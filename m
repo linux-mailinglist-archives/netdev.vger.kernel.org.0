@@ -2,112 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07ED719A519
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 08:11:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0598319A561
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 08:33:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731804AbgDAGLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 02:11:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59726 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731725AbgDAGLf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Apr 2020 02:11:35 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 20BEA20714;
-        Wed,  1 Apr 2020 06:11:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585721494;
-        bh=yn4DTjfeYhX/ci/4lfzmZSEl2lrudX8CABrfWhxhOfQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KqsfjQ1qUSENBtF4qSo+lPc+ecgJkVIplngAg0zVs4Xk2KSgQYOGYN4A616YR8J+8
-         JD4lnc+1DSZuafmxq8tEjl6XLRn/ry2RkbpbXTQJDxTYvLcbgb4BP/zlY1QFCkJxtm
-         pfruGQAPd433YTg4khoumDhAr7Zghz4qyb3E9gSo=
-Date:   Wed, 1 Apr 2020 08:11:31 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        Ben Hutchings <ben.hutchings@codethink.co.uk>,
-        lkft-triage@lists.linaro.org,
-        linux- stable <stable@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        john.fastabend@gmail.com, komachi.yoshiki@gmail.com,
-        Andrii Nakryiko <andriin@fb.com>, lukenels@cs.washington.edu,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH 5.5 000/171] 5.5.14-rc2 review
-Message-ID: <20200401061131.GA1907105@kroah.com>
-References: <20200331141450.035873853@linuxfoundation.org>
- <CA+G9fYuU-5o5DG1VSQuCPx=TSs61-1jBekdGb5yvMRz4ur3BQg@mail.gmail.com>
+        id S1731860AbgDAGdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 02:33:31 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:50025 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731735AbgDAGdb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 02:33:31 -0400
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jJWwJ-0004Mk-Ei; Wed, 01 Apr 2020 08:33:27 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jJWw5-00053m-3n; Wed, 01 Apr 2020 08:33:13 +0200
+Date:   Wed, 1 Apr 2020 08:33:13 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
+        linux-kernel@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        linux-imx@nxp.com, kernel@pengutronix.de,
+        David Jander <david@protonic.nl>,
+        Shawn Guo <shawnguo@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH v2] ARM: imx: allow to disable board specific PHY fixups
+Message-ID: <20200401063313.5e5r7jm6fjzdqpdg@pengutronix.de>
+References: <20200329110457.4113-1-o.rempel@pengutronix.de>
+ <20200329150854.GA31812@lunn.ch>
+ <20200330052611.2bgu7x4nmimf7pru@pengutronix.de>
+ <40209d08-4acb-75c5-1766-6d39bb826ff9@gmail.com>
+ <20200330174114.GG25745@shell.armlinux.org.uk>
+ <5ae5c0de-f05c-5e3f-86e1-a9afdd3e1ef1@pengutronix.de>
+ <20200331075457.GJ25745@shell.armlinux.org.uk>
+ <f1352a82-be3a-cd0a-7cba-6f338f205098@pengutronix.de>
+ <20200331081918.GK25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CA+G9fYuU-5o5DG1VSQuCPx=TSs61-1jBekdGb5yvMRz4ur3BQg@mail.gmail.com>
+In-Reply-To: <20200331081918.GK25745@shell.armlinux.org.uk>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 08:28:42 up 137 days, 21:47, 155 users,  load average: 0.00, 0.03,
+ 0.00
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 01, 2020 at 04:18:41AM +0530, Naresh Kamboju wrote:
-> On Tue, 31 Mar 2020 at 21:02, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > This is the start of the stable review cycle for the 5.5.14 release.
-> > There are 171 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> >
-> > Responses should be made by Thu, 02 Apr 2020 14:12:02 +0000.
-> > Anything received after that time might be too late.
-> >
-> > The whole patch series can be found in one patch at:
-> >         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.5.14-rc2.gz
-> > or in the git tree and branch at:
-> >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.5.y
-> > and the diffstat can be found below.
-> >
-> > thanks,
-> >
-> > greg k-h
+On Tue, Mar 31, 2020 at 09:19:18AM +0100, Russell King - ARM Linux admin wrote:
+> On Tue, Mar 31, 2020 at 10:00:12AM +0200, Marc Kleine-Budde wrote:
+> > On 3/31/20 9:54 AM, Russell King - ARM Linux admin wrote:
+> > > On Tue, Mar 31, 2020 at 09:47:19AM +0200, Marc Kleine-Budde wrote:
+> > >> On 3/30/20 7:41 PM, Russell King - ARM Linux admin wrote:
+> > >>>>> arch/arm/mach-imx/mach-imx6q.c:167:		phy_register_fixup_for_uid(PHY_ID_KSZ9021, MICREL_PHY_ID_MASK,
+> > >>>>> arch/arm/mach-imx/mach-imx6q.c:169:		phy_register_fixup_for_uid(PHY_ID_KSZ9031, MICREL_PHY_ID_MASK,
+> > >>>>> arch/arm/mach-imx/mach-imx6q.c:171:		phy_register_fixup_for_uid(PHY_ID_AR8031, 0xffffffef,
+> > >>>>> arch/arm/mach-imx/mach-imx6q.c:173:		phy_register_fixup_for_uid(PHY_ID_AR8035, 0xffffffef,
+> > >>>
+> > >>> As far as I'm concerned, the AR8035 fixup is there with good reason.
+> > >>> It's not just "random" but is required to make the AR8035 usable with
+> > >>> the iMX6 SoCs.  Not because of a board level thing, but because it's
+> > >>> required for the AR8035 to be usable with an iMX6 SoC.
+> > >>
+> > >> Is this still ture, if the AR8035 is attached to a switch behind an iMX6?
+> > > 
+> > > Do you know of such a setup, or are you talking about theoretical
+> > > situations?
+> > 
+> > Granted, not for the AR8035, but for one of the KSZ Phys. This is why
+> > Oleksij started looking into this issue in the first place.
 > 
+> Maybe there's an easy solution to this - check whether the PHY being
+> fixed up is connected to the iMX6 SoC:
 > 
-> Results from Linaro’s test farm.
-> Regressions on x86_64 and i386.
+> static bool phy_connected_to(struct phy_device *phydev,
+> 			     const struct of_device_id *matches)
+> {
+> 	struct device_node *np, *phy_np;
 > 
-> selftests bpf test_verifier reports as failed.
-> This test PASSED on v5.5.13
+> 	for_each_matching_node(np, matches) {
+> 		phy_np = of_parse_phandle(np, "phy-handle", 0);
+> 		if (!phy_np)
+> 			phy_np = of_parse_phandle(np, "phy", 0);
+> 		if (!phy_np)
+> 			phy_np = of_parse_phandle(np, "phy-device", 0);
+> 		if (phy_np && phydev->mdio.dev.of_node == phy_np) {
+> 			of_node_put(phy_np);
+> 			of_node_put(np);
+> 			return true;
+> 		}
+> 		of_node_put(phy_np);
+> 	}
+> 	return false;
+> }
 > 
-> #554/p jgt32: range bound deduction, reg op imm FAIL
-> Failed to load prog 'Success'!
-> R8 unbounded memory access, make sure to bounds check any array access
-> into a map
-> verification time 141 usec
-> stack depth 8
-> processed 16 insns (limit 1000000) max_states_per_insn 0 total_states
-> 1 peak_states 1 mark_read 1
-> #555/p jgt32: range bound deduction, reg1 op reg2, reg1 unknown FAIL
-> Failed to load prog 'Success'!
-> R8 unbounded memory access, make sure to bounds check any array access
-> into a map
-> verification time 94 usec
-> stack depth 8
-> processed 17 insns (limit 1000000) max_states_per_insn 0 total_states
-> 1 peak_states 1 mark_read 1
-> #556/p jle32: range bound deduction, reg1 op reg2, reg2 unknown FAIL
-> Failed to load prog 'Success'!
-> R8 unbounded memory access, make sure to bounds check any array access
-> into a map
-> verification time 68 usec
-> stack depth 8
-> processed 17 insns (limit 1000000) max_states_per_insn 0 total_states
-> 1 peak_states 1 mark_read 1
+> static struct of_device_id imx_fec_ids[] = {
+> 	{ .compatible = "fsl,imx6q-fec", },
+> 	...
+> 	{ },
+> };
+> 
+> static bool phy_connected_to_fec(struct phy_device *phydev)
+> {
+> 	return phy_connected_to(phydev, imx_fec_ids);
+> }
+> 
+> and then in the fixups:
+> 
+> 	if (!phy_connected_to_fec(phydev))
+> 		return 0;
+> 
 
-Can you run 'git bisect' to find the offending patch?
+Ok, i see. We will limit fixup impact to some specific devicetree nodes.
+And if we wont to disable fixup completely, some special devicetree binding will
+be needed. Correct? Is this acceptable mainline way?
+For the usb ethernet fixups we will need some thing similar.
 
-thanks,
-
-greg k-h
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
