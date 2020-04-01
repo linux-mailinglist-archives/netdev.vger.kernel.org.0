@@ -2,224 +2,446 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF01219A999
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 12:30:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B72519A9CF
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 12:50:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730590AbgDAKau (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 06:30:50 -0400
-Received: from mail-eopbgr80085.outbound.protection.outlook.com ([40.107.8.85]:40099
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728087AbgDAKau (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Apr 2020 06:30:50 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=A/knvA48DeBN2n/4IFhC3XKN6zNIfkvAz+6nque9kg+u064xmtqjC1A9api6wdkTCAmkpeL2ACi608i6GKTO+SnUjBVlM1F9dSbiPIHDJwKDkg5GN0eKKsx4wKZkDWnTxI6HC6RN0sN+KtSv3udLSyqDrzoaeYT6IU7kli37PouHuJneUynUsGksCEIf7cdRIyU8iSgDA14uMJVPCz168rD49PUk565NYZ0tovgTDujLiEnvrvq9knrjizU1F+1RntXEAw1dTMrgD79dLSAeq93y/ZVMt43TBDHEzHnGSbxLqmI+EFPaWe2Ewid+BPiQUdJhhWLwQeuOHrkgZ4SqYw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Prvms0shENhSG2DQpYtaR8BnnyxSoTZMViHOEB9g3jo=;
- b=dByHQSTuDm0KeOSFhp4oNrX/BeBUCWFx25ZyEUTUF2MooIFzLn3Rgzt1aCd587RfzD6TLQs38wNt3X1r7K9+7kbCeg7c3QW7VRI9oe8eSoAUdAXQpOKQBhRrAfLsEbW6FWlaZPPeaXC4CE79u5YKfVWhX7Rc/Xi0RglirOkEVNyn4pWbbXGgb58qNPLAegc4LKzNg4T+voiR+XWbYxpX4CvfetZA99dthLKeTZD9BnMztduElS5cJhyqHFvs2dsRmQNY8Drc6PGOUT0r05YFyiCbfv25vpIHwlbRQLS+id1WbwvmC7qhenHbl28s3q1/uETaVqKp66ZaAQQYuJ/nfg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Prvms0shENhSG2DQpYtaR8BnnyxSoTZMViHOEB9g3jo=;
- b=AIZSdzUrZsv/p5vdm04K9x6SBZUgt2LaEexQ5SGzvAAVUhtNDlrKksVE3lQFpTbUQwT/1il+oMlUJRwT0fo+z1QFrtiRf7o1A9R5qKsy5Kik15YpFwoGSuakRA3mrXS+b/rLBYr1A0IT6Pntt8kLr/Uwy7C71MQa0cxVoTw8FCA=
-Received: from DB8PR04MB6828.eurprd04.prod.outlook.com (52.133.240.149) by
- DB8PR04MB6684.eurprd04.prod.outlook.com (20.179.249.21) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2856.18; Wed, 1 Apr 2020 10:30:45 +0000
-Received: from DB8PR04MB6828.eurprd04.prod.outlook.com
- ([fe80::e44e:f867:d67:e901]) by DB8PR04MB6828.eurprd04.prod.outlook.com
- ([fe80::e44e:f867:d67:e901%2]) with mapi id 15.20.2856.019; Wed, 1 Apr 2020
- 10:30:45 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Baruch Siach <baruch@tkos.co.il>,
-        Russell King <linux@armlinux.org.uk>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Shmuel Hazan <sh@tkos.co.il>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: RE: [PATCH] net: phy: marvell10g: add firmware load support
-Thread-Topic: [PATCH] net: phy: marvell10g: add firmware load support
-Thread-Index: AQHWB4WZmiAHbtx9oEaZfhbuYbUB0ahkCkwA
-Date:   Wed, 1 Apr 2020 10:30:45 +0000
-Message-ID: <DB8PR04MB6828927ED67036524362F369E0C90@DB8PR04MB6828.eurprd04.prod.outlook.com>
-References: <16e4a15e359012fc485d22c7e413a129029fbd0f.1585676858.git.baruch@tkos.co.il>
-In-Reply-To: <16e4a15e359012fc485d22c7e413a129029fbd0f.1585676858.git.baruch@tkos.co.il>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ioana.ciornei@nxp.com; 
-x-originating-ip: [5.12.96.237]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 64d7000c-8b4c-4422-cd65-08d7d627bccc
-x-ms-traffictypediagnostic: DB8PR04MB6684:
-x-microsoft-antispam-prvs: <DB8PR04MB66846F4A2C1860E9E85C0E79E0C90@DB8PR04MB6684.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 03607C04F0
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6828.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(346002)(376002)(396003)(136003)(39860400002)(366004)(6506007)(66556008)(66446008)(66946007)(9686003)(55016002)(33656002)(186003)(7696005)(64756008)(26005)(44832011)(2906002)(52536014)(478600001)(81156014)(8936002)(66476007)(76116006)(110136005)(54906003)(71200400001)(8676002)(86362001)(4326008)(81166006)(5660300002)(316002);DIR:OUT;SFP:1101;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: JAXfvBQcDr8CX+YYz5EhWvSwEJTHILDnhEbUc3/UIrBQTyyPSWHpEqqAnASpHZTUtNUZ9wL+auMiJW6VPavTPg++Dx85gyAEanSwXCcs0z5HCz7y9F7PcHBSLn46AKtFLfXdWGDPNpEKD+F3QMlgPgSBlM8xy1/JkzSoTvXXRR/zC32EdIRYI+LSA9rTyNwf0t8wnkHxRDcZwhcTbdZ0yfby9GXrP2Icl+tR0s5AHB3xWUAuHp9UCp3hvcdCmIv+w09OTj3kWVIo1PLoxgM3lMDmhBhJkfCHSllU6r+8JxDi0x39t8asyhDoVhEFnvZkiPmMmbJPTPERookSuUgr6daud2/ubD0BN7nb/5YYqqeqA4biVeb68xiT7szaWRQpBI13LFVcdaKsdr8o7U7To2ch/QDn6cwIsaYTWto9nOsIEGAu01DTil0wmHQxj/De
-x-ms-exchange-antispam-messagedata: WX4Vc2jxXEd2d2n0yjMldj2rgJr8JkhrXxiCa2w6EcX6uKHNHP6zyB3a50ZoSmfZQxBwjC+cHQ3b0Gs2uNdq56LJhU2nqFm5LBByHi9cE1wHCAMZa5OpclaU4h/EQyBDlhTbVQNv6OhHHNnJtUqmGg==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1732144AbgDAKus (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 06:50:48 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:41700 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726445AbgDAKus (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 06:50:48 -0400
+Received: by mail-qk1-f196.google.com with SMTP id q188so26461538qke.8
+        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 03:50:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6ni9zUQuq2aS16k0tL11E3YtgcPCNQL7SAwwNmRvVR0=;
+        b=LoQZ+g8/TQZq+fVZd4tbqBKnwqUeGrn6pyLJDE8pBZ6zwkZmOUqIlgVtnyflU0qUko
+         R8sfvYx9YO96nBACuyf9QjNX42Ui1GNJbdZDIjgbI06pmj65m2yhW6kVnbZEZSm5GzkA
+         K9oTgpobfo/bZkfhknuGj0a14N9gBUOKPOpWR+vdNh5fkCShqdkFnGW5PVjfgGsKAu3M
+         vkpfaFisd+tGpzq09Bh0SCwpm/ANpuReruPjz9sHJ6T6AIKjw0R2ApnubOjsfn1C5sbo
+         54XPkwYfbzAUY9Cu0TVacnjuof4nimI1UamBsg/oJyuDwXKPjUiqLyp2QTPwtzZJQNFE
+         Pt9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6ni9zUQuq2aS16k0tL11E3YtgcPCNQL7SAwwNmRvVR0=;
+        b=fzQdpudZjqc0r2gI76ri4sRBWQubYLbkbndJ4xgIEKhSw/BJP2mE4HZpmPOk4RPIJp
+         jPkd8ojm+nwb5XNhdAbLXpknkWdbhGygifImxbLfc7/bmLuKynDPgfuJpGJVK4tU29If
+         ZkN0OqSxz8axjyhboR5sLKWzQCDpHxmSNFbf/PAq2BonyeMJo8ohSW8coHCjNNr+nvUX
+         hAp7QercNEKx5InBhakRR/b0BduyVSzdjLwt+665s2LSSRmKd/LgpHpaCpcLDiarmS8w
+         wUN+WlFc/dE/hBGkmc3AK7ldG+IxhO417iGkozD78u+KJaJ51dnPymoCqA8p2wDT7DEd
+         mdNA==
+X-Gm-Message-State: ANhLgQ21Rrx/Rx2kdbc7DX2x8G632I4TF1WJSpDeVC2vaePN9PObXIE5
+        SGvqBq5r5ytKNUcXeQvw6XQS3kvATNWK3OxhZ1+4PQ==
+X-Google-Smtp-Source: ADFU+vvAQNkuZTjcy2WKjYf11PxulhsBHc05QrVFFMZgh4sspO38KFDnrqc50IZuDBBiwUYbFU+GT7ZBNvLZT/xXtpA=
+X-Received: by 2002:a37:bc47:: with SMTP id m68mr8634181qkf.8.1585738246598;
+ Wed, 01 Apr 2020 03:50:46 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 64d7000c-8b4c-4422-cd65-08d7d627bccc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Apr 2020 10:30:45.5055
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /3sdQe+XQqDyAojGqtbHYFM+gSVCA8a1MX7CBwbTWkAmZCQ2NTJNzMb/eRJX+X4ieXKZiQxXAbZZ1IgUy8Jztw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6684
+References: <1584969039-74113-1-git-send-email-xiangxia.m.yue@gmail.com>
+ <CAOrHB_BZ2Sqjooc9u1osbrEsbL5w003CL54v_bd3YPcqkjOzjg@mail.gmail.com>
+ <CAMDZJNV1+zA9EGRMDrZDBNxTg3fr+4ZeH7bcLgfVginx3p4Cww@mail.gmail.com> <CAOrHB_Bw1cUANoKe_1ZeGQkVVX6rj5YPTzzcNUjv3_KKRWehdQ@mail.gmail.com>
+In-Reply-To: <CAOrHB_Bw1cUANoKe_1ZeGQkVVX6rj5YPTzzcNUjv3_KKRWehdQ@mail.gmail.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Wed, 1 Apr 2020 18:50:09 +0800
+Message-ID: <CAMDZJNWHaQ_fYPdjC0hhQZbr_vXReDXeA5TgFNHy8SG79SzU1g@mail.gmail.com>
+Subject: Re: [PATCH net-next v1 1/3] net: openvswitch: expand the meters
+ number supported
+To:     Pravin Shelar <pshelar@ovn.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        ovs dev <dev@openvswitch.org>, Andy Zhou <azhou@ovn.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: [PATCH] net: phy: marvell10g: add firmware load support
->=20
-> When Marvell 88X3310 and 88E2110 hardware configuration SPI_CONFIG strap
-> bit is pulled up, the host must load firmware to the PHY after reset.
-> Add support for loading firmware.
->=20
-> Firmware files are available from Marvell under NDA.
->=20
-> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-> ---
->  drivers/net/phy/marvell10g.c | 114 +++++++++++++++++++++++++++++++++++
->  1 file changed, 114 insertions(+)
->=20
-> diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c =
-index
-> 64c9f3bba2cd..9572426ba1c6 100644
-> --- a/drivers/net/phy/marvell10g.c
-> +++ b/drivers/net/phy/marvell10g.c
-> @@ -27,13 +27,28 @@
->  #include <linux/marvell_phy.h>
->  #include <linux/phy.h>
->  #include <linux/sfp.h>
-> +#include <linux/firmware.h>
-> +#include <linux/delay.h>
->=20
+On Tue, Mar 31, 2020 at 11:57 AM Pravin Shelar <pshelar@ovn.org> wrote:
+>
+> On Sun, Mar 29, 2020 at 5:35 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> >
+> > On Mon, Mar 30, 2020 at 12:46 AM Pravin Shelar <pshelar@ovn.org> wrote:
+> > >
+> > > On Sat, Mar 28, 2020 at 8:46 AM <xiangxia.m.yue@gmail.com> wrote:
+> > > >
+> > > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > > >
+> > > > In kernel datapath of Open vSwitch, there are only 1024
+> > > > buckets of meter in one dp. If installing more than 1024
+> > > > (e.g. 8192) meters, it may lead to the performance drop.
+> > > > But in some case, for example, Open vSwitch used as edge
+> > > > gateway, there should be 200,000+ at least, meters used for
+> > > > IP address bandwidth limitation.
+> > > >
+> > > > [Open vSwitch userspace datapath has this issue too.]
+> > > >
+> > > > For more scalable meter, this patch expands the buckets
+> > > > when necessary, so we can install more meters in the datapath.
+> > > >
+> > > > * Introducing the struct *dp_meter_instance*, it's easy to
+> > > >   expand meter though change the *ti* point in the struct
+> > > >   *dp_meter_table*.
+> > > > * Using kvmalloc_array instead of kmalloc_array.
+> > > >
+> > > Thanks for working on this, I have couple of comments.
+> > >
+> > > > Cc: Pravin B Shelar <pshelar@ovn.org>
+> > > > Cc: Andy Zhou <azhou@ovn.org>
+> > > > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > > > ---
+> > > >  net/openvswitch/datapath.h |   2 +-
+> > > >  net/openvswitch/meter.c    | 168 ++++++++++++++++++++++++++++++-------
+> > > >  net/openvswitch/meter.h    |  17 +++-
+> > > >  3 files changed, 153 insertions(+), 34 deletions(-)
+> > > >
+> > > > diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
+> > > > index e239a46c2f94..785105578448 100644
+> > > > --- a/net/openvswitch/datapath.h
+> > > > +++ b/net/openvswitch/datapath.h
+> > > > @@ -82,7 +82,7 @@ struct datapath {
+> > > >         u32 max_headroom;
+> > > >
+> > > >         /* Switch meters. */
+> > > > -       struct hlist_head *meters;
+> > > > +       struct dp_meter_table *meters;
+> > > >  };
+> > > >
+> > > >  /**
+> > > > diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
+> > > > index 5010d1ddd4bd..98003b201b45 100644
+> > > > --- a/net/openvswitch/meter.c
+> > > > +++ b/net/openvswitch/meter.c
+> > > > @@ -47,40 +47,136 @@ static void ovs_meter_free(struct dp_meter *meter)
+> > > >         kfree_rcu(meter, rcu);
+> > > >  }
+> > > >
+> > > > -static struct hlist_head *meter_hash_bucket(const struct datapath *dp,
+> > > > +static struct hlist_head *meter_hash_bucket(struct dp_meter_instance *ti,
+> > > >                                             u32 meter_id)
+> > > >  {
+> > > > -       return &dp->meters[meter_id & (METER_HASH_BUCKETS - 1)];
+> > > > +       u32 hash = jhash_1word(meter_id, ti->hash_seed);
+> > > > +
+> > > I do not see any need to hash meter-id, can you explain it.
+> > >
+> > > > +       return &ti->buckets[hash & (ti->n_buckets - 1)];
+> > > >  }
+> > > >
+> > > >  /* Call with ovs_mutex or RCU read lock. */
+> > > > -static struct dp_meter *lookup_meter(const struct datapath *dp,
+> > > > +static struct dp_meter *lookup_meter(const struct dp_meter_table *tbl,
+> > > >                                      u32 meter_id)
+> > > >  {
+> > > > +       struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
+> > > >         struct dp_meter *meter;
+> > > >         struct hlist_head *head;
+> > > >
+> > > > -       head = meter_hash_bucket(dp, meter_id);
+> > > > -       hlist_for_each_entry_rcu(meter, head, dp_hash_node,
+> > > > -                               lockdep_ovsl_is_held()) {
+> > > > +       head = meter_hash_bucket(ti, meter_id);
+> > > > +       hlist_for_each_entry_rcu(meter, head, hash_node[ti->node_ver],
+> > > > +                                lockdep_ovsl_is_held()) {
+> > > >                 if (meter->id == meter_id)
+> > > >                         return meter;
+> > > >         }
+> > > > +
+> > > This patch is expanding meter table linearly with number meters added
+> > > to datapath. so I do not see need to have hash table. it can be a
+> > > simple array. This would also improve lookup efficiency.
+> > > For hash collision we could find next free slot in array. let me know
+> > > what do you think about this approach.
+> > Hi Pravin
+> > If we use the simple array, when inserting the meter, for hash collision, we can
+> > find next free slot, but one case, when there are many meters in the array.
+> > we may find many slot for the free slot.
+> > And when we lookup the meter, for hash collision, we may find many
+> > array slots, and
+> > then find it, or that meter does not exist in the array, In that case,
+> > there may be a lookup performance
+> > drop.
+> >
+> I was thinking that users can insure that there are no hash collision,
+> but time complexity of negative case is expensive. so I am fine with
+> the hash table.
+Hi Pravi
+I check again the meter implementation of ovs, ovs-vswitchd use the id-pool to
+get a valid meter-id which passed to kernel, so there is no hash collision. You
+are right. we use the single array is the better solution.
+> > For hash meter-id in meter_hash_bucket, I am not 100% sure it is
+> > useful. it just update
+> > hash_seed when expand meters. For performance, we can remove it. Thanks.
+> ok.
+>
+> > > >         return NULL;
+> > > >  }
+> > > >
+> > > > -static void attach_meter(struct datapath *dp, struct dp_meter *meter)
+> > > > +static struct dp_meter_instance *dp_meter_instance_alloc(const int size)
+> > > > +{
+> > > > +       struct dp_meter_instance *ti;
+> > > > +       int i;
+> > > > +
+> > > > +       ti = kmalloc(sizeof(*ti), GFP_KERNEL);
+> > > > +       if (!ti)
+> > > > +               return NULL;
+> > > > +
+> > > > +       ti->buckets = kvmalloc_array(size, sizeof(struct hlist_head),
+> > > > +                                    GFP_KERNEL);
+> > > > +       if (!ti->buckets) {
+> > > > +               kfree(ti);
+> > > > +               return NULL;
+> > > > +       }
+> > > > +
+> > > > +       for (i = 0; i < size; i++)
+> > > > +               INIT_HLIST_HEAD(&ti->buckets[i]);
+> > > > +
+> > > > +       ti->n_buckets = size;
+> > > > +       ti->node_ver = 0;
+> > > > +       get_random_bytes(&ti->hash_seed, sizeof(u32));
+> > > > +
+> > > > +       return ti;
+> > > > +}
+> > > > +
+> > > > +static void dp_meter_instance_free_rcu(struct rcu_head *rcu)
+> > > >  {
+> > > > -       struct hlist_head *head = meter_hash_bucket(dp, meter->id);
+> > > > +       struct dp_meter_instance *ti;
+> > > >
+> > > > -       hlist_add_head_rcu(&meter->dp_hash_node, head);
+> > > > +       ti = container_of(rcu, struct dp_meter_instance, rcu);
+> > > > +       kvfree(ti->buckets);
+> > > > +       kfree(ti);
+> > > >  }
+> > > >
+> > > > -static void detach_meter(struct dp_meter *meter)
+> > > > +static void dp_meter_instance_insert(struct dp_meter_instance *ti,
+> > > > +                                    struct dp_meter *meter)
+> > > > +{
+> > > > +       struct hlist_head *head = meter_hash_bucket(ti, meter->id);
+> > > > +
+> > > > +       hlist_add_head_rcu(&meter->hash_node[ti->node_ver], head);
+> > > > +}
+> > > > +
+> > > > +static void dp_meter_instance_remove(struct dp_meter_instance *ti,
+> > > > +                                    struct dp_meter *meter)
+> > > >  {
+> > > > +       hlist_del_rcu(&meter->hash_node[ti->node_ver]);
+> > > > +}
+> > > > +
+> > > > +static struct dp_meter_instance *
+> > > > +dp_meter_instance_expand(struct dp_meter_instance *ti)
+> > > > +{
+> > > > +       struct dp_meter_instance *new_ti;
+> > > > +       int i;
+> > > > +
+> > > > +       new_ti = dp_meter_instance_alloc(ti->n_buckets * 2);
+> > > > +       if (!new_ti)
+> > > > +               return NULL;
+> > > > +
+> > > > +       new_ti->node_ver = !ti->node_ver;
+> > > > +
+> > > > +       for (i = 0; i < ti->n_buckets; i++) {
+> > > > +               struct hlist_head *head = &ti->buckets[i];
+> > > > +               struct dp_meter *meter;
+> > > > +
+> > > > +               hlist_for_each_entry_rcu(meter, head, hash_node[ti->node_ver],
+> > > > +                                        lockdep_ovsl_is_held())
+> > > > +                       dp_meter_instance_insert(new_ti, meter);
+> > > > +       }
+> > > > +
+> > > > +       return new_ti;
+> > > > +}
+> > > > +
+> > > > +static void attach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
+> > > > +{
+> > > > +       struct dp_meter_instance *new_ti;
+> > > > +       struct dp_meter_instance *ti;
+> > > > +
+> > > > +       ti = rcu_dereference_ovsl(tbl->ti);
+> > > > +       dp_meter_instance_insert(ti, meter);
+> > > > +
+> > > > +       /* operate the counter safely, because called with ovs_lock. */
+> > > > +       tbl->count++;
+> > > > +
+> > > > +       if (tbl->count > ti->n_buckets) {
+> > > > +               new_ti = dp_meter_instance_expand(ti);
+> > > > +
+> > >
+> > >
+> > > > +               if (new_ti) {
+> > > > +                       rcu_assign_pointer(tbl->ti, new_ti);
+> > > > +                       call_rcu(&ti->rcu, dp_meter_instance_free_rcu);
+> > > > +               }
+> > > > +       }
+> > > > +}
+> > > > +
+> > > > +static void detach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
+> > > > +{
+> > > > +       struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
+> > > > +
+> > > >         ASSERT_OVSL();
+> > > > -       if (meter)
+> > > > -               hlist_del_rcu(&meter->dp_hash_node);
+> > > > +       if (meter) {
+> > > > +               /* operate the counter safely, because called with ovs_lock. */
+> > > > +               tbl->count--;
+> > > > +               dp_meter_instance_remove(ti, meter);
+> > > > +       }
+> > > >  }
+> > > >
+> > > >  static struct sk_buff *
+> > > > @@ -303,9 +399,9 @@ static int ovs_meter_cmd_set(struct sk_buff *skb, struct genl_info *info)
+> > > >         meter_id = nla_get_u32(a[OVS_METER_ATTR_ID]);
+> > > >
+> > > >         /* Cannot fail after this. */
+> > > > -       old_meter = lookup_meter(dp, meter_id);
+> > > > -       detach_meter(old_meter);
+> > > > -       attach_meter(dp, meter);
+> > > > +       old_meter = lookup_meter(dp->meters, meter_id);
+> > > > +       detach_meter(dp->meters, old_meter);
+> > > > +       attach_meter(dp->meters, meter);
+> > > >         ovs_unlock();
+> > > >
+> > > >         /* Build response with the meter_id and stats from
+> > > > @@ -365,7 +461,7 @@ static int ovs_meter_cmd_get(struct sk_buff *skb, struct genl_info *info)
+> > > >         }
+> > > >
+> > > >         /* Locate meter, copy stats. */
+> > > > -       meter = lookup_meter(dp, meter_id);
+> > > > +       meter = lookup_meter(dp->meters, meter_id);
+> > > >         if (!meter) {
+> > > >                 err = -ENOENT;
+> > > >                 goto exit_unlock;
+> > > > @@ -416,13 +512,13 @@ static int ovs_meter_cmd_del(struct sk_buff *skb, struct genl_info *info)
+> > > >                 goto exit_unlock;
+> > > >         }
+> > > >
+> > > > -       old_meter = lookup_meter(dp, meter_id);
+> > > > +       old_meter = lookup_meter(dp->meters, meter_id);
+> > > >         if (old_meter) {
+> > > >                 spin_lock_bh(&old_meter->lock);
+> > > >                 err = ovs_meter_cmd_reply_stats(reply, meter_id, old_meter);
+> > > >                 WARN_ON(err);
+> > > >                 spin_unlock_bh(&old_meter->lock);
+> > > > -               detach_meter(old_meter);
+> > > > +               detach_meter(dp->meters, old_meter);
+> > > >         }
+> > > >         ovs_unlock();
+> > > >         ovs_meter_free(old_meter);
+> > > > @@ -452,7 +548,7 @@ bool ovs_meter_execute(struct datapath *dp, struct sk_buff *skb,
+> > > >         int i, band_exceeded_max = -1;
+> > > >         u32 band_exceeded_rate = 0;
+> > > >
+> > > > -       meter = lookup_meter(dp, meter_id);
+> > > > +       meter = lookup_meter(dp->meters, meter_id);
+> > > >         /* Do not drop the packet when there is no meter. */
+> > > >         if (!meter)
+> > > >                 return false;
+> > > > @@ -570,32 +666,44 @@ struct genl_family dp_meter_genl_family __ro_after_init = {
+> > > >
+> > > >  int ovs_meters_init(struct datapath *dp)
+> > > >  {
+> > > > -       int i;
+> > > > +       struct dp_meter_instance *ti;
+> > > > +       struct dp_meter_table *tbl;
+> > > >
+> > > > -       dp->meters = kmalloc_array(METER_HASH_BUCKETS,
+> > > > -                                  sizeof(struct hlist_head), GFP_KERNEL);
+> > > > +       tbl = kmalloc(sizeof(*tbl), GFP_KERNEL);
+> > > > +       if (!tbl)
+> > > > +               return -ENOMEM;
+> > > >
+> > > > -       if (!dp->meters)
+> > > > +       tbl->count = 0;
+> > > > +
+> > > > +       ti = dp_meter_instance_alloc(METER_HASH_BUCKETS);
+> > > > +       if (!ti) {
+> > > > +               kfree(tbl);
+> > > >                 return -ENOMEM;
+> > > > +       }
+> > > >
+> > > > -       for (i = 0; i < METER_HASH_BUCKETS; i++)
+> > > > -               INIT_HLIST_HEAD(&dp->meters[i]);
+> > > > +       rcu_assign_pointer(tbl->ti, ti);
+> > > > +       dp->meters = tbl;
+> > > >
+> > > >         return 0;
+> > > >  }
+> > > >
+> > > >  void ovs_meters_exit(struct datapath *dp)
+> > > >  {
+> > > > +       struct dp_meter_table *tbl = dp->meters;
+> > > > +       struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
+> > > >         int i;
+> > > >
+> > > > -       for (i = 0; i < METER_HASH_BUCKETS; i++) {
+> > > > -               struct hlist_head *head = &dp->meters[i];
+> > > > +       for (i = 0; i < ti->n_buckets; i++) {
+> > > > +               struct hlist_head *head = &ti->buckets[i];
+> > > >                 struct dp_meter *meter;
+> > > >                 struct hlist_node *n;
+> > > >
+> > > > -               hlist_for_each_entry_safe(meter, n, head, dp_hash_node)
+> > > > -                       kfree(meter);
+> > > > +               hlist_for_each_entry_safe(meter, n, head,
+> > > > +                                         hash_node[ti->node_ver])
+> > > > +                       ovs_meter_free(meter);
+> > > >         }
+> > > >
+> > > > -       kfree(dp->meters);
+> > > > +       kvfree(ti->buckets);
+> > > > +       kfree(ti);
+> > > > +       kfree(tbl);
+> > > >  }
+> > > > diff --git a/net/openvswitch/meter.h b/net/openvswitch/meter.h
+> > > > index f645913870bd..bc84796d7d4d 100644
+> > > > --- a/net/openvswitch/meter.h
+> > > > +++ b/net/openvswitch/meter.h
+> > > > @@ -30,9 +30,7 @@ struct dp_meter_band {
+> > > >  struct dp_meter {
+> > > >         spinlock_t lock;    /* Per meter lock */
+> > > >         struct rcu_head rcu;
+> > > > -       struct hlist_node dp_hash_node; /*Element in datapath->meters
+> > > > -                                        * hash table.
+> > > > -                                        */
+> > > > +       struct hlist_node hash_node[2];
+> > > >         u32 id;
+> > > >         u16 kbps:1, keep_stats:1;
+> > > >         u16 n_bands;
+> > > > @@ -42,6 +40,19 @@ struct dp_meter {
+> > > >         struct dp_meter_band bands[];
+> > > >  };
+> > > >
+> > > > +struct dp_meter_instance {
+> > > > +       struct hlist_head *buckets;
+> > > > +       struct rcu_head rcu;
+> > > > +       u32 n_buckets;
+> > > > +       u32 hash_seed;
+> > > > +       u8 node_ver;
+> > > > +};
+> > > > +
+> > > > +struct dp_meter_table {
+> > > > +       struct dp_meter_instance __rcu *ti;
+> > > > +       u32 count;
+> > > > +};
+> > > > +
+> > > >  extern struct genl_family dp_meter_genl_family;
+> > > >  int ovs_meters_init(struct datapath *dp);
+> > > >  void ovs_meters_exit(struct datapath *dp);
+> > > > --
+> > > > 2.23.0
+> > > >
+> >
+> >
+> >
+> > --
+> > Best regards, Tonghao
 
-[snip]
 
-> +
-> +static void mv3310_report_firmware_rev(struct phy_device *phydev) {
-> +	int rev1, rev2;
-> +
-> +	rev1 =3D phy_read_mmd(phydev, MDIO_MMD_PMAPMD,
-> MV_PMA_FW_REV1);
-> +	rev2 =3D phy_read_mmd(phydev, MDIO_MMD_PMAPMD,
-> MV_PMA_FW_REV2);
-> +	if (rev1 < 0 || rev2 < 0)
-> +		return;
-> +
-> +	dev_info(&phydev->mdio.dev, "Loaded firmware revision
-> %d.%d.%d.%d",
-> +			(rev1 & 0xff00) >> 8, rev1 & 0x00ff,
-> +			(rev2 & 0xff00) >> 8, rev2 & 0x00ff); }
-> +
-> +static int mv3310_load_firmware(struct phy_device *phydev) {
-> +	const struct firmware *fw_entry;
-> +	char *fw_file;
-> +	int ret;
-> +
-> +	switch (phydev->drv->phy_id) {
-> +	case MARVELL_PHY_ID_88X3310:
-> +		fw_file =3D "mrvl/x3310fw.hdr";
-> +		break;
-> +	case MARVELL_PHY_ID_88E2110:
-> +		fw_file =3D "mrvl/e21x0fw.hdr";
-> +		break;
 
-Couldn't the static selection of the firmware be replaced by a new generic=
-=20
-property in the PHY's device node? This would help to just have a solution
-in place that works even if the firmware version sees any upgrades or
-new filenames are added.
-
-Also, from a generic standpoint, having a 'firmware-name' property in the
-device node would also be of help in a situation when the exact same PHY
-is integrated twice on the same board but with different MII side link
-modes thus different firmware images.
-This is typically the case for Aquantia PHYs.
-
-Ioana
-
-> +	default:
-> +		dev_warn(&phydev->mdio.dev, "unknown firmware file for %s
-> PHY",
-> +				phydev->drv->name);
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret =3D request_firmware(&fw_entry, fw_file, &phydev->mdio.dev);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Firmware size must be larger than header, and even */
-> +	if (fw_entry->size <=3D MV_FIRMWARE_HEADER_SIZE ||
-> +			(fw_entry->size % 2) !=3D 0) {
-> +		dev_err(&phydev->mdio.dev, "firmware file invalid");
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* Clear checksum register */
-> +	phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_RAM_CHECKSUM);
-> +
-> +	/* Set firmware load address */
-> +	phy_write_mmd(phydev, MDIO_MMD_PCS, MV_PCS_FW_LOW_WORD,
-> 0);
-> +	phy_write_mmd(phydev, MDIO_MMD_PCS, MV_PCS_FW_HIGH_WORD,
-> 0x0010);
-> +
-> +	ret =3D mv3310_write_firmware(phydev,
-> +			fw_entry->data + MV_FIRMWARE_HEADER_SIZE,
-> +			fw_entry->size - MV_FIRMWARE_HEADER_SIZE);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	phy_modify_mmd(phydev, MDIO_MMD_PMAPMD, MV_PMA_BOOT,
-> +			MV_PMA_BOOT_FW_LOADED,
-> MV_PMA_BOOT_FW_LOADED);
-> +
-> +	release_firmware(fw_entry);
-> +
-> +	msleep(100);
-> +	mv3310_report_firmware_rev(phydev);
-> +
-> +	return 0;
-> +}
-> +
->  static const struct sfp_upstream_ops mv3310_sfp_ops =3D {
->  	.attach =3D phy_sfp_attach,
->  	.detach =3D phy_sfp_detach,
-> @@ -249,6 +357,12 @@ static int mv3310_probe(struct phy_device *phydev)
->  		return -ENODEV;
->  	}
->=20
-> +	if ((ret & MV_PMA_BOOT_PROGRESS_MASK) =3D=3D
-> MV_PMA_BOOT_WAITING) {
-> +		ret =3D mv3310_load_firmware(phydev);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
->  	priv =3D devm_kzalloc(&phydev->mdio.dev, sizeof(*priv), GFP_KERNEL);
->  	if (!priv)
->  		return -ENOMEM;
-> --
-> 2.25.1
-
+-- 
+Best regards, Tonghao
