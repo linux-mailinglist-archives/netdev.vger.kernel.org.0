@@ -2,102 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D5C119A711
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 10:20:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42F5719A7FC
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 10:56:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730831AbgDAIUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 04:20:08 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:38431 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726205AbgDAIUI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 04:20:08 -0400
-Received: by mail-pg1-f196.google.com with SMTP id x7so11760120pgh.5
-        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 01:20:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=QFO0vf8e8DojHzC7YKKnWcjJKYcUUi6BB0Xvkcc0pJc=;
-        b=w++wGeiNVTv/fz8h/D2fQ8RKq8fKC+9Jz+vX6b4AcyL8KRKHNVMEpwShLa5F1frzO1
-         Bda6A2H/HYR2+N2im+kK3SXARA+hI2/nYP3Rg/qjrlotrlctZaoI88a0rMgsB0NjJO2X
-         xRPmXljSIddgZxEaMvWQmrr/1XcL7P3b4dxEQouwsyj+M4J5AtQktI0mOLrBVSgsvfJp
-         4zgqOV4AYLL92YnuNemUsgQAuIkOdFf09marZjFENI3vt2o9eDR8YOTFrdBx/YG5oh2h
-         k91JvSYSOsM/5h40ZdcVC9RkMvm1/UgZzHQhrj89blEtyUzq19O6zUkoJ4Y0Z8uKd9o0
-         0BhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=QFO0vf8e8DojHzC7YKKnWcjJKYcUUi6BB0Xvkcc0pJc=;
-        b=nogVkNZgcEzcbNmvDCGTAZ2z6ciKXf+Ytz1I6Zqdhk5JAoIioiPiHepNLoYVmpJ0dc
-         IMhiIleJMytwxqAghqwTYFk9MN71FIIOTREVXQ2wIg6i/4wI+Rm06ZCEASj8Ese8CzQB
-         +R9i8vVu2npqe0c7hUO3L/pxUuGuXLjaWBLKwmEoaNub87kwcsl65IFC9tQnX3TLNEFB
-         NSK1H64GUqn/iAcnuErupRbmRGbPs+jpBUKGcftjns7nqsDrG0bahpmc2FznySP+LZ60
-         lK2BgM7Yk/FkDcX+4piFlNU8rBO8AL2fkUg/mQkvrspmnMDfCKUtbn/f357aGMhPQZOP
-         +bKA==
-X-Gm-Message-State: ANhLgQ37kybPsMga5e5eW4ey4ItRSElVH1uA/hCwpCfGofDt58jf9DWX
-        WQUVaHRaUU5xuQvU71KUfc/0
-X-Google-Smtp-Source: ADFU+vvjnoX9qATo8Ax3smn2g6ng6pV6THrQwh3JlG3wMQgvz0eNY8mwOCDQ51gAvmtCVFlkWsI+zQ==
-X-Received: by 2002:aa7:962d:: with SMTP id r13mr23217262pfg.244.1585729206901;
-        Wed, 01 Apr 2020 01:20:06 -0700 (PDT)
-Received: from Mani-XPS-13-9360 ([2409:4072:648c:592d:1580:e843:709d:f3b5])
-        by smtp.gmail.com with ESMTPSA id j21sm908394pgn.30.2020.04.01.01.20.02
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 01 Apr 2020 01:20:06 -0700 (PDT)
-Date:   Wed, 1 Apr 2020 13:50:00 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     gregkh@linuxfoundation.org, davem@davemloft.net,
-        smohanad@codeaurora.org, jhugo@codeaurora.org,
-        kvalo@codeaurora.org, hemantk@codeaurora.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, clew@codeaurora.org
-Subject: Re: [PATCH 2/3] net: qrtr: Add MHI transport layer
-Message-ID: <20200401082000.GA15627@Mani-XPS-13-9360>
-References: <20200401064435.12676-1-manivannan.sadhasivam@linaro.org>
- <20200401064435.12676-3-manivannan.sadhasivam@linaro.org>
- <20200401071023.GD663905@yoga>
+        id S1731842AbgDAI4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 04:56:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54442 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727322AbgDAI4X (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Apr 2020 04:56:23 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 95AB620784;
+        Wed,  1 Apr 2020 08:56:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585731383;
+        bh=pZfkpzV/DA6TJrp3HueXSBW9yxX80ESU1n7+BOkQquc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Os3MhArKMK5pr15JDTv+GuhUZA2z26WCPoNodnEur3UTs7+7Lwh3XVqLAj2qqcLVM
+         c8DWL6v+4M5n71Cu9YE1IwMSRlNnXg3oN4ieQ7YbnLJ0xfXJRqvgQDolrPzIqrtQxn
+         42lXpvbIaEju92IXHKsXjfPxVlqShCvg+T44u6j0=
+Date:   Wed, 1 Apr 2020 10:56:20 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        Ben Hutchings <ben.hutchings@codethink.co.uk>,
+        lkft-triage@lists.linaro.org,
+        linux- stable <stable@vger.kernel.org>,
+        john.fastabend@gmail.com, komachi.yoshiki@gmail.com,
+        Andrii Nakryiko <andriin@fb.com>, lukenels@cs.washington.edu,
+        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH 5.5 000/171] 5.5.14-rc2 review
+Message-ID: <20200401085620.GD2026666@kroah.com>
+References: <20200331141450.035873853@linuxfoundation.org>
+ <CA+G9fYuU-5o5DG1VSQuCPx=TSs61-1jBekdGb5yvMRz4ur3BQg@mail.gmail.com>
+ <20200401061131.GA1907105@kroah.com>
+ <dc2cee11-84fc-70a7-41d8-2de23942697c@iogearbox.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200401071023.GD663905@yoga>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <dc2cee11-84fc-70a7-41d8-2de23942697c@iogearbox.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 01, 2020 at 12:10:23AM -0700, Bjorn Andersson wrote:
-> On Tue 31 Mar 23:44 PDT 2020, Manivannan Sadhasivam wrote:
-> > diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
-> [..]
-> > +static void qcom_mhi_qrtr_ul_callback(struct mhi_device *mhi_dev,
-> > +				      struct mhi_result *mhi_res)
-> > +{
-> > +	struct sk_buff *skb = (struct sk_buff *)mhi_res->buf_addr;
-> > +
-> > +	consume_skb(skb);
-> > +	if (skb->sk)
-> > +		sock_put(skb->sk);
+On Wed, Apr 01, 2020 at 10:03:16AM +0200, Daniel Borkmann wrote:
+> On 4/1/20 8:11 AM, Greg Kroah-Hartman wrote:
+> > On Wed, Apr 01, 2020 at 04:18:41AM +0530, Naresh Kamboju wrote:
+> > > On Tue, 31 Mar 2020 at 21:02, Greg Kroah-Hartman
+> > > <gregkh@linuxfoundation.org> wrote:
+> > > > 
+> > > > This is the start of the stable review cycle for the 5.5.14 release.
+> > > > There are 171 patches in this series, all will be posted as a response
+> > > > to this one.  If anyone has any issues with these being applied, please
+> > > > let me know.
+> > > > 
+> > > > Responses should be made by Thu, 02 Apr 2020 14:12:02 +0000.
+> > > > Anything received after that time might be too late.
+> > > > 
+> > > > The whole patch series can be found in one patch at:
+> > > >          https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.5.14-rc2.gz
+> > > > or in the git tree and branch at:
+> > > >          git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.5.y
+> > > > and the diffstat can be found below.
+> > > > 
+> > > > thanks,
+> > > > 
+> > > > greg k-h
+> > > 
+> > > Results from Linaro’s test farm.
+> > > Regressions on x86_64 and i386.
+> > > 
+> > > selftests bpf test_verifier reports as failed.
+> > > This test PASSED on v5.5.13
+> > > 
+> > > #554/p jgt32: range bound deduction, reg op imm FAIL
+> > > Failed to load prog 'Success'!
+> > > R8 unbounded memory access, make sure to bounds check any array access
+> > > into a map
+> > > verification time 141 usec
+> > > stack depth 8
+> > > processed 16 insns (limit 1000000) max_states_per_insn 0 total_states
+> > > 1 peak_states 1 mark_read 1
+> > > #555/p jgt32: range bound deduction, reg1 op reg2, reg1 unknown FAIL
+> > > Failed to load prog 'Success'!
+> > > R8 unbounded memory access, make sure to bounds check any array access
+> > > into a map
+> > > verification time 94 usec
+> > > stack depth 8
+> > > processed 17 insns (limit 1000000) max_states_per_insn 0 total_states
+> > > 1 peak_states 1 mark_read 1
+> > > #556/p jle32: range bound deduction, reg1 op reg2, reg2 unknown FAIL
+> > > Failed to load prog 'Success'!
+> > > R8 unbounded memory access, make sure to bounds check any array access
+> > > into a map
+> > > verification time 68 usec
+> > > stack depth 8
+> > > processed 17 insns (limit 1000000) max_states_per_insn 0 total_states
+> > > 1 peak_states 1 mark_read 1
+> > 
+> > Can you run 'git bisect' to find the offending patch?
 > 
-> Don't you need to do this in opposite order, to avoid a use after free?
-> 
+> No need, I'll send you a patch to update the selftests. It's expected that they
+> fail now due to the revert we had to do, so if this is the only issue it shouldn't
+> hold up the release. In any case, I'll send them over to you next.
 
-I thought about it but the socket refcounting postulates in net/sock.h states:
+Great, thanks for letting me know this isn't a "real" issue :)
 
-"sk_free is called from any context: process, BH, IRQ. When it is called,
-socket has no references from outside -> sk_free may release descendant
-resources allocated by the socket, but to the time when it is called, socket
-is NOT referenced by any hash tables, lists etc."
-
-Here the sock it still referenced by skb, so I don't exactly know if we can
-release the socket using sock_put() before consume_skb(). But on the other hand,
-once skb is freed then accessing its member is clearly a use after free issue.
-
-Maybe someone can clarify this?
-
-Thanks,
-Mani
-
-> Regards,
-> Bjorn
+greg k-h
