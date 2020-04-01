@@ -2,136 +2,266 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D053A19AD92
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 16:15:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33C5819ADA0
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 16:18:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732975AbgDAOPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 10:15:03 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:58452 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732826AbgDAOPD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 10:15:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=CG4OmPa/gJjzatQG79XkzsR0JM6D3FtKUESWPgDFYUI=; b=FLoiFyV9GBN4e5K2JSJFsYsLy
-        eQEiCGTHai8I/AIPsdax4gnpxe1sTozOowESIDOeFOHX6PXaLlaOIa1qCKZD2OHOOJ6BP1fQJ3bsG
-        yOmw5xJo828E6kLdA7vqcOoooAnPu+C/dHp2sm21JTA2wlMZmwLqK+GGcOfV8GOGy7s730Q/2meIn
-        I9iPGDwRX4pbJIzxJ2BG9NQl/yXBP59v8n1kQUNFxw1uh/gJoOuvlGRxHByXAnU5Xq4BR9o+H2Hev
-        MHu19blJGnmGCDkaY6T3g9vCEjVUFOjs7ae8+ltAm1ZjPUtbLlL5/ukGo3KKgYK80Q/xmLiTaLpj/
-        VLsSYYRNA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44274)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jJe8r-0006LQ-Nb; Wed, 01 Apr 2020 15:14:53 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jJe8m-0000lb-QQ; Wed, 01 Apr 2020 15:14:48 +0100
-Date:   Wed, 1 Apr 2020 15:14:48 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Florinel Iordache <florinel.iordache@nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        Leo Li <leoyang.li@nxp.com>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 6/9] net: phy: add backplane kr driver support
-Message-ID: <20200401141448.GU25745@shell.armlinux.org.uk>
-References: <AM0PR04MB544326757B0B510C7C3C6417FBC90@AM0PR04MB5443.eurprd04.prod.outlook.com>
+        id S1732880AbgDAORy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 10:17:54 -0400
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:26188 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1732205AbgDAORy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 10:17:54 -0400
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 031EHLwk010045;
+        Wed, 1 Apr 2020 16:17:34 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=STMicroelectronics;
+ bh=Z6VNMqTZ2uwRu8WKkNLiLmvYTadoYga3ntG3YOu/TiU=;
+ b=axZXezGT3396UNnC/EOneTFB4Ge+MsYYlB6WJYBw23fMIBAMstAdfT5iosNkfoeWrmiG
+ QjiVjJU3hWbDM+udH6oMluKvd6ANYjoRN5Ep0qtF3yLSKjb4FRctObHLpUrzACjiX6j/
+ xB7anIR2pyKMRB2LJEoK8ufv/H57M24T//zkoM/cohpHmJPMzjCU3QxdSx2zKW3lTcp2
+ 1qs9hBrYaFLVS3Uel2Hk3AqwX1q8m3L40579XlELlncXsvIuy1YVzRI+AtBUDOTWiqpn
+ Rh8DqbHZUf8R5jzG1lFpvVykUHWDlKGkMaqPo1Mn9l1iQOsyAFN0oKxSWXR0EuPhmEsL CQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 301vkdx483-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 01 Apr 2020 16:17:34 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C603910002A;
+        Wed,  1 Apr 2020 16:17:30 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag3node2.st.com [10.75.127.8])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id AE0A32B0D50;
+        Wed,  1 Apr 2020 16:17:30 +0200 (CEST)
+Received: from lmecxl0912.tpe.st.com (10.75.127.49) by SFHDAG3NODE2.st.com
+ (10.75.127.8) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Wed, 1 Apr
+ 2020 16:17:23 +0200
+Subject: Re: [PATCHv2 1/1] net: ethernet: stmmac: simplify phy modes
+ management for stm32
+To:     Christophe Roullier <christophe.roullier@st.com>,
+        <robh@kernel.org>, <davem@davemloft.net>, <joabreu@synopsys.com>,
+        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
+        <peppe.cavallaro@st.com>
+CC:     <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <andrew@lunn.ch>
+References: <20200316090907.18488-1-christophe.roullier@st.com>
+From:   Alexandre Torgue <alexandre.torgue@st.com>
+Message-ID: <cb0a5dd3-02da-7d60-7069-a8ee080ad239@st.com>
+Date:   Wed, 1 Apr 2020 16:17:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM0PR04MB544326757B0B510C7C3C6417FBC90@AM0PR04MB5443.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200316090907.18488-1-christophe.roullier@st.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.49]
+X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG3NODE2.st.com
+ (10.75.127.8)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-01_01:2020-03-31,2020-03-31 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 01, 2020 at 02:01:25PM +0000, Florinel Iordache wrote:
-> > On Thu, Mar 26, 2020 at 03:51:19PM +0200, Florinel Iordache wrote:
-> > > Add support for backplane kr generic driver including link training
-> > > (ieee802.3ap/ba) and fixed equalization algorithm
-> > >
-> > > Signed-off-by: Florinel Iordache <florinel.iordache@nxp.com>
-> > > +/* Read AN Link Status */
-> > > +static int is_an_link_up(struct phy_device *bpphy) {
-> > > +     struct backplane_phy_info *bp_phy = bpphy->priv;
-> > > +     int ret, val = 0;
-> > > +
-> > > +     mutex_lock(&bp_phy->bpphy_lock);
-> > > +
-> > > +     /* Read twice because Link_Status is LL (Latched Low) bit */
-> > > +     val = phy_read_mmd(bpphy, MDIO_MMD_AN, bp_phy-
-> > >bp_dev.mdio.an_status);
-> > > +     val = phy_read_mmd(bpphy, MDIO_MMD_AN,
-> > > + bp_phy->bp_dev.mdio.an_status);
-> > 
-> > Why not just
-> > 
-> > val = phy_read_mmd(bpphy, MDIO_MMD_AN, MDIO_CTRL1);
-> > 
-> > Or is your hardware not actually conformant to the standard?
-> > 
-> > There has also been a lot of discussion of reading the status twice is correct or
-> > not. Don't you care the link has briefly gone down and up again?
-> > 
-> >         Andrew
+Hi Christophe
+
+On 3/16/20 10:09 AM, Christophe Roullier wrote:
+> No new feature, just to simplify stm32 part to be easier to use.
+> Add by default all Ethernet clocks in DT, and activate or not in function
+> of phy mode, clock frequency, if property "st,ext-phyclk" is set or not.
+> Keep backward compatibility
+> -----------------------------------------------------------------------
+> |PHY_MODE | Normal | PHY wo crystal|   PHY wo crystal   |  No 125Mhz  |
+> |         |        |      25MHz    |        50MHz       |  from PHY   |
+> -----------------------------------------------------------------------
+> |  MII    |	 -    |     eth-ck    |       n/a          |	    n/a  |
+> |         |        | st,ext-phyclk |                    |             |
+> -----------------------------------------------------------------------
+> |  GMII   |	 -    |     eth-ck    |       n/a          |	    n/a  |
+> |         |        | st,ext-phyclk |                    |             |
+> -----------------------------------------------------------------------
+> | RGMII   |	 -    |     eth-ck    |       n/a          |      eth-ck  |
+> |         |        | st,ext-phyclk |                    |st,eth-clk-sel|
+> |         |        |               |                    |       or     |
+> |         |        |               |                    | st,ext-phyclk|
+> ------------------------------------------------------------------------
+> | RMII    |	 -    |     eth-ck    |      eth-ck        |	     n/a  |
+> |         |        | st,ext-phyclk | st,eth-ref-clk-sel |              |
+> |         |        |               | or st,ext-phyclk   |              |
+> ------------------------------------------------------------------------
 > 
-> This could be changed to use directly the MDIO_STAT1 in order to read
-> AN status (and use MDIO_CTRL1 for writing the control register) but this
-> is more flexible and more readable since we defined the structure
-> kr_mdio_info that contains all registers offsets required by backplane
-> driver like: LT(link training) registers, AN registers, PMD registers.
-> So we wanted to put all these together to be clear that all these
-> offsets are essential for backplane driver and they can be setup
-> automatically by calling the function: backplane_setup_mdio_c45.
+> Signed-off-by: Christophe Roullier <christophe.roullier@st.com>
 > 
-> + void backplane_setup_mdio_c45(struct backplane_kr_info *bpkr)
-> + /* KX/KR AN registers: IEEE802.3 Clause 45 (MMD 7) */
-> + bpkr->mdio.an_control = MDIO_CTRL1;
-> + bpkr->mdio.an_status = MDIO_STAT1;
-> + bpkr->mdio.an_ad_ability_0 = MDIO_PMA_EXTABLE_10GBKR;
-> + bpkr->mdio.an_ad_ability_1 = MDIO_PMA_EXTABLE_10GBKR + 1;
-> + bpkr->mdio.an_lp_base_page_ability_1 = MDIO_PMA_EXTABLE_10GBKR + 4;
+> ---
 
-Where they are IEEE 802.3 standard registers, just use the standard
-definitions, do not indirect.
+Acked-by: Alexandre TORGUE <alexandre.torgue@st.com>
 
-> This approach is more flexible because it lets open the possibility for
-> extension on other non-standard devices (devices non-compliant with
-> clause 45) to still use this driver for backplane operation.
 
-That's an entirely false argument.  If something is going to be
-non-standard, why do you think that the only thing they'll do is
-have non-standard register offsets?  Wouldn't they also have
-non-standard register contents as well - and if they do, your
-"flexible" model will no longer work there.
-
-This seems to me to be a classic case of over-design.
-
-We have seem some PHYs with multiple different PHY blocks within the
-clause 45 space, but these are merely at offsets and follow the
-standard IEEE 802.3 register sets at various offsets.  The minimum
-that would be required in that case would be to carry a single register
-offset - but there is no point until we encounter a PHY that actually
-requires that for this support.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+>   .../net/ethernet/stmicro/stmmac/dwmac-stm32.c | 74 +++++++++++--------
+>   1 file changed, 44 insertions(+), 30 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c
+> index b2dc99289687..5d4df4c5254e 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c
+> @@ -29,6 +29,11 @@
+>   #define SYSCFG_PMCR_ETH_CLK_SEL		BIT(16)
+>   #define SYSCFG_PMCR_ETH_REF_CLK_SEL	BIT(17)
+>   
+> +/* CLOCK feed to PHY*/
+> +#define ETH_CK_F_25M	25000000
+> +#define ETH_CK_F_50M	50000000
+> +#define ETH_CK_F_125M	125000000
+> +
+>   /*  Ethernet PHY interface selection in register SYSCFG Configuration
+>    *------------------------------------------
+>    * src	 |BIT(23)| BIT(22)| BIT(21)|BIT(20)|
+> @@ -58,33 +63,20 @@
+>    *|         |        |      25MHz    |        50MHz       |                  |
+>    * ---------------------------------------------------------------------------
+>    *|  MII    |	 -   |     eth-ck    |	      n/a	  |	  n/a        |
+> - *|         |        |		     |                    |		     |
+> + *|         |        | st,ext-phyclk |                    |		     |
+>    * ---------------------------------------------------------------------------
+>    *|  GMII   |	 -   |     eth-ck    |	      n/a	  |	  n/a        |
+> - *|         |        |               |                    |		     |
+> + *|         |        | st,ext-phyclk |                    |		     |
+>    * ---------------------------------------------------------------------------
+> - *| RGMII   |	 -   |     eth-ck    |	      n/a	  |  eth-ck (no pin) |
+> - *|         |        |               |                    |  st,eth-clk-sel  |
+> + *| RGMII   |	 -   |     eth-ck    |	      n/a	  |      eth-ck      |
+> + *|         |        | st,ext-phyclk |                    | st,eth-clk-sel or|
+> + *|         |        |               |                    | st,ext-phyclk    |
+>    * ---------------------------------------------------------------------------
+>    *| RMII    |	 -   |     eth-ck    |	    eth-ck        |	  n/a        |
+> - *|         |        |		     | st,eth-ref-clk-sel |		     |
+> + *|         |        | st,ext-phyclk | st,eth-ref-clk-sel |		     |
+> + *|         |        |               | or st,ext-phyclk   |		     |
+>    * ---------------------------------------------------------------------------
+>    *
+> - * BIT(17) : set this bit in RMII mode when you have PHY without crystal 50MHz
+> - * BIT(16) : set this bit in GMII/RGMII PHY when you do not want use 125Mhz
+> - * from PHY
+> - *-----------------------------------------------------
+> - * src	 |         BIT(17)       |       BIT(16)      |
+> - *-----------------------------------------------------
+> - * MII   |           n/a	 |         n/a        |
+> - *-----------------------------------------------------
+> - * GMII  |           n/a         |   st,eth-clk-sel   |
+> - *-----------------------------------------------------
+> - * RGMII |           n/a         |   st,eth-clk-sel   |
+> - *-----------------------------------------------------
+> - * RMII  |   st,eth-ref-clk-sel	 |         n/a        |
+> - *-----------------------------------------------------
+> - *
+>    */
+>   
+>   struct stm32_dwmac {
+> @@ -93,6 +85,8 @@ struct stm32_dwmac {
+>   	struct clk *clk_eth_ck;
+>   	struct clk *clk_ethstp;
+>   	struct clk *syscfg_clk;
+> +	int ext_phyclk;
+> +	int enable_eth_ck;
+>   	int eth_clk_sel_reg;
+>   	int eth_ref_clk_sel_reg;
+>   	int irq_pwr_wakeup;
+> @@ -155,14 +149,17 @@ static int stm32mp1_clk_prepare(struct stm32_dwmac *dwmac, bool prepare)
+>   		ret = clk_prepare_enable(dwmac->syscfg_clk);
+>   		if (ret)
+>   			return ret;
+> -		ret = clk_prepare_enable(dwmac->clk_eth_ck);
+> -		if (ret) {
+> -			clk_disable_unprepare(dwmac->syscfg_clk);
+> -			return ret;
+> +		if (dwmac->enable_eth_ck) {
+> +			ret = clk_prepare_enable(dwmac->clk_eth_ck);
+> +			if (ret) {
+> +				clk_disable_unprepare(dwmac->syscfg_clk);
+> +				return ret;
+> +			}
+>   		}
+>   	} else {
+>   		clk_disable_unprepare(dwmac->syscfg_clk);
+> -		clk_disable_unprepare(dwmac->clk_eth_ck);
+> +		if (dwmac->enable_eth_ck)
+> +			clk_disable_unprepare(dwmac->clk_eth_ck);
+>   	}
+>   	return ret;
+>   }
+> @@ -170,24 +167,34 @@ static int stm32mp1_clk_prepare(struct stm32_dwmac *dwmac, bool prepare)
+>   static int stm32mp1_set_mode(struct plat_stmmacenet_data *plat_dat)
+>   {
+>   	struct stm32_dwmac *dwmac = plat_dat->bsp_priv;
+> -	u32 reg = dwmac->mode_reg;
+> +	u32 reg = dwmac->mode_reg, clk_rate;
+>   	int val;
+>   
+> +	clk_rate = clk_get_rate(dwmac->clk_eth_ck);
+> +	dwmac->enable_eth_ck = false;
+>   	switch (plat_dat->interface) {
+>   	case PHY_INTERFACE_MODE_MII:
+> +		if (clk_rate == ETH_CK_F_25M && dwmac->ext_phyclk)
+> +			dwmac->enable_eth_ck = true;
+>   		val = SYSCFG_PMCR_ETH_SEL_MII;
+>   		pr_debug("SYSCFG init : PHY_INTERFACE_MODE_MII\n");
+>   		break;
+>   	case PHY_INTERFACE_MODE_GMII:
+>   		val = SYSCFG_PMCR_ETH_SEL_GMII;
+> -		if (dwmac->eth_clk_sel_reg)
+> +		if (clk_rate == ETH_CK_F_25M &&
+> +		    (dwmac->eth_clk_sel_reg || dwmac->ext_phyclk)) {
+> +			dwmac->enable_eth_ck = true;
+>   			val |= SYSCFG_PMCR_ETH_CLK_SEL;
+> +		}
+>   		pr_debug("SYSCFG init : PHY_INTERFACE_MODE_GMII\n");
+>   		break;
+>   	case PHY_INTERFACE_MODE_RMII:
+>   		val = SYSCFG_PMCR_ETH_SEL_RMII;
+> -		if (dwmac->eth_ref_clk_sel_reg)
+> +		if ((clk_rate == ETH_CK_F_25M || clk_rate == ETH_CK_F_50M) &&
+> +		    (dwmac->eth_ref_clk_sel_reg || dwmac->ext_phyclk)) {
+> +			dwmac->enable_eth_ck = true;
+>   			val |= SYSCFG_PMCR_ETH_REF_CLK_SEL;
+> +		}
+>   		pr_debug("SYSCFG init : PHY_INTERFACE_MODE_RMII\n");
+>   		break;
+>   	case PHY_INTERFACE_MODE_RGMII:
+> @@ -195,8 +202,11 @@ static int stm32mp1_set_mode(struct plat_stmmacenet_data *plat_dat)
+>   	case PHY_INTERFACE_MODE_RGMII_RXID:
+>   	case PHY_INTERFACE_MODE_RGMII_TXID:
+>   		val = SYSCFG_PMCR_ETH_SEL_RGMII;
+> -		if (dwmac->eth_clk_sel_reg)
+> +		if ((clk_rate == ETH_CK_F_25M || clk_rate == ETH_CK_F_125M) &&
+> +		    (dwmac->eth_clk_sel_reg || dwmac->ext_phyclk)) {
+> +			dwmac->enable_eth_ck = true;
+>   			val |= SYSCFG_PMCR_ETH_CLK_SEL;
+> +		}
+>   		pr_debug("SYSCFG init : PHY_INTERFACE_MODE_RGMII\n");
+>   		break;
+>   	default:
+> @@ -294,6 +304,9 @@ static int stm32mp1_parse_data(struct stm32_dwmac *dwmac,
+>   	struct device_node *np = dev->of_node;
+>   	int err = 0;
+>   
+> +	/* Ethernet PHY have no crystal */
+> +	dwmac->ext_phyclk = of_property_read_bool(np, "st,ext-phyclk");
+> +
+>   	/* Gigabit Ethernet 125MHz clock selection. */
+>   	dwmac->eth_clk_sel_reg = of_property_read_bool(np, "st,eth-clk-sel");
+>   
+> @@ -431,7 +444,8 @@ static int stm32mp1_suspend(struct stm32_dwmac *dwmac)
+>   
+>   	clk_disable_unprepare(dwmac->clk_tx);
+>   	clk_disable_unprepare(dwmac->syscfg_clk);
+> -	clk_disable_unprepare(dwmac->clk_eth_ck);
+> +	if (dwmac->enable_eth_ck)
+> +		clk_disable_unprepare(dwmac->clk_eth_ck);
+>   
+>   	return ret;
+>   }
+> 
