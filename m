@@ -2,61 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 89DBD19B6A1
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 21:57:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5A9019B6AE
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 22:00:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732807AbgDAT5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 15:57:47 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:45304 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732397AbgDAT5r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 15:57:47 -0400
-Received: by mail-qk1-f193.google.com with SMTP id c145so1368705qke.12
-        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 12:57:47 -0700 (PDT)
+        id S1732860AbgDAUAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 16:00:32 -0400
+Received: from mail-qv1-f68.google.com ([209.85.219.68]:40604 "EHLO
+        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732385AbgDAUAb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 16:00:31 -0400
+Received: by mail-qv1-f68.google.com with SMTP id bp12so419447qvb.7
+        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 13:00:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=4qn7laUxocfpUF7wHojl5fjkob+Ycucgi3hGCUCQQbc=;
-        b=hOjKJ5LN06tdG5/Q7oWVjA0SqRoir78Ic27B6yq6FIsNz/XlmL2vOAiz6yBQA8OVlg
-         5lakTCDLNQLJY0lk9S8dSDSJVRsCn+05nFmDhFbABPEmQ2H2O+lE48jDz2y3svQVit5F
-         DeuV7x9b9QTh1NUsZqBe+86X/90cyUJoG525z56zO27c+onFFcCY8uEYjdwEGv1ktPi+
-         pnqQydBwpNDarjWPke5NO9O1rmIY+54KomPZjpPTc48qdNaxUwSCAqhVtg385O0agjQW
-         xatep/NO18Vi9kJueXjIE62C6P+IuzYu2AVpl86+BbMXnvY27lqo35DaO4fZSX+Yu/bn
-         0U9Q==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=8NcRHCtOSM5adY4o2+jx12O7LZxVQWgfHCad3CXRytE=;
+        b=BAsRigWV8hDF9XHP74IIOXGezxspmhMqv5XAIxtP3AsaVZynMYlW5MQszuumJ9Cr2r
+         UZn9C/R58JvfULwcGZU73403qN3fdROxZjryS/LeJl8OS7cT7+uLOQsMQA6BucS6OrAJ
+         uUz9zfxuZhLeefX9vZ+k6DX1YOC/1RVtVNWgrsbtCBgtMyl27k1b0gHKq//4ATCdAZf1
+         GkmnaPLRaAgvHamFY+zxf9HDUQxhuOxp7dCt14B+v8FMUexSxtyegssEX+EYZVPC30yJ
+         /STmxpqA8UVWxjBIWyC2rLnPGKrMwCZ0AiRBfJtxvrzgspfj9S8UNFPrE5h2MPf0Uopm
+         TIsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=4qn7laUxocfpUF7wHojl5fjkob+Ycucgi3hGCUCQQbc=;
-        b=SB00eqMTOVtn3Ae8ZyXFNPrWoHH6usqCCzUh0xtiWZCf7/JbSJF0q6daBIvgohrz1f
-         3Wl78ThBS7dRoYyGP25CH62/sPpj9xiuyIN7wm67MCXmzf15d5/mXB0c0cJvqZhpLpU+
-         TjnzD1MNNs7i9+BTxGlnuT1WxUwS+vKeLOEeRtJLdB5RSQWUQeQFkRboBH6HsdqOvTTs
-         B0sgNcM6ruJ1ZPf25ckPct4bwS2LDnwmU27FQUa39sYah9N6FcKgLCJKpusr6Gm6D00g
-         I2KUJLZOf5zj7pmwji1A3HsKQ88cHCCRZ/rkvFPAeMCq7Fe8tkSUnj7F8NwuearU4gVv
-         Vkfg==
-X-Gm-Message-State: ANhLgQ1SmesWkDpKrdj1M04yfAeI2wmn34hGjSkYD5yjGzTlc8SCWAt/
-        z0NxAxd5hCv4tjV3WNlmXis=
-X-Google-Smtp-Source: ADFU+vttE+CeT9HnVPqckiZcztjgS65fi6fsYNweqL+xCKz81d/E7WIXMTOA1i2PpQMIhtYXgdITtw==
-X-Received: by 2002:a05:620a:22ef:: with SMTP id p15mr11694033qki.495.1585771066550;
-        Wed, 01 Apr 2020 12:57:46 -0700 (PDT)
+        bh=8NcRHCtOSM5adY4o2+jx12O7LZxVQWgfHCad3CXRytE=;
+        b=Quy5UYHsC6t0H8fPuTgAWEFIsd6sNYmTd8xZpSYBlvkrbbNAzuwluP9k5YA6KYQyRN
+         kGJzZnkEn/vVuMkpxh8pTKvQOBhA8VnvXjfPzHy3KekTw999O0/UhLSvovLa1g+0u15j
+         qzu4NY91Pqj8eSi7YQbYDYEjjwNjHrSvj1V20LnxFu+xQFPUkoj+EViSBRFHq3x8Yi2a
+         CjEYPza//i9yVPmwDTm/9Ox+Uq868TrMjBukNdiGlDdafrkkEK5i8NC0vpbyBCdeyWTq
+         NbJR6jxrvVKDAw70HdrW6nvPHB7+3dcliPsPdHynDSfbQDCX2zqTByXtMX++/It+2HI9
+         ma3A==
+X-Gm-Message-State: ANhLgQ1FZkvSZ8l9+KcX+YQs8wSjvHn+7Il7T1lUHh4fs6ZUhwP9lET/
+        Hc77zDgVnpuySJBkvFGPZHI=
+X-Google-Smtp-Source: ADFU+vvqJ+n1UAsSgoN0jG9AW0erxHLenY5HOrYrijXI8r9AfrtIvrVniL1JHDoBGmcVcFOzrtbTrA==
+X-Received: by 2002:ad4:436b:: with SMTP id u11mr22436408qvt.117.1585771229291;
+        Wed, 01 Apr 2020 13:00:29 -0700 (PDT)
 Received: from ?IPv6:2601:282:803:7700:f8fc:a46d:375f:4fa2? ([2601:282:803:7700:f8fc:a46d:375f:4fa2])
-        by smtp.googlemail.com with ESMTPSA id c12sm2094993qkg.30.2020.04.01.12.57.45
+        by smtp.googlemail.com with ESMTPSA id 207sm2101569qkf.69.2020.04.01.13.00.28
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Apr 2020 12:57:46 -0700 (PDT)
-Subject: Re: PATCH: Error message if set memlock=infinite failed during bpf
- load
-To:     Stefan Majer <stefan.majer@gmail.com>, netdev@vger.kernel.org,
+        Wed, 01 Apr 2020 13:00:28 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next 1/3] tc: p_ip6: Support pedit of IPv6
+ dsfield
+To:     Petr Machata <petrm@mellanox.com>,
         Stephen Hemminger <stephen@networkplumber.org>
-References: <CADdPHGsD4b5GNoLy3aPQndkA84P_m33o-G1kP7F7Xkhterw0Vw@mail.gmail.com>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
+References: <cover.1585331173.git.petrm@mellanox.com>
+ <628ade92d458e62f9471911d3cf8f3b193212eaa.1585331173.git.petrm@mellanox.com>
+ <20200327175123.1930e099@hermes.lan> <87eetafdki.fsf@mellanox.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <386b1135-6a3b-f006-021f-95ba07f42ec5@gmail.com>
-Date:   Wed, 1 Apr 2020 13:57:44 -0600
+Message-ID: <0686d67a-84e8-dfab-7200-c67105420bcb@gmail.com>
+Date:   Wed, 1 Apr 2020 14:00:27 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <CADdPHGsD4b5GNoLy3aPQndkA84P_m33o-G1kP7F7Xkhterw0Vw@mail.gmail.com>
+In-Reply-To: <87eetafdki.fsf@mellanox.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -65,42 +68,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/1/20 12:57 AM, Stefan Majer wrote:
-> Executing ip vrf exec <vrfname> command sometimes fails with:
+On 3/30/20 2:32 AM, Petr Machata wrote:
 > 
-> bpf: Failed to load program: Operation not permitted
+> Stephen Hemminger <stephen@networkplumber.org> writes:
 > 
-> This error message might be misleading because the underlying reason can be
-> that memlock limit is to small.
+>>> diff --git a/tc/p_ip6.c b/tc/p_ip6.c
+>>> index 7cc7997b..b6fe81f5 100644
+>>> --- a/tc/p_ip6.c
+>>> +++ b/tc/p_ip6.c
+>>> @@ -56,6 +56,22 @@ parse_ip6(int *argc_p, char ***argv_p,
+>>>  		res = parse_cmd(&argc, &argv, 4, TU32, 0x0007ffff, sel, tkey);
+>>>  		goto done;
+>>>  	}
+>>> +	if (strcmp(*argv, "traffic_class") == 0 ||
+>>> +	    strcmp(*argv, "tos") == 0 ||
+>>> +	    strcmp(*argv, "dsfield") == 0) {
+>>> +		NEXT_ARG();
+>>> +		tkey->off = 1;
+>>> +		res = parse_cmd(&argc, &argv, 1, TU32, RU8, sel, tkey);
+>>> +
+>>> +		/* Shift the field by 4 bits on success. */
+>>> +		if (!res) {
+>>> +			int nkeys = sel->sel.nkeys;
+>>> +			struct tc_pedit_key *key = &sel->sel.keys[nkeys - 1];
+>>> +			key->mask = htonl(ntohl(key->mask) << 4 | 0xf);
+>>> +			key->val = htonl(ntohl(key->val) << 4);
+>>> +		}
+>>> +		goto done;
+>>> +	}
+>> Why in the middle of the list?
 > 
-> It is already implemented to set memlock to infinite, but without
-> error handling.
+> Because that's the order IPv4 code does them.
+
+neither parse function uses matches() so the order should not matter.
 > 
-> With this patch at least a warning is printed out to inform the user
-> what might be the root cause.
+>> Why three aliases for the same value?
+>> Since this is new code choose one and make it match what IPv6 standard
+>> calls that field.
 > 
-> 
-> Signed-off-by: Stefan Majer <stefan.majer@gmail.com>
-> 
-> diff --git a/lib/bpf.c b/lib/bpf.c
-> index 10cf9bf4..210830d9 100644
-> --- a/lib/bpf.c
-> +++ b/lib/bpf.c
-> @@ -1416,8 +1416,8 @@ static void bpf_init_env(void)
->   .rlim_max = RLIM_INFINITY,
->   };
-> 
-> - /* Don't bother in case we fail! */
-> - setrlimit(RLIMIT_MEMLOCK, &limit);
-> + if (!setrlimit(RLIMIT_MEMLOCK, &limit))
-> + fprintf(stderr, "Continue without setting ulimit memlock=infinity.
-> Error:%s\n", strerror(errno));
-> 
->   if (!bpf_get_work_dir(BPF_PROG_TYPE_UNSPEC))
->   fprintf(stderr, "Continuing without mounted eBPF fs. Too old kernel?\n");
+> TOS because flower also calls it TOS, even if it's the IPv6 field.
+> dsfield, because the IPv4 pedit also accepts this. I'm fine with just
+> accepting traffic_class though.
 > 
 
-bpf_init_env is not called for 'ip vrf exec'.
-
-Since other bpf code raises the limit it would be consistent for 'ip vrf
-exec' to do the same. I know this limit has been a pain for some users.
+that's probably the right thing to do since this is ipv6 related
