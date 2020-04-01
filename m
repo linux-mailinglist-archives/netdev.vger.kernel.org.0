@@ -2,167 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B81C519B8DE
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 01:18:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 432DC19B8E0
+	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 01:19:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733262AbgDAXS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 19:18:27 -0400
-Received: from mail-il1-f196.google.com ([209.85.166.196]:35822 "EHLO
-        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732537AbgDAXS1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 19:18:27 -0400
-Received: by mail-il1-f196.google.com with SMTP id 7so1783112ill.2
-        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 16:18:24 -0700 (PDT)
+        id S1733286AbgDAXTy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 19:19:54 -0400
+Received: from mail-qv1-f41.google.com ([209.85.219.41]:42776 "EHLO
+        mail-qv1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732537AbgDAXTx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 19:19:53 -0400
+Received: by mail-qv1-f41.google.com with SMTP id ca9so731633qvb.9;
+        Wed, 01 Apr 2020 16:19:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=aStNwHGcg4HXgGp/sSqVaH0OjggLXkpoemAa7H6Bkb0=;
-        b=Dn5mU/W/+GRdMM3sDBTNeLnkiFRb44aiL0YQOTntjU8euIcQFhES3L/oeOm6yB5HBU
-         CSSOyEy5QLInpY8AwQGo1wsgahYyQxtjbuyj65M8BaG3zzG+oGp1/w/DrLbXolu6yTa0
-         HPmC8ADsY5vjV20y5HB0hkOOHJHZWG2x+uyFxKL9w0uc9x0ttsSN/EqS0jLy+U9j6VmE
-         ADgrnsI372y7EiFFnB+ELkTKx6NlLQweK85wf6oLvY1pkc0QaiL+5waFQlm8V8+/Ooz/
-         cKv5MLodezEM8O9O2GwczBvLZlh6+3iIMq6fA7n4H7pUQOWNJI2kHrIzBM8D6qcKDuR2
-         raPA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2URR2g44lQdCwfn/Tkh9j1lhueN+DBYJikDKN7H5608=;
+        b=jZpoHJfuqEfG50YWYIlPGCUNNQ5rittqBuoVGQwBwdOc0NMOvwQes4JVF6JbUWWoUo
+         m0OeCTiZ+5KKhBN71gDlRQZHu+UEzL06Rm3ud3XYWYzdrxrGEwSH72T1R2W/Vp9O+F8s
+         6PHcvvAojAUhodlzhZdnMtIjWttWb79KWUQfMb3yUWElb3R9wiIT96VWjZ1Fr/iEQx/9
+         t9RYArIO6+sNNOerr8NJ7XEkynQBJqRMNc2i3dncAoTN37IvpWeihyamvuV3QQVuDC6t
+         k+fVfBz8w/zV4WBTCxwoevgA5choxEt2waFn0DAIQlyATuYKFYMt26UwDAD3PDT2HCzl
+         JnDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aStNwHGcg4HXgGp/sSqVaH0OjggLXkpoemAa7H6Bkb0=;
-        b=aFS9yEe1eGdObLa7olEDTrM/M2yITiwWcPMzuHNOkwyO6qijurPCnwFPx1hCXPAS77
-         dCFf79gXY5IvkFpGpqKFSGohLAnshBW1D3VOPzg5/6XVSbrKjq7DXqs3ULFA8eCJSL9c
-         UjDHzZsNhcoISOm+/cChC3CMxrHcNNiGYunkTXmlgKRk3VCuNj9ei4yBV1TnHseJTiau
-         i4i9cgO0ns7UH6OFyoJT9aB4rhHCGlX9FMr2Le6g5OdVY8yIaLk6VqfGWdrA9B9FzGOT
-         vDBBTzSdRArhgllfS0EeyFL12pkN2EDdqXYm3dTFTw1ykfjZpmW2RoP5qXZ+E1pdp0yY
-         CVsg==
-X-Gm-Message-State: AGi0PuYmXid+vZzOu3XmyHNB36sVJktmorJfYpI+XwjAhkAx9j/AcEYE
-        dCEyiPF/x6S3bUVC/W+7iG5n5Q==
-X-Google-Smtp-Source: APiQypIQ8hziB4HtU+Sptx7pxo5HpJG46+Do1IdUouYHx80x6LVgUrDQUTOsWZ32D3yWbT7UHYbWSw==
-X-Received: by 2002:a92:d108:: with SMTP id a8mr443859ilb.107.1585783104162;
-        Wed, 01 Apr 2020 16:18:24 -0700 (PDT)
-Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id p76sm939011iod.13.2020.04.01.16.18.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Apr 2020 16:18:23 -0700 (PDT)
-Subject: Re: [PATCH v3] bitfield.h: add FIELD_MAX() and field_max()
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Maxim Kuvyrkov <maxim.kuvyrkov@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>
-References: <20200311024240.26834-1-elder@linaro.org>
- <20200401173515.142249-1-ndesaulniers@google.com>
- <3659efd7-4e72-6bff-5657-c1270e8553f4@linaro.org>
- <CAKwvOdn7TpsZJ70mRiQARJc9Fy+364PXSAiPnSpc_M9pOaXjGw@mail.gmail.com>
- <3c878065-8d25-8177-b7c4-9813b60c9ff6@linaro.org>
- <CAKwvOdnZ-QNeYQ_G-aEuo8cC_m68E5mAC4cskwAQpJJQPc1BSg@mail.gmail.com>
- <efd2c8b1-4efd-572e-10c5-c45f705274d0@linaro.org>
- <CAKwvOdnZ9KL1Esmdjvk-BTP2a+C24bOWguNVaU3RSXKi1Ouh+w@mail.gmail.com>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <5635b511-64f8-b612-eb25-20b43ced4ed3@linaro.org>
-Date:   Wed, 1 Apr 2020 18:18:09 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2URR2g44lQdCwfn/Tkh9j1lhueN+DBYJikDKN7H5608=;
+        b=mXBpWoCCtTkEx0iK/1mWpJwYmzA6EilkBrUmDzCsskdF83NAy4t68VtGYJB4HNGZ0a
+         np3n3atTgkkmUjHRibUzOxVn/xJGVad39L2mrpJ61K8TAa0QmeiDAxAm6nPpFh65MNRi
+         rEUlNNQCEs45iRpEenZPImjLs7FXrYRsDrxJlJUuWRuKkXoI7Z4GzkYaF87uFe9GmHas
+         01VXqJImMHe1V0qAlysuHv7jLk5+306p0QgUZ1T41rB3Z0DlyLuZPTFDDa6uYbSXBLxa
+         b8760m39jXeD7jyuYpkRqLaKhP+2CUo8OD3YPi6MBXdYJnLlFWIDCPgsJFHh9Ho+xxQa
+         SfSQ==
+X-Gm-Message-State: AGi0PuY/uxGWfXyxl72/rKzi22yXGP42oTXFDLWfZv4rKfn5JyQWHNKn
+        R388hv64FttrLlwSeGdz/ppzXJfz1/8JIPqgmRI=
+X-Google-Smtp-Source: APiQypKp5ScZYtVmlvOUOH8jsenqRkI1KwDczEFJuV3oe7hocEQ64EEStMNYvhHmrySfkACgxvPkDz/C1lEzd5FYGGI=
+X-Received: by 2002:a05:6214:14b1:: with SMTP id bo17mr568247qvb.196.1585783192726;
+ Wed, 01 Apr 2020 16:19:52 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAKwvOdnZ9KL1Esmdjvk-BTP2a+C24bOWguNVaU3RSXKi1Ouh+w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200329225342.16317-1-joe@wand.net.nz> <20200329225342.16317-5-joe@wand.net.nz>
+In-Reply-To: <20200329225342.16317-5-joe@wand.net.nz>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 1 Apr 2020 16:19:41 -0700
+Message-ID: <CAEf4Bzb6Jr3qBOd0N2NsqMCXQ-19StU+TdFSmB=E+mDPeeC_Jg@mail.gmail.com>
+Subject: Re: [PATCHv5 bpf-next 4/5] selftests: bpf: add test for sk_assign
+To:     Joe Stringer <joe@wand.net.nz>
+Cc:     bpf <bpf@vger.kernel.org>, Lorenz Bauer <lmb@cloudflare.com>,
+        Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Martin Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/1/20 5:26 PM, Nick Desaulniers wrote:
-> On Wed, Apr 1, 2020 at 1:21 PM Alex Elder <elder@linaro.org> wrote:
->>
->> On 4/1/20 2:54 PM, Nick Desaulniers wrote:
->>> On Wed, Apr 1, 2020 at 12:44 PM Alex Elder <elder@linaro.org> wrote:
->>>>
->>>> Can you tell me where I can find the commit id of the kernel
->>>> that is being built when this error is reported?  I would
->>>> like to examine things and build it myself so I can fix it.
->>>> But so far haven't found what I need to check out.
->>>
->>> From the report: https://groups.google.com/g/clang-built-linux/c/pX-kr_t5l_A
->>
->> That link doesn't work for me.
-> 
-> Sigh, second internal bug filed against google groups this
-> week...settings look correct but I too see a 404 when in private
-> browsing mode.
-> 
->>
->>> Configuration details:
->>> rr[llvm_url]="https://github.com/llvm/llvm-project.git"
->>> rr[linux_url]="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git"
->>> rr[linux_branch]="7111951b8d4973bda27ff663f2cf18b663d15b48"
->>
->> That commit is just the one in which Linux v5.6 is tagged.
->> It doesn't include any of this code (but it's the last
->> tagged release that current linus/master is built on).
->>
->> It doesn't answer my question about what commit id was
->> used for this build, unfortunately.
-> 
-> 7111951b8d4973bda27ff663f2cf18b663d15b48 *is* the commit id that was
-> used for the build.  It sync'd the mainline tree at that commit.
-> 
->>> the linux_branch looks like a SHA of what the latest ToT of mainline
->>> was when the CI ran.
->>>
->>> I was suspecting that maybe there was a small window between the
->>> regression, and the fix, and when the bot happened to sync.  But it
->>> seems that: e31a50162feb352147d3fc87b9e036703c8f2636 landed before
->>> 7111951b8d4973bda27ff663f2cf18b663d15b48 IIUC.
->>
->> Yes, this:
->>   e31a50162feb bitfield.h: add FIELD_MAX() and field_max()
->> landed about 200 commits after the code that needed it.
->>
->> So there's a chance the kernel that got built was somewhere
->> between those two, and I believe the problem you point out
->> would happen in that case.  This is why I started by asking
->> whether it was something built during a bisect.
->>
->> It's still not clear to me what happened here.  I can explain
->> how this *could* happen, but I don't believe problem exists
->> in the latest upstream kernel commit.
->>
->> Is there something else you think I should do?
-> 
-> mainline is hosed for aarch64 due to some dtc failures.  I'm not sure
-> how TCWG's CI chooses the bisection starting point, but if mainline
-> was broken, and it jumped back say 300 commits, then the automated
-> bisection may have converged on your first patch, but not the second.
+On Sun, Mar 29, 2020 at 3:58 PM Joe Stringer <joe@wand.net.nz> wrote:
+>
+> From: Lorenz Bauer <lmb@cloudflare.com>
+>
+> Attach a tc direct-action classifier to lo in a fresh network
+> namespace, and rewrite all connection attempts to localhost:4321
+> to localhost:1234 (for port tests) and connections to unreachable
+> IPv4/IPv6 IPs to the local socket (for address tests). Includes
+> implementations for both TCP and UDP.
+>
+> Keep in mind that both client to server and server to client traffic
+> passes the classifier.
+>
+> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> Co-authored-by: Joe Stringer <joe@wand.net.nz>
+> Signed-off-by: Joe Stringer <joe@wand.net.nz>
+> Acked-by: Martin KaFai Lau <kafai@fb.com>
+> ---
+> v5: No change
+> v4: Add acks
+> v3: Add tests for UDP socket assign
+>     Fix switching back to original netns after test
+>     Avoid using signals to timeout connections
+>     Refactor to iterate through test cases
+> v2: Rebase onto test_progs infrastructure
+> v1: Initial commit
+> ---
 
-This is similar to the situation I discussed with Maxim this
-morning.  A different failure (yes, DTC related) led to an
-automated bisect process, which landed on my commit. And my
-commit unfortunately has the the known issue that was later
-corrected.
+Hey Joe!
 
-Maxim said this was what started the automated bisect:
-===
-+# 00:01:41 make[2]: *** [arch/arm64/boot/dts/ti/k3-am654-base-board.dtb] Error 2
-+# 00:01:41 make[2]: *** [arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb] Error 2
-+# 00:01:41 make[1]: *** [arch/arm64/boot/dts/ti] Error 2
-+# 00:01:41 make: *** [dtbs] Error 2
-===
+When syncing libbpf to Github, this selftest is now failing with the
+follow errors:
 
-> I just checked out mainline @ 7111951b8d4973bda27ff663f2cf18b663d15b48
-> and couldn't reproduce, so I assume the above is what happened.  So
-> sorry for the noise, I'll go investigate the dtc failure.  Not sure
-> how that skipped -next coverage.
+tc: command line is not complete, try "help"
+configure_stack:FAIL:46
+configure_stack: Interrupted system call
+#49 sk_assign:FAIL
 
-Thank you for following up.
+We are probably missing some packages or something like that. Could
+you please help figuring out how we need to adjust libbpf Travis CI
+environment to accomodate this? Thanks!
+You can find one of the failed runs at [0]
 
-					-Alex
+  [0] https://travis-ci.com/github/anakryiko/libbpf/jobs/311759005
