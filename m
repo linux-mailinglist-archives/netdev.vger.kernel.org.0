@@ -2,119 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 42F5719A7FC
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 10:56:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82DC019A815
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 10:59:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731842AbgDAI4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 04:56:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54442 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727322AbgDAI4X (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Apr 2020 04:56:23 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 95AB620784;
-        Wed,  1 Apr 2020 08:56:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585731383;
-        bh=pZfkpzV/DA6TJrp3HueXSBW9yxX80ESU1n7+BOkQquc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Os3MhArKMK5pr15JDTv+GuhUZA2z26WCPoNodnEur3UTs7+7Lwh3XVqLAj2qqcLVM
-         c8DWL6v+4M5n71Cu9YE1IwMSRlNnXg3oN4ieQ7YbnLJ0xfXJRqvgQDolrPzIqrtQxn
-         42lXpvbIaEju92IXHKsXjfPxVlqShCvg+T44u6j0=
-Date:   Wed, 1 Apr 2020 10:56:20 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        Ben Hutchings <ben.hutchings@codethink.co.uk>,
-        lkft-triage@lists.linaro.org,
-        linux- stable <stable@vger.kernel.org>,
-        john.fastabend@gmail.com, komachi.yoshiki@gmail.com,
-        Andrii Nakryiko <andriin@fb.com>, lukenels@cs.washington.edu,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH 5.5 000/171] 5.5.14-rc2 review
-Message-ID: <20200401085620.GD2026666@kroah.com>
-References: <20200331141450.035873853@linuxfoundation.org>
- <CA+G9fYuU-5o5DG1VSQuCPx=TSs61-1jBekdGb5yvMRz4ur3BQg@mail.gmail.com>
- <20200401061131.GA1907105@kroah.com>
- <dc2cee11-84fc-70a7-41d8-2de23942697c@iogearbox.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <dc2cee11-84fc-70a7-41d8-2de23942697c@iogearbox.net>
+        id S1730720AbgDAI7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 04:59:37 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:37835 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726536AbgDAI7g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 04:59:36 -0400
+Received: by mail-pf1-f194.google.com with SMTP id u65so1582321pfb.4
+        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 01:59:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=lG1ghcspACgZLEmgMcA84iprDirIsm87dZC5cB9GAwI=;
+        b=k5TMDhDISpD5hN47hFSC1HZ82vv5+noPbKerxE6Rr2ipMC8GOQLeU4Rk66wqFEJWHJ
+         Dmn5uliAb80tK8YdzKaKrSKbzoIVn/SoWv9gst92pWoQss5EqEhPXildZf/ino9zMYyA
+         uoHCUBVinK0WDbK9WgNawZcXGTYQmXG2WvA61YUOM5BcC/zBeyQZfGuTPePeEhCtGyB9
+         W4sFvdxLVbbYGRxTWExo9CR8K1tXjeUlaDgbB/jAIqM0Q6PfGTqk/MMUBOx2MAhG3wqR
+         l8i5kRLrgow74oxV1YD+dK/G5VqahIr1B957ubIbhMiyZEq4bLJ+MPh15V+FR+FjQE1E
+         0row==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=lG1ghcspACgZLEmgMcA84iprDirIsm87dZC5cB9GAwI=;
+        b=tZ5461aBRUT1dLywAIplDUJk8YeU8phRZ5MkptmtIJuwymClXLQ+X8Row6aGxTQtnB
+         LIUnvwIpxK0GfUhuhVcygY+n5yq+Fp6q0TiC2QQ3SClk3R4ZJDRHlpPezWJM04BL9YPG
+         hu0oZfwSgxARtg4GSApPw8LR3Z1/Rc8TYI293XJ6Jga4JQ4unfERoBn98sjSaDEUlCIx
+         zza1gsj12jCLVTXLmDrdTV/xVSgjoqD8FSWANuD+EhIg4xJA0i3oL8fXgi2X6vbUkw8W
+         NkZChoPbsoM+7xiQPYtpd8f6HmsBCQ3cw51X6RZ3WiX6oMKc+BpshxVLvJ3nuv6nZ5Dz
+         b9ig==
+X-Gm-Message-State: AGi0PubqEhKtFb55OCkrCsh+VbaZoiE+Hl2Cq0dzeOCYOzMwMXCQymfF
+        VP/eCb1VlK+PTDu5EqOoQVw5e1IA
+X-Google-Smtp-Source: APiQypLx20eFZmI0azbae+47cmacu8GmE2Iuf+jMhwaacIlQIYrq71dB242rwzg3q2pxvHzxHtUiTQ==
+X-Received: by 2002:a63:8c4b:: with SMTP id q11mr4989416pgn.131.1585731573771;
+        Wed, 01 Apr 2020 01:59:33 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id q43sm1141672pjc.40.2020.04.01.01.59.32
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 01 Apr 2020 01:59:33 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Subject: [PATCH ipsec-next 0/5] xfrm: support ipv6 nexthdrs process in transport and beet modes
+Date:   Wed,  1 Apr 2020 16:59:20 +0800
+Message-Id: <cover.1585731430.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 01, 2020 at 10:03:16AM +0200, Daniel Borkmann wrote:
-> On 4/1/20 8:11 AM, Greg Kroah-Hartman wrote:
-> > On Wed, Apr 01, 2020 at 04:18:41AM +0530, Naresh Kamboju wrote:
-> > > On Tue, 31 Mar 2020 at 21:02, Greg Kroah-Hartman
-> > > <gregkh@linuxfoundation.org> wrote:
-> > > > 
-> > > > This is the start of the stable review cycle for the 5.5.14 release.
-> > > > There are 171 patches in this series, all will be posted as a response
-> > > > to this one.  If anyone has any issues with these being applied, please
-> > > > let me know.
-> > > > 
-> > > > Responses should be made by Thu, 02 Apr 2020 14:12:02 +0000.
-> > > > Anything received after that time might be too late.
-> > > > 
-> > > > The whole patch series can be found in one patch at:
-> > > >          https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.5.14-rc2.gz
-> > > > or in the git tree and branch at:
-> > > >          git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.5.y
-> > > > and the diffstat can be found below.
-> > > > 
-> > > > thanks,
-> > > > 
-> > > > greg k-h
-> > > 
-> > > Results from Linaro’s test farm.
-> > > Regressions on x86_64 and i386.
-> > > 
-> > > selftests bpf test_verifier reports as failed.
-> > > This test PASSED on v5.5.13
-> > > 
-> > > #554/p jgt32: range bound deduction, reg op imm FAIL
-> > > Failed to load prog 'Success'!
-> > > R8 unbounded memory access, make sure to bounds check any array access
-> > > into a map
-> > > verification time 141 usec
-> > > stack depth 8
-> > > processed 16 insns (limit 1000000) max_states_per_insn 0 total_states
-> > > 1 peak_states 1 mark_read 1
-> > > #555/p jgt32: range bound deduction, reg1 op reg2, reg1 unknown FAIL
-> > > Failed to load prog 'Success'!
-> > > R8 unbounded memory access, make sure to bounds check any array access
-> > > into a map
-> > > verification time 94 usec
-> > > stack depth 8
-> > > processed 17 insns (limit 1000000) max_states_per_insn 0 total_states
-> > > 1 peak_states 1 mark_read 1
-> > > #556/p jle32: range bound deduction, reg1 op reg2, reg2 unknown FAIL
-> > > Failed to load prog 'Success'!
-> > > R8 unbounded memory access, make sure to bounds check any array access
-> > > into a map
-> > > verification time 68 usec
-> > > stack depth 8
-> > > processed 17 insns (limit 1000000) max_states_per_insn 0 total_states
-> > > 1 peak_states 1 mark_read 1
-> > 
-> > Can you run 'git bisect' to find the offending patch?
-> 
-> No need, I'll send you a patch to update the selftests. It's expected that they
-> fail now due to the revert we had to do, so if this is the only issue it shouldn't
-> hold up the release. In any case, I'll send them over to you next.
+For esp transport and beet modes, when the inner ipv6 nexthdrs
+are set, the 'proto' and 'transport_header' are needed to fix
+in some places, so that the packet can be sent and received
+properly, and no panicks are caused.
 
-Great, thanks for letting me know this isn't a "real" issue :)
+Note that the inner ipv6 nexthdrs problems don't affect tunnel
+mode, as in which ESP nexthdr proto is always IP(6).
 
-greg k-h
+Xin Long (5):
+  xfrm: allow to accept packets with ipv6 NEXTHDR_HOP in xfrm_input
+  xfrm: do pskb_pull properly in __xfrm_transport_prep
+  esp6: get the right proto for transport mode in esp6_gso_encap
+  esp6: support ipv6 nexthdrs process for beet gso segment
+  esp4: support ipv6 nexthdrs process for beet gso segment
+
+ net/ipv4/esp4_offload.c | 14 ++++++++++----
+ net/ipv6/esp6_offload.c | 19 ++++++++++++++++---
+ net/xfrm/xfrm_device.c  |  8 +++-----
+ net/xfrm/xfrm_input.c   |  2 +-
+ 4 files changed, 30 insertions(+), 13 deletions(-)
+
+-- 
+2.1.0
+
