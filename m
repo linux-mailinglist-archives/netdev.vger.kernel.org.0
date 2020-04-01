@@ -2,73 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24F8719A89D
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 11:27:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 598A219A8B8
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 11:34:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730333AbgDAJ14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 05:27:56 -0400
-Received: from guitar.tcltek.co.il ([192.115.133.116]:52514 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726205AbgDAJ14 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Apr 2020 05:27:56 -0400
-Received: from tarshish (unknown [10.0.8.3])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1732143AbgDAJeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 05:34:12 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:51000 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726205AbgDAJeL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Apr 2020 05:34:11 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id B8A9C2051F;
+        Wed,  1 Apr 2020 11:34:10 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id JvRFFgboYyac; Wed,  1 Apr 2020 11:34:10 +0200 (CEST)
+Received: from cas-essen-02.secunet.de (202.40.53.10.in-addr.arpa [10.53.40.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id 6800C440813;
-        Wed,  1 Apr 2020 12:27:53 +0300 (IDT)
-References: <16e4a15e359012fc485d22c7e413a129029fbd0f.1585676858.git.baruch@tkos.co.il> <20200331180346.GS25745@shell.armlinux.org.uk> <874ku3dcki.fsf@tarshish> <1ad954a5-5cfc-caa3-5aca-0810223e5ac3@tkos.co.il> <d2017ccc-c85a-2e6d-4578-eaff530665fe@tkos.co.il>
-User-agent: mu4e 1.2.0; emacs 26.1
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Russell King <linux@armlinux.org.uk>, "Shmuel H." <sh@tkos.co.il>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH] net: phy: marvell10g: add firmware load support
-In-reply-to: <d2017ccc-c85a-2e6d-4578-eaff530665fe@tkos.co.il>
-Date:   Wed, 01 Apr 2020 12:27:53 +0300
-Message-ID: <87wo6zblnq.fsf@tarshish>
+        by a.mx.secunet.com (Postfix) with ESMTPS id 5EA32200A0;
+        Wed,  1 Apr 2020 11:34:10 +0200 (CEST)
+Received: from gauss2.secunet.de (10.182.7.193) by cas-essen-02.secunet.de
+ (10.53.40.202) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Wed, 1 Apr 2020
+ 11:34:10 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id D97E131800A4; Wed,  1 Apr 2020 11:34:09 +0200 (CEST)
+Date:   Wed, 1 Apr 2020 11:34:09 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Xin Long <lucien.xin@gmail.com>
+CC:     <netdev@vger.kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Subject: Re: [PATCH ipsec-next 0/5] xfrm: support ipv6 nexthdrs process in
+ transport and beet modes
+Message-ID: <20200401093409.GV13121@gauss3.secunet.de>
+References: <cover.1585731430.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <cover.1585731430.git.lucien.xin@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ cas-essen-02.secunet.de (10.53.40.202)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Shmuel, Russell,
+On Wed, Apr 01, 2020 at 04:59:20PM +0800, Xin Long wrote:
+> For esp transport and beet modes, when the inner ipv6 nexthdrs
+> are set, the 'proto' and 'transport_header' are needed to fix
+> in some places, so that the packet can be sent and received
+> properly, and no panicks are caused.
 
-On Wed, Apr 01 2020, Shmuel H. wrote:
-> On 01/04/2020 08:07, Shmuel H. wrote:
->> On 01/04/2020 08:01, Baruch Siach wrote:
->>> On Tue, Mar 31 2020, Russell King - ARM Linux admin wrote:
->>>> On Tue, Mar 31, 2020 at 08:47:38PM +0300, Baruch Siach wrote:
->>>>> When Marvell 88X3310 and 88E2110 hardware configuration SPI_CONFIG strap
->>>>> bit is pulled up, the host must load firmware to the PHY after reset.
->>>>> Add support for loading firmware.
->>>>>
->>>>> Firmware files are available from Marvell under NDA.
->>>> As I understand it, the firmware for the different revisions of the
->>>> 88x3310 are different, so I think the current derivation of filenames
->>>> is not correct.
->>> I was not aware of that.
->>>
->>> Shmuel, have you seen different firmware revisions from Marvell for 88x3310?
->> There are many firmware revisions, but I didn't see any mention of one
->> being compatible with a specific HW revision on the changelog / datasheets.
-> Sorry,
-> Apparently, Marvell do provide multiple firmware versions for the
-> MVx3310 (REV A1, REV A0, latest).
+Please separate the fixes and send them for inclusion
+into the ipsec tree. Everything else has to wait until
+after the merge window. net-next is closed and so is
+ipsec-next.
 
-I checked the Marvell website again. The text on the links leading to
-firmware files appear to hint at different hardware revisions. But the
-firmware release notes don't mention any hardware revision dependency.
+Thanks!
 
-Russell, have you seen any indication that the latest firmware file does
-not support all current PHY revisions?
-
-Thanks,
-baruch
-
--- 
-     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
