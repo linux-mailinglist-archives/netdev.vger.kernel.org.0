@@ -2,98 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC3AC19AD24
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 15:51:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3B8619AD2D
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 15:54:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732783AbgDANvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 09:51:48 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:43064 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732705AbgDANvs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Apr 2020 09:51:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=BsnKKCm/0xhUX9Eh0r+sJcFsnyafS56/e7BV12MesKg=; b=qa/VcPdrBtpGUMbaqANfWFh9+W
-        TP8qKQ3TYfGL8IXRLr3FchAEU2Azq8RAv55NSYoN8MxvVE2aeVkcSYIL7z6FPBhfIfIqpImHfzGVk
-        +LF2NCoRc3+cUPjGCRZul8yh3r+BWj2M5OtAMdghdk/XxmBjQPurVS8ts1uwGAGlbblc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jJdmJ-000Qgk-52; Wed, 01 Apr 2020 15:51:35 +0200
-Date:   Wed, 1 Apr 2020 15:51:35 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florinel Iordache <florinel.iordache@nxp.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        id S1732787AbgDANyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 09:54:01 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:58218 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732234AbgDANyB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 09:54:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=KFhV2UZ1QUeqQAPCpDDLL0+91AMfXaoyijKaEXgGzIY=; b=fnDcE6abKzVxhl9ZGBMpXssli
+        ri2oaCkFt+nCgH287oWa8apOr+xksbpkGFfxlzcPkpeHxINJFOY9t42B8es8Dx/oEdrxfNQgfndVN
+        uaP82cf/A+5a7ptHJSv5x+hFALd9BSrkQ+QGfEKOvgZnKCvQk3N4+zTQHVxXgTaxRO9JrEQGMBw13
+        cKHOidL5ttYwpxxGsp/XB+kuNzrKOD7fqmXefFFsUAhi6wvXrrEKquyK9vH66IUbe3V8HBqTvswjU
+        wzRn3J+9TDaYLQ64JrRFQbYzneOd11I6eEq3QV+XMdhoKexDJvnTXBEwS4a4oDw0m5Q1Ts+8EHFs7
+        9wyDXLRIQ==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:40122)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jJdoX-0006Fp-NP; Wed, 01 Apr 2020 14:53:53 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jJdoU-0000kO-Uc; Wed, 01 Apr 2020 14:53:50 +0100
+Date:   Wed, 1 Apr 2020 14:53:50 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Baruch Siach <baruch@tkos.co.il>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        Leo Li <leoyang.li@nxp.com>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 6/9] net: phy: add backplane kr driver support
-Message-ID: <20200401135135.GA62290@lunn.ch>
-References: <AM0PR04MB5443E8D583734C98C54C519EFBC90@AM0PR04MB5443.eurprd04.prod.outlook.com>
+        Shmuel Hazan <sh@tkos.co.il>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH] net: phy: marvell10g: add firmware load support
+Message-ID: <20200401135350.GT25745@shell.armlinux.org.uk>
+References: <16e4a15e359012fc485d22c7e413a129029fbd0f.1585676858.git.baruch@tkos.co.il>
+ <DB8PR04MB6828927ED67036524362F369E0C90@DB8PR04MB6828.eurprd04.prod.outlook.com>
+ <20200401130321.GA71179@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <AM0PR04MB5443E8D583734C98C54C519EFBC90@AM0PR04MB5443.eurprd04.prod.outlook.com>
+In-Reply-To: <20200401130321.GA71179@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 01, 2020 at 01:35:36PM +0000, Florinel Iordache wrote:
-> > On Thu, Mar 26, 2020 at 03:51:19PM +0200, Florinel Iordache wrote:
-> > > +static void setup_supported_linkmode(struct phy_device *bpphy) {
-> > > +     struct backplane_phy_info *bp_phy = bpphy->priv;
-> > 
-> > I'm not sure it is a good idea to completely take over phydev->priv like this, in
-> > what is just helper code. What if the PHY driver needs memory of its own? There
-> > are a few examples of this already in other PHY drivers. Could a KR PHY contain
-> > a temperature sensor? Could it contain statistics counters which need
-> > accumulating?
-> > 
-> >         Andrew
-> 
-> Backplane KR driver allocates memory for structure backplane_phy_info
-> which is saved in phydev->priv. After all this is the purpose of priv
-> according to its description in phy.h: <<private data pointer For use
-> by PHYs to maintain extra state>>. Here the priv is used to maintain
-> extra state needed for backplane. This way the backplane specific data
-> becomes available for all PHY callbacks (defined in struct phy_driver)
-> that receive a pointer to phy_device structure. This initial version
-> doesn't include accumulating statistics counters but we have in plan
-> to add these in future versions. The counters will be kept in specific
-> structures as members of the main backplane data mentioned above
-> and entire support will be integrated with ethtool.
+On Wed, Apr 01, 2020 at 03:03:21PM +0200, Andrew Lunn wrote:
+> For a general purpose OS like Linux, this will have to change before
+> we support firmware upload. We need generic firmware, which is the
+> same everywhere, and then PHY specific blobs for things like the eye
+> configuration. This basic idea has been around a long time in the WiFi
+> world. The Atheros WiFi chipsets needed a board specific blod which
+> contains calibration data, path losses on the board, in order that the
+> transmit power could be tuned to prevent it sending too much power out
+> the aerial.
 
-Hi Florinel
+The reality of that approach is that people scratch around on the
+Internet trying to find the board specific data file, and end up
+using anything they can get their hands on just to have something
+that works - irrespective of whether or not it is the correct one.
 
-And what about hwmon, or anything else which a driver needs memory
-for?
+It's a total usability failure to have board specific blobs.
 
-As far as i see it, we have two bodies of code here. There is a set of
-helpers which implement most of the backplane functionality. And then
-there is an example driver for your hardware. In the future we expect
-other drivers to be added for other vendors hardware.
-
-phydev->priv is for the driver. helpers should not assume they have
-complete control over it.
-
-Anyway, this may be a mute point. Lets first solve the problem of how
-a PCS is represented.
-
-  Andrew
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
