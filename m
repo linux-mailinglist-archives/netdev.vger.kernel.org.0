@@ -2,86 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4015D19A5B4
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 08:57:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C17C419A5C1
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 09:01:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731849AbgDAG5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 02:57:37 -0400
-Received: from mail-yb1-f171.google.com ([209.85.219.171]:37716 "EHLO
-        mail-yb1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731764AbgDAG5g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 02:57:36 -0400
-Received: by mail-yb1-f171.google.com with SMTP id n2so11298408ybg.4
-        for <netdev@vger.kernel.org>; Tue, 31 Mar 2020 23:57:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=92zncqgi58to5wHJKOD0e7zkfEuj7QsygWR1Z75H6sU=;
-        b=iu0/+7y4bad2+h2ooBY7MLwaPernTBotRzZKtt3pS/z+0noTiG0+BvxukAfIxlM/Vy
-         EdiVetrWqPsNs0qfVl2fjuqB/9DvMC+4vL2jzRGopja7cer9vVVcxeoIqMSMfAmW37Lf
-         BOW/reBCWYhnH7EeDvlW6PQi9k8xFAH5lxpk/2G91hCVO5eMo0QPM+S218EaORYWAMDz
-         3ETu0zuOjcbQyJ4YVZSc8pqGqIvBCr442i1zbt1E9sAlKN/EhU3Gny1IJHFZDMYgcGMx
-         aMvhatTwIpdF1tlG1+J6q8j0k0X5gLvthmT2cF5hjZIoMkUbQluR384T+VDjlLG+nl8r
-         YFRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=92zncqgi58to5wHJKOD0e7zkfEuj7QsygWR1Z75H6sU=;
-        b=asWvzhK6JoVe6juRSxwwEDqr5KOuMv7ai3DYNy6a6iACVSaG+dc2ZFBWmEIrXG3VIt
-         ayjbwnrz9b0cLGH+CVgpodLB+reNKXfD9Md4IlhqacqnzVY+VY8Q82kgdnHXFMwNsmtH
-         SNdmHq9C/8kHcaQNw97ndsUK+UfhpljlwEBSrGjlA/0eX52/Xla97F0oPzQuAOHQWagG
-         HLXluIfC6NEjLyv8KtPjEufz2P8cy7HhO3MNZORQxBRHdumlhjuLu6MrMwb8vEgNK4qq
-         Jb2sVC1wxm0dJmQgfFTttmUdlfwMoFof45iTKeMMw3GamSHhjWAPri3Yoj5QBWjT5Sfr
-         06AQ==
-X-Gm-Message-State: ANhLgQ3iwxZJmxCcaflIl0/kl41o0qS31UG1O5oCnU2Hi1+WL441xKr3
-        nlNvoFHakEUzgVjZJ0D/dYizeSP5dX/jxsstQmjeHaJ8m6Y=
-X-Google-Smtp-Source: ADFU+vsvpRh2knreF390c9xNsMU0dqB+9jP8YwKxtvFimWaOb8cQAwq9I2Nn97kQGNJkDaymV1wZdTw54sFSDtBUWMQ=
-X-Received: by 2002:a25:3d83:: with SMTP id k125mr35876195yba.239.1585724255211;
- Tue, 31 Mar 2020 23:57:35 -0700 (PDT)
+        id S1731910AbgDAHAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 03:00:55 -0400
+Received: from dvalin.narfation.org ([213.160.73.56]:41254 "EHLO
+        dvalin.narfation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731792AbgDAHAz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 03:00:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
+        s=20121; t=1585724452;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eZ6rBSBIdA4UjzIh0yr15zffeVskWrBIvZd3EQOPrHQ=;
+        b=n4i5Mxx0SgULGxZvV7buuIi+nBoDF4oNx4ok5Lxv3oThJ0jbvE6nTcE8aRQr+jl+3U1dXb
+        QkV3PM3ke6Go0QqeFj/8YtaqS8sAdZMisZvclqZROIlWb6cxBl/W+tsFChNezTGztqdtJ3
+        fVPep6L3Q1M+KH852n3FGxJ7yeM6ClI=
+From:   Sven Eckelmann <sven@narfation.org>
+To:     ath10k@lists.infradead.org
+Cc:     Linus =?ISO-8859-1?Q?L=FCssing?= <linus.luessing@c0d3.blue>,
+        Linus =?ISO-8859-1?Q?L=FCssing?= <ll@simonwunderlich.de>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ben Greear <greearb@candelatech.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Kalle Valo <kvalo@codeaurora.org>
+Subject: Re: [PATCH] ath10k: increase rx buffer size to 2048
+Date:   Wed, 01 Apr 2020 09:00:49 +0200
+Message-ID: <3300912.TRQvxCK2vZ@bentobox>
+In-Reply-To: <20200205191043.21913-1-linus.luessing@c0d3.blue>
+References: <20200205191043.21913-1-linus.luessing@c0d3.blue>
 MIME-Version: 1.0
-From:   Stefan Majer <stefan.majer@gmail.com>
-Date:   Wed, 1 Apr 2020 08:57:24 +0200
-Message-ID: <CADdPHGsD4b5GNoLy3aPQndkA84P_m33o-G1kP7F7Xkhterw0Vw@mail.gmail.com>
-Subject: PATCH: Error message if set memlock=infinite failed during bpf load
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="nextPart1800025.TbuEdfJRpj"; micalg="pgp-sha512"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Executing ip vrf exec <vrfname> command sometimes fails with:
+--nextPart1800025.TbuEdfJRpj
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 
-bpf: Failed to load program: Operation not permitted
+On Wednesday, 5 February 2020 20:10:43 CEST Linus L=FCssing wrote:
+> From: Linus L=FCssing <ll@simonwunderlich.de>
+>=20
+> Before, only frames with a maximum size of 1528 bytes could be
+> transmitted between two 802.11s nodes.
+>=20
+> For batman-adv for instance, which adds its own header to each frame,
+> we typically need an MTU of at least 1532 bytes to be able to transmit
+> without fragmentation.
+>=20
+> This patch now increases the maxmimum frame size from 1528 to 1656
+> bytes.
+[...]
 
-This error message might be misleading because the underlying reason can be
-that memlock limit is to small.
+@Kalle, I saw that this patch was marked as deferred [1] but I couldn't fin=
+d=20
+any mail why it was done so. It seems like this currently creates real worl=
+d=20
+problems - so would be nice if you could explain shortly what is currently=
+=20
+blocking its acceptance.
 
-It is already implemented to set memlock to infinite, but without
-error handling.
+Kind regards,
+	Sven
 
-With this patch at least a warning is printed out to inform the user
-what might be the root cause.
+[1] https://patchwork.kernel.org/patch/11367055/
+--nextPart1800025.TbuEdfJRpj
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAl6EPCEACgkQXYcKB8Em
+e0YRxA//YxxFkrb3+3MfksBJzKvpwPudQje1PeGas/4ofeiU8BeEaEGPbE5psITT
+FNUyVMxVf9VceV10aWdFwVNB4pr6BNhp8ENaZC1mM+ysv4qx2GGdFizlDSmctk6S
+KUEeE7sGWPMF8GsVmKFOm91xDWZJPQkz39dYrrOF/n8z0A/PpSVVj9GU1+qWh1uY
+wpTi1FBpQ22mt1+lLtkzd79iWR88tUEq6+kSb6c9iGRHwFzAKsWH2ztHiz1XJKUL
+JuslEzrgknh22OKVuMDFeHERdTV20QxFouTv4jJNAT7++TWrOOscqLmyAHApkzxS
+LUasYj1cIAUIOhiB26luknCi2nshgSqo3pX98brWOc5k7oOAip2dj3ZP7SKTTCDx
+bm/oTQEjvH6tx/ejTssiObbCNE2eNVk2NKSiIPQ43f/7TUQLKOx0MwKZP0Oze1AO
+nNPz04GP75RJManuczRyBRZ9RVHfS4V/yiD1EDvT3NQpmg9bJrfWyo7gpFAVL8mx
+BXHiaDmaXbRAlK4DrBR/ozjYXlGddNVBJQ9JTdk1PM0BOoTnRjMj/Gs1ZIvtKb8R
+mlfJYXEu4D9tIi1XlRAOmMZ/VYlE33T198Pb5ia6r6g4qlqiVpZc/h+ktfB/BkWH
+SqRSuL6vw7oCbxefi5oF2T0HEVU3K3hvvATa0R6A2xQgtkz/pXQ=
+=1DtW
+-----END PGP SIGNATURE-----
+
+--nextPart1800025.TbuEdfJRpj--
 
 
-Signed-off-by: Stefan Majer <stefan.majer@gmail.com>
 
-diff --git a/lib/bpf.c b/lib/bpf.c
-index 10cf9bf4..210830d9 100644
---- a/lib/bpf.c
-+++ b/lib/bpf.c
-@@ -1416,8 +1416,8 @@ static void bpf_init_env(void)
-  .rlim_max = RLIM_INFINITY,
-  };
-
-- /* Don't bother in case we fail! */
-- setrlimit(RLIMIT_MEMLOCK, &limit);
-+ if (!setrlimit(RLIMIT_MEMLOCK, &limit))
-+ fprintf(stderr, "Continue without setting ulimit memlock=infinity.
-Error:%s\n", strerror(errno));
-
-  if (!bpf_get_work_dir(BPF_PROG_TYPE_UNSPEC))
-  fprintf(stderr, "Continuing without mounted eBPF fs. Too old kernel?\n");
-
--- 
-Stefan Majer
