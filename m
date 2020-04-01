@@ -2,98 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50A6319ADC6
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 16:26:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 056C719ADCD
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 16:27:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733003AbgDAO0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 10:26:16 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:40508 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732749AbgDAO0P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 10:26:15 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.144])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id B8F69200DB;
-        Wed,  1 Apr 2020 14:26:14 +0000 (UTC)
-Received: from us4-mdac16-13.at1.mdlocal (unknown [10.110.49.195])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id B748A800AF;
-        Wed,  1 Apr 2020 14:26:14 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.105])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 559BB40073;
-        Wed,  1 Apr 2020 14:26:14 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id ED8349C007D;
-        Wed,  1 Apr 2020 14:26:13 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 1 Apr 2020
- 15:26:07 +0100
-Subject: Re: [PATCH v3 bpf-next 0/4] Add support for cgroup bpf_link
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     David Ahern <dsahern@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "Alexei Starovoitov" <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Andrey Ignatov" <rdna@fb.com>, Kernel Team <kernel-team@fb.com>
-References: <20200330030001.2312810-1-andriin@fb.com>
- <c9f52288-5ea8-a117-8a67-84ba48374d3a@gmail.com>
- <CAEf4BzZpCOCi1QfL0peBRjAOkXRwGEi_DAW4z34Mf3Tv_sbRFw@mail.gmail.com>
- <662788f9-0a53-72d4-2675-daec893b5b81@gmail.com>
- <CAADnVQK8oMZehQVt34=5zgN12VBc2940AWJJK2Ft0cbOi1jDhQ@mail.gmail.com>
- <cdd576be-8075-13a7-98ee-9bc9355a2437@gmail.com>
- <20200331003222.gdc2qb5rmopphdxl@ast-mbp>
- <58cea4c7-e832-2632-7f69-5502b06310b2@gmail.com>
- <CAEf4BzZSCdtSRw9mj2W5Vv3C-G6iZdMJsZ8WGon11mN3oBiguQ@mail.gmail.com>
- <869adb74-5192-563d-0e8a-9cb578b2a601@solarflare.com>
- <CAEf4Bza1ueH=SUccfDNScRyURFoQfa1b2z-x1pOfVXuSpGUpmQ@mail.gmail.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <e9e81427-c0d7-4a1e-ba9b-c51fd3c683ac@solarflare.com>
-Date:   Wed, 1 Apr 2020 15:26:04 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1733022AbgDAO1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 10:27:38 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:40786 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1732843AbgDAO1g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 10:27:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585751254;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AC+xCtqiJYVKw8uvibXZdquPbYJhxrP3dh8NvWfdbEs=;
+        b=Iqv/Hu9ta1nL+IuVNpRxKg2Pap3SV5q848wQQFuMKL3I3zaQIQm9xjvyeDBLCsplthU+K4
+        KXx8lnOxf07f6oIgpHN7k7bFinmmrLObwMPX1f+E3VoIAnSOyV8WodXTj4DKDwcrfNyJJf
+        MRoZ7Ja+nEB2mYVqavT6A6T2WoQNnPA=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-173-8LRaKMNKMNCkz5JhuQ2PAw-1; Wed, 01 Apr 2020 10:27:31 -0400
+X-MC-Unique: 8LRaKMNKMNCkz5JhuQ2PAw-1
+Received: by mail-wr1-f69.google.com with SMTP id h95so9416543wrh.11
+        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 07:27:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=AC+xCtqiJYVKw8uvibXZdquPbYJhxrP3dh8NvWfdbEs=;
+        b=kl17eafFrAXT/iwoQNZmR7xLYKOAibOlU/RW3js01kNsKvhWSzPPZi3aeuohtKeVPu
+         7G88wZTfUU+GKEsWH+2dO1bLXwrKkbJtw3E/PjQLbcp+Lsuf5RPd53bLRFqeEtjRVwmY
+         ZKLsYKuuHX+W4z0RM6HiFCDYMLfvIF2VkPc+PzkuesSAdwNOIhXgroqJEAV7C3QjBkcj
+         Hfbr5tm0EeWDMjyXxnDrocuGvuKpjVBWuRsYzgROZqdLq8/M2DOAhpLsGypK1rplXuDS
+         j8EWb9xNTD/oZMrqSvZEA1fOQE1ahuPyZg8LsUfBTRbMEh+24YF3FkgQWHj1XHg1elhH
+         z3Tw==
+X-Gm-Message-State: AGi0PuYKLLaGgj/+1TuA4cGiVdO9kncp/QNwdi1pW6eGDFLJI617oHCo
+        IXB3HeL8r5i/F3yK/1l870O/D7cocc94Yv7hBATOVT+VGjiy4HyhJYO9HQQOkC/nko0kbXkQpk8
+        nc8TdrkmyOv6t3HCD
+X-Received: by 2002:a1c:7d83:: with SMTP id y125mr4743871wmc.21.1585751249839;
+        Wed, 01 Apr 2020 07:27:29 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJJt7lJi60JuKAIp/rXIjmTJwlS5cY9W7TmEAMkhxUGDg3AMcGVYKQShXzSwPvJ9KNLjAunKg==
+X-Received: by 2002:a1c:7d83:: with SMTP id y125mr4743844wmc.21.1585751249553;
+        Wed, 01 Apr 2020 07:27:29 -0700 (PDT)
+Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
+        by smtp.gmail.com with ESMTPSA id b127sm635666wmd.2.2020.04.01.07.27.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Apr 2020 07:27:28 -0700 (PDT)
+Date:   Wed, 1 Apr 2020 10:27:24 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Christian Borntraeger <borntraeger@de.ibm.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        jgg@mellanox.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        lingshan.zhu@intel.com, eperezma@redhat.com, lulu@redhat.com,
+        parav@mellanox.com, kevin.tian@intel.com, stefanha@redhat.com,
+        rdunlap@infradead.org, hch@infradead.org, aadam@redhat.com,
+        jiri@mellanox.com, shahafs@mellanox.com, hanand@xilinx.com,
+        mhabets@solarflare.com, gdawar@xilinx.com, saugatm@xilinx.com,
+        vmireyno@marvell.com, zhangweining@ruijie.com.cn
+Subject: Re: [PATCH V9 1/9] vhost: refine vhost and vringh kconfig
+Message-ID: <20200401102631-mutt-send-email-mst@kernel.org>
+References: <20200326140125.19794-1-jasowang@redhat.com>
+ <20200326140125.19794-2-jasowang@redhat.com>
+ <fde312a4-56bd-f11f-799f-8aa952008012@de.ibm.com>
+ <41ee1f6a-3124-d44b-bf34-0f26604f9514@redhat.com>
+ <4726da4c-11ec-3b6e-1218-6d6d365d5038@de.ibm.com>
+ <39b96e3a-9f4e-6e1d-e988-8c4bcfb55879@de.ibm.com>
+ <c423c5b1-7817-7417-d7af-e07bef6368e7@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <CAEf4Bza1ueH=SUccfDNScRyURFoQfa1b2z-x1pOfVXuSpGUpmQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25326.003
-X-TM-AS-Result: No-9.170700-8.000000-10
-X-TMASE-MatchedRID: csPTYAMX1+HecRzRckOs5/ZvT2zYoYOwt3aeg7g/usAM74Nf6tTB9sij
-        F4UeOUZT7FsIwysVj2VO1SpuqMw3YVJAAk7j9W+XkJi1wdeHFtqcqlCdrhyhQCO7AnsM9hLAXa9
-        +3ZJzfMIWf1eVkaUg8CObEUW1s0wmEkhxDD0C3MwD2WXLXdz+AQZyESFXAljfSX8n1Gj4wAE/Fc
-        xFvf6KLlTEG0VYp/krlVMZeeAkuNC/WXZS/HqJ2tAtbEEX0MxBxEHRux+uk8h+ICquNi0WJLCxA
-        2qCQxM8Ht6Glx7uLSICvd0lnWtVOMmLiOgEMwkoftwZ3X11IV0=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--9.170700-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25326.003
-X-MDID: 1585751174-9paET6OkOxIX
+In-Reply-To: <c423c5b1-7817-7417-d7af-e07bef6368e7@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/04/2020 01:22, Andrii Nakryiko wrote:
-> Can you please point out where I was objecting to observability API
-> (which is LINK_QUERY thing we've discussed and I didn't oppose, and
-> I'm going to add next)?
-I didn't say you objected to it.
-I just said that you argued that it was OK for it to not land in the
- same release as the rest of the API, because drgn could paper over
- that gap.  Which seems to me to signify a dangerous way of thinking,
- and I wanted to raise the alarm about that.
-(If you _don't_ see what's wrong with that argument... well, that'd
- be even _more_ alarming.  Debuggers — and fuser, for that matter —
- are for when things go wrong _in ways the designers of the system
- failed to anticipate_.  They should not be part of a 'normal' work-
- flow for dealing with problems that we already _know_ are possible;
- it's kinda-sorta like how exceptions shouldn't be used for non-
- exceptional situations.)
+On Wed, Apr 01, 2020 at 10:13:29PM +0800, Jason Wang wrote:
+> 
+> On 2020/4/1 下午9:02, Christian Borntraeger wrote:
+> > 
+> > On 01.04.20 14:56, Christian Borntraeger wrote:
+> > > On 01.04.20 14:50, Jason Wang wrote:
+> > > > On 2020/4/1 下午7:21, Christian Borntraeger wrote:
+> > > > > On 26.03.20 15:01, Jason Wang wrote:
+> > > > > > Currently, CONFIG_VHOST depends on CONFIG_VIRTUALIZATION. But vhost is
+> > > > > > not necessarily for VM since it's a generic userspace and kernel
+> > > > > > communication protocol. Such dependency may prevent archs without
+> > > > > > virtualization support from using vhost.
+> > > > > > 
+> > > > > > To solve this, a dedicated vhost menu is created under drivers so
+> > > > > > CONIFG_VHOST can be decoupled out of CONFIG_VIRTUALIZATION.
+> > > > > FWIW, this now results in vhost not being build with defconfig kernels (in todays
+> > > > > linux-next).
+> > > > > 
+> > > > Hi Christian:
+> > > > 
+> > > > Did you meet it even with this commit https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=a4be40cbcedba9b5b714f3c95182e8a45176e42d?
+> > > I simply used linux-next. The defconfig does NOT contain CONFIG_VHOST and therefore CONFIG_VHOST_NET and friends
+> > > can not be selected.
+> > > 
+> > > $ git checkout next-20200401
+> > > $ make defconfig
+> > >    HOSTCC  scripts/basic/fixdep
+> > >    HOSTCC  scripts/kconfig/conf.o
+> > >    HOSTCC  scripts/kconfig/confdata.o
+> > >    HOSTCC  scripts/kconfig/expr.o
+> > >    LEX     scripts/kconfig/lexer.lex.c
+> > >    YACC    scripts/kconfig/parser.tab.[ch]
+> > >    HOSTCC  scripts/kconfig/lexer.lex.o
+> > >    HOSTCC  scripts/kconfig/parser.tab.o
+> > >    HOSTCC  scripts/kconfig/preprocess.o
+> > >    HOSTCC  scripts/kconfig/symbol.o
+> > >    HOSTCC  scripts/kconfig/util.o
+> > >    HOSTLD  scripts/kconfig/conf
+> > > *** Default configuration is based on 'x86_64_defconfig'
+> > > #
+> > > # configuration written to .config
+> > > #
+> > > 
+> > > $ grep VHOST .config
+> > > # CONFIG_VHOST is not set
+> > > 
+> > > > If yes, what's your build config looks like?
+> > > > 
+> > > > Thanks
+> > This was x86. Not sure if that did work before.
+> > On s390 this is definitely a regression as the defconfig files
+> > for s390 do select VHOST_NET
+> > 
+> > grep VHOST arch/s390/configs/*
+> > arch/s390/configs/debug_defconfig:CONFIG_VHOST_NET=m
+> > arch/s390/configs/debug_defconfig:CONFIG_VHOST_VSOCK=m
+> > arch/s390/configs/defconfig:CONFIG_VHOST_NET=m
+> > arch/s390/configs/defconfig:CONFIG_VHOST_VSOCK=m
+> > 
+> > and this worked with 5.6, but does not work with next. Just adding
+> > CONFIG_VHOST=m to the defconfig solves the issue, something like
+> 
+> 
+> Right, I think we probably need
+> 
+> 1) add CONFIG_VHOST=m to all defconfigs that enables
+> CONFIG_VHOST_NET/VSOCK/SCSI.
+> 
+> or
+> 
+> 2) don't use menuconfig for CONFIG_VHOST, let NET/SCSI/VDPA just select it.
+> 
+> Thanks
 
--ed
+OK I tried this:
+
+diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
+index 2523a1d4290a..a314b900d479 100644
+--- a/drivers/vhost/Kconfig
++++ b/drivers/vhost/Kconfig
+@@ -19,11 +19,10 @@ menuconfig VHOST
+ 	  This option is selected by any driver which needs to access
+ 	  the core of vhost.
+ 
+-if VHOST
+-
+ config VHOST_NET
+ 	tristate "Host kernel accelerator for virtio net"
+ 	depends on NET && EVENTFD && (TUN || !TUN) && (TAP || !TAP)
++	select VHOST
+ 	---help---
+ 	  This kernel module can be loaded in host kernel to accelerate
+ 	  guest networking with virtio_net. Not to be confused with virtio_net
+@@ -35,6 +34,7 @@ config VHOST_NET
+ config VHOST_SCSI
+ 	tristate "VHOST_SCSI TCM fabric driver"
+ 	depends on TARGET_CORE && EVENTFD
++	select VHOST
+ 	default n
+ 	---help---
+ 	Say M here to enable the vhost_scsi TCM fabric module
+@@ -44,6 +44,7 @@ config VHOST_VSOCK
+ 	tristate "vhost virtio-vsock driver"
+ 	depends on VSOCKETS && EVENTFD
+ 	select VIRTIO_VSOCKETS_COMMON
++	select VHOST
+ 	default n
+ 	---help---
+ 	This kernel module can be loaded in the host kernel to provide AF_VSOCK
+@@ -57,6 +58,7 @@ config VHOST_VDPA
+ 	tristate "Vhost driver for vDPA-based backend"
+ 	depends on EVENTFD
+ 	select VDPA
++	select VHOST
+ 	help
+ 	  This kernel module can be loaded in host kernel to accelerate
+ 	  guest virtio devices with the vDPA-based backends.
+@@ -78,5 +80,3 @@ config VHOST_CROSS_ENDIAN_LEGACY
+ 	  adds some overhead, it is disabled by default.
+ 
+ 	  If unsure, say "N".
+-
+-endif
+
+
+But now CONFIG_VHOST is always "y", never "m".
+Which I think will make it a built-in.
+Didn't figure out why yet.
+
+-- 
+MST
+
