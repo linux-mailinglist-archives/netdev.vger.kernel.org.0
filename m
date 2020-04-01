@@ -2,138 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF08F19AF6C
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 18:09:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7811E19AF74
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 18:10:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732121AbgDAQJy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 12:09:54 -0400
-Received: from mail-eopbgr70050.outbound.protection.outlook.com ([40.107.7.50]:60750
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726612AbgDAQJy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Apr 2020 12:09:54 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=C3URhhSqflaeOMmznQzujCK97cJP/XGJ75moSR5TGVtbh2EPnXLQ0XymlIZIGyPk4M1L9UwT7vkGP/Ssyhc4IwarYVUgY81Tau1Ejl7b/gv66Y9V2hk8hnmPKEYh89qmVpTrFx28RfHqWZrSSOwUfF755relYw2q1k0Zl+9grvhA94Zv5Bb5GMVRmi7yFrmdJ4BbEiaseu+/+Ck/ipzIslCeycT2gpRQVDeQS5XnxpAkPFx07hBCrvCapLd85TkOeWGBm32SEmCuZ5aF+u1WEPaPcSD+WbLyapL2UgPNujlDLZdyXwZh6PYuSelRZ1LNzBlSCLnKcJNiEknQbtFQBw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JPUWUm+ocYDBHkJ9iURrNLJ2xUQS9EcJILDOq0AlAqk=;
- b=lZ4CprPBdYe3ZlHRNJ++BjJv+6ji9XJy4bOXSsYc3uPv88lKDnnGMz+Ohleg2H9AMiw3SNHSHxr2z4AAcsLqWL/srXpdX4vBJlq8hV1gvZj35a7HBKrqKg4IEk5Y3S7psGi1PVIB4C87RD75Ttd5yuTEnAf9bUDUTBLS8uHxprcT8yly/yEXC1NRkzoNVx8HBTfZRpP/NLDReAl4KqcBN8RCk6qO4Y0rtIoHn7Ll/siRqmXt4ZTMECzCtrbYxWdYHSf0t4/065U7nvrlVzKn87WFf37B7hXnhNXjR8+nP7Dw+yrtnHf7C6dlvjVYwN5vW0KoLjl+lERALBuzwXNxrg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JPUWUm+ocYDBHkJ9iURrNLJ2xUQS9EcJILDOq0AlAqk=;
- b=hZiZ0+2B6mo0NyJ1PAt9oqPz2ilO9W6iecbV+ipQkKX93z/ToWUXAol/wX2cmWnq7ZsGsbOFcVaXQPZkte1gKAhgN08KQu4fpl75ZF5wky8TPOzDveE3OGozmtrjiGOaAAqiY7Q9Osyga5oOIqPx7c0QeefMRnVdE3dPNoCRoXk=
-Received: from DB8PR04MB6828.eurprd04.prod.outlook.com (52.133.240.149) by
- DB8PR04MB6857.eurprd04.prod.outlook.com (52.133.240.213) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2856.18; Wed, 1 Apr 2020 16:09:50 +0000
-Received: from DB8PR04MB6828.eurprd04.prod.outlook.com
- ([fe80::e44e:f867:d67:e901]) by DB8PR04MB6828.eurprd04.prod.outlook.com
- ([fe80::e44e:f867:d67:e901%2]) with mapi id 15.20.2856.019; Wed, 1 Apr 2020
- 16:09:50 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Baruch Siach <baruch@tkos.co.il>,
-        Russell King <linux@armlinux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Shmuel Hazan <sh@tkos.co.il>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>
-Subject: RE: [PATCH] net: phy: marvell10g: add firmware load support
-Thread-Topic: [PATCH] net: phy: marvell10g: add firmware load support
-Thread-Index: AQHWB4WZmiAHbtx9oEaZfhbuYbUB0ahkCkwAgAAyf4CAACtM0A==
-Date:   Wed, 1 Apr 2020 16:09:50 +0000
-Message-ID: <DB8PR04MB682824E5521062809F311778E0C90@DB8PR04MB6828.eurprd04.prod.outlook.com>
-References: <16e4a15e359012fc485d22c7e413a129029fbd0f.1585676858.git.baruch@tkos.co.il>
- <DB8PR04MB6828927ED67036524362F369E0C90@DB8PR04MB6828.eurprd04.prod.outlook.com>
- <20200401130321.GA71179@lunn.ch>
-In-Reply-To: <20200401130321.GA71179@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ioana.ciornei@nxp.com; 
-x-originating-ip: [5.12.96.237]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 631cc538-43ba-40ec-b146-08d7d6571b29
-x-ms-traffictypediagnostic: DB8PR04MB6857:|DB8PR04MB6857:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB8PR04MB685764D8761F41F23859DC7AE0C90@DB8PR04MB6857.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 03607C04F0
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6828.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(39860400002)(366004)(376002)(346002)(136003)(396003)(9686003)(478600001)(8676002)(55016002)(81156014)(8936002)(81166006)(44832011)(54906003)(5660300002)(186003)(86362001)(76116006)(71200400001)(6916009)(4326008)(64756008)(7696005)(6506007)(26005)(66446008)(66556008)(66946007)(66476007)(316002)(33656002)(2906002)(52536014);DIR:OUT;SFP:1101;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: NBTV0V7aVuw7BKIeAMi12K41srS89420k1EaW/fuWIqB2tl/Up7oDxdaGUXzH6LkMT5z0JNQR1MNCY4Jc0HqlyhJnNnwyhw3wkoeLPHUbvRuZaKlAgKVwQXvU/IFE/X2oHLn9JVwG+OijYPZn4formP12kCXuty0s1vzZoV5uwb9iCRoLAYZ277sKVVyr561o/mcrRPrDRJ1gCYHVwJm1402YIRfVfzrua8aHfLLAjyZMo+Y3yO+s1MYA3CGf8pkdj9/DhM2FU7WTPjIPivqoU5QPLBZ5ItigJnU+MVta0tksI+Arhs1ZXwrjzdZBvlMKlbXb0WedhfA45D+ke9wYwD1UMxeuWfpT4an3eQfsWLonVAB2/mSe+bkNnePMX9flqTURtMx2ybQKU4JDwngrxlm2eY9NnTbQUI8SbogPW07sGspgW/DEltfpcLy6M+f
-x-ms-exchange-antispam-messagedata: 8rhWS26ZrfivTP4XhsmFGMD++n0ObIuUUAF93Ic5icnkjyRdYJS5hcRNN0Py+5A0pjB7zdhW4ad55brTxpu4foVYMyAHe6C1mtPqcmOsaSn58tiGHWqLmT4JJ+3Bwflgfo4zujehOn6dpO6gK9IaSQ==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1732377AbgDAQKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 12:10:24 -0400
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:3445 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726205AbgDAQKX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 12:10:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1585757423; x=1617293423;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=f8HUbR5cvKWzDVauqwjQ24njzyfgLggG0ctNNboTQFU=;
+  b=fO/jf8TutCoI43KaS47R5OmNfzsK8mCzhq4H++04EYNb8DmU+U67/W4l
+   TjYCBsuNR3zM3GC34GpRKVxcpULQdFTVuV9ue4qtnq2HNQfdjW18yojaG
+   DQNg1XZT5ZP9fhLOnn1sIjSKPre/8pxGoaBs2bWVZLeEeD23eprbA9GKh
+   UCB7QrUz2ZHVv1xnjrcF4Smv0dE5biZRwYDvSoVyWfL/loTU0DVbfdjp/
+   uZ5L1uht7GYdGs/QO1T7X7NUwTH26jYyRXe1RU6JAF2VtsSvdbt4Boodq
+   KAnjmxv0q0l3oMloPYsfVevpKnumwz/deHJQ8qn8AAXmzP+MM456iReu9
+   Q==;
+IronPort-SDR: nSyJyqtwj8K4LDMJJsAl9jtCU9KdQnPMRWdqG7FtalZmPDMMK8cR9+PqOgSljtwn5oTvWKMhkH
+ H+HGNvrBGM+5ZV5z2P1wQbbRYPK2DNGeBh4VXBQXXT4b8v4tVR0+UW1NWtFawCEZHRCevumLr3
+ OXp8IasiePIWCSU2BFpqVF+eFeZCvVSYHHh1zss1U0yyEr7CsGD4Ej7q1OI9AL7MKI7JLFu4uq
+ qdZ8pEpbgPt/02Qfq0gsR2jyPwQQuqTj+NHLl8BqvwjVoyIvzUpcaNJoWdix3CyS2lfSgquRmq
+ osY=
+X-IronPort-AV: E=Sophos;i="5.72,332,1580799600"; 
+   d="scan'208";a="7756912"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 01 Apr 2020 09:10:22 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 1 Apr 2020 09:10:22 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Wed, 1 Apr 2020 09:10:22 -0700
+Date:   Wed, 1 Apr 2020 18:10:21 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+CC:     <davem@davemloft.net>, <jiri@resnulli.us>, <ivecera@redhat.com>,
+        <kuba@kernel.org>, <roopa@cumulusnetworks.com>,
+        <olteanv@gmail.com>, <andrew@lunn.ch>,
+        <UNGLinuxDriver@microchip.com>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <bridge@lists.linux-foundation.org>
+Subject: Re: [RFC net-next v4 8/9] bridge: mrp: Integrate MRP into the bridge
+Message-ID: <20200401161021.3s2sqvma7r7wpo7h@soft-dev3.microsemi.net>
+References: <20200327092126.15407-1-horatiu.vultur@microchip.com>
+ <20200327092126.15407-9-horatiu.vultur@microchip.com>
+ <17d9fb2a-cb48-7bb6-cb79-3876ca3a74b2@cumulusnetworks.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 631cc538-43ba-40ec-b146-08d7d6571b29
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Apr 2020 16:09:50.1514
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 66NjAOWxju7ec83D/Nb04+CYyPMtDyxOjALGPK4SnLmo6bAAW7tUcgxpUM0JMs0CjYnWv/K2U+puE0muFjZudg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6857
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <17d9fb2a-cb48-7bb6-cb79-3876ca3a74b2@cumulusnetworks.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [PATCH] net: phy: marvell10g: add firmware load support
->=20
-> Ioana
->=20
-> > This is typically the case for Aquantia PHYs.
->=20
-> The Aquantia is just odd. I would never use it as a generic example.
-> If i remember correctly, its 'firmware' is actually made up of multiple p=
-arts, only
-> part of which is actual firmware. It has provisioning, which can be used =
-to set
-> register values. This potentially invalidates the driver, which makes ass=
-umptions
-> about reset values of registers. And is contains board specific data, lik=
-e eye
-> configuration.
->=20
-> As i understand it, Aquantia customises the firmware for the specific PHY=
- on
-> each board design.
->=20
-> For a general purpose OS like Linux, this will have to change before we s=
-upport
-> firmware upload. We need generic firmware, which is the same everywhere, =
-and
-> then PHY specific blobs for things like the eye configuration. This basic=
- idea has
-> been around a long time in the WiFi world. The Atheros WiFi chipsets need=
-ed a
-> board specific blod which contains calibration data, path losses on the b=
-oard, in
-> order that the transmit power could be tuned to prevent it sending too mu=
-ch
-> power out the aerial.
->=20
->     Andrew
+Hi Nik,
 
-I am just trying to understand the message, are we throwing our hands in th=
-e air
-and wait for the vendor to change its policy?
+The 03/30/2020 19:16, Nikolay Aleksandrov wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> On 27/03/2020 11:21, Horatiu Vultur wrote:
+> > To integrate MRP into the bridge, the bridge needs to do the following:
+> > - add new flag(BR_MPP_AWARE) to the net bridge ports, this bit will be set when
+> >   the port is added to an MRP instance. In this way it knows if the frame was
+> >   received on MRP ring port
+> > - detect if the MRP frame was received on MRP ring port in that case it would be
+> >   processed otherwise just forward it as usual.
+> > - enable parsing of MRP
+> > - before whenever the bridge was set up, it would set all the ports in
+> >   forwarding state. Add an extra check to not set ports in forwarding state if
+> >   the port is an MRP ring port. The reason of this change is that if the MRP
+> >   instance initially sets the port in blocked state by setting the bridge up it
+> >   would overwrite this setting.
+> >
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> > ---
+> >  include/linux/if_bridge.h |  1 +
+> >  net/bridge/br_device.c    |  3 +++
+> >  net/bridge/br_input.c     |  3 +++
+> >  net/bridge/br_netlink.c   |  5 +++++
+> >  net/bridge/br_private.h   | 22 ++++++++++++++++++++++
+> >  net/bridge/br_stp.c       |  6 ++++++
+> >  6 files changed, 40 insertions(+)
+> >
+> > diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
+> > index 9e57c4411734..10baa9efdae8 100644
+> > --- a/include/linux/if_bridge.h
+> > +++ b/include/linux/if_bridge.h
+> > @@ -47,6 +47,7 @@ struct br_ip_list {
+> >  #define BR_BCAST_FLOOD               BIT(14)
+> >  #define BR_NEIGH_SUPPRESS    BIT(15)
+> >  #define BR_ISOLATED          BIT(16)
+> > +#define BR_MRP_AWARE         BIT(17)
+> >
+> >  #define BR_DEFAULT_AGEING_TIME       (300 * HZ)
+> >
+> > diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
+> > index 0e3dbc5f3c34..8ec1362588af 100644
+> > --- a/net/bridge/br_device.c
+> > +++ b/net/bridge/br_device.c
+> > @@ -463,6 +463,9 @@ void br_dev_setup(struct net_device *dev)
+> >       spin_lock_init(&br->lock);
+> >       INIT_LIST_HEAD(&br->port_list);
+> >       INIT_HLIST_HEAD(&br->fdb_list);
+> > +#if IS_ENABLED(CONFIG_BRIDGE_MRP)
+> > +     INIT_LIST_HEAD(&br->mrp_list);
+> > +#endif
+> >       spin_lock_init(&br->hash_lock);
+> >
+> >       br->bridge_id.prio[0] = 0x80;
+> > diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+> > index fcc260840028..d5c34f36f0f4 100644
+> > --- a/net/bridge/br_input.c
+> > +++ b/net/bridge/br_input.c
+> > @@ -342,6 +342,9 @@ rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
+> >               }
+> >       }
+> >
+> > +     if (unlikely(br_mrp_process(p, skb)))
+> > +             return RX_HANDLER_PASS;
+> > +
+> >  forward:
+> >       switch (p->state) {
+> >       case BR_STATE_FORWARDING:
+> > diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+> > index 43dab4066f91..77bc96745be6 100644
+> > --- a/net/bridge/br_netlink.c
+> > +++ b/net/bridge/br_netlink.c
+> > @@ -669,6 +669,11 @@ static int br_afspec(struct net_bridge *br,
+> >                       if (err)
+> >                               return err;
+> >                       break;
+> > +             case IFLA_BRIDGE_MRP:
+> > +                     err = br_mrp_parse(br, p, attr, cmd);
+> > +                     if (err)
+> > +                             return err;
+> > +                     break;
+> >               }
+> >       }
+> >
+> > diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+> > index 1f97703a52ff..38894f2cf98f 100644
+> > --- a/net/bridge/br_private.h
+> > +++ b/net/bridge/br_private.h
+> > @@ -428,6 +428,10 @@ struct net_bridge {
+> >       int offload_fwd_mark;
+> >  #endif
+> >       struct hlist_head               fdb_list;
+> > +
+> > +#if IS_ENABLED(CONFIG_BRIDGE_MRP)
+> > +     struct list_head                __rcu mrp_list;
+> > +#endif
+> >  };
+> >
+> >  struct br_input_skb_cb {
+> > @@ -1304,6 +1308,24 @@ unsigned long br_timer_value(const struct timer_list *timer);
+> >  extern int (*br_fdb_test_addr_hook)(struct net_device *dev, unsigned char *addr);
+> >  #endif
+> >
+> > +/* br_mrp.c */
+> > +#if IS_ENABLED(CONFIG_BRIDGE_MRP)
+> > +int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
+> > +              struct nlattr *attr, int cmd);
+> > +int br_mrp_process(struct net_bridge_port *p, struct sk_buff *skb);
+> > +#else
+> > +static inline int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
+> > +                            struct nlattr *attr, int cmd)
+> > +{
+> > +     return -1;
+> 
+> You should return proper error here.
 
-If we don't act on this, it doesn't mean that it's not a problem... it is, =
-but it's the bootloader's.
+It will return -EOPNOTSUPP.
 
-Ioana
+> 
+> > +}
+> > +
+> > +static inline int br_mrp_process(struct net_bridge_port *p, struct sk_buff *skb)
+> > +{
+> > +     return -1;
+> 
+> The bridge can't possibly work with MRP disabled with this.
 
+Good catch, it will return 0.
+
+> 
+> > +}
+> > +#endif
+> > +
+> >  /* br_netlink.c */
+> >  extern struct rtnl_link_ops br_link_ops;
+> >  int br_netlink_init(void);
+> > diff --git a/net/bridge/br_stp.c b/net/bridge/br_stp.c
+> > index 1f14b8455345..3e88be7aa269 100644
+> > --- a/net/bridge/br_stp.c
+> > +++ b/net/bridge/br_stp.c
+> > @@ -36,6 +36,12 @@ void br_set_state(struct net_bridge_port *p, unsigned int state)
+> >       };
+> >       int err;
+> >
+> > +     /* Don't change the state of the ports if they are driven by a different
+> > +      * protocol.
+> > +      */
+> > +     if (p->flags & BR_MRP_AWARE)
+> > +             return;
+> > +
+> 
+> Maybe disallow STP type (kernel/user-space/no-stp) changing as well, force it to no-stp.
+
+I am not sure that I understand completely here, do you want me to
+disable STP if MRP is started?
+
+> 
+> >       p->state = state;
+> >       err = switchdev_port_attr_set(p->dev, &attr);
+> >       if (err && err != -EOPNOTSUPP)
+> >
+> 
+
+-- 
+/Horatiu
