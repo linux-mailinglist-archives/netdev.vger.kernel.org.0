@@ -2,303 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E132019ACAF
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 15:23:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDE8A19ACF5
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 15:35:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732645AbgDANXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 09:23:10 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:27896 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732565AbgDANXJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 09:23:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585747388;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hi0o+VWe9/l5oID1pIBS8BAdOnRzvBXeS2Ff7vUWBLM=;
-        b=YsbH370jYOzsyC2MnNOdkvit3PivM5xWnwJI+M8o56YLX+r1qzvaZ6eNcstKsyz+nYJkVx
-        5U5PozrbzaJLT40xzf4S1n6D2u5NIQTD89AzdDdl6y6+a38JiPeNAXK/ArSDkiQg5LCXxc
-        UjmxGpxmMNL9iNJTI6MKU6T+HlEx5hI=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-295-R-XyDRY8PEGF68QRDivnnw-1; Wed, 01 Apr 2020 09:23:03 -0400
-X-MC-Unique: R-XyDRY8PEGF68QRDivnnw-1
-Received: by mail-wm1-f69.google.com with SMTP id w8so2446013wmk.5
-        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 06:23:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hi0o+VWe9/l5oID1pIBS8BAdOnRzvBXeS2Ff7vUWBLM=;
-        b=C+NU2aeXCQzVYdu5d6lP0VC8f/nrfAUrY0CIn4PxFnFAHyynDfZ6gg+lCewE2v97Hl
-         DUxX08XnEyHlTj4SUWKvdLmvNpUbrAGCx5wZRFG+QvwpLXNMzuzENpd4oOH4G0edEiqs
-         Sou18N6Ylbb6bpfEbpn5+JAs7z4ZgTrtN0AxihS3GcNpUhWUWYAJiI8HYFfuyJqcrhCJ
-         1SDBcMiJDBFBfzRXoPgdEgEQsvI/z2pIUtspdWVjhX1xHxUwD636PC4Zr0Kx9cD73Gqf
-         Pv2JxWGQAcmiQqVlY+v1QWcrHHzo8vbU3s0gnQ8as+GXvAvYrlLyltwbpyAYY3yG2pqa
-         3csQ==
-X-Gm-Message-State: AGi0Pua3rpFngemLZYHToU9dCthw8uHLxaptIQHQatTiMGejP8+zuXC5
-        5pNGw6pcfcNbLgN/pPnxuZhosYEcVqqVQxeOKwMcRuh24Iln1vW0tkh8JJOC4lAIPHcOHEv7rAx
-        YadyjE1/NKwHi9upC
-X-Received: by 2002:a05:600c:2251:: with SMTP id a17mr4325116wmm.106.1585747382388;
-        Wed, 01 Apr 2020 06:23:02 -0700 (PDT)
-X-Google-Smtp-Source: APiQypJhB75sCXbwWEjkpMwVSQLEx4YoDlWEazTbH9fpWHve3UfYWpZM6zzG2sMK7lf6Dc3p4IaHJg==
-X-Received: by 2002:a05:600c:2251:: with SMTP id a17mr4325075wmm.106.1585747382089;
-        Wed, 01 Apr 2020 06:23:02 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
-        by smtp.gmail.com with ESMTPSA id c85sm2625867wmd.48.2020.04.01.06.22.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Apr 2020 06:22:58 -0700 (PDT)
-Date:   Wed, 1 Apr 2020 09:22:52 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        jgg@mellanox.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        lingshan.zhu@intel.com, eperezma@redhat.com, lulu@redhat.com,
-        parav@mellanox.com, kevin.tian@intel.com, stefanha@redhat.com,
-        rdunlap@infradead.org, hch@infradead.org, aadam@redhat.com,
-        jiri@mellanox.com, shahafs@mellanox.com, hanand@xilinx.com,
-        mhabets@solarflare.com, gdawar@xilinx.com, saugatm@xilinx.com,
-        vmireyno@marvell.com, zhangweining@ruijie.com.cn
-Subject: Re: [PATCH V9 1/9] vhost: refine vhost and vringh kconfig
-Message-ID: <20200401092004-mutt-send-email-mst@kernel.org>
-References: <20200326140125.19794-1-jasowang@redhat.com>
- <20200326140125.19794-2-jasowang@redhat.com>
+        id S1732687AbgDANfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 09:35:39 -0400
+Received: from mail-eopbgr40079.outbound.protection.outlook.com ([40.107.4.79]:23694
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1732234AbgDANfj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Apr 2020 09:35:39 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SwZrNGASAEIMmi/Fbpp5720fehN0PqrILUst2exxxoCjM/jscohxt7W+rayT9l0kzix/UHaG59tPJxlKmMR9GpcftWJtn9y/NY4oT4omX+8MHsWb/jqfXoZiX8BlxD+061B+vWqvfgUWoM9sfZgyaMnOP6da2/EtOVBsFTw9MNjLzsgN39ZZCJJzCJ1rzEkEy18kjB+rvwGxb+d2bPnKblHFep6t3xhAgtrMVxC82CIDjqF01rWw1JJEymrrNC7/PqxJMaduKutYkZol3aWTZOZin/iYxiPBIlcykxwebwsPc9XU/3qG4QxzznHijd+GBTLAyHj5fkSxOLbXourhtQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AeVzIt7CF8mz3KyY0kXWw88dSf23A6KMONTj/JNY7j4=;
+ b=KoRWB+tTRpyDOuyYeaeZSIDOflAQJXvV9/h5giEyPrK+/iIg4viYEEpITHFNIGVA6e0JGCoVSiTbaoFyQlnyrfbUDNwRGwHISQ5bpban9AcwKfO/XJCvOumBRSimTrq0b9fcBEpsp5Fh2JOE3JMgn9Cm3Kw8yYkXNJlqPqyA/4xIuNeF4yD9R8j92TZ8YRRD0AMmm0M66Att8JVY2OVvBHLei/CqIKvgJWXcNe3XfIzL4qeKx6v85LI1uo7FoaoH8/T4YQXPEBU6QV1FmmRv9K9zYaz3GS8X+wl8D5Mg/mMe5iYWPRqo66fb1mywwvlQjbD1tzn4wajJ0DyglNPCjw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AeVzIt7CF8mz3KyY0kXWw88dSf23A6KMONTj/JNY7j4=;
+ b=KAywp385sybYlT9YOn+ei49NBVQyX5Xmv0CEg0aSI+qkPgVMhtf73Aukfc9PzTJv05QWwEMehXyANgfO1erz+zQpMntt+/pmT98YaJPGVfGjG7cWZkhp0pGdPC0sKQNcx8oXA8NGav8QujLGqeOaHsHQrbOBJ7lsZgiuSQ2mjmg=
+Received: from AM0PR04MB5443.eurprd04.prod.outlook.com (20.178.114.161) by
+ AM0PR04MB4162.eurprd04.prod.outlook.com (52.134.95.21) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2856.20; Wed, 1 Apr 2020 13:35:36 +0000
+Received: from AM0PR04MB5443.eurprd04.prod.outlook.com
+ ([fe80::ccc:be36:aaf0:709a]) by AM0PR04MB5443.eurprd04.prod.outlook.com
+ ([fe80::ccc:be36:aaf0:709a%7]) with mapi id 15.20.2856.019; Wed, 1 Apr 2020
+ 13:35:36 +0000
+From:   Florinel Iordache <florinel.iordache@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        Leo Li <leoyang.li@nxp.com>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Florinel Iordache <florinel.iordache@nxp.com>
+Subject: Re: [PATCH net-next 6/9] net: phy: add backplane kr driver support
+Thread-Topic: [PATCH net-next 6/9] net: phy: add backplane kr driver support
+Thread-Index: AdYIKJUsx3bt4MTYS3+XcE5ss4tWhQ==
+Date:   Wed, 1 Apr 2020 13:35:36 +0000
+Message-ID: <AM0PR04MB5443E8D583734C98C54C519EFBC90@AM0PR04MB5443.eurprd04.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=florinel.iordache@nxp.com; 
+x-originating-ip: [78.96.99.111]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 7dc65ab3-0c72-45bc-2333-08d7d6418f58
+x-ms-traffictypediagnostic: AM0PR04MB4162:|AM0PR04MB4162:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR04MB4162D2164C984F7FD0E2920FFBC90@AM0PR04MB4162.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 03607C04F0
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5443.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(396003)(346002)(366004)(376002)(136003)(39860400002)(316002)(66446008)(52536014)(76116006)(86362001)(26005)(33656002)(54906003)(7696005)(2906002)(4326008)(186003)(44832011)(478600001)(6506007)(7416002)(81166006)(66476007)(66946007)(64756008)(6916009)(9686003)(55016002)(71200400001)(8676002)(81156014)(66556008)(8936002)(5660300002);DIR:OUT;SFP:1101;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: U+VvETLqJzsG0PXejmXRJI3YiO67BEJYZHh9EBnALJZxLoV2OX0q3RbfhL76eIJtenZsKDmGNXn974OIkwAkFn/wv91ng4Tnvajn5mD4UQ5REHCeePtVe/Qdn1qsjfybF3FglcXFGnowCicEdbtjZqVp8pS9QhUAiUKo6qSpFSEg4AIFtCZqyTzT6XPpKEIH6QUPg6F1F1a3f7NWoNPZxKfRwGquOnsBUxXs0FT1alcSTR/oAAlXvq6ZKoC33xKF1l3EUSnK/ONqxjyfsMV2kF3xbiO+ZsZELjJF9sAekd4HW+H2EGBv5tFLLLyAh1s6sp6ZTO7XVDQ+jIOM9bujqHRsyg66mAbQCLc1dMQI7ynN5QrhOlC0wDBH1T9lmudO9u7eVN1pictTaMfqg3FGF/6z+hzHJbKm8ZvZiuuvNX5S+KtyWk+WJfP0VwArJSev
+x-ms-exchange-antispam-messagedata: dN1cRpkFrALDWn4dY7JJ3Z9uOUzfPwbIcnKmMcr/5bCQgPvF8LiX7TJd3f3JOBjlZEJLjG5PDg+iP0miF3Yqm9mvbDnEE0aLUBdh4GuOaKgzIV4ogWcgrTZVPs1ePKXXHPVDpSygWxM64uQBCEvIVA==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200326140125.19794-2-jasowang@redhat.com>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7dc65ab3-0c72-45bc-2333-08d7d6418f58
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Apr 2020 13:35:36.0721
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: n3Mu8uAD0O44eAQQuicGWFMroX4NsW6uOM4mF6TwdoaXeuoor2GTpuhmi5dSw8tD68fm+JSrQXQNbpviSb7pnMnfth4hWmrNpMy8xHQDTuM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4162
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 26, 2020 at 10:01:17PM +0800, Jason Wang wrote:
-> Currently, CONFIG_VHOST depends on CONFIG_VIRTUALIZATION. But vhost is
-> not necessarily for VM since it's a generic userspace and kernel
-> communication protocol. Such dependency may prevent archs without
-> virtualization support from using vhost.
-> 
-> To solve this, a dedicated vhost menu is created under drivers so
-> CONIFG_VHOST can be decoupled out of CONFIG_VIRTUALIZATION.
-> 
-> While at it, also squash Kconfig.vringh into vhost Kconfig file. This
-> avoids the trick of conditional inclusion from VOP or CAIF. Then it
-> will be easier to introduce new vringh users and common dependency for
-> both vringh and vhost.
-> 
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> On Thu, Mar 26, 2020 at 03:51:19PM +0200, Florinel Iordache wrote:
+> > +static void setup_supported_linkmode(struct phy_device *bpphy) {
+> > +     struct backplane_phy_info *bp_phy =3D bpphy->priv;
+>=20
+> I'm not sure it is a good idea to completely take over phydev->priv like =
+this, in
+> what is just helper code. What if the PHY driver needs memory of its own?=
+ There
+> are a few examples of this already in other PHY drivers. Could a KR PHY c=
+ontain
+> a temperature sensor? Could it contain statistics counters which need
+> accumulating?
+>=20
+>         Andrew
 
-Is this just so we can drop the dependency on CONFIG_VIRTUALIZATION?
-If yes what happens if we drop this patch?
-Given the impact it had I'd like to defer it till next release if
-possible.
+Backplane KR driver allocates memory for structure backplane_phy_info
+which is saved in phydev->priv. After all this is the purpose of priv
+according to its description in phy.h: <<private data pointer For use
+by PHYs to maintain extra state>>. Here the priv is used to maintain
+extra state needed for backplane. This way the backplane specific data
+becomes available for all PHY callbacks (defined in struct phy_driver)
+that receive a pointer to phy_device structure. This initial version
+doesn't include accumulating statistics counters but we have in plan
+to add these in future versions. The counters will be kept in specific
+structures as members of the main backplane data mentioned above
+and entire support will be integrated with ethtool.
 
-
-> ---
->  arch/arm/kvm/Kconfig         |  2 --
->  arch/arm64/kvm/Kconfig       |  2 --
->  arch/mips/kvm/Kconfig        |  2 --
->  arch/powerpc/kvm/Kconfig     |  2 --
->  arch/s390/kvm/Kconfig        |  4 ----
->  arch/x86/kvm/Kconfig         |  4 ----
->  drivers/Kconfig              |  2 ++
->  drivers/misc/mic/Kconfig     |  4 ----
->  drivers/net/caif/Kconfig     |  4 ----
->  drivers/vhost/Kconfig        | 23 ++++++++++++++---------
->  drivers/vhost/Kconfig.vringh |  6 ------
->  11 files changed, 16 insertions(+), 39 deletions(-)
->  delete mode 100644 drivers/vhost/Kconfig.vringh
-> 
-> diff --git a/arch/arm/kvm/Kconfig b/arch/arm/kvm/Kconfig
-> index f591026347a5..be97393761bf 100644
-> --- a/arch/arm/kvm/Kconfig
-> +++ b/arch/arm/kvm/Kconfig
-> @@ -54,6 +54,4 @@ config KVM_ARM_HOST
->  	---help---
->  	  Provides host support for ARM processors.
->  
-> -source "drivers/vhost/Kconfig"
-> -
->  endif # VIRTUALIZATION
-> diff --git a/arch/arm64/kvm/Kconfig b/arch/arm64/kvm/Kconfig
-> index a475c68cbfec..449386d76441 100644
-> --- a/arch/arm64/kvm/Kconfig
-> +++ b/arch/arm64/kvm/Kconfig
-> @@ -64,6 +64,4 @@ config KVM_ARM_PMU
->  config KVM_INDIRECT_VECTORS
->         def_bool KVM && (HARDEN_BRANCH_PREDICTOR || HARDEN_EL2_VECTORS)
->  
-> -source "drivers/vhost/Kconfig"
-> -
->  endif # VIRTUALIZATION
-> diff --git a/arch/mips/kvm/Kconfig b/arch/mips/kvm/Kconfig
-> index eac25aef21e0..b91d145aa2d5 100644
-> --- a/arch/mips/kvm/Kconfig
-> +++ b/arch/mips/kvm/Kconfig
-> @@ -72,6 +72,4 @@ config KVM_MIPS_DEBUG_COP0_COUNTERS
->  
->  	  If unsure, say N.
->  
-> -source "drivers/vhost/Kconfig"
-> -
->  endif # VIRTUALIZATION
-> diff --git a/arch/powerpc/kvm/Kconfig b/arch/powerpc/kvm/Kconfig
-> index 711fca9bc6f0..12885eda324e 100644
-> --- a/arch/powerpc/kvm/Kconfig
-> +++ b/arch/powerpc/kvm/Kconfig
-> @@ -204,6 +204,4 @@ config KVM_XIVE
->  	default y
->  	depends on KVM_XICS && PPC_XIVE_NATIVE && KVM_BOOK3S_HV_POSSIBLE
->  
-> -source "drivers/vhost/Kconfig"
-> -
->  endif # VIRTUALIZATION
-> diff --git a/arch/s390/kvm/Kconfig b/arch/s390/kvm/Kconfig
-> index d3db3d7ed077..def3b60f1fe8 100644
-> --- a/arch/s390/kvm/Kconfig
-> +++ b/arch/s390/kvm/Kconfig
-> @@ -55,8 +55,4 @@ config KVM_S390_UCONTROL
->  
->  	  If unsure, say N.
->  
-> -# OK, it's a little counter-intuitive to do this, but it puts it neatly under
-> -# the virtualization menu.
-> -source "drivers/vhost/Kconfig"
-> -
->  endif # VIRTUALIZATION
-> diff --git a/arch/x86/kvm/Kconfig b/arch/x86/kvm/Kconfig
-> index 991019d5eee1..0dfe70e17af9 100644
-> --- a/arch/x86/kvm/Kconfig
-> +++ b/arch/x86/kvm/Kconfig
-> @@ -94,8 +94,4 @@ config KVM_MMU_AUDIT
->  	 This option adds a R/W kVM module parameter 'mmu_audit', which allows
->  	 auditing of KVM MMU events at runtime.
->  
-> -# OK, it's a little counter-intuitive to do this, but it puts it neatly under
-> -# the virtualization menu.
-> -source "drivers/vhost/Kconfig"
-> -
->  endif # VIRTUALIZATION
-> diff --git a/drivers/Kconfig b/drivers/Kconfig
-> index 8befa53f43be..7a6d8b2b68b4 100644
-> --- a/drivers/Kconfig
-> +++ b/drivers/Kconfig
-> @@ -138,6 +138,8 @@ source "drivers/virt/Kconfig"
->  
->  source "drivers/virtio/Kconfig"
->  
-> +source "drivers/vhost/Kconfig"
-> +
->  source "drivers/hv/Kconfig"
->  
->  source "drivers/xen/Kconfig"
-> diff --git a/drivers/misc/mic/Kconfig b/drivers/misc/mic/Kconfig
-> index b6841ba6d922..8f201d019f5a 100644
-> --- a/drivers/misc/mic/Kconfig
-> +++ b/drivers/misc/mic/Kconfig
-> @@ -133,8 +133,4 @@ config VOP
->  	  OS and tools for MIC to use with this driver are available from
->  	  <http://software.intel.com/en-us/mic-developer>.
->  
-> -if VOP
-> -source "drivers/vhost/Kconfig.vringh"
-> -endif
-> -
->  endmenu
-> diff --git a/drivers/net/caif/Kconfig b/drivers/net/caif/Kconfig
-> index e74e2bb61236..9db0570c5beb 100644
-> --- a/drivers/net/caif/Kconfig
-> +++ b/drivers/net/caif/Kconfig
-> @@ -58,8 +58,4 @@ config CAIF_VIRTIO
->  	---help---
->  	  The CAIF driver for CAIF over Virtio.
->  
-> -if CAIF_VIRTIO
-> -source "drivers/vhost/Kconfig.vringh"
-> -endif
-> -
->  endif # CAIF_DRIVERS
-> diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
-> index 3d03ccbd1adc..4aef10a54cd1 100644
-> --- a/drivers/vhost/Kconfig
-> +++ b/drivers/vhost/Kconfig
-> @@ -1,8 +1,20 @@
->  # SPDX-License-Identifier: GPL-2.0-only
-> +config VHOST_RING
-> +	tristate
-> +	help
-> +	  This option is selected by any driver which needs to access
-> +	  the host side of a virtio ring.
-> +
-> +menuconfig VHOST
-> +	tristate "Host kernel accelerator for virtio (VHOST)"
-> +	help
-> +	  This option is selected by any driver which needs to access
-> +	  the core of vhost.
-> +if VHOST
-> +
-
-The description here is wrong, isn't it?
-VHOST and VHOST_RING are no longer selected, right?
-
-
->  config VHOST_NET
->  	tristate "Host kernel accelerator for virtio net"
->  	depends on NET && EVENTFD && (TUN || !TUN) && (TAP || !TAP)
-> -	select VHOST
->  	---help---
->  	  This kernel module can be loaded in host kernel to accelerate
->  	  guest networking with virtio_net. Not to be confused with virtio_net
-> @@ -14,7 +26,6 @@ config VHOST_NET
->  config VHOST_SCSI
->  	tristate "VHOST_SCSI TCM fabric driver"
->  	depends on TARGET_CORE && EVENTFD
-> -	select VHOST
->  	default n
->  	---help---
->  	Say M here to enable the vhost_scsi TCM fabric module
-> @@ -24,7 +35,6 @@ config VHOST_VSOCK
->  	tristate "vhost virtio-vsock driver"
->  	depends on VSOCKETS && EVENTFD
->  	select VIRTIO_VSOCKETS_COMMON
-> -	select VHOST
->  	default n
->  	---help---
->  	This kernel module can be loaded in the host kernel to provide AF_VSOCK
-> @@ -34,12 +44,6 @@ config VHOST_VSOCK
->  	To compile this driver as a module, choose M here: the module will be called
->  	vhost_vsock.
->  
-> -config VHOST
-> -	tristate
-> -	---help---
-> -	  This option is selected by any driver which needs to access
-> -	  the core of vhost.
-> -
->  config VHOST_CROSS_ENDIAN_LEGACY
->  	bool "Cross-endian support for vhost"
->  	default n
-> @@ -54,3 +58,4 @@ config VHOST_CROSS_ENDIAN_LEGACY
->  	  adds some overhead, it is disabled by default.
->  
->  	  If unsure, say "N".
-> +endif
-> diff --git a/drivers/vhost/Kconfig.vringh b/drivers/vhost/Kconfig.vringh
-> deleted file mode 100644
-> index c1fe36a9b8d4..000000000000
-> --- a/drivers/vhost/Kconfig.vringh
-> +++ /dev/null
-> @@ -1,6 +0,0 @@
-> -# SPDX-License-Identifier: GPL-2.0-only
-> -config VHOST_RING
-> -	tristate
-> -	---help---
-> -	  This option is selected by any driver which needs to access
-> -	  the host side of a virtio ring.
-> -- 
-> 2.20.1
-
+Florin.
