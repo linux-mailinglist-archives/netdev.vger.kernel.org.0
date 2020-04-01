@@ -2,66 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 598A219A8B8
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 11:34:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7AD619A8FE
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 11:58:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732143AbgDAJeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 05:34:12 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:51000 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726205AbgDAJeL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Apr 2020 05:34:11 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id B8A9C2051F;
-        Wed,  1 Apr 2020 11:34:10 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id JvRFFgboYyac; Wed,  1 Apr 2020 11:34:10 +0200 (CEST)
-Received: from cas-essen-02.secunet.de (202.40.53.10.in-addr.arpa [10.53.40.202])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 5EA32200A0;
-        Wed,  1 Apr 2020 11:34:10 +0200 (CEST)
-Received: from gauss2.secunet.de (10.182.7.193) by cas-essen-02.secunet.de
- (10.53.40.202) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Wed, 1 Apr 2020
- 11:34:10 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id D97E131800A4; Wed,  1 Apr 2020 11:34:09 +0200 (CEST)
-Date:   Wed, 1 Apr 2020 11:34:09 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Xin Long <lucien.xin@gmail.com>
-CC:     <netdev@vger.kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>,
+        id S1731951AbgDAJ55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 05:57:57 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:51483 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727620AbgDAJ5x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 05:57:53 -0400
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jJa7u-0002Hr-19; Wed, 01 Apr 2020 11:57:38 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jJa7p-00067a-CQ; Wed, 01 Apr 2020 11:57:33 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>,
+        David Jander <david@protonic.nl>,
         "David S. Miller" <davem@davemloft.net>,
-        Sabrina Dubroca <sd@queasysnail.net>
-Subject: Re: [PATCH ipsec-next 0/5] xfrm: support ipv6 nexthdrs process in
- transport and beet modes
-Message-ID: <20200401093409.GV13121@gauss3.secunet.de>
-References: <cover.1585731430.git.lucien.xin@gmail.com>
+        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        kernel@pengutronix.de, Liam Girdwood <lgirdwood@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-imx@nxp.com,
+        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        netdev@vger.kernel.org,
+        Philippe Schenker <philippe.schenker@toradex.com>
+Subject: [PATCH] net: phy: at803x: fix clock sink configuration on ATH8030 and ATH8035
+Date:   Wed,  1 Apr 2020 11:57:32 +0200
+Message-Id: <20200401095732.23197-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.26.0.rc2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <cover.1585731430.git.lucien.xin@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- cas-essen-02.secunet.de (10.53.40.202)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 01, 2020 at 04:59:20PM +0800, Xin Long wrote:
-> For esp transport and beet modes, when the inner ipv6 nexthdrs
-> are set, the 'proto' and 'transport_header' are needed to fix
-> in some places, so that the packet can be sent and received
-> properly, and no panicks are caused.
+The masks in priv->clk_25m_reg and priv->clk_25m_mask are one-bits-set
+for the values that comprise the fields, not zero-bits-set.
 
-Please separate the fixes and send them for inclusion
-into the ipsec tree. Everything else has to wait until
-after the merge window. net-next is closed and so is
-ipsec-next.
+This patch fixes the clock frequency configuration for ATH8030 and
+ATH8035 Atheros PHYs by removing the erroneous "~".
 
-Thanks!
+To reproduce this bug, configure the PHY  with the device tree binding
+"qca,clk-out-frequency" and remove the machine specific PHY fixups.
+
+Fixes: 2f664823a47021 ("net: phy: at803x: add device tree binding")
+Reported-by: Russell King <linux@armlinux.org.uk>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/phy/at803x.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index 481cf48c9b9e4..31f731e6df720 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -425,8 +425,8 @@ static int at803x_parse_dt(struct phy_device *phydev)
+ 		 */
+ 		if (at803x_match_phy_id(phydev, ATH8030_PHY_ID) ||
+ 		    at803x_match_phy_id(phydev, ATH8035_PHY_ID)) {
+-			priv->clk_25m_reg &= ~AT8035_CLK_OUT_MASK;
+-			priv->clk_25m_mask &= ~AT8035_CLK_OUT_MASK;
++			priv->clk_25m_reg &= AT8035_CLK_OUT_MASK;
++			priv->clk_25m_mask &= AT8035_CLK_OUT_MASK;
+ 		}
+ 	}
+ 
+-- 
+2.26.0.rc2
 
