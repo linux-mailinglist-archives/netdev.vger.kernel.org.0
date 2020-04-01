@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EED7119AA7A
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 13:09:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5857C19AA7C
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 13:09:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732407AbgDALJX convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 1 Apr 2020 07:09:23 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:59305 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1732234AbgDALJW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 07:09:22 -0400
+        id S1732437AbgDALJ2 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 1 Apr 2020 07:09:28 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:54367 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1732352AbgDALJ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 07:09:27 -0400
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-112-0EkIty7hMGeNjH1wd9f-JQ-1; Wed, 01 Apr 2020 07:09:18 -0400
-X-MC-Unique: 0EkIty7hMGeNjH1wd9f-JQ-1
+ us-mta-239-dM95Zu_jML2EgRodxeAK9w-1; Wed, 01 Apr 2020 07:09:23 -0400
+X-MC-Unique: dM95Zu_jML2EgRodxeAK9w-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2887413FB;
-        Wed,  1 Apr 2020 11:09:16 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8EB6418A5500;
+        Wed,  1 Apr 2020 11:09:21 +0000 (UTC)
 Received: from krava.redhat.com (unknown [10.40.194.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4F5C11001B09;
-        Wed,  1 Apr 2020 11:09:12 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8427C10027AF;
+        Wed,  1 Apr 2020 11:09:16 +0000 (UTC)
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
@@ -35,9 +35,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         KP Singh <kpsingh@chromium.org>,
         Andrii Nakryiko <andriin@fb.com>, bgregg@netflix.com,
         Al Viro <viro@zeniv.linux.org.uk>
-Subject: [PATCH 1/3] bpf: Add support to check if BTF object is nested in another object
-Date:   Wed,  1 Apr 2020 13:09:05 +0200
-Message-Id: <20200401110907.2669564-2-jolsa@kernel.org>
+Subject: [PATCH 2/3] bpf: Add d_path helper
+Date:   Wed,  1 Apr 2020 13:09:06 +0200
+Message-Id: <20200401110907.2669564-3-jolsa@kernel.org>
 In-Reply-To: <20200401110907.2669564-1-jolsa@kernel.org>
 References: <20200401110907.2669564-1-jolsa@kernel.org>
 MIME-Version: 1.0
@@ -51,158 +51,156 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding btf_struct_address function that takes 2 BTF objects
-and offset as arguments and checks wether object A is nested
-in object B on given offset.
+Adding d_path helper function that returns full path
+for give 'struct path' object, which needs to be the
+kernel BTF 'path' object.
 
-This function is be used when checking the helper function
-PTR_TO_BTF_ID arguments. If the argument has an offset value,
-the btf_struct_address will check if the final address is
-the expected BTF ID.
+The helper calls directly d_path function.
 
-This way we can access nested BTF objects under PTR_TO_BTF_ID
-pointer type and pass them to helpers, while they still point
-to valid kernel BTF objects.
+Updating also bpf.h tools uapi header and adding
+'path' to bpf_helpers_doc.py script.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- include/linux/bpf.h   |  3 ++
- kernel/bpf/btf.c      | 69 +++++++++++++++++++++++++++++++++++++++++++
- kernel/bpf/verifier.c | 18 +++++++++--
- 3 files changed, 88 insertions(+), 2 deletions(-)
+ include/uapi/linux/bpf.h       | 14 +++++++++++++-
+ kernel/trace/bpf_trace.c       | 31 +++++++++++++++++++++++++++++++
+ scripts/bpf_helpers_doc.py     |  2 ++
+ tools/include/uapi/linux/bpf.h | 14 +++++++++++++-
+ 4 files changed, 59 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index fd2b2322412d..d3bad7ee60c6 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1196,6 +1196,9 @@ int btf_struct_access(struct bpf_verifier_log *log,
- 		      const struct btf_type *t, int off, int size,
- 		      enum bpf_access_type atype,
- 		      u32 *next_btf_id);
-+int btf_struct_address(struct bpf_verifier_log *log,
-+		     const struct btf_type *t,
-+		     u32 off, u32 exp_id);
- int btf_resolve_helper_id(struct bpf_verifier_log *log,
- 			  const struct bpf_func_proto *fn, int);
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 2e29a671d67e..8da1b4750364 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -3025,6 +3025,17 @@ union bpf_attr {
+  *		* **-EOPNOTSUPP**	Unsupported operation, for example a
+  *					call from outside of TC ingress.
+  *		* **-ESOCKTNOSUPPORT**	Socket type not supported (reuseport).
++ *
++ * int bpf_d_path(struct path *path, char *buf, u32 sz)
++ *	Description
++ *		Return full path for given 'struct path' object, which
++ *		needs to be the kernel BTF 'path' object. The path is
++ *		returned in buffer provided 'buf' of size 'sz'.
++ *
++ *	Return
++ *		length of returned string on success, or a negative
++ *		error in case of failure
++ *
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -3151,7 +3162,8 @@ union bpf_attr {
+ 	FN(xdp_output),			\
+ 	FN(get_netns_cookie),		\
+ 	FN(get_current_ancestor_cgroup_id),	\
+-	FN(sk_assign),
++	FN(sk_assign),			\
++	FN(d_path),
  
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index d65c6912bdaf..9aafffa57d8b 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -4002,6 +4002,75 @@ int btf_struct_access(struct bpf_verifier_log *log,
- 	return -EINVAL;
- }
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+  * function eBPF program intends to call
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index ca1796747a77..6ca390b2b26e 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -779,6 +779,35 @@ static const struct bpf_func_proto bpf_send_signal_thread_proto = {
+ 	.arg1_type	= ARG_ANYTHING,
+ };
  
-+int btf_struct_address(struct bpf_verifier_log *log,
-+		       const struct btf_type *t,
-+		       u32 off, u32 exp_id)
++BPF_CALL_3(bpf_d_path, struct path *, path, char *, buf, u32, sz)
 +{
-+	u32 i, moff, mtrue_end, msize = 0;
-+	const struct btf_member *member;
-+	const struct btf_type *mtype;
-+	const char *tname, *mname;
++	char *p = d_path(path, buf, sz - 1);
++	int len;
 +
-+again:
-+	tname = __btf_name_by_offset(btf_vmlinux, t->name_off);
-+	if (!btf_type_is_struct(t)) {
-+		bpf_log(log, "Type '%s' is not a struct\n", tname);
-+		return -EINVAL;
-+	}
-+
-+	if (off > t->size) {
-+		bpf_log(log, "address beyond struct %s at off %u size %u\n",
-+			tname, off, t->size);
-+		return -EACCES;
-+	}
-+
-+	for_each_member(i, t, member) {
-+		/* offset of the field in bytes */
-+		moff = btf_member_bit_offset(t, member) / 8;
-+		if (off < moff)
-+			/* won't find anything, field is already too far */
-+			break;
-+
-+		/* we found the member */
-+		if (off == moff && member->type == exp_id)
-+			return 0;
-+
-+		/* type of the field */
-+		mtype = btf_type_by_id(btf_vmlinux, member->type);
-+		mname = __btf_name_by_offset(btf_vmlinux, member->name_off);
-+
-+		mtype = btf_resolve_size(btf_vmlinux, mtype, &msize,
-+					 NULL, NULL);
-+		if (IS_ERR(mtype)) {
-+			bpf_log(log, "field %s doesn't have size\n", mname);
-+			return -EFAULT;
++	if (IS_ERR(p)) {
++		len = PTR_ERR(p);
++	} else {
++		len = strlen(p);
++		if (len && p != buf) {
++			memmove(buf, p, len);
++			buf[len] = 0;
 +		}
-+
-+		mtrue_end = moff + msize;
-+		if (off >= mtrue_end)
-+			/* no overlap with member, keep iterating */
-+			continue;
-+
-+		/* the 'off' we're looking for is either equal to start
-+		 * of this field or inside of this struct
-+		 */
-+		if (btf_type_is_struct(mtype)) {
-+			/* our field must be inside that union or struct */
-+			t = mtype;
-+
-+			/* adjust offset we're looking for */
-+			off -= moff;
-+			goto again;
-+		}
-+
-+		bpf_log(log, "struct %s doesn't have struct field at offset %d\n", tname, off);
-+		return -EACCES;
 +	}
 +
-+	bpf_log(log, "struct %s doesn't have field at offset %d\n", tname, off);
-+	return -EACCES;
++	return len;
 +}
 +
- static int __btf_resolve_helper_id(struct bpf_verifier_log *log, void *fn,
- 				   int arg)
++static u32 bpf_d_path_btf_ids[3];
++static const struct bpf_func_proto bpf_d_path_proto = {
++	.func		= bpf_d_path,
++	.gpl_only	= true,
++	.ret_type	= RET_INTEGER,
++	.arg1_type	= ARG_PTR_TO_BTF_ID,
++	.arg2_type	= ARG_PTR_TO_MEM,
++	.arg3_type	= ARG_CONST_SIZE,
++	.btf_id		= bpf_d_path_btf_ids,
++};
++
+ const struct bpf_func_proto *
+ bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
  {
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 04c6630cc18f..6eb88bef4379 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -3103,6 +3103,18 @@ static int check_ptr_to_btf_access(struct bpf_verifier_env *env,
- 	return 0;
- }
+@@ -1224,6 +1253,8 @@ tracing_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 	case BPF_FUNC_xdp_output:
+ 		return &bpf_xdp_output_proto;
+ #endif
++	case BPF_FUNC_d_path:
++		return &bpf_d_path_proto;
+ 	default:
+ 		return raw_tp_prog_func_proto(func_id, prog);
+ 	}
+diff --git a/scripts/bpf_helpers_doc.py b/scripts/bpf_helpers_doc.py
+index f43d193aff3a..8f62cbc4c3ff 100755
+--- a/scripts/bpf_helpers_doc.py
++++ b/scripts/bpf_helpers_doc.py
+@@ -418,6 +418,7 @@ class PrinterHelpers(Printer):
+             'struct __sk_buff',
+             'struct sk_msg_md',
+             'struct xdp_md',
++            'struct path',
+     ]
+     known_types = {
+             '...',
+@@ -450,6 +451,7 @@ class PrinterHelpers(Printer):
+             'struct sk_reuseport_md',
+             'struct sockaddr',
+             'struct tcphdr',
++            'struct path',
+     }
+     mapped_types = {
+             'u8': '__u8',
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 2e29a671d67e..8da1b4750364 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -3025,6 +3025,17 @@ union bpf_attr {
+  *		* **-EOPNOTSUPP**	Unsupported operation, for example a
+  *					call from outside of TC ingress.
+  *		* **-ESOCKTNOSUPPORT**	Socket type not supported (reuseport).
++ *
++ * int bpf_d_path(struct path *path, char *buf, u32 sz)
++ *	Description
++ *		Return full path for given 'struct path' object, which
++ *		needs to be the kernel BTF 'path' object. The path is
++ *		returned in buffer provided 'buf' of size 'sz'.
++ *
++ *	Return
++ *		length of returned string on success, or a negative
++ *		error in case of failure
++ *
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -3151,7 +3162,8 @@ union bpf_attr {
+ 	FN(xdp_output),			\
+ 	FN(get_netns_cookie),		\
+ 	FN(get_current_ancestor_cgroup_id),	\
+-	FN(sk_assign),
++	FN(sk_assign),			\
++	FN(d_path),
  
-+static void check_ptr_in_btf(struct bpf_verifier_env *env,
-+			     struct bpf_reg_state *reg,
-+			     u32 exp_id)
-+{
-+	const struct btf_type *t = btf_type_by_id(btf_vmlinux, reg->btf_id);
-+
-+	if (!btf_struct_address(&env->log, t, reg->off, exp_id)) {
-+		reg->btf_id = exp_id;
-+		reg->off = 0;
-+	}
-+}
-+
- /* check whether memory at (regno + off) is accessible for t = (read | write)
-  * if t==write, value_regno is a register which value is stored into memory
-  * if t==read, value_regno is a register which will receive the value from memory
-@@ -3696,10 +3708,12 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 regno,
- 		expected_type = PTR_TO_BTF_ID;
- 		if (type != expected_type)
- 			goto err_type;
-+		if (reg->off)
-+			check_ptr_in_btf(env, reg, meta->btf_id);
- 		if (reg->btf_id != meta->btf_id) {
--			verbose(env, "Helper has type %s got %s in R%d\n",
-+			verbose(env, "Helper has type %s got %s in R%d, off %d\n",
- 				kernel_type_name(meta->btf_id),
--				kernel_type_name(reg->btf_id), regno);
-+				kernel_type_name(reg->btf_id), regno, reg->off);
- 
- 			return -EACCES;
- 		}
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+  * function eBPF program intends to call
 -- 
 2.25.2
 
