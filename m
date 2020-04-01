@@ -2,26 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05FE619B716
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 22:35:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EE9B19B734
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 22:42:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733027AbgDAUf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 16:35:26 -0400
-Received: from mail.mbosch.me ([188.68.58.50]:57388 "EHLO mail.mbosch.me"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732337AbgDAUfZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Apr 2020 16:35:25 -0400
-Date:   Wed, 1 Apr 2020 22:35:23 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mbosch.me; s=mail;
-        t=1585773324; bh=CuWbeJhD3hV0jfGTPLHLHXyTZmrbniUamCtz2EzZ3Oo=;
-        h=Date:From:To:Subject:References:In-Reply-To;
-        b=cGmfl9yUTd2B4+JD7PAHLzVK1uJt4gjX3rEwOmkh0WwC0ptnj3IOgo8+fSzFebFke
-         yIRgWjOvGJoQS/1a60Iv7zidGJWkvcBMKe6NOWCHqyWY6dcMgD3JvYqA5f/6J992gE
-         ACLAr8ogJIhtaUOVyo4UBVNsgv/Lr/y1EMaS8mHI=
-From:   Maximilian Bosch <maximilian@mbosch.me>
-To:     netdev@vger.kernel.org
+        id S1732960AbgDAUmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 16:42:00 -0400
+Received: from mail-qt1-f180.google.com ([209.85.160.180]:33790 "EHLO
+        mail-qt1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732411AbgDAUl7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 16:41:59 -0400
+Received: by mail-qt1-f180.google.com with SMTP id c14so1439155qtp.0
+        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 13:41:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=iIRRf+GraRLCCujNnXL/qmnDvhHgz0hmnC4Ih+y5WZ0=;
+        b=kFNblNNwpvxW0mooxqUXbeMXbOcb8pp3C+0MGGCHtNw8WBsZUMCCCCtucsCw8we03Y
+         ddss+Pfc8BOjtea/y35MTDocA63OrrYWuOq/UxLv3uIQI0WXam2Butbsr8G3RBFnJ/KI
+         P4H1P3puM1s3riLSRpevCvlUiqcdRuOMzCox5JcHNnbCJn7AkE/Mah8LV27FYRInjE0M
+         nUuhLuiNEYHtGC8rAZpfARBF76vpdXc+3xScHJ7pHuQKWQ+Y+f9LbtjeBLfJSAZx6Ume
+         h7lcmusPlT0jjrhVZD0tmn6LxOs3vrElptLg3AcKprTR9I9tZDfQKlt4FlZ6A9Z1ALzO
+         wEcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=iIRRf+GraRLCCujNnXL/qmnDvhHgz0hmnC4Ih+y5WZ0=;
+        b=poDwlQDP49pXZJQrz8Y+/OuRuOgh7m5tSlQ0RxmFUKPgxrTEc3pyI0pZCv3D/F84Qr
+         dkm1dNySgrSgnnUp1wFFcshbf+eF48hsl+4sgEc6tof6VcBeH6B63BsaZ5bhEHJN7cF+
+         bym9zMnbIaoBvt1r0Eo2a3hHESFgEmq2A0I9es5LSzodLtHA9hO5PeKQ801E76bp3Yhz
+         2qiGs0hlo7kF+wwt4j/wPumX8S4gxMgxYriCLOGxpM17utq+7H0jlzUkfg4drlXozURm
+         pp8ZG3Wq9WgM2vpH0kc0bQP/dxB1xbXdPsiXVJT6QAhdzFvc1BQ3Lr2n77c6oX8skR2Z
+         Fzzg==
+X-Gm-Message-State: ANhLgQ3pi57oqnNxh7b2Q6EvT5xk9gGX9qZM9IKC+w7VteXQTZoMskiI
+        EiZwIEKYaY/8HBfSH2NHVbEfwydX
+X-Google-Smtp-Source: ADFU+vsbA2dt1cKiSviu4tPquvx1jHMd3Cij/C1gJAfWidFM6dy03RuRleuwd1Og3kkhUD/ZvJg8cA==
+X-Received: by 2002:ac8:7684:: with SMTP id g4mr12455961qtr.339.1585773718246;
+        Wed, 01 Apr 2020 13:41:58 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:f8fc:a46d:375f:4fa2? ([2601:282:803:7700:f8fc:a46d:375f:4fa2])
+        by smtp.googlemail.com with ESMTPSA id u51sm2287399qth.46.2020.04.01.13.41.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Apr 2020 13:41:57 -0700 (PDT)
 Subject: Re: VRF Issue Since kernel 5
-Message-ID: <20200401203523.vafhsqb3uxfvvvxq@topsnens>
+To:     Maximilian Bosch <maximilian@mbosch.me>, netdev@vger.kernel.org
 References: <7CAF2F23-5D88-4BE7-B703-06B71D1EDD11@online.net>
  <db3f6cd0-aa28-0883-715c-3e1eaeb7fd1e@gmail.com>
  <CWLP265MB1554C88316ACF2BDD4692ECAFDB10@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
@@ -32,153 +57,65 @@ References: <7CAF2F23-5D88-4BE7-B703-06B71D1EDD11@online.net>
  <2583bdb7-f9ea-3b7b-1c09-a273d3229b45@gmail.com>
  <20200401181650.flnxssoyih7c5s5y@topsnens>
  <b6ead5e9-cc0e-5017-e9a1-98b09b110650@gmail.com>
+ <20200401203523.vafhsqb3uxfvvvxq@topsnens>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <00917d3a-17f8-b772-5b93-3abdf1540b94@gmail.com>
+Date:   Wed, 1 Apr 2020 14:41:56 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="yo642vexa4szaq7u"
-Content-Disposition: inline
-In-Reply-To: <b6ead5e9-cc0e-5017-e9a1-98b09b110650@gmail.com>
+In-Reply-To: <20200401203523.vafhsqb3uxfvvvxq@topsnens>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 4/1/20 2:35 PM, Maximilian Bosch wrote:
+> Hi!
+> 
+>> This should work:
+>>     make -C tools/testing/selftests/net nettest
+>>     PATH=$PWD/tools/testing/selftests/net:$PATH
+>>     tools/testing/selftests/net/fcnal-test.sh
+> 
+> Thanks, will try this out later.
+> 
+>> If you want that ssh connection to work over a VRF you either need to
+>> set the shell context:
+>>     ip vrf exec <NAME> su - $USER
+>>
+> 
+> Yes, using `ip vrf exec` is basically my current workaround.
 
---yo642vexa4szaq7u
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+that's not a workaround, it's a requirement. With VRF configured all
+addresses are relative to the L3 domain. When trying to connect to a
+remote host, the VRF needs to be given.
 
-Hi!
+> 
+>> or add 'ip vrf exec' before the ssh. If it is an incoming connection to
+>> a server the ssh server either needs to be bound to the VRF or you need
+>> 'net.ipv4.tcp_l3mdev_accept = 1'
+> 
+> Does this mean that the `*l3mdev_accept`-parameters only "fix" this
+> issue if the VRF is on the server I connect to?
 
-> This should work:
->     make -C tools/testing/selftests/net nettest
->     PATH=3D$PWD/tools/testing/selftests/net:$PATH
->     tools/testing/selftests/net/fcnal-test.sh
+server side setting only.
 
-Thanks, will try this out later.
+> 
+> In my case the VRF is on my local machine and I try to connect through
+> the VRF to the server.
+> 
+>> The tcp reset suggests you are doing an outbound connection but the
+>> lookup for what must be the SYN-ACK is not finding the local socket -
+>> and that is because of the missing 'ip vrf exec' above.
+> 
+> I only experience this behavior on a 5.x kernel, not on e.g. 4.19
+> though. I may be wrong, but isn't this a breaking change for userspace
+> applications in the end?
 
-> If you want that ssh connection to work over a VRF you either need to
-> set the shell context:
->     ip vrf exec <NAME> su - $USER
->=20
-
-Yes, using `ip vrf exec` is basically my current workaround.
-
-> or add 'ip vrf exec' before the ssh. If it is an incoming connection to
-> a server the ssh server either needs to be bound to the VRF or you need
-> 'net.ipv4.tcp_l3mdev_accept =3D 1'
-
-Does this mean that the `*l3mdev_accept`-parameters only "fix" this
-issue if the VRF is on the server I connect to?
-
-In my case the VRF is on my local machine and I try to connect through
-the VRF to the server.
-
-> The tcp reset suggests you are doing an outbound connection but the
-> lookup for what must be the SYN-ACK is not finding the local socket -
-> and that is because of the missing 'ip vrf exec' above.
-
-I only experience this behavior on a 5.x kernel, not on e.g. 4.19
-though. I may be wrong, but isn't this a breaking change for userspace
-applications in the end?
-
-Thanks!
-
-  Maximilian
-
-On Wed, Apr 01, 2020 at 01:18:28PM -0600, David Ahern wrote:
-> On 4/1/20 12:16 PM, Maximilian Bosch wrote:
-> > Hi!
-> >=20
-> > First of all, sorry for my delayed response!
-> >=20
-> >> functional test script under tools/testing/selftests/net covers VRF
-> >> tests and it ran clean for 5.4 last time I checked. There were a few
-> >> changes that went into 4.20 or 5.0 that might be tripping up this use
-> >> case, but I need a lot more information.
-> >=20
-> > I recently started an attempt to get those tests running on my machine
-> > (and a Fedora VM after that), however I had several issues with
-> > timeouts (when running `sudo -E make -C tools/testing/selftests TARGETS=
-=3D"net"
-> > run_tests`).
-> >=20
-> > May I ask if there are further things I need to take care of to get
-> > those tests successfully running?
->=20
-> This should work:
->     make -C tools/testing/selftests/net nettest
->     PATH=3D$PWD/tools/testing/selftests/net:$PATH
->     tools/testing/selftests/net/fcnal-test.sh
->=20
-> >=20
-> >> are you saying wireguard worked with VRF in the past but is not now?
-> >=20
-> > No. WireGuard traffic is still working fine. The only issue is
-> > TCP-traffic through a VRF (which worked with 4.19, but doesn't anymore
-> > with 5.4 and 5.5).
-> >=20
-> >> 'ip vrf exec' loads a bpf program and that requires locked memory, so
-> >> yes, you need to increase it.
-> >=20
-> > Thanks a lot for the explanation!
-> >=20
-> >> Let's start with lookups:
-> >>
-> >> perf record -e fib:* -a -g
-> >> <run test that fails, ctrl-c>
-> >> perf script
-> >=20
-> > For the record, please note that I'm now on Linux 5.5.13.
-> >=20
-> > I ran the following command:
-> >=20
-> > ```
-> > sudo perf record -e fib:* -a -g -- ssh root@92.60.36.231 -o ConnectTime=
-out=3D10s
-> > ```
->=20
-> If you want that ssh connection to work over a VRF you either need to
-> set the shell context:
->     ip vrf exec <NAME> su - $USER
->=20
-> or add 'ip vrf exec' before the ssh. If it is an incoming connection to
-> a server the ssh server either needs to be bound to the VRF or you need
-> 'net.ipv4.tcp_l3mdev_accept =3D 1'
->=20
-> >=20
-> > The full output can be found here:
-> >=20
-> > https://gist.githubusercontent.com/Ma27/a6f83e05f6ffede21c2e27d5c7d2709=
-8/raw/4852d97ee4860f7887e16f94a8ede4b4406f07bc/perf-report.txt
->=20
-> seems like you have local rule ahead of the l3mdev rule. The order
-> should be:
->=20
-> # ip ru ls
-> 1000:	from all lookup [l3mdev-table]
-> 32765:	from all lookup local
-> 32766:	from all lookup main
->=20
-> That is not the problem, I just noticed some sub-optimal lookups.
->=20
-> The tcp reset suggests you are doing an outbound connection but the
-> lookup for what must be the SYN-ACK is not finding the local socket -
-> and that is because of the missing 'ip vrf exec' above.
-
---yo642vexa4szaq7u
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEPg3TILK+tBEQDaTVCR2/TR/Ea44FAl6E+wsACgkQCR2/TR/E
-a44KdggAlIV10jZn2kBgzH8Jsn+oDe3XkHXgqNA7/fop36oOZDZ7kONCj+lJIXmM
-mk1wyz1hrGQb6dxkWQqy6X9vQuqp462tqjSbEh+LD38gVZxfki6L4YAjFZImBHP8
-S37bcHdfpHFZMCf4XX5bgsSqRvUcolR8WUtTeFERbR641jmNGxUCPBeSr42hA71W
-0C7i4t10kgQYL+hwFbdlxVaR5hmSmFmwmcBnOrQfCtwLEst8dyOt3NPpHDfN5Clp
-NvkGzLTVl+fr2rNvqJxN0obY36sJFqIpSDAnup6+22zQb3+9NP0mWKWGaiCi/Clx
-N08DGCQI/OSXsyJWc3BZZAMoGsiOgQ==
-=1I16
------END PGP SIGNATURE-----
-
---yo642vexa4szaq7u--
+I do not see how this worked on 4.19. My comment above is a fundamental
+property of VRF and has been needed since day 1. That's why 'ip vrf
+exec' exists.
