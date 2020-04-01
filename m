@@ -2,153 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E75E619AD4A
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 16:01:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3AF019AD4C
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 16:01:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732863AbgDAOBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 10:01:30 -0400
-Received: from mail-vi1eur05on2082.outbound.protection.outlook.com ([40.107.21.82]:6061
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1732587AbgDAOBa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Apr 2020 10:01:30 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hVu2fNCilSh4BnBUWLZ0HnzTS08HI3iYWbckE5GXqQdFEmOEfBXowg/m9qGVEi7eXaEmfTcgEblPmuSnD8mn25MQzxFk4aJ20LjLgpCtoyPkJMMbaydcSuoZyi/xvgFFzwZaRhXTYbvQLhfnfpHpd9Sv1dnCyZ29hBrENXuRKE/KSUdm2XI+7yhvtfbRPIVITKJFpopjWlpDR5ZkD5L7zVvwI3teg7T+zCPmEwx2ehQr0YoRz8raB5eAzcI7JMPvxSyaLkuQyMJqf9Aecq//znDyEwbCYGF27R91+vZyt9aRn3x4zfi0SD+67LTNtwdYwDYsksTvq6DbaGBZoHkt5A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sdQZAnPhxbUU0wz7EbtiR/NiPNnaMZrIONl2QtELy5k=;
- b=SJCqkJBltqrbOk1TdPAwm48c3Qm5zFLWOimmlXkVz6N7yoTF2Gbcm3T2OZzoem9uhykpDBwWGNQOZN9XN0lIarlyjB1eaHNwd22l7THsG/XpBxTda5W6204WjqouNuoQnBv5Hl6jD6bh91lkbqV14cZryWrcmQyJJw9wR4dbB8VZaIHO5idbeRvUIWu9KMtHbzJvExi+LSIKhyc7J2yJH+mtjo3eRChAnMiJQzt3Em5zZZ+rg4guyrJcqopJJKT/t9RKv0qAmDl9UzmcARn0wZUu6vwVXDgqXWrP4btLTU3Hpn/UkKILWpLmI4CwTXCqlSFLkCIIw13z3yucK7CR3Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sdQZAnPhxbUU0wz7EbtiR/NiPNnaMZrIONl2QtELy5k=;
- b=QfCEyKF4sgaEPO+GrkSNPiR+qWDHGCaT0fNdMk/OQ4ETDnqkDT5FSzFjz0ZaCZZUHuXvXJjNsXrsMkfSXphG4dNx3wEbuOtSlFs4svgGZxNHmmDP6gEdvONZYUuNEQcISJbPhiZuYMq8t2cyE2UZU5DPvTCLSkRRkO99Op9JHmw=
-Received: from AM0PR04MB5443.eurprd04.prod.outlook.com (20.178.114.161) by
- AM0PR04MB4274.eurprd04.prod.outlook.com (52.134.124.12) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2856.20; Wed, 1 Apr 2020 14:01:25 +0000
-Received: from AM0PR04MB5443.eurprd04.prod.outlook.com
- ([fe80::ccc:be36:aaf0:709a]) by AM0PR04MB5443.eurprd04.prod.outlook.com
- ([fe80::ccc:be36:aaf0:709a%7]) with mapi id 15.20.2856.019; Wed, 1 Apr 2020
- 14:01:25 +0000
-From:   Florinel Iordache <florinel.iordache@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        Leo Li <leoyang.li@nxp.com>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Florinel Iordache <florinel.iordache@nxp.com>
-Subject: Re: [PATCH net-next 6/9] net: phy: add backplane kr driver support
-Thread-Topic: [PATCH net-next 6/9] net: phy: add backplane kr driver support
-Thread-Index: AdYIKzcJA6qpFTRuS0KZUSXx/e10Jg==
-Date:   Wed, 1 Apr 2020 14:01:25 +0000
-Message-ID: <AM0PR04MB544326757B0B510C7C3C6417FBC90@AM0PR04MB5443.eurprd04.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=florinel.iordache@nxp.com; 
-x-originating-ip: [78.96.99.111]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 93234786-f796-4285-5da6-08d7d6452a92
-x-ms-traffictypediagnostic: AM0PR04MB4274:|AM0PR04MB4274:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR04MB427419D3BB299DEAC16D7C03FBC90@AM0PR04MB4274.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 03607C04F0
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5443.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(136003)(376002)(346002)(366004)(39860400002)(396003)(6916009)(7416002)(7696005)(66446008)(64756008)(66556008)(6506007)(81166006)(81156014)(316002)(8676002)(2906002)(8936002)(52536014)(26005)(66476007)(54906003)(478600001)(186003)(44832011)(76116006)(33656002)(5660300002)(4326008)(66946007)(71200400001)(55016002)(9686003)(86362001);DIR:OUT;SFP:1101;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: tdmbRsfFz5nOqLQapvanb19l6UKaGG24ikn2Lr1GO+Kq6nSGvTASbsYRmclGx9cNG01+k1sHk5SYXSBxN7G2KfAh4qMxAzFXf11wKurgInzQUjNh88n74KMri7bHnSQzyj8VtfmvQ5FHUGOOW2ggxli8EosO72rJlEIvdH9o6d4WgDHMcbN6CoCBPBqPsxy6IAA9iBeyWeqgcHxB3+MLGZcGCtQwN2x9yO2ZDWA5w8bn7dSAnmeK9Hmod5IBJoHUI24ks7zYJX3y4Ix7hb+KJx5wRWIPIetzWzjsqYaLx93B5Jx9gWPMm/yRfjnZOvbBVDzEfvyYZA92naBTvVnORv/2umVcC8PBcTb95hOYxnYpk7Na+afDa8ug1wVsPY/AsMcrtLlQCnPIpYln3PBmQxN/fbLFwr2Z7zzhHyKcP9Hf5Z44OBfmKG5pGpBrgyhd
-x-ms-exchange-antispam-messagedata: ah7nl6lFBPsSUMCP5MXqskvDniSdtJTRkJWRTGRD3FgHAn2qXDeR77BZHcqrbc2vqZGekmp9bEpcWh2Wfvt2ka8T/foDZlL9F2KdFZWCg3pKCRxIVVrsDrF/T3kLgThAlFHqbweAs9/qLXEYoQx5/A==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1732876AbgDAOBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 10:01:38 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:28463 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1732869AbgDAOBi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 10:01:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585749697;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JTgkw/DNWNFnGK1V1mn43DeF8IkK7OE1WypLeTHLQVQ=;
+        b=EGSmWOJm1ezZitKr3PRMFPHyrMBAydSdocSPwPQMSIRvRFUamw+B05M8Vj8hDhpgan2EyO
+        JZbgQcC+5Hz6UCaJwvxm5z4agclT6myQHtZKHBGW5pXUt9W+o94RnwtB4rqWFsJU/BOshF
+        CqVfkj5uT69l9QBNfeqnL7udR6I7R6M=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-47-zZVmb3plPwWwUnvwzbZZlQ-1; Wed, 01 Apr 2020 10:01:34 -0400
+X-MC-Unique: zZVmb3plPwWwUnvwzbZZlQ-1
+Received: by mail-wr1-f71.google.com with SMTP id e10so14604161wru.6
+        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 07:01:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=JTgkw/DNWNFnGK1V1mn43DeF8IkK7OE1WypLeTHLQVQ=;
+        b=nJSacTsOOY6FX5wrlIKxMyzBWYOPtjY7MbAvGUTq6F9ndwpPmErKxtKgw6s9HhsW2s
+         QVV6alyyJIWMAzh1yFtzIwODjl35Mc4hyNZ2tT9X1a3FA2rlBdlzidd3E1s+8ml2oxiB
+         QABibzcvrGOava5wuDKuXt8g3fiJj5G7RF5jrAIK8WfAcT9Ni991pT51/4H9OH1z8ZKO
+         Xk2glLt9dynYmC60I/yDlzPfjHgQlzqBNoHd4xtEh5w7teIffOsUNag9oddKWVAqz8Ps
+         eunmjEvtbG9gR5sX9HLd0Y6LrpFD/ssPl5iLFnV3tcBqFeTdogK69PrIW8qulpauxUf+
+         lySQ==
+X-Gm-Message-State: ANhLgQ0S0ZxfM9fcXlUM8wHz5BS77hAkst0436NX2tlkzPTe0DPs4dNr
+        RWT/mQG9qTD3jE9QDQr0jfrCjo8sQeORTPQyOckAgEzRZmV7zQLFiIcpPq1LCua9uyNRmHtRsGS
+        1lGzbzdTlFXwXb/iX
+X-Received: by 2002:adf:9321:: with SMTP id 30mr24990277wro.330.1585749692210;
+        Wed, 01 Apr 2020 07:01:32 -0700 (PDT)
+X-Google-Smtp-Source: ADFU+vsFbKox39mO56Wdb4IkMUuB5u4BTlW+FZYATXuysnk2/9j76LmESJqT/c2PrF73AgslT1nk9A==
+X-Received: by 2002:adf:9321:: with SMTP id 30mr24990241wro.330.1585749691892;
+        Wed, 01 Apr 2020 07:01:31 -0700 (PDT)
+Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
+        by smtp.gmail.com with ESMTPSA id 98sm3113112wrk.52.2020.04.01.07.01.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Apr 2020 07:01:31 -0700 (PDT)
+Date:   Wed, 1 Apr 2020 10:01:26 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Christian Borntraeger <borntraeger@de.ibm.com>
+Cc:     Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, jgg@mellanox.com,
+        maxime.coquelin@redhat.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, rob.miller@broadcom.com,
+        xiao.w.wang@intel.com, lingshan.zhu@intel.com, eperezma@redhat.com,
+        lulu@redhat.com, parav@mellanox.com, kevin.tian@intel.com,
+        stefanha@redhat.com, rdunlap@infradead.org, hch@infradead.org,
+        aadam@redhat.com, jiri@mellanox.com, shahafs@mellanox.com,
+        hanand@xilinx.com, mhabets@solarflare.com, gdawar@xilinx.com,
+        saugatm@xilinx.com, vmireyno@marvell.com,
+        zhangweining@ruijie.com.cn
+Subject: Re: [PATCH V9 1/9] vhost: refine vhost and vringh kconfig
+Message-ID: <20200401095820-mutt-send-email-mst@kernel.org>
+References: <20200326140125.19794-1-jasowang@redhat.com>
+ <20200326140125.19794-2-jasowang@redhat.com>
+ <fde312a4-56bd-f11f-799f-8aa952008012@de.ibm.com>
+ <41ee1f6a-3124-d44b-bf34-0f26604f9514@redhat.com>
+ <4726da4c-11ec-3b6e-1218-6d6d365d5038@de.ibm.com>
+ <39b96e3a-9f4e-6e1d-e988-8c4bcfb55879@de.ibm.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 93234786-f796-4285-5da6-08d7d6452a92
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Apr 2020 14:01:25.0797
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 03LwOiRrOm4aHykiZ2liflosIv1SUv3AAs0HVbwO+R2goXi1nRBeZXy3iQVRPqpWyIeY1P/V35aPe5yNTYA0h7ILuLXRXtVmJWPVuzbFOog=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4274
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <39b96e3a-9f4e-6e1d-e988-8c4bcfb55879@de.ibm.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Thu, Mar 26, 2020 at 03:51:19PM +0200, Florinel Iordache wrote:
-> > Add support for backplane kr generic driver including link training
-> > (ieee802.3ap/ba) and fixed equalization algorithm
-> >
-> > Signed-off-by: Florinel Iordache <florinel.iordache@nxp.com>
-> > +/* Read AN Link Status */
-> > +static int is_an_link_up(struct phy_device *bpphy) {
-> > +     struct backplane_phy_info *bp_phy =3D bpphy->priv;
-> > +     int ret, val =3D 0;
-> > +
-> > +     mutex_lock(&bp_phy->bpphy_lock);
-> > +
-> > +     /* Read twice because Link_Status is LL (Latched Low) bit */
-> > +     val =3D phy_read_mmd(bpphy, MDIO_MMD_AN, bp_phy-
-> >bp_dev.mdio.an_status);
-> > +     val =3D phy_read_mmd(bpphy, MDIO_MMD_AN,
-> > + bp_phy->bp_dev.mdio.an_status);
->=20
-> Why not just
->=20
-> val =3D phy_read_mmd(bpphy, MDIO_MMD_AN, MDIO_CTRL1);
->=20
-> Or is your hardware not actually conformant to the standard?
->=20
-> There has also been a lot of discussion of reading the status twice is co=
-rrect or
-> not. Don't you care the link has briefly gone down and up again?
->=20
->         Andrew
+On Wed, Apr 01, 2020 at 03:02:00PM +0200, Christian Borntraeger wrote:
+> 
+> 
+> On 01.04.20 14:56, Christian Borntraeger wrote:
+> > 
+> > On 01.04.20 14:50, Jason Wang wrote:
+> >>
+> >> On 2020/4/1 下午7:21, Christian Borntraeger wrote:
+> >>> On 26.03.20 15:01, Jason Wang wrote:
+> >>>> Currently, CONFIG_VHOST depends on CONFIG_VIRTUALIZATION. But vhost is
+> >>>> not necessarily for VM since it's a generic userspace and kernel
+> >>>> communication protocol. Such dependency may prevent archs without
+> >>>> virtualization support from using vhost.
+> >>>>
+> >>>> To solve this, a dedicated vhost menu is created under drivers so
+> >>>> CONIFG_VHOST can be decoupled out of CONFIG_VIRTUALIZATION.
+> >>> FWIW, this now results in vhost not being build with defconfig kernels (in todays
+> >>> linux-next).
+> >>>
+> >>
+> >> Hi Christian:
+> >>
+> >> Did you meet it even with this commit https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=a4be40cbcedba9b5b714f3c95182e8a45176e42d?
+> > 
+> > I simply used linux-next. The defconfig does NOT contain CONFIG_VHOST and therefore CONFIG_VHOST_NET and friends
+> > can not be selected.
+> > 
+> > $ git checkout next-20200401
+> > $ make defconfig
+> >   HOSTCC  scripts/basic/fixdep
+> >   HOSTCC  scripts/kconfig/conf.o
+> >   HOSTCC  scripts/kconfig/confdata.o
+> >   HOSTCC  scripts/kconfig/expr.o
+> >   LEX     scripts/kconfig/lexer.lex.c
+> >   YACC    scripts/kconfig/parser.tab.[ch]
+> >   HOSTCC  scripts/kconfig/lexer.lex.o
+> >   HOSTCC  scripts/kconfig/parser.tab.o
+> >   HOSTCC  scripts/kconfig/preprocess.o
+> >   HOSTCC  scripts/kconfig/symbol.o
+> >   HOSTCC  scripts/kconfig/util.o
+> >   HOSTLD  scripts/kconfig/conf
+> > *** Default configuration is based on 'x86_64_defconfig'
+> > #
+> > # configuration written to .config
+> > #
+> > 
+> > $ grep VHOST .config
+> > # CONFIG_VHOST is not set
+> > 
+> >  
+> >> If yes, what's your build config looks like?
+> >>
+> >> Thanks
+> 
+> This was x86. Not sure if that did work before.
+> On s390 this is definitely a regression as the defconfig files 
+> for s390 do select VHOST_NET
+> 
+> grep VHOST arch/s390/configs/*
+> arch/s390/configs/debug_defconfig:CONFIG_VHOST_NET=m
+> arch/s390/configs/debug_defconfig:CONFIG_VHOST_VSOCK=m
+> arch/s390/configs/defconfig:CONFIG_VHOST_NET=m
+> arch/s390/configs/defconfig:CONFIG_VHOST_VSOCK=m
+> 
+> and this worked with 5.6, but does not work with next. Just adding
+> CONFIG_VHOST=m to the defconfig solves the issue, something like
 
-This could be changed to use directly the MDIO_STAT1 in order to read
-AN status (and use MDIO_CTRL1 for writing the control register) but this
-is more flexible and more readable since we defined the structure
-kr_mdio_info that contains all registers offsets required by backplane
-driver like: LT(link training) registers, AN registers, PMD registers.
-So we wanted to put all these together to be clear that all these
-offsets are essential for backplane driver and they can be setup
-automatically by calling the function: backplane_setup_mdio_c45.
+And a bunch of other places I guess... and I guess we need to
+select VHOST_RING too?
+Also Jason, I just noticed that you added:
 
-+ void backplane_setup_mdio_c45(struct backplane_kr_info *bpkr)
-+ /* KX/KR AN registers: IEEE802.3 Clause 45 (MMD 7) */
-+ bpkr->mdio.an_control =3D MDIO_CTRL1;
-+ bpkr->mdio.an_status =3D MDIO_STAT1;
-+ bpkr->mdio.an_ad_ability_0 =3D MDIO_PMA_EXTABLE_10GBKR;
-+ bpkr->mdio.an_ad_ability_1 =3D MDIO_PMA_EXTABLE_10GBKR + 1;
-+ bpkr->mdio.an_lp_base_page_ability_1 =3D MDIO_PMA_EXTABLE_10GBKR + 4;
+config VHOST_RING
+        tristate
++        select VHOST_IOTLB
+        help
+          This option is selected by any driver which needs to access
+          the host side of a virtio ring.
 
-This approach is more flexible because it lets open the possibility for
-extension on other non-standard devices (devices non-compliant with
-clause 45) to still use this driver for backplane operation.
-These non-standard devices will have just to define their particular
-registers offsets in structure kr_mdio_info and then the rest of the driver
-can be used without other modifications.
+but are you sure this will do the right thing if VHOST_RING itself
+selected?
 
-Florin.
+
+> ---
+>  arch/s390/configs/debug_defconfig | 5 +++--
+>  arch/s390/configs/defconfig       | 5 +++--
+>  2 files changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/s390/configs/debug_defconfig b/arch/s390/configs/debug_defconfig
+> index 46038bc58c9e..0b83274341ce 100644
+> --- a/arch/s390/configs/debug_defconfig
+> +++ b/arch/s390/configs/debug_defconfig
+> @@ -57,8 +57,6 @@ CONFIG_PROTECTED_VIRTUALIZATION_GUEST=y
+>  CONFIG_CMM=m
+>  CONFIG_APPLDATA_BASE=y
+>  CONFIG_KVM=m
+> -CONFIG_VHOST_NET=m
+> -CONFIG_VHOST_VSOCK=m
+>  CONFIG_OPROFILE=m
+>  CONFIG_KPROBES=y
+>  CONFIG_JUMP_LABEL=y
+> @@ -561,6 +559,9 @@ CONFIG_VFIO_MDEV_DEVICE=m
+>  CONFIG_VIRTIO_PCI=m
+>  CONFIG_VIRTIO_BALLOON=m
+>  CONFIG_VIRTIO_INPUT=y
+> +CONFIG_VHOST=m
+> +CONFIG_VHOST_NET=m
+> +CONFIG_VHOST_VSOCK=m
+>  CONFIG_S390_CCW_IOMMU=y
+>  CONFIG_S390_AP_IOMMU=y
+>  CONFIG_EXT4_FS=y
+> diff --git a/arch/s390/configs/defconfig b/arch/s390/configs/defconfig
+> index 7cd0648c1f4e..39e69c4e8cf7 100644
+> --- a/arch/s390/configs/defconfig
+> +++ b/arch/s390/configs/defconfig
+> @@ -57,8 +57,6 @@ CONFIG_PROTECTED_VIRTUALIZATION_GUEST=y
+>  CONFIG_CMM=m
+>  CONFIG_APPLDATA_BASE=y
+>  CONFIG_KVM=m
+> -CONFIG_VHOST_NET=m
+> -CONFIG_VHOST_VSOCK=m
+>  CONFIG_OPROFILE=m
+>  CONFIG_KPROBES=y
+>  CONFIG_JUMP_LABEL=y
+> @@ -557,6 +555,9 @@ CONFIG_VFIO_MDEV_DEVICE=m
+>  CONFIG_VIRTIO_PCI=m
+>  CONFIG_VIRTIO_BALLOON=m
+>  CONFIG_VIRTIO_INPUT=y
+> +CONFIG_VHOST=m
+> +CONFIG_VHOST_NET=m
+> +CONFIG_VHOST_VSOCK=m
+>  CONFIG_S390_CCW_IOMMU=y
+>  CONFIG_S390_AP_IOMMU=y
+>  CONFIG_EXT4_FS=y
+> -- 
+> 2.25.1
+
