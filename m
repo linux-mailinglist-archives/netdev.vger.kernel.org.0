@@ -2,221 +2,317 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F3AF019AD4C
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 16:01:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33C8F19AD75
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 16:09:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732876AbgDAOBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 10:01:38 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:28463 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1732869AbgDAOBi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 10:01:38 -0400
+        id S1732787AbgDAOJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 10:09:36 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:26449 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1732920AbgDAOJg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 10:09:36 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585749697;
+        s=mimecast20190719; t=1585750174;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=JTgkw/DNWNFnGK1V1mn43DeF8IkK7OE1WypLeTHLQVQ=;
-        b=EGSmWOJm1ezZitKr3PRMFPHyrMBAydSdocSPwPQMSIRvRFUamw+B05M8Vj8hDhpgan2EyO
-        JZbgQcC+5Hz6UCaJwvxm5z4agclT6myQHtZKHBGW5pXUt9W+o94RnwtB4rqWFsJU/BOshF
-        CqVfkj5uT69l9QBNfeqnL7udR6I7R6M=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-47-zZVmb3plPwWwUnvwzbZZlQ-1; Wed, 01 Apr 2020 10:01:34 -0400
-X-MC-Unique: zZVmb3plPwWwUnvwzbZZlQ-1
-Received: by mail-wr1-f71.google.com with SMTP id e10so14604161wru.6
-        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 07:01:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=JTgkw/DNWNFnGK1V1mn43DeF8IkK7OE1WypLeTHLQVQ=;
-        b=nJSacTsOOY6FX5wrlIKxMyzBWYOPtjY7MbAvGUTq6F9ndwpPmErKxtKgw6s9HhsW2s
-         QVV6alyyJIWMAzh1yFtzIwODjl35Mc4hyNZ2tT9X1a3FA2rlBdlzidd3E1s+8ml2oxiB
-         QABibzcvrGOava5wuDKuXt8g3fiJj5G7RF5jrAIK8WfAcT9Ni991pT51/4H9OH1z8ZKO
-         Xk2glLt9dynYmC60I/yDlzPfjHgQlzqBNoHd4xtEh5w7teIffOsUNag9oddKWVAqz8Ps
-         eunmjEvtbG9gR5sX9HLd0Y6LrpFD/ssPl5iLFnV3tcBqFeTdogK69PrIW8qulpauxUf+
-         lySQ==
-X-Gm-Message-State: ANhLgQ0S0ZxfM9fcXlUM8wHz5BS77hAkst0436NX2tlkzPTe0DPs4dNr
-        RWT/mQG9qTD3jE9QDQr0jfrCjo8sQeORTPQyOckAgEzRZmV7zQLFiIcpPq1LCua9uyNRmHtRsGS
-        1lGzbzdTlFXwXb/iX
-X-Received: by 2002:adf:9321:: with SMTP id 30mr24990277wro.330.1585749692210;
-        Wed, 01 Apr 2020 07:01:32 -0700 (PDT)
-X-Google-Smtp-Source: ADFU+vsFbKox39mO56Wdb4IkMUuB5u4BTlW+FZYATXuysnk2/9j76LmESJqT/c2PrF73AgslT1nk9A==
-X-Received: by 2002:adf:9321:: with SMTP id 30mr24990241wro.330.1585749691892;
-        Wed, 01 Apr 2020 07:01:31 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
-        by smtp.gmail.com with ESMTPSA id 98sm3113112wrk.52.2020.04.01.07.01.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Apr 2020 07:01:31 -0700 (PDT)
-Date:   Wed, 1 Apr 2020 10:01:26 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Christian Borntraeger <borntraeger@de.ibm.com>
-Cc:     Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, jgg@mellanox.com,
-        maxime.coquelin@redhat.com, cunming.liang@intel.com,
-        zhihong.wang@intel.com, rob.miller@broadcom.com,
-        xiao.w.wang@intel.com, lingshan.zhu@intel.com, eperezma@redhat.com,
-        lulu@redhat.com, parav@mellanox.com, kevin.tian@intel.com,
-        stefanha@redhat.com, rdunlap@infradead.org, hch@infradead.org,
-        aadam@redhat.com, jiri@mellanox.com, shahafs@mellanox.com,
-        hanand@xilinx.com, mhabets@solarflare.com, gdawar@xilinx.com,
-        saugatm@xilinx.com, vmireyno@marvell.com,
-        zhangweining@ruijie.com.cn
+        bh=+kdHmlxvV7fNOjmpSHAm/KiztYrW2H3haVanmSw7PZY=;
+        b=SbjsUrPkV3X1Uvg+lOgRKSvcPWYnAjgvraOcHD6Tw2annH5OZtKf8TE8Ee9ydYfd1wVJRG
+        76fpgHSkz9KdMQAHhwaCmker9d7/404bSoDrpV3V9EPKgwgVPhSRAATK5ryjHJ8mcZVcRd
+        g8IUhj/goal2Mc/dONXeAHDIDXOQuec=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-361-uMleTj1rOEiSPPbbID0kuw-1; Wed, 01 Apr 2020 10:09:27 -0400
+X-MC-Unique: uMleTj1rOEiSPPbbID0kuw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BF0C41922962;
+        Wed,  1 Apr 2020 14:09:24 +0000 (UTC)
+Received: from [10.72.12.139] (ovpn-12-139.pek2.redhat.com [10.72.12.139])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0DD7910002D0;
+        Wed,  1 Apr 2020 14:09:00 +0000 (UTC)
 Subject: Re: [PATCH V9 1/9] vhost: refine vhost and vringh kconfig
-Message-ID: <20200401095820-mutt-send-email-mst@kernel.org>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        jgg@mellanox.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        lingshan.zhu@intel.com, eperezma@redhat.com, lulu@redhat.com,
+        parav@mellanox.com, kevin.tian@intel.com, stefanha@redhat.com,
+        rdunlap@infradead.org, hch@infradead.org, aadam@redhat.com,
+        jiri@mellanox.com, shahafs@mellanox.com, hanand@xilinx.com,
+        mhabets@solarflare.com, gdawar@xilinx.com, saugatm@xilinx.com,
+        vmireyno@marvell.com, zhangweining@ruijie.com.cn
 References: <20200326140125.19794-1-jasowang@redhat.com>
  <20200326140125.19794-2-jasowang@redhat.com>
- <fde312a4-56bd-f11f-799f-8aa952008012@de.ibm.com>
- <41ee1f6a-3124-d44b-bf34-0f26604f9514@redhat.com>
- <4726da4c-11ec-3b6e-1218-6d6d365d5038@de.ibm.com>
- <39b96e3a-9f4e-6e1d-e988-8c4bcfb55879@de.ibm.com>
+ <20200401092004-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <6b4d169a-9962-6014-5423-1507059343e9@redhat.com>
+Date:   Wed, 1 Apr 2020 22:08:59 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <39b96e3a-9f4e-6e1d-e988-8c4bcfb55879@de.ibm.com>
+In-Reply-To: <20200401092004-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 01, 2020 at 03:02:00PM +0200, Christian Borntraeger wrote:
-> 
-> 
-> On 01.04.20 14:56, Christian Borntraeger wrote:
-> > 
-> > On 01.04.20 14:50, Jason Wang wrote:
-> >>
-> >> On 2020/4/1 下午7:21, Christian Borntraeger wrote:
-> >>> On 26.03.20 15:01, Jason Wang wrote:
-> >>>> Currently, CONFIG_VHOST depends on CONFIG_VIRTUALIZATION. But vhost is
-> >>>> not necessarily for VM since it's a generic userspace and kernel
-> >>>> communication protocol. Such dependency may prevent archs without
-> >>>> virtualization support from using vhost.
-> >>>>
-> >>>> To solve this, a dedicated vhost menu is created under drivers so
-> >>>> CONIFG_VHOST can be decoupled out of CONFIG_VIRTUALIZATION.
-> >>> FWIW, this now results in vhost not being build with defconfig kernels (in todays
-> >>> linux-next).
-> >>>
-> >>
-> >> Hi Christian:
-> >>
-> >> Did you meet it even with this commit https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=a4be40cbcedba9b5b714f3c95182e8a45176e42d?
-> > 
-> > I simply used linux-next. The defconfig does NOT contain CONFIG_VHOST and therefore CONFIG_VHOST_NET and friends
-> > can not be selected.
-> > 
-> > $ git checkout next-20200401
-> > $ make defconfig
-> >   HOSTCC  scripts/basic/fixdep
-> >   HOSTCC  scripts/kconfig/conf.o
-> >   HOSTCC  scripts/kconfig/confdata.o
-> >   HOSTCC  scripts/kconfig/expr.o
-> >   LEX     scripts/kconfig/lexer.lex.c
-> >   YACC    scripts/kconfig/parser.tab.[ch]
-> >   HOSTCC  scripts/kconfig/lexer.lex.o
-> >   HOSTCC  scripts/kconfig/parser.tab.o
-> >   HOSTCC  scripts/kconfig/preprocess.o
-> >   HOSTCC  scripts/kconfig/symbol.o
-> >   HOSTCC  scripts/kconfig/util.o
-> >   HOSTLD  scripts/kconfig/conf
-> > *** Default configuration is based on 'x86_64_defconfig'
-> > #
-> > # configuration written to .config
-> > #
-> > 
-> > $ grep VHOST .config
-> > # CONFIG_VHOST is not set
-> > 
-> >  
-> >> If yes, what's your build config looks like?
-> >>
-> >> Thanks
-> 
-> This was x86. Not sure if that did work before.
-> On s390 this is definitely a regression as the defconfig files 
-> for s390 do select VHOST_NET
-> 
-> grep VHOST arch/s390/configs/*
-> arch/s390/configs/debug_defconfig:CONFIG_VHOST_NET=m
-> arch/s390/configs/debug_defconfig:CONFIG_VHOST_VSOCK=m
-> arch/s390/configs/defconfig:CONFIG_VHOST_NET=m
-> arch/s390/configs/defconfig:CONFIG_VHOST_VSOCK=m
-> 
-> and this worked with 5.6, but does not work with next. Just adding
-> CONFIG_VHOST=m to the defconfig solves the issue, something like
 
-And a bunch of other places I guess... and I guess we need to
-select VHOST_RING too?
-Also Jason, I just noticed that you added:
-
-config VHOST_RING
-        tristate
-+        select VHOST_IOTLB
-        help
-          This option is selected by any driver which needs to access
-          the host side of a virtio ring.
-
-but are you sure this will do the right thing if VHOST_RING itself
-selected?
+On 2020/4/1 =E4=B8=8B=E5=8D=889:22, Michael S. Tsirkin wrote:
+> On Thu, Mar 26, 2020 at 10:01:17PM +0800, Jason Wang wrote:
+>> Currently, CONFIG_VHOST depends on CONFIG_VIRTUALIZATION. But vhost is
+>> not necessarily for VM since it's a generic userspace and kernel
+>> communication protocol. Such dependency may prevent archs without
+>> virtualization support from using vhost.
+>>
+>> To solve this, a dedicated vhost menu is created under drivers so
+>> CONIFG_VHOST can be decoupled out of CONFIG_VIRTUALIZATION.
+>>
+>> While at it, also squash Kconfig.vringh into vhost Kconfig file. This
+>> avoids the trick of conditional inclusion from VOP or CAIF. Then it
+>> will be easier to introduce new vringh users and common dependency for
+>> both vringh and vhost.
+>>
+>> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> Is this just so we can drop the dependency on CONFIG_VIRTUALIZATION?
+> If yes what happens if we drop this patch?
 
 
-> ---
->  arch/s390/configs/debug_defconfig | 5 +++--
->  arch/s390/configs/defconfig       | 5 +++--
->  2 files changed, 6 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/s390/configs/debug_defconfig b/arch/s390/configs/debug_defconfig
-> index 46038bc58c9e..0b83274341ce 100644
-> --- a/arch/s390/configs/debug_defconfig
-> +++ b/arch/s390/configs/debug_defconfig
-> @@ -57,8 +57,6 @@ CONFIG_PROTECTED_VIRTUALIZATION_GUEST=y
->  CONFIG_CMM=m
->  CONFIG_APPLDATA_BASE=y
->  CONFIG_KVM=m
-> -CONFIG_VHOST_NET=m
-> -CONFIG_VHOST_VSOCK=m
->  CONFIG_OPROFILE=m
->  CONFIG_KPROBES=y
->  CONFIG_JUMP_LABEL=y
-> @@ -561,6 +559,9 @@ CONFIG_VFIO_MDEV_DEVICE=m
->  CONFIG_VIRTIO_PCI=m
->  CONFIG_VIRTIO_BALLOON=m
->  CONFIG_VIRTIO_INPUT=y
-> +CONFIG_VHOST=m
-> +CONFIG_VHOST_NET=m
-> +CONFIG_VHOST_VSOCK=m
->  CONFIG_S390_CCW_IOMMU=y
->  CONFIG_S390_AP_IOMMU=y
->  CONFIG_EXT4_FS=y
-> diff --git a/arch/s390/configs/defconfig b/arch/s390/configs/defconfig
-> index 7cd0648c1f4e..39e69c4e8cf7 100644
-> --- a/arch/s390/configs/defconfig
-> +++ b/arch/s390/configs/defconfig
-> @@ -57,8 +57,6 @@ CONFIG_PROTECTED_VIRTUALIZATION_GUEST=y
->  CONFIG_CMM=m
->  CONFIG_APPLDATA_BASE=y
->  CONFIG_KVM=m
-> -CONFIG_VHOST_NET=m
-> -CONFIG_VHOST_VSOCK=m
->  CONFIG_OPROFILE=m
->  CONFIG_KPROBES=y
->  CONFIG_JUMP_LABEL=y
-> @@ -557,6 +555,9 @@ CONFIG_VFIO_MDEV_DEVICE=m
->  CONFIG_VIRTIO_PCI=m
->  CONFIG_VIRTIO_BALLOON=m
->  CONFIG_VIRTIO_INPUT=y
-> +CONFIG_VHOST=m
-> +CONFIG_VHOST_NET=m
-> +CONFIG_VHOST_VSOCK=m
->  CONFIG_S390_CCW_IOMMU=y
->  CONFIG_S390_AP_IOMMU=y
->  CONFIG_EXT4_FS=y
-> -- 
-> 2.25.1
+The problem is that then VHOST_RING must depend on CONFIG_VIRTUALIZATION=20
+(which enable VHOST_IOTLB) to work.
+
+But it looks to me CAIF and VOP doesn't requires CONFIG_VIRTUALIZATION.
+
+
+> Given the impact it had I'd like to defer it till next release if
+> possible.
+>
+>
+>> ---
+>>   arch/arm/kvm/Kconfig         |  2 --
+>>   arch/arm64/kvm/Kconfig       |  2 --
+>>   arch/mips/kvm/Kconfig        |  2 --
+>>   arch/powerpc/kvm/Kconfig     |  2 --
+>>   arch/s390/kvm/Kconfig        |  4 ----
+>>   arch/x86/kvm/Kconfig         |  4 ----
+>>   drivers/Kconfig              |  2 ++
+>>   drivers/misc/mic/Kconfig     |  4 ----
+>>   drivers/net/caif/Kconfig     |  4 ----
+>>   drivers/vhost/Kconfig        | 23 ++++++++++++++---------
+>>   drivers/vhost/Kconfig.vringh |  6 ------
+>>   11 files changed, 16 insertions(+), 39 deletions(-)
+>>   delete mode 100644 drivers/vhost/Kconfig.vringh
+>>
+>> diff --git a/arch/arm/kvm/Kconfig b/arch/arm/kvm/Kconfig
+>> index f591026347a5..be97393761bf 100644
+>> --- a/arch/arm/kvm/Kconfig
+>> +++ b/arch/arm/kvm/Kconfig
+>> @@ -54,6 +54,4 @@ config KVM_ARM_HOST
+>>   	---help---
+>>   	  Provides host support for ARM processors.
+>>  =20
+>> -source "drivers/vhost/Kconfig"
+>> -
+>>   endif # VIRTUALIZATION
+>> diff --git a/arch/arm64/kvm/Kconfig b/arch/arm64/kvm/Kconfig
+>> index a475c68cbfec..449386d76441 100644
+>> --- a/arch/arm64/kvm/Kconfig
+>> +++ b/arch/arm64/kvm/Kconfig
+>> @@ -64,6 +64,4 @@ config KVM_ARM_PMU
+>>   config KVM_INDIRECT_VECTORS
+>>          def_bool KVM && (HARDEN_BRANCH_PREDICTOR || HARDEN_EL2_VECTOR=
+S)
+>>  =20
+>> -source "drivers/vhost/Kconfig"
+>> -
+>>   endif # VIRTUALIZATION
+>> diff --git a/arch/mips/kvm/Kconfig b/arch/mips/kvm/Kconfig
+>> index eac25aef21e0..b91d145aa2d5 100644
+>> --- a/arch/mips/kvm/Kconfig
+>> +++ b/arch/mips/kvm/Kconfig
+>> @@ -72,6 +72,4 @@ config KVM_MIPS_DEBUG_COP0_COUNTERS
+>>  =20
+>>   	  If unsure, say N.
+>>  =20
+>> -source "drivers/vhost/Kconfig"
+>> -
+>>   endif # VIRTUALIZATION
+>> diff --git a/arch/powerpc/kvm/Kconfig b/arch/powerpc/kvm/Kconfig
+>> index 711fca9bc6f0..12885eda324e 100644
+>> --- a/arch/powerpc/kvm/Kconfig
+>> +++ b/arch/powerpc/kvm/Kconfig
+>> @@ -204,6 +204,4 @@ config KVM_XIVE
+>>   	default y
+>>   	depends on KVM_XICS && PPC_XIVE_NATIVE && KVM_BOOK3S_HV_POSSIBLE
+>>  =20
+>> -source "drivers/vhost/Kconfig"
+>> -
+>>   endif # VIRTUALIZATION
+>> diff --git a/arch/s390/kvm/Kconfig b/arch/s390/kvm/Kconfig
+>> index d3db3d7ed077..def3b60f1fe8 100644
+>> --- a/arch/s390/kvm/Kconfig
+>> +++ b/arch/s390/kvm/Kconfig
+>> @@ -55,8 +55,4 @@ config KVM_S390_UCONTROL
+>>  =20
+>>   	  If unsure, say N.
+>>  =20
+>> -# OK, it's a little counter-intuitive to do this, but it puts it neat=
+ly under
+>> -# the virtualization menu.
+>> -source "drivers/vhost/Kconfig"
+>> -
+>>   endif # VIRTUALIZATION
+>> diff --git a/arch/x86/kvm/Kconfig b/arch/x86/kvm/Kconfig
+>> index 991019d5eee1..0dfe70e17af9 100644
+>> --- a/arch/x86/kvm/Kconfig
+>> +++ b/arch/x86/kvm/Kconfig
+>> @@ -94,8 +94,4 @@ config KVM_MMU_AUDIT
+>>   	 This option adds a R/W kVM module parameter 'mmu_audit', which all=
+ows
+>>   	 auditing of KVM MMU events at runtime.
+>>  =20
+>> -# OK, it's a little counter-intuitive to do this, but it puts it neat=
+ly under
+>> -# the virtualization menu.
+>> -source "drivers/vhost/Kconfig"
+>> -
+>>   endif # VIRTUALIZATION
+>> diff --git a/drivers/Kconfig b/drivers/Kconfig
+>> index 8befa53f43be..7a6d8b2b68b4 100644
+>> --- a/drivers/Kconfig
+>> +++ b/drivers/Kconfig
+>> @@ -138,6 +138,8 @@ source "drivers/virt/Kconfig"
+>>  =20
+>>   source "drivers/virtio/Kconfig"
+>>  =20
+>> +source "drivers/vhost/Kconfig"
+>> +
+>>   source "drivers/hv/Kconfig"
+>>  =20
+>>   source "drivers/xen/Kconfig"
+>> diff --git a/drivers/misc/mic/Kconfig b/drivers/misc/mic/Kconfig
+>> index b6841ba6d922..8f201d019f5a 100644
+>> --- a/drivers/misc/mic/Kconfig
+>> +++ b/drivers/misc/mic/Kconfig
+>> @@ -133,8 +133,4 @@ config VOP
+>>   	  OS and tools for MIC to use with this driver are available from
+>>   	  <http://software.intel.com/en-us/mic-developer>.
+>>  =20
+>> -if VOP
+>> -source "drivers/vhost/Kconfig.vringh"
+>> -endif
+>> -
+>>   endmenu
+>> diff --git a/drivers/net/caif/Kconfig b/drivers/net/caif/Kconfig
+>> index e74e2bb61236..9db0570c5beb 100644
+>> --- a/drivers/net/caif/Kconfig
+>> +++ b/drivers/net/caif/Kconfig
+>> @@ -58,8 +58,4 @@ config CAIF_VIRTIO
+>>   	---help---
+>>   	  The CAIF driver for CAIF over Virtio.
+>>  =20
+>> -if CAIF_VIRTIO
+>> -source "drivers/vhost/Kconfig.vringh"
+>> -endif
+>> -
+>>   endif # CAIF_DRIVERS
+>> diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
+>> index 3d03ccbd1adc..4aef10a54cd1 100644
+>> --- a/drivers/vhost/Kconfig
+>> +++ b/drivers/vhost/Kconfig
+>> @@ -1,8 +1,20 @@
+>>   # SPDX-License-Identifier: GPL-2.0-only
+>> +config VHOST_RING
+>> +	tristate
+>> +	help
+>> +	  This option is selected by any driver which needs to access
+>> +	  the host side of a virtio ring.
+>> +
+>> +menuconfig VHOST
+>> +	tristate "Host kernel accelerator for virtio (VHOST)"
+>> +	help
+>> +	  This option is selected by any driver which needs to access
+>> +	  the core of vhost.
+>> +if VHOST
+>> +
+> The description here is wrong, isn't it?
+> VHOST and VHOST_RING are no longer selected, right?
+
+
+For VHOST not currently.
+
+For VHOST_RING, it was selected by CAIF, VOP and VDPASIM.
+
+Thanks
+
+
+>
+>
+>>   config VHOST_NET
+>>   	tristate "Host kernel accelerator for virtio net"
+>>   	depends on NET && EVENTFD && (TUN || !TUN) && (TAP || !TAP)
+>> -	select VHOST
+>>   	---help---
+>>   	  This kernel module can be loaded in host kernel to accelerate
+>>   	  guest networking with virtio_net. Not to be confused with virtio_=
+net
+>> @@ -14,7 +26,6 @@ config VHOST_NET
+>>   config VHOST_SCSI
+>>   	tristate "VHOST_SCSI TCM fabric driver"
+>>   	depends on TARGET_CORE && EVENTFD
+>> -	select VHOST
+>>   	default n
+>>   	---help---
+>>   	Say M here to enable the vhost_scsi TCM fabric module
+>> @@ -24,7 +35,6 @@ config VHOST_VSOCK
+>>   	tristate "vhost virtio-vsock driver"
+>>   	depends on VSOCKETS && EVENTFD
+>>   	select VIRTIO_VSOCKETS_COMMON
+>> -	select VHOST
+>>   	default n
+>>   	---help---
+>>   	This kernel module can be loaded in the host kernel to provide AF_V=
+SOCK
+>> @@ -34,12 +44,6 @@ config VHOST_VSOCK
+>>   	To compile this driver as a module, choose M here: the module will =
+be called
+>>   	vhost_vsock.
+>>  =20
+>> -config VHOST
+>> -	tristate
+>> -	---help---
+>> -	  This option is selected by any driver which needs to access
+>> -	  the core of vhost.
+>> -
+>>   config VHOST_CROSS_ENDIAN_LEGACY
+>>   	bool "Cross-endian support for vhost"
+>>   	default n
+>> @@ -54,3 +58,4 @@ config VHOST_CROSS_ENDIAN_LEGACY
+>>   	  adds some overhead, it is disabled by default.
+>>  =20
+>>   	  If unsure, say "N".
+>> +endif
+>> diff --git a/drivers/vhost/Kconfig.vringh b/drivers/vhost/Kconfig.vrin=
+gh
+>> deleted file mode 100644
+>> index c1fe36a9b8d4..000000000000
+>> --- a/drivers/vhost/Kconfig.vringh
+>> +++ /dev/null
+>> @@ -1,6 +0,0 @@
+>> -# SPDX-License-Identifier: GPL-2.0-only
+>> -config VHOST_RING
+>> -	tristate
+>> -	---help---
+>> -	  This option is selected by any driver which needs to access
+>> -	  the host side of a virtio ring.
+>> --=20
+>> 2.20.1
 
