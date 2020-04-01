@@ -2,435 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA18B19B76F
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 23:12:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 343C719B77D
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 23:20:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732428AbgDAVMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 17:12:34 -0400
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:38853 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732337AbgDAVMd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 17:12:33 -0400
-X-Originating-IP: 209.85.222.48
-Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com [209.85.222.48])
-        (Authenticated sender: pshelar@ovn.org)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 93C8E60003
-        for <netdev@vger.kernel.org>; Wed,  1 Apr 2020 21:12:30 +0000 (UTC)
-Received: by mail-ua1-f48.google.com with SMTP id z7so369097uai.6
-        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 14:12:30 -0700 (PDT)
-X-Gm-Message-State: AGi0PubzBkI7iCgpEb5BuRwoaeTRMHJfXSnLx6GuGB42zWXQ6XxzDzlW
-        2fPycDs+LSFeZYPuz4bRnIQZm2i7vtDsPlZ/Lls=
-X-Google-Smtp-Source: APiQypK5BhNgiglkMGB+HQgrSkwnUl1KtM8CZj5jA9mdoM3v/Uw/w7qCMEwQnXHnUNU5BQlwc6FTrTdMcbO6EzlRWO4=
-X-Received: by 2002:ab0:2682:: with SMTP id t2mr282740uao.124.1585775548958;
- Wed, 01 Apr 2020 14:12:28 -0700 (PDT)
+        id S1732560AbgDAVUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 17:20:34 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:45593 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732357AbgDAVUe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 17:20:34 -0400
+Received: by mail-wr1-f66.google.com with SMTP id t7so1743535wrw.12;
+        Wed, 01 Apr 2020 14:20:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=cc:from:to:subject:message-id:date:user-agent:mime-version
+         :content-language;
+        bh=wE5IrcFyTU4EBSYuKo8VVt2iDVJGzIH5aU08VbBxBmU=;
+        b=G3yh+iglyB0XV8SURb3qngC383swlL9Ex8igoLzL60ZR75plIcwZ0s0iozcWbuPc5z
+         WfR5r/zcuMctq/+5bmCdcr3L8qP4Hg/bfI4nrLS3HHzH4Zi8r3uKK+xoUGH4FXeAdGY3
+         vJhndFug21av8wI8heN+YSjlrKQJPCzTcDenoqd4OH/CvfbmruSwdC1Ve60GH9FYfJSN
+         RgeUwICMF5XInYvrIqEZJV5+UAIfxYC5TK7KpVsLZXo/9CPszyELjqpPAOBTdOCa8+jX
+         RTJPaeVL3NsFa1/1ON4Jtm6+AhZdc0BqqPnAZxgQCkp0U0mh9xZEgQefd6XwRnfGaA+W
+         qtrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:cc:from:to:subject:message-id:date:user-agent
+         :mime-version:content-language;
+        bh=wE5IrcFyTU4EBSYuKo8VVt2iDVJGzIH5aU08VbBxBmU=;
+        b=lNNJORSaaX+Mqc7cme9SmpGV5IkFLAhee+SFpEYQPN/DOGDkqO/7AT3DFZDyl//XSQ
+         YCFJk+4acMzWm27ZD0TXX2SQcU12CpylIOr1luS0nNlXrRSuqu7QNsokJ+6BAmB1M0Oi
+         CQPQnGMDuC6Ybx9Zia9V+9tzyW0akdE8YqDVo39C8pAz+q0rRGsYlibusoaAcFblc/sd
+         ZThSxdAQuIWZv6hVRkpgrp+f0S4hSFDhdPTjiwgXKldpIqyZwIKmk0p27EdgrsYrwYZe
+         1TvZXCSmGWhmn2Wp1QnYBEYztjEVPZ5c3lId9Aggmn3c3AWl//btyXbfzLEJ4Onp7mCs
+         R5yw==
+X-Gm-Message-State: ANhLgQ0BZtyUSd1DLAVfGcDH7dBfpVobtFjjt2CZIh3XsOdOM9B+NJUL
+        rYGFOav4/Lik9p8Ny6kbo/s=
+X-Google-Smtp-Source: ADFU+vtmzMlG8HPbtuuzra9qEDWJkdSHD6IZ4c/JXjvG04onuzsy333B98RGa0xVBM3i98gThERtZQ==
+X-Received: by 2002:a5d:4085:: with SMTP id o5mr26427725wrp.327.1585776029213;
+        Wed, 01 Apr 2020 14:20:29 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:6000:3878:c820:d9e6:1e25? (p200300EA8F2960003878C820D9E61E25.dip0.t-ipconnect.de. [2003:ea:8f29:6000:3878:c820:d9e6:1e25])
+        by smtp.googlemail.com with ESMTPSA id y15sm4372861wrh.50.2020.04.01.14.20.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Apr 2020 14:20:28 -0700 (PDT)
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-module@vger.kernel.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Lucas De Marchi <lucas.demarchi@intel.com>,
+        Jessica Yu <jeyu@kernel.org>
+Subject: RFC: Handle hard module dependencies that are not symbol-based (r8169
+ + realtek)
+Message-ID: <f8e3f271-82df-165f-63f1-6df73ba3d59c@gmail.com>
+Date:   Wed, 1 Apr 2020 23:20:20 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-References: <1584969039-74113-1-git-send-email-xiangxia.m.yue@gmail.com>
- <CAOrHB_BZ2Sqjooc9u1osbrEsbL5w003CL54v_bd3YPcqkjOzjg@mail.gmail.com>
- <CAMDZJNV1+zA9EGRMDrZDBNxTg3fr+4ZeH7bcLgfVginx3p4Cww@mail.gmail.com>
- <CAOrHB_Bw1cUANoKe_1ZeGQkVVX6rj5YPTzzcNUjv3_KKRWehdQ@mail.gmail.com> <CAMDZJNWHaQ_fYPdjC0hhQZbr_vXReDXeA5TgFNHy8SG79SzU1g@mail.gmail.com>
-In-Reply-To: <CAMDZJNWHaQ_fYPdjC0hhQZbr_vXReDXeA5TgFNHy8SG79SzU1g@mail.gmail.com>
-From:   Pravin Shelar <pshelar@ovn.org>
-Date:   Wed, 1 Apr 2020 14:12:18 -0700
-X-Gmail-Original-Message-ID: <CAOrHB_AE11g1_giQwLq4B9U6yJ6awDE18iDvg15PtZDbQ3h5yg@mail.gmail.com>
-Message-ID: <CAOrHB_AE11g1_giQwLq4B9U6yJ6awDE18iDvg15PtZDbQ3h5yg@mail.gmail.com>
-Subject: Re: [PATCH net-next v1 1/3] net: openvswitch: expand the meters
- number supported
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        ovs dev <dev@openvswitch.org>, Andy Zhou <azhou@ovn.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/mixed;
+ boundary="------------4E4720F8156463A4A67A6B38"
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ok, thanks.
+This is a multi-part message in MIME format.
+--------------4E4720F8156463A4A67A6B38
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, Apr 1, 2020 at 3:50 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
->
-> On Tue, Mar 31, 2020 at 11:57 AM Pravin Shelar <pshelar@ovn.org> wrote:
-> >
-> > On Sun, Mar 29, 2020 at 5:35 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
-> > >
-> > > On Mon, Mar 30, 2020 at 12:46 AM Pravin Shelar <pshelar@ovn.org> wrote:
-> > > >
-> > > > On Sat, Mar 28, 2020 at 8:46 AM <xiangxia.m.yue@gmail.com> wrote:
-> > > > >
-> > > > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > > > >
-> > > > > In kernel datapath of Open vSwitch, there are only 1024
-> > > > > buckets of meter in one dp. If installing more than 1024
-> > > > > (e.g. 8192) meters, it may lead to the performance drop.
-> > > > > But in some case, for example, Open vSwitch used as edge
-> > > > > gateway, there should be 200,000+ at least, meters used for
-> > > > > IP address bandwidth limitation.
-> > > > >
-> > > > > [Open vSwitch userspace datapath has this issue too.]
-> > > > >
-> > > > > For more scalable meter, this patch expands the buckets
-> > > > > when necessary, so we can install more meters in the datapath.
-> > > > >
-> > > > > * Introducing the struct *dp_meter_instance*, it's easy to
-> > > > >   expand meter though change the *ti* point in the struct
-> > > > >   *dp_meter_table*.
-> > > > > * Using kvmalloc_array instead of kmalloc_array.
-> > > > >
-> > > > Thanks for working on this, I have couple of comments.
-> > > >
-> > > > > Cc: Pravin B Shelar <pshelar@ovn.org>
-> > > > > Cc: Andy Zhou <azhou@ovn.org>
-> > > > > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > > > > ---
-> > > > >  net/openvswitch/datapath.h |   2 +-
-> > > > >  net/openvswitch/meter.c    | 168 ++++++++++++++++++++++++++++++-------
-> > > > >  net/openvswitch/meter.h    |  17 +++-
-> > > > >  3 files changed, 153 insertions(+), 34 deletions(-)
-> > > > >
-> > > > > diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
-> > > > > index e239a46c2f94..785105578448 100644
-> > > > > --- a/net/openvswitch/datapath.h
-> > > > > +++ b/net/openvswitch/datapath.h
-> > > > > @@ -82,7 +82,7 @@ struct datapath {
-> > > > >         u32 max_headroom;
-> > > > >
-> > > > >         /* Switch meters. */
-> > > > > -       struct hlist_head *meters;
-> > > > > +       struct dp_meter_table *meters;
-> > > > >  };
-> > > > >
-> > > > >  /**
-> > > > > diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
-> > > > > index 5010d1ddd4bd..98003b201b45 100644
-> > > > > --- a/net/openvswitch/meter.c
-> > > > > +++ b/net/openvswitch/meter.c
-> > > > > @@ -47,40 +47,136 @@ static void ovs_meter_free(struct dp_meter *meter)
-> > > > >         kfree_rcu(meter, rcu);
-> > > > >  }
-> > > > >
-> > > > > -static struct hlist_head *meter_hash_bucket(const struct datapath *dp,
-> > > > > +static struct hlist_head *meter_hash_bucket(struct dp_meter_instance *ti,
-> > > > >                                             u32 meter_id)
-> > > > >  {
-> > > > > -       return &dp->meters[meter_id & (METER_HASH_BUCKETS - 1)];
-> > > > > +       u32 hash = jhash_1word(meter_id, ti->hash_seed);
-> > > > > +
-> > > > I do not see any need to hash meter-id, can you explain it.
-> > > >
-> > > > > +       return &ti->buckets[hash & (ti->n_buckets - 1)];
-> > > > >  }
-> > > > >
-> > > > >  /* Call with ovs_mutex or RCU read lock. */
-> > > > > -static struct dp_meter *lookup_meter(const struct datapath *dp,
-> > > > > +static struct dp_meter *lookup_meter(const struct dp_meter_table *tbl,
-> > > > >                                      u32 meter_id)
-> > > > >  {
-> > > > > +       struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
-> > > > >         struct dp_meter *meter;
-> > > > >         struct hlist_head *head;
-> > > > >
-> > > > > -       head = meter_hash_bucket(dp, meter_id);
-> > > > > -       hlist_for_each_entry_rcu(meter, head, dp_hash_node,
-> > > > > -                               lockdep_ovsl_is_held()) {
-> > > > > +       head = meter_hash_bucket(ti, meter_id);
-> > > > > +       hlist_for_each_entry_rcu(meter, head, hash_node[ti->node_ver],
-> > > > > +                                lockdep_ovsl_is_held()) {
-> > > > >                 if (meter->id == meter_id)
-> > > > >                         return meter;
-> > > > >         }
-> > > > > +
-> > > > This patch is expanding meter table linearly with number meters added
-> > > > to datapath. so I do not see need to have hash table. it can be a
-> > > > simple array. This would also improve lookup efficiency.
-> > > > For hash collision we could find next free slot in array. let me know
-> > > > what do you think about this approach.
-> > > Hi Pravin
-> > > If we use the simple array, when inserting the meter, for hash collision, we can
-> > > find next free slot, but one case, when there are many meters in the array.
-> > > we may find many slot for the free slot.
-> > > And when we lookup the meter, for hash collision, we may find many
-> > > array slots, and
-> > > then find it, or that meter does not exist in the array, In that case,
-> > > there may be a lookup performance
-> > > drop.
-> > >
-> > I was thinking that users can insure that there are no hash collision,
-> > but time complexity of negative case is expensive. so I am fine with
-> > the hash table.
-> Hi Pravi
-> I check again the meter implementation of ovs, ovs-vswitchd use the id-pool to
-> get a valid meter-id which passed to kernel, so there is no hash collision. You
-> are right. we use the single array is the better solution.
-> > > For hash meter-id in meter_hash_bucket, I am not 100% sure it is
-> > > useful. it just update
-> > > hash_seed when expand meters. For performance, we can remove it. Thanks.
-> > ok.
-> >
-> > > > >         return NULL;
-> > > > >  }
-> > > > >
-> > > > > -static void attach_meter(struct datapath *dp, struct dp_meter *meter)
-> > > > > +static struct dp_meter_instance *dp_meter_instance_alloc(const int size)
-> > > > > +{
-> > > > > +       struct dp_meter_instance *ti;
-> > > > > +       int i;
-> > > > > +
-> > > > > +       ti = kmalloc(sizeof(*ti), GFP_KERNEL);
-> > > > > +       if (!ti)
-> > > > > +               return NULL;
-> > > > > +
-> > > > > +       ti->buckets = kvmalloc_array(size, sizeof(struct hlist_head),
-> > > > > +                                    GFP_KERNEL);
-> > > > > +       if (!ti->buckets) {
-> > > > > +               kfree(ti);
-> > > > > +               return NULL;
-> > > > > +       }
-> > > > > +
-> > > > > +       for (i = 0; i < size; i++)
-> > > > > +               INIT_HLIST_HEAD(&ti->buckets[i]);
-> > > > > +
-> > > > > +       ti->n_buckets = size;
-> > > > > +       ti->node_ver = 0;
-> > > > > +       get_random_bytes(&ti->hash_seed, sizeof(u32));
-> > > > > +
-> > > > > +       return ti;
-> > > > > +}
-> > > > > +
-> > > > > +static void dp_meter_instance_free_rcu(struct rcu_head *rcu)
-> > > > >  {
-> > > > > -       struct hlist_head *head = meter_hash_bucket(dp, meter->id);
-> > > > > +       struct dp_meter_instance *ti;
-> > > > >
-> > > > > -       hlist_add_head_rcu(&meter->dp_hash_node, head);
-> > > > > +       ti = container_of(rcu, struct dp_meter_instance, rcu);
-> > > > > +       kvfree(ti->buckets);
-> > > > > +       kfree(ti);
-> > > > >  }
-> > > > >
-> > > > > -static void detach_meter(struct dp_meter *meter)
-> > > > > +static void dp_meter_instance_insert(struct dp_meter_instance *ti,
-> > > > > +                                    struct dp_meter *meter)
-> > > > > +{
-> > > > > +       struct hlist_head *head = meter_hash_bucket(ti, meter->id);
-> > > > > +
-> > > > > +       hlist_add_head_rcu(&meter->hash_node[ti->node_ver], head);
-> > > > > +}
-> > > > > +
-> > > > > +static void dp_meter_instance_remove(struct dp_meter_instance *ti,
-> > > > > +                                    struct dp_meter *meter)
-> > > > >  {
-> > > > > +       hlist_del_rcu(&meter->hash_node[ti->node_ver]);
-> > > > > +}
-> > > > > +
-> > > > > +static struct dp_meter_instance *
-> > > > > +dp_meter_instance_expand(struct dp_meter_instance *ti)
-> > > > > +{
-> > > > > +       struct dp_meter_instance *new_ti;
-> > > > > +       int i;
-> > > > > +
-> > > > > +       new_ti = dp_meter_instance_alloc(ti->n_buckets * 2);
-> > > > > +       if (!new_ti)
-> > > > > +               return NULL;
-> > > > > +
-> > > > > +       new_ti->node_ver = !ti->node_ver;
-> > > > > +
-> > > > > +       for (i = 0; i < ti->n_buckets; i++) {
-> > > > > +               struct hlist_head *head = &ti->buckets[i];
-> > > > > +               struct dp_meter *meter;
-> > > > > +
-> > > > > +               hlist_for_each_entry_rcu(meter, head, hash_node[ti->node_ver],
-> > > > > +                                        lockdep_ovsl_is_held())
-> > > > > +                       dp_meter_instance_insert(new_ti, meter);
-> > > > > +       }
-> > > > > +
-> > > > > +       return new_ti;
-> > > > > +}
-> > > > > +
-> > > > > +static void attach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
-> > > > > +{
-> > > > > +       struct dp_meter_instance *new_ti;
-> > > > > +       struct dp_meter_instance *ti;
-> > > > > +
-> > > > > +       ti = rcu_dereference_ovsl(tbl->ti);
-> > > > > +       dp_meter_instance_insert(ti, meter);
-> > > > > +
-> > > > > +       /* operate the counter safely, because called with ovs_lock. */
-> > > > > +       tbl->count++;
-> > > > > +
-> > > > > +       if (tbl->count > ti->n_buckets) {
-> > > > > +               new_ti = dp_meter_instance_expand(ti);
-> > > > > +
-> > > >
-> > > >
-> > > > > +               if (new_ti) {
-> > > > > +                       rcu_assign_pointer(tbl->ti, new_ti);
-> > > > > +                       call_rcu(&ti->rcu, dp_meter_instance_free_rcu);
-> > > > > +               }
-> > > > > +       }
-> > > > > +}
-> > > > > +
-> > > > > +static void detach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
-> > > > > +{
-> > > > > +       struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
-> > > > > +
-> > > > >         ASSERT_OVSL();
-> > > > > -       if (meter)
-> > > > > -               hlist_del_rcu(&meter->dp_hash_node);
-> > > > > +       if (meter) {
-> > > > > +               /* operate the counter safely, because called with ovs_lock. */
-> > > > > +               tbl->count--;
-> > > > > +               dp_meter_instance_remove(ti, meter);
-> > > > > +       }
-> > > > >  }
-> > > > >
-> > > > >  static struct sk_buff *
-> > > > > @@ -303,9 +399,9 @@ static int ovs_meter_cmd_set(struct sk_buff *skb, struct genl_info *info)
-> > > > >         meter_id = nla_get_u32(a[OVS_METER_ATTR_ID]);
-> > > > >
-> > > > >         /* Cannot fail after this. */
-> > > > > -       old_meter = lookup_meter(dp, meter_id);
-> > > > > -       detach_meter(old_meter);
-> > > > > -       attach_meter(dp, meter);
-> > > > > +       old_meter = lookup_meter(dp->meters, meter_id);
-> > > > > +       detach_meter(dp->meters, old_meter);
-> > > > > +       attach_meter(dp->meters, meter);
-> > > > >         ovs_unlock();
-> > > > >
-> > > > >         /* Build response with the meter_id and stats from
-> > > > > @@ -365,7 +461,7 @@ static int ovs_meter_cmd_get(struct sk_buff *skb, struct genl_info *info)
-> > > > >         }
-> > > > >
-> > > > >         /* Locate meter, copy stats. */
-> > > > > -       meter = lookup_meter(dp, meter_id);
-> > > > > +       meter = lookup_meter(dp->meters, meter_id);
-> > > > >         if (!meter) {
-> > > > >                 err = -ENOENT;
-> > > > >                 goto exit_unlock;
-> > > > > @@ -416,13 +512,13 @@ static int ovs_meter_cmd_del(struct sk_buff *skb, struct genl_info *info)
-> > > > >                 goto exit_unlock;
-> > > > >         }
-> > > > >
-> > > > > -       old_meter = lookup_meter(dp, meter_id);
-> > > > > +       old_meter = lookup_meter(dp->meters, meter_id);
-> > > > >         if (old_meter) {
-> > > > >                 spin_lock_bh(&old_meter->lock);
-> > > > >                 err = ovs_meter_cmd_reply_stats(reply, meter_id, old_meter);
-> > > > >                 WARN_ON(err);
-> > > > >                 spin_unlock_bh(&old_meter->lock);
-> > > > > -               detach_meter(old_meter);
-> > > > > +               detach_meter(dp->meters, old_meter);
-> > > > >         }
-> > > > >         ovs_unlock();
-> > > > >         ovs_meter_free(old_meter);
-> > > > > @@ -452,7 +548,7 @@ bool ovs_meter_execute(struct datapath *dp, struct sk_buff *skb,
-> > > > >         int i, band_exceeded_max = -1;
-> > > > >         u32 band_exceeded_rate = 0;
-> > > > >
-> > > > > -       meter = lookup_meter(dp, meter_id);
-> > > > > +       meter = lookup_meter(dp->meters, meter_id);
-> > > > >         /* Do not drop the packet when there is no meter. */
-> > > > >         if (!meter)
-> > > > >                 return false;
-> > > > > @@ -570,32 +666,44 @@ struct genl_family dp_meter_genl_family __ro_after_init = {
-> > > > >
-> > > > >  int ovs_meters_init(struct datapath *dp)
-> > > > >  {
-> > > > > -       int i;
-> > > > > +       struct dp_meter_instance *ti;
-> > > > > +       struct dp_meter_table *tbl;
-> > > > >
-> > > > > -       dp->meters = kmalloc_array(METER_HASH_BUCKETS,
-> > > > > -                                  sizeof(struct hlist_head), GFP_KERNEL);
-> > > > > +       tbl = kmalloc(sizeof(*tbl), GFP_KERNEL);
-> > > > > +       if (!tbl)
-> > > > > +               return -ENOMEM;
-> > > > >
-> > > > > -       if (!dp->meters)
-> > > > > +       tbl->count = 0;
-> > > > > +
-> > > > > +       ti = dp_meter_instance_alloc(METER_HASH_BUCKETS);
-> > > > > +       if (!ti) {
-> > > > > +               kfree(tbl);
-> > > > >                 return -ENOMEM;
-> > > > > +       }
-> > > > >
-> > > > > -       for (i = 0; i < METER_HASH_BUCKETS; i++)
-> > > > > -               INIT_HLIST_HEAD(&dp->meters[i]);
-> > > > > +       rcu_assign_pointer(tbl->ti, ti);
-> > > > > +       dp->meters = tbl;
-> > > > >
-> > > > >         return 0;
-> > > > >  }
-> > > > >
-> > > > >  void ovs_meters_exit(struct datapath *dp)
-> > > > >  {
-> > > > > +       struct dp_meter_table *tbl = dp->meters;
-> > > > > +       struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
-> > > > >         int i;
-> > > > >
-> > > > > -       for (i = 0; i < METER_HASH_BUCKETS; i++) {
-> > > > > -               struct hlist_head *head = &dp->meters[i];
-> > > > > +       for (i = 0; i < ti->n_buckets; i++) {
-> > > > > +               struct hlist_head *head = &ti->buckets[i];
-> > > > >                 struct dp_meter *meter;
-> > > > >                 struct hlist_node *n;
-> > > > >
-> > > > > -               hlist_for_each_entry_safe(meter, n, head, dp_hash_node)
-> > > > > -                       kfree(meter);
-> > > > > +               hlist_for_each_entry_safe(meter, n, head,
-> > > > > +                                         hash_node[ti->node_ver])
-> > > > > +                       ovs_meter_free(meter);
-> > > > >         }
-> > > > >
-> > > > > -       kfree(dp->meters);
-> > > > > +       kvfree(ti->buckets);
-> > > > > +       kfree(ti);
-> > > > > +       kfree(tbl);
-> > > > >  }
-> > > > > diff --git a/net/openvswitch/meter.h b/net/openvswitch/meter.h
-> > > > > index f645913870bd..bc84796d7d4d 100644
-> > > > > --- a/net/openvswitch/meter.h
-> > > > > +++ b/net/openvswitch/meter.h
-> > > > > @@ -30,9 +30,7 @@ struct dp_meter_band {
-> > > > >  struct dp_meter {
-> > > > >         spinlock_t lock;    /* Per meter lock */
-> > > > >         struct rcu_head rcu;
-> > > > > -       struct hlist_node dp_hash_node; /*Element in datapath->meters
-> > > > > -                                        * hash table.
-> > > > > -                                        */
-> > > > > +       struct hlist_node hash_node[2];
-> > > > >         u32 id;
-> > > > >         u16 kbps:1, keep_stats:1;
-> > > > >         u16 n_bands;
-> > > > > @@ -42,6 +40,19 @@ struct dp_meter {
-> > > > >         struct dp_meter_band bands[];
-> > > > >  };
-> > > > >
-> > > > > +struct dp_meter_instance {
-> > > > > +       struct hlist_head *buckets;
-> > > > > +       struct rcu_head rcu;
-> > > > > +       u32 n_buckets;
-> > > > > +       u32 hash_seed;
-> > > > > +       u8 node_ver;
-> > > > > +};
-> > > > > +
-> > > > > +struct dp_meter_table {
-> > > > > +       struct dp_meter_instance __rcu *ti;
-> > > > > +       u32 count;
-> > > > > +};
-> > > > > +
-> > > > >  extern struct genl_family dp_meter_genl_family;
-> > > > >  int ovs_meters_init(struct datapath *dp);
-> > > > >  void ovs_meters_exit(struct datapath *dp);
-> > > > > --
-> > > > > 2.23.0
-> > > > >
-> > >
-> > >
-> > >
-> > > --
-> > > Best regards, Tonghao
->
->
->
-> --
-> Best regards, Tonghao
+Currently we have no way to express a hard dependency that is not
+a symbol-based dependency (symbol defined in module A is used in
+module B). Use case:
+Network driver ND uses callbacks in the dedicated PHY driver DP
+for the integrated PHY (namely read_page() and write_page() in
+struct phy_driver). If DP can't be loaded (e.g. because ND is in
+initramfs but DP is not), then phylib will use the generic
+PHY driver GP. GP doesn't implement certain callbacks that are
+needed by ND, therefore ND's probe has to bail out with an error
+once it detects that DP is not loaded.
+We have this problem with driver r8169 having such a dependency
+on PHY driver realtek. Some distributions have tools for
+configuring initramfs that consider hard dependencies based on
+depmod output. Means so far somebody can add r8169.ko to initramfs,
+and neither human being nor machine will have an idea that
+realtek.ko needs to be added too.
+
+Attached patch set (two patches for kmod, one for the kernel)
+allows to express this hard dependency of ND from DP. depmod will
+read this dependency information and treat it like a symbol-based
+dependency. As a result tools e.g. populating initramfs can
+consider the dependency and place DP in initramfs if ND is in
+initramfs. On my system the patch set does the trick when
+adding following line to r8169_main.c:
+MODULE_HARDDEP("realtek");
+
+I'm interested in your opinion on the patches, and whether you
+maybe have a better idea how to solve the problem.
+
+Heiner
+
+--------------4E4720F8156463A4A67A6B38
+Content-Type: text/plain; charset=UTF-8;
+ name="0001-depmod-add-helper-mod_add_dep_unique.patch"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="0001-depmod-add-helper-mod_add_dep_unique.patch"
+
+RnJvbSAyOTBlN2RlZTlmNjA0M2Q2NzdmMDhkYzA2ZTYxMmUxM2VlMGQyZDgzIE1vbiBTZXAg
+MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBIZWluZXIgS2FsbHdlaXQgPGhrYWxsd2VpdDFAZ21h
+aWwuY29tPgpEYXRlOiBUdWUsIDMxIE1hciAyMDIwIDIzOjAyOjQ3ICswMjAwClN1YmplY3Q6
+IFtQQVRDSCAxLzJdIGRlcG1vZDogYWRkIGhlbHBlciBtb2RfYWRkX2RlcF91bmlxdWUKCkNy
+ZWF0ZSBuZXcgaGVscGVyIG1vZF9hZGRfZGVwX3VuaXF1ZSgpLCBuZXh0IHBhdGNoIGluIHRo
+aXMgc2VyaWVzIHdpbGwKYWxzbyBtYWtlIHVzZSBvZiBpdC4KClNpZ25lZC1vZmYtYnk6IEhl
+aW5lciBLYWxsd2VpdCA8aGthbGx3ZWl0MUBnbWFpbC5jb20+Ci0tLQogdG9vbHMvZGVwbW9k
+LmMgfCAyNiArKysrKysrKysrKysrKysrKysrLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDE5
+IGluc2VydGlvbnMoKyksIDcgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvdG9vbHMvZGVw
+bW9kLmMgYi90b29scy9kZXBtb2QuYwppbmRleCA4NzVlMzE0Li41NDE5ZDRkIDEwMDY0NAot
+LS0gYS90b29scy9kZXBtb2QuYworKysgYi90b29scy9kZXBtb2QuYwpAQCAtOTA3LDIzICs5
+MDcsMzUgQEAgc3RhdGljIHZvaWQgbW9kX2ZyZWUoc3RydWN0IG1vZCAqbW9kKQogCWZyZWUo
+bW9kKTsKIH0KIAotc3RhdGljIGludCBtb2RfYWRkX2RlcGVuZGVuY3koc3RydWN0IG1vZCAq
+bW9kLCBzdHJ1Y3Qgc3ltYm9sICpzeW0pCitzdGF0aWMgaW50IG1vZF9hZGRfZGVwX3VuaXF1
+ZShzdHJ1Y3QgbW9kICptb2QsIHN0cnVjdCBtb2QgKmRlcCkKIHsKIAlpbnQgZXJyOwogCi0J
+REJHKCIlcyBkZXBlbmRzIG9uICVzICVzXG4iLCBtb2QtPnBhdGgsIHN5bS0+bmFtZSwKLQkg
+ICAgc3ltLT5vd25lciAhPSBOVUxMID8gc3ltLT5vd25lci0+cGF0aCA6ICIodW5rbm93biki
+KTsKLQotCWlmIChzeW0tPm93bmVyID09IE5VTEwpCisJaWYgKGRlcCA9PSBOVUxMKQogCQly
+ZXR1cm4gMDsKIAotCWVyciA9IGFycmF5X2FwcGVuZF91bmlxdWUoJm1vZC0+ZGVwcywgc3lt
+LT5vd25lcik7CisJZXJyID0gYXJyYXlfYXBwZW5kX3VuaXF1ZSgmbW9kLT5kZXBzLCBkZXAp
+OwogCWlmIChlcnIgPT0gLUVFWElTVCkKIAkJcmV0dXJuIDA7CiAJaWYgKGVyciA8IDApCiAJ
+CXJldHVybiBlcnI7CiAKLQlzeW0tPm93bmVyLT51c2VycysrOworCWRlcC0+dXNlcnMrKzsK
+KworCXJldHVybiAxOworfQorCitzdGF0aWMgaW50IG1vZF9hZGRfZGVwZW5kZW5jeShzdHJ1
+Y3QgbW9kICptb2QsIHN0cnVjdCBzeW1ib2wgKnN5bSkKK3sKKwlpbnQgZXJyOworCisJREJH
+KCIlcyBkZXBlbmRzIG9uICVzICVzXG4iLCBtb2QtPnBhdGgsIHN5bS0+bmFtZSwKKwkgICAg
+c3ltLT5vd25lciAhPSBOVUxMID8gc3ltLT5vd25lci0+cGF0aCA6ICIodW5rbm93bikiKTsK
+KworCWVyciA9IG1vZF9hZGRfZGVwX3VuaXF1ZShtb2QsIHN5bS0+b3duZXIpOworCWlmIChl
+cnIgPD0gMCkKKwkJcmV0dXJuIGVycjsKKwogCVNIT1coIiVzIG5lZWRzIFwiJXNcIjogJXNc
+biIsIG1vZC0+cGF0aCwgc3ltLT5uYW1lLCBzeW0tPm93bmVyLT5wYXRoKTsKIAlyZXR1cm4g
+MDsKIH0KLS0gCjIuMjYuMAoK
+--------------4E4720F8156463A4A67A6B38
+Content-Type: text/plain; charset=UTF-8;
+ name="0001-module-add-MODULE_HARDDEP.patch"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="0001-module-add-MODULE_HARDDEP.patch"
+
+RnJvbSBiMTJmYTBkODViMjFkODRjZGY0NTA5YzUwNDhjNjdlMTc5MTRlYjI4IE1vbiBTZXAg
+MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBIZWluZXIgS2FsbHdlaXQgPGhrYWxsd2VpdDFAZ21h
+aWwuY29tPgpEYXRlOiBNb24sIDMwIE1hciAyMDIwIDE3OjEyOjQ0ICswMjAwClN1YmplY3Q6
+IFtQQVRDSF0gbW9kdWxlOiBhZGQgTU9EVUxFX0hBUkRERVAKCkN1cnJlbnRseSB3ZSBoYXZl
+IG5vIHdheSB0byBleHByZXNzIGEgaGFyZCBkZXBlbmRlbmN5IHRoYXQgaXMgbm90IGEKc3lt
+Ym9sLWJhc2VkIGRlcGVuZGVuY3kgKHN5bWJvbCBkZWZpbmVkIGluIG1vZHVsZSBBIGlzIHVz
+ZWQgaW4KbW9kdWxlIEIpLiBVc2UgY2FzZToKTmV0d29yayBkcml2ZXIgTkQgdXNlcyBjYWxs
+YmFja3MgaW4gdGhlIGRlZGljYXRlZCBQSFkgZHJpdmVyIERQCmZvciB0aGUgaW50ZWdyYXRl
+ZCBQSFkuIElmIERQIGNhbid0IGJlIGxvYWRlZCAoZS5nLiBiZWNhdXNlIE5ECmlzIGluIGlu
+aXRyYW1mcyBidXQgRFAgaXMgbm90KSwgdGhlbiBwaHlsaWIgd2lsbCBsb2FkIHRoZSBnZW5l
+cmljClBIWSBkcml2ZXIgR1AuIEdQIGRvZXNuJ3QgaW1wbGVtZW50IGNlcnRhaW4gY2FsbGJh
+Y2tzIHRoYXQgYXJlCnVzZWQgYnkgTkQsIHRoZXJlZm9yZSBORCdzIHByb2JlIGhhcyB0byBi
+YWlsIG91dCB3aXRoIGFuIGVycm9yCm9uY2UgaXQgZGV0ZWN0cyB0aGF0IERQIGlzIG5vdCBs
+b2FkZWQuClRoaXMgcGF0Y2ggYWxsb3dzIHRvIGV4cHJlc3MgdGhpcyBoYXJkIGRlcGVuZGVu
+Y3kgb2YgTkQgZnJvbSBEUC4KZGVwbW9kIHdpbGwgcmVhZCB0aGlzIGRlcGVuZGVuY3kgaW5m
+b3JtYXRpb24gYW5kIHRyZWF0IGl0IGxpa2UKYSBzeW1ib2wtYmFzZWQgZGVwZW5kZW5jeS4g
+QXMgYSByZXN1bHQgdG9vbHMgZS5nLiBwb3B1bGF0aW5nCmluaXRyYW1mcyBjYW4gY29uc2lk
+ZXIgdGhlIGRlcGVuZGVuY3kgYW5kIHBsYWNlIERQIGluIGluaXRyYW1mcwppZiBORCBpcyBp
+biBpbml0cmFtZnMuCgpTaWduZWQtb2ZmLWJ5OiBIZWluZXIgS2FsbHdlaXQgPGhrYWxsd2Vp
+dDFAZ21haWwuY29tPgotLS0KIGluY2x1ZGUvbGludXgvbW9kdWxlLmggfCA1ICsrKysrCiAx
+IGZpbGUgY2hhbmdlZCwgNSBpbnNlcnRpb25zKCspCgpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9s
+aW51eC9tb2R1bGUuaCBiL2luY2x1ZGUvbGludXgvbW9kdWxlLmgKaW5kZXggMWFkMzkzZTYy
+Li5mMzhkNDEwN2YgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvbGludXgvbW9kdWxlLmgKKysrIGIv
+aW5jbHVkZS9saW51eC9tb2R1bGUuaApAQCAtMTY5LDYgKzE2OSwxMSBAQCBleHRlcm4gdm9p
+ZCBjbGVhbnVwX21vZHVsZSh2b2lkKTsKICAqLwogI2RlZmluZSBNT0RVTEVfU09GVERFUChf
+c29mdGRlcCkgTU9EVUxFX0lORk8oc29mdGRlcCwgX3NvZnRkZXApCiAKKy8qIEhhcmQgbW9k
+dWxlIGRlcGVuZGVuY2llcyB0aGF0IGFyZSBub3QgY29kZSBkZXBlbmRlbmNpZXMKKyAqIEV4
+YW1wbGU6IE1PRFVMRV9IQVJEREVQKCJtb2R1bGUtZm9vIG1vZHVsZS1iYXIiKQorICovCisj
+ZGVmaW5lIE1PRFVMRV9IQVJEREVQKF9oYXJkZGVwKSBNT0RVTEVfSU5GTyhoYXJkZGVwLCBf
+aGFyZGRlcCkKKwogLyoKICAqIE1PRFVMRV9GSUxFIGlzIHVzZWQgZm9yIGdlbmVyYXRpbmcg
+bW9kdWxlcy5idWlsdGluCiAgKiBTbywgbWFrZSBpdCBuby1vcCB3aGVuIHRoaXMgaXMgYmVp
+bmcgYnVpbHQgYXMgYSBtb2R1bGUKLS0gCjIuMjYuMAoK
+--------------4E4720F8156463A4A67A6B38
+Content-Type: text/plain; charset=UTF-8;
+ name="0002-depmod-add-depmod_load_harddeps.patch"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="0002-depmod-add-depmod_load_harddeps.patch"
+
+RnJvbSBhZjNhMjU4MzNhMTYwZTAyOTQ0MWVhZjVhOTNmN2M4NjI1NTQ0Mjk2IE1vbiBTZXAg
+MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBIZWluZXIgS2FsbHdlaXQgPGhrYWxsd2VpdDFAZ21h
+aWwuY29tPgpEYXRlOiBXZWQsIDEgQXByIDIwMjAgMjI6NDI6NTUgKzAyMDAKU3ViamVjdDog
+W1BBVENIIDIvMl0gZGVwbW9kOiBhZGQgZGVwbW9kX2xvYWRfaGFyZGRlcHMKCkxvYWQgZXhw
+bGljaXRseSBkZWNsYXJlZCBoYXJkIGRlcGVuZGVuY3kgaW5mb3JtYXRpb24gZnJvbSBtb2R1
+bGVzIGFuZAphZGQgaXQgdG8gdGhlIHN5bWJvbC1kZXJpdmVkIGRlcGVuZGVuY2llcy4gVGhp
+cyB3aWxsIGFsbG93CmRlcG1vZC1iYXNlZCB0b29scyB0byBjb25zaWRlciBoYXJkIGRlcGVu
+ZGVuY2llcyB0aGF0IGFyZSBub3QgY29kZQpkZXBlbmRlbmNpZXMuCgpTaWduZWQtb2ZmLWJ5
+OiBIZWluZXIgS2FsbHdlaXQgPGhrYWxsd2VpdDFAZ21haWwuY29tPgotLS0KIHRvb2xzL2Rl
+cG1vZC5jIHwgMzggKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysKIDEg
+ZmlsZSBjaGFuZ2VkLCAzOCBpbnNlcnRpb25zKCspCgpkaWZmIC0tZ2l0IGEvdG9vbHMvZGVw
+bW9kLmMgYi90b29scy9kZXBtb2QuYwppbmRleCA1NDE5ZDRkLi41NzcxZGM5IDEwMDY0NAot
+LS0gYS90b29scy9kZXBtb2QuYworKysgYi90b29scy9kZXBtb2QuYwpAQCAtMTUyMiw2ICsx
+NTIyLDQxIEBAIHN0YXRpYyBzdHJ1Y3Qgc3ltYm9sICpkZXBtb2Rfc3ltYm9sX2ZpbmQoY29u
+c3Qgc3RydWN0IGRlcG1vZCAqZGVwbW9kLAogCXJldHVybiBoYXNoX2ZpbmQoZGVwbW9kLT5z
+eW1ib2xzLCBuYW1lKTsKIH0KIAorc3RhdGljIHZvaWQgZGVwbW9kX2xvYWRfaGFyZGRlcHMo
+c3RydWN0IGRlcG1vZCAqZGVwbW9kLCBzdHJ1Y3QgbW9kICptb2QpCit7CisKKwlzdHJ1Y3Qg
+a21vZF9saXN0ICpsOworCisJa21vZF9saXN0X2ZvcmVhY2gobCwgbW9kLT5pbmZvX2xpc3Qp
+IHsKKwkJY29uc3QgY2hhciAqa2V5ID0ga21vZF9tb2R1bGVfaW5mb19nZXRfa2V5KGwpOwor
+CQljb25zdCBjaGFyICpkZXBfbmFtZTsKKwkJc3RydWN0IG1vZCAqZGVwOworCQljaGFyICp2
+YWx1ZTsKKworCQlpZiAoIXN0cmVxKGtleSwgImhhcmRkZXAiKSkKKwkJCWNvbnRpbnVlOwor
+CisJCXZhbHVlID0gc3RyZHVwKGttb2RfbW9kdWxlX2luZm9fZ2V0X3ZhbHVlKGwpKTsKKwkJ
+aWYgKHZhbHVlID09IE5VTEwpCisJCQlyZXR1cm47CisKKwkJZGVwX25hbWUgPSBzdHJ0b2so
+dmFsdWUsICIgXHQiKTsKKworCQl3aGlsZSAoZGVwX25hbWUpIHsKKwkJCWRlcCA9IGhhc2hf
+ZmluZChkZXBtb2QtPm1vZHVsZXNfYnlfbmFtZSwgZGVwX25hbWUpOworCQkJaWYgKGRlcCkK
+KwkJCQltb2RfYWRkX2RlcF91bmlxdWUobW9kLCBkZXApOworCQkJZWxzZQorCQkJCVdSTigi
+aGFyZGRlcDogJXM6IHVua25vd24gZGVwZW5kZW5jeSAlc1xuIiwKKwkJCQkgICAgbW9kLT5t
+b2RuYW1lLCBkZXBfbmFtZSk7CisKKwkJCWRlcF9uYW1lID0gc3RydG9rKE5VTEwsICIgXHQi
+KTsKKwkJfQorCisJCWZyZWUodmFsdWUpOworCX0KK30KKwogc3RhdGljIGludCBkZXBtb2Rf
+bG9hZF9tb2R1bGVzKHN0cnVjdCBkZXBtb2QgKmRlcG1vZCkKIHsKIAlzdHJ1Y3QgbW9kICoq
+aXRyLCAqKml0cl9lbmQ7CkBAIC0xNTY5LDYgKzE2MDQsOSBAQCBzdGF0aWMgaW50IGRlcG1v
+ZF9sb2FkX21vZHVsZV9kZXBlbmRlbmNpZXMoc3RydWN0IGRlcG1vZCAqZGVwbW9kLCBzdHJ1
+Y3QgbW9kICptbwogCXN0cnVjdCBrbW9kX2xpc3QgKmw7CiAKIAlEQkcoImRvIGRlcGVuZGVu
+Y2llcyBvZiAlc1xuIiwgbW9kLT5wYXRoKTsKKworCWRlcG1vZF9sb2FkX2hhcmRkZXBzKGRl
+cG1vZCwgbW9kKTsKKwogCWttb2RfbGlzdF9mb3JlYWNoKGwsIG1vZC0+ZGVwX3N5bV9saXN0
+KSB7CiAJCWNvbnN0IGNoYXIgKm5hbWUgPSBrbW9kX21vZHVsZV9kZXBlbmRlbmN5X3N5bWJv
+bF9nZXRfc3ltYm9sKGwpOwogCQl1aW50NjRfdCBjcmMgPSBrbW9kX21vZHVsZV9kZXBlbmRl
+bmN5X3N5bWJvbF9nZXRfY3JjKGwpOwotLSAKMi4yNi4wCgo=
+--------------4E4720F8156463A4A67A6B38--
