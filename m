@@ -2,113 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D5A9019B6AE
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 22:00:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 115AC19B6C4
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 22:12:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732860AbgDAUAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 16:00:32 -0400
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:40604 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732385AbgDAUAb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 16:00:31 -0400
-Received: by mail-qv1-f68.google.com with SMTP id bp12so419447qvb.7
-        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 13:00:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8NcRHCtOSM5adY4o2+jx12O7LZxVQWgfHCad3CXRytE=;
-        b=BAsRigWV8hDF9XHP74IIOXGezxspmhMqv5XAIxtP3AsaVZynMYlW5MQszuumJ9Cr2r
-         UZn9C/R58JvfULwcGZU73403qN3fdROxZjryS/LeJl8OS7cT7+uLOQsMQA6BucS6OrAJ
-         uUz9zfxuZhLeefX9vZ+k6DX1YOC/1RVtVNWgrsbtCBgtMyl27k1b0gHKq//4ATCdAZf1
-         GkmnaPLRaAgvHamFY+zxf9HDUQxhuOxp7dCt14B+v8FMUexSxtyegssEX+EYZVPC30yJ
-         /STmxpqA8UVWxjBIWyC2rLnPGKrMwCZ0AiRBfJtxvrzgspfj9S8UNFPrE5h2MPf0Uopm
-         TIsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8NcRHCtOSM5adY4o2+jx12O7LZxVQWgfHCad3CXRytE=;
-        b=Quy5UYHsC6t0H8fPuTgAWEFIsd6sNYmTd8xZpSYBlvkrbbNAzuwluP9k5YA6KYQyRN
-         kGJzZnkEn/vVuMkpxh8pTKvQOBhA8VnvXjfPzHy3KekTw999O0/UhLSvovLa1g+0u15j
-         qzu4NY91Pqj8eSi7YQbYDYEjjwNjHrSvj1V20LnxFu+xQFPUkoj+EViSBRFHq3x8Yi2a
-         CjEYPza//i9yVPmwDTm/9Ox+Uq868TrMjBukNdiGlDdafrkkEK5i8NC0vpbyBCdeyWTq
-         NbJR6jxrvVKDAw70HdrW6nvPHB7+3dcliPsPdHynDSfbQDCX2zqTByXtMX++/It+2HI9
-         ma3A==
-X-Gm-Message-State: ANhLgQ1FZkvSZ8l9+KcX+YQs8wSjvHn+7Il7T1lUHh4fs6ZUhwP9lET/
-        Hc77zDgVnpuySJBkvFGPZHI=
-X-Google-Smtp-Source: ADFU+vvqJ+n1UAsSgoN0jG9AW0erxHLenY5HOrYrijXI8r9AfrtIvrVniL1JHDoBGmcVcFOzrtbTrA==
-X-Received: by 2002:ad4:436b:: with SMTP id u11mr22436408qvt.117.1585771229291;
-        Wed, 01 Apr 2020 13:00:29 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:f8fc:a46d:375f:4fa2? ([2601:282:803:7700:f8fc:a46d:375f:4fa2])
-        by smtp.googlemail.com with ESMTPSA id 207sm2101569qkf.69.2020.04.01.13.00.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Apr 2020 13:00:28 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 1/3] tc: p_ip6: Support pedit of IPv6
- dsfield
-To:     Petr Machata <petrm@mellanox.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-References: <cover.1585331173.git.petrm@mellanox.com>
- <628ade92d458e62f9471911d3cf8f3b193212eaa.1585331173.git.petrm@mellanox.com>
- <20200327175123.1930e099@hermes.lan> <87eetafdki.fsf@mellanox.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0686d67a-84e8-dfab-7200-c67105420bcb@gmail.com>
-Date:   Wed, 1 Apr 2020 14:00:27 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.6.0
+        id S1732833AbgDAUMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 16:12:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48298 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732441AbgDAUMg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Apr 2020 16:12:36 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 706E420737;
+        Wed,  1 Apr 2020 20:12:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585771954;
+        bh=HhPJI/8WyDYN25zSB+ChDyHJuHCcorDGX09pa6/nSnA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Eop8iTF6/rj+ZmWzBBIP4Suf8q6AI8nebRb1w3a4FN+KytUw4dAto9g3FsrJcCUvb
+         A6ULZrK8T62IVBm2hMpgbjMbROeU/vaAxWWL6v0cc1lr/AShy4UOYZg+3NGO8WFyNr
+         YOSGZzQ0vx1mjzFk6PBU9S+0aa2gnhHirnEx3DwM=
+Date:   Wed, 1 Apr 2020 13:12:31 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Yuval Avnery <yuvalav@mellanox.com>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "andrew.gospodarek@broadcom.com" <andrew.gospodarek@broadcom.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        Aya Levin <ayal@mellanox.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Yevgeny Kliteynik <kliteyn@mellanox.com>,
+        "dchickles@marvell.com" <dchickles@marvell.com>,
+        "sburla@marvell.com" <sburla@marvell.com>,
+        "fmanlunas@marvell.com" <fmanlunas@marvell.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
+        "snelson@pensando.io" <snelson@pensando.io>,
+        "drivers@pensando.io" <drivers@pensando.io>,
+        "aelior@marvell.com" <aelior@marvell.com>,
+        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
+        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
+        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>,
+        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
+        Alex Vesker <valex@mellanox.com>,
+        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
+        "lihong.yang@intel.com" <lihong.yang@intel.com>,
+        "vikas.gupta@broadcom.com" <vikas.gupta@broadcom.com>,
+        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>
+Subject: Re: [RFC] current devlink extension plan for NICs
+Message-ID: <20200401131231.74f2a5a8@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <AM0PR05MB4866E76AE83EA4D09449AF05D1C90@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20200319192719.GD11304@nanopsycho.orion>
+        <20200319203253.73cca739@kicinski-fedora-PC1C0HJN>
+        <20200320073555.GE11304@nanopsycho.orion>
+        <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
+        <20200321093525.GJ11304@nanopsycho.orion>
+        <20200323122123.2a3ff20f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200326144709.GW11304@nanopsycho.orion>
+        <20200326145146.GX11304@nanopsycho.orion>
+        <20200326133001.1b2694c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200327074736.GJ11304@nanopsycho.orion>
+        <20200327093829.76140a98@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <35e8353f-2bfc-5685-a60e-030cd2d2dd24@mellanox.com>
+        <20200330123623.634739de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <50c0f739-592e-77a4-4872-878f99cc8b93@mellanox.com>
+        <20200331103255.549ea899@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <AM0PR05MB4866E76AE83EA4D09449AF05D1C90@AM0PR05MB4866.eurprd05.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <87eetafdki.fsf@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/30/20 2:32 AM, Petr Machata wrote:
-> 
-> Stephen Hemminger <stephen@networkplumber.org> writes:
-> 
->>> diff --git a/tc/p_ip6.c b/tc/p_ip6.c
->>> index 7cc7997b..b6fe81f5 100644
->>> --- a/tc/p_ip6.c
->>> +++ b/tc/p_ip6.c
->>> @@ -56,6 +56,22 @@ parse_ip6(int *argc_p, char ***argv_p,
->>>  		res = parse_cmd(&argc, &argv, 4, TU32, 0x0007ffff, sel, tkey);
->>>  		goto done;
->>>  	}
->>> +	if (strcmp(*argv, "traffic_class") == 0 ||
->>> +	    strcmp(*argv, "tos") == 0 ||
->>> +	    strcmp(*argv, "dsfield") == 0) {
->>> +		NEXT_ARG();
->>> +		tkey->off = 1;
->>> +		res = parse_cmd(&argc, &argv, 1, TU32, RU8, sel, tkey);
->>> +
->>> +		/* Shift the field by 4 bits on success. */
->>> +		if (!res) {
->>> +			int nkeys = sel->sel.nkeys;
->>> +			struct tc_pedit_key *key = &sel->sel.keys[nkeys - 1];
->>> +			key->mask = htonl(ntohl(key->mask) << 4 | 0xf);
->>> +			key->val = htonl(ntohl(key->val) << 4);
->>> +		}
->>> +		goto done;
->>> +	}
->> Why in the middle of the list?
-> 
-> Because that's the order IPv4 code does them.
+On Wed, 1 Apr 2020 07:32:46 +0000 Parav Pandit wrote:
+> > From: Jakub Kicinski <kuba@kernel.org>
+> > Sent: Tuesday, March 31, 2020 11:03 PM
+> > 
+> > On Tue, 31 Mar 2020 07:45:51 +0000 Parav Pandit wrote:  
+> > > > In fact very little belongs to the port in that model. So why have
+> > > > PCI ports in the first place?
+> > > >  
+> > > for few reasons.
+> > > 1. PCI ports are establishing the relationship between eswitch port
+> > > and its representor netdevice.
+> > > Relying on plain netdev name doesn't work in certain pci topology
+> > > where netdev name exceeds 15 characters.
+> > > 2. health reporters can be at port level.  
+> > 
+> > Why? The health reporters we have not AFAIK are for FW and for queues
+> > hanging. Aren't queues on the slice and FW on the device?  
+> There are multiple heath reporters per object.
+> There are per q health reporters on the representor queues (and
+> representors are attached to devlink port). Can someone can have
+> representor netdev for an eswitch port without devlink port? No,
+> net/core/devlink.c cross verify this and do WARN_ON. So devlink port
+> for eswitch are linked to representors and are needed. Their
+> existence is not a replacement for representing 'portion of the
+> device'.
 
-neither parse function uses matches() so the order should not matter.
-> 
->> Why three aliases for the same value?
->> Since this is new code choose one and make it match what IPv6 standard
->> calls that field.
-> 
-> TOS because flower also calls it TOS, even if it's the IPv6 field.
-> dsfield, because the IPv4 pedit also accepts this. I'm fine with just
-> accepting traffic_class though.
-> 
+I don't understand what you're trying to say. My question was why are
+queues not on the "slice"? If PCIe resources are on the slice, then so
+should be the health reporters.
 
-that's probably the right thing to do since this is ipv6 related
+> > > 3. In future at eswitch pci port, I will be adding dpipe support
+> > > for the internal flow tables done by the driver.
+> > > 4. There were inconsistency among vendor drivers in using/abusing
+> > > phys_port_name of the eswitch ports. This is consolidated via
+> > > devlink port in core. This provides consistent view among all
+> > > vendor drivers.
+> > >
+> > > So PCI eswitch side ports are useful regardless of slice.
+> > >  
+> > > >> Additionally devlink port object doesn't go through the same
+> > > >> state machine as that what slice has to go through.
+> > > >> So its weird that some devlink port has state machine and some
+> > > >> doesn't.  
+> > > >
+> > > > You mean for VFs? I think you can add the states to the API.
+> > > >  
+> > > As we agreed above that eswitch side objects (devlink port and
+> > > representor netdev) should not be used for 'portion of device',  
+> > 
+> > We haven't agreed, I just explained how we differ.  
+> 
+> You mentioned that " Right, in my mental model representor _is_ a
+> port of the eswitch, so repr would not make sense to me."
+> 
+> With that I infer that 'any object that is directly and _always_
+> linked to eswitch and represents an eswitch port is out of question,
+> this includes devlink port of eswitch and netdev representor. Hence,
+> the comment 'we agree conceptually' to not involve devlink port of
+> eswitch and representor netdev to represent 'portion of the device'.
+
+I disagree, repr is one to one with eswitch port. Just because
+repr is associated with a devlink port doesn't mean devlink port 
+must be associated with a repr or a netdev. 
