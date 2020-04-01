@@ -2,218 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DAE119ADA4
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 16:18:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A009319ADB8
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 16:21:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732205AbgDAOSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 10:18:15 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:35108 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1732911AbgDAOSO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 10:18:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585750691;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=koigHvjQZC19eKDd8fYYKD1byFLtuNk9rFfv+MSme6o=;
-        b=Qt3Iy2y0FUVVrw1OuBt/ndUioHleMKP01GPQmVuUXclFzfiO+Y0IyxYufyQqOfHgPSKek3
-        yX1Xa0UwZdUMaX3+q+c5Axdd8bezyqS4uhVivs0KevoVUAkP8k+V9xM9KyFwukDLr/NPNo
-        UoRS4uojGQYIDKKaCCtvNeWCWiYEeFU=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-300-tqK2SkVsNiu2IUiI02DsHw-1; Wed, 01 Apr 2020 10:18:10 -0400
-X-MC-Unique: tqK2SkVsNiu2IUiI02DsHw-1
-Received: by mail-wr1-f69.google.com with SMTP id v17so10566037wro.21
-        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 07:18:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=koigHvjQZC19eKDd8fYYKD1byFLtuNk9rFfv+MSme6o=;
-        b=oXvI9cmxURcZI6Wr/XEVTYrZ7otMIl0j7ya56Tzm4k1arh9pUj6iPxY6qj13xYPcpz
-         V09b1ZChEE202yH5zm8WUDsA5khRnJ6ysz+bAjcENe1Ii33AO5sYGESinjjuUvBrNrPk
-         ULIr8zU2RzfGYTf5+Rx/uZJyMiMEPGHNce5j06djeKxJrcFA2wDpFaWxFZQl6YlBpNzk
-         wldZTV4+08BCXhuGQoLW6/unnOh+L/hUS2ONZvI2Ot3QaU91NQyYsGwBEoa6G80Jto84
-         xGU0Ijy0GtQzsceX/nXeQjH06Qa80jPWt8s5THZMl7JOMF0E4UOcepU4/VozDMBlyjut
-         pTSw==
-X-Gm-Message-State: AGi0PuaDVM13j4R5wHh1wQmJvDyo1a1WFn7ir+psWGPrCx7hPCacPCh1
-        RN2uwpeKQltS/HpYLpvbJFxYR5d8LiczOxS2CTzkoho4MdgVn5k15eJJVLcnycE3fEOsXmVY0JI
-        f9TMGIwo0dttU4aQB
-X-Received: by 2002:a05:600c:2949:: with SMTP id n9mr4854310wmd.129.1585750687901;
-        Wed, 01 Apr 2020 07:18:07 -0700 (PDT)
-X-Google-Smtp-Source: APiQypIDbSLF7skcDOxwD6+QUFmg2lPeWzSgOX1pVJzAYBHdhN6pMa1uaSvkuWaE5DTOSSwxR6SXXw==
-X-Received: by 2002:a05:600c:2949:: with SMTP id n9mr4854274wmd.129.1585750687676;
-        Wed, 01 Apr 2020 07:18:07 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
-        by smtp.gmail.com with ESMTPSA id r5sm2901223wmr.15.2020.04.01.07.18.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Apr 2020 07:18:07 -0700 (PDT)
-Date:   Wed, 1 Apr 2020 10:18:03 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Christian Borntraeger <borntraeger@de.ibm.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        jgg@mellanox.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        lingshan.zhu@intel.com, eperezma@redhat.com, lulu@redhat.com,
-        parav@mellanox.com, kevin.tian@intel.com, stefanha@redhat.com,
-        rdunlap@infradead.org, hch@infradead.org, aadam@redhat.com,
-        jiri@mellanox.com, shahafs@mellanox.com, hanand@xilinx.com,
-        mhabets@solarflare.com, gdawar@xilinx.com, saugatm@xilinx.com,
-        vmireyno@marvell.com, zhangweining@ruijie.com.cn
-Subject: Re: [PATCH V9 1/9] vhost: refine vhost and vringh kconfig
-Message-ID: <20200401101634-mutt-send-email-mst@kernel.org>
-References: <20200326140125.19794-1-jasowang@redhat.com>
- <20200326140125.19794-2-jasowang@redhat.com>
- <fde312a4-56bd-f11f-799f-8aa952008012@de.ibm.com>
- <41ee1f6a-3124-d44b-bf34-0f26604f9514@redhat.com>
- <4726da4c-11ec-3b6e-1218-6d6d365d5038@de.ibm.com>
- <39b96e3a-9f4e-6e1d-e988-8c4bcfb55879@de.ibm.com>
- <c423c5b1-7817-7417-d7af-e07bef6368e7@redhat.com>
+        id S1732943AbgDAOVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 10:21:36 -0400
+Received: from mail-eopbgr140073.outbound.protection.outlook.com ([40.107.14.73]:5351
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1732205AbgDAOVg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 1 Apr 2020 10:21:36 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=k1rruNO3/pMXmzna3M9oic47i5Lfx3/wwxOIsF7i2rY8OFqAA0VhGkF5lNwciPVMxHEv+HbH0PN1tbxFk9FSr9BhnpHxtcGBDMqjjVMeYLKOUo9D1BOKtIWG4TITp+mpAFu5JyZ7E6e9NTnxRMTn2KZf+zdjUuduY0wr5ZKA+mUntN6OYnQyyHvdyUspZtjRnhn4KNvwLvStK9dPjWERe4QgpvjN1F04L+q69Xtt7z/TPukda45AseGNawTSFDOeWLN8zBQCa4FfFoDrfT3qs+sILW56zfXjj7GUadVLzf04hJj3/uBB2g3c7Np6EMLpWSG0e8NypX3ZACK0zpQamw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1jz0BGOXq0nHgoApsMEmTwGe561EMm73LmRro4EnDCk=;
+ b=g3Pmf1VJL6yroo3e/XdxAvlZJWXFzUTZTjydodprk4E5fBy9wDVd+SyUpvZXaoH99hU1M3bzfozq7XjRbxznAqZ4Al4K7e17LsA9Ea9H9nbbmzvuIHRSLdaKPnDishu8Lm1R6QIzkorfibNP4+n34aHrKwuRbNRmjOWumFbjN30Er3ErOwRRvJsSB+jMQdd0bJhqfwy9IAiaLwLkKfqSMUNsi/4WaASiZ9yXiX3U/sy6pWmTJTEtiQlC9NjTRCHY0S2Ay77q3iHNYUFeT6JDuvhkOl+P4ZYsiYkQiH4cizb3PNx7elT/g13uZm9LQihKbQ1H8f+zJZkAT0I67IfiRQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1jz0BGOXq0nHgoApsMEmTwGe561EMm73LmRro4EnDCk=;
+ b=Z+AKAFs0X3gZUBU0p7FJDPifHOZVA/Zy9dj3K509cxk/vTFisC8Z0vUTda8uPm2wehx983TTnPhTB/9C9wSywkj66gp0wURTGdFC8wO28ekOXeueDf1fS+/27SB152bMBnthkS8qv7q6oWyiJIw69wKCntsuyxLeFNH70tBkUz8=
+Received: from AM0PR04MB5443.eurprd04.prod.outlook.com (20.178.114.161) by
+ AM0PR04MB4467.eurprd04.prod.outlook.com (52.135.151.28) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2856.20; Wed, 1 Apr 2020 14:21:28 +0000
+Received: from AM0PR04MB5443.eurprd04.prod.outlook.com
+ ([fe80::ccc:be36:aaf0:709a]) by AM0PR04MB5443.eurprd04.prod.outlook.com
+ ([fe80::ccc:be36:aaf0:709a%7]) with mapi id 15.20.2856.019; Wed, 1 Apr 2020
+ 14:21:28 +0000
+From:   Florinel Iordache <florinel.iordache@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        Leo Li <leoyang.li@nxp.com>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Florinel Iordache <florinel.iordache@nxp.com>
+Subject: RE: [EXT] Re: [PATCH net-next 6/9] net: phy: add backplane kr driver
+ support
+Thread-Topic: [EXT] Re: [PATCH net-next 6/9] net: phy: add backplane kr driver
+ support
+Thread-Index: AdYIKJUsx3bt4MTYS3+XcE5ss4tWhQABBMuAAAD8oPA=
+Date:   Wed, 1 Apr 2020 14:21:28 +0000
+Message-ID: <AM0PR04MB544389A6B2400335A23E4960FBC90@AM0PR04MB5443.eurprd04.prod.outlook.com>
+References: <AM0PR04MB5443E8D583734C98C54C519EFBC90@AM0PR04MB5443.eurprd04.prod.outlook.com>
+ <20200401135135.GA62290@lunn.ch>
+In-Reply-To: <20200401135135.GA62290@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=florinel.iordache@nxp.com; 
+x-originating-ip: [78.96.99.111]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 27154afd-1b07-40ef-088b-08d7d647f7f7
+x-ms-traffictypediagnostic: AM0PR04MB4467:|AM0PR04MB4467:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR04MB4467866B87E436E12388D466FBC90@AM0PR04MB4467.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 03607C04F0
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5443.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(136003)(346002)(396003)(39860400002)(376002)(366004)(6506007)(52536014)(71200400001)(64756008)(44832011)(9686003)(66446008)(26005)(2906002)(5660300002)(66556008)(186003)(66946007)(55016002)(76116006)(66476007)(7696005)(86362001)(81156014)(33656002)(316002)(478600001)(8936002)(81166006)(8676002)(7416002)(54906003)(6916009)(4326008);DIR:OUT;SFP:1101;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: udNBqA06JfHPR6bmj4Mm0lbv4MqDe1+H338TOYdGX4jY4K0Fvf1q335DW5VEeXFsvErRoy+eOk7ZqWvY17+O/Yd2nlhBxPiKXkMT1NULsd0l3T4k8fCbevBE4MUIEqLe0O851PKrdMn2SDmrVlBxWspnXfuzJ0PhYU2c/HwgxsO5lH0JLamLQ1DbIDerIWbkJxMNX+g9kdQYmtjyO7txbcoxV21pOHtt3tkOd0Jyg6jDQD66FXEYdZq7/fY3Sa4NquGE4snYWf6pD4peyRKqGQf0S8u69tDJtLPIk++pn+mv/MvMWnwvPKy/xpijuw3r3QUo8pneIFqkRSCOg5c57fzl2H9O7drsphtVQdn/gONYF+RlRpbwhjDTzB4YumqLxnIse+KbElsBZm7crM7s4xQwbPdULI+ftKGZNB57HQ4NMZCyQQHEDWBGNBFxlSD3
+x-ms-exchange-antispam-messagedata: JoVljybq5WNWUA+6z/8kmxem5FQhw3KOVvZLIYEN0ylMgsSE8BH/M3biPDzqwVZb8HBIyi29coOU6pjOTPdQQqmR/PX8Z1MYlMBwaD7X4tw/vUekPVu0bgANgnfwLcysA0+E43ngJphBqv0OSlDrvA==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <c423c5b1-7817-7417-d7af-e07bef6368e7@redhat.com>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 27154afd-1b07-40ef-088b-08d7d647f7f7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Apr 2020 14:21:28.6459
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: cmpjOhrcc+f55ML+ibivQdedK8D6DNVaR4pRjPvxdi9GxwDMqeeWLqWEpQiUm6FlcGUHegIHj5+Bh2tq0jukgPKWdY2894ap5TXn+McNOxU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4467
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 01, 2020 at 10:13:29PM +0800, Jason Wang wrote:
-> 
-> On 2020/4/1 下午9:02, Christian Borntraeger wrote:
-> > 
-> > On 01.04.20 14:56, Christian Borntraeger wrote:
-> > > On 01.04.20 14:50, Jason Wang wrote:
-> > > > On 2020/4/1 下午7:21, Christian Borntraeger wrote:
-> > > > > On 26.03.20 15:01, Jason Wang wrote:
-> > > > > > Currently, CONFIG_VHOST depends on CONFIG_VIRTUALIZATION. But vhost is
-> > > > > > not necessarily for VM since it's a generic userspace and kernel
-> > > > > > communication protocol. Such dependency may prevent archs without
-> > > > > > virtualization support from using vhost.
-> > > > > > 
-> > > > > > To solve this, a dedicated vhost menu is created under drivers so
-> > > > > > CONIFG_VHOST can be decoupled out of CONFIG_VIRTUALIZATION.
-> > > > > FWIW, this now results in vhost not being build with defconfig kernels (in todays
-> > > > > linux-next).
-> > > > > 
-> > > > Hi Christian:
-> > > > 
-> > > > Did you meet it even with this commit https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=a4be40cbcedba9b5b714f3c95182e8a45176e42d?
-> > > I simply used linux-next. The defconfig does NOT contain CONFIG_VHOST and therefore CONFIG_VHOST_NET and friends
-> > > can not be selected.
-> > > 
-> > > $ git checkout next-20200401
-> > > $ make defconfig
-> > >    HOSTCC  scripts/basic/fixdep
-> > >    HOSTCC  scripts/kconfig/conf.o
-> > >    HOSTCC  scripts/kconfig/confdata.o
-> > >    HOSTCC  scripts/kconfig/expr.o
-> > >    LEX     scripts/kconfig/lexer.lex.c
-> > >    YACC    scripts/kconfig/parser.tab.[ch]
-> > >    HOSTCC  scripts/kconfig/lexer.lex.o
-> > >    HOSTCC  scripts/kconfig/parser.tab.o
-> > >    HOSTCC  scripts/kconfig/preprocess.o
-> > >    HOSTCC  scripts/kconfig/symbol.o
-> > >    HOSTCC  scripts/kconfig/util.o
-> > >    HOSTLD  scripts/kconfig/conf
-> > > *** Default configuration is based on 'x86_64_defconfig'
-> > > #
-> > > # configuration written to .config
-> > > #
-> > > 
-> > > $ grep VHOST .config
-> > > # CONFIG_VHOST is not set
-> > > 
-> > > > If yes, what's your build config looks like?
-> > > > 
-> > > > Thanks
-> > This was x86. Not sure if that did work before.
-> > On s390 this is definitely a regression as the defconfig files
-> > for s390 do select VHOST_NET
-> > 
-> > grep VHOST arch/s390/configs/*
-> > arch/s390/configs/debug_defconfig:CONFIG_VHOST_NET=m
-> > arch/s390/configs/debug_defconfig:CONFIG_VHOST_VSOCK=m
-> > arch/s390/configs/defconfig:CONFIG_VHOST_NET=m
-> > arch/s390/configs/defconfig:CONFIG_VHOST_VSOCK=m
-> > 
-> > and this worked with 5.6, but does not work with next. Just adding
-> > CONFIG_VHOST=m to the defconfig solves the issue, something like
-> 
-> 
-> Right, I think we probably need
-> 
-> 1) add CONFIG_VHOST=m to all defconfigs that enables
-> CONFIG_VHOST_NET/VSOCK/SCSI.
-> 
-> or
-> 
-> 2) don't use menuconfig for CONFIG_VHOST, let NET/SCSI/VDPA just select it.
-> 
-> Thanks
+> On Wed, Apr 01, 2020 at 01:35:36PM +0000, Florinel Iordache wrote:
+> > > On Thu, Mar 26, 2020 at 03:51:19PM +0200, Florinel Iordache wrote:
+> > > > +static void setup_supported_linkmode(struct phy_device *bpphy) {
+> > > > +     struct backplane_phy_info *bp_phy =3D bpphy->priv;
+> > >
+> > > I'm not sure it is a good idea to completely take over phydev->priv
+> > > like this, in what is just helper code. What if the PHY driver needs
+> > > memory of its own? There are a few examples of this already in other
+> > > PHY drivers. Could a KR PHY contain a temperature sensor? Could it
+> > > contain statistics counters which need accumulating?
+> > >
+> > >         Andrew
+> >
+> > Backplane KR driver allocates memory for structure backplane_phy_info
+> > which is saved in phydev->priv. After all this is the purpose of priv
+> > according to its description in phy.h: <<private data pointer For use
+> > by PHYs to maintain extra state>>. Here the priv is used to maintain
+> > extra state needed for backplane. This way the backplane specific data
+> > becomes available for all PHY callbacks (defined in struct phy_driver)
+> > that receive a pointer to phy_device structure. This initial version
+> > doesn't include accumulating statistics counters but we have in plan
+> > to add these in future versions. The counters will be kept in specific
+> > structures as members of the main backplane data mentioned above and
+> > entire support will be integrated with ethtool.
+>=20
+> Hi Florinel
+>=20
+> And what about hwmon, or anything else which a driver needs memory for?
+>=20
+> As far as i see it, we have two bodies of code here. There is a set of he=
+lpers
+> which implement most of the backplane functionality. And then there is an
+> example driver for your hardware. In the future we expect other drivers t=
+o be
+> added for other vendors hardware.
+>=20
+> phydev->priv is for the driver. helpers should not assume they have
+> complete control over it.
+>=20
+> Anyway, this may be a mute point. Lets first solve the problem of how a P=
+CS is
+> represented.
+>=20
+>   Andrew
 
-I think I prefer 2, but does it auto-select VHOST_IOTLB then?
-Generally what was the reason to drop select VHOST from devices?
+Hi Andrew,
 
+Backplane driver was designed as a generic backplane driver over
+the PHY Abstraction Layer, containing standard implementations over
+which several specific devices can be added.
+(please see the diagram existent in chapter: Ethernet Backplane support
+architecture, in the Documentation/networking/backplane.rst)
+So according to this design, the backplane driver can use the priv pointer
+provided by the layer below which is the PHY to be used as extra state
+by the next upper layer which is generic backplane. On the same concept
+we can provide another priv pointer in backplane main structure which is
+equivalent to phy_device to be used by the specific backplane drivers on
+the upper layer.
+Actually for this reason, in v2 which I am currently working, I already
+renamed the structure 'backplane_phy_info' to 'backplane_device'
 
-> 
-> > 
-> > ---
-> >   arch/s390/configs/debug_defconfig | 5 +++--
-> >   arch/s390/configs/defconfig       | 5 +++--
-> >   2 files changed, 6 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/arch/s390/configs/debug_defconfig b/arch/s390/configs/debug_defconfig
-> > index 46038bc58c9e..0b83274341ce 100644
-> > --- a/arch/s390/configs/debug_defconfig
-> > +++ b/arch/s390/configs/debug_defconfig
-> > @@ -57,8 +57,6 @@ CONFIG_PROTECTED_VIRTUALIZATION_GUEST=y
-> >   CONFIG_CMM=m
-> >   CONFIG_APPLDATA_BASE=y
-> >   CONFIG_KVM=m
-> > -CONFIG_VHOST_NET=m
-> > -CONFIG_VHOST_VSOCK=m
-> >   CONFIG_OPROFILE=m
-> >   CONFIG_KPROBES=y
-> >   CONFIG_JUMP_LABEL=y
-> > @@ -561,6 +559,9 @@ CONFIG_VFIO_MDEV_DEVICE=m
-> >   CONFIG_VIRTIO_PCI=m
-> >   CONFIG_VIRTIO_BALLOON=m
-> >   CONFIG_VIRTIO_INPUT=y
-> > +CONFIG_VHOST=m
-> > +CONFIG_VHOST_NET=m
-> > +CONFIG_VHOST_VSOCK=m
-> >   CONFIG_S390_CCW_IOMMU=y
-> >   CONFIG_S390_AP_IOMMU=y
-> >   CONFIG_EXT4_FS=y
-> > diff --git a/arch/s390/configs/defconfig b/arch/s390/configs/defconfig
-> > index 7cd0648c1f4e..39e69c4e8cf7 100644
-> > --- a/arch/s390/configs/defconfig
-> > +++ b/arch/s390/configs/defconfig
-> > @@ -57,8 +57,6 @@ CONFIG_PROTECTED_VIRTUALIZATION_GUEST=y
-> >   CONFIG_CMM=m
-> >   CONFIG_APPLDATA_BASE=y
-> >   CONFIG_KVM=m
-> > -CONFIG_VHOST_NET=m
-> > -CONFIG_VHOST_VSOCK=m
-> >   CONFIG_OPROFILE=m
-> >   CONFIG_KPROBES=y
-> >   CONFIG_JUMP_LABEL=y
-> > @@ -557,6 +555,9 @@ CONFIG_VFIO_MDEV_DEVICE=m
-> >   CONFIG_VIRTIO_PCI=m
-> >   CONFIG_VIRTIO_BALLOON=m
-> >   CONFIG_VIRTIO_INPUT=y
-> > +CONFIG_VHOST=m
-> > +CONFIG_VHOST_NET=m
-> > +CONFIG_VHOST_VSOCK=m
-> >   CONFIG_S390_CCW_IOMMU=y
-> >   CONFIG_S390_AP_IOMMU=y
-> >   CONFIG_EXT4_FS=y
-
+Thank you,
+Florin.
