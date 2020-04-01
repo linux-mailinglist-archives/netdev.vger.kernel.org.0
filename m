@@ -2,177 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5237E19B4C1
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 19:37:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3B4519B4CA
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 19:40:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732137AbgDARhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 13:37:21 -0400
-Received: from mail-yb1-f201.google.com ([209.85.219.201]:38739 "EHLO
-        mail-yb1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726901AbgDARhV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 13:37:21 -0400
-Received: by mail-yb1-f201.google.com with SMTP id k140so865869ybf.5
-        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 10:37:20 -0700 (PDT)
+        id S1732354AbgDARkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 13:40:06 -0400
+Received: from mail-qv1-f67.google.com ([209.85.219.67]:42857 "EHLO
+        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732196AbgDARkG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 13:40:06 -0400
+Received: by mail-qv1-f67.google.com with SMTP id ca9so140942qvb.9;
+        Wed, 01 Apr 2020 10:40:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=wlLZAzbkwugt5T2XXG9KI0MUCOZsK4HjBggRINLaAFg=;
-        b=qL8OGtq7s0YPnsLfUazAiodcTdqHzeX/KvCTDrYnohdEC9LuUmkkMgnMUZHQvbg2Pq
-         5Xare6C6Kr6tIXsLGQXvIOfsCqujWShmmy7Pn1ybuLSJuouRK55TC7xjUYumuCkyY/4v
-         5IuDIbv7C9gMybflo2AAQtWK1+DaY3C9aqaOjAqJi7XhuWIOTCDZLH5kk4fTtjb0Rcup
-         N6nC6kkQUX80FenvoCEreLU6z6hcMPW7pGrFdIl94G9gNzgakZApcr/2+osSE2qo+Wbm
-         OUpTmat9cJbcvwZXjCKOstj55oFZjpe1HYfyMa6UGeOeiWgjUYFIL206orZ+JmEKJXe3
-         PGUg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=fX422TdFozt80QVZChxuC9EZU3f392RlNKEmnBWdj2Q=;
+        b=evA/xkHmMTT1gdc2DMiGqvAp5PmGJdk3+ajrrEYoe0lM0s2K4+LjcPtnxkakvxWKLg
+         85/Z67bIVXJDSph1jVYaCQQp1lGJXM6EjVZa0nh+A+tHo1G54GcTvwK0aD2jlSKji9jM
+         9/EUQUZD/2zHxX1TOCvJSaSQeoSffDev2ffIGsQ31aObkzWHbsrM3iI5mOnYEvgihprx
+         Q162j1mw1mPbfYsgl5Z8CCfzOcEBEGwutQ5fkrGo5/G+T/ffkQo0gTq2sZd0wOHJoNmW
+         tdsLr0ZDNk7108B3CKsmoVff22Z2dGVSwJ3lR8Q+hFOd3AVq9etm8EQtLj5IgGuQ+6Tk
+         i/sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=wlLZAzbkwugt5T2XXG9KI0MUCOZsK4HjBggRINLaAFg=;
-        b=j7kVaEGAye8eO6iGbIOISoIOqzZTc5WjDGc1LkVsQWW6sZzg4q2L3huIarFo17+Gtt
-         RXQfHiPZx2qJyu7Yeywq/wsp84FOAZ1gMwSmT3bJek+VvbshOcDQu4kCbj4XcfpXtY4O
-         2VsweJlAOW4bh8D2rinoRZxDgN0YUnPJQ3oqqOfKOKBMP2DBx05JWHrhrp+hMD3ifaZT
-         tQJdjT8gaKC7vbR3RT5mk16dUex0FZF9QyPdqaw/le/8Veu+4pHN7L1m8tG10OLh4q7X
-         jO1ftFuC7O6Y9505mSAlPC/HgZuY4CIu0vQIJNJV/NFvidyoQU3FKbWQ0aP4jrPNYFbp
-         G9pA==
-X-Gm-Message-State: ANhLgQ2e3Nnk0lzZHSg7MqqjjFTHTplDLmid1qs7aZb6Ih9ms3FkxCUF
-        TDobdEry1820W+CKW/Uqp6eW39iyeO/cYw==
-X-Google-Smtp-Source: ADFU+vsvuC8NCrYOIlTILnQwzU77iZySl8MrST9E0DI3W7PNDk2CAO2tvgYaH+/SewLAxOmezgEAXVwwc/3hbQ==
-X-Received: by 2002:a25:a2c6:: with SMTP id c6mr41000713ybn.270.1585762639724;
- Wed, 01 Apr 2020 10:37:19 -0700 (PDT)
-Date:   Wed,  1 Apr 2020 10:37:16 -0700
-Message-Id: <20200401173716.222205-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.26.0.rc2.310.g2932bb562d-goog
-Subject: [PATCH nf 1/1] netfilter: nf_tables: do not leave dangling pointer in nf_tables_set_alloc_name
-From:   Eric Dumazet <edumazet@google.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
-        Florian Westphal <fw@strlen.de>
-Cc:     netfilter-devel@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=fX422TdFozt80QVZChxuC9EZU3f392RlNKEmnBWdj2Q=;
+        b=CwHXXYoooILjugsme0QQ/vRYmCVdg5M++ibGQ5YYXpk/O/ukHQ8gLuL17Z1EP1UkgQ
+         v3l+c24ElTG9HIyfIxCUrCbR6fgCVkrKzcQo+zkql4SJ412NUFsVteuEGdINoEHSArZX
+         y1afUyvFWnHeJHN9A1Fpxct++5KIg0D70XyGYK/s9V1lrtA23KVwA4MHXBft0VwEEpLO
+         d2rATNl7vzqWi+08ozURkg4w0aZxxRdXIcZEgqdVGWaNIPngtwU+GtVImka1/77+Rf2V
+         hWBxTF2bq4uHmpdU/R73mUFlJxtAC0plnhXvtRvYBzqpNT5JsX2CW8TcVyN5iuGC5+of
+         kg5A==
+X-Gm-Message-State: ANhLgQ3fXSDLj45YI8Vl1zKd3QPDNl0IVr+dwmd0Ux0P/0DRqYLReEYs
+        ZAM2i+wLxIkRttiK/H6pmDVFzugUEtaRUZ3lQgs=
+X-Google-Smtp-Source: ADFU+vtuM30vCozCzySnSiOkT0yB9mHAUljvdphtZTXt9gEG66IVNpXLZbaI+n+Ng9gXXFojDtAlmfiIRhiiqTbDI2Q=
+X-Received: by 2002:a0c:8525:: with SMTP id n34mr22646713qva.224.1585762804641;
+ Wed, 01 Apr 2020 10:40:04 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200330030001.2312810-1-andriin@fb.com> <c9f52288-5ea8-a117-8a67-84ba48374d3a@gmail.com>
+ <CAEf4BzZpCOCi1QfL0peBRjAOkXRwGEi_DAW4z34Mf3Tv_sbRFw@mail.gmail.com>
+ <662788f9-0a53-72d4-2675-daec893b5b81@gmail.com> <CAADnVQK8oMZehQVt34=5zgN12VBc2940AWJJK2Ft0cbOi1jDhQ@mail.gmail.com>
+ <cdd576be-8075-13a7-98ee-9bc9355a2437@gmail.com> <20200331003222.gdc2qb5rmopphdxl@ast-mbp>
+ <58cea4c7-e832-2632-7f69-5502b06310b2@gmail.com> <CAEf4BzZSCdtSRw9mj2W5Vv3C-G6iZdMJsZ8WGon11mN3oBiguQ@mail.gmail.com>
+ <869adb74-5192-563d-0e8a-9cb578b2a601@solarflare.com> <CAEf4Bza1ueH=SUccfDNScRyURFoQfa1b2z-x1pOfVXuSpGUpmQ@mail.gmail.com>
+ <e9e81427-c0d7-4a1e-ba9b-c51fd3c683ac@solarflare.com>
+In-Reply-To: <e9e81427-c0d7-4a1e-ba9b-c51fd3c683ac@solarflare.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 1 Apr 2020 10:39:53 -0700
+Message-ID: <CAEf4BzYj8F05Z_e7SnkG_WvM_S191mNbtzP=cqzF85BUjdLfVg@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 0/4] Add support for cgroup bpf_link
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrey Ignatov <rdna@fb.com>, Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If nf_tables_set_alloc_name() frees set->name, we better
-clear set->name to avoid a future use-after-free or invalid-free.
+On Wed, Apr 1, 2020 at 7:26 AM Edward Cree <ecree@solarflare.com> wrote:
+>
+> On 01/04/2020 01:22, Andrii Nakryiko wrote:
+> > Can you please point out where I was objecting to observability API
+> > (which is LINK_QUERY thing we've discussed and I didn't oppose, and
+> > I'm going to add next)?
+> I didn't say you objected to it.
+> I just said that you argued that it was OK for it to not land in the
+>  same release as the rest of the API, because drgn could paper over
+>  that gap.  Which seems to me to signify a dangerous way of thinking,
+>  and I wanted to raise the alarm about that.
 
-BUG: KASAN: double-free or invalid-free in nf_tables_newset+0x1ed6/0x2560 net/netfilter/nf_tables_api.c:4148
+Let's have a bit more context first. BTW, please don't trim chain of
+replies (at least not so aggressively) next time.
 
-CPU: 0 PID: 28233 Comm: syz-executor.0 Not tainted 5.6.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xd3/0x315 mm/kasan/report.c:374
- kasan_report_invalid_free+0x61/0xa0 mm/kasan/report.c:468
- __kasan_slab_free+0x129/0x140 mm/kasan/common.c:455
- __cache_free mm/slab.c:3426 [inline]
- kfree+0x109/0x2b0 mm/slab.c:3757
- nf_tables_newset+0x1ed6/0x2560 net/netfilter/nf_tables_api.c:4148
- nfnetlink_rcv_batch+0x83a/0x1610 net/netfilter/nfnetlink.c:433
- nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:543 [inline]
- nfnetlink_rcv+0x3af/0x420 net/netfilter/nfnetlink.c:561
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6b9/0x7d0 net/socket.c:2345
- ___sys_sendmsg+0x100/0x170 net/socket.c:2399
- __sys_sendmsg+0xec/0x1b0 net/socket.c:2432
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x45c849
-Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fe5ca21dc78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007fe5ca21e6d4 RCX: 000000000045c849
-RDX: 0000000000000000 RSI: 0000000020000c40 RDI: 0000000000000003
-RBP: 000000000076bf00 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 000000000000095b R14: 00000000004cc0e9 R15: 000000000076bf0c
+>>> That is my point. You are restricting what root can do and people will
+>>> not want to resort to killing random processes trying to find the one
+>>> holding a reference. This is an essential missing piece and should go i=
+n
+>>> at the same time as this set.
+>> No need to kill random processes, you can kill only those that hold
+>> bpf_link FD. You can find them using drgn tool with script like [0].
+> For the record, I find the argument "we don't need a query feature,
+> because you can just use a kernel debugger" *utterly* *horrifying*.
 
-Allocated by task 28233:
- save_stack+0x1b/0x80 mm/kasan/common.c:72
- set_track mm/kasan/common.c:80 [inline]
- __kasan_kmalloc mm/kasan/common.c:515 [inline]
- __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:488
- __do_kmalloc mm/slab.c:3656 [inline]
- __kmalloc_track_caller+0x159/0x790 mm/slab.c:3671
- kvasprintf+0xb5/0x150 lib/kasprintf.c:25
- kasprintf+0xbb/0xf0 lib/kasprintf.c:59
- nf_tables_set_alloc_name net/netfilter/nf_tables_api.c:3536 [inline]
- nf_tables_newset+0x1543/0x2560 net/netfilter/nf_tables_api.c:4088
- nfnetlink_rcv_batch+0x83a/0x1610 net/netfilter/nfnetlink.c:433
- nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:543 [inline]
- nfnetlink_rcv+0x3af/0x420 net/netfilter/nfnetlink.c:561
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6b9/0x7d0 net/socket.c:2345
- ___sys_sendmsg+0x100/0x170 net/socket.c:2399
- __sys_sendmsg+0xec/0x1b0 net/socket.c:2432
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
+I was addressing the concern of having to randomly kill processes.
+Which is a "human override" thing, not really an observability one.
+And my response is exactly that it's better to be able to see all
+owners of bpf_link, rather than have a "nuke" option. It so happens
+that drgn is a very useful tool for this and I was able to prototype
+such script quickly enough to share it with others. drgn is not the
+only option, you can do that by iterating procfs and using fdinfo. It
+can certainly be improved for bpf_link-specific case by providing more
+information (like cgroup path, etc). But in general, it's a question
+of "which processes use given file", which unfortunately, I don't
+think Linux has a better observability APIs for. I'm not happy about
+that, but it's not really bpf_link-specific issue either.
 
-Freed by task 28233:
- save_stack+0x1b/0x80 mm/kasan/common.c:72
- set_track mm/kasan/common.c:80 [inline]
- kasan_set_free_info mm/kasan/common.c:337 [inline]
- __kasan_slab_free+0xf7/0x140 mm/kasan/common.c:476
- __cache_free mm/slab.c:3426 [inline]
- kfree+0x109/0x2b0 mm/slab.c:3757
- nf_tables_set_alloc_name net/netfilter/nf_tables_api.c:3544 [inline]
- nf_tables_newset+0x1f73/0x2560 net/netfilter/nf_tables_api.c:4088
- nfnetlink_rcv_batch+0x83a/0x1610 net/netfilter/nfnetlink.c:433
- nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:543 [inline]
- nfnetlink_rcv+0x3af/0x420 net/netfilter/nfnetlink.c:561
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6b9/0x7d0 net/socket.c:2345
- ___sys_sendmsg+0x100/0x170 net/socket.c:2399
- __sys_sendmsg+0xec/0x1b0 net/socket.c:2432
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> (If you _don't_ see what's wrong with that argument... well, that'd
+>  be even _more_ alarming.  Debuggers =E2=80=94 and fuser, for that matter=
+ =E2=80=94
+>  are for when things go wrong _in ways the designers of the system
+>  failed to anticipate_.  They should not be part of a 'normal' work-
+>  flow for dealing with problems that we already _know_ are possible;
+>  it's kinda-sorta like how exceptions shouldn't be used for non-
+>  exceptional situations.)
 
-The buggy address belongs to the object at ffff8880a6032d00
- which belongs to the cache kmalloc-32 of size 32
-The buggy address is located 0 bytes inside of
- 32-byte region [ffff8880a6032d00, ffff8880a6032d20)
-The buggy address belongs to the page:
-page:ffffea0002980c80 refcount:1 mapcount:0 mapping:ffff8880aa0001c0 index:0xffff8880a6032fc1
-flags: 0xfffe0000000200(slab)
-raw: 00fffe0000000200 ffffea0002a3be88 ffffea00029b1908 ffff8880aa0001c0
-raw: ffff8880a6032fc1 ffff8880a6032000 000000010000003e 0000000000000000
-page dumped because: kasan: bad access detected
+I don't think it's as quite black and white as you are stating. For
+instance, I *think* lsof, netstat, bcc tools, etc disagree with you.
+Also need to kill application because it's attached to XDP or cgroup
+doesn't seem like a "normal" workflow either. But I really would
+rather leave it at that, if you don't mind.
 
-Fixes: 65038428b2c6 ("netfilter: nf_tables: allow to specify stateful expression in set definition")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- net/netfilter/nf_tables_api.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index d0ab5ffa1e2c9e915af4fd77bcd6b4f9ed875a09..f91e96d8de05f99c45b059d1fa6431daf6405cc6 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -3542,6 +3542,7 @@ static int nf_tables_set_alloc_name(struct nft_ctx *ctx, struct nft_set *set,
- 			continue;
- 		if (!strcmp(set->name, i->name)) {
- 			kfree(set->name);
-+			set->name = NULL;
- 			return -ENFILE;
- 		}
- 	}
--- 
-2.26.0.rc2.310.g2932bb562d-goog
-
+>
+> -ed
