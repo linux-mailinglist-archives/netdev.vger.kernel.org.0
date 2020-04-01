@@ -2,98 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C17C419A5C1
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 09:01:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DA3C19A5F5
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 09:11:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731910AbgDAHAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 03:00:55 -0400
-Received: from dvalin.narfation.org ([213.160.73.56]:41254 "EHLO
-        dvalin.narfation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731792AbgDAHAz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 03:00:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
-        s=20121; t=1585724452;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=eZ6rBSBIdA4UjzIh0yr15zffeVskWrBIvZd3EQOPrHQ=;
-        b=n4i5Mxx0SgULGxZvV7buuIi+nBoDF4oNx4ok5Lxv3oThJ0jbvE6nTcE8aRQr+jl+3U1dXb
-        QkV3PM3ke6Go0QqeFj/8YtaqS8sAdZMisZvclqZROIlWb6cxBl/W+tsFChNezTGztqdtJ3
-        fVPep6L3Q1M+KH852n3FGxJ7yeM6ClI=
-From:   Sven Eckelmann <sven@narfation.org>
-To:     ath10k@lists.infradead.org
-Cc:     Linus =?ISO-8859-1?Q?L=FCssing?= <linus.luessing@c0d3.blue>,
-        Linus =?ISO-8859-1?Q?L=FCssing?= <ll@simonwunderlich.de>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Ben Greear <greearb@candelatech.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Kalle Valo <kvalo@codeaurora.org>
-Subject: Re: [PATCH] ath10k: increase rx buffer size to 2048
-Date:   Wed, 01 Apr 2020 09:00:49 +0200
-Message-ID: <3300912.TRQvxCK2vZ@bentobox>
-In-Reply-To: <20200205191043.21913-1-linus.luessing@c0d3.blue>
-References: <20200205191043.21913-1-linus.luessing@c0d3.blue>
+        id S1731898AbgDAHK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 03:10:28 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:35403 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731680AbgDAHK2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 03:10:28 -0400
+Received: by mail-pf1-f193.google.com with SMTP id a13so1640765pfa.2
+        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 00:10:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=q3YpiEN9c0q7gtTc0xgNqKBZ8J1CYe0h5Njvo6qLBqc=;
+        b=cPYiWF/6kIM7c7xd0hz8A3KchAwfdZf/WBjYHWlm/sRzmaapKKkhvB+xM+o9ExkBwu
+         uI+vYZU+DEYJA+34/MvfpCsiHGXfetTpnUhEWprqfuBG6LkAHbm54C4O8FnDf43h0M1k
+         3al6T2FOJA+agQa3CKSPh/T+VrSktO5sni+COXnkfh8oAlcxH3EYD7awYMjmiLX0KR7B
+         NahVO1n9PiR928wCk+0u1GW2/qXX102bzWpS64sACXk3Am6+dgJd1YiU6CkX+2VzABYn
+         D/nK2Wo0ASQJtn6jIZadn8VM7MefKiUkJEWk+jVDIxm1V84vY+t3I6FS5gKv4uTmKKra
+         h2/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=q3YpiEN9c0q7gtTc0xgNqKBZ8J1CYe0h5Njvo6qLBqc=;
+        b=lMFpYE3olNuVz1xt+XyQxs3klm/K2MolDmbr6mCKoFRN9ABDPb00ugTyVUtMYxf6ZW
+         hcE7R2uEG+l4rLOiO8hPs/w1hJ7yfBhR/zaxSncMo11Hh0MODPNtqm5WYkNndCsrqE4m
+         ed7GxytyYwhZSOtbXCuXvmn5cZIfEnTaU8mcCGnLAuUK7BYqgRaMmNSvv84VuRdx8yYR
+         mWyiHz6AhK3ZyRori6XmhYnSlXzurLPhCSRQEXCig6Jxbf+Qy4/8WNb1g+78MaMmgoF3
+         aiHCQytArY5VL+eKgtb/dkYIMbYhpnuRAktkc27T+otPboAGkj/4Ofyggaafuw9UnORd
+         OrCg==
+X-Gm-Message-State: ANhLgQ1oG7kFYdXWRei+bWopinSGqDC/L26oTkADQxs3/YxqW00QEVMX
+        uOdIX90oAN9xfKQhPSiDHp69Ng==
+X-Google-Smtp-Source: ADFU+vv0GaG87lZWdspiXpoeNM3S1HoJf278awHnmC0uQGmwJkgdIPHnBFsC5+Ddmr7OhhkCGjWpeQ==
+X-Received: by 2002:aa7:9ec7:: with SMTP id r7mr22171606pfq.191.1585725026717;
+        Wed, 01 Apr 2020 00:10:26 -0700 (PDT)
+Received: from yoga (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
+        by smtp.gmail.com with ESMTPSA id 144sm870769pfx.184.2020.04.01.00.10.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Apr 2020 00:10:25 -0700 (PDT)
+Date:   Wed, 1 Apr 2020 00:10:23 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     gregkh@linuxfoundation.org, davem@davemloft.net,
+        smohanad@codeaurora.org, jhugo@codeaurora.org,
+        kvalo@codeaurora.org, hemantk@codeaurora.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 2/3] net: qrtr: Add MHI transport layer
+Message-ID: <20200401071023.GD663905@yoga>
+References: <20200401064435.12676-1-manivannan.sadhasivam@linaro.org>
+ <20200401064435.12676-3-manivannan.sadhasivam@linaro.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart1800025.TbuEdfJRpj"; micalg="pgp-sha512"; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200401064435.12676-3-manivannan.sadhasivam@linaro.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart1800025.TbuEdfJRpj
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+On Tue 31 Mar 23:44 PDT 2020, Manivannan Sadhasivam wrote:
+> diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
+[..]
+> +static void qcom_mhi_qrtr_ul_callback(struct mhi_device *mhi_dev,
+> +				      struct mhi_result *mhi_res)
+> +{
+> +	struct sk_buff *skb = (struct sk_buff *)mhi_res->buf_addr;
+> +
+> +	consume_skb(skb);
+> +	if (skb->sk)
+> +		sock_put(skb->sk);
 
-On Wednesday, 5 February 2020 20:10:43 CEST Linus L=FCssing wrote:
-> From: Linus L=FCssing <ll@simonwunderlich.de>
->=20
-> Before, only frames with a maximum size of 1528 bytes could be
-> transmitted between two 802.11s nodes.
->=20
-> For batman-adv for instance, which adds its own header to each frame,
-> we typically need an MTU of at least 1532 bytes to be able to transmit
-> without fragmentation.
->=20
-> This patch now increases the maxmimum frame size from 1528 to 1656
-> bytes.
-[...]
+Don't you need to do this in opposite order, to avoid a use after free?
 
-@Kalle, I saw that this patch was marked as deferred [1] but I couldn't fin=
-d=20
-any mail why it was done so. It seems like this currently creates real worl=
-d=20
-problems - so would be nice if you could explain shortly what is currently=
-=20
-blocking its acceptance.
-
-Kind regards,
-	Sven
-
-[1] https://patchwork.kernel.org/patch/11367055/
---nextPart1800025.TbuEdfJRpj
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAl6EPCEACgkQXYcKB8Em
-e0YRxA//YxxFkrb3+3MfksBJzKvpwPudQje1PeGas/4ofeiU8BeEaEGPbE5psITT
-FNUyVMxVf9VceV10aWdFwVNB4pr6BNhp8ENaZC1mM+ysv4qx2GGdFizlDSmctk6S
-KUEeE7sGWPMF8GsVmKFOm91xDWZJPQkz39dYrrOF/n8z0A/PpSVVj9GU1+qWh1uY
-wpTi1FBpQ22mt1+lLtkzd79iWR88tUEq6+kSb6c9iGRHwFzAKsWH2ztHiz1XJKUL
-JuslEzrgknh22OKVuMDFeHERdTV20QxFouTv4jJNAT7++TWrOOscqLmyAHApkzxS
-LUasYj1cIAUIOhiB26luknCi2nshgSqo3pX98brWOc5k7oOAip2dj3ZP7SKTTCDx
-bm/oTQEjvH6tx/ejTssiObbCNE2eNVk2NKSiIPQ43f/7TUQLKOx0MwKZP0Oze1AO
-nNPz04GP75RJManuczRyBRZ9RVHfS4V/yiD1EDvT3NQpmg9bJrfWyo7gpFAVL8mx
-BXHiaDmaXbRAlK4DrBR/ozjYXlGddNVBJQ9JTdk1PM0BOoTnRjMj/Gs1ZIvtKb8R
-mlfJYXEu4D9tIi1XlRAOmMZ/VYlE33T198Pb5ia6r6g4qlqiVpZc/h+ktfB/BkWH
-SqRSuL6vw7oCbxefi5oF2T0HEVU3K3hvvATa0R6A2xQgtkz/pXQ=
-=1DtW
------END PGP SIGNATURE-----
-
---nextPart1800025.TbuEdfJRpj--
-
-
-
+Regards,
+Bjorn
