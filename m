@@ -2,108 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD8A819C4A3
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 16:47:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BE7A19C4A8
+	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 16:48:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388713AbgDBOqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 10:46:42 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:34884 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2388573AbgDBOqm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 10:46:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585838801;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=247fWnWaIxGLXiVh3d5vG20xrpndo7qpcBC/YB6ZW/8=;
-        b=hNLZRZMoh/KlmXmn2eLYhAFPwdJQeUBxRGJkoJjt7RBW4GrkcQL2foIwL5Nyynufi2Fhec
-        YYkkQBW/6+NXlIfKjX88YH+ql3/c7vFcV/pvUoU1jCyGp/cq8pR8lvTkbovw7b0l3PAUzs
-        g26rDWpDJENlqcECLXaEUJzx6hQ51sM=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-265-JtHcet1GN_CbMhiopqnhVg-1; Thu, 02 Apr 2020 10:46:40 -0400
-X-MC-Unique: JtHcet1GN_CbMhiopqnhVg-1
-Received: by mail-qv1-f72.google.com with SMTP id a12so2871144qvv.8
-        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 07:46:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=247fWnWaIxGLXiVh3d5vG20xrpndo7qpcBC/YB6ZW/8=;
-        b=YrA7wV/LFveLhmnaHgBbLWBcJ7e90UyNfhOOaejeq4oeIhZZ+2KwJ5KctsQ04vD1+S
-         /Z77j3j2us+g3I1hdisW1O9aMiat/hFn/XTsaYLzEQL6q4asTYGEyhiIg42dbfAhk3/X
-         JFuRdFovAuYjZNX/kr0F8n0TSX07LiviV5Jh9xb9z9GgVEuaGvN2BE6RsqQD07XLIWGL
-         /1y2FdeaSGq99MaACxwMOXJ9xmTB7UsD38E7HMHHD7sFGfuYuMVuSxIF1u2xZTnQ3NHr
-         4s00wM9UonrviQoOpSM1DG6EPult+kL0VgVKVHwFJ1hOnB9T0/Spy1RkLtmZqpgHmr/P
-         uiSA==
-X-Gm-Message-State: AGi0PuaN07VwFl7tKgvhVKitswTaVVN7g1XmqrYbicN+RreYGVRB6Xxv
-        RWaWiC+BogyPz//Oe1BXVAUKcSvKhVjSSA++RhhjPNEmeC1EpxrIGRA8H+Fm0COpMvxIQ2pAPom
-        Cnvda3vfDK3/CM4YH
-X-Received: by 2002:ae9:dd83:: with SMTP id r125mr3878506qkf.105.1585838799303;
-        Thu, 02 Apr 2020 07:46:39 -0700 (PDT)
-X-Google-Smtp-Source: APiQypJrCvrYOfccOPc0wjpUe4Jhvl0Nl/n0u9FB6DDdrO18srx7Gu82PDrBByu2qXM5kAyNldGtag==
-X-Received: by 2002:ae9:dd83:: with SMTP id r125mr3878453qkf.105.1585838798775;
-        Thu, 02 Apr 2020 07:46:38 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
-        by smtp.gmail.com with ESMTPSA id p9sm3672571qtu.3.2020.04.02.07.46.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Apr 2020 07:46:37 -0700 (PDT)
-Date:   Thu, 2 Apr 2020 10:46:33 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v2] vhost: drop vring dependency on iotlb
-Message-ID: <20200402144519.34194-1-mst@redhat.com>
+        id S2388737AbgDBOrt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 10:47:49 -0400
+Received: from mail-eopbgr760075.outbound.protection.outlook.com ([40.107.76.75]:65156
+        "EHLO NAM02-CY1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2388612AbgDBOrt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Apr 2020 10:47:49 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eW+bRmGT98Z0wAzczCutzwsf2pWrspD/1BJ07e2hYcci96mdinIX9JsnzWkwpvw1BWglgXBSRjIygamqWItdJCFJV0gQY7ykbtMV0s4O+QsNyiXd4/z0DdNRXs7W0Qh+OIKziqA6XRV5cFHos0HR42B9T93EcCTowwGImlucGI0oVLwDVoDb736rmQ5dTQvutgoyPSSfYaNaatxz3cgaWEx4VvUSsU+y6nlQQuCwG8Z5+n+OWDEcUd+LnEKfokl5eJLfVA4rbB8MyKID+kseJDpD9kgnjDE1AjSR2m5qC6FyLprS2G/YqUqZpnaH0wHb0dpzNeDwmWT5hmmQenLZxA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tx5HaOlF5WMgiHCbnL8ck9EVglskddJgBgzgphBcfhg=;
+ b=l0u8llp14V+KmDxwJPNUWozkuRo4EgaNJr8YbW2Jntb05yUPwR+gOlcIcZBGWbGxP47wHKK8K9DwHWV/Xt1I56y0/xSqMHnKzLVDW7US77py4rDROBgh7LBnxDdju6yFvzL1TD+rAxBo48q0e9yQevyOjV0+n6ivQAqaeV/bBBPp7tIYQrw8KWtqr4WeCIZ5RNgcuzheQnRWDFuOnv1G9Yq0RwOJ6GAci8wMvYpKwXM+p5yjcQearnqzdIMAlcJu7un+yVGsTZuhMcpGLH2L+YIYzKRNgFhRRPaoJKo21m0ehosmuXsR/zTCOdxiWi9UVerJ7r5S/l+7QR8yPnTXrQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tx5HaOlF5WMgiHCbnL8ck9EVglskddJgBgzgphBcfhg=;
+ b=JmVEKs9vYVWjT3uIv1ioxHeO0cnhixvEBhJ9+bpI2oQ81WGcKzjxje9zWGu7shKQzZnIf0Re7Cs0pWv7WB1EQyDG0mrOz1Rw9ZXUgK7petsZfPj8rVy7nkU6shP8R253Hl/95sKCzIznuGpmZUqHfUQLKcsEpGLsvv1TuPRh8fU=
+Received: from MN2PR11MB4063.namprd11.prod.outlook.com (2603:10b6:208:13f::22)
+ by MN2PR11MB3758.namprd11.prod.outlook.com (2603:10b6:208:f6::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.20; Thu, 2 Apr
+ 2020 14:47:46 +0000
+Received: from MN2PR11MB4063.namprd11.prod.outlook.com
+ ([fe80::ade4:5702:1c8b:a2b3]) by MN2PR11MB4063.namprd11.prod.outlook.com
+ ([fe80::ade4:5702:1c8b:a2b3%7]) with mapi id 15.20.2856.019; Thu, 2 Apr 2020
+ 14:47:46 +0000
+From:   =?iso-8859-1?Q?J=E9r=F4me_Pouiller?= <Jerome.Pouiller@silabs.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+CC:     "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Kalle Valo <kvalo@codeaurora.org>
+Subject: Re: [PATCH 04/32] staging: wfx: remove "burst" mechanism
+Thread-Topic: [PATCH 04/32] staging: wfx: remove "burst" mechanism
+Thread-Index: AQHWCBVPTkK1g59Lj06+40sZrLfNVKhlzpUAgAAclgA=
+Date:   Thu, 2 Apr 2020 14:47:45 +0000
+Message-ID: <2993281.fr9RtUPQsq@pc-42>
+References: <20200401110405.80282-1-Jerome.Pouiller@silabs.com>
+ <20200401110405.80282-5-Jerome.Pouiller@silabs.com>
+ <20200402130526.GR2001@kadam>
+In-Reply-To: <20200402130526.GR2001@kadam>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Jerome.Pouiller@silabs.com; 
+x-originating-ip: [82.67.86.106]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 444f3428-2d65-4b2b-bf1d-08d7d714ce7f
+x-ms-traffictypediagnostic: MN2PR11MB3758:
+x-microsoft-antispam-prvs: <MN2PR11MB37580815BDFD6BF7FBDB90F493C60@MN2PR11MB3758.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 0361212EA8
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR11MB4063.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(7916004)(376002)(39850400004)(366004)(346002)(136003)(396003)(26005)(71200400001)(81156014)(54906003)(33716001)(316002)(6916009)(186003)(6506007)(86362001)(6486002)(478600001)(8936002)(76116006)(66446008)(66476007)(91956017)(4326008)(81166006)(6512007)(66946007)(64756008)(2906002)(9686003)(66556008)(8676002)(5660300002)(39026012);DIR:OUT;SFP:1101;
+received-spf: None (protection.outlook.com: silabs.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: bC7fT14yzI98ccEY6ZtlAx9o74t1ZzlwBZoJzOLqQn9W9/17zjRZeVQhQi2z6yRb/E9k/3a+t2UKnZ3n9KmJLguaZsmIIOYO7rMbSqyLBxNGjNZUw55VNCeAii7QQqqhGeEdcJS3sPxSLSWDrnvjSQ7oN0PCyBJYcKDa769oeQYO+u/tGBCGuiX71wnSarkSjsvBn24C2u0LB0q19elhVzMFjBbJVe9vJz8FFpXGJP15K7yzFOOb4F7X28lad+WM4e4oJGg1L+7VD0dFZ1P5cXirm1KMDbOVG0giZUgPqeq+/muuiEUeq9QnbpNJCCEJ8bFVQvu4MWLRpsymK86TeR0xhw3ks6Dr1hFCzDx7PeAisisyHv7c6QMzfGnDnM5kyrMWijsDTr8vqjYfRBNZiaD50fpa7ObYWOMwwCSD2+0HBO5fMS6/98JvAWBIu2I6+usrdiGQEIUe5L9pDRid7nsoU66VzlvdJvzfoMCO9eSahwxyTs8Q+rw0ChumBja/
+x-ms-exchange-antispam-messagedata: 9odATOtO0QhPTq2nAShPA3uNdLSMJJs/YnkXEXY0lj0iImpDumvCYlSWkZcuIZy06hhlg3PmhnaEFKytIn6oiKDCLyUbmpQY8v+kO860sZoCWjurZut1gPsxHJaxSdd8Rtjgf7qrxpTdRPSeQxVfmQ==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="iso-8859-1"
+Content-ID: <CC952B9C1189284E897517DD71B780CD@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email 2.24.1.751.gd10ce2899c
-X-Mutt-Fcc: =sent
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 444f3428-2d65-4b2b-bf1d-08d7d714ce7f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Apr 2020 14:47:45.9121
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: zx/YJxdY5VZnixGjai+QJ8SE7qSSsGWw1Nd/ejuGINiZEcstX9IMwL6vLwcIIEwHkz11QkCmmLxts7ZtM39zAA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB3758
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-vringh can now be built without IOTLB.
-Select IOTLB directly where it's used.
+On Thursday 2 April 2020 15:05:26 CEST Dan Carpenter wrote:
+[...]
+>                             ^^^^^^^^^
+> Not related to this this patch but this confused me initially.  UINT_MAX
+> would be more readable.
+>=20
+> The other unrelated question I had about this function was:
+>=20
+>    402          /* search for a winner using edca params */
+>    403          for (i =3D 0; i < IEEE80211_NUM_ACS; ++i) {
+>                                 ^^^^^^^^^^^^^^^^^
+> IEEE80211_NUM_ACS is 4.
+>=20
+>    404                  int queued;
+>    405
+>    406                  edca =3D &wvif->edca_params[i];
+>    407                  queued =3D wfx_tx_queue_get_num_queued(&wvif->wde=
+v->tx_queue[i],
+>    408                                  tx_allowed_mask);
+>    409                  if (!queued)
+>    410                          continue;
+>    411                  *total +=3D queued;
+>    412                  score =3D ((edca->aifs + edca->cw_min) << 16) +
+>    413                          ((edca->cw_max - edca->cw_min) *
+>    414                           (get_random_int() & 0xFFFF));
+>    415                  if (score < best && (winner < 0 || i !=3D 3)) {
+>                                                            ^^^^^^
+>=20
+> Why do we not want winner to be 3?  It's unrelated to the patch but
+> there should be a comment next to that code probably.
+>=20
+>    416                          best =3D score;
+>    417                          winner =3D i;
+>    418                  }
+>    419          }
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
+Indeed. In add, this code is useless. That's why I drop this code in
+patch 22/32.
 
-Applies on top of my vhost tree.
-Changes from v1:
-	VDPA_SIM needs VHOST_IOTLB
-
- drivers/vdpa/Kconfig  | 1 +
- drivers/vhost/Kconfig | 1 -
- 2 files changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/vdpa/Kconfig b/drivers/vdpa/Kconfig
-index 7db1460104b7..08b615f2da39 100644
---- a/drivers/vdpa/Kconfig
-+++ b/drivers/vdpa/Kconfig
-@@ -17,6 +17,7 @@ config VDPA_SIM
- 	depends on RUNTIME_TESTING_MENU
- 	select VDPA
- 	select VHOST_RING
-+	select VHOST_IOTLB
- 	default n
- 	help
- 	  vDPA networking device simulator which loop TX traffic back
-diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
-index f0404ce255d1..cb6b17323eb2 100644
---- a/drivers/vhost/Kconfig
-+++ b/drivers/vhost/Kconfig
-@@ -8,7 +8,6 @@ config VHOST_IOTLB
- 
- config VHOST_RING
- 	tristate
--	select VHOST_IOTLB
- 	help
- 	  This option is selected by any driver which needs to access
- 	  the host side of a virtio ring.
--- 
-MST
+--=20
+J=E9r=F4me Pouiller
 
