@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EA5419C637
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 17:45:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9002219C64E
+	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 17:47:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389519AbgDBPoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 11:44:38 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:41039 "EHLO
+        id S2389448AbgDBPrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 11:47:13 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:36167 "EHLO
         mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389458AbgDBPoi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 11:44:38 -0400
-Received: by mail-qt1-f194.google.com with SMTP id i3so3618029qtv.8
-        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 08:44:37 -0700 (PDT)
+        with ESMTP id S2388677AbgDBPrN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 11:47:13 -0400
+Received: by mail-qt1-f194.google.com with SMTP id m33so3663889qtb.3
+        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 08:47:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:message-id:from:to:cc:subject:in-reply-to:references
          :mime-version:content-disposition:content-transfer-encoding;
-        bh=TLNDcmEugJyCTREx8LMvzFodlzrJq+ZkY4LgYUCwf/g=;
-        b=u4Ssz7Pp7EGBFnoV5Nb+fa1b7zjwL/iAnBFZOTylrNtUHqtcV6jA8/NRDHjTD2OwTF
-         hDjmjHVHuQK7DB4QlQRcGpgOgH5B9TsgKoRp7y/xfRQpw9DAKrHSxqWrInhqfqcxZotp
-         me/PmdxWvtqawdxTXUoVWIL9YNSn0D2GUhcVhpUh9B6qbGYIaAV6saHErJAoMszx/297
-         5jiY9S3hP/laHzQvEGMDe8uSF2rNNphLnMy+QWzCBhIrsYRm7bHP/R+PNTBRXU04bMf2
-         FLsMfFdkLm924oIjyBrhYgdRrHbzdjFrgboh7qOr4KyG9r7qt1VpDk/7NnymHHJ3GrCM
-         1UuA==
+        bh=3SVv2ugMxS46wTzXW7lQ8FYVphicqiD0yWzt0V9lWqM=;
+        b=oM2mnNt+Da4yan/CuYqdjNv9lyRH+AZirotPamlybilH1mNPPBo31F4Y8ojXGMT/qR
+         jYAjKJSAPPyAJDKr860PDrnB9IkpPhiRksR3Agic+rnVT+acP0ffrg1xk5xpDkHxybhR
+         jd7j+l82iL/OWQLPXcLPd0apHAJ2maDZ08HRaqLzA9MFXphNI316MJaoz281teyZ59vG
+         J1G3rHH8prKqWkeuPgI/LyI6WfA/0lufjXHBXGZokOwEofVC8IiLc4XfvaJSc2Z2z+dU
+         vNfzODFAEYorTBDQb9Rr9Wy0P1Eulx9gujbV8668d37zBg/Lo9tpbHBWVpYdasO2kejW
+         +tKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
          :references:mime-version:content-disposition
          :content-transfer-encoding;
-        bh=TLNDcmEugJyCTREx8LMvzFodlzrJq+ZkY4LgYUCwf/g=;
-        b=FWNSejvfW/0t8401tTgbZy9InX+a8ZuDU8/z7Sq93X8SxHCecI0t/QuNA/157Kzq/F
-         3sO8GPM0rgSnsKBkcXRCjuhQFyRBP9In605/mY/Hr+I3c1+uZP19EBeuKXriXmfZqzMO
-         mbfH8vacP+TfFMkhbxkWvcCFnI1AOGC6Ogc2Kzx2S7kuAUJS0JD4FSkl05f+tQ49v0+Z
-         tbotBvTYt/6IAiuGx2fmJdl5RfUI4T33v2njhDlAumM9ISUj+d6upesUIX3TZ13t80iP
-         em8Itx85CmzZQwe6NJ1uwxEa//KXFgZtIMxI/4zr/AaGx82zHo1BsWTOxH/3qbLmpy6d
-         116g==
-X-Gm-Message-State: AGi0PuYGGsgAwDuSzZnWvgs5vbHOYDVmkIEzulj+MTpkrdpzpInW2QDf
-        kP4P/HvSc4g5zzY+ACHrmKc=
-X-Google-Smtp-Source: APiQypKU7exO/63Xm5noeunxGObNEu3zNMCzGXF96xebZXvdMe/wTklIeVs+tb6qKsLWpDcy7VgCCw==
-X-Received: by 2002:ac8:39c6:: with SMTP id v64mr3610184qte.344.1585842277298;
-        Thu, 02 Apr 2020 08:44:37 -0700 (PDT)
+        bh=3SVv2ugMxS46wTzXW7lQ8FYVphicqiD0yWzt0V9lWqM=;
+        b=WhasMgwRtfDgqPg8dmDHGwzclN2/bFiIE1lVBWCgK+ZRVU3IFk1xnGy67gIsGe8W2a
+         nmxFJ9YLVVw5YafXa8TDSf2psJYu59uXxIHIZ3LNRhkulK37Ru57PuLq0nd9o+oLZ0+1
+         hX5WqrqSjxrvt+iNVRXoAXUsMan/OflMkOtkx+Py+74HV0c3FaFE9qp6X99DqPQ1oerL
+         hmMvd5pnSHuii711S5i+AGF/30Gohmg/RMQgwwLYHuzTypptiJslD8pBVMM+9aS/pHR7
+         /Yzhmzf1pu+Rs6GNMf/h93vF+QILqAvKjTpYVHcIhM3MFBAV6sZ9CFkwxJ3E0YvJPWWS
+         vdFA==
+X-Gm-Message-State: AGi0PuYJ4TPsn5X8E2hSZs+gdZCu3Kal2YnGF9zuByxInmPLK+tYXI8v
+        QAEGpGBYNtKcw3Q3NyxmC+nOe8LS
+X-Google-Smtp-Source: APiQypIIXCpdFgZenUP6zPT6STB53cnU/6PTIvRFoshz+roMfPBteP3BpP959FOvJqnsYLIlwRAHaw==
+X-Received: by 2002:ac8:4f4f:: with SMTP id i15mr3503712qtw.329.1585842432230;
+        Thu, 02 Apr 2020 08:47:12 -0700 (PDT)
 Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id q24sm3987326qtk.45.2020.04.02.08.44.36
+        by smtp.gmail.com with ESMTPSA id u51sm4015897qth.46.2020.04.02.08.47.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Apr 2020 08:44:36 -0700 (PDT)
-Date:   Thu, 2 Apr 2020 11:44:35 -0400
-Message-ID: <20200402114435.GB1775094@t480s.localdomain>
+        Thu, 02 Apr 2020 08:47:11 -0700 (PDT)
+Date:   Thu, 2 Apr 2020 11:47:10 -0400
+Message-ID: <20200402114710.GD1775094@t480s.localdomain>
 From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Jason Yan <yanaijie@huawei.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Jason Yan <yanaijie@huawei.com>
-Subject: Re: [PATCH] net: dsa: make dsa_bridge_mtu_normalization() static
-In-Reply-To: <20200402071505.9999-1-yanaijie@huawei.com>
-References: <20200402071505.9999-1-yanaijie@huawei.com>
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] net: dsa: dsa_bridge_mtu_normalization() can be
+ static
+In-Reply-To: <20200402102819.8334-1-olteanv@gmail.com>
+References: <20200402102819.8334-1-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
@@ -64,13 +64,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2 Apr 2020 15:15:05 +0800, Jason Yan <yanaijie@huawei.com> wrote:
-> Fix the following sparse warning:
+On Thu,  2 Apr 2020 13:28:19 +0300, Vladimir Oltean <olteanv@gmail.com> wrote:
+> From: kbuild test robot <lkp@intel.com>
 > 
-> net/dsa/slave.c:1341:6: warning: symbol 'dsa_bridge_mtu_normalization'
-> was not declared. Should it be static?
+> This function is not called from any other C file.
 > 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Jason Yan <yanaijie@huawei.com>
+> Fixes: bff33f7e2ae2 ("net: dsa: implement auto-normalization of MTU for bridge hardware datapath")
+> Signed-off-by: kbuild test robot <lkp@intel.com>
 
-Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
+Did you mean Reported-by? I don't think kbuild test robot signed that.
+
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Jason sent a patch already.
+
+Thanks,
+Vivien
