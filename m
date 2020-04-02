@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E3BA19CC95
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 23:55:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEAC319CCA2
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 00:01:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389104AbgDBVy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 17:54:58 -0400
-Received: from mail-pl1-f174.google.com ([209.85.214.174]:37985 "EHLO
-        mail-pl1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726963AbgDBVy6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 17:54:58 -0400
-Received: by mail-pl1-f174.google.com with SMTP id w3so1866206plz.5;
-        Thu, 02 Apr 2020 14:54:57 -0700 (PDT)
+        id S2389444AbgDBWBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 18:01:19 -0400
+Received: from mail-pf1-f172.google.com ([209.85.210.172]:46993 "EHLO
+        mail-pf1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388630AbgDBWBT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 18:01:19 -0400
+Received: by mail-pf1-f172.google.com with SMTP id q3so2402419pff.13;
+        Thu, 02 Apr 2020 15:01:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=7F+dYfCQ5OWPWnYJ+4oT6s4iSyTj4WjRWONg/cEd36E=;
-        b=JqM4MTbqnbQYNbHDb/Lsa0LtXMRbw+NzgCYA24ggBcNrFXddNHmJAhGZQsJLuKYo4s
-         bs0tab/ETqaLdfSTosf9HwRUL5F4a5Pfr3ZspB+NeKfbn7JQFgjwq1E6jijg96qBhIgp
-         7GAbOXbilKqRYawJJFmjy9aLjx95L3+tFf1N9VsAgjgO+At467an9uJdpq1Uy/KoniDJ
-         bQwEDXY2p+4Mbpl+jQseArL2/BIcFywlIvNqZrAqLd0BlcKvEUufXgnZfS/wkb/cINzk
-         DhvVCZRjGhI6rpMJRdkDnU+qcbyFJh1V/Qbk8/g8SZ3kQgbp4RWZ+M0UodlgkQCk0uQx
-         FYPg==
+        bh=37dRGmZCWDfrsr/yQKihQyb75KURA+A7EOa/wR7mD64=;
+        b=sjgm/m4AZnRKO6c06PcaXwk/TpffUJrxlvFhAPOdY52ksIYg4p1rGpJYi3yBW1oycB
+         WYTDzPxGWQmbb3P8/1v1CbZMbMvnWF86a2Vg+0Qedo05TsaEuZOIvEcdtxFDzKqrFs2V
+         pCAwhIFw55F/tj6A/tev91MU5htGoJkKYsUT9oE2n7tyygf/T7g/usOjyWARPFL3K3I7
+         ReoMBsQopbU/UmrBoEPe7Dydif8B+61vKqYCFzDlwZmy/eIyPvzeqs0xbSyIhyVsyWWZ
+         U8bQdHJMEvE76ITftSiSKCTNXtkSWm0HUvmNWaAq7BnILc4i4NPRq5BbzDRxtJfaZDEk
+         91Og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to;
-        bh=7F+dYfCQ5OWPWnYJ+4oT6s4iSyTj4WjRWONg/cEd36E=;
-        b=lZlI4MagEOU6qIR/Q4TMgtS6B5Hb8dS2wUwFZoUFGU1sxv+CWaDWZvqbF1nm0BW1b9
-         f/NPPZkojbs4omsM7PzILgcdyjyrDyKeQTid3SFvYSbZDX/cGRdifeU2mMF1Y7gcfdb4
-         93qnVFk0Igkys4tkfOXvbhDkNHTG0LY8/3rsPTsd+Cjdq8OzPpL303+3myVUNFQn0Ptp
-         xlHpJvX9oMUca3vaLgHnfAeSUTp1bVHiq9eQvJw39MGPaLlPQDxW2Pqm6nAsbV3iN2BW
-         mApaJTmA0yOJXr81PCoX+eCbi8a84VWMW4d3je9gWhE4hO+4DnMw6gtmM+8LNaFRdg1m
-         75pA==
-X-Gm-Message-State: AGi0PuZMX63+LUmUgbNs7VWOOnDI++XUPHC3ZG1TdNN4ZQBofZKOhhHD
-        HAJdA+1q8CU+aGDPDXpNH2Y=
-X-Google-Smtp-Source: APiQypJ97zG5VKuAK+PO5tuBbNLDtn14oB6nlBq/SlFCldX5AX7HHFojs/qNPTvNdRbpC1SrZDeWNQ==
-X-Received: by 2002:a17:902:207:: with SMTP id 7mr5034143plc.216.1585864496372;
-        Thu, 02 Apr 2020 14:54:56 -0700 (PDT)
+        bh=37dRGmZCWDfrsr/yQKihQyb75KURA+A7EOa/wR7mD64=;
+        b=TAKY+xb8KAZr6S7NXs0DWoDp46hYt0j1gUv8RvmNTH5oWm7GGjJWTCbImhXuu9SAcl
+         /+9i7mLQKG1wzsGeu4YOOJAokOdvsSpg6o5LweJi69+ODwIcBT9i2oFeqVsB/axTcS3H
+         R95QgOe6Knx8ebuXNWISi2NC7ObPcw+S2EpN5xvY/48LQI4Ylix3zVtUez3HX4FhTiUD
+         ECtdD5VvqVNOoAGwKxfP/9EKHOYfchNo8jSAfz3B7jJifhJ+neG2dcggzVVX+AKtZhSp
+         7GJP/29/pYKhA2s2pEuxQaciRfTxtdMpIdnHrosawF2RpoDj4DcrjNoQA+L9CBTMMNeE
+         9VuA==
+X-Gm-Message-State: AGi0PuasoeCTXCEfa434FyTADBU6psPq/fGyvxH+HraIXjFrB1ig26O0
+        AgmpQz19/EDd4emguq4c7nA=
+X-Google-Smtp-Source: APiQypIvPfpNLZiQo7v+ODJh0Xn7WIGxyW+UjNFUNhb1e0t9AWYePXCdnmjZks23v7hZxX5C79cQsA==
+X-Received: by 2002:a63:fd11:: with SMTP id d17mr5507288pgh.213.1585864877440;
+        Thu, 02 Apr 2020 15:01:17 -0700 (PDT)
 Received: from ast-mbp ([2620:10d:c090:400::5:b3a4])
-        by smtp.gmail.com with ESMTPSA id y7sm4406310pfq.159.2020.04.02.14.54.54
+        by smtp.gmail.com with ESMTPSA id u3sm4555230pfb.36.2020.04.02.15.01.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Apr 2020 14:54:55 -0700 (PDT)
-Date:   Thu, 2 Apr 2020 14:54:52 -0700
+        Thu, 02 Apr 2020 15:01:16 -0700 (PDT)
+Date:   Thu, 2 Apr 2020 15:01:13 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+To:     Andrey Ignatov <rdna@fb.com>
+Cc:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andriin@fb.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Andrey Ignatov <rdna@fb.com>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Subject: Re: bpf: ability to attach freplace to multiple parents
-Message-ID: <20200402215452.dkkbbymnhzlcux7m@ast-mbp>
+Message-ID: <20200402220113.cqrh6hdjwt4ycvip@ast-mbp>
 References: <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com>
  <87tv2e10ly.fsf@toke.dk>
  <CAEf4BzY1bs5WRsvr5UbfqV9UKnwxmCUa9NQ6FWirT2uREaj7_g@mail.gmail.com>
@@ -64,30 +64,29 @@ References: <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com>
  <20200326195340.dznktutm6yq763af@ast-mbp>
  <87o8sim4rw.fsf@toke.dk>
  <20200402202156.hq7wpz5vdoajpqp5@ast-mbp>
- <87o8s9eg5b.fsf@toke.dk>
+ <20200402212433.GA12405@rdna-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <87o8s9eg5b.fsf@toke.dk>
+In-Reply-To: <20200402212433.GA12405@rdna-mbp.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 02, 2020 at 11:23:12PM +0200, Toke Høiland-Jørgensen wrote:
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
-> 
+On Thu, Apr 02, 2020 at 02:24:33PM -0700, Andrey Ignatov wrote:
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> [Thu, 2020-04-02 13:22 -0700]:
 > > On Fri, Mar 27, 2020 at 12:11:15PM +0100, Toke Høiland-Jørgensen wrote:
-> >> 
-> >> Current code is in [0], for those following along. There are two bits of
-> >> kernel support missing before I can get it to where I want it for an
-> >> initial "release": Atomic replace of the dispatcher (this series), and
-> >> the ability to attach an freplace program to more than one "parent".
-> >> I'll try to get an RFC out for the latter during the merge window, but
-> >> I'll probably need some help in figuring out how to make it safe from
-> >> the verifier PoV.
-> >
+> > > 
+> > > Current code is in [0], for those following along. There are two bits of
+> > > kernel support missing before I can get it to where I want it for an
+> > > initial "release": Atomic replace of the dispatcher (this series), and
+> > > the ability to attach an freplace program to more than one "parent".
+> > > I'll try to get an RFC out for the latter during the merge window, but
+> > > I'll probably need some help in figuring out how to make it safe from
+> > > the verifier PoV.
+> > 
 > > I have some thoughts on the second part "ability to attach an freplace
 > > to more than one 'parent'".
 > > I think the solution should be more generic than just freplace.
@@ -99,9 +98,6 @@ On Thu, Apr 02, 2020 at 11:23:12PM +0200, Toke Høiland-Jørgensen wrote:
 > > progs for every target bpf prog it's collecting stats about.
 > > I didn't add this ability to fentry/fexit/freplace only to simplify
 > > initial implementation ;) I think the time had come.
-> 
-> Yup, I agree that it makes sense to do the same for fentry/fexit.
-> 
 > > Currently fentry/fexit/freplace progs have single prog->aux->linked_prog pointer.
 > > It just needs to become a linked list.
 > > The api extension could be like this:
@@ -115,51 +111,27 @@ On Thu, Apr 02, 2020 at 11:23:12PM +0200, Toke Høiland-Jørgensen wrote:
 > > exactly matches to btf of another requested linked_prog and
 > > if they match it will attach the same prog to two target programs (in case of freplace)
 > > or two kernel functions (in case of fentry/fexit).
-> 
-> API-wise this was exactly what I had in mind as well.
-
-perfect!
-
+> > 
 > > Toke, Andrey,
 > > if above kinda makes sense from high level description
 > > I can prototype it quickly and then we can discuss details
 > > in the patches ?
 > > Or we can drill further into details and discuss corner cases.
 > 
-> I have one detail to discuss: What would the bpf_raw_tp_open() call
-> return on the second attachment? A second reference to the same bpf_link
-> fd as the initial attachment, or a different link?
+> That makes sense to me.
+> 
+> I've also been thinking of a way to "transition" ext prog from one
+> target program to another, but I had an impression that limiting number
+> of target progs to one for an ext prog is "by design" and hard to
+> change, and was looking at introducing a way to duplicate existing ext
+> prog by its fd but with different attach_prog_fd and attach_btf_id (smth
+> like BPF_PROG_DUP command) instead.
 
-It's a different link.
-For fentry/fexit/freplace the link is pair:
-  // target           ...         bpf_prog
-(target_prog_fd_or_vmlinux, fentry_exit_replace_prog_fd).
-
-So for xdp case we will have:
-root_link = (eth0_ifindex, dispatcher_prog_fd) // dispatcher prog attached to eth0
-link1 = (dispatcher_prog_fd, xdp_firewall1_fd) // 1st extension prog attached to dispatcher
-link2 = (dispatcher_prog_fd, xdp_firewall2_fd) // 2nd extension prog attached to dispatcher
-
-Now libxdp wants to update the dispatcher prog.
-It generates new dispatcher prog with more placeholder entries or new policy:
-new_dispatcher_prog_fd.
-It's not attached anywhere.
-Then libxdp calls new bpf_raw_tp_open() api I'm proposing above to create:
-link3 = (new_dispatcher_prog_fd, xdp_firewall1_fd)
-link4 = (new_dispatcher_prog_fd, xdp_firewall2_fd)
-Now we have two firewalls attached to both old dispatcher prog and new dispatcher prog.
-Both firewalls are executing via old dispatcher prog that is active.
-Now libxdp calls:
-bpf_link_udpate(root_link, dispatcher_prog_fd, new_dispatcher_prog_fd)
-which atomically replaces old dispatcher prog with new dispatcher prog in eth0.
-The traffic keeps flowing into both firewalls. No packets lost.
-But now it goes through new dipsatcher prog.
-libxdp can now:
-close(dispatcher_prog_fd);
-close(link1);
-close(link2);
-Closing (and destroying two links) will remove old dispatcher prog
-from linked list in xdp_firewall1_prog->aux->linked_prog_list and from
-xdp_firewall2_prog->aux->linked_prog_list.
-Notice that there is no need to explicitly detach old dispatcher prog from eth0.
-link_update() did it while replacing it with new dispatcher prog.
+I think cloning the whole program is useful.
+iirc cilium folks wanted an ability for clone to have a different 'flavor' of
+the program. Like re-verifying and re-optimizing with new dead code elimination
+when global data changed. Like loading a prog to manage traffic for one k8
+container with given IP, then cloning this prog for a different container with
+different IP. So clone is effectively a fast load where the verifier
+potentially doesn't need to do full verification of all paths. I think it's
+still a useful feature, but for this case, I hope, much simpler approach would do.
