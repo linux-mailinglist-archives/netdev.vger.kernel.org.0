@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA36619C388
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 16:03:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 935DF19C38C
+	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 16:03:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388441AbgDBODA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 10:03:00 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:40585 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732484AbgDBOC7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 10:02:59 -0400
-Received: by mail-wr1-f67.google.com with SMTP id s8so2200252wrt.7
-        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 07:02:58 -0700 (PDT)
+        id S2388577AbgDBODF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 10:03:05 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:42817 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388357AbgDBODE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 10:03:04 -0400
+Received: by mail-wr1-f68.google.com with SMTP id h15so4331715wrx.9
+        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 07:03:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=message-id:subject:from:to:cc:date:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=fqn7p/l7UwSVEcFtTYwLbDZZfP18GORIXD0/qCGLlHI=;
-        b=ayNgC39jRlZElPUbkmOCwcKapm+bAKDE9EO+rfAWTQhemjIpsA312DayojrbJb0+ll
-         iHbmk0q3yYT1AVAr731mbxjnPHwij/f0j+J7a/AvmA4GqCjSJKwXNMJiMf1GfRFjoC4C
-         nTgTujtXFyF6zy9tCsrkPAxxGsc5MUYHqjBaE=
+        bh=ROM0NZlL8/uavKppMYhFZmhpIoRWlNeIkHl4YW1IeXQ=;
+        b=dS6/5rCM4/vLn5Oy//VpCZAlhD7BDjbPJNcgTtkenuduZrGDvvix/PkbBWumdzIM4E
+         Ppf1+JtrgEOi+afPPtzZJOLKh0bg0GnikmJ1cEZK77soD4Q0bjb9naI/vzr1Y2VgQnka
+         SoD13n04fddvXe4/i+/tNfir/2jZslLYttg/k=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=fqn7p/l7UwSVEcFtTYwLbDZZfP18GORIXD0/qCGLlHI=;
-        b=kF729PDiRyf8Ux172Gn+9dhVztF8X3OQDx3a7//lrMFqNiCLo7RFcHq4i4m/CPNwWu
-         pBopKF/od4MXbSG9IEsjWWZr07hCp5/3sKkOY2L5fdFKbreNTMCvnM+nZUCyFHTxf+rH
-         cEZv4OEgwImqyoffpI2sjjyjlMChEe6gJO6To/Wip1LZso4IRZzuwOnxq/2AaGeB8CP8
-         cQS4T2JSoXEiKB9r9pBQ6bryETyLSL9oF+q5FxqLXe8aie0Js7gZ4wOVZMKg4+119eER
-         25GjK8W6/MYkCiYzoBbbA5Sg8308MGS1dHaI3ukWB0n2R2/lt99sgr4tPjAr74e3pa6d
-         1lzQ==
-X-Gm-Message-State: AGi0PuaDJfrs+75BSBG18UT5QDavn09N9zhwmjsl94Nw6bHRPqL988Pe
-        3MkP/civFfBja2RAx35n0VKNqw==
-X-Google-Smtp-Source: APiQypK+8UMfG1mJo59/786/qFE6iY0sUP7qJJoMnX9RQZSEFfXGn9lxL0DMeRUI8e6DiMcBzP3G6w==
-X-Received: by 2002:a5d:6045:: with SMTP id j5mr3654797wrt.401.1585836177591;
-        Thu, 02 Apr 2020 07:02:57 -0700 (PDT)
+        bh=ROM0NZlL8/uavKppMYhFZmhpIoRWlNeIkHl4YW1IeXQ=;
+        b=DCQ1A1wnkkzyZ37n/98V7hhplz6LuQ0bq3e6oMrLulQmYPR1f+1MsBrrbDQVfAwsCh
+         +htNfKTGR0PQRCTcaZGWc65Ofk4R6LScXuhSheJyj5yBYVrkhD4M6Tiz1qfi7u7m2AXI
+         v8wZHqRn6js1lp89CmvJ8H1AJ3NPfOXCYDnIZqEmpv8K/hLH4kDK0bBNHxz/UpxqRUrK
+         yQOo7+hGpulksgDpn/JU91bRBHUtJQs+2zijDHviwUfBD4yWGTcJNf8s5xfpFMc89vsT
+         OWoX/yukSsoiW6qFepCwaRgGhC/BAgg0lqvaBXH1M7M9rDs8qpXe+yPu6c2NLJzicpDv
+         HBFA==
+X-Gm-Message-State: AGi0PubPpQ0lmxqmwdCN9Y5tBqudwh2euYGuD7JgcYreKeYc3Y71tsGO
+        ORARqk0rOIoltJoP3Lq6xCGpSA==
+X-Google-Smtp-Source: APiQypLJTBUL+2+4Apj1ozbT3vs8eWnc03DsQNS2UzDY9+fj4p3EejYdi/YFzBetYav6I9LGsJP2xQ==
+X-Received: by 2002:a5d:498b:: with SMTP id r11mr3722281wrq.368.1585836182081;
+        Thu, 02 Apr 2020 07:03:02 -0700 (PDT)
 Received: from revest.fritz.box ([2a02:168:ff55:0:c8d2:c098:b5ec:e20e])
-        by smtp.gmail.com with ESMTPSA id b199sm7965195wme.23.2020.04.02.07.02.56
+        by smtp.gmail.com with ESMTPSA id p10sm7548565wrm.6.2020.04.02.07.03.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Apr 2020 07:02:56 -0700 (PDT)
-Message-ID: <2c93a2c75e55291473370d9805f8dd0484acd5a3.camel@chromium.org>
-Subject: Re: [PATCH 2/3] bpf: Add d_path helper
+        Thu, 02 Apr 2020 07:03:01 -0700 (PDT)
+Message-ID: <5968eda68bfec39387c34ffaf0ecc3ed5d8afd6f.camel@chromium.org>
+Subject: Re: [RFC 0/3] bpf: Add d_path helper
 From:   Florent Revest <revest@chromium.org>
 To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
@@ -55,10 +55,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         KP Singh <kpsingh@chromium.org>,
         Andrii Nakryiko <andriin@fb.com>, bgregg@netflix.com,
         Al Viro <viro@zeniv.linux.org.uk>
-Date:   Thu, 02 Apr 2020 16:02:55 +0200
-In-Reply-To: <20200401110907.2669564-3-jolsa@kernel.org>
+Date:   Thu, 02 Apr 2020 16:03:00 +0200
+In-Reply-To: <20200401110907.2669564-1-jolsa@kernel.org>
 References: <20200401110907.2669564-1-jolsa@kernel.org>
-         <20200401110907.2669564-3-jolsa@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.34.1-2+build1 
 MIME-Version: 1.0
@@ -69,49 +68,47 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, 2020-04-01 at 13:09 +0200, Jiri Olsa wrote:
-> + * int bpf_d_path(struct path *path, char *buf, u32 sz)
-> + *	Description
-> + *		Return full path for given 'struct path' object, which
-> + *		needs to be the kernel BTF 'path' object. The path is
-> + *		returned in buffer provided 'buf' of size 'sz'.
-> + *
-> + *	Return
-> + *		length of returned string on success, or a negative
-> + *		error in case of failure
-> + *
+> hi,
+> adding d_path helper to return full path for 'path' object.
+> 
+> I originally added and used 'file_path' helper, which did the same,
+> but used 'struct file' object. Then realized that file_path is just
+> a wrapper for d_path, so we'd cover more calling sites if we add
+> d_path helper and allowed resolving BTF object within another object,
+> so we could call d_path also with file pointer, like:
+> 
+>   bpf_d_path(&file->f_path, buf, size);
+> 
+> This feature is mainly to be able to add dpath (filepath originally)
+> function to bpftrace, which seems to work nicely now, like:
+> 
+>   # bpftrace -e 'kretfunc:fget { printf("%s\n", dpath(args->ret-
+> >f_path));  }' 
+> 
+> I'm not completely sure this is all safe and bullet proof and there's
+> no other way to do this, hence RFC post.
+> 
+> I'd be happy also with file_path function, but I thought it'd be
+> a shame not to try to add d_path with the verifier change.
+> I'm open to any suggestions ;-)
 
-You might want to add that d_path is ambiguous since it can add
-" (deleted)" at the end of your path and you don't know whether this is
-actually part of the file path or not. :) 
+First of all I want to mention that we are really interested in this
+feature so thanks a lot for bringing it up Jiri! I have experimented
+with similar BPF helpers in the past few months so I hope my input can
+be helpful! :)
 
-> +BPF_CALL_3(bpf_d_path, struct path *, path, char *, buf, u32, sz)
-> +{
-> +	char *p = d_path(path, buf, sz - 1);
-
-I am curious why you'd use sz - 1 here? In my experience, d_path's
-output is 0 limited so you shouldn't need to keep an extra byte for
-that (if that was the intention here).
-
-> +	int len;
-> +
-> +	if (IS_ERR(p)) {
-> +		len = PTR_ERR(p);
-> +	} else {
-> +		len = strlen(p);
-> +		if (len && p != buf) {
-> +			memmove(buf, p, len);
-
-Have you considered returning the offset within buf instead and let the
-BPF program do pointer arithmetics to find the beginning of the string?
-
-> +			buf[len] = 0;
-
-If my previous comment about sz - 1 is true, then this wouldn't be
-necessary, you could just use memmove with len + 1.
-
-> +		}
-> +	}
-> +
-> +	return len;
-> +}
+One of our use-cases is to gather information about execution events,
+including a bunch of paths (such as the executable command, the
+resolved executable file path and the current-working-directory) and
+then output them to Perf.
+Each of those paths can be up to PATH_MAX(one page) long so we would
+pre-allocate a data structure with a few identifiers (to later
+reassemble the event from userspace) and a page of data and then we
+would output it using bpf_perf_event_output. However, with three mostly
+empty pages per event, we would quickly fill up the ring buffer and
+loose many events.
+This might be a bit out-of-scope at this moment but one of the
+teachings we got from playing with such a helper is that we would also
+need a helper for outputting strings to Perf, pre-pended with a header
+buffer.
 
