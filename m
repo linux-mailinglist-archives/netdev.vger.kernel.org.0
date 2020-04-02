@@ -2,134 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64BE319C5BB
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 17:23:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D7BA19C621
+	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 17:41:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389235AbgDBPXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 11:23:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42102 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388905AbgDBPXm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Apr 2020 11:23:42 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4E5452072E;
-        Thu,  2 Apr 2020 15:23:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585841022;
-        bh=tFXECtvKJqnbi/Y7fXmSHCkN8icSS1fEboq9F8fqq2U=;
-        h=From:To:Cc:Subject:Date:From;
-        b=GCk0/yJ3EZtGNGrnmhGsyS1eJ6qDRDUR9jxKsUopYLMiUv5O0HNAxMnWw9/p6xEhk
-         2i7NA4TAf5n0GGtY1MSY3KGUjF5QTNsCJcktmngOC1Bd+Bs1CfNK7dpVkXfsXu5axy
-         Mf5Gdy+gICj4qth8Z7GqbuElcHTQsbXGvFGJoypQ=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@mellanox.com>,
-        Arjan van de Ven <arjan@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        Itay Aveksis <itayav@mellanox.com>
-Subject: [PATCH net] net/sched: Don't print dump stack in event of transmission timeout
-Date:   Thu,  2 Apr 2020 18:23:36 +0300
-Message-Id: <20200402152336.538433-1-leon@kernel.org>
-X-Mailer: git-send-email 2.25.1
+        id S2389429AbgDBPki (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 11:40:38 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:34162 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388972AbgDBPkh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 11:40:37 -0400
+Received: by mail-lf1-f65.google.com with SMTP id e7so3144533lfq.1;
+        Thu, 02 Apr 2020 08:40:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1+2erfkkbu3TLnQgP4FNOMyrP6eIdZu6/WJPUCTbdAA=;
+        b=QiJY6vAFVaADxgmOmeE784cvy5UzSNFL7qXv9U7OiG/ZMEuwa2vEwY6vVWcaccQ7na
+         GbAEDP+GKI/k7Z4eVfyfmSz10A/spb4g63pOAA3oq6T/nxAAd3YUVZOuzoqxoF3wW+PZ
+         qFpyF74CkGNiCdMXkCbmmeBtF20TG/+rjyFJSvz4kQY/Euvsp7hRzDziIIm0nnx9VHw/
+         j37WbJT9HhQEk3LDifhUHXz33V1hGVfNvTalDT9wQtshYzrIjXb72WeZPCKw2+9LATR4
+         8/6cxXD8+ZnYsyxq2OTIkr6OKTFV3DJOYwoLKFDF0/QHs1li4pbHyfpO2TP66E/0SDuZ
+         hxeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1+2erfkkbu3TLnQgP4FNOMyrP6eIdZu6/WJPUCTbdAA=;
+        b=UWKsQ/EjjHANV9fLPgBni5oyPbDuTlHhQ7B8wH9bW+p1Q45etwe9a2FOLVkUNUMVwG
+         W30k76KOx3JjcoffDPv7ki0pITqam0iQPabpmw5peoFqbgZoKsc2e3zLIOmWvnvVMcHj
+         fLKazb0hpYPmrsuvJA7R5nWhb9trTj1ptwUGsZXSuU71n5GN2eZDT+XG0UvRgKyVYLxT
+         Qtl4PH9QudOew7it/NY9BgHM0q1pSuFj/mJP7dlq7psaU5SRp3jhALwjwMbET3Z4ftGk
+         7TCNx26wLUSlpC9QPJJECnhhTt/6WaMDTB8RisjQLyr9h0lQw+6sPwHtinIjqy15PN4Y
+         5g0w==
+X-Gm-Message-State: AGi0PuaaMPw8GauXvn0zkVSKsxgM5ie5/7v0dnmfT58q5A6gOTCERg1I
+        US9GSYayGON622+QjrYpVqotdirxuNQmKxKsZ88=
+X-Google-Smtp-Source: APiQypIdvYJc6O/exwVrWe6ToU6iOSXmBNO1FTBzi81ghhxfIzKlP+jfokCDAjIOMT0OgNS+I5in+pfDYpMcW1SGxZc=
+X-Received: by 2002:a19:40ca:: with SMTP id n193mr2503030lfa.196.1585842035185;
+ Thu, 02 Apr 2020 08:40:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <fb5ab568-9bc8-3145-a8db-3e975ccdf846@gmail.com>
+ <20200331060641.79999-1-maowenan@huawei.com> <7a1d55ad-1427-67fe-f204-4d4a0ab2c4b1@gmail.com>
+ <20200401181419.7acd2aa6@carbon> <ede2f407-839e-d29e-0ebe-aa39dd461bfd@gmail.com>
+ <20200402110619.48f31a63@carbon>
+In-Reply-To: <20200402110619.48f31a63@carbon>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 2 Apr 2020 08:40:23 -0700
+Message-ID: <CAADnVQKEyv_bRhEfu1Jp=DSggj_O2xjJyd_QZ7a4LJY+dUO2rg@mail.gmail.com>
+Subject: Re: [PATCH net v2] veth: xdp: use head instead of hard_start
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Mao Wenan <maowenan@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, jwi@linux.ibm.com,
+        jianglidong3@jd.com, Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@mellanox.com>
+On Thu, Apr 2, 2020 at 2:06 AM Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+>
+> On Thu, 2 Apr 2020 09:47:03 +0900
+> Toshiaki Makita <toshiaki.makita1@gmail.com> wrote:
+>
+> > On 2020/04/02 1:15, Jesper Dangaard Brouer wrote:
+> > ...
+> > > [PATCH RFC net-next] veth: adjust hard_start offset on redirect XDP frames
+> > >
+> > > When native XDP redirect into a veth device, the frame arrives in the
+> > > xdp_frame structure. It is then processed in veth_xdp_rcv_one(),
+> > > which can run a new XDP bpf_prog on the packet. Doing so requires
+> > > converting xdp_frame to xdp_buff, but the tricky part is that
+> > > xdp_frame memory area is located in the top (data_hard_start) memory
+> > > area that xdp_buff will point into.
+> > >
+> > > The current code tried to protect the xdp_frame area, by assigning
+> > > xdp_buff.data_hard_start past this memory. This results in 32 bytes
+> > > less headroom to expand into via BPF-helper bpf_xdp_adjust_head().
+> > >
+> > > This protect step is actually not needed, because BPF-helper
+> > > bpf_xdp_adjust_head() already reserve this area, and don't allow
+> > > BPF-prog to expand into it. Thus, it is safe to point data_hard_start
+> > > directly at xdp_frame memory area.
+> > >
+> > > Cc: Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>
+> >
+> > FYI: This mail address is deprecated.
+> >
+> > > Fixes: 9fc8d518d9d5 ("veth: Handle xdp_frames in xdp napi ring")
+> > > Reported-by: Mao Wenan <maowenan@huawei.com>
+> > > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> >
+> > FWIW,
+> >
+> > Acked-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
+>
+> Thanks.
+>
+> I have updated your email and added your ack in my patchset.  I will
+> submit this officially once net-next opens up again[1], as part my
+> larger patchset for introducing XDP frame_sz.
 
-In event of transmission timeout, the drivers are given an opportunity
-to recover and continue to work after some in-house cleanups.
-
-Such event can be caused by HW bugs, wrong congestion configurations
-and many more other scenarios. In such case, users are interested to
-get a simple  "NETDEV WATCHDOG ... " print, which points to the relevant
-netdevice in trouble.
-
-The dump stack printed later was added in the commit b4192bbd85d2
-("net: Add a WARN_ON_ONCE() to the transmit timeout function") to give
-extra information, like list of the modules and which driver is involved.
-
-While the latter is already printed in "NETDEV WATCHDOG ... ", the list
-of modules rarely needed and can be collected later.
-
-So let's remove the WARN_ONCE() and make dmesg look more user-friendly in
-large cluster setups.
-
-[  281.170584] ------------[ cut here ]------------
-[  281.197120] NETDEV WATCHDOG: ib1 (mlx4_core): transmit queue 0 timed out
-[  281.198521] WARNING: CPU: 0 PID: 0 at net/sched/sch_generic.c:442 dev_watchdog+0x232/0x240
-[  281.200259] Modules linked in: bonding ipip tunnel4 geneve ip6_udp_tunnel udp_tunnel ip6_gre ip6_tunnel tunnel6 ip_gre gre ip_tunnel mlx4_en ptp pps_core mlx4_ib mlx4_core rdma_ucm ib_uverbs ib_ipoib ib_umad openvswitch nsh xt_MASQUERADE nf_conntrack_netlink nfnetlink iptable_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 br_netfilter overlay ib_srp scsi_transport_srp rpcrdma ib_iser libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm ib_core [last unloaded: mlx4_core]
-[  281.208290] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.6.0-rc5-J14907-G268960df60ee #1
-[  281.209954] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
-[  281.212281] RIP: 0010:dev_watchdog+0x232/0x240
-[  281.213260] Code: 85 c0 75 e8 eb a5 4c 89 ef c6 05 dd 9c c4 00 01 e8 d3 b6 fb ff 44 89 e1 4c 89 ee 48 c7 c7 40 54 0b 82 48 89 c2 e8 10 f1 a0 ff <0f> 0b eb 86 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 c7 47
-[  281.217078] RSP: 0018:ffffc90000003e70 EFLAGS: 00010282
-[  281.218210] RAX: 0000000000000000 RBX: ffff8884521c3ce8 RCX: 0000000000000007
-[  281.219709] RDX: 0000000000000007 RSI: 0000000000000086 RDI: ffff88846fc18230
-[  281.221206] RBP: ffff88846daad440 R08: 0000000000000000 R09: 0000000000000249
-[  281.222697] R10: 0000000000000774 R11: ffffc90000003d25 R12: 0000000000000000
-[  281.224202] R13: ffff88846daad000 R14: ffff88846daad440 R15: 0000000000000082
-[  281.225733] FS:  0000000000000000(0000) GS:ffff88846fc00000(0000) knlGS:0000000000000000
-[  281.227472] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  281.228713] CR2: 00007efd12565000 CR3: 000000043cd3a002 CR4: 0000000000160eb0
-[  281.230241] Call Trace:
-[  281.230900]  <IRQ>
-[  281.231469]  ? qdisc_put_unlocked+0x30/0x30
-[  281.232437]  call_timer_fn+0x30/0x130
-[  281.233300]  run_timer_softirq+0x18b/0x490
-[  281.234229]  ? timerqueue_add+0x96/0xb0
-[  281.235119]  ? enqueue_hrtimer+0x3d/0x90
-[  281.236029]  __do_softirq+0xdf/0x2e5
-[  281.236864]  irq_exit+0xa0/0xb0
-[  281.237621]  smp_apic_timer_interrupt+0x72/0x120
-[  281.238652]  apic_timer_interrupt+0xf/0x20
-[  281.239581]  </IRQ>
-[  281.240147] RIP: 0010:default_idle+0x2d/0x150
-[  281.241133] Code: 00 00 8b 05 3d 75 a7 00 41 54 55 65 8b 2d 6b e0 71 7e 53 85 c0 7f 29 8b 05 c8 97 f7 00 85 c0 7e 07 0f 00 2d 37 56 52 00 fb f4 <8b> 05 15 75 a7 00 65 8b 2d 46 e0 71 7e 85 c0 7f 7f 5b 5d 41 5c c3
-[  281.244935] RSP: 0018:ffffffff82203ea0 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
-[  281.246584] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000001
-[  281.248082] RDX: 000000000010db42 RSI: ffffffff82203e40 RDI: 000000416d8a7440
-[  281.249581] RBP: 0000000000000000 R08: 0000000000000001 R09: 00000041770da407
-[  281.251069] R10: 0000000000000264 R11: 0000000000000000 R12: ffffffff82211840
-[  281.252545] R13: 0000000000000000 R14: 0000000000000000 R15: ffffffff82211840
-[  281.254036]  do_idle+0x1ee/0x210
-[  281.254809]  cpu_startup_entry+0x19/0x20
-[  281.255713]  start_kernel+0x490/0x4af
-[  281.257577]  secondary_startup_64+0xa4/0xb0
-[  281.259147] ---[ end trace 78f566c0214a2cb0 ]---
-[  281.260866] ib1: transmit timeout: latency 1120 msecs
-[  281.262730] ib1: queue stopped 1, tx_head 167838, tx_tail 167710
-
-Fixes: b4192bbd85d2 ("net: Add a WARN_ON_ONCE() to the transmit timeout function")
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
----
- net/sched/sch_generic.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index 6c9595f1048a..c12530fe8b21 100644
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -439,8 +439,9 @@ static void dev_watchdog(struct timer_list *t)
-
- 			if (some_queue_timedout) {
- 				trace_net_dev_xmit_timeout(dev, i);
--				WARN_ONCE(1, KERN_INFO "NETDEV WATCHDOG: %s (%s): transmit queue %u timed out\n",
--				       dev->name, netdev_drivername(dev), i);
-+				pr_info_once("NETDEV WATCHDOG: %s (%s): transmit queue %u timed out\n",
-+					     dev->name,
-+					     netdev_drivername(dev), i);
- 				dev->netdev_ops->ndo_tx_timeout(dev, i);
- 			}
- 			if (!mod_timer(&dev->watchdog_timer,
---
-2.25.1
-
+It looks like bug fix to me.
+The way I read it that behavior of bpf_xdp_adjust_head() is a bit
+buggy with veth netdev,
+so why wait ?
