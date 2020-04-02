@@ -2,126 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93FBD19BDDF
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 10:48:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E58D19BE56
+	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 11:04:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387758AbgDBIsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 04:48:12 -0400
-Received: from mout.kundenserver.de ([212.227.17.13]:39989 "EHLO
+        id S2387880AbgDBJEh convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 2 Apr 2020 05:04:37 -0400
+Received: from mout.kundenserver.de ([212.227.17.13]:59771 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728803AbgDBIsL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 04:48:11 -0400
-Received: from methusalix.internal.home.lespocky.de ([92.117.37.184]) by
- mrelayeu.kundenserver.de (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis)
- id 1M1qfu-1jM8Ra0HRw-002CQL; Thu, 02 Apr 2020 10:48:06 +0200
-Received: from falbala.internal.home.lespocky.de ([192.168.243.94])
-        by methusalix.internal.home.lespocky.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <post@lespocky.de>)
-        id 1jJvW7-0002JG-6M; Thu, 02 Apr 2020 10:48:04 +0200
-Date:   Thu, 2 Apr 2020 10:48:02 +0200
-From:   Alexander Dahl <post@lespocky.de>
-To:     linux-doc@vger.kernel.org
-Cc:     Florian Wolters <florian@florian-wolters.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Karsten Keil <isdn@linux-pingi.de>
-Subject: doc: Leftovers from CAPI remove?
-Message-ID: <20200402084801.soysci5abrazctog@falbala.internal.home.lespocky.de>
-Mail-Followup-To: linux-doc@vger.kernel.org,
-        Florian Wolters <florian@florian-wolters.de>,
-        Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Karsten Keil <isdn@linux-pingi.de>
+        with ESMTP id S2387473AbgDBJEh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 05:04:37 -0400
+Received: from mail-qk1-f172.google.com ([209.85.222.172]) by
+ mrelayeu.kundenserver.de (mreue109 [212.227.15.145]) with ESMTPSA (Nemesis)
+ id 1MRmsG-1jn6Qy3Gsk-00TBEG; Thu, 02 Apr 2020 11:04:34 +0200
+Received: by mail-qk1-f172.google.com with SMTP id x3so3159124qki.4;
+        Thu, 02 Apr 2020 02:04:34 -0700 (PDT)
+X-Gm-Message-State: AGi0PuYjs9YqvhaDo1KAmTmos3P0evqO5bQUe8OSJuxkk/ELur8A37GD
+        AoYnd+PQG1X/wgsfeLylPcRUkrSeZiqA5l8td/A=
+X-Google-Smtp-Source: APiQypKBfQsYykcFkIqBe9jjU7uR9/oyFhIFaqxhu6VwqBavKfsvvOXvcqhwXwws5y4l+ZBftGfEqBmfQCje4QargqA=
+X-Received: by 2002:a37:3c1:: with SMTP id 184mr763949qkd.352.1585818273400;
+ Thu, 02 Apr 2020 02:04:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="tvymzrgbesooq62h"
-Content-Disposition: inline
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Scan-Signature: 2e89b8130284c79aa2484230574bb425
-X-Spam-Score: -2.7 (--)
-X-Provags-ID: V03:K1:WoG4PWMIhmmyPPgJD5uwY33yQ9PtnaOtaZPSlEfdVcmnpmqeluR
- PPGb9KGTHZfe0w0zIGMMRFNqe6NImR7eez2JoPhmPO55ZPinAGXqOkT2ZHrgn1aoKD4U4wl
- nvnTSeIrSUbjhFJ2UuGBccjwYbUPhikzs52b6+aNeGRkCifqyzRY+804Z2VfVqKiSUIpKeK
- 6I2jiH/25i4yy2qSPOnjA==
+References: <20200402084801.soysci5abrazctog@falbala.internal.home.lespocky.de>
+In-Reply-To: <20200402084801.soysci5abrazctog@falbala.internal.home.lespocky.de>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 2 Apr 2020 11:04:17 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a05J5b2UkkqYgM1MvOb79cax-rPd=htzHYN5+GZSkeMjw@mail.gmail.com>
+Message-ID: <CAK8P3a05J5b2UkkqYgM1MvOb79cax-rPd=htzHYN5+GZSkeMjw@mail.gmail.com>
+Subject: Re: doc: Leftovers from CAPI remove?
+To:     "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Florian Wolters <florian@florian-wolters.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Networking <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Karsten Keil <isdn@linux-pingi.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:a+/OOngsJ21qtkmsP4JZkmDMtFpklq8rxnT8dcDChrwKSPrjAbu
+ 4xzgvWZZ0z+58hEkwkGeGGEbhP2dp9cQ0gUJ+2QkH6HzmGzXDr2tNLnHRkBOU6qMJXrJxij
+ H/MkVS+Z5HaWffv8m56Ko/ibB44b1kOhDRBSAXYMHybLIARWKNiZ2zG0RU3Buhl6aYmAsfK
+ +w3XpIc/Ln7qYYakvbjmw==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:V7YSUOLdg88=:cv5XUDbbL9T9LS2nNpo6b9
- 4tXadBGkI96fYpa/E8KBVL6S2OuIEF9OG7TTZF5WUlaTznlOJsxOxxZJGSABzTS5alXq+LTdE
- Y5YeJnQhrJ8dXjrvk9FPrUsd/+c3bPxDDdv21ibbyELleqtPfKhfBzf2eoFfuAyIQBe+FQL0Q
- klxl1CY/49nYe4yrmjkG/FRkDrdQSWKMnevd1yh0jIW8tDj3pZPxOyMOL3XmYZzy44qc3lBZV
- RwDb8wEBuZt6/KHg3Gixbci0fNcMzGanl26YKd6QnEUJTwcpytqSwDJ8Mt9p6u7vLE4zhYXhz
- QlrrA2OEqLB1LVCVvhvZuZUUCnNftDsC9Yg//M6gchvFM7FEirAbrnyK1/WsanThvchm0Xztg
- i54+KiK0b7U4plIJj2NemEYx2XAPChAjhMIFEDcOWgLJStlF3xyltakcvzdhA/EKaWZF4N0Lx
- FTnphaorlRzpqbwd5UPxEXJuryWvNJU7chBMD1bSz9wGJGqpMy+Xx5WYNTCUff8swlqLJSOfX
- UHGSUGNMWtH1DvRCKebczkscOrk6HrpCSmK1t1Vtc87q6stBb7ALeOEF8/WDrTTddYLLZqdmQ
- UGWso3tmtwcTIPd/2y3caYbHAe872rkdt9gpK/cXvDykxT0yseiZbuDPadsq1Zv5jzkMzeENA
- DkJp7ZGt3yWufUqQWafVRQaq0QYtclqoBFaaxySTcC1gJN4L6quaN+c7ovrx9igJMXW2E74DU
- Zc50L2E3sqtwvGJ3qSYeKpj+3iND7ym3qM5W0ZuovDfvg16gKs9+nAVUfut7I5g7MEQpJCDwZ
- aKdmQkzP0RBwbaTO2h4Q1HgUtVTLdlMUD5i/Ooe5+FfxbOI0VRP12VZa18bXQ6kegLw3X4x
+X-UI-Out-Filterresults: notjunk:1;V03:K0:PD4TBDejJFg=:UCUxr+ccPsV8MuC2+ijdmO
+ J35z7IUjx/ATnl3A2Dqg2f1k0ZFT1j5OB9N+tyRoAf/8vd6jsN2s2Qftx/BzNOPmUehJqiX73
+ oqY/wqajEmewIorATtWPWZC+4Gm0cP8SGYHxUtki9d3uFOFi2+K2BydSAKGMQGGaz2Cfj/V0m
+ U2iCtz7qBC6J9W/Thwtxs8S/pxhTqvwO2wH9ZANp/0bvF/Hq5ZTfcMgd2ayRCewuDA/OaGWmx
+ WVM6PuyIQNpawVsw6JQAnnkUaQUc6ETedXPFqSZO7pKRkcOb2j3vdy0nl0tG8o8/5fj2+d6AS
+ TTp/MrqIP2mDVbXsmRjwN8RF+Qm+V54W6gLqxb/W2dJaA5xlgYWGFohndNeLmbe2lW59T0QP0
+ YeHGCE3Xycw5TC4aBMJhRzHz9qpjbWmq/Ysb7MsYUeIoJfnMUrM53QntKIgnJp2WenCXFdTqb
+ E6WWtI2OGZ22wHhZX+1wJhZJYCF5kWlMt1wpQM/SMa1ne+gaIqNgno6CLGqSCT6ubU9hYwJ9b
+ ql9B/vbMUtpBZeJ9cFPFquIzifg1qsd+N6enFC3suZTUpQ6p1qa6OiDbjo0EwWWL5c/V4voUW
+ LvNV9nHecVwpoX5wm/L5tUlFgnelbeEyqg4vL+IRx5iVeO2UDjxAxLfQRDrapV2O1dKmsCn9Y
+ gTkMa86sBamu1IKzGwdH6F+n0jhMnTll1b13YelzD/KY0MsBtqgk4VzAXiXfleRd457Fnrxf0
+ s73tqZuj5FfRtkEUf0kDMxNrOkVrGBxwHzndDL+OiKpb0TMInXzyiRKnFCXwhzhonNn2S5Bd6
+ cieGNj4zZS/Y4Gt7ghEqW901nZIrjVD7dbc6ZrZMzIOj5ib+C0=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Apr 2, 2020 at 10:48 AM Alexander Dahl <post@lespocky.de> wrote:
+>
+> Hei hei,
+>
+> when accidentally building an old Fritz PCI driver¹ against v5.6.1 we
+> hit this build error (which this mail is not about):
+>
+> /home/florian/.fbr/fbr-4.0-trunk-x86_64/buildroot/output/build/fcpci-2.6-43.x86_64-5.6.1/fritz/src/main.c:371:3:
+> Fehler: Implizite Deklaration der Funktion »register_capi_driver«; meinten Sie »register_chrdev«?  [-Werror=implicit-function-declaration]
+>
+> A quick grep in master revealed there are still hints to the function
+> 'register_capi_driver()' in file Documentation/isdn/interface_capi.rst
+>
+> I suppose after removing capi parts with f59aba2f7579 ("isdn: capi:
+> dead code removal") and merging with 7ba31c3f2f1e ("Merge tag
+> 'staging-5.6-rc1' of
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging") these
+> are leftovers in the documentation, which should be removed, right?
 
---tvymzrgbesooq62h
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Ah, it seems I missed the removal of 'struct capi_driver' that is no longer
+referenced anywhere. I removed the documentation for all code I removed,
+but stopped after recursively removing more unused code after I had
+not found much any more. I can submit this small patch if we think
+it helps, though it wouldn't change much otherwise.
 
-Hei hei,
+diff --git a/Documentation/isdn/interface_capi.rst
+b/Documentation/isdn/interface_capi.rst
+index fe2421444b76..897175cffd8f 100644
+--- a/Documentation/isdn/interface_capi.rst
++++ b/Documentation/isdn/interface_capi.rst
+@@ -70,19 +70,6 @@ messages for that application may be passed to or
+from the device anymore.
+ 4. Data Structures
+ ==================
 
-when accidentally building an old Fritz PCI driver=C2=B9 against v5.6.1 we
-hit this build error (which this mail is not about):
+-4.1 struct capi_driver
+-----------------------
+-
+-This structure describes a Kernel CAPI driver itself. It is used in the
+-register_capi_driver() and unregister_capi_driver() functions, and contains
+-the following non-private fields, all to be set by the driver before calling
+-register_capi_driver():
+-
+-``char name[32]``
+-       the name of the driver, as a zero-terminated ASCII string
+-``char revision[32]``
+-       the revision number of the driver, as a zero-terminated ASCII string
+-
+ 4.2 struct capi_ctr
+ -------------------
 
-/home/florian/.fbr/fbr-4.0-trunk-x86_64/buildroot/output/build/fcpci-2.6-43=
-=2Ex86_64-5.6.1/fritz/src/main.c:371:3:
-Fehler: Implizite Deklaration der Funktion =C2=BBregister_capi_driver=C2=AB=
-; meinten Sie =C2=BBregister_chrdev=C2=AB?  [-Werror=3Dimplicit-function-de=
-claration]
+diff --git a/include/linux/isdn/capilli.h b/include/linux/isdn/capilli.h
+index 12be09b6883b..3c546103f60e 100644
+--- a/include/linux/isdn/capilli.h
++++ b/include/linux/isdn/capilli.h
+@@ -81,15 +81,4 @@ void capi_ctr_ready(struct capi_ctr * card);
+ void capi_ctr_down(struct capi_ctr * card);
+ void capi_ctr_handle_message(struct capi_ctr * card, u16 appl, struct
+sk_buff *skb);
 
-A quick grep in master revealed there are still hints to the function
-'register_capi_driver()' in file Documentation/isdn/interface_capi.rst
+-// ---------------------------------------------------------------------------
+-// needed for AVM capi drivers
+-
+-struct capi_driver {
+-       char name[32];                          /* driver name */
+-       char revision[32];
+-
+-       /* management information for kcapi */
+-       struct list_head list;
+-};
+-
+ #endif                         /* __CAPILLI_H__ */
 
-I suppose after removing capi parts with f59aba2f7579 ("isdn: capi:
-dead code removal") and merging with 7ba31c3f2f1e ("Merge tag
-'staging-5.6-rc1' of
-git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging") these
-are leftovers in the documentation, which should be removed, right?
+> ¹we still have basic ISDN support in fli4l [1], although no one is
+> motivated to maintain it, there are still users, mainly with local
+> PBX installations …
 
-Greets
-Alex
+Which of the many isdn stacks (i4l, kernelcapi, misdn, misdn2, ...)
+do you think are still in use there? Do you know of CAPI users
+that are forced to stay on linux-5.4.y after the removal?
 
-=C2=B9we still have basic ISDN support in fli4l [1], although no one is
-motivated to maintain it, there are still users, mainly with local
-PBX installations =E2=80=A6
-
-[1] http://www.fli4l.de/
-
---=20
-/"\ ASCII RIBBON | =C2=BBWith the first link, the chain is forged. The first
-\ / CAMPAIGN     | speech censured, the first thought forbidden, the
- X  AGAINST      | first freedom denied, chains us all irrevocably.=C2=AB
-/ \ HTML MAIL    | (Jean-Luc Picard, quoting Judge Aaron Satie)
-
---tvymzrgbesooq62h
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEwo7muQJjlc+Prwj6NK3NAHIhXMYFAl6Fpr0ACgkQNK3NAHIh
-XMYTqw/7BhBxs9BmkUSB9GoV3D8XvYV4hqbHz5ntqTgPMJw7ZFoqbtygxpeWAMTJ
-mxNUmHBtOCPOM/yF00zmueYunhuHLP/OCMol9KaLY+CK8AZtit102ja3kvjSVU2f
-5DK1Lt8CR5VQIUp78+/FFIgK3DBLDOWhQHhNWTGcO+MDcqimMCfXdUMQwZmxKDIg
-YUo3qaK19f5nnehOj5fNRnBWlYNTtnsw4lNytq5poRCYDXSojmT7bNbnETllHU4Q
-/r58jjWPynRv6vZg36H6mnmLAC+er3Eo+FgqZnveu6QYitsUdvDCT5Q2ieXp1tJb
-yCIQRRezDA3Uh/5HRghjwU/H/5zhX/28FQsmeF/lRd06L6o+eBhJps32vcXV9Oux
-25SUMFI6RMD2AtWB1VnZqEgIqWIsepDFOlxtDVmLhusm00QSV96l1l9jtIH47t4d
-fJ7hOVGVqJfYweYg2axz+r4/MHHgSvmymrDdCf4cQZTw4AsBPasE49mWfmLNPnpU
-o7Ej5X8cyVoRrfjxgRFppAzK7n9ug7lLd3eAhJ4ziYKHZzG2EiK6nsebYUT+A5F5
-RnueuvXVEAc16RKUts4yYM/7gMkpWchd0hGdG5pQ7S8++pgyaPJcqW0tXIXWvT5v
-rdgBTSqIk+vw68LX1f2xG/KUXsCKi8urabu88lr/PyukNhbIucQ=
-=hRnY
------END PGP SIGNATURE-----
-
---tvymzrgbesooq62h--
+      Arnd
