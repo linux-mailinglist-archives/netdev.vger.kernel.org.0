@@ -2,43 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ABE519C8BD
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 20:23:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B16AB19C8F6
+	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 20:43:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389128AbgDBSXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 14:23:15 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:55539 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727734AbgDBSXO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 14:23:14 -0400
-Received: by mail-io1-f70.google.com with SMTP id k5so3599614ioa.22
-        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 11:23:12 -0700 (PDT)
+        id S2389281AbgDBSnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 14:43:13 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:33280 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388764AbgDBSnN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 14:43:13 -0400
+Received: by mail-io1-f71.google.com with SMTP id w25so3729428iom.0
+        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 11:43:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=NNlrRJrUXWvHWzrnTaBtXk0/+RiU5njBUqCM+N6MKjo=;
-        b=SjiHJV2n0ahTkEP4ALhzFJoTO5UenmzrYzN/2pT9GMJLYV02z1WdjuAcQAniPp7KrM
-         vvRwMrYqXB5/IDqJSYZwxrQDFzuVjShLpoUKpSgIm4WO47MbP0cJHDGiBdGYAZND9bbf
-         QG+joMJTTRbq/wx/FO4lYbC4Mw1V6n/WjT/R3DXSck+rgKB3f01SkCJ6Lef8y6vAZqTs
-         tgbB7TqsUFZb1lJZMwMC29WaFym22UYNJhEBBgToioLC1LHufLlp8eZy2BDP7m1V8NKu
-         rppvz8CR8dbJjRcL+xO0jmZUS6eL+qYVVBXMnDlb6GKEGXQD0It56vivZrdt8+Twoa18
-         It0g==
-X-Gm-Message-State: AGi0PuZL8/lAfYhQHmKj6+8xe9cpS6pTmKVx33kR8SXidWNdfOZGeE4R
-        aLd0s5dnvaJCVxMzhyxzkP6KFSo3wS1NmyS/Rdm5dbCquiEV
-X-Google-Smtp-Source: APiQypL0C54pWwDAKqya6F/1DWLBx0dcmDEjT3rj11kXPMmqwIwibJF2HBXzKlfzzdkmw2F3ZvQdo2TQ1TqfUT0EjCSdpFGAA5AY
+        bh=yoqnUjRtu8mgbvv/13mBn4nrRvAQngPro3mOt8IGEyc=;
+        b=bk+3/MHuxUi2EaWLwPUtAyoYHH3QdM/YkimD7nEr1lt9uX075FCKrLW4i2U9hqHGSe
+         3MdwjvHgTAIN3wJcyDRKDJObw3LjF/pa8xtQq5TxkX81BlKdoH/21MVQyexyUhQKF6oW
+         xBiXDrEGdTWu9UtNQt8/AeXtGJkgYVDpPJyGdA92UTzI4r1ThuBRZqDXgGh68za/yJWk
+         hk64qowVMvyKbunrRzKNitKZEtRWoKIncoW6S7M3ZRWO2eqKh22YoObAb5R6GvcOQYJY
+         Q6CsW83g1YFF5rb/WoeTsmU9fsA8e1RHr9zDjv5uR2MrzEmLD0cj5eFBWeOYelw4A1rC
+         LlKg==
+X-Gm-Message-State: AGi0Pubo2djKFEs1fExel2DACE3fDXEfFjgJvwe89dFIIFrMWZjE+LpN
+        h3Txx0kLZml+jLYML7/A3Mo08l7mS+3A2ouzXpNXZh7TXJsb
+X-Google-Smtp-Source: APiQypJTLL+G338lLsPPlftz5FYyt7Zj4Yb5dOSEJfqQHqIdaImyApgkIj3rO3pVWniQSbfg9V8Od7ErArR2SgzZISGoixPw66T9
 MIME-Version: 1.0
-X-Received: by 2002:a5d:9c15:: with SMTP id 21mr3992216ioe.47.1585851791831;
- Thu, 02 Apr 2020 11:23:11 -0700 (PDT)
-Date:   Thu, 02 Apr 2020 11:23:11 -0700
+X-Received: by 2002:a02:55c5:: with SMTP id e188mr4602763jab.57.1585852992156;
+ Thu, 02 Apr 2020 11:43:12 -0700 (PDT)
+Date:   Thu, 02 Apr 2020 11:43:12 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b7fabf05a252e486@google.com>
-Subject: WARNING: refcount bug in tcindex_data_put
-From:   syzbot <syzbot+8325e509a1bf83ec741d@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, paulmck@kernel.org,
-        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
+Message-ID: <00000000000043794505a2532c6b@google.com>
+Subject: general protection fault in macsec_upd_offload
+From:   syzbot <syzbot+7022ab7c383875c17eff@syzkaller.appspotmail.com>
+To:     antoine.tenart@bootlin.com, davem@davemloft.net,
+        dbogdanov@marvell.com, irusskikh@marvell.com,
+        linux-kernel@vger.kernel.org, mathew.j.martineau@linux.intel.com,
+        matthieu.baerts@tessares.net, mayflowerera@gmail.com,
+        mstarovoitov@marvell.com, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -51,64 +53,89 @@ syzbot found the following crash on:
 
 HEAD commit:    304e0242 net_sched: add a temporary refcnt for struct tcin..
 git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=13471edbe00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=17a6940be00000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=8c1e98458335a7d1
-dashboard link: https://syzkaller.appspot.com/bug?extid=8325e509a1bf83ec741d
+dashboard link: https://syzkaller.appspot.com/bug?extid=7022ab7c383875c17eff
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11c6940be00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13c74ba3e00000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1099dadbe00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12a63197e00000
 
 The bug was bisected to:
 
-commit 304e024216a802a7dc8ba75d36de82fa136bbf3e
-Author: Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sat Mar 28 19:12:59 2020 +0000
+commit 01cacb00b35cb62b139f07d5f84bcf0eeda8eff6
+Author: Paolo Abeni <pabeni@redhat.com>
+Date:   Fri Mar 27 21:48:51 2020 +0000
 
-    net_sched: add a temporary refcnt for struct tcindex_data
+    mptcp: add netlink-based PM
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=141434b7e00000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=161434b7e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=121434b7e00000
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16133ebde00000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=15133ebde00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=11133ebde00000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+8325e509a1bf83ec741d@syzkaller.appspotmail.com
-Fixes: 304e024216a8 ("net_sched: add a temporary refcnt for struct tcindex_data")
+Reported-by: syzbot+7022ab7c383875c17eff@syzkaller.appspotmail.com
+Fixes: 01cacb00b35c ("mptcp: add netlink-based PM")
 
-------------[ cut here ]------------
-refcount_t: underflow; use-after-free.
-WARNING: CPU: 0 PID: 7 at lib/refcount.c:28 refcount_warn_saturate+0x1d1/0x1e0 lib/refcount.c:28
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 7 Comm: kworker/u4:0 Not tainted 5.6.0-syzkaller #0
+batman_adv: batadv0: Interface activated: batadv_slave_1
+netlink: 'syz-executor343': attribute type 1 has an invalid length.
+general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+CPU: 1 PID: 7006 Comm: syz-executor343 Not tainted 5.6.0-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: tc_filter_workqueue tcindex_destroy_work
+RIP: 0010:nla_get_u8 include/net/netlink.h:1543 [inline]
+RIP: 0010:macsec_upd_offload+0x1c9/0x5a0 drivers/net/macsec.c:2597
+Code: fd 00 f0 ff ff 0f 87 23 03 00 00 e8 01 c5 d0 fc 48 8b 5c 24 38 48 b8 00 00 00 00 00 fc ff df 48 8d 7b 04 48 89 fa 48 c1 ea 03 <0f> b6 04 02 48 89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 1b 03 00 00
+RSP: 0018:ffffc90001797558 EFLAGS: 00010247
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff84a2244d
+RDX: 0000000000000000 RSI: ffffffff84a2245f RDI: 0000000000000004
+RBP: ffff8880a8372000 R08: ffff888095cae5c0 R09: ffffc90001797588
+R10: fffff520002f2eb3 R11: ffffc9000179759f R12: 0000000000000000
+R13: ffff88809ffaff80 R14: 1ffff920002f2eab R15: 0000000000000000
+FS:  0000000000a6a880(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fdd4d1316c0 CR3: 0000000093074000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- panic+0x2e3/0x75c kernel/panic.c:221
- __warn.cold+0x2f/0x35 kernel/panic.c:582
- report_bug+0x27b/0x2f0 lib/bug.c:195
- fixup_bug arch/x86/kernel/traps.c:175 [inline]
- fixup_bug arch/x86/kernel/traps.c:170 [inline]
- do_error_trap+0x12b/0x220 arch/x86/kernel/traps.c:267
- do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:286
- invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-RIP: 0010:refcount_warn_saturate+0x1d1/0x1e0 lib/refcount.c:28
-Code: e9 db fe ff ff 48 89 df e8 2c 95 1e fe e9 8a fe ff ff e8 c2 81 e1 fd 48 c7 c7 40 c6 71 88 c6 05 42 be f1 06 01 e8 17 f6 b2 fd <0f> 0b e9 af fe ff ff 0f 1f 84 00 00 00 00 00 41 56 41 55 41 54 55
-RSP: 0018:ffffc90000cdfcf0 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff815ca861 RDI: fffff5200019bf90
-RBP: 0000000000000003 R08: ffff8880a95a41c0 R09: ffffed1015cc66a1
-R10: ffffed1015cc66a0 R11: ffff8880ae633507 R12: ffff8880a81c8c2c
-R13: ffff8880a81c8c40 R14: ffff8880a9580e00 R15: ffff8880aa034800
- refcount_sub_and_test include/linux/refcount.h:261 [inline]
- refcount_dec_and_test include/linux/refcount.h:281 [inline]
- tcindex_data_put+0xd1/0xf0 net/sched/cls_tcindex.c:72
- process_one_work+0x965/0x16a0 kernel/workqueue.c:2266
- worker_thread+0x96/0xe20 kernel/workqueue.c:2412
- kthread+0x388/0x470 kernel/kthread.c:268
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+ genl_family_rcv_msg_doit net/netlink/genetlink.c:673 [inline]
+ genl_family_rcv_msg net/netlink/genetlink.c:718 [inline]
+ genl_rcv_msg+0x627/0xdf0 net/netlink/genetlink.c:735
+ netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2469
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:746
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6bf/0x7e0 net/socket.c:2362
+ ___sys_sendmsg+0x100/0x170 net/socket.c:2416
+ __sys_sendmsg+0xec/0x1b0 net/socket.c:2449
+ do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+ entry_SYSCALL_64_after_hwframe+0x49/0xb3
+RIP: 0033:0x4438a9
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 6b 0e fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffdc14392d8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00000000004438a9
+RDX: 0000000000000000 RSI: 00000000200000c0 RDI: 0000000000000003
+RBP: 00007ffdc14392f0 R08: 00000000bb1414ac R09: 00000000bb1414ac
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffdc1439320
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+Modules linked in:
+---[ end trace 98b6a7926fe123d8 ]---
+RIP: 0010:nla_get_u8 include/net/netlink.h:1543 [inline]
+RIP: 0010:macsec_upd_offload+0x1c9/0x5a0 drivers/net/macsec.c:2597
+Code: fd 00 f0 ff ff 0f 87 23 03 00 00 e8 01 c5 d0 fc 48 8b 5c 24 38 48 b8 00 00 00 00 00 fc ff df 48 8d 7b 04 48 89 fa 48 c1 ea 03 <0f> b6 04 02 48 89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 1b 03 00 00
+RSP: 0018:ffffc90001797558 EFLAGS: 00010247
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff84a2244d
+RDX: 0000000000000000 RSI: ffffffff84a2245f RDI: 0000000000000004
+RBP: ffff8880a8372000 R08: ffff888095cae5c0 R09: ffffc90001797588
+R10: fffff520002f2eb3 R11: ffffc9000179759f R12: 0000000000000000
+R13: ffff88809ffaff80 R14: 1ffff920002f2eab R15: 0000000000000000
+FS:  0000000000a6a880(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fdd4d1316c0 CR3: 0000000093074000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
 
 ---
