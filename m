@@ -2,113 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 935DF19C38C
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 16:03:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F61C19C38E
+	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 16:03:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388577AbgDBODF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 10:03:05 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:42817 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388357AbgDBODE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 10:03:04 -0400
-Received: by mail-wr1-f68.google.com with SMTP id h15so4331715wrx.9
-        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 07:03:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=ROM0NZlL8/uavKppMYhFZmhpIoRWlNeIkHl4YW1IeXQ=;
-        b=dS6/5rCM4/vLn5Oy//VpCZAlhD7BDjbPJNcgTtkenuduZrGDvvix/PkbBWumdzIM4E
-         Ppf1+JtrgEOi+afPPtzZJOLKh0bg0GnikmJ1cEZK77soD4Q0bjb9naI/vzr1Y2VgQnka
-         SoD13n04fddvXe4/i+/tNfir/2jZslLYttg/k=
+        id S2388174AbgDBODf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 10:03:35 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:24831 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1732567AbgDBODf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 10:03:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585836213;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pW3IStRHotZHHVJbI4O500WA85Dxv8izDV7FvTI+lnk=;
+        b=QCFGDXC1euDEXak/vabZe6s0rKJuHvz+ds1lpT/pxyfSwLnstzFs63tkXQGWBWIeS0V6/W
+        /e3SrJB7+ccFLclBDpdGC6UwGtbsD9C4XmW6sUIEBaaOofzF69HJOT5OknEwSFkejc+JyS
+        UELtwUsW4aI2HAZFzSY41Gjn5AMp+ds=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-254-IRLWxlSmMxilqeVdFAy3cA-1; Thu, 02 Apr 2020 10:03:31 -0400
+X-MC-Unique: IRLWxlSmMxilqeVdFAy3cA-1
+Received: by mail-qk1-f198.google.com with SMTP id w21so1613700qkj.18
+        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 07:03:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=ROM0NZlL8/uavKppMYhFZmhpIoRWlNeIkHl4YW1IeXQ=;
-        b=DCQ1A1wnkkzyZ37n/98V7hhplz6LuQ0bq3e6oMrLulQmYPR1f+1MsBrrbDQVfAwsCh
-         +htNfKTGR0PQRCTcaZGWc65Ofk4R6LScXuhSheJyj5yBYVrkhD4M6Tiz1qfi7u7m2AXI
-         v8wZHqRn6js1lp89CmvJ8H1AJ3NPfOXCYDnIZqEmpv8K/hLH4kDK0bBNHxz/UpxqRUrK
-         yQOo7+hGpulksgDpn/JU91bRBHUtJQs+2zijDHviwUfBD4yWGTcJNf8s5xfpFMc89vsT
-         OWoX/yukSsoiW6qFepCwaRgGhC/BAgg0lqvaBXH1M7M9rDs8qpXe+yPu6c2NLJzicpDv
-         HBFA==
-X-Gm-Message-State: AGi0PubPpQ0lmxqmwdCN9Y5tBqudwh2euYGuD7JgcYreKeYc3Y71tsGO
-        ORARqk0rOIoltJoP3Lq6xCGpSA==
-X-Google-Smtp-Source: APiQypLJTBUL+2+4Apj1ozbT3vs8eWnc03DsQNS2UzDY9+fj4p3EejYdi/YFzBetYav6I9LGsJP2xQ==
-X-Received: by 2002:a5d:498b:: with SMTP id r11mr3722281wrq.368.1585836182081;
-        Thu, 02 Apr 2020 07:03:02 -0700 (PDT)
-Received: from revest.fritz.box ([2a02:168:ff55:0:c8d2:c098:b5ec:e20e])
-        by smtp.gmail.com with ESMTPSA id p10sm7548565wrm.6.2020.04.02.07.03.00
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=pW3IStRHotZHHVJbI4O500WA85Dxv8izDV7FvTI+lnk=;
+        b=tQjG9VyjSPJsicgjnCmTU+LuOe2nuOdqqrYAqz6OL6TBIidB7+KV6FLA8qItt2L2+F
+         l38MsJGCbPzqg9KPUnvWzln/XHqrZ3elXU4QPnbxSKWZu/3OarTqnonavl7NozXM+INQ
+         V3D6wDr3dZw8g5zzX15oEcbTRryAQg41pd5TVuwK4BbNxTjyPZCjOB22gEqxxa0UI4Yb
+         kg4gOhRamruN2VbGACn17I+/Mo8gJav1ZNCj+BWX0vVBClZB7gMq0a/6XusV2iqfPhae
+         OtBs6TSVFsanZBuk+u/ND+MXQq5sJaNt1EN+1CynTXwXWPIcm3+oT5QEqP7INPLN1elS
+         +Uqg==
+X-Gm-Message-State: AGi0Pub4PuYICgrJWj1jIddtFSyeMuq8ifu8k0eX5HCgN5MaRBUDtBhE
+        OpQ6NGk7qmjOFDXrc8dUjW8nWWzLghv8ZbfFEIqhj5Ce3qCiOj6bzIm7Z5qHRTwd7br8zcQbFdx
+        V7w/LwHYFcwqftO1L
+X-Received: by 2002:ac8:32db:: with SMTP id a27mr3131757qtb.165.1585836211385;
+        Thu, 02 Apr 2020 07:03:31 -0700 (PDT)
+X-Google-Smtp-Source: APiQypLB2eqca8BJt9vk/5KptVL7bmZKMKTWTE9G9WXe57GBeZhOtApxHa3hrcRZ/Msl/M2CvDDzGA==
+X-Received: by 2002:ac8:32db:: with SMTP id a27mr3131701qtb.165.1585836211041;
+        Thu, 02 Apr 2020 07:03:31 -0700 (PDT)
+Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
+        by smtp.gmail.com with ESMTPSA id h143sm3517147qke.58.2020.04.02.07.03.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Apr 2020 07:03:01 -0700 (PDT)
-Message-ID: <5968eda68bfec39387c34ffaf0ecc3ed5d8afd6f.camel@chromium.org>
-Subject: Re: [RFC 0/3] bpf: Add d_path helper
-From:   Florent Revest <revest@chromium.org>
-To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>, bgregg@netflix.com,
-        Al Viro <viro@zeniv.linux.org.uk>
-Date:   Thu, 02 Apr 2020 16:03:00 +0200
-In-Reply-To: <20200401110907.2669564-1-jolsa@kernel.org>
-References: <20200401110907.2669564-1-jolsa@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.1-2+build1 
+        Thu, 02 Apr 2020 07:03:30 -0700 (PDT)
+Date:   Thu, 2 Apr 2020 10:03:21 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        jgg@mellanox.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        lingshan.zhu@intel.com, eperezma@redhat.com, lulu@redhat.com,
+        parav@mellanox.com, kevin.tian@intel.com, stefanha@redhat.com,
+        rdunlap@infradead.org, hch@infradead.org, aadam@redhat.com,
+        jiri@mellanox.com, shahafs@mellanox.com, hanand@xilinx.com,
+        mhabets@solarflare.com, gdawar@xilinx.com, saugatm@xilinx.com,
+        vmireyno@marvell.com, zhangweining@ruijie.com.cn
+Subject: Re: [PATCH V9 1/9] vhost: refine vhost and vringh kconfig
+Message-ID: <20200402100257-mutt-send-email-mst@kernel.org>
+References: <20200326140125.19794-1-jasowang@redhat.com>
+ <20200326140125.19794-2-jasowang@redhat.com>
+ <20200401092004-mutt-send-email-mst@kernel.org>
+ <6b4d169a-9962-6014-5423-1507059343e9@redhat.com>
+ <20200401100954-mutt-send-email-mst@kernel.org>
+ <3dd3b7e7-e3d9-dba4-00fc-868081f95ab7@redhat.com>
+ <20200401120643-mutt-send-email-mst@kernel.org>
+ <c11c2195-88eb-2096-af47-40f2da5b389f@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <c11c2195-88eb-2096-af47-40f2da5b389f@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-04-01 at 13:09 +0200, Jiri Olsa wrote:
-> hi,
-> adding d_path helper to return full path for 'path' object.
+On Thu, Apr 02, 2020 at 11:22:57AM +0800, Jason Wang wrote:
 > 
-> I originally added and used 'file_path' helper, which did the same,
-> but used 'struct file' object. Then realized that file_path is just
-> a wrapper for d_path, so we'd cover more calling sites if we add
-> d_path helper and allowed resolving BTF object within another object,
-> so we could call d_path also with file pointer, like:
+> On 2020/4/2 上午12:08, Michael S. Tsirkin wrote:
+> > On Wed, Apr 01, 2020 at 10:29:32PM +0800, Jason Wang wrote:
+> > > >From 9b3a5d23b8bf6b0a11e65e688335d782f8e6aa5c Mon Sep 17 00:00:00 2001
+> > > From: Jason Wang <jasowang@redhat.com>
+> > > Date: Wed, 1 Apr 2020 22:17:27 +0800
+> > > Subject: [PATCH] vhost: let CONFIG_VHOST to be selected by drivers
+> > > 
+> > > The defconfig on some archs enable vhost_net or vhost_vsock by
+> > > default. So instead of adding CONFIG_VHOST=m to all of those files,
+> > > simply letting CONFIG_VHOST to be selected by all of the vhost
+> > > drivers. This fixes the build on the archs with CONFIG_VHOST_NET=m in
+> > > their defconfig.
+> > > 
+> > > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > > ---
+> > >   drivers/vhost/Kconfig | 15 +++++++++++----
+> > >   1 file changed, 11 insertions(+), 4 deletions(-)
+> > > 
+> > > diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
+> > > index 2523a1d4290a..362b832f5338 100644
+> > > --- a/drivers/vhost/Kconfig
+> > > +++ b/drivers/vhost/Kconfig
+> > > @@ -11,19 +11,23 @@ config VHOST_RING
+> > >   	  This option is selected by any driver which needs to access
+> > >   	  the host side of a virtio ring.
+> > > -menuconfig VHOST
+> > > -	tristate "Host kernel accelerator for virtio (VHOST)"
+> > > -	depends on EVENTFD
+> > > +config VHOST
+> > > +	tristate
+> > >   	select VHOST_IOTLB
+> > >   	help
+> > >   	  This option is selected by any driver which needs to access
+> > >   	  the core of vhost.
+> > > -if VHOST
+> > > +menuconfig VHOST_MENU
+> > > +	bool "VHOST drivers"
+> > > +	default y
+> > > +
+> > > +if VHOST_MENU
+> > >   config VHOST_NET
+> > >   	tristate "Host kernel accelerator for virtio net"
+> > >   	depends on NET && EVENTFD && (TUN || !TUN) && (TAP || !TAP)
+> > > +	select VHOST
+> > >   	---help---
+> > >   	  This kernel module can be loaded in host kernel to accelerate
+> > >   	  guest networking with virtio_net. Not to be confused with virtio_net
+> > > @@ -35,6 +39,7 @@ config VHOST_NET
+> > >   config VHOST_SCSI
+> > >   	tristate "VHOST_SCSI TCM fabric driver"
+> > >   	depends on TARGET_CORE && EVENTFD
+> > > +	select VHOST
+> > >   	default n
+> > >   	---help---
+> > >   	Say M here to enable the vhost_scsi TCM fabric module
+> > > @@ -43,6 +48,7 @@ config VHOST_SCSI
+> > >   config VHOST_VSOCK
+> > >   	tristate "vhost virtio-vsock driver"
+> > >   	depends on VSOCKETS && EVENTFD
+> > > +	select VHOST
+> > >   	select VIRTIO_VSOCKETS_COMMON
+> > >   	default n
+> > >   	---help---
+> > > @@ -56,6 +62,7 @@ config VHOST_VSOCK
+> > >   config VHOST_VDPA
+> > >   	tristate "Vhost driver for vDPA-based backend"
+> > >   	depends on EVENTFD
+> > > +	select VHOST
 > 
->   bpf_d_path(&file->f_path, buf, size);
 > 
-> This feature is mainly to be able to add dpath (filepath originally)
-> function to bpftrace, which seems to work nicely now, like:
+> This part is not squashed.
 > 
->   # bpftrace -e 'kretfunc:fget { printf("%s\n", dpath(args->ret-
-> >f_path));  }' 
 > 
-> I'm not completely sure this is all safe and bullet proof and there's
-> no other way to do this, hence RFC post.
+> > >   	select VDPA
+> > >   	help
+> > >   	  This kernel module can be loaded in host kernel to accelerate
+> > OK so I squashed this into the original buggy patch.
+> > Could you please play with vhost branch of my tree on various
+> > arches? If it looks ok to you let me know I'll push
+> > this to next.
 > 
-> I'd be happy also with file_path function, but I thought it'd be
-> a shame not to try to add d_path with the verifier change.
-> I'm open to any suggestions ;-)
+> 
+> With the above part squashed. I've tested all the archs whose defconfig have
+> VHOST_NET or VHOST_VSOCK enabled.
+> 
+> All looks fine.
+> 
+> Thanks
 
-First of all I want to mention that we are really interested in this
-feature so thanks a lot for bringing it up Jiri! I have experimented
-with similar BPF helpers in the past few months so I hope my input can
-be helpful! :)
 
-One of our use-cases is to gather information about execution events,
-including a bunch of paths (such as the executable command, the
-resolved executable file path and the current-working-directory) and
-then output them to Perf.
-Each of those paths can be up to PATH_MAX(one page) long so we would
-pre-allocate a data structure with a few identifiers (to later
-reassemble the event from userspace) and a page of data and then we
-would output it using bpf_perf_event_output. However, with three mostly
-empty pages per event, we would quickly fill up the ring buffer and
-loose many events.
-This might be a bit out-of-scope at this moment but one of the
-teachings we got from playing with such a helper is that we would also
-need a helper for outputting strings to Perf, pre-pended with a header
-buffer.
+I'm a bit confused. So is the next tag in my tree ok now?
+
+-- 
+MST
 
