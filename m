@@ -2,125 +2,290 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA7D219C707
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 18:27:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92FD819C7B6
+	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 19:13:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389781AbgDBQ1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 12:27:18 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:59992 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1731842AbgDBQ1R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 12:27:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585844837;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YiGejvc/Z1PscIO5Y2Td9wzrTW6YFSsKAEAcda9xkVg=;
-        b=dhE5SrImN9eHxrTL9BOO3EPsDioxY1EIiRdxduuxgF5hHNG3kvPu/lIA0D9U3U/zebDGCs
-        6L9OTouU/BS0+NVEd3IkeBGTHdRlzF22fymJleL87S3pyutXuuHRZr6Yd/P9IY4Xlk7Pk1
-        QYXxz6u6ZZtoYZ/W1kcGCOoHXSZ1rio=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-420-SQKBzPnAN3-5exjNVT5H0w-1; Thu, 02 Apr 2020 12:27:15 -0400
-X-MC-Unique: SQKBzPnAN3-5exjNVT5H0w-1
-Received: by mail-qv1-f71.google.com with SMTP id v4so3190683qvt.3
-        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 09:27:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=YiGejvc/Z1PscIO5Y2Td9wzrTW6YFSsKAEAcda9xkVg=;
-        b=mBXmMlxpDdyYX6kSnWbavDrcNfkWGn9tGOLTuzBpnhDBPVp+2l4FDNiBFxR4jcA5FG
-         mwTBscd1nGPveVoW0dZDFGcMo94msug9hIorbMy+aYs6YZDp60cQc5O2iaAHiAZqF/zC
-         tEzwgNSW6tzP3d386TTrjE/IGoxi/OyHhqKPjkrdIznH/RjmJb8VKazJP5UtPrV9OnqN
-         POkQG1NgKK/nyh5o0AQMTMXU5dC2pgCBJDsCgl0YrFBL32rqC9V9NDIMdWEGFqb13/YK
-         S/ZrMsoOVVcNw3Lk1ZbvwxcZdxp2/C1sqsgqHXZjdlbPFqzDOZOKSVYgjgm6fGWGFvgc
-         shsA==
-X-Gm-Message-State: AGi0PuaTXftU4mELmIVAasiEpSTn1zgvT/PmaiH32oF8tg/VUkapkwsW
-        vinpoImlk7zopG/GoRQffYU53mEGvVwPzCHQo+wWNuAK+rKyxFuiaoRawlxUHasv8mV9y87GeVa
-        +y+wIeAiyuQwmAQRZ
-X-Received: by 2002:ac8:4641:: with SMTP id f1mr3595343qto.216.1585844834571;
-        Thu, 02 Apr 2020 09:27:14 -0700 (PDT)
-X-Google-Smtp-Source: APiQypI9uiNgZebAWGTM/6pTKMcpl2+Pbh6hcnrsxur+SijZm8gBzgmehd7nG3POHrAdyCwNw6XVFw==
-X-Received: by 2002:ac8:4641:: with SMTP id f1mr3595317qto.216.1585844834186;
-        Thu, 02 Apr 2020 09:27:14 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
-        by smtp.gmail.com with ESMTPSA id v17sm3764796qkf.83.2020.04.02.09.27.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Apr 2020 09:27:13 -0700 (PDT)
-Date:   Thu, 2 Apr 2020 12:27:09 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2] vhost: drop vring dependency on iotlb
-Message-ID: <20200402122544-mutt-send-email-mst@kernel.org>
-References: <20200402144519.34194-1-mst@redhat.com>
- <44f9b9d3-3da2-fafe-aa45-edd574dc6484@redhat.com>
+        id S2388727AbgDBRNb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 13:13:31 -0400
+Received: from fgont.go6lab.si ([91.239.96.14]:41508 "EHLO fgont.go6lab.si"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731608AbgDBRNa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Apr 2020 13:13:30 -0400
+X-Greylist: delayed 408 seconds by postgrey-1.27 at vger.kernel.org; Thu, 02 Apr 2020 13:13:28 EDT
+Received: from [192.168.0.10] (unknown [181.45.84.85])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by fgont.go6lab.si (Postfix) with ESMTPSA id 47B7789394;
+        Thu,  2 Apr 2020 19:06:39 +0200 (CEST)
+To:     netdev <netdev@vger.kernel.org>
+From:   Fernando Gont <fgont@si6networks.com>
+Subject: [PATCH] [net-next] IPv6 RFC4941bis (Privacy/temporary addresses)
+Message-ID: <e8eb613d-3967-3bf3-209c-630017c7f304@si6networks.com>
+Date:   Thu, 2 Apr 2020 14:06:31 -0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <44f9b9d3-3da2-fafe-aa45-edd574dc6484@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 02, 2020 at 11:01:13PM +0800, Jason Wang wrote:
-> 
-> On 2020/4/2 下午10:46, Michael S. Tsirkin wrote:
-> > vringh can now be built without IOTLB.
-> > Select IOTLB directly where it's used.
-> > 
-> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > ---
-> > 
-> > Applies on top of my vhost tree.
-> > Changes from v1:
-> > 	VDPA_SIM needs VHOST_IOTLB
-> 
-> 
-> It looks to me the patch is identical to v1.
-> 
-> Thanks
+Folks,
+
+This patch the upcoming revision of RFC4941: 
+https://tools.ietf.org/html/draft-ietf-6man-rfc4941bis-08 .
+
+Namely,
+
+* Reduces the default Valid Lifetime to 2 days
+This reduces stress on network elements, among other things
+
+* Employs different IIDs for different prefixes
+To avoid network activity correlation among addresses configured for 
+different prefixes
+
+* Uses a simpler algorithm for IID generation
+No need to store "history" anywhere
+
+P.S.: The patch is also available here: 
+https://www.gont.com.ar/code/fgont-patch-linux-net-next-rfc4941bis.txt
+
+---- cut here ----
+diff --git Documentation/networking/ip-sysctl.txt 
+Documentation/networking/ip-sysctl.txt
+index ee961d322d93..db1ee7340090 100644
+--- Documentation/networking/ip-sysctl.txt
++++ Documentation/networking/ip-sysctl.txt
+@@ -1807,7 +1807,7 @@ use_tempaddr - INTEGER
+
+  temp_valid_lft - INTEGER
+  	valid lifetime (in seconds) for temporary addresses.
+-	Default: 604800 (7 days)
++	Default: 172800 (2 days)
+
+  temp_prefered_lft - INTEGER
+  	Preferred lifetime (in seconds) for temporary addresses.
+diff --git include/net/addrconf.h include/net/addrconf.h
+index e0eabe58aa8b..1bd21ee035bf 100644
+--- include/net/addrconf.h
++++ include/net/addrconf.h
+@@ -8,7 +8,7 @@
+
+  #define MIN_VALID_LIFETIME		(2*3600)	/* 2 hours */
+
+-#define TEMP_VALID_LIFETIME		(7*86400)
++#define TEMP_VALID_LIFETIME		(2*86400)
+  #define TEMP_PREFERRED_LIFETIME		(86400)
+  #define REGEN_MAX_RETRY			(3)
+  #define MAX_DESYNC_FACTOR		(600)
+diff --git include/net/if_inet6.h include/net/if_inet6.h
+index a01981d7108f..212eb278bda6 100644
+--- include/net/if_inet6.h
++++ include/net/if_inet6.h
+@@ -190,7 +190,6 @@ struct inet6_dev {
+  	int			dead;
+
+  	u32			desync_factor;
+-	u8			rndid[8];
+  	struct list_head	tempaddr_list;
+
+  	struct in6_addr		token;
+diff --git net/ipv6/addrconf.c net/ipv6/addrconf.c
+index a11fd4d67832..da34dbbd0195 100644
+--- net/ipv6/addrconf.c
++++ net/ipv6/addrconf.c
+@@ -135,8 +135,7 @@ static inline void addrconf_sysctl_unregister(struct 
+inet6_dev *idev)
+  }
+  #endif
+
+-static void ipv6_regen_rndid(struct inet6_dev *idev);
+-static void ipv6_try_regen_rndid(struct inet6_dev *idev, struct 
+in6_addr *tmpaddr);
++static void ipv6_gen_rnd_iid(struct in6_addr *addr);
+
+  static int ipv6_generate_eui64(u8 *eui, struct net_device *dev);
+  static int ipv6_count_addresses(const struct inet6_dev *idev);
+@@ -432,8 +431,7 @@ static struct inet6_dev *ipv6_add_dev(struct 
+net_device *dev)
+  	    dev->type == ARPHRD_SIT ||
+  	    dev->type == ARPHRD_NONE) {
+  		ndev->cnf.use_tempaddr = -1;
+-	} else
+-		ipv6_regen_rndid(ndev);
++	}
+
+  	ndev->token = in6addr_any;
+
+@@ -1306,12 +1304,11 @@ static void ipv6_del_addr(struct inet6_ifaddr *ifp)
+  	in6_ifa_put(ifp);
+  }
+
+-static int ipv6_create_tempaddr(struct inet6_ifaddr *ifp,
+-				struct inet6_ifaddr *ift,
+-				bool block)
++static int ipv6_create_tempaddr(struct inet6_ifaddr *ifp, bool block)
+  {
+  	struct inet6_dev *idev = ifp->idev;
+-	struct in6_addr addr, *tmpaddr;
++	struct in6_addr addr;
++	struct inet6_ifaddr *ift;
+  	unsigned long tmp_tstamp, age;
+  	unsigned long regen_advance;
+  	struct ifa6_config cfg;
+@@ -1321,14 +1318,7 @@ static int ipv6_create_tempaddr(struct 
+inet6_ifaddr *ifp,
+  	s32 cnf_temp_preferred_lft;
+
+  	write_lock_bh(&idev->lock);
+-	if (ift) {
+-		spin_lock_bh(&ift->lock);
+-		memcpy(&addr.s6_addr[8], &ift->addr.s6_addr[8], 8);
+-		spin_unlock_bh(&ift->lock);
+-		tmpaddr = &addr;
+-	} else {
+-		tmpaddr = NULL;
+-	}
++
+  retry:
+  	in6_dev_hold(idev);
+  	if (idev->cnf.use_tempaddr <= 0) {
+@@ -1351,8 +1341,8 @@ static int ipv6_create_tempaddr(struct 
+inet6_ifaddr *ifp,
+  	}
+  	in6_ifa_hold(ifp);
+  	memcpy(addr.s6_addr, ifp->addr.s6_addr, 8);
+-	ipv6_try_regen_rndid(idev, tmpaddr);
+-	memcpy(&addr.s6_addr[8], idev->rndid, 8);
++	ipv6_gen_rnd_iid(&addr);
++
+  	age = (now - ifp->tstamp) / HZ;
+
+  	regen_advance = idev->cnf.regen_max_retry *
+@@ -1417,7 +1407,6 @@ static int ipv6_create_tempaddr(struct 
+inet6_ifaddr *ifp,
+  		in6_ifa_put(ifp);
+  		in6_dev_put(idev);
+  		pr_info("%s: retry temporary address regeneration\n", __func__);
+-		tmpaddr = &addr;
+  		write_lock_bh(&idev->lock);
+  		goto retry;
+  	}
+@@ -2032,7 +2021,7 @@ static void addrconf_dad_stop(struct inet6_ifaddr 
+*ifp, int dad_failed)
+  		if (ifpub) {
+  			in6_ifa_hold(ifpub);
+  			spin_unlock_bh(&ifp->lock);
+-			ipv6_create_tempaddr(ifpub, ifp, true);
++			ipv6_create_tempaddr(ifpub, true);
+  			in6_ifa_put(ifpub);
+  		} else {
+  			spin_unlock_bh(&ifp->lock);
+@@ -2329,42 +2318,39 @@ static int ipv6_inherit_eui64(u8 *eui, struct 
+inet6_dev *idev)
+  	return err;
+  }
+
+-/* (re)generation of randomized interface identifier (RFC 3041 3.2, 3.5) */
+-static void ipv6_regen_rndid(struct inet6_dev *idev)
++/* Generation of a randomized Interface Identifier 
+draft-ietf-6man-rfc4941bis, Section 3.3.1 */
++static void ipv6_gen_rnd_iid(struct in6_addr *addr)
+  {
+  regen:
+-	get_random_bytes(idev->rndid, sizeof(idev->rndid));
+-	idev->rndid[0] &= ~0x02;
++	get_random_bytes(&addr->s6_addr[8], 8);
+
+  	/*
+-	 * <draft-ietf-ipngwg-temp-addresses-v2-00.txt>:
+-	 * check if generated address is not inappropriate
++	 *  <draft-ietf-6man-rfc4941bis-08.txt>, Section 3.3.1:
++	 *  check if generated address is not inappropriate:
++	 *
++	 *  - Reserved IPv6 Interface Identifers
++	 * 
+(http://www.iana.org/assignments/ipv6-interface-ids/ipv6-interface-ids.xhtml)
+  	 *
+-	 *  - Reserved subnet anycast (RFC 2526)
+-	 *	11111101 11....11 1xxxxxxx
+-	 *  - ISATAP (RFC4214) 6.1
+-	 *	00-00-5E-FE-xx-xx-xx-xx
+-	 *  - value 0
+  	 *  - XXX: already assigned to an address on the device
+  	 */
+-	if (idev->rndid[0] == 0xfd &&
+-	 
+(idev->rndid[1]&idev->rndid[2]&idev->rndid[3]&idev->rndid[4]&idev->rndid[5]&idev->rndid[6]) 
+== 0xff &&
+-	    (idev->rndid[7]&0x80))
++
++	/* Subnet-router anycast: 0000:0000:0000:0000 */
++	if (!(addr->s6_addr32[2] | addr->s6_addr32[3]))
+  		goto regen;
+-	if ((idev->rndid[0]|idev->rndid[1]) == 0) {
+-		if (idev->rndid[2] == 0x5e && idev->rndid[3] == 0xfe)
+-			goto regen;
+-		if 
+((idev->rndid[2]|idev->rndid[3]|idev->rndid[4]|idev->rndid[5]|idev->rndid[6]|idev->rndid[7]) 
+== 0x00)
+-			goto regen;
+-	}
+-}
+
+-static void  ipv6_try_regen_rndid(struct inet6_dev *idev, struct 
+in6_addr *tmpaddr)
+-{
+-	if (tmpaddr && memcmp(idev->rndid, &tmpaddr->s6_addr[8], 8) == 0)
+-		ipv6_regen_rndid(idev);
++	/* IANA Ethernet block: 0200:5EFF:FE00:0000-0200:5EFF:FE00:5212
++	   Proxy Mobile IPv6:   0200:5EFF:FE00:5213
++	   IANA Ethernet block: 0200:5EFF:FE00:5214-0200:5EFF:FEFF:FFFF
++	*/
++	if (ntohl(addr->s6_addr32[2]) == 0x02005eff && 
+(ntohl(addr->s6_addr32[3]) & 0Xff000000) == 0xfe000000)
++		goto regen;
++
++	/* Reserved subnet anycast addresses */
++	if (ntohl(addr->s6_addr32[2]) == 0xfdffffff && 
+ntohl(addr->s6_addr32[3]) >= 0Xffffff80)
++		goto regen;
+  }
+
++
+  /*
+   *	Add prefix route.
+   */
+@@ -2544,7 +2530,7 @@ static void manage_tempaddrs(struct inet6_dev *idev,
+  		 * no temporary address currently exists.
+  		 */
+  		read_unlock_bh(&idev->lock);
+-		ipv6_create_tempaddr(ifp, NULL, false);
++		ipv6_create_tempaddr(ifp, false);
+  	} else {
+  		read_unlock_bh(&idev->lock);
+  	}
+@@ -4539,7 +4525,7 @@ static void addrconf_verify_rtnl(void)
+  						ifpub->regen_count = 0;
+  						spin_unlock(&ifpub->lock);
+  						rcu_read_unlock_bh();
+-						ipv6_create_tempaddr(ifpub, ifp, true);
++						ipv6_create_tempaddr(ifpub, true);
+  						in6_ifa_put(ifpub);
+  						in6_ifa_put(ifp);
+  						rcu_read_lock_bh();
+---- cut here ----
+
+Thanks,
+-- 
+Fernando Gont
+SI6 Networks
+e-mail: fgont@si6networks.com
+PGP Fingerprint: 6666 31C6 D484 63B2 8FB1 E3C4 AE25 0D55 1D4E 7492
 
 
-you are right. I squashed the description into
-    virtio/test: fix up after IOTLB changes
-take a look at it in the vhost tree.
 
-> 
-> > 
-> >   drivers/vdpa/Kconfig  | 1 +
-> >   drivers/vhost/Kconfig | 1 -
-> >   2 files changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/vdpa/Kconfig b/drivers/vdpa/Kconfig
-> > index 7db1460104b7..08b615f2da39 100644
-> > --- a/drivers/vdpa/Kconfig
-> > +++ b/drivers/vdpa/Kconfig
-> > @@ -17,6 +17,7 @@ config VDPA_SIM
-> >   	depends on RUNTIME_TESTING_MENU
-> >   	select VDPA
-> >   	select VHOST_RING
-> > +	select VHOST_IOTLB
-> >   	default n
-> >   	help
-> >   	  vDPA networking device simulator which loop TX traffic back
-> > diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
-> > index f0404ce255d1..cb6b17323eb2 100644
-> > --- a/drivers/vhost/Kconfig
-> > +++ b/drivers/vhost/Kconfig
-> > @@ -8,7 +8,6 @@ config VHOST_IOTLB
-> >   config VHOST_RING
-> >   	tristate
-> > -	select VHOST_IOTLB
-> >   	help
-> >   	  This option is selected by any driver which needs to access
-> >   	  the host side of a virtio ring.
 
