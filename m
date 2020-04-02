@@ -2,102 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EE8919C05E
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 13:45:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53C3519C118
+	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 14:32:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388057AbgDBLpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 07:45:20 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:44690 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728803AbgDBLpU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 07:45:20 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1jJyHd-0002jH-VF; Thu, 02 Apr 2020 13:45:18 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Florian Westphal <fw@strlen.de>
-Subject: [PATCH net 4/4] mptcp: fix "fn parameter not described" warnings
-Date:   Thu,  2 Apr 2020 13:44:54 +0200
-Message-Id: <20200402114454.8533-5-fw@strlen.de>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200402114454.8533-1-fw@strlen.de>
-References: <20200402114454.8533-1-fw@strlen.de>
+        id S2388155AbgDBMbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 08:31:52 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:53724 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2388045AbgDBMbw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 08:31:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585830709;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=b1iuEwMOCbdyBg0ZzUREMNzB1yA2no/SoVc43YelAqs=;
+        b=eq/9l7IADwcqzJU2V68DmlmZBTMDedJOSOXIIEfXJRddZ9Pu35RM0tkRTPLzIxG6EW1r9e
+        wCXl3r9dvLKETHQWA7wRVhZcjRNuAI7y4YO/PqWYb4NCOrlM/OHW95scPB963/gyTAo5lW
+        EQJfBirD/vQQBFXGaM6b5L4DJOMYEJo=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-375-ul-yVuLeOY6H2-7kqOHzuA-1; Thu, 02 Apr 2020 08:31:44 -0400
+X-MC-Unique: ul-yVuLeOY6H2-7kqOHzuA-1
+Received: by mail-wm1-f70.google.com with SMTP id o5so1343703wmo.6
+        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 05:31:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=b1iuEwMOCbdyBg0ZzUREMNzB1yA2no/SoVc43YelAqs=;
+        b=uK/V9wrGe5elfUqKa4eCe6ppdrGxw8bGhiAVEAnPn/XJXecYDGXdLivtR9nsA43eFt
+         9Qr1khlQjmih+wNDOe3xaPjdDUszfuuRUeUsdpRzTMWjfRfERlhnXP8HBmEM5fzqWlga
+         vrZAZwsVegIhDUSEbiroWFfkR9lQo8RFI1JsT3PM3PR4+sQruYx0DNwLYpszKNgVpEoo
+         xZilLiPb1B4lguh8BbKpauiYQ+nxuN5ouBQdYiv7Wlf+aYpw2/OmscHvLuIn2VnYxu2i
+         fs7AJy1sUvrMboiUOum0IUnNYTfpRcrGNIODwrGfSzSMLmS64AT5fF+oXpj3nWLxDpMj
+         za1A==
+X-Gm-Message-State: AGi0PuYUlxJSZ6yMyVr97LKi14UJdfeLqmFJrpz36GhRtCTSEbAloXT2
+        NnHMEzBUT+bhWJ8FQgcbupCoYLdAfvefxDGkvCfm0W2R6rSEeNVRP0W8Ig1PZkszpgKQjkRHZou
+        PtQHhFvd1ki3WSg8B
+X-Received: by 2002:a1c:5502:: with SMTP id j2mr3329005wmb.93.1585830703576;
+        Thu, 02 Apr 2020 05:31:43 -0700 (PDT)
+X-Google-Smtp-Source: APiQypKeJkvlyzlxZHIlUhPY1uR/INkbvzSshkiu5u15mWxi8/IcJgopTZ/QYSyOkrZueWFFXMQn6g==
+X-Received: by 2002:a1c:5502:: with SMTP id j2mr3328989wmb.93.1585830703329;
+        Thu, 02 Apr 2020 05:31:43 -0700 (PDT)
+Received: from x1.localdomain (2001-1c00-0c0c-fe00-d2ea-f29d-118b-24dc.cable.dynamic.v6.ziggo.nl. [2001:1c00:c0c:fe00:d2ea:f29d:118b:24dc])
+        by smtp.gmail.com with ESMTPSA id h81sm7629471wme.42.2020.04.02.05.31.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Apr 2020 05:31:42 -0700 (PDT)
+Subject: Re: [Intel-wired-lan] [PATCH] e1000e: bump up timeout to wait when ME
+ un-configure ULP mode
+To:     Aaron Ma <aaron.ma@canonical.com>, jeffrey.t.kirsher@intel.com,
+        davem@davemloft.net, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        sasha.neftin@intel.com
+References: <20200323191639.48826-1-aaron.ma@canonical.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+Message-ID: <4f9f1ad0-e66a-d3c8-b152-209e9595e5d7@redhat.com>
+Date:   Thu, 2 Apr 2020 14:31:41 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200323191639.48826-1-aaron.ma@canonical.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matthieu Baerts <matthieu.baerts@tessares.net>
+Hi,
 
-Obtained with:
+On 3/23/20 8:16 PM, Aaron Ma wrote:
+> ME takes 2+ seconds to un-configure ULP mode done after resume
+> from s2idle on some ThinkPad laptops.
+> Without enough wait, reset and re-init will fail with error.
+> 
+> Fixes: f15bb6dde738cc8fa0 ("e1000e: Add support for S0ix")
+> BugLink: https://bugs.launchpad.net/bugs/1865570
+> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
 
-  $ make W=1 net/mptcp/token.o
-  net/mptcp/token.c:53: warning: Function parameter or member 'req' not described in 'mptcp_token_new_request'
-  net/mptcp/token.c:98: warning: Function parameter or member 'sk' not described in 'mptcp_token_new_connect'
-  net/mptcp/token.c:133: warning: Function parameter or member 'conn' not described in 'mptcp_token_new_accept'
-  net/mptcp/token.c:178: warning: Function parameter or member 'token' not described in 'mptcp_token_destroy_request'
-  net/mptcp/token.c:191: warning: Function parameter or member 'token' not described in 'mptcp_token_destroy'
+I have been testing this bug because this is being reported against
+Fedora 32 too:
 
-Fixes: 79c0949e9a09 (mptcp: Add key generation and token tree)
-Fixes: 58b09919626b (mptcp: create msk early)
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- net/mptcp/token.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+https://bugzilla.redhat.com/show_bug.cgi?id=1816621
 
-diff --git a/net/mptcp/token.c b/net/mptcp/token.c
-index 129a5ad1bc35..33352dd99d4d 100644
---- a/net/mptcp/token.c
-+++ b/net/mptcp/token.c
-@@ -40,7 +40,7 @@ static int token_used __read_mostly;
- 
- /**
-  * mptcp_token_new_request - create new key/idsn/token for subflow_request
-- * @req - the request socket
-+ * @req: the request socket
-  *
-  * This function is called when a new mptcp connection is coming in.
-  *
-@@ -80,7 +80,7 @@ int mptcp_token_new_request(struct request_sock *req)
- 
- /**
-  * mptcp_token_new_connect - create new key/idsn/token for subflow
-- * @sk - the socket that will initiate a connection
-+ * @sk: the socket that will initiate a connection
-  *
-  * This function is called when a new outgoing mptcp connection is
-  * initiated.
-@@ -125,6 +125,7 @@ int mptcp_token_new_connect(struct sock *sk)
- /**
-  * mptcp_token_new_accept - insert token for later processing
-  * @token: the token to insert to the tree
-+ * @conn: the just cloned socket linked to the new connection
-  *
-  * Called when a SYN packet creates a new logical connection, i.e.
-  * is not a join request.
-@@ -169,7 +170,7 @@ struct mptcp_sock *mptcp_token_get_sock(u32 token)
- 
- /**
-  * mptcp_token_destroy_request - remove mptcp connection/token
-- * @token - token of mptcp connection to remove
-+ * @token: token of mptcp connection to remove
-  *
-  * Remove not-yet-fully-established incoming connection identified
-  * by @token.
-@@ -183,7 +184,7 @@ void mptcp_token_destroy_request(u32 token)
- 
- /**
-  * mptcp_token_destroy - remove mptcp connection/token
-- * @token - token of mptcp connection to remove
-+ * @token: token of mptcp connection to remove
-  *
-  * Remove the connection identified by @token.
-  */
--- 
-2.24.1
+I can confirm that this patch fixes the problem of both
+a X1 7th gen as a X1 8th gen no longer suspending after
+a suspend resume cycle.
+
+Not only does it fix that, before this patch the kernel
+would regularly log the following error on these laptops
+independent of suspend/resume activity:
+
+e1000e 0000:00:1f.6 enp0s31f6: Hardware Error
+
+These messages are now also gone. So it seems that the timeout
+is really just too short.
+
+I can agree that it would be good to better understand this;
+and/or to get the ME firmware fixed to not take so long.
+
+But in my experience when dealing with e.g. embedded-controller
+in various laptops sometimes the firmware of these devives
+simply just takes a long time for certain things.
+
+This fix fixes a real problem, on a popular model laptop
+and since it just extends a timeout it is a pretty harmless
+(no chance of regressions) fix. As such since there seems
+to be no other solution in sight, can we please move forward
+with this fix for now ?
+
+Regards,
+
+Hans
+
+
+
+
+
+> ---
+>   drivers/net/ethernet/intel/e1000e/ich8lan.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+> index b4135c50e905..147b15a2f8b3 100644
+> --- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
+> +++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+> @@ -1240,9 +1240,9 @@ static s32 e1000_disable_ulp_lpt_lp(struct e1000_hw *hw, bool force)
+>   			ew32(H2ME, mac_reg);
+>   		}
+>   
+> -		/* Poll up to 300msec for ME to clear ULP_CFG_DONE. */
+> +		/* Poll up to 2.5sec for ME to clear ULP_CFG_DONE. */
+>   		while (er32(FWSM) & E1000_FWSM_ULP_CFG_DONE) {
+> -			if (i++ == 30) {
+> +			if (i++ == 250) {
+>   				ret_val = -E1000_ERR_PHY;
+>   				goto out;
+>   			}
+> 
 
