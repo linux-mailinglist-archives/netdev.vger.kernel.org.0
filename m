@@ -2,124 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E34119C04C
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 13:40:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A726919C056
+	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 13:42:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388108AbgDBLkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 07:40:25 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:59132 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728803AbgDBLkZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 07:40:25 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 032BYsE3014357;
-        Thu, 2 Apr 2020 04:40:20 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0818;
- bh=H0PyYP3DtXoemFw8VPX1ih54nVMlz40IxhJVVdYGRmM=;
- b=UedZUC7Rva7xigfM/TotIVPdn47SNx2Yigzq6rXU3G8zwDEXCln3jt/5OccOrbCQAEnC
- nvs6uiBQxCq5K2qDNfQBy2k0lIrLFDjSVtxgv0EtfRZnqqhdmU7C3bFJbUxk8mhGOhGX
- vC7EpitWV4Alwom/Qq50Tr7BX+G3fRe/PO6q4mR+WEJx0TTLTYcZmcQ9Lum6s2UL9eBK
- qXJAQ/EMuHyXOAMEt5OIxfYGARW3bkQP2rYLgDk7BMR61Q0qPN6UP/482H71gLdTxfty
- dIpLcA5N8ULM8YW/GdUjQEe0DeyB9kk1LKm+GLiLShaQcHeWVxNchMRm83RRITL/UhHp dg== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0b-0016f401.pphosted.com with ESMTP id 3046h621c5-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 02 Apr 2020 04:40:20 -0700
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 2 Apr
- 2020 04:40:08 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.108)
- by SC-EXCH04.marvell.com (10.93.176.84) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Thu, 2 Apr 2020 04:40:08 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BE2IqYdCpJDrUMltnms44uSsRgpmSGq8rUhcniqMcXOl5lK/SaPhOO8G7yDGsQfRP2BB2lDqIFM6G7WKqOHDeNd7/rqp2zQWoklJyr0A/cQSZzJpGFqqOwKUUjhBa5WC2MVs2WeuZMYdzoNW2nt0aJbv7zFkD7xUSGklTVd174YM1EtkW4KACA+fZF9nwaSlPz+9QwxfIsWwmi9IO0+lr98XnOYbO7YvgnLHEVvhiIkE5me/ANV5RDDndbh6fPv30MLQ810mLgyXNBd2rkt3wLUsQqWb2pKuwHy9vJydMLkUqy0H+aM4oh5cPMuuneKTwQc31cu6fqL1nImfQgbt6w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=H0PyYP3DtXoemFw8VPX1ih54nVMlz40IxhJVVdYGRmM=;
- b=W725KJJax8+05LSbF+7cWPH8TncaxIPlXjBRnrJpaP7/oGCsewSOPfOFZqvcr99ThHO0jepsnlGy8h2zt409RArTtTayn9woVH3z4yGY+dQOlfHTZG8/EVZ18dFzDgyaJ1tXZc1w7ZbGKWZhxcOJTDlhBv8gAg4+Po3fzHWzxeAfFibkF47OHickgqC/0oBpBA92zzD0HwPK1FPz9X76gQKwz425n0zWaFZkDPkwVqre9u4O/lsu5KFXgMCN7LyLgw7TMP2EMsC3xhlmTGKEtDzJB8SHfVAkD5njbapFLZvmFBb8KDGxTHwkg1b1AMjMTZDVE0st/cWNT8ggk63GWQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=H0PyYP3DtXoemFw8VPX1ih54nVMlz40IxhJVVdYGRmM=;
- b=kJ4TJFUWaEt2ERmB587HidyOAubV+D2x1J0eGCeBT9wd1x9HBKxryN51MzvOaspdzJEzpM83UmdpNs4RlvsptgPq688MWwIwZJuh8RRpdxes7ikF/OxekIP8q6rHsyleuvQ25+0eV8UKJttMst430UkrSjSOPluHwFW+6zHEVBQ=
-Received: from DM5PR18MB1418.namprd18.prod.outlook.com (2603:10b6:3:bc::7) by
- DM5PR18MB1307.namprd18.prod.outlook.com (2603:10b6:3:b2::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2878.16; Thu, 2 Apr 2020 11:40:07 +0000
-Received: from DM5PR18MB1418.namprd18.prod.outlook.com
- ([fe80::645c:11c1:6e45:2323]) by DM5PR18MB1418.namprd18.prod.outlook.com
- ([fe80::645c:11c1:6e45:2323%6]) with mapi id 15.20.2856.019; Thu, 2 Apr 2020
- 11:40:07 +0000
-From:   Igor Russkikh <irusskikh@marvell.com>
-To:     Colin King <colin.king@canonical.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Mark Starovoytov <mstarovoitov@marvell.com>,
-        "Dmitry Bogdanov" <dbogdanov@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [EXT] [PATCH][next] net: atlantic: fix missing | operator when
- assigning rec->llc
-Thread-Topic: [EXT] [PATCH][next] net: atlantic: fix missing | operator when
- assigning rec->llc
-Thread-Index: AQHWCH0mj8mRw42JIE2naWFBBJnpMKhltTBA
-Date:   Thu, 2 Apr 2020 11:40:06 +0000
-Message-ID: <DM5PR18MB14189BD4043BE8974C9AC001B7C60@DM5PR18MB1418.namprd18.prod.outlook.com>
-References: <20200401232736.410028-1-colin.king@canonical.com>
-In-Reply-To: <20200401232736.410028-1-colin.king@canonical.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [79.126.46.27]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9b972329-364b-4e0f-36e8-08d7d6fa97b9
-x-ms-traffictypediagnostic: DM5PR18MB1307:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR18MB1307342272B3064D4E1EF4F5B7C60@DM5PR18MB1307.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2657;
-x-forefront-prvs: 0361212EA8
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR18MB1418.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(346002)(39860400002)(376002)(366004)(396003)(136003)(5660300002)(81156014)(81166006)(8676002)(110136005)(9686003)(26005)(478600001)(52536014)(33656002)(186003)(2906002)(86362001)(4744005)(66556008)(66476007)(64756008)(66446008)(7696005)(6506007)(76116006)(66946007)(8936002)(54906003)(71200400001)(316002)(55016002)(4326008);DIR:OUT;SFP:1101;
-received-spf: None (protection.outlook.com: marvell.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: /VswkEd52akOsMhDn3qfW6NCAnYa90Kgc6M+HWUi+ZbauxUdw+L+JNixlXR2G0Fw4rXZpxubV4LLWtuy1p0Kc/2C45X8VmixUbFd/Ioo+I1fkKA9jba4iwO0P58H5gLNlAiDD/HZ1Bloy3QVQ/tkceZ3NGm0GXxYF8JfNl9/9YuRI5QwVEbYTtjcBMBGvH9EO+rIW/ZlRLtmpquK3bSu29/LwmqJIEcFcajSHKLVPNCFEF+FCxGmqOT7s0pFBOVVKfP3kcyQVmNY5R+B68MiyPCsiwOA5QAIxnwdvFrE0roT0tfMGyHTRBBwJMYlq45kW4XZFKCWa1wGoMCNMnFxrHVFIfF+0R/mbkRjIKACIBYuafSumQQkMO6mqzDhfBzWsg4E/FQX5BEI91iiDV3WpCAvmT+Q6YUYsyGG0xlg91c+hd6YpEsjDbzSc4pM5+PZ
-x-ms-exchange-antispam-messagedata: YZ59FdMY3H/k4rIpcoLzA6BYh8GeuRz6K/dDoZYbW+eCgej+A557//sUP0TCXg8jVzVUZkVAuutXLTX2whk5/OK6WLuZFMwwEyU4fFXdbMTdYWXElqRHCKZb3YcxWf7ptVeLRefonhKKH76q4EP00A==
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S2387939AbgDBLmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 07:42:14 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:38387 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728803AbgDBLmN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 07:42:13 -0400
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jJyEY-0001jv-7O; Thu, 02 Apr 2020 13:42:06 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jJyES-0005T9-L6; Thu, 02 Apr 2020 13:42:00 +0200
+Date:   Thu, 2 Apr 2020 13:42:00 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Christian Herber <christian.herber@nxp.com>,
+        Rob Herring <robh@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Marek Vasut <marex@denx.de>, netdev <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: Re: [PATCH v4 1/4] dt-bindings: net: phy: Add support for NXP
+ TJA11xx
+Message-ID: <20200402114200.GA15570@pengutronix.de>
+References: <AM0PR04MB70413A974A2152D27CAADFAC86F00@AM0PR04MB7041.eurprd04.prod.outlook.com>
+ <20200323151423.GA32387@lunn.ch>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9b972329-364b-4e0f-36e8-08d7d6fa97b9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Apr 2020 11:40:07.0011
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: qn9SzLS03qVN0aZWJKgnUguj/XWZHm05uY6Fv4Yz/W7MIneYPXpLd8tT3WFTv9zR3XGTn4HA4ISVSLqDPmwPxg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR18MB1307
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-02_01:2020-03-31,2020-04-02 signatures=0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200323151423.GA32387@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 13:37:53 up 204 days, 25 min, 468 users,  load average: 3.36, 6.87,
+ 10.61
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhhbmtzIENvbGluLA0KDQpXZSBhbHNvIGZvdW5kIHRoaXMgdHlwbyByZWNlbnRseSwgYnV0IHlv
-dSB3ZXJlIGFoZWFkIG9mIHVzICkNCg0KPiBGcm9tOiBDb2xpbiBJYW4gS2luZyA8Y29saW4ua2lu
-Z0BjYW5vbmljYWwuY29tPg0KPiByZWMtPmxsYyBpcyBjdXJyZW50bHkgYmVpbmcgYXNzaWduZWQg
-dHdpY2UsIG9uY2Ugd2l0aCB0aGUgbG93ZXIgOCBiaXRzDQo+IGZyb20gcGFja2VkX3JlY29yZFs4
-XSBhbmQgdGhlbiByZS1hc3NpZ25lZCBhZnRlcndhcmRzIHdpdGggZGF0YSBmcm9tIHBhY2tlZF9y
-ZWNvcmRbOV0uICBUaGlzIGxvb2tzIGxpa2UgYSB0eXBlLA0KPiAgSSBiZWxpZXZlIHRoZSBzZWNv
-bmQgYXNzaWdubWVudCBzaG91bGQgYmUgdXNpbmcgdGhlIHw9IG9wZXJhdG9yIHJhdGhlciB0aGFu
-IGEgZGlyZWN0IGFzc2lnbm1lbnQuDQoNCj4gQWRkcmVzc2VzLUNvdmVyaXR5OiAoIlVudXNlZCB2
-YWx1ZSIpDQo+IEZpeGVzOiBiOGY4YTBiN2I1Y2IgKCJuZXQ6IGF0bGFudGljOiBNQUNTZWMgaW5n
-cmVzcyBvZmZsb2FkIEhXIGJpbmRpbmdzIikNCj4gU2lnbmVkLW9mZi1ieTogQ29saW4gSWFuIEtp
-bmcgPGNvbGluLmtpbmdAY2Fub25pY2FsLmNvbT4NCg0KQWNrZWQtYnk6IElnb3IgUnVzc2tpa2gg
-PGlydXNza2lraEBtYXJlbGwuY29tPg0K
+On Mon, Mar 23, 2020 at 04:14:23PM +0100, Andrew Lunn wrote:
+> > Yes, it is one device with two address. This is if you call the entire IC a device. If you look at it from a PHY perspective, it is two devices with 1 address.
+> > If you just look at it as a single device, it gets difficult to add PHY specific properties in the future, e.g. master/slave selection.
+> 
+> > In my opinion its important to have some kind of container for the
+> > entire IC, but likewise for the individual PHYs.
+> 
+> Yes, we need some sort of representation of two devices.
+> 
+> Logically, the two PHYs are on the same MDIO bus, so you could have
+> two nodes on the main bus.
+> 
+> Or you consider the secondary PHY as being on an internal MDIO bus
+> which is transparently bridged to the main bus. This is what was
+> proposed in the last patchset.
+> 
+> Because this bridge is transparent, the rest of the PHY/MDIO framework
+> has no idea about it. So i prefer that we keep with two PHY nodes on
+> the main bus. But i still think we need the master PHY to register the
+> secondary PHY, due to the missing PHY ID, and the other constrains
+> like resets which the master PHY has to handle.
+
+Yes, this is the way how current patches are implemented.
+
+Should dt-binding documentation and PHY changes go via David's tree
+upstream?  If nobody has strong opinion against it, @David can you
+please take them.
+
+Regards,
+Oleksij & Marc
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
