@@ -2,146 +2,283 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53C3519C118
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 14:32:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 397CB19C13F
+	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 14:38:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388155AbgDBMbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 08:31:52 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:53724 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2388045AbgDBMbw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 08:31:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585830709;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=b1iuEwMOCbdyBg0ZzUREMNzB1yA2no/SoVc43YelAqs=;
-        b=eq/9l7IADwcqzJU2V68DmlmZBTMDedJOSOXIIEfXJRddZ9Pu35RM0tkRTPLzIxG6EW1r9e
-        wCXl3r9dvLKETHQWA7wRVhZcjRNuAI7y4YO/PqWYb4NCOrlM/OHW95scPB963/gyTAo5lW
-        EQJfBirD/vQQBFXGaM6b5L4DJOMYEJo=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-375-ul-yVuLeOY6H2-7kqOHzuA-1; Thu, 02 Apr 2020 08:31:44 -0400
-X-MC-Unique: ul-yVuLeOY6H2-7kqOHzuA-1
-Received: by mail-wm1-f70.google.com with SMTP id o5so1343703wmo.6
-        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 05:31:44 -0700 (PDT)
+        id S2388268AbgDBMiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 08:38:14 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:32855 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729213AbgDBMiO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 08:38:14 -0400
+Received: by mail-qt1-f193.google.com with SMTP id c14so3079661qtp.0;
+        Thu, 02 Apr 2020 05:38:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=user-agent:date:subject:from:to:cc:message-id:thread-topic
+         :references:in-reply-to:mime-version:content-transfer-encoding;
+        bh=+jH8hdXCd9Ym6DPhy+4AlV5854a6fLVFEkswNBLo8LQ=;
+        b=saPIu+O4u8UdbNbArI5VFdJ758YePBDqI1sbTdazpSKWtd32oYAZyEzLuJLwm/s/XX
+         Txvz6Dsz9X2j8e62xVLYW8rlFXCf1MF8by5eKit06LisEXIvjG+Y9MEpV8mG7/iJkBSj
+         moyb7blhlk2StUF3ORFd0ONBadBL3gxGpU3tLRa8us8Khf7FNLmUnUUhmuIFvNT8JYwb
+         vPE52GkFmu+PJ6cJp6H8sdR6udvWxqnJsT8UHO6ws751DO/VecOqP4ZRpdcEJiqJ7gZ/
+         hGVHoMUHoWsnLpZrkm/UfRFB11vBd0wjz3NfmiW5oPm+aU8eM9QXE7n6HO6kOsEJmMJH
+         No9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:user-agent:date:subject:from:to:cc:message-id
+         :thread-topic:references:in-reply-to:mime-version
          :content-transfer-encoding;
-        bh=b1iuEwMOCbdyBg0ZzUREMNzB1yA2no/SoVc43YelAqs=;
-        b=uK/V9wrGe5elfUqKa4eCe6ppdrGxw8bGhiAVEAnPn/XJXecYDGXdLivtR9nsA43eFt
-         9Qr1khlQjmih+wNDOe3xaPjdDUszfuuRUeUsdpRzTMWjfRfERlhnXP8HBmEM5fzqWlga
-         vrZAZwsVegIhDUSEbiroWFfkR9lQo8RFI1JsT3PM3PR4+sQruYx0DNwLYpszKNgVpEoo
-         xZilLiPb1B4lguh8BbKpauiYQ+nxuN5ouBQdYiv7Wlf+aYpw2/OmscHvLuIn2VnYxu2i
-         fs7AJy1sUvrMboiUOum0IUnNYTfpRcrGNIODwrGfSzSMLmS64AT5fF+oXpj3nWLxDpMj
-         za1A==
-X-Gm-Message-State: AGi0PuYUlxJSZ6yMyVr97LKi14UJdfeLqmFJrpz36GhRtCTSEbAloXT2
-        NnHMEzBUT+bhWJ8FQgcbupCoYLdAfvefxDGkvCfm0W2R6rSEeNVRP0W8Ig1PZkszpgKQjkRHZou
-        PtQHhFvd1ki3WSg8B
-X-Received: by 2002:a1c:5502:: with SMTP id j2mr3329005wmb.93.1585830703576;
-        Thu, 02 Apr 2020 05:31:43 -0700 (PDT)
-X-Google-Smtp-Source: APiQypKeJkvlyzlxZHIlUhPY1uR/INkbvzSshkiu5u15mWxi8/IcJgopTZ/QYSyOkrZueWFFXMQn6g==
-X-Received: by 2002:a1c:5502:: with SMTP id j2mr3328989wmb.93.1585830703329;
-        Thu, 02 Apr 2020 05:31:43 -0700 (PDT)
-Received: from x1.localdomain (2001-1c00-0c0c-fe00-d2ea-f29d-118b-24dc.cable.dynamic.v6.ziggo.nl. [2001:1c00:c0c:fe00:d2ea:f29d:118b:24dc])
-        by smtp.gmail.com with ESMTPSA id h81sm7629471wme.42.2020.04.02.05.31.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Apr 2020 05:31:42 -0700 (PDT)
-Subject: Re: [Intel-wired-lan] [PATCH] e1000e: bump up timeout to wait when ME
- un-configure ULP mode
-To:     Aaron Ma <aaron.ma@canonical.com>, jeffrey.t.kirsher@intel.com,
-        davem@davemloft.net, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sasha.neftin@intel.com
-References: <20200323191639.48826-1-aaron.ma@canonical.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-Message-ID: <4f9f1ad0-e66a-d3c8-b152-209e9595e5d7@redhat.com>
-Date:   Thu, 2 Apr 2020 14:31:41 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-In-Reply-To: <20200323191639.48826-1-aaron.ma@canonical.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        bh=+jH8hdXCd9Ym6DPhy+4AlV5854a6fLVFEkswNBLo8LQ=;
+        b=C2uQYz5cWWQredHrfIN38BHsBHhZCftBS3RU4CwctLETcMSD7qbL8YQeiXmQc0CbK/
+         JmyYyTgfYdAM5o2QpIelppdAFFt12SQ+MpuHdd0M8o5cKIxePoyjYeh9/7TDoHsfbInq
+         Qxu+IO7JFqnZ1AQhZmqaEp0/U5vcTVAgz5ITqnPEPmqRSo7b8q83vQelJnvrErRoDfN3
+         YbVTErlqB/SLQBLvAWGl+QZH7yKMl2nYPzAkH2xRNORbBboEUzsZk47mDz43uycwRXPJ
+         G6PzPeN/VmhIRdx0JsXJNp2adbrKOeb8W5H7TKdY2B01rlqsnIvo/rGpgF0k8KoUNz2W
+         LTcg==
+X-Gm-Message-State: AGi0PubdjCi+0iLw78k8DIHCHBShXdDGxsQ/GsM+5QItY5qA1yHjMdSc
+        CN+zuAkXkBJApswJ68hubfE=
+X-Google-Smtp-Source: APiQypLV+xtgmiUZkI7Xe4MZVYjWaOO0etWdrNQLLA88VPy5vtl58lZ5ieLWEL5o+0XVpHzODoDKjA==
+X-Received: by 2002:aed:2535:: with SMTP id v50mr2671290qtc.354.1585831091995;
+        Thu, 02 Apr 2020 05:38:11 -0700 (PDT)
+Received: from [10.117.94.148] ([2001:470:b16e:20::200])
+        by smtp.gmail.com with ESMTPSA id l13sm3141191qke.116.2020.04.02.05.38.10
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 02 Apr 2020 05:38:11 -0700 (PDT)
+User-Agent: Microsoft-MacOutlook/16.35.20030802
+Date:   Thu, 02 Apr 2020 08:38:10 -0400
+Subject: Re: [ANNOUNCE] nftables 0.9.4 release
+From:   sbezverk <sbezverk@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        netfilter <netfilter@vger.kernel.org>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>
+CC:     <netdev@vger.kernel.org>, <lwn@lwn.net>
+Message-ID: <8174B383-989D-4F9D-BDCA-3A82DE5090D2@gmail.com>
+Thread-Topic: [ANNOUNCE] nftables 0.9.4 release
+References: <20200401143114.yfdfej6bldpk5inx@salvia>
+In-Reply-To: <20200401143114.yfdfej6bldpk5inx@salvia>
+Mime-version: 1.0
+Content-type: text/plain;
+        charset="UTF-8"
+Content-transfer-encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello Pablo,
 
-On 3/23/20 8:16 PM, Aaron Ma wrote:
-> ME takes 2+ seconds to un-configure ULP mode done after resume
-> from s2idle on some ThinkPad laptops.
-> Without enough wait, reset and re-init will fail with error.
-> 
-> Fixes: f15bb6dde738cc8fa0 ("e1000e: Add support for S0ix")
-> BugLink: https://bugs.launchpad.net/bugs/1865570
-> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+Did this commit make into 0.9.4?
 
-I have been testing this bug because this is being reported against
-Fedora 32 too:
+https://patchwork.ozlabs.org/patch/1202696/
 
-https://bugzilla.redhat.com/show_bug.cgi?id=1816621
+Thank you
+Serguei
 
-I can confirm that this patch fixes the problem of both
-a X1 7th gen as a X1 8th gen no longer suspending after
-a suspend resume cycle.
+=EF=BB=BFOn 2020-04-01, 10:34 AM, "Pablo Neira Ayuso" <netfilter-owner@vger.kerne=
+l.org on behalf of pablo@netfilter.org> wrote:
 
-Not only does it fix that, before this patch the kernel
-would regularly log the following error on these laptops
-independent of suspend/resume activity:
+    Hi!
+   =20
+    The Netfilter project proudly presents:
+   =20
+            nftables 0.9.4
+   =20
+    This release contains fixes and new features available up to the Linux
+    kernel 5.6 release.
+   =20
+    * Support for ranges in concatenations (requires Linux kernel >=3D 5.6),
+      e.g.
+   =20
+        table ip foo {
+               set whitelist {
+                       type ipv4_addr . ipv4_addr . inet_service
+                       flags interval
+                       elements =3D { 192.168.10.35-192.168.10.40 . 192.68.11=
+.123-192.168.11.125 . 80 }
+               }
+   =20
+               chain bar {
+                       type filter hook prerouting priority filter; policy =
+drop;
+                       ip saddr . ip daddr . tcp dport @whitelist accept
+               }
+        }
+   =20
+      This creates a `whitelist' set whose elements are a concatenation.
+      The interval flag specifies that this set might include ranges in
+      concatenations. The example above is accepting all traffic coming
+      from 192.168.10.35 to 192.168.10.40 (both addresses in the range
+      are included), destination to 192.68.10.123 and TCP destination
+      port 80.
+   =20
+    * typeof support for sets. You can use typeof to specify the datatype
+      of the selector in sets, e.g.
+   =20
+         table ip foo {
+                set whitelist {
+                        typeof ip saddr
+                        elements =3D { 192.168.10.35, 192.168.10.101, 192.168=
+.10.135 }
+                }
+   =20
+                chain bar {
+                        type filter hook prerouting priority filter; policy=
+ drop;
+                        ip daddr @whitelist accept
+                }
+         }
+   =20
+      You can also use typeof in maps:
+   =20
+         table ip foo {
+                map addr2mark {
+                    typeof ip saddr : meta mark
+                    elements =3D { 192.168.10.35 : 0x00000001, 192.168.10.135=
+ : 0x00000002 }
+                }
+         }
+   =20
+    * NAT mappings with concatenations. This allows you to specify the addr=
+ess
+      and port to be used in the NAT mangling from maps, eg.
+   =20
+          nft add rule ip nat pre dnat ip addr . port to ip saddr map { 1.1=
+.1.1 : 2.2.2.2 . 30 }
+   =20
+      You can also use this new feature with named sets:
+   =20
+          nft add map ip nat destinations { type ipv4_addr . inet_service :=
+ ipv4_addr . inet_service \; }
+          nft add rule ip nat pre dnat ip addr . port to ip saddr . tcp dpo=
+rt map @destinations
+   =20
+    * Hardware offload support: Your nic driver must include support for th=
+is
+      infrastructure. You have to enable offload via ethtool:
+   =20
+         # ethtool -K eth0 hw-tc-offload on
+   =20
+      Then, in nftables, you have to turn on the offload flag in the basech=
+ain
+      definition.
+   =20
+         # cat file.nft
+         table netdev x {
+                chain y {
+                    type filter hook ingress device eth0 priority 10; flags=
+ offload;
+                    ip saddr 192.168.30.20 drop
+                }
+         }
+         # nft -f file.nft
+   =20
+      Just a simple example to drop all traffic coming from 192.168.30.20
+      from the hardware. The Linux host see no packets at all from
+      192.168.30.20 after this since the nic filters out the packets.
+   =20
+      As of kernel 5.6, supported features are:
+   =20
+      - Matching on:
+        -- packet header fields.
+        -- input interface.
+   =20
+      - Actions available are:
+        -- accept / drop action.
+        -- Duplicate packet to port through `dup'.
+        -- Mirror packet to port through `fwd'.
+   =20
+    * Enhancements to improve location-based error reporting, e.g.
+   =20
+         # nft delete rule ip y z handle 7
+         Error: Could not process rule: No such file or directory
+         delete rule ip y z handle 7
+                        ^
+   =20
+      In this example above, the table `y' does not exist in your system.
+   =20
+         # nft delete rule ip x x handle 7
+         Error: Could not process rule: No such file or directory
+         delete rule ip x x handle 7
+                                   ^
+   =20
+      This means that rule handle 7 does not exist.
+   =20
+         # nft delete table twst
+         Error: No such file or directory; did you mean table =E2=80=98test=E2=80=99 in=
+ family ip?
+         delete table twst
+                      ^^^^
+   =20
+      If you delete a table whose name has been mistyped, error reporting
+      includes a suggestion.
+   =20
+    * Match on the slave interface through `meta sdif' and `meta
+      sdifname', e.g.
+   =20
+            ... meta sdifname vrf1 ...
+   =20
+    * Support for right and left shifts:
+   =20
+            ... meta mark set meta mark lshift 1 or 0x1 ...
+   =20
+      This example shows how to shift one bit left the existing packet
+      mark and set the less significant bit to 1.
+   =20
+    * New -V option to display extended version information, including
+      compile time options:
+   =20
+         # nft -V
+           nftables v0.9.4 (Jive at Five)
+              cli:          readline
+              json:         yes
+              minigmp:      no
+              libxtables:   yes
+   =20
+    * manpage documentation updates.
+   =20
+    * ... and bugfixes.
+   =20
+    See ChangeLog that comes attached to this email for more details.
+   =20
+    =3D Caveat =3D
+   =20
+    This new version enforces options before commands, ie.
+   =20
+         # nft list ruleset -a
+         Error: syntax error, options must be specified before commands
+         nft list ruleset -a
+            ^             ~~
+   =20
+    Just place the option before the command:
+   =20
+         # nft -a list ruleset
+         ... [ ruleset listing here ] ...
+   =20
+    Make sure to update your scripts.
+   =20
+    You can download this new release from:
+   =20
+    http://www.netfilter.org/projects/nftables/downloads.html#nftables-0.9.=
+4
+    ftp://ftp.netfilter.org/pub/nftables/
+   =20
+    To build the code, libnftnl 1.1.6 and libmnl >=3D 1.0.3 are required:
+   =20
+    * http://netfilter.org/projects/libnftnl/index.html
+    * http://netfilter.org/projects/libmnl/index.html
+   =20
+    Visit our wikipage for user documentation at:
+   =20
+    * http://wiki.nftables.org
+   =20
+    For the manpage reference, check man(8) nft.
+   =20
+    In case of bugs and feature request, file them via:
+   =20
+    * https://bugzilla.netfilter.org
+   =20
+    Happy firewalling!
+   =20
 
-e1000e 0000:00:1f.6 enp0s31f6: Hardware Error
-
-These messages are now also gone. So it seems that the timeout
-is really just too short.
-
-I can agree that it would be good to better understand this;
-and/or to get the ME firmware fixed to not take so long.
-
-But in my experience when dealing with e.g. embedded-controller
-in various laptops sometimes the firmware of these devives
-simply just takes a long time for certain things.
-
-This fix fixes a real problem, on a popular model laptop
-and since it just extends a timeout it is a pretty harmless
-(no chance of regressions) fix. As such since there seems
-to be no other solution in sight, can we please move forward
-with this fix for now ?
-
-Regards,
-
-Hans
-
-
-
-
-
-> ---
->   drivers/net/ethernet/intel/e1000e/ich8lan.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-> index b4135c50e905..147b15a2f8b3 100644
-> --- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
-> +++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-> @@ -1240,9 +1240,9 @@ static s32 e1000_disable_ulp_lpt_lp(struct e1000_hw *hw, bool force)
->   			ew32(H2ME, mac_reg);
->   		}
->   
-> -		/* Poll up to 300msec for ME to clear ULP_CFG_DONE. */
-> +		/* Poll up to 2.5sec for ME to clear ULP_CFG_DONE. */
->   		while (er32(FWSM) & E1000_FWSM_ULP_CFG_DONE) {
-> -			if (i++ == 30) {
-> +			if (i++ == 250) {
->   				ret_val = -E1000_ERR_PHY;
->   				goto out;
->   			}
-> 
 
