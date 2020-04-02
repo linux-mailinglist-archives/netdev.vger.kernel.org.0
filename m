@@ -2,106 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8AE719C3AE
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 16:13:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 881D719C3D6
+	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 16:21:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388371AbgDBONB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 10:13:01 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:47689 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2388239AbgDBONA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 10:13:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585836779;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=Lsas7jxJ1WMu8rRlGVbgJ8eIsxujsCQQeq8BgBAYBkI=;
-        b=TWz9U+cRrADAROTxO/jIEurRypEO+HCiCxkVY4DLlFxx4Sqg8t5w+nNEcS+3GCoOJ1r9cm
-        2SGneoW8OYJ3+ylNg8oHock4GKw86cAiseShJ4RA/0HVRiEUo/PEjcLJ3tOoYFwvNgQzgt
-        iPC1PNTNWIxktqguNnNKgrMNkYJ6DQs=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-411-NwhnvBIbNwCcJwvdrBmiXw-1; Thu, 02 Apr 2020 10:12:55 -0400
-X-MC-Unique: NwhnvBIbNwCcJwvdrBmiXw-1
-Received: by mail-qk1-f198.google.com with SMTP id h186so3103266qkc.22
-        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 07:12:55 -0700 (PDT)
+        id S2387854AbgDBOSG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 10:18:06 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:40490 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733195AbgDBOSF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 10:18:05 -0400
+Received: by mail-pf1-f195.google.com with SMTP id c20so1813126pfi.7;
+        Thu, 02 Apr 2020 07:18:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=sV9tqvN+vUsyclDdwQsodCiDkYsbUmI0zD+TvEKC7qc=;
+        b=q8n6vkBIA8dUONiHy5uZswo71uL9A604LdVul9lHMn41yd5Xl1Jzvj/PQf6kq8Fdi3
+         deRNP+evO0vErW2JdOHESfh4oCrIzS7X+Or/Ryl6ada27/8kV+00c62o36YVmNm3bXAh
+         niUJKP78LuRxoXbZyJKvSiv8+O+J7rN0ZlcV58yUSf5J0Ri54PXHO8aglrSGbfTwJGNH
+         mCB6C7CTQpA1WHsbiT7wK/drP5IxUUyEU+cWICUE00vvv8HwdZjNosrg47VEPp8idvRK
+         tYBNGKqpvz+D+IQCU4wX++r+x4iKBXyp0t0izDX1ETCzZ2NMtdusDzQBbXw103jza8Vo
+         RuHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=Lsas7jxJ1WMu8rRlGVbgJ8eIsxujsCQQeq8BgBAYBkI=;
-        b=YdqpEjKrdg4hFitS3LZeEA+7QQp1nSgq1OTdsZvHZheJweOHw2DRRm8/DmtnjaW7Ty
-         ZYEfD6wA8+wSPKHtNrtYqZN5ePS33MKIVm1CbVXb1m+Uxvq572hHwCzAITMpBLKprGNE
-         u4c6t/VpvANLrSTJ7tXYsAz1eOsiZdJRazJv13oAF0fwrzhuhAqMsl3NkVM31AOjJuJp
-         Qm8zsvuVB/381j7q4XspEPb475Ujs28zW4ViiFPMYwTvvLigrw2EQ2fYvvyoKCvrHd+m
-         WLu+6qw4dOlEDdtSyxyqwIhT+DO/W+LnLGygndrbhEEJdjhzTrzHFVFp9DgF9wEyQY2z
-         jPTA==
-X-Gm-Message-State: AGi0PuZlQ3xu+kZSzJkaZhmCY4Iucay9qJ0FKwsUKQHlIxZ5H17zA8bC
-        0wpH+36I/c/A8y5Kyz9rqNUtCA+9S5jiNvgJ0Vc0Iy5Bvfby2e/L0Ns7g6hGZ6DWSLvL7BlDNKC
-        5z2RXERZdwR5rJ2z2
-X-Received: by 2002:a37:7c81:: with SMTP id x123mr3569405qkc.287.1585836775148;
-        Thu, 02 Apr 2020 07:12:55 -0700 (PDT)
-X-Google-Smtp-Source: APiQypLfJWfDXTGKKPJbCvXgetpUrdL/5Wc33Wc2j+KEgqsWojCWykGbIs6gJg6z/V4LYFVIdSjzNQ==
-X-Received: by 2002:a37:7c81:: with SMTP id x123mr3569380qkc.287.1585836774834;
-        Thu, 02 Apr 2020 07:12:54 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
-        by smtp.gmail.com with ESMTPSA id b7sm3553494qkc.61.2020.04.02.07.12.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Apr 2020 07:12:53 -0700 (PDT)
-Date:   Thu, 2 Apr 2020 10:12:50 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH] vhost: drop vring dependency on iotlb
-Message-ID: <20200402141207.32628-1-mst@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email 2.24.1.751.gd10ce2899c
-X-Mutt-Fcc: =sent
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=sV9tqvN+vUsyclDdwQsodCiDkYsbUmI0zD+TvEKC7qc=;
+        b=CY7tkgf3JQFT6vn2QfYkS0ySgGuCom7TGHBSAOgKGii2Yld2Ut0g/9yijMchQ4RX/P
+         xstm8LGRJofFF1uz88TccSlOYlqxmOmYHQ1P/b5ieWHGl6J/YHDTYo4yKyhamyiXnjmt
+         2DBmSiZz2BWFHI3NvHJxVNtDBC4cOAaRjtG2sUSMGrUTZ/y+aIzB5VhJDzlOiE0IWFpi
+         lcJAgD+CyITmLIyYsxwF+tNlG4oZaxB7VRDs1iUnI7gpwYWhBn7W2nCH3V80r2s4PsYM
+         5NehSSDh8cRzm0TvF5r9yenHMW2KgydHgD63+f2IlyqNxsXP9nKgj1wkh6i/+g1ExDWE
+         91Bw==
+X-Gm-Message-State: AGi0PubqGn3S08VASMm8y/AuFKQUL0i3beEjDz7YsIMLK4X0kyMUrJsG
+        h4BraBmSp564RB5/lIWoBjJl4/7X
+X-Google-Smtp-Source: APiQypKzNpovHvEBeYUUJnNJcVcgCL02kvy3XkA8JBR55L1Xtym3V6pWuaeOTyojCvb39rlyVeyYow==
+X-Received: by 2002:a63:29c1:: with SMTP id p184mr3613563pgp.37.1585837084468;
+        Thu, 02 Apr 2020 07:18:04 -0700 (PDT)
+Received: from VM_0_35_centos.localdomain ([150.109.62.251])
+        by smtp.gmail.com with ESMTPSA id r63sm3887237pfr.42.2020.04.02.07.18.02
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 02 Apr 2020 07:18:03 -0700 (PDT)
+From:   Qiujun Huang <hqjagain@gmail.com>
+To:     amitkarwar@gmail.com, siva8118@gmail.com, kvalo@codeaurora.org
+Cc:     davem@davemloft.net, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Qiujun Huang <hqjagain@gmail.com>
+Subject: [PATCH] rsi: fix a typo "throld" -> "threshold"
+Date:   Thu,  2 Apr 2020 22:17:58 +0800
+Message-Id: <1585837078-6149-1-git-send-email-hqjagain@gmail.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-vringh can now be built without IOTLB.
-Select IOTLB directly where it's used.
+There is a typo in debug message. Fix it.
+s/throld/threshold
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
 ---
+ drivers/net/wireless/rsi/rsi_91x_mac80211.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This is on top of my previous patch (in vhost tree now).
-
- drivers/vdpa/Kconfig  | 1 +
- drivers/vhost/Kconfig | 1 -
- 2 files changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/vdpa/Kconfig b/drivers/vdpa/Kconfig
-index 7db1460104b7..08b615f2da39 100644
---- a/drivers/vdpa/Kconfig
-+++ b/drivers/vdpa/Kconfig
-@@ -17,6 +17,7 @@ config VDPA_SIM
- 	depends on RUNTIME_TESTING_MENU
- 	select VDPA
- 	select VHOST_RING
-+	select VHOST_IOTLB
- 	default n
- 	help
- 	  vDPA networking device simulator which loop TX traffic back
-diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
-index 21feea0d69c9..bdd270fede26 100644
---- a/drivers/vhost/Kconfig
-+++ b/drivers/vhost/Kconfig
-@@ -6,7 +6,6 @@ config VHOST_IOTLB
- 
- config VHOST_RING
- 	tristate
--	select VHOST_IOTLB
- 	help
- 	  This option is selected by any driver which needs to access
- 	  the host side of a virtio ring.
+diff --git a/drivers/net/wireless/rsi/rsi_91x_mac80211.c b/drivers/net/wireless/rsi/rsi_91x_mac80211.c
+index 4400882..5c0adb0 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_mac80211.c
++++ b/drivers/net/wireless/rsi/rsi_91x_mac80211.c
+@@ -832,7 +832,7 @@ static void rsi_mac80211_bss_info_changed(struct ieee80211_hw *hw,
+ 		common->cqm_info.last_cqm_event_rssi = 0;
+ 		common->cqm_info.rssi_thold = bss_conf->cqm_rssi_thold;
+ 		common->cqm_info.rssi_hyst = bss_conf->cqm_rssi_hyst;
+-		rsi_dbg(INFO_ZONE, "RSSI throld & hysteresis are: %d %d\n",
++		rsi_dbg(INFO_ZONE, "RSSI threshold & hysteresis are: %d %d\n",
+ 			common->cqm_info.rssi_thold,
+ 			common->cqm_info.rssi_hyst);
+ 	}
 -- 
-MST
+1.8.3.1
 
