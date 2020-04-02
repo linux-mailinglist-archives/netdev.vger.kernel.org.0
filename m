@@ -2,69 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40C3819CC58
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 23:25:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E3BA19CC95
+	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 23:55:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388902AbgDBVZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 17:25:07 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:35214 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731892AbgDBVZE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 17:25:04 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 032LG6BU000798;
-        Thu, 2 Apr 2020 14:24:48 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type :
- content-transfer-encoding : in-reply-to : mime-version; s=facebook;
- bh=JPjT8tgHMpyQkWqtoHN4CBy8U5z9wQP4R5WsABc5HEY=;
- b=V7HHyl5tIELixR4yLyaY6ee/x8QTH+Lw5T0JfrnsmpSgHt0mLufwuOOKZ+RuV9PdMAeu
- NVDFBSZDoHGnjshtJriienCmKH/EMQ+Nol7+njjwR8PX3evmbcTrbBuMwU2qPQubLGu4
- DlhyqPIGN6LQwCvhcdFu5ViVAtzk8kL4TjQ= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 305jfrt014-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 02 Apr 2020 14:24:48 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Thu, 2 Apr 2020 14:24:39 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZkZPfZAEjeRogXWW/w3Mv8VP+RxrzT7qScsEPIAIbS0Xi3lUZo2q2ibVU+sOvFtENNyNBYm7GzDcptjdrUIWnLVexp4XEy0ggnndDWclqyDeNYfBa/kuxaalhV7kCgxAs1LhpbqmKYRZFOhXOMPnSM/7W6RDkavJMIqwTo2RoGa0JqMUtmyirAxvq6Jq9pYb11yO+tL0S0kb9fTUpOKV1qC434EqB5vARrdTXBUXzduOBIxlerqX5CzcGYKOcqTiKn/dO33yLtgn/W3Jzkg42uUNlpi+1XdUeVe9t3MDeegQ+Pu4VKWG/SfSViOx5A6pR0uBTeJUrdeFg+Q+AZej7Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JPjT8tgHMpyQkWqtoHN4CBy8U5z9wQP4R5WsABc5HEY=;
- b=W+VIcmnS8YS1ygllnSDrohW/P+EfXomYsRmswgH+JrSFZf3a9mQ7U3EChDT5JmNTn9tJ1XMzzLKh34E5undX3vnvcO8KA7pSRq31a6Y7INV3915UFHIKAK62wOekMtcVrdkWXSuLE+eRisAphd3LFeLcv5MlawWsCQmnlUu9wtQkj7lc6vqAkD2U/Jsofn0TBvFh457xT/WOG65zC11fGyfElzml2GaO20doqc/26u+kdaYWZqWffhoqCweM7ybUjhdlFT+tr7zh6JTRbwT4BNN/cZ3uDgITwEPhXZtnvxCSsebJ9UkBqaOQEVgdcOrmMwzoLr1j2Pz2OPldlsEOrw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JPjT8tgHMpyQkWqtoHN4CBy8U5z9wQP4R5WsABc5HEY=;
- b=BTE4Nu+IkPLHX2TshB28CEOtZAJFMX0DYkL1rf1+KVcpoDr1Thg6ehtCKRHjdnKN1onVV7pwuOthbRyNCp/kUPqFkvVvg5/6qJ+QBb1GDTf3EJWXTV8KOtMDzlINWmGfQIp/W+RYVMB+t+suiexlYuviIIFvjsE0jrPToHWaphQ=
-Received: from BYAPR15MB4119.namprd15.prod.outlook.com (2603:10b6:a02:cd::20)
- by BYAPR15MB2630.namprd15.prod.outlook.com (2603:10b6:a03:14c::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.19; Thu, 2 Apr
- 2020 21:24:36 +0000
-Received: from BYAPR15MB4119.namprd15.prod.outlook.com
- ([fe80::90d6:ec75:fde:e992]) by BYAPR15MB4119.namprd15.prod.outlook.com
- ([fe80::90d6:ec75:fde:e992%7]) with mapi id 15.20.2856.019; Thu, 2 Apr 2020
- 21:24:36 +0000
-Date:   Thu, 2 Apr 2020 14:24:33 -0700
-From:   Andrey Ignatov <rdna@fb.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        id S2389104AbgDBVy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 17:54:58 -0400
+Received: from mail-pl1-f174.google.com ([209.85.214.174]:37985 "EHLO
+        mail-pl1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726963AbgDBVy6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 17:54:58 -0400
+Received: by mail-pl1-f174.google.com with SMTP id w3so1866206plz.5;
+        Thu, 02 Apr 2020 14:54:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=7F+dYfCQ5OWPWnYJ+4oT6s4iSyTj4WjRWONg/cEd36E=;
+        b=JqM4MTbqnbQYNbHDb/Lsa0LtXMRbw+NzgCYA24ggBcNrFXddNHmJAhGZQsJLuKYo4s
+         bs0tab/ETqaLdfSTosf9HwRUL5F4a5Pfr3ZspB+NeKfbn7JQFgjwq1E6jijg96qBhIgp
+         7GAbOXbilKqRYawJJFmjy9aLjx95L3+tFf1N9VsAgjgO+At467an9uJdpq1Uy/KoniDJ
+         bQwEDXY2p+4Mbpl+jQseArL2/BIcFywlIvNqZrAqLd0BlcKvEUufXgnZfS/wkb/cINzk
+         DhvVCZRjGhI6rpMJRdkDnU+qcbyFJh1V/Qbk8/g8SZ3kQgbp4RWZ+M0UodlgkQCk0uQx
+         FYPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=7F+dYfCQ5OWPWnYJ+4oT6s4iSyTj4WjRWONg/cEd36E=;
+        b=lZlI4MagEOU6qIR/Q4TMgtS6B5Hb8dS2wUwFZoUFGU1sxv+CWaDWZvqbF1nm0BW1b9
+         f/NPPZkojbs4omsM7PzILgcdyjyrDyKeQTid3SFvYSbZDX/cGRdifeU2mMF1Y7gcfdb4
+         93qnVFk0Igkys4tkfOXvbhDkNHTG0LY8/3rsPTsd+Cjdq8OzPpL303+3myVUNFQn0Ptp
+         xlHpJvX9oMUca3vaLgHnfAeSUTp1bVHiq9eQvJw39MGPaLlPQDxW2Pqm6nAsbV3iN2BW
+         mApaJTmA0yOJXr81PCoX+eCbi8a84VWMW4d3je9gWhE4hO+4DnMw6gtmM+8LNaFRdg1m
+         75pA==
+X-Gm-Message-State: AGi0PuZMX63+LUmUgbNs7VWOOnDI++XUPHC3ZG1TdNN4ZQBofZKOhhHD
+        HAJdA+1q8CU+aGDPDXpNH2Y=
+X-Google-Smtp-Source: APiQypJ97zG5VKuAK+PO5tuBbNLDtn14oB6nlBq/SlFCldX5AX7HHFojs/qNPTvNdRbpC1SrZDeWNQ==
+X-Received: by 2002:a17:902:207:: with SMTP id 7mr5034143plc.216.1585864496372;
+        Thu, 02 Apr 2020 14:54:56 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:400::5:b3a4])
+        by smtp.gmail.com with ESMTPSA id y7sm4406310pfq.159.2020.04.02.14.54.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Apr 2020 14:54:55 -0700 (PDT)
+Date:   Thu, 2 Apr 2020 14:54:52 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andriin@fb.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Andrey Ignatov <rdna@fb.com>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Subject: Re: bpf: ability to attach freplace to multiple parents
-Message-ID: <20200402212433.GA12405@rdna-mbp.dhcp.thefacebook.com>
-References: <87h7ye3mf3.fsf@toke.dk>
- <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com>
+Message-ID: <20200402215452.dkkbbymnhzlcux7m@ast-mbp>
+References: <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com>
  <87tv2e10ly.fsf@toke.dk>
  <CAEf4BzY1bs5WRsvr5UbfqV9UKnwxmCUa9NQ6FWirT2uREaj7_g@mail.gmail.com>
  <87369wrcyv.fsf@toke.dk>
@@ -73,112 +64,102 @@ References: <87h7ye3mf3.fsf@toke.dk>
  <20200326195340.dznktutm6yq763af@ast-mbp>
  <87o8sim4rw.fsf@toke.dk>
  <20200402202156.hq7wpz5vdoajpqp5@ast-mbp>
-Content-Type: text/plain; charset=utf-8
+ <87o8s9eg5b.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200402202156.hq7wpz5vdoajpqp5@ast-mbp>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-ClientProxiedBy: CO1PR15CA0090.namprd15.prod.outlook.com
- (2603:10b6:101:20::34) To BYAPR15MB4119.namprd15.prod.outlook.com
- (2603:10b6:a02:cd::20)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost (2620:10d:c090:400::5:5b0c) by CO1PR15CA0090.namprd15.prod.outlook.com (2603:10b6:101:20::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.20 via Frontend Transport; Thu, 2 Apr 2020 21:24:35 +0000
-X-Originating-IP: [2620:10d:c090:400::5:5b0c]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: de8e1d43-c07a-45d4-a563-08d7d74c3e2a
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2630:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB2630AC1A280BF655BAE89EC0A8C60@BYAPR15MB2630.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-Forefront-PRVS: 0361212EA8
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4119.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10019020)(396003)(39860400002)(346002)(376002)(136003)(366004)(81166006)(16526019)(186003)(86362001)(66574012)(8936002)(54906003)(81156014)(66556008)(316002)(6486002)(478600001)(4326008)(52116002)(8676002)(66476007)(2906002)(6496006)(66946007)(33656002)(9686003)(5660300002)(1076003)(6916009);DIR:OUT;SFP:1102;
-Received-SPF: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QA09CfgAPesm2dMtTmntfjvjL5P98Am25V56Kt2JWXkk4tZwaaU85wTbr+RCAsA+6YOV9XwRbgr4x5jcT+ZYgQpt792vVZx0PyGK5gHxp1S7iPb/br7PIIaUTYvow2ka5vtwaC6pJVLg4AFX+saL+1wtbGn/8XjtrcWknsxJhg5CJWWkKRSk+O59TotPNIUIHc8ALoUfYZMCMxdE2jLD4jqDIsI/7/wKhgIj1b1yciNuWIlUo+Awbdp2+8xlUdNqv5h8FTjDVPbuZeygDelbG5Cz93m83GHzp/qTvORvascwNkVKE5auWaU6GBUOrYCkhSrjJEE6v33NOEkslmFppkGDU/ja/up9LoOZZkt5fI53oAKyjPMCvxLxtYowOVQz4epW3kZIy3Uyq1e3k/7iwXaIVw8Ft7lTLJqUZA/6nzqN2tryVtgXSem+6BS69jo8
-X-MS-Exchange-AntiSpam-MessageData: janJ5X2MD3iqSOy7bF7FHxGy468dLuCOtJWWweoHq5YWpe+dSZsopIvIbD7dJeT2WEQCo4LoqMwCZLxKaNd7V4piUwfcPBhOFDPeRAGoMpzgWbWbjiBq7Uwl+4+6IoGPYnKP91a7uLnwYRggrdGjyuxUah6nZ4wFz4mfJgecfc390NaqqB82aDqDQa5a2YqS
-X-MS-Exchange-CrossTenant-Network-Message-Id: de8e1d43-c07a-45d4-a563-08d7d74c3e2a
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Apr 2020 21:24:35.9101
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VekpOasK8+2gd8ZuUP+NO133EtKrmbt0dsQklBlsovyOlyTyIrVklLZWn0EdazNJ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2630
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-02_11:2020-04-02,2020-04-02 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- mlxlogscore=999 lowpriorityscore=0 bulkscore=0 priorityscore=1501
- impostorscore=0 mlxscore=0 phishscore=0 spamscore=0 malwarescore=0
- suspectscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2004020157
-X-FB-Internal: deliver
+In-Reply-To: <87o8s9eg5b.fsf@toke.dk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> [Thu, 2020-04-02 13:22 -0700]:
-> On Fri, Mar 27, 2020 at 12:11:15PM +0100, Toke HÃ¸iland-JÃ¸rgensen wrote:
-> > 
-> > Current code is in [0], for those following along. There are two bits of
-> > kernel support missing before I can get it to where I want it for an
-> > initial "release": Atomic replace of the dispatcher (this series), and
-> > the ability to attach an freplace program to more than one "parent".
-> > I'll try to get an RFC out for the latter during the merge window, but
-> > I'll probably need some help in figuring out how to make it safe from
-> > the verifier PoV.
+On Thu, Apr 02, 2020 at 11:23:12PM +0200, Toke Høiland-Jørgensen wrote:
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 > 
-> I have some thoughts on the second part "ability to attach an freplace
-> to more than one 'parent'".
-> I think the solution should be more generic than just freplace.
-> fentry/fexit need to have the same feature.
-> Few folks already said that they want to attach fentry to multiple
-> kernel functions. It's similar to what people do with kprobe progs now.
-> (attach to multiple and differentiate attach point based on parent IP)
-> Similarly "bpftool profile" needs it to avoid creating new pair of fentry/fexit
-> progs for every target bpf prog it's collecting stats about.
-> I didn't add this ability to fentry/fexit/freplace only to simplify
-> initial implementation ;) I think the time had come.
-> Currently fentry/fexit/freplace progs have single prog->aux->linked_prog pointer.
-> It just needs to become a linked list.
-> The api extension could be like this:
-> bpf_raw_tp_open(prog_fd, attach_prog_fd, attach_btf_id);
-> (currently it's just bpf_raw_tp_open(prog_fd))
-> The same pair of (attach_prog_fd, attach_btf_id) is already passed into prog_load
-> to hold the linked_prog and its corresponding btf_id.
-> I'm proposing to extend raw_tp_open with this pair as well to
-> attach existing fentry/fexit/freplace prog to another target.
-> Internally the kernel verify that btf of current linked_prog
-> exactly matches to btf of another requested linked_prog and
-> if they match it will attach the same prog to two target programs (in case of freplace)
-> or two kernel functions (in case of fentry/fexit).
+> > On Fri, Mar 27, 2020 at 12:11:15PM +0100, Toke Høiland-Jørgensen wrote:
+> >> 
+> >> Current code is in [0], for those following along. There are two bits of
+> >> kernel support missing before I can get it to where I want it for an
+> >> initial "release": Atomic replace of the dispatcher (this series), and
+> >> the ability to attach an freplace program to more than one "parent".
+> >> I'll try to get an RFC out for the latter during the merge window, but
+> >> I'll probably need some help in figuring out how to make it safe from
+> >> the verifier PoV.
+> >
+> > I have some thoughts on the second part "ability to attach an freplace
+> > to more than one 'parent'".
+> > I think the solution should be more generic than just freplace.
+> > fentry/fexit need to have the same feature.
+> > Few folks already said that they want to attach fentry to multiple
+> > kernel functions. It's similar to what people do with kprobe progs now.
+> > (attach to multiple and differentiate attach point based on parent IP)
+> > Similarly "bpftool profile" needs it to avoid creating new pair of fentry/fexit
+> > progs for every target bpf prog it's collecting stats about.
+> > I didn't add this ability to fentry/fexit/freplace only to simplify
+> > initial implementation ;) I think the time had come.
 > 
-> Toke, Andrey,
-> if above kinda makes sense from high level description
-> I can prototype it quickly and then we can discuss details
-> in the patches ?
-> Or we can drill further into details and discuss corner cases.
+> Yup, I agree that it makes sense to do the same for fentry/fexit.
+> 
+> > Currently fentry/fexit/freplace progs have single prog->aux->linked_prog pointer.
+> > It just needs to become a linked list.
+> > The api extension could be like this:
+> > bpf_raw_tp_open(prog_fd, attach_prog_fd, attach_btf_id);
+> > (currently it's just bpf_raw_tp_open(prog_fd))
+> > The same pair of (attach_prog_fd, attach_btf_id) is already passed into prog_load
+> > to hold the linked_prog and its corresponding btf_id.
+> > I'm proposing to extend raw_tp_open with this pair as well to
+> > attach existing fentry/fexit/freplace prog to another target.
+> > Internally the kernel verify that btf of current linked_prog
+> > exactly matches to btf of another requested linked_prog and
+> > if they match it will attach the same prog to two target programs (in case of freplace)
+> > or two kernel functions (in case of fentry/fexit).
+> 
+> API-wise this was exactly what I had in mind as well.
 
-That makes sense to me.
+perfect!
 
-I've also been thinking of a way to "transition" ext prog from one
-target program to another, but I had an impression that limiting number
-of target progs to one for an ext prog is "by design" and hard to
-change, and was looking at introducing a way to duplicate existing ext
-prog by its fd but with different attach_prog_fd and attach_btf_id (smth
-like BPF_PROG_DUP command) instead.
+> > Toke, Andrey,
+> > if above kinda makes sense from high level description
+> > I can prototype it quickly and then we can discuss details
+> > in the patches ?
+> > Or we can drill further into details and discuss corner cases.
+> 
+> I have one detail to discuss: What would the bpf_raw_tp_open() call
+> return on the second attachment? A second reference to the same bpf_link
+> fd as the initial attachment, or a different link?
 
-But since you're saying that there are actually many use-cases to be
-able to attach freplace/fexit/fentry to multiple target programs, that
-works as well. Happy to look at the prototype when it's available.
+It's a different link.
+For fentry/fexit/freplace the link is pair:
+  // target           ...         bpf_prog
+(target_prog_fd_or_vmlinux, fentry_exit_replace_prog_fd).
 
-Thanks.
+So for xdp case we will have:
+root_link = (eth0_ifindex, dispatcher_prog_fd) // dispatcher prog attached to eth0
+link1 = (dispatcher_prog_fd, xdp_firewall1_fd) // 1st extension prog attached to dispatcher
+link2 = (dispatcher_prog_fd, xdp_firewall2_fd) // 2nd extension prog attached to dispatcher
 
-
--- 
-Andrey Ignatov
+Now libxdp wants to update the dispatcher prog.
+It generates new dispatcher prog with more placeholder entries or new policy:
+new_dispatcher_prog_fd.
+It's not attached anywhere.
+Then libxdp calls new bpf_raw_tp_open() api I'm proposing above to create:
+link3 = (new_dispatcher_prog_fd, xdp_firewall1_fd)
+link4 = (new_dispatcher_prog_fd, xdp_firewall2_fd)
+Now we have two firewalls attached to both old dispatcher prog and new dispatcher prog.
+Both firewalls are executing via old dispatcher prog that is active.
+Now libxdp calls:
+bpf_link_udpate(root_link, dispatcher_prog_fd, new_dispatcher_prog_fd)
+which atomically replaces old dispatcher prog with new dispatcher prog in eth0.
+The traffic keeps flowing into both firewalls. No packets lost.
+But now it goes through new dipsatcher prog.
+libxdp can now:
+close(dispatcher_prog_fd);
+close(link1);
+close(link2);
+Closing (and destroying two links) will remove old dispatcher prog
+from linked list in xdp_firewall1_prog->aux->linked_prog_list and from
+xdp_firewall2_prog->aux->linked_prog_list.
+Notice that there is no need to explicitly detach old dispatcher prog from eth0.
+link_update() did it while replacing it with new dispatcher prog.
