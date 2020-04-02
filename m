@@ -2,149 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B16AB19C8F6
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 20:43:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA96719CA0E
+	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 21:34:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389281AbgDBSnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 14:43:13 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:33280 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388764AbgDBSnN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 14:43:13 -0400
-Received: by mail-io1-f71.google.com with SMTP id w25so3729428iom.0
-        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 11:43:12 -0700 (PDT)
+        id S2389297AbgDBTen (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 15:34:43 -0400
+Received: from mail-pg1-f171.google.com ([209.85.215.171]:34779 "EHLO
+        mail-pg1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729033AbgDBTem (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 15:34:42 -0400
+Received: by mail-pg1-f171.google.com with SMTP id l14so2326436pgb.1
+        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 12:34:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZcdYcKuBeenscSEmNE8LHxP2C693m2s2u+d9jUGxZ5Y=;
+        b=WMzPtSZ2ch0op51Gy8vmR0c73dqEJIzv1TXv9ijmJw4Zq7akibTNyQHyB3I46P6D4R
+         hKRrXVY/XU4qcwxAgnfnmPJd8oobSnXRVtcI6piNTUB1pKnicpP3JVLKHUOW8YETf/45
+         RAfudto0DU4PjBZtQu6XIarfWKeUZSImdOF6TzjPbxp+YEtQCDl3bvJXEcdaB5IQNO0W
+         mPmSn8HodlXgy6n0x104eJf02HqgaNilSILdA0hQX0mJbMWyh3LyeyKxtwpycdVslf4G
+         +vRlyO/2AfLjYsU8i0DoYISoLF4T5eshi3C8/bDe3HN6MWCYkYHQC3j5vd8m4eSDO2dr
+         E8pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=yoqnUjRtu8mgbvv/13mBn4nrRvAQngPro3mOt8IGEyc=;
-        b=bk+3/MHuxUi2EaWLwPUtAyoYHH3QdM/YkimD7nEr1lt9uX075FCKrLW4i2U9hqHGSe
-         3MdwjvHgTAIN3wJcyDRKDJObw3LjF/pa8xtQq5TxkX81BlKdoH/21MVQyexyUhQKF6oW
-         xBiXDrEGdTWu9UtNQt8/AeXtGJkgYVDpPJyGdA92UTzI4r1ThuBRZqDXgGh68za/yJWk
-         hk64qowVMvyKbunrRzKNitKZEtRWoKIncoW6S7M3ZRWO2eqKh22YoObAb5R6GvcOQYJY
-         Q6CsW83g1YFF5rb/WoeTsmU9fsA8e1RHr9zDjv5uR2MrzEmLD0cj5eFBWeOYelw4A1rC
-         LlKg==
-X-Gm-Message-State: AGi0Pubo2djKFEs1fExel2DACE3fDXEfFjgJvwe89dFIIFrMWZjE+LpN
-        h3Txx0kLZml+jLYML7/A3Mo08l7mS+3A2ouzXpNXZh7TXJsb
-X-Google-Smtp-Source: APiQypJTLL+G338lLsPPlftz5FYyt7Zj4Yb5dOSEJfqQHqIdaImyApgkIj3rO3pVWniQSbfg9V8Od7ErArR2SgzZISGoixPw66T9
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZcdYcKuBeenscSEmNE8LHxP2C693m2s2u+d9jUGxZ5Y=;
+        b=bPXcqpL1snXsQ74+kwE+w4wj+qSdw5QmbgwWkIj7gqyXgWT4w6BcUqBeGU0T5iddoY
+         L7U6r9FC132QBr3TTzSFI/ppbShkiE1389zEuFA4+SgXgAR6gDejfeRHW916/SqJD6Ph
+         DlJRGDnDibyLGLiorxfUlSn6NrAcu1hlMsmIaD9rjPzZeJNRZ3U1H5kPw6/n33YWrCwb
+         fWKovJfmGHhlwK0BXrC9Fp0kNzNjUcdl3Cndpi6686Wt5KykdAOroSEEq9O/hSqh0hNY
+         Gn19y3OduysUJnflwQa7m/aIT1/mlUQgOpUlhQORFchiYirm73xp7+3X5bZ+xWyY2LXF
+         DGxg==
+X-Gm-Message-State: AGi0PubIyQBlD+JJtaiV/PUrxNlumYgkFV6WWxX+sIDIWg1FNVkthR53
+        Mwjfcyf6UJoo+LPOK7T/NraZ5McaprMXpQ==
+X-Google-Smtp-Source: APiQypKBX6jpEatEyEe7YjbmWdXn3uQgM+LgAIf+ezRwA+epO6mymt1URsS7pLB29l+W8jwFIhmepA==
+X-Received: by 2002:aa7:8bdc:: with SMTP id s28mr4975179pfd.110.1585856080712;
+        Thu, 02 Apr 2020 12:34:40 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id q8sm4297450pfg.19.2020.04.02.12.34.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Apr 2020 12:34:40 -0700 (PDT)
+Date:   Thu, 2 Apr 2020 12:34:32 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Cc:     linux-kerne@vger.kernel.org
+Subject: [ANNOUNCE] iproute2 5.6
+Message-ID: <20200402123432.4cbdaa59@hermes.lan>
 MIME-Version: 1.0
-X-Received: by 2002:a02:55c5:: with SMTP id e188mr4602763jab.57.1585852992156;
- Thu, 02 Apr 2020 11:43:12 -0700 (PDT)
-Date:   Thu, 02 Apr 2020 11:43:12 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000043794505a2532c6b@google.com>
-Subject: general protection fault in macsec_upd_offload
-From:   syzbot <syzbot+7022ab7c383875c17eff@syzkaller.appspotmail.com>
-To:     antoine.tenart@bootlin.com, davem@davemloft.net,
-        dbogdanov@marvell.com, irusskikh@marvell.com,
-        linux-kernel@vger.kernel.org, mathew.j.martineau@linux.intel.com,
-        matthieu.baerts@tessares.net, mayflowerera@gmail.com,
-        mstarovoitov@marvell.com, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+The 5.6 kernel has been released, and the last patches have
+been applied to iproute2.
 
-syzbot found the following crash on:
+Not a lot of changes in this release, most are related to fixing output
+formatting and documentation.
 
-HEAD commit:    304e0242 net_sched: add a temporary refcnt for struct tcin..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=17a6940be00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8c1e98458335a7d1
-dashboard link: https://syzkaller.appspot.com/bug?extid=7022ab7c383875c17eff
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1099dadbe00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12a63197e00000
+Download:
+    https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-5.6.0.tar.gz
 
-The bug was bisected to:
+Repository for upcoming release:
+    git://git.kernel.org/pub/scm/network/iproute2/iproute2.git
 
-commit 01cacb00b35cb62b139f07d5f84bcf0eeda8eff6
-Author: Paolo Abeni <pabeni@redhat.com>
-Date:   Fri Mar 27 21:48:51 2020 +0000
+And future release (net-next):
+    git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
 
-    mptcp: add netlink-based PM
+Thanks for all the contributions.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16133ebde00000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=15133ebde00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=11133ebde00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+7022ab7c383875c17eff@syzkaller.appspotmail.com
-Fixes: 01cacb00b35c ("mptcp: add netlink-based PM")
-
-batman_adv: batadv0: Interface activated: batadv_slave_1
-netlink: 'syz-executor343': attribute type 1 has an invalid length.
-general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-CPU: 1 PID: 7006 Comm: syz-executor343 Not tainted 5.6.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:nla_get_u8 include/net/netlink.h:1543 [inline]
-RIP: 0010:macsec_upd_offload+0x1c9/0x5a0 drivers/net/macsec.c:2597
-Code: fd 00 f0 ff ff 0f 87 23 03 00 00 e8 01 c5 d0 fc 48 8b 5c 24 38 48 b8 00 00 00 00 00 fc ff df 48 8d 7b 04 48 89 fa 48 c1 ea 03 <0f> b6 04 02 48 89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 1b 03 00 00
-RSP: 0018:ffffc90001797558 EFLAGS: 00010247
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff84a2244d
-RDX: 0000000000000000 RSI: ffffffff84a2245f RDI: 0000000000000004
-RBP: ffff8880a8372000 R08: ffff888095cae5c0 R09: ffffc90001797588
-R10: fffff520002f2eb3 R11: ffffc9000179759f R12: 0000000000000000
-R13: ffff88809ffaff80 R14: 1ffff920002f2eab R15: 0000000000000000
-FS:  0000000000a6a880(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fdd4d1316c0 CR3: 0000000093074000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- genl_family_rcv_msg_doit net/netlink/genetlink.c:673 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:718 [inline]
- genl_rcv_msg+0x627/0xdf0 net/netlink/genetlink.c:735
- netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2469
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:746
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6bf/0x7e0 net/socket.c:2362
- ___sys_sendmsg+0x100/0x170 net/socket.c:2416
- __sys_sendmsg+0xec/0x1b0 net/socket.c:2449
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x4438a9
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 6b 0e fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffdc14392d8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00000000004438a9
-RDX: 0000000000000000 RSI: 00000000200000c0 RDI: 0000000000000003
-RBP: 00007ffdc14392f0 R08: 00000000bb1414ac R09: 00000000bb1414ac
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffdc1439320
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-Modules linked in:
----[ end trace 98b6a7926fe123d8 ]---
-RIP: 0010:nla_get_u8 include/net/netlink.h:1543 [inline]
-RIP: 0010:macsec_upd_offload+0x1c9/0x5a0 drivers/net/macsec.c:2597
-Code: fd 00 f0 ff ff 0f 87 23 03 00 00 e8 01 c5 d0 fc 48 8b 5c 24 38 48 b8 00 00 00 00 00 fc ff df 48 8d 7b 04 48 89 fa 48 c1 ea 03 <0f> b6 04 02 48 89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 1b 03 00 00
-RSP: 0018:ffffc90001797558 EFLAGS: 00010247
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff84a2244d
-RDX: 0000000000000000 RSI: ffffffff84a2245f RDI: 0000000000000004
-RBP: ffff8880a8372000 R08: ffff888095cae5c0 R09: ffffc90001797588
-R10: fffff520002f2eb3 R11: ffffc9000179759f R12: 0000000000000000
-R13: ffff88809ffaff80 R14: 1ffff920002f2eab R15: 0000000000000000
-FS:  0000000000a6a880(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fdd4d1316c0 CR3: 0000000093074000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
+Report problems (or enhancements) to the netdev@vger.kernel.org mailing list.
 
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Andrea Claudi (8):
+      ip-xfrm: Fix help messages
+      ip link: xstats: fix TX IGMP reports string
+      nstat: print useful error messages in abort() cases
+      man: ip.8: Add missing vrf subcommand description
+      man: rdma.8: Add missing resource subcommand description
+      man: rdma-statistic: Add filter description
+      nexthop: fix error reporting in filter dump
+      man: bridge.8: fix bridge link show description
+
+Andy Roulin (1):
+      iplink: bond: print lacp actor/partner oper states as strings
+
+David Ahern (4):
+      Update kernel headers
+      Update kernel headers
+      Update kernel headers
+      Update kernel headers and import udp.h
+
+Donald Sharp (1):
+      ip route: Do not imply pref and ttl-propagate are per nexthop
+
+Guillaume Nault (1):
+      iproute2: fix MPLS label parsing
+
+Ido Schimmel (1):
+      ip route: Print "rt_offload" and "rt_trap" indication
+
+Leslie Monis (1):
+      tc: parse attributes with NLA_F_NESTED flag
+
+Michal Kubecek (1):
+      ip link: show permanent hardware address
+
+Mohit P. Tahiliani (1):
+      tc: add support for FQ-PIE packet scheduler
+
+Paolo Lungaroni (1):
+      add support for table name in SRv6 End.DT* behaviors
+
+Peter Junos (2):
+      ss: use compact output for undetected screen width
+      ss: fix tests to reflect compact output
+
+Petr Machata (2):
+      libnetlink: parse_rtattr_nested should allow NLA_F_NESTED flag
+      tc: Add support for ETS Qdisc
+
+Sabrina Dubroca (1):
+      ip: xfrm: add espintcp encapsulation
+
+Stephen Hemminger (9):
+      tc: do not output newline in oneline mode
+      uapi: update bpf.h and btf.h
+      uapi/pkt_sched: upstream changes from fq_pie
+      uapi: updates to tcp.h, snmp.h and if_bridge.h
+      devlink: fix warning from unchecked write
+      uapi: update magic.h
+      uapi: update bpf.h
+      uapi: update linux/in.h
+      v5.6.0
+
+Vivien Didelot (1):
+      iplink: add support for STP xstats
+
+Xin Long (2):
+      erspan: set erspan_ver to 1 by default
+      xfrm: not try to delete ipcomp states when using deleteall
+
