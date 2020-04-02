@@ -2,105 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9364019BB63
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 07:40:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC2CB19BB5B
+	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 07:36:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728135AbgDBFkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 01:40:17 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:34234 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726201AbgDBFkR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 01:40:17 -0400
-Received: by mail-qk1-f193.google.com with SMTP id i6so2814149qke.1;
-        Wed, 01 Apr 2020 22:40:16 -0700 (PDT)
+        id S1729213AbgDBFgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 01:36:38 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:39992 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729065AbgDBFgh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 01:36:37 -0400
+Received: by mail-pf1-f194.google.com with SMTP id c20so1229993pfi.7
+        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 22:36:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Hj9hqNcME2oIKIw+5Vx3xGDXGbaFZ4ovP+thufGAVmU=;
-        b=oGgRiCyGM1NttzIOzX4lwfWaLVWlVNJVxi3p2J32f8r5BrPNarW8vx/Yl6iLZg5HU/
-         y1n7ZlChgcMzf6CBkZqbMoDBLXJcQzKXki+ZUF7JoXFN4UXXS8qJ4XMG1Dy5hJIP3D2q
-         PxIWu5Jz96mjpP+jTJdf8y6ohWWqVQYGRE+1Buh1xTTha5aNmdttUQo7vhVy+mQC//Xs
-         LEuGp+m+fJGeAswwrLaJzN9iuSErM4LRexHOGPl21AVS1fxbUL0yQWNG/9NYEI/wx1B6
-         sLOCt5cU4xBWmc99Zmu9lpWLpu4MQRIbmJsSeB8vI+u6Zhyi9W1GAygUEPh5rP6Dw1iu
-         YEvw==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=c9aiokAxzZhwWXc4cjzfhhR5DKaeA3lVRVjrvcxIYDo=;
+        b=YxfV5CiR7/K2rL9/KvIrT7WZdxOlFXLB0MxY+F7eBnURzYLzvc7J52d3H58oVXAVTY
+         kQhpUccDZxXsu/nIQLQ4YKxiFn3MAgNDkrkWAe+wf3Rlriyy6vPomitMLioeEdYqtyNz
+         wZl38EXvLgq42G9/McXJQbmcSLh4XonPDCYCENZ/PfEH5YVu71Hzz2DS0skJB/1JYKjX
+         KGPoN99b6NJ52FkB9AfIYQY/DZPFKhKt8cUPEkQUT3WRl1Sdvpc4sO5IXEn5CoUQw4db
+         FoJAOu/Jyarvj6Hp4Hio+uE7b+FLn/bNP3VVjjajsQoUWfDQD1AG4nZ5n23HLrbYW9nW
+         Qpkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=Hj9hqNcME2oIKIw+5Vx3xGDXGbaFZ4ovP+thufGAVmU=;
-        b=Smif+8RHLKd1nWQ1GDTERfSIhNR7k4Z7JHxwVtF7WlQghN6KbKR3gkPWuGkSbacT3/
-         4DYz127WT4bSInQrSv+qtk+X12RjcBiMlovv5pHNelKD6i1a1aP9xZFo0LTwT860HKx1
-         y6qxIHvObx/GheS4j0u3ogus0uNzEvTnlIptNQhA3ifwvQNbDh8CuJWaeQVvNB29si1v
-         7kNV8ivhLPLpGA99IAjgA08wgROQD68QC/SpEahxG2LzEG0dITRMUeFoHAq/5YYBuBy5
-         8OxEfsR0G3SqdqLYl8qnuRFFpixh++N2XKpDhqP23Y25U3UZfVRYixxpVTGCqJhqxKWQ
-         FEQA==
-X-Gm-Message-State: AGi0PubsIirzpTp/gtfpoocLpGEqUHWZ6H4oC2JT+fOsEwWJEP7mCPKO
-        GpUyv8R62QuZ9JFioWVUj+u9Yktv
-X-Google-Smtp-Source: APiQypKYQzwTCauSCZsNzFwP7pSAbf43FjGqHiBn/lCnEhAbO+zIU1RyY8RLX9MuztxrJHSKsfzyeg==
-X-Received: by 2002:a37:4c4d:: with SMTP id z74mr1842987qka.53.1585806015666;
-        Wed, 01 Apr 2020 22:40:15 -0700 (PDT)
-Received: from localhost (c-73-74-7-9.hsd1.il.comcast.net. [73.74.7.9])
-        by smtp.gmail.com with ESMTPSA id t140sm2911459qke.48.2020.04.01.22.40.13
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=c9aiokAxzZhwWXc4cjzfhhR5DKaeA3lVRVjrvcxIYDo=;
+        b=gGDwYanSNZeLX4EBZa7ulixjDn4OjUYVoZs2ii3bA6QS4C8XqwHjkstAi2p2REvqh3
+         I2uzp1xZb6ptjckcRKcX4hGgQfumNVU/VE+A5K+QvAjWmOMv1qVjrZe78w53IoPjMJuZ
+         6l8HxTftfBnf0fhMXmRQw1ibZAc5OHMG2gsDKL8UibXBqnQ/S0dSc9zIXHDcf1ADQ0Xc
+         b7LNYq6kQ+Ae0LwDjkzgxoovVKuL6sXH+Ux9VDDqnIUeEBN/r9Kio8d9CSb53vRrmEZ+
+         dDxENg6pMpReemXTC5mKZsUjIxxiGGNmNgphW98VYP4qwcpCJ0HWVfOPT3NrXpehGQ08
+         NIwg==
+X-Gm-Message-State: AGi0PuYLBG5zOlUyHJS35NLUGi+Cs6AxgEl/Cuz4kPryurL3vZwR8syw
+        72Vk5sCM/wKaLDDz77RPEfL9
+X-Google-Smtp-Source: APiQypJkdabGHuso2IS07ogoJUhKzJdhEuB0gSewbxXaShBigRMmgAgz1IGbzAzHT5PlR/qVgiDl1g==
+X-Received: by 2002:aa7:870b:: with SMTP id b11mr1524260pfo.134.1585805794658;
+        Wed, 01 Apr 2020 22:36:34 -0700 (PDT)
+Received: from localhost.localdomain ([2409:4072:29a:a216:d9f7:e98f:311a:69f6])
+        by smtp.gmail.com with ESMTPSA id s14sm2684824pgl.4.2020.04.01.22.36.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Apr 2020 22:40:14 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by localhost (8.15.2/8.14.9) with ESMTP id 0325eAOc005904;
-        Thu, 2 Apr 2020 00:40:12 -0500
-Received: (from chris@localhost)
-        by localhost (8.15.2/8.15.2/Submit) id 03254KY3004887;
-        Thu, 2 Apr 2020 00:04:20 -0500
-From:   Chris Rorvick <chris@rorvick.com>
-To:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Chris Rorvick <chris@rorvick.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH] iwlwifi: actually check allocated conf_tlv pointer
-Date:   Thu,  2 Apr 2020 00:02:19 -0500
-Message-Id: <20200402050219.4842-1-chris@rorvick.com>
-X-Mailer: git-send-email 2.25.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 01 Apr 2020 22:36:34 -0700 (PDT)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     gregkh@linuxfoundation.org, davem@davemloft.net
+Cc:     smohanad@codeaurora.org, jhugo@codeaurora.org,
+        kvalo@codeaurora.org, bjorn.andersson@linaro.org,
+        hemantk@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clew@codeaurora.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        netdev@vger.kernel.org
+Subject: [PATCH v2 2/3] net: qrtr: Add MHI transport layer
+Date:   Thu,  2 Apr 2020 11:06:09 +0530
+Message-Id: <20200402053610.9345-3-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200402053610.9345-1-manivannan.sadhasivam@linaro.org>
+References: <20200402053610.9345-1-manivannan.sadhasivam@linaro.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 71bc0334a637 ("iwlwifi: check allocated pointer when allocating
-conf_tlvs") attempted to fix a typoe introduced by commit 17b809c9b22e
-("iwlwifi: dbg: move debug data to a struct") but does not implement the
-check correctly.
+MHI is the transport layer used for communicating to the external modems.
+Hence, this commit adds MHI transport layer support to QRTR for
+transferring the QMI messages over IPC Router.
 
-Tweeted-by: @grsecurity
-Signed-off-by: Chris Rorvick <chris@rorvick.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 ---
-In this wasn't picked up?
+ net/qrtr/Kconfig  |   7 +++
+ net/qrtr/Makefile |   2 +
+ net/qrtr/mhi.c    | 126 ++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 135 insertions(+)
+ create mode 100644 net/qrtr/mhi.c
 
- drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-index ff52e69c1c80..a37f330e7bd4 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-@@ -1465,11 +1465,11 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
- 		if (pieces->dbg_conf_tlv[i]) {
- 			drv->fw.dbg.conf_tlv[i] =
- 				kmemdup(pieces->dbg_conf_tlv[i],
- 					pieces->dbg_conf_tlv_len[i],
- 					GFP_KERNEL);
--			if (!pieces->dbg_conf_tlv[i])
-+			if (!drv->fw.dbg_conf_tlv[i])
- 				goto out_free_fw;
- 		}
- 	}
+diff --git a/net/qrtr/Kconfig b/net/qrtr/Kconfig
+index 63f89cc6e82c..8eb876471564 100644
+--- a/net/qrtr/Kconfig
++++ b/net/qrtr/Kconfig
+@@ -29,4 +29,11 @@ config QRTR_TUN
+ 	  implement endpoints of QRTR, for purpose of tunneling data to other
+ 	  hosts or testing purposes.
  
- 	memset(&trigger_tlv_sz, 0xff, sizeof(trigger_tlv_sz));
++config QRTR_MHI
++	tristate "MHI IPC Router channels"
++	depends on MHI_BUS
++	help
++	  Say Y here to support MHI based ipcrouter channels. MHI is the
++	  transport used for communicating to external modems.
++
+ endif # QRTR
+diff --git a/net/qrtr/Makefile b/net/qrtr/Makefile
+index 32d4e923925d..1b1411d158a7 100644
+--- a/net/qrtr/Makefile
++++ b/net/qrtr/Makefile
+@@ -5,3 +5,5 @@ obj-$(CONFIG_QRTR_SMD) += qrtr-smd.o
+ qrtr-smd-y	:= smd.o
+ obj-$(CONFIG_QRTR_TUN) += qrtr-tun.o
+ qrtr-tun-y	:= tun.o
++obj-$(CONFIG_QRTR_MHI) += qrtr-mhi.o
++qrtr-mhi-y	:= mhi.o
+diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
+new file mode 100644
+index 000000000000..2f604dff93cd
+--- /dev/null
++++ b/net/qrtr/mhi.c
+@@ -0,0 +1,126 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
++ */
++
++#include <linux/mhi.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/skbuff.h>
++#include <net/sock.h>
++
++#include "qrtr.h"
++
++struct qrtr_mhi_dev {
++	struct qrtr_endpoint ep;
++	struct mhi_device *mhi_dev;
++	struct device *dev;
++};
++
++/* From MHI to QRTR */
++static void qcom_mhi_qrtr_dl_callback(struct mhi_device *mhi_dev,
++				      struct mhi_result *mhi_res)
++{
++	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
++	int rc;
++
++	if (!qdev || mhi_res->transaction_status)
++		return;
++
++	rc = qrtr_endpoint_post(&qdev->ep, mhi_res->buf_addr,
++				mhi_res->bytes_xferd);
++	if (rc == -EINVAL)
++		dev_err(qdev->dev, "invalid ipcrouter packet\n");
++}
++
++/* From QRTR to MHI */
++static void qcom_mhi_qrtr_ul_callback(struct mhi_device *mhi_dev,
++				      struct mhi_result *mhi_res)
++{
++	struct sk_buff *skb = (struct sk_buff *)mhi_res->buf_addr;
++
++	if (skb->sk)
++		sock_put(skb->sk);
++	consume_skb(skb);
++}
++
++/* Send data over MHI */
++static int qcom_mhi_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
++{
++	struct qrtr_mhi_dev *qdev = container_of(ep, struct qrtr_mhi_dev, ep);
++	int rc;
++
++	rc = skb_linearize(skb);
++	if (rc) {
++		kfree_skb(skb);
++		return rc;
++	}
++
++	rc = mhi_queue_skb(qdev->mhi_dev, DMA_TO_DEVICE, skb, skb->len,
++			   MHI_EOT);
++	if (rc) {
++		kfree_skb(skb);
++		return rc;
++	}
++
++	if (skb->sk)
++		sock_hold(skb->sk);
++
++	return rc;
++}
++
++static int qcom_mhi_qrtr_probe(struct mhi_device *mhi_dev,
++			       const struct mhi_device_id *id)
++{
++	struct qrtr_mhi_dev *qdev;
++	int rc;
++
++	qdev = devm_kzalloc(&mhi_dev->dev, sizeof(*qdev), GFP_KERNEL);
++	if (!qdev)
++		return -ENOMEM;
++
++	qdev->mhi_dev = mhi_dev;
++	qdev->dev = &mhi_dev->dev;
++	qdev->ep.xmit = qcom_mhi_qrtr_send;
++
++	dev_set_drvdata(&mhi_dev->dev, qdev);
++	rc = qrtr_endpoint_register(&qdev->ep, QRTR_EP_NID_AUTO);
++	if (rc)
++		return rc;
++
++	dev_dbg(qdev->dev, "Qualcomm MHI QRTR driver probed\n");
++
++	return 0;
++}
++
++static void qcom_mhi_qrtr_remove(struct mhi_device *mhi_dev)
++{
++	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
++
++	qrtr_endpoint_unregister(&qdev->ep);
++	dev_set_drvdata(&mhi_dev->dev, NULL);
++}
++
++static const struct mhi_device_id qcom_mhi_qrtr_id_table[] = {
++	{ .chan = "IPCR" },
++	{}
++};
++MODULE_DEVICE_TABLE(mhi, qcom_mhi_qrtr_id_table);
++
++static struct mhi_driver qcom_mhi_qrtr_driver = {
++	.probe = qcom_mhi_qrtr_probe,
++	.remove = qcom_mhi_qrtr_remove,
++	.dl_xfer_cb = qcom_mhi_qrtr_dl_callback,
++	.ul_xfer_cb = qcom_mhi_qrtr_ul_callback,
++	.id_table = qcom_mhi_qrtr_id_table,
++	.driver = {
++		.name = "qcom_mhi_qrtr",
++	},
++};
++
++module_mhi_driver(qcom_mhi_qrtr_driver);
++
++MODULE_AUTHOR("Chris Lew <clew@codeaurora.org>");
++MODULE_AUTHOR("Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>");
++MODULE_DESCRIPTION("Qualcomm IPC-Router MHI interface driver");
++MODULE_LICENSE("GPL v2");
 -- 
-2.24.1
+2.17.1
 
