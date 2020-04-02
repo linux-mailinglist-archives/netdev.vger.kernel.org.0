@@ -2,103 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D554619B983
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 02:26:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AC2119B998
+	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 02:47:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732989AbgDBA0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 20:26:42 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:45664 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732385AbgDBA0m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 20:26:42 -0400
-Received: by mail-pf1-f193.google.com with SMTP id r14so855335pfl.12
-        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 17:26:41 -0700 (PDT)
+        id S1732872AbgDBArM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 20:47:12 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:38269 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732527AbgDBArM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 20:47:12 -0400
+Received: by mail-pf1-f195.google.com with SMTP id c21so910143pfo.5;
+        Wed, 01 Apr 2020 17:47:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ob50KPPitu/VAsCZRCb3jIgsR0wX/xQsKu6DYbArPO4=;
-        b=pHAONuh2cBAam65QtvHR6M5VI4wsm+z8NLQz0FSUy4wl0NcZnViOpfQYIAVwYqo+GZ
-         6u/yJcCBkg0GUBhSG+eGb8Z1GJWrDcwH3Wr5Ry3Ms1DEAEk7yD7os4vd6JhSOKjskUG4
-         r3wGD+dWECHTN6nYHUIfjqza7scSXkzCDEqQe6q5Jm+B/gCnFnsp+OMy6VjIcO592Sj2
-         xXlTkTicFXlyELgXpyjKervJ7cz84gj7hK65zerNKNVET0gcejyJGIFz5ka8k4RL3Hpl
-         MhTRtr5Jqi/dTDEmBmUoeRo4kXd5QMl/ivO71/Ze8GThkm01gienkv1OsisOlGAwhZmz
-         QbRQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=gKLfRHXqeC/oi2xP24lA0VxkwaXTW253NCEpbDodjM8=;
+        b=TQ5U5WQwnl6uazN/fdbqBwcYVhvaEdWSkMdvsbnu3CIQe9EtEnej6O1oUa2hLwpMyI
+         WjaCa5H/8AG8MYT1bUp2cQryZgIU73eqS953Nng2zR/9xGGxnpO7rTw4X0jXLB6hwkiJ
+         uwa3Yhd1bztdbxwwUFFoIzC+r1z2uc5Fdgk4ZkX81lZitAZdNeYKrzRKtdmkLwCHzuVQ
+         aNQml7SPwtnlHWSbbNUf+NOtcRxM0N36tKc5l10vgoCTU8Sf+FTwQ1KCoRxS6JcNAnlR
+         V85JKyQFo9nqRfVL4kMjlaOTWGCXr5qMc4w9jKsZr69iKvFYeXknjB0B3+rLE3G6BAI8
+         G4GA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ob50KPPitu/VAsCZRCb3jIgsR0wX/xQsKu6DYbArPO4=;
-        b=BGRinF0Q9hx5kQ41Lhkiko1xlNgYICzkSsTvXme637N68EYpSo12hYskLZcv4QCvnP
-         doDkSEtwme+1ksV+0dCEG8lBOwfgDl2HDSdbLm8xevXJfldOn17qFfcqwWGvrsuJB5Yg
-         /L0foY6ogt35dp2BVu/qek8QKU3qPS7cJPMcOvXgxEahBdZ94jEsJ7Zu3m+lYvYnnmgr
-         5e6tW4lFwBo38prswgF1qgQk1AWmfezCmcekgLpBSklp7+qvNG2iDMV6g0YWSFF2yNOQ
-         pAc+e70ahQJPb137WmWmq6fAL6hnmRdlouz7kIQBS0qJoEk7BUHCcYSuxIKheCc+7QIa
-         Prng==
-X-Gm-Message-State: AGi0PuaTJGgSaoRiLgtwScjUUzgegiqBKnl6pTXmzAPuf4kO+FPs4G7G
-        Go9em513Ld6ajn+ODhhFS9IXdKGE78m2jqeJJDP5pQ==
-X-Google-Smtp-Source: APiQypKeG0RcaEryHPNpjDE3LJENFRlmFYUd6WwW6EYlUJOuCKtogvsWiFcehG/IvwaDMd5evl8Xm6x6apMH7SD2Ofc=
-X-Received: by 2002:a63:a34d:: with SMTP id v13mr837990pgn.10.1585787200467;
- Wed, 01 Apr 2020 17:26:40 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=gKLfRHXqeC/oi2xP24lA0VxkwaXTW253NCEpbDodjM8=;
+        b=UMMgse8FaQ7XjiyquOtZ8+rPcjFsBer4PmBMo9rcbYtokvMRaccc9W930X5CpdOCNW
+         KBXREQAtvCj+TeFuaPlTQOIHwj8N2rid+XDPaRx2QF2V8y6nr6E0Ux0C8izCGOpw66qj
+         rz+sb7Kw0lOmLFmzy3bfr+uE5DFv38iJRmkpL3G6itmGMwUdvJ5qdeE93sXiBXlE5KZJ
+         RQCKTny4PpGvAoSoSQzBDedLU7OIA/IPzyppo0nwelS/pxP0EreawInUupbI/PBGO3EI
+         cuAs1qkTllfUBfNkWm1KDoOQ5NHTQM7mlBVf/vtWArYA10ClsaEJXNGGwE+J9KXCL2kx
+         UWgA==
+X-Gm-Message-State: AGi0Pua7NJ2lI2OOyd2RjXEH+eNqo8FHEM6QNekZZQZtBXGsnrXqEOnl
+        OeASkG6SJgz+qd+Ziq+zDZz3VyAo
+X-Google-Smtp-Source: APiQypJUo1ChJEV935jbuqqDGBmqOSPXf7PQPaGev8X1QugSrNwjI99o4UN3g6xKqwJEPMoQZ5fpxA==
+X-Received: by 2002:a63:5fd8:: with SMTP id t207mr873597pgb.186.1585788429294;
+        Wed, 01 Apr 2020 17:47:09 -0700 (PDT)
+Received: from [192.168.1.18] (i223-218-245-204.s42.a013.ap.plala.or.jp. [223.218.245.204])
+        by smtp.googlemail.com with ESMTPSA id 63sm2451755pfx.132.2020.04.01.17.47.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Apr 2020 17:47:08 -0700 (PDT)
+Subject: Re: [PATCH net v2] veth: xdp: use head instead of hard_start
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Mao Wenan <maowenan@huawei.com>, davem@davemloft.net,
+        ast@kernel.org, daniel@iogearbox.net, kuba@kernel.org,
+        hawk@kernel.org, john.fastabend@gmail.com, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        jwi@linux.ibm.com, jianglidong3@jd.com, edumazet@google.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <fb5ab568-9bc8-3145-a8db-3e975ccdf846@gmail.com>
+ <20200331060641.79999-1-maowenan@huawei.com>
+ <7a1d55ad-1427-67fe-f204-4d4a0ab2c4b1@gmail.com>
+ <20200401181419.7acd2aa6@carbon>
+From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
+Message-ID: <ede2f407-839e-d29e-0ebe-aa39dd461bfd@gmail.com>
+Date:   Thu, 2 Apr 2020 09:47:03 +0900
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-References: <20200311024240.26834-1-elder@linaro.org> <20200401173515.142249-1-ndesaulniers@google.com>
- <3659efd7-4e72-6bff-5657-c1270e8553f4@linaro.org> <CAKwvOdn7TpsZJ70mRiQARJc9Fy+364PXSAiPnSpc_M9pOaXjGw@mail.gmail.com>
- <3c878065-8d25-8177-b7c4-9813b60c9ff6@linaro.org> <CAKwvOdnZ-QNeYQ_G-aEuo8cC_m68E5mAC4cskwAQpJJQPc1BSg@mail.gmail.com>
- <efd2c8b1-4efd-572e-10c5-c45f705274d0@linaro.org> <CAKwvOdnZ9KL1Esmdjvk-BTP2a+C24bOWguNVaU3RSXKi1Ouh+w@mail.gmail.com>
- <5635b511-64f8-b612-eb25-20b43ced4ed3@linaro.org>
-In-Reply-To: <5635b511-64f8-b612-eb25-20b43ced4ed3@linaro.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Wed, 1 Apr 2020 17:26:29 -0700
-Message-ID: <CAKwvOdnO2=yjEerw50b_C2vrgdCh2es6ZRfQpBRVR9RCrvwi6Q@mail.gmail.com>
-Subject: Re: [PATCH v3] bitfield.h: add FIELD_MAX() and field_max()
-To:     Alex Elder <elder@linaro.org>,
-        Maxim Kuvyrkov <maxim.kuvyrkov@linaro.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200401181419.7acd2aa6@carbon>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 1, 2020 at 4:18 PM Alex Elder <elder@linaro.org> wrote:
->
-> On 4/1/20 5:26 PM, Nick Desaulniers wrote:
-> >
-> > mainline is hosed for aarch64 due to some dtc failures.  I'm not sure
-> > how TCWG's CI chooses the bisection starting point, but if mainline
-> > was broken, and it jumped back say 300 commits, then the automated
-> > bisection may have converged on your first patch, but not the second.
->
-> This is similar to the situation I discussed with Maxim this
-> morning.  A different failure (yes, DTC related) led to an
-> automated bisect process, which landed on my commit. And my
-> commit unfortunately has the the known issue that was later
-> corrected.
->
-> Maxim said this was what started the automated bisect:
-> ===
-> +# 00:01:41 make[2]: *** [arch/arm64/boot/dts/ti/k3-am654-base-board.dtb] Error 2
-> +# 00:01:41 make[2]: *** [arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dtb] Error 2
-> +# 00:01:41 make[1]: *** [arch/arm64/boot/dts/ti] Error 2
-> +# 00:01:41 make: *** [dtbs] Error 2
+On 2020/04/02 1:15, Jesper Dangaard Brouer wrote:
+...
+> [PATCH RFC net-next] veth: adjust hard_start offset on redirect XDP frames
+> 
+> When native XDP redirect into a veth device, the frame arrives in the
+> xdp_frame structure. It is then processed in veth_xdp_rcv_one(),
+> which can run a new XDP bpf_prog on the packet. Doing so requires
+> converting xdp_frame to xdp_buff, but the tricky part is that
+> xdp_frame memory area is located in the top (data_hard_start) memory
+> area that xdp_buff will point into.
+> 
+> The current code tried to protect the xdp_frame area, by assigning
+> xdp_buff.data_hard_start past this memory. This results in 32 bytes
+> less headroom to expand into via BPF-helper bpf_xdp_adjust_head().
+> 
+> This protect step is actually not needed, because BPF-helper
+> bpf_xdp_adjust_head() already reserve this area, and don't allow
+> BPF-prog to expand into it. Thus, it is safe to point data_hard_start
+> directly at xdp_frame memory area.
+> 
+> Cc: Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>
 
-DTC thread:
-https://lore.kernel.org/linux-arm-kernel/20200401223500.224253-1-ndesaulniers@google.com/
+FYI: This mail address is deprecated.
 
-Maxim, can you describe how the last known good sha is chosen?  If you
-persist anything between builds, like ccache dir, maybe you could
-propagate a sha of the last successful build, updating it if no
-regression occurred?  Then that can always be a precise last known
-good sha.  Though I don't know if the merge commits complicate this.
--- 
-Thanks,
-~Nick Desaulniers
+> Fixes: 9fc8d518d9d5 ("veth: Handle xdp_frames in xdp napi ring")
+> Reported-by: Mao Wenan <maowenan@huawei.com>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+FWIW,
+
+Acked-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
