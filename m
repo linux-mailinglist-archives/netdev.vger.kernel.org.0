@@ -2,67 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A501A19BAA2
-	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 05:24:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1095D19BAD4
+	for <lists+netdev@lfdr.de>; Thu,  2 Apr 2020 06:02:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387421AbgDBDXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 23:23:24 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:38003 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1732664AbgDBDXX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 23:23:23 -0400
+        id S1727012AbgDBECJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 00:02:09 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:57432 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725890AbgDBECJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 00:02:09 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585797802;
+        s=mimecast20190719; t=1585800128;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=lo4oQtgFAkpJN5E5vhIt9kZ5uAzDrIArkXhNzR8IY6M=;
-        b=HE/q2pIuz2A3Bii6mHl2f4P5lMM3AyKXdjsNR90zMtq4sDCwSYuDzoP0QTy3r8TE/wE15T
-        nzZ4Zx9z3H5EEqrUZ9R45IlU8EAm1eP6TJ0h3PCh9sLizumYW/fD62Z/WhOhN1R51RAKyE
-        FgryWHi7TybJ8zOBieBK2oyqXRJ0zw8=
+        bh=+zSv1WA+rPbGSzOupPYuZO2qP78Tb9ejg8WqBI3qnMo=;
+        b=Zq/0G99Y+8TMIbhsq98MXKsY1qWepSwQLR5HWmM0bSh8l/zgRj0iQGKUowIMZCO/3UOZlo
+        Yc1KmA/topYXYN0gXahWa/3Ya7xbQJMwAbVCmkMu+Os7rroXxvy/mj7OrynB/T48b2W2jv
+        uqB68aicSGrxSa/48yLtaBZDUZhIZEk=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-26-LVyMK6ydO8Sv_d3yw-jCFQ-1; Wed, 01 Apr 2020 23:23:18 -0400
-X-MC-Unique: LVyMK6ydO8Sv_d3yw-jCFQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+ us-mta-472-LUxoOoOCPzGXTIuUcfvDzQ-1; Thu, 02 Apr 2020 00:02:04 -0400
+X-MC-Unique: LUxoOoOCPzGXTIuUcfvDzQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 125D218A5511;
-        Thu,  2 Apr 2020 03:23:16 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2816E107ACC4;
+        Thu,  2 Apr 2020 04:02:03 +0000 (UTC)
 Received: from [10.72.13.209] (ovpn-13-209.pek2.redhat.com [10.72.13.209])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8EEDE89F0A;
-        Thu,  2 Apr 2020 03:22:59 +0000 (UTC)
-Subject: Re: [PATCH V9 1/9] vhost: refine vhost and vringh kconfig
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        jgg@mellanox.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        lingshan.zhu@intel.com, eperezma@redhat.com, lulu@redhat.com,
-        parav@mellanox.com, kevin.tian@intel.com, stefanha@redhat.com,
-        rdunlap@infradead.org, hch@infradead.org, aadam@redhat.com,
-        jiri@mellanox.com, shahafs@mellanox.com, hanand@xilinx.com,
-        mhabets@solarflare.com, gdawar@xilinx.com, saugatm@xilinx.com,
-        vmireyno@marvell.com, zhangweining@ruijie.com.cn
-References: <20200326140125.19794-1-jasowang@redhat.com>
- <20200326140125.19794-2-jasowang@redhat.com>
- <20200401092004-mutt-send-email-mst@kernel.org>
- <6b4d169a-9962-6014-5423-1507059343e9@redhat.com>
- <20200401100954-mutt-send-email-mst@kernel.org>
- <3dd3b7e7-e3d9-dba4-00fc-868081f95ab7@redhat.com>
- <20200401120643-mutt-send-email-mst@kernel.org>
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F012719C69;
+        Thu,  2 Apr 2020 04:01:57 +0000 (UTC)
+Subject: Re: [PATCH] virtio/test: fix up after IOTLB changes
+To:     "Michael S. Tsirkin" <mst@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org
+References: <20200401165100.276039-1-mst@redhat.com>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <c11c2195-88eb-2096-af47-40f2da5b389f@redhat.com>
-Date:   Thu, 2 Apr 2020 11:22:57 +0800
+Message-ID: <921fe999-e183-058d-722a-1a6a6ab066e0@redhat.com>
+Date:   Thu, 2 Apr 2020 12:01:56 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20200401120643-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20200401165100.276039-1-mst@redhat.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -70,98 +56,123 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2020/4/2 =E4=B8=8A=E5=8D=8812:08, Michael S. Tsirkin wrote:
-> On Wed, Apr 01, 2020 at 10:29:32PM +0800, Jason Wang wrote:
->> >From 9b3a5d23b8bf6b0a11e65e688335d782f8e6aa5c Mon Sep 17 00:00:00 200=
-1
->> From: Jason Wang <jasowang@redhat.com>
->> Date: Wed, 1 Apr 2020 22:17:27 +0800
->> Subject: [PATCH] vhost: let CONFIG_VHOST to be selected by drivers
->>
->> The defconfig on some archs enable vhost_net or vhost_vsock by
->> default. So instead of adding CONFIG_VHOST=3Dm to all of those files,
->> simply letting CONFIG_VHOST to be selected by all of the vhost
->> drivers. This fixes the build on the archs with CONFIG_VHOST_NET=3Dm i=
-n
->> their defconfig.
->>
->> Signed-off-by: Jason Wang <jasowang@redhat.com>
->> ---
->>   drivers/vhost/Kconfig | 15 +++++++++++----
->>   1 file changed, 11 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
->> index 2523a1d4290a..362b832f5338 100644
->> --- a/drivers/vhost/Kconfig
->> +++ b/drivers/vhost/Kconfig
->> @@ -11,19 +11,23 @@ config VHOST_RING
->>   	  This option is selected by any driver which needs to access
->>   	  the host side of a virtio ring.
->>  =20
->> -menuconfig VHOST
->> -	tristate "Host kernel accelerator for virtio (VHOST)"
->> -	depends on EVENTFD
->> +config VHOST
->> +	tristate
->>   	select VHOST_IOTLB
->>   	help
->>   	  This option is selected by any driver which needs to access
->>   	  the core of vhost.
->>  =20
->> -if VHOST
->> +menuconfig VHOST_MENU
->> +	bool "VHOST drivers"
->> +	default y
->> +
->> +if VHOST_MENU
->>  =20
->>   config VHOST_NET
->>   	tristate "Host kernel accelerator for virtio net"
->>   	depends on NET && EVENTFD && (TUN || !TUN) && (TAP || !TAP)
->> +	select VHOST
->>   	---help---
->>   	  This kernel module can be loaded in host kernel to accelerate
->>   	  guest networking with virtio_net. Not to be confused with virtio_=
-net
->> @@ -35,6 +39,7 @@ config VHOST_NET
->>   config VHOST_SCSI
->>   	tristate "VHOST_SCSI TCM fabric driver"
->>   	depends on TARGET_CORE && EVENTFD
->> +	select VHOST
->>   	default n
->>   	---help---
->>   	Say M here to enable the vhost_scsi TCM fabric module
->> @@ -43,6 +48,7 @@ config VHOST_SCSI
->>   config VHOST_VSOCK
->>   	tristate "vhost virtio-vsock driver"
->>   	depends on VSOCKETS && EVENTFD
->> +	select VHOST
->>   	select VIRTIO_VSOCKETS_COMMON
->>   	default n
->>   	---help---
->> @@ -56,6 +62,7 @@ config VHOST_VSOCK
->>   config VHOST_VDPA
->>   	tristate "Vhost driver for vDPA-based backend"
->>   	depends on EVENTFD
->> +	select VHOST
+On 2020/4/2 =E4=B8=8A=E5=8D=8812:51, Michael S. Tsirkin wrote:
+> Allow building vringh without IOTLB (that's the case for userspace
+> builds, will be useful for CAIF/VOD down the road too).
+> Update for API tweaks.
+> Don't include vringh with kernel builds.
 
 
-This part is not squashed.
+I'm not quite sure we need this.
+
+E.g the userspace accessor is not used by CAIF/VOP.
 
 
->>   	select VDPA
->>   	help
->>   	  This kernel module can be loaded in host kernel to accelerate
-> OK so I squashed this into the original buggy patch.
-> Could you please play with vhost branch of my tree on various
-> arches? If it looks ok to you let me know I'll push
-> this to next.
+>
+> Cc: Jason Wang <jasowang@redhat.com>
+> Cc: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>   drivers/vhost/test.c   | 4 ++--
+>   drivers/vhost/vringh.c | 5 +++++
+>   include/linux/vringh.h | 2 ++
+>   tools/virtio/Makefile  | 3 ++-
+>   4 files changed, 11 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
+> index 394e2e5c772d..9a3a09005e03 100644
+> --- a/drivers/vhost/test.c
+> +++ b/drivers/vhost/test.c
+> @@ -120,7 +120,7 @@ static int vhost_test_open(struct inode *inode, str=
+uct file *f)
+>   	vqs[VHOST_TEST_VQ] =3D &n->vqs[VHOST_TEST_VQ];
+>   	n->vqs[VHOST_TEST_VQ].handle_kick =3D handle_vq_kick;
+>   	vhost_dev_init(dev, vqs, VHOST_TEST_VQ_MAX, UIO_MAXIOV,
+> -		       VHOST_TEST_PKT_WEIGHT, VHOST_TEST_WEIGHT);
+> +		       VHOST_TEST_PKT_WEIGHT, VHOST_TEST_WEIGHT, NULL);
+>  =20
+>   	f->private_data =3D n;
+>  =20
+> @@ -225,7 +225,7 @@ static long vhost_test_reset_owner(struct vhost_tes=
+t *n)
+>   {
+>   	void *priv =3D NULL;
+>   	long err;
+> -	struct vhost_umem *umem;
+> +	struct vhost_iotlb *umem;
+>  =20
+>   	mutex_lock(&n->dev.mutex);
+>   	err =3D vhost_dev_check_owner(&n->dev);
+> diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+> index ee0491f579ac..878e565dfffe 100644
+> --- a/drivers/vhost/vringh.c
+> +++ b/drivers/vhost/vringh.c
+> @@ -13,9 +13,11 @@
+>   #include <linux/uaccess.h>
+>   #include <linux/slab.h>
+>   #include <linux/export.h>
+> +#ifdef VHOST_IOTLB
 
 
-With the above part squashed. I've tested all the archs whose defconfig=20
-have VHOST_NET or VHOST_VSOCK enabled.
+Kbuild bot reports build issues with this.
 
-All looks fine.
+It looks to me we should use #if IS_ENABLED(CONFIG_VHOST_IOTLB) here and=20
+following checks.
 
 Thanks
+
+
+>   #include <linux/bvec.h>
+>   #include <linux/highmem.h>
+>   #include <linux/vhost_iotlb.h>
+> +#endif
+>   #include <uapi/linux/virtio_config.h>
+>  =20
+>   static __printf(1,2) __cold void vringh_bad(const char *fmt, ...)
+> @@ -1059,6 +1061,8 @@ int vringh_need_notify_kern(struct vringh *vrh)
+>   }
+>   EXPORT_SYMBOL(vringh_need_notify_kern);
+>  =20
+> +#ifdef VHOST_IOTLB
+> +
+>   static int iotlb_translate(const struct vringh *vrh,
+>   			   u64 addr, u64 len, struct bio_vec iov[],
+>   			   int iov_size, u32 perm)
+> @@ -1416,5 +1420,6 @@ int vringh_need_notify_iotlb(struct vringh *vrh)
+>   }
+>   EXPORT_SYMBOL(vringh_need_notify_iotlb);
+>  =20
+> +#endif
+>  =20
+>   MODULE_LICENSE("GPL");
+> diff --git a/include/linux/vringh.h b/include/linux/vringh.h
+> index bd0503ca6f8f..ebff121c0b02 100644
+> --- a/include/linux/vringh.h
+> +++ b/include/linux/vringh.h
+> @@ -14,8 +14,10 @@
+>   #include <linux/virtio_byteorder.h>
+>   #include <linux/uio.h>
+>   #include <linux/slab.h>
+> +#ifdef VHOST_IOTLB
+>   #include <linux/dma-direction.h>
+>   #include <linux/vhost_iotlb.h>
+> +#endif
+>   #include <asm/barrier.h>
+>  =20
+>   /* virtio_ring with information needed for host access. */
+> diff --git a/tools/virtio/Makefile b/tools/virtio/Makefile
+> index f33f32f1d208..d3f152f4660b 100644
+> --- a/tools/virtio/Makefile
+> +++ b/tools/virtio/Makefile
+> @@ -22,7 +22,8 @@ OOT_CONFIGS=3D\
+>   	CONFIG_VHOST=3Dm \
+>   	CONFIG_VHOST_NET=3Dn \
+>   	CONFIG_VHOST_SCSI=3Dn \
+> -	CONFIG_VHOST_VSOCK=3Dn
+> +	CONFIG_VHOST_VSOCK=3Dn \
+> +	CONFIG_VHOST_RING=3Dn
+>   OOT_BUILD=3DKCFLAGS=3D"-I "${OOT_VHOST} ${MAKE} -C ${OOT_KSRC} V=3D${=
+V}
+>   oot-build:
+>   	echo "UNSUPPORTED! Don't use the resulting modules in production!"
 
