@@ -2,124 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68FF419D196
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 09:59:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E9F819D191
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 09:59:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390228AbgDCH7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 03:59:41 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:46659 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732595AbgDCH7l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 03:59:41 -0400
-Received: by mail-pl1-f193.google.com with SMTP id s23so2389199plq.13;
-        Fri, 03 Apr 2020 00:59:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=HkFftEmd1xByJ3L+7Q66Ss8hnA6ge5noLyBAo3i2apI=;
-        b=owdPcNHLVrE6Ernuo3DIqVGM+J5Nqciv40IjY4XcWu6kUJXVDuppwYzvUm9xhzkGer
-         2RyZBP3uYHNjwRvtxkJcB/FYs3ct/0V3YBWr5k5LLix+qzWavz5paoVlgAvhoR7jJYEE
-         mvvgY0d14n8bomLWQlFCr7FyU6IUbUfBrwkw6Pvy4NMU9ZF3KLO5XyV+dBokkDkCC0ot
-         QQZIYeZEV1nseE8I+9SvwHqOryshuUpMFamfMArl1Th+4HqS//ZCJkeMwnbZUFvsZOOn
-         GwvHh7kB2LDxYOFVy29uV+XjTjBI3wXmZucdYE2l4lIuPc0E9AHMW9gg7sp6agq5FJrJ
-         dfUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=HkFftEmd1xByJ3L+7Q66Ss8hnA6ge5noLyBAo3i2apI=;
-        b=RgbUCBc2+NLLTtv8hEGMbba8mpHUZQ9V6b+0G3rmSWWgqclzpIK9tYjRSrmBFT2RAp
-         H+VOaVPckg6D7WFEw0jH6KclBu893fe6pBUVs5p2Bx1eQP1Co9TBqvXmErDZJZlT5EMO
-         Q6dIF0nuphYLIEuBeqBU3RlUwJEDDuJcJb26aGhiTyJCoW3bju47o0EVuEndFtrVeF6m
-         vwygaGGk18WFg2Q4thUiAwtKyRz9jNtuIECYN5u8kuqLs70oXMLSMFoXFJo1eAZ6wVoQ
-         4l38xZHuCyS6/+iXdKaZzYuJj+pcj5Jg3EN9v2pNnulmzeA5h218sirunAuXDXDaa5Hs
-         skqg==
-X-Gm-Message-State: AGi0PubNJILFPw1P/2XZ/J7MywEHOY10oVOVHyhQKE21R+gulcwSUw9h
-        CIa/cFfUJStUjsAaVf4+QHBCHeHn
-X-Google-Smtp-Source: APiQypJCLfL2iWxMmyuJ+LAUznxT/4OCgOffcowdkVFQSdCP3AaRC5/0SwntKetKknxf7y3Lqj4VfQ==
-X-Received: by 2002:a17:90b:1118:: with SMTP id gi24mr7409859pjb.99.1585900780339;
-        Fri, 03 Apr 2020 00:59:40 -0700 (PDT)
-Received: from localhost ([43.224.245.180])
-        by smtp.gmail.com with ESMTPSA id x27sm5263837pff.200.2020.04.03.00.59.39
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 03 Apr 2020 00:59:39 -0700 (PDT)
-From:   Geliang Tang <geliangtang@gmail.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        id S2389510AbgDCH7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 03:59:07 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:41180 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2389015AbgDCH7H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 03:59:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585900745;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mniN1sVbAvx++omfkPGQNGeast1vWCfMpGJZoMvG5sg=;
+        b=cOjU317MV7u0YvNwWzGWs0WlENlf3gClsGJomRHx9i6UBGkm7y39mKSjzB6aicjrzgffPX
+        SXMy0OowBaxA42ND5/KIP6xX00hCf6H542gNrpJA4+u2r6yeOl/8Dh4cU3yl+mUAAI5PUa
+        iok5T83UDn08BOBmSsikF4HycnLFJ6Q=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-258-q4cbpdrYOIeVl-OSojS6fA-1; Fri, 03 Apr 2020 03:59:01 -0400
+X-MC-Unique: q4cbpdrYOIeVl-OSojS6fA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2ED85800D5C;
+        Fri,  3 Apr 2020 07:58:59 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.16])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6C5A85C1D6;
+        Fri,  3 Apr 2020 07:58:49 +0000 (UTC)
+Date:   Fri, 3 Apr 2020 09:58:47 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Mao Wenan <maowenan@huawei.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
-        mptcp@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] mptcp: move pr_fmt defining to protocol.h
-Date:   Fri,  3 Apr 2020 15:57:25 +0800
-Message-Id: <34c83a5fe561739c7b85a3c4959eb44c3155d075.1585899578.git.geliangtang@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, jwi@linux.ibm.com,
+        jianglidong3@jd.com, Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org, brouer@redhat.com
+Subject: Re: [PATCH net v2] veth: xdp: use head instead of hard_start
+Message-ID: <20200403095847.21e1e5ea@carbon>
+In-Reply-To: <CAADnVQKEyv_bRhEfu1Jp=DSggj_O2xjJyd_QZ7a4LJY+dUO2rg@mail.gmail.com>
+References: <fb5ab568-9bc8-3145-a8db-3e975ccdf846@gmail.com>
+        <20200331060641.79999-1-maowenan@huawei.com>
+        <7a1d55ad-1427-67fe-f204-4d4a0ab2c4b1@gmail.com>
+        <20200401181419.7acd2aa6@carbon>
+        <ede2f407-839e-d29e-0ebe-aa39dd461bfd@gmail.com>
+        <20200402110619.48f31a63@carbon>
+        <CAADnVQKEyv_bRhEfu1Jp=DSggj_O2xjJyd_QZ7a4LJY+dUO2rg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some of the mptcp logs didn't print out the format string "MPTCP":
+On Thu, 2 Apr 2020 08:40:23 -0700
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 
-[  129.185774] DSS
-[  129.185774] data_fin=0 dsn64=1 use_map=1 ack64=1 use_ack=1
-[  129.185774] data_ack=5481534886531492085
-[  129.185775] data_seq=15725204003114694615 subflow_seq=1425409 data_len=5216
-[  129.185776] subflow=0000000093526a92 fully established=1 seq=0:0 remaining=28
-[  129.185776] MPTCP: msk=00000000d5a704a6 ssk=00000000b5aabc31 data_avail=0 skb=0000000088f05424
-[  129.185777] MPTCP: seq=15725204003114694615 is64=1 ssn=1425409 data_len=5216 data_fin=0
-[  129.185777] MPTCP: msk=00000000d5a704a6 ssk=00000000b5aabc31 status=0
-[  129.185778] MPTCP: msk ack_seq=da3b25b9a233c2c7 subflow ack_seq=da3b25b9a233c2c7
-[  129.185778] MPTCP: msk=00000000d5a704a6 ssk=00000000b5aabc31 data_avail=1 skb=000000000caed2cc
-[  129.185779] subflow=0000000093526a92 fully established=1 seq=0:0 remaining=28
+> On Thu, Apr 2, 2020 at 2:06 AM Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+> >
+> > On Thu, 2 Apr 2020 09:47:03 +0900
+> > Toshiaki Makita <toshiaki.makita1@gmail.com> wrote:
+> >  
+> > > On 2020/04/02 1:15, Jesper Dangaard Brouer wrote:
+> > > ...  
+> > > > [PATCH RFC net-next] veth: adjust hard_start offset on redirect XDP frames
+> > > >
+> > > > When native XDP redirect into a veth device, the frame arrives in the
+> > > > xdp_frame structure. It is then processed in veth_xdp_rcv_one(),
+> > > > which can run a new XDP bpf_prog on the packet. Doing so requires
+> > > > converting xdp_frame to xdp_buff, but the tricky part is that
+> > > > xdp_frame memory area is located in the top (data_hard_start) memory
+> > > > area that xdp_buff will point into.
+> > > >
+> > > > The current code tried to protect the xdp_frame area, by assigning
+> > > > xdp_buff.data_hard_start past this memory. This results in 32 bytes
+> > > > less headroom to expand into via BPF-helper bpf_xdp_adjust_head().
+> > > >
+> > > > This protect step is actually not needed, because BPF-helper
+> > > > bpf_xdp_adjust_head() already reserve this area, and don't allow
+> > > > BPF-prog to expand into it. Thus, it is safe to point data_hard_start
+> > > > directly at xdp_frame memory area.
+> > > >
+> > > > Cc: Toshiaki Makita <makita.toshiaki@lab.ntt.co.jp>  
+> > >
+> > > FYI: This mail address is deprecated.
+> > >  
+> > > > Fixes: 9fc8d518d9d5 ("veth: Handle xdp_frames in xdp napi ring")
+> > > > Reported-by: Mao Wenan <maowenan@huawei.com>
+> > > > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>  
+> > >
+> > > FWIW,
+> > >
+> > > Acked-by: Toshiaki Makita <toshiaki.makita1@gmail.com>  
+> >
+> > Thanks.
+> >
+> > I have updated your email and added your ack in my patchset.  I will
+> > submit this officially once net-next opens up again[1], as part my
+> > larger patchset for introducing XDP frame_sz.  
+> 
+> It looks like bug fix to me.
+> The way I read it that behavior of bpf_xdp_adjust_head() is a bit
+> buggy with veth netdev,
+> so why wait ?
 
-So this patch moves the pr_fmt defining from protocol.c to protocol.h, which
-is included by all the C files. Then we can get the same format string
-"MPTCP" in all mptcp logs like this:
+I want to wait to ease your life as maintainer. This is part of a
+larger patchset (for XDP frame_sz) and the next patch touch same code
+path and thus depend on these code adjustments.  If we apply them in
+bpf vs bpf-next then you/we will have to handle merge conflicts.  The
+severity of the "fix" is really low, it only means 32 bytes less
+headroom (which I doubt anyone is using).
 
-[  141.854787] MPTCP: DSS
-[  141.854788] MPTCP: data_fin=0 dsn64=1 use_map=1 ack64=1 use_ack=1
-[  141.854788] MPTCP: data_ack=18028325517710311871
-[  141.854788] MPTCP: data_seq=6163976859259356786 subflow_seq=3309569 data_len=8192
-[  141.854789] MPTCP: msk=000000005847a66a ssk=0000000022469903 data_avail=0 skb=00000000dd95efc3
-[  141.854789] MPTCP: seq=6163976859259356786 is64=1 ssn=3309569 data_len=8192 data_fin=0
-[  141.854790] MPTCP: msk=000000005847a66a ssk=0000000022469903 status=0
-[  141.854790] MPTCP: msk ack_seq=558ad84b9be1d162 subflow ack_seq=558ad84b9be1d162
-[  141.854791] MPTCP: msk=000000005847a66a ssk=0000000022469903 data_avail=1 skb=000000000b8926f6
-[  141.854791] MPTCP: subflow=00000000e4e4579c fully established=1 seq=0:0 remaining=28
-[  141.854792] MPTCP: subflow=00000000e4e4579c fully established=1 seq=0:dcdf2f3b remaining=28
-
-Signed-off-by: Geliang Tang <geliangtang@gmail.com>
----
- net/mptcp/protocol.c | 2 --
- net/mptcp/protocol.h | 2 ++
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 72f3176dc924..cc86137cd04f 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -4,8 +4,6 @@
-  * Copyright (c) 2017 - 2019, Intel Corporation.
-  */
- 
--#define pr_fmt(fmt) "MPTCP: " fmt
--
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/netdevice.h>
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 67448002a2d7..3eff041eeccf 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -7,6 +7,8 @@
- #ifndef __MPTCP_PROTOCOL_H
- #define __MPTCP_PROTOCOL_H
- 
-+#define pr_fmt(fmt) "MPTCP: " fmt
-+
- #include <linux/random.h>
- #include <net/tcp.h>
- #include <net/inet_connection_sock.h>
 -- 
-2.17.1
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
