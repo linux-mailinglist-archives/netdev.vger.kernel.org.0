@@ -2,124 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DE8119D478
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 11:56:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E36919D50B
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 12:29:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390649AbgDCJ4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 05:56:36 -0400
-Received: from forwardcorp1j.mail.yandex.net ([5.45.199.163]:55240 "EHLO
-        forwardcorp1j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727792AbgDCJ4g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 05:56:36 -0400
-Received: from mxbackcorp1g.mail.yandex.net (mxbackcorp1g.mail.yandex.net [IPv6:2a02:6b8:0:1402::301])
-        by forwardcorp1j.mail.yandex.net (Yandex) with ESMTP id 63E8D2E0B0E;
-        Fri,  3 Apr 2020 12:56:32 +0300 (MSK)
-Received: from myt4-18a966dbd9be.qloud-c.yandex.net (myt4-18a966dbd9be.qloud-c.yandex.net [2a02:6b8:c00:12ad:0:640:18a9:66db])
-        by mxbackcorp1g.mail.yandex.net (mxbackcorp/Yandex) with ESMTP id E5QFmAImMn-uVNK4SJG;
-        Fri, 03 Apr 2020 12:56:32 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1585907792; bh=quoFiDMrc4n64AIBxbW1ayY5jdo/MDfLHVb25p4vCC0=;
-        h=Message-ID:Subject:To:From:Date:Cc;
-        b=qfW4f15gWBYhHThlb6i7AgwCc9v26b0hEDJ8cy40bXs5eVJKV6dpInZkz3DcGxcdp
-         Ie2esvZimeok6tAjsZgmVd2DsR9t7SxHYvCAp65argc/j3dqJ8BUOkgjNnLkEk/zHR
-         sTpRoYpL5qrjJVNEdfLcWhdcmkW88Lju8xzivL+0=
-Authentication-Results: mxbackcorp1g.mail.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from unknown (unknown [2a02:6b8:b080:7115::1:c])
-        by myt4-18a966dbd9be.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id ZJWyyT8QkH-uVW4dxLT;
-        Fri, 03 Apr 2020 12:56:31 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-Date:   Fri, 3 Apr 2020 12:56:27 +0300
-From:   Dmitry Yakunin <zeil@yandex-team.ru>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     khlebnikov@yandex-team.ru, cgroups@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH v3 net] inet_diag: add cgroup id attribute
-Message-ID: <20200403095627.GA85072@yandex-team.ru>
+        id S2390640AbgDCK3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 06:29:31 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:56288 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727944AbgDCK3b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 06:29:31 -0400
+Received: by mail-wm1-f65.google.com with SMTP id r16so6608075wmg.5
+        for <netdev@vger.kernel.org>; Fri, 03 Apr 2020 03:29:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=qDDpKbX/Hxwly8HQ4p/vXSXmAl1qLd9RXGXIMyMKlB0=;
+        b=rDaFXJ97iS7SKZcftRg6IP7wNZbU81ndPSFY5cBjR3nhWtaef0+a451Gi5EUPv5h9C
+         6L6x7WqqizbPjYKic8GTQLIlky1FtGs2xOpRisKa7dW4bbrRbxOyxd9bybZWjkkf2Jwv
+         ab8AhdJ4y8XXfn91stzUtMre+bwSECP0jUJjtpBF+oQXMFkzlSocd8FDDer21HsGNn/r
+         dm4uJJJ2DpRfr+NRZ/2/K768EhU3WV1DTUHARN/XZUTWDEzaJSdyPx76DG7I/4Y+Qiqy
+         IIcqHHQBkmmCw29oxjzQd20NsbvZmQZbNQ4R+12E3bC/oMs2UVBIRqLWLQ/Qg20j+VJY
+         lgyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=qDDpKbX/Hxwly8HQ4p/vXSXmAl1qLd9RXGXIMyMKlB0=;
+        b=F5T+mpFuA1ou7Ck4YJeJMcqsdNYe6ZbaneJYXEgPOrZCgD1uIt4AIve+inkjoI5dj1
+         Ib28qjFKuni6s7cGXpa5bkMiKOnpyHzDV3eAYBcKhYTdsR7TS7ttfIAB8yEYID1SRTft
+         NLIF5BZEXAZKyIq8dt4FBCWiJnc2tipcUiZlmMsxl0hWvqifBpNvNLxTrU89Xpj2yt86
+         YpfYYzoJ0HnfihSgdE+oFNRKNuhy6tFYS2MyLUYKA+V0VRIVLeCzjNTsrOmlGU+YHc6K
+         skQK3CcsTP4YBJqr0C2GRAJDBgjm1WygqFbGBHTfygDMRdr2auvtEmc9IJmTjZ+OoQ7e
+         Vnxg==
+X-Gm-Message-State: AGi0Pub9a1hXObxMYDGVljAi+9XIFtM63xDAJR7oz3/QjthfBp9SU8Rd
+        BRNw0j1TUfKPqLeKHzSHC3qb4w==
+X-Google-Smtp-Source: APiQypKUIx/BqyMhU3xK/1yn5HaMBf0wTS8vKdIUd0gda4oqFr5twfQ1HHvwuWA8NCyIeo6IfgHe1w==
+X-Received: by 2002:a1c:9a87:: with SMTP id c129mr7585709wme.149.1585909768966;
+        Fri, 03 Apr 2020 03:29:28 -0700 (PDT)
+Received: from tsr-lap-08.nix.tessares.net ([79.132.236.184])
+        by smtp.gmail.com with ESMTPSA id o16sm11640075wrw.75.2020.04.03.03.29.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Apr 2020 03:29:28 -0700 (PDT)
+Subject: Re: [PATCH] mptcp: move pr_fmt defining to protocol.h
+To:     Geliang Tang <geliangtang@gmail.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, mptcp@lists.01.org,
+        linux-kernel@vger.kernel.org
+References: <34c83a5fe561739c7b85a3c4959eb44c3155d075.1585899578.git.geliangtang@gmail.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Message-ID: <9674b6ce-3888-557e-8f32-230671363903@tessares.net>
+Date:   Fri, 3 Apr 2020 12:29:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <34c83a5fe561739c7b85a3c4959eb44c3155d075.1585899578.git.geliangtang@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds cgroup v2 ID to common inet diag message attributes.
-Cgroup v2 ID is kernfs ID (ino or ino+gen). This attribute allows filter
-inet diag output by cgroup ID obtained by name_to_handle_at() syscall.
-When net_cls or net_prio cgroup is activated this ID is equal to 1 (root
-cgroup ID) for newly created sockets.
+Hi Geliang,
 
-Some notes about this ID:
+On 03/04/2020 09:57, Geliang Tang wrote:
+> Some of the mptcp logs didn't print out the format string "MPTCP":
+> 
+> [  129.185774] DSS
+> [  129.185774] data_fin=0 dsn64=1 use_map=1 ack64=1 use_ack=1
+> [  129.185774] data_ack=5481534886531492085
+> [  129.185775] data_seq=15725204003114694615 subflow_seq=1425409 data_len=5216
+> [  129.185776] subflow=0000000093526a92 fully established=1 seq=0:0 remaining=28
+> [  129.185776] MPTCP: msk=00000000d5a704a6 ssk=00000000b5aabc31 data_avail=0 skb=0000000088f05424
+> [  129.185777] MPTCP: seq=15725204003114694615 is64=1 ssn=1425409 data_len=5216 data_fin=0
+> [  129.185777] MPTCP: msk=00000000d5a704a6 ssk=00000000b5aabc31 status=0
+> [  129.185778] MPTCP: msk ack_seq=da3b25b9a233c2c7 subflow ack_seq=da3b25b9a233c2c7
+> [  129.185778] MPTCP: msk=00000000d5a704a6 ssk=00000000b5aabc31 data_avail=1 skb=000000000caed2cc
+> [  129.185779] subflow=0000000093526a92 fully established=1 seq=0:0 remaining=28
+> 
+> So this patch moves the pr_fmt defining from protocol.c to protocol.h, which
+> is included by all the C files. Then we can get the same format string
+> "MPTCP" in all mptcp logs like this:
+> 
+> [  141.854787] MPTCP: DSS
+> [  141.854788] MPTCP: data_fin=0 dsn64=1 use_map=1 ack64=1 use_ack=1
+> [  141.854788] MPTCP: data_ack=18028325517710311871
+> [  141.854788] MPTCP: data_seq=6163976859259356786 subflow_seq=3309569 data_len=8192
+> [  141.854789] MPTCP: msk=000000005847a66a ssk=0000000022469903 data_avail=0 skb=00000000dd95efc3
+> [  141.854789] MPTCP: seq=6163976859259356786 is64=1 ssn=3309569 data_len=8192 data_fin=0
+> [  141.854790] MPTCP: msk=000000005847a66a ssk=0000000022469903 status=0
+> [  141.854790] MPTCP: msk ack_seq=558ad84b9be1d162 subflow ack_seq=558ad84b9be1d162
+> [  141.854791] MPTCP: msk=000000005847a66a ssk=0000000022469903 data_avail=1 skb=000000000b8926f6
+> [  141.854791] MPTCP: subflow=00000000e4e4579c fully established=1 seq=0:0 remaining=28
+> [  141.854792] MPTCP: subflow=00000000e4e4579c fully established=1 seq=0:dcdf2f3b remaining=28
 
-1) gets initialized in socket() syscall
-2) incoming socket gets ID from listening socket
-   (not during accept() syscall)
-3) not changed when process get moved to another cgroup
-4) can point to deleted cgroup (refcounting)
+Good idea to uniform that.
+I think it can be useful for MPTCP devs to add a different prefix in 
+each MPTCP .c files but this small improvement can be done later.
 
-v2:
-  - use CONFIG_SOCK_CGROUP_DATA instead if CONFIG_CGROUPS
+LGTM, thanks Geliang!
 
-v3:
-  - fix attr size by using nla_total_size_64bit() (Eric Dumazet)
-  - more detailed commit message (Konstantin Khlebnikov)
-
-Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
-Reviewed-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
----
- include/linux/inet_diag.h      | 6 +++++-
- include/uapi/linux/inet_diag.h | 1 +
- net/ipv4/inet_diag.c           | 7 +++++++
- 3 files changed, 13 insertions(+), 1 deletion(-)
-
-diff --git a/include/linux/inet_diag.h b/include/linux/inet_diag.h
-index c91cf2d..0696f86 100644
---- a/include/linux/inet_diag.h
-+++ b/include/linux/inet_diag.h
-@@ -66,7 +66,11 @@ static inline size_t inet_diag_msg_attrs_size(void)
- 		+ nla_total_size(1)  /* INET_DIAG_SKV6ONLY */
- #endif
- 		+ nla_total_size(4)  /* INET_DIAG_MARK */
--		+ nla_total_size(4); /* INET_DIAG_CLASS_ID */
-+		+ nla_total_size(4)  /* INET_DIAG_CLASS_ID */
-+#ifdef CONFIG_SOCK_CGROUP_DATA
-+		+ nla_total_size_64bit(sizeof(u64))  /* INET_DIAG_CGROUP_ID */
-+#endif
-+		;
- }
- int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
- 			     struct inet_diag_msg *r, int ext,
-diff --git a/include/uapi/linux/inet_diag.h b/include/uapi/linux/inet_diag.h
-index a1ff345..dc87ad6 100644
---- a/include/uapi/linux/inet_diag.h
-+++ b/include/uapi/linux/inet_diag.h
-@@ -154,6 +154,7 @@ enum {
- 	INET_DIAG_CLASS_ID,	/* request as INET_DIAG_TCLASS */
- 	INET_DIAG_MD5SIG,
- 	INET_DIAG_ULP_INFO,
-+	INET_DIAG_CGROUP_ID,
- 	__INET_DIAG_MAX,
- };
- 
-diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
-index 8c83775..17e3c52 100644
---- a/net/ipv4/inet_diag.c
-+++ b/net/ipv4/inet_diag.c
-@@ -161,6 +161,13 @@ int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
- 			goto errout;
- 	}
- 
-+#ifdef CONFIG_SOCK_CGROUP_DATA
-+	if (nla_put_u64_64bit(skb, INET_DIAG_CGROUP_ID,
-+			      cgroup_id(sock_cgroup_ptr(&sk->sk_cgrp_data)),
-+			      INET_DIAG_PAD))
-+		goto errout;
-+#endif
-+
- 	r->idiag_uid = from_kuid_munged(user_ns, sock_i_uid(sk));
- 	r->idiag_inode = sock_i_ino(sk);
- 
--- 
-2.7.4
-
+Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
