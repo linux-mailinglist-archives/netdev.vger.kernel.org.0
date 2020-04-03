@@ -2,125 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EE67A19CEDF
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 05:33:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C650119CEFE
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 05:59:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390175AbgDCDb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 23:31:56 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:56464 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388951AbgDCDb4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 23:31:56 -0400
-Received: from [192.168.188.14] (unknown [120.132.1.226])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id DBD5940F36;
-        Fri,  3 Apr 2020 11:31:46 +0800 (CST)
-Subject: Re: [PATCH net-next] net/mlx5e: avoid check the hw_stats of
- flow_action for FT flow
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        "pablo@netfilter.org" <pablo@netfilter.org>,
-        Oz Shlomo <ozsh@mellanox.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <1585464960-6204-1-git-send-email-wenxu@ucloud.cn>
- <fd36f18360b2800b37fe6b7466b7361afd43718b.camel@mellanox.com>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <d3e0a559-3a7b-0fd4-5d1f-ccb0aea1dffd@ucloud.cn>
-Date:   Fri, 3 Apr 2020 11:31:44 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S2390390AbgDCD7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 23:59:18 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:35952 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388951AbgDCD7R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 23:59:17 -0400
+Received: by mail-pg1-f194.google.com with SMTP id c23so2891374pgj.3
+        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 20:59:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1AL2WwMB5oCGPA1dRaR0rUrfUG8Re9VpielHeMMBHPw=;
+        b=O8nqgsG15U0TtkBkWlSHgRgf+zmGBOW++0mnT5aa8EQcjSnpf8F+HAClxfdwTHCxAE
+         iTgQLoGs7To9XDfZoto2KnxeI7EcBvzkCKn8d4minNMN+W8MgSkkT9XQ9phiFHScyqKj
+         GSymMkz78pDGTKP0GQkIEoCmoRVVP1EsyDeaV7pDVUt/RHJrfJtt6gYSaICpeM8QwNne
+         uaCWE8kv8uFe/fowVsLNEaIZApEy+R5MA+NG16fkas0BLlrThzP5ZOSJp6nDQ6wCTI95
+         qX4Uhc0hZDkhGlbqV3NpiZwtD3Ik75qJIdDJn5OOAUhzwnNT2arym6GpKjE1gvzQ0uIv
+         8J5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1AL2WwMB5oCGPA1dRaR0rUrfUG8Re9VpielHeMMBHPw=;
+        b=EsJBB7FebVfrYQDaofhePqufsbk/7tPyVHAPbyw9LFDfBE3PCV/7nFN/8f1ngJaqzL
+         HlYkjBBgFxobQxUWTwPsr3WuGRvQlsUMGH/m5P3nhUk78WRJSnxKcT2s/JxwyVelawBK
+         Va9nkSIGLeBXUDl2Q6JEm72uufscitYsNuKNhHuzl/pDC1bABAuR5J4DU6auaxdiWf7A
+         1i75eaJ4VE1Yo07K0Qh7qu3AyDfZX6PBoQMbiVqSxhdnVu5YojoIUrkKmvvjJ0I3qmWz
+         8Ss726dD0ijdcqyBEozx8Vu4hc538mJ8+ltN94vEia3bdsvpwf+b5hVxXuLQ3XKDQHRG
+         GarA==
+X-Gm-Message-State: AGi0PubFoZ5ptebVfAlymKMeRPz0idr40rToJ7WgKFLUY7NgmMWNWJtg
+        0+SLrjeXQlH7050FVXcsetfCw8aok0c=
+X-Google-Smtp-Source: APiQypI1QbGhYN9fI37M1P8Uvk55adX/8Rta6m4JGKo/EGYD1S7IcQhE5Fs7sFUFHZzItwnIgr9Ylw==
+X-Received: by 2002:aa7:96ae:: with SMTP id g14mr6293016pfk.216.1585886356320;
+        Thu, 02 Apr 2020 20:59:16 -0700 (PDT)
+Received: from tw-172-25-31-169.office.twttr.net ([8.25.197.25])
+        by smtp.gmail.com with ESMTPSA id 1sm4767136pjo.10.2020.04.02.20.59.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Apr 2020 20:59:15 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        syzbot+8325e509a1bf83ec741d@syzkaller.appspotmail.com,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "Paul E . McKenney" <paulmck@kernel.org>
+Subject: [Patch net] net_sched: fix a missing refcnt in tcindex_init()
+Date:   Thu,  2 Apr 2020 20:58:51 -0700
+Message-Id: <20200403035851.31647-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
-In-Reply-To: <fd36f18360b2800b37fe6b7466b7361afd43718b.camel@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVklVSkpNS0tLT0pIQ0JPTU5ZV1koWU
-        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MT46Txw*Fzg*HhUdHE48HSIQ
-        HxoKCUJVSlVKTkNOQ0NPTEtMSkJCVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
-        SElVSlVJSU1ZV1kIAVlBT09CTDcG
-X-HM-Tid: 0a713e1839082086kuqydbd5940f36
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The initial refcnt of struct tcindex_data should be 1,
+it is clear that I forgot to set it to 1 in tcindex_init().
+This leads to a dec-after-zero warning.
 
-On 4/3/2020 10:59 AM, Saeed Mahameed wrote:
-> On Sun, 2020-03-29 at 14:56 +0800, wenxu@ucloud.cn wrote:
->> From: wenxu <wenxu@ucloud.cn>
->>
->> The hw_stats in flow_action can't be supported in nftable
->> flowtables. This check will lead the nft flowtable offload
->> failed. So don't check the hw_stats of flow_action for FT
->> flow.
->>
-> This looks like a work around not a solution .. if the user requested a
-> hw_stats action that the hw can't support, no matter what the request
-> is, we should fail it even if it was for ft offloads.
->
-> if it is not support by nftable, then the caller shouldn't ask for
-> hw_stats action in first place.
+Reported-by: syzbot+8325e509a1bf83ec741d@syzkaller.appspotmail.com
+Fixes: 304e024216a8 ("net_sched: add a temporary refcnt for struct tcindex_data")
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Cc: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+---
+ net/sched/cls_tcindex.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-The action entries in nft didn't set the hw_stats and the vlaue is 0.
+diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
+index 065345832a69..61e95029c18f 100644
+--- a/net/sched/cls_tcindex.c
++++ b/net/sched/cls_tcindex.c
+@@ -151,6 +151,7 @@ static int tcindex_init(struct tcf_proto *tp)
+ 	p->mask = 0xffff;
+ 	p->hash = DEFAULT_HASH_SIZE;
+ 	p->fall_through = 1;
++	refcount_set(&p->refcnt, 1); /* Paired with tcindex_destroy_work() */
+ 
+ 	rcu_assign_pointer(tp->root, p);
+ 	return 0;
+-- 
+2.21.1
 
-
-The following function check the hw_stats should contain FLOW_ACTION_HW_STATS_DELAYED_BIT.
-
-flow_action_hw_stats_check(flow_action, extack, FLOW_ACTION_HW_STATS_DELAYED_BIT)
-
-
-
-Maybe the following patch is better?
-
-
-__flow_action_hw_stats_check(const struct flow_action *action,
-                             struct netlink_ext_ack *extack,
-                             bool check_allow_bit,
-                             enum flow_action_hw_stats_bit allow_bit)
-{
-        const struct flow_action_entry *action_entry;
-
-        if (!flow_action_has_entries(action))
-                return true;
-        if (!flow_action_mixed_hw_stats_check(action, extack))
-                return false;
-        action_entry = flow_action_first_entry_get(action);
-        if (!check_allow_bit &&
-            action_entry->hw_stats != FLOW_ACTION_HW_STATS_ANY) {
-                NL_SET_ERR_MSG_MOD(extack, "Driver supports only default HW stats type \"any\"");
-                return false;
--        } else if (check_allow_bit &&
-+        } else if (check_allow_bit && action_entry->hw_stats &&
-                   !(action_entry->hw_stats & BIT(allow_bit))) {
-                NL_SET_ERR_MSG_MOD(extack, "Driver does not support selected HW stats type");
-                return false;
-        }   
-        return true;
-}
-
-
-
-
->> Signed-off-by: wenxu <wenxu@ucloud.cn>
->> ---
->>  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 3 ++-
->>  1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
->> b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
->> index 901b5fa..4666015 100644
->> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
->> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
->> @@ -3703,7 +3703,8 @@ static int parse_tc_fdb_actions(struct
->> mlx5e_priv *priv,
->>  	if (!flow_action_has_entries(flow_action))
->>  		return -EINVAL;
->>  
->> -	if (!flow_action_hw_stats_check(flow_action, extack,
->> +	if (!ft_flow &&
->> +	    !flow_action_hw_stats_check(flow_action, extack,
->>  					FLOW_ACTION_HW_STATS_DELAYED_BI
->> T))
->>  		return -EOPNOTSUPP;
->>  
