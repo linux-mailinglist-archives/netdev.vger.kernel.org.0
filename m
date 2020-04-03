@@ -2,66 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50D6C19E147
-	for <lists+netdev@lfdr.de>; Sat,  4 Apr 2020 01:06:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F66B19E14A
+	for <lists+netdev@lfdr.de>; Sat,  4 Apr 2020 01:08:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728589AbgDCXGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 19:06:50 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:36372 "EHLO
+        id S1728456AbgDCXIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 19:08:10 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:36396 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727958AbgDCXGu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 19:06:50 -0400
+        with ESMTP id S1727829AbgDCXIK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 19:08:10 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D6F7D121938E3;
-        Fri,  3 Apr 2020 16:06:49 -0700 (PDT)
-Date:   Fri, 03 Apr 2020 16:06:49 -0700 (PDT)
-Message-Id: <20200403.160649.1243854856424851277.davem@davemloft.net>
-To:     geliangtang@gmail.com
-Cc:     mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
-        kuba@kernel.org, netdev@vger.kernel.org, mptcp@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] mptcp: add some missing pr_fmt defines
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id BB394121938E3;
+        Fri,  3 Apr 2020 16:08:09 -0700 (PDT)
+Date:   Fri, 03 Apr 2020 16:08:09 -0700 (PDT)
+Message-Id: <20200403.160809.1500394661848619682.davem@davemloft.net>
+To:     zeil@yandex-team.ru
+Cc:     netdev@vger.kernel.org, khlebnikov@yandex-team.ru,
+        cgroups@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH v3 net] inet_diag: add cgroup id attribute
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <f66ab0b7dfcc895d901e6e85b30f2a21842d2b2c.1585904950.git.geliangtang@gmail.com>
-References: <34c83a5fe561739c7b85a3c4959eb44c3155d075.1585899578.git.geliangtang@gmail.com>
-        <f66ab0b7dfcc895d901e6e85b30f2a21842d2b2c.1585904950.git.geliangtang@gmail.com>
+In-Reply-To: <20200403095627.GA85072@yandex-team.ru>
+References: <20200403095627.GA85072@yandex-team.ru>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 03 Apr 2020 16:06:50 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 03 Apr 2020 16:08:10 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geliang Tang <geliangtang@gmail.com>
-Date: Fri,  3 Apr 2020 17:14:08 +0800
+From: Dmitry Yakunin <zeil@yandex-team.ru>
+Date: Fri, 3 Apr 2020 12:56:27 +0300
 
-> Some of the mptcp logs didn't print out the format string:
+> This patch adds cgroup v2 ID to common inet diag message attributes.
+> Cgroup v2 ID is kernfs ID (ino or ino+gen). This attribute allows filter
+> inet diag output by cgroup ID obtained by name_to_handle_at() syscall.
+> When net_cls or net_prio cgroup is activated this ID is equal to 1 (root
+> cgroup ID) for newly created sockets.
 > 
-> [  185.651493] DSS
-> [  185.651494] data_fin=0 dsn64=0 use_map=0 ack64=1 use_ack=1
-> [  185.651494] data_ack=13792750332298763796
-> [  185.651495] MPTCP: msk=00000000c4b81cfc ssk=000000009743af53 data_avail=0 skb=0000000063dc595d
-> [  185.651495] MPTCP: msk=00000000c4b81cfc ssk=000000009743af53 status=0
-> [  185.651495] MPTCP: msk ack_seq=9bbc894565aa2f9a subflow ack_seq=9bbc894565aa2f9a
-> [  185.651496] MPTCP: msk=00000000c4b81cfc ssk=000000009743af53 data_avail=1 skb=0000000012e809e1
+> Some notes about this ID:
 > 
-> So this patch added these missing pr_fmt defines. Then we can get the same
-> format string "MPTCP" in all mptcp logs like this:
+> 1) gets initialized in socket() syscall
+> 2) incoming socket gets ID from listening socket
+>    (not during accept() syscall)
+> 3) not changed when process get moved to another cgroup
+> 4) can point to deleted cgroup (refcounting)
 > 
-> [  142.795829] MPTCP: DSS
-> [  142.795829] MPTCP: data_fin=0 dsn64=0 use_map=0 ack64=1 use_ack=1
-> [  142.795829] MPTCP: data_ack=8089704603109242421
-> [  142.795830] MPTCP: msk=00000000133a24e0 ssk=000000002e508c64 data_avail=0 skb=00000000d5f230df
-> [  142.795830] MPTCP: msk=00000000133a24e0 ssk=000000002e508c64 status=0
-> [  142.795831] MPTCP: msk ack_seq=66790290f1199d9b subflow ack_seq=66790290f1199d9b
-> [  142.795831] MPTCP: msk=00000000133a24e0 ssk=000000002e508c64 data_avail=1 skb=00000000de5aca2e
+> v2:
+>   - use CONFIG_SOCK_CGROUP_DATA instead if CONFIG_CGROUPS
 > 
-> Signed-off-by: Geliang Tang <geliangtang@gmail.com>
+> v3:
+>   - fix attr size by using nla_total_size_64bit() (Eric Dumazet)
+>   - more detailed commit message (Konstantin Khlebnikov)
+> 
+> Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
+> Reviewed-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
 
-Applied, thanks.
+As a new feature, this should be resubmitted when net-next opens back
+up.  Thank you.
