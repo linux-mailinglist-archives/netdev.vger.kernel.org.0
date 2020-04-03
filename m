@@ -2,162 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3036419CE5C
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 03:52:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C21419CE77
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 04:07:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390335AbgDCBwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 21:52:02 -0400
-Received: from mail-vs1-f68.google.com ([209.85.217.68]:32897 "EHLO
-        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388709AbgDCBwB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 21:52:01 -0400
-Received: by mail-vs1-f68.google.com with SMTP id y138so3995016vsy.0;
-        Thu, 02 Apr 2020 18:52:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yzcUwwZAx9cJWhIKNDwF4fx+PYIpeHg0vU5fbIxqvk8=;
-        b=QQu7IOoXLIXwr9uFFFsFQuEwoANIn0gcVdZ05Xr8+MnHevxePg4/WaiD/1GSzFPlnQ
-         txHHlNqqaRyFMXDFYxTQj+2tZuFt0S/nq8MO13fPbFiGoUpp6Be+QbpWJkPgLRgHM5jK
-         CWUzcLi2M1uERabWALn1BENWz8QAKV1F6LGoReElyfzGo1rEfCM49Hn4NlcP5wuF8YmH
-         IlAidr13QaSFmTG4srvDVZfxT5h6Fyqhz6S1xNjdBBAMvcTJ/9IKps/GJ+hOowlOJJJf
-         IxwDz2la/y0FlTWOQPgUHVLUutT2ZIsI6IjQINvh9Yb9/5KelKlWmfrgXLCY81+YjYja
-         K8xw==
+        id S2390198AbgDCCHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 22:07:05 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:50769 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388951AbgDCCHF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 22:07:05 -0400
+Received: by mail-il1-f197.google.com with SMTP id c9so5374611ill.17
+        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 19:07:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yzcUwwZAx9cJWhIKNDwF4fx+PYIpeHg0vU5fbIxqvk8=;
-        b=Qv91AwezIHd257ACbvW8F+vv8lFSu0U5z0qQvX8QQlmtCiAyINqlpaZvCdCXUxyGZR
-         HDBsyTGjmC6YTStUp+3wgCnzaJJ670W4O6zM6TOSjEHSli6qvoTe2Yz5bDaL2jHTVzcB
-         vOiiNkarPJCfond7KAn/PWlxbMXQ3zkj+d1DKc1Ks/NCDfM14OfLR9xrc3WJ1y+AzD4s
-         YLKhKcRElAPiC2o3BdPkCsNnfAqnltkdNw7tZ4F1WhpZhEm9lkVfsiSoRJjMu8c1n75q
-         0v2dsUWwyp1RD2MuTKqyX0H6O4DD8FG6Qk+FRjcGLxK2gx0LHk8YaiF2UsNVs/AiEiYE
-         u2ew==
-X-Gm-Message-State: AGi0PuY3q3zbfHtnLdkmKgS4TQ329fqrCwKN1i/l7KaD/Wrr7XMPZe5l
-        oRio0K72q8Q4ZGNroNN6+7ZrJEoHhy4mEahuqM5sOZbj
-X-Google-Smtp-Source: APiQypJrlBnfOocvs6kqoA3k8N+fJ+UdXwLIEkJZ0HucmWLImsUfpuxCQi+C5w7anhz/V5UO10i+Q6vZiqMQipvFf8c=
-X-Received: by 2002:a67:fe41:: with SMTP id m1mr5103781vsr.174.1585878720525;
- Thu, 02 Apr 2020 18:52:00 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=7J/k6eEvJIq17JOSR8idMeCvoHGU5sGu3VSOhnubzmQ=;
+        b=DKgWWAgvlDHlaJfT6SxXJsRm4kCbj64lCDOPC7gMCqqSRcRiyTXuury7waOROJx9Dm
+         tLhi8eIuIk1F3lfPRyBeSilK3uWJmO7TuyYP64pPqfSej0GoD/xpIQdlwpKdWJ4rctpJ
+         UOe7zJyza2eZTbJp26Ra1Py0TzOjDVua+3WGKAypLGhydJ3dpIGBS7K82J16nGrAb+jl
+         vgreheScFA2K78DLW19S3iQSWYNJkHJOjvlmI7mnIEQq3xrxIpJ8IyGWcbVPGvYbBHtK
+         hpuCIUg/ucQrtBeuHnDG0DL9R2KbgU7T2C8bGrSF0pi+++prcc7bZ9AswpxpN8xSPG74
+         Oqmg==
+X-Gm-Message-State: AGi0Pub438mMyKwuFPiurS+RFLYcpj9dA8ZSu0di7S0cP+TNW8iInhBQ
+        /QdjnInbNB9ZYFZtXBx8Yn45vu2U1F7HTsQrtHOoRM3amJGs
+X-Google-Smtp-Source: APiQypIAlBCMDIO8Mp11ihUP2Aa0Ng3EkKSMlaylNoj+IQZ2XoML5J9qeSvuWJ7dpt7NnOEllOT2e+Bk8VEnYuPTEsrmo2SdkbZx
 MIME-Version: 1.0
-References: <000000000000666c9c05a1c05d12@google.com>
-In-Reply-To: <000000000000666c9c05a1c05d12@google.com>
-From:   Qiujun Huang <anenbupt@gmail.com>
-Date:   Fri, 3 Apr 2020 09:51:48 +0800
-Message-ID: <CADG63jAUxAFXRpxeyQodbt5kPouvfd+XoaXWWawd3kVMwMWwxg@mail.gmail.com>
-Subject: Re: general protection fault in ath9k_hif_usb_rx_cb
-To:     syzbot <syzbot+40d5d2e8a4680952f042@syzkaller.appspotmail.com>
-Cc:     Andrey Konovalov <andreyknvl@google.com>,
+X-Received: by 2002:a6b:dd14:: with SMTP id f20mr5790683ioc.123.1585879624594;
+ Thu, 02 Apr 2020 19:07:04 -0700 (PDT)
+Date:   Thu, 02 Apr 2020 19:07:04 -0700
+In-Reply-To: <CADG63jC06pj4pSrKMKQeK1pedyRnjNTWWmTzg-6rNbQh5c6=Ug@mail.gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ae3c0205a2595fc4@google.com>
+Subject: Re: KASAN: use-after-free Write in ath9k_htc_rx_msg
+From:   syzbot <syzbot+b1c61e5f11be5782f192@syzkaller.appspotmail.com>
+To:     andreyknvl@google.com, anenbupt@gmail.com,
         ath9k-devel@qca.qualcomm.com, davem@davemloft.net,
-        kvalo@codeaurora.org, LKML <linux-kernel@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: multipart/mixed; boundary="000000000000cb617405a25929ad"
+        kvalo@codeaurora.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000cb617405a25929ad
-Content-Type: text/plain; charset="UTF-8"
+Hello,
 
-#syz test: https://github.com/google/kasan.git usb-fuzzer
+syzbot has tested the proposed patch and the reproducer did not trigger crash:
 
---000000000000cb617405a25929ad
-Content-Type: application/octet-stream; 
-	name="0001-ath9k-fix-use-after-free-read-in-htc_connect_service.patch"
-Content-Disposition: attachment; 
-	filename="0001-ath9k-fix-use-after-free-read-in-htc_connect_service.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_k8jj8hpg0>
-X-Attachment-Id: f_k8jj8hpg0
+Reported-and-tested-by: syzbot+b1c61e5f11be5782f192@syzkaller.appspotmail.com
 
-RnJvbSA2MWE3N2JiMjE3OTJiYTIzMjMyOTk4ODBhYzRhMDdjNmZlMGI5NGEwIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBRaXVqdW4gSHVhbmcgPGhxamFnYWluQGdtYWlsLmNvbT4KRGF0
-ZTogVHVlLCAzMSBNYXIgMjAyMCAyMDoxODo1NiArMDgwMApTdWJqZWN0OiBbUEFUQ0hdIGF0aDlr
-OiBmaXggdXNlLWFmdGVyLWZyZWUgcmVhZCBpbiBodGNfY29ubmVjdF9zZXJ2aWNlCgooMSlUaGUg
-c2tiIGlzIGNvbnN1bWVkIGJ5IGh0Y19zZW5kX2VwaWQuCigyKWZyZWUgd21pIGxhdGVyIGFmdGVy
-IHVyYiBoYXMgYmVlbiBraWxsZWQuCigzKWNoZWNrIHRoZSBlbmRwb2ludF9pZC4KClNpZ25lZC1v
-ZmYtYnk6IFFpdWp1biBIdWFuZyA8aHFqYWdhaW5AZ21haWwuY29tPgotLS0KIGRyaXZlcnMvbmV0
-L3dpcmVsZXNzL2F0aC9hdGg5ay9oaWZfdXNiLmMgICAgICB8ICA0ICsrKy0KIGRyaXZlcnMvbmV0
-L3dpcmVsZXNzL2F0aC9hdGg5ay9odGNfZHJ2X2luaXQuYyB8ICAyICstCiBkcml2ZXJzL25ldC93
-aXJlbGVzcy9hdGgvYXRoOWsvaHRjX2hzdC5jICAgICAgfCAgNyArKysrLS0tCiBkcml2ZXJzL25l
-dC93aXJlbGVzcy9hdGgvYXRoOWsvd21pLmMgICAgICAgICAgfCAxNSArKysrKysrKysrKysrKy0K
-IGRyaXZlcnMvbmV0L3dpcmVsZXNzL2F0aC9hdGg5ay93bWkuaCAgICAgICAgICB8ICAyICsrCiA1
-IGZpbGVzIGNoYW5nZWQsIDI0IGluc2VydGlvbnMoKyksIDYgZGVsZXRpb25zKC0pCgpkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDlrL2hpZl91c2IuYyBiL2RyaXZlcnMv
-bmV0L3dpcmVsZXNzL2F0aC9hdGg5ay9oaWZfdXNiLmMKaW5kZXggZGQwYzMyMzc5Mzc1Li4yNzU2
-MDdhNzQ4NDEgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL2F0aC9hdGg5ay9oaWZf
-dXNiLmMKKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDlrL2hpZl91c2IuYwpAQCAt
-MTM0MSw4ICsxMzQxLDEwIEBAIHN0YXRpYyB2b2lkIGF0aDlrX2hpZl91c2JfZGlzY29ubmVjdChz
-dHJ1Y3QgdXNiX2ludGVyZmFjZSAqaW50ZXJmYWNlKQogCiAJaWYgKGhpZl9kZXYtPmZsYWdzICYg
-SElGX1VTQl9SRUFEWSkgewogCQlhdGg5a19odGNfaHdfZGVpbml0KGhpZl9kZXYtPmh0Y19oYW5k
-bGUsIHVucGx1Z2dlZCk7Ci0JCWF0aDlrX2h0Y19od19mcmVlKGhpZl9kZXYtPmh0Y19oYW5kbGUp
-OwogCQlhdGg5a19oaWZfdXNiX2Rldl9kZWluaXQoaGlmX2Rldik7CisJCXNtcF9tYigpOworCQlh
-dGg5a19kZXN0b3lfd21pKGhpZl9kZXYtPmh0Y19oYW5kbGUtPmRydl9wcml2KTsKKwkJYXRoOWtf
-aHRjX2h3X2ZyZWUoaGlmX2Rldi0+aHRjX2hhbmRsZSk7CiAJfQogCiAJdXNiX3NldF9pbnRmZGF0
-YShpbnRlcmZhY2UsIE5VTEwpOwpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRo
-L2F0aDlrL2h0Y19kcnZfaW5pdC5jIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDlrL2h0
-Y19kcnZfaW5pdC5jCmluZGV4IGQ5NjEwOTVhYjAxZi4uZDFkMGVkNmU2NTNjIDEwMDY0NAotLS0g
-YS9kcml2ZXJzL25ldC93aXJlbGVzcy9hdGgvYXRoOWsvaHRjX2Rydl9pbml0LmMKKysrIGIvZHJp
-dmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDlrL2h0Y19kcnZfaW5pdC5jCkBAIC05ODIsNyArOTgy
-LDcgQEAgdm9pZCBhdGg5a19odGNfZGlzY29ubmVjdF9kZXZpY2Uoc3RydWN0IGh0Y190YXJnZXQg
-Kmh0Y19oYW5kbGUsIGJvb2wgaG90dW5wbHVnKQogCQkJaHRjX2hhbmRsZS0+ZHJ2X3ByaXYtPmFo
-LT5haF9mbGFncyB8PSBBSF9VTlBMVUdHRUQ7CiAKIAkJYXRoOWtfZGVpbml0X2RldmljZShodGNf
-aGFuZGxlLT5kcnZfcHJpdik7Ci0JCWF0aDlrX2RlaW5pdF93bWkoaHRjX2hhbmRsZS0+ZHJ2X3By
-aXYpOworCQlhdGg5a19zdG9wX3dtaShodGNfaGFuZGxlLT5kcnZfcHJpdik7CiAJCWllZWU4MDIx
-MV9mcmVlX2h3KGh0Y19oYW5kbGUtPmRydl9wcml2LT5odyk7CiAJfQogfQpkaWZmIC0tZ2l0IGEv
-ZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDlrL2h0Y19oc3QuYyBiL2RyaXZlcnMvbmV0L3dp
-cmVsZXNzL2F0aC9hdGg5ay9odGNfaHN0LmMKaW5kZXggZDA5MWM4ZWJkY2YwLi44NmNmMTE4Yzll
-NWYgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL2F0aC9hdGg5ay9odGNfaHN0LmMK
-KysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDlrL2h0Y19oc3QuYwpAQCAtMTE1LDYg
-KzExNSwxMCBAQCBzdGF0aWMgdm9pZCBodGNfcHJvY2Vzc19jb25uX3JzcChzdHJ1Y3QgaHRjX3Rh
-cmdldCAqdGFyZ2V0LAogCQllcGlkID0gc3ZjX3JzcG1zZy0+ZW5kcG9pbnRfaWQ7CiAJCXNlcnZp
-Y2VfaWQgPSBiZTE2X3RvX2NwdShzdmNfcnNwbXNnLT5zZXJ2aWNlX2lkKTsKIAkJbWF4X21zZ2xl
-biA9IGJlMTZfdG9fY3B1KHN2Y19yc3Btc2ctPm1heF9tc2dfbGVuKTsKKworCQlpZiAoZXBpZCA+
-PSBFTkRQT0lOVF9NQVgpCisJCQlyZXR1cm47CisKIAkJZW5kcG9pbnQgPSAmdGFyZ2V0LT5lbmRw
-b2ludFtlcGlkXTsKIAogCQlmb3IgKHRlcGlkID0gKEVORFBPSU5UX01BWCAtIDEpOyB0ZXBpZCA+
-IEVORFBPSU5UMDsgdGVwaWQtLSkgewpAQCAtMTcwLDcgKzE3NCw2IEBAIHN0YXRpYyBpbnQgaHRj
-X2NvbmZpZ19waXBlX2NyZWRpdHMoc3RydWN0IGh0Y190YXJnZXQgKnRhcmdldCkKIAl0aW1lX2xl
-ZnQgPSB3YWl0X2Zvcl9jb21wbGV0aW9uX3RpbWVvdXQoJnRhcmdldC0+Y21kX3dhaXQsIEhaKTsK
-IAlpZiAoIXRpbWVfbGVmdCkgewogCQlkZXZfZXJyKHRhcmdldC0+ZGV2LCAiSFRDIGNyZWRpdCBj
-b25maWcgdGltZW91dFxuIik7Ci0JCWtmcmVlX3NrYihza2IpOwogCQlyZXR1cm4gLUVUSU1FRE9V
-VDsKIAl9CiAKQEAgLTIwNiw3ICsyMDksNiBAQCBzdGF0aWMgaW50IGh0Y19zZXR1cF9jb21wbGV0
-ZShzdHJ1Y3QgaHRjX3RhcmdldCAqdGFyZ2V0KQogCXRpbWVfbGVmdCA9IHdhaXRfZm9yX2NvbXBs
-ZXRpb25fdGltZW91dCgmdGFyZ2V0LT5jbWRfd2FpdCwgSFopOwogCWlmICghdGltZV9sZWZ0KSB7
-CiAJCWRldl9lcnIodGFyZ2V0LT5kZXYsICJIVEMgc3RhcnQgdGltZW91dFxuIik7Ci0JCWtmcmVl
-X3NrYihza2IpOwogCQlyZXR1cm4gLUVUSU1FRE9VVDsKIAl9CiAKQEAgLTI3OSw3ICsyODEsNiBA
-QCBpbnQgaHRjX2Nvbm5lY3Rfc2VydmljZShzdHJ1Y3QgaHRjX3RhcmdldCAqdGFyZ2V0LAogCWlm
-ICghdGltZV9sZWZ0KSB7CiAJCWRldl9lcnIodGFyZ2V0LT5kZXYsICJTZXJ2aWNlIGNvbm5lY3Rp
-b24gdGltZW91dCBmb3I6ICVkXG4iLAogCQkJc2VydmljZV9jb25ucmVxLT5zZXJ2aWNlX2lkKTsK
-LQkJa2ZyZWVfc2tiKHNrYik7CiAJCXJldHVybiAtRVRJTUVET1VUOwogCX0KIApkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDlrL3dtaS5jIGIvZHJpdmVycy9uZXQvd2ly
-ZWxlc3MvYXRoL2F0aDlrL3dtaS5jCmluZGV4IGNkYzE0NjA5MTE5NC4uNjE1ZTZlMzJmNjg3IDEw
-MDY0NAotLS0gYS9kcml2ZXJzL25ldC93aXJlbGVzcy9hdGgvYXRoOWsvd21pLmMKKysrIGIvZHJp
-dmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDlrL3dtaS5jCkBAIC0xMjMsNiArMTIzLDIwIEBAIHZv
-aWQgYXRoOWtfZGVpbml0X3dtaShzdHJ1Y3QgYXRoOWtfaHRjX3ByaXYgKnByaXYpCiAJa2ZyZWUo
-cHJpdi0+d21pKTsKIH0KIAordm9pZCBhdGg5a19zdG9wX3dtaShzdHJ1Y3QgYXRoOWtfaHRjX3By
-aXYgKnByaXYpCit7CisJc3RydWN0IHdtaSAqd21pID0gcHJpdi0+d21pOworCQorCW11dGV4X2xv
-Y2soJndtaS0+b3BfbXV0ZXgpOworCXdtaS0+c3RvcHBlZCA9IHRydWU7CisJbXV0ZXhfdW5sb2Nr
-KCZ3bWktPm9wX211dGV4KTsKK30KKwordm9pZCBhdGg5a19kZXN0b3lfd21pKHN0cnVjdCBhdGg5
-a19odGNfcHJpdiAqcHJpdikKK3sKKwlrZnJlZShwcml2LT53bWkpOworfQorCiB2b2lkIGF0aDlr
-X3dtaV9ldmVudF9kcmFpbihzdHJ1Y3QgYXRoOWtfaHRjX3ByaXYgKnByaXYpCiB7CiAJdW5zaWdu
-ZWQgbG9uZyBmbGFnczsKQEAgLTMzNiw3ICszNTAsNiBAQCBpbnQgYXRoOWtfd21pX2NtZChzdHJ1
-Y3Qgd21pICp3bWksIGVudW0gd21pX2NtZF9pZCBjbWRfaWQsCiAJCWF0aF9kYmcoY29tbW9uLCBX
-TUksICJUaW1lb3V0IHdhaXRpbmcgZm9yIFdNSSBjb21tYW5kOiAlc1xuIiwKIAkJCXdtaV9jbWRf
-dG9fbmFtZShjbWRfaWQpKTsKIAkJbXV0ZXhfdW5sb2NrKCZ3bWktPm9wX211dGV4KTsKLQkJa2Zy
-ZWVfc2tiKHNrYik7CiAJCXJldHVybiAtRVRJTUVET1VUOwogCX0KIApkaWZmIC0tZ2l0IGEvZHJp
-dmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDlrL3dtaS5oIGIvZHJpdmVycy9uZXQvd2lyZWxlc3Mv
-YXRoL2F0aDlrL3dtaS5oCmluZGV4IDM4MDE3NWQ1ZWNkNy4uYzNlMjc4Mzc3MzY1IDEwMDY0NAot
-LS0gYS9kcml2ZXJzL25ldC93aXJlbGVzcy9hdGgvYXRoOWsvd21pLmgKKysrIGIvZHJpdmVycy9u
-ZXQvd2lyZWxlc3MvYXRoL2F0aDlrL3dtaS5oCkBAIC0xODksNiArMTg5LDggQEAgaW50IGF0aDlr
-X3dtaV9jbWQoc3RydWN0IHdtaSAqd21pLCBlbnVtIHdtaV9jbWRfaWQgY21kX2lkLAogdm9pZCBh
-dGg5a193bWlfZXZlbnRfdGFza2xldCh1bnNpZ25lZCBsb25nIGRhdGEpOwogdm9pZCBhdGg5a19m
-YXRhbF93b3JrKHN0cnVjdCB3b3JrX3N0cnVjdCAqd29yayk7CiB2b2lkIGF0aDlrX3dtaV9ldmVu
-dF9kcmFpbihzdHJ1Y3QgYXRoOWtfaHRjX3ByaXYgKnByaXYpOwordm9pZCBhdGg5a19zdG9wX3dt
-aShzdHJ1Y3QgYXRoOWtfaHRjX3ByaXYgKnByaXYpOwordm9pZCBhdGg5a19kZXN0b3lfd21pKHN0
-cnVjdCBhdGg5a19odGNfcHJpdiAqcHJpdik7CiAKICNkZWZpbmUgV01JX0NNRChfd21pX2NtZCkJ
-CQkJCQlcCiAJZG8gewkJCQkJCQkJXAotLSAKMi4xNy4xCgo=
---000000000000cb617405a25929ad--
+Tested on:
+
+commit:         0fa84af8 Merge tag 'usb-serial-5.7-rc1' of https://git.ker..
+git tree:       https://github.com/google/kasan.git usb-fuzzer
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a782c087b1f425c6
+dashboard link: https://syzkaller.appspot.com/bug?extid=b1c61e5f11be5782f192
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=172383dbe00000
+
+Note: testing is done by a robot and is best-effort only.
