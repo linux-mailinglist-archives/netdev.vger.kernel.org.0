@@ -2,90 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF7B219D674
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 14:10:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 314AA19D70E
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 15:00:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403919AbgDCMK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 08:10:29 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:54604 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2403836AbgDCMK3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 08:10:29 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 033CAQOq022577;
-        Fri, 3 Apr 2020 05:10:28 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=3W7fmIESO+zeoLpMX7W0/8ICR/yIecO5/iPxgZfqtXs=;
- b=UeF32Hdb35JEGDS4mDCliP2hI1ZdYbQVLssi2pJ/WFDGICe4S+Pl4XyvTRA+yxWXcXg8
- 9BhZkpDWlKzNpmp6NoAhyIliYqlpcb1ucvjbgs9+i7+2nUC3xAWVOLDqLzix1gBIPCT0
- c3dhQoJq+9DUJhgfN5btCiOFcwmWLXxfyYE1VfxDeVnvJFwz4PVyG4ko00nD5TtEkgdw
- B9zl/uMHxkgmulzgTFdVAbTm9fCHWIlmb3bQedvYtKHSfumdJNyCVKU4C+pXqx6TyU1+
- RFO437OpT3IfeDufI6pNPDdywwC+npXrJGcj9alvFcZIydN78W13eK1g+NCLUo+1PioZ nA== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0a-0016f401.pphosted.com with ESMTP id 304855xgtd-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 03 Apr 2020 05:10:28 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 3 Apr
- 2020 05:10:20 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 3 Apr 2020 05:10:20 -0700
-Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id 2FAC23F703F;
-        Fri,  3 Apr 2020 05:10:20 -0700 (PDT)
-Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id 033CAK1g002574;
-        Fri, 3 Apr 2020 05:10:20 -0700
-Received: (from root@localhost)
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id 033CAK0P002573;
-        Fri, 3 Apr 2020 05:10:20 -0700
-From:   Saurav Kashyap <skashyap@marvell.com>
-To:     <martin.petersen@oracle.com>
-CC:     <GR-QLogic-Storage-Upstream@marvell.com>,
-        <linux-scsi@vger.kernel.org>, <jhasan@marvell.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH v3 7/7] qedf: Get dev info after updating the params.
-Date:   Fri, 3 Apr 2020 05:09:57 -0700
-Message-ID: <20200403120957.2431-8-skashyap@marvell.com>
-X-Mailer: git-send-email 2.12.0
-In-Reply-To: <20200403120957.2431-1-skashyap@marvell.com>
-References: <20200403120957.2431-1-skashyap@marvell.com>
+        id S2390863AbgDCNAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 09:00:40 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:55727 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728117AbgDCNAk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 09:00:40 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 44E5A5C037D;
+        Fri,  3 Apr 2020 09:00:39 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Fri, 03 Apr 2020 09:00:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=Wrlw4V/+PkxQRiQ2T
+        cvCsjUeGg2ijs+K34QgKc/i3Y0=; b=w7lUEa3NGipmu2kuhB3ORXuN7jOQSmrED
+        xbvJ8AYldIauyeYr/mliXGqL6ljpgjddbuy6FEjbkSJDSAxNoPG+86QBUZ1OrKhH
+        Kn8WPTtExRYraeNHnr3RoMsumi1/st2H15SpzA23/USCYmCP1sitXhC0hlui9yuT
+        fbOlIBA4K+kbHVpU93NFoatpXszytjnRAYKmQLL1eySn4RVatGFjpr+7HPXwjTMQ
+        WOLTgKmau+iLV1cZ2rEJjKTygd7vRWhR3YB4yTRyLLXkeCXY7X9RG1X5TwXKMmph
+        vnDSJ+Svr1yXhBW6YJCHhbBhM4OAOpB2Ghg9E4gRN8SIAZAtSDvGQ==
+X-ME-Sender: <xms:djOHXpkYRFvWiYxLl5SgwR-FAxN3x-FhC_X-04S5qbFhvdQU1F6h-Q>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrtdeigdeitdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
+    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
+    rdhorhhgqeenucfkphepjeelrddukedurddufedvrdduledunecuvehluhhsthgvrhfuih
+    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdr
+    ohhrgh
+X-ME-Proxy: <xmx:djOHXlYVFbWzpGmVNFTcH8v4BS-4WHaZRSbfb4YnqBzR9BhsbpmOiA>
+    <xmx:djOHXoiID6PEyjdpmEQcN88TglqsiEPStlhqWEpgcE6g0rqmzoI5Iw>
+    <xmx:djOHXjye8VfqCvKj5baJSEQlpeowR27QMABA7MMOaZZdW50oELliKA>
+    <xmx:dzOHXjwoQBT5A7_u5cOeYL5ucVwUBOYpDPT2P0k_nvSpaDb6c4Xlug>
+Received: from splinter.mtl.com (bzq-79-181-132-191.red.bezeqint.net [79.181.132.191])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 111B03280069;
+        Fri,  3 Apr 2020 09:00:36 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, petrm@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net 0/2] mlxsw: spectrum_flower: Do not stop at FLOW_ACTION_{VLAN_MANGLE, PRIORITY}
+Date:   Fri,  3 Apr 2020 16:00:08 +0300
+Message-Id: <20200403130010.2471710-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-03_07:2020-04-03,2020-04-03 signatures=0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-- Get the dev info after updating the params.
+From: Ido Schimmel <idosch@mellanox.com>
 
-Signed-off-by: Saurav Kashyap <skashyap@marvell.com>
----
- drivers/scsi/qedf/qedf_main.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+Petr says:
 
-diff --git a/drivers/scsi/qedf/qedf_main.c b/drivers/scsi/qedf/qedf_main.c
-index 52673b4..dc5ac55 100644
---- a/drivers/scsi/qedf/qedf_main.c
-+++ b/drivers/scsi/qedf/qedf_main.c
-@@ -3332,6 +3332,13 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
- 	}
- 	qed_ops->common->update_pf_params(qedf->cdev, &qedf->pf_params);
- 
-+	/* Learn information crucial for qedf to progress */
-+	rc = qed_ops->fill_dev_info(qedf->cdev, &qedf->dev_info);
-+	if (rc) {
-+		QEDF_ERR(&qedf->dbg_ctx, "Failed to dev info.\n");
-+		goto err2;
-+	}
-+
- 	/* Record BDQ producer doorbell addresses */
- 	qedf->bdq_primary_prod = qedf->dev_info.primary_dbq_rq_addr;
- 	qedf->bdq_secondary_prod = qedf->dev_info.secondary_bdq_rq_addr;
+The handlers for FLOW_ACTION_VLAN_MANGLE and FLOW_ACTION_PRIORITY end by
+returning whatever the lower-level function that they call returns. If
+there are more actions lined up after one of these actions, those are
+never offloaded. Each of the two patches fixes one of those actions.
+
+Petr Machata (2):
+  mlxsw: spectrum_flower: Do not stop at FLOW_ACTION_PRIORITY
+  mlxsw: spectrum_flower: Do not stop at FLOW_ACTION_VLAN_MANGLE
+
+ .../ethernet/mellanox/mlxsw/spectrum_flower.c  | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
+
 -- 
-1.8.3.1
+2.24.1
 
