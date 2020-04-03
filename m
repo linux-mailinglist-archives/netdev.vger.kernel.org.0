@@ -2,97 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6296719CF81
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 06:43:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C13519CF88
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 06:48:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730571AbgDCEnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 00:43:41 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:36203 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725851AbgDCEnl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 00:43:41 -0400
-Received: by mail-oi1-f194.google.com with SMTP id k18so5068841oib.3
-        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 21:43:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Pxk3qk5Bn3RYUkFktZThaPnODyF46Yu2JEsa4YXKZiw=;
-        b=kFYRYrg76NUoc/b/Akw88QOh5ieISq+4SNZnrbBD6Nx2XScbFcZbBR9Ic0Y9Yre5Va
-         SBukoww18pRUawsVt/qWxf+GMQBPKenl1blOUmE+CxFnj6zDpsRfIsajxrp2qZWiaNDV
-         N+388V5XxrbAaQDd1Izi8V4rc88SXwmAZSUB9SbgF7BViZv025zuHqdGpvSd5kVK38OA
-         9CEso6zH8AsMl7p/PMjpeHj+KZh7kPyYYQ6jS4yqUT7ZkhG4LLpJy/OMV8uD4w2HUXR6
-         7mwhkPZak6Z9ac9+b+jsfXjxKnZAnl2ApVoaU97jg+i6g4vzVKGYaU1ZbRspaRn9wr0K
-         IPIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Pxk3qk5Bn3RYUkFktZThaPnODyF46Yu2JEsa4YXKZiw=;
-        b=hh2a2xPgbK/W1UXngeM/6KNXarW49TyJ9OBu4x7SFXxG6+hELcE3/lwtofDxqsKo0R
-         o1KxUcyS+6+6nKXvvJyA43JkEch7+JjDGO8MeUhXi71HfHZ2xYOWpLlU9dhkZpfOdpZ6
-         IHjTeGZJeIVgaoFIp+ctgpn5TZwiHq29SYjr2huOs2lW1dItZzgPBNbzAyBN5+j6Z+DT
-         lCt8MoLGS6BIsvpyCfvDcCvVxIuy78zhyx2ymYEDFBwXDfT7BBVAE5DFVAyV/xtq+lXv
-         m6x0KS27M7EOSQapSFIvNnhflHE/CCYBXyWcMYLxuFSY/cEKFo31duwhqvzW3vEY7+vk
-         7P+w==
-X-Gm-Message-State: AGi0PuaNoM0ziAk6khuu6Z1PhfjHWlnjZBUSytFVe7pNw3sMY5j6d3UF
-        nH9FfaIqJCz9+Mm9s6tAksgYjPcvSNskDW16DgM2HVCDQCU=
-X-Google-Smtp-Source: APiQypI4MZW5519Jc++Gxj0tg4LUpf0zGuO8blCD9CpY7/3GANc+aJZ9SOkshmrL2BMv3DBaBR8A+jdIl8+v6F+3fjY=
-X-Received: by 2002:a05:6808:648:: with SMTP id z8mr1823987oih.72.1585889020816;
- Thu, 02 Apr 2020 21:43:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <a59f92670c72db738d91b639ecc72ef8daf69300.1585866258.git.marcelo.leitner@gmail.com>
- <20200402.180417.804204103829966415.davem@davemloft.net> <20200403011412.GA3629@localhost.localdomain>
-In-Reply-To: <20200403011412.GA3629@localhost.localdomain>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 2 Apr 2020 21:43:29 -0700
-Message-ID: <CAM_iQpUvn+ijyZtLmca3n+nZmHY9cMmPYwZMp5BTv10bLUhg3Q@mail.gmail.com>
-Subject: Re: [PATCH net] net: sched: reduce amount of log messages in act_mirred
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        id S1730236AbgDCEsk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 00:48:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43932 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725851AbgDCEsk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Apr 2020 00:48:40 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 49B1F20787;
+        Fri,  3 Apr 2020 04:48:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585889318;
+        bh=g7AEKFun6b88CFN6uNPuAS7ErDz1rN8QQpys1CkGM/E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bu57Ambv7UEcUspa75cIeECYsDsKi1qZLuS9K0gK0/5wAt0RrpnpN8qKZ+MRgcxkx
+         HV6qBBkIazYdrzD4pcWrqn2evzYD+avxvKuF7YGM85TSd9l550RFlDv4Itl7IiEp6r
+         QNRbtmW4wCqOfb9oeQ7JvuN40+ym3ctsRIvSd8qI=
+Date:   Fri, 3 Apr 2020 07:48:35 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Arjan van de Ven <arjan@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Content-Type: text/plain; charset="UTF-8"
+        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        Itay Aveksis <itayav@mellanox.com>
+Subject: Re: [PATCH net] net/sched: Don't print dump stack in event of
+ transmission timeout
+Message-ID: <20200403044835.GE80989@unreal>
+References: <20200402152336.538433-1-leon@kernel.org>
+ <20200402155723.534147ac@kicinski-fedora-PC1C0HJN>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200402155723.534147ac@kicinski-fedora-PC1C0HJN>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 2, 2020 at 6:14 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Thu, Apr 02, 2020 at 06:04:17PM -0700, David Miller wrote:
-> > From: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> > Date: Thu,  2 Apr 2020 19:26:12 -0300
+On Thu, Apr 02, 2020 at 03:57:23PM -0700, Jakub Kicinski wrote:
+> On Thu,  2 Apr 2020 18:23:36 +0300 Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@mellanox.com>
 > >
-> > > @@ -245,8 +245,8 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
-> > >     }
-> > >
-> > >     if (unlikely(!(dev->flags & IFF_UP))) {
-> > > -           net_notice_ratelimited("tc mirred to Houston: device %s is down\n",
-> > > -                                  dev->name);
-> > > +           pr_notice_once("tc mirred: device %s is down\n",
-> > > +                          dev->name);
+> > In event of transmission timeout, the drivers are given an opportunity
+> > to recover and continue to work after some in-house cleanups.
 > >
-> > This reduction is too extreme.
+> > Such event can be caused by HW bugs, wrong congestion configurations
+> > and many more other scenarios. In such case, users are interested to
+> > get a simple  "NETDEV WATCHDOG ... " print, which points to the relevant
+> > netdevice in trouble.
 > >
-> > If someone causes this problem, reconfigures everything thinking that the
-> > problem will be fixed, they won't see this message the second time and
-> > mistakenly think it's working.
+> > The dump stack printed later was added in the commit b4192bbd85d2
+> > ("net: Add a WARN_ON_ONCE() to the transmit timeout function") to give
+> > extra information, like list of the modules and which driver is involved.
+> >
+> > While the latter is already printed in "NETDEV WATCHDOG ... ", the list
+> > of modules rarely needed and can be collected later.
+> >
+> > So let's remove the WARN_ONCE() and make dmesg look more user-friendly in
+> > large cluster setups.
 >
-> Fair point. Then what about removing it entirely? printk's are not the
-> best way to debug packet drops anyway and the action already registers
-> the drops in its stats.
+> I'm of two minds about this. As much as printing a stack dump here is
+> not that useful indeed, it's certainly a good way of getting user's
+> attention. TX queue time outs should never happen, and there's a bunch
+> of log crawlers out there looking for kernel warnings.
 >
-> Or perhaps a marker in the message, stating that it is logged only
-> once per boot. I'm leaning to the one above, to just remove it.
+> Is there something special about IB here? The sender gets back
+> pressured into oblivion?
 
-I think the reason why we print that is we do not handle
-NETDEV_DOWN event in mirred_device_event() or check IFF_UP
-in tcf_mirred_init(). I think if we can do both, we can remove
-this message entirely. I am not sure whether the latter would break
-existing expectations, as users may want to add a down device
-as a target and bring it up afterward.
+There is nothing special here, it is HW bug on the specific device family
+(mlx4). My primary work is in RDMA domain, so this is how we get IB here.
+It is possible to get same warning with ETH too.
 
-Thanks.
+>
+> > [  281.170584] ------------[ cut here ]------------
+> > [  281.197120] NETDEV WATCHDOG: ib1 (mlx4_core): transmit queue 0 timed out
+> > [  281.198521] WARNING: CPU: 0 PID: 0 at net/sched/sch_generic.c:442 dev_watchdog+0x232/0x240
+> > [  281.200259] Modules linked in: bonding ipip tunnel4 geneve ip6_udp_tunnel udp_tunnel ip6_gre ip6_tunnel tunnel6 ip_gre gre ip_tunnel mlx4_en ptp pps_core mlx4_ib mlx4_core rdma_ucm ib_uverbs ib_ipoib ib_umad openvswitch nsh xt_MASQUERADE nf_conntrack_netlink nfnetlink iptable_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 br_netfilter overlay ib_srp scsi_transport_srp rpcrdma ib_iser libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm ib_core [last unloaded: mlx4_core]
+> > [  281.208290] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.6.0-rc5-J14907-G268960df60ee #1
+> > [  281.209954] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
+> > [  281.212281] RIP: 0010:dev_watchdog+0x232/0x240
+> > [  281.213260] Code: 85 c0 75 e8 eb a5 4c 89 ef c6 05 dd 9c c4 00 01 e8 d3 b6 fb ff 44 89 e1 4c 89 ee 48 c7 c7 40 54 0b 82 48 89 c2 e8 10 f1 a0 ff <0f> 0b eb 86 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 c7 47
+> > [  281.217078] RSP: 0018:ffffc90000003e70 EFLAGS: 00010282
+> > [  281.218210] RAX: 0000000000000000 RBX: ffff8884521c3ce8 RCX: 0000000000000007
+> > [  281.219709] RDX: 0000000000000007 RSI: 0000000000000086 RDI: ffff88846fc18230
+> > [  281.221206] RBP: ffff88846daad440 R08: 0000000000000000 R09: 0000000000000249
+> > [  281.222697] R10: 0000000000000774 R11: ffffc90000003d25 R12: 0000000000000000
+> > [  281.224202] R13: ffff88846daad000 R14: ffff88846daad440 R15: 0000000000000082
+> > [  281.225733] FS:  0000000000000000(0000) GS:ffff88846fc00000(0000) knlGS:0000000000000000
+> > [  281.227472] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [  281.228713] CR2: 00007efd12565000 CR3: 000000043cd3a002 CR4: 0000000000160eb0
+> > [  281.230241] Call Trace:
+> > [  281.230900]  <IRQ>
+> > [  281.231469]  ? qdisc_put_unlocked+0x30/0x30
+> > [  281.232437]  call_timer_fn+0x30/0x130
+> > [  281.233300]  run_timer_softirq+0x18b/0x490
+> > [  281.234229]  ? timerqueue_add+0x96/0xb0
+> > [  281.235119]  ? enqueue_hrtimer+0x3d/0x90
+> > [  281.236029]  __do_softirq+0xdf/0x2e5
+> > [  281.236864]  irq_exit+0xa0/0xb0
+> > [  281.237621]  smp_apic_timer_interrupt+0x72/0x120
+> > [  281.238652]  apic_timer_interrupt+0xf/0x20
+> > [  281.239581]  </IRQ>
+> > [  281.240147] RIP: 0010:default_idle+0x2d/0x150
+> > [  281.241133] Code: 00 00 8b 05 3d 75 a7 00 41 54 55 65 8b 2d 6b e0 71 7e 53 85 c0 7f 29 8b 05 c8 97 f7 00 85 c0 7e 07 0f 00 2d 37 56 52 00 fb f4 <8b> 05 15 75 a7 00 65 8b 2d 46 e0 71 7e 85 c0 7f 7f 5b 5d 41 5c c3
+> > [  281.244935] RSP: 0018:ffffffff82203ea0 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
+> > [  281.246584] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000001
+> > [  281.248082] RDX: 000000000010db42 RSI: ffffffff82203e40 RDI: 000000416d8a7440
+> > [  281.249581] RBP: 0000000000000000 R08: 0000000000000001 R09: 00000041770da407
+> > [  281.251069] R10: 0000000000000264 R11: 0000000000000000 R12: ffffffff82211840
+> > [  281.252545] R13: 0000000000000000 R14: 0000000000000000 R15: ffffffff82211840
+> > [  281.254036]  do_idle+0x1ee/0x210
+> > [  281.254809]  cpu_startup_entry+0x19/0x20
+> > [  281.255713]  start_kernel+0x490/0x4af
+> > [  281.257577]  secondary_startup_64+0xa4/0xb0
+> > [  281.259147] ---[ end trace 78f566c0214a2cb0 ]---
+> > [  281.260866] ib1: transmit timeout: latency 1120 msecs
+> > [  281.262730] ib1: queue stopped 1, tx_head 167838, tx_tail 167710
+> >
+> > Fixes: b4192bbd85d2 ("net: Add a WARN_ON_ONCE() to the transmit timeout function")
+> > Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+> > ---
+> >  net/sched/sch_generic.c | 5 +++--
+> >  1 file changed, 3 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+> > index 6c9595f1048a..c12530fe8b21 100644
+> > --- a/net/sched/sch_generic.c
+> > +++ b/net/sched/sch_generic.c
+> > @@ -439,8 +439,9 @@ static void dev_watchdog(struct timer_list *t)
+> >
+> >  			if (some_queue_timedout) {
+> >  				trace_net_dev_xmit_timeout(dev, i);
+> > -				WARN_ONCE(1, KERN_INFO "NETDEV WATCHDOG: %s (%s): transmit queue %u timed out\n",
+> > -				       dev->name, netdev_drivername(dev), i);
+> > +				pr_info_once("NETDEV WATCHDOG: %s (%s): transmit queue %u timed out\n",
+>
+> I'd say pr_err_once(). Or dev_err_once().
+
+I simply converted KERN_INFO to pr_info_once(), but will be happy to
+change it to your suggestion or to Cong's once Dave relax his decision
+about removing WARN_ONCE() here.
+
+Thanks
+
+>
+> > +					     dev->name,
+> > +					     netdev_drivername(dev), i);
+> >  				dev->netdev_ops->ndo_tx_timeout(dev, i);
+> >  			}
+> >  			if (!mod_timer(&dev->watchdog_timer,
+> > --
+> > 2.25.1
+> >
+>
