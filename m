@@ -2,77 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF0D219CE54
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 03:49:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F320519CE58
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 03:51:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390286AbgDCBta (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 21:49:30 -0400
-Received: from mail-vs1-f65.google.com ([209.85.217.65]:41177 "EHLO
-        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388709AbgDCBta (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 21:49:30 -0400
-Received: by mail-vs1-f65.google.com with SMTP id a63so3947774vsa.8;
-        Thu, 02 Apr 2020 18:49:29 -0700 (PDT)
+        id S2390228AbgDCBvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 21:51:04 -0400
+Received: from mail-vs1-f66.google.com ([209.85.217.66]:45717 "EHLO
+        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388709AbgDCBvE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 21:51:04 -0400
+Received: by mail-vs1-f66.google.com with SMTP id x82so3918646vsc.12;
+        Thu, 02 Apr 2020 18:51:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=A1UgCaq/sneZWs82BMpAJ1Zb7NbqtDFIsjH2B80RJuY=;
-        b=JZMT/N2r3FJM7awaf3qHWC0KGL3LgtwX7JOODWPzwsX8LUQJOLd/ABtTMJ2ZY7N7N5
-         fZUqEEtFR9rXmnCQ3va4mJuZkiv0x48vnnNXf9UTkvuFV5xoor4IoMGwo71gK7PPc/JL
-         np8QuQgZSqYPFIuAKbJdmstuWFpZuOz5I0IZq7ejFjJ2Iv+o62h0YThLa5bzqeixjCOK
-         bc7jkXGiWyThxVU9RhtcFRZyOWUunQw40STZuEaLMdWKr3WtsmlyVm89k0WYIvhSAeko
-         IFAYM+3a2MAnxBmauUVuXN4818BdrKW6P3GA/oebUq452zxHyI4aU9CIUbt2MbMpQwgs
-         sGZA==
+        bh=T30nQFAnuIIawv31c+oNgXo4Yj8+O9bKIqkNHwwdTDU=;
+        b=GUnKRNpQtqh8cmWgICFU1dy0vKewumquzyrMLjEyxXr4YAhktDC4m9gP6IIMSx7XQE
+         sfSeJhXy6zI++cbjctnKXtv60rimmJgMR8shQ36ZXA8sgjgXdp+4JjX4hTK6SuznjisE
+         2o3TCuR1VDAljG7oEafS2yEXPHbzvIb/SqAWbSNgEVaVA/dGq/ZjcNOT0ZZbtRalE/GX
+         4+BF+TekbDoc7t9aa8TrATq6AAoqkxCyt5e1L4ct4epJ0EMfXAqPyejv5bEabeXePJFg
+         Ka38XCW27KRe79EF4IOE8SaR55WAq6pC7fDT4OwAcD616T03bphvFsCwBCtj6M3FjFdO
+         iKHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=A1UgCaq/sneZWs82BMpAJ1Zb7NbqtDFIsjH2B80RJuY=;
-        b=cYMoMap+WupKT5foS7tVhfvsxy2UMgXFKOjZJIO6vwHL7gAXxYfrPwFKWG0X2KYVXa
-         5/lQLR1eryAMnxA006MqmepBk1yyvKbDI/il2oAqEUYV4XSM2pHzOC1JrcDRVkKidwQf
-         I2hqJJoUU7x1YFv1PKrDek+aK9CSOtVp8oHY56R2SIPjsn81YIbbOzeuLpSJ3zKiZpbR
-         QNRizSQzNOCHCNrxuIDX7PU2m3FHrthbZm7HbklGETeE/IYpAf2Z4ZaK45m7XwhkMz32
-         NNdXmld3YfrFwlPJK66LbHUkEi1cqDLnvjh1+1o/bMlNqjM3GA9jaZlZVSvhgVxgEPQn
-         MXfg==
-X-Gm-Message-State: AGi0PuaxX9aNBrvt5LAcEb9egu/xVAKqcLv1sdmx72idOOjuXMXzNnvD
-        vD+VfuKNhUuBidtG3z18Er5xjbynKO2ZsN/xxH4=
-X-Google-Smtp-Source: APiQypKNV7+QGS3DWHrllnUuCUKW69ratEU5FHrCnXUd1BpUhBkSgECPcL5CgcJm+ZmQiXtbLh+otd4XRNg89G8xwfY=
-X-Received: by 2002:a05:6102:1b:: with SMTP id j27mr4626105vsp.150.1585878568603;
- Thu, 02 Apr 2020 18:49:28 -0700 (PDT)
+        bh=T30nQFAnuIIawv31c+oNgXo4Yj8+O9bKIqkNHwwdTDU=;
+        b=Oxj9H9d+NxPRJnq0u+IUVZ9oUFJcLHMsemUUUHdFFlMbbgph89xRvR7u0byJjSO1HM
+         LA9BlERUleCKBIKFn1aeehrY/MqrxLWCGttrCiX62Z2MDtDtUfXMRZRyZSe3lc0ZXxKP
+         ODDgJlXT5iTE3yiDgqducLAq4TbckXh4iT2qgcxmY+xB6IqZAFPubvZYcHiLThA/oTI6
+         YlS7zWNCrgKi3WPF/10SUh/y9y+XTrul94MOXLhowelA9X/WKOcDFCTfUfsF+9OtkSEY
+         Dhi8SxLgqnU0nptVzTAWmlBidFpOPIXiF5dNoWfNSAI1hBDOLQWVlpL7fi3HpCAwt5SQ
+         Vx2A==
+X-Gm-Message-State: AGi0PuZS1Q4A0SvozYk9Bs2ccm2n4nuSCpUr1OvXGvr0y6VmdOMwxsuJ
+        2IF7dgbxkPpzyDIyCXgeGDyXdqrT2pyaQVZIvZ0=
+X-Google-Smtp-Source: APiQypK1A3z+jEtxwg6p6YHgsQaKRUY00lZis+J7o1/0W76aqLqWGVi8cKxEDW1BNAfH+rhtqvFSbMG0WbdRtSfONNs=
+X-Received: by 2002:a05:6102:a01:: with SMTP id t1mr4502335vsa.108.1585878660822;
+ Thu, 02 Apr 2020 18:51:00 -0700 (PDT)
 MIME-Version: 1.0
-References: <0000000000006ac55b05a1c05d72@google.com>
-In-Reply-To: <0000000000006ac55b05a1c05d72@google.com>
+References: <0000000000000002fc05a1d61a68@google.com>
+In-Reply-To: <0000000000000002fc05a1d61a68@google.com>
 From:   Qiujun Huang <anenbupt@gmail.com>
-Date:   Fri, 3 Apr 2020 09:49:16 +0800
-Message-ID: <CADG63jC06pj4pSrKMKQeK1pedyRnjNTWWmTzg-6rNbQh5c6=Ug@mail.gmail.com>
-Subject: Re: KASAN: use-after-free Write in ath9k_htc_rx_msg
-To:     syzbot <syzbot+b1c61e5f11be5782f192@syzkaller.appspotmail.com>
+Date:   Fri, 3 Apr 2020 09:50:49 +0800
+Message-ID: <CADG63jCRT=gcRK4RzQ8Gv4uyMkQ4LVGfczC587GLyfkb8F7-aw@mail.gmail.com>
+Subject: Re: KASAN: use-after-free Read in ath9k_wmi_ctrl_rx
+To:     syzbot <syzbot+5d338854440137ea0fef@syzkaller.appspotmail.com>
 Cc:     Andrey Konovalov <andreyknvl@google.com>,
         ath9k-devel@qca.qualcomm.com, davem@davemloft.net,
         kvalo@codeaurora.org, LKML <linux-kernel@vger.kernel.org>,
         USB list <linux-usb@vger.kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: multipart/mixed; boundary="000000000000bdb0f205a25920d1"
+Content-Type: multipart/mixed; boundary="0000000000003c980b05a259265c"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000bdb0f205a25920d1
+--0000000000003c980b05a259265c
 Content-Type: text/plain; charset="UTF-8"
 
 #syz test: https://github.com/google/kasan.git usb-fuzzer
 
---000000000000bdb0f205a25920d1
+--0000000000003c980b05a259265c
 Content-Type: application/octet-stream; 
 	name="0001-ath9k-fix-use-after-free-read-in-htc_connect_service.patch"
 Content-Disposition: attachment; 
 	filename="0001-ath9k-fix-use-after-free-read-in-htc_connect_service.patch"
 Content-Transfer-Encoding: base64
-Content-ID: <f_k8jj56zv0>
-X-Attachment-Id: f_k8jj56zv0
+Content-ID: <f_k8jj767g0>
+X-Attachment-Id: f_k8jj767g0
 
 RnJvbSA2MWE3N2JiMjE3OTJiYTIzMjMyOTk4ODBhYzRhMDdjNmZlMGI5NGEwIE1vbiBTZXAgMTcg
 MDA6MDA6MDAgMjAwMQpGcm9tOiBRaXVqdW4gSHVhbmcgPGhxamFnYWluQGdtYWlsLmNvbT4KRGF0
@@ -160,4 +160,4 @@ dF9kcmFpbihzdHJ1Y3QgYXRoOWtfaHRjX3ByaXYgKnByaXYpOwordm9pZCBhdGg5a19zdG9wX3dt
 aShzdHJ1Y3QgYXRoOWtfaHRjX3ByaXYgKnByaXYpOwordm9pZCBhdGg5a19kZXN0b3lfd21pKHN0
 cnVjdCBhdGg5a19odGNfcHJpdiAqcHJpdik7CiAKICNkZWZpbmUgV01JX0NNRChfd21pX2NtZCkJ
 CQkJCQlcCiAJZG8gewkJCQkJCQkJXAotLSAKMi4xNy4xCgo=
---000000000000bdb0f205a25920d1--
+--0000000000003c980b05a259265c--
