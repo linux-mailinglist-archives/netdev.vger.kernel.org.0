@@ -2,215 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BD9F19D200
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 10:18:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B196019D232
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 10:30:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390528AbgDCISW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 04:18:22 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:37533 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390480AbgDCISU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 04:18:20 -0400
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jKHWo-0002IG-Qi; Fri, 03 Apr 2020 10:18:14 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jKHWn-0005DA-RG; Fri, 03 Apr 2020 10:18:13 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH v1] net: phy: micrel: add phy-mode support for the KSZ9031 PHY
-Date:   Fri,  3 Apr 2020 10:18:12 +0200
-Message-Id: <20200403081812.19717-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.26.0.rc2
+        id S2390267AbgDCIaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 04:30:05 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:38674 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727803AbgDCIaF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 04:30:05 -0400
+Received: by mail-wr1-f68.google.com with SMTP id c7so7439538wrx.5;
+        Fri, 03 Apr 2020 01:30:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=3iWIecZVAUc54be4Wh163O1yVl1PDGP5Br1BGuUzE/8=;
+        b=XwyRgY4XjYW/Buw6NkjUDhGOBN/O+2O7qIlzjL3nuX+C+FmJLzmJoTbaGWIw15L0wU
+         1w8rq6bJ24+y9oLw7IuaiA+DmkyyWiBNzFA7deImL3PqNVuEUMhZe7gTRAsBa4zO52VD
+         DIucnu/amcrZw8l7kx1nYlSK32PT4ELjC0Y2aXbYc4edhgoPM4JNX4LPmbrYlPmJIaDX
+         iO03Gc6riPqeNBjUSc57aV/y1zK5cvS0etXOLfypdkeoDYX2sB//2g/tpjg9bKzsF2Cs
+         9asxqdGcf34vUks2c2R5/OhTXphysCT4AbzU50Mz4A4R0FcvVg8VQqw7EWmKEhsyqtpe
+         2wzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=3iWIecZVAUc54be4Wh163O1yVl1PDGP5Br1BGuUzE/8=;
+        b=jYRPvC3xRvI0wB4rY/sJec6tYIULsw++6uyFkHAtDoweAB5vpPF7IGMbNPZ18UWLwg
+         ccAP8qyby8KzjynrWFwUf3wb7AGDT73EKPbtq9ydVlgXktshCmzwld/k/Ch35W5r7Ej/
+         mVY4Ok43EY5Pm1TSNNefzJRSbZAYon6nTsJHDsZhfAyVY2USlSsGvtAIj8EjPpOONb5Z
+         H0+krr/BJ0WiWeqyqzXQansIE3QIhw5fPVVahuzXp0yQZgVRRCNW/4FKRoyLwIXfeJV/
+         gGZlQPPG3qyyVb/XrW+hx/Tta8ybXjmLUPF0uGeLZSpiXWxovjyS8Y3HBIikgTld8M1P
+         7lUQ==
+X-Gm-Message-State: AGi0PubHgYxF+V2+hWkOK5ounUuK9/M1xxS8BfDjKC5cG/0O3gCQEvax
+        L7F0WNvc2U3YVqUyeM/JV7JPVzDHRjp8be6XJ58=
+X-Google-Smtp-Source: APiQypLZTMuFMIiys8xTsHicNhdnmlOZZLjZ64lcpWDqZtPx2rlxI5fuJ9y+byBrgy0epOJ3Y8B+B0NNDcO2ODscwIc=
+X-Received: by 2002:adf:f852:: with SMTP id d18mr8249972wrq.172.1585902602006;
+ Fri, 03 Apr 2020 01:30:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <1585813930-19712-1-git-send-email-lirongqing@baidu.com> <6BB0E637-B5F8-4B50-9B70-8A30F4AF6CF5@gmail.com>
+In-Reply-To: <6BB0E637-B5F8-4B50-9B70-8A30F4AF6CF5@gmail.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Fri, 3 Apr 2020 10:29:50 +0200
+Message-ID: <CAJ+HfNjTaWp+=na14mjMzpbRzM2Ea5wK_MNJddFNEJ59XDLPNw@mail.gmail.com>
+Subject: Re: [PATCH] xsk: fix out of boundary write in __xsk_rcv_memcpy
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     Li RongQing <lirongqing@baidu.com>,
+        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kevin Laatz <kevin.laatz@intel.com>,
+        Ciara Loftus <ciara.loftus@intel.com>,
+        Bruce Richardson <bruce.richardson@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for following phy-modes: rgmii, rgmii-id, rgmii-txid, rgmii-rxid.
+On Fri, 3 Apr 2020 at 00:22, Jonathan Lemon <jonathan.lemon@gmail.com> wrot=
+e:
+>
+> On 2 Apr 2020, at 0:52, Li RongQing wrote:
+>
+> > first_len is remainder of first page, if write size is
+> > larger than it, out of page boundary write will happen
+> >
+> > Fixes: c05cd3645814 "(xsk: add support to allow unaligned chunk placeme=
+nt)"
+> > Signed-off-by: Li RongQing <lirongqing@baidu.com>
+>
+> Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 
-This PHY has an internal RX delay of 1.2ns and no delay for TX.
-
-The pad skew registers allow to set the total TX delay to max 1.38ns and
-the total RX delay to max of 2.58ns (configurable 1.38ns + build in
-1.2ns) and a minimal delay of 0ns.
-
-According to the RGMII v2 specification the delay provided by PCB traces
-should be between 1.5ns and 2.0ns. As this PHY can provide max delay of
-only 1.38ns on the TX line, in RGMII-ID mode a symmetric delay of 1.38ns
-for both the RX and TX lines is chosen, even if the RX line could be
-configured with the 1.5ns according to the standard.
-
-The phy-modes can still be fine tuned/overwritten by *-skew-ps
-device tree properties described in:
-Documentation/devicetree/bindings/net/micrel-ksz90x1.txt
-
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/phy/micrel.c | 109 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 109 insertions(+)
-
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 2ec19e5540bff..4fe5a814f586d 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -19,6 +19,7 @@
-  *			 ksz9477
-  */
- 
-+#include <linux/bitfield.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/phy.h>
-@@ -489,9 +490,50 @@ static int ksz9021_config_init(struct phy_device *phydev)
- 
- /* MMD Address 0x2 */
- #define MII_KSZ9031RN_CONTROL_PAD_SKEW	4
-+#define MII_KSZ9031RN_RX_CTL_M		GENMASK(7, 4)
-+#define MII_KSZ9031RN_TX_CTL_M		GENMASK(3, 0)
-+
- #define MII_KSZ9031RN_RX_DATA_PAD_SKEW	5
-+#define MII_KSZ9031RN_RXD3		GENMASK(15, 12)
-+#define MII_KSZ9031RN_RXD2		GENMASK(11, 8)
-+#define MII_KSZ9031RN_RXD1		GENMASK(7, 4)
-+#define MII_KSZ9031RN_RXD0		GENMASK(3, 0)
-+
- #define MII_KSZ9031RN_TX_DATA_PAD_SKEW	6
-+#define MII_KSZ9031RN_TXD3		GENMASK(15, 12)
-+#define MII_KSZ9031RN_TXD2		GENMASK(11, 8)
-+#define MII_KSZ9031RN_TXD1		GENMASK(7, 4)
-+#define MII_KSZ9031RN_TXD0		GENMASK(3, 0)
-+
- #define MII_KSZ9031RN_CLK_PAD_SKEW	8
-+#define MII_KSZ9031RN_GTX_CLK		GENMASK(9, 5)
-+#define MII_KSZ9031RN_RX_CLK		GENMASK(4, 0)
-+
-+/* KSZ9031 has internal RGMII_IDRX = 1.2ns and RGMII_IDTX = 0ns. To
-+ * provide different RGMII options we need to configure delay offset
-+ * for each pad relative to build in delay.
-+ */
-+/* set rx to +0.18ns and rx_clk to "No delay adjustment" value to get delays of
-+ * 1.38ns
-+ */
-+#define RX_ID				0x1a
-+#define RX_CLK_ID			0xf
-+
-+/* set rx to +0.30ns and rx_clk to -0.90ns to compensate the
-+ * internal 1.2ns delay.
-+ */
-+#define RX_ND				0xc
-+#define RX_CLK_ND			0x0
-+
-+/* set tx to -0.42ns and tx_clk to +0.96ns to get 1.38ns delay */
-+#define TX_ID				0x0
-+#define TX_CLK_ID			0x1f
-+
-+/* set tx and tx_clk to "No delay adjustment" to keep 0ns
-+ * dealy
-+ */
-+#define TX_ND				0x7
-+#define TX_CLK_ND			0xf
- 
- /* MMD Address 0x1C */
- #define MII_KSZ9031RN_EDPD		0x23
-@@ -564,6 +606,67 @@ static int ksz9031_enable_edpd(struct phy_device *phydev)
- 			     reg | MII_KSZ9031RN_EDPD_ENABLE);
- }
- 
-+static int ksz9031_config_rgmii_delay(struct phy_device *phydev)
-+{
-+	u16 rx, tx, rx_clk, tx_clk;
-+	int ret;
-+
-+	switch (phydev->interface) {
-+	case PHY_INTERFACE_MODE_RGMII:
-+		tx = TX_ND;
-+		tx_clk = TX_CLK_ND;
-+		rx = RX_ND;
-+		rx_clk = RX_CLK_ND;
-+		break;
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+		tx = TX_ID;
-+		tx_clk = TX_CLK_ID;
-+		rx = RX_ID;
-+		rx_clk = RX_CLK_ID;
-+		break;
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+		tx = TX_ND;
-+		tx_clk = TX_CLK_ND;
-+		rx = RX_ID;
-+		rx_clk = RX_CLK_ID;
-+		break;
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
-+		tx = TX_ID;
-+		tx_clk = TX_CLK_ID;
-+		rx = RX_ND;
-+		rx_clk = RX_CLK_ND;
-+		break;
-+	default:
-+		return 0;
-+	}
-+
-+	ret = phy_write_mmd(phydev, 2, MII_KSZ9031RN_CONTROL_PAD_SKEW,
-+			    FIELD_PREP(MII_KSZ9031RN_RX_CTL_M, rx) |
-+			    FIELD_PREP(MII_KSZ9031RN_TX_CTL_M, tx));
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = phy_write_mmd(phydev, 2, MII_KSZ9031RN_RX_DATA_PAD_SKEW,
-+			    FIELD_PREP(MII_KSZ9031RN_RXD3, rx) |
-+			    FIELD_PREP(MII_KSZ9031RN_RXD2, rx) |
-+			    FIELD_PREP(MII_KSZ9031RN_RXD1, rx) |
-+			    FIELD_PREP(MII_KSZ9031RN_RXD0, rx));
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = phy_write_mmd(phydev, 2, MII_KSZ9031RN_TX_DATA_PAD_SKEW,
-+			    FIELD_PREP(MII_KSZ9031RN_TXD3, tx) |
-+			    FIELD_PREP(MII_KSZ9031RN_TXD2, tx) |
-+			    FIELD_PREP(MII_KSZ9031RN_TXD1, tx) |
-+			    FIELD_PREP(MII_KSZ9031RN_TXD0, tx));
-+	if (ret < 0)
-+		return ret;
-+
-+	return phy_write_mmd(phydev, 2, MII_KSZ9031RN_CLK_PAD_SKEW,
-+			     FIELD_PREP(MII_KSZ9031RN_GTX_CLK, tx_clk) |
-+			     FIELD_PREP(MII_KSZ9031RN_RX_CLK, rx_clk));
-+}
-+
- static int ksz9031_config_init(struct phy_device *phydev)
- {
- 	const struct device *dev = &phydev->mdio.dev;
-@@ -596,6 +699,12 @@ static int ksz9031_config_init(struct phy_device *phydev)
- 	} while (!of_node && dev_walker);
- 
- 	if (of_node) {
-+		if (phy_interface_is_rgmii(phydev)) {
-+			result = ksz9031_config_rgmii_delay(phydev);
-+			if (result < 0)
-+				return result;
-+		}
-+
- 		ksz9031_of_load_skew_values(phydev, of_node,
- 				MII_KSZ9031RN_CLK_PAD_SKEW, 5,
- 				clk_skews, 2);
--- 
-2.26.0.rc2
-
+Good catch!
+Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
