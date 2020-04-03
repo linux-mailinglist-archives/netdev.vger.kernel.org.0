@@ -2,86 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BBD0F19D1AF
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 10:04:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ECF819D1CD
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 10:07:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390388AbgDCIEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 04:04:00 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:36332 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727431AbgDCID7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 04:03:59 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03383bua041820;
-        Fri, 3 Apr 2020 08:03:45 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=uVaVWvGK2rRDzlNOFOUMvxplXsbxRH2vt/0XQlDzCsY=;
- b=twbeWOniMJLadbk7nycMgbesUu2TjHH3UQD7dFhYGpMwTvQ9/9/esw2i6D2PYeCt/+rn
- YeXF1WEdUoFx8+8tpT3V8D6xU9BiTlpI8XqEhOxdMMbLFaGO7GRZBkt9pkoSnD1mlpOM
- 06/sINYAp/V+WtUCiKqAjzAQ7iTzDhTtsDuOTVBCdV+cp9RtHRrXVRPVSwWJLgcgsSO1
- By9NpKzyIUa8ly2xRYd6rndixWBm8jZtuQ+1bwixTtoC94Mhn1dqsO4DWTuTEHEyz/kK
- QKo6tW/fszw6arvGThpgrG9QtZ2jhOh7PTVla1+NJw7ls8XGUuGue86WjMCqqktjZKM0 OQ== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2130.oracle.com with ESMTP id 303cevfkbn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 03 Apr 2020 08:03:45 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03382Drn142883;
-        Fri, 3 Apr 2020 08:03:45 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3020.oracle.com with ESMTP id 302ga41tmk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 03 Apr 2020 08:03:45 +0000
-Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 03383h3E008767;
-        Fri, 3 Apr 2020 08:03:43 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 03 Apr 2020 01:03:43 -0700
-Date:   Fri, 3 Apr 2020 11:03:35 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
-Cc:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Kalle Valo <kvalo@codeaurora.org>
-Subject: Re: [PATCH 00/32] staging: wfx: rework the Tx queue
-Message-ID: <20200403080335.GU2001@kadam>
-References: <20200401110405.80282-1-Jerome.Pouiller@silabs.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200401110405.80282-1-Jerome.Pouiller@silabs.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9579 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- mlxlogscore=999 bulkscore=0 mlxscore=0 spamscore=0 adultscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004030068
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9579 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 adultscore=0
- clxscore=1015 phishscore=0 lowpriorityscore=0 spamscore=0 malwarescore=0
- suspectscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
- definitions=main-2004030068
+        id S2390446AbgDCIHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 04:07:40 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:40013 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727854AbgDCIHk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 04:07:40 -0400
+Received: by mail-pl1-f193.google.com with SMTP id h11so2412175plk.7;
+        Fri, 03 Apr 2020 01:07:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=BqsejPhEsNGTkBR/V4VHlPwRYOn9PoHXki3NwPRDLyI=;
+        b=RU6eH1p9bVt0qJ3ao/uc4k+J6TbgbVV5QCR6ftVCHnS+ODzh2STglo+CiyNPg3V25L
+         NtbMCZTLmQE1oDVk451ykXcFYPcYdWZOWozqjCVvR5fldIGkvXdKti5ce/VvrbiwlALY
+         6Vn7fWHHLCUHW+mKrc6y1alEAhTXwYd0VDsAuTyO0jmRgErN9DbH0nenwZsLkMY8H7tG
+         hb/1dPxFqAphsQdP9WKpog775HALF5pWc6sb4j7r+RpZr0itVLLmZ5+Rv2N5ouFneuO0
+         FoplwDh1cNcwEjgeqSYXkw9wdlTnLqA3KU/2ThajPfmNMLnulX47gLHEXGsBxYHuQxcf
+         QK3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=BqsejPhEsNGTkBR/V4VHlPwRYOn9PoHXki3NwPRDLyI=;
+        b=MIrq5gFfaM9DQ1CdCxWJsK6+OBgfgdmxU83xXZ6OpLp5LP8YHEBqwSs4dDVnB85fo/
+         gO1itnhw9mI4DeGcK5R+tHV+bthEmGafR1iBzA168AuaUy9aaCF0KZEV7BhS0JNnNTAA
+         uRDbBe2LvxK0oNxughEt4OLTKy9EgQbCP81vcUBV2zKZm8Q7bNI5b0/zCSqNUipM8pc5
+         7xOy2NikAaggNaY1l/0lp9QmwzlQRkXDl6yYUGHmVQJ9I+YO0VByXzDJ3Iy5FoLkPfHK
+         brnP7xUSFCSvXqu62Cf6zXrb3RQVFCplez6Wbu7JHEBKiZkErxOvbDptCgJekTZdAoFE
+         98Zg==
+X-Gm-Message-State: AGi0PubhmN/FBAyMI+9y01ePZEPcfoi6YtC/EibWUGJwfDQ0TWlyDu8l
+        RHyuNxTGJaBRyRF8w3XMJI3qsdKa
+X-Google-Smtp-Source: APiQypIYASoYJ8qshnEx4durUctoWwG5Ygup6ZLhtYh5wmDyBknPpmOEgUDOpI0eF0TURpJgNQYE9w==
+X-Received: by 2002:a17:90b:1b05:: with SMTP id nu5mr8299244pjb.110.1585901258717;
+        Fri, 03 Apr 2020 01:07:38 -0700 (PDT)
+Received: from VM_0_35_centos.localdomain ([150.109.62.251])
+        by smtp.gmail.com with ESMTPSA id 13sm5314500pfn.131.2020.04.03.01.07.36
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 03 Apr 2020 01:07:38 -0700 (PDT)
+From:   Qiujun Huang <hqjagain@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net
+Cc:     kafai@fb.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Qiujun Huang <hqjagain@gmail.com>
+Subject: [PATCH] bpf: fix a typo "inacitve" -> "inactive"
+Date:   Fri,  3 Apr 2020 16:07:34 +0800
+Message-Id: <1585901254-30377-1-git-send-email-hqjagain@gmail.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I didn't quite finish reviewing these pathches last night.  Looks good.
-You will need a check on "ssidlen" to prevent memory corruption, as
-discussed in patch 1, but that's not a bug which was introduced by this
-patchset.  None of my other comments really applied to the patchset
-itself, just to the surrounding code.
+There is a typo, fix it.
+s/inacitve/inactive
 
-Looks good.
+Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
+---
+ kernel/bpf/bpf_lru_list.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-
-regards,
-dan carpenter
+diff --git a/kernel/bpf/bpf_lru_list.h b/kernel/bpf/bpf_lru_list.h
+index f025046..6b12f06 100644
+--- a/kernel/bpf/bpf_lru_list.h
++++ b/kernel/bpf/bpf_lru_list.h
+@@ -30,7 +30,7 @@ struct bpf_lru_node {
+ struct bpf_lru_list {
+ 	struct list_head lists[NR_BPF_LRU_LIST_T];
+ 	unsigned int counts[NR_BPF_LRU_LIST_COUNT];
+-	/* The next inacitve list rotation starts from here */
++	/* The next inactive list rotation starts from here */
+ 	struct list_head *next_inactive_rotation;
+ 
+ 	raw_spinlock_t lock ____cacheline_aligned_in_smp;
+-- 
+1.8.3.1
 
