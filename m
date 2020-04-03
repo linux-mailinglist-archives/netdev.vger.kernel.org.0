@@ -2,86 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00D2319D04E
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 08:38:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF3DA19D095
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 08:56:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388520AbgDCGih (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 02:38:37 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:36819 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2387655AbgDCGih (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 02:38:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585895916;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FoY5mkBeMkeyo7y0OE/A/cmKtuN2NtQ3ZqEZt21GFCU=;
-        b=JfSrU9/hAaBZofUCjhNvHfrxGQVt0BwDeS5mRYL/gJz3nRgRskoQD53WWCSmfLLch34cDH
-        miLrxSQe+4CucaKIjwO15P1sVnLugU72DYOoPXy6dm79fFSu8IvH8oece/01MpU7QGlF7D
-        cBmCelYprpwcPmPTlo9z4mV3U79KKzY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-450-pOpQyYxoPhyAEITttS26fg-1; Fri, 03 Apr 2020 02:38:34 -0400
-X-MC-Unique: pOpQyYxoPhyAEITttS26fg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9A9298017CE;
-        Fri,  3 Apr 2020 06:38:33 +0000 (UTC)
-Received: from [10.72.13.110] (ovpn-13-110.pek2.redhat.com [10.72.13.110])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5A2B094960;
-        Fri,  3 Apr 2020 06:38:29 +0000 (UTC)
-Subject: Re: [PATCH v2] vhost: drop vring dependency on iotlb
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20200402144519.34194-1-mst@redhat.com>
- <44f9b9d3-3da2-fafe-aa45-edd574dc6484@redhat.com>
- <20200402122544-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <f811f02e-5681-33c0-f970-f60c62ff0041@redhat.com>
-Date:   Fri, 3 Apr 2020 14:38:27 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <20200402122544-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-Content-Transfer-Encoding: quoted-printable
+        id S2387655AbgDCG4E convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 3 Apr 2020 02:56:04 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:37584 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729423AbgDCG4E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 02:56:04 -0400
+Received: from marcel-macbook.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 7F820CECF9;
+        Fri,  3 Apr 2020 09:05:35 +0200 (CEST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [PATCH v3 1/1] Bluetooth: Prioritize SCO traffic
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20200323124503.v3.1.I17e2220fd0c0822c76a15ef89b882fb4cfe3fe89@changeid>
+Date:   Fri, 3 Apr 2020 08:56:01 +0200
+Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
+        ChromeOS Bluetooth Upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <7FD50BDC-A4B5-4ED9-8DAB-887039735800@holtmann.org>
+References: <20200323194507.90944-1-abhishekpandit@chromium.org>
+ <20200323124503.v3.1.I17e2220fd0c0822c76a15ef89b882fb4cfe3fe89@changeid>
+To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Abhishek,
 
-On 2020/4/3 =E4=B8=8A=E5=8D=8812:27, Michael S. Tsirkin wrote:
-> On Thu, Apr 02, 2020 at 11:01:13PM +0800, Jason Wang wrote:
->> On 2020/4/2 =E4=B8=8B=E5=8D=8810:46, Michael S. Tsirkin wrote:
->>> vringh can now be built without IOTLB.
->>> Select IOTLB directly where it's used.
->>>
->>> Signed-off-by: Michael S. Tsirkin<mst@redhat.com>
->>> ---
->>>
->>> Applies on top of my vhost tree.
->>> Changes from v1:
->>> 	VDPA_SIM needs VHOST_IOTLB
->> It looks to me the patch is identical to v1.
->>
->> Thanks
-> you are right. I squashed the description into
->      virtio/test: fix up after IOTLB changes
-> take a look at it in the vhost tree.
+> When scheduling TX packets, send all SCO/eSCO packets first, check for
+> pending SCO/eSCO packets after every ACL/LE packet and send them if any
+> are pending.  This is done to make sure that we can meet SCO deadlines
+> on slow interfaces like UART.
+> 
+> If we were to queue up multiple ACL packets without checking for a SCO
+> packet, we might miss the SCO timing. For example:
+> 
+> The time it takes to send a maximum size ACL packet (1024 bytes):
+> t = 10/8 * 1024 bytes * 8 bits/byte * 1 packet / baudrate
+>        where 10/8 is uart overhead due to start/stop bits per byte
+> 
+> Replace t = 3.75ms (SCO deadline), which gives us a baudrate of 2730666.
+> 
+> At a baudrate of 3000000, if we didn't check for SCO packets within 1024
+> bytes, we would miss the 3.75ms timing window.
+> 
+> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> ---
+> 
+> Changes in v3:
+> * Removed hci_sched_sync
+> 
+> Changes in v2:
+> * Refactor to check for SCO/eSCO after each ACL/LE packet sent
+> * Enabled SCO priority all the time and removed the sched_limit variable
+> 
+> net/bluetooth/hci_core.c | 106 +++++++++++++++++++++------------------
+> 1 file changed, 57 insertions(+), 49 deletions(-)
 
+patch has been applied to bluetooth-next tree.
 
-Looks fine.
+However I have been a bit reluctant to apply this right away. I think when this code was originally written, we only had ACL and SCO packets. The world was pretty simple. And right now we also only have two packets types (ignoring ISO packets for now), but we added LE and eSCO as separate scheduling and thus “fake” packet types.
 
-Thanks
+I have the feeling that this serialized packet processing will get us into trouble since we prioritize BR/EDR packets over LE packets and SCO over eSCO. I think we should have looked at all packets based on SO_PRIORITY and with ISO packets we have to most likely re-design this. Anyway, just something to think about.
 
+Regards
 
->
+Marcel
 
