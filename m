@@ -2,82 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7548419CECE
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 05:15:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE67A19CEDF
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 05:33:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390313AbgDCDPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 23:15:19 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:32961 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389108AbgDCDPT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 23:15:19 -0400
-Received: from [123.118.214.4] (helo=localhost.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <aaron.ma@canonical.com>)
-        id 1jKCnb-0008Mo-1M; Fri, 03 Apr 2020 03:15:15 +0000
-Subject: Re: [Intel-wired-lan] [PATCH] e1000e: bump up timeout to wait when ME
- un-configure ULP mode
-To:     Hans de Goede <hdegoede@redhat.com>, jeffrey.t.kirsher@intel.com,
-        davem@davemloft.net, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sasha.neftin@intel.com
-References: <20200323191639.48826-1-aaron.ma@canonical.com>
- <4f9f1ad0-e66a-d3c8-b152-209e9595e5d7@redhat.com>
-From:   Aaron Ma <aaron.ma@canonical.com>
-Autocrypt: addr=aaron.ma@canonical.com; prefer-encrypt=mutual; keydata=
- mQENBFffeLkBCACi4eE4dPsgWN6B9UDOVcAvb5QgU/hRG6yS0I1lGKQv4KA+bke0c5g8clbO
- 9gIlIl2bityfA9NzBsDik4Iei3AxMbFyxv9keMwcOFQBIOZF0P3f05qjxftF8P+yp9QTV4hp
- BkFzsXzWRgXN3r8hU8wqZybepF4B1C83sm2kQ5A5N0AUGbZli9i2G+/VscG9sWfLy8T7f4YW
- MjmlijCjoV6k29vsmTWQPZ7EApNpvR5BnZQPmQWzkkr0lNXlsKcyLgefQtlwg6drK4fe4wz0
- ouBIHJEiXE1LWK1hUzkCUASra4WRwKk1Mv/NLLE/aJRqEvF2ukt3uVuM77RWfl7/H/v5ABEB
- AAG0IUFhcm9uIE1hIDxhYXJvbi5tYUBjYW5vbmljYWwuY29tPokBNwQTAQgAIQUCV994uQIb
- AwULCQgHAgYVCAkKCwIEFgIDAQIeAQIXgAAKCRDNxCzQfVU6ntJ9B/9aVy0+RkLqF9QpLmw+
- LAf1m3Fd+4ZarPTerqDqkLla3ekYhbrEtlI1mYuB5f+gtrIjmcW27gacHdslKB9YwaL8B4ZB
- GJKhcrntLg4YPzYUnXZkHHTv1hMw7fBYw82cBT+EbG0Djh6Po6Ihqyr3auHhfFcp1PZH4Mtq
- 6hN5KaDZzF/go+tRF5e4bn61Nhdue7mrhFSlfkzLG2ehHWmRV+S91ksH81YDFnazK0sRINBx
- V1S8ts3WJ2f1AbgmnDlbK3c/AfI5YxnIHn/x2ZdXj1P/wn7DgZHmpMy5DMuk0gN34NLUPLA/
- cHeKoBAF8emugljiKecKBpMTLe8FrVOxbkrauQENBFffeLkBCACweKP3Wx+gK81+rOUpuQ00
- sCyKzdtMuXXJ7oL4GzYHbLfJq+F+UHpQbytVGTn3R5+Y61v41g2zTYZooaC+Hs1+ixf+buG2
- +2LZjPSELWPNzH9lsKNlCcEvu1XhyyHkBDbnFFHWlUlql3nSXMo//dOTG/XGKaEaZUxjCLUC
- 8ehLc16DJDvdXsPwWhHrCH/4k92F6qQ14QigBMsl75jDTDJMEYgRYEBT1D/bwxdIeoN1BfIG
- mYgf059RrWax4SMiJtVDSUuDOpdwoEcZ0FWesRfbFrM+k/XKiIbjMZSvLunA4FIsOdWYOob4
- Hh0rsm1G+fBLYtT+bE26OWpQ/lSn4TdhABEBAAGJAR8EGAEIAAkFAlffeLkCGwwACgkQzcQs
- 0H1VOp6p5Af/ap5EVuP1AhFdPD3pXLNrUUt72W3cuAOjXyss43qFC2YRjGfktrizsDjQU46g
- VKoD6EW9XUPgvYM+k8BJEoXDLhHWnCnMKlbHP3OImxzLRhF4kdlnLicz1zKRcessQatRpJgG
- NIiD+eFyh0CZcWBO1BB5rWikjO/idicHao2stFdaBmIeXvhT9Xp6XNFEmzOmfHps+kKpWshY
- 9LDAU0ERBNsW4bekOCa/QxfqcbZYRjrVQvya0EhrPhq0bBpzkIL/7QSBMcdv6IajTlHnLARF
- nAIofCEKeEl7+ksiRapL5Nykcbt4dldE3sQWxIybC94SZ4inENKw6I8RNpigWm0R5w==
-Message-ID: <1c0e602f-1fe7-62b1-2283-b98783782e87@canonical.com>
-Date:   Fri, 3 Apr 2020 11:15:06 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+        id S2390175AbgDCDb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 23:31:56 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:56464 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388951AbgDCDb4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 23:31:56 -0400
+Received: from [192.168.188.14] (unknown [120.132.1.226])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id DBD5940F36;
+        Fri,  3 Apr 2020 11:31:46 +0800 (CST)
+Subject: Re: [PATCH net-next] net/mlx5e: avoid check the hw_stats of
+ flow_action for FT flow
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Paul Blakey <paulb@mellanox.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        "pablo@netfilter.org" <pablo@netfilter.org>,
+        Oz Shlomo <ozsh@mellanox.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <1585464960-6204-1-git-send-email-wenxu@ucloud.cn>
+ <fd36f18360b2800b37fe6b7466b7361afd43718b.camel@mellanox.com>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <d3e0a559-3a7b-0fd4-5d1f-ccb0aea1dffd@ucloud.cn>
+Date:   Fri, 3 Apr 2020 11:31:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <4f9f1ad0-e66a-d3c8-b152-209e9595e5d7@redhat.com>
+In-Reply-To: <fd36f18360b2800b37fe6b7466b7361afd43718b.camel@mellanox.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVklVSkpNS0tLT0pIQ0JPTU5ZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MT46Txw*Fzg*HhUdHE48HSIQ
+        HxoKCUJVSlVKTkNOQ0NPTEtMSkJCVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
+        SElVSlVJSU1ZV1kIAVlBT09CTDcG
+X-HM-Tid: 0a713e1839082086kuqydbd5940f36
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jeffrey:
 
-I have received the email that you apply this patch to next-queue branch
-dev-queue.
+On 4/3/2020 10:59 AM, Saeed Mahameed wrote:
+> On Sun, 2020-03-29 at 14:56 +0800, wenxu@ucloud.cn wrote:
+>> From: wenxu <wenxu@ucloud.cn>
+>>
+>> The hw_stats in flow_action can't be supported in nftable
+>> flowtables. This check will lead the nft flowtable offload
+>> failed. So don't check the hw_stats of flow_action for FT
+>> flow.
+>>
+> This looks like a work around not a solution .. if the user requested a
+> hw_stats action that the hw can't support, no matter what the request
+> is, we should fail it even if it was for ft offloads.
+>
+> if it is not support by nftable, then the caller shouldn't ask for
+> hw_stats action in first place.
 
-But after this branch is rebased to v5.6, I can't find it.
+The action entries in nft didn't set the hw_stats and the vlaue is 0.
 
-Will you apply again?
 
-Thanks,
-Aaron
+The following function check the hw_stats should contain FLOW_ACTION_HW_STATS_DELAYED_BIT.
 
-On 4/2/20 8:31 PM, Hans de Goede wrote:
-> 
-> This fix fixes a real problem, on a popular model laptop
-> and since it just extends a timeout it is a pretty harmless
-> (no chance of regressions) fix. As such since there seems
-> to be no other solution in sight, can we please move forward
-> with this fix for now ?
+flow_action_hw_stats_check(flow_action, extack, FLOW_ACTION_HW_STATS_DELAYED_BIT)
+
+
+
+Maybe the following patch is better?
+
+
+__flow_action_hw_stats_check(const struct flow_action *action,
+                             struct netlink_ext_ack *extack,
+                             bool check_allow_bit,
+                             enum flow_action_hw_stats_bit allow_bit)
+{
+        const struct flow_action_entry *action_entry;
+
+        if (!flow_action_has_entries(action))
+                return true;
+        if (!flow_action_mixed_hw_stats_check(action, extack))
+                return false;
+        action_entry = flow_action_first_entry_get(action);
+        if (!check_allow_bit &&
+            action_entry->hw_stats != FLOW_ACTION_HW_STATS_ANY) {
+                NL_SET_ERR_MSG_MOD(extack, "Driver supports only default HW stats type \"any\"");
+                return false;
+-        } else if (check_allow_bit &&
++        } else if (check_allow_bit && action_entry->hw_stats &&
+                   !(action_entry->hw_stats & BIT(allow_bit))) {
+                NL_SET_ERR_MSG_MOD(extack, "Driver does not support selected HW stats type");
+                return false;
+        }   
+        return true;
+}
+
+
+
+
+>> Signed-off-by: wenxu <wenxu@ucloud.cn>
+>> ---
+>>  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 3 ++-
+>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+>> b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+>> index 901b5fa..4666015 100644
+>> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+>> @@ -3703,7 +3703,8 @@ static int parse_tc_fdb_actions(struct
+>> mlx5e_priv *priv,
+>>  	if (!flow_action_has_entries(flow_action))
+>>  		return -EINVAL;
+>>  
+>> -	if (!flow_action_hw_stats_check(flow_action, extack,
+>> +	if (!ft_flow &&
+>> +	    !flow_action_hw_stats_check(flow_action, extack,
+>>  					FLOW_ACTION_HW_STATS_DELAYED_BI
+>> T))
+>>  		return -EOPNOTSUPP;
+>>  
