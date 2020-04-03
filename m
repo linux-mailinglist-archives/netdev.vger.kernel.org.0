@@ -2,100 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0415119D186
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 09:53:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68FF419D196
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 09:59:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389015AbgDCHxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 03:53:35 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:58829 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387655AbgDCHxe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 03:53:34 -0400
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jKH8s-0007k2-Pp; Fri, 03 Apr 2020 09:53:30 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jKH8o-0003QX-Hj; Fri, 03 Apr 2020 09:53:26 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH v1] net: phy: micrel: kszphy_resume(): add delay after genphy_resume() before accessing PHY registers
-Date:   Fri,  3 Apr 2020 09:53:25 +0200
-Message-Id: <20200403075325.10205-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.26.0.rc2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+        id S2390228AbgDCH7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 03:59:41 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:46659 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732595AbgDCH7l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 03:59:41 -0400
+Received: by mail-pl1-f193.google.com with SMTP id s23so2389199plq.13;
+        Fri, 03 Apr 2020 00:59:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=HkFftEmd1xByJ3L+7Q66Ss8hnA6ge5noLyBAo3i2apI=;
+        b=owdPcNHLVrE6Ernuo3DIqVGM+J5Nqciv40IjY4XcWu6kUJXVDuppwYzvUm9xhzkGer
+         2RyZBP3uYHNjwRvtxkJcB/FYs3ct/0V3YBWr5k5LLix+qzWavz5paoVlgAvhoR7jJYEE
+         mvvgY0d14n8bomLWQlFCr7FyU6IUbUfBrwkw6Pvy4NMU9ZF3KLO5XyV+dBokkDkCC0ot
+         QQZIYeZEV1nseE8I+9SvwHqOryshuUpMFamfMArl1Th+4HqS//ZCJkeMwnbZUFvsZOOn
+         GwvHh7kB2LDxYOFVy29uV+XjTjBI3wXmZucdYE2l4lIuPc0E9AHMW9gg7sp6agq5FJrJ
+         dfUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=HkFftEmd1xByJ3L+7Q66Ss8hnA6ge5noLyBAo3i2apI=;
+        b=RgbUCBc2+NLLTtv8hEGMbba8mpHUZQ9V6b+0G3rmSWWgqclzpIK9tYjRSrmBFT2RAp
+         H+VOaVPckg6D7WFEw0jH6KclBu893fe6pBUVs5p2Bx1eQP1Co9TBqvXmErDZJZlT5EMO
+         Q6dIF0nuphYLIEuBeqBU3RlUwJEDDuJcJb26aGhiTyJCoW3bju47o0EVuEndFtrVeF6m
+         vwygaGGk18WFg2Q4thUiAwtKyRz9jNtuIECYN5u8kuqLs70oXMLSMFoXFJo1eAZ6wVoQ
+         4l38xZHuCyS6/+iXdKaZzYuJj+pcj5Jg3EN9v2pNnulmzeA5h218sirunAuXDXDaa5Hs
+         skqg==
+X-Gm-Message-State: AGi0PubNJILFPw1P/2XZ/J7MywEHOY10oVOVHyhQKE21R+gulcwSUw9h
+        CIa/cFfUJStUjsAaVf4+QHBCHeHn
+X-Google-Smtp-Source: APiQypJCLfL2iWxMmyuJ+LAUznxT/4OCgOffcowdkVFQSdCP3AaRC5/0SwntKetKknxf7y3Lqj4VfQ==
+X-Received: by 2002:a17:90b:1118:: with SMTP id gi24mr7409859pjb.99.1585900780339;
+        Fri, 03 Apr 2020 00:59:40 -0700 (PDT)
+Received: from localhost ([43.224.245.180])
+        by smtp.gmail.com with ESMTPSA id x27sm5263837pff.200.2020.04.03.00.59.39
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 03 Apr 2020 00:59:39 -0700 (PDT)
+From:   Geliang Tang <geliangtang@gmail.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
+        mptcp@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] mptcp: move pr_fmt defining to protocol.h
+Date:   Fri,  3 Apr 2020 15:57:25 +0800
+Message-Id: <34c83a5fe561739c7b85a3c4959eb44c3155d075.1585899578.git.geliangtang@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After the power-down bit is cleared, the chip internally triggers a
-global reset. According to the KSZ9031 documentation, we have to wait at
-least 1ms for the reset to finish.
+Some of the mptcp logs didn't print out the format string "MPTCP":
 
-If the chip is accessed during reset, read will return 0xffff, while
-write will be ignored. Depending on the system performance and MDIO bus
-speed, we may or may not run in to this issue.
+[  129.185774] DSS
+[  129.185774] data_fin=0 dsn64=1 use_map=1 ack64=1 use_ack=1
+[  129.185774] data_ack=5481534886531492085
+[  129.185775] data_seq=15725204003114694615 subflow_seq=1425409 data_len=5216
+[  129.185776] subflow=0000000093526a92 fully established=1 seq=0:0 remaining=28
+[  129.185776] MPTCP: msk=00000000d5a704a6 ssk=00000000b5aabc31 data_avail=0 skb=0000000088f05424
+[  129.185777] MPTCP: seq=15725204003114694615 is64=1 ssn=1425409 data_len=5216 data_fin=0
+[  129.185777] MPTCP: msk=00000000d5a704a6 ssk=00000000b5aabc31 status=0
+[  129.185778] MPTCP: msk ack_seq=da3b25b9a233c2c7 subflow ack_seq=da3b25b9a233c2c7
+[  129.185778] MPTCP: msk=00000000d5a704a6 ssk=00000000b5aabc31 data_avail=1 skb=000000000caed2cc
+[  129.185779] subflow=0000000093526a92 fully established=1 seq=0:0 remaining=28
 
-This bug was discovered on an iMX6QP system with KSZ9031 PHY and
-attached PHY interrupt line. If IRQ was used, the link status update was
-lost. In polling mode, the link status update was always correct.
+So this patch moves the pr_fmt defining from protocol.c to protocol.h, which
+is included by all the C files. Then we can get the same format string
+"MPTCP" in all mptcp logs like this:
 
-The investigation showed, that during a read-modify-write access, the
-read returned 0xffff (while the chip was still in reset) and
-corresponding write hit the chip _after_ reset and triggered (due to the
-0xffff) another reset in an undocumented bit (register 0x1f, bit 1),
-resulting in the next write being lost due to the new reset cycle.
+[  141.854787] MPTCP: DSS
+[  141.854788] MPTCP: data_fin=0 dsn64=1 use_map=1 ack64=1 use_ack=1
+[  141.854788] MPTCP: data_ack=18028325517710311871
+[  141.854788] MPTCP: data_seq=6163976859259356786 subflow_seq=3309569 data_len=8192
+[  141.854789] MPTCP: msk=000000005847a66a ssk=0000000022469903 data_avail=0 skb=00000000dd95efc3
+[  141.854789] MPTCP: seq=6163976859259356786 is64=1 ssn=3309569 data_len=8192 data_fin=0
+[  141.854790] MPTCP: msk=000000005847a66a ssk=0000000022469903 status=0
+[  141.854790] MPTCP: msk ack_seq=558ad84b9be1d162 subflow ack_seq=558ad84b9be1d162
+[  141.854791] MPTCP: msk=000000005847a66a ssk=0000000022469903 data_avail=1 skb=000000000b8926f6
+[  141.854791] MPTCP: subflow=00000000e4e4579c fully established=1 seq=0:0 remaining=28
+[  141.854792] MPTCP: subflow=00000000e4e4579c fully established=1 seq=0:dcdf2f3b remaining=28
 
-This patch fixes the issue by adding a 1...2 ms sleep after the
-genphy_resume().
-
-Fixes: 836384d2501d ("net: phy: micrel: Add specific suspend")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: Geliang Tang <geliangtang@gmail.com>
 ---
- drivers/net/phy/micrel.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ net/mptcp/protocol.c | 2 --
+ net/mptcp/protocol.h | 2 ++
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 2ec19e5540bff..05d20343b8161 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -25,6 +25,7 @@
- #include <linux/micrel_phy.h>
- #include <linux/of.h>
- #include <linux/clk.h>
-+#include <linux/delay.h>
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 72f3176dc924..cc86137cd04f 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -4,8 +4,6 @@
+  * Copyright (c) 2017 - 2019, Intel Corporation.
+  */
  
- /* Operation Mode Strap Override */
- #define MII_KSZPHY_OMSO				0x16
-@@ -952,6 +953,12 @@ static int kszphy_resume(struct phy_device *phydev)
+-#define pr_fmt(fmt) "MPTCP: " fmt
+-
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/netdevice.h>
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 67448002a2d7..3eff041eeccf 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -7,6 +7,8 @@
+ #ifndef __MPTCP_PROTOCOL_H
+ #define __MPTCP_PROTOCOL_H
  
- 	genphy_resume(phydev);
- 
-+	/* After switching from power-down to normal mode, an internal global
-+	 * reset is automatically generated. Wait a minimum of 1 ms before
-+	 * read/write access to the PHY registers.
-+	 */
-+	usleep_range(1000, 2000);
++#define pr_fmt(fmt) "MPTCP: " fmt
 +
- 	ret = kszphy_config_reset(phydev);
- 	if (ret)
- 		return ret;
+ #include <linux/random.h>
+ #include <net/tcp.h>
+ #include <net/inet_connection_sock.h>
 -- 
-2.26.0.rc2
+2.17.1
 
