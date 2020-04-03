@@ -2,98 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3DE319D710
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 15:00:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CDB819D725
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 15:06:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390910AbgDCNAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 09:00:43 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:33197 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2390805AbgDCNAm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 09:00:42 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 7FD325C03AE;
-        Fri,  3 Apr 2020 09:00:41 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Fri, 03 Apr 2020 09:00:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=3RxEj2Lv1A7TjjUjOh+/y4F/Vhw2l0yzg8UakgCoVd4=; b=RuaGPKZH
-        u2L1rj6PTpi6DnKRIspEI21WCsRQUsG2HCxxruLhC0yNRVkE3WTVhRKy6sOoetBU
-        68TYYkCbnvQg6NFqWJR+vziuKkuikIhWvsZacFln9JCS67tPm3azT8QtjD7OdCt3
-        NGkI6UeQcYIodVtbr1Cs5dlZD0lBY8Xj9R/gNmpJy2452SUxg8PZ7HW9YEisRxWC
-        iEhseKtFm6OaPTXDkRozp7JXo6UJv4gPymu9J9T1fWUIbFfdzY6yVw1OYMeBDSTs
-        GcT0ZuEy2poSzOggQ+gQg340RNKH39L3HzjnTHWO1hb4l+v4+3ZlfjrkShj5TSxT
-        3CrMKP4k5dPk1A==
-X-ME-Sender: <xms:eTOHXs0xwb6lQFO_Oc40r4SNYKJzBb8BzFIIK0WDkElYhRWeONkQ_Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrtdeigdeitdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
-    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucfkphepjeelrddukedurddufedvrdduledunecuvehluhhsthgvrh
-    fuihiivgepudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgt
-    hhdrohhrgh
-X-ME-Proxy: <xmx:eTOHXllP5rlHUOVYDjE_a7t0WijOv6mJXqVi_5ekw_At-N3HoRw2xQ>
-    <xmx:eTOHXtS0W88K5QRQ8N8apRCImSgmo4ZA7ZKYbbQFAHmlAshsNnUSyw>
-    <xmx:eTOHXnqKNZnohgICNxVhXZ-BJ8zIi1S9aVOnd2iVGKpgvsg8NbZrUw>
-    <xmx:eTOHXppcQmaZhc2nl7YFWmljyVzpusawwM8xQyclYj0HkmZM3FW27g>
-Received: from splinter.mtl.com (bzq-79-181-132-191.red.bezeqint.net [79.181.132.191])
-        by mail.messagingengine.com (Postfix) with ESMTPA id D5C2B3280063;
-        Fri,  3 Apr 2020 09:00:39 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, petrm@mellanox.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net 2/2] mlxsw: spectrum_flower: Do not stop at FLOW_ACTION_VLAN_MANGLE
-Date:   Fri,  3 Apr 2020 16:00:10 +0300
-Message-Id: <20200403130010.2471710-3-idosch@idosch.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200403130010.2471710-1-idosch@idosch.org>
-References: <20200403130010.2471710-1-idosch@idosch.org>
+        id S2390787AbgDCNGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 09:06:01 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:46482 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727998AbgDCNGA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Apr 2020 09:06:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=kfWSDIagbtyE24zBzSd4Wi6BEjjkOuCZzFGWsd96K8M=; b=tpibQXHxHXhTwILqRgiYnGoWXY
+        2I8M/hc36uFRuM61QLxUpnpYQRMdQIVg7x9+UdgzNxr2JJEIENJc3Irs3UWdHWHi4eZ9dOxsEhv9E
+        j92HXm26NX6dQNEra4C0t9c7x6JbLbl58ldc7Cq2ouUZiIJEXnCxRF+CLyO6Y973Hca8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jKM16-000naW-ON; Fri, 03 Apr 2020 15:05:48 +0200
+Date:   Fri, 3 Apr 2020 15:05:48 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        David Jander <david@protonic.nl>,
+        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH v1] net: phy: micrel: kszphy_resume(): add delay after
+ genphy_resume() before accessing PHY registers
+Message-ID: <20200403130548.GD114745@lunn.ch>
+References: <20200403075325.10205-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200403075325.10205-1-o.rempel@pengutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Machata <petrm@mellanox.com>
+On Fri, Apr 03, 2020 at 09:53:25AM +0200, Oleksij Rempel wrote:
+> After the power-down bit is cleared, the chip internally triggers a
+> global reset. According to the KSZ9031 documentation, we have to wait at
+> least 1ms for the reset to finish.
+> 
+> If the chip is accessed during reset, read will return 0xffff, while
+> write will be ignored. Depending on the system performance and MDIO bus
+> speed, we may or may not run in to this issue.
+> 
+> This bug was discovered on an iMX6QP system with KSZ9031 PHY and
+> attached PHY interrupt line. If IRQ was used, the link status update was
+> lost. In polling mode, the link status update was always correct.
+> 
+> The investigation showed, that during a read-modify-write access, the
+> read returned 0xffff (while the chip was still in reset) and
+> corresponding write hit the chip _after_ reset and triggered (due to the
+> 0xffff) another reset in an undocumented bit (register 0x1f, bit 1),
+> resulting in the next write being lost due to the new reset cycle.
+> 
+> This patch fixes the issue by adding a 1...2 ms sleep after the
+> genphy_resume().
+> 
+> Fixes: 836384d2501d ("net: phy: micrel: Add specific suspend")
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-The handler for FLOW_ACTION_VLAN_MANGLE ends by returning whatever the
-lower-level function that it calls returns. If there are more actions lined
-up after this action, those are never offloaded. Fix by only bailing out
-when the called function returns an error.
+Hi Oleksij
 
-Fixes: a150201a70da ("mlxsw: spectrum: Add support for vlan modify TC action")
-Signed-off-by: Petr Machata <petrm@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+Please in future set the subject to [PATCH net v1] to indicate this is
+a fix.
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-index 69f77615c816..51117a5a6bbf 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-@@ -150,9 +150,12 @@ static int mlxsw_sp_flower_parse_actions(struct mlxsw_sp *mlxsw_sp,
- 			u8 prio = act->vlan.prio;
- 			u16 vid = act->vlan.vid;
- 
--			return mlxsw_sp_acl_rulei_act_vlan(mlxsw_sp, rulei,
--							   act->id, vid,
--							   proto, prio, extack);
-+			err = mlxsw_sp_acl_rulei_act_vlan(mlxsw_sp, rulei,
-+							  act->id, vid,
-+							  proto, prio, extack);
-+			if (err)
-+				return err;
-+			break;
- 			}
- 		case FLOW_ACTION_PRIORITY:
- 			err = mlxsw_sp_acl_rulei_act_priority(mlxsw_sp, rulei,
--- 
-2.24.1
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
+    Andrew
