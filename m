@@ -2,51 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D226619CDF5
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 02:55:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E62F119CDF9
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 02:55:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390399AbgDCAzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Apr 2020 20:55:04 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:53608 "EHLO
+        id S2391192AbgDCAzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Apr 2020 20:55:50 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:53618 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390138AbgDCAzD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 20:55:03 -0400
+        with ESMTP id S2390138AbgDCAzu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Apr 2020 20:55:50 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 598D1127401B7;
-        Thu,  2 Apr 2020 17:55:03 -0700 (PDT)
-Date:   Thu, 02 Apr 2020 17:55:02 -0700 (PDT)
-Message-Id: <20200402.175502.2304965794103611918.davem@davemloft.net>
-To:     code@timstallard.me.uk
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: icmp6: add icmp_errors_use_inbound_ifaddr
- sysctl for IPv6
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1291D127401BE;
+        Thu,  2 Apr 2020 17:55:50 -0700 (PDT)
+Date:   Thu, 02 Apr 2020 17:55:49 -0700 (PDT)
+Message-Id: <20200402.175549.2287578271928617904.davem@davemloft.net>
+To:     liuhangbin@gmail.com
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com
+Subject: Re: [PATCHv3 net-next] neigh: support smaller retrans_time settting
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200331231706.14551-1-code@timstallard.me.uk>
-References: <20200331231706.14551-1-code@timstallard.me.uk>
+In-Reply-To: <20200401064620.493-1-liuhangbin@gmail.com>
+References: <20200401020749.2608-1-liuhangbin@gmail.com>
+        <20200401064620.493-1-liuhangbin@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 02 Apr 2020 17:55:03 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 02 Apr 2020 17:55:50 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tim Stallard <code@timstallard.me.uk>
-Date: Wed,  1 Apr 2020 00:17:06 +0100
+From: Hangbin Liu <liuhangbin@gmail.com>
+Date: Wed,  1 Apr 2020 14:46:20 +0800
 
-> In practice, this causes issues with IPv6 path MTU discovery in networks
-> where unroutable linknets are used, and packets from these linknets are
-> discarded by upstream providers' BCP38 filters, dropping all Packet
-> Too Big errors. Traceroutes are also broken in this scenario.
+> Currently, we limited the retrans_time to be greater than HZ/2. i.e.
+> setting retrans_time less than 500ms will not work. This makes the user
+> unable to achieve a more accurate control for bonding arp fast failover.
+> 
+> Update the sanity check to HZ/100, which is 10ms, to let users have more
+> ability on the retrans_time control.
+> 
+> v3: sync the behavior with IPv6 and update all the timer handler
+> v2: use HZ instead of hard code number
+> 
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 
-But now traceroute6 is going to output confusing output by default
-again in the scenerios described in the Fixes: commit.
+Applied, I like the consistency between ipv4 and ipv6 now.
 
-Why don't we see if, explicitly, a source address was configured on
-the route rather than us using a default saddr?  And in that case go
-back to the old behavior.
+Thanks.
