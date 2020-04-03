@@ -2,75 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E48EF19DF7F
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 22:40:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6D5519DF9C
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 22:40:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728268AbgDCUkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 16:40:15 -0400
-Received: from mail-vs1-f68.google.com ([209.85.217.68]:47003 "EHLO
-        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727835AbgDCUkO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 16:40:14 -0400
-Received: by mail-vs1-f68.google.com with SMTP id z125so5777039vsb.13;
-        Fri, 03 Apr 2020 13:40:12 -0700 (PDT)
+        id S1728392AbgDCUkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 16:40:47 -0400
+Received: from mail-vs1-f44.google.com ([209.85.217.44]:41945 "EHLO
+        mail-vs1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727909AbgDCUkr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 16:40:47 -0400
+Received: by mail-vs1-f44.google.com with SMTP id a63so5812737vsa.8;
+        Fri, 03 Apr 2020 13:40:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=aU7in0y9BBjodw0Jcy97EWu7DWSSdjklHIeGhajuoe8=;
-        b=FnzgDiZkmEks9QV5qNJdwepxGsDmh2ltTjeMFWtjk5lW2uGWvWnShwd2zryuWN3cH2
-         ZEt8YroRvIFDlG4UFXhrLfaLvnCnvDpw5SrsBFImA9KSQKCrBJXgjC4KkUqvrOKLNIrQ
-         exQqe3vCANHqcY48jwLxq1T+322Mv026okkccUKE0+Rf5myrxRtrI8Zi1SM6vs/KZyRh
-         IcYBf9Oop9RsrAq06unHYITxpoJ+1puqqUnsqOWNm9q3sIs/nuedVtLvw8IoTk1Rf3jP
-         TXoyMMsfelaG9hu3FMMOe3QIMq9kZPLDNSoLpEjHKRJhJtgaAU2vsjwsO9F7x2QkoIlF
-         o+kA==
+        bh=1ZSHTEuE2TrCB0Hc3gLckkl/Eg9IsjGuQDv+RGlo1/w=;
+        b=C+CEymTiNTUponn2pCwneJYUaFITPvMHm1nEKdVxJP2jAXG0YIPvbApgCBtXsH+0Bn
+         048d8omQenhIyLdIph6iMDxprxF6bvbhJmIB7X5X5FF1uST4mhariHIKEt6Y2V/57UTD
+         J6iwU19OPQrAtUuwsmq1kXc6bLUhVslh8uHJ0kmQaR0cp40ngUKiXED0+EB3V+rQUpCt
+         dyuCot2FCKAO/+xXxvwl+a046lc3oF4xD9uPzKW6mux/1hoBm9HX6jd6ZgrMg6ZzIjCb
+         j8Sw/KuwRMu/Upm+h9v8iFWHmD9li7Zla/mFiEUEXNhyLfsKmtPnS61tv6RCV3pqHZ3m
+         ccVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=aU7in0y9BBjodw0Jcy97EWu7DWSSdjklHIeGhajuoe8=;
-        b=Y1T+ooy8i866AReAbPrhxGIEYDiIDmHsxwlsUCr4uMJuFIRpMjHFOBhPWwqWSQXCm1
-         AKtKfqTUviFFp82LbBNuRqS/MEZyTYJgLFvqT9FHKMQbS4siCWOJPsvvEBNfW3OaV3Fz
-         8QemOTV4NzuaijxfNuW2qaWqGffwEY2+3gWTaLjlf/n28jkjNZN4Hp29q+xaNHBQGXZT
-         auqKHId+2z/hCa7BIpD2AgMkXoMuU7dfHi/WYV35XAxydSzAU8+EkOff6xzn7GvPTC3C
-         pur8ifg61CbfpdphZCL8DovBL3Z8XS13O58+jxonsCHV4X5WqALHaAxZGvzJLuyyWn4m
-         tgRA==
-X-Gm-Message-State: AGi0PubBp2icgSuh5hq/p7MAdBW9eGcC9X2jt8k6Y9xMalx1zKPu/YzO
-        KgNH+9Z7b9MjUfR2ixTyuMt0Y7eV8uQUxi4BfoA=
-X-Google-Smtp-Source: APiQypJtEEJ24LDkPfbMqV/I8G9PYRRN632AThBkR7BRD0GqlIgcT9brE8Hyu2E2/+Gb5OMbdOepkrJOVmznugmemf0=
-X-Received: by 2002:a67:3201:: with SMTP id y1mr8421775vsy.54.1585946412298;
- Fri, 03 Apr 2020 13:40:12 -0700 (PDT)
+        bh=1ZSHTEuE2TrCB0Hc3gLckkl/Eg9IsjGuQDv+RGlo1/w=;
+        b=R94MbBfB6qhsgC9KrO1eEiJnAUqFC58UOd6GC8p8wUZiGbx/VP9xDrhq0gkAhq+p4p
+         Jg4rvJDoooHF2fQsQQ7/m5H8f/Kw5yWwz7zRTBavvQXlp8moEFtS++V2JanvsNNFivwr
+         EZE8eYsmMpA4rJo+eaKx1p/6dlT3VEeXUrPyoi96S1xBbgfJq2CKo4QXX/THMXvD2uaL
+         lCOKqPYIn2FuRBNkfRzJDY6/q2n90B+fcjLRc+BlfUd+cH+neRC4XIMx/nTyhSrH5leM
+         Xy8AqsvoDbMFwsXfD327s3Sup+Wmw/OBiMAXKCHDZcVgiCo1sd+ikfAueiC9Q1RQlDkf
+         rYGQ==
+X-Gm-Message-State: AGi0PuZQbnPUdJ1dVMTQ/v4YQ4sHl7gaZx+trQEloL+Dw6OFTkIerxXK
+        PVsZlQ0s2BQ6IR97okTAE0itHenfy3p9PTuvYWc=
+X-Google-Smtp-Source: APiQypJmFQzqaxv4JqwPh3mMnsoWxysKOsU7abBIjTl/yTkm+hlnCxXIHoHPvfemQ0AyBxfRhn3V6ZjYAqMkAng16tw=
+X-Received: by 2002:a67:c189:: with SMTP id h9mr8340051vsj.91.1585946443459;
+ Fri, 03 Apr 2020 13:40:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <000000000000590f6b05a1c05d15@google.com>
-In-Reply-To: <000000000000590f6b05a1c05d15@google.com>
+References: <0000000000006ac55b05a1c05d72@google.com>
+In-Reply-To: <0000000000006ac55b05a1c05d72@google.com>
 From:   Qiujun Huang <anenbupt@gmail.com>
-Date:   Sat, 4 Apr 2020 04:39:58 +0800
-Message-ID: <CADG63jDxb5zkvQwNn=M1ONCsEVZxZBUo8SzN86U01w4tQ5F4Rg@mail.gmail.com>
-Subject: Re: KASAN: use-after-free Read in htc_connect_service
-To:     syzbot <syzbot+9505af1ae303dabdc646@syzkaller.appspotmail.com>
+Date:   Sat, 4 Apr 2020 04:40:30 +0800
+Message-ID: <CADG63jDvVnX=_5oJSEqrsTUsCuYPj6Grz9dEFLvWpa1F=oa1Lw@mail.gmail.com>
+Subject: Re: KASAN: use-after-free Write in ath9k_htc_rx_msg
+To:     syzbot <syzbot+b1c61e5f11be5782f192@syzkaller.appspotmail.com>
 Cc:     Andrey Konovalov <andreyknvl@google.com>,
         ath9k-devel@qca.qualcomm.com, davem@davemloft.net,
         kvalo@codeaurora.org, LKML <linux-kernel@vger.kernel.org>,
         USB list <linux-usb@vger.kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: multipart/mixed; boundary="00000000000089d16705a268ec6e"
+Content-Type: multipart/mixed; boundary="000000000000657f7f05a268eed5"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000089d16705a268ec6e
+--000000000000657f7f05a268eed5
 Content-Type: text/plain; charset="UTF-8"
 
 #syz test: https://github.com/google/kasan.git usb-fuzzer
 
---00000000000089d16705a268ec6e
+--000000000000657f7f05a268eed5
 Content-Type: application/octet-stream; name="ath9k_040401.patch"
 Content-Disposition: attachment; filename="ath9k_040401.patch"
 Content-Transfer-Encoding: base64
-Content-ID: <f_k8knjbaa0>
-X-Attachment-Id: f_k8knjbaa0
+Content-ID: <f_k8knjzl40>
+X-Attachment-Id: f_k8knjzl40
 
 ZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL2F0aC9hdGg5ay9oaWZfdXNiLmMgYi9k
 cml2ZXJzL25ldC93aXJlbGVzcy9hdGgvYXRoOWsvaGlmX3VzYi5jCmluZGV4IGRkMGMzMjM3OTM3
@@ -227,4 +227,4 @@ aHRjX3ByaXYgKnByaXYpOwordm9pZCBhdGg5a19zdG9wX3dtaShzdHJ1Y3QgYXRoOWtfaHRjX3By
 aXYgKnByaXYpOwordm9pZCBhdGg5a19kZXN0b3lfd21pKHN0cnVjdCBhdGg5a19odGNfcHJpdiAq
 cHJpdik7CiAKICNkZWZpbmUgV01JX0NNRChfd21pX2NtZCkJCQkJCQlcCiAJZG8gewkJCQkJCQkJ
 XAo=
---00000000000089d16705a268ec6e--
+--000000000000657f7f05a268eed5--
