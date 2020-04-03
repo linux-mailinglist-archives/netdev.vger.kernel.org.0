@@ -2,130 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D841919D9DB
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 17:13:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33F6219DA35
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 17:32:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404166AbgDCPNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 11:13:53 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:43005 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404130AbgDCPNx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 11:13:53 -0400
-Received: by mail-lj1-f193.google.com with SMTP id q19so7258732ljp.9
-        for <netdev@vger.kernel.org>; Fri, 03 Apr 2020 08:13:51 -0700 (PDT)
+        id S2404352AbgDCPcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 11:32:20 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:43383 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404212AbgDCPcU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 11:32:20 -0400
+Received: by mail-qt1-f193.google.com with SMTP id a5so6718726qtw.10;
+        Fri, 03 Apr 2020 08:32:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DSB/s+jkbmzG+872wg2P5RsXw25dw+k96VoLRNM+xIk=;
-        b=NnJYHcrEmoB8qNXKZ3slYqn5PMbvp36PsylL6He+9olAxu//fFL0pW4XIUIvD8cMrC
-         Y6yJUUkqD6a9+uUEcC8JRoRzvnPwwrxRCwu5cm7XKxdFF0A/t/nmcgJKXjWTTn4txEwc
-         Zq2lnpBvjQjY0ThdGLJ6pNVSru7mBNvrD2SWMqXXZmWfZHKPmHXm4eNcwAw8ElBj/jT3
-         cNeyUrYOt0SLmx7WShfQxs1JwZ5G+ZKdS5bWF08a2A6lsdVXeADyUkvgW+k9aHrbsLSu
-         +O5s8Z35IVJrBBcJYxOOQJRSxgQpvskRgy5RHSR0ueUphiBEl+Tl3s1X/15Em29ndTdH
-         X6ww==
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=y7To2c0IPcP+NtVX1KTJaYfy+X+WHPG5TXUQtYJZhYg=;
+        b=jgurJFufNjK8kU2P7yjDWN1ftchUwklQ+yP83wv8ISI/Oo1/tIcSRTj1zMPFOYzWZW
+         WFU3Ckt1haCQbbVS9/7VT5HigWCXBMSOthcvYfRkN7eE9LI47BPxVy0JIo/GM+SQ7zBA
+         4PrHyF1vTPpkVHWHhCLKPdHLallAUPhZb50VCwgIbYngvHEub9k1yyD3DiMoQzWDBfXa
+         MUgQRDDH215ocTDvm0zw2XTzk5UPoEGrrDs6xz0Zwk11JxFwoCn7TeT3a/9jvKGrdxsa
+         XRXJ+R3agLrDDNPAJ99z04uKCxlEwRUtl52Y3AYp+RdT+FmhP6P2HZ/YVNljDJZUhHGG
+         NbjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DSB/s+jkbmzG+872wg2P5RsXw25dw+k96VoLRNM+xIk=;
-        b=fwf4vPTFycJfpqBN/kqDua5uLLPYirXEkRRJ/vTcg9pn2DN0TeIitMWeAV0fdiH6kf
-         jrSeNrfUMgu0nvTDOGNV4IO/GkMCYlpIxer32kD469L/u/inO/B0/lBy2+a6AIfupsTk
-         48L/ZLwJp/Q/YJVJt82ikiUpNww+8zFMrEHAXJ8rFqesFYp4eXXU5zC27/52R+8Dp6Tu
-         S7+R1RZ4E1iBGozKotbcL9YVBSQ64l32dKZxqbE7A7Q5zb2j6ikngazL0neefuIaCsh0
-         rsRMdO5rL5CTQL2pGP7TePyjLQZMLQUPA6fzg3DH9VacnVwNbh4MUkEq+nSlbpGlV86m
-         pcng==
-X-Gm-Message-State: AGi0PualmWqpEgyvaKfFt3cxOtTFpHciQLfBAPVpaRqUXnyFLrX0DG0/
-        t2M42qEYUmvFOU1OzRqsx6tYCvuljzwYTtYBQTvXMQ==
-X-Google-Smtp-Source: APiQypLtONB4lTDIuQGKUYhKGtjTQQxubEMFFX2sH19d1M6w/MHAofyXnuV7Dw13bDwXeScnw2+wB73K329En9qbzbE=
-X-Received: by 2002:a2e:9084:: with SMTP id l4mr5287406ljg.277.1585926830857;
- Fri, 03 Apr 2020 08:13:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200403150236.74232-1-linux@roeck-us.net>
-In-Reply-To: <20200403150236.74232-1-linux@roeck-us.net>
-From:   Alain Michaud <alainmichaud@google.com>
-Date:   Fri, 3 Apr 2020 11:13:39 -0400
-Message-ID: <CALWDO_WK2Vcq+92isabfsn8+=0UPoexF4pxbnEcJJPGas62-yw@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: Simplify / fix return values from tk_request
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=y7To2c0IPcP+NtVX1KTJaYfy+X+WHPG5TXUQtYJZhYg=;
+        b=ZHEox8gjrlFY8yH9ZeEsKGYjr3E+CN6U8oSqOW8/bhG/TRv5Z0LTgkwm4lptLOxEm/
+         zE3lMX+BLpVc3BxtgI+xqnLWR6HtK8crKyLaR+ZKaJrkdfxOOReyyNawWoBmespGBZf+
+         MWhtpmRZwv5MJScjqa7R0H2OZr9NKd3NUCjiA+Xz6AwRkRQ42H+m+Dap3taIhWmPEnU/
+         Ba5eBhHYlfQoxatbQac0GMVFB/04NNtzMnyqcPXM27268yQlMchk4zMMJO2LymgCne3l
+         Qw5xGyQV+H5JmU2dCPFHxXFkMdZXmCaoXuCI0SRMikmxq7ZZRrREvU6E01yECQwROotb
+         2XxA==
+X-Gm-Message-State: AGi0PuauYMz1j0YA2+vSZP2b4W8m3IiXSW2A0PoGLD8NlT5y4VZxe+ac
+        aBKCHsSsV00uHsZY4TRTsxHu1vevY1AaRQ==
+X-Google-Smtp-Source: APiQypKiAYoUEbEGh58Gu2fYUDs6qwPuJ+EPNz6A9/uiOzNGa/Hr39a0CbUn2+a7sgbx7CbbdegyzA==
+X-Received: by 2002:ac8:4e56:: with SMTP id e22mr3449753qtw.185.1585927937980;
+        Fri, 03 Apr 2020 08:32:17 -0700 (PDT)
+Received: from quaco.ghostprotocols.net ([179.97.37.151])
+        by smtp.gmail.com with ESMTPSA id o186sm6489184qke.39.2020.04.03.08.32.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Apr 2020 08:32:16 -0700 (PDT)
+From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id D3A57409A3; Fri,  3 Apr 2020 12:32:14 -0300 (-03)
+Date:   Fri, 3 Apr 2020 12:32:14 -0300
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
+        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        BlueZ <linux-bluetooth@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Sonny Sasaka <sonnysasaka@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+        David Miller <davem@redhat.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Song Liu <song@kernel.org>
+Subject: Re: [PATCHv5 00/15] bpf: Add trampoline and dispatcher to
+ /proc/kallsyms
+Message-ID: <20200403153214.GA25386@kernel.org>
+References: <20200312195610.346362-1-jolsa@kernel.org>
+ <20200313023927.ejv6aubwzjht55cf@ast-mbp>
+ <20200313083151.GA386262@krava>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200313083151.GA386262@krava>
+X-Url:  http://acmel.wordpress.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Guenter/Marcel,
+Em Fri, Mar 13, 2020 at 09:31:51AM +0100, Jiri Olsa escreveu:
+> On Thu, Mar 12, 2020 at 07:39:27PM -0700, Alexei Starovoitov wrote:
+> > On Thu, Mar 12, 2020 at 08:55:55PM +0100, Jiri Olsa wrote:
+> > > hi,
+> > > this patchset adds trampoline and dispatcher objects
+> > > to be visible in /proc/kallsyms. The last patch also
+> > > adds sorting for all bpf objects in /proc/kallsyms.
+> > 
+> > I removed second sentence from the cover letter and
+> > applied the first 12 patches.
+> > Thanks a lot!
+> > 
+> > > For perf tool to properly display trampoline/dispatcher you need
+> > > also Arnaldo's perf/urgent branch changes. I merged everything
+> > > into following branch:
+> > > 
+> > >   git://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git bpf/kallsyms
+> > 
+> > It sounds that you folks want to land the last three patches via Arnaldo's tree
+> > to avoid conflicts?
+> > Right?
+> 
+> right, thanks
 
+Thanks, applied those 3 patches, will try and test this all when I get
+my branch merged,
 
-On Fri, Apr 3, 2020 at 11:03 AM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> Some static checker run by 0day reports a variableScope warning.
->
-> net/bluetooth/smp.c:870:6: warning:
->         The scope of the variable 'err' can be reduced. [variableScope]
->
-> There is no need for two separate variables holding return values.
-> Stick with the existing variable. While at it, don't pre-initialize
-> 'ret' because it is set in each code path.
->
-> tk_request() is supposed to return a negative error code on errors,
-> not a bluetooth return code. The calling code converts the return
-> value to SMP_UNSPECIFIED if needed.
->
-> Fixes: 92516cd97fd4 ("Bluetooth: Always request for user confirmation for Just Works")
-> Cc: Sonny Sasaka <sonnysasaka@chromium.org>
-> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-> ---
->  net/bluetooth/smp.c | 9 ++++-----
->  1 file changed, 4 insertions(+), 5 deletions(-)
->
-> diff --git a/net/bluetooth/smp.c b/net/bluetooth/smp.c
-> index d0b695ee49f6..30e8626dd553 100644
-> --- a/net/bluetooth/smp.c
-> +++ b/net/bluetooth/smp.c
-> @@ -854,8 +854,7 @@ static int tk_request(struct l2cap_conn *conn, u8 remote_oob, u8 auth,
->         struct l2cap_chan *chan = conn->smp;
->         struct smp_chan *smp = chan->data;
->         u32 passkey = 0;
-> -       int ret = 0;
-> -       int err;
-> +       int ret;
->
->         /* Initialize key for JUST WORKS */
->         memset(smp->tk, 0, sizeof(smp->tk));
-> @@ -887,12 +886,12 @@ static int tk_request(struct l2cap_conn *conn, u8 remote_oob, u8 auth,
->         /* If Just Works, Continue with Zero TK and ask user-space for
->          * confirmation */
->         if (smp->method == JUST_WORKS) {
-> -               err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
-> +               ret = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
->                                                 hcon->type,
->                                                 hcon->dst_type,
->                                                 passkey, 1);
-> -               if (err)
-> -                       return SMP_UNSPECIFIED;
-> +               if (ret)
-> +                       return ret;
-I think there may be some miss match between expected types of error
-codes here.  The SMP error code type seems to be expected throughout
-this code base, so this change would propagate a potential negative
-value while the rest of the SMP protocol expects strictly positive
-error codes.
-
->                 set_bit(SMP_FLAG_WAIT_USER, &smp->flags);
->                 return 0;
->         }
-> --
-> 2.17.1
->
-
-Thanks,
-Alain
+- Arnaldo
