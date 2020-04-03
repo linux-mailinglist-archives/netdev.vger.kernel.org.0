@@ -2,114 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B956819D940
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 16:36:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12A7E19D942
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 16:37:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391007AbgDCOgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 10:36:35 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:34584 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728066AbgDCOgf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 10:36:35 -0400
-Received: by mail-ed1-f66.google.com with SMTP id o1so9550603edv.1
-        for <netdev@vger.kernel.org>; Fri, 03 Apr 2020 07:36:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dLYxFS/lHjikx1GU+rKGyo4p+aUj5IVG7njebZp2DQs=;
-        b=lOP6qq+H65qWwsABM6qfyhlqAg38kxGYUQPTZ+NU1Yws+fhsBy5I8gUS70g9lheJ2E
-         pEiDbjBrwYxfJaCG6H9RKFUfKsNIUTeccsYdIAuD+TJuMqoiYFfrTZXT+TndJb7czo46
-         QkABe+rhq83Qiq4PefNKDwgn+zjmSqT/2PwjUWjPz7AwIC/xX1qqX7bxdTIiQWXTrB99
-         Og3Bm9oyVDhcmwzwaOC8/Aot0JJWxoBZlj/FmtKKPIoWaQGfNaORyzJeuYkjhPBHyILp
-         U9YsNoIat1tmjLOF1RJ5jYAdcyyJycyyyeAvci39ZW4tQ2GJ0MDTQP43aJhaiNI9R1ra
-         6yWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dLYxFS/lHjikx1GU+rKGyo4p+aUj5IVG7njebZp2DQs=;
-        b=uMDLwqsKWgpS9DBsDcJVomQSRCTarG6vr5KNvl8da3K70HeqKC7GL5PGZUDnpFAMvm
-         SAU7tw2DGhZbIRc2IW6VwyUBCxReYj762RvQfKnNNNzrjBJyPox72bWl0OhiqLykdAXB
-         m0vMQxmxeUGrLN6hpRQq4ZSxsn5Y6YSHvrLZzBTSAd16ylGzTNMlEA7OUmCSSnX0eVd0
-         cwfEgb0eNpLs12H+GlkzsMofjaH6UCc8PLzJu86ZQSOsnQqJwJx0AFRcr/+YU73JDJKe
-         GdPZy4fvFxrqlL+XCuwiDCqwTKBwJn+RvcdMxN9MPx2eYzhleP3ZxJ6OnX5BbezHltt8
-         /8qw==
-X-Gm-Message-State: AGi0PuYovJHMdxnUYUOdqDwxyPu4al4ag0ij/ggIsBWEhR2XJXBZE/yy
-        n1cYIifvJS1W58kYIoNJybRucWQPIRYUDy7kepc=
-X-Google-Smtp-Source: APiQypJpi+kL5/olhpdNmVxYp8klgvhKR2cKoIDQ/zjzYUoj5vbxjGpSPiMtdrpyEMhILgGXzeqS4BhDZiJODSvRJn0=
-X-Received: by 2002:aa7:d602:: with SMTP id c2mr8219172edr.118.1585924592910;
- Fri, 03 Apr 2020 07:36:32 -0700 (PDT)
+        id S2391042AbgDCOhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 10:37:21 -0400
+Received: from forwardcorp1j.mail.yandex.net ([5.45.199.163]:60718 "EHLO
+        forwardcorp1j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2390796AbgDCOhV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 10:37:21 -0400
+Received: from mxbackcorp1o.mail.yandex.net (mxbackcorp1o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::301])
+        by forwardcorp1j.mail.yandex.net (Yandex) with ESMTP id 55A332E151A;
+        Fri,  3 Apr 2020 17:37:18 +0300 (MSK)
+Received: from iva8-88b7aa9dc799.qloud-c.yandex.net (iva8-88b7aa9dc799.qloud-c.yandex.net [2a02:6b8:c0c:77a0:0:640:88b7:aa9d])
+        by mxbackcorp1o.mail.yandex.net (mxbackcorp/Yandex) with ESMTP id 5Ty4DonBRu-bHiSwSOI;
+        Fri, 03 Apr 2020 17:37:18 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
+        t=1585924638; bh=rZPKF6obiJ/krD77h4NfxBs/gQ6MdBgNCuwQmy0+SWU=;
+        h=In-Reply-To:Message-ID:From:Date:References:To:Subject:Cc;
+        b=Bi7CnL9+JFSdwQ7EcUVkkhRpD2i2IdQXd0BcCfjJsFqxyEALDQ7lW5MnXX+LRXBh6
+         qx4CRVbfV5SdaYxpmSh1nqIMimnKICDPWUz+q2icQ/ZieWYbpb7l6sRNPQ0f2rOj3b
+         ve+YHvl6czWpRy/Hld+/U7WxNsNN0AUww4jSXlhM=
+Authentication-Results: mxbackcorp1o.mail.yandex.net; dkim=pass header.i=@yandex-team.ru
+Received: from unknown (unknown [2a02:6b8:b080:8910::1:6])
+        by iva8-88b7aa9dc799.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id YfNmyTPKzN-bHWmcnfE;
+        Fri, 03 Apr 2020 17:37:17 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+Subject: Re: [PATCH v3 net] inet_diag: add cgroup id attribute
+To:     Tejun Heo <tj@kernel.org>, Dmitry Yakunin <zeil@yandex-team.ru>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        cgroups@vger.kernel.org, bpf@vger.kernel.org
+References: <20200403095627.GA85072@yandex-team.ru>
+ <20200403133817.GW162390@mtj.duckdns.org>
+From:   Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
+Message-ID: <c28be8aa-d91c-3827-7e99-f92ad05ef6f1@yandex-team.ru>
+Date:   Fri, 3 Apr 2020 17:37:17 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-References: <alpine.DEB.2.21.2004031542220.2694@hadrien>
-In-Reply-To: <alpine.DEB.2.21.2004031542220.2694@hadrien>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 3 Apr 2020 17:36:21 +0300
-Message-ID: <CA+h21hrP-0Tdpqje-xbPHmh+v+zndsFyxaEfadMwdAHY+9QK+g@mail.gmail.com>
-Subject: Re: question about drivers/net/dsa/sja1105/sja1105_main.c
-To:     Julia Lawall <julia.lawall@inria.fr>
-Cc:     netdev <netdev@vger.kernel.org>, Joe Perches <joe@perches.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200403133817.GW162390@mtj.duckdns.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-CA
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Julia,
+On 03/04/2020 16.38, Tejun Heo wrote:
+> On Fri, Apr 03, 2020 at 12:56:27PM +0300, Dmitry Yakunin wrote:
+>> This patch adds cgroup v2 ID to common inet diag message attributes.
+>> Cgroup v2 ID is kernfs ID (ino or ino+gen). This attribute allows filter
+>> inet diag output by cgroup ID obtained by name_to_handle_at() syscall.
+>> When net_cls or net_prio cgroup is activated this ID is equal to 1 (root
+>> cgroup ID) for newly created sockets.
+>>
+>> Some notes about this ID:
+>>
+>> 1) gets initialized in socket() syscall
+>> 2) incoming socket gets ID from listening socket
+>>     (not during accept() syscall)
+> 
+> How would this work with things like inetd? Would it make sense to associate the
+> socket on the first actual send/recv?
 
-On Fri, 3 Apr 2020 at 16:46, Julia Lawall <julia.lawall@inria.fr> wrote:
->
-> Hello,
->
-> The function sja1105_static_config_reload in sja1105_main.c contains the
-> code:
->
->                 if (!an_enabled) {
->                         int speed = SPEED_UNKNOWN;
->
->                         if (bmcr & BMCR_SPEED1000)
->                                 speed = SPEED_1000;
->                         else if (bmcr & BMCR_SPEED100)
->                                 speed = SPEED_100;
->                         else if (bmcr & BMCR_SPEED10)
->                                 speed = SPEED_10;
->
->                         sja1105_sgmii_pcs_force_speed(priv, speed);
->                 }
->
-> The last test bmcr & BMCR_SPEED10 does not look correct, because according
-> to include/uapi/linux/mii.h, BMCR_SPEED10 is 0.  What should be done
-> instead?
->
-> thanks,
-> julia
+First send/recv seems too intrusive.
+Setsockopt to change association to current cgroup (or by id) seems more reasonable.
 
-Thanks for pointing out, you raise a good point.
-Correct usage would be:
+Systemd variant of inetd handles sockets as separate units and probably
+creates own cgroups for them.
 
-include/uapi/linux/mii.h:
-#define BMCR_SPEED_MASK 0x2040
-
-drivers/net/dsa/sja1105/sja1105_main.c:
-                         int speed = SPEED_UNKNOWN;
-
-                         if (bmcr & BMCR_SPEED_MASK == BMCR_SPEED1000)
-                                 speed = SPEED_1000;
-                         else if (bmcr & BMCR_SPEED_MASK == BMCR_SPEED100)
-                                 speed = SPEED_100;
-                         else if (bmcr & BMCR_SPEED_MASK == BMCR_SPEED10)
-                                 speed = SPEED_10;
-
-but the BMCR_SPEED_MASK doesn't exist, it looks like. I believe that
-is because drivers (or the PHY library) don't typically need to read
-the speed from the MII_BMCR register, they just need to write it. If
-the PHY library maintainers think there is any value in defining
-BMCR_SPEED_MASK as part of the UAPI, we can do that. Otherwise, the
-definition can be restricted to drivers/net/dsa/sja1105/sja1105.h.
-
-Thanks,
--Vladimir
+> 
+> Thanks.
+> 
