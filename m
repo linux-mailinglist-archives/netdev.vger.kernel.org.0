@@ -2,106 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4EC219D294
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 10:46:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 041FD19D2C4
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 10:56:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390550AbgDCIqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 04:46:43 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:34716 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389876AbgDCIqm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 04:46:42 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0338gkWC034758;
-        Fri, 3 Apr 2020 08:46:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=Y+AET8seX8nUTZtaySySO6dBKVo+n069jzDC0TqS70E=;
- b=aD9/vhMSvr1C0Kz4MwF28gntBMT7zrGIcQKq20E3JeVbvbz7MP+wNSlu/hxx8hJAe+R+
- eDAFDeehbf8zyoc5g20ogFRkfmdbBgRgA/s7Q99atUMK0CvAqY/WAYLBTwPbRXF6ofFQ
- CR4pjHq+mehouvAIUQwr3EOiClDQ1lB9zSY3Av03B76nSwoJVuFFGwgxL6N+ajnFk9kj
- KFO0MxC6WOraOzjy/FAlxKGvVDO7DGrvQmo6OKOvnZsmDgJJjMhk2UKsNmgi5Jm4wsrr
- Ic9pabNXnRc/HXR0HKgSwxAelIAwKgCjZpzfp3EwPCsbI5U4w1+ocujINAIyx5z3myMo 1Q== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2120.oracle.com with ESMTP id 303aqj09u3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 03 Apr 2020 08:46:35 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0338hAXs146992;
-        Fri, 3 Apr 2020 08:46:34 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3020.oracle.com with ESMTP id 304sjs57xp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 03 Apr 2020 08:46:34 +0000
-Received: from abhmp0004.oracle.com (abhmp0004.oracle.com [141.146.116.10])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0338kWXX014173;
-        Fri, 3 Apr 2020 08:46:32 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 03 Apr 2020 01:46:32 -0700
-Date:   Fri, 3 Apr 2020 11:46:24 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Jiri Pirko <jiri@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] mlxsw: spectrum_trap: fix unintention integer
- overflow on left shift
-Message-ID: <20200403084624.GA2001@kadam>
-References: <20200402144851.565983-1-colin.king@canonical.com>
+        id S2390433AbgDCI4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 04:56:00 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:23640 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727856AbgDCI4A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 04:56:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585904158;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UUO2hpzrUb4O8Yw0h3ZZcshPOPBcVYEzfp73urzKT10=;
+        b=iLvsTEEgKWX4TaeGph6n6HkiGZCtmJVJkyKinIIkVXNXULe/st5wgFUidCOane8dZgQ5J3
+        koZYHpT4j2DPEIH53/FlpPGOsxpATiqka1NZByBLF/BCluRcfRTGmLrpEV5fkdQsY3KF2i
+        nP3yDHWdtaFLkdjzbh0VTrzRvlD6xCM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-41-HneTfMmuPouWBW5cJc_5hQ-1; Fri, 03 Apr 2020 04:55:55 -0400
+X-MC-Unique: HneTfMmuPouWBW5cJc_5hQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 82876477;
+        Fri,  3 Apr 2020 08:55:52 +0000 (UTC)
+Received: from krava (unknown [10.40.194.72])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 36ED35DA76;
+        Fri,  3 Apr 2020 08:55:35 +0000 (UTC)
+Date:   Fri, 3 Apr 2020 10:55:29 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Florent Revest <revest@chromium.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>, bgregg@netflix.com,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [RFC 0/3] bpf: Add d_path helper
+Message-ID: <20200403085529.GD2784502@krava>
+References: <20200401110907.2669564-1-jolsa@kernel.org>
+ <5968eda68bfec39387c34ffaf0ecc3ed5d8afd6f.camel@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200402144851.565983-1-colin.king@canonical.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9579 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 adultscore=0 mlxscore=0
- malwarescore=0 phishscore=0 suspectscore=0 mlxlogscore=999 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
- definitions=main-2004030074
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9579 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 phishscore=0 clxscore=1011
- malwarescore=0 impostorscore=0 mlxlogscore=999 spamscore=0 mlxscore=0
- priorityscore=1501 lowpriorityscore=0 adultscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
- definitions=main-2004030074
+In-Reply-To: <5968eda68bfec39387c34ffaf0ecc3ed5d8afd6f.camel@chromium.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 02, 2020 at 03:48:51PM +0100, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
+On Thu, Apr 02, 2020 at 04:03:00PM +0200, Florent Revest wrote:
+> On Wed, 2020-04-01 at 13:09 +0200, Jiri Olsa wrote:
+> > hi,
+> > adding d_path helper to return full path for 'path' object.
+> > 
+> > I originally added and used 'file_path' helper, which did the same,
+> > but used 'struct file' object. Then realized that file_path is just
+> > a wrapper for d_path, so we'd cover more calling sites if we add
+> > d_path helper and allowed resolving BTF object within another object,
+> > so we could call d_path also with file pointer, like:
+> > 
+> >   bpf_d_path(&file->f_path, buf, size);
+> > 
+> > This feature is mainly to be able to add dpath (filepath originally)
+> > function to bpftrace, which seems to work nicely now, like:
+> > 
+> >   # bpftrace -e 'kretfunc:fget { printf("%s\n", dpath(args->ret-
+> > >f_path));  }' 
+> > 
+> > I'm not completely sure this is all safe and bullet proof and there's
+> > no other way to do this, hence RFC post.
+> > 
+> > I'd be happy also with file_path function, but I thought it'd be
+> > a shame not to try to add d_path with the verifier change.
+> > I'm open to any suggestions ;-)
 > 
-> Shifting the integer value 1 is evaluated using 32-bit
-> arithmetic and then used in an expression that expects a 64-bit
-> value, so there is potentially an integer overflow. Fix this
-> by using the BIT_ULL macro to perform the shift and avoid the
-> overflow.
+> First of all I want to mention that we are really interested in this
+> feature so thanks a lot for bringing it up Jiri! I have experimented
+> with similar BPF helpers in the past few months so I hope my input can
+> be helpful! :)
 > 
-> Addresses-Coverity: ("Unintentional integer overflow")
-> Fixes: 13f2e64b94ea ("mlxsw: spectrum_trap: Add devlink-trap policer support")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->  drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-> index 9096ffd89e50..fbf714d027d8 100644
-> --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-> +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-> @@ -643,7 +643,7 @@ static int mlxsw_sp_trap_policer_bs(u64 burst, u8 *p_burst_size,
->  {
->  	int bs = fls64(burst) - 1;
->  
-> -	if (burst != (1 << bs)) {
-> +	if (burst != (BIT_ULL(bs))) {
+> One of our use-cases is to gather information about execution events,
+> including a bunch of paths (such as the executable command, the
+> resolved executable file path and the current-working-directory) and
+> then output them to Perf.
+> Each of those paths can be up to PATH_MAX(one page) long so we would
+> pre-allocate a data structure with a few identifiers (to later
+> reassemble the event from userspace) and a page of data and then we
+> would output it using bpf_perf_event_output. However, with three mostly
+> empty pages per event, we would quickly fill up the ring buffer and
+> loose many events.
+> This might be a bit out-of-scope at this moment but one of the
+> teachings we got from playing with such a helper is that we would also
+> need a helper for outputting strings to Perf, pre-pended with a header
+> buffer.
 
-Please delete the extra parentheses.
+I think bpftrace uses fixed size as well at some point,
+but very small one, which is still sufficent for tools usage,
+but we can always send only data with the size of the path
 
-	if (burst != BIT_ULL(bs)) {
-
-regards,
-dan carpenter
+thanks for info
+jirka
 
