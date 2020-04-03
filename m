@@ -2,78 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B239E19D157
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 09:37:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59A7E19D15F
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 09:38:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388907AbgDCHha (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 03:37:30 -0400
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:39897 "EHLO mx1.molgen.mpg.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730759AbgDCHha (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Apr 2020 03:37:30 -0400
-Received: from [192.168.1.6] (x590ea470.dyn.telefonica.de [89.14.164.112])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id C112C206442DE;
-        Fri,  3 Apr 2020 09:37:26 +0200 (CEST)
-Subject: Re: [Intel-wired-lan] [PATCH] e1000e: bump up timeout to wait when ME
- un-configure ULP mode
-To:     Aaron Ma <aaron.ma@canonical.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        davem@davemloft.net, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sasha.neftin@intel.com
-References: <20200323191639.48826-1-aaron.ma@canonical.com>
- <4f9f1ad0-e66a-d3c8-b152-209e9595e5d7@redhat.com>
- <1c0e602f-1fe7-62b1-2283-b98783782e87@canonical.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-Message-ID: <2d7c1890-9cd8-8134-af12-5c55cd7e1a8e@molgen.mpg.de>
-Date:   Fri, 3 Apr 2020 09:37:26 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-In-Reply-To: <1c0e602f-1fe7-62b1-2283-b98783782e87@canonical.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S2390362AbgDCHip (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 03:38:45 -0400
+Received: from conuserg-12.nifty.com ([210.131.2.79]:30544 "EHLO
+        conuserg-12.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390267AbgDCHip (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 03:38:45 -0400
+Received: from localhost.localdomain (p14092-ipngnfx01kyoto.kyoto.ocn.ne.jp [153.142.97.92]) (authenticated)
+        by conuserg-12.nifty.com with ESMTP id 0337bnR8018752;
+        Fri, 3 Apr 2020 16:37:49 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 0337bnR8018752
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1585899470;
+        bh=kd64Egtcv7z+eNdTYSdkDz1izi5aQNUps8DVTK9PF4s=;
+        h=From:To:Cc:Subject:Date:From;
+        b=0anGhdcPT5b4H1i35chsiMv+k2P947lf69UkgT33PdrESwTDs1uDWHfzUYrFlXReZ
+         2CVNN9d6cPtDKFl4FAHFdNXanLYzJhac87krTrDce1RNEz3RGY9PlRvP8Pw/jLvGNW
+         /9LLTPjPbNoIuPE8fXraN4q4pJ7FrKqHVs9UG+dwRzSbGLCVDboKP5pQuwrcwIzdlU
+         C1tFIofg9AqvEXZNv8E5A2e1aNY9Umzwr1WM11O5ZDO5KRLMIfJP2s866/tHtiInM6
+         zPJvV0RXfswm2c6P3OhNyzdSa25/J++x3l37j+S2EqbsSWhmeHQt95xT7nIUa5a/kQ
+         7S7zQ8atPJhFw==
+X-Nifty-SrcIP: [153.142.97.92]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH] net: can: remove "WITH Linux-syscall-note" from SPDX tag of C files
+Date:   Fri,  3 Apr 2020 16:37:41 +0900
+Message-Id: <20200403073741.18352-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Linux folks,
+The "WITH Linux-syscall-note" exception is intended for UAPI headers.
 
+See LICENSES/exceptions/Linux-syscall-note
 
-Am 03.04.20 um 05:15 schrieb Aaron Ma:
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
 
-> I have received the email that you apply this patch to next-queue branch
-> dev-queue.
-> 
-> But after this branch is rebased to v5.6, I can't find it.
-> 
-> Will you apply again?
+ net/can/bcm.c  | 2 +-
+ net/can/gw.c   | 2 +-
+ net/can/proc.c | 2 +-
+ net/can/raw.c  | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-I really urge you to write more elaborate commit messages.
+diff --git a/net/can/bcm.c b/net/can/bcm.c
+index c96fa0f33db3..d94b20933339 100644
+--- a/net/can/bcm.c
++++ b/net/can/bcm.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
++// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
+ /*
+  * bcm.c - Broadcast Manager to filter/send (cyclic) CAN content
+  *
+diff --git a/net/can/gw.c b/net/can/gw.c
+index 65d60c93af29..49b4e3d91ad6 100644
+--- a/net/can/gw.c
++++ b/net/can/gw.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
++// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
+ /* gw.c - CAN frame Gateway/Router/Bridge with netlink interface
+  *
+  * Copyright (c) 2019 Volkswagen Group Electronic Research
+diff --git a/net/can/proc.c b/net/can/proc.c
+index e6881bfc3ed1..a4eb06c9eb70 100644
+--- a/net/can/proc.c
++++ b/net/can/proc.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
++// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
+ /*
+  * proc.c - procfs support for Protocol family CAN core module
+  *
+diff --git a/net/can/raw.c b/net/can/raw.c
+index 59c039d73c6d..ab104cc18562 100644
+--- a/net/can/raw.c
++++ b/net/can/raw.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
++// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
+ /* raw.c - Raw sockets for protocol family CAN
+  *
+  * Copyright (c) 2002-2007 Volkswagen Group Electronic Research
+-- 
+2.17.1
 
-The exact error is not listed. The known regressed devices are not 
-listed, so possible testers cannot easily test or affected people cannot 
-find it, when searching the Linux git history.
-
-How did you find out, that ME takes more than two seconds?
-
-Also, it’s not clear, what effect increasing the timeout has. Does the 
-whole resume process take longer or just getting the Ethernet device 
-back up?
-
-Lastly, in case of the timeout, an error message should be printed, so 
-people with even more broken ME devices, get a clue.
-
-Without this information, how can anybody know, if this is the right fix 
-and distributions, if it should be backported?
-
-
-Kind regards,
-
-Paul
