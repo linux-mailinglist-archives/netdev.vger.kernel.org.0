@@ -2,27 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 613C119DFBA
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 22:42:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17A9519DFBB
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 22:42:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728183AbgDCUmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 16:42:11 -0400
-Received: from balrog.mythic-beasts.com ([46.235.227.24]:50607 "EHLO
+        id S1728108AbgDCUmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 16:42:43 -0400
+Received: from balrog.mythic-beasts.com ([46.235.227.24]:38157 "EHLO
         balrog.mythic-beasts.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726368AbgDCUmL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 16:42:11 -0400
-X-Greylist: delayed 1064 seconds by postgrey-1.27 at vger.kernel.org; Fri, 03 Apr 2020 16:42:10 EDT
-Received: from [2001:678:634:203:cf83:32c6:10b8:3403] (port=48100 helo=phosphorus.lan.house.timstallard.me.uk)
+        with ESMTP id S1726368AbgDCUmn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 16:42:43 -0400
+Received: from [2001:678:634:203:cf83:32c6:10b8:3403] (port=49362 helo=phosphorus.lan.house.timstallard.me.uk)
         by balrog.mythic-beasts.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92.3)
         (envelope-from <code@timstallard.me.uk>)
-        id 1jKSrZ-0001xT-Dy; Fri, 03 Apr 2020 21:24:25 +0100
+        id 1jKStp-0003As-S2; Fri, 03 Apr 2020 21:26:46 +0100
 From:   Tim Stallard <code@timstallard.me.uk>
 To:     netdev@vger.kernel.org
 Cc:     Tim Stallard <code@timstallard.me.uk>
-Subject: [PATCH net] net: icmp6: do not select saddr from iif when route has prefsrc set
-Date:   Fri,  3 Apr 2020 21:22:57 +0100
-Message-Id: <20200403202257.1167-1-code@timstallard.me.uk>
+Subject: [PATCH net] net: ipv6: do not consider routes via gateways for anycast address check
+Date:   Fri,  3 Apr 2020 21:26:21 +0100
+Message-Id: <20200403202621.1657-1-code@timstallard.me.uk>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -33,20 +32,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since commit fac6fce9bdb5 ("net: icmp6: provide input address for
-traceroute6") ICMPv6 errors have source addresses from the ingress
-interface. However, this overrides when source address selection is
-influenced by setting preferred source addresses on routes.
+The behaviour for what is considered an anycast address changed in
+commit 45e4fd26683c ("ipv6: Only create RTF_CACHE routes after
+encountering pmtu exception"). This now considers the first
+address in a subnet where there is a route via a gateway
+to be an anycast address.
 
-This can result in ICMP errors being lost to upstream BCP38 filters
-when the wrong source addresses are used, breaking path MTU discovery
-and traceroute.
+This breaks path MTU discovery and traceroutes when a host in a
+remote network uses the address at the start of a prefix
+(eg 2600:: advertised as 2600::/48 in the DFZ) as ICMP errors
+will not be sent to anycast addresses.
 
-This patch sets the modified source address selection to only take place
-when the route used has no prefsrc set.
+This patch excludes any routes with a gateway, or via point to
+point links, like the behaviour previously from
+rt6_is_gw_or_nonexthop in net/ipv6/route.c.
 
-It can be tested with:
-
+This can be tested with:
 ip link add v1 type veth peer name v2
 ip netns add test
 ip netns exec test ip link set lo up
@@ -54,76 +55,39 @@ ip link set v2 netns test
 ip link set v1 up
 ip netns exec test ip link set v2 up
 ip addr add 2001:db8::1/64 dev v1 nodad
-ip addr add 2001:db8::3 dev v1 nodad
+ip addr add 2001:db8:100:: dev lo nodad
 ip netns exec test ip addr add 2001:db8::2/64 dev v2 nodad
 ip netns exec test ip route add unreachable 2001:db8:1::1
-ip netns exec test ip addr add 2001:db8:100::1 dev lo
-ip netns exec test ip route add 2001:db8::1 dev v2 src 2001:db8:100::1
-ip route add 2001:db8:1000::1 via 2001:db8::2
-traceroute6 -s 2001:db8::1 2001:db8:1000::1
-traceroute6 -s 2001:db8::3 2001:db8:1000::1
+ip netns exec test ip route add 2001:db8:100::/64 via 2001:db8::1
+ip netns exec test sysctl net.ipv6.conf.all.forwarding=1
+ip route add 2001:db8:1::1 via 2001:db8::2
+ping -I 2001:db8::1 2001:db8:1::1 -c1
+ping -I 2001:db8:100:: 2001:db8:1::1 -c1
+ip addr delete 2001:db8:100:: dev lo
 ip netns delete test
 
-Output before:
-$ traceroute6 -s 2001:db8::1 2001:db8:1000::1
-traceroute to 2001:db8:1000::1 (2001:db8:1000::1), 30 hops max, 80 byte packets
- 1  2001:db8::2 (2001:db8::2)  0.843 ms !N  0.396 ms !N  0.257 ms !N
-$ traceroute6 -s 2001:db8::3 2001:db8:1000::1
-traceroute to 2001:db8:1000::1 (2001:db8:1000::1), 30 hops max, 80 byte packets
- 1  2001:db8::2 (2001:db8::2)  0.772 ms !N  0.257 ms !N  0.357 ms !N
+Currently the first ping will get back a destination unreachable ICMP
+error, but the second will never get a response, with "icmp6_send:
+acast source" logged. After this patch, both get destination
+unreachable ICMP replies.
 
-After:
-$ traceroute6 -s 2001:db8::1 2001:db8:1000::1
-traceroute to 2001:db8:1000::1 (2001:db8:1000::1), 30 hops max, 80 byte packets
- 1  2001:db8:100::1 (2001:db8:100::1)  8.885 ms !N  0.310 ms !N  0.174 ms !N
-$ traceroute6 -s 2001:db8::3 2001:db8:1000::1
-traceroute to 2001:db8:1000::1 (2001:db8:1000::1), 30 hops max, 80 byte packets
- 1  2001:db8::2 (2001:db8::2)  1.403 ms !N  0.205 ms !N  0.313 ms !N
-
-Fixes: fac6fce9bdb5 ("net: icmp6: provide input address for traceroute6")
+Fixes: 45e4fd26683c ("ipv6: Only create RTF_CACHE routes after encountering pmtu exception")
 Signed-off-by: Tim Stallard <code@timstallard.me.uk>
 ---
- net/ipv6/icmp.c | 21 ++++++++++++++++++++-
- 1 file changed, 20 insertions(+), 1 deletion(-)
+ include/net/ip6_route.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
-index 2688f3e82165..fc5000370030 100644
---- a/net/ipv6/icmp.c
-+++ b/net/ipv6/icmp.c
-@@ -229,6 +229,25 @@ static bool icmpv6_xrlim_allow(struct sock *sk, u8 type,
- 	return res;
- }
+diff --git a/include/net/ip6_route.h b/include/net/ip6_route.h
+index f7543c095b33..9947eb1e9eb6 100644
+--- a/include/net/ip6_route.h
++++ b/include/net/ip6_route.h
+@@ -254,6 +254,7 @@ static inline bool ipv6_anycast_destination(const struct dst_entry *dst,
  
-+static bool icmpv6_rt_has_prefsrc(struct sock *sk, u8 type,
-+				  struct flowi6 *fl6)
-+{
-+	struct net *net = sock_net(sk);
-+	struct dst_entry *dst;
-+	bool res = false;
-+
-+	dst = ip6_route_output(net, sk, fl6);
-+	if (!dst->error) {
-+		struct rt6_info *rt = (struct rt6_info *)dst;
-+		struct in6_addr prefsrc;
-+
-+		rt6_get_prefsrc(rt, &prefsrc);
-+		res = !ipv6_addr_any(&prefsrc);
-+	}
-+	dst_release(dst);
-+	return res;
-+}
-+
- /*
-  *	an inline helper for the "simple" if statement below
-  *	checks if parameter problem report is caused by an
-@@ -527,7 +546,7 @@ static void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
- 		saddr = force_saddr;
- 	if (saddr) {
- 		fl6.saddr = *saddr;
--	} else {
-+	} else if (!icmpv6_rt_has_prefsrc(sk, type, &fl6)) {
- 		/* select a more meaningful saddr from input if */
- 		struct net_device *in_netdev;
+ 	return rt->rt6i_flags & RTF_ANYCAST ||
+ 		(rt->rt6i_dst.plen < 127 &&
++		 !(rt->rt6i_flags & (RTF_GATEWAY | RTF_NONEXTHOP)) &&
+ 		 ipv6_addr_equal(&rt->rt6i_dst.addr, daddr));
+ }
  
 -- 
 2.20.1
