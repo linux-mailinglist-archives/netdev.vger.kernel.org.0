@@ -2,118 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 524C719D93B
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 16:36:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B956819D940
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 16:36:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391039AbgDCOfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 10:35:55 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.51]:33286 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728066AbgDCOfy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 10:35:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1585924552;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=xWGcb/l7SldX2juZaR8V+bjOtkYI2pMNM28oAI3XPqQ=;
-        b=MRrfXOOieZKawrtFR0unAIALIKSs47Y1EX+ozjaxrNMMmk0hlCUq4ByhKJjUQax9ro
-        23xObzVb/fgppbdD+wZYHC9xTGqc1/1YCsAGNt73D78bvPvHQ0EZ88Q7tSwo+t2tJQBZ
-        lzRCyELT9yoTlNep1LtnolKx6YXdOGCZFhLgvun2a+5CR+AX8xul5Bv7EKI3r3+yhW9F
-        VGwR4J8DAEIynobufzjB0QU78i05OqQPIKsbkPK3BTpedMgq2O4zoHWtnH8f8nW5MuX/
-        grWhnl/zQvDqgSLO+2HU6csWb3fUYh+me0MsQzUF+0Pf/AJUV8CgRVTqFuFvNPJ/nlhs
-        Op8Q==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMJV8h5mUrT"
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.50.177]
-        by smtp.strato.de (RZmta 46.2.1 DYNA|AUTH)
-        with ESMTPSA id D07898w33EZZORH
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Fri, 3 Apr 2020 16:35:35 +0200 (CEST)
-Subject: Re: [PATCH] net: can: remove "WITH Linux-syscall-note" from SPDX tag
- of C files
-To:     Masahiro Yamada <masahiroy@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20200403073741.18352-1-masahiroy@kernel.org>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <f45febfa-a19a-0d76-d545-6427e5f1ce1e@hartkopp.net>
-Date:   Fri, 3 Apr 2020 16:35:30 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S2391007AbgDCOgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 10:36:35 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:34584 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728066AbgDCOgf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 10:36:35 -0400
+Received: by mail-ed1-f66.google.com with SMTP id o1so9550603edv.1
+        for <netdev@vger.kernel.org>; Fri, 03 Apr 2020 07:36:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dLYxFS/lHjikx1GU+rKGyo4p+aUj5IVG7njebZp2DQs=;
+        b=lOP6qq+H65qWwsABM6qfyhlqAg38kxGYUQPTZ+NU1Yws+fhsBy5I8gUS70g9lheJ2E
+         pEiDbjBrwYxfJaCG6H9RKFUfKsNIUTeccsYdIAuD+TJuMqoiYFfrTZXT+TndJb7czo46
+         QkABe+rhq83Qiq4PefNKDwgn+zjmSqT/2PwjUWjPz7AwIC/xX1qqX7bxdTIiQWXTrB99
+         Og3Bm9oyVDhcmwzwaOC8/Aot0JJWxoBZlj/FmtKKPIoWaQGfNaORyzJeuYkjhPBHyILp
+         U9YsNoIat1tmjLOF1RJ5jYAdcyyJycyyyeAvci39ZW4tQ2GJ0MDTQP43aJhaiNI9R1ra
+         6yWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dLYxFS/lHjikx1GU+rKGyo4p+aUj5IVG7njebZp2DQs=;
+        b=uMDLwqsKWgpS9DBsDcJVomQSRCTarG6vr5KNvl8da3K70HeqKC7GL5PGZUDnpFAMvm
+         SAU7tw2DGhZbIRc2IW6VwyUBCxReYj762RvQfKnNNNzrjBJyPox72bWl0OhiqLykdAXB
+         m0vMQxmxeUGrLN6hpRQq4ZSxsn5Y6YSHvrLZzBTSAd16ylGzTNMlEA7OUmCSSnX0eVd0
+         cwfEgb0eNpLs12H+GlkzsMofjaH6UCc8PLzJu86ZQSOsnQqJwJx0AFRcr/+YU73JDJKe
+         GdPZy4fvFxrqlL+XCuwiDCqwTKBwJn+RvcdMxN9MPx2eYzhleP3ZxJ6OnX5BbezHltt8
+         /8qw==
+X-Gm-Message-State: AGi0PuYovJHMdxnUYUOdqDwxyPu4al4ag0ij/ggIsBWEhR2XJXBZE/yy
+        n1cYIifvJS1W58kYIoNJybRucWQPIRYUDy7kepc=
+X-Google-Smtp-Source: APiQypJpi+kL5/olhpdNmVxYp8klgvhKR2cKoIDQ/zjzYUoj5vbxjGpSPiMtdrpyEMhILgGXzeqS4BhDZiJODSvRJn0=
+X-Received: by 2002:aa7:d602:: with SMTP id c2mr8219172edr.118.1585924592910;
+ Fri, 03 Apr 2020 07:36:32 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200403073741.18352-1-masahiroy@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <alpine.DEB.2.21.2004031542220.2694@hadrien>
+In-Reply-To: <alpine.DEB.2.21.2004031542220.2694@hadrien>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Fri, 3 Apr 2020 17:36:21 +0300
+Message-ID: <CA+h21hrP-0Tdpqje-xbPHmh+v+zndsFyxaEfadMwdAHY+9QK+g@mail.gmail.com>
+Subject: Re: question about drivers/net/dsa/sja1105/sja1105_main.c
+To:     Julia Lawall <julia.lawall@inria.fr>
+Cc:     netdev <netdev@vger.kernel.org>, Joe Perches <joe@perches.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Julia,
 
+On Fri, 3 Apr 2020 at 16:46, Julia Lawall <julia.lawall@inria.fr> wrote:
+>
+> Hello,
+>
+> The function sja1105_static_config_reload in sja1105_main.c contains the
+> code:
+>
+>                 if (!an_enabled) {
+>                         int speed = SPEED_UNKNOWN;
+>
+>                         if (bmcr & BMCR_SPEED1000)
+>                                 speed = SPEED_1000;
+>                         else if (bmcr & BMCR_SPEED100)
+>                                 speed = SPEED_100;
+>                         else if (bmcr & BMCR_SPEED10)
+>                                 speed = SPEED_10;
+>
+>                         sja1105_sgmii_pcs_force_speed(priv, speed);
+>                 }
+>
+> The last test bmcr & BMCR_SPEED10 does not look correct, because according
+> to include/uapi/linux/mii.h, BMCR_SPEED10 is 0.  What should be done
+> instead?
+>
+> thanks,
+> julia
 
-On 03/04/2020 09.37, Masahiro Yamada wrote:
-> The "WITH Linux-syscall-note" exception is intended for UAPI headers.
-> 
-> See LICENSES/exceptions/Linux-syscall-note
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Thanks for pointing out, you raise a good point.
+Correct usage would be:
 
-Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+include/uapi/linux/mii.h:
+#define BMCR_SPEED_MASK 0x2040
 
-Thanks Masahiro!
+drivers/net/dsa/sja1105/sja1105_main.c:
+                         int speed = SPEED_UNKNOWN;
 
+                         if (bmcr & BMCR_SPEED_MASK == BMCR_SPEED1000)
+                                 speed = SPEED_1000;
+                         else if (bmcr & BMCR_SPEED_MASK == BMCR_SPEED100)
+                                 speed = SPEED_100;
+                         else if (bmcr & BMCR_SPEED_MASK == BMCR_SPEED10)
+                                 speed = SPEED_10;
 
-> ---
-> 
->   net/can/bcm.c  | 2 +-
->   net/can/gw.c   | 2 +-
->   net/can/proc.c | 2 +-
->   net/can/raw.c  | 2 +-
->   4 files changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/net/can/bcm.c b/net/can/bcm.c
-> index c96fa0f33db3..d94b20933339 100644
-> --- a/net/can/bcm.c
-> +++ b/net/can/bcm.c
-> @@ -1,4 +1,4 @@
-> -// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
-> +// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
->   /*
->    * bcm.c - Broadcast Manager to filter/send (cyclic) CAN content
->    *
-> diff --git a/net/can/gw.c b/net/can/gw.c
-> index 65d60c93af29..49b4e3d91ad6 100644
-> --- a/net/can/gw.c
-> +++ b/net/can/gw.c
-> @@ -1,4 +1,4 @@
-> -// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
-> +// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
->   /* gw.c - CAN frame Gateway/Router/Bridge with netlink interface
->    *
->    * Copyright (c) 2019 Volkswagen Group Electronic Research
-> diff --git a/net/can/proc.c b/net/can/proc.c
-> index e6881bfc3ed1..a4eb06c9eb70 100644
-> --- a/net/can/proc.c
-> +++ b/net/can/proc.c
-> @@ -1,4 +1,4 @@
-> -// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
-> +// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
->   /*
->    * proc.c - procfs support for Protocol family CAN core module
->    *
-> diff --git a/net/can/raw.c b/net/can/raw.c
-> index 59c039d73c6d..ab104cc18562 100644
-> --- a/net/can/raw.c
-> +++ b/net/can/raw.c
-> @@ -1,4 +1,4 @@
-> -// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
-> +// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
->   /* raw.c - Raw sockets for protocol family CAN
->    *
->    * Copyright (c) 2002-2007 Volkswagen Group Electronic Research
-> 
+but the BMCR_SPEED_MASK doesn't exist, it looks like. I believe that
+is because drivers (or the PHY library) don't typically need to read
+the speed from the MII_BMCR register, they just need to write it. If
+the PHY library maintainers think there is any value in defining
+BMCR_SPEED_MASK as part of the UAPI, we can do that. Otherwise, the
+definition can be restricted to drivers/net/dsa/sja1105/sja1105.h.
+
+Thanks,
+-Vladimir
