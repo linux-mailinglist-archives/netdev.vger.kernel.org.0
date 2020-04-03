@@ -2,73 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF87919CF4D
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 06:29:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0916319CF53
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 06:30:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730550AbgDCE3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 00:29:03 -0400
-Received: from m12-11.163.com ([220.181.12.11]:56664 "EHLO m12-11.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725851AbgDCE3D (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Apr 2020 00:29:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Wbeh/
-        XXcF9p0H3UV40lvWAHy5eGKJ2dZMK1faGpA0Mk=; b=fuOjBSS9j4j1VOrIIr+LE
-        sHNc6E5MUFVYXC1xXTU6EuO8pRtT0tYNHvpvzGleVwha52sTyJ+1Oqy3QbX/NbdP
-        DD6Kql1AhFfTx3AAK6ppr4CrU/1aJFf0e1C1fCvYB9KTBjp5ifzhD5PoNYtnUSzV
-        KlUasBVr2jwU6MDyvE7Xlg=
-Received: from localhost.localdomain (unknown [125.82.11.124])
-        by smtp7 (Coremail) with SMTP id C8CowADH59sdu4ZePW+mCQ--.9443S4;
-        Fri, 03 Apr 2020 12:27:10 +0800 (CST)
-From:   Hu Haowen <xianfengting221@163.com>
-To:     saeedm@mellanox.com, leon@kernel.org, davem@davemloft.net
-Cc:     moshe@mellanox.com, lsahlber@redhat.com, kw@linux.com,
-        wqu@suse.com, xiubli@redhat.com, xianfengting221@163.com,
-        chris@chris-wilson.co.uk, stfrench@microsoft.com,
-        airlied@redhat.com, yamada.masahiro@socionext.com, cai@lca.pw,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] net/mlx5: add the missing space character
-Date:   Fri,  3 Apr 2020 12:26:59 +0800
-Message-Id: <20200403042659.9167-1-xianfengting221@163.com>
-X-Mailer: git-send-email 2.20.1
+        id S1729987AbgDCEa1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 00:30:27 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:46466 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725851AbgDCEa1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 00:30:27 -0400
+Received: by mail-ot1-f68.google.com with SMTP id 111so5947008oth.13
+        for <netdev@vger.kernel.org>; Thu, 02 Apr 2020 21:30:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ol4C8g0+klaf0A6nMtyYR5Z8r2Ln5uSPPaqxsHbTubA=;
+        b=UPDh2QNLDkvW9+Pj0o2auxtPk5bGvNH4ZUMEDZ1Sp4YUIloPUEN1dUS0DBSjLM3kwG
+         bSbBH6OEuFJlYDQMULmn2jraRDRRcRX3ivfSg+LaxWtai5PuJnhyHCyYwLL+eV5DwytS
+         edFRuXnEqR5MEv9K9UvnkeLi1l4glPzbayAE9xlZ7PbR52J5Op4nz1munevNgJw7IGER
+         0SieiYcMmFwn7yRwFJztkNP1rN6BYefdFrLkW+mo9FBAQdscvqdCvHAcUN9V42f5IVRj
+         fVs/1/bvkMen9u040FlPSFCPUbBLFF13714HwC8bs1dFTfGxWxhAMU3eFmpGh5d/q6Lg
+         2yrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ol4C8g0+klaf0A6nMtyYR5Z8r2Ln5uSPPaqxsHbTubA=;
+        b=k3jMrVU9bY3TAAleRgHP0NdfDLi6/krG3azTsGEWL6lRu3bqIYP4/3+v0S8nns1lSn
+         +KKxtr/4RVdLfiUUpD2SujeOSxASXiTTMoH5X27F1z0o4pShzixITQP/Jvtttu1nRxoD
+         +QjD9xTGMrolo8w+uxpaztafQhekUtStLl6h99bLF5fe/0VxQZqCK/r1LqD27rw6/10z
+         gL1X3mE34w9oHoDMQwb654hVYaRNjtNDz5BYbg8E3IE8BZeIXsSzM09iKP9pL9AARcp0
+         WuQ3qWqjsxmsJVDygvrvGOrJ1u1dzaKR1O0OUG7aEYuhVQRp8/bC5bKYjurRhRA6VM6p
+         hTWw==
+X-Gm-Message-State: AGi0Pubn689+foWsp3kNfvKfNFx5lBrnVqWgqWkCCfZ2oY5shtcdeYdb
+        OANwQuBlIAFWmQynodtT3Q7KWHqhJJSU8geToco=
+X-Google-Smtp-Source: APiQypIjAuWRS7pcR6IS1hZXaNmaKSCyNMPn6vZop8xk0NR48hrz0qxiW0Ktdlxbzc6bevRbVRbE83+6fIWZWmNGaMI=
+X-Received: by 2002:a05:6830:1e96:: with SMTP id n22mr4929443otr.189.1585888226400;
+ Thu, 02 Apr 2020 21:30:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: C8CowADH59sdu4ZePW+mCQ--.9443S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW7GryfGr4fCr1UZrWUWw17ZFb_yoW8Jr45pF
-        s8JFZrurs7tw45Xa18ZFW8Z3s5GwsYkay09F4fC393Xrn5tr48Crn3tryYkr10kr13J3sx
-        tF9rArW7Awn8W37anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jcyCJUUUUU=
-X-Originating-IP: [125.82.11.124]
-X-CM-SenderInfo: h0ld0wxhqj3xtqjsjii6rwjhhfrp/1tbiFR76AF5mI-KHKQAAs2
+References: <20200402152336.538433-1-leon@kernel.org> <20200402.180218.940555077368617365.davem@davemloft.net>
+In-Reply-To: <20200402.180218.940555077368617365.davem@davemloft.net>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 2 Apr 2020 21:30:15 -0700
+Message-ID: <CAM_iQpWvkTTRwV5-tj1Hj_a8hG2X-udU0BG2VXDbukuKFeN=JA@mail.gmail.com>
+Subject: Re: [PATCH net] net/sched: Don't print dump stack in event of
+ transmission timeout
+To:     David Miller <davem@davemloft.net>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, leonro@mellanox.com,
+        Arjan van de Ven <arjan@linux.intel.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        itayav@mellanox.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 91b56d8462a9 ("net/mlx5: improve some comments") did not add
-that missing space character and this commit is used to fix it up.
+On Thu, Apr 2, 2020 at 6:02 PM David Miller <davem@davemloft.net> wrote:
+>
+> From: Leon Romanovsky <leon@kernel.org>
+> Date: Thu,  2 Apr 2020 18:23:36 +0300
+>
+> > In event of transmission timeout, the drivers are given an opportunity
+> > to recover and continue to work after some in-house cleanups.
+> >
+> > Such event can be caused by HW bugs, wrong congestion configurations
+> > and many more other scenarios. In such case, users are interested to
+> > get a simple  "NETDEV WATCHDOG ... " print, which points to the relevant
+> > netdevice in trouble.
+> >
+> > The dump stack printed later was added in the commit b4192bbd85d2
+> > ("net: Add a WARN_ON_ONCE() to the transmit timeout function") to give
+> > extra information, like list of the modules and which driver is involved.
+> >
+> > While the latter is already printed in "NETDEV WATCHDOG ... ", the list
+> > of modules rarely needed and can be collected later.
+> >
+> > So let's remove the WARN_ONCE() and make dmesg look more user-friendly in
+> > large cluster setups.
+>
+> Software bugs play into these situations and on at least two or three
+> occasions I know that the backtrace hinted at the cause of the bug.
+>
 
-Fixes: 91b56d8462a9 ("net/mlx5: improve some comments")
-Signed-off-by: Hu Haowen <xianfengting221@163.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I don't see how a timer stack trace could help to debug this issue
+in any scenario, the messages out of this stack trace are indeed
+helpful.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
-index c9c9b479bda5..31bddb48e5c3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
-@@ -676,7 +676,7 @@ static void mlx5_fw_tracer_handle_traces(struct work_struct *work)
- 	block_count = tracer->buff.size / TRACER_BLOCK_SIZE_BYTE;
- 	start_offset = tracer->buff.consumer_index * TRACER_BLOCK_SIZE_BYTE;
- 
--	/* Copy the block to local buffer to avoid HW override while being processed*/
-+	/* Copy the block to local buffer to avoid HW override while being processed */
- 	memcpy(tmp_trace_block, tracer->buff.log_buf + start_offset,
- 	       TRACER_BLOCK_SIZE_BYTE);
- 
--- 
-2.20.1
+On the other hand, a stack trace does help to get some attention
+via ABRT, but at least for us we now use rasdaemon to capture
+this, so I am 100% fine to remove this stack trace.
 
-
+Thanks.
