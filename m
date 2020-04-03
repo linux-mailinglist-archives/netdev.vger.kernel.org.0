@@ -2,54 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B4F019E02C
-	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 23:12:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2121C19E035
+	for <lists+netdev@lfdr.de>; Fri,  3 Apr 2020 23:13:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728229AbgDCVMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 17:12:03 -0400
-Received: from smtprelay0230.hostedemail.com ([216.40.44.230]:43110 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728173AbgDCVMD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 17:12:03 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay05.hostedemail.com (Postfix) with ESMTP id DBC401803F787;
-        Fri,  3 Apr 2020 21:12:01 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1537:1560:1593:1594:1711:1714:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3622:3870:3871:3872:3873:3874:3876:4321:5007:10004:10400:10848:11026:11232:11658:11914:12296:12297:12438:12740:12760:12895:13069:13161:13229:13311:13357:13439:14659:14721:21080:21611:21627:30041:30054:30070:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: woman60_2ea71f4a1b319
-X-Filterd-Recvd-Size: 1298
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf15.hostedemail.com (Postfix) with ESMTPA;
-        Fri,  3 Apr 2020 21:12:00 +0000 (UTC)
-Message-ID: <4e26a79ed71bd41b3bf2f65e48c4e4c41094fddc.camel@perches.com>
-Subject: Re: question about drivers/net/dsa/sja1105/sja1105_main.c
-From:   Joe Perches <joe@perches.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Julia Lawall <julia.lawall@inria.fr>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Date:   Fri, 03 Apr 2020 14:10:03 -0700
-In-Reply-To: <7fc8f8d5-285a-9ec0-23c5-c867347c4feb@gmail.com>
-References: <alpine.DEB.2.21.2004031542220.2694@hadrien>
-         <CA+h21hrP-0Tdpqje-xbPHmh+v+zndsFyxaEfadMwdAHY+9QK+g@mail.gmail.com>
-         <7fc8f8d5-285a-9ec0-23c5-c867347c4feb@gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.34.1-2 
+        id S1728344AbgDCVNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 17:13:12 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:36373 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728264AbgDCVNJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 17:13:09 -0400
+Received: by mail-lj1-f195.google.com with SMTP id b1so8439371ljp.3;
+        Fri, 03 Apr 2020 14:13:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XmiJ8r8In7YZhRpgdLSggbFpjzBQN570VmkdZRjoKl0=;
+        b=M6ntENSWQevfVE4wJYGpCvuhiRBs/UguboAiKuhbN1k8eoUdPpvVhUv1xnF8VXgwRA
+         MdLwa/cOtEg+kyIANAYshaShDUIy364a8Qo+R2UAu/P1S+ulxY0kFyk+cOqsHi+T3UFp
+         g2LxoYzZgTThz6Oy4rK7gU2WNK3GzOtrqQzmeQOwI6MlscPkO2M6rdL00gjYrK8igEyZ
+         w5SN4N/51Ggyw+VN7sRiouv16fwKQmHEjKcDJW5oAysHPfz/jbDfsiAK5JZqbT+Yt1Rd
+         2RdZsW5WGf/hx2pwMsgqOhucC8mAjPqiSPy8ltpa3QVsgaRKLVWedu342pVtPwBbnBYf
+         wxIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XmiJ8r8In7YZhRpgdLSggbFpjzBQN570VmkdZRjoKl0=;
+        b=azRK44efIQRVkP9oWe75wP8STYF6/bdc6aMngSiRglurMbz5n1HTSZu7Y4QXdGUOR+
+         P4kFFa5nBpUtnz4TboY7bIVoAadsFor6l20ir9SGpNokh2xufrhkHMidelEmwCKuaXnM
+         68JREb+mKLeU3sKj21LBAyKJ+ENHEPydV48HivhRPie3cU8IKQKm8xmR70MfWJK3vvZE
+         H7KNCKq+z29tmTrAb43gdECrAu+RbFFDvmTc6kwjBNYYNq8Xt8RZCvoTrN2+EMdf9XLe
+         sBaNGG5WkiOLK9cK8B15LaOYIoHcftZeg1grm3lDUkXrQsbsLIe/SxUVZP9mbAJQVwMY
+         ZyIA==
+X-Gm-Message-State: AGi0PuZKcVuijDqwn1vAxHAWm74zmeA1ghVjFDY8MSaGnd4+V5Jt6Vqe
+        /STXadkWxrXEgu2eupuW8I38Gk/cztfUimAZi0s=
+X-Google-Smtp-Source: APiQypLrAAv0TjbwUikI1rOrsahsFIicv7pVJUqr/CcJxejGQmURK1Ta5WDW3qardZaSCQVr8cXCTMZJZgEGyc+DR3M=
+X-Received: by 2002:a2e:b24c:: with SMTP id n12mr6345776ljm.7.1585948385607;
+ Fri, 03 Apr 2020 14:13:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <fb5ab568-9bc8-3145-a8db-3e975ccdf846@gmail.com>
+ <20200331060641.79999-1-maowenan@huawei.com> <7a1d55ad-1427-67fe-f204-4d4a0ab2c4b1@gmail.com>
+ <20200401181419.7acd2aa6@carbon> <ede2f407-839e-d29e-0ebe-aa39dd461bfd@gmail.com>
+ <20200402110619.48f31a63@carbon> <CAADnVQKEyv_bRhEfu1Jp=DSggj_O2xjJyd_QZ7a4LJY+dUO2rg@mail.gmail.com>
+ <20200403095847.21e1e5ea@carbon>
+In-Reply-To: <20200403095847.21e1e5ea@carbon>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 3 Apr 2020 14:12:54 -0700
+Message-ID: <CAADnVQKs9hLUPB6vW+sC3pe1ivXKU3woJFvT=X2hCqT=NnZF7Q@mail.gmail.com>
+Subject: Re: [PATCH net v2] veth: xdp: use head instead of hard_start
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Mao Wenan <maowenan@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, jwi@linux.ibm.com,
+        jianglidong3@jd.com, Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-04-03 at 23:02 +0200, Heiner Kallweit wrote:
-> It's right that this is not correct. You can check genphy_read_status_fixed()
-> for how it's done there.
+On Fri, Apr 3, 2020 at 12:59 AM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
+>
+> I want to wait to ease your life as maintainer. This is part of a
+> larger patchset (for XDP frame_sz) and the next patch touch same code
+> path and thus depend on these code adjustments.  If we apply them in
+> bpf vs bpf-next then you/we will have to handle merge conflicts.  The
+> severity of the "fix" is really low, it only means 32 bytes less
+> headroom (which I doubt anyone is using).
 
-There is no SPEED_UNKNOWN in that function.
-
-
+Ahh. Make sense. That type of fix can wait.
+Thanks!
