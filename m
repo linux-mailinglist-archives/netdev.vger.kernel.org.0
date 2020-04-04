@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA95619E79A
-	for <lists+netdev@lfdr.de>; Sat,  4 Apr 2020 22:49:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32C4319E7A3
+	for <lists+netdev@lfdr.de>; Sat,  4 Apr 2020 22:49:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726402AbgDDUtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Apr 2020 16:49:03 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:58825 "EHLO
+        id S1726297AbgDDUtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Apr 2020 16:49:06 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:49633 "EHLO
         new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726297AbgDDUtD (ORCPT
+        by vger.kernel.org with ESMTP id S1726278AbgDDUtD (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 4 Apr 2020 16:49:03 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 7778D5801D3;
+        by mailnew.nyi.internal (Postfix) with ESMTP id 829445801D4;
         Sat,  4 Apr 2020 16:49:02 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
   by compute3.internal (MEProxy); Sat, 04 Apr 2020 16:49:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alistair23.me;
-         h=from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=fm3; bh=KIJG0IcLzxmdwV/29oXvU5STaA
-        F5Yt1sQAOEbJBudyg=; b=fwgHoggIwUNk27OoEb3usYPdeA9UCO0xb9BV76jWWy
-        dLuWCX9T+VBcHNpivWvRCBaSLxJmHSFWfcVxy6BcaRBnquaMJhWcr7HP2LB0OupD
-        ajqkX1w4xKcXIAvwkqwrSe30eVei42nWI0XWUaYXxNTCr242WyEUPxxI7EteHeRW
-        7Pjv/DVXfGjqHD7+wQQ5ayiUkYwofUuZY2mCtgW8lcUBPDcQhWm0KCEOsjV7sSUJ
-        k5FvMOweq1jyvTBZKa8eA9TUt4jGg8Tnjf8dbo1pwAL0TszwtNsxf6mzf89jhmfv
-        ctfOfqqXMOtd0UtgMPk2EOa3xwWY6a95gFlWr1K7H7jg==
+         h=from:to:cc:subject:date:message-id:in-reply-to:references
+        :mime-version:content-transfer-encoding; s=fm3; bh=5Z62tta6RewP7
+        vFb8pMLmQzZ9HleyuU0GSnH4JaxFcU=; b=fS+sH+WOcuw6FGpl8XeL577h7L68f
+        /+IBFRU4sFKsYNTs4deO7XXeeATznXTGegkYzdJQsjmG5V0WYWaw16tD1QU+vK1R
+        OOWugORUW9zVW5g53TLn3NQSJdvB9oNnba+WZW5Xi6e3pbXFLIgwO4aiWJ/mzspT
+        4MFrMxAedXQAC+kUe1zUnlMTPAk4HiISukvgjTrqIcNWnA41pf6Pv/te0HNx288K
+        xzUp9QQ8akvlOIo4TuUe/feiCdxXU+P0g2kg7PwTONtTibwWKWH1F6XmFgO1KYnG
+        bwGnEKld4CSfwZSU6nkJnltrz4IMLu1mYDl48ib2cg6SNw4FkSSwaTDrQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=KIJG0IcLzxmdwV/29
-        oXvU5STaAF5Yt1sQAOEbJBudyg=; b=YsKOgJsKal1FFidz1nafJNO9MUS4BeOsg
-        ImS0Oul8/L/Ef9BTgMDusRFsa4PdvVu5000/AFykyjbuEqWiORva7uz7I1xbYi1h
-        NBTC9uzaSLDHXguCRX6NK3RTn4QPKJTcT30aaInnL8R+oaac/6TnXQnyEu1DRZTJ
-        x1yVG4+Oh8gj69jh+czllJihn/kpTAsE7QMobQyaSDkJwsqBGLs+mgYEqVaKLz7+
-        KXjl5Zh1kNDcUxG0FY0XsG0E6QmAYO+iPhPNtyzTOukPSpZfx9kZ6vl2cvvnycjx
-        w5TWkRREHXFh/KyhKf5L8/hHCBQQX6nZcgAkIrvSzb4IXolbgrikQ==
-X-ME-Sender: <xms:vfKIXnnPLjQBsXhwm-4V265kssvsw8tP5tncSUhMuI8i4IKNrTk-9Q>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; bh=5Z62tta6RewP7vFb8pMLmQzZ9HleyuU0GSnH4JaxFcU=; b=bQIJLvkH
+        7WOxpSAWkP92QSRgiOeBcezWjF3AqajGOhLCogI14RZcuKtVfEznpHe4Bt5iuqeh
+        dtV1Ea7lgG6IAF30th4jGNGmn4iy3AK6GEFiSjOiPu2IL128zmCZCHhJziKO7Y8r
+        Gi+RzBFpC12VD55w4zeXH0gNTOx/VjukANGCllhoPN24bCgHVak01Soc8TTbogSM
+        FkiKs5eysC0R6Qdvf+bLpBj/G4wCYZ6RnQX2wS3AElcCcBdTI54ImXYj8/ec7jxx
+        vbqvWtp/I9vJki590A1ahf9JHoESHXbaXC/xBSrCjuXBHt0qWs/zhsqS6Jsxt8ap
+        QK9P/YT+6sKCnQ==
+X-ME-Sender: <xms:vvKIXt3ICXJZ3Ww8bcE_-2xOaAHO6hKS86lVT35n82ibJQxvQusIMw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrtdekgdduheduucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomheptehlihhsthgrihhrucfhrhgrnhgtihhsuceorghlihhsthgrihhr
-    segrlhhishhtrghirhdvfedrmhgvqeenucffohhmrghinhepuggvvhhitggvthhrvggvrd
-    horhhgnecukfhppeejfedrleefrdekgedrvddtkeenucevlhhushhtvghrufhiiigvpedt
-    necurfgrrhgrmhepmhgrihhlfhhrohhmpegrlhhishhtrghirhesrghlihhsthgrihhrvd
-    efrdhmvg
-X-ME-Proxy: <xmx:vfKIXstkpaJa-1MGh_rbimMwU1cSzFNnDg_KzfBBeHR2K-qRoezmrw>
-    <xmx:vfKIXix-fL9JOyrj1gXNXN9hbLv1kQL1gVy3cCQ-XOXiqjLmEjxRAQ>
-    <xmx:vfKIXvypviPSGQNwsQnflgudlGWAFDMLoahNMvsNrmqKh8fgYVefGA>
-    <xmx:vvKIXgwBPwApEj8zw3xESkszjG3zce-c12K7RhfKR_UfGR7hwa9wlg>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
+    dtredttdenucfhrhhomheptehlihhsthgrihhrucfhrhgrnhgtihhsuceorghlihhsthgr
+    ihhrsegrlhhishhtrghirhdvfedrmhgvqeenucfkphepjeefrdelfedrkeegrddvtdekne
+    cuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprghlihhs
+    thgrihhrsegrlhhishhtrghirhdvfedrmhgv
+X-ME-Proxy: <xmx:vvKIXvzj_zaWI2K2VeIoTvIeWebruHjSg5Kke8AUTHcYL-Yod8n-sQ>
+    <xmx:vvKIXonTYKKh9Rv0tZ4JBlJtmFTL7T4notcJ46ptAu0rwppiF4rqcQ>
+    <xmx:vvKIXrxuvb9OVjW73-Sr4XkNjYekZhgIep4o1ol3GDAFB7l7HQIQZw>
+    <xmx:vvKIXlxK7UEtQVUHsHrmQpNVyAGyZyooSrAQB1yXsAWcfpvoWfFmXA>
 Received: from alistair-xps-14z.alistair23.me (c-73-93-84-208.hsd1.ca.comcast.net [73.93.84.208])
-        by mail.messagingengine.com (Postfix) with ESMTPA id DD9663280065;
-        Sat,  4 Apr 2020 16:48:59 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 30521328005E;
+        Sat,  4 Apr 2020 16:49:01 -0400 (EDT)
 From:   Alistair Francis <alistair@alistair23.me>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         marcel@holtmann.org, johan.hedberg@gmail.com,
@@ -58,10 +58,12 @@ To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
 Cc:     anarsoul@gmail.com, devicetree@vger.kernel.org,
         alistair23@gmail.com, linux-arm-kernel@lists.infradead.org,
         Alistair Francis <alistair@alistair23.me>
-Subject: [PATCH 1/3] dt-bindings: net: bluetooth: Add rtl8723bs-bluetooth
-Date:   Sat,  4 Apr 2020 13:48:48 -0700
-Message-Id: <20200404204850.405050-1-alistair@alistair23.me>
+Subject: [PATCH 2/3] Bluetooth: hci_h5: Add support for binding RTL8723BS with device tree
+Date:   Sat,  4 Apr 2020 13:48:49 -0700
+Message-Id: <20200404204850.405050-2-alistair@alistair23.me>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200404204850.405050-1-alistair@alistair23.me>
+References: <20200404204850.405050-1-alistair@alistair23.me>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -71,77 +73,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vasily Khoruzhick <anarsoul@gmail.com>
 
-Add binding document for bluetooth part of RTL8723BS/RTL8723CS
+RTL8723BS is often used in ARM boards, so add ability to bind it
+using device tree.
 
 Signed-off-by: Vasily Khoruzhick <anarsoul@gmail.com>
 Signed-off-by: Alistair Francis <alistair@alistair23.me>
 ---
- .../bindings/net/realtek,rtl8723bs-bt.yaml    | 56 +++++++++++++++++++
- 1 file changed, 56 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/realtek,rtl8723bs-bt.yaml
+ drivers/bluetooth/hci_h5.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/realtek,rtl8723bs-bt.yaml b/Documentation/devicetree/bindings/net/realtek,rtl8723bs-bt.yaml
-new file mode 100644
-index 000000000000..9e212954f629
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/realtek,rtl8723bs-bt.yaml
-@@ -0,0 +1,56 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/realtek,rtl8723bs-bt.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: RTL8723BS/RTL8723CS Bluetooth Device Tree Bindings
-+
-+maintainers:
-+  - Vasily Khoruzhick <anarsoul@gmail.com>
-+  - Alistair Francis <alistair@alistair23.me>
-+
-+description:
-+  RTL8723CS/RTL8723CS is WiFi + BT chip. WiFi part is connected over SDIO, while
-+  BT is connected over serial. It speaks H5 protocol with few extra commands
-+  to upload firmware and change module speed.
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - "realtek,rtl8723bs-bt"
-+      - "realtek,rtl8723cs-bt"
-+
-+  device-wake-gpios:
-+    description:
-+      GPIO specifier, used to wakeup the BT module (active high)
-+
-+  enable-gpios:
-+    description:
-+      GPIO specifier, used to enable the BT module (active high)
-+
-+  host-wake-gpios:
-+    desciption:
-+      GPIO specifier, used to wakeup the host processor (active high)
-+
-+firmware-postfix: firmware postfix to be used for firmware config
-+reset-gpios: GPIO specifier, used to reset the BT module (active high)
-+
-+required:
-+  - compatible
-+
-+examples:
-+  - |
-+    &uart1 {
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
-+        status = "okay";
-+
-+        bluetooth {
-+            compatible = "realtek,rtl8723bs-bt";
-+            reset-gpios = <&r_pio 0 4 GPIO_ACTIVE_LOW>; /* PL4 */
-+            device-wake-gpios = <&r_pio 0 5 GPIO_ACTIVE_HIGH>; /* PL5 */
-+            host-wakeup-gpios = <&r_pio 0 6 GPIO_ACTIVE_HIGH>; /* PL6 */
-+            firmware-postfix="pine64";
-+        };
-+    };
+diff --git a/drivers/bluetooth/hci_h5.c b/drivers/bluetooth/hci_h5.c
+index 106c110efe56..6ea6cd73dff4 100644
+--- a/drivers/bluetooth/hci_h5.c
++++ b/drivers/bluetooth/hci_h5.c
+@@ -820,6 +820,8 @@ static int h5_serdev_probe(struct serdev_device *serdev)
+ 			return -ENODEV;
+ 
+ 		h5->vnd = (const struct h5_vnd *)data;
++		of_property_read_string(dev.of_node,
++					"firmware-postfix", &h5->id);
+ 	}
+ 
+ 
+@@ -1019,6 +1021,8 @@ static const struct of_device_id rtl_bluetooth_of_match[] = {
+ 	{ .compatible = "realtek,rtl8822cs-bt",
+ 	  .data = (const void *)&rtl_vnd },
+ #endif
++	{ .compatible = "realtek,rtl8822bs-bt",
++	  .data = (const void *)&rtl_vnd },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, rtl_bluetooth_of_match);
 -- 
 2.25.1
 
