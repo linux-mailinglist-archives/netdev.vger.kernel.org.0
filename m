@@ -2,89 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41A2419E618
-	for <lists+netdev@lfdr.de>; Sat,  4 Apr 2020 17:34:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 670AA19E643
+	for <lists+netdev@lfdr.de>; Sat,  4 Apr 2020 17:50:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726377AbgDDPem (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Apr 2020 11:34:42 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:46223 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726130AbgDDPem (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Apr 2020 11:34:42 -0400
-Received: by mail-ot1-f67.google.com with SMTP id 111so10537805oth.13;
-        Sat, 04 Apr 2020 08:34:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wJJHt0CSx4rCuEsqr8ESfPqtz2SvcHs+oQjfrjV6kEc=;
-        b=rvWQiF5F8bJnmlWbMT7R49NetVKvTAdp4EJoY3L86knHIuMiThiWt9GN38kOhTFKJh
-         R/puK9Sr3rH99oncCgmc1eK4NIkt+fy8pJp82Uj0vAMSBEQnbAGzU5HSBYLjcU31y0Hq
-         4yaatE2LPEJ5lgaSEd+1NuCPVvtORn+cSTnedW8fICKr4mMw9NT+KjMSLPPB7sN4dlZC
-         dLsMVRtTOT7xshyqN4Uaiqm3NnxvOoKvRkQmkMqQn3LongPZHMloOdNa73uECn/jAC9x
-         dkVQTIIDejHXp9ieN+gkTLpU7d54CHS/0Ks69XfSwNU+pS+nL+vefjtCj7Al4RwaRHRj
-         jSGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wJJHt0CSx4rCuEsqr8ESfPqtz2SvcHs+oQjfrjV6kEc=;
-        b=qvrzP2zJZuma8eBENfjixEQZSgXoh9tiuwNs/hnBp+0tx/iQaepfGS0CvDBcBP2TjF
-         klgYZmoAnbliOaWJEg//04Eij7dhyIEdEIzNvy9I2ulwk31K3+JjOZBs7AtE7Nx1Fl+C
-         vDa0oH8/Ztu78FpsG0GEQH6of2bJbjZ0fJeynaMWqP6qYphGiMNl/mFPjFwvQRW8rn3u
-         yaQLmy2e4CcJxq/lJf56PNb/MoNjS3Zc2r6stsvjFJefUNW3t+XBqyZXVc7e74iAQAmf
-         wnYbeHpcwP3kNpNrzi8f0ErQVNM9J8aKmzT3fPOVK1vWxY2SoksV3pJ+m+4Mprv+dQGt
-         vUKQ==
-X-Gm-Message-State: AGi0PuYGM1M4Kc6mqRFnjd239hP2meLsH+7zGofk7MrZ0ZA9uW4GNVHc
-        f5TLcb1UH2xlqa9qR634WDeK+Q6l8W0WKeMTZqY=
-X-Google-Smtp-Source: APiQypJurN6kKeueDqM6o5vZ2pCFzzx2u9sVqqily6xPz9KLmAwCuSMsRcuswvGToxGksPlnBUBs6hgZxPamk8aeaiQ=
-X-Received: by 2002:a9d:7a45:: with SMTP id z5mr10438979otm.181.1586014481828;
- Sat, 04 Apr 2020 08:34:41 -0700 (PDT)
+        id S1726300AbgDDPuq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Apr 2020 11:50:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42380 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726130AbgDDPuq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 4 Apr 2020 11:50:46 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 36704206E6;
+        Sat,  4 Apr 2020 15:50:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1586015445;
+        bh=0Nn+EFUzUjFBB+9yzouXCkUYoa5BAhVneCkFnDND6d4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qJ2Npy7plxKmyeQJZrczC3n26CVBnACKU6IgjVyrjMQ1IyiyGSLHX4Wvw0u56uA91
+         k0vX8QHI1fzvN6NQBb2jxEmq+8UTfS9N8ZO+Ouecx69XxZ690RY+XApmQIR4JZ9pOd
+         SdLiVERAxzZbwO/61tuXlG56flA5KGrBJurbt6hY=
+Date:   Sat, 4 Apr 2020 17:50:40 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, rafael@kernel.org,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mitch.a.williams@intel.com
+Subject: Re: [PATCH net v2 1/3] class: add class_has_file_ns() helper function
+Message-ID: <20200404155040.GC1476305@kroah.com>
+References: <20200404141827.26255-1-ap420073@gmail.com>
 MIME-Version: 1.0
-References: <20200403112830.505720-1-gch981213@gmail.com> <20200403180911.Horde.9xqnJvjcRDe-ttshlJbG6WE@www.vdorst.com>
- <CAJsYDVJj1JajVxeGifaOprXYstG-gC_OYwd5LrALUY_4BdtR3A@mail.gmail.com> <20200404150810.GA161768@lunn.ch>
-In-Reply-To: <20200404150810.GA161768@lunn.ch>
-From:   Chuanhong Guo <gch981213@gmail.com>
-Date:   Sat, 4 Apr 2020 23:34:30 +0800
-Message-ID: <CAJsYDV+NY90r=PV0dYRRaTEuxQAMTbakLvguX-1jOu3OQwYfSQ@mail.gmail.com>
-Subject: Re: [PATCH] net: dsa: mt7530: fix null pointer dereferencing in port5 setup
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
-        netdev@vger.kernel.org, stable@vger.kernel.org,
-        Sean Wang <sean.wang@mediatek.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-mediatek@lists.infradead.org,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200404141827.26255-1-ap420073@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+On Sat, Apr 04, 2020 at 02:18:27PM +0000, Taehee Yoo wrote:
+> The new helper function is to check whether the class file is existing
+> or not. This function will be used by networking stack to
+> check "/sys/class/net/*" file.
+> 
+> Reported-by: syzbot+830c6dbfc71edc4f0b8f@syzkaller.appspotmail.com
+> Fixes: b76cdba9cdb2 ("[PATCH] bonding: add sysfs functionality to bonding (large)")
+> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> ---
+> 
+> v1 -> v2:
+>  - Implement class_has_file_ns() instead of class_find_and_get_file_ns().
+>  - Change headline.
+>  - Add kernel documentation comment.
+> 
+>  drivers/base/class.c         | 22 ++++++++++++++++++++++
+>  include/linux/device/class.h |  3 ++-
+>  2 files changed, 24 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/base/class.c b/drivers/base/class.c
+> index bcd410e6d70a..a2f2787f6aa7 100644
+> --- a/drivers/base/class.c
+> +++ b/drivers/base/class.c
+> @@ -105,6 +105,28 @@ void class_remove_file_ns(struct class *cls, const struct class_attribute *attr,
+>  		sysfs_remove_file_ns(&cls->p->subsys.kobj, &attr->attr, ns);
+>  }
+>  
+> +/**
+> + * class_has_file_ns - check whether file is existing or not
+> + * @cls: the compatibility class
+> + * @name: name to look for
+> + * @ns: the namespace tag to use
+> + */
+> +bool class_has_file_ns(struct class *cls, const char *name,
+> +		       const void *ns)
 
-On Sat, Apr 4, 2020 at 11:08 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> > > MT7530 tries to detect if 2nd GMAC is using a phy with phy-address 0 or 4.
-> >
-> > What if the 2nd GMAC connects to an external PHY on address 0 on a
-> > different mdio-bus?
->
-> In general, you using a phy-handle to cover such a situation. If there
-> is a phy-handle, just use it.
+Why would you use this?  And what happens if the file shows up, or goes
+away, instantly after this call is made?
 
-If it's determining where switch mac5 is wired, a phy-handle is fine.
-Here we are determining where exposed rgmii2 pins are wired.
-It can be wired to switch mac5 or skip the switch mac completely
-and connected to phy0/phy4.
-Current driver is determining rgmii2 wiring on mt7530 using phy-handle
-on *another unrelated ethernet node* which doesn't sound right.
+This feels very broken.
 
--- 
-Regards,
-Chuanhong Guo
+greg k-h
