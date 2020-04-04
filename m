@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7221019E67B
-	for <lists+netdev@lfdr.de>; Sat,  4 Apr 2020 18:46:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D11819E6A9
+	for <lists+netdev@lfdr.de>; Sat,  4 Apr 2020 19:18:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726294AbgDDQfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Apr 2020 12:35:30 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:33596 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726207AbgDDQf3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Apr 2020 12:35:29 -0400
-Received: by mail-lj1-f195.google.com with SMTP id f20so10203338ljm.0;
-        Sat, 04 Apr 2020 09:35:28 -0700 (PDT)
+        id S1726370AbgDDRSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Apr 2020 13:18:36 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:34420 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726057AbgDDRSg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Apr 2020 13:18:36 -0400
+Received: by mail-lj1-f193.google.com with SMTP id p10so10275842ljn.1;
+        Sat, 04 Apr 2020 10:18:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=TcZGIpZFtsXQnB9IM08ZO9Vrk1h6ZXgf7qgWlNa11hY=;
-        b=hUY1lkeI80CHymemQMT2uF4IhmhhZhgY8dFrQIX+4laKtyHJNVGCd10YpYGNBDmf8d
-         LKOLEObwgKE9KfsVT2Gk5vnQxkov3L7FkCbemeaM2p600g2ZXHDfFa4Tm9e1jx5uwjxX
-         BHyug1lXYg9GJAGNttowFSA33mKP1QwLnV3CU+2GZoxId1KgHR9ctXERL06I+QEnQd03
-         szDsKjH6W1VSKRvxtxzqBvFAftKjcnWUcWtxsqoFZwiSyQq7C1F62cDj3/bJu+yyWpSd
-         xzK5hwXFV7H3LS4QZUZQHKfwp8VTSf+aDJoaUlaw42XWugoGCA1ebLpAZCLZ3IZtiaOx
-         0bUg==
+        bh=+uhxRGX6MPG3FC6JHWtiYmK6qLmp1QIoL6oQZjfRONY=;
+        b=nd+WcLU8Nkb3NCybgzvxt5VvOktuAe/AqLpVnjLRMi1zhdqSwGot8V+Wntg2eoytm4
+         UYw+VXJ6se7MqMNVECQGMqZyn4Dtfg3FBpju68UAzafwtNqJPASMLh6NoNAtnHDIx5Dc
+         LisWSh2BUCh+q/qdErQZdpILL+qDYCibSb/ZaELWTwkDGSd104JClCdzlImF5lgGwYbM
+         VY90nOWQj9th3yD97HjIp8kcx3AJhJeLugb1FGGnZVzu1JL+PkTEBQuwy0h16ejB5tp0
+         UnTFokM4kcyiZJHcez78Qda6TEUOKgGvuRjpUbY0Ztf0jdCPUcFLewwUC6Rl1IdkxSz/
+         U3EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=TcZGIpZFtsXQnB9IM08ZO9Vrk1h6ZXgf7qgWlNa11hY=;
-        b=F4x0zhTINI4XOGQzoWYDf8hnbH09/HDUmjCFTz/EDaiGdZHRhuSxFwbGfFv5/r2pWe
-         Q1py+ZUNiADLOL963hKw2wQSqJvLMKBzpaYWcw/8BVu9rU1mVRa+UXAglEOR8GVldkA1
-         M+wK2fPP6AISxAKyOty6crJ8P0e60LeZZaDljXjG+UdJ1qAUoSJAn/qITBx1QEpLqIHz
-         wacjJk/LpSFrjHoUcNnfKuqbaHyaPxbMdwWajLEuTVK/Jug43CEKDG0IrujSht45+Taa
-         6UzrYAErDW5mOHPQtJT+FkaGh2om4ZngZGVkgEGW+RbqgBOdm07BQ14wxCexSMU42nbz
-         6IxA==
-X-Gm-Message-State: AGi0PuYwRPCq59j691ZZKUn+yzZl1aYAZA9tgQS/D4/2gpEBNv4ZLM8Z
-        FZRcewT2+w8zfl/gaS4CPNqTJCubC4Bbudtkud4=
-X-Google-Smtp-Source: APiQypIe+DtLDZ6Yy6a7w+4neV8cfXmY7x+lCE8hWWOYcjUAAb0I8sPBi8KtcYImnj02TLzzvlScEeSl45FEjsLC5Z0=
-X-Received: by 2002:a2e:4942:: with SMTP id b2mr8092892ljd.135.1586018127540;
- Sat, 04 Apr 2020 09:35:27 -0700 (PDT)
+        bh=+uhxRGX6MPG3FC6JHWtiYmK6qLmp1QIoL6oQZjfRONY=;
+        b=heFe5iXOKv2oZldsxyuZJFKtKfVZzi3H9gfy3pcxVfvhiguK9+elOK2WA1HH1mft5o
+         4S3930WfZCUBg+WFC8hZxZKMLlgeRrUbuLj1FnLDb9JE3nA3Oz86HblCMlozxROfNK6J
+         OYbR70jUJKcQnKHkU5jxjUw3ISgOptvzccf7z5T/drn5HdqDvkVkTJKx3NJ0zBJcqqAd
+         0jOnQkFF3xQtJGxpJBoHfmqBy09piWVf/dFsFxZxJpWN9QsSzNNeQ3J6odomdh2gOOMC
+         7VZ/W+7tTGSxDBSLvA3Vhmpc9LzVzhWXfCsEjEN9E2TapP6k7XPLMEYN8nfvoMz9OFel
+         HHPA==
+X-Gm-Message-State: AGi0PuY9BmTKwycYmqjYAYi6D9E+wtIg4NbT89Vk6+UNDel00YekAMmd
+        KEdnis9jYzFGrPE0pLRjRVWR0gOCh3BTXW45tEI=
+X-Google-Smtp-Source: APiQypKbneMMaFHfEv8AYv4pXWPjoKLLu9YejArU/08n/11tmBWhsBVTZ41q0GYynLf1gxAoQxMR37qxtV7jCEj2kmI=
+X-Received: by 2002:a2e:81cc:: with SMTP id s12mr7960117ljg.90.1586020713555;
+ Sat, 04 Apr 2020 10:18:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200404141827.26255-1-ap420073@gmail.com> <20200404155040.GC1476305@kroah.com>
-In-Reply-To: <20200404155040.GC1476305@kroah.com>
+References: <20200404141909.26399-1-ap420073@gmail.com> <20200404155122.GD1476305@kroah.com>
+In-Reply-To: <20200404155122.GD1476305@kroah.com>
 From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Sun, 5 Apr 2020 01:35:16 +0900
-Message-ID: <CAMArcTX6j5bCLmLOcD13W8NkXtMHO-uouOnhnRAi4i5xdU+B3Q@mail.gmail.com>
-Subject: Re: [PATCH net v2 1/3] class: add class_has_file_ns() helper function
+Date:   Sun, 5 Apr 2020 02:18:22 +0900
+Message-ID: <CAMArcTVdn7FcfX-BCnZ+LUzdct4yj2BLyhpTu832_VGt_O+xWA@mail.gmail.com>
+Subject: Re: [PATCH net v2 2/3] net: core: add netdev_class_has_file_ns()
+ helper function
 To:     Greg KH <gregkh@linuxfoundation.org>
 Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, rafael@kernel.org,
@@ -60,16 +61,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 5 Apr 2020 at 00:50, Greg KH <gregkh@linuxfoundation.org> wrote:
+On Sun, 5 Apr 2020 at 00:51, Greg KH <gregkh@linuxfoundation.org> wrote:
 >
 
 Hi Greg,
 Thank you for your review!
 
-> On Sat, Apr 04, 2020 at 02:18:27PM +0000, Taehee Yoo wrote:
-> > The new helper function is to check whether the class file is existing
-> > or not. This function will be used by networking stack to
-> > check "/sys/class/net/*" file.
+> On Sat, Apr 04, 2020 at 02:19:09PM +0000, Taehee Yoo wrote:
+> > This helper function is to check whether the class file "/sys/class/net/*"
+> > is existing or not.
+> > In the next patch, this helper function will be used.
 > >
 > > Reported-by: syzbot+830c6dbfc71edc4f0b8f@syzkaller.appspotmail.com
 > > Fixes: b76cdba9cdb2 ("[PATCH] bonding: add sysfs functionality to bonding (large)")
@@ -77,41 +78,45 @@ Thank you for your review!
 > > ---
 > >
 > > v1 -> v2:
-> >  - Implement class_has_file_ns() instead of class_find_and_get_file_ns().
-> >  - Change headline.
-> >  - Add kernel documentation comment.
+> >  - use class_has_file_ns(), which is introduced by the first patch.
 > >
-> >  drivers/base/class.c         | 22 ++++++++++++++++++++++
-> >  include/linux/device/class.h |  3 ++-
-> >  2 files changed, 24 insertions(+), 1 deletion(-)
+> >  include/linux/netdevice.h | 2 +-
+> >  net/core/net-sysfs.c      | 6 ++++++
+> >  2 files changed, 7 insertions(+), 1 deletion(-)
 > >
-> > diff --git a/drivers/base/class.c b/drivers/base/class.c
-> > index bcd410e6d70a..a2f2787f6aa7 100644
-> > --- a/drivers/base/class.c
-> > +++ b/drivers/base/class.c
-> > @@ -105,6 +105,28 @@ void class_remove_file_ns(struct class *cls, const struct class_attribute *attr,
-> >               sysfs_remove_file_ns(&cls->p->subsys.kobj, &attr->attr, ns);
+> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> > index 130a668049ab..a04c487c0975 100644
+> > --- a/include/linux/netdevice.h
+> > +++ b/include/linux/netdevice.h
+> > @@ -4555,7 +4555,7 @@ int netdev_class_create_file_ns(const struct class_attribute *class_attr,
+> >                               const void *ns);
+> >  void netdev_class_remove_file_ns(const struct class_attribute *class_attr,
+> >                                const void *ns);
+> > -
+> > +bool netdev_class_has_file_ns(const char *name, const void *ns);
+> >  static inline int netdev_class_create_file(const struct class_attribute *class_attr)
+> >  {
+> >       return netdev_class_create_file_ns(class_attr, NULL);
+> > diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+> > index cf0215734ceb..8a20d658eff0 100644
+> > --- a/net/core/net-sysfs.c
+> > +++ b/net/core/net-sysfs.c
+> > @@ -1914,6 +1914,12 @@ void netdev_class_remove_file_ns(const struct class_attribute *class_attr,
 > >  }
+> >  EXPORT_SYMBOL(netdev_class_remove_file_ns);
 > >
-> > +/**
-> > + * class_has_file_ns - check whether file is existing or not
-> > + * @cls: the compatibility class
-> > + * @name: name to look for
-> > + * @ns: the namespace tag to use
-> > + */
-> > +bool class_has_file_ns(struct class *cls, const char *name,
-> > +                    const void *ns)
+> > +bool netdev_class_has_file_ns(const char *name, const void *ns)
+> > +{
+> > +     return class_has_file_ns(&net_class, name, ns);
+> > +}
+> > +EXPORT_SYMBOL(netdev_class_has_file_ns);
 >
-> Why would you use this?  And what happens if the file shows up, or goes
-> away, instantly after this call is made?
->
-> This feels very broken.
+> Again, this feels broken, it can not solve a race condition.
 >
 
-Ah, I missed considering other usescases.
-If other users don't use locks, this function would return incorrect
-information. The problem seems to become from that this function
-calls kernfs_put().
+This function is considered to be used under rtnl mutex and
+I assume that no one could use "/sys/class/net/*" outside of rtnl mutex.
+So, I think it returns the correct information under rtnl mutex.
 
 Thanks a lot!
 Taehee Yoo
