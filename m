@@ -2,151 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC3C019E1F7
-	for <lists+netdev@lfdr.de>; Sat,  4 Apr 2020 02:39:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA3C719E277
+	for <lists+netdev@lfdr.de>; Sat,  4 Apr 2020 05:19:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726453AbgDDAjr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 20:39:47 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:39433 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726186AbgDDAjq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 20:39:46 -0400
-Received: by mail-oi1-f196.google.com with SMTP id d63so7823187oig.6
-        for <netdev@vger.kernel.org>; Fri, 03 Apr 2020 17:39:46 -0700 (PDT)
+        id S1726297AbgDDDTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 23:19:22 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:42930 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726186AbgDDDTW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 23:19:22 -0400
+Received: by mail-ot1-f68.google.com with SMTP id z5so9498431oth.9;
+        Fri, 03 Apr 2020 20:19:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fwdppA0HowuUxClKJSgNKg+JHXHmd+YQUDGgvkgPrgc=;
-        b=CTYeesYijL6YL0zbY2T3qZ9i9jeI+GL+zJV/w8dCXBJeLXh80ZNTvBGixknssfhX1T
-         1rCCELoyTTit8BEXfL9towo6fN7qTznLFlsXaS3X17sDNz77Xy9qtI2NGU4R04t0aovx
-         OuWqaIM5p76ajHQA97GKBo8dejcwB7YDY/FWI=
+         :cc:content-transfer-encoding;
+        bh=RTly8p3iJA54wQveLK6xwcKTq81ZrBUHxfgTAcTA1Z8=;
+        b=PBPm3xk3Zhyh4WEtZGT4iZUioZXpoQWPKvTJlrPLgJIW7R3KHXQyy44rW7bb3gQmRr
+         MAjFLXSHLR0/mMeCx1NsP108UpaOg6DZEj2Ay8Emby/wekk51VdfVEjYYXypWVpMgSWu
+         9lmbohH8AYCxPu68IG6shouyhXXUV3g+xyYs3XRaoOQw8it4wZnSDokQTSyL8dZ8JWlH
+         4NMi1/IIEQB84ELgmXBy20XjVB8gUbbxGZ+HhVim6pc84LVBKvPWziEk2VoJBESoTXiN
+         H4+67Ph/bJYjsO9JJjJBJVqeUjS4M6usqoDjjvjSNJbVoConiSJpeAwCxCItb7j3wg1K
+         sjjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fwdppA0HowuUxClKJSgNKg+JHXHmd+YQUDGgvkgPrgc=;
-        b=aPQ/SHCeJWEKBCJIc4Tx6+JQpmJaWtg0AcIeaK0FF88Rz00RhFb2vosLN4NGrlaaZ1
-         hbH2Yw4UptEFmosXbYoVTaYnb0HG7/4MW+ZeRY4ZyUnL2cgGYDL3RNKwq3UufIDbWXGv
-         3dOkfL5kQQCSZMFBLvoHKSL3cCZaYAnJ04Xpe4TEDpWBtnNe8UzvKbzk59tbQcj+7HXy
-         37sE+WouYzIfBd96iQV07VSue7n09/55oblj4t1lXl09AQf6kb7yEozJbEwJAO8BVsOy
-         lVGQSXHByHQDtIPp4IR5oUT7QmTLRzdc9Y3q2XJPwRqUGpJr6I0Zxzk2N610/UCudmE9
-         uw7g==
-X-Gm-Message-State: AGi0PubzKXnDbtHg7k9mbbqY+VTl5ceoDr9ocjf0MQj8H+s7kBHq9FSi
-        4JLSEGTG5qdBlUag8eSTmRKIr4FBcLH77BOg6PLArMwp
-X-Google-Smtp-Source: APiQypK6wmBpZkXXMEXYONFsAJvr2BqqX5Cgz+k5e2G1JIYQoEjpB2AFV8zsmkWIpww0h+1ARvwfZ49JiRrnCJchBqs=
-X-Received: by 2002:aca:1e0e:: with SMTP id m14mr5275665oic.136.1585960785750;
- Fri, 03 Apr 2020 17:39:45 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=RTly8p3iJA54wQveLK6xwcKTq81ZrBUHxfgTAcTA1Z8=;
+        b=sltS6n4vgQIO6lAVYp7j2ea/UrKV+Z5hP3/zwCkRCdE1zqOLYlkIHmOf+Sr3vWwkuN
+         q7VHLSMhZneeXMNKrAdB8/60Be1ngdisJW5vBQUg7lylwKpxELq/6z1SzHUgmdxhtbxm
+         AucCX7tncJXi0q4Y+ksOTMF9JjwmCqCLX/bWoENcBXbShwYUJLy7SUXIoiA9xuvUCKSQ
+         QwyaNbVxQyXqTmo1ctIWPgiv+sHQScwZi3xaLstZ2Ffbh04ahwQ2qk8zogTpWI0SNO6O
+         TOXiXcT+cFqh09KMVHRBqxF9j0RGOyEbUzhxdPJj5K3bYmmaiYOtw9Jn1na0cFy6GpRc
+         K/AA==
+X-Gm-Message-State: AGi0Pub3+Dqb9etj14kyxionhwsfXubaOpLEmE1OmBsEbQZB9ykBv/IV
+        XbZhzFbmeq9Cg/Vn9fM5w+S/JgVrwu5foOrgERQ=
+X-Google-Smtp-Source: APiQypLv6No4WClkuaXzzhXvWFmPvXoxH6GZGX5Z0oivPxYgzY5GBClyMuhj5EwhtDn3Wicr/GZFbALmhg+fsa11XJc=
+X-Received: by 2002:a9d:1b6d:: with SMTP id l100mr8444823otl.70.1585970361154;
+ Fri, 03 Apr 2020 20:19:21 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200403150236.74232-1-linux@roeck-us.net> <CALWDO_WK2Vcq+92isabfsn8+=0UPoexF4pxbnEcJJPGas62-yw@mail.gmail.com>
- <0f0ea237-5976-e56f-cd31-96b76bb03254@roeck-us.net> <CALWDO_VfZV0_uvsXyWAa-uOQ21228rUDsaChgkex88pyiP3U=A@mail.gmail.com>
-In-Reply-To: <CALWDO_VfZV0_uvsXyWAa-uOQ21228rUDsaChgkex88pyiP3U=A@mail.gmail.com>
-From:   Sonny Sasaka <sonnysasaka@chromium.org>
-Date:   Fri, 3 Apr 2020 17:39:34 -0700
-Message-ID: <CAOxioNn-eRnMmLu7dk9bLi5KwRzh_yip4hiwMY6mRW6cYMaWeA@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: Simplify / fix return values from tk_request
-To:     Alain Michaud <alainmichaud@google.com>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        BlueZ <linux-bluetooth@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20200403112830.505720-1-gch981213@gmail.com> <20200403180911.Horde.9xqnJvjcRDe-ttshlJbG6WE@www.vdorst.com>
+In-Reply-To: <20200403180911.Horde.9xqnJvjcRDe-ttshlJbG6WE@www.vdorst.com>
+From:   Chuanhong Guo <gch981213@gmail.com>
+Date:   Sat, 4 Apr 2020 11:19:10 +0800
+Message-ID: <CAJsYDVJj1JajVxeGifaOprXYstG-gC_OYwd5LrALUY_4BdtR3A@mail.gmail.com>
+Subject: Re: [PATCH] net: dsa: mt7530: fix null pointer dereferencing in port5 setup
+To:     =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>
+Cc:     netdev@vger.kernel.org, stable@vger.kernel.org,
+        Sean Wang <sean.wang@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-mediatek@lists.infradead.org,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The patch looks good to me. Agreed with Guenter's assessment, I made a
-mistake in the original patch by not being consistent with the
-function contract.
+Hi!
 
-On Fri, Apr 3, 2020 at 9:57 AM Alain Michaud <alainmichaud@google.com> wrote:
+On Sat, Apr 4, 2020 at 2:09 AM Ren=C3=A9 van Dorst <opensource@vdorst.com> =
+wrote:
 >
-> On Fri, Apr 3, 2020 at 12:43 PM Guenter Roeck <linux@roeck-us.net> wrote:
-> >
-> > On 4/3/20 8:13 AM, Alain Michaud wrote:
-> > > Hi Guenter/Marcel,
-> > >
-> > >
-> > > On Fri, Apr 3, 2020 at 11:03 AM Guenter Roeck <linux@roeck-us.net> wrote:
-> > >>
-> > >> Some static checker run by 0day reports a variableScope warning.
-> > >>
-> > >> net/bluetooth/smp.c:870:6: warning:
-> > >>         The scope of the variable 'err' can be reduced. [variableScope]
-> > >>
-> > >> There is no need for two separate variables holding return values.
-> > >> Stick with the existing variable. While at it, don't pre-initialize
-> > >> 'ret' because it is set in each code path.
-> > >>
-> > >> tk_request() is supposed to return a negative error code on errors,
-> > >> not a bluetooth return code. The calling code converts the return
-> > >> value to SMP_UNSPECIFIED if needed.
-> > >>
-> > >> Fixes: 92516cd97fd4 ("Bluetooth: Always request for user confirmation for Just Works")
-> > >> Cc: Sonny Sasaka <sonnysasaka@chromium.org>
-> > >> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-> > >> ---
-> > >>  net/bluetooth/smp.c | 9 ++++-----
-> > >>  1 file changed, 4 insertions(+), 5 deletions(-)
-> > >>
-> > >> diff --git a/net/bluetooth/smp.c b/net/bluetooth/smp.c
-> > >> index d0b695ee49f6..30e8626dd553 100644
-> > >> --- a/net/bluetooth/smp.c
-> > >> +++ b/net/bluetooth/smp.c
-> > >> @@ -854,8 +854,7 @@ static int tk_request(struct l2cap_conn *conn, u8 remote_oob, u8 auth,
-> > >>         struct l2cap_chan *chan = conn->smp;
-> > >>         struct smp_chan *smp = chan->data;
-> > >>         u32 passkey = 0;
-> > >> -       int ret = 0;
-> > >> -       int err;
-> > >> +       int ret;
-> > >>
-> > >>         /* Initialize key for JUST WORKS */
-> > >>         memset(smp->tk, 0, sizeof(smp->tk));
-> > >> @@ -887,12 +886,12 @@ static int tk_request(struct l2cap_conn *conn, u8 remote_oob, u8 auth,
-> > >>         /* If Just Works, Continue with Zero TK and ask user-space for
-> > >>          * confirmation */
-> > >>         if (smp->method == JUST_WORKS) {
-> > >> -               err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
-> > >> +               ret = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
-> > >>                                                 hcon->type,
-> > >>                                                 hcon->dst_type,
-> > >>                                                 passkey, 1);
-> > >> -               if (err)
-> > >> -                       return SMP_UNSPECIFIED;
-> > >> +               if (ret)
-> > >> +                       return ret;
-> > > I think there may be some miss match between expected types of error
-> > > codes here.  The SMP error code type seems to be expected throughout
-> > > this code base, so this change would propagate a potential negative
-> > > value while the rest of the SMP protocol expects strictly positive
-> > > error codes.
-> > >
-> >
-> > Up to the patch introducing the SMP_UNSPECIFIED return value, tk_request()
-> > returned negative error codes, and all callers convert it to SMP_UNSPECIFIED.
-> >
-> > If tk_request() is supposed to return SMP_UNSPECIFIED on error, it should
-> > be returned consistently, and its callers don't have to convert it again.
-> Agreed, the conventions aren't clear here.  I'll differ to Marcel to
-> provide guidance in this case where as a long term solution might
-> increase the scope of this patch beyond what would be reasonable.
-> >
-> > Guenter
-> >
-> > >>                 set_bit(SMP_FLAG_WAIT_USER, &smp->flags);
-> > >>                 return 0;
-> > >>         }
-> > >> --
-> > >> 2.17.1
-> > >>
-> > >
-> > > Thanks,
-> > > Alain
-> > >
-> >
+> Quoting Chuanhong Guo <gch981213@gmail.com>:
+>
+> Hi Chuanhong,
+>
+> > The 2nd gmac of mediatek soc ethernet may not be connected to a PHY
+> > and a phy-handle isn't always available.
+> > Unfortunately, mt7530 dsa driver assumes that the 2nd gmac is always
+> > connected to switch port 5 and setup mt7530 according to phy address
+> > of 2nd gmac node, causing null pointer dereferencing when phy-handle
+> > isn't defined in dts.
+>
+> MT7530 tries to detect if 2nd GMAC is using a phy with phy-address 0 or 4=
+.
+
+What if the 2nd GMAC connects to an external PHY on address 0 on a
+different mdio-bus? This is already happening on mt7629 where the
+integrated PHY connected to gmac2 is on address 0 and gmac1
+connects to external mt753x switch.
+On mt7621, the RGMII2 is always wired to switch mac5 as well as
+external pins, and one should disable switch mac5 in this case or
+there's pin conflict.
+
+> If so, switch port 5 needs to be setup so that PHY 0 or 4 is available
+> via port 5 of the switch. Any MAC can talk to PHY 0/4 directly via port 5=
+.
+> This is also explained in the kernel docs mt7530.txt.
+>
+> May be there are better way to detect that any node is using phy 0/4 of
+> the switch.
+
+It should never be detected. This piece of code is to configure how
+RGMII2 on mt7530 is wired: PHY0/PHY4/switch MAC5/off. And it
+should be implemented as a configurable dt property. We should
+not make assumption that 2 RGMIIs always connected to the two
+macs on mtk_eth_soc and we should never parse parent eth dts
+in DSA driver.
+
+--=20
+Regards,
+Chuanhong Guo
