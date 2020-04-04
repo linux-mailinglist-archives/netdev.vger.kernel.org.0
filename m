@@ -2,231 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA04919E4E0
-	for <lists+netdev@lfdr.de>; Sat,  4 Apr 2020 14:20:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 681FC19E4ED
+	for <lists+netdev@lfdr.de>; Sat,  4 Apr 2020 14:39:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726229AbgDDMT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Apr 2020 08:19:56 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:48138 "EHLO mx.0dd.nl"
+        id S1726230AbgDDMay (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Apr 2020 08:30:54 -0400
+Received: from mout.web.de ([212.227.17.12]:58315 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725870AbgDDMT4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 4 Apr 2020 08:19:56 -0400
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id A81075FC75;
-        Sat,  4 Apr 2020 14:19:54 +0200 (CEST)
-Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="FnkcgQFR";
-        dkim-atps=neutral
-Received: from www (www.vdorst.com [192.168.2.222])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.vdorst.com (Postfix) with ESMTPSA id 4CD4627C8BA;
-        Sat,  4 Apr 2020 14:19:54 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 4CD4627C8BA
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1586002794;
-        bh=ctayAcaFI2hlA1UO9mKHsTkEOszfKFOnmNt31e4Np0I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FnkcgQFRZELMzJe7wCKoQLLnSJGlZWKvPN6+dQ6pGu2p1AJE439FO+gj7O8yLm2FD
-         51WSsVONmjWuhENP5JtBfGcBJstO848Mcr1Su1pN+ntJOfggcmGfly9QsN3BZKd1Wc
-         9OsTxvzq6kYNQdnEAmxRJ5pdAEz2EfIYLRB1+Xc51kKwOYVeXgYYbGfOYPDTy5RmUH
-         PjfibHRoWN2G1gcctcK8ax45ErcuaBVa/8o/8S04z1+sABIwbHS6UiWiF0+jvbdT+j
-         AqRZtxuPtDVw09HjT+mv2mB5UT+9Px5SpXLKJ5cgKNGmQHfJqjp/WwAGPg0XKZ6Ay/
-         i05ABzsRQxn9g==
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
- www.vdorst.com (Horde Framework) with HTTPS; Sat, 04 Apr 2020 12:19:54 +0000
-Date:   Sat, 04 Apr 2020 12:19:54 +0000
-Message-ID: <20200404121954.Horde.D4IT7LfXGUekf9m8q6GWcn4@www.vdorst.com>
-From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
-To:     sean.wang@mediatek.com
-Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
-        vivien.didelot@savoirfairelinux.com, Mark-MC.Lee@mediatek.com,
-        john@phrozen.org, Landen.Chao@mediatek.com,
-        steven.liu@mediatek.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH net 2/2] net: ethernet: mediatek: move mt7623 settings
- out off the mt7530
-References: <1585960697-15547-1-git-send-email-sean.wang@mediatek.com>
- <1585960697-15547-2-git-send-email-sean.wang@mediatek.com>
-In-Reply-To: <1585960697-15547-2-git-send-email-sean.wang@mediatek.com>
-User-Agent: Horde Application Framework 5
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
+        id S1725870AbgDDMax (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 4 Apr 2020 08:30:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1586003423;
+        bh=EgjoOrOfNszCHgR9zPO/wVOqjPYsnHpGG05ACXZM6SI=;
+        h=X-UI-Sender-Class:To:Cc:Subject:From:Date;
+        b=MVKLfNt5zzz6HHa2uAzeCe/HJRZY1E3fnLWkxTJrmtTfAi/cP9AYP2lkL70CYLaD4
+         8p/koFI2CyF+3ak2cXYpFZ0yVGjLhqUP6/6gQPeRE+/ikLVDhG4bQbHIf+d8sq1ort
+         VVJfJsfbnAONRuDkZg1Cj0G8pl5rCviouXZSSBkY=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.3] ([93.132.181.229]) by smtp.web.de (mrweb103
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0M3T5g-1j3B1T0Dtw-00qzd3; Sat, 04
+ Apr 2020 14:30:23 +0200
+To:     Qiujun Huang <hqjagain@gmail.com>, ath9k-devel@qca.qualcomm.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Qiujun Huang <anenbupt@gmail.com>
+Subject: Re: [PATCH 1/5] ath9k: Fix use-after-free read in htc_connect_service
+From:   Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <d3083092-bb87-daa4-673c-06f935285254@web.de>
+Date:   Sat, 4 Apr 2020 14:30:21 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:004CYPF3hqD9JGG6qw09Kz9gax4Qh7fBcp/QBmGBQzF6SkiDZJF
+ kRf1CF8yB+by6102CbFrVb3zXSLMXWWD6crWOTnPePy1eF11k3BTczT44KsuocCqjUJjFiw
+ I2XZBXyKDYEdKeQk/oXQa86eR65MRP6gkEq/iD/FNleUfZ0h4ZKX44tSAarTNI4pjOWQqqi
+ HlrYK7ewRHYxMfw3KkIQA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:NOL2uWzJc8g=:jD03p0FtoayiqIkM2IUeUB
+ xBNpnwqLePoPIFd1EWGzSaeISkXc/IsW8Xo8kqjY7x5oEDQgpliFig5vog+DkA8xBL6Dz1VFM
+ BJvQqZH8XX+p/lK4aFe9Qoufh09p/Hpg2vrh9RSjqn2MNXNnmfx/25+bW+75mZWAQUO4kWkUP
+ rCV7H7oLq6lhhhkX8om89oWt9KjvvzesysbMRJRq9zCeabDn9OcEy+e0ZBxJEiQV6wubfaDag
+ 61C61Guia7zDIs7ox4K8GZAmFQAD/xgaymOZoL/OCFiallvZpsWtc9rzDNt20wHt3AXLk8PxM
+ tJG5cVY5qtlPwbQDtdJjwat7YhK1qZwN60Lx5vnQeYlD3/NOncug5N3ZJUmKP8BHxos7s7Cvx
+ ncX1/4yc0NyI8b6pFrr+nYAnacDFNHfoE7G7SruApTGiKeFcWZXeZFKSXFzxgK163JetBtu0L
+ uXFfpGU8YB73TA7qaRYqvldI2+dW/hr84sbn7p2PfKUE2ikS7rVD7mK6/3e/IkCyihVEKUOhd
+ Pr6sQ0RPNcaLz+ZCJv56jZRRYpLOYucP07aa6wTuF6uf9bKZU4tyPhS1NSF8TvR94NQsW80te
+ XBuoYw6mC++TYlIZaRqofb4M54JNjDMMTglt2GM3b00lUIpGAWpb7ZtMwlipM9+ZeI/9P00DU
+ 8vAGyXfplNhAQ83/ndYa1YRHNSup4ce1rrMubR2bFfQGepVQyJTpncyS4JoRMSma03e+NEgbq
+ bueuXc63z+2OZO2Q0K6uOOcivkDnnCYXqOkYHTStrj5UA99L9DIZSrcSgqECPhaMcetlPj2ir
+ JKf2fIL2GItXfJ9z6bxdBZh5r3UE+2Lvmx+/PUyNjQUGKVFHubsOnEVhAEP9KzSuj5lw9CLLp
+ bsm3y7vLn2YNtlu4IqAdJgXZiWfpXzqx9/NsZ8voHRFfNQ43ikNGYrnRGl6F5lZhwl9GcHiDu
+ YJRL9wFnO/Xxz23n0EjEtCLtOFbCTeVZ9nNTF4JvSnpeAvYV1L1HKE/WgxHI4yZVfNZt9rX/k
+ vczcDwGFvxSBhcW5QzlJdtO3cvhFLqtBmuSlxlr8CvrQQY4ldIGyE3+yfKZrquvo1169W02IL
+ rPd/4udCYbFO0GjWuBRKwvVhTeRf9YqVgX5wjvQVgk2UE5H+7mBkl+guGHf/4H849jBgAwLyp
+ iRtpH2+SQGFkR4DL/E9eY4lk88KICfgIMnBGIbKdirZFkMG56Bj97ih2EyBLmFwezaODR9Qlr
+ XDGUy6HyxgANKNRvs
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sean,
+> The skb is consumed by htc_send_epid, so it needn't release again.
 
-See comments below.
+I suggest to use the word =E2=80=9Creleased=E2=80=9D so that a typo will b=
+e avoided
+in the final commit message.
 
-Quoting sean.wang@mediatek.com:
-
-> From: René van Dorst <opensource@vdorst.com>
->
-> Moving mt7623 logic out off mt7530, is required to make hardware setting
-> consistent after we introduce phylink to mtk driver.
->
-> Fixes: b8fc9f30821e ("net: ethernet: mediatek: Add basic PHYLINK support")
-> Reviewed-by: Sean Wang <sean.wang@mediatek.com>
-> Tested-by: Sean Wang <sean.wang@mediatek.com>
-> Signed-off-by: René van Dorst <opensource@vdorst.com>
-> ---
->  drivers/net/ethernet/mediatek/mtk_eth_soc.c | 43 ++++++++++++++++++---
->  drivers/net/ethernet/mediatek/mtk_eth_soc.h |  8 ++++
->  2 files changed, 45 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c  
-> b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> index 8d28f90acfe7..14da599664e6 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> @@ -65,6 +65,17 @@ u32 mtk_r32(struct mtk_eth *eth, unsigned reg)
->  	return __raw_readl(eth->base + reg);
->  }
->
-> +u32 mtk_m32(struct mtk_eth *eth, u32 mask, u32 set, unsigned reg)
-> +{
-> +	u32 val;
-> +
-> +	val = mtk_r32(eth, reg);
-> +	val &= ~mask;
-> +	val |= set;
-> +	mtk_w32(eth, val, reg);
-> +	return reg;
-> +}
-> +
->  static int mtk_mdio_busy_wait(struct mtk_eth *eth)
->  {
->  	unsigned long t_start = jiffies;
-> @@ -160,11 +171,21 @@ static int mt7621_gmac0_rgmii_adjust(struct  
-> mtk_eth *eth,
->  	return 0;
->  }
->
-> -static void mtk_gmac0_rgmii_adjust(struct mtk_eth *eth, int speed)
-> +static void mtk_gmac0_rgmii_adjust(struct mtk_eth *eth,
-> +				   phy_interface_t interface, int speed)
->  {
->  	u32 val;
->  	int ret;
->
-> +	if (interface == PHY_INTERFACE_MODE_TRGMII) {
-> +		mtk_w32(eth, TRGMII_MODE, INTF_MODE);
-> +		val = 500000000;
-> +		ret = clk_set_rate(eth->clks[MTK_CLK_TRGPLL], val);
-> +		if (ret)
-> +			dev_err(eth->dev, "Failed to set trgmii pll: %d\n", ret);
-> +		return;
-> +	}
-> +
->  	val = (speed == SPEED_1000) ?
->  		INTF_MODE_RGMII_1000 : INTF_MODE_RGMII_10_100;
->  	mtk_w32(eth, val, INTF_MODE);
-> @@ -193,7 +214,7 @@ static void mtk_mac_config(struct phylink_config  
-> *config, unsigned int mode,
->  	struct mtk_mac *mac = container_of(config, struct mtk_mac,
->  					   phylink_config);
->  	struct mtk_eth *eth = mac->hw;
-> -	u32 mcr_cur, mcr_new, sid;
-> +	u32 mcr_cur, mcr_new, sid, i;
->  	int val, ge_mode, err;
->
->  	/* MT76x8 has no hardware settings between for the MAC */
-> @@ -251,10 +272,20 @@ static void mtk_mac_config(struct  
-> phylink_config *config, unsigned int mode,
->  							      state->interface))
->  					goto err_phy;
->  			} else {
-> -				if (state->interface !=
-> -				    PHY_INTERFACE_MODE_TRGMII)
-> -					mtk_gmac0_rgmii_adjust(mac->hw,
-> -							       state->speed);
-> +				mtk_gmac0_rgmii_adjust(mac->hw,
-> +						       state->interface,
-> +						       state->speed);
-> +
-
-As I tried to explain in my email of 27 March.
-
-mtk_gmac0_rgmii_adjust() needs to be modified or split-up!
-Russell King pointed out that mtk_gmac0_rgmii_adjust() is using state->speed
-variable. This variable may has not the right value so it should not be used
-here. Also mtk_gmac0_rgmii_adjust() is only called on a  
-state->interface change
-not state->speed change.
-
-So can we make this function only dependend on the state->interface and how?
-
-I think in both cases, remove mtk_gmac0_rgmii_adjust() changes in this  
-patch and
-create a separet patch to fix mtk_gmac0_rgmii_adjust() issue. Would be  
-great if
-that also complies to the latest PHYLINK api [1]. So that functions that using
-state->speed and other related parameters move to mac_link_up(). Similair also
-on the mt7530 switch driver [2].
-
-Greats,
-
-René
-
-[1]:  
-https://lore.kernel.org/linux-arm-kernel/20200217172242.GZ25745@shell.armlinux.org.uk/
-[2]:  
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=1d01145fd659f9f96ede1c34e3bea0ccb558a293
-
-> +				/* mt7623_pad_clk_setup */
-> +				for (i = 0 ; i < NUM_TRGMII_CTRL; i++)
-> +					mtk_w32(mac->hw,
-> +						TD_DM_DRVP(8) | TD_DM_DRVN(8),
-> +						TRGMII_TD_ODT(i));
-> +
-> +				/* Assert/release MT7623 RXC reset */
-> +				mtk_m32(mac->hw, 0, RXC_RST | RXC_DQSISEL,
-> +					TRGMII_RCK_CTRL);
-> +				mtk_m32(mac->hw, RXC_RST, 0, TRGMII_RCK_CTRL);
->  			}
->  		}
->
-> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h  
-> b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-> index 85830fe14a1b..454cfcd465fd 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-> @@ -352,10 +352,13 @@
->  #define DQSI0(x)		((x << 0) & GENMASK(6, 0))
->  #define DQSI1(x)		((x << 8) & GENMASK(14, 8))
->  #define RXCTL_DMWTLAT(x)	((x << 16) & GENMASK(18, 16))
-> +#define RXC_RST			BIT(31)
->  #define RXC_DQSISEL		BIT(30)
->  #define RCK_CTRL_RGMII_1000	(RXC_DQSISEL | RXCTL_DMWTLAT(2) | DQSI1(16))
->  #define RCK_CTRL_RGMII_10_100	RXCTL_DMWTLAT(2)
->
-> +#define NUM_TRGMII_CTRL		5
-> +
->  /* TRGMII RXC control register */
->  #define TRGMII_TCK_CTRL		0x10340
->  #define TXCTL_DMWTLAT(x)	((x << 16) & GENMASK(18, 16))
-> @@ -363,6 +366,11 @@
->  #define TCK_CTRL_RGMII_1000	TXCTL_DMWTLAT(2)
->  #define TCK_CTRL_RGMII_10_100	(TXC_INV | TXCTL_DMWTLAT(2))
->
-> +/* TRGMII TX Drive Strength */
-> +#define TRGMII_TD_ODT(i)	(0x10354 + 8 * (i))
-> +#define  TD_DM_DRVP(x)		((x) & 0xf)
-> +#define  TD_DM_DRVN(x)		(((x) & 0xf) << 4)
-> +
->  /* TRGMII Interface mode register */
->  #define INTF_MODE		0x10390
->  #define TRGMII_INTF_DIS		BIT(0)
-> --
-> 2.25.1
-
-
-
+Regards,
+Markus
