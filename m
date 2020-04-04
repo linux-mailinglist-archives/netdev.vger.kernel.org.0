@@ -2,127 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3D5F19E1F3
-	for <lists+netdev@lfdr.de>; Sat,  4 Apr 2020 02:38:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC3C019E1F7
+	for <lists+netdev@lfdr.de>; Sat,  4 Apr 2020 02:39:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726314AbgDDAi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Apr 2020 20:38:29 -0400
-Received: from mailgw02.mediatek.com ([210.61.82.184]:53575 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726060AbgDDAi2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 20:38:28 -0400
-X-UUID: 04a1bc8cd0d0426b99e77206e7fb76d0-20200404
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=0bVyoWv6qoGb6EzC4renaHQUyi40WWljdwPyCk1Mog8=;
-        b=dyX2dyBMkgiAQYlgJOZEHqRr2JSxHQTqjC4H5DLYu+i1dDWlggTmYkJqe/pKkumu/IotsxZkeN/rJC2rwvuOwAvAtLhKUxR274biB5Uy6LlC8tnM3uR8FK6TkQfIOdD29A5+og3XAq6tbZwBTCAf+jaxZxWr+aiR9VRgVu4RuJQ=;
-X-UUID: 04a1bc8cd0d0426b99e77206e7fb76d0-20200404
-Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw02.mediatek.com
-        (envelope-from <sean.wang@mediatek.com>)
-        (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
-        with ESMTP id 26405071; Sat, 04 Apr 2020 08:38:23 +0800
-Received: from mtkcas08.mediatek.inc (172.21.101.126) by
- mtkmbs02n2.mediatek.inc (172.21.101.101) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Sat, 4 Apr 2020 08:38:20 +0800
-Received: from mtkswgap22.mediatek.inc (172.21.77.33) by mtkcas08.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sat, 4 Apr 2020 08:38:21 +0800
-From:   <sean.wang@mediatek.com>
-To:     <davem@davemloft.net>, <andrew@lunn.ch>, <f.fainelli@gmail.com>,
-        <vivien.didelot@savoirfairelinux.com>, <Mark-MC.Lee@mediatek.com>,
-        <john@phrozen.org>
-CC:     <Landen.Chao@mediatek.com>, <steven.liu@mediatek.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
-Subject: [PATCH net 2/2] net: ethernet: mediatek: move mt7623 settings out off the mt7530
-Date:   Sat, 4 Apr 2020 08:38:17 +0800
-Message-ID: <1585960697-15547-2-git-send-email-sean.wang@mediatek.com>
-X-Mailer: git-send-email 1.7.9.5
-In-Reply-To: <1585960697-15547-1-git-send-email-sean.wang@mediatek.com>
-References: <1585960697-15547-1-git-send-email-sean.wang@mediatek.com>
+        id S1726453AbgDDAjr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Apr 2020 20:39:47 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:39433 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726186AbgDDAjq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Apr 2020 20:39:46 -0400
+Received: by mail-oi1-f196.google.com with SMTP id d63so7823187oig.6
+        for <netdev@vger.kernel.org>; Fri, 03 Apr 2020 17:39:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fwdppA0HowuUxClKJSgNKg+JHXHmd+YQUDGgvkgPrgc=;
+        b=CTYeesYijL6YL0zbY2T3qZ9i9jeI+GL+zJV/w8dCXBJeLXh80ZNTvBGixknssfhX1T
+         1rCCELoyTTit8BEXfL9towo6fN7qTznLFlsXaS3X17sDNz77Xy9qtI2NGU4R04t0aovx
+         OuWqaIM5p76ajHQA97GKBo8dejcwB7YDY/FWI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fwdppA0HowuUxClKJSgNKg+JHXHmd+YQUDGgvkgPrgc=;
+        b=aPQ/SHCeJWEKBCJIc4Tx6+JQpmJaWtg0AcIeaK0FF88Rz00RhFb2vosLN4NGrlaaZ1
+         hbH2Yw4UptEFmosXbYoVTaYnb0HG7/4MW+ZeRY4ZyUnL2cgGYDL3RNKwq3UufIDbWXGv
+         3dOkfL5kQQCSZMFBLvoHKSL3cCZaYAnJ04Xpe4TEDpWBtnNe8UzvKbzk59tbQcj+7HXy
+         37sE+WouYzIfBd96iQV07VSue7n09/55oblj4t1lXl09AQf6kb7yEozJbEwJAO8BVsOy
+         lVGQSXHByHQDtIPp4IR5oUT7QmTLRzdc9Y3q2XJPwRqUGpJr6I0Zxzk2N610/UCudmE9
+         uw7g==
+X-Gm-Message-State: AGi0PubzKXnDbtHg7k9mbbqY+VTl5ceoDr9ocjf0MQj8H+s7kBHq9FSi
+        4JLSEGTG5qdBlUag8eSTmRKIr4FBcLH77BOg6PLArMwp
+X-Google-Smtp-Source: APiQypK6wmBpZkXXMEXYONFsAJvr2BqqX5Cgz+k5e2G1JIYQoEjpB2AFV8zsmkWIpww0h+1ARvwfZ49JiRrnCJchBqs=
+X-Received: by 2002:aca:1e0e:: with SMTP id m14mr5275665oic.136.1585960785750;
+ Fri, 03 Apr 2020 17:39:45 -0700 (PDT)
 MIME-Version: 1.0
+References: <20200403150236.74232-1-linux@roeck-us.net> <CALWDO_WK2Vcq+92isabfsn8+=0UPoexF4pxbnEcJJPGas62-yw@mail.gmail.com>
+ <0f0ea237-5976-e56f-cd31-96b76bb03254@roeck-us.net> <CALWDO_VfZV0_uvsXyWAa-uOQ21228rUDsaChgkex88pyiP3U=A@mail.gmail.com>
+In-Reply-To: <CALWDO_VfZV0_uvsXyWAa-uOQ21228rUDsaChgkex88pyiP3U=A@mail.gmail.com>
+From:   Sonny Sasaka <sonnysasaka@chromium.org>
+Date:   Fri, 3 Apr 2020 17:39:34 -0700
+Message-ID: <CAOxioNn-eRnMmLu7dk9bLi5KwRzh_yip4hiwMY6mRW6cYMaWeA@mail.gmail.com>
+Subject: Re: [PATCH] Bluetooth: Simplify / fix return values from tk_request
+To:     Alain Michaud <alainmichaud@google.com>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        BlueZ <linux-bluetooth@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-TM-SNTS-SMTP: E5739DF59F6A401EEA2953695B4595341229673A67FE42F9773F8F6918567BB12000:8
-X-MTK:  N
-Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogUmVuw6kgdmFuIERvcnN0IDxvcGVuc291cmNlQHZkb3JzdC5jb20+DQoNCk1vdmluZyBt
-dDc2MjMgbG9naWMgb3V0IG9mZiBtdDc1MzAsIGlzIHJlcXVpcmVkIHRvIG1ha2UgaGFyZHdhcmUg
-c2V0dGluZw0KY29uc2lzdGVudCBhZnRlciB3ZSBpbnRyb2R1Y2UgcGh5bGluayB0byBtdGsgZHJp
-dmVyLg0KDQpGaXhlczogYjhmYzlmMzA4MjFlICgibmV0OiBldGhlcm5ldDogbWVkaWF0ZWs6IEFk
-ZCBiYXNpYyBQSFlMSU5LIHN1cHBvcnQiKQ0KUmV2aWV3ZWQtYnk6IFNlYW4gV2FuZyA8c2Vhbi53
-YW5nQG1lZGlhdGVrLmNvbT4NClRlc3RlZC1ieTogU2VhbiBXYW5nIDxzZWFuLndhbmdAbWVkaWF0
-ZWsuY29tPg0KU2lnbmVkLW9mZi1ieTogUmVuw6kgdmFuIERvcnN0IDxvcGVuc291cmNlQHZkb3Jz
-dC5jb20+DQotLS0NCiBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWRpYXRlay9tdGtfZXRoX3NvYy5j
-IHwgNDMgKysrKysrKysrKysrKysrKysrLS0tDQogZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVkaWF0
-ZWsvbXRrX2V0aF9zb2MuaCB8ICA4ICsrKysNCiAyIGZpbGVzIGNoYW5nZWQsIDQ1IGluc2VydGlv
-bnMoKyksIDYgZGVsZXRpb25zKC0pDQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5l
-dC9tZWRpYXRlay9tdGtfZXRoX3NvYy5jIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVkaWF0ZWsv
-bXRrX2V0aF9zb2MuYw0KaW5kZXggOGQyOGY5MGFjZmU3Li4xNGRhNTk5NjY0ZTYgMTAwNjQ0DQot
-LS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWRpYXRlay9tdGtfZXRoX3NvYy5jDQorKysgYi9k
-cml2ZXJzL25ldC9ldGhlcm5ldC9tZWRpYXRlay9tdGtfZXRoX3NvYy5jDQpAQCAtNjUsNiArNjUs
-MTcgQEAgdTMyIG10a19yMzIoc3RydWN0IG10a19ldGggKmV0aCwgdW5zaWduZWQgcmVnKQ0KIAly
-ZXR1cm4gX19yYXdfcmVhZGwoZXRoLT5iYXNlICsgcmVnKTsNCiB9DQogDQordTMyIG10a19tMzIo
-c3RydWN0IG10a19ldGggKmV0aCwgdTMyIG1hc2ssIHUzMiBzZXQsIHVuc2lnbmVkIHJlZykNCit7
-DQorCXUzMiB2YWw7DQorDQorCXZhbCA9IG10a19yMzIoZXRoLCByZWcpOw0KKwl2YWwgJj0gfm1h
-c2s7DQorCXZhbCB8PSBzZXQ7DQorCW10a193MzIoZXRoLCB2YWwsIHJlZyk7DQorCXJldHVybiBy
-ZWc7DQorfQ0KKw0KIHN0YXRpYyBpbnQgbXRrX21kaW9fYnVzeV93YWl0KHN0cnVjdCBtdGtfZXRo
-ICpldGgpDQogew0KIAl1bnNpZ25lZCBsb25nIHRfc3RhcnQgPSBqaWZmaWVzOw0KQEAgLTE2MCwx
-MSArMTcxLDIxIEBAIHN0YXRpYyBpbnQgbXQ3NjIxX2dtYWMwX3JnbWlpX2FkanVzdChzdHJ1Y3Qg
-bXRrX2V0aCAqZXRoLA0KIAlyZXR1cm4gMDsNCiB9DQogDQotc3RhdGljIHZvaWQgbXRrX2dtYWMw
-X3JnbWlpX2FkanVzdChzdHJ1Y3QgbXRrX2V0aCAqZXRoLCBpbnQgc3BlZWQpDQorc3RhdGljIHZv
-aWQgbXRrX2dtYWMwX3JnbWlpX2FkanVzdChzdHJ1Y3QgbXRrX2V0aCAqZXRoLA0KKwkJCQkgICBw
-aHlfaW50ZXJmYWNlX3QgaW50ZXJmYWNlLCBpbnQgc3BlZWQpDQogew0KIAl1MzIgdmFsOw0KIAlp
-bnQgcmV0Ow0KIA0KKwlpZiAoaW50ZXJmYWNlID09IFBIWV9JTlRFUkZBQ0VfTU9ERV9UUkdNSUkp
-IHsNCisJCW10a193MzIoZXRoLCBUUkdNSUlfTU9ERSwgSU5URl9NT0RFKTsNCisJCXZhbCA9IDUw
-MDAwMDAwMDsNCisJCXJldCA9IGNsa19zZXRfcmF0ZShldGgtPmNsa3NbTVRLX0NMS19UUkdQTExd
-LCB2YWwpOw0KKwkJaWYgKHJldCkNCisJCQlkZXZfZXJyKGV0aC0+ZGV2LCAiRmFpbGVkIHRvIHNl
-dCB0cmdtaWkgcGxsOiAlZFxuIiwgcmV0KTsNCisJCXJldHVybjsNCisJfQ0KKw0KIAl2YWwgPSAo
-c3BlZWQgPT0gU1BFRURfMTAwMCkgPw0KIAkJSU5URl9NT0RFX1JHTUlJXzEwMDAgOiBJTlRGX01P
-REVfUkdNSUlfMTBfMTAwOw0KIAltdGtfdzMyKGV0aCwgdmFsLCBJTlRGX01PREUpOw0KQEAgLTE5
-Myw3ICsyMTQsNyBAQCBzdGF0aWMgdm9pZCBtdGtfbWFjX2NvbmZpZyhzdHJ1Y3QgcGh5bGlua19j
-b25maWcgKmNvbmZpZywgdW5zaWduZWQgaW50IG1vZGUsDQogCXN0cnVjdCBtdGtfbWFjICptYWMg
-PSBjb250YWluZXJfb2YoY29uZmlnLCBzdHJ1Y3QgbXRrX21hYywNCiAJCQkJCSAgIHBoeWxpbmtf
-Y29uZmlnKTsNCiAJc3RydWN0IG10a19ldGggKmV0aCA9IG1hYy0+aHc7DQotCXUzMiBtY3JfY3Vy
-LCBtY3JfbmV3LCBzaWQ7DQorCXUzMiBtY3JfY3VyLCBtY3JfbmV3LCBzaWQsIGk7DQogCWludCB2
-YWwsIGdlX21vZGUsIGVycjsNCiANCiAJLyogTVQ3Nng4IGhhcyBubyBoYXJkd2FyZSBzZXR0aW5n
-cyBiZXR3ZWVuIGZvciB0aGUgTUFDICovDQpAQCAtMjUxLDEwICsyNzIsMjAgQEAgc3RhdGljIHZv
-aWQgbXRrX21hY19jb25maWcoc3RydWN0IHBoeWxpbmtfY29uZmlnICpjb25maWcsIHVuc2lnbmVk
-IGludCBtb2RlLA0KIAkJCQkJCQkgICAgICBzdGF0ZS0+aW50ZXJmYWNlKSkNCiAJCQkJCWdvdG8g
-ZXJyX3BoeTsNCiAJCQl9IGVsc2Ugew0KLQkJCQlpZiAoc3RhdGUtPmludGVyZmFjZSAhPQ0KLQkJ
-CQkgICAgUEhZX0lOVEVSRkFDRV9NT0RFX1RSR01JSSkNCi0JCQkJCW10a19nbWFjMF9yZ21paV9h
-ZGp1c3QobWFjLT5odywNCi0JCQkJCQkJICAgICAgIHN0YXRlLT5zcGVlZCk7DQorCQkJCW10a19n
-bWFjMF9yZ21paV9hZGp1c3QobWFjLT5odywNCisJCQkJCQkgICAgICAgc3RhdGUtPmludGVyZmFj
-ZSwNCisJCQkJCQkgICAgICAgc3RhdGUtPnNwZWVkKTsNCisNCisJCQkJLyogbXQ3NjIzX3BhZF9j
-bGtfc2V0dXAgKi8NCisJCQkJZm9yIChpID0gMCA7IGkgPCBOVU1fVFJHTUlJX0NUUkw7IGkrKykN
-CisJCQkJCW10a193MzIobWFjLT5odywNCisJCQkJCQlURF9ETV9EUlZQKDgpIHwgVERfRE1fRFJW
-Tig4KSwNCisJCQkJCQlUUkdNSUlfVERfT0RUKGkpKTsNCisNCisJCQkJLyogQXNzZXJ0L3JlbGVh
-c2UgTVQ3NjIzIFJYQyByZXNldCAqLw0KKwkJCQltdGtfbTMyKG1hYy0+aHcsIDAsIFJYQ19SU1Qg
-fCBSWENfRFFTSVNFTCwNCisJCQkJCVRSR01JSV9SQ0tfQ1RSTCk7DQorCQkJCW10a19tMzIobWFj
-LT5odywgUlhDX1JTVCwgMCwgVFJHTUlJX1JDS19DVFJMKTsNCiAJCQl9DQogCQl9DQogDQpkaWZm
-IC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVkaWF0ZWsvbXRrX2V0aF9zb2MuaCBiL2Ry
-aXZlcnMvbmV0L2V0aGVybmV0L21lZGlhdGVrL210a19ldGhfc29jLmgNCmluZGV4IDg1ODMwZmUx
-NGExYi4uNDU0Y2ZjZDQ2NWZkIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVk
-aWF0ZWsvbXRrX2V0aF9zb2MuaA0KKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVkaWF0ZWsv
-bXRrX2V0aF9zb2MuaA0KQEAgLTM1MiwxMCArMzUyLDEzIEBADQogI2RlZmluZSBEUVNJMCh4KQkJ
-KCh4IDw8IDApICYgR0VOTUFTSyg2LCAwKSkNCiAjZGVmaW5lIERRU0kxKHgpCQkoKHggPDwgOCkg
-JiBHRU5NQVNLKDE0LCA4KSkNCiAjZGVmaW5lIFJYQ1RMX0RNV1RMQVQoeCkJKCh4IDw8IDE2KSAm
-IEdFTk1BU0soMTgsIDE2KSkNCisjZGVmaW5lIFJYQ19SU1QJCQlCSVQoMzEpDQogI2RlZmluZSBS
-WENfRFFTSVNFTAkJQklUKDMwKQ0KICNkZWZpbmUgUkNLX0NUUkxfUkdNSUlfMTAwMAkoUlhDX0RR
-U0lTRUwgfCBSWENUTF9ETVdUTEFUKDIpIHwgRFFTSTEoMTYpKQ0KICNkZWZpbmUgUkNLX0NUUkxf
-UkdNSUlfMTBfMTAwCVJYQ1RMX0RNV1RMQVQoMikNCiANCisjZGVmaW5lIE5VTV9UUkdNSUlfQ1RS
-TAkJNQ0KKw0KIC8qIFRSR01JSSBSWEMgY29udHJvbCByZWdpc3RlciAqLw0KICNkZWZpbmUgVFJH
-TUlJX1RDS19DVFJMCQkweDEwMzQwDQogI2RlZmluZSBUWENUTF9ETVdUTEFUKHgpCSgoeCA8PCAx
-NikgJiBHRU5NQVNLKDE4LCAxNikpDQpAQCAtMzYzLDYgKzM2NiwxMSBAQA0KICNkZWZpbmUgVENL
-X0NUUkxfUkdNSUlfMTAwMAlUWENUTF9ETVdUTEFUKDIpDQogI2RlZmluZSBUQ0tfQ1RSTF9SR01J
-SV8xMF8xMDAJKFRYQ19JTlYgfCBUWENUTF9ETVdUTEFUKDIpKQ0KIA0KKy8qIFRSR01JSSBUWCBE
-cml2ZSBTdHJlbmd0aCAqLw0KKyNkZWZpbmUgVFJHTUlJX1REX09EVChpKQkoMHgxMDM1NCArIDgg
-KiAoaSkpDQorI2RlZmluZSAgVERfRE1fRFJWUCh4KQkJKCh4KSAmIDB4ZikNCisjZGVmaW5lICBU
-RF9ETV9EUlZOKHgpCQkoKCh4KSAmIDB4ZikgPDwgNCkNCisNCiAvKiBUUkdNSUkgSW50ZXJmYWNl
-IG1vZGUgcmVnaXN0ZXIgKi8NCiAjZGVmaW5lIElOVEZfTU9ERQkJMHgxMDM5MA0KICNkZWZpbmUg
-VFJHTUlJX0lOVEZfRElTCQlCSVQoMCkNCi0tIA0KMi4yNS4xDQo=
+The patch looks good to me. Agreed with Guenter's assessment, I made a
+mistake in the original patch by not being consistent with the
+function contract.
 
+On Fri, Apr 3, 2020 at 9:57 AM Alain Michaud <alainmichaud@google.com> wrote:
+>
+> On Fri, Apr 3, 2020 at 12:43 PM Guenter Roeck <linux@roeck-us.net> wrote:
+> >
+> > On 4/3/20 8:13 AM, Alain Michaud wrote:
+> > > Hi Guenter/Marcel,
+> > >
+> > >
+> > > On Fri, Apr 3, 2020 at 11:03 AM Guenter Roeck <linux@roeck-us.net> wrote:
+> > >>
+> > >> Some static checker run by 0day reports a variableScope warning.
+> > >>
+> > >> net/bluetooth/smp.c:870:6: warning:
+> > >>         The scope of the variable 'err' can be reduced. [variableScope]
+> > >>
+> > >> There is no need for two separate variables holding return values.
+> > >> Stick with the existing variable. While at it, don't pre-initialize
+> > >> 'ret' because it is set in each code path.
+> > >>
+> > >> tk_request() is supposed to return a negative error code on errors,
+> > >> not a bluetooth return code. The calling code converts the return
+> > >> value to SMP_UNSPECIFIED if needed.
+> > >>
+> > >> Fixes: 92516cd97fd4 ("Bluetooth: Always request for user confirmation for Just Works")
+> > >> Cc: Sonny Sasaka <sonnysasaka@chromium.org>
+> > >> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> > >> ---
+> > >>  net/bluetooth/smp.c | 9 ++++-----
+> > >>  1 file changed, 4 insertions(+), 5 deletions(-)
+> > >>
+> > >> diff --git a/net/bluetooth/smp.c b/net/bluetooth/smp.c
+> > >> index d0b695ee49f6..30e8626dd553 100644
+> > >> --- a/net/bluetooth/smp.c
+> > >> +++ b/net/bluetooth/smp.c
+> > >> @@ -854,8 +854,7 @@ static int tk_request(struct l2cap_conn *conn, u8 remote_oob, u8 auth,
+> > >>         struct l2cap_chan *chan = conn->smp;
+> > >>         struct smp_chan *smp = chan->data;
+> > >>         u32 passkey = 0;
+> > >> -       int ret = 0;
+> > >> -       int err;
+> > >> +       int ret;
+> > >>
+> > >>         /* Initialize key for JUST WORKS */
+> > >>         memset(smp->tk, 0, sizeof(smp->tk));
+> > >> @@ -887,12 +886,12 @@ static int tk_request(struct l2cap_conn *conn, u8 remote_oob, u8 auth,
+> > >>         /* If Just Works, Continue with Zero TK and ask user-space for
+> > >>          * confirmation */
+> > >>         if (smp->method == JUST_WORKS) {
+> > >> -               err = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
+> > >> +               ret = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
+> > >>                                                 hcon->type,
+> > >>                                                 hcon->dst_type,
+> > >>                                                 passkey, 1);
+> > >> -               if (err)
+> > >> -                       return SMP_UNSPECIFIED;
+> > >> +               if (ret)
+> > >> +                       return ret;
+> > > I think there may be some miss match between expected types of error
+> > > codes here.  The SMP error code type seems to be expected throughout
+> > > this code base, so this change would propagate a potential negative
+> > > value while the rest of the SMP protocol expects strictly positive
+> > > error codes.
+> > >
+> >
+> > Up to the patch introducing the SMP_UNSPECIFIED return value, tk_request()
+> > returned negative error codes, and all callers convert it to SMP_UNSPECIFIED.
+> >
+> > If tk_request() is supposed to return SMP_UNSPECIFIED on error, it should
+> > be returned consistently, and its callers don't have to convert it again.
+> Agreed, the conventions aren't clear here.  I'll differ to Marcel to
+> provide guidance in this case where as a long term solution might
+> increase the scope of this patch beyond what would be reasonable.
+> >
+> > Guenter
+> >
+> > >>                 set_bit(SMP_FLAG_WAIT_USER, &smp->flags);
+> > >>                 return 0;
+> > >>         }
+> > >> --
+> > >> 2.17.1
+> > >>
+> > >
+> > > Thanks,
+> > > Alain
+> > >
+> >
