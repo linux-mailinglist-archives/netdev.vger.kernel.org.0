@@ -2,116 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A38C19EA0A
-	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 10:37:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BE5919EA0F
+	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 10:45:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726410AbgDEIhA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Apr 2020 04:37:00 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:34881 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726308AbgDEIhA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Apr 2020 04:37:00 -0400
-Received: by mail-pf1-f193.google.com with SMTP id a13so6007474pfa.2;
-        Sun, 05 Apr 2020 01:36:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=Ncl8XXtzp8goItvEp2ww15C1VisVJr6bKa4zYnBNmX0=;
-        b=UiBbl3JgXB+WXPn0PDlm6JGE4zUA0Lk+w2SyBVnGyw+dtI3fMZAwpQvxLQLp1zocmc
-         cbZAjRELnDckLbIDej8cQ9TYieSow+wb5wXbORwlZevebns6eo8/z0JWd8gu9J6eQvcw
-         hazEBqpkdC/xBC+YGvNdp/RryMhQ/PVr5bSPI/hnLNMKTMSs9uJrrKbom6qKwt53EDl6
-         DcRcqE9SMUU8sMl3p5awrJZf2xuCdUStIN8IFN3vUpYauz/B1Me3zUaDSTYiU1K/RbSb
-         fzUtxc7jlXr99CrDzjo6H1+wCRql+6stLwwjt9iiefUmyJqE7D+H6jnjoPQcAsxrXOVl
-         ZGFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Ncl8XXtzp8goItvEp2ww15C1VisVJr6bKa4zYnBNmX0=;
-        b=IVIxM5N2nZf2mFqVHJknxklv6Tozfk8SMDwcv9j956+LEdk+pKN7R3QArlfYX6WWvg
-         Hk0R2ouoazFK1irysfp3DtVp8nF3r0m6Rx+MqAsq+qWxGo1R9Qp9OsEfvK5pV49vUdXQ
-         H8s+7o1gJmwji70hX4O6cM1qrrFtveq6YAaIaCITm6t0Ah80kLiqohz8hGcCT9nLeEG6
-         kJeZhhmMnEbzcrejqXtHfpiD7cyQG5ieBHzO1tnAcJKgScDgfvYF1fcCGFJZGznowZCN
-         a/0yUSIXgsyvaElOOrbln2fSu5eXDkHTkYbV5CU5KuL5iajctvrJre1oQ6YaHuGcmR69
-         0aPg==
-X-Gm-Message-State: AGi0Pubx71WSMvGnvlOUz0g1uNenb3YTfEEyjkoi0x2LLW65VR0tjzwj
-        Vb6pdicLoN57msxlyAfC2OM=
-X-Google-Smtp-Source: APiQypLwjpQ8/2K2EhOZmMPEwHuHozeHT2LsHn3MvCuDvbg8478/A6s7FGnWlBvSyPQ5EeyjF7JA+w==
-X-Received: by 2002:a63:602:: with SMTP id 2mr15774896pgg.356.1586075818769;
-        Sun, 05 Apr 2020 01:36:58 -0700 (PDT)
-Received: from localhost (n112120135125.netvigator.com. [112.120.135.125])
-        by smtp.gmail.com with ESMTPSA id y3sm8991405pfy.158.2020.04.05.01.36.57
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 05 Apr 2020 01:36:58 -0700 (PDT)
-From:   Qiujun Huang <hqjagain@gmail.com>
-To:     jdike@addtoit.com, richard@nod.at, anton.ivanov@cambridgegreys.com
-Cc:     ast@kernel.org, daniel@iogearbox.net, linux-um@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Qiujun Huang <hqjagain@gmail.com>
-Subject: [PATCH] um: delete an unnecessary check before the kfree
-Date:   Sun,  5 Apr 2020 16:36:52 +0800
-Message-Id: <20200405083652.29462-1-hqjagain@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726479AbgDEIpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Apr 2020 04:45:01 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:49556 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726364AbgDEIpA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Apr 2020 04:45:00 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1586076300; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=YD+6B7bB8KDIMzLCo6S03UdZ+WXtGN9oqNBfZxnj7PU=; b=WseyDcEVh4sefHTKiIZiJ//HNIlOAy6p2zxT5sHyD8oJFrjIwtNMw8/A3vmmPn3gesXAI19a
+ VtrPGl923Fmw0zAGNSLLQ7Y+T7++HNhAjxKIn1UbTRQqMh+RLeY0gntfu5/n7H/11rdDq/Xz
+ i6pU013g0CcjU39wmhfH8A7/5Zg=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e899a8b.7fc9721a2538-smtp-out-n05;
+ Sun, 05 Apr 2020 08:44:59 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id A02E7C43637; Sun,  5 Apr 2020 08:44:58 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id BC38AC433F2;
+        Sun,  5 Apr 2020 08:44:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org BC38AC433F2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Chris Rorvick <chris@rorvick.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] iwlwifi: actually check allocated conf_tlv pointer
+References: <20200402050219.4842-1-chris@rorvick.com>
+Date:   Sun, 05 Apr 2020 11:44:53 +0300
+In-Reply-To: <20200402050219.4842-1-chris@rorvick.com> (Chris Rorvick's
+        message of "Thu, 2 Apr 2020 00:02:19 -0500")
+Message-ID: <87mu7qfhiy.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-NULL check before kfree is unnecessary so remove it.
+Chris Rorvick <chris@rorvick.com> writes:
 
-This issue was detected by using the Coccinelle software.
+> Commit 71bc0334a637 ("iwlwifi: check allocated pointer when allocating
+> conf_tlvs") attempted to fix a typoe introduced by commit 17b809c9b22e
+> ("iwlwifi: dbg: move debug data to a struct") but does not implement the
+> check correctly.
+>
+> Tweeted-by: @grsecurity
+> Signed-off-by: Chris Rorvick <chris@rorvick.com>
 
-Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
----
- arch/um/drivers/vector_user.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+I'll add:
 
-diff --git a/arch/um/drivers/vector_user.c b/arch/um/drivers/vector_user.c
-index ddcd917be0af..aa28e9eecb7b 100644
---- a/arch/um/drivers/vector_user.c
-+++ b/arch/um/drivers/vector_user.c
-@@ -221,8 +221,7 @@ static struct vector_fds *user_init_tap_fds(struct arglist *ifspec)
- 	return result;
- tap_cleanup:
- 	printk(UM_KERN_ERR "user_init_tap: init failed, error %d", fd);
--	if (result != NULL)
--		kfree(result);
-+	kfree(result);
- 	return NULL;
- }
- 
-@@ -266,8 +265,7 @@ static struct vector_fds *user_init_hybrid_fds(struct arglist *ifspec)
- 	return result;
- hybrid_cleanup:
- 	printk(UM_KERN_ERR "user_init_hybrid: init failed");
--	if (result != NULL)
--		kfree(result);
-+	kfree(result);
- 	return NULL;
- }
- 
-@@ -344,10 +342,8 @@ static struct vector_fds *user_init_unix_fds(struct arglist *ifspec, int id)
- unix_cleanup:
- 	if (fd >= 0)
- 		os_close_file(fd);
--	if (remote_addr != NULL)
--		kfree(remote_addr);
--	if (result != NULL)
--		kfree(result);
-+	kfree(remote_addr);
-+	kfree(result);
- 	return NULL;
- }
- 
-@@ -382,8 +378,7 @@ static struct vector_fds *user_init_raw_fds(struct arglist *ifspec)
- 	return result;
- raw_cleanup:
- 	printk(UM_KERN_ERR "user_init_raw: init failed, error %d", err);
--	if (result != NULL)
--		kfree(result);
-+	kfree(result);
- 	return NULL;
- }
- 
+Fixes: 71bc0334a637 ("iwlwifi: check allocated pointer when allocating conf_tlvs")
+
+> ---
+> In this wasn't picked up?
+
+Luca, can I take this directly?
+
 -- 
-2.17.1
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
