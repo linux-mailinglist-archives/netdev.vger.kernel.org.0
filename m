@@ -2,57 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C329719EE3E
-	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 23:17:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D0FC19EDDC
+	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 22:15:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727742AbgDEVR5 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 5 Apr 2020 17:17:57 -0400
-Received: from mail.augl.cc ([80.121.213.134]:28943 "EHLO
-        AGL-DC01.augl2010.local" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726887AbgDEVR4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Apr 2020 17:17:56 -0400
-X-Greylist: delayed 3070 seconds by postgrey-1.27 at vger.kernel.org; Sun, 05 Apr 2020 17:17:55 EDT
-Received: from coris.com ([103.207.36.17]) by AGL-DC01.augl2010.local with Microsoft SMTPSVC(10.0.14393.2608);
-         Sun, 5 Apr 2020 22:11:41 +0200
-Reply-To: kentpace@sina.com
-From:   Kent Pace <kentpace@coris.com>
-To:     netdev@vger.kernel.org
-Subject: Urgent! Please Read
-Date:   05 Apr 2020 13:11:40 -0700
-Message-ID: <20200405131139.EA46994C4024C030@coris.com>
+        id S1727953AbgDEUOv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Apr 2020 16:14:51 -0400
+Received: from mail-ua1-f67.google.com ([209.85.222.67]:38253 "EHLO
+        mail-ua1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726887AbgDEUOu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Apr 2020 16:14:50 -0400
+Received: by mail-ua1-f67.google.com with SMTP id g10so4752927uae.5
+        for <netdev@vger.kernel.org>; Sun, 05 Apr 2020 13:14:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=5RZZPCFdrZOQUY0NpVhCKIfJRTC5bG/d80lCyOIHMvI=;
+        b=GGhHZrDPPbkuzuguWgms3SM2M2r0UKmzXGPaAggqc+tXUrrldJO9EKkeDqA8Xq4f4M
+         n6SE42S3xLoU8IYHjcxnJtJcsXwJqwpf4FnHHnJA/3G79TzB+hKrLF8lGCWgNKfmK/6N
+         vhyhilkBjED6nXY3rv8nCdf+t8Q4Mtk49+hKNmdfXoRTbLcnzpfXqLsrlKHI2ZGUQr0u
+         Mwirm4hw3GYZLAmtCJSijBMF5SHXE20JO7gBJOKiVHx/Sr4WC+QxTNifGHPrxfRyOJlM
+         OuKbZiiLA+LY/YyfGaJ+raq8FpX55yIvJriPPGMyfrMd6Ry+LufuOqNzNaVcLvQZrx9w
+         92MA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=5RZZPCFdrZOQUY0NpVhCKIfJRTC5bG/d80lCyOIHMvI=;
+        b=DQUVpI+0isPQN14KDHV5dRIXjv8STFEfe8Z/h1BZ16cOv0b9dCnPArz8PVro+yejTQ
+         o4WvITnoN2bhNe1/B6W67v2dCO4/25XpmowwwLE0hdkjlwBH7J/YWgCA1l386GSrcNpJ
+         h2rv8LfeCyeertomSpvZKJPekfQfLPc3IIScgAtUVpICaD0Z1/uZhrY8tnttCD4IDpE0
+         Cjgr0/0gTGw/bk+/c/IO/+iWgB+1lPFAKn82HS1JWFzoy8x3Q+1yW7nqh+4bKp7MV7wE
+         7AUl6ZlhsOVqKIYldX0k6dYoSRUEGeyPq5Eks+lBCO9Yqh4/lg8PxHLsyVQg2vijagoL
+         suTw==
+X-Gm-Message-State: AGi0PuZ+jQbId+qAC458Z6bidIaDZnCGFzvFmYgjBu+lhA5jbOqeRqUE
+        qDKksUpwMVcALQEWWS0ZSKQ6VbV/oVPa27R6q/9Nyw==
+X-Google-Smtp-Source: APiQypK5FH36bz+ECXHur6NM82rZjixh9mlkCGmXkvklZL2waKqFuFQoW77uZcqw/ZVBnmI0yqkHaVY/mKm0ENokkPE=
+X-Received: by 2002:ab0:6185:: with SMTP id h5mr13446724uan.23.1586117689615;
+ Sun, 05 Apr 2020 13:14:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: 8BIT
-X-OriginalArrivalTime: 05 Apr 2020 20:11:42.0672 (UTC) FILETIME=[6C6E9D00:01D60B86]
+References: <20200331163559.132240-1-zenczykowski@gmail.com> <20200405200522.5pcxitjcnxss4e7r@salvia>
+In-Reply-To: <20200405200522.5pcxitjcnxss4e7r@salvia>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Date:   Sun, 5 Apr 2020 13:14:39 -0700
+Message-ID: <CANP3RGczLdp831hQvxAPp_RPdf=A75zKoEEkFE+QGcw0sPy62w@mail.gmail.com>
+Subject: Re: [PATCH] netfilter: IDLETIMER target v1 - match Android layout
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Netfilter Development Mailing List 
+        <netfilter-devel@vger.kernel.org>,
+        Manoj Basapathi <manojbm@codeaurora.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Jan Engelhardt <jengelh@inai.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+> Hi Maciej,
+>
+> I'm attaching a new version, including EOPNOTSUPP if the send_nl_msg
+> field is set, it's the most basic handling I can think of until this
+> option becomes useful.
+>
+> Would you commit to send a patch for this new merge window to make it
+> useful?
 
+Yes, I can do that.
 
-There is something very important I need to discuss with you.  I 
-am writing  this letter in tears and fear. In tears because I 
-will soon depart and in fear because I don't really know if you 
-will do this faithfully.
+Thank you.
 
-
-I am COVID-19  patient and the doctor has already confirmed I may 
-not last for the next 7 days.
-
-I have substantial amount of money deposited in a security vault 
-around your country. It is in trunk boxes and once  I receive 
-your response and see your readiness to claim the money 
-immediately, I will forward the needed documents and the contact 
-of the security vault where the consignment is deposited,
-I am not asking you to give me anything but I want you to help 
-people that has been infected with this deadly virus with 60% of 
-the money and 40% should be for you and your family.
-
-I will disclose exact amount in the boxes as soon as I 
-receive your response.
-
-
-Regards
+Reviewed-by: Maciej =C5=BBenczykowski <maze@google.com>
