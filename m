@@ -2,144 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6472E19E82A
-	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 03:03:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CFE919E836
+	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 03:26:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726399AbgDEBDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Apr 2020 21:03:04 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:33033 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726057AbgDEBDE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 4 Apr 2020 21:03:04 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 48vwQB4jswz9sP7;
-        Sun,  5 Apr 2020 11:02:58 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1586048580;
-        bh=1blZoo3vVyhmNqddNOFTZ6uyACtlgq/IeEhOrTE/sUc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sXahE9V7LMQFiVUgz2ZqgK5vEh41rJ+3IMOw6bk7rr9TYxTAUsoAA/h0vIOiKSH+U
-         vvBi7QfCSzWPYWkTd/FKiz+GHke1z/hO+RSOyATnrJSRlFCNLABRGZ4bFBsatcRrZw
-         NYwMylTrS8WVV5UxEsiE3k0xJ5ZiM1G/Vy6WLLiSpXSh7WKTbDAtU1cCcfhOXuumjC
-         ZJG5TAoyQHOQFZ/uRv4NSBcXwDvBBUSNPSQIoCLhu0QT5Mwlb+ETKW2c1vdx/HWWSW
-         Lw2MDYk0fZSFzYDishXeqWxfgoHJHNwmF2xHh5xsDn2SX5LikUgNuIKD8fPNZc0fHv
-         NfcPDkj0hnaMg==
-Date:   Sun, 5 Apr 2020 11:02:51 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Howells <dhowells@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        KP Singh <kpsingh@google.com>
-Subject: Re: linux-next: manual merge of the keys tree with the bpf-next
- tree
-Message-ID: <20200405110251.2a15afe2@canb.auug.org.au>
-In-Reply-To: <20200330130636.0846e394@canb.auug.org.au>
-References: <20200330130636.0846e394@canb.auug.org.au>
+        id S1726406AbgDEB0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Apr 2020 21:26:01 -0400
+Received: from wnew1-smtp.messagingengine.com ([64.147.123.26]:36015 "EHLO
+        wnew1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726300AbgDEB0B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Apr 2020 21:26:01 -0400
+X-Greylist: delayed 548 seconds by postgrey-1.27 at vger.kernel.org; Sat, 04 Apr 2020 21:26:00 EDT
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.west.internal (Postfix) with ESMTP id 15D276C9;
+        Sat,  4 Apr 2020 21:16:51 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sat, 04 Apr 2020 21:16:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alistair23.me;
+         h=subject:to:cc:references:from:message-id:date:mime-version
+        :in-reply-to:content-type:content-transfer-encoding; s=fm3; bh=N
+        kfxaedLLWCL3Ia/QIn6Lh9/03kANmH0eC/GZ3hJQ1k=; b=jBy0NQYWm+B6ulYyG
+        8LrCjYc70G34Zo4Z48krapj+fmkLISnqvcJWUdYZQymfaQwZq9OD26SV+dObTpCd
+        DgbCJYZWwueEGmg2UFf5ZqEX8o4JPx/ydxT0ltKhG15dt9fRRUA8AAl2TsVMm92r
+        k31cuUM5jxTKHfL17ukyVQdN/8UY7PsDAHqArrLf7pCt/NhRcuJnRsbHosGAVQJe
+        T0p/IffrTlh3w1cki9rnqQtv9Si28sFSETmASyaoSG/aXLtBtamVZMi9w0fcpbAy
+        ios+Y8LV0Rj1oG6xab5mH9x9d0PFNlGlaGAkaWG9XXj6/N9bMoHW4wSc7GW84AsC
+        Ks8Kg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; bh=NkfxaedLLWCL3Ia/QIn6Lh9/03kANmH0eC/GZ3hJQ
+        1k=; b=VvwCdv7bESg4csbRT5bavXpJ9Eill1wTIqI/OYnN3MgcXw4rfEwuo0Uj8
+        qIE9NE3q4hr5vx02rO0fo7ffMGUw36ACpKbJEjSb4LT+iiqQyTizcC+TDfg77Dev
+        Faj0CEHWRwXkb/4uV7A13HA+GweKh8YIHL0e01HlQ2leQei2xoAWKH9PxaeP6HPo
+        o4n124WZwwayDmRMAErQUYZIDoYJu8E6cBlj+b+Pf8nq0pwbzoXLdKaBzDK/rNXX
+        Aq3cwWyU7uls0QtjixEXlCK5pYalJYWH5goJNdCftrw0brO10CMLwnSWW5AYf3II
+        0R7NIqoWy26HquJR9PSwplCl4CCcA==
+X-ME-Sender: <xms:fTGJXteEQrnd79QYNXrBF1GSWlZTdAEsHksIhVUfLD8rcKJpFbrcHg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrtdelgdeghecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhepuffvfhfhkffffgggjggtgfesthejre
+    dttdefjeenucfhrhhomheptehlihhsthgrihhrucfhrhgrnhgtihhsuceorghlihhsthgr
+    ihhrsegrlhhishhtrghirhdvfedrmhgvqeenucffohhmrghinhepuggvvhhitggvthhrvg
+    gvrdhorhhgpdhkvghrnhgvlhdrohhrghenucfkphepjeefrdelfedrkeegrddvtdeknecu
+    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprghlihhsth
+    grihhrsegrlhhishhtrghirhdvfedrmhgv
+X-ME-Proxy: <xmx:fTGJXhDMONLl7qBROxbhVbwEl2UjtpW6nG6NAjuPDAz0ljR1mAWcrQ>
+    <xmx:fTGJXr18xc-IA9gb__BJudXTRmsBj5hppaXcWwcpFykApI1djKqurw>
+    <xmx:fTGJXhQwP4yFvhggCTC4zQeJxlivbUvmVXXntILE-7uhPsviKpbLLQ>
+    <xmx:gjGJXn2RSZeKTubI3frSzNzjRPeffoOzFzg8dEAbj37X5vZuNXZIZumTufo>
+Received: from [172.16.1.131] (c-73-93-84-208.hsd1.ca.comcast.net [73.93.84.208])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 8F20A3280060;
+        Sat,  4 Apr 2020 21:16:44 -0400 (EDT)
+Subject: Re: [PATCH 1/3] dt-bindings: net: bluetooth: Add rtl8723bs-bluetooth
+To:     alistair23@gmail.com
+Cc:     devicetree@vger.kernel.org, johan.hedberg@gmail.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        marcel@holtmann.org, mripard@kernel.org, netdev@vger.kernel.org,
+        wens@csie.org, max.chou@realtek.com, hdegoede@redhat.com
+References: <20200404204850.405050-1-alistair@alistair23.me>
+ <20200404224205.1643238-1-martin.blumenstingl@googlemail.com>
+From:   Alistair Francis <alistair@alistair23.me>
+Message-ID: <d30412ef-0de3-338b-a1de-0e8b179c2aff@alistair23.me>
+Date:   Sat, 4 Apr 2020 18:16:43 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/fmd/H82N.UluJmFTwe6HCM/";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <20200404224205.1643238-1-martin.blumenstingl@googlemail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/fmd/H82N.UluJmFTwe6HCM/
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-
-Hi all,
-
-On Mon, 30 Mar 2020 13:06:36 +1100 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
+On 4/04/2020 3:42 pm, Martin Blumenstingl wrote:
+> Hi Alistair,
 >
-> Today's linux-next merge of the keys tree got a conflict in:
->=20
->   include/linux/lsm_hooks.h
->=20
-> between commit:
->=20
->   98e828a0650f ("security: Refactor declaration of LSM hooks")
->=20
-> from the bpf-next tree and commits:
->=20
->   e8fa137bb3cb ("security: Add hooks to rule on setting a watch")
->   858bc27762c1 ("security: Add a hook for the point of notification inser=
-tion")
->=20
-> from the keys tree.
->=20
-> I fixed it up (I used the former version of this file and added the
-> following merge resolution patch) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
->=20
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Mon, 30 Mar 2020 12:55:31 +1100
-> Subject: [PATCH] security: keys: fixup for "security: Refactor declaratio=
-n of
->  LSM hooks"
->=20
-> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> ---
->  include/linux/lsm_hook_defs.h | 10 ++++++++++
->  1 file changed, 10 insertions(+)
->=20
-> diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-> index 9cd4455528e5..4f8d63fd1327 100644
-> --- a/include/linux/lsm_hook_defs.h
-> +++ b/include/linux/lsm_hook_defs.h
-> @@ -252,6 +252,16 @@ LSM_HOOK(int, 0, inode_notifysecctx, struct inode *i=
-node, void *ctx, u32 ctxlen)
->  LSM_HOOK(int, 0, inode_setsecctx, struct dentry *dentry, void *ctx, u32 =
-ctxlen)
->  LSM_HOOK(int, 0, inode_getsecctx, struct inode *inode, void **ctx,
->  	 u32 *ctxlen)
-> +#ifdef CONFIG_KEY_NOTIFICATIONS
-> +LSM_HOOK(int, 0, watch_key, struct key *key)
-> +#endif
-> +#ifdef CONFIG_DEVICE_NOTIFICATIONS
-> +LSM_HOOK(int, 0, watch_devices, void)
-> +#endif
-> +#ifdef CONFIG_WATCH_QUEUE
-> +LSM_HOOK(int, 0, post_notification, const struct cred *w_cred,
-> +	 const struct cred *cred, struct watch_notification *n)
-> +#endif
-> =20
->  #ifdef CONFIG_SECURITY_NETWORK
->  LSM_HOOK(int, 0, unix_stream_connect, struct sock *sock, struct sock *ot=
-her,
-> --=20
-> 2.25.0
-
-This is now a conflict between the keys tree and Linus' tree.
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/fmd/H82N.UluJmFTwe6HCM/
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl6JLjsACgkQAVBC80lX
-0GyWVwgAkcTlPF9X4YXQU9Tf2+Zf/cdI2g0kySmk4IzT6s0bVWBr6pfHEuFWnMRy
-Yi8GZMF+sbbV4Agem5o/KdfzTrjF2xfnC4N/BRxTDwK6IavBBNIxwyQdOpkRcRSS
-b+WdKRnwwfszxWAAZa3oqXCKIdT9OSCjfZyEfTMYnEBS3MFDw/HhgJujHoG+EmVJ
-TF+9i59lT47/AN1Adwcs5Psr/aIxf6V/8+sl47e7TimgUnvch+LrEz53ByFhcMCg
-TYrKdXNjRdfD5F4xRJwQLGDjFJaEQxFchPhB7CD8sVDTSsXPYPQh7lYeC0PRC3iv
-0ouA1ztljHL3YloZ8wDHH9thoW0Fzg==
-=x0hx
------END PGP SIGNATURE-----
-
---Sig_/fmd/H82N.UluJmFTwe6HCM/--
+> +Cc Max Chou, he may be interested in this also
+>
+> [...]
+>> @@ -0,0 +1,56 @@
+>> +# SPDX-License-Identifier: GPL-2.0
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/net/realtek,rtl8723bs-bt.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: RTL8723BS/RTL8723CS Bluetooth Device Tree Bindings
+> I suggest you also add RTL8822C here (as well as to the compatible enum
+> and the description below). commit 848fc6164158d6 ("Bluetooth: hci_h5:
+> btrtl: Add support for RTL8822C") adde support for that chip but didn't
+> add the dt-binding documentation.
+>
+> [...]
+>> +  device-wake-gpios:
+>> +    description:
+>> +      GPIO specifier, used to wakeup the BT module (active high)
+>> +
+>> +  enable-gpios:
+>> +    description:
+>> +      GPIO specifier, used to enable the BT module (active high)
+>> +
+>> +  host-wake-gpios:
+>> +    desciption:
+>> +      GPIO specifier, used to wakeup the host processor (active high)
+> regarding all GPIOs here: it entirely depends on the board whether these
+> are active HIGH or LOW. even though the actual Bluetooth part may
+> require a specific polarity there can be (for example) a transistor on
+> the board which could be used to invert the polarity (from the SoC's
+> view).
+>
+> also "make dt_binding_check" reports:
+>    properties:host-wake-gpios: 'maxItems' is a required property
+> I assume that it'll be the same for the other properties
+>
+>> +firmware-postfix: firmware postfix to be used for firmware config
+> there's no other dt-binding that uses "firmware-postfix" yet. However,
+> there are a few that use "firmware-name". My opinion hasn't changed
+> since Vasily has posted this series initially: I would not add that
+> property for now because there seems to be a "standard" config blob
+> (which works for "all" boards), see Hans' analysis result of the ACPI
+> config blobs for RTL8723BS: [0].
+> Getting that "standard" config blob into linux-firmware would be
+> awesome (I assume licensing is not an issue here, Hans can probably give
+> more details here). I'm not sure about the licenses of "board specific"
+> config blobs and whether these can be added to linux-firmware.
+>
+> also indentation seems wrong here
+>
+>> +reset-gpios: GPIO specifier, used to reset the BT module (active high)
+> indentation seems wrong here too
+>
+> also please note that there is currently no support for this property
+> inside the hci_h5 driver and you don't seem to add support for it within
+> this series either. so please double check that the reset GPIO is really
+> wired up on your sopine board.
+>
+>> +required:
+>> +  - compatible
+>> +
+>> +examples:
+>> +  - |
+>> +    &uart1 {
+>> +        pinctrl-names = "default";
+>> +        pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
+>> +        status = "okay";
+> AFAIK the "status" property should be omitted from examples
+>
+> also please add a "uart-has-rtscts" propery, see
+> Documentation/devicetree/bindings/serial/serial.yaml
+> Also please update patch #3.
+>
+>
+> Martin
+>
+>
+> [0] https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/commit/rtl_bt/rtl8723bs_config-OBDA8723.bin?id=e6b9001e91110c654573b8f8e2db6155d10d3b57
