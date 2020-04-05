@@ -2,144 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 508EF19EA2B
-	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 11:18:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0B6D19EA6A
+	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 12:36:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726546AbgDEJSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Apr 2020 05:18:05 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:46213 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726399AbgDEJSF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Apr 2020 05:18:05 -0400
-Received: by mail-lj1-f193.google.com with SMTP id r7so11297189ljg.13;
-        Sun, 05 Apr 2020 02:18:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ezAeoP6FHV4AgjLzQuSOWjGz7T/3USe1LlIeyEWnVyY=;
-        b=BJop5i+EaG3paQbNb4bN/ifD24C0PwLCf4+Fe1ldfM6T5WuJdO6h34bW8Mg3TT2j9a
-         RTSZOePJPsJzM/ejFEoFXHzK4y7WW1IQjDrY5AeDsZtZcLuUJomZykzce7OY3U0FIeer
-         sz3CwiDmFbmYJJ1dsHGqLtoN74nBjxpnCPLTXG7qE9tU/cKisiP5ovyQoFSlaTJtEWi1
-         vlNmEU3ozk0LKP4qYL07NHUaKzYmCY+ZH501//0zXFvEeNke0kp9MbSWbiuQ9j8ZIz2d
-         xLXItZEC+zgMrjwETAydoLc8vEedkihxqKq3bl+ivRp46f9i55SX20cXTipr3iPqHerY
-         U+Cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ezAeoP6FHV4AgjLzQuSOWjGz7T/3USe1LlIeyEWnVyY=;
-        b=VNCT/uVTd0dm+uPy4zEluEArEWv925MnR842mjqTXnvBH4ByLF+QmZSbfPAj+hZSFk
-         KfGSGYXRHwkn08hSL3hPc/AgU5uT9gg254pQwZ+dSZCijPUHvlZk5ky5G1hZp4/80VTb
-         HmqS5z1dc/x8Zu0BGPaQOSpBkqB+l718UUh69zZ07Q2Rn6qMrJbaqD7Uu4IjVMPLNq1t
-         7IZejh6AF1piiniO0PyJRuTfakqDrJT8KfN3Jmo2milzx9KQTNZut7EZHJUq6ur0wbyI
-         heO38wd4qjAczs92189pFAMXjzSATLIrY64+Velj6EDtpZmG8QIjCcZ/KX0gKgs/pc3S
-         GCNw==
-X-Gm-Message-State: AGi0PubgPbSsdIUeC005+CGe/ijeEseDSQj8Ddxp0VcFGarhjUFrYBnl
-        ty4BENfJChXkubU3qrVrYaLc9Bq99j63ZASZaKQIHn6d
-X-Google-Smtp-Source: APiQypJPDLy6OKizWRXuz0X5VBBP6ERK7+B3E98bN+O0lraEpSbbuOTmRKhtm25oWPuHP62rY1+rK/uU5ZMUjYZTMRI=
-X-Received: by 2002:a2e:9252:: with SMTP id v18mr9228042ljg.114.1586078282352;
- Sun, 05 Apr 2020 02:18:02 -0700 (PDT)
+        id S1726534AbgDEKgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Apr 2020 06:36:23 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:49386 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726417AbgDEKgX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Apr 2020 06:36:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=/yYzyLnkt5o4Y6sZshOUF7fL7wkCcwbfoUoIru+drL8=; b=j5X9/Ru3dETwVmESQJCHU9yF9s
+        On7QaK9lK3CMZ7kXWhnwVrN00KeNKZyK93dEX+TfcpnmgdoyAvD1FIUpxrA0AtPypRpPml23hJCfy
+        KhRuDRSX396CyPjihpasA9adwWaq0CKaHfLy+4rbiWPgalNw2IJ8wCok/x6HFd5hhu4W9RTmUEzmb
+        GXvYWCI9A/p3s5gxkNEiD7cRzDWz+pYUE0TMFZoki91O9P1uhFIS0Kn8MJO0wDuGphZksUbX4+V3j
+        0DEI9ks+BWAqV+fB0QhxYlawQkcNHu278of7/FmzeAjJNLBaQGYAtfB+JM8PMys1oirQUeXrhmxbU
+        g3IkxjmA==;
+Received: from willy by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jL2dW-0007eO-Vw; Sun, 05 Apr 2020 10:36:18 +0000
+Date:   Sun, 5 Apr 2020 03:36:18 -0700
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, willemb@google.com,
+        kuba@kernel.org, simon.horman@netronome.com, sdf@google.com,
+        john.hurley@netronome.com, edumazet@google.com, fw@strlen.de,
+        jonathan.lemon@gmail.com, pablo@netfilter.org,
+        rdunlap@infradead.org, jeremy@azazel.net, pabeni@redhat.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] skbuff.h: Improve the checksum related comments
+Message-ID: <20200405103618.GV21484@bombadil.infradead.org>
+References: <1586071063-51656-1-git-send-email-decui@microsoft.com>
 MIME-Version: 1.0
-References: <20200404141909.26399-1-ap420073@gmail.com> <20200404155122.GD1476305@kroah.com>
- <CAMArcTVdn7FcfX-BCnZ+LUzdct4yj2BLyhpTu832_VGt_O+xWA@mail.gmail.com> <20200405073212.GA1551960@kroah.com>
-In-Reply-To: <20200405073212.GA1551960@kroah.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Sun, 5 Apr 2020 18:17:50 +0900
-Message-ID: <CAMArcTVp4Hvsg607+Robuw3wgajTBa-9LeD=50+b9NumDAF-Hg@mail.gmail.com>
-Subject: Re: [PATCH net v2 2/3] net: core: add netdev_class_has_file_ns()
- helper function
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, rafael@kernel.org,
-        j.vosburgh@gmail.com, vfalico@gmail.com,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, mitch.a.williams@intel.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1586071063-51656-1-git-send-email-decui@microsoft.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 5 Apr 2020 at 16:32, Greg KH <gregkh@linuxfoundation.org> wrote:
->
+On Sun, Apr 05, 2020 at 12:17:43AM -0700, Dexuan Cui wrote:
+>   * CHECKSUM_COMPLETE:
+>   *
+> - *   This is the most generic way. The device supplied checksum of the _whole_
+> - *   packet as seen by netif_rx() and fills out in skb->csum. Meaning, the
+> + *   This is the most generic way. The device supplies checksum of the _whole_
+> + *   packet as seen by netif_rx() and fills out in skb->csum. This means the
 
-Hi Greg,
-Thank you for the review!
+I think both 'supplies' and 'supplied' are correct in this sentence.  The
+nuances are slightly different, but the meaning is the same in this instance.
 
-> On Sun, Apr 05, 2020 at 02:18:22AM +0900, Taehee Yoo wrote:
-> > On Sun, 5 Apr 2020 at 00:51, Greg KH <gregkh@linuxfoundation.org> wrote:
-> > >
-> >
-> > Hi Greg,
-> > Thank you for your review!
-> >
-> > > On Sat, Apr 04, 2020 at 02:19:09PM +0000, Taehee Yoo wrote:
-> > > > This helper function is to check whether the class file "/sys/class/net/*"
-> > > > is existing or not.
-> > > > In the next patch, this helper function will be used.
-> > > >
-> > > > Reported-by: syzbot+830c6dbfc71edc4f0b8f@syzkaller.appspotmail.com
-> > > > Fixes: b76cdba9cdb2 ("[PATCH] bonding: add sysfs functionality to bonding (large)")
-> > > > Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-> > > > ---
-> > > >
-> > > > v1 -> v2:
-> > > >  - use class_has_file_ns(), which is introduced by the first patch.
-> > > >
-> > > >  include/linux/netdevice.h | 2 +-
-> > > >  net/core/net-sysfs.c      | 6 ++++++
-> > > >  2 files changed, 7 insertions(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> > > > index 130a668049ab..a04c487c0975 100644
-> > > > --- a/include/linux/netdevice.h
-> > > > +++ b/include/linux/netdevice.h
-> > > > @@ -4555,7 +4555,7 @@ int netdev_class_create_file_ns(const struct class_attribute *class_attr,
-> > > >                               const void *ns);
-> > > >  void netdev_class_remove_file_ns(const struct class_attribute *class_attr,
-> > > >                                const void *ns);
-> > > > -
-> > > > +bool netdev_class_has_file_ns(const char *name, const void *ns);
-> > > >  static inline int netdev_class_create_file(const struct class_attribute *class_attr)
-> > > >  {
-> > > >       return netdev_class_create_file_ns(class_attr, NULL);
-> > > > diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-> > > > index cf0215734ceb..8a20d658eff0 100644
-> > > > --- a/net/core/net-sysfs.c
-> > > > +++ b/net/core/net-sysfs.c
-> > > > @@ -1914,6 +1914,12 @@ void netdev_class_remove_file_ns(const struct class_attribute *class_attr,
-> > > >  }
-> > > >  EXPORT_SYMBOL(netdev_class_remove_file_ns);
-> > > >
-> > > > +bool netdev_class_has_file_ns(const char *name, const void *ns)
-> > > > +{
-> > > > +     return class_has_file_ns(&net_class, name, ns);
-> > > > +}
-> > > > +EXPORT_SYMBOL(netdev_class_has_file_ns);
-> > >
-> > > Again, this feels broken, it can not solve a race condition.
-> > >
-> >
-> > This function is considered to be used under rtnl mutex and
-> > I assume that no one could use "/sys/class/net/*" outside of rtnl mutex.
-> > So, I think it returns the correct information under rtnl mutex.
->
-> But you are creating a globally exported function that can be called
-> from anywhere, and as such, is not useful because it has no locking or
-> hints of how to use it correctly at all.
->
+You missed a mistake in the second line though, it should be either 'fills
+out' or 'fills in'.  I think we tend to prefer 'fills in'.
 
-Yes, I agree with that.
+>   * CHECKSUM_COMPLETE:
+>   *   Not used in checksum output. If a driver observes a packet with this value
+> - *   set in skbuff, if should treat as CHECKSUM_NONE being set.
+> + *   set in skbuff, the driver should treat it as CHECKSUM_NONE being set.
 
-> Again, don't push this "solution" down to sysfs to solve, you know if
-> you have a device that is not cleaned up yet, so don't try to
-> rename/create a device of the same name before that is finished.
->
+I would go with "it should treat the packet as if CHECKSUM_NONE were set."
 
-Okay, Thank you for that.
-I will find another way to fix it.
+> @@ -211,7 +211,7 @@
+>   * is implied by the SKB_GSO_* flags in gso_type. Most obviously, if the
+>   * gso_type is SKB_GSO_TCPV4 or SKB_GSO_TCPV6, TCP checksum offload as
+>   * part of the GSO operation is implied. If a checksum is being offloaded
+> - * with GSO then ip_summed is CHECKSUM_PARTIAL, csum_start and csum_offset
+> + * with GSO then ip_summed is CHECKSUM_PARTIAL AND csum_start and csum_offset
+>   * are set to refer to the outermost checksum being offload (two offloaded
+>   * checksums are possible with UDP encapsulation).
 
-Thanks a lot!
-Taehee Yoo
+Why the capitalisation of 'AND'?
+
+Thanks for the improvements,
+
+Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
