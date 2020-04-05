@@ -2,105 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D60119ED58
-	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 20:31:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2427D19EDB6
+	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 21:47:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727081AbgDESb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Apr 2020 14:31:28 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:34137 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726771AbgDESb2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Apr 2020 14:31:28 -0400
-Received: by mail-qk1-f194.google.com with SMTP id i186so4989266qke.1;
-        Sun, 05 Apr 2020 11:31:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VdCOiULPYGtStxmnCkuLZmgFo9x/FqnSR/aOAQ2GpqY=;
-        b=a/oiTCaP0JqkVYTPom12lG6TzWozpI0vJlIWag+UO6v0t6sQUvmrDxpxORevKwDUue
-         lXmR8iaLNSHPmO6foLB+ZjB4hyevI81dyVbN7PYQ8uqEf9rhZrFfY0jDy5NFLjTkSZGz
-         S9ISOBAAV6XJ+G80TqgsgXbYLHPX2t/UDU5+cPqMdILsGERgFQC37Rc7zXd9lHOEu8BW
-         vSso/2iwS6uJ/ZgJBtty7cVCtBziAD4EkVWQW4OLK1DK3PQaBwxrONvaXh4U3z+2MTM6
-         Cy12QYmIjonp+eEoMeg05391xGGkWVsLsg5MPhDE3XFks/k0n6B1ZeZHT58H6m0WJyLx
-         cJ6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VdCOiULPYGtStxmnCkuLZmgFo9x/FqnSR/aOAQ2GpqY=;
-        b=os8XJtitpsqftVd9/UGukvLeD+fNuyssIzandq6QXlGvfxgvWT5YmPtUDwWYjgJCze
-         hnsBfCNZJDfJNbw8v3u4SjQ2e4fcgFhJ/PeSmO/pj8kyykkN9cRd5QBVYnyWdwyvukAh
-         3VsWtcfwxJJyG7XwfqIRnAReflCmCygRJNknt/XMvnlekzRxG2KTeIQcc8XXR1FkC/rq
-         vj5g9oneakR/ye6NcQVDmTK5p7SJJU81agISu9aSL28o8GqUq5iIkIWZH3tmc/zcpmqj
-         xiXX6LdPP2toIa2lEoBk1gGAdL/gynDldYAWq2cDDcsq2lFcQTN14CMlmschFF8An+OY
-         /rag==
-X-Gm-Message-State: AGi0Pua6kXfJnbF4s5AqIivugns5e42s5f3F/RPR1WnF26NSNr4P8SUB
-        lugDQ8rqLw3x6qN18I+1cihIvRxZroKxp4oINQI=
-X-Google-Smtp-Source: APiQypJlyFvwWzBHcBNhjoIuhWhZakt/U0cjOygj60OtUhHLEU48/lMr/qPnmWesPtPMCPIHmjE4WU2Sk8XtVbPvGQo=
-X-Received: by 2002:a37:9c4d:: with SMTP id f74mr2633934qke.437.1586111486634;
- Sun, 05 Apr 2020 11:31:26 -0700 (PDT)
+        id S1727612AbgDETrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Apr 2020 15:47:19 -0400
+Received: from correo.us.es ([193.147.175.20]:34332 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727509AbgDETrT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 Apr 2020 15:47:19 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id F0BBD8140F
+        for <netdev@vger.kernel.org>; Sun,  5 Apr 2020 21:47:16 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id E22FD100A53
+        for <netdev@vger.kernel.org>; Sun,  5 Apr 2020 21:47:16 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id D7488100A47; Sun,  5 Apr 2020 21:47:16 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 7C921DA736;
+        Sun,  5 Apr 2020 21:47:14 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sun, 05 Apr 2020 21:47:14 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 59F5342EE38E;
+        Sun,  5 Apr 2020 21:47:14 +0200 (CEST)
+Date:   Sun, 5 Apr 2020 21:47:14 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: Re: [PATCH nf 1/1] netfilter: nf_tables: do not leave dangling
+ pointer in nf_tables_set_alloc_name
+Message-ID: <20200405194714.wagcla6jdvkn55di@salvia>
+References: <20200401173716.222205-1-edumazet@google.com>
 MIME-Version: 1.0
-References: <20200404000948.3980903-1-andriin@fb.com> <0849eba7-18c3-e5d5-f4d6-b76dcb882906@gmail.com>
-In-Reply-To: <0849eba7-18c3-e5d5-f4d6-b76dcb882906@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sun, 5 Apr 2020 11:31:15 -0700
-Message-ID: <CAEf4Bzb4HJNzpyF=yRsS1CjiZK1qZ57QmiFUH2-hh46u+OFs7A@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 0/8] bpf_link observability APIs
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200401173716.222205-1-edumazet@google.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 5, 2020 at 9:26 AM David Ahern <dsahern@gmail.com> wrote:
->
-> On 4/3/20 6:09 PM, Andrii Nakryiko wrote:
-> > This patch series adds various observability APIs to bpf_link:
-> >   - each bpf_link now gets ID, similar to bpf_map and bpf_prog, by which
-> >     user-space can iterate over all existing bpf_links and create limited FD
-> >     from ID;
-> >   - allows to get extra object information with bpf_link general and
-> >     type-specific information;
-> >   - makes LINK_UPDATE operation allowed only for writable bpf_links and allows
-> >     to pin bpf_link as read-only file;
-> >   - implements `bpf link show` command which lists all active bpf_links in the
-> >     system;
-> >   - implements `bpf link pin` allowing to pin bpf_link by ID or from other
-> >     pinned path.
-> >
-> > This RFC series is missing selftests and only limited amount of manual testing
-> > was performed. But kernel implementation is hopefully in a good shape and
-> > won't change much (unless some big issues are identified with the current
-> > approach). It would be great to get feedback on approach and implementation,
-> > before I invest more time in writing tests.
-> >
->
-> The word 'ownership' was used over and over in describing the benefits
-> of bpf_link meaning a process owns a program at a specific attach point.
-> How does this set allow me to discover the pid of the process
-> controlling a specific bpf_link?
+On Wed, Apr 01, 2020 at 10:37:16AM -0700, Eric Dumazet wrote:
+> If nf_tables_set_alloc_name() frees set->name, we better
+> clear set->name to avoid a future use-after-free or invalid-free.
 
-In general, it's many processes, not a single process. Here's how:
-
-1. Each bpf_link has a unique ID.
-2. You can find desired bpf_link info (including ID) either by already
-having FD and querying it with GET_OBJ_INFO_BY_FD, or by doing
-GET_NEXT_ID iteration and then GET_FD_BY_ID + GET_OBJ_INFO_BY_FD.
-3. Iterate all open files (either by using tools like drgn or by
-iterating over procfs), check their fdinfo to see if it's bpf_link's
-with given ID. This gives you which application has FD open against
-given bpf_link.
-
-Similarly one can iterate over all pinned files in bpffs and see if it
-pins bpf_link (I believe bpftool can do that already and show which
-objects are pinned, so it should be a minimal change to actually print
-out all the pinned file paths).
-
-Does that answer your question?
+Applied, thank you.
