@@ -2,56 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F24119EB95
-	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 15:49:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E46D719EB98
+	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 15:50:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726718AbgDENtu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Apr 2020 09:49:50 -0400
-Received: from mail-wr1-f45.google.com ([209.85.221.45]:40680 "EHLO
-        mail-wr1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726636AbgDENtu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Apr 2020 09:49:50 -0400
-Received: by mail-wr1-f45.google.com with SMTP id s8so12046654wrt.7
-        for <netdev@vger.kernel.org>; Sun, 05 Apr 2020 06:49:49 -0700 (PDT)
+        id S1726891AbgDENt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Apr 2020 09:49:59 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:33156 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726636AbgDENt7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Apr 2020 09:49:59 -0400
+Received: by mail-wm1-f68.google.com with SMTP id z14so5857860wmf.0
+        for <netdev@vger.kernel.org>; Sun, 05 Apr 2020 06:49:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:reply-to:mime-version
-         :content-transfer-encoding;
-        bh=xtfoRjhWf642zI1+H6uMDpR0mtXxyw3DLNJ52bvvCCw=;
-        b=M4Y8RupOqBloQIwEidrHc4RZnroymrP4eo1q9068SyD8bUsxz2/7cHgqX+j5F5RpwN
-         KFzt/BMwb0ljsKI5jf9CquKFovTgWnR0y2KmoS8IkcR/xG8zrjD9TqiC7AcysWf00Gr2
-         xwxJkKh3Na9aLgDSdxEGRMBalOj24cPNqluyMVs/tcGJhCNraBfaa9Fy0/B8C1twGSt3
-         NYSHcfj0ZQcSOhP7q9/AcheFv6783lo8e/1LX9l+bptQEf0mV0PTnGv5v/IE2oLx3Pfn
-         sjXCq+Lib2ceYb+2Uw3FJFLFgftokr/qZfpcl1cL7H9fa4tkPwgBdp1O9js5EPWTK29P
-         SSIQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references:reply-to
+         :mime-version:content-transfer-encoding;
+        bh=L3c3HjFnEPfOn7OLYmFJnF9OygmltTZwNyqX02+3Ls0=;
+        b=f3tHDKEBLMdGbUtp14HZOViF7glcvz/aPTCUQrDfHT6C1cBTbwx5oW2mDREfmxp70v
+         +X7hhLh3RScmSvmbvhK3ruWsh06cSWWN+lOVudLEbsCA9Z3+rlaR2f2RN9Z4hlq/p6ms
+         uzW68YaFl1PLvBQ8c7JCX+SNw9yRXA1G4FGlTQgt++KeIDFbk7NkaNZQTzAEqlX/XFAy
+         lNIX3biR27Scgv+6tw1kFT6ORO2xQlxjp5w5mX1h6MxevL1Bw+Y1DMhYmuq5EGIC0txV
+         gWnLZMSwMUzrYc5OXvtRnOon1Zgq2N2D7AkqkE5UHbOzrbLlJD1ypo12FzbXiAZQ9ULt
+         W74g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:reply-to
-         :mime-version:content-transfer-encoding;
-        bh=xtfoRjhWf642zI1+H6uMDpR0mtXxyw3DLNJ52bvvCCw=;
-        b=oa9W0XhS0qZs0OrCIDCv2rWdsBC224JhsfOdJpX0ORUC1Z9QjJI0oqx1F6L3WzgkIc
-         lUT1bgroUnAUwp1exDsaAKXdX0tkxdqh3/BhCeKUKtdp6VrVZ5cLSsmoJDgwEpUc+ugU
-         Lixatan6Oj28cgqAp0vnCoBRJjg5lFYiH936NNvT9VB5oRaNrjKGx0ERWrcA5l+i4KbZ
-         0zNWiWlIYwyVtYBzGOqV1xJBT1Lf2uxABJ+hpn38XTjDedDKn77oc11+GNY1JssJsqjD
-         JiHL/Eutm9E+4C0Libn8DN2p0IywHVm4UnviiIkeMGvd0/+1abXrzKa6gJ+DdNob1xpQ
-         /cow==
-X-Gm-Message-State: AGi0PuYIKdTdjvWnejm2L6eUUis+A33YIz2KA+ieFvi33JG7p1aXo31B
-        R5Ttf0MF45saDuK5NFWq9CUd0Hxs
-X-Google-Smtp-Source: APiQypJZvKKerA6c5d7Zs3FDljp5rryiwPhtVF0OS//p7SWk8nSRRuzvtFYM3uLCIpX989jKh1F05A==
-X-Received: by 2002:adf:cd8d:: with SMTP id q13mr1710113wrj.400.1586094587747;
-        Sun, 05 Apr 2020 06:49:47 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:reply-to:mime-version:content-transfer-encoding;
+        bh=L3c3HjFnEPfOn7OLYmFJnF9OygmltTZwNyqX02+3Ls0=;
+        b=SPYMMpy3LV2WoT00CNU68fx9/CZbFU7OTzRBqhKFi+9krgKcmx5X7uWuIJpR2Zaw3Q
+         HUAUYOdGEerJMXpEFGdgCQm0tpK9GsfI/7xsVXi7eeep2yEPXWw4T/eutmlaVCVWDD1R
+         Mts6k4dTrG2XeEELzntcbHYJUd7Kt1CQAxG+9KFz6nzNUG4O4HR1Br63IhKLxhSIIFGs
+         MkE192pSgIbK/twZiDNGblQlHrewpvYAfqgkuOTdAsTVOF/V+G7+a+3740BHZ4LZFNum
+         EXxDSSorfdq2YQk3AQ+RFiPRPNZUIfR2SUtVpY0R6b5fgwbRlJWv8IWPAp2wixb9BCBy
+         gUvA==
+X-Gm-Message-State: AGi0Puaf5Gk8sEx5fLOOB644Nd7Qhww+E2nnX67FfvydeodZuKs6C9Y0
+        dT2eJF3f31Qd+IKveNKJ44LAgWjs
+X-Google-Smtp-Source: APiQypJEfZ4MhrKIEweVJw1ZyVRKDVjvRResgaGSMNf8VRH6d0/nfRA5tNWrbofFzJMnahTbs+FfuA==
+X-Received: by 2002:a1c:9658:: with SMTP id y85mr17907285wmd.63.1586094596830;
+        Sun, 05 Apr 2020 06:49:56 -0700 (PDT)
 Received: from localhost ([2a01:e35:2f01:a61:fc49:14b:88c:2a9c])
-        by smtp.gmail.com with ESMTPSA id n1sm9014376wrw.52.2020.04.05.06.49.45
-        for <netdev@vger.kernel.org>
+        by smtp.gmail.com with ESMTPSA id q9sm3997473wrp.61.2020.04.05.06.49.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Apr 2020 06:49:46 -0700 (PDT)
+        Sun, 05 Apr 2020 06:49:55 -0700 (PDT)
 From:   "=?UTF-8?q?Bastien=20Roucari=C3=A8s?=" <roucaries.bastien@gmail.com>
 X-Google-Original-From: =?UTF-8?q?Bastien=20Roucari=C3=A8s?= <rouca@debian.org>
 To:     netdev@vger.kernel.org
-Subject: Improve documentation of bridge 
-Date:   Sun,  5 Apr 2020 15:48:52 +0200
-Message-Id: <20200405134859.57232-1-rouca@debian.org>
+Cc:     =?UTF-8?q?Bastien=20Roucari=C3=A8s?= <rouca@debian.org>
+Subject: [PATCH iproute2 1/6] Better documentation of mcast_to_unicast option
+Date:   Sun,  5 Apr 2020 15:48:53 +0200
+Message-Id: <20200405134859.57232-2-rouca@debian.org>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200405134859.57232-1-rouca@debian.org>
+References: <20200405134859.57232-1-rouca@debian.org>
 Reply-To: rouca@debian.org
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -61,19 +63,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This option is useful for Wifi bridge but need some tweak.
 
-Please found a serie improving documentation of bridge device.
+Document it from kernel patches documentation
 
-Please review and apply
+Signed-off-by: Bastien Roucariès <rouca@debian.org>
+---
+ man/man8/bridge.8 | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-I could not understand some options in this page:
-- vlan_tunnel on  ? 
-
-According to https://vincent.bernat.ch/en/blog/2017-linux-bridge-isolation
-I need  echo 1 > /sys/class/net/br0/bridge/vlan_filtering to enable vlan filtering
-
-Do we need the echo 1 ? Or could be implemented by ip bridge (better for user experience) ?
-
-Bastien 
-
+diff --git a/man/man8/bridge.8 b/man/man8/bridge.8
+index b9bd6bc5..efb84582 100644
+--- a/man/man8/bridge.8
++++ b/man/man8/bridge.8
+@@ -383,6 +383,34 @@ there is no MDB entry. By default this flag is on.
+ Controls whether a given port will replicate packets using unicast
+ instead of multicast. By default this flag is off.
+ 
++This is done by copying the packet per host and
++changing the multicast destination MAC to a unicast one accordingly.
++
++.BR mcast_to_unicast
++works on top of the multicast snooping feature of
++the bridge. Which means unicast copies are only delivered to hosts which
++are interested in it and signalized this via IGMP/MLD reports
++previously.
++
++
++This feature is intended for interface types which have a more reliable
++and/or efficient way to deliver unicast packets than broadcast ones
++(e.g. WiFi).
++
++However, it should only be enabled on interfaces where no IGMPv2/MLDv1
++report suppression takes place. IGMP/MLD report suppression issue is usually
++overcome by the network daemon (supplicant) enabling AP isolation and
++by that separating all STAs.
++
++Delivery of STA-to-STA IP mulitcast is made possible again by
++enabling and utilizing the bridge hairpin mode, which considers the
++incoming port as a potential outgoing port, too (see
++.B hairpin
++option)
++
++Hairpin mode is performed after multicast snooping, therefore leading to
++only deliver reports to STAs running a multicast router.
++
+ .TP
+ .BR "neigh_suppress on " or " neigh_suppress off "
+ Controls whether neigh discovery (arp and nd) proxy and suppression is
+-- 
+2.25.1
 
