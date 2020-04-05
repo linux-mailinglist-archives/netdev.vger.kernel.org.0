@@ -2,96 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D89719EA20
-	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 11:14:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 508EF19EA2B
+	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 11:18:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726494AbgDEJOr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Apr 2020 05:14:47 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:42518 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726397AbgDEJOr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Apr 2020 05:14:47 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1586078086; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=6/9MibweBRdexKNq6gs4nfntQ4hl08uFrMqjxWvBPlM=; b=uFCBOpnPVLBkHDmaOxb+m+HdUaYSqp9XVLaZt8WYjj6/lpADpbODR7abn6A4BZOOPoaZE2IT
- a6qjKrGdYvftZzNxXodMKufbYEX/WG3Lqsc7qqLy4ujVCOWzbNA6lhd37y/wkaiSmXiQx5BB
- 2wm+tAxUti9TRk4twRIXuWBFFBI=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e89a179.7f1fa20ed2d0-smtp-out-n05;
- Sun, 05 Apr 2020 09:14:33 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 1A7E1C433D2; Sun,  5 Apr 2020 09:14:33 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 79925C433D2;
-        Sun,  5 Apr 2020 09:14:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 79925C433D2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Luca Coelho <luca@coelho.fi>
-Cc:     Chris Rorvick <chris@rorvick.com>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] iwlwifi: actually check allocated conf_tlv pointer
-References: <20200402050219.4842-1-chris@rorvick.com>
-        <87mu7qfhiy.fsf@codeaurora.org>
-        <e43fb61905bcc31f93d6e72e5c470ad5585b6dfd.camel@coelho.fi>
-Date:   Sun, 05 Apr 2020 12:13:55 +0300
-In-Reply-To: <e43fb61905bcc31f93d6e72e5c470ad5585b6dfd.camel@coelho.fi> (Luca
-        Coelho's message of "Sun, 05 Apr 2020 11:51:53 +0300")
-Message-ID: <87zhbqz44s.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1726546AbgDEJSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Apr 2020 05:18:05 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:46213 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726399AbgDEJSF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Apr 2020 05:18:05 -0400
+Received: by mail-lj1-f193.google.com with SMTP id r7so11297189ljg.13;
+        Sun, 05 Apr 2020 02:18:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ezAeoP6FHV4AgjLzQuSOWjGz7T/3USe1LlIeyEWnVyY=;
+        b=BJop5i+EaG3paQbNb4bN/ifD24C0PwLCf4+Fe1ldfM6T5WuJdO6h34bW8Mg3TT2j9a
+         RTSZOePJPsJzM/ejFEoFXHzK4y7WW1IQjDrY5AeDsZtZcLuUJomZykzce7OY3U0FIeer
+         sz3CwiDmFbmYJJ1dsHGqLtoN74nBjxpnCPLTXG7qE9tU/cKisiP5ovyQoFSlaTJtEWi1
+         vlNmEU3ozk0LKP4qYL07NHUaKzYmCY+ZH501//0zXFvEeNke0kp9MbSWbiuQ9j8ZIz2d
+         xLXItZEC+zgMrjwETAydoLc8vEedkihxqKq3bl+ivRp46f9i55SX20cXTipr3iPqHerY
+         U+Cw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ezAeoP6FHV4AgjLzQuSOWjGz7T/3USe1LlIeyEWnVyY=;
+        b=VNCT/uVTd0dm+uPy4zEluEArEWv925MnR842mjqTXnvBH4ByLF+QmZSbfPAj+hZSFk
+         KfGSGYXRHwkn08hSL3hPc/AgU5uT9gg254pQwZ+dSZCijPUHvlZk5ky5G1hZp4/80VTb
+         HmqS5z1dc/x8Zu0BGPaQOSpBkqB+l718UUh69zZ07Q2Rn6qMrJbaqD7Uu4IjVMPLNq1t
+         7IZejh6AF1piiniO0PyJRuTfakqDrJT8KfN3Jmo2milzx9KQTNZut7EZHJUq6ur0wbyI
+         heO38wd4qjAczs92189pFAMXjzSATLIrY64+Velj6EDtpZmG8QIjCcZ/KX0gKgs/pc3S
+         GCNw==
+X-Gm-Message-State: AGi0PubgPbSsdIUeC005+CGe/ijeEseDSQj8Ddxp0VcFGarhjUFrYBnl
+        ty4BENfJChXkubU3qrVrYaLc9Bq99j63ZASZaKQIHn6d
+X-Google-Smtp-Source: APiQypJPDLy6OKizWRXuz0X5VBBP6ERK7+B3E98bN+O0lraEpSbbuOTmRKhtm25oWPuHP62rY1+rK/uU5ZMUjYZTMRI=
+X-Received: by 2002:a2e:9252:: with SMTP id v18mr9228042ljg.114.1586078282352;
+ Sun, 05 Apr 2020 02:18:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20200404141909.26399-1-ap420073@gmail.com> <20200404155122.GD1476305@kroah.com>
+ <CAMArcTVdn7FcfX-BCnZ+LUzdct4yj2BLyhpTu832_VGt_O+xWA@mail.gmail.com> <20200405073212.GA1551960@kroah.com>
+In-Reply-To: <20200405073212.GA1551960@kroah.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Sun, 5 Apr 2020 18:17:50 +0900
+Message-ID: <CAMArcTVp4Hvsg607+Robuw3wgajTBa-9LeD=50+b9NumDAF-Hg@mail.gmail.com>
+Subject: Re: [PATCH net v2 2/3] net: core: add netdev_class_has_file_ns()
+ helper function
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, rafael@kernel.org,
+        j.vosburgh@gmail.com, vfalico@gmail.com,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, mitch.a.williams@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Luca Coelho <luca@coelho.fi> writes:
-
-> On Sun, 2020-04-05 at 11:44 +0300, Kalle Valo wrote:
->> Chris Rorvick <chris@rorvick.com> writes:
->> 
->> > Commit 71bc0334a637 ("iwlwifi: check allocated pointer when allocating
->> > conf_tlvs") attempted to fix a typoe introduced by commit 17b809c9b22e
->> > ("iwlwifi: dbg: move debug data to a struct") but does not implement the
->> > check correctly.
->> > 
->> > Tweeted-by: @grsecurity
->> > Signed-off-by: Chris Rorvick <chris@rorvick.com>
->> 
->> I'll add:
->> 
->> Fixes: 71bc0334a637 ("iwlwifi: check allocated pointer when allocating conf_tlvs")
->> 
->> > ---
->> > In this wasn't picked up?
->> 
->> Luca, can I take this directly?
+On Sun, 5 Apr 2020 at 16:32, Greg KH <gregkh@linuxfoundation.org> wrote:
 >
-> Yes, please take it directly.
 
-Ok, assigned it to me in patchwork.
+Hi Greg,
+Thank you for the review!
 
-> This can happen in OOM situations and, when it does, we will
-> potentially try to dereference a NULL pointer.
+> On Sun, Apr 05, 2020 at 02:18:22AM +0900, Taehee Yoo wrote:
+> > On Sun, 5 Apr 2020 at 00:51, Greg KH <gregkh@linuxfoundation.org> wrote:
+> > >
+> >
+> > Hi Greg,
+> > Thank you for your review!
+> >
+> > > On Sat, Apr 04, 2020 at 02:19:09PM +0000, Taehee Yoo wrote:
+> > > > This helper function is to check whether the class file "/sys/class/net/*"
+> > > > is existing or not.
+> > > > In the next patch, this helper function will be used.
+> > > >
+> > > > Reported-by: syzbot+830c6dbfc71edc4f0b8f@syzkaller.appspotmail.com
+> > > > Fixes: b76cdba9cdb2 ("[PATCH] bonding: add sysfs functionality to bonding (large)")
+> > > > Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> > > > ---
+> > > >
+> > > > v1 -> v2:
+> > > >  - use class_has_file_ns(), which is introduced by the first patch.
+> > > >
+> > > >  include/linux/netdevice.h | 2 +-
+> > > >  net/core/net-sysfs.c      | 6 ++++++
+> > > >  2 files changed, 7 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> > > > index 130a668049ab..a04c487c0975 100644
+> > > > --- a/include/linux/netdevice.h
+> > > > +++ b/include/linux/netdevice.h
+> > > > @@ -4555,7 +4555,7 @@ int netdev_class_create_file_ns(const struct class_attribute *class_attr,
+> > > >                               const void *ns);
+> > > >  void netdev_class_remove_file_ns(const struct class_attribute *class_attr,
+> > > >                                const void *ns);
+> > > > -
+> > > > +bool netdev_class_has_file_ns(const char *name, const void *ns);
+> > > >  static inline int netdev_class_create_file(const struct class_attribute *class_attr)
+> > > >  {
+> > > >       return netdev_class_create_file_ns(class_attr, NULL);
+> > > > diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+> > > > index cf0215734ceb..8a20d658eff0 100644
+> > > > --- a/net/core/net-sysfs.c
+> > > > +++ b/net/core/net-sysfs.c
+> > > > @@ -1914,6 +1914,12 @@ void netdev_class_remove_file_ns(const struct class_attribute *class_attr,
+> > > >  }
+> > > >  EXPORT_SYMBOL(netdev_class_remove_file_ns);
+> > > >
+> > > > +bool netdev_class_has_file_ns(const char *name, const void *ns)
+> > > > +{
+> > > > +     return class_has_file_ns(&net_class, name, ns);
+> > > > +}
+> > > > +EXPORT_SYMBOL(netdev_class_has_file_ns);
+> > >
+> > > Again, this feels broken, it can not solve a race condition.
+> > >
+> >
+> > This function is considered to be used under rtnl mutex and
+> > I assume that no one could use "/sys/class/net/*" outside of rtnl mutex.
+> > So, I think it returns the correct information under rtnl mutex.
+>
+> But you are creating a globally exported function that can be called
+> from anywhere, and as such, is not useful because it has no locking or
+> hints of how to use it correctly at all.
+>
 
-I'll add this to the commit log.
+Yes, I agree with that.
 
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+> Again, don't push this "solution" down to sysfs to solve, you know if
+> you have a device that is not cleaned up yet, so don't try to
+> rename/create a device of the same name before that is finished.
+>
+
+Okay, Thank you for that.
+I will find another way to fix it.
+
+Thanks a lot!
+Taehee Yoo
