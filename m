@@ -2,100 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CCFE519EDC7
-	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 22:00:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CDED19EDCE
+	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 22:05:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727254AbgDEUAj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Apr 2020 16:00:39 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:46898 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726678AbgDEUAj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Apr 2020 16:00:39 -0400
-Received: by mail-wr1-f66.google.com with SMTP id j17so14851072wru.13;
-        Sun, 05 Apr 2020 13:00:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=VLVnSq472ZJWcRIFfrtdvmcQ4Q6YhtKhA+2SpNJSSFY=;
-        b=tisiBEh+hi212zrFvsb8QK9bg6uUxFD20rxK396zIiaVnelUtKohfPkHxgigT8gX3x
-         wwScEba4+4R71KEjAFRJjKakmS2aUF0aq0QVkLrbvnuQMXBAw5DXu4rVf0Mi4E2r5b1a
-         L5+mj1SfqVLqQARZi5vA7nK+wA6D0ZULCDLlcSCeGCGQsI0ynsw3XEzyzS4fp/pzQk/h
-         mEoOzok1P/Mo8DJXBc/AJ310C5+3aIZTadztgXXlOzhXsN8Z4bVFZEy9ABve4sDLVqbB
-         tzfVc9/MIVOut0sDyoVDT52a8ocwDG+b6mlMS74qD557+XtiGY0mEqn3nfRwyguP2HBN
-         t6aQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=VLVnSq472ZJWcRIFfrtdvmcQ4Q6YhtKhA+2SpNJSSFY=;
-        b=gdebPjlBIzua+c1JwFuVrt92mE+igLPRwB3QKHOdGDk+KplcCPfoy/SZkr0qS3Pmtd
-         Ca7OOoTaEdxC+YISFIYxLjXKAai1nMV99V/ZFFYWrvdn+RjQeUeS3NGZNMigM3lvrME7
-         nbMR3nO6SiVe2U9pi1QBSOybKdOdE492+kyx4beaSALHNqi0PzJbCpzak5hJwmSOVBSu
-         r+dPyaMeifc+uozOHMot2wHEsrEZAxupIvKdPiMJjanlBwmoNVBYeW9Pnyn5tecOj3i4
-         dwhysOCp33FZXp1g3naMtV2MxyXbx7+3MunX487/H30YAUva0QgGv5cf2vRQAKWBFlnr
-         wSdA==
-X-Gm-Message-State: AGi0PuZ6qWsMqQp6BKGX3QPI0ToUKfgMJFOhdfYVg3KAIBbnE1P+8OS8
-        38cFaIzvVIYGejSkSLTkERgNMwt/
-X-Google-Smtp-Source: APiQypLwDyEZDBhpvrBuB2T68qQlJnJY6a4tehVFtzhkayjoer40jPntEFLQaNx/E+PyePvx/TOC0w==
-X-Received: by 2002:a5d:4bc1:: with SMTP id l1mr21693434wrt.103.1586116837278;
-        Sun, 05 Apr 2020 13:00:37 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id v7sm6855700wmg.3.2020.04.05.13.00.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Apr 2020 13:00:36 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] net: dsa: bcm_sf2: Ensure correct sub-node is parsed
-Date:   Sun,  5 Apr 2020 13:00:30 -0700
-Message-Id: <20200405200031.27263-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1727444AbgDEUF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Apr 2020 16:05:28 -0400
+Received: from correo.us.es ([193.147.175.20]:38066 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726887AbgDEUF2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 Apr 2020 16:05:28 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 27A1F81411
+        for <netdev@vger.kernel.org>; Sun,  5 Apr 2020 22:05:26 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 181F1100A4B
+        for <netdev@vger.kernel.org>; Sun,  5 Apr 2020 22:05:26 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 05E80100A5C; Sun,  5 Apr 2020 22:05:26 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 9ED59DA736;
+        Sun,  5 Apr 2020 22:05:22 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sun, 05 Apr 2020 22:05:22 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 74D3F426CCB9;
+        Sun,  5 Apr 2020 22:05:22 +0200 (CEST)
+Date:   Sun, 5 Apr 2020 22:05:22 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Cc:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>,
+        Florian Westphal <fw@strlen.de>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Netfilter Development Mailing List 
+        <netfilter-devel@vger.kernel.org>,
+        Manoj Basapathi <manojbm@codeaurora.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Jan Engelhardt <jengelh@inai.de>
+Subject: Re: [PATCH] netfilter: IDLETIMER target v1 - match Android layout
+Message-ID: <20200405200522.5pcxitjcnxss4e7r@salvia>
+References: <20200331163559.132240-1-zenczykowski@gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="dmv5ja26wlrpku2e"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200331163559.132240-1-zenczykowski@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the bcm_sf2 was converted into a proper platform device driver and
-used the new dsa_register_switch() interface, we would still be parsing
-the legacy DSA node that contained all the port information since the
-platform firmware has intentionally maintained backward and forward
-compatibility to client programs. Ensure that we do parse the correct
-node, which is "ports" per the revised DSA binding.
 
-Fixes: d9338023fb8e ("net: dsa: bcm_sf2: Make it a real platform device driver")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+--dmv5ja26wlrpku2e
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+
+Hi Maciej,
+
+On Tue, Mar 31, 2020 at 09:35:59AM -0700, Maciej Żenczykowski wrote:
+> From: Maciej Żenczykowski <maze@google.com>
+[...]
+> We immediately notice that these two rev 1 structs are the
+> same size and layout, and that while timer_type and send_nl_msg
+> are differently named and serve a different purpose, they're
+> at the same offset.
+
+I'm attaching a new version, including EOPNOTSUPP if the send_nl_msg
+field is set, it's the most basic handling I can think of until this
+option becomes useful.
+
+Would you commit to send a patch for this new merge window to make it
+useful?
+
+Thank you.
+
+--dmv5ja26wlrpku2e
+Content-Type: text/x-diff; charset=utf-8
+Content-Disposition: attachment; filename="0001-netfilter-IDLETIMER-target-v1-match-Android-layout.patch"
+Content-Transfer-Encoding: 8bit
+
+From f29c2a23ac49126886a2248e5948a8c62888e3dc Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>
+Date: Tue, 31 Mar 2020 09:35:59 -0700
+Subject: [PATCH] netfilter: IDLETIMER target v1 - match Android layout
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Android has long had an extension to IDLETIMER to send netlink
+messages to userspace, see:
+  https://android.googlesource.com/kernel/common/+/refs/heads/android-mainline/include/uapi/linux/netfilter/xt_IDLETIMER.h#42
+Note: this is idletimer target rev 1, there is no rev 0 in
+the Android common kernel sources, see registration at:
+  https://android.googlesource.com/kernel/common/+/refs/heads/android-mainline/net/netfilter/xt_IDLETIMER.c#483
+
+When we compare that to upstream's new idletimer target rev 1:
+  https://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git/tree/include/uapi/linux/netfilter/xt_IDLETIMER.h#n46
+
+We immediately notice that these two rev 1 structs are the
+same size and layout, and that while timer_type and send_nl_msg
+are differently named and serve a different purpose, they're
+at the same offset.
+
+This makes them impossible to tell apart - and thus one cannot
+know in a mixed Android/vanilla environment whether one means
+timer_type or send_nl_msg.
+
+Since this is iptables/netfilter uapi it introduces a problem
+between iptables (vanilla vs Android) userspace and kernel
+(vanilla vs Android) if the two don't match each other.
+
+Additionally when at some point in the future Android picks up
+5.7+ it's not at all clear how to resolve the resulting merge
+conflict.
+
+Furthermore, since upgrading the kernel on old Android phones
+is pretty much impossible there does not seem to be an easy way
+out of this predicament.
+
+The only thing I've been able to come up with is some super
+disgusting kernel version >= 5.7 check in the iptables binary
+to flip between different struct layouts.
+
+By adding a dummy field to the vanilla Linux kernel header file
+we can force the two structs to be compatible with each other.
+
+Long term I think I would like to deprecate send_nl_msg out of
+Android entirely, but I haven't quite been able to figure out
+exactly how we depend on it.  It seems to be very similar to
+sysfs notifications but with some extra info.
+
+Currently it's actually always enabled whenever Android uses
+the IDLETIMER target, so we could also probably entirely
+remove it from the uapi in favour of just always enabling it,
+but again we can't upgrade old kernels already in the field.
+
+(Also note that this doesn't change the structure's size,
+as it is simply fitting into the pre-existing padding, and
+that since 5.7 hasn't been released yet, there's still time
+to make this uapi visible change)
+
+Cc: Manoj Basapathi <manojbm@codeaurora.org>
+Cc: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- drivers/net/dsa/bcm_sf2.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ include/uapi/linux/netfilter/xt_IDLETIMER.h | 1 +
+ net/netfilter/xt_IDLETIMER.c                | 3 +++
+ 2 files changed, 4 insertions(+)
 
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index cc95adc5ab4b..c7ac63f41918 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -1079,6 +1079,7 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
- 	const struct bcm_sf2_of_data *data;
- 	struct b53_platform_data *pdata;
- 	struct dsa_switch_ops *ops;
-+	struct device_node *ports;
- 	struct bcm_sf2_priv *priv;
- 	struct b53_device *dev;
- 	struct dsa_switch *ds;
-@@ -1146,7 +1147,11 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
- 	set_bit(0, priv->cfp.used);
- 	set_bit(0, priv->cfp.unique);
+diff --git a/include/uapi/linux/netfilter/xt_IDLETIMER.h b/include/uapi/linux/netfilter/xt_IDLETIMER.h
+index 434e6506abaa..49ddcdc61c09 100644
+--- a/include/uapi/linux/netfilter/xt_IDLETIMER.h
++++ b/include/uapi/linux/netfilter/xt_IDLETIMER.h
+@@ -48,6 +48,7 @@ struct idletimer_tg_info_v1 {
  
--	bcm_sf2_identify_ports(priv, dn->child);
-+	ports = of_find_node_by_name(dn, "ports");
-+	if (ports) {
-+		bcm_sf2_identify_ports(priv, ports);
-+		of_node_put(ports);
-+	}
+ 	char label[MAX_IDLETIMER_LABEL_SIZE];
  
- 	priv->irq0 = irq_of_parse_and_map(dn, 0);
- 	priv->irq1 = irq_of_parse_and_map(dn, 1);
++	__u8 send_nl_msg;   /* unused: for compatibility with Android */
+ 	__u8 timer_type;
+ 
+ 	/* for kernel module internal use only */
+diff --git a/net/netfilter/xt_IDLETIMER.c b/net/netfilter/xt_IDLETIMER.c
+index 75bd0e5dd312..7b2f359bfce4 100644
+--- a/net/netfilter/xt_IDLETIMER.c
++++ b/net/netfilter/xt_IDLETIMER.c
+@@ -346,6 +346,9 @@ static int idletimer_tg_checkentry_v1(const struct xt_tgchk_param *par)
+ 
+ 	pr_debug("checkentry targinfo%s\n", info->label);
+ 
++	if (info->send_nl_msg)
++		return -EOPNOTSUPP;
++
+ 	ret = idletimer_tg_helper((struct idletimer_tg_info *)info);
+ 	if(ret < 0)
+ 	{
 -- 
-2.17.1
+2.11.0
 
+
+--dmv5ja26wlrpku2e--
