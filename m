@@ -2,97 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D3FC19E9BF
-	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 09:32:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B660F19E9C3
+	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 09:32:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726388AbgDEHcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Apr 2020 03:32:07 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:41115 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726250AbgDEHcH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Apr 2020 03:32:07 -0400
-Received: by mail-lj1-f193.google.com with SMTP id n17so11218111lji.8;
-        Sun, 05 Apr 2020 00:32:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eD1t6b6bMcxK4Ie5EdhHP4NX5L/6yZx5WWdL+NqTuFM=;
-        b=IaUFjyzGMjvSuZUhuIT+qX06jQmPcM9zWOwoyVDc9uLUmFlE+sahAVX+0e9YPgVIla
-         6tb2IbvPacUnriosr16vxHsDBxhnZT0uBiCPWRHn8MswqURqTAbb21rzHQs/84JUgKyV
-         pp4ok2OLNxQ25Y/P+8xRcTwVN7Q1Gb3hyHkgbHO4eOtWGx/S5Yj4DMII3RkpbnTTmXN2
-         2BUuBaqh5AwW+ing808geuVCgSpaqPzM+lEwjnzNqoK9YXN3F3rXng9IbyRVlHM7MDw4
-         nY3KBii/I7alyruhKl1s0KtU1yiwXfM+877h7BcAckjrV26GttzdgXJgI20nZ93XG8t8
-         MNww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eD1t6b6bMcxK4Ie5EdhHP4NX5L/6yZx5WWdL+NqTuFM=;
-        b=RFeuTv6iQvTzIYNFZYRq7rXvtGhzn0N8poazjKirQoMEMCjcqqi7ZAS4iByeiscCgD
-         1zgjIzjao0UmeD6AHGYPaXJ43W4dcx1vK4BbO4N0smT0MikIAV9UL6wRPyvptjLliWEh
-         VBx749T/0ba01QRgCHaASPm5xEBUD7B562e90rcij7oX5BcCipb9AWB7J/P1VtT4c3F6
-         0zMMPKviBO8xXahp6260zDftieRLyAqVZWUsAMz30YjLvW6AcL7leRpXyykmbFINkVsC
-         GtOF+GhJ5gR6PKAmGNeT2iaR1HjxRDb2pvSuw/EZkuiod/y5vKg47iLkd0e8rD+7XeZE
-         TfFg==
-X-Gm-Message-State: AGi0PubXLapU52zg9vvrvGyG9TCCbw77H55YZkux1QnY7+rCfCpd9sXp
-        Whw8fTUnWOct5QtLMo6F3clJA79rplHA7oNjKXA=
-X-Google-Smtp-Source: APiQypJXdhdQBquZgZTuHcyBb40zTgvwv7f2rBl+afcbHzTn4x/NBwTXLrLQdqpUR11TUZKMM7vHIYbWMG7nYY7ww64=
-X-Received: by 2002:a2e:b4e9:: with SMTP id s9mr9174132ljm.108.1586071923337;
- Sun, 05 Apr 2020 00:32:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200404141922.26492-1-ap420073@gmail.com> <20200404155247.GE1476305@kroah.com>
-In-Reply-To: <20200404155247.GE1476305@kroah.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Sun, 5 Apr 2020 16:31:51 +0900
-Message-ID: <CAMArcTVOgG_4Qp4UDFNj-FwxkePJDOw92fkNtDEtTVte9EUpLQ@mail.gmail.com>
-Subject: Re: [PATCH net v2 3/3] net: core: avoid warning in dev_change_net_namespace()
-To:     Greg KH <gregkh@linuxfoundation.org>
+        id S1726444AbgDEHcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Apr 2020 03:32:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34082 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726250AbgDEHcV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 Apr 2020 03:32:21 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 440C42072F;
+        Sun,  5 Apr 2020 07:32:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1586071939;
+        bh=uxJFsqHw4FMXwzJ8lGsDQw5mgJwOHY1JB3yeEsk4k6E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DCl1GoRCD/Rx2VQQtXD5hnFB5LQit3vR4Am5qmD4WI9e7YRWFSVKmQksYYa+Kntxo
+         9hVdssY+pEF22w+r7QCVRlIRBsFLGPeZyNlkK5jd3K+EC9+dfIQ0pX//VZZKdzWUgP
+         Nb0OtnMlkuMe7k4/jTSkyX3oi6V8T8brjcyCCZHo=
+Date:   Sun, 5 Apr 2020 09:32:12 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Taehee Yoo <ap420073@gmail.com>
 Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, rafael@kernel.org,
         j.vosburgh@gmail.com, vfalico@gmail.com,
         Andy Gospodarek <andy@greyhouse.net>,
         Netdev <netdev@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>, mitch.a.williams@intel.com
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH net v2 2/3] net: core: add netdev_class_has_file_ns()
+ helper function
+Message-ID: <20200405073212.GA1551960@kroah.com>
+References: <20200404141909.26399-1-ap420073@gmail.com>
+ <20200404155122.GD1476305@kroah.com>
+ <CAMArcTVdn7FcfX-BCnZ+LUzdct4yj2BLyhpTu832_VGt_O+xWA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMArcTVdn7FcfX-BCnZ+LUzdct4yj2BLyhpTu832_VGt_O+xWA@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 5 Apr 2020 at 00:52, Greg KH <gregkh@linuxfoundation.org> wrote:
->
+On Sun, Apr 05, 2020 at 02:18:22AM +0900, Taehee Yoo wrote:
+> On Sun, 5 Apr 2020 at 00:51, Greg KH <gregkh@linuxfoundation.org> wrote:
+> >
+> 
+> Hi Greg,
+> Thank you for your review!
+> 
+> > On Sat, Apr 04, 2020 at 02:19:09PM +0000, Taehee Yoo wrote:
+> > > This helper function is to check whether the class file "/sys/class/net/*"
+> > > is existing or not.
+> > > In the next patch, this helper function will be used.
+> > >
+> > > Reported-by: syzbot+830c6dbfc71edc4f0b8f@syzkaller.appspotmail.com
+> > > Fixes: b76cdba9cdb2 ("[PATCH] bonding: add sysfs functionality to bonding (large)")
+> > > Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> > > ---
+> > >
+> > > v1 -> v2:
+> > >  - use class_has_file_ns(), which is introduced by the first patch.
+> > >
+> > >  include/linux/netdevice.h | 2 +-
+> > >  net/core/net-sysfs.c      | 6 ++++++
+> > >  2 files changed, 7 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> > > index 130a668049ab..a04c487c0975 100644
+> > > --- a/include/linux/netdevice.h
+> > > +++ b/include/linux/netdevice.h
+> > > @@ -4555,7 +4555,7 @@ int netdev_class_create_file_ns(const struct class_attribute *class_attr,
+> > >                               const void *ns);
+> > >  void netdev_class_remove_file_ns(const struct class_attribute *class_attr,
+> > >                                const void *ns);
+> > > -
+> > > +bool netdev_class_has_file_ns(const char *name, const void *ns);
+> > >  static inline int netdev_class_create_file(const struct class_attribute *class_attr)
+> > >  {
+> > >       return netdev_class_create_file_ns(class_attr, NULL);
+> > > diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+> > > index cf0215734ceb..8a20d658eff0 100644
+> > > --- a/net/core/net-sysfs.c
+> > > +++ b/net/core/net-sysfs.c
+> > > @@ -1914,6 +1914,12 @@ void netdev_class_remove_file_ns(const struct class_attribute *class_attr,
+> > >  }
+> > >  EXPORT_SYMBOL(netdev_class_remove_file_ns);
+> > >
+> > > +bool netdev_class_has_file_ns(const char *name, const void *ns)
+> > > +{
+> > > +     return class_has_file_ns(&net_class, name, ns);
+> > > +}
+> > > +EXPORT_SYMBOL(netdev_class_has_file_ns);
+> >
+> > Again, this feels broken, it can not solve a race condition.
+> >
+> 
+> This function is considered to be used under rtnl mutex and
+> I assume that no one could use "/sys/class/net/*" outside of rtnl mutex.
+> So, I think it returns the correct information under rtnl mutex.
 
-Hi Greg,
-Thank you for your review!
+But you are creating a globally exported function that can be called
+from anywhere, and as such, is not useful because it has no locking or
+hints of how to use it correctly at all.
 
-> On Sat, Apr 04, 2020 at 02:19:22PM +0000, Taehee Yoo wrote:
-> > When interface's namespace is being changed, dev_change_net_namespace()
-> > is called. This removes and re-allocates many resources that include
-> > sysfs files. The "/net/class/net/<interface name>" is one of them.
-> > If the sysfs creation routine(device_rename()) found duplicate sysfs
-> > file name, it warns about it and fails. But unfortunately, at that point,
-> > dev_change_net_namespace() doesn't return fail because rollback cost
-> > is too high.
-> > So, the interface can't have a sysfs file.
->
-> Why don't you check for a duplicate namespace before you do anything
-> like mess with sysfs?  Wouldn't that be the correct thing instead of
-> trying to paper over the issue by having sysfs be the thing to tell you
-> not to do this or not?
->
+Again, don't push this "solution" down to sysfs to solve, you know if
+you have a device that is not cleaned up yet, so don't try to
+rename/create a device of the same name before that is finished.
 
-Sorry, I don't understand about "check for a duplicate namespace".
-Could you please explain it?
+thanks,
 
-> > The approach of this patch is to find the duplicate sysfs file as
-> > fast as possible. If it found that, dev_change_net_namespace() returns
-> > fail immediately with zero rollback cost.
->
-> Don't rely on sysfs to save you from this race condition, it's not the
-> way to do it at all.
-
-Okay, I will find another approach.
-
-Thank you so much.
-Taehee Yoo
+greg k-h
