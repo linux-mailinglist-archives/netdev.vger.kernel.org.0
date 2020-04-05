@@ -2,181 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A150519EE15
-	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 22:42:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9B9D19EE50
+	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 23:43:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727666AbgDEUmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Apr 2020 16:42:36 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:52614 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726772AbgDEUmg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Apr 2020 16:42:36 -0400
-Received: by mail-wm1-f67.google.com with SMTP id t203so4139552wmt.2
-        for <netdev@vger.kernel.org>; Sun, 05 Apr 2020 13:42:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:from:subject:autocrypt:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=HFVcFquFzZtFkoYbcAS2OitZ4/Jgoq5tK65kPExzKzo=;
-        b=WpddIZ66qPagyqfK1AXY82Dff6ug5Bn3c9jnB4jx3zg3ecPCmF4nhLvT6eRBb7Qy6q
-         8BkX04FIZgYl+QDCHhTBlBht3Q55jsZxt5nE7TbiYmWiw5vYkZ6afgR3cOqwMgq1rzSd
-         xA3Oo6si/CLqm8V/FWpRigEeQDjVqkiRE06F0dIcSC1ZZjPIW3BgVmtyTtJygk7duRUW
-         1VQt8rHllrjq4/3PI2iB21l4m9sVKMo+Q7LxNZTwdGKpWxdDaLf8rVUx0eVmPKIbGTPN
-         xGKcC8bJx7uVikSQnGi8Kvc3tmGWfIpq75IQHLc6Kmwqj2EvBXOiGEyLdkfDsgCiHkLy
-         5YEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:from:subject:autocrypt:message-id:date
-         :user-agent:mime-version:content-language:content-transfer-encoding;
-        bh=HFVcFquFzZtFkoYbcAS2OitZ4/Jgoq5tK65kPExzKzo=;
-        b=gMeewu6J4ellX6dKJzBcbZY831xJHpP5CWgXiihk6C24mj4yN51eYRBNUioBSW3A3H
-         NMrfoKcTB4K+R1ecxenG6jFUgvEvgURBgPiy4MPGeh0dJYvo/GtRSKR4sM4kVo6vuafg
-         +YDEEc/skbtANXDzRI7iytKic669PqLUmx9JxRzzTXxByheaDbaORZ9w5VZTXtbK2p0i
-         04XDrESpCFc9f2RLh72y3uD4A1JkuQYVGdTk4NelK0BzJCw7fWWPaFUS4TL86cOMDSu3
-         X48T4oM0dU+a0g0CxvpcD9mhP4ldOd0Dy0ra7uwYcRPF0yRDVnNV57I8Q4p2/Dq8LeqO
-         2epQ==
-X-Gm-Message-State: AGi0PuaxHgnZlz7m+v6yb5eMXBGJs5tfcts8wRq0mdSrsTVaN8y61tcV
-        ngOfIFw1giwZAyTtaEFXA7k=
-X-Google-Smtp-Source: APiQypKrsX5s6XkdBIWVQ5ynKmSd+DmTCAFpP+0IpNwtaldrnUUU96sKSa6XgM5YiHIwvmkLj3QLHA==
-X-Received: by 2002:a05:600c:2f17:: with SMTP id r23mr2366657wmn.81.1586119353068;
-        Sun, 05 Apr 2020 13:42:33 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id n1sm10398839wrw.52.2020.04.05.13.42.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 05 Apr 2020 13:42:32 -0700 (PDT)
-To:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Subject: Changing devlink port flavor dynamically for DSA
-Autocrypt: addr=f.fainelli@gmail.com; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <ef16b5bb-4115-e540-0ffd-1531e5982612@gmail.com>
-Date:   Sun, 5 Apr 2020 13:42:29 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.6.0
+        id S1727796AbgDEVnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Apr 2020 17:43:03 -0400
+Received: from mailgw01.mediatek.com ([210.61.82.183]:16955 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726887AbgDEVnC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Apr 2020 17:43:02 -0400
+X-UUID: 19d78705d68b4c7c89f34097f80edf8a-20200406
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=hssZPfyKrC98XlGlDvRIiEbPnbk/z0BqAx8da7Ypfjg=;
+        b=Yr/wigx2O2DrjtRfqxCQWO1JBrkMV0RITsh4mUAUEdisJA6oR4ut23rMA7T/A/XfDfdIaZ6w0O9cHsDjB/CT7zP5KJE+Rp/K2SEUxNcxg4/C2io/cCRV2j/1QPR7Y6WHGa5uHkf3L5Q2G6zELzpp6oD9ltfXK67LdAM7ccZMfAw=;
+X-UUID: 19d78705d68b4c7c89f34097f80edf8a-20200406
+Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw01.mediatek.com
+        (envelope-from <sean.wang@mediatek.com>)
+        (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
+        with ESMTP id 1152393772; Mon, 06 Apr 2020 05:42:57 +0800
+Received: from mtkcas08.mediatek.inc (172.21.101.126) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 6 Apr 2020 05:42:56 +0800
+Received: from mtkswgap22.mediatek.inc (172.21.77.33) by mtkcas08.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 6 Apr 2020 05:42:53 +0800
+From:   <sean.wang@mediatek.com>
+To:     <davem@davemloft.net>, <andrew@lunn.ch>, <f.fainelli@gmail.com>,
+        <vivien.didelot@savoirfairelinux.com>, <Mark-MC.Lee@mediatek.com>,
+        <john@phrozen.org>
+CC:     <Landen.Chao@mediatek.com>, <steven.liu@mediatek.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
+Subject: [PATCH v2 net 1/2] net: dsa: mt7530: move mt7623 settings out off the mt7530
+Date:   Mon, 6 Apr 2020 05:42:53 +0800
+Message-ID: <1586122974-22125-1-git-send-email-sean.wang@mediatek.com>
+X-Mailer: git-send-email 1.7.9.5
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+X-MTK:  N
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+RnJvbTogUmVuw6kgdmFuIERvcnN0IDxvcGVuc291cmNlQHZkb3JzdC5jb20+DQoNCk1vdmluZyBt
+dDc2MjMgbG9naWMgb3V0IG9mZiBtdDc1MzAsIGlzIHJlcXVpcmVkIHRvIG1ha2UgaGFyZHdhcmUg
+c2V0dGluZw0KY29uc2lzdGVudCBhZnRlciB3ZSBpbnRyb2R1Y2UgcGh5bGluayB0byBtdGsgZHJp
+dmVyLg0KDQpGaXhlczogY2EzNjZkNmM4ODliICgibmV0OiBkc2E6IG10NzUzMDogQ29udmVydCB0
+byBQSFlMSU5LIEFQSSIpDQpSZXZpZXdlZC1ieTogU2VhbiBXYW5nIDxzZWFuLndhbmdAbWVkaWF0
+ZWsuY29tPg0KVGVzdGVkLWJ5OiBTZWFuIFdhbmcgPHNlYW4ud2FuZ0BtZWRpYXRlay5jb20+DQpT
+aWduZWQtb2ZmLWJ5OiBSZW7DqSB2YW4gRG9yc3QgPG9wZW5zb3VyY2VAdmRvcnN0LmNvbT4NCi0t
+LQ0KdjEgLT4gdjI6IG5vIGNoYW5nZQ0KLS0tDQogZHJpdmVycy9uZXQvZHNhL210NzUzMC5jIHwg
+ODUgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KIGRyaXZlcnMvbmV0
+L2RzYS9tdDc1MzAuaCB8IDEwIC0tLS0tDQogMiBmaWxlcyBjaGFuZ2VkLCA5NSBkZWxldGlvbnMo
+LSkNCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2RzYS9tdDc1MzAuYyBiL2RyaXZlcnMvbmV0
+L2RzYS9tdDc1MzAuYw0KaW5kZXggMmQwZDkxZGIwZGRiLi44NDM5MWM4YTBlMTYgMTAwNjQ0DQot
+LS0gYS9kcml2ZXJzL25ldC9kc2EvbXQ3NTMwLmMNCisrKyBiL2RyaXZlcnMvbmV0L2RzYS9tdDc1
+MzAuYw0KQEAgLTY2LDU4ICs2Niw2IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3QgbXQ3NTMwX21pYl9k
+ZXNjIG10NzUzMF9taWJbXSA9IHsNCiAJTUlCX0RFU0MoMSwgMHhiOCwgIlJ4QXJsRHJvcCIpLA0K
+IH07DQogDQotc3RhdGljIGludA0KLW10NzYyM190cmdtaWlfd3JpdGUoc3RydWN0IG10NzUzMF9w
+cml2ICpwcml2LCAgdTMyIHJlZywgdTMyIHZhbCkNCi17DQotCWludCByZXQ7DQotDQotCXJldCA9
+ICByZWdtYXBfd3JpdGUocHJpdi0+ZXRoZXJuZXQsIFRSR01JSV9CQVNFKHJlZyksIHZhbCk7DQot
+CWlmIChyZXQgPCAwKQ0KLQkJZGV2X2Vycihwcml2LT5kZXYsDQotCQkJImZhaWxlZCB0byBwcml2
+IHdyaXRlIHJlZ2lzdGVyXG4iKTsNCi0JcmV0dXJuIHJldDsNCi19DQotDQotc3RhdGljIHUzMg0K
+LW10NzYyM190cmdtaWlfcmVhZChzdHJ1Y3QgbXQ3NTMwX3ByaXYgKnByaXYsIHUzMiByZWcpDQot
+ew0KLQlpbnQgcmV0Ow0KLQl1MzIgdmFsOw0KLQ0KLQlyZXQgPSByZWdtYXBfcmVhZChwcml2LT5l
+dGhlcm5ldCwgVFJHTUlJX0JBU0UocmVnKSwgJnZhbCk7DQotCWlmIChyZXQgPCAwKSB7DQotCQlk
+ZXZfZXJyKHByaXYtPmRldiwNCi0JCQkiZmFpbGVkIHRvIHByaXYgcmVhZCByZWdpc3RlclxuIik7
+DQotCQlyZXR1cm4gcmV0Ow0KLQl9DQotDQotCXJldHVybiB2YWw7DQotfQ0KLQ0KLXN0YXRpYyB2
+b2lkDQotbXQ3NjIzX3RyZ21paV9ybXcoc3RydWN0IG10NzUzMF9wcml2ICpwcml2LCB1MzIgcmVn
+LA0KLQkJICB1MzIgbWFzaywgdTMyIHNldCkNCi17DQotCXUzMiB2YWw7DQotDQotCXZhbCA9IG10
+NzYyM190cmdtaWlfcmVhZChwcml2LCByZWcpOw0KLQl2YWwgJj0gfm1hc2s7DQotCXZhbCB8PSBz
+ZXQ7DQotCW10NzYyM190cmdtaWlfd3JpdGUocHJpdiwgcmVnLCB2YWwpOw0KLX0NCi0NCi1zdGF0
+aWMgdm9pZA0KLW10NzYyM190cmdtaWlfc2V0KHN0cnVjdCBtdDc1MzBfcHJpdiAqcHJpdiwgdTMy
+IHJlZywgdTMyIHZhbCkNCi17DQotCW10NzYyM190cmdtaWlfcm13KHByaXYsIHJlZywgMCwgdmFs
+KTsNCi19DQotDQotc3RhdGljIHZvaWQNCi1tdDc2MjNfdHJnbWlpX2NsZWFyKHN0cnVjdCBtdDc1
+MzBfcHJpdiAqcHJpdiwgdTMyIHJlZywgdTMyIHZhbCkNCi17DQotCW10NzYyM190cmdtaWlfcm13
+KHByaXYsIHJlZywgdmFsLCAwKTsNCi19DQotDQogc3RhdGljIGludA0KIGNvcmVfcmVhZF9tbWRf
+aW5kaXJlY3Qoc3RydWN0IG10NzUzMF9wcml2ICpwcml2LCBpbnQgcHJ0YWQsIGludCBkZXZhZCkN
+CiB7DQpAQCAtNTMwLDI3ICs0NzgsNiBAQCBtdDc1MzBfcGFkX2Nsa19zZXR1cChzdHJ1Y3QgZHNh
+X3N3aXRjaCAqZHMsIGludCBtb2RlKQ0KIAkJZm9yIChpID0gMCA7IGkgPCBOVU1fVFJHTUlJX0NU
+Ukw7IGkrKykNCiAJCQltdDc1MzBfcm13KHByaXYsIE1UNzUzMF9UUkdNSUlfUkQoaSksDQogCQkJ
+CSAgIFJEX1RBUF9NQVNLLCBSRF9UQVAoMTYpKTsNCi0JZWxzZQ0KLQkJaWYgKHByaXYtPmlkICE9
+IElEX01UNzYyMSkNCi0JCQltdDc2MjNfdHJnbWlpX3NldChwcml2LCBHU1dfSU5URl9NT0RFLA0K
+LQkJCQkJICBJTlRGX01PREVfVFJHTUlJKTsNCi0NCi0JcmV0dXJuIDA7DQotfQ0KLQ0KLXN0YXRp
+YyBpbnQNCi1tdDc2MjNfcGFkX2Nsa19zZXR1cChzdHJ1Y3QgZHNhX3N3aXRjaCAqZHMpDQotew0K
+LQlzdHJ1Y3QgbXQ3NTMwX3ByaXYgKnByaXYgPSBkcy0+cHJpdjsNCi0JaW50IGk7DQotDQotCWZv
+ciAoaSA9IDAgOyBpIDwgTlVNX1RSR01JSV9DVFJMOyBpKyspDQotCQltdDc2MjNfdHJnbWlpX3dy
+aXRlKHByaXYsIEdTV19UUkdNSUlfVERfT0RUKGkpLA0KLQkJCQkgICAgVERfRE1fRFJWUCg4KSB8
+IFREX0RNX0RSVk4oOCkpOw0KLQ0KLQltdDc2MjNfdHJnbWlpX3NldChwcml2LCBHU1dfVFJHTUlJ
+X1JDS19DVFJMLCBSWF9SU1QgfCBSWENfRFFTSVNFTCk7DQotCW10NzYyM190cmdtaWlfY2xlYXIo
+cHJpdiwgR1NXX1RSR01JSV9SQ0tfQ1RSTCwgUlhfUlNUKTsNCi0NCiAJcmV0dXJuIDA7DQogfQ0K
+IA0KQEAgLTEzMDMsMTAgKzEyMzAsNiBAQCBtdDc1MzBfc2V0dXAoc3RydWN0IGRzYV9zd2l0Y2gg
+KmRzKQ0KIAlkbiA9IGRzYV90b19wb3J0KGRzLCBNVDc1MzBfQ1BVX1BPUlQpLT5tYXN0ZXItPmRl
+di5vZl9ub2RlLT5wYXJlbnQ7DQogDQogCWlmIChwcml2LT5pZCA9PSBJRF9NVDc1MzApIHsNCi0J
+CXByaXYtPmV0aGVybmV0ID0gc3lzY29uX25vZGVfdG9fcmVnbWFwKGRuKTsNCi0JCWlmIChJU19F
+UlIocHJpdi0+ZXRoZXJuZXQpKQ0KLQkJCXJldHVybiBQVFJfRVJSKHByaXYtPmV0aGVybmV0KTsN
+Ci0NCiAJCXJlZ3VsYXRvcl9zZXRfdm9sdGFnZShwcml2LT5jb3JlX3B3ciwgMTAwMDAwMCwgMTAw
+MDAwMCk7DQogCQlyZXQgPSByZWd1bGF0b3JfZW5hYmxlKHByaXYtPmNvcmVfcHdyKTsNCiAJCWlm
+IChyZXQgPCAwKSB7DQpAQCAtMTQ2OCwxNCArMTM5MSw2IEBAIHN0YXRpYyB2b2lkIG10NzUzMF9w
+aHlsaW5rX21hY19jb25maWcoc3RydWN0IGRzYV9zd2l0Y2ggKmRzLCBpbnQgcG9ydCwNCiAJCS8q
+IFNldHVwIFRYIGNpcmN1aXQgaW5jbHVpbmcgcmVsZXZhbnQgUEFEIGFuZCBkcml2aW5nICovDQog
+CQltdDc1MzBfcGFkX2Nsa19zZXR1cChkcywgc3RhdGUtPmludGVyZmFjZSk7DQogDQotCQlpZiAo
+cHJpdi0+aWQgPT0gSURfTVQ3NTMwKSB7DQotCQkJLyogU2V0dXAgUlggY2lyY3VpdCwgcmVsZXZh
+bnQgUEFEIGFuZCBkcml2aW5nIG9uIHRoZQ0KLQkJCSAqIGhvc3Qgd2hpY2ggbXVzdCBiZSBwbGFj
+ZWQgYWZ0ZXIgdGhlIHNldHVwIG9uIHRoZQ0KLQkJCSAqIGRldmljZSBzaWRlIGlzIGFsbCBmaW5p
+c2hlZC4NCi0JCQkgKi8NCi0JCQltdDc2MjNfcGFkX2Nsa19zZXR1cChkcyk7DQotCQl9DQotDQog
+CQlwcml2LT5wNl9pbnRlcmZhY2UgPSBzdGF0ZS0+aW50ZXJmYWNlOw0KIAkJYnJlYWs7DQogCWRl
+ZmF1bHQ6DQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZHNhL210NzUzMC5oIGIvZHJpdmVycy9u
+ZXQvZHNhL210NzUzMC5oDQppbmRleCBlZjliNTJmMzE1MmIuLjRhZWY2MDI0NDQxYiAxMDA2NDQN
+Ci0tLSBhL2RyaXZlcnMvbmV0L2RzYS9tdDc1MzAuaA0KKysrIGIvZHJpdmVycy9uZXQvZHNhL210
+NzUzMC5oDQpAQCAtMjc3LDcgKzI3Nyw2IEBAIGVudW0gbXQ3NTMwX3ZsYW5fcG9ydF9hdHRyIHsN
+CiANCiAvKiBSZWdpc3RlcnMgZm9yIFRSR01JSSBvbiB0aGUgYm90aCBzaWRlICovDQogI2RlZmlu
+ZSBNVDc1MzBfVFJHTUlJX1JDS19DVFJMCQkweDdhMDANCi0jZGVmaW5lIEdTV19UUkdNSUlfUkNL
+X0NUUkwJCTB4MzAwDQogI2RlZmluZSAgUlhfUlNUCQkJCUJJVCgzMSkNCiAjZGVmaW5lICBSWENf
+RFFTSVNFTAkJCUJJVCgzMCkNCiAjZGVmaW5lICBEUVNJMV9UQVBfTUFTSwkJCSgweDdmIDw8IDgp
+DQpAQCAtMjg2LDMxICsyODUsMjQgQEAgZW51bSBtdDc1MzBfdmxhbl9wb3J0X2F0dHIgew0KICNk
+ZWZpbmUgIERRU0kwX1RBUCh4KQkJCSgoeCkgJiAweDdmKQ0KIA0KICNkZWZpbmUgTVQ3NTMwX1RS
+R01JSV9SQ0tfUlRUCQkweDdhMDQNCi0jZGVmaW5lIEdTV19UUkdNSUlfUkNLX1JUVAkJMHgzMDQN
+CiAjZGVmaW5lICBEUVMxX0dBVEUJCQlCSVQoMzEpDQogI2RlZmluZSAgRFFTMF9HQVRFCQkJQklU
+KDMwKQ0KIA0KICNkZWZpbmUgTVQ3NTMwX1RSR01JSV9SRCh4KQkJKDB4N2ExMCArICh4KSAqIDgp
+DQotI2RlZmluZSBHU1dfVFJHTUlJX1JEKHgpCQkoMHgzMTAgKyAoeCkgKiA4KQ0KICNkZWZpbmUg
+IEJTTElQX0VOCQkJQklUKDMxKQ0KICNkZWZpbmUgIEVER0VfQ0hLCQkJQklUKDMwKQ0KICNkZWZp
+bmUgIFJEX1RBUF9NQVNLCQkJMHg3Zg0KICNkZWZpbmUgIFJEX1RBUCh4KQkJCSgoeCkgJiAweDdm
+KQ0KIA0KLSNkZWZpbmUgR1NXX1RSR01JSV9UWENUUkwJCTB4MzQwDQogI2RlZmluZSBNVDc1MzBf
+VFJHTUlJX1RYQ1RSTAkJMHg3YTQwDQogI2RlZmluZSAgVFJBSU5fVFhFTgkJCUJJVCgzMSkNCiAj
+ZGVmaW5lICBUWENfSU5WCQkJQklUKDMwKQ0KICNkZWZpbmUgIFRYX1JTVAkJCQlCSVQoMjgpDQog
+DQogI2RlZmluZSBNVDc1MzBfVFJHTUlJX1REX09EVChpKQkJKDB4N2E1NCArIDggKiAoaSkpDQot
+I2RlZmluZSBHU1dfVFJHTUlJX1REX09EVChpKQkJKDB4MzU0ICsgOCAqIChpKSkNCiAjZGVmaW5l
+ICBURF9ETV9EUlZQKHgpCQkJKCh4KSAmIDB4ZikNCiAjZGVmaW5lICBURF9ETV9EUlZOKHgpCQkJ
+KCgoeCkgJiAweGYpIDw8IDQpDQogDQotI2RlZmluZSBHU1dfSU5URl9NT0RFCQkJMHgzOTANCi0j
+ZGVmaW5lICBJTlRGX01PREVfVFJHTUlJCQlCSVQoMSkNCi0NCiAjZGVmaW5lIE1UNzUzMF9UUkdN
+SUlfVENLX0NUUkwJCTB4N2E3OA0KICNkZWZpbmUgIFRDS19UQVAoeCkJCQkoKCh4KSAmIDB4Zikg
+PDwgOCkNCiANCkBAIC00NDMsNyArNDM1LDYgQEAgc3RhdGljIGNvbnN0IGNoYXIgKnA1X2ludGZf
+bW9kZXModW5zaWduZWQgaW50IHA1X2ludGVyZmFjZSkNCiAgKiBAZHM6CQkJVGhlIHBvaW50ZXIg
+dG8gdGhlIGRzYSBjb3JlIHN0cnVjdHVyZQ0KICAqIEBidXM6CQlUaGUgYnVzIHVzZWQgZm9yIHRo
+ZSBkZXZpY2UgYW5kIGJ1aWx0LWluIFBIWQ0KICAqIEByc3RjOgkJVGhlIHBvaW50ZXIgdG8gcmVz
+ZXQgY29udHJvbCB1c2VkIGJ5IE1DTQ0KLSAqIEBldGhlcm5ldDoJCVRoZSByZWdtYXAgdXNlZCBm
+b3IgYWNjZXNzIFRSR01JSS1iYXNlZCByZWdpc3RlcnMNCiAgKiBAY29yZV9wd3I6CQlUaGUgcG93
+ZXIgc3VwcGxpZWQgaW50byB0aGUgY29yZQ0KICAqIEBpb19wd3I6CQlUaGUgcG93ZXIgc3VwcGxp
+ZWQgaW50byB0aGUgSS9PDQogICogQHJlc2V0OgkJVGhlIGRlc2NyaXB0b3IgZm9yIEdQSU8gbGlu
+ZSB0aWVkIHRvIGl0cyByZXNldCBwaW4NCkBAIC00NjAsNyArNDUxLDYgQEAgc3RydWN0IG10NzUz
+MF9wcml2IHsNCiAJc3RydWN0IGRzYV9zd2l0Y2gJKmRzOw0KIAlzdHJ1Y3QgbWlpX2J1cwkJKmJ1
+czsNCiAJc3RydWN0IHJlc2V0X2NvbnRyb2wJKnJzdGM7DQotCXN0cnVjdCByZWdtYXAJCSpldGhl
+cm5ldDsNCiAJc3RydWN0IHJlZ3VsYXRvcgkqY29yZV9wd3I7DQogCXN0cnVjdCByZWd1bGF0b3IJ
+KmlvX3B3cjsNCiAJc3RydWN0IGdwaW9fZGVzYwkqcmVzZXQ7DQotLSANCjIuMjUuMQ0K
 
-On a BCM7278 system, we have two ports of the switch: 5 and 8, that
-connect to separate Ethernet MACs that the host/CPU can control. In
-premise they are both interchangeable because the switch supports
-configuring the management port to be either 5 or 8 and the Ethernet
-MACs are two identical instances.
-
-The Ethernet MACs are scheduled differently across the memory controller
-(they have different bandwidth and priority allocations) so it is
-desirable to select an Ethernet MAC capable of sustaining bandwidth and
-latency for host networking. Our current (in the downstream kernel) use
-case is to expose port 5 solely as a control end-point to the user and
-leave it to the user how they wish to use the Ethernet MAC behind port
-5. Some customers use it to bridge Wi-Fi traffic, some simply keep it
-disabled. Port 5 of that switch does not make use of Broadcom tags in
-that case, since ARL-based forwarding works just fine.
-
-The current Device Tree representation that we have for that system
-makes it possible for either port to be elected as the CPU port from a
-DSA perspective as they both have an "ethernet" phandle property that
-points to the appropriate Ethernet MAC node, because of that the DSA
-framework treats them as CPU ports.
-
-My current line of thinking is to permit a port to be configured as
-either "cpu" or "user" flavor and do that through devlink. This can
-create some challenges but hopefully this also paves the way for finally
-supporting "multi-CPU port" configurations. I am thinking something like
-this would be how I would like it to be configured:
-
-# First configure port 8 as the new CPU port
-devlink port set pci/0000:01:00.0/8 type cpu
-# Now unmap port 5 from being a CPU port
-devlink port set pci/0000:01:00.0/1 type eth
-
-and this would do a simple "swap" of all user ports being now associated
-with port 8, and no longer with port 5, thus permitting port 5 from
-becoming a standard user port. Or maybe, we need to do this as an atomic
-operation in order to avoid a switch being configured with no CPU port
-anymore, so something like this instead:
-
-devlink port set pci/0000:01:00.0/5 type eth mgmt pci/0000:01:00.0/8
-
-The latter could also be used to define groups of ports within a switch
-that has multiple CPU ports, e.g.:
-
-# Ports 1 through 4 "bound" to CPU port 5:
-
-for i in $(seq 0 3)
-do
-	devlink port set pci/0000:01:00.0/$i type eth mgmt pci/0000:01:00.0/5
-done
-
-# Ports 7 bound to CPU port 8:
-
-devlink port set pci/0000:01:00.0/1 type eth mgmt pci/0000:01:00.0/8
-
-Let me know what you think!
-
-Thanks
--- 
-Florian
