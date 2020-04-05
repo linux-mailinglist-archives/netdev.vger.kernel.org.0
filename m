@@ -2,56 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF3B619ECB0
-	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 18:41:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F7DC19ECC1
+	for <lists+netdev@lfdr.de>; Sun,  5 Apr 2020 18:52:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727620AbgDEQla (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Apr 2020 12:41:30 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:43786 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727075AbgDEQl3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Apr 2020 12:41:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=+M0Y1kjtlZOoIzta5LvEShFkET8hM92YHdaoqL+I5Fg=; b=dq7sjnd54/K3+ZTSbi2RUgN+61
-        rJw2w4cuSzHi64TQmp4migtec4jAcBa15X41M9GNs2Ar9QcvqxJE2XP/khncENXbWRU5zmZpG9JKL
-        qUomqye3eWwhubDeX/WbcRFiJjr9q5eXJ+MwtiafS0gIpIrlNq/w+P6rfa2xOgt79r+6jNWEFx5Rk
-        9FU6XydQ4jwaryrEGp5NcqWDrb4w0QCtmGUva7es7IeTbAwzcCM704hXvi+t/Dq27YzNxW/XjyZWv
-        LCxi63wdSEOCAg822kz2avJI2F+gLYXROu7sDfgeNsJf0oYLgqZpunQq18W69n0t9dy8i5D9vY/cA
-        yNjCc1Ag==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jL8Kr-0002db-DQ; Sun, 05 Apr 2020 16:41:25 +0000
-Subject: Re: [PATCH net] skbuff.h: Improve the checksum related comments
-To:     Dexuan Cui <decui@microsoft.com>,
-        Matthew Wilcox <willy@infradead.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "willemb@google.com" <willemb@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "simon.horman@netronome.com" <simon.horman@netronome.com>,
-        "sdf@google.com" <sdf@google.com>,
-        "john.hurley@netronome.com" <john.hurley@netronome.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "fw@strlen.de" <fw@strlen.de>,
-        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "pablo@netfilter.org" <pablo@netfilter.org>,
-        "jeremy@azazel.net" <jeremy@azazel.net>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <1586071063-51656-1-git-send-email-decui@microsoft.com>
- <20200405103618.GV21484@bombadil.infradead.org>
- <HK0P153MB027363A6F5A5AACC366B11A3BFC50@HK0P153MB0273.APCP153.PROD.OUTLOOK.COM>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <7a0df207-8ad3-3731-c372-146a19befc02@infradead.org>
-Date:   Sun, 5 Apr 2020 09:41:24 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1727126AbgDEQwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Apr 2020 12:52:33 -0400
+Received: from mail-il1-f196.google.com ([209.85.166.196]:40303 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726669AbgDEQwd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Apr 2020 12:52:33 -0400
+Received: by mail-il1-f196.google.com with SMTP id j9so12407778ilr.7
+        for <netdev@vger.kernel.org>; Sun, 05 Apr 2020 09:52:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=MV98g94yDnvUF9S16GRoqgbM3rwRJYDoquWLLjgP7Ec=;
+        b=M1IOov8b8fR/krRT/L3PClneR7Tem/90sB8mtH+i5iaIBas0heEhosx2dEsinGy7ka
+         7Y7gbx1n5qrimIY93SfSp3s27whVcyoL/vXpI49PFdMxxd9VLjuP4krptzQMiR4DLItC
+         jsqU6ZGkibD51VnL2erV24NczqkKjKg3rRVr5YLtP2sUD3gGE6CPnnE417KOSOGPgwLa
+         lb75QkM72xDiI79Ni37C8+uQrP+qMGRjWNJSMoNiXBfG8FRDEMzjd4nuXlRRadfOHDWM
+         0lFSdslK88ofhUJ2ssq3HHszFPzQY3x02K/vApOMEIciPD3lAYwSuTJepXac2pu4//cx
+         XF6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MV98g94yDnvUF9S16GRoqgbM3rwRJYDoquWLLjgP7Ec=;
+        b=sOCwpNUxoeDqlSCAxljiVU5clkl6FPfRXN7Hjxsv+2acyM39X+Jn4jdxLB9RBqKvhH
+         wBviyZM0ZytFs+t4Pds/Jns0UTndpiW3e8loYD8d+GCNVlunOajyKvmJZDrqUirOitKr
+         QbuNgoZhoxb53n1MPOdiD8/L2qYRxBanOir6hbuYGfAZ92/HG7IJrxoWKAuEAhnVUS8B
+         cxBcEWSIhLxf92zU8h+D9puc1fYGKxPamAdb3SDc19ZValsTIBwDXLpYMzWlSLLQ51GI
+         1LTk26WJa8brpy3EgthcDPfQ6BUtt/P+tnesp6PTIgX3Zy+WPdAiB7zMMYwuzk5uUPsU
+         bF5Q==
+X-Gm-Message-State: AGi0PuYgoRS7qC6hf9vtcTuy6kzbFfMB+H35Htzy4rgxsQuwCAOGk8OX
+        On1SfH6qF4M2kDsqavJR/MQTI6rN
+X-Google-Smtp-Source: APiQypJO3KZnU7c8cy3D93j2V8IIe20hcAw4d1C1nolzEpy7QHt6MyGf1exncn/SznCnfkUF+9xaTA==
+X-Received: by 2002:a92:8659:: with SMTP id g86mr18377287ild.267.1586105552021;
+        Sun, 05 Apr 2020 09:52:32 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:60e1:98ca:913:d555? ([2601:282:803:7700:60e1:98ca:913:d555])
+        by smtp.googlemail.com with ESMTPSA id p69sm5089534ill.46.2020.04.05.09.52.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 05 Apr 2020 09:52:31 -0700 (PDT)
+Subject: Re: VRF Issue Since kernel 5
+To:     Maximilian Bosch <maximilian@mbosch.me>, netdev@vger.kernel.org
+References: <CWLP265MB1554C88316ACF2BDD4692ECAFDB10@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
+ <CWLP265MB15544E2F2303FA2D0F76B7F5FDB10@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
+ <CWLP265MB1554604C9DB9B28D245E47A2FDB10@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
+ <ef7ca3ad-d85c-01aa-42b6-b08db69399e4@vyatta.att-mail.com>
+ <20200310204721.7jo23zgb7pjf5j33@topsnens>
+ <2583bdb7-f9ea-3b7b-1c09-a273d3229b45@gmail.com>
+ <20200401181650.flnxssoyih7c5s5y@topsnens>
+ <b6ead5e9-cc0e-5017-e9a1-98b09b110650@gmail.com>
+ <20200401203523.vafhsqb3uxfvvvxq@topsnens>
+ <00917d3a-17f8-b772-5b93-3abdf1540b94@gmail.com>
+ <20200402230233.mumqo22khf7q7o7c@topsnens>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <5e64064d-eb03-53d3-f80a-7646e71405d8@gmail.com>
+Date:   Sun, 5 Apr 2020 10:52:30 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <HK0P153MB027363A6F5A5AACC366B11A3BFC50@HK0P153MB0273.APCP153.PROD.OUTLOOK.COM>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20200402230233.mumqo22khf7q7o7c@topsnens>
+Content-Type: text/plain; charset=windows-1252
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -59,79 +73,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/5/20 9:33 AM, Dexuan Cui wrote:
->> From: Matthew Wilcox <willy@infradead.org>
->> Sent: Sunday, April 5, 2020 3:36 AM
->> To: Dexuan Cui <decui@microsoft.com>
->>
->> On Sun, Apr 05, 2020 at 12:17:43AM -0700, Dexuan Cui wrote:
->>>   * CHECKSUM_COMPLETE:
->>>   *
->>> - *   This is the most generic way. The device supplied checksum of the
->> _whole_
->>> - *   packet as seen by netif_rx() and fills out in skb->csum. Meaning, the
->>> + *   This is the most generic way. The device supplies checksum of the
->> _whole_
->>> + *   packet as seen by netif_rx() and fills out in skb->csum. This means the
->>
->> I think both 'supplies' and 'supplied' are correct in this sentence.  The
->> nuances are slightly different, but the meaning is the same in this instance.
+On 4/2/20 5:02 PM, Maximilian Bosch wrote:
+> Hi!
 > 
-> I see. So let me rever back to "supplied".
->  
->> You missed a mistake in the second line though, it should be either 'fills
->> out' or 'fills in'.  I think we tend to prefer 'fills in'.
+>> I do not see how this worked on 4.19. My comment above is a fundamental
+>> property of VRF and has been needed since day 1. That's why 'ip vrf
+>> exec' exists.
 > 
-> Thanks! Will use "fills in" in v2.
-> 
->>>   * CHECKSUM_COMPLETE:
->>>   *   Not used in checksum output. If a driver observes a packet with this
->> value
->>> - *   set in skbuff, if should treat as CHECKSUM_NONE being set.
->>> + *   set in skbuff, the driver should treat it as CHECKSUM_NONE being set.
->>
->> I would go with "it should treat the packet as if CHECKSUM_NONE were set."
-> 
-> Thanks. Will use this version.
->  
->>> @@ -211,7 +211,7 @@
->>>   * is implied by the SKB_GSO_* flags in gso_type. Most obviously, if the
->>>   * gso_type is SKB_GSO_TCPV4 or SKB_GSO_TCPV6, TCP checksum offload
->> as
->>>   * part of the GSO operation is implied. If a checksum is being offloaded
->>> - * with GSO then ip_summed is CHECKSUM_PARTIAL, csum_start and
->> csum_offset
->>> + * with GSO then ip_summed is CHECKSUM_PARTIAL AND csum_start and
->> csum_offset
->>>   * are set to refer to the outermost checksum being offload (two offloaded
->>>   * checksums are possible with UDP encapsulation).
->>
->> Why the capitalisation of 'AND'?
-> 
-> The current text without the patch is:
->  * part of the GSO operation is implied. If a checksum is being offloaded
->  * with GSO then ip_summed is CHECKSUM_PARTIAL, csum_start and csum_offset
->  * are set to refer to the outermost checksum being offload (two offloaded
->  * checksums are possible with UDP encapsulation).
-> 
-> The comma after the "CHECKSUM_PARTIAL" seems suspicious to me. I feel we
-> should add an "and" after the comma, or replace the comma with "and", but
-> either way we'll have "... and csum_start and csum_offset...", which seems a little
-> unnatural to me since we have 2 'and's here... So I tried to make it a little natural
-> by replacing the first 'and' with 'AND', which obviously causes confusion to you.
+> I'm afraid I have to disagree here: first of all, I created a
+> regression-test in NixOS for this purpose a while ago[1]. The third test-case
+> (lines 197-208) does basically what I demonstrated in my previous emails
+> (opening SSH connetions through a local VRF). This worked fine until we
+> bumped our default kernel to 5.4.x which is the reason why this testcase
+> is temporarily commented out.
 
-maybe "both csum_start and csum_offset are set to refer to".
-
-> Please suggest the best change here. Thanks!
->  
->> Thanks for the improvements,
->>
->> Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> 
-> Thanks for the comments! I'll wait for your suggestion on the 'AND' and post
-> a v2.
+I do not have access to a NixOS install, nor the time to create one.
+Please provide a set of ip commands to re-create the test that work with
+Ubuntu, debian or fedora.
 
 
--- 
-~Randy
+> After skimming through the VRF-related changes in 4.20 and 5.0 (which
+> might've had some relevant changes as you suggested previously), I
+> rebuilt the kernels 5.4.29 and 5.5.13 with
+> 3c82a21f4320c8d54cf6456b27c8d49e5ffb722e[2] reverted on top and the
+> commented-out testcase works fine again. In other words, my usecase
+> seems to have worked before and the mentioned commit appears to cause
+> the "regression".
 
+The vyatta folks who made the changes will take a look.
