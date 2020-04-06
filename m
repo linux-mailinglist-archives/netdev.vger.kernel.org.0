@@ -2,92 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EAC8F19F476
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 13:20:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF80319F4A9
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 13:34:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727331AbgDFLUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 07:20:33 -0400
-Received: from mail-out.m-online.net ([212.18.0.9]:48222 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726858AbgDFLUc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 07:20:32 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 48wp4F6st1z1qrfP;
-        Mon,  6 Apr 2020 13:20:24 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 48wp483CjPz1qtx8;
-        Mon,  6 Apr 2020 13:20:24 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id IMvX_2u2wyhg; Mon,  6 Apr 2020 13:20:23 +0200 (CEST)
-X-Auth-Info: bE/rO+qC3AjARv+N5Np79UJFZcDh7YDv4BSRZkKbtbk=
-Received: from [IPv6:::1] (unknown [195.140.253.167])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Mon,  6 Apr 2020 13:20:23 +0200 (CEST)
-Subject: Re: [PATCH V3 00/18] net: ks8851: Unify KS8851 SPI and MLL drivers
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>
-References: <20200328003148.498021-1-marex@denx.de>
- <20200406031649.zujfod44bz53ztlo@wunner.de>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <f9449a3b-7536-0bde-4ee6-b254fd90923f@denx.de>
-Date:   Mon, 6 Apr 2020 13:20:22 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1727327AbgDFLek (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 07:34:40 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:60793 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727193AbgDFLek (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 07:34:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1586172878;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Td0qmJhFGaHA2Wqtu8EGlxM4UuCh1EuR6xJZTZL2Dmw=;
+        b=IdjfUNIOw6sGMt+SkOmImJTHhonuI6ae2x09KdPlbFgyXM59SMHSiXdBCXvph/CwsBN/5u
+        IJ1u62au8UPYYF1rPocgzxMsmLdSjKpzuOTeOP+nj96veOllu0POlQq/ZSLyoT1xwXWhxJ
+        R+P/iFBM+E/DofY5t6NrkCeE8WbumNU=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-131-xz8ylUIQOkmIlvYfQ3_y_w-1; Mon, 06 Apr 2020 07:34:36 -0400
+X-MC-Unique: xz8ylUIQOkmIlvYfQ3_y_w-1
+Received: by mail-lf1-f69.google.com with SMTP id j9so1378151lfh.22
+        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 04:34:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=Td0qmJhFGaHA2Wqtu8EGlxM4UuCh1EuR6xJZTZL2Dmw=;
+        b=MF7Rby1ElMgthQMCvkYy6nK7AVknAmBmToqaLUCpuwkEnYPrB1hvdqzrZBv6QRGU9q
+         AtS1lQC6WypsxP7aQrCgQJw2AOrGhD1Ta9NpPOlHavuSI0S2i9BKGK7KaQOvVg8ZDgri
+         R85t4bTfQ30tXTCMDuXUhYJZq5cFmbEDa5FDUY3MBWaRNd6KE8f9K+Fb2zSBcajRDk7q
+         WEaCCVTDIXs7XWkBTfLdKZhCeHqvMdDK24v8DHmXWF5VQjTQ8G+/8fhKEytILv/h2YdL
+         C1fxwEhqXbNTz5SitUCf7O9NEkRUlQim1YKduq8/b/ZJbw5+ZjqonKrfQ9V0TFRXrB69
+         8Phw==
+X-Gm-Message-State: AGi0PuZDhEwxE3g8Z9ugKo/hVHBna4Tf0npcQcsH2R/xVI/gQAJcCH6T
+        MKCEeVlHWw0dwZp91DOulj/Mnd38WQhnhhTcfXOzlCAmYs0f60ZhG7uQJBvghbUiHS7hwSpgnVY
+        QGIJlsbjWmcmsnz0w
+X-Received: by 2002:a19:f017:: with SMTP id p23mr13145400lfc.150.1586172874700;
+        Mon, 06 Apr 2020 04:34:34 -0700 (PDT)
+X-Google-Smtp-Source: APiQypIXFMnI97HPZDz//xcACckcDYI38kbDNaDdqnMNj0HO9bAl1ps1kiIldxBXH0jO0Fs4Kw+SKw==
+X-Received: by 2002:a19:f017:: with SMTP id p23mr13145385lfc.150.1586172874514;
+        Mon, 06 Apr 2020 04:34:34 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id i20sm9751915lja.17.2020.04.06.04.34.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Apr 2020 04:34:33 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 0415D1804E7; Mon,  6 Apr 2020 13:34:32 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [RFC PATCH bpf-next 4/8] bpf: support GET_FD_BY_ID and GET_NEXT_ID for bpf_link
+In-Reply-To: <20200404000948.3980903-5-andriin@fb.com>
+References: <20200404000948.3980903-1-andriin@fb.com> <20200404000948.3980903-5-andriin@fb.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 06 Apr 2020 13:34:32 +0200
+Message-ID: <87pnckc0fr.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20200406031649.zujfod44bz53ztlo@wunner.de>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/6/20 5:16 AM, Lukas Wunner wrote:
-> On Sat, Mar 28, 2020 at 01:31:30AM +0100, Marek Vasut wrote:
->> The KS8851SNL/SNLI and KS8851-16MLL/MLLI/MLLU are very much the same pieces
->> of silicon, except the former has an SPI interface, while the later has a
->> parallel bus interface. Thus far, Linux has two separate drivers for each
->> and they are diverging considerably.
->>
->> This series unifies them into a single driver with small SPI and parallel
->> bus specific parts. The approach here is to first separate out the SPI
->> specific parts into a separate file, then add parallel bus accessors in
->> another separate file and then finally remove the old parallel bus driver.
->> The reason for replacing the old parallel bus driver is because the SPI
->> bus driver is much higher quality.
-> 
-> Sorry for the delay Marek.
-> 
-> ks8851.ko (SPI variant) no longer compiles with this series.
-> The attached 0001 patch fixes it.
-> 
-> Both drivers can only be compiled as modules with this series:
-> If only one of them is built-in, there's a linker error because of
-> the module_param_named() for msg_enable.
-> If both are built-in, the symbol collisions you've mentioned occur.
-> 
-> It seems Kbuild can't support building a .o file with a different name
-> than the corresponding .c file because of the implicit rules used
-> everywhere.  However, ks8851_common.c can be renamed to be a header
-> file (a library of sorts) which is included by the two .c files.
-> I've renamed ks8851_spi.c back to the original ks8851.c and
-> ks8851_par.c back to ks8851_mll.c. The result is the attached 0002 patch.
-> Compiles without any errors regardless if one or both drivers are
-> built-in or modules.
-> 
-> I'll be back at the office this week and will conduct performance
-> measurements with this version.
+Andrii Nakryiko <andriin@fb.com> writes:
 
-This looks like a hack, I'm more inclined to go back to using callbacks
-for the various functions, since I don't see any performance problems
-there. We're still talking about 25 MHz SPI bus here and the SPI
-subsystem is full of such indirection anyway, so I'm not even sure what
-you're hoping to gain here ; it seems to me like a premature
-optimization which only causes trouble.
+> Add support to look up bpf_link by ID and iterate over all existing bpf_links
+> in the system. GET_FD_BY_ID code handles not-yet-ready bpf_link by checking
+> that its ID hasn't been set to non-zero value yet. Setting bpf_link's ID is
+> done as the very last step in finalizing bpf_link, together with installing
+> FD. This approach allows users of bpf_link in kernel code to not worry about
+> races between user-space and kernel code that hasn't finished attaching and
+> initializing bpf_link.
+>
+> Further, it's critical that BPF_LINK_GET_FD_BY_ID only ever allows to create
+> bpf_link FD that's O_RDONLY. This is to protect processes owning bpf_link and
+> thus allowed to perform modifications on them (like LINK_UPDATE), from other
+> processes that got bpf_link ID from GET_NEXT_ID API. In the latter case, only
+> querying bpf_link information (implemented later in the series) will be
+> allowed.
+
+I must admit I remain sceptical about this model of restricting access
+without any of the regular override mechanisms (for instance, enforcing
+read-only mode regardless of CAP_DAC_OVERRIDE in this series). Since you
+keep saying there would be 'some' override mechanism, I think it would
+be helpful if you could just include that so we can see the full
+mechanism in context.
+
+-Toke
+
