@@ -2,112 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05E4A19F9B2
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 18:06:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81F2C19F9E2
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 18:12:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729388AbgDFQGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 12:06:21 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:45217 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729369AbgDFQGQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 12:06:16 -0400
-Received: by mail-io1-f71.google.com with SMTP id g5so202977ioh.12
-        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 09:06:13 -0700 (PDT)
+        id S1729453AbgDFQMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 12:12:10 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:37342 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729444AbgDFQMJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 12:12:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1586189528;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YSJ8Eyd5qzlvYRVDFDnJ/h6MFs7vCBsG17V62Acz7Go=;
+        b=eyV2B8YNkwvmRb0v5xMEd85IeegWif0Ogf0guMeFaWL8xGZt8muSswQT3MeyXgUKdrm4ka
+        dZGJXvmhZHVZD4P20jqXxDUUAfjF2ZIt0Zwxg2lgypKY0pXB4okZSXdTON+YeunCsmOMJF
+        hXVp8kmutN3UQ5UopQF1Hk7hxsWhZVI=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-280-ig4y8yBEPXq9eQUBWJ_CTw-1; Mon, 06 Apr 2020 12:12:04 -0400
+X-MC-Unique: ig4y8yBEPXq9eQUBWJ_CTw-1
+Received: by mail-wr1-f70.google.com with SMTP id 91so57897wro.1
+        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 09:12:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=TctIDdVeh0zTC3Sh8bVpm1XRU56EagRQHXsvYpdgUks=;
-        b=Oc1+FTiVF1hzvs3qKiiNh7yD1LHxfaK6v/IGgTm4+gxO8NarABmXf36ouM9z9hCtpd
-         ZQtyvq8g2hI8mbX3AQgCU+txWUWeD+wKEOv950zrhfl73o5nUKDjJJ8LewDJBkvP6S4B
-         eAT8SriuEOs+SQdksKj2Vc7Jb5kEU2a91yE31+JfwoBioTOx611iqd9fIti15EsFjef3
-         yertLT8nemOMJ8zPzsftgDl9XhPUq96yp+JAYXpKLwrAeTpXMg81b9RVZq8dVC55+MeP
-         rjhufTjlSNWF5M74MFqbLsbAy3Gbp/fR4WUhtu4REYSXkRD8qMu6QP0ClSorspb5B3up
-         g7kg==
-X-Gm-Message-State: AGi0PuaFJXV+gGCg/laiufgweOTdPk3KhLtw5k/Hup4ucqONct4bWs+F
-        A1hxa3wUzTu7ctnRvQrwYazgp1vYjpVD0cSNka/0s3fLhi1l
-X-Google-Smtp-Source: APiQypJvs6wcQue85oIKF4W5vZB0eFwGSndx1OwAYeqIULpCiqEuJs+eWCl9+cLoVOi6T2wSDWQv+4wv0u/ZS/qQPHBLwk1Cy1fD
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YSJ8Eyd5qzlvYRVDFDnJ/h6MFs7vCBsG17V62Acz7Go=;
+        b=K3DudOU5oyowwxO5n4c36aAlbq4FyDjvG9pVITt8fdPlDTjxqZeZJ770PvXdAX25kA
+         kTKfaTSgJ/AsVNR9E/RyC53A4IieJC3RUsNADvVtzsHVR5Z4soOnsUA7AJCgGGMZSOVG
+         +e8zHfK959vRj4coXoZQuI+Dyhvky+tX3tGbYJxgejxtVLo9Eriaik5xognEz1v3iLGG
+         mnvSNPsa1WGSbmFeObx4R54rQE5vjkQnJEKLD76/P2cpjedcEc0oiWDw2SH4CUiyCCxQ
+         U8/fqQ7b+llYHc3SD1Ad+QMl0eAhVlkyASLccKhZysqBZiG38OXu9u9jnhnMQAcY/PU2
+         E9Ow==
+X-Gm-Message-State: AGi0PuapUVIUfSvG1zz8k8mlNwu3H2JF1PZeDj3lrxmoxYMCr6kYPrNH
+        6TcKLimyc/sy173WUtkOyicF6d6JH3wPlr+qLnJYcCeBfExPyNFD0tFUidz00VwRmd/jXSXVUPx
+        xtm8NPQfAxvPjicdE
+X-Received: by 2002:adf:a48d:: with SMTP id g13mr26477936wrb.38.1586189522887;
+        Mon, 06 Apr 2020 09:12:02 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJYH9VirBBcJS7XAIuyV6I64Pp7s8xM5+YVZD9WaBXPltzMCbzOkZBbTEPyDfUwNBxO2HXnbw==
+X-Received: by 2002:adf:a48d:: with SMTP id g13mr26477907wrb.38.1586189522618;
+        Mon, 06 Apr 2020 09:12:02 -0700 (PDT)
+Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
+        by smtp.gmail.com with ESMTPSA id s66sm56418wme.40.2020.04.06.09.12.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Apr 2020 09:12:02 -0700 (PDT)
+Date:   Mon, 6 Apr 2020 12:12:00 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH v3 2/2] vhost: force spec specified alignment on types
+Message-ID: <20200406161146.130741-3-mst@redhat.com>
+References: <20200406161146.130741-1-mst@redhat.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:5dc7:: with SMTP id e68mr22121257ilg.205.1586189173234;
- Mon, 06 Apr 2020 09:06:13 -0700 (PDT)
-Date:   Mon, 06 Apr 2020 09:06:13 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000037a2ac05a2a17202@google.com>
-Subject: general protection fault in tipc_conn_delete_sub
-From:   syzbot <syzbot+55a38037455d0351efd3@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jmaloy@redhat.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200406161146.130741-1-mst@redhat.com>
+X-Mailer: git-send-email 2.24.1.751.gd10ce2899c
+X-Mutt-Fcc: =sent
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+The ring element addresses are passed between components with different
+alignments assumptions. Thus, if guest/userspace selects a pointer and
+host then gets and dereferences it, we might need to decrease the
+compiler-selected alignment to prevent compiler on the host from
+assuming pointer is aligned.
 
-syzbot found the following crash on:
+This actually triggers on ARM with -mabi=apcs-gnu - which is a
+deprecated configuration, but it seems safer to handle this
+generally.
 
-HEAD commit:    919dce24 Merge tag 'for-linus' of git://git.kernel.org/pub..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1250d0c7e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d6a1e2f9a9986236
-dashboard link: https://syzkaller.appspot.com/bug?extid=55a38037455d0351efd3
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=118ff0c7e00000
+I verified that the produced binary is exactly identical on x86.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+55a38037455d0351efd3@syzkaller.appspotmail.com
-
-general protection fault, probably for non-canonical address 0xdffffc0000000014: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x00000000000000a0-0x00000000000000a7]
-CPU: 1 PID: 113 Comm: kworker/u4:3 Not tainted 5.6.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: tipc_send tipc_conn_send_work
-RIP: 0010:tipc_conn_delete_sub+0x54/0x440 net/tipc/topsrv.c:231
-Code: 48 c1 ea 03 80 3c 02 00 0f 85 f0 03 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 6b 18 48 8d bd a0 00 00 00 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 c0 03 00 00 48 c7 c0 34 0b 8a 8a 4c 8b a5 a0 00
-RSP: 0018:ffffc900012d7b58 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: ffff8880a8269c00 RCX: ffffffff8789ca01
-RDX: 0000000000000014 RSI: ffffffff8789a059 RDI: 00000000000000a0
-RBP: 0000000000000000 R08: ffff8880a8d88380 R09: fffffbfff18577a8
-R10: fffffbfff18577a7 R11: ffffffff8c2bbd3f R12: dffffc0000000000
-R13: ffff888093d35a18 R14: ffff8880a8269c00 R15: ffff888093d35a00
-FS:  0000000000000000(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000000076c000 CR3: 000000009441d000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- tipc_conn_send_to_sock+0x380/0x560 net/tipc/topsrv.c:266
- tipc_conn_send_work+0x6f/0x90 net/tipc/topsrv.c:304
- process_one_work+0x965/0x16a0 kernel/workqueue.c:2266
- worker_thread+0x96/0xe20 kernel/workqueue.c:2412
- kthread+0x388/0x470 kernel/kthread.c:268
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-Modules linked in:
----[ end trace 2c161a84be832606 ]---
-RIP: 0010:tipc_conn_delete_sub+0x54/0x440 net/tipc/topsrv.c:231
-Code: 48 c1 ea 03 80 3c 02 00 0f 85 f0 03 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 6b 18 48 8d bd a0 00 00 00 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 c0 03 00 00 48 c7 c0 34 0b 8a 8a 4c 8b a5 a0 00
-RSP: 0018:ffffc900012d7b58 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: ffff8880a8269c00 RCX: ffffffff8789ca01
-RDX: 0000000000000014 RSI: ffffffff8789a059 RDI: 00000000000000a0
-RBP: 0000000000000000 R08: ffff8880a8d88380 R09: fffffbfff18577a8
-R10: fffffbfff18577a7 R11: ffffffff8c2bbd3f R12: dffffc0000000000
-R13: ffff888093d35a18 R14: ffff8880a8269c00 R15: ffff888093d35a00
-FS:  0000000000000000(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020800000 CR3: 0000000091b8e000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/vhost/vhost.h       |  6 +++---
+ include/linux/virtio_ring.h | 24 +++++++++++++++++++++---
+ 2 files changed, 24 insertions(+), 6 deletions(-)
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+index 181382185bbc..3ceaafecc1fb 100644
+--- a/drivers/vhost/vhost.h
++++ b/drivers/vhost/vhost.h
+@@ -67,9 +67,9 @@ struct vhost_virtqueue {
+ 	/* The actual ring of buffers. */
+ 	struct mutex mutex;
+ 	unsigned int num;
+-	struct vring_desc __user *desc;
+-	struct vring_avail __user *avail;
+-	struct vring_used __user *used;
++	vring_desc_t __user *desc;
++	vring_avail_t __user *avail;
++	vring_used_t __user *used;
+ 	const struct vhost_iotlb_map *meta_iotlb[VHOST_NUM_ADDRS];
+ 	struct file *kick;
+ 	struct eventfd_ctx *call_ctx;
+diff --git a/include/linux/virtio_ring.h b/include/linux/virtio_ring.h
+index b6a31b3cf87c..dfb58eff7a7f 100644
+--- a/include/linux/virtio_ring.h
++++ b/include/linux/virtio_ring.h
+@@ -113,14 +113,32 @@ void vring_transport_features(struct virtio_device *vdev);
+ 
+ irqreturn_t vring_interrupt(int irq, void *_vq);
+ 
++/*
++ * The ring element addresses are passed between components with different
++ * alignments assumptions. Thus, we might need to decrease the compiler-selected
++ * alignment, and so must use a typedef to make sure the __aligned attribute
++ * actually takes hold:
++ *
++ * https://gcc.gnu.org/onlinedocs//gcc/Common-Type-Attributes.html#Common-Type-Attributes
++ *
++ * When used on a struct, or struct member, the aligned attribute can only
++ * increase the alignment; in order to decrease it, the packed attribute must
++ * be specified as well. When used as part of a typedef, the aligned attribute
++ * can both increase and decrease alignment, and specifying the packed
++ * attribute generates a warning.
++ */
++typedef struct vring_desc __aligned(VRING_DESC_ALIGN_SIZE) vring_desc_t;
++typedef struct vring_avail __aligned(VRING_AVAIL_ALIGN_SIZE) vring_avail_t;
++typedef struct vring_used __aligned(VRING_USED_ALIGN_SIZE) vring_used_t;
++
+ struct vring {
+ 	unsigned int num;
+ 
+-	struct vring_desc *desc;
++	vring_desc_t *desc;
+ 
+-	struct vring_avail *avail;
++	vring_avail_t *avail;
+ 
+-	struct vring_used *used;
++	vring_used_t *used;
+ };
+ 
+ static inline void vring_legacy_init(struct vring *vr, unsigned int num, void *p,
+-- 
+MST
+
