@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3CF919FB26
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 19:15:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5710119FB47
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 19:20:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729130AbgDFRPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 13:15:31 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:57342 "EHLO
+        id S1729482AbgDFRU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 13:20:29 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:57354 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726536AbgDFRPa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 13:15:30 -0400
+        with ESMTP id S1729366AbgDFRU3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 13:20:29 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id A8C3815DA2268;
-        Mon,  6 Apr 2020 10:15:29 -0700 (PDT)
-Date:   Mon, 06 Apr 2020 10:15:28 -0700 (PDT)
-Message-Id: <20200406.101528.341697434340865081.davem@davemloft.net>
-To:     idosch@idosch.org
-Cc:     netdev@vger.kernel.org, jiri@mellanox.com, petrm@mellanox.com,
-        mlxsw@mellanox.com, idosch@mellanox.com
-Subject: Re: [PATCH net v2 0/2] mlxsw: spectrum_flower: Do not stop at
- FLOW_ACTION_{VLAN_MANGLE, PRIORITY}
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id B7BAD15DA6701;
+        Mon,  6 Apr 2020 10:20:28 -0700 (PDT)
+Date:   Mon, 06 Apr 2020 10:20:27 -0700 (PDT)
+Message-Id: <20200406.102027.658947559034471738.davem@davemloft.net>
+To:     colin.king@canonical.com
+Cc:     inaky.perez-gonzalez@intel.com, linux-wimax@intel.com,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] wimax: remove some redundant assignments to variable
+ result
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200405065022.2578662-1-idosch@idosch.org>
-References: <20200405065022.2578662-1-idosch@idosch.org>
+In-Reply-To: <20200405120603.369405-1-colin.king@canonical.com>
+References: <20200405120603.369405-1-colin.king@canonical.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 06 Apr 2020 10:15:30 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 06 Apr 2020 10:20:29 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@idosch.org>
-Date: Sun,  5 Apr 2020 09:50:20 +0300
+From: Colin King <colin.king@canonical.com>
+Date: Sun,  5 Apr 2020 13:06:02 +0100
 
-> From: Ido Schimmel <idosch@mellanox.com>
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> Petr says:
+> In function i2400m_bm_buf_alloc there is no need to use a variable
+> 'result' to return -ENOMEM, just return the literal value. In the
+> function i2400m_setup the variable 'result' is initialized with a
+> value that is never read, it is a redundant assignment that can
+> be removed.
 > 
-> The handlers for FLOW_ACTION_VLAN_MANGLE and FLOW_ACTION_PRIORITY end by
-> returning whatever the lower-level function that they call returns. If
-> there are more actions lined up after one of these actions, those are
-> never offloaded. Each of the two patches fixes one of those actions.
-> 
-> v2:
-> * Patch #1: Use valid SHA1 ID in Fixes line (Dave)
+> Addresses-Coverity: ("Unused value")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-Series applied and patch #2 queued up for -stable, thanks.
+Applied, thanks.
