@@ -2,91 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B60C19F837
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 16:48:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBB8719F83A
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 16:48:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728743AbgDFOsd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 10:48:33 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50916 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728697AbgDFOsc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Apr 2020 10:48:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=jndYh7GlwNS3Suqwh3rj4zu5D8kBRWnhUuUbjJc1gaY=; b=uenn7vmk6Yn/aMdzsb5yOlZEQg
-        lmUvAB9L8kZcEAW7MJWAVVXcYp1+GBAIwLi8LhwAV/FaBpePG5WM97NOX9y6nSyonXUXC6+NHwot1
-        dmw7unMoScx35Irnh5jLDmwtEB9ck2xeUJPQP0Y6+rmARhSanowU7kPspgLzREWlV5oQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jLT2c-001HDo-6R; Mon, 06 Apr 2020 16:47:58 +0200
-Date:   Mon, 6 Apr 2020 16:47:58 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Alexander Lobakin <79537434260@yandex.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        linux-kernel@vger.kernel.org, Mao Wenan <maowenan@huawei.com>
-Subject: Re: [PATCH net-next] net: dsa: add GRO support via gro_cells
-Message-ID: <20200406144758.GC301483@lunn.ch>
-References: <20200406105910.32339-1-79537434260@yandex.com>
+        id S1728769AbgDFOsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 10:48:37 -0400
+Received: from mail-eopbgr10090.outbound.protection.outlook.com ([40.107.1.90]:1859
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728704AbgDFOsf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Apr 2020 10:48:35 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WCQ/aGB6qkPOtOlmHq29BPjcfHLEGUyJPLv+2VeQbzrzY8U8BCekMaoPE6TKN6aelgdUzuH6IEYkpBhNF+lKH4ZwV4K1Q/1PyBQi5MP8HdXz5vd6q4PMfjhghgOfOZOguta7UY5Sh3t9PKYMnCJAq0f4cVR9tcG9p/ZgLFMQtdnEPSgdR3kc5jOX3fU7hXfnpbZCVkHYVtwayp9oJNWo4/t0xLp22U5EE47XlbzANfHLtNH4SDOB6fmu/l/zTHuepcPBEeYjFcPSc8jI9J0koKhnmgkDib0evY9jA4hyTKs0KunyEwpF3/O0P5kmC0NE/MoKEb5PUWAK9IiIFqNlmw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TyyfcVcDZBJGpx7vSUzWpVUceWuNnLVTn99HDqjpAKc=;
+ b=MFTnuT+VLgnv4njsPcFjegHUlerypNUuJJv96GgAIy29oTL2ytxjDUGxVlv5b+hwNXEymw06yhzk0mzIIganUkG5p4h8bxUqkQLIRYx3ESGgKUbQnXWLQY573QmWARnsJQJ4g1UUrVU7uwLPnGad63LO+VsPjBf7MEfwNIMxHDiB5oS/SNPtTTZC0cyJMy7LfT6UBOBLuad8E5pBc0kpbEJzwX8OLAoRb3WFimWnlEb5UOJdvSDvZjLc5khUXkO2AolVH0YGJ+ab5qxx+9aIYEK4yC5jhXq7WMZeQqwIJOj6B0EDJQ2QRJhOofbkBFfag9BGGKlqhtcA5uVgnRa1tg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
+ dkim=pass header.d=toradex.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TyyfcVcDZBJGpx7vSUzWpVUceWuNnLVTn99HDqjpAKc=;
+ b=pV41UdDsRsV6GJPAkHjKs7f40wAAlOzqZWJhcQn5kkSY2GVNQ8APWcIWndM+e50B7g1IFMCAl0srnfFDkoYMhFZoUUefUZGsHbW6+KkIAJQEt+hQssaI2wggXWYfwXVwG9vrHdkJPVvtPMvVkAGAAreYana90F+p6mbWTKMgjBc=
+Received: from AM6PR05MB6120.eurprd05.prod.outlook.com (2603:10a6:20b:a8::25)
+ by AM6PR05MB5127.eurprd05.prod.outlook.com (2603:10a6:20b:6b::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2878.20; Mon, 6 Apr
+ 2020 14:48:30 +0000
+Received: from AM6PR05MB6120.eurprd05.prod.outlook.com
+ ([fe80::44ad:bee7:b765:b9c7]) by AM6PR05MB6120.eurprd05.prod.outlook.com
+ ([fe80::44ad:bee7:b765:b9c7%7]) with mapi id 15.20.2878.021; Mon, 6 Apr 2020
+ 14:48:30 +0000
+From:   Philippe Schenker <philippe.schenker@toradex.com>
+To:     "o.rempel@pengutronix.de" <o.rempel@pengutronix.de>
+CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "david@protonic.nl" <david@protonic.nl>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v1] net: phy: micrel: add phy-mode support for the KSZ9031
+ PHY
+Thread-Topic: [PATCH v1] net: phy: micrel: add phy-mode support for the
+ KSZ9031 PHY
+Thread-Index: AQHWCZBx8XMINRFo9k6sGIGWF9Rf76hr0AuAgABNy4CAABPoAA==
+Date:   Mon, 6 Apr 2020 14:48:30 +0000
+Message-ID: <5870f784b546adabfd9ec6693a8e5287b0036ef6.camel@toradex.com>
+References: <20200403081812.19717-1-o.rempel@pengutronix.de>
+         <868f2449c1bc93cfe38629708c1e449d6c16de6d.camel@toradex.com>
+         <20200406133715.GA15542@pengutronix.de>
+In-Reply-To: <20200406133715.GA15542@pengutronix.de>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.1 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=philippe.schenker@toradex.com; 
+x-originating-ip: [51.154.7.61]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2b51a62b-88d3-4bd4-dac1-08d7da3992c6
+x-ms-traffictypediagnostic: AM6PR05MB5127:
+x-microsoft-antispam-prvs: <AM6PR05MB51273E5E03B90CB03DCD1EF9F4C20@AM6PR05MB5127.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0365C0E14B
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR05MB6120.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10019020)(4636009)(346002)(396003)(376002)(366004)(39840400004)(136003)(4326008)(66446008)(6916009)(5660300002)(2906002)(44832011)(2616005)(186003)(316002)(54906003)(6506007)(26005)(6512007)(81166006)(81156014)(8676002)(8936002)(76116006)(966005)(91956017)(66946007)(36756003)(7416002)(66556008)(478600001)(71200400001)(66476007)(64756008)(6486002)(86362001);DIR:OUT;SFP:1102;
+received-spf: None (protection.outlook.com: toradex.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: KTBV3DiRAzzJA5yTkFnpiHghyNJdXaoi4kp+RqEwjhvcPeq5G5zzuX0WZ25/cm+DLy9M6wOwgaosYITgWFzMbmzsSsPsuUUG1Kh4bBDLAkh+ZJToE9UaDcLSCvy+pyM4j+1U189zMEPJIggs5xSS73yrI0ooHF2VnywuabYyx4igfaOIsCnQYKkZIWzsBSzxpUv4l4OmFsIJRZ6OOfLJtNfvSBQP2/T7IZVBv8/8ikmpXm81ah811VoPFfiukAKHVzLcRKYvZTrQLOjIZbl6VkhbNCVgRLwOBCOQKEB9REZlM2Kwb1duK97Hjqsjh37vloss6W4wfKMiBu6aVxv1M2osLgpcBvKSrzmIpsfY03yZkObduVxQICiAvsamvRob35JlPEAxGtQ5k43SG0fiqDrPZCUDDlDGIIYd6zVvZTHhwwIcQbG774stDA/I9AL0qxsQ9rcVygE5lf0SAmuKi6CbTkMbsPBIqIXMI/by1mYe7QQS83/ftXSC57ihkC57fgGAzLHESaLouSKXPhHnGA==
+x-ms-exchange-antispam-messagedata: Y5uboNgSooSbTZwiH1d+xPdZv1og8IZ1dlfwyz7It9DU7ngdJv39nLRtq9mjdhaTD5M8Dy8yNCBGycRQ6XSN19uJzXJ9OgxcFPpSc/7zloqADrg8VACZxfo3BwWhmHYEyNgnej4MMyARIQHr5xTpRA==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <52B150B90C90924EB7889DDA04352CE0@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200406105910.32339-1-79537434260@yandex.com>
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2b51a62b-88d3-4bd4-dac1-08d7da3992c6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Apr 2020 14:48:30.5911
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: fxsRh1Lj4CvjxXafOAY6hg8g8eT13Dn+QDf+gruhne9d3T1mcDQ7UB6A3y/DocTUX/H5aS3UtZyrdEwKOI7uHxJJUNK0ncoJ8JdeIK0qrMs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5127
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 06, 2020 at 01:59:10PM +0300, Alexander Lobakin wrote:
-> gro_cells lib is used by different encapsulating netdevices, such as
-> geneve, macsec, vxlan etc. to speed up decapsulated traffic processing.
-> CPU tag is a sort of "encapsulation", and we can use the same mechs to
-> greatly improve overall DSA performance.
-> skbs are passed to the GRO layer after removing CPU tags, so we don't
-> need any new packet offload types as it was firstly proposed by me in
-> the first GRO-over-DSA variant [1].
-> 
-> The size of struct gro_cells is sizeof(void *), so hot struct
-> dsa_slave_priv becomes only 4/8 bytes bigger, and all critical fields
-> remain in one 32-byte cacheline.
-> The other positive side effect is that drivers for network devices
-> that can be shipped as CPU ports of DSA-driven switches can now use
-> napi_gro_frags() to pass skbs to kernel. Packets built that way are
-> completely non-linear and are likely being dropped without GRO.
-> 
-> This was tested on to-be-mainlined-soon Ethernet driver that uses
-> napi_gro_frags(), and the overall performance was on par with the
-> variant from [1], sometimes even better due to minimal overhead.
-> net.core.gro_normal_batch tuning may help to push it to the limit
-> on particular setups and platforms.
-> 
-> [1] https://lore.kernel.org/netdev/20191230143028.27313-1-alobakin@dlink.ru/
-
-Hi Alexander
-
-net-next is closed at the moment. So you should of posted this with an
-RFC prefix.
-
-The implementation looks nice and simple. But it would be nice to have
-some performance figures.
-
-     Andrew
+T24gTW9uLCAyMDIwLTA0LTA2IGF0IDE1OjM3ICswMjAwLCBPbGVrc2lqIFJlbXBlbCB3cm90ZToN
+Cj4gSGksDQo+IA0KPiBPbiBNb24sIEFwciAwNiwgMjAyMCBhdCAwODo1ODo0OUFNICswMDAwLCBQ
+aGlsaXBwZSBTY2hlbmtlciB3cm90ZToNCj4gPiBPbiBGcmksIDIwMjAtMDQtMDMgYXQgMTA6MTgg
+KzAyMDAsIE9sZWtzaWogUmVtcGVsIHdyb3RlOg0KPiA+ID4gQWRkIHN1cHBvcnQgZm9yIGZvbGxv
+d2luZyBwaHktbW9kZXM6IHJnbWlpLCByZ21paS1pZCwgcmdtaWktdHhpZCwNCj4gPiA+IHJnbWlp
+LXJ4aWQuDQo+ID4gPiANCj4gPiA+IFRoaXMgUEhZIGhhcyBhbiBpbnRlcm5hbCBSWCBkZWxheSBv
+ZiAxLjJucyBhbmQgbm8gZGVsYXkgZm9yIFRYLg0KPiA+ID4gDQo+ID4gPiBUaGUgcGFkIHNrZXcg
+cmVnaXN0ZXJzIGFsbG93IHRvIHNldCB0aGUgdG90YWwgVFggZGVsYXkgdG8gbWF4DQo+ID4gPiAx
+LjM4bnMNCj4gPiA+IGFuZA0KPiA+ID4gdGhlIHRvdGFsIFJYIGRlbGF5IHRvIG1heCBvZiAyLjU4
+bnMgKGNvbmZpZ3VyYWJsZSAxLjM4bnMgKyBidWlsZA0KPiA+ID4gaW4NCj4gPiA+IDEuMm5zKSBh
+bmQgYSBtaW5pbWFsIGRlbGF5IG9mIDBucy4NCj4gPiANCj4gPiBUaGlzIHNrZXcgZGVsYXkgcmVn
+aXN0ZXJzIG9mIHRoZSBLU1o5MDMxIGFyZSBub3QgbWVhbnQgZm9yIHRoaXMNCj4gPiBkZWxheS4N
+Cj4gDQo+IEFjY29yZGluZyB0byB0aGUgZG9jdW1lbnRhdGlvbiBvZiB0aGUgUEhZIFsxXSwgdGhl
+c2UgcmVnaXN0ZXJzIHNob3VsZA0KPiBiZQ0KPiB1c2VkIHRvIHR1bmUgdGhlIHRvdGFsIGRlbGF5
+IG9mIHRoZSBjaXJjdWl0Lg0KDQpZZXMgeW91J3JlIHJpZ2h0LiBJIG1peGVkIGl0IHVwIHdpdGgg
+S1NaOTEzMSB0aGF0IGhhcyBhIHNwZWNpZmljDQpyZWdpc3RlciBmb3IgdGhhdCBwdXJwb3NlIGFu
+ZCBza2V3IHJlZ2lzdGVycyBhcmUgbWVhbnQgb25seSBmb3IgUENCLQ0KbGVuZ3RoIGFkanVzdG1l
+bnQuDQo+IA0KPiA+IEJ1dCBJIGFncmVlIHRoYXQgaXQgY291bGQgbWFrZSBzZW5zZSB0byBpbXBs
+ZW1lbnQgcGh5LW1vZGVzIHRvbyBmb3INCj4gPiB0aGlzDQo+ID4gUEhZLiBJIGV2ZW4gdGhvdWdo
+dCBteXNlbGYgYWJvdXQgaW1wbGVtZW50aW5nIGl0Lg0KPiA+IEJ1dCBJIGd1ZXNzIGl0IGlzIG5v
+dCBhIGdvb2QgdGhpbmcgdG8gYmUgYWJsZSB0byBzZXQgdGhlIHNhbWUNCj4gPiByZWdpc3RlcnMg
+aW4gYSBjaGlwIGluIHR3byBkaWZmZXJlbnQgcGxhY2VzIGluIGEgRFQuIEhvdyBpcyB0aGlzDQo+
+ID4gc29sdmVkIGdlbmVyYWxseSBpbiBsaW51eD8NCj4gDQo+IEluIHRoaXMgY2FzZSBpIHdvdWxk
+IHByZWZlciB0byB0YWxrIGFib3V0IHNldmVyYWwgZGV2aWNlIHRyZWUNCj4gcHJvcGVydGllcw0K
+PiBkZXNjcmliaW5nIHRoZSBzYW1lIHRoaW5nLiBUaGUgcGh5LW1vZGUgcHJvcGVydHkgd2lsbCBz
+ZXQgYSBtb3JlDQo+IGdlbmVyaWMNCj4gZGVmYXVsdHMgd2hlcmUgdGhlICotc2tldy1wcyBwcm9w
+ZXJ0aWVzIGNhbmUgYmUgdXNlZCB0byBvdmVyd3JpdGUNCj4gc2luZ2xlDQo+IG9yIGFsbCBwYWRz
+Lg0KDQpJJ20ganVzdCBhZnJhaWQgdGhhdCBvbmUgd2lsbCByZWFkIHRoZSBkb2N1bWVudGF0aW9u
+LCBwdXQgcmdtaWktaWQgaW4NCnRoZXJlIGFuZCBhbHNvIHRyeSB0byBhZGp1c3QgUENCLXRyYWNl
+LWxlbmd0aCBpbiBza2V3IHJlZ2lzdGVycy4uLg0KVGhhdCdzIHdoeSBJJ2QgYXQgbGVhc3QgdGhy
+b3cgYSB3YXJuaW5nIG9yIGVycm9yLg0KPiANCj4gVGhlIGN1cnJlbnQgc2l0dWF0aW9uIGlzOg0K
+PiAtIHdlIGhhdmUgYSBSR01JSS1SWElEIFBIWSAod2l0aCBpbnRlcm5hbCBub3Qgb3B0aW9uYWwg
+ZGVsYXkgb2YgMS4ybnMpDQo+IC0gd2hpY2ggaXMgY29uZmlndXJlZCBpbiBtYW55IChhbGw/KSBk
+ZXZpY2V0cmllcyBhcyBwaHktbW9kZT0icmdtaWkiLA0KPiBub3QNCj4gICAicmdtaWktcnhpZCIu
+DQo+IA0KPiBUaGVyZSBhcmUgYm9hcmRzOg0KPiAtIHdpdGggZGVmYXVsdCBvcHRpb25zLiBObyBl
+eHRyYSBkZWxheXMgYXJlIGNvbmZpZ3VyZWQsIHNvIGFjdHVhbGx5DQo+IHRoZXkNCj4gICB3YW50
+IHRvIGhhdmUgYSAicmdtaWktcnhpZCIsIGJ1dCBjb25maWd1cmUgYXMgcGh5LW1vZGU9InJnbWlp
+IiANCj4gLSBjb25maWd1cmVkIGJ5IGZpeHVwIChmb3IgZXhhbXBsZSBpbiBpJ01YNlE6ICBSR01J
+SS1JRCwgYnV0IGluIERUDQo+ICAgY29uZmlndXJhdGlvbiB3aXRoIHBoeS1tb2RlPXJnbWlpKQ0K
+PiANCj4gQWxsIG9mIHRoaXMgY29uZmlndXJhdGlvbnMgYXJlIGJyb2tlbi4gVGhpcyBvbmUgaXMg
+Y29ycmVjdDoNCj4gDQo+IC0gY29uZmlndXJlZCBieSAqLXNrZXctcHMgcHJvcGVydHkgYW5kIHVz
+aW5nIHBoeS1tb2RlPXJnbWlpLg0KDQpJIGFncmVlLg0KPiANCj4gPiBBbm90aGVyIHJlYXNvbmlu
+ZyBpcyB0aGF0IHRoaXMgd2lsbCAqb25seSogd29yaywgaWYgdGhlIFBDQiB0cmFjZXMNCj4gPiBh
+cmUNCj4gPiBsZW5ndGgtIG1hdGNoZWQuIFRoaXMgbGVhZHMgbWUgdG8gdGhlIGNvbmNsdXNpb24g
+dGhhdCB0aHJvd2luZyBhbg0KPiA+IGVycm9yIHNvIHRoZSBQSFkgZG9lc24ndCB3b3JrIGlmIHNv
+bWVvbmUgYWRkZWQgZS5nLiAncmdtaWktaWQnIGFuZA0KPiA+IHNrZXcgcmVnaXN0ZXJzIGlzIGEg
+Z29vZCB0aGluZy4NCj4gDQo+IFNvIHlvdSBtZWFuLCBza2V3IHNldHRpbmcgc2hvdWxkIG9ubHkg
+d29yayB3aXRoIHBoeS1tb2RlPSJyZ21paSIsIGFuZA0KPiB0aHJvdyBhbiBlcnJvciBvdGhlcndp
+c2U/IE1ha2VzIHNlbnNlIHRvIG1lLg0KDQpZZXMsIHRoYXQncyBleGFjdGx5IG15IGludGVudGlv
+bi4gQnV0IHdoZW4gSSB0aGluayBhYm91dCBpdCBhIHdhcm5pbmcgaXMNCm1vcmUgYXBwcm9wcmlh
+dGUgdGhhbiBhbiBlcnJvciwgYnV0IEkgZ3Vlc3MgdGhhdCdzIHVwIHRvIHRoZSBtYWludGFpbmVy
+DQp0byBkZWNpZGUuDQo+IA0KPiA+IEJ1dCB3aXRoIHRoYXQgd2Ugd291bGQgbWF5YmUgYnJlYWsg
+c29tZSBib2FyZHMuLi4gQXQgbGVhc3QgSSB3b3VsZA0KPiA+IHRocm93DQo+ID4gYSB3YXJuaW5n
+IGluIGtzejkwMzFfb2ZfbG9hZF9za2V3X3ZhbHVlcy4NCj4gPiANCj4gPiA+IEFjY29yZGluZyB0
+byB0aGUgUkdNSUkgdjIgc3BlY2lmaWNhdGlvbiB0aGUgZGVsYXkgcHJvdmlkZWQgYnkgUENCDQo+
+ID4gPiB0cmFjZXMNCj4gPiANCj4gPiBBcyBJIHVuZGVyc3Rvb2QsIFJHTUlJIHYxLjMgZGVtYW5k
+cyBkZWxheSBieSBQQ0IgdHJhY2VzICh0aGF0IGlzIGZvcg0KPiA+IGVtYmVkZGVkIG1vc3RseSBu
+b3QgcG9zc2libGUpLiBXaGVyZWFzIFJHTUlJIHYyLjAgZGVtYW5kcyBkZSBNQUMgdG8NCj4gPiBh
+ZGQNCj4gPiB0aGUgZGVsYXkgZm9yIFRYQyBhbmQgdGhlIFBIWSBmb3IgUlhDLg0KPiA+IA0KPiA+
+IEkga25vdyBpdHMgbml0cGlja3kgYnV0IHN0aWxsIGNhbiBiZSBjb25mdXNpbmcgZm9yIHNvbWVv
+bmUgdHJ5aW5nIHRvDQo+ID4gdW5kZXJzdGFuZCB0aGF0LiBDb3VsZCB5b3UgYWRqdXN0IHRoYXQg
+aGVyZT8NCj4gPiANCj4gPiA+IHNob3VsZCBiZSBiZXR3ZWVuIDEuNW5zIGFuZCAyLjBucy4gQXMg
+dGhpcyBQSFkgY2FuIHByb3ZpZGUgbWF4DQo+ID4gPiBkZWxheQ0KPiA+ID4gb2YNCj4gPiA+IG9u
+bHkgMS4zOG5zIG9uIHRoZSBUWCBsaW5lLCBpbiBSR01JSS1JRCBtb2RlIGEgc3ltbWV0cmljIGRl
+bGF5IG9mDQo+ID4gPiAxLjM4bnMNCj4gPiA+IGZvciBib3RoIHRoZSBSWCBhbmQgVFggbGluZXMg
+aXMgY2hvc2VuLCBldmVuIGlmIHRoZSBSWCBsaW5lIGNvdWxkDQo+ID4gPiBiZQ0KPiA+ID4gY29u
+ZmlndXJlZCB3aXRoIHRoZSAxLjVucyBhY2NvcmRpbmcgdG8gdGhlIHN0YW5kYXJkLg0KPiA+IA0K
+PiA+IFdoeSBkbyB5b3UgZGVjaWRlZCBmb3IgYSBzeW1tZXRyaWMgZGVsYXk/IEkgZ3Vlc3MgdGhl
+IGhhcmR3YXJlIGxldmVsDQo+ID4gZG9lc24ndCBjYXJlIGlmIHRoZSBpbnB1dC1zdGFnZXMgb2Yg
+dHdvIGRpZmZlcmVudCBzaWxpY29ucyBkb24ndA0KPiA+IGNhcmUgaWYNCj4gPiB0aGUgZGVsYXkg
+aXMgc3ltbWV0cmljYWwuIEkgc3VnZ2VzdCB0byB1c2UgYSBkZWxheSBmb3IgUlhDIHRvIGdldA0K
+PiA+IHRoZQ0KPiA+IFJYQyBjbG9jayBlZGdlIGluIHRoZSBtaWRkbGUgb2YgdGhlIGRhdGEgbGlu
+ZXMuDQo+IA0KPiBBcmUgdGhlcmUgYW55IHRlY2huaWNhbCBqdXN0aWZpY2F0aW9uIHRvIHVzZSBi
+b3RoIDEuMzggb3Igb25lIDEuMzggYW5kDQo+IG90aGVyIDIuMD8NCg0KWWVzLCB3ZSBzaG91bGQg
+dHJ5IHRvIGFjaGlldmUgdGhlIFJHTUlJIHNwZWNzIHdoZXJlIHBvc3NpYmxlLiBTbyBJJ2QNCmRl
+bGF5IFJYQyBtb3JlIHRoYW4gVFhDLg0KPiANCj4gT3VyIEhXIGV4cGVydCBzdWdnZXN0IHRvIHVz
+ZSB0aGUgbWlkZGxlIG9mIHRoZSBSR01JSSByZWNvbW1lbmRlZA0KPiBkZWxheToNCj4gMS43NW5z
+LiBXaGF0IGlzIHlvdXIgb3Bpbmlvbj8gU28gZmFyIGtzejkwMzEgcHJvdmlkZSBub3QgY29uZmln
+dXJhYmxlDQo+IDEuMm5zIGFuZA0KPiBrc3U5MTMxIHVzZSAyLjBucyAoRExMIGJhc2VkKSBkZWxh
+eS4gSXQgbG9va3MgbGlrZSB0aGUgImludGVybmFsDQo+IGRlbGF5Ig0KPiBpbnRlcnByZXRhdGlv
+biBoYXMgc29tZSB2YWxpZCByYW5nZSBvZiBudW1iZXJzLg0KDQpJIHdvdWxkIG5vdCBvbmx5IHRy
+eSB0byBoaXQgdGhlIG1pZGRsZSBmcm9tIHRoZSBzcGVjaWZpY2F0aW9uIGJ1dCB0aGUNCm1pZGRs
+ZSBvZiB0aGUgYWN0dWFsIHNpZ25hbC4gV2l0aCB0aGF0IEkgbWVhbiB0byBoYXZlIFRfc2V0dXAg
+YW5kIFRfaG9sZA0KdGltZXMgYWJvdXQgdGhlIHNhbWUuIFBsZWFzZSBzZWUgYW4gUkdNSUkgdGlt
+aW5nIGRpYWdyYW0gZm9yIHRoZSBtZWFuaW5nDQpvZiB0aG9zZSBuYW1lc1sxXS4NCg0KSSBjYWxj
+dWxhdGVkIHRoZSBvcHRpbXVtIGRlbGF5IGluIGEgd29yc3QgY2FzZSBzY2VuYXJpby4gSSB0b29r
+IG1heGltdW0NCmRldmlhdGlvbiBvZiB0aGUgY2xvY2sgKDcuMm5zIC0gOC44bnMpIGFuZCBhbHNv
+IHNrZXcgb2YgdGhlIE1BQw0KKGFjY29yZGluZyB0byBSR01JSSBzcGVjIC01MDBwcyB0byA1MDBw
+cykuIFdpdGggbXkgdGhlb3J5IG9mIGhpdHRpbmcgdGhlDQptaWRkbGUgb2YgdGhlIGNsb2NrIGVk
+Z2VzLCB0aGlzIHJlc3VsdHMgaW4gbWluL21heCBkZWxheSB0aW1lcyBvZiBhbg0KYWRkZWQgZGVs
+YXkgdG8gUlhDIG9mIDYwMHBzICgxLjhucyBpbiB0b3RhbCkgYW5kIGZvciBUWEMgd2UncmUgc3R1
+Y2sNCndpdGggMS4zOG5zIHdoaWNoIGlzIGZpbmUgaW4gbW9zdCBjYXNlcywgYnV0IGFuIG9wdGlt
+YWwgdmFsdWUgaGVyZSB3b3VsZA0KYWxzbyBiZSBpbiB0aGUgcmFuZ2UgeW91ciBIVyBleHBlcnQg
+c3VnZ2VzdHMuIEknbSBnbGFkIHdlJ3JlIHJlc3VsdGluZw0KaW4gYWJvdXQgdGhlIHNhbWUgdmFs
+dWVzIQ0KDQpVbHRpbWF0ZWx5IEkgd291bGQgc2V0IHRoZSByZWdpc3RlcnMgaW4gJ3JnbWlpLQ0K
+aWQnIHRvOg0KTU1EIFJlZ2lzdGVyIDIuNAkweDcwDQpNTUQgUmVnaXN0ZXIgMi41CTB4Nzc3Nw0K
+TU1EIFJlZ2lzdGVyIDIuNgkweDANCk1NRCBSZWdpc3RlciAyLjgJMHgzRjkNCg0KSSdsbCBzZW5k
+IHlvdSB0aGVzZSB2YWx1ZXMgZm9yIGNyb3NzLWNoZWNrDQp2YWxpZGF0aW9uLg0KDQpSZWdhcmRz
+LA0KUGhpbGlwcGUNCg0KWzFdIGh0dHBzOi8vd3d3LnRpLmNvbS9saXQvYW4vc25sYTI0My9zbmxh
+MjQzLnBkZg0K
