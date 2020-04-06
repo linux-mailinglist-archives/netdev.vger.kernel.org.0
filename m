@@ -2,94 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7C9219F1FF
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 11:03:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB9ED19F215
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 11:09:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726793AbgDFJDb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 05:03:31 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:43986 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726533AbgDFJDa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Apr 2020 05:03:30 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id A047820523;
-        Mon,  6 Apr 2020 11:03:28 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 3hYAfdPan_2n; Mon,  6 Apr 2020 11:03:28 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (201.40.53.10.in-addr.arpa [10.53.40.201])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726714AbgDFJJa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 05:09:30 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:24542 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726670AbgDFJJ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 05:09:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1586164168;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2lvKA0xUIiCsW6HoBtQirda8p4dzQ/WxqHlUFpRTwhc=;
+        b=ZUGfUZznWN03UXpPqiPTPw6Ywp/Lumf6G1pcvp5ZpKDriQrNPcSEVVPnKdIhdHE/1/cQdI
+        zfn33xlg0P4y/WJftYr5FUAcvussBogRCAyZLrbktBpaq6bcBdxw0Q0vcr23UEAWyIt5ho
+        Rwypftk57ubG1+1WiXo9exCkRLPHG7c=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-62-QGQozKdbNny04y9Cqeg_MA-1; Mon, 06 Apr 2020 05:09:26 -0400
+X-MC-Unique: QGQozKdbNny04y9Cqeg_MA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 3730D2051F;
-        Mon,  6 Apr 2020 11:03:28 +0200 (CEST)
-Received: from gauss2.secunet.de (10.182.7.193) by cas-essen-01.secunet.de
- (10.53.40.201) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Mon, 6 Apr 2020
- 11:03:28 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 9DCB53180093; Mon,  6 Apr 2020 11:03:27 +0200 (CEST)
-Date:   Mon, 6 Apr 2020 11:03:27 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Yuehaibing <yuehaibing@huawei.com>
-CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] xfrm: policy: Remove obsolete WARN while xfrm
- policy inserting
-Message-ID: <20200406090327.GF13121@gauss3.secunet.de>
-References: <20200327123443.12408-1-yuehaibing@huawei.com>
- <20200328112302.GA13121@gauss3.secunet.de>
- <1d3596fb-c7e3-16c9-f48f-fe58e9a2569a@huawei.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3C66E8024EB;
+        Mon,  6 Apr 2020 09:09:24 +0000 (UTC)
+Received: from krava (unknown [10.40.192.7])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id DF15727062;
+        Mon,  6 Apr 2020 09:09:20 +0000 (UTC)
+Date:   Mon, 6 Apr 2020 11:09:18 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>, bgregg@netflix.com
+Subject: Re: [RFC 0/3] bpf: Add d_path helper
+Message-ID: <20200406090918.GA3035739@krava>
+References: <20200401110907.2669564-1-jolsa@kernel.org>
+ <20200402142106.GF23230@ZenIV.linux.org.uk>
+ <20200403090828.GF2784502@krava>
+ <20200406031602.GR23230@ZenIV.linux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1d3596fb-c7e3-16c9-f48f-fe58e9a2569a@huawei.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- cas-essen-01.secunet.de (10.53.40.201)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+In-Reply-To: <20200406031602.GR23230@ZenIV.linux.org.uk>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 30, 2020 at 10:05:32PM +0800, Yuehaibing wrote:
-> On 2020/3/28 19:23, Steffen Klassert wrote:
-> > On Fri, Mar 27, 2020 at 08:34:43PM +0800, YueHaibing wrote:
-> >> Since commit 7cb8a93968e3 ("xfrm: Allow inserting policies with matching
-> >> mark and different priorities"), we allow duplicate policies with
-> >> different priority, this WARN is not needed any more.
+On Mon, Apr 06, 2020 at 04:16:02AM +0100, Al Viro wrote:
+> On Fri, Apr 03, 2020 at 11:08:28AM +0200, Jiri Olsa wrote:
+> 
+> > if we limit it just to task context I think it would still be
+> > helpful for us:
 > > 
-> > Can you please describe a bit more detailed why this warning
-> > can't trigger anymore?
+> >   if (in_task())
+> > 	d_path..
+> > 
+> > perhaps even create a d_path version without d_dname callback
+> > if that'd be still a problem, because it seems to be there mainly
+> > for special filesystems..?
 > 
-> No, this warning is triggered while detect a duplicate entry in the policy list
+> IDGI...
+> 	1) d_path(), by definition, is dependent upon the
+> process' root - the same <mount,dentry> pair will yield
+> different strings if caller is chrooted.  You *can't* just
+> use a random process' root
+> 	2) we are *NOT* making rename_lock and mount_lock
+> disable interrupts.  Not happening.
 > 
-> regardless of the priority. If we insert policy like this:
-> 
-> policy A (mark.v = 3475289, mark.m = 0, priority = 1)	//A is inserted
-> policy B (mark.v = 0, mark.m = 0, priority = 0) 	//B is inserted
-> policy C (mark.v = 3475289, mark.m = 0, priority = 0)	//C is inserted and B is deleted
+> So it has to be process-synchronous anyway.  Could you describe
+> where that thing is going to be callable?
 
-The codepath that replaces a policy by another should just trigger
-on policy updates (XFRM_MSG_UPDPOLICY). Is that the case in your
-test?
+it could be called as bpf helper from any place we could put
+the trampoline probe on.. so most of the kernel functions
+(at entry or exit) .. we can make checks, like for context
+before we allow to call it
 
-It should not be possible to add policy C with XFRM_MSG_NEWPOLICY
-as long as you have policy B inserted.
+is there any way we could have d_path functionality (even
+reduced and not working for all cases) that could be used
+or called like that?
 
-The update replaces an old policy by a new one, the lookup keys of
-the old policy must match the lookup keys of the new one. But policy
-B has not the same lookup keys as C, the mark is different. So B should
-not be replaced with C.
-
-> policy D (mark.v = 3475289, mark.m = 0, priority = 1)	
-> 
-> while finding delpol in xfrm_policy_insert_list,
-> first round delpol is matched C, whose priority is less than D, so contiue the loop,
-> then A is matched， WARN_ON is triggered.  It seems the WARN is useless.
-
-Looks like the warning is usefull, it found a bug.
+thanks,
+jirka
 
