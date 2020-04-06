@@ -2,36 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C6B21A1D68
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 10:28:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6052C19EF83
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 05:16:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726883AbgDHI2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 04:28:38 -0400
-Received: from [222.73.136.220] ([222.73.136.220]:54713 "EHLO localhost"
-        rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725763AbgDHI2i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Apr 2020 04:28:38 -0400
-X-Greylist: delayed 121740 seconds by postgrey-1.27 at vger.kernel.org; Wed, 08 Apr 2020 04:28:37 EDT
-Received: from mail.1mutian.com (Unknown [129.205.24.157])
-        by localhost with ESMTPA
-        ; Mon, 6 Apr 2020 11:19:03 +0800
-To:     "netdev" <netdev@vger.kernel.org>, "oneukum" <oneukum@suse.de>
-From:   Facix Booka <daniel@1mutian.com>
-Subject: =?UTF-8?Q?Ich_finde_es_interessant?=
-Message-ID: <e3e2ea47-d314-4382-bdaa-f0d9e634c2dd@1mutian.com>
-Date:   Sun, 5 Apr 2020 19:12:44 -0800
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1726552AbgDFDQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Apr 2020 23:16:14 -0400
+Received: from zeniv.linux.org.uk ([195.92.253.2]:46578 "EHLO
+        ZenIV.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726486AbgDFDQN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Apr 2020 23:16:13 -0400
+Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jLIF0-00BlXN-Gi; Mon, 06 Apr 2020 03:16:02 +0000
+Date:   Mon, 6 Apr 2020 04:16:02 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Wenbo Zhang <ethercflow@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>, bgregg@netflix.com
+Subject: Re: [RFC 0/3] bpf: Add d_path helper
+Message-ID: <20200406031602.GR23230@ZenIV.linux.org.uk>
+References: <20200401110907.2669564-1-jolsa@kernel.org>
+ <20200402142106.GF23230@ZenIV.linux.org.uk>
+ <20200403090828.GF2784502@krava>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200403090828.GF2784502@krava>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Apr 03, 2020 at 11:08:28AM +0200, Jiri Olsa wrote:
 
-Es ist Zeit, Geld zu verdienen, ohne das Haus zu verlassen. Kostenlose Registrierung nur bis 1. Mai! https://bit.ly/3dUxMSE
-Facix Booka
+> if we limit it just to task context I think it would still be
+> helpful for us:
+> 
+>   if (in_task())
+> 	d_path..
+> 
+> perhaps even create a d_path version without d_dname callback
+> if that'd be still a problem, because it seems to be there mainly
+> for special filesystems..?
 
+IDGI...
+	1) d_path(), by definition, is dependent upon the
+process' root - the same <mount,dentry> pair will yield
+different strings if caller is chrooted.  You *can't* just
+use a random process' root
+	2) we are *NOT* making rename_lock and mount_lock
+disable interrupts.  Not happening.
+
+So it has to be process-synchronous anyway.  Could you describe
+where that thing is going to be callable?
