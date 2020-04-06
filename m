@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C0681A0042
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 23:35:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 844A91A0059
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 23:36:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726589AbgDFVep (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 17:34:45 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:38149 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726552AbgDFVeo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 17:34:44 -0400
+        id S1726794AbgDFVfM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 17:35:12 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:45555 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726762AbgDFVfL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 17:35:11 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586208884;
+        s=mimecast20190719; t=1586208910;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
         bh=b+P99eoGOE59dzJri6nDdYTRF/iHp1rUM821OiEBSWI=;
-        b=Z7amTvX4E8a/BsieLgf9KNnVc3e3g/OJSc4czDKiqHROckdje2WEV9RbRep8GmmBWna4Pl
-        9sv4BugdujiMjM/t3oHaFhKtG6X7cxVDzsQhDMA7u7q+xf5kxgbrSltrL6TObsj5uk6YBF
-        IntsugIb4kUrEWOUzOIg2XbCz0juVDs=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-467-EzFo7p_XNgaZLNhUrTMojg-1; Mon, 06 Apr 2020 17:34:40 -0400
-X-MC-Unique: EzFo7p_XNgaZLNhUrTMojg-1
-Received: by mail-wr1-f70.google.com with SMTP id w12so554376wrl.23
-        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 14:34:40 -0700 (PDT)
+        b=Mg8Vj/gSwdhlNbgAr3FwEyVtVnfFe74j6FkXKNpo6Y2sjrAryV6/F4irQ13Be0WTFVUAhv
+        lWcVu+JJxAZgM6Ytf0vWZCow0mw15mJVmY0l3o0WS4bjLspxtR6Rxqjmas6Eo61scFXvbV
+        qAeX7jQ7RqgwNwLXI3x0f4r/Dl0WfrI=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-321-A2DGgfhnMUy5afGkWgyndg-1; Mon, 06 Apr 2020 17:35:08 -0400
+X-MC-Unique: A2DGgfhnMUy5afGkWgyndg-1
+Received: by mail-wr1-f69.google.com with SMTP id d4so576388wrq.10
+        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 14:35:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
         bh=b+P99eoGOE59dzJri6nDdYTRF/iHp1rUM821OiEBSWI=;
-        b=U0XhVdlIGos+alg7DkKIoNkn2b1r6ZAjKH6bK9Bsx7B24IlAI2a++iWqnxMu96rdzH
-         4eiDA9D/+sB6mEgw3kQtY2rj/oHFVnDMyAMQg75lm6csFtd62UDY4Wu1ozJYCOh3ixlA
-         6k/q82i/Dqc5vQgQtNawLaw1ErTG4R3jZWf6ILm1fWx9GtT9dYhh6VmxVyVeZqfcwNG1
-         jpOVd7X8CXEN6412qcz7NegVG8EQNg9XpKkzsZm/eIJcKRWhsJy/WjMZe6SSIbdyMtUe
-         MxonrLAcWVHZRiiwPteH4iHRPVOORMENn82tjuGm2jkkACZTVNDfSAHlZt8ze0zy5ZI3
-         4lfQ==
-X-Gm-Message-State: AGi0PubD/lPB76KzVXtbhAzLmrQkKnznVJg8T+XQ8z8RXFmpcR49CoPo
-        IIyeiowdygbT4YPQZeBG3/gQWZ4kKhiJXMLhvUz6FlTpk84nVwWI2VI4SLAWc9VRwuHbxgsrxKz
-        h7zZ2MxB4pimB9now
-X-Received: by 2002:a1c:2d95:: with SMTP id t143mr1048134wmt.89.1586208879545;
-        Mon, 06 Apr 2020 14:34:39 -0700 (PDT)
-X-Google-Smtp-Source: APiQypIDfEOd292CqNqE70r5arC2C5jNItEbGfr741TbN6Hn4hfA1uTh0Srcc3LesXCK0n49qBd6Cw==
-X-Received: by 2002:a1c:2d95:: with SMTP id t143mr1048122wmt.89.1586208879332;
-        Mon, 06 Apr 2020 14:34:39 -0700 (PDT)
+        b=cBL8Z8q89JxRtgLZWD1C8CzU2Af0P9evy+fVpzpqf8q043FIWXOCWDBDp2WcH+Ova8
+         JC66reoY1TT8hpPFMjB0xsL4gE/tehyOlp0DPaJdXvIA+za4hWa8XEACF7bnMugxck0S
+         F5I4EGJWWoozfgf9IL+jzFrVO9mHsgweNjOFpzr/5mNPPA4KcFOTnNRzV4fuI6VKATPl
+         FLq9Wl+H6GTeM4PAAbJFvvJ280nMjDVyZn6FMJle5IPjOp1N9QIx6CinfZ65Qd6PMcbi
+         byqflm6bn5QDWjovDLcQ7O5O+LHn7adqERJScs2jkXIBRYcJ1Z9mo64meIxnn1n9QJEN
+         kNMw==
+X-Gm-Message-State: AGi0PuZJanwWvF+MCXSlL5HbH+48AXXF1N6o++tya44i6i8hXQVBmePW
+        3ZEwo8qgWg2ZVIqKTDUDukEu7XkKLBgU8rE/VNbG0BhzFHGFzS2U9hqUkuxGThAn7Bovd2HCF7F
+        OCLdOnQbHeiRIW4Pz
+X-Received: by 2002:a5d:4c87:: with SMTP id z7mr1417295wrs.39.1586208907583;
+        Mon, 06 Apr 2020 14:35:07 -0700 (PDT)
+X-Google-Smtp-Source: APiQypKcIiWn1HPwA+vMFpmabnpjQIkpeHu9tKG3iwnUgYRQLaqvdB7lSYnAh68ff+ai34FiHnYBKA==
+X-Received: by 2002:a5d:4c87:: with SMTP id z7mr1417269wrs.39.1586208907340;
+        Mon, 06 Apr 2020 14:35:07 -0700 (PDT)
 Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
-        by smtp.gmail.com with ESMTPSA id b85sm1103452wmb.21.2020.04.06.14.34.38
+        by smtp.gmail.com with ESMTPSA id u22sm1003113wmu.43.2020.04.06.14.35.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Apr 2020 14:34:38 -0700 (PDT)
-Date:   Mon, 6 Apr 2020 17:34:37 -0400
+        Mon, 06 Apr 2020 14:35:06 -0700 (PDT)
+Date:   Mon, 6 Apr 2020 17:35:04 -0400
 From:   "Michael S. Tsirkin" <mst@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH v4 06/12] vhost: force spec specified alignment on types
-Message-ID: <20200406210108.148131-7-mst@redhat.com>
-References: <20200406210108.148131-1-mst@redhat.com>
+Subject: [PATCH v5 06/12] vhost: force spec specified alignment on types
+Message-ID: <20200406213314.248038-7-mst@redhat.com>
+References: <20200406213314.248038-1-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200406210108.148131-1-mst@redhat.com>
+In-Reply-To: <20200406213314.248038-1-mst@redhat.com>
 X-Mailer: git-send-email 2.24.1.751.gd10ce2899c
 X-Mutt-Fcc: =sent
 Sender: netdev-owner@vger.kernel.org
