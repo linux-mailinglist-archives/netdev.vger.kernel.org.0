@@ -2,140 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC77719F406
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 13:01:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFCEE19F42E
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 13:10:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727354AbgDFLBo convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 6 Apr 2020 07:01:44 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:60770 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727003AbgDFLBo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 07:01:44 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.69 with qID 036B1KSr8017517, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexmb06.realtek.com.tw[172.21.6.99])
-        by rtits2.realtek.com.tw (8.15.2/2.66/5.86) with ESMTPS id 036B1KSr8017517
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 6 Apr 2020 19:01:20 +0800
-Received: from RTEXMB03.realtek.com.tw (172.21.6.96) by
- RTEXMB06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Mon, 6 Apr 2020 19:01:20 +0800
-Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
- RTEXMB03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Mon, 6 Apr 2020 19:01:20 +0800
-Received: from RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999]) by
- RTEXMB04.realtek.com.tw ([fe80::d9c5:a079:495e:b999%6]) with mapi id
- 15.01.1779.005; Mon, 6 Apr 2020 19:01:20 +0800
-From:   Tony Chuang <yhchuang@realtek.com>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-CC:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "open list:REALTEK WIRELESS DRIVER (rtw88)" 
-        <linux-wireless@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] rtw88: Add delay on polling h2c command status bit
-Thread-Topic: [PATCH] rtw88: Add delay on polling h2c command status bit
-Thread-Index: AQHWC/bdJYgYrtvTIE2p2Ip9l+r986hr7Eug
-Date:   Mon, 6 Apr 2020 11:01:20 +0000
-Message-ID: <3b815e889a934491bca23593a84532d7@realtek.com>
-References: <20200406093623.3980-1-kai.heng.feng@canonical.com>
-In-Reply-To: <20200406093623.3980-1-kai.heng.feng@canonical.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.68.175]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727322AbgDFLKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 07:10:17 -0400
+Received: from forward104p.mail.yandex.net ([77.88.28.107]:43565 "EHLO
+        forward104p.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727187AbgDFLKR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 07:10:17 -0400
+X-Greylist: delayed 376 seconds by postgrey-1.27 at vger.kernel.org; Mon, 06 Apr 2020 07:10:15 EDT
+Received: from mxback2g.mail.yandex.net (mxback2g.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b7:163])
+        by forward104p.mail.yandex.net (Yandex) with ESMTP id 2D1A14B01769;
+        Mon,  6 Apr 2020 14:03:58 +0300 (MSK)
+Received: from iva6-add863d6e49c.qloud-c.yandex.net (iva6-add863d6e49c.qloud-c.yandex.net [2a02:6b8:c0c:7ea0:0:640:add8:63d6])
+        by mxback2g.mail.yandex.net (mxback/Yandex) with ESMTP id 1lkKD5Qv5k-3taCEc9W;
+        Mon, 06 Apr 2020 14:03:58 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1586171038;
+        bh=MVbOdw9l4QGn3nnIO9erS76GIdiX/YjUcUkIYMD5UTg=;
+        h=Subject:To:From:Cc:Date:Message-Id;
+        b=bfzLdk4ExqJTfeP8CqC6jDSZSy5lO661rPA2yyCDjnZMShwp+rNaeaquL/r9csELL
+         3/vZ+zcrswugGBBiwKe5pdRTro0gPsZXB/qI0dTKtOmpbsKUiL4SbE9VwRqmIC4wCe
+         InbKcGer7B9aKeu93ZNjH2gDvGbj0RNlUX1bH0nA=
+Authentication-Results: mxback2g.mail.yandex.net; dkim=pass header.i=@yandex.ru
+Received: by iva6-add863d6e49c.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id 2f6WU2NpeW-3r287sqM;
+        Mon, 06 Apr 2020 14:03:55 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+From:   Alexander Lobakin <bloodyreaper@yandex.ru>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Mao Wenan <maowenan@huawei.com>,
+        Alexander Lobakin <bloodyreaper@yandex.ru>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH resend net-next] net: dsa: add GRO support via gro_cells
+Date:   Mon,  6 Apr 2020 14:03:18 +0300
+Message-Id: <20200406110318.33738-1-bloodyreaper@yandex.ru>
+X-Mailer: git-send-email 2.26.0
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: [PATCH] rtw88: Add delay on polling h2c command status bit
-> 
-> On some systems we can constanly see rtw88 complains:
-> [39584.721375] rtw_pci 0000:03:00.0: failed to send h2c command
-> 
-> Increase interval of each check to wait the status bit really changes.
-> 
-> While at it, add some helpers so we can use standarized
-> readx_poll_timeout() macro.
-> 
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
->  drivers/net/wireless/realtek/rtw88/fw.c  | 12 ++++++------
->  drivers/net/wireless/realtek/rtw88/hci.h |  4 ++++
->  2 files changed, 10 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtw88/fw.c
-> b/drivers/net/wireless/realtek/rtw88/fw.c
-> index 05c430b3489c..bc9982e77524 100644
-> --- a/drivers/net/wireless/realtek/rtw88/fw.c
-> +++ b/drivers/net/wireless/realtek/rtw88/fw.c
-> @@ -2,6 +2,8 @@
->  /* Copyright(c) 2018-2019  Realtek Corporation
->   */
-> 
-> +#include <linux/iopoll.h>
-> +
->  #include "main.h"
->  #include "coex.h"
->  #include "fw.h"
-> @@ -193,8 +195,8 @@ static void rtw_fw_send_h2c_command(struct
-> rtw_dev *rtwdev,
->  	u8 box;
->  	u8 box_state;
->  	u32 box_reg, box_ex_reg;
-> -	u32 h2c_wait;
->  	int idx;
-> +	int ret;
-> 
->  	rtw_dbg(rtwdev, RTW_DBG_FW,
->  		"send H2C content %02x%02x%02x%02x %02x%02x%02x%02x\n",
-> @@ -226,12 +228,10 @@ static void rtw_fw_send_h2c_command(struct
-> rtw_dev *rtwdev,
->  		goto out;
->  	}
-> 
-> -	h2c_wait = 20;
-> -	do {
-> -		box_state = rtw_read8(rtwdev, REG_HMETFR);
-> -	} while ((box_state >> box) & 0x1 && --h2c_wait > 0);
-> +	ret = readx_poll_timeout(rr8, REG_HMETFR, box_state,
-> +				 !((box_state >> box) & 0x1), 100, 3000);
-> 
-> -	if (!h2c_wait) {
-> +	if (ret) {
->  		rtw_err(rtwdev, "failed to send h2c command\n");
->  		goto out;
->  	}
-> diff --git a/drivers/net/wireless/realtek/rtw88/hci.h
-> b/drivers/net/wireless/realtek/rtw88/hci.h
-> index 2cba327e6218..24062c7079c6 100644
-> --- a/drivers/net/wireless/realtek/rtw88/hci.h
-> +++ b/drivers/net/wireless/realtek/rtw88/hci.h
-> @@ -253,6 +253,10 @@ rtw_write8_mask(struct rtw_dev *rtwdev, u32 addr,
-> u32 mask, u8 data)
->  	rtw_write8(rtwdev, addr, set);
->  }
-> 
-> +#define rr8(addr)      rtw_read8(rtwdev, addr)
-> +#define rr16(addr)     rtw_read16(rtwdev, addr)
-> +#define rr32(addr)     rtw_read32(rtwdev, addr)
-> +
->  static inline enum rtw_hci_type rtw_hci_type(struct rtw_dev *rtwdev)
->  {
->  	return rtwdev->hci.type;
-> --
+gro_cells lib is used by different encapsulating netdevices, such as
+geneve, macsec, vxlan etc. to speed up decapsulated traffic processing.
+CPU tag is a sort of "encapsulation", and we can use the same mechs to
+greatly improve overall DSA performance.
+skbs are passed to the GRO layer after removing CPU tags, so we don't
+need any new packet offload types as it was firstly proposed by me in
+the first GRO-over-DSA variant [1].
 
-I think the timeout is because the H2C is triggered when the lower 4 bytes are written.
-So, we probably should write h2c[4] ~ h2c[7] before h2c[0] ~ h2c[3].
+The size of struct gro_cells is sizeof(void *), so hot struct
+dsa_slave_priv becomes only 4/8 bytes bigger, and all critical fields
+remain in one 32-byte cacheline.
+The other positive side effect is that drivers for network devices
+that can be shipped as CPU ports of DSA-driven switches can now use
+napi_gro_frags() to pass skbs to kernel. Packets built that way are
+completely non-linear and are likely being dropped without GRO.
 
-But this delay still works, I think you can keep it, and reorder the h2c write sequence.
+This was tested on to-be-mainlined-soon Ethernet driver that uses
+napi_gro_frags(), and the overall performance was on par with the
+variant from [1], sometimes even better due to minimal overhead.
+net.core.gro_normal_batch tuning may help to push it to the limit
+on particular setups and platforms.
 
-Yen-Hsuan
+[1] https://lore.kernel.org/netdev/20191230143028.27313-1-alobakin@dlink.ru/
+
+Signed-off-by: Alexander Lobakin <bloodyreaper@yandex.ru>
+---
+ net/dsa/Kconfig    |  1 +
+ net/dsa/dsa.c      |  2 +-
+ net/dsa/dsa_priv.h |  3 +++
+ net/dsa/slave.c    | 10 +++++++++-
+ 4 files changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
+index 92663dcb3aa2..739613070d07 100644
+--- a/net/dsa/Kconfig
++++ b/net/dsa/Kconfig
+@@ -9,6 +9,7 @@ menuconfig NET_DSA
+ 	tristate "Distributed Switch Architecture"
+ 	depends on HAVE_NET_DSA
+ 	depends on BRIDGE || BRIDGE=n
++	select GRO_CELLS
+ 	select NET_SWITCHDEV
+ 	select PHYLINK
+ 	select NET_DEVLINK
+diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
+index ee2610c4d46a..0384a911779e 100644
+--- a/net/dsa/dsa.c
++++ b/net/dsa/dsa.c
+@@ -234,7 +234,7 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
+ 	if (dsa_skb_defer_rx_timestamp(p, skb))
+ 		return 0;
+ 
+-	netif_receive_skb(skb);
++	gro_cells_receive(&p->gcells, skb);
+ 
+ 	return 0;
+ }
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 904cc7c9b882..6d9a1ef65fa0 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -11,6 +11,7 @@
+ #include <linux/netdevice.h>
+ #include <linux/netpoll.h>
+ #include <net/dsa.h>
++#include <net/gro_cells.h>
+ 
+ enum {
+ 	DSA_NOTIFIER_AGEING_TIME,
+@@ -77,6 +78,8 @@ struct dsa_slave_priv {
+ 
+ 	struct pcpu_sw_netstats	*stats64;
+ 
++	struct gro_cells	gcells;
++
+ 	/* DSA port data, such as switch, port index, etc. */
+ 	struct dsa_port		*dp;
+ 
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 5390ff541658..36c7491e8e5f 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -1762,6 +1762,11 @@ int dsa_slave_create(struct dsa_port *port)
+ 		free_netdev(slave_dev);
+ 		return -ENOMEM;
+ 	}
++
++	ret = gro_cells_init(&p->gcells, slave_dev);
++	if (ret)
++		goto out_free;
++
+ 	p->dp = port;
+ 	INIT_LIST_HEAD(&p->mall_tc_list);
+ 	p->xmit = cpu_dp->tag_ops->xmit;
+@@ -1781,7 +1786,7 @@ int dsa_slave_create(struct dsa_port *port)
+ 	ret = dsa_slave_phy_setup(slave_dev);
+ 	if (ret) {
+ 		netdev_err(master, "error %d setting up slave phy\n", ret);
+-		goto out_free;
++		goto out_gcells;
+ 	}
+ 
+ 	dsa_slave_notify(slave_dev, DSA_PORT_REGISTER);
+@@ -1800,6 +1805,8 @@ int dsa_slave_create(struct dsa_port *port)
+ 	phylink_disconnect_phy(p->dp->pl);
+ 	rtnl_unlock();
+ 	phylink_destroy(p->dp->pl);
++out_gcells:
++	gro_cells_destroy(&p->gcells);
+ out_free:
+ 	free_percpu(p->stats64);
+ 	free_netdev(slave_dev);
+@@ -1820,6 +1827,7 @@ void dsa_slave_destroy(struct net_device *slave_dev)
+ 	dsa_slave_notify(slave_dev, DSA_PORT_UNREGISTER);
+ 	unregister_netdev(slave_dev);
+ 	phylink_destroy(dp->pl);
++	gro_cells_destroy(&p->gcells);
+ 	free_percpu(p->stats64);
+ 	free_netdev(slave_dev);
+ }
+-- 
+2.26.0
+
