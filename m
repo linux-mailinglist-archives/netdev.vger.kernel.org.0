@@ -2,122 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC42819F77B
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 16:03:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5472919F7A2
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 16:09:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728581AbgDFOD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 10:03:27 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:56283 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728512AbgDFOD1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 10:03:27 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1586181807; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=ddRHNrTYuHRZ9Qp05MVsdiWN86Gi1Yd/jbkzWd681IA=; b=UcSLmAMXe7IdJL9SLmJjE24+xB3UwwORB7jZuS6NfGtpgK5eY6eUdCtjbIM/IIB+E56hhKOx
- gv6R4kVsxw1SOzo9MU3DlvWwrfO1c/sTMVzO4ugDcu2xK4+CXBnQ1D99KSjW6KXTPRy9Rqj8
- OOfHfcA1khpMGdaSXqW7eYXRTU4=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e8b369a.7fc899cd3998-smtp-out-n02;
- Mon, 06 Apr 2020 14:03:06 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 50DCBC43636; Mon,  6 Apr 2020 14:03:05 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1728643AbgDFOJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 10:09:41 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:26271 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726436AbgDFOJk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 10:09:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1586182179;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Wl9a4vsMx6popLEQnps/1oTIMHKzOVah2HdwSj1HK4k=;
+        b=T7SyR2U7n4VBR9Bh2c9woIcfyTHUtAtFbAW97hOYzPisY8dtsUonr83TsEVbNEBt4H7zBX
+        +iXOnvqGaXcyuW297tsU71Miyzv+in//Fq4k6NaEYsrWyj8Rd5bp7AnAJK+odSE1mPbE1P
+        SQ6u8NKdbmp2wBKgkc2bHSkZatKH+KI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-506-20pdoNKkNzyFdMakHIAuLg-1; Mon, 06 Apr 2020 10:09:35 -0400
+X-MC-Unique: 20pdoNKkNzyFdMakHIAuLg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 0FBE0C433D2;
-        Mon,  6 Apr 2020 14:03:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 0FBE0C433D2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Tony Chuang <yhchuang@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "open list\:REALTEK WIRELESS DRIVER \(rtw88\)" 
-        <linux-wireless@vger.kernel.org>,
-        "open list\:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] rtw88: Add delay on polling h2c command status bit
-References: <20200406093623.3980-1-kai.heng.feng@canonical.com>
-        <87v9mczu4h.fsf@kamboji.qca.qualcomm.com>
-        <94EAAF7E-66C5-40E2-B6A9-0787CB13A3A9@canonical.com>
-        <87zhboycfr.fsf@kamboji.qca.qualcomm.com>
-        <83B3A3D8-833A-42BE-9EB0-59C95B349B01@canonical.com>
-Date:   Mon, 06 Apr 2020 17:03:00 +0300
-In-Reply-To: <83B3A3D8-833A-42BE-9EB0-59C95B349B01@canonical.com> (Kai-Heng
-        Feng's message of "Mon, 6 Apr 2020 21:35:29 +0800")
-Message-ID: <87k12syanf.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1DE5313F6;
+        Mon,  6 Apr 2020 14:09:34 +0000 (UTC)
+Received: from [10.72.12.191] (ovpn-12-191.pek2.redhat.com [10.72.12.191])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 115529D352;
+        Mon,  6 Apr 2020 14:09:28 +0000 (UTC)
+Subject: Re: [PATCH] vhost: force spec specified alignment on types
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+References: <20200406124931.120768-1-mst@redhat.com>
+ <045c84ed-151e-a850-9c72-5079bd2775e6@redhat.com>
+ <20200406095424-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <d171447e-eabc-60ab-6de7-41ac9b82d7d1@redhat.com>
+Date:   Mon, 6 Apr 2020 22:09:27 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20200406095424-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
 
->> On Apr 6, 2020, at 21:24, Kalle Valo <kvalo@codeaurora.org> wrote:
->> 
->> Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
->> 
->>>> On Apr 6, 2020, at 20:17, Kalle Valo <kvalo@codeaurora.org> wrote:
->>>> 
->>>> Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
->>>> 
->>>>> --- a/drivers/net/wireless/realtek/rtw88/hci.h
->>>>> +++ b/drivers/net/wireless/realtek/rtw88/hci.h
->>>>> @@ -253,6 +253,10 @@ rtw_write8_mask(struct rtw_dev *rtwdev, u32
->>>>> addr, u32 mask, u8 data)
->>>>> 	rtw_write8(rtwdev, addr, set);
->>>>> }
->>>>> 
->>>>> +#define rr8(addr)      rtw_read8(rtwdev, addr)
->>>>> +#define rr16(addr)     rtw_read16(rtwdev, addr)
->>>>> +#define rr32(addr)     rtw_read32(rtwdev, addr)
->>>> 
->>>> For me these macros reduce code readability, not improve anything. They
->>>> hide the use of rtwdev variable, which is evil, and a name like rr8() is
->>>> just way too vague. Please keep the original function names as is.
->>> 
->>> The inspiration is from another driver.
->>> readx_poll_timeout macro only takes one argument for the op.
->>> Some other drivers have their own poll_timeout implementation,
->>> and I guess it makes sense to make one specific for rtw88.
->> 
->> I'm not even understanding the problem you are tying to fix with these
->> macros. The upstream philosopyhy is to have the source code readable and
->> maintainable, not to use minimal number of characters. There's a reason
->> why we don't name our functions a(), b(), c() and so on.
+On 2020/4/6 =E4=B8=8B=E5=8D=889:55, Michael S. Tsirkin wrote:
+> On Mon, Apr 06, 2020 at 09:34:00PM +0800, Jason Wang wrote:
+>> On 2020/4/6 =E4=B8=8B=E5=8D=888:50, Michael S. Tsirkin wrote:
+>>> The ring element addresses are passed between components with differe=
+nt
+>>> alignments assumptions. Thus, if guest/userspace selects a pointer an=
+d
+>>> host then gets and dereferences it, we might need to decrease the
+>>> compiler-selected alignment to prevent compiler on the host from
+>>> assuming pointer is aligned.
+>>>
+>>> This actually triggers on ARM with -mabi=3Dapcs-gnu - which is a
+>>> deprecated configuration, but it seems safer to handle this
+>>> generally.
+>>>
+>>> I verified that the produced binary is exactly identical on x86.
+>>>
+>>> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+>>> ---
+>>>
+>>> This is my preferred way to handle the ARM incompatibility issues
+>>> (in preference to kconfig hacks).
+>>> I will push this into next now.
+>>> Comments?
+>>
+>> I'm not sure if it's too late to fix. It would still be still problema=
+tic
+>> for the userspace that is using old uapi headers?
+>>
+>> Thanks
+> It's not a problem in userspace. The problem is when
+> userspace/guest uses 2 byte alignment and passes it to kernel
+> assuming 8 byte alignment. The fix is for host not to
+> make these assumptions.
+
+
+Yes, but I meant when userspace is complied with apcs-gnu, then it still=20
+assumes 8 byte alignment?
+
+Thanks
+
+
 >
-> The current h2c polling doesn't have delay between each interval, so
-> the polling is too fast and the following logic considers it's a
-> timeout.
-> The readx_poll_timeout() macro provides a generic mechanism to setup
-> an interval delay and timeout which is what we need here.
-> However readx_poll_timeout only accepts one parameter which usually is
-> memory address, while we need to pass both rtwdev and address.
->
-> So if hiding rtwdev is evil, we can roll our own variant of
-> readx_poll_timeout() to make the polling readable.
+>>>    drivers/vhost/vhost.h            |  6 ++---
+>>>    include/uapi/linux/virtio_ring.h | 41 ++++++++++++++++++++++++----=
+----
+>>>    2 files changed, 34 insertions(+), 13 deletions(-)
+>>>
+>>> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+>>> index cc82918158d2..a67bda9792ec 100644
+>>> --- a/drivers/vhost/vhost.h
+>>> +++ b/drivers/vhost/vhost.h
+>>> @@ -74,9 +74,9 @@ struct vhost_virtqueue {
+>>>    	/* The actual ring of buffers. */
+>>>    	struct mutex mutex;
+>>>    	unsigned int num;
+>>> -	struct vring_desc __user *desc;
+>>> -	struct vring_avail __user *avail;
+>>> -	struct vring_used __user *used;
+>>> +	vring_desc_t __user *desc;
+>>> +	vring_avail_t __user *avail;
+>>> +	vring_used_t __user *used;
+>>>    	const struct vhost_iotlb_map *meta_iotlb[VHOST_NUM_ADDRS];
+>>>    	struct vhost_desc *descs;
+>>> diff --git a/include/uapi/linux/virtio_ring.h b/include/uapi/linux/vi=
+rtio_ring.h
+>>> index 559f42e73315..cd6e0b2eaf2f 100644
+>>> --- a/include/uapi/linux/virtio_ring.h
+>>> +++ b/include/uapi/linux/virtio_ring.h
+>>> @@ -118,16 +118,6 @@ struct vring_used {
+>>>    	struct vring_used_elem ring[];
+>>>    };
+>>> -struct vring {
+>>> -	unsigned int num;
+>>> -
+>>> -	struct vring_desc *desc;
+>>> -
+>>> -	struct vring_avail *avail;
+>>> -
+>>> -	struct vring_used *used;
+>>> -};
+>>> -
+>>>    /* Alignment requirements for vring elements.
+>>>     * When using pre-virtio 1.0 layout, these fall out naturally.
+>>>     */
+>>> @@ -164,6 +154,37 @@ struct vring {
+>>>    #define vring_used_event(vr) ((vr)->avail->ring[(vr)->num])
+>>>    #define vring_avail_event(vr) (*(__virtio16 *)&(vr)->used->ring[(v=
+r)->num])
+>>> +/*
+>>> + * The ring element addresses are passed between components with dif=
+ferent
+>>> + * alignments assumptions. Thus, we might need to decrease the compi=
+ler-selected
+>>> + * alignment, and so must use a typedef to make sure the __aligned a=
+ttribute
+>>> + * actually takes hold:
+>>> + *
+>>> + * https://gcc.gnu.org/onlinedocs//gcc/Common-Type-Attributes.html#C=
+ommon-Type-Attributes
+>>> + *
+>>> + * When used on a struct, or struct member, the aligned attribute ca=
+n only
+>>> + * increase the alignment; in order to decrease it, the packed attri=
+bute must
+>>> + * be specified as well. When used as part of a typedef, the aligned=
+ attribute
+>>> + * can both increase and decrease alignment, and specifying the pack=
+ed
+>>> + * attribute generates a warning.
+>>> + */
+>>> +typedef struct vring_desc __attribute__((aligned(VRING_DESC_ALIGN_SI=
+ZE)))
+>>> +	vring_desc_t;
+>>> +typedef struct vring_avail __attribute__((aligned(VRING_AVAIL_ALIGN_=
+SIZE)))
+>>> +	vring_avail_t;
+>>> +typedef struct vring_used __attribute__((aligned(VRING_USED_ALIGN_SI=
+ZE)))
+>>> +	vring_used_t;
+>>> +
+>>> +struct vring {
+>>> +	unsigned int num;
+>>> +
+>>> +	vring_desc_t *desc;
+>>> +
+>>> +	vring_avail_t *avail;
+>>> +
+>>> +	vring_used_t *used;
+>>> +};
+>>> +
+>>>    static inline void vring_init(struct vring *vr, unsigned int num, =
+void *p,
+>>>    			      unsigned long align)
+>>>    {
 
-Can't you do:
-
-ret = read_poll_timeout(rtw_read8, box_state,
-                        !((box_state >> box) & 0x1), 100,
-                        3000, false, rtw_dev, REG_HMETFR);
-
-No ugly macros needed and it should function the same. But I did not
-test this in any way, so no idea if it even compiles.
-
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
