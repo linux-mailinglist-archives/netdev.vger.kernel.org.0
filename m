@@ -2,96 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 288EB19F8E2
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 17:31:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABF9B19F8F2
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 17:35:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728935AbgDFPak (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 11:30:40 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:43913 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728777AbgDFPak (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 11:30:40 -0400
-Received: by mail-qt1-f193.google.com with SMTP id a5so13113390qtw.10;
-        Mon, 06 Apr 2020 08:30:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=9/Lib8Nq4WE3nzqxkLUu8jj6vOsH3bpD+SC3KKN41nc=;
-        b=pFCBH4F2G8fB7fwOgWqeggA8ElmT6bE/jQq4+FqBZ76KOjPAnwjx2gYjZq31SNxnlC
-         ZWmkgoeZ12YbyySRVw4EvfgBjdK3BQWFy1W01y5OzW14SCCasU9x4xzgDc1QHAgztanC
-         RRsneb/6MPVBFwmus96LGEZWNKSvikRIEwlaiD+5aJx5kE8ZxR/wkLxkRYYcLzwpWkVz
-         Htg9x6X7GIy5+Ja2ZHyo37kXYHSeyrGt5N9XaSf07KezhHK7OkAqgjYMsYrHm3dk03Xx
-         u0m1gcL4C9QqpfACjvRZLqPPWj+oYawwNlD3fFIdO/QL03ZLJdA5sWc1XEqZ1b28ECuj
-         bmjQ==
+        id S1729024AbgDFPfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 11:35:34 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:33345 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729018AbgDFPfe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 11:35:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1586187333;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WcD5bnL3oh20wTc9EOP7RiXfqynrk2ncKD+A08n84pk=;
+        b=OkyqIJhgD69StkGJoYglRh/Yrqy5cLDYzXA+wBWV7jMHLY1SYPKvwtVrPyDuwMvquvv7bU
+        lb7WrX0WrAWNm4XQaUUgK4crxWvPhm+E+iSD+f518sukAgir5l/ED6Og64pbBTQEM/a5wi
+        8+w78SxvdR1B2InK2F7EtViZwoY0ank=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-45-Awgj0WJDMwKRE4_Qwpkc9A-1; Mon, 06 Apr 2020 11:35:30 -0400
+X-MC-Unique: Awgj0WJDMwKRE4_Qwpkc9A-1
+Received: by mail-wm1-f69.google.com with SMTP id y1so5053045wmj.3
+        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 08:35:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=9/Lib8Nq4WE3nzqxkLUu8jj6vOsH3bpD+SC3KKN41nc=;
-        b=SaA+cBrKf7TjG/yYpznDFeKtes0KwV5GnyzRRk/2dEgDAsmc4VXxKNldT2LvJxIR9+
-         nF+alQ7WPeBZEfDI9ojBxLOXgc3FkksUVs/0o4w5Ef2X5eqM21zUngi+XkhMgNIZS3EL
-         gA6/2GfPnMpSgzfor6JMRjio7PG12/DngWG+GOshumMjQlzWngwc1osHYzCoUmvWnUSM
-         8lc2oriUyCfGaWdt86SYhH42yqvkwDP0qfbz5ak05ei63m8NkwnPAbc5Yt+h53M5A3PD
-         7Pzhw8w4d6HAaMqtaDnSn2p0jgBfQNWYH1BDjHS2IhxaT9zh3Zws059Sd3neAwITqq8h
-         aPHA==
-X-Gm-Message-State: AGi0PuZk43ITmVojlXPLLIiNMFn7Y3lw+A9GZR97TjsQpysVL+RDo9Hk
-        3j+NbCWceHwfK8F/Ddj6Wts=
-X-Google-Smtp-Source: APiQypJEA17uSHU7j8QjRM33A4/KndAa3GCr50fugSNB45LZ2dRFE57vuQ3xsDxXQ3pdaJFiQ933RQ==
-X-Received: by 2002:ac8:6686:: with SMTP id d6mr21391251qtp.149.1586187037912;
-        Mon, 06 Apr 2020 08:30:37 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id j15sm14752351qtr.40.2020.04.06.08.30.36
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WcD5bnL3oh20wTc9EOP7RiXfqynrk2ncKD+A08n84pk=;
+        b=pNpAD4Qo+jG01lJJZJ2Fomo0KsHAtN0oXCLXJWyyJoILm2U9FB+T/w6ynmYWKUD9XZ
+         Yg/GbH9LNxovaSV8jnj9dDyGbq1Thbni8S9lyOHVuEL+PyPjyqvrB7futh5VZEFb3m+V
+         m8xECBewpOrwAIkEDHJhPIqfmC4J3k8ohDxFFgpvdVQ2g+jLG9H7ir18CyzOrk3yiVuE
+         97mtlDRz0aZzyujzcJMz4HQ7tOE/1yKyPiU9wZgtp09yKoixjhZXVXTPGEHc2zJzJ8cY
+         0rLv6mOfY2ieWCfo7jfrJqdYDI/K9xYooFMdC8vnZdcYFiElTHF6nzustLLCZfrRi5Lx
+         2flg==
+X-Gm-Message-State: AGi0PuYHlc/bgPDJ7GWCCnASQ35cqhUzzMVn9kdgT3wWGt3LArWzll83
+        3gPGdXbzZKoTVSXddug019By0NY0hw87VIw49W5fJ+XwE/Ww5mdv14pfhhD61UspwMONEW9nDtQ
+        kGyoc/AXk/BmOm7ZO
+X-Received: by 2002:a7b:c24a:: with SMTP id b10mr235147wmj.61.1586187328645;
+        Mon, 06 Apr 2020 08:35:28 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJviLbcieugAjPGOVBq05eDNBi87y+oZCK+mJ9GTEVcTRtTrZXiXSxdhRpJLHpez1P5uNEa6Q==
+X-Received: by 2002:a7b:c24a:: with SMTP id b10mr235126wmj.61.1586187328352;
+        Mon, 06 Apr 2020 08:35:28 -0700 (PDT)
+Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
+        by smtp.gmail.com with ESMTPSA id d6sm27113086wrw.10.2020.04.06.08.35.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Apr 2020 08:30:37 -0700 (PDT)
-Date:   Mon, 6 Apr 2020 11:30:35 -0400
-Message-ID: <20200406113035.GB510003@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] net: dsa: bcm_sf2: Do not register slave MDIO bus
- with OF
-In-Reply-To: <20200404213517.12783-1-f.fainelli@gmail.com>
-References: <20200404213517.12783-1-f.fainelli@gmail.com>
+        Mon, 06 Apr 2020 08:35:27 -0700 (PDT)
+Date:   Mon, 6 Apr 2020 11:35:26 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH v2 2/2] vhost: force spec specified alignment on types
+Message-ID: <20200406153245.127680-3-mst@redhat.com>
+References: <20200406153245.127680-1-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200406153245.127680-1-mst@redhat.com>
+X-Mailer: git-send-email 2.24.1.751.gd10ce2899c
+X-Mutt-Fcc: =sent
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat,  4 Apr 2020 14:35:17 -0700, Florian Fainelli <f.fainelli@gmail.com> wrote:
-> We were registering our slave MDIO bus with OF and doing so with
-> assigning the newly created slave_mii_bus of_node to the master MDIO bus
-> controller node. This is a bad thing to do for a number of reasons:
-> 
-> - we are completely lying about the slave MII bus is arranged and yet we
->   still want to control which MDIO devices it probes. It was attempted
->   before to play tricks with the bus_mask to perform that:
->   https://www.spinics.net/lists/netdev/msg429420.html but the approach
->   was rightfully rejected
-> 
-> - the device_node reference counting is messed up and we are effectively
->   doing a double probe on the devices we already probed using the
->   master, this messes up all resources reference counts (such as clocks)
-> 
-> The proper fix for this as indicated by David in his reply to the
-> thread above is to use a platform data style registration so as to
-> control exactly which devices we probe:
-> https://www.spinics.net/lists/netdev/msg430083.html
-> 
-> By using mdiobus_register(), our slave_mii_bus->phy_mask value is used
-> as intended, and all the PHY addresses that must be redirected towards
-> our slave MDIO bus is happening while other addresses get redirected
-> towards the master MDIO bus.
-> 
-> Fixes: 461cd1b03e32 ("net: dsa: bcm_sf2: Register our slave MDIO bus")
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+The ring element addresses are passed between components with different
+alignments assumptions. Thus, if guest/userspace selects a pointer and
+host then gets and dereferences it, we might need to decrease the
+compiler-selected alignment to prevent compiler on the host from
+assuming pointer is aligned.
 
-Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
+This actually triggers on ARM with -mabi=apcs-gnu - which is a
+deprecated configuration, but it seems safer to handle this
+generally.
+
+I verified that the produced binary is exactly identical on x86.
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ drivers/vhost/vhost.h       |  6 +++---
+ include/linux/virtio_ring.h | 24 +++++++++++++++++++++---
+ 2 files changed, 24 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+index cc82918158d2..a67bda9792ec 100644
+--- a/drivers/vhost/vhost.h
++++ b/drivers/vhost/vhost.h
+@@ -74,9 +74,9 @@ struct vhost_virtqueue {
+ 	/* The actual ring of buffers. */
+ 	struct mutex mutex;
+ 	unsigned int num;
+-	struct vring_desc __user *desc;
+-	struct vring_avail __user *avail;
+-	struct vring_used __user *used;
++	vring_desc_t __user *desc;
++	vring_avail_t __user *avail;
++	vring_used_t __user *used;
+ 	const struct vhost_iotlb_map *meta_iotlb[VHOST_NUM_ADDRS];
+ 
+ 	struct vhost_desc *descs;
+diff --git a/include/linux/virtio_ring.h b/include/linux/virtio_ring.h
+index 09fc6164b523..efcb9fde1dbf 100644
+--- a/include/linux/virtio_ring.h
++++ b/include/linux/virtio_ring.h
+@@ -113,14 +113,32 @@ void vring_transport_features(struct virtio_device *vdev);
+ 
+ irqreturn_t vring_interrupt(int irq, void *_vq);
+ 
++/*
++ * The ring element addresses are passed between components with different
++ * alignments assumptions. Thus, we might need to decrease the compiler-selected
++ * alignment, and so must use a typedef to make sure the __aligned attribute
++ * actually takes hold:
++ *
++ * https://gcc.gnu.org/onlinedocs//gcc/Common-Type-Attributes.html#Common-Type-Attributes
++ *
++ * When used on a struct, or struct member, the aligned attribute can only
++ * increase the alignment; in order to decrease it, the packed attribute must
++ * be specified as well. When used as part of a typedef, the aligned attribute
++ * can both increase and decrease alignment, and specifying the packed
++ * attribute generates a warning.
++ */
++typedef struct vring_desc __aligned(VRING_DESC_ALIGN_SIZE) vring_desc_t;
++typedef struct vring_avail __aligned(VRING_AVAIL_ALIGN_SIZE) vring_avail_t;
++typedef struct vring_used __aligned(VRING_USED_ALIGN_SIZE) vring_used_t;
++
+ struct vring_s {
+ 	unsigned int num;
+ 
+-	struct vring_desc *desc;
++	vring_desc_t *desc;
+ 
+-	struct vring_avail *avail;
++	vring_avail_t *avail;
+ 
+-	struct vring_used *used;
++	vring_used_t *used;
+ };
+ 
+ static inline void vring_legacy_init(struct vring_s *vr, unsigned int num, void *p,
+-- 
+MST
+
