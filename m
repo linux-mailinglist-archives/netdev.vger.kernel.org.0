@@ -2,108 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5770919F69A
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 15:15:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7D8419F6BB
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 15:18:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728301AbgDFNPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 09:15:39 -0400
-Received: from mout.kundenserver.de ([212.227.17.13]:38139 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728193AbgDFNPj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 09:15:39 -0400
-Received: from mail-qt1-f177.google.com ([209.85.160.177]) by
- mrelayeu.kundenserver.de (mreue108 [212.227.15.145]) with ESMTPSA (Nemesis)
- id 1MQ5jC-1jhWor11UG-00M5t0; Mon, 06 Apr 2020 15:15:37 +0200
-Received: by mail-qt1-f177.google.com with SMTP id z12so12722257qtq.5;
-        Mon, 06 Apr 2020 06:15:36 -0700 (PDT)
-X-Gm-Message-State: AGi0Pua2eAG1q45ORCf6QKN97fvEUVaM7Wev7gS2YJmZ0T9alRSZaIZi
-        R4JJNha7ZUvzZ/aX35KjJt1OgusXw2ULcuV+tLs=
-X-Google-Smtp-Source: APiQypLa5L7CKwlGZNhn/7xAjUoLc+7MSyvfCvi3f7raJ3Pm4QCoa8xTD4iijCH0Ufx8gGRQ4K6mPgVfCzePn/2MrKM=
-X-Received: by 2002:ac8:12c2:: with SMTP id b2mr379999qtj.7.1586178935967;
- Mon, 06 Apr 2020 06:15:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200406121233.109889-1-mst@redhat.com> <20200406121233.109889-3-mst@redhat.com>
- <CAK8P3a1nce31itwMKbmXoNZh-Y68m3GX_WwzNiaBuk280VFh-Q@mail.gmail.com> <20200406085707-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20200406085707-mutt-send-email-mst@kernel.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 6 Apr 2020 15:15:20 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1=-rhiMyAh6=6EwhxSmNnYaXR9NWhh+ZGh4Hh=U_gEuA@mail.gmail.com>
-Message-ID: <CAK8P3a1=-rhiMyAh6=6EwhxSmNnYaXR9NWhh+ZGh4Hh=U_gEuA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] vhost: disable for OABI
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        "richard.henderson@linaro.org" <richard.henderson@linaro.org>,
-        "christophe.lyon@st.com" <christophe.lyon@st.com>,
-        kbuild test robot <lkp@intel.com>,
-        "daniel.santos@pobox.com" <daniel.santos@pobox.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Richard Earnshaw <Richard.Earnshaw@arm.com>,
-        Sudeep Dutt <sudeep.dutt@intel.com>,
-        Ashutosh Dixit <ashutosh.dixit@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        id S1728482AbgDFNS1 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 6 Apr 2020 09:18:27 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:33489 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728219AbgDFNS1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 09:18:27 -0400
+Received: from mail-pl1-f197.google.com ([209.85.214.197])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <kai.heng.feng@canonical.com>)
+        id 1jLRdx-0000wJ-3W
+        for netdev@vger.kernel.org; Mon, 06 Apr 2020 13:18:25 +0000
+Received: by mail-pl1-f197.google.com with SMTP id k12so10969831pls.23
+        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 06:18:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=yfh8auMdoRigiRys04NLUbX84A9moSV9U1pPae/atro=;
+        b=prl8qFagriW4xVyExPjuun8R3UX+BKlC+UVjPsRFCjeMflscs8jYXX2G7ZHHizfUah
+         nmCJxRh//EBbIkjJ24xPW9VQqNuTTGa10hMuOBFUKkaf3EAZ0xVx4mw4e2He7Zx8b7b4
+         B38rA7Qd1IY15o6BxVnWtgbxy9GAiSzzR4T8ug1/YNKu5/5G6A1jEEb+AMaCI//+JGG+
+         eLrSljAyCBQ81F34/VIaH/DuNvUJR8m//pqQdXfRpJRfB68JpqnaGBHUoHTK+tze8v46
+         gK39FiPySIGsSCco/VVPtv5GyfbbOanyX4SyYObSFFQJIVQva9GApjQhqdUZH80NV5aw
+         zmBQ==
+X-Gm-Message-State: AGi0PuYV0KeJP5Q6VOxQ22RNcg4CNeEjzhD5o/NRAgrlGYxRVsQ9TAgZ
+        POT7FbZmDBa+iJIRCRaFtS41FPFQmT/bZARJ8FdlsOpw8BnL382sehc5+nliQL0LH1qoRQB4HU7
+        KOuw7Qf5lBw57YzV8gKHeipwTX4oF4BrFVw==
+X-Received: by 2002:a63:e558:: with SMTP id z24mr20646321pgj.368.1586179103758;
+        Mon, 06 Apr 2020 06:18:23 -0700 (PDT)
+X-Google-Smtp-Source: APiQypIRNNfP69Byee6DnP3oE8819ZQmmW1WafsLeF6MlX6NhlFtF3wCeXFKCIqmcsiELvOx6719nA==
+X-Received: by 2002:a63:e558:: with SMTP id z24mr20646297pgj.368.1586179103368;
+        Mon, 06 Apr 2020 06:18:23 -0700 (PDT)
+Received: from [192.168.1.208] (220-133-187-190.HINET-IP.hinet.net. [220.133.187.190])
+        by smtp.gmail.com with ESMTPSA id 135sm11948080pfu.207.2020.04.06.06.18.21
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 06 Apr 2020 06:18:22 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [PATCH] rtw88: Add delay on polling h2c command status bit
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+In-Reply-To: <87v9mczu4h.fsf@kamboji.qca.qualcomm.com>
+Date:   Mon, 6 Apr 2020 21:18:20 +0800
+Cc:     Tony Chuang <yhchuang@realtek.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        kvm list <kvm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:eOGOvwDewauxKWRDEnPVWf5EDRque1mRx2tHK0CCdFO0/T32fwP
- jQxBIk34uZzQ7k0wZY9g7R6UAVBvVBoNL+NRz4LOpAzBJW2wCckUPV7qamp0ue6eB0pUspg
- 3UXQ6e6bHEE2DxDKEs0sO3N+fBI6+DSdtvT41xtgUjlDuUz7CVo2Z/Pae6+0WHakBg7Ogfl
- e8IT7NxxG1cWjOQfuzsbg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:gaqzuPgItbY=:jaYoCVrNlG+E/xXN6wtuV9
- Rgr9tN6wO1eoGvuqdCKp6NpLQZ2+EGfqLrCAMueSpYtXG1wN1SFECQjyRnMKmGNTfwnYgf3KU
- iBhD+x8zSHx0TcWMWI5RC0S3zlMAsm+IVkBYVm+tiS+wSomaLyLUDQIH91Cp3+WTGlOfL1zQG
- fOJKCYEPgK/tMLMpDUlgzR7Cs32AqVHgc16H2YxRwLXfpVCjnvDqOqZ4dLyEAqtN9tCJg/b/R
- p9pMzwhNhS1bU29LJl7FGn4xYmzb+dnibbtVHWXPNev5nEyB3ns8Mh4cLXnqH0AWSI+ACp5zC
- HmImnZQ66T+arEi2xTygH3/hcf4o+dv3fXphtmfZ/1l6S+CUAHsAPYnWxmv7N57l34iYJ/sT8
- SJG0gdCUXTugCcxdBAZ3Cdc3tuE1mPcjybDUJywymi43O6oz47itN1Nzwzlr1h15CeNuBvyu2
- +jflbl4ytueSdoSRseYrKjZK8EPVX/0uF6gaj2tVGUMHGXhJ3PDdIzDlVim0d/99swoocQTln
- Ai9/gxkHFiykCyFZ9q/uAfojsm+MjOQvjzAMpbHuqoJllpXfME0xd1tWym54uHXRXx9TTFFI9
- wBrys2OmuEeOQapioghOCg+P5ffo0CNsHC7Fe+8pLYuy8PeHhVLwfuGLssYjDErmrNnJakEk8
- x+0JptYnpqteN3hhi3raMJ0hRy4/m3bMrSXL0LbBYQoGjYzW4PD3HiU9Yk4buGOOrxYWYJB0N
- XznDa0FlrlCxswh88MnolbyPhqWwQfMbJZr5izyFqHBBc6bAJ0jHpNMfISjcGS1D/2rYZN0xt
- 3ULwwPOas6WUlQX4L2JTF3llMtlf6dAxkxYvlq1Hj59slx4Lis=
+        "open list:REALTEK WIRELESS DRIVER (rtw88)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <94EAAF7E-66C5-40E2-B6A9-0787CB13A3A9@canonical.com>
+References: <20200406093623.3980-1-kai.heng.feng@canonical.com>
+ <87v9mczu4h.fsf@kamboji.qca.qualcomm.com>
+To:     Kalle Valo <kvalo@codeaurora.org>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 6, 2020 at 3:02 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Mon, Apr 06, 2020 at 02:50:32PM +0200, Arnd Bergmann wrote:
-> > On Mon, Apr 6, 2020 at 2:12 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > >
-> > > +config VHOST_DPN
-> > > +       bool "VHOST dependencies"
-> > > +       depends on !ARM || AEABI
-> > > +       default y
-> > > +       help
-> > > +         Anything selecting VHOST or VHOST_RING must depend on VHOST_DPN.
-> > > +         This excludes the deprecated ARM ABI since that forces a 4 byte
-> > > +         alignment on all structs - incompatible with virtio spec requirements.
-> > > +
-> >
-> > This should not be a user-visible option, so just make this 'def_bool
-> > !ARM || AEABI'
-> >
->
-> I like keeping some kind of hint around for when one tries to understand
-> why is a specific symbol visible.
 
-I meant you should remove the "VHOST dependencies" prompt, not the
-help text, which is certainly useful here. You can also use the three lines
 
-     bool
-     depends on !ARM || AEABI
-     default y
+> On Apr 6, 2020, at 20:17, Kalle Valo <kvalo@codeaurora.org> wrote:
+> 
+> Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
+> 
+>> On some systems we can constanly see rtw88 complains:
+>> [39584.721375] rtw_pci 0000:03:00.0: failed to send h2c command
+>> 
+>> Increase interval of each check to wait the status bit really changes.
+>> 
+>> While at it, add some helpers so we can use standarized
+>> readx_poll_timeout() macro.
+> 
+> One logical change per patch, please.
 
-in front of the help text, but those are equivalent to the one-line version
-I suggested.
+Will split it into two separate patches.
 
-     Arnd
+> 
+>> --- a/drivers/net/wireless/realtek/rtw88/hci.h
+>> +++ b/drivers/net/wireless/realtek/rtw88/hci.h
+>> @@ -253,6 +253,10 @@ rtw_write8_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u8 data)
+>> 	rtw_write8(rtwdev, addr, set);
+>> }
+>> 
+>> +#define rr8(addr)      rtw_read8(rtwdev, addr)
+>> +#define rr16(addr)     rtw_read16(rtwdev, addr)
+>> +#define rr32(addr)     rtw_read32(rtwdev, addr)
+> 
+> For me these macros reduce code readability, not improve anything. They
+> hide the use of rtwdev variable, which is evil, and a name like rr8() is
+> just way too vague. Please keep the original function names as is.
+
+The inspiration is from another driver.
+readx_poll_timeout macro only takes one argument for the op.
+Some other drivers have their own poll_timeout implementation,
+and I guess it makes sense to make one specific for rtw88.
+
+Kai-Heng
+
+> 
+> -- 
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
