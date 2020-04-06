@@ -2,81 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB6D519F7D1
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 16:22:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC68119F7E6
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 16:26:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728637AbgDFOWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 10:22:25 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:12839 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728334AbgDFOWZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 10:22:25 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1586182944; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=2Vn7X1cSpiflRFN1VreX4R0Trwz919PTZIn7s9PwGt0=;
- b=ADGM7KyII0yoAwp+DbwGAqKRb2rUjeB//k8tww9BGM0UmngDVnHKdozjSZ4HSZd4+cVWYPU1
- n2Ui9xn9YeaDwIjTpzTjO1JG8NFrocGGWVsgi+Gri/QPCMGs2zpiD5pSs4TW6s973LhTb1xo
- fxlnkwBgx7/TXKAg8P2tZmZjBMc=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e8b3b0f.7f31281d6618-smtp-out-n03;
- Mon, 06 Apr 2020 14:22:07 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id CB6BFC43636; Mon,  6 Apr 2020 14:22:07 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 206BBC433F2;
-        Mon,  6 Apr 2020 14:22:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 206BBC433F2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1728692AbgDFOZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 10:25:54 -0400
+Received: from mail-yb1-f193.google.com ([209.85.219.193]:45172 "EHLO
+        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728566AbgDFOZx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 10:25:53 -0400
+Received: by mail-yb1-f193.google.com with SMTP id g6so8837475ybh.12;
+        Mon, 06 Apr 2020 07:25:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=A1e6rv+wa9eMFQC7jl+vmCrZCOWGenHHnzuo3smwjuw=;
+        b=tE9vpyVS7KlbS7n5s7IQvB+c8+LYwC1qwApksX7SlkwAIoNxUW8T542xoB/Iz77Efg
+         TnI8nzo3yF4j2Tlr0DVvLCO39JTT7RZO0i2BTbkiib6KPaPfQAvobhpVVjJTXggs9ylO
+         ilurunlvBz3i3FLC2VeyWrdcLUPyEmbwIN6Df/gCSqNe6ZQ2tRxhjeuZrLNhCDvT6di/
+         X6+BhfjChoD0b9wLwjkJ7KMUfXBmacHEb9kfOJk2mfLPDlc/Nm+kPKT/eFjaGqobidKJ
+         x2Fk7ZuMin1PnESrAM+751F6i6zqvmZbCoBL0qgrON/T1R2jCk3sS3cXJioktroJGPak
+         9xkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=A1e6rv+wa9eMFQC7jl+vmCrZCOWGenHHnzuo3smwjuw=;
+        b=C6WpP4kbHkudzQjQVw2UpVVDsjzQsdVNtiBIqDV4tOh0gSFnCYLr7AgIw5cf4522fN
+         MP10euBPCmBNxzhxN103Ax8maSl5kISkikeJfSLUA7wxu/GEbTxTMR0E6w4sJcdFyHge
+         kKb2660IY4hJtgc7pNsfKflnBg2eV2kT7oHOwK9m2uxhSZuEW7PKogHXRsI0l0Wxeb5e
+         DRZmTqlwYPNjkVTQzUlM4tIE86DWj82mIE5bo6J5wmCmNeHsUMQi4ueVk5qSwKCg15a3
+         j/NbJLyJWA6W6pnua0UhJL7OKWJVhZttTgBLxNB1eu8u9p0riRMtgzdrFCbDKjP2W9vV
+         4Bmg==
+X-Gm-Message-State: AGi0Pua+EBMT5+RQ/mMS7bK1cRs3MnnPfPv7tKTBOn0Q+xo1dKQrLsUI
+        zjvu6rUYVQ+VXNN7GmiMzwZAoO7ZXjbhwWGBf94=
+X-Google-Smtp-Source: APiQypJdiJtl3+v04phKnoeqU7IKBw3R90X2oZ43U9OsiUnAuIQhErWZlpW/iqHtlo6P1LOEfMwcR/gv9WKreiRmt0U=
+X-Received: by 2002:a25:da48:: with SMTP id n69mr35790780ybf.370.1586183152074;
+ Mon, 06 Apr 2020 07:25:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath11k: fix compiler warnings without CONFIG_THERMAL
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200403083414.31392-1-yuehaibing@huawei.com>
-References: <20200403083414.31392-1-yuehaibing@huawei.com>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     <davem@davemloft.net>, <pradeepc@codeaurora.org>,
-        <ath11k@lists.infradead.org>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20200406142207.CB6BFC43636@smtp.codeaurora.org>
-Date:   Mon,  6 Apr 2020 14:22:07 +0000 (UTC)
+References: <1586175677-3061-1-git-send-email-sumit.garg@linaro.org>
+ <87ftdgokao.fsf@tynnyri.adurom.net> <1e352e2130e19aec5aa5fc42db397ad50bb4ad05.camel@sipsolutions.net>
+ <87r1x0zsgk.fsf@kamboji.qca.qualcomm.com> <a7e3e8cceff1301f5de5fb2c9aac62b372922b3e.camel@sipsolutions.net>
+ <87imiczrwm.fsf@kamboji.qca.qualcomm.com> <ee168acb768d87776db2be4e978616f9187908d0.camel@sipsolutions.net>
+ <CAFA6WYOjU_iDyAn5PMGe=usg-2sPtupSQEYwcomUcHZBAPnURA@mail.gmail.com>
+ <87v9mcycbf.fsf@kamboji.qca.qualcomm.com> <CABPxzYKs3nj0AUX4L-j87Db8v3WnM4uGif9nRTGgx1m2HNN8Rg@mail.gmail.com>
+ <35cadbaff1239378c955014f9ad491bc68dda028.camel@sipsolutions.net>
+In-Reply-To: <35cadbaff1239378c955014f9ad491bc68dda028.camel@sipsolutions.net>
+From:   Krishna Chaitanya <chaitanya.mgit@gmail.com>
+Date:   Mon, 6 Apr 2020 19:55:40 +0530
+Message-ID: <CABPxzY++YMBPTV4quAkYvEAMfULjMXLkVfNzwocwubno5HO2Bw@mail.gmail.com>
+Subject: Re: [PATCH] mac80211: fix race in ieee80211_register_hw()
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Matthias=2DPeter_Sch=C3=B6pfer?= 
+        <matthias.schoepfer@ithinx.io>,
+        "Berg Philipp (HAU-EDS)" <Philipp.Berg@liebherr.com>,
+        "Weitner Michael (HAU-EDS)" <Michael.Weitner@liebherr.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Loic Poulain <loic.poulain@linaro.org>, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-YueHaibing <yuehaibing@huawei.com> wrote:
-
-> drivers/net/wireless/ath/ath11k/thermal.h:45:1:
->  warning: no return statement in function returning non-void [-Wreturn-type]
-> drivers/net/wireless/ath/ath11k/core.c:416:28: error:
->  passing argument 1 of 'ath11k_thermal_unregister' from incompatible pointer type [-Werror=incompatible-pointer-types]
-> 
-> Add missing return 0 in ath11k_thermal_set_throttling,
-> and fix ath11k_thermal_unregister param type.
-> 
-> Fixes: 2a63bbca06b2 ("ath11k: add thermal cooling device support")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-
-Patch applied to wireless-drivers.git, thanks.
-
-c9be1a642a7b ath11k: fix compiler warnings without CONFIG_THERMAL
-
--- 
-https://patchwork.kernel.org/patch/11472105/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+On Mon, Apr 6, 2020 at 7:31 PM Johannes Berg <johannes@sipsolutions.net> wrote:
+>
+> On Mon, 2020-04-06 at 19:25 +0530, Krishna Chaitanya wrote:
+> > On Mon, Apr 6, 2020 at 6:57 PM Kalle Valo <kvalo@codeaurora.org> wrote:
+> > > Sumit Garg <sumit.garg@linaro.org> writes:
+> > >
+> > > > On Mon, 6 Apr 2020 at 18:38, Johannes Berg <johannes@sipsolutions.net> wrote:
+> > > > > On Mon, 2020-04-06 at 16:04 +0300, Kalle Valo wrote:
+> > > > > > Johannes Berg <johannes@sipsolutions.net> writes:
+> > > > > >
+> > > > > > > On Mon, 2020-04-06 at 15:52 +0300, Kalle Valo wrote:
+> > > > > > > > Johannes Berg <johannes@sipsolutions.net> writes:
+> > > > > > > >
+> > > > > > > > > On Mon, 2020-04-06 at 15:44 +0300, Kalle Valo wrote:
+> > > > > > > > > > >     user-space  ieee80211_register_hw()  RX IRQ
+> > > > > > > > > > >     +++++++++++++++++++++++++++++++++++++++++++++
+> > > > > > > > > > >        |                    |             |
+> > > > > > > > > > >        |<---wlan0---wiphy_register()      |
+> > > > > > > > > > >        |----start wlan0---->|             |
+> > > > > > > > > > >        |                    |<---IRQ---(RX packet)
+> > > > > > > > > > >        |              Kernel crash        |
+> > > > > > > > > > >        |              due to unallocated  |
+> > > > > > > > > > >        |              workqueue.          |
+> > > > > > > > >
+> > > > > > > > > [snip]
+> > > > > > > > >
+> > > > > > > > > > I have understood that no frames should be received until mac80211 calls
+> > > > > > > > > > struct ieee80211_ops::start:
+> > > > > > > > > >
+> > > > > > > > > >  * @start: Called before the first netdevice attached to the hardware
+> > > > > > > > > >  *         is enabled. This should turn on the hardware and must turn on
+> > > > > > > > > >  *         frame reception (for possibly enabled monitor interfaces.)
+> > > > > > > > >
+> > > > > > > > > True, but I think he's saying that you can actually add and configure an
+> > > > > > > > > interface as soon as the wiphy is registered?
+> > > > > > > >
+> > > > > > > > With '<---IRQ---(RX packet)' I assumed wcn36xx is delivering a frame to
+> > > > > > > > mac80211 using ieee80211_rx(), but of course I'm just guessing here.
+> > > > > > >
+> > > > > > > Yeah, but that could be legitimate?
+> > > > > >
+> > > > > > Ah, I misunderstood then. The way I have understood is that no rx frames
+> > > > > > should be delivered (= calling ieee80211_rx()_ before start() is called,
+> > > > > > but if that's not the case please ignore me :)
+> > > > >
+> > > > > No no, that _is_ the case. But I think the "start wlan0" could end up
+> > > > > calling it?
+>
+> > I am still confused, without ieee80211_if_add how can the userspace
+> > bring up the interface?
+>
+> It can add its own interface. Maybe that won't be 'wlan0' but something
+> else?
+>
+> like
+>
+> iw phy0 interface add wlan0 type station
+> ip link set wlan0 up
+Ah okay, got it, thanks. Very narrow window though :-) as the
+alloc_ordered_workqueue
+doesn't need RTNL and there is a long way to go to do if_add() from
+user and setup
+the driver for interrupts. Again depends on the driver though, it
+should properly handle
+pending ieee80211_register_hw() with start().
