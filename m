@@ -2,95 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 16DA019F079
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 08:54:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4224F19F095
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 09:06:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726530AbgDFGxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 02:53:52 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:37849 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726495AbgDFGxw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 02:53:52 -0400
-Received: by mail-wm1-f66.google.com with SMTP id j19so14556881wmi.2
-        for <netdev@vger.kernel.org>; Sun, 05 Apr 2020 23:53:50 -0700 (PDT)
+        id S1726589AbgDFHG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 03:06:26 -0400
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:35848 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726486AbgDFHGZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 03:06:25 -0400
+Received: by mail-pj1-f68.google.com with SMTP id nu11so6064516pjb.1;
+        Mon, 06 Apr 2020 00:06:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=vdHwawrg2goF/xDkxCClW5/26st3fBn8hf31j+8q+80=;
-        b=L5a2x2EjfC+MgLzz27jW8wF9vUHG2Wy3ZgiF0nRzmg6Ql350EeqDmebY5efPudaosk
-         mxFMPWQriqhYdAVxN76boSa3DCnfq0KXBm5WsZQRifdqQkVjx9rDEf/EolGNJmjhEtEg
-         gyzF8LBmLVISgbyaBcat9rNqhm27yXKSqOCxFUl8uRpZYwUwlpFej7HAaFX0dL8IMzSd
-         6XPbNbzM8712mnbMXK8+zeSv5MMgooTpl78Ld7EsaVfpA8v7+18xBNI631YYpelUHvB7
-         ZZ5YC3m58ULqV0xMw5Db15Szkfc6H9bJnkxx81Ix7+NUZC8sxTx1ckHqtppvb1yPmXoz
-         ocxQ==
+         :content-disposition:in-reply-to:user-agent;
+        bh=RqJfBxc+5hEXzJUkSWB0gPw7NrIyI3K3Pr3732qHYAQ=;
+        b=fUl+6I4x7XwQcdmoCTE2Z0XeWKNZEAvwwQhxESe8sRcEQ6vn+AfhNO23bXM8aiWdRe
+         wVnHoSlX0U3b04JnkGrI5Ay7r0HfzNA0pKXN6fKs/gP6RV4tnDNoiDyKyGKhADiOl43n
+         F+mF6OdX/tADPC9HmEUR2PJJhzbFPdsXHduQuuFTWnIM3HbbkxMv3OvuJKYbTAl42H8N
+         1djGWbVFtbtxKYMtodVAdgw7d1ViLwhPqusfpHjBZmhP8Wby1fHN6KWDj01D0FRMHbs2
+         40LctGPDNwQdiPuTkW3RvZYYmwy5GjBoAHY3eo1S34N7o4Y+/bM9ACEMqEVOAq1Y+/ZZ
+         d+Tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vdHwawrg2goF/xDkxCClW5/26st3fBn8hf31j+8q+80=;
-        b=AuSaFsV3yxHbca7fUgZpdHqAWY2Thba8ntj3+bhZPiTOeYu/CiSZ4yxOqAURMq8nOE
-         ssiG9YzGnJSqI5k8DzT3r6OoYDQ98Ig2fmpW6k0LSwJf8AfRfnB3h3FB07wHU4PRn8qR
-         gwYCzG93kVYrLwj+7OVPLXWipX8IJ4U7ol+7DjCvD4RRb6W9Q68uO3YWdXRX8zte/7A2
-         +dgUG+slWODC8Cpjvil3e0Vgd8NZB13URznF7umMgHN5lmKfsFwnTTZiD/+qWsqo8WMS
-         u01kcfuTrZiszgAlIhIpyTBNKejQnX8vndpCPfw32yDZEkeLPA0/tKZ9wsf+LI4uxtbi
-         nvfA==
-X-Gm-Message-State: AGi0PuburUq2g0Xhke3AB1RrVPEBLZcL21urz6t4HwYEXmukNCuQfnUK
-        Ri6PunT4pyuhL6QhwdQTBSZk7g==
-X-Google-Smtp-Source: APiQypLGS7pKJ73ev+kPHpiX/tZswkIym+3HYA7yCJNAIDriFH59VDOhOHRwWL/6KQTqY8bi176hnA==
-X-Received: by 2002:a7b:c8cc:: with SMTP id f12mr1685011wml.7.1586156030040;
-        Sun, 05 Apr 2020 23:53:50 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id f187sm24417209wme.9.2020.04.05.23.53.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Apr 2020 23:53:49 -0700 (PDT)
-Date:   Mon, 6 Apr 2020 08:53:48 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com, mlxsw@mellanox.com
-Subject: Re: [patch iproute2/net-next 0/8] devlink: spring cleanup
-Message-ID: <20200406065348.GA2354@nanopsycho.orion>
-References: <20200404161621.3452-1-jiri@resnulli.us>
- <20200405192109.5e883411@hermes.lan>
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=RqJfBxc+5hEXzJUkSWB0gPw7NrIyI3K3Pr3732qHYAQ=;
+        b=GCOKNDwRQ6oPwdsISBwc3Ccs2EyJR0gJjOeSzMRphCCQxoQqy6U3mLimza2FQ1i9PY
+         Bs0qzgOGKuUM+XbjwPaFoUmsxW7+OKCbf+7ELoJOMA7gr9HrdszmqHB1EQaOVbC1BpcP
+         fImoGj0VdvYj4w3TCJh7zsRq4RhKH5/tCOeYrZ8jGtnZia4Bo2yUVpyXYVu5jgUN/PxO
+         jc8K+9enhl/4BmWOUd9dkmCxBzDYiAaFb9mwQEt7Lt7ENM5BTj8yaeC+GbMYxtLd9Ubx
+         lMjivOwNlL4aIm1LCbeQgHBYTbJcryybWFSyygoBvDLAOFsgecIGyzlLncSWaCbaXrJr
+         +k1Q==
+X-Gm-Message-State: AGi0PubBiffcWLft+F3M/nvSKrBEaHC7eXxnmtFmyQOM6+JF3Q+ot2uQ
+        wH+7yzLxRa1z+EQLLfx0svI=
+X-Google-Smtp-Source: APiQypKNbF2E3D32XKuBDPJhhlvxxo8J2rW27s0dKvSTxEZx7hANy5tViHe3jOKRRTeN/AfHY6j/Qg==
+X-Received: by 2002:a17:902:507:: with SMTP id 7mr19209367plf.42.1586156784681;
+        Mon, 06 Apr 2020 00:06:24 -0700 (PDT)
+Received: from workstation-LAP.localdomain ([103.87.57.178])
+        by smtp.gmail.com with ESMTPSA id m2sm11318884pjk.4.2020.04.06.00.06.19
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 06 Apr 2020 00:06:23 -0700 (PDT)
+Date:   Mon, 6 Apr 2020 12:36:12 +0530
+From:   Amol Grover <frextrite@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jeremy Sowden <jeremy@azazel.net>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Kate Stewart <kstewart@linuxfoundation.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>
+Subject: Re: [PATCH] netfilter: ipset: Pass lockdep expression to RCU lists
+Message-ID: <20200406070612.GA240@workstation-LAP.localdomain>
+References: <20200216172653.19772-1-frextrite@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200405192109.5e883411@hermes.lan>
+In-Reply-To: <20200216172653.19772-1-frextrite@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Apr 06, 2020 at 04:21:09AM CEST, stephen@networkplumber.org wrote:
->On Sat,  4 Apr 2020 18:16:13 +0200
->Jiri Pirko <jiri@resnulli.us> wrote:
->
->> From: Jiri Pirko <jiri@mellanox.com>
->> 
->> This patchset contains couple of small fixes, consistency changes,
->> help and man adjustments.
->> 
->> Jiri Pirko (8):
->>   devlink: remove custom bool command line options parsing
->>   devlink: Fix help and man of "devlink health set" command
->>   devlink: fix encap mode manupulation
->>   devlink: Add alias "counters_enabled" for "counters" option
->>   devlink: rename dpipe_counters_enable struct field to
->>     dpipe_counters_enabled
->>   devlink: Fix help message for dpipe
->>   devlink: remove "dev" object sub help messages
->>   man: add man page for devlink dpipe
->> 
->>  bash-completion/devlink   |   8 +--
->>  devlink/devlink.c         | 131 +++++++++++++++++---------------------
->>  man/man8/devlink-dev.8    |   8 +--
->>  man/man8/devlink-dpipe.8  | 100 +++++++++++++++++++++++++++++
->>  man/man8/devlink-health.8 |  30 +++++----
->>  5 files changed, 181 insertions(+), 96 deletions(-)
->>  create mode 100644 man/man8/devlink-dpipe.8
->> 
->
->Since these all don't depend on new kernel features, let me take
->them directly and skip net-next
+On Sun, Feb 16, 2020 at 10:56:54PM +0530, Amol Grover wrote:
+> ip_set_type_list is traversed using list_for_each_entry_rcu
+> outside an RCU read-side critical section but under the protection
+> of ip_set_type_mutex.
+> 
+> Hence, add corresponding lockdep expression to silence false-positive
+> warnings, and harden RCU lists.
+> 
+> Signed-off-by: Amol Grover <frextrite@gmail.com>
+> ---
 
-Okay.
+Hi David
+
+Could you please go through this patch aswell? This patch was directed to 
+preemptively fix the _suspicious RCU usage_ warning which is now also
+being reported by Kernel Test Robot.
+
+[   11.654186] =============================
+[   11.654619] WARNING: suspicious RCU usage
+[   11.655022] 5.6.0-rc1-00179-gdb4ead2cd5253 #1 Not tainted
+[   11.655583] -----------------------------
+[   11.656001] net/netfilter/ipset/ip_set_core.c:89 RCU-list traversed in non-reader section!!
+
+Thanks
+Amol
+
+>  net/netfilter/ipset/ip_set_core.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
+> index cf895bc80871..97c851589160 100644
+> --- a/net/netfilter/ipset/ip_set_core.c
+> +++ b/net/netfilter/ipset/ip_set_core.c
+> @@ -86,7 +86,8 @@ find_set_type(const char *name, u8 family, u8 revision)
+>  {
+>  	struct ip_set_type *type;
+>  
+> -	list_for_each_entry_rcu(type, &ip_set_type_list, list)
+> +	list_for_each_entry_rcu(type, &ip_set_type_list, list,
+> +				lockdep_is_held(&ip_set_type_mutex))
+>  		if (STRNCMP(type->name, name) &&
+>  		    (type->family == family ||
+>  		     type->family == NFPROTO_UNSPEC) &&
+> -- 
+> 2.24.1
+> 
