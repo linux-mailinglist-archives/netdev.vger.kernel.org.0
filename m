@@ -2,199 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBB8719F83A
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 16:48:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6443F19F841
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 16:52:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728769AbgDFOsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 10:48:37 -0400
-Received: from mail-eopbgr10090.outbound.protection.outlook.com ([40.107.1.90]:1859
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728704AbgDFOsf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Apr 2020 10:48:35 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WCQ/aGB6qkPOtOlmHq29BPjcfHLEGUyJPLv+2VeQbzrzY8U8BCekMaoPE6TKN6aelgdUzuH6IEYkpBhNF+lKH4ZwV4K1Q/1PyBQi5MP8HdXz5vd6q4PMfjhghgOfOZOguta7UY5Sh3t9PKYMnCJAq0f4cVR9tcG9p/ZgLFMQtdnEPSgdR3kc5jOX3fU7hXfnpbZCVkHYVtwayp9oJNWo4/t0xLp22U5EE47XlbzANfHLtNH4SDOB6fmu/l/zTHuepcPBEeYjFcPSc8jI9J0koKhnmgkDib0evY9jA4hyTKs0KunyEwpF3/O0P5kmC0NE/MoKEb5PUWAK9IiIFqNlmw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TyyfcVcDZBJGpx7vSUzWpVUceWuNnLVTn99HDqjpAKc=;
- b=MFTnuT+VLgnv4njsPcFjegHUlerypNUuJJv96GgAIy29oTL2ytxjDUGxVlv5b+hwNXEymw06yhzk0mzIIganUkG5p4h8bxUqkQLIRYx3ESGgKUbQnXWLQY573QmWARnsJQJ4g1UUrVU7uwLPnGad63LO+VsPjBf7MEfwNIMxHDiB5oS/SNPtTTZC0cyJMy7LfT6UBOBLuad8E5pBc0kpbEJzwX8OLAoRb3WFimWnlEb5UOJdvSDvZjLc5khUXkO2AolVH0YGJ+ab5qxx+9aIYEK4yC5jhXq7WMZeQqwIJOj6B0EDJQ2QRJhOofbkBFfag9BGGKlqhtcA5uVgnRa1tg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
- dkim=pass header.d=toradex.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TyyfcVcDZBJGpx7vSUzWpVUceWuNnLVTn99HDqjpAKc=;
- b=pV41UdDsRsV6GJPAkHjKs7f40wAAlOzqZWJhcQn5kkSY2GVNQ8APWcIWndM+e50B7g1IFMCAl0srnfFDkoYMhFZoUUefUZGsHbW6+KkIAJQEt+hQssaI2wggXWYfwXVwG9vrHdkJPVvtPMvVkAGAAreYana90F+p6mbWTKMgjBc=
-Received: from AM6PR05MB6120.eurprd05.prod.outlook.com (2603:10a6:20b:a8::25)
- by AM6PR05MB5127.eurprd05.prod.outlook.com (2603:10a6:20b:6b::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2878.20; Mon, 6 Apr
- 2020 14:48:30 +0000
-Received: from AM6PR05MB6120.eurprd05.prod.outlook.com
- ([fe80::44ad:bee7:b765:b9c7]) by AM6PR05MB6120.eurprd05.prod.outlook.com
- ([fe80::44ad:bee7:b765:b9c7%7]) with mapi id 15.20.2878.021; Mon, 6 Apr 2020
- 14:48:30 +0000
-From:   Philippe Schenker <philippe.schenker@toradex.com>
-To:     "o.rempel@pengutronix.de" <o.rempel@pengutronix.de>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "david@protonic.nl" <david@protonic.nl>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v1] net: phy: micrel: add phy-mode support for the KSZ9031
- PHY
-Thread-Topic: [PATCH v1] net: phy: micrel: add phy-mode support for the
- KSZ9031 PHY
-Thread-Index: AQHWCZBx8XMINRFo9k6sGIGWF9Rf76hr0AuAgABNy4CAABPoAA==
-Date:   Mon, 6 Apr 2020 14:48:30 +0000
-Message-ID: <5870f784b546adabfd9ec6693a8e5287b0036ef6.camel@toradex.com>
-References: <20200403081812.19717-1-o.rempel@pengutronix.de>
-         <868f2449c1bc93cfe38629708c1e449d6c16de6d.camel@toradex.com>
-         <20200406133715.GA15542@pengutronix.de>
-In-Reply-To: <20200406133715.GA15542@pengutronix.de>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.36.1 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=philippe.schenker@toradex.com; 
-x-originating-ip: [51.154.7.61]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2b51a62b-88d3-4bd4-dac1-08d7da3992c6
-x-ms-traffictypediagnostic: AM6PR05MB5127:
-x-microsoft-antispam-prvs: <AM6PR05MB51273E5E03B90CB03DCD1EF9F4C20@AM6PR05MB5127.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0365C0E14B
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR05MB6120.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10019020)(4636009)(346002)(396003)(376002)(366004)(39840400004)(136003)(4326008)(66446008)(6916009)(5660300002)(2906002)(44832011)(2616005)(186003)(316002)(54906003)(6506007)(26005)(6512007)(81166006)(81156014)(8676002)(8936002)(76116006)(966005)(91956017)(66946007)(36756003)(7416002)(66556008)(478600001)(71200400001)(66476007)(64756008)(6486002)(86362001);DIR:OUT;SFP:1102;
-received-spf: None (protection.outlook.com: toradex.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: KTBV3DiRAzzJA5yTkFnpiHghyNJdXaoi4kp+RqEwjhvcPeq5G5zzuX0WZ25/cm+DLy9M6wOwgaosYITgWFzMbmzsSsPsuUUG1Kh4bBDLAkh+ZJToE9UaDcLSCvy+pyM4j+1U189zMEPJIggs5xSS73yrI0ooHF2VnywuabYyx4igfaOIsCnQYKkZIWzsBSzxpUv4l4OmFsIJRZ6OOfLJtNfvSBQP2/T7IZVBv8/8ikmpXm81ah811VoPFfiukAKHVzLcRKYvZTrQLOjIZbl6VkhbNCVgRLwOBCOQKEB9REZlM2Kwb1duK97Hjqsjh37vloss6W4wfKMiBu6aVxv1M2osLgpcBvKSrzmIpsfY03yZkObduVxQICiAvsamvRob35JlPEAxGtQ5k43SG0fiqDrPZCUDDlDGIIYd6zVvZTHhwwIcQbG774stDA/I9AL0qxsQ9rcVygE5lf0SAmuKi6CbTkMbsPBIqIXMI/by1mYe7QQS83/ftXSC57ihkC57fgGAzLHESaLouSKXPhHnGA==
-x-ms-exchange-antispam-messagedata: Y5uboNgSooSbTZwiH1d+xPdZv1og8IZ1dlfwyz7It9DU7ngdJv39nLRtq9mjdhaTD5M8Dy8yNCBGycRQ6XSN19uJzXJ9OgxcFPpSc/7zloqADrg8VACZxfo3BwWhmHYEyNgnej4MMyARIQHr5xTpRA==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <52B150B90C90924EB7889DDA04352CE0@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728786AbgDFOwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 10:52:41 -0400
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:39332 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728734AbgDFOwl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 10:52:41 -0400
+Received: by mail-yb1-f194.google.com with SMTP id h205so8915576ybg.6;
+        Mon, 06 Apr 2020 07:52:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=t4wjTXsPVYDAF0Rh7pFMNhwtFuty/N2rOqgxDEfZ/Sw=;
+        b=SBhq0q/ZK03IfVa4a6D2mf9RXC2ytcswUYBcuVaz3kuZsif/61gpy1LRRI+zsU6++O
+         fWVrwWYFL0SbAiVsex7wd79xGP9NzMufXbwc9DWj074Pt4NsigrVSrH3gj0tjk8TOJi7
+         iwB6q8g14hF1e0DFdkMKFoS4FIbzSbZFCL0Irn09eu6+beuSgYYkGbzi2GeB0mv7Cybe
+         bYt0oMbKrQOaPokPGCjKGImNAW7m7SWarLy9Snr3MnsldszuNH74KBXIqUbfzLLn4GuP
+         RoFF4GUSMv/5pwjTzaOe8thYd6YgfJ5DK97R8qy7HI+bcnv1r8Rzd9uBfrtMcMbKyX2u
+         gjmg==
+X-Gm-Message-State: AGi0Pub8refGSTXDCBZCcYc49hPN6tCowtQ5SoSgQBmGAGW8gmkEyYhl
+        /upL4vTUb7s91IdkzepOKKxsEzJpQ71Nuzjm+QQ=
+X-Google-Smtp-Source: APiQypI1cMI5XMrDE3mSE6bbYAawc2oBNbpcDCRXHpJDoX3XOsXlC/vfwSZUcgq4MmsZjYrhcfzTbDuI279TT3hvxUQ=
+X-Received: by 2002:a25:aa29:: with SMTP id s38mr34746167ybi.325.1586184759706;
+ Mon, 06 Apr 2020 07:52:39 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2b51a62b-88d3-4bd4-dac1-08d7da3992c6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Apr 2020 14:48:30.5911
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: d9995866-0d9b-4251-8315-093f062abab4
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fxsRh1Lj4CvjxXafOAY6hg8g8eT13Dn+QDf+gruhne9d3T1mcDQ7UB6A3y/DocTUX/H5aS3UtZyrdEwKOI7uHxJJUNK0ncoJ8JdeIK0qrMs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5127
+References: <cover.1585917191.git.nicolas.ferre@microchip.com>
+ <CAFcVECLkPxN0nk=jr9AxJoV3i1jHBoY4s3yeodHDO2uOZspQPg@mail.gmail.com> <9e2ab6cd-526d-f1b5-4bd0-4a8f80d9dd8f@microchip.com>
+In-Reply-To: <9e2ab6cd-526d-f1b5-4bd0-4a8f80d9dd8f@microchip.com>
+From:   Harini Katakam <harinik@xilinx.com>
+Date:   Mon, 6 Apr 2020 20:22:28 +0530
+Message-ID: <CAFcVECLHkLSa+PaRWyoiqfYBpNNY3to-TSE3sqWPY3hY2chrXg@mail.gmail.com>
+Subject: Re: [RFC PATCH 0/3] net: macb: Wake-on-Lan magic packet fixes
+To:     Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Harini Katakam <harini.katakam@xilinx.com>,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Rafal Ozieblo <rafalo@cadence.com>,
+        Sergio Prado <sergio.prado@e-labworks.com>,
+        antoine.tenart@bootlin.com,
+        Florian Fainelli <f.fainelli@gmail.com>, linux@armlinux.org.uk,
+        Andrew Lunn <andrew@lunn.ch>,
+        Michal Simek <michal.simek@xilinx.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDIwLTA0LTA2IGF0IDE1OjM3ICswMjAwLCBPbGVrc2lqIFJlbXBlbCB3cm90ZToN
-Cj4gSGksDQo+IA0KPiBPbiBNb24sIEFwciAwNiwgMjAyMCBhdCAwODo1ODo0OUFNICswMDAwLCBQ
-aGlsaXBwZSBTY2hlbmtlciB3cm90ZToNCj4gPiBPbiBGcmksIDIwMjAtMDQtMDMgYXQgMTA6MTgg
-KzAyMDAsIE9sZWtzaWogUmVtcGVsIHdyb3RlOg0KPiA+ID4gQWRkIHN1cHBvcnQgZm9yIGZvbGxv
-d2luZyBwaHktbW9kZXM6IHJnbWlpLCByZ21paS1pZCwgcmdtaWktdHhpZCwNCj4gPiA+IHJnbWlp
-LXJ4aWQuDQo+ID4gPiANCj4gPiA+IFRoaXMgUEhZIGhhcyBhbiBpbnRlcm5hbCBSWCBkZWxheSBv
-ZiAxLjJucyBhbmQgbm8gZGVsYXkgZm9yIFRYLg0KPiA+ID4gDQo+ID4gPiBUaGUgcGFkIHNrZXcg
-cmVnaXN0ZXJzIGFsbG93IHRvIHNldCB0aGUgdG90YWwgVFggZGVsYXkgdG8gbWF4DQo+ID4gPiAx
-LjM4bnMNCj4gPiA+IGFuZA0KPiA+ID4gdGhlIHRvdGFsIFJYIGRlbGF5IHRvIG1heCBvZiAyLjU4
-bnMgKGNvbmZpZ3VyYWJsZSAxLjM4bnMgKyBidWlsZA0KPiA+ID4gaW4NCj4gPiA+IDEuMm5zKSBh
-bmQgYSBtaW5pbWFsIGRlbGF5IG9mIDBucy4NCj4gPiANCj4gPiBUaGlzIHNrZXcgZGVsYXkgcmVn
-aXN0ZXJzIG9mIHRoZSBLU1o5MDMxIGFyZSBub3QgbWVhbnQgZm9yIHRoaXMNCj4gPiBkZWxheS4N
-Cj4gDQo+IEFjY29yZGluZyB0byB0aGUgZG9jdW1lbnRhdGlvbiBvZiB0aGUgUEhZIFsxXSwgdGhl
-c2UgcmVnaXN0ZXJzIHNob3VsZA0KPiBiZQ0KPiB1c2VkIHRvIHR1bmUgdGhlIHRvdGFsIGRlbGF5
-IG9mIHRoZSBjaXJjdWl0Lg0KDQpZZXMgeW91J3JlIHJpZ2h0LiBJIG1peGVkIGl0IHVwIHdpdGgg
-S1NaOTEzMSB0aGF0IGhhcyBhIHNwZWNpZmljDQpyZWdpc3RlciBmb3IgdGhhdCBwdXJwb3NlIGFu
-ZCBza2V3IHJlZ2lzdGVycyBhcmUgbWVhbnQgb25seSBmb3IgUENCLQ0KbGVuZ3RoIGFkanVzdG1l
-bnQuDQo+IA0KPiA+IEJ1dCBJIGFncmVlIHRoYXQgaXQgY291bGQgbWFrZSBzZW5zZSB0byBpbXBs
-ZW1lbnQgcGh5LW1vZGVzIHRvbyBmb3INCj4gPiB0aGlzDQo+ID4gUEhZLiBJIGV2ZW4gdGhvdWdo
-dCBteXNlbGYgYWJvdXQgaW1wbGVtZW50aW5nIGl0Lg0KPiA+IEJ1dCBJIGd1ZXNzIGl0IGlzIG5v
-dCBhIGdvb2QgdGhpbmcgdG8gYmUgYWJsZSB0byBzZXQgdGhlIHNhbWUNCj4gPiByZWdpc3RlcnMg
-aW4gYSBjaGlwIGluIHR3byBkaWZmZXJlbnQgcGxhY2VzIGluIGEgRFQuIEhvdyBpcyB0aGlzDQo+
-ID4gc29sdmVkIGdlbmVyYWxseSBpbiBsaW51eD8NCj4gDQo+IEluIHRoaXMgY2FzZSBpIHdvdWxk
-IHByZWZlciB0byB0YWxrIGFib3V0IHNldmVyYWwgZGV2aWNlIHRyZWUNCj4gcHJvcGVydGllcw0K
-PiBkZXNjcmliaW5nIHRoZSBzYW1lIHRoaW5nLiBUaGUgcGh5LW1vZGUgcHJvcGVydHkgd2lsbCBz
-ZXQgYSBtb3JlDQo+IGdlbmVyaWMNCj4gZGVmYXVsdHMgd2hlcmUgdGhlICotc2tldy1wcyBwcm9w
-ZXJ0aWVzIGNhbmUgYmUgdXNlZCB0byBvdmVyd3JpdGUNCj4gc2luZ2xlDQo+IG9yIGFsbCBwYWRz
-Lg0KDQpJJ20ganVzdCBhZnJhaWQgdGhhdCBvbmUgd2lsbCByZWFkIHRoZSBkb2N1bWVudGF0aW9u
-LCBwdXQgcmdtaWktaWQgaW4NCnRoZXJlIGFuZCBhbHNvIHRyeSB0byBhZGp1c3QgUENCLXRyYWNl
-LWxlbmd0aCBpbiBza2V3IHJlZ2lzdGVycy4uLg0KVGhhdCdzIHdoeSBJJ2QgYXQgbGVhc3QgdGhy
-b3cgYSB3YXJuaW5nIG9yIGVycm9yLg0KPiANCj4gVGhlIGN1cnJlbnQgc2l0dWF0aW9uIGlzOg0K
-PiAtIHdlIGhhdmUgYSBSR01JSS1SWElEIFBIWSAod2l0aCBpbnRlcm5hbCBub3Qgb3B0aW9uYWwg
-ZGVsYXkgb2YgMS4ybnMpDQo+IC0gd2hpY2ggaXMgY29uZmlndXJlZCBpbiBtYW55IChhbGw/KSBk
-ZXZpY2V0cmllcyBhcyBwaHktbW9kZT0icmdtaWkiLA0KPiBub3QNCj4gICAicmdtaWktcnhpZCIu
-DQo+IA0KPiBUaGVyZSBhcmUgYm9hcmRzOg0KPiAtIHdpdGggZGVmYXVsdCBvcHRpb25zLiBObyBl
-eHRyYSBkZWxheXMgYXJlIGNvbmZpZ3VyZWQsIHNvIGFjdHVhbGx5DQo+IHRoZXkNCj4gICB3YW50
-IHRvIGhhdmUgYSAicmdtaWktcnhpZCIsIGJ1dCBjb25maWd1cmUgYXMgcGh5LW1vZGU9InJnbWlp
-IiANCj4gLSBjb25maWd1cmVkIGJ5IGZpeHVwIChmb3IgZXhhbXBsZSBpbiBpJ01YNlE6ICBSR01J
-SS1JRCwgYnV0IGluIERUDQo+ICAgY29uZmlndXJhdGlvbiB3aXRoIHBoeS1tb2RlPXJnbWlpKQ0K
-PiANCj4gQWxsIG9mIHRoaXMgY29uZmlndXJhdGlvbnMgYXJlIGJyb2tlbi4gVGhpcyBvbmUgaXMg
-Y29ycmVjdDoNCj4gDQo+IC0gY29uZmlndXJlZCBieSAqLXNrZXctcHMgcHJvcGVydHkgYW5kIHVz
-aW5nIHBoeS1tb2RlPXJnbWlpLg0KDQpJIGFncmVlLg0KPiANCj4gPiBBbm90aGVyIHJlYXNvbmlu
-ZyBpcyB0aGF0IHRoaXMgd2lsbCAqb25seSogd29yaywgaWYgdGhlIFBDQiB0cmFjZXMNCj4gPiBh
-cmUNCj4gPiBsZW5ndGgtIG1hdGNoZWQuIFRoaXMgbGVhZHMgbWUgdG8gdGhlIGNvbmNsdXNpb24g
-dGhhdCB0aHJvd2luZyBhbg0KPiA+IGVycm9yIHNvIHRoZSBQSFkgZG9lc24ndCB3b3JrIGlmIHNv
-bWVvbmUgYWRkZWQgZS5nLiAncmdtaWktaWQnIGFuZA0KPiA+IHNrZXcgcmVnaXN0ZXJzIGlzIGEg
-Z29vZCB0aGluZy4NCj4gDQo+IFNvIHlvdSBtZWFuLCBza2V3IHNldHRpbmcgc2hvdWxkIG9ubHkg
-d29yayB3aXRoIHBoeS1tb2RlPSJyZ21paSIsIGFuZA0KPiB0aHJvdyBhbiBlcnJvciBvdGhlcndp
-c2U/IE1ha2VzIHNlbnNlIHRvIG1lLg0KDQpZZXMsIHRoYXQncyBleGFjdGx5IG15IGludGVudGlv
-bi4gQnV0IHdoZW4gSSB0aGluayBhYm91dCBpdCBhIHdhcm5pbmcgaXMNCm1vcmUgYXBwcm9wcmlh
-dGUgdGhhbiBhbiBlcnJvciwgYnV0IEkgZ3Vlc3MgdGhhdCdzIHVwIHRvIHRoZSBtYWludGFpbmVy
-DQp0byBkZWNpZGUuDQo+IA0KPiA+IEJ1dCB3aXRoIHRoYXQgd2Ugd291bGQgbWF5YmUgYnJlYWsg
-c29tZSBib2FyZHMuLi4gQXQgbGVhc3QgSSB3b3VsZA0KPiA+IHRocm93DQo+ID4gYSB3YXJuaW5n
-IGluIGtzejkwMzFfb2ZfbG9hZF9za2V3X3ZhbHVlcy4NCj4gPiANCj4gPiA+IEFjY29yZGluZyB0
-byB0aGUgUkdNSUkgdjIgc3BlY2lmaWNhdGlvbiB0aGUgZGVsYXkgcHJvdmlkZWQgYnkgUENCDQo+
-ID4gPiB0cmFjZXMNCj4gPiANCj4gPiBBcyBJIHVuZGVyc3Rvb2QsIFJHTUlJIHYxLjMgZGVtYW5k
-cyBkZWxheSBieSBQQ0IgdHJhY2VzICh0aGF0IGlzIGZvcg0KPiA+IGVtYmVkZGVkIG1vc3RseSBu
-b3QgcG9zc2libGUpLiBXaGVyZWFzIFJHTUlJIHYyLjAgZGVtYW5kcyBkZSBNQUMgdG8NCj4gPiBh
-ZGQNCj4gPiB0aGUgZGVsYXkgZm9yIFRYQyBhbmQgdGhlIFBIWSBmb3IgUlhDLg0KPiA+IA0KPiA+
-IEkga25vdyBpdHMgbml0cGlja3kgYnV0IHN0aWxsIGNhbiBiZSBjb25mdXNpbmcgZm9yIHNvbWVv
-bmUgdHJ5aW5nIHRvDQo+ID4gdW5kZXJzdGFuZCB0aGF0LiBDb3VsZCB5b3UgYWRqdXN0IHRoYXQg
-aGVyZT8NCj4gPiANCj4gPiA+IHNob3VsZCBiZSBiZXR3ZWVuIDEuNW5zIGFuZCAyLjBucy4gQXMg
-dGhpcyBQSFkgY2FuIHByb3ZpZGUgbWF4DQo+ID4gPiBkZWxheQ0KPiA+ID4gb2YNCj4gPiA+IG9u
-bHkgMS4zOG5zIG9uIHRoZSBUWCBsaW5lLCBpbiBSR01JSS1JRCBtb2RlIGEgc3ltbWV0cmljIGRl
-bGF5IG9mDQo+ID4gPiAxLjM4bnMNCj4gPiA+IGZvciBib3RoIHRoZSBSWCBhbmQgVFggbGluZXMg
-aXMgY2hvc2VuLCBldmVuIGlmIHRoZSBSWCBsaW5lIGNvdWxkDQo+ID4gPiBiZQ0KPiA+ID4gY29u
-ZmlndXJlZCB3aXRoIHRoZSAxLjVucyBhY2NvcmRpbmcgdG8gdGhlIHN0YW5kYXJkLg0KPiA+IA0K
-PiA+IFdoeSBkbyB5b3UgZGVjaWRlZCBmb3IgYSBzeW1tZXRyaWMgZGVsYXk/IEkgZ3Vlc3MgdGhl
-IGhhcmR3YXJlIGxldmVsDQo+ID4gZG9lc24ndCBjYXJlIGlmIHRoZSBpbnB1dC1zdGFnZXMgb2Yg
-dHdvIGRpZmZlcmVudCBzaWxpY29ucyBkb24ndA0KPiA+IGNhcmUgaWYNCj4gPiB0aGUgZGVsYXkg
-aXMgc3ltbWV0cmljYWwuIEkgc3VnZ2VzdCB0byB1c2UgYSBkZWxheSBmb3IgUlhDIHRvIGdldA0K
-PiA+IHRoZQ0KPiA+IFJYQyBjbG9jayBlZGdlIGluIHRoZSBtaWRkbGUgb2YgdGhlIGRhdGEgbGlu
-ZXMuDQo+IA0KPiBBcmUgdGhlcmUgYW55IHRlY2huaWNhbCBqdXN0aWZpY2F0aW9uIHRvIHVzZSBi
-b3RoIDEuMzggb3Igb25lIDEuMzggYW5kDQo+IG90aGVyIDIuMD8NCg0KWWVzLCB3ZSBzaG91bGQg
-dHJ5IHRvIGFjaGlldmUgdGhlIFJHTUlJIHNwZWNzIHdoZXJlIHBvc3NpYmxlLiBTbyBJJ2QNCmRl
-bGF5IFJYQyBtb3JlIHRoYW4gVFhDLg0KPiANCj4gT3VyIEhXIGV4cGVydCBzdWdnZXN0IHRvIHVz
-ZSB0aGUgbWlkZGxlIG9mIHRoZSBSR01JSSByZWNvbW1lbmRlZA0KPiBkZWxheToNCj4gMS43NW5z
-LiBXaGF0IGlzIHlvdXIgb3Bpbmlvbj8gU28gZmFyIGtzejkwMzEgcHJvdmlkZSBub3QgY29uZmln
-dXJhYmxlDQo+IDEuMm5zIGFuZA0KPiBrc3U5MTMxIHVzZSAyLjBucyAoRExMIGJhc2VkKSBkZWxh
-eS4gSXQgbG9va3MgbGlrZSB0aGUgImludGVybmFsDQo+IGRlbGF5Ig0KPiBpbnRlcnByZXRhdGlv
-biBoYXMgc29tZSB2YWxpZCByYW5nZSBvZiBudW1iZXJzLg0KDQpJIHdvdWxkIG5vdCBvbmx5IHRy
-eSB0byBoaXQgdGhlIG1pZGRsZSBmcm9tIHRoZSBzcGVjaWZpY2F0aW9uIGJ1dCB0aGUNCm1pZGRs
-ZSBvZiB0aGUgYWN0dWFsIHNpZ25hbC4gV2l0aCB0aGF0IEkgbWVhbiB0byBoYXZlIFRfc2V0dXAg
-YW5kIFRfaG9sZA0KdGltZXMgYWJvdXQgdGhlIHNhbWUuIFBsZWFzZSBzZWUgYW4gUkdNSUkgdGlt
-aW5nIGRpYWdyYW0gZm9yIHRoZSBtZWFuaW5nDQpvZiB0aG9zZSBuYW1lc1sxXS4NCg0KSSBjYWxj
-dWxhdGVkIHRoZSBvcHRpbXVtIGRlbGF5IGluIGEgd29yc3QgY2FzZSBzY2VuYXJpby4gSSB0b29r
-IG1heGltdW0NCmRldmlhdGlvbiBvZiB0aGUgY2xvY2sgKDcuMm5zIC0gOC44bnMpIGFuZCBhbHNv
-IHNrZXcgb2YgdGhlIE1BQw0KKGFjY29yZGluZyB0byBSR01JSSBzcGVjIC01MDBwcyB0byA1MDBw
-cykuIFdpdGggbXkgdGhlb3J5IG9mIGhpdHRpbmcgdGhlDQptaWRkbGUgb2YgdGhlIGNsb2NrIGVk
-Z2VzLCB0aGlzIHJlc3VsdHMgaW4gbWluL21heCBkZWxheSB0aW1lcyBvZiBhbg0KYWRkZWQgZGVs
-YXkgdG8gUlhDIG9mIDYwMHBzICgxLjhucyBpbiB0b3RhbCkgYW5kIGZvciBUWEMgd2UncmUgc3R1
-Y2sNCndpdGggMS4zOG5zIHdoaWNoIGlzIGZpbmUgaW4gbW9zdCBjYXNlcywgYnV0IGFuIG9wdGlt
-YWwgdmFsdWUgaGVyZSB3b3VsZA0KYWxzbyBiZSBpbiB0aGUgcmFuZ2UgeW91ciBIVyBleHBlcnQg
-c3VnZ2VzdHMuIEknbSBnbGFkIHdlJ3JlIHJlc3VsdGluZw0KaW4gYWJvdXQgdGhlIHNhbWUgdmFs
-dWVzIQ0KDQpVbHRpbWF0ZWx5IEkgd291bGQgc2V0IHRoZSByZWdpc3RlcnMgaW4gJ3JnbWlpLQ0K
-aWQnIHRvOg0KTU1EIFJlZ2lzdGVyIDIuNAkweDcwDQpNTUQgUmVnaXN0ZXIgMi41CTB4Nzc3Nw0K
-TU1EIFJlZ2lzdGVyIDIuNgkweDANCk1NRCBSZWdpc3RlciAyLjgJMHgzRjkNCg0KSSdsbCBzZW5k
-IHlvdSB0aGVzZSB2YWx1ZXMgZm9yIGNyb3NzLWNoZWNrDQp2YWxpZGF0aW9uLg0KDQpSZWdhcmRz
-LA0KUGhpbGlwcGUNCg0KWzFdIGh0dHBzOi8vd3d3LnRpLmNvbS9saXQvYW4vc25sYTI0My9zbmxh
-MjQzLnBkZg0K
+Hi Nicolas,
+
+On Mon, Apr 6, 2020 at 7:56 PM Nicolas Ferre
+<nicolas.ferre@microchip.com> wrote:
+>
+> Hi Harini,
+>
+> On 03/04/2020 at 15:36, Harini Katakam wrote:
+> > Hi Nicolas,
+> >
+> > On Fri, Apr 3, 2020 at 6:45 PM <nicolas.ferre@microchip.com> wrote:
+> >>
+> >> From: Nicolas Ferre <nicolas.ferre@microchip.com>
+<snip>
+> >
+> > I know that the IP versions from r1p10 have a mechanism to disable DMA queues
+> > (bit 0 of the queue pointer register) which is cleaner. But for
+> > earlier IP versions,
+>
+> Which IP name are you referring to? GEM, GEM-GXL? What is the value of
+> register 0xFC then?
+
+GEM_GXL
+
+>
+> > I remember discussing with Cadence and there is no way to keep RX
+> > enabled for WOL
+> > with RX DMA disabled. I'm afraid that means there should be a bare
+> > minimum memory
+> > region with a dummy descriptor if you do not want to process the
+> > packets. That memory
+> > should also be accessible while the rest of the system is powered
+> > down. Please let me
+>
+> Very interesting information Harini, thanks a lot for having shared it.
+>
+> My GEM IP has 0xFC at value: 0x00020203. But I don't see a way to keep
+> DMA queues disabled by using the famous bit that you mention above.
+
+Yeah, it is not possible in this revision. This is part of the GEM_GXL r1p10 or
+higher I think. I can't be sure of all the possible variations of the
+revision reg
+because the scheme changed at some point but it looks like this:
+0x00070100
+bits 27:16 (module_ID), bits16:0 (module_revision); they could increase.
+
+Regards,
+Harini
