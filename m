@@ -2,150 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0885019F644
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 15:00:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D214019F646
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 15:00:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728247AbgDFNAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 09:00:16 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:33121 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728215AbgDFNAP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 09:00:15 -0400
-Received: by mail-lf1-f67.google.com with SMTP id h6so7231745lfc.0
-        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 06:00:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HaRtA1Jxq4FuD6KqIBhNnRMRisYsJA5aLAs60fjZD2Q=;
-        b=rD2AULqSP96WxjXaqAFp5EsQfPhsFzhnNWBb8t2W/fTRDZ4yomA7CMj74SfCjCGPfr
-         B/Ilxh+VR73N/yBlOUaLew5ENt0LqEJR/0252PKKN/vc/3wspe4donmTh2zcWSVH9v1V
-         CijhHhY4atIh1Avty7uGZYDLi0sezXPX6t0rZQMcnBRFc76hkXGZHInYAI63UiW+wbQ8
-         NbEthKqfcLUYQDUuAyhONVCYhn1IAkM2dB+VeAIkkPl7fhzacMVYKGCSFpr++ME88JnU
-         eEWuQMML8MKSGEUELb5W/Td4Bg057bP8H9NIN65XVJxCzTcgOQNpP1DUVjIBmIIuUl9j
-         bl5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HaRtA1Jxq4FuD6KqIBhNnRMRisYsJA5aLAs60fjZD2Q=;
-        b=ETcq3jCIhInQiywm0xSnmW+8nghkvI8Qd730Xfc3DJiCJXPZuEwxsV+meXnaamNM1Y
-         dzm6gIQIqQ/Lpy4ICZBuzT1DYgvVcBTDMnUZ2swZY0WwWvt7fPCcnAuZc3GAjfxhHw8H
-         CHW3f5E6fQYGqTTLKa/jOouLumRzrvLTlLwuTXJr6luDl2P/HLzwL3oumyleqAqk3DQI
-         /MUzBvqlcC0ECu9wltVL8t/0mAgGu2jxblb8G1VJl05g+qnAOUWiaA1o53Fvr7Be/NXF
-         taFe49tfylYP6ATHy0nPXbVwsU4qJ8bWDCQz5lsZR9gR7mhIP74///TSO2+ZPXsJbBez
-         sXqA==
-X-Gm-Message-State: AGi0PubdcVur7xAnm3CoCOpRLjnS7V1gKml5NrvhcJRVgOJkSbIH5eGW
-        IRhri8ZBvzZce0skqlsfwjrxlTN4erxXNkLxrCtNTg==
-X-Google-Smtp-Source: APiQypKWLxaOr2JwxPFRIKy8DyIk+GnLoWmCpZts1WGuVzegc2XBLTsdqA1LYFKaM6QY1KoWLGPuGNAn7rVqCVucQYw=
-X-Received: by 2002:a19:6749:: with SMTP id e9mr12526614lfj.122.1586178012739;
- Mon, 06 Apr 2020 06:00:12 -0700 (PDT)
+        id S1728253AbgDFNAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 09:00:41 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:50877 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728144AbgDFNAl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 09:00:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1586178040;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NYol29NYhDl9/p2i+3iMB21EckDmpEIsAkQKwZjRPUs=;
+        b=FQlzBLaZyqXqsbKVm0iZ4X7rZZf79BJxhOHAegl6Ux0/3CHaSSo0rhzmWyZb67b3EQzLb4
+        oZ+88XoTJs/vz+/JfBLKIiz7tDMA9/qDBI3YFIO55ymz/XGU1f5dZLZeJKwFIL6NDosdMZ
+        o6csNu45LLSvjzRcQ0EoriYOeJp6WFw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-417-ZZG-eqcBMmufViv3LVUzJg-1; Mon, 06 Apr 2020 09:00:30 -0400
+X-MC-Unique: ZZG-eqcBMmufViv3LVUzJg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 03C0C1922967;
+        Mon,  6 Apr 2020 13:00:28 +0000 (UTC)
+Received: from krava (unknown [10.40.192.7])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 248056EF97;
+        Mon,  6 Apr 2020 13:00:23 +0000 (UTC)
+Date:   Mon, 6 Apr 2020 15:00:21 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Song Liu <songliubraving@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@redhat.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Song Liu <song@kernel.org>
+Subject: Re: [PATCH 13/15] perf tools: Synthesize bpf_trampoline/dispatcher
+ ksymbol event
+Message-ID: <20200406130021.GB3035739@krava>
+References: <20200312195610.346362-1-jolsa@kernel.org>
+ <20200312195610.346362-14-jolsa@kernel.org>
+ <20200406125412.GA29826@kernel.org>
 MIME-Version: 1.0
-References: <1586175677-3061-1-git-send-email-sumit.garg@linaro.org> <f2a393a2f01c93776446c83e345a102a780cfe88.camel@sipsolutions.net>
-In-Reply-To: <f2a393a2f01c93776446c83e345a102a780cfe88.camel@sipsolutions.net>
-From:   Sumit Garg <sumit.garg@linaro.org>
-Date:   Mon, 6 Apr 2020 18:30:01 +0530
-Message-ID: <CAFA6WYPBef1w2YG8vDTnRK9N3Tjt-vQahpYd61H6twsRuT8YZw@mail.gmail.com>
-Subject: Re: [PATCH] mac80211: fix race in ieee80211_register_hw()
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     linux-wireless@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
-        netdev@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        =?UTF-8?Q?Matthias=2DPeter_Sch=C3=B6pfer?= 
-        <matthias.schoepfer@ithinx.io>,
-        "Berg Philipp (HAU-EDS)" <Philipp.Berg@liebherr.com>,
-        "Weitner Michael (HAU-EDS)" <Michael.Weitner@liebherr.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Loic Poulain <loic.poulain@linaro.org>, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200406125412.GA29826@kernel.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 6 Apr 2020 at 18:14, Johannes Berg <johannes@sipsolutions.net> wrote:
->
-> On Mon, 2020-04-06 at 17:51 +0530, Sumit Garg wrote:
-> > A race condition leading to a kernel crash is observed during invocation
-> > of ieee80211_register_hw() on a dragonboard410c device having wcn36xx
-> > driver built as a loadable module along with a wifi manager in user-space
-> > waiting for a wifi device (wlanX) to be active.
-> >
-> > Sequence diagram for a particular kernel crash scenario:
-> >
-> >     user-space  ieee80211_register_hw()  RX IRQ
-> >     +++++++++++++++++++++++++++++++++++++++++++++
-> >        |                    |             |
-> >        |<---wlan0---wiphy_register()      |
-> >        |----start wlan0---->|             |
-> >        |                    |<---IRQ---(RX packet)
-> >        |              Kernel crash        |
-> >        |              due to unallocated  |
-> >        |              workqueue.          |
-> >        |                    |             |
-> >        |       alloc_ordered_workqueue()  |
-> >        |                    |             |
-> >        |              Misc wiphy init.    |
-> >        |                    |             |
-> >        |            ieee80211_if_add()    |
-> >        |                    |             |
-> >
-> > As evident from above sequence diagram, this race condition isn't specific
-> > to a particular wifi driver but rather the initialization sequence in
-> > ieee80211_register_hw() needs to be fixed.
->
-> Indeed, oops.
->
-> > So re-order the initialization
-> > sequence and the updated sequence diagram would look like:
-> >
-> >     user-space  ieee80211_register_hw()  RX IRQ
-> >     +++++++++++++++++++++++++++++++++++++++++++++
-> >        |                    |             |
-> >        |       alloc_ordered_workqueue()  |
-> >        |                    |             |
-> >        |              Misc wiphy init.    |
-> >        |                    |             |
-> >        |<---wlan0---wiphy_register()      |
-> >        |----start wlan0---->|             |
-> >        |                    |<---IRQ---(RX packet)
-> >        |                    |             |
-> >        |            ieee80211_if_add()    |
-> >        |                    |             |
->
-> Makes sense.
->
-> > @@ -1254,6 +1250,14 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
-> >               local->sband_allocated |= BIT(band);
-> >       }
-> >
-> > +     rtnl_unlock();
+On Mon, Apr 06, 2020 at 09:54:12AM -0300, Arnaldo Carvalho de Melo wrote:
+> Em Thu, Mar 12, 2020 at 08:56:08PM +0100, Jiri Olsa escreveu:
+> > +static int
+> > +process_bpf_image(char *name, u64 addr, struct kallsyms_parse *data)
+> > +{
+> > +	struct machine *machine =3D data->machine;
+> > +	union perf_event *event =3D data->event;
+> > +	struct perf_record_ksymbol *ksymbol;
 > > +
-> > +     result = wiphy_register(local->hw.wiphy);
-> > +     if (result < 0)
-> > +             goto fail_wiphy_register;
+> > +	ksymbol =3D &event->ksymbol;
 > > +
-> > +     rtnl_lock();
->
-> I'm a bit worried about this unlock/relock here though.
->
-> I think we only need the RTNL for the call to
-> ieee80211_init_rate_ctrl_alg() and then later ieee80211_if_add(), so
-> perhaps we can move that a little closer?
->
+> > +	*ksymbol =3D (struct perf_record_ksymbol) {
+> > +		.header =3D {
+> > +			.type =3D PERF_RECORD_KSYMBOL,
+> > +			.size =3D offsetof(struct perf_record_ksymbol, name),
+> > +		},
+> > +		.addr      =3D addr,
+> > +		.len       =3D page_size,
+> > +		.ksym_type =3D PERF_RECORD_KSYMBOL_TYPE_BPF,
+> > +		.flags     =3D 0,
+> > +	};
+> > +
+> > +	strncpy(ksymbol->name, name, KSYM_NAME_LEN);
+> > +	ksymbol->header.size +=3D PERF_ALIGN(strlen(name) + 1, sizeof(u64))=
+;
+> > +	memset((void *) event + event->header.size, 0, machine->id_hdr_size=
+);
+> > +	event->header.size +=3D machine->id_hdr_size;
+> > +
+> > +	return perf_tool__process_synth_event(data->tool, event, machine,
+> > +					      data->process);
+>=20
+> This explodes in fedora 32 and rawhide and in openmandriva:cooker:
+>=20
+>   GEN      /tmp/build/perf/python/perf.so
+>   CC       /tmp/build/perf/util/bpf-event.o
+> In file included from /usr/include/string.h:495,
+>                  from /git/perf/tools/lib/bpf/libbpf_common.h:12,
+>                  from /git/perf/tools/lib/bpf/bpf.h:31,
+>                  from util/bpf-event.c:4:
+> In function =E2=80=98strncpy=E2=80=99,
+>     inlined from =E2=80=98process_bpf_image=E2=80=99 at util/bpf-event.=
+c:323:2,
+>     inlined from =E2=80=98kallsyms_process_symbol=E2=80=99 at util/bpf-=
+event.c:358:9:
+> /usr/include/bits/string_fortified.h:106:10: error: =E2=80=98__builtin_=
+strncpy=E2=80=99 specified bound 256 equals destination size [-Werror=3Ds=
+tringop-truncation]
+>   106 |   return __builtin___strncpy_chk (__dest, __src, __len, __bos (=
+__dest));
+>       |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~=
+~~~~~~~~
+> cc1: all warnings being treated as errors
+> mv: cannot stat '/tmp/build/perf/util/.bpf-event.o.tmp': No such file o=
+r directory
+> make[4]: *** [/git/perf/tools/build/Makefile.build:97: /tmp/build/perf/=
+util/bpf-event.o] Error 1
+> make[3]: *** [/git/perf/tools/build/Makefile.build:139: util] Error 2
+> make[2]: *** [Makefile.perf:617: /tmp/build/perf/perf-in.o] Error 2
+> make[1]: *** [Makefile.perf:225: sub-make] Error 2
+> make: *** [Makefile:70: all] Error 2
+> make: Leaving directory '/git/perf/tools/perf'
+> [perfbuilder@fc58e82bfba4 ~]$
+>=20
+> So I patched it a bit, please ack:
 
-Sure, will move rtnl_unlock() to just after call to
-ieee80211_init_rate_ctrl_alg().
+perfect, thanks
 
-> All the stuff between is really just setting up local stuff, so doesn't
-> really need to worry?
->
+Acked-by: Jiri Olsa <jolsa@redhat.com>
 
-Okay.
+jirka
 
--Sumit
+>=20
+>=20
+> diff --git a/tools/perf/util/bpf-event.c b/tools/perf/util/bpf-event.c
+> index 3728db98981e..0cd41a862952 100644
+> --- a/tools/perf/util/bpf-event.c
+> +++ b/tools/perf/util/bpf-event.c
+> @@ -306,6 +306,7 @@ process_bpf_image(char *name, u64 addr, struct kall=
+syms_parse *data)
+>  	struct machine *machine =3D data->machine;
+>  	union perf_event *event =3D data->event;
+>  	struct perf_record_ksymbol *ksymbol;
+> +	int len;
+> =20
+>  	ksymbol =3D &event->ksymbol;
+> =20
+> @@ -320,8 +321,8 @@ process_bpf_image(char *name, u64 addr, struct kall=
+syms_parse *data)
+>  		.flags     =3D 0,
+>  	};
+> =20
+> -	strncpy(ksymbol->name, name, KSYM_NAME_LEN);
+> -	ksymbol->header.size +=3D PERF_ALIGN(strlen(name) + 1, sizeof(u64));
+> +	len =3D scnprintf(ksymbol->name, KSYM_NAME_LEN, "%s", name);
+> +	ksymbol->header.size +=3D PERF_ALIGN(len + 1, sizeof(u64));
+>  	memset((void *) event + event->header.size, 0, machine->id_hdr_size);
+>  	event->header.size +=3D machine->id_hdr_size;
+> =20
+>=20
 
-> johannes
->
->
