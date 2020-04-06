@@ -2,209 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67AFF19FDB6
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 20:59:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8031D19FDCC
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 21:00:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726399AbgDFS7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 14:59:12 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:38757 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726353AbgDFS7M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 14:59:12 -0400
-Received: by mail-qk1-f195.google.com with SMTP id h14so17376503qke.5;
-        Mon, 06 Apr 2020 11:59:11 -0700 (PDT)
+        id S1725957AbgDFTAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 15:00:54 -0400
+Received: from mail-wr1-f52.google.com ([209.85.221.52]:38712 "EHLO
+        mail-wr1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725876AbgDFTAy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 15:00:54 -0400
+Received: by mail-wr1-f52.google.com with SMTP id 31so795821wre.5
+        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 12:00:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=FhUQ50FJvXYerE7pqAuRjsCvJDWVfozWW+eGdNz7xZQ=;
-        b=aRANXusIKKNeeo7jgBmhY2mVLHTDoMLOGfoHDsjtEW6CFXnpoJvZxPz4JP4ENOcfQV
-         4TwPan8+foQceR6E6RPEplumd90QlwBcbNpy14QCQFI7ijLZ1yIO8VGf8jdI80VtiFu4
-         2B5VmCDFSiN4W+2ilZss7V9C0sBEnemfvwi3tx4mNeV+u6Oov9WKRTcA2dIE6GC4yOWB
-         IxccjZKlj8g30+sSrxsO7wf5AfEWA2YWsXels26EE9un2Y19bXfNCStDLlB212CwqvMS
-         Cmy85/LKCFEBkL72dV8O8pt8Bvkci5NTGRtFBkri7Eqfc/4KL7wyeOwe311IniT7VkJi
-         URAA==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AAwYP8qPxxHpMIXG1y9N9/bqBTipKdfeHTR5j2FnmxU=;
+        b=LQ8rASWLWA3kuE4CYGcoSP34o9F9MGLjoiM/cDUt9goXkAkLGZQQdC6wa6LTOWqnXv
+         O0D2CpJMaxySy3ut22AVQL6rOzbVUObH7BRTHIPWQM3gYyFCh4m9HpsUUsGZUJpHppK7
+         AHU7Oe/OU8atsYe/aRinY5vbxLE6vBlKwMMaYLPv80q1uY8l+N5wyXU4pcVMgs6Pvw7A
+         cFKFLtSmbpIMNztkPgoye10VPqvs5FVHcPn+sbkde9aOb5YWLnqAonrXGTtdD9XUNzZb
+         2x+6MeTJZtZLjDZ59fiMWV1/anp53DD5rQC8YymFZK7bJfT74abM96kRViOzSL40Q8Ym
+         sB9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=FhUQ50FJvXYerE7pqAuRjsCvJDWVfozWW+eGdNz7xZQ=;
-        b=sTe5Xz+IqoSgZOiltEtuapXPN/Vlex4JYoFP26uuSfJY+GF1WHp7ho4eO95JcOLSl0
-         GCTCRLKP5m6ks6JD1q4MtvEt887UrpozXLRW4SDQf1lYIvEdkZlBcFxR+uesTw17LgjW
-         WM5J0ZuZX/2XyCm7FL0NOuaDSNOhWrfFowq5ZzFtI2TOBNq73H6+qztu6W/jSdEOLKop
-         4PLLc2LzhjSkofgR6cmK+OYJP2ggNJxc1DTB6bRxR4vGzTFQ44uuvTC5yA61kOy7Og7a
-         WcKRGBlUv9ovJOsXAIhfP/UKhcYA19olhEq+pW4tHNxSZVJ1FajrlCoQ55SH+bwxb13E
-         G4UA==
-X-Gm-Message-State: AGi0PubAtkB/YtndEQr2L5r+8vZrmcKwkQWmufa+Ein9quzYlg2aZlsg
-        zr3yV22SDnB0TbDkXQ5ZatlV+/vAojbOXED8MTM=
-X-Google-Smtp-Source: APiQypLtpX2icgkBe8ouZNdaYrAwxzV8qylfkHVt0sfQpctCU1ItcWB+JQ7sx+xgHI1UkQ+cnGyOaB6LWILlDEoy0wM=
-X-Received: by 2002:a05:620a:88e:: with SMTP id b14mr802447qka.449.1586199550490;
- Mon, 06 Apr 2020 11:59:10 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AAwYP8qPxxHpMIXG1y9N9/bqBTipKdfeHTR5j2FnmxU=;
+        b=YuOU7LJz0y/y0M0GnMjtjSG+PHGxlFoyAV11eMam7gGIpHYgZldHhMz1sGThVjuYkU
+         W52C0CnLNwmKsX309DMtbFNwMFuUelWlT6jFK3xUatzDMJhz5Ydz0lfBVP5X8+rotKf8
+         IPFpe+DDddVJbwRD92GRzxpA5Yu8eglSY0YJj25+MnFmxuaAtOu2COqtpr8vA1GZ4bVh
+         Uql+ikvai/+XXqd/LST5uyzCwiopUJKciXRQboWj5aWNzBxipTm67FlEV7Qy59OfQFSA
+         QWDeH9oKCnBAP+6KJUh8/e5ko6GLw19flAVPkIK7Dv9Ah+agmOt5M90L95UW/riU7a5j
+         BQ6A==
+X-Gm-Message-State: AGi0PuYtzrp+WQerGuG7JxKDTWcgS9WzLJRBJewYRo1SWxTrGAO3Z6Pi
+        Tf+xF3mc/XPg/o5DbDs3ezR54vkDjM8=
+X-Google-Smtp-Source: APiQypKdV+0ptK4o7FQqtMnOjntEq/BLNMAqnzIWWISuVPcJPgM8zYiekKE+MFXoFxSPhXM8FX8+ew==
+X-Received: by 2002:adf:e7c6:: with SMTP id e6mr670167wrn.159.1586199651797;
+        Mon, 06 Apr 2020 12:00:51 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id q187sm532830wma.41.2020.04.06.12.00.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Apr 2020 12:00:51 -0700 (PDT)
+Date:   Mon, 6 Apr 2020 21:00:50 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Ido Schimmel <idosch@idosch.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: Changing devlink port flavor dynamically for DSA
+Message-ID: <20200406190050.GE2354@nanopsycho.orion>
+References: <ef16b5bb-4115-e540-0ffd-1531e5982612@gmail.com>
+ <20200406180410.GB2354@nanopsycho.orion>
+ <2efae9ae-8957-7d52-617a-848b62f5aca3@gmail.com>
+ <20200406182002.GD2354@nanopsycho.orion>
+ <176481d3-eeee-feae-095a-6a3023d986f5@gmail.com>
 MIME-Version: 1.0
-References: <20200404000948.3980903-1-andriin@fb.com> <20200404000948.3980903-6-andriin@fb.com>
- <87o8s4c0fo.fsf@toke.dk>
-In-Reply-To: <87o8s4c0fo.fsf@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 6 Apr 2020 11:58:59 -0700
-Message-ID: <CAEf4BzZAkdc-=_jGB=hOL4zPRa_Q7G=BCgDgt=_in53hjWJ-2w@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 5/8] bpf: add support for BPF_OBJ_GET_INFO_BY_FD
- for bpf_link
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <176481d3-eeee-feae-095a-6a3023d986f5@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 6, 2020 at 4:34 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
-t.com> wrote:
+Mon, Apr 06, 2020 at 08:41:25PM CEST, f.fainelli@gmail.com wrote:
 >
-> Andrii Nakryiko <andriin@fb.com> writes:
 >
-> > Add ability to fetch bpf_link details through BPF_OBJ_GET_INFO_BY_FD co=
-mmand.
-> > Also enhance show_fdinfo to potentially include bpf_link type-specific
-> > information (similarly to obj_info).
-> >
-> > Also introduce enum bpf_link_type stored in bpf_link itself and expose =
-it in
-> > UAPI. bpf_link_tracing also now will store and return bpf_attach_type.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >  include/linux/bpf-cgroup.h     |   2 -
-> >  include/linux/bpf.h            |  10 +-
-> >  include/linux/bpf_types.h      |   6 ++
-> >  include/uapi/linux/bpf.h       |  28 ++++++
-> >  kernel/bpf/btf.c               |   2 +
-> >  kernel/bpf/cgroup.c            |  45 ++++++++-
-> >  kernel/bpf/syscall.c           | 164 +++++++++++++++++++++++++++++----
-> >  kernel/bpf/verifier.c          |   2 +
-> >  tools/include/uapi/linux/bpf.h |  31 +++++++
-> >  9 files changed, 266 insertions(+), 24 deletions(-)
-> >
-> > diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
-> > index d2d969669564..ab95824a1d99 100644
-> > --- a/include/linux/bpf-cgroup.h
-> > +++ b/include/linux/bpf-cgroup.h
-> > @@ -57,8 +57,6 @@ struct bpf_cgroup_link {
-> >       enum bpf_attach_type type;
-> >  };
-> >
-> > -extern const struct bpf_link_ops bpf_cgroup_link_lops;
-> > -
-> >  struct bpf_prog_list {
-> >       struct list_head node;
-> >       struct bpf_prog *prog;
-> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > index 67ce74890911..8cf182d256d4 100644
-> > --- a/include/linux/bpf.h
-> > +++ b/include/linux/bpf.h
-> > @@ -1026,9 +1026,11 @@ extern const struct file_operations bpf_prog_fop=
-s;
-> >       extern const struct bpf_verifier_ops _name ## _verifier_ops;
-> >  #define BPF_MAP_TYPE(_id, _ops) \
-> >       extern const struct bpf_map_ops _ops;
-> > +#define BPF_LINK_TYPE(_id, _name)
-> >  #include <linux/bpf_types.h>
-> >  #undef BPF_PROG_TYPE
-> >  #undef BPF_MAP_TYPE
-> > +#undef BPF_LINK_TYPE
-> >
-> >  extern const struct bpf_prog_ops bpf_offload_prog_ops;
-> >  extern const struct bpf_verifier_ops tc_cls_act_analyzer_ops;
-> > @@ -1086,6 +1088,7 @@ int bpf_prog_new_fd(struct bpf_prog *prog);
-> >  struct bpf_link {
-> >       atomic64_t refcnt;
-> >       u32 id;
-> > +     enum bpf_link_type type;
-> >       const struct bpf_link_ops *ops;
-> >       struct bpf_prog *prog;
-> >       struct work_struct work;
-> > @@ -1103,9 +1106,14 @@ struct bpf_link_ops {
-> >       void (*dealloc)(struct bpf_link *link);
-> >       int (*update_prog)(struct bpf_link *link, struct bpf_prog *new_pr=
-og,
-> >                          struct bpf_prog *old_prog);
-> > +     void (*show_fdinfo)(const struct bpf_link *link, struct seq_file =
-*seq);
-> > +     int (*fill_link_info)(const struct bpf_link *link,
-> > +                           struct bpf_link_info *info,
-> > +                           const struct bpf_link_info *uinfo,
-> > +                           u32 info_len);
-> >  };
-> >
-> > -void bpf_link_init(struct bpf_link *link,
-> > +void bpf_link_init(struct bpf_link *link, enum bpf_link_type type,
-> >                  const struct bpf_link_ops *ops, struct bpf_prog *prog)=
-;
-> >  int bpf_link_prime(struct bpf_link *link, struct bpf_link_primer *prim=
-er);
-> >  int bpf_link_settle(struct bpf_link_primer *primer);
-> > diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
-> > index ba0c2d56f8a3..8345cdf553b8 100644
-> > --- a/include/linux/bpf_types.h
-> > +++ b/include/linux/bpf_types.h
-> > @@ -118,3 +118,9 @@ BPF_MAP_TYPE(BPF_MAP_TYPE_STACK, stack_map_ops)
-> >  #if defined(CONFIG_BPF_JIT)
-> >  BPF_MAP_TYPE(BPF_MAP_TYPE_STRUCT_OPS, bpf_struct_ops_map_ops)
-> >  #endif
-> > +
-> > +BPF_LINK_TYPE(BPF_LINK_TYPE_RAW_TRACEPOINT, raw_tracepoint)
-> > +BPF_LINK_TYPE(BPF_LINK_TYPE_TRACING, tracing)
-> > +#ifdef CONFIG_CGROUP_BPF
-> > +BPF_LINK_TYPE(BPF_LINK_TYPE_CGROUP, cgroup)
-> > +#endif
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index 407c086bc9e4..d2f269082a33 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -222,6 +222,15 @@ enum bpf_attach_type {
-> >
-> >  #define MAX_BPF_ATTACH_TYPE __MAX_BPF_ATTACH_TYPE
-> >
-> > +enum bpf_link_type {
-> > +     BPF_LINK_TYPE_UNSPEC =3D 0,
-> > +     BPF_LINK_TYPE_RAW_TRACEPOINT =3D 1,
-> > +     BPF_LINK_TYPE_TRACING =3D 2,
-> > +     BPF_LINK_TYPE_CGROUP =3D 3,
-> > +
-> > +     MAX_BPF_LINK_TYPE,
-> > +};
-> > +
-> >  /* cgroup-bpf attach flags used in BPF_PROG_ATTACH command
-> >   *
-> >   * NONE(default): No further bpf programs allowed in the subtree.
-> > @@ -3601,6 +3610,25 @@ struct bpf_btf_info {
-> >       __u32 id;
-> >  } __attribute__((aligned(8)));
-> >
-> > +struct bpf_link_info {
-> > +     __u32 type;
-> > +     __u32 id;
-> > +     __u32 prog_id;
-> > +     union {
-> > +             struct {
-> > +                     __aligned_u64 tp_name; /* in/out: tp_name buffer =
-ptr */
-> > +                     __u32 tp_name_len;     /* in/out: tp_name buffer =
-len */
-> > +             } raw_tracepoint;
-> > +             struct {
-> > +                     __u32 attach_type;
-> > +             } tracing;
+>On 4/6/2020 11:20 AM, Jiri Pirko wrote:
+>> Mon, Apr 06, 2020 at 08:11:18PM CEST, f.fainelli@gmail.com wrote:
+>>>
+>>>
+>>> On 4/6/2020 11:04 AM, Jiri Pirko wrote:
+>>>> Sun, Apr 05, 2020 at 10:42:29PM CEST, f.fainelli@gmail.com wrote:
+>>>>> Hi all,
+>>>>>
+>>>>> On a BCM7278 system, we have two ports of the switch: 5 and 8, that
+>>>>> connect to separate Ethernet MACs that the host/CPU can control. In
+>>>>> premise they are both interchangeable because the switch supports
+>>>>> configuring the management port to be either 5 or 8 and the Ethernet
+>>>>> MACs are two identical instances.
+>>>>>
+>>>>> The Ethernet MACs are scheduled differently across the memory controller
+>>>>> (they have different bandwidth and priority allocations) so it is
+>>>>> desirable to select an Ethernet MAC capable of sustaining bandwidth and
+>>>>> latency for host networking. Our current (in the downstream kernel) use
+>>>>> case is to expose port 5 solely as a control end-point to the user and
+>>>>> leave it to the user how they wish to use the Ethernet MAC behind port
+>>>>> 5. Some customers use it to bridge Wi-Fi traffic, some simply keep it
+>>>>> disabled. Port 5 of that switch does not make use of Broadcom tags in
+>>>>> that case, since ARL-based forwarding works just fine.
+>>>>>
+>>>>> The current Device Tree representation that we have for that system
+>>>>> makes it possible for either port to be elected as the CPU port from a
+>>>>> DSA perspective as they both have an "ethernet" phandle property that
+>>>>> points to the appropriate Ethernet MAC node, because of that the DSA
+>>>>> framework treats them as CPU ports.
+>>>>>
+>>>>> My current line of thinking is to permit a port to be configured as
+>>>>> either "cpu" or "user" flavor and do that through devlink. This can
+>>>>> create some challenges but hopefully this also paves the way for finally
+>>>>> supporting "multi-CPU port" configurations. I am thinking something like
+>>>>> this would be how I would like it to be configured:
+>>>>>
+>>>>> # First configure port 8 as the new CPU port
+>>>>> devlink port set pci/0000:01:00.0/8 type cpu
+>>>>> # Now unmap port 5 from being a CPU port
+>>>>> devlink port set pci/0000:01:00.0/1 type eth
+>>>>
+>>>> You are mixing "type" and "flavour".
+>>>>
+>>>> Flavours: cpu/physical. I guess that is what you wanted to set, correct?
+>>>
+>>> Correct, flavor is really what we want to change here.
+>>>
+>>>>
+>>>> I'm not sure, it would make sense. The CPU port is still CPU port, it is
+>>>> just not used. You can never make is really "physical", am I correct? 
+>>>
+>>> True, although with DSA as you may know if we have a DSA_PORT_TYPE_CPU
+>>> (or DSA_PORT_TYPE_DSA), then we do not create a corresponding net_device
+>>> instance because that would duplicate the Ethernet MAC net_device. This
+>>> is largely the reason for suggesting doing this via devlink (so that we
+>>> do not rely on a net_device handle). So by changing from a
+>>> DSA_PORT_TYPE_CPU flavor to DSA_PORT_TYPE_USER, this means you would now
+>>> see a corresponding net_device instance. Conversely when you migrate
+>>>from DSA_PORT_TYPE_USER to DSA_PORT_TYPE_CPU, the corresponding
+>>> net_device would be removed.
+>> 
+>> Wait, why would you ever want to have a netdevice for CPU port (changed
+>> to "user")? What am I missing? Is there a usecase, some multi-person
+>> port?
+>> 
 >
-> Shouldn't this also include the attach target?
+>I believe I explained the use case in my first email. The way the Device
+>Tree description is currently laid out makes it that Port 5 gets picked
+>up as the CPU port for the system. This is because the DSA layer stops
+>whenever it encounters the first "CPU" port, which it determines by
+>having an "ethernet" phandle (reference) to an Ethernet MAC controller node.
+>
+>The Ethernet MAC controller behind Port 5 does not have the necessary
+>bandwidth allocation at the memory controller level to sustain Gigabit
+>traffic with 64B packets. Instead we want to use Port 8 and the Ethernet
+>MAC connected to it which has been budgeted to support that bandwidth.
+>
+>The reason why we want to have a representor (DSA_PORT_TYPE_USER) for
+>port 5 of the switch is also because we need to set-up Compact Field
+>Processor (CFP) rules which need to identify specific packets ingressing
+>a specific port number and to be redirected towards another port (7) for
+>audio/video streaming processing. The interface to configure CFP is
+>currently ethool::rxnfc and that requires a net_device handle,
+>cls_flower would be the same AFAICT.
 
-We can store extra stuff in bpf_link for this as well and return it,
-I'll take a look what makes sense to return for bpf_tracing_link.
+But if you don't use port 5 as CPU port, you don't use if for anything.
+Okay, you say that you need it for ethtool setup. But can't you use
+other netdevs of another port (physical port) for that?
 
->
-> -Toke
->
+My point is, port 5 would not ever become physical port, equivalent to
+port 1 for example. Will still be CPU port. Only used/unused.
