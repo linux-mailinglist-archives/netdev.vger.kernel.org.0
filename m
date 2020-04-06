@@ -2,74 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3A101A0947
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 10:25:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17C1D19FEDF
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 22:13:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726720AbgDGIZr convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 7 Apr 2020 04:25:47 -0400
-Received: from pmg.slemankab.go.id ([103.71.191.178]:35366 "EHLO
-        pmg.slemankab.go.id" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725817AbgDGIZq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 04:25:46 -0400
-Received: from pmg.slemankab.go.id (localhost.localdomain [127.0.0.1])
-        by pmg.slemankab.go.id (Proxmox) with ESMTP id 48C0E342993;
-        Tue,  7 Apr 2020 03:12:42 +0700 (WIB)
-Received: from mailserver.slemankab.go.id (mail.slemankab.go.id [192.168.90.92])
-        by pmg.slemankab.go.id (Proxmox) with ESMTPS id 2034F3414B3;
-        Tue,  7 Apr 2020 03:12:27 +0700 (WIB)
-Received: from localhost (localhost [127.0.0.1])
-        by mailserver.slemankab.go.id (Postfix) with ESMTP id 0DABE344387;
-        Tue,  7 Apr 2020 03:12:27 +0700 (WIB)
-Received: from mailserver.slemankab.go.id ([127.0.0.1])
-        by localhost (mailserver.slemankab.go.id [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id q3ROJ26OUQP0; Tue,  7 Apr 2020 03:12:26 +0700 (WIB)
-Received: from localhost (localhost [127.0.0.1])
-        by mailserver.slemankab.go.id (Postfix) with ESMTP id B9366343A34;
-        Tue,  7 Apr 2020 03:12:26 +0700 (WIB)
-X-Virus-Scanned: amavisd-new at mailserver.slemankab.go.id
-Received: from mailserver.slemankab.go.id ([127.0.0.1])
-        by localhost (mailserver.slemankab.go.id [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 8KTlyDQiJ8tz; Tue,  7 Apr 2020 03:12:26 +0700 (WIB)
-Received: from [100.85.182.74] (unknown [110.225.93.65])
-        by mailserver.slemankab.go.id (Postfix) with ESMTPSA id 566C93440B0;
-        Tue,  7 Apr 2020 03:12:19 +0700 (WIB)
-Content-Type: text/plain; charset="iso-8859-1"
+        id S1726426AbgDFUND (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 16:13:03 -0400
+Received: from www62.your-server.de ([213.133.104.62]:50512 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725895AbgDFUND (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 16:13:03 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jLY78-0000bM-7W; Mon, 06 Apr 2020 22:12:58 +0200
+Received: from [178.195.186.98] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jLY77-000Ref-Sy; Mon, 06 Apr 2020 22:12:57 +0200
+Subject: Re: [PATCH] xsk: fix out of boundary write in __xsk_rcv_memcpy
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     Li RongQing <lirongqing@baidu.com>,
+        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kevin Laatz <kevin.laatz@intel.com>,
+        Ciara Loftus <ciara.loftus@intel.com>,
+        Bruce Richardson <bruce.richardson@intel.com>,
+        magnus.karlsson@intel.com
+References: <1585813930-19712-1-git-send-email-lirongqing@baidu.com>
+ <6BB0E637-B5F8-4B50-9B70-8A30F4AF6CF5@gmail.com>
+ <CAJ+HfNjTaWp+=na14mjMzpbRzM2Ea5wK_MNJddFNEJ59XDLPNw@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <7dbc67e0-aaca-9809-3cda-34f3d5791337@iogearbox.net>
+Date:   Mon, 6 Apr 2020 22:12:57 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: =?utf-8?q?ATENCI=C3=93N____?=
-To:     Recipients <administrator@ancol.com>
-From:   Sistemas administrador <administrator@ancol.com>
-Date:   Tue, 07 Apr 2020 01:42:10 +0530
-Reply-To: mailsss@mail2world.com
-Message-Id: <20200406201219.566C93440B0@mailserver.slemankab.go.id>
-X-SPAM-LEVEL: Spam detection results:  1
-        ALL_TRUSTED                -1 Passed through trusted hosts only via SMTP
-        BAYES_40               -0.001 Bayes spam probability is 20 to 40%
-        FREEMAIL_FORGED_REPLYTO  2.095 Freemail in Reply-To, but not From
-        KAM_DMARC_STATUS         0.01 Test Rule for DKIM or SPF Failure with Strict Alignment
+In-Reply-To: <CAJ+HfNjTaWp+=na14mjMzpbRzM2Ea5wK_MNJddFNEJ59XDLPNw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25774/Mon Apr  6 14:53:25 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ATENCIÓN;
+On 4/3/20 10:29 AM, BjÃ¶rn TÃ¶pel wrote:
+> On Fri, 3 Apr 2020 at 00:22, Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+>> On 2 Apr 2020, at 0:52, Li RongQing wrote:
+>>
+>>> first_len is remainder of first page, if write size is
+>>> larger than it, out of page boundary write will happen
+>>>
+>>> Fixes: c05cd3645814 "(xsk: add support to allow unaligned chunk placement)"
+>>> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+>>
+>> Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+> 
+> Good catch!
+> Acked-by: BjÃ¶rn TÃ¶pel <bjorn.topel@intel.com>
 
-Su buzón ha superado el límite de almacenamiento, que es de 5 GB definidos por el administrador, quien actualmente está ejecutando en 10.9GB, no puede ser capaz de enviar o recibir correo nuevo hasta que vuelva a validar su buzón de correo electrónico. Para revalidar su buzón de correo, envíe la siguiente información a continuación:
+Applied, thanks!
 
-nombre:
-Nombre de usuario:
-contraseña:
-Confirmar contraseña:
-E-mail:
-teléfono:
+BjÃ¶rn, Magnus, others, would be really valuable to have a proper kselftest suite
+in BPF for covering everything xsk related, including such corner cases as Li fixed
+here, wdyt? ;-)
 
-Si usted no puede revalidar su buzón, el buzón se deshabilitará!
-
-Disculpa las molestias.
-Código de verificación:666690opp4r56 es: 006524.2020
-Correo Soporte Técnico © 2020
-
-¡gracias
-Sistemas administrador
-
+Thanks,
+Daniel
