@@ -2,115 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F54619FC7E
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 20:06:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5111819FC88
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 20:09:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726589AbgDFSGj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 14:06:39 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:40722 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726530AbgDFSGj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 14:06:39 -0400
-Received: by mail-wr1-f65.google.com with SMTP id s8so557931wrt.7
-        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 11:06:37 -0700 (PDT)
+        id S1726632AbgDFSJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 14:09:09 -0400
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:38002 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726436AbgDFSJI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 14:09:08 -0400
+Received: by mail-yb1-f194.google.com with SMTP id 204so347425ybw.5;
+        Mon, 06 Apr 2020 11:09:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=70URWwjZCBpvtwiUWI7tNhDiEyKOh0lXOWNvFVOTj38=;
-        b=n0lh1431yTgQU5kOgnqlmRpwaEUVUjgLakF5zq4FC9qNcumRVjbwVuAlaymiH++nRE
-         nE1SLaBgmBjnagoI54ZCObvr9qet4O1o1XGo2FdGCzZKe//3YFnZZfKJUGBpXP6qbMdR
-         qewiLIqcuJcCWmQlwVv/WAAw1g8OZyRrVukYSMW85uv5wungCQwjpcARy6liy52N4bZu
-         E5augtTiyCbBHcgaUogMsyqQD8DMoAcjOaa7Exp1jAIa4ECFnbYCEEQPu7QFr/ZfbWKx
-         zzi6VvI5efMrVpdW3SgDeHHj/HQx77nFDvCQuOjKfmh46CUr64HFErh3Fld8XNg/+2qD
-         HIJA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YerZdcxcQmsmPmbc7x3l9FNg9tmvbjAIdH163TSG1LM=;
+        b=C3hh1cS14KFIfA2sbb6OW61jKT6Zea0KasgKyB/5198Mh0GTyceREUQ3TXh1fJoy60
+         aqmMe+gR+t3Dt0EER1JxbS4MdKJGWi4dVaX/TUL+ye28lSgk1mgGVT9boLVvLMSx2L8y
+         Vg7uqev+kgFvU46OX16LWH2RWg9DCSCYtNvspZAVTxHu6/o2p96pmo9xBryiQ9f8cnBi
+         cNdRV359X/j2lCSFrbjMr4OIK3J6oEDoCk7sELPLvjv+2CrYfBsdar1rPFsiIknc5yVt
+         mvXiO11tk1AIye2stB2lE/Pvst7v56WhBZdW7fsmhBcbDlhew1SqVZcwOZBjlSuVaRtK
+         z1pQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=70URWwjZCBpvtwiUWI7tNhDiEyKOh0lXOWNvFVOTj38=;
-        b=Yfl3+hyNsSlousFUe9Eizf7jJO6WSJ5KTsEelpuDCIo9496xij5j30iOQ3sHtQIOfV
-         t/aENRvdHp7qW+OHj14ez0zhwPGN3dphSsE2sYGHIlup+rEPM8BBOqg6B3phbPnWlkgY
-         gCZyGhlCiiU5/u1rkXBKTTuwWaDrwzzepU4mXlT7uZ+TY+DtZAPPRxYM80/lJ7PnW5+X
-         XWUXa7NxlLcApj1ENqPvGY6jC52/gdrH86R8anUmRfCVmO2axl87y2bX/OsMVwhYRx5p
-         8Z02g9amBVlY3f/2lvJ32w/i+E7S/v/sHiJ2cvzvr8JfBaiP5B1utoke5nk5NSgX9WCF
-         7IqA==
-X-Gm-Message-State: AGi0PuZ0g+x4z/grZV6hP5X9MJ81jT2PUgAIJ8yxs6pYmbwj3z5A1/zY
-        9uGxGXN9jEOX81OhU75F42uITw==
-X-Google-Smtp-Source: APiQypKmlDF5+aQhhXjJbEbEY1LXsV0Uv63KqW9WqbiNo1kGHDUcG1Fu9iZ23GnN7H4xPc2KRvYAnw==
-X-Received: by 2002:adf:ec4c:: with SMTP id w12mr439577wrn.240.1586196397091;
-        Mon, 06 Apr 2020 11:06:37 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id f12sm27697431wrm.94.2020.04.06.11.06.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Apr 2020 11:06:36 -0700 (PDT)
-Date:   Mon, 6 Apr 2020 20:06:35 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com, mlxsw@mellanox.com
-Subject: Re: [patch iproute2/net-next 8/8] man: add man page for devlink dpipe
-Message-ID: <20200406180635.GC2354@nanopsycho.orion>
-References: <20200404161621.3452-1-jiri@resnulli.us>
- <20200404161621.3452-9-jiri@resnulli.us>
- <20200406103036.2ac9c665@hermes.lan>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YerZdcxcQmsmPmbc7x3l9FNg9tmvbjAIdH163TSG1LM=;
+        b=Gc6UuhEVh82b4GgcaCEFs2Q+EG+rBNz8fxCaJejz06aYMI33IOgVxqASNAyh9jtGKX
+         NqOlse9IzOL879sledZqgRv2FdWKvhJXYHyg+7+KK8azzi+da8/p3pBzwqwogSU1aykM
+         i1KDh1pZsZ7NUKa4Gwn917DXvk0yHqudk+RAuogW3qAzB/Eil6i6L6HZQmqMQEi4udwm
+         3KieRfKPo3woFQvBbwMeuU+s+OxFIPOQOfa7RlmCYiTc1c3lWnDnh0QfkyP2513nHZSL
+         vqKiy6cCdtIOZ9G0zwsVHNSUeO05/Hvd+wJgnJ4h6b0g8a95EwYPkseMtLXtigl92Cnt
+         8FwA==
+X-Gm-Message-State: AGi0PuZES+9N8uB01LEkmjl0M9uNjT0rHjpSyPPmDccAViSJSG9an2wY
+        k2AO9ltIspqCHOTXt6h+tWNK4krnSol2Vvaytuc=
+X-Google-Smtp-Source: APiQypJNh0gfrRG+aUIvtwyV5pyFGfJIwXgdUOU3PFRpUCcp7aUGELXyXGkqfsUeqnbL0YixSStkauVyExmNu0ZwAhk=
+X-Received: by 2002:a25:bb0b:: with SMTP id z11mr35630837ybg.400.1586196545618;
+ Mon, 06 Apr 2020 11:09:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200406103036.2ac9c665@hermes.lan>
+References: <1586175677-3061-1-git-send-email-sumit.garg@linaro.org>
+ <87ftdgokao.fsf@tynnyri.adurom.net> <1e352e2130e19aec5aa5fc42db397ad50bb4ad05.camel@sipsolutions.net>
+ <87r1x0zsgk.fsf@kamboji.qca.qualcomm.com> <a7e3e8cceff1301f5de5fb2c9aac62b372922b3e.camel@sipsolutions.net>
+ <87imiczrwm.fsf@kamboji.qca.qualcomm.com> <ee168acb768d87776db2be4e978616f9187908d0.camel@sipsolutions.net>
+ <CAFA6WYOjU_iDyAn5PMGe=usg-2sPtupSQEYwcomUcHZBAPnURA@mail.gmail.com>
+ <87v9mcycbf.fsf@kamboji.qca.qualcomm.com> <CABPxzYKs3nj0AUX4L-j87Db8v3WnM4uGif9nRTGgx1m2HNN8Rg@mail.gmail.com>
+ <35cadbaff1239378c955014f9ad491bc68dda028.camel@sipsolutions.net>
+ <CABPxzY++YMBPTV4quAkYvEAMfULjMXLkVfNzwocwubno5HO2Bw@mail.gmail.com> <5575dfe84aa745a3c2a61e240c3d150dc8d9446f.camel@sipsolutions.net>
+In-Reply-To: <5575dfe84aa745a3c2a61e240c3d150dc8d9446f.camel@sipsolutions.net>
+From:   Krishna Chaitanya <chaitanya.mgit@gmail.com>
+Date:   Mon, 6 Apr 2020 23:38:54 +0530
+Message-ID: <CABPxzYJHjaLH+ozyFZx1hwXrNxdHgJaardk-kn7d72y7RC-=hw@mail.gmail.com>
+Subject: Re: [PATCH] mac80211: fix race in ieee80211_register_hw()
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Matthias=2DPeter_Sch=C3=B6pfer?= 
+        <matthias.schoepfer@ithinx.io>,
+        "Berg Philipp (HAU-EDS)" <Philipp.Berg@liebherr.com>,
+        "Weitner Michael (HAU-EDS)" <Michael.Weitner@liebherr.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Loic Poulain <loic.poulain@linaro.org>, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Apr 06, 2020 at 07:30:36PM CEST, stephen@networkplumber.org wrote:
->On Sat,  4 Apr 2020 18:16:21 +0200
->Jiri Pirko <jiri@resnulli.us> wrote:
+On Mon, Apr 6, 2020 at 8:36 PM Johannes Berg <johannes@sipsolutions.net> wrote:
 >
->> From: Jiri Pirko <jiri@mellanox.com>
->> 
->> Add simple man page for devlink dpipe.
->> 
->> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
->> ---
->>  man/man8/devlink-dpipe.8 | 100 +++++++++++++++++++++++++++++++++++++++
->>  1 file changed, 100 insertions(+)
->>  create mode 100644 man/man8/devlink-dpipe.8
->> 
->> diff --git a/man/man8/devlink-dpipe.8 b/man/man8/devlink-dpipe.8
->> new file mode 100644
->> index 000000000000..00379401208e
->> --- /dev/null
->> +++ b/man/man8/devlink-dpipe.8
->> @@ -0,0 +1,100 @@
->> +.TH DEVLINK\-DPIPE 8 "4 Apr 2020" "iproute2" "Linux"
->> +.SH NAME
->> +devlink-dpipe \- devlink dataplane pipeline visualization 
->> +.SH SYNOPSIS
->> +.sp
->> +.ad l
->> +.in +8
->> +.ti -8
->> +.B devlink
->> +.RI "[ " OPTIONS " ]"
->> +.B dpipe
->> +.RB "{ " table " | " header " }"
->> +.RI "{ " COMMAND " | "
->> +.BR help " }"
->> +.sp
->> +
->> +.ti -8
->> +.IR OPTIONS " := { "
->> +\fB\-V\fR[\fIersion\fR] }
->> +
->> +.ti -8
->> +.BI "devlink dpipe table show " DEV
->> +.R [
->> +.BI name " TABLE_NAME "
->> +.R ]
+> On Mon, 2020-04-06 at 19:55 +0530, Krishna Chaitanya wrote:
 >
->I applied the whole set, but fixed some issues on the man page.
->You had some trailing white space, and the .R macro is not the right
->way to do this. Make check runs a script from Debian and it spots that.
+> > > iw phy0 interface add wlan0 type station
+> > > ip link set wlan0 up
+> > Ah okay, got it, thanks. Very narrow window though :-) as the
+> > alloc_ordered_workqueue
+> > doesn't need RTNL and there is a long way to go to do if_add() from
+> > user and setup
+> > the driver for interrupts.
+>
+> True, I do wonder how this is hit. Maybe something with no preempt and a
+> uevent triggering things?
+Probably, it might be specific to the dragonboard410c configuration
 
-Okay. I'll make sure to run this next time. I had no idea it checkes
-man. Thanks!
+> > Again depends on the driver though, it
+> > should properly handle
+> > pending ieee80211_register_hw() with start().
+
+> It could, but it'd be really tricky. Much better to fix mac80211.
+Sure, anyways it is a good change.
