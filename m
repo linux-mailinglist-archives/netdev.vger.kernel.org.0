@@ -2,96 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0285319F6DB
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 15:24:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFC9619F6E8
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 15:26:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728440AbgDFNYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 09:24:35 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:21488 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728262AbgDFNYd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 09:24:33 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1586179473; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=0huV9gCKoElhr+Kd6F/isL7651Gm8HQMAsVqnv5Vwq0=; b=A26cxBE1vnEgs7+uWZIuNKf6ttS3sbAAPYFM0Psf0Kmrb3tzXyg37v0jdOI8zfh2mnTQUu3q
- tXFS/a48fG93gkbPei/qKW2Q3tQ9iKEynjzKbxlH3BvATSAd8UtIPlRLYdge9L+rxpCfwaov
- iQJwiZGWno0Vvl0rAg57Dx0v8rQ=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e8b2d8d.7ff7bd409810-smtp-out-n05;
- Mon, 06 Apr 2020 13:24:29 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 1CA2FC43636; Mon,  6 Apr 2020 13:24:29 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id DE9BDC433F2;
-        Mon,  6 Apr 2020 13:24:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DE9BDC433F2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Tony Chuang <yhchuang@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "open list\:REALTEK WIRELESS DRIVER \(rtw88\)" 
-        <linux-wireless@vger.kernel.org>,
-        "open list\:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] rtw88: Add delay on polling h2c command status bit
-References: <20200406093623.3980-1-kai.heng.feng@canonical.com>
-        <87v9mczu4h.fsf@kamboji.qca.qualcomm.com>
-        <94EAAF7E-66C5-40E2-B6A9-0787CB13A3A9@canonical.com>
-Date:   Mon, 06 Apr 2020 16:24:24 +0300
-In-Reply-To: <94EAAF7E-66C5-40E2-B6A9-0787CB13A3A9@canonical.com> (Kai-Heng
-        Feng's message of "Mon, 6 Apr 2020 21:18:20 +0800")
-Message-ID: <87zhboycfr.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1728367AbgDFN0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 09:26:21 -0400
+Received: from mout.gmx.net ([212.227.17.22]:40757 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728193AbgDFN0V (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Apr 2020 09:26:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1586179542;
+        bh=cZxryEa5tb+4ohfc5V2brSTnlGtEjAXGe6KYmDrG5hk=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=FDqxf/03Me6n52488Y18Rabb5YSwMPn1mam4w4B6S2FebURiMOjtlneLssYKRhVZV
+         iSU2GotSw9c5FzSAXDal/a4PO8MaL4SCiPIb+eHaWbjHqRuSJ33O0zYBXMHpZOxGAl
+         xWbb/xhuYuR4UuaOcC6KNdWEzXaA+6JGSVrclXek=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [217.61.149.116] ([217.61.149.116]) by web-mail.gmx.net
+ (3c-app-gmx-bap62.server.lan [172.19.172.132]) (via HTTP); Mon, 6 Apr 2020
+ 15:25:42 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+Message-ID: <trinity-fb0cdf15-dfcf-4d60-9144-87d8fbfad5ba-1586179542451@3c-app-gmx-bap62>
+From:   "Frank Wunderlich" <frank-w@public-files.de>
+To:     sean.wang@mediatek.com
+Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        vivien.didelot@savoirfairelinux.com, Mark-MC.Lee@mediatek.com,
+        john@phrozen.org, Landen.Chao@mediatek.com,
+        steven.liu@mediatek.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?Q?=22Ren=C3=A9_van_Dorst=22?= <opensource@vdorst.com>,
+        linux-mediatek@lists.infradead.org
+Subject: Aw: [PATCH v2 net 1/2] net: dsa: mt7530: move mt7623 settings out
+ off the mt7530
+Content-Type: text/plain; charset=UTF-8
+Date:   Mon, 6 Apr 2020 15:25:42 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <1586122974-22125-1-git-send-email-sean.wang@mediatek.com>
+References: <1586122974-22125-1-git-send-email-sean.wang@mediatek.com>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:O1vU5Y4cQTpCmCr8F/qiebVj81nxiFnE5QlNKEK3tTiupQQ3ghXSyk0ZApsFymcjQ8Rlf
+ q3gIdeGy49auc3bph4SXTubVy51+lvbVajZaENnxiiY8AGOJyiDriMDc65Dxc1SGJxXySuhC5XQP
+ 7dZJruxEuXE8FNuPSWK7mQG6+8T74Sgv3bm0myeTblKgGfMo37EXtoCaVevDZ0leLdhR/1pvqa/+
+ 5Cy0ZI35eRixcMb2Wf/oSUvbkqsdv8kS5iQa451qd/x8IpPyMXJeL0cbKqNmWWLJyPfrBiVvGzx4
+ SI=
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:pBy9zcz6aqI=:Y+q9/7RkJD0R8BQoabs8+k
+ a0AtodGnx1+Sp3KQ0UES8c/6igKsZhu5lFK65lXFmsdIh3X0GZSZlWegMyGqnjhL/0ToWRS/4
+ GYhN0gfTjU6h+5s12FFxOYwXf6VLs2yor9iT9yur1I8vtFClWoIaCyHG9UP7RqSr0OsxNHSmn
+ LdMrwrv4Gyr5MfdBQCHKEou0Iz8RnAvmxSJJmVmB193gLABJGj+2Mj1hRumOjn5AZvtiibO9x
+ N6QlD4QGWYnyJVW+v1Lebc82GVX0Pw88mDoHyuGQMFhurajKscffLM7rVVnLU2ZyvQHAGAylI
+ RtZtNldAVDfH/Mp0pEsH/FcS7Yw9xmx+2LQIrl9lO839TIpHSxpuoiMbsXqBW6MTWag5uFXEJ
+ 08yCayHNEP2KWwsBpIOO7428ykDDzHPhX+R/+NUcEALWl4sculIltOspefQv4o2l2AFj/0HVr
+ clH+GOPY9Qem2S7z0JItFBkIEdQ/k3rdJkjWVdbJviTwBwcZVzBrRbhC9VoN52dtjys/pcorJ
+ 1y29sm4VqxoRCFPZW8KfIN5ME6SGyE6CO7kYQk3Y00Pclq/F6lG4sHiUCtm2oo/iAwFIg2Jgj
+ vxvIThhIyWGt7zWiaUX2D2WDlgHyE7HZm6kz+nOhszj33OysxFo2mFgrlE6fUkfkiIXN6ZmYO
+ 0mhKgc1gZJ4sLMNLVD3LnopNOy+aunQVJN/+KJg62hcm4D1SnKQpl+h+WtXMDmfhTvAM=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
+Hi,
 
->> On Apr 6, 2020, at 20:17, Kalle Valo <kvalo@codeaurora.org> wrote:
->> 
->> Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
->> 
->>> --- a/drivers/net/wireless/realtek/rtw88/hci.h
->>> +++ b/drivers/net/wireless/realtek/rtw88/hci.h
->>> @@ -253,6 +253,10 @@ rtw_write8_mask(struct rtw_dev *rtwdev, u32
->>> addr, u32 mask, u8 data)
->>> 	rtw_write8(rtwdev, addr, set);
->>> }
->>> 
->>> +#define rr8(addr)      rtw_read8(rtwdev, addr)
->>> +#define rr16(addr)     rtw_read16(rtwdev, addr)
->>> +#define rr32(addr)     rtw_read32(rtwdev, addr)
->> 
->> For me these macros reduce code readability, not improve anything. They
->> hide the use of rtwdev variable, which is evil, and a name like rr8() is
->> just way too vague. Please keep the original function names as is.
->
-> The inspiration is from another driver.
-> readx_poll_timeout macro only takes one argument for the op.
-> Some other drivers have their own poll_timeout implementation,
-> and I guess it makes sense to make one specific for rtw88.
+have tested these 2 and additional rene's 3rd Patch on my tree [1] on BPi-R2, no problem with trgmii yet (multiple power-cycle+reboots). I had issues with current 5.6.0 version, so imho these should go also into 5.6.y
 
-I'm not even understanding the problem you are tying to fix with these
-macros. The upstream philosopyhy is to have the source code readable and
-maintainable, not to use minimal number of characters. There's a reason
-why we don't name our functions a(), b(), c() and so on.
+regards Frank
 
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Tested-by: Frank Wunderlich <frank-w@public-files.de>
+
+[1] https://github.com/frank-w/BPI-R2-4.14/commits/5.6-trgmii
