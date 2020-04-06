@@ -2,105 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D40F19F2B0
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 11:36:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 801B019F2BD
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 11:39:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726808AbgDFJgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 05:36:38 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:53751 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726687AbgDFJgi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 05:36:38 -0400
-Received: from 61-220-137-37.hinet-ip.hinet.net ([61.220.137.37] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <kai.heng.feng@canonical.com>)
-        id 1jLOB8-0002nT-Rr; Mon, 06 Apr 2020 09:36:27 +0000
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     yhchuang@realtek.com
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org (open list:REALTEK WIRELESS DRIVER
-        (rtw88)), netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] rtw88: Add delay on polling h2c command status bit
-Date:   Mon,  6 Apr 2020 17:36:22 +0800
-Message-Id: <20200406093623.3980-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726721AbgDFJjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 05:39:20 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:20197 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726675AbgDFJjU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 05:39:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1586165960;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=o7QUe55LDlS7vu95ZSOJID294mWSSyJ6ODdz33cAI3U=;
+        b=cmddpFcRTh/um7rCmx2eG3hAzooq7hoxTt+LZ7Hw1r9Krvxh3zXLPixsnL0Kei+x080F8Q
+        dxYDdo26EhG7fnvXtHGJhgzUn/6PN/LRRXoftiE6kE1j+EsVfFxZkAB3azWDr1GNay1Tho
+        zYErcAsu0PyLqe4skuK0V5/pJPpJbAE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-102-MUWyIXgUMjC0kLqx8nDXfQ-1; Mon, 06 Apr 2020 05:39:16 -0400
+X-MC-Unique: MUWyIXgUMjC0kLqx8nDXfQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1C6CE801E57;
+        Mon,  6 Apr 2020 09:39:15 +0000 (UTC)
+Received: from new-host-5.redhat.com (unknown [10.40.195.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B2A4027189;
+        Mon,  6 Apr 2020 09:39:13 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        Dmitry Bogdanov <dbogdanov@marvell.com>,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH net] macsec: fix NULL dereference in macsec_upd_offload()
+Date:   Mon,  6 Apr 2020 11:38:29 +0200
+Message-Id: <74490212072a970d0b65114644f90b1c06c68402.1586165752.git.dcaratti@redhat.com>
+MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On some systems we can constanly see rtw88 complains:
-[39584.721375] rtw_pci 0000:03:00.0: failed to send h2c command
+macsec_upd_offload() gets the value of MACSEC_OFFLOAD_ATTR_TYPE
+without checking its presence in the request message, and this causes
+a NULL dereference. Fix it rejecting any configuration that does not
+include this attribute.
 
-Increase interval of each check to wait the status bit really changes.
-
-While at it, add some helpers so we can use standarized
-readx_poll_timeout() macro.
-
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Reported-and-tested-by: syzbot+7022ab7c383875c17eff@syzkaller.appspotmail=
+.com
+Fixes: dcb780fb2795 ("net: macsec: add nla support for changing the offlo=
+ading selection")
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 ---
- drivers/net/wireless/realtek/rtw88/fw.c  | 12 ++++++------
- drivers/net/wireless/realtek/rtw88/hci.h |  4 ++++
- 2 files changed, 10 insertions(+), 6 deletions(-)
+ drivers/net/macsec.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/fw.c b/drivers/net/wireless/realtek/rtw88/fw.c
-index 05c430b3489c..bc9982e77524 100644
---- a/drivers/net/wireless/realtek/rtw88/fw.c
-+++ b/drivers/net/wireless/realtek/rtw88/fw.c
-@@ -2,6 +2,8 @@
- /* Copyright(c) 2018-2019  Realtek Corporation
-  */
- 
-+#include <linux/iopoll.h>
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index da82d7f16a09..0d580d81d910 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -2594,6 +2594,9 @@ static int macsec_upd_offload(struct sk_buff *skb, =
+struct genl_info *info)
+ 		return PTR_ERR(dev);
+ 	macsec =3D macsec_priv(dev);
+=20
++	if (!tb_offload[MACSEC_OFFLOAD_ATTR_TYPE])
++		return -EINVAL;
 +
- #include "main.h"
- #include "coex.h"
- #include "fw.h"
-@@ -193,8 +195,8 @@ static void rtw_fw_send_h2c_command(struct rtw_dev *rtwdev,
- 	u8 box;
- 	u8 box_state;
- 	u32 box_reg, box_ex_reg;
--	u32 h2c_wait;
- 	int idx;
-+	int ret;
- 
- 	rtw_dbg(rtwdev, RTW_DBG_FW,
- 		"send H2C content %02x%02x%02x%02x %02x%02x%02x%02x\n",
-@@ -226,12 +228,10 @@ static void rtw_fw_send_h2c_command(struct rtw_dev *rtwdev,
- 		goto out;
- 	}
- 
--	h2c_wait = 20;
--	do {
--		box_state = rtw_read8(rtwdev, REG_HMETFR);
--	} while ((box_state >> box) & 0x1 && --h2c_wait > 0);
-+	ret = readx_poll_timeout(rr8, REG_HMETFR, box_state,
-+				 !((box_state >> box) & 0x1), 100, 3000);
- 
--	if (!h2c_wait) {
-+	if (ret) {
- 		rtw_err(rtwdev, "failed to send h2c command\n");
- 		goto out;
- 	}
-diff --git a/drivers/net/wireless/realtek/rtw88/hci.h b/drivers/net/wireless/realtek/rtw88/hci.h
-index 2cba327e6218..24062c7079c6 100644
---- a/drivers/net/wireless/realtek/rtw88/hci.h
-+++ b/drivers/net/wireless/realtek/rtw88/hci.h
-@@ -253,6 +253,10 @@ rtw_write8_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u8 data)
- 	rtw_write8(rtwdev, addr, set);
- }
- 
-+#define rr8(addr)      rtw_read8(rtwdev, addr)
-+#define rr16(addr)     rtw_read16(rtwdev, addr)
-+#define rr32(addr)     rtw_read32(rtwdev, addr)
-+
- static inline enum rtw_hci_type rtw_hci_type(struct rtw_dev *rtwdev)
- {
- 	return rtwdev->hci.type;
--- 
-2.17.1
+ 	offload =3D nla_get_u8(tb_offload[MACSEC_OFFLOAD_ATTR_TYPE]);
+ 	if (macsec->offload =3D=3D offload)
+ 		return 0;
+--=20
+2.25.1
 
