@@ -2,81 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CBDB19F432
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 13:12:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D608019F46D
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 13:19:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727327AbgDFLMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 07:12:17 -0400
-Received: from sonic308-20.consmr.mail.ir2.yahoo.com ([77.238.178.148]:39679
-        "EHLO sonic308-20.consmr.mail.ir2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726873AbgDFLMR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 07:12:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=btinternet.com; s=s2048; t=1586171534; bh=zDZ9QOYVUcd+Miv/XXcaBB39zkYnnckVxFmIYcplgp8=; h=Date:From:To:Subject:References:From:Subject; b=hcRJthcyM+mXY+yotGmdIPUtVQtkC7lsDJ4neaHUH1pSYg72jQLfhrmPj9TleIrFo+AsuJNSsxZUCcMvf8bUO3fRf4oOzbPpuqtz53RgeIuahXuYcmXpha8aWRJJw5jsYiWnPY0fFfq9udE51qk2EepCPNKXdXTdyc0/4NX5zj2zyKSDOhnNDZ903kbR1HL2mVEjJb+IXuWatT9TyWdVScrb20r8WcJJK05tgUFii5ZuMRHYGGXhg9J++qmcmFfl++H1Xk0adqx4qH6ZFMn5z1kdFbvItI7oWLJHwONqFlondsGiGdT7BdXQ4P8hpAUL3ZKUgDgzd/WekvkjoUSYyw==
-X-YMail-OSG: fsIsK7UVM1m1_7f5b1gogFgRxxwuTfI3.NkBlfLQBXWQ83VhpltZxLlXOKXA8Mt
- z113TT6fMMmkvCB9oxTIQrd5mJqry_VuuTvrtB4JpT4y4IpcLo.u2FB4a2uSo53GmjuDgu9ccuUX
- 5MGduly5DXm5xPm7Oi7IYMS_acmcYBqwUCqWRArwTnWgJGVZcQPQqifS2yyiPE5TeYr3JTAey7ry
- CEmP2_yTlXxWDcgNO42aNBmtlZ6OPdVZCbE8JZka7zKPaWOPkNFZz6VZG4lgyAj.a1p5qtggsIuL
- g9cV2LZfYJ8y7C6bxsZt1i1W_XRO0CgxYQgWVuEqZ81djXUZ8Nm1f8H4SVd.IvD_v58e3bqKFJON
- Dj3DMOmOecq24jgkB1OA1qcH9S.o45GDzzPsEamIXJxXSEC4dNdKkulhIF.GcC0zEDpyPxUzUpkY
- GUSAfn5Khm1HK7jx_bycACjJYClg_nUkD.86e.EW34jrtAe6Kyn7Mn6tFACogG2lOq8zHS7Bo_RI
- ktiUDTOql53eUAf4ep8JB2zPq.P2IEMcVuElkv7gwirzJsyWRqjx7VIdcejPA64aQY.LyUV9aIjS
- yQ8G8UXf_4NoZnVR8CrRBhl82Tymu1iYGI7jLRqE71nsqPg0syrZlMEmOj6lGObaxjmGPaZiFx0f
- Vk2.MzW18jt5dfenP3vz5Xr0rwbfNefwNkA9krKDjvbHOMyybUH9nfJ2Vc1PPuNV5_cZl_8vyXDs
- qnLAEDNeBstUiKNR1CExegjNJHMEonC9rDdY.V4jNjXmVYSvNSPhu1dqobnTuFIQK389_w725ofS
- VeO0PoxXeP7z3pO1fA0HV3_94nJpVEubysmIUDUE0qI3qZh9h3jbs1QWTHRMFzTEAi7KPheC_Qdl
- qIwXnuFzqbjrGk8i.M3rJPyvVpDg1f0mwMOBZEIMSSFGVvP.x13kZUff_0PmxQzl0MkmBCDrhpAD
- GzZYLBkBA_0UQdlnVWRagzDr1lEmHwDPZwlGXpFisnjf3ezBkly6uI383EcMIkGKlNUETGZJsu_S
- zQvOpNescqXBS3CLU3adXpeAX.V3DNG9wDFNUEDEPXS_gAZ06ZsXoDwS2WoVsumuVntXgPeqyK2Z
- YJvBOQSHgEqYsb5BS79MpwoovBnIdoZwiHiavsgDrpVp_si6CXF4xNMZrpjHsbFXav.60CFqOGxe
- eLACBM_qzD_WJGTtwMWYApgXU8GfFp37zAZecY2HEKaZecsTchB.fdtSXMRDln16uHniJ78.Fnhs
- r197uyiLrn.6nFhzYZyyD9mCudp6o75rur.A3R0wwf4nIOB_cKLz9PKDtQKCQj3Kb8jQjOpIdLXA
- NRdt9P8VipnbRKxjMouhOUJfkcQdqsKgE5eYV4Q--
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic308.consmr.mail.ir2.yahoo.com with HTTP; Mon, 6 Apr 2020 11:12:14 +0000
-Date:   Mon, 6 Apr 2020 11:12:09 +0000 (UTC)
-From:   Jason Forster <jasonajf@btinternet.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Message-ID: <61151149.2061088.1586171529969@mail.yahoo.com>
-Subject: Netem 'caveat' clarification
-MIME-Version: 1.0
+        id S1728001AbgDFLTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 07:19:11 -0400
+Received: from mail-eopbgr690076.outbound.protection.outlook.com ([40.107.69.76]:20110
+        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726873AbgDFLS4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Apr 2020 07:18:56 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CQv7aJVxoI6LjWYBHMVcVfrO/O6hg2vgVr8IgWcy+m5LOAwGoeRm/SxFe/yUdLJ9k9OrmzESNZQQEgAUVH6a6wvnXjapg2sdywggTYV7Ko4EB3ZV2hJCHwZzUpBEMbBiv3ixfzIQBhYuIsGubU6LW9m+DovRjZl3HTGz1Drd7NaEJgmgCwVFY81nipA3KMqLdkQizLLJ7stnlQf5M94alDIzl7F5bLiFEoT7yE1Va/W34xCV98OeLaB6bYGq3uGq/IpTZSBYucDc2wLehfv/ABPfGXdXHI3a6yzRwsU1fGodGHQ6aRjs4fUyoO5R1No+fmaQog0IA58Nb5U4w87NiQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rCfg3DeG9nVcwyxoXOblYQwsAn9E/l2Q6VO1zJZcd4w=;
+ b=Ce2QKLojCSadVJidtt6GyHAZulYQMq2HtyKXuzUQguNad+8lKLavr9dpPyH363VpycAgx3qPRARuZeoPN3xpJUdDgXbNZuNovLnMjWS+YzkFYJd8tC3an8OwgbztkJ7bNiQh9IcYnd5jjavRhnfo7IMAXgAbk5DDaPBu5fbgB3mrcv9RwJWbXOwSgG9UchLTxxsO3YmAdsLuo7+BkZLX9HKonc6IUbmxhzLDOm+QhPPCKb7NmJsoRHGQtXot+apzrQi/5ebL5mLTWWG8FUlwL7F5qynwhH5oCyREfeUccIw40tr2DZtxD+qQ6fRys95EMALnIIYA3DTQhz6ycY6XXQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rCfg3DeG9nVcwyxoXOblYQwsAn9E/l2Q6VO1zJZcd4w=;
+ b=E6AzDXSN93xRlIP4LA8/3AxY34vp60Jsy+xhDPN4dX5ovA4txTy/htLDWscqqKwMRysLugImoWAly5zdSNys/iBKW1vHFC0SzASTG4U5KLMLKomj8eXFxYUovj0dmfweqnaO3t5Ti+p0Ab5oTT3iRJVEutf36AuMF0bE51s4Zts=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=Jerome.Pouiller@silabs.com; 
+Received: from BN6PR11MB4052.namprd11.prod.outlook.com (2603:10b6:405:7a::37)
+ by BN6PR11MB3860.namprd11.prod.outlook.com (2603:10b6:405:77::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2878.15; Mon, 6 Apr
+ 2020 11:18:13 +0000
+Received: from BN6PR11MB4052.namprd11.prod.outlook.com
+ ([fe80::e0af:e9de:ffce:7376]) by BN6PR11MB4052.namprd11.prod.outlook.com
+ ([fe80::e0af:e9de:ffce:7376%3]) with mapi id 15.20.2878.018; Mon, 6 Apr 2020
+ 11:18:13 +0000
+From:   Jerome Pouiller <Jerome.Pouiller@silabs.com>
+To:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
+        <jerome.pouiller@silabs.com>
+Subject: [PATCH 00/11] staging: wfx: clean up HIF API
+Date:   Mon,  6 Apr 2020 13:17:45 +0200
+Message-Id: <20200406111756.154086-1-Jerome.Pouiller@silabs.com>
+X-Mailer: git-send-email 2.25.1
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-References: <61151149.2061088.1586171529969.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.15620 YMailNorrin Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36
+Content-Transfer-Encoding: base64
+X-ClientProxiedBy: DM5PR05CA0010.namprd05.prod.outlook.com
+ (2603:10b6:3:d4::20) To BN6PR11MB4052.namprd11.prod.outlook.com
+ (2603:10b6:405:7a::37)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from pc-42.silabs.com (2a01:e35:2435:66a0:544b:f17b:7ae8:fb7) by DM5PR05CA0010.namprd05.prod.outlook.com (2603:10b6:3:d4::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2900.13 via Frontend Transport; Mon, 6 Apr 2020 11:18:11 +0000
+X-Mailer: git-send-email 2.25.1
+X-Originating-IP: [2a01:e35:2435:66a0:544b:f17b:7ae8:fb7]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d6e2bc58-1cf5-41e3-71ea-08d7da1c321a
+X-MS-TrafficTypeDiagnostic: BN6PR11MB3860:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BN6PR11MB38602A2E895F8D18385A91A693C20@BN6PR11MB3860.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2276;
+X-Forefront-PRVS: 0365C0E14B
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR11MB4052.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(396003)(39850400004)(346002)(366004)(136003)(376002)(186003)(16526019)(7696005)(52116002)(36756003)(5660300002)(107886003)(316002)(54906003)(66946007)(66476007)(4326008)(2616005)(66556008)(1076003)(66574012)(81166006)(6666004)(6486002)(8936002)(2906002)(86362001)(81156014)(8676002)(478600001);DIR:OUT;SFP:1101;
+Received-SPF: None (protection.outlook.com: silabs.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Dnu3Doaw4wceTVYieOvg19ClMhb2sb2P04SepSzpM6CHmtO7O4TbbZMbN1YaiuUgNNZWuQCymHtBfxW9h/zDK4ZTVWvGPD9GL5/wPuXLJE2mqPqeRabNxtkTc+hMdmqpCDKrSTVO+nfNmoQ/SnqYGDiHu+M8beIC48Bss2JOjjjLc+FKEMtFXMTT9ElUEWpv7skkDhNKqlBitkd+pmA+dCBxFtFFvoEOHCU/3F+6G7xz8R+/4U8WWwzSxE3SG41IVAiaU6SSNSAaDvFT+7HkHeObi+au1JyTolBehAZS8HzfhMaDpH3ye5uGPHJ0uiyvU4bXPrdFniAnA2YTglHrdAKfRSA77OU9qL3CKbWXzlolx2q4QNVkf+kBrOB0ngjwk2agd4CcK4zuxVv+WjTxlj7mF7fm51EcJLt69Q9ZxCMuepZ64RusghADRbQ+WrrQ
+X-MS-Exchange-AntiSpam-MessageData: 9fB274sGGN8tVHqcPC25WqntnvTJggXjcNBTYbuL0jqHkhHE9FjQkSrcnUa86890hrkyjvdUlXrrTA6SNlEhZulCv2/GKEVF+83ArLkAJm2rQmyq0dZHPuOvg8vb0vESaH6JL7pAB3+r/FrLU4l9eGDy6y/hWq0RPMkRdlLvQV2r1On898iNfS4ysykj/viAxTBLH5myH0Y4SW1jcTzpuA==
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d6e2bc58-1cf5-41e3-71ea-08d7da1c321a
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2020 11:18:13.6154
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ptHsPmEyn+PAR5l4M6LbIVnBW7VpKKnYXzvsPO0PR9epHXOGycO4b9ON0Rowb2o9VhAD0NKThkotagaz/jTqiw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB3860
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
-I'm looking for clarification to the statement on=C2=A0https://wiki.linuxfo=
-undation.org/networking/netem, namely;
-
-Caveats
-When loss is used locally (not on a bridge or router), the loss is reported=
- to the upper level protocols. This may cause TCP to resend and behave as i=
-f there was no loss. When testing protocol reponse to loss it is best to us=
-e a netem on a=C2=A0bridge=C2=A0or=C2=A0router
-
-
-What are the limits to this statement? If I run on a router on a separate p=
-iece of h/w with netem, then clearly there'll be no issue. Is it an invalid=
- configuration (which will in turn lead to misleading results) to run netem=
- in a container and implement the router functionality inside the container=
-?
-
-I've created a setup using a container configuration on which netem impairm=
-ents were applied, routing the tcp iperf from the host to the container and=
- encouragingly saw the remote iperf server dealing with the lost packets. H=
-owever, in an attempt to prove the container approach was not giving mislea=
-ding results, I removed the container from the ip path, applied the losses =
-locally and got the same results as those when running with the container. =
-I was expecting the 'caveat' to be hit since these would be classed as loca=
-l losses and the iperf server would not be seeing any packet loss.=C2=A0
-
-Any pointers or info would be gratefully received.
-
-Apologies if I've arrived at the wrong form - if so - please advise the cor=
-rect address to post to.
-
-Cheers,
-Jason.
+RnJvbTogSsOpcsO0bWUgUG91aWxsZXIgPGplcm9tZS5wb3VpbGxlckBzaWxhYnMuY29tPgoKSGVs
+bG8gYWxsLAoKVGhpcyBzZXJpZXMgdHJ5IHRvIGNsZWFuIHVwIHRoZSBIYXJkd2FyZSBJbnRlckZh
+Y2UgKEhJRikgQVBJIG9mIHRoZQp3ZnggZHJpdmVyLgoKTm90aWNlIGl0IGludGVuZGVkIHRvIGJl
+IGFwcGxpZWQgb24gdG9wIG9mIFB1bGwtUmVxdWVzdCBuYW1lZAoic3RhZ2luZzogd2Z4OiByZXdv
+cmsgdGhlIFR4IHF1ZXVlIi4KCkrDqXLDtG1lIFBvdWlsbGVyICgxMSk6CiAgc3RhZ2luZzogd2Z4
+OiBkcm9wIHVudXNlZCBXRlhfTElOS19JRF9HQ19USU1FT1VUCiAgc3RhZ2luZzogd2Z4OiByZWxv
+Y2F0ZSBMSU5LX0lEX05PX0FTU09DIGFuZCBNQVhfU1RBX0lOX0FQX01PREUgdG8gaGlmCiAgICBB
+UEkKICBzdGFnaW5nOiB3Zng6IHJlbG9jYXRlIFRYX1JFVFJZX1BPTElDWV9NQVggYW5kIFRYX1JF
+VFJZX1BPTElDWV9JTlZBTElECiAgICB0byBoaWYgQVBJCiAgc3RhZ2luZzogd2Z4OiByZW1vdmUg
+dW51c2VkIGRlZmluaXRpb25zIGZyb20gdGhlIGhpZiBBUEkKICBzdGFnaW5nOiB3Zng6IHJlbW92
+ZSB1c2VsZXNzIGRlZmluZXMKICBzdGFnaW5nOiB3Zng6IGZpeCBlbmRpYW5uZXNzIG9mIGhpZiBB
+UEkKICBzdGFnaW5nOiB3Zng6IGFsaWduIG1lbWJlcnMgZGVjbGFyYXRpb25zIGluIGhpZiBBUEkK
+ICBzdGFnaW5nOiB3Zng6IHBsYWNlIGhpZl90eF9taWIgZnVuY3Rpb25zIGludG8gYSAuYyBmaWxl
+CiAgc3RhZ2luZzogd2Z4OiBhbGxvdyB0byBjb25uZWN0IGFuIElCU1Mgd2l0aCBhbiBleGlzdGlu
+ZyBTU0lECiAgc3RhZ2luZzogd2Z4OiBtYWtlIGhpZl9pZV90YWJsZV9lbnRyeSBjb25zdAogIHN0
+YWdpbmc6IHdmeDogc2VuZCBqdXN0IG5lY2Vzc2FyeSBieXRlcwoKIGRyaXZlcnMvc3RhZ2luZy93
+ZngvTWFrZWZpbGUgICAgICAgICAgfCAgIDEgKwogZHJpdmVycy9zdGFnaW5nL3dmeC9kYXRhX3R4
+LmMgICAgICAgICB8ICAyMCArLQogZHJpdmVycy9zdGFnaW5nL3dmeC9kYXRhX3R4LmggICAgICAg
+ICB8ICAgMiArLQogZHJpdmVycy9zdGFnaW5nL3dmeC9oaWZfYXBpX2NtZC5oICAgICB8IDYyNSAr
+KysrKysrKysrKystLS0tLS0tLS0tLS0KIGRyaXZlcnMvc3RhZ2luZy93ZngvaGlmX2FwaV9nZW5l
+cmFsLmggfCA0MjkgKysrKysrKy0tLS0tLS0tLQogZHJpdmVycy9zdGFnaW5nL3dmeC9oaWZfYXBp
+X21pYi5oICAgICB8IDY3MSArKysrKysrKysrLS0tLS0tLS0tLS0tLS0tLQogZHJpdmVycy9zdGFn
+aW5nL3dmeC9oaWZfdHguYyAgICAgICAgICB8ICAgMiArLQogZHJpdmVycy9zdGFnaW5nL3dmeC9o
+aWZfdHhfbWliLmMgICAgICB8IDM5NyArKysrKysrKysrKysrKysKIGRyaXZlcnMvc3RhZ2luZy93
+ZngvaGlmX3R4X21pYi5oICAgICAgfCA0MzUgKystLS0tLS0tLS0tLS0tLS0KIGRyaXZlcnMvc3Rh
+Z2luZy93Zngva2V5LmMgICAgICAgICAgICAgfCAgIDEgKwogZHJpdmVycy9zdGFnaW5nL3dmeC9t
+YWluLmMgICAgICAgICAgICB8ICAgMiArLQogZHJpdmVycy9zdGFnaW5nL3dmeC9xdWV1ZS5oICAg
+ICAgICAgICB8ICAgMyAtCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L3N0YS5jICAgICAgICAgICAgIHwg
+ICA1ICstCiAxMyBmaWxlcyBjaGFuZ2VkLCAxMTg1IGluc2VydGlvbnMoKyksIDE0MDggZGVsZXRp
+b25zKC0pCiBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9zdGFnaW5nL3dmeC9oaWZfdHhfbWli
+LmMKCi0tIAoyLjI1LjEKCg==
