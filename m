@@ -2,98 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB9ED19F215
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 11:09:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D40F19F2B0
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 11:36:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726714AbgDFJJa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 05:09:30 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:24542 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726670AbgDFJJ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 05:09:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586164168;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2lvKA0xUIiCsW6HoBtQirda8p4dzQ/WxqHlUFpRTwhc=;
-        b=ZUGfUZznWN03UXpPqiPTPw6Ywp/Lumf6G1pcvp5ZpKDriQrNPcSEVVPnKdIhdHE/1/cQdI
-        zfn33xlg0P4y/WJftYr5FUAcvussBogRCAyZLrbktBpaq6bcBdxw0Q0vcr23UEAWyIt5ho
-        Rwypftk57ubG1+1WiXo9exCkRLPHG7c=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-62-QGQozKdbNny04y9Cqeg_MA-1; Mon, 06 Apr 2020 05:09:26 -0400
-X-MC-Unique: QGQozKdbNny04y9Cqeg_MA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3C66E8024EB;
-        Mon,  6 Apr 2020 09:09:24 +0000 (UTC)
-Received: from krava (unknown [10.40.192.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id DF15727062;
-        Mon,  6 Apr 2020 09:09:20 +0000 (UTC)
-Date:   Mon, 6 Apr 2020 11:09:18 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>, bgregg@netflix.com
-Subject: Re: [RFC 0/3] bpf: Add d_path helper
-Message-ID: <20200406090918.GA3035739@krava>
-References: <20200401110907.2669564-1-jolsa@kernel.org>
- <20200402142106.GF23230@ZenIV.linux.org.uk>
- <20200403090828.GF2784502@krava>
- <20200406031602.GR23230@ZenIV.linux.org.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200406031602.GR23230@ZenIV.linux.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+        id S1726808AbgDFJgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 05:36:38 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:53751 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726687AbgDFJgi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 05:36:38 -0400
+Received: from 61-220-137-37.hinet-ip.hinet.net ([61.220.137.37] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <kai.heng.feng@canonical.com>)
+        id 1jLOB8-0002nT-Rr; Mon, 06 Apr 2020 09:36:27 +0000
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     yhchuang@realtek.com
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org (open list:REALTEK WIRELESS DRIVER
+        (rtw88)), netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] rtw88: Add delay on polling h2c command status bit
+Date:   Mon,  6 Apr 2020 17:36:22 +0800
+Message-Id: <20200406093623.3980-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 06, 2020 at 04:16:02AM +0100, Al Viro wrote:
-> On Fri, Apr 03, 2020 at 11:08:28AM +0200, Jiri Olsa wrote:
-> 
-> > if we limit it just to task context I think it would still be
-> > helpful for us:
-> > 
-> >   if (in_task())
-> > 	d_path..
-> > 
-> > perhaps even create a d_path version without d_dname callback
-> > if that'd be still a problem, because it seems to be there mainly
-> > for special filesystems..?
-> 
-> IDGI...
-> 	1) d_path(), by definition, is dependent upon the
-> process' root - the same <mount,dentry> pair will yield
-> different strings if caller is chrooted.  You *can't* just
-> use a random process' root
-> 	2) we are *NOT* making rename_lock and mount_lock
-> disable interrupts.  Not happening.
-> 
-> So it has to be process-synchronous anyway.  Could you describe
-> where that thing is going to be callable?
+On some systems we can constanly see rtw88 complains:
+[39584.721375] rtw_pci 0000:03:00.0: failed to send h2c command
 
-it could be called as bpf helper from any place we could put
-the trampoline probe on.. so most of the kernel functions
-(at entry or exit) .. we can make checks, like for context
-before we allow to call it
+Increase interval of each check to wait the status bit really changes.
 
-is there any way we could have d_path functionality (even
-reduced and not working for all cases) that could be used
-or called like that?
+While at it, add some helpers so we can use standarized
+readx_poll_timeout() macro.
 
-thanks,
-jirka
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+ drivers/net/wireless/realtek/rtw88/fw.c  | 12 ++++++------
+ drivers/net/wireless/realtek/rtw88/hci.h |  4 ++++
+ 2 files changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw88/fw.c b/drivers/net/wireless/realtek/rtw88/fw.c
+index 05c430b3489c..bc9982e77524 100644
+--- a/drivers/net/wireless/realtek/rtw88/fw.c
++++ b/drivers/net/wireless/realtek/rtw88/fw.c
+@@ -2,6 +2,8 @@
+ /* Copyright(c) 2018-2019  Realtek Corporation
+  */
+ 
++#include <linux/iopoll.h>
++
+ #include "main.h"
+ #include "coex.h"
+ #include "fw.h"
+@@ -193,8 +195,8 @@ static void rtw_fw_send_h2c_command(struct rtw_dev *rtwdev,
+ 	u8 box;
+ 	u8 box_state;
+ 	u32 box_reg, box_ex_reg;
+-	u32 h2c_wait;
+ 	int idx;
++	int ret;
+ 
+ 	rtw_dbg(rtwdev, RTW_DBG_FW,
+ 		"send H2C content %02x%02x%02x%02x %02x%02x%02x%02x\n",
+@@ -226,12 +228,10 @@ static void rtw_fw_send_h2c_command(struct rtw_dev *rtwdev,
+ 		goto out;
+ 	}
+ 
+-	h2c_wait = 20;
+-	do {
+-		box_state = rtw_read8(rtwdev, REG_HMETFR);
+-	} while ((box_state >> box) & 0x1 && --h2c_wait > 0);
++	ret = readx_poll_timeout(rr8, REG_HMETFR, box_state,
++				 !((box_state >> box) & 0x1), 100, 3000);
+ 
+-	if (!h2c_wait) {
++	if (ret) {
+ 		rtw_err(rtwdev, "failed to send h2c command\n");
+ 		goto out;
+ 	}
+diff --git a/drivers/net/wireless/realtek/rtw88/hci.h b/drivers/net/wireless/realtek/rtw88/hci.h
+index 2cba327e6218..24062c7079c6 100644
+--- a/drivers/net/wireless/realtek/rtw88/hci.h
++++ b/drivers/net/wireless/realtek/rtw88/hci.h
+@@ -253,6 +253,10 @@ rtw_write8_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u8 data)
+ 	rtw_write8(rtwdev, addr, set);
+ }
+ 
++#define rr8(addr)      rtw_read8(rtwdev, addr)
++#define rr16(addr)     rtw_read16(rtwdev, addr)
++#define rr32(addr)     rtw_read32(rtwdev, addr)
++
+ static inline enum rtw_hci_type rtw_hci_type(struct rtw_dev *rtwdev)
+ {
+ 	return rtwdev->hci.type;
+-- 
+2.17.1
 
