@@ -2,129 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E15619FF0B
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 22:28:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB80419FFCE
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 23:02:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726312AbgDFU2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 16:28:38 -0400
-Received: from mail-eopbgr20073.outbound.protection.outlook.com ([40.107.2.73]:52974
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726084AbgDFU2i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Apr 2020 16:28:38 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z2T5wGNICEoTReNtftTlbNYEM6EYNbmYRxRVTC4dONO0C12M6Lo+eIJns6kak6e0jb7QqGUoj8ZQAdxwblvByQsBjeDf+g41Q0xfnJWx3znRCwK14GkFa9jXm0+9i59DY28HWEad717igibFrhjJWjxyvgm9pvUocXaU5TYAJvf0UkUhGkJb1eaeR1mdKrUszOP8Gi5gnIsfUP7TGN+BdyUOKurWO3+l+wuLKDSs/MjMLJBnXlkg5w74jGSLAoqxqNrk7YIS4//bqPM4fJTjtsp1nS3MddQbPsX9f88FjFHlgk17N+//4ghEq82MyQgh/TWYko38eKNvcSfJImnDrg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KL4MkUPcH1dJZukoTLW8pw7Y8NLIJJqSiAXaDuJteYw=;
- b=bCrOjh9jzDLx+e6c3WvhZpt08OTcdBZgOfo4aHjx6NiTKC+tZCxUyK4ijybk9s/USY1CRc/0BY2Pav3sZuolBFXVU9woB61h/5EFqaEb8UaccoOuCMlRlmHRzgBnHYumu6zBtDMaBTGDPxbc+DdhiqGKgrjST+uT10VXVwQeLJ06cjqCrkim+91xhwL+2ENdt1IZ0b/nRwMz9CjUaIFvTpbkqDo4UaoYaDTwJU46b1GESg4w1uW2nLNMIjTG6JxmVXG59/hqmdFAqXpbyzAdyxmZn22Io1Ggwp7np0gIPVsbNiYSfsEPXlJONScR85SktKz+G/ByKaXl0S0ik3sodQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KL4MkUPcH1dJZukoTLW8pw7Y8NLIJJqSiAXaDuJteYw=;
- b=FjodmKGIdd5HkMuCl243WENGgJvGmvprPVRKT5L5yc2NtOFMOxZA3/koTxijjo4yKeIk8biB1OcitGtlgscSHhIOKsW0EpGinA6QwU/MqLKFQV9kK0XYn7zGFuD6GRD9E6ELnwqaIgT8qXFUsz3xdKUGYOJMnLwgy8PtTyNgmkQ=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=petrm@mellanox.com; 
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
- HE1PR05MB3291.eurprd05.prod.outlook.com (2603:10a6:7:37::29) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2878.16; Mon, 6 Apr 2020 20:28:33 +0000
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::e9a8:7b1c:f82a:865b]) by HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::e9a8:7b1c:f82a:865b%6]) with mapi id 15.20.2878.018; Mon, 6 Apr 2020
- 20:28:33 +0000
-References: <20200402095608.18704-1-jiri@resnulli.us> <6c15c9ec-e1e3-cf78-e2bb-9c5db8d43abc@intel.com>
-User-agent: mu4e 1.3.3; emacs 26.3
-From:   Petr Machata <petrm@mellanox.com>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        dsahern@gmail.com, stephen@networkplumber.org, davem@davemloft.net,
-        kuba@kernel.org, mlxsw@mellanox.com
-Subject: Re: [patch iproute2/net-next] devlink: fix JSON output of mon command
-In-reply-to: <6c15c9ec-e1e3-cf78-e2bb-9c5db8d43abc@intel.com>
-Date:   Mon, 06 Apr 2020 22:28:31 +0200
-Message-ID: <87imice4uo.fsf@mellanox.com>
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR02CA0063.eurprd02.prod.outlook.com
- (2603:10a6:208:d2::40) To HE1PR05MB4746.eurprd05.prod.outlook.com
- (2603:10a6:7:a3::22)
+        id S1726594AbgDFVCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 17:02:17 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:40075 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726303AbgDFVCN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 17:02:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1586206933;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=b+P99eoGOE59dzJri6nDdYTRF/iHp1rUM821OiEBSWI=;
+        b=bvZH/+HCbyZ6Jn3O1UZZbCEhDJfs9/bQ6GN215SwBOEcr0HgI51xibzwwtvUnqA693Dm2E
+        OPOWHA+GhCwJWGfdZwKl9FFVch5WxMMLG+yXBgT6urkKXLiKek2k67Br7EFEzsD6dJx0Km
+        HCG8K73Arwj/S3Td5c0HIoF9wSXAYwg=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-500-yVx9VR-aOqGOvzd9r_NOUg-1; Mon, 06 Apr 2020 17:02:07 -0400
+X-MC-Unique: yVx9VR-aOqGOvzd9r_NOUg-1
+Received: by mail-wr1-f69.google.com with SMTP id 91so539531wro.1
+        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 14:02:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=b+P99eoGOE59dzJri6nDdYTRF/iHp1rUM821OiEBSWI=;
+        b=e3dWpxDEml46XIVhFC/y6MczrF+aFt/TGj9etItUXS89xI6NbV1W1xNBwSLulPcOXR
+         n6lRGqb2I+fP0G7cpy/bOnbqzhtWvI/3zyaWP2SOgsIJ3KQ2CWuddMoyBfmwCdOItjLb
+         epn6cupJMFYqR/0mavQ/mk1np83qbBmc7DXJV4MZuTRLcVVt0A6JNeNFdfDmugXg+/qP
+         MYZryvhZj2J1CpHp4MeHfxJWjlbRjE+Mdsyhk30NH6vXZpDYYlnhczOYSJQEwzXcxmK4
+         cNt2k8Y0W1LF6du8xg4YTIuBrZc6tWm+bpBQrQ6HTk9Luw4/UpuqlPMP3x0YVZltqBqT
+         GYoA==
+X-Gm-Message-State: AGi0PubEmby+OYvqS2UGCmBoDqxgRov8xW9Y+eyeEHTYTQzg3KZBL7FC
+        KUmEjeSIrZYJpgU5npzjaRLaz3RKq1CaOdHaKASPfa+wsOiF5U0nff0FP7tTt+qs36V5t32TfEQ
+        po5A8iufxkaHxDghz
+X-Received: by 2002:a1c:3589:: with SMTP id c131mr1302288wma.116.1586206926219;
+        Mon, 06 Apr 2020 14:02:06 -0700 (PDT)
+X-Google-Smtp-Source: APiQypLupa6V8Ag++nWn1lmvVOFBGbVp+NnLiKBe5TZlJuWBjL147oyGdoSjF8DsSNg7neOpqnwMaw==
+X-Received: by 2002:a1c:3589:: with SMTP id c131mr1302258wma.116.1586206925856;
+        Mon, 06 Apr 2020 14:02:05 -0700 (PDT)
+Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
+        by smtp.gmail.com with ESMTPSA id v9sm17395464wrv.18.2020.04.06.14.02.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Apr 2020 14:02:05 -0700 (PDT)
+Date:   Mon, 6 Apr 2020 17:02:03 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH v4 06/12] vhost: force spec specified alignment on types
+Message-ID: <20200406210108.148131-7-mst@redhat.com>
+References: <20200406210108.148131-1-mst@redhat.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from yaviefel (89.176.246.183) by AM0PR02CA0063.eurprd02.prod.outlook.com (2603:10a6:208:d2::40) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2878.16 via Frontend Transport; Mon, 6 Apr 2020 20:28:32 +0000
-X-Originating-IP: [89.176.246.183]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 37e8e4b9-8fbb-4370-5d1a-08d7da6913a2
-X-MS-TrafficTypeDiagnostic: HE1PR05MB3291:|HE1PR05MB3291:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1PR05MB3291CF2B155DA2277CCCF9C5DBC20@HE1PR05MB3291.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-Forefront-PRVS: 0365C0E14B
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(396003)(136003)(366004)(39860400002)(346002)(376002)(66946007)(86362001)(66556008)(52116002)(6496006)(186003)(16526019)(2906002)(478600001)(66476007)(316002)(5660300002)(6486002)(2616005)(956004)(53546011)(26005)(6916009)(107886003)(81166006)(81156014)(4326008)(8936002)(8676002)(36756003);DIR:OUT;SFP:1101;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2N3thrSkliNC1P+P5osF8jrDWRwFgf31HQJaORbyD9JdSGG9B+WGEYAfK0YvswHTUWUY3TDJ1YJbG/vl/2wfPOLq7J8MMz8BV+AmwYEOn+MzHZr9eL9xykhbYtLIFLkIgCH2T+KZE/A24XtWwgSr6U/KSUm2Cb8lY4UPEoi1R8PpgfEU1kjK3rXlicaZHorrP/CLKWKHveKywc3/tQqN8iXgrR27xJ4BwX+Z9Be0MtMbL9Kl/AUbLG/MgOp0J0QjQPZcMLR3gxTSYDzJxeg416J8qtM4TcdPG6IeLkFfFCEboCObv4zDO1AVDk3xn/XecaXZo3BqHpsYkRaNsJPZRfVQhm81GrIejN6d1pDrWp6rgqYeRGSBQbgOg/Q/E5lYjjSmg9ViDvD15HjKsgqFBEyTxZcUdcwfjeAnqdi0AVq/4ArA3QQ/qirz/rxADVsm
-X-MS-Exchange-AntiSpam-MessageData: zjbAvbermDQLME4ThVHmPl7j2OYPZ/8OTTnaAx9n/tsIMchTrh1fGsRk6T9PTGhTCOWINIaTI6ey8vIo5/T3mOR3moFSoe/faAep+0gYLiB59fhNTnBjA1IGGZDG/+GEr2RpWu47Uu1TYnEPPod8AA==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 37e8e4b9-8fbb-4370-5d1a-08d7da6913a2
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2020 20:28:33.3952
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FOBbcnwsMWiIOZrYDjnbewh2tNOtip3qqlsxys2p8+WOJvjkJCSIMvRZ49gxXJpy/udc4NsUl8gnZ36EUFqBaQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3291
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200406210108.148131-1-mst@redhat.com>
+X-Mailer: git-send-email 2.24.1.751.gd10ce2899c
+X-Mutt-Fcc: =sent
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The ring element addresses are passed between components with different
+alignments assumptions. Thus, if guest/userspace selects a pointer and
+host then gets and dereferences it, we might need to decrease the
+compiler-selected alignment to prevent compiler on the host from
+assuming pointer is aligned.
 
-Jacob Keller <jacob.e.keller@intel.com> writes:
+This actually triggers on ARM with -mabi=apcs-gnu - which is a
+deprecated configuration, but it seems safer to handle this
+generally.
 
-> On 4/2/2020 2:56 AM, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@mellanox.com>
->>
->> The current JSON output of mon command is broken. Fix it and make sure
->> that the output is a valid JSON. Also, handle SIGINT gracefully to allow
->> to end the JSON properly.
->>
->
-> I wonder if there is an easy way we could get "make check" or something
-> to add a test to help verify this is valid JSON?
+I verified that the produced binary is exactly identical on x86.
 
-Simply piping to jq is an easy way to figure out if it's at least valid
-JSON. In principle it would be possible to write more detailed checks as
-TDC (tc-testing) selftests in the kernel.
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ drivers/vhost/vhost.h       |  6 +++---
+ include/linux/virtio_ring.h | 24 +++++++++++++++++++++---
+ 2 files changed, 24 insertions(+), 6 deletions(-)
 
-Something like this:
+diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+index f8403bd46b85..60cab4c78229 100644
+--- a/drivers/vhost/vhost.h
++++ b/drivers/vhost/vhost.h
+@@ -67,9 +67,9 @@ struct vhost_virtqueue {
+ 	/* The actual ring of buffers. */
+ 	struct mutex mutex;
+ 	unsigned int num;
+-	struct vring_desc __user *desc;
+-	struct vring_avail __user *avail;
+-	struct vring_used __user *used;
++	vring_desc_t __user *desc;
++	vring_avail_t __user *avail;
++	vring_used_t __user *used;
+ 	const struct vhost_iotlb_map *meta_iotlb[VHOST_NUM_ADDRS];
+ 	struct file *kick;
+ 	struct eventfd_ctx *call_ctx;
+diff --git a/include/linux/virtio_ring.h b/include/linux/virtio_ring.h
+index 11680e74761a..c3f9ca054250 100644
+--- a/include/linux/virtio_ring.h
++++ b/include/linux/virtio_ring.h
+@@ -60,14 +60,32 @@ static inline void virtio_store_mb(bool weak_barriers,
+ struct virtio_device;
+ struct virtqueue;
+ 
++/*
++ * The ring element addresses are passed between components with different
++ * alignments assumptions. Thus, we might need to decrease the compiler-selected
++ * alignment, and so must use a typedef to make sure the __aligned attribute
++ * actually takes hold:
++ *
++ * https://gcc.gnu.org/onlinedocs//gcc/Common-Type-Attributes.html#Common-Type-Attributes
++ *
++ * When used on a struct, or struct member, the aligned attribute can only
++ * increase the alignment; in order to decrease it, the packed attribute must
++ * be specified as well. When used as part of a typedef, the aligned attribute
++ * can both increase and decrease alignment, and specifying the packed
++ * attribute generates a warning.
++ */
++typedef struct vring_desc __aligned(VRING_DESC_ALIGN_SIZE) vring_desc_t;
++typedef struct vring_avail __aligned(VRING_AVAIL_ALIGN_SIZE) vring_avail_t;
++typedef struct vring_used __aligned(VRING_USED_ALIGN_SIZE) vring_used_t;
++
+ struct vring {
+ 	unsigned int num;
+ 
+-	struct vring_desc *desc;
++	vring_desc_t *desc;
+ 
+-	struct vring_avail *avail;
++	vring_avail_t *avail;
+ 
+-	struct vring_used *used;
++	vring_used_t *used;
+ };
+ 
+ /*
+-- 
+MST
 
-    {
-        "id": "a520",
-        "name": "JSON",
-        "category": [
-            "qdisc",
-            "fifo"
-        ],
-        "setup": [
-            "$IP link add dev $DUMMY type dummy || /bin/true",
-	    "$TC qdisc add dev $DUMMY handle 1: root bfifo"
-        ],
-        "cmdUnderTest": "/bin/true",
-        "expExitCode": "0",
-        "verifyCmd": "$TC -j qdisc show dev $DUMMY | jq '.[].kind'",
-        "matchPattern": "bfifo",
-        "matchCount": "1",
-        "teardown": [
-            "$TC qdisc del dev $DUMMY handle 1: root bfifo",
-            "$IP link del dev $DUMMY type dummy"
-        ]
-    }
-
-Kinda verbose for this level of detail though.
