@@ -2,75 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFC9619F6E8
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 15:26:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC29519F6EB
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 15:27:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728367AbgDFN0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 09:26:21 -0400
-Received: from mout.gmx.net ([212.227.17.22]:40757 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728193AbgDFN0V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Apr 2020 09:26:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1586179542;
-        bh=cZxryEa5tb+4ohfc5V2brSTnlGtEjAXGe6KYmDrG5hk=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=FDqxf/03Me6n52488Y18Rabb5YSwMPn1mam4w4B6S2FebURiMOjtlneLssYKRhVZV
-         iSU2GotSw9c5FzSAXDal/a4PO8MaL4SCiPIb+eHaWbjHqRuSJ33O0zYBXMHpZOxGAl
-         xWbb/xhuYuR4UuaOcC6KNdWEzXaA+6JGSVrclXek=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [217.61.149.116] ([217.61.149.116]) by web-mail.gmx.net
- (3c-app-gmx-bap62.server.lan [172.19.172.132]) (via HTTP); Mon, 6 Apr 2020
- 15:25:42 +0200
+        id S1728401AbgDFN1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 09:27:24 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:18215 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728193AbgDFN1X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 09:27:23 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1586179642; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=sg0YR1A5Pef3VRnFaQiwEzT6F8DEIg+uQHeuwoU6nms=; b=vHsrIhjYN63wFKbB0GJxOfG18aUbWk2JB1UZtLxcf0M3rAjhgK9zomhHQGC5QP9BQ5532lyK
+ xmkwKIpQq6auuGM+fRDXl6ZiSBmmmDghJkJRRPBgOgorv2jHehG/1QQxZwesfawPkaBtGp8U
+ CuXx3VfBI1rPl7PH6nFcvMhNHfY=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e8b2e2b.7fc892fc7f80-smtp-out-n02;
+ Mon, 06 Apr 2020 13:27:07 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id A120AC44788; Mon,  6 Apr 2020 13:27:06 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id DF11EC433BA;
+        Mon,  6 Apr 2020 13:27:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DF11EC433BA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Sumit Garg <sumit.garg@linaro.org>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        linux-wireless@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Matthias-Peter =?utf-8?Q?Sch=C3=B6pfer?= 
+        <matthias.schoepfer@ithinx.io>,
+        "Berg Philipp \(HAU-EDS\)" <Philipp.Berg@liebherr.com>,
+        "Weitner Michael \(HAU-EDS\)" <Michael.Weitner@liebherr.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Loic Poulain <loic.poulain@linaro.org>, stable@vger.kernel.org
+Subject: Re: [PATCH] mac80211: fix race in ieee80211_register_hw()
+References: <1586175677-3061-1-git-send-email-sumit.garg@linaro.org>
+        <87ftdgokao.fsf@tynnyri.adurom.net>
+        <1e352e2130e19aec5aa5fc42db397ad50bb4ad05.camel@sipsolutions.net>
+        <87r1x0zsgk.fsf@kamboji.qca.qualcomm.com>
+        <a7e3e8cceff1301f5de5fb2c9aac62b372922b3e.camel@sipsolutions.net>
+        <87imiczrwm.fsf@kamboji.qca.qualcomm.com>
+        <ee168acb768d87776db2be4e978616f9187908d0.camel@sipsolutions.net>
+        <CAFA6WYOjU_iDyAn5PMGe=usg-2sPtupSQEYwcomUcHZBAPnURA@mail.gmail.com>
+Date:   Mon, 06 Apr 2020 16:27:00 +0300
+In-Reply-To: <CAFA6WYOjU_iDyAn5PMGe=usg-2sPtupSQEYwcomUcHZBAPnURA@mail.gmail.com>
+        (Sumit Garg's message of "Mon, 6 Apr 2020 18:51:04 +0530")
+Message-ID: <87v9mcycbf.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Message-ID: <trinity-fb0cdf15-dfcf-4d60-9144-87d8fbfad5ba-1586179542451@3c-app-gmx-bap62>
-From:   "Frank Wunderlich" <frank-w@public-files.de>
-To:     sean.wang@mediatek.com
-Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
-        vivien.didelot@savoirfairelinux.com, Mark-MC.Lee@mediatek.com,
-        john@phrozen.org, Landen.Chao@mediatek.com,
-        steven.liu@mediatek.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?Q?=22Ren=C3=A9_van_Dorst=22?= <opensource@vdorst.com>,
-        linux-mediatek@lists.infradead.org
-Subject: Aw: [PATCH v2 net 1/2] net: dsa: mt7530: move mt7623 settings out
- off the mt7530
-Content-Type: text/plain; charset=UTF-8
-Date:   Mon, 6 Apr 2020 15:25:42 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <1586122974-22125-1-git-send-email-sean.wang@mediatek.com>
-References: <1586122974-22125-1-git-send-email-sean.wang@mediatek.com>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:O1vU5Y4cQTpCmCr8F/qiebVj81nxiFnE5QlNKEK3tTiupQQ3ghXSyk0ZApsFymcjQ8Rlf
- q3gIdeGy49auc3bph4SXTubVy51+lvbVajZaENnxiiY8AGOJyiDriMDc65Dxc1SGJxXySuhC5XQP
- 7dZJruxEuXE8FNuPSWK7mQG6+8T74Sgv3bm0myeTblKgGfMo37EXtoCaVevDZ0leLdhR/1pvqa/+
- 5Cy0ZI35eRixcMb2Wf/oSUvbkqsdv8kS5iQa451qd/x8IpPyMXJeL0cbKqNmWWLJyPfrBiVvGzx4
- SI=
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:pBy9zcz6aqI=:Y+q9/7RkJD0R8BQoabs8+k
- a0AtodGnx1+Sp3KQ0UES8c/6igKsZhu5lFK65lXFmsdIh3X0GZSZlWegMyGqnjhL/0ToWRS/4
- GYhN0gfTjU6h+5s12FFxOYwXf6VLs2yor9iT9yur1I8vtFClWoIaCyHG9UP7RqSr0OsxNHSmn
- LdMrwrv4Gyr5MfdBQCHKEou0Iz8RnAvmxSJJmVmB193gLABJGj+2Mj1hRumOjn5AZvtiibO9x
- N6QlD4QGWYnyJVW+v1Lebc82GVX0Pw88mDoHyuGQMFhurajKscffLM7rVVnLU2ZyvQHAGAylI
- RtZtNldAVDfH/Mp0pEsH/FcS7Yw9xmx+2LQIrl9lO839TIpHSxpuoiMbsXqBW6MTWag5uFXEJ
- 08yCayHNEP2KWwsBpIOO7428ykDDzHPhX+R/+NUcEALWl4sculIltOspefQv4o2l2AFj/0HVr
- clH+GOPY9Qem2S7z0JItFBkIEdQ/k3rdJkjWVdbJviTwBwcZVzBrRbhC9VoN52dtjys/pcorJ
- 1y29sm4VqxoRCFPZW8KfIN5ME6SGyE6CO7kYQk3Y00Pclq/F6lG4sHiUCtm2oo/iAwFIg2Jgj
- vxvIThhIyWGt7zWiaUX2D2WDlgHyE7HZm6kz+nOhszj33OysxFo2mFgrlE6fUkfkiIXN6ZmYO
- 0mhKgc1gZJ4sLMNLVD3LnopNOy+aunQVJN/+KJg62hcm4D1SnKQpl+h+WtXMDmfhTvAM=
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Sumit Garg <sumit.garg@linaro.org> writes:
 
-have tested these 2 and additional rene's 3rd Patch on my tree [1] on BPi-R2, no problem with trgmii yet (multiple power-cycle+reboots). I had issues with current 5.6.0 version, so imho these should go also into 5.6.y
+> On Mon, 6 Apr 2020 at 18:38, Johannes Berg <johannes@sipsolutions.net> wrote:
+>>
+>> On Mon, 2020-04-06 at 16:04 +0300, Kalle Valo wrote:
+>> > Johannes Berg <johannes@sipsolutions.net> writes:
+>> >
+>> > > On Mon, 2020-04-06 at 15:52 +0300, Kalle Valo wrote:
+>> > > > Johannes Berg <johannes@sipsolutions.net> writes:
+>> > > >
+>> > > > > On Mon, 2020-04-06 at 15:44 +0300, Kalle Valo wrote:
+>> > > > > > >     user-space  ieee80211_register_hw()  RX IRQ
+>> > > > > > >     +++++++++++++++++++++++++++++++++++++++++++++
+>> > > > > > >        |                    |             |
+>> > > > > > >        |<---wlan0---wiphy_register()      |
+>> > > > > > >        |----start wlan0---->|             |
+>> > > > > > >        |                    |<---IRQ---(RX packet)
+>> > > > > > >        |              Kernel crash        |
+>> > > > > > >        |              due to unallocated  |
+>> > > > > > >        |              workqueue.          |
+>> > > > >
+>> > > > > [snip]
+>> > > > >
+>> > > > > > I have understood that no frames should be received until mac80211 calls
+>> > > > > > struct ieee80211_ops::start:
+>> > > > > >
+>> > > > > >  * @start: Called before the first netdevice attached to the hardware
+>> > > > > >  *         is enabled. This should turn on the hardware and must turn on
+>> > > > > >  *         frame reception (for possibly enabled monitor interfaces.)
+>> > > > >
+>> > > > > True, but I think he's saying that you can actually add and configure an
+>> > > > > interface as soon as the wiphy is registered?
+>> > > >
+>> > > > With '<---IRQ---(RX packet)' I assumed wcn36xx is delivering a frame to
+>> > > > mac80211 using ieee80211_rx(), but of course I'm just guessing here.
+>> > >
+>> > > Yeah, but that could be legitimate?
+>> >
+>> > Ah, I misunderstood then. The way I have understood is that no rx frames
+>> > should be delivered (= calling ieee80211_rx()_ before start() is called,
+>> > but if that's not the case please ignore me :)
+>>
+>> No no, that _is_ the case. But I think the "start wlan0" could end up
+>> calling it?
+>>
+>
+> Sorry if I wasn't clear enough via the sequence diagram. It's a common
+> RX packet that arrives via ieee80211_tasklet_handler() which is
+> enabled via call to "struct ieee80211_ops::start" api.
 
-regards Frank
+Ah sorry, I didn't realise that. So wcn36xx is not to be blamed then,
+thanks for the clarification.
 
-Tested-by: Frank Wunderlich <frank-w@public-files.de>
-
-[1] https://github.com/frank-w/BPI-R2-4.14/commits/5.6-trgmii
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
