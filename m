@@ -2,125 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C7B119EF38
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 03:53:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6DEA19EF3E
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 04:02:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726475AbgDFBvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Apr 2020 21:51:41 -0400
-Received: from mail-eopbgr1320118.outbound.protection.outlook.com ([40.107.132.118]:64434
-        "EHLO APC01-PU1-obe.outbound.protection.outlook.com"
+        id S1726469AbgDFCCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Apr 2020 22:02:00 -0400
+Received: from mail-co1nam11on2094.outbound.protection.outlook.com ([40.107.220.94]:24769
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726373AbgDFBvl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 Apr 2020 21:51:41 -0400
+        id S1726373AbgDFCCA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 Apr 2020 22:02:00 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fBLpiJ0bvNQZS8utZgc8MvpN/pYt1poacotFvIoeuwJBdPi/R/8qkC7WfxRP4zXM4IwRJ0oXqmHhkyf5KRGtCPhSo6NTmSg/Gogrki7BMnefw9OblR8klC+jE+kfhNmkPPZKx93G/Y7b56BUMtp8QXAKUdv4B4ylx6u148zixa8QLJPDgor+rL18pZXVxN+8Uoscp2bfYkstQjKY5NXe6Yg1YgygDHOMZCXYCxqti2Hb2qkjpKfiqy6+VaYVz7QJivoIGI2Ph4pkBBLzUVHFJ1QfDXPwckpQCkQ48OeTp+O5p1uCVYJhgrbm+Qj0RLgR4Cnb8To+NuLWBzuUjq+yYA==
+ b=mlPlmlwh+S6yQbGi2ckgyrB89OytZZKq+8BhrNC0hb4OA+t9m7ON0H0L4ZsbCehUatn/nS+EJ289n9y8inQ26NXpOO0T3bgEdu25OM7RRPRamr9XzF06YfVEBJx+MzfLXFTXB8YluTphwPzICu1JafzMwLd3bHYnyY4uZgPnQcBShAwWHWwDm+yn4gmqMqjXf72wJjbZO5892meIEChT+kv2jbH/VfbAlxZvHGuv2dZmnzRDeOkgWFWTcnRiSeSGu/s+hlHugf5PcrCAdWH5YoeX8pp2SXUh1otTXBgrVUGvHEMIElzwgq6SCU9zDjxCtExSOihnNsf+6EuJglrN9A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oAis/pX2Od+aiPxhpkC+D6mMU3IPsmq5eXM5m6lk8YA=;
- b=nx/YvqKaoNhX0nUP0NBjlBb4PMVjgSSZBcq+OwHF1O4pUN664A95yr9COicsynmelj5MwdU+99EkR6LLPvlqMj3vuOSxAjQpCXSMIf4vroWdCMRplYWJQEa2qkxTl4kHJAAAhj3he/sPLgZTT92jZPElKKiF/lp1lRPjljzbMHynqEd9b2JzqVi1FZi5JoXWjuPGt7aF4urU+mQtdCSqBRnQmBtga3WGbDwI3qytfHdnvy92GZTJ/6aMUTKr+eXV/PVNEjzAx/EvwofnHx0zkLAOAg9qy7oIGTXgkWWQnuV/eBgzCwsWSMsR01fRjU9oPF2JKY3fbTTpOKm07zKX1w==
+ bh=l2YPG1NwyzFq65fcKxG2yfw4fGyg5WXCjYwqHl8bTJM=;
+ b=Nf9dcAA3Fk0mvhA8Vc1MZ8IuYCuVtdv7zszmSIEpwmXi91XNcnPBjgxlGlKvHOsoCkJ4o9K7V3yX9mY6F64+Z2W0E+OVi2EuJ4qenDXSVr+IX1afHR71TQ2huNJ3rU+V6pRpd6wS0PJ4svfykG/EAy5V80pKLwuZOYU5/9xoeQ5iDmUnzKfNM0sn9DMpOn7USh50MZQ5YGdytvX+FwyInCzdNJ+thc4pfE8s6GQ0AzMkeumWx4I4uPy9hEfVeGrjAMCGbKlZ6SaGvbSkQfU9VA+9E1S9a4RyOuAXG2pIn+svt/PvqZwI8QV8BTfzGCptwYgJztkUFZog3JouW0pCCg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=microsoft.com; dmarc=pass action=none
  header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oAis/pX2Od+aiPxhpkC+D6mMU3IPsmq5eXM5m6lk8YA=;
- b=dlQ6/PHFoYV9UIoYxu979sxE32RYvZnKeSSX1zQP1bDQ7e9ibLsxiygE4cNXTgmsvUcpTRsj83QJ4YY+THbOqUZLBhzZ4625POyGfzGS73tAvlDZeYk0iDNbhAp467/3vfkCuTBS8myivSRA9TiKSEg01a7fbFD0yn9rWp+mjrc=
-Received: from HK0P153MB0273.APCP153.PROD.OUTLOOK.COM (52.132.236.76) by
- HK0P153MB0322.APCP153.PROD.OUTLOOK.COM (52.132.237.19) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2921.3; Mon, 6 Apr 2020 01:51:35 +0000
-Received: from HK0P153MB0273.APCP153.PROD.OUTLOOK.COM
- ([fe80::2d07:e045:9d5b:898a]) by HK0P153MB0273.APCP153.PROD.OUTLOOK.COM
- ([fe80::2d07:e045:9d5b:898a%2]) with mapi id 15.20.2921.000; Mon, 6 Apr 2020
- 01:51:35 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Randy Dunlap <rdunlap@infradead.org>,
-        "willy@infradead.org" <willy@infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "willemb@google.com" <willemb@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "simon.horman@netronome.com" <simon.horman@netronome.com>,
-        "sdf@google.com" <sdf@google.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "fw@strlen.de" <fw@strlen.de>,
-        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "pablo@netfilter.org" <pablo@netfilter.org>,
-        "jeremy@azazel.net" <jeremy@azazel.net>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2 net] skbuff.h: Improve the checksum related comments
-Thread-Topic: [PATCH v2 net] skbuff.h: Improve the checksum related comments
-Thread-Index: AQHWC7S1P+7SGhlHM0G3BTFuIPba1KhrU+3w
-Date:   Mon, 6 Apr 2020 01:51:35 +0000
-Message-ID: <HK0P153MB02738B53E62194DE1AF1752ABFC20@HK0P153MB0273.APCP153.PROD.OUTLOOK.COM>
-References: <1586136369-67251-1-git-send-email-decui@microsoft.com>
- <6efee6bb-d68d-0f83-d469-b173cf4f5d0f@infradead.org>
-In-Reply-To: <6efee6bb-d68d-0f83-d469-b173cf4f5d0f@infradead.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=decui@microsoft.com;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-04-06T01:51:33.0595972Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
- Information Protection;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=ac878895-ae42-4f98-a0e1-fb2722b398b3;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
-authentication-results: spf=none (sender IP is )
+ bh=l2YPG1NwyzFq65fcKxG2yfw4fGyg5WXCjYwqHl8bTJM=;
+ b=N2PYd9S4hhXJ2e3FFu9modSbbENexCSnO3mS0mgahqaFq2CKE+U6OhkPaEk1DLT3MKdUyoKESQtGGoySFtBRaeoXGSdINV5+lJcYb4RSjolAABWKtq2YM5I7+yzfGWnievPpLb+rHc25KW71x4xVmEJIbaz/hbdlmt5ba+gdnAU=
+Authentication-Results: spf=none (sender IP is )
  smtp.mailfrom=decui@microsoft.com; 
-x-originating-ip: [2601:600:a280:7f70:ac71:2d80:3165:3247]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 0f890298-092b-4a5a-8d5d-08d7d9cd0a09
-x-ms-traffictypediagnostic: HK0P153MB0322:
-x-microsoft-antispam-prvs: <HK0P153MB0322A51918455F74041F8DC2BFC20@HK0P153MB0322.APCP153.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 0365C0E14B
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0P153MB0273.APCP153.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFTY:;SFS:(10019020)(4636009)(396003)(346002)(366004)(376002)(136003)(39860400002)(55016002)(66556008)(81166006)(81156014)(66946007)(186003)(4744005)(76116006)(4326008)(66476007)(9686003)(10290500003)(71200400001)(53546011)(52536014)(7696005)(6506007)(316002)(82950400001)(82960400001)(8676002)(66446008)(64756008)(5660300002)(478600001)(86362001)(8990500004)(110136005)(33656002)(2906002)(7416002)(8936002)(921003)(1121003);DIR:OUT;SFP:1102;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: gONmB0gAMbM6YoaDt4YHizTFrTDR6EtVzFbSqefzOQnP80Es/jJFvhT6wp1ecKrpBVEd2XqtuxLr98B/Hs3i3jiVH6UtjK7P+BbXLhU0DdrHXwSZjJ+67arQLZYRNfq1PHr1nr67VbqEfjhSldHNDZs3Rmxyk5NY6wcXrklmwDoJwxDRHr6vhv9BDMmmByXaWrokdtrWm/qOv1JLdPIRfY0EzbxPIshqn+dYivqVhou/Ff4rr9CmDG9rsGp+ZU5kXlCoaSJeDHhT0gAW/s8pQpWaQr2SnUyBKRpn0pdHD1CubUVWhM3S9XHn7QMIdjyYaHUTrVr1qGISyIok/OBvtdGCs5hB93Ni9t+3vjkacYzVjr7lJq5DT2CSaPW4jXiTNN4smcySyjpx+gsj9pzYMz4M7WBvv09MhOCS2KYRkJnxAgbLrebE3cYr/WFj/xDJDIF14fuVWRUPfU6vAwcLxzO0+zgI6UfSK2ws5zx3uU4RCKMJjnrGOeVAYbDOiNBC
-x-ms-exchange-antispam-messagedata: Jz58qllvMmy9GUCyb2WQU0drLnnnWffZx/VeGAxsH2nl5JlhH6dJXcjwiB18cnGiWZ5leFmDOj5OnfJ6SaF1WwsO5o+Du4snt7cG8DB6U4EIjA5Ex4Ke59GTMEYpiE6B/pjw75GEl/hjLjVQlJ1YqLzg4zRpzQknJdGImemgA8Intn2Uh7JiaLiTW+cx7Eo76u0xtr8Eg9cyJPy9jYRHfw==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Received: from BN8PR21MB1139.namprd21.prod.outlook.com (2603:10b6:408:72::10)
+ by BN8PR21MB1235.namprd21.prod.outlook.com (2603:10b6:408:77::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.3; Mon, 6 Apr
+ 2020 01:59:55 +0000
+Received: from BN8PR21MB1139.namprd21.prod.outlook.com
+ ([fe80::b5da:34dd:f205:560b]) by BN8PR21MB1139.namprd21.prod.outlook.com
+ ([fe80::b5da:34dd:f205:560b%4]) with mapi id 15.20.2900.010; Mon, 6 Apr 2020
+ 01:59:55 +0000
+From:   Dexuan Cui <decui@microsoft.com>
+To:     willy@infradead.org, netdev@vger.kernel.org, davem@davemloft.net,
+        willemb@google.com, kuba@kernel.org, simon.horman@netronome.com,
+        sdf@google.com, edumazet@google.com, fw@strlen.de,
+        jonathan.lemon@gmail.com, pablo@netfilter.org,
+        rdunlap@infradead.org, decui@microsoft.com, jeremy@azazel.net,
+        pabeni@redhat.com
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH v3 net] skbuff.h: Improve the checksum related comments
+Date:   Sun,  5 Apr 2020 18:59:24 -0700
+Message-Id: <1586138364-71127-1-git-send-email-decui@microsoft.com>
+X-Mailer: git-send-email 1.8.3.1
+Reply-To: decui@microsoft.com
+Content-Type: text/plain
+X-ClientProxiedBy: MWHPR10CA0008.namprd10.prod.outlook.com (2603:10b6:301::18)
+ To BN8PR21MB1139.namprd21.prod.outlook.com (2603:10b6:408:72::10)
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net (13.77.154.182) by MWHPR10CA0008.namprd10.prod.outlook.com (2603:10b6:301::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2878.15 via Frontend Transport; Mon, 6 Apr 2020 01:59:53 +0000
+X-Mailer: git-send-email 1.8.3.1
+X-Originating-IP: [13.77.154.182]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: c5af1b16-6825-4a24-edcd-08d7d9ce33c8
+X-MS-TrafficTypeDiagnostic: BN8PR21MB1235:|BN8PR21MB1235:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BN8PR21MB123534D2E6CA450706A1AB6EBFC20@BN8PR21MB1235.namprd21.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 0365C0E14B
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR21MB1139.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10019020)(4636009)(396003)(39860400002)(346002)(136003)(366004)(376002)(4326008)(36756003)(6486002)(6506007)(66946007)(82950400001)(478600001)(3450700001)(6512007)(66556008)(66476007)(86362001)(82960400001)(5660300002)(2906002)(52116002)(8676002)(26005)(10290500003)(186003)(6666004)(16526019)(316002)(81166006)(81156014)(2616005)(8936002)(7416002)(956004)(921003)(1121003);DIR:OUT;SFP:1102;
+Received-SPF: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: DW1ImMxgUsrevgWJ+3S62TUnC1enWifNB/wf8DeRP8lZdpfLrAeZZxGGOz/drqf+1f90sEC8MWz/Ye2P0FCns6qXfMzVzppIdl4fBM4zpIUDnhAtQW6RKwwOQILF3urFJCoNm8AEr3BUyQpFONsMQ+kcoxZV79sOgaAME1Sf55zorEv/MBEeOd9IpJ803ea5hFynT7ZHzgJqRNjsboAjdrCRcRNlXpxF5IE1KEzCjKBm9rE7DPvIqrQMhq5kY+tzSxmRRthTaYg0SHjT8UYxEXPO8lBjLN4cm96xa609hyDkXC0ZY80pOEE8Nzuce/Kx5XS4+oD6hu6QyqeoQtFuQ1vLIwnru3ahXH4sLg23w57wwjEpjHQoVeIZh2hcMlg5ziF12GmXYGy2C+fTEXfb/AOuz+dXOUdwG151P3hp2ssNmUWGOduonx9sS3A0GplvpEzB6zM3iau6K3GcXeNEuA8ibvS5fp7lo22OMQd0qDY2koZ6zGdBOSpLAnilW2iw
+X-MS-Exchange-AntiSpam-MessageData: 7DNkGybTu1/8SOIMNEaOQ90LGsBp9GuzyB26zW2ci5XO7yt4ecGdyxBbm+l6aYLNK6x+VFOb8EAH/ZWAS0Bh7EU2e3hYBEsqLkXGHWufahzpEHohanGlUHGsqYGvPMlenYjCM8zvf6jOz34qqQVuWw==
 X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0f890298-092b-4a5a-8d5d-08d7d9cd0a09
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Apr 2020 01:51:35.1868
+X-MS-Exchange-CrossTenant-Network-Message-Id: c5af1b16-6825-4a24-edcd-08d7d9ce33c8
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2020 01:59:55.4239
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: svGmAxD27nt4f0C7APyZgTZhlw5coyzP61qjThl/ufHLi5TSOVe2XwqQP7ncS+IN7Dpd/lkzdIgJo50oIj2baA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0P153MB0322
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: oagJUbJ6OX+Jd/0xlvfs4n8XBavuhfEQbUpMPzz0z5CEuyOY98OULY7l3UmskY/1jh03lc/tJKfwcHcGE2Jqsw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR21MB1235
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBGcm9tOiBSYW5keSBEdW5sYXAgPHJkdW5sYXBAaW5mcmFkZWFkLm9yZz4NCj4gU2VudDogU3Vu
-ZGF5LCBBcHJpbCA1LCAyMDIwIDY6NDMgUE0NCj4gT24gNC81LzIwIDY6MjYgUE0sIERleHVhbiBD
-dWkgd3JvdGU6DQo+ID4gQEAgLTIxMSw5ICsyMTEsOSBAQA0KPiA+ICAgKiBpcyBpbXBsaWVkIGJ5
-IHRoZSBTS0JfR1NPXyogZmxhZ3MgaW4gZ3NvX3R5cGUuIE1vc3Qgb2J2aW91c2x5LCBpZiB0aGUN
-Cj4gPiAgICogZ3NvX3R5cGUgaXMgU0tCX0dTT19UQ1BWNCBvciBTS0JfR1NPX1RDUFY2LCBUQ1Ag
-Y2hlY2tzdW0gb2ZmbG9hZA0KPiBhcw0KPiA+ICAgKiBwYXJ0IG9mIHRoZSBHU08gb3BlcmF0aW9u
-IGlzIGltcGxpZWQuIElmIGEgY2hlY2tzdW0gaXMgYmVpbmcgb2ZmbG9hZGVkDQo+ID4gLSAqIHdp
-dGggR1NPIHRoZW4gaXBfc3VtbWVkIGlzIENIRUNLU1VNX1BBUlRJQUwsIGNzdW1fc3RhcnQgYW5k
-DQo+IGNzdW1fb2Zmc2V0DQo+ID4gLSAqIGFyZSBzZXQgdG8gcmVmZXIgdG8gdGhlIG91dGVybW9z
-dCBjaGVja3N1bSBiZWluZyBvZmZsb2FkICh0d28gb2ZmbG9hZGVkDQo+ID4gLSAqIGNoZWNrc3Vt
-cyBhcmUgcG9zc2libGUgd2l0aCBVRFAgZW5jYXBzdWxhdGlvbikuDQo+ID4gKyAqIHdpdGggR1NP
-IHRoZW4gaXBfc3VtbWVkIGlzIENIRUNLU1VNX1BBUlRJQUwsIGFuZCBib3RoIGNzdW1fc3RhcnQN
-Cj4gYW5kDQo+ID4gKyAqIGNzdW1fb2Zmc2V0IGFyZSBzZXQgdG8gcmVmZXIgdG8gdGhlIG91dGVy
-bW9zdCBjaGVja3N1bSBiZWluZyBvZmZsb2FkDQo+ICh0d28NCj4gDQo+IA0KPiBiZWluZyBvZmZs
-b2FkZWQNCg0KVGhhbmtzIGZvciBzcG90dGluZyB0aGlzISA6LSkNCg0KPiANCj4gUmV2aWV3ZWQt
-Ynk6IFJhbmR5IER1bmxhcCA8cmR1bmxhcEBpbmZyYWRlYWQub3JnPg0KPiAtLQ0KPiB+UmFuZHkN
-Cg0KV2lsbCBwb3N0IGEgdjMgc2hvcnRseS4NCg0KVGhhbmtzLA0KLS0gRGV4dWFuDQo=
+Fixed the punctuation and some typos.
+Improved some sentences with minor changes.
+
+No change of semantics or code.
+
+Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Dexuan Cui <decui@microsoft.com>
+
+---
+
+Changes in v2:
+1. Integrated comments from Matthew Wilcox, and added his Reviewed-by:
+
+   Reverted back to "supplied" from "supplies".
+   "fills out in" -> "fills in".
+   Used "it should treat the packet as if CHECKSUM_NONE were set.".
+
+2. Integrated a comment from Randy Dunlap:
+
+   "... ip_summed is CHECKSUM_PARTIAL, csum_start and csum_offset
+   are set to..."
+
+   ->
+
+   "... ip_summed is CHECKSUM_PARTIAL, and both csum_start and
+   csum_offset are set to refer to..."
+
+Changes in v3:
+    "being offload" -> "being offloaded"   [Randy Dunlap]
+    Added Randy's Reviewed-by.
+
+ include/linux/skbuff.h | 38 +++++++++++++++++++-------------------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
+
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 28b1a2b..3a2ac70 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -47,8 +47,8 @@
+  * A. IP checksum related features
+  *
+  * Drivers advertise checksum offload capabilities in the features of a device.
+- * From the stack's point of view these are capabilities offered by the driver,
+- * a driver typically only advertises features that it is capable of offloading
++ * From the stack's point of view these are capabilities offered by the driver.
++ * A driver typically only advertises features that it is capable of offloading
+  * to its device.
+  *
+  * The checksum related features are:
+@@ -63,7 +63,7 @@
+  *			  TCP or UDP packets over IPv4. These are specifically
+  *			  unencapsulated packets of the form IPv4|TCP or
+  *			  IPv4|UDP where the Protocol field in the IPv4 header
+- *			  is TCP or UDP. The IPv4 header may contain IP options
++ *			  is TCP or UDP. The IPv4 header may contain IP options.
+  *			  This feature cannot be set in features for a device
+  *			  with NETIF_F_HW_CSUM also set. This feature is being
+  *			  DEPRECATED (see below).
+@@ -79,13 +79,13 @@
+  *			  DEPRECATED (see below).
+  *
+  *	NETIF_F_RXCSUM - Driver (device) performs receive checksum offload.
+- *			 This flag is used only used to disable the RX checksum
++ *			 This flag is only used to disable the RX checksum
+  *			 feature for a device. The stack will accept receive
+  *			 checksum indication in packets received on a device
+  *			 regardless of whether NETIF_F_RXCSUM is set.
+  *
+  * B. Checksumming of received packets by device. Indication of checksum
+- *    verification is in set skb->ip_summed. Possible values are:
++ *    verification is set in skb->ip_summed. Possible values are:
+  *
+  * CHECKSUM_NONE:
+  *
+@@ -115,16 +115,16 @@
+  *   the packet minus one that have been verified as CHECKSUM_UNNECESSARY.
+  *   For instance if a device receives an IPv6->UDP->GRE->IPv4->TCP packet
+  *   and a device is able to verify the checksums for UDP (possibly zero),
+- *   GRE (checksum flag is set), and TCP-- skb->csum_level would be set to
++ *   GRE (checksum flag is set) and TCP, skb->csum_level would be set to
+  *   two. If the device were only able to verify the UDP checksum and not
+- *   GRE, either because it doesn't support GRE checksum of because GRE
++ *   GRE, either because it doesn't support GRE checksum or because GRE
+  *   checksum is bad, skb->csum_level would be set to zero (TCP checksum is
+  *   not considered in this case).
+  *
+  * CHECKSUM_COMPLETE:
+  *
+  *   This is the most generic way. The device supplied checksum of the _whole_
+- *   packet as seen by netif_rx() and fills out in skb->csum. Meaning, the
++ *   packet as seen by netif_rx() and fills in skb->csum. This means the
+  *   hardware doesn't need to parse L3/L4 headers to implement this.
+  *
+  *   Notes:
+@@ -153,8 +153,8 @@
+  *   from skb->csum_start up to the end, and to record/write the checksum at
+  *   offset skb->csum_start + skb->csum_offset. A driver may verify that the
+  *   csum_start and csum_offset values are valid values given the length and
+- *   offset of the packet, however they should not attempt to validate that the
+- *   checksum refers to a legitimate transport layer checksum-- it is the
++ *   offset of the packet, but it should not attempt to validate that the
++ *   checksum refers to a legitimate transport layer checksum -- it is the
+  *   purview of the stack to validate that csum_start and csum_offset are set
+  *   correctly.
+  *
+@@ -178,18 +178,18 @@
+  *
+  * CHECKSUM_UNNECESSARY:
+  *
+- *   This has the same meaning on as CHECKSUM_NONE for checksum offload on
++ *   This has the same meaning as CHECKSUM_NONE for checksum offload on
+  *   output.
+  *
+  * CHECKSUM_COMPLETE:
+  *   Not used in checksum output. If a driver observes a packet with this value
+- *   set in skbuff, if should treat as CHECKSUM_NONE being set.
++ *   set in skbuff, it should treat the packet as if CHECKSUM_NONE were set.
+  *
+  * D. Non-IP checksum (CRC) offloads
+  *
+  *   NETIF_F_SCTP_CRC - This feature indicates that a device is capable of
+  *     offloading the SCTP CRC in a packet. To perform this offload the stack
+- *     will set set csum_start and csum_offset accordingly, set ip_summed to
++ *     will set csum_start and csum_offset accordingly, set ip_summed to
+  *     CHECKSUM_PARTIAL and set csum_not_inet to 1, to provide an indication in
+  *     the skbuff that the CHECKSUM_PARTIAL refers to CRC32c.
+  *     A driver that supports both IP checksum offload and SCTP CRC32c offload
+@@ -200,10 +200,10 @@
+  *   NETIF_F_FCOE_CRC - This feature indicates that a device is capable of
+  *     offloading the FCOE CRC in a packet. To perform this offload the stack
+  *     will set ip_summed to CHECKSUM_PARTIAL and set csum_start and csum_offset
+- *     accordingly. Note the there is no indication in the skbuff that the
+- *     CHECKSUM_PARTIAL refers to an FCOE checksum, a driver that supports
++ *     accordingly. Note that there is no indication in the skbuff that the
++ *     CHECKSUM_PARTIAL refers to an FCOE checksum, so a driver that supports
+  *     both IP checksum offload and FCOE CRC offload must verify which offload
+- *     is configured for a packet presumably by inspecting packet headers.
++ *     is configured for a packet, presumably by inspecting packet headers.
+  *
+  * E. Checksumming on output with GSO.
+  *
+@@ -211,9 +211,9 @@
+  * is implied by the SKB_GSO_* flags in gso_type. Most obviously, if the
+  * gso_type is SKB_GSO_TCPV4 or SKB_GSO_TCPV6, TCP checksum offload as
+  * part of the GSO operation is implied. If a checksum is being offloaded
+- * with GSO then ip_summed is CHECKSUM_PARTIAL, csum_start and csum_offset
+- * are set to refer to the outermost checksum being offload (two offloaded
+- * checksums are possible with UDP encapsulation).
++ * with GSO then ip_summed is CHECKSUM_PARTIAL, and both csum_start and
++ * csum_offset are set to refer to the outermost checksum being offloaded
++ * (two offloaded checksums are possible with UDP encapsulation).
+  */
+ 
+ /* Don't change this without changing skb_csum_unnecessary! */
+-- 
+1.8.3.1
+
