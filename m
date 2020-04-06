@@ -2,211 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BBBE1A00FF
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 00:17:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF5F61A00FC
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 00:17:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726635AbgDFWQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 18:16:30 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:34370 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726595AbgDFWQa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 18:16:30 -0400
-Received: by mail-pg1-f193.google.com with SMTP id l14so730061pgb.1
-        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 15:16:29 -0700 (PDT)
+        id S1726403AbgDFWQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 18:16:21 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:34168 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726112AbgDFWQU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 18:16:20 -0400
+Received: by mail-wm1-f66.google.com with SMTP id c195so183475wme.1
+        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 15:16:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cs.washington.edu; s=goo201206;
-        h=from:to:cc:subject:date:message-id;
-        bh=I8Ag8RJmxCZk7aftpHG1/aOT8pIgsaZRRBMA74l4szs=;
-        b=M8J8NhOnd6VsGu2mROnqMiucZGBJHkCFpdPuRUXTHrWBoiRpSX/zdOAAme47f8IpmO
-         LbxP9RDtmYBA4sFMzviQSaX6l/c2ApCo5J9ZISFFgE3ic036efVrwB2nD7wkS1aBm/gE
-         pEWLs6KKpMP1482IJ5rRxQ3ubJH7OiJ35zFuM=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=1DqZmqajFlvPwp1gb1qH3t6WeMfoiRBHnjCA+jpLHNc=;
+        b=ecSgTPGdcd8ybBGM0cUiSlo544EVs82D1doWK8XpeAASDipKc9K/qdJNpky1VvelA6
+         Hz6fqBXQn0wNp9qtEp8b4CU8DnFkSWaEh7CT0i4bxEOMPN+o5/TNpihRW43iDBr/tGV8
+         8cEY+46LehyDSrTzncpCStprDbrfxOf63gcQBTsyqbYAtidKEFfZhJ5S7lbl5Ivpp47w
+         Z3okBTTb2zmL/TP/Ws4gROoPniOXC7cIvMsvDDjdsgL2+xR4MQqKOvLSuGLwFheTTrp7
+         FJmE5yLzQrAs07V5RnMaq96HxNxIbceAIlIVg0MPYkluWiAr/RhqwZvuczDDLTXarY2H
+         jfsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=I8Ag8RJmxCZk7aftpHG1/aOT8pIgsaZRRBMA74l4szs=;
-        b=irpqKDIDWh6NTsw+gQ0QvyT3RedcxcSEvak3tP2acFcYbqLF4TEjLFxaD7Ns5tZsuQ
-         5wFVKMAuscTyzETQ9PaZfFSXFnGZKHBhKEmCbD7PhVq6O1Vx+74nNdEqqBegi4jW9dZw
-         m3gFUva3Sv8+/a/CY98SGDE6AVCTqv5JldDlfIb+22cCCRaIstRH1oUOHVoEW433kdCQ
-         +pSw9+JfJ76QHfeSzTpVqVr7P08GxrtEvepvKn+tx19Jdg+fr8lUN+Tk/hgfMHYHGTGo
-         GPlmyPKKqLP5LRTronygXLpvimnwWKy+C/28S1hR24FagXwlZoLxhNG+pHG8tJF2R1sI
-         Wy0A==
-X-Gm-Message-State: AGi0PuafsRWWntwjRhKjA+B8FmkHcwzY1r4hapJU6KyJYh/k3Ff8NGuC
-        ZYTJLy7kKn0zh+xJIyNIR4EQUw==
-X-Google-Smtp-Source: APiQypLGxqHjlTUmIKxBeT61WxtzGWT1x2WVVzwD4uK2qvte99BMAMa7HumrAI/VX29+HNxtKillxg==
-X-Received: by 2002:a63:dd09:: with SMTP id t9mr1182732pgg.432.1586211388598;
-        Mon, 06 Apr 2020 15:16:28 -0700 (PDT)
-Received: from localhost.localdomain (c-73-53-94-119.hsd1.wa.comcast.net. [73.53.94.119])
-        by smtp.gmail.com with ESMTPSA id s12sm11714998pgi.38.2020.04.06.15.16.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Apr 2020 15:16:28 -0700 (PDT)
-From:   Luke Nelson <lukenels@cs.washington.edu>
-X-Google-Original-From: Luke Nelson <luke.r.nels@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     Xi Wang <xi.wang@gmail.com>, Luke Nelson <luke.r.nels@gmail.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf] riscv, bpf: Fix offset range checking for auipc+jalr on RV64
-Date:   Mon,  6 Apr 2020 22:16:04 +0000
-Message-Id: <20200406221604.18547-1-luke.r.nels@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1DqZmqajFlvPwp1gb1qH3t6WeMfoiRBHnjCA+jpLHNc=;
+        b=i4vlhiCQpKP/6pPtjRvDkNq769lfDsAMhrxfqjIjEemKch4CNQUd7oYUk3minZZ1bY
+         onK6nwSjq4hRkEnjtXn2XMmM7uGEZTsQCuXAq4YTR+0e5z2htP7bZuqoFZehnCMOa9es
+         ZgSNKOgnt60KEL0WXvjfIiC2HtkBIlbXsuD2JnWLk4nt0V02EARJecidlZ+ReXmRN8CL
+         +H6RHwP2PghxxeN5KKSPkEzcFZ1AjqkfVPKDmqqkRBGj6AVVoea9ndSe6aMRtobWn5lY
+         lZlR0UxRtpifI5RAmfu0Yw8hhshbtb5ccMoSF/X9erdKWYzks6iU5XSD7VpIICK/eCP3
+         Jglg==
+X-Gm-Message-State: AGi0PuZXP2U/xnuYoj807jslCyY6vdqzUul56KOqGtZrGf7kX2b/WUhS
+        4bPkKTLruvunGenPq4xFt4CjwfTi
+X-Google-Smtp-Source: APiQypItFXiuccBjt9wOP0nyfQV+beAohNMz0/QPBds/aoHb1oSE1eN3iXNU8LN8BdGPaIZQUwzpXA==
+X-Received: by 2002:a05:600c:2645:: with SMTP id 5mr1001514wmy.168.1586211374846;
+        Mon, 06 Apr 2020 15:16:14 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:6000:edb1:84cf:fe97:96f5? (p200300EA8F296000EDB184CFFE9796F5.dip0.t-ipconnect.de. [2003:ea:8f29:6000:edb1:84cf:fe97:96f5])
+        by smtp.googlemail.com with ESMTPSA id o16sm28270691wrw.75.2020.04.06.15.16.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Apr 2020 15:16:14 -0700 (PDT)
+Subject: Re: [PATCH net] r8169: fix multicast tx issue with macvlan interface
+To:     Charles DAYMAND <charles.daymand@wifirst.fr>
+Cc:     Eric Dumazet <edumazet@google.com>, netdev <netdev@vger.kernel.org>
+References: <20200327090800.27810-1-charles.daymand@wifirst.fr>
+ <0bab7e0b-7b22-ad0f-2558-25602705e807@gmail.com>
+ <d7a0eca8-15aa-10da-06cc-1eeef3a7a423@gmail.com>
+ <CANn89iKA8k3GyxCKCJRacB42qcFqUDsiRhFOZxOQ7JCED0ChyQ@mail.gmail.com>
+ <42f81a4a-24fc-f1fb-11db-ea90a692f249@gmail.com>
+ <CANn89i+A=Mu=9LMscd2Daqej+uVLc3E6w33MZzTwpe2v+k89Mw@mail.gmail.com>
+ <CAFJtzm03QpjGRs70tth26BdUFN_o8zsJOccbnA58ma+2uwiGcg@mail.gmail.com>
+ <c02274b9-1ba0-d5e9-848f-5d6761df20f4@gmail.com>
+ <CAFJtzm0H=pztSp_RQt_YNnPHQkq4N4Z5S-PqMFgE=Fp=Fo-G_w@mail.gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <df776fc4-871d-d82c-a202-ba4f4d7bfb42@gmail.com>
+Date:   Tue, 7 Apr 2020 00:16:09 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
+MIME-Version: 1.0
+In-Reply-To: <CAFJtzm0H=pztSp_RQt_YNnPHQkq4N4Z5S-PqMFgE=Fp=Fo-G_w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The existing code in emit_call on RV64 checks that the PC-relative offset
-to the function fits in 32 bits before calling emit_jump_and_link to emit
-an auipc+jalr pair. However, this check is incorrect because offsets in
-the range [2^31 - 2^11, 2^31 - 1] cannot be encoded using auipc+jalr on
-RV64 (see discussion [1]). The RISC-V spec has recently been updated
-to reflect this fact [2, 3].
+On 06.04.2020 16:12, Charles DAYMAND wrote:
+> Hello,
+> Sorry for the long delay, I didn't have physical access to the
+> hardware last week. I did more testing today by connecting directly my
+> laptop to the hardware and the issue not only affects multicast but
+> also unicast with macvlan.
+> Only ping packets are correctly sent.
+> Using wireshark I can only see malformed ethernet packets (example
+> with multicast packet below)
+> Frame 1: 106 bytes on wire (848 bits), 106 bytes captured (848 bits)
+> IEEE 802.3 Ethernet
+>     Destination: IPv4mcast_09 (01:00:5e:00:00:09)
+>     Source: b2:41:6f:04:c1:86 (b2:41:6f:04:c1:86)
+>     Length: 96
+>         [Expert Info (Error/Malformed): Length field value goes past
+> the end of the payload]
+> Logical-Link Control
+>     DSAP: Unknown (0x45)
+>     SSAP: Unknown (0xc0)
+>     Control field: I, N(R)=46, N(S)=0 (0x5C00)
+> Data (88 bytes)
+>     Data: 50320c780111087fac159401e0000009020802080048207a...
+>     [Length: 88]
+> Please find the full pcap file at this url with also a tentative to
+> establish a ssh connection :
+> https://fourcot.fr/temp/malformed_ethernet2.pcap
+> 
+> Best regards
+> 
+> Charles
+> 
+> 
+> Le mar. 31 mars 2020 à 16:07, Heiner Kallweit <hkallweit1@gmail.com> a écrit :
+>>
+>> Thanks for further testing! The good news from my perspective is that the issue doesn't occur
+>> w/o macvlen, therefore it doesn't seem to be a r8169 network driver issue.
+>>
+>> W/o knowing tcpdump in detail I think it switches the NIC to promiscuous mode, means
+>> it should see all packets, incl. the ones with checksum errors.
+>> Maybe you can mirror the port to which the problematic system is connected and
+>> analyze the traffic. Or for whatever reason the switch doesn't forward the multicast
+>> packets to your notebook.
+>>
+>> Heiner
+>>
+>>
+>> On 31.03.2020 15:44, Charles DAYMAND wrote:
+>>> Hello,
+>>> We tested to enable tx checksumming manually (via ethtool) on a kernel 4.19.0-5-amd64 which is the oldest kernel compatible with our software and we observed exactly the same issue.
+>>> For information when connecting a laptop directly to the interface we can't see any multicast packet when tx checksumming is enabled on tcpdump.
+>>> Our network is composed of a cisco switch and we can still see the multicast counters correctly increasing even when we have the issue.
+>>>
+>>> I also confirm that when not using macvlan but the real interface there is no issue on the multicast packets, they are correctly sent and received.
+>>> I have a stupid question, if the IP checksum was bad on the multicast packet, would the receiver NIC drop the packet or would it be seen by tcpdump by the receiver ?
+>>>
+>>> Le ven. 27 mars 2020 à 20:43, Eric Dumazet <edumazet@google.com <mailto:edumazet@google.com>> a écrit :
+>>>
+>>>     On Fri, Mar 27, 2020 at 12:17 PM Heiner Kallweit <hkallweit1@gmail.com <mailto:hkallweit1@gmail.com>> wrote:
+>>>     >
+>>>     > On 27.03.2020 19:52, Eric Dumazet wrote:
+>>>     > > On Fri, Mar 27, 2020 at 10:41 AM Heiner Kallweit <hkallweit1@gmail.com <mailto:hkallweit1@gmail.com>> wrote:
+>>>     > >>
+>>>     > >> On 27.03.2020 10:39, Heiner Kallweit wrote:
+>>>     > >>> On 27.03.2020 10:08, Charles Daymand wrote:
+>>>     > >>>> During kernel upgrade testing on our hardware, we found that macvlan
+>>>     > >>>> interface were no longer able to send valid multicast packet.
+>>>     > >>>>
+>>>     > >>>> tcpdump run on our hardware was correctly showing our multicast
+>>>     > >>>> packet but when connecting a laptop to our hardware we didn't see any
+>>>     > >>>> packets.
+>>>     > >>>>
+>>>     > >>>> Bisecting turned up commit 93681cd7d94f
+>>>     > >>>> "r8169: enable HW csum and TSO" activates the feature NETIF_F_IP_CSUM
+>>>     > >>>> which is responsible for the drop of packet in case of macvlan
+>>>     > >>>> interface. Note that revision RTL_GIGA_MAC_VER_34 was already a specific
+>>>     > >>>> case since TSO was keep disabled.
+>>>     > >>>>
+>>>     > >>>> Deactivating NETIF_F_IP_CSUM using ethtool is correcting our multicast
+>>>     > >>>> issue, but we believe that this hardware issue is important enough to
+>>>     > >>>> keep tx checksum off by default on this revision.
+>>>     > >>>>
+>>>     > >>>> The change is deactivating the default value of NETIF_F_IP_CSUM for this
+>>>     > >>>> specific revision.
+>>>     > >>>>
+>>>     > >>>
+>>>     > >>> The referenced commit may not be the root cause but just reveal another
+>>>     > >>> issue that has been existing before. Root cause may be in the net core
+>>>     > >>> or somewhere else. Did you check with other RTL8168 versions to verify
+>>>     > >>> that it's indeed a HW issue with this specific chip version?
+>>>     > >>>
+>>>     > >>> What you could do: Enable tx checksumming manually (via ethtool) on
+>>>     > >>> older kernel versions and check whether they are fine or not.
+>>>     > >>> If an older version is fine, then you can start a new bisect with tx
+>>>     > >>> checksumming enabled.
+>>>     > >>>
+>>>     > >>> And did you capture and analyze traffic to verify that actually the
+>>>     > >>> checksum is incorrect (and packets discarded therefore on receiving end)?
+>>>     > >>>
+>>>     > >>>
+>>>     > >>>> Fixes: 93681cd7d94f ("r8169: enable HW csum and TSO")
+>>>     > >>>> Signed-off-by: Charles Daymand <charles.daymand@wifirst.fr <mailto:charles.daymand@wifirst.fr>>
+>>>     > >>>> ---
+>>>     > >>>>  net/drivers/net/ethernet/realtek/r8169_main.c | 3 +++
+>>>     > >>>>  1 file changed, 3 insertions(+)
+>>>     > >>>>
+>>>     > >>>> diff --git a/net/drivers/net/ethernet/realtek/r8169_main.c b/net/drivers/net/ethernet/realtek/r8169_main.c
+>>>     > >>>> index a9bdafd15a35..3b69135fc500 100644
+>>>     > >>>> --- a/net/drivers/net/ethernet/realtek/r8169_main.c
+>>>     > >>>> +++ b/net/drivers/net/ethernet/realtek/r8169_main.c
+>>>     > >>>> @@ -5591,6 +5591,9 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>>>     > >>>>              dev->vlan_features &= ~(NETIF_F_ALL_TSO | NETIF_F_SG);
+>>>     > >>>>              dev->hw_features &= ~(NETIF_F_ALL_TSO | NETIF_F_SG);
+>>>     > >>>>              dev->features &= ~(NETIF_F_ALL_TSO | NETIF_F_SG);
+>>>     > >>>> +            if (tp->mac_version == RTL_GIGA_MAC_VER_34) {
+>>>     > >>>> +                    dev->features &= ~NETIF_F_IP_CSUM;
+>>>     > >>>> +            }
+>>>     > >>>>      }
+>>>     > >>>>
+>>>     > >>>>      dev->hw_features |= NETIF_F_RXALL;
+>>>     > >>>>
+>>>     > >>>
+>>>     > >>
+>>>     > >> After looking a little bit at the macvlen code I think there might be an
+>>>     > >> issue in it, but I'm not sure, therefore let me add Eric (as macvlen doesn't
+>>>     > >> seem to have a dedicated maintainer).
+>>>     > >>
+>>>     > >> r8169 implements a ndo_features_check callback that disables tx checksumming
+>>>     > >> for the chip version in question and small packets (due to a HW issue).
+>>>     > >> macvlen uses passthru_features_check() as ndo_features_check callback, this
+>>>     > >> seems to indicate to me that the ndo_features_check callback of lowerdev is
+>>>     > >> ignored. This could explain the issue you see.
+>>>     > >>
+>>>     > >
+>>>     > > macvlan_queue_xmit() calls dev_queue_xmit_accel() after switching skb->dev,
+>>>     > > so the second __dev_queue_xmit() should eventually call the real_dev
+>>>     > > ndo_features_check()
+>>>     > >
+>>>     > Thanks, Eric. There's a second path in macvlan_queue_xmit() calling
+>>>     > dev_forward_skb(vlan->lowerdev, skb). Does what you said apply also there?
+>>>
+>>>     This path wont send packets to the physical NIC, packets are injected
+>>>     back via dev_forward_skb()
+>>>
+>>>     >
+>>>     > Still I find it strange that a tx hw checksumming issue should affect multicasts
+>>>     > only. Also the chip version in question is quite common and I would expect
+>>>     > others to have hit the same issue.
+>>>     > Maybe best would be to re-test on the affected system w/o involving macvlen.
+>>>     >
+>>>     > >
+>>>     > >
+>>>     > >> Would be interesting to see whether it fixes your issue if you let the
+>>>     > >> macvlen ndo_features_check call lowerdev's ndo_features_check. Can you try this?
+>>>     > >>
+>>>     > >> By the way:
+>>>     > >> Also the ndo_fix_features callback of lowerdev seems to be ignored.
+>>>     >
+>>>
+>>>
+>>>
+>>> --
+>>>
+>>> logo wifirst <http://www.wifirst.fr/en>
+>>>
+>>> Charles Daymand
+>>>
+>>> Développeur infrastructure
+>>>
+>>> 26 rue de Berri 75008 Paris
+>>>
+>>> Assistance dédiée responsable de site - 01 70 70 46 70
+>>> Assistance utilisateur - 01 70 70 46 26
+>>>
+>>
+> 
+> 
 
-This patch fixes the problem by moving the check on the offset into
-emit_jump_and_link and modifying it to the correct range of encodable
-offsets, which is [-2^31 - 2^11, 2^31 - 2^11). This also enforces the
-check on the offset to other uses of emit_jump_and_link (e.g., BPF_JA)
-as well.
+In a similar context Realtek made me aware of a hw issue if IP header
+has the options field set. You mentioned problems with multicast packets,
+and based on the following code the root cause may be related.
 
-Currently, this bug is unlikely to be triggered, because the memory
-region from which JITed images are allocated is close enough to kernel
-text for the offsets to not become too large; and because the bounds on
-BPF program size are small enough. This patch prevents this problem from
-becoming an issue if either of these change.
+br_ip4_multicast_alloc_query()
+-> iph->ihl = 6;
 
-[1]: https://groups.google.com/a/groups.riscv.org/forum/#!topic/isa-dev/bwWFhBnnZFQ
-[2]: https://github.com/riscv/riscv-isa-manual/commit/b1e42e09ac55116dbf9de5e4fb326a5a90e4a993
-[3]: https://github.com/riscv/riscv-isa-manual/commit/4c1b2066ebd2965a422e41eb262d0a208a7fea07
+I'd appreciate if you could test (with HW tx checksumming enabled)
+whether this experimental patch fixes the issue with invalid/lost
+multicasts.
 
-Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
----
- arch/riscv/net/bpf_jit_comp64.c | 49 +++++++++++++++++++++------------
- 1 file changed, 32 insertions(+), 17 deletions(-)
 
-diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_comp64.c
-index cc1985d8750a..d208a9fd6c52 100644
---- a/arch/riscv/net/bpf_jit_comp64.c
-+++ b/arch/riscv/net/bpf_jit_comp64.c
-@@ -110,6 +110,16 @@ static bool is_32b_int(s64 val)
- 	return -(1L << 31) <= val && val < (1L << 31);
- }
- 
-+static bool in_auipc_jalr_range(s64 val)
-+{
-+	/*
-+	 * auipc+jalr can reach any signed PC-relative offset in the range
-+	 * [-2^31 - 2^11, 2^31 - 2^11).
-+	 */
-+	return (-(1L << 31) - (1L << 11)) <= val &&
-+		val < ((1L << 31) - (1L << 11));
-+}
-+
- static void emit_imm(u8 rd, s64 val, struct rv_jit_context *ctx)
- {
- 	/* Note that the immediate from the add is sign-extended,
-@@ -380,20 +390,24 @@ static void emit_sext_32_rd(u8 *rd, struct rv_jit_context *ctx)
- 	*rd = RV_REG_T2;
- }
- 
--static void emit_jump_and_link(u8 rd, s64 rvoff, bool force_jalr,
--			       struct rv_jit_context *ctx)
-+static int emit_jump_and_link(u8 rd, s64 rvoff, bool force_jalr,
-+			      struct rv_jit_context *ctx)
- {
- 	s64 upper, lower;
- 
- 	if (rvoff && is_21b_int(rvoff) && !force_jalr) {
- 		emit(rv_jal(rd, rvoff >> 1), ctx);
--		return;
-+		return 0;
-+	} else if (in_auipc_jalr_range(rvoff)) {
-+		upper = (rvoff + (1 << 11)) >> 12;
-+		lower = rvoff & 0xfff;
-+		emit(rv_auipc(RV_REG_T1, upper), ctx);
-+		emit(rv_jalr(rd, RV_REG_T1, lower), ctx);
-+		return 0;
- 	}
- 
--	upper = (rvoff + (1 << 11)) >> 12;
--	lower = rvoff & 0xfff;
--	emit(rv_auipc(RV_REG_T1, upper), ctx);
--	emit(rv_jalr(rd, RV_REG_T1, lower), ctx);
-+	pr_err("bpf-jit: target offset 0x%llx is out of range\n", rvoff);
-+	return -ERANGE;
- }
- 
- static bool is_signed_bpf_cond(u8 cond)
-@@ -407,18 +421,16 @@ static int emit_call(bool fixed, u64 addr, struct rv_jit_context *ctx)
- 	s64 off = 0;
- 	u64 ip;
- 	u8 rd;
-+	int ret;
- 
- 	if (addr && ctx->insns) {
- 		ip = (u64)(long)(ctx->insns + ctx->ninsns);
- 		off = addr - ip;
--		if (!is_32b_int(off)) {
--			pr_err("bpf-jit: target call addr %pK is out of range\n",
--			       (void *)addr);
--			return -ERANGE;
--		}
- 	}
- 
--	emit_jump_and_link(RV_REG_RA, off, !fixed, ctx);
-+	ret = emit_jump_and_link(RV_REG_RA, off, !fixed, ctx);
-+	if (ret)
-+		return ret;
- 	rd = bpf_to_rv_reg(BPF_REG_0, ctx);
- 	emit(rv_addi(rd, RV_REG_A0, 0), ctx);
- 	return 0;
-@@ -429,7 +441,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
- {
- 	bool is64 = BPF_CLASS(insn->code) == BPF_ALU64 ||
- 		    BPF_CLASS(insn->code) == BPF_JMP;
--	int s, e, rvoff, i = insn - ctx->prog->insnsi;
-+	int s, e, rvoff, ret, i = insn - ctx->prog->insnsi;
- 	struct bpf_prog_aux *aux = ctx->prog->aux;
- 	u8 rd = -1, rs = -1, code = insn->code;
- 	s16 off = insn->off;
-@@ -699,7 +711,9 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
- 	/* JUMP off */
- 	case BPF_JMP | BPF_JA:
- 		rvoff = rv_offset(i, off, ctx);
--		emit_jump_and_link(RV_REG_ZERO, rvoff, false, ctx);
-+		ret = emit_jump_and_link(RV_REG_ZERO, rvoff, false, ctx);
-+		if (ret)
-+			return ret;
- 		break;
- 
- 	/* IF (dst COND src) JUMP off */
-@@ -801,7 +815,6 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
- 	case BPF_JMP | BPF_CALL:
- 	{
- 		bool fixed;
--		int ret;
- 		u64 addr;
- 
- 		mark_call(ctx);
-@@ -826,7 +839,9 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
- 			break;
- 
- 		rvoff = epilogue_offset(ctx);
--		emit_jump_and_link(RV_REG_ZERO, rvoff, false, ctx);
-+		ret = emit_jump_and_link(RV_REG_ZERO, rvoff, false, ctx);
-+		if (ret)
-+			return ret;
- 		break;
- 
- 	/* dst = imm64 */
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index e40e8eaeb..dd251ddb8 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -4319,6 +4319,10 @@ static netdev_features_t rtl8169_features_check(struct sk_buff *skb,
+ 		    rtl_chip_supports_csum_v2(tp))
+ 			features &= ~NETIF_F_ALL_TSO;
+ 	} else if (skb->ip_summed == CHECKSUM_PARTIAL) {
++		if (ip_hdrlen(skb) > sizeof(struct iphdr)) {
++			pr_info("hk: iphdr has options field set\n");
++			features &= ~NETIF_F_CSUM_MASK;
++		}
+ 		if (skb->len < ETH_ZLEN) {
+ 			switch (tp->mac_version) {
+ 			case RTL_GIGA_MAC_VER_11:
 -- 
-2.17.1
+2.26.0
 
