@@ -2,189 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C936C19FFFA
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 23:11:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21F0719FFFF
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 23:14:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726403AbgDFVLe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 17:11:34 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:43941 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725933AbgDFVLe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 17:11:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586207493;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=xw2IXbDc6erg5HETD8kiXgNsbIOvz2N8DW0E+Bc8mD0=;
-        b=VW4lNOXyG/ighOtPSnlZRReDBuLaaflD9bHkhz+zxJ8KHgmJlaaA8KuKTsscE57eX5lMHC
-        8nepM1AaEqAKc1SSq6yl9gxBPNfrraFWHpOZjWmxh9/IhIoKW6U34kljzGmXmS9fnaz74N
-        v0PntISYUZVdWMdIXBx4gz0I/fu0leg=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-481-fpX9mtgAO5GWIiyDA0TiDQ-1; Mon, 06 Apr 2020 17:11:29 -0400
-X-MC-Unique: fpX9mtgAO5GWIiyDA0TiDQ-1
-Received: by mail-wm1-f72.google.com with SMTP id o26so390454wmh.1
-        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 14:11:29 -0700 (PDT)
+        id S1726421AbgDFVOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 17:14:12 -0400
+Received: from mail-lf1-f41.google.com ([209.85.167.41]:43104 "EHLO
+        mail-lf1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725895AbgDFVOM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 17:14:12 -0400
+Received: by mail-lf1-f41.google.com with SMTP id k28so635910lfe.10
+        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 14:14:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+Xd1xzbAohX/FqkqTk1cM6F9kOwM40uvkJrnhkR7+Fo=;
+        b=1MwGnWt2vQYBfJnOaGiMooJfZu8yPk9Lnh8IpQq4l4Fbk8acKx7Q0J83j4fbMJhmTX
+         Bz+eZjKKF+Ub1qTlSs94FqivztSEebggGwKqOO2o5c+66jj41PmWZIOIuYytFsaBqmG8
+         vbyS8SUkw8WPy8l9fXvKJ/eTAO6MGiT8QjtZbd1sQ9eBCMAg61zLKtD8blKSPCHXxeBc
+         XiVn5iAZEWta1iZrNBRvwoGTxeux9ycBqcHT22tBvWp4wUHFIRiKeN3mDGTuN9nsKMVN
+         8v0178c+aA+YlM+cBBDnBIF5MieLOOec2d4ecPVr44unPekjdEqBzjzuGLrRYzF7VbXT
+         XeQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=xw2IXbDc6erg5HETD8kiXgNsbIOvz2N8DW0E+Bc8mD0=;
-        b=inAmaW+n7/Ddj6i7ra9tlOqnWAQ7KZDU7lHQN8dbLX4/TB2KLs39FsYgAZ0WnTobLI
-         ZxHuw7E1LORLJqEA898t+O8W7APcPyzvfV9xa4ouMrsU5XWt0ow4YXsIXpatQSU7VdE/
-         v/CmgpP+JR5JVcxw57/OfNkcRRKwGBPwO61jDJ+2wp2Jpo/8BpveLTZR1IrtqXPsZvCp
-         k9b8xH52upMQbZHMEX8Bir1e396Gv6Jv9vKG7IgXdKD1dnZWGGPYnp7hJOS/atUohxY3
-         TalX+i/j+E48+mc2rvDzrN/YIzgcRSDeRM2PHWKIehG9ApelAJFIhgg7+vgRbF0bOw0D
-         /VTg==
-X-Gm-Message-State: AGi0PuZgT3zgPqU/JryPBmhRqDsId65kvCW/+wLTUszlbHtsWFitrUs5
-        JmZzCuY2cHsQS4vx7B4dtmbPL60SriAhJecal/ZmsGAQOcIWAtl9WNsqrrj/8DRAhLhfPNVIZaJ
-        dAKJnObm4dYt0NTLt
-X-Received: by 2002:a05:600c:2a52:: with SMTP id x18mr932499wme.37.1586207488356;
-        Mon, 06 Apr 2020 14:11:28 -0700 (PDT)
-X-Google-Smtp-Source: APiQypIuopl4ajbdC3ug75t4KceTRePheaHXToSHTTSi41utVfsJr0uYqtKb8e7/TbxvYzk23Hg23w==
-X-Received: by 2002:a05:600c:2a52:: with SMTP id x18mr932473wme.37.1586207488125;
-        Mon, 06 Apr 2020 14:11:28 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
-        by smtp.gmail.com with ESMTPSA id d7sm27508603wrr.77.2020.04.06.14.11.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Apr 2020 14:11:27 -0700 (PDT)
-Date:   Mon, 6 Apr 2020 17:11:24 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        alexander.h.duyck@linux.intel.com, david@redhat.com,
-        eperezma@redhat.com, jasowang@redhat.com, lingshan.zhu@intel.com,
-        mhocko@kernel.org, mst@redhat.com, namit@vmware.com,
-        rdunlap@infradead.org, rientjes@google.com, tiwei.bie@intel.com,
-        tysand@google.com, wei.w.wang@intel.com, xiao.w.wang@intel.com,
-        yuri.benditovich@daynix.com
-Subject: [GIT PULL] vhost: fixes, vdpa
-Message-ID: <20200406171124-mutt-send-email-mst@kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=+Xd1xzbAohX/FqkqTk1cM6F9kOwM40uvkJrnhkR7+Fo=;
+        b=DBrTsmSstY/QNODkV23RWE8zmNnpjzw6WuQCbJbXURP9GUnnDzOksefccOd8Wq6W13
+         FGANIRSjHUo+YmpGI8CHLKluTUI4XF1WoaScH+WeSRbIn8unakx0rbMSbDoc43Qe+GtK
+         3s8azTD3W3OpSlp3If5GB1ADMXpiWw3ijH443q4oBZCoxOX5wtxYVim+T+KF5qSmju0m
+         DfOcGEDFj1hVgcoKQMQKDGwqCnpK52tfe0rVhHqfnKTQk/vncFrw1TSSvncq9NFpNnA+
+         bML+by6350xZd7A/9RiyOrJEwkFxDAxumUPmT982ty9FuwiHTzsXJJHUYjsJUGQP+D7I
+         h0eQ==
+X-Gm-Message-State: AGi0PubqnZv2Jl5xDtTBxv/Id9bLCBfCQU/tQBTcJ0FaGGT0IOkzHnwN
+        fjZbhMudIPXN5rJk8iPzy9bklw==
+X-Google-Smtp-Source: APiQypLi+4wO9Y/cU95F3kWj2BAO3JcE28FDvZp9goT7P7q6xIUprCvzvB04YOF9s/5Y3E2PeokoTA==
+X-Received: by 2002:a19:40d0:: with SMTP id n199mr14028200lfa.161.1586207649535;
+        Mon, 06 Apr 2020 14:14:09 -0700 (PDT)
+Received: from wasted.cogentembedded.com ([2a00:1fa0:462e:583f:4b1:b175:1ecb:fb31])
+        by smtp.gmail.com with ESMTPSA id h16sm10509386ljl.73.2020.04.06.14.14.07
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 06 Apr 2020 14:14:08 -0700 (PDT)
+Subject: Re: question about drivers/net/ethernet/renesas/ravb_main.c
+To:     Julia Lawall <julia.lawall@inria.fr>, horms+renesas@verge.net.au,
+        tho.vu.wh@rvc.renesas.com, uli+renesas@fpond.eu
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, joe@perches.com
+References: <alpine.DEB.2.21.2004031559240.2694@hadrien>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Organization: Cogent Embedded
+Message-ID: <4c39386e-4259-ba45-1f7f-1e6307a7753a@cogentembedded.com>
+Date:   Tue, 7 Apr 2020 00:14:07 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mutt-Fcc: =sent
+In-Reply-To: <alpine.DEB.2.21.2004031559240.2694@hadrien>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-MW
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that many more architectures build vhost, a couple of these (um, and
-arm with deprecated oabi) have reported build failures with randconfig,
-however fixes for that need a bit more discussion/testing and will be
-merged separately.
+Hello!
 
-Not a regression - these previously simply didn't have vhost at all.
-Also, there's some DMA API code in the vdpa simulator is hacky - if no
-solution surfaces soon we can always disable it before release:
-it's not a big deal either way as it's just test code.
+On 04/03/2020 05:04 PM, Julia Lawall wrote:
 
-The following changes since commit 16fbf79b0f83bc752cee8589279f1ebfe57b3b6e:
+> In the function ravb_hwtstamp_get in ravb_main.c, the following code looks
+> suspicious:
+> 
+>         if (priv->tstamp_rx_ctrl & RAVB_RXTSTAMP_TYPE_V2_L2_EVENT)
+>                 config.rx_filter = HWTSTAMP_FILTER_PTP_V2_L2_EVENT;
+>         else if (priv->tstamp_rx_ctrl & RAVB_RXTSTAMP_TYPE_ALL)
+>                 config.rx_filter = HWTSTAMP_FILTER_ALL;
+>         else
+>                 config.rx_filter = HWTSTAMP_FILTER_NONE;
+> 
+> According to drivers/net/ethernet/renesas/ravb.h,
+> RAVB_RXTSTAMP_TYPE_V2_L2_EVENT is 0x00000002 and RAVB_RXTSTAMP_TYPE_ALL is
+> 0x00000006.  Therefore, if the test on RAVB_RXTSTAMP_TYPE_ALL should be
+> true, it will never be reached.  How should the code be changed?
 
-  Linux 5.6-rc7 (2020-03-22 18:31:56 -0700)
+   After looking at the code, I think that setting RAVB_RXTSTAMP_TYPE_ALL to
+0x00000004 should be enough. BTW, the RAVB_{R,T}XTSTAMP_VALID don't seem be
+used anywhere...
 
-are available in the Git repository at:
+> thanks,
+> julia
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-
-for you to fetch changes up to c9b9f5f8c0f3cdb893cb86c168cdaa3aa5ed7278:
-
-  vdpa: move to drivers/vdpa (2020-04-02 10:41:40 -0400)
-
-----------------------------------------------------------------
-virtio: fixes, vdpa
-
-Some bug fixes.
-Balloon reverted to use the OOM handler again.
-The new vdpa subsystem with two first drivers.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-David Hildenbrand (1):
-      virtio-balloon: Switch back to OOM handler for VIRTIO_BALLOON_F_DEFLATE_ON_OOM
-
-Jason Wang (7):
-      vhost: refine vhost and vringh kconfig
-      vhost: allow per device message handler
-      vhost: factor out IOTLB
-      vringh: IOTLB support
-      vDPA: introduce vDPA bus
-      virtio: introduce a vDPA based transport
-      vdpasim: vDPA device simulator
-
-Michael S. Tsirkin (2):
-      tools/virtio: option to build an out of tree module
-      vdpa: move to drivers/vdpa
-
-Tiwei Bie (1):
-      vhost: introduce vDPA-based backend
-
-Yuri Benditovich (3):
-      virtio-net: Introduce extended RSC feature
-      virtio-net: Introduce RSS receive steering feature
-      virtio-net: Introduce hash report feature
-
-Zhu Lingshan (1):
-      virtio: Intel IFC VF driver for VDPA
-
- MAINTAINERS                      |   3 +
- arch/arm/kvm/Kconfig             |   2 -
- arch/arm64/kvm/Kconfig           |   2 -
- arch/mips/kvm/Kconfig            |   2 -
- arch/powerpc/kvm/Kconfig         |   2 -
- arch/s390/kvm/Kconfig            |   4 -
- arch/x86/kvm/Kconfig             |   4 -
- drivers/Kconfig                  |   4 +
- drivers/Makefile                 |   1 +
- drivers/misc/mic/Kconfig         |   4 -
- drivers/net/caif/Kconfig         |   4 -
- drivers/vdpa/Kconfig             |  37 ++
- drivers/vdpa/Makefile            |   4 +
- drivers/vdpa/ifcvf/Makefile      |   3 +
- drivers/vdpa/ifcvf/ifcvf_base.c  | 389 +++++++++++++++++
- drivers/vdpa/ifcvf/ifcvf_base.h  | 118 ++++++
- drivers/vdpa/ifcvf/ifcvf_main.c  | 435 +++++++++++++++++++
- drivers/vdpa/vdpa.c              | 180 ++++++++
- drivers/vdpa/vdpa_sim/Makefile   |   2 +
- drivers/vdpa/vdpa_sim/vdpa_sim.c | 629 ++++++++++++++++++++++++++++
- drivers/vhost/Kconfig            |  45 +-
- drivers/vhost/Kconfig.vringh     |   6 -
- drivers/vhost/Makefile           |   6 +
- drivers/vhost/iotlb.c            | 177 ++++++++
- drivers/vhost/net.c              |   5 +-
- drivers/vhost/scsi.c             |   2 +-
- drivers/vhost/vdpa.c             | 883 +++++++++++++++++++++++++++++++++++++++
- drivers/vhost/vhost.c            | 233 ++++-------
- drivers/vhost/vhost.h            |  45 +-
- drivers/vhost/vringh.c           | 421 ++++++++++++++++++-
- drivers/vhost/vsock.c            |   2 +-
- drivers/virtio/Kconfig           |  13 +
- drivers/virtio/Makefile          |   1 +
- drivers/virtio/virtio_balloon.c  | 107 ++---
- drivers/virtio/virtio_vdpa.c     | 396 ++++++++++++++++++
- include/linux/vdpa.h             | 253 +++++++++++
- include/linux/vhost_iotlb.h      |  47 +++
- include/linux/vringh.h           |  36 ++
- include/uapi/linux/vhost.h       |  24 ++
- include/uapi/linux/vhost_types.h |   8 +
- include/uapi/linux/virtio_net.h  | 102 ++++-
- tools/virtio/Makefile            |  27 +-
- 42 files changed, 4354 insertions(+), 314 deletions(-)
- create mode 100644 drivers/vdpa/Kconfig
- create mode 100644 drivers/vdpa/Makefile
- create mode 100644 drivers/vdpa/ifcvf/Makefile
- create mode 100644 drivers/vdpa/ifcvf/ifcvf_base.c
- create mode 100644 drivers/vdpa/ifcvf/ifcvf_base.h
- create mode 100644 drivers/vdpa/ifcvf/ifcvf_main.c
- create mode 100644 drivers/vdpa/vdpa.c
- create mode 100644 drivers/vdpa/vdpa_sim/Makefile
- create mode 100644 drivers/vdpa/vdpa_sim/vdpa_sim.c
- delete mode 100644 drivers/vhost/Kconfig.vringh
- create mode 100644 drivers/vhost/iotlb.c
- create mode 100644 drivers/vhost/vdpa.c
- create mode 100644 drivers/virtio/virtio_vdpa.c
- create mode 100644 include/linux/vdpa.h
- create mode 100644 include/linux/vhost_iotlb.h
-
+MBR, Sergei
