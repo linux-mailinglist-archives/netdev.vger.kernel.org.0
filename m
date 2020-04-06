@@ -2,178 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 768B019FCF8
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 20:20:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8388019FD02
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 20:23:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726703AbgDFSUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 14:20:06 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:43839 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726521AbgDFSUF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 14:20:05 -0400
-Received: by mail-wr1-f65.google.com with SMTP id w15so588106wrv.10
-        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 11:20:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=SAO+1TNMhMc1LSA8/WfvDrQsOzUQ3pBmaeEqYFvEUWQ=;
-        b=Ti4tokQZ+rd2STnTkJvpDAUpfvBhf6GX/EgB0Dn2T64qiG0RCpz7wEsbqgLafqgIEQ
-         UZKxgy6fgN7yEUKUyJpjLAy1m+5kGd8tOIiPCaRfroi5RB5hgEh6Jpn5Vu13fWGZU5jx
-         +D0AGiJVyC/wIU/IFx0gkCaQUmuUB25rx7MZgjZm8z3uHN9Zhbm4BuadOT2MRvlhPjfB
-         oLaat2rWlqcfPbXTUFTIZaI18Vq0lpfC8iOIRgPzxnpz0HVDOs1w9KOoFKIJ0gbX5Go4
-         I3mmPuuhH42KTVN64ZGgxxf4WKOfZ1/Z1j9A/6KDshwgJ3jK3nNQbHDCco2FM9CP7MY/
-         iGow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SAO+1TNMhMc1LSA8/WfvDrQsOzUQ3pBmaeEqYFvEUWQ=;
-        b=G8MZUkf0llSZgyFahPHnh3QpfrgbwPDyWL6AaQaMwAgxUx889g+1N6pq4MvqWgBrrV
-         tfVq1XkuWqxSYoFubDYjgp6KrwI4tlXTQkdtFyGKSdx84OW47lIdARgMilS42s7Aka0I
-         du56q/PBYNfYusZax8c1A4Ai+iRwjn6Bq3B1VoyllX150JpL2qpS1oEiOIyPh6fyIUQb
-         a+9F25P+1BHgoawNJ0vSmD7FqV0/LDmVuhAYXSbRaLKJaG0FKOzTt7o1MXceP2sb/Zog
-         flZx2gk9N8oWex3KA9ghgsGXzjneIVKFChFUxCY81jHPyyIWae0OXh60DkzVKwxHf0Ww
-         Wf4Q==
-X-Gm-Message-State: AGi0PubhPT09e/6l99qf1S08Y8JxjRzaU1LStYAJM0NpuKLbygKyreIv
-        I/clyQguxSaAWuJFFQP3jzhGEcBg8uI=
-X-Google-Smtp-Source: APiQypL+LeS+8HSQePGqZ2kElMZhjSSn6O18/rj4nXQWZq0A4XM15duJTAAhxGuugZWPx5CM/0Wf9A==
-X-Received: by 2002:adf:a343:: with SMTP id d3mr485384wrb.163.1586197203241;
-        Mon, 06 Apr 2020 11:20:03 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id g186sm505137wme.7.2020.04.06.11.20.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Apr 2020 11:20:02 -0700 (PDT)
-Date:   Mon, 6 Apr 2020 20:20:02 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: Changing devlink port flavor dynamically for DSA
-Message-ID: <20200406182002.GD2354@nanopsycho.orion>
-References: <ef16b5bb-4115-e540-0ffd-1531e5982612@gmail.com>
- <20200406180410.GB2354@nanopsycho.orion>
- <2efae9ae-8957-7d52-617a-848b62f5aca3@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2efae9ae-8957-7d52-617a-848b62f5aca3@gmail.com>
+        id S1726616AbgDFSXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 14:23:02 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:57942 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726475AbgDFSXC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 14:23:02 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7F49215DADD19;
+        Mon,  6 Apr 2020 11:23:01 -0700 (PDT)
+Date:   Mon, 06 Apr 2020 11:22:58 -0700 (PDT)
+Message-Id: <20200406.112258.20998915860758260.davem@davemloft.net>
+To:     torvalds@linux-foundation.org
+CC:     akpm@linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT] Networking
+From:   David Miller <davem@davemloft.net>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 06 Apr 2020 11:23:01 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Apr 06, 2020 at 08:11:18PM CEST, f.fainelli@gmail.com wrote:
->
->
->On 4/6/2020 11:04 AM, Jiri Pirko wrote:
->> Sun, Apr 05, 2020 at 10:42:29PM CEST, f.fainelli@gmail.com wrote:
->>> Hi all,
->>>
->>> On a BCM7278 system, we have two ports of the switch: 5 and 8, that
->>> connect to separate Ethernet MACs that the host/CPU can control. In
->>> premise they are both interchangeable because the switch supports
->>> configuring the management port to be either 5 or 8 and the Ethernet
->>> MACs are two identical instances.
->>>
->>> The Ethernet MACs are scheduled differently across the memory controller
->>> (they have different bandwidth and priority allocations) so it is
->>> desirable to select an Ethernet MAC capable of sustaining bandwidth and
->>> latency for host networking. Our current (in the downstream kernel) use
->>> case is to expose port 5 solely as a control end-point to the user and
->>> leave it to the user how they wish to use the Ethernet MAC behind port
->>> 5. Some customers use it to bridge Wi-Fi traffic, some simply keep it
->>> disabled. Port 5 of that switch does not make use of Broadcom tags in
->>> that case, since ARL-based forwarding works just fine.
->>>
->>> The current Device Tree representation that we have for that system
->>> makes it possible for either port to be elected as the CPU port from a
->>> DSA perspective as they both have an "ethernet" phandle property that
->>> points to the appropriate Ethernet MAC node, because of that the DSA
->>> framework treats them as CPU ports.
->>>
->>> My current line of thinking is to permit a port to be configured as
->>> either "cpu" or "user" flavor and do that through devlink. This can
->>> create some challenges but hopefully this also paves the way for finally
->>> supporting "multi-CPU port" configurations. I am thinking something like
->>> this would be how I would like it to be configured:
->>>
->>> # First configure port 8 as the new CPU port
->>> devlink port set pci/0000:01:00.0/8 type cpu
->>> # Now unmap port 5 from being a CPU port
->>> devlink port set pci/0000:01:00.0/1 type eth
->> 
->> You are mixing "type" and "flavour".
->> 
->> Flavours: cpu/physical. I guess that is what you wanted to set, correct?
->
->Correct, flavor is really what we want to change here.
->
->> 
->> I'm not sure, it would make sense. The CPU port is still CPU port, it is
->> just not used. You can never make is really "physical", am I correct? 
->
->True, although with DSA as you may know if we have a DSA_PORT_TYPE_CPU
->(or DSA_PORT_TYPE_DSA), then we do not create a corresponding net_device
->instance because that would duplicate the Ethernet MAC net_device. This
->is largely the reason for suggesting doing this via devlink (so that we
->do not rely on a net_device handle). So by changing from a
->DSA_PORT_TYPE_CPU flavor to DSA_PORT_TYPE_USER, this means you would now
->see a corresponding net_device instance. Conversely when you migrate
->from DSA_PORT_TYPE_USER to DSA_PORT_TYPE_CPU, the corresponding
->net_device would be removed.
 
-Wait, why would you ever want to have a netdevice for CPU port (changed
-to "user")? What am I missing? Is there a usecase, some multi-person
-port?
+1) Slave bond and team devices should not be assigned ipv6 link local
+   addresses, from Jarod Wilson.
 
+2) Fix clock sink config on some at803x PHY devices, from Oleksij
+   Rempel.
 
->
->Or maybe we finally bite the bullet and create net_device representors
->for all port types...
->
->> 
->> 
->> btw, we already implement port "type" setting. To "eth" and "ib". This
->> is how you can change the type of fabric for mlx4 driver.
->> 
->> 
->>>
->>> and this would do a simple "swap" of all user ports being now associated
->>> with port 8, and no longer with port 5, thus permitting port 5 from
->>> becoming a standard user port. Or maybe, we need to do this as an atomic
->>> operation in order to avoid a switch being configured with no CPU port
->>> anymore, so something like this instead:
->>>
->>> devlink port set pci/0000:01:00.0/5 type eth mgmt pci/0000:01:00.0/8
->>>
->>> The latter could also be used to define groups of ports within a switch
->>> that has multiple CPU ports, e.g.:
->>>
->>> # Ports 1 through 4 "bound" to CPU port 5:
->>>
->>> for i in $(seq 0 3)
->>> do
->>> 	devlink port set pci/0000:01:00.0/$i type eth mgmt pci/0000:01:00.0/5
->>> done
->>>
->>> # Ports 7 bound to CPU port 8:
->>>
->>> devlink port set pci/0000:01:00.0/1 type eth mgmt pci/0000:01:00.0/8
->> 
->> It is basically a mapping of physical port to CPU port, isn't it?
->> 
->> How about something like?
->> devlink port set pci/0000:01:00.0/1 cpu_master pci/0000:01:00.0/5
->> devlink port set pci/0000:01:00.0/2 cpu_master pci/0000:01:00.0/5
->> devlink port set pci/0000:01:00.0/7 cpu_master pci/0000:01:00.0/8
->> 
->> If CPU port would have 0 mapped ports, it would mean it is disabled.
->> What do you think?
->
->Yes, this makes sense.
->-- 
->Florian
+3) Uninitialized stack space transmitted in slcan frames, fix from
+   Richard Palethorpe.
+
+4) Guard HW VLAN ops properly in stmmac driver, from Jose Abreu.
+
+5) "=" --> "|=" fix in aquantia driver, from Colin Ian King.
+
+6) Fix TCP fallback in mptcp, from Florian Westphal.  (accessing
+   a plain tcp_sk as if it were an mptcp socket).
+
+7) Fix cavium driver in some configurations wrt. PTP, from Yue
+   Haibing.
+
+8) Make ipv6 and ipv4 consistent in the lower bound allowed for
+   neighbour entry retrans_time, from Hangbin Liu.
+
+9) Don't use private workqueue in pegasus usb driver, from Petko
+   Manolov.
+
+10) Fix integer overflow in mlxsw, from Colin Ian King.
+
+11) Missing refcnt init in cls_tcindex, from Cong Wang.
+
+12) One too many loop iterations when processing cmpri entries in
+    ipv6 rpl code, from Alexander Aring.
+
+13) Disable SG and TSO by default in r8169, from Heiner Kallweit.
+
+14) NULL deref in macsec, from Davide Caratti.
+
+Please pull, thanks a lot!
+
+The following changes since commit 1a323ea5356edbb3073dc59d51b9e6b86908857d:
+
+  x86: get rid of 'errret' argument to __get_user_xyz() macross (2020-03-31 18:23:47 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git 
+
+for you to fetch changes up to aa81700cf2326e288c9ca1fe7b544039617f1fc2:
+
+  macsec: fix NULL dereference in macsec_upd_offload() (2020-04-06 10:26:08 -0700)
+
+----------------------------------------------------------------
+Alexander Aring (1):
+      ipv6: rpl: fix loop iteration
+
+Chuanhong Guo (1):
+      net: dsa: mt7530: fix null pointer dereferencing in port5 setup
+
+Colin Ian King (5):
+      net: atlantic: fix missing | operator when assigning rec->llc
+      net: ipv6: rpl_iptunnel: remove redundant assignments to variable err
+      mlxsw: spectrum_trap: fix unintention integer overflow on left shift
+      wimax: remove some redundant assignments to variable result
+      qed: remove redundant assignment to variable 'rc'
+
+Cong Wang (2):
+      net_sched: add a temporary refcnt for struct tcindex_data
+      net_sched: fix a missing refcnt in tcindex_init()
+
+David S. Miller (2):
+      Merge branch 'mptcp-various-bugfixes-and-improvements'
+      Merge branch 'mlxsw-fixes'
+
+Davide Caratti (1):
+      macsec: fix NULL dereference in macsec_upd_offload()
+
+Dexuan Cui (1):
+      skbuff.h: Improve the checksum related comments
+
+Florian Fainelli (2):
+      net: dsa: bcm_sf2: Do not register slave MDIO bus with OF
+      net: dsa: bcm_sf2: Ensure correct sub-node is parsed
+
+Florian Westphal (3):
+      mptcp: fix tcp fallback crash
+      mptcp: subflow: check parent mptcp socket on subflow state change
+      mptcp: re-check dsn before reading from subflow
+
+Geliang Tang (1):
+      mptcp: add some missing pr_fmt defines
+
+Hangbin Liu (1):
+      neigh: support smaller retrans_time settting
+
+Heiner Kallweit (1):
+      r8169: change back SG and TSO to be disabled by default
+
+Herat Ramani (1):
+      cxgb4: fix MPS index overwrite when setting MAC address
+
+Hu Haowen (2):
+      net/faraday: fix grammar in function ftgmac100_setup_clk() in ftgmac100.c
+      bnx2x: correct a comment mistake in grammar
+
+Jarod Wilson (1):
+      ipv6: don't auto-add link-local address to lag ports
+
+Jisheng Zhang (1):
+      net: stmmac: dwmac1000: fix out-of-bounds mac address reg setting
+
+Jose Abreu (2):
+      net: stmmac: Fix VLAN filtering when HW does not support it
+      net: stmmac: xgmac: Fix VLAN register handling
+
+Matthieu Baerts (1):
+      mptcp: fix "fn parameter not described" warnings
+
+Oleksij Rempel (2):
+      net: phy: at803x: fix clock sink configuration on ATH8030 and ATH8035
+      net: phy: micrel: kszphy_resume(): add delay after genphy_resume() before accessing PHY registers
+
+Petko Manolov (1):
+      pegasus: Remove pegasus' own workqueue
+
+Petr Machata (2):
+      mlxsw: spectrum_flower: Do not stop at FLOW_ACTION_PRIORITY
+      mlxsw: spectrum_flower: Do not stop at FLOW_ACTION_VLAN_MANGLE
+
+Rahul Lakkireddy (1):
+      cxgb4: free MQPRIO resources in shutdown path
+
+Richard Palethorpe (1):
+      slcan: Don't transmit uninitialized stack data in padding
+
+Rob Herring (1):
+      dt-bindings: net: mvusb: Fix example errors
+
+Subash Abhinov Kasiviswanathan (1):
+      net: qualcomm: rmnet: Allow configuration updates to existing devices
+
+Tonghao Zhang (1):
+      net: openvswitch: use hlist_for_each_entry_rcu instead of hlist_for_each_entry
+
+Vincent Bernat (1):
+      net: core: enable SO_BINDTODEVICE for non-root users
+
+Will Deacon (1):
+      tun: Don't put_page() for all negative return values from XDP program
+
+YueHaibing (2):
+      crypto/chcr: Add missing include file <linux/highmem.h>
+      net: cavium: Fix build errors due to 'imply CAVIUM_PTP'
+
+kbuild test robot (1):
+      net: dsa: dsa_bridge_mtu_normalization() can be static
+
+ Documentation/devicetree/bindings/net/marvell,mvusb.yaml   |  29 ++++++++++----------
+ drivers/crypto/chelsio/chcr_ktls.c                         |   1 +
+ drivers/net/can/slcan.c                                    |   4 +--
+ drivers/net/dsa/bcm_sf2.c                                  |   9 +++++--
+ drivers/net/dsa/mt7530.c                                   |   3 +++
+ drivers/net/ethernet/aquantia/atlantic/macsec/macsec_api.c |   2 +-
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c           |   3 ++-
+ drivers/net/ethernet/cavium/common/cavium_ptp.h            |   2 +-
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c            |   5 +++-
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c       |  23 ++++++++++++++++
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h       |   1 +
+ drivers/net/ethernet/faraday/ftgmac100.c                   |   2 +-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c      |  18 ++++++++-----
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c        |   2 +-
+ drivers/net/ethernet/qlogic/qed/qed_l2.c                   |   2 +-
+ drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c         |  31 ++++++++++++---------
+ drivers/net/ethernet/realtek/r8169_main.c                  |  29 ++++++++++----------
+ drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c       |   2 +-
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c        |  11 ++++++++
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c          |  17 ++++++++----
+ drivers/net/macsec.c                                       |   3 +++
+ drivers/net/phy/at803x.c                                   |   4 +--
+ drivers/net/phy/micrel.c                                   |   7 +++++
+ drivers/net/tun.c                                          |  10 ++++---
+ drivers/net/usb/pegasus.c                                  |  38 +++++---------------------
+ drivers/net/wimax/i2400m/driver.c                          |   7 ++---
+ include/linux/skbuff.h                                     |  38 +++++++++++++-------------
+ net/core/neighbour.c                                       |  10 ++++---
+ net/core/sock.c                                            |   2 +-
+ net/dsa/slave.c                                            |   2 +-
+ net/ipv6/addrconf.c                                        |  11 +++++---
+ net/ipv6/ndisc.c                                           |   4 +--
+ net/ipv6/rpl.c                                             |   6 ++---
+ net/ipv6/rpl_iptunnel.c                                    |   2 +-
+ net/mptcp/options.c                                        |   2 ++
+ net/mptcp/pm.c                                             |   2 ++
+ net/mptcp/pm_netlink.c                                     |   2 ++
+ net/mptcp/protocol.c                                       | 109 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++---
+ net/mptcp/protocol.h                                       |   2 ++
+ net/mptcp/subflow.c                                        |   3 +--
+ net/mptcp/token.c                                          |   9 ++++---
+ net/openvswitch/flow_table.c                               |  10 ++++---
+ net/sched/cls_tcindex.c                                    |  45 ++++++++++++++++++++++++++-----
+ 43 files changed, 361 insertions(+), 163 deletions(-)
