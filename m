@@ -2,220 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D6F119F187
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 10:25:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45EB219F1C0
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 10:43:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726638AbgDFIZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 04:25:55 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:50577 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726591AbgDFIZz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 04:25:55 -0400
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jLN4o-0007J7-Ta; Mon, 06 Apr 2020 10:25:50 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jLN4j-0007px-FF; Mon, 06 Apr 2020 10:25:45 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH net-next v2] net: phy: micrel: add phy-mode support for the KSZ9031 PHY
-Date:   Mon,  6 Apr 2020 10:25:44 +0200
-Message-Id: <20200406082544.28924-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.26.0.rc2
+        id S1726621AbgDFInR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 04:43:17 -0400
+Received: from mail-eopbgr1410112.outbound.protection.outlook.com ([40.107.141.112]:2860
+        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726533AbgDFInR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Apr 2020 04:43:17 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Unx4numgOYZv1osve5CLM+GbhagrNxXokhysBJR04sfa1VIKk0V4KE7gTXSzyQqtrm9I9hUAl/ceODOKasLgj9Ah6GL46129qDF7FdaxK68YKHmI1aeQSgrSF8k3N6fhKTD9URoxBMMcoRPmRUr7DF3FaUe2HOl0yyFvTAVHMHSgJGz5dlNAGsvn/fQPxcFCwOvEGxUjdzznt4qdqmsPYgBMPKXOqpMCxMFylHiNuO/7FAwTrFJTm9vaual+a4Zd0H10NR4WYSZhvFdf9aCgO0b5XymfE7/ywrlvyrqmNM1xDUguz8Py0ujFJsBE+r9ijYS2vTr/t5b/fwnVILTyow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jKXSIZj/5CBpL6pTeCYJd/JqqXl5u7S+OfE+24v4ZgM=;
+ b=elhOjUCVcV1sOAr+vwRmFBrz4mdp12gvQKE1aM0dSApXN8pD38MDGumREKdSuQm5P8HM8OW+dOROYnzgFo1QBCOlX3kuR95OkfILtAFwo2Fr+pkSyExV4yKgs7NYGzEC5W8eVmo1wJdCL9c+SrLo3wzFkkcmPrfArjCYnp7/afegff3drr5XpIrxJw5GHJFP0zoNA3jroSCYUuZuSfwFgnOuChdV9jVVLQq0rhu8oQ0Ltno3qi4YVWiVBe/QyeC9XSFkJfrF5mvAPyXeIHl2PewXZEex7/f0LRxfXAtVDYg+g0bygFIVhhEbaeblStaKIGI/Vfcpbd6rzE4EtokByw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jKXSIZj/5CBpL6pTeCYJd/JqqXl5u7S+OfE+24v4ZgM=;
+ b=mIcplxa4B5ECBrtKbxCG80UvzZbo7VRTJJ2QF8x2P+Flt7HdxIRDVkuhDjQZB6+41zcEeheb6sLYCKk6j1KQSj7Le2uvTPsHtXk4ErkFpUQ+kvqmhX5U8z5pivmeN7pbuu2Zg4MXnuBuTWTMhMkPooUz6XPKV5hUH6w1dJ/Vryc=
+Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com (20.179.175.203) by
+ TYAPR01MB2192.jpnprd01.prod.outlook.com (52.133.177.141) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2878.17; Mon, 6 Apr 2020 08:43:10 +0000
+Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com
+ ([fe80::ed7f:1268:55a9:fc06]) by TYAPR01MB4544.jpnprd01.prod.outlook.com
+ ([fe80::ed7f:1268:55a9:fc06%4]) with mapi id 15.20.2878.017; Mon, 6 Apr 2020
+ 08:43:10 +0000
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     John Stultz <john.stultz@linaro.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+CC:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: RE: How to fix WARN from drivers/base/dd.c in next-20200401 if
+ CONFIG_MODULES=y?
+Thread-Topic: How to fix WARN from drivers/base/dd.c in next-20200401 if
+ CONFIG_MODULES=y?
+Thread-Index: AdYI1eHeE+d8Du49RZSXfyqelir+RgAPcQ+AACaCwgAAIpzUAABtUcqg
+Date:   Mon, 6 Apr 2020 08:43:10 +0000
+Message-ID: <TYAPR01MB45447DFE9E81D77CA867DEC8D8C20@TYAPR01MB4544.jpnprd01.prod.outlook.com>
+References: <TYAPR01MB45443DF63B9EF29054F7C41FD8C60@TYAPR01MB4544.jpnprd01.prod.outlook.com>
+ <CALAqxLWopjCkiM=NR868DTcX-apPc1MPnONJMppm1jzCboAheg@mail.gmail.com>
+ <CAMuHMdVtHhq9Nef1pBtBUKfRU2L-KgDffiOv28VqhrewR_j1Dw@mail.gmail.com>
+ <CALAqxLX2AEFJxqXXXKPs8SU7Su2FqNjwbSt5BxwmQJqYQuST9A@mail.gmail.com>
+In-Reply-To: <CALAqxLX2AEFJxqXXXKPs8SU7Su2FqNjwbSt5BxwmQJqYQuST9A@mail.gmail.com>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=yoshihiro.shimoda.uh@renesas.com; 
+x-originating-ip: [124.210.22.195]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: cbc7ca76-420c-4016-0ba7-08d7da068944
+x-ms-traffictypediagnostic: TYAPR01MB2192:
+x-microsoft-antispam-prvs: <TYAPR01MB2192B1D9CEB99CDA8574C814D8C20@TYAPR01MB2192.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0365C0E14B
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYAPR01MB4544.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10019020)(4636009)(346002)(39860400002)(366004)(396003)(136003)(376002)(2906002)(110136005)(316002)(54906003)(4326008)(76116006)(6506007)(186003)(33656002)(66556008)(66476007)(66946007)(53546011)(55236004)(7696005)(478600001)(52536014)(66446008)(64756008)(26005)(5660300002)(55016002)(9686003)(86362001)(81166006)(8676002)(8936002)(81156014)(71200400001);DIR:OUT;SFP:1102;
+received-spf: None (protection.outlook.com: renesas.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: UZOtgRaYOCWHFkNoS5wD7DBZrMZnPI9hn9AxXekqvqtBJsLyv/MTuTw8iybELh8y2vtJruTThXJDcYt4mNBu+kSaQpe7u3CSvPTGBjZqLh0BnxaRsIwI2a6KDoGJSgBjTqdynUXNg4cscQff/udifreRTENzeBU6ev6eYaUiWJPujt8hV0bdDVXkErT+er8e/d1aRau2Yh9/xg7VB06zF1ju1FBtSPqsphrKy3gr+SBPkZMtT2EHbJBjSGSDGhXhnh+2nuSVdtX3RVNR3Q5IdzL5w+gAspciPTFlsPlTeLNn9iZI6sS8BohG1T8lEt3IgJcwS2aqiAuOjjjdlLLhV7wxygm488XA35iyPyb04CrH8q9Nk/mHc6wZcis3rCPA8XPrjWQoZaZy37Hswl6E7csKqIlSGe2BNPyA0EV8toszR8KdKXpumIe8vEw4FX6N
+x-ms-exchange-antispam-messagedata: YEWqd1JAMDXqUtOi2viaWq4Jf49lCTcq4GmS/z0GKN/KLuebJ4phbC+RhlKCcgdcWcrXf2pVmdZvHbXwxirfqEtBVW5fSQYGZiU3m8UG3R2pBx+cAaLSE+j55/EY6lyQjVppGcMMhRl/yZUpUwvVZA==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cbc7ca76-420c-4016-0ba7-08d7da068944
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Apr 2020 08:43:10.2942
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: NQOHnE2kPwXxqalAoHc1u0wiMl5Ku6svnDiG7iSejdv/BNflIePm3oRYC7o2xNTLKXnnSIah4S0cRgQQzBjEMP1s+Cq9jM+0YET9fKf0P6Vn7On+vt6diXk8zD1aimJW
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB2192
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for following phy-modes: rgmii, rgmii-id, rgmii-txid, rgmii-rxid.
-
-This PHY has an internal RX delay of 1.2ns and no delay for TX.
-
-The pad skew registers allow to set the total TX delay to max 1.38ns and
-the total RX delay to max of 2.58ns (configurable 1.38ns + build in
-1.2ns) and a minimal delay of 0ns.
-
-According to the RGMII v2 specification the delay provided by PCB traces
-should be between 1.5ns and 2.0ns. As this PHY can provide max delay of
-only 1.38ns on the TX line, in RGMII-ID mode a symmetric delay of 1.38ns
-for both the RX and TX lines is chosen, even if the RX line could be
-configured with the 1.5ns according to the standard.
-
-The phy-modes can still be fine tuned/overwritten by *-skew-ps
-device tree properties described in:
-Documentation/devicetree/bindings/net/micrel-ksz90x1.txt
-
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
-changes v2:
-- change RX_ID value from 0x1a to 0xa. The overflow bit was detected by
-  FIELD_PREP() build check.
-  Reported-by: kbuild test robot <lkp@intel.com>
-
- drivers/net/phy/micrel.c | 109 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 109 insertions(+)
-
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 05d20343b8161..8b5907a9a4c0f 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -19,6 +19,7 @@
-  *			 ksz9477
-  */
- 
-+#include <linux/bitfield.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/phy.h>
-@@ -490,9 +491,50 @@ static int ksz9021_config_init(struct phy_device *phydev)
- 
- /* MMD Address 0x2 */
- #define MII_KSZ9031RN_CONTROL_PAD_SKEW	4
-+#define MII_KSZ9031RN_RX_CTL_M		GENMASK(7, 4)
-+#define MII_KSZ9031RN_TX_CTL_M		GENMASK(3, 0)
-+
- #define MII_KSZ9031RN_RX_DATA_PAD_SKEW	5
-+#define MII_KSZ9031RN_RXD3		GENMASK(15, 12)
-+#define MII_KSZ9031RN_RXD2		GENMASK(11, 8)
-+#define MII_KSZ9031RN_RXD1		GENMASK(7, 4)
-+#define MII_KSZ9031RN_RXD0		GENMASK(3, 0)
-+
- #define MII_KSZ9031RN_TX_DATA_PAD_SKEW	6
-+#define MII_KSZ9031RN_TXD3		GENMASK(15, 12)
-+#define MII_KSZ9031RN_TXD2		GENMASK(11, 8)
-+#define MII_KSZ9031RN_TXD1		GENMASK(7, 4)
-+#define MII_KSZ9031RN_TXD0		GENMASK(3, 0)
-+
- #define MII_KSZ9031RN_CLK_PAD_SKEW	8
-+#define MII_KSZ9031RN_GTX_CLK		GENMASK(9, 5)
-+#define MII_KSZ9031RN_RX_CLK		GENMASK(4, 0)
-+
-+/* KSZ9031 has internal RGMII_IDRX = 1.2ns and RGMII_IDTX = 0ns. To
-+ * provide different RGMII options we need to configure delay offset
-+ * for each pad relative to build in delay.
-+ */
-+/* set rx to +0.18ns and rx_clk to "No delay adjustment" value to get delays of
-+ * 1.38ns
-+ */
-+#define RX_ID				0xa
-+#define RX_CLK_ID			0xf
-+
-+/* set rx to +0.30ns and rx_clk to -0.90ns to compensate the
-+ * internal 1.2ns delay.
-+ */
-+#define RX_ND				0xc
-+#define RX_CLK_ND			0x0
-+
-+/* set tx to -0.42ns and tx_clk to +0.96ns to get 1.38ns delay */
-+#define TX_ID				0x0
-+#define TX_CLK_ID			0x1f
-+
-+/* set tx and tx_clk to "No delay adjustment" to keep 0ns
-+ * dealy
-+ */
-+#define TX_ND				0x7
-+#define TX_CLK_ND			0xf
- 
- /* MMD Address 0x1C */
- #define MII_KSZ9031RN_EDPD		0x23
-@@ -565,6 +607,67 @@ static int ksz9031_enable_edpd(struct phy_device *phydev)
- 			     reg | MII_KSZ9031RN_EDPD_ENABLE);
- }
- 
-+static int ksz9031_config_rgmii_delay(struct phy_device *phydev)
-+{
-+	u16 rx, tx, rx_clk, tx_clk;
-+	int ret;
-+
-+	switch (phydev->interface) {
-+	case PHY_INTERFACE_MODE_RGMII:
-+		tx = TX_ND;
-+		tx_clk = TX_CLK_ND;
-+		rx = RX_ND;
-+		rx_clk = RX_CLK_ND;
-+		break;
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+		tx = TX_ID;
-+		tx_clk = TX_CLK_ID;
-+		rx = RX_ID;
-+		rx_clk = RX_CLK_ID;
-+		break;
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+		tx = TX_ND;
-+		tx_clk = TX_CLK_ND;
-+		rx = RX_ID;
-+		rx_clk = RX_CLK_ID;
-+		break;
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
-+		tx = TX_ID;
-+		tx_clk = TX_CLK_ID;
-+		rx = RX_ND;
-+		rx_clk = RX_CLK_ND;
-+		break;
-+	default:
-+		return 0;
-+	}
-+
-+	ret = phy_write_mmd(phydev, 2, MII_KSZ9031RN_CONTROL_PAD_SKEW,
-+			    FIELD_PREP(MII_KSZ9031RN_RX_CTL_M, rx) |
-+			    FIELD_PREP(MII_KSZ9031RN_TX_CTL_M, tx));
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = phy_write_mmd(phydev, 2, MII_KSZ9031RN_RX_DATA_PAD_SKEW,
-+			    FIELD_PREP(MII_KSZ9031RN_RXD3, rx) |
-+			    FIELD_PREP(MII_KSZ9031RN_RXD2, rx) |
-+			    FIELD_PREP(MII_KSZ9031RN_RXD1, rx) |
-+			    FIELD_PREP(MII_KSZ9031RN_RXD0, rx));
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = phy_write_mmd(phydev, 2, MII_KSZ9031RN_TX_DATA_PAD_SKEW,
-+			    FIELD_PREP(MII_KSZ9031RN_TXD3, tx) |
-+			    FIELD_PREP(MII_KSZ9031RN_TXD2, tx) |
-+			    FIELD_PREP(MII_KSZ9031RN_TXD1, tx) |
-+			    FIELD_PREP(MII_KSZ9031RN_TXD0, tx));
-+	if (ret < 0)
-+		return ret;
-+
-+	return phy_write_mmd(phydev, 2, MII_KSZ9031RN_CLK_PAD_SKEW,
-+			     FIELD_PREP(MII_KSZ9031RN_GTX_CLK, tx_clk) |
-+			     FIELD_PREP(MII_KSZ9031RN_RX_CLK, rx_clk));
-+}
-+
- static int ksz9031_config_init(struct phy_device *phydev)
- {
- 	const struct device *dev = &phydev->mdio.dev;
-@@ -597,6 +700,12 @@ static int ksz9031_config_init(struct phy_device *phydev)
- 	} while (!of_node && dev_walker);
- 
- 	if (of_node) {
-+		if (phy_interface_is_rgmii(phydev)) {
-+			result = ksz9031_config_rgmii_delay(phydev);
-+			if (result < 0)
-+				return result;
-+		}
-+
- 		ksz9031_of_load_skew_values(phydev, of_node,
- 				MII_KSZ9031RN_CLK_PAD_SKEW, 5,
- 				clk_skews, 2);
--- 
-2.26.0.rc2
-
+SGkgSm9obiwgR2VlcnQsDQoNCj4gRnJvbTogSm9obiBTdHVsdHosIFNlbnQ6IFNhdHVyZGF5LCBB
+cHJpbCA0LCAyMDIwIDE6MTkgUE0NCj4gDQo+IE9uIEZyaSwgQXByIDMsIDIwMjAgYXQgNDo0NyBB
+TSBHZWVydCBVeXR0ZXJob2V2ZW4gPGdlZXJ0QGxpbnV4LW02OGsub3JnPiB3cm90ZToNCj4gPiBP
+biBUaHUsIEFwciAyLCAyMDIwIGF0IDc6MjcgUE0gSm9obiBTdHVsdHogPGpvaG4uc3R1bHR6QGxp
+bmFyby5vcmc+IHdyb3RlOg0KPiA+ID4gT24gVGh1LCBBcHIgMiwgMjAyMCBhdCAzOjE3IEFNIFlv
+c2hpaGlybyBTaGltb2RhDQo+ID4gPiA8eW9zaGloaXJvLnNoaW1vZGEudWhAcmVuZXNhcy5jb20+
+IHdyb3RlOg0KPiA+ID4gPg0KPiA+ID4gPiBJIGZvdW5kIGFuIGlzc3VlIGFmdGVyIGFwcGxpZWQg
+dGhlIGZvbGxvd2luZyBwYXRjaGVzOg0KPiA+ID4gPiAtLS0NCj4gPiA+ID4gNjRjNzc1ZiBkcml2
+ZXIgY29yZTogUmVuYW1lIGRlZmVycmVkX3Byb2JlX3RpbWVvdXQgYW5kIG1ha2UgaXQgZ2xvYmFs
+DQo+ID4gPiA+IDBlOWY4ZDAgZHJpdmVyIGNvcmU6IFJlbW92ZSBkcml2ZXJfZGVmZXJyZWRfcHJv
+YmVfY2hlY2tfc3RhdGVfY29udGludWUoKQ0KPiA+ID4gPiBiZWM2YzBlIHBpbmN0cmw6IFJlbW92
+ZSB1c2Ugb2YgZHJpdmVyX2RlZmVycmVkX3Byb2JlX2NoZWNrX3N0YXRlX2NvbnRpbnVlKCkNCj4g
+PiA+ID4gZTJjZWM3ZCBkcml2ZXIgY29yZTogU2V0IGRlZmVycmVkX3Byb2JlX3RpbWVvdXQgdG8g
+YSBsb25nZXIgZGVmYXVsdCBpZiBDT05GSUdfTU9EVUxFUyBpcyBzZXQNCj4gPg0KPiA+IE5vdGUg
+dGhhdCBqdXN0IHNldHRpbmcgZGVmZXJyZWRfcHJvYmVfdGltZW91dCA9IC0xIGxpa2UgZm9yIHRo
+ZQ0KPiA+IENPTkZJR19NT0RVTEVTPW4gY2FzZSBkb2Vzbid0IGhlbHAuDQo+IA0KPiBZZWEuIEkg
+Y2FuIHNlZSB3aHkgaW4gdGhhdCBjYXNlLCBhcyB3ZSdyZSBjaGVja2luZw0KPiAhSVNfRU5BQkxF
+RChDT05GSUdfTU9EVUxFUykgZGlyZWN0bHkgaW4NCj4gZHJpdmVyX2RlZmVycmVkX3Byb2JlX2No
+ZWNrX3N0YXRlLg0KPiANCj4gSSBndWVzcyB3ZSBjb3VsZCBzd2l0Y2ggdGhhdCB0byBjaGVja2lu
+Zw0KPiAoZHJpdmVyX2RlZmVycmVkX3Byb2JlX3RpbWVvdXQgPT0gLTEpIHdoaWNoIHdvdWxkIGhh
+dmUgdGhlIHNhbWUgbG9naWMNCj4gYW5kIGF0IGxlYXN0IG1ha2UgaXQgY29uc2lzdGVudCBpZiBz
+b21lb25lIHNwZWNpZmllcyAtMSBvbiB0aGUgY29tbWFuZA0KPiBsaW5lIChzaW5jZSBub3cgaXQg
+d2lsbCBlZmZlY3RpdmVseSBoYXZlIGl0IEVQUk9CRV9ERUZFUiBmb3JldmVyIGluDQo+IHRoYXQg
+Y2FzZSkuIEJ1dCBhbHNvIGhhdmluZyBhIHRpbWVvdXQ9aW5maW5pdHkgY291bGQgYmUgdXNlZnVs
+IGlmDQo+IGZvbGtzIGRvbid0IHdhbnQgdGhlIGRlZmVycmluZyB0byB0aW1lIG91dC4gIE1heWJl
+IGluIHRoZSAhbW9kdWxlcw0KPiBjYXNlIHNldHRpbmcgaXQgdG8gPTAgd291bGQgYmUgdGhlIG1v
+c3QgY2xlYXIuDQo+IA0KPiBCdXQgdGhhdCdzIHNvcnQgb2YgYSBmdXJ0aGVyIGNsZWFudXAuIEkn
+bSBzdGlsbCBtb3JlIHdvcnJpZWQgYWJvdXQgdGhlDQo+IE5GUyBmYWlsdXJlIGJlbG93Lg0KPiAN
+Cj4gDQo+ID4gPiBIZXksDQo+ID4gPiAgIFRlcnJpYmx5IHNvcnJ5IGZvciB0aGUgdHJvdWJsZS4g
+U28gYXMgUm9iaW4gbWVudGlvbmVkIEkgaGF2ZSBhIHBhdGNoDQo+ID4gPiB0byByZW1vdmUgdGhl
+IFdBUk4gbWVzc2FnZXMsIGJ1dCBJJ20gYSBiaXQgbW9yZSBjb25jZXJuZWQgYWJvdXQgd2h5DQo+
+ID4gPiBhZnRlciB0aGUgMzAgc2Vjb25kIGRlbGF5LCB0aGUgZXRoZXJuZXQgZHJpdmVyIGxvYWRz
+Og0KPiA+ID4gICBbICAgMzYuMjE4NjY2XSByYXZiIGU2ODAwMDAwLmV0aGVybmV0IGV0aDA6IEJh
+c2UgYWRkcmVzcyBhdA0KPiA+ID4gMHhlNjgwMDAwMCwgMmU6MDk6MGE6MDI6ZWI6MmQsIElSUSAx
+MTcuDQo+ID4gPiBidXQgTkZTIGZhaWxzLg0KPiA+ID4NCj4gPiA+IElzIGl0IGp1c3QgdGhhdCB0
+aGUgMzAgc2Vjb25kIGRlbGF5IGlzIHRvbyBsb25nIGFuZCBORlMgZ2l2ZXMgdXA/DQo+ID4NCj4g
+PiBJIGFkZGVkIHNvbWUgZGVidWcgY29kZSB0byBtb3VudF9uZnNfcm9vdCgpLCB3aGljaCBzaG93
+cyB0aGF0IHRoZSBmaXJzdA0KPiA+IDMgdHJpZXMgaGFwcGVuIGJlZm9yZSByYXZiIGlzIGluc3Rh
+bnRpYXRlZCwgYW5kIHRoZSBsYXN0IDMgdHJpZXMgaGFwcGVuDQo+ID4gYWZ0ZXIuICBTbyBORlMg
+cm9vdCBzaG91bGQgd29yaywgaWYgdGhlIG5ldHdvcmsgd29ya3MuDQo+ID4NCj4gPiBIb3dldmVy
+LCBpdCBzZWVtcyB0aGUgRXRoZXJuZXQgUEhZIGlzIG5ldmVyIGluaXRpYWxpemVkLCBoZW5jZSB0
+aGUgbGluaw0KPiA+IG5ldmVyIGJlY29tZXMgcmVhZHkuICBEbWVzZyBiZWZvcmUvYWZ0ZXI6DQo+
+ID4NCj4gPiAgICAgIHJhdmIgZTY4MDAwMDAuZXRoZXJuZXQgZXRoMDogQmFzZSBhZGRyZXNzIGF0
+IDB4ZTY4MDAwMDAsDQo+ID4gMmU6MDk6MGE6MDI6ZWE6ZmYsIElSUSAxMDguDQo+ID4NCj4gPiBH
+b29kLg0KPiA+DQo+ID4gICAgICAuLi4NCj4gPiAgICAgLWdwaW9fcmNhciBlNjA1MjAwMC5ncGlv
+OiBzZW5zZSBpcnEgPSAxMSwgdHlwZSA9IDgNCj4gPg0KPiA+IFRoaXMgaXMgdGhlIEdQSU8gdGhl
+IFBIWSBJUlEgaXMgY29ubmVjdGVkIHRvLg0KPiA+IE5vdGUgdGhhdCB0aGF0IEdQSU8gY29udHJv
+bGxlciBoYXMgYmVlbiBpbnN0YW50aWF0ZWQgYmVmb3JlLg0KPiA+DQo+ID4gICAgICAuLi4NCj4g
+PiAgICAgLU1pY3JlbCBLU1o5MDMxIEdpZ2FiaXQgUEhZIGU2ODAwMDAwLmV0aGVybmV0LWZmZmZm
+ZmZmOjAwOg0KPiA+IGF0dGFjaGVkIFBIWSBkcml2ZXIgW01pY3JlbCBLU1o5MDMxIEdpZ2FiaXQg
+UEhZXQ0KPiA+IChtaWlfYnVzOnBoeV9hZGRyPWU2ODAwMDAwLmV0aGVybmV0LWZmZmZmZmZmOjAw
+LCBpcnE9MTk3KQ0KPiA+ICAgICAgLi4uDQo+ID4gICAgIC1yYXZiIGU2ODAwMDAwLmV0aGVybmV0
+IGV0aDA6IExpbmsgaXMgVXAgLSAxR2Jwcy9GdWxsIC0gZmxvdyBjb250cm9sIG9mZg0KPiA+DQo+
+ID4gT29wcy4NCj4gPg0KPiA+ICAgICAtU2VuZGluZyBESENQIHJlcXVlc3RzIC4uLCBPSw0KPiA+
+ICAgICAtSVAtQ29uZmlnOiBHb3QgREhDUCBhbnN3ZXIgZnJvbSAuLi4NCj4gPiAgICAgIC4uLg0K
+PiA+ICAgICArVkZTOiBVbmFibGUgdG8gbW91bnQgcm9vdCBmcyB2aWEgTkZTLCB0cnlpbmcgZmxv
+cHB5Lg0KPiA+ICAgICArVkZTOiBDYW5ub3Qgb3BlbiByb290IGRldmljZSAibmZzIiBvciB1bmtu
+b3duLWJsb2NrKDIsMCk6IGVycm9yIC02DQo+ID4NCj4gPiA+IERvZXMgYm9vdGluZyB3aXRoIGRl
+ZmVycmVkX3Byb2JlX3RpbWVvdXQ9MCB3b3JrPw0KPiA+DQo+ID4gSXQgZG9lcywgYXMgbm93IGV2
+ZXJ5dGhpbmcgdXNpbmcgb3B0aW9uYWwgbGlua3MgKERNQSBhbmQgSU9NTVUpIGlzIG5vdw0KPiA+
+IGluc3RhbnRpYXRlZCBvbiBmaXJzdCB0cnkuDQo+IA0KPiBUaGFua3Mgc28gbXVjaCBmb3IgaGVs
+cGluZyBjbGFyaWZ5IHRoaXMhDQo+IA0KPiBTbyBpdCdzIGF0IGxlYXN0IGdvb2QgdG8gaGVhciB0
+aGF0IGJvb3Rpbmcgd2l0aA0KPiBkZWZlcnJlZF9wcm9iZV90aW1lb3V0PTAgaXMgd29ya2luZyEg
+IEJ1dCBJJ20gYnVtbWVkIHRoZSBORlMgKG9yIGFzDQo+IHlvdSBwb2ludGVkIG91dCBpbiB5b3Vy
+IGxhdGVyIG1haWwsICBpcF9hdXRvX2NvbmZpZykgZmFsbHMgb3Zlcg0KPiBiZWNhdXNlIHRoZSBu
+ZXR3b3JrIGlzbid0IGltbWVkaWF0ZWx5IHRoZXJlLg0KPiANCj4gTG9va2luZyBhIGxpdHRsZSBj
+bG9zZXIgYXQgdGhlIGlwX2F1dG9fY29uZmlnKCkgY29kZSwgSSB0aGluayB0aGUNCj4gaXNzdWUg
+bWF5IGJlIHRoYXQgd2FpdF9mb3JfZGV2aWNlX3Byb2JlKCkgaXMgZWZmZWN0aXZlbHkgcmV0dXJu
+aW5nIHRvbw0KPiBlYXJseSwgc2luY2UgdGhlIHByb2JlX2RlZmVyX3RpbWVvdXQgaXMgc3RpbGwg
+YWN0aXZlPyBJIG5lZWQgdG8gZGlnIGENCj4gYml0IG1vcmUgb24gdGhhdCBjb2RlLCBvbiBNb25k
+YXksIGFzIEkgZG9uJ3QgZnVsbHkgdW5kZXJzdGFuZCBpdCB5ZXQuDQoNCkkgdGhpbmsgc28uIEkg
+YWxzbyBpbnZlc3RpZ2F0ZWQgdGhpcyBpc3N1ZSBtb3JlIGFuZCB0aGVuIHRoZSBmb2xsb3dpbmcN
+CnBhdGNoIHNlZW1zIHRvIGJlIHJlbGF0ZWQgYmVjYXVzZSByZXR1cm4gdmFsdWUgaXMgY2hhbmdl
+ZCBhIGJpdC4NCg0KYzhjNDNjZSBkcml2ZXIgY29yZTogRml4IGRyaXZlcl9kZWZlcnJlZF9wcm9i
+ZV9jaGVja19zdGF0ZSgpIGxvZ2ljDQoNCiMgQnkgdGhlIHdheSwgdGhpcyBpcyBvdGhlciB0b3Bp
+YyB0aG91Z2gsIElJVUMgd2Ugc2hvdWxkIHJldmlzZQ0KIyB0aGUgZGVmZXJyZWRfcHJvYmVfdGlt
+ZW91dD0gaW4gRG9jdW1lbnRhdGlvbi9hZG1pbi1ndWlkZS9rZXJuZWwtcGFyYW1ldGVycy50eHQN
+CiMgZm9yIHRoZSBjb21taXQgYzhjNDNjZS4gRXNwZWNpYWxseSAiIEEgdGltZW91dCBvZiAwIHdp
+bGwgdGltZW91dCBhdCB0aGUgZW5kIG9mIGluaXRjYWxscy4iDQojIGRvZXNuJ3QgbWF0Y2ggYWZ0
+ZXIgd2UgYXBwbGllZCB0aGUgY29tbWl0Lg0KDQpJJ20gZ3Vlc3Npbmcgd2Ugc2hvdWxkIGFkZCB0
+aGUgZm9sbG93aW5nIGZsdXNoX3dvcmsgZm9yIGRlZmVycmVkX3Byb2JlX3RpbWVvdXRfd29yaygp
+Lg0KIyBTb3JyeSwgSSBkaWRuJ3QgdGVzdCB0aGlzIGZvciBzb21lIHJlYXNvbnMgeWV0IHRob3Vn
+aC4uLg0KDQorICAgICAgIC8qIHdhaXQgZm9yIHRoZSBkZWZlcnJlZCBwcm9iZSB0aW1lb3V0IHdv
+cmtxdWV1ZSB0byBmaW5pc2ggKi8NCisgICAgICAgaWYgKGRyaXZlcl9kZWZlcnJlZF9wcm9iZV90
+aW1lb3V0ID4gMCkNCisgICAgICAgICAgICAgICBmbHVzaF93b3JrKCZkZWZlcnJlZF9wcm9iZV90
+aW1lb3V0X3dvcmspOw0KDQo+IElmIEkgY2FuJ3QgZmluZCBhIHdheSB0byBhZGRyZXNzIHRoYXQs
+IEkgdGhpbmsgdGhlIGJlc3QgY291cnNlIHdpbGwgYmUNCj4gdG8gc2V0IHRoZSBkcml2ZXJfZGVm
+ZXJyZWRfcHJvYmVfdGltZW91dCB2YWx1ZSB0byBkZWZhdWx0IHRvIDANCj4gcmVnYXJkbGVzcyBv
+ZiB0aGUgdmFsdWUgb2YgQ09ORklHX01PRFVMRVMsIHNvIHdlIGRvbid0IGNhdXNlIGFueQ0KPiBh
+cHBhcmVudCByZWdyZXNzaW9uIGZyb20gcHJldmlvdXMgYmVoYXZpb3IuIFRoYXQgd2lsbCBhbHNv
+IHNvcnQgb3V0DQo+IHRoZSBsZXNzIGludHVpdGl2ZSA9IC0xIGluaXRpYWxpemF0aW9uIGluIHRo
+ZSBub24tbW9kdWxlcyBjYXNlLg0KPiANCj4gSW4gYW55IGNhc2UsIEknbGwgdHJ5IHRvIGhhdmUg
+YSBwYXRjaCB0byBzZW5kIG91dCBvbiBNb25kYXkuDQoNClRoYW5rcyENCg0KQmVzdCByZWdhcmRz
+LA0KWW9zaGloaXJvIFNoaW1vZGENCg0KPiB0aGFua3MNCj4gLWpvaG4NCg==
