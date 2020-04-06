@@ -2,147 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 844A91A0059
-	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 23:36:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DE3B1A007C
+	for <lists+netdev@lfdr.de>; Mon,  6 Apr 2020 23:52:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726794AbgDFVfM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 17:35:12 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:45555 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726762AbgDFVfL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 17:35:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586208910;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=b+P99eoGOE59dzJri6nDdYTRF/iHp1rUM821OiEBSWI=;
-        b=Mg8Vj/gSwdhlNbgAr3FwEyVtVnfFe74j6FkXKNpo6Y2sjrAryV6/F4irQ13Be0WTFVUAhv
-        lWcVu+JJxAZgM6Ytf0vWZCow0mw15mJVmY0l3o0WS4bjLspxtR6Rxqjmas6Eo61scFXvbV
-        qAeX7jQ7RqgwNwLXI3x0f4r/Dl0WfrI=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-321-A2DGgfhnMUy5afGkWgyndg-1; Mon, 06 Apr 2020 17:35:08 -0400
-X-MC-Unique: A2DGgfhnMUy5afGkWgyndg-1
-Received: by mail-wr1-f69.google.com with SMTP id d4so576388wrq.10
-        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 14:35:08 -0700 (PDT)
+        id S1726339AbgDFVwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 17:52:42 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:42510 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725933AbgDFVwl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 17:52:41 -0400
+Received: by mail-wr1-f66.google.com with SMTP id h15so1351592wrx.9
+        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 14:52:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zB1NSRQYvEfwBZPNE/8IfnahdRjVFm34I8yx81t7+H8=;
+        b=ImKKTKp3YwPINq3FWiVrj7gXE18eMdO3lDCQzZWZFiNZMZ6bwopVOhIrAjmmatLP/s
+         Ev64ylES48nohybKC1p0u1MlWl1Jgj4hUoxPmwNdWHxPazUDRppTpw3n5LHJDTRKrDit
+         lUoMzpE//RTXXxrWjQSB6zfcbciDBSJR81j7RNzTFpKsrUycVVg9LiVVSywKY9+IzjCi
+         e8D/x/n7uYrlMfFQm5YdrGmhpBYjjP4YLHzX4aHBIl3DpxfXyutU6InWj0rTLBwMP+eL
+         d3ZqZXEyeQECh950NGNPV/YuSEN+BsEgxPMBXAii/HZegiMTfY15ptc+JBN50aPHYrAH
+         EXUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=b+P99eoGOE59dzJri6nDdYTRF/iHp1rUM821OiEBSWI=;
-        b=cBL8Z8q89JxRtgLZWD1C8CzU2Af0P9evy+fVpzpqf8q043FIWXOCWDBDp2WcH+Ova8
-         JC66reoY1TT8hpPFMjB0xsL4gE/tehyOlp0DPaJdXvIA+za4hWa8XEACF7bnMugxck0S
-         F5I4EGJWWoozfgf9IL+jzFrVO9mHsgweNjOFpzr/5mNPPA4KcFOTnNRzV4fuI6VKATPl
-         FLq9Wl+H6GTeM4PAAbJFvvJ280nMjDVyZn6FMJle5IPjOp1N9QIx6CinfZ65Qd6PMcbi
-         byqflm6bn5QDWjovDLcQ7O5O+LHn7adqERJScs2jkXIBRYcJ1Z9mo64meIxnn1n9QJEN
-         kNMw==
-X-Gm-Message-State: AGi0PuZJanwWvF+MCXSlL5HbH+48AXXF1N6o++tya44i6i8hXQVBmePW
-        3ZEwo8qgWg2ZVIqKTDUDukEu7XkKLBgU8rE/VNbG0BhzFHGFzS2U9hqUkuxGThAn7Bovd2HCF7F
-        OCLdOnQbHeiRIW4Pz
-X-Received: by 2002:a5d:4c87:: with SMTP id z7mr1417295wrs.39.1586208907583;
-        Mon, 06 Apr 2020 14:35:07 -0700 (PDT)
-X-Google-Smtp-Source: APiQypKcIiWn1HPwA+vMFpmabnpjQIkpeHu9tKG3iwnUgYRQLaqvdB7lSYnAh68ff+ai34FiHnYBKA==
-X-Received: by 2002:a5d:4c87:: with SMTP id z7mr1417269wrs.39.1586208907340;
-        Mon, 06 Apr 2020 14:35:07 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
-        by smtp.gmail.com with ESMTPSA id u22sm1003113wmu.43.2020.04.06.14.35.05
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zB1NSRQYvEfwBZPNE/8IfnahdRjVFm34I8yx81t7+H8=;
+        b=hMdEP91PwWRdYe0krUdtPTEZiYsnpMmcAE3T5yhH8H9p4J0WbO6oEC9PP//w+2O0ds
+         wsqAIRWXJEEdOAdza0rqrhq3MK3g0BBDX8am9OWt/t4ZIOZkVCQeTlw16Y+FKoGTm+Gv
+         eRYzB8ZCBCxUTf8/H9+H1GQlqJmpKaGRwapb0PQSmPuSFtxBTKAASIRsySiySppvwoQE
+         6+MSaKRCyIoRwlu/jJJDqiOb+Z/qeF9ws76GHLqe1xUwO1R8YnuADifgL3OuqRzqzRNC
+         w0VpeYfehyrVx2LlAkjPT3PL9c/anxfwRRvQRI2fGEV1X1Zk3+BcfwIOoiOKKZwFwhXZ
+         zrqg==
+X-Gm-Message-State: AGi0PuaE7r5PZK0ON3kdzo90vv1cjJ/fQ7gbHkGBPXVLEC+C5s5r00UO
+        gl/wWAh5x+6J42U/TQBJz5ZwLH4fbnQ=
+X-Google-Smtp-Source: APiQypL1AeP3tuBfY/xOocjqcaJGXmWJIalc80mmVl8eT41om5sNsio0i4NVj8jOMHGjP3+LeuEaJA==
+X-Received: by 2002:a5d:6310:: with SMTP id i16mr1347547wru.244.1586209959686;
+        Mon, 06 Apr 2020 14:52:39 -0700 (PDT)
+Received: from de0709bef958.v.cablecom.net ([185.104.184.118])
+        by smtp.gmail.com with ESMTPSA id w15sm18218199wra.25.2020.04.06.14.52.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Apr 2020 14:35:06 -0700 (PDT)
-Date:   Mon, 6 Apr 2020 17:35:04 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH v5 06/12] vhost: force spec specified alignment on types
-Message-ID: <20200406213314.248038-7-mst@redhat.com>
-References: <20200406213314.248038-1-mst@redhat.com>
+        Mon, 06 Apr 2020 14:52:39 -0700 (PDT)
+From:   Lothar Rubusch <l.rubusch@gmail.com>
+To:     kuba@kernel.org, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Lothar Rubusch <l.rubusch@gmail.com>
+Subject: [PATCH] Documentation: sock.h - fix warnings
+Date:   Mon,  6 Apr 2020 21:52:30 +0000
+Message-Id: <20200406215230.21758-1-l.rubusch@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200406213314.248038-1-mst@redhat.com>
-X-Mailer: git-send-email 2.24.1.751.gd10ce2899c
-X-Mutt-Fcc: =sent
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ring element addresses are passed between components with different
-alignments assumptions. Thus, if guest/userspace selects a pointer and
-host then gets and dereferences it, we might need to decrease the
-compiler-selected alignment to prevent compiler on the host from
-assuming pointer is aligned.
+Fix some sphinx warnings at 'make htmldocs'.
 
-This actually triggers on ARM with -mabi=apcs-gnu - which is a
-deprecated configuration, but it seems safer to handle this
-generally.
-
-I verified that the produced binary is exactly identical on x86.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Lothar Rubusch <l.rubusch@gmail.com>
 ---
- drivers/vhost/vhost.h       |  6 +++---
- include/linux/virtio_ring.h | 24 +++++++++++++++++++++---
- 2 files changed, 24 insertions(+), 6 deletions(-)
+ include/net/sock.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-index f8403bd46b85..60cab4c78229 100644
---- a/drivers/vhost/vhost.h
-+++ b/drivers/vhost/vhost.h
-@@ -67,9 +67,9 @@ struct vhost_virtqueue {
- 	/* The actual ring of buffers. */
- 	struct mutex mutex;
- 	unsigned int num;
--	struct vring_desc __user *desc;
--	struct vring_avail __user *avail;
--	struct vring_used __user *used;
-+	vring_desc_t __user *desc;
-+	vring_avail_t __user *avail;
-+	vring_used_t __user *used;
- 	const struct vhost_iotlb_map *meta_iotlb[VHOST_NUM_ADDRS];
- 	struct file *kick;
- 	struct eventfd_ctx *call_ctx;
-diff --git a/include/linux/virtio_ring.h b/include/linux/virtio_ring.h
-index 11680e74761a..c3f9ca054250 100644
---- a/include/linux/virtio_ring.h
-+++ b/include/linux/virtio_ring.h
-@@ -60,14 +60,32 @@ static inline void virtio_store_mb(bool weak_barriers,
- struct virtio_device;
- struct virtqueue;
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 6d84784d33fa..2924bcbbd402 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -2554,8 +2554,8 @@ sk_is_refcounted(struct sock *sk)
  
-+/*
-+ * The ring element addresses are passed between components with different
-+ * alignments assumptions. Thus, we might need to decrease the compiler-selected
-+ * alignment, and so must use a typedef to make sure the __aligned attribute
-+ * actually takes hold:
-+ *
-+ * https://gcc.gnu.org/onlinedocs//gcc/Common-Type-Attributes.html#Common-Type-Attributes
-+ *
-+ * When used on a struct, or struct member, the aligned attribute can only
-+ * increase the alignment; in order to decrease it, the packed attribute must
-+ * be specified as well. When used as part of a typedef, the aligned attribute
-+ * can both increase and decrease alignment, and specifying the packed
-+ * attribute generates a warning.
-+ */
-+typedef struct vring_desc __aligned(VRING_DESC_ALIGN_SIZE) vring_desc_t;
-+typedef struct vring_avail __aligned(VRING_AVAIL_ALIGN_SIZE) vring_avail_t;
-+typedef struct vring_used __aligned(VRING_USED_ALIGN_SIZE) vring_used_t;
-+
- struct vring {
- 	unsigned int num;
- 
--	struct vring_desc *desc;
-+	vring_desc_t *desc;
- 
--	struct vring_avail *avail;
-+	vring_avail_t *avail;
- 
--	struct vring_used *used;
-+	vring_used_t *used;
- };
- 
- /*
+ /**
+  * skb_steal_sock
+- * @skb to steal the socket from
+- * @refcounted is set to true if the socket is reference-counted
++ * @skb: to steal the socket from
++ * @refcounted: is set to true if the socket is reference-counted
+  */
+ static inline struct sock *
+ skb_steal_sock(struct sk_buff *skb, bool *refcounted)
 -- 
-MST
+2.20.1
 
