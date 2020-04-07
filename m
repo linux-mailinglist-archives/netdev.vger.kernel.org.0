@@ -2,167 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BBC601A07EF
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 09:06:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEADC1A081E
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 09:20:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726901AbgDGHGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 03:06:21 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:45435 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726631AbgDGHGU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 03:06:20 -0400
-Received: by mail-pl1-f196.google.com with SMTP id t4so866733plq.12
-        for <netdev@vger.kernel.org>; Tue, 07 Apr 2020 00:06:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=xAVY7T1+cZqyUQSpaOqLvP0ADsbvMfjMiLxlWlklJPo=;
-        b=pddZluUMZtOco59Dv37yDhn0NwXH3iQvM0Oq48SS68zWVnjH55cfcAZhaBOJy4u1rv
-         tJMnbj26p7YyNtuecgLVHXc4lGwC12izuYcBXigtG4ewMwsQ7MRtsr4sqmF4Y4gOouAN
-         j4g3UTq3JaV7GmqCVZl40LSiDLx3/t/+SrkL54U/sCBsgj9+ujSwVa7tMfyn2C2dayPY
-         bP6W5wxM7/3dzSe52070VxoT/fwX1/EyPrSk1vSBJY/UvQnu+VTl+/A9VfH84cSqb0+Z
-         mYSHWrP+R6wGxZhLHeBsD1dn2Y1Z3ljyanl7uyiyXbR9t3mgjDl4eE0Y2wiEqOSU3GRe
-         UdeQ==
+        id S1727648AbgDGHUl convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 7 Apr 2020 03:20:41 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:36739 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727192AbgDGHUk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 03:20:40 -0400
+Received: from mail-pg1-f198.google.com ([209.85.215.198])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <kai.heng.feng@canonical.com>)
+        id 1jLiXG-0001cn-0I
+        for netdev@vger.kernel.org; Tue, 07 Apr 2020 07:20:38 +0000
+Received: by mail-pg1-f198.google.com with SMTP id j16so1774561pga.1
+        for <netdev@vger.kernel.org>; Tue, 07 Apr 2020 00:20:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=xAVY7T1+cZqyUQSpaOqLvP0ADsbvMfjMiLxlWlklJPo=;
-        b=oo07E+qOrPdOeqk9XO2v83eV6kLOGHwU6YlazxSBnJ43b/3BTDwa0yYU5TXnxSskkW
-         o65y302to9u5L6iBlTZrGY2LTJ9/dxglFndckVC3vQP9mjx4uUBqXwTIFElUd04CE8Ko
-         jPdQmB9wVox2DMTvOqFepWzeDEhykE/ABNxeKDU4U8rFRNaWNcSN5e+1R/nLO9TYeYvm
-         PI2DN68AsevD1qutUTdkKl59otJCYkCIzECzxsUEAr8pnjZd5hfjYUjanZ4CHYzQgjAh
-         l9j06XAqB3NzZxtJfYXF3C2MD/a98yZf+YeoSPzm9YGvl3sro6tZ6sTj+cIZB7CwUSes
-         JvlQ==
-X-Gm-Message-State: AGi0PuY+lEF7oNKGN+Lfv0IOzQqWJ+mCY+Q/bWLPV9UZVjPFiJ+k7Aqi
-        e4eClbjgpORb52E4ORhcqC49mw==
-X-Google-Smtp-Source: APiQypI9ny5imcqnQwUupSAXYN43rwnatWBWoNOx4g9R3mWkwWVHU851cSuUArsLGxHk8bcLnyA8Cw==
-X-Received: by 2002:a17:90a:30c3:: with SMTP id h61mr1110597pjb.18.1586243179017;
-        Tue, 07 Apr 2020 00:06:19 -0700 (PDT)
-Received: from localhost.localdomain ([2601:1c2:680:1319:692:26ff:feda:3a81])
-        by smtp.gmail.com with ESMTPSA id na18sm826900pjb.31.2020.04.07.00.06.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Apr 2020 00:06:18 -0700 (PDT)
-From:   John Stultz <john.stultz@linaro.org>
-To:     lkml <linux-kernel@vger.kernel.org>
-Cc:     John Stultz <john.stultz@linaro.org>,
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=D9wpwa0NndfexX1TCjkujJJlqtFXso1cUg7215eV4lg=;
+        b=Pts1Bm8FkzEVvILQTzPhUinNwRmnPMVSY22qkgYmf+uCCjuq6l7enB5w1lLWoXNAkd
+         tEPeDXB4nOqIkELUYjCg/W4cIcDSzNC4oSTqYNDbLHNXVG0ehPRf4yXK4wozDNOeHNQY
+         VE2Htw5U8xowmbpf/669Ezl9TtTNM7xRJy829iYLfE8dmB6X2fAkO4uf8YSsmKQX2D+q
+         I8/XSNCfeEIADHWxKi/a3UCu1FkXFPt+DBVQnodHDBIYEodOSCe9US3eyjIjKtm8ND24
+         hWeA3UzY3W8tDvj57fbPJ9yJJ1VGYD4Gdz/odCZDWIlvpARz52OozTDU6t9ahiLoMSgO
+         Rp8g==
+X-Gm-Message-State: AGi0Pua3Md+zYsvY+tqCaCCTMMWP3EeHzyOxJmR1NVm8zPEf8lDKxh2+
+        wRqjmkaSqOo3/WnCIfzNfjurJtFliAzwujUyndlg1FSLOoEcwEKESOXi+uWcqbZPhz3bfoMkERR
+        ItdIjx5pTsGcE5krZ9M/tAO7wgL/FmIRMkQ==
+X-Received: by 2002:a63:8442:: with SMTP id k63mr728453pgd.11.1586244036553;
+        Tue, 07 Apr 2020 00:20:36 -0700 (PDT)
+X-Google-Smtp-Source: APiQypIvttWs2PpNx5F/azwXTq270G+WVg1/eAhpUeAmVFhMz6KQT9Cf1f83uAYabfusCXHjXis5cA==
+X-Received: by 2002:a63:8442:: with SMTP id k63mr728433pgd.11.1586244036201;
+        Tue, 07 Apr 2020 00:20:36 -0700 (PDT)
+Received: from [192.168.1.208] (220-133-187-190.HINET-IP.hinet.net. [220.133.187.190])
+        by smtp.gmail.com with ESMTPSA id w138sm13528050pff.145.2020.04.07.00.20.34
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 07 Apr 2020 00:20:35 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [PATCH] rtw88: Add delay on polling h2c command status bit
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+In-Reply-To: <87k12syanf.fsf@kamboji.qca.qualcomm.com>
+Date:   Tue, 7 Apr 2020 15:20:33 +0800
+Cc:     Tony Chuang <yhchuang@realtek.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Rob Herring <robh@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        netdev <netdev@vger.kernel.org>, linux-pm@vger.kernel.org
-Subject: [RFC][PATCH] driver core: Ensure wait_for_device_probe() waits until the deferred_probe_timeout fires
-Date:   Tue,  7 Apr 2020 07:06:09 +0000
-Message-Id: <20200407070609.42865-1-john.stultz@linaro.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <TYAPR01MB45443FA43152C0091D6EBF9AD8C20@TYAPR01MB4544.jpnprd01.prod.outlook.com>
-References: <TYAPR01MB45443FA43152C0091D6EBF9AD8C20@TYAPR01MB4544.jpnprd01.prod.outlook.com>
+        "open list:REALTEK WIRELESS DRIVER (rtw88)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <E3E792CF-AC1A-466E-A1B2-F1CFAE9BC673@canonical.com>
+References: <20200406093623.3980-1-kai.heng.feng@canonical.com>
+ <87v9mczu4h.fsf@kamboji.qca.qualcomm.com>
+ <94EAAF7E-66C5-40E2-B6A9-0787CB13A3A9@canonical.com>
+ <87zhboycfr.fsf@kamboji.qca.qualcomm.com>
+ <83B3A3D8-833A-42BE-9EB0-59C95B349B01@canonical.com>
+ <87k12syanf.fsf@kamboji.qca.qualcomm.com>
+To:     Kalle Valo <kvalo@codeaurora.org>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In commit c8c43cee29f6 ("driver core: Fix
-driver_deferred_probe_check_state() logic"), we set the default
-driver_deferred_probe_timeout value to 30 seconds to allow for
-drivers that are missing dependencies to have some time so that
-the dependency may be loaded from userland after initcalls_done
-is set.
 
-However, Yoshihiro Shimoda reported that on his device that
-expects to have unmet dependencies (due to "optional links" in
-its devicetree), was failing to mount the NFS root.
 
-In digging further, it seemed the problem was that while the
-device properly probes after waiting 30 seconds for any missing
-modules to load, the ip_auto_config() had already failed,
-resulting in NFS to fail. This was due to ip_auto_config()
-calling wait_for_device_probe() which doesn't wait for the
-driver_deferred_probe_timeout to fire.
+> On Apr 6, 2020, at 22:03, Kalle Valo <kvalo@codeaurora.org> wrote:
+> 
+> Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
+> 
+>>> On Apr 6, 2020, at 21:24, Kalle Valo <kvalo@codeaurora.org> wrote:
+>>> 
+>>> Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
+>>> 
+>>>>> On Apr 6, 2020, at 20:17, Kalle Valo <kvalo@codeaurora.org> wrote:
+>>>>> 
+>>>>> Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
+>>>>> 
+>>>>>> --- a/drivers/net/wireless/realtek/rtw88/hci.h
+>>>>>> +++ b/drivers/net/wireless/realtek/rtw88/hci.h
+>>>>>> @@ -253,6 +253,10 @@ rtw_write8_mask(struct rtw_dev *rtwdev, u32
+>>>>>> addr, u32 mask, u8 data)
+>>>>>> 	rtw_write8(rtwdev, addr, set);
+>>>>>> }
+>>>>>> 
+>>>>>> +#define rr8(addr)      rtw_read8(rtwdev, addr)
+>>>>>> +#define rr16(addr)     rtw_read16(rtwdev, addr)
+>>>>>> +#define rr32(addr)     rtw_read32(rtwdev, addr)
+>>>>> 
+>>>>> For me these macros reduce code readability, not improve anything. They
+>>>>> hide the use of rtwdev variable, which is evil, and a name like rr8() is
+>>>>> just way too vague. Please keep the original function names as is.
+>>>> 
+>>>> The inspiration is from another driver.
+>>>> readx_poll_timeout macro only takes one argument for the op.
+>>>> Some other drivers have their own poll_timeout implementation,
+>>>> and I guess it makes sense to make one specific for rtw88.
+>>> 
+>>> I'm not even understanding the problem you are tying to fix with these
+>>> macros. The upstream philosopyhy is to have the source code readable and
+>>> maintainable, not to use minimal number of characters. There's a reason
+>>> why we don't name our functions a(), b(), c() and so on.
+>> 
+>> The current h2c polling doesn't have delay between each interval, so
+>> the polling is too fast and the following logic considers it's a
+>> timeout.
+>> The readx_poll_timeout() macro provides a generic mechanism to setup
+>> an interval delay and timeout which is what we need here.
+>> However readx_poll_timeout only accepts one parameter which usually is
+>> memory address, while we need to pass both rtwdev and address.
+>> 
+>> So if hiding rtwdev is evil, we can roll our own variant of
+>> readx_poll_timeout() to make the polling readable.
+> 
+> Can't you do:
+> 
+> ret = read_poll_timeout(rtw_read8, box_state,
+>                        !((box_state >> box) & 0x1), 100,
+>                        3000, false, rtw_dev, REG_HMETFR);
+> 
+> No ugly macros needed and it should function the same. But I did not
+> test this in any way, so no idea if it even compiles.
 
-This patch tries to fix the issue by creating a waitqueue
-for the driver_deferred_probe_timeout, and calling wait_event()
-to make sure driver_deferred_probe_timeout is zero in
-wait_for_device_probe() to make sure all the probing is
-finished.
+Yes that will do. Didn't notice the recently added macro.
 
-NOTE: I'm not 100% sure this won't have other unwanted side
-effects (I don't have failing hardware myself to validate),
-so I'd apprecate testing and close review.
+Will send v2.
 
-If this approach doesn't work, I'll simply set the default
-driver_deferred_probe_timeout value back to zero, to avoid any
-behavioral change from before.
+Kai-Heng
 
-Thanks to Geert for chasing down that ip_auto_config was why NFS
-was failing in this case!
-
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
-Cc: Rob Herring <robh@kernel.org>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: netdev <netdev@vger.kernel.org>
-Cc: linux-pm@vger.kernel.org
-Reported-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Fixes: c8c43cee29f6 ("driver core: Fix driver_deferred_probe_check_state() logic")
-Signed-off-by: John Stultz <john.stultz@linaro.org>
----
- drivers/base/dd.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index 06ec0e851fa1..8c13f0df3282 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -232,9 +232,10 @@ DEFINE_SHOW_ATTRIBUTE(deferred_devs);
- int driver_deferred_probe_timeout = 30;
- #else
- /* In the case of !modules, no probe timeout needed */
--int driver_deferred_probe_timeout = -1;
-+int driver_deferred_probe_timeout;
- #endif
- EXPORT_SYMBOL_GPL(driver_deferred_probe_timeout);
-+static DECLARE_WAIT_QUEUE_HEAD(probe_timeout_waitqueue);
- 
- static int __init deferred_probe_timeout_setup(char *str)
- {
-@@ -266,7 +267,7 @@ int driver_deferred_probe_check_state(struct device *dev)
- 		return -ENODEV;
- 	}
- 
--	if (!driver_deferred_probe_timeout) {
-+	if (!driver_deferred_probe_timeout && initcalls_done) {
- 		dev_WARN(dev, "deferred probe timeout, ignoring dependency");
- 		return -ETIMEDOUT;
- 	}
-@@ -284,6 +285,7 @@ static void deferred_probe_timeout_work_func(struct work_struct *work)
- 
- 	list_for_each_entry_safe(private, p, &deferred_probe_pending_list, deferred_probe)
- 		dev_info(private->device, "deferred probe pending");
-+	wake_up(&probe_timeout_waitqueue);
- }
- static DECLARE_DELAYED_WORK(deferred_probe_timeout_work, deferred_probe_timeout_work_func);
- 
-@@ -658,6 +660,9 @@ int driver_probe_done(void)
-  */
- void wait_for_device_probe(void)
- {
-+	/* wait for probe timeout */
-+	wait_event(probe_timeout_waitqueue, !driver_deferred_probe_timeout);
-+
- 	/* wait for the deferred probe workqueue to finish */
- 	flush_work(&deferred_probe_work);
- 
--- 
-2.17.1
+> 
+> -- 
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
