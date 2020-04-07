@@ -2,124 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F2D771A08A5
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 09:51:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B3F31A08C9
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 10:00:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727868AbgDGHu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 03:50:57 -0400
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:37861 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726393AbgDGHu4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 03:50:56 -0400
-Received: by mail-oi1-f193.google.com with SMTP id u20so704036oic.4;
-        Tue, 07 Apr 2020 00:50:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0xy6duWOZRsuHgXNoNpThMEK6ifcrseX8Tb2v5L0t3w=;
-        b=GjmjozCa9XABCQsxu8udzhj+4g0cFo/678VvU34pINIJ8YH8Kji7kPBBFpOI0n47LI
-         kgDmxgHmsgUcrQtxFBCPHmB1sTfdzCQQytFnlcL84+rnVc99mBS2FAJSpcZzRWBUdrHq
-         jtgtMMx+FV+KN1J0e/ppLVeV/I/vaOcbQQgk0S6rkkVN4l+ZBRFU8RZXWSE0wGglg2Ob
-         oDgy7RVN5YwIyoeI2IE3lk8AEtEF5e/wAHZkUGzg1rGmo7SvM5HUZyEZRfUrKgMwkBn9
-         ewNBSQhbpMEx5TXUm5mjElvabw7m2HHiLRaIKgJeu1eDyFnQBHztb0jkqO0XPYOns61d
-         Bw1w==
-X-Gm-Message-State: AGi0Puasw42vU11wl0+z1T4pdTwV4oS+tQ/G98zWBLrUaatDZvuP2E8J
-        A+5HJoUpOVO9j6kM9fle04EjIPZw7EK5pbMUXvgnYg==
-X-Google-Smtp-Source: APiQypKCWFOch3oAwMdPxUdedE4Y/iCDOJ6IAetbFPjyMJpK27zl1aQSrHJKlOtCDvanLpz5/kdr8tkFj2evA3On/xc=
-X-Received: by 2002:aca:cdd1:: with SMTP id d200mr671758oig.153.1586245855947;
- Tue, 07 Apr 2020 00:50:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <TYAPR01MB45443FA43152C0091D6EBF9AD8C20@TYAPR01MB4544.jpnprd01.prod.outlook.com>
- <20200407070609.42865-1-john.stultz@linaro.org>
-In-Reply-To: <20200407070609.42865-1-john.stultz@linaro.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 7 Apr 2020 09:50:44 +0200
-Message-ID: <CAMuHMdWSXvHN5zEh7A+CygxEHP42qFrum+ntiL=m+ATwYOOB0Q@mail.gmail.com>
-Subject: Re: [RFC][PATCH] driver core: Ensure wait_for_device_probe() waits
- until the deferred_probe_timeout fires
-To:     John Stultz <john.stultz@linaro.org>
-Cc:     lkml <linux-kernel@vger.kernel.org>,
+        id S1727873AbgDGIAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 04:00:16 -0400
+Received: from mx2.suse.de ([195.135.220.15]:35104 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726635AbgDGIAQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Apr 2020 04:00:16 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 5A711AC37;
+        Tue,  7 Apr 2020 08:00:12 +0000 (UTC)
+Subject: Re: [kernel-hardening] [PATCH 09/38] usercopy: Mark kmalloc caches as
+ usercopy caches
+To:     Jann Horn <jannh@google.com>, Kees Cook <keescook@chromium.org>
+Cc:     Christian Borntraeger <borntraeger@de.ibm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christopher Lameter <cl@linux.com>,
+        Jiri Slaby <jslaby@suse.cz>,
+        Julian Wiedmann <jwi@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        David Windsor <dave@nullcore.net>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux-MM <linux-mm@kvack.org>, linux-xfs@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andy Lutomirski <luto@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Rob Herring <robh@kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Laura Abbott <labbott@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Christoffer Dall <christoffer.dall@linaro.org>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        Jan Kara <jack@suse.cz>,
+        Luis de Bethencourt <luisbg@kernel.org>,
+        Marc Zyngier <marc.zyngier@arm.com>,
+        Rik van Riel <riel@redhat.com>,
+        Matthew Garrett <mjg59@google.com>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Kernel Hardening <kernel-hardening@lists.openwall.com>,
+        Michal Kubecek <mkubecek@suse.cz>
+References: <201911121313.1097D6EE@keescook> <201911141327.4DE6510@keescook>
+ <bfca96db-bbd0-d958-7732-76e36c667c68@suse.cz>
+ <202001271519.AA6ADEACF0@keescook>
+ <5861936c-1fe1-4c44-d012-26efa0c8b6e7@de.ibm.com>
+ <202001281457.FA11CC313A@keescook>
+ <alpine.DEB.2.21.2001291640350.1546@www.lameter.com>
+ <6844ea47-8e0e-4fb7-d86f-68046995a749@de.ibm.com>
+ <20200129170939.GA4277@infradead.org>
+ <771c5511-c5ab-3dd1-d938-5dbc40396daa@de.ibm.com>
+ <202001300945.7D465B5F5@keescook>
+ <CAG48ez1a4waGk9kB0WLaSbs4muSoK0AYAVk8=XYaKj4_+6e6Hg@mail.gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+Message-ID: <7d810f6d-8085-ea2f-7805-47ba3842dc50@suse.cz>
+Date:   Tue, 7 Apr 2020 10:00:10 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
+MIME-Version: 1.0
+In-Reply-To: <CAG48ez1a4waGk9kB0WLaSbs4muSoK0AYAVk8=XYaKj4_+6e6Hg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi John,
+On 1/31/20 1:03 PM, Jann Horn wrote:
 
-On Tue, Apr 7, 2020 at 9:06 AM John Stultz <john.stultz@linaro.org> wrote:
-> In commit c8c43cee29f6 ("driver core: Fix
-> driver_deferred_probe_check_state() logic"), we set the default
-> driver_deferred_probe_timeout value to 30 seconds to allow for
-> drivers that are missing dependencies to have some time so that
-> the dependency may be loaded from userland after initcalls_done
-> is set.
->
-> However, Yoshihiro Shimoda reported that on his device that
-> expects to have unmet dependencies (due to "optional links" in
-> its devicetree), was failing to mount the NFS root.
->
-> In digging further, it seemed the problem was that while the
-> device properly probes after waiting 30 seconds for any missing
-> modules to load, the ip_auto_config() had already failed,
-> resulting in NFS to fail. This was due to ip_auto_config()
-> calling wait_for_device_probe() which doesn't wait for the
-> driver_deferred_probe_timeout to fire.
->
-> This patch tries to fix the issue by creating a waitqueue
-> for the driver_deferred_probe_timeout, and calling wait_event()
-> to make sure driver_deferred_probe_timeout is zero in
-> wait_for_device_probe() to make sure all the probing is
-> finished.
->
-> NOTE: I'm not 100% sure this won't have other unwanted side
-> effects (I don't have failing hardware myself to validate),
-> so I'd apprecate testing and close review.
->
-> If this approach doesn't work, I'll simply set the default
-> driver_deferred_probe_timeout value back to zero, to avoid any
-> behavioral change from before.
->
-> Thanks to Geert for chasing down that ip_auto_config was why NFS
-> was failing in this case!
->
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-> Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
-> Cc: Rob Herring <robh@kernel.org>
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> Cc: netdev <netdev@vger.kernel.org>
-> Cc: linux-pm@vger.kernel.org
-> Reported-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> Fixes: c8c43cee29f6 ("driver core: Fix driver_deferred_probe_check_state() logic")
-> Signed-off-by: John Stultz <john.stultz@linaro.org>
+> I think dma-kmalloc slabs should be handled the same way as normal
+> kmalloc slabs. When a dma-kmalloc allocation is freshly created, it is
+> just normal kernel memory - even if it might later be used for DMA -,
+> and it should be perfectly fine to copy_from_user() into such
+> allocations at that point, and to copy_to_user() out of them at the
+> end. If you look at the places where such allocations are created, you
+> can see things like kmemdup(), memcpy() and so on - all normal
+> operations that shouldn't conceptually be different from usercopy in
+> any relevant way.
+ 
+So, let's do that?
 
-Thanks, this fixes the issue for me!
+----8<----
+From d5190e4e871689a530da3c3fd327be45a88f006a Mon Sep 17 00:00:00 2001
+From: Vlastimil Babka <vbabka@suse.cz>
+Date: Tue, 7 Apr 2020 09:58:00 +0200
+Subject: [PATCH] usercopy: Mark dma-kmalloc caches as usercopy caches
 
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+We have seen a "usercopy: Kernel memory overwrite attempt detected to SLUB
+object 'dma-kmalloc-1 k' (offset 0, size 11)!" error on s390x, as IUCV uses
+kmalloc() with __GFP_DMA because of memory address restrictions.
+The issue has been discussed [2] and it has been noted that if all the kmalloc
+caches are marked as usercopy, there's little reason not to mark dma-kmalloc
+caches too. The 'dma' part merely means that __GFP_DMA is used to restrict
+memory address range.
 
-Gr{oetje,eeting}s,
+As Jann Horn put it [3]:
 
-                        Geert
+"I think dma-kmalloc slabs should be handled the same way as normal
+kmalloc slabs. When a dma-kmalloc allocation is freshly created, it is
+just normal kernel memory - even if it might later be used for DMA -,
+and it should be perfectly fine to copy_from_user() into such
+allocations at that point, and to copy_to_user() out of them at the
+end. If you look at the places where such allocations are created, you
+can see things like kmemdup(), memcpy() and so on - all normal
+operations that shouldn't conceptually be different from usercopy in
+any relevant way."
 
+Thus this patch marks the dma-kmalloc-* caches as usercopy.
+
+[1] https://bugzilla.suse.com/show_bug.cgi?id=1156053
+[2] https://lore.kernel.org/kernel-hardening/bfca96db-bbd0-d958-7732-76e36c667c68@suse.cz/
+[3] https://lore.kernel.org/kernel-hardening/CAG48ez1a4waGk9kB0WLaSbs4muSoK0AYAVk8=XYaKj4_+6e6Hg@mail.gmail.com/
+
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+---
+ mm/slab_common.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/mm/slab_common.c b/mm/slab_common.c
+index 5282f881d2f5..ae9486160594 100644
+--- a/mm/slab_common.c
++++ b/mm/slab_common.c
+@@ -1303,7 +1303,8 @@ void __init create_kmalloc_caches(slab_flags_t flags)
+ 			kmalloc_caches[KMALLOC_DMA][i] = create_kmalloc_cache(
+ 				kmalloc_info[i].name[KMALLOC_DMA],
+ 				kmalloc_info[i].size,
+-				SLAB_CACHE_DMA | flags, 0, 0);
++				SLAB_CACHE_DMA | flags, 0,
++				kmalloc_info[i].size);
+ 		}
+ 	}
+ #endif
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.26.0
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
