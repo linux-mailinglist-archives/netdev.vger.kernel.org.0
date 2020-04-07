@@ -2,88 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 696A11A0E61
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 15:30:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA2EB1A0F4C
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 16:33:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728854AbgDGNaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 09:30:17 -0400
-Received: from m177134.mail.qiye.163.com ([123.58.177.134]:60028 "EHLO
-        m177134.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728482AbgDGNaQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 09:30:16 -0400
-Received: from ubuntu.localdomain (unknown [58.251.74.227])
-        by m17618.mail.qiye.163.com (Hmail) with ESMTPA id 870F74E0EBF;
-        Tue,  7 Apr 2020 21:30:07 +0800 (CST)
-From:   WANG Wenhu <wenhu.wang@vivo.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Allison Randal <allison@lohutok.net>,
-        Nicholas Mc Guire <hofrat@osadl.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        WANG Wenhu <wenhu.wang@vivo.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     opensource.kernel@vivo.org
-Subject: [PATCH] net: qrtr: send msgs from local of same id as broadcast
-Date:   Tue,  7 Apr 2020 06:29:28 -0700
-Message-Id: <20200407132930.109738-1-wenhu.wang@vivo.com>
-X-Mailer: git-send-email 2.17.1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUlXWQgYFAkeWUFZTVVITENCQkJMSktLQ0hLSllXWShZQU
-        hPN1dZLVlBSVdZCQ4XHghZQVk1NCk2OjckKS43PlkG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NTY6Axw*GDgwTxEdCDZWPEki
-        HhAaFB9VSlVKTkNNSU1NSUpLS0xCVTMWGhIXVQweFRMOVQwaFRw7DRINFFUYFBZFWVdZEgtZQVlO
-        Q1VJTkpVTE9VSUlMWVdZCAFZQUlMTk03Bg++
-X-HM-Tid: 0a7154d576ed9376kuws870f74e0ebf
+        id S1729092AbgDGOdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 10:33:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49674 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728975AbgDGOdJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Apr 2020 10:33:09 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8AC342072A;
+        Tue,  7 Apr 2020 14:33:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1586269989;
+        bh=cminWrIgkRVEhjmai3BMkPP+WLA37jmwDe9yEHcu7Tg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=T+mc3+rDHQN+IacAd+EmpTdDH2QE8aO0VMBd8RUfIZg7lMPcTqAmayi+OoDlmf724
+         ep5Duhdvj2XzEEsxx/jN5ENw5LdRt5/mEw/XJjh/e8Wnk+8niv71ZpkDUjqXuE+iWc
+         A9g/3oTOEG6F6VMW6AuzVTUNvoovPNd8kqkKV2DE=
+Date:   Tue, 7 Apr 2020 16:33:04 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     Jason Gunthorpe <jgg@ziepe.ca>, Leon Romanovsky <leon@kernel.org>,
+        syzbot <syzbot+9627a92b1f9262d5d30c@syzkaller.appspotmail.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Rafael Wysocki <rafael@kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Subject: Re: WARNING in ib_umad_kill_port
+Message-ID: <20200407143304.GA876345@kroah.com>
+References: <00000000000075245205a2997f68@google.com>
+ <20200406172151.GJ80989@unreal>
+ <20200406174440.GR20941@ziepe.ca>
+ <CACT4Y+Zv_WXEn6u5a6kRZpkDJnSzeGF1L7JMw4g85TLEgAM7Lw@mail.gmail.com>
+ <20200407115548.GU20941@ziepe.ca>
+ <CACT4Y+Zy0LwpHkTMTtb08ojOxuEUFo1Z7wkMCYSVCvsVDcxayw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACT4Y+Zy0LwpHkTMTtb08ojOxuEUFo1Z7wkMCYSVCvsVDcxayw@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the local node id(qrtr_local_nid) is not modified after its
-initialization, it equals to the broadcast node id(QRTR_NODE_BCAST).
-So the messages from local node should not be taken as broadcast
-and keep the process going to send them out anyway.
+On Tue, Apr 07, 2020 at 02:39:42PM +0200, Dmitry Vyukov wrote:
+> On Tue, Apr 7, 2020 at 1:55 PM Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> >
+> > On Tue, Apr 07, 2020 at 11:56:30AM +0200, Dmitry Vyukov wrote:
+> > > > I'm not sure what could be done wrong here to elicit this:
+> > > >
+> > > >  sysfs group 'power' not found for kobject 'umad1'
+> > > >
+> > > > ??
+> > > >
+> > > > I've seen another similar sysfs related trigger that we couldn't
+> > > > figure out.
+> > > >
+> > > > Hard to investigate without a reproducer.
+> > >
+> > > Based on all of the sysfs-related bugs I've seen, my bet would be on
+> > > some races. E.g. one thread registers devices, while another
+> > > unregisters these.
+> >
+> > I did check that the naming is ordered right, at least we won't be
+> > concurrently creating and destroying umadX sysfs of the same names.
+> >
+> > I'm also fairly sure we can't be destroying the parent at the same
+> > time as this child.
+> >
+> > Do you see the above commonly? Could it be some driver core thing? Or
+> > is it more likely something wrong in umad?
+> 
+> Mmmm... I can't say, I am looking at some bugs very briefly. I've
+> noticed that sysfs comes up periodically (or was it some other similar
+> fs?). General observation is that code frequently assumes only the
+> happy scenario and only, say, a single administrator doing one thing
+> at a time, slowly and carefully, and it is not really hardened against
+> armies of monkeys.
+> But I did not look at code abstractions, bug patterns, contracts, etc.
+> 
+> Greg KH may know better. Greg, as far as I remember you commented on
+> some of these reports along the lines of, for example, "the warning is
+> in sysfs code, but the bug is in the callers".
 
-The definitions are as follow:
-static unsigned int qrtr_local_nid = NUMA_NO_NODE;
-
-Fixes: commit fdf5fd397566 ("net: qrtr: Broadcast messages only from control port")
-Signed-off-by: Wang Wenhu <wenhu.wang@vivo.com>
----
- net/qrtr/qrtr.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-index 5a8e42ad1504..5dbd248c5ffb 100644
---- a/net/qrtr/qrtr.c
-+++ b/net/qrtr/qrtr.c
-@@ -907,20 +907,21 @@ static int qrtr_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 
- 	node = NULL;
- 	if (addr->sq_node == QRTR_NODE_BCAST) {
--		enqueue_fn = qrtr_bcast_enqueue;
--		if (addr->sq_port != QRTR_PORT_CTRL) {
-+		if (addr->sq_port != QRTR_PORT_CTRL &&
-+				qrtr_local_nid != QRTR_NODE_BCAST) {
- 			release_sock(sk);
- 			return -ENOTCONN;
- 		}
-+		enqueue_fn = qrtr_bcast_enqueue;
- 	} else if (addr->sq_node == ipc->us.sq_node) {
- 		enqueue_fn = qrtr_local_enqueue;
- 	} else {
--		enqueue_fn = qrtr_node_enqueue;
- 		node = qrtr_node_lookup(addr->sq_node);
- 		if (!node) {
- 			release_sock(sk);
- 			return -ECONNRESET;
- 		}
-+		enqueue_fn = qrtr_node_enqueue;
- 	}
- 
- 	plen = (len + 3) & ~3;
--- 
-2.17.1
+Yes, that is correct.
 
