@@ -2,155 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CCA081A0605
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 07:01:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68FF71A067E
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 07:20:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726631AbgDGFBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 01:01:44 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:64252 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726030AbgDGFBn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 01:01:43 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1586235702; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=jt0Tk8pFpcuNkX69+BRAOWUABI4M2KygUuVbL9SWXck=;
- b=HEdS5b2wSdnJb3g6JB2tV4Mwj5JJZKjI21TP1yVUH7Bw/dyKPioeAsrYqlCFAfU9NQ+QVUS3
- px+ZkkjoodYCBmzR2Uv9lGaSNtOEkRnJtTvdB3govTwLOqJF5LFyKYTzA0H4oLijqdnLgRSz
- txYe+a04+I3LGN6T/SyswIERzG0=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e8c0936.7f2ed250d538-smtp-out-n01;
- Tue, 07 Apr 2020 05:01:42 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 09CFAC433D2; Tue,  7 Apr 2020 05:01:42 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 947B3C433BA;
-        Tue,  7 Apr 2020 05:01:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 947B3C433BA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH 1/5] ath9k: Fix use-after-free Read in htc_connect_service
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200404041838.10426-2-hqjagain@gmail.com>
-References: <20200404041838.10426-2-hqjagain@gmail.com>
-To:     Qiujun Huang <hqjagain@gmail.com>
-Cc:     ath9k-devel@qca.qualcomm.com, davem@davemloft.net,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, anenbupt@gmail.com,
-        syzkaller-bugs@googlegroups.com, Qiujun Huang <hqjagain@gmail.com>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20200407050142.09CFAC433D2@smtp.codeaurora.org>
-Date:   Tue,  7 Apr 2020 05:01:42 +0000 (UTC)
+        id S1726761AbgDGFUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 01:20:53 -0400
+Received: from mail-wm1-f42.google.com ([209.85.128.42]:37663 "EHLO
+        mail-wm1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725802AbgDGFUw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 01:20:52 -0400
+Received: by mail-wm1-f42.google.com with SMTP id j19so447755wmi.2
+        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 22:20:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pplo.net; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=LH9DVsh46tLVBrpPLnxCn487/+heGcwo1v8Lhu9J4SA=;
+        b=Yaoi7EWv8BVdIWHxhU7KgJV9KSvaZITvyGLKCqNsIUjZJDQuZn+p2liax8O/ANItxh
+         42udsFfpRxwUmxYunfDtNTz8Y5XcMZcjFhY2XXWOaOETZyFJQiF4XcMdvvSe9DkK7pqL
+         ptuvAbbU0iM9Qt24fPeei6ZJPbDCAQXP6topk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=LH9DVsh46tLVBrpPLnxCn487/+heGcwo1v8Lhu9J4SA=;
+        b=hfBSn3pa31iNJT20jK5hGJubG7498bb9gyCI8fivPZVrGnACza1CP71asB0ZHH4IrC
+         tYo+MERDFxvRPr/Bou1uQiSGK8AXeYVotfghC5Gll3B1ouvcBIn0fYBsgJMZ71OekkLx
+         GmtKHQ6mcBw1wz6ZDVHyuI2oWLnn1RG75U87+C/rS233CpH+yp5LaGEmz+YR8H986ozV
+         rSGv9CktHu9i9pPxTpVUo7MNDSVvRDxXDjeTCWdYYf/Jgdx91bv8WougY8pZEYANDYHg
+         EmRXfYh+Sd8izh2O+oh/rIdjdD48johu5qXyPh3VZnBIdEYQE5wMT8WxFtVIZ+FXUe9M
+         O79g==
+X-Gm-Message-State: AGi0PuYiWxl1YdxcjDFRytcYDKcEbXlxH1KSjpu+zOi1ytLms9ZKiFrx
+        sudgPQRXMtKw/G1PzKZOYW3IiQ==
+X-Google-Smtp-Source: APiQypKeZqarKUrfz8xJfRN1ya3ZQpQrv9QMZ5pNza7kjpY8aRvbBtA1UevOVHQpIzn5U06LGLj5qQ==
+X-Received: by 2002:a1c:7405:: with SMTP id p5mr441503wmc.20.1586236848823;
+        Mon, 06 Apr 2020 22:20:48 -0700 (PDT)
+Received: from localhost.localdomain (85.251.42.187.dyn.user.ono.com. [85.251.42.187])
+        by smtp.gmail.com with ESMTPSA id f12sm806975wmh.4.2020.04.06.22.20.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Apr 2020 22:20:48 -0700 (PDT)
+From:   Lourdes Pedrajas <lu@pplo.net>
+To:     David Miller <davem@davemloft.net>
+Cc:     Stefano Brivio <sbrivio@redhat.com>, netdev@vger.kernel.org,
+        David Ahern <dsahern@gmail.com>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Subject: [PATCH net-next] selftests: pmtu: implement IPIP, SIT and ip6tnl PMTU discovery tests
+Date:   Tue,  7 Apr 2020 07:20:40 +0200
+Message-Id: <20200407052040.8116-1-lu@pplo.net>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Qiujun Huang <hqjagain@gmail.com> wrote:
+Add PMTU discovery tests for these encapsulations:
 
-> The skb is consumed by htc_send_epid, so it needn't release again.
-> 
-> The case reported by syzbot:
-> 
-> https://lore.kernel.org/linux-usb/000000000000590f6b05a1c05d15@google.com
-> usb 1-1: ath9k_htc: Firmware ath9k_htc/htc_9271-1.4.0.fw requested
-> usb 1-1: ath9k_htc: Transferred FW: ath9k_htc/htc_9271-1.4.0.fw, size:
-> 51008
-> usb 1-1: Service connection timeout for: 256
-> ==================================================================
-> BUG: KASAN: use-after-free in atomic_read
-> include/asm-generic/atomic-instrumented.h:26 [inline]
-> BUG: KASAN: use-after-free in refcount_read include/linux/refcount.h:134
-> [inline]
-> BUG: KASAN: use-after-free in skb_unref include/linux/skbuff.h:1042
-> [inline]
-> BUG: KASAN: use-after-free in kfree_skb+0x32/0x3d0 net/core/skbuff.c:692
-> Read of size 4 at addr ffff8881d0957994 by task kworker/1:2/83
-> 
-> Call Trace:
-> kfree_skb+0x32/0x3d0 net/core/skbuff.c:692
-> htc_connect_service.cold+0xa9/0x109
-> drivers/net/wireless/ath/ath9k/htc_hst.c:282
-> ath9k_wmi_connect+0xd2/0x1a0 drivers/net/wireless/ath/ath9k/wmi.c:265
-> ath9k_init_htc_services.constprop.0+0xb4/0x650
-> drivers/net/wireless/ath/ath9k/htc_drv_init.c:146
-> ath9k_htc_probe_device+0x25a/0x1d80
-> drivers/net/wireless/ath/ath9k/htc_drv_init.c:959
-> ath9k_htc_hw_init+0x31/0x60
-> drivers/net/wireless/ath/ath9k/htc_hst.c:501
-> ath9k_hif_usb_firmware_cb+0x26b/0x500
-> drivers/net/wireless/ath/ath9k/hif_usb.c:1187
-> request_firmware_work_func+0x126/0x242
-> drivers/base/firmware_loader/main.c:976
-> process_one_work+0x94b/0x1620 kernel/workqueue.c:2264
-> worker_thread+0x96/0xe20 kernel/workqueue.c:2410
-> kthread+0x318/0x420 kernel/kthread.c:255
-> ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-> 
-> Allocated by task 83:
-> kmem_cache_alloc_node+0xdc/0x330 mm/slub.c:2814
-> __alloc_skb+0xba/0x5a0 net/core/skbuff.c:198
-> alloc_skb include/linux/skbuff.h:1081 [inline]
-> htc_connect_service+0x2cc/0x840
-> drivers/net/wireless/ath/ath9k/htc_hst.c:257
-> ath9k_wmi_connect+0xd2/0x1a0 drivers/net/wireless/ath/ath9k/wmi.c:265
-> ath9k_init_htc_services.constprop.0+0xb4/0x650
-> drivers/net/wireless/ath/ath9k/htc_drv_init.c:146
-> ath9k_htc_probe_device+0x25a/0x1d80
-> drivers/net/wireless/ath/ath9k/htc_drv_init.c:959
-> ath9k_htc_hw_init+0x31/0x60
-> drivers/net/wireless/ath/ath9k/htc_hst.c:501
-> ath9k_hif_usb_firmware_cb+0x26b/0x500
-> drivers/net/wireless/ath/ath9k/hif_usb.c:1187
-> request_firmware_work_func+0x126/0x242
-> drivers/base/firmware_loader/main.c:976
-> process_one_work+0x94b/0x1620 kernel/workqueue.c:2264
-> worker_thread+0x96/0xe20 kernel/workqueue.c:2410
-> kthread+0x318/0x420 kernel/kthread.c:255
-> ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-> 
-> Freed by task 0:
-> kfree_skb+0x102/0x3d0 net/core/skbuff.c:690
-> ath9k_htc_txcompletion_cb+0x1f8/0x2b0
-> drivers/net/wireless/ath/ath9k/htc_hst.c:356
-> hif_usb_regout_cb+0x10b/0x1b0
-> drivers/net/wireless/ath/ath9k/hif_usb.c:90
-> __usb_hcd_giveback_urb+0x29a/0x550 drivers/usb/core/hcd.c:1650
-> usb_hcd_giveback_urb+0x368/0x420 drivers/usb/core/hcd.c:1716
-> dummy_timer+0x1258/0x32ae drivers/usb/gadget/udc/dummy_hcd.c:1966
-> call_timer_fn+0x195/0x6f0 kernel/time/timer.c:1404
-> expire_timers kernel/time/timer.c:1449 [inline]
-> __run_timers kernel/time/timer.c:1773 [inline]
-> __run_timers kernel/time/timer.c:1740 [inline]
-> run_timer_softirq+0x5f9/0x1500 kernel/time/timer.c:1786
-> __do_softirq+0x21e/0x950 kernel/softirq.c:292
-> 
-> Reported-and-tested-by: syzbot+9505af1ae303dabdc646@syzkaller.appspotmail.com
-> Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+- IPIP
+- SIT, mode ip6ip
+- ip6tnl, modes ip6ip6 and ipip6
 
-5 patches applied to ath-next branch of ath.git, thanks.
+Signed-off-by: Lourdes Pedrajas <lu@pplo.net>
+Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
+---
+ tools/testing/selftests/net/pmtu.sh | 122 ++++++++++++++++++++++++++++
+ 1 file changed, 122 insertions(+)
 
-ced21a4c726b ath9k: Fix use-after-free Read in htc_connect_service
-abeaa85054ff ath9k: Fix use-after-free Read in ath9k_wmi_ctrl_rx
-e4ff08a4d727 ath9k: Fix use-after-free Write in ath9k_htc_rx_msg
-19d6c375d671 ath9x: Fix stack-out-of-bounds Write in ath9k_hif_usb_rx_cb
-2bbcaaee1fcb ath9k: Fix general protection fault in ath9k_hif_usb_rx_cb
-
+diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
+index 71a62e7e35b1..2be0bdb35d77 100755
+--- a/tools/testing/selftests/net/pmtu.sh
++++ b/tools/testing/selftests/net/pmtu.sh
+@@ -67,6 +67,10 @@
+ #	Same as pmtu_ipv4_vxlan4, but using a generic UDP IPv4/IPv6
+ #	encapsulation (GUE) over IPv4/IPv6, instead of VXLAN
+ #
++# - pmtu_ipv{4,6}_ipv{4,6}_exception
++#	Same as pmtu_ipv4_vxlan4, but using a IPv4/IPv6 tunnel over IPv4/IPv6,
++#	instead of VXLAN
++#
+ # - pmtu_vti4_exception
+ #	Set up vti tunnel on top of veth, with xfrm states and policies, in two
+ #	namespaces with matching endpoints. Check that route exception is not
+@@ -151,6 +155,10 @@ tests="
+ 	pmtu_ipv6_gue4_exception	IPv6 over gue4: PMTU exceptions		1
+ 	pmtu_ipv4_gue6_exception	IPv4 over gue6: PMTU exceptions		1
+ 	pmtu_ipv6_gue6_exception	IPv6 over gue6: PMTU exceptions		1
++	pmtu_ipv4_ipv4_exception	IPv4 over IPv4: PMTU exceptions		1
++	pmtu_ipv6_ipv4_exception	IPv6 over IPv4: PMTU exceptions		1
++	pmtu_ipv4_ipv6_exception	IPv4 over IPv6: PMTU exceptions		1
++	pmtu_ipv6_ipv6_exception	IPv6 over IPv6: PMTU exceptions		1
+ 	pmtu_vti6_exception		vti6: PMTU exceptions			0
+ 	pmtu_vti4_exception		vti4: PMTU exceptions			0
+ 	pmtu_vti4_default_mtu		vti4: default MTU assignment		0
+@@ -363,6 +371,62 @@ setup_gue66() {
+ 	setup_fou_or_gue 6 6 gue
+ }
+ 
++setup_ipvX_over_ipvY() {
++	inner=${1}
++	outer=${2}
++
++	if [ "${outer}" -eq 4 ]; then
++		a_addr="${prefix4}.${a_r1}.1"
++		b_addr="${prefix4}.${b_r1}.1"
++		if [ "${inner}" -eq 4 ]; then
++			type="ipip"
++			mode="ipip"
++		else
++			type="sit"
++			mode="ip6ip"
++		fi
++	else
++		a_addr="${prefix6}:${a_r1}::1"
++		b_addr="${prefix6}:${b_r1}::1"
++		type="ip6tnl"
++		if [ "${inner}" -eq 4 ]; then
++			mode="ipip6"
++		else
++			mode="ip6ip6"
++		fi
++	fi
++
++	run_cmd ${ns_a} ip link add ip_a type ${type} local ${a_addr} remote ${b_addr} mode ${mode} || return 2
++	run_cmd ${ns_b} ip link add ip_b type ${type} local ${b_addr} remote ${a_addr} mode ${mode}
++
++	run_cmd ${ns_a} ip link set ip_a up
++	run_cmd ${ns_b} ip link set ip_b up
++
++	if [ "${inner}" = "4" ]; then
++		run_cmd ${ns_a} ip addr add ${tunnel4_a_addr}/${tunnel4_mask} dev ip_a
++		run_cmd ${ns_b} ip addr add ${tunnel4_b_addr}/${tunnel4_mask} dev ip_b
++	else
++		run_cmd ${ns_a} ip addr add ${tunnel6_a_addr}/${tunnel6_mask} dev ip_a
++		run_cmd ${ns_b} ip addr add ${tunnel6_b_addr}/${tunnel6_mask} dev ip_b
++	fi
++}
++
++setup_ip4ip4() {
++	setup_ipvX_over_ipvY 4 4
++}
++
++setup_ip6ip4() {
++	setup_ipvX_over_ipvY 6 4
++}
++
++setup_ip4ip6() {
++	setup_ipvX_over_ipvY 4 6
++}
++
++setup_ip6ip6() {
++	setup_ipvX_over_ipvY 6 6
++}
++
+ setup_namespaces() {
+ 	for n in ${NS_A} ${NS_B} ${NS_R1} ${NS_R2}; do
+ 		ip netns add ${n} || return 1
+@@ -908,6 +972,64 @@ test_pmtu_ipv6_gue6_exception() {
+ 	test_pmtu_ipvX_over_fouY_or_gueY 6 6 gue
+ }
+ 
++test_pmtu_ipvX_over_ipvY_exception() {
++	inner=${1}
++	outer=${2}
++	ll_mtu=4000
++
++	setup namespaces routing ip${inner}ip${outer} || return 2
++
++	trace "${ns_a}" ip_a         "${ns_b}"  ip_b  \
++	      "${ns_a}" veth_A-R1    "${ns_r1}" veth_R1-A \
++	      "${ns_b}" veth_B-R1    "${ns_r1}" veth_R1-B
++
++	if [ ${inner} -eq 4 ]; then
++		ping=ping
++		dst=${tunnel4_b_addr}
++	else
++		ping=${ping6}
++		dst=${tunnel6_b_addr}
++	fi
++
++	if [ ${outer} -eq 4 ]; then
++		#                      IPv4 header
++		exp_mtu=$((${ll_mtu} - 20))
++	else
++		#                      IPv6 header   Option 4
++		exp_mtu=$((${ll_mtu} - 40          - 8))
++	fi
++
++	# Create route exception by exceeding link layer MTU
++	mtu "${ns_a}"  veth_A-R1 $((${ll_mtu} + 1000))
++	mtu "${ns_r1}" veth_R1-A $((${ll_mtu} + 1000))
++	mtu "${ns_b}"  veth_B-R1 ${ll_mtu}
++	mtu "${ns_r1}" veth_R1-B ${ll_mtu}
++
++	mtu "${ns_a}" ip_a $((${ll_mtu} + 1000)) || return
++	mtu "${ns_b}" ip_b $((${ll_mtu} + 1000)) || return
++	run_cmd ${ns_a} ${ping} -q -M want -i 0.1 -w 1 -s $((${ll_mtu} + 500)) ${dst}
++
++	# Check that exception was created
++	pmtu="$(route_get_dst_pmtu_from_exception "${ns_a}" ${dst})"
++	check_pmtu_value ${exp_mtu} "${pmtu}" "exceeding link layer MTU on ip${inner}ip${outer} interface"
++}
++
++test_pmtu_ipv4_ipv4_exception() {
++	test_pmtu_ipvX_over_ipvY_exception 4 4
++}
++
++test_pmtu_ipv6_ipv4_exception() {
++	test_pmtu_ipvX_over_ipvY_exception 6 4
++}
++
++test_pmtu_ipv4_ipv6_exception() {
++	test_pmtu_ipvX_over_ipvY_exception 4 6
++}
++
++test_pmtu_ipv6_ipv6_exception() {
++	test_pmtu_ipvX_over_ipvY_exception 6 6
++}
++
+ test_pmtu_vti4_exception() {
+ 	setup namespaces veth vti4 xfrm4 || return 2
+ 	trace "${ns_a}" veth_a    "${ns_b}" veth_b \
 -- 
-https://patchwork.kernel.org/patch/11474039/
+2.17.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
