@@ -2,103 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 362D91A148A
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 20:39:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 095811A153B
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 20:48:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728019AbgDGSjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 14:39:16 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:45956 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726950AbgDGSjQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 14:39:16 -0400
-Received: by mail-lj1-f193.google.com with SMTP id t17so4845760ljc.12
-        for <netdev@vger.kernel.org>; Tue, 07 Apr 2020 11:39:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YTOMqzmqJZ7tcU1cgqIhCtHjF6AAr4kLgyB3spNq9dY=;
-        b=R3M7TuTqwbkZfw3MwAcf0K0cGJwJKEfxA2AavRzCYf0Sar3jH2TBM/hkdAIJRyfjJa
-         pPV76pPDODDAFCfUWhb5b7KYIzcNEJTQIjB8R8ogGVkpLKFsmg+EzwrorYSE20LouXIX
-         Uo5qkcMm0qhjrkPAfjGOiT0xD6uPI9O3g9rac=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YTOMqzmqJZ7tcU1cgqIhCtHjF6AAr4kLgyB3spNq9dY=;
-        b=MI1sakorUHLA54tRJi0gCdLkHHMbhSsSA7uC0iz2lcgpBE1ciVQgRMBDLp4HFe/N1u
-         /dYLCjq0iLAz2KpFDf42o8hMdx6P1bMjzKAND+heru1oYOgoyuiDoBYAUPPbFIPZEWuc
-         RAa0Jm1jytOOJDyaC5mYLExcRInyB9YllP501kc/U9fIub1/F7Cx/3zvz3DtO1gmTYLs
-         rQK2FpAlEh9ECTk9SR1+ZGXFbyijGMd9R3wCW15i1hwzici5J75F7EoAaFnnqIuang+u
-         SZKitr1wQBYdCvGeDI2CkmuKd7HZE0Av+P0pOhDOpaktl1tl8zQO0Ou87YInB2nvWkxC
-         jF+g==
-X-Gm-Message-State: AGi0PuaARo8XHOMyOzPVPmD6wyN27RSsmw48KeQU6L0hYD7gFcLaX/bH
-        SxwqLOau4zbKK4SRl2+iHmaavedyB9g=
-X-Google-Smtp-Source: APiQypLl19W7mSK+HR3wjDy7mqjYWv7DXby1kia4az4X4+6wmhnw1a4LCBPERmYTwmL7jI/VdWADrQ==
-X-Received: by 2002:a2e:b8c1:: with SMTP id s1mr2686976ljp.0.1586284752881;
-        Tue, 07 Apr 2020 11:39:12 -0700 (PDT)
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com. [209.85.208.179])
-        by smtp.gmail.com with ESMTPSA id l132sm5060035lfd.95.2020.04.07.11.39.11
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Apr 2020 11:39:11 -0700 (PDT)
-Received: by mail-lj1-f179.google.com with SMTP id r7so4842489ljg.13
-        for <netdev@vger.kernel.org>; Tue, 07 Apr 2020 11:39:11 -0700 (PDT)
-X-Received: by 2002:a05:651c:50e:: with SMTP id o14mr2484705ljp.241.1586284750968;
- Tue, 07 Apr 2020 11:39:10 -0700 (PDT)
+        id S1726718AbgDGSsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 14:48:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59180 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726332AbgDGSsP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Apr 2020 14:48:15 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 62A3220730;
+        Tue,  7 Apr 2020 18:48:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1586285294;
+        bh=rTmBHDoBAy4CL3L6aYQVMHrBcqCicMbxXJIdvUl3zDo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lUfPRcUbiJY9srJK0tCnGDSXurAhsM21eETj1n45sAnsw2/asfY8dN8IdczmirjYS
+         ++rLuKtBhj36PmGVxA5pIleTSTVpPNJP8+OPb7YvYQPbKxYxUTzSp0ONsL7Gkx1Zyi
+         hsxOAvETTnZqyuE62/+Njo6ARiP5kX+34+XkFG2E=
+Date:   Tue, 7 Apr 2020 21:48:09 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Ka-Cheong Poon <ka-cheong.poon@oracle.com>
+Cc:     netdev@vger.kernel.org, santosh.shilimkar@oracle.com,
+        davem@davemloft.net, rds-devel@oss.oracle.com,
+        sironhide0null@gmail.com
+Subject: Re: [PATCH net 1/2] net/rds: Replace direct refcount_inc() by inline
+ function
+Message-ID: <20200407184809.GP80989@unreal>
+References: <4b96ea99c3f0ccd5cc0683a5c944a1c4da41cc38.1586275373.git.ka-cheong.poon@oracle.com>
 MIME-Version: 1.0
-References: <20200407174306.145032-1-briannorris@chromium.org> <20200407112427.403c73c9@hermes.lan>
-In-Reply-To: <20200407112427.403c73c9@hermes.lan>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Tue, 7 Apr 2020 11:38:59 -0700
-X-Gmail-Original-Message-ID: <CA+ASDXM540KLNXjRh0swrp=ATGfxWS-VUcZcqYT1Udm4QLPaVQ@mail.gmail.com>
-Message-ID: <CA+ASDXM540KLNXjRh0swrp=ATGfxWS-VUcZcqYT1Udm4QLPaVQ@mail.gmail.com>
-Subject: Re: [PATCH iproute2 1/2] man: add ip-netns(8) as generation target
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4b96ea99c3f0ccd5cc0683a5c944a1c4da41cc38.1586275373.git.ka-cheong.poon@oracle.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 7, 2020 at 11:24 AM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
+On Tue, Apr 07, 2020 at 09:08:01AM -0700, Ka-Cheong Poon wrote:
+> Added rds_ib_dev_get() and rds_mr_get() to improve code readability.
+
+It is very hard to agree with this sentence.
+Hiding basic kernel primitives is very rare will improve code readability.
+It is definitely not the case here.
+
+Thanks
+
 >
-> On Tue,  7 Apr 2020 10:43:05 -0700
-> Brian Norris <briannorris@chromium.org> wrote:
+> Signed-off-by: Ka-Cheong Poon <ka-cheong.poon@oracle.com>
+> ---
+>  net/rds/ib.c      | 8 ++++----
+>  net/rds/ib.h      | 5 +++++
+>  net/rds/ib_rdma.c | 6 +++---
+>  net/rds/rdma.c    | 8 ++++----
+>  net/rds/rds.h     | 5 +++++
+>  5 files changed, 21 insertions(+), 11 deletions(-)
 >
-> > Prepare for adding new variable substitutions. Unify the sed rules while
-> > we're at it, since there's no need to write this out 4 times.
-> >
-> > Signed-off-by: Brian Norris <briannorris@chromium.org>
+> diff --git a/net/rds/ib.c b/net/rds/ib.c
+> index a792d8a..c16cb1a 100644
+> --- a/net/rds/ib.c
+> +++ b/net/rds/ib.c
+> @@ -1,5 +1,5 @@
+>  /*
+> - * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
+> + * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+>   *
+>   * This software is available to you under a choice of one of two
+>   * licenses.  You may choose to be licensed under the terms of the GNU
+> @@ -224,10 +224,10 @@ static void rds_ib_add_one(struct ib_device *device)
+>  	down_write(&rds_ib_devices_lock);
+>  	list_add_tail_rcu(&rds_ibdev->list, &rds_ib_devices);
+>  	up_write(&rds_ib_devices_lock);
+> -	refcount_inc(&rds_ibdev->refcount);
+> +	rds_ib_dev_get(rds_ibdev);
 >
-> Why is this needed?
-
-For patch 1: it's only for the sake of patch 2.
-If you're implying that patch 2 doesn't describe the "why?" well
-enough: I'll try again:
-
-> man: replace $(NETNS_ETC_DIR) and $(NETNS_RUN_DIR) in ip-netns(8)
+>  	ib_set_client_data(device, &rds_ib_client, rds_ibdev);
+> -	refcount_inc(&rds_ibdev->refcount);
+> +	rds_ib_dev_get(rds_ibdev);
 >
-> These can be configured to different paths. Reflect that in the
-> generated documentation.
-
-This is needed because Chrom{ium,e} OS patches iproute2 to use /run
-directly instead of /var/run [1]. We also build the man pages, so we'd
-like the man-pages to match.
-
-Incidentally, we were already manually patching this out (in both
-source and man-page) before this upstream patch existed:
-e2f5ceccdab5 Allow to configure /var/run/netns directory
-It would be nice if we could just use the Makefile variable instead.
-
-I can resubmit if you'd like a more verbose description in the patch
-submission itself.
-
-Brian
-
-[1] Longer answer: because the latter traverses a symlink on a
-read/write partition, whereas the former is a direct-mounted tmpfs. We
-can provide better guarantees for programs that avoid symlinks like
-this.
+>  	rds_ib_nodev_connect();
+>
+> @@ -258,7 +258,7 @@ struct rds_ib_device *rds_ib_get_client_data(struct ib_device *device)
+>  	rcu_read_lock();
+>  	rds_ibdev = ib_get_client_data(device, &rds_ib_client);
+>  	if (rds_ibdev)
+> -		refcount_inc(&rds_ibdev->refcount);
+> +		rds_ib_dev_get(rds_ibdev);
+>  	rcu_read_unlock();
+>  	return rds_ibdev;
+>  }
+> diff --git a/net/rds/ib.h b/net/rds/ib.h
+> index 0296f1f..fe7ea4e 100644
+> --- a/net/rds/ib.h
+> +++ b/net/rds/ib.h
+> @@ -361,6 +361,11 @@ static inline void rds_ib_dma_sync_sg_for_device(struct ib_device *dev,
+>  extern struct rds_transport rds_ib_transport;
+>  struct rds_ib_device *rds_ib_get_client_data(struct ib_device *device);
+>  void rds_ib_dev_put(struct rds_ib_device *rds_ibdev);
+> +static inline void rds_ib_dev_get(struct rds_ib_device *rds_ibdev)
+> +{
+> +	refcount_inc(&rds_ibdev->refcount);
+> +}
+> +
+>  extern struct ib_client rds_ib_client;
+>
+>  extern unsigned int rds_ib_retry_count;
+> diff --git a/net/rds/ib_rdma.c b/net/rds/ib_rdma.c
+> index b34b24e..1b942d80 100644
+> --- a/net/rds/ib_rdma.c
+> +++ b/net/rds/ib_rdma.c
+> @@ -1,5 +1,5 @@
+>  /*
+> - * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+> + * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+>   *
+>   * This software is available to you under a choice of one of two
+>   * licenses.  You may choose to be licensed under the terms of the GNU
+> @@ -56,7 +56,7 @@ static struct rds_ib_device *rds_ib_get_device(__be32 ipaddr)
+>  	list_for_each_entry_rcu(rds_ibdev, &rds_ib_devices, list) {
+>  		list_for_each_entry_rcu(i_ipaddr, &rds_ibdev->ipaddr_list, list) {
+>  			if (i_ipaddr->ipaddr == ipaddr) {
+> -				refcount_inc(&rds_ibdev->refcount);
+> +				rds_ib_dev_get(rds_ibdev);
+>  				rcu_read_unlock();
+>  				return rds_ibdev;
+>  			}
+> @@ -139,7 +139,7 @@ void rds_ib_add_conn(struct rds_ib_device *rds_ibdev, struct rds_connection *con
+>  	spin_unlock_irq(&ib_nodev_conns_lock);
+>
+>  	ic->rds_ibdev = rds_ibdev;
+> -	refcount_inc(&rds_ibdev->refcount);
+> +	rds_ib_dev_get(rds_ibdev);
+>  }
+>
+>  void rds_ib_remove_conn(struct rds_ib_device *rds_ibdev, struct rds_connection *conn)
+> diff --git a/net/rds/rdma.c b/net/rds/rdma.c
+> index 585e6b3..d5abe0e 100644
+> --- a/net/rds/rdma.c
+> +++ b/net/rds/rdma.c
+> @@ -1,5 +1,5 @@
+>  /*
+> - * Copyright (c) 2007, 2017 Oracle and/or its affiliates. All rights reserved.
+> + * Copyright (c) 2007, 2020 Oracle and/or its affiliates. All rights reserved.
+>   *
+>   * This software is available to you under a choice of one of two
+>   * licenses.  You may choose to be licensed under the terms of the GNU
+> @@ -84,7 +84,7 @@ static struct rds_mr *rds_mr_tree_walk(struct rb_root *root, u64 key,
+>  	if (insert) {
+>  		rb_link_node(&insert->r_rb_node, parent, p);
+>  		rb_insert_color(&insert->r_rb_node, root);
+> -		refcount_inc(&insert->r_refcount);
+> +		rds_mr_get(insert);
+>  	}
+>  	return NULL;
+>  }
+> @@ -343,7 +343,7 @@ static int __rds_rdma_map(struct rds_sock *rs, struct rds_get_mr_args *args,
+>
+>  	rdsdebug("RDS: get_mr key is %x\n", mr->r_key);
+>  	if (mr_ret) {
+> -		refcount_inc(&mr->r_refcount);
+> +		rds_mr_get(mr);
+>  		*mr_ret = mr;
+>  	}
+>
+> @@ -827,7 +827,7 @@ int rds_cmsg_rdma_dest(struct rds_sock *rs, struct rds_message *rm,
+>  	if (!mr)
+>  		err = -EINVAL;	/* invalid r_key */
+>  	else
+> -		refcount_inc(&mr->r_refcount);
+> +		rds_mr_get(mr);
+>  	spin_unlock_irqrestore(&rs->rs_rdma_lock, flags);
+>
+>  	if (mr) {
+> diff --git a/net/rds/rds.h b/net/rds/rds.h
+> index e4a6035..6a665fa 100644
+> --- a/net/rds/rds.h
+> +++ b/net/rds/rds.h
+> @@ -953,6 +953,11 @@ static inline void rds_mr_put(struct rds_mr *mr)
+>  		__rds_put_mr_final(mr);
+>  }
+>
+> +static inline void rds_mr_get(struct rds_mr *mr)
+> +{
+> +	refcount_inc(&mr->r_refcount);
+> +}
+> +
+>  static inline bool rds_destroy_pending(struct rds_connection *conn)
+>  {
+>  	return !check_net(rds_conn_net(conn)) ||
+> --
+> 1.8.3.1
+>
