@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EAC71A02ED
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:10:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98E8C1A02EC
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:10:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727728AbgDGAB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727769AbgDGAB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 6 Apr 2020 20:01:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35696 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:35758 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727696AbgDGAB5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Apr 2020 20:01:57 -0400
+        id S1727706AbgDGAB7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Apr 2020 20:01:59 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EF6D920857;
-        Tue,  7 Apr 2020 00:01:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 806022082F;
+        Tue,  7 Apr 2020 00:01:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586217716;
-        bh=3lqjoguLUMkjgVnLq4LSYyidc8BX3fXTE69J4DScU8s=;
+        s=default; t=1586217718;
+        bh=qM8LL6uEKVv7hUeypNV5D5h6B/YiokxF949tvBiBp3s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KZHjkrWJDmxeJz9cVfk/CAsKt5dAkSX8t5Bmm0Ns4pz5yAdrm2LWJWeNzQtkZxz7U
-         e1vgrwM3h8vPIkFMIAwO36VaHA0X5so6YIA4BWr6xiZ5bDzXOnPwfqAPP6XcDuC4TY
-         0EoXA7ETDO5BgBHK9HY6tJrmq3Id9qF5LnSIv04o=
+        b=gj6o9DH2xFLmFpM6qblHLRiBLRn0aZAxkCSxvORrUg7MG9h/znLUc/kazXKqmeii/
+         tjUTmCfvPRM9/s2GVSjj16KIRsrzrTbyCkGURyS/8a21TTKbzCd3BdG/OYV1cbmAJJ
+         aK4rdsGkwMzXAqqgzO9sipPM77BPajLz51SxHjaQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
+Cc:     Tariq Toukan <tariqt@mellanox.com>,
+        Boris Pismenny <borisp@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 04/32] bpf: Fix deadlock with rq_lock in bpf_send_signal()
-Date:   Mon,  6 Apr 2020 20:01:22 -0400
-Message-Id: <20200407000151.16768-4-sashal@kernel.org>
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 05/32] net/mlx5e: kTLS, Fix wrong value in record tracker enum
+Date:   Mon,  6 Apr 2020 20:01:23 -0400
+Message-Id: <20200407000151.16768-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200407000151.16768-1-sashal@kernel.org>
 References: <20200407000151.16768-1-sashal@kernel.org>
@@ -44,198 +45,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yonghong Song <yhs@fb.com>
+From: Tariq Toukan <tariqt@mellanox.com>
 
-[ Upstream commit 1bc7896e9ef44fd77858b3ef0b8a6840be3a4494 ]
+[ Upstream commit f28ca65efa87b3fb8da3d69ca7cb1ebc0448de66 ]
 
-When experimenting with bpf_send_signal() helper in our production
-environment (5.2 based), we experienced a deadlock in NMI mode:
-   #5 [ffffc9002219f770] queued_spin_lock_slowpath at ffffffff8110be24
-   #6 [ffffc9002219f770] _raw_spin_lock_irqsave at ffffffff81a43012
-   #7 [ffffc9002219f780] try_to_wake_up at ffffffff810e7ecd
-   #8 [ffffc9002219f7e0] signal_wake_up_state at ffffffff810c7b55
-   #9 [ffffc9002219f7f0] __send_signal at ffffffff810c8602
-  #10 [ffffc9002219f830] do_send_sig_info at ffffffff810ca31a
-  #11 [ffffc9002219f868] bpf_send_signal at ffffffff8119d227
-  #12 [ffffc9002219f988] bpf_overflow_handler at ffffffff811d4140
-  #13 [ffffc9002219f9e0] __perf_event_overflow at ffffffff811d68cf
-  #14 [ffffc9002219fa10] perf_swevent_overflow at ffffffff811d6a09
-  #15 [ffffc9002219fa38] ___perf_sw_event at ffffffff811e0f47
-  #16 [ffffc9002219fc30] __schedule at ffffffff81a3e04d
-  #17 [ffffc9002219fc90] schedule at ffffffff81a3e219
-  #18 [ffffc9002219fca0] futex_wait_queue_me at ffffffff8113d1b9
-  #19 [ffffc9002219fcd8] futex_wait at ffffffff8113e529
-  #20 [ffffc9002219fdf0] do_futex at ffffffff8113ffbc
-  #21 [ffffc9002219fec0] __x64_sys_futex at ffffffff81140d1c
-  #22 [ffffc9002219ff38] do_syscall_64 at ffffffff81002602
-  #23 [ffffc9002219ff50] entry_SYSCALL_64_after_hwframe at ffffffff81c00068
+Fix to match the HW spec: TRACKING state is 1, SEARCHING is 2.
+No real issue for now, as these values are not currently used.
 
-The above call stack is actually very similar to an issue
-reported by Commit eac9153f2b58 ("bpf/stackmap: Fix deadlock with
-rq_lock in bpf_get_stack()") by Song Liu. The only difference is
-bpf_send_signal() helper instead of bpf_get_stack() helper.
-
-The above deadlock is triggered with a perf_sw_event.
-Similar to Commit eac9153f2b58, the below almost identical reproducer
-used tracepoint point sched/sched_switch so the issue can be easily caught.
-  /* stress_test.c */
-  #include <stdio.h>
-  #include <stdlib.h>
-  #include <sys/mman.h>
-  #include <pthread.h>
-  #include <sys/types.h>
-  #include <sys/stat.h>
-  #include <fcntl.h>
-
-  #define THREAD_COUNT 1000
-  char *filename;
-  void *worker(void *p)
-  {
-        void *ptr;
-        int fd;
-        char *pptr;
-
-        fd = open(filename, O_RDONLY);
-        if (fd < 0)
-                return NULL;
-        while (1) {
-                struct timespec ts = {0, 1000 + rand() % 2000};
-
-                ptr = mmap(NULL, 4096 * 64, PROT_READ, MAP_PRIVATE, fd, 0);
-                usleep(1);
-                if (ptr == MAP_FAILED) {
-                        printf("failed to mmap\n");
-                        break;
-                }
-                munmap(ptr, 4096 * 64);
-                usleep(1);
-                pptr = malloc(1);
-                usleep(1);
-                pptr[0] = 1;
-                usleep(1);
-                free(pptr);
-                usleep(1);
-                nanosleep(&ts, NULL);
-        }
-        close(fd);
-        return NULL;
-  }
-
-  int main(int argc, char *argv[])
-  {
-        void *ptr;
-        int i;
-        pthread_t threads[THREAD_COUNT];
-
-        if (argc < 2)
-                return 0;
-
-        filename = argv[1];
-
-        for (i = 0; i < THREAD_COUNT; i++) {
-                if (pthread_create(threads + i, NULL, worker, NULL)) {
-                        fprintf(stderr, "Error creating thread\n");
-                        return 0;
-                }
-        }
-
-        for (i = 0; i < THREAD_COUNT; i++)
-                pthread_join(threads[i], NULL);
-        return 0;
-  }
-and the following command:
-  1. run `stress_test /bin/ls` in one windown
-  2. hack bcc trace.py with the following change:
-     --- a/tools/trace.py
-     +++ b/tools/trace.py
-     @@ -513,6 +513,7 @@ BPF_PERF_OUTPUT(%s);
-              __data.tgid = __tgid;
-              __data.pid = __pid;
-              bpf_get_current_comm(&__data.comm, sizeof(__data.comm));
-     +        bpf_send_signal(10);
-      %s
-      %s
-              %s.perf_submit(%s, &__data, sizeof(__data));
-  3. in a different window run
-     ./trace.py -p $(pidof stress_test) t:sched:sched_switch
-
-The deadlock can be reproduced in our production system.
-
-Similar to Song's fix, the fix is to delay sending signal if
-irqs is disabled to avoid deadlocks involving with rq_lock.
-With this change, my above stress-test in our production system
-won't cause deadlock any more.
-
-I also implemented a scale-down version of reproducer in the
-selftest (a subsequent commit). With latest bpf-next,
-it complains for the following potential deadlock.
-  [   32.832450] -> #1 (&p->pi_lock){-.-.}:
-  [   32.833100]        _raw_spin_lock_irqsave+0x44/0x80
-  [   32.833696]        task_rq_lock+0x2c/0xa0
-  [   32.834182]        task_sched_runtime+0x59/0xd0
-  [   32.834721]        thread_group_cputime+0x250/0x270
-  [   32.835304]        thread_group_cputime_adjusted+0x2e/0x70
-  [   32.835959]        do_task_stat+0x8a7/0xb80
-  [   32.836461]        proc_single_show+0x51/0xb0
-  ...
-  [   32.839512] -> #0 (&(&sighand->siglock)->rlock){....}:
-  [   32.840275]        __lock_acquire+0x1358/0x1a20
-  [   32.840826]        lock_acquire+0xc7/0x1d0
-  [   32.841309]        _raw_spin_lock_irqsave+0x44/0x80
-  [   32.841916]        __lock_task_sighand+0x79/0x160
-  [   32.842465]        do_send_sig_info+0x35/0x90
-  [   32.842977]        bpf_send_signal+0xa/0x10
-  [   32.843464]        bpf_prog_bc13ed9e4d3163e3_send_signal_tp_sched+0x465/0x1000
-  [   32.844301]        trace_call_bpf+0x115/0x270
-  [   32.844809]        perf_trace_run_bpf_submit+0x4a/0xc0
-  [   32.845411]        perf_trace_sched_switch+0x10f/0x180
-  [   32.846014]        __schedule+0x45d/0x880
-  [   32.846483]        schedule+0x5f/0xd0
-  ...
-
-  [   32.853148] Chain exists of:
-  [   32.853148]   &(&sighand->siglock)->rlock --> &p->pi_lock --> &rq->lock
-  [   32.853148]
-  [   32.854451]  Possible unsafe locking scenario:
-  [   32.854451]
-  [   32.855173]        CPU0                    CPU1
-  [   32.855745]        ----                    ----
-  [   32.856278]   lock(&rq->lock);
-  [   32.856671]                                lock(&p->pi_lock);
-  [   32.857332]                                lock(&rq->lock);
-  [   32.857999]   lock(&(&sighand->siglock)->rlock);
-
-  Deadlock happens on CPU0 when it tries to acquire &sighand->siglock
-  but it has been held by CPU1 and CPU1 tries to grab &rq->lock
-  and cannot get it.
-
-  This is not exactly the callstack in our production environment,
-  but sympotom is similar and both locks are using spin_lock_irqsave()
-  to acquire the lock, and both involves rq_lock. The fix to delay
-  sending signal when irq is disabled also fixed this issue.
-
-Signed-off-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Cc: Song Liu <songliubraving@fb.com>
-Link: https://lore.kernel.org/bpf/20200304191104.2796501-1-yhs@fb.com
+Fixes: d2ead1f360e8 ("net/mlx5e: Add kTLS TX HW offload support")
+Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
+Reviewed-by: Boris Pismenny <borisp@mellanox.com>
+Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/bpf_trace.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 89bdac61233db..2372b861f2cfa 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -650,7 +650,7 @@ BPF_CALL_1(bpf_send_signal, u32, sig)
- 	if (unlikely(!nmi_uaccess_okay()))
- 		return -EPERM;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h
+index a3efa29a4629d..63116be6b1d60 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.h
+@@ -38,8 +38,8 @@ enum {
  
--	if (in_nmi()) {
-+	if (irqs_disabled()) {
- 		/* Do an early check on signal validity. Otherwise,
- 		 * the error is lost in deferred irq_work.
- 		 */
+ enum {
+ 	MLX5E_TLS_PROGRESS_PARAMS_RECORD_TRACKER_STATE_START     = 0,
+-	MLX5E_TLS_PROGRESS_PARAMS_RECORD_TRACKER_STATE_SEARCHING = 1,
+-	MLX5E_TLS_PROGRESS_PARAMS_RECORD_TRACKER_STATE_TRACKING  = 2,
++	MLX5E_TLS_PROGRESS_PARAMS_RECORD_TRACKER_STATE_TRACKING  = 1,
++	MLX5E_TLS_PROGRESS_PARAMS_RECORD_TRACKER_STATE_SEARCHING = 2,
+ };
+ 
+ struct mlx5e_ktls_offload_context_tx {
 -- 
 2.20.1
 
