@@ -2,223 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68FF71A067E
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 07:20:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1D511A068E
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 07:28:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726761AbgDGFUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 01:20:53 -0400
-Received: from mail-wm1-f42.google.com ([209.85.128.42]:37663 "EHLO
-        mail-wm1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725802AbgDGFUw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 01:20:52 -0400
-Received: by mail-wm1-f42.google.com with SMTP id j19so447755wmi.2
-        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 22:20:49 -0700 (PDT)
+        id S1726829AbgDGF23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 01:28:29 -0400
+Received: from mail-vs1-f67.google.com ([209.85.217.67]:37063 "EHLO
+        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726448AbgDGF23 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 01:28:29 -0400
+Received: by mail-vs1-f67.google.com with SMTP id o3so1447348vsd.4;
+        Mon, 06 Apr 2020 22:28:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pplo.net; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=LH9DVsh46tLVBrpPLnxCn487/+heGcwo1v8Lhu9J4SA=;
-        b=Yaoi7EWv8BVdIWHxhU7KgJV9KSvaZITvyGLKCqNsIUjZJDQuZn+p2liax8O/ANItxh
-         42udsFfpRxwUmxYunfDtNTz8Y5XcMZcjFhY2XXWOaOETZyFJQiF4XcMdvvSe9DkK7pqL
-         ptuvAbbU0iM9Qt24fPeei6ZJPbDCAQXP6topk=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WrrS0Lhv15zxlqz1Gg8dhCo/1YDYxqP75f329M6pi8g=;
+        b=ecWsFgYxhiIQvqETzF0YU62LFUUJpET9TBMlx/sk0c/jmfFnFtkHFuLXoVMQp+seqm
+         tZY9UvlZV2xPSiTnbMjOIKzecJoipBK3eq+WrxAqCuKugzMrywczIyV873todT6OwFTB
+         ZmYRz+/xWizAbFXs6k4ygl5JIz/MZVUsdpXt+6t4c1Mp7xWqBLV2smPPAlh+tleZpumK
+         CNXkCgYtlkHYKrckeC+MywD0XH9ALgIQfiZUEHPUF133dLOhEXYfr4ISPgK0w9d1bfTg
+         yqvFxzq+HoEfqpICa2k4OwxaxX1GVetOHFZmTJXlx826yeBuQ93SkA6N7TVVG38FSU+c
+         PJXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=LH9DVsh46tLVBrpPLnxCn487/+heGcwo1v8Lhu9J4SA=;
-        b=hfBSn3pa31iNJT20jK5hGJubG7498bb9gyCI8fivPZVrGnACza1CP71asB0ZHH4IrC
-         tYo+MERDFxvRPr/Bou1uQiSGK8AXeYVotfghC5Gll3B1ouvcBIn0fYBsgJMZ71OekkLx
-         GmtKHQ6mcBw1wz6ZDVHyuI2oWLnn1RG75U87+C/rS233CpH+yp5LaGEmz+YR8H986ozV
-         rSGv9CktHu9i9pPxTpVUo7MNDSVvRDxXDjeTCWdYYf/Jgdx91bv8WougY8pZEYANDYHg
-         EmRXfYh+Sd8izh2O+oh/rIdjdD48johu5qXyPh3VZnBIdEYQE5wMT8WxFtVIZ+FXUe9M
-         O79g==
-X-Gm-Message-State: AGi0PuYiWxl1YdxcjDFRytcYDKcEbXlxH1KSjpu+zOi1ytLms9ZKiFrx
-        sudgPQRXMtKw/G1PzKZOYW3IiQ==
-X-Google-Smtp-Source: APiQypKeZqarKUrfz8xJfRN1ya3ZQpQrv9QMZ5pNza7kjpY8aRvbBtA1UevOVHQpIzn5U06LGLj5qQ==
-X-Received: by 2002:a1c:7405:: with SMTP id p5mr441503wmc.20.1586236848823;
-        Mon, 06 Apr 2020 22:20:48 -0700 (PDT)
-Received: from localhost.localdomain (85.251.42.187.dyn.user.ono.com. [85.251.42.187])
-        by smtp.gmail.com with ESMTPSA id f12sm806975wmh.4.2020.04.06.22.20.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Apr 2020 22:20:48 -0700 (PDT)
-From:   Lourdes Pedrajas <lu@pplo.net>
-To:     David Miller <davem@davemloft.net>
-Cc:     Stefano Brivio <sbrivio@redhat.com>, netdev@vger.kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Sabrina Dubroca <sd@queasysnail.net>
-Subject: [PATCH net-next] selftests: pmtu: implement IPIP, SIT and ip6tnl PMTU discovery tests
-Date:   Tue,  7 Apr 2020 07:20:40 +0200
-Message-Id: <20200407052040.8116-1-lu@pplo.net>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WrrS0Lhv15zxlqz1Gg8dhCo/1YDYxqP75f329M6pi8g=;
+        b=N268/RZ1MAP4EJM+hdjXfS2/iInM2HyWeb0DCf5kveGaooGVHb0iOCcWwGl0bnYOXR
+         ZOQRPgR0tvARyqH4NB7Ljn60gGxbbXA76MBNkHAfhlPgLvPR3lPouXHS586dVCl2cAZN
+         YvQiveV7pCthSKrLDy2M1Dad2YroflKLJh/dqgFqTZ395PMraUYxH/0gwJAJiNI+s7EN
+         EmnLRlDCEHt4qokR5uIHzDUKkoHDiXHcp8wUX0n5H7zCjXo+y2DHqmGaDpXMGmq7fmQ7
+         L1t62BS3Pi6QHoVx9axNT3+1p/CjUVLH/KStMrSTFrTVjpXpi8UHZhLwgfhsE3gZX7Mx
+         plCg==
+X-Gm-Message-State: AGi0PuYjCzoZqx1JgrUYhZtLQ6EJG2oXYgLtpNd+nvHPAKcC/4FOVOAI
+        M8fOtA/F0LDsamkyBnZb6YELwPYwFswzd6LwYvk=
+X-Google-Smtp-Source: APiQypIby2UXjuX8vOzjjgILvfC+AKaKfIeOVqPZMgfFRa7+1YoghBkUDH/75MUxC3ZBPdUOACQWBqcCuCYnrY88pSE=
+X-Received: by 2002:a67:fd6f:: with SMTP id h15mr503854vsa.96.1586237306008;
+ Mon, 06 Apr 2020 22:28:26 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200118000128.15746-1-matthew.cover@stackpath.com>
+ <20200121202038.26490-1-matthew.cover@stackpath.com> <CAGyo_hpVm7q3ghW+je23xs3ja_COP_BMZoE_=phwGRzjSTih8w@mail.gmail.com>
+ <CAOftzPi74gg=g8VK-43KmA7qqpiSYnJVoYUFDtPDwum10KHc2Q@mail.gmail.com>
+ <CAGyo_hprQRLLUUnt9G4SJnbgLSdN=HTDDGFBsPYMDC5bGmTPYA@mail.gmail.com>
+ <20200130215330.f3unziderf5rlipf@ast-mbp> <CAGyo_hrYhwzVRcyN22j_4pBAcVGaazSu2xQFHT_DYpFeHdUjyA@mail.gmail.com>
+ <20200220044505.bpfvdrcmc27ik2jp@ast-mbp> <CAGyo_hrcibFyz=b=+y=yO_yapw=TbtbO8d1vGPSLpTU0Y2gzBw@mail.gmail.com>
+ <20200407030303.ffs7xxruuktss5fs@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200407030303.ffs7xxruuktss5fs@ast-mbp.dhcp.thefacebook.com>
+From:   Matt Cover <werekraken@gmail.com>
+Date:   Mon, 6 Apr 2020 22:28:13 -0700
+Message-ID: <CAGyo_hrYYYN6EXnbocauMo52pF52fAQwiJbDVZwH4NG3UC5anQ@mail.gmail.com>
+Subject: Re: unstable bpf helpers proposal. Was: [PATCH bpf-next v2 1/2] bpf:
+ add bpf_ct_lookup_{tcp,udp}() helpers
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Matthew Cover <matthew.cover@stackpath.com>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        kernel-team@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add PMTU discovery tests for these encapsulations:
+On Mon, Apr 6, 2020 at 8:03 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Fri, Apr 03, 2020 at 04:56:01PM -0700, Matt Cover wrote:
+> > > I think doing BTF annotation for EXPORT_SYMBOL_BPF(bpf_icmp_send); is trivial.
+> >
+> > I've been looking into this more; here is what I'm thinking.
+> >
+> > 1. Export symbols for bpf the same as modules, but into one or more
+> >    special namespaces.
+> >
+> >    Exported symbols recently gained namespaces.
+> >      https://lore.kernel.org/linux-usb/20190906103235.197072-1-maennich@google.com/
+> >      Documentation/kbuild/namespaces.rst
+> >
+> >    This makes the in-kernel changes needed for export super simple.
+> >
+> >      #define EXPORT_SYMBOL_BPF(sym)     EXPORT_SYMBOL_NS(sym, BPF_PROG)
+> >      #define EXPORT_SYMBOL_BPF_GPL(sym) EXPORT_SYMBOL_NS_GPL(sym, BPF_PROG)
+> >
+> >    BPF_PROG is our special namespace above. We can easily add
+> >    BPF_PROG_ACQUIRES and BPF_PROG_RELEASES for those types of
+> >    unstable helpers.
+> >
+> >    Exports for bpf progs are then as simple as for modules.
+> >
+> >      EXPORT_SYMBOL_BPF(bpf_icmp_send);
+> >
+> >    Documenting these namespaces as not for use by modules should be
+> >    enough; an explicit import statement to use namespaced symbols is
+> >    already required. Explicitly preventing module use in
+> >    MODULE_IMPORT_NS or modpost are also options if we feel more is
+> >    needed.
+> >
+> > 2. Teach pahole's (dwarves') dwarf loader to parse __ksymtab*.
+> >
+> >    I've got a functional wip which retrieves the namespace from the
+> >    __kstrtab ELF section. Working to differentiate between __ksymtab
+> >    and __ksymtab_gpl symbols next. Good news is this info is readily
+> >    available in vmlinux and module .o files. The interface here will
+> >    probably end up similar to dwarves' elf_symtab__*, but with an
+> >    struct elf_ksymtab per __ksymtab* section (all pointing to the
+> >    same __kstrtab section though).
+> >
+> > 3. Teach pahole's btf encoder to encode the following bools: export,
+> >    gpl_only, acquires, releases.
+> >
+> >    I'm envisioning this info will end up in a new struct
+> >    btf_func_proto in btf.h. Perhaps like this.
+> >
+> >      struct btf_func_proto {
+> >          /* "info" bits arrangement
+> >           * bit     0: exported (callable by bpf prog)
+> >           * bit     1: gpl_only (only callable from GPL licensed bpf prog)
+> >           * bit     2: acquires (acquires and returns a refcounted pointer)
+> >           * bit     3: releases (first argument, a refcounted pointer,
+> > is released)
+> >           * bits 4-31: unused
+> >           */
+> >          __u32    info;
+> >      };
+> >
+> >    Currently, a "struct btf_type" of type BTF_KIND_FUNC_PROTO is
+> >    directly followed by vlen struct btf_param/s. I'm hoping we can
+> >    insert btf_func_proto before the first btf_param or after the
+> >    last. If that's not workable, adding a new type,
+> >    BTF_KIND_FUNC_EXPORT, is another idea.
+>
+> I don't see why 1 and 2 are necessary.
+> What is the value of true export_symbol here?
 
-- IPIP
-- SIT, mode ip6ip
-- ip6tnl, modes ip6ip6 and ipip6
+Hmm... I was under the impression that these functions had to be
+exported to be eligible for BTF. Perhaps I'm misunderstanding this
+dwaves commit:
 
-Signed-off-by: Lourdes Pedrajas <lu@pplo.net>
-Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
----
- tools/testing/selftests/net/pmtu.sh | 122 ++++++++++++++++++++++++++++
- 1 file changed, 122 insertions(+)
+  3c5f2a224aa1 ("btf_encoder: Preserve and encode exported functions
+as BTF_KIND_FUNC")
 
-diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
-index 71a62e7e35b1..2be0bdb35d77 100755
---- a/tools/testing/selftests/net/pmtu.sh
-+++ b/tools/testing/selftests/net/pmtu.sh
-@@ -67,6 +67,10 @@
- #	Same as pmtu_ipv4_vxlan4, but using a generic UDP IPv4/IPv6
- #	encapsulation (GUE) over IPv4/IPv6, instead of VXLAN
- #
-+# - pmtu_ipv{4,6}_ipv{4,6}_exception
-+#	Same as pmtu_ipv4_vxlan4, but using a IPv4/IPv6 tunnel over IPv4/IPv6,
-+#	instead of VXLAN
-+#
- # - pmtu_vti4_exception
- #	Set up vti tunnel on top of veth, with xfrm states and policies, in two
- #	namespaces with matching endpoints. Check that route exception is not
-@@ -151,6 +155,10 @@ tests="
- 	pmtu_ipv6_gue4_exception	IPv6 over gue4: PMTU exceptions		1
- 	pmtu_ipv4_gue6_exception	IPv4 over gue6: PMTU exceptions		1
- 	pmtu_ipv6_gue6_exception	IPv6 over gue6: PMTU exceptions		1
-+	pmtu_ipv4_ipv4_exception	IPv4 over IPv4: PMTU exceptions		1
-+	pmtu_ipv6_ipv4_exception	IPv6 over IPv4: PMTU exceptions		1
-+	pmtu_ipv4_ipv6_exception	IPv4 over IPv6: PMTU exceptions		1
-+	pmtu_ipv6_ipv6_exception	IPv6 over IPv6: PMTU exceptions		1
- 	pmtu_vti6_exception		vti6: PMTU exceptions			0
- 	pmtu_vti4_exception		vti4: PMTU exceptions			0
- 	pmtu_vti4_default_mtu		vti4: default MTU assignment		0
-@@ -363,6 +371,62 @@ setup_gue66() {
- 	setup_fou_or_gue 6 6 gue
- }
- 
-+setup_ipvX_over_ipvY() {
-+	inner=${1}
-+	outer=${2}
-+
-+	if [ "${outer}" -eq 4 ]; then
-+		a_addr="${prefix4}.${a_r1}.1"
-+		b_addr="${prefix4}.${b_r1}.1"
-+		if [ "${inner}" -eq 4 ]; then
-+			type="ipip"
-+			mode="ipip"
-+		else
-+			type="sit"
-+			mode="ip6ip"
-+		fi
-+	else
-+		a_addr="${prefix6}:${a_r1}::1"
-+		b_addr="${prefix6}:${b_r1}::1"
-+		type="ip6tnl"
-+		if [ "${inner}" -eq 4 ]; then
-+			mode="ipip6"
-+		else
-+			mode="ip6ip6"
-+		fi
-+	fi
-+
-+	run_cmd ${ns_a} ip link add ip_a type ${type} local ${a_addr} remote ${b_addr} mode ${mode} || return 2
-+	run_cmd ${ns_b} ip link add ip_b type ${type} local ${b_addr} remote ${a_addr} mode ${mode}
-+
-+	run_cmd ${ns_a} ip link set ip_a up
-+	run_cmd ${ns_b} ip link set ip_b up
-+
-+	if [ "${inner}" = "4" ]; then
-+		run_cmd ${ns_a} ip addr add ${tunnel4_a_addr}/${tunnel4_mask} dev ip_a
-+		run_cmd ${ns_b} ip addr add ${tunnel4_b_addr}/${tunnel4_mask} dev ip_b
-+	else
-+		run_cmd ${ns_a} ip addr add ${tunnel6_a_addr}/${tunnel6_mask} dev ip_a
-+		run_cmd ${ns_b} ip addr add ${tunnel6_b_addr}/${tunnel6_mask} dev ip_b
-+	fi
-+}
-+
-+setup_ip4ip4() {
-+	setup_ipvX_over_ipvY 4 4
-+}
-+
-+setup_ip6ip4() {
-+	setup_ipvX_over_ipvY 6 4
-+}
-+
-+setup_ip4ip6() {
-+	setup_ipvX_over_ipvY 4 6
-+}
-+
-+setup_ip6ip6() {
-+	setup_ipvX_over_ipvY 6 6
-+}
-+
- setup_namespaces() {
- 	for n in ${NS_A} ${NS_B} ${NS_R1} ${NS_R2}; do
- 		ip netns add ${n} || return 1
-@@ -908,6 +972,64 @@ test_pmtu_ipv6_gue6_exception() {
- 	test_pmtu_ipvX_over_fouY_or_gueY 6 6 gue
- }
- 
-+test_pmtu_ipvX_over_ipvY_exception() {
-+	inner=${1}
-+	outer=${2}
-+	ll_mtu=4000
-+
-+	setup namespaces routing ip${inner}ip${outer} || return 2
-+
-+	trace "${ns_a}" ip_a         "${ns_b}"  ip_b  \
-+	      "${ns_a}" veth_A-R1    "${ns_r1}" veth_R1-A \
-+	      "${ns_b}" veth_B-R1    "${ns_r1}" veth_R1-B
-+
-+	if [ ${inner} -eq 4 ]; then
-+		ping=ping
-+		dst=${tunnel4_b_addr}
-+	else
-+		ping=${ping6}
-+		dst=${tunnel6_b_addr}
-+	fi
-+
-+	if [ ${outer} -eq 4 ]; then
-+		#                      IPv4 header
-+		exp_mtu=$((${ll_mtu} - 20))
-+	else
-+		#                      IPv6 header   Option 4
-+		exp_mtu=$((${ll_mtu} - 40          - 8))
-+	fi
-+
-+	# Create route exception by exceeding link layer MTU
-+	mtu "${ns_a}"  veth_A-R1 $((${ll_mtu} + 1000))
-+	mtu "${ns_r1}" veth_R1-A $((${ll_mtu} + 1000))
-+	mtu "${ns_b}"  veth_B-R1 ${ll_mtu}
-+	mtu "${ns_r1}" veth_R1-B ${ll_mtu}
-+
-+	mtu "${ns_a}" ip_a $((${ll_mtu} + 1000)) || return
-+	mtu "${ns_b}" ip_b $((${ll_mtu} + 1000)) || return
-+	run_cmd ${ns_a} ${ping} -q -M want -i 0.1 -w 1 -s $((${ll_mtu} + 500)) ${dst}
-+
-+	# Check that exception was created
-+	pmtu="$(route_get_dst_pmtu_from_exception "${ns_a}" ${dst})"
-+	check_pmtu_value ${exp_mtu} "${pmtu}" "exceeding link layer MTU on ip${inner}ip${outer} interface"
-+}
-+
-+test_pmtu_ipv4_ipv4_exception() {
-+	test_pmtu_ipvX_over_ipvY_exception 4 4
-+}
-+
-+test_pmtu_ipv6_ipv4_exception() {
-+	test_pmtu_ipvX_over_ipvY_exception 6 4
-+}
-+
-+test_pmtu_ipv4_ipv6_exception() {
-+	test_pmtu_ipvX_over_ipvY_exception 4 6
-+}
-+
-+test_pmtu_ipv6_ipv6_exception() {
-+	test_pmtu_ipvX_over_ipvY_exception 6 6
-+}
-+
- test_pmtu_vti4_exception() {
- 	setup namespaces veth vti4 xfrm4 || return 2
- 	trace "${ns_a}" veth_a    "${ns_b}" veth_b \
--- 
-2.17.1
+Looking briefly I can see that the functions in symvers and BTF are
+not an exact match. Does "exported functions" in the above commit
+message not mean "exported symbols"?
 
+It looks like BTF FUNCs line up perfectly with symbols marked 'T' and
+'W' in kallsyms. I'll look into what adds a [TW] marked symbol to
+kallsyms and see how this differs from symvers.
+
+> What is the value of namespaced true export_symbol?
+
+This simply seemed like a clean way to group the symbols under the
+premise these functions already needed to be exported via
+EXPORT_SYMBOL*.
+
+> Imo it only adds memory overhead to vmlinux.
+> The same information is available in BTF as a _name_.
+> What is the point to replicate it into kcrc?
+
+See below.
+
+> Imo kcrc is a poor protection mechanism that is already worse
+> that BTF. I really don't see a value going that route.
+>
+
+See below
+
+> I think just encoding the intent to export into BTF is enough.
+> Option 3 above looks like overkill too. Just name convention would do.
+> We already use different prefixes to encode certain BTFs
+> (see struct_ops and btf_trace).
+> Just say when BTF func_proto starts with "export_" it means it's exported.
+> It would be trivial for users to grep as well:
+> bpftool btf dump file ./vmlinux |grep export_
+
+Ok, cool. A naming convention could work (even if it turns out we do
+have to EXPORT_SYMBOL).
+
+>
+> >
+> > The crcs could be used to improve the developer experience when
+> > using unstable helpers.
+>
+> crc don't add any additional value on top of BTF. BTF types has to match exactly.
+> It's like C compiler checking that you can call a function with correct proto.
+
+I can see that for the verifier BTF is much superior to crc. The
+safety of the program is not improved by the crc. I was simply
+thinking the crc could be used in struct variant selection instead
+of kernel version. In some environments this could be useful since
+distros often backport patches while leaving version old (often
+meaning a second distro-specific version must also be considered).
