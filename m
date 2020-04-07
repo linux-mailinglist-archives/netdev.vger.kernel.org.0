@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C96DB1A02D2
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:10:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 654791A034F
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:11:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726826AbgDGABZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 20:01:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34190 "EHLO mail.kernel.org"
+        id S1727998AbgDGAIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 20:08:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34304 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726759AbgDGABX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Apr 2020 20:01:23 -0400
+        id S1726795AbgDGABZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Apr 2020 20:01:25 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1D4BE2078A;
-        Tue,  7 Apr 2020 00:01:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DA61720857;
+        Tue,  7 Apr 2020 00:01:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586217680;
-        bh=aJGDApDJxafW+Vlm41KJkKg+iMU290np3OMqekDT3+0=;
+        s=default; t=1586217684;
+        bh=uCDUcXmEwX5SSUfpabvQs8S1gdekkxZT6ihr0BNLMug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PzpmA8SD5sXlyfu0ggmLC5oCSmsi9nwvk6R/cCF7sN+5pQ66hU1kVrOM1FeHEsbYy
-         wrugyvsa3W+pXGCoLy2w7KE+OTDfOQQxFJh3Cf7TiAzCc1/E+LxFTgHOiMdcNDnH1y
-         PTVEt5vSvqZ03YMyi4ncjn6uBdnNis4EsZnGqND4=
+        b=pfW+VS4sMb8Ipvjb61jX0bbHN5aL12raeeSS0aTdXpQCt3SEhtRJKtr9PvwCwvqrj
+         WOCr2G2xYqprl+gC8Ynx/ZfxD+PxV01oGY/B77yZ4HXs+Fs8R/MpHKfFcNBV4cDB8q
+         CNE7NiQiXT1N7afgHl43Ihqu91u3Rle/BuK76gSA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheng Wei <wei.zheng@vivo.com>,
+Cc:     Luo bin <luobin9@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 17/35] net: vxge: fix wrong __VA_ARGS__ usage
-Date:   Mon,  6 Apr 2020 20:00:39 -0400
-Message-Id: <20200407000058.16423-17-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.5 20/35] hinic: fix a bug of waitting for IO stopped
+Date:   Mon,  6 Apr 2020 20:00:42 -0400
+Message-Id: <20200407000058.16423-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200407000058.16423-1-sashal@kernel.org>
 References: <20200407000058.16423-1-sashal@kernel.org>
@@ -43,96 +43,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zheng Wei <wei.zheng@vivo.com>
+From: Luo bin <luobin9@huawei.com>
 
-[ Upstream commit b317538c47943f9903860d83cc0060409e12d2ff ]
+[ Upstream commit 96758117dc528e6d84bd23d205e8cf7f31eda029 ]
 
-printk in macro vxge_debug_ll uses __VA_ARGS__ without "##" prefix,
-it causes a build error when there is no variable
-arguments(e.g. only fmt is specified.).
+it's unreliable for fw to check whether IO is stopped, so driver
+wait for enough time to ensure IO process is done in hw before
+freeing resources
 
-Signed-off-by: Zheng Wei <wei.zheng@vivo.com>
+Signed-off-by: Luo bin <luobin9@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/neterion/vxge/vxge-config.h |  2 +-
- drivers/net/ethernet/neterion/vxge/vxge-main.h   | 14 +++++++-------
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ .../net/ethernet/huawei/hinic/hinic_hw_dev.c  | 51 +------------------
+ 1 file changed, 2 insertions(+), 49 deletions(-)
 
-diff --git a/drivers/net/ethernet/neterion/vxge/vxge-config.h b/drivers/net/ethernet/neterion/vxge/vxge-config.h
-index e678ba379598e..628fa9b2f7416 100644
---- a/drivers/net/ethernet/neterion/vxge/vxge-config.h
-+++ b/drivers/net/ethernet/neterion/vxge/vxge-config.h
-@@ -2045,7 +2045,7 @@ vxge_hw_vpath_strip_fcs_check(struct __vxge_hw_device *hldev, u64 vpath_mask);
- 	if ((level >= VXGE_ERR && VXGE_COMPONENT_LL & VXGE_DEBUG_ERR_MASK) ||  \
- 	    (level >= VXGE_TRACE && VXGE_COMPONENT_LL & VXGE_DEBUG_TRACE_MASK))\
- 		if ((mask & VXGE_DEBUG_MASK) == mask)			       \
--			printk(fmt "\n", __VA_ARGS__);			       \
-+			printk(fmt "\n", ##__VA_ARGS__);		       \
- } while (0)
- #else
- #define vxge_debug_ll(level, mask, fmt, ...)
-diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.h b/drivers/net/ethernet/neterion/vxge/vxge-main.h
-index 59a57ff5e96af..9c86f4f9cd424 100644
---- a/drivers/net/ethernet/neterion/vxge/vxge-main.h
-+++ b/drivers/net/ethernet/neterion/vxge/vxge-main.h
-@@ -452,49 +452,49 @@ int vxge_fw_upgrade(struct vxgedev *vdev, char *fw_name, int override);
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
+index 79b3d53f2fbfa..c7c75b772a866 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
+@@ -360,50 +360,6 @@ static int wait_for_db_state(struct hinic_hwdev *hwdev)
+ 	return -EFAULT;
+ }
  
- #if (VXGE_DEBUG_LL_CONFIG & VXGE_DEBUG_MASK)
- #define vxge_debug_ll_config(level, fmt, ...) \
--	vxge_debug_ll(level, VXGE_DEBUG_LL_CONFIG, fmt, __VA_ARGS__)
-+	vxge_debug_ll(level, VXGE_DEBUG_LL_CONFIG, fmt, ##__VA_ARGS__)
- #else
- #define vxge_debug_ll_config(level, fmt, ...)
- #endif
+-static int wait_for_io_stopped(struct hinic_hwdev *hwdev)
+-{
+-	struct hinic_cmd_io_status cmd_io_status;
+-	struct hinic_hwif *hwif = hwdev->hwif;
+-	struct pci_dev *pdev = hwif->pdev;
+-	struct hinic_pfhwdev *pfhwdev;
+-	unsigned long end;
+-	u16 out_size;
+-	int err;
+-
+-	if (!HINIC_IS_PF(hwif) && !HINIC_IS_PPF(hwif)) {
+-		dev_err(&pdev->dev, "Unsupported PCI Function type\n");
+-		return -EINVAL;
+-	}
+-
+-	pfhwdev = container_of(hwdev, struct hinic_pfhwdev, hwdev);
+-
+-	cmd_io_status.func_idx = HINIC_HWIF_FUNC_IDX(hwif);
+-
+-	end = jiffies + msecs_to_jiffies(IO_STATUS_TIMEOUT);
+-	do {
+-		err = hinic_msg_to_mgmt(&pfhwdev->pf_to_mgmt, HINIC_MOD_COMM,
+-					HINIC_COMM_CMD_IO_STATUS_GET,
+-					&cmd_io_status, sizeof(cmd_io_status),
+-					&cmd_io_status, &out_size,
+-					HINIC_MGMT_MSG_SYNC);
+-		if ((err) || (out_size != sizeof(cmd_io_status))) {
+-			dev_err(&pdev->dev, "Failed to get IO status, ret = %d\n",
+-				err);
+-			return err;
+-		}
+-
+-		if (cmd_io_status.status == IO_STOPPED) {
+-			dev_info(&pdev->dev, "IO stopped\n");
+-			return 0;
+-		}
+-
+-		msleep(20);
+-	} while (time_before(jiffies, end));
+-
+-	dev_err(&pdev->dev, "Wait for IO stopped - Timeout\n");
+-	return -ETIMEDOUT;
+-}
+-
+ /**
+  * clear_io_resource - set the IO resources as not active in the NIC
+  * @hwdev: the NIC HW device
+@@ -423,11 +379,8 @@ static int clear_io_resources(struct hinic_hwdev *hwdev)
+ 		return -EINVAL;
+ 	}
  
- #if (VXGE_DEBUG_INIT & VXGE_DEBUG_MASK)
- #define vxge_debug_init(level, fmt, ...) \
--	vxge_debug_ll(level, VXGE_DEBUG_INIT, fmt, __VA_ARGS__)
-+	vxge_debug_ll(level, VXGE_DEBUG_INIT, fmt, ##__VA_ARGS__)
- #else
- #define vxge_debug_init(level, fmt, ...)
- #endif
+-	err = wait_for_io_stopped(hwdev);
+-	if (err) {
+-		dev_err(&pdev->dev, "IO has not stopped yet\n");
+-		return err;
+-	}
++	/* sleep 100ms to wait for firmware stopping I/O */
++	msleep(100);
  
- #if (VXGE_DEBUG_TX & VXGE_DEBUG_MASK)
- #define vxge_debug_tx(level, fmt, ...) \
--	vxge_debug_ll(level, VXGE_DEBUG_TX, fmt, __VA_ARGS__)
-+	vxge_debug_ll(level, VXGE_DEBUG_TX, fmt, ##__VA_ARGS__)
- #else
- #define vxge_debug_tx(level, fmt, ...)
- #endif
+ 	cmd_clear_io_res.func_idx = HINIC_HWIF_FUNC_IDX(hwif);
  
- #if (VXGE_DEBUG_RX & VXGE_DEBUG_MASK)
- #define vxge_debug_rx(level, fmt, ...) \
--	vxge_debug_ll(level, VXGE_DEBUG_RX, fmt, __VA_ARGS__)
-+	vxge_debug_ll(level, VXGE_DEBUG_RX, fmt, ##__VA_ARGS__)
- #else
- #define vxge_debug_rx(level, fmt, ...)
- #endif
- 
- #if (VXGE_DEBUG_MEM & VXGE_DEBUG_MASK)
- #define vxge_debug_mem(level, fmt, ...) \
--	vxge_debug_ll(level, VXGE_DEBUG_MEM, fmt, __VA_ARGS__)
-+	vxge_debug_ll(level, VXGE_DEBUG_MEM, fmt, ##__VA_ARGS__)
- #else
- #define vxge_debug_mem(level, fmt, ...)
- #endif
- 
- #if (VXGE_DEBUG_ENTRYEXIT & VXGE_DEBUG_MASK)
- #define vxge_debug_entryexit(level, fmt, ...) \
--	vxge_debug_ll(level, VXGE_DEBUG_ENTRYEXIT, fmt, __VA_ARGS__)
-+	vxge_debug_ll(level, VXGE_DEBUG_ENTRYEXIT, fmt, ##__VA_ARGS__)
- #else
- #define vxge_debug_entryexit(level, fmt, ...)
- #endif
- 
- #if (VXGE_DEBUG_INTR & VXGE_DEBUG_MASK)
- #define vxge_debug_intr(level, fmt, ...) \
--	vxge_debug_ll(level, VXGE_DEBUG_INTR, fmt, __VA_ARGS__)
-+	vxge_debug_ll(level, VXGE_DEBUG_INTR, fmt, ##__VA_ARGS__)
- #else
- #define vxge_debug_intr(level, fmt, ...)
- #endif
 -- 
 2.20.1
 
