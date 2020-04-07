@@ -2,217 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FA101A0438
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 03:16:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A9CD1A046A
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 03:18:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726312AbgDGBQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 21:16:06 -0400
-Received: from mail-qv1-f66.google.com ([209.85.219.66]:39133 "EHLO
-        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726246AbgDGBQG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 21:16:06 -0400
-Received: by mail-qv1-f66.google.com with SMTP id v38so1080657qvf.6;
-        Mon, 06 Apr 2020 18:16:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0ZCPZ0mrFnF08NLYBSeh3n7zB5LOqXY3876GSeecKmM=;
-        b=sjVvYFLVbY4Ny2IAXojk0K1yzYtxeCDMFamVaH1mP7pA1s0XYQG7FCHt6gW8iWGgAL
-         6CnrDnOMze0l62eKFiuBn7SKl2s9VnUtW9bQzJ3U0IpZe3LmPPvzgapAslSzB6ePmka0
-         aSpW/o55fglMvygYM+fJtDUQMjoGEsX/WsktFRS0MNDddmBPl8sG/DvhfZG9rXG3rdV4
-         ge/MW4GK/IXrmjd7WzQHWKB1FkopI3aRFVtdIwDmEVEBkM5CyCLKy2k6Fyi9Hs0xgveV
-         AmI1nynSWbZRMDFGoVONTB0L6Xg4G9/jClCgyy/gFw7KTdLbsUSYUiFqcu4Md0ovUsQM
-         C3+Q==
+        id S1726365AbgDGBRq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 21:17:46 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:46575 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726699AbgDGBQy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 21:16:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1586222213;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=b+P99eoGOE59dzJri6nDdYTRF/iHp1rUM821OiEBSWI=;
+        b=FL5cL9jB/jv3Cw8c0R7qvL4Fr6L6684qHMIGeLvRn49FmU0NAjyiVhOH2dTCfHtVcwNLTT
+        /fKTvnPA8fBXt1d1mTRvRISYxbpwz2TZ3uzW9C1r2QkluBXsCQt8fjbqw8CNvpeNm1trai
+        9qnn1PPCSS8PgevWzuuC3b3MAZBt08o=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-24-SQrGXRjCMhqs9zfu1hJr0g-1; Mon, 06 Apr 2020 21:16:51 -0400
+X-MC-Unique: SQrGXRjCMhqs9zfu1hJr0g-1
+Received: by mail-wm1-f72.google.com with SMTP id p18so13001wmk.9
+        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 18:16:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=0ZCPZ0mrFnF08NLYBSeh3n7zB5LOqXY3876GSeecKmM=;
-        b=HoCrGMEERCS8BVWtup8dn+HyjX4HxaaibN05HNx5t/u71mcKTBp7qJhEkLHtQ3uNeY
-         i5PDYoaUOVCpSSg9JeQ6xDXUN/Egrpprs0os3pB3AmVIHAcpkKUS+CLb2nAF15aIrD0J
-         DrQEhjoIz+xuiCaCNJGJfDviNsjyUsOEx14nYiuvMzIeBc9MF8A9YJF7p0WBDmAIMOlF
-         NUZ+kQXn+ujiKr44jvUs8vQc5+waijWuqie9MdDfmQMKiw7ehhh0MC/4PT2zQ2BldHRc
-         P8c7DIXtcN0C03mRZgiG2PooGSLSLKqe7YU5zymb76mGmkg+E9HRpqyYBx3+UfmyUVrr
-         Oljw==
-X-Gm-Message-State: AGi0PuYa5VOfPdzQDuHb7pT5DF+C8gtZeHnp/Uv3CUR+x8NVBh6KU7Oh
-        FFibabh7/M+7gUdrXgy9ccg=
-X-Google-Smtp-Source: APiQypJQwc4ZOKGUFnwXb31oKnHjINpF8TGbxIXW/KpuaZFg0Ofm0/woXh47uGy9Zbmaks1twOU0UA==
-X-Received: by 2002:a0c:a181:: with SMTP id e1mr2677712qva.19.1586222165491;
-        Mon, 06 Apr 2020 18:16:05 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c091:480::84df])
-        by smtp.gmail.com with ESMTPSA id 60sm15873988qtb.95.2020.04.06.18.16.02
+        bh=b+P99eoGOE59dzJri6nDdYTRF/iHp1rUM821OiEBSWI=;
+        b=Jy5JVkyNdYBrZ7ejAU6liJdK94MXtPl3Sy4LjYu9VHkNuH/nAgJxghQC85qjWA5/9E
+         F/IqOZUnWiAMW/HwWmhImtPh07/F2LksT7DlE42t6HoDrqNwduq53LP+sJ1fiV8t1nuc
+         i63TNArqIFP29F5EbKyc6ageSCql7fvHME82eteQtNDXO/elv6cEt3AwBlbql9Y3jd/y
+         eRshzChLSj8fUvHKYO8HurLeNa2xE2mqK4hAnlU0uXiuJBQbTIwcfZl0e7F9WzMLZ05u
+         NiR2DgnPgI0lWm37cMwvguP02vJ9v1WphLdkCvjUCxcD5Wx9/Wus65zE3e3vAUQggwal
+         8HPw==
+X-Gm-Message-State: AGi0PubtPiUWovPUZ1/RVwyHb8m6vPzAAouZUImtCn+TI0dqOkq98svl
+        Lvv8pUWp57rBS/77zXN1mWu37crsclej1NNCWTrY2bNcZC+tRJv7/rGISXbPY4DHxfTtAU8jevK
+        Wfp1EJNRaraUmRGXF
+X-Received: by 2002:adf:fe52:: with SMTP id m18mr2041304wrs.162.1586222210552;
+        Mon, 06 Apr 2020 18:16:50 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJn5DjBcjpMzTbrTEAm6PtADPd35uHLc30DK0aLGHH0mu1pODoic12Kr5dEmc3NA5QUWXhA1A==
+X-Received: by 2002:adf:fe52:: with SMTP id m18mr2041286wrs.162.1586222210287;
+        Mon, 06 Apr 2020 18:16:50 -0700 (PDT)
+Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
+        by smtp.gmail.com with ESMTPSA id u13sm30079813wru.88.2020.04.06.18.16.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Apr 2020 18:16:04 -0700 (PDT)
-Date:   Mon, 6 Apr 2020 18:16:01 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>, bgregg@netflix.com,
-        Al Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH 1/3] bpf: Add support to check if BTF object is nested in
- another object
-Message-ID: <20200407011601.526c6i6dyq6lndmf@ast-mbp.dhcp.thefacebook.com>
-References: <20200401110907.2669564-1-jolsa@kernel.org>
- <20200401110907.2669564-2-jolsa@kernel.org>
+        Mon, 06 Apr 2020 18:16:49 -0700 (PDT)
+Date:   Mon, 6 Apr 2020 21:16:48 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH v8 10/19] vhost: force spec specified alignment on types
+Message-ID: <20200407011612.478226-11-mst@redhat.com>
+References: <20200407011612.478226-1-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200401110907.2669564-2-jolsa@kernel.org>
+In-Reply-To: <20200407011612.478226-1-mst@redhat.com>
+X-Mailer: git-send-email 2.24.1.751.gd10ce2899c
+X-Mutt-Fcc: =sent
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 01, 2020 at 01:09:05PM +0200, Jiri Olsa wrote:
-> Adding btf_struct_address function that takes 2 BTF objects
-> and offset as arguments and checks wether object A is nested
-> in object B on given offset.
-> 
-> This function is be used when checking the helper function
-> PTR_TO_BTF_ID arguments. If the argument has an offset value,
-> the btf_struct_address will check if the final address is
-> the expected BTF ID.
-> 
-> This way we can access nested BTF objects under PTR_TO_BTF_ID
-> pointer type and pass them to helpers, while they still point
-> to valid kernel BTF objects.
-> 
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  include/linux/bpf.h   |  3 ++
->  kernel/bpf/btf.c      | 69 +++++++++++++++++++++++++++++++++++++++++++
->  kernel/bpf/verifier.c | 18 +++++++++--
->  3 files changed, 88 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index fd2b2322412d..d3bad7ee60c6 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1196,6 +1196,9 @@ int btf_struct_access(struct bpf_verifier_log *log,
->  		      const struct btf_type *t, int off, int size,
->  		      enum bpf_access_type atype,
->  		      u32 *next_btf_id);
-> +int btf_struct_address(struct bpf_verifier_log *log,
-> +		     const struct btf_type *t,
-> +		     u32 off, u32 exp_id);
->  int btf_resolve_helper_id(struct bpf_verifier_log *log,
->  			  const struct bpf_func_proto *fn, int);
->  
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index d65c6912bdaf..9aafffa57d8b 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -4002,6 +4002,75 @@ int btf_struct_access(struct bpf_verifier_log *log,
->  	return -EINVAL;
->  }
->  
-> +int btf_struct_address(struct bpf_verifier_log *log,
-> +		       const struct btf_type *t,
-> +		       u32 off, u32 exp_id)
-> +{
-> +	u32 i, moff, mtrue_end, msize = 0;
-> +	const struct btf_member *member;
-> +	const struct btf_type *mtype;
-> +	const char *tname, *mname;
-> +
-> +again:
-> +	tname = __btf_name_by_offset(btf_vmlinux, t->name_off);
-> +	if (!btf_type_is_struct(t)) {
-> +		bpf_log(log, "Type '%s' is not a struct\n", tname);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (off > t->size) {
-> +		bpf_log(log, "address beyond struct %s at off %u size %u\n",
-> +			tname, off, t->size);
-> +		return -EACCES;
-> +	}
-> +
-> +	for_each_member(i, t, member) {
-> +		/* offset of the field in bytes */
-> +		moff = btf_member_bit_offset(t, member) / 8;
-> +		if (off < moff)
-> +			/* won't find anything, field is already too far */
-> +			break;
-> +
-> +		/* we found the member */
-> +		if (off == moff && member->type == exp_id)
-> +			return 0;
-> +
-> +		/* type of the field */
-> +		mtype = btf_type_by_id(btf_vmlinux, member->type);
-> +		mname = __btf_name_by_offset(btf_vmlinux, member->name_off);
-> +
-> +		mtype = btf_resolve_size(btf_vmlinux, mtype, &msize,
-> +					 NULL, NULL);
-> +		if (IS_ERR(mtype)) {
-> +			bpf_log(log, "field %s doesn't have size\n", mname);
-> +			return -EFAULT;
-> +		}
-> +
-> +		mtrue_end = moff + msize;
-> +		if (off >= mtrue_end)
-> +			/* no overlap with member, keep iterating */
-> +			continue;
-> +
-> +		/* the 'off' we're looking for is either equal to start
-> +		 * of this field or inside of this struct
-> +		 */
-> +		if (btf_type_is_struct(mtype)) {
-> +			/* our field must be inside that union or struct */
-> +			t = mtype;
-> +
-> +			/* adjust offset we're looking for */
-> +			off -= moff;
-> +			goto again;
-> +		}
+The ring element addresses are passed between components with different
+alignments assumptions. Thus, if guest/userspace selects a pointer and
+host then gets and dereferences it, we might need to decrease the
+compiler-selected alignment to prevent compiler on the host from
+assuming pointer is aligned.
 
-Looks like copy-paste that should be generalized into common helper.
+This actually triggers on ARM with -mabi=apcs-gnu - which is a
+deprecated configuration, but it seems safer to handle this
+generally.
 
-> +
-> +		bpf_log(log, "struct %s doesn't have struct field at offset %d\n", tname, off);
-> +		return -EACCES;
-> +	}
-> +
-> +	bpf_log(log, "struct %s doesn't have field at offset %d\n", tname, off);
-> +	return -EACCES;
-> +}
-> +
->  static int __btf_resolve_helper_id(struct bpf_verifier_log *log, void *fn,
->  				   int arg)
->  {
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 04c6630cc18f..6eb88bef4379 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -3103,6 +3103,18 @@ static int check_ptr_to_btf_access(struct bpf_verifier_env *env,
->  	return 0;
->  }
->  
-> +static void check_ptr_in_btf(struct bpf_verifier_env *env,
-> +			     struct bpf_reg_state *reg,
-> +			     u32 exp_id)
-> +{
-> +	const struct btf_type *t = btf_type_by_id(btf_vmlinux, reg->btf_id);
-> +
-> +	if (!btf_struct_address(&env->log, t, reg->off, exp_id)) {
-> +		reg->btf_id = exp_id;
-> +		reg->off = 0;
+I verified that the produced binary is exactly identical on x86.
 
-This doesn't look right.
-If you simply overwrite btf_id and off in the reg it will contain wrong info
-in any subsequent instruction.
-Typically it would be ok, since this reg is a function argument and will be
-scratched after the call, but consider:
-bpf_foo(&file->f_path, &file->f_owner);
-The same base register will be used to construct R1 and R2
-and above re-assign will screw up R1.
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ drivers/vhost/vhost.h       |  6 +++---
+ include/linux/virtio_ring.h | 24 +++++++++++++++++++++---
+ 2 files changed, 24 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+index f8403bd46b85..60cab4c78229 100644
+--- a/drivers/vhost/vhost.h
++++ b/drivers/vhost/vhost.h
+@@ -67,9 +67,9 @@ struct vhost_virtqueue {
+ 	/* The actual ring of buffers. */
+ 	struct mutex mutex;
+ 	unsigned int num;
+-	struct vring_desc __user *desc;
+-	struct vring_avail __user *avail;
+-	struct vring_used __user *used;
++	vring_desc_t __user *desc;
++	vring_avail_t __user *avail;
++	vring_used_t __user *used;
+ 	const struct vhost_iotlb_map *meta_iotlb[VHOST_NUM_ADDRS];
+ 	struct file *kick;
+ 	struct eventfd_ctx *call_ctx;
+diff --git a/include/linux/virtio_ring.h b/include/linux/virtio_ring.h
+index 11680e74761a..c3f9ca054250 100644
+--- a/include/linux/virtio_ring.h
++++ b/include/linux/virtio_ring.h
+@@ -60,14 +60,32 @@ static inline void virtio_store_mb(bool weak_barriers,
+ struct virtio_device;
+ struct virtqueue;
+ 
++/*
++ * The ring element addresses are passed between components with different
++ * alignments assumptions. Thus, we might need to decrease the compiler-selected
++ * alignment, and so must use a typedef to make sure the __aligned attribute
++ * actually takes hold:
++ *
++ * https://gcc.gnu.org/onlinedocs//gcc/Common-Type-Attributes.html#Common-Type-Attributes
++ *
++ * When used on a struct, or struct member, the aligned attribute can only
++ * increase the alignment; in order to decrease it, the packed attribute must
++ * be specified as well. When used as part of a typedef, the aligned attribute
++ * can both increase and decrease alignment, and specifying the packed
++ * attribute generates a warning.
++ */
++typedef struct vring_desc __aligned(VRING_DESC_ALIGN_SIZE) vring_desc_t;
++typedef struct vring_avail __aligned(VRING_AVAIL_ALIGN_SIZE) vring_avail_t;
++typedef struct vring_used __aligned(VRING_USED_ALIGN_SIZE) vring_used_t;
++
+ struct vring {
+ 	unsigned int num;
+ 
+-	struct vring_desc *desc;
++	vring_desc_t *desc;
+ 
+-	struct vring_avail *avail;
++	vring_avail_t *avail;
+ 
+-	struct vring_used *used;
++	vring_used_t *used;
+ };
+ 
+ /*
+-- 
+MST
+
