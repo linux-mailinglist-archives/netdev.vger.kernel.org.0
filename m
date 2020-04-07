@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 080281A0293
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:05:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 182251A0291
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:05:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728178AbgDGACn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1728189AbgDGACn (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 6 Apr 2020 20:02:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37536 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:37556 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728159AbgDGACk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Apr 2020 20:02:40 -0400
+        id S1728143AbgDGACm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Apr 2020 20:02:42 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8B97720857;
-        Tue,  7 Apr 2020 00:02:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9FA9D2080C;
+        Tue,  7 Apr 2020 00:02:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586217760;
-        bh=jfwCsAvjDH3ZwiE9o8OYiI+Fbo15gpdgV44F0mGIzMU=;
+        s=default; t=1586217761;
+        bh=vdgwYlSOFs28XcipsvxT05S44fVtgoTHlfCzcQhrxhE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r24j7I6PwCWm5LIQQz7YINNCPckTpHCliEQkHL4gXG/Uk2PkxZyeYYJqDkSjcKcoN
-         eoLuDYjmfe3WHJXp2bUYJAAgN7Ok/BCQp4iH8XWKVSmZJFWM2VIYzOPmtRKuubHSM2
-         1sD5ugX0zvyVXFispUXkP119T/4cfaM4P8xY0XpU=
+        b=2fMoTF9kuV7qBA0lxyFHz3T4i0duwXgMQRa3ChGTvulyAsksNCciSya2D4EbouTeg
+         neRzxrG/M+fiHTa32SyClsNTd3YT268aUUXkZmHg+YnXY+43Ou6uhZIoMXJ8DSYkZq
+         Fvnlujlq38PM38JseeMW8WAknT900DfvZ6PbFV64=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Howells <dhowells@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, linux-afs@lists.infradead.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 04/13] rxrpc: Fix sendmsg(MSG_WAITALL) handling
-Date:   Mon,  6 Apr 2020 20:02:25 -0400
-Message-Id: <20200407000234.17088-4-sashal@kernel.org>
+Cc:     Zheng Wei <wei.zheng@vivo.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 05/13] net: vxge: fix wrong __VA_ARGS__ usage
+Date:   Mon,  6 Apr 2020 20:02:26 -0400
+Message-Id: <20200407000234.17088-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200407000234.17088-1-sashal@kernel.org>
 References: <20200407000234.17088-1-sashal@kernel.org>
@@ -43,36 +43,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Zheng Wei <wei.zheng@vivo.com>
 
-[ Upstream commit 498b577660f08cef5d9e78e0ed6dcd4c0939e98c ]
+[ Upstream commit b317538c47943f9903860d83cc0060409e12d2ff ]
 
-Fix the handling of sendmsg() with MSG_WAITALL for userspace to round the
-timeout for when a signal occurs up to at least two jiffies as a 1 jiffy
-timeout may end up being effectively 0 if jiffies wraps at the wrong time.
+printk in macro vxge_debug_ll uses __VA_ARGS__ without "##" prefix,
+it causes a build error when there is no variable
+arguments(e.g. only fmt is specified.).
 
-Fixes: bc5e3a546d55 ("rxrpc: Use MSG_WAITALL to tell sendmsg() to temporarily ignore signals")
-Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Zheng Wei <wei.zheng@vivo.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/sendmsg.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/neterion/vxge/vxge-config.h |  2 +-
+ drivers/net/ethernet/neterion/vxge/vxge-main.h   | 14 +++++++-------
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
-index 68993439e1d91..7ee72053037a3 100644
---- a/net/rxrpc/sendmsg.c
-+++ b/net/rxrpc/sendmsg.c
-@@ -75,8 +75,8 @@ static int rxrpc_wait_for_tx_window_nonintr(struct rxrpc_sock *rx,
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-config.h b/drivers/net/ethernet/neterion/vxge/vxge-config.h
+index d743a37a3cee8..e5dda2c27f187 100644
+--- a/drivers/net/ethernet/neterion/vxge/vxge-config.h
++++ b/drivers/net/ethernet/neterion/vxge/vxge-config.h
+@@ -2065,7 +2065,7 @@ vxge_hw_vpath_strip_fcs_check(struct __vxge_hw_device *hldev, u64 vpath_mask);
+ 	if ((level >= VXGE_ERR && VXGE_COMPONENT_LL & VXGE_DEBUG_ERR_MASK) ||  \
+ 	    (level >= VXGE_TRACE && VXGE_COMPONENT_LL & VXGE_DEBUG_TRACE_MASK))\
+ 		if ((mask & VXGE_DEBUG_MASK) == mask)			       \
+-			printk(fmt "\n", __VA_ARGS__);			       \
++			printk(fmt "\n", ##__VA_ARGS__);		       \
+ } while (0)
+ #else
+ #define vxge_debug_ll(level, mask, fmt, ...)
+diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.h b/drivers/net/ethernet/neterion/vxge/vxge-main.h
+index 59a57ff5e96af..9c86f4f9cd424 100644
+--- a/drivers/net/ethernet/neterion/vxge/vxge-main.h
++++ b/drivers/net/ethernet/neterion/vxge/vxge-main.h
+@@ -452,49 +452,49 @@ int vxge_fw_upgrade(struct vxgedev *vdev, char *fw_name, int override);
  
- 	rtt = READ_ONCE(call->peer->rtt);
- 	rtt2 = nsecs_to_jiffies64(rtt) * 2;
--	if (rtt2 < 1)
--		rtt2 = 1;
-+	if (rtt2 < 2)
-+		rtt2 = 2;
+ #if (VXGE_DEBUG_LL_CONFIG & VXGE_DEBUG_MASK)
+ #define vxge_debug_ll_config(level, fmt, ...) \
+-	vxge_debug_ll(level, VXGE_DEBUG_LL_CONFIG, fmt, __VA_ARGS__)
++	vxge_debug_ll(level, VXGE_DEBUG_LL_CONFIG, fmt, ##__VA_ARGS__)
+ #else
+ #define vxge_debug_ll_config(level, fmt, ...)
+ #endif
  
- 	timeout = rtt2;
- 	tx_start = READ_ONCE(call->tx_hard_ack);
+ #if (VXGE_DEBUG_INIT & VXGE_DEBUG_MASK)
+ #define vxge_debug_init(level, fmt, ...) \
+-	vxge_debug_ll(level, VXGE_DEBUG_INIT, fmt, __VA_ARGS__)
++	vxge_debug_ll(level, VXGE_DEBUG_INIT, fmt, ##__VA_ARGS__)
+ #else
+ #define vxge_debug_init(level, fmt, ...)
+ #endif
+ 
+ #if (VXGE_DEBUG_TX & VXGE_DEBUG_MASK)
+ #define vxge_debug_tx(level, fmt, ...) \
+-	vxge_debug_ll(level, VXGE_DEBUG_TX, fmt, __VA_ARGS__)
++	vxge_debug_ll(level, VXGE_DEBUG_TX, fmt, ##__VA_ARGS__)
+ #else
+ #define vxge_debug_tx(level, fmt, ...)
+ #endif
+ 
+ #if (VXGE_DEBUG_RX & VXGE_DEBUG_MASK)
+ #define vxge_debug_rx(level, fmt, ...) \
+-	vxge_debug_ll(level, VXGE_DEBUG_RX, fmt, __VA_ARGS__)
++	vxge_debug_ll(level, VXGE_DEBUG_RX, fmt, ##__VA_ARGS__)
+ #else
+ #define vxge_debug_rx(level, fmt, ...)
+ #endif
+ 
+ #if (VXGE_DEBUG_MEM & VXGE_DEBUG_MASK)
+ #define vxge_debug_mem(level, fmt, ...) \
+-	vxge_debug_ll(level, VXGE_DEBUG_MEM, fmt, __VA_ARGS__)
++	vxge_debug_ll(level, VXGE_DEBUG_MEM, fmt, ##__VA_ARGS__)
+ #else
+ #define vxge_debug_mem(level, fmt, ...)
+ #endif
+ 
+ #if (VXGE_DEBUG_ENTRYEXIT & VXGE_DEBUG_MASK)
+ #define vxge_debug_entryexit(level, fmt, ...) \
+-	vxge_debug_ll(level, VXGE_DEBUG_ENTRYEXIT, fmt, __VA_ARGS__)
++	vxge_debug_ll(level, VXGE_DEBUG_ENTRYEXIT, fmt, ##__VA_ARGS__)
+ #else
+ #define vxge_debug_entryexit(level, fmt, ...)
+ #endif
+ 
+ #if (VXGE_DEBUG_INTR & VXGE_DEBUG_MASK)
+ #define vxge_debug_intr(level, fmt, ...) \
+-	vxge_debug_ll(level, VXGE_DEBUG_INTR, fmt, __VA_ARGS__)
++	vxge_debug_ll(level, VXGE_DEBUG_INTR, fmt, ##__VA_ARGS__)
+ #else
+ #define vxge_debug_intr(level, fmt, ...)
+ #endif
 -- 
 2.20.1
 
