@@ -2,126 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 353DA1A0AC0
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 12:05:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 249A41A0AD2
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 12:09:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728140AbgDGKFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 06:05:18 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:31031 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728091AbgDGKFS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 06:05:18 -0400
+        id S1728263AbgDGKI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 06:08:58 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:34264 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726562AbgDGKI6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 06:08:58 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586253917;
+        s=mimecast20190719; t=1586254137;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=V6OOZIcMHbA4COKeQ3vI4ZGPp1DvSViJ7U0v6oxO7OU=;
-        b=h3Jl+pEyjqlrMv0L+k4O8AC610s+TMNhYegY7f9vnETEUOjEewv42MsdbV3krzIqcCyutn
-        eoU7v3vFH7pjqje2DeLWfeyBxalWPFjGhmizG2eaE2Nx5yRwB3rd2/61+kWpBKpaMXROBB
-        KxJre+ajwlWpPpePiQCD3VRijfYXrcI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-371-QroJ8KuLO02FEL4Vw2CyIQ-1; Tue, 07 Apr 2020 06:05:12 -0400
-X-MC-Unique: QroJ8KuLO02FEL4Vw2CyIQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DCBFC102C868;
-        Tue,  7 Apr 2020 10:05:10 +0000 (UTC)
-Received: from colo-mx.corp.redhat.com (colo-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.21])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 27CA394B4E;
-        Tue,  7 Apr 2020 10:05:10 +0000 (UTC)
-Received: from zmail21.collab.prod.int.phx2.redhat.com (zmail21.collab.prod.int.phx2.redhat.com [10.5.83.24])
-        by colo-mx.corp.redhat.com (Postfix) with ESMTP id 3375E93A61;
-        Tue,  7 Apr 2020 10:05:09 +0000 (UTC)
-Date:   Tue, 7 Apr 2020 06:05:09 -0400 (EDT)
-From:   Vladis Dronov <vdronov@redhat.com>
-To:     Andrea Righi <andrea.righi@canonical.com>
-Cc:     Piotr Morgwai =?utf-8?Q?Kotarbi=C5=84ski?= <morgwai@morgwai.pl>,
-        Colin Ian King <colin.king@canonical.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-ID: <1493646639.21012930.1586253909001.JavaMail.zimbra@redhat.com>
-In-Reply-To: <20200407093422.GD3665@xps-13>
-References: <20200309172238.GJ267906@xps-13> <1196893766.20531178.1585920854778.JavaMail.zimbra@redhat.com> <20200407093422.GD3665@xps-13>
-Subject: Re: [PATCH v2] ptp: free ptp clock properly
+        bh=Z+d4Qx7H0BkaQ6jx/a91Q5D/w2sYbHgdntEiY9YRCI4=;
+        b=QQzxlYeoIXLIC8aflNX1h/t/R+R3f3xXGUnyX44KKk/YoyhzY55ltr1tUgnJckE6crShQS
+        gPpgeI2x6DwTjfabOJDcPYusPylWjNusHw903JGUujckyoY7JcxNRs/47/p+XJOnhfqXQd
+        /8S9onyxxeHRdrc/XEIhOsrwoSU6usc=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-157-FfrQDsRkOECRlb69Uv7Nhg-1; Tue, 07 Apr 2020 06:08:55 -0400
+X-MC-Unique: FfrQDsRkOECRlb69Uv7Nhg-1
+Received: by mail-wr1-f70.google.com with SMTP id 88so1520632wrq.4
+        for <netdev@vger.kernel.org>; Tue, 07 Apr 2020 03:08:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Z+d4Qx7H0BkaQ6jx/a91Q5D/w2sYbHgdntEiY9YRCI4=;
+        b=RJRha2iM3BOyiV5DcnhvKfzEbgtmWti3bp2fsz8/5tFXnNcTeojkA7wmFk1rhLCZ9B
+         AeqxbZEwmAR8xGbX9nNdmrREY5CZUD+lqBPFnUQNVv3410rNak8AqHb75NWwdBLNAljw
+         XZ5UEe0gmJzT/8s7GiqcX6QY6GKEqrOJyzT0SM4VJ7Rki1VZD1PKtmXJhhEGC+2RH3Fn
+         Sk3sorS7U6WHRjVhyR3/8Dc79BB1O068qbZGgXSvPQ7LM2v/mSbLeO7ZAIsTQ5pLpSQf
+         0u++2VHeen67GoPAcBgBWxb+gmX4Y3Geb9z1yMLvPq92ZDGTVIZ1346ljJVc54toSzxm
+         SNeA==
+X-Gm-Message-State: AGi0PubFOFv02mhNPAiTdS6Yq43HHNix+LFbiLi50liyCXq7pG4uHCux
+        f9EalQ91bgok0gIYjk0bmOc485mZlieulyTzQQspOnq/wpUwFZd848EdgDXnEaYaFGtemmjOTAe
+        vQ1QQ1aDQsQ4YJQhy
+X-Received: by 2002:a05:600c:2c47:: with SMTP id r7mr1583545wmg.50.1586254134335;
+        Tue, 07 Apr 2020 03:08:54 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJjB2szx0xQgD9OibxDJRFX1Jm7Z1KhFoXl8BhDzxrbWSAltbqVX49bIubsJYfEtbHFRe8h+g==
+X-Received: by 2002:a05:600c:2c47:: with SMTP id r7mr1583516wmg.50.1586254134095;
+        Tue, 07 Apr 2020 03:08:54 -0700 (PDT)
+Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
+        by smtp.gmail.com with ESMTPSA id n64sm1571755wme.45.2020.04.07.03.08.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Apr 2020 03:08:53 -0700 (PDT)
+Date:   Tue, 7 Apr 2020 06:08:43 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        alexander.h.duyck@linux.intel.com, eperezma@redhat.com,
+        jasowang@redhat.com, lingshan.zhu@intel.com, mhocko@kernel.org,
+        namit@vmware.com, rdunlap@infradead.org, rientjes@google.com,
+        tiwei.bie@intel.com, tysand@google.com, wei.w.wang@intel.com,
+        xiao.w.wang@intel.com, yuri.benditovich@daynix.com
+Subject: Re: [GIT PULL v2] vhost: cleanups and fixes
+Message-ID: <20200407060741-mutt-send-email-mst@kernel.org>
+References: <20200407055334-mutt-send-email-mst@kernel.org>
+ <00a7ce5f-8fb4-8c3e-7113-9a422682abdf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Originating-IP: [10.40.208.84, 10.4.195.29]
-Thread-Topic: free ptp clock properly
-Thread-Index: WLuFyIwSVbLAUz+GYlxwZs1rVfBFIw==
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <00a7ce5f-8fb4-8c3e-7113-9a422682abdf@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Tue, Apr 07, 2020 at 11:56:59AM +0200, David Hildenbrand wrote:
+> On 07.04.20 11:53, Michael S. Tsirkin wrote:
+> > Changes from PULL v1:
+> > 	reverted a commit that was also in Andrew Morton's tree,
+> > 	to resolve a merge conflict:
+> > 	this is what Stephen Rothwell was doing to resolve it
+> > 	in linux-next.
+> > 
+> > 
+> > Now that many more architectures build vhost, a couple of these (um, and
+> > arm with deprecated oabi) have reported build failures with randconfig,
+> > however fixes for that need a bit more discussion/testing and will be
+> > merged separately.
+> > 
+> > Not a regression - these previously simply didn't have vhost at all.
+> > Also, there's some DMA API code in the vdpa simulator is hacky - if no
+> > solution surfaces soon we can always disable it before release:
+> > it's not a big deal either way as it's just test code.
+> > 
+> > 
+> > The following changes since commit 16fbf79b0f83bc752cee8589279f1ebfe57b3b6e:
+> > 
+> >   Linux 5.6-rc7 (2020-03-22 18:31:56 -0700)
+> > 
+> > are available in the Git repository at:
+> > 
+> >   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+> > 
+> > for you to fetch changes up to 835a6a649d0dd1b1f46759eb60fff2f63ed253a7:
+> > 
+> >   virtio-balloon: Revert "virtio-balloon: Switch back to OOM handler for VIRTIO_BALLOON_F_DEFLATE_ON_OOM" (2020-04-07 05:44:57 -0400)
+> > 
+> > ----------------------------------------------------------------
+> > virtio: fixes, vdpa
+> > 
+> > Some bug fixes.
+> > The new vdpa subsystem with two first drivers.
+> > 
+> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > 
+> > ----------------------------------------------------------------
+> > David Hildenbrand (1):
+> >       virtio-balloon: Switch back to OOM handler for VIRTIO_BALLOON_F_DEFLATE_ON_OOM
+> 
+> ^ stale leftover in this message only I assume
 
------ Original Message -----
-> From: "Andrea Righi" <andrea.righi@canonical.com>
-> To: "Vladis Dronov" <vdronov@redhat.com>
-> Cc: "Piotr Morgwai Kotarbi=C5=84ski" <morgwai@morgwai.pl>, "Colin Ian Kin=
-g" <colin.king@canonical.com>, "Richard Cochran"
-> <richardcochran@gmail.com>, "David S. Miller" <davem@davemloft.net>, netd=
-ev@vger.kernel.org,
-> linux-kernel@vger.kernel.org
-> Sent: Tuesday, April 7, 2020 11:34:22 AM
-> Subject: Re: [PATCH v2] ptp: free ptp clock properly
->=20
-> On Fri, Apr 03, 2020 at 09:34:14AM -0400, Vladis Dronov wrote:
-> > Hello, Andrea, Colin, all,
-> >=20
-> > This fix is really not needed, as its creation is based on the assumpti=
-on
-> > that the Ubuntu kernel 5.3.0-40-generic has the upstream commit
-> > 75718584cb3c,
-> > which is the real fix to this crash.
-> >=20
-> > > > > I would guess that a kernel in question (5.3.0-40-generic) has th=
-e
-> > > > > commit
-> > > > > a33121e5487b but does not have the commit 75718584cb3c, which sho=
-uld
-> > > > > be
-> > > > > exactly fixing a docking station disconnect crash. Could you plea=
-se,
-> > > > > check this?
-> > > >
-> > > > Unfortunately the kernel in question already has 75718584cb3c:
-> > > > https://git.launchpad.net/~ubuntu-kernel/ubuntu/+source/linux/+git/=
-bionic/commit/?h=3Dhwe&id=3Dc71b774732f997ef38ed7bd62e73891a01f2bbfe
-> >=20
-> > Apologies, but the assumption above is not correct, 5.3.0-40-generic do=
-es
-> > not have 75718584cb3c. If it had 75718584cb3c it would be a fix and the
-> > ptp-related
-> > crash (described in https://bugs.launchpad.net/bugs/1864754) would not
-> > happen.
-> >=20
-> > This way
-> > https://lists.ubuntu.com/archives/kernel-team/2020-March/108562.html fi=
-x
-> > is not really needed.
->=20
-> Hi Vladis,
->=20
-> for the records, I repeated the tests with a lot of help from the bug
-> reporter (Morgwai, added in cc), this time making sure we were using the
-> same kernels.
->=20
-> I confirm that my fix is not really needed as you correctly pointed out.
-> Thanks for looking into this and sorry for the noise! :)
+No - I did not rebase since I did not want to invalidate all the testing
+people did, just tacked a revert on top.  So this commit is there
+together with its revert.
 
-Hei, great! Thank you for updating. I'm happy this situation has resolved
-properly!
 
->=20
-> -Andrea
->=20
-
-Best regards,
-Vladis Dronov | Red Hat, Inc. | The Core Kernel | Senior Software Engineer
+> 
+> -- 
+> Thanks,
+> 
+> David / dhildenb
 
