@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14C351A02F4
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:10:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F20CE1A02FD
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:10:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727899AbgDGACF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 20:02:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35950 "EHLO mail.kernel.org"
+        id S1727941AbgDGACL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 20:02:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36072 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727775AbgDGACE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Apr 2020 20:02:04 -0400
+        id S1727916AbgDGACH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Apr 2020 20:02:07 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 00AED208E4;
-        Tue,  7 Apr 2020 00:02:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8249F20842;
+        Tue,  7 Apr 2020 00:02:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586217723;
-        bh=3QmcZ+XzN2FY7ipu4OPbIdcpP94pwoaA917evhec7Xg=;
+        s=default; t=1586217727;
+        bh=P4mihfxv14d3mYrlZSFYDB506Er2e2jwCb818HK4qwI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qV0KpB6Gf3ds9QdNuFjiROAqN987l/YZk+9pnDpIm+sgQhrbgp8sY/qr7db4psmw6
-         GOIq0ZuWiZJDKJxma3W4EV/+E4IN2w22WkUNo5iN1TEFR8OFXdN9thWGDYOA1oihhE
-         Mc3ts6rg8qlwOMaCdWJpe7UUbj0u3Wz+2t0RECPk=
+        b=WrEP7ELDc/BeedJIbrZXPFFQ3AFffLMtgi/NqhyAJUvGjo0THR/q1kqqZ5aN2Q+bC
+         f4Vd6W4zHIj+5u7Y6rMFyOkx6Dia4QQes4jS5wgYDvZZvO/n2vYzeEyRH8+3q6dymO
+         s1G1KCJg1m1Jds6GNIc9swSA7wrhVBwTUh+C/On4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 09/32] iwlwifi: mvm: Fix rate scale NSS configuration
-Date:   Mon,  6 Apr 2020 20:01:27 -0400
-Message-Id: <20200407000151.16768-9-sashal@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, linux-afs@lists.infradead.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 12/32] rxrpc: Abstract out the calculation of whether there's Tx space
+Date:   Mon,  6 Apr 2020 20:01:30 -0400
+Message-Id: <20200407000151.16768-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200407000151.16768-1-sashal@kernel.org>
 References: <20200407000151.16768-1-sashal@kernel.org>
@@ -44,93 +43,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit ce19801ba75a902ab515dda03b57738c708d0781 ]
+[ Upstream commit 158fe6665389964a1de212818b4a5c52b7f7aff4 ]
 
-The TLC configuration did not take into consideration the station's
-SMPS configuration, and thus configured rates for 2 NSS even if
-static SMPS was reported by the station. Fix this.
+Abstract out the calculation of there being sufficient Tx buffer space.
+This is reproduced several times in the rxrpc sendmsg code.
 
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20200306151129.b4f940d13eca.Ieebfa889d08205a3a961ae0138fb5832e8a0f9c1@changeid
+Signed-off-by: David Howells <dhowells@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/intel/iwlwifi/mvm/rs-fw.c    | 29 ++++++++++++++-----
- 1 file changed, 21 insertions(+), 8 deletions(-)
+ net/rxrpc/sendmsg.c | 27 ++++++++++++++++++---------
+ 1 file changed, 18 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c b/drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c
-index 24df3182ec9eb..5b2bd603febfc 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c
-@@ -6,7 +6,7 @@
-  * GPL LICENSE SUMMARY
-  *
-  * Copyright(c) 2017        Intel Deutschland GmbH
-- * Copyright(c) 2018 - 2019 Intel Corporation
-+ * Copyright(c) 2018 - 2020 Intel Corporation
-  *
-  * This program is free software; you can redistribute it and/or modify
-  * it under the terms of version 2 of the GNU General Public License as
-@@ -27,7 +27,7 @@
-  * BSD LICENSE
-  *
-  * Copyright(c) 2017        Intel Deutschland GmbH
-- * Copyright(c) 2018 - 2019 Intel Corporation
-+ * Copyright(c) 2018 - 2020 Intel Corporation
-  * All rights reserved.
-  *
-  * Redistribution and use in source and binary forms, with or without
-@@ -195,11 +195,13 @@ rs_fw_vht_set_enabled_rates(const struct ieee80211_sta *sta,
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index 813fd68881429..a13051d380973 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -17,6 +17,21 @@
+ #include <net/af_rxrpc.h>
+ #include "ar-internal.h"
+ 
++/*
++ * Return true if there's sufficient Tx queue space.
++ */
++static bool rxrpc_check_tx_space(struct rxrpc_call *call, rxrpc_seq_t *_tx_win)
++{
++	unsigned int win_size =
++		min_t(unsigned int, call->tx_winsize,
++		      call->cong_cwnd + call->cong_extra);
++	rxrpc_seq_t tx_win = READ_ONCE(call->tx_hard_ack);
++
++	if (_tx_win)
++		*_tx_win = tx_win;
++	return call->tx_top - tx_win < win_size;
++}
++
+ /*
+  * Wait for space to appear in the Tx queue or a signal to occur.
+  */
+@@ -26,9 +41,7 @@ static int rxrpc_wait_for_tx_window_intr(struct rxrpc_sock *rx,
  {
- 	u16 supp;
- 	int i, highest_mcs;
-+	u8 nss = sta->rx_nss;
+ 	for (;;) {
+ 		set_current_state(TASK_INTERRUPTIBLE);
+-		if (call->tx_top - call->tx_hard_ack <
+-		    min_t(unsigned int, call->tx_winsize,
+-			  call->cong_cwnd + call->cong_extra))
++		if (rxrpc_check_tx_space(call, NULL))
+ 			return 0;
  
--	for (i = 0; i < sta->rx_nss; i++) {
--		if (i == IWL_TLC_NSS_MAX)
--			break;
-+	/* the station support only a single receive chain */
-+	if (sta->smps_mode == IEEE80211_SMPS_STATIC)
-+		nss = 1;
+ 		if (call->state >= RXRPC_CALL_COMPLETE)
+@@ -68,9 +81,7 @@ static int rxrpc_wait_for_tx_window_nonintr(struct rxrpc_sock *rx,
+ 		set_current_state(TASK_UNINTERRUPTIBLE);
  
-+	for (i = 0; i < nss && i < IWL_TLC_NSS_MAX; i++) {
- 		highest_mcs = rs_fw_vht_highest_rx_mcs_index(vht_cap, i + 1);
- 		if (!highest_mcs)
- 			continue;
-@@ -245,8 +247,13 @@ rs_fw_he_set_enabled_rates(const struct ieee80211_sta *sta,
- 	u16 tx_mcs_160 =
- 		le16_to_cpu(sband->iftype_data->he_cap.he_mcs_nss_supp.tx_mcs_160);
- 	int i;
-+	u8 nss = sta->rx_nss;
+ 		tx_win = READ_ONCE(call->tx_hard_ack);
+-		if (call->tx_top - tx_win <
+-		    min_t(unsigned int, call->tx_winsize,
+-			  call->cong_cwnd + call->cong_extra))
++		if (rxrpc_check_tx_space(call, &tx_win))
+ 			return 0;
  
--	for (i = 0; i < sta->rx_nss && i < IWL_TLC_NSS_MAX; i++) {
-+	/* the station support only a single receive chain */
-+	if (sta->smps_mode == IEEE80211_SMPS_STATIC)
-+		nss = 1;
-+
-+	for (i = 0; i < nss && i < IWL_TLC_NSS_MAX; i++) {
- 		u16 _mcs_160 = (mcs_160 >> (2 * i)) & 0x3;
- 		u16 _mcs_80 = (mcs_80 >> (2 * i)) & 0x3;
- 		u16 _tx_mcs_160 = (tx_mcs_160 >> (2 * i)) & 0x3;
-@@ -307,8 +314,14 @@ static void rs_fw_set_supp_rates(struct ieee80211_sta *sta,
- 		cmd->mode = IWL_TLC_MNG_MODE_HT;
- 		cmd->ht_rates[IWL_TLC_NSS_1][IWL_TLC_HT_BW_NONE_160] =
- 			cpu_to_le16(ht_cap->mcs.rx_mask[0]);
--		cmd->ht_rates[IWL_TLC_NSS_2][IWL_TLC_HT_BW_NONE_160] =
--			cpu_to_le16(ht_cap->mcs.rx_mask[1]);
-+
-+		/* the station support only a single receive chain */
-+		if (sta->smps_mode == IEEE80211_SMPS_STATIC)
-+			cmd->ht_rates[IWL_TLC_NSS_2][IWL_TLC_HT_BW_NONE_160] =
-+				0;
-+		else
-+			cmd->ht_rates[IWL_TLC_NSS_2][IWL_TLC_HT_BW_NONE_160] =
-+				cpu_to_le16(ht_cap->mcs.rx_mask[1]);
- 	}
- }
+ 		if (call->state >= RXRPC_CALL_COMPLETE)
+@@ -302,9 +313,7 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
  
+ 			_debug("alloc");
+ 
+-			if (call->tx_top - call->tx_hard_ack >=
+-			    min_t(unsigned int, call->tx_winsize,
+-				  call->cong_cwnd + call->cong_extra)) {
++			if (!rxrpc_check_tx_space(call, NULL)) {
+ 				ret = -EAGAIN;
+ 				if (msg->msg_flags & MSG_DONTWAIT)
+ 					goto maybe_error;
 -- 
 2.20.1
 
