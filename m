@@ -2,106 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 297DB1A0A0C
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 11:28:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EAAE1A0A41
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 11:34:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728073AbgDGJ16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 05:27:58 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:40465 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726353AbgDGJ16 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 05:27:58 -0400
-Received: by mail-wr1-f66.google.com with SMTP id s8so3021470wrt.7
-        for <netdev@vger.kernel.org>; Tue, 07 Apr 2020 02:27:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=X4ebnL9FKFq17X3pHCnu37OOFN1BcUTTkawnKuPEaf4=;
-        b=PxCV+msgjJfTVEbXmYgWagz9SMQD/gPBV15QP9rDBb9WK67XC2KO/GGSeUHh8ysbAi
-         9UDAn1MQ1imc604W1LmpW8vQU6yhxEcUVlWKHOWoh5rEokp7SP//+tkgpT4kWJ5U/qcY
-         67UZgaQcAD+YcoRoioSrxcx9YEEw/Bi5YFcds=
+        id S1728151AbgDGJe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 05:34:28 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:41878 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726725AbgDGJe1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 05:34:27 -0400
+Received: from mail-wm1-f71.google.com ([209.85.128.71])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <andrea.righi@canonical.com>)
+        id 1jLkci-0001t2-Uv
+        for netdev@vger.kernel.org; Tue, 07 Apr 2020 09:34:25 +0000
+Received: by mail-wm1-f71.google.com with SMTP id s9so360941wmh.2
+        for <netdev@vger.kernel.org>; Tue, 07 Apr 2020 02:34:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=X4ebnL9FKFq17X3pHCnu37OOFN1BcUTTkawnKuPEaf4=;
-        b=tH3QIlLU4hLxuTi/AXbEWg2xEpV2H/tAOad0r+YpsR+Avhrar8gT+PyaVc43h9N6xA
-         T+CrNUV2J34HCdV6R9hHrywJOXcl0b9RP9M0bmOWtCod+BU9cp4w8KYLyZMx63SL9lTi
-         AoLZAM8C8AjQBNHe2xJmSFma0dJI7GXYyYzRdxjh61uMMjLy9XsYZLMt+3jqvlg2rMIu
-         Bc7RvtCHduETtiyayFUpPm/8SSEQm2L9sRZhDDKzFrJ+24zpvBERa3S6IBTGS1h9MUes
-         rVHhMNtzaSdl65sxtZmNH2AIImmNtwJc5dMWHVVaogl8YBFAIv997VMdkZu87Tg4FvYS
-         Yljw==
-X-Gm-Message-State: AGi0PuZVap49L2P1mapOLS4lLISNztY2tqA3NQe/SksbKQg+orx0YXIY
-        oCB6mwCh8rI6dVpsTdFUKm27dQ==
-X-Google-Smtp-Source: APiQypK3qB3PWwDqhsBScgrnmzwQA56QeljH9ycdKKg0XVEGUVIBcK2CB3gMaBAPt5w8egJN/h6GvA==
-X-Received: by 2002:adf:fa4f:: with SMTP id y15mr1849852wrr.118.1586251675115;
-        Tue, 07 Apr 2020 02:27:55 -0700 (PDT)
-Received: from google.com ([2a00:79e0:42:204:8a21:ba0c:bb42:75ec])
-        by smtp.gmail.com with ESMTPSA id d13sm3116411wrg.21.2020.04.07.02.27.54
+        bh=uPsTNxLdIDWlRCtJqG7CoBzdAg59oIT20FSzJSMfJfM=;
+        b=dMdFRmH7iTdOMF02dT4KFcmO0LWgxcoxRLGiVa/9aSQjYe/KO5gvqgpcMIFw8HhWwV
+         8gf5H5tWnCO1eQbJxRtV5oRmrd1aFWT8fG+aLHVdGhAMzGkZx8c17yk6VXN+XXWCt1qc
+         HhKeDDTWjUeuoc+x8oP1cdmOE3aXo2c75tla8Yc0OMkk8hnWOz8tTaQ534ya2uN+2Xhd
+         YVHCsqrW2yjDCdcH7Q02oLsLJVVuJWqwcDhZGZnyHqKqe3NI+ZiXBAlQuV9NnHtqzdoC
+         L5WnxvlsQmZZMmQ43nQ0kweyF7KMAb8vRdWuf24LARuHilMpbfFpE47Nghqk29KAbmDA
+         vyMA==
+X-Gm-Message-State: AGi0PubVIWag5Z5e0JCJEM26QeH3CERFEkx7/3CXe4DZBZrpqwaRxtXP
+        d9LvGtpl2TkznHOW/1dYXcX+fdDkUIlm6DVTaCJ5g9Qk3ap7EP2jKlZbAzEniowGosba2EgxagC
+        t6Uch8yGB5PnVao7nILjU7qHedEy5oLzwrA==
+X-Received: by 2002:a1c:68d5:: with SMTP id d204mr1442651wmc.15.1586252064435;
+        Tue, 07 Apr 2020 02:34:24 -0700 (PDT)
+X-Google-Smtp-Source: APiQypKmrWsL/bX9oZ/TNvsql4F4PCjQsXe8fa6CUIX/VQhprHmkFfhDzZXlUz4Tuus9VKxSSbzujw==
+X-Received: by 2002:a1c:68d5:: with SMTP id d204mr1442631wmc.15.1586252064149;
+        Tue, 07 Apr 2020 02:34:24 -0700 (PDT)
+Received: from localhost (host123-127-dynamic.36-79-r.retail.telecomitalia.it. [79.36.127.123])
+        by smtp.gmail.com with ESMTPSA id f5sm20796541wrj.95.2020.04.07.02.34.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Apr 2020 02:27:54 -0700 (PDT)
-From:   KP Singh <kpsingh@chromium.org>
-X-Google-Original-From: KP Singh <kpsingh>
-Date:   Tue, 7 Apr 2020 11:27:53 +0200
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Al Viro <viro@zeniv.linux.org.uk>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>, bgregg@netflix.com
-Subject: Re: [RFC 0/3] bpf: Add d_path helper
-Message-ID: <20200407092753.GA109512@google.com>
-References: <20200401110907.2669564-1-jolsa@kernel.org>
- <20200402142106.GF23230@ZenIV.linux.org.uk>
- <20200403090828.GF2784502@krava>
- <20200406031602.GR23230@ZenIV.linux.org.uk>
- <20200406090918.GA3035739@krava>
- <20200407011052.khtujfdamjtwvpdp@ast-mbp.dhcp.thefacebook.com>
+        Tue, 07 Apr 2020 02:34:23 -0700 (PDT)
+Date:   Tue, 7 Apr 2020 11:34:22 +0200
+From:   Andrea Righi <andrea.righi@canonical.com>
+To:     Vladis Dronov <vdronov@redhat.com>
+Cc:     Piotr Morgwai =?utf-8?Q?Kotarbi=C5=84ski?= <morgwai@morgwai.pl>,
+        Colin Ian King <colin.king@canonical.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] ptp: free ptp clock properly
+Message-ID: <20200407093422.GD3665@xps-13>
+References: <20200309172238.GJ267906@xps-13>
+ <1196893766.20531178.1585920854778.JavaMail.zimbra@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200407011052.khtujfdamjtwvpdp@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <1196893766.20531178.1585920854778.JavaMail.zimbra@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06-Apr 18:10, Alexei Starovoitov wrote:
-> On Mon, Apr 06, 2020 at 11:09:18AM +0200, Jiri Olsa wrote:
-> > 
-> > is there any way we could have d_path functionality (even
-> > reduced and not working for all cases) that could be used
-> > or called like that?
+On Fri, Apr 03, 2020 at 09:34:14AM -0400, Vladis Dronov wrote:
+> Hello, Andrea, Colin, all,
 > 
-> I agree with Al. This helper cannot be enabled for all of bpf tracing.
-> We have to white list its usage for specific callsites only.
-> May be all of lsm hooks are safe. I don't know yet. This has to be
-> analyzed carefully. Every hook. One by one.
-
-I agree with this, there are some LSM hooks which do get called in
-interrupt context, eg. task_free (which gets called in an RCU
-callback).
-
-The hooks that we are using it for and we know that it works (using
-our experimental helpers similar to this) are the bprm_* hooks in the
-exec pathway (for logic based on the path of the executable).
-
-It might be worth whitelisting these functions by adding verifier ops
-for LSM programs?
-
-Would you want to do it as a part of this series?
-
-- KP
-
-> in_task() isn't really a solution.
+> This fix is really not needed, as its creation is based on the assumption
+> that the Ubuntu kernel 5.3.0-40-generic has the upstream commit 75718584cb3c,
+> which is the real fix to this crash.
 > 
-> At the same time I agree that such helper is badly needed.
-> Folks have been requesting it for long time.
+> > > > I would guess that a kernel in question (5.3.0-40-generic) has the commit
+> > > > a33121e5487b but does not have the commit 75718584cb3c, which should be
+> > > > exactly fixing a docking station disconnect crash. Could you please,
+> > > > check this?
+> > >
+> > > Unfortunately the kernel in question already has 75718584cb3c:
+> > > https://git.launchpad.net/~ubuntu-kernel/ubuntu/+source/linux/+git/bionic/commit/?h=hwe&id=c71b774732f997ef38ed7bd62e73891a01f2bbfe
+> 
+> Apologies, but the assumption above is not correct, 5.3.0-40-generic does
+> not have 75718584cb3c. If it had 75718584cb3c it would be a fix and the ptp-related
+> crash (described in https://bugs.launchpad.net/bugs/1864754) would not happen.
+> 
+> This way https://lists.ubuntu.com/archives/kernel-team/2020-March/108562.html fix
+> is not really needed.
+
+Hi Vladis,
+
+for the records, I repeated the tests with a lot of help from the bug
+reporter (Morgwai, added in cc), this time making sure we were using the
+same kernels.
+
+I confirm that my fix is not really needed as you correctly pointed out.
+Thanks for looking into this and sorry for the noise! :)
+
+-Andrea
