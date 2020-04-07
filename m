@@ -2,99 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DA471A0A5D
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 11:46:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86C041A0A71
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 11:50:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728074AbgDGJqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 05:46:10 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:53169 "EHLO
+        id S1728144AbgDGJum (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 05:50:42 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:47866 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726725AbgDGJqK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 05:46:10 -0400
+        with ESMTP id S1726399AbgDGJum (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 05:50:42 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586252768;
+        s=mimecast20190719; t=1586253040;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=Su0ReTVX7Cb33fcFL+lR2+jV5JDoxhihoJOmLDMgeLw=;
-        b=PyeRhW3RmO95SbRnk5+zMOnIEnR4QdLdDx8o0m40msptYemsPtf72G/Mn0iTdrsZWvm76n
-        S67PCimmbXZ/MG9ujwYArb+YQJIaUSx1WlwPbXHr4l51JGU1lw3oBSZ3OZf9jtBx1i3mwu
-        qaCyO5dG+rJyrxGLKCZOaQAbB1pCqC4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-487-xLq7ZSX6M1ix20yGWkVWlA-1; Tue, 07 Apr 2020 05:46:04 -0400
-X-MC-Unique: xLq7ZSX6M1ix20yGWkVWlA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 80D6B800D50;
-        Tue,  7 Apr 2020 09:46:02 +0000 (UTC)
-Received: from krava (unknown [10.40.192.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 30111271B2;
-        Tue,  7 Apr 2020 09:45:59 +0000 (UTC)
-Date:   Tue, 7 Apr 2020 11:45:56 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     KP Singh <kpsingh@chromium.org>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bgregg@netflix.com
-Subject: Re: [RFC 0/3] bpf: Add d_path helper
-Message-ID: <20200407094556.GC3144092@krava>
-References: <20200401110907.2669564-1-jolsa@kernel.org>
- <20200402142106.GF23230@ZenIV.linux.org.uk>
- <20200403090828.GF2784502@krava>
- <20200406031602.GR23230@ZenIV.linux.org.uk>
- <20200406090918.GA3035739@krava>
- <20200407011052.khtujfdamjtwvpdp@ast-mbp.dhcp.thefacebook.com>
- <20200407092753.GA109512@google.com>
+        bh=0sVBPEE0xzucWIbbsT162YE9B5hG9SIrPw6ALlMaDJs=;
+        b=YpMeAIjWHHfk0cA0K6FzC3QW5OxLn8UMVnOUC7kviT1wDCOvIbePTaNOz2e+r7U0JWuOdB
+        2qumAjnYpOjN8agtsCEdWmyiUzVnuvBK6TZmVF+nqcZGmczOIR8QPpeRQtYS2GryBMC8uc
+        bbooeIO2hzegv5JurGMdTk1jK9x3NS4=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-260-V1okdiLYOUKFUlbapOQsRg-1; Tue, 07 Apr 2020 05:50:37 -0400
+X-MC-Unique: V1okdiLYOUKFUlbapOQsRg-1
+Received: by mail-wm1-f72.google.com with SMTP id z24so479814wml.9
+        for <netdev@vger.kernel.org>; Tue, 07 Apr 2020 02:50:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0sVBPEE0xzucWIbbsT162YE9B5hG9SIrPw6ALlMaDJs=;
+        b=jaiWtqc7ZIHlYpbddBVlUBPAmnFYwJdb7NoeY+Q3nJV83FQSS4ZqPgopPYH+eAhaUh
+         i6fpx5B9VuPXUwXZbQ7LKF8/RU1QllVKfzUAULsk/S5jl+SfN4/SnkRc6gOowgWoblN3
+         zE4G1srqYON45+pAny/gPUdNRPgij1KODniEDsWovnjZUEC8jDnHIKO1pNuORrRq8Bt4
+         VjFueZCV1YhOYYGIRt88UEUv93LspGk9tJZ6+6imAgNvwdxITAUQH+iiTsVUa/PYS0WL
+         0T+qyvYvOOFy26+9uTrn48a6RN+rhrHU7xXZ8xNxvspB6V6gjds8MN1RLWDnZ2foR05T
+         80pA==
+X-Gm-Message-State: AGi0PubQn9yRGlOeOXjh7gZQ7a8qlWsEkF0kSZaga0LPv0wfCpuEC+Hl
+        SGWiaNtngEJ3bfWGBkBNwRUGZTuls8PqnC2DNRQReMzB3YZNVcvWwwIw7yM84CjaT80omGYEqWJ
+        /fo/YC4WXxyRC092v
+X-Received: by 2002:a1c:6a14:: with SMTP id f20mr1431092wmc.125.1586253035882;
+        Tue, 07 Apr 2020 02:50:35 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJfdSbEhEAnnavsksjAg2GryZUBfh45QLjmuphCxXIBX+5BhJi3IGriZs1rxxuFBrWFBIg72Q==
+X-Received: by 2002:a1c:6a14:: with SMTP id f20mr1431058wmc.125.1586253035663;
+        Tue, 07 Apr 2020 02:50:35 -0700 (PDT)
+Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
+        by smtp.gmail.com with ESMTPSA id y15sm6107385wro.68.2020.04.07.02.50.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Apr 2020 02:50:35 -0700 (PDT)
+Date:   Tue, 7 Apr 2020 05:50:31 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        alexander.h.duyck@linux.intel.com, david@redhat.com,
+        eperezma@redhat.com, jasowang@redhat.com, lingshan.zhu@intel.com,
+        mhocko@kernel.org, namit@vmware.com, rdunlap@infradead.org,
+        rientjes@google.com, tiwei.bie@intel.com, tysand@google.com,
+        wei.w.wang@intel.com, xiao.w.wang@intel.com,
+        yuri.benditovich@daynix.com
+Subject: Re: [GIT PULL] vhost: fixes, vdpa
+Message-ID: <20200407054752-mutt-send-email-mst@kernel.org>
+References: <20200406171124-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200407092753.GA109512@google.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+In-Reply-To: <20200406171124-mutt-send-email-mst@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 07, 2020 at 11:27:53AM +0200, KP Singh wrote:
-> On 06-Apr 18:10, Alexei Starovoitov wrote:
-> > On Mon, Apr 06, 2020 at 11:09:18AM +0200, Jiri Olsa wrote:
-> > > 
-> > > is there any way we could have d_path functionality (even
-> > > reduced and not working for all cases) that could be used
-> > > or called like that?
-> > 
-> > I agree with Al. This helper cannot be enabled for all of bpf tracing.
-> > We have to white list its usage for specific callsites only.
-> > May be all of lsm hooks are safe. I don't know yet. This has to be
-> > analyzed carefully. Every hook. One by one.
+On Mon, Apr 06, 2020 at 05:11:28PM -0400, Michael S. Tsirkin wrote:
+> Now that many more architectures build vhost, a couple of these (um, and
+> arm with deprecated oabi) have reported build failures with randconfig,
+> however fixes for that need a bit more discussion/testing and will be
+> merged separately.
 > 
-> I agree with this, there are some LSM hooks which do get called in
-> interrupt context, eg. task_free (which gets called in an RCU
-> callback).
+> Not a regression - these previously simply didn't have vhost at all.
+> Also, there's some DMA API code in the vdpa simulator is hacky - if no
+> solution surfaces soon we can always disable it before release:
+> it's not a big deal either way as it's just test code.
 > 
-> The hooks that we are using it for and we know that it works (using
-> our experimental helpers similar to this) are the bprm_* hooks in the
-> exec pathway (for logic based on the path of the executable).
+> The following changes since commit 16fbf79b0f83bc752cee8589279f1ebfe57b3b6e:
 > 
-> It might be worth whitelisting these functions by adding verifier ops
-> for LSM programs?
+>   Linux 5.6-rc7 (2020-03-22 18:31:56 -0700)
 > 
-> Would you want to do it as a part of this series?
+> are available in the Git repository at:
+> 
+>   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+> 
+> for you to fetch changes up to c9b9f5f8c0f3cdb893cb86c168cdaa3aa5ed7278:
+> 
+>   vdpa: move to drivers/vdpa (2020-04-02 10:41:40 -0400)
+> 
+> ----------------------------------------------------------------
+> virtio: fixes, vdpa
+> 
+> Some bug fixes.
+> Balloon reverted to use the OOM handler again.
+> The new vdpa subsystem with two first drivers.
+> 
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
-I guess we should to do some generic whitelist solution that
-would be usable by any prog type.. I'll try to put something
-together
+OK this was conflicting with akpm tree, turns out Stephen
+was reverting the OOM handler change since akpm tree has its own
+variant.
 
-jirka
+So I pushed the revert in my tree to make it easier for you.
+I'll send PULL v2 just to make things clear.
+
+
+> ----------------------------------------------------------------
+> David Hildenbrand (1):
+>       virtio-balloon: Switch back to OOM handler for VIRTIO_BALLOON_F_DEFLATE_ON_OOM
+> 
+> Jason Wang (7):
+>       vhost: refine vhost and vringh kconfig
+>       vhost: allow per device message handler
+>       vhost: factor out IOTLB
+>       vringh: IOTLB support
+>       vDPA: introduce vDPA bus
+>       virtio: introduce a vDPA based transport
+>       vdpasim: vDPA device simulator
+> 
+> Michael S. Tsirkin (2):
+>       tools/virtio: option to build an out of tree module
+>       vdpa: move to drivers/vdpa
+> 
+> Tiwei Bie (1):
+>       vhost: introduce vDPA-based backend
+> 
+> Yuri Benditovich (3):
+>       virtio-net: Introduce extended RSC feature
+>       virtio-net: Introduce RSS receive steering feature
+>       virtio-net: Introduce hash report feature
+> 
+> Zhu Lingshan (1):
+>       virtio: Intel IFC VF driver for VDPA
+> 
+>  MAINTAINERS                      |   3 +
+>  arch/arm/kvm/Kconfig             |   2 -
+>  arch/arm64/kvm/Kconfig           |   2 -
+>  arch/mips/kvm/Kconfig            |   2 -
+>  arch/powerpc/kvm/Kconfig         |   2 -
+>  arch/s390/kvm/Kconfig            |   4 -
+>  arch/x86/kvm/Kconfig             |   4 -
+>  drivers/Kconfig                  |   4 +
+>  drivers/Makefile                 |   1 +
+>  drivers/misc/mic/Kconfig         |   4 -
+>  drivers/net/caif/Kconfig         |   4 -
+>  drivers/vdpa/Kconfig             |  37 ++
+>  drivers/vdpa/Makefile            |   4 +
+>  drivers/vdpa/ifcvf/Makefile      |   3 +
+>  drivers/vdpa/ifcvf/ifcvf_base.c  | 389 +++++++++++++++++
+>  drivers/vdpa/ifcvf/ifcvf_base.h  | 118 ++++++
+>  drivers/vdpa/ifcvf/ifcvf_main.c  | 435 +++++++++++++++++++
+>  drivers/vdpa/vdpa.c              | 180 ++++++++
+>  drivers/vdpa/vdpa_sim/Makefile   |   2 +
+>  drivers/vdpa/vdpa_sim/vdpa_sim.c | 629 ++++++++++++++++++++++++++++
+>  drivers/vhost/Kconfig            |  45 +-
+>  drivers/vhost/Kconfig.vringh     |   6 -
+>  drivers/vhost/Makefile           |   6 +
+>  drivers/vhost/iotlb.c            | 177 ++++++++
+>  drivers/vhost/net.c              |   5 +-
+>  drivers/vhost/scsi.c             |   2 +-
+>  drivers/vhost/vdpa.c             | 883 +++++++++++++++++++++++++++++++++++++++
+>  drivers/vhost/vhost.c            | 233 ++++-------
+>  drivers/vhost/vhost.h            |  45 +-
+>  drivers/vhost/vringh.c           | 421 ++++++++++++++++++-
+>  drivers/vhost/vsock.c            |   2 +-
+>  drivers/virtio/Kconfig           |  13 +
+>  drivers/virtio/Makefile          |   1 +
+>  drivers/virtio/virtio_balloon.c  | 107 ++---
+>  drivers/virtio/virtio_vdpa.c     | 396 ++++++++++++++++++
+>  include/linux/vdpa.h             | 253 +++++++++++
+>  include/linux/vhost_iotlb.h      |  47 +++
+>  include/linux/vringh.h           |  36 ++
+>  include/uapi/linux/vhost.h       |  24 ++
+>  include/uapi/linux/vhost_types.h |   8 +
+>  include/uapi/linux/virtio_net.h  | 102 ++++-
+>  tools/virtio/Makefile            |  27 +-
+>  42 files changed, 4354 insertions(+), 314 deletions(-)
+>  create mode 100644 drivers/vdpa/Kconfig
+>  create mode 100644 drivers/vdpa/Makefile
+>  create mode 100644 drivers/vdpa/ifcvf/Makefile
+>  create mode 100644 drivers/vdpa/ifcvf/ifcvf_base.c
+>  create mode 100644 drivers/vdpa/ifcvf/ifcvf_base.h
+>  create mode 100644 drivers/vdpa/ifcvf/ifcvf_main.c
+>  create mode 100644 drivers/vdpa/vdpa.c
+>  create mode 100644 drivers/vdpa/vdpa_sim/Makefile
+>  create mode 100644 drivers/vdpa/vdpa_sim/vdpa_sim.c
+>  delete mode 100644 drivers/vhost/Kconfig.vringh
+>  create mode 100644 drivers/vhost/iotlb.c
+>  create mode 100644 drivers/vhost/vdpa.c
+>  create mode 100644 drivers/virtio/virtio_vdpa.c
+>  create mode 100644 include/linux/vdpa.h
+>  create mode 100644 include/linux/vhost_iotlb.h
 
