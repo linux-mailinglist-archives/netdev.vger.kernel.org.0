@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D56941A027C
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:05:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B539D1A024D
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:04:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726712AbgDGAET (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 20:04:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37994 "EHLO mail.kernel.org"
+        id S1728324AbgDGADA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 20:03:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38030 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726591AbgDGAC5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Apr 2020 20:02:57 -0400
+        id S1728309AbgDGAC6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Apr 2020 20:02:58 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CD462214DB;
-        Tue,  7 Apr 2020 00:02:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D603920801;
+        Tue,  7 Apr 2020 00:02:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586217776;
-        bh=ayGMqr2YAgREXgmNx7uslr0j0P7JHAp6o6CM/Bz+Luw=;
+        s=default; t=1586217777;
+        bh=9SCmRP9uH8nX1LIhUPHY4aB9lDvFEEQOfKymCRxe/cs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d+DGg1idAvffaS7MqFfCxGEwbeEU8nTOKvVdfonapga+RYiiMbMcpSHKQvMppe9eH
-         kUp0uHOzCDqJhl0KBuo/1fK+WkYOxBecpmjQ3qlSTrC3E67gLxok8BGzNJHnNb0ib8
-         R5a5pRSus5Rdivl6SD9ZM8t6Pl2NDLQIyEN0EFB4=
+        b=fP3pO05ldSZSid/tWFFVyV4/HoOJGQctUL5rGS+m9MIGwzkj4HKcZGduPE1uvtbPR
+         phYSBWkcX0qcdXZ3TG5s12BIfpK79QulLN+YBZYvtcZrVGNZjFNksUZOMBNfcNaiwb
+         9kAOo+FfVmkvdaDXQ2M7w7J5zp6i2RvNe/707u1A=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Luo bin <luobin9@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 3/9] hinic: fix a bug of waitting for IO stopped
-Date:   Mon,  6 Apr 2020 20:02:46 -0400
-Message-Id: <20200407000252.17241-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 4/9] hinic: fix the bug of clearing event queue
+Date:   Mon,  6 Apr 2020 20:02:47 -0400
+Message-Id: <20200407000252.17241-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200407000252.17241-1-sashal@kernel.org>
 References: <20200407000252.17241-1-sashal@kernel.org>
@@ -45,87 +45,90 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Luo bin <luobin9@huawei.com>
 
-[ Upstream commit 96758117dc528e6d84bd23d205e8cf7f31eda029 ]
+[ Upstream commit 614eaa943e9fc3fcdbd4aa0692ae84973d363333 ]
 
-it's unreliable for fw to check whether IO is stopped, so driver
-wait for enough time to ensure IO process is done in hw before
-freeing resources
+should disable eq irq before freeing it, must clear event queue
+depth in hw before freeing relevant memory to avoid illegal
+memory access and update consumer idx to avoid invalid interrupt
 
 Signed-off-by: Luo bin <luobin9@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/huawei/hinic/hinic_hw_dev.c  | 51 +------------------
- 1 file changed, 2 insertions(+), 49 deletions(-)
+ .../net/ethernet/huawei/hinic/hinic_hw_eqs.c  | 24 +++++++++++++------
+ 1 file changed, 17 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
-index 46aba02b8672b..5763e333a9afe 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
-@@ -373,50 +373,6 @@ static int wait_for_db_state(struct hinic_hwdev *hwdev)
- 	return -EFAULT;
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c
+index 7cb8b9b94726d..1e631366b72b6 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c
+@@ -197,7 +197,7 @@ static u8 eq_cons_idx_checksum_set(u32 val)
+  * eq_update_ci - update the HW cons idx of event queue
+  * @eq: the event queue to update the cons idx for
+  **/
+-static void eq_update_ci(struct hinic_eq *eq)
++static void eq_update_ci(struct hinic_eq *eq, u32 arm_state)
+ {
+ 	u32 val, addr = EQ_CONS_IDX_REG_ADDR(eq);
+ 
+@@ -211,7 +211,7 @@ static void eq_update_ci(struct hinic_eq *eq)
+ 
+ 	val |= HINIC_EQ_CI_SET(eq->cons_idx, IDX)    |
+ 	       HINIC_EQ_CI_SET(eq->wrapped, WRAPPED) |
+-	       HINIC_EQ_CI_SET(EQ_ARMED, INT_ARMED);
++	       HINIC_EQ_CI_SET(arm_state, INT_ARMED);
+ 
+ 	val |= HINIC_EQ_CI_SET(eq_cons_idx_checksum_set(val), XOR_CHKSUM);
+ 
+@@ -356,7 +356,7 @@ static void eq_irq_handler(void *data)
+ 	else if (eq->type == HINIC_CEQ)
+ 		ceq_irq_handler(eq);
+ 
+-	eq_update_ci(eq);
++	eq_update_ci(eq, EQ_ARMED);
  }
  
--static int wait_for_io_stopped(struct hinic_hwdev *hwdev)
--{
--	struct hinic_cmd_io_status cmd_io_status;
--	struct hinic_hwif *hwif = hwdev->hwif;
--	struct pci_dev *pdev = hwif->pdev;
--	struct hinic_pfhwdev *pfhwdev;
--	unsigned long end;
--	u16 out_size;
--	int err;
--
--	if (!HINIC_IS_PF(hwif) && !HINIC_IS_PPF(hwif)) {
--		dev_err(&pdev->dev, "Unsupported PCI Function type\n");
--		return -EINVAL;
--	}
--
--	pfhwdev = container_of(hwdev, struct hinic_pfhwdev, hwdev);
--
--	cmd_io_status.func_idx = HINIC_HWIF_FUNC_IDX(hwif);
--
--	end = jiffies + msecs_to_jiffies(IO_STATUS_TIMEOUT);
--	do {
--		err = hinic_msg_to_mgmt(&pfhwdev->pf_to_mgmt, HINIC_MOD_COMM,
--					HINIC_COMM_CMD_IO_STATUS_GET,
--					&cmd_io_status, sizeof(cmd_io_status),
--					&cmd_io_status, &out_size,
--					HINIC_MGMT_MSG_SYNC);
--		if ((err) || (out_size != sizeof(cmd_io_status))) {
--			dev_err(&pdev->dev, "Failed to get IO status, ret = %d\n",
--				err);
--			return err;
--		}
--
--		if (cmd_io_status.status == IO_STOPPED) {
--			dev_info(&pdev->dev, "IO stopped\n");
--			return 0;
--		}
--
--		msleep(20);
--	} while (time_before(jiffies, end));
--
--	dev_err(&pdev->dev, "Wait for IO stopped - Timeout\n");
--	return -ETIMEDOUT;
--}
--
  /**
-  * clear_io_resource - set the IO resources as not active in the NIC
-  * @hwdev: the NIC HW device
-@@ -436,11 +392,8 @@ static int clear_io_resources(struct hinic_hwdev *hwdev)
- 		return -EINVAL;
+@@ -711,7 +711,7 @@ static int init_eq(struct hinic_eq *eq, struct hinic_hwif *hwif,
  	}
  
--	err = wait_for_io_stopped(hwdev);
--	if (err) {
--		dev_err(&pdev->dev, "IO has not stopped yet\n");
--		return err;
--	}
-+	/* sleep 100ms to wait for firmware stopping I/O */
-+	msleep(100);
+ 	set_eq_ctrls(eq);
+-	eq_update_ci(eq);
++	eq_update_ci(eq, EQ_ARMED);
  
- 	cmd_clear_io_res.func_idx = HINIC_HWIF_FUNC_IDX(hwif);
+ 	err = alloc_eq_pages(eq);
+ 	if (err) {
+@@ -761,18 +761,28 @@ static int init_eq(struct hinic_eq *eq, struct hinic_hwif *hwif,
+  **/
+ static void remove_eq(struct hinic_eq *eq)
+ {
+-	struct msix_entry *entry = &eq->msix_entry;
+-
+-	free_irq(entry->vector, eq);
++	hinic_set_msix_state(eq->hwif, eq->msix_entry.entry,
++			     HINIC_MSIX_DISABLE);
++	free_irq(eq->msix_entry.vector, eq);
+ 
+ 	if (eq->type == HINIC_AEQ) {
+ 		struct hinic_eq_work *aeq_work = &eq->aeq_work;
+ 
+ 		cancel_work_sync(&aeq_work->work);
++		/* clear aeq_len to avoid hw access host memory */
++		hinic_hwif_write_reg(eq->hwif,
++				     HINIC_CSR_AEQ_CTRL_1_ADDR(eq->q_id), 0);
+ 	} else if (eq->type == HINIC_CEQ) {
+ 		tasklet_kill(&eq->ceq_tasklet);
++		/* clear ceq_len to avoid hw access host memory */
++		hinic_hwif_write_reg(eq->hwif,
++				     HINIC_CSR_CEQ_CTRL_1_ADDR(eq->q_id), 0);
+ 	}
+ 
++	/* update cons_idx to avoid invalid interrupt */
++	eq->cons_idx = hinic_hwif_read_reg(eq->hwif, EQ_PROD_IDX_REG_ADDR(eq));
++	eq_update_ci(eq, EQ_NOT_ARMED);
++
+ 	free_eq_pages(eq);
+ }
  
 -- 
 2.20.1
