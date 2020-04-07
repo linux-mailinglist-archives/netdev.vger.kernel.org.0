@@ -2,197 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 095811A153B
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 20:48:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A444A1A15F1
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 21:25:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726718AbgDGSsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 14:48:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59180 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726332AbgDGSsP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Apr 2020 14:48:15 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 62A3220730;
-        Tue,  7 Apr 2020 18:48:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586285294;
-        bh=rTmBHDoBAy4CL3L6aYQVMHrBcqCicMbxXJIdvUl3zDo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lUfPRcUbiJY9srJK0tCnGDSXurAhsM21eETj1n45sAnsw2/asfY8dN8IdczmirjYS
-         ++rLuKtBhj36PmGVxA5pIleTSTVpPNJP8+OPb7YvYQPbKxYxUTzSp0ONsL7Gkx1Zyi
-         hsxOAvETTnZqyuE62/+Njo6ARiP5kX+34+XkFG2E=
-Date:   Tue, 7 Apr 2020 21:48:09 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Ka-Cheong Poon <ka-cheong.poon@oracle.com>
-Cc:     netdev@vger.kernel.org, santosh.shilimkar@oracle.com,
-        davem@davemloft.net, rds-devel@oss.oracle.com,
-        sironhide0null@gmail.com
-Subject: Re: [PATCH net 1/2] net/rds: Replace direct refcount_inc() by inline
- function
-Message-ID: <20200407184809.GP80989@unreal>
-References: <4b96ea99c3f0ccd5cc0683a5c944a1c4da41cc38.1586275373.git.ka-cheong.poon@oracle.com>
+        id S1726891AbgDGTZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 15:25:16 -0400
+Received: from mail-yb1-f195.google.com ([209.85.219.195]:46952 "EHLO
+        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726705AbgDGTZQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 15:25:16 -0400
+Received: by mail-yb1-f195.google.com with SMTP id f14so2413056ybr.13;
+        Tue, 07 Apr 2020 12:25:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7Hzvtg6W0i9DvnOErHW1hryLvey/3wLijh3fHGUEWdw=;
+        b=s/kJS3q1UOBpbuEZ+pkttGQ5l06EF7BUXxAUEee2bEUKn6ltPTrIePhhewjMEG2m+R
+         Dpu8sLfRYsNkGWBrd1aS2/rr5414FSnmOk6dpj+Q7rXj81MhSFqAEDHXzzVohJiJgSOC
+         yidiTuF+4+cE9iC5aJXqW/SlO7Agso91d4Z47zNynyIFBAp3XuKjCroR4zllE6ENgJz9
+         djhC88WaA0dtRdvNNs6cKuw8GfZdCaKXhR17AG/gOuVWkBZlR6D8ZwgG6rlEQGlpscBX
+         CYiTKitbuQaTXGxTN5iZx1oAHJ8SA6thrmOQDQGQLNvbFmB8TrJL45WUDIpG3hdCrFf3
+         YF0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7Hzvtg6W0i9DvnOErHW1hryLvey/3wLijh3fHGUEWdw=;
+        b=OgfAqqyxnfH2tyZgJERMTpdAI22KZCvvA+1Jtl6JEkvrkdbRGdorQr3udwrMG8qg3V
+         A/s0m6ZaWIn2SIC38My5OI9cyvxKdJBK6cTLdl5F8xjZIAJjBBEE4x7VUhdtpo9KS5Vt
+         3haRpFyjBSz4WDYsG5Uo13T64XvcOwuKl6RM79vyB++gz+LK5FRtT9pCjJ1IrGgiSfON
+         eia7A0o/jBZMsQ8Lj8AQ/rQ+NK5v1e678f7n/8CxHUzoHXAVvtoK4lFWuD54z2H4x5Gr
+         oQ5ibfcyGz2eEKv9RoKzHsTL2cVd51J+GLYyw0B1GDsUOkipK0yTOIht8o+YhsYMqpSv
+         sqOw==
+X-Gm-Message-State: AGi0PuZEejlI5GDKFeoLe9ftmn3eFEbGkrmPbh9QlJrALUgG+wIzA2FV
+        KoU7VHgBT2sDDgU62m4gfPN+ewkhgu/m2XmdRlY=
+X-Google-Smtp-Source: APiQypICC/AIYivmuvOLIsjtwfRyZYvNSJhSUAjN47Px/dH2plt/G0bwyMVa2Ih1Ik90fo2CZ8pphvVAoAlAxIcpkbk=
+X-Received: by 2002:a5b:443:: with SMTP id s3mr6522316ybp.14.1586287514312;
+ Tue, 07 Apr 2020 12:25:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4b96ea99c3f0ccd5cc0683a5c944a1c4da41cc38.1586275373.git.ka-cheong.poon@oracle.com>
+References: <1586254255-28713-1-git-send-email-sumit.garg@linaro.org>
+In-Reply-To: <1586254255-28713-1-git-send-email-sumit.garg@linaro.org>
+From:   Krishna Chaitanya <chaitanya.mgit@gmail.com>
+Date:   Wed, 8 Apr 2020 00:55:02 +0530
+Message-ID: <CABPxzY+hL=jD6Zy=netP3oqNXg69gDL2g0KiPe40eaXXgZBnxw@mail.gmail.com>
+Subject: Re: [PATCH v2] mac80211: fix race in ieee80211_register_hw()
+To:     Sumit Garg <sumit.garg@linaro.org>
+Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Matthias=2DPeter_Sch=C3=B6pfer?= 
+        <matthias.schoepfer@ithinx.io>,
+        "Berg Philipp (HAU-EDS)" <Philipp.Berg@liebherr.com>,
+        "Weitner Michael (HAU-EDS)" <Michael.Weitner@liebherr.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Loic Poulain <loic.poulain@linaro.org>, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 07, 2020 at 09:08:01AM -0700, Ka-Cheong Poon wrote:
-> Added rds_ib_dev_get() and rds_mr_get() to improve code readability.
-
-It is very hard to agree with this sentence.
-Hiding basic kernel primitives is very rare will improve code readability.
-It is definitely not the case here.
-
-Thanks
-
+On Tue, Apr 7, 2020 at 3:41 PM Sumit Garg <sumit.garg@linaro.org> wrote:
 >
-> Signed-off-by: Ka-Cheong Poon <ka-cheong.poon@oracle.com>
+> A race condition leading to a kernel crash is observed during invocation
+> of ieee80211_register_hw() on a dragonboard410c device having wcn36xx
+> driver built as a loadable module along with a wifi manager in user-space
+> waiting for a wifi device (wlanX) to be active.
+>
+> Sequence diagram for a particular kernel crash scenario:
+>
+>     user-space  ieee80211_register_hw()  ieee80211_tasklet_handler()
+>     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>        |                    |                 |
+>        |<---phy0----wiphy_register()          |
+>        |-----iwd if_add---->|                 |
+just a nitpick, a better one would be (iwd: if_add + ap_start) since
+we need to have 'iwctl ap start'
+to trigger the interrupts.
+>        |                    |<---IRQ----(RX packet)
+>        |              Kernel crash            |
+>        |              due to unallocated      |
+>        |              workqueue.              |
+>        |                    |                 |
+>        |       alloc_ordered_workqueue()      |
+>        |                    |                 |
+>        |              Misc wiphy init.        |
+>        |                    |                 |
+>        |            ieee80211_if_add()        |
+>        |                    |                 |
+>
+> As evident from above sequence diagram, this race condition isn't specific
+> to a particular wifi driver but rather the initialization sequence in
+> ieee80211_register_hw() needs to be fixed. So re-order the initialization
+> sequence and the updated sequence diagram would look like:
+>
+>     user-space  ieee80211_register_hw()  ieee80211_tasklet_handler()
+>     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>        |                    |                 |
+>        |       alloc_ordered_workqueue()      |
+>        |                    |                 |
+>        |              Misc wiphy init.        |
+>        |                    |                 |
+>        |<---phy0----wiphy_register()          |
+>        |-----iwd if_add---->|                 |
+same as above.
+>        |                    |<---IRQ----(RX packet)
+>        |                    |                 |
+>        |            ieee80211_if_add()        |
+>        |                    |                 |
+>
+> Cc: <stable@vger.kernel.org>
+> Signed-off-by: Sumit Garg <sumit.garg@linaro.org>
 > ---
->  net/rds/ib.c      | 8 ++++----
->  net/rds/ib.h      | 5 +++++
->  net/rds/ib_rdma.c | 6 +++---
->  net/rds/rdma.c    | 8 ++++----
->  net/rds/rds.h     | 5 +++++
->  5 files changed, 21 insertions(+), 11 deletions(-)
 >
-> diff --git a/net/rds/ib.c b/net/rds/ib.c
-> index a792d8a..c16cb1a 100644
-> --- a/net/rds/ib.c
-> +++ b/net/rds/ib.c
-> @@ -1,5 +1,5 @@
->  /*
-> - * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
-> + * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
->   *
->   * This software is available to you under a choice of one of two
->   * licenses.  You may choose to be licensed under the terms of the GNU
-> @@ -224,10 +224,10 @@ static void rds_ib_add_one(struct ib_device *device)
->  	down_write(&rds_ib_devices_lock);
->  	list_add_tail_rcu(&rds_ibdev->list, &rds_ib_devices);
->  	up_write(&rds_ib_devices_lock);
-> -	refcount_inc(&rds_ibdev->refcount);
-> +	rds_ib_dev_get(rds_ibdev);
+> Changes in v2:
+> - Move rtnl_unlock() just after ieee80211_init_rate_ctrl_alg().
+> - Update sequence diagrams in commit message for more clarification.
 >
->  	ib_set_client_data(device, &rds_ib_client, rds_ibdev);
-> -	refcount_inc(&rds_ibdev->refcount);
-> +	rds_ib_dev_get(rds_ibdev);
+>  net/mac80211/main.c | 22 +++++++++++++---------
+>  1 file changed, 13 insertions(+), 9 deletions(-)
 >
->  	rds_ib_nodev_connect();
+> diff --git a/net/mac80211/main.c b/net/mac80211/main.c
+> index 4c2b5ba..d497129 100644
+> --- a/net/mac80211/main.c
+> +++ b/net/mac80211/main.c
+> @@ -1051,7 +1051,7 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+>                 local->hw.wiphy->signal_type = CFG80211_SIGNAL_TYPE_UNSPEC;
+>                 if (hw->max_signal <= 0) {
+>                         result = -EINVAL;
+> -                       goto fail_wiphy_register;
+> +                       goto fail_workqueue;
+>                 }
+>         }
 >
-> @@ -258,7 +258,7 @@ struct rds_ib_device *rds_ib_get_client_data(struct ib_device *device)
->  	rcu_read_lock();
->  	rds_ibdev = ib_get_client_data(device, &rds_ib_client);
->  	if (rds_ibdev)
-> -		refcount_inc(&rds_ibdev->refcount);
-> +		rds_ib_dev_get(rds_ibdev);
->  	rcu_read_unlock();
->  	return rds_ibdev;
->  }
-> diff --git a/net/rds/ib.h b/net/rds/ib.h
-> index 0296f1f..fe7ea4e 100644
-> --- a/net/rds/ib.h
-> +++ b/net/rds/ib.h
-> @@ -361,6 +361,11 @@ static inline void rds_ib_dma_sync_sg_for_device(struct ib_device *dev,
->  extern struct rds_transport rds_ib_transport;
->  struct rds_ib_device *rds_ib_get_client_data(struct ib_device *device);
->  void rds_ib_dev_put(struct rds_ib_device *rds_ibdev);
-> +static inline void rds_ib_dev_get(struct rds_ib_device *rds_ibdev)
-> +{
-> +	refcount_inc(&rds_ibdev->refcount);
-> +}
+> @@ -1113,7 +1113,7 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+>
+>         result = ieee80211_init_cipher_suites(local);
+>         if (result < 0)
+> -               goto fail_wiphy_register;
+> +               goto fail_workqueue;
+>
+>         if (!local->ops->remain_on_channel)
+>                 local->hw.wiphy->max_remain_on_channel_duration = 5000;
+> @@ -1139,10 +1139,6 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+>
+>         local->hw.wiphy->max_num_csa_counters = IEEE80211_MAX_CSA_COUNTERS_NUM;
+>
+> -       result = wiphy_register(local->hw.wiphy);
+> -       if (result < 0)
+> -               goto fail_wiphy_register;
+> -
+>         /*
+>          * We use the number of queues for feature tests (QoS, HT) internally
+>          * so restrict them appropriately.
+> @@ -1207,6 +1203,8 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+>                 goto fail_rate;
+>         }
+>
+> +       rtnl_unlock();
 > +
->  extern struct ib_client rds_ib_client;
+>         if (local->rate_ctrl) {
+>                 clear_bit(IEEE80211_HW_SUPPORTS_VHT_EXT_NSS_BW, hw->flags);
+>                 if (local->rate_ctrl->ops->capa & RATE_CTRL_CAPA_VHT_EXT_NSS_BW)
+> @@ -1254,6 +1252,12 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+>                 local->sband_allocated |= BIT(band);
+>         }
 >
->  extern unsigned int rds_ib_retry_count;
-> diff --git a/net/rds/ib_rdma.c b/net/rds/ib_rdma.c
-> index b34b24e..1b942d80 100644
-> --- a/net/rds/ib_rdma.c
-> +++ b/net/rds/ib_rdma.c
-> @@ -1,5 +1,5 @@
->  /*
-> - * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
-> + * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
->   *
->   * This software is available to you under a choice of one of two
->   * licenses.  You may choose to be licensed under the terms of the GNU
-> @@ -56,7 +56,7 @@ static struct rds_ib_device *rds_ib_get_device(__be32 ipaddr)
->  	list_for_each_entry_rcu(rds_ibdev, &rds_ib_devices, list) {
->  		list_for_each_entry_rcu(i_ipaddr, &rds_ibdev->ipaddr_list, list) {
->  			if (i_ipaddr->ipaddr == ipaddr) {
-> -				refcount_inc(&rds_ibdev->refcount);
-> +				rds_ib_dev_get(rds_ibdev);
->  				rcu_read_unlock();
->  				return rds_ibdev;
->  			}
-> @@ -139,7 +139,7 @@ void rds_ib_add_conn(struct rds_ib_device *rds_ibdev, struct rds_connection *con
->  	spin_unlock_irq(&ib_nodev_conns_lock);
->
->  	ic->rds_ibdev = rds_ibdev;
-> -	refcount_inc(&rds_ibdev->refcount);
-> +	rds_ib_dev_get(rds_ibdev);
->  }
->
->  void rds_ib_remove_conn(struct rds_ib_device *rds_ibdev, struct rds_connection *conn)
-> diff --git a/net/rds/rdma.c b/net/rds/rdma.c
-> index 585e6b3..d5abe0e 100644
-> --- a/net/rds/rdma.c
-> +++ b/net/rds/rdma.c
-> @@ -1,5 +1,5 @@
->  /*
-> - * Copyright (c) 2007, 2017 Oracle and/or its affiliates. All rights reserved.
-> + * Copyright (c) 2007, 2020 Oracle and/or its affiliates. All rights reserved.
->   *
->   * This software is available to you under a choice of one of two
->   * licenses.  You may choose to be licensed under the terms of the GNU
-> @@ -84,7 +84,7 @@ static struct rds_mr *rds_mr_tree_walk(struct rb_root *root, u64 key,
->  	if (insert) {
->  		rb_link_node(&insert->r_rb_node, parent, p);
->  		rb_insert_color(&insert->r_rb_node, root);
-> -		refcount_inc(&insert->r_refcount);
-> +		rds_mr_get(insert);
->  	}
->  	return NULL;
->  }
-> @@ -343,7 +343,7 @@ static int __rds_rdma_map(struct rds_sock *rs, struct rds_get_mr_args *args,
->
->  	rdsdebug("RDS: get_mr key is %x\n", mr->r_key);
->  	if (mr_ret) {
-> -		refcount_inc(&mr->r_refcount);
-> +		rds_mr_get(mr);
->  		*mr_ret = mr;
->  	}
->
-> @@ -827,7 +827,7 @@ int rds_cmsg_rdma_dest(struct rds_sock *rs, struct rds_message *rm,
->  	if (!mr)
->  		err = -EINVAL;	/* invalid r_key */
->  	else
-> -		refcount_inc(&mr->r_refcount);
-> +		rds_mr_get(mr);
->  	spin_unlock_irqrestore(&rs->rs_rdma_lock, flags);
->
->  	if (mr) {
-> diff --git a/net/rds/rds.h b/net/rds/rds.h
-> index e4a6035..6a665fa 100644
-> --- a/net/rds/rds.h
-> +++ b/net/rds/rds.h
-> @@ -953,6 +953,11 @@ static inline void rds_mr_put(struct rds_mr *mr)
->  		__rds_put_mr_final(mr);
->  }
->
-> +static inline void rds_mr_get(struct rds_mr *mr)
-> +{
-> +	refcount_inc(&mr->r_refcount);
-> +}
+> +       result = wiphy_register(local->hw.wiphy);
+> +       if (result < 0)
+> +               goto fail_wiphy_register;
 > +
->  static inline bool rds_destroy_pending(struct rds_connection *conn)
->  {
->  	return !check_net(rds_conn_net(conn)) ||
+> +       rtnl_lock();
+> +
+>         /* add one default STA interface if supported */
+>         if (local->hw.wiphy->interface_modes & BIT(NL80211_IFTYPE_STATION) &&
+>             !ieee80211_hw_check(hw, NO_AUTO_VIF)) {
+> @@ -1293,6 +1297,8 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+>  #if defined(CONFIG_INET) || defined(CONFIG_IPV6)
+>   fail_ifa:
+>  #endif
+> +       wiphy_unregister(local->hw.wiphy);
+> + fail_wiphy_register:
+>         rtnl_lock();
+>         rate_control_deinitialize(local);
+>         ieee80211_remove_interfaces(local);
+> @@ -1302,8 +1308,6 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+>         ieee80211_led_exit(local);
+>         destroy_workqueue(local->workqueue);
+>   fail_workqueue:
+> -       wiphy_unregister(local->hw.wiphy);
+> - fail_wiphy_register:
+>         if (local->wiphy_ciphers_allocated)
+>                 kfree(local->hw.wiphy->cipher_suites);
+>         kfree(local->int_scan_req);
+> @@ -1353,8 +1357,8 @@ void ieee80211_unregister_hw(struct ieee80211_hw *hw)
+>         skb_queue_purge(&local->skb_queue_unreliable);
+>         skb_queue_purge(&local->skb_queue_tdls_chsw);
+>
+> -       destroy_workqueue(local->workqueue);
+>         wiphy_unregister(local->hw.wiphy);
+> +       destroy_workqueue(local->workqueue);
+>         ieee80211_led_exit(local);
+>         kfree(local->int_scan_req);
+>  }
 > --
-> 1.8.3.1
+> 2.7.4
 >
+
+
+-- 
+Thanks,
+Regards,
+Chaitanya T K.
