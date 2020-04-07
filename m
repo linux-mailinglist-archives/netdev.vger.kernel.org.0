@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 919391A0234
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:04:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 298B31A02B4
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:05:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728054AbgDGACW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 20:02:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36642 "EHLO mail.kernel.org"
+        id S1726420AbgDGAC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 20:02:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36774 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728029AbgDGACU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Apr 2020 20:02:20 -0400
+        id S1728056AbgDGACW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Apr 2020 20:02:22 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 77E9120768;
-        Tue,  7 Apr 2020 00:02:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1066F2080C;
+        Tue,  7 Apr 2020 00:02:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586217739;
-        bh=51H9TY8V5noS4FlXlFD3P5jsli5RDi0dx8xUt4ONeBk=;
+        s=default; t=1586217742;
+        bh=AVj+XPiQxDa8C7Tyehp1HCoqAl1OwJmuCvK9g5+Z3jQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mJKh4VGhW0aZnDF4qsInoq2XyxQcnl1VxfUxIk52ofuLXhMMlPfx53TX7FneeweRQ
-         1eMP/YyMOL3BrC+6XRVIMedCH5X74dascO4xe+myUUz8ZrIb13vq2tuKQ6zggpzigV
-         QFcqo/dsUkfgsK5BQYpSavDZVsL1qXaxje4RcnFo=
+        b=KA80CbZnOpEmNylEkB6Hs9hpCCZ5lUWCd82bYwiNnIwQ/BXQ2aRhsMMKKdbnaRuhV
+         ZSu0e1bsaVnNVVbS5bmBP2NfF28qTUVfOGijiFyWSd/WcO+yy6cyiQeQLI+k1c5wm4
+         eRpOW8evDYF8/PdO4OJPe6WyL2rqVzKNUDjYsBaI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alan Maguire <alan.maguire@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 22/32] selftests/net: add definition for SOL_DCCP to fix compilation errors for old libc
-Date:   Mon,  6 Apr 2020 20:01:40 -0400
-Message-Id: <20200407000151.16768-22-sashal@kernel.org>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>, Phil Sutter <phil@nwl.cc>,
+        Stefano Brivio <sbrivio@redhat.com>,
+        Sasha Levin <sashal@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 24/32] netfilter: nf_tables: Allow set back-ends to report partial overlaps on insertion
+Date:   Mon,  6 Apr 2020 20:01:42 -0400
+Message-Id: <20200407000151.16768-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200407000151.16768-1-sashal@kernel.org>
 References: <20200407000151.16768-1-sashal@kernel.org>
@@ -44,44 +45,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alan Maguire <alan.maguire@oracle.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 83a9b6f639e9f6b632337f9776de17d51d969c77 ]
+[ Upstream commit 8c2d45b2b65ca1f215244be1c600236e83f9815f ]
 
-Many systems build/test up-to-date kernels with older libcs, and
-an older glibc (2.17) lacks the definition of SOL_DCCP in
-/usr/include/bits/socket.h (it was added in the 4.6 timeframe).
+Currently, the -EEXIST return code of ->insert() callbacks is ambiguous: it
+might indicate that a given element (including intervals) already exists as
+such, or that the new element would clash with existing ones.
 
-Adding the definition to the test program avoids a compilation
-failure that gets in the way of building tools/testing/selftests/net.
-The test itself will work once the definition is added; either
-skipping due to DCCP not being configured in the kernel under test
-or passing, so there are no other more up-to-date glibc dependencies
-here it seems beyond that missing definition.
+If identical elements already exist, the front-end is ignoring this without
+returning error, in case NLM_F_EXCL is not set. However, if the new element
+can't be inserted due an overlap, we should report this to the user.
 
-Fixes: 11fb60d1089f ("selftests: net: reuseport_addr_any: add DCCP")
-Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+To this purpose, allow set back-ends to return -ENOTEMPTY on collision with
+existing elements, translate that to -EEXIST, and return that to userspace,
+no matter if NLM_F_EXCL was set.
+
+Reported-by: Phil Sutter <phil@nwl.cc>
+Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/reuseport_addr_any.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/netfilter/nf_tables_api.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/tools/testing/selftests/net/reuseport_addr_any.c b/tools/testing/selftests/net/reuseport_addr_any.c
-index c6233935fed14..b8475cb29be7a 100644
---- a/tools/testing/selftests/net/reuseport_addr_any.c
-+++ b/tools/testing/selftests/net/reuseport_addr_any.c
-@@ -21,6 +21,10 @@
- #include <sys/socket.h>
- #include <unistd.h>
- 
-+#ifndef SOL_DCCP
-+#define SOL_DCCP 269
-+#endif
-+
- static const char *IP4_ADDR = "127.0.0.1";
- static const char *IP6_ADDR = "::1";
- static const char *IP4_MAPPED6 = "::ffff:127.0.0.1";
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 068daff41f6e6..ddaaf5e535d58 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -4689,6 +4689,11 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
+ 				err = -EBUSY;
+ 			else if (!(nlmsg_flags & NLM_F_EXCL))
+ 				err = 0;
++		} else if (err == -ENOTEMPTY) {
++			/* ENOTEMPTY reports overlapping between this element
++			 * and an existing one.
++			 */
++			err = -EEXIST;
+ 		}
+ 		goto err5;
+ 	}
 -- 
 2.20.1
 
