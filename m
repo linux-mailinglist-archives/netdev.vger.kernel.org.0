@@ -2,131 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 249A41A0AD2
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 12:09:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5F7C1A0AD8
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 12:11:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728263AbgDGKI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 06:08:58 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:34264 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726562AbgDGKI6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 06:08:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586254137;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z+d4Qx7H0BkaQ6jx/a91Q5D/w2sYbHgdntEiY9YRCI4=;
-        b=QQzxlYeoIXLIC8aflNX1h/t/R+R3f3xXGUnyX44KKk/YoyhzY55ltr1tUgnJckE6crShQS
-        gPpgeI2x6DwTjfabOJDcPYusPylWjNusHw903JGUujckyoY7JcxNRs/47/p+XJOnhfqXQd
-        /8S9onyxxeHRdrc/XEIhOsrwoSU6usc=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-157-FfrQDsRkOECRlb69Uv7Nhg-1; Tue, 07 Apr 2020 06:08:55 -0400
-X-MC-Unique: FfrQDsRkOECRlb69Uv7Nhg-1
-Received: by mail-wr1-f70.google.com with SMTP id 88so1520632wrq.4
-        for <netdev@vger.kernel.org>; Tue, 07 Apr 2020 03:08:55 -0700 (PDT)
+        id S1728140AbgDGKLh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 06:11:37 -0400
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:32929 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726716AbgDGKLg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 06:11:36 -0400
+Received: by mail-pj1-f65.google.com with SMTP id cp9so1025641pjb.0
+        for <netdev@vger.kernel.org>; Tue, 07 Apr 2020 03:11:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=3Lk5/xOF8GmAm5CGxsYxvvNGCwk8oZx7GJZ2RMStRsA=;
+        b=sVoo3UD03yj9EpPDPBT1OiLH75+8rv65KzM6qPBb35hNNuwPd8TSDJVfDT+iFslcV8
+         MiUR5iyFHEXsbd8HBTwGvq84HunNGYdHb+0tPlkwiHdo6XZCDwuF9/i8DE0QpBKcmQGM
+         grYuEdJk350htD1sYEG9IeofrQHk5uYQU/O/F4w58NEmy5O+DvVVdj9Z3d0I2jzUZetc
+         3nYoungIn6blgf1HjfsYeNGDrXqUo+nQYRWj4c4GPMxk+pS13iJGMItuz8xa7e8veNq8
+         tmX5peWY1c2qjQnQaKJCxg01IqG+xvaIUEQWZzjA50B+MHmfV4HV/rMomPGT0y7QVOIL
+         JT8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Z+d4Qx7H0BkaQ6jx/a91Q5D/w2sYbHgdntEiY9YRCI4=;
-        b=RJRha2iM3BOyiV5DcnhvKfzEbgtmWti3bp2fsz8/5tFXnNcTeojkA7wmFk1rhLCZ9B
-         AeqxbZEwmAR8xGbX9nNdmrREY5CZUD+lqBPFnUQNVv3410rNak8AqHb75NWwdBLNAljw
-         XZ5UEe0gmJzT/8s7GiqcX6QY6GKEqrOJyzT0SM4VJ7Rki1VZD1PKtmXJhhEGC+2RH3Fn
-         Sk3sorS7U6WHRjVhyR3/8Dc79BB1O068qbZGgXSvPQ7LM2v/mSbLeO7ZAIsTQ5pLpSQf
-         0u++2VHeen67GoPAcBgBWxb+gmX4Y3Geb9z1yMLvPq92ZDGTVIZ1346ljJVc54toSzxm
-         SNeA==
-X-Gm-Message-State: AGi0PubFOFv02mhNPAiTdS6Yq43HHNix+LFbiLi50liyCXq7pG4uHCux
-        f9EalQ91bgok0gIYjk0bmOc485mZlieulyTzQQspOnq/wpUwFZd848EdgDXnEaYaFGtemmjOTAe
-        vQ1QQ1aDQsQ4YJQhy
-X-Received: by 2002:a05:600c:2c47:: with SMTP id r7mr1583545wmg.50.1586254134335;
-        Tue, 07 Apr 2020 03:08:54 -0700 (PDT)
-X-Google-Smtp-Source: APiQypJjB2szx0xQgD9OibxDJRFX1Jm7Z1KhFoXl8BhDzxrbWSAltbqVX49bIubsJYfEtbHFRe8h+g==
-X-Received: by 2002:a05:600c:2c47:: with SMTP id r7mr1583516wmg.50.1586254134095;
-        Tue, 07 Apr 2020 03:08:54 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
-        by smtp.gmail.com with ESMTPSA id n64sm1571755wme.45.2020.04.07.03.08.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Apr 2020 03:08:53 -0700 (PDT)
-Date:   Tue, 7 Apr 2020 06:08:43 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        alexander.h.duyck@linux.intel.com, eperezma@redhat.com,
-        jasowang@redhat.com, lingshan.zhu@intel.com, mhocko@kernel.org,
-        namit@vmware.com, rdunlap@infradead.org, rientjes@google.com,
-        tiwei.bie@intel.com, tysand@google.com, wei.w.wang@intel.com,
-        xiao.w.wang@intel.com, yuri.benditovich@daynix.com
-Subject: Re: [GIT PULL v2] vhost: cleanups and fixes
-Message-ID: <20200407060741-mutt-send-email-mst@kernel.org>
-References: <20200407055334-mutt-send-email-mst@kernel.org>
- <00a7ce5f-8fb4-8c3e-7113-9a422682abdf@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <00a7ce5f-8fb4-8c3e-7113-9a422682abdf@redhat.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=3Lk5/xOF8GmAm5CGxsYxvvNGCwk8oZx7GJZ2RMStRsA=;
+        b=tu3LCrYn7mXYyDjCNsnztcfTs3hCjPS9CC5XhKvvdUuJVWJFfE/JjuZBl/pUsOGxxh
+         CXLfPQqxc769hkN+10nihRD1+kR8K8N/ZVoESJvGtEuCNEbDXXsOtZRnGmAaJrrnM/KF
+         MlPsDY8TGajbijK/eQEUBe7mr/ItiPfoodUgM7dOnK/oX6vldtwvIcww9A1F53B3gFt6
+         NTpGQcOamvlPYj/5B0Dmp1yooS6SX3do8J/OXu60mEyDpWeLBaxpoCjY7DL3YCEo517s
+         c/2bKTsvaLwPUgItgglh3I9yFNgRCAxL3e6N66b1vln8wD33Rk5Z7Zh2JI7ESbTVgNrw
+         4hJQ==
+X-Gm-Message-State: AGi0PuasWUgTG6DkAgVctXn0ZnoBx69JdeTvCTdJqFefxIYzp+b5tk3V
+        /4jDyPYRP1QwN5rfM6xrsIjA4Q==
+X-Google-Smtp-Source: APiQypIK+S5PEPLtnd7TZeAcCYxZYT5PuRWNTQmfbuH/XPngzM4EJQcB3Sxl1EsdijdFqy4CGHVbHQ==
+X-Received: by 2002:a17:90a:c256:: with SMTP id d22mr1911489pjx.78.1586254295563;
+        Tue, 07 Apr 2020 03:11:35 -0700 (PDT)
+Received: from localhost.localdomain ([117.196.230.86])
+        by smtp.gmail.com with ESMTPSA id q67sm1228692pjq.29.2020.04.07.03.11.29
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 07 Apr 2020 03:11:34 -0700 (PDT)
+From:   Sumit Garg <sumit.garg@linaro.org>
+To:     linux-wireless@vger.kernel.org, johannes@sipsolutions.net
+Cc:     davem@davemloft.net, kuba@kernel.org, kvalo@codeaurora.org,
+        chaitanya.mgit@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, matthias.schoepfer@ithinx.io,
+        Philipp.Berg@liebherr.com, Michael.Weitner@liebherr.com,
+        daniel.thompson@linaro.org, loic.poulain@linaro.org,
+        Sumit Garg <sumit.garg@linaro.org>, stable@vger.kernel.org
+Subject: [PATCH v2] mac80211: fix race in ieee80211_register_hw()
+Date:   Tue,  7 Apr 2020 15:40:55 +0530
+Message-Id: <1586254255-28713-1-git-send-email-sumit.garg@linaro.org>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 07, 2020 at 11:56:59AM +0200, David Hildenbrand wrote:
-> On 07.04.20 11:53, Michael S. Tsirkin wrote:
-> > Changes from PULL v1:
-> > 	reverted a commit that was also in Andrew Morton's tree,
-> > 	to resolve a merge conflict:
-> > 	this is what Stephen Rothwell was doing to resolve it
-> > 	in linux-next.
-> > 
-> > 
-> > Now that many more architectures build vhost, a couple of these (um, and
-> > arm with deprecated oabi) have reported build failures with randconfig,
-> > however fixes for that need a bit more discussion/testing and will be
-> > merged separately.
-> > 
-> > Not a regression - these previously simply didn't have vhost at all.
-> > Also, there's some DMA API code in the vdpa simulator is hacky - if no
-> > solution surfaces soon we can always disable it before release:
-> > it's not a big deal either way as it's just test code.
-> > 
-> > 
-> > The following changes since commit 16fbf79b0f83bc752cee8589279f1ebfe57b3b6e:
-> > 
-> >   Linux 5.6-rc7 (2020-03-22 18:31:56 -0700)
-> > 
-> > are available in the Git repository at:
-> > 
-> >   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-> > 
-> > for you to fetch changes up to 835a6a649d0dd1b1f46759eb60fff2f63ed253a7:
-> > 
-> >   virtio-balloon: Revert "virtio-balloon: Switch back to OOM handler for VIRTIO_BALLOON_F_DEFLATE_ON_OOM" (2020-04-07 05:44:57 -0400)
-> > 
-> > ----------------------------------------------------------------
-> > virtio: fixes, vdpa
-> > 
-> > Some bug fixes.
-> > The new vdpa subsystem with two first drivers.
-> > 
-> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > 
-> > ----------------------------------------------------------------
-> > David Hildenbrand (1):
-> >       virtio-balloon: Switch back to OOM handler for VIRTIO_BALLOON_F_DEFLATE_ON_OOM
-> 
-> ^ stale leftover in this message only I assume
+A race condition leading to a kernel crash is observed during invocation
+of ieee80211_register_hw() on a dragonboard410c device having wcn36xx
+driver built as a loadable module along with a wifi manager in user-space
+waiting for a wifi device (wlanX) to be active.
 
-No - I did not rebase since I did not want to invalidate all the testing
-people did, just tacked a revert on top.  So this commit is there
-together with its revert.
+Sequence diagram for a particular kernel crash scenario:
 
+    user-space  ieee80211_register_hw()  ieee80211_tasklet_handler()
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+       |                    |                 |
+       |<---phy0----wiphy_register()          |
+       |-----iwd if_add---->|                 |
+       |                    |<---IRQ----(RX packet)
+       |              Kernel crash            |
+       |              due to unallocated      |
+       |              workqueue.              |
+       |                    |                 |
+       |       alloc_ordered_workqueue()      |
+       |                    |                 |
+       |              Misc wiphy init.        |
+       |                    |                 |
+       |            ieee80211_if_add()        |
+       |                    |                 |
 
-> 
-> -- 
-> Thanks,
-> 
-> David / dhildenb
+As evident from above sequence diagram, this race condition isn't specific
+to a particular wifi driver but rather the initialization sequence in
+ieee80211_register_hw() needs to be fixed. So re-order the initialization
+sequence and the updated sequence diagram would look like:
+
+    user-space  ieee80211_register_hw()  ieee80211_tasklet_handler()
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+       |                    |                 |
+       |       alloc_ordered_workqueue()      |
+       |                    |                 |
+       |              Misc wiphy init.        |
+       |                    |                 |
+       |<---phy0----wiphy_register()          |
+       |-----iwd if_add---->|                 |
+       |                    |<---IRQ----(RX packet)
+       |                    |                 |
+       |            ieee80211_if_add()        |
+       |                    |                 |
+
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Sumit Garg <sumit.garg@linaro.org>
+---
+
+Changes in v2:
+- Move rtnl_unlock() just after ieee80211_init_rate_ctrl_alg().
+- Update sequence diagrams in commit message for more clarification.
+
+ net/mac80211/main.c | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
+
+diff --git a/net/mac80211/main.c b/net/mac80211/main.c
+index 4c2b5ba..d497129 100644
+--- a/net/mac80211/main.c
++++ b/net/mac80211/main.c
+@@ -1051,7 +1051,7 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+ 		local->hw.wiphy->signal_type = CFG80211_SIGNAL_TYPE_UNSPEC;
+ 		if (hw->max_signal <= 0) {
+ 			result = -EINVAL;
+-			goto fail_wiphy_register;
++			goto fail_workqueue;
+ 		}
+ 	}
+ 
+@@ -1113,7 +1113,7 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+ 
+ 	result = ieee80211_init_cipher_suites(local);
+ 	if (result < 0)
+-		goto fail_wiphy_register;
++		goto fail_workqueue;
+ 
+ 	if (!local->ops->remain_on_channel)
+ 		local->hw.wiphy->max_remain_on_channel_duration = 5000;
+@@ -1139,10 +1139,6 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+ 
+ 	local->hw.wiphy->max_num_csa_counters = IEEE80211_MAX_CSA_COUNTERS_NUM;
+ 
+-	result = wiphy_register(local->hw.wiphy);
+-	if (result < 0)
+-		goto fail_wiphy_register;
+-
+ 	/*
+ 	 * We use the number of queues for feature tests (QoS, HT) internally
+ 	 * so restrict them appropriately.
+@@ -1207,6 +1203,8 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+ 		goto fail_rate;
+ 	}
+ 
++	rtnl_unlock();
++
+ 	if (local->rate_ctrl) {
+ 		clear_bit(IEEE80211_HW_SUPPORTS_VHT_EXT_NSS_BW, hw->flags);
+ 		if (local->rate_ctrl->ops->capa & RATE_CTRL_CAPA_VHT_EXT_NSS_BW)
+@@ -1254,6 +1252,12 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+ 		local->sband_allocated |= BIT(band);
+ 	}
+ 
++	result = wiphy_register(local->hw.wiphy);
++	if (result < 0)
++		goto fail_wiphy_register;
++
++	rtnl_lock();
++
+ 	/* add one default STA interface if supported */
+ 	if (local->hw.wiphy->interface_modes & BIT(NL80211_IFTYPE_STATION) &&
+ 	    !ieee80211_hw_check(hw, NO_AUTO_VIF)) {
+@@ -1293,6 +1297,8 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+ #if defined(CONFIG_INET) || defined(CONFIG_IPV6)
+  fail_ifa:
+ #endif
++	wiphy_unregister(local->hw.wiphy);
++ fail_wiphy_register:
+ 	rtnl_lock();
+ 	rate_control_deinitialize(local);
+ 	ieee80211_remove_interfaces(local);
+@@ -1302,8 +1308,6 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+ 	ieee80211_led_exit(local);
+ 	destroy_workqueue(local->workqueue);
+  fail_workqueue:
+-	wiphy_unregister(local->hw.wiphy);
+- fail_wiphy_register:
+ 	if (local->wiphy_ciphers_allocated)
+ 		kfree(local->hw.wiphy->cipher_suites);
+ 	kfree(local->int_scan_req);
+@@ -1353,8 +1357,8 @@ void ieee80211_unregister_hw(struct ieee80211_hw *hw)
+ 	skb_queue_purge(&local->skb_queue_unreliable);
+ 	skb_queue_purge(&local->skb_queue_tdls_chsw);
+ 
+-	destroy_workqueue(local->workqueue);
+ 	wiphy_unregister(local->hw.wiphy);
++	destroy_workqueue(local->workqueue);
+ 	ieee80211_led_exit(local);
+ 	kfree(local->int_scan_req);
+ }
+-- 
+2.7.4
 
