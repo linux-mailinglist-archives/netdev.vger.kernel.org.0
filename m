@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBC191A026A
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:05:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BE9A1A0267
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:05:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728431AbgDGADm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 20:03:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38360 "EHLO mail.kernel.org"
+        id S1728415AbgDGADg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 20:03:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38378 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728356AbgDGADJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Apr 2020 20:03:09 -0400
+        id S1727308AbgDGADL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Apr 2020 20:03:11 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 457AC2078C;
-        Tue,  7 Apr 2020 00:03:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8EECF2080C;
+        Tue,  7 Apr 2020 00:03:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586217789;
-        bh=JdtJsSJ3WVBLBbJeS+i+JF2aJaJCNvzsxpR2owr2CjA=;
+        s=default; t=1586217790;
+        bh=T/a03JFRVwZf26cJQ8+4XA7GcZj1JeU8Ggit0HX5RJM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hqHGkD9ol95LhRBzyTAWxlrjEbux7lStUvG5NtObupVnV4PB/r8yfA1/MTVUkNgBg
-         jBylc9UHUSF31/6VB+EVNp6m+ihyzDZb4JvapP3//m3D4ni8ROi2kSaO2uWsuSMt8Q
-         +yesNUMGLAi37uKg3Ktz/H4IeW3fh64W7btTs6go=
+        b=cUXHyP8Mql0fL+f0Ob7mjAaPbsRuxr4hWxBGssd7jJhnTNfZvNZagxSBb/W9C0hww
+         apU/1M7jbJv07HEnxGAz1Y2mZShLhcj6wR43ZCuRY5QFO4w5mWBP/Uuqs0ltppVuno
+         cYoVI8iHMoXQJp3aIQevjuc5G3EtlamjhNlsPQAo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>, Phil Sutter <phil@nwl.cc>,
-        Stefano Brivio <sbrivio@redhat.com>,
-        Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 3/5] netfilter: nf_tables: Allow set back-ends to report partial overlaps on insertion
-Date:   Mon,  6 Apr 2020 20:03:02 -0400
-Message-Id: <20200407000304.17360-3-sashal@kernel.org>
+Cc:     Xu Wang <vulab@iscas.ac.cn>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 4/5] qlcnic: Fix bad kzalloc null test
+Date:   Mon,  6 Apr 2020 20:03:03 -0400
+Message-Id: <20200407000304.17360-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200407000304.17360-1-sashal@kernel.org>
 References: <20200407000304.17360-1-sashal@kernel.org>
@@ -45,46 +43,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Xu Wang <vulab@iscas.ac.cn>
 
-[ Upstream commit 8c2d45b2b65ca1f215244be1c600236e83f9815f ]
+[ Upstream commit bcaeb886ade124331a6f3a5cef34a3f1484c0a03 ]
 
-Currently, the -EEXIST return code of ->insert() callbacks is ambiguous: it
-might indicate that a given element (including intervals) already exists as
-such, or that the new element would clash with existing ones.
+In qlcnic_83xx_get_reset_instruction_template, the variable
+of null test is bad, so correct it.
 
-If identical elements already exist, the front-end is ignoring this without
-returning error, in case NLM_F_EXCL is not set. However, if the new element
-can't be inserted due an overlap, we should report this to the user.
-
-To this purpose, allow set back-ends to return -ENOTEMPTY on collision with
-existing elements, translate that to -EEXIST, and return that to userspace,
-no matter if NLM_F_EXCL was set.
-
-Reported-by: Phil Sutter <phil@nwl.cc>
-Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 2fa1c4f2e94e0..d9b448ed9a47c 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -3642,6 +3642,11 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
- 				err = -EBUSY;
- 			else if (!(nlmsg_flags & NLM_F_EXCL))
- 				err = 0;
-+		} else if (err == -ENOTEMPTY) {
-+			/* ENOTEMPTY reports overlapping between this element
-+			 * and an existing one.
-+			 */
-+			err = -EEXIST;
- 		}
- 		goto err5;
- 	}
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
+index 07f9067affc65..cda5b0a9e9489 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
+@@ -1720,7 +1720,7 @@ static int qlcnic_83xx_get_reset_instruction_template(struct qlcnic_adapter *p_d
+ 
+ 	ahw->reset.seq_error = 0;
+ 	ahw->reset.buff = kzalloc(QLC_83XX_RESTART_TEMPLATE_SIZE, GFP_KERNEL);
+-	if (p_dev->ahw->reset.buff == NULL)
++	if (ahw->reset.buff == NULL)
+ 		return -ENOMEM;
+ 
+ 	p_buff = p_dev->ahw->reset.buff;
 -- 
 2.20.1
 
