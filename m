@@ -2,99 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C2B61A1828
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 00:29:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84ACC1A1840
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 00:32:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726627AbgDGW3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 18:29:49 -0400
-Received: from correo.us.es ([193.147.175.20]:53154 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726632AbgDGW3r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Apr 2020 18:29:47 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id A2505F2DF8
-        for <netdev@vger.kernel.org>; Wed,  8 Apr 2020 00:29:45 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 92D5CFF6FC
-        for <netdev@vger.kernel.org>; Wed,  8 Apr 2020 00:29:45 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 88602FF6F8; Wed,  8 Apr 2020 00:29:45 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id AF2C5FF6EF;
-        Wed,  8 Apr 2020 00:29:43 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 08 Apr 2020 00:29:43 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (unknown [90.77.255.23])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 8BB3F4251480;
-        Wed,  8 Apr 2020 00:29:43 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 7/7] netfilter: nf_tables: reintroduce the NFT_SET_CONCAT flag
-Date:   Wed,  8 Apr 2020 00:29:36 +0200
-Message-Id: <20200407222936.206295-8-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20200407222936.206295-1-pablo@netfilter.org>
-References: <20200407222936.206295-1-pablo@netfilter.org>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726484AbgDGWce (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 18:32:34 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:54212 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726406AbgDGWce (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 18:32:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
+        Subject:Sender:Reply-To:Content-ID:Content-Description;
+        bh=ceHE465QANvH7KjEA3vF1AMqSosilk1LOTmLSQVO4mc=; b=cdoLVg0f+DkRDM0bHuqLu3x5sp
+        mI8ZHvmxQYcVGrGSyLYhb44NUomTxgXFy4Ygh69JBzIy36w2UgzzPH5tbvlFJ62Z5/SjOpzgDgp9f
+        R34ZbRDTWb4708A5ppRpG+BCV+CD2XweradaE7zN6BN+a4hkuh0Mx0njn0Y8h7NOYX2GcqoDL4WnG
+        pr39YOZJEuTeLJ3Z9heTrmODkvGcKPHdff3hxQNgU3hkUK8IRvyE+/vFo8e0LAw5jqXN95nGtIhrd
+        hsDsuuTrYM+UZP0D8qZmG5+3HH+h1Z0xns3+CM5at4unx2lYgGrP7I6/siIsUih3GpaWukF5Jaw23
+        5X+GVXlw==;
+Received: from [2601:1c0:6280:3f0:897c:6038:c71d:ecac]
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jLwlk-0000Ds-Tl; Tue, 07 Apr 2020 22:32:32 +0000
+Subject: Re: [PATCH] Documentation: sock.h - fix warnings
+To:     Lothar Rubusch <l.rubusch@gmail.com>, kuba@kernel.org,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+References: <20200406215230.21758-1-l.rubusch@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <2d7059a9-930b-c62b-bf47-f5822720579b@infradead.org>
+Date:   Tue, 7 Apr 2020 15:32:32 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
+MIME-Version: 1.0
+In-Reply-To: <20200406215230.21758-1-l.rubusch@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stefano originally proposed to introduce this flag, users hit EOPNOTSUPP
-in new binaries with old kernels when defining a set with ranges in
-a concatenation.
+On 4/6/20 2:52 PM, Lothar Rubusch wrote:
+> Fix some sphinx warnings at 'make htmldocs'.
+> 
+> Signed-off-by: Lothar Rubusch <l.rubusch@gmail.com>
+> ---
+>  include/net/sock.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/net/sock.h b/include/net/sock.h
+> index 6d84784d33fa..2924bcbbd402 100644
+> --- a/include/net/sock.h
+> +++ b/include/net/sock.h
+> @@ -2554,8 +2554,8 @@ sk_is_refcounted(struct sock *sk)
+>  
+>  /**
+>   * skb_steal_sock
+> - * @skb to steal the socket from
+> - * @refcounted is set to true if the socket is reference-counted
+> + * @skb: to steal the socket from
+> + * @refcounted: is set to true if the socket is reference-counted
+>   */
+>  static inline struct sock *
+>  skb_steal_sock(struct sk_buff *skb, bool *refcounted)
+> 
 
-Fixes: f3a2181e16f1 ("netfilter: nf_tables: Support for sets with multiple ranged fields")
-Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- include/uapi/linux/netfilter/nf_tables.h | 2 ++
- net/netfilter/nf_tables_api.c            | 2 +-
- 2 files changed, 3 insertions(+), 1 deletion(-)
+Hi,
+How about something like this instead:
 
-diff --git a/include/uapi/linux/netfilter/nf_tables.h b/include/uapi/linux/netfilter/nf_tables.h
-index 30f2a87270dc..4565456c0ef4 100644
---- a/include/uapi/linux/netfilter/nf_tables.h
-+++ b/include/uapi/linux/netfilter/nf_tables.h
-@@ -276,6 +276,7 @@ enum nft_rule_compat_attributes {
-  * @NFT_SET_TIMEOUT: set uses timeouts
-  * @NFT_SET_EVAL: set can be updated from the evaluation path
-  * @NFT_SET_OBJECT: set contains stateful objects
-+ * @NFT_SET_CONCAT: set contains a concatenation
-  */
- enum nft_set_flags {
- 	NFT_SET_ANONYMOUS		= 0x1,
-@@ -285,6 +286,7 @@ enum nft_set_flags {
- 	NFT_SET_TIMEOUT			= 0x10,
- 	NFT_SET_EVAL			= 0x20,
- 	NFT_SET_OBJECT			= 0x40,
-+	NFT_SET_CONCAT			= 0x80,
- };
- 
  /**
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 21cbde6ecee3..9adfbc7e8ae7 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -3962,7 +3962,7 @@ static int nf_tables_newset(struct net *net, struct sock *nlsk,
- 		if (flags & ~(NFT_SET_ANONYMOUS | NFT_SET_CONSTANT |
- 			      NFT_SET_INTERVAL | NFT_SET_TIMEOUT |
- 			      NFT_SET_MAP | NFT_SET_EVAL |
--			      NFT_SET_OBJECT))
-+			      NFT_SET_OBJECT | NFT_SET_CONCAT))
- 			return -EOPNOTSUPP;
- 		/* Only one of these operations is supported */
- 		if ((flags & (NFT_SET_MAP | NFT_SET_OBJECT)) ==
+- * skb_steal_sock
+- * @skb to steal the socket from
+- * @refcounted is set to true if the socket is reference-counted
++ * skb_steal_sock - steal a socket from an sk_buff
++ * @skb: sk_buff to steal the socket from
++ * @refcounted: is set to true if the socket is reference-counted
+  */
+
+
+and preferably (IMO) the subject should be more like this:
+
+[PATCH] net: sock.h: fix skb_steal_sock() kernel-doc notation
+
+
+thanks.
 -- 
-2.11.0
+~Randy
 
