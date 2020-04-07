@@ -2,190 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0BE91A0E06
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 14:57:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9663B1A0E44
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 15:23:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728736AbgDGM5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 08:57:49 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:37334 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728146AbgDGM5s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 08:57:48 -0400
-Received: by mail-wm1-f68.google.com with SMTP id j19so1728677wmi.2;
-        Tue, 07 Apr 2020 05:57:47 -0700 (PDT)
+        id S1728768AbgDGNXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 09:23:32 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:36065 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728555AbgDGNXb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 09:23:31 -0400
+Received: by mail-pf1-f193.google.com with SMTP id n10so813738pff.3
+        for <netdev@vger.kernel.org>; Tue, 07 Apr 2020 06:23:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=NJgFiHGVdEHVoPHsjcjQFPUVIguP3zuu0mFKw20AE/I=;
-        b=vBaMQQlfPEOTUUXSzYIRq4G4kDrCj4VmuSnRz3BAzJkT0orChsQF6W5INidkHLNPW7
-         nqTyfzXBdohezy0lOGI3lsaO3OXyZ6MdPUHTa1tcM2ngqPFMKVvkUY1s0dXNxJgocRgO
-         Gx5sYtkoAVX+xl/QN/Hz+fspEgaZqIcIQbVGDG5oGJ8HV45f9zFNSbU9c7NNqwKVF5Yi
-         0K3exelQTcqOpeP5+huVBYoOda9yUg+AiGiV3ezLl1QSpsaHcj97JsmWdaHoj5AP8c5u
-         Te9qraRr03mED15QGisiH2MQZobn32netPPlIBXXmbbaQBwVOatO/8ev0uu42D3dYGBN
-         RWEw==
+        h=from:to:cc:subject:date:message-id;
+        bh=TjWM2YzH1USVIxCoPL8ZalCmcQDCAISbYZs6BcOuYLg=;
+        b=dPAdSe+pVRwEsFLfBGuEUSoatGcYsbEKQTtF3K3yjYv2R1N0rbpc+inVCf35DYZ8X2
+         FaKGRexP6wKSSu1EaIBYWPoYmcggItYUBd9hNuAcU3mvBy/bUhMI5IANJFhKjO8FLmUh
+         x8///Nx7b2y1X78yXOvJc258CB7oq7s2HPPOKg+P6YsiMcr5ZYBV8CbjXIPh3tN5bsHD
+         5lc/07QK55iNL2rw6mY3VGSspq4qz67Oq3S82Qy8ecSz5/2uN+GRRLvWNSjsUx928aho
+         2NJtRA2fQ28WN5FCXvIutcTLFjlRQNgUrI1laXru5W9Ux8WLp1Cxs/cE0MA6VuNSXx7Y
+         Afkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=NJgFiHGVdEHVoPHsjcjQFPUVIguP3zuu0mFKw20AE/I=;
-        b=Vyr/TmkQhAvU1NHPqqyB9d9aSsha+imcteGun1aqNAoI8GgG1uXWjbO9q+otC2FpK6
-         EUKI7Qlwq6bCzGQfBsWqlaqGrVx2qvevW5YRg4wCh/OjzJpt95Bn6dqbMLxcdRgV7CLi
-         3omADt1XgTukdJu4Nw5dEXymP0UQbmp9KUykU6wmD1odHEC7+Rdoue/ZCLmY75feKxi8
-         ix6L09RQSHZmLDDiNI5L3c3threSfuPdMsOpzWOZn1DMcqxlIGQVRtXaPbjkfaPTtF+f
-         dXaEaut872tdfu9U/ksHPanJX5i5ZFfl+UkeBIdIMS9L1KbQYn4+a5AgGNGKfqPRsjJw
-         b8hw==
-X-Gm-Message-State: AGi0PuYbEfFls2vJhiqucth+Jz4RLeKOqWGzPoJgjyy+ZkBWVkONkPpk
-        3fwGaGBNXZgQ2orqE/dMbz28vEnMbAKICiNNqZU=
-X-Google-Smtp-Source: APiQypLf2n32gkj/40LPaOXiDFIUwBtDEXVa9iT+o0zSQGe98lpZiv9eO+Dg4KTGdklo81hElYAdZ5EZ/fvR5qsk8rE=
-X-Received: by 2002:a1c:7c0d:: with SMTP id x13mr2251285wmc.44.1586264266277;
- Tue, 07 Apr 2020 05:57:46 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200407023512.GA25005@ubuntu> <20200407030504.GX23230@ZenIV.linux.org.uk>
- <20200407031318.GY23230@ZenIV.linux.org.uk> <CAM7-yPQas7hvTVLa4U80t0Em0HgLCk2whLQa4O3uff5J3OYiAA@mail.gmail.com>
- <20200407040354.GZ23230@ZenIV.linux.org.uk> <CAM7-yPRaQsNgZKjru40nM1N_u8HVLVKmJCAzu20DcPL=jzKjWQ@mail.gmail.com>
-In-Reply-To: <CAM7-yPRaQsNgZKjru40nM1N_u8HVLVKmJCAzu20DcPL=jzKjWQ@mail.gmail.com>
-From:   Yun Levi <ppbuk5246@gmail.com>
-Date:   Tue, 7 Apr 2020 21:57:35 +0900
-Message-ID: <CAM7-yPQ4DNNBHd2=QJpCLAmRRLSVuxKjnH6kJmuBdQ8iP0TRSA@mail.gmail.com>
-Subject: Fwd: [PATCH] netns: dangling pointer on netns bind mount point.
-To:     daniel@iogearbox.net, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=TjWM2YzH1USVIxCoPL8ZalCmcQDCAISbYZs6BcOuYLg=;
+        b=RN5+TJ3GeE3MqNWL3LZ41kX5v9z1CMZyEgt68Tlym6laPjhqdnwm4gXRBcAEIKnq1o
+         s9F8KoRFZeDRwqbzj0tQvcGGaCZkw3XMY4Z0DyoQCBBF/6v7kilOgf2cUtIMmIsI38uK
+         5DrSiiaVf/+FWDDheIVy6yf0UUwc6vXeF7zbex8M7QUMcOneDDMD7V8PA+pUlcs7Hyxv
+         jl06bERFT52jbUWTsxQwOsZfi31BR8q5JF+3GhPRctRqboqLqZ9XUB8WbAK4VEt63Tce
+         F2Yldk6DsYNUfIDobDbcDZfK/EcqvCo+9n64tadolrMYdOQV3FrW/aAHlbmiNJ/Dyx/D
+         9Ccg==
+X-Gm-Message-State: AGi0PuYHlwy5X4kUJoxyJf3GcTpk9ECgWQ8UCDnI7My0wcv7UEQfVYtz
+        oq8C+Sk84oQqPdRK+pFW+PM=
+X-Google-Smtp-Source: APiQypKJdtv8ncQRXFTE5q22PqSI6wOSsjstBz+DR+xQG1RaB6ox36i1ddnehAagkMyfZkb6TvuCaw==
+X-Received: by 2002:a63:6f84:: with SMTP id k126mr2042976pgc.391.1586265808681;
+        Tue, 07 Apr 2020 06:23:28 -0700 (PDT)
+Received: from localhost.localdomain ([180.70.143.152])
+        by smtp.gmail.com with ESMTPSA id i16sm13992938pfq.165.2020.04.07.06.23.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Apr 2020 06:23:27 -0700 (PDT)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     ap420073@gmail.com
+Subject: [PATCH net] hsr: check protocol version in hsr_newlink()
+Date:   Tue,  7 Apr 2020 13:23:21 +0000
+Message-Id: <20200407132321.3957-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
----------- Forwarded message ---------
-From: Yun Levi <ppbuk5246@gmail.com>
-Date: Tue, Apr 7, 2020 at 9:53 PM
-Subject: Re: [PATCH] netns: dangling pointer on netns bind mount point.
-To: Al Viro <viro@zeniv.linux.org.uk>
-Cc: David S. Miller <davem@davemloft.net>, Jakub Kicinski
-<kuba@kernel.org>, Guillaume Nault <gnault@redhat.com>, Nicolas
-Dichtel <nicolas.dichtel@6wind.com>, Eric Dumazet
-<edumazet@google.com>, Li RongQing <lirongqing@baidu.com>, Thomas
-Gleixner <tglx@linutronix.de>, Johannes Berg
-<johannes.berg@intel.com>, David Howells <dhowells@redhat.com>,
-<daniel@iogearbox.net>, <linux-fsdevel@vger.kernel.org>,
-<linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+In the current hsr code, only 0 and 1 protocol versions are valid.
+But current hsr code doesn't check the version, which is received by
+userspace.
 
+Test commands:
+    ip link add dummy0 type dummy
+    ip link add dummy1 type dummy
+    ip link add hsr0 type hsr slave1 dummy0 slave2 dummy1 version 4
 
-BTW, It's my question.
+In the test commands, version 4 is invalid.
+So, the command should be failed.
 
->Look: we call ns_get_path(), which calls ns_get_path_cb(), which
->calls the callback passed to it (ns_get_path_task(), in this case),
->which grabs a reference to ns.  Then we pass that reference to
->__ns_get_path().
->
->__ns_get_path() looks for dentry stashed in ns.  If there is one
->and it's still alive, we grab a reference to that dentry and drop
->the reference to ns - no new inodes had been created, so no new
->namespace references have appeared.  Existing inode is pinned
->by dentry and dentry is pinned by _dentry_ reference we've got.
+After this patch, following error will occur.
+"Error: hsr: Only versions 0..1 are supported."
 
-actually ns_get_path is called in unshare(2). and it makes new dentry
-and inode in __ns_get_path finally (Cuz it create new network
-namespace)
-In that case, when I mount with --bind option to this
-proc/self/ns/net, it only increase dentry refcount on
-do_loopback->clone_mnt finally (not call netns_operation->get)
-That means it's not increase previous created network namespace
-reference count but only increase reference count of _dentry_
-In that situation, If I exit the child process it definitely frees the
-net_namespace previous created at the same time it decrease
-net_namespace's refcnt in exit_task_namespace().
-It means it's possible that bind mount point can hold the dentry with
-inode having net_namespace's dangling pointer in another process.
-In above situation, parent who know that binded mount point calls
-setns(2) then it sets the net_namespace which is refered by the inode
-of the dentry increased by do_loopback.
-That makes set the net_namespace which was freed already.
+Fixes: ee1c27977284 ("net/hsr: Added support for HSR v1")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+---
+ net/hsr/hsr_netlink.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-The Kernel Panic log is happend NOT in child kill but in Parent killed
-after I setns(2) with the net_namespace made by child process.
+diff --git a/net/hsr/hsr_netlink.c b/net/hsr/hsr_netlink.c
+index 5465a395da04..1decb25f6764 100644
+--- a/net/hsr/hsr_netlink.c
++++ b/net/hsr/hsr_netlink.c
+@@ -69,10 +69,16 @@ static int hsr_newlink(struct net *src_net, struct net_device *dev,
+ 	else
+ 		multicast_spec = nla_get_u8(data[IFLA_HSR_MULTICAST_SPEC]);
+ 
+-	if (!data[IFLA_HSR_VERSION])
++	if (!data[IFLA_HSR_VERSION]) {
+ 		hsr_version = 0;
+-	else
++	} else {
+ 		hsr_version = nla_get_u8(data[IFLA_HSR_VERSION]);
++		if (hsr_version > 1) {
++			NL_SET_ERR_MSG_MOD(extack,
++					   "Only versions 0..1 are supported");
++			return -EINVAL;
++		}
++	}
+ 
+ 	return hsr_dev_finalize(dev, link, multicast_spec, hsr_version, extack);
+ }
+-- 
+2.17.1
 
-Thanks you for your reviewing, But Please forgive that I couldn't
-share .config right now (I try to make for x86....)
-I try to understand your comments But Please forgive my fault because
-of my ignorant...
-If my explain is wrong, please rebuke me... and Please share your knowledge...
-
-Thank you.
-
-On Tue, Apr 7, 2020 at 1:04 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
->
-> On Tue, Apr 07, 2020 at 12:29:34PM +0900, Yun Levi wrote:
->
-> > sock_prot_inuse_add+0x10/0x20
-> > __sock_release+0x44/0xc0
-> > sock_close+0x14/0x20
-> > __fput+0x8c/0x1b8
-> > ____fput+0xc/0x18
-> > task_work_run+0xa8/0xd8
-> > do_exit+0x2e4/0xa50
-> > do_group_exit+0x34/0xc8
-> > get_signal+0xd4/0x600
-> > do_signal+0x174/0x268
-> > do_notify_resume+0xcc/0x110
-> > work_pending+0x8/0x10
-> > Code: b940c821 f940c000 d538d083 8b010800 (b8606861) ---[ end trace
-> > 0b98c9ccbfd9f6fd ]---
-> > Date/Time : 02-14-0120 06:35:47 Kernel panic - not syncing: Fatal
-> > exception in interrupt SMP: stopping secondary CPUs Kernel Offset:
-> > disabled CPU features: 0x0,21806000 Memory Limit: none
-> >
-> > What I saw is when I try to bind on some mount point to
-> > /proc/{pid}/ns/net which made by child process, That's doesn't
-> > increase the netns' refcnt.
->
-> Why would it?  Increase of netns refcount should happen when you
-> follow /proc/*/ns/net and stay for as long as nsfs inode is alive,
-> not by cloning that mount.  And while we are at it, you don't need
-> to bind it anywhere in order to call setns() - just open the
-> sucker and then feed the resulting descriptor to setns(2).  No
-> mount --bind involved and if child exiting between open() and
-> setns() would free netns, we would have exact same problem.
->
-> > And when the child process's going to exit, it frees the netns But
-> > Still bind mount point's inode's private data point to netns which was
-> > freed by child when it exits.
->
-> Look: we call ns_get_path(), which calls ns_get_path_cb(), which
-> calls the callback passed to it (ns_get_path_task(), in this case),
-> which grabs a reference to ns.  Then we pass that reference to
-> __ns_get_path().
->
-> __ns_get_path() looks for dentry stashed in ns.  If there is one
-> and it's still alive, we grab a reference to that dentry and drop
-> the reference to ns - no new inodes had been created, so no new
-> namespace references have appeared.  Existing inode is pinned
-> by dentry and dentry is pinned by _dentry_ reference we've got.
->
-> If dentry is not there or is already in the middle of being destroyed,
-> we allocate a new inode, stash our namespace reference into it,
-> create a dentry referencing that new inode, stash it into namespace
-> and return that dentry.  Without dropping namespace reference we'd
-> obtained in ns_get_path_task() - it went into new inode.
->
-> If inode or dentry creation fails (out of memory), we drop what
-> we'd obtained (namespace if inode creation fails, just the inode
-> if dentry creation fails - namespace reference that went into
-> inode will be dropped by inode destructor in the latter case) and
-> return an error.
->
-> If somebody else manages to get through the entire thing while
-> we'd been allocating stuff and we see _their_ dentry already
-> stashed into namespace, we just drop our dentry (its destructor
-> will drop inode reference, which will lead to inode destructor,
-> which will drop namespace reference) and bugger off with -EAGAIN.
-> The caller (ns_get_path_cb()) will retry the entire thing.
->
-> The invariant to be preserved here is "each of those inodes
-> holds a reference to namespace for as long as the inode exists".
-> ns_get_path() increments namespace refcount if and only if it
-> has allocated an nsfs inode.  If it grabs an existing dentry
-> instead, the namespace refcount remains unchanged.
->
-> Anyway, I would really like to see .config and C (or shell)
-> reproducer.  Ideally - .config that could be run in a KVM.
