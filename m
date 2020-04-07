@@ -2,255 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6964A1A045B
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 03:17:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD7551A04A1
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 03:45:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726331AbgDGBRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 21:17:16 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:34588 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726882AbgDGBRP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 21:17:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586222233;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=L4yUJTneo14gmnV6yvCsrtosUccNNJJsj0HwyG8nxy8=;
-        b=dYDUoHtjRkXZ+xjWapTkM64AhkSsBNogYXtxJAE4BqLvL+dZwKsYhapp9jq7FcPPT88UO8
-        P6TAAKaOiBNQzlV/fjZhU/VEuIznVMVM1RFkZd9SqWaNffkvA5CRQRhsndzNrMvj9QYRlB
-        BbPv950ebFQcnApjoo1wjhBx/3fdNu0=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-18-sXujBEmtPwq5T-iIalohZQ-1; Mon, 06 Apr 2020 21:17:11 -0400
-X-MC-Unique: sXujBEmtPwq5T-iIalohZQ-1
-Received: by mail-wm1-f70.google.com with SMTP id y1so16811wmj.3
-        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 18:17:11 -0700 (PDT)
+        id S1726534AbgDGBpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 21:45:01 -0400
+Received: from mail-qk1-f180.google.com ([209.85.222.180]:39383 "EHLO
+        mail-qk1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726287AbgDGBpB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Apr 2020 21:45:01 -0400
+Received: by mail-qk1-f180.google.com with SMTP id b62so151116qkf.6;
+        Mon, 06 Apr 2020 18:45:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=NggrQUhazO137ux8faKO/YjQPeO/hVW++bf4nbV8Dug=;
+        b=TWOB1bmgM65TTlDb+FICN4fsLq82Pd+fpyI6eOud08w1y7J4mKPxzyk+9ibTlnFNKV
+         n7YbjixxHTISqIsr8Y+eMQUO1q6X92ernNn/iLMTRol84d6azAuMacLdU2GqzR1QvR2T
+         bagWiwX1h3yeO4YiHFNKLxVhlgFJ8uX10r83VnvAO9IwmYQHAywPkUrOGK1N0ivhFGJk
+         WWnlwWbk/Lt9/estG+VKidtdQK6u2FedlqFiy7X7KJf8y3EK2qtY/4C8ykVO4t0wMQwK
+         NW5yGRSEBzl2YE9OBCyS/j1nA+Ajxeo1Nzs//nKE/nUCmKIKJVNz3bStlVhC+djGmWcW
+         Svxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to;
-        bh=L4yUJTneo14gmnV6yvCsrtosUccNNJJsj0HwyG8nxy8=;
-        b=XZd6qLRliVhSynNQolIxwE0Dn0FByIOmGYTG5Z7B6tz+K4yYN1/GnymHz1eLhApReq
-         zgHj++Oz5HsZFPKQcJ/5hIPtNG7oFTMTzfs3Qb6jWocOnDvEVTa9mc3kDHYt+WOij2Xb
-         vBv7lkgGlzdfmsrefMmrxvMcPHwydg0DSTlPJOCJrBsHAy5/6va/QhIMBMAPMbf5utE4
-         lLCo5SHKiOh+QzuR+HcexT2nJbeAxqVmP/xJsdg9oxDFFB95mtDsgnB8FVRxOS2IEErK
-         3PdvL243KeL0AM3U52/6tyfCYCczyZtNos9zr9AD9ebjGU2Wzw7ZnEeRDGcLbnChBQHB
-         0peg==
-X-Gm-Message-State: AGi0PuZx3lDgAPpvgl1K/fTYY0c1f/sw/Z9KQyE7BRAnjD/kk6AQCkpY
-        AiWzSr1eiGBDimlaJ1cLxy+meUMHvf6NHLO968nNDyANll2GglCRfgngZabfpFLGqtaboNk1eWB
-        poxpaP9Ej9qJoXmQw
-X-Received: by 2002:a1c:5fc4:: with SMTP id t187mr374383wmb.181.1586222229740;
-        Mon, 06 Apr 2020 18:17:09 -0700 (PDT)
-X-Google-Smtp-Source: APiQypKkiNknhVaK+RZPuldKf4eAt3hD9+QrpIeBJqjHyc1vicdnoI2VoW6Zw94N1UlJe5J6ZKdvFQ==
-X-Received: by 2002:a1c:5fc4:: with SMTP id t187mr374365wmb.181.1586222229459;
-        Mon, 06 Apr 2020 18:17:09 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
-        by smtp.gmail.com with ESMTPSA id a145sm122477wmd.20.2020.04.06.18.17.08
+        bh=NggrQUhazO137ux8faKO/YjQPeO/hVW++bf4nbV8Dug=;
+        b=pSMya9wjAKxi9W6cC8L4uhVQfbyf0pyYYGZUTB0GPSnG1rrh7mwtj2/Ncqyyo8LJAp
+         9MJJxFr/A8bfRdjhVsM5mI8FbBWylRwvVt64wxUBR2IvVfR+/mFUhywrttWruTsnd7vJ
+         SvfYXQd1ptv9Gi76L9/PVJ1Iwr8KwFYmBmhwZBktTDJcBgb4kYgJLoNrx+2IF1GCF0Rs
+         uVcFnirB5evW/qEUgCaNrYsb2vMzUblWl2aGhn+rilJhtEOlyMCHyKvIyeohJp12POBK
+         FJIGz5XTNm3wnp0WycXgbyyjESCh2BfhZB2Z+9Db+FCA664fc0koHL2ZNGQwdK/oNUV+
+         0mwQ==
+X-Gm-Message-State: AGi0PuZwgULpAH56AFiGr5ESGBmSYxqjLCr2o2XKhWucE7777NCezAJA
+        Cc1dmVLfHoomyxEh7/rx3Nk=
+X-Google-Smtp-Source: APiQypIzVJihzS4VXWcOxKweg3CURC91hAQrCk2m4O24YXSnhFTSTfXGAHehx+5DI7h/qCpOgqWPYg==
+X-Received: by 2002:a37:a5d6:: with SMTP id o205mr12183158qke.7.1586223899622;
+        Mon, 06 Apr 2020 18:44:59 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c091:480::84df])
+        by smtp.gmail.com with ESMTPSA id e5sm50198qtp.83.2020.04.06.18.44.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Apr 2020 18:17:09 -0700 (PDT)
-Date:   Mon, 6 Apr 2020 21:17:07 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH v8 19/19] vhost: batching fetches
-Message-ID: <20200407011612.478226-20-mst@redhat.com>
-References: <20200407011612.478226-1-mst@redhat.com>
+        Mon, 06 Apr 2020 18:44:58 -0700 (PDT)
+Date:   Mon, 6 Apr 2020 18:44:55 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrey Ignatov <rdna@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: bpf: ability to attach freplace to multiple parents
+Message-ID: <20200407014455.u7x36kkfmxcllqa6@ast-mbp.dhcp.thefacebook.com>
+References: <CAEf4BzY1bs5WRsvr5UbfqV9UKnwxmCUa9NQ6FWirT2uREaj7_g@mail.gmail.com>
+ <87369wrcyv.fsf@toke.dk>
+ <CAEf4BzZKvuPz8NZODYnn4DOcjPnj5caVeOHTP9_D3=wL0nVFfw@mail.gmail.com>
+ <CACAyw9-FrwgBGjGT1CYrKJuyRJtwn0XUsifF_uR6LpRbcucN+A@mail.gmail.com>
+ <20200326195340.dznktutm6yq763af@ast-mbp>
+ <87o8sim4rw.fsf@toke.dk>
+ <20200402202156.hq7wpz5vdoajpqp5@ast-mbp>
+ <87o8s9eg5b.fsf@toke.dk>
+ <20200402215452.dkkbbymnhzlcux7m@ast-mbp>
+ <87ftdldkvl.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200407011612.478226-1-mst@redhat.com>
-X-Mailer: git-send-email 2.24.1.751.gd10ce2899c
-X-Mutt-Fcc: =sent
+In-Reply-To: <87ftdldkvl.fsf@toke.dk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With this patch applied, new and old code perform identically.
+On Fri, Apr 03, 2020 at 10:38:38AM +0200, Toke Høiland-Jørgensen wrote:
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+> 
+> > It's a different link.
+> > For fentry/fexit/freplace the link is pair:
+> >   // target           ...         bpf_prog
+> > (target_prog_fd_or_vmlinux, fentry_exit_replace_prog_fd).
+> >
+> > So for xdp case we will have:
+> > root_link = (eth0_ifindex, dispatcher_prog_fd) // dispatcher prog attached to eth0
+> > link1 = (dispatcher_prog_fd, xdp_firewall1_fd) // 1st extension prog attached to dispatcher
+> > link2 = (dispatcher_prog_fd, xdp_firewall2_fd) // 2nd extension prog attached to dispatcher
+> >
+> > Now libxdp wants to update the dispatcher prog.
+> > It generates new dispatcher prog with more placeholder entries or new policy:
+> > new_dispatcher_prog_fd.
+> > It's not attached anywhere.
+> > Then libxdp calls new bpf_raw_tp_open() api I'm proposing above to create:
+> > link3 = (new_dispatcher_prog_fd, xdp_firewall1_fd)
+> > link4 = (new_dispatcher_prog_fd, xdp_firewall2_fd)
+> > Now we have two firewalls attached to both old dispatcher prog and new dispatcher prog.
+> > Both firewalls are executing via old dispatcher prog that is active.
+> > Now libxdp calls:
+> > bpf_link_udpate(root_link, dispatcher_prog_fd, new_dispatcher_prog_fd)
+> > which atomically replaces old dispatcher prog with new dispatcher prog in eth0.
+> > The traffic keeps flowing into both firewalls. No packets lost.
+> > But now it goes through new dipsatcher prog.
+> > libxdp can now:
+> > close(dispatcher_prog_fd);
+> > close(link1);
+> > close(link2);
+> > Closing (and destroying two links) will remove old dispatcher prog
+> > from linked list in xdp_firewall1_prog->aux->linked_prog_list and from
+> > xdp_firewall2_prog->aux->linked_prog_list.
+> > Notice that there is no need to explicitly detach old dispatcher prog from eth0.
+> > link_update() did it while replacing it with new dispatcher prog.
+> 
+> Yeah, this was the flow I had in mind already. However, what I meant was
+> that *from the PoV of an application consuming the link fd*, this would
+> lead to dangling links.
+> 
+> I.e., an application does:
+> 
+> app1_link_fd = libxdp_install_prog(prog1);
+> 
+> and stores link_fd somewhere (just holds on to it, or pins it
+> somewhere).
+> 
+> Then later, another application does:
+> 
+> app2_link_fd = libxdp_install_prog(prog2);
+> 
+> but this has the side-effect of replacing the dispatcher, so
+> app1_link_fd is now no longer valid.
+> 
+> This can be worked around, of course (e.g., just return the prog_fd and
+> hide any link_fd details inside the library), but if the point of
+> bpf_link is that the application could hold on to it and use it for
+> subsequent replacements, that would be nice to have for consumers of the
+> library as well, no?
 
-Lots of extra optimizations are now possible, e.g.
-we can fetch multiple heads with copy_from/to_user now.
-We can get rid of maintaining the log array.  Etc etc.
+link is a pair of (hook, prog). I don't think that single bpf-link (FD)
+should represent (hook1, hook2, hook3, prog). It will be super confusing to the
+user space when single FD magically turns into multi attach. If you really need
+one object to represent multiple bpf_links where the same program is attached
+to multiple location such abstraction needs to be done by user space library.
+At the end it's libbpf job. I think it's fine for libbpf to have
+'struct bpf_multi_link' where multiple 'struct bpf_link' can be aggregated.
+From task point of view they are all FDs and will get autoclosed and such.
 
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Eugenio PÃ©rez <eperezma@redhat.com>
-Link: https://lore.kernel.org/r/20200401183118.8334-4-eperezma@redhat.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- drivers/vhost/test.c  |  2 +-
- drivers/vhost/vhost.c | 47 ++++++++++++++++++++++++++++++++++++++-----
- drivers/vhost/vhost.h |  5 ++++-
- 3 files changed, 47 insertions(+), 7 deletions(-)
+There is also a way to update dispatch prog without introducing bpf_multi_link.
+My understanding that you don't want libxdp to work as a daemon.
+So app1 does libxdp_install_prog(prog1) and gets back
+'struct bpf_link *' (which is FD internally).
+App2 wants to refresh dispatcher prog.
+It loads new prog. Finds bpf_link of app1 (ether in bpffs or via bpf_link idr).
+Queries app1_prog_id->fd.
+app1_link2_fd = bpf_raw_tp_open(app1_prog_fd, new_dispatch_prog, new_btf_id);
+// now app1_prog is attached to two dispatcher progs
 
-diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
-index b06680833f03..251ca723ac3f 100644
---- a/drivers/vhost/test.c
-+++ b/drivers/vhost/test.c
-@@ -119,7 +119,7 @@ static int vhost_test_open(struct inode *inode, struct file *f)
- 	dev = &n->dev;
- 	vqs[VHOST_TEST_VQ] = &n->vqs[VHOST_TEST_VQ];
- 	n->vqs[VHOST_TEST_VQ].handle_kick = handle_vq_kick;
--	vhost_dev_init(dev, vqs, VHOST_TEST_VQ_MAX, UIO_MAXIOV,
-+	vhost_dev_init(dev, vqs, VHOST_TEST_VQ_MAX, UIO_MAXIOV + 64,
- 		       VHOST_TEST_PKT_WEIGHT, VHOST_TEST_WEIGHT, NULL);
- 
- 	f->private_data = n;
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index 6ca658c21e15..0395229486a9 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -299,6 +299,7 @@ static void vhost_vq_reset(struct vhost_dev *dev,
- {
- 	vq->num = 1;
- 	vq->ndescs = 0;
-+	vq->first_desc = 0;
- 	vq->desc = NULL;
- 	vq->avail = NULL;
- 	vq->used = NULL;
-@@ -367,6 +368,11 @@ static int vhost_worker(void *data)
- 	return 0;
- }
- 
-+static int vhost_vq_num_batch_descs(struct vhost_virtqueue *vq)
-+{
-+	return vq->max_descs - UIO_MAXIOV;
-+}
-+
- static void vhost_vq_free_iovecs(struct vhost_virtqueue *vq)
- {
- 	kfree(vq->descs);
-@@ -389,6 +395,9 @@ static long vhost_dev_alloc_iovecs(struct vhost_dev *dev)
- 	for (i = 0; i < dev->nvqs; ++i) {
- 		vq = dev->vqs[i];
- 		vq->max_descs = dev->iov_limit;
-+		if (vhost_vq_num_batch_descs(vq) < 0) {
-+			return -EINVAL;
-+		}
- 		vq->descs = kmalloc_array(vq->max_descs,
- 					  sizeof(*vq->descs),
- 					  GFP_KERNEL);
-@@ -1570,6 +1579,7 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
- 		vq->last_avail_idx = s.num;
- 		/* Forget the cached index value. */
- 		vq->avail_idx = vq->last_avail_idx;
-+		vq->ndescs = vq->first_desc = 0;
- 		break;
- 	case VHOST_GET_VRING_BASE:
- 		s.index = idx;
-@@ -2136,7 +2146,7 @@ static int fetch_indirect_descs(struct vhost_virtqueue *vq,
- 	return 0;
- }
- 
--static int fetch_descs(struct vhost_virtqueue *vq)
-+static int fetch_buf(struct vhost_virtqueue *vq)
- {
- 	unsigned int i, head, found = 0;
- 	struct vhost_desc *last;
-@@ -2149,7 +2159,11 @@ static int fetch_descs(struct vhost_virtqueue *vq)
- 	/* Check it isn't doing very strange things with descriptor numbers. */
- 	last_avail_idx = vq->last_avail_idx;
- 
--	if (vq->avail_idx == vq->last_avail_idx) {
-+	if (unlikely(vq->avail_idx == vq->last_avail_idx)) {
-+		/* If we already have work to do, don't bother re-checking. */
-+		if (likely(vq->ndescs))
-+			return vq->num;
-+
- 		if (unlikely(vhost_get_avail_idx(vq, &avail_idx))) {
- 			vq_err(vq, "Failed to access avail idx at %p\n",
- 				&vq->avail->idx);
-@@ -2240,6 +2254,24 @@ static int fetch_descs(struct vhost_virtqueue *vq)
- 	return 0;
- }
- 
-+static int fetch_descs(struct vhost_virtqueue *vq)
-+{
-+	int ret = 0;
-+
-+	if (unlikely(vq->first_desc >= vq->ndescs)) {
-+		vq->first_desc = 0;
-+		vq->ndescs = 0;
-+	}
-+
-+	if (vq->ndescs)
-+		return 0;
-+
-+	while (!ret && vq->ndescs <= vhost_vq_num_batch_descs(vq))
-+		ret = fetch_buf(vq);
-+
-+	return vq->ndescs ? 0 : ret;
-+}
-+
- /* This looks in the virtqueue and for the first available buffer, and converts
-  * it to an iovec for convenient access.  Since descriptors consist of some
-  * number of output then some number of input descriptors, it's actually two
-@@ -2265,7 +2297,7 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
- 	if (unlikely(log))
- 		*log_num = 0;
- 
--	for (i = 0; i < vq->ndescs; ++i) {
-+	for (i = vq->first_desc; i < vq->ndescs; ++i) {
- 		unsigned iov_count = *in_num + *out_num;
- 		struct vhost_desc *desc = &vq->descs[i];
- 		int access;
-@@ -2311,14 +2343,19 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
- 		}
- 
- 		ret = desc->id;
-+
-+		if (!(desc->flags & VRING_DESC_F_NEXT))
-+			break;
- 	}
- 
--	vq->ndescs = 0;
-+	vq->first_desc = i + 1;
- 
- 	return ret;
- 
- err:
--	vhost_discard_vq_desc(vq, 1);
-+	for (i = vq->first_desc; i < vq->ndescs; ++i)
-+		if (!(vq->descs[i].flags & VRING_DESC_F_NEXT))
-+			vhost_discard_vq_desc(vq, 1);
- 	vq->ndescs = 0;
- 
- 	return ret;
-diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-index 76356edee8e5..a67bda9792ec 100644
---- a/drivers/vhost/vhost.h
-+++ b/drivers/vhost/vhost.h
-@@ -81,6 +81,7 @@ struct vhost_virtqueue {
- 
- 	struct vhost_desc *descs;
- 	int ndescs;
-+	int first_desc;
- 	int max_descs;
- 
- 	struct file *kick;
-@@ -229,7 +230,7 @@ void vhost_iotlb_map_free(struct vhost_iotlb *iotlb,
- 			  struct vhost_iotlb_map *map);
- 
- #define vq_err(vq, fmt, ...) do {                                  \
--		pr_debug(pr_fmt(fmt), ##__VA_ARGS__);       \
-+		pr_err(pr_fmt(fmt), ##__VA_ARGS__);       \
- 		if ((vq)->error_ctx)                               \
- 				eventfd_signal((vq)->error_ctx, 1);\
- 	} while (0)
-@@ -255,6 +256,8 @@ static inline void vhost_vq_set_backend(struct vhost_virtqueue *vq,
- 					void *private_data)
- {
- 	vq->private_data = private_data;
-+	vq->ndescs = 0;
-+	vq->first_desc = 0;
- }
- 
- /**
--- 
-MST
+bpf_link_update(root_link, old_dispatcher_prog, new_dispatcher_prog);
+// now traffic is going to app1 prog via new dispatcher
 
+bpf_link_update_hook(app1_link1_fd, app1_link2_fd);
+here I'm proposing a new operation that will close 2nd link and will update
+hook of the first link with the hook of 2nd link if prog is the same.
+Conceptually it's a similar operation to bpf_link_update() which replaces bpf
+prog in the hook. bpf_link_update_hook() can replace the hook while keeping the
+program the same.
+
+Note it cannot be called earlier. app2 still need to attach app1 prog to
+two dispatcher progs, replace dispatcher and only then switch the hook
+in bpf_link internals. Otherwise app1 traffic will stop while new dispatcher
+is not yet active.
