@@ -2,69 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFA9F1A116F
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 18:33:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31EBE1A11FD
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 18:46:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728368AbgDGQd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 12:33:28 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:46496 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726833AbgDGQd2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 12:33:28 -0400
-Received: from marcel-macbook.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
-        by mail.holtmann.org (Postfix) with ESMTPSA id E88BACECD8;
-        Tue,  7 Apr 2020 18:43:00 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [PATCH v2] Bluetooth: debugfs option to unset MITM flag
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20200407122522.v2.1.Ibfc500cbf0bf2dc8429b17f064e960e95bb228e9@changeid>
-Date:   Tue, 7 Apr 2020 18:33:26 +0200
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Archie Pusaka <apusaka@chromium.org>,
+        id S1726586AbgDGQqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 12:46:14 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:42989 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726332AbgDGQqO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 12:46:14 -0400
+Received: by mail-ot1-f68.google.com with SMTP id z5so3791385oth.9;
+        Tue, 07 Apr 2020 09:46:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xdgq/m7wdEH2dNnMYJSAVng7ahhHHb6G51Gt5KF/eIE=;
+        b=s4Lo3YTd/0taYIpS/hvoRk2OPALB6aVfQbAzrtaBMDyyOWxo8unOLTX1mfFXkh+Rsr
+         VvImF9fLGZQJtSzd/BD4SZ6ywE1JwWl8BtX+odVNtnXhVD/kh2l64EZYxUeDq+Mxg3mH
+         K96189OihepaUS8GSBYwwEzijhXyty2os9fFw+ua9cGJ/lahPaEWryoInNEQQzBh2JWF
+         Fu0p5DhxmsIXyPI1r96X5RpbXxqYfl6HwEtgD6wdja2E5dtDchGulg14FMkyVzNprLOJ
+         q9HWUbFjqJgt+90T2htK7jvVbbpOnoznW2nswZ9Fd83SUTdr7LHyfY15KpnTFGL7pCuW
+         +Urw==
+X-Gm-Message-State: AGi0PuZAEKxB+aDnr6+HjDwYmlYAETqoJTrTZA6PS/Sy2b3NqN2wFa8J
+        OV/wXMIEzzPu892pnUsD+7mPLyu5TNdA5GQCvWhO7w==
+X-Google-Smtp-Source: APiQypLogSYV3HvxMl0VRU89DMEYJGXNCu+UCkIvB4GBviiOYEGYq/g1ev39Gp3mREmZ4fVibatgIevbBQUdtEI/q6I=
+X-Received: by 2002:a4a:a442:: with SMTP id w2mr2604642ool.90.1586277973542;
+ Tue, 07 Apr 2020 09:46:13 -0700 (PDT)
+MIME-Version: 1.0
+References: <TYAPR01MB45443FA43152C0091D6EBF9AD8C20@TYAPR01MB4544.jpnprd01.prod.outlook.com>
+ <20200407070609.42865-1-john.stultz@linaro.org> <CAMuHMdWSXvHN5zEh7A+CygxEHP42qFrum+ntiL=m+ATwYOOB0Q@mail.gmail.com>
+In-Reply-To: <CAMuHMdWSXvHN5zEh7A+CygxEHP42qFrum+ntiL=m+ATwYOOB0Q@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 7 Apr 2020 18:46:02 +0200
+Message-ID: <CAMuHMdXuv1jcuDZLh9TfBQH5Oyf9S8qhVfFbui0a5OpbwUzT8Q@mail.gmail.com>
+Subject: Re: [RFC][PATCH] driver core: Ensure wait_for_device_probe() waits
+ until the deferred_probe_timeout fires
+To:     John Stultz <john.stultz@linaro.org>
+Cc:     lkml <linux-kernel@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org
-Content-Transfer-Encoding: 7bit
-Message-Id: <9FED3BF8-B784-4E71-86C2-5BFACB18F1AA@holtmann.org>
-References: <20200407122522.v2.1.Ibfc500cbf0bf2dc8429b17f064e960e95bb228e9@changeid>
-To:     Archie Pusaka <apusaka@google.com>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Rob Herring <robh@kernel.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Archie,
+Hi John,
 
-> The BT qualification test SM/MAS/PKE/BV-01-C needs us to turn off
-> the MITM flag when pairing, and at the same time also set the io
-> capability to something other than no input no output.
-> 
-> Currently the MITM flag is only unset when the io capability is set
-> to no input no output, therefore the test cannot be executed.
-> 
-> This patch introduces a debugfs option to force MITM flag to be
-> turned off.
-> 
-> Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-> ---
-> 
-> Changes in v2:
-> - Rename flag to HCI_FORCE_NO_MITM
-> - Move debugfs functions to hci_debugfs.c
-> - Add comments on not setting SMP_AUTH_MITM
-> 
-> include/net/bluetooth/hci.h |  1 +
-> net/bluetooth/hci_debugfs.c | 46 +++++++++++++++++++++++++++++++++++++
-> net/bluetooth/smp.c         | 15 ++++++++----
-> 3 files changed, 57 insertions(+), 5 deletions(-)
+On Tue, Apr 7, 2020 at 9:50 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> On Tue, Apr 7, 2020 at 9:06 AM John Stultz <john.stultz@linaro.org> wrote:
+> > In commit c8c43cee29f6 ("driver core: Fix
+> > driver_deferred_probe_check_state() logic"), we set the default
+> > driver_deferred_probe_timeout value to 30 seconds to allow for
+> > drivers that are missing dependencies to have some time so that
+> > the dependency may be loaded from userland after initcalls_done
+> > is set.
+> >
+> > However, Yoshihiro Shimoda reported that on his device that
+> > expects to have unmet dependencies (due to "optional links" in
+> > its devicetree), was failing to mount the NFS root.
+> >
+> > In digging further, it seemed the problem was that while the
+> > device properly probes after waiting 30 seconds for any missing
+> > modules to load, the ip_auto_config() had already failed,
+> > resulting in NFS to fail. This was due to ip_auto_config()
+> > calling wait_for_device_probe() which doesn't wait for the
+> > driver_deferred_probe_timeout to fire.
+> >
+> > This patch tries to fix the issue by creating a waitqueue
+> > for the driver_deferred_probe_timeout, and calling wait_event()
+> > to make sure driver_deferred_probe_timeout is zero in
+> > wait_for_device_probe() to make sure all the probing is
+> > finished.
+> >
+> > NOTE: I'm not 100% sure this won't have other unwanted side
+> > effects (I don't have failing hardware myself to validate),
+> > so I'd apprecate testing and close review.
+> >
+> > If this approach doesn't work, I'll simply set the default
+> > driver_deferred_probe_timeout value back to zero, to avoid any
+> > behavioral change from before.
+> >
+> > Thanks to Geert for chasing down that ip_auto_config was why NFS
+> > was failing in this case!
+> >
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
+> > Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
+> > Cc: Rob Herring <robh@kernel.org>
+> > Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> > Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> > Cc: netdev <netdev@vger.kernel.org>
+> > Cc: linux-pm@vger.kernel.org
+> > Reported-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> > Fixes: c8c43cee29f6 ("driver core: Fix driver_deferred_probe_check_state() logic")
+> > Signed-off-by: John Stultz <john.stultz@linaro.org>
+>
+> Thanks, this fixes the issue for me!
+>
+> Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-patch has been applied to bluetooth-next tree.
+Unfortunately this adds another delay of ca. 30 s to mounting NFS root
+when using a kernel config that does include IOMMU and MODULES
+support.
 
-Regards
+Gr{oetje,eeting}s,
 
-Marcel
+                        Geert
 
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
