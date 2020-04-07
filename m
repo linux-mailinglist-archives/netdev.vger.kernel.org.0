@@ -2,34 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26C3A1A0FEF
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 17:12:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D67901A1077
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 17:44:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729280AbgDGPM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 11:12:26 -0400
-Received: from mout.web.de ([212.227.17.11]:47199 "EHLO mout.web.de"
+        id S1726910AbgDGPoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 11:44:06 -0400
+Received: from mout.web.de ([212.227.17.12]:46759 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728917AbgDGPMZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Apr 2020 11:12:25 -0400
+        id S1726760AbgDGPoF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Apr 2020 11:44:05 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1586272328;
-        bh=eaQCulwN4tutP4JcG6F/6ekV5+WwQnYfWRGpAq4Sno0=;
+        s=dbaedf251592; t=1586274192;
+        bh=r1jnwzyblYdoTJn4uj4aC8lYZJHJpofVyJNK1Ely/vA=;
         h=X-UI-Sender-Class:To:Cc:Subject:From:Date;
-        b=CKILv9GD6wHhKxO2u82a7484vjDQCxV7PPPJU7mo/RIolO1d4ON8nBZkXjxp3CKT+
-         BH72yAxHmo0/st6dHxop9+0XKfXV0qubpIRsN7dIMP9kVO7xF2SjfF3z6T71pKQ/rz
-         eJyn6o/rkae9TM4l9uvOadKtMj+3Gj1v7u4L43Eo=
+        b=WsMcC7kKyK45MgoysQLEVVjJBPRSJ3XymgoZNiD8BPH9Mas6rgpw8EJWYpC7B6kab
+         oP76oKWOgGHClqHPEL7iEyEPqhgPD5+OsYfLhEryQrcKnRfmS+dvK71/z5tLY5Tf96
+         yQH1rmPY0ZrCEiaiydv3ORgaEk/gmP+vaBow/3Fo=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
 Received: from [192.168.1.3] ([78.49.5.104]) by smtp.web.de (mrweb101
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0LvBV8-1jDYSI2ex8-010JHi; Tue, 07
- Apr 2020 17:12:08 +0200
-To:     Niklas Schnelle <schnelle@linux.ibm.com>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MZDKy-1jaCOp3jJM-00Kwzv; Tue, 07
+ Apr 2020 17:43:12 +0200
+To:     Levi Yun <ppbuk5246@gmail.com>, linux-fsdevel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        David Howells <dhowells@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [RFC] net/mlx5: Fix failing fw tracer allocation on s390
+        Eric Dumazet <edumazet@google.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Li Rongqing <lirongqing@baidu.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Al Viro <viro@zeniv.linux.org.uk>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] netns: Fix dangling pointer on netns bind mount point
 From:   Markus Elfring <Markus.Elfring@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
@@ -74,48 +80,51 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <77241c76-4836-3080-7fa6-e65fc3af5106@web.de>
-Date:   Tue, 7 Apr 2020 17:12:04 +0200
+Message-ID: <e27e25cb-738b-1260-4be6-99728acdbc8e@web.de>
+Date:   Tue, 7 Apr 2020 17:43:08 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.6.0
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:BBB+879L09pHLCNOjgTFSNPxC88/hhITl+4GTbKJ54WW4aCUs99
- 36AJ4I2H5kxq9e1Ut6UomV9mUVw+y2/VrejiiTRx2u0ZcTFyCGJu+c7y9gx0Yd7IQVYwN72
- gaj7wE9yD2hjNwoQLs6U6NAe5IhTpitlYsxFrgG9dnvP/THWxLgOSvAcfZg5yt3H3uo6zHu
- uFp+Y+eieGU6m5FR6zzXQ==
+X-Provags-ID: V03:K1:r3XvxNrDQh0NbXtROKGOmlyZghQJOH1Z9rPxmjeC1zwUkPcCecu
+ MiMASVW+gYj4nCnPNUAQ2L/B+PBwlAyRYpAd2saUODLSfNCpG67641h20WBL8jO6fDI5ZaU
+ LCn/hnMqyNAobgkxde3oniuKiaAlKMDZttH/ch+bFt69lgIkr961CpBNTlQ7uzWiokZpmYa
+ aF+J/jmyjWdSU5IhLtjlg==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:igVlEAP7Nu8=:PzN90UhXhu/ZegAZCfL935
- OgoEyQT6YTcfqz0x+s7R3mtmjGHW/rI9ELiUZgKlZpGhpC00fqacnfhU1htDSe6l7UqTODOGX
- yr6N2SqoQKW6rKgr9PL89XyBFcMKPQcnUKUyclKVdiDWR/wK8xkqlG9KgGD8CwC71V1LDjh4F
- LtuyCAFvi+NNVJBcKX0aTjkcD8yzVUE5Waabpg/gGUrjp5oIIXMk4V6zy7N8TRGnH1CcZITJW
- F7FwjItKRB+tHwLmsOKWnFm1vhd+4moHkJBTdAD225Kx9TOvNknbdDS4kb7lV+LtCqkhcE8Q/
- /ezEOOnHpG+9TWWRVqO+7abgv3yMj0iETmquJZkldQ0v0vWVZBLh2eIWuepq7cihyxk0JZsLg
- SEj/SdbY2LovyjBOnfD1+gGNYGVg29aRuifCQsahHjRnPeyC+/Yjgff85njFJybulsuOpgQzf
- 1S0rWWoBlawVF1DfYcuV43UStNCQZRBjtpmEh5E4wXWC3/pIU31Ac6IblgEpRlBxyf+nMxwBy
- ZIHenPnpROVZs5/zJyApuNSmE2aDJQpDIlyTK99rjTfice/W914CyyFBLa4nsf5JwAXbeXgkS
- nN9am/p9ua+Ng/85/0Qe2uSy82w9r6vpw3giCS93BFQ+09FQMlJfpHyEYck+CYRuTshxLrCoX
- jsCh18iqbIC6FSTzh5gmGmy6wPWTSutq4uliuSRoKOhgtJjR175knU2B3yiY8rkA66oq44wo7
- pUFengtxS52RR1VbtXXWbkMa8GYUNz7o+4VWTq5HVRdLeW0YWtrgYDVf0ld5mCtYJJbOlGblD
- vxyCWlMz7tIdBH/9tM8dgDn27zpNywwuIlLxVRiKdVy7azK7NnAe/wxYFE6K7eZVIt+bcuyib
- E0NAWl30dheV/UnRXnPtcKJ1jvZNDe1+Bz7Q3VP2W+d2KEnSBO3ipG9yvPuZjy+4upRYZ311F
- xBex0n6I9nLfuU42qdN94c9GnIeoEezyXGCeBOWgGnDew0okVYfH+U728LLN47/uo0IRE0uBm
- 5arIfb9KpoLQ1T1U53pM+tmVKpPOcauy4S/kflJnn34GQZoWEydQeIAlPmmJP9IVf3HkjT1+a
- Wb9fDiErGSUkHjHt8mnXP8IdUVJHbF+utNb/Kzy1s1OJDuYSYc6x2CJS+T8ZcLMI6kQqzwZso
- NqwWLhN4/PM9z4pnVIZsFPR8Mr0fei7Pz0NNNTVSs2JRKVRPzw+BizemI+7mnXwZ1xkUTyFqE
- 3KUEtGuQ8IwwBFucC
+X-UI-Out-Filterresults: notjunk:1;V03:K0:tb46XnomZLw=:a/X6/D4+kxmu7PSSxrwh2M
+ uC5cxRLWRjx3Q4aSb7gTi48CoTL1EZ72bHz1Txpd6mXMarOMUerE8vNNtXQ8qV6QJkNW+p8Qg
+ DmMlQC85sfo9NN0KhsvUD7W/EmJtCXzTmH59mOdMAOpBM0fl6GuQBd2PFBlUi6WDksWbcn6/4
+ UDm7AYfji/y9W6X0P1l5Xxf0RDo/dEU4kGpjyqCeULPz0qXkVTih7XLzm6n8EmFl2cU+6Hxf8
+ n98mbllOYIkxr8n8Y6hjZCqSJHeGyUb8MrcnS55JD6Vvi36vHK43WuoV+LOxndfa9YHJsrYmM
+ K2YW/bY0IWIiwnG9bLVvJeT8Q2UGeS+N1G+0wS7bPJNoXVLyw+bSYg9DFbNjLGUXNlAXiMbK6
+ i7UMqaRvCTPd9IMgYLFxNs/ZxkT/rqvF9sDUMeqZWPTQNZZqSVfpiKmpn5sCaoaLT6sinZsQa
+ q9QjF9wfK+9WIMGq23qv5WNIWDhLgnMzBufaDNiS1wgtbjQLb9QbC7PMTDFwr7gbIYsVmuulZ
+ lCYPpiP3fqmzsxqZIzBWtKE5RjU+mVfWG8bzSpELBKqgoEsBrUGJ4kK+QrvzmvFM77Hb0jU1M
+ UdcRaR8uv7AsLRHH9LJyCTw+hAkFmwBqoRwIg7E2/8KgILyF89UBMZUdAd2nb1xSF+lKIX1Kj
+ LiQoRmyofo7wSZaE/Flachjjb+g84OIa+ADOmNsMXE2UIR535ttp14cZ+NBL0f5p6tk4OGriM
+ Bdu65aOw9ALIsUsIZ2UOYHhRcslgyeaV9YhXDDHukgEkwBMbvBs4KOJWnFNZ+56/MsXJbeE6S
+ YTuBv1xod4Yvz50MB+ECBOgtTfBh0QrC3V3vUVOH3BvsRGz5ysrU2IbSQMnv68i3gE5IB0oGe
+ ok2l2KJVzw4HLe4V5JUOUlXghJHEHDg3gkzqZh4BggjQSUyO9bHI/3XSGX4z6JFF+X0rNb/Yc
+ it4iTb3XfeKO9hTV7D7j8gFJ5TpYRSjNRhjMEHcTO4AkfTUd10EUMIZEWwB+VYhzoVncEaxMp
+ mZoRsq3PC3B3rkTgEdcSXRWar/JsOJQ75XACaSuzDcXid5nKEMVd+oxz2ludhKqqoDFdurY+/
+ tj3M6d4WLEutfkNtxpG0ESj2Ksy8KUkZ2ZxUEa28WkKHMVDEjzAj1te6ZoqQI+jY7Hh8Fu1jZ
+ 5YaMpunNxiQci8rQze38pBb9OYR1tLtNvQK2gWoAaJY1sZ2eMvPtWKAveC/Hle4EfixBxOXFA
+ IUrGht0Y9ZPh2OmhL
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On s390 FORCE_MAX_ZONEORDER is 9 instead of 11, thus a larger kzalloc()
-> allocation as done for the firmware tracer will always fail.
+> This patch fix the above scenario by increaseing reference count.
 
-How do you think about to add the tag =E2=80=9CFixes=E2=80=9D to the final=
- change description?
+I suggest to improve also this commit message.
+
+* Wording alternative:
+  Correct the above scenario by increasing the reference counter.
+
+* Would you like to add the tag =E2=80=9CFixes=E2=80=9D?
 
 Regards,
 Markus
