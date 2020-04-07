@@ -2,129 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D67901A1077
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 17:44:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF73E1A10FA
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 18:08:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726910AbgDGPoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 11:44:06 -0400
-Received: from mout.web.de ([212.227.17.12]:46759 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726760AbgDGPoF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Apr 2020 11:44:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1586274192;
-        bh=r1jnwzyblYdoTJn4uj4aC8lYZJHJpofVyJNK1Ely/vA=;
-        h=X-UI-Sender-Class:To:Cc:Subject:From:Date;
-        b=WsMcC7kKyK45MgoysQLEVVjJBPRSJ3XymgoZNiD8BPH9Mas6rgpw8EJWYpC7B6kab
-         oP76oKWOgGHClqHPEL7iEyEPqhgPD5+OsYfLhEryQrcKnRfmS+dvK71/z5tLY5Tf96
-         yQH1rmPY0ZrCEiaiydv3ORgaEk/gmP+vaBow/3Fo=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.3] ([78.49.5.104]) by smtp.web.de (mrweb101
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0MZDKy-1jaCOp3jJM-00Kwzv; Tue, 07
- Apr 2020 17:43:12 +0200
-To:     Levi Yun <ppbuk5246@gmail.com>, linux-fsdevel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        David Howells <dhowells@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Li Rongqing <lirongqing@baidu.com>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Al Viro <viro@zeniv.linux.org.uk>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] netns: Fix dangling pointer on netns bind mount point
-From:   Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <e27e25cb-738b-1260-4be6-99728acdbc8e@web.de>
-Date:   Tue, 7 Apr 2020 17:43:08 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:r3XvxNrDQh0NbXtROKGOmlyZghQJOH1Z9rPxmjeC1zwUkPcCecu
- MiMASVW+gYj4nCnPNUAQ2L/B+PBwlAyRYpAd2saUODLSfNCpG67641h20WBL8jO6fDI5ZaU
- LCn/hnMqyNAobgkxde3oniuKiaAlKMDZttH/ch+bFt69lgIkr961CpBNTlQ7uzWiokZpmYa
- aF+J/jmyjWdSU5IhLtjlg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:tb46XnomZLw=:a/X6/D4+kxmu7PSSxrwh2M
- uC5cxRLWRjx3Q4aSb7gTi48CoTL1EZ72bHz1Txpd6mXMarOMUerE8vNNtXQ8qV6QJkNW+p8Qg
- DmMlQC85sfo9NN0KhsvUD7W/EmJtCXzTmH59mOdMAOpBM0fl6GuQBd2PFBlUi6WDksWbcn6/4
- UDm7AYfji/y9W6X0P1l5Xxf0RDo/dEU4kGpjyqCeULPz0qXkVTih7XLzm6n8EmFl2cU+6Hxf8
- n98mbllOYIkxr8n8Y6hjZCqSJHeGyUb8MrcnS55JD6Vvi36vHK43WuoV+LOxndfa9YHJsrYmM
- K2YW/bY0IWIiwnG9bLVvJeT8Q2UGeS+N1G+0wS7bPJNoXVLyw+bSYg9DFbNjLGUXNlAXiMbK6
- i7UMqaRvCTPd9IMgYLFxNs/ZxkT/rqvF9sDUMeqZWPTQNZZqSVfpiKmpn5sCaoaLT6sinZsQa
- q9QjF9wfK+9WIMGq23qv5WNIWDhLgnMzBufaDNiS1wgtbjQLb9QbC7PMTDFwr7gbIYsVmuulZ
- lCYPpiP3fqmzsxqZIzBWtKE5RjU+mVfWG8bzSpELBKqgoEsBrUGJ4kK+QrvzmvFM77Hb0jU1M
- UdcRaR8uv7AsLRHH9LJyCTw+hAkFmwBqoRwIg7E2/8KgILyF89UBMZUdAd2nb1xSF+lKIX1Kj
- LiQoRmyofo7wSZaE/Flachjjb+g84OIa+ADOmNsMXE2UIR535ttp14cZ+NBL0f5p6tk4OGriM
- Bdu65aOw9ALIsUsIZ2UOYHhRcslgyeaV9YhXDDHukgEkwBMbvBs4KOJWnFNZ+56/MsXJbeE6S
- YTuBv1xod4Yvz50MB+ECBOgtTfBh0QrC3V3vUVOH3BvsRGz5ysrU2IbSQMnv68i3gE5IB0oGe
- ok2l2KJVzw4HLe4V5JUOUlXghJHEHDg3gkzqZh4BggjQSUyO9bHI/3XSGX4z6JFF+X0rNb/Yc
- it4iTb3XfeKO9hTV7D7j8gFJ5TpYRSjNRhjMEHcTO4AkfTUd10EUMIZEWwB+VYhzoVncEaxMp
- mZoRsq3PC3B3rkTgEdcSXRWar/JsOJQ75XACaSuzDcXid5nKEMVd+oxz2ludhKqqoDFdurY+/
- tj3M6d4WLEutfkNtxpG0ESj2Ksy8KUkZ2ZxUEa28WkKHMVDEjzAj1te6ZoqQI+jY7Hh8Fu1jZ
- 5YaMpunNxiQci8rQze38pBb9OYR1tLtNvQK2gWoAaJY1sZ2eMvPtWKAveC/Hle4EfixBxOXFA
- IUrGht0Y9ZPh2OmhL
+        id S1727865AbgDGQIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 12:08:18 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:38442 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726873AbgDGQIS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 12:08:18 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 037Fx0oi161043;
+        Tue, 7 Apr 2020 16:08:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id; s=corp-2020-01-29;
+ bh=3qfxonWgtJKEfRw3FTyMs9nDWr+Pzqq3qSpXKmLAm6g=;
+ b=XUo1BXFaBVliC1+f1Wt18dAer9hZNdO0hdULpk2XNpeeJVdRvywmAP6BrBkMUAP/VQQJ
+ u5c6lfWb20YRI2+GjIXjocaVSAQ3jJz/udgSyaRa3jCj5z6jTx3d+ua/LZpAJM91yB/d
+ oHuQ3gRLTwy0H0rAF5YBMkN28h4Odq91bJxWuPVFDLPDwyFQ2t+o59zHspP3NHoHFcPr
+ c327sha92W94Ejq95QLh4nXsZ0uGYMj0qM5iyxmR0wrS6gGth62XMsoxd2CIZkEvBfCS
+ OB9w0OT+JVeDGN1c1u4JOag/fG1wdVEw4peBBRMsVwDcx73lErDmAixTDQdJHwICBtqp Ow== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2120.oracle.com with ESMTP id 306jvn5xm3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 07 Apr 2020 16:08:08 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 037G7aP8036339;
+        Tue, 7 Apr 2020 16:08:07 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3020.oracle.com with ESMTP id 30741eq51d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 07 Apr 2020 16:08:07 +0000
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 037G873h038492;
+        Tue, 7 Apr 2020 16:08:07 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3020.oracle.com with ESMTP id 30741eq500-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 07 Apr 2020 16:08:07 +0000
+Received: from abhmp0015.oracle.com (abhmp0015.oracle.com [141.146.116.21])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 037G865l026271;
+        Tue, 7 Apr 2020 16:08:06 GMT
+Received: from ca-dev40.us.oracle.com (/10.129.135.27)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 07 Apr 2020 09:08:05 -0700
+From:   Ka-Cheong Poon <ka-cheong.poon@oracle.com>
+To:     netdev@vger.kernel.org
+Cc:     santosh.shilimkar@oracle.com, davem@davemloft.net,
+        rds-devel@oss.oracle.com, sironhide0null@gmail.com
+Subject: [PATCH net 1/2] net/rds: Replace direct refcount_inc() by inline function
+Date:   Tue,  7 Apr 2020 09:08:01 -0700
+Message-Id: <4b96ea99c3f0ccd5cc0683a5c944a1c4da41cc38.1586275373.git.ka-cheong.poon@oracle.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9583 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 suspectscore=1
+ mlxlogscore=972 mlxscore=0 bulkscore=0 adultscore=0 priorityscore=1501
+ lowpriorityscore=0 clxscore=1011 malwarescore=0 impostorscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2004070131
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> This patch fix the above scenario by increaseing reference count.
+Added rds_ib_dev_get() and rds_mr_get() to improve code readability.
 
-I suggest to improve also this commit message.
+Signed-off-by: Ka-Cheong Poon <ka-cheong.poon@oracle.com>
+---
+ net/rds/ib.c      | 8 ++++----
+ net/rds/ib.h      | 5 +++++
+ net/rds/ib_rdma.c | 6 +++---
+ net/rds/rdma.c    | 8 ++++----
+ net/rds/rds.h     | 5 +++++
+ 5 files changed, 21 insertions(+), 11 deletions(-)
 
-* Wording alternative:
-  Correct the above scenario by increasing the reference counter.
+diff --git a/net/rds/ib.c b/net/rds/ib.c
+index a792d8a..c16cb1a 100644
+--- a/net/rds/ib.c
++++ b/net/rds/ib.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
++ * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+  *
+  * This software is available to you under a choice of one of two
+  * licenses.  You may choose to be licensed under the terms of the GNU
+@@ -224,10 +224,10 @@ static void rds_ib_add_one(struct ib_device *device)
+ 	down_write(&rds_ib_devices_lock);
+ 	list_add_tail_rcu(&rds_ibdev->list, &rds_ib_devices);
+ 	up_write(&rds_ib_devices_lock);
+-	refcount_inc(&rds_ibdev->refcount);
++	rds_ib_dev_get(rds_ibdev);
+ 
+ 	ib_set_client_data(device, &rds_ib_client, rds_ibdev);
+-	refcount_inc(&rds_ibdev->refcount);
++	rds_ib_dev_get(rds_ibdev);
+ 
+ 	rds_ib_nodev_connect();
+ 
+@@ -258,7 +258,7 @@ struct rds_ib_device *rds_ib_get_client_data(struct ib_device *device)
+ 	rcu_read_lock();
+ 	rds_ibdev = ib_get_client_data(device, &rds_ib_client);
+ 	if (rds_ibdev)
+-		refcount_inc(&rds_ibdev->refcount);
++		rds_ib_dev_get(rds_ibdev);
+ 	rcu_read_unlock();
+ 	return rds_ibdev;
+ }
+diff --git a/net/rds/ib.h b/net/rds/ib.h
+index 0296f1f..fe7ea4e 100644
+--- a/net/rds/ib.h
++++ b/net/rds/ib.h
+@@ -361,6 +361,11 @@ static inline void rds_ib_dma_sync_sg_for_device(struct ib_device *dev,
+ extern struct rds_transport rds_ib_transport;
+ struct rds_ib_device *rds_ib_get_client_data(struct ib_device *device);
+ void rds_ib_dev_put(struct rds_ib_device *rds_ibdev);
++static inline void rds_ib_dev_get(struct rds_ib_device *rds_ibdev)
++{
++	refcount_inc(&rds_ibdev->refcount);
++}
++
+ extern struct ib_client rds_ib_client;
+ 
+ extern unsigned int rds_ib_retry_count;
+diff --git a/net/rds/ib_rdma.c b/net/rds/ib_rdma.c
+index b34b24e..1b942d80 100644
+--- a/net/rds/ib_rdma.c
++++ b/net/rds/ib_rdma.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
++ * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+  *
+  * This software is available to you under a choice of one of two
+  * licenses.  You may choose to be licensed under the terms of the GNU
+@@ -56,7 +56,7 @@ static struct rds_ib_device *rds_ib_get_device(__be32 ipaddr)
+ 	list_for_each_entry_rcu(rds_ibdev, &rds_ib_devices, list) {
+ 		list_for_each_entry_rcu(i_ipaddr, &rds_ibdev->ipaddr_list, list) {
+ 			if (i_ipaddr->ipaddr == ipaddr) {
+-				refcount_inc(&rds_ibdev->refcount);
++				rds_ib_dev_get(rds_ibdev);
+ 				rcu_read_unlock();
+ 				return rds_ibdev;
+ 			}
+@@ -139,7 +139,7 @@ void rds_ib_add_conn(struct rds_ib_device *rds_ibdev, struct rds_connection *con
+ 	spin_unlock_irq(&ib_nodev_conns_lock);
+ 
+ 	ic->rds_ibdev = rds_ibdev;
+-	refcount_inc(&rds_ibdev->refcount);
++	rds_ib_dev_get(rds_ibdev);
+ }
+ 
+ void rds_ib_remove_conn(struct rds_ib_device *rds_ibdev, struct rds_connection *conn)
+diff --git a/net/rds/rdma.c b/net/rds/rdma.c
+index 585e6b3..d5abe0e 100644
+--- a/net/rds/rdma.c
++++ b/net/rds/rdma.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2007, 2017 Oracle and/or its affiliates. All rights reserved.
++ * Copyright (c) 2007, 2020 Oracle and/or its affiliates. All rights reserved.
+  *
+  * This software is available to you under a choice of one of two
+  * licenses.  You may choose to be licensed under the terms of the GNU
+@@ -84,7 +84,7 @@ static struct rds_mr *rds_mr_tree_walk(struct rb_root *root, u64 key,
+ 	if (insert) {
+ 		rb_link_node(&insert->r_rb_node, parent, p);
+ 		rb_insert_color(&insert->r_rb_node, root);
+-		refcount_inc(&insert->r_refcount);
++		rds_mr_get(insert);
+ 	}
+ 	return NULL;
+ }
+@@ -343,7 +343,7 @@ static int __rds_rdma_map(struct rds_sock *rs, struct rds_get_mr_args *args,
+ 
+ 	rdsdebug("RDS: get_mr key is %x\n", mr->r_key);
+ 	if (mr_ret) {
+-		refcount_inc(&mr->r_refcount);
++		rds_mr_get(mr);
+ 		*mr_ret = mr;
+ 	}
+ 
+@@ -827,7 +827,7 @@ int rds_cmsg_rdma_dest(struct rds_sock *rs, struct rds_message *rm,
+ 	if (!mr)
+ 		err = -EINVAL;	/* invalid r_key */
+ 	else
+-		refcount_inc(&mr->r_refcount);
++		rds_mr_get(mr);
+ 	spin_unlock_irqrestore(&rs->rs_rdma_lock, flags);
+ 
+ 	if (mr) {
+diff --git a/net/rds/rds.h b/net/rds/rds.h
+index e4a6035..6a665fa 100644
+--- a/net/rds/rds.h
++++ b/net/rds/rds.h
+@@ -953,6 +953,11 @@ static inline void rds_mr_put(struct rds_mr *mr)
+ 		__rds_put_mr_final(mr);
+ }
+ 
++static inline void rds_mr_get(struct rds_mr *mr)
++{
++	refcount_inc(&mr->r_refcount);
++}
++
+ static inline bool rds_destroy_pending(struct rds_connection *conn)
+ {
+ 	return !check_net(rds_conn_net(conn)) ||
+-- 
+1.8.3.1
 
-* Would you like to add the tag =E2=80=9CFixes=E2=80=9D?
-
-Regards,
-Markus
