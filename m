@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB02B1A0297
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:05:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AF011A023E
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:04:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727481AbgDGAFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 20:05:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37598 "EHLO mail.kernel.org"
+        id S1728237AbgDGACr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 20:02:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37618 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728173AbgDGACm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Apr 2020 20:02:42 -0400
+        id S1728193AbgDGACn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Apr 2020 20:02:43 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B10EC2082F;
-        Tue,  7 Apr 2020 00:02:41 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CA1E720842;
+        Tue,  7 Apr 2020 00:02:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586217762;
-        bh=SXAong0dK9Zt1RqkvYCfwsNxtQBl+WYaOrbAXLIv3TA=;
+        s=default; t=1586217763;
+        bh=eUYWMO0lOftTvx7LH14lERm5G1MalglcjgYGjYMuWzQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HqP7dVgU9K7xu7ukPxH+YnNAGO2J6vyMgsp4pUwS/t61Yf4AHtPqsW6h3J7c8TlcC
-         Rdawkg4Fh1xhN30Jtb0uKjGqnoDpmbh8oLiz6HZOR4wytTYz1QhyjXRqoTfHAhRZEa
-         Ajd5RnFaRXJfMxN8O7ipbWoFSTpEKjpHIHctzWug=
+        b=nMVd7efWV+MZc9t8IEj5PGZBZ988zFMkUgb9WK4j/Q8eIvsiXfvcq6CWaz7o9ZCGJ
+         FnLV6tgyBCWlIU2990zCVSbfu17nNo1cScIkUR4tIOTO2csL+gUUwuC+o9Ou71GZmu
+         hThChlIFq84p3nIVTHlL7/QIZ18JibxkeBBLAN1Q=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Luo bin <luobin9@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 06/13] hinic: fix a bug of waitting for IO stopped
-Date:   Mon,  6 Apr 2020 20:02:27 -0400
-Message-Id: <20200407000234.17088-6-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 07/13] hinic: fix wrong para of wait_for_completion_timeout
+Date:   Mon,  6 Apr 2020 20:02:28 -0400
+Message-Id: <20200407000234.17088-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200407000234.17088-1-sashal@kernel.org>
 References: <20200407000234.17088-1-sashal@kernel.org>
@@ -45,88 +45,56 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Luo bin <luobin9@huawei.com>
 
-[ Upstream commit 96758117dc528e6d84bd23d205e8cf7f31eda029 ]
+[ Upstream commit 0da7c322f116210ebfdda59c7da663a6fc5e9cc8 ]
 
-it's unreliable for fw to check whether IO is stopped, so driver
-wait for enough time to ensure IO process is done in hw before
-freeing resources
+the second input parameter of wait_for_completion_timeout should
+be jiffies instead of millisecond
 
 Signed-off-by: Luo bin <luobin9@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/huawei/hinic/hinic_hw_dev.c  | 51 +------------------
- 1 file changed, 2 insertions(+), 49 deletions(-)
+ drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c | 3 ++-
+ drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c | 5 +++--
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
-index 9deec13d98e93..4c91c8ceac5f9 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c
-@@ -370,50 +370,6 @@ static int wait_for_db_state(struct hinic_hwdev *hwdev)
- 	return -EFAULT;
- }
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c
+index 4d09ea786b35f..ee715bf785adf 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c
+@@ -398,7 +398,8 @@ static int cmdq_sync_cmd_direct_resp(struct hinic_cmdq *cmdq,
  
--static int wait_for_io_stopped(struct hinic_hwdev *hwdev)
--{
--	struct hinic_cmd_io_status cmd_io_status;
--	struct hinic_hwif *hwif = hwdev->hwif;
--	struct pci_dev *pdev = hwif->pdev;
--	struct hinic_pfhwdev *pfhwdev;
--	unsigned long end;
--	u16 out_size;
--	int err;
--
--	if (!HINIC_IS_PF(hwif) && !HINIC_IS_PPF(hwif)) {
--		dev_err(&pdev->dev, "Unsupported PCI Function type\n");
--		return -EINVAL;
--	}
--
--	pfhwdev = container_of(hwdev, struct hinic_pfhwdev, hwdev);
--
--	cmd_io_status.func_idx = HINIC_HWIF_FUNC_IDX(hwif);
--
--	end = jiffies + msecs_to_jiffies(IO_STATUS_TIMEOUT);
--	do {
--		err = hinic_msg_to_mgmt(&pfhwdev->pf_to_mgmt, HINIC_MOD_COMM,
--					HINIC_COMM_CMD_IO_STATUS_GET,
--					&cmd_io_status, sizeof(cmd_io_status),
--					&cmd_io_status, &out_size,
--					HINIC_MGMT_MSG_SYNC);
--		if ((err) || (out_size != sizeof(cmd_io_status))) {
--			dev_err(&pdev->dev, "Failed to get IO status, ret = %d\n",
--				err);
--			return err;
--		}
--
--		if (cmd_io_status.status == IO_STOPPED) {
--			dev_info(&pdev->dev, "IO stopped\n");
--			return 0;
--		}
--
--		msleep(20);
--	} while (time_before(jiffies, end));
--
--	dev_err(&pdev->dev, "Wait for IO stopped - Timeout\n");
--	return -ETIMEDOUT;
--}
--
- /**
-  * clear_io_resource - set the IO resources as not active in the NIC
-  * @hwdev: the NIC HW device
-@@ -433,11 +389,8 @@ static int clear_io_resources(struct hinic_hwdev *hwdev)
- 		return -EINVAL;
+ 	spin_unlock_bh(&cmdq->cmdq_lock);
+ 
+-	if (!wait_for_completion_timeout(&done, CMDQ_TIMEOUT)) {
++	if (!wait_for_completion_timeout(&done,
++					 msecs_to_jiffies(CMDQ_TIMEOUT))) {
+ 		spin_lock_bh(&cmdq->cmdq_lock);
+ 
+ 		if (cmdq->errcode[curr_prod_idx] == &errcode)
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
+index 278dc13f3dae8..9fcf2e5e00039 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
+@@ -52,7 +52,7 @@
+ 
+ #define MSG_NOT_RESP                    0xFFFF
+ 
+-#define MGMT_MSG_TIMEOUT                1000
++#define MGMT_MSG_TIMEOUT                5000
+ 
+ #define mgmt_to_pfhwdev(pf_mgmt)        \
+ 		container_of(pf_mgmt, struct hinic_pfhwdev, pf_to_mgmt)
+@@ -276,7 +276,8 @@ static int msg_to_mgmt_sync(struct hinic_pf_to_mgmt *pf_to_mgmt,
+ 		goto unlock_sync_msg;
  	}
  
--	err = wait_for_io_stopped(hwdev);
--	if (err) {
--		dev_err(&pdev->dev, "IO has not stopped yet\n");
--		return err;
--	}
-+	/* sleep 100ms to wait for firmware stopping I/O */
-+	msleep(100);
- 
- 	cmd_clear_io_res.func_idx = HINIC_HWIF_FUNC_IDX(hwif);
- 
+-	if (!wait_for_completion_timeout(recv_done, MGMT_MSG_TIMEOUT)) {
++	if (!wait_for_completion_timeout(recv_done,
++					 msecs_to_jiffies(MGMT_MSG_TIMEOUT))) {
+ 		dev_err(&pdev->dev, "MGMT timeout, MSG id = %d\n", msg_id);
+ 		err = -ETIMEDOUT;
+ 		goto unlock_sync_msg;
 -- 
 2.20.1
 
