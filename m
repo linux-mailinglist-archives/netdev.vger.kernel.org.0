@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7121B1A0336
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:10:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 931861A02E5
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:10:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728187AbgDGAHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 20:07:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35020 "EHLO mail.kernel.org"
+        id S1727359AbgDGABl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 20:01:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35042 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727247AbgDGABk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726965AbgDGABk (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 6 Apr 2020 20:01:40 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9749620A8B;
-        Tue,  7 Apr 2020 00:01:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D14862082D;
+        Tue,  7 Apr 2020 00:01:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586217699;
-        bh=Zg0lXdbFYkI82DZL3HsOsGw1RamNs7bH/YilUYo10QM=;
+        s=default; t=1586217700;
+        bh=T/a03JFRVwZf26cJQ8+4XA7GcZj1JeU8Ggit0HX5RJM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dEMdc21AW5Rx2x7z/2rKxDrLnaXgeokOB000LhORVYR9BY/M1233pEw/vUFlr90zo
-         2KuHE+NJroVn5szAWNWOp3AJQ7uFSyrQeCXIosGQgWeRHubrHjHWnGOTXCFEHt2Bfw
-         wVeQw6CQCl5by7aC4R7QK4l6D8DYMUSYRtuZesHU=
+        b=N5v7e8Sc4OtOIdSq3r/6kL5UlV7YLVpgjrFbz8ZlYrKA02SWlTIven8+JxA3U98uq
+         wbIgpQ6utsbYCVEY+UwcbpDSoTJ+f6iYXqvw4Q1Hn7Ma26sgr5+hGspXm2s8nX1e1i
+         5miGhaC8GQfC+spiNOz+N8N1S3YD7YA/DaL8R2nw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 32/35] cfg80211: Do not warn on same channel at the end of CSA
-Date:   Mon,  6 Apr 2020 20:00:54 -0400
-Message-Id: <20200407000058.16423-32-sashal@kernel.org>
+Cc:     Xu Wang <vulab@iscas.ac.cn>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.5 33/35] qlcnic: Fix bad kzalloc null test
+Date:   Mon,  6 Apr 2020 20:00:55 -0400
+Message-Id: <20200407000058.16423-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200407000058.16423-1-sashal@kernel.org>
 References: <20200407000058.16423-1-sashal@kernel.org>
@@ -45,43 +43,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Xu Wang <vulab@iscas.ac.cn>
 
-[ Upstream commit 05dcb8bb258575a8dd3499d0d78bd2db633c2b23 ]
+[ Upstream commit bcaeb886ade124331a6f3a5cef34a3f1484c0a03 ]
 
-When cfg80211_update_assoc_bss_entry() is called, there is a
-verification that the BSS channel actually changed. As some APs use
-CSA also for bandwidth changes, this would result with a kernel
-warning.
+In qlcnic_83xx_get_reset_instruction_template, the variable
+of null test is bad, so correct it.
 
-Fix this by removing the WARN_ON().
-
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20200326150855.96316ada0e8d.I6710376b1b4257e5f4712fc7ab16e2b638d512aa@changeid
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/scan.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/wireless/scan.c b/net/wireless/scan.c
-index aef240fdf8df6..328402ab64a3f 100644
---- a/net/wireless/scan.c
-+++ b/net/wireless/scan.c
-@@ -2022,7 +2022,11 @@ void cfg80211_update_assoc_bss_entry(struct wireless_dev *wdev,
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
+index 07f9067affc65..cda5b0a9e9489 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_init.c
+@@ -1720,7 +1720,7 @@ static int qlcnic_83xx_get_reset_instruction_template(struct qlcnic_adapter *p_d
  
- 	spin_lock_bh(&rdev->bss_lock);
+ 	ahw->reset.seq_error = 0;
+ 	ahw->reset.buff = kzalloc(QLC_83XX_RESTART_TEMPLATE_SIZE, GFP_KERNEL);
+-	if (p_dev->ahw->reset.buff == NULL)
++	if (ahw->reset.buff == NULL)
+ 		return -ENOMEM;
  
--	if (WARN_ON(cbss->pub.channel == chan))
-+	/*
-+	 * Some APs use CSA also for bandwidth changes, i.e., without actually
-+	 * changing the control channel, so no need to update in such a case.
-+	 */
-+	if (cbss->pub.channel == chan)
- 		goto done;
- 
- 	/* use transmitting bss */
+ 	p_buff = p_dev->ahw->reset.buff;
 -- 
 2.20.1
 
