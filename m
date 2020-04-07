@@ -2,76 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E92641A1878
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 01:07:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60B5B1A18BE
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 01:44:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726420AbgDGXHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 19:07:37 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:58034 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726380AbgDGXHh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 19:07:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=ZvEK24UkGqNzOBqjmwZC2IhscWnqjcxBYAU9aBjfkaU=; b=M/gdZ54ulguO3O9Hvd7KmSfZd2
-        NpWGOUb8fizHa+JAZwhjfRCxjORim0d/k/isFCCZPSnKEMgGJuHAH0rK7E9zn5gpvdjgcI3XckCHq
-        qb7KpNpPTf9j65rQ1j9MYvl37ZA9g79B3NcoJ29if3u/LgLWOs6zC8SP2WsEWrdrV0A93hE25UhEs
-        F8uvLgdlVDmPHYEtpNv6qXu+39DH8MWK7rb/EP4SwLgmuNBUFnApIB+82QhIpXwfc+HJOhHyYrzN7
-        pWeQ/zLZCnyD/MpMD00INq88BnJAWRYKWOqoYiXZITJqV8jXeoLwtD1mJsJpWn4EaqXZdo8E48gd7
-        YxuZMvgg==;
-Received: from [2601:1c0:6280:3f0:897c:6038:c71d:ecac]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jLxJg-00038Z-8y; Tue, 07 Apr 2020 23:07:36 +0000
-Subject: Re: [PATCH] Documentation: mdio_bus.c - fix warnings
-To:     Lothar Rubusch <l.rubusch@gmail.com>, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org
-References: <20200406212920.20229-1-l.rubusch@gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <138ef631-15fd-f1d3-18cd-2ebd0529699a@infradead.org>
-Date:   Tue, 7 Apr 2020 16:07:34 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1726437AbgDGXoN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 19:44:13 -0400
+Received: from www62.your-server.de ([213.133.104.62]:57580 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726386AbgDGXoN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 19:44:13 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jLxt0-0001PO-3o; Wed, 08 Apr 2020 01:44:06 +0200
+Received: from [178.195.186.98] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jLxsz-0008rw-Hi; Wed, 08 Apr 2020 01:44:05 +0200
+Subject: Re: [PATCH bpf] riscv, bpf: Fix offset range checking for auipc+jalr
+ on RV64
+To:     Luke Nelson <lukenels@cs.washington.edu>, bpf@vger.kernel.org
+Cc:     Xi Wang <xi.wang@gmail.com>, Luke Nelson <luke.r.nels@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20200406221604.18547-1-luke.r.nels@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <bdea1a61-53d6-dc03-7cdb-4b6b0710be2e@iogearbox.net>
+Date:   Wed, 8 Apr 2020 01:44:04 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20200406212920.20229-1-l.rubusch@gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20200406221604.18547-1-luke.r.nels@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25775/Tue Apr  7 14:53:51 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/6/20 2:29 PM, Lothar Rubusch wrote:
-> Fix wrong parameter description and related warnings at 'make htmldocs'.
+On 4/7/20 12:16 AM, Luke Nelson wrote:
+> The existing code in emit_call on RV64 checks that the PC-relative offset
+> to the function fits in 32 bits before calling emit_jump_and_link to emit
+> an auipc+jalr pair. However, this check is incorrect because offsets in
+> the range [2^31 - 2^11, 2^31 - 1] cannot be encoded using auipc+jalr on
+> RV64 (see discussion [1]). The RISC-V spec has recently been updated
+> to reflect this fact [2, 3].
 > 
-> Signed-off-by: Lothar Rubusch <l.rubusch@gmail.com>
-
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-Tested-by: Randy Dunlap <rdunlap@infradead.org>
-
-> ---
->  drivers/net/phy/mdio_bus.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> This patch fixes the problem by moving the check on the offset into
+> emit_jump_and_link and modifying it to the correct range of encodable
+> offsets, which is [-2^31 - 2^11, 2^31 - 2^11). This also enforces the
+> check on the offset to other uses of emit_jump_and_link (e.g., BPF_JA)
+> as well.
 > 
-> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-> index 522760c8bca6..7a4eb3f2cb74 100644
-> --- a/drivers/net/phy/mdio_bus.c
-> +++ b/drivers/net/phy/mdio_bus.c
-> @@ -464,7 +464,7 @@ static struct class mdio_bus_class = {
->  
->  /**
->   * mdio_find_bus - Given the name of a mdiobus, find the mii_bus.
-> - * @mdio_bus_np: Pointer to the mii_bus.
-> + * @mdio_name: The name of a mdiobus.
->   *
->   * Returns a reference to the mii_bus, or NULL if none found.  The
->   * embedded struct device will have its reference count incremented,
+> Currently, this bug is unlikely to be triggered, because the memory
+> region from which JITed images are allocated is close enough to kernel
+> text for the offsets to not become too large; and because the bounds on
+> BPF program size are small enough. This patch prevents this problem from
+> becoming an issue if either of these change.
 > 
+> [1]: https://groups.google.com/a/groups.riscv.org/forum/#!topic/isa-dev/bwWFhBnnZFQ
+> [2]: https://github.com/riscv/riscv-isa-manual/commit/b1e42e09ac55116dbf9de5e4fb326a5a90e4a993
+> [3]: https://github.com/riscv/riscv-isa-manual/commit/4c1b2066ebd2965a422e41eb262d0a208a7fea07
+> 
+> Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
 
-thanks.
--- 
-~Randy
+Applied, thanks!
