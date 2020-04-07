@@ -2,67 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0AD41A0694
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 07:30:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FD6D1A06A6
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 07:43:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726765AbgDGFar (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 01:30:47 -0400
-Received: from mail-wm1-f50.google.com ([209.85.128.50]:51856 "EHLO
-        mail-wm1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725802AbgDGFar (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 01:30:47 -0400
-Received: by mail-wm1-f50.google.com with SMTP id z7so452109wmk.1
-        for <netdev@vger.kernel.org>; Mon, 06 Apr 2020 22:30:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pplo.net; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=XVV232eGa4mla1ZlD7WydWfRNKQL9Slh9qy6Anr1YR0=;
-        b=IsUB5CVTlENqxxX9SnTtDESw52Nls0CX4WyflRsBDnNtLuCiIZXzRLbf1MtY5VO3YI
-         aD/uLxLznptHaQGgLT7k4u8LSmUZRCoNh0p9y+KxzrAvgfMYxslotauDEqghTZkL3xR+
-         cB4nJzO5fPyOfvsNnq/DOAmLMeh45VrSw/3D8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XVV232eGa4mla1ZlD7WydWfRNKQL9Slh9qy6Anr1YR0=;
-        b=FQEDcBtRS5oyejNpr2ygCdCl645yOmFN7oVt5gW9oLPi0Iz7hZc7NCpP65L3tb22r/
-         x+HcioPIsYqwuhqDarpFb6xQLcuO6zM/L+jEtZtyFZvZ6kziSFWAHq/6hVijq/qki4F9
-         WH44i8bvBzg/samfpBzzyZJy8r9dPrA2eIysGsMlLi3FxTOiviW+sI+YmgMZMp9c8ekf
-         v3V2Ym3l75BtR7kcQmEPDibkFzYJiMZjr3py1dcRrIihIsPC7Uu6UKd+3JC4cWv9IOlg
-         mgatYKCiECPCgtW6/oS0XOmCAFl86SqCk1879MtCe1sbTxGBNSkOMF22g3v67OaF5hEa
-         zNUg==
-X-Gm-Message-State: AGi0PuYhtzG6sgddYSDPEomLB5RbxCP9L1DiU6qjCcSTlSicvLT82sXR
-        6wRkmCBnEjdCtuLc35Siv+ipMw==
-X-Google-Smtp-Source: APiQypLwgmnsW3oyevK2DV63rqrT9auacr4BpBWA3xg8z1zYerwlFjiXEZlTxkN+qUGfDMjRTlzZQQ==
-X-Received: by 2002:a1c:6146:: with SMTP id v67mr496895wmb.78.1586237445367;
-        Mon, 06 Apr 2020 22:30:45 -0700 (PDT)
-Received: from supernova (85.251.42.187.dyn.user.ono.com. [85.251.42.187])
-        by smtp.gmail.com with ESMTPSA id q4sm2148795wmj.1.2020.04.06.22.30.44
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 06 Apr 2020 22:30:45 -0700 (PDT)
-Date:   Tue, 7 Apr 2020 07:30:42 +0200
-From:   Lourdes Pedrajas <lu@pplo.net>
-To:     David Miller <davem@davemloft.net>
-Cc:     Stefano Brivio <sbrivio@redhat.com>, netdev@vger.kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Sabrina Dubroca <sd@queasysnail.net>
-Subject: Re: [PATCH net-next] selftests: pmtu: implement IPIP, SIT and ip6tnl
- PMTU discovery tests
-Message-ID: <20200407053042.GB3249@supernova>
-References: <20200407052040.8116-1-lu@pplo.net>
+        id S1726798AbgDGFne (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 01:43:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46654 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725802AbgDGFne (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Apr 2020 01:43:34 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 795B8206F5;
+        Tue,  7 Apr 2020 05:43:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1586238214;
+        bh=f4zBSzGQroby1C5YQlwI3K2ZZKv+UEnm9JRTLRxnuVc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BhjTUHK6rfgOQOow47upoLydCbz1A1zra8g0JKDFZmkfip45CWso89+wGI7aWuFwN
+         7+vyH0lc0qYskBWeLV41dx6l3kBvTG96hUtyiapXmmYbfvwvAYMbCUnTftC3yiTKvS
+         txa0pmYkGBVLjEQGfSv2m7wdCK81fyl7M9Sk6Z8Y=
+Date:   Tue, 7 Apr 2020 07:43:31 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     linux-stable@vger.kernel.org, sashal@kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH stable-4.9.y]] net: dsa: tag_brcm: Fix
+ skb->fwd_offload_mark location
+Message-ID: <20200407054331.GA258967@kroah.com>
+References: <1586220853-34769-1-git-send-email-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200407052040.8116-1-lu@pplo.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <1586220853-34769-1-git-send-email-f.fainelli@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 07, 2020 at 07:20:40AM +0200, Lourdes Pedrajas wrote:
-> Add PMTU discovery tests for these encapsulations:
+On Mon, Apr 06, 2020 at 05:54:12PM -0700, Florian Fainelli wrote:
+> When the backport of upstream commit
+> 0e62f543bed03a64495bd2651d4fe1aa4bcb7fe5 ("net: dsa: Fix duplicate
+> frames flooded by learning") was done the assignment of
+> skb->fwd_offload_mark would land in brcm_tag_xmit() which is incorrect,
+> it should have been in brcm_tag_rcv().
 > 
+> Fixes: 5e845dc62f38 ("net: dsa: Fix duplicate frames flooded by learning")
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>  net/dsa/tag_brcm.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Sorry, I forgot that net-next is closed :( Please disregard, I'll re-post.
+Now queued up, thanks.
+
+greg k-h
