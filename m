@@ -2,129 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31EBE1A11FD
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 18:46:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D79A1A127B
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 19:13:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726586AbgDGQqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 12:46:14 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:42989 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726332AbgDGQqO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 12:46:14 -0400
-Received: by mail-ot1-f68.google.com with SMTP id z5so3791385oth.9;
-        Tue, 07 Apr 2020 09:46:13 -0700 (PDT)
+        id S1726523AbgDGRNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 13:13:49 -0400
+Received: from mail-qv1-f47.google.com ([209.85.219.47]:36437 "EHLO
+        mail-qv1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726277AbgDGRNs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 13:13:48 -0400
+Received: by mail-qv1-f47.google.com with SMTP id z13so2213655qvw.3
+        for <netdev@vger.kernel.org>; Tue, 07 Apr 2020 10:13:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=za9mZgZMFIIRg3GpMvsNl2kwUYzssn+fn7P0K8O4oYY=;
+        b=AFpHJsNA/2WF5GDUPhm9q9UT3xZp1mbLKf6GDkvtdLScqROvu4LOBDTvb1et05YF7y
+         2s8DXYgBb9XTwxo85rURlzjT9/In1xNXEj2koBE92DlW1wBy6NO+V075BL9+7yCcAKX+
+         za21V1+s8DHlYUHJXgj8n4LEvqcMRYUNNyXDQwBFmIpg6JmRqymzg+q/kDk8pqCyoiM3
+         WBaEgruJWj2zRIvy50uSYbMJ6DTsOYXZCzPNWtQ139CrMYFX6UzmQEsNbjHOAtSMlmEE
+         ATpwrgPW+UCcKoI02arVusNwF8PkLTty5YNqvE4w+pywTn6cWczNO8I1gBJL3yYNOgb7
+         HxQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xdgq/m7wdEH2dNnMYJSAVng7ahhHHb6G51Gt5KF/eIE=;
-        b=s4Lo3YTd/0taYIpS/hvoRk2OPALB6aVfQbAzrtaBMDyyOWxo8unOLTX1mfFXkh+Rsr
-         VvImF9fLGZQJtSzd/BD4SZ6ywE1JwWl8BtX+odVNtnXhVD/kh2l64EZYxUeDq+Mxg3mH
-         K96189OihepaUS8GSBYwwEzijhXyty2os9fFw+ua9cGJ/lahPaEWryoInNEQQzBh2JWF
-         Fu0p5DhxmsIXyPI1r96X5RpbXxqYfl6HwEtgD6wdja2E5dtDchGulg14FMkyVzNprLOJ
-         q9HWUbFjqJgt+90T2htK7jvVbbpOnoznW2nswZ9Fd83SUTdr7LHyfY15KpnTFGL7pCuW
-         +Urw==
-X-Gm-Message-State: AGi0PuZAEKxB+aDnr6+HjDwYmlYAETqoJTrTZA6PS/Sy2b3NqN2wFa8J
-        OV/wXMIEzzPu892pnUsD+7mPLyu5TNdA5GQCvWhO7w==
-X-Google-Smtp-Source: APiQypLogSYV3HvxMl0VRU89DMEYJGXNCu+UCkIvB4GBviiOYEGYq/g1ev39Gp3mREmZ4fVibatgIevbBQUdtEI/q6I=
-X-Received: by 2002:a4a:a442:: with SMTP id w2mr2604642ool.90.1586277973542;
- Tue, 07 Apr 2020 09:46:13 -0700 (PDT)
-MIME-Version: 1.0
-References: <TYAPR01MB45443FA43152C0091D6EBF9AD8C20@TYAPR01MB4544.jpnprd01.prod.outlook.com>
- <20200407070609.42865-1-john.stultz@linaro.org> <CAMuHMdWSXvHN5zEh7A+CygxEHP42qFrum+ntiL=m+ATwYOOB0Q@mail.gmail.com>
-In-Reply-To: <CAMuHMdWSXvHN5zEh7A+CygxEHP42qFrum+ntiL=m+ATwYOOB0Q@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 7 Apr 2020 18:46:02 +0200
-Message-ID: <CAMuHMdXuv1jcuDZLh9TfBQH5Oyf9S8qhVfFbui0a5OpbwUzT8Q@mail.gmail.com>
-Subject: Re: [RFC][PATCH] driver core: Ensure wait_for_device_probe() waits
- until the deferred_probe_timeout fires
-To:     John Stultz <john.stultz@linaro.org>
-Cc:     lkml <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Rob Herring <robh@kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=za9mZgZMFIIRg3GpMvsNl2kwUYzssn+fn7P0K8O4oYY=;
+        b=LluZXmBJJEjHaIg6d+maaRCKDutIZuq3FiD7+p1gF1Oi1C7Qj6FqhOZGq34B2krkPm
+         FsYXMowFAlrJdEBYjh1r4XuNuhfYOm32KeHTQnO61KCItCFZZZhnQF5p5F/5YsChItsf
+         rZT4PjsSNxC6uBKxoiJHiojROpLbXs3xf8ot8UUh3R4bxjGaQ6ns+NSn/51fpgN4jrKr
+         mh71EPZmfxvP3kwqGZBweakC2c0z6KuZtPoqAkzFcyb9CUc8GBaSPQIjihVXmRB2sKy4
+         TGN7bIOjOjC3si7BckOwXtlXhAH5KoiJ2mZa4w+PKOKpR6UvzZXhc4a7xGcxvtnM+xDI
+         IOlA==
+X-Gm-Message-State: AGi0PubIDr3LuERfP1p89DryT9AFTDmDd3P4tczLkVDXqzw6nu2AeDeB
+        iJk/wYdxNJmHIrjd+2dtaH66sw==
+X-Google-Smtp-Source: APiQypL5v98splBWn64XF9b6rs7+8CXL0VOOmIa7E3k/ulontEPPpHTZqFUj9e+LU/f+0d6T9bG1zQ==
+X-Received: by 2002:a05:6214:154c:: with SMTP id t12mr3376288qvw.218.1586279627457;
+        Tue, 07 Apr 2020 10:13:47 -0700 (PDT)
+Received: from mojatatu.com ([74.127.203.199])
+        by smtp.gmail.com with ESMTPSA id v77sm13963962qkb.24.2020.04.07.10.13.38
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 07 Apr 2020 10:13:46 -0700 (PDT)
+From:   Roman Mashak <mrv@mojatatu.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, lucasb@mojatatu.com,
+        Roman Mashak <mrv@mojatatu.com>
+Subject: [PATCH net 1/1] tc-testing: remove duplicate code in tdc.py
+Date:   Tue,  7 Apr 2020 13:13:25 -0400
+Message-Id: <1586279605-6689-1-git-send-email-mrv@mojatatu.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi John,
+In set_operation_mode() function remove duplicated check for args.list
+parameter, which is already done one line before.
 
-On Tue, Apr 7, 2020 at 9:50 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> On Tue, Apr 7, 2020 at 9:06 AM John Stultz <john.stultz@linaro.org> wrote:
-> > In commit c8c43cee29f6 ("driver core: Fix
-> > driver_deferred_probe_check_state() logic"), we set the default
-> > driver_deferred_probe_timeout value to 30 seconds to allow for
-> > drivers that are missing dependencies to have some time so that
-> > the dependency may be loaded from userland after initcalls_done
-> > is set.
-> >
-> > However, Yoshihiro Shimoda reported that on his device that
-> > expects to have unmet dependencies (due to "optional links" in
-> > its devicetree), was failing to mount the NFS root.
-> >
-> > In digging further, it seemed the problem was that while the
-> > device properly probes after waiting 30 seconds for any missing
-> > modules to load, the ip_auto_config() had already failed,
-> > resulting in NFS to fail. This was due to ip_auto_config()
-> > calling wait_for_device_probe() which doesn't wait for the
-> > driver_deferred_probe_timeout to fire.
-> >
-> > This patch tries to fix the issue by creating a waitqueue
-> > for the driver_deferred_probe_timeout, and calling wait_event()
-> > to make sure driver_deferred_probe_timeout is zero in
-> > wait_for_device_probe() to make sure all the probing is
-> > finished.
-> >
-> > NOTE: I'm not 100% sure this won't have other unwanted side
-> > effects (I don't have failing hardware myself to validate),
-> > so I'd apprecate testing and close review.
-> >
-> > If this approach doesn't work, I'll simply set the default
-> > driver_deferred_probe_timeout value back to zero, to avoid any
-> > behavioral change from before.
-> >
-> > Thanks to Geert for chasing down that ip_auto_config was why NFS
-> > was failing in this case!
-> >
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-> > Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
-> > Cc: Rob Herring <robh@kernel.org>
-> > Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> > Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> > Cc: netdev <netdev@vger.kernel.org>
-> > Cc: linux-pm@vger.kernel.org
-> > Reported-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> > Fixes: c8c43cee29f6 ("driver core: Fix driver_deferred_probe_check_state() logic")
-> > Signed-off-by: John Stultz <john.stultz@linaro.org>
->
-> Thanks, this fixes the issue for me!
->
-> Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Roman Mashak <mrv@mojatatu.com>
+---
+ tools/testing/selftests/tc-testing/tdc.py | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-Unfortunately this adds another delay of ca. 30 s to mounting NFS root
-when using a kernel config that does include IOMMU and MODULES
-support.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
+diff --git a/tools/testing/selftests/tc-testing/tdc.py b/tools/testing/selftests/tc-testing/tdc.py
+index e566c70e64a1..a3e43189d940 100755
+--- a/tools/testing/selftests/tc-testing/tdc.py
++++ b/tools/testing/selftests/tc-testing/tdc.py
+@@ -713,9 +713,8 @@ def set_operation_mode(pm, parser, args, remaining):
+         exit(0)
+ 
+     if args.list:
+-        if args.list:
+-            list_test_cases(alltests)
+-            exit(0)
++        list_test_cases(alltests)
++        exit(0)
+ 
+     if len(alltests):
+         req_plugins = pm.get_required_plugins(alltests)
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.7.4
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
