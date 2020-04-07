@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C014C1A02F1
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:10:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14C351A02F4
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:10:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726701AbgDGACE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 20:02:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35902 "EHLO mail.kernel.org"
+        id S1727899AbgDGACF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 20:02:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35950 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727847AbgDGACD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Apr 2020 20:02:03 -0400
+        id S1727775AbgDGACE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Apr 2020 20:02:04 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E466720842;
-        Tue,  7 Apr 2020 00:02:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 00AED208E4;
+        Tue,  7 Apr 2020 00:02:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586217722;
-        bh=Sb3NPDH1SdCPrT2vOzdHnbroa9okV1T2L90Jo+ULj9I=;
+        s=default; t=1586217723;
+        bh=3QmcZ+XzN2FY7ipu4OPbIdcpP94pwoaA917evhec7Xg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OI2dCHera2FI6OE6tIqLcqoCkNEyuVnPbDepu8TjVUJJd+Ltatj4egYCzCipjvmxe
-         MNU/NnMYGKOPJYEokQYx2k+zmdqFKfYFNtEJctsJHVm5AoMlmU4NcryZ/opoR8QI8d
-         ypiRGb3zlKXfo5NS2fHYrn3e5yLJkx1RFUAUchV4=
+        b=qV0KpB6Gf3ds9QdNuFjiROAqN987l/YZk+9pnDpIm+sgQhrbgp8sY/qr7db4psmw6
+         GOIq0ZuWiZJDKJxma3W4EV/+E4IN2w22WkUNo5iN1TEFR8OFXdN9thWGDYOA1oihhE
+         Mc3ts6rg8qlwOMaCdWJpe7UUbj0u3Wz+2t0RECPk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
+Cc:     Ilan Peer <ilan.peer@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 08/32] iwlwifi: dbg: don't abort if sending DBGC_SUSPEND_RESUME fails
-Date:   Mon,  6 Apr 2020 20:01:26 -0400
-Message-Id: <20200407000151.16768-8-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 09/32] iwlwifi: mvm: Fix rate scale NSS configuration
+Date:   Mon,  6 Apr 2020 20:01:27 -0400
+Message-Id: <20200407000151.16768-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200407000151.16768-1-sashal@kernel.org>
 References: <20200407000151.16768-1-sashal@kernel.org>
@@ -43,87 +44,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luca Coelho <luciano.coelho@intel.com>
+From: Ilan Peer <ilan.peer@intel.com>
 
-[ Upstream commit 699b760bd29edba736590fffef7654cb079c753e ]
+[ Upstream commit ce19801ba75a902ab515dda03b57738c708d0781 ]
 
-If the firmware is in a bad state or not initialized fully, sending
-the DBGC_SUSPEND_RESUME command fails but we can still collect logs.
+The TLC configuration did not take into consideration the station's
+SMPS configuration, and thus configured rates for 2 NSS even if
+static SMPS was reported by the station. Fix this.
 
-Instead of aborting the entire dump process, simply ignore the error.
-By removing the last callpoint that was checking the return value, we
-can also convert the function to return void.
-
+Signed-off-by: Ilan Peer <ilan.peer@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Fixes: 576058330f2d ("iwlwifi: dbg: support debug recording suspend resume command")
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20200306151129.dcec37b2efd4.I8dcd190431d110a6a0e88095ce93591ccfb3d78d@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20200306151129.b4f940d13eca.Ieebfa889d08205a3a961ae0138fb5832e8a0f9c1@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/fw/dbg.c | 15 +++++----------
- drivers/net/wireless/intel/iwlwifi/fw/dbg.h |  6 +++---
- 2 files changed, 8 insertions(+), 13 deletions(-)
+ .../net/wireless/intel/iwlwifi/mvm/rs-fw.c    | 29 ++++++++++++++-----
+ 1 file changed, 21 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-index ef65e1ea374fd..cb5465d9c0686 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-@@ -2311,10 +2311,7 @@ static void iwl_fw_dbg_collect_sync(struct iwl_fw_runtime *fwrt, u8 wk_idx)
- 		goto out;
- 	}
- 
--	if (iwl_fw_dbg_stop_restart_recording(fwrt, &params, true)) {
--		IWL_ERR(fwrt, "Failed to stop DBGC recording, aborting dump\n");
--		goto out;
--	}
-+	iwl_fw_dbg_stop_restart_recording(fwrt, &params, true);
- 
- 	IWL_DEBUG_FW_INFO(fwrt, "WRT: Data collection start\n");
- 	if (iwl_trans_dbg_ini_valid(fwrt->trans))
-@@ -2480,14 +2477,14 @@ static int iwl_fw_dbg_restart_recording(struct iwl_trans *trans,
- 	return 0;
- }
- 
--int iwl_fw_dbg_stop_restart_recording(struct iwl_fw_runtime *fwrt,
--				      struct iwl_fw_dbg_params *params,
--				      bool stop)
-+void iwl_fw_dbg_stop_restart_recording(struct iwl_fw_runtime *fwrt,
-+				       struct iwl_fw_dbg_params *params,
-+				       bool stop)
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c b/drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c
+index 24df3182ec9eb..5b2bd603febfc 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c
+@@ -6,7 +6,7 @@
+  * GPL LICENSE SUMMARY
+  *
+  * Copyright(c) 2017        Intel Deutschland GmbH
+- * Copyright(c) 2018 - 2019 Intel Corporation
++ * Copyright(c) 2018 - 2020 Intel Corporation
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of version 2 of the GNU General Public License as
+@@ -27,7 +27,7 @@
+  * BSD LICENSE
+  *
+  * Copyright(c) 2017        Intel Deutschland GmbH
+- * Copyright(c) 2018 - 2019 Intel Corporation
++ * Copyright(c) 2018 - 2020 Intel Corporation
+  * All rights reserved.
+  *
+  * Redistribution and use in source and binary forms, with or without
+@@ -195,11 +195,13 @@ rs_fw_vht_set_enabled_rates(const struct ieee80211_sta *sta,
  {
- 	int ret = 0;
+ 	u16 supp;
+ 	int i, highest_mcs;
++	u8 nss = sta->rx_nss;
  
- 	if (test_bit(STATUS_FW_ERROR, &fwrt->trans->status))
--		return 0;
-+		return;
+-	for (i = 0; i < sta->rx_nss; i++) {
+-		if (i == IWL_TLC_NSS_MAX)
+-			break;
++	/* the station support only a single receive chain */
++	if (sta->smps_mode == IEEE80211_SMPS_STATIC)
++		nss = 1;
  
- 	if (fw_has_capa(&fwrt->fw->ucode_capa,
- 			IWL_UCODE_TLV_CAPA_DBG_SUSPEND_RESUME_CMD_SUPP))
-@@ -2504,7 +2501,5 @@ int iwl_fw_dbg_stop_restart_recording(struct iwl_fw_runtime *fwrt,
- 			iwl_fw_set_dbg_rec_on(fwrt);
++	for (i = 0; i < nss && i < IWL_TLC_NSS_MAX; i++) {
+ 		highest_mcs = rs_fw_vht_highest_rx_mcs_index(vht_cap, i + 1);
+ 		if (!highest_mcs)
+ 			continue;
+@@ -245,8 +247,13 @@ rs_fw_he_set_enabled_rates(const struct ieee80211_sta *sta,
+ 	u16 tx_mcs_160 =
+ 		le16_to_cpu(sband->iftype_data->he_cap.he_mcs_nss_supp.tx_mcs_160);
+ 	int i;
++	u8 nss = sta->rx_nss;
+ 
+-	for (i = 0; i < sta->rx_nss && i < IWL_TLC_NSS_MAX; i++) {
++	/* the station support only a single receive chain */
++	if (sta->smps_mode == IEEE80211_SMPS_STATIC)
++		nss = 1;
++
++	for (i = 0; i < nss && i < IWL_TLC_NSS_MAX; i++) {
+ 		u16 _mcs_160 = (mcs_160 >> (2 * i)) & 0x3;
+ 		u16 _mcs_80 = (mcs_80 >> (2 * i)) & 0x3;
+ 		u16 _tx_mcs_160 = (tx_mcs_160 >> (2 * i)) & 0x3;
+@@ -307,8 +314,14 @@ static void rs_fw_set_supp_rates(struct ieee80211_sta *sta,
+ 		cmd->mode = IWL_TLC_MNG_MODE_HT;
+ 		cmd->ht_rates[IWL_TLC_NSS_1][IWL_TLC_HT_BW_NONE_160] =
+ 			cpu_to_le16(ht_cap->mcs.rx_mask[0]);
+-		cmd->ht_rates[IWL_TLC_NSS_2][IWL_TLC_HT_BW_NONE_160] =
+-			cpu_to_le16(ht_cap->mcs.rx_mask[1]);
++
++		/* the station support only a single receive chain */
++		if (sta->smps_mode == IEEE80211_SMPS_STATIC)
++			cmd->ht_rates[IWL_TLC_NSS_2][IWL_TLC_HT_BW_NONE_160] =
++				0;
++		else
++			cmd->ht_rates[IWL_TLC_NSS_2][IWL_TLC_HT_BW_NONE_160] =
++				cpu_to_le16(ht_cap->mcs.rx_mask[1]);
  	}
- #endif
--
--	return ret;
  }
- IWL_EXPORT_SYMBOL(iwl_fw_dbg_stop_restart_recording);
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dbg.h b/drivers/net/wireless/intel/iwlwifi/fw/dbg.h
-index e3b5dd34643f5..2ac61629f46f4 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/dbg.h
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/dbg.h
-@@ -263,9 +263,9 @@ _iwl_fw_dbg_trigger_simple_stop(struct iwl_fw_runtime *fwrt,
- 	_iwl_fw_dbg_trigger_simple_stop((fwrt), (wdev),		\
- 					iwl_fw_dbg_get_trigger((fwrt)->fw,\
- 							       (trig)))
--int iwl_fw_dbg_stop_restart_recording(struct iwl_fw_runtime *fwrt,
--				      struct iwl_fw_dbg_params *params,
--				      bool stop);
-+void iwl_fw_dbg_stop_restart_recording(struct iwl_fw_runtime *fwrt,
-+				       struct iwl_fw_dbg_params *params,
-+				       bool stop);
  
- #ifdef CONFIG_IWLWIFI_DEBUGFS
- static inline void iwl_fw_set_dbg_rec_on(struct iwl_fw_runtime *fwrt)
 -- 
 2.20.1
 
