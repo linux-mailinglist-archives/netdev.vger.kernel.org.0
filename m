@@ -2,140 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C420E1A0C9C
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 13:12:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 212091A0D1B
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 13:55:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728458AbgDGLMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 07:12:33 -0400
-Received: from mout.kundenserver.de ([212.227.17.13]:33745 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728075AbgDGLMc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 07:12:32 -0400
-Received: from weisslap.aisec.fraunhofer.de ([178.27.102.19]) by
- mrelayeu.kundenserver.de (mreue106 [212.227.15.183]) with ESMTPSA (Nemesis)
- id 1Mf0uq-1ipUfT29Qw-00gaww; Tue, 07 Apr 2020 13:12:17 +0200
-From:   =?UTF-8?q?Michael=20Wei=C3=9F?= <michael.weiss@aisec.fraunhofer.de>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org,
-        =?UTF-8?q?Michael=20Wei=C3=9F?= <michael.weiss@aisec.fraunhofer.de>
-Subject: [PATCH] l2tp: Allow management of tunnels and session in user namespace
-Date:   Tue,  7 Apr 2020 13:11:48 +0200
-Message-Id: <20200407111148.28406-1-michael.weiss@aisec.fraunhofer.de>
-X-Mailer: git-send-email 2.20.1
+        id S1728209AbgDGLzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 07:55:51 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:45765 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726562AbgDGLzv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 07:55:51 -0400
+Received: by mail-qk1-f195.google.com with SMTP id m67so75263qke.12
+        for <netdev@vger.kernel.org>; Tue, 07 Apr 2020 04:55:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ceAe9s5g1bpqs/xuk9UoBUiTWj0Xhc3RDSdNgpswe0Q=;
+        b=MgUm0WOp8c8FLGB7Ig9nz5OKFLDWqyBHiLaWKxbCjl1iyEUxM/1XZNr5O+NhZHo4fe
+         R0Z4TJCHZYXh8L+/cnbal1UBc20KEWoa0ukvwx3SVgDGMMOhhguGv0RYFu+d5DyTCIBf
+         jHKEw9N6iCFhBkxiuxyt5R7nS9hQi5T4HbwpN5hDyOlI7PsUtPVBvNEooBibfPsXyt+K
+         nJWpiDXZcDh8f06MQ4IXCB9B6lojiTIDGV51LtXY/UuE+bzimWeak/KA3iFWTFKX3bks
+         //GWpDCzc5fL8Z5Y01nEBk8UUbKsTx46WlNeMjhIq1HC7P85+dHAmmuXmnPMDcmhHg+B
+         IOIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ceAe9s5g1bpqs/xuk9UoBUiTWj0Xhc3RDSdNgpswe0Q=;
+        b=Xsvj2c8B8PqY2xkJaQv9D3ATiHelbPB7CQ+mFFxsnLUURAHTcYtjv1foyQGH4Hd816
+         csuzsz88BiJCHoePu5l8mdeIEKjZTsPhgNuR4AtrfecF2bWntmtSdmhlni8rx8RJYo9i
+         vk+DhK7k0EKbMgvyp5sP+U4mSi/YWzB+g/Jcgg8zpYlVM+G0b7ie4pF7lFly97FfQnkT
+         ZsNyn/W1mU2v7SaPXNqzbj5Nsa4TA116fkhPOfiBD227Gesg637jzoKxTL0jsrnb0yhY
+         jDfcS4Db2JjfQP0uHMUyEjIb491MjguvvCE/a8k+mWkVuAtFUQRnUNYCu51vOYVNWjuQ
+         dL/Q==
+X-Gm-Message-State: AGi0PuYnMs98VW6z295GF5MgGVcZ2t6GjhXcS8JCQX128RkjXyaxVPFW
+        bMKBgZm5M8ykhiqEqqxuPzAinw==
+X-Google-Smtp-Source: APiQypI6tyZXZJ/lR2tBYH+vI4JsVy0kISJi44Lw4iUz36y6gU16DjHD+k1n8fMNxZYuWTBREupC8w==
+X-Received: by 2002:a05:620a:91d:: with SMTP id v29mr1681222qkv.424.1586260549945;
+        Tue, 07 Apr 2020 04:55:49 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
+        by smtp.gmail.com with ESMTPSA id q13sm7074962qki.136.2020.04.07.04.55.49
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 07 Apr 2020 04:55:49 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1jLmpY-0007fp-Nb; Tue, 07 Apr 2020 08:55:48 -0300
+Date:   Tue, 7 Apr 2020 08:55:48 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        syzbot <syzbot+9627a92b1f9262d5d30c@syzkaller.appspotmail.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Rafael Wysocki <rafael@kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Subject: Re: WARNING in ib_umad_kill_port
+Message-ID: <20200407115548.GU20941@ziepe.ca>
+References: <00000000000075245205a2997f68@google.com>
+ <20200406172151.GJ80989@unreal>
+ <20200406174440.GR20941@ziepe.ca>
+ <CACT4Y+Zv_WXEn6u5a6kRZpkDJnSzeGF1L7JMw4g85TLEgAM7Lw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:Pi37i8/ZdO+l0xxB5bzHLm+H+wGE7HoJuRKjq8JSx09hbOj6Pds
- G48n5yxM6TOy2a7jXsHyGRcCruJS2FzVGze+sDL4cZWqvX8MxHS3hh8S8NMBK1AclcspcCN
- EGFEK8lnVWlH1cxyP7dsOZXARB2Zzbk0cjxNGz3iVqRMUr/2DBTexmZ4aebVIXatbnli2XO
- VDBETXTw4C2uXTMv6HJlA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:F/ObvcO9eu0=:X6ayZIriyZp4dGhhYAbzma
- u+wqBeK7M75MJorOWb/sm0bHYZ1NP23sjXIETeCasZovLFQsymiagf1kP/SXIy1QTRJzUqChb
- STdIOPF9rkTTVjzJ0TJEQ1zgoYK2+qGsDoDcAFujiGva8Gq5WuTABIYT9j+DDOPhFRJCfFzYr
- HXIuQEj+QyXx45MN8hRwcyJA3r3SGE45zsurUakdVeHL8gg+YrfB26gBALDMwJMhuQMvYkySn
- xesb0gAvREL16uME7aHWSFRB72zk7rUrCgXrXfeUvpotCY/IznbqR173SPulvziyN7Ix6J7PP
- 41Edr2bWMo3cqDkyQQKCELDlkZzfBBxvnPnN+gphqHB35qlM3Ti8YDmG3o4aCvzWs00tziWtj
- rcc7LK9l7JHOHfQQRcmOYSSFWO77pokxZQVwqhFdTiJv0cQm6KbnDBZYaUGj4pBJHG2ZUsWAs
- wNv08/BrK+q5IDEvuywrnJzD4nJO7K+JNy/meTo+30pQQEJygWWCAc3RGtrZofOqRyNGkShwi
- mnG8nZzYF612muOPjj5qge54NUGFClY2/OC7KUo8Yh8KB6BHdJc6OX6FD8+WtHWnsoQaQuW5k
- UeWEHKDGUrBHKXrsCKl1kZgXEN6uPlG3PZbYYbWh8qdabfV1ey+6nLS7mncgK1kA7YjsGye92
- SQL9O4to4sEuzsrvZ6sd4QO1LDzej3nuxJvlkjVv6Bxk3UjOvU3p//YP+ZLZh4QtkXL8kifo+
- PMJ1RnQRG6Pg7rY1jJP4TLW80cvmrXkUbxQzKXu2uEhFcMXANoBhlVTM0ITHWfWvWz4iXt7ZU
- KDduv6ScO9Hu/GCe4J+HB90n8rGJxYgvF+kMB/01Bwf35esgqkBJStU7JK8n828Rgb+XaTdOf
- Udq40vO1GvJufMvGfBng==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACT4Y+Zv_WXEn6u5a6kRZpkDJnSzeGF1L7JMw4g85TLEgAM7Lw@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Creation and management of L2TPv3 tunnels and session through netlink
-requires CAP_NET_ADMIN. However, a process with CAP_NET_ADMIN in a
-non-initial user namespace gets an EPERM due to the use of the
-genetlink GENL_ADMIN_PERM flag. Thus, management of L2TP VPNs inside
-an unprivileged container won't work.
+On Tue, Apr 07, 2020 at 11:56:30AM +0200, Dmitry Vyukov wrote:
+> > I'm not sure what could be done wrong here to elicit this:
+> >
+> >  sysfs group 'power' not found for kobject 'umad1'
+> >
+> > ??
+> >
+> > I've seen another similar sysfs related trigger that we couldn't
+> > figure out.
+> >
+> > Hard to investigate without a reproducer.
+> 
+> Based on all of the sysfs-related bugs I've seen, my bet would be on
+> some races. E.g. one thread registers devices, while another
+> unregisters these.
 
-We replaced the GENL_ADMIN_PERM by the GENL_UNS_ADMIN_PERM flag
-similar to other network modules which also had this problem, e.g.,
-openvswitch (commit 4a92602aa1cd "openvswitch: allow management from
-inside user namespaces") and nl80211 (commit 5617c6cd6f844 "nl80211:
-Allow privileged operations from user namespaces").
+I did check that the naming is ordered right, at least we won't be
+concurrently creating and destroying umadX sysfs of the same names.
 
-I tested this in the container runtime trustm3 (trustm3.github.io)
-and was able to create l2tp tunnels and sessions in unpriviliged
-(user namespaced) containers using a private network namespace.
-For other runtimes such as docker or lxc this should work, too.
+I'm also fairly sure we can't be destroying the parent at the same
+time as this child.
 
-Signed-off-by: Michael Weiß <michael.weiss@aisec.fraunhofer.de>
----
- net/l2tp/l2tp_netlink.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+Do you see the above commonly? Could it be some driver core thing? Or
+is it more likely something wrong in umad?
 
-diff --git a/net/l2tp/l2tp_netlink.c b/net/l2tp/l2tp_netlink.c
-index f5a9bdc4980c..ebb381c3f1b9 100644
---- a/net/l2tp/l2tp_netlink.c
-+++ b/net/l2tp/l2tp_netlink.c
-@@ -920,51 +920,51 @@ static const struct genl_ops l2tp_nl_ops[] = {
- 		.cmd = L2TP_CMD_TUNNEL_CREATE,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = l2tp_nl_cmd_tunnel_create,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 	},
- 	{
- 		.cmd = L2TP_CMD_TUNNEL_DELETE,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = l2tp_nl_cmd_tunnel_delete,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 	},
- 	{
- 		.cmd = L2TP_CMD_TUNNEL_MODIFY,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = l2tp_nl_cmd_tunnel_modify,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 	},
- 	{
- 		.cmd = L2TP_CMD_TUNNEL_GET,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = l2tp_nl_cmd_tunnel_get,
- 		.dumpit = l2tp_nl_cmd_tunnel_dump,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 	},
- 	{
- 		.cmd = L2TP_CMD_SESSION_CREATE,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = l2tp_nl_cmd_session_create,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 	},
- 	{
- 		.cmd = L2TP_CMD_SESSION_DELETE,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = l2tp_nl_cmd_session_delete,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 	},
- 	{
- 		.cmd = L2TP_CMD_SESSION_MODIFY,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = l2tp_nl_cmd_session_modify,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 	},
- 	{
- 		.cmd = L2TP_CMD_SESSION_GET,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = l2tp_nl_cmd_session_get,
- 		.dumpit = l2tp_nl_cmd_session_dump,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 	},
- };
- 
--- 
-2.20.1
-
+Jason
