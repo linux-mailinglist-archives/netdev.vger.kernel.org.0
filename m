@@ -2,147 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D94871A145B
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 20:39:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 362D91A148A
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 20:39:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727890AbgDGSij (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 14:38:39 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:35616 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727857AbgDGSii (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 14:38:38 -0400
-Received: by mail-ot1-f65.google.com with SMTP id v2so4227102oto.2
-        for <netdev@vger.kernel.org>; Tue, 07 Apr 2020 11:38:37 -0700 (PDT)
+        id S1728019AbgDGSjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 14:39:16 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:45956 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726950AbgDGSjQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 14:39:16 -0400
+Received: by mail-lj1-f193.google.com with SMTP id t17so4845760ljc.12
+        for <netdev@vger.kernel.org>; Tue, 07 Apr 2020 11:39:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=DfU5H29fCXE3UgX+4sVCKl7laMGWi7iSdKnWzwJAqFc=;
-        b=r3Amgov5t5gHc1Vo6J48zl+Kwo3vO8poNSiulyIrPrwzvvmc+vbExumlXUUezgp2e0
-         ahmpdd62XIm162m5mZX27P7RzSvQAjLc8hopGL9glBIVZT4cxLnIkZiayMsUpTYERFhE
-         kCIkAEBhIgZXyoUB9Nzt5UtNj7sEwP0fWY129L/TacgRefrZ7gOkLBCoRLwlUnT7xk+w
-         cuEjeefzyNNNQWc8hThFdp1JqyLnAoEimChKY9ubvSA0d+CN8nCpBFy6VQfHNkEuMF2N
-         Ahk4ha84IJF27fgAaDOlQV1GuDyNZISxoWXaTkz7i4u+BfZKS8a3wvroUIExmQcz7E1v
-         5h3w==
+        bh=YTOMqzmqJZ7tcU1cgqIhCtHjF6AAr4kLgyB3spNq9dY=;
+        b=R3M7TuTqwbkZfw3MwAcf0K0cGJwJKEfxA2AavRzCYf0Sar3jH2TBM/hkdAIJRyfjJa
+         pPV76pPDODDAFCfUWhb5b7KYIzcNEJTQIjB8R8ogGVkpLKFsmg+EzwrorYSE20LouXIX
+         Uo5qkcMm0qhjrkPAfjGOiT0xD6uPI9O3g9rac=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=DfU5H29fCXE3UgX+4sVCKl7laMGWi7iSdKnWzwJAqFc=;
-        b=L9QRY7oFNmTgPswTNl7edHrq2NzWlUAwQOtydpbY9XLa0hpU5yZM2XVqt8lIvExXcf
-         mC+HnQeYv/YfIeZ0etNoUrvBr9UCz3ksqMceu+IaMpwc5zMV/z1FP7gI9WFXzwOHbXEv
-         S02k2OZ+r+Lbr4LFZAnbFjC+C90rx43IcO2ImnRN39wJs6VlqnhoEihZuCrztKjTtffV
-         3FlP/vnUCc4sCXyv9Y99IznTdErfPg3Q6kxlr6nQsN3ZcnRkUmk6bb0+xbnvZDjjyi5V
-         pzmmiglTpwjpF7G2yLi2bv5C432RxJ7uKfNzmHpNStiEPg07meSqtohtKf8+ZLJ8PZlw
-         2kZg==
-X-Gm-Message-State: AGi0PuaPRRJpa1Xb7IdatioZ/apznWxo4coBpD2KITLFBVaNOblP+W18
-        nVGr5uWWCXfn5lHU7F5UsSfeNaDKavH4sgZ5lkfscw==
-X-Google-Smtp-Source: APiQypKvRIslouspebvmyiyTT8xoA5MiR6UfoN24Yzn6dDPf3VJZJrZVbdZ4mwOwB4jJHmwtHVaBzLtq5nJkixnQyVY=
-X-Received: by 2002:a9d:7349:: with SMTP id l9mr601660otk.221.1586284717081;
- Tue, 07 Apr 2020 11:38:37 -0700 (PDT)
+        bh=YTOMqzmqJZ7tcU1cgqIhCtHjF6AAr4kLgyB3spNq9dY=;
+        b=MI1sakorUHLA54tRJi0gCdLkHHMbhSsSA7uC0iz2lcgpBE1ciVQgRMBDLp4HFe/N1u
+         /dYLCjq0iLAz2KpFDf42o8hMdx6P1bMjzKAND+heru1oYOgoyuiDoBYAUPPbFIPZEWuc
+         RAa0Jm1jytOOJDyaC5mYLExcRInyB9YllP501kc/U9fIub1/F7Cx/3zvz3DtO1gmTYLs
+         rQK2FpAlEh9ECTk9SR1+ZGXFbyijGMd9R3wCW15i1hwzici5J75F7EoAaFnnqIuang+u
+         SZKitr1wQBYdCvGeDI2CkmuKd7HZE0Av+P0pOhDOpaktl1tl8zQO0Ou87YInB2nvWkxC
+         jF+g==
+X-Gm-Message-State: AGi0PuaARo8XHOMyOzPVPmD6wyN27RSsmw48KeQU6L0hYD7gFcLaX/bH
+        SxwqLOau4zbKK4SRl2+iHmaavedyB9g=
+X-Google-Smtp-Source: APiQypLl19W7mSK+HR3wjDy7mqjYWv7DXby1kia4az4X4+6wmhnw1a4LCBPERmYTwmL7jI/VdWADrQ==
+X-Received: by 2002:a2e:b8c1:: with SMTP id s1mr2686976ljp.0.1586284752881;
+        Tue, 07 Apr 2020 11:39:12 -0700 (PDT)
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com. [209.85.208.179])
+        by smtp.gmail.com with ESMTPSA id l132sm5060035lfd.95.2020.04.07.11.39.11
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Apr 2020 11:39:11 -0700 (PDT)
+Received: by mail-lj1-f179.google.com with SMTP id r7so4842489ljg.13
+        for <netdev@vger.kernel.org>; Tue, 07 Apr 2020 11:39:11 -0700 (PDT)
+X-Received: by 2002:a05:651c:50e:: with SMTP id o14mr2484705ljp.241.1586284750968;
+ Tue, 07 Apr 2020 11:39:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <TYAPR01MB45443FA43152C0091D6EBF9AD8C20@TYAPR01MB4544.jpnprd01.prod.outlook.com>
- <20200407070609.42865-1-john.stultz@linaro.org> <CAMuHMdWSXvHN5zEh7A+CygxEHP42qFrum+ntiL=m+ATwYOOB0Q@mail.gmail.com>
- <CAMuHMdXuv1jcuDZLh9TfBQH5Oyf9S8qhVfFbui0a5OpbwUzT8Q@mail.gmail.com>
-In-Reply-To: <CAMuHMdXuv1jcuDZLh9TfBQH5Oyf9S8qhVfFbui0a5OpbwUzT8Q@mail.gmail.com>
-From:   John Stultz <john.stultz@linaro.org>
-Date:   Tue, 7 Apr 2020 11:38:25 -0700
-Message-ID: <CALAqxLVCMbHO33P1wF-4bXZ5r7T9Xgw569eVp8e7oM7QSQtjzA@mail.gmail.com>
-Subject: Re: [RFC][PATCH] driver core: Ensure wait_for_device_probe() waits
- until the deferred_probe_timeout fires
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     lkml <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Rob Herring <robh@kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>
+References: <20200407174306.145032-1-briannorris@chromium.org> <20200407112427.403c73c9@hermes.lan>
+In-Reply-To: <20200407112427.403c73c9@hermes.lan>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Tue, 7 Apr 2020 11:38:59 -0700
+X-Gmail-Original-Message-ID: <CA+ASDXM540KLNXjRh0swrp=ATGfxWS-VUcZcqYT1Udm4QLPaVQ@mail.gmail.com>
+Message-ID: <CA+ASDXM540KLNXjRh0swrp=ATGfxWS-VUcZcqYT1Udm4QLPaVQ@mail.gmail.com>
+Subject: Re: [PATCH iproute2 1/2] man: add ip-netns(8) as generation target
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 7, 2020 at 9:46 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+On Tue, Apr 7, 2020 at 11:24 AM Stephen Hemminger
+<stephen@networkplumber.org> wrote:
 >
-> Hi John,
+> On Tue,  7 Apr 2020 10:43:05 -0700
+> Brian Norris <briannorris@chromium.org> wrote:
 >
-> On Tue, Apr 7, 2020 at 9:50 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > On Tue, Apr 7, 2020 at 9:06 AM John Stultz <john.stultz@linaro.org> wrote:
-> > > In commit c8c43cee29f6 ("driver core: Fix
-> > > driver_deferred_probe_check_state() logic"), we set the default
-> > > driver_deferred_probe_timeout value to 30 seconds to allow for
-> > > drivers that are missing dependencies to have some time so that
-> > > the dependency may be loaded from userland after initcalls_done
-> > > is set.
-> > >
-> > > However, Yoshihiro Shimoda reported that on his device that
-> > > expects to have unmet dependencies (due to "optional links" in
-> > > its devicetree), was failing to mount the NFS root.
-> > >
-> > > In digging further, it seemed the problem was that while the
-> > > device properly probes after waiting 30 seconds for any missing
-> > > modules to load, the ip_auto_config() had already failed,
-> > > resulting in NFS to fail. This was due to ip_auto_config()
-> > > calling wait_for_device_probe() which doesn't wait for the
-> > > driver_deferred_probe_timeout to fire.
-> > >
-> > > This patch tries to fix the issue by creating a waitqueue
-> > > for the driver_deferred_probe_timeout, and calling wait_event()
-> > > to make sure driver_deferred_probe_timeout is zero in
-> > > wait_for_device_probe() to make sure all the probing is
-> > > finished.
-> > >
-> > > NOTE: I'm not 100% sure this won't have other unwanted side
-> > > effects (I don't have failing hardware myself to validate),
-> > > so I'd apprecate testing and close review.
-> > >
-> > > If this approach doesn't work, I'll simply set the default
-> > > driver_deferred_probe_timeout value back to zero, to avoid any
-> > > behavioral change from before.
-> > >
-> > > Thanks to Geert for chasing down that ip_auto_config was why NFS
-> > > was failing in this case!
-> > >
-> > > Cc: "David S. Miller" <davem@davemloft.net>
-> > > Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-> > > Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-> > > Cc: Jakub Kicinski <kuba@kernel.org>
-> > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
-> > > Cc: Rob Herring <robh@kernel.org>
-> > > Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> > > Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> > > Cc: netdev <netdev@vger.kernel.org>
-> > > Cc: linux-pm@vger.kernel.org
-> > > Reported-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> > > Fixes: c8c43cee29f6 ("driver core: Fix driver_deferred_probe_check_state() logic")
-> > > Signed-off-by: John Stultz <john.stultz@linaro.org>
+> > Prepare for adding new variable substitutions. Unify the sed rules while
+> > we're at it, since there's no need to write this out 4 times.
 > >
-> > Thanks, this fixes the issue for me!
-> >
-> > Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > Signed-off-by: Brian Norris <briannorris@chromium.org>
 >
-> Unfortunately this adds another delay of ca. 30 s to mounting NFS root
-> when using a kernel config that does include IOMMU and MODULES
-> support.
+> Why is this needed?
 
-Yea. I worry the other downside is that systems with no missing
-dependencies will also see the stall here since we're waiting for the
-timeout regardless of if there's any drivers missing.
+For patch 1: it's only for the sake of patch 2.
+If you're implying that patch 2 doesn't describe the "why?" well
+enough: I'll try again:
 
-So in the light of morning (well, just barely), I think just setting
-the probe timeout to zero by default is the best approach. The series
-then doesn't change behavior but just cleans things up.
+> man: replace $(NETNS_ETC_DIR) and $(NETNS_RUN_DIR) in ip-netns(8)
+>
+> These can be configured to different paths. Reflect that in the
+> generated documentation.
 
-Though, I guess one could argue this fix should go along with setting
-the value to zero, so at least if folks specify a delay on the boot
-cmd, things don't fail because they didn't wait.
+This is needed because Chrom{ium,e} OS patches iproute2 to use /run
+directly instead of /var/run [1]. We also build the man pages, so we'd
+like the man-pages to match.
 
-thanks
--john
+Incidentally, we were already manually patching this out (in both
+source and man-page) before this upstream patch existed:
+e2f5ceccdab5 Allow to configure /var/run/netns directory
+It would be nice if we could just use the Makefile variable instead.
+
+I can resubmit if you'd like a more verbose description in the patch
+submission itself.
+
+Brian
+
+[1] Longer answer: because the latter traverses a symlink on a
+read/write partition, whereas the former is a direct-mounted tmpfs. We
+can provide better guarantees for programs that avoid symlinks like
+this.
