@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B539D1A024D
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:04:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75AF21A0279
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 02:05:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728324AbgDGADA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Apr 2020 20:03:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38030 "EHLO mail.kernel.org"
+        id S1727989AbgDGAEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Apr 2020 20:04:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38064 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728309AbgDGAC6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Apr 2020 20:02:58 -0400
+        id S1728312AbgDGAC7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Apr 2020 20:02:59 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D603920801;
-        Tue,  7 Apr 2020 00:02:56 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1D06D2078C;
+        Tue,  7 Apr 2020 00:02:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586217777;
-        bh=9SCmRP9uH8nX1LIhUPHY4aB9lDvFEEQOfKymCRxe/cs=;
+        s=default; t=1586217778;
+        bh=YH4AGpdCWy5IFEc8AHZ2MuIqQUIpNjevYeeA9hxY4Kw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fP3pO05ldSZSid/tWFFVyV4/HoOJGQctUL5rGS+m9MIGwzkj4HKcZGduPE1uvtbPR
-         phYSBWkcX0qcdXZ3TG5s12BIfpK79QulLN+YBZYvtcZrVGNZjFNksUZOMBNfcNaiwb
-         9kAOo+FfVmkvdaDXQ2M7w7J5zp6i2RvNe/707u1A=
+        b=NJQvek5Ndm4p5xSoU88fH0L1vfL+/iBfbowGLSUCxTh39opJzk2SrT1cLquT1OHyO
+         BCpSA013xncjP/N28364zOKtw4YBd/rYXOoz8l+LF078xcGm1QDPHMsjQre5iJwNtE
+         CLAlAsLHuQdBPdasOTa2Dq/Iz9Aa5VwSbPMdBos8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Luo bin <luobin9@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 4/9] hinic: fix the bug of clearing event queue
-Date:   Mon,  6 Apr 2020 20:02:47 -0400
-Message-Id: <20200407000252.17241-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 5/9] hinic: fix wrong para of wait_for_completion_timeout
+Date:   Mon,  6 Apr 2020 20:02:48 -0400
+Message-Id: <20200407000252.17241-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200407000252.17241-1-sashal@kernel.org>
 References: <20200407000252.17241-1-sashal@kernel.org>
@@ -45,91 +45,56 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Luo bin <luobin9@huawei.com>
 
-[ Upstream commit 614eaa943e9fc3fcdbd4aa0692ae84973d363333 ]
+[ Upstream commit 0da7c322f116210ebfdda59c7da663a6fc5e9cc8 ]
 
-should disable eq irq before freeing it, must clear event queue
-depth in hw before freeing relevant memory to avoid illegal
-memory access and update consumer idx to avoid invalid interrupt
+the second input parameter of wait_for_completion_timeout should
+be jiffies instead of millisecond
 
 Signed-off-by: Luo bin <luobin9@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/huawei/hinic/hinic_hw_eqs.c  | 24 +++++++++++++------
- 1 file changed, 17 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c | 3 ++-
+ drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c | 5 +++--
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c
-index 7cb8b9b94726d..1e631366b72b6 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c
-@@ -197,7 +197,7 @@ static u8 eq_cons_idx_checksum_set(u32 val)
-  * eq_update_ci - update the HW cons idx of event queue
-  * @eq: the event queue to update the cons idx for
-  **/
--static void eq_update_ci(struct hinic_eq *eq)
-+static void eq_update_ci(struct hinic_eq *eq, u32 arm_state)
- {
- 	u32 val, addr = EQ_CONS_IDX_REG_ADDR(eq);
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c
+index 7d95f0866fb0b..e1de97effcd24 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c
+@@ -398,7 +398,8 @@ static int cmdq_sync_cmd_direct_resp(struct hinic_cmdq *cmdq,
  
-@@ -211,7 +211,7 @@ static void eq_update_ci(struct hinic_eq *eq)
+ 	spin_unlock_bh(&cmdq->cmdq_lock);
  
- 	val |= HINIC_EQ_CI_SET(eq->cons_idx, IDX)    |
- 	       HINIC_EQ_CI_SET(eq->wrapped, WRAPPED) |
--	       HINIC_EQ_CI_SET(EQ_ARMED, INT_ARMED);
-+	       HINIC_EQ_CI_SET(arm_state, INT_ARMED);
+-	if (!wait_for_completion_timeout(&done, CMDQ_TIMEOUT)) {
++	if (!wait_for_completion_timeout(&done,
++					 msecs_to_jiffies(CMDQ_TIMEOUT))) {
+ 		spin_lock_bh(&cmdq->cmdq_lock);
  
- 	val |= HINIC_EQ_CI_SET(eq_cons_idx_checksum_set(val), XOR_CHKSUM);
+ 		if (cmdq->errcode[curr_prod_idx] == &errcode)
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
+index 278dc13f3dae8..9fcf2e5e00039 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
+@@ -52,7 +52,7 @@
  
-@@ -356,7 +356,7 @@ static void eq_irq_handler(void *data)
- 	else if (eq->type == HINIC_CEQ)
- 		ceq_irq_handler(eq);
+ #define MSG_NOT_RESP                    0xFFFF
  
--	eq_update_ci(eq);
-+	eq_update_ci(eq, EQ_ARMED);
- }
+-#define MGMT_MSG_TIMEOUT                1000
++#define MGMT_MSG_TIMEOUT                5000
  
- /**
-@@ -711,7 +711,7 @@ static int init_eq(struct hinic_eq *eq, struct hinic_hwif *hwif,
+ #define mgmt_to_pfhwdev(pf_mgmt)        \
+ 		container_of(pf_mgmt, struct hinic_pfhwdev, pf_to_mgmt)
+@@ -276,7 +276,8 @@ static int msg_to_mgmt_sync(struct hinic_pf_to_mgmt *pf_to_mgmt,
+ 		goto unlock_sync_msg;
  	}
  
- 	set_eq_ctrls(eq);
--	eq_update_ci(eq);
-+	eq_update_ci(eq, EQ_ARMED);
- 
- 	err = alloc_eq_pages(eq);
- 	if (err) {
-@@ -761,18 +761,28 @@ static int init_eq(struct hinic_eq *eq, struct hinic_hwif *hwif,
-  **/
- static void remove_eq(struct hinic_eq *eq)
- {
--	struct msix_entry *entry = &eq->msix_entry;
--
--	free_irq(entry->vector, eq);
-+	hinic_set_msix_state(eq->hwif, eq->msix_entry.entry,
-+			     HINIC_MSIX_DISABLE);
-+	free_irq(eq->msix_entry.vector, eq);
- 
- 	if (eq->type == HINIC_AEQ) {
- 		struct hinic_eq_work *aeq_work = &eq->aeq_work;
- 
- 		cancel_work_sync(&aeq_work->work);
-+		/* clear aeq_len to avoid hw access host memory */
-+		hinic_hwif_write_reg(eq->hwif,
-+				     HINIC_CSR_AEQ_CTRL_1_ADDR(eq->q_id), 0);
- 	} else if (eq->type == HINIC_CEQ) {
- 		tasklet_kill(&eq->ceq_tasklet);
-+		/* clear ceq_len to avoid hw access host memory */
-+		hinic_hwif_write_reg(eq->hwif,
-+				     HINIC_CSR_CEQ_CTRL_1_ADDR(eq->q_id), 0);
- 	}
- 
-+	/* update cons_idx to avoid invalid interrupt */
-+	eq->cons_idx = hinic_hwif_read_reg(eq->hwif, EQ_PROD_IDX_REG_ADDR(eq));
-+	eq_update_ci(eq, EQ_NOT_ARMED);
-+
- 	free_eq_pages(eq);
- }
- 
+-	if (!wait_for_completion_timeout(recv_done, MGMT_MSG_TIMEOUT)) {
++	if (!wait_for_completion_timeout(recv_done,
++					 msecs_to_jiffies(MGMT_MSG_TIMEOUT))) {
+ 		dev_err(&pdev->dev, "MGMT timeout, MSG id = %d\n", msg_id);
+ 		err = -ETIMEDOUT;
+ 		goto unlock_sync_msg;
 -- 
 2.20.1
 
