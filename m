@@ -2,114 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FBD41A08D8
-	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 10:02:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA7C21A0920
+	for <lists+netdev@lfdr.de>; Tue,  7 Apr 2020 10:14:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727953AbgDGICY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 04:02:24 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:51754 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726635AbgDGICX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 04:02:23 -0400
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0377XJST082551
-        for <netdev@vger.kernel.org>; Tue, 7 Apr 2020 04:02:22 -0400
-Received: from e06smtp02.uk.ibm.com (e06smtp02.uk.ibm.com [195.75.94.98])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 308mgssn7p-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 07 Apr 2020 04:02:11 -0400
-Received: from localhost
-        by e06smtp02.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <schnelle@linux.ibm.com>;
-        Tue, 7 Apr 2020 09:01:17 +0100
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (9.149.109.197)
-        by e06smtp02.uk.ibm.com (192.168.101.132) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Tue, 7 Apr 2020 09:01:14 +0100
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 03781Vj529032666
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 7 Apr 2020 08:01:31 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 45F0E52051;
-        Tue,  7 Apr 2020 08:01:31 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 0C91452054;
-        Tue,  7 Apr 2020 08:01:31 +0000 (GMT)
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Leon Romanovsky <leon@kernel.org>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        Niklas Schnelle <schnelle@linux.ibm.com>
-Subject: [RFC 1/1] net/mlx5: Fix failing fw tracer allocation on s390
-Date:   Tue,  7 Apr 2020 10:01:30 +0200
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200407080130.34472-1-schnelle@linux.ibm.com>
-References: <20200407080130.34472-1-schnelle@linux.ibm.com>
-X-TM-AS-GCONF: 00
-x-cbid: 20040708-0008-0000-0000-0000036C0319
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 20040708-0009-0000-0000-00004A8D9BDA
-Message-Id: <20200407080130.34472-2-schnelle@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-07_01:2020-04-07,2020-04-06 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
- lowpriorityscore=0 spamscore=0 bulkscore=0 clxscore=1015 mlxscore=0
- malwarescore=0 priorityscore=1501 mlxlogscore=999 suspectscore=2
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004070059
+        id S1727924AbgDGIOH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 04:14:07 -0400
+Received: from proxmox-new.maurer-it.com ([212.186.127.180]:14397 "EHLO
+        proxmox-new.maurer-it.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726687AbgDGIOH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 04:14:07 -0400
+X-Greylist: delayed 555 seconds by postgrey-1.27 at vger.kernel.org; Tue, 07 Apr 2020 04:14:06 EDT
+Received: from proxmox-new.maurer-it.com (localhost.localdomain [127.0.0.1])
+        by proxmox-new.maurer-it.com (Proxmox) with ESMTP id 28CD14597C;
+        Tue,  7 Apr 2020 10:04:50 +0200 (CEST)
+Subject: Re: [PATCH] net/bpfilter: remove superfluous testing message
+To:     David Miller <davem@davemloft.net>, bmeneg@redhat.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+References: <20200331130630.633400-1-bmeneg@redhat.com>
+ <20200331.100806.878847626011762877.davem@davemloft.net>
+From:   Thomas Lamprecht <t.lamprecht@proxmox.com>
+Message-ID: <f6af51c3-0875-c394-f6c4-2f51c7d1280c@proxmox.com>
+Date:   Tue, 7 Apr 2020 10:04:48 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:75.0) Gecko/20100101
+ Thunderbird/75.0
+MIME-Version: 1.0
+In-Reply-To: <20200331.100806.878847626011762877.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On s390 FORCE_MAX_ZONEORDER is 9 instead of 11, thus a larger kzalloc()
-allocation as done for the firmware tracer will always fail.
+On 3/31/20 7:08 PM, David Miller wrote:
+> From: Bruno Meneguele <bmeneg@redhat.com>
+> Date: Tue, 31 Mar 2020 10:06:30 -0300
+> 
+>> A testing message was brought by 13d0f7b814d9 ("net/bpfilter: fix dprintf
+>> usage for /dev/kmsg") but should've been deleted before patch submission.
+>> Although it doesn't cause any harm to the code or functionality itself, it's
+>> totally unpleasant to have it displayed on every loop iteration with no real
+>> use case. Thus remove it unconditionally.
+>>
+>> Fixes: 13d0f7b814d9 ("net/bpfilter: fix dprintf usage for /dev/kmsg")
+>> Signed-off-by: Bruno Meneguele <bmeneg@redhat.com>
+> 
+> Applied, thanks.
+> 
 
-Looking at mlx5_fw_tracer_save_trace(), it is actually the driver itself
-that copies the debug data into the trace array and there is no need for
-the allocation to be contiguous in physical memory. We can therefor use
-kvzalloc() instead of kzalloc() and get rid of the large contiguous
-allcoation.
+As the commit this fixes was included in a stable release (at least 5.4.29[0],
+I did not checked others - sorry) it could make sense to backport this also
+to the 5.4 stable tree?
 
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Per documentation[1], I checked the netdev and Greg's queues, but did not found
+it to be included anywhere yet.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
-index c9c9b479bda5..5ce6ebbc7f10 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
-@@ -935,7 +935,7 @@ struct mlx5_fw_tracer *mlx5_fw_tracer_create(struct mlx5_core_dev *dev)
- 		return NULL;
- 	}
- 
--	tracer = kzalloc(sizeof(*tracer), GFP_KERNEL);
-+	tracer = kvzalloc(sizeof(*tracer), GFP_KERNEL);
- 	if (!tracer)
- 		return ERR_PTR(-ENOMEM);
- 
-@@ -982,7 +982,7 @@ struct mlx5_fw_tracer *mlx5_fw_tracer_create(struct mlx5_core_dev *dev)
- 	tracer->dev = NULL;
- 	destroy_workqueue(tracer->work_queue);
- free_tracer:
--	kfree(tracer);
-+	kvfree(tracer);
- 	return ERR_PTR(err);
- }
- 
-@@ -1061,7 +1061,7 @@ void mlx5_fw_tracer_destroy(struct mlx5_fw_tracer *tracer)
- 	mlx5_fw_tracer_destroy_log_buf(tracer);
- 	flush_workqueue(tracer->work_queue);
- 	destroy_workqueue(tracer->work_queue);
--	kfree(tracer);
-+	kvfree(tracer);
- }
- 
- static int fw_tracer_event(struct notifier_block *nb, unsigned long action, void *data)
--- 
-2.17.1
+I hope I handled this request somewhat correctly, please tell me if I should
+propose the backported patch more directly to the respective stable list. As is,
+the patch[2] applies fine here on top of 5.4.30.
+
+cheers,
+Thomas
+
+[0]: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=linux-5.4.y&id=712c39d9319a864b74b44fd03b0e083afa2d8af2
+[1]: https://www.kernel.org/doc/html/latest/networking/netdev-FAQ.html#q-how-can-i-tell-what-patches-are-queued-up-for-backporting-to-the-various-stable-releases
+[2]: https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/patch/?id=41c55ea6c2a7ca4c663eeec05bdf54f4e2419699
 
