@@ -2,141 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B63F21A279E
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 18:59:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42DF31A27FB
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 19:32:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729436AbgDHQ7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 12:59:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47904 "EHLO mail.kernel.org"
+        id S1729597AbgDHRcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 13:32:05 -0400
+Received: from mga12.intel.com ([192.55.52.136]:17604 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728966AbgDHQ7T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Apr 2020 12:59:19 -0400
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6B58F20757;
-        Wed,  8 Apr 2020 16:59:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586365158;
-        bh=K2RdMZ6ZhSGxxEAjYA1jEozwMp9Q32OYBGd5JyJ1hxI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HGvuFv44IUDaTVa01Kwo+lBCAwCr35nBto8tpIh5PdBETAkbU0+d+BogNU5pNuzLp
-         VeXiQiNkuTVQCzqPM9YM6bt+R+XqFntVWfPCQpaNm/CiqDmH2/zDkfVEZJfiIbO2+k
-         eEBjQ/hOUpdvGI44oqCeG0I7Svi6mbrT7Q6DWQo8=
-Date:   Wed, 8 Apr 2020 09:59:14 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Yuval Avnery <yuvalav@mellanox.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
+        id S1728771AbgDHRcF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Apr 2020 13:32:05 -0400
+IronPort-SDR: Ar5yCnsXzK7BFPqgHi24XNxjqm40ZNsFMaY0qnCXFZtxPZ6nK99vwla5MwI2WNjbeYW322Q7c7
+ tGQLCgFghPgg==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2020 10:32:04 -0700
+IronPort-SDR: 2I538bWVfJfLlF/ZOfIMcxUOCMMdomDh4bmOAqpFBpzjUODcD4SrUFpnnaTu8bU9Q6QyDz7GRj
+ K6q4iMC2tuaA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,359,1580803200"; 
+   d="scan'208";a="286617958"
+Received: from hrotuna-mobl.ti.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.39.246])
+  by fmsmga002.fm.intel.com with ESMTP; 08 Apr 2020 10:31:59 -0700
+Subject: Re: [PATCH RFC v2 28/33] xdp: for Intel AF_XDP drivers add XDP
+ frame_sz
+To:     Jesper Dangaard Brouer <brouer@redhat.com>, sameehj@amazon.com
+Cc:     intel-wired-lan@lists.osuosl.org,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, zorik@amazon.com,
+        akiyano@amazon.com, gtzalik@amazon.com,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
         Saeed Mahameed <saeedm@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "andrew.gospodarek@broadcom.com" <andrew.gospodarek@broadcom.com>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        Aya Levin <ayal@mellanox.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Yevgeny Kliteynik <kliteyn@mellanox.com>,
-        "dchickles@marvell.com" <dchickles@marvell.com>,
-        "sburla@marvell.com" <sburla@marvell.com>,
-        "fmanlunas@marvell.com" <fmanlunas@marvell.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
-        "snelson@pensando.io" <snelson@pensando.io>,
-        "drivers@pensando.io" <drivers@pensando.io>,
-        "aelior@marvell.com" <aelior@marvell.com>,
-        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
-        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
-        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
-        Mark Zhang <markz@mellanox.com>,
-        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
-        Alex Vesker <valex@mellanox.com>,
-        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
-        "lihong.yang@intel.com" <lihong.yang@intel.com>,
-        "vikas.gupta@broadcom.com" <vikas.gupta@broadcom.com>,
-        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>
-Subject: Re: [RFC] current devlink extension plan for NICs
-Message-ID: <20200408095914.772dfdf3@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <AM0PR05MB4866B13FF6B672469BDF4A3FD1C00@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20200319192719.GD11304@nanopsycho.orion>
-        <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
-        <20200321093525.GJ11304@nanopsycho.orion>
-        <20200323122123.2a3ff20f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200326144709.GW11304@nanopsycho.orion>
-        <20200326145146.GX11304@nanopsycho.orion>
-        <20200326133001.1b2694c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200327074736.GJ11304@nanopsycho.orion>
-        <20200327093829.76140a98@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <35e8353f-2bfc-5685-a60e-030cd2d2dd24@mellanox.com>
-        <20200330123623.634739de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <50c0f739-592e-77a4-4872-878f99cc8b93@mellanox.com>
-        <20200331103255.549ea899@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <AM0PR05MB4866E76AE83EA4D09449AF05D1C90@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20200401131231.74f2a5a8@kicinski-fedora-PC1C0HJN>
-        <AM0PR05MB4866B13FF6B672469BDF4A3FD1C00@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        Maxim Mikityanskiy <maximmi@mellanox.com>
+References: <158634658714.707275.7903484085370879864.stgit@firesoul>
+ <158634677661.707275.17823370564281193008.stgit@firesoul>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <55b6684d-9097-e2c1-c939-bf3273bd70f6@intel.com>
+Date:   Wed, 8 Apr 2020 19:31:58 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <158634677661.707275.17823370564281193008.stgit@firesoul>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 8 Apr 2020 05:07:04 +0000 Parav Pandit wrote:
-> > > > > 3. In future at eswitch pci port, I will be adding dpipe support
-> > > > > for the internal flow tables done by the driver.
-> > > > > 4. There were inconsistency among vendor drivers in using/abusing
-> > > > > phys_port_name of the eswitch ports. This is consolidated via
-> > > > > devlink port in core. This provides consistent view among all
-> > > > > vendor drivers.
-> > > > >
-> > > > > So PCI eswitch side ports are useful regardless of slice.
-> > > > >  
-> > > > > >> Additionally devlink port object doesn't go through the same
-> > > > > >> state machine as that what slice has to go through.
-> > > > > >> So its weird that some devlink port has state machine and some
-> > > > > >> doesn't.  
-> > > > > >
-> > > > > > You mean for VFs? I think you can add the states to the API.
-> > > > > >  
-> > > > > As we agreed above that eswitch side objects (devlink port and
-> > > > > representor netdev) should not be used for 'portion of device',  
-> > > >
-> > > > We haven't agreed, I just explained how we differ.  
-> > >
-> > > You mentioned that " Right, in my mental model representor _is_ a port
-> > > of the eswitch, so repr would not make sense to me."
-> > >
-> > > With that I infer that 'any object that is directly and _always_
-> > > linked to eswitch and represents an eswitch port is out of question,
-> > > this includes devlink port of eswitch and netdev representor. Hence,
-> > > the comment 'we agree conceptually' to not involve devlink port of
-> > > eswitch and representor netdev to represent 'portion of the device'.  
-> > 
-> > I disagree, repr is one to one with eswitch port. Just because repr is
-> > associated with a devlink port doesn't mean devlink port must be associated
-> > with a repr or a netdev.  
-> Devlink port which is on eswitch side is registered with switch_id and also linked to the rep netdev.
-> From this port phys_port_name is derived.
-> This eswitch port shouldn't represent 'portion of the device'.
+On 2020-04-08 13:52, Jesper Dangaard Brouer wrote:
+> Intel drivers implement native AF_XDP zerocopy in separate C-files,
+> that have its own invocation of bpf_prog_run_xdp(). The setup of
+> xdp_buff is also handled in separately from normal code path.
+> 
+> This patch update XDP frame_sz for AF_XDP zerocopy drivers i40e, ice
+> and ixgbe, as the code changes needed are very similar.  Introduce a
+> helper function xsk_umem_xdp_frame_sz() for calculating frame size.
+> 
+> Cc: intel-wired-lan@lists.osuosl.org
+> Cc: Björn Töpel <bjorn.topel@intel.com>
+> Cc: Magnus Karlsson <magnus.karlsson@intel.com>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-switch_id is per port, so it's perfectly fine for a devlink port not to
-have one, or for two ports of the same device to have a different ID.
+Thanks for the patch, Jesper! Note that mlx5 has AF_XDP support as well,
+and might need similar changes. Adding Max for input!
 
-The phys_port_name argument I don't follow. How does that matter in the
-"should we create another object" debate?
+For the Intel drivers, and core AF_XDP:
+Acked-by: Björn Töpel <bjorn.topel@intel.com>
 
-IMO introducing the slice if it's 1:1 with ports is a no-go. I also
-don't like how creating a slice implicitly creates a devlink port in
-your design. If those objects are so strongly linked that creating one
-implies the other they should just be merged.
-
-I'm also concerned that the slice is basically a non-networking port.
-I bet some of the things we add there will one day be useful for
-networking or DSA ports.
-
-So I'd suggest to maybe step back from the SmartNIC scenario and try to
-figure out how slices are useful on their own.
+> ---
+>   drivers/net/ethernet/intel/i40e/i40e_xsk.c   |    2 ++
+>   drivers/net/ethernet/intel/ice/ice_xsk.c     |    2 ++
+>   drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c |    2 ++
+>   include/net/xdp_sock.h                       |   11 +++++++++++
+>   4 files changed, 17 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> index 0b7d29192b2c..2b9184aead5f 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> @@ -531,12 +531,14 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
+>   {
+>   	unsigned int total_rx_bytes = 0, total_rx_packets = 0;
+>   	u16 cleaned_count = I40E_DESC_UNUSED(rx_ring);
+> +	struct xdp_umem *umem = rx_ring->xsk_umem;
+>   	unsigned int xdp_res, xdp_xmit = 0;
+>   	bool failure = false;
+>   	struct sk_buff *skb;
+>   	struct xdp_buff xdp;
+>   
+>   	xdp.rxq = &rx_ring->xdp_rxq;
+> +	xdp.frame_sz = xsk_umem_xdp_frame_sz(umem);
+>   
+>   	while (likely(total_rx_packets < (unsigned int)budget)) {
+>   		struct i40e_rx_buffer *bi;
+> diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
+> index 8279db15e870..23e5515d4527 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_xsk.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
+> @@ -840,11 +840,13 @@ int ice_clean_rx_irq_zc(struct ice_ring *rx_ring, int budget)
+>   {
+>   	unsigned int total_rx_bytes = 0, total_rx_packets = 0;
+>   	u16 cleaned_count = ICE_DESC_UNUSED(rx_ring);
+> +	struct xdp_umem *umem = rx_ring->xsk_umem;
+>   	unsigned int xdp_xmit = 0;
+>   	bool failure = false;
+>   	struct xdp_buff xdp;
+>   
+>   	xdp.rxq = &rx_ring->xdp_rxq;
+> +	xdp.frame_sz = xsk_umem_xdp_frame_sz(umem);
+>   
+>   	while (likely(total_rx_packets < (unsigned int)budget)) {
+>   		union ice_32b_rx_flex_desc *rx_desc;
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> index 74b540ebb3dc..a656ee9a1fae 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> @@ -431,12 +431,14 @@ int ixgbe_clean_rx_irq_zc(struct ixgbe_q_vector *q_vector,
+>   	unsigned int total_rx_bytes = 0, total_rx_packets = 0;
+>   	struct ixgbe_adapter *adapter = q_vector->adapter;
+>   	u16 cleaned_count = ixgbe_desc_unused(rx_ring);
+> +	struct xdp_umem *umem = rx_ring->xsk_umem;
+>   	unsigned int xdp_res, xdp_xmit = 0;
+>   	bool failure = false;
+>   	struct sk_buff *skb;
+>   	struct xdp_buff xdp;
+>   
+>   	xdp.rxq = &rx_ring->xdp_rxq;
+> +	xdp.frame_sz = xsk_umem_xdp_frame_sz(umem);
+>   
+>   	while (likely(total_rx_packets < budget)) {
+>   		union ixgbe_adv_rx_desc *rx_desc;
+> diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+> index e86ec48ef627..1cd1ec3cea97 100644
+> --- a/include/net/xdp_sock.h
+> +++ b/include/net/xdp_sock.h
+> @@ -237,6 +237,12 @@ static inline u64 xsk_umem_adjust_offset(struct xdp_umem *umem, u64 address,
+>   	else
+>   		return address + offset;
+>   }
+> +
+> +static inline u32 xsk_umem_xdp_frame_sz(struct xdp_umem *umem)
+> +{
+> +	return umem->chunk_size_nohr + umem->headroom;
+> +}
+> +
+>   #else
+>   static inline int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
+>   {
+> @@ -367,6 +373,11 @@ static inline u64 xsk_umem_adjust_offset(struct xdp_umem *umem, u64 handle,
+>   	return 0;
+>   }
+>   
+> +static inline u32 xsk_umem_xdp_frame_sz(struct xdp_umem *umem)
+> +{
+> +	return 0;
+> +}
+> +
+>   static inline int __xsk_map_redirect(struct xdp_sock *xs, struct xdp_buff *xdp)
+>   {
+>   	return -EOPNOTSUPP;
+> 
+> 
