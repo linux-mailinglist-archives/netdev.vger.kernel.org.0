@@ -2,106 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7E071A2AEB
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 23:17:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 204FA1A2B0A
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 23:21:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729088AbgDHVRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 17:17:54 -0400
-Received: from pb-smtp2.pobox.com ([64.147.108.71]:51922 "EHLO
-        pb-smtp2.pobox.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726663AbgDHVRx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 17:17:53 -0400
-Received: from pb-smtp2.pobox.com (unknown [127.0.0.1])
-        by pb-smtp2.pobox.com (Postfix) with ESMTP id 15C175069A;
-        Wed,  8 Apr 2020 17:17:49 -0400 (EDT)
-        (envelope-from nico@fluxnic.net)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=pobox.com; h=date:from:to
-        :cc:subject:in-reply-to:message-id:references:mime-version
-        :content-type; s=sasl; bh=UIkb5A+H+jKDQ3GWp3Tbf0a8oXM=; b=AcgYlX
-        TnCHG5UcWgHkl8IlsC1e1uSPmTDBMpHTb4rnXL06C201X87TtsWkywbE7tyhVEgL
-        joaA4hStDMXuw8ZUssiqUmef7sB8CpImWNNVRynUk532oaFQQiq7ylZfjC6WKOG0
-        n438CvV7eUlVobxBSL2o/win8JdgiYwNnjPJU=
-Received: from pb-smtp2.nyi.icgroup.com (unknown [127.0.0.1])
-        by pb-smtp2.pobox.com (Postfix) with ESMTP id EBD9250698;
-        Wed,  8 Apr 2020 17:17:48 -0400 (EDT)
-        (envelope-from nico@fluxnic.net)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=fluxnic.net;
- h=date:from:to:cc:subject:in-reply-to:message-id:references:mime-version:content-type; s=2016-12.pbsmtp; bh=C5qZnucLOvddU0/aYHUwvuoSJMokDJ9d4K7zprmELhs=; b=rhI9Y9k7ariW+D63u1TPx511dXcnGqLfZWvC4hyySB7C8iu6lcGWtATA4lzrxivdp5SOwycFxqeXwlBHGMIZ+/TN4juy0TA9A3TTPQBm6TTbluFOmyrcr3+B1c5KEDP/2UtjGbuSvcOZxVxL1iYp3mQwA1ofghE5W48Ncw1e8cc=
-Received: from yoda.home (unknown [24.203.50.76])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by pb-smtp2.pobox.com (Postfix) with ESMTPSA id 5F86F50697;
-        Wed,  8 Apr 2020 17:17:48 -0400 (EDT)
-        (envelope-from nico@fluxnic.net)
-Received: from xanadu.home (xanadu.home [192.168.2.2])
-        by yoda.home (Postfix) with ESMTPSA id 798F72DA0D4B;
-        Wed,  8 Apr 2020 17:17:47 -0400 (EDT)
-Date:   Wed, 8 Apr 2020 17:17:47 -0400 (EDT)
-From:   Nicolas Pitre <nico@fluxnic.net>
-To:     Arnd Bergmann <arnd@arndb.de>
-cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        id S1730426AbgDHVVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 17:21:51 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:45626 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727749AbgDHVVu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 17:21:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1586380908;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zjdVKSaKUFVN3gQUYjode6bFrQibAh5czANpuUwH5nM=;
+        b=Z0Ia+hZKGENZE4dKWybaBoabs95llc1JVDDBgdUa+8GLTg0wrQ1ggQet+BkUuUHFxKpunq
+        10H0vyi6l26eSgc9K3DSX6z06nosgrL9uzKfPSuB6IN73h9L9xW4qnaFuFCp2/IM5BYOOd
+        KrHmNGgpR453pWidczgsftT09fgLpoM=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-357-0mOecZYJOUaqMa6vPsHETA-1; Wed, 08 Apr 2020 17:21:47 -0400
+X-MC-Unique: 0mOecZYJOUaqMa6vPsHETA-1
+Received: by mail-lj1-f200.google.com with SMTP id v22so2302152ljj.10
+        for <netdev@vger.kernel.org>; Wed, 08 Apr 2020 14:21:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=zjdVKSaKUFVN3gQUYjode6bFrQibAh5czANpuUwH5nM=;
+        b=OTbLyttrvUrrDRq5kwdn/NW96pGMFYZ0XXpmaNcsnYQxjW+uc3XX6l7POsa96h2Zie
+         Idxtd8zcTAKzlDK/ENcU3QCvLE6k280WDpjdXNjB/6xO+1MFGhet6NvFXzNdEwjxfhdS
+         1sKr9yn1/VOkysYF2/a5q66gOJReGzQ/929zQGFQUKdOChHvS17AqsqH4s8pZdHZgrjE
+         m/oQrvICCsfSpwie5MZezLAQVGTbxSNYkXxXQ1d6ncf7r3XcDO9hmv1BaZCutDMW0KJC
+         V1euHltG1ouv2/pSGQt40SY1IDP01XLRvPZmQj5xpvxSCAZUZY5QkygyD2D4u4P1PzbM
+         bO/g==
+X-Gm-Message-State: AGi0PuYYDfi5TEzMIvYjDfiPPyLyTHklN1+hecGU9jm9IUlILB2yv/l6
+        pVhow8XCF/a+Goy3NgJmzzqd5EoFh8EYTIh48lG4fyeBZpDOhHG4y86Kms/dmIqzZ65YBDDVezm
+        pl0Vsb5GreFJDYu+k
+X-Received: by 2002:a2e:974d:: with SMTP id f13mr696449ljj.178.1586380905575;
+        Wed, 08 Apr 2020 14:21:45 -0700 (PDT)
+X-Google-Smtp-Source: APiQypLO0G4XVJnWM99J9TSjjrOwqcuVAUbfX7gGqC4VxjGNfeUs2cPxoj/0UOwqIDGwkaRxfvIQGw==
+X-Received: by 2002:a2e:974d:: with SMTP id f13mr696436ljj.178.1586380905320;
+        Wed, 08 Apr 2020 14:21:45 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id n13sm15959641lfk.78.2020.04.08.14.21.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Apr 2020 14:21:44 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id A9CDC1804E7; Wed,  8 Apr 2020 23:21:40 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
         Networking <netdev@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>
-Subject: Re: [RFC 0/6] Regressions for "imply" behavior change
-In-Reply-To: <CAK8P3a2frDf4BzEpEF0uwPTV2dv6Jve+6N97z1sSuSBUAPJquA@mail.gmail.com>
-Message-ID: <nycvar.YSQ.7.76.2004081715080.2671@knanqh.ubzr>
-References: <20200408202711.1198966-1-arnd@arndb.de> <nycvar.YSQ.7.76.2004081633260.2671@knanqh.ubzr> <CAK8P3a2frDf4BzEpEF0uwPTV2dv6Jve+6N97z1sSuSBUAPJquA@mail.gmail.com>
-User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [RFC PATCH bpf-next 4/8] bpf: support GET_FD_BY_ID and GET_NEXT_ID for bpf_link
+In-Reply-To: <CAEf4BzaiRYMc4QMjz8bEn1bgiSXZvW_e2N48-kTR4Fqgog2fBg@mail.gmail.com>
+References: <20200404000948.3980903-1-andriin@fb.com> <20200404000948.3980903-5-andriin@fb.com> <87pnckc0fr.fsf@toke.dk> <CAEf4BzYrW43EW_Uneqo4B6TLY4V9fKXJxWj+-gbq-7X0j7y86g@mail.gmail.com> <877dyq80x8.fsf@toke.dk> <CAEf4BzaiRYMc4QMjz8bEn1bgiSXZvW_e2N48-kTR4Fqgog2fBg@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 08 Apr 2020 23:21:40 +0200
+Message-ID: <87tv1t65cr.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Pobox-Relay-ID: 65B28AAA-79DE-11EA-BF5C-D1361DBA3BAF-78420484!pb-smtp2.pobox.com
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 8 Apr 2020, Arnd Bergmann wrote:
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-> On Wed, Apr 8, 2020 at 10:38 PM Nicolas Pitre <nico@fluxnic.net> wrote:
-> > On Wed, 8 Apr 2020, Arnd Bergmann wrote:
-> > > I have created workarounds for the Kconfig files, which now stop using
-> > > imply and do something else in each case. I don't know whether there was
-> > > a bug in the kconfig changes that has led to allowing configurations that
-> > > were not meant to be legal even with the new semantics, or if the Kconfig
-> > > files have simply become incorrect now and the tool works as expected.
-> >
-> > In most cases it is the code that has to be fixed. It typically does:
-> >
-> >         if (IS_ENABLED(CONFIG_FOO))
-> >                 foo_init();
-> >
-> > Where it should rather do:
-> >
-> >         if (IS_REACHABLE(CONFIG_FOO))
-> >                 foo_init();
-> >
-> > A couple of such patches have been produced and queued in their
-> > respective trees already.
-> 
-> I try to use IS_REACHABLE() only as a last resort, as it tends to
-> confuse users when a subsystem is built as a module and already
-> loaded but something relying on that subsystem does not use it.
+> On Wed, Apr 8, 2020 at 8:14 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
+hat.com> wrote:
+>>
+>> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>>
+>> > On Mon, Apr 6, 2020 at 4:34 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
+redhat.com> wrote:
+>> >>
+>> >> Andrii Nakryiko <andriin@fb.com> writes:
+>> >>
+>> >> > Add support to look up bpf_link by ID and iterate over all existing=
+ bpf_links
+>> >> > in the system. GET_FD_BY_ID code handles not-yet-ready bpf_link by =
+checking
+>> >> > that its ID hasn't been set to non-zero value yet. Setting bpf_link=
+'s ID is
+>> >> > done as the very last step in finalizing bpf_link, together with in=
+stalling
+>> >> > FD. This approach allows users of bpf_link in kernel code to not wo=
+rry about
+>> >> > races between user-space and kernel code that hasn't finished attac=
+hing and
+>> >> > initializing bpf_link.
+>> >> >
+>> >> > Further, it's critical that BPF_LINK_GET_FD_BY_ID only ever allows =
+to create
+>> >> > bpf_link FD that's O_RDONLY. This is to protect processes owning bp=
+f_link and
+>> >> > thus allowed to perform modifications on them (like LINK_UPDATE), f=
+rom other
+>> >> > processes that got bpf_link ID from GET_NEXT_ID API. In the latter =
+case, only
+>> >> > querying bpf_link information (implemented later in the series) wil=
+l be
+>> >> > allowed.
+>> >>
+>> >> I must admit I remain sceptical about this model of restricting access
+>> >> without any of the regular override mechanisms (for instance, enforci=
+ng
+>> >> read-only mode regardless of CAP_DAC_OVERRIDE in this series). Since =
+you
+>> >> keep saying there would be 'some' override mechanism, I think it would
+>> >> be helpful if you could just include that so we can see the full
+>> >> mechanism in context.
+>> >
+>> > I wasn't aware of CAP_DAC_OVERRIDE, thanks for bringing this up.
+>> >
+>> > One way to go about this is to allow creating writable bpf_link for
+>> > GET_FD_BY_ID if CAP_DAC_OVERRIDE is set. Then we can allow LINK_DETACH
+>> > operation on writable links, same as we do with LINK_UPDATE here.
+>> > LINK_DETACH will do the same as cgroup bpf_link auto-detachment on
+>> > cgroup dying: it will detach bpf_link, but will leave it alive until
+>> > last FD is closed.
+>>
+>> Yup, I think this would be a reasonable way to implement the override
+>> mechanism - it would ensure 'full root' users (like a root shell) can
+>> remove attachments, while still preventing applications from doing so by
+>> limiting their capabilities.
+>
+> So I did some experiments and I think I want to keep GET_FD_BY_ID for
+> bpf_link to return only read-only bpf_links.
 
-Then this is a usage policy issue, not a code correctness issue.
+Why, exactly? (also, see below)
 
-The correctness issue is fixed with IS_REACHABLE(). If you want to 
-enforce a usage policy then this goes in Kconfig.
+> After that, one can pin bpf_link temporarily and re-open it as
+> writable one, provided CAP_DAC_OVERRIDE capability is present. All
+> that works already, because pinned bpf_link is just a file, so one can
+> do fchmod on it and all that will go through normal file access
+> permission check code path.
 
-But you still can do both.
+Ah, I did not know that was possible - I was assuming that bpffs was
+doing something special to prevent that. But if not, great!
 
+> Unfortunately, just re-opening same FD as writable (which would
+> be possible if fcntl(fd, F_SETFL, S_IRUSR
+>  S_IWUSR) was supported on Linux) without pinning is not possible.
+> Opening link from /proc/<pid>/fd/<link-fd> doesn't seem to work
+> either, because backing inode is not BPF FS inode. I'm not sure, but
+> maybe we can support the latter eventually. But either way, I think
+> given this is to be used for manual troubleshooting, going through few
+> extra hoops to force-detach bpf_link is actually a good thing.
 
-Nicolas
+Hmm, I disagree that deliberately making users jump through hoops is a
+good thing. Smells an awful lot like security through obscurity to me;
+and we all know how well that works anyway...
+
+>> Extending on the concept of RO/RW bpf_link attachments, maybe it should
+>> even be possible for an application to choose which mode it wants to pin
+>> its fd in? With the same capability being able to override it of
+>> course...
+>
+> Isn't that what patch #2 is doing?...
+
+Ah yes, so it is! I guess I skipped over that a bit too fast ;)
+
+> There are few bugs in the implementation currently, but it will work
+> in the final version.
+
+Cool.
+
+>> > We need to consider, though, if CAP_DAC_OVERRIDE is something that can
+>> > be disabled for majority of real-life applications to prevent them
+>> > from doing this. If every realistic application has/needs
+>> > CAP_DAC_OVERRIDE, then that's essentially just saying that anyone can
+>> > get writable bpf_link and do anything with it.
+>>
+>> I poked around a bit, and looking at the sandboxing configurations
+>> shipped with various daemons in their systemd unit files, it appears
+>> that the main case where daemons are granted CAP_DAC_OVERRIDE is if they
+>> have to be able to read /etc/shadow (which is installed as chmod 0). If
+>> this is really the case, that would indicate it's not a widely needed
+>> capability; but I wouldn't exactly say that I've done a comprehensive
+>> survey, so probably a good idea for you to check your users as well :)
+>
+> Right, it might not be possible to drop it for all applications right
+> away, but at least CAP_DAC_OVERRIDE is not CAP_SYS_ADMIN, which is
+> absolutely necessary to work with BPF.
+
+Yeah, I do hope that we'll eventually get CAP_BPF...
+
+-Toke
+
