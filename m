@@ -2,169 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 841EF1A1ECB
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 12:29:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53F721A5D8B
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 10:45:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728099AbgDHK3Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 06:29:24 -0400
-Received: from mail-eopbgr1410134.outbound.protection.outlook.com ([40.107.141.134]:3584
-        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726846AbgDHK3Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Apr 2020 06:29:24 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iJ2sNAYv03BDmOClbzhksPkGWTbmHGsGev7R2WRctMK4cX66Hdyq8U1je8A9FTgqgdUHWCK1iZZibL1c59WJrioxpdNB1lV/9fnwBXDNunLC3XLoFdZQaYJvkQkbkvWmfYAEPutUiCoj3d+PEE+gTkjmu4fXrq+5L8u2BZhw9lnVMnMucGbmTKY/+FHbYG8QX/yQkY87Fe8SqA5lrcj2+Lawo6pZunWrg7DkqdZUTdp1VzaVlTJXjMR6iQikvlaNfH480o97xdINS5hFxLu7MwubfYSoszsVQs0NJJBiz0MRwr4DB+GCHesW/KX0bwnbwMkQpgSdLI40w1Il1+CP1w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Pw18AfjmIHG/6pjUcqblLv4PRbYJAnF/RYGjCb6WFJU=;
- b=Q3nqKOoIk+XLaRp4od2WtXCyVC2dMuigyPlARlG9UDwNv0XSh/H6NjbuJhjHHuOKNSJSQJsqxJ+tnqTyWJiPd0bzZpQVs86X7N4zx84W/K1FzfKdqOc2+Z67ZMQOeoc+6tuhchI2DGsDtK6XpXerRp1R2HZu80RUJNw24Rzrdl+etE0G5pfklLyuhDsPSfv/NRwWe+YRCoIKO1buM84LlEcWlZwzjYDC0lKqma6YrHniMlQGm//0WJK0ygLmBK3EmKOIMwo7WZCmFcjJ+rpHh0zMPTdobKprkU3egkoipJXOg4SVoNjxddSf3xTG3lA9dXWlSZc/KvpeQtQ4Fzfkpg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Pw18AfjmIHG/6pjUcqblLv4PRbYJAnF/RYGjCb6WFJU=;
- b=j67QxUSD8fBC/CjS6hpCxjbiXoRO7ULJ2S2i+V/9UkyKWFuMgHqhvI7oJyx/jBPmkBDM5FVAH6PmyRUTRiN6wOd5b0kKBiRQ78MsnnKv48DDKmvUMcMZ3jFp7DZBNAWZDN0ID8tTpewFlO37IOZrSPaDb48y713dMCxu+4Se7E8=
-Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com (20.179.175.203) by
- TYAPR01MB2735.jpnprd01.prod.outlook.com (20.177.101.139) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2878.20; Wed, 8 Apr 2020 10:29:20 +0000
-Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com
- ([fe80::ed7f:1268:55a9:fc06]) by TYAPR01MB4544.jpnprd01.prod.outlook.com
- ([fe80::ed7f:1268:55a9:fc06%4]) with mapi id 15.20.2900.015; Wed, 8 Apr 2020
- 10:29:20 +0000
-From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To:     John Stultz <john.stultz@linaro.org>,
-        lkml <linux-kernel@vger.kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Rob Herring <robh@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        netdev <netdev@vger.kernel.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>
-Subject: RE: [RFC][PATCH v2 2/2] driver core: Ensure wait_for_device_probe()
- waits until the deferred_probe_timeout fires
-Thread-Topic: [RFC][PATCH v2 2/2] driver core: Ensure wait_for_device_probe()
- waits until the deferred_probe_timeout fires
-Thread-Index: AQHWDXcYaRasF4w8J0WGvexXGfCK66hvBRAg
-Date:   Wed, 8 Apr 2020 10:29:20 +0000
-Message-ID: <TYAPR01MB45443540F0A3729AD2B98A96D8C00@TYAPR01MB4544.jpnprd01.prod.outlook.com>
-References: <20200408072650.1731-1-john.stultz@linaro.org>
- <20200408072650.1731-2-john.stultz@linaro.org>
-In-Reply-To: <20200408072650.1731-2-john.stultz@linaro.org>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=yoshihiro.shimoda.uh@renesas.com; 
-x-originating-ip: [124.210.22.195]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 09470796-8ad4-4b05-6111-08d7dba7b30c
-x-ms-traffictypediagnostic: TYAPR01MB2735:
-x-microsoft-antispam-prvs: <TYAPR01MB27359C92C2554E093FF67057D8C00@TYAPR01MB2735.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0367A50BB1
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYAPR01MB4544.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10019020)(4636009)(376002)(346002)(396003)(136003)(39860400002)(366004)(110136005)(52536014)(54906003)(316002)(26005)(8936002)(9686003)(5660300002)(55016002)(81166007)(86362001)(186003)(55236004)(7696005)(66446008)(6506007)(66946007)(4326008)(66556008)(8676002)(64756008)(66476007)(33656002)(7416002)(478600001)(2906002)(71200400001)(76116006)(81156014);DIR:OUT;SFP:1102;
-received-spf: None (protection.outlook.com: renesas.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: H8bR3nAJpSZLlB/zKB1Tcx5M4lIZTZR62GynDjt0NR7D425TIG+MCAihPYRHvqU4a0Y7jfRyWAbB5aKfuGh9yKTSGsDOhQk8k+G0CBqaZSbXiJVbgnNoK95ycs3r7ghFU4rzgS40hnqCSW2/Q820qjCNHLR6BtGWK0n1W0VvARbSZwIwjl7h57TjFAGpya2gxM3wZPcNzlOKDA1k5qxlCsP5PrjoTjkuil25GK7BWcqTds4BmsihflvfycejmuqKQIn/mLmhAhrEiJ4J4di/7Oadhu/cHVrwMDY5DRhqjnA47jG1vfpVLWO5mE6NJsFG8pq8XcNztF2ugk9kj1w6TjhrN9O+VPKpwZlq0UGRQ5wBB2Q1XIZSGAk6OadQd5Juibn8CbjIOYLyYyaFjwBIXUjLMw4fJom1vPCDuCHZGhiOD6gwkMNoIYDFCKlYBYVb
-x-ms-exchange-antispam-messagedata: DpQENT/GPCeXeH5bImRgsGT4IIGBKe3X5bObCEO/Q2sUpOKhW9romjv/Tqo7s6fq4Q3bV2XCTI49Rl+Ry3XWay9M0tffYqeDoixMZLfTGxZ2TG5N9qjfgq8S9EBvd56r5u16BhTomBZT+OLg/xskgw==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726072AbgDLIpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Apr 2020 04:45:20 -0400
+Received: from fgont.go6lab.si ([91.239.96.14]:50980 "EHLO fgont.go6lab.si"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725832AbgDLIpU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 12 Apr 2020 04:45:20 -0400
+Received: from localhost (unknown [181.45.84.85])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by fgont.go6lab.si (Postfix) with ESMTPSA id 7C34B80831;
+        Sun, 12 Apr 2020 10:45:14 +0200 (CEST)
+Date:   Wed, 8 Apr 2020 07:44:58 -0300
+From:   Fernando Gont <fgont@si6networks.com>
+To:     netdev@vger.kernel.org
+Cc:     David Miller <davem@davemloft.net>
+Subject: [PATCH net-next] Implement draft-ietf-6man-rfc4941bis
+Message-ID: <20200408104458.GA15473@archlinux-current.localdomain>
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 09470796-8ad4-4b05-6111-08d7dba7b30c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Apr 2020 10:29:20.4989
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: lCALL4+8Ftz43rBN1wRRTbslE5lrMS9pfOIcchNdYAAAIKlAIuVBEr02KaR4bO9uJj/irJQ+y22bhPzLEystF56xlPLmZAgQQtKRK8LNJY4OYWweWWDCNAMdpzVWkaq7
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB2735
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi John,
+Implement the upcoming rev of RFC4941 (IPv6 temporary addresses):
+https://tools.ietf.org/html/draft-ietf-6man-rfc4941bis-09
 
-> From: John Stultz, Sent: Wednesday, April 8, 2020 4:27 PM
->=20
-> In commit c8c43cee29f6 ("driver core: Fix
-> driver_deferred_probe_check_state() logic"), we set the default
-> driver_deferred_probe_timeout value to 30 seconds to allow for
-> drivers that are missing dependencies to have some time so that
-> the dependency may be loaded from userland after initcalls_done
-> is set.
->=20
-> However, Yoshihiro Shimoda reported that on his device that
-> expects to have unmet dependencies (due to "optional links" in
-> its devicetree), was failing to mount the NFS root.
->=20
-> In digging further, it seemed the problem was that while the
-> device properly probes after waiting 30 seconds for any missing
-> modules to load, the ip_auto_config() had already failed,
-> resulting in NFS to fail. This was due to ip_auto_config()
-> calling wait_for_device_probe() which doesn't wait for the
-> driver_deferred_probe_timeout to fire.
->=20
-> This patch tries to fix the issue by creating a waitqueue
-> for the driver_deferred_probe_timeout, and calling wait_event()
-> to make sure driver_deferred_probe_timeout is zero in
-> wait_for_device_probe() to make sure all the probing is
-> finished.
->=20
-> The downside to this solution is that kernel functionality that
-> uses wait_for_device_probe(), will block until the
-> driver_deferred_probe_timeout fires, regardless of if there is
-> any missing dependencies.
->=20
-> However, the previous patch reverts the default timeout value to
-> zero, so this side-effect will only affect users who specify a
-> driver_deferred_probe_timeout=3D value as a boot argument, where
-> the additional delay would be beneficial to allow modules to
-> load later during boot.
->=20
-> Thanks to Geert for chasing down that ip_auto_config was why NFS
-> was failing in this case!
->=20
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-> Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
-> Cc: Rob Herring <robh@kernel.org>
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> Cc: netdev <netdev@vger.kernel.org>
-> Cc: linux-pm@vger.kernel.org
-> Reported-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> Fixes: c8c43cee29f6 ("driver core: Fix driver_deferred_probe_check_state(=
-) logic")
-> Signed-off-by: John Stultz <john.stultz@linaro.org>
-> ---
-> * v2: Split patch, and apply it as a follow-on to setting
->       the driver_deferred_probe_timeout defalt back to zero
-> ---
+* Reduces the default Valid Lifetime to 2 days
+  This reduces stress on network elements, among other things
 
-Thank you for the patch! This patch doesn't cause any side
-effect on my environment (the value of driver_deferred_probe_timeout is 0).
-So,
+* Employs different IIDs for different prefixes
+  To avoid network activity correlation among addresses configured
+  for different prefixes
 
-Tested-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+* Uses a simpler algorithm for IID generation
+  No need to store "history" anywhere
 
-Best regards,
-Yoshihiro Shimoda
+Signed-off-by: Fernando Gont <fgont@si6networks.com>
+---
+ Documentation/networking/ip-sysctl.txt |  2 +-
+ include/net/addrconf.h                 |  2 +-
+ include/net/if_inet6.h                 |  1 -
+ net/ipv6/addrconf.c                    | 85 +++++++++++---------------
+ 4 files changed, 38 insertions(+), 52 deletions(-)
+
+diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
+index ee961d322d93..db1ee7340090 100644
+--- a/Documentation/networking/ip-sysctl.txt
++++ b/Documentation/networking/ip-sysctl.txt
+@@ -1807,7 +1807,7 @@ use_tempaddr - INTEGER
+ 
+ temp_valid_lft - INTEGER
+ 	valid lifetime (in seconds) for temporary addresses.
+-	Default: 604800 (7 days)
++	Default: 172800 (2 days)
+ 
+ temp_prefered_lft - INTEGER
+ 	Preferred lifetime (in seconds) for temporary addresses.
+diff --git a/include/net/addrconf.h b/include/net/addrconf.h
+index e0eabe58aa8b..37ecd7d322de 100644
+--- a/include/net/addrconf.h
++++ b/include/net/addrconf.h
+@@ -8,7 +8,7 @@
+ 
+ #define MIN_VALID_LIFETIME		(2*3600)	/* 2 hours */
+ 
+-#define TEMP_VALID_LIFETIME		(7*86400)
++#define TEMP_VALID_LIFETIME		(2 * 86400)
+ #define TEMP_PREFERRED_LIFETIME		(86400)
+ #define REGEN_MAX_RETRY			(3)
+ #define MAX_DESYNC_FACTOR		(600)
+diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
+index a01981d7108f..212eb278bda6 100644
+--- a/include/net/if_inet6.h
++++ b/include/net/if_inet6.h
+@@ -190,7 +190,6 @@ struct inet6_dev {
+ 	int			dead;
+ 
+ 	u32			desync_factor;
+-	u8			rndid[8];
+ 	struct list_head	tempaddr_list;
+ 
+ 	struct in6_addr		token;
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 24e319dfb510..7a0bb5dedcfa 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -135,8 +135,7 @@ static inline void addrconf_sysctl_unregister(struct inet6_dev *idev)
+ }
+ #endif
+ 
+-static void ipv6_regen_rndid(struct inet6_dev *idev);
+-static void ipv6_try_regen_rndid(struct inet6_dev *idev, struct in6_addr *tmpaddr);
++static void ipv6_gen_rnd_iid(struct in6_addr *addr);
+ 
+ static int ipv6_generate_eui64(u8 *eui, struct net_device *dev);
+ static int ipv6_count_addresses(const struct inet6_dev *idev);
+@@ -432,8 +431,7 @@ static struct inet6_dev *ipv6_add_dev(struct net_device *dev)
+ 	    dev->type == ARPHRD_SIT ||
+ 	    dev->type == ARPHRD_NONE) {
+ 		ndev->cnf.use_tempaddr = -1;
+-	} else
+-		ipv6_regen_rndid(ndev);
++	}
+ 
+ 	ndev->token = in6addr_any;
+ 
+@@ -1306,12 +1304,11 @@ static void ipv6_del_addr(struct inet6_ifaddr *ifp)
+ 	in6_ifa_put(ifp);
+ }
+ 
+-static int ipv6_create_tempaddr(struct inet6_ifaddr *ifp,
+-				struct inet6_ifaddr *ift,
+-				bool block)
++static int ipv6_create_tempaddr(struct inet6_ifaddr *ifp, bool block)
+ {
+ 	struct inet6_dev *idev = ifp->idev;
+-	struct in6_addr addr, *tmpaddr;
++	struct in6_addr addr;
++	struct inet6_ifaddr *ift;
+ 	unsigned long tmp_tstamp, age;
+ 	unsigned long regen_advance;
+ 	struct ifa6_config cfg;
+@@ -1321,14 +1318,7 @@ static int ipv6_create_tempaddr(struct inet6_ifaddr *ifp,
+ 	s32 cnf_temp_preferred_lft;
+ 
+ 	write_lock_bh(&idev->lock);
+-	if (ift) {
+-		spin_lock_bh(&ift->lock);
+-		memcpy(&addr.s6_addr[8], &ift->addr.s6_addr[8], 8);
+-		spin_unlock_bh(&ift->lock);
+-		tmpaddr = &addr;
+-	} else {
+-		tmpaddr = NULL;
+-	}
++
+ retry:
+ 	in6_dev_hold(idev);
+ 	if (idev->cnf.use_tempaddr <= 0) {
+@@ -1351,8 +1341,8 @@ static int ipv6_create_tempaddr(struct inet6_ifaddr *ifp,
+ 	}
+ 	in6_ifa_hold(ifp);
+ 	memcpy(addr.s6_addr, ifp->addr.s6_addr, 8);
+-	ipv6_try_regen_rndid(idev, tmpaddr);
+-	memcpy(&addr.s6_addr[8], idev->rndid, 8);
++	ipv6_gen_rnd_iid(&addr);
++
+ 	age = (now - ifp->tstamp) / HZ;
+ 
+ 	regen_advance = idev->cnf.regen_max_retry *
+@@ -1417,7 +1407,6 @@ static int ipv6_create_tempaddr(struct inet6_ifaddr *ifp,
+ 		in6_ifa_put(ifp);
+ 		in6_dev_put(idev);
+ 		pr_info("%s: retry temporary address regeneration\n", __func__);
+-		tmpaddr = &addr;
+ 		write_lock_bh(&idev->lock);
+ 		goto retry;
+ 	}
+@@ -2032,7 +2021,7 @@ static void addrconf_dad_stop(struct inet6_ifaddr *ifp, int dad_failed)
+ 		if (ifpub) {
+ 			in6_ifa_hold(ifpub);
+ 			spin_unlock_bh(&ifp->lock);
+-			ipv6_create_tempaddr(ifpub, ifp, true);
++			ipv6_create_tempaddr(ifpub, true);
+ 			in6_ifa_put(ifpub);
+ 		} else {
+ 			spin_unlock_bh(&ifp->lock);
+@@ -2329,40 +2318,38 @@ static int ipv6_inherit_eui64(u8 *eui, struct inet6_dev *idev)
+ 	return err;
+ }
+ 
+-/* (re)generation of randomized interface identifier (RFC 3041 3.2, 3.5) */
+-static void ipv6_regen_rndid(struct inet6_dev *idev)
++/* Generation of a randomized Interface Identifier
++ * draft-ietf-6man-rfc4941bis, Section 3.3.1
++ */
++
++static void ipv6_gen_rnd_iid(struct in6_addr *addr)
+ {
+ regen:
+-	get_random_bytes(idev->rndid, sizeof(idev->rndid));
+-	idev->rndid[0] &= ~0x02;
++	get_random_bytes(&addr->s6_addr[8], 8);
+ 
+-	/*
+-	 * <draft-ietf-ipngwg-temp-addresses-v2-00.txt>:
+-	 * check if generated address is not inappropriate
++	/* <draft-ietf-6man-rfc4941bis-08.txt>, Section 3.3.1:
++	 * check if generated address is not inappropriate:
+ 	 *
+-	 *  - Reserved subnet anycast (RFC 2526)
+-	 *	11111101 11....11 1xxxxxxx
+-	 *  - ISATAP (RFC4214) 6.1
+-	 *	00-00-5E-FE-xx-xx-xx-xx
+-	 *  - value 0
+-	 *  - XXX: already assigned to an address on the device
++	 * - Reserved IPv6 Interface Identifers
++	 * - XXX: already assigned to an address on the device
+ 	 */
+-	if (idev->rndid[0] == 0xfd &&
+-	    (idev->rndid[1]&idev->rndid[2]&idev->rndid[3]&idev->rndid[4]&idev->rndid[5]&idev->rndid[6]) == 0xff &&
+-	    (idev->rndid[7]&0x80))
++
++	/* Subnet-router anycast: 0000:0000:0000:0000 */
++	if (!(addr->s6_addr32[2] | addr->s6_addr32[3]))
+ 		goto regen;
+-	if ((idev->rndid[0]|idev->rndid[1]) == 0) {
+-		if (idev->rndid[2] == 0x5e && idev->rndid[3] == 0xfe)
+-			goto regen;
+-		if ((idev->rndid[2]|idev->rndid[3]|idev->rndid[4]|idev->rndid[5]|idev->rndid[6]|idev->rndid[7]) == 0x00)
+-			goto regen;
+-	}
+-}
+ 
+-static void  ipv6_try_regen_rndid(struct inet6_dev *idev, struct in6_addr *tmpaddr)
+-{
+-	if (tmpaddr && memcmp(idev->rndid, &tmpaddr->s6_addr[8], 8) == 0)
+-		ipv6_regen_rndid(idev);
++	/* IANA Ethernet block: 0200:5EFF:FE00:0000-0200:5EFF:FE00:5212
++	 * Proxy Mobile IPv6:   0200:5EFF:FE00:5213
++	 * IANA Ethernet block: 0200:5EFF:FE00:5214-0200:5EFF:FEFF:FFFF
++	 */
++	if (ntohl(addr->s6_addr32[2]) == 0x02005eff &&
++	    (ntohl(addr->s6_addr32[3]) & 0Xff000000) == 0xfe000000)
++		goto regen;
++
++	/* Reserved subnet anycast addresses */
++	if (ntohl(addr->s6_addr32[2]) == 0xfdffffff &&
++	    ntohl(addr->s6_addr32[3]) >= 0Xffffff80)
++		goto regen;
+ }
+ 
+ /*
+@@ -2544,7 +2531,7 @@ static void manage_tempaddrs(struct inet6_dev *idev,
+ 		 * no temporary address currently exists.
+ 		 */
+ 		read_unlock_bh(&idev->lock);
+-		ipv6_create_tempaddr(ifp, NULL, false);
++		ipv6_create_tempaddr(ifp, false);
+ 	} else {
+ 		read_unlock_bh(&idev->lock);
+ 	}
+@@ -4544,7 +4531,7 @@ static void addrconf_verify_rtnl(void)
+ 						ifpub->regen_count = 0;
+ 						spin_unlock(&ifpub->lock);
+ 						rcu_read_unlock_bh();
+-						ipv6_create_tempaddr(ifpub, ifp, true);
++						ipv6_create_tempaddr(ifpub, true);
+ 						in6_ifa_put(ifpub);
+ 						in6_ifa_put(ifp);
+ 						rcu_read_lock_bh();
+-- 
+2.26.0
 
