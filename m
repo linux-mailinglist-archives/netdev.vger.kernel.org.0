@@ -2,160 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D813E1A1C96
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 09:27:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50E251A1D15
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 10:07:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726885AbgDHH1A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 03:27:00 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:44315 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726882AbgDHH07 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 03:26:59 -0400
-Received: by mail-pl1-f196.google.com with SMTP id h11so2199639plr.11
-        for <netdev@vger.kernel.org>; Wed, 08 Apr 2020 00:26:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=MmpEQ8SQC6Xl5tR7Jjj5y8uD8BC/8L8xLziXkQ0TWVI=;
-        b=Z+eW7VdIANVP+y7K6bQ7lohbpmARsE8zZhuKT6N6QZUHELquqVNPm9CQ7F1SLG7RYS
-         QIdpR3lDKGieyLPJ0t7fBN9hqU017Ekfn1idJP58ax8+d6CR4DdzOSkuV9dAs/B0PhgF
-         DSZFB10RTROOOWvuV4752//VE1+P9z1sNXB83AHPCBQT51jB8SkiisAOqvfedZ58/p8d
-         YwGW5wlHsBud4pZ0OLcZ6LYZESBsqCRrVY2oC/ziYwL9X1n2QCZYKLe71lpMS6FC8adA
-         +uhz6cm1LtsjPcCIGOdBcTHcmEqpXVzn7LY68DsRxuCjOCLb2zkaEKfO3HL6LxETGtG7
-         Hsug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=MmpEQ8SQC6Xl5tR7Jjj5y8uD8BC/8L8xLziXkQ0TWVI=;
-        b=XYLQYlpbRtKCVNhhM40GCDSAMHc6ZG6lbMYTJzUTQ+Lo+uywz8nYktnwZZD1MMCxpo
-         XY+7G3DPkMKaVlCG9CpL/m/YWIpxNyoQ1Lm0kwCrvtG0Nu6zsReb/SZtTQcQBnuCjLUJ
-         AJBXC5mCxqihVPQsA0u6TeScdw0x34lqxBz3r0qpftPpidnvszhI5nLrNZXLMK2cb0w9
-         wHgizr0mnn+SE3CcN7X3MZQSiX0vBuKYKhFlXnr+8yPAn1vdjHP56SYYh/9XOqAuRIbW
-         6xmdBsjYcL2iEAuMx7RJP72ZHSiH8XY0h9SLVK13eye0z1ebqt8ddVi0bNJNRtAkr3KX
-         sRrA==
-X-Gm-Message-State: AGi0PuaZTJtghy3rZ1uPLWmLpImULjyNQpzxLpJDhYhH7txF+aHpzbqW
-        mZeYu+4qEVmUqysCvocVbY/edw==
-X-Google-Smtp-Source: APiQypJY5jt1Z+kCEh8DOZw5UuW9RxeqX3HfnqdnLIu6JVDPye1OyCCRnTHl4q5Efv/HapSv97ToSg==
-X-Received: by 2002:a17:902:d303:: with SMTP id b3mr5933935plc.63.1586330818286;
-        Wed, 08 Apr 2020 00:26:58 -0700 (PDT)
-Received: from localhost.localdomain ([2601:1c2:680:1319:692:26ff:feda:3a81])
-        by smtp.gmail.com with ESMTPSA id e187sm15356066pfe.143.2020.04.08.00.26.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Apr 2020 00:26:57 -0700 (PDT)
-From:   John Stultz <john.stultz@linaro.org>
-To:     lkml <linux-kernel@vger.kernel.org>
-Cc:     John Stultz <john.stultz@linaro.org>,
+        id S1726668AbgDHIGv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 04:06:51 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:23772 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726436AbgDHIGv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 04:06:51 -0400
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 038853sU113731
+        for <netdev@vger.kernel.org>; Wed, 8 Apr 2020 04:06:51 -0400
+Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 309203umdh-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 08 Apr 2020 04:06:50 -0400
+Received: from localhost
+        by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <schnelle@linux.ibm.com>;
+        Wed, 8 Apr 2020 09:06:24 +0100
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (9.149.109.197)
+        by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Wed, 8 Apr 2020 09:06:21 +0100
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 03886jG531391922
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 8 Apr 2020 08:06:45 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DA58442045;
+        Wed,  8 Apr 2020 08:06:44 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 82F634204D;
+        Wed,  8 Apr 2020 08:06:44 +0000 (GMT)
+Received: from oc5500677777.ibm.com (unknown [9.145.62.21])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  8 Apr 2020 08:06:44 +0000 (GMT)
+Subject: Re: [RFC] net/mlx5: Fix failing fw tracer allocation on s390
+To:     Markus Elfring <Markus.Elfring@web.de>, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Rob Herring <robh@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        netdev <netdev@vger.kernel.org>, linux-pm@vger.kernel.org
-Subject: [RFC][PATCH v2 2/2] driver core: Ensure wait_for_device_probe() waits until the deferred_probe_timeout fires
-Date:   Wed,  8 Apr 2020 07:26:50 +0000
-Message-Id: <20200408072650.1731-2-john.stultz@linaro.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200408072650.1731-1-john.stultz@linaro.org>
-References: <20200408072650.1731-1-john.stultz@linaro.org>
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>
+References: <77241c76-4836-3080-7fa6-e65fc3af5106@web.de>
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+Date:   Wed, 8 Apr 2020 10:06:44 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
+MIME-Version: 1.0
+In-Reply-To: <77241c76-4836-3080-7fa6-e65fc3af5106@web.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+x-cbid: 20040808-4275-0000-0000-000003BBDC52
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 20040808-4276-0000-0000-000038D13FB0
+Message-Id: <7eaec712-6427-7adf-98cd-2c4347dd9e85@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-07_10:2020-04-07,2020-04-07 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ lowpriorityscore=0 clxscore=1015 mlxscore=0 malwarescore=0
+ priorityscore=1501 bulkscore=0 mlxlogscore=999 adultscore=0 spamscore=0
+ phishscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2003020000 definitions=main-2004080065
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In commit c8c43cee29f6 ("driver core: Fix
-driver_deferred_probe_check_state() logic"), we set the default
-driver_deferred_probe_timeout value to 30 seconds to allow for
-drivers that are missing dependencies to have some time so that
-the dependency may be loaded from userland after initcalls_done
-is set.
 
-However, Yoshihiro Shimoda reported that on his device that
-expects to have unmet dependencies (due to "optional links" in
-its devicetree), was failing to mount the NFS root.
+On 4/7/20 5:12 PM, Markus Elfring wrote:
+>> On s390 FORCE_MAX_ZONEORDER is 9 instead of 11, thus a larger kzalloc()
+>> allocation as done for the firmware tracer will always fail.
+> 
+> How do you think about to add the tag “Fixes” to the final change description?
+> 
+> Regards,
+> Markus
+> 
+You're right that makes a lot of sense, thanks! I guess this should reference
+the commit that introduced the debug trace, right?
 
-In digging further, it seemed the problem was that while the
-device properly probes after waiting 30 seconds for any missing
-modules to load, the ip_auto_config() had already failed,
-resulting in NFS to fail. This was due to ip_auto_config()
-calling wait_for_device_probe() which doesn't wait for the
-driver_deferred_probe_timeout to fire.
-
-This patch tries to fix the issue by creating a waitqueue
-for the driver_deferred_probe_timeout, and calling wait_event()
-to make sure driver_deferred_probe_timeout is zero in
-wait_for_device_probe() to make sure all the probing is
-finished.
-
-The downside to this solution is that kernel functionality that
-uses wait_for_device_probe(), will block until the
-driver_deferred_probe_timeout fires, regardless of if there is
-any missing dependencies.
-
-However, the previous patch reverts the default timeout value to
-zero, so this side-effect will only affect users who specify a
-driver_deferred_probe_timeout= value as a boot argument, where
-the additional delay would be beneficial to allow modules to
-load later during boot.
-
-Thanks to Geert for chasing down that ip_auto_config was why NFS
-was failing in this case!
-
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
-Cc: Rob Herring <robh@kernel.org>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: netdev <netdev@vger.kernel.org>
-Cc: linux-pm@vger.kernel.org
-Reported-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Fixes: c8c43cee29f6 ("driver core: Fix driver_deferred_probe_check_state() logic")
-Signed-off-by: John Stultz <john.stultz@linaro.org>
----
-* v2: Split patch, and apply it as a follow-on to setting
-      the driver_deferred_probe_timeout defalt back to zero
----
- drivers/base/dd.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index 908ae4d7805e..5e6c00176969 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -226,6 +226,7 @@ DEFINE_SHOW_ATTRIBUTE(deferred_devs);
- 
- int driver_deferred_probe_timeout;
- EXPORT_SYMBOL_GPL(driver_deferred_probe_timeout);
-+static DECLARE_WAIT_QUEUE_HEAD(probe_timeout_waitqueue);
- 
- static int __init deferred_probe_timeout_setup(char *str)
- {
-@@ -275,6 +276,7 @@ static void deferred_probe_timeout_work_func(struct work_struct *work)
- 
- 	list_for_each_entry_safe(private, p, &deferred_probe_pending_list, deferred_probe)
- 		dev_info(private->device, "deferred probe pending");
-+	wake_up(&probe_timeout_waitqueue);
- }
- static DECLARE_DELAYED_WORK(deferred_probe_timeout_work, deferred_probe_timeout_work_func);
- 
-@@ -649,6 +651,9 @@ int driver_probe_done(void)
-  */
- void wait_for_device_probe(void)
- {
-+	/* wait for probe timeout */
-+	wait_event(probe_timeout_waitqueue, !driver_deferred_probe_timeout);
-+
- 	/* wait for the deferred probe workqueue to finish */
- 	flush_work(&deferred_probe_work);
- 
--- 
-2.17.1
+Best regards,
+Niklas
 
