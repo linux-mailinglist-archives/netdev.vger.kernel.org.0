@@ -2,175 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB4281A2004
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 13:41:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A98101A202D
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 13:50:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728615AbgDHLlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 07:41:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37534 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728497AbgDHLlA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Apr 2020 07:41:00 -0400
-Received: from coco.lan (ip5f5ad4d8.dynamic.kabel-deutschland.de [95.90.212.216])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1728633AbgDHLux (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 07:50:53 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:27686 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728492AbgDHLux (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 07:50:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1586346652;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2eXzQtSYdeTw5pRT+LOtyhNeBfnI40tGkZtZgT4bf9k=;
+        b=Xz7woTJYGKU2lQcsrUd+uZQ2qSVuyQppVs8V7fBxvQg8XHtDi3yfLIeFFQg9Pfvrm+hbeK
+        8AA3GuLu1jg18qBHUTQVg0+Nd3mY3ZwJDZGptzFZ3zN1PP/OoZYqe8EJHrtGAzUtvPUvCU
+        AkGgE47p8dVIY/h9FQyTuu4f9QEVedU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-252-SEAr8W1PMYCDNEoc6BDj9A-1; Wed, 08 Apr 2020 07:50:48 -0400
+X-MC-Unique: SEAr8W1PMYCDNEoc6BDj9A-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 759AF20747;
-        Wed,  8 Apr 2020 11:40:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586346059;
-        bh=igLuiZn52qB1kj2vKxCTjSGs9/VNYNbdH6sNTlgRisY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lNMtsoG3BeTIbawLBoa0nrrwd0el6dj9ixd/wEe67LD2atI1u1lEiKmTJiKJA0hjV
-         FXR8cQCs+m+ksv+uue55PKV997wAUH/UarzRCS6hVK+lXwWdeotoHeiFSlypmHOYoN
-         dm4usj1My3oZ7OaxsoqH8jwAufqemuBwo1R1j8fs=
-Date:   Wed, 8 Apr 2020 13:40:48 +0200
-From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ricardo Ribalda Delgado <ribalda@kernel.org>,
-        Luca Ceresoli <luca@lucaceresoli.net>,
-        dmaengine@vger.kernel.org, Matthias Maennich <maennich@google.com>,
-        Harry Wei <harryxiyou@gmail.com>, x86@kernel.org,
-        ecryptfs@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        target-devel@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Tyler Hicks <code@tyhicks.com>, Vinod Koul <vkoul@kernel.org>,
-        Alex Shi <alex.shi@linux.alibaba.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linuxppc-dev@lists.ozlabs.org, Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v2 0/2] Don't generate thousands of new warnings when
- building docs
-Message-ID: <20200408134048.5329427d@coco.lan>
-In-Reply-To: <87lfn8klf4.fsf@mpe.ellerman.id.au>
-References: <cover.1584716446.git.mchehab+huawei@kernel.org>
-        <87lfn8klf4.fsf@mpe.ellerman.id.au>
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 97FA8801E66;
+        Wed,  8 Apr 2020 11:50:46 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.40.208.40])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5EF5060BF7;
+        Wed,  8 Apr 2020 11:50:40 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 6BA77300020FB;
+        Wed,  8 Apr 2020 13:50:39 +0200 (CEST)
+Subject: [PATCH RFC v2 01/33] xdp: add frame size to xdp_buff
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     sameehj@amazon.com
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, zorik@amazon.com, akiyano@amazon.com,
+        gtzalik@amazon.com,
+        =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Date:   Wed, 08 Apr 2020 13:50:39 +0200
+Message-ID: <158634663936.707275.3156718045905620430.stgit@firesoul>
+In-Reply-To: <158634658714.707275.7903484085370879864.stgit@firesoul>
+References: <158634658714.707275.7903484085370879864.stgit@firesoul>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Tue, 07 Apr 2020 13:46:23 +1000
-Michael Ellerman <mpe@ellerman.id.au> escreveu:
+XDP have evolved to support several frame sizes, but xdp_buff was not
+updated with this information. The frame size (frame_sz) member of
+xdp_buff is introduced to know the real size of the memory the frame is
+delivered in.
 
-> Mauro Carvalho Chehab <mchehab+huawei@kernel.org> writes:
-> > This small series address a regression caused by a new patch at
-> > docs-next (and at linux-next).
-> >
+When introducing this also make it clear that some tailroom is
+reserved/required when creating SKBs using build_skb().
 
-...
+It would also have been an option to introduce a pointer to
+data_hard_end (with reserved offset). The advantage with frame_sz is
+that (like rxq) drivers only need to setup/assign this value once per
+NAPI cycle. Due to XDP-generic (and some drivers) it's not possible to
+store frame_sz inside xdp_rxq_info, because it's varies per packet as it
+can be based/depend on packet length.
 
-> > This solves almost all problems we have. Still, there are a few places
-> > where we have two chapters at the same document with the
-> > same name. The first patch addresses this problem.  
-> 
-> I'm still seeing a lot of warnings. Am I doing something wrong?
-> 
-> cheers
-> 
-> /linux/Documentation/powerpc/cxl.rst:406: WARNING: duplicate label powerpc/cxl:open, other instance in /linux/Documentation/powerpc/cxl.rst
-...
-> /linux/Documentation/powerpc/syscall64-abi.rst:86: WARNING: duplicate label powerpc/syscall64-abi:parameters and return value, other instance in /linux/Documentation/powerpc/syscall64-abi.rst
-...
-> /linux/Documentation/powerpc/ultravisor.rst:339: WARNING: duplicate label powerpc/ultravisor:syntax, other instance in /linux/Documentation/powerpc/ultravisor.rst
-...
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+---
+ include/net/xdp.h |   17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-I can't reproduce your issue here at linux-next (+ my pending doc patches).
-
-So, I can only provide you some hints.
-
-If you see the logs you posted, all of them are related to duplicated
-labels inside the same file.
-
--
-
-The new Sphinx module we're using (sphinx.ext.autosectionlabel) generates
-references for two levels, within the same document file (after this patch).
-
-
-Looking at the first document (at linux-next version), it has:
-
-1) A first level document title:
-
-   Coherent Accelerator Interface (CXL)
-
-2) Several second level titles:
-
-   Introduction
-   Hardware overview
-   AFU Modes
-   MMIO space
-   Interrupts
-   Work Element Descriptor (WED)
-   User API
-   Sysfs Class
-   Udev rules
-
-Right now, there's no duplication, but if someone adds, for example, 
-another first-level or second-level title called "Interrupts", then 
-the file will produce a duplicated label and Sphinx will warn.
-
-The same would happen if someone adds another title (either first
-level or second level) called "Coherent Accelerator Interface (CXL)",
-as this will conflict with the document title.
-
--
-
-Now, if the title "Coherent Accelerator Interface (CXL)" got removed,
-then "Introduction".."Udev rules" will become first level titles.
-
-Then, the sections at the "User API": "open", "ioctl"... will become
-second level titles and it will produce lots of warnings.
-
--
-
-That's said, IMHO, this document needs section titles for the two
-sections under "User API". Adding it would allow removing the document
-title. See enclosed.
-
-Thanks,
-Mauro
-
-powerpc: docs: cxl.rst: mark two section titles as such
-
-The User API chapter contains two sub-chapters. Mark them as
-such.
-
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-
-
-diff --git a/Documentation/powerpc/cxl.rst b/Documentation/powerpc/cxl.rst
-index 920546d81326..d2d77057610e 100644
---- a/Documentation/powerpc/cxl.rst
-+++ b/Documentation/powerpc/cxl.rst
-@@ -133,6 +133,7 @@ User API
- ========
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index 40c6d3398458..99f4374f6214 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -6,6 +6,8 @@
+ #ifndef __LINUX_NET_XDP_H__
+ #define __LINUX_NET_XDP_H__
  
- 1. AFU character devices
-+^^^^^^^^^^^^^^^^^^^^^^^^
++#include <linux/skbuff.h> /* skb_shared_info */
++
+ /**
+  * DOC: XDP RX-queue information
+  *
+@@ -70,8 +72,23 @@ struct xdp_buff {
+ 	void *data_hard_start;
+ 	unsigned long handle;
+ 	struct xdp_rxq_info *rxq;
++	u32 frame_sz; /* frame size to deduct data_hard_end/reserved tailroom*/
+ };
  
-     For AFUs operating in AFU directed mode, two character device
-     files will be created. /dev/cxl/afu0.0m will correspond to a
-@@ -395,6 +396,7 @@ read
- 
- 
- 2. Card character device (powerVM guest only)
-+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- 
-     In a powerVM guest, an extra character device is created for the
-     card. The device is only used to write (flash) a new image on the
++/* Reserve memory area at end-of data area.
++ *
++ * This macro reserves tailroom in the XDP buffer by limiting the
++ * XDP/BPF data access to data_hard_end.  Notice same area (and size)
++ * is used for XDP_PASS, when constructing the SKB via build_skb().
++ */
++#define xdp_data_hard_end(xdp)				\
++	((xdp)->data_hard_start + (xdp)->frame_sz -	\
++	 SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
++
++/* Like skb_shinfo */
++#define xdp_shinfo(xdp)	((struct skb_shared_info *)(xdp_data_hard_end(xdp)))
++// XXX: Above likely belongs in later patch
++
+ struct xdp_frame {
+ 	void *data;
+ 	u16 len;
+
 
