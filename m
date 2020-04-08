@@ -2,96 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E356D1A19ED
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 04:25:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6FE11A1A07
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 04:41:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726443AbgDHCZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Apr 2020 22:25:20 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:33908 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726416AbgDHCZT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 22:25:19 -0400
-Received: by mail-pg1-f193.google.com with SMTP id l14so2664374pgb.1
-        for <netdev@vger.kernel.org>; Tue, 07 Apr 2020 19:25:19 -0700 (PDT)
+        id S1726483AbgDHCky (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Apr 2020 22:40:54 -0400
+Received: from mail-vs1-f65.google.com ([209.85.217.65]:39494 "EHLO
+        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726428AbgDHCky (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Apr 2020 22:40:54 -0400
+Received: by mail-vs1-f65.google.com with SMTP id u9so3815993vsp.6;
+        Tue, 07 Apr 2020 19:40:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8YakeIytkCqdHsA7rZz1DKZmmB2+FFdVVFL33CNj1L0=;
-        b=Mr+jmsXpQfi/mJzy+2EkycfrUdnhUWgfbYvF4YE1VRvqyqWUqUD0CAAUNluaH9xwTq
-         I7lT0MhkfVoUKxiuvAJ5Pw8bVvxU0Ih6h/IdGpMAtz2RUsOFpYVFQasvGHmvCI9R1HF5
-         6JoA86zxqv3HsPPiQlQaxyx3BMQPzJwuK+QCMYHHrdP63zySCxyFiDdHqO3cLDukrDxQ
-         Oto++2ctjS0zDb1+a/ByMx1E7ac9QSfaieerXdaZaWT/Tv7/cbNxzZKIfkqhfDPo01Q8
-         kJMvEFXK/rto3F3zSswpKiYDpDVefcLeo5NYgeXKLSuyiZWZSI/rdv+0g0hB40WQlFer
-         ZRyA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=C/ZXELd6yqxZHW3BMVHT8QXqccYsYFJYeRQU4hncJI4=;
+        b=DWTsYb57lLv4UhbmAHVIqGY1gwsmUFF/xGwTBGcOQCFF77+OitoyXkMEwJdwXhGkDx
+         FhAAEQvbXqmJ0WHYXscwJFdhaq3cCsVu4saHA9ffAkEGZdvWEvTCH0WHhZfTR729yF6F
+         isQ7KidVqN2l+h6kbXbnJShrtbzYs4w1YOf03qQwluWbbh5zJOWubOZwiQ/wabk+MWfq
+         bzF8uhMcLIa5y9O9NiwRFMc8h3lGb4QMHW8AXfjJakqZKqjRyf8KuYCO69vQ/Ry6Biii
+         XhoqQZTwDlB1c0gaUNPiLpp39WpFDaBfO+xBbKDJIxM4IsUpLjW8d1PdHuG9jgmRP1xV
+         MLDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8YakeIytkCqdHsA7rZz1DKZmmB2+FFdVVFL33CNj1L0=;
-        b=cdOMJh5KFOlNAAYaUH2QHocbawzcDpD1h6YOPPI84hs+qjmzdv6U4tV2RDko/izXHT
-         cusKABv76BgHe554X5V54890yirnDwG+PVASzxRBMfEJNM6K1Sbi24UkEULH8P8bBkFQ
-         XsG84QWolCiQW0CtMA0PJfff93j9gJF9SkqpA7Tq+zeM49ooNoqYUKxDiP7HHEpMnwCE
-         wkOpzsoYQWMrNAWpmAsYn9dXbrwEgXo5bo/RgTH2Sbo4BqgTmAtfJTw0ovJZmorP7Ncq
-         OgAD5foRcs3qg3SzxebCmoOLoukSSwEoS3zv+cYxYt6RD/w2jyFOqtLNaaahWpxF+v3O
-         Jvyw==
-X-Gm-Message-State: AGi0Pubf3R3yTHS0q5EFfH8ne+mg4RiDP1c6khWPeWo2/v8wEiDqUvBr
-        r/AcCNC1PchEJgEcmyLnAX+c7fZW
-X-Google-Smtp-Source: APiQypL6VdDS+QFl5RvJkV7nJriuiJr9LDZN0HFfdtzbavKpLrlXwC/lf+htlusZVSAQG07Ucj2hag==
-X-Received: by 2002:a62:164a:: with SMTP id 71mr632683pfw.273.1586312718894;
-        Tue, 07 Apr 2020 19:25:18 -0700 (PDT)
-Received: from [0.0.0.0] ([2001:19f0:8001:1c6b:5400:2ff:fe92:fb44])
-        by smtp.googlemail.com with ESMTPSA id s61sm3017792pjd.33.2020.04.07.19.25.15
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 07 Apr 2020 19:25:18 -0700 (PDT)
-Subject: Re: [PATCH net 2/2] net/rds: Fix MR reference counting problem
-To:     santosh.shilimkar@oracle.com,
-        Ka-Cheong Poon <ka-cheong.poon@oracle.com>,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, rds-devel@oss.oracle.com
-References: <4b96ea99c3f0ccd5cc0683a5c944a1c4da41cc38.1586275373.git.ka-cheong.poon@oracle.com>
- <a99e79aa8515e4b52ced83447122fbd260104f0f.1586275373.git.ka-cheong.poon@oracle.com>
- <96f17f7d-365c-32ec-2efe-a6a5d9d306b7@oracle.com>
-From:   zerons <sironhide0null@gmail.com>
-Openpgp: preference=signencrypt
-Message-ID: <e1853439-fe73-14d1-a57c-1a67341a7f8a@gmail.com>
-Date:   Wed, 8 Apr 2020 10:25:11 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=C/ZXELd6yqxZHW3BMVHT8QXqccYsYFJYeRQU4hncJI4=;
+        b=Gl+SHguUa1C14SyB75qHKzFpUsemjfZDsnt2wW7qkC2XIi9Ri35eCK7wWJ0boHjcDc
+         tUxfvar/D3Q1i7LCuWO0g/9KCKwFL/fR1vXRRcihePTVaQ6NMWzhF6Oqv8ZHGLcRHs++
+         MoM/zkfAPHgnsJ9UaF5wUT6FkQA8UnOxcDPaYfPOz6hAkztu5LBXZJQJAn89TDKxZpZk
+         6NlCM596JjkpfihsQZR2Y4qRw5YY0ol3ppC/FbBHETVCsaO0SlrumYmkP8kaT3xDpogG
+         uPA2Uny5tpRkA0ttEw/NoNGf/LTlO3DLoOGIOdFSEEl0hJpOWonmXMaa+yKfnHACSFjK
+         IAMg==
+X-Gm-Message-State: AGi0PuYgFQCVa8i2WD+doENgMEp6HhUd4bhgpQfWpjOP9WYqIxeSw5cB
+        B++tiZzdTsGfo0K4x0zXBJW/lloYPCs/1YY9Al8=
+X-Google-Smtp-Source: APiQypIP3VAej2uId6VHVbbIUWzlpc0T8buWRSSeE/UQMn2w7lUT8WSp6+QUP6rkBP1MRFbbQdzu/A6tDvKLFRc4HmI=
+X-Received: by 2002:a67:902:: with SMTP id 2mr4789025vsj.133.1586313652812;
+ Tue, 07 Apr 2020 19:40:52 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <96f17f7d-365c-32ec-2efe-a6a5d9d306b7@oracle.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20200407055837.3508017-1-alistair@alistair23.me>
+ <20200407055837.3508017-2-alistair@alistair23.me> <CA+E=qVdQKS9TCG7Sa4aefAZbgWO3-rgA9u13v=iB6+TN7yQe=Q@mail.gmail.com>
+In-Reply-To: <CA+E=qVdQKS9TCG7Sa4aefAZbgWO3-rgA9u13v=iB6+TN7yQe=Q@mail.gmail.com>
+From:   Alistair Francis <alistair23@gmail.com>
+Date:   Tue, 7 Apr 2020 19:40:26 -0700
+Message-ID: <CAKmqyKPGtHLzyeM5optDBF79sWNvCKt=6Qn+i0sdcqgy_W3nzA@mail.gmail.com>
+Subject: Re: [PATCH v2 2/3] Bluetooth: hci_h5: Add support for binding
+ RTL8723BS with device tree
+To:     Vasily Khoruzhick <anarsoul@gmail.com>
+Cc:     Alistair Francis <alistair@alistair23.me>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "open list:BLUETOOTH DRIVERS" <linux-bluetooth@vger.kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        arm-linux <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/8/20 03:30, santosh.shilimkar@oracle.com wrote:
-> On 4/7/20 9:08 AM, Ka-Cheong Poon wrote:
->> In rds_free_mr(), it calls rds_destroy_mr(mr) directly.  But this
->> defeats the purpose of reference counting and makes MR free handling
->> impossible.  It means that holding a reference does not guarantee that
->> it is safe to access some fields.  For example, In
->> rds_cmsg_rdma_dest(), it increases the ref count, unlocks and then
->> calls mr->r_trans->sync_mr().  But if rds_free_mr() (and
->> rds_destroy_mr()) is called in between (there is no lock preventing
->> this to happen), r_trans_private is set to NULL, causing a panic.
->> Similar issue is in rds_rdma_unuse().
->>
->> Reported-by: zerons <sironhide0null@gmail.com>
->> Signed-off-by: Ka-Cheong Poon <ka-cheong.poon@oracle.com>
->> ---
-> Thanks for getting this out on the list.
-> 
-> Hi zerons,
-> Can you please review it and see it addresses your concern ?
-> 
+On Mon, Apr 6, 2020 at 11:51 PM Vasily Khoruzhick <anarsoul@gmail.com> wrote:
+>
+> On Mon, Apr 6, 2020 at 10:58 PM Alistair Francis <alistair@alistair23.me> wrote:
+> >
+> > From: Vasily Khoruzhick <anarsoul@gmail.com>
+> >
+> > RTL8723BS is often used in ARM boards, so add ability to bind it
+> > using device tree.
+> >
+> > Signed-off-by: Vasily Khoruzhick <anarsoul@gmail.com>
+> > Signed-off-by: Alistair Francis <alistair@alistair23.me>
+> > ---
+> >  drivers/bluetooth/hci_h5.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> >
+> > diff --git a/drivers/bluetooth/hci_h5.c b/drivers/bluetooth/hci_h5.c
+> > index 106c110efe56..b0e25a7ca850 100644
+> > --- a/drivers/bluetooth/hci_h5.c
+> > +++ b/drivers/bluetooth/hci_h5.c
+> > @@ -1019,6 +1019,8 @@ static const struct of_device_id rtl_bluetooth_of_match[] = {
+> >         { .compatible = "realtek,rtl8822cs-bt",
+> >           .data = (const void *)&rtl_vnd },
+> >  #endif
+> > +       { .compatible = "realtek,rtl8822bs-bt",
+>
+> Wrong compatible? Also you probably want to keep it over #endif.
 
-Yes, the MR gets freed only when the ref count decreases to zero does
-address my concern. I think it make the logic cleaner as well. Fantastic!
+Fixed.
 
-Regards,
-zerons
+Alistair
+
+>
+> > +         .data = (const void *)&rtl_vnd },
+> >         { },
+> >  };
+> >  MODULE_DEVICE_TABLE(of, rtl_bluetooth_of_match);
+> > --
+> > 2.25.1
+> >
