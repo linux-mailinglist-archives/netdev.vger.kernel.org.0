@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83DD21A2B12
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 23:27:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B4851A2B21
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 23:31:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729557AbgDHV1w convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 8 Apr 2020 17:27:52 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:52912 "EHLO
+        id S1730553AbgDHVbT convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 8 Apr 2020 17:31:19 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:52928 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728187AbgDHV1w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 17:27:52 -0400
+        with ESMTP id S1729613AbgDHVbT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 17:31:19 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 12647127D24BE;
-        Wed,  8 Apr 2020 14:27:52 -0700 (PDT)
-Date:   Wed, 08 Apr 2020 14:27:49 -0700 (PDT)
-Message-Id: <20200408.142749.1712309028781080294.davem@davemloft.net>
-To:     lesedorucalin01@gmail.com
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] net: UDP repair mode for retrieving the send queue of
- corked UDP socket
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D6BED127D38A9;
+        Wed,  8 Apr 2020 14:31:18 -0700 (PDT)
+Date:   Wed, 08 Apr 2020 14:31:17 -0700 (PDT)
+Message-Id: <20200408.143117.436896098376081766.davem@davemloft.net>
+To:     michael.weiss@aisec.fraunhofer.de
+Cc:     kuba@kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] l2tp: Allow management of tunnels and session in user
+ namespace
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200408205954.GA15086@white>
-References: <20200408205954.GA15086@white>
+In-Reply-To: <20200407111148.28406-1-michael.weiss@aisec.fraunhofer.de>
+References: <20200407111148.28406-1-michael.weiss@aisec.fraunhofer.de>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-2
+Content-Type: Text/Plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 08 Apr 2020 14:27:52 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 08 Apr 2020 14:31:19 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Le∫e Doru C„lin <lesedorucalin01@gmail.com>
-Date: Wed, 8 Apr 2020 23:59:54 +0300
+From: Michael Weiﬂ <michael.weiss@aisec.fraunhofer.de>
+Date: Tue,  7 Apr 2020 13:11:48 +0200
 
-> Hello everyone!
+> Creation and management of L2TPv3 tunnels and session through netlink
+> requires CAP_NET_ADMIN. However, a process with CAP_NET_ADMIN in a
+> non-initial user namespace gets an EPERM due to the use of the
+> genetlink GENL_ADMIN_PERM flag. Thus, management of L2TP VPNs inside
+> an unprivileged container won't work.
 > 
-> In this year's edition of GSoC, there is a project idea for CRIU to add support
-> for checkpoint/restore of cork-ed UDP sockets. But to add it, the kernel API needs
-> to be extended.
-> This is what this patch does. It adds UDP "repair mode" for UDP sockets in a similar
-> approach to the TCP "repair mode", but only the send queue is necessary to be retrieved.
-> So the patch extends the recv and setsockopt syscalls. Using UDP_REPAIR option in
-> setsockopt, caller can set the socket in repair mode. If it is setted, the
-> recv/recvfrom/recvmsg will receive the write queue and the destination of the data.
-> As in the TCP mode, to change the repair mode requires the CAP_NET_ADMIN capability
-> and to receive data the caller is obliged to use the MSG_PEEK flag.
+> We replaced the GENL_ADMIN_PERM by the GENL_UNS_ADMIN_PERM flag
+> similar to other network modules which also had this problem, e.g.,
+> openvswitch (commit 4a92602aa1cd "openvswitch: allow management from
+> inside user namespaces") and nl80211 (commit 5617c6cd6f844 "nl80211:
+> Allow privileged operations from user namespaces").
 > 
-> Best regards,
-> Lese Doru
+> I tested this in the container runtime trustm3 (trustm3.github.io)
+> and was able to create l2tp tunnels and sessions in unpriviliged
+> (user namespaced) containers using a private network namespace.
+> For other runtimes such as docker or lxc this should work, too.
 > 
-> Signed-off-by: Lese Doru Calin <lesedorucalin01@gmail.com>
+> Signed-off-by: Michael Weiﬂ <michael.weiss@aisec.fraunhofer.de>
 
-Why do I feel like I've seen this patch several times before?
-
+Applied, thank you.
