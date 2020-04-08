@@ -2,241 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6D431A1B91
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 07:39:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEAB31A1BB2
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 07:59:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726559AbgDHFjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 01:39:20 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:39256 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725879AbgDHFjU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 01:39:20 -0400
-Received: by mail-wr1-f67.google.com with SMTP id p10so6312472wrt.6;
-        Tue, 07 Apr 2020 22:39:18 -0700 (PDT)
+        id S1726602AbgDHF7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 01:59:32 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:50412 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725932AbgDHF7c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 01:59:32 -0400
+Received: by mail-wm1-f68.google.com with SMTP id x25so3889083wmc.0;
+        Tue, 07 Apr 2020 22:59:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Okc82vqS7N+cAm2fC1T1A+xd/pJAgTWbJlOtDSH21Rg=;
-        b=NGjPIN3pcaFl/PAoh+/QRIXJUQi67BRhQXiHheHL6FKEhBjcg638Yd5wqiN9Z9yzop
-         VLX4y+CU3TUGzKxd8u21ww8cA32q/2uUZi0Cb1Q8BljyD929VSo2RJhuzsIYGiZdPyjB
-         AsvH2uHEv5ygVlRkUV4j/sLvRQpwKXZg4ZLiJXe1mNE51phrSZiYTEkF9RXoZSI/Se5u
-         yFcRuXDwtrW75zBa3E30rmV0IP3CLT89nbijAfeh41UmSpnCjOF95CUO8S8pvom+6INC
-         kbu1Cj8SB3XQNOie8ZrjVMD2doQGnMkae6fol4+qmN3s7SYNyj/FEPmx+4bsWwMTZW4D
-         +4Bw==
+         :cc;
+        bh=cgR7uqdaJ50QZEIrE0fJfx3G07O03Ia9KRHu35QfCnk=;
+        b=vBE9zAGEMfzVYHubGJcrtsDaQo7Moejx0vsU1jgdJXySP4D9dirzA000xPpmi0/0iJ
+         pwX4pUy2JIDc0rWcKljF3iY4S7JEQRMcZQHCja8Y+NQecsStD6M8+13hI8OOkYzGz8P6
+         bFaNV651cIKtzAHT3y0R4b3Cm6D5FTB4EBqy6AfL3AFnFQ/jNluZzz+m50enoiaCbK++
+         jZw3tqViVon0O7PUm9FntAcleG3QnhyjTTilbp/FTkbwJz/1p4sbuQxKs8xaph9GQvRx
+         motOHHrUBj8MIXXZ4368ZRKFJH19ZtVrOmtCmRTILpgqQpAiEWNtZsrdYq0Je6T2WObn
+         z1ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Okc82vqS7N+cAm2fC1T1A+xd/pJAgTWbJlOtDSH21Rg=;
-        b=sfU4WmRnSk98h2eHeQiulXNQSUQb2wwHYjlcwjFS72CXI1jKeE4XC2Dd3kHbfx+A4x
-         gIIwsMQBcJQIAvwnyGzMh8Fs2m1idZfS7FgP814zV2MjewDRs9ISz0dhc1gKiQKzzYyz
-         qBDxsjvLP1+dHp6d6jUR8H6eJFNyDr87PoXtMPzjEJbSzHFfavaRHj2zAR1kkO+l0/A5
-         T0VAOzFNjdDSNBtu2Q9gEbtKCqc8fzniRN2lLI0pGsSS/f1Cj9b7rJSgZaGkbVE931Rl
-         +k4vLlHzb1LJ4VTrreuYa6HPrYV420kQnkE1aB/QLCP7hXRj/bqWq9BXUBSz1KdZyQmU
-         6atQ==
-X-Gm-Message-State: AGi0PuYFINnuZgxqBbziCfeCx2/RFd5bLuO51Pot68VqD/y+1EMxl7EH
-        kJvwjtncSOZ4B5t19lTr2T7jXiWUrXnWt99MWcw=
-X-Google-Smtp-Source: APiQypJITdWG6cr8CDIiyQl/5qm7RlFhsLVBSSSISjnWZ2rvwBgjWu9u8DR1q3ID4FGyCHEUXNbHgfHuDChal9IuBWM=
-X-Received: by 2002:a5d:4988:: with SMTP id r8mr6283912wrq.248.1586324357903;
- Tue, 07 Apr 2020 22:39:17 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=cgR7uqdaJ50QZEIrE0fJfx3G07O03Ia9KRHu35QfCnk=;
+        b=I84kudqu8x2u6jk2JSdCDcbDW/VmXtwymqorJ14kbJ91eeb+EIZ1NhmryR5XgMYyd4
+         SV4E5alU0W0o+D5VgrZEIiZvaqpdHuTzgGumn4N7UVDYg5AuOWKOPBG2EWop/maGoFUn
+         V4961IFv12bQE+/yVqxXvBaEmB7GPsMy5+QCj7IBepYswMaDMAqFc0pwX7opnqLsPPE8
+         XJEXXsdTLKJpRcAfEuTfZSfD21RKf1+9q8rI8lH6+oEHTQqMNAQCS9aNVwo18Iz/DHSe
+         ft+TjPM0t2ssYq9ioCqaePomK3u2Q6+0vlqgYRT7vNSKXXSi/diO1y20Anl0qJemAsF0
+         C0qg==
+X-Gm-Message-State: AGi0PuYH9q/r299yhMyTVUujF+3JFT/w9fyd4e3cxTsT4EFVmxnG7bTE
+        Mj3cQOHoQp8zKp5QPR6C7g0DrAAo+YQyk52+BbI=
+X-Google-Smtp-Source: APiQypLDXmBrSTPTsGbzeouiuElQtjRy7iy4LVc4QJ4HUfGC8Am6BH7nKrOZnVbga2iYlB7nqI+2TpQYlGscEnyDH+o=
+X-Received: by 2002:a1c:5fc4:: with SMTP id t187mr2952706wmb.181.1586325568230;
+ Tue, 07 Apr 2020 22:59:28 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200406221604.18547-1-luke.r.nels@gmail.com>
-In-Reply-To: <20200406221604.18547-1-luke.r.nels@gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Wed, 8 Apr 2020 07:39:06 +0200
-Message-ID: <CAJ+HfNh=VDeXJQ3iYHDEXAd1xB_YPShnJyqsW4OmRE=VLAMuuw@mail.gmail.com>
-Subject: Re: [PATCH bpf] riscv, bpf: Fix offset range checking for auipc+jalr
- on RV64
-To:     Luke Nelson <lukenels@cs.washington.edu>
-Cc:     bpf <bpf@vger.kernel.org>, Xi Wang <xi.wang@gmail.com>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Netdev <netdev@vger.kernel.org>, linux-riscv@lists.infradead.org,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20200407023512.GA25005@ubuntu> <20200407030504.GX23230@ZenIV.linux.org.uk>
+ <20200407031318.GY23230@ZenIV.linux.org.uk> <CAM7-yPQas7hvTVLa4U80t0Em0HgLCk2whLQa4O3uff5J3OYiAA@mail.gmail.com>
+ <20200407040354.GZ23230@ZenIV.linux.org.uk> <CAM7-yPRaQsNgZKjru40nM1N_u8HVLVKmJCAzu20DcPL=jzKjWQ@mail.gmail.com>
+ <20200407182609.GA23230@ZenIV.linux.org.uk>
+In-Reply-To: <20200407182609.GA23230@ZenIV.linux.org.uk>
+From:   Yun Levi <ppbuk5246@gmail.com>
+Date:   Wed, 8 Apr 2020 14:59:17 +0900
+Message-ID: <CAM7-yPS_xh54H9M7B8-tAmPM4+w0VgnruJhK509upsDgZvcNhg@mail.gmail.com>
+Subject: Re: [PATCH] netns: dangling pointer on netns bind mount point.
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Guillaume Nault <gnault@redhat.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Li RongQing <lirongqing@baidu.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Johannes Berg <johannes.berg@intel.com>,
+        David Howells <dhowells@redhat.com>, daniel@iogearbox.net,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 7 Apr 2020 at 00:16, Luke Nelson <lukenels@cs.washington.edu> wrote=
-:
->
-> The existing code in emit_call on RV64 checks that the PC-relative offset
-> to the function fits in 32 bits before calling emit_jump_and_link to emit
-> an auipc+jalr pair. However, this check is incorrect because offsets in
-> the range [2^31 - 2^11, 2^31 - 1] cannot be encoded using auipc+jalr on
-> RV64 (see discussion [1]). The RISC-V spec has recently been updated
-> to reflect this fact [2, 3].
->
-> This patch fixes the problem by moving the check on the offset into
-> emit_jump_and_link and modifying it to the correct range of encodable
-> offsets, which is [-2^31 - 2^11, 2^31 - 2^11). This also enforces the
-> check on the offset to other uses of emit_jump_and_link (e.g., BPF_JA)
-> as well.
->
-> Currently, this bug is unlikely to be triggered, because the memory
-> region from which JITed images are allocated is close enough to kernel
-> text for the offsets to not become too large; and because the bounds on
-> BPF program size are small enough. This patch prevents this problem from
-> becoming an issue if either of these change.
->
-> [1]: https://groups.google.com/a/groups.riscv.org/forum/#!topic/isa-dev/b=
-wWFhBnnZFQ
-> [2]: https://github.com/riscv/riscv-isa-manual/commit/b1e42e09ac55116dbf9=
-de5e4fb326a5a90e4a993
-> [3]: https://github.com/riscv/riscv-isa-manual/commit/4c1b2066ebd2965a422=
-e41eb262d0a208a7fea07
->
+Thank you for great comments. Thanks to you I understand what i missed.
 
-Wow! Interesting! Thanks for fixing this!
+I try to generate problem on mainline But, as you explained that
+situation isn't happen,
 
-Too late to Ack, but still:
+Maybe my other things which I made generate some problem (freeing
+network namespace..)
 
-Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
+Thanks for great answering and sharing.
 
-> Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
-> ---
->  arch/riscv/net/bpf_jit_comp64.c | 49 +++++++++++++++++++++------------
->  1 file changed, 32 insertions(+), 17 deletions(-)
+If I meet the situation, at that time I'll share. Thank you very much!
+
+P.S. If I have a question, Could I ask via e-mail like this?
+
+On Wed, Apr 8, 2020 at 3:26 AM Al Viro <viro@zeniv.linux.org.uk> wrote:
 >
-> diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_com=
-p64.c
-> index cc1985d8750a..d208a9fd6c52 100644
-> --- a/arch/riscv/net/bpf_jit_comp64.c
-> +++ b/arch/riscv/net/bpf_jit_comp64.c
-> @@ -110,6 +110,16 @@ static bool is_32b_int(s64 val)
->         return -(1L << 31) <=3D val && val < (1L << 31);
->  }
+> On Tue, Apr 07, 2020 at 09:53:29PM +0900, Yun Levi wrote:
+> > BTW, It's my question.
+> >
+> > >Look: we call ns_get_path(), which calls ns_get_path_cb(), which
+> > >calls the callback passed to it (ns_get_path_task(), in this case),
+> > >which grabs a reference to ns.  Then we pass that reference to
+> > >__ns_get_path().
+> > >
+> > >__ns_get_path() looks for dentry stashed in ns.  If there is one
+> > >and it's still alive, we grab a reference to that dentry and drop
+> > >the reference to ns - no new inodes had been created, so no new
+> > >namespace references have appeared.  Existing inode is pinned
+> > >by dentry and dentry is pinned by _dentry_ reference we've got.
+> >
+> > actually ns_get_path is called in unshare(2).
 >
-> +static bool in_auipc_jalr_range(s64 val)
-> +{
-> +       /*
-> +        * auipc+jalr can reach any signed PC-relative offset in the rang=
-e
-> +        * [-2^31 - 2^11, 2^31 - 2^11).
-> +        */
-> +       return (-(1L << 31) - (1L << 11)) <=3D val &&
-> +               val < ((1L << 31) - (1L << 11));
-> +}
-> +
->  static void emit_imm(u8 rd, s64 val, struct rv_jit_context *ctx)
->  {
->         /* Note that the immediate from the add is sign-extended,
-> @@ -380,20 +390,24 @@ static void emit_sext_32_rd(u8 *rd, struct rv_jit_c=
-ontext *ctx)
->         *rd =3D RV_REG_T2;
->  }
->
-> -static void emit_jump_and_link(u8 rd, s64 rvoff, bool force_jalr,
-> -                              struct rv_jit_context *ctx)
-> +static int emit_jump_and_link(u8 rd, s64 rvoff, bool force_jalr,
-> +                             struct rv_jit_context *ctx)
->  {
->         s64 upper, lower;
->
->         if (rvoff && is_21b_int(rvoff) && !force_jalr) {
->                 emit(rv_jal(rd, rvoff >> 1), ctx);
-> -               return;
-> +               return 0;
-> +       } else if (in_auipc_jalr_range(rvoff)) {
-> +               upper =3D (rvoff + (1 << 11)) >> 12;
-> +               lower =3D rvoff & 0xfff;
-> +               emit(rv_auipc(RV_REG_T1, upper), ctx);
-> +               emit(rv_jalr(rd, RV_REG_T1, lower), ctx);
-> +               return 0;
+> Yes, it does.  Via perf_event_namespaces(), which does
+>         perf_fill_ns_link_info(&ns_link_info[NET_NS_INDEX],
+>                                task, &netns_operations);
+> and there we have
+>         error = ns_get_path(&ns_path, task, ns_ops);
+>         if (!error) {
+>                 ns_inode = ns_path.dentry->d_inode;
+>                 ns_link_info->dev = new_encode_dev(ns_inode->i_sb->s_dev);
+>                 ns_link_info->ino = ns_inode->i_ino;
+>                 path_put(&ns_path);
 >         }
+> See that path_put()?  Dentry reference is dropped by it.
 >
-> -       upper =3D (rvoff + (1 << 11)) >> 12;
-> -       lower =3D rvoff & 0xfff;
-> -       emit(rv_auipc(RV_REG_T1, upper), ctx);
-> -       emit(rv_jalr(rd, RV_REG_T1, lower), ctx);
-> +       pr_err("bpf-jit: target offset 0x%llx is out of range\n", rvoff);
-> +       return -ERANGE;
->  }
+> > and it makes new dentry and
+> > inode in __ns_get_path finally (Cuz it create new network namespace)
+> >
+> > In that case, when I mount with --bind option to this proc/self/ns/net, it
+> > only increase dentry refcount on do_loopback->clone_mnt finally (not call
+> > netns_operation->get)
+> > That means it's not increase previous created network namespace reference
+> > count but only increase reference count of _dentry_
+> >
+> > In that situation, If I exit the child process it definitely frees the
+> > net_namespace previous created at the same time it decrease net_namespace's
+> > refcnt in exit_task_namespace().
+> > It means it's possible that bind mount point can hold the dentry with inode
+> > having net_namespace's dangling pointer in another process.
+> > In above situation, parent who know that binded mount point calls setns(2)
+> > then it sets the net_namespace which is refered by the inode of the dentry
+> > increased by do_loopback.
+> > That makes set the net_namespace which was freed already.
 >
->  static bool is_signed_bpf_cond(u8 cond)
-> @@ -407,18 +421,16 @@ static int emit_call(bool fixed, u64 addr, struct r=
-v_jit_context *ctx)
->         s64 off =3D 0;
->         u64 ip;
->         u8 rd;
-> +       int ret;
+> How?  Netns reference in inode contributes to netns refcount.  And it's held
+> for as long as the _inode_ has positive refcount - we only drop it from
+> the inode destructor, *NOT* every time we drop a reference to inode.
+> In the similar fashion, the inode reference in dentry contributes to inode
+> refcount.  And again, that inode reference won't be dropped until the _last_
+> reference to dentry gets dropped.
 >
->         if (addr && ctx->insns) {
->                 ip =3D (u64)(long)(ctx->insns + ctx->ninsns);
->                 off =3D addr - ip;
-> -               if (!is_32b_int(off)) {
-> -                       pr_err("bpf-jit: target call addr %pK is out of r=
-ange\n",
-> -                              (void *)addr);
-> -                       return -ERANGE;
-> -               }
->         }
->
-> -       emit_jump_and_link(RV_REG_RA, off, !fixed, ctx);
-> +       ret =3D emit_jump_and_link(RV_REG_RA, off, !fixed, ctx);
-> +       if (ret)
-> +               return ret;
->         rd =3D bpf_to_rv_reg(BPF_REG_0, ctx);
->         emit(rv_addi(rd, RV_REG_A0, 0), ctx);
+> Incrementing refcount of dentry is enough to pin the inode and thus the
+> netns the inode refers to.  It's a very common pattern with refcounting;
+> a useful way of thinking about it is to consider the refcount of e.g.
+> inode as sum of several components, one of them being "number of struct
+> dentry instances with ->d_inode pointing to our inode".  And look at e.g.
+> __ns_get_path() like this:
+>         rcu_read_lock();
+>         d = atomic_long_read(&ns->stashed);
+>         if (!d)
+>                 goto slow;
+>         dentry = (struct dentry *)d;
+>         if (!lockref_get_not_dead(&dentry->d_lockref))
+>                 goto slow;
+> other_count(dentry) got incremented by 1.
+>         rcu_read_unlock();
+>         ns->ops->put(ns);
+> other_count(ns) decremented by 1.
+> got_it:
+>         path->mnt = mntget(mnt);
+>         path->dentry = dentry;
+> path added to paths(dentry), other_count(dentry) decremented by 1 (getting
+> it back to the original value).
 >         return 0;
-> @@ -429,7 +441,7 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, st=
-ruct rv_jit_context *ctx,
->  {
->         bool is64 =3D BPF_CLASS(insn->code) =3D=3D BPF_ALU64 ||
->                     BPF_CLASS(insn->code) =3D=3D BPF_JMP;
-> -       int s, e, rvoff, i =3D insn - ctx->prog->insnsi;
-> +       int s, e, rvoff, ret, i =3D insn - ctx->prog->insnsi;
->         struct bpf_prog_aux *aux =3D ctx->prog->aux;
->         u8 rd =3D -1, rs =3D -1, code =3D insn->code;
->         s16 off =3D insn->off;
-> @@ -699,7 +711,9 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, st=
-ruct rv_jit_context *ctx,
->         /* JUMP off */
->         case BPF_JMP | BPF_JA:
->                 rvoff =3D rv_offset(i, off, ctx);
-> -               emit_jump_and_link(RV_REG_ZERO, rvoff, false, ctx);
-> +               ret =3D emit_jump_and_link(RV_REG_ZERO, rvoff, false, ctx=
-);
-> +               if (ret)
-> +                       return ret;
->                 break;
+> slow:
+>         rcu_read_unlock();
+>         inode = new_inode_pseudo(mnt->mnt_sb);
+>         if (!inode) {
+>                 ns->ops->put(ns);
+> subtract 1 from other_count(ns)
+>                 return -ENOMEM;
+>         }
+> dentries(inode) = empty
+> other_count(inode) = 1
+>         ....
+>         inode->i_private = ns;
+> add inode to inodes(ns), subtract 1 from other_count(ns); the total
+> is unchanged.
+>         dentry = d_alloc_anon(mnt->mnt_sb);
+>         if (!dentry) {
+>                 iput(inode);
+> subtract 1 from other_count(inode).  Since now all components of
+> inode refcount are zero, inode gets destroyed.  Destructor calls
+> nsfs_evict_inode(), which removes the inode from inodes(ns).
+> The total effect: inode is destroyed, inodes(ns) is back to what
+> it used to be and other_count(ns) is left decremented by 1 compared
+> to what we used to have.  IOW, the balance is the same as if inode
+> allocation would've failed.
+>                 return -ENOMEM;
+>         }
+> other_count(dentry) = 1
+>         d_instantiate(dentry, inode);
+> add dentry to dentries(inode), subtract 1 from other_count(inode).
+> The total is unchanged.  Now other_count(inode) is 0 and dentries(inode)
+> is {dentry}.
+>         d = atomic_long_cmpxchg(&ns->stashed, 0, (unsigned long)dentry);
+>         if (d) {
+> somebody else has gotten there first
+>                 d_delete(dentry);       /* make sure ->d_prune() does nothing */
+>                 dput(dentry);
+> subtract 1 from other_count(dentry) (which will drive it to 0).  Since
+> no other references exist, dentry gets destroyed.  Destructor will
+> remove dentry from dentries(inode) and since other_count(inode) is already
+> zero, trigger destruction of inode.  That, in turn, will remove inode
+> from inodes(ns).  Total effect: dentry is destroyed, inode is destroyed,
+> inodes(ns) is back to what it used to be, other_count(ns) is left decremented
+> by 1 compared to what we used to have.
+>                 cpu_relax();
+>                 return -EAGAIN;
+>         }
+>         goto got_it;
+> got_it:
+>         path->mnt = mntget(mnt);
+>         path->dentry = dentry;
+> add path to paths(dentry), subtract 1 from other_count(dentry).  At that
+> point other_count(dentry) is back to 0, ditto for other_count(inode) and
+> other_count(ns) is left decremented by 1 compared to what it used to be.
+> inode is added to inodes(ns), dentry - to dentries(inode) and path - to
+> paths(dentry).
+>         return 0;
+> and we are done.
 >
->         /* IF (dst COND src) JUMP off */
-> @@ -801,7 +815,6 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, st=
-ruct rv_jit_context *ctx,
->         case BPF_JMP | BPF_CALL:
->         {
->                 bool fixed;
-> -               int ret;
->                 u64 addr;
->
->                 mark_call(ctx);
-> @@ -826,7 +839,9 @@ int bpf_jit_emit_insn(const struct bpf_insn *insn, st=
-ruct rv_jit_context *ctx,
->                         break;
->
->                 rvoff =3D epilogue_offset(ctx);
-> -               emit_jump_and_link(RV_REG_ZERO, rvoff, false, ctx);
-> +               ret =3D emit_jump_and_link(RV_REG_ZERO, rvoff, false, ctx=
-);
-> +               if (ret)
-> +                       return ret;
->                 break;
->
->         /* dst =3D imm64 */
-> --
-> 2.17.1
->
+> In all cases the total effect is the same as far as "other" counts go:
+> other_count(ns) is down by 1 and that's the only change in other_count()
+> of *ANY* objects.  Of course we do not keep track of the sets explicitly;
+> it would cost too much and we only interested in the sum of their sizes
+> anyway.  What we actually store is the sum, so operations like "transfer
+> the reference from one component to another" are not immediately obvious
+> to be refcounting ones - the sum is unchanged.  Conceptually, though,
+> they are refcounting operations.
+>         Up to d_instantiate() we are holding a reference to inode;
+> after that we are *not* - it has been transferred to dentry.  That's
+> why on subsequent failure exits we do not call iput() - the inode
+> reference is not ours to discard anymore.
+>         In the same way, up to inode->i_private = ns; we are holding
+> a reference to ns.  After that we are not - it's been transferred to
+> inode.  From that point on it's not ours to discard; it will be
+> dropped when inode gets destroyed, whenever that happens.
