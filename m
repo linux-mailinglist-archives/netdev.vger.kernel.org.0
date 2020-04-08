@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D4191A2A63
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 22:28:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CA351A2A5F
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 22:28:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730417AbgDHU1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 16:27:48 -0400
-Received: from mout.kundenserver.de ([212.227.126.135]:44477 "EHLO
+        id S1730461AbgDHU1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 16:27:51 -0400
+Received: from mout.kundenserver.de ([212.227.126.187]:51355 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729333AbgDHU1r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 16:27:47 -0400
+        with ESMTP id S1729333AbgDHU1u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 16:27:50 -0400
 Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
  (mreue010 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1MfHUx-1ip88a1CpP-00gqlq; Wed, 08 Apr 2020 22:27:19 +0200
+ 1Mrh9Y-1izGjr3MlI-00nlSz; Wed, 08 Apr 2020 22:27:19 +0200
 From:   Arnd Bergmann <arnd@arndb.de>
 To:     linux-kernel@vger.kernel.org,
         Masahiro Yamada <masahiroy@kernel.org>,
@@ -31,91 +31,66 @@ Cc:     Arnd Bergmann <arnd@arndb.de>, Andrzej Hajda <a.hajda@samsung.com>,
         Leon Romanovsky <leon@kernel.org>,
         dri-devel@lists.freedesktop.org, linux-renesas-soc@vger.kernel.org,
         netdev@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [RFC 0/6] Regressions for "imply" behavior change
-Date:   Wed,  8 Apr 2020 22:27:05 +0200
-Message-Id: <20200408202711.1198966-1-arnd@arndb.de>
+Subject: [RFC 1/6] thunder: select PTP driver if possible
+Date:   Wed,  8 Apr 2020 22:27:06 +0200
+Message-Id: <20200408202711.1198966-2-arnd@arndb.de>
 X-Mailer: git-send-email 2.26.0
+In-Reply-To: <20200408202711.1198966-1-arnd@arndb.de>
+References: <20200408202711.1198966-1-arnd@arndb.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:zEzMmRw2UXFx9zU6fPxN+W5wPcFHDncLQsBY9LbEA0w9eEN1eTu
- cnzjMxpU5zxrYcnwqTeAc+Ps/JyboCntYRrUtWKxjMYWqJF44Bf4LOvKsA+DX4gzPI+FQub
- UxxzljbycF32PPMrcW97pI811kKuSvXVrKpXAN9hfhlEgzbQUJJE8q6o5AYNdaJE9WYW8la
- uMsnELmKxIjuKo2Mnf2bQ==
+X-Provags-ID: V03:K1:mGlRd5xXvrWXjH5ARNufEZPCVL9cYj10ODbmPSRMgDrYtv3nXEc
+ pnVt/hadqMl2XTMQZrC9iv1lQ3+3zV9clZ0cy+FrVsKbQDG5ydckomDupqtfWBpYAA5SL2b
+ ejhseEmA9tAmYQ19vMw/qvPk1gTfisBagmO/idcL225eXQYT8xGDe7hLh2vIjswDKD8Vli+
+ 7ocNzTVy5ThHS8QujPL2Q==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:TWdcwFoldyI=:NS8I92rXicAb2aGhAXYXT3
- zbu3I6qgkDuIzvNKKVw06vL7+R2l1nBDjNBPVo4DXwjxE1dDTAneGOxdoT5CVDnn4eNCkUou8
- 6Az6Tq087nNHF5iiZJ5NolfFLRiBg10jtfZpBPmyUYiiQ9nDM9r0009G8AlF/+gNfRDMdGYmT
- gncDh39Bmz4VBL0nbCXN8K4kbJvwlwcv4Kj4eG9drYgmTiY1vZUyJv/AuXA4XCNCormt00fx5
- 9Oq6GtnUnI+129u0nx1Wp1h3HQB9jJZtzBXuT9j2tovNUV+kBiVgSEkj4WDrgXLS1zgwr/Ow2
- WiWNzvjnzFTNkbB5Y9ryeW/LPIPcwGv2dtdp3QAGmfU4PcXa7Dev17vdxjeIUPVCBmi9MsSI5
- xm9PAlIZvzWXRbiKHvHneEsJWxOi+O+qR7xJ7ye+HHpxo2mZ2pR4AMLsUcXYPXjpFdHjLnQTb
- T2uKH3neFx1H+Xhd2dpxj6RNntKe9b8VtYXK7willY8/WWs5Gjm/4BnvoXwNhCGvcRK+G8c2g
- AfNqVvEauy+AtxH7EB4rhNOlTfiiDMzzvsnxXLA/tphh2HzFV7CH+dL3Bmsf+Eil28ld6XI6O
- XkdDmCbVfn6BI9nC3AoP2pgyEWcgyVDIDSQi4GfDGlPEW+161trruvSc7uPKPJPvDs2D1pI/E
- 4pJdhI2vcfHaqYkK8JeAaYRQI/S6rwMtUkWtzofxhzqwtFJL7mPA0Dw9wiMHnMp0nThfJ42aC
- Bl32WLzx9ELKvgw6hv0t68fHB9/Xxv9NrCK19O899oeawmWtm8L/3N2BMfWZDVQGBvffLxnm8
- abBAJx3W3JbM74GshlW7uydgO/5lfqdEXGppl/fRbmlNs5hWcI=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:/nLZWXqnSdw=:phuLH7tle7YBo97T3huV5A
+ vSH8xCo4twHU84eg4LvK4HOn2oFolsTYGZa7ROooND9YGt7MB5zz2Q8z9RTJodxFRn/XG9dOf
+ NscqFwaOXSxVAUJsjy/uEB0hicWqQu8xEcUY+9DCLcd8q7SVpN/QIRF6ttpBP19m/PmXqyv1o
+ /sw4SUqnEvUrNysy3IynuagA8enqZQ1TDbfjul2uZllbFNGXrRzMj3CA9CsLyU7yGTRu05J/h
+ Xum24X+4IC4lg1k5fwt0nNHZ1IKTMePnwwC5oWsroAHgDqQDlNpK7uHI8IWHuuxRiqXQDJC5i
+ z+Z6KtPdmG128SbnEbblbnbblKt+K9bXMhgogAp0DoMYf8J/qcCV3kf09stxpSqfuIGfPnjyU
+ KOent5VLIkZCNlKvyHrEm+gyhPn2rQHBajpCCWXPu37pQX+vpEgCL7PneJc4fdlmbxS1iA1Cy
+ RF+ad2EDQAkocPHNvigKWAAehlA9QRjVxipXwW31RnOhLwdgeuqgRecV/i/ggUl8gDViV1ymW
+ lHuzosDGj+TVv+RYSfvxecxkdvTRsk1Bj817pcCuGTmzbESstAikpZM73nb9YhpZOjLZYC2NG
+ twpAchLKYWWJ1aB4o/VhaSgn5omEitydCCPi4cdiCHgcn4MtniRDa6IFziUZiE93xzVPu7WHD
+ 0EAtotW2BYHlSqsrQ9Yf+alqoXxf6PIWGHmGtlAAR43obUqNNiyRgVuuICZH38wVqqc0NVZi7
+ Rt1447uuSlKrrXx37E8+y7pfa28xD2eKt4O+BQMIHXWuBsFpiN6qOo0tMvcHmxjEFEKuijvCA
+ BTb984lp4wcmvcR8Z0xnpylpFzuR7vyIDT9/98rJdVPKhEXJdw=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi everyone,
+The 'imply' selection means the driver can still be a loadable
+module even if the main driver is built-in, leading to a link
+error:
 
-I've just restarted doing randconfig builds on top of mainline Linux and
-found a couple of regressions with missing dependency from the recent
-change in the "imply" keyword in Kconfig, presumably these two patches:
+aarch64-linux-ld: drivers/net/ethernet/cavium/thunder/nicvf_main.o: in function `nicvf_remove':
+nicvf_main.c:(.text+0x25c): undefined reference to `cavium_ptp_put'
+aarch64-linux-ld: drivers/net/ethernet/cavium/thunder/nicvf_main.o: in function `nicvf_probe':
+nicvf_main.c:(.text+0x3080): undefined reference to `cavium_ptp_get'
 
-3a9dd3ecb207 kconfig: make 'imply' obey the direct dependency
-def2fbffe62c kconfig: allow symbols implied by y to become m
+Use a 'select' statement instead.
 
-I have created workarounds for the Kconfig files, which now stop using
-imply and do something else in each case. I don't know whether there was
-a bug in the kconfig changes that has led to allowing configurations that
-were not meant to be legal even with the new semantics, or if the Kconfig
-files have simply become incorrect now and the tool works as expected.
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/net/ethernet/cavium/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Please have a look at the cases I found, and what you think we should
-do about them. I assume there are a couple more like these, the six
-regressions here are what I found in the first 1000 randconfig builds
-on the kernel.
-
-       Arnd
-
-Arnd Bergmann (6):
-  thunder: select PTP driver if possible
-  net/mlx5e: fix VXLAN dependency
-  LiquidIO VF: add dependency for PTP_1588_CLOCK
-  drm/bridge/sii8620: fix extcon dependency
-  drm/rcar-du: fix selection of CMM driver
-  drm/rcar-du: fix lvds dependency
-
- drivers/gpu/drm/bridge/Kconfig                  | 1 -
- drivers/gpu/drm/bridge/sil-sii8620.c            | 5 +++--
- drivers/gpu/drm/rcar-du/Kconfig                 | 7 ++-----
- drivers/net/ethernet/cavium/Kconfig             | 4 ++--
- drivers/net/ethernet/mellanox/mlx5/core/Kconfig | 2 +-
- 5 files changed, 8 insertions(+), 11 deletions(-)
-
-
-Cc: Andrzej Hajda <a.hajda@samsung.com>
-Cc: Neil Armstrong <narmstrong@baylibre.com>
-Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
-Cc: Jonas Karlman <jonas@kwiboo.se>
-Cc: Jernej Skrabec <jernej.skrabec@siol.net>
-Cc: David Airlie <airlied@linux.ie>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Saeed Mahameed <saeedm@mellanox.com>
-Cc: Leon Romanovsky <leon@kernel.org>
-Cc: dri-devel@lists.freedesktop.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-renesas-soc@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: linux-rdma@vger.kernel.org
-
-
+diff --git a/drivers/net/ethernet/cavium/Kconfig b/drivers/net/ethernet/cavium/Kconfig
+index 6a700d34019e..52806ef20d2d 100644
+--- a/drivers/net/ethernet/cavium/Kconfig
++++ b/drivers/net/ethernet/cavium/Kconfig
+@@ -27,7 +27,7 @@ config THUNDER_NIC_PF
+ 
+ config THUNDER_NIC_VF
+ 	tristate "Thunder Virtual function driver"
+-	imply CAVIUM_PTP
++	select CAVIUM_PTP if POSIX_TIMERS
+ 	depends on 64BIT && PCI
+ 	---help---
+ 	  This driver supports Thunder's NIC virtual function
 -- 
 2.26.0
 
