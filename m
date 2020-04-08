@@ -2,183 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 09C8E1A1EAC
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 12:21:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F8891A1EBE
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 12:25:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728118AbgDHKVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 06:21:19 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:56222 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726846AbgDHKVT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 06:21:19 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 038ADl2p118984;
-        Wed, 8 Apr 2020 10:21:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : in-reply-to :
- references; s=corp-2020-01-29;
- bh=Si8Xwn0FubnhVinonnKQuwh07MeUhM45kQOJuneHLLk=;
- b=Jo46YrqEKqTH9WQCAaGjA+nOIjT+/CTCsF8bpYv+shsgewtix2XYWmJ0wyk9AtfZg5nk
- CZAcQ0qZumXNgNfQi3UXNPUMtOeTS2yCmK42c85nFLxXC8jY6TWkIjAXix3Pqr1ZBQly
- Mua8exRlBMWAcIuQqdnu6T+tGjDlgEU2LWpzJ6jh58nH/TiUEGsEbhiHOb7JsZGK29GT
- x3P5VGYXSLR5mtiDZ574wi1Rm0lqRhl4n3MQAiHhjcD7bU7XAsqVvPdyR4cy02FM97E2
- YkHmHQEAUUOpDV9iETA4uNOzP69QuxYEOUonAZfiC0vK5YlU6rRGmx/nUz9itHxUwpBe GQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 3091m0tm5w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 08 Apr 2020 10:21:09 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 038ADNPN130956;
-        Wed, 8 Apr 2020 10:21:08 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3030.oracle.com with ESMTP id 3091m0m81q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 08 Apr 2020 10:21:08 +0000
-Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 038AL8HU152741;
-        Wed, 8 Apr 2020 10:21:08 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 3091m0m80v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 08 Apr 2020 10:21:07 +0000
-Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 038AL6TZ018097;
-        Wed, 8 Apr 2020 10:21:06 GMT
-Received: from ca-dev40.us.oracle.com (/10.129.135.27)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 08 Apr 2020 03:21:06 -0700
-From:   Ka-Cheong Poon <ka-cheong.poon@oracle.com>
-To:     netdev@vger.kernel.org
-Cc:     santosh.shilimkar@oracle.com, davem@davemloft.net,
-        rds-devel@oss.oracle.com, sironhide0null@gmail.com
-Subject: [PATCH v2 net 2/2] net/rds: Fix MR reference counting problem
-Date:   Wed,  8 Apr 2020 03:21:02 -0700
-Message-Id: <76140548ff6c7ae75af0a7c4e6f585a061bd74a7.1586340235.git.ka-cheong.poon@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <fb149123516920dd5f5bf730a1da3a0cb9f3d25e.1586340235.git.ka-cheong.poon@oracle.com>
-References: <fb149123516920dd5f5bf730a1da3a0cb9f3d25e.1586340235.git.ka-cheong.poon@oracle.com>
-In-Reply-To: <fb149123516920dd5f5bf730a1da3a0cb9f3d25e.1586340235.git.ka-cheong.poon@oracle.com>
-References: <fb149123516920dd5f5bf730a1da3a0cb9f3d25e.1586340235.git.ka-cheong.poon@oracle.com>
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9584 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxlogscore=999 mlxscore=0
- priorityscore=1501 phishscore=0 suspectscore=3 bulkscore=0
- lowpriorityscore=0 impostorscore=0 malwarescore=0 clxscore=1015
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004080085
+        id S1728048AbgDHKZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 06:25:11 -0400
+Received: from mail-eopbgr1410117.outbound.protection.outlook.com ([40.107.141.117]:25520
+        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725932AbgDHKZL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Apr 2020 06:25:11 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eIileUYx2ujVRzzqiekNonmMNJBV2atI91vSdQGuaozhL/u5sod1G/pyamIEf4TB03w39xQQV4cZ4r7NC9hM6vv3stgyUo1aIz8K+Uw0q7vNRtT0zYYL8JisPFrwJl2ZwvYt3sS1HKkxD5MFGY5FYlpCBwzbX+1rNx8lmCZGmaAk5iF+MTOZkcRKvH163CruBxi2ZPatlqJOUE0BsY341RW0zcIz805wGjaIGe2N3kRTyS+NTKxVVancPMaVailQtZFGH/0rNCQPSGWkSZ9RDGdeQl+TVBAdIZmJECVHP1XkDe4u5UJ1lSzbyp39LsoAyOrWkt5Ma1ZXTMvCl2qk0g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0bvMIfu4bNVmo90Z4RETSA6+xb42chgYJiM3N8RXqX8=;
+ b=BBHBTkzMZoX8cpL0Joh2nU9MPgWDz94lOk2Tnzt+rbQQ9Tt2Gz9/0XO+3kpPWMUByvAHdxTNeeQFcfHHKH6HIaIuYFfkGOCvifFo7uLJR8PKEAj4QGpOSyB7IV9ZoL/NU47hM6QHbRLei7iq1d+SXkOYnOOy+8qzNC5d2tPTDzFclczXdfiFwKOiZza4A0YIp7ByPJoPLt+Uv0hPzfQVP69pFbTYBNudcyAoz4o016XUBDH4SEeq2LzBBdm06o7hpA8OdiueFPlSxjomSazkBJonYrAqOgDom1n9UNgDcONUzesFtm58PAC8QQG0paqIt6c1WlNvPXMLP0iEIohGrA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0bvMIfu4bNVmo90Z4RETSA6+xb42chgYJiM3N8RXqX8=;
+ b=AMHkf43h4Fn1Zz7oPeuMcZkya32VPNVz8TaxJGx3qDy/aQZmoB0bSgsvJgRfatjil5qQ4YdDu7xT19gP3fcxoylZ6XSYz836YzYyLmEKmDbS8ytTGhNuBQLAhGEPk9L/4uY/qzyY33ZUifE75jP6uNywv6HX/2hhXGloNURRF7M=
+Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com (20.179.175.203) by
+ TYAPR01MB2735.jpnprd01.prod.outlook.com (20.177.101.139) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2878.20; Wed, 8 Apr 2020 10:25:06 +0000
+Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com
+ ([fe80::ed7f:1268:55a9:fc06]) by TYAPR01MB4544.jpnprd01.prod.outlook.com
+ ([fe80::ed7f:1268:55a9:fc06%4]) with mapi id 15.20.2900.015; Wed, 8 Apr 2020
+ 10:25:06 +0000
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     John Stultz <john.stultz@linaro.org>,
+        lkml <linux-kernel@vger.kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Rob Herring <robh@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        netdev <netdev@vger.kernel.org>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>
+Subject: RE: [RFC][PATCH v2 1/2] driver core: Revert default
+ driver_deferred_probe_timeout value to 0
+Thread-Topic: [RFC][PATCH v2 1/2] driver core: Revert default
+ driver_deferred_probe_timeout value to 0
+Thread-Index: AQHWDXcWXye7D9W90EKkrusU1lNNn6hvBE8w
+Date:   Wed, 8 Apr 2020 10:25:05 +0000
+Message-ID: <TYAPR01MB45442402CC541A01A623F8C4D8C00@TYAPR01MB4544.jpnprd01.prod.outlook.com>
+References: <20200408072650.1731-1-john.stultz@linaro.org>
+In-Reply-To: <20200408072650.1731-1-john.stultz@linaro.org>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=yoshihiro.shimoda.uh@renesas.com; 
+x-originating-ip: [124.210.22.195]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 420cafd8-0f3c-4e8e-74f1-08d7dba71b4b
+x-ms-traffictypediagnostic: TYAPR01MB2735:
+x-microsoft-antispam-prvs: <TYAPR01MB27359A1927A17E8886C28950D8C00@TYAPR01MB2735.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 0367A50BB1
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYAPR01MB4544.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10019020)(4636009)(376002)(346002)(396003)(136003)(39860400002)(366004)(110136005)(52536014)(54906003)(316002)(26005)(8936002)(9686003)(5660300002)(55016002)(81166007)(86362001)(186003)(55236004)(7696005)(66446008)(6506007)(66946007)(4326008)(66556008)(8676002)(64756008)(66476007)(33656002)(7416002)(478600001)(2906002)(71200400001)(76116006)(81156014);DIR:OUT;SFP:1102;
+received-spf: None (protection.outlook.com: renesas.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: iudkrUzifjIHL/KFpCdfRuLdeXMDhNnTGHjz5fM714s2eejcLHxXgDup+dEZO50LDOFARYLkLUVSwWDnyeOj2M0EQUhsc0M9pkpqeZT9WFo3HWcUeQADGXrm6eJjWuOzwAAl6xqJDwLqQI629FZHF2yaujaqoAtEYxMLXcT73IidFNEtrgWap1XqTJm7+i7djBcoPZyCmqQdaFAsujQpl/S+xJuUNeM1MROcRDTnhlNKd8jxYdXgGo4v6plWMP3SqkSJjkl3aLIWXkkThUJoOXeuH91I6f2ZixJBrpYO/kyPlqouT0/HBg0muESdlW0oC8sY/4Mf+gIJ9krsNI0YMrwrURHAtqcsrS/0/+xfDIvNDrWB3syVszHfbH4FGW68x8mlOAHSk6QgprQmZ1nue3rD5TItktDJX8IC1lRx7ja60MA1R+VlqLn1bLdTfq9N
+x-ms-exchange-antispam-messagedata: Mh9U3V2hHSPwIaoL7SvQUOebOFpRI9fIdB7kSB9MUVtviiWw69+Nd/JAS1NyhbyqrsAuvpcSqf2PB9SbSSEEnL8BLw9tUhLrqlHEXRSP8/2+dQgdieHQMQkOahJVBH/2t6PaGB/7HAxG86buobpOsw==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 420cafd8-0f3c-4e8e-74f1-08d7dba71b4b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Apr 2020 10:25:05.8286
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: XXctKMTY9uJkIE29OV3cRyvokZUPcRS3inyuuvt7PKAZkQP/Nw1uRt63Hyg4RgAKakyL3H64Nw/W9TXEfZOCiF2nFBtkg2Ognq7mKgs6qafp2d0/gNfh3DcSuL3hqJXZ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB2735
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In rds_free_mr(), it calls rds_destroy_mr(mr) directly.  But this
-defeats the purpose of reference counting and makes MR free handling
-impossible.  It means that holding a reference does not guarantee that
-it is safe to access some fields.  For example, In
-rds_cmsg_rdma_dest(), it increases the ref count, unlocks and then
-calls mr->r_trans->sync_mr().  But if rds_free_mr() (and
-rds_destroy_mr()) is called in between (there is no lock preventing
-this to happen), r_trans_private is set to NULL, causing a panic.
-Similar issue is in rds_rdma_unuse().
+Hi John,
 
-Reported-by: zerons <sironhide0null@gmail.com>
-Signed-off-by: Ka-Cheong Poon <ka-cheong.poon@oracle.com>
-Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
----
- net/rds/rdma.c | 25 ++++++++++++-------------
- net/rds/rds.h  |  8 --------
- 2 files changed, 12 insertions(+), 21 deletions(-)
+> From: John Stultz, Sent: Wednesday, April 8, 2020 4:27 PM
+>=20
+> In commit c8c43cee29f6 ("driver core: Fix
+> driver_deferred_probe_check_state() logic"), we both cleaned up
+> the logic and also set the default driver_deferred_probe_timeout
+> value to 30 seconds to allow for drivers that are missing
+> dependencies to have some time so that the dependency may be
+> loaded from userland after initcalls_done is set.
+>=20
+> However, Yoshihiro Shimoda reported that on his device that
+> expects to have unmet dependencies (due to "optional links" in
+> its devicetree), was failing to mount the NFS root.
+>=20
+> In digging further, it seemed the problem was that while the
+> device properly probes after waiting 30 seconds for any missing
+> modules to load, the ip_auto_config() had already failed,
+> resulting in NFS to fail. This was due to ip_auto_config()
+> calling wait_for_device_probe() which doesn't wait for the
+> driver_deferred_probe_timeout to fire.
+>=20
+> Fixing that issue is possible, but could also introduce 30
+> second delays in bootups for users who don't have any
+> missing dependencies, which is not ideal.
+>=20
+> So I think the best solution to avoid any regressions is to
+> revert back to a default timeout value of zero, and allow
+> systems that need to utilize the timeout in order for userland
+> to load any modules that supply misisng dependencies in the dts
+> to specify the timeout length via the exiting documented boot
+> argument.
+>=20
+> Thanks to Geert for chasing down that ip_auto_config was why NFS
+> was failing in this case!
+>=20
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
+> Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
+> Cc: Rob Herring <robh@kernel.org>
+> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> Cc: netdev <netdev@vger.kernel.org>
+> Cc: linux-pm@vger.kernel.org
+> Reported-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> Fixes: c8c43cee29f6 ("driver core: Fix driver_deferred_probe_check_state(=
+) logic")
+> Signed-off-by: John Stultz <john.stultz@linaro.org>
 
-diff --git a/net/rds/rdma.c b/net/rds/rdma.c
-index f828b66..113e442 100644
---- a/net/rds/rdma.c
-+++ b/net/rds/rdma.c
-@@ -101,9 +101,6 @@ static void rds_destroy_mr(struct rds_mr *mr)
- 	rdsdebug("RDS: destroy mr key is %x refcnt %u\n",
- 		 mr->r_key, kref_read(&mr->r_kref));
- 
--	if (test_and_set_bit(RDS_MR_DEAD, &mr->r_state))
--		return;
--
- 	spin_lock_irqsave(&rs->rs_rdma_lock, flags);
- 	if (!RB_EMPTY_NODE(&mr->r_rb_node))
- 		rb_erase(&mr->r_rb_node, &rs->rs_rdma_keys);
-@@ -142,7 +139,6 @@ void rds_rdma_drop_keys(struct rds_sock *rs)
- 		rb_erase(&mr->r_rb_node, &rs->rs_rdma_keys);
- 		RB_CLEAR_NODE(&mr->r_rb_node);
- 		spin_unlock_irqrestore(&rs->rs_rdma_lock, flags);
--		rds_destroy_mr(mr);
- 		kref_put(&mr->r_kref, __rds_put_mr_final);
- 		spin_lock_irqsave(&rs->rs_rdma_lock, flags);
- 	}
-@@ -436,12 +432,6 @@ int rds_free_mr(struct rds_sock *rs, char __user *optval, int optlen)
- 	if (!mr)
- 		return -EINVAL;
- 
--	/*
--	 * call rds_destroy_mr() ourselves so that we're sure it's done by the time
--	 * we return.  If we let rds_mr_put() do it it might not happen until
--	 * someone else drops their ref.
--	 */
--	rds_destroy_mr(mr);
- 	kref_put(&mr->r_kref, __rds_put_mr_final);
- 	return 0;
- }
-@@ -466,6 +456,14 @@ void rds_rdma_unuse(struct rds_sock *rs, u32 r_key, int force)
- 		return;
- 	}
- 
-+	/* Get a reference so that the MR won't go away before calling
-+	 * sync_mr() below.
-+	 */
-+	kref_get(&mr->r_kref);
-+
-+	/* If it is going to be freed, remove it from the tree now so
-+	 * that no other thread can find it and free it.
-+	 */
- 	if (mr->r_use_once || force) {
- 		rb_erase(&mr->r_rb_node, &rs->rs_rdma_keys);
- 		RB_CLEAR_NODE(&mr->r_rb_node);
-@@ -479,12 +477,13 @@ void rds_rdma_unuse(struct rds_sock *rs, u32 r_key, int force)
- 	if (mr->r_trans->sync_mr)
- 		mr->r_trans->sync_mr(mr->r_trans_private, DMA_FROM_DEVICE);
- 
-+	/* Release the reference held above. */
-+	kref_put(&mr->r_kref, __rds_put_mr_final);
-+
- 	/* If the MR was marked as invalidate, this will
- 	 * trigger an async flush. */
--	if (zot_me) {
--		rds_destroy_mr(mr);
-+	if (zot_me)
- 		kref_put(&mr->r_kref, __rds_put_mr_final);
--	}
- }
- 
- void rds_rdma_free_op(struct rm_rdma_op *ro)
-diff --git a/net/rds/rds.h b/net/rds/rds.h
-index 3cda01c..8e18cd2 100644
---- a/net/rds/rds.h
-+++ b/net/rds/rds.h
-@@ -299,19 +299,11 @@ struct rds_mr {
- 	unsigned int		r_invalidate:1;
- 	unsigned int		r_write:1;
- 
--	/* This is for RDS_MR_DEAD.
--	 * It would be nice & consistent to make this part of the above
--	 * bit field here, but we need to use test_and_set_bit.
--	 */
--	unsigned long		r_state;
- 	struct rds_sock		*r_sock; /* back pointer to the socket that owns us */
- 	struct rds_transport	*r_trans;
- 	void			*r_trans_private;
- };
- 
--/* Flags for mr->r_state */
--#define RDS_MR_DEAD		0
--
- static inline rds_rdma_cookie_t rds_rdma_make_cookie(u32 r_key, u32 offset)
- {
- 	return r_key | (((u64) offset) << 32);
--- 
-1.8.3.1
+Thank you for the patch! This patch could fix the issue
+on my environment. So,
+
+Tested-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+
+Best regards,
+Yoshihiro Shimoda
 
