@@ -2,132 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C8AEA1A23C0
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 16:06:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F6FA1A2454
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 16:49:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728134AbgDHOGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 10:06:34 -0400
-Received: from mail-db8eur05on2071.outbound.protection.outlook.com ([40.107.20.71]:59713
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727226AbgDHOGd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Apr 2020 10:06:33 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EP8Utd2CtI9GdeVB9mFVOmCTRUnx8xwfSAiMYFl7VnztAP7Cri5t1R7MfHCiO+7iNHI1Ghry25iHSI/wtHgPkNGyXf1zcvMOeuIqZ4DD6lhzOARon2YtMYJTLG2GiLbWQB1v2lBZxdnbovg6mCUTQrX9Bp2EjhJxgFDR45Nn+0qvArzhjTmNbgyO6BF8xGDeSGugJ3U2OxKUM1N+qCWLmKtMoxswVAUp6fWsL3yE8vfTI3hp8yf9WfTsz175YR/088EM2G4FXDm53B8E3OwGta+OA227AlXvAKRgaNR5P4UXaHEbWKKRnQXVM9KW3GnShc4YQdNSsdLY68TKjalpwA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wdX5HNp81IJxATz9EsLteNsKPIduh/jGId0vrLAazpw=;
- b=BN1UvRhxCOLiRqiMvI7r9AF2FHF4R5yy00/Qp5AvZbyF6NWfoK0Pt8TvLRgF2D1E/S2SlAHKmhiSibYYReTp6dsnwdqCwgoKAI9ctLZ5qiBbilUnQZw8iwiKXxQLPqEBggkre4rUS9KtDxNuQPINDHsUjC027mBi6E+CeOAod6ywQbX6NJ2VMcPXhcKDJgdjhLRoricAZCddNFJB/fWNhFoK/2Jmqq0xyLh+apUPqMKybV5sbt0IWxIS3tTOssxPgX3kgUKwrsb4mn3OHpqG7tuTazBeD6Ajy+znh4sjSSrqil8VYSLSTMTgfrX1Z+E7UFTsKyAuf3tBwLxc1DKMvQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wdX5HNp81IJxATz9EsLteNsKPIduh/jGId0vrLAazpw=;
- b=saBgCdoBXvs9trMnpGT4qBsCu1bfKEbG8zsq06GREaUD6l1Bf8l9hQqhk7NnEawcf8IbIEJgLTOk2BvJm/cO52e3J/UpqLZqbrwLt5SRiHFpXxvwFBwTGsOCA6tfWPLHVxuDDThJNnFRr/FAHNNqyoEkRRoIJKHd+TacG9wML4A=
-Received: from HE1PR0501MB2570.eurprd05.prod.outlook.com (2603:10a6:3:6c::17)
- by HE1PR0501MB2172.eurprd05.prod.outlook.com (2603:10a6:3:26::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2900.15; Wed, 8 Apr
- 2020 14:06:27 +0000
-Received: from HE1PR0501MB2570.eurprd05.prod.outlook.com
- ([fe80::60c4:f0b4:dc7b:c7fc]) by HE1PR0501MB2570.eurprd05.prod.outlook.com
- ([fe80::60c4:f0b4:dc7b:c7fc%10]) with mapi id 15.20.2878.021; Wed, 8 Apr 2020
- 14:06:27 +0000
-From:   Maxim Mikityanskiy <maximmi@mellanox.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Yossi Kuperman <yossiku@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: Weird behavior (bug?) with mq qdisc
-Thread-Topic: Weird behavior (bug?) with mq qdisc
-Thread-Index: AdYNruRJeA4EkvVBTQWP2ipOBIuLGQ==
-Date:   Wed, 8 Apr 2020 14:06:27 +0000
-Message-ID: <HE1PR0501MB2570BC6028E3020D84AE4E40D1C00@HE1PR0501MB2570.eurprd05.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=maximmi@mellanox.com; 
-x-originating-ip: [159.224.90.213]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: ea5dbc19-feeb-421b-31dd-08d7dbc6079f
-x-ms-traffictypediagnostic: HE1PR0501MB2172:|HE1PR0501MB2172:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <HE1PR0501MB21720F7A8784390C05934DAAD1C00@HE1PR0501MB2172.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0367A50BB1
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0501MB2570.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(346002)(376002)(396003)(136003)(366004)(39860400002)(64756008)(66446008)(66476007)(7696005)(6506007)(26005)(8936002)(8676002)(52536014)(76116006)(66946007)(81156014)(66556008)(55236004)(186003)(4326008)(55016002)(5660300002)(9686003)(110136005)(54906003)(316002)(86362001)(478600001)(71200400001)(81166007)(33656002)(2906002);DIR:OUT;SFP:1101;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: uUc98h4O5FTUlbS7344HxuaAmFnKOIE10NF7VWxixeRDkH7nswqU70JXyqF9tDQSFq/hsijPy/jsSqfAlHvEgvZzJOPdfjxXf0fNzjpn0N80kPleZsnG0gf5loaNGl9E2crrhjfo0xrVsSJkrP61dshzXwKegBaGWxRtkHD376mYlGfoFybyTzv+6FBjVvUqACfJHcyC+ximOXJl7mN/8s+fJXvHzXoxm43AzEh0Vvcjaic3T5YbxID3ec6mTOum7tqd07czHBZdnEL907C7pme2COU79dLWF7gdAVZfVFv6egl83apnz6WsgxKH7coy4uv8wWNwZ7EzvxsrGeG9MMV2NS4GhxfTSaqQmByrZRVMaEWSHakhtOGIx4PSc5aeGXC5r8t6KmlMpc/Qg3r6SCuX+jZl2/Hg7ex/T9d3VVLZdmXNcZz9ts1ugw77Lr3p
-x-ms-exchange-antispam-messagedata: JAtA8lifHv1d6/Gt3AetJ4Jyz4CJbmTMyBQpnbytvr7gH1Z1vLMPZqe3ch7eYLIKfIGK1/FDSYy7ypsO8YdRRTmZRsyvIZYt2TbSPlFL0qMbAyeKvzW3B7GJ/ZdeWDPUjPk4j7uC4JIUrERHF7Ugfw==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1729178AbgDHOto (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 10:49:44 -0400
+Received: from mail-il1-f194.google.com ([209.85.166.194]:38874 "EHLO
+        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727376AbgDHOto (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 10:49:44 -0400
+Received: by mail-il1-f194.google.com with SMTP id n13so6953787ilm.5
+        for <netdev@vger.kernel.org>; Wed, 08 Apr 2020 07:49:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=wR8J2b+VadqJ7co3OXe203kY2wp7FcU9y3rU2x1X2Lc=;
+        b=Q+okMJOrmu46BVJ4W897WB0ETPT3t230J2V2WVuN1/vb7TaiudSsP+hEQ/JozXtrOW
+         R1ztXk5Cw3tZTb3XoHG1FR0jjl8KxjUPbb5BNvT2T7HOJEu9zrwzLv0M0dgTuxuHyqJ0
+         jJEdM3BAsaFEppMhxtx44mFHxADRksXNpTLBbOAyTc15ilmMjkeb5qoKAcN4684MpcQq
+         tKwWbtlxJ9HWA1FEGDmdvTMBIxXl7+z5fu83MOOEqkX/LwR5g480QdV580w9qOu00m2k
+         yVd2bbtESxEQYeD97+4DAOIN5FPh1qqljXORgyvC1CbFN1mJV1LmxR3ZJXTFNKvxuwIs
+         0L8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=wR8J2b+VadqJ7co3OXe203kY2wp7FcU9y3rU2x1X2Lc=;
+        b=H466+XT+yb89MI53hjgwVYKK5HJRqnNkGZs7J4NRYbYHAxKxeDhDzhSkbdW0zEgVLX
+         RZnZiwThskKyONl/X582HNSTwo3BlS8kc4WZhBEh4YqmsyjsBJ6DTmhqIKPzk+rTWucs
+         3EClVYGxoLH0s5zuWu9Zc070ISsNGiI5RyejOY6ge47rzm4blqLrL7cK4qZf2VXrfww3
+         J2nX1o8NInbJmo/WwpT5tPAtgod7T9sLdZHkOscdbiLsstfxTK05RK3W5rtaVO64BHzL
+         hhgQq6wVVf5Q/KE/oBzC5TB33PiBy//RMxoC8kHi/UKwsVY6g+z2s0peY7xD0NOKFqFB
+         dmMQ==
+X-Gm-Message-State: AGi0PuZB+EiHgNYVVD0/WWqnbBjcsUJd4Ml1I9BpBthLJ0C6PfaWNp3B
+        SVArV9VOoSw/S2FGPMWz1U7FLbV63T0miWV8tyY=
+X-Google-Smtp-Source: APiQypJTukjCEgjULDIFs6A7jB6rTECx/YYSMuVLIZxT5C2Nr1PoDVcbeJGiz6RbTEHkbww7NSGEWi6jO1USaLjjOtU=
+X-Received: by 2002:a92:3c56:: with SMTP id j83mr1986756ila.37.1586357382979;
+ Wed, 08 Apr 2020 07:49:42 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea5dbc19-feeb-421b-31dd-08d7dbc6079f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Apr 2020 14:06:27.2386
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9ll5B1B90U0YMVC33sW90h8wTCi57qNK5gISNiijy0CLRp+K+IUqxcyyktPjQ1VM2lEwRZGKB2FzSL1bEEDIIg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0501MB2172
+From:   "Matwey V. Kornilov" <matwey.kornilov@gmail.com>
+Date:   Wed, 8 Apr 2020 17:49:31 +0300
+Message-ID: <CAJs94EYHsjEoqydJX6hYFg_Y=T7nVKjpJ5n85mvhazb6xNSg0g@mail.gmail.com>
+Subject: zynq-zturn: macb: Could not attach PHY
+To:     linux@armlinux.org.uk, Michal Simek <michal.simek@xilinx.com>,
+        nicolas.ferre@microchip.com, Anton Gerasimov <tossel@gmail.com>,
+        andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com
+Cc:     netdev@vger.kernel.org,
+        Linux ARM Kernel List <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello,
 
-Commit 95dc19299f74 ("pkt_sched: give visibility to mq slave qdiscs") by
-Eric exposes mq's child qdiscs. It uses real_num_tx_queues to limit the
-amount of per-queue qdiscs exposed, but it only queries that value on
-attach. However, this value may be changed afterwards by ethtool -L, but
-tc qdisc show will continue to show the old amount of per-queue qdiscs:
+I am running Linux 5.6 on MYIR Z-turn board and see the following issue:
 
-1. 8 channels, `tc qdisc show dev eth1` shows mq and 8 pfifo_fast
-qdiscs.
-2. Run `ethtool -L eth1 combined 4`.
-3. `tc qdisc show dev eth1` shows the same.
-4. Run `tc qdisc replace dev eth1 root mq`.
-5. `tc qdisc show dev eth1` shows mq and 4 pfifo_fast qdiscs.
-6. Run `ethtool -L eth1 combined 8`.
-7. `tc qdisc show dev eth1` still shows mq and 4 pfifo_fast qdiscs.
+[   38.485960] macb e000b000.ethernet eth0: Cadence GEM rev 0x00020118
+at 0xe000b000 irq 28 (a6:78:9c:86:65:d3)
+[   42.990885] macb e000b000.ethernet eth0: Could not attach PHY (-19)
 
-As I understand, the purpose of the aforementioned commit is to expose
-stats along with the per-queue qdiscs, and after some trivial
-configuration changes we end up without stats on half of queues.
+Setting 0x3 for ethernet-phy address in zynq-zturn.dts fixes this issue:
 
-Moreover, it can be continued:
+[   23.445231] macb e000b000.ethernet eth0: Cadence GEM rev 0x00020118
+at 0xe000b000 irq 28 (5a:77:b7:82:c4:b3)
+[   27.843706] macb e000b000.ethernet eth0: PHY
+[e000b000.ethernet-ffffffff:03] driver [Micrel KSZ9031 Gigabit PHY]
+(irq=POLL)
+[   27.843726] macb e000b000.ethernet eth0: configuring for
+phy/rgmii-id link mod
 
-8. Run `tc qdisc replace dev eth1 parent 8001:1 pfifo`.
-9. Run `tc qdisc del dev eth1 parent 8001:1`.
-10. Now the qdisc for queue 0 is deleted completely.
+However, I've found that there are at least two Z-turn board
+revisions. The first one has v4 schematics as described in
+http://www.myirtech.com/download/Zynq7000/Z-TURNBOARD_schematic.pdf
+The second one has v5 schematics. I've found v5 schematics PDF file at
+DVD disk supplied with my board. I am not sure whether I am allowed to
+attach it here.
+My board seems to be v5 schematics. The only described difference
+between board revisions is that v4 has Atheros AR8035 PHY at 0b000
+address, and v5 has Micrel KSZ9031 PHY at 0b011 address.
 
-Such behavior looks like a bug to me. When I delete the root qdisc, it
-gets replaced by a sane default. I would expect that when I delete a
-qdisc of a netdev queue, it would be restored to the default too.
+What should be preferred fix for this issue? I have not found a way to
+specify a list of PHY addresses to probe in DTS file.
+u-boot has similar issue with this board [1]. While it can be
+workarounded by PHY auto scan for u-boot, in Linux
+drivers/of/of_mdio.c, I see that auto scan is generally not
+encouraged.
 
-Now, if we look at both issues at the same time, in the first case
-qdiscs were missing from tc qdisc show output, but they were actually
-there, and in the second case they are deleted for real, but these cases
-can't be distinguished by tc qdisc show.
+[1] https://lists.denx.de/pipermail/u-boot/2020-April/405605.html
 
-I would like to hear more opinions on these two issues (1. qdiscs are
-not shown when the number of queues grows, 2. tc qdisc del for a queue
-reverts to noop, rather than to some sane default). Any ideas about
-fixing them, especially issue 1? Some kind of notification mechanism
-from netif_set_real_num_tx_queues to mq or even complete reattachment of
-mq when the number of queues change...
-
-Thanks,
-Max
+-- 
+With best regards,
+Matwey V. Kornilov
