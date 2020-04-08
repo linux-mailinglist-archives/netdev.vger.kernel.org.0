@@ -2,159 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EF601A1D7C
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 10:36:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB7471A1DE0
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 11:07:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727199AbgDHIgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 04:36:12 -0400
-Received: from m176149.mail.qiye.163.com ([59.111.176.149]:39340 "EHLO
-        m176149.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726792AbgDHIgM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 04:36:12 -0400
-X-Greylist: delayed 592 seconds by postgrey-1.27 at vger.kernel.org; Wed, 08 Apr 2020 04:35:07 EDT
-Received: from vivo.com (wm-9.qy.internal [127.0.0.1])
-        by m176149.mail.qiye.163.com (Hmail) with ESMTP id 4BF522824F4;
-        Wed,  8 Apr 2020 16:25:09 +0800 (CST)
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-Message-ID: <AIQAwAC1CEyk0dn9USjN-4ql.3.1586334309292.Hmail.wenhu.wang@vivo.com>
-To:     Wang Wenhu <wenhu.wang@vivo.com>
-Cc:     akpm@linux-foundation.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Carl Huang <cjhuang@codeaurora.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Nicholas Mc Guire <hofrat@osadl.org>,
-        Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: =?UTF-8?B?UmU6W1BBVENIXSBuZXQ6IHFydHI6IHN1cHBvcnQgcXJ0ciBzZXJ2aWNlIGFuZCBsb29rdXAgcm91dGU=?=
-X-Priority: 3
-X-Mailer: HMail Webmail Server V2.0 Copyright (c) 2016-163.com
-X-Originating-IP: 58.251.74.227
-In-Reply-To: <20200408081657.5876-1-wenhu.wang@vivo.com>
+        id S1727847AbgDHJHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 05:07:35 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:33427 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726775AbgDHJHf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 05:07:35 -0400
+Received: by mail-wr1-f66.google.com with SMTP id a25so6950952wrd.0;
+        Wed, 08 Apr 2020 02:07:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=tDqXfOMMU1aiMxNa6ojUxPMtJdc9yDWPtU8wKO19sy8=;
+        b=T5U7THsUxJ6ZuuPi9pDRbPPmm+vSXjD+chynu68DULjkmf4Ijl5WDG930A+jfwScyE
+         cHK2YIEFshNZ8XVTShn/l0OchkLGExiKP/+utKuQchKCt1ZUaRiaqko0M7gHpBqKMp78
+         ALncTk314XAIoZ0yr2R4e9wO7bIJNlthy0pavCQ3hwIx552OaMmaYTZ8XfZH0IYs+I5y
+         tK8gVAOjCb7tjoJltjkXunryR+5DuxODi7VSMsI34v2iYktll2wPrP6ilwva+ec0yD62
+         VKpWKhPRayB6yIBt9HhpCWEZJplzPFqX1iOXLxZ6zdONtLphGdO24xF9lb1U1vTE9vOq
+         oLvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=tDqXfOMMU1aiMxNa6ojUxPMtJdc9yDWPtU8wKO19sy8=;
+        b=hmL7bZNg4fXN/RLUcHcbFxeBWqJnnPR211PdlBP1LrhmyQhnLRnIM1bJTUim42U661
+         qRSc5j7ZuqIh8tjebf0K+ijJr8yt6lB/rbdlMjaYW4IJIreg2LCCVmKCaF1IvSKhuyU3
+         65f1E2/YPZEJvdvJsjpe+lBpBItuhALdySXycn38gkZbMnUkT0GHH2isMKVY2BwQ59sV
+         mdvPsKcYZf7KyL1uBfsXkEOSXYsyR6nKM0Sdj3Tl2nSnKOT/n2eF6StyIezli3XvZzR3
+         K1+SWYhkmyuP3hzJivm8biEGLsVatnHKnMBcqYUM7Gt1gB5Wswd0bfdXBuP67h5FmPOZ
+         wVrw==
+X-Gm-Message-State: AGi0PubAxq1xEqa7mBLBupHlJkmXA0gRU56jZCVEGOPBJFkOnN3nc7jP
+        Uor1zOcmwM3e5cPiQ1vZdM55adv4SO0xH028Q/o=
+X-Google-Smtp-Source: APiQypI2jffggddQs3H73E0fGZHKav2Zl9+DI3ND4AUGi8hLuvcj2nJAqi9tNj7kjAduovm2mQMyvi+oEVtnN1YlUkE=
+X-Received: by 2002:a05:6000:4c:: with SMTP id k12mr964994wrx.179.1586336850824;
+ Wed, 08 Apr 2020 02:07:30 -0700 (PDT)
 MIME-Version: 1.0
-Received: from wenhu.wang@vivo.com( [58.251.74.227) ] by ajax-webmail ( [127.0.0.1] ) ; Wed, 8 Apr 2020 16:25:09 +0800 (GMT+08:00)
-From:   =?UTF-8?B?546L5paH6JmO?= <wenhu.wang@vivo.com>
-Date:   Wed, 8 Apr 2020 16:25:09 +0800 (GMT+08:00)
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZTlVCSElCQkJNSktCS0tDQ1lXWShZQU
-        hPN1dZLVlBSVdZCQ4XHghZQVk1NCk2OjckKS43PlkG
-X-HM-Sender-Digest: e1kJHlYWEh9ZQUhMSklOSkJPTkhKN1dZDB4ZWUEPCQ4eV1kSHx4VD1lB
-        WUc6Mio6DDo4Sjg#AhBLHxVCLigRNVZPChdVSFVKTkNNSEhPSEpKT09KVTMWGhIXVQweFRMOVQwa
-        FRw7DRINFFUYFBZFWVdZEgtZQVlOQ1VJTkpVTE9VSUlMWVdZCAFZQUpLQk5KNwY+
-X-HM-Tid: 0a7158e49bc39395kuws4bf522824f4
+References: <20200402050219.4842-1-chris@rorvick.com> <20200406141058.29895C43637@smtp.codeaurora.org>
+ <CA+icZUUOQ0KTJM6w7yfj=g3BprQqJtTQjCjiXRb9dTTeoQL8KA@mail.gmail.com>
+In-Reply-To: <CA+icZUUOQ0KTJM6w7yfj=g3BprQqJtTQjCjiXRb9dTTeoQL8KA@mail.gmail.com>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Wed, 8 Apr 2020 11:07:19 +0200
+Message-ID: <CA+icZUUiY5tjxgY58383mtXGGiwsRU+t6SX+CtVUN_0cjcLJTQ@mail.gmail.com>
+Subject: Re: [PATCH] iwlwifi: actually check allocated conf_tlv pointer
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Chris Rorvick <chris@rorvick.com>, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-UmVhbGx5IFNvcnJ5IGZvciB0aGF0IEkgc2VudCBvdXQgdGhlIHBhdGNoIG9mIHRoZSBkcml2ZXIg
-cGF0Y2ggc2hvdWxkIGJlZW4gc2VudC4KSSB3aWxsIHNlbmQgYSBuZXcgcGF0Y2ggd2l0aCBRU1Ig
-c3VwcG9ydCBsYXRlci4gUGxlYXNlIGp1c3QgaWdub3JlIHRoaXMgb25lLiAKClRoYW5rcywgV2Vu
-aHUuCgpGcm9tOiBXYW5nIFdlbmh1IDx3ZW5odS53YW5nQHZpdm8uY29tPgpEYXRlOiAyMDIwLTA0
-LTA4IDE2OjE2OjU0ClRvOiAgYWtwbUBsaW51eC1mb3VuZGF0aW9uLm9yZywiRGF2aWQgUy4gTWls
-bGVyIiA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD4sSmFrdWIgS2ljaW5za2kgPGt1YmFAa2VybmVsLm9y
-Zz4sQmpvcm4gQW5kZXJzc29uIDxiam9ybi5hbmRlcnNzb25AbGluYXJvLm9yZz4sR3JlZyBLcm9h
-aC1IYXJ0bWFuIDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZz4sQ2FybCBIdWFuZyA8Y2podWFu
-Z0Bjb2RlYXVyb3JhLm9yZz4sQXJuZCBCZXJnbWFubiA8YXJuZEBhcm5kYi5kZT4sTmljaG9sYXMg
-TWMgR3VpcmUgPGhvZnJhdEBvc2FkbC5vcmc+LFRob21hcyBHbGVpeG5lciA8dGdseEBsaW51dHJv
-bml4LmRlPixuZXRkZXZAdmdlci5rZXJuZWwub3JnLGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5v
-cmcKQ2M6ICBrZXJuZWxAdml2by5jb20sV2FuZyBXZW5odSA8d2VuaHUud2FuZ0B2aXZvLmNvbT4K
-U3ViamVjdDogW1BBVENIXSBuZXQ6IHFydHI6IHN1cHBvcnQgcXJ0ciBzZXJ2aWNlIGFuZCBsb29r
-dXAgcm91dGU+UVNSIGltcGxlbWVudHMgbWFpbnRlbmFuY2Ugb2YgcXJ0ciBzZXJ2aWNlcyBhbmQg
-bG9va3Vwcy4gSXQgd291bGQKPmJlIGhlbHBmdWwgZm9yIGRldmVsb3BlcnMgdG8gd29yayB3aXRo
-IFFSVFIgd2l0aG91dCB0aGUgbm9uZS1vcGVuc291cmNlCj51c2VyLXNwYWNlIGltcGxlbWVudGF0
-aW9uIHBhcnQgb2YgSVBDIFJvdXRlci4KPgo+QXMgd2Uga25vdywgdGhlIGV4dHJlbWVseSBpbXBv
-cnRhbnQgcG9pbnQgb2YgSVBDIFJvdXRlciBpcyB0aGUgc3VwcG9ydAo+b2Ygc2VydmljZXMgZm9y
-bSBkaWZmZXJlbnQgbm9kZXMuIEJ1dCBRUlRSIHdhcyBwdXNoZWQgaW50byBtYWlubGluZQo+d2l0
-aG91dCByb3V0ZSBwcm9jZXNzIHN1cHBvcnQgb2Ygc2VydmljZXMsIGFuZCB0aGUgcm91dGVyIHBv
-cnQgcHJvY2Vzcwo+aXMgaW1wbGVtZW50ZWQgaW4gdXNlci1zcGFjZSBhcyBub25lLW9wZW5zb3Vy
-Y2UgY29kZXMsIHdoaWNoIGlzIGFuCj5ncmVhdCB1bmNvbnZlbmllbmNlIGZvciBkZXZlbG9wZXJz
-Lgo+Cj5RU1IgYWxzbyBpbXBsZW1lbnRzIGEgaW50ZXJmYWNlIHZpYSBjaGFyZGV2IGFuZCBhIHNl
-dCBvZiBzeXNmcyBjbGFzcwo+ZmlsZXMgZm9yIHRoZSBjb21tdW5pY2F0aW9uIGFuZCBkZWJ1Z2dp
-bmcgaW4gdXNlci1zcGFjZS4gV2UgY2FuIGdldAo+c2VydmljZSBhbmQgbG9va3VwIGVudHJpZXMg
-Y29udmVuaWVudGx5IHZpYSBzeXNmcyBmaWxlIGluIC9zeXMvY2xhc3MvcXNyLy4KPkN1cnJlbnRs
-eSBhZGQtc2VydmVyLCBkZWwtc2VydmVyLCBhZGQtbG9va3VwIGFuZCBkZWwtbG9va3VwIGNvbnRy
-b2wKPnBhY2thdGV0cyBhcmUgcHJvY2Vzc2VkIGFuZCBlbmhhbmNlbWVudHMgY291bGQgYmUgdGFr
-ZW4gZWFzaWx5IHVwb24KPmN1cnJlbnRseSBpbXBsZW1lbnRhdGlvbi4KPgo+U2lnbmVkLW9mZi1i
-eTogV2FuZyBXZW5odSA8d2VuaHUud2FuZ0B2aXZvLmNvbT4KPi0tLQo+IG5ldC9xcnRyL3FydHIu
-YyB8ICAzICsrLQo+IG5ldC9xcnRyL3Fzci5jICB8IDQ3ICsrKysrKysrKysrKysrKysrKysrKysr
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4gMiBmaWxlcyBjaGFuZ2VkLCAyNSBpbnNlcnRpb25z
-KCspLCAyNSBkZWxldGlvbnMoLSkKPgo+ZGlmZiAtLWdpdCBhL25ldC9xcnRyL3FydHIuYyBiL25l
-dC9xcnRyL3FydHIuYwo+aW5kZXggMzhmMjVkM2MxYzM5Li4yNjdmN2Q2Yzc0NmYgMTAwNjQ0Cj4t
-LS0gYS9uZXQvcXJ0ci9xcnRyLmMKPisrKyBiL25ldC9xcnRyL3FydHIuYwo+QEAgLTE1OCw3ICsx
-NTgsOCBAQCBzdGF0aWMgaW50IHFydHJfYmNhc3RfZW5xdWV1ZShzdHJ1Y3QgcXJ0cl9ub2RlICpu
-b2RlLCBzdHJ1Y3Qgc2tfYnVmZiAqc2tiLAo+IHN0YXRpYyBzdHJ1Y3QgcXJ0cl9zb2NrICpxcnRy
-X3BvcnRfbG9va3VwKGludCBwb3J0KTsKPiBzdGF0aWMgdm9pZCBxcnRyX3BvcnRfcHV0KHN0cnVj
-dCBxcnRyX3NvY2sgKmlwYyk7Cj4gCj4tdW5zaWduZWQgaW50IGdldF9xcnRyX2xvY2FsX25pZCh2
-b2lkKSB7Cj4rdW5zaWduZWQgaW50IGdldF9xcnRyX2xvY2FsX25pZCh2b2lkKQo+K3sKPiAJcmV0
-dXJuIHFydHJfbG9jYWxfbmlkOwo+IH0KPiAKPmRpZmYgLS1naXQgYS9uZXQvcXJ0ci9xc3IuYyBi
-L25ldC9xcnRyL3Fzci5jCj5pbmRleCAzZGQ0M2Q0ZTMwMWYuLjI3ZmNiNTFhNjI0YSAxMDA2NDQK
-Pi0tLSBhL25ldC9xcnRyL3Fzci5jCj4rKysgYi9uZXQvcXJ0ci9xc3IuYwo+QEAgLTkxLDEwICs5
-MSw3IEBAIHN0cnVjdCBxc3Igewo+IAo+IHN0cnVjdCBxc3Jfb3BzIHsKPiAJaW50ICgqbmV3X3Nl
-cnZlcikoc3RydWN0IHFzcl9pbmZvICpzdmMpOwo+LQo+LQlpbnQgKCpuZXdfbG9va3VwKShzdHJ1
-Y3QgcXNyX2luZm8gKnN2YywKPi0JCQkJdTMyIG5vZGUsCj4tCQkJCXUzMiBwb3J0KTsKPisJaW50
-ICgqbmV3X2xvb2t1cCkoc3RydWN0IHFzcl9pbmZvICpzdmMsIHUzMiBub2RlLCB1MzIgcG9ydCk7
-Cj4gfTsKPiAKPiBzdGF0aWMgaW50IHFzcl9tYWpvcjsKPkBAIC0xMTIsNyArMTA5LDcgQEAgc3Rh
-dGljIGludCBxc3JfbmV3X3NlcnZlcihzdHJ1Y3QgcXNyX2luZm8gKm5ldykKPiAKPiAJbGlzdF9m
-b3JfZWFjaF9lbnRyeShsb29rdXAsICZxc3ItPmxvb2t1cHMsIGxpc3QpIHsKPiAJCWlmIChsb29r
-dXAtPnNlcnZpY2UgPT0gbmV3LT5zZXJ2aWNlICYmCj4tCQkJCWxvb2t1cC0+aW5zdGFuY2UgPT0g
-bmV3LT5pbnN0YW5jZSkgewo+KwkJCWxvb2t1cC0+aW5zdGFuY2UgPT0gbmV3LT5pbnN0YW5jZSkg
-ewo+IAkJCXJldCA9IG9wcy0+bmV3X2xvb2t1cChuZXcsCj4gCQkJCQkJCWxvb2t1cC0+Y2xpZW50
-Lm5vZGUsCj4gCQkJCQkJCWxvb2t1cC0+Y2xpZW50LnBvcnQpOwo+QEAgLTEyNyw5ICsxMjQsNyBA
-QCBzdGF0aWMgaW50IHFzcl9uZXdfc2VydmVyKHN0cnVjdCBxc3JfaW5mbyAqbmV3KQo+IAlyZXR1
-cm4gMDsKPiB9Cj4gCj4tc3RhdGljIGludCBxc3JfbmV3X2xvb2t1cChzdHJ1Y3QgcXNyX2luZm8g
-KnN2YywKPi0JCQkJdTMyIG5vZGUsCj4tCQkJCXUzMiBwb3J0KQo+K3N0YXRpYyBpbnQgcXNyX25l
-d19sb29rdXAoc3RydWN0IHFzcl9pbmZvICpzdmMsIHUzMiBub2RlLCB1MzIgcG9ydCkKPiB7Cj4g
-CXN0cnVjdCBxcnRyX2N0cmxfcGt0IHBrdDsKPiAJc3RydWN0IHNvY2thZGRyX3FydHIgc3E7Cj5A
-QCAtMTgwLDcgKzE3NSw3IEBAIHN0YXRpYyB2b2lkIHFzcl9yZWN2X25ld19zZXJ2ZXIodTMyIHNl
-cnZpY2UsCj4gCWxpc3RfZm9yX2VhY2hfZW50cnkodGVtcCwgJnFzci0+c2VydmljZXMsIGxpc3Qp
-IHsKPiAJCWlmICh0ZW1wLT5zZXJ2aWNlID09IHNlcnZpY2UgJiYgdGVtcC0+aW5zdGFuY2UgPT0g
-aW5zdGFuY2UpIHsKPiAJCQlwcl9lcnIoIkVycm9yIHNlcnZlciBleGlzdHMsIHNlcnZpY2U6MHgl
-eCBpbnN0YW5jZToweCV4IiwKPi0JCQkJCQkJc2VydmljZSwgaW5zdGFuY2UpOwo+KwkJCQkgICBz
-ZXJ2aWNlLCBpbnN0YW5jZSk7Cj4gCQkJcmV0dXJuOwo+IAkJfQo+IAl9Cj5AQCAtMjMwLDkgKzIy
-NSw5IEBAIHN0YXRpYyB2b2lkIHFzcl9yZWN2X25ld19sb29rdXAodTMyIHNlcnZpY2UsCj4gCj4g
-CWxpc3RfZm9yX2VhY2hfZW50cnkodGVtcCwgJnFzci0+bG9va3VwcywgbGlzdCkgewo+IAkJaWYg
-KHRlbXAtPnNlcnZpY2UgPT0gc2VydmljZSAmJgo+LQkJCQl0ZW1wLT5pbnN0YW5jZSA9PSBpbnN0
-YW5jZSAmJgo+LQkJCQl0ZW1wLT5jbGllbnQubm9kZSA9PSBub2RlICYmCj4tCQkJCXRlbXAtPmNs
-aWVudC5wb3J0ID09IHBvcnQpIHsKPisJCQl0ZW1wLT5pbnN0YW5jZSA9PSBpbnN0YW5jZSAmJgo+
-KwkJCXRlbXAtPmNsaWVudC5ub2RlID09IG5vZGUgJiYKPisJCQl0ZW1wLT5jbGllbnQucG9ydCA9
-PSBwb3J0KSB7Cj4gCQkJcHJfZXJyKCJFcnJvciBsb29rdXAgZXhpc3RzLCBzZXJ2aWNlOjB4JXgg
-aW5zdGFuY2U6MHgleCBub2RlOiVkIHBvcnQ6JWQiLAo+IAkJCQkJCXNlcnZpY2UsIGluc3RhbmNl
-LCBub2RlLCBwb3J0KTsKPiAJCQlyZXR1cm47Cj5AQCAtMjk5LDI4ICsyOTQsMjggQEAgc3RhdGlj
-IHZvaWQgcXNyX3JlY3ZfY3RybF9wa3Qoc3RydWN0IHNvY2thZGRyX3FydHIgKnNxLAo+IAlzd2l0
-Y2ggKGxlMzJfdG9fY3B1KHBrdC0+Y21kKSkgewo+IAljYXNlIFFSVFJfVFlQRV9ORVdfU0VSVkVS
-Ogo+IAkJcXNyX3JlY3ZfbmV3X3NlcnZlcihsZTMyX3RvX2NwdShwa3QtPnNlcnZlci5zZXJ2aWNl
-KSwKPi0JCQkJICAgIGxlMzJfdG9fY3B1KHBrdC0+c2VydmVyLmluc3RhbmNlKSwKPisJCQkJCWxl
-MzJfdG9fY3B1KHBrdC0+c2VydmVyLmluc3RhbmNlKSwKPiAJCQkJICAgIGxlMzJfdG9fY3B1KHBr
-dC0+c2VydmVyLm5vZGUpLAo+IAkJCQkgICAgbGUzMl90b19jcHUocGt0LT5zZXJ2ZXIucG9ydCkp
-Owo+IAkJYnJlYWs7Cj4gCj4gCWNhc2UgUVJUUl9UWVBFX05FV19MT09LVVA6Cj4gCQlxc3JfcmVj
-dl9uZXdfbG9va3VwKGxlMzJfdG9fY3B1KHBrdC0+c2VydmVyLnNlcnZpY2UpLAo+LQkJCQkgICAg
-bGUzMl90b19jcHUocGt0LT5zZXJ2ZXIuaW5zdGFuY2UpLAo+LQkJCQkgICAgc3EtPnNxX25vZGUs
-Cj4tCQkJCSAgICBzcS0+c3FfcG9ydCk7Cj4rCQkJCQlsZTMyX3RvX2NwdShwa3QtPnNlcnZlci5p
-bnN0YW5jZSksCj4rCQkJCQlzcS0+c3Ffbm9kZSwKPisJCQkJCXNxLT5zcV9wb3J0KTsKPiAJCWJy
-ZWFrOwo+IAo+IAljYXNlIFFSVFJfVFlQRV9ERUxfU0VSVkVSOgo+IAkJcXNyX3JlY3ZfZGVsX3Nl
-cnZlcihsZTMyX3RvX2NwdShwa3QtPnNlcnZlci5zZXJ2aWNlKSwKPi0JCQkJICAgIGxlMzJfdG9f
-Y3B1KHBrdC0+c2VydmVyLmluc3RhbmNlKSk7Cj4rCQkJCQlsZTMyX3RvX2NwdShwa3QtPnNlcnZl
-ci5pbnN0YW5jZSkpOwo+IAkJYnJlYWs7Cj4gCj4gCWNhc2UgUVJUUl9UWVBFX0RFTF9MT09LVVA6
-Cj4gCQlxc3JfcmVjdl9kZWxfbG9va3VwKGxlMzJfdG9fY3B1KHBrdC0+c2VydmVyLnNlcnZpY2Up
-LAo+LQkJCQkgICAgbGUzMl90b19jcHUocGt0LT5zZXJ2ZXIuaW5zdGFuY2UpLAo+LQkJCQkgICAg
-c3EtPnNxX25vZGUsCj4tCQkJCSAgICBzcS0+c3FfcG9ydCk7Cj4rCQkJCQlsZTMyX3RvX2NwdShw
-a3QtPnNlcnZlci5pbnN0YW5jZSksCj4rCQkJCQlzcS0+c3Ffbm9kZSwKPisJCQkJCXNxLT5zcV9w
-b3J0KTsKPiAJCWJyZWFrOwo+IAl9Cj4gfQo+QEAgLTM4Niw4ICszODEsMTAgQEAgc3RhdGljIHNz
-aXplX3QgbG9va3Vwc19zaG93KHN0cnVjdCBkZXZpY2UgKmRldiwKPiAJbXV0ZXhfbG9jaygmcXNy
-LT5xc3JfbG9jayk7Cj4gCWxpc3RfZm9yX2VhY2hfZW50cnkobG9va3VwLCAmcXNyLT5sb29rdXBz
-LCBsaXN0KSB7Cj4gCQlyZXQgKz0gc3ByaW50ZihidWYsICJzZXJ2aWNlOjB4JTA0eCBpbnN0YW5j
-ZToweCUwNHggICBub2RlOiUwNGQgcG9ydDolMDRkXG4iLAo+LQkJCQlsb29rdXAtPnNlcnZpY2Us
-IGxvb2t1cC0+aW5zdGFuY2UsCj4tCQkJCWxvb2t1cC0+c2VydmVyLm5vZGUsIGxvb2t1cC0+c2Vy
-dmVyLnBvcnQpOwo+KwkJCQkJbG9va3VwLT5zZXJ2aWNlLAo+KwkJCQkJbG9va3VwLT5pbnN0YW5j
-ZSwKPisJCQkJCWxvb2t1cC0+c2VydmVyLm5vZGUsCj4rCQkJCQlsb29rdXAtPnNlcnZlci5wb3J0
-KTsKPiAJfQo+IAltdXRleF91bmxvY2soJnFzci0+cXNyX2xvY2spOwo+IAo+QEAgLTQwNCw4ICs0
-MDEsMTAgQEAgc3RhdGljIHNzaXplX3Qgc2VydmljZXNfc2hvdyhzdHJ1Y3QgZGV2aWNlICpkZXYs
-Cj4gCW11dGV4X2xvY2soJnFzci0+cXNyX2xvY2spOwo+IAlsaXN0X2Zvcl9lYWNoX2VudHJ5KHN2
-YywgJnFzci0+c2VydmljZXMsIGxpc3QpIHsKPiAJCXJldCArPSBzcHJpbnRmKGJ1ZiwgInNlcnZp
-Y2U6MHglMDR4IGluc3RhbmNlOjB4JTA0eCAgbm9kZTolMDRkIHBvcnQ6JTA0ZFxuIiwKPi0JCQkJ
-c3ZjLT5zZXJ2aWNlLCBzdmMtPmluc3RhbmNlLAo+LQkJCQlzdmMtPnNlcnZlci5ub2RlLCBzdmMt
-PnNlcnZlci5wb3J0KTsKPisJCQkJCXN2Yy0+c2VydmljZSwKPisJCQkJCXN2Yy0+aW5zdGFuY2Us
-Cj4rCQkJCQlzdmMtPnNlcnZlci5ub2RlLAo+KwkJCQkJc3ZjLT5zZXJ2ZXIucG9ydCk7Cj4gCX0K
-PiAJbXV0ZXhfdW5sb2NrKCZxc3ItPnFzcl9sb2NrKTsKPiAKPi0tIAo+Mi4xNy4xCj4KDQoNCg==
+On Mon, Apr 6, 2020 at 9:53 PM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+>
+> On Mon, Apr 6, 2020 at 4:11 PM Kalle Valo <kvalo@codeaurora.org> wrote:
+> >
+> > Chris Rorvick <chris@rorvick.com> wrote:
+> >
+> > > Commit 71bc0334a637 ("iwlwifi: check allocated pointer when allocating
+> > > conf_tlvs") attempted to fix a typoe introduced by commit 17b809c9b22e
+> > > ("iwlwifi: dbg: move debug data to a struct") but does not implement the
+> > > check correctly.
+> > >
+> > > This can happen in OOM situations and, when it does, we will potentially try to
+> > > dereference a NULL pointer.
+> > >
+> > > Tweeted-by: @grsecurity
+> > > Signed-off-by: Chris Rorvick <chris@rorvick.com>
+> >
+> > Fails to build, please rebase on top of wireless-drivers.
+> >
+> > drivers/net/wireless/intel/iwlwifi/iwl-drv.c: In function 'iwl_req_fw_callback':
+> > drivers/net/wireless/intel/iwlwifi/iwl-drv.c:1470:16: error: 'struct iwl_fw' has no member named 'dbg_conf_tlv'
+> >     if (!drv->fw.dbg_conf_tlv[i])
+> >                 ^
+> > make[5]: *** [drivers/net/wireless/intel/iwlwifi/iwl-drv.o] Error 1
+> > make[5]: *** Waiting for unfinished jobs....
+> > make[4]: *** [drivers/net/wireless/intel/iwlwifi] Error 2
+> > make[3]: *** [drivers/net/wireless/intel] Error 2
+> > make[2]: *** [drivers/net/wireless] Error 2
+> > make[1]: *** [drivers/net] Error 2
+> > make[1]: *** Waiting for unfinished jobs....
+> > make: *** [drivers] Error 2
+> >
+>
+> Should be:
+>
+> $ git diff
+> diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
+> b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
+> index 0481796f75bc..c24350222133 100644
+> --- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
+> +++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
+> @@ -1467,7 +1467,7 @@ static void iwl_req_fw_callback(const struct
+> firmware *ucode_raw, void *context)
+>                                 kmemdup(pieces->dbg_conf_tlv[i],
+>                                         pieces->dbg_conf_tlv_len[i],
+>                                         GFP_KERNEL);
+
+Maybe this diff is clearer:
+
+$ diff iwlwifi-actually-check-allocated-conf_tlv-pointer.patch
+iwlwifi-actually-check-allocated-conf_tlv-pointer-v2-dileks.patch
+95a96
+> Fixes: 71bc0334a637 ("iwlwifi: check allocated pointer when allocating conf_tlvs")
+99c100,104
+< In this wasn't picked up?
+---
+>
+> [ v1->v2:
+>   - Fix typo s/fw.dbg_conf_tlv/fw.dbg.conf_tlv
+>   - Add Fixes tag as suggested by Kalle
+> -dileks ]
+115c120
+< +                     if (!drv->fw.dbg_conf_tlv[i])
+---
+> +                     if (!drv->fw.dbg.conf_tlv[i])
+
+Tested on top of Linux v5.6.3.
+
+- Sedat -
