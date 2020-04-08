@@ -2,46 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A98101A202D
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 13:50:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B446E1A202B
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 13:50:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728633AbgDHLux (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 07:50:53 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:27686 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728492AbgDHLux (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 07:50:53 -0400
+        id S1728611AbgDHLuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 07:50:52 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:55290 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728570AbgDHLuv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 07:50:51 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586346652;
+        s=mimecast20190719; t=1586346650;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=2eXzQtSYdeTw5pRT+LOtyhNeBfnI40tGkZtZgT4bf9k=;
-        b=Xz7woTJYGKU2lQcsrUd+uZQ2qSVuyQppVs8V7fBxvQg8XHtDi3yfLIeFFQg9Pfvrm+hbeK
-        8AA3GuLu1jg18qBHUTQVg0+Nd3mY3ZwJDZGptzFZ3zN1PP/OoZYqe8EJHrtGAzUtvPUvCU
-        AkGgE47p8dVIY/h9FQyTuu4f9QEVedU=
+        bh=902ZrQ0FmY2T7r9/E7C7KmRNTtWQBm4ZVBZiBQzPeQk=;
+        b=FQKWXFEjnzQvrhhKSwRSSAmak2gD2AhzTAcT5gPP2EL7lBISq7OycSPpNBvyhUw805pDxI
+        woXMzWujKn5X+7rlGzt4mhDL/4Jhszft8kkF1LjlXwCfl+bxlS/iru95DtdXocIbJJmJGG
+        J9QYaX1/W0qdL9AgLRvqUtbtzImP8tQ=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-252-SEAr8W1PMYCDNEoc6BDj9A-1; Wed, 08 Apr 2020 07:50:48 -0400
-X-MC-Unique: SEAr8W1PMYCDNEoc6BDj9A-1
+ us-mta-342-4iHv-62-P3-vbWBqBEsJEg-1; Wed, 08 Apr 2020 07:50:49 -0400
+X-MC-Unique: 4iHv-62-P3-vbWBqBEsJEg-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 97FA8801E66;
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8DF01108442E;
         Wed,  8 Apr 2020 11:50:46 +0000 (UTC)
 Received: from firesoul.localdomain (unknown [10.40.208.40])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5EF5060BF7;
-        Wed,  8 Apr 2020 11:50:40 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6570A60BFB;
+        Wed,  8 Apr 2020 11:50:45 +0000 (UTC)
 Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 6BA77300020FB;
-        Wed,  8 Apr 2020 13:50:39 +0200 (CEST)
-Subject: [PATCH RFC v2 01/33] xdp: add frame size to xdp_buff
+        by firesoul.localdomain (Postfix) with ESMTP id 80560300020FA;
+        Wed,  8 Apr 2020 13:50:44 +0200 (CEST)
+Subject: [PATCH RFC v2 02/33] bnxt: add XDP frame size to driver
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     sameehj@amazon.com
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, zorik@amazon.com, akiyano@amazon.com,
-        gtzalik@amazon.com,
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
+        Andy Gospodarek <gospo@broadcom.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, zorik@amazon.com,
+        akiyano@amazon.com, gtzalik@amazon.com,
         =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Daniel Borkmann <borkmann@iogearbox.net>,
         Alexei Starovoitov <alexei.starovoitov@gmail.com>,
@@ -53,8 +56,8 @@ Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
         Lorenzo Bianconi <lorenzo@kernel.org>,
         Saeed Mahameed <saeedm@mellanox.com>
-Date:   Wed, 08 Apr 2020 13:50:39 +0200
-Message-ID: <158634663936.707275.3156718045905620430.stgit@firesoul>
+Date:   Wed, 08 Apr 2020 13:50:44 +0200
+Message-ID: <158634664445.707275.1398644487162575219.stgit@firesoul>
 In-Reply-To: <158634658714.707275.7903484085370879864.stgit@firesoul>
 References: <158634658714.707275.7903484085370879864.stgit@firesoul>
 User-Agent: StGit/0.19
@@ -67,62 +70,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-XDP have evolved to support several frame sizes, but xdp_buff was not
-updated with this information. The frame size (frame_sz) member of
-xdp_buff is introduced to know the real size of the memory the frame is
-delivered in.
+This driver uses full PAGE_SIZE pages when XDP is enabled.
 
-When introducing this also make it clear that some tailroom is
-reserved/required when creating SKBs using build_skb().
-
-It would also have been an option to introduce a pointer to
-data_hard_end (with reserved offset). The advantage with frame_sz is
-that (like rxq) drivers only need to setup/assign this value once per
-NAPI cycle. Due to XDP-generic (and some drivers) it's not possible to
-store frame_sz inside xdp_rxq_info, because it's varies per packet as it
-can be based/depend on packet length.
-
+Cc: Michael Chan <michael.chan@broadcom.com>
+Cc: Andy Gospodarek <andrew.gospodarek@broadcom.com>
 Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
 ---
- include/net/xdp.h |   17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index 40c6d3398458..99f4374f6214 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -6,6 +6,8 @@
- #ifndef __LINUX_NET_XDP_H__
- #define __LINUX_NET_XDP_H__
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+index c6f6f2033880..5e3b4a3b69ea 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+@@ -138,6 +138,7 @@ bool bnxt_rx_xdp(struct bnxt *bp, struct bnxt_rx_ring_info *rxr, u16 cons,
+ 	xdp_set_data_meta_invalid(&xdp);
+ 	xdp.data_end = *data_ptr + *len;
+ 	xdp.rxq = &rxr->xdp_rxq;
++	xdp.frame_sz = PAGE_SIZE; /* BNXT_RX_PAGE_MODE(bp) when XDP enabled */
+ 	orig_data = xdp.data;
  
-+#include <linux/skbuff.h> /* skb_shared_info */
-+
- /**
-  * DOC: XDP RX-queue information
-  *
-@@ -70,8 +72,23 @@ struct xdp_buff {
- 	void *data_hard_start;
- 	unsigned long handle;
- 	struct xdp_rxq_info *rxq;
-+	u32 frame_sz; /* frame size to deduct data_hard_end/reserved tailroom*/
- };
- 
-+/* Reserve memory area at end-of data area.
-+ *
-+ * This macro reserves tailroom in the XDP buffer by limiting the
-+ * XDP/BPF data access to data_hard_end.  Notice same area (and size)
-+ * is used for XDP_PASS, when constructing the SKB via build_skb().
-+ */
-+#define xdp_data_hard_end(xdp)				\
-+	((xdp)->data_hard_start + (xdp)->frame_sz -	\
-+	 SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
-+
-+/* Like skb_shinfo */
-+#define xdp_shinfo(xdp)	((struct skb_shared_info *)(xdp_data_hard_end(xdp)))
-+// XXX: Above likely belongs in later patch
-+
- struct xdp_frame {
- 	void *data;
- 	u16 len;
+ 	rcu_read_lock();
 
 
