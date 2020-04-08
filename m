@@ -2,121 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCB011A2792
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 18:55:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B63F21A279E
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 18:59:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730460AbgDHQz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 12:55:27 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:35126 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728627AbgDHQz1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 12:55:27 -0400
-Received: by mail-pf1-f194.google.com with SMTP id a13so2679161pfa.2;
-        Wed, 08 Apr 2020 09:55:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=iN6v1y3bUGTA3QAXmoYx9KRomlhUAmrnaSxlwoSLx14=;
-        b=RV+bouxc7T7nCtEfiH6LQkUvzxPx6z19Q7Sl8s+bVPtUjD5EcEJmeMpNLEL9oCH88h
-         Di770a0NPMoYcfAWno/89FiotZ7urwA88aFxASh2QU9kOrdOEOATJPA56Qo2nQtBCyg1
-         se9jGWW/uzL7E+pfwfGlA+45452Lx0JxarKQl59mXYl9pxAZiwHZjrnznbek6awOrQe/
-         tw+Ly1XXYlsuozcr7Tp6/m7fHWn7pHPkc4FXZim5DzgdahsJHNnW8m2ecwZZTTdn3lso
-         /QIYuCiXUp80gJczr8uxZ4m7j1O4u1MVT0rHKJzmJe7OVD+3te3fVpkkWUyB4OTkMKtd
-         nRWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iN6v1y3bUGTA3QAXmoYx9KRomlhUAmrnaSxlwoSLx14=;
-        b=NbDNgXHxVfvoxAeTm62veVeKYi5EaH4HTkoJ+54hWAoswIk7oqt62x3s6LK+SRexBJ
-         fyp0RAVRXfea3wbUqvkOwZoGIFjAuygbJ3c67VjmnngsR4ZzaaVsMguD0XDoEi1F0cd2
-         gKQwVV4fv/ijf/p4QKtzDw/79sqxx4KO3UH3I7IfjF6QWhTOchFQ923fQburTxrN3TlZ
-         ioVCBAy9SRFqjx2xTJWm+nqlfui4yG7hdW+XPrkgAzjBzvOQ1117kFKrqQsw5TRwyxB2
-         zBJD0JvMXzUstneK0mQQyCWoEnAAvTkPWk34ogyUPI1N0B4SyxXOyVptrs1W4GomlV58
-         M0iA==
-X-Gm-Message-State: AGi0PuZ5JK6QBoXEABdJKpG49CRq6IdjIPwmjfeUbsiIe+HO57SWC49O
-        yqoakAokKJM8LyOvjwJC318=
-X-Google-Smtp-Source: APiQypLa/L3StXHwyb5YsmgRtv1L8s0LdE+QZfIRCBwHwMqCeOpFX/AlTxWi71aR3aICTr7OnDOr5g==
-X-Received: by 2002:a63:7b1a:: with SMTP id w26mr7403210pgc.298.1586364924586;
-        Wed, 08 Apr 2020 09:55:24 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:c144])
-        by smtp.gmail.com with ESMTPSA id p4sm16955295pfg.163.2020.04.08.09.55.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Apr 2020 09:55:23 -0700 (PDT)
-Date:   Wed, 8 Apr 2020 09:55:19 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     sameehj@amazon.com, Grygorii Strashko <grygorii.strashko@ti.com>,
-        intel-wired-lan@lists.osuosl.org, Ariel Elior <aelior@marvell.com>,
-        Andy Gospodarek <gospo@broadcom.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Robert Richter <rrichter@marvell.com>,
-        GR-everest-linux-l2@marvell.com, Wei Liu <wei.liu@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Mao Wenan <maowenan@huawei.com>,
-        Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        Michael Chan <michael.chan@broadcom.com>,
+        id S1729436AbgDHQ7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 12:59:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47904 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728966AbgDHQ7T (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Apr 2020 12:59:19 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6B58F20757;
+        Wed,  8 Apr 2020 16:59:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1586365158;
+        bh=K2RdMZ6ZhSGxxEAjYA1jEozwMp9Q32OYBGd5JyJ1hxI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HGvuFv44IUDaTVa01Kwo+lBCAwCr35nBto8tpIh5PdBETAkbU0+d+BogNU5pNuzLp
+         VeXiQiNkuTVQCzqPM9YM6bt+R+XqFntVWfPCQpaNm/CiqDmH2/zDkfVEZJfiIbO2+k
+         eEBjQ/hOUpdvGI44oqCeG0I7Svi6mbrT7Q6DWQo8=
+Date:   Wed, 8 Apr 2020 09:59:14 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Yuval Avnery <yuvalav@mellanox.com>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>,
         Saeed Mahameed <saeedm@mellanox.com>,
-        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "andrew.gospodarek@broadcom.com" <andrew.gospodarek@broadcom.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        Aya Levin <ayal@mellanox.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Yevgeny Kliteynik <kliteyn@mellanox.com>,
+        "dchickles@marvell.com" <dchickles@marvell.com>,
+        "sburla@marvell.com" <sburla@marvell.com>,
+        "fmanlunas@marvell.com" <fmanlunas@marvell.com>,
         Tariq Toukan <tariqt@mellanox.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        thomas.petazzoni@bootlin.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, zorik@amazon.com, gtzalik@amazon.com,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        David Ahern <dsahern@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: Re: [PATCH RFC v2 00/33] XDP extend with knowledge of frame size
-Message-ID: <20200408165519.da6dr5mclqol6g26@ast-mbp>
-References: <158634658714.707275.7903484085370879864.stgit@firesoul>
+        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
+        "snelson@pensando.io" <snelson@pensando.io>,
+        "drivers@pensando.io" <drivers@pensando.io>,
+        "aelior@marvell.com" <aelior@marvell.com>,
+        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
+        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
+        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>,
+        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
+        Alex Vesker <valex@mellanox.com>,
+        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
+        "lihong.yang@intel.com" <lihong.yang@intel.com>,
+        "vikas.gupta@broadcom.com" <vikas.gupta@broadcom.com>,
+        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>
+Subject: Re: [RFC] current devlink extension plan for NICs
+Message-ID: <20200408095914.772dfdf3@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <AM0PR05MB4866B13FF6B672469BDF4A3FD1C00@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20200319192719.GD11304@nanopsycho.orion>
+        <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
+        <20200321093525.GJ11304@nanopsycho.orion>
+        <20200323122123.2a3ff20f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200326144709.GW11304@nanopsycho.orion>
+        <20200326145146.GX11304@nanopsycho.orion>
+        <20200326133001.1b2694c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200327074736.GJ11304@nanopsycho.orion>
+        <20200327093829.76140a98@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <35e8353f-2bfc-5685-a60e-030cd2d2dd24@mellanox.com>
+        <20200330123623.634739de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <50c0f739-592e-77a4-4872-878f99cc8b93@mellanox.com>
+        <20200331103255.549ea899@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <AM0PR05MB4866E76AE83EA4D09449AF05D1C90@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20200401131231.74f2a5a8@kicinski-fedora-PC1C0HJN>
+        <AM0PR05MB4866B13FF6B672469BDF4A3FD1C00@AM0PR05MB4866.eurprd05.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <158634658714.707275.7903484085370879864.stgit@firesoul>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 08, 2020 at 01:50:34PM +0200, Jesper Dangaard Brouer wrote:
-> RFC-note: This is only an RFC because net-next is closed.
-> - Please ACK patches you like, then I will collect those for later.
-> 
-> XDP have evolved to support several frame sizes, but xdp_buff was not
-> updated with this information. This have caused the side-effect that
-> XDP frame data hard end is unknown. This have limited the BPF-helper
-> bpf_xdp_adjust_tail to only shrink the packet. This patchset address
-> this and add packet tail extend/grow.
-> 
-> The purpose of the patchset is ALSO to reserve a memory area that can be
-> used for storing extra information, specifically for extending XDP with
-> multi-buffer support. One proposal is to use same layout as
-> skb_shared_info, which is why this area is currently 320 bytes.
-> 
-> When converting xdp_frame to SKB (veth and cpumap), the full tailroom
-> area can now be used and SKB truesize is now correct. For most
-> drivers this result in a much larger tailroom in SKB "head" data
-> area. The network stack can now take advantage of this when doing SKB
-> coalescing. Thus, a good driver test is to use xdp_redirect_cpu from
-> samples/bpf/ and do some TCP stream testing.
+On Wed, 8 Apr 2020 05:07:04 +0000 Parav Pandit wrote:
+> > > > > 3. In future at eswitch pci port, I will be adding dpipe support
+> > > > > for the internal flow tables done by the driver.
+> > > > > 4. There were inconsistency among vendor drivers in using/abusing
+> > > > > phys_port_name of the eswitch ports. This is consolidated via
+> > > > > devlink port in core. This provides consistent view among all
+> > > > > vendor drivers.
+> > > > >
+> > > > > So PCI eswitch side ports are useful regardless of slice.
+> > > > >  
+> > > > > >> Additionally devlink port object doesn't go through the same
+> > > > > >> state machine as that what slice has to go through.
+> > > > > >> So its weird that some devlink port has state machine and some
+> > > > > >> doesn't.  
+> > > > > >
+> > > > > > You mean for VFs? I think you can add the states to the API.
+> > > > > >  
+> > > > > As we agreed above that eswitch side objects (devlink port and
+> > > > > representor netdev) should not be used for 'portion of device',  
+> > > >
+> > > > We haven't agreed, I just explained how we differ.  
+> > >
+> > > You mentioned that " Right, in my mental model representor _is_ a port
+> > > of the eswitch, so repr would not make sense to me."
+> > >
+> > > With that I infer that 'any object that is directly and _always_
+> > > linked to eswitch and represents an eswitch port is out of question,
+> > > this includes devlink port of eswitch and netdev representor. Hence,
+> > > the comment 'we agree conceptually' to not involve devlink port of
+> > > eswitch and representor netdev to represent 'portion of the device'.  
+> > 
+> > I disagree, repr is one to one with eswitch port. Just because repr is
+> > associated with a devlink port doesn't mean devlink port must be associated
+> > with a repr or a netdev.  
+> Devlink port which is on eswitch side is registered with switch_id and also linked to the rep netdev.
+> From this port phys_port_name is derived.
+> This eswitch port shouldn't represent 'portion of the device'.
 
-I did a quick look through the patches. Overall looks good to me.
-Nice to see selftests as well.
-If you can add an xdp selftest that uses generic xdp on lo or veth
-that would be awesome.
-I rarely run test_xdp*.sh tests, but run test_progs on every commit.
-So having more comprehensive xdp test as part of test_progs will help us
-catch breakage sooner.
+switch_id is per port, so it's perfectly fine for a devlink port not to
+have one, or for two ports of the same device to have a different ID.
+
+The phys_port_name argument I don't follow. How does that matter in the
+"should we create another object" debate?
+
+IMO introducing the slice if it's 1:1 with ports is a no-go. I also
+don't like how creating a slice implicitly creates a devlink port in
+your design. If those objects are so strongly linked that creating one
+implies the other they should just be merged.
+
+I'm also concerned that the slice is basically a non-networking port.
+I bet some of the things we add there will one day be useful for
+networking or DSA ports.
+
+So I'd suggest to maybe step back from the SmartNIC scenario and try to
+figure out how slices are useful on their own.
