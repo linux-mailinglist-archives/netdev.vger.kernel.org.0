@@ -2,118 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2FAF1A28DF
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 20:54:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED5211A28E3
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 20:55:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729736AbgDHSyj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 14:54:39 -0400
-Received: from mout.kundenserver.de ([212.227.17.10]:55225 "EHLO
+        id S1729798AbgDHSzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 14:55:19 -0400
+Received: from mout.kundenserver.de ([212.227.17.10]:38009 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727963AbgDHSyj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 14:54:39 -0400
+        with ESMTP id S1727963AbgDHSzS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 14:55:18 -0400
 Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue108 [212.227.15.145]) with ESMTPA (Nemesis) id
- 1MOzGc-1jezXZ2dFk-00PNE2; Wed, 08 Apr 2020 20:54:17 +0200
+ (mreue109 [212.227.15.145]) with ESMTPA (Nemesis) id
+ 1MTiHb-1jjihD1mRh-00U4Cr; Wed, 08 Apr 2020 20:54:58 +0200
 From:   Arnd Bergmann <arnd@arndb.de>
-To:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Chin-Yen Lee <timlee@realtek.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
+To:     Boris Pismenny <borisp@mellanox.com>,
+        Aviad Yehezkel <aviadye@mellanox.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Brian Norris <briannorris@chromium.org>,
-        Chris Chiu <chiu@endlessm.com>,
-        Jian-Hong Pan <jian-hong@endlessm.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Dirk van der Merwe <dirk.vandermerwe@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Davide Caratti <dcaratti@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] rtw88: avoid unused function warnings
-Date:   Wed,  8 Apr 2020 20:53:51 +0200
-Message-Id: <20200408185413.218643-1-arnd@arndb.de>
+Subject: [PATCH] net/tls: fix const assignment warning
+Date:   Wed,  8 Apr 2020 20:54:43 +0200
+Message-Id: <20200408185452.279040-1-arnd@arndb.de>
 X-Mailer: git-send-email 2.26.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:NcxJ3QwXn+I/rIrGm23TbRtV/rSdt2ck5/p2IEg1r3CmWhFbgeo
- b+WNMyhAX9E4KZ/3PsT3fuPrA9OgXE36y4NLKM+dm5k2yO2O/Em7jA8u0Ay7U0R93jOwpX9
- 1f7kt/zVFU/4osp1IXY8rfOsb6NNivxBLWoOKk7hMsyCHvTdrkmQiTadkpONGGQ7QvGe3iz
- H6OqWAFqZhyqtrZfiyQqA==
+X-Provags-ID: V03:K1:s2ekPbRiCj8XbJbqCtFITnCU5qx2sljqiQialUMXh9xL7YIesyQ
+ IunrRXr8qvuNMCnleLG6FrI0yMnVmsqFi4lfjeokgQ7crXdqslhjJ/MYxB/rzVvoHv0DcKy
+ UALDPTsBWoN9+NOikWH8mPojs4fvp/DP/QDDkjZo1rwZ6pYJja3ItnjQ/fSGrjHkFs3vB4p
+ aC8RxKTyeqPMu0TNJJ7mg==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:ain4j8UjaS4=:xPFq9x2/orRVHsZe2bfhS/
- 7Fsft5wkuKS9ipxHcAHtN7JkgqgX78LuWM0lJpIVDscesdNeq7rDetOFaYNVuHiQI0u7oYQtK
- +F34ShN01nQGYKyPysrh8zOg18zwl7Hcpust1GxWMc/IbpH7FgbT0nszYlIfH37pP4XlmlRiw
- dV+O8rsBgLHn1jnXS/z4hAz8nke9CYmmzdOTced58zBVEFVRTn9q+OdLLSPPBX2S0XmWyr4NW
- snDsuSD6IcR6/ZI7U752HuqabBeTvWEjqAIwsm71Me3CjOJcQBMv9y6As0lzYLoIC7YuoBr6k
- Zft67PebPSvYndCdQzPP3xpwOMqfDoCag/i1ev+N/Q260cIlKO8H2f4gjS0tLFCmMi1JAo9/+
- noVCpVu+YLW4eZdAxIJwMC6V2RVL7GM8E37MD+eNGR7lSvBbOwJ12k8oMaVVbitjQaSqQUnIp
- RffpvWf2wzYu0OH3NUC7Duy12BMHN0Q+rAllc8wuwrZEfuXAP+zCFeJmysOesdpYsQBnh/T11
- nTTScIW5YHPQa85/8Zlr9lESMIPg1aISF5fS7+2sVKC/SqBeeYJ6oOItYjz4nPbwEUhL8OcR7
- oz3YcfWOlnLDnzVQxNFfMlx4C07EFrz/i9uZLAo/PPJtEbyopu8tcmNI3+HCflIQdDRhO9/Jq
- aOEhh2IgWXX+KMRxfkZSZ83yFGA8xgGLWQHT4s6WG+VV058KoSkizMuc3fEmAEwdzZ5pjCtOT
- vD4BhwkmPJdRglybncWfi+LFTrstyEKxcto1Q+pV5bFnmLcPyDsDx2RL8+v+LsQp9SjGpRVJD
- JZgqS1ctSqyfcF+jKHKqp6aEpk+nVc7p/v4kFK0nhGIRxBrPkU=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:XNlwvoRgn/I=:GPc09Rlc6JdxKCcvTUiRFh
+ rVW3CTvjmOR2VUuEh66iRj7PaBTRepfr8su6tv1gSuRas/a7FyCISchnCEDz+RyEC1YQiGdj6
+ YEFxUUpZel6OVHm2oGiWQxzJ8HoWNKKmPBk3eqQeDDQiGwtR9WCesMN++w7KOHDYA93dk3BAI
+ OtdkCWVxVMQnBxFzoAiLv1GznKGTAza0Vty89jucwlFYj+nUi1sZxbxCVc8ImcQpBa+fWwdhe
+ p50n8+xQw0XNypgSYclT79I6z66q3HvMIrt/Ief6qVZ1jZGv4WsuNzXasG+yfHhvEaPlDXzgf
+ mI0RYRq2vH1S4/EIC/yx48LZcfUWBWzw3ylWtZ5E6QBLIuQ6dRn7St85jkvppQ5U4IpTy2qJi
+ cKsmhGNcfMUIugnF1mR3z/igT3cnVhvfs6epCK4e1kNXm/Mw/fZgzqPnRQVrjabJZdAoeVf+c
+ MHjhY3tbXLROg1tJx0UG6qMuZf8EOw/xrd/gKUHqPO57fAGrqug6bZBiSI2D9a2DzisbOTiBX
+ KiHT6mIouLIHgXjJHuq3QxbnN1bSTAF2uAkwX0D5MqQeODST8mNy40JAK8O+uz1l6dx5baMpL
+ Z7pXqlrrHHqmJuWXk1pGuX9VwSxt+Sfrroc6zZpTRPidJxXvCr3FR/C1EdqMjf1VnH82stceB
+ ResMdJ68vjD0dpWcMKOiSGwDypGweXtN0DlaVMOqxoBNqSJ/9WKqNEJK2EOOZALIZ3foHtygH
+ +1Fm+Jv6/xj7i37pjTwfRgiyxIjSeYaEINMwROloFYp2Fl/00EW3Y7QPNaIT3CwbZkfUztsLH
+ hY5GP1aH3tOsfc7CZY40wMJHlwatnerCq+0Z9QguDecdZ2/A7c=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The rtw88 driver defines emtpy functions with multiple indirections
-but gets one of these wrong:
+Building with some experimental patches, I came across a warning
+in the tls code:
 
-drivers/net/wireless/realtek/rtw88/pci.c:1347:12: error: 'rtw_pci_resume' defined but not used [-Werror=unused-function]
- 1347 | static int rtw_pci_resume(struct device *dev)
-      |            ^~~~~~~~~~~~~~
-drivers/net/wireless/realtek/rtw88/pci.c:1342:12: error: 'rtw_pci_suspend' defined but not used [-Werror=unused-function]
- 1342 | static int rtw_pci_suspend(struct device *dev)
+include/linux/compiler.h:215:30: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  215 |  *(volatile typeof(x) *)&(x) = (val);  \
+      |                              ^
+net/tls/tls_main.c:650:4: note: in expansion of macro 'smp_store_release'
+  650 |    smp_store_release(&saved_tcpv4_prot, prot);
 
-Better simplify it to rely on the conditional reference in
-SIMPLE_DEV_PM_OPS(), and mark the functions as __maybe_unused to avoid
-warning about it.
+This appears to be a legitimate warning about assigning a const pointer
+into the non-const 'saved_tcpv4_prot' global. Annotate both the ipv4 and
+ipv6 pointers 'const' to make the code internally consistent.
 
-I'm not sure if these are needed at all given that the functions
-don't do anything, but they were only recently added.
-
-Fixes: 44bc17f7f5b3 ("rtw88: support wowlan feature for 8822c")
+Fixes: 5bb4c45d466c ("net/tls: Read sk_prot once when building tls proto ops")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/wireless/realtek/rtw88/pci.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ net/tls/tls_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
-index e37c71495c0d..1af87eb2e53a 100644
---- a/drivers/net/wireless/realtek/rtw88/pci.c
-+++ b/drivers/net/wireless/realtek/rtw88/pci.c
-@@ -1338,22 +1338,17 @@ static void rtw_pci_phy_cfg(struct rtw_dev *rtwdev)
- 	rtw_pci_link_cfg(rtwdev);
- }
- 
--#ifdef CONFIG_PM
--static int rtw_pci_suspend(struct device *dev)
-+static int __maybe_unused rtw_pci_suspend(struct device *dev)
- {
- 	return 0;
- }
- 
--static int rtw_pci_resume(struct device *dev)
-+static int __maybe_unused rtw_pci_resume(struct device *dev)
- {
- 	return 0;
- }
- 
- static SIMPLE_DEV_PM_OPS(rtw_pm_ops, rtw_pci_suspend, rtw_pci_resume);
--#define RTW_PM_OPS (&rtw_pm_ops)
--#else
--#define RTW_PM_OPS NULL
--#endif
- 
- static int rtw_pci_claim(struct rtw_dev *rtwdev, struct pci_dev *pdev)
- {
-@@ -1582,7 +1577,7 @@ static struct pci_driver rtw_pci_driver = {
- 	.id_table = rtw_pci_id_table,
- 	.probe = rtw_pci_probe,
- 	.remove = rtw_pci_remove,
--	.driver.pm = RTW_PM_OPS,
-+	.driver.pm = &rtw_pm_ops,
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index 156efce50dbd..0e989005bdc2 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -56,9 +56,9 @@ enum {
+ 	TLS_NUM_PROTS,
  };
- module_pci_driver(rtw_pci_driver);
  
+-static struct proto *saved_tcpv6_prot;
++static const struct proto *saved_tcpv6_prot;
+ static DEFINE_MUTEX(tcpv6_prot_mutex);
+-static struct proto *saved_tcpv4_prot;
++static const struct proto *saved_tcpv4_prot;
+ static DEFINE_MUTEX(tcpv4_prot_mutex);
+ static struct proto tls_prots[TLS_NUM_PROTS][TLS_NUM_CONFIG][TLS_NUM_CONFIG];
+ static struct proto_ops tls_sw_proto_ops;
 -- 
 2.26.0
 
