@@ -2,98 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7FEC1A2B7A
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 23:54:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F4811A2BC0
+	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 00:10:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726652AbgDHVy2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 17:54:28 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:41925 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726494AbgDHVy2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 17:54:28 -0400
-Received: by mail-qk1-f195.google.com with SMTP id y3so1966444qky.8;
-        Wed, 08 Apr 2020 14:54:27 -0700 (PDT)
+        id S1726492AbgDHWKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 18:10:30 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:39875 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726467AbgDHWKa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 18:10:30 -0400
+Received: by mail-wm1-f67.google.com with SMTP id y24so1684092wma.4
+        for <netdev@vger.kernel.org>; Wed, 08 Apr 2020 15:10:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=80oRdp7P30+JZo0JuTVsvbrYkq28bFUCWUY33UXVWVo=;
-        b=r8qC0/Urc5VZ4LePFOcQkmQ7Dmtyd5ltpzgZrU1g/XBDNWkyrEPhDJyKfURA9U57yt
-         ossduzR5eWPv1pngi0U0VbFRIqAkDJo9sQpuSlfj6IcMluiphgsBNDWV7bXN0q4NLH0B
-         gHkX+FBtdtRIxcT2oNn3iIJolzFbOBKybH0j0+tZ9O4d8/uRcd/NEXsWEBpvb9L9P0Or
-         6/VTr2TPseeo5uGBM9E7wxORv6GcgPJjF/aCcfh2R6ilJLWL2HIrzD4afImMxRkDHDoS
-         qSz/EHoXJUaHGiaHcmsHUO0IfXZeQdpHmp7AoJ0NHzJ1xxCdXzHlskVw5zn1soh//laY
-         Wjew==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oE7Hj9Syoi/cKdQThdKFHNgx6mBLmKlQozrjLnYoP+8=;
+        b=ezqMMHUSpFvEEXo0YBUv2IcKzZDxta4M+pwGGuJV+ORMWyIUwts7ArO8syv/yI0y6h
+         Hv9WzN5anLyG0QwzNvm1l2zbkuW8lfvoHYgf9d/b5ANTCiM1wsB6XddThBMEZzjnzX01
+         fs6JLPI5oqM4y1FVpA+IahpvR9xZle/NRaP2Si2Oypbs9xYae3UC2Fia9jC/JOUsCmcJ
+         icY+BGZO/Fwh+T6USqeEplzNPS1r3lcTii9DwR6rlCJ4wIzLl2dxRgxsghFo+pTqN5+T
+         yq9QFbgsrZONTRL8fcLfNGxrdRnf47qzzhEy1aq087F0zPDNmc2tqa/45C567GBeVI1c
+         KSug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=80oRdp7P30+JZo0JuTVsvbrYkq28bFUCWUY33UXVWVo=;
-        b=Q5FYvbFJg3Xw4D4/hmRlT0Ggva16+4Ye3EvcFEDF32Ua7Zji4VehZ5C1qJ2Et0TMLO
-         HsDAHT3EU08xGzLPQDCDm3TnvCOVB7ROCcql+9pE9xi5sqEqG3SFibr1E2+NCUFkYp5f
-         dHJVHBJTIgNKtC0tXKvyZR2WyVvH7aHE7hm44qBRb++9Q/Bk6zR6z3CIwVipw807lBS8
-         H6jZiwee2SzpRkNA80aze9/L9WwNsBOpE/uYoxHyyCZPHbpJ50N3sEBp5pIzXXOJcyd5
-         Wy5hUyD9hVNb1SpLGlepCrghY0A4ew6w+SHSnD7nWM8yDVTzgBLPSik9ZtgaIuRJOon+
-         ZqLQ==
-X-Gm-Message-State: AGi0PuaXnIOleIGT6GczD4Q/xHu3ZzL7iUwQNAayOZoQXJ9ubfo+EWJF
-        bF9Wz8mY0TSf9exkgyZkz9w=
-X-Google-Smtp-Source: APiQypI/IgZ8IFFzz2XkAhS9o8ekvzboQN9JGpH2HUM9MiUgvQbd23WIQ22foaOevBDyoqlmBul5WQ==
-X-Received: by 2002:a37:6e87:: with SMTP id j129mr2076673qkc.358.1586382866520;
-        Wed, 08 Apr 2020 14:54:26 -0700 (PDT)
-Received: from localhost.localdomain ([177.220.176.139])
-        by smtp.gmail.com with ESMTPSA id u7sm1334132qkj.51.2020.04.08.14.54.25
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oE7Hj9Syoi/cKdQThdKFHNgx6mBLmKlQozrjLnYoP+8=;
+        b=PbEtUkNtol2lTghWoogTvOaPQMK+lQ/3AQNao/s1R6BgLmZB/91kcpB+Y0wFLCi+6D
+         PK2HuNweV68IXgNkl17Xtw6QhuTc+Hs0n59lRjMDqbg05kBN8PBYI8iLj6bHQHoc6P7u
+         xJOdvyd6g6CZXoMh/4JRwsQAXVNLCzQ08pyg03OSkgzhI1qhNEO8C2Ud3GvjnSmoDxBP
+         X7Kdfln1zHNphucrFv9FHHCFleEAXntjMw/KH0C1kPAU53RiReR9EiDxNv1nN6hBAVzW
+         f+7HVkEwGdVOkRo2lRd7CVAmkOXShCD0EdC5qlFJI4uD6Usue7G/Hx/Z4MarnVsxNx3G
+         M/+w==
+X-Gm-Message-State: AGi0PuY6z+uYekQ/m53EB0d4bITKSkhCV+0h7V+Tl+5PQc61C/rzd8Q6
+        walIJjSbMWwvgYUkpMyOhHg=
+X-Google-Smtp-Source: APiQypLllDnKC9Q7Q5VvaFO9nxjgiJlhM+/ZjscMuqvH4kLTUadkIX/W7osI0DFmts+TGIYplE100Q==
+X-Received: by 2002:a7b:cd89:: with SMTP id y9mr7012756wmj.102.1586383828503;
+        Wed, 08 Apr 2020 15:10:28 -0700 (PDT)
+Received: from de0709bef958.v.cablecom.net ([45.87.212.59])
+        by smtp.gmail.com with ESMTPSA id k84sm1164271wmk.2.2020.04.08.15.10.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Apr 2020 14:54:25 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 0E018C5510; Wed,  8 Apr 2020 18:54:23 -0300 (-03)
-Date:   Wed, 8 Apr 2020 18:54:22 -0300
-From:   "marcelo.leitner@gmail.com" <marcelo.leitner@gmail.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "leon@kernel.org" <leon@kernel.org>, Roi Dayan <roid@mellanox.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>
-Subject: Re: [PATCH net] net/mlx5e: limit log messages due to (ovs) probing
- to _once
-Message-ID: <20200408215422.GA137894@localhost.localdomain>
-References: <d57b95462cccf0f67089c91d3dfd3d1f4c46e9bf.1585872570.git.marcelo.leitner@gmail.com>
- <c4e43a61a8ad7f57e2cb228cc0ba810b68af89cb.camel@mellanox.com>
- <20200403024835.GA3547@localhost.localdomain>
- <d4c0225fc25a6979c6f6863eaf84ee4d4d0a7972.camel@mellanox.com>
+        Wed, 08 Apr 2020 15:10:28 -0700 (PDT)
+From:   Lothar Rubusch <l.rubusch@gmail.com>
+To:     jiri@mellanox.com, davem@davemloft.net, kuba@kernel.org,
+        corbet@lwn.net
+Cc:     netdev@vger.kernel.org, Lothar Rubusch <l.rubusch@gmail.com>
+Subject: [PATCH] Documentation: devlink: fix broken link warning
+Date:   Wed,  8 Apr 2020 22:09:31 +0000
+Message-Id: <20200408220931.27532-1-l.rubusch@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d4c0225fc25a6979c6f6863eaf84ee4d4d0a7972.camel@mellanox.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 08, 2020 at 07:51:22PM +0000, Saeed Mahameed wrote:
-...
-> > > I understand it is for debug only but i strongly suggest to not
-> > > totally
-> > > suppress these messages and maybe just move them to tracepoints
-> > > buffer
-> > > ? for those who would want to really debug .. 
-> > > 
-> > > we already have some tracepoints implemented for en_tc.c 
-> > > mlx5/core/diag/en_tc_tracepoints.c, maybe we should define a
-> > > tracepoint
-> > > for error reporting .. 
-> > 
-> > That, or s/netdev_warn/netdev_dbg/, but both are more hidden to the
-> > user than the _once.
-> > 
-> 
-> i don't see any reason to pollute kernel log with debug messages when
-> we have tracepoint buffer for en_tc .. 
+At 'make htmldocs' the following warning is thrown:
 
-So we're agreeing that these need to be changed. Good.
+Documentation/networking/devlink/devlink-trap.rst:302:
+WARNING: undefined label: generic-packet-trap-groups
 
-I don't think a sysadmin would be using tracepoints for
-troubleshooting this, but okay. My only objective here is exactly what
-you said, to not pollute kernel log too much with these potentially
-repetitive messages.
+Fixes the warning by setting the label to the specified header,
+within the same document.
+
+Signed-off-by: Lothar Rubusch <l.rubusch@gmail.com>
+---
+ Documentation/networking/devlink/devlink-trap.rst | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/networking/devlink/devlink-trap.rst b/Documentation/networking/devlink/devlink-trap.rst
+index a09971c2115c..fe089acb7783 100644
+--- a/Documentation/networking/devlink/devlink-trap.rst
++++ b/Documentation/networking/devlink/devlink-trap.rst
+@@ -257,6 +257,8 @@ drivers:
+   * :doc:`netdevsim`
+   * :doc:`mlxsw`
+ 
++.. _Generic-Packet-Trap-Groups:
++
+ Generic Packet Trap Groups
+ ==========================
+ 
+-- 
+2.20.1
+
