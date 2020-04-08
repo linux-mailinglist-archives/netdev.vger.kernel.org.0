@@ -2,123 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 49ADF1A24E4
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 17:22:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F07271A2553
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 17:36:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729566AbgDHPWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 11:22:49 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:39143 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729540AbgDHPWs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 11:22:48 -0400
-Received: from ip5f5bd698.dynamic.kabel-deutschland.de ([95.91.214.152] helo=wittgenstein.fritz.box)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <christian.brauner@ubuntu.com>)
-        id 1jMCXM-0001BO-Rr; Wed, 08 Apr 2020 15:22:44 +0000
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     Jens Axboe <axboe@kernel.dk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-api@vger.kernel.org
-Cc:     Jonathan Corbet <corbet@lwn.net>, Serge Hallyn <serge@hallyn.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, Tejun Heo <tj@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Saravana Kannan <saravanak@google.com>,
-        Jan Kara <jack@suse.cz>, David Howells <dhowells@redhat.com>,
-        Seth Forshee <seth.forshee@canonical.com>,
-        David Rheinsberg <david.rheinsberg@gmail.com>,
-        Tom Gundersen <teg@jklm.no>,
-        Christian Kellner <ckellner@redhat.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
-        linux-doc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 8/8] loopfs: only show devices in their correct instance
-Date:   Wed,  8 Apr 2020 17:21:51 +0200
-Message-Id: <20200408152151.5780-9-christian.brauner@ubuntu.com>
-X-Mailer: git-send-email 2.26.0
-In-Reply-To: <20200408152151.5780-1-christian.brauner@ubuntu.com>
-References: <20200408152151.5780-1-christian.brauner@ubuntu.com>
+        id S1729174AbgDHPgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 11:36:45 -0400
+Received: from mail-qk1-f173.google.com ([209.85.222.173]:44943 "EHLO
+        mail-qk1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728942AbgDHPgn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 11:36:43 -0400
+Received: by mail-qk1-f173.google.com with SMTP id j4so497583qkc.11
+        for <netdev@vger.kernel.org>; Wed, 08 Apr 2020 08:36:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=sxeWyCQdNpdEpYRo+Y4PyUMAycLOhv+ajInP2C0qDng=;
+        b=FdyQUhHwVVN+YVFog1G/K82F75PnHQSrKVgdNBsxxljFrzZnjjgggGelu7PKhOb0Mo
+         zAetRXRUv0YPP/aPvtHpTvoCAbBuC9ebAds81EJ2cu8g7ccJD1cHKu0UaXsZ3CHLRyKf
+         ocafB04iiOLhAFzFUy9CP0au7kzUSfp8txaPWY8gTAS4LUX700OcGB2YL21MTFX+nrcE
+         UR6umRU6LVEKvc//mMML9IIDYbJPTKFqz2dGMHDWl0r4rJNYqFAYnhG0ivqk8Xn82WyR
+         dsuHVng4LL30THPA4TPKr1YiVwIh1kWNRnJkF1EwIlsOAxCHgr8D6UOIYTbEoHccSpiR
+         8kNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sxeWyCQdNpdEpYRo+Y4PyUMAycLOhv+ajInP2C0qDng=;
+        b=Kt+jwBJswx4nmLdNLEIdbjnY6Xnt1QInOBc0b1U+UUe8jUgQM+u+l7QAhoOtaAF5HT
+         pB7+a8edxzJkz18mkL/sJrnKxkkPd/Rwkn+b7HXihrbF0eI/VWNAa82bPw6qpOCOiJ2x
+         R8/CWwMHq5WOrxd8RTJc3DwibdGcA5/WjPDjCbC6TGA8sWbOLAbQWzzZPVeUfXveaq8C
+         7ZGtpIohzhsF7kbdHJFNnkWEAX1Xc4rgm0+I8sVCResjdJuthH0ommilUueKhTirsBkI
+         47XYktj9SjD3IFIHYi0Nn3bO+xhnpud7OXfhkEdnnZaeopPZ5MkUlMsQWE8w9lEazyO8
+         1yVA==
+X-Gm-Message-State: AGi0PuYPnlqOXPj0ytGxtESVcvwCSGaqMsavSozPHNhGJBhRGISMOEdP
+        bjBsmLK1yoqn24lxg4zmqk04C6z9
+X-Google-Smtp-Source: APiQypKxPH+ei3IoV1I4l9d4UoUcVuanfephySr3CEpUkvmTJVC9xvr0MxKywXAZb92/m6DjDZ+BoQ==
+X-Received: by 2002:a37:8781:: with SMTP id j123mr5904928qkd.308.1586360201856;
+        Wed, 08 Apr 2020 08:36:41 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:440d:6925:c240:4cc1? ([2601:282:803:7700:440d:6925:c240:4cc1])
+        by smtp.googlemail.com with ESMTPSA id b82sm7767199qkc.13.2020.04.08.08.36.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Apr 2020 08:36:41 -0700 (PDT)
+Subject: Re: VRF Issue Since kernel 5
+To:     mmanning@vyatta.att-mail.com,
+        Maximilian Bosch <maximilian@mbosch.me>, netdev@vger.kernel.org
+References: <CWLP265MB1554C88316ACF2BDD4692ECAFDB10@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
+ <CWLP265MB15544E2F2303FA2D0F76B7F5FDB10@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
+ <CWLP265MB1554604C9DB9B28D245E47A2FDB10@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
+ <ef7ca3ad-d85c-01aa-42b6-b08db69399e4@vyatta.att-mail.com>
+ <20200310204721.7jo23zgb7pjf5j33@topsnens>
+ <2583bdb7-f9ea-3b7b-1c09-a273d3229b45@gmail.com>
+ <20200401181650.flnxssoyih7c5s5y@topsnens>
+ <b6ead5e9-cc0e-5017-e9a1-98b09b110650@gmail.com>
+ <20200401203523.vafhsqb3uxfvvvxq@topsnens>
+ <00917d3a-17f8-b772-5b93-3abdf1540b94@gmail.com>
+ <20200402230233.mumqo22khf7q7o7c@topsnens>
+ <5e64064d-eb03-53d3-f80a-7646e71405d8@gmail.com>
+ <d81f97fe-be4b-041d-1233-7e69758d96ef@vyatta.att-mail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <fb75df70-ef65-320c-7be5-ed51193f354b@gmail.com>
+Date:   Wed, 8 Apr 2020 09:36:39 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <d81f97fe-be4b-041d-1233-7e69758d96ef@vyatta.att-mail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since loopfs devices belong to a loopfs instance they have no business
-polluting the host's devtmpfs mount and should not propagate out of the
-namespace they belong to.
+On 4/8/20 4:07 AM, Mike Manning wrote:
+> Hi Maximilian,
+> Can you please clarify what the issue is with using 'ip vrf exec <vrf>
+> ssh' for running the ssh client in the vrf? This is the recommended
+> method for running an application in a VRF. As part of our VRF
 
-Cc: Jens Axboe <axboe@kernel.dk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
----
- drivers/base/devtmpfs.c | 4 ++--
- drivers/block/loop.c    | 4 +++-
- include/linux/device.h  | 3 +++
- 3 files changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/base/devtmpfs.c b/drivers/base/devtmpfs.c
-index c9017e0584c0..77371ceb88fa 100644
---- a/drivers/base/devtmpfs.c
-+++ b/drivers/base/devtmpfs.c
-@@ -111,7 +111,7 @@ int devtmpfs_create_node(struct device *dev)
- 	const char *tmp = NULL;
- 	struct req req;
- 
--	if (!thread)
-+	if (!thread || dev->no_devnode)
- 		return 0;
- 
- 	req.mode = 0;
-@@ -138,7 +138,7 @@ int devtmpfs_delete_node(struct device *dev)
- 	const char *tmp = NULL;
- 	struct req req;
- 
--	if (!thread)
-+	if (!thread || dev->no_devnode)
- 		return 0;
- 
- 	req.name = device_get_devnode(dev, NULL, NULL, NULL, &tmp);
-diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-index 7a14fd3e4329..df75ca4ac040 100644
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -2155,8 +2155,10 @@ static int loop_add(struct loop_device **l, int i, struct inode *inode)
- 	disk->queue		= lo->lo_queue;
- 	sprintf(disk->disk_name, "loop%d", i);
- #ifdef CONFIG_BLK_DEV_LOOPFS
--	if (loopfs_i_sb(inode))
-+	if (loopfs_i_sb(inode)) {
- 		disk->user_ns = loopfs_i_sb(inode)->s_user_ns;
-+		disk_to_dev(disk)->no_devnode = true;
-+	}
- #endif
- 
- 	add_disk(disk);
-diff --git a/include/linux/device.h b/include/linux/device.h
-index fa04dfd22bbc..9fa438e3e4ca 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -525,6 +525,8 @@ struct dev_links_info {
-  *		  sync_state() callback.
-  * @dma_coherent: this particular device is dma coherent, even if the
-  *		architecture supports non-coherent devices.
-+ * @no_devnode: whether device nodes associated with this device are kept out
-+ *		of devtmpfs (e.g. due to separate filesystem)
-  *
-  * At the lowest level, every device in a Linux system is represented by an
-  * instance of struct device. The device structure contains the information
-@@ -625,6 +627,7 @@ struct device {
-     defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
- 	bool			dma_coherent:1;
- #endif
-+	bool			no_devnode:1;
- };
- 
- static inline struct device *kobj_to_dev(struct kobject *kobj)
--- 
-2.26.0
-
+Running a client in default vrf and using route leaking to get the
+packet to go out is a broken setup. If it ever worked at all it was
+sheer luck and not the intention of the design. Route leaking between
+VRFs is for forwarding, not local processes. If a local process is to
+work over a VRF it MUST set the VRF on the socket; anything else is just
+broken.
