@@ -2,60 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3BB51A2ECC
-	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 07:36:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45BE41A2CA5
+	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 01:58:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726082AbgDIFeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Apr 2020 01:34:21 -0400
-Received: from mail.dsns.gov.ua ([194.0.148.101]:55928 "EHLO mail.dsns.gov.ua"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725283AbgDIFeV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Apr 2020 01:34:21 -0400
-X-Greylist: delayed 13825 seconds by postgrey-1.27 at vger.kernel.org; Thu, 09 Apr 2020 01:34:19 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dsns.gov.ua (Postfix) with ESMTP id 8710520A40FB;
-        Thu,  9 Apr 2020 02:48:52 +0300 (EEST)
-Received: from mail.dsns.gov.ua ([127.0.0.1])
-        by localhost (mail.dsns.gov.ua [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id KkgycN2DNVxE; Thu,  9 Apr 2020 02:48:52 +0300 (EEST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dsns.gov.ua (Postfix) with ESMTP id 8BFC420A40FA;
-        Thu,  9 Apr 2020 02:48:50 +0300 (EEST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.dsns.gov.ua 8BFC420A40FA
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dsns.gov.ua;
-        s=1E60DAC0-2607-11E9-81E6-7A77C2B36653; t=1586389730;
-        bh=JOr226zvJ+gm05fmVWBmBvLIaovPFE3Ssc/vebi6xw8=;
-        h=Date:From:Message-ID:MIME-Version;
-        b=Juu/8ZkM/3QLk0T2jgQ6E3ty6643IE974CIjnQgoYz8xUqqKRZKgdDZdYxvl45dF3
-         GpqujRmshh2BuR6aNoUZavqaFhnT15IKbF3lcHJOreMANXYrUqMZQIh7pwrMUYpG6V
-         R3RWnJfe2lSRS0+YcNp1XD099XHN/HJ/Aqobq1Y0caDnQWSufwm1ryXhwuiC1wTUHE
-         opa9UfulflQdczRw4/y285hSOTt7QSqK2PH3JTZbrT1krti39wnx/L21I8JMAH5u1P
-         VuMZI73YhR23TixoZEXolGMBBOE7QMmvBStISjdw9xlc5jFUUokVZ++3/eAl/lGd+C
-         QFwZMkbcae3vw==
-X-Virus-Scanned: amavisd-new at dsns.gov.ua
-Received: from mail.dsns.gov.ua ([127.0.0.1])
-        by localhost (mail.dsns.gov.ua [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id uZ3A6b6IaTic; Thu,  9 Apr 2020 02:48:50 +0300 (EEST)
-Received: from mail.dsns.gov.ua (localhost [127.0.0.1])
-        by mail.dsns.gov.ua (Postfix) with ESMTP id 1DDA720A40A3;
-        Thu,  9 Apr 2020 02:48:47 +0300 (EEST)
-Date:   Thu, 9 Apr 2020 02:48:47 +0300 (EEST)
-From:   Lerynne West <avia_duty@dsns.gov.ua>
-Reply-To: Lerynne West <lerynnewest584@gmail.com>
-Message-ID: <174884223.7253268.1586389727062.JavaMail.zimbra@dsns.gov.ua>
-Subject: Hello
+        id S1726549AbgDHX6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 19:58:14 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:53208 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726510AbgDHX6O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 19:58:14 -0400
+Received: from 1.general.cascardo.us.vpn ([10.172.70.58] helo=localhost.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <cascardo@canonical.com>)
+        id 1jMKaC-0001Kx-Ef; Wed, 08 Apr 2020 23:58:12 +0000
+From:   Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, keescook@chromium.org,
+        luto@amacapital.net, wad@chromium.org, shuah@kernel.org
+Subject: [PATCH] selftests/seccomp: allow clock_nanosleep instead of nanosleep
+Date:   Wed,  8 Apr 2020 20:57:53 -0300
+Message-Id: <20200408235753.8566-1-cascardo@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Originating-IP: [105.112.106.135, 172.69.253.145]
-X-Mailer: Zimbra 8.8.15_GA_3918 (zclient/8.8.15_GA_3918)
-Thread-Index: b52KInJEu2nn1m0xX3EIBT1R1TbiNA==
-Thread-Topic: Hello
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I am Lerynne West. Your email was selected for a donation. Please reach me =
-through my private email {lerynnewest584@gmail.com}=C2=A0=C2=A0
+glibc 2.31 calls clock_nanosleep when its nanosleep function is used. So
+the restart_syscall fails after that. In order to deal with it, we trace
+clock_nanosleep and nanosleep. Then we check for either.
+
+This works just fine on systems with both glibc 2.30 and glibc 2.31,
+whereas it failed before on a system with glibc 2.31.
+
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+---
+ tools/testing/selftests/seccomp/seccomp_bpf.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
+index 89fb3e0b552e..c0aa46ce14f6 100644
+--- a/tools/testing/selftests/seccomp/seccomp_bpf.c
++++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
+@@ -2803,12 +2803,13 @@ TEST(syscall_restart)
+ 			 offsetof(struct seccomp_data, nr)),
+ 
+ #ifdef __NR_sigreturn
+-		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, __NR_sigreturn, 6, 0),
++		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, __NR_sigreturn, 7, 0),
+ #endif
+-		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, __NR_read, 5, 0),
+-		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, __NR_exit, 4, 0),
+-		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, __NR_rt_sigreturn, 3, 0),
+-		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, __NR_nanosleep, 4, 0),
++		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, __NR_read, 6, 0),
++		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, __NR_exit, 5, 0),
++		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, __NR_rt_sigreturn, 4, 0),
++		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, __NR_nanosleep, 5, 0),
++		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, __NR_clock_nanosleep, 4, 0),
+ 		BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K, __NR_restart_syscall, 4, 0),
+ 
+ 		/* Allow __NR_write for easy logging. */
+@@ -2895,7 +2896,8 @@ TEST(syscall_restart)
+ 	ASSERT_EQ(PTRACE_EVENT_SECCOMP, (status >> 16));
+ 	ASSERT_EQ(0, ptrace(PTRACE_GETEVENTMSG, child_pid, NULL, &msg));
+ 	ASSERT_EQ(0x100, msg);
+-	EXPECT_EQ(__NR_nanosleep, get_syscall(_metadata, child_pid));
++	ret = get_syscall(_metadata, child_pid);
++	EXPECT_TRUE(ret == __NR_nanosleep || ret == __NR_clock_nanosleep);
+ 
+ 	/* Might as well check siginfo for sanity while we're here. */
+ 	ASSERT_EQ(0, ptrace(PTRACE_GETSIGINFO, child_pid, NULL, &info));
+-- 
+2.20.1
+
