@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF2881A2A56
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 22:27:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F27621A2A6E
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 22:28:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729333AbgDHU1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 16:27:51 -0400
-Received: from mout.kundenserver.de ([212.227.126.187]:51203 "EHLO
+        id S1730576AbgDHU2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 16:28:13 -0400
+Received: from mout.kundenserver.de ([212.227.126.130]:50203 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730438AbgDHU1u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 16:27:50 -0400
+        with ESMTP id S1729431AbgDHU1s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 16:27:48 -0400
 Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
  (mreue010 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1M1HqM-1jJXCV1zju-002p3H; Wed, 08 Apr 2020 22:27:21 +0200
+ 1Ma1kC-1jpzv402E8-00VxbF; Wed, 08 Apr 2020 22:27:22 +0200
 From:   Arnd Bergmann <arnd@arndb.de>
 To:     linux-kernel@vger.kernel.org,
         Masahiro Yamada <masahiroy@kernel.org>,
@@ -31,93 +31,81 @@ Cc:     Arnd Bergmann <arnd@arndb.de>, Andrzej Hajda <a.hajda@samsung.com>,
         Leon Romanovsky <leon@kernel.org>,
         dri-devel@lists.freedesktop.org, linux-renesas-soc@vger.kernel.org,
         netdev@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [RFC 4/6] drm/bridge/sii8620: fix extcon dependency
-Date:   Wed,  8 Apr 2020 22:27:09 +0200
-Message-Id: <20200408202711.1198966-5-arnd@arndb.de>
+Subject: [RFC 5/6] drm/rcar-du: fix selection of CMM driver
+Date:   Wed,  8 Apr 2020 22:27:10 +0200
+Message-Id: <20200408202711.1198966-6-arnd@arndb.de>
 X-Mailer: git-send-email 2.26.0
 In-Reply-To: <20200408202711.1198966-1-arnd@arndb.de>
 References: <20200408202711.1198966-1-arnd@arndb.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:vV8vEqFFzBxDwbCUpevBksXzEnRG+4YylcxGZKW7vX+9eMNUg1m
- GTSrbKOi6FlzzBUHGBDpQR3uJHzbcRVL29ejotroODkZe9OPHSlxi90k/mXcQ4EwBxDqz+S
- fwAOPMaKXUvZqrRoIeRpqd1CCyTHjbL5K4harE/L5KNprHiRjOcSxfYcjG43V5CQGDOrMdP
- 0Zvp6NP7uN5f0uBgGxXEA==
+X-Provags-ID: V03:K1:BHGsIuVv5ZbKZcE4TjncqtpdBu8WjZS+2Q1lxqyGkiA2mhZOxWk
+ P/dnbzJufBgPE0K1DKdoofKWfp0z22YhTz+VuyDG06en1W4KOhovhJrv6BugOwEFXqTaTj2
+ 288ntMN6bhI9PumD50NA/n3txC43UpJhfmdGrdxosHRyNYVJgDBMQiwxTTn/uWVFTqjSdUU
+ fDQQqODpLa+nnX9eremjg==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:MptYX3yueAQ=:b885v6hNqw1kQDiue/weO6
- uP+3VRcZwHepB7aNKzqTfmN4RuwxLKcd3Ykn79jFhPBxl2wZfHWApXes3mbeDb/x1w+Vf3eXo
- q9YEc9yKSSVlxROHdqCSWcymhLpZ2EDGCdvQbKoMGTtFXTirZiv2DAe3FnAWFufrzLccql5PD
- EHa10ti3QaaWQoWarrhnR+u9A33uYjAF35zBqi6jQol9OPXkKAlO5yJcEcD0jpkfo6GS81i5y
- kH+gPTPYH30Wr9WocW6L91lXSvOaqKNE3BzcyPFgUPkKZdEFM+dMi8tZl2HxIwzJA1XqcwFfi
- XrfEV0cIYSe2KcZozeoabmYbdGj6q/22WC5AsKTZZgalFOuOBF8wVGKu/2wC6RLZ9COX/CFeu
- 6W+gTiE6JSfyRpDVXLFq+HnzULwdyNoAEb9aJf3iXX2AjYYvaqyB/lzs4IWSfLtkGFp9HDRzt
- AqgANzoPqYHUQkhSHCS2jpi3VNEU1z3mj98JfTwXmrM5v9LhzBIuTMdDAgqLXUSCEdq7RhW3T
- XvOf7th7/rXNolz9+AOIiILyM7J3arHbaIfZhe23PnMVjW1r8ySVflQqck+e0e0zycDo0T/Bx
- YtLQLGldhMoefh+6y6apc8rGbDJpRnerakstMgLD3Xg4C3JBpOoFEMmWSTc0KwSjScvTdVbFZ
- N2d5HtbEJry0CQNPtNudp2FRAzOMVvxY6G+Tz19wbIEno35Y6FxB+s2evGed0xWIVvhi7fdjc
- QFRA5cQBDSRwNMPrqLXlIjX5+A+SX8eaXTCT/FampsaxQeRsv7tSnCQm+OMw67CNp7QNJOZOs
- HS8WJIHYn7I0p4NzUPVc9S0+juW29sTv81JFrBTxLetf8xRiNA=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:pp2T8S8fwiY=:YFTKAmm3THs3lkgTu/9cJO
+ OlEtbaj4m1Q5rf7W3W0uZLdMofdnYljtx8FY5AetjTPsNapbUFYF/lEmeEIi2ZJ2XntmC8zYC
+ EJ8vhWs3nd3PF4ZiisP0ZuphikEQmE6sMD/MqJ4fMBozRB7Y7Q9WYtgy9LYl4pofjT5ITkfj8
+ zn1K+ou3M5Zg8obfkcB7h2q53e3Xf0UwPgVqBhex3D/m3VsHxFczoP4Ke5g8FGmAhJCUxAlwL
+ 2PFHFwGyb6KCkVHbnDkhoOeZxvn0QqXK8+45nCfJIvr2AbPnhixWzgQByM2NXOAZEd4teCAz/
+ qxorUPGpDH1S7dbIj3N3ooaHTS3oi4JQacv8a+RLyyJQ9pwxlazye1rH6RI0Z6gK3MiRFnhZ2
+ lq9fUUdQg/KctqBHG8a73RVU0VDaP0fy1BjwPBZaFhlWURfyNLxRG/qVhfmA0raUlGneT2iOW
+ He+R/86cyk0/B1G6OZZxXsX5ZBaVdYxOT/CYk3yXRB40jdkw/v8ZTle5gBvZ6zySj1Ad0dcs/
+ 4iMaS5adZbjp1svnyH2qvzvuB4vAmca9l1RJLzwFCdzSwFMdwNpowt/525p3rQ5hPvavQkS8W
+ 6eOsFHwpp9Kp7ZCoHvnhNwEEvUI7wiYSRg1BO7t3B5OgB19ndMAHUoTgc3lbOxgyhoTXPaX8o
+ tI7K8mzkll+T9iyBn99wcIbTYTEiYhRM1BvmfTtCRyn9H7UWD3WTPba8PPrynVA50MrI7uLly
+ BS8Jy4fz75apY/KbCLbbT54mmCW1x+HAOJaCCcrHcpdZkjz0fj3tWKOz+LDi0Kvmt0qRb5tKd
+ rSVLD4Vzw4UcAzTHMoiBj6bSie1LlISiOrXQ/oOoxrZBCBLNp8=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using 'imply' does not work here, it still cause the same build
-failure:
+The 'imply' statement does not seem to have an effect, as it's
+still possible to turn the CMM code into a loadable module
+in a randconfig build, leading to a link error:
 
-arm-linux-gnueabi-ld: drivers/gpu/drm/bridge/sil-sii8620.o: in function `sii8620_remove':
-sil-sii8620.c:(.text+0x1b8): undefined reference to `extcon_unregister_notifier'
-arm-linux-gnueabi-ld: drivers/gpu/drm/bridge/sil-sii8620.o: in function `sii8620_probe':
-sil-sii8620.c:(.text+0x27e8): undefined reference to `extcon_find_edev_by_node'
-arm-linux-gnueabi-ld: sil-sii8620.c:(.text+0x2870): undefined reference to `extcon_register_notifier'
-arm-linux-gnueabi-ld: drivers/gpu/drm/bridge/sil-sii8620.o: in function `sii8620_extcon_work':
-sil-sii8620.c:(.text+0x2908): undefined reference to `extcon_get_state'
+arm-linux-gnueabi-ld: drivers/gpu/drm/rcar-du/rcar_du_crtc.o: in function `rcar_du_crtc_atomic_enable':
+rcar_du_crtc.c:(.text+0xad4): undefined reference to `rcar_lvds_clk_enable'
+arm-linux-gnueabi-ld: drivers/gpu/drm/rcar-du/rcar_du_crtc.o: in function `rcar_du_crtc_atomic_disable':
+rcar_du_crtc.c:(.text+0xd7c): undefined reference to `rcar_lvds_clk_disable'
+arm-linux-gnueabi-ld: drivers/gpu/drm/rcar-du/rcar_du_drv.o: in function `rcar_du_init':
+rcar_du_drv.c:(.init.text+0x4): undefined reference to `rcar_du_of_init'
+arm-linux-gnueabi-ld: drivers/gpu/drm/rcar-du/rcar_du_encoder.o: in function `rcar_du_encoder_init':
 
-I tried the usual 'depends on EXTCON || !EXTCON' logic, but that caused
-a circular Kconfig dependency. Using IS_REACHABLE() is ugly but works.
+Remove the 'imply', and instead use a silent symbol that defaults
+to the correct setting.
 
-Fixes: 7a109673899b ("drm/bridge/sii8620: add Kconfig dependency on extcon")
+Fixes: e08e934d6c28 ("drm: rcar-du: Add support for CMM")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/gpu/drm/bridge/Kconfig       | 1 -
- drivers/gpu/drm/bridge/sil-sii8620.c | 5 +++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/rcar-du/Kconfig | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/Kconfig b/drivers/gpu/drm/bridge/Kconfig
-index aaed2347ace9..78e5ba06acff 100644
---- a/drivers/gpu/drm/bridge/Kconfig
-+++ b/drivers/gpu/drm/bridge/Kconfig
-@@ -90,7 +90,6 @@ config DRM_SIL_SII8620
- 	tristate "Silicon Image SII8620 HDMI/MHL bridge"
- 	depends on OF
+diff --git a/drivers/gpu/drm/rcar-du/Kconfig b/drivers/gpu/drm/rcar-du/Kconfig
+index 0919f1f159a4..5e35f5934d62 100644
+--- a/drivers/gpu/drm/rcar-du/Kconfig
++++ b/drivers/gpu/drm/rcar-du/Kconfig
+@@ -4,7 +4,6 @@ config DRM_RCAR_DU
+ 	depends on DRM && OF
+ 	depends on ARM || ARM64
+ 	depends on ARCH_RENESAS || COMPILE_TEST
+-	imply DRM_RCAR_CMM
+ 	imply DRM_RCAR_LVDS
  	select DRM_KMS_HELPER
--	imply EXTCON
- 	depends on RC_CORE || !RC_CORE
+ 	select DRM_KMS_CMA_HELPER
+@@ -15,9 +14,8 @@ config DRM_RCAR_DU
+ 	  If M is selected the module will be called rcar-du-drm.
+ 
+ config DRM_RCAR_CMM
+-	tristate "R-Car DU Color Management Module (CMM) Support"
++	def_tristate DRM_RCAR_DU
+ 	depends on DRM && OF
+-	depends on DRM_RCAR_DU
  	help
- 	  Silicon Image SII8620 HDMI/MHL bridge chip driver.
-diff --git a/drivers/gpu/drm/bridge/sil-sii8620.c b/drivers/gpu/drm/bridge/sil-sii8620.c
-index 92acd336aa89..94b6c38e6855 100644
---- a/drivers/gpu/drm/bridge/sil-sii8620.c
-+++ b/drivers/gpu/drm/bridge/sil-sii8620.c
-@@ -2330,7 +2330,8 @@ static int sii8620_probe(struct i2c_client *client,
- 	if (ret)
- 		return ret;
+ 	  Enable support for R-Car Color Management Module (CMM).
  
--	ret = sii8620_extcon_init(ctx);
-+	if (IS_REACHABLE(CONFIG_EXTCON))
-+		ret = sii8620_extcon_init(ctx);
- 	if (ret < 0) {
- 		dev_err(ctx->dev, "failed to initialize EXTCON\n");
- 		return ret;
-@@ -2352,7 +2353,7 @@ static int sii8620_remove(struct i2c_client *client)
- {
- 	struct sii8620 *ctx = i2c_get_clientdata(client);
- 
--	if (ctx->extcon) {
-+	if (IS_REACHABLE(CONFIG_EXTCON) && ctx->extcon) {
- 		extcon_unregister_notifier(ctx->extcon, EXTCON_DISP_MHL,
- 					   &ctx->extcon_nb);
- 		flush_work(&ctx->extcon_wq);
 -- 
 2.26.0
 
