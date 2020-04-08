@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ADF9C1A2038
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 13:51:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EB521A2035
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 13:51:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728662AbgDHLvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 07:51:22 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:46362 "EHLO
+        id S1728652AbgDHLvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 07:51:18 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:37520 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728655AbgDHLvU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 07:51:20 -0400
+        by vger.kernel.org with ESMTP id S1728635AbgDHLvR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 07:51:17 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586346678;
+        s=mimecast20190719; t=1586346676;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=AryrqyZ3mlTrDFeOWBQ1XUsJPbT6sIwVfGT3fNb6aI0=;
-        b=d6g0grW/oJE12uIfycTB0hEshpaCMsiAOjOv/0w9rPydjUqz6KyDOuY725reUZ2YCxBYe2
-        6hVU5badvoIuO9rtxYs1tn7qfoLXufyQeRMQAtDV4TrHVYhpNZJF8jOT8do0AMO4TjjlXS
-        ntNYydX2h+dmi53+efGI1WxTe49vjv4=
+        bh=jXba+XtT9T2e7WXxZq/751Lokp2fv24Zljt1exxIEiA=;
+        b=iUHqdr9/fe/glcLCsP8VG2ekoQSJlYb+Zoafgm9TjWdLLA7hh3t5Q+JCcz+qtpMPI9K0qv
+        kkx5GPso9jRYl2GeiUaKpFLImaXlfSg9mR2XvX4Rd8H1x+7Tq6RuPULP9lSIJOrqVoFn44
+        GgO0xkpHxdC6wA/FV6/pCrEPlVjgN1c=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-162-STAdAJbSNZSdXMpFFMPJMA-1; Wed, 08 Apr 2020 07:51:14 -0400
-X-MC-Unique: STAdAJbSNZSdXMpFFMPJMA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+ us-mta-459-M3zlFnoCOwiOG7UGCw3A4A-1; Wed, 08 Apr 2020 07:51:15 -0400
+X-MC-Unique: M3zlFnoCOwiOG7UGCw3A4A-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E303019067F0;
-        Wed,  8 Apr 2020 11:51:11 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 87855801F8A;
+        Wed,  8 Apr 2020 11:51:12 +0000 (UTC)
 Received: from firesoul.localdomain (unknown [10.40.208.40])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A9F585C1BB;
-        Wed,  8 Apr 2020 11:51:00 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C04AF60BFB;
+        Wed,  8 Apr 2020 11:51:05 +0000 (UTC)
 Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id BCC15300020FA;
-        Wed,  8 Apr 2020 13:50:59 +0200 (CEST)
-Subject: [PATCH RFC v2 05/33] net: netsec: Add support for XDP frame size
+        by firesoul.localdomain (Postfix) with ESMTP id D04CE300020FB;
+        Wed,  8 Apr 2020 13:51:04 +0200 (CEST)
+Subject: [PATCH RFC v2 06/33] net: XDP-generic determining XDP frame size
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     sameehj@amazon.com
-Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, zorik@amazon.com,
-        akiyano@amazon.com, gtzalik@amazon.com,
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, zorik@amazon.com, akiyano@amazon.com,
+        gtzalik@amazon.com,
         =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Daniel Borkmann <borkmann@iogearbox.net>,
         Alexei Starovoitov <alexei.starovoitov@gmail.com>,
@@ -54,125 +53,68 @@ Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
         Lorenzo Bianconi <lorenzo@kernel.org>,
         Saeed Mahameed <saeedm@mellanox.com>
-Date:   Wed, 08 Apr 2020 13:50:59 +0200
-Message-ID: <158634665970.707275.15490233569929847990.stgit@firesoul>
+Date:   Wed, 08 Apr 2020 13:51:04 +0200
+Message-ID: <158634666478.707275.4768222424893157119.stgit@firesoul>
 In-Reply-To: <158634658714.707275.7903484085370879864.stgit@firesoul>
 References: <158634658714.707275.7903484085370879864.stgit@firesoul>
 User-Agent: StGit/0.19
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+The SKB "head" pointer points to the data area that contains
+skb_shared_info, that can be found via skb_end_pointer(). Given
+xdp->data_hard_start have been established (basically pointing to
+skb->head), frame size is between skb_end_pointer() and data_hard_start,
+plus the size reserved to skb_shared_info.
 
-This driver takes advantage of page_pool PP_FLAG_DMA_SYNC_DEV that
-can help reduce the number of cache-lines that need to be flushed
-when doing DMA sync for_device. Due to xdp_adjust_tail can grow the
-area accessible to the by the CPU (can possibly write into), then max
-sync length *after* bpf_prog_run_xdp() needs to be taken into account.
+Change the bpf_xdp_adjust_tail offset adjust of skb->len, to be a positive
+offset number on grow, and negative number on shrink.  As this seems more
+natural when reading the code.
 
-Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 ---
- drivers/net/ethernet/socionext/netsec.c |   30 ++++++++++++++++++------------
- 1 file changed, 18 insertions(+), 12 deletions(-)
+ net/core/dev.c |   14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
-index a5a0fb60193a..e1f4be4b3d69 100644
---- a/drivers/net/ethernet/socionext/netsec.c
-+++ b/drivers/net/ethernet/socionext/netsec.c
-@@ -884,23 +884,28 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 			  struct xdp_buff *xdp)
- {
- 	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
--	unsigned int len = xdp->data_end - xdp->data;
-+	unsigned int sync, len = xdp->data_end - xdp->data;
- 	u32 ret = NETSEC_XDP_PASS;
-+	struct page *page;
- 	int err;
- 	u32 act;
- 
- 	act = bpf_prog_run_xdp(prog, xdp);
- 
-+	/* Due xdp_adjust_tail: DMA sync for_device cover max len CPU touch */
-+	sync = xdp->data_end - xdp->data_hard_start - NETSEC_RXBUF_HEADROOM;
-+	sync = max(sync, len);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 9c9e763bfe0e..899920c3a78f 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4548,6 +4548,11 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+ 	xdp->data_meta = xdp->data;
+ 	xdp->data_end = xdp->data + hlen;
+ 	xdp->data_hard_start = skb->data - skb_headroom(skb);
 +
- 	switch (act) {
- 	case XDP_PASS:
- 		ret = NETSEC_XDP_PASS;
- 		break;
- 	case XDP_TX:
- 		ret = netsec_xdp_xmit_back(priv, xdp);
--		if (ret != NETSEC_XDP_TX)
--			page_pool_put_page(dring->page_pool,
--					   virt_to_head_page(xdp->data), len,
--					   true);
-+		if (ret != NETSEC_XDP_TX) {
-+			page = virt_to_head_page(xdp->data);
-+			page_pool_put_page(dring->page_pool, page, sync, true);
-+		}
- 		break;
- 	case XDP_REDIRECT:
- 		err = xdp_do_redirect(priv->ndev, xdp, prog);
-@@ -908,9 +913,8 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 			ret = NETSEC_XDP_REDIR;
- 		} else {
- 			ret = NETSEC_XDP_CONSUMED;
--			page_pool_put_page(dring->page_pool,
--					   virt_to_head_page(xdp->data), len,
--					   true);
-+			page = virt_to_head_page(xdp->data);
-+			page_pool_put_page(dring->page_pool, page, sync, true);
- 		}
- 		break;
- 	default:
-@@ -921,8 +925,8 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 		/* fall through -- handle aborts by dropping packet */
- 	case XDP_DROP:
- 		ret = NETSEC_XDP_CONSUMED;
--		page_pool_put_page(dring->page_pool,
--				   virt_to_head_page(xdp->data), len, true);
-+		page = virt_to_head_page(xdp->data);
-+		page_pool_put_page(dring->page_pool, page, sync, true);
- 		break;
++	/* SKB "head" area always have tailroom for skb_shared_info */
++	xdp->frame_sz  = (void *)skb_end_pointer(skb) - xdp->data_hard_start;
++	xdp->frame_sz += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
++
+ 	orig_data_end = xdp->data_end;
+ 	orig_data = xdp->data;
+ 	eth = (struct ethhdr *)xdp->data;
+@@ -4571,14 +4576,11 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+ 		skb_reset_network_header(skb);
  	}
  
-@@ -936,10 +940,14 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
- 	struct netsec_rx_pkt_info rx_info;
- 	enum dma_data_direction dma_dir;
- 	struct bpf_prog *xdp_prog;
-+	struct xdp_buff xdp;
- 	u16 xdp_xmit = 0;
- 	u32 xdp_act = 0;
- 	int done = 0;
+-	/* check if bpf_xdp_adjust_tail was used. it can only "shrink"
+-	 * pckt.
+-	 */
+-	off = orig_data_end - xdp->data_end;
++	/* check if bpf_xdp_adjust_tail was used */
++	off = xdp->data_end - orig_data_end;
+ 	if (off != 0) {
+ 		skb_set_tail_pointer(skb, xdp->data_end - xdp->data);
+-		skb->len -= off;
+-
++		skb->len += off; /* positive on grow, negative on shrink */
+ 	}
  
-+	xdp.rxq = &dring->xdp_rxq;
-+	xdp.frame_sz = PAGE_SIZE;
-+
- 	rcu_read_lock();
- 	xdp_prog = READ_ONCE(priv->xdp_prog);
- 	dma_dir = page_pool_get_dma_dir(dring->page_pool);
-@@ -953,7 +961,6 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
- 		struct sk_buff *skb = NULL;
- 		u16 pkt_len, desc_len;
- 		dma_addr_t dma_handle;
--		struct xdp_buff xdp;
- 		void *buf_addr;
- 
- 		if (de->attr & (1U << NETSEC_RX_PKT_OWN_FIELD)) {
-@@ -1002,7 +1009,6 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
- 		xdp.data = desc->addr + NETSEC_RXBUF_HEADROOM;
- 		xdp_set_data_meta_invalid(&xdp);
- 		xdp.data_end = xdp.data + pkt_len;
--		xdp.rxq = &dring->xdp_rxq;
- 
- 		if (xdp_prog) {
- 			xdp_result = netsec_run_xdp(priv, xdp_prog, &xdp);
+ 	/* check if XDP changed eth hdr such SKB needs update */
 
 
