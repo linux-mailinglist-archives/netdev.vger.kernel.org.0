@@ -2,124 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4480F1A2B76
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 23:51:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 927811A2B64
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 23:48:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726678AbgDHVvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 17:51:37 -0400
-Received: from mail.pqgruber.com ([52.59.78.55]:44878 "EHLO mail.pqgruber.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726523AbgDHVvh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Apr 2020 17:51:37 -0400
-X-Greylist: delayed 367 seconds by postgrey-1.27 at vger.kernel.org; Wed, 08 Apr 2020 17:51:36 EDT
-Received: from workstation.tuxnet (213-47-165-233.cable.dynamic.surfer.at [213.47.165.233])
-        by mail.pqgruber.com (Postfix) with ESMTPSA id D4D19C72B3E;
-        Wed,  8 Apr 2020 23:45:27 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pqgruber.com;
-        s=mail; t=1586382328;
-        bh=/Xfxr6bQ0YUHTVcrSQ5u+QRzIamIw5VqJzOKJ0VgNNU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=k/0qDYpotiovTl+xpRajQ9esKeqgReP0BjkNmbwAasfOY0GzIsXwv2wMkoEvZcZIa
-         fZYXBZIE8zZ3x/IXsPy8WBeXz/dCz4QwPnP25vbnvde5ETHg3UbR0YdlVXhdSZP8qJ
-         nqkHJu02YexlKmteRSlFpgB0nnWW8YFhuMcQ0q5I=
-From:   Clemens Gruber <clemens.gruber@pqgruber.com>
+        id S1726520AbgDHVsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 17:48:25 -0400
+Received: from mail-40134.protonmail.ch ([185.70.40.134]:20078 "EHLO
+        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726409AbgDHVsY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 17:48:24 -0400
+Date:   Wed, 08 Apr 2020 21:48:16 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=proton;
+        t=1586382502; bh=CK5BJ5IYf8vYEacgqeHy5n0FsUoPfe1BipswSDkcMkk=;
+        h=Date:To:From:Reply-To:Subject:From;
+        b=hEOM/kXyveheiOrUL57r0gRQ4yAhUN+FrYZwZ/BnoHhOvRspPfzQ1afxnSPDOokYN
+         w5zBi0MnEpOdxjc8H8z6CWEI8eEb1asyheeca8rLfLyn1gdrLORqySUwTazJRqIQr4
+         gapLgWwqWHyu7DKBcJg5t0q/3yjaFgeC8Lr1APf9q/vZkFZpzJ+fGWeLBNhZIH2aT3
+         MG4kHrkPyGcgRIIICogO6sWANqIzUwHWmQCm5HdeoudOGJtZIRMPgXNdr+ziRnAjx1
+         RzD+qqI1N6+VZHYtz4gQdBxCm/rffuOP42NaATxw/MR5RHi0Pzl1fz+xebV5FQCfPZ
+         DXd/ZOfhowAHA==
 To:     netdev@vger.kernel.org
-Cc:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org,
-        Clemens Gruber <clemens.gruber@pqgruber.com>,
-        stable@vger.kernel.org
-Subject: [PATCH] net: phy: marvell: Fix pause frame negotiation
-Date:   Wed,  8 Apr 2020 23:43:26 +0200
-Message-Id: <20200408214326.934440-1-clemens.gruber@pqgruber.com>
-X-Mailer: git-send-email 2.26.0
+From:   Yadunandan Pillai <thesw4rm@pm.me>
+Reply-To: Yadunandan Pillai <thesw4rm@pm.me>
+Subject: Including Bluetooth in Netfilter/eBPF for packet tracing and manipulation
+Message-ID: <98a782fe-bf17-c84a-1470-3f29d5b4d946@pm.me>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=7.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on mail.protonmail.ch
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The negotiation of flow control / pause frame modes was broken since
-commit fcf1f59afc67 ("net: phy: marvell: rearrange to use
-genphy_read_lpa()") moved the setting of phydev->duplex below the
-phy_resolve_aneg_pause call. Due to a check of DUPLEX_FULL in that
-function, phydev->pause was no longer set.
+Are there any active efforts on creating packet=20
+interception/modification hooks
+for Bluetooth in Netfilter or eBPF? It would be pretty useful so you can=20
+bridge
+the two protocols for IoT networks and the like. I've started looking=20
+into it
+but don't want to step on anyone else's work if it's already an ongoing
+project.
 
-Fix it by moving the parsing of the status variable before the blocks
-dealing with the pause frames.
 
-Fixes: fcf1f59afc67 ("net: phy: marvell: rearrange to use genphy_read_lpa()")
-Cc: stable@vger.kernel.org # v5.6+
-Signed-off-by: Clemens Gruber <clemens.gruber@pqgruber.com>
----
- drivers/net/phy/marvell.c | 44 +++++++++++++++++++--------------------
- 1 file changed, 22 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 4714ca0e0d4b..02cde4c0668c 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -1263,6 +1263,28 @@ static int marvell_read_status_page_an(struct phy_device *phydev,
- 	int lpa;
- 	int err;
- 
-+	if (!(status & MII_M1011_PHY_STATUS_RESOLVED))
-+		return 0;
-+
-+	if (status & MII_M1011_PHY_STATUS_FULLDUPLEX)
-+		phydev->duplex = DUPLEX_FULL;
-+	else
-+		phydev->duplex = DUPLEX_HALF;
-+
-+	switch (status & MII_M1011_PHY_STATUS_SPD_MASK) {
-+	case MII_M1011_PHY_STATUS_1000:
-+		phydev->speed = SPEED_1000;
-+		break;
-+
-+	case MII_M1011_PHY_STATUS_100:
-+		phydev->speed = SPEED_100;
-+		break;
-+
-+	default:
-+		phydev->speed = SPEED_10;
-+		break;
-+	}
-+
- 	if (!fiber) {
- 		err = genphy_read_lpa(phydev);
- 		if (err < 0)
-@@ -1291,28 +1313,6 @@ static int marvell_read_status_page_an(struct phy_device *phydev,
- 		}
- 	}
- 
--	if (!(status & MII_M1011_PHY_STATUS_RESOLVED))
--		return 0;
--
--	if (status & MII_M1011_PHY_STATUS_FULLDUPLEX)
--		phydev->duplex = DUPLEX_FULL;
--	else
--		phydev->duplex = DUPLEX_HALF;
--
--	switch (status & MII_M1011_PHY_STATUS_SPD_MASK) {
--	case MII_M1011_PHY_STATUS_1000:
--		phydev->speed = SPEED_1000;
--		break;
--
--	case MII_M1011_PHY_STATUS_100:
--		phydev->speed = SPEED_100;
--		break;
--
--	default:
--		phydev->speed = SPEED_10;
--		break;
--	}
--
- 	return 0;
- }
- 
--- 
-2.26.0
 
