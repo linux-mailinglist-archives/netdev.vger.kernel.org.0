@@ -2,230 +2,305 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A2331A2AAC
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 22:52:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 108531A2ABD
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 23:00:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729287AbgDHUwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 16:52:40 -0400
-Received: from mail-wm1-f42.google.com ([209.85.128.42]:38650 "EHLO
-        mail-wm1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729231AbgDHUwj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 16:52:39 -0400
-Received: by mail-wm1-f42.google.com with SMTP id f20so1290230wmh.3
-        for <netdev@vger.kernel.org>; Wed, 08 Apr 2020 13:52:37 -0700 (PDT)
+        id S1729703AbgDHVAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 17:00:03 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:55148 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728797AbgDHVAC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 17:00:02 -0400
+Received: by mail-wm1-f67.google.com with SMTP id h2so1239253wmb.4
+        for <netdev@vger.kernel.org>; Wed, 08 Apr 2020 14:00:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=3XbbyHHJ0IZf1sgUmuQvknob5+Jn1cbPagotsX3JEgQ=;
-        b=sFpWlM5wymWPfpcN4a1YI8YV+vKnmtVkm+bHIazW6m30cmXKRiodUCs+EtZMaw7Ke9
-         VyV7+GlID9nS/fPo++vMoVVgGgZQ/drSbPNdT1LkegLrv0YFs2U/I8ANQH323lkvgK6L
-         eVkH8FqKP+dvhALOKNVU3raz3oRfd63hctQ54jsQLrRnwhEJSZKge1B5uzS/5TjUGhUw
-         4hsu2z2SjVwvc2GsQBm9GCrSyFSQmNoHe081ogfHb9LNUa7HrPoyBk3FwIG0audn9lSo
-         0AOriahz96qlsvpyotyHpcF/lNUT7MhIBmJoXcYTk2s5lBe7R8ck95y/WiiEWbWj06vY
-         VlXA==
+        h=date:from:to:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=PhPifwOwQ588DESREyza7bMifJxpxEdh8KQpg1xL+oo=;
+        b=Hzg8IW2kFoWaTbQZyXk29kYcTCR7sVx4YzYDE73u3EpLWE2i1iYWKwTzf8duZUdwkv
+         2FxTvqzW+lkL7MZCIqlaXtqt5mD09CoxkvpgChf8LWqKNBrGUa3CsZYuu50+1AxFI30F
+         n8vMerLvx5tDuqkleH2rMSutDC3WDAHtRm72ih1Pm3Kt+6FNfKdtb6+SjSa8TEkOhxcX
+         dzpPD0OjEw74098stJvKw9vKM+jX9F/3mrgJryXY1DAm4LDD7diNHTTN2gB/4gDTqtKz
+         PLulm4BBn1puLnd/FZsKC408Ox0wjQDoBoE/QnZnOPWl2MHLvobXHA5VwL2GH3cumQvr
+         niEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=3XbbyHHJ0IZf1sgUmuQvknob5+Jn1cbPagotsX3JEgQ=;
-        b=KeZNV9N5Lfm+rzWSIbhaZFYygTMss1BvteJD4raXQzbJCcBjm1MbQeOyz7vVz0ycEW
-         HFSApnoubVHtCoWCpDtoZ6sgWdmzX50Srp9PYrdp/oRtKRpKeC7/3KDd7DZ/663yOSoU
-         0m3lJBeUMPn3I6ktsZ1ep92FMwBeoHj+gjwbeS1iK9G6QSy7dgagqWkVqOl9CiFFElQk
-         xqdC8xeXyGdxZFb0+JvxBA5MEZJWrLZjQvNgDVEGXXGA8pYT7eqVOsIRWxTploW4U2Ez
-         hsvCk2v/D8QEOuNpDjiPgRz4Xfn0RvoomcExhfAtorOpercj68DnaV6FEDIIgTRff3Qg
-         Z8Xg==
-X-Gm-Message-State: AGi0PuZM6rTZZe33lFsdbLcs+toiDTlY68LlT4YpBdiLt5rryChK7uy7
-        7KxwpC2dnRVTGL5jfPbbwuFP6wZx
-X-Google-Smtp-Source: APiQypK1vpK6dfzamY4zQ4vHDND/i11nUZPzEXpMNZF1uzc331jm/gKy6ewFCEc33sZH8GyxWbYQzQ==
-X-Received: by 2002:a7b:cc01:: with SMTP id f1mr6810136wmh.39.1586379156895;
-        Wed, 08 Apr 2020 13:52:36 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id n6sm11034328wrs.81.2020.04.08.13.52.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Apr 2020 13:52:36 -0700 (PDT)
-Subject: Re: Changing devlink port flavor dynamically for DSA
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>
-References: <ef16b5bb-4115-e540-0ffd-1531e5982612@gmail.com>
- <CA+h21hrtUg9Xxwxfe+N6MkY2eSjjDTQc+sTtRwYW4kf_u3quwA@mail.gmail.com>
- <5efb57cc-d783-ed70-73c1-3114f4952520@gmail.com>
- <CA+h21hpG64V4OhF0yRa-HfBYo9EoZDP8P-y3WT==w4WUrNVkLQ@mail.gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <d9a7427d-09b5-9f3b-ba3a-7aadddf34c50@gmail.com>
-Date:   Wed, 8 Apr 2020 13:52:33 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.6.0
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=PhPifwOwQ588DESREyza7bMifJxpxEdh8KQpg1xL+oo=;
+        b=bJe7BvzL3LrxY3ir7q6GLUCjKmjxye1mGQsTtLJUOEIRV9fOS7dvpapujOvBGD+HUy
+         p6pWPlCxhIXXFuaj0/OTuClHUx45Ykz42TbtcMNT+RFhN924uXml4139m8+zmymv8nyT
+         4taGDBNSymyOFx1ILba8fFGlCy2wWaqvcjhOKIIDIBXwIjLTEiE54DCq0fr2JH/sxo6a
+         kqOswJU4vb8QEXXak39Fj63dYXB2ToOQwdTr2+qrakGeK8IhAo5DSGxm45BXHeLFJYeF
+         3THrgDbBteJ7de4XVu8toigtCsPo7E5d2SI/0dDDPSuliU32SfvCH887Ddke2+/t2Mhf
+         M4Zw==
+X-Gm-Message-State: AGi0PuaJgEqr/kvWDuOjqB2YUbPnSLtl9F+Z+1huJtK6O+irDfP+0bq7
+        eKprEOm9XSbfkGNQ8rtDPGgDCUbSK9w=
+X-Google-Smtp-Source: APiQypKz9chR9tjFIo+KEom69LLnki83S2NyxIJknkP6SyZ2kExq29X6eL/xXPRGl9DtWb8O6+1oBg==
+X-Received: by 2002:adf:ed52:: with SMTP id u18mr5861092wro.377.1586379599659;
+        Wed, 08 Apr 2020 13:59:59 -0700 (PDT)
+Received: from white ([188.27.148.74])
+        by smtp.gmail.com with ESMTPSA id f4sm19972135wrp.80.2020.04.08.13.59.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Apr 2020 13:59:59 -0700 (PDT)
+Date:   Wed, 8 Apr 2020 23:59:54 +0300
+From:   =?utf-8?B?TGXFn2UgRG9ydSBDxINsaW4=?= <lesedorucalin01@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org
+Subject: [PATCH] net: UDP repair mode for retrieving the send queue of corked
+ UDP socket
+Message-ID: <20200408205954.GA15086@white>
 MIME-Version: 1.0
-In-Reply-To: <CA+h21hpG64V4OhF0yRa-HfBYo9EoZDP8P-y3WT==w4WUrNVkLQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello everyone!
 
+In this year's edition of GSoC, there is a project idea for CRIU to add support
+for checkpoint/restore of cork-ed UDP sockets. But to add it, the kernel API needs
+to be extended.
+This is what this patch does. It adds UDP "repair mode" for UDP sockets in a similar
+approach to the TCP "repair mode", but only the send queue is necessary to be retrieved.
+So the patch extends the recv and setsockopt syscalls. Using UDP_REPAIR option in
+setsockopt, caller can set the socket in repair mode. If it is setted, the
+recv/recvfrom/recvmsg will receive the write queue and the destination of the data.
+As in the TCP mode, to change the repair mode requires the CAP_NET_ADMIN capability
+and to receive data the caller is obliged to use the MSG_PEEK flag.
 
-On 4/8/2020 1:10 PM, Vladimir Oltean wrote:
-> On Wed, 8 Apr 2020 at 23:05, Florian Fainelli <f.fainelli@gmail.com> wrote:
->>
->>
->>
->> On 4/8/2020 12:51 PM, Vladimir Oltean wrote:
->>> Hi Florian,
->>>
->>> On Sun, 5 Apr 2020 at 23:42, Florian Fainelli <f.fainelli@gmail.com> wrote:
->>>>
->>>> Hi all,
->>>>
->>>> On a BCM7278 system, we have two ports of the switch: 5 and 8, that
->>>> connect to separate Ethernet MACs that the host/CPU can control. In
->>>> premise they are both interchangeable because the switch supports
->>>> configuring the management port to be either 5 or 8 and the Ethernet
->>>> MACs are two identical instances.
->>>>
->>>> The Ethernet MACs are scheduled differently across the memory controller
->>>> (they have different bandwidth and priority allocations) so it is
->>>> desirable to select an Ethernet MAC capable of sustaining bandwidth and
->>>> latency for host networking. Our current (in the downstream kernel) use
->>>> case is to expose port 5 solely as a control end-point to the user and
->>>> leave it to the user how they wish to use the Ethernet MAC behind port
->>>> 5. Some customers use it to bridge Wi-Fi traffic, some simply keep it
->>>> disabled. Port 5 of that switch does not make use of Broadcom tags in
->>>> that case, since ARL-based forwarding works just fine.
->>>>
->>>> The current Device Tree representation that we have for that system
->>>> makes it possible for either port to be elected as the CPU port from a
->>>> DSA perspective as they both have an "ethernet" phandle property that
->>>> points to the appropriate Ethernet MAC node, because of that the DSA
->>>> framework treats them as CPU ports.
->>>>
->>>> My current line of thinking is to permit a port to be configured as
->>>> either "cpu" or "user" flavor and do that through devlink. This can
->>>> create some challenges but hopefully this also paves the way for finally
->>>> supporting "multi-CPU port" configurations. I am thinking something like
->>>> this would be how I would like it to be configured:
->>>>
->>>> # First configure port 8 as the new CPU port
->>>> devlink port set pci/0000:01:00.0/8 type cpu
->>>> # Now unmap port 5 from being a CPU port
->>>> devlink port set pci/0000:01:00.0/1 type eth
->>>>
->>>> and this would do a simple "swap" of all user ports being now associated
->>>> with port 8, and no longer with port 5, thus permitting port 5 from
->>>> becoming a standard user port. Or maybe, we need to do this as an atomic
->>>> operation in order to avoid a switch being configured with no CPU port
->>>> anymore, so something like this instead:
->>>>
->>>> devlink port set pci/0000:01:00.0/5 type eth mgmt pci/0000:01:00.0/8
->>>>
->>>> The latter could also be used to define groups of ports within a switch
->>>> that has multiple CPU ports, e.g.:
->>>>
->>>> # Ports 1 through 4 "bound" to CPU port 5:
->>>>
->>>> for i in $(seq 0 3)
->>>> do
->>>>         devlink port set pci/0000:01:00.0/$i type eth mgmt pci/0000:01:00.0/5
->>>> done
->>>>
->>>> # Ports 7 bound to CPU port 8:
->>>>
->>>> devlink port set pci/0000:01:00.0/1 type eth mgmt pci/0000:01:00.0/8
->>>>
->>>> Let me know what you think!
->>>>
->>>> Thanks
->>>> --
->>>> Florian
->>>
->>> What is missing from your argumentation is what would the new devlink
->>> mechanism of changing the CPU port bring for your particular use case.
->>> I mean you can already remove the "ethernet" device tree property from
->>> port 5 and end up exactly with the configuration that you want, no?
->>
->> That's what I do in our downstream tree for now, should I submit this
->> upstream? I doubt it would be accepted.
->> --
->> Florian
-> 
-> This is exactly what we do for the NXP LS1028A (ocelot/felix driver),
-> where we enable just one of the 2 CPU ports by default (and the other
-> one, just as a simple user port in the very few situations that
-> require it):
-> https://github.com/torvalds/linux/blob/master/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi#L943
-> Although to be fair, for LS1028A we can't even dream of enabling DSA
-> tagging on both CPU ports at the same time, since there is a hardware
-> limitation in place that only a single port may carry DSA tags at any
-> given moment in time.
+Best regards,
+Lese Doru
 
-The firmware is provided by the boot loader in my case, and while it can
-be changed, dealing with incompatibilities is a support burden, so
-instead, I have two lines of code in the sf2 driver to delete the DT
-property and that gets me going.
-
-I still think there is value in being able to assign groups of user
-ports to a specific CPU/management port (maybe even DSA, say if we
-supported trunking/bonding at some point).
--- 
-Florian
+Signed-off-by: Lese Doru Calin <lesedorucalin01@gmail.com>
+---
+ include/linux/udp.h      |    3 +
+ include/uapi/linux/udp.h |    1 
+ net/ipv4/udp.c           |   59 +++++++++++++++++++++++++++++++++++++
+ net/ipv6/udp.c           |   45 ++++++++++++++++++++++++++++
+ 4 files changed, 107 insertions(+), 1 deletion(-)
+ 
+diff --git a/include/linux/udp.h b/include/linux/udp.h
+index aa84597bdc33..b22bd70118ce 100644
+--- a/include/linux/udp.h
++++ b/include/linux/udp.h
+@@ -51,7 +51,8 @@ struct udp_sock {
+ 					   * different encapsulation layer set
+ 					   * this
+ 					   */
+-			 gro_enabled:1;	/* Can accept GRO packets */
++			 gro_enabled:1,	/* Can accept GRO packets */
++			 repair:1;/* Receive the send queue */
+ 	/*
+ 	 * Following member retains the information to create a UDP header
+ 	 * when the socket is uncorked.
+diff --git a/include/uapi/linux/udp.h b/include/uapi/linux/udp.h
+index 4828794efcf8..2fe78329d6da 100644
+--- a/include/uapi/linux/udp.h
++++ b/include/uapi/linux/udp.h
+@@ -29,6 +29,7 @@ struct udphdr {
+ 
+ /* UDP socket options */
+ #define UDP_CORK	1	/* Never send partially complete segments */
++#define UDP_REPAIR  19  /* Receive the send queue */
+ #define UDP_ENCAP	100	/* Set the socket to accept encapsulated packets */
+ #define UDP_NO_CHECK6_TX 101	/* Disable sending checksum for UDP6X */
+ #define UDP_NO_CHECK6_RX 102	/* Disable accpeting checksum for UDP6 */
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 32564b350823..fe6537ad1aaf 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1720,6 +1720,28 @@ struct sk_buff *__skb_recv_udp(struct sock *sk, unsigned int flags,
+ }
+ EXPORT_SYMBOL(__skb_recv_udp);
+ 
++static int udp_peek_sndq(struct sock *sk, struct msghdr *msg, int off, int len)
++{
++	struct sk_buff *skb;
++	int copied = 0, err = 0, copy;
++
++	skb_queue_walk(&sk->sk_write_queue, skb) {
++		copy = len - copied;
++		if (copy > skb->len - off)
++			copy = skb->len - off;
++
++		err = skb_copy_datagram_msg(skb, off, msg, copy);
++		if (err)
++			break;
++
++		copied += copy;
++
++		if (len <= copied)
++			break;
++	}
++	return err ?: copied;
++}
++
+ /*
+  * 	This should be easy, if there is something there we
+  * 	return it, otherwise we block.
+@@ -1729,8 +1751,10 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
+ 		int flags, int *addr_len)
+ {
+ 	struct inet_sock *inet = inet_sk(sk);
++	struct udp_sock *up = udp_sk(sk);
+ 	DECLARE_SOCKADDR(struct sockaddr_in *, sin, msg->msg_name);
+ 	struct sk_buff *skb;
++	struct flowi4 *fl4;
+ 	unsigned int ulen, copied;
+ 	int off, err, peeking = flags & MSG_PEEK;
+ 	int is_udplite = IS_UDPLITE(sk);
+@@ -1739,6 +1763,12 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
+ 	if (flags & MSG_ERRQUEUE)
+ 		return ip_recv_error(sk, msg, len, addr_len);
+ 
++	if (unlikely(up->repair)) {
++		if (!peeking)
++			return -EPERM;
++		goto recv_sndq;
++	}
++
+ try_again:
+ 	off = sk_peek_offset(sk, flags);
+ 	skb = __skb_recv_udp(sk, flags, noblock, &off, &err);
+@@ -1832,6 +1862,18 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
+ 	cond_resched();
+ 	msg->msg_flags &= ~MSG_TRUNC;
+ 	goto try_again;
++
++recv_sndq:
++	off = sizeof(struct iphdr) + sizeof(struct udphdr);
++	if (sin) {
++		fl4 = &inet->cork.fl.u.ip4;
++		sin->sin_family = AF_INET;
++		sin->sin_port = fl4->fl4_dport;
++		sin->sin_addr.s_addr = fl4->daddr;
++		memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
++		*addr_len = sizeof(*sin);
++	}
++	return udp_peek_sndq(sk, msg, off, len);
+ }
+ 
+ int udp_pre_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+@@ -2525,6 +2567,10 @@ void udp_destroy_sock(struct sock *sk)
+ 	}
+ }
+ 
++static inline bool udp_can_repair_sock(const struct sock *sk)
++{
++	return ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN);
++}
+ /*
+  *	Socket option code for UDP
+  */
+@@ -2557,6 +2603,15 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
+ 		}
+ 		break;
+ 
++	case UDP_REPAIR:
++		if (!udp_can_repair_sock(sk))
++			err = -EPERM;
++		else if (val != 0)
++			up->repair = 1;
++		else
++			up->repair = 0;
++		break;
++
+ 	case UDP_ENCAP:
+ 		switch (val) {
+ 		case 0:
+@@ -2678,6 +2733,10 @@ int udp_lib_getsockopt(struct sock *sk, int level, int optname,
+ 		val = up->corkflag;
+ 		break;
+ 
++	case UDP_REPAIR:
++		val = up->repair;
++		break;
++
+ 	case UDP_ENCAP:
+ 		val = up->encap_type;
+ 		break;
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 7d4151747340..298afaf54e0c 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -250,6 +250,28 @@ struct sock *udp6_lib_lookup(struct net *net, const struct in6_addr *saddr, __be
+ EXPORT_SYMBOL_GPL(udp6_lib_lookup);
+ #endif
+ 
++static int udp6_peek_sndq(struct sock *sk, struct msghdr *msg, int off, int len)
++{
++	struct sk_buff *skb;
++	int copied = 0, err = 0, copy;
++
++	skb_queue_walk(&sk->sk_write_queue, skb) {
++		copy = len - copied;
++		if (copy > skb->len - off)
++			copy = skb->len - off;
++
++		err = skb_copy_datagram_msg(skb, off, msg, copy);
++		if (err)
++			break;
++
++		copied += copy;
++
++		if (len <= copied)
++			break;
++	}
++	return err ?: copied;
++}
++
+ /* do not use the scratch area len for jumbogram: their length execeeds the
+  * scratch area space; note that the IP6CB flags is still in the first
+  * cacheline, so checking for jumbograms is cheap
+@@ -269,7 +291,9 @@ int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ {
+ 	struct ipv6_pinfo *np = inet6_sk(sk);
+ 	struct inet_sock *inet = inet_sk(sk);
++	struct udp_sock *up = udp_sk(sk);
+ 	struct sk_buff *skb;
++	struct flowi6 *fl6;
+ 	unsigned int ulen, copied;
+ 	int off, err, peeking = flags & MSG_PEEK;
+ 	int is_udplite = IS_UDPLITE(sk);
+@@ -283,6 +307,12 @@ int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 	if (np->rxpmtu && np->rxopt.bits.rxpmtu)
+ 		return ipv6_recv_rxpmtu(sk, msg, len, addr_len);
+ 
++	if (unlikely(up->repair)) {
++		if (!peeking)
++			return -EPERM;
++		goto recv_sndq;
++	}
++
+ try_again:
+ 	off = sk_peek_offset(sk, flags);
+ 	skb = __skb_recv_udp(sk, flags, noblock, &off, &err);
+@@ -394,6 +424,21 @@ int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 	cond_resched();
+ 	msg->msg_flags &= ~MSG_TRUNC;
+ 	goto try_again;
++
++recv_sndq:
++	off = sizeof(struct ipv6hdr) + sizeof(struct udphdr);
++	if (msg->msg_name) {
++		DECLARE_SOCKADDR(struct sockaddr_in6 *, sin6, msg->msg_name);
++
++		fl6 = &inet->cork.fl.u.ip6;
++		sin6->sin6_family = AF_INET6;
++		sin6->sin6_port = fl6->fl6_dport;
++		sin6->sin6_flowinfo = 0;
++		sin6->sin6_addr = fl6->daddr;
++		sin6->sin6_scope_id = fl6->flowi6_oif;
++		*addr_len = sizeof(*sin6);
++	}
++	return udp6_peek_sndq(sk, msg, off, len);
+ }
+ 
+ DEFINE_STATIC_KEY_FALSE(udpv6_encap_needed_key);
