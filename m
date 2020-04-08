@@ -2,57 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1FF91A240A
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 16:28:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9FC91A2397
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 15:49:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728771AbgDHO2y convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 8 Apr 2020 10:28:54 -0400
-Received: from cepheus.pop-ap.rnp.br ([200.129.167.25]:56556 "EHLO
-        cepheus.pop-ap.rnp.br" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726795AbgDHO2x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 10:28:53 -0400
-X-Greylist: delayed 3506 seconds by postgrey-1.27 at vger.kernel.org; Wed, 08 Apr 2020 10:28:53 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by cepheus.pop-ap.rnp.br (Postfix) with ESMTP id 4C7D1725FBF;
-        Wed,  8 Apr 2020 10:13:22 -0300 (-03)
-Received: from cepheus.pop-ap.rnp.br ([127.0.0.1])
-        by localhost (cepheus.pop-ap.rnp.br [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id UP7qVn5j9n_M; Wed,  8 Apr 2020 10:13:21 -0300 (-03)
-Received: from localhost (localhost [127.0.0.1])
-        by cepheus.pop-ap.rnp.br (Postfix) with ESMTP id 7A754725FAF;
-        Wed,  8 Apr 2020 10:13:21 -0300 (-03)
-X-Virus-Scanned: amavisd-new at cepheus.pop-ap.rnp.br
-Received: from cepheus.pop-ap.rnp.br ([127.0.0.1])
-        by localhost (cepheus.pop-ap.rnp.br [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id yX2jFbidi2K1; Wed,  8 Apr 2020 10:13:21 -0300 (-03)
-Received: from cepheus.pop-ap.rnp.br (cepheus.pop-ap.rnp.br [200.129.167.25])
-        by cepheus.pop-ap.rnp.br (Postfix) with ESMTP id 06039724066;
-        Wed,  8 Apr 2020 10:13:19 -0300 (-03)
-Date:   Wed, 8 Apr 2020 10:13:18 -0300 (BRT)
-From:   Trust Online Credit Bvba <camila.teixeira@pop-ap.rnp.br>
-Reply-To: "trustonlinecreditbvba@outlook.com" 
-          <trustonlinecreditbvba@outlook.com>
-Message-ID: <1927212997.102931.1586351598946.JavaMail.zimbra@pop-ap.rnp.br>
-Subject: =?utf-8?Q?L=C3=A5n?=
+        id S1727996AbgDHNte (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 09:49:34 -0400
+Received: from zeniv.linux.org.uk ([195.92.253.2]:60260 "EHLO
+        ZenIV.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727505AbgDHNte (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 09:49:34 -0400
+Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jMB4a-00E49z-DG; Wed, 08 Apr 2020 13:48:56 +0000
+Date:   Wed, 8 Apr 2020 14:48:56 +0100
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     Yun Levi <ppbuk5246@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Guillaume Nault <gnault@redhat.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Li RongQing <lirongqing@baidu.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Johannes Berg <johannes.berg@intel.com>,
+        David Howells <dhowells@redhat.com>, daniel@iogearbox.net,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] netns: dangling pointer on netns bind mount point.
+Message-ID: <20200408134856.GB23230@ZenIV.linux.org.uk>
+References: <20200407023512.GA25005@ubuntu>
+ <20200407030504.GX23230@ZenIV.linux.org.uk>
+ <20200407031318.GY23230@ZenIV.linux.org.uk>
+ <CAM7-yPQas7hvTVLa4U80t0Em0HgLCk2whLQa4O3uff5J3OYiAA@mail.gmail.com>
+ <20200407040354.GZ23230@ZenIV.linux.org.uk>
+ <CAM7-yPRaQsNgZKjru40nM1N_u8HVLVKmJCAzu20DcPL=jzKjWQ@mail.gmail.com>
+ <20200407182609.GA23230@ZenIV.linux.org.uk>
+ <CAM7-yPS_xh54H9M7B8-tAmPM4+w0VgnruJhK509upsDgZvcNhg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [200.129.167.25]
-X-Mailer: Zimbra 8.8.8_GA_2009 (zclient/8.8.8_GA_2009)
-Thread-Index: w2gmCG+lGH+3gG4O9P4z7xsQZ0/1dA==
-Thread-Topic: =?utf-8?B?TMOlbg==?=
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAM7-yPS_xh54H9M7B8-tAmPM4+w0VgnruJhK509upsDgZvcNhg@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Välkommen;
-Visste du att användning av Trust Online Credit Bvba kan öka fördelarna med ditt företag och tjänster? är ett registrerat kreditföretag. Vi erbjuder hjälp med att utveckla ditt företag genom att ge ett lån till vilket belopp som helst. offentlig. från individ till samarbete. Vårt lån har en låg ränta på 2%. Vi erbjuder medel Belopp: 5 000 till 20 000 000 och med en period på 1 år till 25 år.
-Vi ger dig ett initialt lån, vänligen kontakta oss på
-E-post: trustonlinecreditbvba@outlook.com
-WhatsApp: +44 7480 726469
-Webbplats: https://trustonlinecreditbvba.com/
-för kreditbehandling. kommer att nå ditt bankkonto inom 24 timmar efter din begäran.
-Hälsningar,
-Lita på online kredit Bvba
+On Wed, Apr 08, 2020 at 02:59:17PM +0900, Yun Levi wrote:
+> Thank you for great comments. Thanks to you I understand what i missed.
+> 
+> I try to generate problem on mainline But, as you explained that
+> situation isn't happen,
+> 
+> Maybe my other things which I made generate some problem (freeing
+> network namespace..)
+> 
+> Thanks for great answering and sharing.
+> 
+> If I meet the situation, at that time I'll share. Thank you very much!
+> 
+> P.S. If I have a question, Could I ask via e-mail like this?
+
+Sure, no problem...
