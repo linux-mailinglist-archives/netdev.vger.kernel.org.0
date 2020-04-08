@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 974631A2707
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 18:19:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 894A41A2708
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 18:19:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729684AbgDHQT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 12:19:26 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:40571 "EHLO
+        id S1730080AbgDHQT2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 12:19:28 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:45598 "EHLO
         mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728294AbgDHQT0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 12:19:26 -0400
-Received: by mail-pg1-f196.google.com with SMTP id c5so3532230pgi.7
-        for <netdev@vger.kernel.org>; Wed, 08 Apr 2020 09:19:25 -0700 (PDT)
+        with ESMTP id S1726876AbgDHQT1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 12:19:27 -0400
+Received: by mail-pg1-f196.google.com with SMTP id 128so917046pge.12
+        for <netdev@vger.kernel.org>; Wed, 08 Apr 2020 09:19:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=WeJEtpgO4/t/2ysUfaYVIIRsRSLfmGetHSYYcz2hOlo=;
-        b=XIoKRCLmRgyB2nzcfJTLyXUT2tYkI1qN+chnLNkOpG0v/vkNXMAkk+Umvib5WrGW23
-         s6dBah+QQOM2tzce24VzfOqJ6BVsipqsuCcKYNqRToigvBK21yXY0u9sm9rT3XF8PrXf
-         gjs7XoVniEA80frzlXZbrvhKWnsBi2KXOrKJXUx9/+oPEyrARwWv+9UEoqnBcJ0x4EI6
-         ekcKTnFciat4zbnc65Ml99ynj6rSxKxMK8MCLu9Guq1Es1A7XJXtyz/d3lnXBZR6fSPs
-         B6YG1RjDVP6vD7+ZrnOBxq4CSgRKg+5LJzjIblHVwH36opk2LLJ41G96YEy1wu6bfkhR
-         uP1w==
+        bh=WZXZU3gRx+dsdrniJKIuh1ypsevLSlIAVOQSYlzkJf4=;
+        b=eBvlTQiVG1Eywd5AqtTYW+SLITHmENhe9am4oczingYB58jBLaK1rTRfiQuPxADz0x
+         zHz1clvTp1U3hAKEz6B9kN8hO3oLfT6tt8G6XynxoWHT4kEjn8DgOJdw5snrzpZQ+Tzy
+         NHyWgVT1cyV32eErQo7qGKd+JX/fvyWgOPZZPrVZypy0av1ltfEF9Z4C4tuPcRikyPto
+         z/0QQeP3FpXGlMfwuUDqDPjC+4rYSPvAkmnp5k3zCzMMEn2/Spa52seFvls2oGMjekYx
+         fg1tH9Sw5nghuo/u9UMGh5L4nI+d8FApef+zbixA3aIIPFH6uq2E5uqrr/CsroTpRuDG
+         mK6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=WeJEtpgO4/t/2ysUfaYVIIRsRSLfmGetHSYYcz2hOlo=;
-        b=UnXvd6U+EWbHrXvuM20r792w+2eXcK9AEqbZpd/A+F6T0BXv2DMnBDJFDbZBsbzZ4Y
-         POiRlGIHwCTm0U6uVLukF019d20Yu0jprBKMwWcmUU3tAmVXvA8qwrYL3ubr8ZLnhTcj
-         kHaVUMf2zSRDoejN1PscRHhrT1ovzzKtZoJ0MT6wsNeDuMbOjM/hFi4LTKZ0pCt7A5lA
-         zbZ7olLW4AlCzUmUPKiM9yslEFRiHYVZjPiakJzAWQreqHkRYJmZ3S00uTcVQNuYaQuh
-         uyJbiK2t25jGfCGZme7VVWwXlL+CbBBED3I6uLih0UmVbMZx9Xr9CSVKOd4A+ZMhnrFw
-         EZuQ==
-X-Gm-Message-State: AGi0Pub3CVUVs34MeJS3S3EO7/BJhyqGO56EE3fRdDbDGw6hJSfIUgQe
-        FeOABHtGl6tnlAHWa8KquuRK4kJrp8k=
-X-Google-Smtp-Source: APiQypJVgFxz9MiEeOlzyjPVPFjd5ZnxDOD1eHFbl6dkUQgo1JAQMS0o8Zzziy2cfHRGQpn37wReXA==
-X-Received: by 2002:a63:3d04:: with SMTP id k4mr7749708pga.115.1586362764640;
-        Wed, 08 Apr 2020 09:19:24 -0700 (PDT)
+        bh=WZXZU3gRx+dsdrniJKIuh1ypsevLSlIAVOQSYlzkJf4=;
+        b=jUGEzJ7RIOLa4+j0Uu6DQpsIsZvIybgAT0b9fr35ZouZz2w88Ulo1kHNV7yLNs3zQt
+         HQLL/g7ERq9oeN91trqdu9A/gvx8sFHtP6Qydo+q9NAAl0MruMQdn7qBkR/F7cHST1or
+         ImNTp4Hm5f0RvHMHhAW6hrc1g8ZUttTxOWyzoAvRqZ1dRTzsDGKN8QwmbseRlgBudtih
+         XAfVoEvy/wX/BOB8In+EU3Tj/kUnIPytmlzP8zWcLcdUWVbSRvAUFw85GS9rR3nHWph8
+         4IOZD3Uhaeikud/OvXrZBOz+OhGjEIElvM/qXDKV0nynhbe5hE6O2CkQvsn2/NpQnyjb
+         NrMg==
+X-Gm-Message-State: AGi0PuaqoXKs7+yYaYlSwDfK9Mw8WDYltATMVbKQAzztiI6vxSWjBeT4
+        tQpCTqqilgChBPnBstmYkVEqYAazu3Q=
+X-Google-Smtp-Source: APiQypJEgs3EuHxPzy6K+Pdq/53WiIx56OwFIV20XlOfDvytT2XrDn9SomKK8GG1xja9/IB+vwP+Sw==
+X-Received: by 2002:a63:c149:: with SMTP id p9mr7506959pgi.389.1586362765711;
+        Wed, 08 Apr 2020 09:19:25 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id s12sm16021693pgi.38.2020.04.08.09.19.23
+        by smtp.gmail.com with ESMTPSA id s12sm16021693pgi.38.2020.04.08.09.19.24
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
         Wed, 08 Apr 2020 09:19:24 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net 1/2] ionic: replay filters after fw upgrade
-Date:   Wed,  8 Apr 2020 09:19:11 -0700
-Message-Id: <20200408161912.17153-2-snelson@pensando.io>
+Subject: [PATCH net 2/2] ionic: set station addr only if needed
+Date:   Wed,  8 Apr 2020 09:19:12 -0700
+Message-Id: <20200408161912.17153-3-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200408161912.17153-1-snelson@pensando.io>
 References: <20200408161912.17153-1-snelson@pensando.io>
@@ -57,134 +57,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The NIC's filters are lost in the midst of the fw-upgrade
-so we need to replay them into the FW.  We also remove the
-unused ionic_rx_filter_del() function.
+The code was working too hard and in some cases was trying to
+delete filters that weren't there, generating a potentially
+misleading error message.
+    IONIC_CMD_RX_FILTER_DEL (32) failed: IONIC_RC_ENOENT (-2)
 
-Fixes: c672412f6172 ("ionic: remove lifs on fw reset")
+Fixes: 2a654540be10 ("ionic: Add Rx filter and rx_mode ndo support")
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- .../net/ethernet/pensando/ionic/ionic_lif.c   | 12 +++--
- .../ethernet/pensando/ionic/ionic_rx_filter.c | 52 +++++++++++++++----
- .../ethernet/pensando/ionic/ionic_rx_filter.h |  2 +-
- 3 files changed, 51 insertions(+), 15 deletions(-)
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 32 +++++++++++--------
+ 1 file changed, 19 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 4b8a76098ca3..f8f437aec027 100644
+index f8f437aec027..5acf4f46c268 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -2127,6 +2127,8 @@ static void ionic_lif_handle_fw_up(struct ionic_lif *lif)
- 	if (lif->registered)
- 		ionic_lif_set_netdev_info(lif);
- 
-+	ionic_rx_filter_replay(lif);
-+
- 	if (netif_running(lif->netdev)) {
- 		err = ionic_txrx_alloc(lif);
- 		if (err)
-@@ -2206,9 +2208,9 @@ static void ionic_lif_deinit(struct ionic_lif *lif)
- 	if (!test_bit(IONIC_LIF_F_FW_RESET, lif->state)) {
- 		cancel_work_sync(&lif->deferred.work);
- 		cancel_work_sync(&lif->tx_timeout_work);
-+		ionic_rx_filters_deinit(lif);
- 	}
- 
--	ionic_rx_filters_deinit(lif);
- 	if (lif->netdev->features & NETIF_F_RXHASH)
- 		ionic_lif_rss_deinit(lif);
- 
-@@ -2421,9 +2423,11 @@ static int ionic_lif_init(struct ionic_lif *lif)
+@@ -2341,24 +2341,30 @@ static int ionic_station_set(struct ionic_lif *lif)
+ 	err = ionic_adminq_post_wait(lif, &ctx);
  	if (err)
- 		goto err_out_notifyq_deinit;
- 
--	err = ionic_rx_filters_init(lif);
--	if (err)
--		goto err_out_notifyq_deinit;
-+	if (!test_bit(IONIC_LIF_F_FW_RESET, lif->state)) {
-+		err = ionic_rx_filters_init(lif);
-+		if (err)
-+			goto err_out_notifyq_deinit;
-+	}
- 
- 	err = ionic_station_set(lif);
- 	if (err)
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c b/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
-index 7a093f148ee5..f3c7dd1596ee 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.c
-@@ -17,17 +17,49 @@ void ionic_rx_filter_free(struct ionic_lif *lif, struct ionic_rx_filter *f)
- 	devm_kfree(dev, f);
- }
- 
--int ionic_rx_filter_del(struct ionic_lif *lif, struct ionic_rx_filter *f)
-+void ionic_rx_filter_replay(struct ionic_lif *lif)
- {
--	struct ionic_admin_ctx ctx = {
--		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
--		.cmd.rx_filter_del = {
--			.opcode = IONIC_CMD_RX_FILTER_DEL,
--			.filter_id = cpu_to_le32(f->filter_id),
--		},
--	};
+ 		return err;
 -
--	return ionic_adminq_post_wait(lif, &ctx);
-+	struct ionic_rx_filter_add_cmd *ac;
-+	struct ionic_admin_ctx ctx;
-+	struct ionic_rx_filter *f;
-+	struct hlist_head *head;
-+	struct hlist_node *tmp;
-+	unsigned int i;
-+	int err = 0;
-+
-+	ac = &ctx.cmd.rx_filter_add;
-+
-+	for (i = 0; i < IONIC_RX_FILTER_HLISTS; i++) {
-+		head = &lif->rx_filters.by_id[i];
-+		hlist_for_each_entry_safe(f, tmp, head, by_id) {
-+			ctx.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work);
-+			memcpy(ac, &f->cmd, sizeof(f->cmd));
-+			dev_dbg(&lif->netdev->dev, "replay filter command:\n");
-+			dynamic_hex_dump("cmd ", DUMP_PREFIX_OFFSET, 16, 1,
-+					 &ctx.cmd, sizeof(ctx.cmd), true);
-+
-+			err = ionic_adminq_post_wait(lif, &ctx);
-+			if (err) {
-+				switch (le16_to_cpu(ac->match)) {
-+				case IONIC_RX_FILTER_MATCH_VLAN:
-+					netdev_info(lif->netdev, "Replay failed - %d: vlan %d\n",
-+						    err,
-+						    le16_to_cpu(ac->vlan.vlan));
-+					break;
-+				case IONIC_RX_FILTER_MATCH_MAC:
-+					netdev_info(lif->netdev, "Replay failed - %d: mac %pM\n",
-+						    err, ac->mac.addr);
-+					break;
-+				case IONIC_RX_FILTER_MATCH_MAC_VLAN:
-+					netdev_info(lif->netdev, "Replay failed - %d: vlan %d mac %pM\n",
-+						    err,
-+						    le16_to_cpu(ac->vlan.vlan),
-+						    ac->mac.addr);
-+					break;
-+				}
-+			}
++	netdev_dbg(lif->netdev, "found initial MAC addr %pM\n",
++		   ctx.comp.lif_getattr.mac);
+ 	if (is_zero_ether_addr(ctx.comp.lif_getattr.mac))
+ 		return 0;
+ 
+-	memcpy(addr.sa_data, ctx.comp.lif_getattr.mac, netdev->addr_len);
+-	addr.sa_family = AF_INET;
+-	err = eth_prepare_mac_addr_change(netdev, &addr);
+-	if (err) {
+-		netdev_warn(lif->netdev, "ignoring bad MAC addr from NIC %pM - err %d\n",
+-			    addr.sa_data, err);
+-		return 0;
+-	}
++	if (!ether_addr_equal(ctx.comp.lif_getattr.mac, netdev->dev_addr)) {
++		memcpy(addr.sa_data, ctx.comp.lif_getattr.mac, netdev->addr_len);
++		addr.sa_family = AF_INET;
++		err = eth_prepare_mac_addr_change(netdev, &addr);
++		if (err) {
++			netdev_warn(lif->netdev, "ignoring bad MAC addr from NIC %pM - err %d\n",
++				    addr.sa_data, err);
++			return 0;
 +		}
+ 
+-	netdev_dbg(lif->netdev, "deleting station MAC addr %pM\n",
+-		   netdev->dev_addr);
+-	ionic_lif_addr(lif, netdev->dev_addr, false);
++		if (!is_zero_ether_addr(netdev->dev_addr)) {
++			netdev_dbg(lif->netdev, "deleting station MAC addr %pM\n",
++				   netdev->dev_addr);
++			ionic_lif_addr(lif, netdev->dev_addr, false);
++		}
++
++		eth_commit_mac_addr_change(netdev, &addr);
 +	}
- }
  
- int ionic_rx_filters_init(struct ionic_lif *lif)
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.h b/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.h
-index b6aec9c19918..cf8f4c0a961c 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_rx_filter.h
-@@ -24,7 +24,7 @@ struct ionic_rx_filters {
- };
- 
- void ionic_rx_filter_free(struct ionic_lif *lif, struct ionic_rx_filter *f);
--int ionic_rx_filter_del(struct ionic_lif *lif, struct ionic_rx_filter *f);
-+void ionic_rx_filter_replay(struct ionic_lif *lif);
- int ionic_rx_filters_init(struct ionic_lif *lif);
- void ionic_rx_filters_deinit(struct ionic_lif *lif);
- int ionic_rx_filter_save(struct ionic_lif *lif, u32 flow_id, u16 rxq_index,
+-	eth_commit_mac_addr_change(netdev, &addr);
+ 	netdev_dbg(lif->netdev, "adding station MAC addr %pM\n",
+ 		   netdev->dev_addr);
+ 	ionic_lif_addr(lif, netdev->dev_addr, true);
 -- 
 2.17.1
 
