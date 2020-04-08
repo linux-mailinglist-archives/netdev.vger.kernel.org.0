@@ -2,153 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF9A31A2A18
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 22:11:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10ABE1A2A38
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 22:18:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730207AbgDHULH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 16:11:07 -0400
-Received: from mail-ed1-f48.google.com ([209.85.208.48]:35452 "EHLO
-        mail-ed1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729682AbgDHULG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 16:11:06 -0400
-Received: by mail-ed1-f48.google.com with SMTP id c7so10376951edl.2
-        for <netdev@vger.kernel.org>; Wed, 08 Apr 2020 13:11:05 -0700 (PDT)
+        id S1728150AbgDHUSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 16:18:51 -0400
+Received: from mail-ot1-f53.google.com ([209.85.210.53]:33054 "EHLO
+        mail-ot1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726774AbgDHUSv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 16:18:51 -0400
+Received: by mail-ot1-f53.google.com with SMTP id 103so1766961otv.0
+        for <netdev@vger.kernel.org>; Wed, 08 Apr 2020 13:18:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eCYsZLS97QLhKKwuI7DX5hcVxNYmnHqtRLK0/roj1yw=;
-        b=QrnE96NYonSTuqC2Lf9wb7Rw7D91RdvI3JGbaMUUhbXEtRUzo4UDraRP9zezs24vil
-         vJlewn1zZak+1XSqg2dtM0jKR8uRsIrzJByf8qJXrudE6lqwi1z3XYHj7mdkwG1Urz3i
-         XZqOlu8N4UZciQux2Zm1HlCkOMUwrXDvwr0LTABPCxNngiJqBUZ/WT+eTXdQk4pwO2TQ
-         JED1mWbL15hgk/Opb2OzCFOlF83Vrh48hNwMHF2ACnUfxCcyHkoPvYBQlbU1QOrOt5nb
-         +7889IkFepOuYrUHNeXMnBO41ngt/RrZ0LOQvkLeJzpKjHPI7vlIsUs7aeRubLNdLBPk
-         SaeA==
+         :cc:content-transfer-encoding;
+        bh=O9OQLWU+L8cw2kQ65uVTWLezhpLVOU7vvKIvyjvb5go=;
+        b=fAH7nGvu5Ex9ePvBMLwGYHM+yNT4lIfyeI5YvP/rD2QCacGZJ/07c/Of0SNxmniQmt
+         fgn0ig3599QRzFy8jsHw8vyallXVP3vSgeI+LT+9/OoY9A3WWqZOlvPXoVPAS8a3E9L4
+         SlCk5qOnP/fif2yptA7JQdGhItrc3Cmf4W3RRt4mJn/YRIeBysnihfUWhG/ETpbcsIMj
+         8BRF0nCG/aQQeQLGg/IbAy1rJg3k+vMEM+BppRBKgMrUwBp2NRLv8JJDTADw6KvwaxIw
+         L+a61V1U3Hw7ig9fsEkVIB5nvEEcgEAqXZVdT+hCKOylsHBXP+oQ8y5pbXKiQgYTKa8l
+         pPRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eCYsZLS97QLhKKwuI7DX5hcVxNYmnHqtRLK0/roj1yw=;
-        b=KIR5geaW+4Lkq+3FzckKSb0WAGBCd4zuOBMt2mGeITkVT+l+8XB6q4UwxJyatOhb3h
-         rbhyqdRk1Hc+QhH4pZpa2m+lrr/pgzgCUl2QCfOsnopYZW8Qq3T6BVUZM/nlt20K3g1F
-         9QjppxenCdZZz/UPX1EfutPH3Voe4qZNc9JJLTZB//PxBlRUKxd6Ho2QAA2IxfS3804u
-         qTbuZWzZdBU4j2Sc36+5rVfl7EngIE24DyADXaQMVfdKCexvtpxrksfpN8uNMTSrqqvq
-         3qrq5MLpb/rTwxvxF7IT8/Qq70iZAWDdxB0m9U79ngc5cixhczAGkThH1bbtNaQ8Idaz
-         r0tQ==
-X-Gm-Message-State: AGi0PubsCCIncY6+t/hTmJ1bISGJcnLxkT/ENeyo0cr0eq/KaTPvqMtE
-        AHJXtzqy/2WqDglEDeBMKhzMmNXV34l0YbQpUJw=
-X-Google-Smtp-Source: APiQypJZB/rSARRvWFlw59iUUAsultMOoTWXKqYbrlUdexd6Ag83oxXjIeySkR1pJz1A8NYMQ/zX2VW2EIiS8QnpIlw=
-X-Received: by 2002:a17:906:9359:: with SMTP id p25mr8531071ejw.184.1586376664260;
- Wed, 08 Apr 2020 13:11:04 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=O9OQLWU+L8cw2kQ65uVTWLezhpLVOU7vvKIvyjvb5go=;
+        b=I2Yu/SlJF5IQdB0AY0ByeYjFwCbom8px/bKnJzSn/ZirM8GOUw05moxqOysPiSCFZQ
+         3b9tLeWmgIv4GQ5Z+AeXpLzkxxaStirCjJz5gJlETWtoRcOjD2lYB40dj2dXHLluZCqV
+         MYlwcczG5ECzFKOHMYXRc83Sza6ViNYGneFGZGhkRQ8fTE7aQ5q8zh2KrV6QFIGHnnlW
+         ks36cb272XQVLq9fqA68R33hBqjn32enRw4KffXD7L8nvcOYkvyhsn6o2BZLgTPYnGMf
+         Nq2KUeOti+pIvgenrfPTjy+dFHCd7Da9SNwGb9XQpTk/5QD3pHvBfRf92eP/rH/yp2oc
+         6UlA==
+X-Gm-Message-State: AGi0PuY2pkRyQHsacoCA/by8aRCuV8d8QTpVxwUsJ5wWN9pUMKrCQmj7
+        +/lmTpr6v6lv104u3FZfEROi6MV+14HTrawaVw2tNEtYEx4=
+X-Google-Smtp-Source: APiQypKfCwrUsUM9Uh31ug7UZNa+TyfFlFUvLHZi2jIfMrQzrF28VySiHkHgZCyv/HNL5gz86//tJNxUHMVSEl4Jlag=
+X-Received: by 2002:a9d:6a49:: with SMTP id h9mr6481301otn.189.1586377130037;
+ Wed, 08 Apr 2020 13:18:50 -0700 (PDT)
 MIME-Version: 1.0
-References: <ef16b5bb-4115-e540-0ffd-1531e5982612@gmail.com>
- <CA+h21hrtUg9Xxwxfe+N6MkY2eSjjDTQc+sTtRwYW4kf_u3quwA@mail.gmail.com> <5efb57cc-d783-ed70-73c1-3114f4952520@gmail.com>
-In-Reply-To: <5efb57cc-d783-ed70-73c1-3114f4952520@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Wed, 8 Apr 2020 23:10:53 +0300
-Message-ID: <CA+h21hpG64V4OhF0yRa-HfBYo9EoZDP8P-y3WT==w4WUrNVkLQ@mail.gmail.com>
-Subject: Re: Changing devlink port flavor dynamically for DSA
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>
+References: <CANxWus8WiqQZBZF9aWF_wc-57OJcEb-MoPS5zup+JFY_oLwHGA@mail.gmail.com>
+ <CAM_iQpUPvcyxoW9=z4pY6rMfeAJNAbh21km4fUTSredm1rP+0Q@mail.gmail.com>
+ <CANxWus9HZhN=K5oFH-qSO43vJ39Yn9YhyviNm5DLkWVnkoSeQQ@mail.gmail.com>
+ <CAM_iQpWaK9t7patdFaS_BCdckM-nuocv7m1eiGwbO-jdLVNBMw@mail.gmail.com>
+ <CANxWus9yWwUq9YKE=d5T-6UutewFO01XFnvn=KHcevUmz27W0A@mail.gmail.com>
+ <CAM_iQpW8xSpTQP7+XKORS0zLTWBtPwmD1OsVE9tC2YnhLotU3A@mail.gmail.com>
+ <CANxWus-koY-AHzqbdG6DaVaDYj4aWztj8m+8ntYLvEQ0iM_yDw@mail.gmail.com>
+ <CANxWus_tPZ-C2KuaY4xpuLVKXriTQv1jvHygc6o0RFcdM4TX2w@mail.gmail.com>
+ <CAM_iQpV0g+yUjrzPdzsm=4t7+ZBt8Y=RTwYJdn9RUqFb1aCE1A@mail.gmail.com>
+ <CAM_iQpWLK8ZKShdsWNQrbhFa2B9V8e+OSNRQ_06zyNmDToq5ew@mail.gmail.com>
+ <CANxWus8YFkWPELmau=tbTXYa8ezyMsC5M+vLrNPoqbOcrLo0Cg@mail.gmail.com>
+ <CANxWus9qVhpAr+XJbqmgprkCKFQYkAFHbduPQhU=824YVrq+uw@mail.gmail.com>
+ <CAM_iQpV-0f=yX3P=ZD7_-mBvZZn57MGmFxrHqT3U3g+p_mKyJQ@mail.gmail.com> <CANxWus8P8KdcZE8L1-ZLOWLxyp4OOWNY82Xw+S2qAomanViWQA@mail.gmail.com>
+In-Reply-To: <CANxWus8P8KdcZE8L1-ZLOWLxyp4OOWNY82Xw+S2qAomanViWQA@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 8 Apr 2020 13:18:38 -0700
+Message-ID: <CAM_iQpU3uhQewuAtv38xfgWesVEqpazXs3QqFHBBRF4i1qLdXw@mail.gmail.com>
+Subject: Re: iproute2: tc deletion freezes whole server
+To:     =?UTF-8?Q?V=C3=A1clav_Zindulka?= <vaclav.zindulka@tlapnet.cz>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 8 Apr 2020 at 23:05, Florian Fainelli <f.fainelli@gmail.com> wrote:
->
->
->
-> On 4/8/2020 12:51 PM, Vladimir Oltean wrote:
-> > Hi Florian,
-> >
-> > On Sun, 5 Apr 2020 at 23:42, Florian Fainelli <f.fainelli@gmail.com> wrote:
-> >>
-> >> Hi all,
-> >>
-> >> On a BCM7278 system, we have two ports of the switch: 5 and 8, that
-> >> connect to separate Ethernet MACs that the host/CPU can control. In
-> >> premise they are both interchangeable because the switch supports
-> >> configuring the management port to be either 5 or 8 and the Ethernet
-> >> MACs are two identical instances.
-> >>
-> >> The Ethernet MACs are scheduled differently across the memory controller
-> >> (they have different bandwidth and priority allocations) so it is
-> >> desirable to select an Ethernet MAC capable of sustaining bandwidth and
-> >> latency for host networking. Our current (in the downstream kernel) use
-> >> case is to expose port 5 solely as a control end-point to the user and
-> >> leave it to the user how they wish to use the Ethernet MAC behind port
-> >> 5. Some customers use it to bridge Wi-Fi traffic, some simply keep it
-> >> disabled. Port 5 of that switch does not make use of Broadcom tags in
-> >> that case, since ARL-based forwarding works just fine.
-> >>
-> >> The current Device Tree representation that we have for that system
-> >> makes it possible for either port to be elected as the CPU port from a
-> >> DSA perspective as they both have an "ethernet" phandle property that
-> >> points to the appropriate Ethernet MAC node, because of that the DSA
-> >> framework treats them as CPU ports.
-> >>
-> >> My current line of thinking is to permit a port to be configured as
-> >> either "cpu" or "user" flavor and do that through devlink. This can
-> >> create some challenges but hopefully this also paves the way for finally
-> >> supporting "multi-CPU port" configurations. I am thinking something like
-> >> this would be how I would like it to be configured:
-> >>
-> >> # First configure port 8 as the new CPU port
-> >> devlink port set pci/0000:01:00.0/8 type cpu
-> >> # Now unmap port 5 from being a CPU port
-> >> devlink port set pci/0000:01:00.0/1 type eth
-> >>
-> >> and this would do a simple "swap" of all user ports being now associated
-> >> with port 8, and no longer with port 5, thus permitting port 5 from
-> >> becoming a standard user port. Or maybe, we need to do this as an atomic
-> >> operation in order to avoid a switch being configured with no CPU port
-> >> anymore, so something like this instead:
-> >>
-> >> devlink port set pci/0000:01:00.0/5 type eth mgmt pci/0000:01:00.0/8
-> >>
-> >> The latter could also be used to define groups of ports within a switch
-> >> that has multiple CPU ports, e.g.:
-> >>
-> >> # Ports 1 through 4 "bound" to CPU port 5:
-> >>
-> >> for i in $(seq 0 3)
-> >> do
-> >>         devlink port set pci/0000:01:00.0/$i type eth mgmt pci/0000:01:00.0/5
-> >> done
-> >>
-> >> # Ports 7 bound to CPU port 8:
-> >>
-> >> devlink port set pci/0000:01:00.0/1 type eth mgmt pci/0000:01:00.0/8
-> >>
-> >> Let me know what you think!
-> >>
-> >> Thanks
-> >> --
-> >> Florian
-> >
-> > What is missing from your argumentation is what would the new devlink
-> > mechanism of changing the CPU port bring for your particular use case.
-> > I mean you can already remove the "ethernet" device tree property from
-> > port 5 and end up exactly with the configuration that you want, no?
->
-> That's what I do in our downstream tree for now, should I submit this
-> upstream? I doubt it would be accepted.
-> --
-> Florian
+Hi, V=C3=A1clav
 
-This is exactly what we do for the NXP LS1028A (ocelot/felix driver),
-where we enable just one of the 2 CPU ports by default (and the other
-one, just as a simple user port in the very few situations that
-require it):
-https://github.com/torvalds/linux/blob/master/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi#L943
-Although to be fair, for LS1028A we can't even dream of enabling DSA
-tagging on both CPU ports at the same time, since there is a hardware
-limitation in place that only a single port may carry DSA tags at any
-given moment in time.
+Sorry for the delay.
 
--Vladimir
+The problem is actually more complicated than I thought, although it
+needs more work, below is the first pile of patches I have for you to
+test:
+
+https://github.com/congwang/linux/commits/qdisc_reset
+
+It is based on the latest net-next branch. Please let me know the result.
+
+Meanwhile, I will continue to work on this and will provide you more
+patches on top.
+
+Thanks for testing!
