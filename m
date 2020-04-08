@@ -2,137 +2,253 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCFE41A2203
-	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 14:27:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 128071A1EAD
+	for <lists+netdev@lfdr.de>; Wed,  8 Apr 2020 12:21:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728627AbgDHM14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 08:27:56 -0400
-Received: from mx0a-00191d01.pphosted.com ([67.231.149.140]:8734 "EHLO
-        mx0a-00191d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726769AbgDHM1z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 08:27:55 -0400
-X-Greylist: delayed 8401 seconds by postgrey-1.27 at vger.kernel.org; Wed, 08 Apr 2020 08:27:54 EDT
-Received: from pps.filterd (m0049295.ppops.net [127.0.0.1])
-        by m0049295.ppops.net-00191d01. (8.16.0.42/8.16.0.42) with SMTP id 038A1Hnp002121;
-        Wed, 8 Apr 2020 06:07:44 -0400
-Received: from tlpd255.enaf.dadc.sbc.com (sbcsmtp3.sbc.com [144.160.112.28])
-        by m0049295.ppops.net-00191d01. with ESMTP id 3091nvh12q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 Apr 2020 06:07:44 -0400
-Received: from enaf.dadc.sbc.com (localhost [127.0.0.1])
-        by tlpd255.enaf.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id 038A7hGs123659;
-        Wed, 8 Apr 2020 05:07:43 -0500
-Received: from zlp30497.vci.att.com (zlp30497.vci.att.com [135.46.181.156])
-        by tlpd255.enaf.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id 038A7e89123623
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Wed, 8 Apr 2020 05:07:40 -0500
-Received: from zlp30497.vci.att.com (zlp30497.vci.att.com [127.0.0.1])
-        by zlp30497.vci.att.com (Service) with ESMTP id 7CE1C4016998;
-        Wed,  8 Apr 2020 10:07:40 +0000 (GMT)
-Received: from clpi183.sldc.sbc.com (unknown [135.41.1.46])
-        by zlp30497.vci.att.com (Service) with ESMTP id 50DA64016997;
-        Wed,  8 Apr 2020 10:07:40 +0000 (GMT)
-Received: from sldc.sbc.com (localhost [127.0.0.1])
-        by clpi183.sldc.sbc.com (8.14.5/8.14.5) with ESMTP id 038A7ex5018242;
-        Wed, 8 Apr 2020 05:07:40 -0500
-Received: from mail.eng.vyatta.net (mail.eng.vyatta.net [10.156.50.82])
-        by clpi183.sldc.sbc.com (8.14.5/8.14.5) with ESMTP id 038A7XoR017759;
-        Wed, 8 Apr 2020 05:07:33 -0500
-Received: from [10.156.47.146] (unknown [10.156.47.146])
-        by mail.eng.vyatta.net (Postfix) with ESMTPA id C5B6C3601B3;
-        Wed,  8 Apr 2020 03:07:32 -0700 (PDT)
-From:   Mike Manning <mmanning@vyatta.att-mail.com>
-Subject: Re: VRF Issue Since kernel 5
-Reply-To: mmanning@vyatta.att-mail.com
-To:     Maximilian Bosch <maximilian@mbosch.me>, netdev@vger.kernel.org
-Cc:     David Ahern <dsahern@gmail.com>
-References: <CWLP265MB1554C88316ACF2BDD4692ECAFDB10@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
- <CWLP265MB15544E2F2303FA2D0F76B7F5FDB10@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
- <CWLP265MB1554604C9DB9B28D245E47A2FDB10@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
- <ef7ca3ad-d85c-01aa-42b6-b08db69399e4@vyatta.att-mail.com>
- <20200310204721.7jo23zgb7pjf5j33@topsnens>
- <2583bdb7-f9ea-3b7b-1c09-a273d3229b45@gmail.com>
- <20200401181650.flnxssoyih7c5s5y@topsnens>
- <b6ead5e9-cc0e-5017-e9a1-98b09b110650@gmail.com>
- <20200401203523.vafhsqb3uxfvvvxq@topsnens>
- <00917d3a-17f8-b772-5b93-3abdf1540b94@gmail.com>
- <20200402230233.mumqo22khf7q7o7c@topsnens>
- <5e64064d-eb03-53d3-f80a-7646e71405d8@gmail.com>
-Message-ID: <d81f97fe-be4b-041d-1233-7e69758d96ef@vyatta.att-mail.com>
-Date:   Wed, 8 Apr 2020 11:07:31 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <5e64064d-eb03-53d3-f80a-7646e71405d8@gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-07_10:2020-04-07,2020-04-07 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_policy_notspam policy=outbound_policy score=0
- lowpriorityscore=0 phishscore=0 clxscore=1011 bulkscore=0 spamscore=0
- mlxscore=0 adultscore=0 suspectscore=0 malwarescore=0 impostorscore=0
- mlxlogscore=999 priorityscore=1501 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2004080084
+        id S1728093AbgDHKVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 06:21:19 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:56224 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726521AbgDHKVT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 06:21:19 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 038ADliZ118979;
+        Wed, 8 Apr 2020 10:21:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id; s=corp-2020-01-29;
+ bh=jhFlMGAhryb0OEnOAZN5ySeN86EhDTD7tAAj+a4B5SM=;
+ b=IYRmV4rWCctBj4h/4pFnR2QmIQuBdTC19BwEkkrguluVCGBc/n+ZivFTnAMSfBxbu7ax
+ 4dOv1tAUqwiFU9RgJt86pUErdJcUOtEN+Lq4CbaVxH14MZlGzazJvImAJW1uSTRBOFuK
+ b6YrfxP+Z4F2EZRMyCZVhwyBiyDznqEuMhgybGMLeKLmN17xHhCbKvviyOS/sTkHfDEK
+ TmuG/UfDk+cIf1i7QfRFZVkaeJt+IUWElJgZcXUh/ZUPw5/PB3Z9ICz3MT/8Cz5R1Tfh
+ oyE96AspVhBb+KM8/zUTGcsSdGFaGoiEID0ABrXnPZeEHt9o62M8ej9GbU59Uo1z2VSH aA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 3091m0tm5s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 08 Apr 2020 10:21:09 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 038ACYFH015983;
+        Wed, 8 Apr 2020 10:21:08 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3020.oracle.com with ESMTP id 3099v8mym9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 08 Apr 2020 10:21:08 +0000
+Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 038AL7ts038739;
+        Wed, 8 Apr 2020 10:21:07 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3020.oracle.com with ESMTP id 3099v8myk8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 08 Apr 2020 10:21:07 +0000
+Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 038AL63e002134;
+        Wed, 8 Apr 2020 10:21:06 GMT
+Received: from ca-dev40.us.oracle.com (/10.129.135.27)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 08 Apr 2020 03:21:06 -0700
+From:   Ka-Cheong Poon <ka-cheong.poon@oracle.com>
+To:     netdev@vger.kernel.org
+Cc:     santosh.shilimkar@oracle.com, davem@davemloft.net,
+        rds-devel@oss.oracle.com, sironhide0null@gmail.com
+Subject: [PATCH v2 net 1/2] net/rds: Replace struct rds_mr's r_refcount with struct kref
+Date:   Wed,  8 Apr 2020 03:21:01 -0700
+Message-Id: <fb149123516920dd5f5bf730a1da3a0cb9f3d25e.1586340235.git.ka-cheong.poon@oracle.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9584 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxlogscore=999 mlxscore=0
+ priorityscore=1501 phishscore=0 suspectscore=3 bulkscore=0
+ lowpriorityscore=0 impostorscore=0 malwarescore=0 clxscore=1015
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2004080085
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Maximilian,
-Can you please clarify what the issue is with using 'ip vrf exec <vrf>
-ssh' for running the ssh client in the vrf? This is the recommended
-method for running an application in a VRF. As part of our VRF
-development on this a couple of years ago, we provided a changeset for
-openssh so that the vrf could be specified as an option, cf
-https://bugzilla.mindrot.org/show_bug.cgi?id=2784. That was not applied
-due to the ease of using 'ip vrf exec'.
+And removed rds_mr_put().
 
-Alternatively, to run the ssh client in the default VRF, you can bind it
-to an address on an interface (or specify the interface) in the default
-VRF using ssh -b (or -B) option, or similarly add an entry in
-/etc/ssh/ssh_config for BindAddress (or BindInterface).
+Signed-off-by: Ka-Cheong Poon <ka-cheong.poon@oracle.com>
+---
+ net/rds/message.c |  6 +++---
+ net/rds/rdma.c    | 28 +++++++++++++++-------------
+ net/rds/rds.h     |  9 ++-------
+ 3 files changed, 20 insertions(+), 23 deletions(-)
 
-Then for egress, leak a route in the default table to get to the gateway
-via the VRF (as you must already be doing), and for ingress, leak a
-route in the VRF's table for the return path to the ssh client. For
-this, get the table id for the vrf from 'ip vrf', add the route for the
-client prefix with the additional 'table <tbl-id>' option, and confirm
-the route with 'ip route show vrf <vrf-name>'.
-
-I have started looking at the issue you have reported, but as you may
-appreciate, it is not trivial. This client-side use-case is not typical,
-as VRF config is generally applied to routers or switches, not hosts.
-
-Thanks
-Mike
-
-
-On 05/04/2020 17:52, David Ahern wrote:
-> On 4/2/20 5:02 PM, Maximilian Bosch wrote:
->> Hi!
->>
->>> I do not see how this worked on 4.19. My comment above is a fundamental
->>> property of VRF and has been needed since day 1. That's why 'ip vrf
->>> exec' exists.
->> I'm afraid I have to disagree here: first of all, I created a
->> regression-test in NixOS for this purpose a while ago[1]. The third test-case
->> (lines 197-208) does basically what I demonstrated in my previous emails
->> (opening SSH connetions through a local VRF). This worked fine until we
->> bumped our default kernel to 5.4.x which is the reason why this testcase
->> is temporarily commented out.
-> I do not have access to a NixOS install, nor the time to create one.
-> Please provide a set of ip commands to re-create the test that work with
-> Ubuntu, debian or fedora.
->
->
->> After skimming through the VRF-related changes in 4.20 and 5.0 (which
->> might've had some relevant changes as you suggested previously), I
->> rebuilt the kernels 5.4.29 and 5.5.13 with
->> 3c82a21f4320c8d54cf6456b27c8d49e5ffb722e[2] reverted on top and the
->> commented-out testcase works fine again. In other words, my usecase
->> seems to have worked before and the mentioned commit appears to cause
->> the "regression".
-> The vyatta folks who made the changes will take a look.
-
+diff --git a/net/rds/message.c b/net/rds/message.c
+index 50f13f1..bbecb8c 100644
+--- a/net/rds/message.c
++++ b/net/rds/message.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2006 Oracle.  All rights reserved.
++ * Copyright (c) 2006, 2020 Oracle and/or its affiliates.
+  *
+  * This software is available to you under a choice of one of two
+  * licenses.  You may choose to be licensed under the terms of the GNU
+@@ -162,12 +162,12 @@ static void rds_message_purge(struct rds_message *rm)
+ 	if (rm->rdma.op_active)
+ 		rds_rdma_free_op(&rm->rdma);
+ 	if (rm->rdma.op_rdma_mr)
+-		rds_mr_put(rm->rdma.op_rdma_mr);
++		kref_put(&rm->rdma.op_rdma_mr->r_kref, __rds_put_mr_final);
+ 
+ 	if (rm->atomic.op_active)
+ 		rds_atomic_free_op(&rm->atomic);
+ 	if (rm->atomic.op_rdma_mr)
+-		rds_mr_put(rm->atomic.op_rdma_mr);
++		kref_put(&rm->atomic.op_rdma_mr->r_kref, __rds_put_mr_final);
+ }
+ 
+ void rds_message_put(struct rds_message *rm)
+diff --git a/net/rds/rdma.c b/net/rds/rdma.c
+index 585e6b3..f828b66 100644
+--- a/net/rds/rdma.c
++++ b/net/rds/rdma.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2007, 2017 Oracle and/or its affiliates. All rights reserved.
++ * Copyright (c) 2007, 2020 Oracle and/or its affiliates.
+  *
+  * This software is available to you under a choice of one of two
+  * licenses.  You may choose to be licensed under the terms of the GNU
+@@ -84,7 +84,7 @@ static struct rds_mr *rds_mr_tree_walk(struct rb_root *root, u64 key,
+ 	if (insert) {
+ 		rb_link_node(&insert->r_rb_node, parent, p);
+ 		rb_insert_color(&insert->r_rb_node, root);
+-		refcount_inc(&insert->r_refcount);
++		kref_get(&insert->r_kref);
+ 	}
+ 	return NULL;
+ }
+@@ -99,7 +99,7 @@ static void rds_destroy_mr(struct rds_mr *mr)
+ 	unsigned long flags;
+ 
+ 	rdsdebug("RDS: destroy mr key is %x refcnt %u\n",
+-			mr->r_key, refcount_read(&mr->r_refcount));
++		 mr->r_key, kref_read(&mr->r_kref));
+ 
+ 	if (test_and_set_bit(RDS_MR_DEAD, &mr->r_state))
+ 		return;
+@@ -115,8 +115,10 @@ static void rds_destroy_mr(struct rds_mr *mr)
+ 		mr->r_trans->free_mr(trans_private, mr->r_invalidate);
+ }
+ 
+-void __rds_put_mr_final(struct rds_mr *mr)
++void __rds_put_mr_final(struct kref *kref)
+ {
++	struct rds_mr *mr = container_of(kref, struct rds_mr, r_kref);
++
+ 	rds_destroy_mr(mr);
+ 	kfree(mr);
+ }
+@@ -141,7 +143,7 @@ void rds_rdma_drop_keys(struct rds_sock *rs)
+ 		RB_CLEAR_NODE(&mr->r_rb_node);
+ 		spin_unlock_irqrestore(&rs->rs_rdma_lock, flags);
+ 		rds_destroy_mr(mr);
+-		rds_mr_put(mr);
++		kref_put(&mr->r_kref, __rds_put_mr_final);
+ 		spin_lock_irqsave(&rs->rs_rdma_lock, flags);
+ 	}
+ 	spin_unlock_irqrestore(&rs->rs_rdma_lock, flags);
+@@ -242,7 +244,7 @@ static int __rds_rdma_map(struct rds_sock *rs, struct rds_get_mr_args *args,
+ 		goto out;
+ 	}
+ 
+-	refcount_set(&mr->r_refcount, 1);
++	kref_init(&mr->r_kref);
+ 	RB_CLEAR_NODE(&mr->r_rb_node);
+ 	mr->r_trans = rs->rs_transport;
+ 	mr->r_sock = rs;
+@@ -343,7 +345,7 @@ static int __rds_rdma_map(struct rds_sock *rs, struct rds_get_mr_args *args,
+ 
+ 	rdsdebug("RDS: get_mr key is %x\n", mr->r_key);
+ 	if (mr_ret) {
+-		refcount_inc(&mr->r_refcount);
++		kref_get(&mr->r_kref);
+ 		*mr_ret = mr;
+ 	}
+ 
+@@ -351,7 +353,7 @@ static int __rds_rdma_map(struct rds_sock *rs, struct rds_get_mr_args *args,
+ out:
+ 	kfree(pages);
+ 	if (mr)
+-		rds_mr_put(mr);
++		kref_put(&mr->r_kref, __rds_put_mr_final);
+ 	return ret;
+ }
+ 
+@@ -440,7 +442,7 @@ int rds_free_mr(struct rds_sock *rs, char __user *optval, int optlen)
+ 	 * someone else drops their ref.
+ 	 */
+ 	rds_destroy_mr(mr);
+-	rds_mr_put(mr);
++	kref_put(&mr->r_kref, __rds_put_mr_final);
+ 	return 0;
+ }
+ 
+@@ -481,7 +483,7 @@ void rds_rdma_unuse(struct rds_sock *rs, u32 r_key, int force)
+ 	 * trigger an async flush. */
+ 	if (zot_me) {
+ 		rds_destroy_mr(mr);
+-		rds_mr_put(mr);
++		kref_put(&mr->r_kref, __rds_put_mr_final);
+ 	}
+ }
+ 
+@@ -490,7 +492,7 @@ void rds_rdma_free_op(struct rm_rdma_op *ro)
+ 	unsigned int i;
+ 
+ 	if (ro->op_odp_mr) {
+-		rds_mr_put(ro->op_odp_mr);
++		kref_put(&ro->op_odp_mr->r_kref, __rds_put_mr_final);
+ 	} else {
+ 		for (i = 0; i < ro->op_nents; i++) {
+ 			struct page *page = sg_page(&ro->op_sg[i]);
+@@ -730,7 +732,7 @@ int rds_cmsg_rdma_args(struct rds_sock *rs, struct rds_message *rm,
+ 				goto out_pages;
+ 			}
+ 			RB_CLEAR_NODE(&local_odp_mr->r_rb_node);
+-			refcount_set(&local_odp_mr->r_refcount, 1);
++			kref_init(&local_odp_mr->r_kref);
+ 			local_odp_mr->r_trans = rs->rs_transport;
+ 			local_odp_mr->r_sock = rs;
+ 			local_odp_mr->r_trans_private =
+@@ -827,7 +829,7 @@ int rds_cmsg_rdma_dest(struct rds_sock *rs, struct rds_message *rm,
+ 	if (!mr)
+ 		err = -EINVAL;	/* invalid r_key */
+ 	else
+-		refcount_inc(&mr->r_refcount);
++		kref_get(&mr->r_kref);
+ 	spin_unlock_irqrestore(&rs->rs_rdma_lock, flags);
+ 
+ 	if (mr) {
+diff --git a/net/rds/rds.h b/net/rds/rds.h
+index e4a6035..3cda01c 100644
+--- a/net/rds/rds.h
++++ b/net/rds/rds.h
+@@ -291,7 +291,7 @@ struct rds_incoming {
+ 
+ struct rds_mr {
+ 	struct rb_node		r_rb_node;
+-	refcount_t		r_refcount;
++	struct kref		r_kref;
+ 	u32			r_key;
+ 
+ 	/* A copy of the creation flags */
+@@ -946,12 +946,7 @@ int rds_cmsg_rdma_map(struct rds_sock *rs, struct rds_message *rm,
+ int rds_cmsg_atomic(struct rds_sock *rs, struct rds_message *rm,
+ 		    struct cmsghdr *cmsg);
+ 
+-void __rds_put_mr_final(struct rds_mr *mr);
+-static inline void rds_mr_put(struct rds_mr *mr)
+-{
+-	if (refcount_dec_and_test(&mr->r_refcount))
+-		__rds_put_mr_final(mr);
+-}
++void __rds_put_mr_final(struct kref *kref);
+ 
+ static inline bool rds_destroy_pending(struct rds_connection *conn)
+ {
+-- 
+1.8.3.1
 
