@@ -2,69 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 291051A38E0
-	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 19:28:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C27141A3904
+	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 19:38:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726641AbgDIR2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Apr 2020 13:28:16 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:33476 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726623AbgDIR2Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 13:28:16 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 96E87128D8644;
-        Thu,  9 Apr 2020 10:28:15 -0700 (PDT)
-Date:   Thu, 09 Apr 2020 10:28:14 -0700 (PDT)
-Message-Id: <20200409.102814.2035520677628509572.davem@davemloft.net>
-To:     vadym.kochan@plvision.eu
-Cc:     netdev@vger.kernel.org, yoshfuji@linux-ipv6.org,
-        challa@noironetworks.com, linux-kernel@vger.kernel.org,
-        taras.chornyi@plvision.eu
-Subject: Re: [PATCH net v3] net: ipv4: devinet: Fix crash when add/del
- multicast IP with autojoin
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200409172524.26385-1-vadym.kochan@plvision.eu>
-References: <20200409172524.26385-1-vadym.kochan@plvision.eu>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 09 Apr 2020 10:28:15 -0700 (PDT)
+        id S1726620AbgDIRir (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Apr 2020 13:38:47 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:38565 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726502AbgDIRir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 13:38:47 -0400
+Received: by mail-wr1-f67.google.com with SMTP id 31so12880367wre.5
+        for <netdev@vger.kernel.org>; Thu, 09 Apr 2020 10:38:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sslab.ics.keio.ac.jp; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=cB5yBSX4XmqsF1ppUkd5OJUCXOdbq3LIDZ0hfF3NUgw=;
+        b=AGeMCB2RRpgTqU0NyD8K0PMZxZc9+wdj85illkNZBFhXaDT9YCV/M4sHa4D+5pqg2O
+         xcFqG9jDLQZo3duKjJI2k43wS7IYfPKRw+rB0EmR0stDi++HHUpZETn74dUlqeETl/DK
+         2ldu2cXbWe1c/D5YBxpd4VpeItFyYoIF+U+tE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=cB5yBSX4XmqsF1ppUkd5OJUCXOdbq3LIDZ0hfF3NUgw=;
+        b=XNgyjm/j2I1cy0c03S0c8nfP7Y1h0vFjMs1rOMau9glI/OJgfzgHOoR94UtNt/AgkF
+         5uoHvAjvSW9si+LD3v1+oDSEY70RP0KvQKu38KdHdqqJDUvb276l29ghkaI8Phc7Hx5S
+         QxsrZOxlvqSITcsnRmapbzaAgjFEALif8sUf5HlEKucK9K06TWAT17jVFtkvy5/yfPmN
+         UTps+G27F0Xx6+0w5Oo3QifM8VHLRFKXABVf+xPyVr2xNjfugI0ndz4WWg66JuTQyPWy
+         ncdRz4X9cWvizxwJ6048MtpURSdb6d4Om29yBYFFetBZsYrr1e4o5Rynayo3XdHj6/XN
+         L9/Q==
+X-Gm-Message-State: AGi0PuaE1KUFVEDgJga29zYuOpVpaBGKxYaAdZ56xMpSisg1DZMwBjKH
+        EvCABV8GTKeuyGyRumTQFjgy0EfCE9cTTq3Q60OLhc8DkDI3RSVq
+X-Google-Smtp-Source: APiQypKHuqryJeoz1PSWp+rhiE3ZzkNIIf6gabELUM2oO0fS6yQjNadMGyH6yBef5R2sSWoP37RfT6f3UF604jlXS8I=
+X-Received: by 2002:adf:fc4f:: with SMTP id e15mr219309wrs.415.1586453926274;
+ Thu, 09 Apr 2020 10:38:46 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200409150210.15488-1-keitasuzuki.park@sslab.ics.keio.ac.jp> <20200409.101844.1655988786538703860.davem@davemloft.net>
+In-Reply-To: <20200409.101844.1655988786538703860.davem@davemloft.net>
+From:   Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+Date:   Fri, 10 Apr 2020 02:38:35 +0900
+Message-ID: <CAEYrHjkjYESXHG1x0Obnz+T5xv00vyZKHzUg=ZC70f0JymSU=g@mail.gmail.com>
+Subject: Re: [PATCH] nfp: Fix memory leak in nfp_resource_acquire()
+To:     David Miller <davem@davemloft.net>
+Cc:     Kubota Takafumi <takafumi.kubota1012@sslab.ics.keio.ac.jp>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETRONOME ETHERNET DRIVERS" <oss-drivers@netronome.com>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vadym Kochan <vadym.kochan@plvision.eu>
-Date: Thu,  9 Apr 2020 20:25:24 +0300
+Hi,
 
-> From: Taras Chornyi <taras.chornyi@plvision.eu>
-> 
-> When CONFIG_IP_MULTICAST is not set and multicast ip is added to the device
-> with autojoin flag or when multicast ip is deleted kernel will crash.
-> 
-> steps to reproduce:
-> 
-> ip addr add 224.0.0.0/32 dev eth0
-> ip addr del 224.0.0.0/32 dev eth0
-> 
-> or
-> 
-> ip addr add 224.0.0.0/32 dev eth0 autojoin
-> 
-> Unable to handle kernel NULL pointer dereference at virtual address 0000000000000088
->  pc : _raw_write_lock_irqsave+0x1e0/0x2ac
->  lr : lock_sock_nested+0x1c/0x60
->  Call trace:
->   _raw_write_lock_irqsave+0x1e0/0x2ac
->   lock_sock_nested+0x1c/0x60
->   ip_mc_config.isra.28+0x50/0xe0
- ...
-> Fixes: 93a714d6b53d ("multicast: Extend ip address command to enable multicast group join/leave on")
-> Signed-off-by: Taras Chornyi <taras.chornyi@plvision.eu>
-> Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
+So sorry about this. It seems like I accidentally touched the patch
+file after generating / testing the patch.
+I will resend the new patch immediately.
 
-Applied and queued up for -stable, thanks.
+I have tested the patch using kmemleak.
+
+Thanks.
+
+2020=E5=B9=B44=E6=9C=8810=E6=97=A5(=E9=87=91) 2:18 David Miller <davem@dave=
+mloft.net>:
+>
+> From: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+> Date: Thu,  9 Apr 2020 15:02:07 +0000
+>
+> > This patch fixes a memory leak in nfp_resource_acquire(). res->mutex is
+> > alllocated in nfp_resource_try_acquire(). However, when
+> > msleep_interruptible() or time_is_before_eq_jiffies() fails, it falls
+> > into err_fails path where res is freed, but res->mutex is not.
+> >
+> > Fix this by changing call to free to nfp_resource_release().
+> >
+> > Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+>
+> Did you test compile this?
+>
+> drivers/net/ethernet/netronome/nfp/nfpcore/nfp_resource.c: In function =
+=E2=80=98nfp_resource_acquire=E2=80=99:
+> drivers/net/ethernet/netronome/nfp/nfpcore/nfp_resource.c:203:2: error: i=
+mplicit declaration of function =E2=80=98nfp_resource_relase=E2=80=99; did =
+you mean =E2=80=98nfp_resource_release=E2=80=99? [-Werror=3Dimplicit-functi=
+on-declaration]
+>   nfp_resource_relase(res);
+>   ^~~~~~~~~~~~~~~~~~~
+>   nfp_resource_release
+>
+> And this makes me feel like the test was not runtime tested either.
