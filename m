@@ -2,49 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EAF371A38B1
-	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 19:12:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 732761A38B6
+	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 19:13:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726832AbgDIRMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Apr 2020 13:12:06 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:33244 "EHLO
+        id S1726864AbgDIRN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Apr 2020 13:13:57 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:33264 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726759AbgDIRMG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 13:12:06 -0400
+        with ESMTP id S1726650AbgDIRN4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 13:13:56 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4E55F128C0940;
-        Thu,  9 Apr 2020 10:12:06 -0700 (PDT)
-Date:   Thu, 09 Apr 2020 10:12:05 -0700 (PDT)
-Message-Id: <20200409.101205.1131645111037893713.davem@davemloft.net>
-To:     vadym.kochan@plvision.eu
-Cc:     netdev@vger.kernel.org, yoshfuji@linux-ipv6.org,
-        challa@noironetworks.com, linux-kernel@vger.kernel.org,
-        taras.chornyi@plvision.eu
-Subject: Re: [PATCH net v2] net: ipv4: devinet: Fix crash when add/del
- multicast IP with autojoin
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 95A1C128C1250;
+        Thu,  9 Apr 2020 10:13:56 -0700 (PDT)
+Date:   Thu, 09 Apr 2020 10:13:55 -0700 (PDT)
+Message-Id: <20200409.101355.534685961785562180.davem@davemloft.net>
+To:     liuhangbin@gmail.com
+Cc:     netdev@vger.kernel.org, daniel@iogearbox.net,
+        yoshfuji@linux-ipv6.org
+Subject: Re: [PATCH net] net/ipv6: allow token to be set when accept_ra
+ disabled
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200409053932.22902-1-vadym.kochan@plvision.eu>
-References: <20200409053932.22902-1-vadym.kochan@plvision.eu>
+In-Reply-To: <20200409065604.817-1-liuhangbin@gmail.com>
+References: <20200409065604.817-1-liuhangbin@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 09 Apr 2020 10:12:06 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 09 Apr 2020 10:13:56 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vadym Kochan <vadym.kochan@plvision.eu>
-Date: Thu,  9 Apr 2020 08:39:32 +0300
+From: Hangbin Liu <liuhangbin@gmail.com>
+Date: Thu,  9 Apr 2020 14:56:04 +0800
 
-> Fixes: 93a714d (multicast: Extend ip address command to enable multicast group join/leave on)
+> The token setting should not depend on whether accept_ra is enabled or
+> disabled. The user could set the token at any time. Enable or disable
+> accept_ra only affects when the token address take effective.
+> 
+> On the other hand, we didn't remove the token setting when disable
+> accept_ra. So let's just remove the accept_ra checking when user want
+> to set token address.
+> 
+> Fixes: f53adae4eae5 ("net: ipv6: add tokenized interface identifier support")
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 
-Fixes tags must specify commit IDs with 12 digits of significance.
-Please fix this and resubmit.
+It is dangerous to change this, because now people can write bootup
+and configuration scripts that will work with newer kernels yet fail
+unexpectedly in older kernels.
 
-And in the parenthesis, the commit header text should also be surrounded
-by double quotes like ("...")
+I think requiring that RA be enabled in order to set the token is
+an absolutely reasonable requirement.
