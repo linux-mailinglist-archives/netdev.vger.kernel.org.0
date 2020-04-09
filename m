@@ -2,129 +2,253 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79C281A310F
-	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 10:41:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABF571A3119
+	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 10:42:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726594AbgDIIlR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Apr 2020 04:41:17 -0400
-Received: from mga12.intel.com ([192.55.52.136]:18402 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726470AbgDIIlR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Apr 2020 04:41:17 -0400
-IronPort-SDR: BUIQ9jcktPupZ+KATaEXNsjE+VZy0p1LUdJ/Iw+Y9pv6HQmpgINhXybTeZMmuUImrNcRqCA2b+
- G0JRF0BpApQA==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2020 01:41:17 -0700
-IronPort-SDR: VRkD0xl0Hi3Ldvuf0kEfJ8F4gCAOL43B4AsAFq3BlZ1Jho9cZYh4n5YVd8dXC/Z9fBC7Vpc3HU
- VNRFRnBMmHYQ==
-X-IronPort-AV: E=Sophos;i="5.72,362,1580803200"; 
-   d="scan'208";a="425437262"
-Received: from ashakhno-mobl.ccr.corp.intel.com (HELO localhost) ([10.252.61.38])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2020 01:41:10 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>, Arnd Bergmann <arnd@arndb.de>
-Cc:     Jernej Skrabec <jernej.skrabec@siol.net>,
-        Leon Romanovsky <leon@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        David Airlie <airlied@linux.ie>,
-        Networking <netdev@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-rdma <linux-rdma@vger.kernel.org>
-Subject: Re: [RFC 0/6] Regressions for "imply" behavior change
-In-Reply-To: <20200408224224.GD11886@ziepe.ca>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20200408202711.1198966-1-arnd@arndb.de> <nycvar.YSQ.7.76.2004081633260.2671@knanqh.ubzr> <CAK8P3a2frDf4BzEpEF0uwPTV2dv6Jve+6N97z1sSuSBUAPJquA@mail.gmail.com> <20200408224224.GD11886@ziepe.ca>
-Date:   Thu, 09 Apr 2020 11:41:08 +0300
-Message-ID: <87k12pgifv.fsf@intel.com>
+        id S1726681AbgDIImc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Apr 2020 04:42:32 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:41025 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725783AbgDIImc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 04:42:32 -0400
+Received: from 1.general.ppisati.uk.vpn ([10.172.193.134] helo=canonical.com)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <paolo.pisati@canonical.com>)
+        id 1jMSlT-0000Km-Lv; Thu, 09 Apr 2020 08:42:23 +0000
+Date:   Thu, 9 Apr 2020 10:42:23 +0200
+From:   Paolo Pisati <paolo.pisati@canonical.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: selftests/bpf: test_maps: libbpf: Error loading .BTF into kernel:
+ -22. Failed to load SK_SKB verdict prog
+Message-ID: <20200409084223.GA72109@harukaze>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 08 Apr 2020, Jason Gunthorpe <jgg@ziepe.ca> wrote:
-> On Wed, Apr 08, 2020 at 10:49:48PM +0200, Arnd Bergmann wrote:
->> On Wed, Apr 8, 2020 at 10:38 PM Nicolas Pitre <nico@fluxnic.net> wrote:
->> > On Wed, 8 Apr 2020, Arnd Bergmann wrote:
->> > > I have created workarounds for the Kconfig files, which now stop using
->> > > imply and do something else in each case. I don't know whether there was
->> > > a bug in the kconfig changes that has led to allowing configurations that
->> > > were not meant to be legal even with the new semantics, or if the Kconfig
->> > > files have simply become incorrect now and the tool works as expected.
->> >
->> > In most cases it is the code that has to be fixed. It typically does:
->> >
->> >         if (IS_ENABLED(CONFIG_FOO))
->> >                 foo_init();
->> >
->> > Where it should rather do:
->> >
->> >         if (IS_REACHABLE(CONFIG_FOO))
->> >                 foo_init();
->> >
->> > A couple of such patches have been produced and queued in their
->> > respective trees already.
->> 
->> I try to use IS_REACHABLE() only as a last resort, as it tends to
->> confuse users when a subsystem is built as a module and already
->> loaded but something relying on that subsystem does not use it.
->> 
->> In the six patches I made, I had to use IS_REACHABLE() once,
->> for the others I tended to use a Kconfig dependency like
->> 
->> 'depends on FOO || FOO=n'
->
-> It is unfortunate kconfig doesn't have a language feature for this
-> idiom, as the above is confounding without a lot of kconfig knowledge
->
->> I did come up with the IS_REACHABLE() macro originally, but that
->> doesn't mean I think it's a good idea to use it liberally ;-)
->
-> It would be nice to have some uniform policy here
->
-> I also don't like the IS_REACHABLE solution, it makes this more
-> complicated, not less..
+test_maps fails consistently on x86-64 5.4.y (5.4.31 and defconfig +
+tools/testing/selftests/bpf/config in this case) and dumps this output:
 
-Just chiming "me too" here.
+~/linux/tools/testing/selftests/bpf$ sudo ./test_maps
+libbpf: Error loading BTF: Invalid argument(22)
+libbpf: magic: 0xeb9f
+version: 1
+flags: 0x0
+hdr_len: 24
+type_off: 0
+type_len: 780
+str_off: 780
+str_len: 854
+btf_total_size: 1658
+[1] PTR (anon) type_id=2
+[2] STRUCT __sk_buff size=176 vlen=31
+	len type_id=3 bits_offset=0
+	pkt_type type_id=3 bits_offset=32
+	mark type_id=3 bits_offset=64
+	queue_mapping type_id=3 bits_offset=96
+	protocol type_id=3 bits_offset=128
+	vlan_present type_id=3 bits_offset=160
+	vlan_tci type_id=3 bits_offset=192
+	vlan_proto type_id=3 bits_offset=224
+	priority type_id=3 bits_offset=256
+	ingress_ifindex type_id=3 bits_offset=288
+	ifindex type_id=3 bits_offset=320
+	tc_index type_id=3 bits_offset=352
+	cb type_id=5 bits_offset=384
+	hash type_id=3 bits_offset=544
+	tc_classid type_id=3 bits_offset=576
+	data type_id=3 bits_offset=608
+	data_end type_id=3 bits_offset=640
+	napi_id type_id=3 bits_offset=672
+	family type_id=3 bits_offset=704
+	remote_ip4 type_id=3 bits_offset=736
+	local_ip4 type_id=3 bits_offset=768
+	remote_ip6 type_id=7 bits_offset=800
+	local_ip6 type_id=7 bits_offset=928
+	remote_port type_id=3 bits_offset=1056
+	local_port type_id=3 bits_offset=1088
+	data_meta type_id=3 bits_offset=1120
+	(anon) type_id=8 bits_offset=1152
+	tstamp type_id=10 bits_offset=1216
+	wire_len type_id=3 bits_offset=1280
+	gso_segs type_id=3 bits_offset=1312
+	(anon) type_id=12 bits_offset=1344
+[3] TYPEDEF __u32 type_id=4
+[4] INT unsigned int size=4 bits_offset=0 nr_bits=32 encoding=(none)
+[5] ARRAY (anon) type_id=3 index_type_id=6 nr_elems=5
+[6] INT __ARRAY_SIZE_TYPE__ size=4 bits_offset=0 nr_bits=32 encoding=(none)
+[7] ARRAY (anon) type_id=3 index_type_id=6 nr_elems=4
+[8] UNION (anon) size=8 vlen=1
+	flow_keys type_id=9 bits_offset=0
+[9] PTR (anon) type_id=23
+[10] TYPEDEF __u64 type_id=11
+[11] INT long long unsigned int size=8 bits_offset=0 nr_bits=64 encoding=(none)
+[12] UNION (anon) size=8 vlen=1
+	sk type_id=13 bits_offset=0
+[13] PTR (anon) type_id=24
+[14] FUNC_PROTO (anon) return=15 args=(1 skb)
+[15] INT int size=4 bits_offset=0 nr_bits=32 encoding=SIGNED
+[16] FUNC bpf_prog1 type_id=14 vlen != 0
 
-IS_REACHABLE() is not a solution, it's a hack to hide a dependency link
-problem under the carpet, in a way that is difficult for the user to
-debug and figure out.
+libbpf: Error loading .BTF into kernel: -22.
+libbpf: Error loading BTF: Invalid argument(22)
+libbpf: magic: 0xeb9f
+version: 1
+flags: 0x0
+hdr_len: 24
+type_off: 0
+type_len: 440
+str_off: 440
+str_len: 564
+btf_total_size: 1028
+[1] PTR (anon) type_id=2
+[2] STRUCT sk_msg_md size=72 vlen=10
+	(anon) type_id=3 bits_offset=0
+	(anon) type_id=5 bits_offset=64
+	family type_id=6 bits_offset=128
+	remote_ip4 type_id=6 bits_offset=160
+	local_ip4 type_id=6 bits_offset=192
+	remote_ip6 type_id=8 bits_offset=224
+	local_ip6 type_id=8 bits_offset=352
+	remote_port type_id=6 bits_offset=480
+	local_port type_id=6 bits_offset=512
+	size type_id=6 bits_offset=544
+[3] UNION (anon) size=8 vlen=1
+	data type_id=4 bits_offset=0
+[4] PTR (anon) type_id=0
+[5] UNION (anon) size=8 vlen=1
+	data_end type_id=4 bits_offset=0
+[6] TYPEDEF __u32 type_id=7
+[7] INT unsigned int size=4 bits_offset=0 nr_bits=32 encoding=(none)
+[8] ARRAY (anon) type_id=6 index_type_id=9 nr_elems=4
+[9] INT __ARRAY_SIZE_TYPE__ size=4 bits_offset=0 nr_bits=32 encoding=(none)
+[10] FUNC_PROTO (anon) return=11 args=(1 msg)
+[11] INT int size=4 bits_offset=0 nr_bits=32 encoding=SIGNED
+[12] FUNC bpf_prog1 type_id=10 vlen != 0
 
-The user thinks they've enabled a feature, but it doesn't get used
-anyway, because a builtin depends on something that is a module and
-therefore not reachable. Can someone please give me an example where
-that kind of behaviour is desirable?
+libbpf: Error loading .BTF into kernel: -22.
+libbpf: Error loading BTF: Invalid argument(22)
+libbpf: magic: 0xeb9f
+version: 1
+flags: 0x0
+hdr_len: 24
+type_off: 0
+type_len: 1300
+str_off: 1300
+str_len: 907
+btf_total_size: 2231
+[1] STRUCT (anon) size=32 vlen=4
+	type type_id=2 bits_offset=0
+	max_entries type_id=6 bits_offset=64
+	key_size type_id=8 bits_offset=128
+	value_size type_id=8 bits_offset=192
+[2] PTR (anon) type_id=4
+[3] INT int size=4 bits_offset=0 nr_bits=32 encoding=SIGNED
+[4] ARRAY (anon) type_id=3 index_type_id=5 nr_elems=15
+[5] INT __ARRAY_SIZE_TYPE__ size=4 bits_offset=0 nr_bits=32 encoding=(none)
+[6] PTR (anon) type_id=7
+[7] ARRAY (anon) type_id=3 index_type_id=5 nr_elems=20
+[8] PTR (anon) type_id=9
+[9] ARRAY (anon) type_id=3 index_type_id=5 nr_elems=4
+[10] VAR sock_map_rx type_id=1 linkage=1
+[11] STRUCT (anon) size=32 vlen=4
+	type type_id=2 bits_offset=0
+	max_entries type_id=6 bits_offset=64
+	key_size type_id=8 bits_offset=128
+	value_size type_id=8 bits_offset=192
+[12] VAR sock_map_tx type_id=11 linkage=1
+[13] STRUCT (anon) size=32 vlen=4
+	type type_id=2 bits_offset=0
+	max_entries type_id=6 bits_offset=64
+	key_size type_id=8 bits_offset=128
+	value_size type_id=8 bits_offset=192
+[14] VAR sock_map_msg type_id=13 linkage=1
+[15] STRUCT (anon) size=32 vlen=4
+	type type_id=16 bits_offset=0
+	max_entries type_id=6 bits_offset=64
+	key type_id=18 bits_offset=128
+	value type_id=18 bits_offset=192
+[16] PTR (anon) type_id=17
+[17] ARRAY (anon) type_id=3 index_type_id=5 nr_elems=2
+[18] PTR (anon) type_id=3
+[19] VAR sock_map_break type_id=15 linkage=1
+[20] PTR (anon) type_id=21
+[21] STRUCT __sk_buff size=176 vlen=31
+	len type_id=22 bits_offset=0
+	pkt_type type_id=22 bits_offset=32
+	mark type_id=22 bits_offset=64
+	queue_mapping type_id=22 bits_offset=96
+	protocol type_id=22 bits_offset=128
+	vlan_present type_id=22 bits_offset=160
+	vlan_tci type_id=22 bits_offset=192
+	vlan_proto type_id=22 bits_offset=224
+	priority type_id=22 bits_offset=256
+	ingress_ifindex type_id=22 bits_offset=288
+	ifindex type_id=22 bits_offset=320
+	tc_index type_id=22 bits_offset=352
+	cb type_id=24 bits_offset=384
+	hash type_id=22 bits_offset=544
+	tc_classid type_id=22 bits_offset=576
+	data type_id=22 bits_offset=608
+	data_end type_id=22 bits_offset=640
+	napi_id type_id=22 bits_offset=672
+	family type_id=22 bits_offset=704
+	remote_ip4 type_id=22 bits_offset=736
+	local_ip4 type_id=22 bits_offset=768
+	remote_ip6 type_id=25 bits_offset=800
+	local_ip6 type_id=25 bits_offset=928
+	remote_port type_id=22 bits_offset=1056
+	local_port type_id=22 bits_offset=1088
+	data_meta type_id=22 bits_offset=1120
+	(anon) type_id=26 bits_offset=1152
+	tstamp type_id=28 bits_offset=1216
+	wire_len type_id=22 bits_offset=1280
+	gso_segs type_id=22 bits_offset=1312
+	(anon) type_id=30 bits_offset=1344
+[22] TYPEDEF __u32 type_id=23
+[23] INT unsigned int size=4 bits_offset=0 nr_bits=32 encoding=(none)
+[24] ARRAY (anon) type_id=22 index_type_id=5 nr_elems=5
+[25] ARRAY (anon) type_id=22 index_type_id=5 nr_elems=4
+[26] UNION (anon) size=8 vlen=1
+	flow_keys type_id=27 bits_offset=0
+[27] PTR (anon) type_id=41
+[28] TYPEDEF __u64 type_id=29
+[29] INT long long unsigned int size=8 bits_offset=0 nr_bits=64 encoding=(none)
+[30] UNION (anon) size=8 vlen=1
+	sk type_id=31 bits_offset=0
+[31] PTR (anon) type_id=42
+[32] FUNC_PROTO (anon) return=3 args=(20 skb)
+[33] FUNC bpf_prog2 type_id=32 vlen != 0
 
-AFAICT IS_REACHABLE() is becoming more and more common in the kernel,
-but arguably it's just making more undesirable configurations
-possible. Configurations that should simply be blocked by using suitable
-dependencies on the Kconfig level.
+libbpf: Error loading .BTF into kernel: -22.
+Failed to load SK_SKB verdict prog
 
-For example, you have two graphics drivers, one builtin and another
-module. Then you have backlight as a module. Using IS_REACHABLE(),
-backlight would work in one driver, but not the other. I'm sure there is
-the oddball person who finds this desirable, but the overwhelming
-majority would just make the deps such that either you make all of them
-modules, or also require backlight to be builtin.
+~/linux/tools/testing/selftests/bpf$ find . -name sockmap_\*prog.o
+./sockmap_verdict_prog.o
+./sockmap_tcp_msg_prog.o
+./alu32/sockmap_verdict_prog.o
+./alu32/sockmap_tcp_msg_prog.o
+./alu32/sockmap_parse_prog.o
+./sockmap_parse_prog.o
 
+$ dpkg -l | grep clang
+ii  clang                            1:10.0-50~exp1                      amd64 C, C++ and Objective-C compiler (LLVM based)
+ii  clang-10                         1:10.0.0-2ubuntu2                   amd64 C, C++ and Objective-C compiler
+ii  libclang-common-10-dev           1:10.0.0-2ubuntu2                   amd64 Clang library - Common development package
+ii  libclang-cpp10                   1:10.0.0-2ubuntu2                   amd64 C++ interface to the Clang library
+ii  libclang1-10                     1:10.0.0-2ubuntu2                   amd64 C interface to the Clang library
 
-BR,
-Jani.
-
-
+Full log of "TARGETS=bpf run_tests" is available here: https://paste.ubuntu.com/p/MTkWD63Zgc/
 -- 
-Jani Nikula, Intel Open Source Graphics Center
+bye,
+p.
