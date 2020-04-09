@@ -2,96 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1D3D1A2DB7
-	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 04:55:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE4241A2DF6
+	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 05:30:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726597AbgDICzH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Apr 2020 22:55:07 -0400
-Received: from m17618.mail.qiye.163.com ([59.111.176.18]:33214 "EHLO
-        m17618.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726549AbgDICzG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 22:55:06 -0400
-Received: from ubuntu.localdomain (unknown [58.251.74.226])
-        by m17618.mail.qiye.163.com (Hmail) with ESMTPA id 3953B4E18B4;
-        Thu,  9 Apr 2020 10:54:59 +0800 (CST)
-From:   Wang Wenhu <wenhu.wang@vivo.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Wen Gong <wgong@codeaurora.org>,
-        Allison Randal <allison@lohutok.net>,
-        Willem de Bruijn <willemb@google.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Carl Huang <cjhuang@codeaurora.org>,
-        Wang Wenhu <wenhu.wang@vivo.com>,
-        Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     kernel@vivo.com
-Subject: [PATCH v3] net: qrtr: send msgs from local of same id as broadcast
-Date:   Wed,  8 Apr 2020 19:53:53 -0700
-Message-Id: <20200409025414.19376-1-wenhu.wang@vivo.com>
-X-Mailer: git-send-email 2.17.1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZT1VPTklLS0tKT0pKT0hDWVdZKFlBSE
-        83V1ktWUFJV1kJDhceCFlBWTU0KTY6NyQpLjc#WQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OjI6Pgw*MTg0EhcPCg01VkkZ
-        LDkKCTNVSlVKTkNNT0tLQktKQ0xDVTMWGhIXVQweFRMOVQwaFRw7DRINFFUYFBZFWVdZEgtZQVlO
-        Q1VJTkpVTE9VSUlNWVdZCAFZQUhKSUo3Bg++
-X-HM-Tid: 0a715cdcb2a59376kuws3953b4e18b4
+        id S1726582AbgDIDaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Apr 2020 23:30:20 -0400
+Received: from informaticadirecta.net ([217.160.128.46]:41218 "EHLO
+        s17808673.onlinehome-server.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726545AbgDIDaT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Apr 2020 23:30:19 -0400
+Received: from webmail.pratsassessoria.com (localhost [IPv6:::1])
+        by s17808673.onlinehome-server.info (Postfix) with ESMTPA id ECBBD1A0A89;
+        Wed,  8 Apr 2020 22:22:47 -0500 (CDT)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 09 Apr 2020 04:22:47 +0100
+From:   Marcelo Tartaro <yongsc@gmail.com>
+To:     undisclosed-recipients:;
+Subject: Business Investment Proposal
+Organization: Alserkal and MENA
+Reply-To: marcelotartaro51@gmail.com
+Mail-Reply-To: marcelotartaro51@gmail.com
+Message-ID: <8b3ca85362ef39215c92bbd56e24e227@pratsassessoria.com>
+X-Sender: yongsc@gmail.com
+User-Agent: Roundcube Webmail/1.1.10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the local node id(qrtr_local_nid) is not modified after its
-initialization, it equals to the broadcast node id(QRTR_NODE_BCAST).
-So the messages from local node should not be taken as broadcast
-and keep the process going to send them out anyway.
 
-The definitions are as follow:
-static unsigned int qrtr_local_nid = NUMA_NO_NODE;
-#define QRTR_NODE_BCAST	0xffffffffu
 
-Fixes: commit fdf5fd397566 ("net: qrtr: Broadcast messages only from control port")
-Signed-off-by: Wang Wenhu <wenhu.wang@vivo.com>
----
-Changlog:
- - v3 Use whitespace rather than tabs to make the line up correct.
- - v2 For coding style, line up the newline of the if conditional judgement
-      with the one exists before.
----
- net/qrtr/qrtr.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-index 5a8e42ad1504..b7b854621c26 100644
---- a/net/qrtr/qrtr.c
-+++ b/net/qrtr/qrtr.c
-@@ -907,20 +907,21 @@ static int qrtr_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 
- 	node = NULL;
- 	if (addr->sq_node == QRTR_NODE_BCAST) {
--		enqueue_fn = qrtr_bcast_enqueue;
--		if (addr->sq_port != QRTR_PORT_CTRL) {
-+		if (addr->sq_port != QRTR_PORT_CTRL &&
-+		    qrtr_local_nid != QRTR_NODE_BCAST) {
- 			release_sock(sk);
- 			return -ENOTCONN;
- 		}
-+		enqueue_fn = qrtr_bcast_enqueue;
- 	} else if (addr->sq_node == ipc->us.sq_node) {
- 		enqueue_fn = qrtr_local_enqueue;
- 	} else {
--		enqueue_fn = qrtr_node_enqueue;
- 		node = qrtr_node_lookup(addr->sq_node);
- 		if (!node) {
- 			release_sock(sk);
- 			return -ECONNRESET;
- 		}
-+		enqueue_fn = qrtr_node_enqueue;
- 	}
- 
- 	plen = (len + 3) & ~3;
 -- 
-2.17.1
+GOOD DAY ,
 
+  I AM DR. MARCELO TARTARO AND I WORK AS A FINANCIAL CONSULTANT WITH
+ALSERKAL GROUP , UAE AND SOME HIGH NETWORTH INDIVIDUALS FROM THE MENA
+REGION .
+
+  BASICALLY, MY PRINCIPALS ARE INTERESTED IN INVESTING IN PROJECTS THAT 
+ARE
+VIABLE AND HAS CAPACITY OF GENERATING A REASONABLE ROI FOR THE INVESTOR.
+
+   I MUST CONSIDER YOU A PRIVILEGED ENTITY WHO SHALL BE PRIVY TO MANY
+SOURCABLE CLEAN FUND MEAN FOR FOREIGN INVESTMENT AND YOU ARE ABLE TO 
+ACCESS
+UP TO ONE BILLION EURO OR MORE IF YOU ARE ABLE TO FOLLOW THE SYSTEM OF 
+THE
+ARABS WHO ARE WELL KNOWN AS PRIVATE / FAMILY BUSINESS ORIENTED PEOPLE.
+
+  I WILL WISH THAT YOU SEND A COPY OF YOUR HIGHLIGHTED PROJECTS WITH A
+ELUCIDATED BUSINESS PLANS WHICH I SHALL PROPAGATE FOR ITS IMMEDIATE
+APPROVAL FOR A MINIMAL ROI RETURN ON INVESTMENT WHICH YOU SHALL HAVE 
+SOLE
+MANDATE.
+
+  WE WILL NEED TO SEE YOUR BUSINESS PLAN OR EXECUTIVE SUMMARY OF YOUR
+PROJECT FOR OUR REVIEW AND CONSIDERATION.
+
+  PLEASE LET ME HAVE YOUR REPLY FOR MORE SERIOUS DISCUSSIONS
+
+  THANKS
+
+  DR. MARCELO TARTARO
