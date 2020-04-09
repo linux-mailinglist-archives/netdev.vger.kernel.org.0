@@ -2,264 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE1501A39D4
-	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 20:29:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 299041A39FC
+	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 20:49:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726647AbgDIS3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Apr 2020 14:29:55 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:40885 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726574AbgDIS3z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 14:29:55 -0400
-Received: by mail-wr1-f66.google.com with SMTP id s8so13026701wrt.7
-        for <netdev@vger.kernel.org>; Thu, 09 Apr 2020 11:29:53 -0700 (PDT)
+        id S1726651AbgDIStq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Apr 2020 14:49:46 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:33904 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725987AbgDIStq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 14:49:46 -0400
+Received: by mail-qk1-f196.google.com with SMTP id i186so5153528qke.1;
+        Thu, 09 Apr 2020 11:49:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eC0pbUZ8erlCo7/NncIxzPbGpACWoPHQAz3sVvTJrmI=;
-        b=OjcY/TB9HWjN1Cz0Rfu5zJjUPUkAPFZqONSBIypVQ20isjdBjNS1GaQ5vxYENAy4M+
-         Kg3Wp5S6HCYl0A898xdQOOD41+A9YixlRFuyIUsO99te4R7rZ/iGz7ecmQEbxk/NUaqV
-         SttM/WXkjwSbVvDH0jrlsK/WD6d11EmuAooBvTDG7tzpPgROPAj6+51t3qa5u35MYGeO
-         CWmj5EMTE2LZcvwOYlPptLLyTf5q8WGQ6Kct5tpjLxbP0X1dTJJ26xvVdD/1AlD1wLkQ
-         lPG214JPWc6PdwLey6MUiA+c1XZGNUQ9VlwSwi8GtQmVCMSyTXwaN/P5DuX7TBvqe8Ub
-         2ugA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=ukIym3BDkleiNccRNd//cvZqgy+EVOlLbrUy2LS0HW4=;
+        b=MJLV19CDMKNsrsUeYmWHoH8tFPQUHJ8U9Qm2B/ehJiY+1UH0/AXQdOwyPT7XEY4GeC
+         /YIt5xg+IiPxW8r+kpCuqgcHlf9ayxPo6epcvlhXpCF2H11jBYmJgThCiC7G45GusHoA
+         +sm8qcYCWc725kfM6llNMlXtDm2T9wMlz1Pi5Q0So+5JFlIeMOt6ubC+ZTR1XZCs6zWT
+         tDPUmSDSbFWLx9L7KQX+1z6vvf9OUCMxQKxDfHo0Ehr4uwzOlSisH3p9aBUO1t3ASahp
+         X59sHlXdftw3f2QaTcAvvWzEybdLqoHrn7gaNeiGSLmWLrtuW85nCH4mlF91sJMgwj7x
+         oOKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eC0pbUZ8erlCo7/NncIxzPbGpACWoPHQAz3sVvTJrmI=;
-        b=uSxGqxNAO27z5FXDgTeCRQ7pUo4EbpZliVreXMCFbT3fuLcNndDCd4IlmTL3orZjao
-         q+3LKSCKbcyaF/1OsZ708wv3ww3dTw7pb/4gyoYGI0VrLywey7dmyIGjTXZySL5efD0f
-         kPeKfmMrU4JIqzsVufgXXhFiWnIQkFAYRUZ8AF2vIRCSvcX6hknHvceCmnWQLFiBE9HZ
-         2LoSx5cFTJa8ske0NcXj0kEHco3eMcoFcPVX0rZI41UTC35UExVe0khqyTQAa9SYJj4x
-         NoOLmkW+VSurMnCl0nFjaCcdEQl0euScvm+Ivo5825kIH/5Ge9JTBOfbJvii61jKEqSi
-         YJmA==
-X-Gm-Message-State: AGi0PuZTEMW/fK+rsDsYKpUrZ7Q+jJYe1mgZOtHUbrx1SlNBK0eHErnD
-        tiIZ34CdFE51tc1ZYqjQSW6hnChfI/o=
-X-Google-Smtp-Source: APiQypKmiRKV0wwpPFbJZvGYtxWouoeXOXgk2ufFJq1dNPz/PU/7DHqCZ1PT0N8xPWJmDSBu7yPg/Q==
-X-Received: by 2002:adf:a28e:: with SMTP id s14mr497379wra.208.1586456992686;
-        Thu, 09 Apr 2020 11:29:52 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id v186sm4723058wme.24.2020.04.09.11.29.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Apr 2020 11:29:52 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org, mlxsw@mellanox.com
-Subject: [patch iproute2 v2] devlink: fix JSON output of mon command
-Date:   Thu,  9 Apr 2020 20:29:51 +0200
-Message-Id: <20200409182951.2334-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ukIym3BDkleiNccRNd//cvZqgy+EVOlLbrUy2LS0HW4=;
+        b=RTNThCviXmmXkuNmhZ9w3pHjoeT2wW2JePcjzu+kH0274tP1UqPLMNgKP6xG0KTOJy
+         dskrJhBvVdaU2ntw6zt2SxEZoa+g4gsOlpuyuSMsKA6Orbe25CGsz7kypMfQe3SMo0xy
+         gFC3tkmNyfn+UaP+Uh2QLnEFLXWXl7owR7BxtQLicTzoWwr1LSLMC6JJ8dm92kR4ibWl
+         DXSxQejYYJyk2HQZtSwmzDpv4kHXRszh2Rm5z0EGmc29Nvrn2zhjv3Qsf60VNfWKX/NW
+         b3njSjZWwc8d6Fdxe5h5NW2tKSnr3gflVHuJh78tPSvE6Gh5A5PhT2d+AKtJTFGIkBJE
+         qzRg==
+X-Gm-Message-State: AGi0PubMN8gaO2NNCf50P+IB3O88/RArob26bK0nCaLNfFSdXSfv+qUC
+        uE1KPpV/PixfD0Yne2DaRQvn0mqgtg049fXjnrM=
+X-Google-Smtp-Source: APiQypJnvqtJIiJzu/cCI9NPl703qxPZ3yvnssM+gougkcbMsL8WzOoXxGZ1X8Aa9TCVNZOOD7lrctLT79qbZpf6NJ4=
+X-Received: by 2002:ae9:e854:: with SMTP id a81mr308401qkg.36.1586458184812;
+ Thu, 09 Apr 2020 11:49:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200404000948.3980903-1-andriin@fb.com> <20200404000948.3980903-5-andriin@fb.com>
+ <87pnckc0fr.fsf@toke.dk> <CAEf4BzYrW43EW_Uneqo4B6TLY4V9fKXJxWj+-gbq-7X0j7y86g@mail.gmail.com>
+ <877dyq80x8.fsf@toke.dk> <CAEf4BzaiRYMc4QMjz8bEn1bgiSXZvW_e2N48-kTR4Fqgog2fBg@mail.gmail.com>
+ <87tv1t65cr.fsf@toke.dk>
+In-Reply-To: <87tv1t65cr.fsf@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 9 Apr 2020 11:49:33 -0700
+Message-ID: <CAEf4BzbXCsHCJ6Tet0i5g=pKB_uYqvgiaBNuY-NMdZm8rdZN5g@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 4/8] bpf: support GET_FD_BY_ID and
+ GET_NEXT_ID for bpf_link
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+On Wed, Apr 8, 2020 at 2:21 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
+t.com> wrote:
+>
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>
+> > On Wed, Apr 8, 2020 at 8:14 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
+edhat.com> wrote:
+> >>
+> >> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+> >>
+> >> > On Mon, Apr 6, 2020 at 4:34 AM Toke H=C3=B8iland-J=C3=B8rgensen <tok=
+e@redhat.com> wrote:
+> >> >>
+> >> >> Andrii Nakryiko <andriin@fb.com> writes:
+> >> >>
+> >> >> > Add support to look up bpf_link by ID and iterate over all existi=
+ng bpf_links
+> >> >> > in the system. GET_FD_BY_ID code handles not-yet-ready bpf_link b=
+y checking
+> >> >> > that its ID hasn't been set to non-zero value yet. Setting bpf_li=
+nk's ID is
+> >> >> > done as the very last step in finalizing bpf_link, together with =
+installing
+> >> >> > FD. This approach allows users of bpf_link in kernel code to not =
+worry about
+> >> >> > races between user-space and kernel code that hasn't finished att=
+aching and
+> >> >> > initializing bpf_link.
+> >> >> >
+> >> >> > Further, it's critical that BPF_LINK_GET_FD_BY_ID only ever allow=
+s to create
+> >> >> > bpf_link FD that's O_RDONLY. This is to protect processes owning =
+bpf_link and
+> >> >> > thus allowed to perform modifications on them (like LINK_UPDATE),=
+ from other
+> >> >> > processes that got bpf_link ID from GET_NEXT_ID API. In the latte=
+r case, only
+> >> >> > querying bpf_link information (implemented later in the series) w=
+ill be
+> >> >> > allowed.
+> >> >>
+> >> >> I must admit I remain sceptical about this model of restricting acc=
+ess
+> >> >> without any of the regular override mechanisms (for instance, enfor=
+cing
+> >> >> read-only mode regardless of CAP_DAC_OVERRIDE in this series). Sinc=
+e you
+> >> >> keep saying there would be 'some' override mechanism, I think it wo=
+uld
+> >> >> be helpful if you could just include that so we can see the full
+> >> >> mechanism in context.
+> >> >
+> >> > I wasn't aware of CAP_DAC_OVERRIDE, thanks for bringing this up.
+> >> >
+> >> > One way to go about this is to allow creating writable bpf_link for
+> >> > GET_FD_BY_ID if CAP_DAC_OVERRIDE is set. Then we can allow LINK_DETA=
+CH
+> >> > operation on writable links, same as we do with LINK_UPDATE here.
+> >> > LINK_DETACH will do the same as cgroup bpf_link auto-detachment on
+> >> > cgroup dying: it will detach bpf_link, but will leave it alive until
+> >> > last FD is closed.
+> >>
+> >> Yup, I think this would be a reasonable way to implement the override
+> >> mechanism - it would ensure 'full root' users (like a root shell) can
+> >> remove attachments, while still preventing applications from doing so =
+by
+> >> limiting their capabilities.
+> >
+> > So I did some experiments and I think I want to keep GET_FD_BY_ID for
+> > bpf_link to return only read-only bpf_links.
+>
+> Why, exactly? (also, see below)
 
-The current JSON output of mon command is broken. Fix it and make sure
-that the output is a valid JSON. Also, handle SIGINT gracefully to allow
-to end the JSON properly.
+For the reasons I explained below: because you can turn read-only
+bpf_link into writable one through pinning + chmod, if you have
+CAP_DAC_OVERRIDE.
 
-Example:
-$ devlink mon -j -p
-{
-    "mon": [ {
-            "command": "new",
-            "dev": {
-                "netdevsim/netdevsim10": {}
-            }
-        },{
-            "command": "new",
-            "port": {
-                "netdevsim/netdevsim10/0": {
-                    "type": "notset",
-                    "flavour": "physical",
-                    "port": 1
-                }
-            }
-        },{
-            "command": "new",
-            "port": {
-                "netdevsim/netdevsim10/0": {
-                    "type": "eth",
-                    "netdev": "eth0",
-                    "flavour": "physical",
-                    "port": 1
-                }
-            }
-        },{
-            "command": "new",
-            "port": {
-                "netdevsim/netdevsim10/0": {
-                    "type": "notset",
-                    "flavour": "physical",
-                    "port": 1
-                }
-            }
-        },{
-            "command": "del",
-            "port": {
-                "netdevsim/netdevsim10/0": {
-                    "type": "notset",
-                    "flavour": "physical",
-                    "port": 1
-                }
-            }
-        },{
-            "command": "del",
-            "dev": {
-                "netdevsim/netdevsim10": {}
-            }
-        } ]
-}
+>
+> > After that, one can pin bpf_link temporarily and re-open it as
+> > writable one, provided CAP_DAC_OVERRIDE capability is present. All
+> > that works already, because pinned bpf_link is just a file, so one can
+> > do fchmod on it and all that will go through normal file access
+> > permission check code path.
+>
+> Ah, I did not know that was possible - I was assuming that bpffs was
+> doing something special to prevent that. But if not, great!
+>
+> > Unfortunately, just re-opening same FD as writable (which would
+> > be possible if fcntl(fd, F_SETFL, S_IRUSR
+> >  S_IWUSR) was supported on Linux) without pinning is not possible.
+> > Opening link from /proc/<pid>/fd/<link-fd> doesn't seem to work
+> > either, because backing inode is not BPF FS inode. I'm not sure, but
+> > maybe we can support the latter eventually. But either way, I think
+> > given this is to be used for manual troubleshooting, going through few
+> > extra hoops to force-detach bpf_link is actually a good thing.
+>
+> Hmm, I disagree that deliberately making users jump through hoops is a
+> good thing. Smells an awful lot like security through obscurity to me;
+> and we all know how well that works anyway...
 
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
----
-v1->v2:
-- rebased on top of current master
----
- devlink/devlink.c | 54 +++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 52 insertions(+), 2 deletions(-)
+Depends on who users are? bpftool can implement this as one of
+`bpftool link` sub-commands and allow human operators to force-detach
+bpf_link, if necessary. I think applications shouldn't do this
+(programmatically) at all, which is why I think it's actually good
+that it's harder and not obvious, this will make developer think again
+before implementing this, hopefully. For me it's about discouraging
+bad practice.
 
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 4cf58f408385..f67fe6dd8759 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -152,6 +152,30 @@ static int _mnlg_socket_recv_run(struct mnlg_socket *nlg,
- 	return 0;
- }
- 
-+static void dummy_signal_handler(int signum)
-+{
-+}
-+
-+static int _mnlg_socket_recv_run_intr(struct mnlg_socket *nlg,
-+				      mnl_cb_t data_cb, void *data)
-+{
-+	struct sigaction act, oact;
-+	int err;
-+
-+	act.sa_handler = dummy_signal_handler;
-+	sigemptyset(&act.sa_mask);
-+	act.sa_flags = SA_NODEFER;
-+
-+	sigaction(SIGINT, &act, &oact);
-+	err = mnlg_socket_recv_run(nlg, data_cb, data);
-+	sigaction(SIGINT, &oact, NULL);
-+	if (err < 0 && errno != EINTR) {
-+		pr_err("devlink answers: %s\n", strerror(errno));
-+		return -errno;
-+	}
-+	return 0;
-+}
-+
- static int _mnlg_socket_send(struct mnlg_socket *nlg,
- 			     const struct nlmsghdr *nlh)
- {
-@@ -4236,7 +4260,21 @@ static const char *cmd_obj(uint8_t cmd)
- 
- static void pr_out_mon_header(uint8_t cmd)
- {
--	pr_out("[%s,%s] ", cmd_obj(cmd), cmd_name(cmd));
-+	if (!is_json_context()) {
-+		pr_out("[%s,%s] ", cmd_obj(cmd), cmd_name(cmd));
-+	} else {
-+		open_json_object(NULL);
-+		print_string(PRINT_JSON, "command", NULL, cmd_name(cmd));
-+		open_json_object(cmd_obj(cmd));
-+	}
-+}
-+
-+static void pr_out_mon_footer(void)
-+{
-+	if (is_json_context()) {
-+		close_json_object();
-+		close_json_object();
-+	}
- }
- 
- static bool cmd_filter_check(struct dl *dl, uint8_t cmd)
-@@ -4306,6 +4344,7 @@ static int cmd_mon_show_cb(const struct nlmsghdr *nlh, void *data)
- 			return MNL_CB_ERROR;
- 		pr_out_mon_header(genl->cmd);
- 		pr_out_handle(dl, tb);
-+		pr_out_mon_footer();
- 		break;
- 	case DEVLINK_CMD_PORT_GET: /* fall through */
- 	case DEVLINK_CMD_PORT_SET: /* fall through */
-@@ -4317,6 +4356,7 @@ static int cmd_mon_show_cb(const struct nlmsghdr *nlh, void *data)
- 			return MNL_CB_ERROR;
- 		pr_out_mon_header(genl->cmd);
- 		pr_out_port(dl, tb);
-+		pr_out_mon_footer();
- 		break;
- 	case DEVLINK_CMD_PARAM_GET: /* fall through */
- 	case DEVLINK_CMD_PARAM_SET: /* fall through */
-@@ -4328,6 +4368,7 @@ static int cmd_mon_show_cb(const struct nlmsghdr *nlh, void *data)
- 			return MNL_CB_ERROR;
- 		pr_out_mon_header(genl->cmd);
- 		pr_out_param(dl, tb, false);
-+		pr_out_mon_footer();
- 		break;
- 	case DEVLINK_CMD_REGION_GET: /* fall through */
- 	case DEVLINK_CMD_REGION_SET: /* fall through */
-@@ -4339,6 +4380,7 @@ static int cmd_mon_show_cb(const struct nlmsghdr *nlh, void *data)
- 			return MNL_CB_ERROR;
- 		pr_out_mon_header(genl->cmd);
- 		pr_out_region(dl, tb);
-+		pr_out_mon_footer();
- 		break;
- 	case DEVLINK_CMD_FLASH_UPDATE: /* fall through */
- 	case DEVLINK_CMD_FLASH_UPDATE_END: /* fall through */
-@@ -4348,6 +4390,7 @@ static int cmd_mon_show_cb(const struct nlmsghdr *nlh, void *data)
- 			return MNL_CB_ERROR;
- 		pr_out_mon_header(genl->cmd);
- 		pr_out_flash_update(dl, tb);
-+		pr_out_mon_footer();
- 		break;
- 	case DEVLINK_CMD_HEALTH_REPORTER_RECOVER:
- 		mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
-@@ -4356,6 +4399,7 @@ static int cmd_mon_show_cb(const struct nlmsghdr *nlh, void *data)
- 			return MNL_CB_ERROR;
- 		pr_out_mon_header(genl->cmd);
- 		pr_out_health(dl, tb);
-+		pr_out_mon_footer();
- 		break;
- 	case DEVLINK_CMD_TRAP_GET: /* fall through */
- 	case DEVLINK_CMD_TRAP_SET: /* fall through */
-@@ -4372,6 +4416,7 @@ static int cmd_mon_show_cb(const struct nlmsghdr *nlh, void *data)
- 			return MNL_CB_ERROR;
- 		pr_out_mon_header(genl->cmd);
- 		pr_out_trap(dl, tb, false);
-+		pr_out_mon_footer();
- 		break;
- 	case DEVLINK_CMD_TRAP_GROUP_GET: /* fall through */
- 	case DEVLINK_CMD_TRAP_GROUP_SET: /* fall through */
-@@ -4384,6 +4429,7 @@ static int cmd_mon_show_cb(const struct nlmsghdr *nlh, void *data)
- 			return MNL_CB_ERROR;
- 		pr_out_mon_header(genl->cmd);
- 		pr_out_trap_group(dl, tb, false);
-+		pr_out_mon_footer();
- 		break;
- 	case DEVLINK_CMD_TRAP_POLICER_GET: /* fall through */
- 	case DEVLINK_CMD_TRAP_POLICER_SET: /* fall through */
-@@ -4423,7 +4469,11 @@ static int cmd_mon_show(struct dl *dl)
- 	err = _mnlg_socket_group_add(dl->nlg, DEVLINK_GENL_MCGRP_CONFIG_NAME);
- 	if (err)
- 		return err;
--	err = _mnlg_socket_recv_run(dl->nlg, cmd_mon_show_cb, dl);
-+	open_json_object(NULL);
-+	open_json_array(PRINT_JSON, "mon");
-+	err = _mnlg_socket_recv_run_intr(dl->nlg, cmd_mon_show_cb, dl);
-+	close_json_array(PRINT_JSON, NULL);
-+	close_json_object();
- 	if (err)
- 		return err;
- 	return 0;
--- 
-2.21.1
-
+>
+> >> Extending on the concept of RO/RW bpf_link attachments, maybe it shoul=
+d
+> >> even be possible for an application to choose which mode it wants to p=
+in
+> >> its fd in? With the same capability being able to override it of
+> >> course...
+> >
+> > Isn't that what patch #2 is doing?...
+>
+> Ah yes, so it is! I guess I skipped over that a bit too fast ;)
+>
+> > There are few bugs in the implementation currently, but it will work
+> > in the final version.
+>
+> Cool.
+>
+> >> > We need to consider, though, if CAP_DAC_OVERRIDE is something that c=
+an
+> >> > be disabled for majority of real-life applications to prevent them
+> >> > from doing this. If every realistic application has/needs
+> >> > CAP_DAC_OVERRIDE, then that's essentially just saying that anyone ca=
+n
+> >> > get writable bpf_link and do anything with it.
+> >>
+> >> I poked around a bit, and looking at the sandboxing configurations
+> >> shipped with various daemons in their systemd unit files, it appears
+> >> that the main case where daemons are granted CAP_DAC_OVERRIDE is if th=
+ey
+> >> have to be able to read /etc/shadow (which is installed as chmod 0). I=
+f
+> >> this is really the case, that would indicate it's not a widely needed
+> >> capability; but I wouldn't exactly say that I've done a comprehensive
+> >> survey, so probably a good idea for you to check your users as well :)
+> >
+> > Right, it might not be possible to drop it for all applications right
+> > away, but at least CAP_DAC_OVERRIDE is not CAP_SYS_ADMIN, which is
+> > absolutely necessary to work with BPF.
+>
+> Yeah, I do hope that we'll eventually get CAP_BPF...
+>
+> -Toke
+>
