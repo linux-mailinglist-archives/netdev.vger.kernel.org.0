@@ -2,123 +2,259 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A83EB1A2ECA
-	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 07:31:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AFA51A2ED2
+	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 07:39:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725881AbgDIFbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Apr 2020 01:31:23 -0400
-Received: from mail-il1-f195.google.com ([209.85.166.195]:41738 "EHLO
-        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725783AbgDIFbW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 01:31:22 -0400
-Received: by mail-il1-f195.google.com with SMTP id t6so9096318ilj.8;
-        Wed, 08 Apr 2020 22:31:22 -0700 (PDT)
+        id S1726574AbgDIFjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Apr 2020 01:39:31 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:43024 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726052AbgDIFja (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 01:39:30 -0400
+Received: by mail-io1-f66.google.com with SMTP id u2so2630760iop.10;
+        Wed, 08 Apr 2020 22:39:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=i9fLIXUSp9PMnTR1VW9gKNaZd1p/oGp3W/BU0tnDSL4=;
-        b=RNJsoIOVIUGSvTNAQ3DBkkDzWUB+lHzjDn9PpWaOVz30hXHpoIjXSGFi/bzd6UelFA
-         mc7eQOAFO21+YFPR+Tk4tOarHp9Oh/ozYph0g+bbJxHk7eNmbrpKsFMA2pQelxqcBfWU
-         Xbm3DgFmjiPnY3EuhquLoQPzbvQBbn5qQim7ZLWOn4IWcbgLooJ7dR6rymx1juBjWMZs
-         USvfVStX17R5iQp5Os1ehbgQJ1I47SOW2+SHYLdgrchukN6J1d4urVdt+mhwRx65Xi61
-         S4DwLy1cYa8QWsiLm83pZRtzjjtADncxUIGy5unK5uRFR5UenXigl5ck97KafQdCoLDf
-         eESA==
+         :cc;
+        bh=ljGAHp2OjKbTOFHe8vnoaVTTxVxXbioqrcoMST1/WOo=;
+        b=HkG56GMfGJ4oOadqcLZ8K9Ajjq83Iyh59fq801QTD4zro/RN9oEeQEvooFasxrfuGz
+         BzKmFHaUGhXK5R2MqHGJXcMU0QKgkBTY9bk+Dr4xm1NO0WnnQDZcuNwAPvu7wGpOCMmk
+         t2K7/u5Y6+3RA8y1RUgDhYz8BgvFB3eBZtM1sNjmiGhfoL7OGG6x33RmyDZqQkx4dXek
+         IIwzbjuPUQU9harCVey752sogp8rmD+CdeW8CIUUtNyxJh4PdV7nhEDY21FTP4E5vBpX
+         mkrasJc8tvc6IXNJGIeutXFt6PI1hokvM0Kb4dfs4HpUBUSwID2C+0VsV/m895xuZkyj
+         Ub4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=i9fLIXUSp9PMnTR1VW9gKNaZd1p/oGp3W/BU0tnDSL4=;
-        b=VL2JpUHrlqcaH03eITo+HrP8F0meV302XZHQA6zyjzXyqCxJ9BSsK+rF7vV5MXJFpI
-         qrP78uHr3HkBEdb2hZ8lhIPqgSDPmeahnzCgUM5y2Nk7okgrH9qnCUFS6N3UqVsho+nI
-         vGGGqoBJ3ib7t3RhVD4NaoKVsRO1466U09Y0xxoaOf4KIlEw/iupTNfIXwC9kU3eLuSZ
-         2fl9GaMSbUvA+YGrEy2lg4h8bSL0T0gh5tYYVf+vXbkg8OZYJQcQehi/dk86MXK4Yql5
-         taByJXCYk9sfHHvn5iGbgRsxfmms9ICO55Rpjq/EmivzVORw3ilEXyLPLjjXL/GBypYG
-         Irnw==
-X-Gm-Message-State: AGi0PuZ/JOT/1/ISAjnlbcxdTBankheZ26tWNYXzYiycp7K6S0G75OVI
-        ISqcqOiK+bZnMsSayK26Btd6KT/8T4G/2CHHOx8=
-X-Google-Smtp-Source: APiQypJDUip9PqaZcs25DVe7tBFwutdMUvW4NKqG5PF9UdWYvNeR3vZcAH0CIrfbvTyUYT8wVsvRKZJbiiM9wp6alLE=
-X-Received: by 2002:a92:9e99:: with SMTP id s25mr11302828ilk.306.1586410282506;
- Wed, 08 Apr 2020 22:31:22 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=ljGAHp2OjKbTOFHe8vnoaVTTxVxXbioqrcoMST1/WOo=;
+        b=UjHuUOQPsMnVOw9k7TCYcsoQPfhJFSviIjZO9p0GYqkwYZKP3vXURcSvzbl6cYS0aC
+         hawMtXw5Uh/yqNMZaucNU+J/QcyKhHOhBO667EWjL/iMRuRUx/6p3yX+atVYoGn2MUeN
+         zVhie+NVB9NxIbGcR7OwuIYRia2LqYPdBAxnORoSW9V4PK9FE9ZkDaNgz6H7SHm6GUIY
+         SbuG9TUtK4AxBF5DuX3Gaueovq8hCNhqag/lrukKXz9a/c/hrsXvinUL1+GCZHkR4a8C
+         4/UgcMdnXUJwzmkqy7KM5RdN+c4+F/ADX/HyLS8mSBTixCX7jqDGGSyXCDC+3akvDKbO
+         51XA==
+X-Gm-Message-State: AGi0PuahwDRDpvxeukGixeVhGF4lNay2Ykvb+DZYWgizQ1xYQGAy+QUY
+        6gSqNjSJHtG4X4x4tJ/C9pxzhZKfsQeUnbiIz2o=
+X-Google-Smtp-Source: APiQypIL7SeYio2ZFuNp5g6MDFQufig71I9V1q4nfq+9nWJ+P9gSXGZQgEVwLHyPBwzlz+ajo1kFs5NqvWoLGRKwBuA=
+X-Received: by 2002:a05:6638:186:: with SMTP id a6mr1070872jaq.36.1586410769722;
+ Wed, 08 Apr 2020 22:39:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <1586240904-14176-1-git-send-email-komachi.yoshiki@gmail.com> <CAEf4BzZaMX=xPSkOdggX6kMa_a2eWZws9W0EiJm7Qf1x1sR+cQ@mail.gmail.com>
-In-Reply-To: <CAEf4BzZaMX=xPSkOdggX6kMa_a2eWZws9W0EiJm7Qf1x1sR+cQ@mail.gmail.com>
-From:   Yoshiki Komachi <komachi.yoshiki@gmail.com>
-Date:   Thu, 9 Apr 2020 14:31:11 +0900
-Message-ID: <CAA6waGJNzgtKuNps6QZn39Nx3L0WJD3F0ikgAUh6-6ZWyMchmw@mail.gmail.com>
-Subject: Re: [PATCH] libbpf: Make bpf/bpf_helpers.h self-contained
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <20200408152151.5780-1-christian.brauner@ubuntu.com> <20200408152151.5780-3-christian.brauner@ubuntu.com>
+In-Reply-To: <20200408152151.5780-3-christian.brauner@ubuntu.com>
+From:   David Rheinsberg <david.rheinsberg@gmail.com>
+Date:   Thu, 9 Apr 2020 07:39:18 +0200
+Message-ID: <CADyDSO54-GuSUJrciSD2jbSShCYDpXCp53cr+D7u0ZQT141uTA@mail.gmail.com>
+Subject: Re: [PATCH 2/8] loopfs: implement loopfs
+To:     Christian Brauner <christian.brauner@ubuntu.com>
+Cc:     Jens Axboe <axboe@kernel.dk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        lkml <linux-kernel@vger.kernel.org>, linux-block@vger.kernel.org,
+        linux-api@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Serge Hallyn <serge@hallyn.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, Tejun Heo <tj@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saravana Kannan <saravanak@google.com>,
+        Jan Kara <jack@suse.cz>, David Howells <dhowells@redhat.com>,
+        Seth Forshee <seth.forshee@canonical.com>,
+        Tom Gundersen <teg@jklm.no>,
+        Christian Kellner <ckellner@redhat.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        =?UTF-8?Q?St=C3=A9phane_Graber?= <stgraber@ubuntu.com>,
+        linux-doc@vger.kernel.org, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2020=E5=B9=B44=E6=9C=887=E6=97=A5(=E7=81=AB) 15:52 Andrii Nakryiko <andrii.=
-nakryiko@gmail.com>:
+Hi
+
+On Wed, Apr 8, 2020 at 5:27 PM Christian Brauner
+<christian.brauner@ubuntu.com> wrote:
 >
-> On Mon, Apr 6, 2020 at 11:29 PM Yoshiki Komachi
-> <komachi.yoshiki@gmail.com> wrote:
-> >
-> > I tried to compile a bpf program including bpf_helpers.h, however it
-> > resulted in failure as below:
-> >
-> >   # clang -I./linux/tools/lib/ -I/lib/modules/$(uname -r)/build/include=
-/ \
-> >     -O2 -Wall -target bpf -emit-llvm -c bpf_prog.c -o bpf_prog.bc
-> >   ...
-> >   In file included from linux/tools/lib/bpf/bpf_helpers.h:5:
-> >   linux/tools/lib/bpf/bpf_helper_defs.h:56:82: error: unknown type name=
- '__u64'
-> >   ...
-> >
-> > This is because bpf_helpers.h depends on linux/types.h and it is not
-> > self-contained. This has been like this long time, but since bpf_helper=
-s.h
-> > was moved from selftests private file to libbpf header file, IMO it
-> > should include linux/types.h by itself.
-> >
-> > Fixes: e01a75c15969 ("libbpf: Move bpf_{helpers, helper_defs, endian, t=
-racing}.h into libbpf")
-> > Signed-off-by: Yoshiki Komachi <komachi.yoshiki@gmail.com>
-> > ---
-> >  tools/lib/bpf/bpf_helpers.h | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-> > index f69cc208778a..d9288e695eb1 100644
-> > --- a/tools/lib/bpf/bpf_helpers.h
-> > +++ b/tools/lib/bpf/bpf_helpers.h
-> > @@ -2,6 +2,7 @@
-> >  #ifndef __BPF_HELPERS__
-> >  #define __BPF_HELPERS__
-> >
-> > +#include <linux/types.h>
-> >  #include "bpf_helper_defs.h"
+> This implements loopfs, a loop device filesystem. It takes inspiration
+> from the binderfs filesystem I implemented about two years ago and with
+> which we had overally good experiences so far. Parts of it are also
+> based on [3] but it's mostly a new, imho cleaner approach.
 >
-> It's actually intentional, so that bpf_helpers.h can be used together
-> with auto-generated (from BTF) vmlinux.h (which will have all the
-> __u64 and other typedefs).
+> One of the use-cases for loopfs is to allow to dynamically allocate loop
+> devices in sandboxed workloads without exposing /dev or
+> /dev/loop-control to the workload in question and without having to
+> implement a complex and also racy protocol to send around file
+> descriptors for loop devices. With loopfs each mount is a new instance,
+> i.e. loop devices created in one loopfs instance are independent of any
+> loop devices created in another loopfs instance. This allows
+> sufficiently privileged tools to have their own private stash of loop
+> device instances.
+>
+> In addition, the loopfs filesystem can be mounted by user namespace root
+> and is thus suitable for use in containers. Combined with syscall
+> interception this makes it possible to securely delegate mounting of
+> images on loop devices, i.e. when a users calls mount -o loop <image>
+> <mountpoint> it will be possible to completely setup the loop device
+> (enabled in later patches) and the mount syscall to actually perform the
+> mount will be handled through syscall interception and be performed by a
+> sufficiently privileged process. Syscall interception is already
+> supported through a new seccomp feature we implemented in [1] and
+> extended in [2] and is actively used in production workloads. The
+> additional loopfs work will be used there and in various other workloads
+> too.
+>
+> The number of loop devices available to a loopfs instance can be limited
+> by setting the "max" mount option to a positive integer. This e.g.
+> allows sufficiently privileged processes to dynamically enforce a limit
+> on the number of devices. This limit is dynamic in contrast to the
+> max_loop module option in that a sufficiently privileged process can
+> update it with a simple remount operation.
+>
+> The loopfs filesystem is placed under a new config option and special
+> care has been taken to not introduce any new code when users do not
+> select this config option.
+>
+> Note that in __loop_clr_fd() we now need not just check whether bdev is
+> valid but also whether bdev->bd_disk is valid. This wasn't necessary
+> before because in order to call LOOP_CLR_FD the loop device would need
+> to be open and thus bdev->bd_disk was guaranteed to be allocated. For
+> loopfs loop devices we allow callers to simply unlink them just as we do
+> for binderfs binder devices and we do also need to account for the case
+> where a loopfs superblock is shutdown while backing files might still be
+> associated with some loop devices. In such cases no bd_disk device will
+> be attached to bdev. This is not in itself noteworthy it's more about
+> documenting the "why" of the added bdev->bd_disk check for posterity.
+>
+> [1]: 6a21cc50f0c7 ("seccomp: add a return code to trap to userspace")
+> [2]: fb3c5386b382 ("seccomp: add SECCOMP_USER_NOTIF_FLAG_CONTINUE")
+> [3]: https://lore.kernel.org/lkml/1401227936-15698-1-git-send-email-seth.forshee@canonical.com
+> Cc: Jens Axboe <axboe@kernel.dk>
+> Cc: Seth Forshee <seth.forshee@canonical.com>
+> Cc: Tom Gundersen <teg@jklm.no>
+> Cc: Tejun Heo <tj@kernel.org>
+> Cc: Christian Kellner <ckellner@redhat.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: David Rheinsberg <david.rheinsberg@gmail.com>
+> Cc: Dmitry Vyukov <dvyukov@google.com>
+> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
+> ---
+>  MAINTAINERS                   |   5 +
+>  drivers/block/Kconfig         |   4 +
+>  drivers/block/Makefile        |   1 +
+>  drivers/block/loop.c          | 151 +++++++++---
+>  drivers/block/loop.h          |   8 +-
+>  drivers/block/loopfs/Makefile |   3 +
+>  drivers/block/loopfs/loopfs.c | 429 ++++++++++++++++++++++++++++++++++
+>  drivers/block/loopfs/loopfs.h |  35 +++
+>  include/uapi/linux/magic.h    |   1 +
+>  9 files changed, 600 insertions(+), 37 deletions(-)
+>  create mode 100644 drivers/block/loopfs/Makefile
+>  create mode 100644 drivers/block/loopfs/loopfs.c
+>  create mode 100644 drivers/block/loopfs/loopfs.h
+>
+[...]
+> diff --git a/drivers/block/loopfs/loopfs.c b/drivers/block/loopfs/loopfs.c
+> new file mode 100644
+> index 000000000000..ac46aa337008
+> --- /dev/null
+> +++ b/drivers/block/loopfs/loopfs.c
+> @@ -0,0 +1,429 @@
+[...]
+> +/**
+> + * loopfs_loop_device_create - allocate inode from super block of a loopfs mount
+> + * @lo:                loop device for which we are creating a new device entry
+> + * @ref_inode: inode from wich the super block will be taken
+> + * @device_nr:  device number of the associated disk device
+> + *
+> + * This function creates a new device node for @lo.
+> + * Minor numbers are limited and tracked globally. The
+> + * function will stash a struct loop_device for the specific loop
+> + * device in i_private of the inode.
+> + * It will go on to allocate a new inode from the super block of the
+> + * filesystem mount, stash a struct loop_device in its i_private field
+> + * and attach a dentry to that inode.
+> + *
+> + * Return: 0 on success, negative errno on failure
+> + */
+> +int loopfs_loop_device_create(struct loop_device *lo, struct inode *ref_inode,
+> +                             dev_t device_nr)
+> +{
+> +       char name[DISK_NAME_LEN];
+> +       struct super_block *sb;
+> +       struct loopfs_info *info;
+> +       struct dentry *root, *dentry;
+> +       struct inode *inode;
+> +
+> +       sb = loopfs_i_sb(ref_inode);
+> +       if (!sb)
+> +               return 0;
+> +
+> +       if (MAJOR(device_nr) != LOOP_MAJOR)
+> +               return -EINVAL;
+> +
+> +       info = LOOPFS_SB(sb);
+> +       if ((info->device_count + 1) > info->mount_opts.max)
+> +               return -ENOSPC;
 
-Thanks for kind comments, and I found out that it=E2=80=99s not wrong but i=
-ntentional.
+Can you elaborate what the use-case for this limit is?
 
-However users (like me) may not be aware of it at this point, because
-there is no related statement as far as I know. Instead of my previous
-proposal, we should add some comments (e.g., this header needs to
-include either auto-generated (from BTF) vmlinux.h or linux/types.h
-before using) to bpf_helpers.h header, IMO.
+With loopfs in place, any process can create its own user_ns, mount
+their private loopfs and create as many loop-devices as they want.
+Hence, this limit does not serve as an effective global
+resource-control. Secondly, anyone with access to `loop-control` can
+now create loop instances until this limit is hit, thus causing anyone
+else to be unable to create more. This effectively prevents you from
+sharing a loopfs between non-trusting parties. I am unsure where that
+limit would actually be used?
 
-> >
-> >  #define __uint(name, val) int (*name)[val]
-> > --
-> > 2.24.1
-> >
+Thanks
+David
+
+> +
+> +       if (snprintf(name, sizeof(name), "loop%d", lo->lo_number) >= sizeof(name))
+> +               return -EINVAL;
+> +
+> +       inode = new_inode(sb);
+> +       if (!inode)
+> +               return -ENOMEM;
+> +
+> +       /*
+> +        * The i_fop field will be set to the correct fops by the device layer
+> +        * when the loop device in this loopfs instance is opened.
+> +        */
+> +       inode->i_ino = MINOR(device_nr) + INODE_OFFSET;
+> +       inode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);
+> +       inode->i_uid = info->root_uid;
+> +       inode->i_gid = info->root_gid;
+> +       init_special_inode(inode, S_IFBLK | 0600, device_nr);
+> +
+> +       root = sb->s_root;
+> +       inode_lock(d_inode(root));
+> +       /* look it up */
+> +       dentry = lookup_one_len(name, root, strlen(name));
+> +       if (IS_ERR(dentry)) {
+> +               inode_unlock(d_inode(root));
+> +               iput(inode);
+> +               return PTR_ERR(dentry);
+> +       }
+> +
+> +       if (d_really_is_positive(dentry)) {
+> +               /* already exists */
+> +               dput(dentry);
+> +               inode_unlock(d_inode(root));
+> +               iput(inode);
+> +               return -EEXIST;
+> +       }
+> +
+> +       d_instantiate(dentry, inode);
+> +       fsnotify_create(d_inode(root), dentry);
+> +       inode_unlock(d_inode(root));
+> +
+> +       inode->i_private = lo;
+> +       lo->lo_loopfs_i = inode;
+> +       info->device_count++;
+> +
+> +       return 0;
+> +}
+[...]
