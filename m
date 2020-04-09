@@ -2,92 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9DBB1A2FA6
-	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 08:56:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B7EB1A2FB0
+	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 09:03:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725985AbgDIG4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Apr 2020 02:56:32 -0400
-Received: from mail-qv1-f67.google.com ([209.85.219.67]:42442 "EHLO
-        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725783AbgDIG4c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 02:56:32 -0400
-Received: by mail-qv1-f67.google.com with SMTP id ca9so4993525qvb.9
-        for <netdev@vger.kernel.org>; Wed, 08 Apr 2020 23:56:30 -0700 (PDT)
+        id S1726638AbgDIHDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Apr 2020 03:03:09 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:46927 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726589AbgDIHDI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 03:03:08 -0400
+Received: by mail-qt1-f196.google.com with SMTP id g7so1976154qtj.13
+        for <netdev@vger.kernel.org>; Thu, 09 Apr 2020 00:03:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GrAlTd7ha3CV6gCFirjFgEM//iNaaleQDGz96CqZCss=;
-        b=if5DE+qhWDF/+FcO4RP+7ZBup5a3bI2RYi+2Mo4xO68dhDgy8ATe9M3MiN1gnCgAuO
-         tzY+GsVqA9aYg2Cduxa0qMiiRwrQnkCuu7niIST9ywAxHyTJkKJQTTMbsxOJQ+jG7LNr
-         QmFhGYiS/d9EMGr2VlS8pDCkeAeZ9c+6cmlAWPbyCWrxI6EuQRt8VsD+PLFnKESWBBfp
-         iuAcAHvW6Zi94T6lhDcslaQrUWpfv7NCZynix2wKelO6W0UejNm9ZN67f5k0kqZpZ1fq
-         DUWr+T2aP9Ol+46n+wCO5wIMWuSbf73WmvQ+TlmE1yHWoYpbvrd6WREdhOK/F6Z9xVjy
-         dEzQ==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=4T5kGWYuiWsD8ODG0rIT5wEJy5Zk5WzpdZY70XPYCsk=;
+        b=nh7PHjWteqz8nFiHSjdWnVP7s/XkAfF1ymz+SC5KOF7ff+qFavN9xWvQtCveEZumqP
+         Js0U5iOyiNiX0f5FDlsNU/xj0ioJRTCvg6fcTokSxpk7DAjMIOKJeDKLXT+qT5HauLa2
+         TxJ4oI7IdnA8l0vUXq6P86eg+pENHwdeX8GPbsjiYVxhUHFrZE2NH87nmZsThIsfDySq
+         6Ueeav8Fa2S+yIy+d31YRfW/Okz3ce8NTe6OSjELck4bUW2cYOTG3fiQl9ALKawhyAE/
+         xV36Y62LGGOK8uHb6JB+w+LBDuZKdqq6PsZG6sS1vtfczJ+vl5DyjI1bIY5y0SNmNFay
+         Uplg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GrAlTd7ha3CV6gCFirjFgEM//iNaaleQDGz96CqZCss=;
-        b=S6/A14OtWzo1GCGSV9RLKbC4HCvUJKipOQAAxxK95N7rcQyuVn12bYV/ujuuon/1Qf
-         F4Gr9FaFXhwtfZcqYZW3WMiQwlAcIPil1Nrs0FmoWWIWBNHpHyIeT7dChqxIF4Y9PoHv
-         lgUinOHDlzQeA0Cjt1bOiW9yljAsUZJhSMEviyN9zAjvTm/1rO/de2SMYxL+KIMYrFEQ
-         L8ZbInu0VtWU/mXL/cSZ2xaKGetevu+fn3mHJuZCZhGrL442547Prz9H/R46HCuzGn6o
-         5WGhzsB8WHOui/fgv9lE/eMABA6rDIt87lyAM10lg2t/Plfq7s+zSErtBWVJaT+mnvht
-         K9lA==
-X-Gm-Message-State: AGi0PuaAx6SOnuS4MlaGcHjj/Gx2XAnp+Y8A21+UEsOjjxpJ2ZFOIV8o
-        Tm/v0odNX2hsQVaex2p7EWKFcRjeNjs=
-X-Google-Smtp-Source: APiQypIljmtfy1cTS2vP4rtwT7x8tsTujNVw3GDevrfa8O4X4hfGoJfilMGTDTX2OvMj0/M7vf2ctQ==
-X-Received: by 2002:a0c:b503:: with SMTP id d3mr11357852qve.176.1586415390232;
-        Wed, 08 Apr 2020 23:56:30 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id l62sm20789825qte.52.2020.04.08.23.56.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Apr 2020 23:56:29 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        YOSHIFUJI Hideaki <yoshfuji@linux-ipv6.org>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net] net/ipv6: allow token to be set when accept_ra disabled
-Date:   Thu,  9 Apr 2020 14:56:04 +0800
-Message-Id: <20200409065604.817-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.19.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=4T5kGWYuiWsD8ODG0rIT5wEJy5Zk5WzpdZY70XPYCsk=;
+        b=f8Ae9ZsMJP852970b3F6wdTPoj2df0zuVA1eBaHJygYRdLgmBO7iPgrcSkLIWnv+4f
+         VARViA18Gj8LpZdCVGl80PhyG/cu/29nyyCJ1I/doWIz42PNEQgoA/ndZ5x1X9VvDvpl
+         IdNNKCwia+GElizWNoPprtzVm5ocT1BKVAOObcFs+HSmV/sxhSkOiwUFubzXs6tI/CHM
+         3EAhvxVwQhErS0LK0gTPrq/PSdEQAMtdvwh3j8AXA2iQmRuKPo08ByjnwBCgwonvt6jR
+         Zgv8k5TA4tctuKM9PwwoUrf2YveJlVDY+Ou4jiRRHUNDRyrs3fIn1Gqq/7fbKrbqAESt
+         JEFA==
+X-Gm-Message-State: AGi0PuZtQr7r/u1TLyRWuYZezUd2WZHp6n+GqNW+HSV4AABYxOrhBP2y
+        KNLE5sU+D2KrMhVRqcOxAXV/wdHJbpQgvBqevL718g==
+X-Google-Smtp-Source: APiQypKJQ3a0N5JoQD3BUJRgBCjL9Mcwnw+lWcXfUjHl6fm5/ft1w+YZKYm17y/CnLUqFgVeQD/ed0MGFxfOHkB7mRE=
+X-Received: by 2002:ac8:6c24:: with SMTP id k4mr3078643qtu.257.1586415786173;
+ Thu, 09 Apr 2020 00:03:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200408152151.5780-1-christian.brauner@ubuntu.com>
+ <CAG48ez0KWgLMOp1d3X1AcRNc4-eF1YiCw=PgWiGjtM6PqQqawg@mail.gmail.com> <CA+enf=uhTi1yWtOe+iuv2FvdZzo69pwsP-NNU2775jN01aDcVQ@mail.gmail.com>
+In-Reply-To: <CA+enf=uhTi1yWtOe+iuv2FvdZzo69pwsP-NNU2775jN01aDcVQ@mail.gmail.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Thu, 9 Apr 2020 09:02:54 +0200
+Message-ID: <CACT4Y+aDeSAARG0b9FjDFyWuhjb=YVxpGtsvBmoKnHo+0TF4gA@mail.gmail.com>
+Subject: Re: [PATCH 0/8] loopfs
+To:     =?UTF-8?Q?St=C3=A9phane_Graber?= <stgraber@ubuntu.com>
+Cc:     Jann Horn <jannh@google.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Serge Hallyn <serge@hallyn.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, Tejun Heo <tj@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saravana Kannan <saravanak@google.com>,
+        Jan Kara <jack@suse.cz>, David Howells <dhowells@redhat.com>,
+        Seth Forshee <seth.forshee@canonical.com>,
+        David Rheinsberg <david.rheinsberg@gmail.com>,
+        Tom Gundersen <teg@jklm.no>,
+        Christian Kellner <ckellner@redhat.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Matthew Garrett <mjg59@google.com>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        syzkaller <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The token setting should not depend on whether accept_ra is enabled or
-disabled. The user could set the token at any time. Enable or disable
-accept_ra only affects when the token address take effective.
+On Wed, Apr 8, 2020 at 6:41 PM St=C3=A9phane Graber <stgraber@ubuntu.com> w=
+rote:
+>
+> On Wed, Apr 8, 2020 at 12:24 PM Jann Horn <jannh@google.com> wrote:
+> >
+> > On Wed, Apr 8, 2020 at 5:23 PM Christian Brauner
+> > <christian.brauner@ubuntu.com> wrote:
+> > > One of the use-cases for loopfs is to allow to dynamically allocate l=
+oop
+> > > devices in sandboxed workloads without exposing /dev or
+> > > /dev/loop-control to the workload in question and without having to
+> > > implement a complex and also racy protocol to send around file
+> > > descriptors for loop devices. With loopfs each mount is a new instanc=
+e,
+> > > i.e. loop devices created in one loopfs instance are independent of a=
+ny
+> > > loop devices created in another loopfs instance. This allows
+> > > sufficiently privileged tools to have their own private stash of loop
+> > > device instances. Dmitry has expressed his desire to use this for
+> > > syzkaller in a private discussion. And various parties that want to u=
+se
+> > > it are Cced here too.
+> > >
+> > > In addition, the loopfs filesystem can be mounted by user namespace r=
+oot
+> > > and is thus suitable for use in containers. Combined with syscall
+> > > interception this makes it possible to securely delegate mounting of
+> > > images on loop devices, i.e. when a user calls mount -o loop <image>
+> > > <mountpoint> it will be possible to completely setup the loop device.
+> > > The final mount syscall to actually perform the mount will be handled
+> > > through syscall interception and be performed by a sufficiently
+> > > privileged process. Syscall interception is already supported through=
+ a
+> > > new seccomp feature we implemented in [1] and extended in [2] and is
+> > > actively used in production workloads. The additional loopfs work wil=
+l
+> > > be used there and in various other workloads too. You'll find a short
+> > > illustration how this works with syscall interception below in [4].
+> >
+> > Would that privileged process then allow you to mount your filesystem
+> > images with things like ext4? As far as I know, the filesystem
+> > maintainers don't generally consider "untrusted filesystem image" to
+> > be a strongly enforced security boundary; and worse, if an attacker
+> > has access to a loop device from which something like ext4 is mounted,
+> > things like "struct ext4_dir_entry_2" will effectively be in shared
+> > memory, and an attacker can trivially bypass e.g.
+> > ext4_check_dir_entry(). At the moment, that's not a huge problem (for
+> > anything other than kernel lockdown) because only root normally has
+> > access to loop devices.
+> >
+> > Ubuntu carries an out-of-tree patch that afaik blocks the shared
+> > memory thing: <https://git.launchpad.net/~ubuntu-kernel/ubuntu/+source/=
+linux/+git/eoan/commit?id=3D4bc428fdf5500b7366313f166b7c9c50ee43f2c4>
+> >
+> > But even with that patch, I'm not super excited about exposing
+> > filesystem image parsing attack surface to containers unless you run
+> > the filesystem in a sandboxed environment (at which point you don't
+> > need a loop device anymore either).
+>
+> So in general we certainly agree that you should never expose someone
+> that you wouldn't trust with root on the host to syscall interception
+> mounting of real kernel filesystems.
+>
+> But that's not all that our syscall interception logic can do. We have
+> support for rewriting a normal filesystem mount attempt to instead use
+> an available FUSE implementation. As far as the user is concerned,
+> they ran "mount /dev/sdaX /mnt" and got that ext4 filesystem mounted
+> on /mnt as requested, except that the container manager intercepted
+> the mount attempt and instead spawned fuse2fs for that mount. This
+> requires absolutely no change to the software the user is running.
+>
+> loopfs, with that interception mode, will let us also handle all cases
+> where a loop would be used, similarly without needing any change to
+> the software being run. If a piece of software calls the command
+> "mount -o loop blah.img /mnt", the "mount" command will setup a loop
+> device as it normally would (doing so through loopfs) and then will
+> call the "mount" syscall, which will get intercepted and redirected to
+> a FUSE implementation if so configured, resulting in the expected
+> filesystem being mounted for the user.
+>
+> LXD with syscall interception offers both straight up privileged
+> mounting using the kernel fs or using a FUSE based implementation.
+> This is configurable on a per-filesystem and per-container basis.
+>
+> I hope that clarifies what we're doing here :)
+>
+> St=C3=A9phane
 
-On the other hand, we didn't remove the token setting when disable
-accept_ra. So let's just remove the accept_ra checking when user want
-to set token address.
 
-Fixes: f53adae4eae5 ("net: ipv6: add tokenized interface identifier support")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- net/ipv6/addrconf.c | 2 --
- 1 file changed, 2 deletions(-)
+Hi Christian,
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 24e319dfb510..4e63330f63e5 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -5689,8 +5689,6 @@ static int inet6_set_iftoken(struct inet6_dev *idev, struct in6_addr *token)
- 		return -EINVAL;
- 	if (dev->flags & (IFF_LOOPBACK | IFF_NOARP))
- 		return -EINVAL;
--	if (!ipv6_accept_ra(idev))
--		return -EINVAL;
- 	if (idev->cnf.rtr_solicits == 0)
- 		return -EINVAL;
- 
--- 
-2.19.2
-
+Our use case for loopfs in syzkaller would be isolation of several
+test processes from each other.
+Currently all loop devices and loop-control are global and cause test
+processes to collide, which in turn causes non-reproducible coverage
+and non-reproducible crashes. Ideally we give each test process its
+own loopfs instance.
