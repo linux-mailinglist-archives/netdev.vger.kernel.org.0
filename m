@@ -2,122 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 661641A3977
-	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 20:00:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E77DF1A39A4
+	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 20:12:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726647AbgDISAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Apr 2020 14:00:21 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:38402 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725970AbgDISAU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 14:00:20 -0400
-Received: by mail-pl1-f196.google.com with SMTP id w3so4092330plz.5
-        for <netdev@vger.kernel.org>; Thu, 09 Apr 2020 11:00:19 -0700 (PDT)
+        id S1726622AbgDISMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Apr 2020 14:12:20 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:42988 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725987AbgDISMU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 14:12:20 -0400
+Received: by mail-qt1-f196.google.com with SMTP id b10so677423qtt.9;
+        Thu, 09 Apr 2020 11:12:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amacapital-net.20150623.gappssmtp.com; s=20150623;
-        h=content-transfer-encoding:from:mime-version:subject:date:message-id
-         :references:cc:in-reply-to:to;
-        bh=zmgHj370LBNKV1cbwyo1caCm3JQLWtu1rtTInvPHiUM=;
-        b=tzNrLp6SmTl4zuvoJWbv/IhrraqC8y+wpruozs/0zZ2WxqUK+8LU0L9I4hzVj2ua9U
-         KY4iUimjpe58mMHQ5aLQgiS86vHoYVT/MPfC/f04JDPoelZ7dXayZ2gxrJoZJFqWqlAW
-         tyC5H1xGmGRb3Es0DTFD6S73K5nQgskuaNMbgkZqBFc2BUEe7mEjWpXrG4IMCVehJ+K9
-         mV7IN/uS5qiJOsvVoX7uMjJXer1hGe247YoLfdMK4bapF4kUSj1XtqPwbXfUvPZqUfTw
-         +FmtN9UGx2prFh+/QoNprDQvyAWYCBn4UgnDGGocPkf5wCqL2lbyaPVsgzPfXKK0MFtg
-         Wb+A==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=SfINGAMNSPnbcTsywzPLPkIFLAeUGN4o5XJ6HHgBN7g=;
+        b=LFOoRG+SoLFi68LZVEeqgGREblIvcNTCH5nf0Fge1zfKlBVxq0KJpdoO50uaTr6G3b
+         1Wkl/pCdGrD9FIAAgFykd+ug43mDtzJZzi2VSXtCHBQgrE3J0gEjY3lcTH+q8MZKzOV3
+         u8OD6rR53HqzmxT8ETomsoJXcIhWTj4+TELPuM1vGJaCFiE6okuyYzvbt0j5GFzYjFHd
+         sPS2rhFZRLMCCUmaZu6QmDxFclMrGqOz5zBOxpIfP1d238MUJRGDHYk0AQbseQBTwjOV
+         enFnvgU/p2kRi3WMNPi3WjorMxni4mCeWKtifcriAhkhTgxguJ0rhdhhQchymS17J2DQ
+         O7IQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:content-transfer-encoding:from:mime-version
-         :subject:date:message-id:references:cc:in-reply-to:to;
-        bh=zmgHj370LBNKV1cbwyo1caCm3JQLWtu1rtTInvPHiUM=;
-        b=EBHKXOuXbP7g1nt9NGL9F4Ap9Sgyf3Z8JZVLNe5768OTAXSR9jcOVTd5Q8T2jc6FJT
-         c8vzMMETGWjbEydI3coZirhuG6cKQ/NX4/AmTpjSU0HiZOoL1dUmKKXs2SbD5mjA+bHO
-         4DXrIfQVzuEXpM+5Zz+pfKbcHzZXoyuGG2fCaO7GSGGnkxHnaXmOWUkW7O/cNQq7GyEB
-         +bmjSnbNT6scVCGZwIcgYbcjKdV2jvXPWQY25AXAfH95cxGHxaa1QgkTpkO3MdEqkAWm
-         oxBLgTMy2BhnqpBS6qsb2Qs1FxT7xu1+iiuwdqpvERsCscaKQI/0VAX3SMCohNHiTd+K
-         OQ/A==
-X-Gm-Message-State: AGi0PuYzxRkzkY3ETzABejMsXValY1+0THaG/c4p1PowEanS4CI6ncWd
-        6HVIVXrpoy+fZI5GBNFBS48dIw==
-X-Google-Smtp-Source: APiQypIyuBEG4mydIIZ8UiVlFa6tJQNZqilN3DYnHlSeONtErGyrPOPpHqhOZbnewz+YO15faSZe2w==
-X-Received: by 2002:a17:902:ff14:: with SMTP id f20mr731344plj.206.1586455218768;
-        Thu, 09 Apr 2020 11:00:18 -0700 (PDT)
-Received: from ?IPv6:2601:646:c200:1ef2:d3f:18b:ffcb:12f6? ([2601:646:c200:1ef2:d3f:18b:ffcb:12f6])
-        by smtp.gmail.com with ESMTPSA id c3sm2461610pfa.160.2020.04.09.11.00.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Apr 2020 11:00:18 -0700 (PDT)
-Content-Type: text/plain; charset=utf-8
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=SfINGAMNSPnbcTsywzPLPkIFLAeUGN4o5XJ6HHgBN7g=;
+        b=n+DsksuzJX2SJETtJXVR08OkegnkSCbkcb6hqFZaETUJoQ9DQ1lW+S5CeHiEoUTijV
+         j5Eg1ykm4TfPCqTUQ2hQkpzBNxsgw4HR/8VEO2dSZovoavuvt3U3lDo5xvhr5hrQT0mc
+         Pt6OW91DqOeTcTtuhqUTkb87DgTkX1k8M/bbA/MPrKdgrIRKVz6b5t69Cmpn7asLEVYv
+         yZG4fw7nrIt8KpA3CRX6yjneH2LwBT5XV2DKi4x+3xj532Qwz9p0Qu2/91EyLDxoZj2p
+         fonRIwRtaj+TzZFi3fV5XX3rB6L/NdVJTrlaHaQ8xs+OP9ILvDOqNZjB/iTTgoVDUJbn
+         N6GQ==
+X-Gm-Message-State: AGi0Pubd7lmYZWeu7JUeh5AERnQ3cJNc7rK8LOM/AlAjWV5MPG13OWv7
+        OBELNRDjwC0zSD9x/lDk4z0Lcl8zDksqs+WKc04=
+X-Google-Smtp-Source: APiQypJkrXftfHK0PfrkYgWRX9IMXPBnGKw7FdapS0URdYMkLC2sY4v3/j8AMCeSaNSQ+kbHE6bPK1eEH69ekXKGcmM=
+X-Received: by 2002:ac8:4e2c:: with SMTP id d12mr602871qtw.171.1586455937926;
+ Thu, 09 Apr 2020 11:12:17 -0700 (PDT)
+MIME-Version: 1.0
+References: <1586240904-14176-1-git-send-email-komachi.yoshiki@gmail.com>
+ <CAEf4BzZaMX=xPSkOdggX6kMa_a2eWZws9W0EiJm7Qf1x1sR+cQ@mail.gmail.com> <CAA6waGJNzgtKuNps6QZn39Nx3L0WJD3F0ikgAUh6-6ZWyMchmw@mail.gmail.com>
+In-Reply-To: <CAA6waGJNzgtKuNps6QZn39Nx3L0WJD3F0ikgAUh6-6ZWyMchmw@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 9 Apr 2020 11:12:06 -0700
+Message-ID: <CAEf4BzaO_m-OQVAuOkMsRC=ePWa95-V8ZpT1C9kWRzrnWZugJQ@mail.gmail.com>
+Subject: Re: [PATCH] libbpf: Make bpf/bpf_helpers.h self-contained
+To:     Yoshiki Komachi <komachi.yoshiki@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-From:   Andy Lutomirski <luto@amacapital.net>
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH v3 04/13] task_isolation: userspace hard isolation from kernel
-Date:   Thu, 9 Apr 2020 11:00:16 -0700
-Message-Id: <915489BC-B2C9-4D47-A205-FC597FC68B98@amacapital.net>
-References: <58995f108f1af4d59aa8ccd412cdff92711a9990.camel@marvell.com>
-Cc:     "frederic@kernel.org" <frederic@kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        Prasun Kapoor <pkapoor@marvell.com>,
-        "mingo@kernel.org" <mingo@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "will@kernel.org" <will@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-In-Reply-To: <58995f108f1af4d59aa8ccd412cdff92711a9990.camel@marvell.com>
-To:     Alex Belits <abelits@marvell.com>
-X-Mailer: iPhone Mail (17E255)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Apr 8, 2020 at 10:31 PM Yoshiki Komachi
+<komachi.yoshiki@gmail.com> wrote:
+>
+> 2020=E5=B9=B44=E6=9C=887=E6=97=A5(=E7=81=AB) 15:52 Andrii Nakryiko <andri=
+i.nakryiko@gmail.com>:
+> >
+> > On Mon, Apr 6, 2020 at 11:29 PM Yoshiki Komachi
+> > <komachi.yoshiki@gmail.com> wrote:
+> > >
+> > > I tried to compile a bpf program including bpf_helpers.h, however it
+> > > resulted in failure as below:
+> > >
+> > >   # clang -I./linux/tools/lib/ -I/lib/modules/$(uname -r)/build/inclu=
+de/ \
+> > >     -O2 -Wall -target bpf -emit-llvm -c bpf_prog.c -o bpf_prog.bc
+> > >   ...
+> > >   In file included from linux/tools/lib/bpf/bpf_helpers.h:5:
+> > >   linux/tools/lib/bpf/bpf_helper_defs.h:56:82: error: unknown type na=
+me '__u64'
+> > >   ...
+> > >
+> > > This is because bpf_helpers.h depends on linux/types.h and it is not
+> > > self-contained. This has been like this long time, but since bpf_help=
+ers.h
+> > > was moved from selftests private file to libbpf header file, IMO it
+> > > should include linux/types.h by itself.
+> > >
+> > > Fixes: e01a75c15969 ("libbpf: Move bpf_{helpers, helper_defs, endian,=
+ tracing}.h into libbpf")
+> > > Signed-off-by: Yoshiki Komachi <komachi.yoshiki@gmail.com>
+> > > ---
+> > >  tools/lib/bpf/bpf_helpers.h | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > >
+> > > diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.=
+h
+> > > index f69cc208778a..d9288e695eb1 100644
+> > > --- a/tools/lib/bpf/bpf_helpers.h
+> > > +++ b/tools/lib/bpf/bpf_helpers.h
+> > > @@ -2,6 +2,7 @@
+> > >  #ifndef __BPF_HELPERS__
+> > >  #define __BPF_HELPERS__
+> > >
+> > > +#include <linux/types.h>
+> > >  #include "bpf_helper_defs.h"
+> >
+> > It's actually intentional, so that bpf_helpers.h can be used together
+> > with auto-generated (from BTF) vmlinux.h (which will have all the
+> > __u64 and other typedefs).
+>
+> Thanks for kind comments, and I found out that it=E2=80=99s not wrong but=
+ intentional.
+>
+> However users (like me) may not be aware of it at this point, because
+> there is no related statement as far as I know. Instead of my previous
+> proposal, we should add some comments (e.g., this header needs to
+> include either auto-generated (from BTF) vmlinux.h or linux/types.h
+> before using) to bpf_helpers.h header, IMO.
 
+Right, documenting various things like this is a sore point with BPF
+usage right now. Feel free to send a patch with such comment. Thanks!
 
-> On Apr 9, 2020, at 8:21 AM, Alex Belits <abelits@marvell.com> wrote:
->=20
-> =EF=BB=BFThe existing nohz_full mode is designed as a "soft" isolation mod=
-e
-> that makes tradeoffs to minimize userspace interruptions while
-> still attempting to avoid overheads in the kernel entry/exit path,
-> to provide 100% kernel semantics, etc.
->=20
-> However, some applications require a "hard" commitment from the
-> kernel to avoid interruptions, in particular userspace device driver
-> style applications, such as high-speed networking code.
->=20
-> This change introduces a framework to allow applications
-> to elect to have the "hard" semantics as needed, specifying
-> prctl(PR_TASK_ISOLATION, PR_TASK_ISOLATION_ENABLE) to do so.
->=20
-> The kernel must be built with the new TASK_ISOLATION Kconfig flag
-> to enable this mode, and the kernel booted with an appropriate
-> "isolcpus=3Dnohz,domain,CPULIST" boot argument to enable
-> nohz_full and isolcpus. The "task_isolation" state is then indicated
-> by setting a new task struct field, task_isolation_flag, to the
-> value passed by prctl(), and also setting a TIF_TASK_ISOLATION
-> bit in the thread_info flags. When the kernel is returning to
-> userspace from the prctl() call and sees TIF_TASK_ISOLATION set,
-> it calls the new task_isolation_start() routine to arrange for
-> the task to avoid being interrupted in the future.
->=20
-> With interrupts disabled, task_isolation_start() ensures that kernel
-> subsystems that might cause a future interrupt are quiesced. If it
-> doesn't succeed, it adjusts the syscall return value to indicate that
-> fact, and userspace can retry as desired. In addition to stopping
-> the scheduler tick, the code takes any actions that might avoid
-> a future interrupt to the core, such as a worker thread being
-> scheduled that could be quiesced now (e.g. the vmstat worker)
-> or a future IPI to the core to clean up some state that could be
-> cleaned up now (e.g. the mm lru per-cpu cache).
->=20
-> Once the task has returned to userspace after issuing the prctl(),
-> if it enters the kernel again via system call, page fault, or any
-> other exception or irq, the kernel will kill it with SIGKILL.
-
-I could easily imagine myself using task isolation, but not with the SIGKILL=
- semantics. SIGKILL causes data loss. Please at least let users choose what s=
-ignal to send.=
+>
+> > >
+> > >  #define __uint(name, val) int (*name)[val]
+> > > --
+> > > 2.24.1
+> > >
