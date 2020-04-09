@@ -2,69 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22A071A35B2
-	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 16:17:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C92AA1A3617
+	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 16:41:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727736AbgDIOQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Apr 2020 10:16:56 -0400
-Received: from forward104o.mail.yandex.net ([37.140.190.179]:42967 "EHLO
-        forward104o.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726977AbgDIOQz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 10:16:55 -0400
-X-Greylist: delayed 447 seconds by postgrey-1.27 at vger.kernel.org; Thu, 09 Apr 2020 10:16:54 EDT
-Received: from mxback8j.mail.yandex.net (mxback8j.mail.yandex.net [IPv6:2a02:6b8:0:1619::111])
-        by forward104o.mail.yandex.net (Yandex) with ESMTP id B30FC940216
-        for <netdev@vger.kernel.org>; Thu,  9 Apr 2020 17:09:26 +0300 (MSK)
-Received: from myt5-aad1beefab42.qloud-c.yandex.net (myt5-aad1beefab42.qloud-c.yandex.net [2a02:6b8:c12:128:0:640:aad1:beef])
-        by mxback8j.mail.yandex.net (mxback/Yandex) with ESMTP id 19iKenMs1s-9QgOpKVT;
-        Thu, 09 Apr 2020 17:09:26 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1586441366;
-        bh=ju9OklVeZVc/dFMqH1Br0uaEFnQkCl2mdMe1niK0OqQ=;
-        h=Subject:From:To:Date:Message-ID;
-        b=ky2aO2zW2XY8jOL1pvSQ5KFNN/rK8jfsAvr6Bb/WEoEaP569lELQNjsDq6Wud6ayI
-         8p7++dwWNKLF3WBK3v6AmQTdIXf7YsGR8ITASlQdLfCTsNLbixKf1NBPsHWNUuGBFS
-         hzlLXyDim/5MJUwl82p0M7yZ3hRlgOc6KPtls3Vc=
-Authentication-Results: mxback8j.mail.yandex.net; dkim=pass header.i=@yandex.ru
-Received: by myt5-aad1beefab42.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id QO1kx9vMAr-9QXCwLJf;
-        Thu, 09 Apr 2020 17:09:26 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-To:     netdev@vger.kernel.org
-From:   Konstantin Kharlamov <hi-angel@yandex.ru>
-Subject: On 5.6.2, SCTP is 10 000 times slower than TCP
-Message-ID: <09cc102b-31d1-b0e8-3ea1-3b07b9a6df74@yandex.ru>
-Date:   Thu, 9 Apr 2020 17:09:26 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1727832AbgDIOlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Apr 2020 10:41:11 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:40458 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727327AbgDIOlL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 10:41:11 -0400
+Received: by mail-qt1-f194.google.com with SMTP id y25so47960qtv.7
+        for <netdev@vger.kernel.org>; Thu, 09 Apr 2020 07:41:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=chYrNioo211Z9oyfcwlgWKEXgzg8Bnd9vqq9X7HSI2k=;
+        b=ItcAkm3z0lcxPtJGRnqJAqKVNl58PrZCKjxV4shp9OrFhYD+aWYM2AW5sZ18na5yJd
+         AQIxszGzS0TSy7fh0aaVi2ZP0C1aRigIY7uG7UqF7IDn7K8s+qdxAMcf9Kd6+/nwG4Tz
+         uVkbCCqnRfEC0E8HWxJ3E/stzu6AgFpIeN+hX9wvMBMxABnMQYXA2Dkk0aZmzEBFFxEE
+         T0X/I/C5WxuVmuuwFZ7TjS2aANKdNFFlbkPR7C1CtV1wjuVEFs9Ny1BwPaP3bLv7oeW1
+         d4bw1trb13QLDshWXx7QQt2kehtMw3AW3RxcaEx1HFzup4U/1EYQERgUcg6nxp1L7heT
+         t//Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=chYrNioo211Z9oyfcwlgWKEXgzg8Bnd9vqq9X7HSI2k=;
+        b=LE/mUhAh7ncufATf3/Ksps1nFT3pijiYyxLBSTG2V7XD1Nf78+9KvBr+HTKp6bbhC/
+         yY0NZ1zNCSPqckOh5pjfGQNo3HiWkBBZr+qUWXG2D9yoJRuqsXRuDGO9xhc3D89kyRPU
+         +C3cSQfWCyi2THsYI1K6wEb8D3t1bEmmZvLaJVRczZSGb0NEL6rOxZWOdqJswMAuRRaK
+         1GGA0jFhiEIMqJAb1lEPK7Fw0rr6++ObFWQkWgF2tAQQ1PDNMQrv8/qX3eBHpdhWYG0k
+         JNZDfRWrNao+BeOF1MKYpKWX3WPHEX3eiP+aUVZTUcO28EAV12k9VlHRPQfy/mVnweAz
+         NhDg==
+X-Gm-Message-State: AGi0PuaDGFLpaDSGQX9Uh4ROap4MPW5bg2QRfZzjqp2gnL2/rc8B2jb6
+        yzNn7GEmLDlrR0YAEi36R+rtF4hj
+X-Google-Smtp-Source: APiQypIVdiVUVpRJ0d8EOsziUcw5OyjLnw1IH22oXpgeIEc8qD7cK7eyWOBx0TqfT7gOzuLfkpbRvw==
+X-Received: by 2002:ac8:2921:: with SMTP id y30mr12197726qty.161.1586443270397;
+        Thu, 09 Apr 2020 07:41:10 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:c4f9:1259:efe:b674? ([2601:282:803:7700:c4f9:1259:efe:b674])
+        by smtp.googlemail.com with ESMTPSA id f7sm18445949qtq.33.2020.04.09.07.41.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Apr 2020 07:41:09 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next v2 0/3] Support pedit of ip6 traffic_class
+To:     Petr Machata <petrm@mellanox.com>, netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>
+References: <cover.1585954968.git.petrm@mellanox.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <4a1bacf1-e5db-f34f-44eb-740ae664fc8d@gmail.com>
+Date:   Thu, 9 Apr 2020 08:41:08 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB-large
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <cover.1585954968.git.petrm@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I was considering, whether SCTP could be faster than TCP, and made some
-measurements. Results are astonishing: 4.74 GB/sec for TCP vs 590, KB/sec for
-SCTP. Let me rephrase: that is 4.74 GB/sec vs 0.00059 GB/sec! Wow. This looks
-sooo wrong, that this is probably a bug, so I'm reporting it here.
+On 4/3/20 5:05 PM, Petr Machata wrote:
+> The pedit action supports tos (and its synonyms, such as dsfield) for IPv4,
+> but not the corresponding IPv6 field, traffic_class. Patch #1 of this
+> series adds this IPv6 support. Patch #2 then adds two related examples to
+> man page, and patch #3 removes from the man page a claim that the extended
+> notation is only available for IPv4.
+> 
+applied to iproute2-next. Thanks
 
-Tests are done on kernel 5.6.2 with qperf 0.4.11 as follows:
-
-1. Run `qperf` in one terminal
-2. Run `qperf -v localhost tcp_bw tcp_lat sctp_bw sctp_lat` in the other terminal
-
-Below are 4 results for my Dell Inspiron 5767 laptop.
-
-Test number | TCP bandwidth | TCP latency, μs | SCTP bandwidth | SCTP latency, μs
-1           | 4.74 GB/sec   | 6.81            | 590, KB/sec    | 11.8
-2           | 5 GB/sec      | 6.79            | 721, KB/sec    | 10.5
-3           | 4.73 GB/sec   | 6.76            | 8.39, MB/sec   | 10.9
-4           | 5.7 GB/sec    | 6.1             | 53.4, MB/sec   | 9.33
-
-FWIW, I also made some measurements on a server hw with older kernel 4.19. The
-difference there is not that big, yet even there SCTP is twice as slower compared
-to TCP.
-
-P.S.: please add me to CC when replying as I'm not subscribed to the list.
