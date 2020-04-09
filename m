@@ -2,87 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0DF71A30E6
-	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 10:29:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EEB71A3108
+	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 10:35:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726752AbgDII3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Apr 2020 04:29:36 -0400
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:50689 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725987AbgDII3g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 04:29:36 -0400
-Received: by mail-pj1-f66.google.com with SMTP id b7so1010658pju.0;
-        Thu, 09 Apr 2020 01:29:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=F8gyLVop1Ch0gKbGVHgodmcnCvN85X6SPXoRalm/4uY=;
-        b=UeBYraYaZuRxL0liXfpT3eVN66/M7EoV5rBCI8IzWjSmRtb+2fS8VCoKQMRNiiNNPI
-         GQtwO3Bb29klU3jizxQRTERoAEXMyuzs1GZ8SHeaPbBLrD4BxH76imlRAO696yJeT/r2
-         qBIrWD7A+ldxeRNDjELWGTGbyz2IHckScRapPjH+TRr2QELy92KzJehjWMqTb4aTYhtu
-         6onqsCgA3u6/XIdsuxQIbr6F331I1soaJ+j5c4fo43C9LhUUj+dNReGxEjJfbh6LKXa4
-         3cGcDbF00vMoIY6Givp1/PKfafreL5o5/vA6obHT0zDpScse921LkE8zqJb/dXCvp59B
-         Osyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=F8gyLVop1Ch0gKbGVHgodmcnCvN85X6SPXoRalm/4uY=;
-        b=k17Lh734EagITwH2O1h0HwNIvTKwyC4IDOPoItgtq6/LC3tKWetqM3mERr3kHBNUIP
-         Lb6sNN0+wNJF80lOnTeRK/J+CGnZEMl4+TGgHNmcwzRFIzLmlnCqLHg1oYEady3e/muJ
-         KFZxuXHqzSABSXB/j+3l1qxc/bMX3Xt3UuOd9/WPZ24wKeF0JrqcO3qwmnAGc/nfV7y4
-         pIkNeshxTEFwUu73SPZDsxHm1/rRFZx2XnhXoiN0nJMH6+AuQ4ooWq2599wJT6Sx5RgF
-         8V3utfuloprOuF3l0d3v19NJTqRacXcGzOC5Vb77b29ZVLoa3UKBFM562jT5b927Jmm6
-         SJZQ==
-X-Gm-Message-State: AGi0Pub/xSeM6tE5n8vNNK0pN5rASRyr29rNZi3qhlxog96WsdgUlItY
-        rPDj40s8/4jshS5GAdnchw==
-X-Google-Smtp-Source: APiQypJOJq7j0sm89Vt3qi8RrEHe8B14IxsT3T/FfEhZcmU+VsnMmS2Hw8QCmcgk7K/Ke/8ZAy4FBQ==
-X-Received: by 2002:a17:90b:24f:: with SMTP id fz15mr9986110pjb.138.1586420975683;
-        Thu, 09 Apr 2020 01:29:35 -0700 (PDT)
-Received: from localhost.localdomain ([2402:3a80:13be:8fdf:25a2:66e2:761f:9d4c])
-        by smtp.gmail.com with ESMTPSA id y19sm19170866pfe.9.2020.04.09.01.29.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Apr 2020 01:29:34 -0700 (PDT)
-From:   madhuparnabhowmik10@gmail.com
-To:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, frextrite@gmail.com,
-        joel@joelfernandes.org, paulmck@kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-Subject: [PATCH 4/4] net: mac80211: mlme.c: Add lockdep condition for RCU list usage
-Date:   Thu,  9 Apr 2020 13:59:25 +0530
-Message-Id: <20200409082925.27481-1-madhuparnabhowmik10@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726689AbgDIIfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Apr 2020 04:35:16 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:40789 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726470AbgDIIfQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 04:35:16 -0400
+Received: from ip5f5bd698.dynamic.kabel-deutschland.de ([95.91.214.152] helo=wittgenstein)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <christian.brauner@ubuntu.com>)
+        id 1jMSci-0007C4-7g; Thu, 09 Apr 2020 08:33:20 +0000
+Date:   Thu, 9 Apr 2020 10:33:19 +0200
+From:   Christian Brauner <christian.brauner@ubuntu.com>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Jens Axboe <axboe@kernel.dk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-api@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Serge Hallyn <serge@hallyn.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, Tejun Heo <tj@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saravana Kannan <saravanak@google.com>,
+        Jan Kara <jack@suse.cz>, David Howells <dhowells@redhat.com>,
+        Seth Forshee <seth.forshee@canonical.com>,
+        David Rheinsberg <david.rheinsberg@gmail.com>,
+        Tom Gundersen <teg@jklm.no>,
+        Christian Kellner <ckellner@redhat.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        =?utf-8?B?U3TDqXBoYW5l?= Graber <stgraber@ubuntu.com>,
+        linux-doc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 2/8] loopfs: implement loopfs
+Message-ID: <20200409083319.nlemf6d7g33hxhiy@wittgenstein>
+References: <20200408152151.5780-1-christian.brauner@ubuntu.com>
+ <20200408152151.5780-3-christian.brauner@ubuntu.com>
+ <20200409075320.GA26234@infradead.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200409075320.GA26234@infradead.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+On Thu, Apr 09, 2020 at 12:53:20AM -0700, Christoph Hellwig wrote:
+> Almost 600 lines of code for a little bit of fine grained control
+> is the wrong tradeoff.  Please find a cheaper way to do this.
 
-ieee80211_add_vht_ie() is called with sdata->wdev.mtx held from
-ieee80211_send_assoc(). Add lockdep condition to avoid false positive
-warnings.
+I think that's a slight misrepresentation of the patchset. Of course, I
+get reservations against adding new code but none of this code will
+exist at all if the config option is not set; and the config option is
+not selected by default. I don't want people to have to use something
+they don't care about of course.
+The patchset itself unblocks a range of use-cases we had issues with for
+quite a while and the standalone, tiny filesystem approach has served us
+well already, so this is not something new. It's not just gaining
+fine-grained control, it's a whole set of new uses and we don't just do
+it for the fun of doing it but because we do have actual users of this.
 
-Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
----
- net/mac80211/mlme.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
-index 16d75da0996a..ef64b3e91ce6 100644
---- a/net/mac80211/mlme.c
-+++ b/net/mac80211/mlme.c
-@@ -590,7 +590,8 @@ static void ieee80211_add_vht_ie(struct ieee80211_sub_if_data *sdata,
- 		bool disable_mu_mimo = false;
- 		struct ieee80211_sub_if_data *other;
- 
--		list_for_each_entry_rcu(other, &local->interfaces, list) {
-+		list_for_each_entry_rcu(other, &local->interfaces, list,
-+					lockdep_is_held(&sdata->wdev.mtx)) {
- 			if (other->vif.mu_mimo_owner) {
- 				disable_mu_mimo = true;
- 				break;
--- 
-2.17.1
-
+Christian
