@@ -2,88 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 38F6F1A2E65
-	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 06:29:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50CE81A2E72
+	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 06:43:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726534AbgDIE3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Apr 2020 00:29:52 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:63099 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725769AbgDIE3v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 00:29:51 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1586406591; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=B3sXth08Y02Tmoumwkje6Jf2EC2NrHb4e6PE2kpw8bM=; b=C+vn6DEB9vqBg8YNTydR6sBdGszWrYuNk0gcaPQcfZKooczxAV/fJCEQbZaanzO7jDcesyVT
- D9nF+GkvNQ2NhI5dNNjC3f0yi8lZczWw2W4eOnvKWgm205IhO42dKUwhKncjRNU4pWamuYJi
- DT8frQt9ZjflsAnlhs3k/C+RuHk=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e8ea4b9.7f540a9fd420-smtp-out-n04;
- Thu, 09 Apr 2020 04:29:45 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id AE7F7C43637; Thu,  9 Apr 2020 04:29:44 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id BCE66C433F2;
-        Thu,  9 Apr 2020 04:29:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org BCE66C433F2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
-        Chin-Yen Lee <timlee@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Brian Norris <briannorris@chromium.org>,
-        Chris Chiu <chiu@endlessm.com>,
-        Jian-Hong Pan <jian-hong@endlessm.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] rtw88: avoid unused function warnings
-References: <20200408185413.218643-1-arnd@arndb.de>
-Date:   Thu, 09 Apr 2020 07:29:39 +0300
-In-Reply-To: <20200408185413.218643-1-arnd@arndb.de> (Arnd Bergmann's message
-        of "Wed, 8 Apr 2020 20:53:51 +0200")
-Message-ID: <87v9m9uvrg.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1725271AbgDIEnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Apr 2020 00:43:01 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:34428 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725828AbgDIEnB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 00:43:01 -0400
+Received: by mail-lf1-f66.google.com with SMTP id x23so6887896lfq.1
+        for <netdev@vger.kernel.org>; Wed, 08 Apr 2020 21:42:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=l82LDlRWYJzmqsomHiNBPGdf4yXwTXQaOWMpWzoGw8g=;
+        b=mOTNsNFIZbsChjKSME0aoOzrBvPlexQuK0ANkFX0Elp2uip6nAUSVWhHQ8r94xz2A2
+         ev1g4D7XVFhW6lqbU+TYnFe7WpKf31QaDtAN+WtERHD8nmGhq8F/xp2zTUWraoyWXJ3r
+         ss6atvmbW05769fT27XtlrqLSCGKHI8YhcJ9ZDu94sM3nlrqT8YijqD10zOGAhb9dA0X
+         GI2V2+TcGQ4sFHo+KMUSCEIsRl+CUQSEWYrbYggPX4zy/ivh2ChAubPN0zE4ayv5msKg
+         f5Q2KB0uftHbiaG9+XKGVhSJMkJSd6kHKtrzLdwRZ4FBU9LXeHXwfk7Hce/HlWHg1dBD
+         O2qA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l82LDlRWYJzmqsomHiNBPGdf4yXwTXQaOWMpWzoGw8g=;
+        b=f0WAkD7hAIycYslQxroHRaSacEkpQoWSQc8dz2kRsTmBuskgTSIy9SOaae4+wJQt0W
+         dnUP9Qda27WOCXAk66vWLwjEhKJ7DbnLFCP0tF8USJ5DrwMj3GZaz1Mai8Z5eTgBGgF5
+         lYO1miBbM60fwX4GYzGpAfrqBeChcKvaH55GZmtXYYMrIXbIEOCH1E4CG9nLqbLaQ7X2
+         6Ljz7faGOApxt/YrM4QPihve0ejdNpjY0/fA9MF3kd6WmhxApeIX27wlCfHC45pVu1QR
+         wpiQB6phSxIC5rXRyF5bi251fu++ai6UHmjVygUfJhtxJ0GAM/4ngwOkh1bjyLrJ+s04
+         yxFQ==
+X-Gm-Message-State: AGi0PubDXY8thZKCFf5vn8Cg0iCVtkvJpkMeEsY4d0ew43iNJNUkVC4+
+        5o8qQf07ci3MNhgRQK3D2/zO0mXv+YMAQkA1IE+1eQ==
+X-Google-Smtp-Source: APiQypKznLNwlw6W4umbsxQ45Vs5Pms5LzStgyoBjm1pcyR+o+cYKM5CtThTxsr6UG1ZdHi1UueHLKh1TtIFsddXvz8=
+X-Received: by 2002:ac2:5f63:: with SMTP id c3mr6500632lfc.15.1586407377965;
+ Wed, 08 Apr 2020 21:42:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <1586254255-28713-1-git-send-email-sumit.garg@linaro.org> <CABPxzY+hL=jD6Zy=netP3oqNXg69gDL2g0KiPe40eaXXgZBnxw@mail.gmail.com>
+In-Reply-To: <CABPxzY+hL=jD6Zy=netP3oqNXg69gDL2g0KiPe40eaXXgZBnxw@mail.gmail.com>
+From:   Sumit Garg <sumit.garg@linaro.org>
+Date:   Thu, 9 Apr 2020 10:12:45 +0530
+Message-ID: <CAFA6WYMZAq6X5m++h33ySCa6jOQCq_tHL=8mUi-kPMcn4FH=jA@mail.gmail.com>
+Subject: Re: [PATCH v2] mac80211: fix race in ieee80211_register_hw()
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
+        Krishna Chaitanya <chaitanya.mgit@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Matthias=2DPeter_Sch=C3=B6pfer?= 
+        <matthias.schoepfer@ithinx.io>,
+        "Berg Philipp (HAU-EDS)" <Philipp.Berg@liebherr.com>,
+        "Weitner Michael (HAU-EDS)" <Michael.Weitner@liebherr.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Loic Poulain <loic.poulain@linaro.org>, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Arnd Bergmann <arnd@arndb.de> writes:
+Hi Johannes,
 
-> The rtw88 driver defines emtpy functions with multiple indirections
-> but gets one of these wrong:
+On Wed, 8 Apr 2020 at 00:55, Krishna Chaitanya <chaitanya.mgit@gmail.com> wrote:
 >
-> drivers/net/wireless/realtek/rtw88/pci.c:1347:12: error: 'rtw_pci_resume' defined but not used [-Werror=unused-function]
->  1347 | static int rtw_pci_resume(struct device *dev)
->       |            ^~~~~~~~~~~~~~
-> drivers/net/wireless/realtek/rtw88/pci.c:1342:12: error: 'rtw_pci_suspend' defined but not used [-Werror=unused-function]
->  1342 | static int rtw_pci_suspend(struct device *dev)
->
-> Better simplify it to rely on the conditional reference in
-> SIMPLE_DEV_PM_OPS(), and mark the functions as __maybe_unused to avoid
-> warning about it.
->
-> I'm not sure if these are needed at all given that the functions
-> don't do anything, but they were only recently added.
->
-> Fixes: 44bc17f7f5b3 ("rtw88: support wowlan feature for 8822c")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> On Tue, Apr 7, 2020 at 3:41 PM Sumit Garg <sumit.garg@linaro.org> wrote:
+> >
+> > A race condition leading to a kernel crash is observed during invocation
+> > of ieee80211_register_hw() on a dragonboard410c device having wcn36xx
+> > driver built as a loadable module along with a wifi manager in user-space
+> > waiting for a wifi device (wlanX) to be active.
+> >
+> > Sequence diagram for a particular kernel crash scenario:
+> >
+> >     user-space  ieee80211_register_hw()  ieee80211_tasklet_handler()
+> >     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+> >        |                    |                 |
+> >        |<---phy0----wiphy_register()          |
+> >        |-----iwd if_add---->|                 |
+> just a nitpick, a better one would be (iwd: if_add + ap_start) since
+> we need to have 'iwctl ap start'
+> to trigger the interrupts.
+> >        |                    |<---IRQ----(RX packet)
+> >        |              Kernel crash            |
+> >        |              due to unallocated      |
+> >        |              workqueue.              |
+> >        |                    |                 |
+> >        |       alloc_ordered_workqueue()      |
+> >        |                    |                 |
+> >        |              Misc wiphy init.        |
+> >        |                    |                 |
+> >        |            ieee80211_if_add()        |
+> >        |                    |                 |
+> >
+> > As evident from above sequence diagram, this race condition isn't specific
+> > to a particular wifi driver but rather the initialization sequence in
+> > ieee80211_register_hw() needs to be fixed. So re-order the initialization
+> > sequence and the updated sequence diagram would look like:
+> >
+> >     user-space  ieee80211_register_hw()  ieee80211_tasklet_handler()
+> >     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+> >        |                    |                 |
+> >        |       alloc_ordered_workqueue()      |
+> >        |                    |                 |
+> >        |              Misc wiphy init.        |
+> >        |                    |                 |
+> >        |<---phy0----wiphy_register()          |
+> >        |-----iwd if_add---->|                 |
+> same as above.
+> >        |                    |<---IRQ----(RX packet)
+> >        |                    |                 |
+> >        |            ieee80211_if_add()        |
+> >        |                    |                 |
+> >
+> > Cc: <stable@vger.kernel.org>
+> > Signed-off-by: Sumit Garg <sumit.garg@linaro.org>
+> > ---
+> >
 
-I'll queue this to v5.7.
+In case we don't have any further comments, could you fix this nitpick
+from Chaitanya while applying or would you like me to respin and send
+v3?
 
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+-Sumit
+
+> > Changes in v2:
+> > - Move rtnl_unlock() just after ieee80211_init_rate_ctrl_alg().
+> > - Update sequence diagrams in commit message for more clarification.
+> >
+> >  net/mac80211/main.c | 22 +++++++++++++---------
+> >  1 file changed, 13 insertions(+), 9 deletions(-)
+> >
+> > diff --git a/net/mac80211/main.c b/net/mac80211/main.c
+> > index 4c2b5ba..d497129 100644
+> > --- a/net/mac80211/main.c
+> > +++ b/net/mac80211/main.c
+> > @@ -1051,7 +1051,7 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+> >                 local->hw.wiphy->signal_type = CFG80211_SIGNAL_TYPE_UNSPEC;
+> >                 if (hw->max_signal <= 0) {
+> >                         result = -EINVAL;
+> > -                       goto fail_wiphy_register;
+> > +                       goto fail_workqueue;
+> >                 }
+> >         }
+> >
+> > @@ -1113,7 +1113,7 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+> >
+> >         result = ieee80211_init_cipher_suites(local);
+> >         if (result < 0)
+> > -               goto fail_wiphy_register;
+> > +               goto fail_workqueue;
+> >
+> >         if (!local->ops->remain_on_channel)
+> >                 local->hw.wiphy->max_remain_on_channel_duration = 5000;
+> > @@ -1139,10 +1139,6 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+> >
+> >         local->hw.wiphy->max_num_csa_counters = IEEE80211_MAX_CSA_COUNTERS_NUM;
+> >
+> > -       result = wiphy_register(local->hw.wiphy);
+> > -       if (result < 0)
+> > -               goto fail_wiphy_register;
+> > -
+> >         /*
+> >          * We use the number of queues for feature tests (QoS, HT) internally
+> >          * so restrict them appropriately.
+> > @@ -1207,6 +1203,8 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+> >                 goto fail_rate;
+> >         }
+> >
+> > +       rtnl_unlock();
+> > +
+> >         if (local->rate_ctrl) {
+> >                 clear_bit(IEEE80211_HW_SUPPORTS_VHT_EXT_NSS_BW, hw->flags);
+> >                 if (local->rate_ctrl->ops->capa & RATE_CTRL_CAPA_VHT_EXT_NSS_BW)
+> > @@ -1254,6 +1252,12 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+> >                 local->sband_allocated |= BIT(band);
+> >         }
+> >
+> > +       result = wiphy_register(local->hw.wiphy);
+> > +       if (result < 0)
+> > +               goto fail_wiphy_register;
+> > +
+> > +       rtnl_lock();
+> > +
+> >         /* add one default STA interface if supported */
+> >         if (local->hw.wiphy->interface_modes & BIT(NL80211_IFTYPE_STATION) &&
+> >             !ieee80211_hw_check(hw, NO_AUTO_VIF)) {
+> > @@ -1293,6 +1297,8 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+> >  #if defined(CONFIG_INET) || defined(CONFIG_IPV6)
+> >   fail_ifa:
+> >  #endif
+> > +       wiphy_unregister(local->hw.wiphy);
+> > + fail_wiphy_register:
+> >         rtnl_lock();
+> >         rate_control_deinitialize(local);
+> >         ieee80211_remove_interfaces(local);
+> > @@ -1302,8 +1308,6 @@ int ieee80211_register_hw(struct ieee80211_hw *hw)
+> >         ieee80211_led_exit(local);
+> >         destroy_workqueue(local->workqueue);
+> >   fail_workqueue:
+> > -       wiphy_unregister(local->hw.wiphy);
+> > - fail_wiphy_register:
+> >         if (local->wiphy_ciphers_allocated)
+> >                 kfree(local->hw.wiphy->cipher_suites);
+> >         kfree(local->int_scan_req);
+> > @@ -1353,8 +1357,8 @@ void ieee80211_unregister_hw(struct ieee80211_hw *hw)
+> >         skb_queue_purge(&local->skb_queue_unreliable);
+> >         skb_queue_purge(&local->skb_queue_tdls_chsw);
+> >
+> > -       destroy_workqueue(local->workqueue);
+> >         wiphy_unregister(local->hw.wiphy);
+> > +       destroy_workqueue(local->workqueue);
+> >         ieee80211_led_exit(local);
+> >         kfree(local->int_scan_req);
+> >  }
+> > --
+> > 2.7.4
+> >
+>
+>
+> --
+> Thanks,
+> Regards,
+> Chaitanya T K.
