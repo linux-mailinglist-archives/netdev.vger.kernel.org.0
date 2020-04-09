@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 964651A30D7
-	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 10:28:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 425E01A30DD
+	for <lists+netdev@lfdr.de>; Thu,  9 Apr 2020 10:29:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726582AbgDII2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Apr 2020 04:28:43 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:33057 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725828AbgDII2n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 04:28:43 -0400
-Received: by mail-pl1-f194.google.com with SMTP id ay1so3603284plb.0;
-        Thu, 09 Apr 2020 01:28:43 -0700 (PDT)
+        id S1726657AbgDII3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Apr 2020 04:29:00 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:36121 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726663AbgDII3A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 04:29:00 -0400
+Received: by mail-pf1-f194.google.com with SMTP id n10so3808307pff.3;
+        Thu, 09 Apr 2020 01:29:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=+fG/Gev7HaxlZXPpDg5ZggbcqVNpIERCkV8tz6C91rI=;
-        b=VrAgMiavqperU/qmbs/nYjs3R21Z28HnwtwMqUnz+kDRaWK1/ZgKpBoHUtv5W1KCFZ
-         bxslrV0uDn0OCQeOo3WZ5AJUYGxXqQ695kC9UHyoy7gG1XspSihCx+CU89l6wPOp6V5y
-         hG+eMGGzgOuXBePYk7ka5BB+R9mdIcab0K+N7UEN15opjjWlE9NlBFzQuTKI/KH/Q/fA
-         ncXvjCpHv2RMY0sUgIwoIwdP52Vt7INaIGjY7NG+KiKG2CUqb408W/RlxvB1PtQ/XfIj
-         qDzBcNS1EyfWfqV8yTUdHDLHOkGJnRiUSOfHBdwnSn1avhWyQL3LV14rk7VVZ2vUcDhZ
-         ZZVA==
+        bh=0HXV8vx9Be0BBihyhMob71nh1LkIaEr5epGWg9GzRAU=;
+        b=MUEXAxyoTdSoolqIbRRVACRTGku/CrRdwrnfri3FU7m1CGWxvVxECyJzNjlzoqEsKx
+         3F4wPoUnPw9Kuzp/PVK1EZi9PKkRunyMAcxg9R/YOyGp5tIrKrpjXWEUrlpLOJOWBzUD
+         obPKIv5NLJclwMiHJMYvdi7BAiqeOxWl8X/mhTECRPJ9/Eld7HjSPlVuifZme/saoNlL
+         r7USy8sMvD85yB/97jF8qGDDQ2P63+yhXJqbcB5PJrASY94EGnAi3CmWe/DK9SxyfXu3
+         3EUfwTX31XHnMhbzoahy0Jh91k/5CiQiM9jr7e97x7EuVBBI/A0B6jKgznf21CII8MWK
+         pJ7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=+fG/Gev7HaxlZXPpDg5ZggbcqVNpIERCkV8tz6C91rI=;
-        b=tUerkIQH8fZIiTRSv9tNj6qyFCXhcrmuH8oMAWrdJN3UwH8UYAucsQCY5Ll99dV0vk
-         Qk/4l7WhlrxrDsIuWO25sWNmhbIzetqiGB3tXxkx+uYUTh9G/mcoXHZjP05HZg5/nNr1
-         //UyD93AAGUj1yQVWlk9/37PTCVkZ/86ReDkNsa6VPtjDNRSctGcF7P1dWjD4QLAnSHD
-         5nCXrepA6hmWsfE9/mgmAQUknQ7ZxaSc7UZ5qZYsCqF4aRFKMcmpGJsksZzjcoWqwa0C
-         oFr46ZPIsw9EIiIiHP6ZIrAisubbultAJZlWANBzl3HFD/sYOczaXykkEzfiLANS86nm
-         IzUA==
-X-Gm-Message-State: AGi0PuYioGT1f7dsSz/Yp9XyUz15T13MOsa3BTQ3TsCkZgWtA3BM8VBm
-        iON+rWEl3m/E1SJSujxnmQ==
-X-Google-Smtp-Source: APiQypJLoXasAxeWqbcLrxY25TSunFHpWMUBhjAxPsjLnDLzDMGnFUlBC1/m+GQba0kNmUo48yAUvg==
-X-Received: by 2002:a17:90a:8c18:: with SMTP id a24mr10599111pjo.43.1586420922983;
-        Thu, 09 Apr 2020 01:28:42 -0700 (PDT)
+        bh=0HXV8vx9Be0BBihyhMob71nh1LkIaEr5epGWg9GzRAU=;
+        b=GGAF0G0KBZSdBn9vB6CdBJkZTzgEUzkWAxNLCJyn9v9AK0n0yfpMJZL3tyonJadkrS
+         /0WXo/hQzA97oVstCVoDweRjrYgu7AMYbC14+7c8xH42J9np48swbEBMwPMD1yM5CgyA
+         RsuGYw69xTocHkjl2jxakGEo6c5Ei7/Zehk2QhOjlxhUiQA60yS5kNYU37KyEymfdcVz
+         gOpwk8BeMx4Zec4s8eLW5uolNfEKwTadAqrwTClKCevgqcI1igV802QeZBta5q+mwG5N
+         QC6+8VZWsLkxL7yeHC4q2gMXfbZFEC2yPwsdtqPiyLW8fGzET9EReA2LOltbtiifB3k/
+         M9/Q==
+X-Gm-Message-State: AGi0PuZ9i4kXGn5z20vtYaNGMM4fl41XQ7LyxBgr8mW1hCutRoMDwJoo
+        1x9xQSIy+/C1Fu3woSfNyA==
+X-Google-Smtp-Source: APiQypJMUo7McfIjWzcXnjJmz+8h35KmF64lZDJ+qnUEu0I5lgVqNGuknsQBsn/cgMScS/uFl60oLQ==
+X-Received: by 2002:a63:e56:: with SMTP id 22mr10914839pgo.173.1586420939939;
+        Thu, 09 Apr 2020 01:28:59 -0700 (PDT)
 Received: from localhost.localdomain ([2402:3a80:13be:8fdf:25a2:66e2:761f:9d4c])
-        by smtp.gmail.com with ESMTPSA id r189sm17762095pgr.31.2020.04.09.01.28.37
+        by smtp.gmail.com with ESMTPSA id h10sm17615674pgf.23.2020.04.09.01.28.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Apr 2020 01:28:42 -0700 (PDT)
+        Thu, 09 Apr 2020 01:28:59 -0700 (PDT)
 From:   madhuparnabhowmik10@gmail.com
 To:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org
 Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
@@ -49,9 +49,9 @@ Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         joel@joelfernandes.org, paulmck@kernel.org,
         linux-kernel-mentees@lists.linuxfoundation.org,
         Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-Subject: [PATCH 1/4] net: mac80211: util.c: Fix RCU list usage warnings
-Date:   Thu,  9 Apr 2020 13:58:22 +0530
-Message-Id: <20200409082822.27314-1-madhuparnabhowmik10@gmail.com>
+Subject: [PATCH 2/4] net: mac80211: scan.c: Fix RCU list related warnings.
+Date:   Thu,  9 Apr 2020 13:58:49 +0530
+Message-Id: <20200409082849.27372-1-madhuparnabhowmik10@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -60,64 +60,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
 
-This patch fixes the following warning (CONIG_PROVE_RCU_LIST)
-in ieee80211_check_combinations().
+This patch fixes the following warning:
 
 WARNING: suspicious RCU usage
-[   80.933723] 5.6.0+ #4 Not tainted
-[   80.933733] -----------------------------
-[   80.933746] net/mac80211/util.c:3934 RCU-list traversed in non-reader section!!
+[   84.530619] 5.6.0+ #4 Not tainted
+[   84.530637] -----------------------------
+[   84.530658] net/mac80211/scan.c:454 RCU-list traversed in non-reader section!!
 
-Also, fix the other uses of list_for_each_entry_rcu() by either using
-list_for_each_entry() instead (When mutex or spinlock is always held
-in the function) or pass the necessary lockdep condition.
+As local->mtx is held in __ieee80211_scan_completed(), no need to use
+list_for_each_entry_rcu() (use list_for_each_entry() instead.).
 
 Signed-off-by: Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
 ---
- net/mac80211/util.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ net/mac80211/scan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/mac80211/util.c b/net/mac80211/util.c
-index 20436c86b9bf..f4b0434024c0 100644
---- a/net/mac80211/util.c
-+++ b/net/mac80211/util.c
-@@ -254,7 +254,7 @@ static void __ieee80211_wake_txqs(struct ieee80211_sub_if_data *sdata, int ac)
- 
- 	sdata->vif.txqs_stopped[ac] = false;
- 
--	list_for_each_entry_rcu(sta, &local->sta_list, list) {
-+	list_for_each_entry(sta, &local->sta_list, list) {
- 		if (sdata != sta->sdata)
- 			continue;
- 
-@@ -719,7 +719,8 @@ static void __iterate_interfaces(struct ieee80211_local *local,
- 	struct ieee80211_sub_if_data *sdata;
- 	bool active_only = iter_flags & IEEE80211_IFACE_ITER_ACTIVE;
- 
+diff --git a/net/mac80211/scan.c b/net/mac80211/scan.c
+index fdac8192a519..0860f028ab2a 100644
+--- a/net/mac80211/scan.c
++++ b/net/mac80211/scan.c
+@@ -451,7 +451,7 @@ static void __ieee80211_scan_completed(struct ieee80211_hw *hw, bool aborted)
+ 	 * the scan was in progress; if there was none this will
+ 	 * just be a no-op for the particular interface.
+ 	 */
 -	list_for_each_entry_rcu(sdata, &local->interfaces, list) {
-+	list_for_each_entry_rcu(sdata, &local->interfaces, list,
-+				(lockdep_is_held(&local->iflist_mtx)|| lockdep_rtnl_is_held())) {
- 		switch (sdata->vif.type) {
- 		case NL80211_IFTYPE_MONITOR:
- 			if (!(sdata->u.mntr.flags & MONITOR_FLAG_ACTIVE))
-@@ -3931,7 +3932,7 @@ int ieee80211_check_combinations(struct ieee80211_sub_if_data *sdata,
- 		params.num_different_channels++;
++	list_for_each_entry(sdata, &local->interfaces, list) {
+ 		if (ieee80211_sdata_running(sdata))
+ 			ieee80211_queue_work(&sdata->local->hw, &sdata->work);
  	}
- 
--	list_for_each_entry_rcu(sdata_iter, &local->interfaces, list) {
-+	list_for_each_entry(sdata_iter, &local->interfaces, list) {
- 		struct wireless_dev *wdev_iter;
- 
- 		wdev_iter = &sdata_iter->wdev;
-@@ -3982,7 +3983,7 @@ int ieee80211_max_num_channels(struct ieee80211_local *local)
- 			ieee80211_chanctx_radar_detect(local, ctx);
- 	}
- 
--	list_for_each_entry_rcu(sdata, &local->interfaces, list)
-+	list_for_each_entry(sdata, &local->interfaces, list)
- 		params.iftype_num[sdata->wdev.iftype]++;
- 
- 	err = cfg80211_iter_combinations(local->hw.wiphy, &params,
 -- 
 2.17.1
 
