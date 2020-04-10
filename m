@@ -2,53 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93FB21A4C39
-	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 00:51:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D79621A4C57
+	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 00:53:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726651AbgDJWvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Apr 2020 18:51:36 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:44892 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726594AbgDJWvg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 18:51:36 -0400
-Received: by mail-qt1-f195.google.com with SMTP id w24so2654605qts.11;
-        Fri, 10 Apr 2020 15:51:36 -0700 (PDT)
+        id S1726712AbgDJWx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Apr 2020 18:53:57 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:40389 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726582AbgDJWx5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 18:53:57 -0400
+Received: by mail-qk1-f196.google.com with SMTP id z15so3717334qki.7;
+        Fri, 10 Apr 2020 15:53:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ZmfQ5zqyJbrC3dajpjoY1pM/m4TAuF0zBO31tm790Fw=;
-        b=diOUXKjMZT7yJfTEGysqrYUArjRx4MV4Ta5nwDbu4mYX4mx/LnHHDL23ny/OWhp2OW
-         AaCu3JRlmN3vsoMXpuqhGbuVBQ/O2sX/cy26fin7cl1emD9dS8yMMFFfxD0jOdVMrGhP
-         1RgZXoSNpz4hgoityuVIZGadGw8vL+Ip/UevR175/pllBHvqK5PFiGSJYEQTtGCwBUDA
-         LWXTeS9uwnew9TqdeXSvLHGZ/L+j5TWbw73LpruTA7Mzosb2EhkX+eWzCVvgbcGOWaBj
-         V2bZOLS+ltqMAAFlzjf701VlPdBF1V8a5wiXVuwRaoPCm5mT7muCehwd6dgB9lsbMpla
-         rlZg==
+        bh=SGhwCL7nCuI/FVuTMRltexN6PKg7K1ZDRYfg8l+fyDk=;
+        b=qUcIc7w4+H7TUeA4jr5J04vfSqvl+2I5vjMO9JYFY9vNivLlyORloiYoijwiqvsQk7
+         yuPj/L7XmzE82e9kdKtihJuJ2B7WkhuCebvvpMymHNbWLyO0ggYd2/FqY8fwBPaCbeDo
+         pG/9MSBFMB4iwneQm7FaJoXpqPMlfyULd8QyIwH4/2Qu5Ex+ETk6V/I1XeXo0etMHXKP
+         35YTyXjOc8wmnbQVRdDuSvDx7dU2Uh1C8bt1d7hCHUo8NKIrzMMzQCMXp07qxd+vPMfa
+         sotBiP7ItSTLi7wNmgma/AIdCgj28o+1Ugj8ZjBKUMO8n6sxyPLpHDerPCTbEbhSO17A
+         HiJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ZmfQ5zqyJbrC3dajpjoY1pM/m4TAuF0zBO31tm790Fw=;
-        b=fhpimuoRojjoN1ZGkSwJ4kW49a1jWVSVTQ4TagukxiJ58LXX7+2EHSisUUDMZKA1+P
-         dhLvemt/Er9sgo5hR8QWq5o8nVr2qtEOqjSIgUFUTaBVAD+HbJQd9aBnYK0+G4aVO3Dl
-         oAuQUi1Mu3dD5xTKsDRltivat2U2sC0XWa4sI1rMLj+1ECyq+6MNZ4w6Wy8lrlH4Q2Ix
-         4D6EaYMk7ICBrvAOLJuMkrunIn70QgaH5ZRjMD/WbxMufkGK2h6OwvMTj+RegCmAW0pr
-         3Tlr5vO7M89NWfZgxQQLVwpA34tfOS/SiOnZ5qB5kFqh4xb7NkVNx/uSc1I3H6OhWf57
-         pQ1Q==
-X-Gm-Message-State: AGi0PuY2lZrKp5agrwOSVf9N87PhS4b/ifihR4PLeWf+YSO+lTS50vB/
-        PYZjUJr1urzUVlusWwJxpW6jWDiixEdRgKMxjvk=
-X-Google-Smtp-Source: APiQypLpLVML+alalPcS1LGytWlShqjCWcBDa11gKDa6Szl4/RuoyhuChEugYshe61uwRtZDpRn0jskeBBxRqVO5wbs=
-X-Received: by 2002:ac8:468d:: with SMTP id g13mr1374600qto.59.1586559094861;
- Fri, 10 Apr 2020 15:51:34 -0700 (PDT)
+        bh=SGhwCL7nCuI/FVuTMRltexN6PKg7K1ZDRYfg8l+fyDk=;
+        b=IcwVuQaTiEpwPhspiX7FWt0DNF/SWCOFKsyiP/VC/9XtVGPC2qr6k6UubGQo6+yeb4
+         Ll0ULk94GDw5F3GSmHEfb+WPSxzfO2bFPbp3LTKpfguC4zRFbLhcC00vtZjvFOKobLoj
+         tDNMFCxNbjelZ22evKp6rQhGshA8zhhmkrJ+nTDLS9fitKwSldELDNbmptdyq9tY0HT0
+         293ofc9a55b7CJr/Fwqv1uD5GG6Wmv90B9rt64EUfwmfsvP6tQuya6MUEA5JdmUGoOBD
+         W/3C0uP02HmQtQ372bu3MLaUbfwmz70wBqx6b4UKLc4IaZ76kOOLmqp3bDB7OrCT3nDT
+         U4nQ==
+X-Gm-Message-State: AGi0PuZu4FEBf4ThBJzheOV3/DlKf3NkI9941j+9iLZkJzyWqWbAu3l4
+        2YJPexi4GfGd4xkJ+W8QOeQu12jxilUnwWkrx0XxdWU2tBI=
+X-Google-Smtp-Source: APiQypLR3BLCiorniAkI5K0Flv6bFsl+08GYAR7qyGs079jLdxLPOkeVfg6E+nw02ELi+FJM/EGE/u9u3fzv7vLfxP0=
+X-Received: by 2002:a37:6587:: with SMTP id z129mr6396575qkb.437.1586559236591;
+ Fri, 10 Apr 2020 15:53:56 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200408232520.2675265-1-yhs@fb.com> <20200408232526.2675664-1-yhs@fb.com>
-In-Reply-To: <20200408232526.2675664-1-yhs@fb.com>
+ <20200410030017.errh35srmbmd7uk5@ast-mbp.dhcp.thefacebook.com> <c34e8f08-c727-1006-e389-633f762106ab@fb.com>
+In-Reply-To: <c34e8f08-c727-1006-e389-633f762106ab@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 10 Apr 2020 15:51:24 -0700
-Message-ID: <CAEf4BzajwPzHUyBvVZzafgKZHXv7b0pmL_avtFO6-_QHh46z1g@mail.gmail.com>
+Date:   Fri, 10 Apr 2020 15:53:45 -0700
+Message-ID: <CAEf4BzYM3fPUGVmRJOArbxgDg-xMpLxyKPxyiH5RQUbKVMPFvA@mail.gmail.com>
 Subject: Re: [RFC PATCH bpf-next 05/16] bpf: create file or anonymous dumpers
 To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
@@ -60,117 +62,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 8, 2020 at 4:26 PM Yonghong Song <yhs@fb.com> wrote:
+On Fri, Apr 10, 2020 at 3:43 PM Yonghong Song <yhs@fb.com> wrote:
 >
-> Given a loaded dumper bpf program, which already
-> knows which target it should bind to, there
-> two ways to create a dumper:
->   - a file based dumper under hierarchy of
->     /sys/kernel/bpfdump/ which uses can
->     "cat" to print out the output.
->   - an anonymous dumper which user application
->     can "read" the dumping output.
 >
-> For file based dumper, BPF_OBJ_PIN syscall interface
-> is used. For anonymous dumper, BPF_PROG_ATTACH
-> syscall interface is used.
 >
-> To facilitate target seq_ops->show() to get the
-> bpf program easily, dumper creation increased
-> the target-provided seq_file private data size
-> so bpf program pointer is also stored in seq_file
-> private data.
+> On 4/9/20 8:00 PM, Alexei Starovoitov wrote:
+> > On Wed, Apr 08, 2020 at 04:25:26PM -0700, Yonghong Song wrote:
+> >> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> >> index 0f1cbed446c1..b51d56fc77f9 100644
+> >> --- a/include/uapi/linux/bpf.h
+> >> +++ b/include/uapi/linux/bpf.h
+> >> @@ -354,6 +354,7 @@ enum {
+> >>   /* Flags for accessing BPF object from syscall side. */
+> >>      BPF_F_RDONLY            = (1U << 3),
+> >>      BPF_F_WRONLY            = (1U << 4),
+> >> +    BPF_F_DUMP              = (1U << 5),
+> > ...
+> >>   static int bpf_obj_pin(const union bpf_attr *attr)
+> >>   {
+> >> -    if (CHECK_ATTR(BPF_OBJ) || attr->file_flags != 0)
+> >> +    if (CHECK_ATTR(BPF_OBJ) || attr->file_flags & ~BPF_F_DUMP)
+> >>              return -EINVAL;
+> >>
+> >> +    if (attr->file_flags == BPF_F_DUMP)
+> >> +            return bpf_dump_create(attr->bpf_fd,
+> >> +                                   u64_to_user_ptr(attr->dumper_name));
+> >> +
+> >>      return bpf_obj_pin_user(attr->bpf_fd, u64_to_user_ptr(attr->pathname));
+> >>   }
+> >
+> > I think kernel can be a bit smarter here. There is no need for user space
+> > to pass BPF_F_DUMP flag to kernel just to differentiate the pinning.
+> > Can prog attach type be used instead?
 >
-> Further, a seq_num which represents how many
-> bpf_dump_get_prog() has been called is also
-> available to the target seq_ops->show().
-> Such information can be used to e.g., print
-> banner before printing out actual data.
+> Think again. I think a flag is still useful.
+> Suppose that we have the following scenario:
+>    - the current directory /sys/fs/bpf/
+>    - user says pin a tracing/dump (target task) prog to "p1"
 >
-> Note the seq_num does not represent the num
-> of unique kernel objects the bpf program has
-> seen. But it should be a good approximate.
+> It is not really clear whether user wants to pin to
+>     /sys/fs/bpf/p1
+> or user wants to pin to
+>     /sys/kernel/bpfdump/task/p1
 >
-> A target feature BPF_DUMP_SEQ_NET_PRIVATE
-> is implemented specifically useful for
-> net based dumpers. It sets net namespace
-> as the current process net namespace.
-> This avoids changing existing net seq_ops
-> in order to retrieve net namespace from
-> the seq_file pointer.
+> unless we say that a tracing/dump program cannot pin
+> to /sys/fs/bpf which seems unnecessary restriction.
 >
-> For open dumper files, anonymous or not, the
-> fdinfo will show the target and prog_id associated
-> with that file descriptor. For dumper file itself,
-> a kernel interface will be provided to retrieve the
-> prog_id in one of the later patches.
->
-> Signed-off-by: Yonghong Song <yhs@fb.com>
-> ---
->  include/linux/bpf.h            |   5 +
->  include/uapi/linux/bpf.h       |   6 +-
->  kernel/bpf/dump.c              | 338 ++++++++++++++++++++++++++++++++-
->  kernel/bpf/syscall.c           |  11 +-
->  tools/include/uapi/linux/bpf.h |   6 +-
->  5 files changed, 362 insertions(+), 4 deletions(-)
->
+> What do you think?
 
-[...]
+Instead of special-casing dumper_name, can we require specifying full
+path, and then check whether it is in BPF FS vs BPFDUMP FS? If the
+latter, additionally check that it is in the right sub-directory
+matching its intended target type.
 
->
-> +struct dumper_inode_info {
-> +       struct bpfdump_target_info *tinfo;
-> +       struct bpf_prog *prog;
-> +};
-> +
-> +struct dumper_info {
-> +       struct list_head list;
-> +       /* file to identify an anon dumper,
-> +        * dentry to identify a file dumper.
-> +        */
-> +       union {
-> +               struct file *file;
-> +               struct dentry *dentry;
-> +       };
-> +       struct bpfdump_target_info *tinfo;
-> +       struct bpf_prog *prog;
-> +};
-
-This is essentially a bpf_link. Why not do it as a bpf_link from the
-get go? Instead of having all this duplication for anonymous and
-pinned dumpers, it would always be a bpf_link-based dumper, but for
-those pinned bpf_link itself is going to be pinned. You also get a
-benefit of being able to list all dumpers through existing bpf_link
-API (also see my RFC patches with bpf_link_prime/bpf_link_settle,
-which makes using bpf_link safe and simple).
-
-[...]
-
-> +
-> +static void anon_dumper_show_fdinfo(struct seq_file *m, struct file *filp)
-> +{
-> +       struct dumper_info *dinfo;
-> +
-> +       mutex_lock(&anon_dumpers.dumper_mutex);
-> +       list_for_each_entry(dinfo, &anon_dumpers.dumpers, list) {
-
-this (and few other places where you search in a loop) would also be
-simplified, because struct file* would point to bpf_dumper_link, which
-then would have a pointer to bpf_prog, dentry (if pinned), etc. No
-searching at all.
-
-> +               if (dinfo->file == filp) {
-> +                       seq_printf(m, "target:\t%s\n"
-> +                                     "prog_id:\t%u\n",
-> +                                  dinfo->tinfo->target,
-> +                                  dinfo->prog->aux->id);
-> +                       break;
-> +               }
-> +       }
-> +       mutex_unlock(&anon_dumpers.dumper_mutex);
-> +}
-> +
-> +#endif
-> +
-
-[...]
+But honestly, just doing everything within BPF FS starts to seem
+cleaner at this point...
