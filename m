@@ -2,80 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4F571A44F2
-	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 12:04:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF8D01A450E
+	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 12:16:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726007AbgDJKE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Apr 2020 06:04:56 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:26694 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725861AbgDJKE4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 06:04:56 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-48-x_uEFZHKOVCh5ORMr0Lc0A-1; Fri, 10 Apr 2020 11:04:53 +0100
-X-MC-Unique: x_uEFZHKOVCh5ORMr0Lc0A-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Fri, 10 Apr 2020 11:04:53 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Fri, 10 Apr 2020 11:04:53 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Konstantin Kharlamov' <hi-angel@yandex.ru>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: On 5.6.2, SCTP is 10 000 times slower than TCP
-Thread-Topic: On 5.6.2, SCTP is 10 000 times slower than TCP
-Thread-Index: AQHWDnmIUf34av0T4karIpy1I9PllqhyHxew
-Date:   Fri, 10 Apr 2020 10:04:53 +0000
-Message-ID: <f45c281f37724eec868ae72180ab3cdd@AcuMS.aculab.com>
-References: <09cc102b-31d1-b0e8-3ea1-3b07b9a6df74@yandex.ru>
-In-Reply-To: <09cc102b-31d1-b0e8-3ea1-3b07b9a6df74@yandex.ru>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1725975AbgDJKQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Apr 2020 06:16:14 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:53220 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725912AbgDJKQO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 06:16:14 -0400
+Received: by mail-wm1-f66.google.com with SMTP id t203so2035109wmt.2
+        for <netdev@vger.kernel.org>; Fri, 10 Apr 2020 03:16:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=MbrvL00yKXphEIPkfscK5eDFDmwTR7wMyeWK3ek+Pzc=;
+        b=VCrtS0UvuePqZL6zpoD2OxKfQ3vmKsEeFQcbq+UFWNDYEGYZ0bmJEUyBll1Zm3tfAn
+         lENf1OKP/SsTAUKXjEWPDfWQ9XVdXnjcJGktQhAV7homiGrOGcQF1Q6ylxfnDZX4Rhoy
+         aVd9nBgs4YszSwyWNPEK7dT+gi3wRqm/dbGSkm3aQsBypRa2SiNjLpa5jiPwvIdQ8WH2
+         7nFG+lrTMr5fxglCeA1n4j+k5ueLYTtGtQAuMvkR5DSjW/Uh0HtnnCiSh7ceo9EKQf3E
+         zMsZYSXMDLrZ6n7WlGwyZGcdxOZA6VnQQLia0MMGPIbb0Z/mWGAzdP3tZ8U+8Txvl903
+         AzXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=MbrvL00yKXphEIPkfscK5eDFDmwTR7wMyeWK3ek+Pzc=;
+        b=BmwKAg0x9CnABsFXeDJirB4lXvO24kd8lH++3bVCUaeInkM/au3CXLBDc2bihJjt5f
+         oxiwShLRamvFCh1Xj4oStRMvKqtrte/0H7H/iDnP71WUoxOI62tFtw1teVRNJVuNY8QZ
+         EQQpLpuf6PQloi6tQr0XlLWHEmcLg15QNYWpTJR/L4XHW3yWwx3/1RdthOkrNWgDGoSV
+         PoqV7/nCaFRuCnZ2mZ9VE5jWkLusn+n/jz2Eoq2MQqmQ96CpQhKAxl8Kck0vQSTzI4HV
+         EEv4uV2NyDvbj26sn46RMcncApAcoBoPmMf3ItC9E6GEYofNxRb8lwMPg7CuOg3fmqeF
+         Vz2g==
+X-Gm-Message-State: AGi0PuZUPXFEb5N+7GFZPmcIv6aG2ozVV/XDrASKO05wYf02uQEsq8eD
+        WI5dl2J7bssn69awoptHzfDd9boeBzPOqRMk2p4=
+X-Google-Smtp-Source: APiQypJQxJxk0LsvWpZ/NfoA60MYAVgk0AUesyPVhLPLOZdGgYkGw4yGqHWdIogAyp8W0UQavzg9BCPKLL/7OOamt04=
+X-Received: by 2002:a1c:4085:: with SMTP id n127mr4694682wma.163.1586513773668;
+ Fri, 10 Apr 2020 03:16:13 -0700 (PDT)
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Received: by 2002:a1c:a50f:0:0:0:0:0 with HTTP; Fri, 10 Apr 2020 03:16:13
+ -0700 (PDT)
+Reply-To: nelsonbile6@gmail.com
+From:   Nelson Bile <patrick35427846adisna2@gmail.com>
+Date:   Fri, 10 Apr 2020 18:16:13 +0800
+Message-ID: <CANK=FAqWq0kXtUGmQZJXGaz09zzxvrbeOFouOi9ayCAbp7a4-A@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogS29uc3RhbnRpbiBLaGFybGFtb3YNCj4gU2VudDogMDkgQXByaWwgMjAyMCAxNTowOQ0K
-PiANCj4gSSB3YXMgY29uc2lkZXJpbmcsIHdoZXRoZXIgU0NUUCBjb3VsZCBiZSBmYXN0ZXIgdGhh
-biBUQ1AsIGFuZCBtYWRlIHNvbWUNCj4gbWVhc3VyZW1lbnRzLg0KDQpTQ1RQIHdpbGwgYWx3YXlz
-IGJlIHNsb3dlciB0aGFuIFRDUCAtIGl0IGlzIG11Y2ggbW9yZSBjb21wbGljYXRlZC4NCkFkZGl0
-aW9uYWxseSBpdCBpcyBtdWNoIGhhcmRlciB0byBmaWxsIGV0aGVybmV0IGZyYW1lcyAtIHdoaWNo
-IG1ha2VzDQppdCBldmVuIHNsb3dlci4NCk5vdCB0byBtZW50aW9uIHRoZSBzbG93ZXIgY2hlY2tz
-dW0gYWxnb3JpdGhtLg0KLSBJIGNhbiBhZGQgbW9yZS4uLg0KSU1ITyBldmVuIHByb3RvY29scyBs
-aWtlIE0zVUEgd291bGQgcnVuIGJldHRlciBvdmVyIFRDUC4NCg0KPiBSZXN1bHRzIGFyZSBhc3Rv
-bmlzaGluZzogNC43NCBHQi9zZWMgZm9yIFRDUCB2cyA1OTAsIEtCL3NlYyBmb3INCj4gU0NUUC4g
-TGV0IG1lIHJlcGhyYXNlOiB0aGF0IGlzIDQuNzQgR0Ivc2VjIHZzIDAuMDAwNTkgR0Ivc2VjISBX
-b3cuIFRoaXMgbG9va3MNCj4gc29vbyB3cm9uZywgdGhhdCB0aGlzIGlzIHByb2JhYmx5IGEgYnVn
-LCBzbyBJJ20gcmVwb3J0aW5nIGl0IGhlcmUuDQoNCkl0IHNob3VsZG4ndCBiZSB0aGF0IG11Y2gg
-c2xvd2VyIHRob3VnaC4NCg0KPiBUZXN0cyBhcmUgZG9uZSBvbiBrZXJuZWwgNS42LjIgd2l0aCBx
-cGVyZiAwLjQuMTEgYXMgZm9sbG93czoNCj4gDQo+IDEuIFJ1biBgcXBlcmZgIGluIG9uZSB0ZXJt
-aW5hbA0KPiAyLiBSdW4gYHFwZXJmIC12IGxvY2FsaG9zdCB0Y3BfYncgdGNwX2xhdCBzY3RwX2J3
-IHNjdHBfbGF0YCBpbiB0aGUgb3RoZXIgdGVybWluYWwNCj4gDQo+IEJlbG93IGFyZSA0IHJlc3Vs
-dHMgZm9yIG15IERlbGwgSW5zcGlyb24gNTc2NyBsYXB0b3AuDQo+IA0KPiBUZXN0IG51bWJlciB8
-IFRDUCBiYW5kd2lkdGggfCBUQ1AgbGF0ZW5jeSwgzrxzIHwgU0NUUCBiYW5kd2lkdGggfCBTQ1RQ
-IGxhdGVuY3ksIM68cw0KPiAxICAgICAgICAgICB8IDQuNzQgR0Ivc2VjICAgfCA2LjgxICAgICAg
-ICAgICAgfCA1OTAsIEtCL3NlYyAgICB8IDExLjgNCj4gMiAgICAgICAgICAgfCA1IEdCL3NlYyAg
-ICAgIHwgNi43OSAgICAgICAgICAgIHwgNzIxLCBLQi9zZWMgICAgfCAxMC41DQo+IDMgICAgICAg
-ICAgIHwgNC43MyBHQi9zZWMgICB8IDYuNzYgICAgICAgICAgICB8IDguMzksIE1CL3NlYyAgIHwg
-MTAuOQ0KPiA0ICAgICAgICAgICB8IDUuNyBHQi9zZWMgICAgfCA2LjEgICAgICAgICAgICAgfCA1
-My40LCBNQi9zZWMgICB8IDkuMzMNCg0KVGhlcmUgaXMgc29tZXRoaW5nIHN0cmFuZ2UgZ29pbmcg
-b24sIHRoZSBsYXRlbmN5IGlzIHJlYXNvbmFibGUuDQoNCj4gRldJVywgSSBhbHNvIG1hZGUgc29t
-ZSBtZWFzdXJlbWVudHMgb24gYSBzZXJ2ZXIgaHcgd2l0aCBvbGRlciBrZXJuZWwgNC4xOS4gVGhl
-DQo+IGRpZmZlcmVuY2UgdGhlcmUgaXMgbm90IHRoYXQgYmlnLCB5ZXQgZXZlbiB0aGVyZSBTQ1RQ
-IGlzIHR3aWNlIGFzIHNsb3dlciBjb21wYXJlZA0KPiB0byBUQ1AuDQoNClRoYXQgd291bGRuJ3Qg
-c3VycHJpc2UgbWUuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUs
-IEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJl
-Z2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
-
+Selamlar can=C4=B1m birka=C3=A7 g=C3=BCn =C3=B6nce sana bir e-posta g=C3=B6=
+nderdim, mesaj=C4=B1m=C4=B1
+ald=C4=B1n m=C4=B1? acil cevap l=C3=BCtfen.
