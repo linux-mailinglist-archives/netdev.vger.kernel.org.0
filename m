@@ -2,84 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 89E681A4237
-	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 07:24:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E7421A4240
+	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 07:34:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725913AbgDJFVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Apr 2020 01:21:41 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:38075 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725710AbgDJFVj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 01:21:39 -0400
-Received: by mail-wm1-f67.google.com with SMTP id f20so1551052wmh.3
-        for <netdev@vger.kernel.org>; Thu, 09 Apr 2020 22:21:38 -0700 (PDT)
+        id S1725830AbgDJFeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Apr 2020 01:34:44 -0400
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:42629 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725208AbgDJFeo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 01:34:44 -0400
+Received: by mail-yb1-f194.google.com with SMTP id c13so649468ybp.9;
+        Thu, 09 Apr 2020 22:34:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sslab.ics.keio.ac.jp; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=k9bnCNibGTTNZ8RfqJKKqIRm03Js0FIJzOCaGoNQsuc=;
-        b=fHqdymfbkjjLYvSs+zmDnvKHLnbVPWjV8BrXSrAyodywDHjTW3EWchSZZUi7fvMS4k
-         YrhSlnC09aPDPKVbTxgSyUrAXMJBZbbpIYJYbTA3waCo2MH4Y+9C2mow1qkuESFEdug8
-         5ITcoGDMvO6R5XpSNA1pmXivaUIXUEQF4Tlpk=
+         :cc;
+        bh=r7WVbVXkZUUgRb9qZ1L6gI7tsmu7BPZuljwnlAA4LGE=;
+        b=UF6FYribBFezMdfvvEEdsT8m59ILjlwg8pexPnicQdLRGZPNmPkel6HwxWvwzxxS2i
+         gAPlPnpe4E7bLf2C/vBqyqgNISlMfdscdBUybYUSqrQRtURVCqd4rakDpnsxrZMPxYLU
+         R2d5NnfCBaMBmgNs2LqBR1EZC/JP63zW+mVazEu5RSCLd87LFM7f+ljelvaON+/zgpsx
+         RAt7wH6UXAb8JK0BwxyQPczLz5JG4H0aDp19h8ZY73MuCxPtQ7No4kwe6AIcGIJHDsYX
+         cewikqRUwx1T5vTWtPQTLX7burGwm1TfF9AKoLAIDGIsAOO1FpBRC1ZXF0TAZSkDS8Uq
+         X0qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=k9bnCNibGTTNZ8RfqJKKqIRm03Js0FIJzOCaGoNQsuc=;
-        b=X8TeF3ijPh9kBEtHqVJ7Hez62SwYV15DPqh44SKE1jx+2aRMa8TUXPZGKRZt/GjvdF
-         pZeRI/NCM/dhnDftOEDBitUYnPch6HIzOPeGGFOGUL4lbEk/KlJol3jQutBY3ngxs+dz
-         gOPK1+gRcaPm/4nbKihgYlrtnQ8G8LTldl4IshjOkLuu6jwHz+nJdjxUtwvgi9TJ52fy
-         eVQrlGh+xvtLVj47xPqJwqrTVJzg7yLXLXWimz4281Why80LGFejYPFcKP/cIufHLKpJ
-         h+ktLq5vHtkAa0Ulx57Wymw++8dRjhHvpOlz5e9223msbKy0XeWQmIgQgazpVpTcV1nN
-         nGcQ==
-X-Gm-Message-State: AGi0PuZnWgJEEc2oju7CaGfqcitM3yvD0Nf+zjiIT3ZrbhYOMYJoPdHx
-        7v1nzYTu0J+mZvp0xzmox0GEwJmI6QCTC8a+ptryww==
-X-Google-Smtp-Source: APiQypI1GNpcvuB391atB3Y+MsS7V92B8mhbmt+Th68wpnYqHV5ThzvOTFL1P1/F60xBajq5y7FUWUz7uEriVPLW89U=
-X-Received: by 2002:a1c:2705:: with SMTP id n5mr3217827wmn.94.1586496097819;
- Thu, 09 Apr 2020 22:21:37 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=r7WVbVXkZUUgRb9qZ1L6gI7tsmu7BPZuljwnlAA4LGE=;
+        b=HuhrTsrM4L9jGjtvQs4pnsi0QnQjxqiVKRgz/jh34Y5dWmDO4Uqp6J/HIa7peToQFu
+         im4craCmgBIxfREbFhJm/GRdjL/A5mxN6mH51mloaazgR0FGLj8OkHg7UOmtdob4SByY
+         fz5MZCcjN2HYvHBhkbWT2ZOuMDhfq8pJ/hG5AL5cZPTELgXmMHQTYSIs6i7sLOe54+/3
+         rlYMslbnzu1iow6SxyReyjgCecAFQ8vDY+Q1atpehhgB2h5wVjfa2IIzZKYr4jrxUwML
+         MXLyt+evpSwcpMGgcwgg9Fxqm/JtU8TfATY0t5mLVEfJfN7EkW5GJ4WjhTuqoMI0mUzO
+         tbkg==
+X-Gm-Message-State: AGi0PubIAeUHVbMZMMxHr9lk25cNOdVuxcs6kyIc6EvKP+pbMbWxuPD1
+        JTR2rdLYw+Skqo7tLDvmOXTYDFvA7vygL7X+dA==
+X-Google-Smtp-Source: APiQypLeHKl6uqXHg6PZjXC0mxcqvbxInetHMef7MUal1RpTHnVAvPx/ZLLaDrbndVdVwww/5F0z3WtfnSMSv68ELdQ=
+X-Received: by 2002:a25:9d12:: with SMTP id i18mr5041676ybp.306.1586496883465;
+ Thu, 09 Apr 2020 22:34:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200409150210.15488-1-keitasuzuki.park@sslab.ics.keio.ac.jp>
- <20200409174113.28635-1-keitasuzuki.park@sslab.ics.keio.ac.jp> <20200409123203.1b5f6534@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20200409123203.1b5f6534@kicinski-fedora-PC1C0HJN>
-From:   Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
-Date:   Fri, 10 Apr 2020 14:21:26 +0900
-Message-ID: <CAEYrHjmy=R0x+zAcANDcTqx2qOhoUjy0Z2okxkjX1JHC3CgZ_A@mail.gmail.com>
-Subject: Re: [PATCH] nfp: Fix memory leak in nfp_resource_acquire()
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Kubota Takafumi <takafumi.kubota1012@sslab.ics.keio.ac.jp>,
-        "David S. Miller" <davem@davemloft.net>,
-        "open list:NETRONOME ETHERNET DRIVERS" <oss-drivers@netronome.com>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+References: <20200410020612.2930667-1-danieltimlee@gmail.com> <20200410050333.qshidymodw3oyn6k@kafai-mbp>
+In-Reply-To: <20200410050333.qshidymodw3oyn6k@kafai-mbp>
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+Date:   Fri, 10 Apr 2020 14:34:27 +0900
+Message-ID: <CAEKGpzgJces1DVrmKu2fXds1tVfthdFVz-xVbpLn89jHparV0g@mail.gmail.com>
+Subject: Re: [PATCH] tools: bpftool: fix struct_ops command invalid pointer free
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Will do, thanks for letting me know.
+Thank you for your time and effort for the review.
 
-Thanks for reviewing.
+Best,
+Daniel
 
-I'll check back the runtime log and see what I can do.
-Thanks.
-
-
-2020=E5=B9=B44=E6=9C=8810=E6=97=A5(=E9=87=91) 4:32 Jakub Kicinski <kuba@ker=
-nel.org>:
+On Fri, Apr 10, 2020 at 2:03 PM Martin KaFai Lau <kafai@fb.com> wrote:
 >
-> On Thu,  9 Apr 2020 17:41:11 +0000 Keita Suzuki wrote:
-> > This patch fixes a memory leak in nfp_resource_acquire(). res->mutex is
-> > alllocated in nfp_resource_try_acquire(). However, when
-> > msleep_interruptible() or time_is_before_eq_jiffies() fails, it falls
-> > into err_fails path where res is freed, but res->mutex is not.
+> On Fri, Apr 10, 2020 at 11:06:12AM +0900, Daniel T. Lee wrote:
+> > From commit 65c93628599d ("bpftool: Add struct_ops support"),
+> > a new type of command struct_ops has been added.
 > >
-> > Fix this by changing call to free to nfp_resource_release().
+> > This command requires kernel CONFIG_DEBUG_INFO_BTF=y, and for retrieving
+> > btf info, get_btf_vmlinux() is used.
+> >
+> > When running this command on kernel without BTF debug info, this will
+> > lead to 'btf_vmlinux' variable contains invalid(error) pointer. And by
+> > this, btf_free() causes a segfault when executing 'bpftool struct_ops'.
+> >
+> > This commit adds pointer validation with IS_ERR not to free invalid
+> > pointer, and this will fix the segfault issue.
+> >
+> > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> Fixes: 65c93628599d ("bpftool: Add struct_ops support")
+> Acked-by: Martin KaFai Lau
 >
-> I don't see a leak here. Maybe you could rephrase the description to
-> make things clearer?
->
-> AFAICS nfp_resource_try_acquire() calls nfp_cpp_mutex_free(res->mutex)
-> if it's about to return an error. We can only hit msleep or time check
-> if it returned an error.
+> Thanks for the fix!  Please add the Fixes tag in the future.
