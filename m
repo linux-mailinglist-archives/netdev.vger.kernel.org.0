@@ -2,97 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EABCA1A3E9A
-	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 05:10:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25CB91A3EA4
+	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 05:16:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726676AbgDJDKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Apr 2020 23:10:49 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:43684 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726659AbgDJDKs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 23:10:48 -0400
-Received: by mail-pf1-f196.google.com with SMTP id l1so488532pff.10;
-        Thu, 09 Apr 2020 20:10:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=SzsIRh2Ih0SubamthzDAukhFWqHrEwEyqn9glQHC50A=;
-        b=tZs81gU0CTqjopHYAp+UbmmLkkCVU7lmJrZd/+m2ag2wMV8QeVcDXQ30UnUyehUz+W
-         D25zQk1L5yWI3PpjPg5Ltd/qbCKqonDS33ZxSFWXONPTlpmKdE1cCVdxdulHbU9EScSz
-         +IemD7iF5chbsXMqRHRDquUq9PkwaSZyAj+Qf32/VXapGVT1Ye+TrwVRExHfJHC/sIp7
-         EC2NZ3uushqH0pMbuYQKTG26IDKd2Le29kbI43/r6ccU7QAZ+lwclaXPR9ubuyroEkRG
-         2isb9YvVEqJXLBJ3ZL945eWZ0CU5tWHVdrKYQh5shnZ1UPPcUu6THo9fpgfluxUCmUFT
-         NwpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SzsIRh2Ih0SubamthzDAukhFWqHrEwEyqn9glQHC50A=;
-        b=MDvE6TObc4nxLLnLyFcwWs6S+ySx/Gws8HTad0POZ9FxhogCriKTOegImmluzLeH9j
-         cimClFua3S7sKDq6W+ZuSs322UoSe7WSvzdPU/3/2/w1r9azBCqLnp8oXJvwLVdBRUl3
-         nvZA6/KBb/pHmrxrGd39Au3rk7FBUPhUiV3tRB2z0xw/MjIi1b+viyE1yYfUGM9Gu6P0
-         +EWc6HPr4eOQSO4WFPmVXWPpT/98Ft/FMv6WteBIU+dq7uDtYImAvnFVHdJkTG3rDtzT
-         ul9FIVdX1RQNhXNnWdh0IHw536WG49dXZlODGjYiMJnouodwdj+fVC9Scqe6RoslUOV7
-         b0IQ==
-X-Gm-Message-State: AGi0Puber1dj6rdAr//KLxuYyrKSlFlz8XGmH0b8vLAi0MYuvmDOUm5S
-        l9fYRucIoVGzWFQQKzs7er4=
-X-Google-Smtp-Source: APiQypLKPQCs6FbPhQXJLu42je+iLWEh7x16G3QKvQOTNJr0T6ORbpK8X19+XmH6415WGeTPJoN3QQ==
-X-Received: by 2002:a63:1154:: with SMTP id 20mr2490448pgr.114.1586488246364;
-        Thu, 09 Apr 2020 20:10:46 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:f219])
-        by smtp.gmail.com with ESMTPSA id i14sm454448pgh.47.2020.04.09.20.10.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Apr 2020 20:10:45 -0700 (PDT)
-Date:   Thu, 9 Apr 2020 20:10:43 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com
-Subject: Re: [RFC PATCH bpf-next 11/16] bpf: implement query for target_proto
- and file dumper prog_id
-Message-ID: <20200410031043.lza5p6rzi6vajy7h@ast-mbp.dhcp.thefacebook.com>
-References: <20200408232520.2675265-1-yhs@fb.com>
- <20200408232533.2676305-1-yhs@fb.com>
+        id S1726654AbgDJDQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Apr 2020 23:16:03 -0400
+Received: from mga07.intel.com ([134.134.136.100]:30990 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726594AbgDJDQC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Apr 2020 23:16:02 -0400
+IronPort-SDR: PN9ikPB35N86S1TxQ1Y7iKKmRLqWdbur6JDEZcHDVGINu8KlteSPrVQybc7+IEkQzrpg8MBNWS
+ E4L/unrmXNmQ==
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2020 20:16:02 -0700
+IronPort-SDR: mwdWbfioCrT9VIiCeFwnyiAwXxTS540MpfN+bFY47xMSgBGlLgy6waCrSFIv8sRAwtyPeKw0RS
+ G9XpNPegE/pA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,364,1580803200"; 
+   d="scan'208,223";a="270284078"
+Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.255.31.39]) ([10.255.31.39])
+  by orsmga002.jf.intel.com with ESMTP; 09 Apr 2020 20:15:54 -0700
+Subject: Re: [PATCH V9 9/9] virtio: Intel IFC VF driver for VDPA
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        kvm list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Networking <netdev@vger.kernel.org>,
+        Jason Gunthorpe <jgg@mellanox.com>, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        eperezma@redhat.com, lulu@redhat.com,
+        Parav Pandit <parav@mellanox.com>, kevin.tian@intel.com,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Christoph Hellwig <hch@infradead.org>, aadam@redhat.com,
+        Jiri Pirko <jiri@mellanox.com>, shahafs@mellanox.com,
+        hanand@xilinx.com, mhabets@solarflare.com, gdawar@xilinx.com,
+        saugatm@xilinx.com, vmireyno@marvell.com,
+        zhangweining@ruijie.com.cn, Bie Tiwei <tiwei.bie@intel.com>
+References: <20200326140125.19794-1-jasowang@redhat.com>
+ <20200326140125.19794-10-jasowang@redhat.com>
+ <CAK8P3a1RXUXs5oYjB=Jq5cpvG11eTnmJ+vc18_-0fzgTH6envA@mail.gmail.com>
+ <20200409162427-mutt-send-email-mst@kernel.org>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+Message-ID: <77962da1-b9ec-2eaf-21d0-9790e7f0366d@intel.com>
+Date:   Fri, 10 Apr 2020 11:15:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200408232533.2676305-1-yhs@fb.com>
+In-Reply-To: <20200409162427-mutt-send-email-mst@kernel.org>
+Content-Type: multipart/mixed;
+ boundary="------------6E5E274523B4D96E25AC383C"
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 08, 2020 at 04:25:33PM -0700, Yonghong Song wrote:
-> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-> index a245f0df53c4..fc2157e319f1 100644
-> --- a/tools/include/uapi/linux/bpf.h
-> +++ b/tools/include/uapi/linux/bpf.h
-> @@ -113,6 +113,7 @@ enum bpf_cmd {
->  	BPF_MAP_DELETE_BATCH,
->  	BPF_LINK_CREATE,
->  	BPF_LINK_UPDATE,
-> +	BPF_DUMP_QUERY,
->  };
->  
->  enum bpf_map_type {
-> @@ -594,6 +595,18 @@ union bpf_attr {
->  		__u32		old_prog_fd;
->  	} link_update;
->  
-> +	struct {
-> +		__u32		query_fd;
-> +		__u32		flags;
-> +		union {
-> +			struct {
-> +				__aligned_u64	target_proto;
-> +				__u32		proto_buf_len;
-> +			};
-> +			__u32			prog_id;
-> +		};
-> +	} dump_query;
+This is a multi-part message in MIME format.
+--------------6E5E274523B4D96E25AC383C
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-I think it would be cleaner to use BPF_OBJ_GET_INFO_BY_FD instead of
-introducing new command.
+
+On 4/10/2020 4:25 AM, Michael S. Tsirkin wrote:
+> On Thu, Apr 09, 2020 at 12:41:13PM +0200, Arnd Bergmann wrote:
+>> On Thu, Mar 26, 2020 at 3:08 PM Jason Wang <jasowang@redhat.com> wrote:
+>>> From: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>
+>>> This commit introduced two layers to drive IFC VF:
+>>>
+>>> (1) ifcvf_base layer, which handles IFC VF NIC hardware operations and
+>>>      configurations.
+>>>
+>>> (2) ifcvf_main layer, which complies to VDPA bus framework,
+>>>      implemented device operations for VDPA bus, handles device probe,
+>>>      bus attaching, vring operations, etc.
+>>>
+>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>> Signed-off-by: Bie Tiwei <tiwei.bie@intel.com>
+>>> Signed-off-by: Wang Xiao <xiao.w.wang@intel.com>
+>>> Signed-off-by: Jason Wang <jasowang@redhat.com>
+>>> +
+>>> +#define IFCVF_QUEUE_ALIGNMENT  PAGE_SIZE
+>>> +#define IFCVF_QUEUE_MAX                32768
+>>> +static u16 ifcvf_vdpa_get_vq_align(struct vdpa_device *vdpa_dev)
+>>> +{
+>>> +       return IFCVF_QUEUE_ALIGNMENT;
+>>> +}
+>> This fails to build on arm64 with 64kb page size (found in linux-next):
+>>
+>> /drivers/vdpa/ifcvf/ifcvf_main.c: In function 'ifcvf_vdpa_get_vq_align':
+>> arch/arm64/include/asm/page-def.h:17:20: error: conversion from 'long
+>> unsigned int' to 'u16' {aka 'short unsigned int'} changes value from
+>> '65536' to '0' [-Werror=overflow]
+>>     17 | #define PAGE_SIZE  (_AC(1, UL) << PAGE_SHIFT)
+>>        |                    ^
+>> drivers/vdpa/ifcvf/ifcvf_base.h:37:31: note: in expansion of macro 'PAGE_SIZE'
+>>     37 | #define IFCVF_QUEUE_ALIGNMENT PAGE_SIZE
+>>        |                               ^~~~~~~~~
+>> drivers/vdpa/ifcvf/ifcvf_main.c:231:9: note: in expansion of macro
+>> 'IFCVF_QUEUE_ALIGNMENT'
+>>    231 |  return IFCVF_QUEUE_ALIGNMENT;
+>>        |         ^~~~~~~~~~~~~~~~~~~~~
+>>
+>> It's probably good enough to just not allow the driver to be built in that
+>> configuration as it's fairly rare but unfortunately there is no simple Kconfig
+>> symbol for it.
+>>
+>> In a similar driver, we did
+>>
+>> config VMXNET3
+>>          tristate "VMware VMXNET3 ethernet driver"
+>>          depends on PCI && INET
+>>          depends on !(PAGE_SIZE_64KB || ARM64_64K_PAGES || \
+>>                       IA64_PAGE_SIZE_64KB || MICROBLAZE_64K_PAGES || \
+>>                       PARISC_PAGE_SIZE_64KB || PPC_64K_PAGES)
+>>
+>> I think we should probably make PAGE_SIZE_64KB a global symbol
+>> in arch/Kconfig and have it selected by the other symbols so drivers
+>> like yours can add a dependency for it.
+>>
+>>           Arnd
+> It's probably easier to make the alignment u32 - I don't really know why it's
+> u16, all callers seem to assign the result to a u32 value.
+
+Thanks Michael!
+
+@ Arnd, would you please kindly have a try on the attached patch? I 
+failed to find an armv8 or above platform for now.
+
+Thanks
+BR
+Zhu Lingshan
+
+--------------6E5E274523B4D96E25AC383C
+Content-Type: text/plain; charset=UTF-8;
+ name="0001-vdpa-change-get_vq_align-to-u32-alignment.patch"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="0001-vdpa-change-get_vq_align-to-u32-alignment.patch"
+
+RnJvbSBiYjIwMTlmMDYyMDYwOWZiYmRjNjg1NGJjY2M1ZmVmZGI1M2YzZDlkIE1vbiBTZXAg
+MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBaaHUgTGluZ3NoYW4gPGxpbmdzaGFuLnpodUBpbnRl
+bC5jb20+CkRhdGU6IEZyaSwgMTAgQXByIDIwMjAgMTE6MDQ6MzggKzA4MDAKU3ViamVjdDog
+W1BBVENIXSB2ZHBhOiBjaGFuZ2UgZ2V0X3ZxX2FsaWduKCkgdG8gdTMyIGFsaWdubWVudAoK
+VGhpcyBjb21taXQgY2hhbmdlIHRoZSByZXR1cm4gdmFsdWUgb2YgZ2V0X3ZxX2FsaWduKCkg
+dG8gdTMyLiB0aGlzCmNhbiBoZWxwIHJlc29sdmUgYSBidWlsZCBpc3N1ZSBvZiBhcm02NCBw
+bGF0Zm9ybSwgYW5kIGFkYXB0aW5nIHRvCnRoZSBjYWxsZXJzLgoKU2lnbmVkLW9mZi1ieTog
+Wmh1IExpbmdzaGFuIDxsaW5nc2hhbi56aHVAaW50ZWwuY29tPgotLS0KIGRyaXZlcnMvdmRw
+YS9pZmN2Zi9pZmN2Zl9tYWluLmMgIHwgMiArLQogZHJpdmVycy92ZHBhL3ZkcGFfc2ltL3Zk
+cGFfc2ltLmMgfCAyICstCiBpbmNsdWRlL2xpbnV4L3ZkcGEuaCAgICAgICAgICAgICB8IDIg
+Ky0KIDMgZmlsZXMgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQoK
+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmRwYS9pZmN2Zi9pZmN2Zl9tYWluLmMgYi9kcml2ZXJz
+L3ZkcGEvaWZjdmYvaWZjdmZfbWFpbi5jCmluZGV4IDhkNTRkYzUuLjk3MDg5NWMgMTAwNjQ0
+Ci0tLSBhL2RyaXZlcnMvdmRwYS9pZmN2Zi9pZmN2Zl9tYWluLmMKKysrIGIvZHJpdmVycy92
+ZHBhL2lmY3ZmL2lmY3ZmX21haW4uYwpAQCAtMjI4LDcgKzIyOCw3IEBAIHN0YXRpYyB1MzIg
+aWZjdmZfdmRwYV9nZXRfdmVuZG9yX2lkKHN0cnVjdCB2ZHBhX2RldmljZSAqdmRwYV9kZXYp
+CiAJcmV0dXJuIElGQ1ZGX1NVQlNZU19WRU5ET1JfSUQ7CiB9CiAKLXN0YXRpYyB1MTYgaWZj
+dmZfdmRwYV9nZXRfdnFfYWxpZ24oc3RydWN0IHZkcGFfZGV2aWNlICp2ZHBhX2RldikKK3N0
+YXRpYyB1MzIgaWZjdmZfdmRwYV9nZXRfdnFfYWxpZ24oc3RydWN0IHZkcGFfZGV2aWNlICp2
+ZHBhX2RldikKIHsKIAlyZXR1cm4gSUZDVkZfUVVFVUVfQUxJR05NRU5UOwogfQpkaWZmIC0t
+Z2l0IGEvZHJpdmVycy92ZHBhL3ZkcGFfc2ltL3ZkcGFfc2ltLmMgYi9kcml2ZXJzL3ZkcGEv
+dmRwYV9zaW0vdmRwYV9zaW0uYwppbmRleCA2ZThhMGNmLi5hNGIzZjBkIDEwMDY0NAotLS0g
+YS9kcml2ZXJzL3ZkcGEvdmRwYV9zaW0vdmRwYV9zaW0uYworKysgYi9kcml2ZXJzL3ZkcGEv
+dmRwYV9zaW0vdmRwYV9zaW0uYwpAQCAtNDM1LDcgKzQzNSw3IEBAIHN0YXRpYyB1NjQgdmRw
+YXNpbV9nZXRfdnFfc3RhdGUoc3RydWN0IHZkcGFfZGV2aWNlICp2ZHBhLCB1MTYgaWR4KQog
+CXJldHVybiB2cmgtPmxhc3RfYXZhaWxfaWR4OwogfQogCi1zdGF0aWMgdTE2IHZkcGFzaW1f
+Z2V0X3ZxX2FsaWduKHN0cnVjdCB2ZHBhX2RldmljZSAqdmRwYSkKK3N0YXRpYyB1MzIgdmRw
+YXNpbV9nZXRfdnFfYWxpZ24oc3RydWN0IHZkcGFfZGV2aWNlICp2ZHBhKQogewogCXJldHVy
+biBWRFBBU0lNX1FVRVVFX0FMSUdOOwogfQpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC92
+ZHBhLmggYi9pbmNsdWRlL2xpbnV4L3ZkcGEuaAppbmRleCA3MzNhY2ZiLi41NDUzYWY4IDEw
+MDY0NAotLS0gYS9pbmNsdWRlL2xpbnV4L3ZkcGEuaAorKysgYi9pbmNsdWRlL2xpbnV4L3Zk
+cGEuaApAQCAtMTY0LDcgKzE2NCw3IEBAIHN0cnVjdCB2ZHBhX2NvbmZpZ19vcHMgewogCXU2
+NCAoKmdldF92cV9zdGF0ZSkoc3RydWN0IHZkcGFfZGV2aWNlICp2ZGV2LCB1MTYgaWR4KTsK
+IAogCS8qIERldmljZSBvcHMgKi8KLQl1MTYgKCpnZXRfdnFfYWxpZ24pKHN0cnVjdCB2ZHBh
+X2RldmljZSAqdmRldik7CisJdTMyICgqZ2V0X3ZxX2FsaWduKShzdHJ1Y3QgdmRwYV9kZXZp
+Y2UgKnZkZXYpOwogCXU2NCAoKmdldF9mZWF0dXJlcykoc3RydWN0IHZkcGFfZGV2aWNlICp2
+ZGV2KTsKIAlpbnQgKCpzZXRfZmVhdHVyZXMpKHN0cnVjdCB2ZHBhX2RldmljZSAqdmRldiwg
+dTY0IGZlYXR1cmVzKTsKIAl2b2lkICgqc2V0X2NvbmZpZ19jYikoc3RydWN0IHZkcGFfZGV2
+aWNlICp2ZGV2LAotLSAKMS44LjMuMQoK
+--------------6E5E274523B4D96E25AC383C--
