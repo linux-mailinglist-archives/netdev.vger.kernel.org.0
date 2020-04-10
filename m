@@ -2,189 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25CB91A3EA4
-	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 05:16:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60C471A3EA6
+	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 05:16:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726654AbgDJDQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Apr 2020 23:16:03 -0400
-Received: from mga07.intel.com ([134.134.136.100]:30990 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726594AbgDJDQC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Apr 2020 23:16:02 -0400
-IronPort-SDR: PN9ikPB35N86S1TxQ1Y7iKKmRLqWdbur6JDEZcHDVGINu8KlteSPrVQybc7+IEkQzrpg8MBNWS
- E4L/unrmXNmQ==
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2020 20:16:02 -0700
-IronPort-SDR: mwdWbfioCrT9VIiCeFwnyiAwXxTS540MpfN+bFY47xMSgBGlLgy6waCrSFIv8sRAwtyPeKw0RS
- G9XpNPegE/pA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,364,1580803200"; 
-   d="scan'208,223";a="270284078"
-Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.255.31.39]) ([10.255.31.39])
-  by orsmga002.jf.intel.com with ESMTP; 09 Apr 2020 20:15:54 -0700
-Subject: Re: [PATCH V9 9/9] virtio: Intel IFC VF driver for VDPA
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        kvm list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Networking <netdev@vger.kernel.org>,
-        Jason Gunthorpe <jgg@mellanox.com>, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        eperezma@redhat.com, lulu@redhat.com,
-        Parav Pandit <parav@mellanox.com>, kevin.tian@intel.com,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Christoph Hellwig <hch@infradead.org>, aadam@redhat.com,
-        Jiri Pirko <jiri@mellanox.com>, shahafs@mellanox.com,
-        hanand@xilinx.com, mhabets@solarflare.com, gdawar@xilinx.com,
-        saugatm@xilinx.com, vmireyno@marvell.com,
-        zhangweining@ruijie.com.cn, Bie Tiwei <tiwei.bie@intel.com>
-References: <20200326140125.19794-1-jasowang@redhat.com>
- <20200326140125.19794-10-jasowang@redhat.com>
- <CAK8P3a1RXUXs5oYjB=Jq5cpvG11eTnmJ+vc18_-0fzgTH6envA@mail.gmail.com>
- <20200409162427-mutt-send-email-mst@kernel.org>
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-Message-ID: <77962da1-b9ec-2eaf-21d0-9790e7f0366d@intel.com>
-Date:   Fri, 10 Apr 2020 11:15:53 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1726684AbgDJDQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Apr 2020 23:16:30 -0400
+Received: from mail-eopbgr1410045.outbound.protection.outlook.com ([40.107.141.45]:47552
+        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726680AbgDJDQ3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Apr 2020 23:16:29 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CJIH9JOGF0x+yFp2GSug2SK1wMbWGyLByq2a3yHzkLB0bvOkXYjdFYR6HEdvtO08CDwe7qtZ0Qcl7A8WQ7D/2/YrnvpRYPhNXRafsw0cuE+BzmoKIHjkEXBWd2A3N12QgzjJ1VuNy2HmBxpkU03Yn6F4JXhn8DlM/BQ6zs7wsrwktkiriWoJb7VuFroxtLB1MQcUvSZpcVscj6AxchthVvXkoszkklmAJ4vcwJP3XAvZDfT9VXWvUVJKWBxN3qRyiYQvi7JPdbn3Xhuh32B3M8DbCAo6wB2FoDQJdtJL5AX+jb60hBs6CbYHKCjyAoVB8GbImJMbo08/bmN4GbXy8Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=V2MQey6v5EzfiPNlUPryW/W1DvPGz3P5rVYx78+tU/s=;
+ b=ZCPiMZ2GQYj1EmTnGtIPY6jFDHm130vOfmn6MmlRb1FrFthlg3vNMpg7QW425Ce7erWm/6PRjdUHlvEYrTl5OZu6NEEPNoX0kwIceciv3WWixDQ03zf+jJXfwdONRgZFmw3mgm2p1JXKwBcs6e6fzsLJeT8S9m/VUq8d2zjQDnSZd9xVS/1ogxTXj3Prj4/X57JyOvEL4SVshoyHXRlcy/FBY/t9ngHEjvfr8sDJDBLJHsn4DJiNRaKaBXoDSFY+HldZrhD9hkC1RFb4AjR1S4IsvE+ziDgUMMKHNwX3HJdaPGJs/e8oi5LNRjgpGLJrd+3hKzZXLs9QBKz5J1kXDw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=sord.co.jp; dmarc=pass action=none header.from=sord.co.jp;
+ dkim=pass header.d=sord.co.jp; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=sordcorp.onmicrosoft.com; s=selector2-sordcorp-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=V2MQey6v5EzfiPNlUPryW/W1DvPGz3P5rVYx78+tU/s=;
+ b=CtTKlxjkpPjlur1mW8eKlaQ3xuRepyKvg97KN59+v3NjWleNoYVql3YENRkoHciPVkwpl52vzne+NPJGTmVSPxQTHnKi8mxvcPFsA7XTcOnQppyMmMOBuXaG4u76G+hC9aVW5nPBOKmnupChTrxq8+H7hrTEDaGULZwN7YAFiWc=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=atsushi.nemoto@sord.co.jp; 
+Received: from OSBPR01MB2087.jpnprd01.prod.outlook.com (52.134.241.18) by
+ OSBPR01MB2198.jpnprd01.prod.outlook.com (52.134.241.22) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2878.15; Fri, 10 Apr 2020 03:16:27 +0000
+Received: from OSBPR01MB2087.jpnprd01.prod.outlook.com
+ ([fe80::71ff:5526:838:a89a]) by OSBPR01MB2087.jpnprd01.prod.outlook.com
+ ([fe80::71ff:5526:838:a89a%7]) with mapi id 15.20.2900.015; Fri, 10 Apr 2020
+ 03:16:27 +0000
+Date:   Fri, 10 Apr 2020 12:16:16 +0900 (JST)
+Message-Id: <20200410.121616.105939195660818175.atsushi.nemoto@sord.co.jp>
+To:     netdev@vger.kernel.org
+Cc:     Yuiko Oshino <yuiko.oshino@microchip.com>,
+        tomonori.sakita@sord.co.jp
+Subject: [PATCH] net: phy: micrel: use genphy_read_status for KSZ9131
+From:   Atsushi Nemoto <atsushi.nemoto@sord.co.jp>
+X-Fingerprint: 6ACA 1623 39BD 9A94 9B1A  B746 CA77 FE94 2874 D52F
+X-Pgp-Public-Key: http://wwwkeys.pgp.net:11371/pks/lookup?op=get&search=0x2874D52F
+X-Mailer: Mew version 6.7 on Emacs 24.5 / Mule 6.0 (HANACHIRUSATO)
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: TYAPR03CA0012.apcprd03.prod.outlook.com
+ (2603:1096:404:14::24) To OSBPR01MB2087.jpnprd01.prod.outlook.com
+ (2603:1096:603:22::18)
 MIME-Version: 1.0
-In-Reply-To: <20200409162427-mutt-send-email-mst@kernel.org>
-Content-Type: multipart/mixed;
- boundary="------------6E5E274523B4D96E25AC383C"
-Content-Language: en-US
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost (61.200.21.62) by TYAPR03CA0012.apcprd03.prod.outlook.com (2603:1096:404:14::24) with Microsoft SMTP Server (version=TLS1_0, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.20.2878.13 via Frontend Transport; Fri, 10 Apr 2020 03:16:26 +0000
+X-Fingerprint: 6ACA 1623 39BD 9A94 9B1A  B746 CA77 FE94 2874 D52F
+X-Pgp-Public-Key: http://wwwkeys.pgp.net:11371/pks/lookup?op=get&search=0x2874D52F
+X-Mailer: Mew version 6.7 on Emacs 24.5 / Mule 6.0 (HANACHIRUSATO)
+X-Originating-IP: [61.200.21.62]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 174373a0-7626-47cf-bbc3-08d7dcfd8e6e
+X-MS-TrafficTypeDiagnostic: OSBPR01MB2198:|OSBPR01MB2198:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <OSBPR01MB21982A38C452D9DA0FFB9EE1BBDE0@OSBPR01MB2198.jpnprd01.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:298;
+X-Forefront-PRVS: 0369E8196C
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OSBPR01MB2087.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(366004)(39850400004)(136003)(376002)(396003)(346002)(8936002)(52116002)(86362001)(107886003)(8676002)(103116003)(4744005)(26005)(6496006)(5660300002)(4326008)(478600001)(16526019)(66476007)(2616005)(44832011)(66556008)(36756003)(6486002)(66946007)(81156014)(6916009)(2906002)(186003)(316002)(6666004)(956004);DIR:OUT;SFP:1101;
+Received-SPF: None (protection.outlook.com: sord.co.jp does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: wO96pYYA6Gyi7Tvg7G6ARNPTazhOlRCzrzWUQtGVUw0iws4mkQKJDDtOd+iw8s1pOeRzgL4uBNRtZkl4eGzOmxcL04FwGRe/tLbTsGJgXVE5SrsXfAjO4XC+FZQFEf8jGqseq16AmokDzGfN3VWeJEku8TB519XbRCZ4JA0enW+9cou0HDQUA7lVb9IA6QXGE/a/I49gx1zXtbA9gvtBKMwgPzYye9hiTsWpNfJOYxaTaNiEfekJSr1znXGCAMY/TZatZtF6LSisOrjxYWXPRJV8XgyMMPnvP4oS+4GNG86aW0Wh67fUcKW5ZmjUBPh97qqo5ldfA73HEHCqaHFfaMGPpOoH0VY8FbH89WsJxoT0TqwGrHnFhgpedwxxa7MOErnTa0HqwLSI7g7/TSNiGN2z58rehwq+T5u7tgzUwzbdfHQOU8Vr4QHXW9WcW+W2
+X-MS-Exchange-AntiSpam-MessageData: QmE1BxMyo2DvNCXGJnw0z+1nrztryYkBeODFrenKViXb/abzqtZSwhHgx3sgJE+W9idq7dW+03ge4AiqAOOCB8CSnDmJtcCwvXOXOWgiUrZkkRyThIsni2jAYtjqhBbnRcAcagrZjASa69nzzHvtpg==
+X-OriginatorOrg: sord.co.jp
+X-MS-Exchange-CrossTenant-Network-Message-Id: 174373a0-7626-47cf-bbc3-08d7dcfd8e6e
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2020 03:16:27.2411
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: cf867293-59a2-46d0-8328-dfdea9397b80
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5yKfLQuxjUSzqJPHwJBgFsi9N+vHbqRvt+6LD/ODZrBT6unMa+4HZnsDAIC0qazl5VgZufIQV0eKlTHVQPLhYvdXCDrQwc3o21t8OQ9USHQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSBPR01MB2198
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------6E5E274523B4D96E25AC383C
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+KSZ9131 will not work with some switches due to workaround for KSZ9031
+introduced in commit d2fd719bcb0e83cb39cfee22ee800f98a56eceb3
+("net/phy: micrel: Add workaround for bad autoneg").
+Use genphy_read_status instead of dedicated ksz9031_read_status.
 
+Signed-off-by: Atsushi Nemoto <atsushi.nemoto@sord.co.jp>
+---
+ drivers/net/phy/micrel.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On 4/10/2020 4:25 AM, Michael S. Tsirkin wrote:
-> On Thu, Apr 09, 2020 at 12:41:13PM +0200, Arnd Bergmann wrote:
->> On Thu, Mar 26, 2020 at 3:08 PM Jason Wang <jasowang@redhat.com> wrote:
->>> From: Zhu Lingshan <lingshan.zhu@intel.com>
->>>
->>> This commit introduced two layers to drive IFC VF:
->>>
->>> (1) ifcvf_base layer, which handles IFC VF NIC hardware operations and
->>>      configurations.
->>>
->>> (2) ifcvf_main layer, which complies to VDPA bus framework,
->>>      implemented device operations for VDPA bus, handles device probe,
->>>      bus attaching, vring operations, etc.
->>>
->>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->>> Signed-off-by: Bie Tiwei <tiwei.bie@intel.com>
->>> Signed-off-by: Wang Xiao <xiao.w.wang@intel.com>
->>> Signed-off-by: Jason Wang <jasowang@redhat.com>
->>> +
->>> +#define IFCVF_QUEUE_ALIGNMENT  PAGE_SIZE
->>> +#define IFCVF_QUEUE_MAX                32768
->>> +static u16 ifcvf_vdpa_get_vq_align(struct vdpa_device *vdpa_dev)
->>> +{
->>> +       return IFCVF_QUEUE_ALIGNMENT;
->>> +}
->> This fails to build on arm64 with 64kb page size (found in linux-next):
->>
->> /drivers/vdpa/ifcvf/ifcvf_main.c: In function 'ifcvf_vdpa_get_vq_align':
->> arch/arm64/include/asm/page-def.h:17:20: error: conversion from 'long
->> unsigned int' to 'u16' {aka 'short unsigned int'} changes value from
->> '65536' to '0' [-Werror=overflow]
->>     17 | #define PAGE_SIZE  (_AC(1, UL) << PAGE_SHIFT)
->>        |                    ^
->> drivers/vdpa/ifcvf/ifcvf_base.h:37:31: note: in expansion of macro 'PAGE_SIZE'
->>     37 | #define IFCVF_QUEUE_ALIGNMENT PAGE_SIZE
->>        |                               ^~~~~~~~~
->> drivers/vdpa/ifcvf/ifcvf_main.c:231:9: note: in expansion of macro
->> 'IFCVF_QUEUE_ALIGNMENT'
->>    231 |  return IFCVF_QUEUE_ALIGNMENT;
->>        |         ^~~~~~~~~~~~~~~~~~~~~
->>
->> It's probably good enough to just not allow the driver to be built in that
->> configuration as it's fairly rare but unfortunately there is no simple Kconfig
->> symbol for it.
->>
->> In a similar driver, we did
->>
->> config VMXNET3
->>          tristate "VMware VMXNET3 ethernet driver"
->>          depends on PCI && INET
->>          depends on !(PAGE_SIZE_64KB || ARM64_64K_PAGES || \
->>                       IA64_PAGE_SIZE_64KB || MICROBLAZE_64K_PAGES || \
->>                       PARISC_PAGE_SIZE_64KB || PPC_64K_PAGES)
->>
->> I think we should probably make PAGE_SIZE_64KB a global symbol
->> in arch/Kconfig and have it selected by the other symbols so drivers
->> like yours can add a dependency for it.
->>
->>           Arnd
-> It's probably easier to make the alignment u32 - I don't really know why it's
-> u16, all callers seem to assign the result to a u32 value.
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 05d20343b816..3a4d83fa52dc 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -1204,7 +1204,7 @@ static struct phy_driver ksphy_driver[] = {
+ 	.driver_data	= &ksz9021_type,
+ 	.probe		= kszphy_probe,
+ 	.config_init	= ksz9131_config_init,
+-	.read_status	= ksz9031_read_status,
++	.read_status	= genphy_read_status,
+ 	.ack_interrupt	= kszphy_ack_interrupt,
+ 	.config_intr	= kszphy_config_intr,
+ 	.get_sset_count = kszphy_get_sset_count,
+-- 
+2.11.0
 
-Thanks Michael!
-
-@ Arnd, would you please kindly have a try on the attached patch? I 
-failed to find an armv8 or above platform for now.
-
-Thanks
-BR
-Zhu Lingshan
-
---------------6E5E274523B4D96E25AC383C
-Content-Type: text/plain; charset=UTF-8;
- name="0001-vdpa-change-get_vq_align-to-u32-alignment.patch"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="0001-vdpa-change-get_vq_align-to-u32-alignment.patch"
-
-RnJvbSBiYjIwMTlmMDYyMDYwOWZiYmRjNjg1NGJjY2M1ZmVmZGI1M2YzZDlkIE1vbiBTZXAg
-MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBaaHUgTGluZ3NoYW4gPGxpbmdzaGFuLnpodUBpbnRl
-bC5jb20+CkRhdGU6IEZyaSwgMTAgQXByIDIwMjAgMTE6MDQ6MzggKzA4MDAKU3ViamVjdDog
-W1BBVENIXSB2ZHBhOiBjaGFuZ2UgZ2V0X3ZxX2FsaWduKCkgdG8gdTMyIGFsaWdubWVudAoK
-VGhpcyBjb21taXQgY2hhbmdlIHRoZSByZXR1cm4gdmFsdWUgb2YgZ2V0X3ZxX2FsaWduKCkg
-dG8gdTMyLiB0aGlzCmNhbiBoZWxwIHJlc29sdmUgYSBidWlsZCBpc3N1ZSBvZiBhcm02NCBw
-bGF0Zm9ybSwgYW5kIGFkYXB0aW5nIHRvCnRoZSBjYWxsZXJzLgoKU2lnbmVkLW9mZi1ieTog
-Wmh1IExpbmdzaGFuIDxsaW5nc2hhbi56aHVAaW50ZWwuY29tPgotLS0KIGRyaXZlcnMvdmRw
-YS9pZmN2Zi9pZmN2Zl9tYWluLmMgIHwgMiArLQogZHJpdmVycy92ZHBhL3ZkcGFfc2ltL3Zk
-cGFfc2ltLmMgfCAyICstCiBpbmNsdWRlL2xpbnV4L3ZkcGEuaCAgICAgICAgICAgICB8IDIg
-Ky0KIDMgZmlsZXMgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQoK
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvdmRwYS9pZmN2Zi9pZmN2Zl9tYWluLmMgYi9kcml2ZXJz
-L3ZkcGEvaWZjdmYvaWZjdmZfbWFpbi5jCmluZGV4IDhkNTRkYzUuLjk3MDg5NWMgMTAwNjQ0
-Ci0tLSBhL2RyaXZlcnMvdmRwYS9pZmN2Zi9pZmN2Zl9tYWluLmMKKysrIGIvZHJpdmVycy92
-ZHBhL2lmY3ZmL2lmY3ZmX21haW4uYwpAQCAtMjI4LDcgKzIyOCw3IEBAIHN0YXRpYyB1MzIg
-aWZjdmZfdmRwYV9nZXRfdmVuZG9yX2lkKHN0cnVjdCB2ZHBhX2RldmljZSAqdmRwYV9kZXYp
-CiAJcmV0dXJuIElGQ1ZGX1NVQlNZU19WRU5ET1JfSUQ7CiB9CiAKLXN0YXRpYyB1MTYgaWZj
-dmZfdmRwYV9nZXRfdnFfYWxpZ24oc3RydWN0IHZkcGFfZGV2aWNlICp2ZHBhX2RldikKK3N0
-YXRpYyB1MzIgaWZjdmZfdmRwYV9nZXRfdnFfYWxpZ24oc3RydWN0IHZkcGFfZGV2aWNlICp2
-ZHBhX2RldikKIHsKIAlyZXR1cm4gSUZDVkZfUVVFVUVfQUxJR05NRU5UOwogfQpkaWZmIC0t
-Z2l0IGEvZHJpdmVycy92ZHBhL3ZkcGFfc2ltL3ZkcGFfc2ltLmMgYi9kcml2ZXJzL3ZkcGEv
-dmRwYV9zaW0vdmRwYV9zaW0uYwppbmRleCA2ZThhMGNmLi5hNGIzZjBkIDEwMDY0NAotLS0g
-YS9kcml2ZXJzL3ZkcGEvdmRwYV9zaW0vdmRwYV9zaW0uYworKysgYi9kcml2ZXJzL3ZkcGEv
-dmRwYV9zaW0vdmRwYV9zaW0uYwpAQCAtNDM1LDcgKzQzNSw3IEBAIHN0YXRpYyB1NjQgdmRw
-YXNpbV9nZXRfdnFfc3RhdGUoc3RydWN0IHZkcGFfZGV2aWNlICp2ZHBhLCB1MTYgaWR4KQog
-CXJldHVybiB2cmgtPmxhc3RfYXZhaWxfaWR4OwogfQogCi1zdGF0aWMgdTE2IHZkcGFzaW1f
-Z2V0X3ZxX2FsaWduKHN0cnVjdCB2ZHBhX2RldmljZSAqdmRwYSkKK3N0YXRpYyB1MzIgdmRw
-YXNpbV9nZXRfdnFfYWxpZ24oc3RydWN0IHZkcGFfZGV2aWNlICp2ZHBhKQogewogCXJldHVy
-biBWRFBBU0lNX1FVRVVFX0FMSUdOOwogfQpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC92
-ZHBhLmggYi9pbmNsdWRlL2xpbnV4L3ZkcGEuaAppbmRleCA3MzNhY2ZiLi41NDUzYWY4IDEw
-MDY0NAotLS0gYS9pbmNsdWRlL2xpbnV4L3ZkcGEuaAorKysgYi9pbmNsdWRlL2xpbnV4L3Zk
-cGEuaApAQCAtMTY0LDcgKzE2NCw3IEBAIHN0cnVjdCB2ZHBhX2NvbmZpZ19vcHMgewogCXU2
-NCAoKmdldF92cV9zdGF0ZSkoc3RydWN0IHZkcGFfZGV2aWNlICp2ZGV2LCB1MTYgaWR4KTsK
-IAogCS8qIERldmljZSBvcHMgKi8KLQl1MTYgKCpnZXRfdnFfYWxpZ24pKHN0cnVjdCB2ZHBh
-X2RldmljZSAqdmRldik7CisJdTMyICgqZ2V0X3ZxX2FsaWduKShzdHJ1Y3QgdmRwYV9kZXZp
-Y2UgKnZkZXYpOwogCXU2NCAoKmdldF9mZWF0dXJlcykoc3RydWN0IHZkcGFfZGV2aWNlICp2
-ZGV2KTsKIAlpbnQgKCpzZXRfZmVhdHVyZXMpKHN0cnVjdCB2ZHBhX2RldmljZSAqdmRldiwg
-dTY0IGZlYXR1cmVzKTsKIAl2b2lkICgqc2V0X2NvbmZpZ19jYikoc3RydWN0IHZkcGFfZGV2
-aWNlICp2ZGV2LAotLSAKMS44LjMuMQoK
---------------6E5E274523B4D96E25AC383C--
