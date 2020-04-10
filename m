@@ -2,104 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 122F91A3D2C
-	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 02:04:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 280131A3D5D
+	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 02:30:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727004AbgDJAEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Apr 2020 20:04:35 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:35096 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726858AbgDJAEf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 20:04:35 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03A01DMk009487
-        for <netdev@vger.kernel.org>; Thu, 9 Apr 2020 17:04:35 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=7itgDPBa4TxViCnoMzDPgvfwSjVu5ZS3d+23mIbwJqs=;
- b=P7MNauj5n8UmPFMvpVamWyoDmTVdV7KFu8nFMdpcVIWMD8xytq1wotQEd1Wc0iCkf6eN
- P+XejDBDIjQUYM7E0H5bmuiPEV6enlXkqKhIQ433oq7jrBaasn0/uDsR8SazAOLCB574
- j3g2BRSdHQlv8+b+tHiy00onTw+toDj9JOU= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 30a61ytudc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 09 Apr 2020 17:04:35 -0700
-Received: from intmgw002.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Thu, 9 Apr 2020 17:04:34 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 6DB722EC31C4; Thu,  9 Apr 2020 17:04:32 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf 2/2] selftests/bpf: validate frozen map contents stays frozen
-Date:   Thu, 9 Apr 2020 17:04:25 -0700
-Message-ID: <20200410000425.2597887-2-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200410000425.2597887-1-andriin@fb.com>
-References: <20200410000425.2597887-1-andriin@fb.com>
+        id S1727237AbgDJAaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Apr 2020 20:30:00 -0400
+Received: from www62.your-server.de ([213.133.104.62]:56282 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726917AbgDJAaA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 20:30:00 -0400
+Received: from 98.186.195.178.dynamic.wline.res.cust.swisscom.ch ([178.195.186.98] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jMhYJ-0004xl-Lc; Fri, 10 Apr 2020 02:29:47 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf 2020-04-10
+Date:   Fri, 10 Apr 2020 02:29:47 +0200
+Message-Id: <20200410002947.30827-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-09_09:2020-04-07,2020-04-09 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
- suspectscore=8 lowpriorityscore=0 mlxlogscore=457 clxscore=1015
- malwarescore=0 impostorscore=0 phishscore=0 mlxscore=0 priorityscore=1501
- adultscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004090171
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25777/Thu Apr  9 13:52:18 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test that frozen and mmap()'ed BPF map can't be mprotect()'ed as writable=
- or
-executable memory.
+Hi David,
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/testing/selftests/bpf/prog_tests/mmap.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+The following pull-request contains BPF updates for your *net* tree.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/mmap.c b/tools/testin=
-g/selftests/bpf/prog_tests/mmap.c
-index 16a814eb4d64..1cdb738346a5 100644
---- a/tools/testing/selftests/bpf/prog_tests/mmap.c
-+++ b/tools/testing/selftests/bpf/prog_tests/mmap.c
-@@ -140,6 +140,22 @@ void test_mmap(void)
- 		goto cleanup;
- 	}
-=20
-+	map_mmaped =3D mmap(NULL, map_sz, PROT_READ, MAP_SHARED, data_map_fd, 0=
-);
-+	if (CHECK(map_mmaped =3D=3D MAP_FAILED, "data_mmap",
-+		  "data_map R/O mmap failed: %d\n", errno)) {
-+		map_mmaped =3D NULL;
-+		goto cleanup;
-+	}
-+	err =3D mprotect(map_mmaped, map_sz, PROT_WRITE);
-+	if (CHECK(!err, "mprotect_wr", "mprotect() succeeded unexpectedly!\n"))
-+		goto cleanup;
-+	err =3D mprotect(map_mmaped, map_sz, PROT_EXEC);
-+	if (CHECK(!err, "mprotect_ex", "mprotect() succeeded unexpectedly!\n"))
-+		goto cleanup;
-+	err =3D munmap(map_mmaped, map_sz);
-+	CHECK_FAIL(err);
-+	map_mmaped =3D NULL;
-+
- 	bss_data->in_val =3D 321;
- 	usleep(1);
- 	CHECK_FAIL(bss_data->in_val !=3D 321);
---=20
-2.24.1
+We've added 13 non-merge commits during the last 7 day(s) which contain
+a total of 13 files changed, 137 insertions(+), 43 deletions(-).
 
+The main changes are:
+
+1) JIT code emission fixes for riscv and arm32, from Luke Nelson and Xi Wang.
+
+2) Disable vmlinux BTF info if GCC_PLUGIN_RANDSTRUCT is used, from Slava Bacherikov.
+
+3) Fix oob write in AF_XDP when meta data is used, from Li RongQing.
+
+4) Fix bpf_get_link_xdp_id() handling on single prog when flags are specified,
+   from Andrey Ignatov.
+
+5) Fix sk_assign() BPF helper for request sockets that can have sk_reuseport
+   field uninitialized, from Joe Stringer.
+
+6) Fix mprotect() test case for the BPF LSM, from KP Singh.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Alexei Starovoitov, Andrii Nakryiko, Björn Töpel, Jann Horn, Jonathan 
+Lemon, kbuild test robot, Kees Cook, KP Singh, Liu Yiding, Luke Nelson, 
+Martin KaFai Lau, Toke Høiland-Jørgensen
+
+----------------------------------------------------------------
+
+The following changes since commit 21f64e72e7073199a6f8d7d8efe52cd814d7d665:
+
+  net: stmmac: xgmac: Fix VLAN register handling (2020-04-02 07:04:45 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to bb9562cf5c67813034c96afb50bd21130a504441:
+
+  arm, bpf: Fix bugs with ALU64 {RSH, ARSH} BPF_K shift by 0 (2020-04-09 01:05:53 +0200)
+
+----------------------------------------------------------------
+Andrey Ignatov (2):
+      libbpf: Fix bpf_get_link_xdp_id flags handling
+      selftests/bpf: Add test for bpf_get_link_xdp_id
+
+Björn Töpel (1):
+      riscv, bpf: Remove BPF JIT for nommu builds
+
+Colin Ian King (1):
+      bpf: Fix spelling mistake "arithmatic" -> "arithmetic" in test_verifier
+
+Jakub Sitnicki (1):
+      net, sk_msg: Don't use RCU_INIT_POINTER on sk_user_data
+
+Jeremy Cline (1):
+      libbpf: Initialize *nl_pid so gcc 10 is happy
+
+Joe Stringer (1):
+      bpf: Fix use of sk->sk_reuseport from sk_assign
+
+KP Singh (1):
+      bpf, lsm: Fix the file_mprotect LSM test.
+
+Li RongQing (1):
+      xsk: Fix out of boundary write in __xsk_rcv_memcpy
+
+Luke Nelson (2):
+      riscv, bpf: Fix offset range checking for auipc+jalr on RV64
+      arm, bpf: Fix bugs with ALU64 {RSH, ARSH} BPF_K shift by 0
+
+Qiujun Huang (1):
+      bpf: Fix a typo "inacitve" -> "inactive"
+
+Slava Bacherikov (1):
+      kbuild, btf: Fix dependencies for DEBUG_INFO_BTF
+
+ arch/arm/net/bpf_jit_32.c                         | 12 +++-
+ arch/riscv/Kconfig                                |  2 +-
+ arch/riscv/net/bpf_jit_comp64.c                   | 49 ++++++++++------
+ kernel/bpf/bpf_lru_list.h                         |  2 +-
+ lib/Kconfig.debug                                 |  2 +
+ net/core/filter.c                                 |  2 +-
+ net/core/sock.c                                   |  2 +-
+ net/xdp/xsk.c                                     |  5 +-
+ tools/lib/bpf/netlink.c                           |  6 +-
+ tools/testing/selftests/bpf/prog_tests/test_lsm.c | 18 +++---
+ tools/testing/selftests/bpf/prog_tests/xdp_info.c | 68 +++++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/lsm.c           |  8 +--
+ tools/testing/selftests/bpf/verifier/bounds.c     |  4 +-
+ 13 files changed, 137 insertions(+), 43 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_info.c
