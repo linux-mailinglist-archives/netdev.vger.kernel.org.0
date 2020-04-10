@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D5B601A4B1B
-	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 22:26:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 599711A4B24
+	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 22:29:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726682AbgDJU0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Apr 2020 16:26:21 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:35094 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726177AbgDJU0U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 16:26:20 -0400
-Received: by mail-pf1-f196.google.com with SMTP id a13so1492799pfa.2
-        for <netdev@vger.kernel.org>; Fri, 10 Apr 2020 13:26:20 -0700 (PDT)
+        id S1726594AbgDJU3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Apr 2020 16:29:09 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:46091 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726626AbgDJU3H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 16:29:07 -0400
+Received: by mail-pl1-f193.google.com with SMTP id x2so993755plv.13
+        for <netdev@vger.kernel.org>; Fri, 10 Apr 2020 13:29:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=pcawoXzVUnVmK13P4l97Pnws9LJgqOmSgo+Ma/dSWps=;
-        b=Rb6Q1NVncgv/6LrQjHpG/fCd/Eq6dDMbjtn14iX378Is2HtKxpf1KzcdRcUJQKpAjE
-         3jcUokjzBmfZ9DcloypWm67fUYTHSXQ6SvuNJv4raI7UAROw25onxDiiZ9BSo6QulpKp
-         4p05bqg7iV9Mh551htKgXjmTu+kRXOvAM+ZfI=
+        bh=HODoK6E8L/CuOaFGCg2iAC1rPoU/icSNRuY7o7sO8Ws=;
+        b=m9o4HrWYGaPjCrKKUVeHWee1Rn5fs9FN8wu6WoU+bDI6noVqb5hinEVQokCBtuQJfT
+         fLUO9wsv1VCMDI85blYzteeMqCT3bnQlg7kLwecAI+coZAI0xGeYB+rFd43a65241FI8
+         E9vNhsauJMCTPS6vDrZki02VIpPoRwqpUc+7o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=pcawoXzVUnVmK13P4l97Pnws9LJgqOmSgo+Ma/dSWps=;
-        b=cgP0kf/+ACGKr6c8z2uCOCG2CrfWjxrR2y5Vx7RnacX3O/1E++GISx5vjAvSvvhJ/t
-         PAHy4FpTKw6cUu7kNwXIJjtubFVE8Lp/pS5wsMx7/HH35I7OCtZJ1JfKUKQX/64sLTS+
-         DEsKuvgO5JnotnsXKJmgqVZneXtEjlFk/73GCFPka7u4p+XOKKBFsTggC44703ED6i6b
-         VTlRupgiddj3mAnnLaG1ZNwwMsVGk3LfyxpgjrGpLCf/IwU9AJkBR41x9hFyOkmScf87
-         pJnjGw33YaKC8WAJku7uj5/SZxOUlqcZcZ6ivgfxVILDW80ooUYz342m59Cyv2/Ecutq
-         rUEw==
-X-Gm-Message-State: AGi0Pub12jiGPbMKKpBRjhLhqKwuQ1kgO2MXPzwruoQ649oF97uI4nBz
-        QgFmwDzt/+Za3DRMRh6GAuYdQA==
-X-Google-Smtp-Source: APiQypK9ltyvL2bWmmEFCII0i4yr4OAUIQsB6jy+736q8Ru3rDmgBOTO/4ND99RcHfaRdLuItB72Rw==
-X-Received: by 2002:aa7:9f98:: with SMTP id z24mr6906759pfr.122.1586550380256;
-        Fri, 10 Apr 2020 13:26:20 -0700 (PDT)
+        bh=HODoK6E8L/CuOaFGCg2iAC1rPoU/icSNRuY7o7sO8Ws=;
+        b=hy4VXWwHqNXgDolsM/zKLrtNEiysMARFsXB5uJ5BbJ+5n5G4+2/5lYzdYHr4dufOIV
+         cSbmMuHMJXryGJoZe62nBfvmNSnzpXt6Uj14SFN6SjMdgpJR+IdbErRr4adc9Fbdbsyw
+         S0emlWxiuG1xQnsCu9sxycL1I2djt9rzVD6xuK6vas3nElBCFpfQi8RouoJzbZo72P01
+         Dv8BInxP+D3+NHLKsSL3mCF3jJUVk8iCvHrvpO/wH4ZjzoN/kyAs5xdBgXVp+xNpoYP9
+         ssjv9lWVQy+j7VcDOiBqaI7RE7A7XEt5rnVDqQYSTfZ4iGfD8k0PcdWUMLxjfu5uxTmx
+         +Wvw==
+X-Gm-Message-State: AGi0PuZmiOrXBj8MPQjVtmKQSMRFJfSjbY+qr3HHqaED3vncDLjJN/AV
+        T166UNv+563oeAN5Y02D9Gu06w==
+X-Google-Smtp-Source: APiQypKD8wYXfs/7EzdxX7L5G4cmdiNC+Ks7MIPw8kTtJLh6/UJnCEZ3fylDcudFSFjvfjyqm97q8A==
+X-Received: by 2002:a17:902:bd45:: with SMTP id b5mr6008293plx.185.1586550545406;
+        Fri, 10 Apr 2020 13:29:05 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id u13sm2582831pjb.45.2020.04.10.13.26.19
+        by smtp.gmail.com with ESMTPSA id u26sm2240496pga.3.2020.04.10.13.29.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Apr 2020 13:26:19 -0700 (PDT)
-Date:   Fri, 10 Apr 2020 13:26:18 -0700
+        Fri, 10 Apr 2020 13:29:04 -0700 (PDT)
+Date:   Fri, 10 Apr 2020 13:29:03 -0700
 From:   Kees Cook <keescook@chromium.org>
 To:     Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
@@ -49,7 +49,7 @@ Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         luto@amacapital.net, wad@chromium.org, shuah@kernel.org
 Subject: Re: [PATCH] selftests/seccomp: allow clock_nanosleep instead of
  nanosleep
-Message-ID: <202004101325.CF69610F77@keescook>
+Message-ID: <202004101328.075568852D@keescook>
 References: <20200408235753.8566-1-cascardo@canonical.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -70,9 +70,10 @@ On Wed, Apr 08, 2020 at 08:57:53PM -0300, Thadeu Lima de Souza Cascardo wrote:
 > 
 > Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 
-Thanks for this! I'm trying to determine if all architectures have
-__NR_clock_nanosleep ... got some test builds running now, but if it all
-builds fine, then I'll get this sent to Linus for -rc2.
+Actually, sorry, this should go via Shuah's tree. :) Shuah, do you have
+anything going Linus's way already for -rc2?
+
+Acked-by: Kees Cook <keescook@chromium.org>
 
 -Kees
 
