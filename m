@@ -2,118 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05FAD1A4CB3
-	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 01:47:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D12B1A4CB6
+	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 01:53:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726650AbgDJXry (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Apr 2020 19:47:54 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:17228 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726594AbgDJXrx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 19:47:53 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03ANj0SN002727;
-        Fri, 10 Apr 2020 16:47:41 -0700
+        id S1726666AbgDJXxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Apr 2020 19:53:06 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:9732 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726646AbgDJXxG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 19:53:06 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 03ANo3eH013581;
+        Fri, 10 Apr 2020 16:52:55 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
  references : from : message-id : date : in-reply-to : content-type :
  content-transfer-encoding : mime-version; s=facebook;
- bh=iEKjC+Yy83GRhkmFXMiJKwwgu8zYECdhSc6RE6zpPJA=;
- b=nbxvEMPOwRCXhTLpDE1IHv/wrf3wZXSUmuFfYcsztQbau0DwdnLPtNo1u4Cq5tI0RjLX
- XBDd/jnTqbZ1WYDasNNSSSy/G2vFhsplGeMvNlFiza8CRU59AVzo8drUmCwas2LDsqz1
- AbJWfNLDigWbb/UtQTlkxL3f5827I+B3gVQ= 
+ bh=jgxmWd/GbDiGpsmhg2Mo/faudBOwAMkQX1VDAqQ23dc=;
+ b=cV5fnia3dcatJCY34UWXJEOsJ/iwrdNpaXsnchAYUTxMgODZDnTUyEcuvQII3FUNdeNC
+ VJP/yqBpoB9Gv9vJ1OJ/x8VwiCPOET1j+aqzxKIqr4ZDOCMbaaZKgfEY+sycVmVYINzR
+ NxrHFS5vKnPMWOp+8t57/5TAVIceg2SwKnA= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 30aur3acg8-1
+        by m0089730.ppops.net with ESMTP id 30adrm5x5e-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 10 Apr 2020 16:47:41 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
+        Fri, 10 Apr 2020 16:52:54 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
  o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Fri, 10 Apr 2020 16:47:40 -0700
+ 15.1.1847.3; Fri, 10 Apr 2020 16:52:53 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a2egH7z3x8M3RPXXfTv663wYgDQHvMkqO0HIfbNPKtbgIfL8UchNOIuJJduMfZVeqTi2VRU140vX8H9TtLpOh7RWJsNK2vpWgrAivhe6KA5I+j/U2duJRQDRWvNxIhFBE4CQcmV/UWaKR2GaDgkDajLZt/wqjywtdP+eAqBcseu9QFRfehRPjVL6/FwUqCdBRD05x5G+CvkciqbTU8bBsrMan3SaiatWvH9+SgnWGMcPgPAtTGs8k0B37vkBvbVl5bszW0v2L7VhcJNZxqQLTV5X699nVBmvDybt0FmnJqmQZT4CC3av2JPHkIFrI5H18TybPb5BC6e+MTHbTTSVXQ==
+ b=hNwsmylRxdk5YuPlo4w9VnSlHqXduBe1shOVSJfDm6gfpRp23HKg8598PWHs47OqctwP92gW1K1F2wXX3tNkR/7Dko65WjgTbPM8Z5uUPoI2wE3ys4mym5Bmpf+aCV98qb3Si1AvW0jyPl/DZ1iApvqbF5ZID24vHVrP/7sewongNRs86jbtVp72yGsJwMd7AgDulAT/gzrC+0OtMIjcAPj4yIZ1ONo9XFhIx6UTv5YRzkmrC94ia9V6Eb5+lQVQj91UC0hqt9jR5v7FXv49m5hvh6i7DUPpY1gLC7DLGAv13t0tL2W1rmZtSvzCK6Gicd4DE2Lkt+SJcBwgWpU0GA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iEKjC+Yy83GRhkmFXMiJKwwgu8zYECdhSc6RE6zpPJA=;
- b=T5tNWsBHttjIkfy42bqPkZkMOH3Nf7HF5xOOGc9rTnS+QrkAfaDoa3CH+cCZQywCN3zJhbHXThbq4BVXVxN3c2ecdhIoFrvYofXIqD4YKXJqAuLWNio6GCuVys4EAsr9WBCNY2an8uLCUGAJ1QC24sGPfslTZipMyHEOiNF5CI2QIGZKMAWsO//qDidAS4VFpCSA7xS1OyaHTvbBiPIekzIunnEMLfMF7Lbaq59SfVKvvPHu/7J6zKtQTY99DVjggEWrB1TO8nfUCn/qATRGdiQ7cZijMNK9BUSt0cSb25/Lgnhi52FH8QdT8b74HyuU597Yk2hAtt7r7uXOhkevGg==
+ bh=jgxmWd/GbDiGpsmhg2Mo/faudBOwAMkQX1VDAqQ23dc=;
+ b=hZBXgtf5fAoFj33L/RdXrZ7O0zVXHHvf3DRiK0D8KJyi4yM0anT1lJdMY+xSUvsHBx4SDHrCt3jN7yfXix1pkwPIqWHEEynELSlOJoMJ4lu9IMKt3Imu4zAkxC+pX4w7GVNe9BQKLHMtJOFkwQeivfJToivugkCYzBP0rfp/Tfu+/DgJ//34N1I2t0Wp1ULNJTRC6upeAk2s8ObrrT/IjYCQ+miueybq/IwXGVQ/sSlbfhdUcs+flP30axXaObFRptxScdKaS2BZEf7z4olwuBLWaLOHXY4/bJyCdl5fr5NX5k60nU/XA1XLYH4vgZHfdDy9CGjI7P3Q5cyThQrGXA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
  s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iEKjC+Yy83GRhkmFXMiJKwwgu8zYECdhSc6RE6zpPJA=;
- b=GLyHA/IKuuARms0DW89tmKnlUnnpP1u9CFnxhUoFZVWn1DTfsID/6tCdBxopoOWmTTeM7D/H//RcMs5JlyzPSZt7xy0U1dLRUaVxh7Zl7dn5EhapQ0M8xacyXtF1eLzJ39YmPaC5S6n3rywKFPFcY9noMvxCEzDh/qokH9MN+3I=
+ bh=jgxmWd/GbDiGpsmhg2Mo/faudBOwAMkQX1VDAqQ23dc=;
+ b=he+Z627AygHVG6Js0OABpcdL1rwqRG2pihFSUyiHFqkiceVsMac/BLO81UIcKbUnorpaMfrQWfhUYYegzkCqqKZ41fE1ZghvxuQSN8RzJKFo4aVVW132vaXzvuVEaAXYODOuiw7ntGi2DK4iWYoZy3jk5Jogk85db7YB5fI39+o=
 Received: from MW3PR15MB3883.namprd15.prod.outlook.com (2603:10b6:303:51::22)
- by MW3PR15MB3962.namprd15.prod.outlook.com (2603:10b6:303:45::16) with
+ by MW3PR15MB4044.namprd15.prod.outlook.com (2603:10b6:303:4b::24) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2878.19; Fri, 10 Apr
- 2020 23:47:39 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2900.24; Fri, 10 Apr
+ 2020 23:52:53 +0000
 Received: from MW3PR15MB3883.namprd15.prod.outlook.com
  ([fe80::a49b:8546:912f:dd98]) by MW3PR15MB3883.namprd15.prod.outlook.com
  ([fe80::a49b:8546:912f:dd98%5]) with mapi id 15.20.2878.018; Fri, 10 Apr 2020
- 23:47:39 +0000
-Subject: Re: [RFC PATCH bpf-next 05/16] bpf: create file or anonymous dumpers
+ 23:52:52 +0000
+Subject: Re: [RFC PATCH bpf-next 06/16] bpf: add netlink and ipv6_route
+ targets
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+CC:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Kernel Team <kernel-team@fb.com>
 References: <20200408232520.2675265-1-yhs@fb.com>
- <20200408232526.2675664-1-yhs@fb.com>
- <20200410030017.errh35srmbmd7uk5@ast-mbp.dhcp.thefacebook.com>
- <c34e8f08-c727-1006-e389-633f762106ab@fb.com>
- <CAEf4BzYM3fPUGVmRJOArbxgDg-xMpLxyKPxyiH5RQUbKVMPFvA@mail.gmail.com>
+ <20200408232527.2675717-1-yhs@fb.com>
+ <CAEf4BzaGrL0h1CC8XCngNnMBAAECSGPNbP6hVshByppVa2wbsg@mail.gmail.com>
 From:   Yonghong Song <yhs@fb.com>
-Message-ID: <2d941e43-72de-b641-22b8-b9ec970ccf52@fb.com>
-Date:   Fri, 10 Apr 2020 16:47:36 -0700
+Message-ID: <fd3cd1c5-8807-037d-647f-efb2e9390079@fb.com>
+Date:   Fri, 10 Apr 2020 16:52:50 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
  Gecko/20100101 Thunderbird/68.7.0
-In-Reply-To: <CAEf4BzYM3fPUGVmRJOArbxgDg-xMpLxyKPxyiH5RQUbKVMPFvA@mail.gmail.com>
+In-Reply-To: <CAEf4BzaGrL0h1CC8XCngNnMBAAECSGPNbP6hVshByppVa2wbsg@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MWHPR15CA0038.namprd15.prod.outlook.com
- (2603:10b6:300:ad::24) To MW3PR15MB3883.namprd15.prod.outlook.com
+X-ClientProxiedBy: MWHPR08CA0049.namprd08.prod.outlook.com
+ (2603:10b6:300:c0::23) To MW3PR15MB3883.namprd15.prod.outlook.com
  (2603:10b6:303:51::22)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from MacBook-Pro-52.local (2620:10d:c090:400::5:e0e4) by MWHPR15CA0038.namprd15.prod.outlook.com (2603:10b6:300:ad::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2900.15 via Frontend Transport; Fri, 10 Apr 2020 23:47:38 +0000
+Received: from MacBook-Pro-52.local (2620:10d:c090:400::5:e0e4) by MWHPR08CA0049.namprd08.prod.outlook.com (2603:10b6:300:c0::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2900.24 via Frontend Transport; Fri, 10 Apr 2020 23:52:51 +0000
 X-Originating-IP: [2620:10d:c090:400::5:e0e4]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 54208cfd-b4ef-4d11-c9f0-08d7dda98d70
-X-MS-TrafficTypeDiagnostic: MW3PR15MB3962:
+X-MS-Office365-Filtering-Correlation-Id: 311c39c7-1d26-45da-81df-08d7ddaa486a
+X-MS-TrafficTypeDiagnostic: MW3PR15MB4044:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MW3PR15MB39629EE4F948DFA0A08BA394D3DE0@MW3PR15MB3962.namprd15.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <MW3PR15MB4044F101CAEF7026C187B40ED3DE0@MW3PR15MB4044.namprd15.prod.outlook.com>
 X-FB-Source: Internal
 X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-Forefront-PRVS: 0369E8196C
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR15MB3883.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10019020)(39860400002)(136003)(346002)(376002)(366004)(396003)(186003)(4326008)(36756003)(6916009)(16526019)(31696002)(52116002)(31686004)(478600001)(53546011)(66946007)(66556008)(66476007)(5660300002)(2906002)(2616005)(86362001)(54906003)(81156014)(6512007)(8936002)(6486002)(316002)(6506007)(8676002);DIR:OUT;SFP:1102;
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR15MB3883.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10019020)(366004)(376002)(136003)(396003)(346002)(39860400002)(31696002)(53546011)(6506007)(52116002)(316002)(2906002)(54906003)(2616005)(478600001)(86362001)(186003)(36756003)(16526019)(66556008)(6486002)(31686004)(66946007)(66476007)(81156014)(8936002)(8676002)(5660300002)(6512007)(4326008)(6916009);DIR:OUT;SFP:1102;
 Received-SPF: None (protection.outlook.com: fb.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nCjCACPMsJvA5J95Lmctrv4Z1siN4HutE4NMVi9qHQM32WN9O5SpPzEcns0h2B4HrEPZxZVlpUz0G/M+TZbvO90TK7sjDS7dkt7p8DQwsKI/mhLZCRqthw7IsRB0wzgDBNmRagkJwM3yBqG+1lvXyDgTfVLtdqvlCAX/DzTFBsdNVWGf9EcpH6qr6thh+bKxKcPzqU/0B6eQQ6Osrym1g1Hj8/jao+2jmR2msHGdWPDfQ0AguRdMmo/5npDDjELaq1gjy0F+6nhPEySniqtbUFULHexc0ZdKzvkBYHGX+rK66qHE+YjQCI3MMZ5UtOjybBvQ0PNEBXvV6yCxvXYpSrd3NXXdKERkLsHnfppYBKXk+wLrb1aD2DUisX6pljm7erdu7zOQJUD4+x2Za0MhhEPZhPqWQ9oMxnd5r/1VrAy/UZ1RXH3dpIjgd76Zpt1J
-X-MS-Exchange-AntiSpam-MessageData: ln1W2PohEIFuuGdBWBtqiOIz9WXxbHf0odANm7d8G5hc/QE8/VoOq4eC0wj19qbPbK/zt0jS/mAQBwbgwvgKgk4pdMGab5p/kVk8X9Wk7SPja71U7crMBWrRVMXZTMSq1gmGk40piMyFP+CAwgri1Upc5va89aP68M8KJwi4af0Hwb/lkfQS4oG9ncoywdV6
-X-MS-Exchange-CrossTenant-Network-Message-Id: 54208cfd-b4ef-4d11-c9f0-08d7dda98d70
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2020 23:47:39.3313
+X-Microsoft-Antispam-Message-Info: gGtHuHfH8TtuaEl7KfybpTXC9oBPd9vXL74ijxu6IUBj3lPQiCSqgHWk5vJqFmM3/udt/R3vFlI3AXZ7XEzrkTyqtDmjPuE0RiSo13y5gqT0+iVwFTQXGDY4PHLRXcT2cpn9/UaCxGtqYvXQwfDqKaGeeHil0K+/2EgfrDFI5/WUKNO2IfspsjwhW/fZ+ww4xCrTbJkgR3z1tx3rdHbbDUmJWMYbcXVKPWx6U8ImU9fbmRKGvyR1Y82hEW1apWg72EPxWzM9CPJNNPQhJMdyE0K6owJxhWv8Re7gigPTntwvxkfVy2nnqbzzzYK4hD6ll1gTuhBvZ7Ewa3xEnh8WGnqmNYc5epehvBUMnU2hHrA34YASyA0T39PDZbunaSGHoWQDXclUrHP9tUJFotGhqgBNafe9QF+9dca680nhN7CvztGF7FPx+ARA6rYDiWTH
+X-MS-Exchange-AntiSpam-MessageData: tf5I3rZxvmIiN8J8fJm3SP4VnExKQctvf51oWBkqc6EQBEAPo3vA7bK29vC/f8kyZMyR/jcz/F5gXdM2/vPQmx7i7WxcpVNGL4TJYiLrrUevO2jN9r49YcPcms1LRNoo0znj/Ee3Y8rvG0WVE6leB56mozKyOdLOTtETumcCbNQPhLv6LbBom9mhimYp+yev
+X-MS-Exchange-CrossTenant-Network-Message-Id: 311c39c7-1d26-45da-81df-08d7ddaa486a
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2020 23:52:52.8359
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LOYPc4hUfMyQtTFehbaf1iJgyDthcxDrQIeXLRQipVh7uBb5wmw0R+kYSh72PF7Y
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR15MB3962
+X-MS-Exchange-CrossTenant-UserPrincipalName: aayKemLds1J8fqbBQhaFkeubLm/ST0yvcluD1Lg9XANh4fpiVT771j/PCqndw4Mo
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR15MB4044
 X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
  definitions=2020-04-10_10:2020-04-09,2020-04-10 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
- adultscore=0 clxscore=1015 bulkscore=0 mlxlogscore=999 priorityscore=1501
- malwarescore=0 impostorscore=0 phishscore=0 spamscore=0 mlxscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004100167
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ impostorscore=0 suspectscore=0 priorityscore=1501 phishscore=0
+ lowpriorityscore=0 mlxlogscore=999 malwarescore=0 bulkscore=0
+ clxscore=1015 spamscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2003020000 definitions=main-2004100168
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -122,66 +120,90 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 4/10/20 3:53 PM, Andrii Nakryiko wrote:
-> On Fri, Apr 10, 2020 at 3:43 PM Yonghong Song <yhs@fb.com> wrote:
+On 4/10/20 4:13 PM, Andrii Nakryiko wrote:
+> On Wed, Apr 8, 2020 at 4:25 PM Yonghong Song <yhs@fb.com> wrote:
 >>
+>> This patch added netlink and ipv6_route targets, using
+>> the same seq_ops (except show()) for /proc/net/{netlink,ipv6_route}.
 >>
+>> Since module is not supported for now, ipv6_route is
+>> supported only if the IPV6 is built-in, i.e., not compiled
+>> as a module. The restriction can be lifted once module
+>> is properly supported for bpfdump.
 >>
->> On 4/9/20 8:00 PM, Alexei Starovoitov wrote:
->>> On Wed, Apr 08, 2020 at 04:25:26PM -0700, Yonghong Song wrote:
->>>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
->>>> index 0f1cbed446c1..b51d56fc77f9 100644
->>>> --- a/include/uapi/linux/bpf.h
->>>> +++ b/include/uapi/linux/bpf.h
->>>> @@ -354,6 +354,7 @@ enum {
->>>>    /* Flags for accessing BPF object from syscall side. */
->>>>       BPF_F_RDONLY            = (1U << 3),
->>>>       BPF_F_WRONLY            = (1U << 4),
->>>> +    BPF_F_DUMP              = (1U << 5),
->>> ...
->>>>    static int bpf_obj_pin(const union bpf_attr *attr)
->>>>    {
->>>> -    if (CHECK_ATTR(BPF_OBJ) || attr->file_flags != 0)
->>>> +    if (CHECK_ATTR(BPF_OBJ) || attr->file_flags & ~BPF_F_DUMP)
->>>>               return -EINVAL;
->>>>
->>>> +    if (attr->file_flags == BPF_F_DUMP)
->>>> +            return bpf_dump_create(attr->bpf_fd,
->>>> +                                   u64_to_user_ptr(attr->dumper_name));
->>>> +
->>>>       return bpf_obj_pin_user(attr->bpf_fd, u64_to_user_ptr(attr->pathname));
->>>>    }
->>>
->>> I think kernel can be a bit smarter here. There is no need for user space
->>> to pass BPF_F_DUMP flag to kernel just to differentiate the pinning.
->>> Can prog attach type be used instead?
+>> Signed-off-by: Yonghong Song <yhs@fb.com>
+>> ---
+>>   include/linux/bpf.h      |  1 +
+>>   kernel/bpf/dump.c        | 13 ++++++++++
+>>   net/ipv6/ip6_fib.c       | 41 +++++++++++++++++++++++++++++-
+>>   net/ipv6/route.c         | 22 ++++++++++++++++
+>>   net/netlink/af_netlink.c | 54 +++++++++++++++++++++++++++++++++++++++-
+>>   5 files changed, 129 insertions(+), 2 deletions(-)
 >>
->> Think again. I think a flag is still useful.
->> Suppose that we have the following scenario:
->>     - the current directory /sys/fs/bpf/
->>     - user says pin a tracing/dump (target task) prog to "p1"
->>
->> It is not really clear whether user wants to pin to
->>      /sys/fs/bpf/p1
->> or user wants to pin to
->>      /sys/kernel/bpfdump/task/p1
->>
->> unless we say that a tracing/dump program cannot pin
->> to /sys/fs/bpf which seems unnecessary restriction.
->>
->> What do you think?
 > 
-> Instead of special-casing dumper_name, can we require specifying full
-> path, and then check whether it is in BPF FS vs BPFDUMP FS? If the
-> latter, additionally check that it is in the right sub-directory
-> matching its intended target type.
+> [...]
+> 
+>>
+>> +#if IS_BUILTIN(CONFIG_IPV6)
+>> +static int ipv6_route_prog_seq_show(struct bpf_prog *prog, struct seq_file *seq,
+>> +                                   u64 seq_num, void *v)
+>> +{
+>> +       struct ipv6_route_iter *iter = seq->private;
+>> +       struct {
+>> +               struct fib6_info *rt;
+>> +               struct seq_file *seq;
+>> +               u64 seq_num;
+>> +       } ctx = {
+> 
+> So this anonymous struct definition has to match bpfdump__ipv6_route
+> function prototype, if I understand correctly. So this means that BTF
+> will have a very useful struct, that can be used directly in BPF
+> program, but it won't have a canonical name. This is very sad... Would
+> it be possible to instead use a struct as a prototype for these
+> dumpers? Here's why it matters. Instead of currently requiring BPF
+> users to declare their dumpers as (just copy-pasted):
+> 
+> int BPF_PROG(some_name, struct fib6_info *rt, struct seq_file *seq,
+> u64 seq_num) {
+>     ...
+> }
+> 
+> if bpfdump__ipv6_route was actually a struct definition:
+> 
+> 
+> struct bpfdump__ipv6_route {
+>      struct fib6_info *rt;
+>      struct seq_file *seq;
+>      u64 seq_num;
+> };
+> 
+> Then with vmlinux.h, such program would be very nicely declared and used as:
+> 
+> int some_name(struct bpfdump__ipv6_route *ctx) {
+>    /* here use ctx->rt, ctx->seq, ctx->seqnum */
+> }
 
-We could. I just think specifying full path for bpfdump is not necessary 
-since it is a single user mount...
+Thanks, I do not know this!
+This definitely better and may make kernel code simpler.
+Will experiment.
 
 > 
-> But honestly, just doing everything within BPF FS starts to seem
-> cleaner at this point...
-
-bpffs is multi mount, which is not a perfect fit for bpfdump,
-considering mounting inside namespace, etc, all dumpers are gone.
+> This is would would be nice to have for raw_tp and tp_btf as well.
+> 
+> 
+> Of course we can also code-generate such types from func_protos in
+> bpftool, and that's a plan B for this, IMO. But seem like in this case
+> you already have two keep two separate entities in sync: func proto
+> and struct for context, so I thought I'd bring it up.
+> 
+>> +               .rt = v,
+>> +               .seq = seq,
+>> +               .seq_num = seq_num,
+>> +       };
+>> +       int ret;
+>> +
+>> +       ret = bpf_dump_run_prog(prog, &ctx);
+>> +       iter->w.leaf = NULL;
+>> +       return ret == 0 ? 0 : -EINVAL;
+>> +}
+>> +
