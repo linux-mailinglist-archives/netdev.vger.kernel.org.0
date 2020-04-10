@@ -2,92 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A785D1A3DA7
-	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 03:17:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDA921A3DF3
+	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 04:06:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726627AbgDJBRM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Apr 2020 21:17:12 -0400
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:45997 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725987AbgDJBRM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 21:17:12 -0400
-Received: by mail-qv1-f68.google.com with SMTP id g4so303623qvo.12
-        for <netdev@vger.kernel.org>; Thu, 09 Apr 2020 18:17:12 -0700 (PDT)
+        id S1726552AbgDJCGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Apr 2020 22:06:22 -0400
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:33859 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726082AbgDJCGW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Apr 2020 22:06:22 -0400
+Received: by mail-pj1-f67.google.com with SMTP id q16so1446534pje.1;
+        Thu, 09 Apr 2020 19:06:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=hwptylitsKMB8jaDzafBlSMcMnLPn1JKtxkfFuXkDtA=;
-        b=p/jqSnxxO9pKAiJNAPiryvCX/ZfmqqPMJQaE/ToqjJeUnY/yXC8rE0IvcEvE9PZZuV
-         JsncZRppjamoMvaP7SL58FibmANPA7etUBpItWYw3CFL3lHnZZj7+H6+kt6lwlCfBViy
-         uyh7fJWDha2+EAiUhcQqg+5/jeYE8gPiHOYX2Im85oUmqsIF7IWTouQY6BdpC01P42vE
-         zVE9KG8291ORlABgl5lFKBhDx+bD4CH/yHdGeup3sTtYe6O9FU/e4TpRY9ZLzGy9A6t6
-         vOp6huoyghAdUyRCY79MkqvVP5SvSE68rHYdXFKZlujOlC3EOBo8jq0jqIMfRpllZztw
-         MpoQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CMpVmJ+cnQy/gzLhnplIw7thRivCqLL3yG7fXq8V54U=;
+        b=AEJQnWZzg53rTfF1TQcWQxy3bwOMKV8uEPRH/XA+Gj76xdqzcDNsZacbQ8kTiQlu0Y
+         k1dVSSD9oRjCNg8Sc25Vu13qTVmilXn/1iJ7vqv9BIGRGCviyqrxN+2EIphX09pLRelS
+         W6IB/q8nl2Br1j9VsDYckCeNy5WcE2hUZnsOkMjqeigg3qXwxcqpoNMkqcvYDHCCRjqo
+         pxgO24zdqRknsUYlHbvABTOTEnMeC+PrusALvS5lvyWC+8mWN0Xr+bhw1I4dM/QU9nTM
+         olijG44/acRgbe8HrflqcLYVsTK13G2h6/SK+VpMU/h7vdWzbDDpy/LIE3Rp+tbLumZM
+         qksw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=hwptylitsKMB8jaDzafBlSMcMnLPn1JKtxkfFuXkDtA=;
-        b=HcKzHcFYyjtbjpmeFXza15LmpV9Z0346q3ARwa83DjMjyODW7w9iPzsl7yCOzclUVA
-         OoWASQb8IGezldRC/JBDa2tCGkpQZUbtc0PUjYxMG+OL+tCWnr+5yR8RXy2CUmabchCE
-         b714+WlhGdzWUfBPO38nyrVEP79CFlLEsBO5erBFyURcyksEHEfA2Y+Xo5pFD5wHUr1m
-         Ji3vmBwH9JEROz29BCKGOz1FYtf97SE4q0JpcptZgtuCe4oncrgO6hluNg6sIcTmgwno
-         d+uI371//bWB/HWaaonYM+7vBrrbaVSP9Vi531lyeraJY2xWK2d+bKRky7x5efgX3E7E
-         B4sA==
-X-Gm-Message-State: AGi0PuYbkM4iE6ShSapyEAt2Kduc1FljL3Cb7w9UG2JjlZBb8o+RLMkL
-        lqnkllbTjKV7Talx+mHWJzE=
-X-Google-Smtp-Source: APiQypJ3bYjO3mW+5AJaCscOhAEUr5qT2PedVuUpAZ5N0J+qxyBoNp3fEdG3teR2qW7N7cmKt/cNhg==
-X-Received: by 2002:a0c:ff06:: with SMTP id w6mr3000463qvt.143.1586481432007;
-        Thu, 09 Apr 2020 18:17:12 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id d17sm498911qtb.74.2020.04.09.18.17.09
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CMpVmJ+cnQy/gzLhnplIw7thRivCqLL3yG7fXq8V54U=;
+        b=ZiXB6juKdSW1FRETMcm4GyoCMU7NJrEal81pa0R6ul0hmXRe4Zg4lanUg1L2O7Z60M
+         6E+CCLaQDQz1U3MNKKcGk/UpXDFTIWhsO2plxa4NZmB8GvQsu2nXvTBGSnEwrvAmxa/0
+         Ge27rSJZ3R6KulzhvtVZaOQCYrJm7Gs1a4r1tD1Nb9HASFTrVd0OiZtnmhajV7hDJUXJ
+         MzG7W+GZ9XRXrvMsSQQHPPCrfK7U3DDfmCIOHL7P9W+YsqvftuUDS12mnGZpxg8ZjeRO
+         ZuZJCTkpBjnbiIfqMxJ67Wqr3JLG7SIZnY11tKUbV9INwLu+aak8Tn5qePtKhZpIWW5B
+         fKvg==
+X-Gm-Message-State: AGi0PuZum6R8DbYPRgRcXhzuOrJtW11fjxKoV6Asc1Yoor5VujHMZ343
+        NEB4Llltjcdy0yhjVSHwQA==
+X-Google-Smtp-Source: APiQypLYxiQSyFcjg3L0pvugfHdSNkykRc+083UGrL0Fl9G/lJem44Arh0ZO70nrUgN20QYTzaD5Lw==
+X-Received: by 2002:a17:90a:3acc:: with SMTP id b70mr2634059pjc.179.1586484380281;
+        Thu, 09 Apr 2020 19:06:20 -0700 (PDT)
+Received: from localhost.localdomain ([49.142.73.162])
+        by smtp.gmail.com with ESMTPSA id s9sm405504pjr.5.2020.04.09.19.06.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Apr 2020 18:17:11 -0700 (PDT)
-Date:   Fri, 10 Apr 2020 09:17:05 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, daniel@iogearbox.net,
-        yoshfuji@linux-ipv6.org, thaller@redhat.com
-Subject: Re: [PATCH net] net/ipv6: allow token to be set when accept_ra
- disabled
-Message-ID: <20200410011704.GH2159@dhcp-12-139.nay.redhat.com>
-References: <20200409065604.817-1-liuhangbin@gmail.com>
- <20200409.101355.534685961785562180.davem@davemloft.net>
+        Thu, 09 Apr 2020 19:06:19 -0700 (PDT)
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>
+Subject: [PATCH] tools: bpftool: fix struct_ops command invalid pointer free
+Date:   Fri, 10 Apr 2020 11:06:12 +0900
+Message-Id: <20200410020612.2930667-1-danieltimlee@gmail.com>
+X-Mailer: git-send-email 2.26.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200409.101355.534685961785562180.davem@davemloft.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 09, 2020 at 10:13:55AM -0700, David Miller wrote:
-> From: Hangbin Liu <liuhangbin@gmail.com>
-> Date: Thu,  9 Apr 2020 14:56:04 +0800
-> 
-> > The token setting should not depend on whether accept_ra is enabled or
-> > disabled. The user could set the token at any time. Enable or disable
-> > accept_ra only affects when the token address take effective.
-> > 
-> > On the other hand, we didn't remove the token setting when disable
-> > accept_ra. So let's just remove the accept_ra checking when user want
-> > to set token address.
-> > 
-> > Fixes: f53adae4eae5 ("net: ipv6: add tokenized interface identifier support")
-> > Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> 
-> It is dangerous to change this, because now people can write bootup
-> and configuration scripts that will work with newer kernels yet fail
-> unexpectedly in older kernels.
+From commit 65c93628599d ("bpftool: Add struct_ops support"),
+a new type of command struct_ops has been added.
 
-Hmm, this makes sense to me. Thanks for the explanation.
+This command requires kernel CONFIG_DEBUG_INFO_BTF=y, and for retrieving
+btf info, get_btf_vmlinux() is used.
 
-Regards
-Hangbin
+When running this command on kernel without BTF debug info, this will
+lead to 'btf_vmlinux' variable contains invalid(error) pointer. And by
+this, btf_free() causes a segfault when executing 'bpftool struct_ops'.
 
-> 
-> I think requiring that RA be enabled in order to set the token is
-> an absolutely reasonable requirement.
+This commit adds pointer validation with IS_ERR not to free invalid
+pointer, and this will fix the segfault issue.
+
+Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+---
+ tools/bpf/bpftool/struct_ops.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/tools/bpf/bpftool/struct_ops.c b/tools/bpf/bpftool/struct_ops.c
+index 2a7befbd11ad..0fe0d584c57e 100644
+--- a/tools/bpf/bpftool/struct_ops.c
++++ b/tools/bpf/bpftool/struct_ops.c
+@@ -591,6 +591,8 @@ int do_struct_ops(int argc, char **argv)
+ 
+ 	err = cmd_select(cmds, argc, argv, do_help);
+ 
+-	btf__free(btf_vmlinux);
++	if (!IS_ERR(btf_vmlinux))
++		btf__free(btf_vmlinux);
++
+ 	return err;
+ }
+-- 
+2.26.0
+
