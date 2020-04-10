@@ -2,66 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BE1B1A4728
-	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 16:04:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D41E1A474E
+	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 16:19:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726598AbgDJOEY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Apr 2020 10:04:24 -0400
-Received: from forward104o.mail.yandex.net ([37.140.190.179]:47434 "EHLO
-        forward104o.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726049AbgDJOEX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 10:04:23 -0400
-Received: from mxback9j.mail.yandex.net (mxback9j.mail.yandex.net [IPv6:2a02:6b8:0:1619::112])
-        by forward104o.mail.yandex.net (Yandex) with ESMTP id D57029415AD
-        for <netdev@vger.kernel.org>; Fri, 10 Apr 2020 17:04:21 +0300 (MSK)
-Received: from iva3-dd2bb2ff2b5f.qloud-c.yandex.net (iva3-dd2bb2ff2b5f.qloud-c.yandex.net [2a02:6b8:c0c:7611:0:640:dd2b:b2ff])
-        by mxback9j.mail.yandex.net (mxback/Yandex) with ESMTP id Bc2Fl3VF7s-4LQWkPQi;
-        Fri, 10 Apr 2020 17:04:21 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1586527461;
-        bh=FpLFaitKudZtRyxEvaOWme6ozKu1G8+oKBnv1E0Lh1w=;
-        h=Subject:From:To:Date:Message-ID;
-        b=MoZSGNi1zj8zksvsbVFZ5anWIb7vSKAlWS2aw3dgGTOrAjcGorWjmSSwAkXj9DBE6
-         HbVM8Z2hqex7Byhl/aBa33GNRS+lWzjGrlVz8BSRYh/mvxCcMEqdY/psJoiC7U9Dp4
-         //5OBAX8Y9oH3LEKiL7VDASHzMC1t+Rk/KvV0Abo=
-Authentication-Results: mxback9j.mail.yandex.net; dkim=pass header.i=@yandex.ru
-Received: by iva3-dd2bb2ff2b5f.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id CrjIlOrWRg-4LWW5KBp;
-        Fri, 10 Apr 2020 17:04:21 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-To:     netdev@vger.kernel.org
-From:   Konstantin Kharlamov <hi-angel@yandex.ru>
-Subject: What's the offload name for iscsi_tcp_recv_skb()?
-Message-ID: <78ca0450-2693-2494-9d13-f34635f4ca6e@yandex.ru>
-Date:   Fri, 10 Apr 2020 17:04:20 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1726598AbgDJOTf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Apr 2020 10:19:35 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:33736 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726145AbgDJOTf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 10:19:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=eOHDUBtktlAkp1IDj3ZDlz5cofiqpzly+S72LpriBqQ=; b=ckhyBX3gcnViqOVAYL/XXP0iU
+        SvnqLVzNcNOQLM2++C59mDAKHtJ/9XOJaYu0EnsOOCHnEaodRtJTRlsyj/NGcBR5X7x7fUA5lzUIH
+        EAAB5hRtvssDzRu/YqMFjxP7mGMc5iFNUS1TdZfcmyEtCVcOUTDHrh7FESk92kRWwNnwGnblRwXcc
+        +/OBaTQDRW99nMBHfWbppMz3WYlCYtPK6Y4oM7MBTNWfk3pXhl4s/DlyY7/BMDLYbjBuei6u5z7uD
+        JhsdqTmNoM3j6V/XFhKi0KYyzav5mPCFaqL6kTu55nXQRm+OVZPzRaYauRb+KjJW3txTZ5HXN9weZ
+        qln67xsEw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48200)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jMuV6-0001uH-Ny; Fri, 10 Apr 2020 15:19:20 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jMuV0-0003qB-J5; Fri, 10 Apr 2020 15:19:14 +0100
+Date:   Fri, 10 Apr 2020 15:19:14 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Matteo Croce <mcroce@redhat.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Luka Perkov <luka.perkov@sartura.hr>
+Subject: Re: [PATCH net-next v2 3/3] net: phy: marvell10g: place in powersave
+ mode at probe
+Message-ID: <20200410141914.GY25745@shell.armlinux.org.uk>
+References: <20200303155347.GS25745@shell.armlinux.org.uk>
+ <E1j99sC-00011f-22@rmk-PC.armlinux.org.uk>
+ <CAGnkfhx+JkD6a_8ojU6tEL_vk6vtwQpxbwU9+beDepL4dxgLyQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB-large
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGnkfhx+JkD6a_8ojU6tEL_vk6vtwQpxbwU9+beDepL4dxgLyQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I seek to improve IOPS for some usecase. I found a bunch of time being spent in
-iscsi_tcp_recv_skb()¹. The function accepts `offloaded` argument, which basically
-allows to skip much of the function.
+On Fri, Apr 10, 2020 at 03:48:34PM +0200, Matteo Croce wrote:
+> On Fri, Apr 10, 2020 at 3:24 PM Russell King <rmk+kernel@armlinux.org.uk> wrote:
+> >
+> > Place the 88x3310 into powersaving mode when probing, which saves 600mW
+> > per PHY. For both PHYs on the Macchiatobin double-shot, this saves
+> > about 10% of the board idle power.
+> >
+> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> 
+> Hi,
+> 
+> I have a Macchiatobin double shot, and my 10G ports stop working after
+> this change.
+> I reverted this commit on top of latest net-next and now the ports work again.
 
-The only place in the kernel where this parameter is used is Chelsio driver². But
-we use Mellanox adapters, not Chelsio ones.
+Please describe the problem in more detail.
 
-So my question is: what is the name of the `offload` capability in `ethtool -k`
-output that allows to offload the function? It would be great if it turns out
-that we have a hw with such capability, and all we need is to simply wire up
-another driver to use that.
+Do you have the interface up?  Does the PHY link with the partner?
+Is the problem just that traffic isn't passed?
 
-I searched all over Chelsio driver, but haven't managed to find what that
-property should be called in `ethtool -k`.
-
-P.S.: the references below are supposed to be URL links to the code, but the ML
-refuses to accept links "under a suspicion of a spam", so, well, sorry for bad
-usability here.
-
-1: commit c0cc271173b2e1c2d8d0ceaef14e4dfa79eefc0d, dir: drivers/scsi/libiscsi_tcp.c:885
-2: commit c0cc271173b2e1c2d8d0ceaef14e4dfa79eefc0d, dir: drivers/scsi/cxgbi/libcxgbi.c:1550
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
