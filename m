@@ -2,160 +2,305 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1949C1A4BB6
-	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 00:02:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 011351A4BDA
+	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 00:18:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726702AbgDJWCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Apr 2020 18:02:37 -0400
-Received: from mail-eopbgr130055.outbound.protection.outlook.com ([40.107.13.55]:44835
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726594AbgDJWCg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Apr 2020 18:02:36 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YmGK0qWTsAdvYqqCfWCNiCEeLOsTgjRBi44vjbnAVbEnxCFPVFTtI40aVjSvf8E1RQjFbOQBYHT10/2pc/UqcovKX6syYey1cduELeTSmr1vHN+BTVZHV1wTPUr1P5BB/PFYlMCw7W0AR3lw0qyNsxy8HRbU1G/lEeEbDFAwNoIL7vwYhcc2fHwsdK+N/LskMsaHS3tNvk/B1Vv5nXklSpOWsFClOjIPqbfZZQQdYJptLJ4JZeQmhYS6mizwDC1mVUloCnCoaWnBScXjlqAuYmw623AmwpEhDFNCmpVMKtrLABffqYVtdgqKNpnXGyv29ASBGSY7N0/1JiNngZwZPQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VQvOtFyh9t3pNwEwVmYmOvHUaikLpQ7butJtTSS6ktI=;
- b=QimEsvTvqs0Bq/cRHWG2Ajyoi9qOwP2ue4zupz5TUoiwHYNVhkFAzaeWWyJ0Jgk46uIy8vL/WP6psXFHNK972N0z6tKY1lmhRFLQqzuyJAjD01LqXYNocu2ZTdCV30N7/m3hgASn0UsDOdVTMyj258hOI22/uHj3uTiS4xb8+go/+kTXgvSJF0oxFFBqUaeOTwhGnuDRb/kPKuE4KT/zwNrV+4e2mgTEecVNWrpiSECZkBj7Juv5FsHgYMFtH8V+0bqUTGsXySZRCV2PiIJg9Dv1hEnDe3/f44VWg/ymLpXAlBWWzZgrnzxr8RCWRM016xVlP9r8Uffhi40Hwu2WQg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VQvOtFyh9t3pNwEwVmYmOvHUaikLpQ7butJtTSS6ktI=;
- b=U/N0WisWERqzYfP9E7elCg7sQ1hUfYaxpHZJx33noLSLhZK2MHOvOp0ewNI1jaZIHhtwfEwMYfaxpR4Nmt//ofYM1N9pToYh1Qv5EM+k4M//fZLdTBbUcaNZgD/nBM49AUes1NQkWo2RgpyPCKa6tw0qeC2pBiXg2f26P3VcFv0=
-Received: from AM6PR05MB5094.eurprd05.prod.outlook.com (2603:10a6:20b:9::29)
- by AM6PR05MB5409.eurprd05.prod.outlook.com (2603:10a6:20b:37::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2900.20; Fri, 10 Apr
- 2020 21:59:57 +0000
-Received: from AM6PR05MB5094.eurprd05.prod.outlook.com
- ([fe80::dc17:894c:778d:fd1]) by AM6PR05MB5094.eurprd05.prod.outlook.com
- ([fe80::dc17:894c:778d:fd1%7]) with mapi id 15.20.2900.015; Fri, 10 Apr 2020
- 21:59:56 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "kuba@kernel.org" <kuba@kernel.org>
-CC:     "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tal Gilboa <talgi@mellanox.com>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>
-Subject: Re: [PATCH net v2 1/2] docs: networking: convert DIM to RST
-Thread-Topic: [PATCH net v2 1/2] docs: networking: convert DIM to RST
-Thread-Index: AQHWDrTu2RZCFwSAxECQoixyMh5xtKhxZAeAgAAFsgCAAX+XgA==
-Date:   Fri, 10 Apr 2020 21:59:56 +0000
-Message-ID: <4569455bbdd44f08e31d2206031f8fcc39702c9f.camel@mellanox.com>
-References: <20200409212159.322775-1-kuba@kernel.org>
-         <1210a28bfe1a67818f3f814e38f52923cbd201c0.camel@mellanox.com>
-         <20200409160658.1b940fcf@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20200409160658.1b940fcf@kicinski-fedora-PC1C0HJN>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.34.4 (3.34.4-1.fc31) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [73.15.39.150]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 260d21ae-06a7-4d41-83c4-08d7dd9a81d4
-x-ms-traffictypediagnostic: AM6PR05MB5409:|AM6PR05MB5409:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM6PR05MB540987238B0C303C942124E0BEDE0@AM6PR05MB5409.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0369E8196C
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR05MB5094.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(376002)(136003)(366004)(39860400002)(346002)(396003)(36756003)(2906002)(316002)(5660300002)(54906003)(6486002)(4326008)(966005)(8676002)(71200400001)(76116006)(91956017)(6916009)(66946007)(66556008)(26005)(6506007)(8936002)(81156014)(478600001)(186003)(86362001)(66446008)(64756008)(6512007)(66476007)(2616005)(6606295002);DIR:OUT;SFP:1101;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: nDyY9fvCgs/P8BZwW8SQqG2md0igaabCMfZmxpEeRq8h2TmPPuUNFpNhMqjunu5CBQx3cUq/VrTyL36MxALWcd0h2oJD/Xo2uAlTnCdgBOH8QDpcVvWiRLfkJJa8NAbF9P4fGXiWbWftsQHWJukvZayzY3qlhqG2jb60f9sgwf/+xwcNsR+BPTEMnsYgCMy4ydCsMHWkzF2wPVIQFXaoGjAVHXkU+7uXri3rQziFtpM4fB/pe+wDYmoS/PwdgSapdF8B9cGE2h8CPAbl4rKG0BmY4g43aFFfZ2xtMgRMggyoMJHs9bMGc+IaL/AnxL8nQcFVvwLh8Iumo5uR39rsyCblBdVXPjjDozDIgkDxb9m6QQbzPMPyi4RFlz2N3pQy+0EoEcAEi79FOd6XQeiD5Bp1pMhiWrFYAmTSpgLiQ9Nbhyeav9fMc8OEq3jkZUMDtP12FWD9JK2zduUsuRsA6gyChVppkiVGJzcY95Ax0dx2BoI1Eh1dgWZIZAp25ts+lMPtXTGxn5z/1EkarMCvkFVAfV+BYDE5jEbskC5Oop5BPdrJ6a2DenOdazWNfSAZ
-x-ms-exchange-antispam-messagedata: glWR/IEafYd18jIbiRr7xsteot3lCDPa4zKKIqHbHahKJoWVE95HY9DlaRTKUe35/y++/mex43ewKNriUIslzaADiQSWZu9UvrEoILFzU9ygqN5rTjCdxbo9/eHiEDbQr2TzOwP+DSOzCiSdSkdZbg==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <AE54754A3A95FD41ABD60E25C7F1A504@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726757AbgDJWSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Apr 2020 18:18:18 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:34090 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726641AbgDJWSR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 18:18:17 -0400
+Received: by mail-qt1-f195.google.com with SMTP id 14so2656285qtp.1;
+        Fri, 10 Apr 2020 15:18:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Uh9shUxtBnoJSqQ6zkuQRj7I7MOXcl/h/ByktU9C7tI=;
+        b=Due2mrx9DZinG/wvEWvx1ZvuiCgn25VPKHxugN+vu9UEcaoaG/IlI3SixSq94AMaW+
+         qjiig80TSiUx0K+Qq6lWxZjjk3czuDqFX4wwMEQozU/cuDcq9M/cyrY9wiTfYPct2hxA
+         si2OjA0jwFApR8IjYID7toiG8fLFvUKwCybQsqBqmhucEo/b8D4Pc8tN4jLx6znkl2av
+         HCjMnArhsWmCJj3ajJAW3DalEC/USSLFTaLq3jiHob5XbTRGccL24yVNiAd/2WCY6hw/
+         LY7yMDl8qx/L8oDOQ1l/5jAuDqSxLMT09z+TDC5sI7CkH3HUbsPuflgvr51yM1qrcsEc
+         vhsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Uh9shUxtBnoJSqQ6zkuQRj7I7MOXcl/h/ByktU9C7tI=;
+        b=Ll+gwlXjWo25Ys4onyl9hA8DZoFCmqa7A3FKRJlhW055MCE9MP+fTEfOlrWCPlKMGV
+         neXcJ1zxmJJY0B1siz/FnH+rR0M6175yQp+GGFfQjoYCya5tZnrZpqbynHe42naGHBJQ
+         XXiFzg7TDKHHVUFbTd2MlKKYxfUG1Jz6TKDJkA/nxOJlwzlJPvwLXl4+qWaV6jjFypAE
+         mC1u0L4fDARcVCOa4dIQFJ3SrApvWU0ksZ+piIO1qsfW3XN5YsHFsSHGTxNMzObfVDDJ
+         A1IePVwnYucHiHvlsmkdGuiBtma99JYiWrD5bSiikG1NO73++UJPNRU3njwQYooFyc0I
+         rtvw==
+X-Gm-Message-State: AGi0Pub9sMQERrNZidJaCpjoOATnGcNlYvh8KakjWlYZn+/ez7LRipS4
+        peNjfqhbHkZzHleauMnqo1leV02g14Srx3yiyQC+f9GJj5n2ug==
+X-Google-Smtp-Source: APiQypKW3LXw5sjXaxcifnnfjoBAIT1hzQuft2v3xxtlNonC35rjZuKbw6NXHuFnFTHe3hTTfaGe40SpZ8lFsb8+4AI=
+X-Received: by 2002:ac8:193d:: with SMTP id t58mr1234465qtj.93.1586557094809;
+ Fri, 10 Apr 2020 15:18:14 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 260d21ae-06a7-4d41-83c4-08d7dd9a81d4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Apr 2020 21:59:56.7855
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: vso1S+m9Z87lEr3+Avma2FzhnYd0KDHFtUziy8Oyj9RDNN4QLMkqvrGGZeHccGUQAw+GdDYEyjWtrMYM/neltQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5409
+References: <20200408232520.2675265-1-yhs@fb.com> <20200408232523.2675550-1-yhs@fb.com>
+In-Reply-To: <20200408232523.2675550-1-yhs@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 10 Apr 2020 15:18:03 -0700
+Message-ID: <CAEf4Bzb5K6h+Cca63JU35XG+NFoFDCVrC=DhDNVz6KTmoyzpFw@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 03/16] bpf: provide a way for targets to
+ register themselves
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDIwLTA0LTA5IGF0IDE2OjA2IC0wNzAwLCBKYWt1YiBLaWNpbnNraSB3cm90ZToN
-Cj4gT24gVGh1LCA5IEFwciAyMDIwIDIyOjQ2OjU1ICswMDAwIFNhZWVkIE1haGFtZWVkIHdyb3Rl
-Og0KPiA+IE9uIFRodSwgMjAyMC0wNC0wOSBhdCAxNDoyMSAtMDcwMCwgSmFrdWIgS2ljaW5za2kg
-d3JvdGU6DQo+ID4gPiBDb252ZXJ0IHRoZSBEeW5hbWljIEludGVycnVwdCBNb2RlcmF0aW9uIGRv
-YyB0byBSU1QgYW5kDQo+ID4gPiB1c2UgdGhlIFJTVCBmZWF0dXJlcyBsaWtlIHN5bnRheCBoaWdo
-bGlnaHQsIGZ1bmN0aW9uIGFuZA0KPiA+ID4gc3RydWN0dXJlIGRvY3VtZW50YXRpb24sIGVudW1l
-cmF0aW9ucywgdGFibGUgb2YgY29udGVudHMuDQo+ID4gPiANCj4gPiA+IFNpZ25lZC1vZmYtYnk6
-IEpha3ViIEtpY2luc2tpIDxrdWJhQGtlcm5lbC5vcmc+DQo+ID4gPiBSZXZpZXdlZC1ieTogUmFu
-ZHkgRHVubGFwIDxyZHVubGFwQGluZnJhZGVhZC5vcmc+DQo+ID4gPiAtLS0NCj4gPiA+IHYyOg0K
-PiA+ID4gIC0gcmVtb3ZlIHRoZSBmdW5jdGlvbnMvdHlwZSBkZWZpbml0aW9uIG1hcmt1cA0KPiA+
-ID4gIC0gY2hhbmdlIHRoZSBjb250ZW50cyBkZWZpbml0aW9uICh0aGUgOmxvY2FsOiBzZWVtIHRv
-DQo+ID4gPiAgICBub3Qgd29yayB0b28gd2VsbCB3aXRoIGtkb2MpDQo+ID4gPiAtLS0NCj4gPiA+
-ICBEb2N1bWVudGF0aW9uL25ldHdvcmtpbmcvaW5kZXgucnN0ICAgICAgICAgICAgfCAgMSArDQo+
-ID4gPiAgLi4uL25ldHdvcmtpbmcve25ldF9kaW0udHh0ID0+IG5ldF9kaW0ucnN0fSAgIHwgOTAg
-KysrKysrKysrLS0NCj4gPiA+IC0tLS0NCj4gPiA+IC0tLS0NCj4gPiA+ICBNQUlOVEFJTkVSUyAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgMSArDQo+ID4gPiAgMyBmaWxlcyBj
-aGFuZ2VkLCA0NSBpbnNlcnRpb25zKCspLCA0NyBkZWxldGlvbnMoLSkNCj4gPiA+ICByZW5hbWUg
-RG9jdW1lbnRhdGlvbi9uZXR3b3JraW5nL3tuZXRfZGltLnR4dCA9PiBuZXRfZGltLnJzdH0NCj4g
-PiA+ICg3OSUpDQo+ID4gPiANCj4gPiA+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL25ldHdv
-cmtpbmcvaW5kZXgucnN0DQo+ID4gPiBiL0RvY3VtZW50YXRpb24vbmV0d29ya2luZy9pbmRleC5y
-c3QNCj4gPiA+IGluZGV4IDUwMTMzZDk3NjFjOS4uNjUzOGVkZTI5NjYxIDEwMDY0NA0KPiA+ID4g
-LS0tIGEvRG9jdW1lbnRhdGlvbi9uZXR3b3JraW5nL2luZGV4LnJzdA0KPiA+ID4gKysrIGIvRG9j
-dW1lbnRhdGlvbi9uZXR3b3JraW5nL2luZGV4LnJzdA0KPiA+ID4gQEAgLTIyLDYgKzIyLDcgQEAg
-TGludXggTmV0d29ya2luZyBEb2N1bWVudGF0aW9uDQo+ID4gPiAgICAgejg1MzBib29rDQo+ID4g
-PiAgICAgbXNnX3plcm9jb3B5DQo+ID4gPiAgICAgZmFpbG92ZXINCj4gPiA+ICsgICBuZXRfZGlt
-ICANCj4gPiANCj4gPiBuZXRfZGltIGlzIGEgcGVyZm9ybWFuY2UgZmVhdHVyZSwgaSB3b3VsZCBt
-b3ZlIGZ1cnRoZXIgZG93biB0aGUNCj4gPiBsaXN0DQo+ID4gd2hlcmUgdGhlIHBlcmYgZmVhdHVy
-ZXMgc3VjaCBhcyBzY2FsaW5nIGFuZCBvZmZsb2FkcyBhcmUgLi4gDQo+IA0KPiBJIG1lYW4uLiBz
-byBpcyBtc2dfemVyb2NvcHkganVzdCBhYm92ZSA7LSkgIEkgc3BvdHRlZCBzbGlnaHQNCj4gYWxw
-aGFiZXRpY2FsIG9yZGVyaW5nIHRoZXJlLCB3aGljaCBtYXkgaGF2ZSBub3QgYmVlbiBpbnRlbnRp
-b25hbCwNCj4gdGhhdCdzIHdoeSBJIHB1dCBpdCBoZXJlLiBNYXJraW5nIHdpdGggIyB0aGluZ3Mg
-b3V0IG9mIG9yZGVyLCBidXQgDQo+IGJhc2VkIG9uIGp1c3QgdGhlIGZpcnN0IGxldHRlcjoNCj4g
-DQoNCk9oIGkgZGlkbid0IHNlZSB0aGUgYWxwaGFiZXRpY2FsIG9yZGVyIDopLCB0aGVuIGkgZ3Vl
-c3MgeW91ciBwYXRjaCBpcw0Kb2suDQoNCj4gIyAgbmV0ZGV2LUZBUQ0KPiAgICBhZl94ZHANCj4g
-ICAgYmFyZXVkcA0KPiAgICBiYXRtYW4tYWR2DQo+ICAgIGNhbg0KPiAgICBjYW5fdWNhbl9wcm90
-b2NvbA0KPiAgICBkZXZpY2VfZHJpdmVycy9pbmRleA0KPiAgICBkc2EvaW5kZXgNCj4gICAgZGV2
-bGluay9pbmRleA0KPiAgICBldGh0b29sLW5ldGxpbmsNCj4gICAgaWVlZTgwMjE1NA0KPiAgICBq
-MTkzOQ0KPiAgICBrYXBpDQo+ICMgIHo4NTMwYm9vaw0KPiAgICBtc2dfemVyb2NvcHkNCj4gIyAg
-ZmFpbG92ZXINCj4gICAgbmV0X2RpbQ0KPiAgICBuZXRfZmFpbG92ZXINCj4gICAgcGh5DQo+ICAg
-IHNmcC1waHlsaW5rDQo+ICMgIGFsaWFzDQo+ICMgIGJyaWRnZQ0KPiAgICBzbm1wX2NvdW50ZXIN
-Cj4gIyAgY2hlY2tzdW0tb2ZmbG9hZHMNCj4gICAgc2VnbWVudGF0aW9uLW9mZmxvYWRzDQo+ICAg
-IHNjYWxpbmcNCj4gICAgdGxzDQo+ICAgIHRscy1vZmZsb2FkDQo+ICMgIG5mYw0KPiAgICA2bG93
-cGFuDQo+IA0KPiBNeSBmZWVsaW5nIGlzIHRoYXQgd2Ugc2hvdWxkIHN0YXJ0IGNvbnNpZGVyaW5n
-IHNwbGl0dGluZyBrZXJuZWwtb25seQ0KPiBkb2NzIGFuZCBhZG1pbi1vbmx5IGRvY3MgZm9yIG5l
-dHdvcmtpbmcsIHdoaWNoIEkgYmVsaWV2ZSBpcyB0aGUNCj4gZGlyZWN0aW9uIEpvbiBhbmQgZm9s
-a3Mgd2FudCBEb2N1bWVudGF0aW9uLyB0byBnby4gQnV0IEkgd2Fzbid0IGJyYXZlDQo+IGVub3Vn
-aCB0byBiZSB0aGUgZmlyc3Qgb25lLiBUaGVuIHdlIGNhbiBpbXBvc2Ugc29tZSBtb3JlIHN0cnVj
-dHVyZSwNCj4gbGlrZSBwdXR0aW5nIGFsbCAicGVyZm9ybWFuY2UiIGRvY3MgaW4gb25lIHN1YmRp
-ci4uPw0KPiANCj4gV0RZVD8NCg0KVGhhdCB3YXMgbXkgaW5pdGlhbCB0aG91Z2h0LCBidXQgaXQg
-c2VlbWVkIGxpa2UgYSBsb3Qgb2Ygd29yayBhbmQNCnJlYWxseSBub3QgcmVsYXRlZCB0byB5b3Vy
-IHBhdGNoLg0KDQpCdXQgeWVzLCBjYXRlZ29yaXppbmcgaXMgdGhlIHdheSB0byBnby4uIGFscGhh
-YmV0aWNhbCBvcmRlciBkb2Vzbid0DQpyZWFsbHkgbWFrZSBhbnkgc2Vuc2UgdW5sZXNzIHlvdSBr
-bm93IGV4YWN0bHkgd2hhdCB5b3UgYXJlIGxvb2tpbmcgZm9yLA0Kd2hpY2ggaXMgbmV2ZXIgdGhl
-IGNhc2UgOiksDQpGb3Igc29tZW9uZSB3aG8gd2FudCB0byBsZWFybiBhYm91dCBwZXJmb3JtYW5j
-ZSB0dW5pbmcgb3Igc29tZXRoaW5nDQpzcGVjaWZpYyBsaWtlIGNvYWxlc2NpbmcsIHdoYXQgc2hv
-dWxkIHRoZXkgbG9vayBmb3IgPyBESU0sIE5FVCBESU0sDQptb2RlcmF0aW9uIG9yIGNvYWxlc2Np
-bmcgPyBzbyBpZiB3ZSBjYXRlZ29yaXplIGFuZCBrZWVwIHRoZSBzdWJkaXJzDQpsaXN0cyBzaG9y
-dCBhbmQgZm9jdXNlZCwgaXQgd2lsbCBiZSB2ZXJ5IGVhc3kgZm9yIHBlb3BsZSB0byBicm93c2Ug
-dGhlDQpuZXR3b3JraW5nIGRvY3MuLg0KDQpUaGluZ3MgY2FuIGdyb3cgbGFyZ2UgdmVyeSBmYXN0
-IGJleW9uZCBvdXIgY29udHJvbC4uIFdlIHNob3VsZCByZWFsbHkNCmVtYnJhY2UgdGhlICJNYWdp
-YyBudW1iZXIgNyIgYXBwcm9hY2ggWzFdIDopDQoNCkhlbHBzIGtlZXAgdGhpbmdzIHNob3J0LCBv
-cmdhbml6ZWQgYW5kIGZvY3VzZWQuDQoNClsxXSANCmh0dHBzOi8vd3d3LmktcHJvZ3JhbW1lci5p
-bmZvL2JhYmJhZ2VzLWJhZy82MjEtdGhlLW1hZ2ljLW51bWJlci1zZXZlbi5odG1sDQoNClRoYW5r
-cywNClNhZWVkLg0KDQo=
+On Wed, Apr 8, 2020 at 4:26 PM Yonghong Song <yhs@fb.com> wrote:
+>
+> Here, the target refers to a particular data structure
+> inside the kernel we want to dump. For example, it
+> can be all task_structs in the current pid namespace,
+> or it could be all open files for all task_structs
+> in the current pid namespace.
+>
+> Each target is identified with the following information:
+>    target_rel_path   <=== relative path to /sys/kernel/bpfdump
+>    target_proto      <=== kernel func proto which represents
+>                           bpf program signature for this target
+>    seq_ops           <=== seq_ops for seq_file operations
+>    seq_priv_size     <=== seq_file private data size
+>    target_feature    <=== target specific feature which needs
+>                           handling outside seq_ops.
+
+It's not clear what "feature" stands for here... Is this just a sort
+of private_data passed through to dumper?
+
+>
+> The target relative path is a relative directory to /sys/kernel/bpfdump/.
+> For example, it could be:
+>    task                  <=== all tasks
+>    task/file             <=== all open files under all tasks
+>    ipv6_route            <=== all ipv6_routes
+>    tcp6/sk_local_storage <=== all tcp6 socket local storages
+>    foo/bar/tar           <=== all tar's in bar in foo
+
+^^ this seems useful, but I don't think code as is supports more than 2 levels?
+
+>
+> The "target_feature" is mostly used for reusing existing seq_ops.
+> For example, for /proc/net/<> stats, the "net" namespace is often
+> stored in file private data. The target_feature enables bpf based
+> dumper to set "net" properly for itself before calling shared
+> seq_ops.
+>
+> bpf_dump_reg_target() is implemented so targets
+> can register themselves. Currently, module is not
+> supported, so there is no bpf_dump_unreg_target().
+> The main reason is that BTF is not available for modules
+> yet.
+>
+> Since target might call bpf_dump_reg_target() before
+> bpfdump mount point is created, __bpfdump_init()
+> may be called in bpf_dump_reg_target() as well.
+>
+> The file-based dumpers will be regular files under
+> the specific target directory. For example,
+>    task/my1      <=== dumper "my1" iterates through all tasks
+>    task/file/my2 <=== dumper "my2" iterates through all open files
+>                       under all tasks
+>
+> Signed-off-by: Yonghong Song <yhs@fb.com>
+> ---
+>  include/linux/bpf.h |   4 +
+>  kernel/bpf/dump.c   | 190 +++++++++++++++++++++++++++++++++++++++++++-
+>  2 files changed, 193 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index fd2b2322412d..53914bec7590 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1109,6 +1109,10 @@ struct bpf_link *bpf_link_get_from_fd(u32 ufd);
+>  int bpf_obj_pin_user(u32 ufd, const char __user *pathname);
+>  int bpf_obj_get_user(const char __user *pathname, int flags);
+>
+> +int bpf_dump_reg_target(const char *target, const char *target_proto,
+> +                       const struct seq_operations *seq_ops,
+> +                       u32 seq_priv_size, u32 target_feature);
+> +
+>  int bpf_percpu_hash_copy(struct bpf_map *map, void *key, void *value);
+>  int bpf_percpu_array_copy(struct bpf_map *map, void *key, void *value);
+>  int bpf_percpu_hash_update(struct bpf_map *map, void *key, void *value,
+> diff --git a/kernel/bpf/dump.c b/kernel/bpf/dump.c
+> index e0c33486e0e7..45528846557f 100644
+> --- a/kernel/bpf/dump.c
+> +++ b/kernel/bpf/dump.c
+> @@ -12,6 +12,173 @@
+>  #include <linux/filter.h>
+>  #include <linux/bpf.h>
+>
+> +struct bpfdump_target_info {
+> +       struct list_head list;
+> +       const char *target;
+> +       const char *target_proto;
+> +       struct dentry *dir_dentry;
+> +       const struct seq_operations *seq_ops;
+> +       u32 seq_priv_size;
+> +       u32 target_feature;
+> +};
+> +
+> +struct bpfdump_targets {
+> +       struct list_head dumpers;
+> +       struct mutex dumper_mutex;
+
+nit: would be a bit simpler if these were static variables with static
+initialization, similar to how bpfdump_dentry is separate?
+
+> +};
+> +
+> +/* registered dump targets */
+> +static struct bpfdump_targets dump_targets;
+> +
+> +static struct dentry *bpfdump_dentry;
+> +
+> +static struct dentry *bpfdump_add_dir(const char *name, struct dentry *parent,
+> +                                     const struct inode_operations *i_ops,
+> +                                     void *data);
+> +static int __bpfdump_init(void);
+> +
+> +static int dumper_unlink(struct inode *dir, struct dentry *dentry)
+> +{
+> +       kfree(d_inode(dentry)->i_private);
+> +       return simple_unlink(dir, dentry);
+> +}
+> +
+> +static const struct inode_operations bpf_dir_iops = {
+> +       .lookup         = simple_lookup,
+> +       .unlink         = dumper_unlink,
+> +};
+> +
+> +int bpf_dump_reg_target(const char *target,
+> +                       const char *target_proto,
+> +                       const struct seq_operations *seq_ops,
+> +                       u32 seq_priv_size, u32 target_feature)
+> +{
+> +       struct bpfdump_target_info *tinfo, *ptinfo;
+> +       struct dentry *dentry, *parent;
+> +       const char *lastslash;
+> +       bool existed = false;
+> +       int err, parent_len;
+> +
+> +       if (!bpfdump_dentry) {
+> +               err = __bpfdump_init();
+
+This will be called (again) if bpfdump_init() fails? Not sure why? In
+rare cases, some dumper will fail to initialize, but then some might
+succeed, which is going to be even more confusing, no?
+
+> +               if (err)
+> +                       return err;
+> +       }
+> +
+> +       tinfo = kmalloc(sizeof(*tinfo), GFP_KERNEL);
+> +       if (!tinfo)
+> +               return -ENOMEM;
+> +
+> +       tinfo->target = target;
+> +       tinfo->target_proto = target_proto;
+> +       tinfo->seq_ops = seq_ops;
+> +       tinfo->seq_priv_size = seq_priv_size;
+> +       tinfo->target_feature = target_feature;
+> +       INIT_LIST_HEAD(&tinfo->list);
+> +
+> +       lastslash = strrchr(target, '/');
+> +       if (!lastslash) {
+> +               parent = bpfdump_dentry;
+
+Two nits here. First, it supports only one and two levels. But it
+seems like it wouldn't be hard to support multiple? Instead of
+reverse-searching for /, you can forward search and keep track of
+"current parent".
+
+nit2:
+
+parent = bpfdump_dentry;
+if (lastslash) {
+
+    parent = ptinfo->dir_dentry;
+}
+
+seems a bit cleaner (and generalizes to multi-level a bit better).
+
+> +       } else {
+> +               parent_len = (unsigned long)lastslash - (unsigned long)target;
+> +
+> +               mutex_lock(&dump_targets.dumper_mutex);
+> +               list_for_each_entry(ptinfo, &dump_targets.dumpers, list) {
+> +                       if (strlen(ptinfo->target) == parent_len &&
+> +                           strncmp(ptinfo->target, target, parent_len) == 0) {
+> +                               existed = true;
+> +                               break;
+> +                       }
+> +               }
+> +               mutex_unlock(&dump_targets.dumper_mutex);
+> +               if (existed == false) {
+> +                       err = -ENOENT;
+> +                       goto free_tinfo;
+> +               }
+> +
+> +               parent = ptinfo->dir_dentry;
+> +               target = lastslash + 1;
+> +       }
+> +       dentry = bpfdump_add_dir(target, parent, &bpf_dir_iops, tinfo);
+> +       if (IS_ERR(dentry)) {
+> +               err = PTR_ERR(dentry);
+> +               goto free_tinfo;
+> +       }
+> +
+> +       tinfo->dir_dentry = dentry;
+> +
+> +       mutex_lock(&dump_targets.dumper_mutex);
+> +       list_add(&tinfo->list, &dump_targets.dumpers);
+> +       mutex_unlock(&dump_targets.dumper_mutex);
+> +       return 0;
+> +
+> +free_tinfo:
+> +       kfree(tinfo);
+> +       return err;
+> +}
+> +
+
+[...]
+
+> +       if (S_ISDIR(mode)) {
+> +               inode->i_op = i_ops;
+> +               inode->i_fop = f_ops;
+> +               inc_nlink(inode);
+> +               inc_nlink(dir);
+> +       } else {
+> +               inode->i_fop = f_ops;
+> +       }
+> +
+> +       d_instantiate(dentry, inode);
+> +       dget(dentry);
+
+lookup_one_len already bumped refcount, why the second time here?
+
+> +       inode_unlock(dir);
+> +       return dentry;
+> +
+> +dentry_put:
+> +       dput(dentry);
+> +       dentry = ERR_PTR(err);
+> +unlock:
+> +       inode_unlock(dir);
+> +       return dentry;
+> +}
+> +
+
+[...]
