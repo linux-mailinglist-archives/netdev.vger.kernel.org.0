@@ -2,125 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CB161A455A
-	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 12:47:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0007A1A4573
+	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 13:01:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726191AbgDJKq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Apr 2020 06:46:57 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:32875 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725955AbgDJKq5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 06:46:57 -0400
-Received: by mail-ed1-f65.google.com with SMTP id z65so2026912ede.0
-        for <netdev@vger.kernel.org>; Fri, 10 Apr 2020 03:46:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=g5flDUCc5onn9My7LelOLYfg2sqbcsix70bfOQElCCY=;
-        b=LK6H2vBs6EQoG8NxAHZXSN3WdX62sel9kYe6pWy8NYbKrN1wiwHV9n+fjzvFa2EVZC
-         dKbcgiPgKifg/BOlyN/6G7Jqsdn3vCsorcbrjgyyYnyCVD0hDygDReY7BLMzhxWNQheV
-         uYgpVnPxlUt38uU7itLT9TjuZLrJLfru6aJW2+r7mmfUexxsfFJAWDoKYF8agmqq1McO
-         867t+FCK+ReI5oR8HEA0VwC3dfkdIXdq++toJj3LOWKeqx08BLwj/6yk1/0uJ3vaKR6s
-         t4+i06Mp1jQj9bQurc4I2/9jPBsYw4iOBeLw7mrzjZH24jOAaXYaH//Oo7Wu+vrHGVMr
-         B/0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=g5flDUCc5onn9My7LelOLYfg2sqbcsix70bfOQElCCY=;
-        b=GyrpL4joHyLmbcz9LIaKwYMxWwevJZNZHSBgBGUrzqSPs+hrs5a1mkLUQdzl+OQf8N
-         r45koEbWUfr6JZ2vy0NP4f5rjS7xSZe+W6Vx6syV5CRQ1QMIXmuRChE35Fgfr+PGlUvK
-         VFUr4m6A55Phw8z98i416SO0iOflzOcgSKI2/biqR6jSr/fcdEeCCRPc2xE6iJg2YSya
-         OrLJBLAVoTDFTSdzPWuMF9wRPRkL8M/0/08kgQgCzQ9TsIFrCexcTdvqWNKHOuPR9tFC
-         o2XrNls5JYuzLecEEopaEanU8RbPZrx05YEdViHfeQKLr79MoobWzZAH2C8oU7so28/s
-         ER7Q==
-X-Gm-Message-State: AGi0PuaW+/JamBk45xzP71mxopetag2CVWAGU+ZvpuPOVVTR+5gL8WxO
-        fGzAkcFHEJbfb67cGBcyX+/+DtiPtVcVqqttxBI=
-X-Google-Smtp-Source: APiQypLWDup2ZAK1S2IcOH0WTMLGSA4ZLAFWbXTDZbsNxTCSZqYmA8hnd16Tb6LpFY9BEm/k8vKrPTA2QvI3BAsREUA=
-X-Received: by 2002:a50:9ea1:: with SMTP id a30mr4246217edf.318.1586515616603;
- Fri, 10 Apr 2020 03:46:56 -0700 (PDT)
+        id S1725991AbgDJLBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Apr 2020 07:01:16 -0400
+Received: from bmailout2.hostsharing.net ([83.223.78.240]:57917 "EHLO
+        bmailout2.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725930AbgDJLBQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 07:01:16 -0400
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
+        by bmailout2.hostsharing.net (Postfix) with ESMTPS id 2CFE52800A26A;
+        Fri, 10 Apr 2020 13:01:14 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id F110D15BC89; Fri, 10 Apr 2020 13:01:13 +0200 (CEST)
+Date:   Fri, 10 Apr 2020 13:01:13 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Marek Vasut <marex@denx.de>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: Re: [PATCH V3 00/18] net: ks8851: Unify KS8851 SPI and MLL drivers
+Message-ID: <20200410110113.j5b3txz5fkgw56xq@wunner.de>
+References: <20200328003148.498021-1-marex@denx.de>
+ <20200406031649.zujfod44bz53ztlo@wunner.de>
+ <f9449a3b-7536-0bde-4ee6-b254fd90923f@denx.de>
+ <143b003a-81f9-d908-9580-67317a8e96c6@denx.de>
 MIME-Version: 1.0
-References: <20200409155409.12043-1-dqfext@gmail.com> <20200409.102035.13094168508101122.davem@davemloft.net>
- <CALW65jbrg1doaRBPdGQkQ-PG6dnh_L4va7RxcMxyKKMqasN7bQ@mail.gmail.com>
- <c7da2de5-5e25-6284-0b35-fd2dbceb9c4f@gmail.com> <CALW65jZAdFFNfGioAFWPwYN+F4baL0Z-+FX_pAte97uxNK3T6g@mail.gmail.com>
-In-Reply-To: <CALW65jZAdFFNfGioAFWPwYN+F4baL0Z-+FX_pAte97uxNK3T6g@mail.gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 10 Apr 2020 13:46:45 +0300
-Message-ID: <CA+h21hp8LueSfh+Z8f0-Y7dTPB50d+3E3K9n6R5MwNzA3Dh1Lw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: dsa: mt7530: enable jumbo frame
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
-        John Crispin <john@phrozen.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Weijie Gao <weijie.gao@mediatek.com>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <143b003a-81f9-d908-9580-67317a8e96c6@denx.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Qingfang,
+On Wed, Apr 08, 2020 at 09:49:14PM +0200, Marek Vasut wrote:
+> On 4/6/20 1:20 PM, Marek Vasut wrote:
+> > On 4/6/20 5:16 AM, Lukas Wunner wrote:
+> > > I'll be back at the office this week and will conduct performance
+> > > measurements with this version.
 
-On Fri, 10 Apr 2020 at 05:51, DENG Qingfang <dqfext@gmail.com> wrote:
->
-> On Fri, Apr 10, 2020 at 10:27 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
-> >
-> >
-> >
-> > On 4/9/2020 7:19 PM, DENG Qingfang wrote:
-> > > So, since nothing else uses the mt7530_set_jumbo function, should I
-> > > remove the function and just add a single rmw to mt7530_setup?
-> >
-> > (please do not top-post on netdev)
-> >
-> > There is a proper way to support the MTU configuration for DSA switch
-> > drivers which is:
-> >
-> >         /*
-> >          * MTU change functionality. Switches can also adjust their MRU
-> > through
-> >          * this method. By MTU, one understands the SDU (L2 payload) length.
-> >          * If the switch needs to account for the DSA tag on the CPU
-> > port, this
-> >          * method needs to to do so privately.
-> >          */
-> >         int     (*port_change_mtu)(struct dsa_switch *ds, int port,
-> >                                    int new_mtu);
-> >         int     (*port_max_mtu)(struct dsa_switch *ds, int port);
->
-> MT7530 does not support configuring jumbo frame per-port
-> The register affects globally
->
-> >
-> > --
-> > Florian
+Latency without this series (ping -A -c 100000):
 
-This is a bit more tricky, but I think you can still deal with it
-using the port_change_mtu functionality. Basically it is only a
-problem when the other ports are standalone - otherwise the
-dsa_bridge_mtu_normalization function should kick in.
-So if you implement port_change_mtu, you should do something along the lines of:
+100000 packets transmitted, 100000 received, 0% packet loss, time 205ms
+rtt min/avg/max/mdev = 0.790/1.695/2.624/0.046 ms, ipg/ewma 2.000/1.693 ms
+                             ^^^^^
+Latency with this series:
 
-for (i = 0; i < MT7530_NUM_PORTS; i++) {
-    struct net_device *slave;
+100000 packets transmitted, 100000 received, 0% packet loss, time 220ms
+rtt min/avg/max/mdev = 0.880/1.717/2.428/0.059 ms, ipg/ewma 2.000/1.710 ms
 
-    if (!dsa_is_user_port(ds, i))
-        continue;
+Latency with this series + my patch to inline accessors:
 
-    slave = ds->ports[i].slave;
+100000 packets transmitted, 100000 received, 0% packet loss, time 219ms
+rtt min/avg/max/mdev = 0.874/1.716/3.296/0.058 ms, ipg/ewma 2.000/1.719 ms
 
-    slave->mtu = new_mtu;
-}
 
-to update the MTU known by the stack for all net devices.
+RX throughput without this series (iperf3 -f k -i 0 -c):
 
-Hope this helps,
--Vladimir
+[  5]   0.00-10.00  sec  19.0 MBytes  15958 Kbits/sec                  receiver
+
+RX throughput with this series:
+
+[  5]   0.00-10.00  sec  18.4 MBytes  15452 Kbits/sec                  receiver
+
+RX throughput with this series + my patch to inline accessors:
+
+[  5]   0.00-10.00  sec  18.5 MBytes  15506 Kbits/sec                  receiver
+
+
+TX throughput without this series (iperf3 -R -f k -i 0 -c):
+
+[  5]   0.00-10.00  sec  18.6 MBytes  15604 Kbits/sec                  receiver
+
+TX throughput with this series:
+
+[  5]   0.00-10.00  sec  18.3 MBytes  15314 Kbits/sec                  receiver
+
+TX throughput with this series + my patch to inline accessors:
+
+[  5]   0.00-10.00  sec  18.3 MBytes  15349 Kbits/sec                  receiver
+
+
+The commands were invoked from a machine with a Broadcom tg3
+Gigabit Ethernet controller.
+
+Conclusion:  The series does incur a measurable performance penalty
+which should be fixed before it gets merged.  Inlining the accessors
+only yields a very small improvement.  I'm wondering where the
+performance penalty is originating from:  Perhaps because of the
+16-bit read of RXFC in ks8851_rx_pkts()?
+
+
+> So I got the KS8851SNL development kit to test the SPI option. The
+> current driver in linux-next gives me SPI transfer timeouts at 1 MHz (I
+> also tried 6 MHz, 10 MHz, same problem, I also checked the signal
+> quality which is OK) both on iMX6Q and on STM32MP1 with ~2 cm long
+> wiring between the SoM and the KS8851SNL devkit, so that's where my
+> testing ends, sadly. Unless you have some idea what the problem might be ?
+
+Check the signal quality with an oscilloscope.
+Crank up drive strength of the SPI pins if supported by the pin controller.
+Check if the driver for the SPI controller is buggy or somehow limits the
+speed.
+
+We use the KSZ8851SNL both with STM32-based products (at 20 MHz SPI clock,
+but without an operating system) and with Raspberry Pi based products
+(at up to 25 MHz SPI clock, with Linux).  It is only the latter that
+I'm really familiar with.  We've invested considerable resources to
+fix bugs and speed up the Raspberry Pi's SPI driver as much as possible.
+By now it works pretty well with the ks8851.
+
+A Raspberry Pi 3 is readily available for just a few Euros, so you may
+want to pick up one of those.  My most recent speed improvements for the
+Raspberry Pi's SPI and DMA drivers went into v5.4, so be sure to use at
+least that.  Should signal quality be a problem, it's possible to
+increase GPIO drive strength by putting a dt-blob.bin in the /boot
+partition:
+
+https://www.raspberrypi.org/documentation/configuration/pin-configuration.md
+
+I forgot to test whether reading the MAC address from the external
+EEPROM works with v3 of your series, but I'll be back in the office
+on Tuesday to take another look.
+
+Thanks,
+
+Lukas
