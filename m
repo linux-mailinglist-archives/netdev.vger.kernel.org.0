@@ -2,87 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40AD01A470E
-	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 15:49:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BE1B1A4728
+	for <lists+netdev@lfdr.de>; Fri, 10 Apr 2020 16:04:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726234AbgDJNtN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Apr 2020 09:49:13 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:58022 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726092AbgDJNtM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 09:49:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586526553;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=49ipUzSe9X30v9tPRFdX12EssE4OU6GOQhoEiogwVg8=;
-        b=EukGuBLnba6Oy1zik17IVmYr9fS6NDPl2FqQnolyJF+rUA7j2s79mCCkukXngtWMn9Nrt+
-        dkygob/87S0tYu785kdFREbDVx5dUzz9xQ+sPrksFbWRNMCCon/W0LBxFTcvJQ4p81dVmC
-        TziDegYSG/PRzKZc7yjHofC29Ugnry8=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-229-I-DnnRB5NhWSHhwTxGNh1w-1; Fri, 10 Apr 2020 09:49:11 -0400
-X-MC-Unique: I-DnnRB5NhWSHhwTxGNh1w-1
-Received: by mail-ed1-f69.google.com with SMTP id bm26so2105925edb.17
-        for <netdev@vger.kernel.org>; Fri, 10 Apr 2020 06:49:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=49ipUzSe9X30v9tPRFdX12EssE4OU6GOQhoEiogwVg8=;
-        b=M1WkEAwL9jeXpo/bBRj2Lw2I5it2Obxg/oOqUp/txfeHcUiylkeWFxN/8Unwz0/4BD
-         knncWi+361t3WzTBD9jWHKBoGwMrD2uux0o9BNffv2H9rErjiXRK4cvizFRXjaPxPl5D
-         mmFDb9gDdppDOWjmLq3E1PQXOw4xKDat5MyYvwX3l5sHXx4+2FzzCHf1qinpL2EtdPcZ
-         KyLaX3keOQigeMb5pHzJuGrk8Tn30eDcAyN68yKGJYTqVqZN/Djf6tIhgURkKNJqP+dT
-         zvKcTG5h8o/PzcoB4V+Tm7dAKp4754oqomKxM+kg5IJtnlyofcdJTLwwLhQNEx0w3YEg
-         ZSdA==
-X-Gm-Message-State: AGi0PuZ8wd73Ew1HQqUR2Fn9fo2gCuzWgu+SSQlOcOjy1RrpkdRMUrRI
-        McvPzSTiGAUaF0ciGC+mGBvNtf1Zfo4RcI+F8p2Hx6vaLxDF5aMpA4oicSX6oyqX2SF4uu7T7FM
-        fpCRSAI0d2QmnSridmXDwg3zo5vE/fF6L
-X-Received: by 2002:a17:907:262a:: with SMTP id aq10mr3758793ejc.377.1586526550196;
-        Fri, 10 Apr 2020 06:49:10 -0700 (PDT)
-X-Google-Smtp-Source: APiQypIBuYfSlQ43XeNpiogMP3+6x1JRgbMoTtlVbJyQ2qZ3avPlPK0mR+O/cT2vjMbYA7o+3hImpyGORvTtP2kzqnc=
-X-Received: by 2002:a17:907:262a:: with SMTP id aq10mr3758778ejc.377.1586526550013;
- Fri, 10 Apr 2020 06:49:10 -0700 (PDT)
+        id S1726598AbgDJOEY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Apr 2020 10:04:24 -0400
+Received: from forward104o.mail.yandex.net ([37.140.190.179]:47434 "EHLO
+        forward104o.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726049AbgDJOEX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 10:04:23 -0400
+Received: from mxback9j.mail.yandex.net (mxback9j.mail.yandex.net [IPv6:2a02:6b8:0:1619::112])
+        by forward104o.mail.yandex.net (Yandex) with ESMTP id D57029415AD
+        for <netdev@vger.kernel.org>; Fri, 10 Apr 2020 17:04:21 +0300 (MSK)
+Received: from iva3-dd2bb2ff2b5f.qloud-c.yandex.net (iva3-dd2bb2ff2b5f.qloud-c.yandex.net [2a02:6b8:c0c:7611:0:640:dd2b:b2ff])
+        by mxback9j.mail.yandex.net (mxback/Yandex) with ESMTP id Bc2Fl3VF7s-4LQWkPQi;
+        Fri, 10 Apr 2020 17:04:21 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1586527461;
+        bh=FpLFaitKudZtRyxEvaOWme6ozKu1G8+oKBnv1E0Lh1w=;
+        h=Subject:From:To:Date:Message-ID;
+        b=MoZSGNi1zj8zksvsbVFZ5anWIb7vSKAlWS2aw3dgGTOrAjcGorWjmSSwAkXj9DBE6
+         HbVM8Z2hqex7Byhl/aBa33GNRS+lWzjGrlVz8BSRYh/mvxCcMEqdY/psJoiC7U9Dp4
+         //5OBAX8Y9oH3LEKiL7VDASHzMC1t+Rk/KvV0Abo=
+Authentication-Results: mxback9j.mail.yandex.net; dkim=pass header.i=@yandex.ru
+Received: by iva3-dd2bb2ff2b5f.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id CrjIlOrWRg-4LWW5KBp;
+        Fri, 10 Apr 2020 17:04:21 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+To:     netdev@vger.kernel.org
+From:   Konstantin Kharlamov <hi-angel@yandex.ru>
+Subject: What's the offload name for iscsi_tcp_recv_skb()?
+Message-ID: <78ca0450-2693-2494-9d13-f34635f4ca6e@yandex.ru>
+Date:   Fri, 10 Apr 2020 17:04:20 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-References: <20200303155347.GS25745@shell.armlinux.org.uk> <E1j99sC-00011f-22@rmk-PC.armlinux.org.uk>
-In-Reply-To: <E1j99sC-00011f-22@rmk-PC.armlinux.org.uk>
-From:   Matteo Croce <mcroce@redhat.com>
-Date:   Fri, 10 Apr 2020 15:48:34 +0200
-Message-ID: <CAGnkfhx+JkD6a_8ojU6tEL_vk6vtwQpxbwU9+beDepL4dxgLyQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 3/3] net: phy: marvell10g: place in powersave
- mode at probe
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Luka Perkov <luka.perkov@sartura.hr>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB-large
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 10, 2020 at 3:24 PM Russell King <rmk+kernel@armlinux.org.uk> wrote:
->
-> Place the 88x3310 into powersaving mode when probing, which saves 600mW
-> per PHY. For both PHYs on the Macchiatobin double-shot, this saves
-> about 10% of the board idle power.
->
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+I seek to improve IOPS for some usecase. I found a bunch of time being spent in
+iscsi_tcp_recv_skb()¹. The function accepts `offloaded` argument, which basically
+allows to skip much of the function.
 
-Hi,
+The only place in the kernel where this parameter is used is Chelsio driver². But
+we use Mellanox adapters, not Chelsio ones.
 
-I have a Macchiatobin double shot, and my 10G ports stop working after
-this change.
-I reverted this commit on top of latest net-next and now the ports work again.
+So my question is: what is the name of the `offload` capability in `ethtool -k`
+output that allows to offload the function? It would be great if it turns out
+that we have a hw with such capability, and all we need is to simply wire up
+another driver to use that.
 
-Bye,
--- 
-Matteo Croce
-per aspera ad upstream
+I searched all over Chelsio driver, but haven't managed to find what that
+property should be called in `ethtool -k`.
 
+P.S.: the references below are supposed to be URL links to the code, but the ML
+refuses to accept links "under a suspicion of a spam", so, well, sorry for bad
+usability here.
+
+1: commit c0cc271173b2e1c2d8d0ceaef14e4dfa79eefc0d, dir: drivers/scsi/libiscsi_tcp.c:885
+2: commit c0cc271173b2e1c2d8d0ceaef14e4dfa79eefc0d, dir: drivers/scsi/cxgbi/libcxgbi.c:1550
