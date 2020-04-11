@@ -2,35 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBC3C1A56F5
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:20:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D2F61A56A9
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:19:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730596AbgDKXNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 19:13:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55192 "EHLO mail.kernel.org"
+        id S1730629AbgDKXN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 19:13:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55358 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730575AbgDKXNu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 19:13:50 -0400
+        id S1729132AbgDKXN4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 19:13:56 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2062320787;
-        Sat, 11 Apr 2020 23:13:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1FDD021744;
+        Sat, 11 Apr 2020 23:13:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586646829;
-        bh=pb0HsRJJ5jCJK7KhsG5jlq9kRHAIunQL+o6nTKDSeUU=;
+        s=default; t=1586646837;
+        bh=9jgHXDBXge+Uelg55uiGNqGFcvm6tM5OrdSs/Qi7XPA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wiq8nNEi31DvAJYoaQahE6E7WGlVN0skcNsxss+JF3TXhPJGuE6HgKcEIO5W9Lam4
-         mGJXodMK/iVUG6rAfRku99iWcU52fkW6jIIob4YbO8BRao6CcPv003gHNMax1Rr6Pm
-         JRPDL5zOlMzzfNWjGN3O4dHBAXXZdICDZybd3KW8=
+        b=fRGNfe1vUBL1lpjdSNbxIhmD2i7z5MWhye0MtGfczFPZ1snM2pc8FZgCCCfHWtUoA
+         n4RpuJD86AB5akjL9QqZlr0SY6OxK8y46T6vbpbX8x+jkQ6fu3SKkrPCL2nx6coSS3
+         Dy+FRzapme1PK2JJyifRLw6DWab3JtkF648ylezI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 19/37] net: dsa: bcm_sf2: Also configure Port 5 for 2Gb/sec on 7278
-Date:   Sat, 11 Apr 2020 19:13:08 -0400
-Message-Id: <20200411231327.26550-19-sashal@kernel.org>
+Cc:     Qiujun Huang <hqjagain@gmail.com>,
+        syzbot+4496e82090657320efc6@syzkaller.appspotmail.com,
+        Hillf Danton <hdanton@sina.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 25/37] Bluetooth: RFCOMM: fix ODEBUG bug in rfcomm_dev_ioctl
+Date:   Sat, 11 Apr 2020 19:13:14 -0400
+Message-Id: <20200411231327.26550-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200411231327.26550-1-sashal@kernel.org>
 References: <20200411231327.26550-1-sashal@kernel.org>
@@ -43,47 +46,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Qiujun Huang <hqjagain@gmail.com>
 
-[ Upstream commit 7458bd540fa0a90220b9e8c349d910d9dde9caf8 ]
+[ Upstream commit 71811cac8532b2387b3414f7cd8fe9e497482864 ]
 
-Either port 5 or port 8 can be used on a 7278 device, make sure that
-port 5 also gets configured properly for 2Gb/sec in that case.
+Needn't call 'rfcomm_dlc_put' here, because 'rfcomm_dlc_exists' didn't
+increase dlc->refcnt.
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: syzbot+4496e82090657320efc6@syzkaller.appspotmail.com
+Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
+Suggested-by: Hillf Danton <hdanton@sina.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/bcm_sf2.c      | 3 +++
- drivers/net/dsa/bcm_sf2_regs.h | 1 +
- 2 files changed, 4 insertions(+)
+ net/bluetooth/rfcomm/tty.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index 6bca42e34a53d..4b0c48a40ba6e 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -691,6 +691,9 @@ static void bcm_sf2_sw_adjust_link(struct dsa_switch *ds, int port,
- 	if (phydev->duplex == DUPLEX_FULL)
- 		reg |= DUPLX_MODE;
- 
-+	if (priv->type == BCM7278_DEVICE_ID && dsa_is_cpu_port(ds, port))
-+		reg |= GMIIP_SPEED_UP_2G;
-+
- 	core_writel(priv, reg, offset);
- 
- 	if (!phydev->is_pseudo_fixed_link)
-diff --git a/drivers/net/dsa/bcm_sf2_regs.h b/drivers/net/dsa/bcm_sf2_regs.h
-index 49695fcc2ea8f..3c4fd7cda701a 100644
---- a/drivers/net/dsa/bcm_sf2_regs.h
-+++ b/drivers/net/dsa/bcm_sf2_regs.h
-@@ -162,6 +162,7 @@ enum bcm_sf2_reg_offs {
- #define  RXFLOW_CNTL			(1 << 4)
- #define  TXFLOW_CNTL			(1 << 5)
- #define  SW_OVERRIDE			(1 << 6)
-+#define  GMIIP_SPEED_UP_2G		(1 << 7)
- 
- #define CORE_WATCHDOG_CTRL		0x001e4
- #define  SOFTWARE_RESET			(1 << 7)
+diff --git a/net/bluetooth/rfcomm/tty.c b/net/bluetooth/rfcomm/tty.c
+index 5f3074cb6b4db..b6f26ec9e90cd 100644
+--- a/net/bluetooth/rfcomm/tty.c
++++ b/net/bluetooth/rfcomm/tty.c
+@@ -413,10 +413,8 @@ static int __rfcomm_create_dev(struct sock *sk, void __user *arg)
+ 		dlc = rfcomm_dlc_exists(&req.src, &req.dst, req.channel);
+ 		if (IS_ERR(dlc))
+ 			return PTR_ERR(dlc);
+-		else if (dlc) {
+-			rfcomm_dlc_put(dlc);
++		if (dlc)
+ 			return -EBUSY;
+-		}
+ 		dlc = rfcomm_dlc_alloc(GFP_KERNEL);
+ 		if (!dlc)
+ 			return -ENOMEM;
 -- 
 2.20.1
 
