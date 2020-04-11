@@ -2,65 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D28ED1A4CDF
-	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 02:20:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2DEB1A4CE1
+	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 02:20:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726783AbgDKAUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Apr 2020 20:20:13 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:42366 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726671AbgDKAUK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 20:20:10 -0400
-Received: by mail-wr1-f65.google.com with SMTP id j2so4044047wrs.9;
-        Fri, 10 Apr 2020 17:20:09 -0700 (PDT)
+        id S1726827AbgDKAUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Apr 2020 20:20:16 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:39469 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726701AbgDKAUO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 20:20:14 -0400
+Received: by mail-wm1-f67.google.com with SMTP id y24so4360688wma.4;
+        Fri, 10 Apr 2020 17:20:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=agKMMUEnxz6VY0lkHl06TnhHs+ST6griE6g5IoxABZ4=;
-        b=WkejCNHLvfgBnKU7wOp7VoMf0V8w5oKiBuxl4TSpcyytvmQK+bK5BNCA+grUsP0dol
-         ltA8Uy5e7T4Q6u2wyQ198noHzKzIOKFmW9xkHvik3RppQC3+L6aW5h4qhvFtvrs/gWHz
-         rIQHYyNl7aNzZS+KLFQAuLvT+bLmvYrBYa6ha7LPRA6qTpiIF1X/twDJI2qGFbl+U0cR
-         J78dHZfLU6oedEGbJ7MpGZzTGmSpbkSeeyKhwSaQie6xYg47wJw2h0S/uKEDVG3GVFyM
-         AudpQfbmcExiS/TnHDdlfB4CZ3PpvNMVooDDdrbVcJ/OJbCxpFBKLFrduYa9VHXktRL9
-         iHgg==
+        bh=neMHyWmt5aDs4XMeVy9/rpYrSAQCVVUJ/oaGM9211Q8=;
+        b=ncIQdvrnO5Y2UQ4dYx8USO2hUvroaLP7i3q1a/wfun2XI+gGPlRhgRiJU9OTT314qD
+         8q4YUQxdkfr1r9NLN2vyQjnAjRHRpkkmQY38RO7bvSia1aBpxZDnGwzZAyqFw6+kX6sK
+         6oXnPqKMY+TTO8Thr0aP15hIm+e394UBVPEVfsmsHST31qnML9qMB/XpPwRjIy0xzE+H
+         swmgg5phJbFpAayDQeTDasnKjdsuyJWAPqHSwWR2CWlowB/tqBPVmKjIp+RNpODjIbYM
+         cX0WpMgT/BaWa9ABnWzeSV1KOjR8lLR3Jewk9SX9yKI63TpUBY+m1qpoNoWSJ+XQA2Kj
+         KVHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=agKMMUEnxz6VY0lkHl06TnhHs+ST6griE6g5IoxABZ4=;
-        b=URh/fNKK3MZJjcByp8UfuCZEhTiLEinYhV6/MZfu1aKUoswTh5ijqLFxkGIVXuIaFT
-         Sn7RCgsDOHtIkiFIiI4xlP/mvlcb3jfE/gMCgLUReQMxXUkflGGYIGijy6MOneDwRrYr
-         vqGEhOLrRcYwxcEAg0w8jbZgAsfrupcM84eMxfus9G/LsWySmJ4hlSyYGiUOVl4zQG1K
-         g/VlUKfOvVqAndRviohUlTHUdXsZbxX0s3K771ocOcXw4olCwHq7M1NCEBthAIGRQDke
-         msV2pMHof8dBoaROOYbw4+YQcj3ZRB+kgE+ucVWJFOiJOFA31h/4IDX1524HLnmRBLJ6
-         /Gbw==
-X-Gm-Message-State: AGi0PuYTYc1GWKzqoBBx+XEVGJTR4aHoqrUkzPXMJU1M9xQ/J4mvmh7A
-        nLwhmSBsGlbGLwS6AEwGCI7/3DsPoMQ/
-X-Google-Smtp-Source: APiQypKtUhTN6JrNR0HHq9eQB8JauCAxv3amDtUoNn0cEwEHclvopkR8/cBSPWuPpv4WmZeuWo4IlQ==
-X-Received: by 2002:a5d:4a11:: with SMTP id m17mr6816815wrq.125.1586564408662;
-        Fri, 10 Apr 2020 17:20:08 -0700 (PDT)
+        bh=neMHyWmt5aDs4XMeVy9/rpYrSAQCVVUJ/oaGM9211Q8=;
+        b=V7sO5CQaJsAgKuLpUqSHMHDl6SsI+Zdb021Pf2q1eD4SLcfgdRjTRzT8f0Trmto6re
+         BPk+h8He0r17tg1gcCLaGVSYagCvcVq+rQe3InvrKWhd64/gLflPaVUzeIzFXZVSJp4H
+         YDXyYLeJuLEy7+8zKiq4+tD20cl5pN7P3YFepm0T/FtKRO1ei1a0oY3A8UNAFylyojHH
+         tk+NmB2je1ziHmVltd15yS3FMf45t3XGHvW/JjfnnUcEJ6JNGT+rD6mBWIMhOoROncTb
+         k6qSeH6rk+dYMd9Ozb+RA+7B+6R+MNA6EyqQhJApMxL8imPrvTMESKrznnUz/5/Q3LYr
+         +s1g==
+X-Gm-Message-State: AGi0PuY+p67iiOFbTmqPR/c+ouOYa/Og/teVgLOoVht+C1g20frfR+S6
+        J99h13Z2lT0yrPkbrW7lpYCw+TNpZER3
+X-Google-Smtp-Source: APiQypIrfTUAeUpy3epoyJ8Ai+C1TsIbYkXmSFwo9u3pL1BWDnOWYKDkrOgbFpJir7rAeRe2FOxCFA==
+X-Received: by 2002:a1c:2d8b:: with SMTP id t133mr7726176wmt.131.1586564411392;
+        Fri, 10 Apr 2020 17:20:11 -0700 (PDT)
 Received: from ninjahost.lan (host-2-102-14-153.as13285.net. [2.102.14.153])
-        by smtp.gmail.com with ESMTPSA id b191sm5091594wmd.39.2020.04.10.17.20.07
+        by smtp.gmail.com with ESMTPSA id b191sm5091594wmd.39.2020.04.10.17.20.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Apr 2020 17:20:08 -0700 (PDT)
+        Fri, 10 Apr 2020 17:20:10 -0700 (PDT)
 From:   Jules Irenge <jbi.octave@gmail.com>
 To:     linux-kernel@vger.kernel.org
-Cc:     boqun.feng@gmail.com, Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Roy Luo <royluo@google.com>, Kalle Valo <kvalo@codeaurora.org>,
+Cc:     boqun.feng@gmail.com, Jouni Malinen <j@w1.fi>,
+        Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org (open list:MEDIATEK MT76 WIRELESS LAN
-        DRIVER), netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Mediatek SoC
-        support),
-        linux-mediatek@lists.infradead.org (moderated list:ARM/Mediatek SoC
-        support)
-Subject: [PATCH 2/9]  mt76: remove unnecessary annotations
-Date:   Sat, 11 Apr 2020 01:19:26 +0100
-Message-Id: <20200411001933.10072-3-jbi.octave@gmail.com>
+        zhong jiang <zhongjiang@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        linux-wireless@vger.kernel.org (open list:HOST AP DRIVER),
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS)
+Subject: [PATCH 3/9] hostap: Add missing annotations for prism2_bss_list_proc_start() and prism2_bss_list_proc_stop
+Date:   Sat, 11 Apr 2020 01:19:27 +0100
+Message-Id: <20200411001933.10072-4-jbi.octave@gmail.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200411001933.10072-1-jbi.octave@gmail.com>
 References: <0/9>
@@ -72,49 +69,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sparse report warnings at mt76_tx_status_unlock() and mt76_tx_status_lock()
+Sparse reports warnings at prism2_bss_list_proc_start() and prism2_bss_list_proc_stop()
 
-warning: context imbalance in mt76_tx_status_lock() - wrong count at exit
-warning: context imbalance in mt76_tx_status_unlock() - unexpected unlock
+warning: context imbalance in prism2_wds_proc_stop() - unexpected unlock
+warning: context imbalance in prism2_bss_list_proc_start() - wrong count at exit
 
-The root cause is the additional __acquire(&dev->status_list.lock)
-and __release(&dev->status_list.unlock) called
- from inside mt76_tx_status_lock() and mt76_tx_status_unlock().
+The root cause is the missing annotations at prism2_bss_list_proc_start()
 
-Remove __acquire(&dev->status_list.lock) annotation
-Remove __releases(&dev->status_list.unlock)
-Correct &dev->status_list.unlock to &dev->status_list.lock
-	-unlock not defined in the sk_buff_head struct
+Add the missing __acquires(&local->lock) annotation
+Add the missing __releases(&local->lock) annotation
 
 Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
 ---
- drivers/net/wireless/mediatek/mt76/tx.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/wireless/intersil/hostap/hostap_proc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/tx.c b/drivers/net/wireless/mediatek/mt76/tx.c
-index 7ee91d946882..7581ba9c2e95 100644
---- a/drivers/net/wireless/mediatek/mt76/tx.c
-+++ b/drivers/net/wireless/mediatek/mt76/tx.c
-@@ -101,18 +101,16 @@ mt76_tx_status_lock(struct mt76_dev *dev, struct sk_buff_head *list)
- {
- 	__skb_queue_head_init(list);
- 	spin_lock_bh(&dev->status_list.lock);
--	__acquire(&dev->status_list.lock);
+diff --git a/drivers/net/wireless/intersil/hostap/hostap_proc.c b/drivers/net/wireless/intersil/hostap/hostap_proc.c
+index a2ee4693eaed..97c270845fd1 100644
+--- a/drivers/net/wireless/intersil/hostap/hostap_proc.c
++++ b/drivers/net/wireless/intersil/hostap/hostap_proc.c
+@@ -149,6 +149,7 @@ static int prism2_bss_list_proc_show(struct seq_file *m, void *v)
  }
- EXPORT_SYMBOL_GPL(mt76_tx_status_lock);
  
- void
- mt76_tx_status_unlock(struct mt76_dev *dev, struct sk_buff_head *list)
--		      __releases(&dev->status_list.unlock)
-+		      __releases(&dev->status_list.lock)
+ static void *prism2_bss_list_proc_start(struct seq_file *m, loff_t *_pos)
++	__acquires(&local->lock)
  {
- 	struct sk_buff *skb;
+ 	local_info_t *local = PDE_DATA(file_inode(m->file));
+ 	spin_lock_bh(&local->lock);
+@@ -162,6 +163,7 @@ static void *prism2_bss_list_proc_next(struct seq_file *m, void *v, loff_t *_pos
+ }
  
- 	spin_unlock_bh(&dev->status_list.lock);
--	__release(&dev->status_list.unlock);
- 
- 	while ((skb = __skb_dequeue(list)) != NULL)
- 		ieee80211_tx_status(dev->hw, skb);
+ static void prism2_bss_list_proc_stop(struct seq_file *m, void *v)
++	__releases(&local->lock)
+ {
+ 	local_info_t *local = PDE_DATA(file_inode(m->file));
+ 	spin_unlock_bh(&local->lock);
 -- 
 2.24.1
 
