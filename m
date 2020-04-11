@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BF3D1A58E2
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:33:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73B2A1A58D6
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:32:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729342AbgDKXJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 19:09:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47694 "EHLO mail.kernel.org"
+        id S1728487AbgDKXJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 19:09:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47846 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727384AbgDKXJt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 19:09:49 -0400
+        id S1729355AbgDKXJy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 19:09:54 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7366B2173E;
-        Sat, 11 Apr 2020 23:09:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8261520757;
+        Sat, 11 Apr 2020 23:09:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586646589;
-        bh=sPiUjXw3NXpP5qEklGpw3Mls0KRF8CnmJR5qzU4XXv4=;
+        s=default; t=1586646595;
+        bh=f0MLmxKj97w5GJet4LAXzq2Mdbp63LVfDH/sg/PQ8cw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VCNGI9kyZqi/XUl/tKJQxrtoP8jIsMlh7A68qVpHwqCrenIXDiYjhwX5qQcf4auvj
-         YqbKc3H+z5zZc6nhsqemKsRaYXYQ/496z9ECJRb24z6XFJPTxzCm6NeX6bZQDC9Y9R
-         6S0hgWTTBZVt9DUI/r9zCnTsX+GJQrPSwllxleGo=
+        b=tEvLZ+Bdz6JONCijsuGShYhOQepSeaZ5Pg9SQ0Sc9j8B/FyTykEmwX5UA5Uhg+xGY
+         FvozwZnOfx/M93L5cBZ26iU7U9BNn9iLjX+kR+2wcUdjpAQMy/y3Bc5Hosud9Wb6vg
+         MSWz8yf4c8WgM39TlTh+7eP/bB5sQcf3wEfpN/QA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+Cc:     Shannon Nelson <snelson@pensando.io>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 004/108] net: phy: probe PHY drivers synchronously
-Date:   Sat, 11 Apr 2020 19:07:59 -0400
-Message-Id: <20200411230943.24951-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 009/108] ionic: check for NULL structs on teardown
+Date:   Sat, 11 Apr 2020 19:08:04 -0400
+Message-Id: <20200411230943.24951-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200411230943.24951-1-sashal@kernel.org>
 References: <20200411230943.24951-1-sashal@kernel.org>
@@ -45,57 +43,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+From: Shannon Nelson <snelson@pensando.io>
 
-[ Upstream commit 16983507742cbcaa5592af530872a82e82fb9c51 ]
+[ Upstream commit a4674f34711b96b65bdc4d54eca88d2fd123bbc6 ]
 
-If we have scenarios like
+Make sure the queue structs exist before trying to tear
+them down to make for safer error recovery.
 
-mdiobus_register()
-	-> loads PHY driver module(s)
-	-> registers PHY driver(s)
-	-> may schedule async probe
-phydev = mdiobus_get_phy()
-<phydev action involving PHY driver>
-
-or
-
-phydev = phy_device_create()
-	-> loads PHY driver module
-	-> registers PHY driver
-	-> may schedule async probe
-<phydev action involving PHY driver>
-
-then we expect the PHY driver to be bound to the phydev when triggering
-the action. This may not be the case in case of asynchronous probing.
-Therefore ensure that PHY drivers are probed synchronously.
-
-Default still is sync probing, except async probing is explicitly
-requested. I saw some comments that the intention is to promote
-async probing for more parallelism in boot process and want to be
-prepared for the case that the default is changed to async probing.
-
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Fixes: 0f3154e6bcb3 ("ionic: Add Tx and Rx handling")
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/phy_device.c | 1 +
- 1 file changed, 1 insertion(+)
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 26 ++++++++++---------
+ .../net/ethernet/pensando/ionic/ionic_main.c  |  7 ++++-
+ 2 files changed, 20 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 0907c3d8d94a2..67d0f68f92316 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -2322,6 +2322,7 @@ int phy_driver_register(struct phy_driver *new_driver, struct module *owner)
- 	new_driver->mdiodrv.driver.probe = phy_probe;
- 	new_driver->mdiodrv.driver.remove = phy_remove;
- 	new_driver->mdiodrv.driver.owner = owner;
-+	new_driver->mdiodrv.driver.probe_type = PROBE_FORCE_SYNCHRONOUS;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index 134640412d7b7..21e126708cc20 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -303,19 +303,21 @@ static void ionic_qcqs_free(struct ionic_lif *lif)
+ 		lif->adminqcq = NULL;
+ 	}
  
- 	retval = driver_register(&new_driver->mdiodrv.driver);
- 	if (retval) {
+-	for (i = 0; i < lif->nxqs; i++)
+-		if (lif->rxqcqs[i].stats)
+-			devm_kfree(dev, lif->rxqcqs[i].stats);
+-
+-	devm_kfree(dev, lif->rxqcqs);
+-	lif->rxqcqs = NULL;
+-
+-	for (i = 0; i < lif->nxqs; i++)
+-		if (lif->txqcqs[i].stats)
+-			devm_kfree(dev, lif->txqcqs[i].stats);
++	if (lif->rxqcqs) {
++		for (i = 0; i < lif->nxqs; i++)
++			if (lif->rxqcqs[i].stats)
++				devm_kfree(dev, lif->rxqcqs[i].stats);
++		devm_kfree(dev, lif->rxqcqs);
++		lif->rxqcqs = NULL;
++	}
+ 
+-	devm_kfree(dev, lif->txqcqs);
+-	lif->txqcqs = NULL;
++	if (lif->txqcqs) {
++		for (i = 0; i < lif->nxqs; i++)
++			if (lif->txqcqs[i].stats)
++				devm_kfree(dev, lif->txqcqs[i].stats);
++		devm_kfree(dev, lif->txqcqs);
++		lif->txqcqs = NULL;
++	}
+ }
+ 
+ static void ionic_link_qcq_interrupts(struct ionic_qcq *src_qcq,
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+index aab3114134128..20a384964fc52 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+@@ -236,11 +236,16 @@ static void ionic_adminq_cb(struct ionic_queue *q,
+ 
+ static int ionic_adminq_post(struct ionic_lif *lif, struct ionic_admin_ctx *ctx)
+ {
+-	struct ionic_queue *adminq = &lif->adminqcq->q;
++	struct ionic_queue *adminq;
+ 	int err = 0;
+ 
+ 	WARN_ON(in_interrupt());
+ 
++	if (!lif->adminqcq)
++		return -EIO;
++
++	adminq = &lif->adminqcq->q;
++
+ 	spin_lock(&lif->adminq_lock);
+ 	if (!ionic_q_has_space(adminq, 1)) {
+ 		err = -ENOSPC;
 -- 
 2.20.1
 
