@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 716731A518D
-	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 14:26:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0D761A5144
+	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 14:24:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727120AbgDKMP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 08:15:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49316 "EHLO mail.kernel.org"
+        id S1728477AbgDKMRq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 08:17:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52502 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727181AbgDKMPZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 08:15:25 -0400
+        id S1727239AbgDKMRp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 08:17:45 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9B29C21655;
-        Sat, 11 Apr 2020 12:15:24 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7CFC420644;
+        Sat, 11 Apr 2020 12:17:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586607325;
-        bh=bUKIwhqr/I1zZj3MIfidzAKGc3BlyDNM+bhRPyedYz8=;
+        s=default; t=1586607465;
+        bh=ZOZLhi1wgZ1KCiSc5ynZD9XDsGPp6+H9laCsQzK4XIw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YjyakbU3x04TquuqK0aPptmvK9v2A++njv3YTnZ+/U9p3X3t5O+3eeTsBv+WSwQGm
-         jiq9YJl75nYCGk74lWztaoh7jlkrQM+vFk/zetlJFgC0CDHAQnJtX/OV1wusP2M0kK
-         typbdsFF6I0fSCJlDsZjo9YtFS5+PrOoQooJBXpc=
+        b=nziEdpRd3Az0a/8oUzpOxL6b04HNB+1kih3KF9XH8Q4dHflEIKcrVSCsU8rPzHkIy
+         BF0Vn3HwzOsUk0EgxfKUbIzw+Cys2HiFsVQECUgFGUZB8Ih/lcuUT6I7ANaJ/8CtOS
+         KR6qteJzDussyDhkrdXyDvc35aDPwCx8IRDyR/Ss=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -31,12 +31,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Marcelo Ricardo Leitner <mleitner@redhat.com>,
         netdev@vger.kernel.org, Jarod Wilson <jarod@redhat.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.19 28/54] ipv6: dont auto-add link-local address to lag ports
-Date:   Sat, 11 Apr 2020 14:09:10 +0200
-Message-Id: <20200411115511.324846089@linuxfoundation.org>
+Subject: [PATCH 5.4 03/41] ipv6: dont auto-add link-local address to lag ports
+Date:   Sat, 11 Apr 2020 14:09:12 +0200
+Message-Id: <20200411115504.360628454@linuxfoundation.org>
 X-Mailer: git-send-email 2.26.0
-In-Reply-To: <20200411115508.284500414@linuxfoundation.org>
-References: <20200411115508.284500414@linuxfoundation.org>
+In-Reply-To: <20200411115504.124035693@linuxfoundation.org>
+References: <20200411115504.124035693@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -121,7 +121,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/net/ipv6/addrconf.c
 +++ b/net/ipv6/addrconf.c
-@@ -3241,6 +3241,10 @@ static void addrconf_addr_gen(struct ine
+@@ -3296,6 +3296,10 @@ static void addrconf_addr_gen(struct ine
  	if (netif_is_l3_master(idev->dev))
  		return;
  
