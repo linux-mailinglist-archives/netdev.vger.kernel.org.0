@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58F021A5947
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:35:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D906C1A5508
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:09:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729040AbgDKXI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 19:08:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46356 "EHLO mail.kernel.org"
+        id S1729056AbgDKXI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 19:08:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46406 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729025AbgDKXI4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 19:08:56 -0400
+        id S1729032AbgDKXI5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 19:08:57 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5690E20787;
-        Sat, 11 Apr 2020 23:08:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B54D421924;
+        Sat, 11 Apr 2020 23:08:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586646536;
-        bh=a5MhkjJhLGiofqjLrUGMZvtWcls7SfWJinIAmTiwpEI=;
+        s=default; t=1586646537;
+        bh=0XvcfMjmExThNxJ5Lf2Fhb+tyCIfM3N6i5bSIHAsSqI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ewZnN33bgTolRW+AOqbjDT+G1UtCmnepvX6Nmmtl+gVj/ozCDpH189F6l7RhP47FB
-         SDu76PltugNNK4TZKIl2+p/kUbB2aWpFIgzAOe1UaveZkuADB4iIwNfBpoAR9iBwPt
-         7YpSdUyLWHOXmrnKXn0HzkAdCqQQCofl/WdX5rwE=
+        b=poTa/Elw+BHB2yM17+HFmu+kmL/32fCa3UvZ/DKpeKnFxPqupBVhUQXojoErzLDFK
+         hvhhPGhyai88kvIsEzGTX7lD7hawkrKhYRqNNENX45fCizV2nSiHkzfnQQkHldlUtA
+         3lWMbTiIrxCufFzYQBrL3T5Mf8Co8I6W+oeDf0Bg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Raveendran Somu <raveendran.somu@cypress.com>,
@@ -32,9 +32,9 @@ Cc:     Raveendran Somu <raveendran.somu@cypress.com>,
         linux-wireless@vger.kernel.org,
         brcm80211-dev-list.pdl@broadcom.com,
         brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 089/121] brcmfmac: Fix driver crash on USB control transfer timeout
-Date:   Sat, 11 Apr 2020 19:06:34 -0400
-Message-Id: <20200411230706.23855-89-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.5 090/121] brcmfmac: Fix double freeing in the fmac usb data path
+Date:   Sat, 11 Apr 2020 19:06:35 -0400
+Message-Id: <20200411230706.23855-90-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200411230706.23855-1-sashal@kernel.org>
 References: <20200411230706.23855-1-sashal@kernel.org>
@@ -49,55 +49,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Raveendran Somu <raveendran.somu@cypress.com>
 
-[ Upstream commit 93a5bfbc7cad8bf3dea81c9bc07761c1226a0860 ]
+[ Upstream commit 78179869dc3f5c0059bbf5d931a2717f1ad97ecd ]
 
-When the control transfer gets timed out, the error status
-was returned without killing that urb, this leads to using
-the same urb. This issue causes the kernel crash as the same
-urb is sumbitted multiple times. The fix is to kill the
-urb for timeout transfer before returning error
+When the brcmf_fws_process_skb() fails to get hanger slot for
+queuing the skb, it tries to free the skb.
+But the caller brcmf_netdev_start_xmit() of that funciton frees
+the packet on error return value.
+This causes the double freeing and which caused the kernel crash.
 
 Signed-off-by: Raveendran Somu <raveendran.somu@cypress.com>
 Signed-off-by: Chi-hsien Lin <chi-hsien.lin@cypress.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/1585124429-97371-2-git-send-email-chi-hsien.lin@cypress.com
+Link: https://lore.kernel.org/r/1585124429-97371-3-git-send-email-chi-hsien.lin@cypress.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
-index 575ed19e91951..10387a7f5d565 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
-@@ -328,11 +328,12 @@ static int brcmf_usb_tx_ctlpkt(struct device *dev, u8 *buf, u32 len)
- 		return err;
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
+index 2bd892df83cc5..80cc45c9aa4a1 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
+@@ -2145,8 +2145,7 @@ int brcmf_fws_process_skb(struct brcmf_if *ifp, struct sk_buff *skb)
+ 		brcmf_fws_enq(fws, BRCMF_FWS_SKBSTATE_DELAYED, fifo, skb);
+ 		brcmf_fws_schedule_deq(fws);
+ 	} else {
+-		bphy_err(drvr, "drop skb: no hanger slot\n");
+-		brcmf_txfinalize(ifp, skb, false);
++		bphy_err(drvr, "no hanger slot available\n");
+ 		rc = -ENOMEM;
  	}
- 	timeout = brcmf_usb_ioctl_resp_wait(devinfo);
--	clear_bit(0, &devinfo->ctl_op);
- 	if (!timeout) {
- 		brcmf_err("Txctl wait timed out\n");
-+		usb_kill_urb(devinfo->ctl_urb);
- 		err = -EIO;
- 	}
-+	clear_bit(0, &devinfo->ctl_op);
- 	return err;
- }
- 
-@@ -358,11 +359,12 @@ static int brcmf_usb_rx_ctlpkt(struct device *dev, u8 *buf, u32 len)
- 	}
- 	timeout = brcmf_usb_ioctl_resp_wait(devinfo);
- 	err = devinfo->ctl_urb_status;
--	clear_bit(0, &devinfo->ctl_op);
- 	if (!timeout) {
- 		brcmf_err("rxctl wait timed out\n");
-+		usb_kill_urb(devinfo->ctl_urb);
- 		err = -EIO;
- 	}
-+	clear_bit(0, &devinfo->ctl_op);
- 	if (!err)
- 		return devinfo->ctl_urb_actual_length;
- 	else
+ 	brcmf_fws_unlock(fws);
 -- 
 2.20.1
 
