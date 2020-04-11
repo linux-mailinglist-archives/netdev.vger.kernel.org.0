@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 972EF1A5B30
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:48:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F042D1A5443
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:05:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727354AbgDKXEm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 19:04:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38208 "EHLO mail.kernel.org"
+        id S1727511AbgDKXEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 19:04:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38452 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727269AbgDKXEj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 19:04:39 -0400
+        id S1727405AbgDKXEt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 19:04:49 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1E5A7215A4;
-        Sat, 11 Apr 2020 23:04:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8C13E216FD;
+        Sat, 11 Apr 2020 23:04:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586646279;
-        bh=trlwDwThN8VpndS+Dosau8+WGoHbHcbywweE9WxjASU=;
+        s=default; t=1586646289;
+        bh=70QxI/XnNG+p+hRvKqGo7LgBaeCOY62GcGH1duZbP6E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WATsBN2IA4yLD5aPmOkGZ0YlZgyoEivtEjnSTloxHGpSqzBQSgeJOiLIN11pr/e4V
-         6qnxhLlK9Aa1TDzUKYLOQ+9Wxq6i5hS/Q6f/DsvJJo//TjVeFTFRGY+jcRgdbSI1ZQ
-         4sMQFAcZEI17+9r4fDYjo9spzuLq8IVfHQC86QW4=
+        b=IbvQyFPi9Uvl5GUv2a2+KOAe4Ao4ZhuEWB5hKY+PzJF4QM/WqXdbLfFO4KIEpq3fc
+         h522PBGVwzTShzXyPJFTizAUB002uMxK4JnOMev3BxY5iOQ16wP54H/8+h+7zslSx/
+         rAF0Ndd+OZmgM8ld7NpH4YDuthqiGB5P83y9klgs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 042/149] libbpf: Fix handling of optional field_name in btf_dump__emit_type_decl
-Date:   Sat, 11 Apr 2020 19:01:59 -0400
-Message-Id: <20200411230347.22371-42-sashal@kernel.org>
+Cc:     Guangbin Huang <huangguangbin2@huawei.com>,
+        Huazhong Tan <tanhuazhong@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.6 050/149] net: hns3: modify an unsuitable print when setting unknown duplex to fibre
+Date:   Sat, 11 Apr 2020 19:02:07 -0400
+Message-Id: <20200411230347.22371-50-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200411230347.22371-1-sashal@kernel.org>
 References: <20200411230347.22371-1-sashal@kernel.org>
@@ -44,35 +44,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrii Nakryiko <andriin@fb.com>
+From: Guangbin Huang <huangguangbin2@huawei.com>
 
-[ Upstream commit 320a36063e1441210106aa33997ad3770d4c86b4 ]
+[ Upstream commit 2d3db26d78805c9e06e26def0081c76e9bb0b7d6 ]
 
-Internal functions, used by btf_dump__emit_type_decl(), assume field_name is
-never going to be NULL. Ensure it's always the case.
+Currently, if device is in link down status and user uses
+'ethtool -s' command to set speed but not specify duplex
+mode, the duplex mode passed from ethtool to driver is
+unknown value(255), and the fibre port will identify this
+value as half duplex mode and print "only copper port
+supports half duplex!". This message is confusing.
 
-Fixes: 9f81654eebe8 ("libbpf: Expose BTF-to-C type declaration emitting API")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20200303180800.3303471-1-andriin@fb.com
+So for fibre port, only the setting duplex is half, prints
+error and returns.
+
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/btf_dump.c | 2 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-index bd09ed1710f12..dc451e4de5ad4 100644
---- a/tools/lib/bpf/btf_dump.c
-+++ b/tools/lib/bpf/btf_dump.c
-@@ -1030,7 +1030,7 @@ int btf_dump__emit_type_decl(struct btf_dump *d, __u32 id,
- 	if (!OPTS_VALID(opts, btf_dump_emit_type_decl_opts))
- 		return -EINVAL;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index c03856e633202..3f59a1924390f 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -736,7 +736,7 @@ static int hns3_check_ksettings_param(const struct net_device *netdev,
+ 	if (ops->get_media_type)
+ 		ops->get_media_type(handle, &media_type, &module_type);
  
--	fname = OPTS_GET(opts, field_name, NULL);
-+	fname = OPTS_GET(opts, field_name, "");
- 	lvl = OPTS_GET(opts, indent_level, 0);
- 	btf_dump_emit_type_decl(d, id, fname, lvl);
- 	return 0;
+-	if (cmd->base.duplex != DUPLEX_FULL &&
++	if (cmd->base.duplex == DUPLEX_HALF &&
+ 	    media_type != HNAE3_MEDIA_TYPE_COPPER) {
+ 		netdev_err(netdev,
+ 			   "only copper port supports half duplex!");
 -- 
 2.20.1
 
