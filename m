@@ -2,62 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2DEB1A4CE1
-	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 02:20:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 927B41A4CCF
+	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 02:20:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726827AbgDKAUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Apr 2020 20:20:16 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:39469 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726701AbgDKAUO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 20:20:14 -0400
-Received: by mail-wm1-f67.google.com with SMTP id y24so4360688wma.4;
-        Fri, 10 Apr 2020 17:20:12 -0700 (PDT)
+        id S1726878AbgDKAUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Apr 2020 20:20:21 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:37800 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726810AbgDKAUR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Apr 2020 20:20:17 -0400
+Received: by mail-wm1-f65.google.com with SMTP id z6so4385296wml.2;
+        Fri, 10 Apr 2020 17:20:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=neMHyWmt5aDs4XMeVy9/rpYrSAQCVVUJ/oaGM9211Q8=;
-        b=ncIQdvrnO5Y2UQ4dYx8USO2hUvroaLP7i3q1a/wfun2XI+gGPlRhgRiJU9OTT314qD
-         8q4YUQxdkfr1r9NLN2vyQjnAjRHRpkkmQY38RO7bvSia1aBpxZDnGwzZAyqFw6+kX6sK
-         6oXnPqKMY+TTO8Thr0aP15hIm+e394UBVPEVfsmsHST31qnML9qMB/XpPwRjIy0xzE+H
-         swmgg5phJbFpAayDQeTDasnKjdsuyJWAPqHSwWR2CWlowB/tqBPVmKjIp+RNpODjIbYM
-         cX0WpMgT/BaWa9ABnWzeSV1KOjR8lLR3Jewk9SX9yKI63TpUBY+m1qpoNoWSJ+XQA2Kj
-         KVHg==
+        bh=bnsdQ5U1vczReUdSDEyFDyP+NZXKnWhzI4gNW+WqNi8=;
+        b=Y4P580LG8AOE73qKmST1Ddlv62Xh2B/xEmvDDI7TnWMBIYAgb0We1EJiiTitFQ7XuJ
+         iOnsUBn0VCt4JcfU84GiB7eSPyTdXOLNYo+DEZvom+0aRjTkhl4ofekKMOk6b8/e8LOU
+         3Syu2KELG0PNf5gGTqPoRmqaMYTka12nijp+jwg8oRyGxnrgxSRE7pngHjzfDUUzLao7
+         nDTj73suFFI+YSHA2HOd5SItkBr9miR3s9NIaItMOPBwJAPjmuC8E/cpKiyxDLqev7JT
+         45yoPK7F8KLtMGSUNDDppOSOEKe7raEHcq2ZG//QO7VpmCudSZUXqouMkH5QCr3fB0hB
+         sZsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=neMHyWmt5aDs4XMeVy9/rpYrSAQCVVUJ/oaGM9211Q8=;
-        b=V7sO5CQaJsAgKuLpUqSHMHDl6SsI+Zdb021Pf2q1eD4SLcfgdRjTRzT8f0Trmto6re
-         BPk+h8He0r17tg1gcCLaGVSYagCvcVq+rQe3InvrKWhd64/gLflPaVUzeIzFXZVSJp4H
-         YDXyYLeJuLEy7+8zKiq4+tD20cl5pN7P3YFepm0T/FtKRO1ei1a0oY3A8UNAFylyojHH
-         tk+NmB2je1ziHmVltd15yS3FMf45t3XGHvW/JjfnnUcEJ6JNGT+rD6mBWIMhOoROncTb
-         k6qSeH6rk+dYMd9Ozb+RA+7B+6R+MNA6EyqQhJApMxL8imPrvTMESKrznnUz/5/Q3LYr
-         +s1g==
-X-Gm-Message-State: AGi0PuY+p67iiOFbTmqPR/c+ouOYa/Og/teVgLOoVht+C1g20frfR+S6
-        J99h13Z2lT0yrPkbrW7lpYCw+TNpZER3
-X-Google-Smtp-Source: APiQypIrfTUAeUpy3epoyJ8Ai+C1TsIbYkXmSFwo9u3pL1BWDnOWYKDkrOgbFpJir7rAeRe2FOxCFA==
-X-Received: by 2002:a1c:2d8b:: with SMTP id t133mr7726176wmt.131.1586564411392;
-        Fri, 10 Apr 2020 17:20:11 -0700 (PDT)
+        bh=bnsdQ5U1vczReUdSDEyFDyP+NZXKnWhzI4gNW+WqNi8=;
+        b=POtOzAC8EXLPD+ihwvx1uMl9J6muC1AIMnpzrOjkI/LNMZD/jqWnZ37ketDkif7bdP
+         rGrhs9SokNkFWikIfZrTP0RcD681Iko2cUG6x4erQe19tGm0LGH+SFnpF+gAEBmIgRXw
+         ynbAiNiJ99ERtAO19wcKl0yLky9+VlHzQAnXKDY+iLqYy6ANIvzXuLaWxsybVWV5Pnxy
+         UbIoCwhMYmtOUCBiYhk4bXnBamfOYp6/R5cbdBLLa+UbCO57IOjgSAnDsr1M9oiFi7Ft
+         egoxNHSVbqXrZcDTQC6GQTMbKevaVNRftkB5NYGyY+YdgDSPYvlZpHRF+nYBLs0d+57H
+         wCjA==
+X-Gm-Message-State: AGi0PuZ1AgcE+jgQ7UEMt8hGNcrqBrvr1wFXBETDrDFuNS92krDPuC/K
+        KZZQv/TnqgC4VcMtW8gyQUHiCCPOu5g9
+X-Google-Smtp-Source: APiQypIGyDnDKW2FoYn138vCPA/Jpjjbp+1H5MENkWO7oxvo7KZDFCmi+fR4jGleSf1o3W6FbciRlg==
+X-Received: by 2002:a1c:f409:: with SMTP id z9mr7850215wma.51.1586564414006;
+        Fri, 10 Apr 2020 17:20:14 -0700 (PDT)
 Received: from ninjahost.lan (host-2-102-14-153.as13285.net. [2.102.14.153])
-        by smtp.gmail.com with ESMTPSA id b191sm5091594wmd.39.2020.04.10.17.20.10
+        by smtp.gmail.com with ESMTPSA id b191sm5091594wmd.39.2020.04.10.17.20.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Apr 2020 17:20:10 -0700 (PDT)
+        Fri, 10 Apr 2020 17:20:13 -0700 (PDT)
 From:   Jules Irenge <jbi.octave@gmail.com>
 To:     linux-kernel@vger.kernel.org
-Cc:     boqun.feng@gmail.com, Jouni Malinen <j@w1.fi>,
+Cc:     boqun.feng@gmail.com,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        zhong jiang <zhongjiang@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        linux-wireless@vger.kernel.org (open list:HOST AP DRIVER),
+        Johannes Berg <johannes.berg@intel.com>,
+        linux-wireless@vger.kernel.org (open list:BROADCOM BRCM80211
+        IEEE802.11n WIRELESS DRIVER),
+        brcm80211-dev-list.pdl@broadcom.com (open list:BROADCOM BRCM80211
+        IEEE802.11n WIRELESS DRIVER),
+        brcm80211-dev-list@cypress.com (open list:BROADCOM BRCM80211
+        IEEE802.11n WIRELESS DRIVER),
         netdev@vger.kernel.org (open list:NETWORKING DRIVERS)
-Subject: [PATCH 3/9] hostap: Add missing annotations for prism2_bss_list_proc_start() and prism2_bss_list_proc_stop
-Date:   Sat, 11 Apr 2020 01:19:27 +0100
-Message-Id: <20200411001933.10072-4-jbi.octave@gmail.com>
+Subject: [PATCH 4/9] mac80211: Add missing annotation for brcms_rfkill_set_hw_state()
+Date:   Sat, 11 Apr 2020 01:19:28 +0100
+Message-Id: <20200411001933.10072-5-jbi.octave@gmail.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200411001933.10072-1-jbi.octave@gmail.com>
 References: <0/9>
@@ -69,41 +76,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sparse reports warnings at prism2_bss_list_proc_start() and prism2_bss_list_proc_stop()
+Sparse reports a warning at brcms_rfkill_set_hw_state()
 
-warning: context imbalance in prism2_wds_proc_stop() - unexpected unlock
-warning: context imbalance in prism2_bss_list_proc_start() - wrong count at exit
-
-The root cause is the missing annotations at prism2_bss_list_proc_start()
-
-Add the missing __acquires(&local->lock) annotation
-Add the missing __releases(&local->lock) annotation
+warning: context imbalance in brcms_rfkill_set_hw_state()
+	- unexpected unlock
+The root cause is the missing annotation at brcms_rfkill_set_hw_state()
+Add the missing __must_hold(&wl->lock) annotation
 
 Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
 ---
- drivers/net/wireless/intersil/hostap/hostap_proc.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/intersil/hostap/hostap_proc.c b/drivers/net/wireless/intersil/hostap/hostap_proc.c
-index a2ee4693eaed..97c270845fd1 100644
---- a/drivers/net/wireless/intersil/hostap/hostap_proc.c
-+++ b/drivers/net/wireless/intersil/hostap/hostap_proc.c
-@@ -149,6 +149,7 @@ static int prism2_bss_list_proc_show(struct seq_file *m, void *v)
- }
- 
- static void *prism2_bss_list_proc_start(struct seq_file *m, loff_t *_pos)
-+	__acquires(&local->lock)
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
+index 8e8b685cfe09..c3dbeacea6ca 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
+@@ -1717,6 +1717,7 @@ int brcms_check_firmwares(struct brcms_info *wl)
+  * precondition: perimeter lock has been acquired
+  */
+ bool brcms_rfkill_set_hw_state(struct brcms_info *wl)
++	__must_hold(&wl->lock)
  {
- 	local_info_t *local = PDE_DATA(file_inode(m->file));
- 	spin_lock_bh(&local->lock);
-@@ -162,6 +163,7 @@ static void *prism2_bss_list_proc_next(struct seq_file *m, void *v, loff_t *_pos
- }
+ 	bool blocked = brcms_c_check_radio_disabled(wl->wlc);
  
- static void prism2_bss_list_proc_stop(struct seq_file *m, void *v)
-+	__releases(&local->lock)
- {
- 	local_info_t *local = PDE_DATA(file_inode(m->file));
- 	spin_unlock_bh(&local->lock);
 -- 
 2.24.1
 
