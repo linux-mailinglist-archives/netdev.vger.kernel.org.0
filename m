@@ -2,35 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BD131A577E
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:23:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F2211A5775
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:23:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730582AbgDKXXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 19:23:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53624 "EHLO mail.kernel.org"
+        id S1730464AbgDKXXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 19:23:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53948 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730292AbgDKXM4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 19:12:56 -0400
+        id S1730324AbgDKXNF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 19:13:05 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C62BB20708;
-        Sat, 11 Apr 2020 23:12:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6D6F520787;
+        Sat, 11 Apr 2020 23:13:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586646776;
-        bh=qatoofgB5RrvttR39Yh97SfdZun7nyvSZh5sTNU+DiE=;
+        s=default; t=1586646785;
+        bh=g0v0sXrv70IUGTrwcuOJiF8tOCF6w735QElodev/INo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1V86hcAqW+S2ED/MbJpL5q0lwyv4x4wyKZr8azHTswkBQ6uC+RD81Py5RhRO207oi
-         hU1YH0I/AgLKkOCK6te1TITMVlixhobZ7MvAU+LnqNJ7EYK7CJaKvbf6ozA9xl7FJR
-         T929VtbAnSFIZdpJyBxTvHvF6pgD9WtIQwwTYFH4=
+        b=FatpMbInEFnovNmd6pIvm4fumQLnuUwUubMAwbbOSpzSwtNQNSusBE8JKzRw/FuXW
+         +VfVQzF1Y855/sy0MNit79yQ256Nt0oQZXpzs9LdqC2+sxkxuaAZu47KcdtXMWHU+f
+         SONO6qFXmQmAKgvgQgh+B3nNbR2KpzLLvDDBghr8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wen Gong <wgong@codeaurora.org>, Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 43/66] ath10k: start recovery process when read int status fail for sdio
-Date:   Sat, 11 Apr 2020 19:11:40 -0400
-Message-Id: <20200411231203.25933-43-sashal@kernel.org>
+Cc:     Raveendran Somu <raveendran.somu@cypress.com>,
+        Chi-hsien Lin <chi-hsien.lin@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 50/66] brcmfmac: Fix driver crash on USB control transfer timeout
+Date:   Sat, 11 Apr 2020 19:11:47 -0400
+Message-Id: <20200411231203.25933-50-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200411231203.25933-1-sashal@kernel.org>
 References: <20200411231203.25933-1-sashal@kernel.org>
@@ -43,51 +47,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wen Gong <wgong@codeaurora.org>
+From: Raveendran Somu <raveendran.somu@cypress.com>
 
-[ Upstream commit 37b7ecb75627699e96750db1e0c5ac56224245df ]
+[ Upstream commit 93a5bfbc7cad8bf3dea81c9bc07761c1226a0860 ]
 
-When running simulate crash stress test, it happened
-"failed to read from address 0x800: -110".
+When the control transfer gets timed out, the error status
+was returned without killing that urb, this leads to using
+the same urb. This issue causes the kernel crash as the same
+urb is sumbitted multiple times. The fix is to kill the
+urb for timeout transfer before returning error
 
-Test steps:
-1. Run command continuous
-echo soft > /sys/kernel/debug/ieee80211/phy0/ath10k/simulate_fw_crash
-
-2. error happened and it did not begin recovery for long time.
-[74377.334846] ath10k_sdio mmc1:0001:1: simulating soft firmware crash
-[74378.378217] ath10k_sdio mmc1:0001:1: failed to read from address 0x800: -110
-[74378.378371] ath10k_sdio mmc1:0001:1: failed to process pending SDIO interrupts: -110
-
-It has sdio errors since it can not read MBOX_HOST_INT_STATUS_ADDRESS,
-then it has to do recovery process to recovery ath10k.
-
-Tested with QCA6174 SDIO with firmware WLAN.RMH.4.4.1-00042.
-
-Signed-off-by: Wen Gong <wgong@codeaurora.org>
+Signed-off-by: Raveendran Somu <raveendran.somu@cypress.com>
+Signed-off-by: Chi-hsien Lin <chi-hsien.lin@cypress.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/1585124429-97371-2-git-send-email-chi-hsien.lin@cypress.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/sdio.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/sdio.c b/drivers/net/wireless/ath/ath10k/sdio.c
-index 0cdaecb0e28a9..1606bd71f3834 100644
---- a/drivers/net/wireless/ath/ath10k/sdio.c
-+++ b/drivers/net/wireless/ath/ath10k/sdio.c
-@@ -915,8 +915,11 @@ static int ath10k_sdio_mbox_read_int_status(struct ath10k *ar,
- 	 */
- 	ret = ath10k_sdio_read(ar, MBOX_HOST_INT_STATUS_ADDRESS,
- 			       irq_proc_reg, sizeof(*irq_proc_reg));
--	if (ret)
-+	if (ret) {
-+		queue_work(ar->workqueue, &ar->restart_work);
-+		ath10k_warn(ar, "read int status fail, start recovery\n");
- 		goto out;
-+	}
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
+index 41254f04ab152..f395ea0b73e7d 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
+@@ -339,11 +339,12 @@ static int brcmf_usb_tx_ctlpkt(struct device *dev, u8 *buf, u32 len)
+ 		return err;
+ 	}
+ 	timeout = brcmf_usb_ioctl_resp_wait(devinfo);
+-	clear_bit(0, &devinfo->ctl_op);
+ 	if (!timeout) {
+ 		brcmf_err("Txctl wait timed out\n");
++		usb_kill_urb(devinfo->ctl_urb);
+ 		err = -EIO;
+ 	}
++	clear_bit(0, &devinfo->ctl_op);
+ 	return err;
+ }
  
- 	/* Update only those registers that are enabled */
- 	*host_int_status = irq_proc_reg->host_int_status &
+@@ -369,11 +370,12 @@ static int brcmf_usb_rx_ctlpkt(struct device *dev, u8 *buf, u32 len)
+ 	}
+ 	timeout = brcmf_usb_ioctl_resp_wait(devinfo);
+ 	err = devinfo->ctl_urb_status;
+-	clear_bit(0, &devinfo->ctl_op);
+ 	if (!timeout) {
+ 		brcmf_err("rxctl wait timed out\n");
++		usb_kill_urb(devinfo->ctl_urb);
+ 		err = -EIO;
+ 	}
++	clear_bit(0, &devinfo->ctl_op);
+ 	if (!err)
+ 		return devinfo->ctl_urb_actual_length;
+ 	else
 -- 
 2.20.1
 
