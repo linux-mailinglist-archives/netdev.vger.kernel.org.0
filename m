@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB1AD1A5640
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:15:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFFAE1A564A
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:15:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730315AbgDKXPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 19:15:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57330 "EHLO mail.kernel.org"
+        id S1730281AbgDKXPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 19:15:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57358 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730574AbgDKXPD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 19:15:03 -0400
+        id S1730548AbgDKXPE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 19:15:04 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B716F216FD;
-        Sat, 11 Apr 2020 23:15:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 103632084D;
+        Sat, 11 Apr 2020 23:15:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586646903;
-        bh=j/J7T8YddQ1GP3noX8Bur2iaAUFZ2iuLy0+IRzGiSN4=;
+        s=default; t=1586646904;
+        bh=qMewOPqG0o5oxG+ZYCQaeBQiCPk5WLpbeEM93ZN/vKU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZZ2gT/aBD3Grtbb5c7B6fnG4ZoTcAj6v3Nr9PulpwuByrjS5Ml1O6fInPrcAQpNL0
-         4ntH8U2wE69IyKwYsM34gWdlMwLUDV/DL0SVXs2JIy9xHE4tZvXpbPnE+2j4FjD4tX
-         hHigmy1oAmvef3/xOTd6kg1giObHcRBwD3YvBs1M=
+        b=qp+ThtzkUQRXwvInZpskDd33iuRSB8ZU4ft74maxy9JquUgadPVZdyau/4fxQg9Hc
+         7woe4tDBTJ5Hbfe/eXaxQ5oo70Ikv0oplD94LXsA34WaeVfngdVDVnUOCZNSjiaQAk
+         pzW82/VEwKHrSVig0aHD4jQvpHF4/IfgVRLRyHp0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Qiujun Huang <hqjagain@gmail.com>,
-        syzbot+4496e82090657320efc6@syzkaller.appspotmail.com,
-        Hillf Danton <hdanton@sina.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+Cc:     Raveendran Somu <raveendran.somu@cypress.com>,
+        Chi-hsien Lin <chi-hsien.lin@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 13/16] Bluetooth: RFCOMM: fix ODEBUG bug in rfcomm_dev_ioctl
-Date:   Sat, 11 Apr 2020 19:14:43 -0400
-Message-Id: <20200411231447.27182-13-sashal@kernel.org>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 14/16] brcmfmac: Fix driver crash on USB control transfer timeout
+Date:   Sat, 11 Apr 2020 19:14:44 -0400
+Message-Id: <20200411231447.27182-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200411231447.27182-1-sashal@kernel.org>
 References: <20200411231447.27182-1-sashal@kernel.org>
@@ -46,38 +45,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Qiujun Huang <hqjagain@gmail.com>
+From: Raveendran Somu <raveendran.somu@cypress.com>
 
-[ Upstream commit 71811cac8532b2387b3414f7cd8fe9e497482864 ]
+[ Upstream commit 93a5bfbc7cad8bf3dea81c9bc07761c1226a0860 ]
 
-Needn't call 'rfcomm_dlc_put' here, because 'rfcomm_dlc_exists' didn't
-increase dlc->refcnt.
+When the control transfer gets timed out, the error status
+was returned without killing that urb, this leads to using
+the same urb. This issue causes the kernel crash as the same
+urb is sumbitted multiple times. The fix is to kill the
+urb for timeout transfer before returning error
 
-Reported-by: syzbot+4496e82090657320efc6@syzkaller.appspotmail.com
-Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
-Suggested-by: Hillf Danton <hdanton@sina.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Raveendran Somu <raveendran.somu@cypress.com>
+Signed-off-by: Chi-hsien Lin <chi-hsien.lin@cypress.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/1585124429-97371-2-git-send-email-chi-hsien.lin@cypress.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/rfcomm/tty.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/wireless/brcm80211/brcmfmac/usb.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/net/bluetooth/rfcomm/tty.c b/net/bluetooth/rfcomm/tty.c
-index 8e385a0ae60e0..939fbf7b352d4 100644
---- a/net/bluetooth/rfcomm/tty.c
-+++ b/net/bluetooth/rfcomm/tty.c
-@@ -413,10 +413,8 @@ static int __rfcomm_create_dev(struct sock *sk, void __user *arg)
- 		dlc = rfcomm_dlc_exists(&req.src, &req.dst, req.channel);
- 		if (IS_ERR(dlc))
- 			return PTR_ERR(dlc);
--		else if (dlc) {
--			rfcomm_dlc_put(dlc);
-+		if (dlc)
- 			return -EBUSY;
--		}
- 		dlc = rfcomm_dlc_alloc(GFP_KERNEL);
- 		if (!dlc)
- 			return -ENOMEM;
+diff --git a/drivers/net/wireless/brcm80211/brcmfmac/usb.c b/drivers/net/wireless/brcm80211/brcmfmac/usb.c
+index 2cb3f12dccbd8..a4eb1ef18143f 100644
+--- a/drivers/net/wireless/brcm80211/brcmfmac/usb.c
++++ b/drivers/net/wireless/brcm80211/brcmfmac/usb.c
+@@ -324,11 +324,12 @@ static int brcmf_usb_tx_ctlpkt(struct device *dev, u8 *buf, u32 len)
+ 		return err;
+ 	}
+ 	timeout = brcmf_usb_ioctl_resp_wait(devinfo);
+-	clear_bit(0, &devinfo->ctl_op);
+ 	if (!timeout) {
+ 		brcmf_err("Txctl wait timed out\n");
++		usb_kill_urb(devinfo->ctl_urb);
+ 		err = -EIO;
+ 	}
++	clear_bit(0, &devinfo->ctl_op);
+ 	return err;
+ }
+ 
+@@ -354,11 +355,12 @@ static int brcmf_usb_rx_ctlpkt(struct device *dev, u8 *buf, u32 len)
+ 	}
+ 	timeout = brcmf_usb_ioctl_resp_wait(devinfo);
+ 	err = devinfo->ctl_urb_status;
+-	clear_bit(0, &devinfo->ctl_op);
+ 	if (!timeout) {
+ 		brcmf_err("rxctl wait timed out\n");
++		usb_kill_urb(devinfo->ctl_urb);
+ 		err = -EIO;
+ 	}
++	clear_bit(0, &devinfo->ctl_op);
+ 	if (!err)
+ 		return devinfo->ctl_urb_actual_length;
+ 	else
 -- 
 2.20.1
 
