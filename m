@@ -2,89 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EE7A41A536C
-	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 20:43:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DDF01A536D
+	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 20:43:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726659AbgDKSlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 14:41:08 -0400
-Received: from mail.skyhub.de ([5.9.137.197]:42696 "EHLO mail.skyhub.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726129AbgDKSlI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 14:41:08 -0400
-Received: from zn.tnic (p200300EC2F1EE200B53534244D96C31E.dip0.t-ipconnect.de [IPv6:2003:ec:2f1e:e200:b535:3424:4d96:c31e])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 57E7B1EC0CC5;
-        Sat, 11 Apr 2020 20:41:07 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1586630467;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=79SuGIhtfZH4AVqTBicnM2HnJJujV/UZuU+29Y4r+D0=;
-        b=aVtlaW0y0wdDjE3pYEMBPnZDohg3ynnwv3dcVJ1I9mtiaLlV6bk0h7tr83V1cZ8NY4Wn73
-        HQBj/E8z3vpAQxCyAl3r9i4B24Ea0cbJIQItbnOxBca2xtPHpO6VJu15jK0Em1Nm2xFrRy
-        CqTtHoUiU5dic0cUPEtZhoKzomTssRI=
-Date:   Sat, 11 Apr 2020 20:41:01 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Keyur Chudgar <keyur@os.amperecomputing.com>,
-        Don Fry <pcnet32@frontier.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>, linux-acenic@sunsite.dk,
-        Maxime Ripard <mripard@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Mark Einon <mark.einon@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>,
-        linux-rockchip@lists.infradead.org,
-        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        David Dillow <dave@thedillows.org>,
-        Netanel Belgazal <netanel@amazon.com>,
-        Quan Nguyen <quan@os.amperecomputing.com>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        linux-arm-kernel@lists.infradead.org,
-        Andreas Larsson <andreas@gaisler.com>,
-        Andy Gospodarek <andy@greyhouse.net>, netdev@vger.kernel.org,
-        Thor Thayer <thor.thayer@linux.intel.com>,
-        linux-kernel@vger.kernel.org, Ion Badulescu <ionut@badula.org>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        Jes Sorensen <jes@trained-monkey.org>,
-        nios2-dev@lists.rocketboards.org, Chen-Yu Tsai <wens@csie.org>
-Subject: Re: [PATCH] net/3com/3c515: Fix MODULE_ARCH_VERMAGIC redefinition
-Message-ID: <20200411184101.GB11128@zn.tnic>
-References: <20200224085311.460338-1-leon@kernel.org>
- <20200224085311.460338-4-leon@kernel.org>
- <20200411155623.GA22175@zn.tnic>
- <20200411161156.GA200683@unreal>
- <20200411173504.GA11128@zn.tnic>
- <20200411181015.GC200683@unreal>
+        id S1726744AbgDKSl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 14:41:57 -0400
+Received: from forward103p.mail.yandex.net ([77.88.28.106]:54879 "EHLO
+        forward103p.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726129AbgDKSl5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Apr 2020 14:41:57 -0400
+Received: from mxback17o.mail.yandex.net (mxback17o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::68])
+        by forward103p.mail.yandex.net (Yandex) with ESMTP id A66A818C0D18;
+        Sat, 11 Apr 2020 21:41:54 +0300 (MSK)
+Received: from iva4-bca95d3b11b1.qloud-c.yandex.net (iva4-bca95d3b11b1.qloud-c.yandex.net [2a02:6b8:c0c:4e8e:0:640:bca9:5d3b])
+        by mxback17o.mail.yandex.net (mxback/Yandex) with ESMTP id fHBCnzA5Eh-fslWbXSX;
+        Sat, 11 Apr 2020 21:41:54 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1586630514;
+        bh=jYd3s4YqKV9Bk1IZymSZ/UKvRBqonGqjzdtesMGkVug=;
+        h=In-Reply-To:From:To:Subject:Cc:Date:References:Message-ID;
+        b=op3iQKchJviCM1upfEQhPQoc1YyefrBhZrxxOfRTr81Bb1n0sotz+Ii5QAOZYBpOn
+         tzIL3ltz5/EAtzvAoC+l1oCD85zTb0y6FiP/Lllal88elXlQfMT6lpShj2K1P6qfJI
+         fDxxPLCN+kFzUPjUOC87bjD3F5D7s8o4v23d1of8=
+Authentication-Results: mxback17o.mail.yandex.net; dkim=pass header.i=@yandex.ru
+Received: by iva4-bca95d3b11b1.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id TrVax7K8o8-frWKduIK;
+        Sat, 11 Apr 2020 21:41:53 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+Subject: Re: [PATCH] scsi: cxgb3i: move docs to functions documented
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org
+References: <20200410170732.411665-1-Hi-Angel@yandex.ru>
+ <20200410184216.0a64b1c7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Konstantin Kharlamov <hi-angel@yandex.ru>
+Message-ID: <72154193-c0a1-919f-8b42-a9656360737f@yandex.ru>
+Date:   Sat, 11 Apr 2020 21:41:53 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200411181015.GC200683@unreal>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200410184216.0a64b1c7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB-large
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 11, 2020 at 09:10:15PM +0300, Leon Romanovsky wrote:
-> I want to think that it was an outcome of some 0-day kbuild report,
-> but I am not sure about that anymore [1].
+Thanks, good point! On my way.
 
-I pushed it here:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/bp/bp.git/log/?h=rc0%2b0-3c
-
-The 0day bot will send me a mail soon. :)
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+On 11.04.2020 04:42, Jakub Kicinski wrote:
+> On Fri, 10 Apr 2020 20:07:32 +0300 Konstantin Kharlamov wrote:
+>> Move documentation for push_tx_frames near the push_tx_frames function,
+>> and likewise for release_offload_resources.
+>>
+>> Signed-off-by: Konstantin Kharlamov <Hi-Angel@yandex.ru>
+> 
+> While at this could you also update the name of the parameter?
+> s/c3cn/csk/.
+> 
+>> +/**
+>> + * release_offload_resources - release offload resource
+>> + * @c3cn: the offloaded iscsi tcp connection.
+>> + * Release resources held by an offload connection (TID, L2T entry, etc.)
+>> + */
+>>   static void release_offload_resources(struct cxgbi_sock *csk)
