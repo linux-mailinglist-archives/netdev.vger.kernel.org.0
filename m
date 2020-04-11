@@ -2,40 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4892D1A581F
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:28:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 663C21A5825
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:28:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729904AbgDKXLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 19:11:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51018 "EHLO mail.kernel.org"
+        id S1730030AbgDKX2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 19:28:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51040 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729882AbgDKXLX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 19:11:23 -0400
+        id S1729424AbgDKXLY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 19:11:24 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7DEF120708;
-        Sat, 11 Apr 2020 23:11:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F41652166E;
+        Sat, 11 Apr 2020 23:11:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586646683;
-        bh=Sc9PaM8KG2j2M4LGfGMIyubp9wA2UO0p2iGeSHmlML0=;
+        s=default; t=1586646684;
+        bh=NIa4Pc3mor/nTpJVhUxJObP/1o6lJ0kvr9Hw5UNiyhY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NEQOiXTe+ScAHlodTO3N9AIlA5b87anXfjkQV7y0wTbboAvulLLcO9LGfcuCdZE22
-         nMcg91nrruUiKP9+golgMSYrCgcFZz2kekfw4JHzBc0fbH3J2tqRdedhURanRbbjW5
-         t/PBvPZcHK/pyEjeQ0FFUuVI8ayzM5EkFEiqItMM=
+        b=lF9iwf2BYt7AMNm4E2NEdgHTDBMMqJTygniEDr6Su8rTpw1a7fryMQOnkrYI6kAAo
+         xF2H+Y9zBmSQVTJ6HpFxd407Fw1TE51RxOrmlw7UtHXbNkF3VRbm+zjyse/UDwmAT1
+         fxYK4AfGsnd6DXMwzTWIWloO+15pGl/LFPcjlQJ4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Raveendran Somu <raveendran.somu@cypress.com>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@cypress.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 079/108] brcmfmac: fix the incorrect return value in brcmf_inform_single_bss().
-Date:   Sat, 11 Apr 2020 19:09:14 -0400
-Message-Id: <20200411230943.24951-79-sashal@kernel.org>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 080/108] xfrm: add prep for esp beet mode offload
+Date:   Sat, 11 Apr 2020 19:09:15 -0400
+Message-Id: <20200411230943.24951-80-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200411230943.24951-1-sashal@kernel.org>
 References: <20200411230943.24951-1-sashal@kernel.org>
@@ -48,41 +43,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Raveendran Somu <raveendran.somu@cypress.com>
+From: Xin Long <lucien.xin@gmail.com>
 
-[ Upstream commit bd9944918ceb28ede97f715d209e220db5e92c09 ]
+[ Upstream commit 308491755f36c461ee67290af159fdba6be0169d ]
 
-The function brcmf_inform_single_bss returns the value as success,
-even when the length exceeds the maximum value.
-The fix is to send appropriate code on this error.
-This issue is observed when Cypress test group reported random fmac
-crashes when running their tests and the path was identified from the
-crash logs. With this fix the random failure issue in Cypress test group
-was resolved.
+Like __xfrm_transport/mode_tunnel_prep(), this patch is to add
+__xfrm_mode_beet_prep() to fix the transport_header for gso
+segments, and reset skb mac_len, and pull skb data to the
+proto inside esp.
 
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-Signed-off-by: Raveendran Somu <raveendran.somu@cypress.com>
-Signed-off-by: Chi-hsien Lin <chi-hsien.lin@cypress.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/1585124429-97371-4-git-send-email-chi-hsien.lin@cypress.com
+This patch also fixes a panic, reported by ltp:
+
+  # modprobe esp4_offload
+  # runltp -f net_stress.ipsec_tcp
+
+  [ 2452.780511] kernel BUG at net/core/skbuff.c:109!
+  [ 2452.799851] Call Trace:
+  [ 2452.800298]  <IRQ>
+  [ 2452.800705]  skb_push.cold.98+0x14/0x20
+  [ 2452.801396]  esp_xmit+0x17b/0x270 [esp4_offload]
+  [ 2452.802799]  validate_xmit_xfrm+0x22f/0x2e0
+  [ 2452.804285]  __dev_queue_xmit+0x589/0x910
+  [ 2452.806264]  __neigh_update+0x3d7/0xa50
+  [ 2452.806958]  arp_process+0x259/0x810
+  [ 2452.807589]  arp_rcv+0x18a/0x1c
+
+It was caused by the skb going to esp_xmit with a wrong transport
+header.
+
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/xfrm/xfrm_device.c | 28 +++++++++++++++++++++++++++-
+ 1 file changed, 27 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-index e3ebb7abbdaed..28e08de04986f 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-@@ -2812,7 +2812,7 @@ static s32 brcmf_inform_single_bss(struct brcmf_cfg80211_info *cfg,
+diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
+index 64486ad813411..0159de5ace90f 100644
+--- a/net/xfrm/xfrm_device.c
++++ b/net/xfrm/xfrm_device.c
+@@ -46,6 +46,25 @@ static void __xfrm_mode_tunnel_prep(struct xfrm_state *x, struct sk_buff *skb,
+ 	pskb_pull(skb, skb->mac_len + x->props.header_len);
+ }
  
- 	if (le32_to_cpu(bi->length) > WL_BSS_INFO_MAX) {
- 		bphy_err(drvr, "Bss info is larger than buffer. Discarding\n");
--		return 0;
-+		return -EINVAL;
++static void __xfrm_mode_beet_prep(struct xfrm_state *x, struct sk_buff *skb,
++				  unsigned int hsize)
++{
++	struct xfrm_offload *xo = xfrm_offload(skb);
++	int phlen = 0;
++
++	if (xo->flags & XFRM_GSO_SEGMENT)
++		skb->transport_header = skb->network_header + hsize;
++
++	skb_reset_mac_len(skb);
++	if (x->sel.family != AF_INET6) {
++		phlen = IPV4_BEET_PHMAXLEN;
++		if (x->outer_mode.family == AF_INET6)
++			phlen += sizeof(struct ipv6hdr) - sizeof(struct iphdr);
++	}
++
++	pskb_pull(skb, skb->mac_len + hsize + (x->props.header_len - phlen));
++}
++
+ /* Adjust pointers into the packet when IPsec is done at layer2 */
+ static void xfrm_outer_mode_prep(struct xfrm_state *x, struct sk_buff *skb)
+ {
+@@ -66,9 +85,16 @@ static void xfrm_outer_mode_prep(struct xfrm_state *x, struct sk_buff *skb)
+ 			return __xfrm_transport_prep(x, skb,
+ 						     sizeof(struct ipv6hdr));
+ 		break;
++	case XFRM_MODE_BEET:
++		if (x->outer_mode.family == AF_INET)
++			return __xfrm_mode_beet_prep(x, skb,
++						     sizeof(struct iphdr));
++		if (x->outer_mode.family == AF_INET6)
++			return __xfrm_mode_beet_prep(x, skb,
++						     sizeof(struct ipv6hdr));
++		break;
+ 	case XFRM_MODE_ROUTEOPTIMIZATION:
+ 	case XFRM_MODE_IN_TRIGGER:
+-	case XFRM_MODE_BEET:
+ 		break;
  	}
- 
- 	if (!bi->ctl_ch) {
+ }
 -- 
 2.20.1
 
