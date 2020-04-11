@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F5BF1A5733
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:21:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F8A01A5720
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:20:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730684AbgDKXVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 19:21:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54628 "EHLO mail.kernel.org"
+        id S1730490AbgDKXNg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 19:13:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54820 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730440AbgDKXN3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 19:13:29 -0400
+        id S1730477AbgDKXNe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 19:13:34 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2902E215A4;
-        Sat, 11 Apr 2020 23:13:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3B03B20708;
+        Sat, 11 Apr 2020 23:13:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586646810;
-        bh=7KBDcV+VldsNsgWPBdf6rR21Z7fTkA7aE2nF50A1fIg=;
+        s=default; t=1586646815;
+        bh=6XBtrqprCqmAJuOV9npDXK8AErRNzlGGsABlQShl+JY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ImxKixyRQ2SjRXKHaWJBf/QubVdjOkZlMB1QKdAgQe2J6WRzl5eBhkEcVrKG1wYc/
-         11ZiVgZL3WXxHedM/45GRdsfHcbjeo8zNdVlJuFGL0kkohYZ6IBQ9KjZaCW9BR0uAY
-         3ktRcjsd/EMZtJpipvOGbW9xn8W0PWY0+tRwUQHM=
+        b=kSKnhyz7U+ZZsxoJel80CV/UC2CvS42mq8MoGChbj5tRJe04D2fw23+LVHHyXTmub
+         ffkb3YyXAL0tepFRJEMitHT3h/OkL5vxDB+VCfnGCJy4aZZUDqqkQ6pMrm4VPnWXSs
+         7b1DdNH3/XEX2OANjyaq/Ckacm1gJGTNz60ZOS6o=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 02/37] net: phy: probe PHY drivers synchronously
-Date:   Sat, 11 Apr 2020 19:12:51 -0400
-Message-Id: <20200411231327.26550-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 06/37] net: phy: mscc: accept all RGMII species in vsc85xx_mac_if_set
+Date:   Sat, 11 Apr 2020 19:12:55 -0400
+Message-Id: <20200411231327.26550-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200411231327.26550-1-sashal@kernel.org>
 References: <20200411231327.26550-1-sashal@kernel.org>
@@ -45,57 +44,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 16983507742cbcaa5592af530872a82e82fb9c51 ]
+[ Upstream commit da206d65f2b293274f8082a26da4e43a1610da54 ]
 
-If we have scenarios like
+The helper for configuring the pinout of the MII side of the PHY should
+do so irrespective of whether RGMII delays are used or not. So accept
+the ID, TXID and RXID variants as well, not just the no-delay RGMII
+variant.
 
-mdiobus_register()
-	-> loads PHY driver module(s)
-	-> registers PHY driver(s)
-	-> may schedule async probe
-phydev = mdiobus_get_phy()
-<phydev action involving PHY driver>
-
-or
-
-phydev = phy_device_create()
-	-> loads PHY driver module
-	-> registers PHY driver
-	-> may schedule async probe
-<phydev action involving PHY driver>
-
-then we expect the PHY driver to be bound to the phydev when triggering
-the action. This may not be the case in case of asynchronous probing.
-Therefore ensure that PHY drivers are probed synchronously.
-
-Default still is sync probing, except async probing is explicitly
-requested. I saw some comments that the intention is to promote
-async probing for more parallelism in boot process and want to be
-prepared for the case that the default is changed to async probing.
-
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/phy_device.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/phy/mscc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 27f1f0b5b8f67..abfe4a6d7eb30 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1887,6 +1887,7 @@ int phy_driver_register(struct phy_driver *new_driver, struct module *owner)
- 	new_driver->mdiodrv.driver.probe = phy_probe;
- 	new_driver->mdiodrv.driver.remove = phy_remove;
- 	new_driver->mdiodrv.driver.owner = owner;
-+	new_driver->mdiodrv.driver.probe_type = PROBE_FORCE_SYNCHRONOUS;
- 
- 	retval = driver_register(&new_driver->mdiodrv.driver);
- 	if (retval) {
+diff --git a/drivers/net/phy/mscc.c b/drivers/net/phy/mscc.c
+index fe81741ab66a3..75b6cdd9d9eb6 100644
+--- a/drivers/net/phy/mscc.c
++++ b/drivers/net/phy/mscc.c
+@@ -470,6 +470,9 @@ static int vsc85xx_mac_if_set(struct phy_device *phydev,
+ 	reg_val = phy_read(phydev, MSCC_PHY_EXT_PHY_CNTL_1);
+ 	reg_val &= ~(MAC_IF_SELECTION_MASK);
+ 	switch (interface) {
++	case PHY_INTERFACE_MODE_RGMII_TXID:
++	case PHY_INTERFACE_MODE_RGMII_RXID:
++	case PHY_INTERFACE_MODE_RGMII_ID:
+ 	case PHY_INTERFACE_MODE_RGMII:
+ 		reg_val |= (MAC_IF_SELECTION_RGMII << MAC_IF_SELECTION_POS);
+ 		break;
 -- 
 2.20.1
 
