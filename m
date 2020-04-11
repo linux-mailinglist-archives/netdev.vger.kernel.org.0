@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1C141A5A0B
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:41:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 094181A59FA
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:40:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727951AbgDKXHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 19:07:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43042 "EHLO mail.kernel.org"
+        id S1729832AbgDKXkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 19:40:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43344 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728617AbgDKXHS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 19:07:18 -0400
+        id S1727919AbgDKXH2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 19:07:28 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 04A5A20CC7;
-        Sat, 11 Apr 2020 23:07:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DE7FF20787;
+        Sat, 11 Apr 2020 23:07:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586646438;
-        bh=Xa8XY9xeIv+I6U6BatoPV/MfhAyhOXvj4mnF/TaDUDg=;
+        s=default; t=1586646447;
+        bh=h08k/XGB9YiKKAdTyYQIrzIjmYkhYs7ZSTs9y0CzzVs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e2JM6BZIzifewHjM8I8oT13/jc6LRXI4nIhWq+UQ/2dk7uAK0XpBZ8eSYPcFNTipn
-         /eNrspSLlWTRa5GrDBsy/2jdTBlcuklZr4lJ8Sz0Y1ReT2lbfcJmCq7YXdymy+gpXl
-         q9luqZE6EZffbAr9RJe4rMGZng0Pn8LVEWjZyQFo=
+        b=N/835YQ1eNIDhLkRpzm8i108HL7ND/KuyET/gCOxgrgvJKcUgkxWN6aq0OP1l7Fui
+         Fhj1zJT0iIgTH2yq9ne1CA/VwxErlG32O9+N6Z/38QQsQhsCEjnL5VWqRWvvyckMpq
+         HQGlSumYC82iCqDERcec3WpLUxVEqmgVpS9LUEWQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 010/121] net: phy: mscc: accept all RGMII species in vsc85xx_mac_if_set
-Date:   Sat, 11 Apr 2020 19:05:15 -0400
-Message-Id: <20200411230706.23855-10-sashal@kernel.org>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.5 018/121] selftests/bpf: Fix test_progs's parsing of test numbers
+Date:   Sat, 11 Apr 2020 19:05:23 -0400
+Message-Id: <20200411230706.23855-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200411230706.23855-1-sashal@kernel.org>
 References: <20200411230706.23855-1-sashal@kernel.org>
@@ -44,37 +46,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Andrii Nakryiko <andriin@fb.com>
 
-[ Upstream commit da206d65f2b293274f8082a26da4e43a1610da54 ]
+[ Upstream commit fc32490bff855a539d253c8a52c5a1ba51d1325a ]
 
-The helper for configuring the pinout of the MII side of the PHY should
-do so irrespective of whether RGMII delays are used or not. So accept
-the ID, TXID and RXID variants as well, not just the no-delay RGMII
-variant.
+When specifying disjoint set of tests, test_progs doesn't set skipped test's
+array elements to false. This leads to spurious execution of tests that should
+have been skipped. Fix it by explicitly initializing them to false.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 3a516a0a3a7b ("selftests/bpf: add sub-tests support for test_progs")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Link: https://lore.kernel.org/bpf/20200314013932.4035712-2-andriin@fb.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/mscc.c | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/testing/selftests/bpf/test_progs.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/phy/mscc.c b/drivers/net/phy/mscc.c
-index 3e38d15a67c64..411c9af3ebc89 100644
---- a/drivers/net/phy/mscc.c
-+++ b/drivers/net/phy/mscc.c
-@@ -824,6 +824,9 @@ static int vsc85xx_mac_if_set(struct phy_device *phydev,
- 	reg_val = phy_read(phydev, MSCC_PHY_EXT_PHY_CNTL_1);
- 	reg_val &= ~(MAC_IF_SELECTION_MASK);
- 	switch (interface) {
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+	case PHY_INTERFACE_MODE_RGMII_ID:
- 	case PHY_INTERFACE_MODE_RGMII:
- 		reg_val |= (MAC_IF_SELECTION_RGMII << MAC_IF_SELECTION_POS);
- 		break;
+diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
+index 7fa7d08a8104d..849c1e8b8e3dc 100644
+--- a/tools/testing/selftests/bpf/test_progs.c
++++ b/tools/testing/selftests/bpf/test_progs.c
+@@ -361,7 +361,7 @@ static int libbpf_print_fn(enum libbpf_print_level level,
+ 
+ int parse_num_list(const char *s, struct test_selector *sel)
+ {
+-	int i, set_len = 0, num, start = 0, end = -1;
++	int i, set_len = 0, new_len, num, start = 0, end = -1;
+ 	bool *set = NULL, *tmp, parsing_end = false;
+ 	char *next;
+ 
+@@ -396,18 +396,19 @@ int parse_num_list(const char *s, struct test_selector *sel)
+ 			return -EINVAL;
+ 
+ 		if (end + 1 > set_len) {
+-			set_len = end + 1;
+-			tmp = realloc(set, set_len);
++			new_len = end + 1;
++			tmp = realloc(set, new_len);
+ 			if (!tmp) {
+ 				free(set);
+ 				return -ENOMEM;
+ 			}
++			for (i = set_len; i < start; i++)
++				tmp[i] = false;
+ 			set = tmp;
++			set_len = new_len;
+ 		}
+-		for (i = start; i <= end; i++) {
++		for (i = start; i <= end; i++)
+ 			set[i] = true;
+-		}
+-
+ 	}
+ 
+ 	if (!set)
 -- 
 2.20.1
 
