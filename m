@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D2481A5937
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:35:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93E861A5524
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:09:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730058AbgDKXfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 19:35:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46570 "EHLO mail.kernel.org"
+        id S1729264AbgDKXJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 19:09:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47358 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729092AbgDKXJD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 19:09:03 -0400
+        id S1729258AbgDKXJc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 19:09:32 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F0FA6216FD;
-        Sat, 11 Apr 2020 23:09:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A1FAE21835;
+        Sat, 11 Apr 2020 23:09:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586646543;
-        bh=xzf5hfC0BW3CdJWDOSiTK6rM7jvE5ABl6OUtU0wT4Qc=;
+        s=default; t=1586646572;
+        bh=6+bWPDXJPSzVT3DAvVk4z5aXpF04J4dNJSc3XKD31JY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2DmzsZB5iyhn/RbI8CpEgw7XooZ1UDfdUNhd4NbYY2ci61INb7tvJzoJ66ojjdNPc
-         DlM/p/62o3BC7vbccjfo2jd8L4AIiC3tcO5at0HzFqmUFw8ootDpbSRkncqM6b2ddR
-         9SxEQRjcxeGUSdCh5y5btI/FBF62YNiNIxIRp2xc=
+        b=gq6feiTuuNwxyoBfXw4UcODxHDys6Z/1r3JiQGhhqGjrA6PqWJMwhNSUCLEpeu1Y7
+         B+odTA0TqiSY1BDrmG5gyZtfYUVQuOuS6iS5n7qxgDlOjtAYc5Ln5ioEHIg6zq1lAw
+         Dzh+pY9bXRygOgBgTqbW7qrTuoIIF5PnCPt9jAKo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Qian Cai <cai@lca.pw>, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+Cc:     Chuck Lever <chuck.lever@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 095/121] netfilter: nf_tables: silence a RCU-list warning in nft_table_lookup()
-Date:   Sat, 11 Apr 2020 19:06:40 -0400
-Message-Id: <20200411230706.23855-95-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.5 119/121] svcrdma: Fix leak of transport addresses
+Date:   Sat, 11 Apr 2020 19:07:04 -0400
+Message-Id: <20200411230706.23855-119-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200411230706.23855-1-sashal@kernel.org>
 References: <20200411230706.23855-1-sashal@kernel.org>
@@ -45,61 +43,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Qian Cai <cai@lca.pw>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit 0a6a9515fe390976cd762c52d8d4f446d7a14285 ]
+[ Upstream commit 1a33d8a284b1e85e03b8c7b1ea8fb985fccd1d71 ]
 
-It is safe to traverse &net->nft.tables with &net->nft.commit_mutex
-held using list_for_each_entry_rcu(). Silence the PROVE_RCU_LIST false
-positive,
+Kernel memory leak detected:
 
-WARNING: suspicious RCU usage
-net/netfilter/nf_tables_api.c:523 RCU-list traversed in non-reader section!!
+unreferenced object 0xffff888849cdf480 (size 8):
+  comm "kworker/u8:3", pid 2086, jiffies 4297898756 (age 4269.856s)
+  hex dump (first 8 bytes):
+    30 00 cd 49 88 88 ff ff                          0..I....
+  backtrace:
+    [<00000000acfc370b>] __kmalloc_track_caller+0x137/0x183
+    [<00000000a2724354>] kstrdup+0x2b/0x43
+    [<0000000082964f84>] xprt_rdma_format_addresses+0x114/0x17d [rpcrdma]
+    [<00000000dfa6ed00>] xprt_setup_rdma_bc+0xc0/0x10c [rpcrdma]
+    [<0000000073051a83>] xprt_create_transport+0x3f/0x1a0 [sunrpc]
+    [<0000000053531a8e>] rpc_create+0x118/0x1cd [sunrpc]
+    [<000000003a51b5f8>] setup_callback_client+0x1a5/0x27d [nfsd]
+    [<000000001bd410af>] nfsd4_process_cb_update.isra.7+0x16c/0x1ac [nfsd]
+    [<000000007f4bbd56>] nfsd4_run_cb_work+0x4c/0xbd [nfsd]
+    [<0000000055c5586b>] process_one_work+0x1b2/0x2fe
+    [<00000000b1e3e8ef>] worker_thread+0x1a6/0x25a
+    [<000000005205fb78>] kthread+0xf6/0xfb
+    [<000000006d2dc057>] ret_from_fork+0x3a/0x50
 
-other info that might help us debug this:
+Introduce a call to xprt_rdma_free_addresses() similar to the way
+that the TCP backchannel releases a transport's peer address
+strings.
 
-rcu_scheduler_active = 2, debug_locks = 1
-1 lock held by iptables/1384:
- #0: ffffffff9745c4a8 (&net->nft.commit_mutex){+.+.}, at: nf_tables_valid_genid+0x25/0x60 [nf_tables]
-
-Call Trace:
- dump_stack+0xa1/0xea
- lockdep_rcu_suspicious+0x103/0x10d
- nft_table_lookup.part.0+0x116/0x120 [nf_tables]
- nf_tables_newtable+0x12c/0x7d0 [nf_tables]
- nfnetlink_rcv_batch+0x559/0x1190 [nfnetlink]
- nfnetlink_rcv+0x1da/0x210 [nfnetlink]
- netlink_unicast+0x306/0x460
- netlink_sendmsg+0x44b/0x770
- ____sys_sendmsg+0x46b/0x4a0
- ___sys_sendmsg+0x138/0x1a0
- __sys_sendmsg+0xb6/0x130
- __x64_sys_sendmsg+0x48/0x50
- do_syscall_64+0x69/0xf4
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-
-Signed-off-by: Qian Cai <cai@lca.pw>
-Acked-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 5d252f90a800 ("svcrdma: Add class for RDMA backwards direction transport")
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/sunrpc/xprtrdma/svc_rdma_backchannel.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 11a2a7b5312ee..61c544801e534 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -520,7 +520,8 @@ static struct nft_table *nft_table_lookup(const struct net *net,
- 	if (nla == NULL)
- 		return ERR_PTR(-EINVAL);
+diff --git a/net/sunrpc/xprtrdma/svc_rdma_backchannel.c b/net/sunrpc/xprtrdma/svc_rdma_backchannel.c
+index 908e78bb87c64..c4fb930779a92 100644
+--- a/net/sunrpc/xprtrdma/svc_rdma_backchannel.c
++++ b/net/sunrpc/xprtrdma/svc_rdma_backchannel.c
+@@ -250,6 +250,7 @@ xprt_rdma_bc_put(struct rpc_xprt *xprt)
+ {
+ 	dprintk("svcrdma: %s: xprt %p\n", __func__, xprt);
  
--	list_for_each_entry_rcu(table, &net->nft.tables, list) {
-+	list_for_each_entry_rcu(table, &net->nft.tables, list,
-+				lockdep_is_held(&net->nft.commit_mutex)) {
- 		if (!nla_strcmp(nla, table->name) &&
- 		    table->family == family &&
- 		    nft_active_genmask(table, genmask))
++	xprt_rdma_free_addresses(xprt);
+ 	xprt_free(xprt);
+ }
+ 
 -- 
 2.20.1
 
