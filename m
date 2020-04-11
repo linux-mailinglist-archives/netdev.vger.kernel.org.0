@@ -2,36 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3D141A5664
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:16:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0389D1A566A
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:16:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730887AbgDKXOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 19:14:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56798 "EHLO mail.kernel.org"
+        id S1730776AbgDKXQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 19:16:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56896 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730878AbgDKXOt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 19:14:49 -0400
+        id S1730468AbgDKXOw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 19:14:52 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1942120787;
-        Sat, 11 Apr 2020 23:14:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7F9B3216FD;
+        Sat, 11 Apr 2020 23:14:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586646888;
-        bh=f0D8Z+oY5ZaJcH142sE8tndQi1zjD0s6/4uhzoQGVbo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=zY0O8vIOCqiaI7lJC4PI5l2J9ki79s6Xo8/9DR3Hv0ef6/lnN5o+1VR07FKRJ1iwX
-         LpVgE2EOfyJg4N634J/HznU1TZcyl7u0WSxFpYV0o0M8dJrPw+NPaTn5Rw12rZ15le
-         D1L5UAekgUAm91IQs7AkuGfNNYR24yK+9e2iOz0w=
+        s=default; t=1586646892;
+        bh=ubpQATfYyxL8AKlKJGzsJ02nU16+ocrs/OQAMKyR6ZE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DxOaVbZjhVbht9HUU8Z9IUBTy5aj9DsxKvcowc326Mwn5ucm3bDteOcziCaFocw+Z
+         Ch2ZoxWkzfVxG69vif/0Pp8CDdMu8SBBVaqP3v/VnfgirsLoRbEWqPV6DH1YDmTOVB
+         iwE+0YVBLTDVGIv2pvg/WVFbiTU+reunjELEbchU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 01/16] net: wan: wanxl: use allow to pass CROSS_COMPILE_M68k for rebuilding firmware
-Date:   Sat, 11 Apr 2020 19:14:31 -0400
-Message-Id: <20200411231447.27182-1-sashal@kernel.org>
+Cc:     Brian Norris <briannorris@chromium.org>,
+        Ganapathi Bhat <ganapathi.gbhat@nxp.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 04/16] mwifiex: set needed_headroom, not hard_header_len
+Date:   Sat, 11 Apr 2020 19:14:34 -0400
+Message-Id: <20200411231447.27182-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200411231447.27182-1-sashal@kernel.org>
+References: <20200411231447.27182-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -41,76 +45,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Masahiro Yamada <masahiroy@kernel.org>
+From: Brian Norris <briannorris@chromium.org>
 
-[ Upstream commit 63b903dfebdea92aa92ad337d8451a6fbfeabf9d ]
+[ Upstream commit 9454f7a895b822dd8fb4588fc55fda7c96728869 ]
 
-As far as I understood from the Kconfig help text, this build rule is
-used to rebuild the driver firmware, which runs on an old m68k-based
-chip. So, you need m68k tools for the firmware rebuild.
+hard_header_len provides limitations for things like AF_PACKET, such
+that we don't allow transmitting packets smaller than this.
 
-wanxl.c is a PCI driver, but CONFIG_M68K does not select CONFIG_HAVE_PCI.
-So, you cannot enable CONFIG_WANXL_BUILD_FIRMWARE for ARCH=m68k. In other
-words, ifeq ($(ARCH),m68k) is false here.
+needed_headroom provides a suggested minimum headroom for SKBs, so that
+we can trivally add our headers to the front.
 
-I am keeping the dead code for now, but rebuilding the firmware requires
-'as68k' and 'ld68k', which I do not have in hand.
+The latter is the correct field to use in this case, while the former
+mostly just prevents sending small AF_PACKET frames.
 
-Instead, the kernel.org m68k GCC [1] successfully built it.
+In any case, mwifiex already does its own bounce buffering [1] if we
+don't have enough headroom, so hints (not hard limits) are all that are
+needed.
 
-Allowing a user to pass in CROSS_COMPILE_M68K= is handier.
+This is the essentially the same bug (and fix) that brcmfmac had, fixed
+in commit cb39288fd6bb ("brcmfmac: use ndev->needed_headroom to reserve
+additional header space").
 
-[1] https://mirrors.edge.kernel.org/pub/tools/crosstool/files/bin/x86_64/9.2.0/x86_64-gcc-9.2.0-nolibc-m68k-linux.tar.xz
+[1] mwifiex_hard_start_xmit():
+	if (skb_headroom(skb) < MWIFIEX_MIN_DATA_HEADER_LEN) {
+	[...]
+		/* Insufficient skb headroom - allocate a new skb */
 
-Suggested-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Fixes: 5e6e3a92b9a4 ("wireless: mwifiex: initial commit for Marvell mwifiex driver")
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Acked-by: Ganapathi Bhat <ganapathi.gbhat@nxp.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wan/Kconfig  |  2 +-
- drivers/net/wan/Makefile | 12 ++++++------
- 2 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/net/wireless/mwifiex/cfg80211.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wan/Kconfig b/drivers/net/wan/Kconfig
-index a2fdd15f285a2..10e53d52b3ed0 100644
---- a/drivers/net/wan/Kconfig
-+++ b/drivers/net/wan/Kconfig
-@@ -199,7 +199,7 @@ config WANXL_BUILD_FIRMWARE
- 	depends on WANXL && !PREVENT_FIRMWARE_BUILD
- 	help
- 	  Allows you to rebuild firmware run by the QUICC processor.
--	  It requires as68k, ld68k and hexdump programs.
-+	  It requires m68k toolchains and hexdump programs.
+diff --git a/drivers/net/wireless/mwifiex/cfg80211.c b/drivers/net/wireless/mwifiex/cfg80211.c
+index c6c2d3304dba7..4f4af48fc3fc6 100644
+--- a/drivers/net/wireless/mwifiex/cfg80211.c
++++ b/drivers/net/wireless/mwifiex/cfg80211.c
+@@ -2755,7 +2755,7 @@ struct wireless_dev *mwifiex_add_virtual_intf(struct wiphy *wiphy,
  
- 	  You should never need this option, say N.
+ 	dev->flags |= IFF_BROADCAST | IFF_MULTICAST;
+ 	dev->watchdog_timeo = MWIFIEX_DEFAULT_WATCHDOG_TIMEOUT;
+-	dev->hard_header_len += MWIFIEX_MIN_DATA_HEADER_LEN;
++	dev->needed_headroom = MWIFIEX_MIN_DATA_HEADER_LEN;
+ 	dev->ethtool_ops = &mwifiex_ethtool_ops;
  
-diff --git a/drivers/net/wan/Makefile b/drivers/net/wan/Makefile
-index c135ef47cbcae..77b8855f26c92 100644
---- a/drivers/net/wan/Makefile
-+++ b/drivers/net/wan/Makefile
-@@ -38,17 +38,17 @@ $(obj)/wanxl.o:	$(obj)/wanxlfw.inc
- 
- ifeq ($(CONFIG_WANXL_BUILD_FIRMWARE),y)
- ifeq ($(ARCH),m68k)
--  AS68K = $(AS)
--  LD68K = $(LD)
-+  M68KAS = $(AS)
-+  M68KLD = $(LD)
- else
--  AS68K = as68k
--  LD68K = ld68k
-+  M68KAS = $(CROSS_COMPILE_M68K)as
-+  M68KLD = $(CROSS_COMPILE_M68K)ld
- endif
- 
- quiet_cmd_build_wanxlfw = BLD FW  $@
-       cmd_build_wanxlfw = \
--	$(CPP) -D__ASSEMBLY__ -Wp,-MD,$(depfile) -I$(srctree)/include/uapi $< | $(AS68K) -m68360 -o $(obj)/wanxlfw.o; \
--	$(LD68K) --oformat binary -Ttext 0x1000 $(obj)/wanxlfw.o -o $(obj)/wanxlfw.bin; \
-+	$(CPP) -D__ASSEMBLY__ -Wp,-MD,$(depfile) -I$(srctree)/include/uapi $< | $(M68KAS) -m68360 -o $(obj)/wanxlfw.o; \
-+	$(M68KLD) --oformat binary -Ttext 0x1000 $(obj)/wanxlfw.o -o $(obj)/wanxlfw.bin; \
- 	hexdump -ve '"\n" 16/1 "0x%02X,"' $(obj)/wanxlfw.bin | sed 's/0x  ,//g;1s/^/static const u8 firmware[]={/;$$s/,$$/\n};\n/' >$(obj)/wanxlfw.inc; \
- 	rm -f $(obj)/wanxlfw.bin $(obj)/wanxlfw.o
- 
+ 	mdev_priv = netdev_priv(dev);
 -- 
 2.20.1
 
