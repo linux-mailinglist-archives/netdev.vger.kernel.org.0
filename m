@@ -2,149 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DB4A1A537C
-	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 21:05:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 221921A53CF
+	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 23:40:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726712AbgDKTFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 15:05:09 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:59090 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726129AbgDKTFI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Apr 2020 15:05:08 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1jNLRC-0000Xa-RL; Sat, 11 Apr 2020 21:05:06 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     syzkaller-bugs@googlegroups.com, mptcp@lists.01.org,
-        Florian Westphal <fw@strlen.de>,
-        syzbot+e56606435b7bfeea8cf5@syzkaller.appspotmail.com
-Subject: [PATCH net] mptcp: fix double-unlock in mptcp_poll
-Date:   Sat, 11 Apr 2020 21:05:01 +0200
-Message-Id: <20200411190501.13249-1-fw@strlen.de>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <000000000000758fcf05a306a8bf@google.com>
-References: <000000000000758fcf05a306a8bf@google.com>
+        id S1726167AbgDKViM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 17:38:12 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:41595 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726025AbgDKViM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Apr 2020 17:38:12 -0400
+Received: by mail-il1-f200.google.com with SMTP id c10so6255741ilq.8
+        for <netdev@vger.kernel.org>; Sat, 11 Apr 2020 14:38:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=qVLd3Bd3uBVfJRLs8SbZxIzd9JmqnZ3Z/DLvPZ5BOss=;
+        b=GTHCwl7Lzl0crCQ+91y41IfehLFUxbHA9ZtqONKUqVAkUwjNj5YWi6I0QuL/176gaf
+         EdbLax/3eV5/d8Zn0SX1lAXhoOU6Zk8sG0japOCqdziruvExMMNMxbFITk95MHDh1oRc
+         AL76cX30z1tBXxVy+t3e7x1ii5NoNe5AqigHU46Ocwx0kh+gp9eQJryUvm+xjW8JkSy/
+         c47mIpAzfL9pzTNSolhs8SNbEgh5xptEz5JWrJRBiHT6nqcepttYOKRWj5tfDykbU2rJ
+         PgUzal1Fx1i4q4hWVBXUBqeO84w/V2z2leCXXl15g0b3POO5rE9RfMh2wJjp+En1VF7G
+         uxGA==
+X-Gm-Message-State: AGi0PubwpjieEk5g06pj5gpU6ZRKiAws/o0ZHOsCKEf1+ukdjxfO1iui
+        9l2rcF1CWPB1oJrwth9CvzD8fASDIna4qLmHnO9+yrkvMI1b
+X-Google-Smtp-Source: APiQypKE0T7vpFvxOcOZvzhUT6OjWfzmqF/bePj9rviDb2ldU3gKgTG6RE46xsPctletAp6kcGWYAiCQogSANoSlVc30WUqilVoK
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a5d:8347:: with SMTP id q7mr10163952ior.172.1586641092063;
+ Sat, 11 Apr 2020 14:38:12 -0700 (PDT)
+Date:   Sat, 11 Apr 2020 14:38:12 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000adb83a05a30aaa04@google.com>
+Subject: WARNING: bad unlock balance in mptcp_shutdown
+From:   syzbot <syzbot+6ebb6d4830e8f8815623@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
+        mptcp@lists.01.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mptcp_connect/28740 is trying to release lock (sk_lock-AF_INET) at:
-[<ffffffff82c15869>] mptcp_poll+0xb9/0x550
+Hello,
+
+syzbot found the following crash on:
+
+HEAD commit:    f5e94d10 Merge tag 'drm-next-2020-04-08' of git://anongit...
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=17a5dbfbe00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=ca75979eeebf06c2
+dashboard link: https://syzkaller.appspot.com/bug?extid=6ebb6d4830e8f8815623
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+6ebb6d4830e8f8815623@syzkaller.appspotmail.com
+
+=====================================
+WARNING: bad unlock balance detected!
+5.6.0-syzkaller #0 Not tainted
+-------------------------------------
+syz-executor.5/2215 is trying to release lock (sk_lock-AF_INET6) at:
+[<ffffffff87c5203b>] mptcp_shutdown+0x38b/0x550 net/mptcp/protocol.c:1889
 but there are no more locks to release!
+
+other info that might help us debug this:
+1 lock held by syz-executor.5/2215:
+ #0: ffff88804a22eda0 (slock-AF_INET6){+.-.}-{2:2}, at: spin_lock_bh include/linux/spinlock.h:358 [inline]
+ #0: ffff88804a22eda0 (slock-AF_INET6){+.-.}-{2:2}, at: release_sock+0x1b/0x1b0 net/core/sock.c:2974
+
+stack backtrace:
+CPU: 0 PID: 2215 Comm: syz-executor.5 Not tainted 5.6.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
 Call Trace:
- lock_release+0x50f/0x750
- release_sock+0x171/0x1b0
- mptcp_poll+0xb9/0x550
- sock_poll+0x157/0x470
- ? get_net_ns+0xb0/0xb0
- do_sys_poll+0x63c/0xdd0
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ __lock_release kernel/locking/lockdep.c:4633 [inline]
+ lock_release+0x586/0x800 kernel/locking/lockdep.c:4941
+ sock_release_ownership include/net/sock.h:1539 [inline]
+ release_sock+0x177/0x1b0 net/core/sock.c:2984
+ mptcp_shutdown+0x38b/0x550 net/mptcp/protocol.c:1889
+ __sys_shutdown+0xf3/0x1a0 net/socket.c:2208
+ __do_sys_shutdown net/socket.c:2216 [inline]
+ __se_sys_shutdown net/socket.c:2214 [inline]
+ __x64_sys_shutdown+0x50/0x70 net/socket.c:2214
+ do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+ entry_SYSCALL_64_after_hwframe+0x49/0xb3
+RIP: 0033:0x45c889
+Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fa67df32c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000030
+RAX: ffffffffffffffda RBX: 00007fa67df336d4 RCX: 000000000045c889
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
+RBP: 000000000076bfa0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
+R13: 0000000000000b5e R14: 00000000004cd960 R15: 000000000076bfac
 
-Problem is that __mptcp_tcp_fallback() releases the mptcp socket lock,
-but after recent change it doesn't do this in all of its return paths.
 
-To fix this, remove the unlock from __mptcp_tcp_fallback() and
-always do the unlock in the caller.
-
-Also add a small comment as to why we have this
-__mptcp_needs_tcp_fallback().
-
-Fixes: 0b4f33def7bbde ("mptcp: fix tcp fallback crash")
-Reported-by: syzbot+e56606435b7bfeea8cf5@syzkaller.appspotmail.com
-Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- NB: Reproducer did not trigger for me, so i can't be 100% sure,
- but looking at the 'Fixes' commit the change to
- __mptcp_needs_tcp_fallback was broken.
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
- net/mptcp/protocol.c | 25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
-
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 72f3176dc924..559253be6a21 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -97,12 +97,7 @@ static struct socket *__mptcp_tcp_fallback(struct mptcp_sock *msk)
- 	if (likely(!__mptcp_needs_tcp_fallback(msk)))
- 		return NULL;
- 
--	if (msk->subflow) {
--		release_sock((struct sock *)msk);
--		return msk->subflow;
--	}
--
--	return NULL;
-+	return msk->subflow;
- }
- 
- static bool __mptcp_can_create_subflow(const struct mptcp_sock *msk)
-@@ -734,9 +729,10 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 			goto out;
- 	}
- 
-+fallback:
- 	ssock = __mptcp_tcp_fallback(msk);
- 	if (unlikely(ssock)) {
--fallback:
-+		release_sock(sk);
- 		pr_debug("fallback passthrough");
- 		ret = sock_sendmsg(ssock, msg);
- 		return ret >= 0 ? ret + copied : (copied ? copied : ret);
-@@ -778,8 +774,14 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		if (ret < 0)
- 			break;
- 		if (ret == 0 && unlikely(__mptcp_needs_tcp_fallback(msk))) {
-+			/* Can happen for passive sockets:
-+			 * 3WHS negotiated MPTCP, but first packet after is
-+			 * plain TCP (e.g. due to middlebox filtering unknown
-+			 * options).
-+			 *
-+			 * Fall back to TCP.
-+			 */
- 			release_sock(ssk);
--			ssock = __mptcp_tcp_fallback(msk);
- 			goto fallback;
- 		}
- 
-@@ -892,6 +894,7 @@ static int mptcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 	ssock = __mptcp_tcp_fallback(msk);
- 	if (unlikely(ssock)) {
- fallback:
-+		release_sock(sk);
- 		pr_debug("fallback-read subflow=%p",
- 			 mptcp_subflow_ctx(ssock->sk));
- 		copied = sock_recvmsg(ssock, msg, flags);
-@@ -1476,12 +1479,11 @@ static int mptcp_setsockopt(struct sock *sk, int level, int optname,
- 	 */
- 	lock_sock(sk);
- 	ssock = __mptcp_tcp_fallback(msk);
-+	release_sock(sk);
- 	if (ssock)
- 		return tcp_setsockopt(ssock->sk, level, optname, optval,
- 				      optlen);
- 
--	release_sock(sk);
--
- 	return -EOPNOTSUPP;
- }
- 
-@@ -1501,12 +1503,11 @@ static int mptcp_getsockopt(struct sock *sk, int level, int optname,
- 	 */
- 	lock_sock(sk);
- 	ssock = __mptcp_tcp_fallback(msk);
-+	release_sock(sk);
- 	if (ssock)
- 		return tcp_getsockopt(ssock->sk, level, optname, optval,
- 				      option);
- 
--	release_sock(sk);
--
- 	return -EOPNOTSUPP;
- }
- 
--- 
-2.24.1
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
