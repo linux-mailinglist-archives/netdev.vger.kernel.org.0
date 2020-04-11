@@ -2,134 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 935D91A5287
-	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 16:54:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 149781A52AB
+	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 17:56:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726182AbgDKOs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 10:48:58 -0400
-Received: from mail.pqgruber.com ([52.59.78.55]:46696 "EHLO mail.pqgruber.com"
+        id S1726182AbgDKP4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 11:56:30 -0400
+Received: from mail.skyhub.de ([5.9.137.197]:49344 "EHLO mail.skyhub.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726037AbgDKOs6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 10:48:58 -0400
-Received: from workstation.tuxnet (213-47-165-233.cable.dynamic.surfer.at [213.47.165.233])
-        by mail.pqgruber.com (Postfix) with ESMTPSA id 20170C72B3E;
-        Sat, 11 Apr 2020 16:48:56 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pqgruber.com;
-        s=mail; t=1586616536;
-        bh=F+HPVoPolAJ0ZWlW/cSWJ0vPz1dnndHcF9dbcmd4TBg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TcNStRDa1gXVevkRBC5ZIkKfQhSn96p+wjeYfG33gC8uqs3PY6O8y2NEfJZjmX5nF
-         d4OneaPIe6XEBAHGflklEmiYyAiIN1nj4QSWBiYnaHTAfGIdRowov+xm6cFwGn+aEg
-         OPnkD4+yIDldQFxFiKQyL5/67qUuhkWcMxu5BMSI=
-Date:   Sat, 11 Apr 2020 16:48:54 +0200
-From:   Clemens Gruber <clemens.gruber@pqgruber.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: marvell: Fix pause frame negotiation
-Message-ID: <20200411144854.GA645563@workstation.tuxnet>
-References: <20200408214326.934440-1-clemens.gruber@pqgruber.com>
- <20200410174304.22f812fd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200411091705.GG25745@shell.armlinux.org.uk>
- <20200411132401.GA273086@workstation.tuxnet>
- <20200411134344.GI25745@shell.armlinux.org.uk>
+        id S1726054AbgDKP4a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 11:56:30 -0400
+Received: from zn.tnic (p200300EC2F1EE2004DDA4FC6A7F1C076.dip0.t-ipconnect.de [IPv6:2003:ec:2f1e:e200:4dda:4fc6:a7f1:c076])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 404AB1EC085F;
+        Sat, 11 Apr 2020 17:56:29 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1586620589;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=0QgKfyD3UcjRgzIwSEmTFwH1FvRCThOAFzQ5S67+qsI=;
+        b=olq7daV2ItKU/slSpda7p8nzWckB9HYez1JCJ44uiLmdHYcn/3sb1KyxX0N4bSYLkeByEc
+        tJIDbMt8m1/bjY7Pw0bZ4MMIIVKiNkPj1a+NKhcxS+2lDfEnuIHXkBiWRUKxiT0XVVWQPq
+        DrnfQ0kcqIextkY2FMCiztRhZDUYQUs=
+Date:   Sat, 11 Apr 2020 17:56:23 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Keyur Chudgar <keyur@os.amperecomputing.com>,
+        Don Fry <pcnet32@frontier.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>, linux-acenic@sunsite.dk,
+        Maxime Ripard <mripard@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Mark Einon <mark.einon@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        linux-rockchip@lists.infradead.org,
+        Iyappan Subramanian <iyappan@os.amperecomputing.com>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        David Dillow <dave@thedillows.org>,
+        Netanel Belgazal <netanel@amazon.com>,
+        Quan Nguyen <quan@os.amperecomputing.com>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        linux-arm-kernel@lists.infradead.org,
+        Andreas Larsson <andreas@gaisler.com>,
+        Andy Gospodarek <andy@greyhouse.net>, netdev@vger.kernel.org,
+        Thor Thayer <thor.thayer@linux.intel.com>,
+        linux-kernel@vger.kernel.org, Ion Badulescu <ionut@badula.org>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        Jes Sorensen <jes@trained-monkey.org>,
+        nios2-dev@lists.rocketboards.org, Chen-Yu Tsai <wens@csie.org>
+Subject: [PATCH] net/3com/3c515: Fix MODULE_ARCH_VERMAGIC redefinition
+Message-ID: <20200411155623.GA22175@zn.tnic>
+References: <20200224085311.460338-1-leon@kernel.org>
+ <20200224085311.460338-4-leon@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200411134344.GI25745@shell.armlinux.org.uk>
+In-Reply-To: <20200224085311.460338-4-leon@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 11, 2020 at 02:43:44PM +0100, Russell King - ARM Linux admin wrote:
-> On Sat, Apr 11, 2020 at 03:24:01PM +0200, Clemens Gruber wrote:
-> > On Sat, Apr 11, 2020 at 10:17:05AM +0100, Russell King - ARM Linux admin wrote:
-> > > On Fri, Apr 10, 2020 at 05:43:04PM -0700, Jakub Kicinski wrote:
-> > > > On Wed,  8 Apr 2020 23:43:26 +0200 Clemens Gruber wrote:
-> > > > > The negotiation of flow control / pause frame modes was broken since
-> > > > > commit fcf1f59afc67 ("net: phy: marvell: rearrange to use
-> > > > > genphy_read_lpa()") moved the setting of phydev->duplex below the
-> > > > > phy_resolve_aneg_pause call. Due to a check of DUPLEX_FULL in that
-> > > > > function, phydev->pause was no longer set.
-> > > > > 
-> > > > > Fix it by moving the parsing of the status variable before the blocks
-> > > > > dealing with the pause frames.
-> > > > > 
-> > > > > Fixes: fcf1f59afc67 ("net: phy: marvell: rearrange to use genphy_read_lpa()")
-> > > > > Cc: stable@vger.kernel.org # v5.6+
-> > > > 
-> > > > nit: please don't CC stable on networking patches
-> > > > 
-> > > > > Signed-off-by: Clemens Gruber <clemens.gruber@pqgruber.com>
-> > > > > ---
-> > > > >  drivers/net/phy/marvell.c | 44 +++++++++++++++++++--------------------
-> > > > >  1 file changed, 22 insertions(+), 22 deletions(-)
-> > > > > 
-> > > > > diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-> > > > > index 4714ca0e0d4b..02cde4c0668c 100644
-> > > > > --- a/drivers/net/phy/marvell.c
-> > > > > +++ b/drivers/net/phy/marvell.c
-> > > > > @@ -1263,6 +1263,28 @@ static int marvell_read_status_page_an(struct phy_device *phydev,
-> > > > >  	int lpa;
-> > > > >  	int err;
-> > > > >  
-> > > > > +	if (!(status & MII_M1011_PHY_STATUS_RESOLVED))
-> > > > > +		return 0;
-> > > > 
-> > > > If we return early here won't we miss updating the advertising bits?
-> > > > We will no longer call e.g. fiber_lpa_mod_linkmode_lpa_t().
-> > > > 
-> > > > Perhaps extracting info from status should be moved to a helper so we
-> > > > can return early without affecting the rest of the flow?
-> > > > 
-> > > > Is my understanding correct?  Russell?
-> > > 
-> > > You are correct - and yes, there is also a problem here.
-> > > 
-> > > It is not clear whether the resolved bit is set before or after the
-> > > link status reports that link is up - however, the resolved bit
-> > > indicates whether the speed and duplex are valid.
-> > 
-> > I assumed that in the fiber case, the link status register won't be 1
-> > until autonegotiation is complete. There is a part in the 88E1510
-> > datasheet on page 57 [2.6.2], which says so but it's in the Fiber/Copper
-> > Auto-Selection chapter and I am not sure if that's true in general. (?)
-> 
-> The fiber code is IMHO very suspect; the decoding of the pause status
-> seems to be completely broken. However, I'm not sure whether anyone
-> actually uses that or not, so I've been trying not to touch it.
-> 
-> > (For copper, we call genphy_update_link, which sets phydev->link to 0 if
-> > autoneg is enabled && !completed. And according to the datasheet,
-> > the resolved bit is set when autonegotiation is completed || disabled)
-> 
-> The resolved bit indicates whether the resolution data is valid, which
-> will be set when autoneg is complete or autoneg is disabled.  However,
-> the timing of the bit compared to the link status is not defined in the
-> datasheet - and that's the problem.  If the link status bits report that
-> the link is up but the resolved bit is indicating that the resolution
-> is not valid, what do we do?  Report potential garbage but link up to
-> the higher layers, or pretend that the link is down?
+From: Borislav Petkov <bp@suse.de>
 
-I see, thanks for the clarification. Pretending that the link is down
-seems to be the right choice.
+Change the include order so that MODULE_ARCH_VERMAGIC from the arch
+header arch/x86/include/asm/module.h gets used instead of the fallback
+from include/linux/vermagic.h and thus fix:
 
-> 
-> > TL/DR:
-> > It's probably a good idea to force link to 0 to be sure, as you
-> > suggested below. I will send a v2 with that change.
-> > 
-> > Moving the extraction of info to a helper is probably better left to a
-> > separate patch?
-> 
-> I'm not sure what you're suggesting.
+  In file included from ./include/linux/module.h:30,
+                   from drivers/net/ethernet/3com/3c515.c:56:
+  ./arch/x86/include/asm/module.h:73: warning: "MODULE_ARCH_VERMAGIC" redefined
+     73 | # define MODULE_ARCH_VERMAGIC MODULE_PROC_FAMILY
+        |
+  In file included from drivers/net/ethernet/3com/3c515.c:25:
+  ./include/linux/vermagic.h:28: note: this is the location of the previous definition
+     28 | #define MODULE_ARCH_VERMAGIC ""
+        |
 
-I was referring to Jakub's suggestion to create a new helper function
-for the parsing of the status register.
+Fixes: 6bba2e89a88c ("net/3com: Delete driver and module versions from 3com drivers")
+Signed-off-by: Borislav Petkov <bp@suse.de>
+---
+ drivers/net/ethernet/3com/3c515.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Clemens
+diff --git a/drivers/net/ethernet/3com/3c515.c b/drivers/net/ethernet/3com/3c515.c
+index 90312fcd6319..cdceef891dbd 100644
+--- a/drivers/net/ethernet/3com/3c515.c
++++ b/drivers/net/ethernet/3com/3c515.c
+@@ -22,7 +22,6 @@
+ 
+ */
+ 
+-#include <linux/vermagic.h>
+ #define DRV_NAME		"3c515"
+ 
+ #define CORKSCREW 1
+@@ -67,6 +66,7 @@ static int max_interrupt_work = 20;
+ #include <linux/timer.h>
+ #include <linux/ethtool.h>
+ #include <linux/bitops.h>
++#include <linux/vermagic.h>
+ 
+ #include <linux/uaccess.h>
+ #include <asm/io.h>
+-- 
+2.21.0
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
