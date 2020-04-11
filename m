@@ -2,99 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E865A1A5260
-	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 15:39:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B39E91A5263
+	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 15:44:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726140AbgDKNju (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 09:39:50 -0400
-Received: from canardo.mork.no ([148.122.252.1]:45483 "EHLO canardo.mork.no"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726054AbgDKNjt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 09:39:49 -0400
-Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 03BDdmpZ022975
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Sat, 11 Apr 2020 15:39:48 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1586612388; bh=7m/AdLPPqzm9a8J+2GRplR0V6UvaC9m18ntQKA+cOLo=;
-        h=From:To:Cc:Subject:Date:Message-Id:From;
-        b=X2hOncnPr8ZLY5d1Gud03YG1i8I9NKj2Iv6L0O8BMaJJJ6I6Pk/+wDSSR7jnD4ixH
-         vKtr+ZFHCLoXnUiHb2Khy/HBe9o160abOn1p/5Riw8IClaHSShPuKmMB+XoEbUXRBM
-         YBTUBDWxa6v4d2aGWF1aLBs0bER5ZEv8S8RNVn0Y=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.92)
-        (envelope-from <bjorn@miraculix.mork.no>)
-        id 1jNGMN-000109-Ri; Sat, 11 Apr 2020 15:39:47 +0200
-From:   =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
-To:     netdev@vger.kernel.org
-Cc:     linux-usb@vger.kernel.org,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
-Subject: [PATCH net,stable] qmi_wwan: add Huawei E1820
-Date:   Sat, 11 Apr 2020 15:39:41 +0200
-Message-Id: <20200411133941.3806-1-bjorn@mork.no>
-X-Mailer: git-send-email 2.20.1
+        id S1726237AbgDKNn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 09:43:56 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:49096 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726047AbgDKNn4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Apr 2020 09:43:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=opAN+rhrN9yLocQk4V9lwScAX0/qUG4aZoyfhg0oYOk=; b=bEfBdp3je4WdQqbv+In3xqJej
+        Eo2CGbdCcHQ/MEGIHukpTeh7bUBv5dxUM9myGKlkvdB3RpUkPIjQixLan0eJUc0QpPysj8xY/i687
+        UugSJGv7aCWZaq7foGUPC+q7K838s3l4aUH1hbAyVyHx7ZOhdyQkjo3Wp2LMCrZRzBjcCMe+ZlZZI
+        18290KKjVVXs7fkA7fnXt0RJ9EUaiox1f/BDgFiW2Ub6WefBsZEETJLyxs8iDA3+b2NPtx0L9BGCw
+        xk4QusFkkLsKPYQcd1DMF/s0ALgnWlrWZoCipoC7cQctusyyRfEwyClSIXuy3dCrQNw8rfxskUlHT
+        7hbxjKmSA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48656)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jNGQG-0007W0-SM; Sat, 11 Apr 2020 14:43:49 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jNGQC-00055b-B3; Sat, 11 Apr 2020 14:43:44 +0100
+Date:   Sat, 11 Apr 2020 14:43:44 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Clemens Gruber <clemens.gruber@pqgruber.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: marvell: Fix pause frame negotiation
+Message-ID: <20200411134344.GI25745@shell.armlinux.org.uk>
+References: <20200408214326.934440-1-clemens.gruber@pqgruber.com>
+ <20200410174304.22f812fd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200411091705.GG25745@shell.armlinux.org.uk>
+ <20200411132401.GA273086@workstation.tuxnet>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.102.1 at canardo
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200411132401.GA273086@workstation.tuxnet>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Older Huawei modem, not using the "standard" Huawei class scheme.
-Supporting QMI on the 02/06/ff function.
+On Sat, Apr 11, 2020 at 03:24:01PM +0200, Clemens Gruber wrote:
+> On Sat, Apr 11, 2020 at 10:17:05AM +0100, Russell King - ARM Linux admin wrote:
+> > On Fri, Apr 10, 2020 at 05:43:04PM -0700, Jakub Kicinski wrote:
+> > > On Wed,  8 Apr 2020 23:43:26 +0200 Clemens Gruber wrote:
+> > > > The negotiation of flow control / pause frame modes was broken since
+> > > > commit fcf1f59afc67 ("net: phy: marvell: rearrange to use
+> > > > genphy_read_lpa()") moved the setting of phydev->duplex below the
+> > > > phy_resolve_aneg_pause call. Due to a check of DUPLEX_FULL in that
+> > > > function, phydev->pause was no longer set.
+> > > > 
+> > > > Fix it by moving the parsing of the status variable before the blocks
+> > > > dealing with the pause frames.
+> > > > 
+> > > > Fixes: fcf1f59afc67 ("net: phy: marvell: rearrange to use genphy_read_lpa()")
+> > > > Cc: stable@vger.kernel.org # v5.6+
+> > > 
+> > > nit: please don't CC stable on networking patches
+> > > 
+> > > > Signed-off-by: Clemens Gruber <clemens.gruber@pqgruber.com>
+> > > > ---
+> > > >  drivers/net/phy/marvell.c | 44 +++++++++++++++++++--------------------
+> > > >  1 file changed, 22 insertions(+), 22 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+> > > > index 4714ca0e0d4b..02cde4c0668c 100644
+> > > > --- a/drivers/net/phy/marvell.c
+> > > > +++ b/drivers/net/phy/marvell.c
+> > > > @@ -1263,6 +1263,28 @@ static int marvell_read_status_page_an(struct phy_device *phydev,
+> > > >  	int lpa;
+> > > >  	int err;
+> > > >  
+> > > > +	if (!(status & MII_M1011_PHY_STATUS_RESOLVED))
+> > > > +		return 0;
+> > > 
+> > > If we return early here won't we miss updating the advertising bits?
+> > > We will no longer call e.g. fiber_lpa_mod_linkmode_lpa_t().
+> > > 
+> > > Perhaps extracting info from status should be moved to a helper so we
+> > > can return early without affecting the rest of the flow?
+> > > 
+> > > Is my understanding correct?  Russell?
+> > 
+> > You are correct - and yes, there is also a problem here.
+> > 
+> > It is not clear whether the resolved bit is set before or after the
+> > link status reports that link is up - however, the resolved bit
+> > indicates whether the speed and duplex are valid.
+> 
+> I assumed that in the fiber case, the link status register won't be 1
+> until autonegotiation is complete. There is a part in the 88E1510
+> datasheet on page 57 [2.6.2], which says so but it's in the Fiber/Copper
+> Auto-Selection chapter and I am not sure if that's true in general. (?)
 
-T:  Bus=01 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  3 Spd=480  MxCh= 0
-D:  Ver= 2.00 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=12d1 ProdID=14ac Rev= 0.00
-S:  Manufacturer=Huawei Technologies
-S:  Product=HUAWEI Mobile
-C:* #Ifs= 7 Cfg#= 1 Atr=c0 MxPwr=500mA
-A:  FirstIf#= 1 IfCount= 2 Cls=02(comm.) Sub=00 Prot=00
-I:* If#= 0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=81(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=4ms
-I:* If#= 1 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=06 Prot=ff Driver=qmi_wwan
-E:  Ad=83(I) Atr=03(Int.) MxPS=  64 Ivl=2ms
-I:* If#= 2 Alt= 0 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=qmi_wwan
-E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=4ms
-I:* If#= 3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=4ms
-I:* If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=4ms
-I:* If#= 5 Alt= 0 #EPs= 2 Cls=08(stor.) Sub=06 Prot=50 Driver=usb-storage
-E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 6 Alt= 0 #EPs= 2 Cls=08(stor.) Sub=06 Prot=50 Driver=usb-storage
-E:  Ad=06(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+The fiber code is IMHO very suspect; the decoding of the pause status
+seems to be completely broken. However, I'm not sure whether anyone
+actually uses that or not, so I've been trying not to touch it.
 
-Signed-off-by: Bjørn Mork <bjorn@mork.no>
----
- drivers/net/usb/qmi_wwan.c | 4 ++++
- 1 file changed, 4 insertions(+)
+> (For copper, we call genphy_update_link, which sets phydev->link to 0 if
+> autoneg is enabled && !completed. And according to the datasheet,
+> the resolved bit is set when autonegotiation is completed || disabled)
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 6c738a271257..08614f1e7407 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -965,6 +965,10 @@ static const struct usb_device_id products[] = {
- 		USB_VENDOR_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, USB_CLASS_VENDOR_SPEC, 0x01, 0x69),
- 		.driver_info        = (unsigned long)&qmi_wwan_info,
- 	},
-+	{	/* Huawei E1820 */
-+		USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, 0x14ac, USB_CLASS_COMM, USB_CDC_SUBCLASS_ETHERNET, 0xff),
-+		.driver_info        = (unsigned long)&qmi_wwan_info,
-+	},
- 	{	/* Motorola Mapphone devices with MDM6600 */
- 		USB_VENDOR_AND_INTERFACE_INFO(0x22b8, USB_CLASS_VENDOR_SPEC, 0xfb, 0xff),
- 		.driver_info        = (unsigned long)&qmi_wwan_info,
+The resolved bit indicates whether the resolution data is valid, which
+will be set when autoneg is complete or autoneg is disabled.  However,
+the timing of the bit compared to the link status is not defined in the
+datasheet - and that's the problem.  If the link status bits report that
+the link is up but the resolved bit is indicating that the resolution
+is not valid, what do we do?  Report potential garbage but link up to
+the higher layers, or pretend that the link is down?
+
+> TL/DR:
+> It's probably a good idea to force link to 0 to be sure, as you
+> suggested below. I will send a v2 with that change.
+> 
+> Moving the extraction of info to a helper is probably better left to a
+> separate patch?
+
+I'm not sure what you're suggesting.
+
 -- 
-2.20.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
