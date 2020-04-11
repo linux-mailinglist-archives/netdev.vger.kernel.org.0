@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C78D61A579E
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:25:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0BC21A57C2
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:26:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730172AbgDKXM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 19:12:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52536 "EHLO mail.kernel.org"
+        id S1730931AbgDKXYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 19:24:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52662 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730156AbgDKXM0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 19:12:26 -0400
+        id S1727365AbgDKXMa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 19:12:30 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E547220757;
-        Sat, 11 Apr 2020 23:12:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 89860216FD;
+        Sat, 11 Apr 2020 23:12:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586646746;
-        bh=EIOaSlYd6ChG2W9s8dUGK3PciMk0ZtlI7tdNVwU2SXk=;
+        s=default; t=1586646750;
+        bh=xqdDMXafI/lJR1TnjvBCsxh6zD3S8/yOI985BQtRjFs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gtIEI5tuYjQIVNvBXayi8X+X7N8THz8xNP9zKaIYSEWOThMJZVn9CbtsRRdHt4v/g
-         M5/03+iS6RIymWDqfaPObompjyAyLjYsAe9q7geji3pPto4je38NlM+3KsX3NTupJw
-         EH4LisAopHfq2KyUe9p/z6kOg22izlEzsN1QBwU0=
+        b=Qa1PGx5gF67vJY5KXXp+HPOADof9kMgqkTfhdqPfs/bOu615mV9SCsKSolud51sVY
+         fYmyg7OIUt0QG5sEhBnhYENtpUhYbrjSfxR8ZaXWBNVMAoeIXU+MNIaXj0yvMohXQC
+         BFUmUhd1K3tiIm/akgwgLg6b/CIjIyeW3xW+kD40=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Taehee Yoo <ap420073@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 19/66] net: rmnet: add missing module alias
-Date:   Sat, 11 Apr 2020 19:11:16 -0400
-Message-Id: <20200411231203.25933-19-sashal@kernel.org>
+Cc:     Alain Michaud <alainm@chromium.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 22/66] Bluetooth: guard against controllers sending zero'd events
+Date:   Sat, 11 Apr 2020 19:11:19 -0400
+Message-Id: <20200411231203.25933-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200411231203.25933-1-sashal@kernel.org>
 References: <20200411231203.25933-1-sashal@kernel.org>
@@ -43,35 +44,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: Alain Michaud <alainm@chromium.org>
 
-[ Upstream commit eed22a0685d651fc531bc63f215bb2a71d4b98e5 ]
+[ Upstream commit 08bb4da90150e2a225f35e0f642cdc463958d696 ]
 
-In the current rmnet code, there is no module alias.
-So, RTNL couldn't load rmnet module automatically.
+Some controllers have been observed to send zero'd events under some
+conditions.  This change guards against this condition as well as adding
+a trace to facilitate diagnosability of this condition.
 
-Test commands:
-    ip link add dummy0 type dummy
-    modprobe -rv rmnet
-    ip link add rmnet0 link dummy0 type rmnet  mux_id 1
-
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Alain Michaud <alainm@chromium.org>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/bluetooth/hci_event.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-index 37786affa9750..d452cb773287f 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-@@ -484,4 +484,5 @@ static void __exit rmnet_exit(void)
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 3e7badb3ac2d5..93d077328c6ab 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -5718,6 +5718,11 @@ void hci_event_packet(struct hci_dev *hdev, struct sk_buff *skb)
+ 	u8 status = 0, event = hdr->evt, req_evt = 0;
+ 	u16 opcode = HCI_OP_NOP;
  
- module_init(rmnet_init)
- module_exit(rmnet_exit)
-+MODULE_ALIAS_RTNL_LINK("rmnet");
- MODULE_LICENSE("GPL v2");
++	if (!event) {
++		bt_dev_warn(hdev, "Received unexpected HCI Event 00000000");
++		goto done;
++	}
++
+ 	if (hdev->sent_cmd && bt_cb(hdev->sent_cmd)->hci.req_event == event) {
+ 		struct hci_command_hdr *cmd_hdr = (void *) hdev->sent_cmd->data;
+ 		opcode = __le16_to_cpu(cmd_hdr->opcode);
+@@ -5929,6 +5934,7 @@ void hci_event_packet(struct hci_dev *hdev, struct sk_buff *skb)
+ 		req_complete_skb(hdev, status, opcode, orig_skb);
+ 	}
+ 
++done:
+ 	kfree_skb(orig_skb);
+ 	kfree_skb(skb);
+ 	hdev->stat.evt_rx++;
 -- 
 2.20.1
 
