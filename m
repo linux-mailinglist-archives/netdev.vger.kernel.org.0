@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE1581A56C7
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:19:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1048B1A56CC
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:19:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730783AbgDKXO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 19:14:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56156 "EHLO mail.kernel.org"
+        id S1730764AbgDKXRc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 19:17:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56184 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730018AbgDKXO0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 19:14:26 -0400
+        id S1730333AbgDKXO3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 19:14:29 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2470F20708;
-        Sat, 11 Apr 2020 23:14:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 751232084D;
+        Sat, 11 Apr 2020 23:14:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586646866;
-        bh=MQrhq1PQAbbHEOt6Vnp7aTJD2bbSPul7BqLClBPI6Fs=;
+        s=default; t=1586646869;
+        bh=xyPGC8d3ARutzQCLS9J1OiD8t1M1/B+LRfv/dx8xgXI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mq5f7cX7R9V+0Rs2U4920kH386zHGiAk+K54TlRHByfm6oAVpxuxa0yreu9gQizHw
-         6BR2tJ82gd1zl/NIjge/cMSPSLvUXxs07b7u0iRys1+uWl2955uABk8Ubk0q6dEAjn
-         DdkcK5EBnzbD3u7L9r4xkba9neGDuTKeOqfSZsbE=
+        b=VabjerICAdvoIuXBhfO76lZ5PDoXPVGBLuXAtwMvRz0vyEuI3LXKlSB3O71t3YghO
+         5QmHWYqQMs8BSxkLJRQgph911YWjVVwgHj7yfJ7rMZWjjIXcGaJTbeIFWkA5ZK3WmS
+         qlvUDdMZ/bUoFFvGRtigZa19i3Fr/Fkj4NhUlYX0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alain Michaud <alainm@chromium.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
+Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>,
+        Aaron Brown <aaron.f.brown@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 11/26] Bluetooth: guard against controllers sending zero'd events
-Date:   Sat, 11 Apr 2020 19:13:58 -0400
-Message-Id: <20200411231413.26911-11-sashal@kernel.org>
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 13/26] net: intel: e1000e: fix possible sleep-in-atomic-context bugs in e1000e_get_hw_semaphore()
+Date:   Sat, 11 Apr 2020 19:14:00 -0400
+Message-Id: <20200411231413.26911-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200411231413.26911-1-sashal@kernel.org>
 References: <20200411231413.26911-1-sashal@kernel.org>
@@ -44,45 +45,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alain Michaud <alainm@chromium.org>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit 08bb4da90150e2a225f35e0f642cdc463958d696 ]
+[ Upstream commit 2e05f756c7099c8991142382648a37b0d4c85943 ]
 
-Some controllers have been observed to send zero'd events under some
-conditions.  This change guards against this condition as well as adding
-a trace to facilitate diagnosability of this condition.
+The driver may sleep while holding a spinlock.
+The function call path (from bottom to top) in Linux 4.19 is:
 
-Signed-off-by: Alain Michaud <alainm@chromium.org>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+drivers/net/ethernet/intel/e1000e/mac.c, 1366:
+	usleep_range in e1000e_get_hw_semaphore
+drivers/net/ethernet/intel/e1000e/80003es2lan.c, 322:
+	e1000e_get_hw_semaphore in e1000_release_swfw_sync_80003es2lan
+drivers/net/ethernet/intel/e1000e/80003es2lan.c, 197:
+	e1000_release_swfw_sync_80003es2lan in e1000_release_phy_80003es2lan
+drivers/net/ethernet/intel/e1000e/netdev.c, 4883:
+	(FUNC_PTR) e1000_release_phy_80003es2lan in e1000e_update_phy_stats
+drivers/net/ethernet/intel/e1000e/netdev.c, 4917:
+	e1000e_update_phy_stats in e1000e_update_stats
+drivers/net/ethernet/intel/e1000e/netdev.c, 5945:
+	e1000e_update_stats in e1000e_get_stats64
+drivers/net/ethernet/intel/e1000e/netdev.c, 5944:
+	spin_lock in e1000e_get_stats64
+
+drivers/net/ethernet/intel/e1000e/mac.c, 1384:
+	usleep_range in e1000e_get_hw_semaphore
+drivers/net/ethernet/intel/e1000e/80003es2lan.c, 322:
+	e1000e_get_hw_semaphore in e1000_release_swfw_sync_80003es2lan
+drivers/net/ethernet/intel/e1000e/80003es2lan.c, 197:
+	e1000_release_swfw_sync_80003es2lan in e1000_release_phy_80003es2lan
+drivers/net/ethernet/intel/e1000e/netdev.c, 4883:
+	(FUNC_PTR) e1000_release_phy_80003es2lan in e1000e_update_phy_stats
+drivers/net/ethernet/intel/e1000e/netdev.c, 4917:
+	e1000e_update_phy_stats in e1000e_update_stats
+drivers/net/ethernet/intel/e1000e/netdev.c, 5945:
+	e1000e_update_stats in e1000e_get_stats64
+drivers/net/ethernet/intel/e1000e/netdev.c, 5944:
+	spin_lock in e1000e_get_stats64
+
+(FUNC_PTR) means a function pointer is called.
+
+To fix these bugs, usleep_range() is replaced with udelay().
+
+These bugs are found by a static analysis tool STCheck written by myself.
+
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_event.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/ethernet/intel/e1000e/mac.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 6f78489fdb132..227b2e14eaeac 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -5249,6 +5249,11 @@ void hci_event_packet(struct hci_dev *hdev, struct sk_buff *skb)
- 	u8 status = 0, event = hdr->evt, req_evt = 0;
- 	u16 opcode = HCI_OP_NOP;
+diff --git a/drivers/net/ethernet/intel/e1000e/mac.c b/drivers/net/ethernet/intel/e1000e/mac.c
+index 5bdc3a2d4fd70..0fc9f49844632 100644
+--- a/drivers/net/ethernet/intel/e1000e/mac.c
++++ b/drivers/net/ethernet/intel/e1000e/mac.c
+@@ -1381,7 +1381,7 @@ s32 e1000e_get_hw_semaphore(struct e1000_hw *hw)
+ 		if (!(swsm & E1000_SWSM_SMBI))
+ 			break;
  
-+	if (!event) {
-+		bt_dev_warn(hdev, "Received unexpected HCI Event 00000000");
-+		goto done;
-+	}
-+
- 	if (hdev->sent_cmd && bt_cb(hdev->sent_cmd)->hci.req_event == event) {
- 		struct hci_command_hdr *cmd_hdr = (void *) hdev->sent_cmd->data;
- 		opcode = __le16_to_cpu(cmd_hdr->opcode);
-@@ -5460,6 +5465,7 @@ void hci_event_packet(struct hci_dev *hdev, struct sk_buff *skb)
- 		req_complete_skb(hdev, status, opcode, orig_skb);
+-		usleep_range(50, 100);
++		udelay(100);
+ 		i++;
  	}
  
-+done:
- 	kfree_skb(orig_skb);
- 	kfree_skb(skb);
- 	hdev->stat.evt_rx++;
+@@ -1399,7 +1399,7 @@ s32 e1000e_get_hw_semaphore(struct e1000_hw *hw)
+ 		if (er32(SWSM) & E1000_SWSM_SWESMBI)
+ 			break;
+ 
+-		usleep_range(50, 100);
++		udelay(100);
+ 	}
+ 
+ 	if (i == timeout) {
 -- 
 2.20.1
 
