@@ -2,223 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E0FF1A4EE9
-	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 10:14:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 488411A4EF1
+	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 10:48:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725941AbgDKIOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 04:14:32 -0400
-Received: from mail-vk1-f194.google.com ([209.85.221.194]:34280 "EHLO
-        mail-vk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725923AbgDKIOb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Apr 2020 04:14:31 -0400
-Received: by mail-vk1-f194.google.com with SMTP id p123so1101064vkg.1
-        for <netdev@vger.kernel.org>; Sat, 11 Apr 2020 01:14:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Qw7Q2dGOvh2sPJ12pU557DCszrP9W9lT4rpRZcvcwnw=;
-        b=slC8l6qjbvo0LqK2S83/X0ZaCO08aDqlWS1M+yO+oz/JyU5nKaETx1HFFNnn/LqZal
-         xCsqP+u8/wyIfmKL9piFZk/NBMNE7G4C0+j/0WIwA7AOxfeqrtxczHuwt/1M9nrrZQ08
-         jbqdIrgfa20vasj00AEXDyUSjgORC1e+gLZg0TNVXI4JkQqUeOqXWm+vtXKH/6J8znHQ
-         7eg6tzLkNS/V5nOrTwiXNLVvatpvOx91Q3mVFCL4yKW5EJYGk3yu1/UQOZYYZgFD9g2q
-         DAEZFCGR0x8jAT7vHJBg5Ziw6tLDBmNzSVqobOrm2vkgVvzGE/2+4bhPs1EfEFwg7QwS
-         I3Gg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Qw7Q2dGOvh2sPJ12pU557DCszrP9W9lT4rpRZcvcwnw=;
-        b=af2dIwGW7UdeCLilcOJD2powLGJ1TXn0yg0+3CXZe6sNVCbQQoZhiz3Ug1miDB2E/z
-         OHIP6X2KUwbDhdHrmUK3zY9sdqLYFbgokkX/ZKNBBElSXVr/Y+9UslhB7ZPaUVl7RV0a
-         CI4PlvN0jZ+NUC7Bt7ceHMC3TowfQgu6Tcz+MRXV5Px1Hpt0TjCO1V66VShcYYF42ZHf
-         xERtP4E0pLDjbwSNlcIjNKaurvW1bdeG63h7M9GtBzSLPni0NzYSt72K3dTI1PO75YbV
-         cYLAFVeVtmOuqpPvpFEQsx1yxlCcPwGig5QuH8ZLyBYWwYwatpxAaenFzp4EhGIc00dg
-         pkAw==
-X-Gm-Message-State: AGi0PubBsL4sz3W9VGwRrMt/4VwOjCPM/9Jfr9v7S4xMV2RHmIMW6WhW
-        /YOLCKmDGU+hIu50Qm/tAz0wDIONFVQR8A+L6l0=
-X-Google-Smtp-Source: APiQypIDFxzxTR2+U3WLdDCTHuMUI9Pwm8qXxqXZRPKCDkjcdgSfRgmEYIArMKPRPhkERpfTgvSdJF+kVPnVUQ92iBQ=
-X-Received: by 2002:a1f:9541:: with SMTP id x62mr5591116vkd.82.1586592870803;
- Sat, 11 Apr 2020 01:14:30 -0700 (PDT)
+        id S1725923AbgDKIhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 04:37:23 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:45724 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725877AbgDKIhX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Apr 2020 04:37:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Ll6RhuVfdlh/XngE+fca5jUOVkWyC1wNY/8ygc6mamA=; b=FDdUJo9qefhe33riIg0a5zD67
+        ZvxYLQC7yYQYFuLK9+BMnmtqtXc2U7AZILCikAvjF7Yr1YfrrQHZF3mXorO/KDosSaME4sJHS1+Yg
+        IFmv1ObVKEk2RgRRMefwa4I1xRZ13E7QT0XxvfXWByxVZQRZiZX5+z5lHQUZNP2f3JTVEXELSYKky
+        ph12xoASELGErXBnqTvCKzCme+G86BhBZ9bbdZ0pbhmIc5cBzWWnqhi82euPp79bqrtP533DNrrkQ
+        Fq/5TKofChUOTnXq+jkfnbZxGkmyBC9WgC5Ri/dWe5cCqRc2kEHzP1Gbsy0ODiWAvPZS/AD6M863S
+        cJHnC0qiQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48566)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jNBdQ-0006GS-Se; Sat, 11 Apr 2020 09:37:11 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jNBdK-0004tC-Eh; Sat, 11 Apr 2020 09:36:58 +0100
+Date:   Sat, 11 Apr 2020 09:36:58 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Matteo Croce <mcroce@redhat.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Luka Perkov <luka.perkov@sartura.hr>
+Subject: Re: [PATCH net-next v2 3/3] net: phy: marvell10g: place in powersave
+ mode at probe
+Message-ID: <20200411083658.GF25745@shell.armlinux.org.uk>
+References: <20200410143658.GM5827@shell.armlinux.org.uk>
+ <CAGnkfhxPm6UWj8Dyt9S08vHdh9nwkTums+WfY14D52dsBsBPgQ@mail.gmail.com>
+ <20200410145034.GA25745@shell.armlinux.org.uk>
+ <CAGnkfhwOCLSG=3v2jy6tTxiPyX0H+Azj7Ni5t8_nkRi=rUfnUQ@mail.gmail.com>
+ <20200410151627.GB25745@shell.armlinux.org.uk>
+ <CAGnkfhyE8q3iM6oW73R2ZUys+osd6YVYWcDDp6-YDsxmyzgKrg@mail.gmail.com>
+ <20200410160409.GC25745@shell.armlinux.org.uk>
+ <CAGnkfhxSjQcX=Di7XMdDCA=zCf7=Jtv2CFR=4keYeib6x=tbFA@mail.gmail.com>
+ <20200410162313.GD25745@shell.armlinux.org.uk>
+ <CAGnkfhwedGe4_JAy5Ok7bxYPi_C9bqVWh1fjV6eGy2Ss+-hSag@mail.gmail.com>
 MIME-Version: 1.0
-References: <1584969039-74113-1-git-send-email-xiangxia.m.yue@gmail.com>
- <CAOrHB_BZ2Sqjooc9u1osbrEsbL5w003CL54v_bd3YPcqkjOzjg@mail.gmail.com>
- <CAMDZJNV1+zA9EGRMDrZDBNxTg3fr+4ZeH7bcLgfVginx3p4Cww@mail.gmail.com>
- <CAOrHB_Bw1cUANoKe_1ZeGQkVVX6rj5YPTzzcNUjv3_KKRWehdQ@mail.gmail.com>
- <CAMDZJNWHaQ_fYPdjC0hhQZbr_vXReDXeA5TgFNHy8SG79SzU1g@mail.gmail.com>
- <20200408150916.GA54720@gmail.com> <CAMDZJNUHLM5nx_ek1uJO4MkPNDoD4Or+SZKVry0+dPkq--VGGg@mail.gmail.com>
- <20200409214142.GB85978@gmail.com> <CAMDZJNX8v4_=0qzHTTS_9x=0bBoM=_ihpsTdaeSZ30n=DpR3bw@mail.gmail.com>
-In-Reply-To: <CAMDZJNX8v4_=0qzHTTS_9x=0bBoM=_ihpsTdaeSZ30n=DpR3bw@mail.gmail.com>
-From:   Pravin Shelar <pravin.ovn@gmail.com>
-Date:   Sat, 11 Apr 2020 01:14:19 -0700
-Message-ID: <CAOrHB_DKEHOmqT1XvQ=UiF-rgsGENymkD88B=zzjLxUz0RiVyw@mail.gmail.com>
-Subject: Re: [ovs-dev] [PATCH net-next v1 1/3] net: openvswitch: expand the
- meters number supported
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     William Tu <u9012063@gmail.com>, ovs dev <dev@openvswitch.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGnkfhwedGe4_JAy5Ok7bxYPi_C9bqVWh1fjV6eGy2Ss+-hSag@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Given that we already use id-pool, we can significantly reduce
-probability of the negative case of meter lookup. Therefore I do not
-see need to use hash table in the datapath.
-
-On Thu, Apr 9, 2020 at 4:29 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
->
-> On Fri, Apr 10, 2020 at 5:41 AM William Tu <u9012063@gmail.com> wrote:
+On Fri, Apr 10, 2020 at 06:30:48PM +0200, Matteo Croce wrote:
+> On Fri, Apr 10, 2020 at 6:23 PM Russell King - ARM Linux admin
+> <linux@armlinux.org.uk> wrote:
 > >
-> > On Wed, Apr 08, 2020 at 11:59:25PM +0800, Tonghao Zhang wrote:
-> > > On Wed, Apr 8, 2020 at 11:09 PM William Tu <u9012063@gmail.com> wrote:
+> > On Fri, Apr 10, 2020 at 06:07:46PM +0200, Matteo Croce wrote:
+> > > On Fri, Apr 10, 2020 at 6:04 PM Russell King - ARM Linux admin
+> > > <linux@armlinux.org.uk> wrote:
 > > > >
-> > > > On Wed, Apr 01, 2020 at 06:50:09PM +0800, Tonghao Zhang wrote:
-> > > > > On Tue, Mar 31, 2020 at 11:57 AM Pravin Shelar <pshelar@ovn.org> wrote:
+> > > > On Fri, Apr 10, 2020 at 05:18:41PM +0200, Matteo Croce wrote:
+> > > > > On Fri, Apr 10, 2020 at 5:16 PM Russell King - ARM Linux admin
+> > > > > <linux@armlinux.org.uk> wrote:
 > > > > > >
-> > > > > > On Sun, Mar 29, 2020 at 5:35 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> > > > > > On Fri, Apr 10, 2020 at 04:59:44PM +0200, Matteo Croce wrote:
+> > > > > > > On Fri, Apr 10, 2020 at 4:50 PM Russell King - ARM Linux admin
+> > > > > > > <linux@armlinux.org.uk> wrote:
+> > > > > > > >
+> > > > > > > > On Fri, Apr 10, 2020 at 04:39:48PM +0200, Matteo Croce wrote:
+> > > > > > > # ./mii-diag eth0 -p 32769
+> > > > > > > Using the specified MII PHY index 32769.
+> > > > > > > Basic registers of MII PHY #32769:  2040 0082 002b 09ab 0071 009a c000 0009.
+> > > > > > >  Basic mode control register 0x2040: Auto-negotiation disabled, with
+> > > > > > >  Speed fixed at 100 mbps, half-duplex.
+> > > > > > >  Basic mode status register 0x0082 ... 0082.
+> > > > > > >    Link status: not established.
+> > > > > > >    *** Link Jabber! ***
+> > > > > > >  Your link partner is generating 100baseTx link beat  (no autonegotiation).
+> > > > > > >    End of basic transceiver information.
 > > > > > > >
-> > > > > > > On Mon, Mar 30, 2020 at 12:46 AM Pravin Shelar <pshelar@ovn.org> wrote:
-> > > > > > > >
-> > > > > > > > On Sat, Mar 28, 2020 at 8:46 AM <xiangxia.m.yue@gmail.com> wrote:
-> > > > > > > > >
-> > > > > > > > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > > > > > > > >
-> > > > > > > > > In kernel datapath of Open vSwitch, there are only 1024
-> > > > > > > > > buckets of meter in one dp. If installing more than 1024
-> > > > > > > > > (e.g. 8192) meters, it may lead to the performance drop.
-> > > > > > > > > But in some case, for example, Open vSwitch used as edge
-> > > > > > > > > gateway, there should be 200,000+ at least, meters used for
-> > > > > > > > > IP address bandwidth limitation.
-> > > > > > > > >
-> > > > > > > > > [Open vSwitch userspace datapath has this issue too.]
-> > > > > > > > >
-> > > > > > > > > For more scalable meter, this patch expands the buckets
-> > > > > > > > > when necessary, so we can install more meters in the datapath.
-> > > > > > > > >
-> > > > > > > > > * Introducing the struct *dp_meter_instance*, it's easy to
-> > > > > > > > >   expand meter though change the *ti* point in the struct
-> > > > > > > > >   *dp_meter_table*.
-> > > > > > > > > * Using kvmalloc_array instead of kmalloc_array.
-> > > > > > > > >
-> > > > > > > > Thanks for working on this, I have couple of comments.
-> > > > > > > >
-> > > > > > > > > Cc: Pravin B Shelar <pshelar@ovn.org>
-> > > > > > > > > Cc: Andy Zhou <azhou@ovn.org>
-> > > > > > > > > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > > > > > > > > ---
-> > > > > > > > >  net/openvswitch/datapath.h |   2 +-
-> > > > > > > > >  net/openvswitch/meter.c    | 168 ++++++++++++++++++++++++++++++-------
-> > > > > > > > >  net/openvswitch/meter.h    |  17 +++-
-> > > > > > > > >  3 files changed, 153 insertions(+), 34 deletions(-)
-> > > > > > > > >
-> > > > > > > > > diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
-> > > > > > > > > index e239a46c2f94..785105578448 100644
-> > > > > > > > > --- a/net/openvswitch/datapath.h
-> > > > > > > > > +++ b/net/openvswitch/datapath.h
-> > > > > > > > > @@ -82,7 +82,7 @@ struct datapath {
-> > > > > > > > >         u32 max_headroom;
-> > > > > > > > >
-> > > > > > > > >         /* Switch meters. */
-> > > > > > > > > -       struct hlist_head *meters;
-> > > > > > > > > +       struct dp_meter_table *meters;
-> > > > > > > > >  };
-> > > > > > > > >
-> > > > > > > > >  /**
-> > > > > > > > > diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
-> > > > > > > > > index 5010d1ddd4bd..98003b201b45 100644
-> > > > > > > > > --- a/net/openvswitch/meter.c
-> > > > > > > > > +++ b/net/openvswitch/meter.c
-> > > > > > > > > @@ -47,40 +47,136 @@ static void ovs_meter_free(struct dp_meter *meter)
-> > > > > > > > >         kfree_rcu(meter, rcu);
-> > > > > > > > >  }
-> > > > > > > > >
-> > > > > > > > > -static struct hlist_head *meter_hash_bucket(const struct datapath *dp,
-> > > > > > > > > +static struct hlist_head *meter_hash_bucket(struct dp_meter_instance *ti,
-> > > > > > > > >                                             u32 meter_id)
-> > > > > > > > >  {
-> > > > > > > > > -       return &dp->meters[meter_id & (METER_HASH_BUCKETS - 1)];
-> > > > > > > > > +       u32 hash = jhash_1word(meter_id, ti->hash_seed);
-> > > > > > > > > +
-> > > > > > > > I do not see any need to hash meter-id, can you explain it.
-> > > > > > > >
-> > > > > > > > > +       return &ti->buckets[hash & (ti->n_buckets - 1)];
-> > > > > > > > >  }
-> > > > > > > > >
-> > > > > > > > >  /* Call with ovs_mutex or RCU read lock. */
-> > > > > > > > > -static struct dp_meter *lookup_meter(const struct datapath *dp,
-> > > > > > > > > +static struct dp_meter *lookup_meter(const struct dp_meter_table *tbl,
-> > > > > > > > >                                      u32 meter_id)
-> > > > > > > > >  {
-> > > > > > > > > +       struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
-> > > > > > > > >         struct dp_meter *meter;
-> > > > > > > > >         struct hlist_head *head;
-> > > > > > > > >
-> > > > > > > > > -       head = meter_hash_bucket(dp, meter_id);
-> > > > > > > > > -       hlist_for_each_entry_rcu(meter, head, dp_hash_node,
-> > > > > > > > > -                               lockdep_ovsl_is_held()) {
-> > > > > > > > > +       head = meter_hash_bucket(ti, meter_id);
-> > > > > > > > > +       hlist_for_each_entry_rcu(meter, head, hash_node[ti->node_ver],
-> > > > > > > > > +                                lockdep_ovsl_is_held()) {
-> > > > > > > > >                 if (meter->id == meter_id)
-> > > > > > > > >                         return meter;
-> > > > > > > > >         }
-> > > > > > > > > +
-> > > > > > > > This patch is expanding meter table linearly with number meters added
-> > > > > > > > to datapath. so I do not see need to have hash table. it can be a
-> > > > > > > > simple array. This would also improve lookup efficiency.
-> > > > > > > > For hash collision we could find next free slot in array. let me know
-> > > > > > > > what do you think about this approach.
-> > > > > > > Hi Pravin
-> > > > > > > If we use the simple array, when inserting the meter, for hash collision, we can
-> > > > > > > find next free slot, but one case, when there are many meters in the array.
-> > > > > > > we may find many slot for the free slot.
-> > > > > > > And when we lookup the meter, for hash collision, we may find many
-> > > > > > > array slots, and
-> > > > > > > then find it, or that meter does not exist in the array, In that case,
-> > > > > > > there may be a lookup performance
-> > > > > > > drop.
+> > > > > > > root@macchiatobin:~# ip link show dev eth0
+> > > > > > > 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP
+> > > > > > > mode DEFAULT group default qlen 2048
+> > > > > > >     link/ether 00:51:82:11:22:00 brd ff:ff:ff:ff:ff:ff
 > > > > > > >
-> > > > > > I was thinking that users can insure that there are no hash collision,
-> > > > > > but time complexity of negative case is expensive. so I am fine with
-> > > > > > the hash table.
+> > > > > > > But no traffic in any direction
+> > > > > >
+> > > > > > So you have the same version PHY hardware as I do.
+> > > > > >
+> > > > > > So, we need further diagnosis, which isn't possible without a more
+> > > > > > advanced mii-diag tool - I'm sorting that out now, and will provide
+> > > > > > a link to a git repo later this afternoon.
+> > > > > >
+> > > > >
+> > > > > Ok, I'll wait for the tool
 > > > >
-> > > > IIUC, there will be hash collision. meter id is an 32-bit value.
-> > > > Currenly in lib/dpif-netdev.c, MAX_METERS = 65536.
-> > > Hi, William
-> > > but id-pool makes sure the meter id is from 0, 1, 2, 3 ... n, but not n, m, y.
-> > > so if we alloc 1024 meters, the last meter id should be 1023, and then
-> > > use the simple array to expand the meter is better ?
+> > > > Okay, please give this a go:
+> > > >
+> > > >         git://git.armlinux.org.uk/~rmk/mii-diag/
+> > > >
+> > > > Please send me the full output from:
+> > > >
+> > > > # ./mii-diag eth0 -v -p 32768
+> > > >
 > > >
+> > > Hi,
+> > >
+> > > here it is:
 > >
-> > I see, so you want to set the # of hash bucket = max # of meter id,
-> > so there is no hash collision, (with the cost of using more memory)
-> Not really, there are 1024 buckets as default, and will expand to
-> 1024*2, and then 1024*2*2  if necessary
-> if the most meter is deleted, we will shrink it.
->
-> > I don't have strong opinion on which design is better. Let's wait for
-> > Pravin's feedback.
+> > Thanks.  It seems that the PHY is reporting that everything is fine,
+> > all the various blocks associated with the SFP+ cage are reporting
+> > that link is established, and link is established with the host.
 > >
-> > William
+> > I wonder - can you tcpdump to see whether any traffic is being
+> > received at either end of the link, in case it's only one direction
+> > that is a problem?
 > >
-> > > > I think what Pravin suggest is to use another hash function to make
-> > > > the hash table more condense. Ex: hash1 and hash2.
-> > > > For lookup, if hash1(key) misses, then try hash2(key).
-> > > >
-> > > > William
-> > > >
-> > > > > Hi Pravi
-> > > > > I check again the meter implementation of ovs, ovs-vswitchd use the id-pool to
-> > > > > get a valid meter-id which passed to kernel, so there is no hash collision. You
-> > > > > are right. we use the single array is the better solution.
-> > > > > > > For hash meter-id in meter_hash_bucket, I am not 100% sure it is
-> > > > > > > useful. it just update
-> > > > > > > hash_seed when expand meters. For performance, we can remove it. Thanks.
-> > > > > > ok.
-> >
->
->
-> --
-> Best regards, Tonghao
+> 
+> Hi,
+> 
+> The problem is in both directions, I can't receive anything, and sent
+> can't be received from the other end.
+> 
+> # ip -s link show dev eth0
+> 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP
+> mode DEFAULT group default qlen 2048
+>     link/ether 00:51:82:11:22:00 brd ff:ff:ff:ff:ff:ff
+>     RX: bytes  packets  errors  dropped overrun mcast
+>     0          0        0       0       0       0
+>     TX: bytes  packets  errors  dropped carrier collsns
+>     252        6        0       0       0       0
+> 
+> If it can help, I can provide you access to the box.
+
+Those statistics look suspicious - do you have IPv6 enabled?  If so,
+those six packets are likely to be router discovery packets for IPv6.
+
+Yes, I think having access to the box would be helpful to speed up
+the diagnosis.  Also, having details of what is on the other end of
+the DAC cable would be useful too.  Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
