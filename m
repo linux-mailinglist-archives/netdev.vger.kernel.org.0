@@ -2,41 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70A9E1A51C9
-	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 14:28:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F0711A514F
+	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 14:25:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727813AbgDKMNb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 08:13:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46446 "EHLO mail.kernel.org"
+        id S1728316AbgDKMQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 08:16:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51262 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726124AbgDKMNa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 08:13:30 -0400
+        id S1727051AbgDKMQv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 08:16:51 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7D1DD2173E;
-        Sat, 11 Apr 2020 12:13:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 80A8721744;
+        Sat, 11 Apr 2020 12:16:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586607209;
-        bh=GDBkdFyQwNJy3s7hikLvymUoDDGW7i4bveuG7EFg1oA=;
+        s=default; t=1586607412;
+        bh=rsMivg6zxnUZe5+q19pH3VNg+un8uCnbdFiR+2ak1+Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kghuFrkX0xVTGGFnCTUjVjwnhtigFZwZapgVnXRbj9mrtjqWBVToRYkzqbNkAHcXA
-         SQSD8Tq5ZqwMKK0bmpp2Fpl4GqjTYfPvFD07waMSiM74aAzqDgO1TgNlfinovkV0+u
-         gSmGtZZu75paUsHvZuFJQopsXFpxswL9cDWIt7Lo=
+        b=KsGAoHzejQYUx8wyGlKMadxQFBVxi7zRcqCw7iRoj6DgNKRC90uN8D7BWMARu49/+
+         KVIt6pw34kpgFb4+XXnf7WIXh6DPZl3Jy8y45nFy3QclDXGCj5pZa09f1FPFNV9G4G
+         eyfGIB7EaAaaxJHUSSuCd6VDtDTfhzjpdABhbbTU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Richard Palethorpe <rpalethorpe@suse.com>,
-        Kees Cook <keescook@chromium.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, security@kernel.org, wg@grandegger.com,
-        mkl@pengutronix.de, davem@davemloft.net
-Subject: [PATCH 4.14 19/38] slcan: Dont transmit uninitialized stack data in padding
-Date:   Sat, 11 Apr 2020 14:09:03 +0200
-Message-Id: <20200411115439.908546772@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH 5.4 01/41] net: phy: realtek: fix handling of RTL8105e-integrated PHY
+Date:   Sat, 11 Apr 2020 14:09:10 +0200
+Message-Id: <20200411115504.231402605@linuxfoundation.org>
 X-Mailer: git-send-email 2.26.0
-In-Reply-To: <20200411115437.795556138@linuxfoundation.org>
-References: <20200411115437.795556138@linuxfoundation.org>
+In-Reply-To: <20200411115504.124035693@linuxfoundation.org>
+References: <20200411115504.124035693@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -45,51 +46,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Richard Palethorpe <rpalethorpe@suse.com>
+From: Heiner Kallweit <hkallweit1@gmail.com>
 
-[ Upstream commit b9258a2cece4ec1f020715fe3554bc2e360f6264 ]
+[ No applicable upstream commit ]
 
-struct can_frame contains some padding which is not explicitly zeroed in
-slc_bump. This uninitialized data will then be transmitted if the stack
-initialization hardening feature is not enabled (CONFIG_INIT_STACK_ALL).
+After the referenced fix it turned out that one particular RTL8168
+chip version (RTL8105e) does not work on 5.4 because no dedicated PHY
+driver exists. Adding this PHY driver was done for fixing a different
+issue for versions from 5.5 already. I re-send the same change for 5.4
+because the commit message differs.
 
-This commit just zeroes the whole struct including the padding.
-
-Signed-off-by: Richard Palethorpe <rpalethorpe@suse.com>
-Fixes: a1044e36e457 ("can: add slcan driver for serial/USB-serial CAN adapters")
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Cc: linux-can@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: security@kernel.org
-Cc: wg@grandegger.com
-Cc: mkl@pengutronix.de
-Cc: davem@davemloft.net
-Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 2e8c339b4946 ("r8169: fix PHY driver check on platforms w/o module softdeps")
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/can/slcan.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
 
---- a/drivers/net/can/slcan.c
-+++ b/drivers/net/can/slcan.c
-@@ -147,7 +147,7 @@ static void slc_bump(struct slcan *sl)
- 	u32 tmpid;
- 	char *cmd = sl->rbuff;
- 
--	cf.can_id = 0;
-+	memset(&cf, 0, sizeof(cf));
- 
- 	switch (*cmd) {
- 	case 'r':
-@@ -186,8 +186,6 @@ static void slc_bump(struct slcan *sl)
- 	else
- 		return;
- 
--	*(u64 *) (&cf.data) = 0; /* clear payload */
--
- 	/* RTR frames may have a dlc > 0 but they never have any data bytes */
- 	if (!(cf.can_id & CAN_RTR_FLAG)) {
- 		for (i = 0; i < cf.can_dlc; i++) {
+---
+ drivers/net/phy/realtek.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -457,6 +457,15 @@ static struct phy_driver realtek_drvs[]
+ 		.read_page	= rtl821x_read_page,
+ 		.write_page	= rtl821x_write_page,
+ 	}, {
++		PHY_ID_MATCH_MODEL(0x001cc880),
++		.name		= "RTL8208 Fast Ethernet",
++		.read_mmd	= genphy_read_mmd_unsupported,
++		.write_mmd	= genphy_write_mmd_unsupported,
++		.suspend	= genphy_suspend,
++		.resume		= genphy_resume,
++		.read_page	= rtl821x_read_page,
++		.write_page	= rtl821x_write_page,
++	}, {
+ 		PHY_ID_MATCH_EXACT(0x001cc910),
+ 		.name		= "RTL8211 Gigabit Ethernet",
+ 		.config_aneg	= rtl8211_config_aneg,
 
 
