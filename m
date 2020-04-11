@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F0711A514F
-	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 14:25:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 716731A518D
+	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 14:26:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728316AbgDKMQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 08:16:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51262 "EHLO mail.kernel.org"
+        id S1727120AbgDKMP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 08:15:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49316 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727051AbgDKMQv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 08:16:51 -0400
+        id S1727181AbgDKMPZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 08:15:25 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 80A8721744;
-        Sat, 11 Apr 2020 12:16:51 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9B29C21655;
+        Sat, 11 Apr 2020 12:15:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586607412;
-        bh=rsMivg6zxnUZe5+q19pH3VNg+un8uCnbdFiR+2ak1+Y=;
+        s=default; t=1586607325;
+        bh=bUKIwhqr/I1zZj3MIfidzAKGc3BlyDNM+bhRPyedYz8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KsGAoHzejQYUx8wyGlKMadxQFBVxi7zRcqCw7iRoj6DgNKRC90uN8D7BWMARu49/+
-         KVIt6pw34kpgFb4+XXnf7WIXh6DPZl3Jy8y45nFy3QclDXGCj5pZa09f1FPFNV9G4G
-         eyfGIB7EaAaaxJHUSSuCd6VDtDTfhzjpdABhbbTU=
+        b=YjyakbU3x04TquuqK0aPptmvK9v2A++njv3YTnZ+/U9p3X3t5O+3eeTsBv+WSwQGm
+         jiq9YJl75nYCGk74lWztaoh7jlkrQM+vFk/zetlJFgC0CDHAQnJtX/OV1wusP2M0kK
+         typbdsFF6I0fSCJlDsZjo9YtFS5+PrOoQooJBXpc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH 5.4 01/41] net: phy: realtek: fix handling of RTL8105e-integrated PHY
+        stable@vger.kernel.org, Moshe Levi <moshele@mellanox.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Marcelo Ricardo Leitner <mleitner@redhat.com>,
+        netdev@vger.kernel.org, Jarod Wilson <jarod@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.19 28/54] ipv6: dont auto-add link-local address to lag ports
 Date:   Sat, 11 Apr 2020 14:09:10 +0200
-Message-Id: <20200411115504.231402605@linuxfoundation.org>
+Message-Id: <20200411115511.324846089@linuxfoundation.org>
 X-Mailer: git-send-email 2.26.0
-In-Reply-To: <20200411115504.124035693@linuxfoundation.org>
-References: <20200411115504.124035693@linuxfoundation.org>
+In-Reply-To: <20200411115508.284500414@linuxfoundation.org>
+References: <20200411115508.284500414@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -46,41 +46,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+From: Jarod Wilson <jarod@redhat.com>
 
-[ No applicable upstream commit ]
+[ Upstream commit 744fdc8233f6aa9582ce08a51ca06e59796a3196 ]
 
-After the referenced fix it turned out that one particular RTL8168
-chip version (RTL8105e) does not work on 5.4 because no dedicated PHY
-driver exists. Adding this PHY driver was done for fixing a different
-issue for versions from 5.5 already. I re-send the same change for 5.4
-because the commit message differs.
+Bonding slave and team port devices should not have link-local addresses
+automatically added to them, as it can interfere with openvswitch being
+able to properly add tc ingress.
 
-Fixes: 2e8c339b4946 ("r8169: fix PHY driver check on platforms w/o module softdeps")
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Basic reproducer, courtesy of Marcelo:
+
+$ ip link add name bond0 type bond
+$ ip link set dev ens2f0np0 master bond0
+$ ip link set dev ens2f1np2 master bond0
+$ ip link set dev bond0 up
+$ ip a s
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN
+group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: ens2f0np0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc
+mq master bond0 state UP group default qlen 1000
+    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+5: ens2f1np2: <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP> mtu 1500 qdisc
+mq master bond0 state DOWN group default qlen 1000
+    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+11: bond0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc
+noqueue state UP group default qlen 1000
+    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::20f:53ff:fe2f:ea40/64 scope link
+       valid_lft forever preferred_lft forever
+
+(above trimmed to relevant entries, obviously)
+
+$ sysctl net.ipv6.conf.ens2f0np0.addr_gen_mode=0
+net.ipv6.conf.ens2f0np0.addr_gen_mode = 0
+$ sysctl net.ipv6.conf.ens2f1np2.addr_gen_mode=0
+net.ipv6.conf.ens2f1np2.addr_gen_mode = 0
+
+$ ip a l ens2f0np0
+2: ens2f0np0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc
+mq master bond0 state UP group default qlen 1000
+    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::20f:53ff:fe2f:ea40/64 scope link tentative
+       valid_lft forever preferred_lft forever
+$ ip a l ens2f1np2
+5: ens2f1np2: <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP> mtu 1500 qdisc
+mq master bond0 state DOWN group default qlen 1000
+    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::20f:53ff:fe2f:ea40/64 scope link tentative
+       valid_lft forever preferred_lft forever
+
+Looks like addrconf_sysctl_addr_gen_mode() bypasses the original "is
+this a slave interface?" check added by commit c2edacf80e15, and
+results in an address getting added, while w/the proposed patch added,
+no address gets added. This simply adds the same gating check to another
+code path, and thus should prevent the same devices from erroneously
+obtaining an ipv6 link-local address.
+
+Fixes: d35a00b8e33d ("net/ipv6: allow sysctl to change link-local address generation mode")
+Reported-by: Moshe Levi <moshele@mellanox.com>
+CC: Stephen Hemminger <stephen@networkplumber.org>
+CC: Marcelo Ricardo Leitner <mleitner@redhat.com>
+CC: netdev@vger.kernel.org
+Signed-off-by: Jarod Wilson <jarod@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
 ---
- drivers/net/phy/realtek.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ net/ipv6/addrconf.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@ -457,6 +457,15 @@ static struct phy_driver realtek_drvs[]
- 		.read_page	= rtl821x_read_page,
- 		.write_page	= rtl821x_write_page,
- 	}, {
-+		PHY_ID_MATCH_MODEL(0x001cc880),
-+		.name		= "RTL8208 Fast Ethernet",
-+		.read_mmd	= genphy_read_mmd_unsupported,
-+		.write_mmd	= genphy_write_mmd_unsupported,
-+		.suspend	= genphy_suspend,
-+		.resume		= genphy_resume,
-+		.read_page	= rtl821x_read_page,
-+		.write_page	= rtl821x_write_page,
-+	}, {
- 		PHY_ID_MATCH_EXACT(0x001cc910),
- 		.name		= "RTL8211 Gigabit Ethernet",
- 		.config_aneg	= rtl8211_config_aneg,
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -3241,6 +3241,10 @@ static void addrconf_addr_gen(struct ine
+ 	if (netif_is_l3_master(idev->dev))
+ 		return;
+ 
++	/* no link local addresses on devices flagged as slaves */
++	if (idev->dev->flags & IFF_SLAVE)
++		return;
++
+ 	ipv6_addr_set(&addr, htonl(0xFE800000), 0, 0, 0);
+ 
+ 	switch (idev->cnf.addr_gen_mode) {
 
 
