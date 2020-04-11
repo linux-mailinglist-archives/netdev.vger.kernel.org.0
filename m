@@ -2,61 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A87471A5265
-	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 15:46:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 197A71A5284
+	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 16:48:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726129AbgDKNq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 09:46:57 -0400
-Received: from canardo.mork.no ([148.122.252.1]:33959 "EHLO canardo.mork.no"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726037AbgDKNq5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 09:46:57 -0400
-Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 03BDktna028880
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Sat, 11 Apr 2020 15:46:55 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1586612816; bh=WvUsLvPkZ9By/1v8OfMvd5JPtGMgPIXHKEwMgdKcyzc=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=T7zpC0FJmQ5VoD5jt5p84pH+URxNah9Lq9KJEHDfdM7T5byT7whBsF7R91tOvnUL9
-         66zVebcLIhPlxdcJ6LqesCYlbXGPM7GiWuNAqCj1SvLzoJ6O9hy9+ueOM8zZB0nPRJ
-         GCZZk6D2092X3956+YdBDSNp7tiAId+pYPpaiSXQ=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.92)
-        (envelope-from <bjorn@mork.no>)
-        id 1jNGTH-00011t-Em; Sat, 11 Apr 2020 15:46:55 +0200
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     netdev@vger.kernel.org
-Cc:     linux-usb@vger.kernel.org
-Subject: Re: [PATCH net,stable] qmi_wwan: add Huawei E1820
-Organization: m
-References: <20200411133941.3806-1-bjorn@mork.no>
-Date:   Sat, 11 Apr 2020 15:46:55 +0200
-In-Reply-To: <20200411133941.3806-1-bjorn@mork.no> (=?utf-8?Q?=22Bj=C3=B8r?=
- =?utf-8?Q?n?= Mork"'s message of
-        "Sat, 11 Apr 2020 15:39:41 +0200")
-Message-ID: <87blnyp228.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S1726090AbgDKOrn convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 11 Apr 2020 10:47:43 -0400
+Received: from exchange.must.edu.mo ([202.175.31.141]:54180 "EHLO
+        mailgate.must.edu.mo" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726037AbgDKOrn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Apr 2020 10:47:43 -0400
+X-Greylist: delayed 1513 seconds by postgrey-1.27 at vger.kernel.org; Sat, 11 Apr 2020 10:47:42 EDT
+Received: from mailgate.must.edu.mo (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 520B011C804;
+        Sat, 11 Apr 2020 22:22:26 +0800 (HKT)
+Received: from mailgate.must.edu.mo (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 24C8D11C7FB;
+        Sat, 11 Apr 2020 22:22:26 +0800 (HKT)
+Received: from exm03.must.edu.mo (unknown [10.100.3.105])
+        by mailgate.must.edu.mo (Postfix) with ESMTPS;
+        Sat, 11 Apr 2020 22:22:26 +0800 (HKT)
+Received: from exm02.must.edu.mo (10.100.3.104) by exm03.must.edu.mo
+ (10.100.3.105) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Sat, 11 Apr
+ 2020 22:22:25 +0800
+Received: from EXCAS01.must.edu.mo (10.100.3.70) by exm02.must.edu.mo
+ (10.100.3.104) with Microsoft SMTP Server (version=TLS1_0,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.1.1713.5 via Frontend
+ Transport; Sat, 11 Apr 2020 22:22:25 +0800
+Received: from EXMB01.must.edu.mo ([fe80::1c20:45d0:2e82:fe9]) by
+ EXCAS01.must.edu.mo ([::1]) with mapi id 14.03.0415.000; Sat, 11 Apr 2020
+ 22:22:25 +0800
+From:   Kan Yean Phinn <ypkan@must.edu.mo>
+Subject: 
+Thread-Index: AdYQDJ7DVDM9DR4GTQWWBLDqCM4HoQ==
+Date:   Sat, 11 Apr 2020 14:22:24 +0000
+Message-ID: <1861F41066C89042A424A3A1CE4E897901DE8ABF2C@EXMB01.must.edu.mo>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.100.3.105]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.102.1 at canardo
-X-Virus-Status: Clean
+To:     Undisclosed recipients:;
+X-TM-AS-GCONF: 00
+X-TM-AS-Product-Ver: IMSVA-9.1.0.1960-8.5.0.1020-25350.000
+X-TM-AS-Result: No--2.915-4.5-31-10
+X-imss-scan-details: No--2.915-4.5-31-10
+X-TM-AS-User-Approved-Sender: Yes;No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Version: IMSVA-9.1.0.1960-8.5.1020-25350.000
+X-TMASE-Result: 10--2.914800-10.000000
+X-TMASE-MatchedRID: KmwEB9+x74EVDWYNMoigUaEtILqFekmXpWGeD/xxRcgtNBcb9sV7iex1
+        X+Qf3QKilQyEqxZ42BTSZvnKlSdQRZ2rq+b8AnLOLTHwnYOikQ1jZaCjhjBZEPn+C4F/MLS2yMn
+        NCccbhR3i8zVgXoAltvRM5pqjzP4KQKA5jOZ21q/H9AcAQin+iS6rCq/zqpu85MIx11wv+COyO8
+        1X3yak82tudqV546Y78s+5DhomXNGoVzzoxh4QnB/9YtG+TEfaXoD7UHPLc9MofTxU3VRK5feP7
+        w0A/L0h1h33aKLOMxfOyJ4qEOP4jw==
+X-IMSS-DKIM-White-List: No;No
+X-TMASE-SNAP-Result: 1.821001.0001-0-1-12:0,22:0,33:0,34:0-0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't apply.
+Good morning,
+In view of the global financial crisis, Sigma financial group is offering  fast loans within 3 days processing time for both business and personal use. Interest rate is 1% per annul and available for all.
+contact us via:  sigmainvfin@gmail.com
 
-I didn't notice this until I sent the patch.  But we already have the
-device in the table, using interface number based matching:
-
-	{QMI_FIXED_INTF(0x12d1, 0x14ac, 1)},	/* Huawei E1820 */
-
-That should be good enough since the interface number is matching the
-02/06/ff function.
-
-
-Bj=C3=B8rn
-
+If interested, send an email now via: sigmainvfin@gmail.com
