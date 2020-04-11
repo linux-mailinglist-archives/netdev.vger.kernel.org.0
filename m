@@ -2,39 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92F581A568B
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:17:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A8C01A5674
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 01:16:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730672AbgDKXQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 19:16:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56506 "EHLO mail.kernel.org"
+        id S1730628AbgDKXQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 19:16:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56726 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729577AbgDKXOi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 19:14:38 -0400
+        id S1730427AbgDKXOp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 19:14:45 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0E8CD21D7A;
-        Sat, 11 Apr 2020 23:14:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2894420CC7;
+        Sat, 11 Apr 2020 23:14:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586646878;
-        bh=kYkhjG0AGoYc0DOr12jKqAZr7EiG3+2d+ZUkMBZ5aw8=;
+        s=default; t=1586646885;
+        bh=Nw/dfC0EA+MH0y6lhM7T8r0En1aJj2wCuKFC2emzcNE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q35wEW3H7EO2G1+KKtBPTd8toKf6UxoDrAXvbuyM3prGZ9qTRBccUDx8NXRQLUI8p
-         6mKhCaznd6Jh0AYCdzwICTDEybgyo1RH5BubnKfrk3DOX9iLgpRV+clOpIYxosm1BY
-         U63FA+OryHSzF+kdK5chO/Nld6x6fStiJ4qkdAr0=
+        b=f6wB5ZxluzlAdVPg0kjPkTdAyvDjYnNenhKWqR7jxm6PpCnviZW8bzbUgvzv+yEqw
+         voKjyzMCy6A1rvs97nFP5xojfRqHBB8Y8SuF1YILY3hGxwMWaiAKtqaRgzDsPVFfX4
+         uj+dxTYF823EYFhvRZ1QbyobSeX8Tha/SM6/M6VI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Raveendran Somu <raveendran.somu@cypress.com>,
-        Chi-hsien Lin <chi-hsien.lin@cypress.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 20/26] brcmfmac: Fix driver crash on USB control transfer timeout
-Date:   Sat, 11 Apr 2020 19:14:07 -0400
-Message-Id: <20200411231413.26911-20-sashal@kernel.org>
+Cc:     Chuck Lever <chuck.lever@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 26/26] svcrdma: Fix leak of transport addresses
+Date:   Sat, 11 Apr 2020 19:14:13 -0400
+Message-Id: <20200411231413.26911-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200411231413.26911-1-sashal@kernel.org>
 References: <20200411231413.26911-1-sashal@kernel.org>
@@ -47,57 +43,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Raveendran Somu <raveendran.somu@cypress.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit 93a5bfbc7cad8bf3dea81c9bc07761c1226a0860 ]
+[ Upstream commit 1a33d8a284b1e85e03b8c7b1ea8fb985fccd1d71 ]
 
-When the control transfer gets timed out, the error status
-was returned without killing that urb, this leads to using
-the same urb. This issue causes the kernel crash as the same
-urb is sumbitted multiple times. The fix is to kill the
-urb for timeout transfer before returning error
+Kernel memory leak detected:
 
-Signed-off-by: Raveendran Somu <raveendran.somu@cypress.com>
-Signed-off-by: Chi-hsien Lin <chi-hsien.lin@cypress.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/1585124429-97371-2-git-send-email-chi-hsien.lin@cypress.com
+unreferenced object 0xffff888849cdf480 (size 8):
+  comm "kworker/u8:3", pid 2086, jiffies 4297898756 (age 4269.856s)
+  hex dump (first 8 bytes):
+    30 00 cd 49 88 88 ff ff                          0..I....
+  backtrace:
+    [<00000000acfc370b>] __kmalloc_track_caller+0x137/0x183
+    [<00000000a2724354>] kstrdup+0x2b/0x43
+    [<0000000082964f84>] xprt_rdma_format_addresses+0x114/0x17d [rpcrdma]
+    [<00000000dfa6ed00>] xprt_setup_rdma_bc+0xc0/0x10c [rpcrdma]
+    [<0000000073051a83>] xprt_create_transport+0x3f/0x1a0 [sunrpc]
+    [<0000000053531a8e>] rpc_create+0x118/0x1cd [sunrpc]
+    [<000000003a51b5f8>] setup_callback_client+0x1a5/0x27d [nfsd]
+    [<000000001bd410af>] nfsd4_process_cb_update.isra.7+0x16c/0x1ac [nfsd]
+    [<000000007f4bbd56>] nfsd4_run_cb_work+0x4c/0xbd [nfsd]
+    [<0000000055c5586b>] process_one_work+0x1b2/0x2fe
+    [<00000000b1e3e8ef>] worker_thread+0x1a6/0x25a
+    [<000000005205fb78>] kthread+0xf6/0xfb
+    [<000000006d2dc057>] ret_from_fork+0x3a/0x50
+
+Introduce a call to xprt_rdma_free_addresses() similar to the way
+that the TCP backchannel releases a transport's peer address
+strings.
+
+Fixes: 5d252f90a800 ("svcrdma: Add class for RDMA backwards direction transport")
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/sunrpc/xprtrdma/svc_rdma_backchannel.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
-index 31727f34381fe..6a87681b52abf 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
-@@ -336,11 +336,12 @@ static int brcmf_usb_tx_ctlpkt(struct device *dev, u8 *buf, u32 len)
- 		return err;
- 	}
- 	timeout = brcmf_usb_ioctl_resp_wait(devinfo);
--	clear_bit(0, &devinfo->ctl_op);
- 	if (!timeout) {
- 		brcmf_err("Txctl wait timed out\n");
-+		usb_kill_urb(devinfo->ctl_urb);
- 		err = -EIO;
- 	}
-+	clear_bit(0, &devinfo->ctl_op);
- 	return err;
- }
+diff --git a/net/sunrpc/xprtrdma/svc_rdma_backchannel.c b/net/sunrpc/xprtrdma/svc_rdma_backchannel.c
+index 6035c5a380a6b..b3d48c6243c80 100644
+--- a/net/sunrpc/xprtrdma/svc_rdma_backchannel.c
++++ b/net/sunrpc/xprtrdma/svc_rdma_backchannel.c
+@@ -277,6 +277,7 @@ xprt_rdma_bc_put(struct rpc_xprt *xprt)
+ {
+ 	dprintk("svcrdma: %s: xprt %p\n", __func__, xprt);
  
-@@ -366,11 +367,12 @@ static int brcmf_usb_rx_ctlpkt(struct device *dev, u8 *buf, u32 len)
- 	}
- 	timeout = brcmf_usb_ioctl_resp_wait(devinfo);
- 	err = devinfo->ctl_urb_status;
--	clear_bit(0, &devinfo->ctl_op);
- 	if (!timeout) {
- 		brcmf_err("rxctl wait timed out\n");
-+		usb_kill_urb(devinfo->ctl_urb);
- 		err = -EIO;
- 	}
-+	clear_bit(0, &devinfo->ctl_op);
- 	if (!err)
- 		return devinfo->ctl_urb_actual_length;
- 	else
++	xprt_rdma_free_addresses(xprt);
+ 	xprt_free(xprt);
+ 	module_put(THIS_MODULE);
+ }
 -- 
 2.20.1
 
