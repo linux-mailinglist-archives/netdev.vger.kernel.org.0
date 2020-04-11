@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68F241A4FD8
-	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 14:12:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 061371A51C4
+	for <lists+netdev@lfdr.de>; Sat, 11 Apr 2020 14:28:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727141AbgDKMMH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 08:12:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44474 "EHLO mail.kernel.org"
+        id S1727742AbgDKMNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 08:13:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46206 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727104AbgDKMMF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Apr 2020 08:12:05 -0400
+        id S1727732AbgDKMNT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Apr 2020 08:13:19 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B6A14214D8;
-        Sat, 11 Apr 2020 12:12:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DA9FB2166E;
+        Sat, 11 Apr 2020 12:13:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586607124;
-        bh=GDBkdFyQwNJy3s7hikLvymUoDDGW7i4bveuG7EFg1oA=;
+        s=default; t=1586607199;
+        bh=/lxQsjwShHOCqEOzz99+Z6MX6Z1Ea8+vgXJ2HukAbNQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cyhTYNDQGQUsOd3W3mGJ/nmQHJzuMZfuWZYC1jxQUWMkjH0RENAGllD7l+tuycm7k
-         yUB+346rrQkAw+jP0920bFKx+f/1Br9nCp1t2mmlF2XH5JXrmZT2OKciQgvzA/wQ2U
-         +ST0wW0+t2iwRR6ozGEdpldJT3xx8i3OMJfj602M=
+        b=f3rO6b4Xx6/H6LP5TNN/DYxOzgzFNSQtbypUkCbJ6pSRs9V724V3q4WKMe/gWvH1J
+         9cIMmERJiHu2qiFoxeh64KI1uL2re4MCywV8fVJn7m3qdJ2JoZEG2N0w/JspUblLo1
+         3QYf3lKn1txu9MOj9S0029eFzxjqgT7Xx8wKSqcU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Richard Palethorpe <rpalethorpe@suse.com>,
-        Kees Cook <keescook@chromium.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, security@kernel.org, wg@grandegger.com,
-        mkl@pengutronix.de, davem@davemloft.net
-Subject: [PATCH 4.9 17/32] slcan: Dont transmit uninitialized stack data in padding
-Date:   Sat, 11 Apr 2020 14:08:56 +0200
-Message-Id: <20200411115420.554970658@linuxfoundation.org>
+        stable@vger.kernel.org, Moshe Levi <moshele@mellanox.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Marcelo Ricardo Leitner <mleitner@redhat.com>,
+        netdev@vger.kernel.org, Jarod Wilson <jarod@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.14 15/38] ipv6: dont auto-add link-local address to lag ports
+Date:   Sat, 11 Apr 2020 14:08:59 +0200
+Message-Id: <20200411115439.509016369@linuxfoundation.org>
 X-Mailer: git-send-email 2.26.0
-In-Reply-To: <20200411115418.455500023@linuxfoundation.org>
-References: <20200411115418.455500023@linuxfoundation.org>
+In-Reply-To: <20200411115437.795556138@linuxfoundation.org>
+References: <20200411115437.795556138@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,51 +46,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Richard Palethorpe <rpalethorpe@suse.com>
+From: Jarod Wilson <jarod@redhat.com>
 
-[ Upstream commit b9258a2cece4ec1f020715fe3554bc2e360f6264 ]
+[ Upstream commit 744fdc8233f6aa9582ce08a51ca06e59796a3196 ]
 
-struct can_frame contains some padding which is not explicitly zeroed in
-slc_bump. This uninitialized data will then be transmitted if the stack
-initialization hardening feature is not enabled (CONFIG_INIT_STACK_ALL).
+Bonding slave and team port devices should not have link-local addresses
+automatically added to them, as it can interfere with openvswitch being
+able to properly add tc ingress.
 
-This commit just zeroes the whole struct including the padding.
+Basic reproducer, courtesy of Marcelo:
 
-Signed-off-by: Richard Palethorpe <rpalethorpe@suse.com>
-Fixes: a1044e36e457 ("can: add slcan driver for serial/USB-serial CAN adapters")
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Cc: linux-can@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: security@kernel.org
-Cc: wg@grandegger.com
-Cc: mkl@pengutronix.de
-Cc: davem@davemloft.net
-Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
+$ ip link add name bond0 type bond
+$ ip link set dev ens2f0np0 master bond0
+$ ip link set dev ens2f1np2 master bond0
+$ ip link set dev bond0 up
+$ ip a s
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN
+group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: ens2f0np0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc
+mq master bond0 state UP group default qlen 1000
+    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+5: ens2f1np2: <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP> mtu 1500 qdisc
+mq master bond0 state DOWN group default qlen 1000
+    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+11: bond0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc
+noqueue state UP group default qlen 1000
+    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::20f:53ff:fe2f:ea40/64 scope link
+       valid_lft forever preferred_lft forever
+
+(above trimmed to relevant entries, obviously)
+
+$ sysctl net.ipv6.conf.ens2f0np0.addr_gen_mode=0
+net.ipv6.conf.ens2f0np0.addr_gen_mode = 0
+$ sysctl net.ipv6.conf.ens2f1np2.addr_gen_mode=0
+net.ipv6.conf.ens2f1np2.addr_gen_mode = 0
+
+$ ip a l ens2f0np0
+2: ens2f0np0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc
+mq master bond0 state UP group default qlen 1000
+    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::20f:53ff:fe2f:ea40/64 scope link tentative
+       valid_lft forever preferred_lft forever
+$ ip a l ens2f1np2
+5: ens2f1np2: <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP> mtu 1500 qdisc
+mq master bond0 state DOWN group default qlen 1000
+    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::20f:53ff:fe2f:ea40/64 scope link tentative
+       valid_lft forever preferred_lft forever
+
+Looks like addrconf_sysctl_addr_gen_mode() bypasses the original "is
+this a slave interface?" check added by commit c2edacf80e15, and
+results in an address getting added, while w/the proposed patch added,
+no address gets added. This simply adds the same gating check to another
+code path, and thus should prevent the same devices from erroneously
+obtaining an ipv6 link-local address.
+
+Fixes: d35a00b8e33d ("net/ipv6: allow sysctl to change link-local address generation mode")
+Reported-by: Moshe Levi <moshele@mellanox.com>
+CC: Stephen Hemminger <stephen@networkplumber.org>
+CC: Marcelo Ricardo Leitner <mleitner@redhat.com>
+CC: netdev@vger.kernel.org
+Signed-off-by: Jarod Wilson <jarod@redhat.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/slcan.c |    4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ net/ipv6/addrconf.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/net/can/slcan.c
-+++ b/drivers/net/can/slcan.c
-@@ -147,7 +147,7 @@ static void slc_bump(struct slcan *sl)
- 	u32 tmpid;
- 	char *cmd = sl->rbuff;
- 
--	cf.can_id = 0;
-+	memset(&cf, 0, sizeof(cf));
- 
- 	switch (*cmd) {
- 	case 'r':
-@@ -186,8 +186,6 @@ static void slc_bump(struct slcan *sl)
- 	else
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -3175,6 +3175,10 @@ static void addrconf_addr_gen(struct ine
+ 	if (netif_is_l3_master(idev->dev))
  		return;
  
--	*(u64 *) (&cf.data) = 0; /* clear payload */
--
- 	/* RTR frames may have a dlc > 0 but they never have any data bytes */
- 	if (!(cf.can_id & CAN_RTR_FLAG)) {
- 		for (i = 0; i < cf.can_dlc; i++) {
++	/* no link local addresses on devices flagged as slaves */
++	if (idev->dev->flags & IFF_SLAVE)
++		return;
++
+ 	ipv6_addr_set(&addr, htonl(0xFE800000), 0, 0, 0);
+ 
+ 	switch (idev->cnf.addr_gen_mode) {
 
 
