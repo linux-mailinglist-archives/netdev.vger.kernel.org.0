@@ -2,145 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45EBA1A5E13
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 12:39:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36C121A5E4F
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 13:37:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726955AbgDLKjJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Apr 2020 06:39:09 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:34618 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725909AbgDLKjI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Apr 2020 06:39:08 -0400
-Received: by mail-io1-f65.google.com with SMTP id f3so6565395ioj.1;
-        Sun, 12 Apr 2020 03:39:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mB50ITuRAo45vr3yEb8CNvZ6X6/DqWAF63v0IHs/huk=;
-        b=C70+d3ftVTHPJ4YDz5UWzWytEpPr478SefEVDz2ZHLx3PLV3IMFwjyAhOslonQ4jIB
-         AR+AIDrKr4L2KJx2ybirfGiNixFdxEKqw2s9a80UXmMgaxnXCk8IwREAycKj7ikzeyPy
-         JsnyvJyw3D0uHi4qgnTGxPsCk9H4HhZ9MNPdNnq1I0m0r+sxmyIl0Y7uCFRzcWeHZkEG
-         o5P4PPGtJcccXZa2fm+EuCOj5D9Vx3UVOK463OSaq6BmLsRP4ATenR9LROvD/Hb/HgUP
-         vEFXCiQOgi1mn8izS0eBazZaVUqhdWOwy6gat1SuxfGAJPBiHNnN7Wu1RxYc4mF0NP9s
-         kJTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mB50ITuRAo45vr3yEb8CNvZ6X6/DqWAF63v0IHs/huk=;
-        b=JX75j1GgXh3BJvptmpWJvqywOfU9wYSWfJF937yaGrnMAZLuUA4vGbV5IJzF6bYD0w
-         qe1A0Oe57G7wvTgv9bIGPQ96PhqOAyiDBdWVmD7/RWJR/Pj385eVokh7YmPhz5kI3nep
-         qVc1YBer5G053+OUdRLWXXMWYx7oImIHM9itfaxde6Q45wZYMd6Gk/P03VcnSP48c9Ri
-         ooxT6i1AbwbncSNU1qfMJPTFM/3yUqTXIkU9t9rpI2zRpCdz91rrnUdplZTPL2mDE5mJ
-         zvcNYwW+kqDLkXKir4HmkftzqJg6BpLji5vEIP+ulioRcRMBfB/gmhtgW7GtNkgA93vN
-         srfg==
-X-Gm-Message-State: AGi0PuZhMsyuAHrHG72aeMi/aTCQePGixgw1eHmbTJuF/KReDZcXLDgH
-        3nPcTUdkFH7LxaYcpsEyICVp+7aXXmcbV89oujsHe+6L
-X-Google-Smtp-Source: APiQypIGAWmKLY3IBZTNsF7xonyMGYkQaY5+Bq/c8BhUrXrk0TMoDADZ4sRM0A+mpRjivLgKubtfP5yiY+od1UyhHn0=
-X-Received: by 2002:a5e:cb02:: with SMTP id p2mr11839251iom.76.1586687945916;
- Sun, 12 Apr 2020 03:39:05 -0700 (PDT)
+        id S1726689AbgDLLhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Apr 2020 07:37:51 -0400
+Received: from mga06.intel.com ([134.134.136.31]:32792 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725903AbgDLLhu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 12 Apr 2020 07:37:50 -0400
+IronPort-SDR: K+L7Tp0Z4JqKxB00W3kohZfcPctqAcsHs81rWpgspblyx/JmEpLpTvfsPVkKiS2vS3wa+pgpK6
+ 0a2tFWpuVwKw==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2020 04:37:49 -0700
+IronPort-SDR: bzZN2hoGmr0W+9u3F2AbvIgYKZgRA0SCXSIEktmFICpyxDqcCLvaIZSTrgupvo1QwFerYNxlaH
+ G1EtNLeuj7oA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,374,1580803200"; 
+   d="scan'208";a="453948217"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 12 Apr 2020 04:37:47 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1jNavr-0001aT-9R; Sun, 12 Apr 2020 19:37:47 +0800
+Date:   Sun, 12 Apr 2020 19:37:20 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     kbuild-all@lists.01.org, clang-built-linux@googlegroups.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org
+Subject: [vhost:vhost 54/54] drivers/virtio/Kconfig:49: syntax error
+Message-ID: <202004121907.Djq7hPBe%lkp@intel.com>
 MIME-Version: 1.0
-References: <20200408152151.5780-1-christian.brauner@ubuntu.com>
- <20200408152151.5780-3-christian.brauner@ubuntu.com> <CADyDSO54-GuSUJrciSD2jbSShCYDpXCp53cr+D7u0ZQT141uTA@mail.gmail.com>
- <20200409082659.exequ3evhlv33csr@wittgenstein>
-In-Reply-To: <20200409082659.exequ3evhlv33csr@wittgenstein>
-From:   David Rheinsberg <david.rheinsberg@gmail.com>
-Date:   Sun, 12 Apr 2020 12:38:54 +0200
-Message-ID: <CADyDSO54FV7OaVwWremmnNbTkvw6hQ-KTLJdEg3V5rfBi8n3Yw@mail.gmail.com>
-Subject: Re: [PATCH 2/8] loopfs: implement loopfs
-To:     Christian Brauner <christian.brauner@ubuntu.com>
-Cc:     Jens Axboe <axboe@kernel.dk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        lkml <linux-kernel@vger.kernel.org>, linux-block@vger.kernel.org,
-        linux-api@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Serge Hallyn <serge@hallyn.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, Tejun Heo <tj@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saravana Kannan <saravanak@google.com>,
-        Jan Kara <jack@suse.cz>, David Howells <dhowells@redhat.com>,
-        Seth Forshee <seth.forshee@canonical.com>,
-        Tom Gundersen <teg@jklm.no>,
-        Christian Kellner <ckellner@redhat.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        =?UTF-8?Q?St=C3=A9phane_Graber?= <stgraber@ubuntu.com>,
-        linux-doc@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git vhost
+head:   e282a85dc20e6d5da055e65c48aae15cc14897c7
+commit: e282a85dc20e6d5da055e65c48aae15cc14897c7 [54/54] vdpa: make vhost, virtio depend on menu
+config: powerpc-defconfig
+compiler: clang version 11.0.0 (https://github.com/llvm/llvm-project 4e86e5eedc684453fe0af6eca2ebdbff33db012c)
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        git checkout e282a85dc20e6d5da055e65c48aae15cc14897c7
+        COMPILER=clang make.cross ARCH=powerpc  defconfig
+        COMPILER=clang make.cross ARCH=powerpc 
 
-On Thu, Apr 9, 2020 at 10:27 AM Christian Brauner
-<christian.brauner@ubuntu.com> wrote:
-> On Thu, Apr 09, 2020 at 07:39:18AM +0200, David Rheinsberg wrote:
-> > With loopfs in place, any process can create its own user_ns, mount
-> > their private loopfs and create as many loop-devices as they want.
-> > Hence, this limit does not serve as an effective global
-> > resource-control. Secondly, anyone with access to `loop-control` can
-> > now create loop instances until this limit is hit, thus causing anyone
-> > else to be unable to create more. This effectively prevents you from
-> > sharing a loopfs between non-trusting parties. I am unsure where that
-> > limit would actually be used?
->
-> Restricting it globally indeed wasn't the intended use-case for it. This
-> was more so that you can specify an instance limit, bind-mount that
-> instance into several places and sufficiently locked down users cannot
-> exceed the instance limit.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kbuild test robot <lkp@intel.com>
 
-But then these users can each exhaust the limit individually. As such,
-you cannot share this instance across users that have no
-trust-relationship. Fine with me, but I still don't understand in
-which scenario the limit would be useful. Anyone can create a user-ns,
-create a new loopfs mount, and just happily create more loop-devices.
-So what is so special that you want to restrict the devices on a
-_single_ mount instance?
+All errors (new ones prefixed by >>):
 
-> I don't think we'd be getting much out of a global limit per se I think
-> the initial namespace being able to reserve a bunch of devices
-> they can always rely on being able create when they need them is more
-> interesting. This is similat to what devpts implements with the
-> "reserved" mount option and what I initially proposed for binderfs. For
-> the latter it was deemed unnecessary by others so I dropped it from
-> loopfs too.
+>> drivers/virtio/Kconfig:49: syntax error
+>> drivers/virtio/Kconfig:48: unknown statement "depend"
+>> drivers/virtio/Kconfig:49: invalid statement
+   drivers/virtio/Kconfig:50: invalid statement
+>> drivers/virtio/Kconfig:51: unknown statement "This"
+   drivers/virtio/Kconfig:52:warning: ignoring unsupported character '.'
+   drivers/virtio/Kconfig:52:warning: ignoring unsupported character ','
+>> drivers/virtio/Kconfig:52: unknown statement "device"
+>> drivers/virtio/Kconfig:53: unknown statement "an"
+>> drivers/virtio/Kconfig:54: unknown statement "physical"
+   drivers/virtio/Kconfig:55:warning: ignoring unsupported character '.'
+>> drivers/virtio/Kconfig:55: unknown statement "offloaded"
+   drivers/virtio/Kconfig:57:warning: ignoring unsupported character ','
+   drivers/virtio/Kconfig:57:warning: ignoring unsupported character '.'
+>> drivers/virtio/Kconfig:57: unknown statement "If"
+   make[2]: *** [scripts/kconfig/Makefile:85: defconfig] Error 1
+   make[1]: *** [Makefile:568: defconfig] Error 2
+   make: *** [Makefile:180: sub-make] Error 2
+   4 real  1 user  1 sys  59.31% cpu 	make defconfig
+--
+>> drivers/virtio/Kconfig:49: syntax error
+>> drivers/virtio/Kconfig:48: unknown statement "depend"
+>> drivers/virtio/Kconfig:49: invalid statement
+   drivers/virtio/Kconfig:50: invalid statement
+>> drivers/virtio/Kconfig:51: unknown statement "This"
+   drivers/virtio/Kconfig:52:warning: ignoring unsupported character '.'
+   drivers/virtio/Kconfig:52:warning: ignoring unsupported character ','
+>> drivers/virtio/Kconfig:52: unknown statement "device"
+>> drivers/virtio/Kconfig:53: unknown statement "an"
+>> drivers/virtio/Kconfig:54: unknown statement "physical"
+   drivers/virtio/Kconfig:55:warning: ignoring unsupported character '.'
+>> drivers/virtio/Kconfig:55: unknown statement "offloaded"
+   drivers/virtio/Kconfig:57:warning: ignoring unsupported character ','
+   drivers/virtio/Kconfig:57:warning: ignoring unsupported character '.'
+>> drivers/virtio/Kconfig:57: unknown statement "If"
+   make[2]: *** [scripts/kconfig/Makefile:75: oldconfig] Error 1
+   make[1]: *** [Makefile:568: oldconfig] Error 2
+   make: *** [Makefile:180: sub-make] Error 2
+   4 real  1 user  1 sys  66.71% cpu 	make oldconfig
+--
+>> drivers/virtio/Kconfig:49: syntax error
+>> drivers/virtio/Kconfig:48: unknown statement "depend"
+>> drivers/virtio/Kconfig:49: invalid statement
+   drivers/virtio/Kconfig:50: invalid statement
+>> drivers/virtio/Kconfig:51: unknown statement "This"
+   drivers/virtio/Kconfig:52:warning: ignoring unsupported character '.'
+   drivers/virtio/Kconfig:52:warning: ignoring unsupported character ','
+>> drivers/virtio/Kconfig:52: unknown statement "device"
+>> drivers/virtio/Kconfig:53: unknown statement "an"
+>> drivers/virtio/Kconfig:54: unknown statement "physical"
+   drivers/virtio/Kconfig:55:warning: ignoring unsupported character '.'
+>> drivers/virtio/Kconfig:55: unknown statement "offloaded"
+   drivers/virtio/Kconfig:57:warning: ignoring unsupported character ','
+   drivers/virtio/Kconfig:57:warning: ignoring unsupported character '.'
+>> drivers/virtio/Kconfig:57: unknown statement "If"
+   make[2]: *** [scripts/kconfig/Makefile:75: olddefconfig] Error 1
+   make[1]: *** [Makefile:568: olddefconfig] Error 2
+   make: *** [Makefile:180: sub-make] Error 2
+   4 real  1 user  1 sys  66.26% cpu 	make olddefconfig
 
-The `reserve` of devpts has a fixed 2-tier system: A global limit, and
-a init-ns reserve. This does nothing to protect one container from
-another.
+vim +49 drivers/virtio/Kconfig
 
-Furthermore, how do you intend to limit user-space from creating an
-unbound amount of loop devices? Unless I am mistaken, with your
-proposal *any* process can create a new loopfs with a basically
-unlimited amount of loop-devices, thus easily triggering unbound
-kernel allocations. I think this needs to be accounted. The classic
-way is to put a per-uid limit into `struct user_struct` (done by
-pipes, mlock, epoll, mq, etc.). An alternative is `struct ucount`,
-which allows hierarchical management (inotify uses that, as an
-example).
+e72542191cbba4 Ohad Ben-Cohen     2011-07-05  14  
+3343660d8c62c6 Anthony Liguori    2007-11-12  15  config VIRTIO_PCI
+d72c5a8c8c57cb Kees Cook          2012-10-02  16  	tristate "PCI driver for virtio devices"
+d72c5a8c8c57cb Kees Cook          2012-10-02  17  	depends on PCI
+3343660d8c62c6 Anthony Liguori    2007-11-12  18  	select VIRTIO
+3343660d8c62c6 Anthony Liguori    2007-11-12  19  	---help---
+b2a6d51ddf7b23 Michael S. Tsirkin 2015-01-15  20  	  This driver provides support for virtio based paravirtual device
+3343660d8c62c6 Anthony Liguori    2007-11-12  21  	  drivers over PCI.  This requires that your VMM has appropriate PCI
+3343660d8c62c6 Anthony Liguori    2007-11-12  22  	  virtio backends.  Most QEMU based VMMs should support these devices
+3343660d8c62c6 Anthony Liguori    2007-11-12  23  	  (like KVM or Xen).
+3343660d8c62c6 Anthony Liguori    2007-11-12  24  
+3343660d8c62c6 Anthony Liguori    2007-11-12  25  	  If unsure, say M.
+3343660d8c62c6 Anthony Liguori    2007-11-12  26  
+46506da5f365ef Michael S. Tsirkin 2015-01-15  27  config VIRTIO_PCI_LEGACY
+46506da5f365ef Michael S. Tsirkin 2015-01-15  28  	bool "Support for legacy virtio draft 0.9.X and older devices"
+46506da5f365ef Michael S. Tsirkin 2015-01-15  29  	default y
+46506da5f365ef Michael S. Tsirkin 2015-01-15  30  	depends on VIRTIO_PCI
+46506da5f365ef Michael S. Tsirkin 2015-01-15  31  	---help---
+46506da5f365ef Michael S. Tsirkin 2015-01-15  32            Virtio PCI Card 0.9.X Draft (circa 2014) and older device support.
+46506da5f365ef Michael S. Tsirkin 2015-01-15  33  
+46506da5f365ef Michael S. Tsirkin 2015-01-15  34  	  This option enables building a transitional driver, supporting
+46506da5f365ef Michael S. Tsirkin 2015-01-15  35  	  both devices conforming to Virtio 1 specification, and legacy devices.
+46506da5f365ef Michael S. Tsirkin 2015-01-15  36  	  If disabled, you get a slightly smaller, non-transitional driver,
+46506da5f365ef Michael S. Tsirkin 2015-01-15  37  	  with no legacy compatibility.
+46506da5f365ef Michael S. Tsirkin 2015-01-15  38  
+46506da5f365ef Michael S. Tsirkin 2015-01-15  39            So look out into your driveway.  Do you have a flying car?  If
+46506da5f365ef Michael S. Tsirkin 2015-01-15  40            so, you can happily disable this option and virtio will not
+46506da5f365ef Michael S. Tsirkin 2015-01-15  41            break.  Otherwise, leave it set.  Unless you're testing what
+46506da5f365ef Michael S. Tsirkin 2015-01-15  42            life will be like in The Future.
+46506da5f365ef Michael S. Tsirkin 2015-01-15  43  
+46506da5f365ef Michael S. Tsirkin 2015-01-15  44  	  If unsure, say Y.
+46506da5f365ef Michael S. Tsirkin 2015-01-15  45  
+c043b4a8cf3b16 Jason Wang         2020-03-26  46  config VIRTIO_VDPA
+c043b4a8cf3b16 Jason Wang         2020-03-26  47  	tristate "vDPA driver for virtio devices"
+e282a85dc20e6d Michael S. Tsirkin 2020-04-12 @48  	depend on VDPA
+c043b4a8cf3b16 Jason Wang         2020-03-26 @49  	select VIRTIO
+c043b4a8cf3b16 Jason Wang         2020-03-26  50  	help
+c043b4a8cf3b16 Jason Wang         2020-03-26 @51  	  This driver provides support for virtio based paravirtual
+c043b4a8cf3b16 Jason Wang         2020-03-26 @52  	  device driver over vDPA bus. For this to be useful, you need
+c043b4a8cf3b16 Jason Wang         2020-03-26 @53  	  an appropriate vDPA device implementation that operates on a
+c043b4a8cf3b16 Jason Wang         2020-03-26 @54  	  physical device to allow the datapath of virtio to be
+c043b4a8cf3b16 Jason Wang         2020-03-26 @55  	  offloaded to hardware.
+c043b4a8cf3b16 Jason Wang         2020-03-26  56  
+c043b4a8cf3b16 Jason Wang         2020-03-26 @57  	  If unsure, say M.
+c043b4a8cf3b16 Jason Wang         2020-03-26  58  
 
-> I also expect most users to pre-create devices in the initial namespace
-> instance they need (e.g. similar to what binderfs does or what loop
-> devices currently have). Does that make sense to you?
+:::::: The code at line 49 was first introduced by commit
+:::::: c043b4a8cf3b16fbdcaec1126841431c33b16e98 virtio: introduce a vDPA based transport
 
-Our use-case is to get programmatic access to loop-devices, so we can
-build customer images on request (especially to create XFS images,
-since mkfs.xfs cannot write them, IIRC). We would be perfectly happy
-with a kernel-interface that takes a file-descriptor to a regular file
-and returns us a file-descriptor to a newly created block device
-(which is automatically destroyed when the last file-descriptor to it
-is closed). This would be ideal *to us*, since it would do automatic
-cleanup on crashes.
+:::::: TO: Jason Wang <jasowang@redhat.com>
+:::::: CC: Michael S. Tsirkin <mst@redhat.com>
 
-We don't need any representation of the loop-device in the
-file-system, as long as we can somehow mount it (either by passing the
-bdev-FD to the new mount-api, or by using /proc/self/fd/ as
-mount-source).
-
-With your proposed loop-fs we could achieve something close to it:
-Mount a private loopfs, create a loop-device, and rely on automatic
-cleanup when the mount-namespace is destroyed.
-
-Thanks
-David
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
