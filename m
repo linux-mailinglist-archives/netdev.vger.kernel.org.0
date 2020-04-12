@@ -2,478 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 876061A5CFA
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 08:01:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 467EE1A5CFE
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 08:09:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725911AbgDLF6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Apr 2020 01:58:48 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:51610 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725815AbgDLF6s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Apr 2020 01:58:48 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03C5vCsH007844
-        for <netdev@vger.kernel.org>; Sat, 11 Apr 2020 22:58:47 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=W/fdNpqtLigVE5mt7qa9ZOkX2mg50U4ZotFzpgxzj64=;
- b=Jom0DZXk+t6uUjfWEwoL+lm5lK76T2KsOLT4nHRN8kKFb2OgNgXYDzlsVCJwr12F9k7F
- pBRSBPzq4HhxKfkKltsoOsxa6sijycwtnCP3l2MYmEVzoTjUEUpfq0GxNFKpxlfBC7Tj
- g9i0KRIpAifEqFwzu1hMPWUku4u8Ii9NoGg= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 30bbkak3fn-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Sat, 11 Apr 2020 22:58:47 -0700
-Received: from intmgw004.08.frc2.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Sat, 11 Apr 2020 22:58:47 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id E654A2EC32D1; Sat, 11 Apr 2020 22:58:43 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>, <rdna@fb.com>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] libbpf: always specify expected_attach_type on program load if supported
-Date:   Sat, 11 Apr 2020 22:58:37 -0700
-Message-ID: <20200412055837.2883320-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1725873AbgDLGJF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Apr 2020 02:09:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56444 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725263AbgDLGJE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 12 Apr 2020 02:09:04 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7D455206B8;
+        Sun, 12 Apr 2020 06:09:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1586671744;
+        bh=/3Ve7Aw+hXhl/NM1eK+r5k7vnHs9rrw66aUKA5c2sMU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=eA9ldMzfnu4gH23+hKe57OxYIIqpz4O2ltPJc39c3WZOzGoaZW5CJfdes3/7x918S
+         +5QWa78pXq9xbbBQc6wlTfOSWZ86Iu+uyUt6UvLHyUsfSWxlQZMDEFJuSzaXO03pmr
+         sCYvWW9I7uzBif1/iE2eY4twwb2C810GY7QgomWw=
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
+        Arjan van de Ven <arjan@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
+Subject: [PATCH net v1] net/sched: Don't print dump stack in event of transmission timeout
+Date:   Sun, 12 Apr 2020 09:08:54 +0300
+Message-Id: <20200412060854.334895-1-leon@kernel.org>
+X-Mailer: git-send-email 2.25.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-11_06:2020-04-11,2020-04-11 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 malwarescore=0
- mlxlogscore=999 impostorscore=0 suspectscore=0 phishscore=0
- priorityscore=1501 adultscore=0 lowpriorityscore=0 clxscore=1015
- spamscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004120054
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For some types of BPF programs that utilize expected_attach_type, libbpf =
-won't
-set load_attr.expected_attach_type, even if expected_attach_type is known=
- from
-section definition. This was done to preserve backwards compatibility wit=
-h old
-kernels that didn't recognize expected_attach_type attribute yet (which w=
-as
-added in 5e43f899b03a ("bpf: Check attach type at prog load time"). But t=
-his
-is problematic for some BPF programs that utilize never features that req=
-uire
-kernel to know specific expected_attach_type (e.g., extended set of retur=
-n
-codes for cgroup_skb/egress programs).
+From: Leon Romanovsky <leonro@mellanox.com>
 
-This patch makes libbpf specify expected_attach_type by default, but also
-detect support for this field in kernel and not set it during program loa=
-d.
-This allows to have a good metadata for bpf_program
-(e.g., bpf_program__get_extected_attach_type()), but still work with old
-kernels (for cases where it can work at all).
+In event of transmission timeout, the drivers are given an opportunity
+to recover and continue to work after some in-house cleanups.
 
-Additionally, due to expected_attach_type being always set for recognized
-program types, bpf_program__attach_cgroup doesn't have to do extra checks=
- to
-determine correct attach type, so remove that additional logic.
+Such event can be caused by HW bugs, wrong congestion configurations
+and many more other scenarios. In such case, users are interested to
+get a simple  "NETDEV WATCHDOG ... " print, which points to the relevant
+netdevice in trouble.
 
-Also adjust section_names selftest to account for this change.
+The dump stack printed later was added in the commit b4192bbd85d2
+("net: Add a WARN_ON_ONCE() to the transmit timeout function") to give
+extra information, like list of the modules and which driver is involved.
 
-More detailed discussion can be found in [0].
+While the latter is already printed in "NETDEV WATCHDOG ... ", the list
+of modules rarely needed and can be collected later.
 
-  [0] https://lore.kernel.org/bpf/20200412003604.GA15986@rdna-mbp.dhcp.th=
-efacebook.com/
+So let's remove the WARN_ONCE() and make dmesg look more user-friendly in
+large cluster setups.
 
-Reported-by: Andrey Ignatov <rdna@fb.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+[  281.170584] ------------[ cut here ]------------
+[  281.197120] NETDEV WATCHDOG: ib1 (mlx4_core): transmit queue 0 timed out
+[  281.198521] WARNING: CPU: 0 PID: 0 at net/sched/sch_generic.c:442 dev_watchdog+0x232/0x240
+[  281.200259] Modules linked in: bonding ipip tunnel4 geneve ip6_udp_tunnel udp_tunnel ip6_gre ip6_tunnel tunnel6 ip_gre gre ip_tunnel mlx4_en ptp pps_core mlx4_ib mlx4_core rdma_ucm ib_uverbs ib_ipoib ib_umad openvswitch nsh xt_MASQUERADE nf_conntrack_netlink nfnetlink iptable_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 br_netfilter overlay ib_srp scsi_transport_srp rpcrdma ib_iser libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm ib_core [last unloaded: mlx4_core]
+[  281.208290] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.6.0-rc5-J14907-G268960df60ee #1
+[  281.209954] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
+[  281.212281] RIP: 0010:dev_watchdog+0x232/0x240
+[  281.213260] Code: 85 c0 75 e8 eb a5 4c 89 ef c6 05 dd 9c c4 00 01 e8 d3 b6 fb ff 44 89 e1 4c 89 ee 48 c7 c7 40 54 0b 82 48 89 c2 e8 10 f1 a0 ff <0f> 0b eb 86 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 c7 47
+[  281.217078] RSP: 0018:ffffc90000003e70 EFLAGS: 00010282
+[  281.218210] RAX: 0000000000000000 RBX: ffff8884521c3ce8 RCX: 0000000000000007
+[  281.219709] RDX: 0000000000000007 RSI: 0000000000000086 RDI: ffff88846fc18230
+[  281.221206] RBP: ffff88846daad440 R08: 0000000000000000 R09: 0000000000000249
+[  281.222697] R10: 0000000000000774 R11: ffffc90000003d25 R12: 0000000000000000
+[  281.224202] R13: ffff88846daad000 R14: ffff88846daad440 R15: 0000000000000082
+[  281.225733] FS:  0000000000000000(0000) GS:ffff88846fc00000(0000) knlGS:0000000000000000
+[  281.227472] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  281.228713] CR2: 00007efd12565000 CR3: 000000043cd3a002 CR4: 0000000000160eb0
+[  281.230241] Call Trace:
+[  281.230900]  <IRQ>
+[  281.231469]  ? qdisc_put_unlocked+0x30/0x30
+[  281.232437]  call_timer_fn+0x30/0x130
+[  281.233300]  run_timer_softirq+0x18b/0x490
+[  281.234229]  ? timerqueue_add+0x96/0xb0
+[  281.235119]  ? enqueue_hrtimer+0x3d/0x90
+[  281.236029]  __do_softirq+0xdf/0x2e5
+[  281.236864]  irq_exit+0xa0/0xb0
+[  281.237621]  smp_apic_timer_interrupt+0x72/0x120
+[  281.238652]  apic_timer_interrupt+0xf/0x20
+[  281.239581]  </IRQ>
+[  281.240147] RIP: 0010:default_idle+0x2d/0x150
+[  281.241133] Code: 00 00 8b 05 3d 75 a7 00 41 54 55 65 8b 2d 6b e0 71 7e 53 85 c0 7f 29 8b 05 c8 97 f7 00 85 c0 7e 07 0f 00 2d 37 56 52 00 fb f4 <8b> 05 15 75 a7 00 65 8b 2d 46 e0 71 7e 85 c0 7f 7f 5b 5d 41 5c c3
+[  281.244935] RSP: 0018:ffffffff82203ea0 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
+[  281.246584] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000001
+[  281.248082] RDX: 000000000010db42 RSI: ffffffff82203e40 RDI: 000000416d8a7440
+[  281.249581] RBP: 0000000000000000 R08: 0000000000000001 R09: 00000041770da407
+[  281.251069] R10: 0000000000000264 R11: 0000000000000000 R12: ffffffff82211840
+[  281.252545] R13: 0000000000000000 R14: 0000000000000000 R15: ffffffff82211840
+[  281.254036]  do_idle+0x1ee/0x210
+[  281.254809]  cpu_startup_entry+0x19/0x20
+[  281.255713]  start_kernel+0x490/0x4af
+[  281.257577]  secondary_startup_64+0xa4/0xb0
+[  281.259147] ---[ end trace 78f566c0214a2cb0 ]---
+[  281.260866] ib1: transmit timeout: latency 1120 msecs
+[  281.262730] ib1: queue stopped 1, tx_head 167838, tx_tail 167710
+
+Fixes: b4192bbd85d2 ("net: Add a WARN_ON_ONCE() to the transmit timeout function")
+Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- tools/lib/bpf/libbpf.c                        | 123 +++++++++++-------
- .../selftests/bpf/prog_tests/section_names.c  |  42 +++---
- 2 files changed, 106 insertions(+), 59 deletions(-)
+Hi Dave,
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index ff9174282a8c..925f720deea0 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -178,6 +178,8 @@ struct bpf_capabilities {
- 	__u32 array_mmap:1;
- 	/* BTF_FUNC_GLOBAL is supported */
- 	__u32 btf_func_global:1;
-+	/* kernel support for expected_attach_type in BPF_PROG_LOAD */
-+	__u32 exp_attach_type:1;
- };
-=20
- enum reloc_type {
-@@ -194,6 +196,22 @@ struct reloc_desc {
- 	int sym_off;
- };
-=20
-+struct bpf_sec_def;
-+
-+typedef struct bpf_link *(*attach_fn_t)(const struct bpf_sec_def *sec,
-+					struct bpf_program *prog);
-+
-+struct bpf_sec_def {
-+	const char *sec;
-+	size_t len;
-+	enum bpf_prog_type prog_type;
-+	enum bpf_attach_type expected_attach_type;
-+	bool is_exp_attach_type_optional;
-+	bool is_attachable;
-+	bool is_attach_btf;
-+	attach_fn_t attach_fn;
-+};
-+
- /*
-  * bpf_prog should be a better name but it has been used in
-  * linux/filter.h.
-@@ -204,6 +222,7 @@ struct bpf_program {
- 	char *name;
- 	int prog_ifindex;
- 	char *section_name;
-+	const struct bpf_sec_def *sec_def;
- 	/* section_name with / replaced by _; makes recursive pinning
- 	 * in bpf_object__pin_programs easier
- 	 */
-@@ -3315,6 +3334,32 @@ static int bpf_object__probe_array_mmap(struct bpf=
-_object *obj)
- 	return 0;
- }
-=20
-+static int
-+bpf_object__probe_exp_attach_type(struct bpf_object *obj)
-+{
-+	struct bpf_load_program_attr attr;
-+	struct bpf_insn insns[] =3D {
-+		BPF_MOV64_IMM(BPF_REG_0, 0),
-+		BPF_EXIT_INSN(),
-+	};
-+	int fd;
-+
-+	memset(&attr, 0, sizeof(attr));
-+	attr.prog_type =3D BPF_PROG_TYPE_CGROUP_SOCK;
-+	attr.expected_attach_type =3D BPF_CGROUP_INET_EGRESS;
-+	attr.insns =3D insns;
-+	attr.insns_cnt =3D ARRAY_SIZE(insns);
-+	attr.license =3D "GPL";
-+
-+	fd =3D bpf_load_program_xattr(&attr, NULL, 0);
-+	if (fd >=3D 0) {
-+		obj->caps.exp_attach_type =3D 1;
-+		close(fd);
-+		return 1;
-+	}
-+	return 0;
-+}
-+
- static int
- bpf_object__probe_caps(struct bpf_object *obj)
- {
-@@ -3325,6 +3370,7 @@ bpf_object__probe_caps(struct bpf_object *obj)
- 		bpf_object__probe_btf_func_global,
- 		bpf_object__probe_btf_datasec,
- 		bpf_object__probe_array_mmap,
-+		bpf_object__probe_exp_attach_type,
- 	};
- 	int i, ret;
-=20
-@@ -4861,7 +4907,13 @@ load_program(struct bpf_program *prog, struct bpf_=
-insn *insns, int insns_cnt,
-=20
- 	memset(&load_attr, 0, sizeof(struct bpf_load_program_attr));
- 	load_attr.prog_type =3D prog->type;
--	load_attr.expected_attach_type =3D prog->expected_attach_type;
-+	/* old kernels might not support specifying expected_attach_type */
-+	if (!prog->caps->exp_attach_type && prog->sec_def &&
-+	    prog->sec_def->is_exp_attach_type_optional)
-+		load_attr.expected_attach_type =3D 0;
-+	else
-+		load_attr.expected_attach_type =3D prog->expected_attach_type;
-+	pr_warn("prog %s exp_Attach %d\n", prog->name, load_attr.expected_attac=
-h_type);
- 	if (prog->caps->name)
- 		load_attr.name =3D prog->name;
- 	load_attr.insns =3D insns;
-@@ -5062,6 +5114,8 @@ bpf_object__load_progs(struct bpf_object *obj, int =
-log_level)
- 	return 0;
- }
-=20
-+static const struct bpf_sec_def *find_sec_def(const char *sec_name);
-+
- static struct bpf_object *
- __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf=
-_sz,
- 		   const struct bpf_object_open_opts *opts)
-@@ -5117,24 +5171,17 @@ __bpf_object__open(const char *path, const void *=
-obj_buf, size_t obj_buf_sz,
- 	bpf_object__elf_finish(obj);
-=20
- 	bpf_object__for_each_program(prog, obj) {
--		enum bpf_prog_type prog_type;
--		enum bpf_attach_type attach_type;
--
--		if (prog->type !=3D BPF_PROG_TYPE_UNSPEC)
--			continue;
--
--		err =3D libbpf_prog_type_by_name(prog->section_name, &prog_type,
--					       &attach_type);
--		if (err =3D=3D -ESRCH)
-+		prog->sec_def =3D find_sec_def(prog->section_name);
-+		if (!prog->sec_def)
- 			/* couldn't guess, but user might manually specify */
- 			continue;
--		if (err)
--			goto out;
-=20
--		bpf_program__set_type(prog, prog_type);
--		bpf_program__set_expected_attach_type(prog, attach_type);
--		if (prog_type =3D=3D BPF_PROG_TYPE_TRACING ||
--		    prog_type =3D=3D BPF_PROG_TYPE_EXT)
-+		bpf_program__set_type(prog, prog->sec_def->prog_type);
-+		bpf_program__set_expected_attach_type(prog,
-+				prog->sec_def->expected_attach_type);
-+
-+		if (prog->sec_def->prog_type =3D=3D BPF_PROG_TYPE_TRACING ||
-+		    prog->sec_def->prog_type =3D=3D BPF_PROG_TYPE_EXT)
- 			prog->attach_prog_fd =3D OPTS_GET(opts, attach_prog_fd, 0);
- 	}
-=20
-@@ -6223,23 +6270,33 @@ void bpf_program__set_expected_attach_type(struct=
- bpf_program *prog,
- 	prog->expected_attach_type =3D type;
- }
-=20
--#define BPF_PROG_SEC_IMPL(string, ptype, eatype, is_attachable, btf, aty=
-pe) \
--	{ string, sizeof(string) - 1, ptype, eatype, is_attachable, btf, atype =
-}
-+#define BPF_PROG_SEC_IMPL(string, ptype, eatype, eatype_optional,	    \
-+			  attachable, attach_btf)			    \
-+	{								    \
-+		.sec =3D string,						    \
-+		.len =3D sizeof(string) - 1,				    \
-+		.prog_type =3D ptype,					    \
-+		.sec =3D string,						    \
-+		.expected_attach_type =3D eatype,				    \
-+		.is_exp_attach_type_optional =3D eatype_optional,		    \
-+		.is_attachable =3D attachable,				    \
-+		.is_attach_btf =3D attach_btf,				    \
-+	}
-=20
- /* Programs that can NOT be attached. */
- #define BPF_PROG_SEC(string, ptype) BPF_PROG_SEC_IMPL(string, ptype, 0, =
-0, 0, 0)
-=20
- /* Programs that can be attached. */
- #define BPF_APROG_SEC(string, ptype, atype) \
--	BPF_PROG_SEC_IMPL(string, ptype, 0, 1, 0, atype)
-+	BPF_PROG_SEC_IMPL(string, ptype, atype, true, 1, 0)
-=20
- /* Programs that must specify expected attach type at load time. */
- #define BPF_EAPROG_SEC(string, ptype, eatype) \
--	BPF_PROG_SEC_IMPL(string, ptype, eatype, 1, 0, eatype)
-+	BPF_PROG_SEC_IMPL(string, ptype, eatype, false, 1, 0)
-=20
- /* Programs that use BTF to identify attach point */
- #define BPF_PROG_BTF(string, ptype, eatype) \
--	BPF_PROG_SEC_IMPL(string, ptype, eatype, 0, 1, 0)
-+	BPF_PROG_SEC_IMPL(string, ptype, eatype, false, 0, 1)
-=20
- /* Programs that can be attached but attach type can't be identified by =
-section
-  * name. Kept for backward compatibility.
-@@ -6253,11 +6310,6 @@ void bpf_program__set_expected_attach_type(struct =
-bpf_program *prog,
- 	__VA_ARGS__							    \
- }
-=20
--struct bpf_sec_def;
--
--typedef struct bpf_link *(*attach_fn_t)(const struct bpf_sec_def *sec,
--					struct bpf_program *prog);
--
- static struct bpf_link *attach_kprobe(const struct bpf_sec_def *sec,
- 				      struct bpf_program *prog);
- static struct bpf_link *attach_tp(const struct bpf_sec_def *sec,
-@@ -6269,17 +6321,6 @@ static struct bpf_link *attach_trace(const struct =
-bpf_sec_def *sec,
- static struct bpf_link *attach_lsm(const struct bpf_sec_def *sec,
- 				   struct bpf_program *prog);
-=20
--struct bpf_sec_def {
--	const char *sec;
--	size_t len;
--	enum bpf_prog_type prog_type;
--	enum bpf_attach_type expected_attach_type;
--	bool is_attachable;
--	bool is_attach_btf;
--	enum bpf_attach_type attach_type;
--	attach_fn_t attach_fn;
--};
--
- static const struct bpf_sec_def section_defs[] =3D {
- 	BPF_PROG_SEC("socket",			BPF_PROG_TYPE_SOCKET_FILTER),
- 	BPF_PROG_SEC("sk_reuseport",		BPF_PROG_TYPE_SK_REUSEPORT),
-@@ -6713,7 +6754,7 @@ int libbpf_attach_type_by_name(const char *name,
- 			continue;
- 		if (!section_defs[i].is_attachable)
- 			return -EINVAL;
--		*attach_type =3D section_defs[i].attach_type;
-+		*attach_type =3D section_defs[i].expected_attach_type;
- 		return 0;
- 	}
- 	pr_debug("failed to guess attach type based on ELF section name '%s'\n"=
-, name);
-@@ -7542,7 +7583,6 @@ static struct bpf_link *attach_lsm(const struct bpf=
-_sec_def *sec,
- struct bpf_link *
- bpf_program__attach_cgroup(struct bpf_program *prog, int cgroup_fd)
- {
--	const struct bpf_sec_def *sec_def;
- 	enum bpf_attach_type attach_type;
- 	char errmsg[STRERR_BUFSIZE];
- 	struct bpf_link *link;
-@@ -7561,11 +7601,6 @@ bpf_program__attach_cgroup(struct bpf_program *pro=
-g, int cgroup_fd)
- 	link->detach =3D &bpf_link__detach_fd;
-=20
- 	attach_type =3D bpf_program__get_expected_attach_type(prog);
--	if (!attach_type) {
--		sec_def =3D find_sec_def(bpf_program__title(prog, false));
--		if (sec_def)
--			attach_type =3D sec_def->attach_type;
--	}
- 	link_fd =3D bpf_link_create(prog_fd, cgroup_fd, attach_type, NULL);
- 	if (link_fd < 0) {
- 		link_fd =3D -errno;
-diff --git a/tools/testing/selftests/bpf/prog_tests/section_names.c b/too=
-ls/testing/selftests/bpf/prog_tests/section_names.c
-index 9d9351dc2ded..713167449c98 100644
---- a/tools/testing/selftests/bpf/prog_tests/section_names.c
-+++ b/tools/testing/selftests/bpf/prog_tests/section_names.c
-@@ -43,18 +43,18 @@ static struct sec_name_test tests[] =3D {
- 	{"lwt_seg6local", {0, BPF_PROG_TYPE_LWT_SEG6LOCAL, 0}, {-EINVAL, 0} },
- 	{
- 		"cgroup_skb/ingress",
--		{0, BPF_PROG_TYPE_CGROUP_SKB, 0},
-+		{0, BPF_PROG_TYPE_CGROUP_SKB, BPF_CGROUP_INET_INGRESS},
- 		{0, BPF_CGROUP_INET_INGRESS},
- 	},
- 	{
- 		"cgroup_skb/egress",
--		{0, BPF_PROG_TYPE_CGROUP_SKB, 0},
-+		{0, BPF_PROG_TYPE_CGROUP_SKB, BPF_CGROUP_INET_EGRESS},
- 		{0, BPF_CGROUP_INET_EGRESS},
- 	},
- 	{"cgroup/skb", {0, BPF_PROG_TYPE_CGROUP_SKB, 0}, {-EINVAL, 0} },
- 	{
- 		"cgroup/sock",
--		{0, BPF_PROG_TYPE_CGROUP_SOCK, 0},
-+		{0, BPF_PROG_TYPE_CGROUP_SOCK, BPF_CGROUP_INET_SOCK_CREATE},
- 		{0, BPF_CGROUP_INET_SOCK_CREATE},
- 	},
- 	{
-@@ -69,26 +69,38 @@ static struct sec_name_test tests[] =3D {
- 	},
- 	{
- 		"cgroup/dev",
--		{0, BPF_PROG_TYPE_CGROUP_DEVICE, 0},
-+		{0, BPF_PROG_TYPE_CGROUP_DEVICE, BPF_CGROUP_DEVICE},
- 		{0, BPF_CGROUP_DEVICE},
- 	},
--	{"sockops", {0, BPF_PROG_TYPE_SOCK_OPS, 0}, {0, BPF_CGROUP_SOCK_OPS} },
-+	{
-+		"sockops",
-+		{0, BPF_PROG_TYPE_SOCK_OPS, BPF_CGROUP_SOCK_OPS},
-+		{0, BPF_CGROUP_SOCK_OPS},
-+	},
- 	{
- 		"sk_skb/stream_parser",
--		{0, BPF_PROG_TYPE_SK_SKB, 0},
-+		{0, BPF_PROG_TYPE_SK_SKB, BPF_SK_SKB_STREAM_PARSER},
- 		{0, BPF_SK_SKB_STREAM_PARSER},
- 	},
- 	{
- 		"sk_skb/stream_verdict",
--		{0, BPF_PROG_TYPE_SK_SKB, 0},
-+		{0, BPF_PROG_TYPE_SK_SKB, BPF_SK_SKB_STREAM_VERDICT},
- 		{0, BPF_SK_SKB_STREAM_VERDICT},
- 	},
- 	{"sk_skb", {0, BPF_PROG_TYPE_SK_SKB, 0}, {-EINVAL, 0} },
--	{"sk_msg", {0, BPF_PROG_TYPE_SK_MSG, 0}, {0, BPF_SK_MSG_VERDICT} },
--	{"lirc_mode2", {0, BPF_PROG_TYPE_LIRC_MODE2, 0}, {0, BPF_LIRC_MODE2} },
-+	{
-+		"sk_msg",
-+		{0, BPF_PROG_TYPE_SK_MSG, BPF_SK_MSG_VERDICT},
-+		{0, BPF_SK_MSG_VERDICT},
-+	},
-+	{
-+		"lirc_mode2",
-+		{0, BPF_PROG_TYPE_LIRC_MODE2, BPF_LIRC_MODE2},
-+		{0, BPF_LIRC_MODE2},
-+	},
- 	{
- 		"flow_dissector",
--		{0, BPF_PROG_TYPE_FLOW_DISSECTOR, 0},
-+		{0, BPF_PROG_TYPE_FLOW_DISSECTOR, BPF_FLOW_DISSECTOR},
- 		{0, BPF_FLOW_DISSECTOR},
- 	},
- 	{
-@@ -158,17 +170,17 @@ static void test_prog_type_by_name(const struct sec=
-_name_test *test)
- 				      &expected_attach_type);
-=20
- 	CHECK(rc !=3D test->expected_load.rc, "check_code",
--	      "prog: unexpected rc=3D%d for %s", rc, test->sec_name);
-+	      "prog: unexpected rc=3D%d for %s\n", rc, test->sec_name);
-=20
- 	if (rc)
- 		return;
-=20
- 	CHECK(prog_type !=3D test->expected_load.prog_type, "check_prog_type",
--	      "prog: unexpected prog_type=3D%d for %s",
-+	      "prog: unexpected prog_type=3D%d for %s\n",
- 	      prog_type, test->sec_name);
-=20
- 	CHECK(expected_attach_type !=3D test->expected_load.expected_attach_typ=
-e,
--	      "check_attach_type", "prog: unexpected expected_attach_type=3D%d =
-for %s",
-+	      "check_attach_type", "prog: unexpected expected_attach_type=3D%d =
-for %s\n",
- 	      expected_attach_type, test->sec_name);
- }
-=20
-@@ -180,13 +192,13 @@ static void test_attach_type_by_name(const struct s=
-ec_name_test *test)
- 	rc =3D libbpf_attach_type_by_name(test->sec_name, &attach_type);
-=20
- 	CHECK(rc !=3D test->expected_attach.rc, "check_ret",
--	      "attach: unexpected rc=3D%d for %s", rc, test->sec_name);
-+	      "attach: unexpected rc=3D%d for %s\n", rc, test->sec_name);
-=20
- 	if (rc)
- 		return;
-=20
- 	CHECK(attach_type !=3D test->expected_attach.attach_type,
--	      "check_attach_type", "attach: unexpected attach_type=3D%d for %s"=
-,
-+	      "check_attach_type", "attach: unexpected attach_type=3D%d for %s\=
-n",
- 	      attach_type, test->sec_name);
- }
-=20
---=20
-2.24.1
+This is a new version of previously sent v0 [1] with change in print error
+level as was suggested by Jakub and Cong. I'm asking you to reevaluate
+your previous decision [2] given the fact that this is user triggered
+bug and very similar scenario was committed by Linus "fs/filesystems.c:
+downgrade user-reachable WARN_ONCE() to pr_warn_once()" a couple of days
+ago [3].
+
+[1] https://lore.kernel.org/netdev/20200402152336.538433-1-leon@kernel.org
+[2] https://lore.kernel.org/netdev/20200402.180218.940555077368617365.davem@davemloft.net
+[3] https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/commit/?h=x86/urgent&id=26c5d78c976ca298e59a56f6101a97b618ba3539
+---
+ net/sched/sch_generic.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index 6c9595f1048a..185f03db3d55 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -439,8 +439,9 @@ static void dev_watchdog(struct timer_list *t)
+
+ 			if (some_queue_timedout) {
+ 				trace_net_dev_xmit_timeout(dev, i);
+-				WARN_ONCE(1, KERN_INFO "NETDEV WATCHDOG: %s (%s): transmit queue %u timed out\n",
+-				       dev->name, netdev_drivername(dev), i);
++				pr_err_once("NETDEV WATCHDOG: %s (%s): transmit queue %u timed out\n",
++					    dev->name,
++					    netdev_drivername(dev), i);
+ 				dev->netdev_ops->ndo_tx_timeout(dev, i);
+ 			}
+ 			if (!mod_timer(&dev->watchdog_timer,
+--
+2.25.2
 
