@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DDCD1A5BC4
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 03:16:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C24A1A5BC6
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 03:16:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726913AbgDLBQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 21:16:36 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:39112 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726879AbgDLBQf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Apr 2020 21:16:35 -0400
-Received: by mail-pg1-f195.google.com with SMTP id g32so2844247pgb.6;
-        Sat, 11 Apr 2020 18:16:34 -0700 (PDT)
+        id S1726942AbgDLBQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 21:16:53 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:36827 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726108AbgDLBQx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Apr 2020 21:16:53 -0400
+Received: by mail-pg1-f196.google.com with SMTP id c23so2850052pgj.3;
+        Sat, 11 Apr 2020 18:16:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=eCiQttnCKTR4ecRUhDQgpFVaIs0+8V8/9fTuTz22WZo=;
-        b=d04DitN6VO3AyBiLzQ/FquyBZPHKLWutJ2nYmfv9iYoX2TkTc0eXGxfSGi0JRQJ3TV
-         r5Y5uwSs3vZKydJs4z8xx3ySLJmMxTFcpxcs+RmU9CF0pMtGK4Op9CPRjn2fJU2Ukxtm
-         oGdBuk662QMT1jR8fh7vcQLdXi2Nhr5+3N8mEvTuSA+4LpcBRPRXdw0JddcFOeDHYTvw
-         Eded/cZBR8Qy6nKkztYxL4upa8x+G7L7SsmtXYPmMr9tHVR/puOY2CLj+awSxAcT9t6q
-         nBrKi2iXD/xgvDYt47mZGruAZj8/eBI0jkxIrYQutAZA6cyQy06n5+Fw0QNa/M33hTk+
-         cs6w==
+        bh=Z/wdt7W0C9VC/X+YjKDTIE/DxGjs9nqAYHGxwvw/0dI=;
+        b=KZnj0Rwqi9IVNnoUsUn4pX/RuUseZPe8RjkjwGv+HDbWe9Flq0twfE5a8w7r0PxzF4
+         tiSzFGhttDZrNZ0LdCIE681+6jgjsHQZ9IazMINtTEVBmb2+kZvXb+HRSszD+L8VR1ju
+         dq2kE+HFroXfPPIpBEwk0xCjIY09B3aoUOl9SrTDpkHRutnnwDWNq7ZOtzupU0NrcY3U
+         iB0sn44EbF6rcvRcAqvaRNa3MoVJadyn9Uw96S2wtxdbyPjAZn/wsi15TS1fsD0tI85R
+         E7fK9w566aKqkxkoNfRgWo/fDmXoxQRur8HEge+wY1xoLyyD00NMn1cpMEDzniASnCDk
+         gqew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=eCiQttnCKTR4ecRUhDQgpFVaIs0+8V8/9fTuTz22WZo=;
-        b=WIpyjegWMlrKiqjVuRnvJXkY8zkkLPfr3XcBB+/ky4DV3K/b5tya3pydjmx4ZrZHV+
-         XHWF7KqqvPXLRvV3IBYP0aJhINr1nHqzsgFB5KtzT/9eh1JU5KicOEWaKCy7i6BrXA42
-         vwdXQZAfnjbFGGnMQnEOmJjDkz2aXhk7+D3xdMB0mYDJbMFsN2m1UX72XTAcqqmP2eYn
-         +h5FST1YlWtyQZAbV5O65UNy1blwR+1UuYtqKQHXyLAZs+FRxWHFqB1PXhp0XKyzdnd8
-         IuGfz1iRFaA2X3B0I9qzZ3b/JRkSX54/j4ZmNG7xlfAqBWciODe/xf2Uz9d4R1DLGXYt
-         v2Lw==
-X-Gm-Message-State: AGi0PuZBo/oZ5EQdA9HY9H9TrU73laVDft51gZACbPr4tJOK7e0BSTgV
-        59vA1tvOutK23Dk4N3w1QTlZ6L/4
-X-Google-Smtp-Source: APiQypKEKw4LeOwr/HXzJmLjphqKWJWvug01cQSgjoiZPXzPYZsPI2xdyFybdoFlNhKYQBV6CgTF2Q==
-X-Received: by 2002:aa7:858b:: with SMTP id w11mr12238872pfn.18.1586654193774;
-        Sat, 11 Apr 2020 18:16:33 -0700 (PDT)
+        bh=Z/wdt7W0C9VC/X+YjKDTIE/DxGjs9nqAYHGxwvw/0dI=;
+        b=LK8Qt7T36gjkV3YbGyhl1z24jCHhAU1D4f9ah0/9jpHxUhoDN8KYs6+3tUBlbGShxw
+         I3oLxMN47Jj8avSGTsWQQCpUIlXzq6TK3+Fq40JR/1SJZp+62ET10imjO4HQVYhiRxsO
+         dC5+Q49soS2HsO8CVExpZVq5k5DiAKHQAc3PpiVIOT7KiUUn8oKw8hRmBPnzSxysG877
+         ntMbsRgPaEa/gaOLP+bo+pWB/k7ugVgGWmf72obvj31NIt4n1Uar+WMleJhULrgv9sHj
+         7bBM48LRt/1m6coXo8RLrq1fQnoEbuAhW5mUJH9kxNDxTVurYXZJ93sDWZ8PBhkR3YTB
+         nkOw==
+X-Gm-Message-State: AGi0PuY611Tif7rk/vBQqo0GpbTKVNhrdnovUJQ+jPqvs+QKkWuD0l+J
+        XRUtJJF9l53lRXsXZYA/SJ88V/t3
+X-Google-Smtp-Source: APiQypJ69GmP+MICoZOVzfpfmj49uoAliYNgod9hgIbjV2zLu7+1Yc5ebmjogmeBzRosz40zaZqW2w==
+X-Received: by 2002:a65:6250:: with SMTP id q16mr11436992pgv.9.1586654211738;
+        Sat, 11 Apr 2020 18:16:51 -0700 (PDT)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id s24sm4630070pgq.16.2020.04.11.18.16.32
+        by smtp.gmail.com with ESMTPSA id w28sm4626345pgc.26.2020.04.11.18.16.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 11 Apr 2020 18:16:33 -0700 (PDT)
-Subject: Re: [PATCH AUTOSEL 5.5 043/121] net: dsa: bcm_sf2: Also configure
+        Sat, 11 Apr 2020 18:16:50 -0700 (PDT)
+Subject: Re: [PATCH AUTOSEL 5.6 053/149] net: dsa: bcm_sf2: Also configure
  Port 5 for 2Gb/sec on 7278
 To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
         stable@vger.kernel.org
 Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20200411230706.23855-1-sashal@kernel.org>
- <20200411230706.23855-43-sashal@kernel.org>
+References: <20200411230347.22371-1-sashal@kernel.org>
+ <20200411230347.22371-53-sashal@kernel.org>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -107,12 +107,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <22b4b065-0d28-5fae-179c-667322d413b3@gmail.com>
-Date:   Sat, 11 Apr 2020 18:16:32 -0700
+Message-ID: <1fabff1d-63ed-e4c3-8db3-ff9443c5ade7@gmail.com>
+Date:   Sat, 11 Apr 2020 18:16:49 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200411230706.23855-43-sashal@kernel.org>
+In-Reply-To: <20200411230347.22371-53-sashal@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,7 +123,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 4/11/2020 4:05 PM, Sasha Levin wrote:
+On 4/11/2020 4:02 PM, Sasha Levin wrote:
 > From: Florian Fainelli <f.fainelli@gmail.com>
 > 
 > [ Upstream commit 7458bd540fa0a90220b9e8c349d910d9dde9caf8 ]
@@ -136,5 +136,5 @@ This was later reverted with:
 3f02735e5da5367e4cd563ce6e5c21ce27922248 ("Revert "net: dsa: bcm_sf2:
 Also configure Port 5 for 2Gb/sec on 7278") please drop it from this
 selection.
--- 
+--
 Florian
