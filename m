@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 590D71A5E5E
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 13:56:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EFE51A5E6B
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 14:02:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726689AbgDLL4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Apr 2020 07:56:30 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:44170 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725903AbgDLL43 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Apr 2020 07:56:29 -0400
-Received: by mail-lj1-f195.google.com with SMTP id z26so6163383ljz.11
-        for <netdev@vger.kernel.org>; Sun, 12 Apr 2020 04:56:28 -0700 (PDT)
+        id S1726992AbgDLMCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Apr 2020 08:02:14 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:36299 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725903AbgDLMCN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Apr 2020 08:02:13 -0400
+Received: by mail-lf1-f65.google.com with SMTP id w145so4552027lff.3
+        for <netdev@vger.kernel.org>; Sun, 12 Apr 2020 05:02:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=BjDcmqGEVd5mzlVwvO39Yh+BVh+W5KIn0cKexVoZutM=;
-        b=OJyMhPABh3x1XouvlsElUh2YR+uox+dJPCZftCoI7Dfx+mTb9ufBFLAMJy0+qw+KFo
-         i8bbthWdyYp/AiYbNuXw8eiEeqiwjKJdtl90poKuaazvj8H/IMxJ+B9hhNZ0/0jSGnnw
-         UbwEFwzXMSjMnv9uj7cZ3EZqhN63QGPN8n6oap1ut9t1wiTLc0tdP5pPRPuRvyCGQ7kj
-         AIHZA+9yJwfZx6A2RASM1Kac3ISamhD8fhHveUgnYu+XyCwSzKcb+8hAiLN4hLl1djac
-         dvYCaxnpeHJLPCY9ELfVp+d1mxUhHOfxxlUxIUM+jpfcBCWTrvTLCA7MXLLvsO0bXv38
-         HFCw==
+        bh=qzhimHapHqm2OHL59xDWMxKmMgcfCyRa8q6rmlz/sJY=;
+        b=SGuPKdm+4Vi+1sGMW41boYwOnV+NiEBg7me43RLpKCUjeVK8PaOyQQnQdY8qZWFn4T
+         Z6dbMAg8fh6MhfgzhUn7t11/tbZ0y9h6JvqfQvWm/oRDj89lqa/jjFSAhg5RadpgGZpW
+         9v+0etAGqe7A2oMx7VOgct+psVSyJM9SLun/vH3JXRMTns20QUrc4CPL4gtgbjKIkIOt
+         VrZGaa+POgJYdnMTjhpCu558FFayJA4S4DZJAQRjfhDgRJwOZelSqysaKoQD2HqULA66
+         I+w49o7myvOCBZliZKjeNJ3r51EOhZQpoDwYmacb7Kckf65TF44EuOdgsR+oCi+ibqOo
+         L7Mg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-transfer-encoding
          :content-language;
-        bh=BjDcmqGEVd5mzlVwvO39Yh+BVh+W5KIn0cKexVoZutM=;
-        b=p5oAdq64QofRzSmAPpoFimXTyUboCIViixlUULle3KwP9domrJ1b+RLBt3DPR14oKd
-         GnBub4m768VzFWbxgCNZTPMcSMmuiH643PW9AOnjk1pq1ofgcy4PRI0OcEpGfgiS6MFq
-         9lfQHOitlvPQldUcOCWIr2vKdGM7w0s1kB2hlkWmWY2RTZIe4XMeGT6kLcJMXmhz+5l6
-         mbGHqzlgJOdU99QQ8gGIViRrH2rScKxL9EkY4L47UryKc3zXnUfIuNSooPUcJXUz/n+2
-         F2DakNO7YVoQBHPcNT7zTbnpca0Us1nUX9MJBTd1eRbm3cEtlDBWw01OxadFnVJvVgTb
-         l0kQ==
-X-Gm-Message-State: AGi0PuZ5N36TXfCB5n1Sg9b83LAuKLYn5KVP5S6o7Pf/PLR4QKOkbh8k
-        f3YfKo3HsPSvzr71qWvUBkVGHSXV
-X-Google-Smtp-Source: APiQypJFAdgm4xMBeQ2z8M58kql3/rOwpuFArBnFPow4o78QsYBrmayt9gxTzi6xNt9Tdnj8aOAPhw==
-X-Received: by 2002:a2e:b241:: with SMTP id n1mr7280278ljm.22.1586692587382;
-        Sun, 12 Apr 2020 04:56:27 -0700 (PDT)
+        bh=qzhimHapHqm2OHL59xDWMxKmMgcfCyRa8q6rmlz/sJY=;
+        b=ii69RNmCQ05/DqmRBSY3XwPl+Z//fN1suuPTrYciPA3mck7uNu7MitYq68XhZWDPgH
+         SaYgbKYOvvb72RGLPnjkLsV6lEVcW5ohhc+686PqEceUExYcBL5h9e7m/a2ImmdhhmF5
+         Fp6+YBZPGnahiFmYOVeKlQWKTbETH4EncdyPDtj3zPXwVmbkXZ5g97FR6zIjCriZpepf
+         uxe8Bq5q90gc6efxABdNjQaWYyq/m0GVarl3AqKDhcyuhAYY1kmYKOaeqxedsCVMJ160
+         6gUSIQRCiQUIUevWdiFmNNXZbYLDUPuWK2JzVCOnaDKT9bBT7HmWVLn/Rekvk3tkcWtN
+         F4vQ==
+X-Gm-Message-State: AGi0PuZRLiczFkOCtLr0V+PsZIOf7Urj1zt4bFtMMCP4/9mhF7onV8uV
+        GW+7/ufO4Lslo+RxnwCoa4jy3PyU
+X-Google-Smtp-Source: APiQypK1m1lPai9KGxPS3XK32wqL41D5ft7Xyd29ssTRQFYeY9wQX6fCkV3V6OTydEiDsi5aSkDpcw==
+X-Received: by 2002:a19:43:: with SMTP id 64mr7486113lfa.67.1586692931755;
+        Sun, 12 Apr 2020 05:02:11 -0700 (PDT)
 Received: from [192.168.1.134] (dsl-olubng11-54f81e-195.dhcp.inet.fi. [84.248.30.195])
-        by smtp.gmail.com with ESMTPSA id k16sm5199659ljk.64.2020.04.12.04.56.25
+        by smtp.gmail.com with ESMTPSA id c21sm5872258lfh.16.2020.04.12.05.02.09
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 12 Apr 2020 04:56:26 -0700 (PDT)
+        Sun, 12 Apr 2020 05:02:10 -0700 (PDT)
 Subject: Re: About r8169 regression 5.4
 To:     Salvatore Bonaccorso <carnil@debian.org>,
         Vincas Dargis <vindrg@gmail.com>
@@ -54,8 +54,8 @@ References: <b46d29d8-faf6-351e-0d9f-a4d4c043a54c@gmail.com>
  <97b0eb30-7ae2-80e2-6961-f52a8bb26b81@gmail.com>
  <20200215161247.GA179065@eldamar.local>
 From:   Lauri Jakku <ljakku77@gmail.com>
-Message-ID: <673c3c72-001e-a7b8-86a7-35772d719a9c@gmail.com>
-Date:   Sun, 12 Apr 2020 14:56:25 +0300
+Message-ID: <962fccca-2372-23d4-ea45-89235792c558@gmail.com>
+Date:   Sun, 12 Apr 2020 15:02:09 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.6.0
 MIME-Version: 1.0
@@ -68,7 +68,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I have patch ready for it
+Hi,
+
+What i was meant to say that i have r8168/69 driver fixed, so that it determines correctly if the realtek.ko is loaded or not.
+
 
 On 2020-02-15 18:12, Salvatore Bonaccorso wrote:
 > Hi Vincas,
