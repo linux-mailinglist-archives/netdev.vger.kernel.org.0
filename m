@@ -2,68 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F13A21A5BE8
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 04:07:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66B1B1A5C60
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 05:49:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726901AbgDLCGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 22:06:52 -0400
-Received: from wnew4-smtp.messagingengine.com ([64.147.123.18]:53915 "EHLO
-        wnew4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726182AbgDLCGw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Apr 2020 22:06:52 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.west.internal (Postfix) with ESMTP id 352327D2;
-        Sat, 11 Apr 2020 22:06:51 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sat, 11 Apr 2020 22:06:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alistair23.me;
-         h=from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding; s=fm3; bh=ILg74KFQ4/u/i
-        LEbpVIGKPDUn0lqkuyVDFTjVVQFF4M=; b=Z2VROd3cksLy59OFEYAZL9M8LDtvZ
-        KMcHoTfCidG1Wyu37u1nOaBA+b5S+JMJ0UBe9BbSYTpnjLw+IbuL/UK1X3conhTF
-        Ur7JYC77svy+8dPKTQAvcPawgLGooTHe9qNvy5Vx5aSmV/XNmOadiO747XkehKHG
-        VPKE4ygSyn37VUMwdRR4UKU58zaN9jEZqMpoaOnY7ObKQNOjfy5Up+G/O3N2nn6a
-        4u0cYeS3yknd9irbeUiIBM04JK/dquR99xKnAS+9Nd8vDoWs3sFOUpujiXEYQOt/
-        Era4ByWmgz3UFN9i4f7KFEc243/M2FbVfR1AyjZGwFkZxOUqnv2xApNPw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=ILg74KFQ4/u/iLEbpVIGKPDUn0lqkuyVDFTjVVQFF4M=; b=g9KvwmYn
-        eJ/kAe+B4GnCJRJwnteJYQcvOgjCM6OU0BUSDNW61hwzlZZXfVmKqrTWDedFx5YL
-        2j/8Qiq6qS8XOGadu68rb9owF123hw9Pl/lsX2GG+5v5Dmde7Pjhu4ln0sc8rcTZ
-        GilG681ThX+ScC+79R81y58dUJNzqnF3xVIjCi6KpOHqUWfx3GIJI6aDF5H8vNvw
-        RcLPwSgmBd9mscJ6NoBGWu/L05Y41VLBdbrWD+NurvV0Pui3HZEpoS9vnj8uQR+r
-        GcpPzpiJRfoZqW016jUvhUwmhlLz7ET8fLaSgbPSlewsQ8foJ32QuId4lxzcJ+wG
-        YzwT+mltb7StnQ==
-X-ME-Sender: <xms:uneSXnd3s7H2zgZMTUWaXQSosb54exS7z_YfnSjrSBahd6sD-bpZuA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrvdehgdehvdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
-    ertddtnecuhfhrohhmpeetlhhishhtrghirhcuhfhrrghntghishcuoegrlhhishhtrghi
-    rhesrghlihhsthgrihhrvdefrdhmvgeqnecukfhppeejfedrleefrdekgedrvddtkeenuc
-    evlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrlhhishht
-    rghirhesrghlihhsthgrihhrvdefrdhmvg
-X-ME-Proxy: <xmx:uneSXilz-yxPtpaS9JqNFRCE037pq-2EUteiN20Jp1vyyDPGkf7s-g>
-    <xmx:uneSXkJZqEE-xL8dRDQRjJYEZIPNakMdx2wGe81VzFG-nsw-4BDGVg>
-    <xmx:uneSXo3GlwI2ejJrwEX4fYIUNlX13p2FRimucRXHEirHzzACum3ffg>
-    <xmx:uneSXo7pROq4Uixu48QJ9uELZQuqiBMiIudDmpGL5CTcKwe43uyCBXITU2c>
-Received: from alistair-xps-14z.alistair23.me (c-73-93-84-208.hsd1.ca.comcast.net [73.93.84.208])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 8824C3280069;
-        Sat, 11 Apr 2020 22:06:49 -0400 (EDT)
-From:   Alistair Francis <alistair@alistair23.me>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcel@holtmann.org, johan.hedberg@gmail.com,
-        linux-bluetooth@vger.kernel.org, mripard@kernel.org, wens@csie.org
-Cc:     anarsoul@gmail.com, devicetree@vger.kernel.org,
-        alistair23@gmail.com, linux-arm-kernel@lists.infradead.org,
-        Alistair Francis <alistair@alistair23.me>
-Subject: [PATCH v3 3/3] arm64: allwinner: Enable Bluetooth and WiFi on sopine baseboard
-Date:   Sat, 11 Apr 2020 19:06:44 -0700
-Message-Id: <20200412020644.355142-3-alistair@alistair23.me>
-X-Mailer: git-send-email 2.26.0
-In-Reply-To: <20200412020644.355142-1-alistair@alistair23.me>
-References: <20200412020644.355142-1-alistair@alistair23.me>
+        id S1726879AbgDLDth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 23:49:37 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:42174 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726565AbgDLDtg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Apr 2020 23:49:36 -0400
+Received: by mail-pg1-f193.google.com with SMTP id g6so2933651pgs.9;
+        Sat, 11 Apr 2020 20:49:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AZDILVGrcKvmYChqNYehZ2onRDlNxnDquPgS6AG9YkA=;
+        b=A42g95LqGNwYhESYqnGpreIG4EbnfwMkhHJSaQiGA575hBn/pQPQWgMYj0tw7iJFNj
+         rN3AssDNxaB4zrqX0Dx6dZgALJ5CPwKGVnaACxGSk7OdopRaUn5y1EATMmvWSrH/t9Uu
+         sVajcAdhvlVkgtP93uksvkAJX7WHNPCNpAZX4HJ2MZyn/GV61aY8oUhJMzYtu+YtzdsR
+         YhiIaEcgpa2zwdEe00uHupW2c2aOL1AMMJ5FCXAdHzYAPik9ZClWgNqEjKTz9cdCDkW4
+         VapuwljUPCa8x0v+nPFyY7MWhscbaCHQW3VsKmqAy3cjpznvKHab6lD8k1J2fOkIefbP
+         GupA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AZDILVGrcKvmYChqNYehZ2onRDlNxnDquPgS6AG9YkA=;
+        b=UCBiVVAbHCjrr4I21eyaMdjQF6roSUqdXC1Wv10zlP6tDi2Hyia4ESydYAH7CeIlcS
+         yYjU6MJu11rL+LZgLscQc0xc+JyV8jDZpKaH7RjJCneOXC1m8M9RgZNatgBLPUKi0pOD
+         KXAFgk55o0se4KdU/cdqr1/K7MmVisl6A7BstfYmM5UqOkPtxNjz7JVYOTEN/PeJ+Lzn
+         Zl+wtAFW47avWKkK23RfepkppSDOWxBVzYuO58BnvRr5vs3a9v500ERRFzOjRx7zT4V5
+         CR6XCAjvuTTno29VbZagTgwOHJLwoXzKcYj3x/EGPVJbDtaANNbGFz6oCdi08BYS+TUK
+         /QUQ==
+X-Gm-Message-State: AGi0PuYihP0YAh0iapiCzLY/gVHPqAtcY/qxXZALwDK1looWGJHMjZHo
+        LhtEc9deX1zFqIbVMPkT6lkuGQ7L
+X-Google-Smtp-Source: APiQypLO0t3hZTP5D7PcbbjFaFd4Pb6oPXH1Y5G0rR7sLuG1LsgDyAfFcEQ7c5W57vgyzeVogfVHXw==
+X-Received: by 2002:a63:c44b:: with SMTP id m11mr11839604pgg.313.1586663375996;
+        Sat, 11 Apr 2020 20:49:35 -0700 (PDT)
+Received: from localhost.localdomain (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id t7sm1841024pfh.143.2020.04.11.20.49.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Apr 2020 20:49:35 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     olteanv@gmail.com, mripard@kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com (moderated list:ARM/STM32
+        ARCHITECTURE),
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM/STM32
+        ARCHITECTURE), linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net] net: stmmac: Guard against txfifosz=0
+Date:   Sat, 11 Apr 2020 20:49:31 -0700
+Message-Id: <20200412034931.9558-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -71,69 +68,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The sopine board has an optional RTL8723BS WiFi + BT module that can be
-connected to UART1. Add this to the device tree so that it will work
-for users if connected.
+After commit bfcb813203e619a8960a819bf533ad2a108d8105 ("net: dsa:
+configure the MTU for switch ports") my Lamobo R1 platform which uses
+an allwinner,sun7i-a20-gmac compatible Ethernet MAC started to fail
+by rejecting a MTU of 1536. The reason for that is that the DMA
+capabilities are not readable on this version of the IP, and there is
+also no 'tx-fifo-depth' property being provided in Device Tree. The
+property is documented as optional, and is not provided.
 
-Signed-off-by: Alistair Francis <alistair@alistair23.me>
+The minimum MTU that the network device accepts is ETH_ZLEN - ETH_HLEN,
+so rejecting the new MTU based on the txfifosz value unchecked seems a
+bit too heavy handed here.
+
+Fixes: eaf4fac47807 ("net: stmmac: Do not accept invalid MTU values")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- .../allwinner/sun50i-a64-sopine-baseboard.dts | 29 +++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-sopine-baseboard.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-sopine-baseboard.dts
-index 2f6ea9f3f6a2..34357ba143cb 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-a64-sopine-baseboard.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-sopine-baseboard.dts
-@@ -42,6 +42,11 @@ reg_vcc1v8: vcc1v8 {
- 		regulator-min-microvolt = <1800000>;
- 		regulator-max-microvolt = <1800000>;
- 	};
-+
-+	wifi_pwrseq: wifi_pwrseq {
-+		compatible = "mmc-pwrseq-simple";
-+		reset-gpios = <&r_pio 0 2 GPIO_ACTIVE_LOW>; /* PL2 */
-+	};
- };
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index e6898fd5223f..9c63ba6f86a9 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -3993,7 +3993,7 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
+ 	new_mtu = STMMAC_ALIGN(new_mtu);
  
- &ac_power_supply {
-@@ -103,6 +108,17 @@ ext_rgmii_phy: ethernet-phy@1 {
- 	};
- };
+ 	/* If condition true, FIFO is too small or MTU too large */
+-	if ((txfifosz < new_mtu) || (new_mtu > BUF_SIZE_16KiB))
++	if ((txfifosz < new_mtu && txfifosz) || (new_mtu > BUF_SIZE_16KiB))
+ 		return -EINVAL;
  
-+&mmc1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&mmc1_pins>;
-+	vmmc-supply = <&reg_dldo4>;
-+	vqmmc-supply = <&reg_eldo1>;
-+	mmc-pwrseq = <&wifi_pwrseq>;
-+	non-removable;
-+	bus-width = <4>;
-+	status = "okay";
-+};
-+
- &mmc2 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&mmc2_pins>;
-@@ -174,6 +190,19 @@ &uart0 {
- 	status = "okay";
- };
- 
-+&uart1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
-+	uart-has-rtscts = <1>;
-+	status = "okay";
-+
-+	bluetooth {
-+		compatible = "realtek,rtl8723bs-bt";
-+		device-wake-gpios = <&r_pio 0 5 GPIO_ACTIVE_HIGH>; /* PL5 */
-+		host-wake-gpios = <&r_pio 0 6 GPIO_ACTIVE_HIGH>; /* PL6 */
-+	};
-+};
-+
- /* On Pi-2 connector */
- &uart2 {
- 	pinctrl-names = "default";
+ 	dev->mtu = new_mtu;
 -- 
-2.26.0
+2.19.1
 
