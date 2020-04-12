@@ -2,97 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (unknown [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7E781A6119
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 01:18:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECC851A6121
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 01:51:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726664AbgDLXST (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Apr 2020 19:18:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.18]:37492 "EHLO
+        id S1726690AbgDLXvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Apr 2020 19:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.18]:42998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726185AbgDLXST (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Apr 2020 19:18:19 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C46E8C0A88B5
-        for <netdev@vger.kernel.org>; Sun, 12 Apr 2020 16:18:17 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id v5so8565357wrp.12
-        for <netdev@vger.kernel.org>; Sun, 12 Apr 2020 16:18:17 -0700 (PDT)
+        with ESMTP id S1726185AbgDLXvI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Apr 2020 19:51:08 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 735B6C0A3BE0
+        for <netdev@vger.kernel.org>; Sun, 12 Apr 2020 16:51:06 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id c195so9063894wme.1
+        for <netdev@vger.kernel.org>; Sun, 12 Apr 2020 16:51:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:cc:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=UMdNc9FyutMf0qaN1hVhzlO0XfQb+nixgVop7sWLPgw=;
-        b=mLHWpuoMIAnKsT6BYxIX/EhafSeo+SsjoKLbHW60yeUXwkKMcS6ErGOCfOasnIhV3f
-         Wbd2t3RJ4nlaZ3dzfaUJ+qh8Yo+aHya7/Qod7seV8OTWomHR6H/ogGQIF/cYKBQALyfP
-         BPJt113ZV2kFj2ffl+qhR81U9cyK1mBrbHgU8qR95MeAqr8UQn3n0CaSFL/QjSYfrC7x
-         gNymsbpkw87TcwwQC3HEQHuPEmG2k+oR/jpUBY5o/yfKx9rNzn4mF1J3Wz0EXjINRW9f
-         i4SwzN+oBFimjnnTLNv8a04j5Hx20EwJtd+RhW82QTwQ35CMjd/8EFfblsvOw/16/cZr
-         uhvQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=+1HDAUOok+FsVjhhzjXBEJIQTDUbhit9FyQaUHNpAPE=;
+        b=T61P/V2Fg+E3iDGZja/brkf0yjpwLB3aZ5+vBqhYHfqAX8wGf+xMSuVtrhYr6Nr31B
+         /NRfI7LhlMKqxgY9XJV1j53iEGdmYTO4CiUjO1wpEEhLlxQlBQM/NBmWmsmiS/2d4szT
+         0M81rChUwx3x6bjf2G2T6YtVlhjivh3UbOsI1J53zLrdFz6uVluAht1adoonNM0KZPuj
+         UsQXGFk49/yMg4w3LBJXlnWHYRJ7bguaPAyAcePsI9qI/+BpNtNlWwFzWCAt4Bcce60v
+         vQypmYmCx9Qq7lrBUkRNAwpzhoaW8HB8a8ooUQj4C00AmUqHX+B3LmqqjpPPj/VMh3Sk
+         Th2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=UMdNc9FyutMf0qaN1hVhzlO0XfQb+nixgVop7sWLPgw=;
-        b=Oqj6vRmNWBTZky1mKNhzpDRMe8xxEA6cTvlwAsrDtTRwqDSA6dEMJORroXGf2k+RSP
-         gEaYaRKNwUgzOGzVHBoW8NdmICLgSclekV4Tgf2JsBlOsGauZdtfe01nuIMsKq0MZ3gy
-         LbLORBlOn4hnVFm9w+DU8TZtH162rNSIWlC6JXSsztLQQKG6zYqTuAVVY9e0j949mUIi
-         27YT3fIZyvNCL/1fL1acf+c1q67s44I3PUcMKAIlzb9Uc0EUA8PG430cvhltHFkj8xdd
-         pbNKMHzdTWlrDicVLU7ECNMHXEUO1KooMkwaneV6y1dFomE+9AISkN9fJRVtAgTL/6r0
-         5pfQ==
-X-Gm-Message-State: AGi0PubKLcmRKumSQxUlRwjxT3SddvtKoLysFQVcT87/YZZMPCx1JbVd
-        tmCXC/tcEcqx9R/q+gt5Gb2+Ebvq
-X-Google-Smtp-Source: APiQypJ3pb+zarrAyMeZqOlF6H8ePkcsD0yiTeIarNJf+ppwM9iGI6OzNo4ExiSI/zh0hQ7aBrcduQ==
-X-Received: by 2002:a5d:6504:: with SMTP id x4mr10018060wru.164.1586733495723;
-        Sun, 12 Apr 2020 16:18:15 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:15c2:71ee:1b35:8df1? (p200300EA8F29600015C271EE1B358DF1.dip0.t-ipconnect.de. [2003:ea:8f29:6000:15c2:71ee:1b35:8df1])
-        by smtp.googlemail.com with ESMTPSA id a9sm7421809wmm.38.2020.04.12.16.18.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 12 Apr 2020 16:18:15 -0700 (PDT)
-Subject: Re: NET: r8169 driver fix/enchansments
-To:     Lauri Jakku <lauri.jakku@pp.inet.fi>
-References: <43733c62-7d0b-258a-93c0-93788c05e475@pp.inet.fi>
-Cc:     netdev@vger.kernel.org
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <7e637dd4-73af-5106-90f7-1d261df06fd2@gmail.com>
-Date:   Mon, 13 Apr 2020 01:18:08 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+1HDAUOok+FsVjhhzjXBEJIQTDUbhit9FyQaUHNpAPE=;
+        b=QO207zYcTJReTN6TslbVAlbED49PW9ssH/du1QKwvZg/6cTtjgfPvv1IqIoVpohTM8
+         ane5mHiPymvUsIAkz8X/EOnOJByQJyVNuB9ub7nZLx9Qw+F4Qoeye78ejx2ZliB58EO9
+         J1sa27Et6jxNGWrBu4yX0NiaBXKsHGuYeApgXdPKXHHl/XVa69Ei/3kRvmY28oh6vdTb
+         YxejEJq2ROTlUQTEhHjLiV36j+xD1oJmi9yu8/HbUPZkaK3arpAtxzNQzNJM9PNKNHe/
+         d+0sEzK3NQXS6/QDg+DH1SU+hUksHZxirx07o2Ocw80v/w/YMqAU41VvZPFui7+67E2U
+         rITg==
+X-Gm-Message-State: AGi0PuZOJQZBnTiS4p6GQNqH0/X1MeiCfnTveIUfgl06pgTPXQA2pp8E
+        zuNnh6hOKmzPasiNFGSaWXZE75H2
+X-Google-Smtp-Source: APiQypLEvu4/y4nnjX4t1zA73Qr/q989oG53uFexii6fR2oMhMQh6Cq9ySbv+sULignHJRvm9y3UgQ==
+X-Received: by 2002:a1c:ded4:: with SMTP id v203mr16150802wmg.106.1586735464512;
+        Sun, 12 Apr 2020 16:51:04 -0700 (PDT)
+Received: from localhost ([2a01:e35:2f01:a61:fc49:14b:88c:2a9c])
+        by smtp.gmail.com with ESMTPSA id b191sm12870839wmd.39.2020.04.12.16.51.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 12 Apr 2020 16:51:03 -0700 (PDT)
+From:   roucaries.bastien@gmail.com
+X-Google-Original-From: rouca@debian.org
+To:     netdev@vger.kernel.org
+Cc:     sergei.shtylyov@cogentembedded.com,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: [V2][PATH 0/6] iproute improve documentation of bridge
+Date:   Mon, 13 Apr 2020 01:50:32 +0200
+Message-Id: <20200412235038.377692-1-rouca@debian.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200405134859.57232-1-rouca@debian.org>
+References: <20200405134859.57232-1-rouca@debian.org>
 MIME-Version: 1.0
-In-Reply-To: <43733c62-7d0b-258a-93c0-93788c05e475@pp.inet.fi>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12.04.2020 14:55, Lauri Jakku wrote:
-> Hi,
-> 
-> 
-> I've made r8169 driver improvements & fixes, please see attachments.
-> 
-> 
-> --Lauri J.
-> 
-> 
-This mail doesn't meet a single formal criteria for a patch. I suggest
-you start here:
-https://www.kernel.org/doc/Documentation/networking/netdev-FAQ.txt
+Please found a serie improving documentation of bridge device.
 
-At first it would be helpful to know what you're trying to fix:
-Which issue on which kernel version?
+Please review and apply
 
-"Added soft depency from realtec phy to libphy"
-That's completely redundant as the Realtek PHY driver has a hard
-dependency on phylib.
+I could not understand some options in this page:
+- vlan_tunnel on  ? 
 
-"u32 phydev_match = !0;"
-That's weird. Do you mean ~0 here?
 
-Then you mix completely different things in one patch.
+[PATCH 1/6] Better documentation of mcast_to_unicast option
+[PATCH 2/6] Improve hairpin mode description
+[PATCH 3/6] Document BPDU filter option
+[PATCH 4/6] Better documentation of BDPU guard
+[PATCH 5/6] Document root_block option
+[PATCH 6/6] State of bridge STP port are now case insensitive
 
-Best first learn about how to submit a formally correct patch series,
-and to whom it should be submitted. Once you submit such a RFC series,
-we have a basis for a discussion.
