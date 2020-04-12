@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C5721A5BBA
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 03:16:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D15491A5BBE
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 03:16:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726802AbgDLBP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Apr 2020 21:15:57 -0400
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:52234 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726108AbgDLBP5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Apr 2020 21:15:57 -0400
-Received: by mail-pj1-f65.google.com with SMTP id ng8so2395965pjb.2;
-        Sat, 11 Apr 2020 18:15:56 -0700 (PDT)
+        id S1726861AbgDLBQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Apr 2020 21:16:13 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:44388 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726108AbgDLBQN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Apr 2020 21:16:13 -0400
+Received: by mail-pl1-f194.google.com with SMTP id h11so2089518plr.11;
+        Sat, 11 Apr 2020 18:16:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=nzgXVCmGCB2h+fYHwYNmPaz3ajnzbIPh10nAQ9+5zFc=;
-        b=rmuRKusMg6uuLqh9+NYfoKVmOTDgZ7nFSoX1oSV/al8wErzBeJpLCTY/MWLuM52wPI
-         Un9lscTJZXYsD2wg4mb6W1JO1Y6ZwpZuOSYGKGteCwAOv5xAEks6uO6ZytOk0ZcaJyU7
-         Z66ZpZF3e/jJppkHmygYYJV8ghRzIDveJ8lsdfIuRYJRMWOIZPuv3hy0HfZE7vEDmDgs
-         0Rpi5FMXoakgI9s4RaXL+VPscXfTwkneISyJ6eVysRbuR4tGeDgWvnh24cEP1aYLgtRY
-         rjbCtvldLDwC/nfMmXB5Oki8gq1KMw5zFlSuog3OlkVTfTTEVOdgZntjNEwyU4QXCe2j
-         8o5A==
+        bh=P151m0r22VALkFbWEsDbRFiyPNFOXiYJwvdCDqBFnsI=;
+        b=SID/EOSNxqjrhgygLIBDIFBG1LZSc/0nI+zcPgsDyxU2jWEteamzXDXffHrhJrJhL6
+         6lgaewPe7qOSjxVBr0VZwKJBar/nypNFx0vbYoAuSAPrmvfE79Emotn3Xi7OPN/aS3j2
+         R5u1Jwh6D3U7j46V+GM6wtrfHGnYNmhGi1itGMpfvDtWW2k7DyRUzzqWO7kq5kbeVrnh
+         fPRNw60Ry8dbc6LjcnXUzopDjyQcMw7+JfXYYvqMqX5vXDiq/7C/SShLiDgQcUFAlSZg
+         yNqN9MYv54eK0Q5kJSCNbV9e+PFy3ymef/WQ6AKVoANz7XvEp5ZkqbGk9TiGXIM3GNIW
+         qMTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=nzgXVCmGCB2h+fYHwYNmPaz3ajnzbIPh10nAQ9+5zFc=;
-        b=Lz4Gten6Wofqa7ZOAdtZqmmbgFTj/6VIH1etuMFlrynudmDouZJa+WgjiMmd62PSTB
-         wUpBBexKe31C5+4WqNjp1tQLN8EOSS0AWjp7UjGymuy8q+mg0uOnG8g90JDCVwosKO65
-         eTUL4bOCcuExfpI76hWFWZx5nB+sZwO4wU2K9IbNkyQkkaPL4Snvt0j8o/U+Ky0PgVAF
-         eX8yQa7nlKhbuWmnSuwPrXrR9h6YxAxtj4hiZOhgfcNWFPZm0JpRJiTkpWMyrz85A/aK
-         Sj7QF+NxGHeZ/PfVc7U6A8J0CITnyPiyAnBQPsqvQClM9n7D7ZW26G1lBBueChXfnxCu
-         3jAw==
-X-Gm-Message-State: AGi0PuZ4dkfboKLd8mc7/YYttdU4PE/PsTMiZ8nMs9BHzMHKo0W9dt+B
-        re1FHJ9Wdpe4oM6lA5omwvUp5Nft
-X-Google-Smtp-Source: APiQypKS4NdUz6Fx5jz6jZBDIHOtm/POexqYOFZVoGYCc36GODtzHf2PiUuTClW54IVrxmEsgL20eg==
-X-Received: by 2002:a17:90a:8c10:: with SMTP id a16mr4250128pjo.78.1586654155606;
-        Sat, 11 Apr 2020 18:15:55 -0700 (PDT)
+        bh=P151m0r22VALkFbWEsDbRFiyPNFOXiYJwvdCDqBFnsI=;
+        b=AZwBA6l2TIDgzBgcMZnhc1932/e19AXkFOL9f+ag3XKGylz7ORg6yVP5JYcDxChWFz
+         h6zEn/EW9lVLvdb/x4GaQEYeyciAFD6L75WnrE5EKL3qZmuvZBu2x6gHKe9DmvgNvqgq
+         LdEjslOH7XandloXK5cqx5Okw6J7JRQBvUBFdrLDsrBQUROMJguaXnMQn9xe1sYWQQZG
+         4iEE9mr4BfVeWIrhtZ1HhGTgjcstMV7FUJy/rXR3jxycfZqIFhMAEev4MEtIRR7JpxQE
+         vqNS8wF/Bo7TTCl5OXUnsxU0jAUU4QS5YX11D2tz4hHt8Jx6ZsgZoNqJBAmakQRAAc7n
+         Tbjw==
+X-Gm-Message-State: AGi0Pubc56vwKfgiQvQ5QE9PAgXKAOVy6JT+uY75mGQvnJgA2BTQeMFL
+        wWfQdaifFjfB5xG0cYfoLLgop3lR
+X-Google-Smtp-Source: APiQypISgPN2afnHs222ZrJkhfOU8B0pobU/jSq+vIeuI11kkrJ524FvDmKc6z0ehnkKjkVck75QOQ==
+X-Received: by 2002:a17:90a:cf13:: with SMTP id h19mr13272973pju.80.1586654171017;
+        Sat, 11 Apr 2020 18:16:11 -0700 (PDT)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id q201sm5165026pfq.32.2020.04.11.18.15.54
+        by smtp.gmail.com with ESMTPSA id s13sm5041231pfm.62.2020.04.11.18.16.09
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 11 Apr 2020 18:15:54 -0700 (PDT)
-Subject: Re: [PATCH AUTOSEL 4.14 19/37] net: dsa: bcm_sf2: Also configure Port
+        Sat, 11 Apr 2020 18:16:10 -0700 (PDT)
+Subject: Re: [PATCH AUTOSEL 4.19 26/66] net: dsa: bcm_sf2: Also configure Port
  5 for 2Gb/sec on 7278
 To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
         stable@vger.kernel.org
 Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20200411231327.26550-1-sashal@kernel.org>
- <20200411231327.26550-19-sashal@kernel.org>
+References: <20200411231203.25933-1-sashal@kernel.org>
+ <20200411231203.25933-26-sashal@kernel.org>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -107,12 +107,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <485a30d3-0677-dce4-c35d-4ccfdc523efe@gmail.com>
-Date:   Sat, 11 Apr 2020 18:15:54 -0700
+Message-ID: <525867fb-ce65-0811-042d-19e732b17a89@gmail.com>
+Date:   Sat, 11 Apr 2020 18:16:10 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200411231327.26550-19-sashal@kernel.org>
+In-Reply-To: <20200411231203.25933-26-sashal@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,7 +123,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 4/11/2020 4:13 PM, Sasha Levin wrote:
+On 4/11/2020 4:11 PM, Sasha Levin wrote:
 > From: Florian Fainelli <f.fainelli@gmail.com>
 > 
 > [ Upstream commit 7458bd540fa0a90220b9e8c349d910d9dde9caf8 ]
@@ -136,43 +136,5 @@ This was later reverted with:
 3f02735e5da5367e4cd563ce6e5c21ce27922248 ("Revert "net: dsa: bcm_sf2:
 Also configure Port 5 for 2Gb/sec on 7278") please drop it from this
 selection.
-
-> 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  drivers/net/dsa/bcm_sf2.c      | 3 +++
->  drivers/net/dsa/bcm_sf2_regs.h | 1 +
->  2 files changed, 4 insertions(+)
-> 
-> diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-> index 6bca42e34a53d..4b0c48a40ba6e 100644
-> --- a/drivers/net/dsa/bcm_sf2.c
-> +++ b/drivers/net/dsa/bcm_sf2.c
-> @@ -691,6 +691,9 @@ static void bcm_sf2_sw_adjust_link(struct dsa_switch *ds, int port,
->  	if (phydev->duplex == DUPLEX_FULL)
->  		reg |= DUPLX_MODE;
->  
-> +	if (priv->type == BCM7278_DEVICE_ID && dsa_is_cpu_port(ds, port))
-> +		reg |= GMIIP_SPEED_UP_2G;
-> +
->  	core_writel(priv, reg, offset);
->  
->  	if (!phydev->is_pseudo_fixed_link)
-> diff --git a/drivers/net/dsa/bcm_sf2_regs.h b/drivers/net/dsa/bcm_sf2_regs.h
-> index 49695fcc2ea8f..3c4fd7cda701a 100644
-> --- a/drivers/net/dsa/bcm_sf2_regs.h
-> +++ b/drivers/net/dsa/bcm_sf2_regs.h
-> @@ -162,6 +162,7 @@ enum bcm_sf2_reg_offs {
->  #define  RXFLOW_CNTL			(1 << 4)
->  #define  TXFLOW_CNTL			(1 << 5)
->  #define  SW_OVERRIDE			(1 << 6)
-> +#define  GMIIP_SPEED_UP_2G		(1 << 7)
->  
->  #define CORE_WATCHDOG_CTRL		0x001e4
->  #define  SOFTWARE_RESET			(1 << 7)
-> 
-
 -- 
 Florian
