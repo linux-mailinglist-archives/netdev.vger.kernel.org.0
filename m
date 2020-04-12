@@ -2,63 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 084401A5D8D
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 10:46:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68B811A5DC0
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 11:26:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725903AbgDLIqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Apr 2020 04:46:21 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:37453 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725832AbgDLIqV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Apr 2020 04:46:21 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from roid@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 12 Apr 2020 11:46:18 +0300
-Received: from dev-r-vrt-138.mtr.labs.mlnx (dev-r-vrt-138.mtr.labs.mlnx [10.212.138.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 03C8kIxe023441;
-        Sun, 12 Apr 2020 11:46:18 +0300
-From:   Roi Dayan <roid@mellanox.com>
-To:     netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, davem@davemloft.net
-Cc:     Jiri Pirko <jiri@mellanox.com>, Paul Blakey <paulb@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>, Roi Dayan <roid@mellanox.com>
-Subject: [PATCH net] netfilter: flowtable: Free block_cb when being deleted
-Date:   Sun, 12 Apr 2020 11:45:47 +0300
-Message-Id: <20200412084547.2217-1-roid@mellanox.com>
-X-Mailer: git-send-email 2.8.4
+        id S1726867AbgDLJ0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Apr 2020 05:26:13 -0400
+Received: from cmccmta2.chinamobile.com ([221.176.66.80]:3994 "EHLO
+        cmccmta2.chinamobile.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725832AbgDLJ0N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Apr 2020 05:26:13 -0400
+Received: from spf.mail.chinamobile.com (unknown[172.16.121.19]) by rmmx-syy-dmz-app05-12005 (RichMail) with SMTP id 2ee55e92de9da03-1fbc8; Sun, 12 Apr 2020 17:25:51 +0800 (CST)
+X-RM-TRANSID: 2ee55e92de9da03-1fbc8
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG: 00000000
+Received: from localhost.localdomain (unknown[112.1.172.56])
+        by rmsmtp-syy-appsvr10-12010 (RichMail) with SMTP id 2eea5e92de9c9bf-68f8a;
+        Sun, 12 Apr 2020 17:25:51 +0800 (CST)
+X-RM-TRANSID: 2eea5e92de9c9bf-68f8a
+From:   Tang Bin <tangbin@cmss.chinamobile.com>
+To:     khalasa@piap.pl, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tang Bin <tangbin@cmss.chinamobile.com>,
+        Shengju Zhang <zhangshengju@cmss.chinamobile.com>
+Subject: [PATCH] net: ethernet: ixp4xx: Add error handling in ixp4xx_eth_probe()
+Date:   Sun, 12 Apr 2020 17:27:28 +0800
+Message-Id: <20200412092728.8396-1-tangbin@cmss.chinamobile.com>
+X-Mailer: git-send-email 2.20.1.windows.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Free block_cb memory when asked to be deleted.
+The function ixp4xx_eth_probe() does not perform sufficient error
+checking after executing devm_ioremap_resource(),which can result
+in crashes if a critical error path is encountered.
 
-Fixes: 978703f42549 ("netfilter: flowtable: Add API for registering to flow table events")
-Signed-off-by: Roi Dayan <roid@mellanox.com>
-Reviewed-by: Paul Blakey <paulb@mellanox.com>
-Reviewed-by: Oz Shlomo <ozsh@mellanox.com>
+Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
+Signed-off-by: Shengju Zhang <zhangshengju@cmss.chinamobile.com>
 ---
- net/netfilter/nf_flow_table_core.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/xscale/ixp4xx_eth.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index c0cb79495c35..4344e572b7f9 100644
---- a/net/netfilter/nf_flow_table_core.c
-+++ b/net/netfilter/nf_flow_table_core.c
-@@ -421,10 +421,12 @@ void nf_flow_table_offload_del_cb(struct nf_flowtable *flow_table,
+diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
+index 269596c15..2e5202923 100644
+--- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
++++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
+@@ -1387,6 +1387,8 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 	regs_phys = res->start;
+ 	port->regs = devm_ioremap_resource(dev, res);
++	if (IS_ERR(port->regs))
++		return PTR_ERR(port->regs);
  
- 	down_write(&flow_table->flow_block_lock);
- 	block_cb = flow_block_cb_lookup(block, cb, cb_priv);
--	if (block_cb)
-+	if (block_cb) {
- 		list_del(&block_cb->list);
--	else
-+		flow_block_cb_free(block_cb);
-+	} else {
- 		WARN_ON(true);
-+	}
- 	up_write(&flow_table->flow_block_lock);
- }
- EXPORT_SYMBOL_GPL(nf_flow_table_offload_del_cb);
+ 	switch (port->id) {
+ 	case IXP4XX_ETH_NPEA:
 -- 
-2.8.4
+2.20.1.windows.1
+
+
 
