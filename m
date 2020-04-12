@@ -2,98 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41C7A1A5DC6
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 11:30:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D13B91A5DD3
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 11:37:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726892AbgDLJaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Apr 2020 05:30:23 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:44429 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725903AbgDLJaW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Apr 2020 05:30:22 -0400
-Received: by mail-lf1-f67.google.com with SMTP id 131so4364086lfh.11
-        for <netdev@vger.kernel.org>; Sun, 12 Apr 2020 02:30:21 -0700 (PDT)
+        id S1726658AbgDLJhu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Apr 2020 05:37:50 -0400
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:45385 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725832AbgDLJhu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Apr 2020 05:37:50 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wvZjieRj4qaMs+6TZihVR3SxRNAcxfJpdpQbrdTQclA=;
-        b=sCoCfMu0RCkeRdSj17DdbWeFKZD3rHgAuAb8cNCMqPqeUuaWB8wGLbnhQr1BYWTXoi
-         upzKaP2DiqcCZOw7Yimp3sz52v7DeyzftOwUBxRkfd2qok0nXYnqVZjH0b47y+kRLZ8C
-         xAIHMfCHjom4BynzVP1HKozH8iBRDWBFIPs/KK+dGDWQ6fNYNI++9uF4CoCi6/FYx7za
-         DifRQVk5Gsuj8f/M+4L6sAQKwiKR1rGWqx3KLO7Yb6/HrShMNEjgLgL9gnO48L2IioUN
-         ijdYlnim6ISiftXFTlzkJWTFmng/tJdrqujwye1v5YnXFFar2lk7nPJu3p/ULW2r+zps
-         fdNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wvZjieRj4qaMs+6TZihVR3SxRNAcxfJpdpQbrdTQclA=;
-        b=OnYIWVlf5RS8QcS1R9WKM9kWtPyhnaIS7m5ayzAwzkReH5cgRVObEvClzHCuC09/65
-         y5zYq5KpCBK8Yk01OXoATtJvERxBjrGqr5SAokXzNJ/uigWI/h10vbl6usONhMlrsit+
-         Ares9prQvssynmDMXN+DyTMVLzvN41G9tPaUv2mGWQLV+5J0CGGZ4svP0Mm1qiUaU9V2
-         MG8PhNpNFs49BkAXUJEXhor1ayyxkOqpxEPLUZVGPMAfwlIsFG9aHmbGKgTjWmLpB5Wg
-         ZvBmcMzFg/NnUf36FuIlM4k8SyhnjC7STls4tPki2n7TWDJwI13e7yM8KbLAaKs5D164
-         GCWA==
-X-Gm-Message-State: AGi0PubjvdpgTbMZq8yZsogJXR9Ok3220rzpXVlg1+pb78s09IePE4r4
-        IzYFjQgX8fNY7gHxQ07R32LQjA==
-X-Google-Smtp-Source: APiQypIiCKyDOWmQveSF/1l/II8M/C9LZdjb3kLvTVumC4zxn5XVOZ2W4iOLnw80Mn52Yek+rtsWuA==
-X-Received: by 2002:a19:d3:: with SMTP id 202mr7255970lfa.24.1586683820655;
-        Sun, 12 Apr 2020 02:30:20 -0700 (PDT)
-Received: from ?IPv6:2a00:1fa0:4648:ec80:e5e4:a4d:fae6:7d12? ([2a00:1fa0:4648:ec80:e5e4:a4d:fae6:7d12])
-        by smtp.gmail.com with ESMTPSA id b2sm1131469lfi.14.2020.04.12.02.30.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 12 Apr 2020 02:30:20 -0700 (PDT)
-Subject: Re: [PATCH AUTOSEL 5.6 056/149] sh_eth: check
- sh_eth_cpu_data::no_xdfar when dumping registers
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Chris Brandt <chris.brandt@renesas.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-References: <20200411230347.22371-1-sashal@kernel.org>
- <20200411230347.22371-56-sashal@kernel.org>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <6416ffc7-84a0-0383-aeda-93b4cb80c800@cogentembedded.com>
-Date:   Sun, 12 Apr 2020 12:30:17 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <20200411230347.22371-56-sashal@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1586684271; x=1618220271;
+  h=from:to:cc:date:message-id:references:in-reply-to:
+   content-transfer-encoding:mime-version:subject;
+  bh=FgZO8pxUZGALjDJ81M+76TTc4tj9QTK3LKdaztb4PFU=;
+  b=CBhxTckAI7MJqmMH90/EI9L9Taz7GBYeqUmwkMtdA0PxQcRbvzEYRirv
+   C8YcZ32M7XmXsWH31bE3PKdmoUOR5r6fSzdpo/mKbg3Fp68Nry734wJPo
+   ORdFy03eNFiDLtiEqECFvEUaboi73/t2MisxwjsLRbTQAnFL1ghWRyGm/
+   0=;
+IronPort-SDR: pzbsOi3X3Ao8axIdhhiCdVsB/4MT1EbhQzz78Yk7oM/2IrQsiblEgMBPxpBhJ8O8SYvrcTXQF9
+ bUZ4aVk45nNw==
+X-IronPort-AV: E=Sophos;i="5.72,374,1580774400"; 
+   d="scan'208";a="28239324"
+Subject: RE: Re: [PATCH] ena: Speed up initialization 90x by reducing poll delays
+Thread-Topic: Re: [PATCH] ena: Speed up initialization 90x by reducing poll delays
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-397e131e.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 12 Apr 2020 09:37:49 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2c-397e131e.us-west-2.amazon.com (Postfix) with ESMTPS id 5FB14A2620;
+        Sun, 12 Apr 2020 09:37:48 +0000 (UTC)
+Received: from EX13D10EUB002.ant.amazon.com (10.43.166.66) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Sun, 12 Apr 2020 09:37:48 +0000
+Received: from EX13D11EUB003.ant.amazon.com (10.43.166.58) by
+ EX13D10EUB002.ant.amazon.com (10.43.166.66) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Sun, 12 Apr 2020 09:37:46 +0000
+Received: from EX13D11EUB003.ant.amazon.com ([10.43.166.58]) by
+ EX13D11EUB003.ant.amazon.com ([10.43.166.58]) with mapi id 15.00.1497.006;
+ Sun, 12 Apr 2020 09:37:46 +0000
+From:   "Jubran, Samih" <sameehj@amazon.com>
+To:     Josh Triplett <josh@joshtriplett.org>
+CC:     "Machulsky, Zorik" <zorik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Thread-Index: AdX3p3qv2ZVxWOLdSTS1k/4T+/7WlwBi2jwABd6e1pA=
+Date:   Sun, 12 Apr 2020 09:37:22 +0000
+Deferred-Delivery: Sun, 12 Apr 2020 09:36:51 +0000
+Message-ID: <1679d519016c4984b67eeb510d50e4b4@EX13D11EUB003.ant.amazon.com>
+References: <eb427583ff2444dcae18e1e37fb27918@EX13D11EUB003.ant.amazon.com>
+ <20200313122824.GA1389@localhost>
+In-Reply-To: <20200313122824.GA1389@localhost>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.166.225]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+Hi Josh,
 
-On 12.04.2020 2:02, Sasha Levin wrote:
+I wanted to let you know that we are still looking into your patch.=20
+After some careful considerations we have decided to set the value of=20
+ENA_POLL_US to 100us. The rationale behind this choice is that the=20
+device might take up to 1ms to complete the reset operation and we=20
+don't want to bombard device. We do agree with most of your patch=20
+and we will be sending one based on it for review.
 
-> From: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-> 
-> [ Upstream commit 7bf47f609f7eaac4f7e9c407a85ad78997288a38 ]
-> 
-> When adding the sh_eth_cpu_data::no_xdfar flag I forgot to add the flag
-> check to  __sh_eth_get_regs(), causing the non-existing RDFAR/TDFAR to be
-> considered for dumping on the R-Car gen1/2 SoCs (the register offset check
-> has the final say here)...
-> 
-> Fixes: 4c1d45850d5 ("sh_eth: add sh_eth_cpu_data::cexcr flag")
+Thanks,
+Sameeh
 
-    Oops, wrong commit here, should've been:
-
-Fixes: 6e80e55bd37a ("sh_eth: add sh_eth_cpu_data::no_xdfar flag")
-
-Luckily, both commits appeared in the same version, 4.17. :-)
-
-> Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-> Tested-by: Chris Brandt <chris.brandt@renesas.com>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-[...]
-
-MBR, Sergei
+> -----Original Message-----
+> From: Josh Triplett <josh@joshtriplett.org>
+> Sent: Friday, March 13, 2020 2:28 PM
+> To: Jubran, Samih <sameehj@amazon.com>
+> Cc: Machulsky, Zorik <zorik@amazon.com>; Belgazal, Netanel
+> <netanel@amazon.com>; Kiyanovski, Arthur <akiyano@amazon.com>;
+> Tzalik, Guy <gtzalik@amazon.com>; Bshara, Saeed <saeedb@amazon.com>;
+> netdev@vger.kernel.org; linux-kernel@vger.kernel.org
+> Subject: RE: [EXTERNAL]Re: [PATCH] ena: Speed up initialization 90x by
+> reducing poll delays
+>=20
+> CAUTION: This email originated from outside of the organization. Do not c=
+lick
+> links or open attachments unless you can confirm the sender and know the
+> content is safe.
+>=20
+>=20
+>=20
+> On Wed, Mar 11, 2020 at 01:24:17PM +0000, Jubran, Samih wrote:
+> > Hi Josh,
+> >
+> > Thanks for taking the time to write this patch. I have faced a bug whil=
+e
+> testing it that I haven't pinpointed yet the root cause of the issue, but=
+ it
+> seems to me like a race in the netlink infrastructure.
+> >
+> > Here is the bug scenario:
+> > 1. created ac  c5.24xlarge instance in AWS in v_virginia region using
+> > the default amazon Linux 2 AMI 2. apply your patch won top of net-next
+> > v5.2 and install the kernel (currently I'm able to boot net-next v5.2
+> > only, higher versions of net-next suffer from errors during boot time)
+> > 3. run "rmmod ena && insmod ena.ko" twice
+> >
+> > Result:
+> > The interface is not in up state
+> >
+> > Expected result:
+> > The interface should be in up state
+> >
+> > What I know so far:
+> > * ena_probe() seems to finish with no errors whatsoever
+> > * adding prints / delays to ena_probe() causes the bug to vanish or
+> > less likely to occur depending on the amount of delays I add
+> > * ena_up() is not called at all when the bug occurs, so it's something
+> > to do with netlink not invoking dev_open()
+> >
+> > Did you face such issues? Do you have any idea what might be causing th=
+is?
+>=20
+> I haven't observed anything like this. I didn't test with Amazon Linux 2,
+> though.
+>=20
+> To rule out some possibilities, could you try disabling *all* userspace
+> networking bits, so that userspace does nothing with a newly discovered
+> interface, and then testing again? (The interface wouldn't be "up" in tha=
+t
+> case, but it should still have a link detected.)
+>=20
+> If that works, then I wonder if the userspace used in Amazon Linux 2 migh=
+t
+> have some kind of race where it's still using the previous incarnation of=
+ the
+> device when you rmmod and insmod? Perhaps the previous delays made it
+> difficult or impossible to trigger that race?
+>=20
+> - Josh Triplett
