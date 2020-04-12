@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36C121A5E4F
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 13:37:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 370B01A5E55
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 13:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726689AbgDLLhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Apr 2020 07:37:51 -0400
-Received: from mga06.intel.com ([134.134.136.31]:32792 "EHLO mga06.intel.com"
+        id S1726943AbgDLLoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Apr 2020 07:44:55 -0400
+Received: from mga05.intel.com ([192.55.52.43]:48803 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725903AbgDLLhu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 12 Apr 2020 07:37:50 -0400
-IronPort-SDR: K+L7Tp0Z4JqKxB00W3kohZfcPctqAcsHs81rWpgspblyx/JmEpLpTvfsPVkKiS2vS3wa+pgpK6
- 0a2tFWpuVwKw==
+        id S1726102AbgDLLoy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 12 Apr 2020 07:44:54 -0400
+IronPort-SDR: nRX8OONIQCAESy7BkZyEP+rQGHaAWxhUVHdid/f3bwDvHixCGeyY/QqqJrar+m6fpm+sE6qkeY
+ 8RnL9WxmSFXA==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2020 04:37:49 -0700
-IronPort-SDR: bzZN2hoGmr0W+9u3F2AbvIgYKZgRA0SCXSIEktmFICpyxDqcCLvaIZSTrgupvo1QwFerYNxlaH
- G1EtNLeuj7oA==
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2020 04:44:54 -0700
+IronPort-SDR: 2JvDTeIGcqgG/475L9lHVmxP1xtKEZv0gZNl/xROFiWqC1Bp80a7aQaVcKJJnKTPoEktKnXNvU
+ JdjLjdoDVzQA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.72,374,1580803200"; 
-   d="scan'208";a="453948217"
+   d="scan'208";a="426406933"
 Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 12 Apr 2020 04:37:47 -0700
+  by orsmga005.jf.intel.com with ESMTP; 12 Apr 2020 04:44:52 -0700
 Received: from kbuild by lkp-server01 with local (Exim 4.89)
         (envelope-from <lkp@intel.com>)
-        id 1jNavr-0001aT-9R; Sun, 12 Apr 2020 19:37:47 +0800
-Date:   Sun, 12 Apr 2020 19:37:20 +0800
+        id 1jNb2h-000IzZ-Gi; Sun, 12 Apr 2020 19:44:51 +0800
+Date:   Sun, 12 Apr 2020 19:44:28 +0800
 From:   kbuild test robot <lkp@intel.com>
 To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     kbuild-all@lists.01.org, clang-built-linux@googlegroups.com,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
 Subject: [vhost:vhost 54/54] drivers/virtio/Kconfig:49: syntax error
-Message-ID: <202004121907.Djq7hPBe%lkp@intel.com>
+Message-ID: <202004121905.c0e81F5r%lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -47,14 +46,14 @@ X-Mailing-List: netdev@vger.kernel.org
 tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git vhost
 head:   e282a85dc20e6d5da055e65c48aae15cc14897c7
 commit: e282a85dc20e6d5da055e65c48aae15cc14897c7 [54/54] vdpa: make vhost, virtio depend on menu
-config: powerpc-defconfig
-compiler: clang version 11.0.0 (https://github.com/llvm/llvm-project 4e86e5eedc684453fe0af6eca2ebdbff33db012c)
+config: s390-randconfig-a001-20200412
+compiler: s390-linux-gcc (GCC) 9.3.0
 reproduce:
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
         git checkout e282a85dc20e6d5da055e65c48aae15cc14897c7
-        COMPILER=clang make.cross ARCH=powerpc  defconfig
-        COMPILER=clang make.cross ARCH=powerpc 
+        GCC_VERSION=9.3.0 make.cross ARCH=s390  randconfig
+        GCC_VERSION=9.3.0 make.cross ARCH=s390 
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kbuild test robot <lkp@intel.com>
@@ -76,30 +75,10 @@ All errors (new ones prefixed by >>):
    drivers/virtio/Kconfig:57:warning: ignoring unsupported character ','
    drivers/virtio/Kconfig:57:warning: ignoring unsupported character '.'
 >> drivers/virtio/Kconfig:57: unknown statement "If"
-   make[2]: *** [scripts/kconfig/Makefile:85: defconfig] Error 1
-   make[1]: *** [Makefile:568: defconfig] Error 2
-   make: *** [Makefile:180: sub-make] Error 2
-   4 real  1 user  1 sys  59.31% cpu 	make defconfig
---
->> drivers/virtio/Kconfig:49: syntax error
->> drivers/virtio/Kconfig:48: unknown statement "depend"
->> drivers/virtio/Kconfig:49: invalid statement
-   drivers/virtio/Kconfig:50: invalid statement
->> drivers/virtio/Kconfig:51: unknown statement "This"
-   drivers/virtio/Kconfig:52:warning: ignoring unsupported character '.'
-   drivers/virtio/Kconfig:52:warning: ignoring unsupported character ','
->> drivers/virtio/Kconfig:52: unknown statement "device"
->> drivers/virtio/Kconfig:53: unknown statement "an"
->> drivers/virtio/Kconfig:54: unknown statement "physical"
-   drivers/virtio/Kconfig:55:warning: ignoring unsupported character '.'
->> drivers/virtio/Kconfig:55: unknown statement "offloaded"
-   drivers/virtio/Kconfig:57:warning: ignoring unsupported character ','
-   drivers/virtio/Kconfig:57:warning: ignoring unsupported character '.'
->> drivers/virtio/Kconfig:57: unknown statement "If"
    make[2]: *** [scripts/kconfig/Makefile:75: oldconfig] Error 1
    make[1]: *** [Makefile:568: oldconfig] Error 2
    make: *** [Makefile:180: sub-make] Error 2
-   4 real  1 user  1 sys  66.71% cpu 	make oldconfig
+   4 real  1 user  0 sys  35.45% cpu 	make oldconfig
 --
 >> drivers/virtio/Kconfig:49: syntax error
 >> drivers/virtio/Kconfig:48: unknown statement "depend"
@@ -119,7 +98,7 @@ All errors (new ones prefixed by >>):
    make[2]: *** [scripts/kconfig/Makefile:75: olddefconfig] Error 1
    make[1]: *** [Makefile:568: olddefconfig] Error 2
    make: *** [Makefile:180: sub-make] Error 2
-   4 real  1 user  1 sys  66.26% cpu 	make olddefconfig
+   5 real  1 user  0 sys  28.87% cpu 	make olddefconfig
 
 vim +49 drivers/virtio/Kconfig
 
