@@ -2,59 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A91B71A5E9B
-	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 14:56:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 720961A5EA7
+	for <lists+netdev@lfdr.de>; Sun, 12 Apr 2020 15:02:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726689AbgDLMxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Apr 2020 08:53:17 -0400
-Received: from mail-lf1-f49.google.com ([209.85.167.49]:33733 "EHLO
-        mail-lf1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725903AbgDLMxR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Apr 2020 08:53:17 -0400
-Received: by mail-lf1-f49.google.com with SMTP id h6so4614966lfc.0
-        for <netdev@vger.kernel.org>; Sun, 12 Apr 2020 05:53:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:from:subject:message-id:date:user-agent:mime-version
-         :content-language;
-        bh=QJoxdK1NBdPRi4gDEHhITYgEjdTTY81qRw30L8uT0cw=;
-        b=RnuvHb0dySQGR0xRUgnCA/cy+JHyfys5VesNHxCKf64EGV7CB3v6qSiihpIVum9wAS
-         R3NqSdP3et2wqEqb0w3fCgq+nUlM8DZMY69Jz0eM9tnegrN+lZdng1YUWFQ/XoRKoeyI
-         Xu6NMmZTFplitn7f5ggj/eG+RPCNx6TAdS7fqAwZZsyELloDZucRtOMTToLMIq0BdIW5
-         h43kgFQGY9wC7z07M3VQxG9f48f8Z9vNpOqs93qHCMWZ6qx+pE0LoBzVafKoxX0nvjei
-         MgCCRs0Bb2uN3P4NWB3aJYnf+zLjrFCZnp4coMs3B1axNd4C25xf4fVgYi9OmTZTUFzM
-         6TpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:from:subject:message-id:date:user-agent
-         :mime-version:content-language;
-        bh=QJoxdK1NBdPRi4gDEHhITYgEjdTTY81qRw30L8uT0cw=;
-        b=emYSVlei5G4kv4SuUT1xdBtTkSJmrghIwou4+fjSD9rtH+L/ngWU/T1IvDv6ETbvNS
-         nlBOQlvYmlgRxbL+ts/jPrMSz/BgKj+eYXnbOxjg2VZmS6us5ZpwiuAXp+9mKIW0zNDn
-         Di00f8nvMd702XZfJFEH71ycM6/nrYApbwHBlfy8dZsAMuoyJtLtQDWLBuxa60+Nrv8j
-         u3tGQECLYJUcU3Tje7SOSkijfVjjMMl6gCUmGwDnTAPf92xXjzpm3btM9LR84w7tMciX
-         XOvR/uWVXjgo4+E8uhKrBx0F3rC889oT7bY1P4Z5aKQrG5uIJcQOYQnz8vNLWca0q5BG
-         Rw7A==
-X-Gm-Message-State: AGi0PubcpG1F4HeA1I417MVTE5j48saRn8wg48ke3teOaUYkaaZcQlQl
-        31FQKDau4v452OnwCe5/bJxuI20c
-X-Google-Smtp-Source: APiQypLziElacNHL70iLWhsjKjMd/fY9aHFumAPwb38c82JOSnEkF6myo29YdJ/FnxVwA54u28ZTZg==
-X-Received: by 2002:ac2:4c9a:: with SMTP id d26mr7680842lfl.112.1586695994795;
-        Sun, 12 Apr 2020 05:53:14 -0700 (PDT)
-Received: from [192.168.1.134] (dsl-olubng11-54f81e-195.dhcp.inet.fi. [84.248.30.195])
-        by smtp.gmail.com with ESMTPSA id v12sm5264444ljh.6.2020.04.12.05.53.13
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 12 Apr 2020 05:53:13 -0700 (PDT)
-To:     netdev@vger.kernel.org
-From:   Lauri Jakku <ljakku77@gmail.com>
+        id S1727009AbgDLNCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Apr 2020 09:02:18 -0400
+Received: from mta-out1.inet.fi ([62.71.2.194]:34098 "EHLO julia1.inet.fi"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726043AbgDLNCR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 12 Apr 2020 09:02:17 -0400
+X-Greylist: delayed 409 seconds by postgrey-1.27 at vger.kernel.org; Sun, 12 Apr 2020 09:02:14 EDT
+X-RazorGate-Vade-Verdict: clean 0
+X-RazorGate-Vade-Classification: clean
+X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgeduhedrvdejgdehlecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfupfevtfenuceurghilhhouhhtmecufedttdenucenucfjughrpefhuffvkffffgggtgesmhdtreertdefjeenucfhrhhomhepnfgruhhrihculfgrkhhkuhcuoehlrghurhhirdhjrghkkhhusehpphdrihhnvghtrdhfiheqnecukfhppeekgedrvdegkedrfedtrdduleehnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehhvghloheplgduledvrdduieekrddurddufeegngdpihhnvghtpeekgedrvdegkedrfedtrdduleehpdhmrghilhhfrhhomhepoehlrghujhgrkhdqfeesmhgsohigrdhinhgvthdrfhhiqecuuefqffgjpeekuefkvffokffogfdprhgtphhtthhopeeonhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhgqe
+Received: from [192.168.1.134] (84.248.30.195) by julia1.inet.fi (9.0.019.26-1) (authenticated as laujak-3)
+        id 5E92F3500000A9DC for netdev@vger.kernel.org; Sun, 12 Apr 2020 15:55:21 +0300
+From:   Lauri Jakku <lauri.jakku@pp.inet.fi>
 Subject: NET: r8169 driver fix/enchansments
-Message-ID: <c945887a-a34c-cbab-7721-ef41b88a03b9@gmail.com>
-Date:   Sun, 12 Apr 2020 15:53:12 +0300
+To:     netdev@vger.kernel.org
+Message-ID: <43733c62-7d0b-258a-93c0-93788c05e475@pp.inet.fi>
+Date:   Sun, 12 Apr 2020 15:55:20 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.6.0
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="------------0B570B2D50B45441B51C40A5"
+ boundary="------------B3E4339C0E7847812B6AB1E2"
 Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -62,7 +34,7 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is a multi-part message in MIME format.
---------------0B570B2D50B45441B51C40A5
+--------------B3E4339C0E7847812B6AB1E2
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 
@@ -75,7 +47,12 @@ I've made r8169 driver improvements & fixes, please see attachments.
 --Lauri J.
 
 
---------------0B570B2D50B45441B51C40A5
+-- 
+Br,
+Lauri J.
+
+
+--------------B3E4339C0E7847812B6AB1E2
 Content-Type: text/x-patch; charset=UTF-8;
  name="NET-r8169-module-enchansments.patch"
 Content-Transfer-Encoding: 7bit
@@ -403,4 +380,5 @@ diff -ur linux-patsatty/drivers/net/phy/realtek.c linux-modattu/drivers/net/phy/
  static int rtl821x_read_page(struct phy_device *phydev)
  {
 
---------------0B570B2D50B45441B51C40A5--
+
+--------------B3E4339C0E7847812B6AB1E2--
