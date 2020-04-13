@@ -2,322 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E963F1A6CF6
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 22:09:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A46021A6CF9
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 22:10:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388234AbgDMUJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 16:09:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35742 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2387774AbgDMUJd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 16:09:33 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AAD0C0A3BDC
-        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 13:09:33 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id x18so7267621wrq.2
-        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 13:09:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ZQmuwjWbtkJ3PTbjB29xBrpIFXLcmxlqXXC/S0/UvWo=;
-        b=RNLrOKUE4VRqpYB22IZ58YwyoWPWLMeIP01VYYYvUpWU9L6ewbwBEhMiGZRbjtfwmL
-         o/PvWOcsbHkqvam5ebeW3AWe8zqEz2rySNeCfSIz0bgfSlWsvKB6ZWoRjhpbPP6FIA6k
-         2LeHSLVYCmGBSyUbDKZVr4sPgTrY9iyIMwC1pXeqi5P+V0K/BWHzpyrI6g75u5wbpon9
-         rTX9b170CivmghnLZuwuB8Zap6m6yrGuUt9LRAmnUxZHDeRM/yWQKHCTcC85Oypur6O1
-         8CVyTDH0NZBJdDxVHk7IJ+2LuClfz27yqkiET6jijPJeZ1HUQGKYitYTRagOR82igNFg
-         qmLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ZQmuwjWbtkJ3PTbjB29xBrpIFXLcmxlqXXC/S0/UvWo=;
-        b=SRNUGQPxcXiESDzsJKhb3nPsQuR9orOMM2FhF4IytZRMNDcFz/SB0oxVXAZ4KWq+KW
-         Ylx8ojE+o0zuZu31x+ZkHjxgGTff5rX/BvdCPIH1JPP6EZ1Y+XeJBGhR+X0uP+SR0Xjf
-         HkJrVe606mL/b29QUM8LebIxXVscNwLonHa9q04Atzup6+zKDGafPBpoNFyULJXGh/mx
-         ovFRih6bunZIMqs1oUASn5GqclJ84jqtGsb3JSkrH8Iy7HHKQTEL8K2udthCivO5StAc
-         FRn1GHgzyh4a3JLdceh07+McQHyX47g8RwzQm3qES9bTV4zNHlZ57gIDSZeu8Nx3FohV
-         X+bw==
-X-Gm-Message-State: AGi0Pubg+fyIi05K1RZ+Bl1AJB7IcQTGat4UDx9rS8vrctctNnvh6vOv
-        nWsXQZ0ANIjEDsJnYf4O7GpCu+zspGg=
-X-Google-Smtp-Source: APiQypLjXHxpM/mE6UxwP23U8wBRSlD7B1uNiRthA1o4AvwwqP4O/8S5LWQDSzCkofUKTH2IKkXWfA==
-X-Received: by 2002:a5d:5112:: with SMTP id s18mr20578206wrt.306.1586808571748;
-        Mon, 13 Apr 2020 13:09:31 -0700 (PDT)
-Received: from white ([188.27.148.74])
-        by smtp.gmail.com with ESMTPSA id 132sm16403062wmc.47.2020.04.13.13.09.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Apr 2020 13:09:31 -0700 (PDT)
-Date:   Mon, 13 Apr 2020 23:09:27 +0300
-From:   =?utf-8?B?TGXFn2UgRG9ydSBDxINsaW4=?= <lesedorucalin01@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] net: UDP repair mode for retrieving the send queue of
- corked UDP socket
-Message-ID: <20200413200927.GA22493@white>
-References: <20200408205954.GA15086@white>
- <20200412.205611.844961656085784911.davem@davemloft.net>
+        id S1733199AbgDMUKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 16:10:33 -0400
+Received: from mout.web.de ([217.72.192.78]:37351 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727816AbgDMUK3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Apr 2020 16:10:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1586808610;
+        bh=hohdPQZE7AeOOy6DzbYybr/CUWc/bO1yJDL5ARvFSMw=;
+        h=X-UI-Sender-Class:Cc:Subject:To:From:Date;
+        b=Ii9BQNUHyNmdB1tX9DQpcC5vCeI5lVBA+74fEnS1vyWSoH4yhoWphnatvnO9ZdOlA
+         rlcPcpDCKrv3GAWf22g19QcZf9fkxINxoxDrhGAIpcz3OKhOiOjj0SJ6+HH3YOzsgi
+         zovlHzn/If1oW0Q3fvn1L9lUZ4YSnwE+53HNkwds=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.3] ([93.133.146.177]) by smtp.web.de (mrweb102
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0M40zO-1j6pVI2rX0-00rbJp; Mon, 13
+ Apr 2020 22:10:10 +0200
+Cc:     linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Halasa <khalasa@piap.pl>
+Subject: Re: ethernet: ixp4xx: Add error handling in ixp4xx_eth_probe()
+To:     Tang Bin <tangbin@cmss.chinamobile.com>, netdev@vger.kernel.org
+From:   Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
+ +v43YoGpDNyhgA0w9CEhuwfZrE91GocMtjLO67TAc2i2nxMc/FJRDI0OemO4VJ9RwID6ltwt
+ mpVJgXGKkNJ1ey+QOXouzlErVvE2fRh+KXXN1Q7fSmTJlAW9XJYHS3BDHb0uRpymRSX3O+E2
+ lA87C7R8qAigPDZi6Z7UmwIA83ZMKXQ5stA0lhPyYgQcM7fh7V4ZYhnR0I5/qkUoxKpqaYLp
+ YHBczVP+Zx/zHOM0KQphOMbU7X3c1pmMruoe6ti9uZzqZSLsF+NKXFEPBS665tQr66HJvZvY
+ GMDlntZFAZ6xQvCC1r3MGoxEC1tuEa24vPCC9RZ9wk2sY5Csbva0WwYv3WKRZZBv8eIhGMxs
+ rcpeGShRFyZ/0BYO53wZAPV1pEhGLLxd8eLN/nEWjJE0ejakPC1H/mt5F+yQBJAzz9JzbToU
+ 5jKLu0SugNI18MspJut8AiA1M44CIWrNHXvWsQ+nnBKHDHHYZu7MoXlOmB32ndsfPthR3GSv
+ jN7YD4Ad724H8fhRijmC1+RpuSce7w2JLj5cYj4MlccmNb8YUxsE8brY2WkXQYS8Ivse39MX
+ BE66MQN0r5DQ6oqgoJ4gHIVBUv/ZwgcmUNS5gQkNCFA0dWXznQARAQABtCZNYXJrdXMgRWxm
+ cmluZyA8TWFya3VzLkVsZnJpbmdAd2ViLmRlPokCVAQTAQgAPhYhBHDP0hzibeXjwQ/ITuU9
+ Figxg9azBQJYNvsQAhsjBQkJZgGABQsJCAcCBhUICQoLAgQWAgMBAh4BAheAAAoJEOU9Figx
+ g9azcyMP/iVihZkZ4VyH3/wlV3nRiXvSreqg+pGPI3c8J6DjP9zvz7QHN35zWM++1yNek7Ar
+ OVXwuKBo18ASlYzZPTFJZwQQdkZSV+atwIzG3US50ZZ4p7VyUuDuQQVVqFlaf6qZOkwHSnk+
+ CeGxlDz1POSHY17VbJG2CzPuqMfgBtqIU1dODFLpFq4oIAwEOG6fxRa59qbsTLXxyw+PzRaR
+ LIjVOit28raM83Efk07JKow8URb4u1n7k9RGAcnsM5/WMLRbDYjWTx0lJ2WO9zYwPgRykhn2
+ sOyJVXk9xVESGTwEPbTtfHM+4x0n0gC6GzfTMvwvZ9G6xoM0S4/+lgbaaa9t5tT/PrsvJiob
+ kfqDrPbmSwr2G5mHnSM9M7B+w8odjmQFOwAjfcxoVIHxC4Cl/GAAKsX3KNKTspCHR0Yag78w
+ i8duH/eEd4tB8twcqCi3aCgWoIrhjNS0myusmuA89kAWFFW5z26qNCOefovCx8drdMXQfMYv
+ g5lRk821ZCNBosfRUvcMXoY6lTwHLIDrEfkJQtjxfdTlWQdwr0mM5ye7vd83AManSQwutgpI
+ q+wE8CNY2VN9xAlE7OhcmWXlnAw3MJLW863SXdGlnkA3N+U4BoKQSIToGuXARQ14IMNvfeKX
+ NphLPpUUnUNdfxAHu/S3tPTc/E/oePbHo794dnEm57LuuQINBFg2+xABEADZg/T+4o5qj4cw
+ nd0G5pFy7ACxk28mSrLuva9tyzqPgRZ2bdPiwNXJUvBg1es2u81urekeUvGvnERB/TKekp25
+ 4wU3I2lEhIXj5NVdLc6eU5czZQs4YEZbu1U5iqhhZmKhlLrhLlZv2whLOXRlLwi4jAzXIZAu
+ 76mT813jbczl2dwxFxcT8XRzk9+dwzNTdOg75683uinMgskiiul+dzd6sumdOhRZR7YBT+xC
+ wzfykOgBKnzfFscMwKR0iuHNB+VdEnZw80XGZi4N1ku81DHxmo2HG3icg7CwO1ih2jx8ik0r
+ riIyMhJrTXgR1hF6kQnX7p2mXe6K0s8tQFK0ZZmYpZuGYYsV05OvU8yqrRVL/GYvy4Xgplm3
+ DuMuC7/A9/BfmxZVEPAS1gW6QQ8vSO4zf60zREKoSNYeiv+tURM2KOEj8tCMZN3k3sNASfoG
+ fMvTvOjT0yzMbJsI1jwLwy5uA2JVdSLoWzBD8awZ2X/eCU9YDZeGuWmxzIHvkuMj8FfX8cK/
+ 2m437UA877eqmcgiEy/3B7XeHUipOL83gjfq4ETzVmxVswkVvZvR6j2blQVr+MhCZPq83Ota
+ xNB7QptPxJuNRZ49gtT6uQkyGI+2daXqkj/Mot5tKxNKtM1Vbr/3b+AEMA7qLz7QjhgGJcie
+ qp4b0gELjY1Oe9dBAXMiDwARAQABiQI8BBgBCAAmFiEEcM/SHOJt5ePBD8hO5T0WKDGD1rMF
+ Alg2+xACGwwFCQlmAYAACgkQ5T0WKDGD1rOYSw/+P6fYSZjTJDAl9XNfXRjRRyJSfaw6N1pA
+ Ahuu0MIa3djFRuFCrAHUaaFZf5V2iW5xhGnrhDwE1Ksf7tlstSne/G0a+Ef7vhUyeTn6U/0m
+ +/BrsCsBUXhqeNuraGUtaleatQijXfuemUwgB+mE3B0SobE601XLo6MYIhPh8MG32MKO5kOY
+ hB5jzyor7WoN3ETVNQoGgMzPVWIRElwpcXr+yGoTLAOpG7nkAUBBj9n9TPpSdt/npfok9ZfL
+ /Q+ranrxb2Cy4tvOPxeVfR58XveX85ICrW9VHPVq9sJf/a24bMm6+qEg1V/G7u/AM3fM8U2m
+ tdrTqOrfxklZ7beppGKzC1/WLrcr072vrdiN0icyOHQlfWmaPv0pUnW3AwtiMYngT96BevfA
+ qlwaymjPTvH+cTXScnbydfOQW8220JQwykUe+sHRZfAF5TS2YCkQvsyf7vIpSqo/ttDk4+xc
+ Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
+ x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
+ pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
+Message-ID: <167fa941-6531-7ede-3a2c-cc4f2bde0845@web.de>
+Date:   Mon, 13 Apr 2020 22:10:06 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200412.205611.844961656085784911.davem@davemloft.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:QqIufzfLP97h/oxSewSwBcYkS7m2tN9Ls0qVgcEzveqru+eCqJr
+ QjhB5DMz6UuM0oGIVBcK9PlNmY/Nrp4S1uit21P4WMIJDgbBvTdeLkTiD+qvPJIri4gzJIv
+ 0kMlCRDEFUnvD/vUorVKJqStjr6fRO+2ZciQtqfnNFwSF3WClgFhdTKOaOaOwIH7BiKSIeK
+ lzn/nKr55Hg6c33ObDdSg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:I/8vNH4z2OE=:pwCb9PdPnBsR8UV6WUXXsc
+ 9hz+2kYXy8mdWVUlcgbo2mZ3nT6z7dR3ckt5A0UtlcWw10pGpu0/TpBd1uUnV6T7q/uEf8oWq
+ WVP4IBuNVGVaB2Hhh14RLqIu09QVlGnDQ8lXu+WImMzd0J1vc73GyKFeTvEJPzARtcTpjvBMN
+ Qbalw2rxo2XpB8zfeT/46AEoCxnf7WLRXQKGi5VxVUwRPhbV74J6ZmIMHtZMf3oGiteD453T9
+ CWq9GZmvuMkWcpsWyBuFrpdwkoGAhAJgfms6hVcPnJc1O0YQrkH46jMsqfwgrAHs02O6vTYzH
+ hQmNRY9tinISGr0bIbjiY/CM5Dor2TV1y5mbldf2ueCC2QSoJlxYhhLls/wF5mXqZSuOOxizO
+ I7S7Zhj7sqT1X/J5OjEolUVX+CHD9zhn+lspUSq/r8zr48hbmKb1A91JqtHVbBpJPaxqW1ddj
+ nmrZ9+UHWegtnBFAA17Kc6nrFE1nq+HdAEFgx4l7nDj4JU6vx+WtLTDqvrFqRo10szsEnlWP0
+ x3OLFFGoRm98skKx/qmMDzsx8LX+uswu3sYnD96e9lobN8T5UlRSgEWKOOt9zJqU+jsMeJf8O
+ buIYQOooMJQgvodTX0Ywq8xS5+v+SNm4+j4GGnrkGiqoaaNhugwuBEUhX7kZx0lCwf2z9bt0H
+ DrR90nOTV24838r61WGYllBZ++Nf3hxYM323euKqnkc6I1u3lYPwrpbnYq9e+1Tdon6AxnbKA
+ JSWB4GGz+kUJdwU6WlGRTo7OE3BRQmSBz1F1L/ZrPG5fU9hwUseeqyA78DWgNvUck5BL1Ia1l
+ IFuSAQi4hPEln3D1z7KSBTGwtVp4ij+XZID6aj9pNVOaw0IvFe5uRnNleVUHJg4d25AbNc3l/
+ aEDW+odRah6fAK408Bgr/ndCQmWWYCJFMldyxAKoUVWJs81JZBtQZ0W4SP+FBsdHC8twW7AnT
+ sSemvXxA+Wl35+ed8X+ymsRhnVGZyKuwUg5EkMOrjaaZ1cYZtFKinvKtQUVAdxDcjw9z530g3
+ SbDfsHQ9j28Po2+6+Fu+3jIqCXJM2CRpO9yeZmf82FBtcbmZWaOKpZTnYUsr02okyDIhCGSf3
+ pxxr1gFt+wcpwLMUOz6d8KzxkNmVgDK/8c0iqReB0Mrt5tP79HEvMxcG/bNhfRUkXPaUj7aBd
+ 92eU4qcrz5z2Ujl+QBPIiVnj+IJ8RZ9Hpw/If7aRuqFlkXt0qIfEfkNQQCSTnmkOzpnd8DPCy
+ McLIjy+Pok9No+FDL
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 12, 2020 at 08:56:11PM -0700, David Miller wrote:
-> From: Lese Doru Calin <lesedorucalin01@gmail.com>
-> Date: Wed, 8 Apr 2020 23:59:54 +0300
-> 
-> > +static int udp_peek_sndq(struct sock *sk, struct msghdr *msg, int off, int len)
-> > +{
-> > +	struct sk_buff *skb;
-> > +	int copied = 0, err = 0, copy;
-> 
-> Please use reverse christmas tree (longest to shortest) ordering for
-> local variables.
-> 
-> > +static int udp6_peek_sndq(struct sock *sk, struct msghdr *msg, int off, int len)
-> > +{
-> > +	struct sk_buff *skb;
-> > +	int copied = 0, err = 0, copy;
-> 
-> Likewise.
-> 
-> Thank you.
+> Fixes: f458ac47 ("ARM/net: ixp4xx: Pass ethernet physical base as
+> resource").
 
-I changed it accordingly. I hope it is ok.
+Please adjust your tag suggestion.
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Do=
+cumentation/process/submitting-patches.rst?id=3D8f3d9f354286745c751374f5f1=
+fcafee6b3f3136#n183
 
-Best regards,
-Lese Doru
+* The identification is too short.
 
-Signed-off-by: Lese Doru Calin <lesedorucalin01@gmail.com>
----
- include/linux/udp.h      |    3 +-
- include/uapi/linux/udp.h |    1 
- net/ipv4/udp.c           |   60 +++++++++++++++++++++++++++++++++++++++++++++++
- net/ipv6/udp.c           |   45 +++++++++++++++++++++++++++++++++++
- 4 files changed, 108 insertions(+), 1 deletion(-)
+* Do not use a line break in the tag subject.
 
-diff --git a/include/linux/udp.h b/include/linux/udp.h
-index aa84597bdc33..b22bd70118ce 100644
---- a/include/linux/udp.h
-+++ b/include/linux/udp.h
-@@ -51,7 +51,8 @@ struct udp_sock {
- 					   * different encapsulation layer set
- 					   * this
- 					   */
--			 gro_enabled:1;	/* Can accept GRO packets */
-+			 gro_enabled:1,	/* Can accept GRO packets */
-+			 repair:1;/* Receive the send queue */
- 	/*
- 	 * Following member retains the information to create a UDP header
- 	 * when the socket is uncorked.
-diff --git a/include/uapi/linux/udp.h b/include/uapi/linux/udp.h
-index 4828794efcf8..2fe78329d6da 100644
---- a/include/uapi/linux/udp.h
-+++ b/include/uapi/linux/udp.h
-@@ -29,6 +29,7 @@ struct udphdr {
- 
- /* UDP socket options */
- #define UDP_CORK	1	/* Never send partially complete segments */
-+#define UDP_REPAIR  19  /* Receive the send queue */
- #define UDP_ENCAP	100	/* Set the socket to accept encapsulated packets */
- #define UDP_NO_CHECK6_TX 101	/* Disable sending checksum for UDP6X */
- #define UDP_NO_CHECK6_RX 102	/* Disable accpeting checksum for UDP6 */
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 32564b350823..306cd70e40cb 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1720,6 +1720,28 @@ struct sk_buff *__skb_recv_udp(struct sock *sk, unsigned int flags,
- }
- EXPORT_SYMBOL(__skb_recv_udp);
- 
-+static int udp_peek_sndq(struct sock *sk, struct msghdr *msg, int off, int len)
-+{
-+	int copy, copied = 0, err = 0;
-+	struct sk_buff *skb;
-+
-+	skb_queue_walk(&sk->sk_write_queue, skb) {
-+		copy = len - copied;
-+		if (copy > skb->len - off)
-+			copy = skb->len - off;
-+
-+		err = skb_copy_datagram_msg(skb, off, msg, copy);
-+		if (err)
-+			break;
-+
-+		copied += copy;
-+
-+		if (len <= copied)
-+			break;
-+	}
-+	return err ?: copied;
-+}
-+
- /*
-  * 	This should be easy, if there is something there we
-  * 	return it, otherwise we block.
-@@ -1729,8 +1751,10 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
- 		int flags, int *addr_len)
- {
- 	struct inet_sock *inet = inet_sk(sk);
-+	struct udp_sock *up = udp_sk(sk);
- 	DECLARE_SOCKADDR(struct sockaddr_in *, sin, msg->msg_name);
- 	struct sk_buff *skb;
-+	struct flowi4 *fl4;
- 	unsigned int ulen, copied;
- 	int off, err, peeking = flags & MSG_PEEK;
- 	int is_udplite = IS_UDPLITE(sk);
-@@ -1739,6 +1763,12 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
- 	if (flags & MSG_ERRQUEUE)
- 		return ip_recv_error(sk, msg, len, addr_len);
- 
-+	if (unlikely(up->repair)) {
-+		if (!peeking)
-+			return -EPERM;
-+		goto recv_sndq;
-+	}
-+
- try_again:
- 	off = sk_peek_offset(sk, flags);
- 	skb = __skb_recv_udp(sk, flags, noblock, &off, &err);
-@@ -1832,6 +1862,18 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
- 	cond_resched();
- 	msg->msg_flags &= ~MSG_TRUNC;
- 	goto try_again;
-+
-+recv_sndq:
-+	off = sizeof(struct iphdr) + sizeof(struct udphdr);
-+	if (sin) {
-+		fl4 = &inet->cork.fl.u.ip4;
-+		sin->sin_family = AF_INET;
-+		sin->sin_port = fl4->fl4_dport;
-+		sin->sin_addr.s_addr = fl4->daddr;
-+		memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
-+		*addr_len = sizeof(*sin);
-+	}
-+	return udp_peek_sndq(sk, msg, off, len);
- }
- 
- int udp_pre_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-@@ -2525,6 +2567,11 @@ void udp_destroy_sock(struct sock *sk)
- 	}
- }
- 
-+static inline bool udp_can_repair_sock(const struct sock *sk)
-+{
-+	return ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN);
-+}
-+
- /*
-  *	Socket option code for UDP
-  */
-@@ -2557,6 +2604,15 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
- 		}
- 		break;
- 
-+	case UDP_REPAIR:
-+		if (!udp_can_repair_sock(sk))
-+			err = -EPERM;
-+		else if (val != 0)
-+			up->repair = 1;
-+		else
-+			up->repair = 0;
-+		break;
-+
- 	case UDP_ENCAP:
- 		switch (val) {
- 		case 0:
-@@ -2678,6 +2734,10 @@ int udp_lib_getsockopt(struct sock *sk, int level, int optname,
- 		val = up->corkflag;
- 		break;
- 
-+	case UDP_REPAIR:
-+		val = up->repair;
-+		break;
-+
- 	case UDP_ENCAP:
- 		val = up->encap_type;
- 		break;
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 7d4151747340..ec653f9fce2d 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -250,6 +250,28 @@ struct sock *udp6_lib_lookup(struct net *net, const struct in6_addr *saddr, __be
- EXPORT_SYMBOL_GPL(udp6_lib_lookup);
- #endif
- 
-+static int udp6_peek_sndq(struct sock *sk, struct msghdr *msg, int off, int len)
-+{
-+	int copy, copied = 0, err = 0;
-+	struct sk_buff *skb;
-+
-+	skb_queue_walk(&sk->sk_write_queue, skb) {
-+		copy = len - copied;
-+		if (copy > skb->len - off)
-+			copy = skb->len - off;
-+
-+		err = skb_copy_datagram_msg(skb, off, msg, copy);
-+		if (err)
-+			break;
-+
-+		copied += copy;
-+
-+		if (len <= copied)
-+			break;
-+	}
-+	return err ?: copied;
-+}
-+
- /* do not use the scratch area len for jumbogram: their length execeeds the
-  * scratch area space; note that the IP6CB flags is still in the first
-  * cacheline, so checking for jumbograms is cheap
-@@ -269,7 +291,9 @@ int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- {
- 	struct ipv6_pinfo *np = inet6_sk(sk);
- 	struct inet_sock *inet = inet_sk(sk);
-+	struct udp_sock *up = udp_sk(sk);
- 	struct sk_buff *skb;
-+	struct flowi6 *fl6;
- 	unsigned int ulen, copied;
- 	int off, err, peeking = flags & MSG_PEEK;
- 	int is_udplite = IS_UDPLITE(sk);
-@@ -283,6 +307,12 @@ int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 	if (np->rxpmtu && np->rxopt.bits.rxpmtu)
- 		return ipv6_recv_rxpmtu(sk, msg, len, addr_len);
- 
-+	if (unlikely(up->repair)) {
-+		if (!peeking)
-+			return -EPERM;
-+		goto recv_sndq;
-+	}
-+
- try_again:
- 	off = sk_peek_offset(sk, flags);
- 	skb = __skb_recv_udp(sk, flags, noblock, &off, &err);
-@@ -394,6 +424,21 @@ int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 	cond_resched();
- 	msg->msg_flags &= ~MSG_TRUNC;
- 	goto try_again;
-+
-+recv_sndq:
-+	off = sizeof(struct ipv6hdr) + sizeof(struct udphdr);
-+	if (msg->msg_name) {
-+		DECLARE_SOCKADDR(struct sockaddr_in6 *, sin6, msg->msg_name);
-+
-+		fl6 = &inet->cork.fl.u.ip6;
-+		sin6->sin6_family = AF_INET6;
-+		sin6->sin6_port = fl6->fl6_dport;
-+		sin6->sin6_flowinfo = 0;
-+		sin6->sin6_addr = fl6->daddr;
-+		sin6->sin6_scope_id = fl6->flowi6_oif;
-+		*addr_len = sizeof(*sin6);
-+	}
-+	return udp6_peek_sndq(sk, msg, off, len);
- }
- 
- DEFINE_STATIC_KEY_FALSE(udpv6_encap_needed_key);
+Regards,
+Markus
