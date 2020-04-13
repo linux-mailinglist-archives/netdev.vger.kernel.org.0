@@ -2,32 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBC8C1A6792
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 16:10:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A685D1A67A7
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 16:15:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730381AbgDMOKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 10:10:30 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:59452 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730372AbgDMOKY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 10:10:24 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: eballetbo)
-        with ESMTPSA id 11B5C26DA92
-From:   Enric Balletbo i Serra <enric.balletbo@collabora.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Collabora Kernel ML <kernel@collabora.com>,
-        Dan Murphy <dmurphy@ti.com>,
+        id S1730453AbgDMOPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 10:15:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47280 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730417AbgDMOPn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Apr 2020 10:15:43 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 417A92073E;
+        Mon, 13 Apr 2020 14:15:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1586787342;
+        bh=p4H0mbNsqUXCc+rVKfiFXeEwB+ggGqgRm+g9Z3fEcEY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Cc2GAdH6dnHe8KR4lpmbGMf5sORxwT0GEUnUKFd8hZi3eGW5HejVhjHLQKnx3hrkQ
+         N8IFris9OuI3EAyBxcks0qgFRnqc1Vi+1oYi7SScdH6CD1/6DU0YCBtHWoawpVE5UX
+         t3k8dWDqrsJV4BbxHVbO3BkqmcK/PWt1HfJPSvhw=
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>,
+        Christoph Hellwig <hch@lst.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH] can: tcan4x5x: Replace depends on REGMAP_SPI with depends on SPI
-Date:   Mon, 13 Apr 2020 16:10:13 +0200
-Message-Id: <20200413141013.506613-1-enric.balletbo@collabora.com>
-X-Mailer: git-send-email 2.25.1
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-nvme@lists.infradead.org, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, rds-devel@oss.oracle.com,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        target-devel@vger.kernel.org
+Subject: [PATCH rdma-next v2 0/7] Add Enhanced Connection Established (ECE)
+Date:   Mon, 13 Apr 2020 17:15:31 +0300
+Message-Id: <20200413141538.935574-1-leon@kernel.org>
+X-Mailer: git-send-email 2.25.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -35,32 +48,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-regmap is a library function that gets selected by drivers that need
-it. No driver modules should depend on it. Instead depends on SPI and
-select REGMAP_SPI. Depending on REGMAP_SPI makes this driver only build
-if another driver already selected REGMAP_SPI, as the symbol can't be
-selected through the menu kernel configuration.
+From: Leon Romanovsky <leonro@mellanox.com>
 
-Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
----
+Changelog:
+ v2:
+ * Rebased on latest rdma-next and removed already accepted patches.
+ * Updated all rdma_reject in-kernel users to provide reject reason.
+ v1: Dropped field_avail patch in favor of mass conversion to use function
+     which already exists in the kernel code.
+ https://lore.kernel.org/lkml/20200310091438.248429-1-leon@kernel.org
+ v0: https://lore.kernel.org/lkml/20200305150105.207959-1-leon@kernel.org
 
- drivers/net/can/m_can/Kconfig | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Enhanced Connection Established or ECE is new negotiation scheme
+introduced in IBTA v1.4 to exchange extra information about nodes
+capabilities and later negotiate them at the connection establishment
+phase.
 
-diff --git a/drivers/net/can/m_can/Kconfig b/drivers/net/can/m_can/Kconfig
-index 1ff0b7fe81d6..c10932a7f1fe 100644
---- a/drivers/net/can/m_can/Kconfig
-+++ b/drivers/net/can/m_can/Kconfig
-@@ -16,7 +16,8 @@ config CAN_M_CAN_PLATFORM
- 
- config CAN_M_CAN_TCAN4X5X
- 	depends on CAN_M_CAN
--	depends on REGMAP_SPI
-+	depends on SPI
-+	select REGMAP_SPI
- 	tristate "TCAN4X5X M_CAN device"
- 	---help---
- 	  Say Y here if you want support for Texas Instruments TCAN4x5x
--- 
-2.25.1
+The RDMA-CM messages (REQ, REP, SIDR_REQ and SIDR_REP) were extended
+to carry two fields, one new and another gained new functionality:
+ * VendorID is a new field that indicates that common subset of vendor
+   option bits are supported as indicated by that VendorID.
+ * AttributeModifier already exists, but overloaded to indicate which
+   vendor options are supported by this VendorID.
+
+This is kernel part of such functionality which is responsible to get data
+from librdmacm and properly create and handle RDMA-CM messages.
+
+Thanks
+
+Leon Romanovsky (7):
+  RDMA/cm: Add Enhanced Connection Establishment (ECE) bits
+  RDMA/uapi: Add ECE definitions to UCMA
+  RDMA/ucma: Extend ucma_connect to receive ECE parameters
+  RDMA/ucma: Deliver ECE parameters through UCMA events
+  RDMA/cm: Send and receive ECE parameter over the wire
+  RDMA/cma: Connect ECE to rdma_accept
+  RDMA/cma: Provide ECE reject reason
+
+ drivers/infiniband/core/cm.c            | 41 ++++++++++++++++---
+ drivers/infiniband/core/cma.c           | 52 ++++++++++++++++++++++---
+ drivers/infiniband/core/cma_priv.h      |  1 +
+ drivers/infiniband/core/ucma.c          | 40 +++++++++++++++----
+ drivers/infiniband/ulp/isert/ib_isert.c |  4 +-
+ drivers/infiniband/ulp/srpt/ib_srpt.c   |  2 +-
+ drivers/nvme/target/rdma.c              |  2 +-
+ include/rdma/ib_cm.h                    | 10 ++++-
+ include/rdma/ibta_vol1_c12.h            |  6 +++
+ include/rdma/rdma_cm.h                  | 18 ++++++++-
+ include/uapi/rdma/rdma_user_cm.h        | 15 ++++++-
+ net/rds/ib_cm.c                         |  2 +-
+ 12 files changed, 167 insertions(+), 26 deletions(-)
+
+--
+2.25.2
 
