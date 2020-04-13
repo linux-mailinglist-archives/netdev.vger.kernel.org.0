@@ -2,71 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F15D71A677C
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 16:05:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBC8C1A6792
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 16:10:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730287AbgDMOFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 10:05:06 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:44516 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730274AbgDMOFF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 10:05:05 -0400
-Received: by mail-io1-f69.google.com with SMTP id o20so10634232ioa.11
-        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 07:05:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=dSAaCUxfmH3RsO4S6JaqC9sPiFMT1emTj9SauC2DHLk=;
-        b=pHm4b22jLJCqER7RPEgaoBAyJGanitNVt4xwTT6SHnsuTm1zpvtRwgD5XSHGjzJSac
-         OBNQCj6OxGcfp5hcSNRlyhSfTYHGC0fUEbf0i5ZwL1FRcpjkaiwdO/ZKCbUlBLo7sYY4
-         mPO2xkK0OvF/PVYsTpsK3xbG0qsc0hATCsaHjcWGbEd/VbAOrz7oRsuZFV/SNYdWePL6
-         zlPEnA3YzQruMwzGBI81SsueO7hdRYhc76ud2PlIs6wy0wBw646wCbZznx1FaSAx7mok
-         bwiOKyAZPPtYRdHKrrrvb+4WKfdYW5JWE6A4NiPDmjtzB+4qMWjDiBNcR6ADkZZr2+vn
-         oMxg==
-X-Gm-Message-State: AGi0PuYytQ5Yue/TzlfXq85Z1YJaykP8+dTlyoaB1cU/h1VkYbqYcfe0
-        Mic7oh1OgWBs/QJMHFiDHeGMd2BiQNdwh7HqDJDDf5Yf7dq2
-X-Google-Smtp-Source: APiQypLR1F78iaVNLapYRHoDrHWZAKXWioEFmpkhtSEmyxWdBCDJ9YMPc5xSsHv6bj/OoSxNP8wJr0eMQai+nXX/+ecVqEcBkG0h
+        id S1730381AbgDMOKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 10:10:30 -0400
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:59452 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730372AbgDMOKY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 10:10:24 -0400
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: eballetbo)
+        with ESMTPSA id 11B5C26DA92
+From:   Enric Balletbo i Serra <enric.balletbo@collabora.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Collabora Kernel ML <kernel@collabora.com>,
+        Dan Murphy <dmurphy@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH] can: tcan4x5x: Replace depends on REGMAP_SPI with depends on SPI
+Date:   Mon, 13 Apr 2020 16:10:13 +0200
+Message-Id: <20200413141013.506613-1-enric.balletbo@collabora.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Received: by 2002:a02:7b05:: with SMTP id q5mr16487082jac.105.1586786703461;
- Mon, 13 Apr 2020 07:05:03 -0700 (PDT)
-Date:   Mon, 13 Apr 2020 07:05:03 -0700
-In-Reply-To: <000000000000bb471d05a2f246d7@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000cb517b05a32c917b@google.com>
-Subject: Re: WARNING in hwsim_new_radio_nl
-From:   syzbot <syzbot+a4aee3f42d7584d76761@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net,
-        kvalo@codeaurora.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, mathew.j.martineau@linux.intel.com,
-        matthieu.baerts@tessares.net, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+regmap is a library function that gets selected by drivers that need
+it. No driver modules should depend on it. Instead depends on SPI and
+select REGMAP_SPI. Depending on REGMAP_SPI makes this driver only build
+if another driver already selected REGMAP_SPI, as the symbol can't be
+selected through the menu kernel configuration.
 
-commit 01cacb00b35cb62b139f07d5f84bcf0eeda8eff6
-Author: Paolo Abeni <pabeni@redhat.com>
-Date:   Fri Mar 27 21:48:51 2020 +0000
+Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+---
 
-    mptcp: add netlink-based PM
+ drivers/net/can/m_can/Kconfig | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10225bb3e00000
-start commit:   4f8a3cc1 Merge tag 'x86-urgent-2020-04-12' of git://git.ke..
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=12225bb3e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=14225bb3e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3bfbde87e8e65624
-dashboard link: https://syzkaller.appspot.com/bug?extid=a4aee3f42d7584d76761
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=100825afe00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10df613fe00000
+diff --git a/drivers/net/can/m_can/Kconfig b/drivers/net/can/m_can/Kconfig
+index 1ff0b7fe81d6..c10932a7f1fe 100644
+--- a/drivers/net/can/m_can/Kconfig
++++ b/drivers/net/can/m_can/Kconfig
+@@ -16,7 +16,8 @@ config CAN_M_CAN_PLATFORM
+ 
+ config CAN_M_CAN_TCAN4X5X
+ 	depends on CAN_M_CAN
+-	depends on REGMAP_SPI
++	depends on SPI
++	select REGMAP_SPI
+ 	tristate "TCAN4X5X M_CAN device"
+ 	---help---
+ 	  Say Y here if you want support for Texas Instruments TCAN4x5x
+-- 
+2.25.1
 
-Reported-by: syzbot+a4aee3f42d7584d76761@syzkaller.appspotmail.com
-Fixes: 01cacb00b35c ("mptcp: add netlink-based PM")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
