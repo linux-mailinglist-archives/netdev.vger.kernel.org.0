@@ -2,63 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD7951A6548
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 12:39:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E372D1A653B
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 12:33:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728689AbgDMKjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 06:39:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51020 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727776AbgDMKjl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 06:39:41 -0400
-X-Greylist: delayed 564 seconds by postgrey-1.27 at vger.kernel.org; Mon, 13 Apr 2020 06:39:41 EDT
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413A0C0A3BDC
-        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 03:30:17 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id q22so8240946ljg.0
-        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 03:30:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:from:subject:message-id:date:user-agent:mime-version
-         :content-language;
-        bh=hXFEDIAqPnYniZWWS9YZh0flv8T2CslD9yWAbYJY8GM=;
-        b=S0KK8w6g3I/bG7tfWUBVQUv96uKE8jzSObKOXmj9yatqQ/xoFuHr/0D+suNek1BsfA
-         CHH/SAHUqMYAyyMLkGzhzACZoDEGxpD833FkCHxW6RzHKKcgr9SjM5I5TGPdDGZ9m+Xa
-         aBleqP8fphUTvViriSxrZwYW3GmVWRfDXrBoOZUPCKTl6nruIrnw3zxP6ZEgyMqZd5Yb
-         pxE+ItAKJSy9TtI5lZLj6RE6nOpolEzbMKk7Jneo7tl5/RJgYXo1pws23V2vGUMg0Smp
-         U8esfWBI4qlOCMjKGGrGXo1a0mTmzrw7+6a/xeR52y5CKlcmCs9EPMr4LYjaeeNTlubI
-         16zA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:from:subject:message-id:date:user-agent
-         :mime-version:content-language;
-        bh=hXFEDIAqPnYniZWWS9YZh0flv8T2CslD9yWAbYJY8GM=;
-        b=pjRUiPKve/cQ0lI4wNKIR6MisT0n0cw+yFMlm1Aw7OzoEA6MjzltiDcmzzc5Pxi5xC
-         kd8e2LTcHD9zNJMXq1kLgTJUeBKQZYwHCyObWSFaq0Zx0F0/Izebh8eaBl047bV/hp5G
-         wTmnm3V3Ti3+qClV8rCJhIs92XeIBoxqaXfeMmrKqc3FhGS6CxOiRZAn4b9P2WZ2n9S0
-         ETKLGVx5fUtFsv++ZPDnUu4Uv7gSRytKvTGBVx2AIQEgzPKfS5EawmMBp3TNmO8QeVWg
-         Bv6NGtlAaBdkO+9aTpyDcYndHNt8C8FbxgkZWh2Uu3hzyzCszLnHFf2JExqbsXGp/G2/
-         wUaw==
-X-Gm-Message-State: AGi0PuaUTsNougGGkR4wcOToHsMiGYZsCb3mYOUFzNWYbnENNeAs/Je+
-        lWBA1BMppV7brLPymgLKBjk=
-X-Google-Smtp-Source: APiQypLiwAEs5DXQS65WbfltHc4lNIPw3gigBTYXsEC8CKXyUxWPGOVXmsWZYZK+fIi4e/PLZxSLeg==
-X-Received: by 2002:a2e:a362:: with SMTP id i2mr10147276ljn.52.1586773815689;
-        Mon, 13 Apr 2020 03:30:15 -0700 (PDT)
-Received: from [192.168.1.134] (dsl-olubng11-54f81e-195.dhcp.inet.fi. [84.248.30.195])
-        by smtp.gmail.com with ESMTPSA id r19sm6852095ljn.95.2020.04.13.03.30.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Apr 2020 03:30:14 -0700 (PDT)
+        id S1728660AbgDMKbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 06:31:43 -0400
+Received: from mta-out1.inet.fi ([62.71.2.194]:51372 "EHLO julia1.inet.fi"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727806AbgDMKbk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Apr 2020 06:31:40 -0400
+X-RazorGate-Vade-Verdict: clean 0
+X-RazorGate-Vade-Classification: clean
+X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgeduhedrvdelgdefudcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfupfevtfenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffuvffkffgfgggtsehmtderredtfeejnecuhfhrohhmpefnrghurhhiucflrghkkhhuuceolhgruhhrihdrjhgrkhhkuhesphhprdhinhgvthdrfhhiqeenucfkphepkeegrddvgeekrdeftddrudelheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopegludelvddrudeikedruddrudefgegnpdhinhgvthepkeegrddvgeekrdeftddrudelhedpmhgrihhlfhhrohhmpeeolhgruhhjrghkqdefsehmsghogidrihhnvghtrdhfihequceuqfffjgepkeeukffvoffkoffgpdhrtghpthhtohepoehhkhgrlhhlfigvihhtudesghhmrghilhdrtghomheqpdhrtghpthhtohepoehnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrgheqpdhrtghpthhtohepoehnihgtpghsfihsugesrhgvrghlthgvkhdrtghomheq
+Received: from [192.168.1.134] (84.248.30.195) by julia1.inet.fi (9.0.019.26-1) (authenticated as laujak-3)
+        id 5E93CD2F00020DE1; Mon, 13 Apr 2020 13:31:20 +0300
+From:   Lauri Jakku <lauri.jakku@pp.inet.fi>
+Subject: NET: r8168/r8169 identifying fix
 To:     netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
         nic_swsd@realtek.com
-From:   Lauri Jakku <ljakku77@gmail.com>
-Subject: NET: r8168/r8169 identifying fix
-Message-ID: <4bc0fc0c-1437-fc41-1c50-38298214ec75@gmail.com>
-Date:   Mon, 13 Apr 2020 13:30:13 +0300
+Message-ID: <ccf638cb-e3ff-b29e-5d1c-e68d00f9bddd@pp.inet.fi>
+Date:   Mon, 13 Apr 2020 13:31:19 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.6.0
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
- boundary="------------E1F7CE4EBE8564C35BBBECFF"
+ boundary="------------E1AD1CD9EC76222200F52DEF"
 Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -66,7 +34,7 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is a multi-part message in MIME format.
---------------E1F7CE4EBE8564C35BBBECFF
+--------------E1AD1CD9EC76222200F52DEF
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 
@@ -265,7 +233,12 @@ index 522760c8bca6..719ea48164f6 100644
 
 
 
---------------E1F7CE4EBE8564C35BBBECFF
+
+-- 
+Br,
+Lauri J.
+
+--------------E1AD1CD9EC76222200F52DEF
 Content-Type: text/x-patch; charset=UTF-8;
  name="NET-r8169-module-enchansments.patch"
 Content-Transfer-Encoding: 7bit
@@ -466,4 +439,5 @@ index 522760c8bca6..719ea48164f6 100644
 2.26.0
 
 
---------------E1F7CE4EBE8564C35BBBECFF--
+
+--------------E1AD1CD9EC76222200F52DEF--
