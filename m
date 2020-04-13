@@ -2,598 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 758481A6642
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 14:20:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82E151A6694
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 14:57:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728348AbgDMMT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 08:19:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39072 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728344AbgDMMTD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Apr 2020 08:19:03 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1729652AbgDMM5X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 08:57:23 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:43745 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728176AbgDMM5W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 08:57:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1586782640;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=q2HkCug22wl+zkMkI5u3X+VGoJlmCsOhM366wAT+DK8=;
+        b=ToBrGW3j3ixA3LMNUngrDZ9+wbl0PBIhlYg2QiLXuyApI7J2dWRYQuU2a950fD+7KNzm9I
+        tvHqDis9Vm6mmSA1npARleLuk+ygvx3zJNtrN4N6wfsuDAFu/hU1rYTfv06oL9XsjGWoiJ
+        waPwWd28BKJ7VcrEgU2LIeDCCKmWC20=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-355-QWnzKfJHNmuYSBJfu7VIAQ-1; Mon, 13 Apr 2020 08:57:17 -0400
+X-MC-Unique: QWnzKfJHNmuYSBJfu7VIAQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 60D7320753;
-        Mon, 13 Apr 2020 12:19:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586780342;
-        bh=2DrwZWsBxVGP8vxqOiu+Su9aarPeIvjYnO/n3J6vhLw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZeEJ+nRuITBrg3/ADWy1eFrS/jMFxJssTWL5SeYGnpBaL2o4gkWvcqsIfUm0+Atgn
-         SwX0NEnNlNiKSjRZE1g24Fc4iSkFw0cnR5GeKV9G3XBIpkVe0dctxP/Wh0laCifovM
-         oYS4pRtMleHiNk2hwmi3gZtLALZYedYOXLeDybeg=
-Date:   Mon, 13 Apr 2020 15:18:58 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Lauri Jakku <lauri.jakku@pp.inet.fi>
-Cc:     netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        nic_swsd@realtek.com
-Subject: Re: NET: r8168/r8169 identifying fix
-Message-ID: <20200413121858.GN334007@unreal>
-References: <4bc0fc0c-1437-fc41-1c50-38298214ec75@gmail.com>
- <20200413105838.GK334007@unreal>
- <dc2de414-0e6e-2531-0131-0f3db397680f@gmail.com>
- <20200413113430.GM334007@unreal>
- <06489204-2bec-fe64-4dbd-7abe4c585c23@pp.inet.fi>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 74A4C1005509;
+        Mon, 13 Apr 2020 12:57:16 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-112-224.rdu2.redhat.com [10.10.112.224])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4FB7A11D2C4;
+        Mon, 13 Apr 2020 12:57:15 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net] rxrpc: Fix DATA Tx to disable nofrag for UDP on AF_INET6
+ socket
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 13 Apr 2020 13:57:14 +0100
+Message-ID: <158678263441.2860393.4171676680352045929.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/0.21
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <06489204-2bec-fe64-4dbd-7abe4c585c23@pp.inet.fi>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 13, 2020 at 03:01:23PM +0300, Lauri Jakku wrote:
-> Hi,
->
-> I've tought that the debug's are worth to save behind an definition/commented out, so they can be enabled if needed.
->
+Fix the DATA packet transmission to disable nofrag for UDPv4 on an AF_INET6
+socket as well as UDPv6 when trying to transmit fragmentably.
 
-Please stop to do top-posting.
+Without this, packets filled to the normal size used by the kernel AFS
+client of 1412 bytes be rejected by udp_sendmsg() with EMSGSIZE
+immediately.  The ->sk_error_report() notification hook is called, but
+rxrpc doesn't generate a trace for it.
 
->
-> Latest version:
->
-> From 1a75f6f9065a58180de1fa3c48fd80418af6c347 Mon Sep 17 00:00:00 2001
-> From: Lauri Jakku <lja@iki.fi>
-> Date: Mon, 13 Apr 2020 13:18:35 +0300
-> Subject: [PATCH] NET: r8168/r8169 identifying fix
->
-> The driver installation determination made properly by
-> checking PHY vs DRIVER id's.
-> ---
->  drivers/net/ethernet/realtek/r8169_main.c | 114 ++++++++++++++++++++--
->  drivers/net/phy/mdio_bus.c                |  15 ++-
->  2 files changed, 119 insertions(+), 10 deletions(-)
->
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index bf5bf05970a2..5e992f285527 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -61,6 +61,11 @@
->  #define R8169_MSG_DEFAULT \
->  	(NETIF_MSG_DRV | NETIF_MSG_PROBE | NETIF_MSG_IFUP | NETIF_MSG_IFDOWN)
->
-> +
-> +/*
-> +#define R8169_PROBE_DEBUG
-> +*/
+This is a temporary fix; a more permanent solution needs to involve
+changing the size of the packets being filled in accordance with the MTU,
+which isn't currently done in AF_RXRPC.  The reason for not doing so was
+that, barring the last packet in an rx jumbo packet, jumbos can only be
+assembled out of 1412-byte packets - and the plan was to construct jumbos
+on the fly at transmission time.
 
-Of course not, it is even worse than before.
-If user recompiles module, he will add prints.
+Also, there's no point turning on IPV6_MTU_DISCOVER, since IPv6 has to
+engage in this anyway since fragmentation is only done by the sender.  We
+can then condense the switch-statement in rxrpc_send_data_packet().
 
-Thanks
+Fixes: 75b54cb57ca3 ("rxrpc: Add IPv6 support")
+Signed-off-by: David Howells <dhowells@redhat.com>
+---
 
-> +
->  /* Maximum number of multicast addresses to filter (vs. Rx-all-multicast).
->     The RTL chips use a 64 element hash table based on the Ethernet CRC. */
->  #define	MC_FILTER_LIMIT	32
-> @@ -5149,6 +5154,9 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
->  {
->  	struct pci_dev *pdev = tp->pci_dev;
->  	struct mii_bus *new_bus;
-> +	u32 phydev_id = 0;
-> +	u32 phydrv_id = 0;
-> +	u32 phydrv_id_mask = 0;
->  	int ret;
->
->  	new_bus = devm_mdiobus_alloc(&pdev->dev);
-> @@ -5165,20 +5173,69 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
->  	new_bus->write = r8169_mdio_write_reg;
->
->  	ret = mdiobus_register(new_bus);
-> +
-> +#ifdef R8169_PROBE_DEBUG
-> +	dev_info(&pdev->dev,
-> +		 "mdiobus_register: %s, %d\n",
-> +		 new_bus->id, ret);
-> +#endif
->  	if (ret)
->  		return ret;
->
->  	tp->phydev = mdiobus_get_phy(new_bus, 0);
-> +
->  	if (!tp->phydev) {
->  		mdiobus_unregister(new_bus);
->  		return -ENODEV;
-> -	} else if (!tp->phydev->drv) {
-> -		/* Most chip versions fail with the genphy driver.
-> -		 * Therefore ensure that the dedicated PHY driver is loaded.
-> -		 */
-> -		dev_err(&pdev->dev, "realtek.ko not loaded, maybe it needs to be added to initramfs?\n");
-> -		mdiobus_unregister(new_bus);
-> -		return -EUNATCH;
-> +	} else {
-> +		/* tp -> phydev ok */
-> +		int everything_OK = 0;
-> +
-> +		/* Check driver id versus phy */
-> +
-> +		if (tp->phydev->drv) {
-> +			u32 phydev_masked = 0xBEEFDEAD;
-> +			u32 drv_masked = ~0;
-> +			u32 phydev_match = ~0;
-> +			u32 drv_match = 0xDEADBEEF;
-> +
-> +			phydev_id = tp->phydev->phy_id;
-> +			phydrv_id = tp->phydev->drv->phy_id;
-> +			phydrv_id_mask = tp->phydev->drv->phy_id_mask;
-> +
-> +			drv_masked = phydrv_id & phydrv_id_mask;
-> +			phydev_masked = phydev_id & phydrv_id_mask;
-> +
-> +#ifdef R8169_PROBE_DEBUG
-> +			dev_debug(&pdev->dev,
-> +				  "%s: ID Check: (%x -> %x), drv (%x -> %x)\n",
-> +				new_bus->id, phydev_id, phydev_masked,
-> +				phydrv_id, drv_masked);
-> +#endif
-> +
-> +			phydev_match = phydev_masked & drv_masked;
-> +			phydev_match = phydev_match == phydev_masked;
-> +
-> +			drv_match = phydev_masked & drv_masked;
-> +			drv_match = drv_match == drv_masked;
-> +
-> +#ifdef R8169_PROBE_DEBUG
-> +			dev_debug(&pdev->dev, "%s: ID Check: %x == %x\n",
-> +				  new_bus->id, phydev_match, drv_match);
-> +#endif
-> +
-> +			everything_OK = (phydev_match == drv_match);
-> +		}
-> +
-> +		if (!everything_OK) {
-> +			/* Most chip versions fail with the genphy driver.
-> +			 * Therefore ensure that the dedicated PHY driver
-> +			 * is loaded.
-> +			 */
-> +			dev_err(&pdev->dev, "realtek.ko not loaded, maybe it needs to be added to initramfs?\n");
-> +			mdiobus_unregister(new_bus);
-> +			return -EUNATCH;
-> +		}
->  	}
->
->  	/* PHY will be woken up in rtl_open() */
-> @@ -5435,6 +5492,10 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	u64_stats_init(&tp->rx_stats.syncp);
->  	u64_stats_init(&tp->tx_stats.syncp);
->
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: MAC\n");
-> +#endif
-> +
->  	rtl_init_mac_address(tp);
->
->  	dev->ethtool_ops = &rtl8169_ethtool_ops;
-> @@ -5483,29 +5544,64 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	dev->hw_features |= NETIF_F_RXFCS;
->
->  	jumbo_max = rtl_jumbo_max(tp);
-> +
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: jumbo max: %d\n", jumbo_max);
-> +#endif
-> +
->  	if (jumbo_max)
->  		dev->max_mtu = jumbo_max;
->
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: irq mask\n");
-> +#endif
-> +
->  	rtl_set_irq_mask(tp);
->
->  	tp->fw_name = rtl_chip_infos[chipset].fw_name;
->
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: FW name: %s\n", tp->fw_name);
-> +#endif
-> +
->  	tp->counters = dmam_alloc_coherent (&pdev->dev, sizeof(*tp->counters),
->  					    &tp->counters_phys_addr,
->  					    GFP_KERNEL);
->  	if (!tp->counters)
->  		return -ENOMEM;
->
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: set driver data\n");
-> +#endif
-> +
->  	pci_set_drvdata(pdev, dev);
->
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: register mdio\n");
-> +#endif
-> +
->  	rc = r8169_mdio_register(tp);
-> +
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: mdio register: %d\n", rc);
-> +#endif
-> +
->  	if (rc)
->  		return rc;
->
->  	/* chip gets powered up in rtl_open() */
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: pll pwr down\n");
-> +#endif
-> +
->  	rtl_pll_power_down(tp);
->
->  	rc = register_netdev(dev);
-> +
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: netdev register: %d\n", rc);
-> +#endif
-> +
->  	if (rc)
->  		goto err_mdio_unregister;
->
-> @@ -5525,6 +5621,10 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	if (pci_dev_run_wake(pdev))
->  		pm_runtime_put_sync(&pdev->dev);
->
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: ALL DONE!\n");
-> +#endif
-> +
->  	return 0;
->
->  err_mdio_unregister:
-> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-> index 522760c8bca6..41777f379a57 100644
-> --- a/drivers/net/phy/mdio_bus.c
-> +++ b/drivers/net/phy/mdio_bus.c
-> @@ -112,14 +112,22 @@ EXPORT_SYMBOL(mdiobus_unregister_device);
->  struct phy_device *mdiobus_get_phy(struct mii_bus *bus, int addr)
->  {
->  	struct mdio_device *mdiodev = bus->mdio_map[addr];
-> -
-> +	struct phy_device *rv = NULL;
-> +/*
-> +	pr_debug("mii_bus %s addr %d, %p\n", bus->id, addr, mdiodev);
-> +*/
->  	if (!mdiodev)
->  		return NULL;
->
->  	if (!(mdiodev->flags & MDIO_DEVICE_FLAG_PHY))
->  		return NULL;
->
-> -	return container_of(mdiodev, struct phy_device, mdio);
-> +	rv = container_of(mdiodev, struct phy_device, mdio);
-> +/*
-> + 	pr_debug("mii_bus OK? %s addr %d, %p -> %p\n",
-> +		 bus->id, addr, mdiodev, rv);
-> +*/
-> +	return rv;
->  }
->  EXPORT_SYMBOL(mdiobus_get_phy);
->
-> @@ -645,10 +653,11 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
->  	mdiobus_setup_mdiodev_from_board_info(bus, mdiobus_create_device);
->
->  	bus->state = MDIOBUS_REGISTERED;
-> -	pr_info("%s: probed\n", bus->name);
-> +	pr_info("%s: probed (mdiobus_register)\n", bus->name);
->  	return 0;
->
->  error:
-> +	pr_err("%s: Error while in mdiobus_register: %d\n", bus->name, err);
->  	while (--i >= 0) {
->  		mdiodev = bus->mdio_map[i];
->  		if (!mdiodev)
-> --
-> 2.26.0
->
->
->
->
-> On 2020-04-13 14:34, Leon Romanovsky wrote:
-> > On Mon, Apr 13, 2020 at 02:02:01PM +0300, Lauri Jakku wrote:
-> >> Hi,
-> >>
-> >> Comments inline.
-> >>
-> >> On 2020-04-13 13:58, Leon Romanovsky wrote:
-> >>> On Mon, Apr 13, 2020 at 01:30:13PM +0300, Lauri Jakku wrote:
-> >>>> From 2d41edd4e6455187094f3a13d58c46eeee35aa31 Mon Sep 17 00:00:00 2001
-> >>>> From: Lauri Jakku <lja@iki.fi>
-> >>>> Date: Mon, 13 Apr 2020 13:18:35 +0300
-> >>>> Subject: [PATCH] NET: r8168/r8169 identifying fix
-> >>>>
-> >>>> The driver installation determination made properly by
-> >>>> checking PHY vs DRIVER id's.
-> >>>> ---
-> >>>>  drivers/net/ethernet/realtek/r8169_main.c | 70 ++++++++++++++++++++---
-> >>>>  drivers/net/phy/mdio_bus.c                | 11 +++-
-> >>>>  2 files changed, 72 insertions(+), 9 deletions(-)
-> >>>
-> >>> I would say that most of the code is debug prints.
-> >>>
-> >>
-> >> I tought that they are helpful to keep, they are using the debug calls, so
-> >> they are not visible if user does not like those.
-> >
-> > You are missing the point of who are your users.
-> >
-> > Users want to have working device and the code. They don't need or like
-> > to debug their kernel.
-> >
-> > Thanks
-> >
->
-> --
-> Br,
-> Lauri J.
+ net/rxrpc/local_object.c |    9 ---------
+ net/rxrpc/output.c       |   44 ++++++++++++--------------------------------
+ 2 files changed, 12 insertions(+), 41 deletions(-)
 
-> From 1a75f6f9065a58180de1fa3c48fd80418af6c347 Mon Sep 17 00:00:00 2001
-> From: Lauri Jakku <lja@iki.fi>
-> Date: Mon, 13 Apr 2020 13:18:35 +0300
-> Subject: [PATCH] NET: r8168/r8169 identifying fix
->
-> The driver installation determination made properly by
-> checking PHY vs DRIVER id's.
-> ---
->  drivers/net/ethernet/realtek/r8169_main.c | 114 ++++++++++++++++++++--
->  drivers/net/phy/mdio_bus.c                |  15 ++-
->  2 files changed, 119 insertions(+), 10 deletions(-)
->
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index bf5bf05970a2..5e992f285527 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -61,6 +61,11 @@
->  #define R8169_MSG_DEFAULT \
->  	(NETIF_MSG_DRV | NETIF_MSG_PROBE | NETIF_MSG_IFUP | NETIF_MSG_IFDOWN)
->
-> +
-> +/*
-> +#define R8169_PROBE_DEBUG
-> +*/
-> +
->  /* Maximum number of multicast addresses to filter (vs. Rx-all-multicast).
->     The RTL chips use a 64 element hash table based on the Ethernet CRC. */
->  #define	MC_FILTER_LIMIT	32
-> @@ -5149,6 +5154,9 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
->  {
->  	struct pci_dev *pdev = tp->pci_dev;
->  	struct mii_bus *new_bus;
-> +	u32 phydev_id = 0;
-> +	u32 phydrv_id = 0;
-> +	u32 phydrv_id_mask = 0;
->  	int ret;
->
->  	new_bus = devm_mdiobus_alloc(&pdev->dev);
-> @@ -5165,20 +5173,69 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
->  	new_bus->write = r8169_mdio_write_reg;
->
->  	ret = mdiobus_register(new_bus);
-> +
-> +#ifdef R8169_PROBE_DEBUG
-> +	dev_info(&pdev->dev,
-> +		 "mdiobus_register: %s, %d\n",
-> +		 new_bus->id, ret);
-> +#endif
->  	if (ret)
->  		return ret;
->
->  	tp->phydev = mdiobus_get_phy(new_bus, 0);
-> +
->  	if (!tp->phydev) {
->  		mdiobus_unregister(new_bus);
->  		return -ENODEV;
-> -	} else if (!tp->phydev->drv) {
-> -		/* Most chip versions fail with the genphy driver.
-> -		 * Therefore ensure that the dedicated PHY driver is loaded.
-> -		 */
-> -		dev_err(&pdev->dev, "realtek.ko not loaded, maybe it needs to be added to initramfs?\n");
-> -		mdiobus_unregister(new_bus);
-> -		return -EUNATCH;
-> +	} else {
-> +		/* tp -> phydev ok */
-> +		int everything_OK = 0;
-> +
-> +		/* Check driver id versus phy */
-> +
-> +		if (tp->phydev->drv) {
-> +			u32 phydev_masked = 0xBEEFDEAD;
-> +			u32 drv_masked = ~0;
-> +			u32 phydev_match = ~0;
-> +			u32 drv_match = 0xDEADBEEF;
-> +
-> +			phydev_id = tp->phydev->phy_id;
-> +			phydrv_id = tp->phydev->drv->phy_id;
-> +			phydrv_id_mask = tp->phydev->drv->phy_id_mask;
-> +
-> +			drv_masked = phydrv_id & phydrv_id_mask;
-> +			phydev_masked = phydev_id & phydrv_id_mask;
-> +
-> +#ifdef R8169_PROBE_DEBUG
-> +			dev_debug(&pdev->dev,
-> +				  "%s: ID Check: (%x -> %x), drv (%x -> %x)\n",
-> +				new_bus->id, phydev_id, phydev_masked,
-> +				phydrv_id, drv_masked);
-> +#endif
-> +
-> +			phydev_match = phydev_masked & drv_masked;
-> +			phydev_match = phydev_match == phydev_masked;
-> +
-> +			drv_match = phydev_masked & drv_masked;
-> +			drv_match = drv_match == drv_masked;
-> +
-> +#ifdef R8169_PROBE_DEBUG
-> +			dev_debug(&pdev->dev, "%s: ID Check: %x == %x\n",
-> +				  new_bus->id, phydev_match, drv_match);
-> +#endif
-> +
-> +			everything_OK = (phydev_match == drv_match);
-> +		}
-> +
-> +		if (!everything_OK) {
-> +			/* Most chip versions fail with the genphy driver.
-> +			 * Therefore ensure that the dedicated PHY driver
-> +			 * is loaded.
-> +			 */
-> +			dev_err(&pdev->dev, "realtek.ko not loaded, maybe it needs to be added to initramfs?\n");
-> +			mdiobus_unregister(new_bus);
-> +			return -EUNATCH;
-> +		}
->  	}
->
->  	/* PHY will be woken up in rtl_open() */
-> @@ -5435,6 +5492,10 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	u64_stats_init(&tp->rx_stats.syncp);
->  	u64_stats_init(&tp->tx_stats.syncp);
->
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: MAC\n");
-> +#endif
-> +
->  	rtl_init_mac_address(tp);
->
->  	dev->ethtool_ops = &rtl8169_ethtool_ops;
-> @@ -5483,29 +5544,64 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	dev->hw_features |= NETIF_F_RXFCS;
->
->  	jumbo_max = rtl_jumbo_max(tp);
-> +
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: jumbo max: %d\n", jumbo_max);
-> +#endif
-> +
->  	if (jumbo_max)
->  		dev->max_mtu = jumbo_max;
->
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: irq mask\n");
-> +#endif
-> +
->  	rtl_set_irq_mask(tp);
->
->  	tp->fw_name = rtl_chip_infos[chipset].fw_name;
->
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: FW name: %s\n", tp->fw_name);
-> +#endif
-> +
->  	tp->counters = dmam_alloc_coherent (&pdev->dev, sizeof(*tp->counters),
->  					    &tp->counters_phys_addr,
->  					    GFP_KERNEL);
->  	if (!tp->counters)
->  		return -ENOMEM;
->
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: set driver data\n");
-> +#endif
-> +
->  	pci_set_drvdata(pdev, dev);
->
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: register mdio\n");
-> +#endif
-> +
->  	rc = r8169_mdio_register(tp);
-> +
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: mdio register: %d\n", rc);
-> +#endif
-> +
->  	if (rc)
->  		return rc;
->
->  	/* chip gets powered up in rtl_open() */
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: pll pwr down\n");
-> +#endif
-> +
->  	rtl_pll_power_down(tp);
->
->  	rc = register_netdev(dev);
-> +
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: netdev register: %d\n", rc);
-> +#endif
-> +
->  	if (rc)
->  		goto err_mdio_unregister;
->
-> @@ -5525,6 +5621,10 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	if (pci_dev_run_wake(pdev))
->  		pm_runtime_put_sync(&pdev->dev);
->
-> +#ifdef R816X_PROBE_DEBUG
-> +	dev_dbg(&pdev->dev, "init: ALL DONE!\n");
-> +#endif
-> +
->  	return 0;
->
->  err_mdio_unregister:
-> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-> index 522760c8bca6..41777f379a57 100644
-> --- a/drivers/net/phy/mdio_bus.c
-> +++ b/drivers/net/phy/mdio_bus.c
-> @@ -112,14 +112,22 @@ EXPORT_SYMBOL(mdiobus_unregister_device);
->  struct phy_device *mdiobus_get_phy(struct mii_bus *bus, int addr)
->  {
->  	struct mdio_device *mdiodev = bus->mdio_map[addr];
-> -
-> +	struct phy_device *rv = NULL;
-> +/*
-> +	pr_debug("mii_bus %s addr %d, %p\n", bus->id, addr, mdiodev);
-> +*/
->  	if (!mdiodev)
->  		return NULL;
->
->  	if (!(mdiodev->flags & MDIO_DEVICE_FLAG_PHY))
->  		return NULL;
->
-> -	return container_of(mdiodev, struct phy_device, mdio);
-> +	rv = container_of(mdiodev, struct phy_device, mdio);
-> +/*
-> + 	pr_debug("mii_bus OK? %s addr %d, %p -> %p\n",
-> +		 bus->id, addr, mdiodev, rv);
-> +*/
-> +	return rv;
->  }
->  EXPORT_SYMBOL(mdiobus_get_phy);
->
-> @@ -645,10 +653,11 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
->  	mdiobus_setup_mdiodev_from_board_info(bus, mdiobus_create_device);
->
->  	bus->state = MDIOBUS_REGISTERED;
-> -	pr_info("%s: probed\n", bus->name);
-> +	pr_info("%s: probed (mdiobus_register)\n", bus->name);
->  	return 0;
->
->  error:
-> +	pr_err("%s: Error while in mdiobus_register: %d\n", bus->name, err);
->  	while (--i >= 0) {
->  		mdiodev = bus->mdio_map[i];
->  		if (!mdiodev)
-> --
-> 2.26.0
->
+diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
+index a6c1349e965d..01135e54d95d 100644
+--- a/net/rxrpc/local_object.c
++++ b/net/rxrpc/local_object.c
+@@ -165,15 +165,6 @@ static int rxrpc_open_socket(struct rxrpc_local *local, struct net *net)
+ 			goto error;
+ 		}
+ 
+-		/* we want to set the don't fragment bit */
+-		opt = IPV6_PMTUDISC_DO;
+-		ret = kernel_setsockopt(local->socket, SOL_IPV6, IPV6_MTU_DISCOVER,
+-					(char *) &opt, sizeof(opt));
+-		if (ret < 0) {
+-			_debug("setsockopt failed");
+-			goto error;
+-		}
+-
+ 		/* Fall through and set IPv4 options too otherwise we don't get
+ 		 * errors from IPv4 packets sent through the IPv6 socket.
+ 		 */
+diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
+index bad3d2420344..90e263c6aa69 100644
+--- a/net/rxrpc/output.c
++++ b/net/rxrpc/output.c
+@@ -474,41 +474,21 @@ int rxrpc_send_data_packet(struct rxrpc_call *call, struct sk_buff *skb,
+ 	skb->tstamp = ktime_get_real();
+ 
+ 	switch (conn->params.local->srx.transport.family) {
++	case AF_INET6:
+ 	case AF_INET:
+ 		opt = IP_PMTUDISC_DONT;
+-		ret = kernel_setsockopt(conn->params.local->socket,
+-					SOL_IP, IP_MTU_DISCOVER,
+-					(char *)&opt, sizeof(opt));
+-		if (ret == 0) {
+-			ret = kernel_sendmsg(conn->params.local->socket, &msg,
+-					     iov, 2, len);
+-			conn->params.peer->last_tx_at = ktime_get_seconds();
+-
+-			opt = IP_PMTUDISC_DO;
+-			kernel_setsockopt(conn->params.local->socket, SOL_IP,
+-					  IP_MTU_DISCOVER,
+-					  (char *)&opt, sizeof(opt));
+-		}
+-		break;
+-
+-#ifdef CONFIG_AF_RXRPC_IPV6
+-	case AF_INET6:
+-		opt = IPV6_PMTUDISC_DONT;
+-		ret = kernel_setsockopt(conn->params.local->socket,
+-					SOL_IPV6, IPV6_MTU_DISCOVER,
+-					(char *)&opt, sizeof(opt));
+-		if (ret == 0) {
+-			ret = kernel_sendmsg(conn->params.local->socket, &msg,
+-					     iov, 2, len);
+-			conn->params.peer->last_tx_at = ktime_get_seconds();
+-
+-			opt = IPV6_PMTUDISC_DO;
+-			kernel_setsockopt(conn->params.local->socket,
+-					  SOL_IPV6, IPV6_MTU_DISCOVER,
+-					  (char *)&opt, sizeof(opt));
+-		}
++		kernel_setsockopt(conn->params.local->socket,
++				  SOL_IP, IP_MTU_DISCOVER,
++				  (char *)&opt, sizeof(opt));
++		ret = kernel_sendmsg(conn->params.local->socket, &msg,
++				     iov, 2, len);
++		conn->params.peer->last_tx_at = ktime_get_seconds();
++
++		opt = IP_PMTUDISC_DO;
++		kernel_setsockopt(conn->params.local->socket,
++				  SOL_IP, IP_MTU_DISCOVER,
++				  (char *)&opt, sizeof(opt));
+ 		break;
+-#endif
+ 
+ 	default:
+ 		BUG();
+
 
