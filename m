@@ -2,33 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (unknown [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 90BA01A6272
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 07:36:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BE1F1A626E
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 07:36:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728925AbgDMFgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 01:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.18]:41866 "EHLO
+        id S1728911AbgDMFgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 01:36:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.18]:41792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727818AbgDMFgh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 01:36:37 -0400
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89CE0C008678;
-        Sun, 12 Apr 2020 22:26:41 -0700 (PDT)
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5AC4F20731;
-        Mon, 13 Apr 2020 05:26:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586755601;
-        bh=RDuc7TIH8NRC/WbymybrwwHyUdyFCCD5uyjfOff9Eag=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Dea8uqwiyJyiKbRypdML2SpeLc3PwNMe9X33+CmisXEPPv7uHhQti1XqpZRzkKFgG
-         vK7h/gWUwgtWfGRW1UWfmZ6uWAjuXXz6qpt2cZv/auuG8rRJ09ce2lO/MCKTGYcQ7c
-         jxZ0OgwkD3WWTSZsYwX3r0X4ox3HO+c3xUq5M+qM=
-Date:   Mon, 13 Apr 2020 08:26:37 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     David Miller <davem@davemloft.net>
+        with ESMTP id S1727822AbgDMFgK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 01:36:10 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B979BC00860C;
+        Sun, 12 Apr 2020 22:36:09 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id F0857127B91F1;
+        Sun, 12 Apr 2020 22:36:06 -0700 (PDT)
+Date:   Sun, 12 Apr 2020 22:36:04 -0700 (PDT)
+Message-Id: <20200412.223604.1160930629964379276.davem@davemloft.net>
+To:     leon@kernel.org
 Cc:     bp@alien8.de, kuba@kernel.org, thomas.lendacky@amd.com,
         keyur@os.amperecomputing.com, pcnet32@frontier.com,
         vfalico@gmail.com, j.vosburgh@gmail.com, linux-acenic@sunsite.dk,
@@ -43,58 +37,24 @@ Cc:     bp@alien8.de, kuba@kernel.org, thomas.lendacky@amd.com,
         ionut@badula.org, akiyano@amazon.com, jes@trained-monkey.org,
         nios2-dev@lists.rocketboards.org, wens@csie.org
 Subject: Re: [PATCH] net/3com/3c515: Fix MODULE_ARCH_VERMAGIC redefinition
-Message-ID: <20200413052637.GG334007@unreal>
-References: <20200411155623.GA22175@zn.tnic>
- <20200412.210341.1711540878857604145.davem@davemloft.net>
- <20200413045555.GE334007@unreal>
- <20200412.220739.516022706077351913.davem@davemloft.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200412.220739.516022706077351913.davem@davemloft.net>
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200413052637.GG334007@unreal>
+References: <20200413045555.GE334007@unreal>
+        <20200412.220739.516022706077351913.davem@davemloft.net>
+        <20200413052637.GG334007@unreal>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 12 Apr 2020 22:36:08 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 12, 2020 at 10:07:39PM -0700, David Miller wrote:
-> From: Leon Romanovsky <leon@kernel.org>
-> Date: Mon, 13 Apr 2020 07:55:55 +0300
->
-> > On Sun, Apr 12, 2020 at 09:03:41PM -0700, David Miller wrote:
-> >> From: Borislav Petkov <bp@alien8.de>
-> >> Date: Sat, 11 Apr 2020 17:56:23 +0200
-> >>
-> >> > From: Borislav Petkov <bp@suse.de>
-> >> >
-> >> > Change the include order so that MODULE_ARCH_VERMAGIC from the arch
-> >> > header arch/x86/include/asm/module.h gets used instead of the fallback
-> >> > from include/linux/vermagic.h and thus fix:
-> >> >
-> >> >   In file included from ./include/linux/module.h:30,
-> >> >                    from drivers/net/ethernet/3com/3c515.c:56:
-> >> >   ./arch/x86/include/asm/module.h:73: warning: "MODULE_ARCH_VERMAGIC" redefined
-> >> >      73 | # define MODULE_ARCH_VERMAGIC MODULE_PROC_FAMILY
-> >> >         |
-> >> >   In file included from drivers/net/ethernet/3com/3c515.c:25:
-> >> >   ./include/linux/vermagic.h:28: note: this is the location of the previous definition
-> >> >      28 | #define MODULE_ARCH_VERMAGIC ""
-> >> >         |
-> >> >
-> >> > Fixes: 6bba2e89a88c ("net/3com: Delete driver and module versions from 3com drivers")
-> >> > Signed-off-by: Borislav Petkov <bp@suse.de>
-> >>
-> >> I'm so confused, that commit in the Fixes: tag is _removing_ code but adding
-> >> new #include directives?!?!
-> >>
-> >> Is vermagic.h really needed in these files?
-> >
-> > You are completely right, it is not needed at all in those files.
->
-> Ok let's just remove it to fix this.
+From: Leon Romanovsky <leon@kernel.org>
+Date: Mon, 13 Apr 2020 08:26:37 +0300
 
-Thanks a lot.
+> How do you want us to handle it? Boris resend, me to send, you to fix?
 
-How do you want us to handle it? Boris resend, me to send, you to fix?
-
-Thanks
+Anyone other than me can do it ;-)
