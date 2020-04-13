@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1118D1A6B35
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 19:19:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A46C1A6B41
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 19:19:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732649AbgDMRS3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 13:18:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38326 "EHLO mail.kernel.org"
+        id S1732710AbgDMRTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 13:19:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38624 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732592AbgDMRSV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Apr 2020 13:18:21 -0400
+        id S1732637AbgDMRS1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Apr 2020 13:18:27 -0400
 Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A606C2072D;
-        Mon, 13 Apr 2020 17:18:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9968E20735;
+        Mon, 13 Apr 2020 17:18:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586798300;
-        bh=6b8LxZUeZhTlC2hf/t5RdISJX9e2rU+A6aRilPcSXpA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=W7/x8Ol2zcWIbqZA5XeWh02K8TOjE6hYjihfAdjzA0KNqmRDnopqW8/+L4djtHkWp
-         omuI3aY1YBm3UTA9s6gf1XgtX1czLR+jvCq7U+bVFzdYIvf+1/zmQbXe0hNS2zcQlo
-         +nzYS3xK4EnYIbUiBgekrHXi4xEqq/T+cjMCsEX0=
+        s=default; t=1586798306;
+        bh=5+1Xa0FD36K0m/kxFeoFKPENVaCqW9g44NMe5nr88o0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NB6gqwt6knEB6FGZG+ulMu+7pfRjr+G+mvfhI3MNNbCdKxVn5N9hDaQrVZdXGu/LI
+         +FdCczAhmEhiFOR3avYbMusY+FX1pJ6uhi+a3XERUxO6MbsMjJi+RH+C2Huh8sfOax
+         qzUZn5AsSWnXJP+M6UYYmrg4cM8qxnwt9Xr4wDE4=
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -30,11 +30,13 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         brouer@redhat.com, toke@redhat.com, toshiaki.makita1@gmail.com,
         daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com
-Subject: [PATCH RFC-v5 bpf-next 00/12] Add support for XDP in egress path
-Date:   Mon, 13 Apr 2020 11:17:49 -0600
-Message-Id: <20200413171801.54406-1-dsahern@kernel.org>
+        dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
+Subject: [PATCH RFC-v5 bpf-next 01/12] net: Add XDP setup and query commands for Tx programs
+Date:   Mon, 13 Apr 2020 11:17:50 -0600
+Message-Id: <20200413171801.54406-2-dsahern@kernel.org>
 X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
+In-Reply-To: <20200413171801.54406-1-dsahern@kernel.org>
+References: <20200413171801.54406-1-dsahern@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -42,125 +44,175 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+From: David Ahern <dahern@digitalocean.com>
 
-This series adds support for XDP in the egress path by introducing
-a new XDP attachment type, BPF_XDP_EGRESS, and adding a UAPI to
-if_link.h for attaching the program to a netdevice and reporting
-the program. bpf programs can be run on all packets in the Tx path -
-skbs or redirected xdp frames. The intent is to emulate the current
-RX path for XDP as much as possible to maintain consistency and
-symmetry in the 2 paths with their APIs.
+Add new netdev commands, XDP_SETUP_PROG_EGRESS and
+XDP_QUERY_PROG_EGRESS, to query and setup egress programs.
 
-This is a missing primitive for XDP allowing solutions to build small,
-targeted programs properly distributed in the networking path allowing,
-for example, an egress firewall/ACL/traffic verification or packet
-manipulation and encapping an entire ethernet frame whether it is
-locally generated traffic, forwarded via the slow path (ie., full
-stack processing) or xdp redirected frames.
+Update dev_change_xdp_fd and dev_xdp_install to take an egress argument.
+If egress bool is set, then use XDP_SETUP_PROG_EGRESS in dev_xdp_install
+and XDP_QUERY_PROG_EGRESS in dev_change_xdp_fd.
 
-Nothing about running a program in the Tx path requires driver specific
-resources like the Rx path has. Thus, programs can be run in core
-code and attached to the net_device struct similar to skb mode. The
-existing XDP_FLAGS_*_MODE are not relevant at the moment, so none can
-be set in the attach. XDP_FLAGS_HW_MODE can be used in the future
-(e.g., the work on offloading programs from a VM).
+Update dev_xdp_uninstall to query for XDP_QUERY_PROG_EGRESS and if a
+program is installed call dev_xdp_install with the egress argument set
+to true.
 
-The locations chosen to run the egress program - __netdev_start_xmit
-before the call to ndo_start_xmit and bq_xmit_all before invoking
-ndo_xdp_xmit - allow follow on patch sets to handle tx queueing and
-setting the queue index if multi-queue with consistency in handling
-both packet formats.
+This enables existing infrastructure to be used for XDP programs in
+the egress path.
 
-A few of the patches trace back to work done on offloading programs
-from a VM by Jason Wang and Prashant Bole.
+Signed-off-by: David Ahern <dahern@digitalocean.com>
+Co-developed-by: Prashant Bhole <prashantbhole.linux@gmail.com>
+Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
+---
+ include/linux/netdevice.h |  4 +++-
+ net/core/dev.c            | 34 +++++++++++++++++++++++-----------
+ net/core/rtnetlink.c      |  2 +-
+ 3 files changed, 27 insertions(+), 13 deletions(-)
 
-Automated tests will be added to tools/testing/selftests/bpf in the
-next revision.
-
-v5:
-- updated cover letter
-- moved running of ebpf program from ndo_{start,xdp}_xmit to core
-  code. Accordingly, dropped all tun and vhost related changes.
-- added egress support to bpftool
-
-v4:
-- updated cover letter
-- patches related to code movement between tuntap, headers and vhost
-  are dropped; previous RFC ran the XDP program in vhost context vs
-  this set which runs them before queueing to vhost. As a part of this
-  moved invocation of egress program to tun_net_xmit and tun_xdp_xmit.
-- renamed do_xdp_generic to do_xdp_generic_rx to emphasize is called
-  in the Rx path; added rx argument to do_xdp_generic_core since it
-  is used for both directions and needs to know which queue values to
-  set in xdp_buff
-
-v3:
-- reworked the patches - splitting patch 1 from RFC v2 into 3, combining
-  patch 2 from RFC v2 into the first 3, combining patches 6 and 7 from
-  RFC v2 into 1 since both did a trivial rename and export. Reordered
-  the patches such that kernel changes are first followed by libbpf and
-  an enhancement to a sample.
-
-- moved small xdp related helper functions from tun.c to tun.h to make
-  tun_ptr_free usable from the tap code. This is needed to handle the
-  case of tap builtin and tun built as a module.
-
-- pkt_ptrs added to `struct tun_file` and passed to tun_consume_packets
-  rather than declaring pkts as an array on the stack.
-
-v2:
-- New XDP attachment type: Jesper, Toke and Alexei discussed whether
-  to introduce a new program type. Since this set adds a way to attach
-  regular XDP program to the tx path, as per Alexei's suggestion, a
-  new attachment type BPF_XDP_EGRESS is introduced.
-
-- libbpf API changes:
-  Alexei had suggested _opts() style of API extension. Considering it
-  two new libbpf APIs are introduced which are equivalent to existing
-  APIs. New ones can be extended easily. Please see individual patches
-  for details. xdp1 sample program is modified to use new APIs.
-
-- tun: Some patches from previous set are removed as they are
-  irrelevant in this series. They will in introduced later.
-
-[1]: https://netdevconf.info/0x13/session.html?xdp-offload-with-virtio-net
-
-David Ahern (12):
-  net: Add XDP setup and query commands for Tx programs
-  net: Add BPF_XDP_EGRESS as a bpf_attach_type
-  xdp: Add xdp_txq_info to xdp_buff
-  net: Add IFLA_XDP_EGRESS for XDP programs in the egress path
-  net: core: rename netif_receive_generic_xdp to do_generic_xdp_core
-  net: core: Rename do_xdp_generic to do_xdp_generic_rx
-  dev: set egress XDP program
-  dev: Support xdp in the Tx path for packets as an skb
-  dev: Support xdp in the Tx path for xdp_frames
-  libbpf: Add egress XDP support
-  bpftool: Add support for XDP egress
-  samples/bpf: add XDP egress support to xdp1
-
- drivers/net/tun.c                  |   4 +-
- include/linux/netdevice.h          |  23 ++-
- include/net/xdp.h                  |   5 +
- include/uapi/linux/bpf.h           |   3 +
- include/uapi/linux/if_link.h       |   3 +
- kernel/bpf/devmap.c                |  19 ++-
- net/core/dev.c                     | 258 +++++++++++++++++++++++------
- net/core/filter.c                  |  23 +++
- net/core/rtnetlink.c               |  96 ++++++++++-
- samples/bpf/xdp1_user.c            |  38 ++++-
- tools/bpf/bpftool/main.h           |   2 +-
- tools/bpf/bpftool/net.c            |  49 +++++-
- tools/bpf/bpftool/netlink_dumper.c |  12 +-
- tools/include/uapi/linux/bpf.h     |   3 +
- tools/include/uapi/linux/if_link.h |   3 +
- tools/lib/bpf/libbpf.c             |   2 +
- tools/lib/bpf/libbpf.h             |   9 +-
- tools/lib/bpf/libbpf.map           |   2 +
- tools/lib/bpf/netlink.c            |  63 ++++++-
- 19 files changed, 528 insertions(+), 89 deletions(-)
-
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 130a668049ab..d0bb9e09660a 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -871,8 +871,10 @@ enum bpf_netdev_command {
+ 	 */
+ 	XDP_SETUP_PROG,
+ 	XDP_SETUP_PROG_HW,
++	XDP_SETUP_PROG_EGRESS,
+ 	XDP_QUERY_PROG,
+ 	XDP_QUERY_PROG_HW,
++	XDP_QUERY_PROG_EGRESS,
+ 	/* BPF program for offload callbacks, invoked at program load time. */
+ 	BPF_OFFLOAD_MAP_ALLOC,
+ 	BPF_OFFLOAD_MAP_FREE,
+@@ -3777,7 +3779,7 @@ struct sk_buff *dev_hard_start_xmit(struct sk_buff *skb, struct net_device *dev,
+ 
+ typedef int (*bpf_op_t)(struct net_device *dev, struct netdev_bpf *bpf);
+ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
+-		      int fd, int expected_fd, u32 flags);
++		      int fd, int expected_fd, u32 flags, bool egress);
+ u32 __dev_xdp_query(struct net_device *dev, bpf_op_t xdp_op,
+ 		    enum bpf_netdev_command cmd);
+ int xdp_umem_query(struct net_device *dev, u16 queue_id);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 3ebfecc7b112..06e0872ecdae 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -8589,7 +8589,7 @@ u32 __dev_xdp_query(struct net_device *dev, bpf_op_t bpf_op,
+ 
+ static int dev_xdp_install(struct net_device *dev, bpf_op_t bpf_op,
+ 			   struct netlink_ext_ack *extack, u32 flags,
+-			   struct bpf_prog *prog)
++			   struct bpf_prog *prog, bool egress)
+ {
+ 	bool non_hw = !(flags & XDP_FLAGS_HW_MODE);
+ 	struct bpf_prog *prev_prog = NULL;
+@@ -8597,8 +8597,10 @@ static int dev_xdp_install(struct net_device *dev, bpf_op_t bpf_op,
+ 	int err;
+ 
+ 	if (non_hw) {
+-		prev_prog = bpf_prog_by_id(__dev_xdp_query(dev, bpf_op,
+-							   XDP_QUERY_PROG));
++		enum bpf_netdev_command cmd;
++
++		cmd = egress ? XDP_QUERY_PROG_EGRESS : XDP_QUERY_PROG;
++		prev_prog = bpf_prog_by_id(__dev_xdp_query(dev, bpf_op, cmd));
+ 		if (IS_ERR(prev_prog))
+ 			prev_prog = NULL;
+ 	}
+@@ -8607,7 +8609,7 @@ static int dev_xdp_install(struct net_device *dev, bpf_op_t bpf_op,
+ 	if (flags & XDP_FLAGS_HW_MODE)
+ 		xdp.command = XDP_SETUP_PROG_HW;
+ 	else
+-		xdp.command = XDP_SETUP_PROG;
++		xdp.command = egress ? XDP_SETUP_PROG_EGRESS : XDP_SETUP_PROG;
+ 	xdp.extack = extack;
+ 	xdp.flags = flags;
+ 	xdp.prog = prog;
+@@ -8628,7 +8630,12 @@ static void dev_xdp_uninstall(struct net_device *dev)
+ 	bpf_op_t ndo_bpf;
+ 
+ 	/* Remove generic XDP */
+-	WARN_ON(dev_xdp_install(dev, generic_xdp_install, NULL, 0, NULL));
++	WARN_ON(dev_xdp_install(dev, generic_xdp_install, NULL, 0, NULL,
++				false));
++
++	/* Remove XDP egress */
++	WARN_ON(dev_xdp_install(dev, generic_xdp_install, NULL, 0, NULL,
++				true));
+ 
+ 	/* Remove from the driver */
+ 	ndo_bpf = dev->netdev_ops->ndo_bpf;
+@@ -8640,14 +8647,14 @@ static void dev_xdp_uninstall(struct net_device *dev)
+ 	WARN_ON(ndo_bpf(dev, &xdp));
+ 	if (xdp.prog_id)
+ 		WARN_ON(dev_xdp_install(dev, ndo_bpf, NULL, xdp.prog_flags,
+-					NULL));
++					NULL, false));
+ 
+ 	/* Remove HW offload */
+ 	memset(&xdp, 0, sizeof(xdp));
+ 	xdp.command = XDP_QUERY_PROG_HW;
+ 	if (!ndo_bpf(dev, &xdp) && xdp.prog_id)
+ 		WARN_ON(dev_xdp_install(dev, ndo_bpf, NULL, xdp.prog_flags,
+-					NULL));
++					NULL, false));
+ }
+ 
+ /**
+@@ -8661,7 +8668,7 @@ static void dev_xdp_uninstall(struct net_device *dev)
+  *	Set or clear a bpf program for a device
+  */
+ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
+-		      int fd, int expected_fd, u32 flags)
++		      int fd, int expected_fd, u32 flags, bool egress)
+ {
+ 	const struct net_device_ops *ops = dev->netdev_ops;
+ 	enum bpf_netdev_command query;
+@@ -8674,7 +8681,11 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
+ 	ASSERT_RTNL();
+ 
+ 	offload = flags & XDP_FLAGS_HW_MODE;
+-	query = offload ? XDP_QUERY_PROG_HW : XDP_QUERY_PROG;
++	if (egress)
++		query = XDP_QUERY_PROG_EGRESS;
++	else
++		query = offload ? XDP_QUERY_PROG_HW : XDP_QUERY_PROG;
++
+ 
+ 	bpf_op = bpf_chk = ops->ndo_bpf;
+ 	if (!bpf_op && (flags & (XDP_FLAGS_DRV_MODE | XDP_FLAGS_HW_MODE))) {
+@@ -8704,7 +8715,8 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
+ 		}
+ 	}
+ 	if (fd >= 0) {
+-		if (!offload && __dev_xdp_query(dev, bpf_chk, XDP_QUERY_PROG)) {
++		if (!offload && !egress &&
++		    __dev_xdp_query(dev, bpf_chk, XDP_QUERY_PROG)) {
+ 			NL_SET_ERR_MSG(extack, "native and generic XDP can't be active at the same time");
+ 			return -EEXIST;
+ 		}
+@@ -8736,7 +8748,7 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
+ 		prog = NULL;
+ 	}
+ 
+-	err = dev_xdp_install(dev, bpf_op, extack, flags, prog);
++	err = dev_xdp_install(dev, bpf_op, extack, flags, prog, egress);
+ 	if (err < 0 && prog)
+ 		bpf_prog_put(prog);
+ 
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 97e47c292333..dc44af16226a 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -2515,7 +2515,7 @@ static int do_setlink_xdp(struct net_device *dev, struct nlattr *tb,
+ 
+ 		err = dev_change_xdp_fd(dev, extack,
+ 					nla_get_s32(xdp[IFLA_XDP_FD]),
+-					expected_fd, xdp_flags);
++					expected_fd, xdp_flags, false);
+ 		if (err)
+ 			return err;
+ 
 -- 
 2.21.1 (Apple Git-122.3)
 
