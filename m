@@ -2,87 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (unknown [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E2D51A62BA
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 07:46:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A14EE1A6289
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 07:41:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726892AbgDMFqh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 01:46:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.18]:43624 "EHLO
+        id S1729042AbgDMFll (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 01:41:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.18]:42704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726440AbgDMFqg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 01:46:36 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA989C0A3BE0;
-        Sun, 12 Apr 2020 22:07:46 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C46A5127B6241;
-        Sun, 12 Apr 2020 22:07:42 -0700 (PDT)
-Date:   Sun, 12 Apr 2020 22:07:39 -0700 (PDT)
-Message-Id: <20200412.220739.516022706077351913.davem@davemloft.net>
-To:     leon@kernel.org
-Cc:     bp@alien8.de, kuba@kernel.org, thomas.lendacky@amd.com,
-        keyur@os.amperecomputing.com, pcnet32@frontier.com,
-        vfalico@gmail.com, j.vosburgh@gmail.com, linux-acenic@sunsite.dk,
-        mripard@kernel.org, heiko@sntech.de, mark.einon@gmail.com,
-        chris.snook@gmail.com, linux-rockchip@lists.infradead.org,
-        iyappan@os.amperecomputing.com, irusskikh@marvell.com,
-        dave@thedillows.org, netanel@amazon.com,
-        quan@os.amperecomputing.com, jcliburn@gmail.com,
-        LinoSanfilippo@gmx.de, linux-arm-kernel@lists.infradead.org,
-        andreas@gaisler.com, andy@greyhouse.net, netdev@vger.kernel.org,
-        thor.thayer@linux.intel.com, linux-kernel@vger.kernel.org,
-        ionut@badula.org, akiyano@amazon.com, jes@trained-monkey.org,
-        nios2-dev@lists.rocketboards.org, wens@csie.org
-Subject: Re: [PATCH] net/3com/3c515: Fix MODULE_ARCH_VERMAGIC redefinition
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200413045555.GE334007@unreal>
-References: <20200411155623.GA22175@zn.tnic>
-        <20200412.210341.1711540878857604145.davem@davemloft.net>
-        <20200413045555.GE334007@unreal>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        with ESMTP id S1729022AbgDMFlh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 01:41:37 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0FEEC008677
+        for <netdev@vger.kernel.org>; Sun, 12 Apr 2020 22:22:15 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id np9so3414629pjb.4
+        for <netdev@vger.kernel.org>; Sun, 12 Apr 2020 22:22:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ZO5kKSC4h32FwDfD7Q6VHkrIHHXtV1u/sKV+ex5uMtg=;
+        b=0xnfSz4UbFRCWoxazvrNDbnyZhjYfPXo9pRDtsz4UOH8v4LDLfDt+s/cyIQqsqOUd1
+         I5VsoZvKDmGO+A2ry+zdwNTpkO/VkpRgpw/484oLrZBS9WGRyJhU49tvckYF0uAJ5AT5
+         O7RfPfPKKs9bbtcd8JH83+6yc/ayg06y497mrnB4Q36djztZv3/BkrxHCiJuWrC3SxJM
+         2abrqO2SmnAHBWcVZS+tO4AZb0vj0ZnqZ2PrchztBA6y91ShKwhNmBV4B4TUFeY+GI1M
+         54fBkefRSIfABIoFsbs7L0co80Wqgs0oJPimgewv9zIjhRkQc4N3dAAbmuzYWmVPv1u7
+         WeTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ZO5kKSC4h32FwDfD7Q6VHkrIHHXtV1u/sKV+ex5uMtg=;
+        b=Fs5Ud4Ev8/Be3S9Uq2R/JWAHm2cJUiT33YaZ9UlIju+pVu6/DVv6wOOJ6IDs5VNqAS
+         rmEnNmucw++meTlZQR3blHNQjqexdP9I6uqP17ZsOFMf1Iy9qQusn3C0wsmoAX3L1FdV
+         T94MDlKlPiEicKuFZ3BNptPHCCCjmr9otC6e5co6GTxNofq8LEYyJyRPDTkB0V8WR6pJ
+         IMsZe0JX+jvAQgK3KvNOZ/yBu7gUvm+yFd56WCcBVuPaljpB7sebZoJmgcB1qjaLyFEo
+         /z77RS4xPNI6hY1lKpWp7WnuESlk/V1RtvrhP0UnjRzgK4wcI0FJ3ms45HhcOzv2KAW1
+         UacQ==
+X-Gm-Message-State: AGi0PuY1NGqfUcCQ3jNnU645ZA3GlxwZObIubkOVTFPLj0ZDjH7c3uSu
+        gM34O2G3dToKU11qwzpqtJqVpA==
+X-Google-Smtp-Source: APiQypLTEWNLQOPahKbZTj9Km5RcpCf9ZaUZ4ohK3E+VaXFHfJ98rTIoDpoAqV8U4yIlF7FaNC82Bg==
+X-Received: by 2002:a17:902:b283:: with SMTP id u3mr15475592plr.311.1586755335271;
+        Sun, 12 Apr 2020 22:22:15 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id c59sm8347331pje.10.2020.04.12.22.22.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 12 Apr 2020 22:22:14 -0700 (PDT)
+Date:   Sun, 12 Apr 2020 22:22:05 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Fernando Gont <fgont@si6networks.com>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>
+Subject: Re: [PATCH net-next] Implement draft-ietf-6man-rfc4941bis
+Message-ID: <20200412222205.04cb37cc@hermes.lan>
+In-Reply-To: <20200408104458.GA15473@archlinux-current.localdomain>
+References: <20200408104458.GA15473@archlinux-current.localdomain>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 12 Apr 2020 22:07:44 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leon@kernel.org>
-Date: Mon, 13 Apr 2020 07:55:55 +0300
+On Wed, 8 Apr 2020 07:44:58 -0300
+Fernando Gont <fgont@si6networks.com> wrote:
 
-> On Sun, Apr 12, 2020 at 09:03:41PM -0700, David Miller wrote:
->> From: Borislav Petkov <bp@alien8.de>
->> Date: Sat, 11 Apr 2020 17:56:23 +0200
->>
->> > From: Borislav Petkov <bp@suse.de>
->> >
->> > Change the include order so that MODULE_ARCH_VERMAGIC from the arch
->> > header arch/x86/include/asm/module.h gets used instead of the fallback
->> > from include/linux/vermagic.h and thus fix:
->> >
->> >   In file included from ./include/linux/module.h:30,
->> >                    from drivers/net/ethernet/3com/3c515.c:56:
->> >   ./arch/x86/include/asm/module.h:73: warning: "MODULE_ARCH_VERMAGIC" redefined
->> >      73 | # define MODULE_ARCH_VERMAGIC MODULE_PROC_FAMILY
->> >         |
->> >   In file included from drivers/net/ethernet/3com/3c515.c:25:
->> >   ./include/linux/vermagic.h:28: note: this is the location of the previous definition
->> >      28 | #define MODULE_ARCH_VERMAGIC ""
->> >         |
->> >
->> > Fixes: 6bba2e89a88c ("net/3com: Delete driver and module versions from 3com drivers")
->> > Signed-off-by: Borislav Petkov <bp@suse.de>
->>
->> I'm so confused, that commit in the Fixes: tag is _removing_ code but adding
->> new #include directives?!?!
->>
->> Is vermagic.h really needed in these files?
+> Implement the upcoming rev of RFC4941 (IPv6 temporary addresses):
+> https://tools.ietf.org/html/draft-ietf-6man-rfc4941bis-09
 > 
-> You are completely right, it is not needed at all in those files.
+> * Reduces the default Valid Lifetime to 2 days
+>   This reduces stress on network elements, among other things
+> 
+> * Employs different IIDs for different prefixes
+>   To avoid network activity correlation among addresses configured
+>   for different prefixes
+> 
+> * Uses a simpler algorithm for IID generation
+>   No need to store "history" anywhere
+> 
+> Signed-off-by: Fernando Gont <fgont@si6networks.com>
+> ---
+>  Documentation/networking/ip-sysctl.txt |  2 +-
+>  include/net/addrconf.h                 |  2 +-
+>  include/net/if_inet6.h                 |  1 -
+>  net/ipv6/addrconf.c                    | 85 +++++++++++---------------
+>  4 files changed, 38 insertions(+), 52 deletions(-)
+> 
+> diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
+> index ee961d322d93..db1ee7340090 100644
+> --- a/Documentation/networking/ip-sysctl.txt
+> +++ b/Documentation/networking/ip-sysctl.txt
+> @@ -1807,7 +1807,7 @@ use_tempaddr - INTEGER
+>  
+>  temp_valid_lft - INTEGER
+>  	valid lifetime (in seconds) for temporary addresses.
+> -	Default: 604800 (7 days)
+> +	Default: 172800 (2 days)
 
-Ok let's just remove it to fix this.
+You can't change defaults for existing users without a really good
+argument.
