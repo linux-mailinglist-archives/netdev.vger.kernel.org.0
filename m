@@ -2,95 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97EAA1A6B53
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 19:22:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B742A1A6B59
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 19:29:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732765AbgDMRWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 13:22:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59060 "EHLO
+        id S1732785AbgDMR3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 13:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732579AbgDMRWr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 13:22:47 -0400
-Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8214AC0A3BDC
-        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 10:22:47 -0700 (PDT)
-Received: by mail-oi1-x241.google.com with SMTP id j16so7980794oih.10
-        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 10:22:47 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1732781AbgDMR3E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 13:29:04 -0400
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32318C0A3BDC
+        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 10:29:04 -0700 (PDT)
+Received: by mail-ot1-x342.google.com with SMTP id j4so3243177otr.11
+        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 10:29:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Hte6YmJ3WRkZVzx+YwinRCCNWLf/ZMtlU8hqonCurjo=;
-        b=KDC/sIJL6Ra8Ui+FRLd2DHtL0F1pAetlMq54aVMgprdqxsLj1caHhE1a1zhN3dZKbc
-         hgbrYeNAsZiwvdE8EVBPjI06ZJhuFaNLtmndgChu39LvKUbI1hBLw8T6f73vlb9QeDYu
-         4aBkhp5rn58VZR2oy1x0V4IAWf1zxG+u+UhUGEw8NJX6wdE7R2HVFxkEoO8o+oKHCT2C
-         P53cY5f5zCvw1XTS72ALkKTRIs5RhSGN2mVCOjRBpFYsfZPKzRRlZHAARlhrkmfop6y9
-         tsrEgeAQ40cIctnfOUP43jmCluGzg/955z/Y2L95YLJtSpAFNMfZnmZLzs+yHobsxdzw
-         WCRw==
+         :cc:content-transfer-encoding;
+        bh=A3en5iyzOMVENH6eYpzFeSxk3riVmI1mcWKP8c73T7Y=;
+        b=ChZazmm7KvFDFM3VM3pWatlAHNL0YXMcxCPK2CDpAnUyJhsjPQxWXacPI8HtajY1x0
+         I3syb90d59WFS/Ukp6CPForM/Trwa9hY9Kv2oJS3IGfaENAiQxAIajgRxBxQ4usskkCd
+         gvimN4rhrYxe7t8sKvOKw7DZ8hT3QChZ32p6jDrIQz/1PLSysYystK22P/6IrnVPXm1C
+         O0mwy+SCPmOiONTmKwQv/quBg+AZONun9UxX7J4MzYIv8e+7oL3UiGTL5i/d4GmiIokg
+         BZT4qLZH1aP8UBg2LN5ojGH7pUwUb1Z4d5ccsH3lxo7chlviekQJEnx41rg4XpnX/Yw7
+         ZznA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Hte6YmJ3WRkZVzx+YwinRCCNWLf/ZMtlU8hqonCurjo=;
-        b=IuVIoKXFglMoegYI92XFfpgX/CafezwFgT+F6n0WXXJTtdtjbeLMhw+bOWqZa2Gc8M
-         sD4RKuhuNkonU43APN4iM1x9g8B6WiHmm2kTMamZioE5W2w0hd8ZhAG192812GmlPzif
-         4gorIA5xqYpmIhwcWvY6YOH6NejfNNrJCP+mZgPScP08wL6KBy/hoCv0EPoILtGCIE17
-         yghv70reymdb5okqvksU2ZsestRfHpEKcXy8MMGhMD+AdvJ2LWu4XFPRWFcSRxPcAbRi
-         JeuZXSH2jgIE8rceYxthuFogUm+XAdbPxeoVDpq4RcQqyg7jEj3Yh7oaTxTINYri6wnd
-         07UQ==
-X-Gm-Message-State: AGi0PuZZ/2HTdcK+z1VCdv/azFbrRMZM6SYFXCJOXDyV+i9fGAbi3jkA
-        FH9qtu6G9wi/Dxlf2UrXt/D/m8M9K9CPZDa7mog=
-X-Google-Smtp-Source: APiQypJf1Nq1LnEKAJAuzrOqCGWodNXI3vK20aWrt4YZ6Z83ukdGDSyQunDQfzI4KlnBwXeo4B40C4xpqDg7ew2iF+8=
-X-Received: by 2002:aca:d489:: with SMTP id l131mr12758912oig.5.1586798566780;
- Mon, 13 Apr 2020 10:22:46 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=A3en5iyzOMVENH6eYpzFeSxk3riVmI1mcWKP8c73T7Y=;
+        b=bnYEQUtDhNFI0fP29ht1HFiiOR5lZ0XyfZUTVHF9SOpPSkxp/jE1BH+zgJY0wjBqt2
+         UnWXXhH+2ezK8+CgdH1sAC0pvy4bFfvvXT2f7bi6ppNxqumMmPyo+HIG80oesSjEAX6Z
+         ruVF9YPshS/lbxr9HmqGO90lH2EMFnw4F8GvLiVxXW0Rx209f1ywB5PUlMiiYJNziymH
+         FnHfJ5Pa25Tmuw7UnTzgIV93qDjRplUVXS4iNCk+YvPQrRyZE4coiOy4M7+OykhlCb/W
+         n5uVTXaTZx5nqHuiWyqkxTSeekbOa21q/2hs2gMD4GZtgvGi0ZmAJ0ZSMLI4aZYitgWs
+         KMBg==
+X-Gm-Message-State: AGi0PuYy2Qkjx4NxxogMHy5Tt4IOo7kYPJhYNhyz71rBJFu7rgetGdZy
+        j6nTdiLGPTafFmPUBNCwiYNsJO+wDJRe91GdVqhL3w==
+X-Google-Smtp-Source: APiQypKPm1BjjKl0/1AZ/ilvFZz+12ikgKDW+CyVhqrA0ULNWKiWlkhsCVop2KnOA7ErbWADOBi/Il7TG4AmZa1wKXc=
+X-Received: by 2002:a05:6830:2410:: with SMTP id j16mr517387ots.189.1586798943455;
+ Mon, 13 Apr 2020 10:29:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200412060854.334895-1-leon@kernel.org>
-In-Reply-To: <20200412060854.334895-1-leon@kernel.org>
+References: <CANxWus8WiqQZBZF9aWF_wc-57OJcEb-MoPS5zup+JFY_oLwHGA@mail.gmail.com>
+ <CAM_iQpUPvcyxoW9=z4pY6rMfeAJNAbh21km4fUTSredm1rP+0Q@mail.gmail.com>
+ <CANxWus9HZhN=K5oFH-qSO43vJ39Yn9YhyviNm5DLkWVnkoSeQQ@mail.gmail.com>
+ <CAM_iQpWaK9t7patdFaS_BCdckM-nuocv7m1eiGwbO-jdLVNBMw@mail.gmail.com>
+ <CANxWus9yWwUq9YKE=d5T-6UutewFO01XFnvn=KHcevUmz27W0A@mail.gmail.com>
+ <CAM_iQpW8xSpTQP7+XKORS0zLTWBtPwmD1OsVE9tC2YnhLotU3A@mail.gmail.com>
+ <CANxWus-koY-AHzqbdG6DaVaDYj4aWztj8m+8ntYLvEQ0iM_yDw@mail.gmail.com>
+ <CANxWus_tPZ-C2KuaY4xpuLVKXriTQv1jvHygc6o0RFcdM4TX2w@mail.gmail.com>
+ <CAM_iQpV0g+yUjrzPdzsm=4t7+ZBt8Y=RTwYJdn9RUqFb1aCE1A@mail.gmail.com>
+ <CAM_iQpWLK8ZKShdsWNQrbhFa2B9V8e+OSNRQ_06zyNmDToq5ew@mail.gmail.com>
+ <CANxWus8YFkWPELmau=tbTXYa8ezyMsC5M+vLrNPoqbOcrLo0Cg@mail.gmail.com>
+ <CANxWus9qVhpAr+XJbqmgprkCKFQYkAFHbduPQhU=824YVrq+uw@mail.gmail.com>
+ <CAM_iQpV-0f=yX3P=ZD7_-mBvZZn57MGmFxrHqT3U3g+p_mKyJQ@mail.gmail.com>
+ <CANxWus8P8KdcZE8L1-ZLOWLxyp4OOWNY82Xw+S2qAomanViWQA@mail.gmail.com>
+ <CAM_iQpU3uhQewuAtv38xfgWesVEqpazXs3QqFHBBRF4i1qLdXw@mail.gmail.com> <CANxWus9xn=Z=rZ6BBZBMHNj6ocWU5dZi3PkOsQtAdgjyUdJ2zg@mail.gmail.com>
+In-Reply-To: <CANxWus9xn=Z=rZ6BBZBMHNj6ocWU5dZi3PkOsQtAdgjyUdJ2zg@mail.gmail.com>
 From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 13 Apr 2020 10:22:33 -0700
-Message-ID: <CAM_iQpUmX0+cACZdJaXvJjHWNXgi4-AWnsLAdtFA45=RpcRnOg@mail.gmail.com>
-Subject: Re: [PATCH net v1] net/sched: Don't print dump stack in event of
- transmission timeout
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        Arjan van de Ven <arjan@linux.intel.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Date:   Mon, 13 Apr 2020 10:28:52 -0700
+Message-ID: <CAM_iQpWPmu71XYvoshZ3aAr0JmXTg+Y9s0Gvpq77XWbokv1AgQ@mail.gmail.com>
+Subject: Re: iproute2: tc deletion freezes whole server
+To:     =?UTF-8?Q?V=C3=A1clav_Zindulka?= <vaclav.zindulka@tlapnet.cz>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 11, 2020 at 11:09 PM Leon Romanovsky <leon@kernel.org> wrote:
+On Sun, Apr 12, 2020 at 1:18 PM V=C3=A1clav Zindulka
+<vaclav.zindulka@tlapnet.cz> wrote:
 >
-> From: Leon Romanovsky <leonro@mellanox.com>
+> On Wed, Apr 8, 2020 at 10:18 PM Cong Wang <xiyou.wangcong@gmail.com> wrot=
+e:
+> >
+> > Hi, V=C3=A1clav
 >
-> In event of transmission timeout, the drivers are given an opportunity
-> to recover and continue to work after some in-house cleanups.
+> Hello Cong,
 >
-> Such event can be caused by HW bugs, wrong congestion configurations
-> and many more other scenarios. In such case, users are interested to
-> get a simple  "NETDEV WATCHDOG ... " print, which points to the relevant
-> netdevice in trouble.
+> > Sorry for the delay.
 >
-> The dump stack printed later was added in the commit b4192bbd85d2
-> ("net: Add a WARN_ON_ONCE() to the transmit timeout function") to give
-> extra information, like list of the modules and which driver is involved.
+> No problem, I'm actually glad you are diagnosing the problem further.
+> I didn't have much time until today and late yesterday to apply
+> patches and to test it.
 >
-> While the latter is already printed in "NETDEV WATCHDOG ... ", the list
-> of modules rarely needed and can be collected later.
+> > The problem is actually more complicated than I thought, although it
+> > needs more work, below is the first pile of patches I have for you to
+> > test:
+> >
+> > https://github.com/congwang/linux/commits/qdisc_reset
+> >
+> > It is based on the latest net-next branch. Please let me know the resul=
+t.
 >
-> So let's remove the WARN_ONCE() and make dmesg look more user-friendly in
-> large cluster setups.
-...
->
-> Fixes: b4192bbd85d2 ("net: Add a WARN_ON_ONCE() to the transmit timeout function")
-> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+> I have applied all the patches in your four commits to my custom 5.4.6
+> kernel source. There was no change in the amount of fq_codel_reset
+> calls. Tested on ifb, RJ45 and SFP+ interfaces.
 
-Acked-by: Cong Wang <xiyou.wangcong@gmail.com>
+It is true my patches do not reduce the number of fq_codel_reset() calls,
+they are intended to reduce the CPU time spent in each fq_codel_reset().
 
-Thanks.
+Can you measure this? Note, you do not have to add your own printk()
+any more, because my patches add a few tracepoints, especially for
+qdisc_reset(). So you can obtain the time by checking the timestamps
+of these trace events. Of course, you can also use perf trace like you
+did before.
+
+Thanks!
