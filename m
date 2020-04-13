@@ -2,197 +2,278 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFA861A6EC5
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 23:55:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE62B1A6ED3
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 00:00:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389348AbgDMVzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 17:55:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52154 "EHLO
+        id S2389408AbgDMWAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 18:00:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2389285AbgDMVzN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 17:55:13 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B6EC0A3BDC;
-        Mon, 13 Apr 2020 14:55:13 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id m8so10364615lji.1;
-        Mon, 13 Apr 2020 14:55:13 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S2389399AbgDMWAj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 18:00:39 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B0F5C0A3BDC;
+        Mon, 13 Apr 2020 15:00:38 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id b10so8508701qtt.9;
+        Mon, 13 Apr 2020 15:00:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=U05ipgzYQFfvdz8yfENntAM8U1md1dSKVlkDdwMaaWo=;
-        b=PgbYl0/IEVy9QV439pqqfgjOL9KN8LJvK2HYSGiqObb6oYeZEPxMt4LwR5HZpuqdrN
-         R1et6Btb1iZbepuJvggBC1O6WhA+iSa7z92Uvvm2Psl8QdsBW9823fds/eOFeXPj4kea
-         pcZ3TmQrwgQUWTzzdjqwcgLzyTEgsq9pBfEDnVHgJUdbR9sQbgK1ZeKlPL4i4P+1zgr1
-         gslyU+oXop2wgL4fuNNCP+ChPVlT9gHJA/L55g5lhTvtIx7E6TyENPtps6tx/HUETxni
-         3jfE9c4vu0FVLecVkJWNGEn+fhdAY/U3ERxCFCtNtUzhfhwnKb4bc9G1YREzOqJqT6W7
-         hFHA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UIEmqvRccNX9Xn4YanQo5OFMeDcInQqI1cVt7r9dDSU=;
+        b=qFp8SoSfJF7gnCk3EWi7SXHj3Aum0EZbHMKZPsLg5oR8ZX09L30t32VXkb6MalcS3I
+         4poOp2Qb03NjGmjORJxhx4wX0Q9gRf8qfNQ5ZOJOOqyfIF6KdqcXgpTUWRnQuNfvk6Po
+         f88Ycc8zMixS/3NPTRldP2T7Pgv+ud0oquojr+l3FbUpjj5e+Q/SDBI3t2MPQObxsFV6
+         0gWu6I5Xo5IWmvKJN3AW3nFLIPdsFaNKSL5/GhMBUaY58UzHEUnygRLSsiEiw/3xCtuG
+         O2uhzmenL5tmNPPvkXEkRekK671dUFanmZSOZw01VUhJS5y21vokmoZ575S2dzfOG1o8
+         Zq2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=U05ipgzYQFfvdz8yfENntAM8U1md1dSKVlkDdwMaaWo=;
-        b=pnnQJnlgZS0018ghCl9npq0pe6KRhHVTGPGvuaH8HcgA6miHPEuJseai9zvCl0bFjc
-         b6s5V2/+8mIwB1EDKjhWPWge/aroX5DyqhnPLkSDtfs6SQrqntbOdQ1ARMwL5NXnyY9w
-         8244CbXPfyGMcfbuBrNv7AlWbHUSZh9cHxPbQjerKWV/fhGv4/IFY93L3VAX1AoTDYr0
-         C+SmZTeLdLp6dsUS/hli7kKrGmlaPWGvHK0OfTlLFwz1d2VSDAdq0f2BwzQfiFSqyYnM
-         W6PtI06sVAK0kGVRmtdbwNY0ZYTUzNVku9dbVzFI5Xr/TBk6nqYMHzEAUS8jWfZwojBU
-         4jMg==
-X-Gm-Message-State: AGi0PuYO43DE94b0sGUdHn8pvVmjh1WBnibZfSW7dSqEvTItiZRpoyPs
-        3Sxf/mcVsV54/S4Z/sjWkPI=
-X-Google-Smtp-Source: APiQypKdLAMv+BKSoxci/0KZ/l3cZ8gLqjLxKWB81P2PlZGyPMV5SiylbxiNTvd7aaT+gtYLZHCGvw==
-X-Received: by 2002:a2e:b558:: with SMTP id a24mr10905390ljn.56.1586814911613;
-        Mon, 13 Apr 2020 14:55:11 -0700 (PDT)
-Received: from laptop ([178.170.168.10])
-        by smtp.gmail.com with ESMTPSA id t81sm8913077lff.52.2020.04.13.14.55.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Apr 2020 14:55:10 -0700 (PDT)
-Date:   Tue, 14 Apr 2020 00:55:08 +0300
-From:   Maxim Zhukov <mussitantesmortem@gmail.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Netdev <netdev@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [Intel-wired-lan] BUG: e1000: infinitely loop at
- e1000_set_link_ksettings
-Message-ID: <20200413215508.GA122208@laptop>
-References: <20200412191824.GA109724@laptop>
- <CAKgT0Udn3sE4iZci2dRNun6i3DMoG==kuksX_gLXWQORXA1kWA@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UIEmqvRccNX9Xn4YanQo5OFMeDcInQqI1cVt7r9dDSU=;
+        b=qCtCJ2SfmbrRm/upmffgcqEVZ2XKKFVjGctyto5ifUn2D1Co6lD3+6hpt4kNxe1wtF
+         kf2zAXHDALgcFds/iOimKuKJb6s1j+waHe52Yhzb/oMjHeOGNctYhJ+Ou+TaV18G8n/2
+         gSFNta4IO8pspfmQCj5SyX3XuYSuA/sgGxTuE0pnPiVvsL78xNpLnAboVZ84/O131mf9
+         O4c3mTiEXG3d27kRvy0b8WLvGVbRVhBKWUk70C1A0OESYRxyWcTxbXWFRDe/RZKqyzKD
+         OJabkHFRqaG9bdodyQVI6K/A8DLUQHMu9hU1e/hN8hbsG1369j/bM7cyhRdlsy6t+Rmb
+         82KA==
+X-Gm-Message-State: AGi0Pub6hLOhlU1BHRgxR8vEdbYnyUvZvoIYWMsBNCBYh/zyAg1hMVZ/
+        Ncf/Uo6eMHVc9OxoxiGlRt0Rr1h3llX8S845k9pSEEKqDfg=
+X-Google-Smtp-Source: APiQypKekT2wxgnvGHyc1g9iqBBqwoUnBjJ6sNFx8CkF65T03XwJdyk8dZerRATecFDK2K1jIi083yWF1Z2wIwZYf8M=
+X-Received: by 2002:ac8:468d:: with SMTP id g13mr13087986qto.59.1586815237399;
+ Mon, 13 Apr 2020 15:00:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKgT0Udn3sE4iZci2dRNun6i3DMoG==kuksX_gLXWQORXA1kWA@mail.gmail.com>
+References: <20200412055837.2883320-1-andriin@fb.com> <20200413202126.GA36960@rdna-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200413202126.GA36960@rdna-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 13 Apr 2020 15:00:26 -0700
+Message-ID: <CAEf4Bzbf7kuzTnq6d=Jh+hRdUi++vxabZz2oQU=hPh52rztbgg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: always specify expected_attach_type on
+ program load if supported
+To:     Andrey Ignatov <rdna@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 13, 2020 at 11:47:21AM -0700, Alexander Duyck wrote:
-> On Sun, Apr 12, 2020 at 4:12 PM Maxim Zhukov
-> <mussitantesmortem@gmail.com> wrote:
-> >
-> > On Qemu X86 (kernel 5.4.31):
-> What version of QEMU are you running? That would tell us more about
-> how the device is being emulated.
-$ qemu-system-i386 --version
-QEMU emulator version 4.2.0
-Copyright (c) 2003-2019 Fabrice Bellard and the QEMU Project developers
+On Mon, Apr 13, 2020 at 1:21 PM Andrey Ignatov <rdna@fb.com> wrote:
 >
-> > The system-maintenance daemon hangout on D-state at startup on
-> > ioctl(ETHTOOL_SSET) for setup advertising, duplex, etc...
+> Andrii Nakryiko <andriin@fb.com> [Sat, 2020-04-11 22:58 -0700]:
+> > For some types of BPF programs that utilize expected_attach_type, libbpf won't
+> > set load_attr.expected_attach_type, even if expected_attach_type is known from
+> > section definition. This was done to preserve backwards compatibility with old
+> > kernels that didn't recognize expected_attach_type attribute yet (which was
+> > added in 5e43f899b03a ("bpf: Check attach type at prog load time"). But this
+> > is problematic for some BPF programs that utilize never features that require
+> > kernel to know specific expected_attach_type (e.g., extended set of return
+> > codes for cgroup_skb/egress programs).
 > >
-> > kgdb stacktrace:
+> > This patch makes libbpf specify expected_attach_type by default, but also
+> > detect support for this field in kernel and not set it during program load.
+> > This allows to have a good metadata for bpf_program
+> > (e.g., bpf_program__get_extected_attach_type()), but still work with old
+> > kernels (for cases where it can work at all).
 > >
-> > ----
+> > Additionally, due to expected_attach_type being always set for recognized
+> > program types, bpf_program__attach_cgroup doesn't have to do extra checks to
+> > determine correct attach type, so remove that additional logic.
 > >
-> 
-> I am dropping the first backtrace since it is a symptom of the trace
-> below. Essentially the issue is all calls to e1000_reinit_locked get
-> stuck because the __E1000_RESETTING bit is stuck set because this
-> first thread is stuck waiting on napi_disable to succeed.
-> 
-> > Also stalled workers backtrace:
+> > Also adjust section_names selftest to account for this change.
 > >
-> > #3  0xc19e0870 in schedule () at kernel/sched/core.c:4150
-> > #4  0xc19e2f3e in schedule_timeout (timeout=<optimized out>) at kernel/time/timer.c:1895
-> > #5  0xc19e3041 in schedule_timeout_uninterruptible (timeout=<optimized out>) at kernel/time/timer.c:1929
-> > #6  0xc10b3dd1 in msleep (msecs=<optimized out>) at kernel/time/timer.c:2048
-> > #7  0xc1771fb4 in napi_disable (n=0xdec0b7d8) at net/core/dev.c:6240
-> > #8  0xc15f0e87 in e1000_down (adapter=0xdec0b540) at drivers/net/ethernet/intel/e1000/e1000_main.c:522
-> > #9  0xc15f0f35 in e1000_reinit_locked (adapter=0xdec0b540) at drivers/net/ethernet/intel/e1000/e1000_main.c:545
-> > #10 0xc15f6ecd in e1000_reset_task (work=0xdec0bca0) at drivers/net/ethernet/intel/e1000/e1000_main.c:3506
-> > #11 0xc106c882 in process_one_work (worker=0xdef4d840, work=0xdec0bca0) at kernel/workqueue.c:2272
-> > #12 0xc106ccc6 in worker_thread (__worker=0xdef4d840) at kernel/workqueue.c:2418
-> > #13 0xc1070657 in kthread (_create=0xdf508800) at kernel/kthread.c:255
-> > #14 0xc19e4078 in ret_from_fork () at arch/x86/entry/entry_32.S:813
-> 
-> So the question I would have is what is causing napi_disable to stall
-> out? I have looked over the latest QEMU code and the driver code and
-> both the Tx and Rx paths should have been shut down at the point where
-> napi_disable is called. I'm assuming there is little to no traffic
-> present so the NAPI thread shouldn't be stuck in the polling state for
-> that reason. The only other thing I can think of is that somehow this
-> is getting scheduled after the interface was already brought down
-> causing napi_disable to be called a second time for the same NAPI
-> instance.
-In the log below udhcpc sends discover packets in the raw mode (https://git.busybox.net/busybox/tree/networking/udhcp/dhcpc.c#n738), maybe it's triggered stall?
+> > More detailed discussion can be found in [0].
+> >
+> >   [0] https://lore.kernel.org/bpf/20200412003604.GA15986@rdna-mbp.dhcp.thefacebook.com/
+> >
+> > Reported-by: Andrey Ignatov <rdna@fb.com>
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >  tools/lib/bpf/libbpf.c                        | 123 +++++++++++-------
+> >  .../selftests/bpf/prog_tests/section_names.c  |  42 +++---
+> >  2 files changed, 106 insertions(+), 59 deletions(-)
+> >
+> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > index ff9174282a8c..925f720deea0 100644
+> > --- a/tools/lib/bpf/libbpf.c
+> > +++ b/tools/lib/bpf/libbpf.c
+> > @@ -178,6 +178,8 @@ struct bpf_capabilities {
+> >       __u32 array_mmap:1;
+> >       /* BTF_FUNC_GLOBAL is supported */
+> >       __u32 btf_func_global:1;
+> > +     /* kernel support for expected_attach_type in BPF_PROG_LOAD */
+> > +     __u32 exp_attach_type:1;
+> >  };
+> >
+> >  enum reloc_type {
+> > @@ -194,6 +196,22 @@ struct reloc_desc {
+> >       int sym_off;
+> >  };
+> >
+> > +struct bpf_sec_def;
+> > +
+> > +typedef struct bpf_link *(*attach_fn_t)(const struct bpf_sec_def *sec,
+> > +                                     struct bpf_program *prog);
+> > +
+> > +struct bpf_sec_def {
+> > +     const char *sec;
+> > +     size_t len;
+> > +     enum bpf_prog_type prog_type;
+> > +     enum bpf_attach_type expected_attach_type;
+> > +     bool is_exp_attach_type_optional;
+> > +     bool is_attachable;
+> > +     bool is_attach_btf;
+> > +     attach_fn_t attach_fn;
+> > +};
+> > +
+> >  /*
+> >   * bpf_prog should be a better name but it has been used in
+> >   * linux/filter.h.
+> > @@ -204,6 +222,7 @@ struct bpf_program {
+> >       char *name;
+> >       int prog_ifindex;
+> >       char *section_name;
+> > +     const struct bpf_sec_def *sec_def;
+> >       /* section_name with / replaced by _; makes recursive pinning
+> >        * in bpf_object__pin_programs easier
+> >        */
+> > @@ -3315,6 +3334,32 @@ static int bpf_object__probe_array_mmap(struct bpf_object *obj)
+> >       return 0;
+> >  }
+> >
+> > +static int
+> > +bpf_object__probe_exp_attach_type(struct bpf_object *obj)
+> > +{
+> > +     struct bpf_load_program_attr attr;
+> > +     struct bpf_insn insns[] = {
+> > +             BPF_MOV64_IMM(BPF_REG_0, 0),
+> > +             BPF_EXIT_INSN(),
+> > +     };
+> > +     int fd;
+> > +
+> > +     memset(&attr, 0, sizeof(attr));
+> > +     attr.prog_type = BPF_PROG_TYPE_CGROUP_SOCK;
+> > +     attr.expected_attach_type = BPF_CGROUP_INET_EGRESS;
+>
+> Could you clarify semantics of this function please?
+>
+> According to the name it looks like it should check whether
+> expected_attach_type attribute is supported or not. But
+> BPF_CGROUP_INET_EGRESS doesn't align with this since
+> expected_attach_type itself was added long before it was supported for
+> BPF_CGROUP_INET_EGRESS.
+>
+> For example 4fbac77d2d09 ("bpf: Hooks for sys_bind") added in Mar 2018 is
+> the first hook ever that used expected_attach_type.
+>
+> aac3fc320d94 ("bpf: Post-hooks for sys_bind") added a bit later is the
+> first hook that made expected_attach_type optional (for
+> BPF_CGROUP_INET_SOCK_CREATE).
+>
+> But 5cf1e9145630 ("bpf: cgroup inet skb programs can return 0 to 3") for
+> BPF_CGROUP_INET_EGRESS was merged more than a year after the previous
+> two.
 
-> 
-> A dmesg log for the system at the time of the hang might be useful as
-> it could include some information on what other configuration options
-> might have been changed that led to us blocking on the napi_disable
-> call.
+I'm checking if kernel is rejecting non-zero expected_attach_type
+field in bpf_attr for BPF_PROG_LOAD command.
 
-running command:
-qemu-system-i386 \
-        -kernel bzImage \
-        -drive file=rootfs.ext2,index=0,media=disk,format=raw \
-        -drive file=storage.ext2,index=1,media=disk,format=raw \
-        -smp 2 \
-        -m 2047M \
-        -enable-kvm \
-        -append "console=ttyS0 root=/dev/sda rw storage=/dev/sdb rw virtfs_tag=host0" \
-        -netdev tap,id=mynet1,ifname=tap0,script=no,downscript=no -device e1000,netdev=mynet1,mac=02:88:b1:e7:d1:f7 \
-        -netdev tap,id=mynet2,ifname=tap1,script=no,downscript=no -device e1000,netdev=mynet2,mac=02:70:67:e7:d1:f7 \
-        -virtfs local,path=./share/,mount_tag=host0,security_model=mapped-file,id=host0 \
-        -nographic
+Before 5e43f899b03a ("bpf: Check attach type at prog load time"),
+kernel would reject non-zero expected_attach_type because
+expected_attach_type didn't exist in bpf_attr. So if that's the case,
+we shouldn't specify expected_attach_type.
 
+After that commit, BPF_CGROUP_INET_EGRESS for
+BPF_PROG_TYPE_CGROUP_SOCK would be supported, even if it is optional,
+so using that combination should work.
 
-dmesg:
+Did I miss something?
 
----------
-[    2.113622] Run /sbin/init as init process
-[    2.145965] random: init: uninitialized urandom read (4 bytes read)
-[    3.175813] random: modprobe: uninitialized urandom read (4 bytes read)
-[    3.182942] modprobe (1267) used greatest stack depth: 5904 bytes left
-[    3.193894] EXT4-fs (sdb): mounting ext2 file system using the ext4 subsystem
-[    3.196343] EXT4-fs (sdb): warning: mounting unchecked fs, running e2fsck is recommended
-[    3.406740] EXT4-fs (sdb): mounted filesystem without journal. Opts: (null)
-[    3.408419] ext2 filesystem being mounted at /boot supports timestamps until 2038 (0x7fffffff)
-[    3.412388] random: sh: uninitialized urandom read (4 bytes read)
-[    3.415512] random: startup.sh: uninitialized urandom read (4 bytes read)
-[    3.907569] 8021q: adding VLAN 0 to HW filter on device eth0
-[    3.909715] e1000: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
-[    3.912057] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
-[    3.922927] 8021q: adding VLAN 0 to HW filter on device x86eth100
-[    3.934933] 8021q: adding VLAN 0 to HW filter on device eth1
-[    3.936800] e1000: eth1 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
-[    3.939092] IPv6: ADDRCONF(NETDEV_CHANGE): eth1: link becomes ready
-[    3.948995] 8021q: adding VLAN 0 to HW filter on device x86eth200
-[    4.178555] e1000 0000:00:04.0 eth1: Reset adapter
-[    4.219492] dmsd[wrkr] (1350) used greatest stack depth: 5536 bytes left
-[    4.368172] random: crng init done
-[    4.369034] random: 6 urandom warning(s) missed due to ratelimiting
-[    4.502536] 8021q: adding VLAN 0 to HW filter on device x86eth100
-[    4.520655] 8021q: adding VLAN 0 to HW filter on device x86eth200
-[    4.558841] br1: port 1(x86eth100) entered blocking state
-[    4.560342] br1: port 1(x86eth100) entered disabled state
-[    4.561649] device x86eth100 entered promiscuous mode
-[    4.562823] device eth0 entered promiscuous mode
-[    9.705295] 8021q: adding VLAN 0 to HW filter on device eth0
-[   11.731948] e1000: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
-----
+>
+> > +     attr.insns = insns;
+> > +     attr.insns_cnt = ARRAY_SIZE(insns);
+> > +     attr.license = "GPL";
+> > +
+> > +     fd = bpf_load_program_xattr(&attr, NULL, 0);
+> > +     if (fd >= 0) {
+> > +             obj->caps.exp_attach_type = 1;
+> > +             close(fd);
+> > +             return 1;
+> > +     }
+> > +     return 0;
+> > +}
+> > +
+> >  static int
+> >  bpf_object__probe_caps(struct bpf_object *obj)
+> >  {
+> > @@ -3325,6 +3370,7 @@ bpf_object__probe_caps(struct bpf_object *obj)
+> >               bpf_object__probe_btf_func_global,
+> >               bpf_object__probe_btf_datasec,
+> >               bpf_object__probe_array_mmap,
+> > +             bpf_object__probe_exp_attach_type,
+> >       };
+> >       int i, ret;
+> >
+> > @@ -4861,7 +4907,13 @@ load_program(struct bpf_program *prog, struct bpf_insn *insns, int insns_cnt,
+> >
+> >       memset(&load_attr, 0, sizeof(struct bpf_load_program_attr));
+> >       load_attr.prog_type = prog->type;
+> > -     load_attr.expected_attach_type = prog->expected_attach_type;
+> > +     /* old kernels might not support specifying expected_attach_type */
+> > +     if (!prog->caps->exp_attach_type && prog->sec_def &&
+> > +         prog->sec_def->is_exp_attach_type_optional)
+> > +             load_attr.expected_attach_type = 0;
+> > +     else
+> > +             load_attr.expected_attach_type = prog->expected_attach_type;
+>
+> I'm having a hard time checking whether it'll work for all cases or may
+> not work for some combination of prog/attach type and kernel version
+> since there are many subtleties.
+>
+> For example BPF_PROG_TYPE_CGROUP_SOCK has both a hook where
+> expected_attach_type is optional (BPF_CGROUP_INET_SOCK_CREATE) and hooks
+> where it's required (BPF_CGROUP_INET{4,6}_POST_BIND), and there
+> bpf_prog_load_fixup_attach_type() function in always sets
+> expected_attach_type if it's not yet.
 
-syslog:
+Right, so we use the fact that they are allowed, even if optional.
+Libbpf should provide correct expected_attach_type, according to
+section definitions and kernel should be happy (unless user specified
+wrong section name, of course, but we can't help that).
 
-----
-Apr 14 00:31:23 [ALRT] default_port_status_set[1716]: ioctl(eth0, ETHTOOL_SSET)
-Apr 14 00:31:23 [ALRT] default_port_status_set[1716]: ifup eth0
-Apr 14 00:31:23 [INFO] kernel: [    9.705295] 8021q: adding VLAN 0 to HW filter on device eth0
-Apr 14 00:31:23 [ALRT] default_port_status_set[1717]: ioctl(eth1, ETHTOOL_SSET)                                   <<<<<<<<<<< last ioctl
-Apr 14 00:31:24 [INFO] udhcpc[1545]: sending discover
-Apr 14 00:31:25 [INFO] kernel: [   11.731948] e1000: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
-----
+>
+> But I don't have context on all hooks that can be affected by this
+> change and could easily miss something.
+>
+> Ideally it should be verified by tests. Current section_names.c test
+> only verifies what will be returned, but AFAIK there is no test that
+> checks whether provided combination of prog_type/expected_attach_type at
+> load time and attach_type at attach time would actually work both on
+> current and old kernels. Do you think it's possible to add such a
+> selftest? (current libbpf CI supports running on old kernels, doesn't
+> it?)
 
+So all the existing selftests are essentially verifying this, if run
+on old kernel. I don't think libbpf currently runs tests on such old
+kernels, though. But there is no extra selftest that we need to add,
+because every single existing one will execute this piece of libbpf
+logic.
 
-> 
-> Other than that, how easy is it to trigger this hang. Is this
-> happening every time you start the guest, or does this just happen
-> periodically?
-It's happening periodically, sometimes the chance is very low.
+>
+>
+> > +     pr_warn("prog %s exp_Attach %d\n", prog->name, load_attr.expected_attach_type);
+> >       if (prog->caps->name)
+> >               load_attr.name = prog->name;
+> >       load_attr.insns = insns;
+> > @@ -5062,6 +5114,8 @@ bpf_object__load_progs(struct bpf_object *obj, int log_level)
+> >       return 0;
+> >  }
+> >
 
-I did't find the way for reproduce this hang (I tried to call ioctl + ifups in several configurations)
+trimming irrelevant parts is good ;)
 
-Thanks for your attention!
+[...]
