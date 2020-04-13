@@ -2,206 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E38191A6C24
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 20:42:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F1651A6C2E
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 20:46:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733060AbgDMSmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 14:42:31 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:34690 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728092AbgDMSma (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Apr 2020 14:42:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=8e8HuFV0TGA3SZAvtjW3okIjD6ZadtQhQFCOyp+9cMM=; b=tDZBmoIpTl7imtNp7ZyIoz4CfS
-        Wl/q3Vm0T+vfA94P9I+K9gpJ2G2DapV2etrMetKrRA+PuoKoSYhlgLqOPlX9jrFWGGWx/ANlZ2IVQ
-        s/BSgP+sB5/TAukc20TyEfexZHf9fbiy3zx4kQZ7DCxvRI5AVMrYGM1kDXay8Q4CU74I=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jO42G-002Uln-2m; Mon, 13 Apr 2020 20:42:20 +0200
-Date:   Mon, 13 Apr 2020 20:42:19 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Robert Marko <robert.marko@sartura.hr>
-Cc:     f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        mark.rutland@arm.com, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Christian Lamparter <chunkeey@gmail.com>,
-        Luka Perkov <luka.perkov@sartura.hr>
-Subject: Re: [PATCH 1/3] net: phy: mdio: add IPQ40xx MDIO driver
-Message-ID: <20200413184219.GH557892@lunn.ch>
-References: <20200413170107.246509-1-robert.marko@sartura.hr>
+        id S2387764AbgDMSqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 14:46:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51040 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2387752AbgDMSqh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 14:46:37 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFAEAC0A3BDC;
+        Mon, 13 Apr 2020 11:46:36 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id t3so6720838qkg.1;
+        Mon, 13 Apr 2020 11:46:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=B4/iE8GVKGojMY11LgRwzzoKBbfHwK52clilGbP458E=;
+        b=pTO/WjNpVdwOK4PnWxhCMTYXfGmfB8muGhdDm+Ce71BPZe+MW8p8yeTQiayHizwzwT
+         dgEF6aOD4BwoyF68f9gOMrQ+2Hz25jt4W30K57oMp+1GSK8UHczVG+IbXzIV//kzAGXX
+         b10k2DpkBpg6axGglNnH/DfoXuIXAIXE5R4YBbMg4PXJ6fw+saDmIvuH5OCjZ+6rkQxi
+         sksjChxy7JVXLzBwTOGmRrxaWIStYn0sOXZ/9bzAaR9VT2BNqd2x7Z2Iniqj562q7N27
+         HBiyhXviyY2M99/y9yU9vXJiTNZyQyP3vc+Ec1KeBa/nFjM8yKPUEy/MXjFtS7iRBAhU
+         zDxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=B4/iE8GVKGojMY11LgRwzzoKBbfHwK52clilGbP458E=;
+        b=oJhg8WOoeU92k7y35GONy5QpXbFhzaePUNZPxjoNDG6IEvU3xkd000pf5cPImWBni8
+         UdtytLlxalwBPEuuChA28+8HV/Eo/AKJZwmiB6NZ7FmLx7sFaUw8rxgIKyl4M0yBgwxF
+         1AUCBSpYBt4L2tsJA8uKejztf34YD7Fq6Ir4vEpFQ4LACeMq0JThVv4SQXK3iPalDFpH
+         24p9mQdfUcHDr/HqKR8dE3cMmwDZDywWWteOCwbrR7g3nXJpKhBNpnzwy+A+XpV56rXo
+         hIDR/s4mY4cQtZbkqlZOHIjRSaBHlqdHQOKxA7KUP9e0lyvzPyA15RBCMLHQgZN6B3IJ
+         00Sg==
+X-Gm-Message-State: AGi0PuZU5bLUvzKsEOuyzILA38X7FuboHrDBAQrup777N9x5IoeoDSOP
+        5y4lfEQyzdhr2rC4JQ9iXv4=
+X-Google-Smtp-Source: APiQypLKepMwA9LtxBn20WaoLlrzuTVCfwR/X0X8krJlPBMLp0nDMiksr03kHgbiZ5zOubCeR4gVhA==
+X-Received: by 2002:a37:414f:: with SMTP id o76mr6343409qka.462.1586803595747;
+        Mon, 13 Apr 2020 11:46:35 -0700 (PDT)
+Received: from localhost ([199.96.181.106])
+        by smtp.gmail.com with ESMTPSA id j2sm9039587qth.57.2020.04.13.11.46.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Apr 2020 11:46:35 -0700 (PDT)
+Date:   Mon, 13 Apr 2020 14:46:34 -0400
+From:   Tejun Heo <tj@kernel.org>
+To:     Christian Brauner <christian.brauner@ubuntu.com>
+Cc:     Jens Axboe <axboe@kernel.dk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-api@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Serge Hallyn <serge@hallyn.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saravana Kannan <saravanak@google.com>,
+        Jan Kara <jack@suse.cz>, David Howells <dhowells@redhat.com>,
+        Seth Forshee <seth.forshee@canonical.com>,
+        David Rheinsberg <david.rheinsberg@gmail.com>,
+        Tom Gundersen <teg@jklm.no>,
+        Christian Kellner <ckellner@redhat.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        =?iso-8859-1?Q?St=E9phane?= Graber <stgraber@ubuntu.com>,
+        linux-doc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 4/8] kernfs: handle multiple namespace tags
+Message-ID: <20200413184634.GF60335@mtj.duckdns.org>
+References: <20200408152151.5780-1-christian.brauner@ubuntu.com>
+ <20200408152151.5780-5-christian.brauner@ubuntu.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200413170107.246509-1-robert.marko@sartura.hr>
+In-Reply-To: <20200408152151.5780-5-christian.brauner@ubuntu.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> --- a/drivers/net/phy/Makefile
-> +++ b/drivers/net/phy/Makefile
-> @@ -36,6 +36,7 @@ obj-$(CONFIG_MDIO_CAVIUM)	+= mdio-cavium.o
->  obj-$(CONFIG_MDIO_GPIO)		+= mdio-gpio.o
->  obj-$(CONFIG_MDIO_HISI_FEMAC)	+= mdio-hisi-femac.o
->  obj-$(CONFIG_MDIO_I2C)		+= mdio-i2c.o
-> +obj-$(CONFIG_MDIO_IPQ40XX)	+= mdio-ipq40xx.o
->  obj-$(CONFIG_MDIO_MOXART)	+= mdio-moxart.o
->  obj-$(CONFIG_MDIO_MSCC_MIIM)	+= mdio-mscc-miim.o
+On Wed, Apr 08, 2020 at 05:21:47PM +0200, Christian Brauner wrote:
+> Since [1] kernfs supports namespace tags. This feature is essential to
+> enable sysfs to present different views of on various parts depending on
+> the namespace tag. For example, the /sys/class/net/ directory will only
+> show network devices that belong to the network namespace that sysfs was
+> mounted in. This is achieved by stashing a reference to the network
+> namespace of the task mounting sysfs in the super block. And when a
+> lookup operation is performed on e.g. /sys/class/net/ kernfs will
+> compare the network namespace tag of the kernfs_node associated with the
+> device and kobject of the network device to the network namespace of the
+> network device. This ensures that only network devices owned by the
+> network namespace sysfs was mounted in are shown, a feature which is
+> essential to containers.
+> For loopfs to show correct permissions in sysfs just as with network
+> devices we need to be able to tag kernfs_super_info with additional
+> namespaces. This extension was even already mentioned in a comment to
+> struct kernfs_super_info:
+>   /*
+>    * Each sb is associated with one namespace tag, currently the
+>    * network namespace of the task which mounted this kernfs
+>    * instance.  If multiple tags become necessary, make the following
+>    * an array and compare kernfs_node tag against every entry.
+>    */
+> This patch extends the kernfs_super_info and kernfs_fs_context ns
+> pointers to fixed-size arrays of namespace tags. The size is taken from
+> the namespaces currently supported by kobjects, i.e. we don't extend it
+> to cover all namespace but only the ones kernfs needs to support.
+> In addition, the kernfs_node struct gains an additional member that
+> indicates the type of namespace this kernfs_node was tagged with. This
+> allows us to simply retrieve the correct namespace tag from the
+> kernfs_fs_context and kernfs_super_info ns array with a simple indexing
+> operation. This has the advantage that we can just keep passing down the
+> correct namespace instead of passing down the array.
+> 
+> [1]: 608b4b9548de ("netns: Teach network device kobjects which namespace they are in.")
+> Cc: Tejun Heo <tj@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
 
-Hi Robert
+Acked-by: Tejun Heo <tj@kernel.org>
 
-That looks odd. What happened to the
+Thanks.
 
-obj-$(CONFIG_MDIO_IPQ8064)      += mdio-ipq8064.o
-
->  obj-$(CONFIG_MDIO_OCTEON)	+= mdio-octeon.o
-> diff --git a/drivers/net/phy/mdio-ipq40xx.c b/drivers/net/phy/mdio-ipq40xx.c
-> new file mode 100644
-> index 000000000000..8068f1e6a077
-> --- /dev/null
-> +++ b/drivers/net/phy/mdio-ipq40xx.c
-> @@ -0,0 +1,180 @@
-> +// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-> +/* Copyright (c) 2015, The Linux Foundation. All rights reserved. */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/io.h>
-> +#include <linux/of_address.h>
-> +#include <linux/of_mdio.h>
-> +#include <linux/phy.h>
-> +#include <linux/platform_device.h>
-> +
-> +#define MDIO_CTRL_0_REG		0x40
-> +#define MDIO_CTRL_1_REG		0x44
-> +#define MDIO_CTRL_2_REG		0x48
-> +#define MDIO_CTRL_3_REG		0x4c
-> +#define MDIO_CTRL_4_REG		0x50
-
-Can we have better names than as. It seems like 3 is read data, 2 is
-write data, etc.
-
-> +#define MDIO_CTRL_4_ACCESS_BUSY		BIT(16)
-> +#define MDIO_CTRL_4_ACCESS_START		BIT(8)
-> +#define MDIO_CTRL_4_ACCESS_CODE_READ		0
-> +#define MDIO_CTRL_4_ACCESS_CODE_WRITE	1
-> +#define CTRL_0_REG_DEFAULT_VALUE	0x150FF
-
-No magic numbers please. Try to explain what each of these bits
-do. I'm guessing they are clock speed, preamble enable, maybe C22/C45?
-
-> +
-> +#define IPQ40XX_MDIO_RETRY	1000
-> +#define IPQ40XX_MDIO_DELAY	10
-> +
-> +struct ipq40xx_mdio_data {
-> +	struct mii_bus	*mii_bus;
-> +	void __iomem	*membase;
-> +	struct device	*dev;
-> +};
-> +
-> +static int ipq40xx_mdio_wait_busy(struct ipq40xx_mdio_data *am)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < IPQ40XX_MDIO_RETRY; i++) {
-> +		unsigned int busy;
-> +
-> +		busy = readl(am->membase + MDIO_CTRL_4_REG) &
-> +			MDIO_CTRL_4_ACCESS_BUSY;
-> +		if (!busy)
-> +			return 0;
-> +
-> +		/* BUSY might take to be cleard by 15~20 times of loop */
-> +		udelay(IPQ40XX_MDIO_DELAY);
-> +	}
-> +
-> +	dev_err(am->dev, "%s: MDIO operation timed out\n", am->mii_bus->name);
-
-dev_err() should give you enough to identify the device. No need to
-print am->mii_bus->name as well.
-
-> +
-> +	return -ETIMEDOUT;
-> +}
-> +
-> +static int ipq40xx_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
-> +{
-> +	struct ipq40xx_mdio_data *am = bus->priv;
-> +	int value = 0;
-> +	unsigned int cmd = 0;
-> +
-> +	lockdep_assert_held(&bus->mdio_lock);
-
-Do you think the core is broken?
-
-Please check if the request is for a C45 read, and return -EOPNOTSUPP
-if so.
-
-
-> +
-> +	if (ipq40xx_mdio_wait_busy(am))
-> +		return -ETIMEDOUT;
-> +
-> +	/* issue the phy address and reg */
-> +	writel((mii_id << 8) | regnum, am->membase + MDIO_CTRL_1_REG);
-> +
-> +	cmd = MDIO_CTRL_4_ACCESS_START | MDIO_CTRL_4_ACCESS_CODE_READ;
-> +
-> +	/* issue read command */
-> +	writel(cmd, am->membase + MDIO_CTRL_4_REG);
-> +
-> +	/* Wait read complete */
-> +	if (ipq40xx_mdio_wait_busy(am))
-> +		return -ETIMEDOUT;
-> +
-> +	/* Read data */
-> +	value = readl(am->membase + MDIO_CTRL_3_REG);
-> +
-> +	return value;
-> +}
-> +
-> +static int ipq40xx_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
-> +							 u16 value)
-> +{
-> +	struct ipq40xx_mdio_data *am = bus->priv;
-> +	unsigned int cmd = 0;
-> +
-> +	lockdep_assert_held(&bus->mdio_lock);
-> +
-> +	if (ipq40xx_mdio_wait_busy(am))
-> +		return -ETIMEDOUT;
-> +
-> +	/* issue the phy address and reg */
-> +	writel((mii_id << 8) | regnum, am->membase + MDIO_CTRL_1_REG);
-> +
-> +	/* issue write data */
-> +	writel(value, am->membase + MDIO_CTRL_2_REG);
-> +
-> +	cmd = MDIO_CTRL_4_ACCESS_START | MDIO_CTRL_4_ACCESS_CODE_WRITE;
-> +	/* issue write command */
-> +	writel(cmd, am->membase + MDIO_CTRL_4_REG);
-> +
-> +	/* Wait write complete */
-> +	if (ipq40xx_mdio_wait_busy(am))
-> +		return -ETIMEDOUT;
-> +
-> +	return 0;
-> +}
-> +
-> +static int ipq40xx_mdio_probe(struct platform_device *pdev)
-> +{
-> +	struct ipq40xx_mdio_data *am;
-
-Why the name am? Generally priv is used. I could also understand bus,
-or even data, but am?
-
-   Andrew
+-- 
+tejun
