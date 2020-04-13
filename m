@@ -2,101 +2,301 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B5CF1A6A09
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 18:39:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACD5D1A6AC6
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 19:01:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731677AbgDMQjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 12:39:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34310 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731652AbgDMQjC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Apr 2020 12:39:02 -0400
-Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 949BE206DA;
-        Mon, 13 Apr 2020 16:39:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586795941;
-        bh=OoRhd3H2mZNy2v3zODygeRhXiEbly9vr7r5aIwvM+HE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zk8qzDU1IQ+8S+QvQhWMs74W6bhVLWxEUeR2CNxxy+o5BAY9TXg6p7nbw1gPyZ+6w
-         xoplIxSndGoIZJbpZjc90Es57ebeXpWD0L8VDMsPAa7zEO/X+0e/5QidCGEyD//joL
-         WnWqsUhYh3hhMglsrc/jxpa9jrkJpEkI9WBNZfpI=
-Date:   Mon, 13 Apr 2020 12:39:00 -0400
-From:   Sasha Levin <sashal@kernel.org>
-To:     Stefano Brivio <sbrivio@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Phil Sutter <phil@nwl.cc>, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.5 27/35] netfilter: nf_tables: Allow set
- back-ends to report partial overlaps on insertion
-Message-ID: <20200413163900.GO27528@sasha-vm>
-References: <20200407000058.16423-1-sashal@kernel.org>
- <20200407000058.16423-27-sashal@kernel.org>
- <20200407021848.626df832@redhat.com>
+        id S1732283AbgDMRBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 13:01:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50474 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1732277AbgDMRBU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 13:01:20 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C190C0A3BE2
+        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 10:01:20 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id v5so10844959wrp.12
+        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 10:01:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sartura-hr.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ifz7eEgQDkI/yAEt03RoeGqs19nYSssxU5j/gJ4Dim0=;
+        b=Kpa31S9WV4DB2epJ0brmlqCYF1LhiH7z0L6PGh4Wbzcd03Fn0R+4GpBmxvFEB7UwNs
+         tfXfQdPF8/Hp/4af5lAokIt68Wyxat3WatIWk7ZEitiTrGuHw2acegBAEv0i/7Hn0iuy
+         ZSPISg9Pl1NZZW2DtFYy5nSyOoczsqC5qAUIGoV9LT7y7SwQGQZ5a4RcFT1bcdGDEYKv
+         7CH50QYVjnEq1z3Mvr4EV4bIV4wAY6Btp5ypPFZETulZ0qzAG6e0LAgVC6tKR3VCE58z
+         Y9E0wIaZm1/uVvZIw3Nc8wtYDlya9c8AWTu7VRTCXRgJRDBptbDHNrPZtl608d5u+QJY
+         2vwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ifz7eEgQDkI/yAEt03RoeGqs19nYSssxU5j/gJ4Dim0=;
+        b=PkupnuA8GO5Oko4mhHrhjoM5Jatw2t3974qAG87yShLgGlAlZlddg3uVbz1Dtb+1FE
+         fcQHOFeVxgxJMgpOOeMGuoKRIYuU58az4qE1QOFJaWaLL8zYugV7NDt0Uvxjr98ihe15
+         bRdQFx5p94QEjdPUpp/R3bjUcT9FfDeRfZFyCmeFwyhb2bLT6K9nMetlY964xLgWQMQd
+         iWGwdktjU3Eo+9YwWrqE0AjbPEeblF1Skhdl7ue3F18rC865+hDxfsncIm56wcd98UpC
+         w1ifaUpXJ85yMiuzVOVT1KpVHd60ZjhMrMcVH6N4dhUZ9qgyuuzgZb5b5PcG7GXD/1MJ
+         ySJQ==
+X-Gm-Message-State: AGi0Pub1aNgEDD+zPDInZ4qJF/WraRl7RYEkROJku2MfuZZ8+h1Cam4U
+        aZI0IPcNDUjHzAQGAojY6B2/IA==
+X-Google-Smtp-Source: APiQypI5L7HxfafpOR4GRvpAW8MC8kqY/R8iWGtx4F0odEFkYwngaQANZQgPqx5hNnsILB/TjEYY0w==
+X-Received: by 2002:adf:e3ca:: with SMTP id k10mr2020584wrm.53.1586797278826;
+        Mon, 13 Apr 2020 10:01:18 -0700 (PDT)
+Received: from localhost.localdomain ([2001:470:1f1b:192:29fe:7bf:41fe:904d])
+        by smtp.googlemail.com with ESMTPSA id q187sm15443268wma.41.2020.04.13.10.01.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Apr 2020 10:01:18 -0700 (PDT)
+From:   Robert Marko <robert.marko@sartura.hr>
+To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        mark.rutland@arm.com, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     Robert Marko <robert.marko@sartura.hr>,
+        Christian Lamparter <chunkeey@gmail.com>,
+        Luka Perkov <luka.perkov@sartura.hr>
+Subject: [PATCH 1/3] net: phy: mdio: add IPQ40xx MDIO driver
+Date:   Mon, 13 Apr 2020 19:01:05 +0200
+Message-Id: <20200413170107.246509-1-robert.marko@sartura.hr>
+X-Mailer: git-send-email 2.26.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20200407021848.626df832@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 07, 2020 at 02:18:48AM +0200, Stefano Brivio wrote:
->Hi Sasha,
->
->On Mon,  6 Apr 2020 20:00:49 -0400
->Sasha Levin <sashal@kernel.org> wrote:
->
->> From: Pablo Neira Ayuso <pablo@netfilter.org>
->>
->> [ Upstream commit 8c2d45b2b65ca1f215244be1c600236e83f9815f ]
->
->This patch, together with 28/35 and 29/35 in this series, and all the
->equivalent patches for 5.4 and 4.19, that is:
->	[PATCH AUTOSEL 5.5 27/35] netfilter: nf_tables: Allow set back-ends to report partial overlaps on insertion
->	[PATCH AUTOSEL 5.5 28/35] netfilter: nft_set_rbtree: Introduce and use nft_rbtree_interval_start()
->	[PATCH AUTOSEL 5.5 29/35] netfilter: nft_set_rbtree: Detect partial overlaps on insertion
->	[PATCH AUTOSEL 5.4 24/32] netfilter: nf_tables: Allow set back-ends to report partial overlaps on insertion
->	[PATCH AUTOSEL 5.4 25/32] netfilter: nft_set_rbtree: Introduce and use nft_rbtree_interval_start()
->	[PATCH AUTOSEL 5.4 26/32] netfilter: nft_set_rbtree: Detect partial overlaps on insertion
->	[PATCH AUTOSEL 4.19 08/13] netfilter: nf_tables: Allow set back-ends to report partial overlaps on insertion
->	[PATCH AUTOSEL 4.19 09/13] netfilter: nft_set_rbtree: Introduce and use nft_rbtree_interval_start()
->	[PATCH AUTOSEL 4.19 10/13] netfilter: nft_set_rbtree: Detect partial overlaps on insertion
->
->should only be backported together with nf.git commit
->	72239f2795fa ("netfilter: nft_set_rbtree: Drop spurious condition for overlap detection on insertion")
->
->as they would otherwise introduce a regression. In general, those changes
->are not really relevant before 5.6, as nft_set_pipapo wasn't there and the
->main purpose here is to make the nft_set_rbtree back-end consistent with it:
->they also prevent a malfunction in nft_set_rbtree itself, but nothing that
->would be triggered using 'nft' alone, and no memory badnesses or critical
->issues whatsoever. So it's also safe to drop them, in my opinion.
->
->Also patches for 4.14 and 4.9:
->	[PATCH AUTOSEL 4.14 6/9] netfilter: nf_tables: Allow set back-ends to report partial overlaps on insertion
->	[PATCH AUTOSEL 4.9 3/5] netfilter: nf_tables: Allow set back-ends to report partial overlaps on insertion
->
->can safely be dropped, because there are no set back-ends there, without
->the following patches, that use this way of reporting a partial overlap.
+This patch adds the driver for the MDIO interface
+inside of Qualcomm IPQ40xx series SoC-s.
 
-I've just dropped them all as 72239f2795fa ("netfilter: nft_set_rbtree:
-Drop spurious condition for overlap detection on insertion") didn't make
-it into Linus's tree yet.
+Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+Cc: Luka Perkov <luka.perkov@sartura.hr>
+---
+ drivers/net/phy/Kconfig        |   7 ++
+ drivers/net/phy/Makefile       |   1 +
+ drivers/net/phy/mdio-ipq40xx.c | 180 +++++++++++++++++++++++++++++++++
+ 3 files changed, 188 insertions(+)
+ create mode 100644 drivers/net/phy/mdio-ipq40xx.c
 
->I'm used to not Cc: stable on networking patches (Dave's net.git),
->but I guess I should instead if they go through nf.git (Pablo's tree),
->right?
-
-Yup, this confusion has caused for quite a few netfilter fixes to not
-land in -stable. If it goes through Pablo's tree (and unless he intructs
-otherwise), you should Cc stable.
-
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index 9dabe03a668c..614d08635012 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -157,6 +157,13 @@ config MDIO_I2C
+ 
+ 	  This is library mode.
+ 
++config MDIO_IPQ40XX
++	tristate "Qualcomm IPQ40xx MDIO interface"
++	depends on HAS_IOMEM && OF
++	help
++	  This driver supports the MDIO interface found in Qualcomm
++	  IPQ40xx series Soc-s.
++
+ config MDIO_MOXART
+ 	tristate "MOXA ART MDIO interface support"
+ 	depends on ARCH_MOXART || COMPILE_TEST
+diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+index fe5badf13b65..c89fc187fd74 100644
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -36,6 +36,7 @@ obj-$(CONFIG_MDIO_CAVIUM)	+= mdio-cavium.o
+ obj-$(CONFIG_MDIO_GPIO)		+= mdio-gpio.o
+ obj-$(CONFIG_MDIO_HISI_FEMAC)	+= mdio-hisi-femac.o
+ obj-$(CONFIG_MDIO_I2C)		+= mdio-i2c.o
++obj-$(CONFIG_MDIO_IPQ40XX)	+= mdio-ipq40xx.o
+ obj-$(CONFIG_MDIO_MOXART)	+= mdio-moxart.o
+ obj-$(CONFIG_MDIO_MSCC_MIIM)	+= mdio-mscc-miim.o
+ obj-$(CONFIG_MDIO_OCTEON)	+= mdio-octeon.o
+diff --git a/drivers/net/phy/mdio-ipq40xx.c b/drivers/net/phy/mdio-ipq40xx.c
+new file mode 100644
+index 000000000000..8068f1e6a077
+--- /dev/null
++++ b/drivers/net/phy/mdio-ipq40xx.c
+@@ -0,0 +1,180 @@
++// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
++/* Copyright (c) 2015, The Linux Foundation. All rights reserved. */
++
++#include <linux/delay.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/io.h>
++#include <linux/of_address.h>
++#include <linux/of_mdio.h>
++#include <linux/phy.h>
++#include <linux/platform_device.h>
++
++#define MDIO_CTRL_0_REG		0x40
++#define MDIO_CTRL_1_REG		0x44
++#define MDIO_CTRL_2_REG		0x48
++#define MDIO_CTRL_3_REG		0x4c
++#define MDIO_CTRL_4_REG		0x50
++#define MDIO_CTRL_4_ACCESS_BUSY		BIT(16)
++#define MDIO_CTRL_4_ACCESS_START		BIT(8)
++#define MDIO_CTRL_4_ACCESS_CODE_READ		0
++#define MDIO_CTRL_4_ACCESS_CODE_WRITE	1
++#define CTRL_0_REG_DEFAULT_VALUE	0x150FF
++
++#define IPQ40XX_MDIO_RETRY	1000
++#define IPQ40XX_MDIO_DELAY	10
++
++struct ipq40xx_mdio_data {
++	struct mii_bus	*mii_bus;
++	void __iomem	*membase;
++	struct device	*dev;
++};
++
++static int ipq40xx_mdio_wait_busy(struct ipq40xx_mdio_data *am)
++{
++	int i;
++
++	for (i = 0; i < IPQ40XX_MDIO_RETRY; i++) {
++		unsigned int busy;
++
++		busy = readl(am->membase + MDIO_CTRL_4_REG) &
++			MDIO_CTRL_4_ACCESS_BUSY;
++		if (!busy)
++			return 0;
++
++		/* BUSY might take to be cleard by 15~20 times of loop */
++		udelay(IPQ40XX_MDIO_DELAY);
++	}
++
++	dev_err(am->dev, "%s: MDIO operation timed out\n", am->mii_bus->name);
++
++	return -ETIMEDOUT;
++}
++
++static int ipq40xx_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
++{
++	struct ipq40xx_mdio_data *am = bus->priv;
++	int value = 0;
++	unsigned int cmd = 0;
++
++	lockdep_assert_held(&bus->mdio_lock);
++
++	if (ipq40xx_mdio_wait_busy(am))
++		return -ETIMEDOUT;
++
++	/* issue the phy address and reg */
++	writel((mii_id << 8) | regnum, am->membase + MDIO_CTRL_1_REG);
++
++	cmd = MDIO_CTRL_4_ACCESS_START | MDIO_CTRL_4_ACCESS_CODE_READ;
++
++	/* issue read command */
++	writel(cmd, am->membase + MDIO_CTRL_4_REG);
++
++	/* Wait read complete */
++	if (ipq40xx_mdio_wait_busy(am))
++		return -ETIMEDOUT;
++
++	/* Read data */
++	value = readl(am->membase + MDIO_CTRL_3_REG);
++
++	return value;
++}
++
++static int ipq40xx_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
++							 u16 value)
++{
++	struct ipq40xx_mdio_data *am = bus->priv;
++	unsigned int cmd = 0;
++
++	lockdep_assert_held(&bus->mdio_lock);
++
++	if (ipq40xx_mdio_wait_busy(am))
++		return -ETIMEDOUT;
++
++	/* issue the phy address and reg */
++	writel((mii_id << 8) | regnum, am->membase + MDIO_CTRL_1_REG);
++
++	/* issue write data */
++	writel(value, am->membase + MDIO_CTRL_2_REG);
++
++	cmd = MDIO_CTRL_4_ACCESS_START | MDIO_CTRL_4_ACCESS_CODE_WRITE;
++	/* issue write command */
++	writel(cmd, am->membase + MDIO_CTRL_4_REG);
++
++	/* Wait write complete */
++	if (ipq40xx_mdio_wait_busy(am))
++		return -ETIMEDOUT;
++
++	return 0;
++}
++
++static int ipq40xx_mdio_probe(struct platform_device *pdev)
++{
++	struct ipq40xx_mdio_data *am;
++	struct resource *res;
++
++	am = devm_kzalloc(&pdev->dev, sizeof(*am), GFP_KERNEL);
++	if (!am)
++		return -ENOMEM;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res) {
++		dev_err(&pdev->dev, "no iomem resource found\n");
++		return -ENXIO;
++	}
++
++	am->membase = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(am->membase)) {
++		dev_err(&pdev->dev, "unable to ioremap registers\n");
++		return PTR_ERR(am->membase);
++	}
++
++	am->mii_bus = devm_mdiobus_alloc(&pdev->dev);
++	if (!am->mii_bus)
++		return  -ENOMEM;
++
++	writel(CTRL_0_REG_DEFAULT_VALUE, am->membase + MDIO_CTRL_0_REG);
++
++	am->mii_bus->name = "ipq40xx_mdio";
++	am->mii_bus->read = ipq40xx_mdio_read;
++	am->mii_bus->write = ipq40xx_mdio_write;
++	am->mii_bus->priv = am;
++	am->mii_bus->parent = &pdev->dev;
++	snprintf(am->mii_bus->id, MII_BUS_ID_SIZE, "%s", dev_name(&pdev->dev));
++
++	am->dev = &pdev->dev;
++	platform_set_drvdata(pdev, am);
++
++	return of_mdiobus_register(am->mii_bus, pdev->dev.of_node);
++}
++
++static int ipq40xx_mdio_remove(struct platform_device *pdev)
++{
++	struct ipq40xx_mdio_data *am = platform_get_drvdata(pdev);
++
++	mdiobus_unregister(am->mii_bus);
++
++	return 0;
++}
++
++static const struct of_device_id ipq40xx_mdio_dt_ids[] = {
++	{ .compatible = "qcom,ipq40xx-mdio" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, ipq40xx_mdio_dt_ids);
++
++static struct platform_driver ipq40xx_mdio_driver = {
++	.probe = ipq40xx_mdio_probe,
++	.remove = ipq40xx_mdio_remove,
++	.driver = {
++		.name = "ipq40xx-mdio",
++		.of_match_table = ipq40xx_mdio_dt_ids,
++	},
++};
++
++module_platform_driver(ipq40xx_mdio_driver);
++
++MODULE_DESCRIPTION("IPQ40XX MDIO interface driver");
++MODULE_AUTHOR("Qualcomm Atheros");
++MODULE_LICENSE("Dual BSD/GPL");
 -- 
-Thanks,
-Sasha
+2.26.0
+
