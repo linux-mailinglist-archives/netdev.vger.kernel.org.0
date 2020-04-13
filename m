@@ -2,133 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B45CA1A6468
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 11:01:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A61E1A6531
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 12:29:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728051AbgDMJBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 05:01:39 -0400
-Received: from smtprelay-out1.synopsys.com ([149.117.87.133]:51714 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728041AbgDMJBi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 05:01:38 -0400
-Received: from mailhost.synopsys.com (badc-mailhost2.synopsys.com [10.192.0.18])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 2F7BAC0361;
-        Mon, 13 Apr 2020 09:01:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1586768498; bh=F+gVWkweCnxiZLz06Z04S76+3XrQurR+AF1Y2DC3u90=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=GSG1B60nBKQFt9cmUbhNOyq55SWQi0Pj9LRd4QKdnjDq8sM8Ua1iZT6WILInvwPXj
-         DiYTwGvfZrM+qcjOyvJqO6GqLwsJPo5deN0zz93VbNoXqLOL5BBCqOtKuwniaDWzJN
-         r09rEXAsB8vWn1e8x6MNgSYfIdBGnvuW5hAfBs15ZONSPOEjrWjM9SlKjgShaTbY3L
-         c5IGJds612Duqz69hAYa3Me78leQ0Z9dHMyWnul0FL/XvzDgwXOk99nukqpETup8R4
-         yzhHpXHkbbKFD7HX8KZP4+by4Cg5d/B0ly0qm9uVcXMzjoLHWSgbY6RcWSs4S66wQ7
-         O/c35SmNwHMhA==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id 3CF98A0067;
-        Mon, 13 Apr 2020 09:01:35 +0000 (UTC)
-Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Mon, 13 Apr 2020 02:01:34 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (10.202.3.67) by
- mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
- 14.3.408.0; Mon, 13 Apr 2020 02:01:34 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bVIHIst+uXcTGTZN1DEWD0nVxzvuMZ9pSfz1iSTxcz+yZx6ifH/OPAMZ52T6Cj5LMwVtrWSw2jlR06eYI9ryqIorH/xPIsoOu55sGZE+rqkwaogr0QysZHF4IXJ78M8RUjnrjQGc3jd4b35t00jmTCNsykMT6fMmLylBnzF+xYuV2wzBy837r2FmhUESFOwGGXSsEJvfXEy5G7fmmaONRHWSyxeq2qOzvtcOtO9wJ6OrDWZbJoof9dpxEjrc1KGbJQxHqxRXlM/pQqXwdvBi7ABeBhGOaPs5WLAHw5EFP3RgFdzgWoHA6skjSxWAich13g8Q4Cg1Zct2R6ZbX/pXSw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sZcm5qclCPrFkIp7FKym8UeEDbOY+eB2tDnv8hEEzp4=;
- b=oGjHKcJwElQnsZks/eVcgq2/cFoAQdi1QVHttVDOLPE/m2TLZhgEriWzuvFllfljFPggOAal9RDBMVSSP5Vnnml6DGX8RF8mnGqNY/55/sw73tECj/vJbZ8DaamKiuc64621prFjrVDhIHTSA4j2BQU+b1+Bmp2lJvYf9mgl2HQ0g+OOCyhJnIiTw7c2CIrHLsOtDHirLtILqvYmFyLEzi1qWtkuJjd1LEgNgJA23muU4kv32EFT63Mg9r7ru/xdpaS8LZIw7D+s/1eeLPKn4TKHEesIMBX4waRNKv1Zymz4paanpsZWrXpCjp9BmpP9KAGsPmSoxTu+X+3kPS2vvg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
- dkim=pass header.d=synopsys.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sZcm5qclCPrFkIp7FKym8UeEDbOY+eB2tDnv8hEEzp4=;
- b=vmTXLgEOSxfBg0KEYvaHntVPV2/2VHE1BEDOziPk20yYcug3eAGDLAaCG+4jf/3uMQvVI3YnVO5GolWZV6PaiBC6YU6fvktYDbaosxpm5BcrADBMQv+LtWMWNyk+WLu4HpijubZFmMcRA4Tc2GIvZYE9uhgvKLL1PYtPuJ2b9Qo=
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com (2603:10b6:408:6e::17)
- by BN8PR12MB3635.namprd12.prod.outlook.com (2603:10b6:408:46::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2900.18; Mon, 13 Apr
- 2020 09:01:32 +0000
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::651e:afe5:d0fb:def4]) by BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::651e:afe5:d0fb:def4%3]) with mapi id 15.20.2900.028; Mon, 13 Apr 2020
- 09:01:32 +0000
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Leon Romanovsky <leonro@mellanox.com>,
-        Arjan van de Ven <arjan@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "Jamal Hadi Salim" <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH net v1] net/sched: Don't print dump stack in event of
- transmission timeout
-Thread-Topic: [PATCH net v1] net/sched: Don't print dump stack in event of
- transmission timeout
-Thread-Index: AQHWEJDvA8zEZsFxqkWKpdmc7/rynqh2wgkg
-Date:   Mon, 13 Apr 2020 09:01:32 +0000
-Message-ID: <BN8PR12MB326678FFB34C9141AD73853BD3DD0@BN8PR12MB3266.namprd12.prod.outlook.com>
-References: <20200412060854.334895-1-leon@kernel.org>
-In-Reply-To: <20200412060854.334895-1-leon@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=joabreu@synopsys.com; 
-x-originating-ip: [198.182.37.200]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ce465346-b527-41ff-d7b2-08d7df8942ff
-x-ms-traffictypediagnostic: BN8PR12MB3635:
-x-microsoft-antispam-prvs: <BN8PR12MB3635BEED5D576B5344482883D3DD0@BN8PR12MB3635.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 037291602B
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3266.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10019020)(39850400004)(396003)(366004)(346002)(376002)(136003)(71200400001)(6506007)(2906002)(4744005)(86362001)(7696005)(110136005)(478600001)(54906003)(55016002)(33656002)(8676002)(66946007)(81156014)(64756008)(76116006)(66446008)(316002)(66556008)(66476007)(52536014)(4326008)(5660300002)(26005)(186003)(8936002)(9686003);DIR:OUT;SFP:1102;
-received-spf: None (protection.outlook.com: synopsys.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: qEpu1EBaD+2kfHXffF+6hi3K3nyT68fuSmOEVCiUYrPGqnMDF4yokujJ2vFw2+HUodaXTgCQ6hHWkxVJl64C2Va1VPagXRCxtjZW59l7IcyhNINNJdtg3VSbl+l/1XCi6xJxajizBJTdL41JLqtxAWhr25MWBXo3ADUGgOaK4NtI+rEYoXxnDF7qASfRvjK+yxVsZkoKgzYugHVmwLK0m4QCX6J+yhfu1Tvu0MWQcDRAnxFgU2sp2RLQX3rO2XOxCSUjp6fX/a9Kyor9oBJuXiMEaN7VVYYN4y1dCyBhyITWeZUjxFDjEgxJjQONa6CP17p14naxUbCRn2YRxgfQWorNcFL95JVMggrrabHa9UD2bf/l8ZnwfTz22V7JwO6I43o6rXnPSounrbCvDI9TECvRZ3j3vkX/p/aj13Hw2BLWBNTFgtUCi8JhPoCG/nNa
-x-ms-exchange-antispam-messagedata: ef1JcKLMVi+iEUnK7AWxHu6aUhNLsxdGBnebvDepNBBh+Ba3f569IpCLXXEmssghAwe5Htg7azcySV8IyWxcXZ0UEI/wKZCf7lOceb8XsBY805C1VRw+OlDmEVVKPz8aBCmpeK2T9C0XzZayFotdHA==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728389AbgDMJem (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 05:34:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34396 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728050AbgDMJel (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 05:34:41 -0400
+X-Greylist: delayed 387 seconds by postgrey-1.27 at vger.kernel.org; Mon, 13 Apr 2020 05:34:41 EDT
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20029C014CDB
+        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 02:28:13 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id r7so8032843ljg.13
+        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 02:28:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ip4c8oMB6zLrxQmN7g56mTf/l58JOv7zXW7fVSjwi2Y=;
+        b=0VwxCXPn+5bgHby9Q3FFSKBvV7hBIT8d/+D7I26kql00sZa5cj746RRY8MnN3gHZxL
+         CnQHo7pn/zh74R4NIxJTpPxajy5yINQpMDmpue8JcihZ/AdeaO5oJMXyVbBRnw4eVa3v
+         vpXscbulqgCfK57WwdMOCLXgm5AFfwMON4Ia3LQyTN4dy53Ew9UP3kHnWKX+xOCg72dS
+         Sj091UHMG4E1kc3X67dSIFGVdKty5oaMdv7hXyeitEL6mCznas8mAcaEUSNKegpmRuf/
+         KVh44IB1WqJRS8Adf8KJ+EKs1J7XI38tqHB+gZ+qGe6nijyLxu9zmxOC61hy9jVcl4Me
+         +ROA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ip4c8oMB6zLrxQmN7g56mTf/l58JOv7zXW7fVSjwi2Y=;
+        b=lnPKKFb6OpOPIuDtvKgUA/6AcsgiRC3g9T47sf40BftCVvYG2YauM0vbJyGC/HaJUV
+         mdRC+6fa60wKJNMdWZ5hudJLE78kevtT5KItBUfGW3biQnM/zFVQWKZ2GgBIs9KTavEi
+         FP2LKwTYh97AhIRTzKrUIik1nrJQQYLXb5Aoq6G1M7pVRw9tRR4fGCAp4h8XIL1unF5m
+         7qcCRvdxGmgKHVabbBETTYiXxcC0mFlIG+8ZojIi5w1okgjbShdoXMT0z8iEVD9A7fuS
+         6ME02D+by3aN0VJv55y7Ofog77btwoFmjc/UuIxPNvbkb2Iev4tzrTiPOHSU7NM4U4xp
+         Csow==
+X-Gm-Message-State: AGi0PuZ2fhoLCy+S2p/mb4/VPC1mHtCt2wJDLtw4qoOCUNyGzwJluFKI
+        Ymy6iXnOfWcJiSMcTVbyG0c/JQ==
+X-Google-Smtp-Source: APiQypJR8TjV6IWsg8EiMXe3krO1G/5b6CF9U5LvrsXZTZVvbMldeYb8RHCe3x2zah4N0e0GQJUrtg==
+X-Received: by 2002:a2e:9209:: with SMTP id k9mr3264368ljg.230.1586770091507;
+        Mon, 13 Apr 2020 02:28:11 -0700 (PDT)
+Received: from ?IPv6:2a00:1fa0:449a:6c6f:9d43:1ad8:e18f:9ec1? ([2a00:1fa0:449a:6c6f:9d43:1ad8:e18f:9ec1])
+        by smtp.gmail.com with ESMTPSA id u19sm6782092lju.83.2020.04.13.02.28.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Apr 2020 02:28:10 -0700 (PDT)
+Subject: Re: [PATCH 4/6] Better documentation of BDPU guard
+To:     roucaries.bastien@gmail.com, netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        =?UTF-8?Q?Bastien_Roucari=c3=a8s?= <rouca@debian.org>
+References: <20200405134859.57232-1-rouca@debian.org>
+ <20200412235038.377692-1-rouca@debian.org>
+ <20200412235038.377692-5-rouca@debian.org>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <cb424879-0d4f-4fc6-3afe-e43f5676093e@cogentembedded.com>
+Date:   Mon, 13 Apr 2020 12:28:06 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: ce465346-b527-41ff-d7b2-08d7df8942ff
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Apr 2020 09:01:32.3281
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: DMjUPlsMcVq0TQkPosLDohd6pMo/8sBcrV9/aWCto7rqvtrWMhbL5yMmCog90DAtIt0bXU5Q9V32qo1cpebX7g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3635
-X-OriginatorOrg: synopsys.com
+In-Reply-To: <20200412235038.377692-5-rouca@debian.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leon@kernel.org>
-Date: Apr/12/2020, 07:08:54 (UTC+00:00)
+Hello!
 
-> [  281.170584] ------------[ cut here ]------------
+On 13.04.2020 2:50, roucaries.bastien@gmail.com wrote:
 
-Not objecting to the patch it-self (because usually stack trace is=20
-useless), but just FYI we use this marker in our CI to track for timeouts=20
-or crashes. I'm not sure if anyone else is using it.
+> From: Bastien Roucariès <rouca@debian.org>
+> 
+> Document that guard disable the port and how to reenable it
+> 
+> Signed-off-by: Bastien Roucariès <rouca@debian.org>
+> ---
+>   man/man8/bridge.8 | 13 ++++++++++++-
+>   1 file changed, 12 insertions(+), 1 deletion(-)
+> 
+> diff --git a/man/man8/bridge.8 b/man/man8/bridge.8
+> index bd33635a..9bfd942f 100644
+> --- a/man/man8/bridge.8
+> +++ b/man/man8/bridge.8
+> @@ -340,7 +340,18 @@ STP BPDUs.
+>   .BR "guard on " or " guard off "
+>   Controls whether STP BPDUs will be processed by the bridge port. By default,
+>   the flag is turned off allowed BPDU processing. Turning this flag on will
+> -cause the port to stop processing STP BPDUs.
+> +disables
 
-And actually, can you please explain why BQL is not suppressing your=20
-timeouts ?
+    Disable. And why break the line here?
 
----
-Thanks,
-Jose Miguel Abreu
+> +the bridge port if a STP BPDU packet is received.
+[...]
+
+MBR, Sergei
