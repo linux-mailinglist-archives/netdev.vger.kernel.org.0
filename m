@@ -2,140 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72CF01A6DBC
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 23:05:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AC771A6DBA
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 23:05:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388721AbgDMVFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 17:05:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44412 "EHLO
+        id S2388715AbgDMVFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 17:05:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733294AbgDMVFM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 17:05:12 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842D1C0A3BDC;
-        Mon, 13 Apr 2020 14:05:10 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id x66so11025339qkd.9;
-        Mon, 13 Apr 2020 14:05:10 -0700 (PDT)
+        with ESMTP id S1733294AbgDMVFE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 17:05:04 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31807C0A3BDC
+        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 14:05:04 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id z6so3842888plk.10
+        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 14:05:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EeQ8cPZJyMnqn3qp0XRBgz6RrgR26tWzPDHmc+2fnOM=;
-        b=CjtQsC66PMc5HraPdj9ULgl0I8UNFNaoXL8fU45Rx5NRMwAa1u6t9+jumKL0iav37x
-         /tywjmQvUxa2vTMLxcQKkc/P+1bnPucswYSqH4IhJgG1KMnp4Qg/J6pOnpz8g75GjL+v
-         a/2HDWioSOcGGK7tjtLnu4Lc83nKk2MZ6ICFS9M6M9l7OSsUHw6JWwrwmDfYiP5mZGbJ
-         0maX2a/AsBqa4I8HkYtfdZxlEBtaAZjroK87P0EceVEVaiJbdkvZ2QPs5GEicyERRXlR
-         8tOrGL1J3v5gSYKqdZqceB1OgEysedaUv8MRjBQAETbaDUK83rSfU6Uv+u3df/dyeXf9
-         ZEcg==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=idC7ItfnrIFIlS1g1m1N7fwLNkVheW5ZTlc48eqevzw=;
+        b=Mo637elaYr4wFv76QY7d/OnbxXZVgg4X3NWj9ksMSJx+rKbLRVCHLeYLoxNgA7j7OL
+         o8/nknphXY1LVzhiWAUG6uuOEG7yUlkwWN59U058wizOAAaILBDln7PgrXw49xHlh9Ya
+         KjUiYuZaM0TUMd785jFOBDwOw1q8ECDvthNZ1BGbUtsMoyhhJLhp3IJzgo37jF1SpUnR
+         hSdn9z35S7eS0wiELleWc89L4qxuFkpMr1bf30SQZsP259jY0KWCHstp34TaUk4vBNmZ
+         2Aw0iXuDibKPSv/UfNCEvMNhs9f0MfVzOVvdnw2G7kNg4T7ddp65iMBG1k+ZqxcU759k
+         +FCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EeQ8cPZJyMnqn3qp0XRBgz6RrgR26tWzPDHmc+2fnOM=;
-        b=PrgN2ziRBn0JgBTeE9UVt4S8T7bxUn+H2n53xrEI1VR+QkA0THTVzGdELIBj807mJB
-         NJBGTFFRDW3LWfNUkCi+r3lA9Yh3+ARHoNWpCRhv1SVVJx3YiF+GUMG0ep3Aa/b4wm4c
-         QbrmzN6fW+01cIzxpFlHB/QOQ0thJllWaELE9ivAoeMeS7Rnalnkzg4JWC+wSyJbBunj
-         0MMXnXOJq6RWttScKkm2vPQJoRt+STXFUjVmJ2yBwv7jcxQGsA5fvutc9ENC5L7F6GV9
-         1sbF/35LuoJ/LXGpPvw6yytqzKazth7atIyZeeF+CfEgKCbACdD5V40LGEvvJ9qNxdqU
-         zJ8w==
-X-Gm-Message-State: AGi0PuYCIL/QuLqakAyrllZkQc6XCQRnhBk8q/c248gYytM0NqZznFzR
-        UdehguRE3EKAlfOUCwA65xsR1JBA0p4uCg2ypQI=
-X-Google-Smtp-Source: APiQypJIPQcMRZSZaBjNWQXP2uxgKBJ6dTQb55JCjl/jSob8DKg+WUwl/6wUY9XZkqC7yRZAjcnsZYZYyIww4BV+ito=
-X-Received: by 2002:ae9:e854:: with SMTP id a81mr18268101qkg.36.1586811909682;
- Mon, 13 Apr 2020 14:05:09 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=idC7ItfnrIFIlS1g1m1N7fwLNkVheW5ZTlc48eqevzw=;
+        b=XomXsdTglSzn+c+8J2WFomVXMg6S38Ri75ixm06kmvyj+iIkL45T9X3zlMqZe+ZPjS
+         o0v5ozhUCIBXdKPtwhUeLqgruseeK/skWqGM0soAXDX2qoEyi34QIBzrJT7ElabSKu01
+         +Ed+pR6fKYYdEq25RX9x+5HxSx6gwF/Glpn/z85uqzbpxf2nacvX9Ewzt27imQmQdqcC
+         Sej+E2rTNv8W7xK5CpxF3RhoZsVMAvUAiu+1GuzPhofY26lhLFrmWcEtBxus3mgOZ7HB
+         PcEh65Qf7JPbiVDuKTUb3ErExme0PfX6izIdnyvB9Vitz8deAHU/Ldy1kG8aa/CWuThB
+         IjAA==
+X-Gm-Message-State: AGi0Pub5JN+fZr+Y0hFtY9IE0+QS/X0TcAiPC02idMY/JmeUjY1yUfmG
+        1xSshSsmAJtLMob/GcS5+mW/uQ==
+X-Google-Smtp-Source: APiQypI8Gx2NEaD/17ZJNQ2uavJClodZwckz4Uj/oerUbY8HbnRAElUIps40qZYxMnxl521ErszvFw==
+X-Received: by 2002:a17:90b:909:: with SMTP id bo9mr25142183pjb.125.1586811903690;
+        Mon, 13 Apr 2020 14:05:03 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id k5sm9476775pfp.147.2020.04.13.14.05.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Apr 2020 14:05:03 -0700 (PDT)
+Date:   Mon, 13 Apr 2020 14:05:00 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Petr Machata <petrm@mellanox.com>
+Cc:     netdev@vger.kernel.org, Xin Long <lucien.xin@gmail.com>,
+        William Tu <u9012063@gmail.com>
+Subject: Re: [PATCH iproute2-next v2] ip: link_gre: Do not send ERSPAN
+ attributes to GRE tunnels
+Message-ID: <20200413140500.3a6d4bda@hermes.lan>
+In-Reply-To: <d8dd14970b391c9c7e9ed11377d43dc56435eca5.1585954448.git.petrm@mellanox.com>
+References: <d8dd14970b391c9c7e9ed11377d43dc56435eca5.1585954448.git.petrm@mellanox.com>
 MIME-Version: 1.0
-References: <20200408232520.2675265-1-yhs@fb.com> <20200408232526.2675664-1-yhs@fb.com>
- <CAEf4Bza8w9ypepeu6eoJkiXqKqEXtWAOONDpZ9LShivKUCOJbg@mail.gmail.com>
- <334a91d2-1567-bf3d-4ae6-305646738132@fb.com> <20200411231719.4nybod6ku524eawv@ast-mbp>
-In-Reply-To: <20200411231719.4nybod6ku524eawv@ast-mbp>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 13 Apr 2020 14:04:58 -0700
-Message-ID: <CAEf4BzaH6oMM=mxaBq3TOK1aK9GmBy-rd0gR12RK6NwVyjUDPg@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 05/16] bpf: create file or anonymous dumpers
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 11, 2020 at 4:17 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Fri, Apr 10, 2020 at 05:23:30PM -0700, Yonghong Song wrote:
-> > >
-> > > So it seems like few things would be useful:
-> > >
-> > > 1. end flag for post-aggregation and/or footer printing (seq_num == 0
-> > > is providing similar means for start flag).
-> >
-> > the end flag is a problem. We could say hijack next or stop so we
-> > can detect the end, but passing a NULL pointer as the object
-> > to the bpf program may be problematic without verifier enforcement
-> > as it may cause a lot of exceptions... Although all these exception
-> > will be silenced by bpf infra, but still not sure whether this
-> > is acceptable or not.
->
-> I don't like passing NULL there just to indicate something to a program.
-> It's not too horrible to support from verifier side, but NULL is only
-> one such flag. What does it suppose to indicate? That dumper prog
-> is just starting? or ending? Let's pass (void*)1, and (void *)2 ?
-> I'm not a fan of such inband signaling.
-> imo it's cleaner and simpler when that object pointer is always valid.
+On Sat,  4 Apr 2020 01:55:34 +0300
+Petr Machata <petrm@mellanox.com> wrote:
 
-I'm not proposing to pass fake pointers. I proposed to have bpfdump
-context instead. E.g., one way to do this would be something like:
+> In the commit referenced below, ip link started sending ERSPAN-specific
+> attributes even for GRE and gretap tunnels. Fix by more carefully
+> distinguishing between the GRE/tap and ERSPAN modes. Do not show
+> ERSPAN-related help in GRE/tap mode, likewise do not accept ERSPAN
+> arguments, or send ERSPAN attributes.
+> 
+> Fixes: 83c543af872e ("erspan: set erspan_ver to 1 by default")
+> Signed-off-by: Petr Machata <petrm@mellanox.com>
+> Acked-by: William Tu <u9012063@gmail.com>
 
-struct bpf_dump_context {
-  struct seq_file *seq;
-  u64 seq_num;
-  int flags; /* 0 | BPF_DUMP_START | BPF_DUMP_END */
-};
-
-int prog(struct bpf_dump_context *ctx, struct netlink_sock *sk) {
-  if (ctx->flags & BPF_DUMP_END) {
-    /* emit summary */
-    return 0;
-  }
-
-  /* sk must be not null here. */
-}
-
-
-This is one way. We can make it simpler by saying that sk == NULL is
-always end of aggregation for given seq_file, then we won't need flags
-and will require `if (!sk)` check explicitly. Don't know what's the
-best way, but what I'm advocating for is to have a way for BPF program
-to know that processing is finished and it's time to emit summary. See
-my other reply in this thread with example use cases.
-
-
->
-> > > 2. Some sort of "session id", so that bpfdumper can maintain
-> > > per-session intermediate state. Plus with this it would be possible to
-> > > detect restarts (if there is some state for the same session and
-> > > seq_num == 0, this is restart).
-> >
-> > I guess we can do this.
->
-> beyond seq_num passing session_id is a good idea. Though I don't quite see
-> the use case where you'd need bpfdumper prog to be stateful, but doesn't hurt.
-
-State per session seems most useful, so session id + hashmap solves
-it. If we do sk_local storage per seq_file, that might be enough as
-well, I guess...
-
-Examples are any kind of summary stats across all sockets/tasks/etc.
-
-Another interesting use case: produce map from process ID (tgid) to
-bpf_maps, bpf_progs, bpf_links (or sockets, or whatever kind of file
-we need). You'd need FD/file -> kernel object map and then kernel
-object -> tgid map. I think there are many useful use-cases beyond
-"one line per object" output cases that inspired bpfdump in the first
-place.
+Applied, thanks for resending
