@@ -2,125 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F1651A6C2E
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 20:46:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDDC91A6C33
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 20:47:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387764AbgDMSqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 14:46:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51040 "EHLO
+        id S1729034AbgDMSrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 14:47:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2387752AbgDMSqh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 14:46:37 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFAEAC0A3BDC;
-        Mon, 13 Apr 2020 11:46:36 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id t3so6720838qkg.1;
-        Mon, 13 Apr 2020 11:46:36 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1728106AbgDMSre (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 14:47:34 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89202C0A3BDC;
+        Mon, 13 Apr 2020 11:47:34 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id f3so10502025ioj.1;
+        Mon, 13 Apr 2020 11:47:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=B4/iE8GVKGojMY11LgRwzzoKBbfHwK52clilGbP458E=;
-        b=pTO/WjNpVdwOK4PnWxhCMTYXfGmfB8muGhdDm+Ce71BPZe+MW8p8yeTQiayHizwzwT
-         dgEF6aOD4BwoyF68f9gOMrQ+2Hz25jt4W30K57oMp+1GSK8UHczVG+IbXzIV//kzAGXX
-         b10k2DpkBpg6axGglNnH/DfoXuIXAIXE5R4YBbMg4PXJ6fw+saDmIvuH5OCjZ+6rkQxi
-         sksjChxy7JVXLzBwTOGmRrxaWIStYn0sOXZ/9bzAaR9VT2BNqd2x7Z2Iniqj562q7N27
-         HBiyhXviyY2M99/y9yU9vXJiTNZyQyP3vc+Ec1KeBa/nFjM8yKPUEy/MXjFtS7iRBAhU
-         zDxQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Eir63x8UrXHEi3SxEoTA6qtHgkzE3yeOTDrEiB0kVN0=;
+        b=HLQHe86pdUzXT3pmls/StC/bhTvrHAWiiZyKcqZjDd+5x3QLeSNqwKyLOMbX2vkBQz
+         IJLgoEjo5yM/myRt1xjq5Dlhy7jihjYVMlsMoVnahMlfQ/NPntWOCqH22EI7ZjC/jStg
+         M+nRYnePMDvioCX9n7UmMIW70N6kH7Hjc1Zb9V+YbiskA/pZ1iEH7wWwo5zngBf0WJ8W
+         YRQ5QJbdr/1UOTiQ5ZacfC+rsC04YhIK1C/ookqyIa0uLmkXKW7FvD/2MZc/VUym49at
+         +EuAI4eCwQis5fYZv8lrngFb/pATJmd9ub6YmFybBmNEJvfo3Wus5r1mn+VGfRROxcut
+         qNHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=B4/iE8GVKGojMY11LgRwzzoKBbfHwK52clilGbP458E=;
-        b=oJhg8WOoeU92k7y35GONy5QpXbFhzaePUNZPxjoNDG6IEvU3xkd000pf5cPImWBni8
-         UdtytLlxalwBPEuuChA28+8HV/Eo/AKJZwmiB6NZ7FmLx7sFaUw8rxgIKyl4M0yBgwxF
-         1AUCBSpYBt4L2tsJA8uKejztf34YD7Fq6Ir4vEpFQ4LACeMq0JThVv4SQXK3iPalDFpH
-         24p9mQdfUcHDr/HqKR8dE3cMmwDZDywWWteOCwbrR7g3nXJpKhBNpnzwy+A+XpV56rXo
-         hIDR/s4mY4cQtZbkqlZOHIjRSaBHlqdHQOKxA7KUP9e0lyvzPyA15RBCMLHQgZN6B3IJ
-         00Sg==
-X-Gm-Message-State: AGi0PuZU5bLUvzKsEOuyzILA38X7FuboHrDBAQrup777N9x5IoeoDSOP
-        5y4lfEQyzdhr2rC4JQ9iXv4=
-X-Google-Smtp-Source: APiQypLKepMwA9LtxBn20WaoLlrzuTVCfwR/X0X8krJlPBMLp0nDMiksr03kHgbiZ5zOubCeR4gVhA==
-X-Received: by 2002:a37:414f:: with SMTP id o76mr6343409qka.462.1586803595747;
-        Mon, 13 Apr 2020 11:46:35 -0700 (PDT)
-Received: from localhost ([199.96.181.106])
-        by smtp.gmail.com with ESMTPSA id j2sm9039587qth.57.2020.04.13.11.46.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Apr 2020 11:46:35 -0700 (PDT)
-Date:   Mon, 13 Apr 2020 14:46:34 -0400
-From:   Tejun Heo <tj@kernel.org>
-To:     Christian Brauner <christian.brauner@ubuntu.com>
-Cc:     Jens Axboe <axboe@kernel.dk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-api@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Serge Hallyn <serge@hallyn.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saravana Kannan <saravanak@google.com>,
-        Jan Kara <jack@suse.cz>, David Howells <dhowells@redhat.com>,
-        Seth Forshee <seth.forshee@canonical.com>,
-        David Rheinsberg <david.rheinsberg@gmail.com>,
-        Tom Gundersen <teg@jklm.no>,
-        Christian Kellner <ckellner@redhat.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        =?iso-8859-1?Q?St=E9phane?= Graber <stgraber@ubuntu.com>,
-        linux-doc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 4/8] kernfs: handle multiple namespace tags
-Message-ID: <20200413184634.GF60335@mtj.duckdns.org>
-References: <20200408152151.5780-1-christian.brauner@ubuntu.com>
- <20200408152151.5780-5-christian.brauner@ubuntu.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Eir63x8UrXHEi3SxEoTA6qtHgkzE3yeOTDrEiB0kVN0=;
+        b=EvvoMBhTrDPusovfWQL7F5XaWajHm4rrpLRtpfPbtA9VOV/5FxoX3+jPtWHFV+2zV1
+         IRicL+BrrU11BGKuyoSA/mzAILhNxMfxWX9++ETaj7+8pcbrNsZ1jp0CSzlUZbroLp88
+         BXFGXouc83QB8F2I2Hy+Lm4U6hSMv7Vwt3uCAG8K5+EPphDB2OJNbWCsGFq4vcuzC+xT
+         QHKgwW1mVzmeTKcFehn5Btu7eGiQs/ix96ruY1L8oh4x2HQIR5ooK+ZssiEpji3E7YkN
+         aN8JNCs9vcOqjraGs3jJyfqRFbEt05Zee8B+j+ZAKJr2AAHoXwAt/4qgqEjwIUTwTTLH
+         JGMg==
+X-Gm-Message-State: AGi0PuZ4xP6o4+/JDERx2+RlJT0Q/lnlhWhbUQZmrgUIx0gy5kJBhIM/
+        aAOtgQPebmEcWvoGsVpz+lHqHj7tFmZqvNyW6J4=
+X-Google-Smtp-Source: APiQypJVK/Z4kWTUDIK9lR1fi/OwosdQ361QYFvDHeeeyydUZF3ldjlzGuW5n+2h9V94+hU7vsXtbs6feLs7ozLHLCQ=
+X-Received: by 2002:a02:9642:: with SMTP id c60mr17089046jai.87.1586803652462;
+ Mon, 13 Apr 2020 11:47:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200408152151.5780-5-christian.brauner@ubuntu.com>
+References: <20200412191824.GA109724@laptop>
+In-Reply-To: <20200412191824.GA109724@laptop>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Mon, 13 Apr 2020 11:47:21 -0700
+Message-ID: <CAKgT0Udn3sE4iZci2dRNun6i3DMoG==kuksX_gLXWQORXA1kWA@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] BUG: e1000: infinitely loop at e1000_set_link_ksettings
+To:     Maxim Zhukov <mussitantesmortem@gmail.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Netdev <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 08, 2020 at 05:21:47PM +0200, Christian Brauner wrote:
-> Since [1] kernfs supports namespace tags. This feature is essential to
-> enable sysfs to present different views of on various parts depending on
-> the namespace tag. For example, the /sys/class/net/ directory will only
-> show network devices that belong to the network namespace that sysfs was
-> mounted in. This is achieved by stashing a reference to the network
-> namespace of the task mounting sysfs in the super block. And when a
-> lookup operation is performed on e.g. /sys/class/net/ kernfs will
-> compare the network namespace tag of the kernfs_node associated with the
-> device and kobject of the network device to the network namespace of the
-> network device. This ensures that only network devices owned by the
-> network namespace sysfs was mounted in are shown, a feature which is
-> essential to containers.
-> For loopfs to show correct permissions in sysfs just as with network
-> devices we need to be able to tag kernfs_super_info with additional
-> namespaces. This extension was even already mentioned in a comment to
-> struct kernfs_super_info:
->   /*
->    * Each sb is associated with one namespace tag, currently the
->    * network namespace of the task which mounted this kernfs
->    * instance.  If multiple tags become necessary, make the following
->    * an array and compare kernfs_node tag against every entry.
->    */
-> This patch extends the kernfs_super_info and kernfs_fs_context ns
-> pointers to fixed-size arrays of namespace tags. The size is taken from
-> the namespaces currently supported by kobjects, i.e. we don't extend it
-> to cover all namespace but only the ones kernfs needs to support.
-> In addition, the kernfs_node struct gains an additional member that
-> indicates the type of namespace this kernfs_node was tagged with. This
-> allows us to simply retrieve the correct namespace tag from the
-> kernfs_fs_context and kernfs_super_info ns array with a simple indexing
-> operation. This has the advantage that we can just keep passing down the
-> correct namespace instead of passing down the array.
-> 
-> [1]: 608b4b9548de ("netns: Teach network device kobjects which namespace they are in.")
-> Cc: Tejun Heo <tj@kernel.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
+On Sun, Apr 12, 2020 at 4:12 PM Maxim Zhukov
+<mussitantesmortem@gmail.com> wrote:
+>
+> On Qemu X86 (kernel 5.4.31):
+What version of QEMU are you running? That would tell us more about
+how the device is being emulated.
 
-Acked-by: Tejun Heo <tj@kernel.org>
+> The system-maintenance daemon hangout on D-state at startup on
+> ioctl(ETHTOOL_SSET) for setup advertising, duplex, etc...
+>
+> kgdb stacktrace:
+>
+> ----
+>
 
-Thanks.
+I am dropping the first backtrace since it is a symptom of the trace
+below. Essentially the issue is all calls to e1000_reinit_locked get
+stuck because the __E1000_RESETTING bit is stuck set because this
+first thread is stuck waiting on napi_disable to succeed.
 
--- 
-tejun
+> Also stalled workers backtrace:
+>
+> #3  0xc19e0870 in schedule () at kernel/sched/core.c:4150
+> #4  0xc19e2f3e in schedule_timeout (timeout=<optimized out>) at kernel/time/timer.c:1895
+> #5  0xc19e3041 in schedule_timeout_uninterruptible (timeout=<optimized out>) at kernel/time/timer.c:1929
+> #6  0xc10b3dd1 in msleep (msecs=<optimized out>) at kernel/time/timer.c:2048
+> #7  0xc1771fb4 in napi_disable (n=0xdec0b7d8) at net/core/dev.c:6240
+> #8  0xc15f0e87 in e1000_down (adapter=0xdec0b540) at drivers/net/ethernet/intel/e1000/e1000_main.c:522
+> #9  0xc15f0f35 in e1000_reinit_locked (adapter=0xdec0b540) at drivers/net/ethernet/intel/e1000/e1000_main.c:545
+> #10 0xc15f6ecd in e1000_reset_task (work=0xdec0bca0) at drivers/net/ethernet/intel/e1000/e1000_main.c:3506
+> #11 0xc106c882 in process_one_work (worker=0xdef4d840, work=0xdec0bca0) at kernel/workqueue.c:2272
+> #12 0xc106ccc6 in worker_thread (__worker=0xdef4d840) at kernel/workqueue.c:2418
+> #13 0xc1070657 in kthread (_create=0xdf508800) at kernel/kthread.c:255
+> #14 0xc19e4078 in ret_from_fork () at arch/x86/entry/entry_32.S:813
+
+So the question I would have is what is causing napi_disable to stall
+out? I have looked over the latest QEMU code and the driver code and
+both the Tx and Rx paths should have been shut down at the point where
+napi_disable is called. I'm assuming there is little to no traffic
+present so the NAPI thread shouldn't be stuck in the polling state for
+that reason. The only other thing I can think of is that somehow this
+is getting scheduled after the interface was already brought down
+causing napi_disable to be called a second time for the same NAPI
+instance.
+
+A dmesg log for the system at the time of the hang might be useful as
+it could include some information on what other configuration options
+might have been changed that led to us blocking on the napi_disable
+call.
+
+Other than that, how easy is it to trigger this hang. Is this
+happening every time you start the guest, or does this just happen
+periodically?
