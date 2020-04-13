@@ -2,92 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33CF51A6E33
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 23:21:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7D8E1A6E5F
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 23:33:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388992AbgDMVV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 17:21:26 -0400
-Received: from mx2.suse.de ([195.135.220.15]:51744 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388978AbgDMVVZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Apr 2020 17:21:25 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 0F829AD4F;
-        Mon, 13 Apr 2020 21:21:23 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 7D775E0FAD; Mon, 13 Apr 2020 23:21:20 +0200 (CEST)
-From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool] features: accept long legacy flag names when setting
- features
-To:     John Linville <linville@tuxdriver.com>
-Cc:     netdev@vger.kernel.org, Konstantin Kharlamov <hi-angel@yandex.ru>
-Message-Id: <20200413212120.7D775E0FAD@unicorn.suse.cz>
-Date:   Mon, 13 Apr 2020 23:21:20 +0200 (CEST)
+        id S2389141AbgDMVdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 17:33:52 -0400
+Received: from smtprelay0129.hostedemail.com ([216.40.44.129]:47468 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2389040AbgDMVdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 17:33:50 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay06.hostedemail.com (Postfix) with ESMTP id D45AF18027F9D;
+        Mon, 13 Apr 2020 21:33:46 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:966:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2196:2199:2393:2559:2562:2693:2828:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3868:3871:3872:4321:4385:5007:6119:6742:6743:7808:8660:10004:10400:10466:10848:11026:11232:11657:11658:11914:12043:12048:12296:12297:12438:12740:12760:12895:13069:13148:13230:13311:13357:13439:14659:14721:21080:21451:21627:21990:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: badge84_5a5696689f027
+X-Filterd-Recvd-Size: 3380
+Received: from XPS-9350.home (unknown [47.151.136.130])
+        (Authenticated sender: joe@perches.com)
+        by omf07.hostedemail.com (Postfix) with ESMTPA;
+        Mon, 13 Apr 2020 21:33:40 +0000 (UTC)
+Message-ID: <efd6ceb1f182aa7364e9706422768a1c1335aee4.camel@perches.com>
+Subject: Re: [PATCH 2/2] crypto: Remove unnecessary memzero_explicit()
+From:   Joe Perches <joe@perches.com>
+To:     Waiman Long <longman@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        David Rientjes <rientjes@google.com>
+Cc:     linux-mm@kvack.org, keyrings@vger.kernel.org,
+        linux-kernel@vger.kernel.org, x86@kernel.org,
+        linux-crypto@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, linux-ppp@vger.kernel.org,
+        wireguard@lists.zx2c4.com, linux-wireless@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org, linux-btrfs@vger.kernel.org,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
+        linux-fscrypt@vger.kernel.org, ecryptfs@vger.kernel.org,
+        kasan-dev@googlegroups.com, linux-bluetooth@vger.kernel.org,
+        linux-wpan@vger.kernel.org, linux-sctp@vger.kernel.org,
+        linux-nfs@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        cocci@systeme.lip6.fr, linux-security-module@vger.kernel.org,
+        linux-integrity@vger.kernel.org
+Date:   Mon, 13 Apr 2020 14:31:32 -0700
+In-Reply-To: <20200413211550.8307-3-longman@redhat.com>
+References: <20200413211550.8307-1-longman@redhat.com>
+         <20200413211550.8307-3-longman@redhat.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.34.1-2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The legacy feature flags have long names (e.g. "generic-receive-offload")
-and short names (e.g. "gro"). While "ethtool -k" shows only long names,
-"ethtool -K" accepts only short names. This is a bit confusing as users
-have to resort to documentation to see what flag name to use; in
-particular, if a legacy flag corresponds to only one actual kernel feature,
-"ethtool -k" shows the output in the same form as if long flag name were
-a kernel feature name but this name cannot be used to set the flag/feature.
+On Mon, 2020-04-13 at 17:15 -0400, Waiman Long wrote:
+> Since kfree_sensitive() will do an implicit memzero_explicit(), there
+> is no need to call memzero_explicit() before it. Eliminate those
+> memzero_explicit() and simplify the call sites.
 
-Accept both short and long legacy flag names in "ethool -K".
+2 bits of trivia:
 
-Reported-by: Konstantin Kharlamov <hi-angel@yandex.ru>
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
----
- ethtool.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+> diff --git a/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c b/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c
+[]
+> @@ -391,10 +388,7 @@ int sun8i_ce_aes_setkey(struct crypto_skcipher *tfm, const u8 *key,
+>  		dev_dbg(ce->dev, "ERROR: Invalid keylen %u\n", keylen);
+>  		return -EINVAL;
+>  	}
+> -	if (op->key) {
+> -		memzero_explicit(op->key, op->keylen);
+> -		kfree(op->key);
+> -	}
+> +	kfree_sensitive(op->key);
+>  	op->keylen = keylen;
+>  	op->key = kmemdup(key, keylen, GFP_KERNEL | GFP_DMA);
+>  	if (!op->key)
 
-diff --git a/ethtool.c b/ethtool.c
-index 1b4e08b6e60f..73f15b3912c1 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -2297,26 +2297,33 @@ static int do_sfeatures(struct cmd_context *ctx)
- 	/* Generate cmdline_info for legacy flags and kernel-named
- 	 * features, and parse our arguments.
- 	 */
--	cmdline_features = calloc(ARRAY_SIZE(off_flag_def) + defs->n_features,
-+	cmdline_features = calloc(2 * ARRAY_SIZE(off_flag_def) +
-+				  defs->n_features,
- 				  sizeof(cmdline_features[0]));
- 	if (!cmdline_features) {
- 		perror("Cannot parse arguments");
- 		rc = 1;
- 		goto err;
- 	}
--	for (i = 0; i < ARRAY_SIZE(off_flag_def); i++)
-+	j = 0;
-+	for (i = 0; i < ARRAY_SIZE(off_flag_def); i++) {
- 		flag_to_cmdline_info(off_flag_def[i].short_name,
- 				     off_flag_def[i].value,
- 				     &off_flags_wanted, &off_flags_mask,
--				     &cmdline_features[i]);
-+				     &cmdline_features[j++]);
-+		flag_to_cmdline_info(off_flag_def[i].long_name,
-+				     off_flag_def[i].value,
-+				     &off_flags_wanted, &off_flags_mask,
-+				     &cmdline_features[j++]);
-+	}
- 	for (i = 0; i < defs->n_features; i++)
- 		flag_to_cmdline_info(
- 			defs->def[i].name, FEATURE_FIELD_FLAG(i),
- 			&FEATURE_WORD(efeatures->features, i, requested),
- 			&FEATURE_WORD(efeatures->features, i, valid),
--			&cmdline_features[ARRAY_SIZE(off_flag_def) + i]);
-+			&cmdline_features[j++]);
- 	parse_generic_cmdline(ctx, &any_changed, cmdline_features,
--			      ARRAY_SIZE(off_flag_def) + defs->n_features);
-+			      2 * ARRAY_SIZE(off_flag_def) + defs->n_features);
- 	free(cmdline_features);
- 
- 	if (!any_changed) {
--- 
-2.26.0
+It might be a defect to set op->keylen before the kmemdup succeeds.
+
+> @@ -416,10 +410,7 @@ int sun8i_ce_des3_setkey(struct crypto_skcipher *tfm, const u8 *key,
+>  	if (err)
+>  		return err;
+>  
+> -	if (op->key) {
+> -		memzero_explicit(op->key, op->keylen);
+> -		kfree(op->key);
+> -	}
+> +	free_sensitive(op->key, op->keylen);
+
+Why not kfree_sensitive(op->key) ?
+
 
