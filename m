@@ -2,232 +2,322 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2C031A6CE5
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 22:00:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E963F1A6CF6
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 22:09:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388184AbgDMUAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 16:00:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34262 "EHLO
+        id S2388234AbgDMUJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 16:09:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2388135AbgDMUAG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 16:00:06 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F09EC0A3BDC;
-        Mon, 13 Apr 2020 13:00:06 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id b10so8188174qtt.9;
-        Mon, 13 Apr 2020 13:00:06 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S2387774AbgDMUJd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 16:09:33 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AAD0C0A3BDC
+        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 13:09:33 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id x18so7267621wrq.2
+        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 13:09:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W3a8iTpmroxpZsTfoI/UNT2i6KRHATNcoYavmwnD5FE=;
-        b=eyIAXPGRHmxECNcWmKMeD86SXvZowNYjd4we8xO/vZgtlGB5Eq016WWHZlViSuEcoA
-         FmTpm3cEf5xoMSf5QFL2ox24ZPA0ToHHyUfC6ovMb00Q8OGWKNw4UJII5tAg10tPC8S+
-         myGPedMfvTg47IHbFjs3KPOOG0pHRCgVA9IYnCxCEuqwg7KjHsgWWzHo3qS8yV0UFkA6
-         ikRljFneNb8y3++ZR/SnbElDD2M0Sj7HHpV+948XmbbbRJeWxIAxVHcptT4poDVh6LGA
-         q9S3tJidSTvCgb7XlCQA0q/1n7DVlgv2/kEmHOYLehwvLqtNVhg+H0E1M1E/xwYaZe3g
-         dYkQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ZQmuwjWbtkJ3PTbjB29xBrpIFXLcmxlqXXC/S0/UvWo=;
+        b=RNLrOKUE4VRqpYB22IZ58YwyoWPWLMeIP01VYYYvUpWU9L6ewbwBEhMiGZRbjtfwmL
+         o/PvWOcsbHkqvam5ebeW3AWe8zqEz2rySNeCfSIz0bgfSlWsvKB6ZWoRjhpbPP6FIA6k
+         2LeHSLVYCmGBSyUbDKZVr4sPgTrY9iyIMwC1pXeqi5P+V0K/BWHzpyrI6g75u5wbpon9
+         rTX9b170CivmghnLZuwuB8Zap6m6yrGuUt9LRAmnUxZHDeRM/yWQKHCTcC85Oypur6O1
+         8CVyTDH0NZBJdDxVHk7IJ+2LuClfz27yqkiET6jijPJeZ1HUQGKYitYTRagOR82igNFg
+         qmLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W3a8iTpmroxpZsTfoI/UNT2i6KRHATNcoYavmwnD5FE=;
-        b=bFLytK8rPagVY/KgtqYzNa/NT7pkkNLR1BHdMQq47fPSQRmYA3MXAB+YgwBfFWv1l7
-         Z1ghMGRC5muRjKEAYUFPR7L547U+dg9aj9RPz1KZAZ53SkNVUOZOaxkMNEq34PqQe2fP
-         Oe31xvSmsEyEe/9ZXcmARn0eyiNR3wAsp5lEYVYOZk3HIa13FqnW/gVkqWpPtL9tItmq
-         OkOFLzATGcgb637n30pc+4eOBxEjNSaC101O4QbMtpCQr/zNIZYbqUFooTfNb16Wz9SL
-         /nj19fyTbflHOxZPSYowNgI6h3VqGXqDODSdfqB0nkjh2Srk06lYIC7TGV48D7RmFqPr
-         aV6w==
-X-Gm-Message-State: AGi0PuaYKolTuCLhdp5J3FRrn+y6YCwEecNzQJ4zfm4wsv/bVdtyOmwh
-        +QCiEX3/GxXPMgCdmF9FZlvd/YMl3NBuDIBsfFK86B3+MLU=
-X-Google-Smtp-Source: APiQypIThO/5CZxH059Udi+owaSa423TCMmqo2FObcQQSlYHHvpQstTGXfjyMdi0Nl3vTcTcrxxVIgSmp1boSXcCF38=
-X-Received: by 2002:ac8:193d:: with SMTP id t58mr12158019qtj.93.1586808005426;
- Mon, 13 Apr 2020 13:00:05 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ZQmuwjWbtkJ3PTbjB29xBrpIFXLcmxlqXXC/S0/UvWo=;
+        b=SRNUGQPxcXiESDzsJKhb3nPsQuR9orOMM2FhF4IytZRMNDcFz/SB0oxVXAZ4KWq+KW
+         Ylx8ojE+o0zuZu31x+ZkHjxgGTff5rX/BvdCPIH1JPP6EZ1Y+XeJBGhR+X0uP+SR0Xjf
+         HkJrVe606mL/b29QUM8LebIxXVscNwLonHa9q04Atzup6+zKDGafPBpoNFyULJXGh/mx
+         ovFRih6bunZIMqs1oUASn5GqclJ84jqtGsb3JSkrH8Iy7HHKQTEL8K2udthCivO5StAc
+         FRn1GHgzyh4a3JLdceh07+McQHyX47g8RwzQm3qES9bTV4zNHlZ57gIDSZeu8Nx3FohV
+         X+bw==
+X-Gm-Message-State: AGi0Pubg+fyIi05K1RZ+Bl1AJB7IcQTGat4UDx9rS8vrctctNnvh6vOv
+        nWsXQZ0ANIjEDsJnYf4O7GpCu+zspGg=
+X-Google-Smtp-Source: APiQypLjXHxpM/mE6UxwP23U8wBRSlD7B1uNiRthA1o4AvwwqP4O/8S5LWQDSzCkofUKTH2IKkXWfA==
+X-Received: by 2002:a5d:5112:: with SMTP id s18mr20578206wrt.306.1586808571748;
+        Mon, 13 Apr 2020 13:09:31 -0700 (PDT)
+Received: from white ([188.27.148.74])
+        by smtp.gmail.com with ESMTPSA id 132sm16403062wmc.47.2020.04.13.13.09.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Apr 2020 13:09:31 -0700 (PDT)
+Date:   Mon, 13 Apr 2020 23:09:27 +0300
+From:   =?utf-8?B?TGXFn2UgRG9ydSBDxINsaW4=?= <lesedorucalin01@gmail.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] net: UDP repair mode for retrieving the send queue of
+ corked UDP socket
+Message-ID: <20200413200927.GA22493@white>
+References: <20200408205954.GA15086@white>
+ <20200412.205611.844961656085784911.davem@davemloft.net>
 MIME-Version: 1.0
-References: <20200408232520.2675265-1-yhs@fb.com> <20200408232526.2675664-1-yhs@fb.com>
- <CAEf4Bza8w9ypepeu6eoJkiXqKqEXtWAOONDpZ9LShivKUCOJbg@mail.gmail.com> <334a91d2-1567-bf3d-4ae6-305646738132@fb.com>
-In-Reply-To: <334a91d2-1567-bf3d-4ae6-305646738132@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 13 Apr 2020 12:59:54 -0700
-Message-ID: <CAEf4BzaYYhK8PpO4Swcj0dqjYg+bn_3OkEnqjCXUgfkkHZgWMw@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 05/16] bpf: create file or anonymous dumpers
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200412.205611.844961656085784911.davem@davemloft.net>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 10, 2020 at 5:23 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 4/10/20 4:25 PM, Andrii Nakryiko wrote:
-> > On Wed, Apr 8, 2020 at 4:26 PM Yonghong Song <yhs@fb.com> wrote:
-> >>
-> >> Given a loaded dumper bpf program, which already
-> >> knows which target it should bind to, there
-> >> two ways to create a dumper:
-> >>    - a file based dumper under hierarchy of
-> >>      /sys/kernel/bpfdump/ which uses can
-> >>      "cat" to print out the output.
-> >>    - an anonymous dumper which user application
-> >>      can "read" the dumping output.
-> >>
-> >> For file based dumper, BPF_OBJ_PIN syscall interface
-> >> is used. For anonymous dumper, BPF_PROG_ATTACH
-> >> syscall interface is used.
-> >>
-> >> To facilitate target seq_ops->show() to get the
-> >> bpf program easily, dumper creation increased
-> >> the target-provided seq_file private data size
-> >> so bpf program pointer is also stored in seq_file
-> >> private data.
-> >>
-> >> Further, a seq_num which represents how many
-> >> bpf_dump_get_prog() has been called is also
-> >> available to the target seq_ops->show().
-> >> Such information can be used to e.g., print
-> >> banner before printing out actual data.
-> >
-> > So I looked up seq_operations struct and did a very cursory read of
-> > fs/seq_file.c and seq_file documentation, so I might be completely off
-> > here.
-> >
-> > start() is called before iteration begins, stop() is called after
-> > iteration ends. Would it be a bit better and user-friendly interface
-> > to have to extra calls to BPF program, say with NULL input element,
-> > but with extra enum/flag that specifies that this is a START or END of
-> > iteration, in addition to seq_num?
->
-> The current design always pass a valid object (task, file, netlink_sock,
-> fib6_info). That is, access to fields to those data structure won't
-> cause runtime exceptions.
->
-> Therefore, with the existing seq_ops implementation for ipv6_route
-> and netlink, etc, we don't have END information. We can get START
-> information though.
+On Sun, Apr 12, 2020 at 08:56:11PM -0700, David Miller wrote:
+> From: Lese Doru Calin <lesedorucalin01@gmail.com>
+> Date: Wed, 8 Apr 2020 23:59:54 +0300
+> 
+> > +static int udp_peek_sndq(struct sock *sk, struct msghdr *msg, int off, int len)
+> > +{
+> > +	struct sk_buff *skb;
+> > +	int copied = 0, err = 0, copy;
+> 
+> Please use reverse christmas tree (longest to shortest) ordering for
+> local variables.
+> 
+> > +static int udp6_peek_sndq(struct sock *sk, struct msghdr *msg, int off, int len)
+> > +{
+> > +	struct sk_buff *skb;
+> > +	int copied = 0, err = 0, copy;
+> 
+> Likewise.
+> 
+> Thank you.
 
-Right, I understand this about current implementation, because it
-calls BPF program from show. But I noticed also stop(), which
+I changed it accordingly. I hope it is ok.
 
->
-> >
-> > Also, right now it's impossible to write stateful dumpers that do any
-> > kind of stats calculation, because it's impossible to determine when
-> > iteration restarted (it starts from the very beginning, not from the
-> > last element). It's impossible to just rememebr last processed
-> > seq_num, because BPF program might be called for a new "session" in
-> > parallel with the old one.
->
-> Theoretically, session end can be detected by checking the return
-> value of last bpf_seq_printf() or bpf_seq_write(). If it indicates
-> an overflow, that means session end.
+Best regards,
+Lese Doru
 
-That's not what I meant by session end. If there is an overflow, the
-session is going to be restart from start (but it's still the same
-session, we just got bigger output buffer).
+Signed-off-by: Lese Doru Calin <lesedorucalin01@gmail.com>
+---
+ include/linux/udp.h      |    3 +-
+ include/uapi/linux/udp.h |    1 
+ net/ipv4/udp.c           |   60 +++++++++++++++++++++++++++++++++++++++++++++++
+ net/ipv6/udp.c           |   45 +++++++++++++++++++++++++++++++++++
+ 4 files changed, 108 insertions(+), 1 deletion(-)
 
->
-> Or bpfdump infrastructure can help do this work to provide
-> session id.
-
-Well, come to think about it. seq_file pointer itself is unique per
-session, so that one can be used as session id, is that right?
-
->
-> >
-> > So it seems like few things would be useful:
-> >
-> > 1. end flag for post-aggregation and/or footer printing (seq_num == 0
-> > is providing similar means for start flag).
->
-> the end flag is a problem. We could say hijack next or stop so we
-> can detect the end, but passing a NULL pointer as the object
-> to the bpf program may be problematic without verifier enforcement
-> as it may cause a lot of exceptions... Although all these exception
-> will be silenced by bpf infra, but still not sure whether this
-> is acceptable or not.
-
-Right, verifier will need to know that item can be valid pointer or
-NULL. It's not perfect, but not too big of a deal for user to check
-for NULL at the very beginning.
-
-What I'm aiming for with this end flags is ability for BPF program to
-collect data during show() calls, and then at the end get extra call
-to give ability to post-aggregate this data and emit some sort of
-summary into seq_file. Think about printing out summary stats across
-all tasks (e.g., p50 of run queue latency, or something like that). In
-that case, I need to iterate all tasks, I don't need to emit anything
-for any individual tasks, but I need to produce an aggregation and
-output after the last task was iterated. Right now it's impossible to
-do, but seems like an extremely powerful and useful feature. drgn
-could utilize this to speed up its scripts. There are plenty of tools
-that would like to have a frequent but cheap view into internals of
-the system, which current is implemented through netlink (taskstats)
-or procfs, both quite expensive, if polled every second.
-
-Anonymous bpfdump, though, is going to be much cheaper, because a lot
-of aggregation can happen in the kernel and only minimal output at the
-end will be read by user-space.
-
->
-> > 2. Some sort of "session id", so that bpfdumper can maintain
-> > per-session intermediate state. Plus with this it would be possible to
-> > detect restarts (if there is some state for the same session and
-> > seq_num == 0, this is restart).
->
-> I guess we can do this.
-
-See above, probably using seq_file pointer is good enough.
-
->
-> >
-> > It seems like it might be a bit more flexible to, instead of providing
-> > seq_file * pointer directly, actually provide a bpfdumper_context
-> > struct, which would have seq_file * as one of fields, other being
-> > session_id and start/stop flags.
->
-> As you mentioned, if we have more fields related to seq_file passing
-> to bpf program, yes, grouping them into a structure makes sense.
->
-> >
-> > A bit unstructured thoughts, but what do you think?
-> >
-> >>
-> >> Note the seq_num does not represent the num
-> >> of unique kernel objects the bpf program has
-> >> seen. But it should be a good approximate.
-> >>
-> >> A target feature BPF_DUMP_SEQ_NET_PRIVATE
-> >> is implemented specifically useful for
-> >> net based dumpers. It sets net namespace
-> >> as the current process net namespace.
-> >> This avoids changing existing net seq_ops
-> >> in order to retrieve net namespace from
-> >> the seq_file pointer.
-> >>
-> >> For open dumper files, anonymous or not, the
-> >> fdinfo will show the target and prog_id associated
-> >> with that file descriptor. For dumper file itself,
-> >> a kernel interface will be provided to retrieve the
-> >> prog_id in one of the later patches.
-> >>
-> >> Signed-off-by: Yonghong Song <yhs@fb.com>
-> >> ---
-> >>   include/linux/bpf.h            |   5 +
-> >>   include/uapi/linux/bpf.h       |   6 +-
-> >>   kernel/bpf/dump.c              | 338 ++++++++++++++++++++++++++++++++-
-> >>   kernel/bpf/syscall.c           |  11 +-
-> >>   tools/include/uapi/linux/bpf.h |   6 +-
-> >>   5 files changed, 362 insertions(+), 4 deletions(-)
-> >>
-> >
-> > [...]
-> >
+diff --git a/include/linux/udp.h b/include/linux/udp.h
+index aa84597bdc33..b22bd70118ce 100644
+--- a/include/linux/udp.h
++++ b/include/linux/udp.h
+@@ -51,7 +51,8 @@ struct udp_sock {
+ 					   * different encapsulation layer set
+ 					   * this
+ 					   */
+-			 gro_enabled:1;	/* Can accept GRO packets */
++			 gro_enabled:1,	/* Can accept GRO packets */
++			 repair:1;/* Receive the send queue */
+ 	/*
+ 	 * Following member retains the information to create a UDP header
+ 	 * when the socket is uncorked.
+diff --git a/include/uapi/linux/udp.h b/include/uapi/linux/udp.h
+index 4828794efcf8..2fe78329d6da 100644
+--- a/include/uapi/linux/udp.h
++++ b/include/uapi/linux/udp.h
+@@ -29,6 +29,7 @@ struct udphdr {
+ 
+ /* UDP socket options */
+ #define UDP_CORK	1	/* Never send partially complete segments */
++#define UDP_REPAIR  19  /* Receive the send queue */
+ #define UDP_ENCAP	100	/* Set the socket to accept encapsulated packets */
+ #define UDP_NO_CHECK6_TX 101	/* Disable sending checksum for UDP6X */
+ #define UDP_NO_CHECK6_RX 102	/* Disable accpeting checksum for UDP6 */
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 32564b350823..306cd70e40cb 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1720,6 +1720,28 @@ struct sk_buff *__skb_recv_udp(struct sock *sk, unsigned int flags,
+ }
+ EXPORT_SYMBOL(__skb_recv_udp);
+ 
++static int udp_peek_sndq(struct sock *sk, struct msghdr *msg, int off, int len)
++{
++	int copy, copied = 0, err = 0;
++	struct sk_buff *skb;
++
++	skb_queue_walk(&sk->sk_write_queue, skb) {
++		copy = len - copied;
++		if (copy > skb->len - off)
++			copy = skb->len - off;
++
++		err = skb_copy_datagram_msg(skb, off, msg, copy);
++		if (err)
++			break;
++
++		copied += copy;
++
++		if (len <= copied)
++			break;
++	}
++	return err ?: copied;
++}
++
+ /*
+  * 	This should be easy, if there is something there we
+  * 	return it, otherwise we block.
+@@ -1729,8 +1751,10 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
+ 		int flags, int *addr_len)
+ {
+ 	struct inet_sock *inet = inet_sk(sk);
++	struct udp_sock *up = udp_sk(sk);
+ 	DECLARE_SOCKADDR(struct sockaddr_in *, sin, msg->msg_name);
+ 	struct sk_buff *skb;
++	struct flowi4 *fl4;
+ 	unsigned int ulen, copied;
+ 	int off, err, peeking = flags & MSG_PEEK;
+ 	int is_udplite = IS_UDPLITE(sk);
+@@ -1739,6 +1763,12 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
+ 	if (flags & MSG_ERRQUEUE)
+ 		return ip_recv_error(sk, msg, len, addr_len);
+ 
++	if (unlikely(up->repair)) {
++		if (!peeking)
++			return -EPERM;
++		goto recv_sndq;
++	}
++
+ try_again:
+ 	off = sk_peek_offset(sk, flags);
+ 	skb = __skb_recv_udp(sk, flags, noblock, &off, &err);
+@@ -1832,6 +1862,18 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
+ 	cond_resched();
+ 	msg->msg_flags &= ~MSG_TRUNC;
+ 	goto try_again;
++
++recv_sndq:
++	off = sizeof(struct iphdr) + sizeof(struct udphdr);
++	if (sin) {
++		fl4 = &inet->cork.fl.u.ip4;
++		sin->sin_family = AF_INET;
++		sin->sin_port = fl4->fl4_dport;
++		sin->sin_addr.s_addr = fl4->daddr;
++		memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
++		*addr_len = sizeof(*sin);
++	}
++	return udp_peek_sndq(sk, msg, off, len);
+ }
+ 
+ int udp_pre_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+@@ -2525,6 +2567,11 @@ void udp_destroy_sock(struct sock *sk)
+ 	}
+ }
+ 
++static inline bool udp_can_repair_sock(const struct sock *sk)
++{
++	return ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN);
++}
++
+ /*
+  *	Socket option code for UDP
+  */
+@@ -2557,6 +2604,15 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
+ 		}
+ 		break;
+ 
++	case UDP_REPAIR:
++		if (!udp_can_repair_sock(sk))
++			err = -EPERM;
++		else if (val != 0)
++			up->repair = 1;
++		else
++			up->repair = 0;
++		break;
++
+ 	case UDP_ENCAP:
+ 		switch (val) {
+ 		case 0:
+@@ -2678,6 +2734,10 @@ int udp_lib_getsockopt(struct sock *sk, int level, int optname,
+ 		val = up->corkflag;
+ 		break;
+ 
++	case UDP_REPAIR:
++		val = up->repair;
++		break;
++
+ 	case UDP_ENCAP:
+ 		val = up->encap_type;
+ 		break;
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 7d4151747340..ec653f9fce2d 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -250,6 +250,28 @@ struct sock *udp6_lib_lookup(struct net *net, const struct in6_addr *saddr, __be
+ EXPORT_SYMBOL_GPL(udp6_lib_lookup);
+ #endif
+ 
++static int udp6_peek_sndq(struct sock *sk, struct msghdr *msg, int off, int len)
++{
++	int copy, copied = 0, err = 0;
++	struct sk_buff *skb;
++
++	skb_queue_walk(&sk->sk_write_queue, skb) {
++		copy = len - copied;
++		if (copy > skb->len - off)
++			copy = skb->len - off;
++
++		err = skb_copy_datagram_msg(skb, off, msg, copy);
++		if (err)
++			break;
++
++		copied += copy;
++
++		if (len <= copied)
++			break;
++	}
++	return err ?: copied;
++}
++
+ /* do not use the scratch area len for jumbogram: their length execeeds the
+  * scratch area space; note that the IP6CB flags is still in the first
+  * cacheline, so checking for jumbograms is cheap
+@@ -269,7 +291,9 @@ int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ {
+ 	struct ipv6_pinfo *np = inet6_sk(sk);
+ 	struct inet_sock *inet = inet_sk(sk);
++	struct udp_sock *up = udp_sk(sk);
+ 	struct sk_buff *skb;
++	struct flowi6 *fl6;
+ 	unsigned int ulen, copied;
+ 	int off, err, peeking = flags & MSG_PEEK;
+ 	int is_udplite = IS_UDPLITE(sk);
+@@ -283,6 +307,12 @@ int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 	if (np->rxpmtu && np->rxopt.bits.rxpmtu)
+ 		return ipv6_recv_rxpmtu(sk, msg, len, addr_len);
+ 
++	if (unlikely(up->repair)) {
++		if (!peeking)
++			return -EPERM;
++		goto recv_sndq;
++	}
++
+ try_again:
+ 	off = sk_peek_offset(sk, flags);
+ 	skb = __skb_recv_udp(sk, flags, noblock, &off, &err);
+@@ -394,6 +424,21 @@ int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 	cond_resched();
+ 	msg->msg_flags &= ~MSG_TRUNC;
+ 	goto try_again;
++
++recv_sndq:
++	off = sizeof(struct ipv6hdr) + sizeof(struct udphdr);
++	if (msg->msg_name) {
++		DECLARE_SOCKADDR(struct sockaddr_in6 *, sin6, msg->msg_name);
++
++		fl6 = &inet->cork.fl.u.ip6;
++		sin6->sin6_family = AF_INET6;
++		sin6->sin6_port = fl6->fl6_dport;
++		sin6->sin6_flowinfo = 0;
++		sin6->sin6_addr = fl6->daddr;
++		sin6->sin6_scope_id = fl6->flowi6_oif;
++		*addr_len = sizeof(*sin6);
++	}
++	return udp6_peek_sndq(sk, msg, off, len);
+ }
+ 
+ DEFINE_STATIC_KEY_FALSE(udpv6_encap_needed_key);
