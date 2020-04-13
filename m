@@ -2,84 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC90B1A6D60
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 22:40:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75E871A6D7C
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 22:44:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388450AbgDMUjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 16:39:16 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:49268 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727877AbgDMUjP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 16:39:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586810354;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=f51PNmBYbtbloXAW1XP9YIZMd0h1/w12eoHfrs8nGCM=;
-        b=MKzmP+yF9Uper8CDDUGN9TKftRVEKqVxmwpw1SPx7DYGnQL35Z15xy1EanszSqzb3yeDiO
-        DXseK4en4jdsNc7SkYmLsXpYXYURJFtdgGn6w6gHjV77vHXx2r8R4ZaGs3J45K/cdf2hh1
-        fWjmkQNsKGM31PeId13zgIePYIkD16Y=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-54-rWXY1eKsMbuGiddBbRRTdA-1; Mon, 13 Apr 2020 16:39:10 -0400
-X-MC-Unique: rWXY1eKsMbuGiddBbRRTdA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2A5301137840;
-        Mon, 13 Apr 2020 20:39:09 +0000 (UTC)
-Received: from localhost (unknown [10.36.110.14])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id C06C19F998;
-        Mon, 13 Apr 2020 20:39:05 +0000 (UTC)
-Date:   Mon, 13 Apr 2020 22:38:58 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Phil Sutter <phil@nwl.cc>, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.5 27/35] netfilter: nf_tables: Allow set
- back-ends to report partial overlaps on insertion
-Message-ID: <20200413223858.17b0f487@redhat.com>
-In-Reply-To: <20200413163900.GO27528@sasha-vm>
-References: <20200407000058.16423-1-sashal@kernel.org>
-        <20200407000058.16423-27-sashal@kernel.org>
-        <20200407021848.626df832@redhat.com>
-        <20200413163900.GO27528@sasha-vm>
-Organization: Red Hat
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+        id S2388515AbgDMUnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 16:43:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40904 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388484AbgDMUnD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 16:43:03 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B22C0A3BDC
+        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 13:43:03 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id cl8so3157269pjb.3
+        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 13:43:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=Jzl9zw+WWi+s6Kx4ZBqfebz2iDt6ayXKGXNZZjJo2Pk=;
+        b=VT1Z726v06Ujmb0lEnnzZAtHRT4apvVynE5ed5Ktp3UGwkACAebRQ9zx2/tlMYHO5F
+         rywIuPMKAUti5V6eK/5urkFIHTA2avL3pBcpv8gN80Owcdom1iv5VfXqsI01rnIAsKJM
+         rhph9sz5PVaOOwI3UNEZQRB4o7SSiuZeWuVIfQT2JqASu3CFmZUlpXfo30toXIzJhl94
+         Ho65K0a43xa3bx6V4R+etOwnd0T+g1i7+JU+XRFRXnG4mBVArkSUa7KSxBRF8wIRSwaP
+         kS6YP99wSgijh6YDO/COskWhGnToZT/yF2UvsM9LBykI/oQZrBYpXSEtLHX9qU8G7Haq
+         TQHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Jzl9zw+WWi+s6Kx4ZBqfebz2iDt6ayXKGXNZZjJo2Pk=;
+        b=cOi9UBqI8bs5yQb+07keMLdOe+ecmXxIGyrfTc9DwqsxYWF8PHvzYermYtXwJm7e7x
+         v0zBG9f5xL3aaSnMZsAyJDUeAseS95aSgN/n7hON9zMIqzbteW759VzV2qLnxfBMMQzU
+         Wtg47K6iTCtSfV8sqFNdnBx+sPPwxjc8qA764/dITQ5BdFplYykSfVuZz68n0Hy71iGz
+         FZvGcf3nFSKzeMVkYldlyOOmGaZRiw2QKKnMvZBTo4OzSor/t+xWHMh7zMq51eK7CCgX
+         VxA5NatnfqKTPg1X8wdELrOcr7aoQo4r0Q1C+ACGwn8kYOX5dEZXowU0+/EEkpshASiZ
+         XdeQ==
+X-Gm-Message-State: AGi0PubR08yVfSDajbs6OPiLm1luwvZqxkgakR+OJXMzPJml2mnysonM
+        rRVa0+BetxQg3MoT2wUhrQwpbg==
+X-Google-Smtp-Source: APiQypIRvteVMg0gNs6DmMEEBBIlRcc/01DPdawXCFZi7iOutYc4cJYrlnAN1psu50sBspsa1M3cjw==
+X-Received: by 2002:a17:90a:77cb:: with SMTP id e11mr24567922pjs.0.1586810583200;
+        Mon, 13 Apr 2020 13:43:03 -0700 (PDT)
+Received: from localhost.localdomain ([2601:1c2:680:1319:692:26ff:feda:3a81])
+        by smtp.gmail.com with ESMTPSA id o21sm4763340pjr.37.2020.04.13.13.43.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Apr 2020 13:43:02 -0700 (PDT)
+From:   John Stultz <john.stultz@linaro.org>
+To:     lkml <linux-kernel@vger.kernel.org>
+Cc:     John Stultz <john.stultz@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Rob Herring <robh@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        netdev <netdev@vger.kernel.org>, linux-pm@vger.kernel.org
+Subject: [PATCH v2 0/2] Fixes for deferred_probe_timeout cleanup
+Date:   Mon, 13 Apr 2020 20:42:51 +0000
+Message-Id: <20200413204253.84991-1-john.stultz@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 13 Apr 2020 12:39:00 -0400
-Sasha Levin <sashal@kernel.org> wrote:
+Just wanted to submit these two fixes for the
+deferred_probe_timeout cleanup that landed in the v5.7-rc1 merge
+window.
 
-> On Tue, Apr 07, 2020 at 02:18:48AM +0200, Stefano Brivio wrote:
->
-> >I'm used to not Cc: stable on networking patches (Dave's net.git),
-> >but I guess I should instead if they go through nf.git (Pablo's tree),
-> >right?  
-> 
-> Yup, this confusion has caused for quite a few netfilter fixes to not
-> land in -stable. If it goes through Pablo's tree (and unless he intructs
-> otherwise), you should Cc stable.
+The first resets the default timeout value back to zero so we
+have no behavioral change from 5.6. This avoids regressions on
+boards that have "optional links" in their device tree.
 
-Hah, thanks for clarifying.
+The scond fixes an issue discovered by Yoshihiro Shimoda
+and Geert Uytterhoeven, where if a timeout was set, things
+like NFS root might fail due to wait_for_device_probe()
+not blocking until the timeout expires.
 
-What do you think I should do specifically with 72239f2795fa
-("netfilter: nft_set_rbtree: Drop spurious condition for overlap detection
-on insertion")?
+thanks
+-john
 
-I haven't Cc'ed stable on that one. Can I expect AUTOSEL to pick it up
-anyway?
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
+Cc: Rob Herring <robh@kernel.org>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: netdev <netdev@vger.kernel.org>
+Cc: linux-pm@vger.kernel.org
+
+John Stultz (2):
+  driver core: Revert default driver_deferred_probe_timeout value to 0
+  driver core: Ensure wait_for_device_probe() waits until the
+    deferred_probe_timeout fires
+
+ drivers/base/dd.c | 18 +++++++-----------
+ 1 file changed, 7 insertions(+), 11 deletions(-)
 
 -- 
-Stefano
+2.17.1
 
