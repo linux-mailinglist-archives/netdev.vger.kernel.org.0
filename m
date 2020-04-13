@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B66321A6B42
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 19:19:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19B0C1A6B43
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 19:19:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732715AbgDMRTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 13:19:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39354 "EHLO mail.kernel.org"
+        id S1732718AbgDMRT2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 13:19:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39318 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732668AbgDMRSk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Apr 2020 13:18:40 -0400
+        id S1732670AbgDMRSl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Apr 2020 13:18:41 -0400
 Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7CF5D20768;
-        Mon, 13 Apr 2020 17:18:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AB9C72076A;
+        Mon, 13 Apr 2020 17:18:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586798319;
-        bh=MJepgGG7F9lzscMMv+O4dmFphkyBr0BMiKv3bqsKPLs=;
+        s=default; t=1586798320;
+        bh=diygsHrujtkxdOjgK42/j6clPIEVUq33QjY8ljsaJZ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=di7HlLIpcgtj28qTUU+NXlxbgSRFO/RxqSlJy/NTFu8zkaxAck2ElxXbnIJ3pQ253
-         C1O1CY0tRKzW2ppFsL/N0YYolg1lB9pSyhzAWwPtUBmdfo4FxxvcS1R6HU1KkWSFPE
-         wxOlYSiqYnheDxwbGafGL7Wjf3l7v4RWnE6GevEw=
+        b=eyMJxX8HXiN3TbKYlFUIjxCPxJOvQl3I89PUQ66/DVXl6hZnEErGslg8MdgtNCtdI
+         pTDSfn1yb69U3ckJvl+vc4KfVxMSU+3TfNcDTmHxJcM5I4A4UyzLlugFPsgtJ8MWFN
+         GzzGTTB9FxIVyKNgp9K9gxp5JjPXCk0eU0OyUd9M=
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -31,9 +31,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
         dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-Subject: [PATCH RFC-v5 bpf-next 11/12] bpftool: Add support for XDP egress
-Date:   Mon, 13 Apr 2020 11:18:00 -0600
-Message-Id: <20200413171801.54406-12-dsahern@kernel.org>
+Subject: [PATCH RFC-v5 bpf-next 12/12] samples/bpf: add XDP egress support to xdp1
+Date:   Mon, 13 Apr 2020 11:18:01 -0600
+Message-Id: <20200413171801.54406-13-dsahern@kernel.org>
 X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 In-Reply-To: <20200413171801.54406-1-dsahern@kernel.org>
 References: <20200413171801.54406-1-dsahern@kernel.org>
@@ -46,195 +46,111 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dahern@digitalocean.com>
 
-Add NET_ATTACH_TYPE_XDP_EGRESS and update attach_type_strings to
-allow a user to specify 'xdp_egress' as the attach or detach point.
+xdp1 and xdp2 now accept -E flag to set XDP program in the egress
+path.
 
-libbpf handles egress config via bpf_set_link_xdp_fd_opts, so
-update do_attach_detach_xdp to use it. Specifically, the new API
-requires old_fd to be set based on any currently loaded program,
-so use bpf_get_link_xdp_id and bpf_get_link_xdp_egress_id to get
-an fd to any existing program.
-
-Update 'net show' command to dump egress programs.
-
+Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
 Signed-off-by: David Ahern <dahern@digitalocean.com>
 ---
- tools/bpf/bpftool/main.h           |  2 +-
- tools/bpf/bpftool/net.c            | 49 +++++++++++++++++++++++++++---
- tools/bpf/bpftool/netlink_dumper.c | 12 ++++++--
- 3 files changed, 55 insertions(+), 8 deletions(-)
+ samples/bpf/xdp1_user.c | 38 +++++++++++++++++++++++++++++++-------
+ 1 file changed, 31 insertions(+), 7 deletions(-)
 
-diff --git a/tools/bpf/bpftool/main.h b/tools/bpf/bpftool/main.h
-index 86f14ce26fd7..cbc0cc2257eb 100644
---- a/tools/bpf/bpftool/main.h
-+++ b/tools/bpf/bpftool/main.h
-@@ -230,7 +230,7 @@ void btf_dump_linfo_json(const struct btf *btf,
- struct nlattr;
- struct ifinfomsg;
- struct tcmsg;
--int do_xdp_dump(struct ifinfomsg *ifinfo, struct nlattr **tb);
-+int do_xdp_dump(struct ifinfomsg *ifinfo, struct nlattr **tb, bool egress);
- int do_filter_dump(struct tcmsg *ifinfo, struct nlattr **tb, const char *kind,
- 		   const char *devname, int ifindex);
+diff --git a/samples/bpf/xdp1_user.c b/samples/bpf/xdp1_user.c
+index c447ad9e3a1d..1e74020203ca 100644
+--- a/samples/bpf/xdp1_user.c
++++ b/samples/bpf/xdp1_user.c
+@@ -21,18 +21,32 @@
+ static int ifindex;
+ static __u32 xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
+ static __u32 prog_id;
++static bool egress;
  
-diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
-index c5e3895b7c8b..1789dcd33d4e 100644
---- a/tools/bpf/bpftool/net.c
-+++ b/tools/bpf/bpftool/net.c
-@@ -32,6 +32,7 @@ struct bpf_netdev_t {
- 	int	used_len;
- 	int	array_len;
- 	int	filter_idx;
-+	bool	egress;
- };
- 
- struct tc_kind_handle {
-@@ -61,6 +62,7 @@ enum net_attach_type {
- 	NET_ATTACH_TYPE_XDP_GENERIC,
- 	NET_ATTACH_TYPE_XDP_DRIVER,
- 	NET_ATTACH_TYPE_XDP_OFFLOAD,
-+	NET_ATTACH_TYPE_XDP_EGRESS,
- };
- 
- static const char * const attach_type_strings[] = {
-@@ -68,6 +70,7 @@ static const char * const attach_type_strings[] = {
- 	[NET_ATTACH_TYPE_XDP_GENERIC]	= "xdpgeneric",
- 	[NET_ATTACH_TYPE_XDP_DRIVER]	= "xdpdrv",
- 	[NET_ATTACH_TYPE_XDP_OFFLOAD]	= "xdpoffload",
-+	[NET_ATTACH_TYPE_XDP_EGRESS]	= "xdp_egress",
- };
- 
- const size_t net_attach_type_size = ARRAY_SIZE(attach_type_strings);
-@@ -111,7 +114,7 @@ static int dump_link_nlmsg(void *cookie, void *msg, struct nlattr **tb)
- 			 : "");
- 	netinfo->used_len++;
- 
--	return do_xdp_dump(ifinfo, tb);
-+	return do_xdp_dump(ifinfo, tb, netinfo->egress);
- }
- 
- static int dump_class_qdisc_nlmsg(void *cookie, void *msg, struct nlattr **tb)
-@@ -276,10 +279,19 @@ static int net_parse_dev(int *argc, char ***argv)
- static int do_attach_detach_xdp(int progfd, enum net_attach_type attach_type,
- 				int ifindex, bool overwrite)
+ static void int_exit(int sig)
  {
--	__u32 flags = 0;
-+	struct bpf_xdp_set_link_opts opts;
-+	__u32 flags = 0, id = 0;
-+	int rc, old_fd = -1;
-+
-+	memset(&opts, 0, sizeof(opts));
-+	opts.sz = sizeof(opts);
++	struct bpf_xdp_set_link_opts opts = { .sz = sizeof(opts) };
+ 	__u32 curr_prog_id = 0;
++	int err, old_fd;
  
- 	if (!overwrite)
- 		flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
-+
-+	if (attach_type == NET_ATTACH_TYPE_XDP_EGRESS)
-+		opts.egress = 1;
-+
- 	if (attach_type == NET_ATTACH_TYPE_XDP_GENERIC)
- 		flags |= XDP_FLAGS_SKB_MODE;
- 	if (attach_type == NET_ATTACH_TYPE_XDP_DRIVER)
-@@ -287,7 +299,27 @@ static int do_attach_detach_xdp(int progfd, enum net_attach_type attach_type,
- 	if (attach_type == NET_ATTACH_TYPE_XDP_OFFLOAD)
- 		flags |= XDP_FLAGS_HW_MODE;
- 
--	return bpf_set_link_xdp_fd(ifindex, progfd, flags);
-+	if (opts.egress)
-+		rc = bpf_get_link_xdp_egress_id(ifindex, &id, flags);
+-	if (bpf_get_link_xdp_id(ifindex, &curr_prog_id, xdp_flags)) {
++	if (egress)
++		err = bpf_get_link_xdp_egress_id(ifindex, &curr_prog_id,
++						 xdp_flags);
 +	else
-+		rc = bpf_get_link_xdp_id(ifindex, &id, flags);
-+
-+	if (rc) {
-+		p_err("Failed to get existing prog id for device");
-+		return rc;
-+	}
-+
-+	if (id)
-+		old_fd = bpf_prog_get_fd_by_id(id);
-+
-+	opts.old_fd = old_fd;
-+
-+	rc = bpf_set_link_xdp_fd_opts(ifindex, progfd, flags, &opts);
-+
-+	if (old_fd != -1)
-+		close(old_fd);
-+
-+	return rc;
- }
- 
- static int do_attach(int argc, char **argv)
-@@ -411,6 +443,7 @@ static int do_show(int argc, char **argv)
- 	dev_array.used_len = 0;
- 	dev_array.array_len = 0;
- 	dev_array.filter_idx = filter_idx;
-+	dev_array.egress = 0;
- 
- 	if (json_output)
- 		jsonw_start_array(json_wtr);
-@@ -419,6 +452,14 @@ static int do_show(int argc, char **argv)
- 	ret = libbpf_nl_get_link(sock, nl_pid, dump_link_nlmsg, &dev_array);
- 	NET_END_ARRAY("\n");
- 
-+	if (!ret) {
-+		dev_array.egress = true;
-+		NET_START_ARRAY("xdp_egress", "%s:\n");
-+		ret = libbpf_nl_get_link(sock, nl_pid, dump_link_nlmsg,
-+					 &dev_array);
-+		NET_END_ARRAY("\n");
-+	}
-+
- 	if (!ret) {
- 		NET_START_ARRAY("tc", "%s:\n");
- 		for (i = 0; i < dev_array.used_len; i++) {
-@@ -464,7 +505,7 @@ static int do_help(int argc, char **argv)
- 		"       %s %s help\n"
- 		"\n"
- 		"       " HELP_SPEC_PROGRAM "\n"
--		"       ATTACH_TYPE := { xdp | xdpgeneric | xdpdrv | xdpoffload }\n"
-+		"       ATTACH_TYPE := { xdp | xdpgeneric | xdpdrv | xdpoffload | xdp_egress}\n"
- 		"\n"
- 		"Note: Only xdp and tc attachments are supported now.\n"
- 		"      For progs attached to cgroups, use \"bpftool cgroup\"\n"
-diff --git a/tools/bpf/bpftool/netlink_dumper.c b/tools/bpf/bpftool/netlink_dumper.c
-index 5f65140b003b..e4a2b6f8e50b 100644
---- a/tools/bpf/bpftool/netlink_dumper.c
-+++ b/tools/bpf/bpftool/netlink_dumper.c
-@@ -55,6 +55,7 @@ static int do_xdp_dump_one(struct nlattr *attr, unsigned int ifindex,
- 		xdp_dump_prog_id(tb, IFLA_XDP_SKB_PROG_ID, "generic", true);
- 		xdp_dump_prog_id(tb, IFLA_XDP_DRV_PROG_ID, "driver", true);
- 		xdp_dump_prog_id(tb, IFLA_XDP_HW_PROG_ID, "offload", true);
-+		xdp_dump_prog_id(tb, IFLA_XDP_EGRESS_CORE_PROG_ID, "core", true);
- 		if (json_output)
- 			jsonw_end_array(json_wtr);
- 	} else if (mode == XDP_ATTACHED_DRV) {
-@@ -63,18 +64,23 @@ static int do_xdp_dump_one(struct nlattr *attr, unsigned int ifindex,
- 		xdp_dump_prog_id(tb, IFLA_XDP_PROG_ID, "generic", false);
- 	} else if (mode == XDP_ATTACHED_HW) {
- 		xdp_dump_prog_id(tb, IFLA_XDP_PROG_ID, "offload", false);
-+	} else if (mode == XDP_ATTACHED_EGRESS_CORE) {
-+		xdp_dump_prog_id(tb, IFLA_XDP_EGRESS_CORE_PROG_ID, "core",
-+				 false);
++		err = bpf_get_link_xdp_id(ifindex, &curr_prog_id, xdp_flags);
++	if (err) {
+ 		printf("bpf_get_link_xdp_id failed\n");
+ 		exit(1);
  	}
- 
- 	NET_END_OBJECT_FINAL;
- 	return 0;
- }
- 
--int do_xdp_dump(struct ifinfomsg *ifinfo, struct nlattr **tb)
-+int do_xdp_dump(struct ifinfomsg *ifinfo, struct nlattr **tb, bool egress)
- {
--	if (!tb[IFLA_XDP])
-+	__u16 atype = egress ? IFLA_XDP_EGRESS : IFLA_XDP;
+-	if (prog_id == curr_prog_id)
+-		bpf_set_link_xdp_fd(ifindex, -1, xdp_flags);
+-	else if (!curr_prog_id)
++	if (prog_id == curr_prog_id) {
++		if (egress)
++			opts.egress = 1;
 +
-+	if (!tb[atype])
- 		return 0;
- 
--	return do_xdp_dump_one(tb[IFLA_XDP], ifinfo->ifi_index,
-+	return do_xdp_dump_one(tb[atype], ifinfo->ifi_index,
- 			       libbpf_nla_getattr_str(tb[IFLA_IFNAME]));
++		old_fd = bpf_prog_get_fd_by_id(prog_id);
++		opts.old_fd = old_fd;
++		bpf_set_link_xdp_fd_opts(ifindex, -1, xdp_flags, &opts);
++		close(old_fd);
++	} else if (!curr_prog_id)
+ 		printf("couldn't find a prog id on a given interface\n");
+ 	else
+ 		printf("program on interface changed, not removing\n");
+@@ -73,19 +87,21 @@ static void usage(const char *prog)
+ 		"OPTS:\n"
+ 		"    -S    use skb-mode\n"
+ 		"    -N    enforce native mode\n"
+-		"    -F    force loading prog\n",
++		"    -F    force loading prog\n"
++		"    -E	   egress path program\n",
+ 		prog);
  }
  
+ int main(int argc, char **argv)
+ {
++	struct bpf_xdp_set_link_opts opts = { .sz = sizeof(opts) };
+ 	struct rlimit r = {RLIM_INFINITY, RLIM_INFINITY};
+ 	struct bpf_prog_load_attr prog_load_attr = {
+ 		.prog_type	= BPF_PROG_TYPE_XDP,
+ 	};
+ 	struct bpf_prog_info info = {};
+ 	__u32 info_len = sizeof(info);
+-	const char *optstr = "FSN";
++	const char *optstr = "FSNE";
+ 	int prog_fd, map_fd, opt;
+ 	struct bpf_object *obj;
+ 	struct bpf_map *map;
+@@ -103,6 +119,9 @@ int main(int argc, char **argv)
+ 		case 'F':
+ 			xdp_flags &= ~XDP_FLAGS_UPDATE_IF_NOEXIST;
+ 			break;
++		case 'E':
++			egress = true;
++			break;
+ 		default:
+ 			usage(basename(argv[0]));
+ 			return 1;
+@@ -130,6 +149,10 @@ int main(int argc, char **argv)
+ 
+ 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
+ 	prog_load_attr.file = filename;
++	if (egress) {
++		opts.egress = 1;
++		prog_load_attr.expected_attach_type = BPF_XDP_EGRESS;
++	}
+ 
+ 	if (bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd))
+ 		return 1;
+@@ -149,7 +172,8 @@ int main(int argc, char **argv)
+ 	signal(SIGINT, int_exit);
+ 	signal(SIGTERM, int_exit);
+ 
+-	if (bpf_set_link_xdp_fd(ifindex, prog_fd, xdp_flags) < 0) {
++	err = bpf_set_link_xdp_fd_opts(ifindex, prog_fd, xdp_flags, &opts);
++	if (err < 0) {
+ 		printf("link set xdp fd failed\n");
+ 		return 1;
+ 	}
 -- 
 2.21.1 (Apple Git-122.3)
 
