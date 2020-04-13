@@ -1,220 +1,92 @@
 Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46A261A642E
-	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 10:36:12 +0200 (CEST)
+Received: from vger.kernel.org (unknown [209.132.180.67])
+	by mail.lfdr.de (Postfix) with ESMTP id A55141A63D6
+	for <lists+netdev@lfdr.de>; Mon, 13 Apr 2020 09:54:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727979AbgDMIf1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 04:35:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.18]:40938 "EHLO
+        id S1729486AbgDMHyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 03:54:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.18]:37348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729277AbgDMILB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 04:11:01 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40211C00860E;
-        Mon, 13 Apr 2020 01:04:59 -0700 (PDT)
-Received: from zn.tnic (p200300EC2F06C9001913BA8A68E69387.dip0.t-ipconnect.de [IPv6:2003:ec:2f06:c900:1913:ba8a:68e6:9387])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id AB4B41EC0C5C;
-        Mon, 13 Apr 2020 10:04:57 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1586765097;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=NtPO5LzemSA3ICkOs6m1ba4SCa7L4ISc43jbxALQ8Eo=;
-        b=LiW9TWY65xGpOpMp70AGqFiT+xVtj2UulV/4AIQ88A2mmw52OenPNvt84zJTmXQ7bqMzGL
-        zhBkQqATm2LMmz85N6xLixb3fl93koLptHv/GK7iGITPLXQOTiYA/vG270sn9ouOu+R2FU
-        JQU+EnPno3Dy9bJNMibbKFZ/Eah3XRc=
-Date:   Mon, 13 Apr 2020 10:04:52 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     David Miller <davem@davemloft.net>, leon@kernel.org
-Cc:     kuba@kernel.org, thomas.lendacky@amd.com,
-        keyur@os.amperecomputing.com, pcnet32@frontier.com,
-        vfalico@gmail.com, j.vosburgh@gmail.com, linux-acenic@sunsite.dk,
-        mripard@kernel.org, heiko@sntech.de, mark.einon@gmail.com,
-        chris.snook@gmail.com, linux-rockchip@lists.infradead.org,
-        iyappan@os.amperecomputing.com, irusskikh@marvell.com,
-        dave@thedillows.org, netanel@amazon.com,
-        quan@os.amperecomputing.com, jcliburn@gmail.com,
-        LinoSanfilippo@gmx.de, linux-arm-kernel@lists.infradead.org,
-        andreas@gaisler.com, andy@greyhouse.net, netdev@vger.kernel.org,
-        thor.thayer@linux.intel.com, linux-kernel@vger.kernel.org,
-        ionut@badula.org, akiyano@amazon.com, jes@trained-monkey.org,
-        nios2-dev@lists.rocketboards.org, wens@csie.org
-Subject: Re: [PATCH] net/3com/3c515: Fix MODULE_ARCH_VERMAGIC redefinition
-Message-ID: <20200413080452.GA3772@zn.tnic>
-References: <20200413045555.GE334007@unreal>
- <20200412.220739.516022706077351913.davem@davemloft.net>
- <20200413052637.GG334007@unreal>
- <20200412.223604.1160930629964379276.davem@davemloft.net>
+        with ESMTP id S1727480AbgDMHyM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 03:54:12 -0400
+Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5286C008651;
+        Mon, 13 Apr 2020 00:54:11 -0700 (PDT)
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 2976A9A447D55784BA21;
+        Mon, 13 Apr 2020 15:54:09 +0800 (CST)
+Received: from huawei.com (10.175.124.28) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.487.0; Mon, 13 Apr 2020
+ 15:53:58 +0800
+From:   Jason Yan <yanaijie@huawei.com>
+To:     <kvalo@codeaurora.org>, <davem@davemloft.net>,
+        <yanaijie@huawei.com>, <libertas-dev@lists.infradead.org>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Hulk Robot <hulkci@huawei.com>
+Subject: [PATCH] libertas: make lbs_process_event() void
+Date:   Mon, 13 Apr 2020 16:20:22 +0800
+Message-ID: <20200413082022.22380-1-yanaijie@huawei.com>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200412.223604.1160930629964379276.davem@davemloft.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.28]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 12, 2020 at 10:36:04PM -0700, David Miller wrote:
-> From: Leon Romanovsky <leon@kernel.org>
-> Date: Mon, 13 Apr 2020 08:26:37 +0300
-> 
-> > How do you want us to handle it? Boris resend, me to send, you to fix?
-> 
-> Anyone other than me can do it ;-)
+Fix the following coccicheck warning:
 
-Ok, here's what I'm thinking: that vermagic.h is normally automatically
-included in the *mod.c as part of the module creation, see add_header()
-in modpost.c.
+drivers/net/wireless/marvell/libertas/cmdresp.c:225:5-8: Unneeded
+variable: "ret". Return "0" on line 355
 
-So then perhaps drivers should not use it directly due to the current
-inclusion order:
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Jason Yan <yanaijie@huawei.com>
+---
+ drivers/net/wireless/marvell/libertas/cmd.h     | 2 +-
+ drivers/net/wireless/marvell/libertas/cmdresp.c | 5 +----
+ 2 files changed, 2 insertions(+), 5 deletions(-)
 
-linux/module.h includes asm/module.h and that arch-specific header
-defines MODULE_VERMAGIC* for the respective arch.
-
-linux/vermagic.h defines all those fallbacks for those MODULE_VERMAGIC*
-things and if the inclusion order is swapped - we get the redefinition
-warning.
-
-Yesterday I tried the below - basically get rid of all the remaining
-includers of linux/vermagic.h but two are left:
-
-drivers/net/ethernet/hisilicon/hns3/hns3_enet.c:18:#include <linux/vermagic.h>
-drivers/net/ethernet/netronome/nfp/nfp_main.c:17:#include <linux/vermagic.h>
-
-because both use VERMAGIC_STRING directly.
-
-So,
-
-* one could either allow that and sort the inclusion order so that, for
-example, asm/module.h includes linux/vermagic.h and thus the fallbacks
-are there present.
-
-or
-
-* remove all uses of VERMAGIC_STRING from the drivers, add a header
-guard which prevents people from using it directly and leave
-VERMAGIC_STRING only to the internal module machinery in the kernel.
-
-Judging by how only a handful of old drivers are even using that,
-perhaps not too far fetched.
-
-In any case, this needs a maintainer decision.
-
-Leon, if you wanna do it whatever you guys end up agreeing on, just go
-ahead and submit the patches - it's not like I don't have anything else
-on the TODO :-) Just add a Reported-by: me and that should be enough.
-
-If you're busy too, lemme know and I'll put it on my todo then.
-
-Thx.
-
-diff --git a/drivers/net/bonding/bonding_priv.h b/drivers/net/bonding/bonding_priv.h
-index 45b77bc8c7b3..48cdf3a49a7d 100644
---- a/drivers/net/bonding/bonding_priv.h
-+++ b/drivers/net/bonding/bonding_priv.h
-@@ -14,7 +14,7 @@
+diff --git a/drivers/net/wireless/marvell/libertas/cmd.h b/drivers/net/wireless/marvell/libertas/cmd.h
+index 80878561cb90..3c193074662b 100644
+--- a/drivers/net/wireless/marvell/libertas/cmd.h
++++ b/drivers/net/wireless/marvell/libertas/cmd.h
+@@ -76,7 +76,7 @@ void lbs_mac_event_disconnected(struct lbs_private *priv,
  
- #ifndef _BONDING_PRIV_H
- #define _BONDING_PRIV_H
--#include <linux/vermagic.h>
-+#include <generated/utsrelease.h>
+ /* Events */
  
- #define DRV_NAME	"bonding"
- #define DRV_DESCRIPTION	"Ethernet Channel Bonding Driver"
-diff --git a/drivers/net/ethernet/3com/3c509.c b/drivers/net/ethernet/3com/3c509.c
-index b762176a1406..139d0120f511 100644
---- a/drivers/net/ethernet/3com/3c509.c
-+++ b/drivers/net/ethernet/3com/3c509.c
-@@ -85,7 +85,6 @@
- #include <linux/device.h>
- #include <linux/eisa.h>
- #include <linux/bitops.h>
--#include <linux/vermagic.h>
+-int lbs_process_event(struct lbs_private *priv, u32 event);
++void lbs_process_event(struct lbs_private *priv, u32 event);
  
- #include <linux/uaccess.h>
- #include <asm/io.h>
-diff --git a/drivers/net/ethernet/3com/3c515.c b/drivers/net/ethernet/3com/3c515.c
-index 90312fcd6319..47b4215bb93b 100644
---- a/drivers/net/ethernet/3com/3c515.c
-+++ b/drivers/net/ethernet/3com/3c515.c
-@@ -22,7 +22,6 @@
  
- */
+ /* Actual commands */
+diff --git a/drivers/net/wireless/marvell/libertas/cmdresp.c b/drivers/net/wireless/marvell/libertas/cmdresp.c
+index b73d08381398..cb515c5584c1 100644
+--- a/drivers/net/wireless/marvell/libertas/cmdresp.c
++++ b/drivers/net/wireless/marvell/libertas/cmdresp.c
+@@ -220,9 +220,8 @@ int lbs_process_command_response(struct lbs_private *priv, u8 *data, u32 len)
+ 	return ret;
+ }
  
--#include <linux/vermagic.h>
- #define DRV_NAME		"3c515"
+-int lbs_process_event(struct lbs_private *priv, u32 event)
++void lbs_process_event(struct lbs_private *priv, u32 event)
+ {
+-	int ret = 0;
+ 	struct cmd_header cmd;
  
- #define CORKSCREW 1
-diff --git a/drivers/net/ethernet/adaptec/starfire.c b/drivers/net/ethernet/adaptec/starfire.c
-index 2db42211329f..a64191fc2af9 100644
---- a/drivers/net/ethernet/adaptec/starfire.c
-+++ b/drivers/net/ethernet/adaptec/starfire.c
-@@ -45,7 +45,6 @@
- #include <asm/processor.h>		/* Processor type for cache alignment. */
- #include <linux/uaccess.h>
- #include <asm/io.h>
--#include <linux/vermagic.h>
- 
- /*
-  * The current frame processor firmware fails to checksum a fragment
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-index 588c62e9add7..3ed150512091 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-@@ -6,7 +6,7 @@
- #include <linux/module.h>
- #include <linux/netdevice.h>
- #include <linux/utsname.h>
--#include <linux/vermagic.h>
-+#include <generated/utsrelease.h>
- 
- #include "ionic.h"
- #include "ionic_bus.h"
-diff --git a/drivers/power/supply/test_power.c b/drivers/power/supply/test_power.c
-index 65c23ef6408d..b3c05ff05783 100644
---- a/drivers/power/supply/test_power.c
-+++ b/drivers/power/supply/test_power.c
-@@ -16,7 +16,7 @@
- #include <linux/power_supply.h>
- #include <linux/errno.h>
- #include <linux/delay.h>
--#include <linux/vermagic.h>
-+#include <generated/utsrelease.h>
- 
- enum test_power_id {
- 	TEST_AC,
-diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index 89d0b1827aaf..adab97e500cf 100644
---- a/net/ethtool/ioctl.c
-+++ b/net/ethtool/ioctl.c
-@@ -17,7 +17,6 @@
- #include <linux/phy.h>
- #include <linux/bitops.h>
- #include <linux/uaccess.h>
--#include <linux/vermagic.h>
- #include <linux/vmalloc.h>
- #include <linux/sfp.h>
- #include <linux/slab.h>
-@@ -29,6 +28,8 @@
- #include <net/flow_offload.h>
- #include <linux/ethtool_netlink.h>
- 
-+#include <generated/utsrelease.h>
-+
- #include "common.h"
- 
- /*
-
-
+ 	switch (event) {
+@@ -351,6 +350,4 @@ int lbs_process_event(struct lbs_private *priv, u32 event)
+ 		netdev_alert(priv->dev, "EVENT: unknown event id %d\n", event);
+ 		break;
+ 	}
+-
+-	return ret;
+ }
 -- 
-Regards/Gruss,
-    Boris.
+2.21.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
