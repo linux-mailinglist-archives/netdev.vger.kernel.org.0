@@ -2,128 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 399971A8CDF
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 22:52:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E17121A8D02
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 22:58:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2633408AbgDNUwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 16:52:16 -0400
-Received: from perceval.ideasonboard.com ([213.167.242.64]:34170 "EHLO
-        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729251AbgDNUwN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 16:52:13 -0400
-Received: from pendragon.ideasonboard.com (81-175-216-236.bb.dnainternet.fi [81.175.216.236])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 64594521;
-        Tue, 14 Apr 2020 22:52:10 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1586897530;
-        bh=yu8wglok8OGTOl53X/EXGSF59yx8BKjlyryBpwdu+g0=;
+        id S2633519AbgDNU6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 16:58:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32786 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2633509AbgDNU56 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Apr 2020 16:57:58 -0400
+Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EA18B20644;
+        Tue, 14 Apr 2020 20:57:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1586897877;
+        bh=LXAWfPur+JOlBNahRVCBAAsy+QLYz5DcMP8nwPJ3zlQ=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eX7dtv0TNakDsdzDQ3BH/Un2lTDwlo7BU+ATugilaXE2BvVbaPEOuDTYiH1LzmDIm
-         zrk2T1Qy/+CGgzRhsuhVjKF08IvLfYSkNdohXM/gitM7lOB1zw2S3nfDH7IHxsEmek
-         VZYsFivVYMWhwIzYLp8N1QYZhkjRQi5t7LPo1xVk=
-Date:   Tue, 14 Apr 2020 23:51:58 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        b=RQHPL1U/2k9xDwXe1ctXo9dOb/1M3o3bVruDxOzHU8hmLv5O6NKQlSsYnu8nBh9Gp
+         Scu++PkO4t0RSiCtKoj31/GKmZ+6fpqQJpvnU5hc0yz6PLCYuWZEXbp/BYCfOvPzEV
+         r2fdozb2loaK1aaE0XOX49/KFcPt2Stux3bDojUw=
+Date:   Tue, 14 Apr 2020 16:57:55 -0400
+From:   Sasha Levin <sashal@kernel.org>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     Or Gerlitz <gerlitz.or@gmail.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stable <stable@vger.kernel.org>,
+        Linux Netdev List <netdev@vger.kernel.org>,
         Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>
-Subject: Re: [RFC 5/6] drm/rcar-du: fix selection of CMM driver
-Message-ID: <20200414205158.GM19819@pendragon.ideasonboard.com>
-References: <20200408202711.1198966-1-arnd@arndb.de>
- <20200408202711.1198966-6-arnd@arndb.de>
- <20200414201739.GJ19819@pendragon.ideasonboard.com>
- <CAK8P3a0hd5bsezrJS3+GV2nRMui4P5yeD2Rk7wQpJsAZeOCOUg@mail.gmail.com>
+        David Miller <davem@davemloft.net>
+Subject: Re: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for
+ representors
+Message-ID: <20200414205755.GF1068@sasha-vm>
+References: <20200411231413.26911-1-sashal@kernel.org>
+ <20200411231413.26911-9-sashal@kernel.org>
+ <CAJ3xEMhhtj77M5vercHDMAHPPVZ8ZF-eyCVQgD4ZZ1Ur3Erbdw@mail.gmail.com>
+ <20200412105935.49dacbf7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200414015627.GA1068@sasha-vm>
+ <CAJ3xEMh=PGVSddBWOX7U6uAuazJLFkCpWQNxhg7dDRgnSdQ=xA@mail.gmail.com>
+ <20200414110911.GA341846@kroah.com>
+ <CAJ3xEMhnXZB-HU7aL3m9A1N_GPxgOC3U4skF_qWL8z3wnvSKPw@mail.gmail.com>
+ <a89a592a-5a11-5e56-a086-52b1694e00db@solarflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <CAK8P3a0hd5bsezrJS3+GV2nRMui4P5yeD2Rk7wQpJsAZeOCOUg@mail.gmail.com>
+In-Reply-To: <a89a592a-5a11-5e56-a086-52b1694e00db@solarflare.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arnd,
+On Tue, Apr 14, 2020 at 04:49:20PM +0100, Edward Cree wrote:
+>On 14/04/2020 16:16, Sasha Levin wrote:
+>> Are you suggesting that a commit without a fixes tag is never a fix?
+>Because fixes are much more likely than non-fixes to have a Fixes tag,
+> the absence of a fixes tag is Bayesian evidence that a commit is not
+> a fix.  It's of course not incontrovertible evidence, since (as you
+> note) some fixes do not have a Fixes tag, but it does increase the
+> amount of countervailing evidence needed to conclude a commit is a fix.
+>In this case it looks as if the only such evidence was that the commit
+> message included the phrase "NULL pointer dereference".
 
-On Tue, Apr 14, 2020 at 10:38:27PM +0200, Arnd Bergmann wrote:
-> On Tue, Apr 14, 2020 at 10:17 PM Laurent Pinchart wrote:
-> > On Wed, Apr 08, 2020 at 10:27:10PM +0200, Arnd Bergmann wrote:
-> > > The 'imply' statement does not seem to have an effect, as it's
-> > > still possible to turn the CMM code into a loadable module
-> > > in a randconfig build, leading to a link error:
-> > >
-> > > arm-linux-gnueabi-ld: drivers/gpu/drm/rcar-du/rcar_du_crtc.o: in function `rcar_du_crtc_atomic_enable':
-> > > rcar_du_crtc.c:(.text+0xad4): undefined reference to `rcar_lvds_clk_enable'
-> > > arm-linux-gnueabi-ld: drivers/gpu/drm/rcar-du/rcar_du_crtc.o: in function `rcar_du_crtc_atomic_disable':
-> > > rcar_du_crtc.c:(.text+0xd7c): undefined reference to `rcar_lvds_clk_disable'
-> > > arm-linux-gnueabi-ld: drivers/gpu/drm/rcar-du/rcar_du_drv.o: in function `rcar_du_init':
-> > > rcar_du_drv.c:(.init.text+0x4): undefined reference to `rcar_du_of_init'
-> > > arm-linux-gnueabi-ld: drivers/gpu/drm/rcar-du/rcar_du_encoder.o: in function `rcar_du_encoder_init':
-> > >
-> > > Remove the 'imply', and instead use a silent symbol that defaults
-> > > to the correct setting.
-> >
-> > This will result in the CMM always being selected when DU is, increasing
-> > the kernel size even for devices that don't need it. I believe we need a
-> > better construct in Kconfig to fix this.
-> 
-> I had expected this to have the same meaning that we had before the
-> Kconfig change: whenever the dependencies are available, turn it on,
-> otherwise leave it disabled.
-> 
-> Can you describe what behavior you actually want instead?
+I've pointed out that almost 50% of commits tagged for stable do not
+have a fixes tag, and yet they are fixes. You really deduce things based
+on coin flip probability?
 
-Doesn't "imply" mean it gets selected by default but can be manually
-disabled ?
+$ git log --oneline -i --grep "fixes:" v4.19..stable/linux-4.19.y | wc -l
+6235
+$ git log --oneline v4.19..stable/linux-4.19.y | wc -l
+12877
 
-> > > --- a/drivers/gpu/drm/rcar-du/Kconfig
-> > > +++ b/drivers/gpu/drm/rcar-du/Kconfig
-> > > @@ -4,7 +4,6 @@ config DRM_RCAR_DU
-> > >       depends on DRM && OF
-> > >       depends on ARM || ARM64
-> > >       depends on ARCH_RENESAS || COMPILE_TEST
-> > > -     imply DRM_RCAR_CMM
-> > >       imply DRM_RCAR_LVDS
-> > >       select DRM_KMS_HELPER
-> > >       select DRM_KMS_CMA_HELPER
-> > > @@ -15,9 +14,8 @@ config DRM_RCAR_DU
-> > >         If M is selected the module will be called rcar-du-drm.
-> > >
-> > >  config DRM_RCAR_CMM
-> > > -     tristate "R-Car DU Color Management Module (CMM) Support"
-> > > +     def_tristate DRM_RCAR_DU
-> > >       depends on DRM && OF
-> > > -     depends on DRM_RCAR_DU
-> > >       help
-> 
-> It would be easy enough to make this a visible 'bool' symbol and
-> build it into the rcu-du-drm.ko module itself. Would that help you?
+Look at that, most fixes in -stable *don't* have a fixes tag. Shouldn't
+your argument be the opposite? If a patch has a fixes tag, it's probably
+not a fix?
 
-That could indeed simplify a few things. I wonder if it could introduce
-a few small issues though (but likely nothing we can't fix). The two
-that come to mind are the fact that the module would have two
-MODULE_DESCRIPTION and MODULE_LICENSE entries (I have no idea if that
-could cause breakages), and that it could make module unloading more
-difficult as the CMM being used by the DU would increase the refcount on
-the module. I think the latter could be worked around by manually
-unbinding the DU device through sysfs before unloading the module (and I
-can't say for sure that unloading the DU module is not broken today
-*innocent and naive look* :-)).
+"it does increase the amount of countervailing evidence needed to
+conclude a commit is a fix" - Please explain this argument given the
+above.
+
+>> Fixes can (and should) come in during a merge window as well. They are
+>> not put on hold until the -rc releases.
+>In networking-land, fixes generally go through David's 'net' tree, rather
+> than 'net-next'; the only times a fix goes to net-next are when
+
+This is great, but the kernel is more than just net/. Note that I also
+do not look at net/ itself, but rather drivers/net/ as those end up with
+a bunch of missed fixes.
+
+>a) the code it's fixing is only in net-next; i.e. it's a fix to a previous
+> patch from the same merge window.  In this case the fix should not be
+> backported, since the code it's fixing will not appear in stable kernels.
+>b) the code has changed enough between net and net-next that different
+> fixes are appropriate for the two trees.  In this case, only the fix that
+> went to 'net' should be backported (since it's the one that's appropriate
+> for net, it's probably more appropriate for stable trees too); the fix
+> that went to 'net-next' should not.
+>Or's original phrasing was that this patch "was pushed to net-next", which
+> is not quite exactly the same thing as -next vs. -rc (though it's similar
+> because of David's system of closing net-next for the duration of the
+> merge window).  And this, again, is quite strong Bayesian evidence that
+> the patch should not be selected for stable.
+>
+>To be honest, that this needs to be explained to you does not inspire
+> confidence in the quality of your autoselection process...
+
+Nothing like a personal attack or two to try and make a point?
 
 -- 
-Regards,
-
-Laurent Pinchart
+Thanks,
+Sasha
