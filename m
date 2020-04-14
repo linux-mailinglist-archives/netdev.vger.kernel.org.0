@@ -2,158 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CD661A84AC
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 18:25:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FD131A84F7
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 18:32:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391469AbgDNQZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 12:25:10 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:46402 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2391466AbgDNQZF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 12:25:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586881500;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yW8t58m2bp1NhazlqC7/k8J+nPWsrZBYDWUsjTyk2qQ=;
-        b=FjbGTECJfZsMnE9+A9oMfnoEDVqb3ysBa861htGWRU+yidk9RoBOD7o2an4hkB7oIpWOgU
-        vVbUHCEpGia52lD8Kq9lm1U1hWrXd6qGyBfR3aQofT39nCULd18fees8sV9+P645czW0dp
-        ksD6uFV6/0qe4NYZLXR8UuNcX844jPg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-87-m_CJjLwlPvyXxruKyZ4cKA-1; Tue, 14 Apr 2020 12:24:56 -0400
-X-MC-Unique: m_CJjLwlPvyXxruKyZ4cKA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 12123107ACC4;
-        Tue, 14 Apr 2020 16:24:50 +0000 (UTC)
-Received: from llong.remote.csb (ovpn-118-173.rdu2.redhat.com [10.10.118.173])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0E02D118DEE;
-        Tue, 14 Apr 2020 16:24:36 +0000 (UTC)
-Subject: Re: [PATCH v2 2/2] crypto: Remove unnecessary memzero_explicit()
-To:     Christophe Leroy <christophe.leroy@c-s.fr>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Joe Perches <joe@perches.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Rientjes <rientjes@google.com>
-Cc:     linux-mm@kvack.org, keyrings@vger.kernel.org,
-        linux-kernel@vger.kernel.org, x86@kernel.org,
-        linux-crypto@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, linux-ppp@vger.kernel.org,
-        wireguard@lists.zx2c4.com, linux-wireless@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
-        linux-fscrypt@vger.kernel.org, ecryptfs@vger.kernel.org,
-        kasan-dev@googlegroups.com, linux-bluetooth@vger.kernel.org,
-        linux-wpan@vger.kernel.org, linux-sctp@vger.kernel.org,
-        linux-nfs@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        cocci@systeme.lip6.fr, linux-security-module@vger.kernel.org,
-        linux-integrity@vger.kernel.org
-References: <20200413211550.8307-1-longman@redhat.com>
- <20200413222846.24240-1-longman@redhat.com>
- <eca85e0b-0af3-c43a-31e4-bd5c3f519798@c-s.fr>
-From:   Waiman Long <longman@redhat.com>
-Organization: Red Hat
-Message-ID: <e194a51f-a5e5-a557-c008-b08cac558572@redhat.com>
-Date:   Tue, 14 Apr 2020 12:24:36 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S2391689AbgDNQaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 12:30:55 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:44248 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391683AbgDNQar (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 12:30:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=bfBQPK6jHUP0T6D3BfvHJs65UU0jMBvVftwbQ7Ccv0A=; b=VrbNfrwuFd02NIyb8SgmA6cXs
+        bvHoC4l9VPppfChhyDlv74mX1jH0buHsPPiGeFkFW087qAV/vkOnKuFd+ditPqCNsdsCrMBDz/Oeu
+        DkYhXbu8i+lVtPUS+iy2IPBMxqzkfM+av6JIvX2U2l92tcypiIkD3ItnposiaxADUpBTjXGgD9oyr
+        Y2htpGA0K+zpWj/LuW3+v7NAttyghVVpH33SGIshzpTk5sQhUf5KV6q4Lvd45270cYxOZO/ME373c
+        LkdvqqMI8uUi/hEhURA5/tVGpm0tTr+igwVPgNrGUgkfJFepZUOcmQkeAdtUtsCncmrKMzYwF/xpL
+        2pNgd9CZg==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:45874)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jOOSF-0000h9-Pb; Tue, 14 Apr 2020 17:30:31 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jOOSA-0008Fc-I7; Tue, 14 Apr 2020 17:30:26 +0100
+Date:   Tue, 14 Apr 2020 17:30:26 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Matteo Croce <mcroce@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Luka Perkov <luka.perkov@sartura.hr>
+Subject: Re: [PATCH net-next v2 3/3] net: phy: marvell10g: place in powersave
+ mode at probe
+Message-ID: <20200414163026.GW25745@shell.armlinux.org.uk>
+References: <20200303155347.GS25745@shell.armlinux.org.uk>
+ <E1j99sC-00011f-22@rmk-PC.armlinux.org.uk>
+ <CAGnkfhx+JkD6a_8ojU6tEL_vk6vtwQpxbwU9+beDepL4dxgLyQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <eca85e0b-0af3-c43a-31e4-bd5c3f519798@c-s.fr>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGnkfhx+JkD6a_8ojU6tEL_vk6vtwQpxbwU9+beDepL4dxgLyQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/14/20 2:08 AM, Christophe Leroy wrote:
->
->
-> Le 14/04/2020 =C3=A0 00:28, Waiman Long a =C3=A9crit=C2=A0:
->> Since kfree_sensitive() will do an implicit memzero_explicit(), there
->> is no need to call memzero_explicit() before it. Eliminate those
->> memzero_explicit() and simplify the call sites. For better correctness=
-,
->> the setting of keylen is also moved down after the key pointer check.
->>
->> Signed-off-by: Waiman Long <longman@redhat.com>
->> ---
->> =C2=A0 .../allwinner/sun8i-ce/sun8i-ce-cipher.c=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 | 19 +++++-------------
->> =C2=A0 .../allwinner/sun8i-ss/sun8i-ss-cipher.c=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 | 20 +++++--------------
->> =C2=A0 drivers/crypto/amlogic/amlogic-gxl-cipher.c=C2=A0=C2=A0 | 12 ++=
-+--------
->> =C2=A0 drivers/crypto/inside-secure/safexcel_hash.c=C2=A0 |=C2=A0 3 +-=
--
->> =C2=A0 4 files changed, 14 insertions(+), 40 deletions(-)
->>
->> diff --git a/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c
->> b/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c
->> index aa4e8fdc2b32..8358fac98719 100644
->> --- a/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c
->> +++ b/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c
->> @@ -366,10 +366,7 @@ void sun8i_ce_cipher_exit(struct crypto_tfm *tfm)
->> =C2=A0 {
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct sun8i_cipher_tfm_ctx *op =3D cry=
-pto_tfm_ctx(tfm);
->> =C2=A0 -=C2=A0=C2=A0=C2=A0 if (op->key) {
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 memzero_explicit(op->key, =
-op->keylen);
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kfree(op->key);
->> -=C2=A0=C2=A0=C2=A0 }
->> +=C2=A0=C2=A0=C2=A0 kfree_sensitive(op->key);
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 crypto_free_sync_skcipher(op->fallback_=
-tfm);
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pm_runtime_put_sync_suspend(op->ce->dev=
-);
->> =C2=A0 }
->> @@ -391,14 +388,11 @@ int sun8i_ce_aes_setkey(struct crypto_skcipher
->> *tfm, const u8 *key,
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dev_dbg(ce->dev=
-, "ERROR: Invalid keylen %u\n", keylen);
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -EINVAL;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
->> -=C2=A0=C2=A0=C2=A0 if (op->key) {
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 memzero_explicit(op->key, =
-op->keylen);
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kfree(op->key);
->> -=C2=A0=C2=A0=C2=A0 }
->> -=C2=A0=C2=A0=C2=A0 op->keylen =3D keylen;
->> +=C2=A0=C2=A0=C2=A0 kfree_sensitive(op->key);
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 op->key =3D kmemdup(key, keylen, GFP_KE=
-RNEL | GFP_DMA);
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (!op->key)
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -ENOMEM;
->> +=C2=A0=C2=A0=C2=A0 op->keylen =3D keylen;
->
-> Does it matter at all to ensure op->keylen is not set when of->key is
-> NULL ? I'm not sure.
->
-> But if it does, then op->keylen should be set to 0 when freeing op->key=
-.=20
+On Fri, Apr 10, 2020 at 03:48:34PM +0200, Matteo Croce wrote:
+> On Fri, Apr 10, 2020 at 3:24 PM Russell King <rmk+kernel@armlinux.org.uk> wrote:
+> >
+> > Place the 88x3310 into powersaving mode when probing, which saves 600mW
+> > per PHY. For both PHYs on the Macchiatobin double-shot, this saves
+> > about 10% of the board idle power.
+> >
+> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> 
+> Hi,
+> 
+> I have a Macchiatobin double shot, and my 10G ports stop working after
+> this change.
+> I reverted this commit on top of latest net-next and now the ports work again.
 
-My thinking is that if memory allocation fails, we just don't touch
-anything and return an error code. I will not explicitly set keylen to 0
-in this case unless it is specified in the API documentation.
+For the public record, I've been debugging this in-part on Matteo's
+board, and it looks like it's a PHY firmware issue.
 
-Cheers,
-Longman
+Both my Macchiatobin boards use firmware 0.2.1.0 (which is not even
+mentioned on Marvell's extranet), whereas Matteo's board uses 0.3.3.0.
+It seems firmware 0.2.1.0 behaves "correctly" with my patch, but
+0.3.3.0 does not - and neither does the latest 0.3.10.0.  Both of
+these more recent versions seem to need a software reset to recover
+from power down mode... so a patch will be coming soon to add that.
 
+I also think it would be a good idea to print the PHY firmware
+version when the PHY is probed - another patch coming for that.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
