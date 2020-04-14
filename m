@@ -2,141 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 348341A7779
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 11:38:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E96351A778D
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 11:44:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437697AbgDNJiU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 05:38:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729471AbgDNJiT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 05:38:19 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3CD7C0A3BD0
-        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 02:38:18 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id i7so16222198edq.3
-        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 02:38:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=l0sElnDfI+ZyVqRL2zYk64+Rr5oxxTVwp3ecCT2n+44=;
-        b=fRoNYYXgsYeuzWQ+HuHIHEIb0CJmAFKpi8LpRXp1aRZ3t4CwZ24F+lFJyRSChsga8d
-         0RL1mAR8XVHFIB51ZXSaNECRtUUYmf4RKAIenb5FnVjVueDd55pqoTxU7UHPqYPK/PIz
-         xxfKSFuNIacBncU7uq5dbgtnwyVHeNwOg0kjCZNetmo+SvXbQ2TsRhjygeJ6lb4UVI+m
-         LyEVcQQRReWzT715iLOCp11oxeUhwatvshzXJHqr0W4dzPqMwYwaz1ov9+QjCkzlBcGi
-         gw3ByE0ULyOq1SmwFREy8iYjSiBo1n+uFPXbSLTg4h9Ew2ZTJ/rrgPUC7pUQjc/UuF3m
-         9tvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=l0sElnDfI+ZyVqRL2zYk64+Rr5oxxTVwp3ecCT2n+44=;
-        b=Iba5aEAIvStuDLsETusD1EYKlqaPSaebAldh5+/cAlXbZ52YVOo0MZVHAutxzFxcud
-         Bh7blgb3bh/zU7uD282yvroETGlJWdYRh9fM3yzExobpnL8C4RQyEIzuyGb2Y8aVE94C
-         JtQEaXK70vVYsT39ZGNYDGtcb/a1lx1n7AyB2ErL/4bqGmInMs0yX9lDAXXDTq8R1RLq
-         ZLTPyf+GtfqZd+FDzv6x98rKtVFBzA08LVhVvVtmdVSVyh4Pd7Bv0GqvgJzDPpqNGlpq
-         YCQzjGI5WIV+fuQw+oOperoszsnIZxUDdxHIXtSo1A1fcf7eaLfbTJiA4b7oqUqfXqhS
-         QevA==
-X-Gm-Message-State: AGi0PuYg4xOFRzAwa4EsengxKjGoadhiN2gkD/KMEBlmAHRFk2Sn5Ke+
-        lafyRjyei/9QcEpEPw4zYMPA6EfAL34wSFGr3lHtvQ==
-X-Google-Smtp-Source: APiQypLOFsfGeYYJBkzEXQ8z9r10aKGeqkfdbpSDChp49Ujn1YdohXhW0v0idRXsv053tn2H2ERXDjBmTnw/hdtIFdA=
-X-Received: by 2002:a17:906:78c:: with SMTP id l12mr2415056ejc.189.1586857097322;
- Tue, 14 Apr 2020 02:38:17 -0700 (PDT)
+        id S2437729AbgDNJoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 05:44:12 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:25836 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729503AbgDNJoL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 05:44:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1586857449;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LjxeJjQxERiNLFziVWG1YXicU4Gh17nrIcM7VgiXAaE=;
+        b=OOunao9uARfUezEk27HaWuW9S6TX4EoKGHDT1HPwE3I6I2z0aAnk5yf17QXVJ1262XlJZu
+        cGgDLe8i8m/BSXR/4NQ4TUBcUpF9uZq58KyNkDFzS7Cg1U+sGDE4OqBee88Jk6DItwwWwJ
+        MQyvwxY4FQWB5da75K0o/+/zsDYUgmM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-412-UaDNhSB_MPm3cK1g0MwMuw-1; Tue, 14 Apr 2020 05:44:06 -0400
+X-MC-Unique: UaDNhSB_MPm3cK1g0MwMuw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7B4878017F3;
+        Tue, 14 Apr 2020 09:44:04 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.6])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E0D3B11A023;
+        Tue, 14 Apr 2020 09:43:53 +0000 (UTC)
+Date:   Tue, 14 Apr 2020 11:43:52 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     sameehj@amazon.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        zorik@amazon.com, akiyano@amazon.com, gtzalik@amazon.com,
+        toke@redhat.com, borkmann@iogearbox.net,
+        alexei.starovoitov@gmail.com, john.fastabend@gmail.com,
+        alexander.duyck@gmail.com, jeffrey.t.kirsher@intel.com,
+        dsahern@gmail.com, willemdebruijn.kernel@gmail.com,
+        ilias.apalodimas@linaro.org, lorenzo@kernel.org,
+        saeedm@mellanox.com, brouer@redhat.com
+Subject: Re: [PATCH RFC v2 30/33] xdp: clear grow memory in
+ bpf_xdp_adjust_tail()
+Message-ID: <20200414114352.16e6a279@carbon>
+In-Reply-To: <20200408.144914.956216445223066424.davem@davemloft.net>
+References: <158634658714.707275.7903484085370879864.stgit@firesoul>
+        <158634678679.707275.5039642404868230051.stgit@firesoul>
+        <20200408.144914.956216445223066424.davem@davemloft.net>
 MIME-Version: 1.0
-References: <20200409155409.12043-1-dqfext@gmail.com> <20200409.102035.13094168508101122.davem@davemloft.net>
- <CALW65jbrg1doaRBPdGQkQ-PG6dnh_L4va7RxcMxyKKMqasN7bQ@mail.gmail.com>
- <c7da2de5-5e25-6284-0b35-fd2dbceb9c4f@gmail.com> <CALW65jZAdFFNfGioAFWPwYN+F4baL0Z-+FX_pAte97uxNK3T6g@mail.gmail.com>
- <CA+h21hp8LueSfh+Z8f0-Y7dTPB50d+3E3K9n6R5MwNzA3Dh1Lw@mail.gmail.com> <CALW65jYodd=GoWrGTcAWEO6wNQdvSQjgO=4tmNYNnmbCh7n8sg@mail.gmail.com>
-In-Reply-To: <CALW65jYodd=GoWrGTcAWEO6wNQdvSQjgO=4tmNYNnmbCh7n8sg@mail.gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 14 Apr 2020 12:38:06 +0300
-Message-ID: <CA+h21hrR-vs=iMHYTzYTHrXJaEQqONdSzGt5mOgTq6G=VhK=GA@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: dsa: mt7530: enable jumbo frame
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
-        John Crispin <john@phrozen.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Weijie Gao <weijie.gao@mediatek.com>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 14 Apr 2020 at 06:03, DENG Qingfang <dqfext@gmail.com> wrote:
->
-> On Fri, Apr 10, 2020 at 6:46 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-> >
-> > Hi Qingfang,
-> >
-> > On Fri, 10 Apr 2020 at 05:51, DENG Qingfang <dqfext@gmail.com> wrote:
-> > >
-> > > On Fri, Apr 10, 2020 at 10:27 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
-> > > >
-> > > >
-> > > >
-> > > > On 4/9/2020 7:19 PM, DENG Qingfang wrote:
-> > > > > So, since nothing else uses the mt7530_set_jumbo function, should I
-> > > > > remove the function and just add a single rmw to mt7530_setup?
-> > > >
-> > > > (please do not top-post on netdev)
-> > > >
-> > > > There is a proper way to support the MTU configuration for DSA switch
-> > > > drivers which is:
-> > > >
-> > > >         /*
-> > > >          * MTU change functionality. Switches can also adjust their MRU
-> > > > through
-> > > >          * this method. By MTU, one understands the SDU (L2 payload) length.
-> > > >          * If the switch needs to account for the DSA tag on the CPU
-> > > > port, this
-> > > >          * method needs to to do so privately.
-> > > >          */
-> > > >         int     (*port_change_mtu)(struct dsa_switch *ds, int port,
-> > > >                                    int new_mtu);
-> > > >         int     (*port_max_mtu)(struct dsa_switch *ds, int port);
-> > >
-> > > MT7530 does not support configuring jumbo frame per-port
-> > > The register affects globally
-> > >
-> > > >
-> > > > --
-> > > > Florian
-> >
-> > This is a bit more tricky, but I think you can still deal with it
-> > using the port_change_mtu functionality. Basically it is only a
-> > problem when the other ports are standalone - otherwise the
-> > dsa_bridge_mtu_normalization function should kick in.
-> > So if you implement port_change_mtu, you should do something along the lines of:
-> >
-> > for (i = 0; i < MT7530_NUM_PORTS; i++) {
-> >     struct net_device *slave;
-> >
-> >     if (!dsa_is_user_port(ds, i))
-> >         continue;
-> >
-> >     slave = ds->ports[i].slave;
-> >
-> >     slave->mtu = new_mtu;
-> > }
-> >
-> > to update the MTU known by the stack for all net devices.
-> Should we warn users that all ports will be affected?
-> >
-> > Hope this helps,
-> > -Vladimir
+On Wed, 08 Apr 2020 14:49:14 -0700 (PDT)
+David Miller <davem@davemloft.net> wrote:
 
-Unless I'm missing something, all ports are affected anyway, so
-changing the MTU _is_ informing users that all switch ports are
-affected.
+> From: Jesper Dangaard Brouer <brouer@redhat.com>
+> Date: Wed, 08 Apr 2020 13:53:06 +0200
+> 
+> > @@ -3445,6 +3445,11 @@ BPF_CALL_2(bpf_xdp_adjust_tail, struct xdp_buff *, xdp, int, offset)
+> >  	if (unlikely(data_end < xdp->data + ETH_HLEN))
+> >  		return -EINVAL;
+> >  
+> > +	/* Clear memory area on grow, can contain uninit kernel memory */
+> > +	if (offset > 0) {
+> > +		memset(xdp->data_end, 0, offset);
+> > +	}  
+> 
+> Single statement basic blocks should elide curly braces.
 
-Thanks,
--Vladimir
+Fixed
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
