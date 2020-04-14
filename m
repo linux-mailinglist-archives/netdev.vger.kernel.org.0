@@ -2,164 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE6ED1A7FBC
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 16:28:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59D2C1A7FF7
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 16:39:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390767AbgDNO2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 10:28:06 -0400
-Received: from mout.kundenserver.de ([212.227.126.133]:36921 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729040AbgDNO2B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 10:28:01 -0400
-Received: from mail-lj1-f177.google.com ([209.85.208.177]) by
- mrelayeu.kundenserver.de (mreue010 [212.227.15.129]) with ESMTPSA (Nemesis)
- id 1MD9nd-1jWvFP2Anh-009C6B; Tue, 14 Apr 2020 16:27:58 +0200
-Received: by mail-lj1-f177.google.com with SMTP id q22so25016ljg.0;
-        Tue, 14 Apr 2020 07:27:58 -0700 (PDT)
-X-Gm-Message-State: AGi0PuaRQXbMmCTgmEEnEb/R9FUHvsfmglePzaD0ekKdenILs7G4cm3a
-        DHZm8iz7FHO2+uen8UH3MPC1E9b0I7sebtqyhSo=
-X-Google-Smtp-Source: APiQypIehfRw4bnzZDiYQ9rbmdjkvSpz2iHh0P7VLnhHPaYn8R1IT4hVMubviwCCAbF8Hb+k1UqXmIWLLXlwy3kW8AM=
-X-Received: by 2002:a2e:b446:: with SMTP id o6mr305063ljm.80.1586874477781;
- Tue, 14 Apr 2020 07:27:57 -0700 (PDT)
+        id S2391032AbgDNOiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 10:38:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39800 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391025AbgDNOip (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 10:38:45 -0400
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E18C061A0C;
+        Tue, 14 Apr 2020 07:38:44 -0700 (PDT)
+Received: by mail-yb1-xb41.google.com with SMTP id f14so7278731ybr.13;
+        Tue, 14 Apr 2020 07:38:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DBov4c0FPAs/GB0H+VoCLMbjb3xE9YZh3UekJ0w2xxQ=;
+        b=SZp9pqL4/SIbGKiZ7G9fbmeTOsbsGmxutmHCVoNe/hXlc9azzXMGyscO0MRHYogJEs
+         tqOv7GyZ0j1FaqLUHrsHIuG9hU5VqzkUVH1cAIHZzh0bZl5Ru/FBUOk/KEsD2cYyn8wn
+         jyNlSBPjeVDiL4ojSURzeLww7OA8yliMEctkSAJLrm+iCe0W30L9yRp77gUuQtBz2qcI
+         Yj98HrlQwvNl5jkZ+mYkrRTg3mN2txEyM/0UQHcvvspUWa62e/baS8R82rxMaHAIzCBn
+         68Zggnwxe90ejy//YBICiWJHGeb4q1IajiJSMCNb7N9Y3XWb3H5W0JUoe7LzE/h94f4r
+         4aXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DBov4c0FPAs/GB0H+VoCLMbjb3xE9YZh3UekJ0w2xxQ=;
+        b=BapCplQFmQh6VVtc/lcnh4wuh3kKE+ahzqtT5E2nbcfjUd5kwahgx7SDse0XEa3kV8
+         onBISHAYtWPH0m+ut9ZUDoWW64a7TegMpRxDxx10TRfQyIxNPK0ZUk0tChLgOTgyahNX
+         Q6FrCK+hdbOoE+ioQTUrssKuXUFp9l3492WOTylsHNGVk0KxH7ymi+iziTISOb/4Ql4u
+         7EBqkU2ixmORBIfWSzmoKD7fOwBFdnWurA8BXEuro3xvKz6/XWbPNzJasaeB+BTEAeT5
+         E/U5EYOjbVT8f43CGQ8M2pJR+G+MtQ4tymAzItW0ao3MJPk5FQVfN9KNeMNXGSZ/DjWR
+         LYgw==
+X-Gm-Message-State: AGi0PuZ1b9i9aI7gpSyd5DXKpsX/KZ9Q6WFJcblcCBWfkhietBSPPCBl
+        Nyx9qhphB1RdhfOtKdQz7x5oHdUELCdZR9OCPP5XUWIfcqg=
+X-Google-Smtp-Source: APiQypIi8Iiyo9TUqXdYboNOEyl3RMyffO46vk+0FWqxXmUbGe7kuvCG0mTEml7Cy73IVaLlNmqICEmmkmsLtv9zzu8=
+X-Received: by 2002:a5b:5cf:: with SMTP id w15mr432551ybp.215.1586875124002;
+ Tue, 14 Apr 2020 07:38:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200408202711.1198966-1-arnd@arndb.de> <nycvar.YSQ.7.76.2004081633260.2671@knanqh.ubzr>
- <CAK8P3a2frDf4BzEpEF0uwPTV2dv6Jve+6N97z1sSuSBUAPJquA@mail.gmail.com>
- <20200408224224.GD11886@ziepe.ca> <87k12pgifv.fsf@intel.com>
- <7d9410a4b7d0ef975f7cbd8f0b6762df114df539.camel@mellanox.com>
- <20200410171320.GN11886@ziepe.ca> <16441479b793077cdef9658f35773739038c39dc.camel@mellanox.com>
- <20200414132900.GD5100@ziepe.ca>
-In-Reply-To: <20200414132900.GD5100@ziepe.ca>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 14 Apr 2020 16:27:41 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0aFQ7h4zRDW=QLogXWc88JkJJXEOK0_CpWwsRjq6+T+w@mail.gmail.com>
-Message-ID: <CAK8P3a0aFQ7h4zRDW=QLogXWc88JkJJXEOK0_CpWwsRjq6+T+w@mail.gmail.com>
-Subject: Re: [RFC 0/6] Regressions for "imply" behavior change
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        "narmstrong@baylibre.com" <narmstrong@baylibre.com>,
-        "masahiroy@kernel.org" <masahiroy@kernel.org>,
-        "Laurent.pinchart@ideasonboard.com" 
-        <Laurent.pinchart@ideasonboard.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "nico@fluxnic.net" <nico@fluxnic.net>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "kieran.bingham+renesas@ideasonboard.com" 
-        <kieran.bingham+renesas@ideasonboard.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "jani.nikula@linux.intel.com" <jani.nikula@linux.intel.com>,
-        "a.hajda@samsung.com" <a.hajda@samsung.com>,
-        "jonas@kwiboo.se" <jonas@kwiboo.se>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "airlied@linux.ie" <airlied@linux.ie>,
-        "jernej.skrabec@siol.net" <jernej.skrabec@siol.net>
+References: <20200411231413.26911-1-sashal@kernel.org> <20200411231413.26911-9-sashal@kernel.org>
+ <CAJ3xEMhhtj77M5vercHDMAHPPVZ8ZF-eyCVQgD4ZZ1Ur3Erbdw@mail.gmail.com>
+ <20200412105935.49dacbf7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200414015627.GA1068@sasha-vm> <CAJ3xEMh=PGVSddBWOX7U6uAuazJLFkCpWQNxhg7dDRgnSdQ=xA@mail.gmail.com>
+ <20200414110911.GA341846@kroah.com>
+In-Reply-To: <20200414110911.GA341846@kroah.com>
+From:   Or Gerlitz <gerlitz.or@gmail.com>
+Date:   Tue, 14 Apr 2020 17:38:32 +0300
+Message-ID: <CAJ3xEMhnXZB-HU7aL3m9A1N_GPxgOC3U4skF_qWL8z3wnvSKPw@mail.gmail.com>
+Subject: Re: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for representors
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Sasha Levin <sashal@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        Stable <stable@vger.kernel.org>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        David Miller <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:UprGL/M9NyjdOlqLrDoplNxPEwHDZvVhDmyY7ZnnsVwKVvzBIuU
- 872FrhcPWiFVDXV1uXzAPPLKxXmpV7w/Qie1lMaYqxlaS2t/GOzpFdTsFaYEUlVWJrQRNIB
- hQ5UIav82JCFvQA41tpt568Xn01dmTrwxVcbhRWNPuIOgOO7ck0DXIlvzBv3RjFBg8dKPEA
- x+oIM19zXsRwa0dt9gybg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:dy4oC+QyOyk=:panXrZzItC+VIEfVeOEAGf
- gyNkrwHX1ighk2WHgomIh2o2rVWvWqTGzrTw4Q9Z187SDWEdTvnK7V7a79u7m8/qg+N1r3VyM
- GNM/oHmNbGI72Ufc4xIBf5uhBgVe3ELLrOihKXe+9QxmS5y20peflkz2Qh13+Nn8ZJ+W00sm5
- Zp+IdHK5OqnxO9jBz7R2L7yCrgVkxR9vM2N4gOKEUJEsebABxQj1tSqHXp1EqJWhlht+Os1Hq
- NIWuYzz3jzSV1IGvb/d1dP5yWKMbdSkr6jYX9BYCOVzZXfPmhhgC1YJcJdWYx/mgUu9ZNXpST
- UIi9N5x5pGl/WLzMdg9QLfQwFJEtKIepYf0SjoMNdXaLSyb8Wo8Pup/8jmBbZlT5kjUPP07Ao
- 5KCQNBoNwI6vjtxduR2bcTEU9BH6tvViJ7avWKvyudklU1JtwgrhVviwu1sllM1MJkXXblp5Q
- FVApCP4AZp7MM94Npsw51iDei4kH+2hVfLx0B/p9ns4uF7fe8vUl2lcl93OZLueVsQ2pcQDd5
- UbWBRzkVezXrPWdvkUpPvjZLV0NEFJTtYuwT9L+sPz/i+cBtrYA1aXWjjt6M3ad/ZkYQ0Zbb3
- YFjQUvPbyZ3oqo3LVt9pwa1svhHlLCyANvGbx7bxV5HTXMM3id0c8ZpiDvt2xtIRoI+9uxn0O
- uhhDiigGAUhJQqBDLEj1LdZ85tYuVK3cMOi5IrgvYNieXEz6JAyOrazQHC+qXg9piY6T9liVu
- Q+hXSfP4XXOR1t88QeldnmT3UgR5JNBKg5C0j69ZgnNHKUqyg6fDO3t720QL/HttSjZm0dJ6j
- HngZOppaFsBD9cIu/XQ2OCgAuJcrc7656xEDYj+ECZ53hDVowQ=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 14, 2020 at 3:29 PM Jason Gunthorpe <jgg@ziepe.ca> wrote:
-> On Fri, Apr 10, 2020 at 07:04:27PM +0000, Saeed Mahameed wrote:
-> > On Fri, 2020-04-10 at 14:13 -0300, Jason Gunthorpe wrote:
-> > > On Fri, Apr 10, 2020 at 02:40:42AM +0000, Saeed Mahameed wrote:
-> > >
-> > > > This assumes that the module using FOO has its own flag
-> > > > representing
-> > > > FOO which is not always the case.
-> > > >
-> > > > for example in mlx5 we use VXLAN config flag directly to compile
-> > > > VXLAN related files:
-> > > >
-> > > > mlx5/core/Makefile:
-> > > >
-> > > > obj-$(CONFIG_MLX5_CORE) += mlx5_core.o
-> > > >
-> > > > mlx5_core-y := mlx5_core.o
-> > > > mlx5_core-$(VXLAN) += mlx5_vxlan.o
-> > > >
-> > > > and in mlx5_main.o we do:
-> > >
-> > > Does this work if VXLAN = m ?
-> >
-> > Yes, if VXLAN IS_REACHABLE to MLX5, mlx5_vxlan.o will be
-> > compiled/linked.
+On Tue, Apr 14, 2020 at 2:09 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> On Tue, Apr 14, 2020 at 01:22:59PM +0300, Or Gerlitz wrote:
+> > IMHO - I think it should be the other way around, you should get approval
+> > from sub-system maintainers to put their code in charge into auto-selection,
+> > unless there's kernel summit decision that says otherwise, is this documented
+> > anywhere?
 >
-> So mlx5_core-m does the right thing somehow?
+> No, we can't get make this a "only take if I agree" as there are _many_
+> subsystem maintainers who today never mark anything for stable trees, as
+> they just can't be bothered.  And that's fine, stable trees should not
+> take up any extra maintainer time if they do not want to do so.  So it's
+> simpler to do an opt-out when asked for.
 
-What happens with CONFIG_VXLAN=m is that the above turns into
+OK, but I must say I am worried from the comment made here:
 
-mlx5_core-y := mlx5_core.o
-mlx5_core-m += mlx5_vxlan.o
+"I'm not sure what a fixes tag has to do with inclusion in a stable tree"
 
-which in turn leads to mlx5_core.ko *not* containing mlx5_vxlan.o,
-and in turn causing that link error against
-mlx5_vxlan_create/mlx5_vxlan_destroy, unless the IS_ENABLED()
-is changed to IS_REACHABLE().
+This patch
 
-> > > > if (IS_ENABLED(VXLAN))
-> > > >        mlx5_vxlan_init()
-> > > >
-> > > > after the change in imply semantics:
-> > > > our options are:
-> > > >
-> > > > 1) use IS_REACHABLE(VXLAN) instead of IS_ENABLED(VXLAN)
-> > > >
-> > > > 2) have MLX5_VXLAN in mlx5 Kconfig and use IS_ENABLED(MLX5_VXLAN)
-> > > > config MLX5_VXLAN
-> > > >   depends on VXLAN || !VXLAN
-> > > >   bool
-> > >
-> > > Does this trick work when vxlan is a bool not a tristate?
-> > >
-> > > Why not just put the VXLAN || !VXLAN directly on MLX5_CORE?
-> > >
-> >
-> > so force MLX5_CORE to n if vxlan is not reachable ?
->
-> IIRC that isn't what the expression does, if vxlan is 'n' then
->   n || !n == true
+(A) was pushed to -next and not -rc kernel
 
-It forces MLX5_CORE to 'm' or 'n' but not 'y' if VXLAN=m,
-but allows any option if VXLAN=y
+(B) doesn't have fixes tag
 
-> The other version of this is (m || VXLAN != m)
+(C) the change log state clearly that what's being "fixed"
+can't be reproduced on any earlier kernel [..] "only possible
+to reproduce with next commit in this series"
 
-Right, that should be the same, but is less common.
-
-I later found that I also needed this one for the same
-kind of dependency on PTP:
-
---- a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-@@ -7,7 +7,7 @@ config MLX5_CORE
-        tristate "Mellanox 5th generation network adapters (ConnectX
-series) core driver"
-        depends on PCI
-        select NET_DEVLINK
--       imply PTP_1588_CLOCK
-+       depends on PTP_1588_CLOCK || !PTP_1588_CLOCK
-        depends on VXLAN || !VXLAN
-        imply MLXFW
-        imply PCI_HYPERV_INTERFACE
+but it was selected for -stable -- at least if the fixes tag was used
+as gating criteria, this wrong stable inclusion could have been eliminated
