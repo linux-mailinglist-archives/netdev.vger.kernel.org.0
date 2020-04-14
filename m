@@ -2,179 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDE541A6FF3
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 02:13:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E54D11A7007
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 02:26:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390377AbgDNANv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 20:13:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45308 "EHLO
+        id S2390435AbgDNA0e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 20:26:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2390372AbgDNANv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 20:13:51 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3237BC0A3BDC;
-        Mon, 13 Apr 2020 17:13:51 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id q17so8500893qtp.4;
-        Mon, 13 Apr 2020 17:13:51 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1727878AbgDNA0d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 20:26:33 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AF63C0A3BDC;
+        Mon, 13 Apr 2020 17:26:32 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id h205so6250692ybg.6;
+        Mon, 13 Apr 2020 17:26:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ctsNaeDB/FhzDxVLxdQCuZgd7WZJGSkNfIxxzpN81Ek=;
-        b=trpCxkFNSPzBe5q21kPCbeP/DSePgIJtc/Sh1egsgZd1b+4/3iXRpPKheqsv+WfuIO
-         nCm0v8zkMmZckykiVJTBghrR8KABfEUavudS1LvZV158EEmQbe7pgH5XwHGnTtVcG72S
-         c6Y3IZJlCP6sRK4tCji1ViDQo2CCsrY1b/bn1HE96vEZK669r9PNyTMpq/u2XDPHipw5
-         S0GpHigJ0Hant9Rlhs2R2fuyu65XRLzWdTI0fAyrqLHAbgR9SNDrArN+tWPIqKjl1cQX
-         lkb3ExwEOuX8+1zb5ODgOsrP3Unr3PJr3HQmMwciCw29Q/u0HEYUhCMj4asV5lWZBZ+7
-         TFrA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=O+y4L2R5i+2Cj/w1MoSPDF15kI4P0C4wXhYRfC0S+a0=;
+        b=RXV5ZIiOsQWh1Fej0gg2cEZQeEIboBrqTlWubPw/OOd0c4Sk+c9ODtFtyqocX4vs8/
+         ni2vCShDQpt3Es0dl9Mr5tnCf4aD9iIKAB93QmnOaB6hih2ThvupWKUBFALyxo/+MLDi
+         EhOSPAH7QWuc+QDXMtXqSir8odhrm22itaSv44+cwa8wRLzJ6lUvy7LsRUaARP1eYStQ
+         to87+SLw+2lwSBf7wOsYa2QwyXJlESpPxoOz+fwudX0SfngcNFfiGaZqOgbf5OcA1MQV
+         gyqc1U/hNMTT001NVAJGULodZRpBErBsC0Fi/P/5hej4ayzTc9e0XmHo7ZWvPpKnCOv0
+         4B1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ctsNaeDB/FhzDxVLxdQCuZgd7WZJGSkNfIxxzpN81Ek=;
-        b=aWqSEoUpk1NosDhRp70QaNXU/am/n5ApNOoC3F3TqDwZzXlNLWkiL+FitjSXPnAoAM
-         mgPUHAO64Bhust96g498VIq0sG+H1lZEEwI6Ifo2bPnSxd9HEhJ9WAz3+FIsP6HS6Zzl
-         Fr2z88n/MYELKtCquIz7bdUetnEC1gQaeLPmVYz2ApDOsLcoh5OpG193SnXljFl38Gxq
-         0h30K3X0jkGu8Cg6nHQKypmNHpciF7P7ygjd5p0Q+SUiVC+ObYp1ijFU++r2f2Dov0Ec
-         34OLKLLO8RzEem+bKpGMvaTAV/vV0Pe0fTLxf1XYlNQo9QeLmnZoxpmhRMqCKSVVLxhk
-         38tQ==
-X-Gm-Message-State: AGi0PuZSWrQvVhLTQxmkcU50GNTsihhSDMFuBp5M3Stny4rSmbk4SpwX
-        ljg12W3lv+bMVURBfwp5233jhNqBSEfIypwZZIHtXcslVUw=
-X-Google-Smtp-Source: APiQypIj95cPbuZpOhzM3iOb7qDrEzrHs3Nk6COZwkER+NWhxiyCXAbIH53BLRef1/LZ9eKh7y/Wa3W68/61zYPnhok=
-X-Received: by 2002:ac8:3f6d:: with SMTP id w42mr9410765qtk.171.1586823230290;
- Mon, 13 Apr 2020 17:13:50 -0700 (PDT)
+         :message-id:subject:to;
+        bh=O+y4L2R5i+2Cj/w1MoSPDF15kI4P0C4wXhYRfC0S+a0=;
+        b=jyXl0HeGyl0GJoBJ4a4TA87xoEXKM+vTDgK+53111SnN7m1fHPDf5aie29Lu6eWFcd
+         wIHKXKRAoGdpsV5vNrRbWQBk1Wc98hoQF7ge7UrQDF2eNk/pUXRCAICENt3+5lm0Nr7x
+         yblabDLsdSr7ieIBuOMSwXN7db6u69z1qGz+nZH9CPJJuitCNKMv/2LQHVC+QtpWGbX1
+         6rldCrYxysUo0d/EtvZN2uUOeVMHIEWnFQBTMj6Hky7QUxdkAfJ9x4za+f+yYnRL18x7
+         oIBhSBVm4wZMwnNimLjBPvDBdrnT0wuxsZzP0fWjIgnj+D3rMPzjB69FuRLaEw+Dyu6h
+         GohA==
+X-Gm-Message-State: AGi0PuY/6uHLurP7trUlgYthtPzx8hWIIOojH2zWJDX/qK+qz8vFn+M3
+        co9SeFQHO8vBYmqDe2tDPGmfkm/NJQLzD3sFgHCUinFDIg==
+X-Google-Smtp-Source: APiQypKp7ptTA/UqEHj7E2VMr1cGfjqOpvk5NXLb2DirK77mDlNKNaT/eQDr9deOvWbkwb6V1fWxDzbHoFthSVbGNjc=
+X-Received: by 2002:a25:1485:: with SMTP id 127mr28989993ybu.464.1586823991299;
+ Mon, 13 Apr 2020 17:26:31 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200408232520.2675265-1-yhs@fb.com> <20200408232532.2676247-1-yhs@fb.com>
-In-Reply-To: <20200408232532.2676247-1-yhs@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 13 Apr 2020 17:13:39 -0700
-Message-ID: <CAEf4Bzb6Uied+4pE0+QbjoeBWVzVHmjEfPGfr5Gr_FKZg_CTEQ@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 10/16] bpf: support variable length array in
- tracing programs
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
+References: <CAEKGpzh3drL1ywEfnJWhAqULcjaqGi+8GZSwG9XV-iYK4DnCpA@mail.gmail.com>
+In-Reply-To: <CAEKGpzh3drL1ywEfnJWhAqULcjaqGi+8GZSwG9XV-iYK4DnCpA@mail.gmail.com>
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+Date:   Tue, 14 Apr 2020 09:26:15 +0900
+Message-ID: <CAEKGpzhSm1hmK0WuK=s-2ROE3yb2HpaQbMaDx4==TM1hwM+smA@mail.gmail.com>
+Subject: Re: BPF program attached on BPF map function (read,write) is not working?
+To:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 8, 2020 at 4:26 PM Yonghong Song <yhs@fb.com> wrote:
+Ping?
+
+On Thu, Apr 9, 2020 at 12:26 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
 >
-> In /proc/net/ipv6_route, we have
->   struct fib6_info {
->     struct fib6_table *fib6_table;
->     ...
->     struct fib6_nh fib6_nh[0];
->   }
->   struct fib6_nh {
->     struct fib_nh_common nh_common;
->     struct rt6_info **rt6i_pcpu;
->     struct rt6_exception_bucket *rt6i_exception_bucket;
->   };
->   struct fib_nh_common {
->     ...
->     u8 nhc_gw_family;
->     ...
->   }
+> Currently, BPF program attached on BPF map function (read,write) is not called.
+> To be specific, the bpf kprobe program on 'htab_map_get_next_key'
+> doesn't called at all. To test this behavior, you can try ./tracex6
+> from the 'samples/bpf'. (It does not work properly at all)
 >
-> The access:
->   struct fib6_nh *fib6_nh = &rt->fib6_nh;
->   ... fib6_nh->nh_common.nhc_gw_family ...
+> By using 'git bisect', found the problem is derived from below commit.(v5.0-rc3)
+> commit 7c4cd051add3 ("bpf: Fix syscall's stackmap lookup potential deadlock")
+> The code below is an excerpt of only the problematic code from the entire code.
 >
-> This patch ensures such an access is handled properly.
+>    diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+>    index b155cd17c1bd..8577bb7f8be6 100644
+>    --- a/kernel/bpf/syscall.c
+>    +++ b/kernel/bpf/syscall.c
+>    @@ -713,8 +713,13 @@ static int map_lookup_elem(union bpf_attr *attr)
 >
-> Signed-off-by: Yonghong Song <yhs@fb.com>
-> ---
->  kernel/bpf/btf.c | 25 +++++++++++++++++++++++++
->  1 file changed, 25 insertions(+)
+>            if (bpf_map_is_dev_bound(map)) {
+>                    err = bpf_map_offload_lookup_elem(map, key, value);
+>                    goto done;
+>            }
 >
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index d65c6912bdaf..89a0d983b169 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -3837,6 +3837,31 @@ int btf_struct_access(struct bpf_verifier_log *log,
+>            preempt_disable();
+>    +      this_cpu_inc(bpf_prog_active);
+>            if (map->map_type == BPF_MAP_TYPE_PERCPU_HASH ||
+>                map->map_type == BPF_MAP_TYPE_LRU_PERCPU_HASH) {
+>                    err = bpf_percpu_hash_copy(map, key, value);
+>            } else if (map->map_type == BPF_MAP_TYPE_PERCPU_ARRAY) {
+>                    err = bpf_percpu_array_copy(map, key, value);
+>    @@ -744,7 +749,10 @@ static int map_lookup_elem(union bpf_attr *attr)
+>                    }
+>                    rcu_read_unlock();
+>            }
+>    +      this_cpu_dec(bpf_prog_active);
+>            preempt_enable();
+>
+>    done:
+>            if (err)
+>                    goto free_value;
+>
+> As you can see from this snippet, bpf_prog_active value (flag I guess?)
+> increases and decreases within the code snippet. And this action create a
+> problem where bpf program on map is not called.
+>
+>    # kernel/trace/bpf_trace.c:74
+>    unsigned int trace_call_bpf(struct trace_event_call *call, void *ctx)
+>    {
+>        ...
+>         preempt_disable();
+>
+>         if (unlikely(__this_cpu_inc_return(bpf_prog_active) != 1)) {
+>                 /*
+>                  * since some bpf program is already running on this cpu,
+>                  * don't call into another bpf program (same or different)
+>                  * and don't send kprobe event into ring-buffer,
+>                  * so return zero here
+>                  */
+>                 ret = 0;
+>                 goto out;
 >         }
+>        ...
+>        ret = BPF_PROG_RUN_ARRAY_CHECK(call->prog_array, ctx, BPF_PROG_RUN);
 >
->         if (off + size > t->size) {
-> +               /* If the last element is a variable size array, we may
-> +                * need to relax the rule.
-> +                */
-> +               struct btf_array *array_elem;
-> +               u32 vlen = btf_type_vlen(t);
-> +               u32 last_member_type;
-> +
-> +               member = btf_type_member(t);
-> +               last_member_type = member[vlen - 1].type;
-
-vlen could be zero, and this will be bad
-
-
-> +               mtype = btf_type_by_id(btf_vmlinux, last_member_type);
-
-might want to strip modifiers here?
-
-> +               if (!btf_type_is_array(mtype))
-> +                       goto error;
-> +
-
-should probably check that off is >= last_member's offset within a
-struct? Otherwise access might be spanning previous field and this
-array?
-
-> +               array_elem = (struct btf_array *)(mtype + 1);
-> +               if (array_elem->nelems != 0)
-> +                       goto error;
-> +
-> +               elem_type = btf_type_by_id(btf_vmlinux, array_elem->type);
-
-strip modifiers
-
-> +               if (!btf_type_is_struct(elem_type))
-> +                       goto error;
-> +
-> +               off = (off - t->size) % elem_type->size;
-
-I think it will be safer to use field offset, not struct size.
-Consider example below
-
-$ cat test-test.c
-struct bla {
-        long a;
-        int b;
-        char c[];
-};
-
-int main() {
-        static struct bla *x = 0;
-        return 0;
-}
-
-$ pahole -F btf -C bla test-test.o
-struct bla {
-        long int                   a;                    /*     0     8 */
-        int                        b;                    /*     8     4 */
-        char                       c[];                  /*    12     0 */
-
-        /* size: 16, cachelines: 1, members: 3 */
-        /* padding: 4 */
-        /* last cacheline: 16 bytes */
-};
-
-c is at offset 12, but struct size is 16 due to long alignment. It
-could be a 4-byte struct instead of char there.
-
-> +               return btf_struct_access(log, elem_type, off, size, atype, next_btf_id);
-> +
-> +error:
->                 bpf_log(log, "access beyond struct %s at off %u size %u\n",
->                         tname, off, size);
->                 return -EACCES;
-> --
-> 2.24.1
+>    out:
+>        __this_cpu_dec(bpf_prog_active);
+>        preempt_enable();
 >
+>
+> So from trace_call_bpf() at kernel/trace/bpf_trace.c check whether
+> bpf_prog_active is 1, and if it is, it skips the execution of bpf program.
+>
+> Back to latest Kernel 5.6, this this_cpu_{inc|dec}() has been wrapped with
+> bpf_{enable|disable}_instrumentation().
+>
+>    # include/linux/bpf.h
+>    static inline void bpf_enable_instrumentation(void)
+>    {
+>            if (IS_ENABLED(CONFIG_PREEMPT_RT))
+>                    this_cpu_dec(bpf_prog_active);
+>            else
+>                    __this_cpu_dec(bpf_prog_active);
+>            migrate_enable();
+>    }
+>
+> And the functions which uses this wrapper are described below.
+>
+>    bpf_map_update_value
+>    bpf_map_copy_value
+>    map_delete_elem
+>    generic_map_delete_batch
+>
+> Which is basically most of the map operation.
+>
+> So, I think this 'unable to attach bpf program on BPF map function (read,write)'
+> is a bug. Or is it desired action?
+>
+> If it is a bug, bpf_{enable|disable}_instrumentation() should only
+> cover stackmap
+> as the upper commit intended. Not sure but adding another flag for
+> lock might work?
+>
+> Or if this is an desired action, this should be covered at
+> documentation with a limitation
+> and tracex6 sample has to be removed.
