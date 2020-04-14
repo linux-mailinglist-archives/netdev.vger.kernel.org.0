@@ -2,104 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26DCB1A8A1A
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 20:49:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1F911A8A1E
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 20:49:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504356AbgDNSrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 14:47:51 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:37404 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2504345AbgDNSrs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Apr 2020 14:47:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=A+16RsUAoG6H5ATYewhMP3VwxAkjRbky3by/uPVeOJo=; b=EhxXmYmGRQ/YFlwIqvWkLmsVxt
-        oez1sRYED1s89KnExZpDgXWR2Ad8MDyJ7WBgpkg06PQH+ucWErCTXE8x/jGpddpptcJimWtIIuyp7
-        QQHEGwo3Vm2rc1XJjZKw10Nz4Z/6hcCU8M+Ot4MQOia65MoR6DRNYcppY9EyDBOy9cXI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jOQax-002i33-Lk; Tue, 14 Apr 2020 20:47:39 +0200
-Date:   Tue, 14 Apr 2020 20:47:39 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Matteo Croce <mcroce@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net 1/2] net: marvell10g: report firmware version
-Message-ID: <20200414184739.GD637127@lunn.ch>
-References: <20200414182935.GY25745@shell.armlinux.org.uk>
- <E1jOQK7-0001WH-KM@rmk-PC.armlinux.org.uk>
+        id S2504380AbgDNSsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 14:48:16 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:52852 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2504345AbgDNSsM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 14:48:12 -0400
+Received: by mail-il1-f199.google.com with SMTP id a79so1101423ill.19
+        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 11:48:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=blKpKhStMAbwnW14AFefOWzQ8dyB6AcHqCMBWAoqBxo=;
+        b=t83E5oD1b9Nf+wMeQE+ML5toa+m7Ar27On5E811YL5MwpDFjVADdarzHDahCZU5kY3
+         3daulLDwlkQjuVR+vOmVAr/3cMeQc2TvVAQowyxgcOVm+G3XC3yo8L/oh4ODci2TJ7h9
+         6aMZ46EPIo5w1g6dpnTf2u2sb13ML0/qT0bl8hIxP3fEM3g6go5Z6ZOg/ZSDiyQu2JgC
+         iJqWAaNIKnp+1G5HofwmU2gJcMDM2mgVuu/c+Z0dP8qIx6ZFCrHGOhpQ8gepLGVtxWfV
+         keKeH7pm1jBXvnOYRxcEzU8dqM1QWV4EzvvTuxsQZK1PtUaU77IID6iZiuryTIt73yrG
+         4WWA==
+X-Gm-Message-State: AGi0PuZ4hW+sDI26r9wtDJQ+ZLqnlA++Oni36PlW53ELaUbuda8snCwe
+        xYNeF3LGjmp2cF7uK1o799WHUAG+NS6XX7hjkg8h9XqSGpbI
+X-Google-Smtp-Source: APiQypJqEqlZyH/jnYwChct6pYjyaF2Qyu5UHI3TEhsudCgq0LFiNYA0FZcNldEKSSTwE7V+x9B5RxvOFP4/qUfwVkF/0G2WkZ4Z
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1jOQK7-0001WH-KM@rmk-PC.armlinux.org.uk>
+X-Received: by 2002:a92:498e:: with SMTP id k14mr1538771ilg.160.1586890091797;
+ Tue, 14 Apr 2020 11:48:11 -0700 (PDT)
+Date:   Tue, 14 Apr 2020 11:48:11 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003823e405a344a481@google.com>
+Subject: WARNING: stack recursion on stack type 2
+From:   syzbot <syzbot+a518ca2ae9f86ff95079@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 14, 2020 at 07:30:15PM +0100, Russell King wrote:
-> Report the firmware version when probing the PHY to allow issues
-> attributable to firmware to be diagnosed.
-> 
-> Tested-by: Matteo Croce <mcroce@redhat.com>
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> ---
->  drivers/net/phy/marvell10g.c | 21 +++++++++++++++++++++
->  1 file changed, 21 insertions(+)
-> 
-> diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-> index 7621badae64d..ee60417cdc55 100644
-> --- a/drivers/net/phy/marvell10g.c
-> +++ b/drivers/net/phy/marvell10g.c
-> @@ -33,6 +33,8 @@
->  #define MV_PHY_ALASKA_NBT_QUIRK_REV	(MARVELL_PHY_ID_88X3310 | 0xa)
->  
->  enum {
-> +	MV_PMA_FW_VER0		= 0xc011,
-> +	MV_PMA_FW_VER1		= 0xc012,
->  	MV_PMA_BOOT		= 0xc050,
->  	MV_PMA_BOOT_FATAL	= BIT(0),
->  
-> @@ -83,6 +85,8 @@ enum {
->  };
->  
->  struct mv3310_priv {
-> +	u32 firmware_ver;
-> +
->  	struct device *hwmon_dev;
->  	char *hwmon_name;
->  };
-> @@ -355,6 +359,23 @@ static int mv3310_probe(struct phy_device *phydev)
->  
->  	dev_set_drvdata(&phydev->mdio.dev, priv);
->  
-> +	ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MV_PMA_FW_VER0);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	priv->firmware_ver = ret << 16;
-> +
-> +	ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MV_PMA_FW_VER1);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	priv->firmware_ver |= ret;
-> +
-> +	dev_info(&phydev->mdio.dev,
-> +		 "Firmware version %u.%u.%u.%u\n",
-> +		 priv->firmware_ver >> 24, (priv->firmware_ver >> 16) & 255,
-> +		 (priv->firmware_ver >> 8) & 255, priv->firmware_ver & 255);
-> +
+Hello,
 
-Hi Russell
+syzbot found the following crash on:
 
-Did you consider using phydev_info()? Or is it too early, and you
-don't get a sensible name?
+HEAD commit:    1a323ea5 x86: get rid of 'errret' argument to __get_user_x..
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1688db5de00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=8c1e98458335a7d1
+dashboard link: https://syzkaller.appspot.com/bug?extid=a518ca2ae9f86ff95079
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
-      Andrew
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+a518ca2ae9f86ff95079@syzkaller.appspotmail.com
+
+WARNING: stack recursion on stack type 2
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
