@@ -2,160 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDECB1A73BF
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 08:34:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57C481A73F1
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 08:58:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406047AbgDNGeg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 02:34:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49356 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406042AbgDNGee (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 02:34:34 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAAC3C0A3BDC
-        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 23:34:33 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id n24so1569635plp.13
-        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 23:34:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lCgKt0xDcuY135+09OPgT/EcdOM3zQzZDMMz+79/NNk=;
-        b=GugkgpIEKM7VxKSpkpL0XWrFfsRSLr9R6sAT3M4Ho0by3ZOIaiRFiQwgmJxfblDGDt
-         AmSot/Bf8QkjceqzqEiSBrmiB+0nJT5vzwQPFcPwYWiRa51uA8v8zvHyVW7+NQ+loWtd
-         RcoNSCUvS1o+p6lyezjhC9jrPoglJbG3KaAsUjpvvRQajFiz0Zuoe2Yk65uWLlED1TyH
-         ktBPQHGAzulACRYuF7ATq3FTHTEp4t3EkLe28BQn6+J8ZOg8UwJN+MVuPm1aa2OWOsUn
-         T+IVtxqlq/OyDn6ZP7DoQTF3v70G+QcI82zJhdrwWeWwKTCMaUHzqE8PL8KlZ2g+mhJR
-         hjwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lCgKt0xDcuY135+09OPgT/EcdOM3zQzZDMMz+79/NNk=;
-        b=Zo7q+eHgjqVsQy8pI1M1MnKr1XeXUgNJIqz2+TL2vqRBVNgMfYWFx6JM5gQswgOv57
-         lUebxUHcuhraASUkctL/lS1ZA3UaSlluWnaU8pcRIjeakxd2GXjIDB8fh+i80sCH5ER5
-         rRuRtkaJAmk7GF2WluZOMK/vQinNEhJfT4qbwXscdmlnrfuA87DNfys4GoRGe6Wu+69q
-         Nne9A9xm/w7iT2wf5UdhkP9hmJbhsDfHdfxfr35tzvHO1C+rMHcjvFwLr6wgH16VrI+Q
-         RmpnRnCCFTx+oskFzZJye/F+I54ZS8OD0Y/SobDKvRYSUkGV86otay+dIdqo5Rf/PLCK
-         43aw==
-X-Gm-Message-State: AGi0PuY0iiJTXmEKUj3oTxF45ojWqio13kDeFfkbyO354OdBMWxy+iB8
-        XOGsMhDm8o1vimAIOIPfb4/oDbzOOiCKuHZN
-X-Google-Smtp-Source: APiQypI7bn1wRxKkG/AA79N2PtMpYLo3Khjme9hkksmNcibqEQKSlAuUAYStAhVxm92yzcMwNgmVAQ==
-X-Received: by 2002:a17:90a:a111:: with SMTP id s17mr27456565pjp.129.1586846073031;
-        Mon, 13 Apr 2020 23:34:33 -0700 (PDT)
-Received: from example.com ([2408:84f3:1457:b125:9ead:97ff:fed1:5059])
-        by smtp.gmail.com with ESMTPSA id i190sm8400774pfc.119.2020.04.13.23.34.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Apr 2020 23:34:32 -0700 (PDT)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        linux-mediatek@lists.infradead.org,
-        John Crispin <john@phrozen.org>,
-        Stijn Segers <foss@volatilesystems.org>,
-        Chuanhong Guo <gch981213@gmail.com>, riddlariddla@hotmail.com,
-        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
-        Szabolcs Hubai <szab.hu@gmail.com>,
-        CHEN Minqiang <ptpt52@gmail.com>,
-        Paul Fertser <fercerpav@gmail.com>
-Subject: [PATCH net-next v2] net: dsa: mt7530: fix tagged frames pass-through in VLAN-unaware mode
-Date:   Tue, 14 Apr 2020 14:34:08 +0800
-Message-Id: <20200414063408.4026-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.26.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S2406179AbgDNG6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 02:58:50 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:37470 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2406131AbgDNG6u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 02:58:50 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from eranbe@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 14 Apr 2020 09:58:43 +0300
+Received: from dev-l-vrt-198.mtl.labs.mlnx (dev-l-vrt-198.mtl.labs.mlnx [10.134.198.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 03E6whps007886;
+        Tue, 14 Apr 2020 09:58:43 +0300
+From:   Eran Ben Elisha <eranbe@mellanox.com>
+To:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Aya Levin <ayal@mellanox.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>
+Subject: [PATCH iproute2-next] devlink: Add devlink health auto_dump command support
+Date:   Tue, 14 Apr 2020 09:57:52 +0300
+Message-Id: <1586847472-32490-1-git-send-email-eranbe@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In VLAN-unaware mode, the Egress Tag (EG_TAG) field in Port VLAN
-Control register must be set to Consistent to let tagged frames pass
-through as is, otherwise their tags will be stripped.
+Add support for configuring auto_dump attribute per reporter.
+With this attribute, one can indicate whether the devlink kernel core
+should execute automatic dump on error.
 
-Fixes: 83163f7dca56 ("net: dsa: mediatek: add VLAN support for MT7530")
-Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+The change will be reflected in show, set and man commands.
+
+Signed-off-by: Eran Ben Elisha <eranbe@mellanox.com>
+Reviewed-by: Aya Levin <ayal@mellanox.com>
 ---
-Changes since v1:
-- Fix build error
+ devlink/devlink.c         | 19 ++++++++++++++++++-
+ man/man8/devlink-health.8 | 11 +++++++++--
+ 2 files changed, 27 insertions(+), 3 deletions(-)
 
----
- drivers/net/dsa/mt7530.c | 18 ++++++++++++------
- drivers/net/dsa/mt7530.h |  7 +++++++
- 2 files changed, 19 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 2d0d91db0ddb..951a65ac7f73 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -846,8 +846,9 @@ mt7530_port_set_vlan_unaware(struct dsa_switch *ds, int port)
- 	 */
- 	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
- 		   MT7530_PORT_MATRIX_MODE);
--	mt7530_rmw(priv, MT7530_PVC_P(port), VLAN_ATTR_MASK,
--		   VLAN_ATTR(MT7530_VLAN_TRANSPARENT));
-+	mt7530_rmw(priv, MT7530_PVC_P(port), VLAN_ATTR_MASK | PVC_EG_TAG_MASK,
-+		   VLAN_ATTR(MT7530_VLAN_TRANSPARENT) |
-+		   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index 4cf58f408385..7c880e045ea7 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -268,6 +268,7 @@ static void ifname_map_free(struct ifname_map *ifname_map)
+ #define DL_OPT_TRAP_POLICER_ID		BIT(34)
+ #define DL_OPT_TRAP_POLICER_RATE	BIT(35)
+ #define DL_OPT_TRAP_POLICER_BURST	BIT(36)
++#define DL_OPT_HEALTH_REPORTER_AUTO_DUMP     BIT(37)
  
- 	for (i = 0; i < MT7530_NUM_PORTS; i++) {
- 		if (dsa_is_user_port(ds, i) &&
-@@ -863,8 +864,8 @@ mt7530_port_set_vlan_unaware(struct dsa_switch *ds, int port)
- 	if (all_user_ports_removed) {
- 		mt7530_write(priv, MT7530_PCR_P(MT7530_CPU_PORT),
- 			     PCR_MATRIX(dsa_user_ports(priv->ds)));
--		mt7530_write(priv, MT7530_PVC_P(MT7530_CPU_PORT),
--			     PORT_SPEC_TAG);
-+		mt7530_write(priv, MT7530_PVC_P(MT7530_CPU_PORT), PORT_SPEC_TAG
-+			     | PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
- 	}
+ struct dl_opts {
+ 	uint64_t present; /* flags of present items */
+@@ -304,6 +305,7 @@ struct dl_opts {
+ 	const char *reporter_name;
+ 	uint64_t reporter_graceful_period;
+ 	bool reporter_auto_recover;
++	bool reporter_auto_dump;
+ 	const char *trap_name;
+ 	const char *trap_group_name;
+ 	enum devlink_trap_action trap_action;
+@@ -1450,6 +1452,13 @@ static int dl_argv_parse(struct dl *dl, uint64_t o_required,
+ 			if (err)
+ 				return err;
+ 			o_found |= DL_OPT_HEALTH_REPORTER_AUTO_RECOVER;
++		} else if (dl_argv_match(dl, "auto_dump") &&
++			(o_all & DL_OPT_HEALTH_REPORTER_AUTO_DUMP)) {
++			dl_arg_inc(dl);
++			err = dl_argv_bool(dl, &opts->reporter_auto_dump);
++			if (err)
++				return err;
++			o_found |= DL_OPT_HEALTH_REPORTER_AUTO_DUMP;
+ 		} else if (dl_argv_match(dl, "trap") &&
+ 			   (o_all & DL_OPT_TRAP_NAME)) {
+ 			dl_arg_inc(dl);
+@@ -1632,6 +1641,9 @@ static void dl_opts_put(struct nlmsghdr *nlh, struct dl *dl)
+ 	if (opts->present & DL_OPT_HEALTH_REPORTER_AUTO_RECOVER)
+ 		mnl_attr_put_u8(nlh, DEVLINK_ATTR_HEALTH_REPORTER_AUTO_RECOVER,
+ 				opts->reporter_auto_recover);
++	if (opts->present & DL_OPT_HEALTH_REPORTER_AUTO_DUMP)
++		mnl_attr_put_u8(nlh, DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP,
++				opts->reporter_auto_dump);
+ 	if (opts->present & DL_OPT_TRAP_NAME)
+ 		mnl_attr_put_strz(nlh, DEVLINK_ATTR_TRAP_NAME,
+ 				  opts->trap_name);
+@@ -6455,7 +6467,8 @@ static int cmd_health_set_params(struct dl *dl)
+ 			       NLM_F_REQUEST | NLM_F_ACK);
+ 	err = dl_argv_parse(dl, DL_OPT_HANDLE | DL_OPT_HEALTH_REPORTER_NAME,
+ 			    DL_OPT_HEALTH_REPORTER_GRACEFUL_PERIOD |
+-			    DL_OPT_HEALTH_REPORTER_AUTO_RECOVER);
++			    DL_OPT_HEALTH_REPORTER_AUTO_RECOVER |
++			    DL_OPT_HEALTH_REPORTER_AUTO_DUMP);
+ 	if (err)
+ 		return err;
+ 
+@@ -6869,6 +6882,9 @@ static void pr_out_health(struct dl *dl, struct nlattr **tb_health)
+ 	if (tb[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_RECOVER])
+ 		print_bool(PRINT_ANY, "auto_recover", " auto_recover %s",
+ 			   mnl_attr_get_u8(tb[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_RECOVER]));
++	if (tb[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP])
++		print_bool(PRINT_ANY, "auto_dump", " auto_dump %s",
++			   mnl_attr_get_u8(tb[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP]));
+ 
+ 	__pr_out_indent_dec();
+ 	pr_out_handle_end(dl);
+@@ -6925,6 +6941,7 @@ static void cmd_health_help(void)
+ 	pr_err("       devlink health set DEV reporter REPORTER_NAME\n");
+ 	pr_err("                          [ grace_period MSEC ]\n");
+ 	pr_err("                          [ auto_recover { true | false } ]\n");
++	pr_err("                          [ auto_dump    { true | false } ]\n");
  }
  
-@@ -890,8 +891,9 @@ mt7530_port_set_vlan_aware(struct dsa_switch *ds, int port)
- 	/* Set the port as a user port which is to be able to recognize VID
- 	 * from incoming packets before fetching entry within the VLAN table.
- 	 */
--	mt7530_rmw(priv, MT7530_PVC_P(port), VLAN_ATTR_MASK,
--		   VLAN_ATTR(MT7530_VLAN_USER));
-+	mt7530_rmw(priv, MT7530_PVC_P(port), VLAN_ATTR_MASK | PVC_EG_TAG_MASK,
-+		   VLAN_ATTR(MT7530_VLAN_USER) |
-+		   PVC_EG_TAG(MT7530_VLAN_EG_DISABLED));
- }
+ static int cmd_health(struct dl *dl)
+diff --git a/man/man8/devlink-health.8 b/man/man8/devlink-health.8
+index 70a86cf0acdc..8a3c77be737b 100644
+--- a/man/man8/devlink-health.8
++++ b/man/man8/devlink-health.8
+@@ -58,6 +58,9 @@ devlink-health \- devlink health reporting and recovery
+ .RI "[ "
+ .BR auto_recover " { " true " | " false " } "
+ .RI "]"
++.RI "[ "
++.BR auto_dump " { " true " | " false " } "
++.RI "]"
  
- static void
-@@ -1380,6 +1382,10 @@ mt7530_setup(struct dsa_switch *ds)
- 			mt7530_cpu_port_enable(priv, i);
- 		else
- 			mt7530_port_disable(ds, i);
+ .ti -8
+ .B devlink health help
+@@ -131,8 +134,8 @@ the next "devlink health dump show" command.
+ - specifies the reporter's name registered on the devlink device.
+ 
+ .SS devlink health set - Configure health reporter.
+-Please note that this command is not supported on a reporter which
+-doesn't support a recovery method.
++Please note that some params are not supported on a reporter which
++doesn't support a recovery or dump method.
+ 
+ .PP
+ .I "DEV"
+@@ -150,6 +153,10 @@ Time interval between consecutive auto recoveries.
+ .BR auto_recover " { " true " | " false " } "
+ Indicates whether the devlink should execute automatic recover on error.
+ 
++.TP
++.BR auto_dump " { " true " | " false " } "
++Indicates whether the devlink should execute automatic dump on error.
 +
-+		/* Enable consistent egress tag */
-+		mt7530_rmw(priv, MT7530_PVC_P(i), PVC_EG_TAG_MASK,
-+			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
- 	}
- 
- 	/* Setup port 5 */
-diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index ef9b52f3152b..2528232d3325 100644
---- a/drivers/net/dsa/mt7530.h
-+++ b/drivers/net/dsa/mt7530.h
-@@ -172,9 +172,16 @@ enum mt7530_port_mode {
- /* Register for port vlan control */
- #define MT7530_PVC_P(x)			(0x2010 + ((x) * 0x100))
- #define  PORT_SPEC_TAG			BIT(5)
-+#define  PVC_EG_TAG(x)			(((x) & 0x7) << 8)
-+#define  PVC_EG_TAG_MASK		PVC_EG_TAG(7)
- #define  VLAN_ATTR(x)			(((x) & 0x3) << 6)
- #define  VLAN_ATTR_MASK			VLAN_ATTR(3)
- 
-+enum mt7530_vlan_port_eg_tag {
-+	MT7530_VLAN_EG_DISABLED = 0,
-+	MT7530_VLAN_EG_CONSISTENT = 1,
-+};
-+
- enum mt7530_vlan_port_attr {
- 	MT7530_VLAN_USER = 0,
- 	MT7530_VLAN_TRANSPARENT = 3,
+ .SH "EXAMPLES"
+ .PP
+ devlink health show
 -- 
-2.26.0
+2.17.1
 
