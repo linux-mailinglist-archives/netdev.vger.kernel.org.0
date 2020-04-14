@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB5291A8D47
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 23:06:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB9AF1A8D4A
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 23:07:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2633697AbgDNVGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 17:06:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46352 "EHLO
+        id S1732950AbgDNVGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 17:06:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731764AbgDNVGR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 17:06:17 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC56C061A0C
-        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 14:06:17 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id t40so5743236pjb.3
-        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 14:06:17 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1732460AbgDNVGv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 17:06:51 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74118C061A0C
+        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 14:06:51 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id y25so517405pfn.5
+        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 14:06:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=CtIGvu1UfrzE5MNZ1yw3byp3laqazgvIeVfM0c9GmN4=;
-        b=m222z0WBhcDjAmapUzrzW4dUkmLAloW1JpoAYSH6siJiW0v6A254b7pfpgw2pA6neV
-         Egibhd4Mo1yP21S26is7KsnglNAy8te+Mgw4am0ifWsI4khx1f8xJKHHzUyc2JQQqFd3
-         XuBFBAjtqq9x8x77sEki23x0WnWugp90F86IlH87NuxVeXETupq9Bglp9FFwXbXGq+9v
-         dyOfjHMcjJdPO0+NB1hFQQsxJT1griCSuNl0JBJS7Lfu49T4LMNkDcFr6wkc14k6UDek
-         vglUK64Md8Z10445EZ2ySewsAQWcpmFRMNPV41HhlKrWh3Ac9GrItQ/osmly44Q4Y0mP
-         qWWw==
+        bh=qpAFz2V4KsbfQTqxZ9I6gF5rppe6LeaaZHkFJp/k8OI=;
+        b=t8R1KPSwpEZHozAHVG4fO7FR7ntwAwrz6RtP42vgf1Iw0KqmWa5SjNpGXIfbI1KfM6
+         zX794BrQzU2zTSEg22gHbwN2yS1/91BtFIn4IDFMMF8ZPVMmopNUmqQq2FZRMyRSuXid
+         fsCVHkg08Zp0xkBKOVSBInruPExW0DQVQZ7x1fz/FgyLjL1gHybqLZnGmb6ue434zSG0
+         zn71DO1TlrAcTh0JIbIPWqVHNhZl+x36iWxkyqhLMuuyWVnXriGg6epN228b2P5Sdv21
+         kV/8bpbKncgae2OxY+tSAAVwDM3435Jfef1KsQnBzNK7IRbBmJFaFRMg1j8+wEIRXWxt
+         1+wA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=CtIGvu1UfrzE5MNZ1yw3byp3laqazgvIeVfM0c9GmN4=;
-        b=hHGKpq8a74yzLxEHL4Az8Ut5+Tq78nBY8lxy8GSbx6AgKPXZdUlONj5HESfbcy3GOn
-         sZFNGuVLSg/CYNxbkjQUguIIviiyAlfudK64A56L6JkF93oeDM1uzPhTBYru0GRipXP/
-         TiAiXy/kbF5ov6YY25uXlb7qwekvtCK9Q3FS6M2WDJgWnNjy6BCsmCOHrT+iHE4IIqEk
-         rlZ63JTIJJhYjFKjqtAnUVpoHF66be6RQgH4/P5FYRDpIg/3P5aAoj0IPeTq24X8ht61
-         lbM5em5OvDffiKGzQQULZNTnXgSmRLYAw9ki1LMMb/h35YQmpbfVn0ECLtueDphJGO1P
-         xrnw==
-X-Gm-Message-State: AGi0PuaXlHFc806RZLcoWjZUa/Js7zGkF2fjGj80L8cPh2aOgzTABW/E
-        tr1O/5KELK+JHDSlVg+4zk4vdt//
-X-Google-Smtp-Source: APiQypLOjPS8CEFGZNJzQnmTU0VjPI3XDjKW3bqr3bpYBrQY7tefaBDbrr+0S9amkFsIfBUby/Ab0w==
-X-Received: by 2002:a17:90a:3441:: with SMTP id o59mr2004404pjb.185.1586898375822;
-        Tue, 14 Apr 2020 14:06:15 -0700 (PDT)
+        bh=qpAFz2V4KsbfQTqxZ9I6gF5rppe6LeaaZHkFJp/k8OI=;
+        b=tYBA5AbpQnjqn7AlYli10CQbMqyQUevEOWW33Tbbr5qK0oyLKehZAToPlLGdkfpoOB
+         H6Xzdtfq0ttLL2BAEKEIj/Twqbsuzg5mOhFKRIIm6QIVsn6ayP3lBSDynGuZW9OSlMGV
+         NzsdBM/TQxufReLSzBvJSU0vXnt+Uz21eAFFctA6yrXKU/irMKlczu9K/KJIkeQtTRyd
+         eF+NKeXYvexUF33zszTqbygGdsO7g6vcIBqSJvGO4uEk6pkpECUGa88hCwENI7lMnFoM
+         ANADyijF2qgSUUXQFfOVf+i6iWeOJevKqo0OvFK6Nv/tiejBwf9V/PeIU9mlEgYb1hxk
+         4MbQ==
+X-Gm-Message-State: AGi0PuaYV8Qckzy+4BEuNzYyXQm0umu3Wfb6V8byhrq+l6b6D6VR1mzY
+        /Y59GgzGGDnB03NBgRUDOzw+nNdB
+X-Google-Smtp-Source: APiQypKNobFdeW6e0Gp4zVl+GCT5LCf4Oyd2WLxcv8qi50hOWbGVN6hGzqpKCjzmfjQ4h0axk4ZLLw==
+X-Received: by 2002:a63:ac43:: with SMTP id z3mr23106565pgn.324.1586898410605;
+        Tue, 14 Apr 2020 14:06:50 -0700 (PDT)
 Received: from [10.230.188.26] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id d8sm6378033pfd.159.2020.04.14.14.06.12
+        by smtp.gmail.com with ESMTPSA id x186sm11740273pfb.151.2020.04.14.14.06.47
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Apr 2020 14:06:14 -0700 (PDT)
-Subject: Re: [PATCH net v2 1/2] net: marvell10g: report firmware version
+        Tue, 14 Apr 2020 14:06:49 -0700 (PDT)
+Subject: Re: [PATCH net v2 2/2] net: marvell10g: soft-reset the PHY when
+ coming out of low power
 To:     Russell King <rmk+kernel@armlinux.org.uk>,
         Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     Matteo Croce <mcroce@redhat.com>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 References: <20200414194753.GB25745@shell.armlinux.org.uk>
- <E1jORYN-000401-3U@rmk-PC.armlinux.org.uk>
+ <E1jORYS-000409-7i@rmk-PC.armlinux.org.uk>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -111,12 +112,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <8167a165-b18e-c81b-c7e6-df79505d73f5@gmail.com>
-Date:   Tue, 14 Apr 2020 14:06:10 -0700
+Message-ID: <2398280e-3211-0864-6f10-799f65d05f78@gmail.com>
+Date:   Tue, 14 Apr 2020 14:06:45 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <E1jORYN-000401-3U@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1jORYS-000409-7i@rmk-PC.armlinux.org.uk>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -128,10 +129,15 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 4/14/2020 12:49 PM, Russell King wrote:
-> Report the firmware version when probing the PHY to allow issues
-> attributable to firmware to be diagnosed.
+> Soft-reset the PHY when coming out of low power mode, which seems to
+> be necessary with firmware versions 0.3.3.0 and 0.3.10.0.
 > 
+> This depends on ("net: marvell10g: report firmware version")
+> 
+> Fixes: c9cc1c815d36 ("net: phy: marvell10g: place in powersave mode at probe")
+> Reported-by: Matteo Croce <mcroce@redhat.com>
 > Tested-by: Matteo Croce <mcroce@redhat.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
