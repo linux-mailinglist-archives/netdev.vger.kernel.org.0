@@ -2,363 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49DB91A8E3E
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 00:09:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD5461A8E6B
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 00:15:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2634168AbgDNWJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 18:09:04 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:62077 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2634148AbgDNWI7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 18:08:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1586902138; x=1618438138;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fZB95YONdpVrDdQcOMBzWeU4LIePphdR6yyMD4Me79s=;
-  b=jqU+2UnPnbRfT6HKohL6gKbJAY81jc3Vq2AY8aVxHv5fhRZY9bUS206s
-   s7a6dEIfoT9AD6z9Z5bbLBlZ4PdwE6uWwBQH2ymaFur3uGr6fqgapyEoD
-   w/9Gfwhdl9ydfM2I5sdf5e3MI5DO9bT16VkRRZxryo1ZxhmGddPZ0sN/U
-   ygtUX1xsnlcsiJsFR/K+KgjKTLB2yVKI0PPcrAVTp4tS+VGLiNFOO1nCP
-   g+0k/IYG09fx2Ud+078CYjUKb3z/58n/h+ok07a027yYMJ9fQ1ti7v7cf
-   SFYjxTONj09ncEPCRB7vfcpiI1nHSJdZ7wbEev6fKCE5sig3hoTECT1Ds
-   A==;
-IronPort-SDR: Re+tLpu1Ws5DpDQS6sklXHcrcTIDns4dMp2x2vGY8caTw+G5+i2fBfUe5165gW7QXnGEnDHLY9
- KxXRD3jAxT92ZxL9fFdm2xiCwTtieQyGowmu/ziDVt0kWdR4tnUEMVVorNu/Zc4s2gjXhBkH8U
- CV9smbBH834rc1PdAf1CoE7uHLe4sLSB+0GKlTD2COIoQQ87FXsUuz+BzydyMcENlReBnfzTww
- Y79e6cW3Rzh8ZuzsNt3nKp/rW8sNbgwbqY1FBPJF/1s3143TXx470IFFLNlwE1BACzxzQdphQj
- QuQ=
-X-IronPort-AV: E=Sophos;i="5.72,384,1580799600"; 
-   d="scan'208";a="72198052"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Apr 2020 15:08:56 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 14 Apr 2020 15:08:56 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Tue, 14 Apr 2020 15:08:41 -0700
-Date:   Wed, 15 Apr 2020 00:08:55 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     <davem@davemloft.net>, <alexandre.belloni@bootlin.com>,
-        <antoine.tenart@bootlin.com>, <andrew@lunn.ch>,
-        <f.fainelli@gmail.com>, <vivien.didelot@gmail.com>,
-        <joergen.andreasen@microchip.com>, <allan.nielsen@microchip.com>,
-        <claudiu.manoil@nxp.com>, <netdev@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <alexandru.marginean@nxp.com>,
-        <xiaoliang.yang_1@nxp.com>, <yangbo.lu@nxp.com>, <po.liu@nxp.com>,
-        <jiri@mellanox.com>, <idosch@idosch.org>, <kuba@kernel.org>
-Subject: Re: [PATCH net] net: mscc: ocelot: fix untagged packet drops when
- enslaving to vlan aware bridge
-Message-ID: <20200414220855.xudjjpfn5ejyoj5r@soft-dev3.microsemi.net>
-References: <20200414193615.29506-1-olteanv@gmail.com>
+        id S2387494AbgDNWO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 18:14:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57130 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1732989AbgDNWOz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 18:14:55 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8CB4C061A0F
+        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 15:14:54 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id a25so16459114wrd.0
+        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 15:14:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=tFNbkDDuu+xJJGMOQnSsTSZToEf+DrCp0hBRrSm4NEc=;
+        b=qabW9Cwsrm5flCJViset/DUU4XAV92iY6uYTR6CKgMWINRrDE/p0FdK2jJYOTZGz+/
+         s7esIJSyksYapk5/fn6o0kQ6QRp0KX+QMW66qQvkBQ321UC34lorcDk1XNHw9XKLl4sn
+         Van8EM9t8zDbWrbFSGieU/bvQFG4SG7dKeGOGtTc4P1ZhF99ggZrLcsQm+hS+o5GYs7y
+         HaRMSFJD3RGWsF683rGYkcbQOUo4/wYjoAOfk4jrsHcsH8OZOojhBUoAvY1OlwRaXLoL
+         P5tjnf86p6ZwIpdaDB7apkv1IHWCqfM8M8CYXECtoj4tIYqk6jV/clruQ0aO0t1jf6qX
+         yELg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=tFNbkDDuu+xJJGMOQnSsTSZToEf+DrCp0hBRrSm4NEc=;
+        b=rvrIn80Ge3dOM6xrQhEio9Q8dclFBIsR/teG5ROR42fOwb90eC2gs7NNjyC6s+X3/b
+         oleOx8/8V7WTd5hSCliLyFpWLq7W3vx9vxuUOjdzSnWbE1bxniaxiRW8GtqrGOWpdOp5
+         q6uON1yGJW3IcSww9QyJfPdsVezv6iJBy941nnDFRdqcjXJMR0XfjIay+568ijDMTu3G
+         VVVeGtvWntBbVrvPTz7DGv0RttRQANVcB8qG+oSfag5G89ifkmWXVHJ/qzTmFAwCQMQb
+         EuISTa4asIiM3sEcBIMqBJBLMG8bDtWGHPwx6K9KKUA8sLPytJYFrXSjt02fbxM89qB8
+         wKVg==
+X-Gm-Message-State: AGi0PubpeGGPEfUpuKemDQQ1ovwejw0TAu7EMtuCjFAnLXXmTE25UPUa
+        o6O09acNe8J0hKTIWgCv2HNm4Q==
+X-Google-Smtp-Source: APiQypJCM7RZYbnn05d5p3O23E+0h2bnGY34lOEUBW3XV9QKLjxerTTj5VEgsJydss45wo2Ye1GFqg==
+X-Received: by 2002:adf:fc4c:: with SMTP id e12mr25646050wrs.265.1586902493086;
+        Tue, 14 Apr 2020 15:14:53 -0700 (PDT)
+Received: from [192.168.0.41] (lns-bzn-59-82-252-135-148.adsl.proxad.net. [82.252.135.148])
+        by smtp.googlemail.com with ESMTPSA id k184sm20036949wmf.9.2020.04.14.15.14.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Apr 2020 15:14:52 -0700 (PDT)
+Subject: Re: [RFC v2 3/9] thermal: Properly handle mode values in .set_mode()
+To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        linux-pm@vger.kernel.org
+Cc:     Zhang Rui <rui.zhang@intel.com>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>, Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Peter Kaestle <peter@piie.net>,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Amit Kucheria <amit.kucheria@verdurent.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Allison Randal <allison@lohutok.net>,
+        Enrico Weigelt <info@metux.net>,
+        Gayatri Kammela <gayatri.kammela@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, kernel@collabora.com
+References: <2bc5a902-acde-526a-11a5-2357d899916c@linaro.org>
+ <20200414180105.20042-1-andrzej.p@collabora.com>
+ <20200414180105.20042-4-andrzej.p@collabora.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+Message-ID: <e7ed4bcf-8605-c6ad-4412-acb33251a0b3@linaro.org>
+Date:   Wed, 15 Apr 2020 00:14:50 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20200414193615.29506-1-olteanv@gmail.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20200414180105.20042-4-andrzej.p@collabora.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 04/14/2020 22:36, Vladimir Oltean wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> To rehash a previous explanation given in commit 1c44ce560b4d ("net:
-> mscc: ocelot: fix vlan_filtering when enslaving to bridge before link is
-> up"), the switch driver operates the in a mode where a single VLAN can
-> be transmitted as untagged on a particular egress port. That is the
-> "native VLAN on trunk port" use case.
-> 
-> The configuration for this native VLAN is driven in 2 ways:
->  - Set the egress port rewriter to strip the VLAN tag for the native
->    VID (as it is egress-untagged, after all).
->  - Configure the ingress port to drop untagged and priority-tagged
->    traffic, if there is no native VLAN. The intention of this setting is
->    that a trunk port with no native VLAN should not accept untagged
->    traffic.
-> 
-> Since both of the above configurations for the native VLAN should only
-> be done if VLAN awareness is requested, they are actually done from the
-> ocelot_port_vlan_filtering function, after the basic procedure of
-> toggling the VLAN awareness flag of the port.
-> 
-> But there's a problem with that simplistic approach: we are trying to
-> juggle with 2 independent variables from a single function:
->  - Native VLAN of the port - its value is held in port->vid.
->  - VLAN awareness state of the port - currently there are some issues
->    here, more on that later*.
-> The actual problem can be seen when enslaving the switch ports to a VLAN
-> filtering bridge:
->  0. The driver configures a pvid of zero for each port, when in
->     standalone mode. While the bridge configures a default_pvid of 1 for
->     each port that gets added as a slave to it.
->  1. The bridge calls ocelot_port_vlan_filtering with vlan_aware=true.
->     The VLAN-filtering-dependent portion of the native VLAN
->     configuration is done, considering that the native VLAN is 0.
->  2. The bridge calls ocelot_vlan_add with vid=1, pvid=true,
->     untagged=true. The native VLAN changes to 1 (change which gets
->     propagated to hardware).
->  3. ??? - nobody calls ocelot_port_vlan_filtering again, to reapply the
->     VLAN-filtering-dependent portion of the native VLAN configuration,
->     for the new native VLAN of 1. One can notice that after toggling "ip
->     link set dev br0 type bridge vlan_filtering 0 && ip link set dev br0
->     type bridge vlan_filtering 1", the new native VLAN finally makes it
->     through and untagged traffic finally starts flowing again. But
->     obviously that shouldn't be needed.
-> 
-> So it is clear that 2 independent variables need to both re-trigger the
-> native VLAN configuration. So we introduce the second variable as
-> ocelot_port->vlan_aware.
-> 
-> *Actually both the DSA Felix driver and the Ocelot driver already had
-> each its own variable:
->  - Ocelot: ocelot_port_private->vlan_aware
->  - Felix: dsa_port->vlan_filtering
-> but the common Ocelot library needs to work with a single, common,
-> variable, so there is some refactoring done to move the vlan_aware
-> property from the private structure into the common ocelot_port
-> structure.
-> 
-> Fixes: 97bb69e1e36e ("net: mscc: ocelot: break apart ocelot_vlan_port_apply")
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Hi Andrzej,
+
+you can drop this patch. It is not useful as the caller checks the
+correctness of the values in the patch 4/9.
+
+Moreover the patch is bogus because it returns before releasing the lock.
+
+On 14/04/2020 20:00, Andrzej Pietrasiewicz wrote:
+> Allow only THERMAL_DEVICE_ENABLED and THERMAL_DEVICE_DISABLED as valid
+> states to transition to.
+
+
+
+
+> Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
 > ---
-> To get full VLAN functionality for the Felix DSA driver, we do also need
-> someting along the lines of Russell King's patch:
-> https://patchwork.ozlabs.org/project/netdev/patch/E1jEB0y-0006iF-5g@rmk-PC.armlinux.org.uk/
-> however that is not material for -net.
+>  drivers/net/ethernet/mellanox/mlxsw/core_thermal.c | 8 ++++++--
+>  drivers/platform/x86/acerhdf.c                     | 4 ++++
+>  drivers/thermal/imx_thermal.c                      | 4 +++-
+>  drivers/thermal/intel/intel_quark_dts_thermal.c    | 5 ++++-
+>  drivers/thermal/of-thermal.c                       | 4 +++-
+>  5 files changed, 20 insertions(+), 5 deletions(-)
 > 
->  drivers/net/dsa/ocelot/felix.c     |  5 +-
->  drivers/net/ethernet/mscc/ocelot.c | 84 +++++++++++++++---------------
->  drivers/net/ethernet/mscc/ocelot.h |  2 -
->  include/soc/mscc/ocelot.h          |  4 +-
->  4 files changed, 47 insertions(+), 48 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-> index 55bf780b7b0e..53f335d83b37 100644
-> --- a/drivers/net/dsa/ocelot/felix.c
-> +++ b/drivers/net/dsa/ocelot/felix.c
-> @@ -77,11 +77,8 @@ static int felix_fdb_add(struct dsa_switch *ds, int port,
->                          const unsigned char *addr, u16 vid)
+> diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+> index ce0a6837daa3..cd435ca7adbe 100644
+> --- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+> +++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
+> @@ -296,8 +296,10 @@ static int mlxsw_thermal_set_mode(struct thermal_zone_device *tzdev,
+>  
+>  	if (mode == THERMAL_DEVICE_ENABLED)
+>  		tzdev->polling_delay = thermal->polling_delay;
+> -	else
+> +	else if (mode == THERMAL_DEVICE_DISABLED)
+>  		tzdev->polling_delay = 0;
+> +	else
+> +		return -EINVAL;
+>  
+>  	mutex_unlock(&tzdev->lock);
+>  
+> @@ -486,8 +488,10 @@ static int mlxsw_thermal_module_mode_set(struct thermal_zone_device *tzdev,
+>  
+>  	if (mode == THERMAL_DEVICE_ENABLED)
+>  		tzdev->polling_delay = thermal->polling_delay;
+> -	else
+> +	else if (mode == THERMAL_DEVICE_DISABLED)
+>  		tzdev->polling_delay = 0;
+> +	else
+> +		return -EINVAL;
+>  
+>  	mutex_unlock(&tzdev->lock);
+>  
+> diff --git a/drivers/platform/x86/acerhdf.c b/drivers/platform/x86/acerhdf.c
+> index 8cc86f4e3ac1..d5188c1d688b 100644
+> --- a/drivers/platform/x86/acerhdf.c
+> +++ b/drivers/platform/x86/acerhdf.c
+> @@ -431,6 +431,10 @@ static int acerhdf_get_mode(struct thermal_zone_device *thermal,
+>  static int acerhdf_set_mode(struct thermal_zone_device *thermal,
+>  			    enum thermal_device_mode mode)
 >  {
->         struct ocelot *ocelot = ds->priv;
-> -       bool vlan_aware;
-> 
-> -       vlan_aware = dsa_port_is_vlan_filtering(dsa_to_port(ds, port));
-> -
-> -       return ocelot_fdb_add(ocelot, port, addr, vid, vlan_aware);
-> +       return ocelot_fdb_add(ocelot, port, addr, vid);
->  }
-> 
->  static int felix_fdb_del(struct dsa_switch *ds, int port,
-> diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-> index f9e9d205b551..a6de5f1bd9b1 100644
-> --- a/drivers/net/ethernet/mscc/ocelot.c
-> +++ b/drivers/net/ethernet/mscc/ocelot.c
-> @@ -183,44 +183,47 @@ static void ocelot_vlan_mode(struct ocelot *ocelot, int port,
->         ocelot_write(ocelot, val, ANA_VLANMASK);
->  }
-> 
-> -void ocelot_port_vlan_filtering(struct ocelot *ocelot, int port,
-> -                               bool vlan_aware)
-> +static int ocelot_port_set_native_vlan(struct ocelot *ocelot, int port,
-> +                                      u16 vid)
->  {
->         struct ocelot_port *ocelot_port = ocelot->ports[port];
-> -       u32 val;
-> +       u32 val = 0;
-> 
-> -       if (vlan_aware)
-> -               val = ANA_PORT_VLAN_CFG_VLAN_AWARE_ENA |
-> -                     ANA_PORT_VLAN_CFG_VLAN_POP_CNT(1);
-> -       else
-> -               val = 0;
-> -       ocelot_rmw_gix(ocelot, val,
-> -                      ANA_PORT_VLAN_CFG_VLAN_AWARE_ENA |
-> -                      ANA_PORT_VLAN_CFG_VLAN_POP_CNT_M,
-> -                      ANA_PORT_VLAN_CFG, port);
-> +       if (ocelot_port->vid != vid) {
-> +               /* Always permit deleting the native VLAN (vid = 0) */
-> +               if (ocelot_port->vid && vid) {
-> +                       dev_err(ocelot->dev,
-> +                               "Port already has a native VLAN: %d\n",
-> +                               ocelot_port->vid);
-> +                       return -EBUSY;
-> +               }
-> +               ocelot_port->vid = vid;
-> +       }
+> +	if (mode != THERMAL_DEVICE_DISABLED &&
+> +	    mode != THERMAL_DEVICE_ENABLED)
+> +		return -EINVAL;
 > +
-> +       ocelot_rmw_gix(ocelot, REW_PORT_VLAN_CFG_PORT_VID(vid),
-> +                      REW_PORT_VLAN_CFG_PORT_VID_M,
-> +                      REW_PORT_VLAN_CFG, port);
-> 
-> -       if (vlan_aware && !ocelot_port->vid)
-> +       if (ocelot_port->vlan_aware && !ocelot_port->vid)
->                 /* If port is vlan-aware and tagged, drop untagged and priority
->                  * tagged frames.
->                  */
->                 val = ANA_PORT_DROP_CFG_DROP_UNTAGGED_ENA |
->                       ANA_PORT_DROP_CFG_DROP_PRIO_S_TAGGED_ENA |
->                       ANA_PORT_DROP_CFG_DROP_PRIO_C_TAGGED_ENA;
-> -       else
-> -               val = 0;
->         ocelot_rmw_gix(ocelot, val,
->                        ANA_PORT_DROP_CFG_DROP_UNTAGGED_ENA |
->                        ANA_PORT_DROP_CFG_DROP_PRIO_S_TAGGED_ENA |
->                        ANA_PORT_DROP_CFG_DROP_PRIO_C_TAGGED_ENA,
->                        ANA_PORT_DROP_CFG, port);
-> 
-> -       if (vlan_aware) {
-> +       if (ocelot_port->vlan_aware) {
->                 if (ocelot_port->vid)
->                         /* Tag all frames except when VID == DEFAULT_VLAN */
-> -                       val |= REW_TAG_CFG_TAG_CFG(1);
-> +                       val = REW_TAG_CFG_TAG_CFG(1);
->                 else
->                         /* Tag all frames */
-> -                       val |= REW_TAG_CFG_TAG_CFG(3);
-> +                       val = REW_TAG_CFG_TAG_CFG(3);
->         } else {
->                 /* Port tagging disabled. */
->                 val = REW_TAG_CFG_TAG_CFG(0);
-> @@ -228,31 +231,31 @@ void ocelot_port_vlan_filtering(struct ocelot *ocelot, int port,
->         ocelot_rmw_gix(ocelot, val,
->                        REW_TAG_CFG_TAG_CFG_M,
->                        REW_TAG_CFG, port);
+>  	if (mode == THERMAL_DEVICE_DISABLED && kernelmode)
+>  		acerhdf_revert_to_bios_mode();
+>  	else if (mode == THERMAL_DEVICE_ENABLED && !kernelmode)
+> diff --git a/drivers/thermal/imx_thermal.c b/drivers/thermal/imx_thermal.c
+> index e761c9b42217..36b1924f1938 100644
+> --- a/drivers/thermal/imx_thermal.c
+> +++ b/drivers/thermal/imx_thermal.c
+> @@ -361,7 +361,7 @@ static int imx_set_mode(struct thermal_zone_device *tz,
+>  			data->irq_enabled = true;
+>  			enable_irq(data->irq);
+>  		}
+> -	} else {
+> +	} else if (mode == THERMAL_DEVICE_DISABLED) {
+>  		regmap_write(map, soc_data->sensor_ctrl + REG_CLR,
+>  			     soc_data->measure_temp_mask);
+>  		regmap_write(map, soc_data->sensor_ctrl + REG_SET,
+> @@ -374,6 +374,8 @@ static int imx_set_mode(struct thermal_zone_device *tz,
+>  			disable_irq(data->irq);
+>  			data->irq_enabled = false;
+>  		}
+> +	} else {
+> +		return -EINVAL;
+>  	}
+>  
+>  	data->mode = mode;
+> diff --git a/drivers/thermal/intel/intel_quark_dts_thermal.c b/drivers/thermal/intel/intel_quark_dts_thermal.c
+> index d704fc104cfd..11d7db895125 100644
+> --- a/drivers/thermal/intel/intel_quark_dts_thermal.c
+> +++ b/drivers/thermal/intel/intel_quark_dts_thermal.c
+> @@ -325,8 +325,11 @@ static int sys_set_mode(struct thermal_zone_device *tzd,
+>  	mutex_lock(&dts_update_mutex);
+>  	if (mode == THERMAL_DEVICE_ENABLED)
+>  		ret = soc_dts_enable(tzd);
+> -	else
+> +	else if (mode == THERMAL_DEVICE_DISABLED)
+>  		ret = soc_dts_disable(tzd);
+> +	else
+> +		return -EINVAL;
 > +
-> +       return 0;
->  }
-> -EXPORT_SYMBOL(ocelot_port_vlan_filtering);
-> 
-> -static int ocelot_port_set_native_vlan(struct ocelot *ocelot, int port,
-> -                                      u16 vid)
-> +void ocelot_port_vlan_filtering(struct ocelot *ocelot, int port,
-> +                               bool vlan_aware)
->  {
->         struct ocelot_port *ocelot_port = ocelot->ports[port];
-> +       u32 val;
-> 
-> -       if (ocelot_port->vid != vid) {
-> -               /* Always permit deleting the native VLAN (vid = 0) */
-> -               if (ocelot_port->vid && vid) {
-> -                       dev_err(ocelot->dev,
-> -                               "Port already has a native VLAN: %d\n",
-> -                               ocelot_port->vid);
-> -                       return -EBUSY;
-> -               }
-> -               ocelot_port->vid = vid;
-> -       }
-> +       ocelot_port->vlan_aware = vlan_aware;
-> 
-> -       ocelot_rmw_gix(ocelot, REW_PORT_VLAN_CFG_PORT_VID(vid),
-> -                      REW_PORT_VLAN_CFG_PORT_VID_M,
-> -                      REW_PORT_VLAN_CFG, port);
-> +       if (vlan_aware)
-> +               val = ANA_PORT_VLAN_CFG_VLAN_AWARE_ENA |
-> +                     ANA_PORT_VLAN_CFG_VLAN_POP_CNT(1);
-> +       else
-> +               val = 0;
-> +       ocelot_rmw_gix(ocelot, val,
-> +                      ANA_PORT_VLAN_CFG_VLAN_AWARE_ENA |
-> +                      ANA_PORT_VLAN_CFG_VLAN_POP_CNT_M,
-> +                      ANA_PORT_VLAN_CFG, port);
-> 
-> -       return 0;
-> +       ocelot_port_set_native_vlan(ocelot, port, ocelot_port->vid);
->  }
-> +EXPORT_SYMBOL(ocelot_port_vlan_filtering);
-> 
->  /* Default vlan to clasify for untagged frames (may be zero) */
->  static void ocelot_port_set_pvid(struct ocelot *ocelot, int port, u16 pvid)
-> @@ -873,12 +876,12 @@ static void ocelot_get_stats64(struct net_device *dev,
->  }
-> 
->  int ocelot_fdb_add(struct ocelot *ocelot, int port,
-> -                  const unsigned char *addr, u16 vid, bool vlan_aware)
-> +                  const unsigned char *addr, u16 vid)
->  {
->         struct ocelot_port *ocelot_port = ocelot->ports[port];
-> 
->         if (!vid) {
-> -               if (!vlan_aware)
-> +               if (!ocelot_port->vlan_aware)
->                         /* If the bridge is not VLAN aware and no VID was
->                          * provided, set it to pvid to ensure the MAC entry
->                          * matches incoming untagged packets
-> @@ -905,7 +908,7 @@ static int ocelot_port_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
->         struct ocelot *ocelot = priv->port.ocelot;
->         int port = priv->chip_port;
-> 
-> -       return ocelot_fdb_add(ocelot, port, addr, vid, priv->vlan_aware);
-> +       return ocelot_fdb_add(ocelot, port, addr, vid);
->  }
-> 
->  int ocelot_fdb_del(struct ocelot *ocelot, int port,
-> @@ -1496,8 +1499,8 @@ static int ocelot_port_attr_set(struct net_device *dev,
->                 ocelot_port_attr_ageing_set(ocelot, port, attr->u.ageing_time);
->                 break;
->         case SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING:
-> -               priv->vlan_aware = attr->u.vlan_filtering;
-> -               ocelot_port_vlan_filtering(ocelot, port, priv->vlan_aware);
-> +               ocelot_port_vlan_filtering(ocelot, port,
-> +                                          attr->u.vlan_filtering);
->                 break;
->         case SWITCHDEV_ATTR_ID_BRIDGE_MC_DISABLED:
->                 ocelot_port_attr_mc_set(ocelot, port, !attr->u.mc_disabled);
-> @@ -1876,7 +1879,6 @@ static int ocelot_netdevice_port_event(struct net_device *dev,
->                         } else {
->                                 err = ocelot_port_bridge_leave(ocelot, port,
->                                                                info->upper_dev);
-> -                               priv->vlan_aware = false;
->                         }
->                 }
->                 if (netif_is_lag_master(info->upper_dev)) {
-> diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
-> index e63bc8743187..7a9c748adda0 100644
-> --- a/drivers/net/ethernet/mscc/ocelot.h
-> +++ b/drivers/net/ethernet/mscc/ocelot.h
-> @@ -57,8 +57,6 @@ struct ocelot_port_private {
->         struct phy_device *phy;
->         u8 chip_port;
-> 
-> -       u8 vlan_aware;
-> -
->         struct phy *serdes;
-> 
->         struct ocelot_port_tc tc;
-> diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-> index 6f122bd6c3c7..25014c1c91b1 100644
-> --- a/include/soc/mscc/ocelot.h
-> +++ b/include/soc/mscc/ocelot.h
-> @@ -482,6 +482,8 @@ struct ocelot_port {
-> 
->         void __iomem                    *regs;
-> 
-> +       bool                            vlan_aware;
-> +
->         /* Ingress default VLAN (pvid) */
->         u16                             pvid;
-> 
-> @@ -616,7 +618,7 @@ int ocelot_port_bridge_leave(struct ocelot *ocelot, int port,
->  int ocelot_fdb_dump(struct ocelot *ocelot, int port,
->                     dsa_fdb_dump_cb_t *cb, void *data);
->  int ocelot_fdb_add(struct ocelot *ocelot, int port,
-> -                  const unsigned char *addr, u16 vid, bool vlan_aware);
-> +                  const unsigned char *addr, u16 vid);
->  int ocelot_fdb_del(struct ocelot *ocelot, int port,
->                    const unsigned char *addr, u16 vid);
->  int ocelot_vlan_add(struct ocelot *ocelot, int port, u16 vid, bool pvid,
-> --
-> 2.17.1
+>  	mutex_unlock(&dts_update_mutex);
+>  
+>  	return ret;
+> diff --git a/drivers/thermal/of-thermal.c b/drivers/thermal/of-thermal.c
+> index 874a47d6923f..36bebf623980 100644
+> --- a/drivers/thermal/of-thermal.c
+> +++ b/drivers/thermal/of-thermal.c
+> @@ -289,9 +289,11 @@ static int of_thermal_set_mode(struct thermal_zone_device *tz,
+>  	if (mode == THERMAL_DEVICE_ENABLED) {
+>  		tz->polling_delay = data->polling_delay;
+>  		tz->passive_delay = data->passive_delay;
+> -	} else {
+> +	} else if (mode == THERMAL_DEVICE_DISABLED) {
+>  		tz->polling_delay = 0;
+>  		tz->passive_delay = 0;
+> +	} else {
+> +		return -EINVAL;
+>  	}
+>  
+>  	mutex_unlock(&tz->lock);
 > 
 
-Reviewed-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 
 -- 
-/Horatiu
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
