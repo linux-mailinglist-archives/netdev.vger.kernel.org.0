@@ -2,59 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75AF11A8A21
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 20:49:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1D411A8A5F
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 20:59:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504390AbgDNStF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 14:49:05 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:37422 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2504372AbgDNStD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Apr 2020 14:49:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=OxNpUlNUMK2ThL4G37x7qilt6pOwxaWeKjcSrWQZuEU=; b=Hr8ic4xoLmRAc/SmERd5yeQF+U
-        nVeHXZzHEWwXiRGSXCAyUUATS+Vq0N9LWfkWrKRCLDwobF1MrTUNT6MmIkKhp4+CDTVL5y8rXxSgL
-        +kCxg2pVtKCW1ORV/g/6rIXP/ssFaqHzWO+sjSrr53Uq10aH6PBcDU3bJFxj7U3w/LL8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jOQcD-002i4U-RX; Tue, 14 Apr 2020 20:48:57 +0200
-Date:   Tue, 14 Apr 2020 20:48:57 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Matteo Croce <mcroce@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net 2/2] net: marvell10g: soft-reset the PHY when coming
- out of low power
-Message-ID: <20200414184857.GE637127@lunn.ch>
-References: <20200414182935.GY25745@shell.armlinux.org.uk>
- <E1jOQKC-0001WS-OW@rmk-PC.armlinux.org.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1jOQKC-0001WS-OW@rmk-PC.armlinux.org.uk>
+        id S2504552AbgDNS7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 14:59:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52500 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2504541AbgDNS7F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 14:59:05 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D47B2C061A0F
+        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 11:59:05 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id nm19so5007617pjb.1
+        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 11:59:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=vIh5eTB8uOZv+p6Eoz7dTqGKo5Rnh4f9sFKMcqBFlS8=;
+        b=TKSsICsFBab9k1r/Gi5jGrU9d5rCvU8AKwKC4tWt+X4MHt8DCtd7JylXyPtfDr97It
+         cWvrhcw8k895UD38eusJiJiXLt8LJcVf5Z0GTMQSaGZKkNGuX6QUnhfCUraiApk4aPVC
+         zUkxuEaZUfBnb4dgp4Wh8RldstNeGPXqBLEoFg8r+Q29SKYCDPNTewavGBOmD/z5ndit
+         sA0PM1rjsRpW6QeqWDeMcUTlWpnOqsT5kP59nabvANNNLjPhqSj+/KRdaXN56Hkl3e7x
+         CBNpY6OGBXo+MK5RU/QXKqUxCMUGcDACNLYg8lKP/HdrZAgGjKO8EUe2ZDtvBqYc5LoE
+         rfTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=vIh5eTB8uOZv+p6Eoz7dTqGKo5Rnh4f9sFKMcqBFlS8=;
+        b=pc4Va3W2KsGk5v6MAWzQRgsceQfq7EBot3O9H9sPizRQBzK8LE7FmuIuP/s/X6glPM
+         CNfPHt6LMFvQWClDEZYU4v5Ogflf5Yoj/YRoM9fAor2iwrTc+TN1pELMQh7kv2oduABM
+         FD1EAfo8VM+v95wOHjxInfiiww9uTgGDhLBbHrrtAR/NB3+OWQib00pJBmoerBQZNsc4
+         pTha6U7omHSO9AOqtHYNckBRfVLwyvTKJtHnYyWpu2RwSrL31JnisTPD8CLy3ZIDpR+9
+         KRVWq/5JWHyt/fg9FMKNyrLFxtLq2/1xB4L5JQqteZ4j4K6AFovHa3qd9j4sAtaIWY42
+         oQdA==
+X-Gm-Message-State: AGi0PuZUCxJuFBsM2b8QCJH8zZbDbCWBLbBmEGWEVJE5PoeVYhLtoBuO
+        JzPFq2v0G/gLNLQmuQgH92dWklLGh8bcug==
+X-Google-Smtp-Source: APiQypLCRwItYE4hAhA2TRPzwwyxc65C2HZuJqXdiigQnh9OCq/AJAhmepoJkaAhS7Huv9Y2QbNqd8iIqzVihw==
+X-Received: by 2002:a17:90a:e02:: with SMTP id v2mr1764972pje.131.1586890745234;
+ Tue, 14 Apr 2020 11:59:05 -0700 (PDT)
+Date:   Tue, 14 Apr 2020 11:58:21 -0700
+Message-Id: <20200414115512.1.I9dd050ead919f2cc3ef83d4e866de537c7799cf3@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.26.0.110.g2183baf09c-goog
+Subject: [PATCH] Bluetooth: Terminate the link if pairing is cancelled
+From:   Manish Mandlik <mmandlik@google.com>
+To:     marcel@holtmann.org, luiz.dentz@gmail.com
+Cc:     linux-bluetooth@vger.kernel.org,
+        chromeos-bluetooth-upstreaming@chromium.org,
+        Alain Michaud <alainm@chromium.org>,
+        Manish Mandlik <mmandlik@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 14, 2020 at 07:30:20PM +0100, Russell King wrote:
-> Soft-reset the PHY when coming out of low power mode, which seems to
-> be necessary with firmware versions 0.3.3.0 and 0.3.10.0.
-> 
-> This depends on ("net: marvell10g: report firmware version")
-> 
-> Fixes: c9cc1c815d36 ("net: phy: marvell10g: place in powersave mode at probe")
-> Reported-by: Matteo Croce <mcroce@redhat.com>
-> Tested-by: Matteo Croce <mcroce@redhat.com>
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+If user decides to cancel ongoing pairing process (e.g. by clicking
+the cancel button on the pairing/passkey window), abort any ongoing
+pairing and then terminate the link.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Manish Mandlik <mmandlik@google.com>
+---
+Hello Linux-Bluetooth,
 
-    Andrew
+  This patch aborts any ongoing pairing and then terminates the link
+  by calling hci_abort_conn() in cancel_pair_device() function.
+
+  However, I'm not very sure if hci_abort_conn() should be called here
+  in cancel_pair_device() or in smp for example to terminate the link
+  after it had sent the pairing failed PDU.
+
+  Please share your thoughts on this.
+
+Thanks and regards,
+Manish.
+
+ net/bluetooth/mgmt.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index 6552003a170eb..1aaa44282af4f 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -3030,6 +3030,18 @@ static int cancel_pair_device(struct sock *sk, struct hci_dev *hdev, void *data,
+ 
+ 	err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_CANCEL_PAIR_DEVICE, 0,
+ 				addr, sizeof(*addr));
++
++	/* Since user doesn't want to proceed with the connection,
++	 * abort any ongoing pairing and then terminate the link.
++	 */
++	if (addr->type == BDADDR_BREDR)
++		hci_remove_link_key(hdev, &addr->bdaddr);
++	else
++		smp_cancel_and_remove_pairing(hdev, &addr->bdaddr,
++					      le_addr_type(addr->type));
++
++	hci_abort_conn(conn, HCI_ERROR_REMOTE_USER_TERM);
++
+ unlock:
+ 	hci_dev_unlock(hdev);
+ 	return err;
+-- 
+2.26.0.110.g2183baf09c-goog
+
