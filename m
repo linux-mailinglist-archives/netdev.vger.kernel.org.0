@@ -2,62 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A13ED1A8D61
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 23:11:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 135501A8D6F
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 23:13:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391698AbgDNVL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 17:11:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47242 "EHLO
+        id S2391731AbgDNVNn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 17:13:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1733025AbgDNVLw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 17:11:52 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF63DC061A0C;
-        Tue, 14 Apr 2020 14:11:51 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id q16so4394540pje.1;
-        Tue, 14 Apr 2020 14:11:51 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1732367AbgDNVNb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 17:13:31 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F99C061A0C;
+        Tue, 14 Apr 2020 14:13:31 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id k1so9049324wrx.4;
+        Tue, 14 Apr 2020 14:13:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=APKPDliDAz6CxWRhdv2ZU8BBMBdYtRGRNVYpl3LcBic=;
-        b=tnsamLwTr55DXkl5PaDA4QQQGSgCqDYKxkKOYaFwPKr0XQ+Dj2kckyU8r2UZOG2pdn
-         j/t5opmQBainmsMGbj74Nbns8qJkeCqFZk0WozWHu2vbiQGoc/QvxleMRTs/G73MLYR1
-         9T1ghMdeJ7yJFhET1DvdM/LtsQFsRXPcedcrjJx0/RogtEsXFywVGyMVa80lw1XYw32P
-         O7zwUD/lG4hYWj3icfsUiC2+Tc4g/zT8F5pGwqGATcdVqPTz+Vvw/JNtJmCp2JzPDM+9
-         ImAz4FefRkmwFm7RRh6yokNzE3uYXx5dthoewcrQRkt8Wpc8OPjo7PaLbebqaF6xfuao
-         Dz9Q==
+        bh=rNEJHZlkpKFFCpbiqBhDEfR5F3dyNpOgz73WiGxKZAI=;
+        b=VPn/ujRcnd/+ymA3MuddiaGyEMq7ma77DLhD5R7FTVqkDCKUitEzS8xU6LIP6Rd7g+
+         f/KW7N58AmAvqbRexJDr/z3ZCp3mE0PFc8paFSYvYcrRiN6fmnwH0XXP8iRr9D8JJh7A
+         dLA5BmEvs0iyZRAJhO/PiqVhEBb6hxrNeDBMicVwgmQRqe3Uvj2WhbUTOekjQEHyENFV
+         i12vXZl+ZTZawKKv5FxekP6VkuofAtAYZ3PvXC58+g8VOPS4Uc4jXFnaRDibNvUyN3Ce
+         lS80UySveHl/z4yN2Wc/P01ycKJ2pUXI0qnPAcTmeSNOAzHjyqrGQdnQYZrvzlE/4HnI
+         Qq8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=APKPDliDAz6CxWRhdv2ZU8BBMBdYtRGRNVYpl3LcBic=;
-        b=GHB9n54mpcX1CFwxznEow53SNYGwQy9WUdcJMaR0ZVVz+8WZvc20N92JibIZzP+Ruc
-         lPrXvw79H+u+TRtbGuL7CB0Sj8yvzLtVNBpGYCdynKdLCPeFKo/P1QNE/AM0SFjCFfk5
-         ZmLE7bZ6LilYbnTCB2tZNARW3dTsoJQ7n7l6c5mzyCaf4qpYw4K7ePnBMDltwFMUCHsq
-         gK5ayZ+l0+1ud5WIICIxogg/qEdGqdvsDlM8VdgBNn6C+PIgDWBx6KUFR73Q3b4iCVcM
-         SXAucq55kQ/4Widn22Zye9V+K73/uONRcbi22kx6szwANXgP3gWNkxEaUTBrx2RP+w05
-         7LHA==
-X-Gm-Message-State: AGi0Pua854YdBS5PUVDxiNQ/zF1Pk2CWnzs3qghErniKYYNznxJzUxjK
-        NUds/NF4gibBxLPqeKD1iAk=
-X-Google-Smtp-Source: APiQypLvJFsaWYLVo6+uJ051ApXuBMSPoTjdVjM8ILIF/e0rI/PCicyWsKmBhyuJcwpxReMzJY0RYQ==
-X-Received: by 2002:a17:90a:71c2:: with SMTP id m2mr2304509pjs.21.1586898711502;
-        Tue, 14 Apr 2020 14:11:51 -0700 (PDT)
-Received: from [10.230.188.26] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id a185sm11978948pfa.27.2020.04.14.14.11.49
+        bh=rNEJHZlkpKFFCpbiqBhDEfR5F3dyNpOgz73WiGxKZAI=;
+        b=gaJNE/OWA6Omnpp1iK2lcj9ngalDtZhohfsOPwIrZ+AZA7XHrxNibMrSvLbsw7hg6s
+         Mq4w2crxhHRN0L0sH386/VJKVJhHM6IGpa7EO8ZXohXTpo289uS+dZpBTEe7BVPBFa8P
+         c+3k4qR5rZkSqjzKGJvypwZuncVM16jDUlWUxC90CEdO2A0sYoPCA/jbzU6ETquQ3ZWz
+         8ZG8FE+r6Tvz8YQ2OY2XjTkkCZBkzZC94DQMaPNASGRQxL9tpjEmD077XMYYAtq4avTT
+         M4kv3/MdysZd3aOiOswSJkq2ExXCxWSplmGbTAh19fjTNS3h/TNgTUb02ido/VaKcjid
+         JREg==
+X-Gm-Message-State: AGi0PuapnfyiO/dd48+AF2iXS0/c7C4RGVOMjOQSRcxbSHSol0PUAR8M
+        EASLZbUwPo66BuxrKAmFrc8=
+X-Google-Smtp-Source: APiQypJQjx47Qzq13ZXcUaXaTqSlxwTIzycqT2V0INa0+dZcuh9LgBQKi5qPeXuz6hmeUdNbAJVrtQ==
+X-Received: by 2002:adf:fe87:: with SMTP id l7mr11369762wrr.360.1586898809694;
+        Tue, 14 Apr 2020 14:13:29 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id j68sm21209801wrj.32.2020.04.14.14.13.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Apr 2020 14:11:50 -0700 (PDT)
-Subject: Re: [PATCH v2 2/3] dt-bindings: add Qualcomm IPQ4019 MDIO bindings
+        Tue, 14 Apr 2020 14:13:28 -0700 (PDT)
+Subject: Re: [PATCH v2 3/3] dts: ipq4019: add MDIO node
 To:     Robert Marko <robert.marko@sartura.hr>, andrew@lunn.ch,
         hkallweit1@gmail.com, linux@armlinux.org.uk,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
         mark.rutland@arm.com, linux-arm-msm@vger.kernel.org,
         devicetree@vger.kernel.org
-Cc:     Luka Perkov <luka.perkov@sartura.hr>
+Cc:     Christian Lamparter <chunkeey@gmail.com>,
+        Luka Perkov <luka.perkov@sartura.hr>
 References: <20200414181012.114905-1-robert.marko@sartura.hr>
- <20200414181012.114905-2-robert.marko@sartura.hr>
+ <20200414181012.114905-3-robert.marko@sartura.hr>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -113,12 +114,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <08c288da-6f5c-7f04-81bc-4c7cb311af3e@gmail.com>
-Date:   Tue, 14 Apr 2020 14:11:49 -0700
+Message-ID: <076e0e54-ad3a-8cb7-d96d-8a83fc315b28@gmail.com>
+Date:   Tue, 14 Apr 2020 14:13:25 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200414181012.114905-2-robert.marko@sartura.hr>
+In-Reply-To: <20200414181012.114905-3-robert.marko@sartura.hr>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -130,26 +131,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 4/14/2020 11:10 AM, Robert Marko wrote:
-> This patch adds the binding document for the IPQ40xx MDIO driver.
+> This patch adds the necessary MDIO interface node
+> to the Qualcomm IPQ4019 DTSI.
 > 
+> Built-in QCA8337N switch is managed using it,
+> and since we have a driver for it lets add it.
+> 
+> Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
 > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 > Cc: Luka Perkov <luka.perkov@sartura.hr>
 > ---
+>  arch/arm/boot/dts/qcom-ipq4019.dtsi | 28 ++++++++++++++++++++++++++++
+>  1 file changed, 28 insertions(+)
 
-[snip]
+Earlier contributions to that file seem to suggest that the preferred
+subject is:
 
-> +examples:
-> +  - |
-> +    mdio@90000 {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +      compatible = "qcom,ipq40xx-mdio";
-> +      reg = <0x90000 0x64>;
-> +      status = "disabled";
-
-I believe the preference is to not put status properties in examples.
-Other than that:
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+ARM: dts: qcom: <subject>
 -- 
 Florian
