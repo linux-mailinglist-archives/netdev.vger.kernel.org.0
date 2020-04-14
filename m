@@ -2,228 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 855751A7A9F
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 14:23:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 765691A7B20
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 14:47:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440059AbgDNMX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 08:23:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39058 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2440053AbgDNMXy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Apr 2020 08:23:54 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S2502171AbgDNMr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 08:47:29 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:27156 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728963AbgDNMrB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 08:47:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1586868420;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=A+nH0t8V7cHfq6JAuXH0DGqngzCk5JxjFUG03j3kMOo=;
+        b=aYagiKFsccgEiUmpnesjw36xSYC58qolEx0C+6msS3nl1OAB8GwoP+KlFlspHSGfZGvJGZ
+        Dk/kBaRNqkGMuAJ5T4yJ45VCTwRxOEk/WabJ1yeE/NxyuX4WUFzXSohz/J+sfb9TDCF1KQ
+        hENzy59AQYfIyqLoQx7DYIwy59hnlEs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-491-sUzUj0mKMti50Ws-J2VG_w-1; Tue, 14 Apr 2020 08:46:51 -0400
+X-MC-Unique: sUzUj0mKMti50Ws-J2VG_w-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 53E3620732;
-        Tue, 14 Apr 2020 12:23:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586867033;
-        bh=HO68f48Xhk1eA5LYUtWE07mUQhbLIhm8b3XNLus8Z7s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gbD7t+j/tuM3YwdcvzylisLeDIKYDiBHL29WWCTO2WxU3f0EJgtm7kJqGbEKyoQj2
-         xSUxvyJeQpWQQeL8XWNquZUdy9GG6qMVPbL4aBlMZWc/TsQdNzhgChw63E/mWyqSHr
-         GbAlJZGfmYl6sSpwjstxHtrlnE3ds4vr80PmpIss=
-Date:   Tue, 14 Apr 2020 15:23:49 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     David Miller <davem@davemloft.net>, kuba@kernel.org,
-        thomas.lendacky@amd.com, keyur@os.amperecomputing.com,
-        pcnet32@frontier.com, vfalico@gmail.com, j.vosburgh@gmail.com,
-        linux-acenic@sunsite.dk, mripard@kernel.org, heiko@sntech.de,
-        mark.einon@gmail.com, chris.snook@gmail.com,
-        linux-rockchip@lists.infradead.org, iyappan@os.amperecomputing.com,
-        irusskikh@marvell.com, dave@thedillows.org, netanel@amazon.com,
-        quan@os.amperecomputing.com, jcliburn@gmail.com,
-        LinoSanfilippo@gmx.de, linux-arm-kernel@lists.infradead.org,
-        andreas@gaisler.com, andy@greyhouse.net, netdev@vger.kernel.org,
-        thor.thayer@linux.intel.com, linux-kernel@vger.kernel.org,
-        ionut@badula.org, akiyano@amazon.com, jes@trained-monkey.org,
-        nios2-dev@lists.rocketboards.org, wens@csie.org
-Subject: Re: [PATCH] net/3com/3c515: Fix MODULE_ARCH_VERMAGIC redefinition
-Message-ID: <20200414122349.GB1011271@unreal>
-References: <20200413045555.GE334007@unreal>
- <20200412.220739.516022706077351913.davem@davemloft.net>
- <20200413052637.GG334007@unreal>
- <20200412.223604.1160930629964379276.davem@davemloft.net>
- <20200413080452.GA3772@zn.tnic>
- <20200413084026.GH334007@unreal>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 762B5800D53;
+        Tue, 14 Apr 2020 12:46:49 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.6])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7DD5060BE2;
+        Tue, 14 Apr 2020 12:46:38 +0000 (UTC)
+Date:   Tue, 14 Apr 2020 14:46:37 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "toke@redhat.com" <toke@redhat.com>,
+        "gtzalik@amazon.com" <gtzalik@amazon.com>,
+        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+        "borkmann@iogearbox.net" <borkmann@iogearbox.net>,
+        "alexander.duyck@gmail.com" <alexander.duyck@gmail.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "akiyano@amazon.com" <akiyano@amazon.com>,
+        "zorik@amazon.com" <zorik@amazon.com>,
+        "alexei.starovoitov@gmail.com" <alexei.starovoitov@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "dsahern@gmail.com" <dsahern@gmail.com>,
+        "lorenzo@kernel.org" <lorenzo@kernel.org>,
+        "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>,
+        brouer@redhat.com, Steffen Klassert <steffen.klassert@secunet.com>,
+        Willy Tarreau <w@1wt.eu>
+Subject: Re: [PATCH RFC v2 29/33] xdp: allow bpf_xdp_adjust_tail() to grow
+ packet size
+Message-ID: <20200414144637.0dafdda5@carbon>
+In-Reply-To: <ed0ce4d76e77b23aa3edcd821d5a4867e8bb27b1.camel@mellanox.com>
+References: <158634658714.707275.7903484085370879864.stgit@firesoul>
+        <158634678170.707275.10720666808605360076.stgit@firesoul>
+        <ed0ce4d76e77b23aa3edcd821d5a4867e8bb27b1.camel@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200413084026.GH334007@unreal>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 13, 2020 at 11:40:26AM +0300, Leon Romanovsky wrote:
-> On Mon, Apr 13, 2020 at 10:04:52AM +0200, Borislav Petkov wrote:
-> > On Sun, Apr 12, 2020 at 10:36:04PM -0700, David Miller wrote:
-> > > From: Leon Romanovsky <leon@kernel.org>
-> > > Date: Mon, 13 Apr 2020 08:26:37 +0300
-> > >
-> > > > How do you want us to handle it? Boris resend, me to send, you to fix?
-> > >
-> > > Anyone other than me can do it ;-)
-> >
-> > Ok, here's what I'm thinking: that vermagic.h is normally automatically
-> > included in the *mod.c as part of the module creation, see add_header()
-> > in modpost.c.
-> >
-> > So then perhaps drivers should not use it directly due to the current
-> > inclusion order:
-> >
-> > linux/module.h includes asm/module.h and that arch-specific header
-> > defines MODULE_VERMAGIC* for the respective arch.
-> >
-> > linux/vermagic.h defines all those fallbacks for those MODULE_VERMAGIC*
-> > things and if the inclusion order is swapped - we get the redefinition
-> > warning.
-> >
-> > Yesterday I tried the below - basically get rid of all the remaining
-> > includers of linux/vermagic.h but two are left:
-> >
-> > drivers/net/ethernet/hisilicon/hns3/hns3_enet.c:18:#include <linux/vermagic.h>
-> > drivers/net/ethernet/netronome/nfp/nfp_main.c:17:#include <linux/vermagic.h>
-> >
-> > because both use VERMAGIC_STRING directly.
-> >
-> > So,
-> >
-> > * one could either allow that and sort the inclusion order so that, for
-> > example, asm/module.h includes linux/vermagic.h and thus the fallbacks
-> > are there present.
-> >
-> > or
-> >
-> > * remove all uses of VERMAGIC_STRING from the drivers, add a header
-> > guard which prevents people from using it directly and leave
-> > VERMAGIC_STRING only to the internal module machinery in the kernel.
-> >
-> > Judging by how only a handful of old drivers are even using that,
-> > perhaps not too far fetched.
-> >
-> > In any case, this needs a maintainer decision.
-> >
-> > Leon, if you wanna do it whatever you guys end up agreeing on, just go
-> > ahead and submit the patches - it's not like I don't have anything else
-> > on the TODO :-) Just add a Reported-by: me and that should be enough.
->
-> I broke it so I should fix and will send a patch today/tomorrow.
+On Thu, 9 Apr 2020 03:31:14 +0000
+Saeed Mahameed <saeedm@mellanox.com> wrote:
 
-ok, the patches are here, will wait for the kbuild results and will send.
-https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/log/?h=vermagic
+> On Wed, 2020-04-08 at 13:53 +0200, Jesper Dangaard Brouer wrote:
+> > Finally, after all drivers have a frame size, allow BPF-helper
+> > bpf_xdp_adjust_tail() to grow or extend packet size at frame tail.
+> >   
+> 
+> can you provide a list of usecases for why tail extension is necessary
+> ?
 
-Thanks
+Use-cases:
+(1) IPsec / XFRM needs a tail extend[1][2].
+(2) DNS-cache replies in XDP.
+(3) HA-proxy ALOHA would need it to convert to XDP.
+ 
+> and what do you have in mind as immediate use of bpf_xdp_adjust_tail()
+> ? 
 
->
-> Thanks
->
-> >
-> > If you're busy too, lemme know and I'll put it on my todo then.
-> >
-> > Thx.
-> >
-> > diff --git a/drivers/net/bonding/bonding_priv.h b/drivers/net/bonding/bonding_priv.h
-> > index 45b77bc8c7b3..48cdf3a49a7d 100644
-> > --- a/drivers/net/bonding/bonding_priv.h
-> > +++ b/drivers/net/bonding/bonding_priv.h
-> > @@ -14,7 +14,7 @@
-> >
-> >  #ifndef _BONDING_PRIV_H
-> >  #define _BONDING_PRIV_H
-> > -#include <linux/vermagic.h>
-> > +#include <generated/utsrelease.h>
-> >
-> >  #define DRV_NAME	"bonding"
-> >  #define DRV_DESCRIPTION	"Ethernet Channel Bonding Driver"
-> > diff --git a/drivers/net/ethernet/3com/3c509.c b/drivers/net/ethernet/3com/3c509.c
-> > index b762176a1406..139d0120f511 100644
-> > --- a/drivers/net/ethernet/3com/3c509.c
-> > +++ b/drivers/net/ethernet/3com/3c509.c
-> > @@ -85,7 +85,6 @@
-> >  #include <linux/device.h>
-> >  #include <linux/eisa.h>
-> >  #include <linux/bitops.h>
-> > -#include <linux/vermagic.h>
-> >
-> >  #include <linux/uaccess.h>
-> >  #include <asm/io.h>
-> > diff --git a/drivers/net/ethernet/3com/3c515.c b/drivers/net/ethernet/3com/3c515.c
-> > index 90312fcd6319..47b4215bb93b 100644
-> > --- a/drivers/net/ethernet/3com/3c515.c
-> > +++ b/drivers/net/ethernet/3com/3c515.c
-> > @@ -22,7 +22,6 @@
-> >
-> >  */
-> >
-> > -#include <linux/vermagic.h>
-> >  #define DRV_NAME		"3c515"
-> >
-> >  #define CORKSCREW 1
-> > diff --git a/drivers/net/ethernet/adaptec/starfire.c b/drivers/net/ethernet/adaptec/starfire.c
-> > index 2db42211329f..a64191fc2af9 100644
-> > --- a/drivers/net/ethernet/adaptec/starfire.c
-> > +++ b/drivers/net/ethernet/adaptec/starfire.c
-> > @@ -45,7 +45,6 @@
-> >  #include <asm/processor.h>		/* Processor type for cache alignment. */
-> >  #include <linux/uaccess.h>
-> >  #include <asm/io.h>
-> > -#include <linux/vermagic.h>
-> >
-> >  /*
-> >   * The current frame processor firmware fails to checksum a fragment
-> > diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-> > index 588c62e9add7..3ed150512091 100644
-> > --- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-> > +++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-> > @@ -6,7 +6,7 @@
-> >  #include <linux/module.h>
-> >  #include <linux/netdevice.h>
-> >  #include <linux/utsname.h>
-> > -#include <linux/vermagic.h>
-> > +#include <generated/utsrelease.h>
-> >
-> >  #include "ionic.h"
-> >  #include "ionic_bus.h"
-> > diff --git a/drivers/power/supply/test_power.c b/drivers/power/supply/test_power.c
-> > index 65c23ef6408d..b3c05ff05783 100644
-> > --- a/drivers/power/supply/test_power.c
-> > +++ b/drivers/power/supply/test_power.c
-> > @@ -16,7 +16,7 @@
-> >  #include <linux/power_supply.h>
-> >  #include <linux/errno.h>
-> >  #include <linux/delay.h>
-> > -#include <linux/vermagic.h>
-> > +#include <generated/utsrelease.h>
-> >
-> >  enum test_power_id {
-> >  	TEST_AC,
-> > diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-> > index 89d0b1827aaf..adab97e500cf 100644
-> > --- a/net/ethtool/ioctl.c
-> > +++ b/net/ethtool/ioctl.c
-> > @@ -17,7 +17,6 @@
-> >  #include <linux/phy.h>
-> >  #include <linux/bitops.h>
-> >  #include <linux/uaccess.h>
-> > -#include <linux/vermagic.h>
-> >  #include <linux/vmalloc.h>
-> >  #include <linux/sfp.h>
-> >  #include <linux/slab.h>
-> > @@ -29,6 +28,8 @@
-> >  #include <net/flow_offload.h>
-> >  #include <linux/ethtool_netlink.h>
-> >
-> > +#include <generated/utsrelease.h>
-> > +
-> >  #include "common.h"
-> >
-> >  /*
-> >
-> >
-> > --
-> > Regards/Gruss,
-> >     Boris.
-> >
-> > https://people.kernel.org/tglx/notes-about-netiquette
+I guess Steffen Klassert's ipsec use-case(1) it the most immediate.
+
+[1] http://vger.kernel.org/netconf2019_files/xfrm_xdp.pdf
+[2] http://vger.kernel.org/netconf2019.html
+
+> both cover letter and commit messages didn't list any actual use case..
+
+Sorry about that.
+
+> > Remember that helper/macro xdp_data_hard_end have reserved some
+> > tailroom.  Thus, this helper makes sure that the BPF-prog don't have
+> > access to this tailroom area.
+> > 
+> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> > ---
+> >  include/uapi/linux/bpf.h |    4 ++--
+> >  net/core/filter.c        |   18 ++++++++++++++++--
+> >  2 files changed, 18 insertions(+), 4 deletions(-)
+> > 
+[... cut ...]
+> > diff --git a/net/core/filter.c b/net/core/filter.c
+> > index 7628b947dbc3..4d58a147eed0 100644
+> > --- a/net/core/filter.c
+> > +++ b/net/core/filter.c
+> > @@ -3422,12 +3422,26 @@ static const struct bpf_func_proto
+> > bpf_xdp_adjust_head_proto = {
+> >  
+> >  BPF_CALL_2(bpf_xdp_adjust_tail, struct xdp_buff *, xdp, int, offset)
+> >  {
+> > +	void *data_hard_end = xdp_data_hard_end(xdp);
+> >  	void *data_end = xdp->data_end + offset;
+> >  
+> > -	/* only shrinking is allowed for now. */
+> > -	if (unlikely(offset >= 0))
+> > +	/* Notice that xdp_data_hard_end have reserved some tailroom */
+> > +	if (unlikely(data_end > data_hard_end))
+> >  		return -EINVAL;
+> >    
+> 
+> i don't know if i like this approach for couple of reasons.
+> 
+> 1. drivers will provide arbitrary frames_sz, which is normally larger
+> than mtu, and could be a full page size, for XDP_TX action this can be
+> problematic if xdp progs will allow oversized packets to get caught at
+> the driver level..
+
+We already check if MTU is exceeded for a specific device when we
+redirect into this, see helper xdp_ok_fwd_dev().  For the XDP_TX case,
+I guess some drivers bypass that check, which should be fixed. The
+XDP_TX case is IMHO a place where we allow drivers do special
+optimizations, thus drivers can choose to do something faster than
+calling generic helper xdp_ok_fwd_dev().  
+  
+> 
+> 2. xdp_data_hard_end(xdp) has a hardcoded assumption of the skb shinfo
+> and it introduces a reverse dependency between xdp buff and skbuff 
+> 
+(I'll address this in another mail)
+
+> both of the above can be solved if the drivers provided the max
+> allowed frame size, already accounting for mtu and shinfo when setting
+> xdp_buff.frame_sz at the driver level.
+
+It seems we look at the problem from two different angles.  You have
+the drivers perspective, while I have the network stacks perspective
+(the XDP_PASS case).  The mlx5 driver treats XDP as a special case, by
+hiding or confining xdp_buff to functions fairly deep in the
+call-stack.  My goal is different (moving SKB out of drivers), I see
+the xdp_buff/xdp_frame as the main packet object in the drivers, that
+gets send up the network stack (after converting to xdp_frame) and
+converted into SKB in core-code (yes, there is a long road-ahead). The
+larger tailroom can be used by netstack in SKB-coalesce.
+
+The next step is making xdp_buff (and xdp_frame) multi-buffer aware.
+This is why I reserve room for skb_shared_info.  I have considered
+reducing the size of xdp_buff.frame_sz, with sizeof(skb_shared_info),
+but it got kind of ugly having this in each drivers.
+
+I also considered having drivers setup a direct pointer to
+{skb,xdp}_shared_info section in xdp_buff, because will make it more
+flexible (for what I imagined Alexander Duyck want).  (But we can still
+do/change that later, once we start work in multi-buffer code)
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
