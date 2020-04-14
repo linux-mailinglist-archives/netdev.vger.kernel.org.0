@@ -2,109 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9C6F1A7B37
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 14:50:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 770BF1A7B2B
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 14:49:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502261AbgDNMtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 08:49:53 -0400
-Received: from mx2.suse.de ([195.135.220.15]:58492 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2502177AbgDNMtm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Apr 2020 08:49:42 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 6EF73AA7C;
-        Tue, 14 Apr 2020 12:49:36 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id E5E76DA72D; Tue, 14 Apr 2020 14:48:54 +0200 (CEST)
-Date:   Tue, 14 Apr 2020 14:48:54 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Joe Perches <joe@perches.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Rientjes <rientjes@google.com>, linux-mm@kvack.org,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
-        x86@kernel.org, linux-crypto@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, linux-ppp@vger.kernel.org,
-        wireguard@lists.zx2c4.com, linux-wireless@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
-        linux-fscrypt@vger.kernel.org, ecryptfs@vger.kernel.org,
-        kasan-dev@googlegroups.com, linux-bluetooth@vger.kernel.org,
-        linux-wpan@vger.kernel.org, linux-sctp@vger.kernel.org,
-        linux-nfs@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        cocci@systeme.lip6.fr, linux-security-module@vger.kernel.org,
-        linux-integrity@vger.kernel.org
-Subject: Re: [PATCH 1/2] mm, treewide: Rename kzfree() to kfree_sensitive()
-Message-ID: <20200414124854.GQ5920@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Waiman Long <longman@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Joe Perches <joe@perches.com>, Matthew Wilcox <willy@infradead.org>,
-        David Rientjes <rientjes@google.com>, linux-mm@kvack.org,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
-        x86@kernel.org, linux-crypto@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, linux-ppp@vger.kernel.org,
-        wireguard@lists.zx2c4.com, linux-wireless@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
-        linux-fscrypt@vger.kernel.org, ecryptfs@vger.kernel.org,
-        kasan-dev@googlegroups.com, linux-bluetooth@vger.kernel.org,
-        linux-wpan@vger.kernel.org, linux-sctp@vger.kernel.org,
-        linux-nfs@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        cocci@systeme.lip6.fr, linux-security-module@vger.kernel.org,
-        linux-integrity@vger.kernel.org
-References: <20200413211550.8307-1-longman@redhat.com>
- <20200413211550.8307-2-longman@redhat.com>
+        id S2502215AbgDNMtg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 08:49:36 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:46983 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728803AbgDNMtd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 08:49:33 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1586868572; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=FEC6UXkgrlVz/1ReSPT9a5+LzjnDG2h4x4E5PpkB6Xk=;
+ b=fLwZlNAPr8rC/RQUePxqUdl4jxmw0poTJj4WTp+S8UHSVuWHUQL0LPDeU67Z5M3D5CyxnPuL
+ LiNCAGuIV011RkTLkeTNei8y65pecazZ4n+JsP8Wyn/lXNPq80VPK3b8CyEjt/zESZe2hP3Z
+ X09RoK6aY8WWK+DzFzUf19gJMnY=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e95b157.7fc2ff541500-smtp-out-n04;
+ Tue, 14 Apr 2020 12:49:27 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 25401C44788; Tue, 14 Apr 2020 12:49:27 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 265FEC433CB;
+        Tue, 14 Apr 2020 12:49:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 265FEC433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200413211550.8307-2-longman@redhat.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] rtw88: avoid unused function warnings
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200408185413.218643-1-arnd@arndb.de>
+References: <20200408185413.218643-1-arnd@arndb.de>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
+        Chin-Yen Lee <timlee@realtek.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Brian Norris <briannorris@chromium.org>,
+        Chris Chiu <chiu@endlessm.com>,
+        Jian-Hong Pan <jian-hong@endlessm.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20200414124927.25401C44788@smtp.codeaurora.org>
+Date:   Tue, 14 Apr 2020 12:49:27 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 13, 2020 at 05:15:49PM -0400, Waiman Long wrote:
->  fs/btrfs/ioctl.c                              |  2 +-
+Arnd Bergmann <arnd@arndb.de> wrote:
 
+> The rtw88 driver defines emtpy functions with multiple indirections
+> but gets one of these wrong:
+> 
+> drivers/net/wireless/realtek/rtw88/pci.c:1347:12: error: 'rtw_pci_resume' defined but not used [-Werror=unused-function]
+>  1347 | static int rtw_pci_resume(struct device *dev)
+>       |            ^~~~~~~~~~~~~~
+> drivers/net/wireless/realtek/rtw88/pci.c:1342:12: error: 'rtw_pci_suspend' defined but not used [-Werror=unused-function]
+>  1342 | static int rtw_pci_suspend(struct device *dev)
+> 
+> Better simplify it to rely on the conditional reference in
+> SIMPLE_DEV_PM_OPS(), and mark the functions as __maybe_unused to avoid
+> warning about it.
+> 
+> I'm not sure if these are needed at all given that the functions
+> don't do anything, but they were only recently added.
+> 
+> Fixes: 44bc17f7f5b3 ("rtw88: support wowlan feature for 8822c")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-> diff --git a/fs/btrfs/ioctl.c b/fs/btrfs/ioctl.c
-> index 40b729dce91c..eab3f8510426 100644
-> --- a/fs/btrfs/ioctl.c
-> +++ b/fs/btrfs/ioctl.c
-> @@ -2691,7 +2691,7 @@ static int btrfs_ioctl_get_subvol_info(struct file *file, void __user *argp)
->  	btrfs_put_root(root);
->  out_free:
->  	btrfs_free_path(path);
-> -	kzfree(subvol_info);
-> +	kfree_sensitive(subvol_info);
+Patch applied to wireless-drivers.git, thanks.
 
-This is not in a sensitive context so please switch it to plain kfree.
-With that you have my acked-by. Thanks.
+7dc7c41607d1 rtw88: avoid unused function warnings
+
+-- 
+https://patchwork.kernel.org/patch/11480657/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
