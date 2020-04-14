@@ -2,105 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2F4A1A72ED
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 07:22:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50E751A72FC
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 07:28:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405459AbgDNFVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 01:21:15 -0400
-Received: from m142-177.yeah.net ([123.58.177.142]:23000 "EHLO
-        m142-177.yeah.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405440AbgDNFVN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 01:21:13 -0400
-X-Greylist: delayed 379 seconds by postgrey-1.27 at vger.kernel.org; Tue, 14 Apr 2020 01:21:11 EDT
-Received: from vivo.com (localhost [127.0.0.1])
-        by m142-177.yeah.net (Hmail) with ESMTP id 56B0B644120;
-        Tue, 14 Apr 2020 13:14:48 +0800 (CST)
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-Message-ID: <ABYAfQB-CGWquV67Mtd-zKqb.3.1586841288308.Hmail.wenhu.wang@vivo.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Carl Huang <cjhuang@codeaurora.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Nicholas Mc Guire <hofrat@osadl.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@vivo.com
-Subject: =?UTF-8?B?UmU6IFtQQVRDSCB2Ml0gbmV0OiBxcnRyOiBzZW5kIG1zZ3MgZnJvbSBsb2NhbCBvZiBzYW1lIGlkIGFzIGJyb2FkY2FzdA==?=
-X-Priority: 3
-X-Mailer: HMail Webmail Server V2.0 Copyright (c) 2016-163.com
-X-Originating-IP: 58.251.74.226
-In-Reply-To: <20200409193600.GR20625@builder.lan>
+        id S2405509AbgDNF2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 01:28:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39168 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729112AbgDNF2N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 01:28:13 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945A0C0A3BDC;
+        Mon, 13 Apr 2020 22:28:13 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id o19so4748064qkk.5;
+        Mon, 13 Apr 2020 22:28:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2ECPnL4O1esYaha2phRo52qP3NWwRwpdDhvP+yrOVz0=;
+        b=eRaI2qWClNb1MJ+osv2y3a6+iV+30lVEwT4vmJkuWy1GS3X+crP4/WCoeBrebWrLin
+         AmLETTMdji1IK0WwBowZHq8ih2UDi7QE10yil/26R+uGbe06/M4Iq3At3U68XIKcTVfJ
+         f9Rbsbackb9j85iKzO1XZ2ywTHjBNm3yLxBJjRtTcaICosKnx5mqv16CZntyZ0WGKJ7s
+         0m9CXLcIoB2k2NiSXPDruQG2m9gRdikJVWSGuVT0+hCsvjAASwAi5TP+XBFbtWWgF73e
+         3ifPPCtYlxxAl9QX6gvQJU8RJC93+sD01CoQi2QNzbnFUKCKigFPZ/Y1pRnUBhnbGT7X
+         nJTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2ECPnL4O1esYaha2phRo52qP3NWwRwpdDhvP+yrOVz0=;
+        b=acxays+bsDMedH93ZebIiSvQXaS1L9iiSmu9MAbuiKxErk95/OBUjGc7nGLfqO0pl0
+         y4p4HxMbb2JqVHeep/3HcjsssB8ZgQ4gDV1Ba7+bT/K8Zbe+NAYgOZHC4MtVMRSqffH+
+         UhdcGRVfINTzw7+oTi2d/crwseB6DfuoXUxHfEV0lweGyyPreeMdvLXzcWLuxu/Jn18+
+         WwAxsG0VI8ei8yJEJ6MAMuIT3qp1aNZjd9CGbkZ4IxDmB4m+LoKVhkFKtDWfDgWk8PS/
+         IYAjCZ6kjLb/WbrfhbZoQpUdkBiefUgA41Yo3S+kI2rtaEx/AFXbysLO1A+0blJnF3PN
+         tu6w==
+X-Gm-Message-State: AGi0PuYZYHNPVjllRT7o0ys+tW43dvwxFSpoPjU7y8pLem/i+vLrX4HV
+        3PBO7i0we0bn3v1CtslrXau6i5XOFSyMRJthjUg=
+X-Google-Smtp-Source: APiQypIHMXkUdwTT/Ut6IKNMNfAaySG9eyUwhzJX1tx3/FUGFCNky1PX5WCfea9goIZknFY93zVRj3LXooMogKZv63g=
+X-Received: by 2002:ae9:e854:: with SMTP id a81mr19633421qkg.36.1586842092674;
+ Mon, 13 Apr 2020 22:28:12 -0700 (PDT)
 MIME-Version: 1.0
-Received: from wenhu.wang@vivo.com( [58.251.74.226) ] by ajax-webmail ( [127.0.0.1] ) ; Tue, 14 Apr 2020 13:14:48 +0800 (GMT+08:00)
-From:   =?UTF-8?B?546L5paH6JmO?= <wenhu.wang@vivo.com>
-Date:   Tue, 14 Apr 2020 13:14:48 +0800 (GMT+08:00)
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZT1VNTU9CQkJCTUpDTkhLSFlXWShZQU
-        hPN1dZLVlBSVdZCQ4XHghZQVk1NCk2OjckKS43PlkG
-X-HM-Sender-Digest: e1kJHlYWEh9ZQUhMSk5PTU9IQ0pJN1dZDB4ZWUEPCQ4eV1kSHx4VD1lB
-        WUc6OSI6HSo5Vjg8LAoOLU1MNg8fVgEwChlVSFVKTkNNQ09KSUJLT0xPVTMWGhIXVQweFRMOVQwa
-        FRw7DRINFFUYFBZFWVdZEgtZQVlOQ1VJTkpVTE9VSUlNWVdZCAFZQU1MSko3Bg++
-X-HM-Tid: 0a71771c7ead6473kurs56b0b644120
+References: <20200408232520.2675265-1-yhs@fb.com> <20200408232531.2676134-1-yhs@fb.com>
+In-Reply-To: <20200408232531.2676134-1-yhs@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 13 Apr 2020 22:28:01 -0700
+Message-ID: <CAEf4Bzb_q5XsZKu9gDJO__hOHCrGfmw5-vz4qPyNtk13CZ=Zdg@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 09/16] bpf: add bpf_seq_printf and
+ bpf_seq_write helpers
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CkZyb206IEJqb3JuIEFuZGVyc3NvbiA8Ympvcm4uYW5kZXJzc29uQGxpbmFyby5vcmc+CkRhdGU6
-IDIwMjAtMDQtMTAgMDM6MzY6MDAKVG86ICBXQU5HIFdlbmh1IDx3ZW5odS53YW5nQHZpdm8uY29t
-PgpDYzogICJEYXZpZCBTLiBNaWxsZXIiIDxkYXZlbUBkYXZlbWxvZnQubmV0PixKYWt1YiBLaWNp
-bnNraSA8a3ViYUBrZXJuZWwub3JnPixDYXJsIEh1YW5nIDxjamh1YW5nQGNvZGVhdXJvcmEub3Jn
-PiwKVGhvbWFzIEdsZWl4bmVyIDx0Z2x4QGxpbnV0cm9uaXguZGU+LEFybmQgQmVyZ21hbm4gPGFy
-bmRAYXJuZGIuZGU+LApOaWNob2xhcyBNYyBHdWlyZSA8aG9mcmF0QG9zYWRsLm9yZz4sbmV0ZGV2
-QHZnZXIua2VybmVsLm9yZyxsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnLGtlcm5lbEB2aXZv
-LmNvbQpTdWJqZWN0OiBSZTogW1BBVENIIHYyXSBuZXQ6IHFydHI6IHNlbmQgbXNncyBmcm9tIGxv
-Y2FsIG9mIHNhbWUgaWQgYXMgYnJvYWRjYXN0Pk9uIFR1ZSAwNyBBcHIgMjA6MzIgUERUIDIwMjAs
-IFdBTkcgV2VuaHUgd3JvdGU6Cj4KPj4gRnJvbTogV2FuZyBXZW5odSA8d2VuaHUud2FuZ0B2aXZv
-LmNvbT4KPj4gCj4+IElmIHRoZSBsb2NhbCBub2RlIGlkKHFydHJfbG9jYWxfbmlkKSBpcyBub3Qg
-bW9kaWZpZWQgYWZ0ZXIgaXRzCj4+IGluaXRpYWxpemF0aW9uLCBpdCBlcXVhbHMgdG8gdGhlIGJy
-b2FkY2FzdCBub2RlIGlkKFFSVFJfTk9ERV9CQ0FTVCkuCj4+IFNvIHRoZSBtZXNzYWdlcyBmcm9t
-IGxvY2FsIG5vZGUgc2hvdWxkIG5vdCBiZSB0YWtlbiBhcyBicm9hZGNhc3QKPj4gYW5kIGtlZXAg
-dGhlIHByb2Nlc3MgZ29pbmcgdG8gc2VuZCB0aGVtIG91dCBhbnl3YXkuCj4+IAo+PiBUaGUgZGVm
-aW5pdGlvbnMgYXJlIGFzIGZvbGxvdzoKPj4gc3RhdGljIHVuc2lnbmVkIGludCBxcnRyX2xvY2Fs
-X25pZCA9IE5VTUFfTk9fTk9ERTsKPj4gCj4+IEZpeGVzOiBjb21taXQgZmRmNWZkMzk3NTY2ICgi
-bmV0OiBxcnRyOiBCcm9hZGNhc3QgbWVzc2FnZXMgb25seSBmcm9tIGNvbnRyb2wgcG9ydCIpCj4+
-IFNpZ25lZC1vZmYtYnk6IFdhbmcgV2VuaHUgPHdlbmh1LndhbmdAdml2by5jb20+Cj4+IC0tLQo+
-PiBDaGFuZ2xvZzoKPj4gIC0gRm9yIGNvZGluZyBzdHlsZSwgbGluZSB1cCB0aGUgbmV3bGluZSBv
-ZiB0aGUgaWYgY29uZGl0aW9uYWwganVkZ2VtZW50Cj4+ICAgIHdpdGggdGhlIG9uZSBleGlzdHMg
-YmVmb3JlLgo+PiAKPj4gIG5ldC9xcnRyL3FydHIuYyB8IDcgKysrKy0tLQo+PiAgMSBmaWxlIGNo
-YW5nZWQsIDQgaW5zZXJ0aW9ucygrKSwgMyBkZWxldGlvbnMoLSkKPj4gCj4+IGRpZmYgLS1naXQg
-YS9uZXQvcXJ0ci9xcnRyLmMgYi9uZXQvcXJ0ci9xcnRyLmMKPj4gaW5kZXggNWE4ZTQyYWQxNTA0
-Li41NDVhNjFmOGVmNzUgMTAwNjQ0Cj4+IC0tLSBhL25ldC9xcnRyL3FydHIuYwo+PiArKysgYi9u
-ZXQvcXJ0ci9xcnRyLmMKPj4gQEAgLTkwNywyMCArOTA3LDIxIEBAIHN0YXRpYyBpbnQgcXJ0cl9z
-ZW5kbXNnKHN0cnVjdCBzb2NrZXQgKnNvY2ssIHN0cnVjdCBtc2doZHIgKm1zZywgc2l6ZV90IGxl
-bikKPj4gIAo+PiAgCW5vZGUgPSBOVUxMOwo+PiAgCWlmIChhZGRyLT5zcV9ub2RlID09IFFSVFJf
-Tk9ERV9CQ0FTVCkgewo+PiAtCQllbnF1ZXVlX2ZuID0gcXJ0cl9iY2FzdF9lbnF1ZXVlOwo+PiAt
-CQlpZiAoYWRkci0+c3FfcG9ydCAhPSBRUlRSX1BPUlRfQ1RSTCkgewo+PiArCQlpZiAoYWRkci0+
-c3FfcG9ydCAhPSBRUlRSX1BPUlRfQ1RSTCAmJgo+PiArCQkJcXJ0cl9sb2NhbF9uaWQgIT0gUVJU
-Ul9OT0RFX0JDQVNUKSB7Cj4KPlNvIHRoaXMgd291bGQgbWVhbiB0aGF0IGlmIGxvY2FsX25pZCBp
-cyBjb25maWd1cmVkIHRvIGJlIHRoZSBiY2FzdAo+YWRkcmVzcyB0aGVuIHJhdGhlciB0aGFuIHJl
-amVjdGluZyBtZXNzYWdlcyB0byBub24tY29udHJvbCBwb3J0cyB3ZSB3aWxsCj5icm9hZGNhc3Qg
-dGhlbS4KPgo+V2hhdCBoYXBwZW5zIHdoZW4gc29tZSBvdGhlciBub2RlIGluIHRoZSBuZXR3b3Jr
-IHJlcGxpZXM/IFdvdWxkbid0IGl0IGJlCj5iZXR0ZXIgdG8gZXhwbGljaXRseSBwcm9oaWJpdCB1
-c2FnZSBvZiB0aGUgYmNhc3QgYWRkcmVzcyBhcyBvdXIgbm9kZQo+YWRkcmVzcz8KCj4+Cj5UaGF0
-IHNhaWQsIGluIHRvcnZhbGRzL21hc3RlciBxcnRyX2xvY2FsX25pZCBpcyBubyBsb25nZXIgaW5p
-dGlhbGl6ZWQgdG8KPlFSVFJfTk9ERV9CQ0FTVCwgYnV0IDEuIFNvIEkgZG9uJ3QgdGhpbmsgeW91
-IG5lZWQgdGhpcyBwYXRjaCBhbnltb3JlLgo+Cj5SZWdhcmRzLAo+Qmpvcm4KCj4KCkhpIEJqb3Ju
-LApZb3UgYXJlIHJpZ2h0LiBJIHNlZSB0aGUgcGF0Y2ggdGhhdCBtb2RpZmllZCB0aGUgbmlkIHRv
-IDEgaW4gbWFpbmxpbmUgdjUuNy1yYzEsCmFuZCBpdCBpcyBiZXR0ZXIgdG8gc29sdmUgYWxsIHRo
-ZSBwcm9ibGVtcy4gQXMgZm9yIHRoaXMgcGF0Y2gsIHRoZSBzaXR1YXRpb24gaXMgdGhhdApJIHdh
-bnQgdG8gdXNlIHFydHIgaW4ga2VybmVsIHRvIGRvIHNvbWV0aGluZyBlbHNlKHRvIGRldmVsb3Ag
-YW5vdGhlciBkcml2ZXIgSSBuYW1lCml0IFJQTU9OOiBSZW1vdGUgUHJvY2Vzc29yIE1vbml0b3Ip
-LCBidXQgdGhlIG5zIG9yIHNlcnZpY2Utcm91dGUgZnVuY3Rpb25hbGl0eQpoYWQgYmVlbiBtaXNz
-aW5nLCBzbyBJIHdyaXRlIGFub3RoZXIgZmlsZSBxc3IuYyBhcyB5b3UgaGFkIGNvbW1ldHRlZCB3
-aGljaApkaWQgdGhlIHNhbWUgdGhpbmcgd2l0aCBucy5jLgoKVGhlIGJhZCB0aGluZyB3YXMgSSBt
-aXNzZWQgdGhlIHBhdGNoIGZyb20gTWFuaXZhbm5hbi4KU28sIGFueXdheSwgdGhpcyBwYXRjaCBp
-cyBub3QgbmVlZGVkIGFueW1vcmUuCgpUaGFua3MsCldlbmh1Cgo+PiAgCQkJcmVsZWFzZV9zb2Nr
-KHNrKTsKPj4gIAkJCXJldHVybiAtRU5PVENPTk47Cj4+ICAJCX0KPj4gKwkJZW5xdWV1ZV9mbiA9
-IHFydHJfYmNhc3RfZW5xdWV1ZTsKPj4gIAl9IGVsc2UgaWYgKGFkZHItPnNxX25vZGUgPT0gaXBj
-LT51cy5zcV9ub2RlKSB7Cj4+ICAJCWVucXVldWVfZm4gPSBxcnRyX2xvY2FsX2VucXVldWU7Cj4+
-ICAJfSBlbHNlIHsKPj4gLQkJZW5xdWV1ZV9mbiA9IHFydHJfbm9kZV9lbnF1ZXVlOwo+PiAgCQlu
-b2RlID0gcXJ0cl9ub2RlX2xvb2t1cChhZGRyLT5zcV9ub2RlKTsKPj4gIAkJaWYgKCFub2RlKSB7
-Cj4+ICAJCQlyZWxlYXNlX3NvY2soc2spOwo+PiAgCQkJcmV0dXJuIC1FQ09OTlJFU0VUOwo+PiAg
-CQl9Cj4+ICsJCWVucXVldWVfZm4gPSBxcnRyX25vZGVfZW5xdWV1ZTsKPj4gIAl9Cj4+ICAKPj4g
-IAlwbGVuID0gKGxlbiArIDMpICYgfjM7Cj4+IC0tIAo+PiAyLjE3LjEKPj4gCg0KDQo=
+On Wed, Apr 8, 2020 at 4:26 PM Yonghong Song <yhs@fb.com> wrote:
+>
+> Two helpers bpf_seq_printf and bpf_seq_write, are added for
+> writing data to the seq_file buffer.
+>
+> bpf_seq_printf supports common format string flag/width/type
+> fields so at least I can get identical results for
+> netlink and ipv6_route targets.
+>
+> For bpf_seq_printf, return value 1 specifically indicates
+> a write failure due to overflow in order to differentiate
+> the failure from format strings.
+>
+> For seq_file show, since the same object may be called
+> twice, some bpf_prog might be sensitive to this. With return
+> value indicating overflow happens the bpf program can
+> react differently.
+>
+> Signed-off-by: Yonghong Song <yhs@fb.com>
+> ---
+>  include/uapi/linux/bpf.h       |  18 +++-
+>  kernel/trace/bpf_trace.c       | 172 +++++++++++++++++++++++++++++++++
+>  scripts/bpf_helpers_doc.py     |   2 +
+>  tools/include/uapi/linux/bpf.h |  18 +++-
+>  4 files changed, 208 insertions(+), 2 deletions(-)
+>
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index b51d56fc77f9..a245f0df53c4 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -3030,6 +3030,20 @@ union bpf_attr {
+>   *             * **-EOPNOTSUPP**       Unsupported operation, for example a
+>   *                                     call from outside of TC ingress.
+>   *             * **-ESOCKTNOSUPPORT**  Socket type not supported (reuseport).
+> + *
+> + * int bpf_seq_printf(struct seq_file *m, const char *fmt, u32 fmt_size, ...)
+> + *     Description
+> + *             seq_printf
+> + *     Return
+> + *             0 if successful, or
+> + *             1 if failure due to buffer overflow, or
+> + *             a negative value for format string related failures.
+
+This encoding feels a bit arbitrary, why not stick to normal error
+codes and return, for example, EAGAIN on overflow (or EOVERFLOW?..)
+
+> + *
+> + * int bpf_seq_write(struct seq_file *m, const void *data, u32 len)
+> + *     Description
+> + *             seq_write
+> + *     Return
+> + *             0 if successful, non-zero otherwise.
+
+Especially given that bpf_seq_write will probably return <0 on the same error?
+
+>   */
+>  #define __BPF_FUNC_MAPPER(FN)          \
+>         FN(unspec),                     \
+> @@ -3156,7 +3170,9 @@ union bpf_attr {
+>         FN(xdp_output),                 \
+>         FN(get_netns_cookie),           \
+>         FN(get_current_ancestor_cgroup_id),     \
+> -       FN(sk_assign),
+> +       FN(sk_assign),                  \
+> +       FN(seq_printf),                 \
+> +       FN(seq_write),
+>
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>   * function eBPF program intends to call
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index ca1796747a77..e7d6ba7c9c51 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -457,6 +457,174 @@ const struct bpf_func_proto *bpf_get_trace_printk_proto(void)
+>         return &bpf_trace_printk_proto;
+>  }
+>
+> +BPF_CALL_5(bpf_seq_printf, struct seq_file *, m, char *, fmt, u32, fmt_size, u64, arg1,
+> +          u64, arg2)
+> +{
+
+I honestly didn't dare to look at implementation below, but this
+limitation of only up to 2 arguments in bpf_seq_printf (arg1 and arg2)
+seem extremely limiting. It might be ok for bpf_printk, but not for
+more general and non-debugging bpf_seq_printf.
+
+How about instead of passing arguments as 4th and 5th argument,
+bpf_seq_printf would require passing a pointer to a long array, where
+each item corresponds to printf argument? So on BPF program side, one
+would have to do this, to printf 5 arguments;
+
+long __tmp_arr[] = { 123, pointer_to_str, some_input_int,
+some_input_long, 5 * arg_x };
+return bpf_seq_printf(m, fmt, fmt_size, &__tmp_arr, sizeof(__tmp_arr));
+
+And the bpf_seq_printf would know that 4th argument is a pointer to an
+array of size provided in 5th argument and process them accordingly.
+This would theoretically allow to have arbitrary number of arguments.
+This local array construction can be abstracted into macro, of course.
+Would something like this be possible?
+
+[...]
+
+> +/* Horrid workaround for getting va_list handling working with different
+> + * argument type combinations generically for 32 and 64 bit archs.
+> + */
+> +#define __BPF_SP_EMIT()        __BPF_ARG2_SP()
+> +#define __BPF_SP(...)                                                  \
+> +       seq_printf(m, fmt, ##__VA_ARGS__)
+> +
+> +#define __BPF_ARG1_SP(...)                                             \
+> +       ((mod[0] == 2 || (mod[0] == 1 && __BITS_PER_LONG == 64))        \
+> +         ? __BPF_SP(arg1, ##__VA_ARGS__)                               \
+> +         : ((mod[0] == 1 || (mod[0] == 0 && __BITS_PER_LONG == 32))    \
+> +             ? __BPF_SP((long)arg1, ##__VA_ARGS__)                     \
+> +             : __BPF_SP((u32)arg1, ##__VA_ARGS__)))
+> +
+> +#define __BPF_ARG2_SP(...)                                             \
+> +       ((mod[1] == 2 || (mod[1] == 1 && __BITS_PER_LONG == 64))        \
+> +         ? __BPF_ARG1_SP(arg2, ##__VA_ARGS__)                          \
+> +         : ((mod[1] == 1 || (mod[1] == 0 && __BITS_PER_LONG == 32))    \
+> +             ? __BPF_ARG1_SP((long)arg2, ##__VA_ARGS__)                \
+> +             : __BPF_ARG1_SP((u32)arg2, ##__VA_ARGS__)))
+
+hm... wouldn't this make it impossible to print 64-bit numbers on
+32-bit arches? It seems to be truncating to 32-bit unconditionally....
+
+> +
+> +       __BPF_SP_EMIT();
+> +       return seq_has_overflowed(m);
+> +}
+> +
+
+[...]
