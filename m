@@ -2,104 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5089C1A8B41
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 21:43:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42AE41A8ADF
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 21:34:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2505091AbgDNTlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 15:41:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37388 "EHLO mail.kernel.org"
+        id S2504898AbgDNTeu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 15:34:50 -0400
+Received: from mx2.suse.de ([195.135.220.15]:60298 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2505018AbgDNTj2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Apr 2020 15:39:28 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4D470206A2;
-        Tue, 14 Apr 2020 19:03:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586891030;
-        bh=kgaOd5rVtBHnlZhuaat/vYuKrg4YXi+X/x2DRDTu9Mw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mzlpg17NeNDDHxQ7VGtVBEezIgYsAcfD1uyXygHInxQqe97fdhnEi2ebFkeLh3MVp
-         WOtIvCcoVgTc/TMbiXFdhZlu+WODs/+te9174iUu2k5KgbYsLf72OcePXd+JfLOIWe
-         J+SwfX7StSR4TIGlH2FI+ZMw16hXzI7kDCywR5ZI=
-Date:   Tue, 14 Apr 2020 12:03:47 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Edward Cree <ecree@solarflare.com>,
-        Or Gerlitz <gerlitz.or@gmail.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Stable <stable@vger.kernel.org>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for
- representors
-Message-ID: <20200414120347.6b898e66@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200414173718.GE1011271@unreal>
-References: <20200411231413.26911-1-sashal@kernel.org>
-        <20200411231413.26911-9-sashal@kernel.org>
-        <CAJ3xEMhhtj77M5vercHDMAHPPVZ8ZF-eyCVQgD4ZZ1Ur3Erbdw@mail.gmail.com>
-        <20200412105935.49dacbf7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200414015627.GA1068@sasha-vm>
-        <CAJ3xEMh=PGVSddBWOX7U6uAuazJLFkCpWQNxhg7dDRgnSdQ=xA@mail.gmail.com>
-        <20200414110911.GA341846@kroah.com>
-        <CAJ3xEMhnXZB-HU7aL3m9A1N_GPxgOC3U4skF_qWL8z3wnvSKPw@mail.gmail.com>
-        <a89a592a-5a11-5e56-a086-52b1694e00db@solarflare.com>
-        <20200414173718.GE1011271@unreal>
+        id S2504805AbgDNTdv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Apr 2020 15:33:51 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 63506AC2C;
+        Tue, 14 Apr 2020 19:16:04 +0000 (UTC)
+Date:   Tue, 14 Apr 2020 21:16:01 +0200
+From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Christophe Leroy <christophe.leroy@c-s.fr>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Joe Perches <joe@perches.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        David Rientjes <rientjes@google.com>, linux-mm@kvack.org,
+        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
+        x86@kernel.org, linux-crypto@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, linux-ppp@vger.kernel.org,
+        wireguard@lists.zx2c4.com, linux-wireless@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org, linux-btrfs@vger.kernel.org,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
+        linux-fscrypt@vger.kernel.org, ecryptfs@vger.kernel.org,
+        kasan-dev@googlegroups.com, linux-bluetooth@vger.kernel.org,
+        linux-wpan@vger.kernel.org, linux-sctp@vger.kernel.org,
+        linux-nfs@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        cocci@systeme.lip6.fr, linux-security-module@vger.kernel.org,
+        linux-integrity@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] crypto: Remove unnecessary memzero_explicit()
+Message-ID: <20200414191601.GZ25468@kitsune.suse.cz>
+References: <20200413211550.8307-1-longman@redhat.com>
+ <20200413222846.24240-1-longman@redhat.com>
+ <eca85e0b-0af3-c43a-31e4-bd5c3f519798@c-s.fr>
+ <e194a51f-a5e5-a557-c008-b08cac558572@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e194a51f-a5e5-a557-c008-b08cac558572@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 14 Apr 2020 20:37:18 +0300 Leon Romanovsky wrote:
-> On Tue, Apr 14, 2020 at 04:49:20PM +0100, Edward Cree wrote:
-> > On 14/04/2020 16:16, Sasha Levin wrote:  
-> > > Are you suggesting that a commit without a fixes tag is never a fix?  
-> > Because fixes are much more likely than non-fixes to have a Fixes tag,
-> >  the absence of a fixes tag is Bayesian evidence that a commit is not
-> >  a fix.  It's of course not incontrovertible evidence, since (as you
-> >  note) some fixes do not have a Fixes tag, but it does increase the
-> >  amount of countervailing evidence needed to conclude a commit is a fix.
-> > In this case it looks as if the only such evidence was that the commit
-> >  message included the phrase "NULL pointer dereference".
-> >  
-> > > Fixes can (and should) come in during a merge window as well. They are
-> > > not put on hold until the -rc releases.  
-> > In networking-land, fixes generally go through David's 'net' tree, rather
-> >  than 'net-next'; the only times a fix goes to net-next are when
-> > a) the code it's fixing is only in net-next; i.e. it's a fix to a previous
-> >  patch from the same merge window.  In this case the fix should not be
-> >  backported, since the code it's fixing will not appear in stable kernels.
-> > b) the code has changed enough between net and net-next that different
-> >  fixes are appropriate for the two trees.  In this case, only the fix that
-> >  went to 'net' should be backported (since it's the one that's appropriate
-> >  for net, it's probably more appropriate for stable trees too); the fix
-> >  that went to 'net-next' should not.
-> > Or's original phrasing was that this patch "was pushed to net-next", which
-> >  is not quite exactly the same thing as -next vs. -rc (though it's similar
-> >  because of David's system of closing net-next for the duration of the
-> >  merge window).  And this, again, is quite strong Bayesian evidence that
-> >  the patch should not be selected for stable.
+On Tue, Apr 14, 2020 at 12:24:36PM -0400, Waiman Long wrote:
+> On 4/14/20 2:08 AM, Christophe Leroy wrote:
 > >
-> > To be honest, that this needs to be explained to you does not inspire
-> >  confidence in the quality of your autoselection process...  
+> >
+> > Le 14/04/2020 à 00:28, Waiman Long a écrit :
+> >> Since kfree_sensitive() will do an implicit memzero_explicit(), there
+> >> is no need to call memzero_explicit() before it. Eliminate those
+> >> memzero_explicit() and simplify the call sites. For better correctness,
+> >> the setting of keylen is also moved down after the key pointer check.
+> >>
+> >> Signed-off-by: Waiman Long <longman@redhat.com>
+> >> ---
+> >>   .../allwinner/sun8i-ce/sun8i-ce-cipher.c      | 19 +++++-------------
+> >>   .../allwinner/sun8i-ss/sun8i-ss-cipher.c      | 20 +++++--------------
+> >>   drivers/crypto/amlogic/amlogic-gxl-cipher.c   | 12 +++--------
+> >>   drivers/crypto/inside-secure/safexcel_hash.c  |  3 +--
+> >>   4 files changed, 14 insertions(+), 40 deletions(-)
+> >>
+> >> diff --git a/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c
+> >> b/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c
+> >> index aa4e8fdc2b32..8358fac98719 100644
+> >> --- a/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c
+> >> +++ b/drivers/crypto/allwinner/sun8i-ce/sun8i-ce-cipher.c
+> >> @@ -366,10 +366,7 @@ void sun8i_ce_cipher_exit(struct crypto_tfm *tfm)
+> >>   {
+> >>       struct sun8i_cipher_tfm_ctx *op = crypto_tfm_ctx(tfm);
+> >>   -    if (op->key) {
+> >> -        memzero_explicit(op->key, op->keylen);
+> >> -        kfree(op->key);
+> >> -    }
+> >> +    kfree_sensitive(op->key);
+> >>       crypto_free_sync_skcipher(op->fallback_tfm);
+> >>       pm_runtime_put_sync_suspend(op->ce->dev);
+> >>   }
+> >> @@ -391,14 +388,11 @@ int sun8i_ce_aes_setkey(struct crypto_skcipher
+> >> *tfm, const u8 *key,
+> >>           dev_dbg(ce->dev, "ERROR: Invalid keylen %u\n", keylen);
+> >>           return -EINVAL;
+> >>       }
+> >> -    if (op->key) {
+> >> -        memzero_explicit(op->key, op->keylen);
+> >> -        kfree(op->key);
+> >> -    }
+> >> -    op->keylen = keylen;
+> >> +    kfree_sensitive(op->key);
+> >>       op->key = kmemdup(key, keylen, GFP_KERNEL | GFP_DMA);
+> >>       if (!op->key)
+> >>           return -ENOMEM;
+> >> +    op->keylen = keylen;
+> >
+> > Does it matter at all to ensure op->keylen is not set when of->key is
+> > NULL ? I'm not sure.
+> >
+> > But if it does, then op->keylen should be set to 0 when freeing op->key. 
 > 
-> It is a little bit harsh to say that.
-> 
-> The autoselection process works good enough for everything outside
-> of netdev community. The amount of bugs in those stable@ trees is
-> not such high if you take into account the amount of fixes automatically
-> brought in.
-> 
-> I think that all Fedora users are indirectly use those stable@ trees.
+> My thinking is that if memory allocation fails, we just don't touch
+> anything and return an error code. I will not explicitly set keylen to 0
+> in this case unless it is specified in the API documentation.
+You already freed the key by now so not touching anything is not
+possible. The key is set to NULL on allocation failure so setting keylen
+to 0 should be redundant. However, setting keylen to 0 is consisent with
+not having a key, and it avoids the possibility of leaking the length
+later should that ever cause any problem.
 
-+1
+Thanks
 
-I think folks how mark things for stable explicitly and carefully have
-an obvious bias because they only see the false positives of auto-sel
-and never the benefits.
+Michal
