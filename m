@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 874A51A798E
+	by mail.lfdr.de (Postfix) with ESMTP id 151551A798D
 	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 13:32:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439251AbgDNLbt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 07:31:49 -0400
-Received: from esa1.microchip.iphmx.com ([68.232.147.91]:18260 "EHLO
-        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2438988AbgDNL1S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 07:27:18 -0400
+        id S2439241AbgDNLbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 07:31:46 -0400
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:34443 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2439050AbgDNL1V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 07:27:21 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1586863637; x=1618399637;
+  t=1586863640; x=1618399640;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=bgal25Q2GLlB11cf7TVsL0b4pEAKBlQgQ2+f0ocKzAw=;
-  b=2AwyDrd7zSLDlCq/kpl2L+PU4PdOgAw9MwikaDSOyMyOtl/+EOiyP9qg
-   7WdHs2WA+NcEOse26b0qe27IWDXEjRq+Sat5UcTRPcB6yFuzQ/URBV+z/
-   pafcnLHsgbCKe8BRUcW/RRFILbMVJnuyRxdzJyS6YI8N0idBAKUGfbYJr
-   wvKyu6+LhD4rqajLD7tTIhxULsyGHnjdhshydYwrLA8AFPcGLZbq5sERS
-   CnoTP93wV2vKicR4/Elfq5HeKuPkgNiyzDgQz6qRGilWSoC11unrZ/mE6
-   +FQjkcDKfHn6q5xb1mE6JVD/gK+e9DootCTuxmX+i/tMYP8QB6UMmZnSk
-   A==;
-IronPort-SDR: FyX6K0vNEkVdhwRsCL9eiSdv7aItkODXd3Lk3HnNjfVx3Ql4HoDErhwnrIzoJgVV1nvzILIPgW
- lctKj78CbMqvGjgZ7laVmI2I7CJMlp9K5RCRs+JG3GaHAhgPhkO6EHYGBLj5Ae5kDYYPYaZI8E
- JiZgZsh35IhX4FoiXCPmXs60xvosDQtlKDmsApiJIEgV2zFPoNrEMPrxriL264luDHtMuqHzP2
- 5tBkAcj36BSXuwYUASUXAYRV3WOpKFVmkDGwVvwP/Qg8c6B3FhX1fLX/AxiH94EDel/ldcgAL8
- vyc=
+  bh=1BR/cROdhCyfHaruTl2nwBlZr33q3GBAyi/Fdo/0EBs=;
+  b=Sxx+bmhFrFiDOtNx8DIOtFmKLaLWd6R9EjSkGqVmz3rcvMisbW7Pe60b
+   +SnL379uC/1DUOwe2ZhT2iHuHDnkaDgbUMPdY4T9kVSh0DjjVPy29zU29
+   s16sARZe9Hlxxr6PIvpPcNLw2yKcUTiSyZIPmVMedDbDT/znyvxDc/UQ9
+   A5A9ljRWgy1PZ5eMLYfxfE4SdZMf7UrZdt6nys5QFgaSp4k7btALIQrXm
+   pvEmLftyUQAFKJqfx28QWmsZPLeBGCwPvj8S7pNRuAptF2iiGXZUTIQnK
+   W1ndYMTdhzjiRpc45mIHHdYACqFimKQj7q0/X5tyK7s3i3BtWzMTNP3+m
+   Q==;
+IronPort-SDR: zf/hQoiWm3Y4RBNwpq0ONwJR+PnwvCap7KnI5S0xk8gopFMrODfRESHZLocIn7gSMns8dFDAob
+ e1FK6TFYF6yL6IogcF6HpR87WSe9sOf+fTjOLmnW9VUNRH7Q8I66JVQu4p1xRFFCKjLOd7UC+t
+ ytrqHlWgdkMZDKZkrv2n12HrCP1ygh3pJJs9hcRPr206putOzuhS2nYfM7w+ycXw8jn1fLu8Tr
+ SzX3u8SWZvk/q117BLWKro0KrxocCbYwsZEBO6+k97dBDpDgGlE/G3I1e17J3WGqvBRUMuoq0d
+ oPo=
 X-IronPort-AV: E=Sophos;i="5.72,382,1580799600"; 
-   d="scan'208";a="75809061"
+   d="scan'208";a="9066823"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Apr 2020 04:27:16 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Apr 2020 04:27:20 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 14 Apr 2020 04:27:03 -0700
+ 15.1.1713.5; Tue, 14 Apr 2020 04:27:19 -0700
 Received: from soft-dev3.microsemi.net (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.1713.5 via Frontend Transport; Tue, 14 Apr 2020 04:27:14 -0700
+ 15.1.1713.5 via Frontend Transport; Tue, 14 Apr 2020 04:27:17 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <nikolay@cumulusnetworks.com>, <davem@davemloft.net>,
         <jiri@resnulli.us>, <ivecera@redhat.com>, <kuba@kernel.org>,
@@ -47,9 +47,9 @@ To:     <nikolay@cumulusnetworks.com>, <davem@davemloft.net>,
         <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
         <bridge@lists.linux-foundation.org>, <UNGLinuxDriver@microchip.com>
 CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [RFC net-next v5 2/9] bridge: mrp: Update Kconfig and Makefile
-Date:   Tue, 14 Apr 2020 13:26:11 +0200
-Message-ID: <20200414112618.3644-3-horatiu.vultur@microchip.com>
+Subject: [RFC net-next v5 3/9] bridge: mrp: Expose function br_mrp_port_open
+Date:   Tue, 14 Apr 2020 13:26:12 +0200
+Message-ID: <20200414112618.3644-4-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200414112618.3644-1-horatiu.vultur@microchip.com>
 References: <20200414112618.3644-1-horatiu.vultur@microchip.com>
@@ -60,45 +60,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the option BRIDGE_MRP to allow to build in or not MRP support.
-The default value is N.
+In case the HW is capable to detect when the MRP ring is open or closed. It is
+expected that the network driver will notify the SW that the ring is open or
+closed.
+
+The function br_mrp_port_open is used to notify the kernel that one of the ports
+stopped receiving MRP_Test frames. The argument 'loc' has a value of '1' when
+the port stopped receiving MRP_Test and '0' when it started to receive MRP_Test.
 
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- net/bridge/Kconfig  | 12 ++++++++++++
- net/bridge/Makefile |  2 ++
- 2 files changed, 14 insertions(+)
+ include/linux/mrp_bridge.h | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+ create mode 100644 include/linux/mrp_bridge.h
 
-diff --git a/net/bridge/Kconfig b/net/bridge/Kconfig
-index e4fb050e2078..51a6414145d2 100644
---- a/net/bridge/Kconfig
-+++ b/net/bridge/Kconfig
-@@ -61,3 +61,15 @@ config BRIDGE_VLAN_FILTERING
- 	  Say N to exclude this support and reduce the binary size.
- 
- 	  If unsure, say Y.
+diff --git a/include/linux/mrp_bridge.h b/include/linux/mrp_bridge.h
+new file mode 100644
+index 000000000000..23d46b356263
+--- /dev/null
++++ b/include/linux/mrp_bridge.h
+@@ -0,0 +1,24 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
 +
-+config BRIDGE_MRP
-+	bool "MRP protocol"
-+	depends on BRIDGE
-+	default n
-+	help
-+	  If you say Y here, then the Ethernet bridge will be able to run MRP
-+	  protocol to detect loops
++#ifndef _LINUX_MRP_BRIDGE_H
++#define _LINUX_MRO_BRIDGE_H
 +
-+	  Say N to exclude this support and reduce the binary size.
++#include <linux/netdevice.h>
 +
-+	  If unsure, say N.
-diff --git a/net/bridge/Makefile b/net/bridge/Makefile
-index 49da7ae6f077..9bf3e1be3328 100644
---- a/net/bridge/Makefile
-+++ b/net/bridge/Makefile
-@@ -25,3 +25,5 @@ bridge-$(CONFIG_BRIDGE_VLAN_FILTERING) += br_vlan.o br_vlan_tunnel.o br_vlan_opt
- bridge-$(CONFIG_NET_SWITCHDEV) += br_switchdev.o
- 
- obj-$(CONFIG_NETFILTER) += netfilter/
++/* The drivers are responsible to call this function when it detects that the
++ * MRP port stopped receiving MRP_Test frames or it started to receive MRP_Test.
++ * The argument dev represents the port and loc(Lost of Continuity) has a value
++ * of 1 when it stopped receiving MRP_Test frames and a value of 0 when it
++ * started to receive frames.
++ *
++ * This eventually notify the userspace which is required to react on these
++ * changes.
++ */
 +
-+bridge-$(CONFIG_BRIDGE_MRP)	+= br_mrp.o br_mrp_netlink.o br_mrp_switchdev.o
++#if IS_ENABLED(CONFIG_BRIDGE_MRP)
++int br_mrp_port_open(struct net_device *dev, u8 loc);
++#else
++inline int br_mrp_port_open(struct net_device *dev, u8 loc)  {}
++#endif
++
++#endif
 -- 
 2.17.1
 
