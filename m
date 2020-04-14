@@ -2,76 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D36DD1A7A1F
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 13:53:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF68B1A79AC
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 13:36:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439653AbgDNLw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 07:52:57 -0400
-Received: from elvis.franken.de ([193.175.24.41]:38462 "EHLO elvis.franken.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728476AbgDNLwz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Apr 2020 07:52:55 -0400
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1jOK7V-0002BV-00; Tue, 14 Apr 2020 13:52:49 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 68F61C0108; Tue, 14 Apr 2020 13:52:35 +0200 (CEST)
-Date:   Tue, 14 Apr 2020 13:52:35 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     mst@redhat.com, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-s390@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        geert@linux-m68k.org,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Heiko Carstens <heiko.carstens@de.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>
-Subject: Re: [PATCH] vhost: do not enable VHOST_MENU by default
-Message-ID: <20200414115235.GA13675@alpha.franken.de>
-References: <20200414024438.19103-1-jasowang@redhat.com>
+        id S2439370AbgDNLgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 07:36:41 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:52800 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2439325AbgDNLgg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Apr 2020 07:36:36 -0400
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id D8BDFF2A221BDC373A7D;
+        Tue, 14 Apr 2020 19:36:30 +0800 (CST)
+Received: from huawei.com (10.175.124.28) by DGGEMS405-HUB.china.huawei.com
+ (10.3.19.205) with Microsoft SMTP Server id 14.3.487.0; Tue, 14 Apr 2020
+ 19:36:24 +0800
+From:   Jason Yan <yanaijie@huawei.com>
+To:     <stas.yakovlev@gmail.com>, <kvalo@codeaurora.org>,
+        <davem@davemloft.net>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Jason Yan <yanaijie@huawei.com>
+Subject: [PATCH] ipw2x00: make ipw_setup_deferred_work() void
+Date:   Tue, 14 Apr 2020 20:02:51 +0800
+Message-ID: <20200414120251.35869-1-yanaijie@huawei.com>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200414024438.19103-1-jasowang@redhat.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.28]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 14, 2020 at 10:44:38AM +0800, Jason Wang wrote:
-> We try to keep the defconfig untouched after decoupling CONFIG_VHOST
-> out of CONFIG_VIRTUALIZATION in commit 20c384f1ea1a
-> ("vhost: refine vhost and vringh kconfig") by enabling VHOST_MENU by
-> default. Then the defconfigs can keep enabling CONFIG_VHOST_NET
-> without the caring of CONFIG_VHOST.
-> 
-> But this will leave a "CONFIG_VHOST_MENU=y" in all defconfigs and even
-> for the ones that doesn't want vhost. So it actually shifts the
-> burdens to the maintainers of all other to add "CONFIG_VHOST_MENU is
-> not set". So this patch tries to enable CONFIG_VHOST explicitly in
-> defconfigs that enables CONFIG_VHOST_NET and CONFIG_VHOST_VSOCK.
-> 
-> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-> Cc: Paul Mackerras <paulus@samba.org>
-> Cc: Michael Ellerman <mpe@ellerman.id.au>
-> Cc: Heiko Carstens <heiko.carstens@de.ibm.com>
-> Cc: Vasily Gorbik <gor@linux.ibm.com>
-> Cc: Christian Borntraeger <borntraeger@de.ibm.com>
-> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> ---
->  arch/mips/configs/malta_kvm_defconfig  |  1 +
+This function actually needs no return value. So remove the unneeded
+variable 'ret' and make it void.
 
-Acked-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+This also fixes the following coccicheck warning:
 
-Thomas.
+drivers/net/wireless/intel/ipw2x00/ipw2200.c:10648:5-8: Unneeded
+variable: "ret". Return "0" on line 10684
 
+Signed-off-by: Jason Yan <yanaijie@huawei.com>
+---
+ drivers/net/wireless/intel/ipw2x00/ipw2200.c | 12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2200.c b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
+index 201a1eb0e2f6..923be3781c92 100644
+--- a/drivers/net/wireless/intel/ipw2x00/ipw2200.c
++++ b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
+@@ -10640,10 +10640,8 @@ static void ipw_bg_link_down(struct work_struct *work)
+ 	mutex_unlock(&priv->mutex);
+ }
+ 
+-static int ipw_setup_deferred_work(struct ipw_priv *priv)
++static void ipw_setup_deferred_work(struct ipw_priv *priv)
+ {
+-	int ret = 0;
+-
+ 	init_waitqueue_head(&priv->wait_command_queue);
+ 	init_waitqueue_head(&priv->wait_state);
+ 
+@@ -10677,8 +10675,6 @@ static int ipw_setup_deferred_work(struct ipw_priv *priv)
+ 
+ 	tasklet_init(&priv->irq_tasklet,
+ 		     ipw_irq_tasklet, (unsigned long)priv);
+-
+-	return ret;
+ }
+ 
+ static void shim__set_security(struct net_device *dev,
+@@ -11659,11 +11655,7 @@ static int ipw_pci_probe(struct pci_dev *pdev,
+ 	IPW_DEBUG_INFO("pci_resource_len = 0x%08x\n", length);
+ 	IPW_DEBUG_INFO("pci_resource_base = %p\n", base);
+ 
+-	err = ipw_setup_deferred_work(priv);
+-	if (err) {
+-		IPW_ERROR("Unable to setup deferred work\n");
+-		goto out_iounmap;
+-	}
++	ipw_setup_deferred_work(priv);
+ 
+ 	ipw_sw_reset(priv, 1);
+ 
 -- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+2.21.1
+
