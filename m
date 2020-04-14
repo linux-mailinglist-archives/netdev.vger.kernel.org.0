@@ -2,88 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FD131A84F7
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 18:32:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E8FC1A852B
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 18:36:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391689AbgDNQaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 12:30:55 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:44248 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391683AbgDNQar (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 12:30:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=bfBQPK6jHUP0T6D3BfvHJs65UU0jMBvVftwbQ7Ccv0A=; b=VrbNfrwuFd02NIyb8SgmA6cXs
-        bvHoC4l9VPppfChhyDlv74mX1jH0buHsPPiGeFkFW087qAV/vkOnKuFd+ditPqCNsdsCrMBDz/Oeu
-        DkYhXbu8i+lVtPUS+iy2IPBMxqzkfM+av6JIvX2U2l92tcypiIkD3ItnposiaxADUpBTjXGgD9oyr
-        Y2htpGA0K+zpWj/LuW3+v7NAttyghVVpH33SGIshzpTk5sQhUf5KV6q4Lvd45270cYxOZO/ME373c
-        LkdvqqMI8uUi/hEhURA5/tVGpm0tTr+igwVPgNrGUgkfJFepZUOcmQkeAdtUtsCncmrKMzYwF/xpL
-        2pNgd9CZg==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:45874)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jOOSF-0000h9-Pb; Tue, 14 Apr 2020 17:30:31 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jOOSA-0008Fc-I7; Tue, 14 Apr 2020 17:30:26 +0100
-Date:   Tue, 14 Apr 2020 17:30:26 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Matteo Croce <mcroce@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Luka Perkov <luka.perkov@sartura.hr>
-Subject: Re: [PATCH net-next v2 3/3] net: phy: marvell10g: place in powersave
- mode at probe
-Message-ID: <20200414163026.GW25745@shell.armlinux.org.uk>
-References: <20200303155347.GS25745@shell.armlinux.org.uk>
- <E1j99sC-00011f-22@rmk-PC.armlinux.org.uk>
- <CAGnkfhx+JkD6a_8ojU6tEL_vk6vtwQpxbwU9+beDepL4dxgLyQ@mail.gmail.com>
+        id S2391831AbgDNQgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 12:36:43 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:35507 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2391815AbgDNQgb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 12:36:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1586882189;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Bma9lzqspxl+HaX8bOFBirR9lSGp5CwUCJdb2i/e18Q=;
+        b=RxJ8vvXQbOoH6bB6gbd0WZZoGoFKChzmWa/+K/VQ033fHT4mfx/adkJYyT7/P4t+aTgt+h
+        0vWM3XzQYbMAJQNSQPlBcQ0ehynVt2YJg6oXTUg8LqNCEhUdZXH9bLyx2d+0JMPzf8CCin
+        VpnLuziEn2Pe1pcUQvsaAUEffv6LJh0=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-318-RZFMYRXuPo-KqgfoEsOLbA-1; Tue, 14 Apr 2020 12:36:12 -0400
+X-MC-Unique: RZFMYRXuPo-KqgfoEsOLbA-1
+Received: by mail-qv1-f71.google.com with SMTP id p12so285087qvm.21
+        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 09:36:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:content-transfer-encoding;
+        bh=Bma9lzqspxl+HaX8bOFBirR9lSGp5CwUCJdb2i/e18Q=;
+        b=HJMkh6vRuQsnWWuEpEDhcvR/XGW6Yvjn4g/AXYyl6+COieTf9dIU3j9QGbyiH7N0RV
+         j2tiHzNu7Sk8thgPag67GZUQaUAU3US2Uc56vTzG7uDMZWvrauctzpF8Ca5bVY/qTcU8
+         tgeHtrUYhOCyB1aszdt0JPLR1lYuwJ/Ni/KYpSp9hOhSgTZifWRd4w2N+YJnoe8GYTLt
+         aKewuvTkea67mkNKHhj/xec3VnRubMP4ZeXTdgWW/wF57YDN0rl9FnXYKnUFk+IBQOH/
+         N3Kc6ubpHx8pO5U9ygOYWbT3RIQYYSkujuEZyUGKq0PtieGf0wTU9+V9glagN8ufxwnA
+         GAVg==
+X-Gm-Message-State: AGi0PuYesF6fCoTHV7U1NRRTEpKKHv9ZS/N3uRjaS7YAMQIdUDnOoO0y
+        haQuzxD1AHbCGKduqb/WhNPt2glNb2UUhnGKWuI6lditgogm1GPwlsL6Wdbc4X5+FaL3pudwwYJ
+        oG8Hizq8hYuQPHWvi
+X-Received: by 2002:aed:3968:: with SMTP id l95mr17285852qte.268.1586882172266;
+        Tue, 14 Apr 2020 09:36:12 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJmGmy3GlXUch/z8/x+Ns406G7xQ35JzF4VsBJ4waQC3oBq6dZNWOjBqM2wZ8BVLIAkuD0c8Q==
+X-Received: by 2002:aed:3968:: with SMTP id l95mr17285823qte.268.1586882171965;
+        Tue, 14 Apr 2020 09:36:11 -0700 (PDT)
+Received: from redhat.com (bzq-79-183-51-3.red.bezeqint.net. [79.183.51.3])
+        by smtp.gmail.com with ESMTPSA id u126sm10933237qkh.66.2020.04.14.09.36.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Apr 2020 09:36:11 -0700 (PDT)
+Date:   Tue, 14 Apr 2020 12:36:06 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        andy.shevchenko@gmail.com, arnd@arndb.de, ashutosh.dixit@intel.com,
+        bjorn.andersson@linaro.org, elfring@users.sourceforge.net,
+        eli@mellanox.com, eperezma@redhat.com, gustavo@embeddedor.com,
+        hulkci@huawei.com, jasowang@redhat.com, matej.genci@nutanix.com,
+        mst@redhat.com, sfr@canb.auug.org.au, yanaijie@huawei.com,
+        yuehaibing@huawei.com
+Subject: [GIT PULL] vhost: cleanups and fixes
+Message-ID: <20200414123606-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAGnkfhx+JkD6a_8ojU6tEL_vk6vtwQpxbwU9+beDepL4dxgLyQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Mutt-Fcc: =sent
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 10, 2020 at 03:48:34PM +0200, Matteo Croce wrote:
-> On Fri, Apr 10, 2020 at 3:24 PM Russell King <rmk+kernel@armlinux.org.uk> wrote:
-> >
-> > Place the 88x3310 into powersaving mode when probing, which saves 600mW
-> > per PHY. For both PHYs on the Macchiatobin double-shot, this saves
-> > about 10% of the board idle power.
-> >
-> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> 
-> Hi,
-> 
-> I have a Macchiatobin double shot, and my 10G ports stop working after
-> this change.
-> I reverted this commit on top of latest net-next and now the ports work again.
+The following changes since commit 835a6a649d0dd1b1f46759eb60fff2f63ed253a7:
 
-For the public record, I've been debugging this in-part on Matteo's
-board, and it looks like it's a PHY firmware issue.
+  virtio-balloon: Revert "virtio-balloon: Switch back to OOM handler for VIRTIO_BALLOON_F_DEFLATE_ON_OOM" (2020-04-07 05:44:57 -0400)
 
-Both my Macchiatobin boards use firmware 0.2.1.0 (which is not even
-mentioned on Marvell's extranet), whereas Matteo's board uses 0.3.3.0.
-It seems firmware 0.2.1.0 behaves "correctly" with my patch, but
-0.3.3.0 does not - and neither does the latest 0.3.10.0.  Both of
-these more recent versions seem to need a software reset to recover
-from power down mode... so a patch will be coming soon to add that.
+are available in the Git repository at:
 
-I also think it would be a good idea to print the PHY firmware
-version when the PHY is probed - another patch coming for that.
+  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+for you to fetch changes up to d4a85c2ace895a58dcab687ff49c76719011f58d:
+
+  vdpa: fix comment of vdpa_register_device() (2020-04-13 07:16:41 -0400)
+
+----------------------------------------------------------------
+virtio: fixes, cleanups
+
+Some bug fixes.
+Cleanup a couple of issues that surfaced meanwhile.
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+----------------------------------------------------------------
+Eugenio Pérez (4):
+      vhost: Create accessors for virtqueues private_data
+      tools/virtio: Add --batch option
+      tools/virtio: Add --batch=random option
+      tools/virtio: Add --reset=random
+
+Gustavo A. R. Silva (1):
+      vhost: vdpa: remove unnecessary null check
+
+Jason Wang (1):
+      vdpa: fix comment of vdpa_register_device()
+
+Jason Yan (1):
+      vhost: remove set but not used variable 'status'
+
+Markus Elfring (1):
+      virtio-mmio: Delete an error message in vm_find_vqs()
+
+Matej Genci (1):
+      virtio: add VIRTIO_RING_NO_LEGACY
+
+Michael S. Tsirkin (22):
+      vdpa-sim: depend on HAS_DMA
+      virtio/test: fix up after IOTLB changes
+      vhost: drop vring dependency on iotlb
+      tools/virtio: define aligned attribute
+      tools/virtio: make asm/barrier.h self contained
+      tools/virtio: define __KERNEL__
+      virtgpu: pull in uaccess.h
+      virtio-rng: pull in slab.h
+      remoteproc: pull in slab.h
+      virtio_input: pull in slab.h
+      rpmsg: pull in slab.h
+      remoteproc: pull in slab.h
+      virtio: stop using legacy struct vring in kernel
+      vhost: force spec specified alignment on types
+      virtio: add legacy init/size APIs
+      virtio_ring: switch to virtio_legacy_init/size
+      tools/virtio: switch to virtio_legacy_init/size
+      vop: switch to virtio_legacy_init/size
+      remoteproc: switch to virtio_legacy_init/size
+      mellanox: switch to virtio_legacy_init/size
+      vdpa: allow a 32 bit vq alignment
+      vdpa: make vhost, virtio depend on menu
+
+Stephen Rothwell (1):
+      drm/virtio: fix up for include file changes
+
+YueHaibing (2):
+      vdpa: remove unused variables 'ifcvf' and 'ifcvf_lm'
+      vdpasim: Return status in vdpasim_get_status
+
+ drivers/block/virtio_blk.c               |   1 +
+ drivers/char/hw_random/virtio-rng.c      |   1 +
+ drivers/gpu/drm/virtio/virtgpu_ioctl.c   |   1 +
+ drivers/gpu/drm/virtio/virtgpu_kms.c     |   1 +
+ drivers/misc/mic/vop/vop_main.c          |   5 +-
+ drivers/misc/mic/vop/vop_vringh.c        |   8 ++-
+ drivers/platform/mellanox/mlxbf-tmfifo.c |   6 +-
+ drivers/remoteproc/remoteproc_core.c     |   2 +-
+ drivers/remoteproc/remoteproc_sysfs.c    |   1 +
+ drivers/remoteproc/remoteproc_virtio.c   |   2 +-
+ drivers/remoteproc/stm32_rproc.c         |   1 +
+ drivers/rpmsg/mtk_rpmsg.c                |   1 +
+ drivers/vdpa/Kconfig                     |  19 +++---
+ drivers/vdpa/ifcvf/ifcvf_base.c          |   2 -
+ drivers/vdpa/ifcvf/ifcvf_main.c          |   4 +-
+ drivers/vdpa/vdpa.c                      |   2 +-
+ drivers/vdpa/vdpa_sim/vdpa_sim.c         |   4 +-
+ drivers/vhost/Kconfig                    |   5 +-
+ drivers/vhost/net.c                      |  28 +++++----
+ drivers/vhost/scsi.c                     |  14 ++---
+ drivers/vhost/test.c                     |  71 +++++++++++++++++++---
+ drivers/vhost/test.h                     |   1 +
+ drivers/vhost/vdpa.c                     |   5 --
+ drivers/vhost/vhost.h                    |  33 +++++++++-
+ drivers/vhost/vringh.c                   |   5 ++
+ drivers/vhost/vsock.c                    |  14 ++---
+ drivers/virtio/Kconfig                   |   2 +-
+ drivers/virtio/virtio_input.c            |   1 +
+ drivers/virtio/virtio_mmio.c             |   4 +-
+ drivers/virtio/virtio_pci_modern.c       |   1 +
+ drivers/virtio/virtio_ring.c             |  15 +++--
+ include/linux/vdpa.h                     |   2 +-
+ include/linux/virtio.h                   |   1 -
+ include/linux/virtio_ring.h              |  46 ++++++++++++++
+ include/linux/vringh.h                   |   7 +++
+ include/uapi/linux/virtio_ring.h         |  30 ++++++---
+ tools/virtio/Makefile                    |   5 +-
+ tools/virtio/asm/barrier.h               |   1 +
+ tools/virtio/generated/autoconf.h        |   0
+ tools/virtio/linux/compiler.h            |   1 +
+ tools/virtio/ringtest/virtio_ring_0_9.c  |   6 +-
+ tools/virtio/virtio_test.c               | 101 ++++++++++++++++++++++++++-----
+ tools/virtio/vringh_test.c               |  18 +++---
+ 43 files changed, 354 insertions(+), 124 deletions(-)
+ create mode 100644 tools/virtio/generated/autoconf.h
+
