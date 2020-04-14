@@ -2,246 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC07E1A7A71
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 14:14:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 855751A7A9F
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 14:23:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439950AbgDNMOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 08:14:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45574 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729799AbgDNMOa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 08:14:30 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F21DC061A0C;
-        Tue, 14 Apr 2020 05:14:30 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id e26so12728551wmk.5;
-        Tue, 14 Apr 2020 05:14:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=Mcttf0CjZrqLA+n5R7K5KnAzyihpiLvE7jQbeZbjFog=;
-        b=P6whjt/doR8M5Wl7pux7ZEjDvSxJLoE6rSrw/9S/OdD54g8MU/H7rxbsofGjeZqzLb
-         rfMGHgIFcYu1Nir+4g3NO310lIehamf5GeavD7mn+FJE0/G/2lsUYsiVhtO87Evg5Jg8
-         RiBT0IXG7zycmzsgsPtc4d0XAt1rMksAaWb5KQioeX0yarl8O1fmYjxVjpZg1I9gIVrp
-         F7k4OndvwyqNAwLG76iUY+feWaNXSZoeaedvB/JJtCv7GJg8th4+K8X5COzX5NFZQhwq
-         qh5nmP/UHdCrRF0xQjF2lR2e1QAi6HgfXhcpOL2SFpL3oacBs42b7Kefw79zk01LQdV4
-         PC+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=Mcttf0CjZrqLA+n5R7K5KnAzyihpiLvE7jQbeZbjFog=;
-        b=JweXjpnU6YsMbyZMIfGJCTLC7+jnmN5L8/U+CMUuL94JwGLd0L6Ddsi6GFFz7Lu4Z7
-         6jMGdzG/QBCL3fhBW7Y0euDfASvaq+Sne0i0y8rQ/Nqmo7Oo603lSmUZkIf5CvpW3wV/
-         hf61nuPHqMZG27F5mIZxFiC0cl21fauXZKxeCBkCM0kmDFOJoPMfSSc6m7Z4D11NnCd1
-         GABbn3pQQfGnBSgVyz6WSfzsqEWcbdiLRDomfIfQ5co+luPswesKjMcHorH+MfEdCt5m
-         NX9eJo71oeGzRxyEITs5QM69Sba2hxRHuQBakCRawgYREqZ2eqSg3MlUZ8bZlTkYTZ6r
-         PxHw==
-X-Gm-Message-State: AGi0PubZVu4Q/9+TC4pTW4Ea9pH5FEakTAklViLYwg0m5UZf6gbIhEu0
-        n6UmVL4dn5jzy2NBNdoe86eY3DLOxiYw5eXN8/g=
-X-Google-Smtp-Source: APiQypIigEskMJRUW5ejRmzmnZjegOR/T+QsYZxccdPkFD4v0S/u8Fz0EmfNXBeZfuY71Xg+Z4tTyqVmuGRKkhNNIh8=
-X-Received: by 2002:a7b:cb86:: with SMTP id m6mr22108261wmi.64.1586866468976;
- Tue, 14 Apr 2020 05:14:28 -0700 (PDT)
+        id S2440059AbgDNMX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 08:23:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39058 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2440053AbgDNMXy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Apr 2020 08:23:54 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 53E3620732;
+        Tue, 14 Apr 2020 12:23:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1586867033;
+        bh=HO68f48Xhk1eA5LYUtWE07mUQhbLIhm8b3XNLus8Z7s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gbD7t+j/tuM3YwdcvzylisLeDIKYDiBHL29WWCTO2WxU3f0EJgtm7kJqGbEKyoQj2
+         xSUxvyJeQpWQQeL8XWNquZUdy9GG6qMVPbL4aBlMZWc/TsQdNzhgChw63E/mWyqSHr
+         GbAlJZGfmYl6sSpwjstxHtrlnE3ds4vr80PmpIss=
+Date:   Tue, 14 Apr 2020 15:23:49 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     David Miller <davem@davemloft.net>, kuba@kernel.org,
+        thomas.lendacky@amd.com, keyur@os.amperecomputing.com,
+        pcnet32@frontier.com, vfalico@gmail.com, j.vosburgh@gmail.com,
+        linux-acenic@sunsite.dk, mripard@kernel.org, heiko@sntech.de,
+        mark.einon@gmail.com, chris.snook@gmail.com,
+        linux-rockchip@lists.infradead.org, iyappan@os.amperecomputing.com,
+        irusskikh@marvell.com, dave@thedillows.org, netanel@amazon.com,
+        quan@os.amperecomputing.com, jcliburn@gmail.com,
+        LinoSanfilippo@gmx.de, linux-arm-kernel@lists.infradead.org,
+        andreas@gaisler.com, andy@greyhouse.net, netdev@vger.kernel.org,
+        thor.thayer@linux.intel.com, linux-kernel@vger.kernel.org,
+        ionut@badula.org, akiyano@amazon.com, jes@trained-monkey.org,
+        nios2-dev@lists.rocketboards.org, wens@csie.org
+Subject: Re: [PATCH] net/3com/3c515: Fix MODULE_ARCH_VERMAGIC redefinition
+Message-ID: <20200414122349.GB1011271@unreal>
+References: <20200413045555.GE334007@unreal>
+ <20200412.220739.516022706077351913.davem@davemloft.net>
+ <20200413052637.GG334007@unreal>
+ <20200412.223604.1160930629964379276.davem@davemloft.net>
+ <20200413080452.GA3772@zn.tnic>
+ <20200413084026.GH334007@unreal>
 MIME-Version: 1.0
-References: <20200402050219.4842-1-chris@rorvick.com> <87mu7qfhiy.fsf@codeaurora.org>
- <e43fb61905bcc31f93d6e72e5c470ad5585b6dfd.camel@coelho.fi> <87zhbqz44s.fsf@kamboji.qca.qualcomm.com>
-In-Reply-To: <87zhbqz44s.fsf@kamboji.qca.qualcomm.com>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Tue, 14 Apr 2020 14:14:17 +0200
-Message-ID: <CA+icZUWBb+M884XeSaO0vw+txg9yac3out+wXNtzjLnFmcMOsQ@mail.gmail.com>
-Subject: Re: [PATCH] iwlwifi: actually check allocated conf_tlv pointer
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Luca Coelho <luca@coelho.fi>, Chris Rorvick <chris@rorvick.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: multipart/mixed; boundary="00000000000030972905a33f248b"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200413084026.GH334007@unreal>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000030972905a33f248b
-Content-Type: text/plain; charset="UTF-8"
-
-On Sun, Apr 5, 2020 at 11:14 AM Kalle Valo <kvalo@codeaurora.org> wrote:
->
-> Luca Coelho <luca@coelho.fi> writes:
->
-> > On Sun, 2020-04-05 at 11:44 +0300, Kalle Valo wrote:
-> >> Chris Rorvick <chris@rorvick.com> writes:
-> >>
-> >> > Commit 71bc0334a637 ("iwlwifi: check allocated pointer when allocating
-> >> > conf_tlvs") attempted to fix a typoe introduced by commit 17b809c9b22e
-> >> > ("iwlwifi: dbg: move debug data to a struct") but does not implement the
-> >> > check correctly.
-> >> >
-> >> > Tweeted-by: @grsecurity
-> >> > Signed-off-by: Chris Rorvick <chris@rorvick.com>
-> >>
-> >> I'll add:
-> >>
-> >> Fixes: 71bc0334a637 ("iwlwifi: check allocated pointer when allocating conf_tlvs")
-> >>
-> >> > ---
-> >> > In this wasn't picked up?
-> >>
-> >> Luca, can I take this directly?
+On Mon, Apr 13, 2020 at 11:40:26AM +0300, Leon Romanovsky wrote:
+> On Mon, Apr 13, 2020 at 10:04:52AM +0200, Borislav Petkov wrote:
+> > On Sun, Apr 12, 2020 at 10:36:04PM -0700, David Miller wrote:
+> > > From: Leon Romanovsky <leon@kernel.org>
+> > > Date: Mon, 13 Apr 2020 08:26:37 +0300
+> > >
+> > > > How do you want us to handle it? Boris resend, me to send, you to fix?
+> > >
+> > > Anyone other than me can do it ;-)
 > >
-> > Yes, please take it directly.
+> > Ok, here's what I'm thinking: that vermagic.h is normally automatically
+> > included in the *mod.c as part of the module creation, see add_header()
+> > in modpost.c.
+> >
+> > So then perhaps drivers should not use it directly due to the current
+> > inclusion order:
+> >
+> > linux/module.h includes asm/module.h and that arch-specific header
+> > defines MODULE_VERMAGIC* for the respective arch.
+> >
+> > linux/vermagic.h defines all those fallbacks for those MODULE_VERMAGIC*
+> > things and if the inclusion order is swapped - we get the redefinition
+> > warning.
+> >
+> > Yesterday I tried the below - basically get rid of all the remaining
+> > includers of linux/vermagic.h but two are left:
+> >
+> > drivers/net/ethernet/hisilicon/hns3/hns3_enet.c:18:#include <linux/vermagic.h>
+> > drivers/net/ethernet/netronome/nfp/nfp_main.c:17:#include <linux/vermagic.h>
+> >
+> > because both use VERMAGIC_STRING directly.
+> >
+> > So,
+> >
+> > * one could either allow that and sort the inclusion order so that, for
+> > example, asm/module.h includes linux/vermagic.h and thus the fallbacks
+> > are there present.
+> >
+> > or
+> >
+> > * remove all uses of VERMAGIC_STRING from the drivers, add a header
+> > guard which prevents people from using it directly and leave
+> > VERMAGIC_STRING only to the internal module machinery in the kernel.
+> >
+> > Judging by how only a handful of old drivers are even using that,
+> > perhaps not too far fetched.
+> >
+> > In any case, this needs a maintainer decision.
+> >
+> > Leon, if you wanna do it whatever you guys end up agreeing on, just go
+> > ahead and submit the patches - it's not like I don't have anything else
+> > on the TODO :-) Just add a Reported-by: me and that should be enough.
 >
-> Ok, assigned it to me in patchwork.
+> I broke it so I should fix and will send a patch today/tomorrow.
+
+ok, the patches are here, will wait for the kbuild results and will send.
+https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/log/?h=vermagic
+
+Thanks
+
 >
-> > This can happen in OOM situations and, when it does, we will
-> > potentially try to dereference a NULL pointer.
+> Thanks
 >
-> I'll add this to the commit log.
->
-
-Hi,
-
-Friendly ping.
-
-Any progress on this?
-
-This patch seems not have landed in Linux v5.7-rc1.
-
-$ head -5 Makefile
-# SPDX-License-Identifier: GPL-2.0
-VERSION = 5
-PATCHLEVEL = 7
-SUBLEVEL = 0
-EXTRAVERSION = -rc1
-
-$ LC_ALL=C git apply --check --verbose
-../patches/iwlwifi-fixes-5.6/iwlwifi-actually-check-allocated-conf_tlv-pointer-v2-dileks.patch
-Checking patch drivers/net/wireless/intel/iwlwifi/iwl-drv.c...
-
-I have attached my v2 which I have tested on top of Linux v5.6.3.
-
-Feel free to add my...
-
-Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
-
-Regards,
-- Sedat -
-
---00000000000030972905a33f248b
-Content-Type: text/x-patch; charset="US-ASCII"; 
-	name="iwlwifi-actually-check-allocated-conf_tlv-pointer-v2-dileks.patch"
-Content-Disposition: attachment; 
-	filename="iwlwifi-actually-check-allocated-conf_tlv-pointer-v2-dileks.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_k8zv90az0>
-X-Attachment-Id: f_k8zv90az0
-
-RnJvbSBwYXRjaHdvcmsgVGh1IEFwciAgMiAwNTowMjoxOSAyMDIwCkNvbnRlbnQtVHlwZTogdGV4
-dC9wbGFpbjsgY2hhcnNldD0idXRmLTgiCk1JTUUtVmVyc2lvbjogMS4wCkNvbnRlbnQtVHJhbnNm
-ZXItRW5jb2Rpbmc6IDdiaXQKWC1QYXRjaHdvcmstU3VibWl0dGVyOiBDaHJpcyBSb3J2aWNrIDxj
-aHJpc0Byb3J2aWNrLmNvbT4KWC1QYXRjaHdvcmstSWQ6IDExNDcwMTI1ClgtUGF0Y2h3b3JrLURl
-bGVnYXRlOiBrdmFsb0BhZHVyb20uY29tClJldHVybi1QYXRoOiA8U1JTMD1waW9tPTVTPXZnZXIu
-a2VybmVsLm9yZz1saW51eC13aXJlbGVzcy1vd25lckBrZXJuZWwub3JnPgpSZWNlaXZlZDogZnJv
-bSBtYWlsLmtlcm5lbC5vcmcgKHBkeC1rb3JnLW1haWwtMS53ZWIuY29kZWF1cm9yYS5vcmcKIFsx
-NzIuMzAuMjAwLjEyM10pCglieSBwZHgta29yZy1wYXRjaHdvcmstMi53ZWIuY29kZWF1cm9yYS5v
-cmcgKFBvc3RmaXgpIHdpdGggRVNNVFAgaWQgNDkxODExNUFCCglmb3IgPHBhdGNod29yay1saW51
-eC13aXJlbGVzc0BwYXRjaHdvcmsua2VybmVsLm9yZz47CiBUaHUsICAyIEFwciAyMDIwIDA1OjQw
-OjIyICswMDAwIChVVEMpClJlY2VpdmVkOiBmcm9tIHZnZXIua2VybmVsLm9yZyAodmdlci5rZXJu
-ZWwub3JnIFsyMDkuMTMyLjE4MC42N10pCglieSBtYWlsLmtlcm5lbC5vcmcgKFBvc3RmaXgpIHdp
-dGggRVNNVFAgaWQgMjZDRjcyMDc4NAoJZm9yIDxwYXRjaHdvcmstbGludXgtd2lyZWxlc3NAcGF0
-Y2h3b3JrLmtlcm5lbC5vcmc+OwogVGh1LCAgMiBBcHIgMjAyMCAwNTo0MDoyMiArMDAwMCAoVVRD
-KQpBdXRoZW50aWNhdGlvbi1SZXN1bHRzOiBtYWlsLmtlcm5lbC5vcmc7Cglka2ltPWZhaWwgcmVh
-c29uPSJzaWduYXR1cmUgdmVyaWZpY2F0aW9uIGZhaWxlZCIgKDIwNDgtYml0IGtleSkKIGhlYWRl
-ci5kPWdtYWlsLmNvbSBoZWFkZXIuaT1AZ21haWwuY29tIGhlYWRlci5iPSJvR2dSaUN5RyIKUmVj
-ZWl2ZWQ6IChtYWpvcmRvbW9Admdlci5rZXJuZWwub3JnKSBieSB2Z2VyLmtlcm5lbC5vcmcgdmlh
-IGxpc3RleHBhbmQKICAgICAgICBpZCBTMTcyNzc0NkFiZ0RCRmtSIChPUkNQVAogICAgICAgIDxy
-ZmM4MjI7cGF0Y2h3b3JrLWxpbnV4LXdpcmVsZXNzQHBhdGNod29yay5rZXJuZWwub3JnPik7CiAg
-ICAgICAgVGh1LCAyIEFwciAyMDIwIDAxOjQwOjE3IC0wNDAwClJlY2VpdmVkOiBmcm9tIG1haWwt
-cWsxLWYxOTMuZ29vZ2xlLmNvbSAoWzIwOS44NS4yMjIuMTkzXTozNDIzNCAiRUhMTwogICAgICAg
-IG1haWwtcWsxLWYxOTMuZ29vZ2xlLmNvbSIgcmhvc3QtZmxhZ3MtT0stT0stT0stT0spIGJ5IHZn
-ZXIua2VybmVsLm9yZwogICAgICAgIHdpdGggRVNNVFAgaWQgUzE3MjYyMDFBYmdEQkZrUiAoT1JD
-UFQKICAgICAgICA8cmZjODIyO2xpbnV4LXdpcmVsZXNzQHZnZXIua2VybmVsLm9yZz4pOwogICAg
-ICAgIFRodSwgMiBBcHIgMjAyMCAwMTo0MDoxNyAtMDQwMApSZWNlaXZlZDogYnkgbWFpbC1xazEt
-ZjE5My5nb29nbGUuY29tIHdpdGggU01UUCBpZCBpNnNvMjgxNDE0OXFrZS4xOwogICAgICAgIFdl
-ZCwgMDEgQXByIDIwMjAgMjI6NDA6MTYgLTA3MDAgKFBEVCkKREtJTS1TaWduYXR1cmU6IHY9MTsg
-YT1yc2Etc2hhMjU2OyBjPXJlbGF4ZWQvcmVsYXhlZDsKICAgICAgICBkPWdtYWlsLmNvbTsgcz0y
-MDE2MTAyNTsKICAgICAgICBoPXNlbmRlcjpmcm9tOnRvOmNjOnN1YmplY3Q6ZGF0ZTptZXNzYWdl
-LWlkOm1pbWUtdmVyc2lvbgogICAgICAgICA6Y29udGVudC10cmFuc2Zlci1lbmNvZGluZzsKICAg
-ICAgICBiaD1IajlocU5jTUUyb0lLSXcrNVZ4M3hHRFhHYmFGWjRvdlArdGh1ZkdBVm1VPTsKICAg
-ICAgICBiPW9HZ1JpQ3lHTTFOdHR6SU96WDRsd2ZXYUxWV2xWTkpWeGkzcDJKMzJmOHI1QnJQTmFy
-Vzh2eC9ZbDZpTFpnNUhVLwogICAgICAgICB5MW43WmxDaGdjTXpmNkNCa1pxYk1vREJMWEpjUXpL
-WGtpK1pVRjdKb1hGTjRVWFhTOHFKNFhNRzFEeTVoSklQM0QycQogICAgICAgICBQeElXdTVKejk2
-bWpwUCtqVEpkZjh5Nm9oV1dxVlFZR1JFKzFCdWgxeFRUaGE1YU5tZHR0VVFvN3ZoVnkrbVFDLy9Y
-cwogICAgICAgICBMRXVHcCttK2ZKR2VBc3d3ckxhSnpOOWl1U0VyTTRMUmV4SE9HUGwyMUFWUzFm
-eGJVTDB5UVdORy85TllFSS93eDFCNgogICAgICAgICBzTE9DdDVjVTR4QldtYzk5Wm11OWxwV0xw
-dTRNUVJJYm1Kc1NlQjh2SSt1NlpoeWk5VzFHQXlnVUVQaDVyUDZEdzFpdQogICAgICAgICBZRXZ3
-PT0KWC1Hb29nbGUtREtJTS1TaWduYXR1cmU6IHY9MTsgYT1yc2Etc2hhMjU2OyBjPXJlbGF4ZWQv
-cmVsYXhlZDsKICAgICAgICBkPTFlMTAwLm5ldDsgcz0yMDE2MTAyNTsKICAgICAgICBoPXgtZ20t
-bWVzc2FnZS1zdGF0ZTpzZW5kZXI6ZnJvbTp0bzpjYzpzdWJqZWN0OmRhdGU6bWVzc2FnZS1pZAog
-ICAgICAgICA6bWltZS12ZXJzaW9uOmNvbnRlbnQtdHJhbnNmZXItZW5jb2Rpbmc7CiAgICAgICAg
-Ymg9SGo5aHFOY01FMm9JS0l3KzVWeDN4R0RYR2JhRlo0b3ZQK3RodWZHQVZtVT07CiAgICAgICAg
-Yj1TbWlmKzhSSExLZDFuV1ExR0RURVJmU0loTlI3azRaN0pIeHdWdEY3V2xRZ2hONktiS1IzZ2tQ
-V3VHa1NiYWNUMy8KICAgICAgICAgNERZejEyN1dUNGJTSW5RclN2K3F0aytYMTJSamNCaU1sb3Z2
-NXBITmVsS0Q2aTFhMWFQOXhaRm8wTFR3VDg2MEhLeDEKICAgICAgICAgeTZxeElIdk9ieC9HaGVT
-NGowdTNvZ3VzMHVOekV2VG5sSXB0TlFoQTNpZnd2UU5iRGg4Q3VKV2FlUVZ2TkIyOXNpMXYKICAg
-ICAgICAgN2tOVjhpdmhMUExwR0E5OUlBamdBMDh3Z1JPUUQ2OFFDL1NwRWFoeEcyTHpFRzBkSVRS
-TVVlRm9IQXEvNVlZQnVCeTUKICAgICAgICAgOE94RWZzUjBHM1NxZHFMWWw4cW51UkZGcGl4aCsr
-TjJYS3BEaHFQMjNZMjVVM1VaZlZSWWl4eHBWVEdDcUpocXhLV1EKICAgICAgICAgRkVRQT09Clgt
-R20tTWVzc2FnZS1TdGF0ZTogQUdpMFB1YnNJaXJ6cFRwL2d0ZnBvb2NMcEdFcVVIV1o2SDRvQzJK
-VCtmT3NFd1dKRVA3bUNQS08KICAgICAgICBHcFV5djhSNjJRdVo5SkZpb1dWVWordTlZa3R2Clgt
-R29vZ2xlLVNtdHAtU291cmNlOiAKIEFQaVF5cEtZUXp3VENhdVNDWnNOekZ3UDdwU0FiZjQzRmpH
-cUhpQm4vbENuRWhBYk8reklVMVJ5WThSTFg5TXV6dHhySkhTS3NmenllZz09ClgtUmVjZWl2ZWQ6
-IGJ5IDIwMDI6YTM3OjRjNGQ6OiB3aXRoIFNNVFAgaWQgejc0bXIxODQyOTg3cWthLjUzLjE1ODU4
-MDYwMTU2NjY7CiAgICAgICAgV2VkLCAwMSBBcHIgMjAyMCAyMjo0MDoxNSAtMDcwMCAoUERUKQpS
-ZWNlaXZlZDogZnJvbSBsb2NhbGhvc3QgKGMtNzMtNzQtNy05LmhzZDEuaWwuY29tY2FzdC5uZXQu
-IFs3My43NC43LjldKQogICAgICAgIGJ5IHNtdHAuZ21haWwuY29tIHdpdGggRVNNVFBTQSBpZAog
-dDE0MHNtMjkxMTQ1OXFrZS40OC4yMDIwLjA0LjAxLjIyLjQwLjEzCiAgICAgICAgKHZlcnNpb249
-VExTMV8zIGNpcGhlcj1UTFNfQUVTXzI1Nl9HQ01fU0hBMzg0IGJpdHM9MjU2LzI1Nik7CiAgICAg
-ICAgV2VkLCAwMSBBcHIgMjAyMCAyMjo0MDoxNCAtMDcwMCAoUERUKQpSZWNlaXZlZDogZnJvbSBs
-b2NhbGhvc3QgKGxvY2FsaG9zdCBbMTI3LjAuMC4xXSkKICAgICAgICBieSBsb2NhbGhvc3QgKDgu
-MTUuMi84LjE0LjkpIHdpdGggRVNNVFAgaWQgMDMyNWVBT2MwMDU5MDQ7CiAgICAgICAgVGh1LCAy
-IEFwciAyMDIwIDAwOjQwOjEyIC0wNTAwClJlY2VpdmVkOiAoZnJvbSBjaHJpc0Bsb2NhbGhvc3Qp
-CiAgICAgICAgYnkgbG9jYWxob3N0ICg4LjE1LjIvOC4xNS4yL1N1Ym1pdCkgaWQgMDMyNTRLWTMw
-MDQ4ODc7CiAgICAgICAgVGh1LCAyIEFwciAyMDIwIDAwOjA0OjIwIC0wNTAwCkZyb206IENocmlz
-IFJvcnZpY2sgPGNocmlzQHJvcnZpY2suY29tPgpUbzogbGludXgtd2lyZWxlc3NAdmdlci5rZXJu
-ZWwub3JnLCBuZXRkZXZAdmdlci5rZXJuZWwub3JnLAogICAgICAgIGxpbnV4LWtlcm5lbEB2Z2Vy
-Lmtlcm5lbC5vcmcKQ2M6IENocmlzIFJvcnZpY2sgPGNocmlzQHJvcnZpY2suY29tPiwKICAgICAg
-ICBKb2hhbm5lcyBCZXJnIDxqb2hhbm5lcy5iZXJnQGludGVsLmNvbT4sCiAgICAgICAgRW1tYW51
-ZWwgR3J1bWJhY2ggPGVtbWFudWVsLmdydW1iYWNoQGludGVsLmNvbT4sCiAgICAgICAgTHVjYSBD
-b2VsaG8gPGx1Y2lhbm8uY29lbGhvQGludGVsLmNvbT4sCiAgICAgICAgSW50ZWwgTGludXggV2ly
-ZWxlc3MgPGxpbnV4d2lmaUBpbnRlbC5jb20+LAogICAgICAgIEthbGxlIFZhbG8gPGt2YWxvQGNv
-ZGVhdXJvcmEub3JnPiwKICAgICAgICAiRGF2aWQgUy4gTWlsbGVyIiA8ZGF2ZW1AZGF2ZW1sb2Z0
-Lm5ldD4KU3ViamVjdDogW1BBVENIXSBpd2x3aWZpOiBhY3R1YWxseSBjaGVjayBhbGxvY2F0ZWQg
-Y29uZl90bHYgcG9pbnRlcgpEYXRlOiBUaHUsICAyIEFwciAyMDIwIDAwOjAyOjE5IC0wNTAwCk1l
-c3NhZ2UtSWQ6IDwyMDIwMDQwMjA1MDIxOS40ODQyLTEtY2hyaXNAcm9ydmljay5jb20+ClgtTWFp
-bGVyOiBnaXQtc2VuZC1lbWFpbCAyLjI1LjAKTUlNRS1WZXJzaW9uOiAxLjAKU2VuZGVyOiBsaW51
-eC13aXJlbGVzcy1vd25lckB2Z2VyLmtlcm5lbC5vcmcKUHJlY2VkZW5jZTogYnVsawpMaXN0LUlE
-OiA8bGludXgtd2lyZWxlc3Mudmdlci5rZXJuZWwub3JnPgpYLU1haWxpbmctTGlzdDogbGludXgt
-d2lyZWxlc3NAdmdlci5rZXJuZWwub3JnCgpDb21taXQgNzFiYzAzMzRhNjM3ICgiaXdsd2lmaTog
-Y2hlY2sgYWxsb2NhdGVkIHBvaW50ZXIgd2hlbiBhbGxvY2F0aW5nCmNvbmZfdGx2cyIpIGF0dGVt
-cHRlZCB0byBmaXggYSB0eXBvZSBpbnRyb2R1Y2VkIGJ5IGNvbW1pdCAxN2I4MDljOWIyMmUKKCJp
-d2x3aWZpOiBkYmc6IG1vdmUgZGVidWcgZGF0YSB0byBhIHN0cnVjdCIpIGJ1dCBkb2VzIG5vdCBp
-bXBsZW1lbnQgdGhlCmNoZWNrIGNvcnJlY3RseS4KCkZpeGVzOiA3MWJjMDMzNGE2MzcgKCJpd2x3
-aWZpOiBjaGVjayBhbGxvY2F0ZWQgcG9pbnRlciB3aGVuIGFsbG9jYXRpbmcgY29uZl90bHZzIikK
-VHdlZXRlZC1ieTogQGdyc2VjdXJpdHkKU2lnbmVkLW9mZi1ieTogQ2hyaXMgUm9ydmljayA8Y2hy
-aXNAcm9ydmljay5jb20+Ci0tLQoKWyB2MS0+djI6CiAgLSBGaXggdHlwbyBzL2Z3LmRiZ19jb25m
-X3Rsdi9mdy5kYmcuY29uZl90bHYKICAtIEFkZCBGaXhlcyB0YWcgYXMgc3VnZ2VzdGVkIGJ5IEth
-bGxlCi1kaWxla3MgXQoKIGRyaXZlcnMvbmV0L3dpcmVsZXNzL2ludGVsL2l3bHdpZmkvaXdsLWRy
-di5jIHwgMiArLQogMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0p
-CgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvaW50ZWwvaXdsd2lmaS9pd2wtZHJ2
-LmMgYi9kcml2ZXJzL25ldC93aXJlbGVzcy9pbnRlbC9pd2x3aWZpL2l3bC1kcnYuYwppbmRleCBm
-ZjUyZTY5YzFjODAuLmEzN2YzMzBlN2JkNCAxMDA2NDQKLS0tIGEvZHJpdmVycy9uZXQvd2lyZWxl
-c3MvaW50ZWwvaXdsd2lmaS9pd2wtZHJ2LmMKKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvaW50
-ZWwvaXdsd2lmaS9pd2wtZHJ2LmMKQEAgLTE0NjUsMTEgKzE0NjUsMTEgQEAgc3RhdGljIHZvaWQg
-aXdsX3JlcV9md19jYWxsYmFjayhjb25zdCBzdHJ1Y3QgZmlybXdhcmUgKnVjb2RlX3Jhdywgdm9p
-ZCAqY29udGV4dCkKIAkJaWYgKHBpZWNlcy0+ZGJnX2NvbmZfdGx2W2ldKSB7CiAJCQlkcnYtPmZ3
-LmRiZy5jb25mX3RsdltpXSA9CiAJCQkJa21lbWR1cChwaWVjZXMtPmRiZ19jb25mX3RsdltpXSwK
-IAkJCQkJcGllY2VzLT5kYmdfY29uZl90bHZfbGVuW2ldLAogCQkJCQlHRlBfS0VSTkVMKTsKLQkJ
-CWlmICghcGllY2VzLT5kYmdfY29uZl90bHZbaV0pCisJCQlpZiAoIWRydi0+ZncuZGJnLmNvbmZf
-dGx2W2ldKQogCQkJCWdvdG8gb3V0X2ZyZWVfZnc7CiAJCX0KIAl9CiAKIAltZW1zZXQoJnRyaWdn
-ZXJfdGx2X3N6LCAweGZmLCBzaXplb2YodHJpZ2dlcl90bHZfc3opKTsK
---00000000000030972905a33f248b--
+> >
+> > If you're busy too, lemme know and I'll put it on my todo then.
+> >
+> > Thx.
+> >
+> > diff --git a/drivers/net/bonding/bonding_priv.h b/drivers/net/bonding/bonding_priv.h
+> > index 45b77bc8c7b3..48cdf3a49a7d 100644
+> > --- a/drivers/net/bonding/bonding_priv.h
+> > +++ b/drivers/net/bonding/bonding_priv.h
+> > @@ -14,7 +14,7 @@
+> >
+> >  #ifndef _BONDING_PRIV_H
+> >  #define _BONDING_PRIV_H
+> > -#include <linux/vermagic.h>
+> > +#include <generated/utsrelease.h>
+> >
+> >  #define DRV_NAME	"bonding"
+> >  #define DRV_DESCRIPTION	"Ethernet Channel Bonding Driver"
+> > diff --git a/drivers/net/ethernet/3com/3c509.c b/drivers/net/ethernet/3com/3c509.c
+> > index b762176a1406..139d0120f511 100644
+> > --- a/drivers/net/ethernet/3com/3c509.c
+> > +++ b/drivers/net/ethernet/3com/3c509.c
+> > @@ -85,7 +85,6 @@
+> >  #include <linux/device.h>
+> >  #include <linux/eisa.h>
+> >  #include <linux/bitops.h>
+> > -#include <linux/vermagic.h>
+> >
+> >  #include <linux/uaccess.h>
+> >  #include <asm/io.h>
+> > diff --git a/drivers/net/ethernet/3com/3c515.c b/drivers/net/ethernet/3com/3c515.c
+> > index 90312fcd6319..47b4215bb93b 100644
+> > --- a/drivers/net/ethernet/3com/3c515.c
+> > +++ b/drivers/net/ethernet/3com/3c515.c
+> > @@ -22,7 +22,6 @@
+> >
+> >  */
+> >
+> > -#include <linux/vermagic.h>
+> >  #define DRV_NAME		"3c515"
+> >
+> >  #define CORKSCREW 1
+> > diff --git a/drivers/net/ethernet/adaptec/starfire.c b/drivers/net/ethernet/adaptec/starfire.c
+> > index 2db42211329f..a64191fc2af9 100644
+> > --- a/drivers/net/ethernet/adaptec/starfire.c
+> > +++ b/drivers/net/ethernet/adaptec/starfire.c
+> > @@ -45,7 +45,6 @@
+> >  #include <asm/processor.h>		/* Processor type for cache alignment. */
+> >  #include <linux/uaccess.h>
+> >  #include <asm/io.h>
+> > -#include <linux/vermagic.h>
+> >
+> >  /*
+> >   * The current frame processor firmware fails to checksum a fragment
+> > diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+> > index 588c62e9add7..3ed150512091 100644
+> > --- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
+> > +++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+> > @@ -6,7 +6,7 @@
+> >  #include <linux/module.h>
+> >  #include <linux/netdevice.h>
+> >  #include <linux/utsname.h>
+> > -#include <linux/vermagic.h>
+> > +#include <generated/utsrelease.h>
+> >
+> >  #include "ionic.h"
+> >  #include "ionic_bus.h"
+> > diff --git a/drivers/power/supply/test_power.c b/drivers/power/supply/test_power.c
+> > index 65c23ef6408d..b3c05ff05783 100644
+> > --- a/drivers/power/supply/test_power.c
+> > +++ b/drivers/power/supply/test_power.c
+> > @@ -16,7 +16,7 @@
+> >  #include <linux/power_supply.h>
+> >  #include <linux/errno.h>
+> >  #include <linux/delay.h>
+> > -#include <linux/vermagic.h>
+> > +#include <generated/utsrelease.h>
+> >
+> >  enum test_power_id {
+> >  	TEST_AC,
+> > diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+> > index 89d0b1827aaf..adab97e500cf 100644
+> > --- a/net/ethtool/ioctl.c
+> > +++ b/net/ethtool/ioctl.c
+> > @@ -17,7 +17,6 @@
+> >  #include <linux/phy.h>
+> >  #include <linux/bitops.h>
+> >  #include <linux/uaccess.h>
+> > -#include <linux/vermagic.h>
+> >  #include <linux/vmalloc.h>
+> >  #include <linux/sfp.h>
+> >  #include <linux/slab.h>
+> > @@ -29,6 +28,8 @@
+> >  #include <net/flow_offload.h>
+> >  #include <linux/ethtool_netlink.h>
+> >
+> > +#include <generated/utsrelease.h>
+> > +
+> >  #include "common.h"
+> >
+> >  /*
+> >
+> >
+> > --
+> > Regards/Gruss,
+> >     Boris.
+> >
+> > https://people.kernel.org/tglx/notes-about-netiquette
