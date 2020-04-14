@@ -2,43 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 421CB1A8B51
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 21:44:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 844951A8B56
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 21:44:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504949AbgDNToJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 15:44:09 -0400
-Received: from www62.your-server.de ([213.133.104.62]:51170 "EHLO
+        id S2505150AbgDNTou (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 15:44:50 -0400
+Received: from www62.your-server.de ([213.133.104.62]:51256 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2440638AbgDNToE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 15:44:04 -0400
+        with ESMTP id S2505152AbgDNToh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 15:44:37 -0400
 Received: from sslproxy01.your-server.de ([78.46.139.224])
         by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89_1)
         (envelope-from <daniel@iogearbox.net>)
-        id 1jORTV-0002Nv-5Z; Tue, 14 Apr 2020 21:44:01 +0200
+        id 1jORU0-0002RT-JV; Tue, 14 Apr 2020 21:44:32 +0200
 Received: from [178.195.186.98] (helo=pc-9.home)
         by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <daniel@iogearbox.net>)
-        id 1jORTU-0005al-RS; Tue, 14 Apr 2020 21:44:00 +0200
-Subject: Re: [PATCH v2 bpf 1/2] bpf: prevent re-mmap()'ing BPF map as writable
- for initially r/o mapping
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jann Horn <jannh@google.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>
-References: <20200410202613.3679837-1-andriin@fb.com>
- <CAG48ez1xuZyOLVkxsjburqjf3Tm4TR8X6pnavUf=pm_woAxLkw@mail.gmail.com>
- <CAEf4Bza2=_OM_yxu3FAyf=mRoDmQC6KmFQ-5qKu0bxxX0PkzgQ@mail.gmail.com>
+        id 1jORU0-0006yB-Bh; Tue, 14 Apr 2020 21:44:32 +0200
+Subject: Re: [PATCH] tools: bpftool: fix struct_ops command invalid pointer
+ free
+To:     Martin KaFai Lau <kafai@fb.com>,
+        "Daniel T. Lee" <danieltimlee@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <20200410020612.2930667-1-danieltimlee@gmail.com>
+ <20200410050333.qshidymodw3oyn6k@kafai-mbp>
 From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <900084f0-e435-b2e5-6ef1-06db90ceac94@iogearbox.net>
-Date:   Tue, 14 Apr 2020 21:44:00 +0200
+Message-ID: <f0f902f7-d3ff-bca8-a17b-d5f8f6ab6310@iogearbox.net>
+Date:   Tue, 14 Apr 2020 21:44:31 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <CAEf4Bza2=_OM_yxu3FAyf=mRoDmQC6KmFQ-5qKu0bxxX0PkzgQ@mail.gmail.com>
+In-Reply-To: <20200410050333.qshidymodw3oyn6k@kafai-mbp>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -49,34 +46,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/14/20 8:28 PM, Andrii Nakryiko wrote:
-> On Tue, Apr 14, 2020 at 9:58 AM Jann Horn <jannh@google.com> wrote:
->> On Fri, Apr 10, 2020 at 10:26 PM Andrii Nakryiko <andriin@fb.com> wrote:
->>> VM_MAYWRITE flag during initial memory mapping determines if already mmap()'ed
->>> pages can be later remapped as writable ones through mprotect() call. To
->>> prevent user application to rewrite contents of memory-mapped as read-only and
->>> subsequently frozen BPF map, remove VM_MAYWRITE flag completely on initially
->>> read-only mapping.
->>>
->>> Alternatively, we could treat any memory-mapping on unfrozen map as writable
->>> and bump writecnt instead. But there is little legitimate reason to map
->>> BPF map as read-only and then re-mmap() it as writable through mprotect(),
->>> instead of just mmap()'ing it as read/write from the very beginning.
->>>
->>> Also, at the suggestion of Jann Horn, drop unnecessary refcounting in mmap
->>> operations. We can just rely on VMA holding reference to BPF map's file
->>> properly.
->>>
->>> Fixes: fc9702273e2e ("bpf: Add mmap() support for BPF_MAP_TYPE_ARRAY")
->>> Reported-by: Jann Horn <jannh@google.com>
->>> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+On 4/10/20 7:03 AM, Martin KaFai Lau wrote:
+> On Fri, Apr 10, 2020 at 11:06:12AM +0900, Daniel T. Lee wrote:
+>>  From commit 65c93628599d ("bpftool: Add struct_ops support"),
+>> a new type of command struct_ops has been added.
 >>
->> Reviewed-by: Jann Horn <jannh@google.com>
+>> This command requires kernel CONFIG_DEBUG_INFO_BTF=y, and for retrieving
+>> btf info, get_btf_vmlinux() is used.
 >>
->> (in the sense that I think this patch is good and correct, but does
->> not fix the entire problem in the bigger picture)
-> 
-> I agree, we'll continue discussion on the other thread, but this
-> should be applied as a bug fix anyways.
+>> When running this command on kernel without BTF debug info, this will
+>> lead to 'btf_vmlinux' variable contains invalid(error) pointer. And by
+>> this, btf_free() causes a segfault when executing 'bpftool struct_ops'.
+>>
+>> This commit adds pointer validation with IS_ERR not to free invalid
+>> pointer, and this will fix the segfault issue.
+>>
+>> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> Fixes: 65c93628599d ("bpftool: Add struct_ops support")
+> Acked-by: Martin KaFai Lau
 
-Applied, thanks!
+Applied & fixed up email, thanks!
