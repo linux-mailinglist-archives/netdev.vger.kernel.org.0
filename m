@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A1331A88C2
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 20:12:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DBBA1A88C1
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 20:12:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503546AbgDNSM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 14:12:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45008 "EHLO
+        id S2503474AbgDNSMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 14:12:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2503473AbgDNSLD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 14:11:03 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF946C0610D6
-        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 11:11:01 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id 33so429049pgx.17
-        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 11:11:01 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S2503479AbgDNSLF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 14:11:05 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B677C061BD3
+        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 11:11:04 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id d11so14164201pjh.4
+        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 11:11:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=BlvWvGdkN2WeiBN4fqdYccjrgT9VbdrAfRUdSyUXBZE=;
-        b=TZqQWV94Zuu65bh1l2U2we+9RQv0ecmGJ/H8OsjT+KUkAeOB0Im2t4v6FIP69dmojT
-         TXzddpdrsIGUDPp7azXpW1Eok3r27SblClzb6ZvGs0vf8ESCCFAlhjLouhoYbG4aZe0s
-         Zqfxgl0hZrH7160buCzm+WwdijtDQEdXVr0f6czTZed9sRSx9fA4Ot2E9x1vYhNhDwAK
-         IFt2XupTwy63RUFA9G7aULrBKkPBd3DuXNyfOmmCPzr/+WpJFwG24wcTbnA8wNXH0m26
-         cK/37ysy+da+dMHdJRpbtWL2Epdw0PvoUqjLQhy3nZicZqklG/9ungERiZxTOmT+VXyZ
-         tO/w==
+        bh=R8mSLoA4yKGeDKyGJ46zmAHwFa4kk4RkB3OQPR7SZNk=;
+        b=soPE3YbSyYsetKYuTK1j8cBgfL1ufL/chbR0V1Nlr/KGFsEhqXTx37PrP+FQqZ0VYS
+         NctD2fvmwY0Mz0T3Tcm3+G7nBpf9rZrXjJUeST7ysZvyAr/mrERTRZWTCT2/0UIRi5/Z
+         q3KMJmhn4tEpliFy/lSZC8i7J7aWbJfQN21+4ZFDhmKviV5dV+ltPNrogtJFbmI87/hL
+         dh42b3mlezccKwMiD+jM5ivV64HZ+tLkq/7I3cFlXr6jqHlMyidiBdgzeBrS9/3wb9yA
+         VoQgrEmq7kcUFtWJiiCr5r+X2ChTmphrOZS/2BOjmBmPijYVLcQ4/ngHh9BbhtWWjdSe
+         cODQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=BlvWvGdkN2WeiBN4fqdYccjrgT9VbdrAfRUdSyUXBZE=;
-        b=nNG/P+3otQPVMbYAv0Ibr2R9iMxsweFRBjW33ksAmEfBnWYVLhYlfMdiDfQJb0KSMj
-         R6sAimZati1/YKESb+d9T7Iqo83DnypQsg3HcxseXj/MoKCoyqR0ceiSQVaexeuFC3o7
-         Qp+rk20fKsGqju2TOuMbBbxqfE5P9xAk00uu6/YVpLog/ThIgFThWXu+IbdYndO5H8yA
-         NqHhzdJSR9V0vtKmF9P5HNSc4WN4ypMIdM+qmA4J/kxIFAxSkEskTFDj7aRn07XuRhPQ
-         /3cE6tln2E//dudVtkzcGdFwMsXQDh/5F9WHLq9JOUZk0AaUce9eli/uIXh1EhgB5U5e
-         dO7g==
-X-Gm-Message-State: AGi0PuZTc/h1VPEgr7pe+iD8Q9h/BpnXVPJqJFk6LLbG7z8+dqgytBfW
-        DQRqU6IHU9Cke8PlhIrp53w9FGuEwPHC
-X-Google-Smtp-Source: APiQypJpp1FHKo9I4j4uknzvoQXqGMx6BkeFOtMVeAThGZ2kTspRZEZVLXgIe/H5UnbizK5QcpZHfol1Mqvg
-X-Received: by 2002:a63:e74f:: with SMTP id j15mr22888445pgk.153.1586887861370;
- Tue, 14 Apr 2020 11:11:01 -0700 (PDT)
-Date:   Tue, 14 Apr 2020 11:10:51 -0700
+        bh=R8mSLoA4yKGeDKyGJ46zmAHwFa4kk4RkB3OQPR7SZNk=;
+        b=YCKexYBkdY8HTNeDWyql3+sHLz4xx4nLmCSjb7R38jR6+WB3OM7o9sN0Axb0tbw4FP
+         lqz8a7D4VEko9BS9zeCje+fP7pNN2ZXKU9Q8pYyhtV2zT5duUCfDTOgB0rZKaagvmsSn
+         dxqF4Veg3OtKRK4tqj/TsMD/Kk4EJSXNz/0dGJg5Y2sdDCA+4lWOt+nOzIlBF7G9+iXM
+         y4vGYziUHcOuXEO+FA/l5jPCrcusFoUXxh/Ch8knwDY6T6INzoMRHmT3tTBVVX8Dn90e
+         P29RTTQS/8ZSHIPp+Lk0NAw0V9GWNCqQQ/umykCnBLDqqvEOR2ScJHWf1bUGcBv1ErTo
+         P/tw==
+X-Gm-Message-State: AGi0PuZhUc9nPRDlsx61FDvRt+sXlk3vaBy7Lg1/8055ad7zKQCdsUR+
+        /NT47PAcuxMGfoGYDRRUi8M59tkbum37
+X-Google-Smtp-Source: APiQypKS42oeOJ/EEIPZ1vIkACtXeNF9CLv/+ToiDrm8HpPrn9vyCpP3q9r8jnr+W/V+4FlFShEz/09JUiYJ
+X-Received: by 2002:a17:90a:14c6:: with SMTP id k64mr1503515pja.39.1586887863831;
+ Tue, 14 Apr 2020 11:11:03 -0700 (PDT)
+Date:   Tue, 14 Apr 2020 11:10:52 -0700
 In-Reply-To: <20200414181054.22435-1-irogers@google.com>
-Message-Id: <20200414181054.22435-2-irogers@google.com>
+Message-Id: <20200414181054.22435-3-irogers@google.com>
 Mime-Version: 1.0
 References: <20200414181054.22435-1-irogers@google.com>
 X-Mailer: git-send-email 2.26.0.110.g2183baf09c-goog
-Subject: [PATCH v9 1/4] perf doc: allow ASCIIDOC_EXTRA to be an argument
+Subject: [PATCH v9 2/4] tools feature: add support for detecting libpfm4
 From:   Ian Rogers <irogers@google.com>
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -85,35 +85,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This will allow parent makefiles to pass values to asciidoc.
+From: Stephane Eranian <eranian@google.com>
 
-Signed-off-by: Ian Rogers <irogers@google.com>
+libpfm4 provides an alternate command line encoding of perf events.
+
+Signed-off-by: Stephane Eranian <eranian@google.com>
+Reviewed-by: Ian Rogers <irogers@google.com>
 ---
- tools/perf/Documentation/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/build/Makefile.feature       | 3 ++-
+ tools/build/feature/Makefile       | 6 +++++-
+ tools/build/feature/test-libpfm4.c | 9 +++++++++
+ 3 files changed, 16 insertions(+), 2 deletions(-)
+ create mode 100644 tools/build/feature/test-libpfm4.c
 
-diff --git a/tools/perf/Documentation/Makefile b/tools/perf/Documentation/Makefile
-index 31824d5269cc..6e54979c2124 100644
---- a/tools/perf/Documentation/Makefile
-+++ b/tools/perf/Documentation/Makefile
-@@ -48,7 +48,7 @@ man5dir=$(mandir)/man5
- man7dir=$(mandir)/man7
+diff --git a/tools/build/Makefile.feature b/tools/build/Makefile.feature
+index 3e0c019ef297..3abd4316cd4f 100644
+--- a/tools/build/Makefile.feature
++++ b/tools/build/Makefile.feature
+@@ -98,7 +98,8 @@ FEATURE_TESTS_EXTRA :=                  \
+          llvm                           \
+          llvm-version                   \
+          clang                          \
+-         libbpf
++         libbpf                         \
++         libpfm4
  
- ASCIIDOC=asciidoc
--ASCIIDOC_EXTRA = --unsafe -f asciidoc.conf
-+ASCIIDOC_EXTRA += --unsafe -f asciidoc.conf
- ASCIIDOC_HTML = xhtml11
- MANPAGE_XSL = manpage-normal.xsl
- XMLTO_EXTRA =
-@@ -59,7 +59,7 @@ HTML_REF = origin/html
+ FEATURE_TESTS ?= $(FEATURE_TESTS_BASIC)
  
- ifdef USE_ASCIIDOCTOR
- ASCIIDOC = asciidoctor
--ASCIIDOC_EXTRA = -a compat-mode
-+ASCIIDOC_EXTRA += -a compat-mode
- ASCIIDOC_EXTRA += -I. -rasciidoctor-extensions
- ASCIIDOC_EXTRA += -a mansource="perf" -a manmanual="perf Manual"
- ASCIIDOC_HTML = xhtml5
+diff --git a/tools/build/feature/Makefile b/tools/build/feature/Makefile
+index 621f528f7822..a6eded94a36b 100644
+--- a/tools/build/feature/Makefile
++++ b/tools/build/feature/Makefile
+@@ -68,7 +68,8 @@ FILES=                                          \
+          test-llvm-version.bin			\
+          test-libaio.bin			\
+          test-libzstd.bin			\
+-         test-file-handle.bin
++         test-file-handle.bin			\
++         test-libpfm4.bin
+ 
+ FILES := $(addprefix $(OUTPUT),$(FILES))
+ 
+@@ -325,6 +326,9 @@ $(OUTPUT)test-libzstd.bin:
+ $(OUTPUT)test-file-handle.bin:
+ 	$(BUILD)
+ 
++$(OUTPUT)test-libpfm4.bin:
++	$(BUILD) -lpfm
++
+ ###############################
+ 
+ clean:
+diff --git a/tools/build/feature/test-libpfm4.c b/tools/build/feature/test-libpfm4.c
+new file mode 100644
+index 000000000000..af49b259459e
+--- /dev/null
++++ b/tools/build/feature/test-libpfm4.c
+@@ -0,0 +1,9 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <sys/types.h>
++#include <perfmon/pfmlib.h>
++
++int main(void)
++{
++	pfm_initialize();
++	return 0;
++}
 -- 
 2.26.0.110.g2183baf09c-goog
 
