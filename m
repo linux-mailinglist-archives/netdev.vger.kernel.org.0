@@ -2,111 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EF521A8C4C
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 22:22:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 310D71A8C98
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 22:37:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2632981AbgDNUSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 16:18:16 -0400
-Received: from perceval.ideasonboard.com ([213.167.242.64]:33892 "EHLO
-        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2632807AbgDNUR5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 16:17:57 -0400
-Received: from pendragon.ideasonboard.com (81-175-216-236.bb.dnainternet.fi [81.175.216.236])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 37C1A521;
-        Tue, 14 Apr 2020 22:17:51 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1586895471;
-        bh=c6Xr5+2L0DxCtZfSvJoou6RSwZxi4WmjMmnUCKihyVA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=A5kQMUxsLc5akyV7IZRrNEf5uWfY0EWXJPRdjxLlff3vbw/+enM8JPoV9d/klth3g
-         zy8/qwAIcychqwGy6M1fbNCf4BFOlly2O0efLT8+BkhrXO+ravDVV+cX9ixjTqoIF6
-         JhgwFOeRP6FoG1U7zCp4n/vRB5aCityKHQlGUGzU=
-Date:   Tue, 14 Apr 2020 23:17:39 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        dri-devel@lists.freedesktop.org, linux-renesas-soc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: Re: [RFC 5/6] drm/rcar-du: fix selection of CMM driver
-Message-ID: <20200414201739.GJ19819@pendragon.ideasonboard.com>
-References: <20200408202711.1198966-1-arnd@arndb.de>
- <20200408202711.1198966-6-arnd@arndb.de>
+        id S2633253AbgDNUhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 16:37:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54728 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2633231AbgDNUhN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Apr 2020 16:37:13 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EAD442076A;
+        Tue, 14 Apr 2020 20:37:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1586896633;
+        bh=yI5VzEtJik+w0LE16sobkPNy9+v88OcEbqLTrk1m3r8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=coGYEIte38bf6SCi4UXgYRhDfCIoXemWbXY58WiLIccSFdvBYZTeRuGzGpkedOD1u
+         hWTNtCm0SR42Pm9fqAemOI4gpalY1U/rS2d4s40vJaGPuIMyQ2gFjnoLX9a/oFbXCM
+         iwQKzngOMV6VmcpJpSnxLwPmxn416G2JM/pHJAyc=
+Date:   Tue, 14 Apr 2020 13:37:11 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        Borislav Petkov <bp@suse.de>, netdev@vger.kernel.org,
+        oss-drivers@netronome.com
+Subject: Re: [PATCH net-next 3/4] net/nfp: Update driver to use global
+ kernel version
+Message-ID: <20200414133711.7b405101@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200414155732.1236944-4-leon@kernel.org>
+References: <20200414155732.1236944-1-leon@kernel.org>
+        <20200414155732.1236944-4-leon@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200408202711.1198966-6-arnd@arndb.de>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arnd,
-
-Thank you for the patch.
-
-On Wed, Apr 08, 2020 at 10:27:10PM +0200, Arnd Bergmann wrote:
-> The 'imply' statement does not seem to have an effect, as it's
-> still possible to turn the CMM code into a loadable module
-> in a randconfig build, leading to a link error:
+On Tue, 14 Apr 2020 18:57:31 +0300 Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@mellanox.com>
 > 
-> arm-linux-gnueabi-ld: drivers/gpu/drm/rcar-du/rcar_du_crtc.o: in function `rcar_du_crtc_atomic_enable':
-> rcar_du_crtc.c:(.text+0xad4): undefined reference to `rcar_lvds_clk_enable'
-> arm-linux-gnueabi-ld: drivers/gpu/drm/rcar-du/rcar_du_crtc.o: in function `rcar_du_crtc_atomic_disable':
-> rcar_du_crtc.c:(.text+0xd7c): undefined reference to `rcar_lvds_clk_disable'
-> arm-linux-gnueabi-ld: drivers/gpu/drm/rcar-du/rcar_du_drv.o: in function `rcar_du_init':
-> rcar_du_drv.c:(.init.text+0x4): undefined reference to `rcar_du_of_init'
-> arm-linux-gnueabi-ld: drivers/gpu/drm/rcar-du/rcar_du_encoder.o: in function `rcar_du_encoder_init':
+> Change nfp driver to use globally defined kernel version.
 > 
-> Remove the 'imply', and instead use a silent symbol that defaults
-> to the correct setting.
+> Reported-by: Borislav Petkov <bp@suse.de>
+> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 
-This will result in the CMM always being selected when DU is, increasing
-the kernel size even for devices that don't need it. I believe we need a
-better construct in Kconfig to fix this.
-
-> Fixes: e08e934d6c28 ("drm: rcar-du: Add support for CMM")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  drivers/gpu/drm/rcar-du/Kconfig | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/rcar-du/Kconfig b/drivers/gpu/drm/rcar-du/Kconfig
-> index 0919f1f159a4..5e35f5934d62 100644
-> --- a/drivers/gpu/drm/rcar-du/Kconfig
-> +++ b/drivers/gpu/drm/rcar-du/Kconfig
-> @@ -4,7 +4,6 @@ config DRM_RCAR_DU
->  	depends on DRM && OF
->  	depends on ARM || ARM64
->  	depends on ARCH_RENESAS || COMPILE_TEST
-> -	imply DRM_RCAR_CMM
->  	imply DRM_RCAR_LVDS
->  	select DRM_KMS_HELPER
->  	select DRM_KMS_CMA_HELPER
-> @@ -15,9 +14,8 @@ config DRM_RCAR_DU
->  	  If M is selected the module will be called rcar-du-drm.
->  
->  config DRM_RCAR_CMM
-> -	tristate "R-Car DU Color Management Module (CMM) Support"
-> +	def_tristate DRM_RCAR_DU
->  	depends on DRM && OF
-> -	depends on DRM_RCAR_DU
->  	help
->  	  Enable support for R-Car Color Management Module (CMM).
->  
-
--- 
-Regards,
-
-Laurent Pinchart
+Acked-by: Jakub Kicinski <kuba@kernel.org>
