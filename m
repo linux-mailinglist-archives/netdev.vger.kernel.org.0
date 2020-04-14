@@ -2,223 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0D101A712B
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 04:45:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7151C1A7167
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 05:03:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404193AbgDNCpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 22:45:06 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:26911 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2404196AbgDNCo6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 22:44:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586832296;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=1JQT2Xm0ZoYwsGUbbr9yEBymLjUdcqLv7hF40ghU85w=;
-        b=dKcNSACjNqwLq6SxdH4RGRTN9SCauDFEtOCNqdf9pebrbcAUDQQC+bFh8surPtxjuKYpuw
-        HR3ZSxpHdwChNY6XtVcZj6phK1nHnshAd5Eb2BseEDF8x1Yylgx8XZ6TzF5yaB4WZnVVVN
-        WZHH5gEOoV1yxP5V22ppkKiwpVEVzOk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-223-DsspG1W7MT6P3LkdYibTNg-1; Mon, 13 Apr 2020 22:44:52 -0400
-X-MC-Unique: DsspG1W7MT6P3LkdYibTNg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 359E6107ACC4;
-        Tue, 14 Apr 2020 02:44:49 +0000 (UTC)
-Received: from jason-ThinkPad-X1-Carbon-6th.redhat.com (ovpn-13-119.pek2.redhat.com [10.72.13.119])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 199AB60BE1;
-        Tue, 14 Apr 2020 02:44:40 +0000 (UTC)
-From:   Jason Wang <jasowang@redhat.com>
-To:     mst@redhat.com, jasowang@redhat.com
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, geert@linux-m68k.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Heiko Carstens <heiko.carstens@de.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>
-Subject: [PATCH] vhost: do not enable VHOST_MENU by default
-Date:   Tue, 14 Apr 2020 10:44:38 +0800
-Message-Id: <20200414024438.19103-1-jasowang@redhat.com>
+        id S2404363AbgDNDDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 23:03:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45086 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728755AbgDNDDO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 23:03:14 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59EB8C0A3BDC
+        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 20:03:14 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id f82so7222820ilh.8
+        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 20:03:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MvvX428jhA03WN2yaKHPbkqaFaksfSra1Adu8XMIvnk=;
+        b=lsxWeaXi7KzM9AHRz9I3JGG6nz3zZugSUkekvKuK+DbygExzEtKRUvMtby+huNU2aA
+         5TmBsboQd/Nosp2M44QZfFkSrPTiuXYBE32zZdQUyoxi0WIkSbIU6LwlqypQSPCRboZW
+         l5rhNUrPpFwa1dW9233XjtmeODqwSj6Y4ZoxPZ5tM+3TBqg+kdGYqAVVm3pjlNIwiKsW
+         vY6dYz3ae12FKAuPJM6v8ZDGaB648qnI03GpkXHf8C7KGRutPeZ5fW49tFykS9j80Qmg
+         w/D7AEXamHkAotXZIzomuXjDJ/HiGpuksmffIfy5OpR3yrl2Yru3EagATt219x95K1iM
+         Oejw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MvvX428jhA03WN2yaKHPbkqaFaksfSra1Adu8XMIvnk=;
+        b=VmYPS8F9B6BhovtzUO3GK9npxra80M8x94ZG9ZZIkMyE0P/TY4Mh01tJUu8cWPBTxk
+         a9cCFFZb8Q/KIID/NQK6WNkM8/ij6umWO4MVM6BZ3tH/Mv7QdC/l1FWZHhzaXz3LKgRV
+         GXzoNN6tSlgjCR+/y39E34CIGmFZpPSvv2Du+hFDwZok5zRnLlkjHOHjOqQ8hBrtjYrR
+         D+GepvoIzUDjEJOdzVjc6hdhBdx9VMHgmiaP/RLqC1CWaVDZhMF1FiyH5WBqLcBb2YrR
+         pgDaRif1hlmpAJ3Tm/1bDcaCFgU1GYMxx2ZDgJch0jPMh/Cl9c3XAGHpiop2vkIbE18c
+         Ba+w==
+X-Gm-Message-State: AGi0Puapn7GTIOQxGJOGQzC3U/+iQXZ3ACF4cmLu5yFzsgFKgq5waBuz
+        qdd/a6m8yTHAjE3i3AOkI8kb80hSjt4LjmlGjvuFJYF1iQE=
+X-Google-Smtp-Source: APiQypJdxOiHOVepSY+VJkvtNtZWPvs+Ogm/uxPCVhz3OiBFQ0RTo9yglWG4d2rrW8/Lzr5mGBOtamSbDoyYatU0RkI=
+X-Received: by 2002:a92:c991:: with SMTP id y17mr20440596iln.239.1586833393592;
+ Mon, 13 Apr 2020 20:03:13 -0700 (PDT)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-Content-Transfer-Encoding: quoted-printable
+References: <20200409155409.12043-1-dqfext@gmail.com> <20200409.102035.13094168508101122.davem@davemloft.net>
+ <CALW65jbrg1doaRBPdGQkQ-PG6dnh_L4va7RxcMxyKKMqasN7bQ@mail.gmail.com>
+ <c7da2de5-5e25-6284-0b35-fd2dbceb9c4f@gmail.com> <CALW65jZAdFFNfGioAFWPwYN+F4baL0Z-+FX_pAte97uxNK3T6g@mail.gmail.com>
+ <CA+h21hp8LueSfh+Z8f0-Y7dTPB50d+3E3K9n6R5MwNzA3Dh1Lw@mail.gmail.com>
+In-Reply-To: <CA+h21hp8LueSfh+Z8f0-Y7dTPB50d+3E3K9n6R5MwNzA3Dh1Lw@mail.gmail.com>
+From:   DENG Qingfang <dqfext@gmail.com>
+Date:   Tue, 14 Apr 2020 11:03:02 +0800
+Message-ID: <CALW65jYodd=GoWrGTcAWEO6wNQdvSQjgO=4tmNYNnmbCh7n8sg@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: dsa: mt7530: enable jumbo frame
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        John Crispin <john@phrozen.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Weijie Gao <weijie.gao@mediatek.com>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We try to keep the defconfig untouched after decoupling CONFIG_VHOST
-out of CONFIG_VIRTUALIZATION in commit 20c384f1ea1a
-("vhost: refine vhost and vringh kconfig") by enabling VHOST_MENU by
-default. Then the defconfigs can keep enabling CONFIG_VHOST_NET
-without the caring of CONFIG_VHOST.
-
-But this will leave a "CONFIG_VHOST_MENU=3Dy" in all defconfigs and even
-for the ones that doesn't want vhost. So it actually shifts the
-burdens to the maintainers of all other to add "CONFIG_VHOST_MENU is
-not set". So this patch tries to enable CONFIG_VHOST explicitly in
-defconfigs that enables CONFIG_VHOST_NET and CONFIG_VHOST_VSOCK.
-
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Heiko Carstens <heiko.carstens@de.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Cc: Christian Borntraeger <borntraeger@de.ibm.com>
-Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Jason Wang <jasowang@redhat.com>
----
- arch/mips/configs/malta_kvm_defconfig  |  1 +
- arch/powerpc/configs/powernv_defconfig |  1 +
- arch/powerpc/configs/ppc64_defconfig   |  1 +
- arch/powerpc/configs/pseries_defconfig |  1 +
- arch/s390/configs/debug_defconfig      |  1 +
- arch/s390/configs/defconfig            |  1 +
- drivers/vhost/Kconfig                  | 18 +++++-------------
- 7 files changed, 11 insertions(+), 13 deletions(-)
-
-diff --git a/arch/mips/configs/malta_kvm_defconfig b/arch/mips/configs/ma=
-lta_kvm_defconfig
-index 8ef612552a19..06f0c7a0ca87 100644
---- a/arch/mips/configs/malta_kvm_defconfig
-+++ b/arch/mips/configs/malta_kvm_defconfig
-@@ -18,6 +18,7 @@ CONFIG_PCI=3Dy
- CONFIG_VIRTUALIZATION=3Dy
- CONFIG_KVM=3Dm
- CONFIG_KVM_MIPS_DEBUG_COP0_COUNTERS=3Dy
-+CONFIG_VHOST=3Dm
- CONFIG_VHOST_NET=3Dm
- CONFIG_MODULES=3Dy
- CONFIG_MODULE_UNLOAD=3Dy
-diff --git a/arch/powerpc/configs/powernv_defconfig b/arch/powerpc/config=
-s/powernv_defconfig
-index 71749377d164..404245b4594d 100644
---- a/arch/powerpc/configs/powernv_defconfig
-+++ b/arch/powerpc/configs/powernv_defconfig
-@@ -346,5 +346,6 @@ CONFIG_CRYPTO_DEV_VMX=3Dy
- CONFIG_VIRTUALIZATION=3Dy
- CONFIG_KVM_BOOK3S_64=3Dm
- CONFIG_KVM_BOOK3S_64_HV=3Dm
-+CONFIG_VHOST=3Dm
- CONFIG_VHOST_NET=3Dm
- CONFIG_PRINTK_TIME=3Dy
-diff --git a/arch/powerpc/configs/ppc64_defconfig b/arch/powerpc/configs/=
-ppc64_defconfig
-index 7e68cb222c7b..4599fc7be285 100644
---- a/arch/powerpc/configs/ppc64_defconfig
-+++ b/arch/powerpc/configs/ppc64_defconfig
-@@ -61,6 +61,7 @@ CONFIG_ELECTRA_CF=3Dy
- CONFIG_VIRTUALIZATION=3Dy
- CONFIG_KVM_BOOK3S_64=3Dm
- CONFIG_KVM_BOOK3S_64_HV=3Dm
-+CONFIG_VHOST=3Dm
- CONFIG_VHOST_NET=3Dm
- CONFIG_OPROFILE=3Dm
- CONFIG_KPROBES=3Dy
-diff --git a/arch/powerpc/configs/pseries_defconfig b/arch/powerpc/config=
-s/pseries_defconfig
-index 6b68109e248f..4cad3901b5de 100644
---- a/arch/powerpc/configs/pseries_defconfig
-+++ b/arch/powerpc/configs/pseries_defconfig
-@@ -321,5 +321,6 @@ CONFIG_CRYPTO_DEV_VMX=3Dy
- CONFIG_VIRTUALIZATION=3Dy
- CONFIG_KVM_BOOK3S_64=3Dm
- CONFIG_KVM_BOOK3S_64_HV=3Dm
-+CONFIG_VHOST=3Dm
- CONFIG_VHOST_NET=3Dm
- CONFIG_PRINTK_TIME=3Dy
-diff --git a/arch/s390/configs/debug_defconfig b/arch/s390/configs/debug_=
-defconfig
-index 0c86ba19fa2b..6ec6e69630d1 100644
---- a/arch/s390/configs/debug_defconfig
-+++ b/arch/s390/configs/debug_defconfig
-@@ -57,6 +57,7 @@ CONFIG_PROTECTED_VIRTUALIZATION_GUEST=3Dy
- CONFIG_CMM=3Dm
- CONFIG_APPLDATA_BASE=3Dy
- CONFIG_KVM=3Dm
-+CONFIG_VHOST=3Dm
- CONFIG_VHOST_NET=3Dm
- CONFIG_VHOST_VSOCK=3Dm
- CONFIG_OPROFILE=3Dm
-diff --git a/arch/s390/configs/defconfig b/arch/s390/configs/defconfig
-index 6b27d861a9a3..d1b3bf83d687 100644
---- a/arch/s390/configs/defconfig
-+++ b/arch/s390/configs/defconfig
-@@ -57,6 +57,7 @@ CONFIG_PROTECTED_VIRTUALIZATION_GUEST=3Dy
- CONFIG_CMM=3Dm
- CONFIG_APPLDATA_BASE=3Dy
- CONFIG_KVM=3Dm
-+CONFIG_VHOST=3Dm
- CONFIG_VHOST_NET=3Dm
- CONFIG_VHOST_VSOCK=3Dm
- CONFIG_OPROFILE=3Dm
-diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
-index e79cbbdfea45..14d296dc18cd 100644
---- a/drivers/vhost/Kconfig
-+++ b/drivers/vhost/Kconfig
-@@ -12,23 +12,18 @@ config VHOST_RING
- 	  This option is selected by any driver which needs to access
- 	  the host side of a virtio ring.
-=20
--config VHOST
--	tristate
-+menuconfig VHOST
-+	tristate "Vhost Devices"
- 	select VHOST_IOTLB
- 	help
--	  This option is selected by any driver which needs to access
--	  the core of vhost.
--
--menuconfig VHOST_MENU
--	bool "VHOST drivers"
--	default y
-+	  Enable option to support host kernel or hardware accelerator
-+	  for virtio device.
-=20
--if VHOST_MENU
-+if VHOST
-=20
- config VHOST_NET
- 	tristate "Host kernel accelerator for virtio net"
- 	depends on NET && EVENTFD && (TUN || !TUN) && (TAP || !TAP)
--	select VHOST
- 	---help---
- 	  This kernel module can be loaded in host kernel to accelerate
- 	  guest networking with virtio_net. Not to be confused with virtio_net
-@@ -40,7 +35,6 @@ config VHOST_NET
- config VHOST_SCSI
- 	tristate "VHOST_SCSI TCM fabric driver"
- 	depends on TARGET_CORE && EVENTFD
--	select VHOST
- 	default n
- 	---help---
- 	Say M here to enable the vhost_scsi TCM fabric module
-@@ -49,7 +43,6 @@ config VHOST_SCSI
- config VHOST_VSOCK
- 	tristate "vhost virtio-vsock driver"
- 	depends on VSOCKETS && EVENTFD
--	select VHOST
- 	select VIRTIO_VSOCKETS_COMMON
- 	default n
- 	---help---
-@@ -63,7 +56,6 @@ config VHOST_VSOCK
- config VHOST_VDPA
- 	tristate "Vhost driver for vDPA-based backend"
- 	depends on EVENTFD
--	select VHOST
- 	depends on VDPA
- 	help
- 	  This kernel module can be loaded in host kernel to accelerate
---=20
-2.20.1
-
+On Fri, Apr 10, 2020 at 6:46 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> Hi Qingfang,
+>
+> On Fri, 10 Apr 2020 at 05:51, DENG Qingfang <dqfext@gmail.com> wrote:
+> >
+> > On Fri, Apr 10, 2020 at 10:27 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
+> > >
+> > >
+> > >
+> > > On 4/9/2020 7:19 PM, DENG Qingfang wrote:
+> > > > So, since nothing else uses the mt7530_set_jumbo function, should I
+> > > > remove the function and just add a single rmw to mt7530_setup?
+> > >
+> > > (please do not top-post on netdev)
+> > >
+> > > There is a proper way to support the MTU configuration for DSA switch
+> > > drivers which is:
+> > >
+> > >         /*
+> > >          * MTU change functionality. Switches can also adjust their MRU
+> > > through
+> > >          * this method. By MTU, one understands the SDU (L2 payload) length.
+> > >          * If the switch needs to account for the DSA tag on the CPU
+> > > port, this
+> > >          * method needs to to do so privately.
+> > >          */
+> > >         int     (*port_change_mtu)(struct dsa_switch *ds, int port,
+> > >                                    int new_mtu);
+> > >         int     (*port_max_mtu)(struct dsa_switch *ds, int port);
+> >
+> > MT7530 does not support configuring jumbo frame per-port
+> > The register affects globally
+> >
+> > >
+> > > --
+> > > Florian
+>
+> This is a bit more tricky, but I think you can still deal with it
+> using the port_change_mtu functionality. Basically it is only a
+> problem when the other ports are standalone - otherwise the
+> dsa_bridge_mtu_normalization function should kick in.
+> So if you implement port_change_mtu, you should do something along the lines of:
+>
+> for (i = 0; i < MT7530_NUM_PORTS; i++) {
+>     struct net_device *slave;
+>
+>     if (!dsa_is_user_port(ds, i))
+>         continue;
+>
+>     slave = ds->ports[i].slave;
+>
+>     slave->mtu = new_mtu;
+> }
+>
+> to update the MTU known by the stack for all net devices.
+Should we warn users that all ports will be affected?
+>
+> Hope this helps,
+> -Vladimir
