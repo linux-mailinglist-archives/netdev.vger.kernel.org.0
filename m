@@ -2,54 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF07B1A7F1C
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 16:04:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F37C01A7F29
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 16:06:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388870AbgDNOEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 10:04:05 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36484 "EHLO vps0.lunn.ch"
+        id S1733070AbgDNOGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 10:06:47 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:36504 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388386AbgDNOED (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Apr 2020 10:04:03 -0400
+        id S1728131AbgDNOGo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Apr 2020 10:06:44 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=0bH6gdqHbfNmkN445ATqSeenRtPaKJB++FVbLu/FOwc=; b=rhDyyIarBEZrvhjwS93TXUgiHk
-        Fp4a/KiL4JztUGGHIzTmMfpgtgbS2+VCboFITL4Z/vWhHwJiVjRDaeDItnFoJXykGrB0nIrH/DJBc
-        36qCvqCiqPsQuvDy274fsFpgy/Ynwg9JV1yF048/6cv79gm8vb5tXvbzpxbW6zUL7vDc=;
+        bh=Prh86KfOexfKICdxjGCy0zjvPj8rSjdr8u8ErSzvYOY=; b=q5tZvBIiZbrondGXjYe+PPJTaf
+        T7EyLBGIIjb+cMOhfP0IDK7FwxIjldnuSmNkeEBcgWBwuNlGxEgAVAJYJe1NIZmLBxsrfkbPn+ZTc
+        IuA2Z+dtNIVetCNwuBdJLDMO0U7lVCpNW9emFVM5kYRzij+UtJoXQu6uzDUDAJ0nJNwM=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
         (envelope-from <andrew@lunn.ch>)
-        id 1jOMAP-002f5O-Tp; Tue, 14 Apr 2020 16:03:57 +0200
-Date:   Tue, 14 Apr 2020 16:03:57 +0200
+        id 1jOMD3-002f7J-Te; Tue, 14 Apr 2020 16:06:41 +0200
+Date:   Tue, 14 Apr 2020 16:06:41 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     netdev@vger.kernel.org,
         Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
         open list <linux-kernel@vger.kernel.org>, davem@davemloft.net,
         kuba@kernel.org
-Subject: Re: [PATCH net 1/4] net: dsa: b53: Lookup VID in ARL searches when
- VLAN is enabled
-Message-ID: <20200414140357.GJ436020@lunn.ch>
+Subject: Re: [PATCH net 2/4] net: dsa: b53: Fix valid setting for MDB entries
+Message-ID: <20200414140641.GK436020@lunn.ch>
 References: <20200414041630.5740-1-f.fainelli@gmail.com>
- <20200414041630.5740-2-f.fainelli@gmail.com>
+ <20200414041630.5740-3-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200414041630.5740-2-f.fainelli@gmail.com>
+In-Reply-To: <20200414041630.5740-3-f.fainelli@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 13, 2020 at 09:16:27PM -0700, Florian Fainelli wrote:
-> When VLAN is enabled, and an ARL search is issued, we also need to
-> compare the full {MAC,VID} tuple before returning a successful search
-> result.
+On Mon, Apr 13, 2020 at 09:16:28PM -0700, Florian Fainelli wrote:
+> When support for the MDB entries was added, the valid bit was correctly
+> changed to be assigned depending on the remaining port bitmask, that is,
+> if there were no more ports added to the entry's port bitmask, the entry
+> now becomes invalid. There was another assignment a few lines below that
+> would override this which would invalidate entries even when there were
+> still multiple ports left in the MDB entry.
 > 
-> Fixes: 1da6df85c6fb ("net: dsa: b53: Implement ARL add/del/dump operations")
+> Fixes: 5d65b64a3d97 ("net: dsa: b53: Add support for MDB")
 > Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
