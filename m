@@ -2,296 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CAF31A7702
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 11:09:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9D801A7714
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 11:11:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437419AbgDNJJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 05:09:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45208 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437410AbgDNJJd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 05:09:33 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8D2C008769
-        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 02:09:31 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id a81so13055202wmf.5
-        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 02:09:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=QwfKGdqam9RIuBIMLZ/S/DFAHpLMsKb4kuHzoefPgZA=;
-        b=PpI2smU4Q7O7yGn29QKLR5E6hM2tJGmjffnfP7dOyNCNAFoNTNNGABUFekttfgkYiP
-         hadODThe0lRT7x7HGgHEn9QEBULOXlWQqAmKyFjfJ0QJ7ZlEVAtdHyyrTTehKFKOVMRG
-         r2H+OL/yuKyiI6HbKsKl7VSrk4FsZM3fPQuMSQbqQpjgN49YRQyNUXk/Gv4E+stmJkIr
-         j8U2+nxQX03RAZI/r8P2y3TR3JqWLWX6vUTmNA0DRO/DHR4CZ4jK+mY8ENxSS0/jjSfh
-         zV51qklLAsev4Bi88dM6/+qdLYfOVf+RpiYV3e0mgLya5vpcsveEdLRsrIue1uUvPxC9
-         +biQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=QwfKGdqam9RIuBIMLZ/S/DFAHpLMsKb4kuHzoefPgZA=;
-        b=lOQlWDIEafT8UCNSC5rm6MorSImZ6b79hz5b3UGRMj8iohKVAwy+y49n87ZdrDBM+r
-         RiLmJDRAn8ATVOcj06G12d+pG6xo+2xInKZReG2BmV21UQV74YUFgERAMSrgLCLjvxnV
-         2MJxXoJbswcTYx2ZWivExsfgUqpjsFk5kBPM1aDtQs0HCwzZclWcVVR2Puz5g7DjZXsC
-         04FzHk8AAZ0RWt+lrcSCPP1L0c6CgKH9bvnIC3ove5JzFFN9nuUklXVoLv2+kDwMt85R
-         EpZK6vBIzLCJpHLyjJY5fgcmnuUGWA4rSbEL3Q1U4pYud0Hp8hxGoCWAymr4nCBVDvlR
-         cavw==
-X-Gm-Message-State: AGi0PuaHzNxVhPiNR+B4NXa4u/tx36b/qjdl1Beic5tGaJ+3VrsJXm8q
-        VenrB1U3uk9J2h5KgeGq/hY=
-X-Google-Smtp-Source: APiQypLE/GfWvo5cFIPIM2QWKl6I5o86DIJtqT7i1OZu7oQiXcusw4XfKALU6y2Vue94X1qQnTCbNQ==
-X-Received: by 2002:a7b:c401:: with SMTP id k1mr22146271wmi.152.1586855370308;
-        Tue, 14 Apr 2020 02:09:30 -0700 (PDT)
-Received: from white ([188.27.148.74])
-        by smtp.gmail.com with ESMTPSA id r17sm8608271wrn.43.2020.04.14.02.09.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Apr 2020 02:09:29 -0700 (PDT)
-Date:   Tue, 14 Apr 2020 12:09:25 +0300
-From:   =?utf-8?B?TGXFn2UgRG9ydSBDxINsaW4=?= <lesedorucalin01@gmail.com>
-To:     Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Subject: [PATCH v3] net: UDP repair mode for retrieving the send queue of
- corked UDP socket
-Message-ID: <20200414090925.GA10402@white>
+        id S2437462AbgDNJLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 05:11:39 -0400
+Received: from mail-db8eur05on2083.outbound.protection.outlook.com ([40.107.20.83]:6130
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2437447AbgDNJLd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Apr 2020 05:11:33 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dXDQpQD3jCR/d6uPOB6RdQgINMwsRxzfYvEnLoNgTXNmGNr8EzPLggAoKpxrWykELEZo9fymRXEg9Itj4b568pK52BI441YZ1hDdkRxy7ObK9ST/t4AIRKmkh1hqtEtvrPnTcpxw4BMlfstXtp8yGEGsmmDmeXGjMykZM5J2q+5ScgiDeGWjfayznAuGWOBnsWidSsbHgzHpHo3tNAkpPBcCpU8Q2owUGOH2T7HCXdyrBgJiQumdNNbZLcXgCB31A/RRjCghNXkVxfeyBz3ZPRdZC/9sOUZ48DRPy7tQT/KD+Y5SVGgTAlsKuG6nphqs2j6wpUxnQcYkuGO5BLWzeA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MYeFNtnkvU1qFshr/Iw5VAqPCiQPFhNBOGhyOQO9oM0=;
+ b=ftyFe/IhCAMS5/uWhZvg+kXZonZ+F1PJkj8RKP4SOu1t0V1x+bmooRMS68qXdzDu7jKie+cJInz96FDcnwicZj8WZK3d2Q9PZobFuVPrS5CfVYCbEETsP/5gY4u+QRGXMoMcoAbjushIVpAo7u9KrYuh12U8RhzAW9UgJdSdIwHc7N7aLBJk/aMow4Rz8LwiXdce6uN1vZs/0qxPd53RcAocb2Ihuie8VDHP0pQUYy6+znYNVhi/dIW+p600XyLT2iEGv6a/tmm1lgt8tNCUxQ1cONQCBRVWAx4opg/XSqzsHd7wHuc73bf0TF5jLZXbOXDc1MGD8gMy4I9LsTaG6A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=orolia.com; dmarc=pass action=none header.from=orolia.com;
+ dkim=pass header.d=orolia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=orolia.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MYeFNtnkvU1qFshr/Iw5VAqPCiQPFhNBOGhyOQO9oM0=;
+ b=q2iWtXCM7EiqVPbwWAzy/hl6GCpyXUEql5PUXZKhoIMM15q+dPnQS6tDeHFedz0kRV/cMBdUJ9T/Sg1pSKeXkc1BLvRzS8K6+ZXOHCWenVcPe83SW0HhmtSab3KnJJ0J4Pk0ZfVISrYvS14oxxXhXF3wI912iwV1M35++2YNBBk=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=julien.beraud@orolia.com; 
+Received: from AM5PR06MB3043.eurprd06.prod.outlook.com (2603:10a6:206:3::26)
+ by AM5PR06MB3057.eurprd06.prod.outlook.com (2603:10a6:206:f::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2900.28; Tue, 14 Apr
+ 2020 09:11:29 +0000
+Received: from AM5PR06MB3043.eurprd06.prod.outlook.com
+ ([fe80::7893:2451:4039:f36b]) by AM5PR06MB3043.eurprd06.prod.outlook.com
+ ([fe80::7893:2451:4039:f36b%7]) with mapi id 15.20.2900.026; Tue, 14 Apr 2020
+ 09:11:29 +0000
+From:   Julien Beraud <julien.beraud@orolia.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Julien Beraud <julien.beraud@orolia.com>
+Subject: [PATCH 1/2] net: stmmac: fix enabling socfpga's ptp_ref_clock
+Date:   Tue, 14 Apr 2020 11:10:02 +0200
+Message-Id: <20200414091003.7629-1-julien.beraud@orolia.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: LO2P265CA0318.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:a4::18) To AM5PR06MB3043.eurprd06.prod.outlook.com
+ (2603:10a6:206:3::26)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from julien.spectracom.local (2a01:cb00:87a9:7d00:9d00:f9d3:1f5a:64cc) by LO2P265CA0318.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:a4::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2900.15 via Frontend Transport; Tue, 14 Apr 2020 09:11:29 +0000
+X-Mailer: git-send-email 2.25.1
+X-Originating-IP: [2a01:cb00:87a9:7d00:9d00:f9d3:1f5a:64cc]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c7acfdfd-c84b-4678-a53e-08d7e053d14c
+X-MS-TrafficTypeDiagnostic: AM5PR06MB3057:|AM5PR06MB3057:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM5PR06MB3057F2FE84D2636C92FDD67099DA0@AM5PR06MB3057.eurprd06.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Forefront-PRVS: 0373D94D15
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM5PR06MB3043.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(376002)(396003)(366004)(39850400004)(346002)(136003)(4326008)(6506007)(81156014)(110136005)(6486002)(2906002)(316002)(5660300002)(8936002)(186003)(8676002)(16526019)(478600001)(66946007)(86362001)(6666004)(52116002)(36756003)(1076003)(107886003)(66476007)(44832011)(6512007)(2616005)(66556008);DIR:OUT;SFP:1101;
+Received-SPF: None (protection.outlook.com: orolia.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tD44eTOi4uHaKfp+uHtG6OjDxugpIt6IJFh77UR8bDjlS/K/N1hKVZwMbXMm4+mOKgi57HU7OirsFQyR2oZTYleFxn0H1A3eO67r97Z4DWrYBg/kmwWVvxOP5BuFzQaZh9+vrz2QTm6W353hyPLZyyYDNIqmfHGCYfA6q8eBwDTdtMXm2gDVijeaZIPmS3s1MK9jcBebXlGn+pA2M/j/hHO1GO/9fxQqI9bJWutqZSTFpuIK7BOiGbe+cqRMU3nltD2QDVdqfJ0fGLCchJLYGfRXUkR1p7dgoUx+Qe37KyqyntDkhFNWhu/GOt9jxKUtWSanDpjA5+bc6pJwDZTrv+rtr+Vivt8cGHYeTLQOCf0VuYWidKcmk2JspS3R7oF++W/RM5v880P3l2pBEjrx3z19NMco3sAO19nrKm5I9dbPLaavq5gHvz2vWUKXryzD
+X-MS-Exchange-AntiSpam-MessageData: 8aOIo9dibSjad2YPpgMZZ+Hb/sabdoaZilu7njU/bYNTmQ7BhwtPqidThSN9BFPt1bAUfYdMxIbgOeSekTUtLqfjwflvvREVRM5oVvjB357QpDmjF5cVXDra9xx3VR2/46uYcdek65tWbo6v/hsRvt7JLVqt4dRRk28ub29WZwMYHgXGQm5LmtEhtu570Gyw5VyDgnn4X3YU0jkeLwayUg==
+X-OriginatorOrg: orolia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c7acfdfd-c84b-4678-a53e-08d7e053d14c
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2020 09:11:29.6022
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a263030c-9c1b-421f-9471-1dec0b29c664
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HLf0+x+SajN0PyNabIxSDjnDubc3YeCrOW/4YBrD1/HywE+mbQMJXn7tgI/Jdy/72vodcGGuEalZYr0vlDF2yasGbearR6RtL9DILfJsIkE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR06MB3057
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In this year's edition of GSoC, there is a project idea for CRIU to add 
-support for checkpoint/restore of cork-ed UDP sockets. But to add it, the
-kernel API needs to be extended.
+There are 2 registers to write to enable a ptp ref clock coming from the
+fpga.
+One that enables the usage of the clock from the fpga for emac0 and emac1
+as a ptp ref clock, and the other to allow signals from the fpga to reach
+emac0 and emac1.
+Currently, if the dwmac-socfpga has phymode set to PHY_INTERFACE_MODE_MII,
+PHY_INTERFACE_MODE_GMII, or PHY_INTERFACE_MODE_SGMII, both registers will
+be written and the ptp ref clock will be set as coming from the fpga.
+Separate the 2 register writes to only enable signals from the fpga to
+reach emac0 or emac1 when ptp ref clock is not coming from the fpga.
 
-This is what this patch does. It adds UDP "repair mode" for UDP sockets in 
-a similar approach to the TCP "repair mode", but only the send queue is
-necessary to be retrieved. So the patch extends the recv and setsockopt 
-syscalls. Using UDP_REPAIR option in setsockopt, caller can set the socket
-in repair mode. If it is setted, the recv/recvfrom/recvmsg will receive the
-write queue and the destination of the data. As in the TCP mode, to change 
-the repair mode requires the CAP_NET_ADMIN capability and to receive data 
-the caller is obliged to use the MSG_PEEK flag.
-
-Signed-off-by: Lese Doru Calin <lesedorucalin01@gmail.com>
+Signed-off-by: Julien Beraud <julien.beraud@orolia.com>
 ---
- include/linux/udp.h      |  3 ++-
- include/uapi/linux/udp.h |  1 +
- net/ipv4/udp.c           | 55 ++++++++++++++++++++++++++++++++++++++++
- net/ipv6/udp.c           | 45 ++++++++++++++++++++++++++++++++
- 4 files changed, 103 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/udp.h b/include/linux/udp.h
-index aa84597bdc33..b22bd70118ce 100644
---- a/include/linux/udp.h
-+++ b/include/linux/udp.h
-@@ -51,7 +51,8 @@ struct udp_sock {
- 					   * different encapsulation layer set
- 					   * this
- 					   */
--			 gro_enabled:1;	/* Can accept GRO packets */
-+			 gro_enabled:1,	/* Can accept GRO packets */
-+			 repair:1;/* Receive the send queue */
- 	/*
- 	 * Following member retains the information to create a UDP header
- 	 * when the socket is uncorked.
-diff --git a/include/uapi/linux/udp.h b/include/uapi/linux/udp.h
-index 4828794efcf8..2fe78329d6da 100644
---- a/include/uapi/linux/udp.h
-+++ b/include/uapi/linux/udp.h
-@@ -29,6 +29,7 @@ struct udphdr {
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+index e0212d2fc2a1..b7087245af26 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+@@ -289,16 +289,19 @@ static int socfpga_gen5_set_phy_mode(struct socfpga_dwmac *dwmac)
+ 	    phymode == PHY_INTERFACE_MODE_MII ||
+ 	    phymode == PHY_INTERFACE_MODE_GMII ||
+ 	    phymode == PHY_INTERFACE_MODE_SGMII) {
+-		ctrl |= SYSMGR_EMACGRP_CTRL_PTP_REF_CLK_MASK << (reg_shift / 2);
+ 		regmap_read(sys_mgr_base_addr, SYSMGR_FPGAGRP_MODULE_REG,
+ 			    &module);
+ 		module |= (SYSMGR_FPGAGRP_MODULE_EMAC << (reg_shift / 2));
+ 		regmap_write(sys_mgr_base_addr, SYSMGR_FPGAGRP_MODULE_REG,
+ 			     module);
+-	} else {
+-		ctrl &= ~(SYSMGR_EMACGRP_CTRL_PTP_REF_CLK_MASK << (reg_shift / 2));
+ 	}
  
- /* UDP socket options */
- #define UDP_CORK	1	/* Never send partially complete segments */
-+#define UDP_REPAIR  19  /* Receive the send queue */
- #define UDP_ENCAP	100	/* Set the socket to accept encapsulated packets */
- #define UDP_NO_CHECK6_TX 101	/* Disable sending checksum for UDP6X */
- #define UDP_NO_CHECK6_RX 102	/* Disable accpeting checksum for UDP6 */
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 32564b350823..dc9d15d564d6 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1720,6 +1720,28 @@ struct sk_buff *__skb_recv_udp(struct sock *sk, unsigned int flags,
- }
- EXPORT_SYMBOL(__skb_recv_udp);
++	if (dwmac->f2h_ptp_ref_clk)
++		ctrl |= SYSMGR_EMACGRP_CTRL_PTP_REF_CLK_MASK << (reg_shift / 2);
++	else
++		ctrl &= ~(SYSMGR_EMACGRP_CTRL_PTP_REF_CLK_MASK <<
++			  (reg_shift / 2));
++
+ 	regmap_write(sys_mgr_base_addr, reg_offset, ctrl);
  
-+static int udp_peek_sndq(struct sock *sk, struct msghdr *msg, int off, int len)
-+{
-+	int copy, copied = 0, err = 0;
-+	struct sk_buff *skb;
-+
-+	skb_queue_walk(&sk->sk_write_queue, skb) {
-+		copy = len - copied;
-+		if (copy > skb->len - off)
-+			copy = skb->len - off;
-+
-+		err = skb_copy_datagram_msg(skb, off, msg, copy);
-+		if (err)
-+			break;
-+
-+		copied += copy;
-+
-+		if (len <= copied)
-+			break;
-+	}
-+	return err ?: copied;
-+}
-+
- /*
-  * 	This should be easy, if there is something there we
-  * 	return it, otherwise we block.
-@@ -1729,8 +1751,10 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
- 		int flags, int *addr_len)
- {
- 	struct inet_sock *inet = inet_sk(sk);
-+	struct udp_sock *up = udp_sk(sk);
- 	DECLARE_SOCKADDR(struct sockaddr_in *, sin, msg->msg_name);
- 	struct sk_buff *skb;
-+	struct flowi4 *fl4;
- 	unsigned int ulen, copied;
- 	int off, err, peeking = flags & MSG_PEEK;
- 	int is_udplite = IS_UDPLITE(sk);
-@@ -1739,6 +1763,12 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
- 	if (flags & MSG_ERRQUEUE)
- 		return ip_recv_error(sk, msg, len, addr_len);
- 
-+	if (unlikely(up->repair)) {
-+		if (!peeking)
-+			return -EPERM;
-+		goto recv_sndq;
-+	}
-+
- try_again:
- 	off = sk_peek_offset(sk, flags);
- 	skb = __skb_recv_udp(sk, flags, noblock, &off, &err);
-@@ -1832,6 +1862,18 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
- 	cond_resched();
- 	msg->msg_flags &= ~MSG_TRUNC;
- 	goto try_again;
-+
-+recv_sndq:
-+	off = sizeof(struct iphdr) + sizeof(struct udphdr);
-+	if (sin) {
-+		fl4 = &inet->cork.fl.u.ip4;
-+		sin->sin_family = AF_INET;
-+		sin->sin_port = fl4->fl4_dport;
-+		sin->sin_addr.s_addr = fl4->daddr;
-+		memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
-+		*addr_len = sizeof(*sin);
-+	}
-+	return udp_peek_sndq(sk, msg, off, len);
- }
- 
- int udp_pre_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-@@ -2557,6 +2599,15 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
- 		}
- 		break;
- 
-+	case UDP_REPAIR:
-+		if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
-+			err = -EPERM;
-+		else if (val != 0)
-+			up->repair = 1;
-+		else
-+			up->repair = 0;
-+		break;
-+
- 	case UDP_ENCAP:
- 		switch (val) {
- 		case 0:
-@@ -2678,6 +2729,10 @@ int udp_lib_getsockopt(struct sock *sk, int level, int optname,
- 		val = up->corkflag;
- 		break;
- 
-+	case UDP_REPAIR:
-+		val = up->repair;
-+		break;
-+
- 	case UDP_ENCAP:
- 		val = up->encap_type;
- 		break;
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 7d4151747340..ec653f9fce2d 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -250,6 +250,28 @@ struct sock *udp6_lib_lookup(struct net *net, const struct in6_addr *saddr, __be
- EXPORT_SYMBOL_GPL(udp6_lib_lookup);
- #endif
- 
-+static int udp6_peek_sndq(struct sock *sk, struct msghdr *msg, int off, int len)
-+{
-+	int copy, copied = 0, err = 0;
-+	struct sk_buff *skb;
-+
-+	skb_queue_walk(&sk->sk_write_queue, skb) {
-+		copy = len - copied;
-+		if (copy > skb->len - off)
-+			copy = skb->len - off;
-+
-+		err = skb_copy_datagram_msg(skb, off, msg, copy);
-+		if (err)
-+			break;
-+
-+		copied += copy;
-+
-+		if (len <= copied)
-+			break;
-+	}
-+	return err ?: copied;
-+}
-+
- /* do not use the scratch area len for jumbogram: their length execeeds the
-  * scratch area space; note that the IP6CB flags is still in the first
-  * cacheline, so checking for jumbograms is cheap
-@@ -269,7 +291,9 @@ int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- {
- 	struct ipv6_pinfo *np = inet6_sk(sk);
- 	struct inet_sock *inet = inet_sk(sk);
-+	struct udp_sock *up = udp_sk(sk);
- 	struct sk_buff *skb;
-+	struct flowi6 *fl6;
- 	unsigned int ulen, copied;
- 	int off, err, peeking = flags & MSG_PEEK;
- 	int is_udplite = IS_UDPLITE(sk);
-@@ -283,6 +307,12 @@ int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 	if (np->rxpmtu && np->rxopt.bits.rxpmtu)
- 		return ipv6_recv_rxpmtu(sk, msg, len, addr_len);
- 
-+	if (unlikely(up->repair)) {
-+		if (!peeking)
-+			return -EPERM;
-+		goto recv_sndq;
-+	}
-+
- try_again:
- 	off = sk_peek_offset(sk, flags);
- 	skb = __skb_recv_udp(sk, flags, noblock, &off, &err);
-@@ -394,6 +424,21 @@ int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 	cond_resched();
- 	msg->msg_flags &= ~MSG_TRUNC;
- 	goto try_again;
-+
-+recv_sndq:
-+	off = sizeof(struct ipv6hdr) + sizeof(struct udphdr);
-+	if (msg->msg_name) {
-+		DECLARE_SOCKADDR(struct sockaddr_in6 *, sin6, msg->msg_name);
-+
-+		fl6 = &inet->cork.fl.u.ip6;
-+		sin6->sin6_family = AF_INET6;
-+		sin6->sin6_port = fl6->fl6_dport;
-+		sin6->sin6_flowinfo = 0;
-+		sin6->sin6_addr = fl6->daddr;
-+		sin6->sin6_scope_id = fl6->flowi6_oif;
-+		*addr_len = sizeof(*sin6);
-+	}
-+	return udp6_peek_sndq(sk, msg, off, len);
- }
- 
- DEFINE_STATIC_KEY_FALSE(udpv6_encap_needed_key);
+ 	/* Deassert reset for the phy configuration to be sampled by
 -- 
-2.17.1
+2.25.1
+
