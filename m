@@ -2,79 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3B441A85CA
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 18:53:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA8821A85E3
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 18:53:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440309AbgDNQtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 12:49:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55218 "EHLO mail.kernel.org"
+        id S2440661AbgDNQvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 12:51:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57368 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2440313AbgDNQtP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 14 Apr 2020 12:49:15 -0400
-Received: from mail.kernel.org (ip5f5ad4d8.dynamic.kabel-deutschland.de [95.90.212.216])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S2440548AbgDNQvJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Apr 2020 12:51:09 -0400
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1910221D7F;
-        Tue, 14 Apr 2020 16:49:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 560FF2078A;
+        Tue, 14 Apr 2020 16:51:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586882943;
-        bh=JNdzVpz9Z7yg2D0nVFa2uGzWJ8/+Wsh+62E+aydGZzQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pUCG8jhe86W6kanMzas8ZHncgj+seFcThXs2JKTePr++6of8aHjZRl2WoSnQy8Zt3
-         T49S/q3HImd1aMdkf9B+4gU8kiqpaW8+FQkgnohanObJadYJhPYzLMUz+yQrHBiBfD
-         mw/wgqoqBheU4SBpIwxEWuTUdsRqfRojQSVwPhGQ=
-Received: from mchehab by mail.kernel.org with local (Exim 4.92.3)
-        (envelope-from <mchehab@kernel.org>)
-        id 1jOOk9-0068mp-BS; Tue, 14 Apr 2020 18:49:01 +0200
-From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Matthias Brugger <mbrugger@suse.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH v2 24/33] docs: dt: fix a broken reference for a file converted to json
-Date:   Tue, 14 Apr 2020 18:48:50 +0200
-Message-Id: <9b1603e254d39c9607bfedefeedaafd2c44aeb19.1586881715.git.mchehab+huawei@kernel.org>
-X-Mailer: git-send-email 2.25.2
-In-Reply-To: <cover.1586881715.git.mchehab+huawei@kernel.org>
-References: <cover.1586881715.git.mchehab+huawei@kernel.org>
+        s=default; t=1586883069;
+        bh=5ItLj3pw8ICgMslGV/jzi2WlPetpysNmexshbAM8+2Y=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=fny7C1Jr3lw6DvYP3P4R/o+BB7IEzN+oPJXzrc6U328xcACnDY2lLYiQIQ1D8udlH
+         RsdBhYsL48o0lluaI4x/l7MwmKNVmKRfkBokxULYNsrxOKBzJuJnj6lOyW5qD5A2/K
+         httZqYXw2vxiorpan5JMiddA56UtrnQzai215yAc=
+Received: by mail-lf1-f53.google.com with SMTP id t11so306501lfe.4;
+        Tue, 14 Apr 2020 09:51:09 -0700 (PDT)
+X-Gm-Message-State: AGi0PuY9/+ju+XMBFLeorHKUymefpM0xCQfmOe2oPIuxbpyk+8X6hKVg
+        WYG0YtYaA3papQwoO57o4VZZcnhvj+ivQDB7szQ=
+X-Google-Smtp-Source: APiQypI19J8K19veT4EiqcGOziMyMfMCR+Dx1XPgW3Ct5WFJ5x80TGUvwNRUHbxW2Cp528PxmLqewLF8/DF94ZOVYag=
+X-Received: by 2002:a19:494f:: with SMTP id l15mr434803lfj.33.1586883067437;
+ Tue, 14 Apr 2020 09:51:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1586779076-101346-1-git-send-email-zou_wei@huawei.com>
+In-Reply-To: <1586779076-101346-1-git-send-email-zou_wei@huawei.com>
+From:   Song Liu <song@kernel.org>
+Date:   Tue, 14 Apr 2020 09:50:56 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7CmnBE4xaS6zUBwXuRN5h-ofwpOBQ9ZU0OFPn0Re-kag@mail.gmail.com>
+Message-ID: <CAPhsuW7CmnBE4xaS6zUBwXuRN5h-ofwpOBQ9ZU0OFPn0Re-kag@mail.gmail.com>
+Subject: Re: [PATCH-next] bpf: Verifier, remove unneeded conversion to bool
+To:     Zou Wei <zou_wei@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Changeset 32ced09d7903 ("dt-bindings: serial: Convert slave-device bindings to json-schema")
-moved a binding to json and updated the links.
+On Mon, Apr 13, 2020 at 10:15 PM Zou Wei <zou_wei@huawei.com> wrote:
+>
+> This issue was detected by using the Coccinelle software:
+>
+> kernel/bpf/verifier.c:1259:16-21: WARNING: conversion to bool not needed here
+>
+> The conversion to bool is unneeded, remove it
+>
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Zou Wei <zou_wei@huawei.com>
 
-Yet, one link was not changed, due to a merge conflict.
-
-Update this one too.
-
-Fixes: 32ced09d7903 ("dt-bindings: serial: Convert slave-device bindings to json-schema")
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
----
- Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
-index beca6466d59a..d2202791c1d4 100644
---- a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
-+++ b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
-@@ -29,7 +29,7 @@ Required properties for compatible string qcom,wcn399x-bt:
- 
- Optional properties for compatible string qcom,wcn399x-bt:
- 
-- - max-speed: see Documentation/devicetree/bindings/serial/slave-device.txt
-+ - max-speed: see Documentation/devicetree/bindings/serial/serial.yaml
-  - firmware-name: specify the name of nvm firmware to load
-  - clocks: clock provided to the controller
- 
--- 
-2.25.2
-
+Acked-by: Song Liu <songliubraving@fb.com>
