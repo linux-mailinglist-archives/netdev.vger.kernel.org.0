@@ -2,351 +2,486 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8EE11A72C1
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 06:49:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77BD01A72C6
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 06:56:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729043AbgDNEts (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 00:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33186 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728938AbgDNEtr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 00:49:47 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69AF1C0A3BDC;
-        Mon, 13 Apr 2020 21:49:47 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id x66so11966616qkd.9;
-        Mon, 13 Apr 2020 21:49:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=t/S6jgUMUtf7N9TJFYoSVKK2bdRKgwrB5auOxn1ubMw=;
-        b=GZz6p9dlzLxhRMwomnNodj3WTUuQbncMWl10JDXHPTAalVcn4luFweyzqBhF9P0i9m
-         DblMfwhpUwNxGcpKvDTxtrePk6OJFT8tcSPddEIQ6R+36UyF/KKeQTwwf5Wc9z5oZ2Fy
-         npYr4hO/XPrfW0xxSLBl1qm6HMZ6BB/4T3aXpSWl97qnLLjEf/fw24BKYiSLIkN8AZqq
-         o8PuyvdivxUH26zua1jgmHelzZreUmlUqQqyN0YD3UTD0zz8MBIzIJ/LcyrZzP7zBxAn
-         n1ywIGXHgiT0DEbnLy9Y+1g2MtMSwzA4n+V8LmvbBOZmSSC4aZHDpTkgjZCkZZhNBqiG
-         Xcvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=t/S6jgUMUtf7N9TJFYoSVKK2bdRKgwrB5auOxn1ubMw=;
-        b=S0oZMf169S1pReUxYkxAsMM1TMu3oXyuw/qn/2lTNXaKkSn5QA41TaPeS3dD8aKZz6
-         UdKyd2LmE56MuNuAKHaOwe7kQQ6tcO6ahnN8jlsJtU2VjQoTI2AT2eawr6oyhnmFVkBr
-         i0BLulhyj5bPZczQIj8k7vtzOzroWTwPfdqiO8tZa+Uijr1EGeoB963PfSNYOoz9uOCJ
-         IgeSys/8Zlm4OYAg97p+hSEQQU+mp0xZULYxo6MhVuf8HnEtC1gX1dNy9RyQPDCswNpy
-         dtQBwoplPA6nCQ1kaax7brMVndqqW/7NPoHDOKHmpnTu0lB30/jceOxr9R9vbOnRsP7J
-         U6BQ==
-X-Gm-Message-State: AGi0PuYOlOUGNYYIV/bmhYAV8OgxeI997pHf+37xlmfc3mRsvS84GTre
-        +QgO9g4Ylyow768PknRYF1K5nN+hBpwQ8WomxBI=
-X-Google-Smtp-Source: APiQypL5YEhTXBld6lxefFcHGNYWxdOepzsHfK5H0ocWMffP1yiZn8Gm4Zi6sPiF5pbUzQfzyrUdKqJSL1doACYkk7Y=
-X-Received: by 2002:a05:620a:88e:: with SMTP id b14mr20637966qka.449.1586839786161;
- Mon, 13 Apr 2020 21:49:46 -0700 (PDT)
+        id S2405387AbgDNE4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 00:56:21 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:8006 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2405372AbgDNE4U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 00:56:20 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03E4orIl020060
+        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 21:56:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=IneuMzkNUTKzowSmLoZ66PckCt8lYVUSvY8AKSzbEVM=;
+ b=Bfsh9OmDp+ijh7jzFglZmeYFKwTTcbmKLstEI9ZB4GRDVohQtjhwlon1BhDoroDbqZCA
+ +MOmkBACx8ryNPDktXNblYiIQZNi+KGnbNwefHMch2m7yDhGTbbIo+seaN3StFyH9zeX
+ huTE5zgGknreUMFJJPZjxC6+q6rsLBvGN2w= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 30bwte8fsp-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 13 Apr 2020 21:56:18 -0700
+Received: from intmgw001.08.frc2.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:21d::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Mon, 13 Apr 2020 21:56:17 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 843932EC308F; Mon, 13 Apr 2020 21:56:14 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <rdna@fb.com>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v2 bpf-next] libbpf: always specify expected_attach_type on program load if supported
+Date:   Mon, 13 Apr 2020 21:56:13 -0700
+Message-ID: <20200414045613.2104756-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <20200412055837.2883320-1-andriin@fb.com> <20200413202126.GA36960@rdna-mbp.dhcp.thefacebook.com>
- <CAEf4Bzbf7kuzTnq6d=Jh+hRdUi++vxabZz2oQU=hPh52rztbgg@mail.gmail.com> <20200413224412.GA44785@rdna-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20200413224412.GA44785@rdna-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 13 Apr 2020 21:49:35 -0700
-Message-ID: <CAEf4BzY6g6E=_-+fvyEqgWK_-+j2jOL1mFA7wapWW8axZmY=UQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: always specify expected_attach_type on
- program load if supported
-To:     Andrey Ignatov <rdna@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-14_01:2020-04-13,2020-04-14 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
+ mlxlogscore=999 mlxscore=0 phishscore=0 bulkscore=0 spamscore=0
+ impostorscore=0 adultscore=0 lowpriorityscore=0 suspectscore=0
+ malwarescore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2003020000 definitions=main-2004140039
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 13, 2020 at 3:44 PM Andrey Ignatov <rdna@fb.com> wrote:
->
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> [Mon, 2020-04-13 15:00 -0700]:
-> > On Mon, Apr 13, 2020 at 1:21 PM Andrey Ignatov <rdna@fb.com> wrote:
-> > >
-> > > Andrii Nakryiko <andriin@fb.com> [Sat, 2020-04-11 22:58 -0700]:
-> > > > For some types of BPF programs that utilize expected_attach_type, libbpf won't
-> > > > set load_attr.expected_attach_type, even if expected_attach_type is known from
-> > > > section definition. This was done to preserve backwards compatibility with old
-> > > > kernels that didn't recognize expected_attach_type attribute yet (which was
-> > > > added in 5e43f899b03a ("bpf: Check attach type at prog load time"). But this
-> > > > is problematic for some BPF programs that utilize never features that require
-> > > > kernel to know specific expected_attach_type (e.g., extended set of return
-> > > > codes for cgroup_skb/egress programs).
-> > > >
-> > > > This patch makes libbpf specify expected_attach_type by default, but also
-> > > > detect support for this field in kernel and not set it during program load.
-> > > > This allows to have a good metadata for bpf_program
-> > > > (e.g., bpf_program__get_extected_attach_type()), but still work with old
-> > > > kernels (for cases where it can work at all).
-> > > >
-> > > > Additionally, due to expected_attach_type being always set for recognized
-> > > > program types, bpf_program__attach_cgroup doesn't have to do extra checks to
-> > > > determine correct attach type, so remove that additional logic.
-> > > >
-> > > > Also adjust section_names selftest to account for this change.
-> > > >
-> > > > More detailed discussion can be found in [0].
-> > > >
-> > > >   [0] https://lore.kernel.org/bpf/20200412003604.GA15986@rdna-mbp.dhcp.thefacebook.com/
-> > > >
-> > > > Reported-by: Andrey Ignatov <rdna@fb.com>
-> > > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > > > ---
-> > > >  tools/lib/bpf/libbpf.c                        | 123 +++++++++++-------
-> > > >  .../selftests/bpf/prog_tests/section_names.c  |  42 +++---
-> > > >  2 files changed, 106 insertions(+), 59 deletions(-)
-> > > >
-> > > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > > > index ff9174282a8c..925f720deea0 100644
-> > > > --- a/tools/lib/bpf/libbpf.c
-> > > > +++ b/tools/lib/bpf/libbpf.c
-> > > > @@ -178,6 +178,8 @@ struct bpf_capabilities {
-> > > >       __u32 array_mmap:1;
-> > > >       /* BTF_FUNC_GLOBAL is supported */
-> > > >       __u32 btf_func_global:1;
-> > > > +     /* kernel support for expected_attach_type in BPF_PROG_LOAD */
-> > > > +     __u32 exp_attach_type:1;
-> > > >  };
-> > > >
-> > > >  enum reloc_type {
-> > > > @@ -194,6 +196,22 @@ struct reloc_desc {
-> > > >       int sym_off;
-> > > >  };
-> > > >
-> > > > +struct bpf_sec_def;
-> > > > +
-> > > > +typedef struct bpf_link *(*attach_fn_t)(const struct bpf_sec_def *sec,
-> > > > +                                     struct bpf_program *prog);
-> > > > +
-> > > > +struct bpf_sec_def {
-> > > > +     const char *sec;
-> > > > +     size_t len;
-> > > > +     enum bpf_prog_type prog_type;
-> > > > +     enum bpf_attach_type expected_attach_type;
-> > > > +     bool is_exp_attach_type_optional;
-> > > > +     bool is_attachable;
-> > > > +     bool is_attach_btf;
-> > > > +     attach_fn_t attach_fn;
-> > > > +};
-> > > > +
-> > > >  /*
-> > > >   * bpf_prog should be a better name but it has been used in
-> > > >   * linux/filter.h.
-> > > > @@ -204,6 +222,7 @@ struct bpf_program {
-> > > >       char *name;
-> > > >       int prog_ifindex;
-> > > >       char *section_name;
-> > > > +     const struct bpf_sec_def *sec_def;
-> > > >       /* section_name with / replaced by _; makes recursive pinning
-> > > >        * in bpf_object__pin_programs easier
-> > > >        */
-> > > > @@ -3315,6 +3334,32 @@ static int bpf_object__probe_array_mmap(struct bpf_object *obj)
-> > > >       return 0;
-> > > >  }
-> > > >
-> > > > +static int
-> > > > +bpf_object__probe_exp_attach_type(struct bpf_object *obj)
-> > > > +{
-> > > > +     struct bpf_load_program_attr attr;
-> > > > +     struct bpf_insn insns[] = {
-> > > > +             BPF_MOV64_IMM(BPF_REG_0, 0),
-> > > > +             BPF_EXIT_INSN(),
-> > > > +     };
-> > > > +     int fd;
-> > > > +
-> > > > +     memset(&attr, 0, sizeof(attr));
-> > > > +     attr.prog_type = BPF_PROG_TYPE_CGROUP_SOCK;
-> > > > +     attr.expected_attach_type = BPF_CGROUP_INET_EGRESS;
-> > >
-> > > Could you clarify semantics of this function please?
-> > >
-> > > According to the name it looks like it should check whether
-> > > expected_attach_type attribute is supported or not. But
-> > > BPF_CGROUP_INET_EGRESS doesn't align with this since
-> > > expected_attach_type itself was added long before it was supported for
-> > > BPF_CGROUP_INET_EGRESS.
-> > >
-> > > For example 4fbac77d2d09 ("bpf: Hooks for sys_bind") added in Mar 2018 is
-> > > the first hook ever that used expected_attach_type.
-> > >
-> > > aac3fc320d94 ("bpf: Post-hooks for sys_bind") added a bit later is the
-> > > first hook that made expected_attach_type optional (for
-> > > BPF_CGROUP_INET_SOCK_CREATE).
-> > >
-> > > But 5cf1e9145630 ("bpf: cgroup inet skb programs can return 0 to 3") for
-> > > BPF_CGROUP_INET_EGRESS was merged more than a year after the previous
-> > > two.
-> >
-> > I'm checking if kernel is rejecting non-zero expected_attach_type
-> > field in bpf_attr for BPF_PROG_LOAD command.
-> >
-> > Before 5e43f899b03a ("bpf: Check attach type at prog load time"),
-> > kernel would reject non-zero expected_attach_type because
-> > expected_attach_type didn't exist in bpf_attr. So if that's the case,
-> > we shouldn't specify expected_attach_type.
-> >
-> > After that commit, BPF_CGROUP_INET_EGRESS for
-> > BPF_PROG_TYPE_CGROUP_SOCK would be supported, even if it is optional,
-> > so using that combination should work.
-> >
-> > Did I miss something?
->
-> So you're saying that there is nothing special about
-> BPF_CGROUP_INET_EGRESS, you just need _any_ attach type and it just
-> happened so that you used this one.
+For some types of BPF programs that utilize expected_attach_type, libbpf =
+won't
+set load_attr.expected_attach_type, even if expected_attach_type is known=
+ from
+section definition. This was done to preserve backwards compatibility wit=
+h old
+kernels that didn't recognize expected_attach_type attribute yet (which w=
+as
+added in 5e43f899b03a ("bpf: Check attach type at prog load time"). But t=
+his
+is problematic for some BPF programs that utilize never features that req=
+uire
+kernel to know specific expected_attach_type (e.g., extended set of retur=
+n
+codes for cgroup_skb/egress programs).
 
-Yes.
+This patch makes libbpf specify expected_attach_type by default, but also
+detect support for this field in kernel and not set it during program loa=
+d.
+This allows to have a good metadata for bpf_program
+(e.g., bpf_program__get_extected_attach_type()), but still work with old
+kernels (for cases where it can work at all).
 
->
-> That sounds fine, but could you clarify it with a comment please,
-> otherwise it looks confusing: "why BPF_CGROUP_INET_EGRESS and not some
-> other attach type, for example any of those which got optional
-> expected_attach_type earlier, what's so special about
-> BPF_CGROUP_INET_EGRESS".
+Additionally, due to expected_attach_type being always set for recognized
+program types, bpf_program__attach_cgroup doesn't have to do extra checks=
+ to
+determine correct attach type, so remove that additional logic.
 
-Sure.
+Also adjust section_names selftest to account for this change.
 
->
-> Also, I just realized that this combination: BPF_PROG_TYPE_CGROUP_SOCK and
-> BPF_CGROUP_INET_EGRESS is incorrect: BPF_CGROUP_INET_EGRESS attach type
-> corresponds to BPF_PROG_TYPE_CGROUP_SKB prog type, not to
-> BPF_PROG_TYPE_CGROUP_SOCK. This call will always fail with EINVAL on new
-> kernels, because of this code in bpf_prog_load_check_attach:
+More detailed discussion can be found in [0].
 
-Yep, not sure how I copy-pasted BPF_PROG_TYPE_CGROUP_SOCK instead of
-BPF_PROG_TYPE_CGROUP_SKB... My vim-foo clearly failed me here :)
+  [0] https://lore.kernel.org/bpf/20200412003604.GA15986@rdna-mbp.dhcp.th=
+efacebook.com/
 
->
->         switch (prog_type) {
->         case BPF_PROG_TYPE_CGROUP_SOCK:
->                 switch (expected_attach_type) {
->                 case BPF_CGROUP_INET_SOCK_CREATE:
->                 case BPF_CGROUP_INET4_POST_BIND:
->                 case BPF_CGROUP_INET6_POST_BIND:
->                         return 0;
->                 default:
->                         return -EINVAL;
->                 }
->
-> That should be fixed.
->
-> And since this has to be changed anyway I'd go with BPF_PROG_TYPE_CGROUP_SOCK
-> and BPF_CGROUP_INET_SOCK_CREATE combination since this is the very first
-> combination in kernel that relied on optional expected_attach_type -- that
-> would make more sense IMO. And clarifying comment as mentioned above :)
+Reported-by: Andrey Ignatov <rdna@fb.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+v1->v2:
+- fixed prog_type/expected_attach_type combo (Andrey);
+- added comment explaining what we are doing in probe_exp_attach_type (An=
+drey).
 
-Sure, sounds good, I'll use this combination instead.
+ tools/lib/bpf/libbpf.c                        | 127 ++++++++++++------
+ .../selftests/bpf/prog_tests/section_names.c  |  42 +++---
+ 2 files changed, 110 insertions(+), 59 deletions(-)
 
->
-> > > > +     attr.insns = insns;
-> > > > +     attr.insns_cnt = ARRAY_SIZE(insns);
-> > > > +     attr.license = "GPL";
-> > > > +
-> > > > +     fd = bpf_load_program_xattr(&attr, NULL, 0);
-> > > > +     if (fd >= 0) {
-> > > > +             obj->caps.exp_attach_type = 1;
-> > > > +             close(fd);
-> > > > +             return 1;
-> > > > +     }
-> > > > +     return 0;
-> > > > +}
-> > > > +
-> > > >  static int
-> > > >  bpf_object__probe_caps(struct bpf_object *obj)
-> > > >  {
-> > > > @@ -3325,6 +3370,7 @@ bpf_object__probe_caps(struct bpf_object *obj)
-> > > >               bpf_object__probe_btf_func_global,
-> > > >               bpf_object__probe_btf_datasec,
-> > > >               bpf_object__probe_array_mmap,
-> > > > +             bpf_object__probe_exp_attach_type,
-> > > >       };
-> > > >       int i, ret;
-> > > >
-> > > > @@ -4861,7 +4907,13 @@ load_program(struct bpf_program *prog, struct bpf_insn *insns, int insns_cnt,
-> > > >
-> > > >       memset(&load_attr, 0, sizeof(struct bpf_load_program_attr));
-> > > >       load_attr.prog_type = prog->type;
-> > > > -     load_attr.expected_attach_type = prog->expected_attach_type;
-> > > > +     /* old kernels might not support specifying expected_attach_type */
-> > > > +     if (!prog->caps->exp_attach_type && prog->sec_def &&
-> > > > +         prog->sec_def->is_exp_attach_type_optional)
-> > > > +             load_attr.expected_attach_type = 0;
-> > > > +     else
-> > > > +             load_attr.expected_attach_type = prog->expected_attach_type;
-> > >
-> > > I'm having a hard time checking whether it'll work for all cases or may
-> > > not work for some combination of prog/attach type and kernel version
-> > > since there are many subtleties.
-> > >
-> > > For example BPF_PROG_TYPE_CGROUP_SOCK has both a hook where
-> > > expected_attach_type is optional (BPF_CGROUP_INET_SOCK_CREATE) and hooks
-> > > where it's required (BPF_CGROUP_INET{4,6}_POST_BIND), and there
-> > > bpf_prog_load_fixup_attach_type() function in always sets
-> > > expected_attach_type if it's not yet.
-> >
-> > Right, so we use the fact that they are allowed, even if optional.
-> > Libbpf should provide correct expected_attach_type, according to
-> > section definitions and kernel should be happy (unless user specified
-> > wrong section name, of course, but we can't help that).
-> >
-> > >
-> > > But I don't have context on all hooks that can be affected by this
-> > > change and could easily miss something.
-> > >
-> > > Ideally it should be verified by tests. Current section_names.c test
-> > > only verifies what will be returned, but AFAIK there is no test that
-> > > checks whether provided combination of prog_type/expected_attach_type at
-> > > load time and attach_type at attach time would actually work both on
-> > > current and old kernels. Do you think it's possible to add such a
-> > > selftest? (current libbpf CI supports running on old kernels, doesn't
-> > > it?)
-> >
-> > So all the existing selftests are essentially verifying this, if run
-> > on old kernel. I don't think libbpf currently runs tests on such old
-> > kernels, though. But there is no extra selftest that we need to add,
-> > because every single existing one will execute this piece of libbpf
-> > logic.
->
-> Apparently existing tests didn't catch the very obvious bug with
-> BPF_PROG_TYPE_CGROUP_SOCK / BPF_CGROUP_INET_EGRESS invalid combination.
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index ff9174282a8c..c7393182e2ae 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -178,6 +178,8 @@ struct bpf_capabilities {
+ 	__u32 array_mmap:1;
+ 	/* BTF_FUNC_GLOBAL is supported */
+ 	__u32 btf_func_global:1;
++	/* kernel support for expected_attach_type in BPF_PROG_LOAD */
++	__u32 exp_attach_type:1;
+ };
+=20
+ enum reloc_type {
+@@ -194,6 +196,22 @@ struct reloc_desc {
+ 	int sym_off;
+ };
+=20
++struct bpf_sec_def;
++
++typedef struct bpf_link *(*attach_fn_t)(const struct bpf_sec_def *sec,
++					struct bpf_program *prog);
++
++struct bpf_sec_def {
++	const char *sec;
++	size_t len;
++	enum bpf_prog_type prog_type;
++	enum bpf_attach_type expected_attach_type;
++	bool is_exp_attach_type_optional;
++	bool is_attachable;
++	bool is_attach_btf;
++	attach_fn_t attach_fn;
++};
++
+ /*
+  * bpf_prog should be a better name but it has been used in
+  * linux/filter.h.
+@@ -204,6 +222,7 @@ struct bpf_program {
+ 	char *name;
+ 	int prog_ifindex;
+ 	char *section_name;
++	const struct bpf_sec_def *sec_def;
+ 	/* section_name with / replaced by _; makes recursive pinning
+ 	 * in bpf_object__pin_programs easier
+ 	 */
+@@ -3315,6 +3334,37 @@ static int bpf_object__probe_array_mmap(struct bpf=
+_object *obj)
+ 	return 0;
+ }
+=20
++static int
++bpf_object__probe_exp_attach_type(struct bpf_object *obj)
++{
++	struct bpf_load_program_attr attr;
++	struct bpf_insn insns[] =3D {
++		BPF_MOV64_IMM(BPF_REG_0, 0),
++		BPF_EXIT_INSN(),
++	};
++	int fd;
++
++	memset(&attr, 0, sizeof(attr));
++	/* use any valid combination of program type and (optional)
++	 * non-zero expected attach type (i.e., not a BPF_CGROUP_INET_INGRESS)
++	 * to see if kernel supports expected_attach_type field for
++	 * BPF_PROG_LOAD command
++	 */
++	attr.prog_type =3D BPF_PROG_TYPE_CGROUP_SOCK;
++	attr.expected_attach_type =3D BPF_CGROUP_INET_SOCK_CREATE;
++	attr.insns =3D insns;
++	attr.insns_cnt =3D ARRAY_SIZE(insns);
++	attr.license =3D "GPL";
++
++	fd =3D bpf_load_program_xattr(&attr, NULL, 0);
++	if (fd >=3D 0) {
++		obj->caps.exp_attach_type =3D 1;
++		close(fd);
++		return 1;
++	}
++	return 0;
++}
++
+ static int
+ bpf_object__probe_caps(struct bpf_object *obj)
+ {
+@@ -3325,6 +3375,7 @@ bpf_object__probe_caps(struct bpf_object *obj)
+ 		bpf_object__probe_btf_func_global,
+ 		bpf_object__probe_btf_datasec,
+ 		bpf_object__probe_array_mmap,
++		bpf_object__probe_exp_attach_type,
+ 	};
+ 	int i, ret;
+=20
+@@ -4861,7 +4912,12 @@ load_program(struct bpf_program *prog, struct bpf_=
+insn *insns, int insns_cnt,
+=20
+ 	memset(&load_attr, 0, sizeof(struct bpf_load_program_attr));
+ 	load_attr.prog_type =3D prog->type;
+-	load_attr.expected_attach_type =3D prog->expected_attach_type;
++	/* old kernels might not support specifying expected_attach_type */
++	if (!prog->caps->exp_attach_type && prog->sec_def &&
++	    prog->sec_def->is_exp_attach_type_optional)
++		load_attr.expected_attach_type =3D 0;
++	else
++		load_attr.expected_attach_type =3D prog->expected_attach_type;
+ 	if (prog->caps->name)
+ 		load_attr.name =3D prog->name;
+ 	load_attr.insns =3D insns;
+@@ -5062,6 +5118,8 @@ bpf_object__load_progs(struct bpf_object *obj, int =
+log_level)
+ 	return 0;
+ }
+=20
++static const struct bpf_sec_def *find_sec_def(const char *sec_name);
++
+ static struct bpf_object *
+ __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf=
+_sz,
+ 		   const struct bpf_object_open_opts *opts)
+@@ -5117,24 +5175,17 @@ __bpf_object__open(const char *path, const void *=
+obj_buf, size_t obj_buf_sz,
+ 	bpf_object__elf_finish(obj);
+=20
+ 	bpf_object__for_each_program(prog, obj) {
+-		enum bpf_prog_type prog_type;
+-		enum bpf_attach_type attach_type;
+-
+-		if (prog->type !=3D BPF_PROG_TYPE_UNSPEC)
+-			continue;
+-
+-		err =3D libbpf_prog_type_by_name(prog->section_name, &prog_type,
+-					       &attach_type);
+-		if (err =3D=3D -ESRCH)
++		prog->sec_def =3D find_sec_def(prog->section_name);
++		if (!prog->sec_def)
+ 			/* couldn't guess, but user might manually specify */
+ 			continue;
+-		if (err)
+-			goto out;
+=20
+-		bpf_program__set_type(prog, prog_type);
+-		bpf_program__set_expected_attach_type(prog, attach_type);
+-		if (prog_type =3D=3D BPF_PROG_TYPE_TRACING ||
+-		    prog_type =3D=3D BPF_PROG_TYPE_EXT)
++		bpf_program__set_type(prog, prog->sec_def->prog_type);
++		bpf_program__set_expected_attach_type(prog,
++				prog->sec_def->expected_attach_type);
++
++		if (prog->sec_def->prog_type =3D=3D BPF_PROG_TYPE_TRACING ||
++		    prog->sec_def->prog_type =3D=3D BPF_PROG_TYPE_EXT)
+ 			prog->attach_prog_fd =3D OPTS_GET(opts, attach_prog_fd, 0);
+ 	}
+=20
+@@ -6223,23 +6274,33 @@ void bpf_program__set_expected_attach_type(struct=
+ bpf_program *prog,
+ 	prog->expected_attach_type =3D type;
+ }
+=20
+-#define BPF_PROG_SEC_IMPL(string, ptype, eatype, is_attachable, btf, aty=
+pe) \
+-	{ string, sizeof(string) - 1, ptype, eatype, is_attachable, btf, atype =
+}
++#define BPF_PROG_SEC_IMPL(string, ptype, eatype, eatype_optional,	    \
++			  attachable, attach_btf)			    \
++	{								    \
++		.sec =3D string,						    \
++		.len =3D sizeof(string) - 1,				    \
++		.prog_type =3D ptype,					    \
++		.sec =3D string,						    \
++		.expected_attach_type =3D eatype,				    \
++		.is_exp_attach_type_optional =3D eatype_optional,		    \
++		.is_attachable =3D attachable,				    \
++		.is_attach_btf =3D attach_btf,				    \
++	}
+=20
+ /* Programs that can NOT be attached. */
+ #define BPF_PROG_SEC(string, ptype) BPF_PROG_SEC_IMPL(string, ptype, 0, =
+0, 0, 0)
+=20
+ /* Programs that can be attached. */
+ #define BPF_APROG_SEC(string, ptype, atype) \
+-	BPF_PROG_SEC_IMPL(string, ptype, 0, 1, 0, atype)
++	BPF_PROG_SEC_IMPL(string, ptype, atype, true, 1, 0)
+=20
+ /* Programs that must specify expected attach type at load time. */
+ #define BPF_EAPROG_SEC(string, ptype, eatype) \
+-	BPF_PROG_SEC_IMPL(string, ptype, eatype, 1, 0, eatype)
++	BPF_PROG_SEC_IMPL(string, ptype, eatype, false, 1, 0)
+=20
+ /* Programs that use BTF to identify attach point */
+ #define BPF_PROG_BTF(string, ptype, eatype) \
+-	BPF_PROG_SEC_IMPL(string, ptype, eatype, 0, 1, 0)
++	BPF_PROG_SEC_IMPL(string, ptype, eatype, false, 0, 1)
+=20
+ /* Programs that can be attached but attach type can't be identified by =
+section
+  * name. Kept for backward compatibility.
+@@ -6253,11 +6314,6 @@ void bpf_program__set_expected_attach_type(struct =
+bpf_program *prog,
+ 	__VA_ARGS__							    \
+ }
+=20
+-struct bpf_sec_def;
+-
+-typedef struct bpf_link *(*attach_fn_t)(const struct bpf_sec_def *sec,
+-					struct bpf_program *prog);
+-
+ static struct bpf_link *attach_kprobe(const struct bpf_sec_def *sec,
+ 				      struct bpf_program *prog);
+ static struct bpf_link *attach_tp(const struct bpf_sec_def *sec,
+@@ -6269,17 +6325,6 @@ static struct bpf_link *attach_trace(const struct =
+bpf_sec_def *sec,
+ static struct bpf_link *attach_lsm(const struct bpf_sec_def *sec,
+ 				   struct bpf_program *prog);
+=20
+-struct bpf_sec_def {
+-	const char *sec;
+-	size_t len;
+-	enum bpf_prog_type prog_type;
+-	enum bpf_attach_type expected_attach_type;
+-	bool is_attachable;
+-	bool is_attach_btf;
+-	enum bpf_attach_type attach_type;
+-	attach_fn_t attach_fn;
+-};
+-
+ static const struct bpf_sec_def section_defs[] =3D {
+ 	BPF_PROG_SEC("socket",			BPF_PROG_TYPE_SOCKET_FILTER),
+ 	BPF_PROG_SEC("sk_reuseport",		BPF_PROG_TYPE_SK_REUSEPORT),
+@@ -6713,7 +6758,7 @@ int libbpf_attach_type_by_name(const char *name,
+ 			continue;
+ 		if (!section_defs[i].is_attachable)
+ 			return -EINVAL;
+-		*attach_type =3D section_defs[i].attach_type;
++		*attach_type =3D section_defs[i].expected_attach_type;
+ 		return 0;
+ 	}
+ 	pr_debug("failed to guess attach type based on ELF section name '%s'\n"=
+, name);
+@@ -7542,7 +7587,6 @@ static struct bpf_link *attach_lsm(const struct bpf=
+_sec_def *sec,
+ struct bpf_link *
+ bpf_program__attach_cgroup(struct bpf_program *prog, int cgroup_fd)
+ {
+-	const struct bpf_sec_def *sec_def;
+ 	enum bpf_attach_type attach_type;
+ 	char errmsg[STRERR_BUFSIZE];
+ 	struct bpf_link *link;
+@@ -7561,11 +7605,6 @@ bpf_program__attach_cgroup(struct bpf_program *pro=
+g, int cgroup_fd)
+ 	link->detach =3D &bpf_link__detach_fd;
+=20
+ 	attach_type =3D bpf_program__get_expected_attach_type(prog);
+-	if (!attach_type) {
+-		sec_def =3D find_sec_def(bpf_program__title(prog, false));
+-		if (sec_def)
+-			attach_type =3D sec_def->attach_type;
+-	}
+ 	link_fd =3D bpf_link_create(prog_fd, cgroup_fd, attach_type, NULL);
+ 	if (link_fd < 0) {
+ 		link_fd =3D -errno;
+diff --git a/tools/testing/selftests/bpf/prog_tests/section_names.c b/too=
+ls/testing/selftests/bpf/prog_tests/section_names.c
+index 9d9351dc2ded..713167449c98 100644
+--- a/tools/testing/selftests/bpf/prog_tests/section_names.c
++++ b/tools/testing/selftests/bpf/prog_tests/section_names.c
+@@ -43,18 +43,18 @@ static struct sec_name_test tests[] =3D {
+ 	{"lwt_seg6local", {0, BPF_PROG_TYPE_LWT_SEG6LOCAL, 0}, {-EINVAL, 0} },
+ 	{
+ 		"cgroup_skb/ingress",
+-		{0, BPF_PROG_TYPE_CGROUP_SKB, 0},
++		{0, BPF_PROG_TYPE_CGROUP_SKB, BPF_CGROUP_INET_INGRESS},
+ 		{0, BPF_CGROUP_INET_INGRESS},
+ 	},
+ 	{
+ 		"cgroup_skb/egress",
+-		{0, BPF_PROG_TYPE_CGROUP_SKB, 0},
++		{0, BPF_PROG_TYPE_CGROUP_SKB, BPF_CGROUP_INET_EGRESS},
+ 		{0, BPF_CGROUP_INET_EGRESS},
+ 	},
+ 	{"cgroup/skb", {0, BPF_PROG_TYPE_CGROUP_SKB, 0}, {-EINVAL, 0} },
+ 	{
+ 		"cgroup/sock",
+-		{0, BPF_PROG_TYPE_CGROUP_SOCK, 0},
++		{0, BPF_PROG_TYPE_CGROUP_SOCK, BPF_CGROUP_INET_SOCK_CREATE},
+ 		{0, BPF_CGROUP_INET_SOCK_CREATE},
+ 	},
+ 	{
+@@ -69,26 +69,38 @@ static struct sec_name_test tests[] =3D {
+ 	},
+ 	{
+ 		"cgroup/dev",
+-		{0, BPF_PROG_TYPE_CGROUP_DEVICE, 0},
++		{0, BPF_PROG_TYPE_CGROUP_DEVICE, BPF_CGROUP_DEVICE},
+ 		{0, BPF_CGROUP_DEVICE},
+ 	},
+-	{"sockops", {0, BPF_PROG_TYPE_SOCK_OPS, 0}, {0, BPF_CGROUP_SOCK_OPS} },
++	{
++		"sockops",
++		{0, BPF_PROG_TYPE_SOCK_OPS, BPF_CGROUP_SOCK_OPS},
++		{0, BPF_CGROUP_SOCK_OPS},
++	},
+ 	{
+ 		"sk_skb/stream_parser",
+-		{0, BPF_PROG_TYPE_SK_SKB, 0},
++		{0, BPF_PROG_TYPE_SK_SKB, BPF_SK_SKB_STREAM_PARSER},
+ 		{0, BPF_SK_SKB_STREAM_PARSER},
+ 	},
+ 	{
+ 		"sk_skb/stream_verdict",
+-		{0, BPF_PROG_TYPE_SK_SKB, 0},
++		{0, BPF_PROG_TYPE_SK_SKB, BPF_SK_SKB_STREAM_VERDICT},
+ 		{0, BPF_SK_SKB_STREAM_VERDICT},
+ 	},
+ 	{"sk_skb", {0, BPF_PROG_TYPE_SK_SKB, 0}, {-EINVAL, 0} },
+-	{"sk_msg", {0, BPF_PROG_TYPE_SK_MSG, 0}, {0, BPF_SK_MSG_VERDICT} },
+-	{"lirc_mode2", {0, BPF_PROG_TYPE_LIRC_MODE2, 0}, {0, BPF_LIRC_MODE2} },
++	{
++		"sk_msg",
++		{0, BPF_PROG_TYPE_SK_MSG, BPF_SK_MSG_VERDICT},
++		{0, BPF_SK_MSG_VERDICT},
++	},
++	{
++		"lirc_mode2",
++		{0, BPF_PROG_TYPE_LIRC_MODE2, BPF_LIRC_MODE2},
++		{0, BPF_LIRC_MODE2},
++	},
+ 	{
+ 		"flow_dissector",
+-		{0, BPF_PROG_TYPE_FLOW_DISSECTOR, 0},
++		{0, BPF_PROG_TYPE_FLOW_DISSECTOR, BPF_FLOW_DISSECTOR},
+ 		{0, BPF_FLOW_DISSECTOR},
+ 	},
+ 	{
+@@ -158,17 +170,17 @@ static void test_prog_type_by_name(const struct sec=
+_name_test *test)
+ 				      &expected_attach_type);
+=20
+ 	CHECK(rc !=3D test->expected_load.rc, "check_code",
+-	      "prog: unexpected rc=3D%d for %s", rc, test->sec_name);
++	      "prog: unexpected rc=3D%d for %s\n", rc, test->sec_name);
+=20
+ 	if (rc)
+ 		return;
+=20
+ 	CHECK(prog_type !=3D test->expected_load.prog_type, "check_prog_type",
+-	      "prog: unexpected prog_type=3D%d for %s",
++	      "prog: unexpected prog_type=3D%d for %s\n",
+ 	      prog_type, test->sec_name);
+=20
+ 	CHECK(expected_attach_type !=3D test->expected_load.expected_attach_typ=
+e,
+-	      "check_attach_type", "prog: unexpected expected_attach_type=3D%d =
+for %s",
++	      "check_attach_type", "prog: unexpected expected_attach_type=3D%d =
+for %s\n",
+ 	      expected_attach_type, test->sec_name);
+ }
+=20
+@@ -180,13 +192,13 @@ static void test_attach_type_by_name(const struct s=
+ec_name_test *test)
+ 	rc =3D libbpf_attach_type_by_name(test->sec_name, &attach_type);
+=20
+ 	CHECK(rc !=3D test->expected_attach.rc, "check_ret",
+-	      "attach: unexpected rc=3D%d for %s", rc, test->sec_name);
++	      "attach: unexpected rc=3D%d for %s\n", rc, test->sec_name);
+=20
+ 	if (rc)
+ 		return;
+=20
+ 	CHECK(attach_type !=3D test->expected_attach.attach_type,
+-	      "check_attach_type", "attach: unexpected attach_type=3D%d for %s"=
+,
++	      "check_attach_type", "attach: unexpected attach_type=3D%d for %s\=
+n",
+ 	      attach_type, test->sec_name);
+ }
+=20
+--=20
+2.24.1
 
-Sigh.. yeah. I expected cgroup_link test to fail if that functionality
-didn't work, but I missed that bpf_program__attach_cgroup() code will
-use correct expected_attach_type, even if it's not provided to
-BPF_PROG_LOAD.
-
->
-> I think it'd be useful to start with at least basic test focused on
-> expected_attach_type. Then later extend it to new attach types when they're
-> being added and, ideally, to existing ones.
-
-How this test should look like? I can make a test that will work only
-on new kernel (e.g., by using cgroup program which needs
-expected_attach_type), but it will fail on old kernels. There doesn't
-seem to be a way to query expected_attach_type from kernel. Any hints
-on how to make test that will pass on old and new kernels and will
-validate expected_attach_type is passed properly?
-
->
->
-> > > > +     pr_warn("prog %s exp_Attach %d\n", prog->name, load_attr.expected_attach_type);
-> > > >       if (prog->caps->name)
-> > > >               load_attr.name = prog->name;
-> > > >       load_attr.insns = insns;
-> > > > @@ -5062,6 +5114,8 @@ bpf_object__load_progs(struct bpf_object *obj, int log_level)
-> > > >       return 0;
-> > > >  }
-> > > >
-> >
-> > trimming irrelevant parts is good ;)
->
-> ack
->
-> --
-> Andrey Ignatov
