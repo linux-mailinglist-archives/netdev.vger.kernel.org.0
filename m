@@ -2,72 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 836A21A7082
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 03:20:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA9EB1A7088
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 03:25:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390730AbgDNBTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 21:19:47 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:39054 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728066AbgDNBTp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 21:19:45 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03E1JhCF055849;
-        Tue, 14 Apr 2020 01:19:43 GMT
+        id S2390753AbgDNBY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 21:24:57 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:49976 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390741AbgDNBY4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 21:24:56 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03E1JIrj095309;
+        Tue, 14 Apr 2020 01:24:53 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : subject :
  from : references : date : in-reply-to : message-id : mime-version :
  content-type; s=corp-2020-01-29;
- bh=4EDrHyItOx5LQY1DZik4qSxP4G3bwbP+YcN/xSRvfAs=;
- b=WVsjZQzQ1/saRkAdS27NUajKeNB+4GxX5w8bx8KWUVhEBJ7YqZBPUP84XwHi/StcvcD4
- 7j/RwP+dgVgh3CFj6Mi3IgqyVVMGagCtKgxKWCoxBMx1s3ivCGtO3GZLbsUmnxE2IHT6
- sxUeEEQR0Eq2SpysCZSz002s1Q5jC6CHgiMrjIuaa086bYG0p6z6DQ7z9PsC1U5HGtPU
- nEwa67wZetVgcMm5FKrv1S53CJGwxBFEcUYjleclKU8fUKo3I0mtFpX11v8MJAK38EXT
- FysqH4u7VMSleriyuFXjHiBEh8o/g3pmKOizPpMwovGeSJfuzir3rL3Rf8qHE/QBdqWd GQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2130.oracle.com with ESMTP id 30b5ar1m97-1
+ bh=8Dzc/Rdxg9baUsL+8G2kiH09PeA7zFg8dzOcM3LFkfw=;
+ b=JU4xcHeMbobiL0q91tdu9sl/z9XCFjLkxgfS0any7Dfvp8kXUcNCPXA7eBap8DclT5x7
+ q22bugngmKLof4cAmI3mXhA3IGnrHLbRVe6gBRSz7yMbi6tBhTanRiNhNpyKut4ae+sF
+ gaEYBBWmuZE5hO/8P4/KxlqMZ2WovIZDi4+An/sVburRoMebTlMvpU1rC2O8I68bjzrJ
+ Nu2se1tYGqwsEcS/KJ8J9Aowf/wMAgcJDZQN856tvXx3wFUVP7dGV7sf1OuuoNQhP6VI
+ 9VSfQvWxlU8td3psML6MytLx4DpzUg1THtcnm3SUlWLb1e2UaKB9DBNV5CpQH5g4uRa5 lQ== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2120.oracle.com with ESMTP id 30b6hphkf8-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 14 Apr 2020 01:19:43 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03E1HipX196071;
-        Tue, 14 Apr 2020 01:19:42 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3030.oracle.com with ESMTP id 30bqcfvs48-1
+        Tue, 14 Apr 2020 01:24:53 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03E1GuM4030175;
+        Tue, 14 Apr 2020 01:22:53 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3020.oracle.com with ESMTP id 30bqm01fmk-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 14 Apr 2020 01:19:42 +0000
-Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 03E1Jgmn017687;
-        Tue, 14 Apr 2020 01:19:42 GMT
+        Tue, 14 Apr 2020 01:22:53 +0000
+Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 03E1MqMp007616;
+        Tue, 14 Apr 2020 01:22:52 GMT
 Received: from ca-mkp.ca.oracle.com (/10.159.214.123)
         by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 13 Apr 2020 18:19:40 -0700
+        with ESMTP ; Mon, 13 Apr 2020 18:22:51 -0700
 To:     Saurav Kashyap <skashyap@marvell.com>
 Cc:     <martin.petersen@oracle.com>,
         <GR-QLogic-Storage-Upstream@marvell.com>,
         <linux-scsi@vger.kernel.org>, <jhasan@marvell.com>,
         <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3 1/7] qedf: Keep track of num of pending flogi.
+Subject: Re: [PATCH v3 2/7] qedf: Fix for the deviations from the SAM-4 spec.
 From:   "Martin K. Petersen" <martin.petersen@oracle.com>
 Organization: Oracle Corporation
 References: <20200403120957.2431-1-skashyap@marvell.com>
-        <20200403120957.2431-2-skashyap@marvell.com>
-Date:   Mon, 13 Apr 2020 21:19:38 -0400
-In-Reply-To: <20200403120957.2431-2-skashyap@marvell.com> (Saurav Kashyap's
-        message of "Fri, 3 Apr 2020 05:09:51 -0700")
-Message-ID: <yq17dyivp79.fsf@oracle.com>
+        <20200403120957.2431-3-skashyap@marvell.com>
+Date:   Mon, 13 Apr 2020 21:22:49 -0400
+In-Reply-To: <20200403120957.2431-3-skashyap@marvell.com> (Saurav Kashyap's
+        message of "Fri, 3 Apr 2020 05:09:52 -0700")
+Message-ID: <yq13696vp1y.fsf@oracle.com>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1.92 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9590 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxlogscore=874
- bulkscore=0 malwarescore=0 phishscore=0 mlxscore=0 spamscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=846
+ adultscore=0 mlxscore=0 phishscore=0 malwarescore=0 spamscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2003020000 definitions=main-2004140008
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9590 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 impostorscore=0
- clxscore=1011 priorityscore=1501 malwarescore=0 phishscore=0 spamscore=0
- mlxlogscore=942 suspectscore=0 adultscore=0 mlxscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
- definitions=main-2004140008
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 adultscore=0
+ mlxlogscore=906 clxscore=1015 mlxscore=0 phishscore=0 suspectscore=0
+ lowpriorityscore=0 bulkscore=0 malwarescore=0 priorityscore=1501
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2004140008
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -76,32 +76,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Saurav,
 
-Please, no "." at the end of Subject: lines.
+This should be 3 patches since there are 3 different functional
+changes.
 
-> - Problem: Port not coming up after bringing down the port
->   for longer duration.
-> - Bring down the port from the switch
-> - wait for fipvlan to exhaust, driver will use
->   default vlan (1002) and call fcoe_ctlr_link_up
-> - libfc/fcoe will start sending FLOGI
-> - bring back the port and switch discard FLOGI
->   because vlan is different.
-> - keep track of pending flogi and if it increases
->   certain number then do ctx reset and it will do
->   fipvlan again.
+> - Upper limit for retry delay(QEDF_RETRY_DELAY_MAX)
+>   increased from 20 sec to 1 min.
 
-That doesn't look like a proper commit message.
+> - Log an event/message indicating throttling of I/O
+>   for the target and include scope and retry delay
+>   time returned by the target and the driver enforced delay.
 
-How about something like:
+> - Synchronizing the update of the fcport->retry_delay_timestamp
+>   between qedf_queuecommand() and qedf_scsi_completion().
 
-    If a port is brought down for an extended period of time, the
-    fipvlan counter gets exhausted and the driver will fall back to
-    default VLAN 1002 and call fcoe_ctlr_link_up to log in. However, the
-    switch will discard the FLOGI attempt because the VLAN is now
-    different.
+"Synchronize".
 
-    Keep track of the number of FLOGI attempts and if a threshold of
-    QEDF_FLOGI_RETRY_CNT is exceeded, perform a context soft reset.
+Please describe why this needs to be synchronized.
 
 -- 
 Martin K. Petersen	Oracle Linux Engineering
