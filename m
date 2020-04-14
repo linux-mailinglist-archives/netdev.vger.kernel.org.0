@@ -2,344 +2,266 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E6B11A7178
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 05:07:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99B971A71F7
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 05:41:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404426AbgDNDHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 23:07:16 -0400
-Received: from mail-vi1eur05on2086.outbound.protection.outlook.com ([40.107.21.86]:44417
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2404405AbgDNDHP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Apr 2020 23:07:15 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=atrwX7R0MfMpAcG05mBfcx4c/rDWcAJ6lqyyVR0xbd6KciBwSk3ThKiwEd7umQXEdhAl7zMTXtJ3WvHKblcgSqh8o1D9x1ZL/9Tvz8JMZ8nehiRU34xX9qDyp3KPPMjMeUDOw3bzk0hMaYkdKJWk/LGYzWgE2Yc9N+fm+y+nDEiHIrr5GRXwmYG89kDTd/NSOSPFCn968/PXQwxuzDP1EZjV1waJpwcM6PGDbiirIEN6yMmrkXmygoOzmiQeOLqHkJn3uA7IOfLAYLhl2Ts3pfsBa7KNAyHIm9fcI9agBdz1eFG2Crd/CnTtc6lV7AgPtc/oMFOtLwQdVAaJv17XOQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a9Q9DUfXsM9jhLdgpDdVSYvd6NbK4JQnud72hXp3iOA=;
- b=aveaWFeCO8ikO000cTR+LWge15WVLA59plAb0pGGoiudnlL5ggbaTgtXHhBysP7yF8OZv9/jiVzGz94EuynrQPwdxTXQcEWL5tZlEqcjXtF9YAueAT0ATJPtl/+TnLj6q+DVtouOceO6DijvcMcLegr1sPw7Nr4mTq6MQEL3Fw5GjMEWO7I7Q7GqNJ2trIX1ONvnlNco6uQkkiIYwV2dleH3onSeUO72a4b9uPb1duHqSjdRr/dLAHEDto/1THJ/KllG/8SZvL6QyePgDR7U16dsgiacEzq/dXFElgnW09e80BDYkaIaE1DMcpPCi18FFGAzHjxncAS8VAjX4m5okg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a9Q9DUfXsM9jhLdgpDdVSYvd6NbK4JQnud72hXp3iOA=;
- b=L98a49XEmjfgJWOPM6zUWQ83NLhFSVpQIc+Un4eA10lL5habDS6KboEPtvhV1KP8Z6bMJtHwVy3vePSIM6vmPCQpM9qo8hzb1A4gVik2F10pYnfoM+a9NFUV8lgJ3GwT2yHrcQ2Vhkm5Q+ckrB2XOHQzzPIPZNE7zQg+w8wTck8=
-Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com (2603:10a6:803:7::18)
- by VI1PR0402MB3470.eurprd04.prod.outlook.com (2603:10a6:803:10::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2900.28; Tue, 14 Apr
- 2020 03:07:10 +0000
-Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com
- ([fe80::d411:cfdb:bf:2b14]) by VI1PR0402MB3600.eurprd04.prod.outlook.com
- ([fe80::d411:cfdb:bf:2b14%7]) with mapi id 15.20.2900.028; Tue, 14 Apr 2020
- 03:07:09 +0000
-From:   Andy Duan <fugang.duan@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
-CC:     netdev <netdev@vger.kernel.org>,
-        Chris Healy <Chris.Healy@zii.aero>,
-        Chris Heally <cphealy@gmail.com>
-Subject: RE: [EXT] [PATCH] net: ethernet: fec: Replace interrupt driven MDIO
- with polled IO
-Thread-Topic: [EXT] [PATCH] net: ethernet: fec: Replace interrupt driven MDIO
- with polled IO
-Thread-Index: AQHWEfYVWKKbuFIKoUCCrpamVzdoDKh37gfg
-Date:   Tue, 14 Apr 2020 03:07:09 +0000
-Message-ID: <VI1PR0402MB3600B82EE105E43BD20E2190FFDA0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
-References: <20200414004551.607503-1-andrew@lunn.ch>
-In-Reply-To: <20200414004551.607503-1-andrew@lunn.ch>
+        id S2404919AbgDNDlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 23:41:44 -0400
+Received: from unicom146.biz-email.net ([210.51.26.146]:4025 "EHLO
+        unicom146.biz-email.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404915AbgDNDll (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 23:41:41 -0400
+Received: from ([60.208.111.195])
+        by unicom146.biz-email.net (Antispam) with ASMTP (SSL) id GHD17110;
+        Tue, 14 Apr 2020 11:41:10 +0800
+Received: from jtjnmail201605.home.langchao.com (10.100.2.5) by
+ jtjnmail201604.home.langchao.com (10.100.2.4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1591.10; Tue, 14 Apr 2020 11:41:15 +0800
+Received: from jtjnmail201605.home.langchao.com ([fe80::8d20:4cc5:1116:d16e])
+ by jtjnmail201605.home.langchao.com ([fe80::8d20:4cc5:1116:d16e%8]) with mapi
+ id 15.01.1591.008; Tue, 14 Apr 2020 11:41:15 +0800
+From:   =?utf-8?B?WWkgWWFuZyAo5p2o54eaKS3kupHmnI3liqHpm4blm6I=?= 
+        <yangyi01@inspur.com>
+To:     "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>
+CC:     "yang_y_yi@163.com" <yang_y_yi@163.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "u9012063@gmail.com" <u9012063@gmail.com>
+Subject: =?utf-8?B?562U5aSNOiBbdmdlci5rZXJuZWwub3Jn5Luj5Y+RXVJlOiBbdmdlci5rZXJu?=
+ =?utf-8?B?ZWwub3Jn5Luj5Y+RXVJlOiBbdmdlci5rZXJuZWwub3Jn5LujICAgICAgICA=?=
+ =?utf-8?B?5Y+RXVJlOiBbUEFUQ0ggbmV0LW5leHRdIG5ldC8gcGFja2V0OiBmaXggVFBB?=
+ =?utf-8?B?Q0tFVF9WMyBwZXJmb3JtICAgICAgICBhbmNlIGlzc3VlIGluIGNhc2Ugb2Yg?=
+ =?utf-8?Q?TSO?=
+Thread-Topic: =?utf-8?B?W3ZnZXIua2VybmVsLm9yZ+S7o+WPkV1SZTogW3ZnZXIua2VybmVsLm9yZw==?=
+ =?utf-8?B?5Luj5Y+RXVJlOiBbdmdlci5rZXJuZWwub3Jn5LujICAgICAgICDlj5FdUmU6?=
+ =?utf-8?B?IFtQQVRDSCBuZXQtbmV4dF0gbmV0LyBwYWNrZXQ6IGZpeCBUUEFDS0VUX1Yz?=
+ =?utf-8?Q?_perform________ance_issue_in_case_of_TSO?=
+Thread-Index: AQHWBp4/s4cxaayG9kGsfPcl6U0K66h4CKhA
+Importance: high
+X-Priority: 1
+Date:   Tue, 14 Apr 2020 03:41:14 +0000
+Message-ID: <9380edd337474a96ad427cc2a2256e5f@inspur.com>
+References: <2786b9598d534abf1f3d11357fa9b5f5@sslemail.net>
+ <CA+FuTSf5U_ndpmBisjqLMihx0q+wCrqndDAUT1vF3=1DXJnumw@mail.gmail.com>
+ <25b83b5245104a30977b042a886aa674@inspur.com>
+ <CAF=yD-LAWc0POejfaB_xRW97BoVdLd6s6kjATyjDFBoK1aP-9Q@mail.gmail.com>
+ <31e6d4edec0146e08cb3603ad6c2be4c@inspur.com>
+ <CA+FuTSfG2J-5pu4kieXHm7d4giv4qXmwXBBHtJf0EcB1=83UOw@mail.gmail.com>
+ <de32975979434430b914de00916bee95@inspur.com>
+ <CA+FuTSe6vkWNq03zxP9Cbx4oj38sf1omeajh5fZRywouyADO6g@mail.gmail.com>
+ <d81dbd7adfbe4bf3ba23649c5d3af59f@inspur.com>
+ <CA+FuTScQfrHFdYYuwB6kWezPLCxs5dQH-hk7Vt9D4SQLzcbLXg@mail.gmail.com>
+ <934640b05d7f46848ba2636fcc0b1e34@inspur.com>
+ <CA+FuTSf5sUxoNTSurptYAq9UGVoDAxPRLHrKHmT0r-QBm=wRmw@mail.gmail.com>
+In-Reply-To: <CA+FuTSf5sUxoNTSurptYAq9UGVoDAxPRLHrKHmT0r-QBm=wRmw@mail.gmail.com>
 Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
+Content-Language: zh-CN
+X-MS-Has-Attach: yes
 X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=fugang.duan@nxp.com; 
-x-originating-ip: [101.86.1.66]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 9dc76493-cc0a-4264-5a63-08d7e020ebd0
-x-ms-traffictypediagnostic: VI1PR0402MB3470:|VI1PR0402MB3470:
-x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-x-microsoft-antispam-prvs: <VI1PR0402MB3470BF917A606EF469933A59FFDA0@VI1PR0402MB3470.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3968;
-x-forefront-prvs: 0373D94D15
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3600.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(346002)(366004)(136003)(39860400002)(396003)(376002)(66476007)(55016002)(86362001)(478600001)(26005)(66946007)(7696005)(66446008)(66556008)(76116006)(64756008)(9686003)(33656002)(2906002)(8936002)(5660300002)(6506007)(81156014)(110136005)(54906003)(316002)(71200400001)(4326008)(52536014)(186003)(8676002);DIR:OUT;SFP:1101;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 3phu3Ibx9cj9GF1gTnd1coKliqI5H3dXAHlDk9JJn6S4MP63s75RnfLM3qsdD8hoTJ+c5RiUmW8lLCc/8VsW82P0hpYWrs88S6THQog5C5lAuE2vCTNJEwqxLR8whfElCwZMggkvKbDr9r5MUCf+0HWAaMQhcRURs3Mrdvo+uDPxn+AkJB93qtlQC+KTxbpDIIq4m4sObdOtbqgF/kWI5CqBtgzSxIgv68y807rgAKdS0DXqCxi17tbDgbU3D0XLzVKX5NagKOZVp3dMLX4IWF/YIFoco1w3k5t0tez8CQmE9z092H4Rj1P+Kl6OPnrX1qGfxRA7ChH2+TDFoaC6L9c/zxu+br8JLFhjNpRUbwSwOY/3N16hZMoLrotyLnCLdnA1Fi/wTLksaipEzNHyFikAIG58feuBp03YFIfF6KLHN+NaXxRDZK/v30sfYaJx
-x-ms-exchange-antispam-messagedata: K7J+jKfYNnZ1Uckvp+/DT2C9A/hi8oaVcqITjDNFVc1ZUyzjPDvoTGFAImoXPNhJZy8qWRbdN8HBx5tklv9RaXbOv1V6FLUmdjsluhQHfIRl48hT/U3waH92Cz9M56hCBESEZB3MB71SfUPp4lg4PA==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+x-originating-ip: [10.100.1.52]
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
+        micalg=SHA1; boundary="----=_NextPart_000_0026_01D61251.992CA860"
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9dc76493-cc0a-4264-5a63-08d7e020ebd0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Apr 2020 03:07:09.4780
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: GKh9D2/VL4V2FAwL4zYqz8opkwsVRNcsTqZh8q4DjaHk/udb9M2IfvDxj1BIUew1gRpiJ0Pob1iuN4bgkU1ltw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3470
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch> Sent: Tuesday, April 14, 2020 8:46 AM
-> Measurements of the MDIO bus have shown that driving the MDIO bus using
-> interrupts is slow. Back to back MDIO transactions take about 90uS, with
-> 25uS spent performing the transaction, and the remainder of the time the =
-bus
-> is idle.
->=20
-> Replacing the completion interrupt with polled IO results in back to back
-> transactions of 40uS. The polling loop waiting for the hardware to comple=
-te
-> the transaction takes around 27uS. Which suggests interrupt handling has =
-an
-> overhead of 50uS, and polled IO nearly halves this overhead, and doubles =
-the
-> MDIO performance.
->=20
+------=_NextPart_000_0026_01D61251.992CA860
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-Although the mdio performance is better, but polling IO by reading register
-cause system/bus loading more heavy.
+Reply inline, sorry for late response.
 
-So I don't think it is valuable to change interrupt mode to polling mode.
+-----=E9=82=AE=E4=BB=B6=E5=8E=9F=E4=BB=B6-----
+=E5=8F=91=E4=BB=B6=E4=BA=BA: netdev-owner@vger.kernel.org =
+[mailto:netdev-owner@vger.kernel.org] =E4=BB=A3=E8=A1=A8 Willem de =
+Bruijn
+=E5=8F=91=E9=80=81=E6=97=B6=E9=97=B4: 2020=E5=B9=B43=E6=9C=8830=E6=97=A5 =
+22:16
+=E6=94=B6=E4=BB=B6=E4=BA=BA: Yi Yang =
+(=E6=9D=A8=E7=87=9A)-=E4=BA=91=E6=9C=8D=E5=8A=A1=E9=9B=86=E5=9B=A2 =
+<yangyi01@inspur.com>
+=E6=8A=84=E9=80=81: yang_y_yi@163.com; netdev@vger.kernel.org; =
+u9012063@gmail.com
+=E4=B8=BB=E9=A2=98: [vger.kernel.org=E4=BB=A3=E5=8F=91]Re: =
+[vger.kernel.org=E4=BB=A3=E5=8F=91]Re: [vger.kernel.org=E4=BB=A3 =
+=E5=8F=91]Re: [PATCH net-next] net/ packet: fix TPACKET_V3 perform ance =
+issue in case of TSO
 
-Thanks,
-Andy
-> Suggested-by: Chris Heally <cphealy@gmail.com>
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> ---
->  drivers/net/ethernet/freescale/fec.h      |  4 +-
->  drivers/net/ethernet/freescale/fec_main.c | 69 ++++++++++++-----------
->  2 files changed, 37 insertions(+), 36 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/freescale/fec.h
-> b/drivers/net/ethernet/freescale/fec.h
-> index bd898f5b4da5..4c8e7f57957a 100644
-> --- a/drivers/net/ethernet/freescale/fec.h
-> +++ b/drivers/net/ethernet/freescale/fec.h
-> @@ -376,8 +376,7 @@ struct bufdesc_ex {
->  #define FEC_ENET_TS_AVAIL       ((uint)0x00010000)
->  #define FEC_ENET_TS_TIMER       ((uint)0x00008000)
->=20
-> -#define FEC_DEFAULT_IMASK (FEC_ENET_TXF | FEC_ENET_RXF |
-> FEC_ENET_MII) -#define FEC_NAPI_IMASK FEC_ENET_MII
-> +#define FEC_DEFAULT_IMASK (FEC_ENET_TXF | FEC_ENET_RXF)
->  #define FEC_RX_DISABLED_IMASK (FEC_DEFAULT_IMASK &
-> (~FEC_ENET_RXF))
->=20
->  /* ENET interrupt coalescing macro define */ @@ -537,7 +536,6 @@ struct
-> fec_enet_private {
->         int     link;
->         int     full_duplex;
->         int     speed;
-> -       struct  completion mdio_done;
->         int     irq[FEC_IRQ_NUM];
->         bool    bufdesc_ex;
->         int     pause_flag;
-> diff --git a/drivers/net/ethernet/freescale/fec_main.c
-> b/drivers/net/ethernet/freescale/fec_main.c
-> index c1c267b61647..48ac0a3a4eb0 100644
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -938,8 +938,8 @@ fec_restart(struct net_device *ndev)
->         writel((__force u32)cpu_to_be32(temp_mac[1]),
->                fep->hwp + FEC_ADDR_HIGH);
->=20
-> -       /* Clear any outstanding interrupt. */
-> -       writel(0xffffffff, fep->hwp + FEC_IEVENT);
-> +       /* Clear any outstanding interrupt, except MDIO. */
-> +       writel((0xffffffff & ~FEC_ENET_MII), fep->hwp + FEC_IEVENT);
->=20
->         fec_enet_bd_init(ndev);
->=20
-> @@ -1085,7 +1085,7 @@ fec_restart(struct net_device *ndev)
->         if (fep->link)
->                 writel(FEC_DEFAULT_IMASK, fep->hwp + FEC_IMASK);
->         else
-> -               writel(FEC_ENET_MII, fep->hwp + FEC_IMASK);
-> +               writel(0, fep->hwp + FEC_IMASK);
->=20
->         /* Init the interrupt coalescing */
->         fec_enet_itr_coal_init(ndev);
-> @@ -1599,6 +1599,10 @@ fec_enet_interrupt(int irq, void *dev_id)
->         irqreturn_t ret =3D IRQ_NONE;
->=20
->         int_events =3D readl(fep->hwp + FEC_IEVENT);
-> +
-> +       /* Don't clear MDIO events, we poll for those */
-> +       int_events &=3D ~FEC_ENET_MII;
-> +
->         writel(int_events, fep->hwp + FEC_IEVENT);
->         fec_enet_collect_events(fep, int_events);
->=20
-> @@ -1606,16 +1610,12 @@ fec_enet_interrupt(int irq, void *dev_id)
->                 ret =3D IRQ_HANDLED;
->=20
->                 if (napi_schedule_prep(&fep->napi)) {
-> -                       /* Disable the NAPI interrupts */
-> -                       writel(FEC_NAPI_IMASK, fep->hwp +
-> FEC_IMASK);
-> +                       /* Disable interrupts */
-> +                       writel(0, fep->hwp + FEC_IMASK);
->                         __napi_schedule(&fep->napi);
->                 }
->         }
->=20
-> -       if (int_events & FEC_ENET_MII) {
-> -               ret =3D IRQ_HANDLED;
-> -               complete(&fep->mdio_done);
-> -       }
->         return ret;
->  }
->=20
-> @@ -1765,11 +1765,26 @@ static void fec_enet_adjust_link(struct
-> net_device *ndev)
->                 phy_print_status(phy_dev);  }
->=20
-> +static int fec_enet_mdio_wait(struct fec_enet_private *fep) {
-> +       int retries =3D 10000;
-> +       uint ievent;
-> +
-> +       while (retries--) {
-> +               ievent =3D readl(fep->hwp + FEC_IEVENT);
-> +               if (ievent & FEC_ENET_MII) {
-> +                       writel(FEC_ENET_MII, fep->hwp +
-> FEC_IEVENT);
-> +                       return 0;
-> +               }
-> +       }
-> +
-> +       return -ETIMEDOUT;
-> +}
-> +
->  static int fec_enet_mdio_read(struct mii_bus *bus, int mii_id, int regnu=
-m)  {
->         struct fec_enet_private *fep =3D bus->priv;
->         struct device *dev =3D &fep->pdev->dev;
-> -       unsigned long time_left;
->         int ret =3D 0, frame_start, frame_addr, frame_op;
->         bool is_c45 =3D !!(regnum & MII_ADDR_C45);
->=20
-> @@ -1777,8 +1792,6 @@ static int fec_enet_mdio_read(struct mii_bus *bus,
-> int mii_id, int regnum)
->         if (ret < 0)
->                 return ret;
->=20
-> -       reinit_completion(&fep->mdio_done);
-> -
->         if (is_c45) {
->                 frame_start =3D FEC_MMFR_ST_C45;
->=20
-> @@ -1790,11 +1803,9 @@ static int fec_enet_mdio_read(struct mii_bus
-> *bus, int mii_id, int regnum)
->                        fep->hwp + FEC_MII_DATA);
->=20
->                 /* wait for end of transfer */
-> -               time_left =3D
-> wait_for_completion_timeout(&fep->mdio_done,
-> -                               usecs_to_jiffies(FEC_MII_TIMEOUT));
-> -               if (time_left =3D=3D 0) {
-> +               ret =3D fec_enet_mdio_wait(fep);
-> +               if (ret) {
->                         netdev_err(fep->netdev, "MDIO address write
-> timeout\n");
-> -                       ret =3D -ETIMEDOUT;
->                         goto out;
->                 }
->=20
-> @@ -1813,11 +1824,9 @@ static int fec_enet_mdio_read(struct mii_bus
-> *bus, int mii_id, int regnum)
->                 FEC_MMFR_TA, fep->hwp + FEC_MII_DATA);
->=20
->         /* wait for end of transfer */
-> -       time_left =3D wait_for_completion_timeout(&fep->mdio_done,
-> -                       usecs_to_jiffies(FEC_MII_TIMEOUT));
-> -       if (time_left =3D=3D 0) {
-> +       ret =3D fec_enet_mdio_wait(fep);
-> +       if (ret) {
->                 netdev_err(fep->netdev, "MDIO read timeout\n");
-> -               ret =3D -ETIMEDOUT;
->                 goto out;
->         }
->=20
-> @@ -1835,7 +1844,6 @@ static int fec_enet_mdio_write(struct mii_bus *bus,
-> int mii_id, int regnum,  {
->         struct fec_enet_private *fep =3D bus->priv;
->         struct device *dev =3D &fep->pdev->dev;
-> -       unsigned long time_left;
->         int ret, frame_start, frame_addr;
->         bool is_c45 =3D !!(regnum & MII_ADDR_C45);
->=20
-> @@ -1845,8 +1853,6 @@ static int fec_enet_mdio_write(struct mii_bus *bus,
-> int mii_id, int regnum,
->         else
->                 ret =3D 0;
->=20
-> -       reinit_completion(&fep->mdio_done);
-> -
->         if (is_c45) {
->                 frame_start =3D FEC_MMFR_ST_C45;
->=20
-> @@ -1858,11 +1864,9 @@ static int fec_enet_mdio_write(struct mii_bus
-> *bus, int mii_id, int regnum,
->                        fep->hwp + FEC_MII_DATA);
->=20
->                 /* wait for end of transfer */
-> -               time_left =3D
-> wait_for_completion_timeout(&fep->mdio_done,
-> -                       usecs_to_jiffies(FEC_MII_TIMEOUT));
-> -               if (time_left =3D=3D 0) {
-> +               ret =3D fec_enet_mdio_wait(fep);
-> +               if (ret) {
->                         netdev_err(fep->netdev, "MDIO address write
-> timeout\n");
-> -                       ret =3D -ETIMEDOUT;
->                         goto out;
->                 }
->         } else {
-> @@ -1878,12 +1882,9 @@ static int fec_enet_mdio_write(struct mii_bus
-> *bus, int mii_id, int regnum,
->                 fep->hwp + FEC_MII_DATA);
->=20
->         /* wait for end of transfer */
-> -       time_left =3D wait_for_completion_timeout(&fep->mdio_done,
-> -                       usecs_to_jiffies(FEC_MII_TIMEOUT));
-> -       if (time_left =3D=3D 0) {
-> +       ret =3D fec_enet_mdio_wait(fep);
-> +       if (ret)
->                 netdev_err(fep->netdev, "MDIO write timeout\n");
-> -               ret  =3D -ETIMEDOUT;
-> -       }
->=20
->  out:
->         pm_runtime_mark_last_busy(dev);
-> @@ -2079,6 +2080,9 @@ static int fec_enet_mii_init(struct platform_device
-> *pdev)
->=20
->         writel(fep->phy_speed, fep->hwp + FEC_MII_SPEED);
->=20
-> +       /* Clear any pending transaction complete indication */
-> +       writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
-> +
->         fep->mii_bus =3D mdiobus_alloc();
->         if (fep->mii_bus =3D=3D NULL) {
->                 err =3D -ENOMEM;
-> @@ -3583,7 +3587,6 @@ fec_probe(struct platform_device *pdev)
->                 fep->irq[i] =3D irq;
->         }
->=20
-> -       init_completion(&fep->mdio_done);
->         ret =3D fec_enet_mii_init(pdev);
->         if (ret)
->                 goto failed_mii_init;
-> --
-> 2.26.0
+On Mon, Mar 30, 2020 at 2:35 AM Yi Yang =
+(=E6=9D=A8=E7=87=9A)-=E4=BA=91=E6=9C=8D=E5=8A=A1=E9=9B=86=E5=9B=A2 =
+<yangyi01@inspur.com> wrote:
+>
+> -----=E9=82=AE=E4=BB=B6=E5=8E=9F=E4=BB=B6-----
+> =E5=8F=91=E4=BB=B6=E4=BA=BA: Willem de Bruijn =
+[mailto:willemdebruijn.kernel@gmail.com]
+> =E5=8F=91=E9=80=81=E6=97=B6=E9=97=B4: =
+2020=E5=B9=B43=E6=9C=8830=E6=97=A5 9:52
+> =E6=94=B6=E4=BB=B6=E4=BA=BA: Yi Yang =
+(=E6=9D=A8=E7=87=9A)-=E4=BA=91=E6=9C=8D=E5=8A=A1=E9=9B=86=E5=9B=A2 =
+<yangyi01@inspur.com>
+> =E6=8A=84=E9=80=81: willemdebruijn.kernel@gmail.com; =
+yang_y_yi@163.com;=20
+> netdev@vger.kernel.org; u9012063@gmail.com
+> =E4=B8=BB=E9=A2=98: Re: [vger.kernel.org=E4=BB=A3=E5=8F=91]Re: =
+[vger.kernel.org=E4=BB=A3=E5=8F=91]Re: [PATCH net-next]=20
+> net/ packet: fix TPACKET_V3 performance issue in case of TSO
+>
+> > iperf3 test result
+> > -----------------------
+> > [yangyi@localhost ovs-master]$ sudo ../run-iperf3.sh
+> > iperf3: no process found
+> > Connecting to host 10.15.1.3, port 5201 [  4] local 10.15.1.2 port
+> > 44976 connected to 10.15.1.3 port 5201
+> > [ ID] Interval           Transfer     Bandwidth       Retr  Cwnd
+> > [  4]   0.00-10.00  sec  19.6 GBytes  16.8 Gbits/sec  106586    307 =
+KBytes
+> > [  4]  10.00-20.00  sec  19.5 GBytes  16.7 Gbits/sec  104625    215 =
+KBytes
+> > [  4]  20.00-30.00  sec  20.0 GBytes  17.2 Gbits/sec  106962    301 =
+KBytes
+>
+> Thanks for the detailed info.
+>
+> So there is more going on there than a simple network tap. veth, which =
+calls netif_rx and thus schedules delivery with a napi after a softirq =
+(twice), tpacket for recv + send + ovs processing. And this is a single =
+flow, so more sensitive to batching, drops and interrupt moderation than =
+a workload of many flows.
+>
+> If anything, I would expect the ACKs on the return path to be the more =
+likely cause for concern, as they are even less likely to fill a block =
+before the timer. The return path is a separate packet socket?
+>
+> With initial small window size, I guess it might be possible for the =
+entire window to be in transit. And as no follow-up data will arrive, =
+this waits for the timeout. But at 3Gbps that is no longer the case.
+> Again, the timeout is intrinsic to TPACKET_V3. If that is =
+unacceptable, then TPACKET_V2 is a more logical choice. Here also in =
+relation to timely ACK responses.
+>
+> Other users of TPACKET_V3 may be using fewer blocks of larger size. A =
+change to retire blocks after 1 gso packet will negatively affect their =
+workloads. At the very least this should be an optional feature, similar =
+to how I suggested converting to micro seconds.
+>
+> [Yi Yang] My iperf3 test is TCP socket, return path is same socket as =
+forward path. BTW this patch will retire current block only if vnet =
+header is in packets, I don't know what else use cases will use vnet =
+header except our user scenario. In addition, I also have more =
+conditions to limit this, but it impacts on performance. I'll try if V2 =
+can fix our issue, this will be only one way to fix our issue if not.
+>
 
+Thanks. Also interesting might be a short packet trace of packet arrival =
+on the bond device ports, taken at the steady state of 3 Gbps.
+To observe when inter-arrival time exceeds the 167 usec mean. Also =
+informative would be to learn whether when retiring a block using your =
+patch, that block also holds one or more ACK packets along with the GSO =
+packet. As their delay might be the true source of throttling the =
+sender.
+
+I think we need to understand the underlying problem better to implement =
+a robust fix that works for a variety of configurations, and does not =
+causing accidental regressions. The current patch works for your setup, =
+but I'm afraid that it might paper over the real issue.
+
+It is a peculiar aspect of TPACKET_V3 that blocks are retired not when a =
+packet is written that fills them, but when the next packet arrives and =
+cannot find room. Again, at sustained rate that delay should be =
+immaterial. But it might be okay to measure remaining space after write =
+and decide to retire if below some watermark. I would prefer that =
+watermark to be a ratio of block size rather than whether the packet is =
+gso or not.
+
+[Yi Yang] Sorry for late reply, I missed this email. I did do timing for =
+every received frames, time interval is highly dynamic, I can't find any =
+valuable clues, but I did find TCP ACK frames have big impact on =
+performance, which are some small frames (size is not more than 100), in =
+TPACKET_V3 case, a block will have a bunch of such TCP ACK frames, so =
+these ACK frames aren't received and sent back to the receiver in time. =
+I tried TPACKET_V2, its performance is beyond I expect, I tried it in =
+kernel 5.5.9, its performance is better than this patch, about 11Gbps, I =
+also tried kernel 4.15.0 (from Ubuntu, it actually cherry picked many =
+fixed patches from upstream, so isn't official 4.15.0), its performance =
+is about 14Gbps, worse than this patch (it is 17Gbps), so obviously the =
+performance is kernel-related, platform related. In non-pmd case (i.e. =
+sender and receiver are one thread and use the same CPU), TPACKET_V2 is =
+much better then recvmmsg&sendmmsg. We decide to use TPACKET_V2 for TSO. =
+But we don't know how we can reach higher performance than 14Gbps, it =
+looks like tpacket_v2/v3's cache flush operation has side effect on =
+performance (especially once flush per frame for TPACKET_V2)
+
+------=_NextPart_000_0026_01D61251.992CA860
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+
+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
+SIb3DQMEAgIAgDAHBgUrDgMCBzAKBggqhkiG9w0DBzAdBgNVHQ4EFgQUwS9Wt2AmUPVKr98VTbaf
+wjdIUXAwHwYDVR0jBBgwFoAUXlkDprRMWGCRTvYetaU5pjLBNWowgdEGA1UdHwSByTCBxjCBw6CB
+wKCBvYaBumxkYXA6Ly8vQ049SU5TUFVSLUNBLENOPUpUQ0EyMDEyLENOPUNEUCxDTj1QdWJsaWMl
+MjBLZXklMjBTZXJ2aWNlcyxDTj1TZXJ2aWNlcyxDTj1Db25maWd1cmF0aW9uLERDPWhvbWUsREM9
+bGFuZ2NoYW8sREM9Y29tP2NlcnRpZmljYXRlUmV2b2NhdGlvbkxpc3Q/YmFzZT9vYmplY3RDbGFz
+cz1jUkxEaXN0cmlidXRpb25Qb2ludDCBxAYIKwYBBQUHAQEEgbcwgbQwgbEGCCsGAQUFBzAChoGk
+bGRhcDovLy9DTj1JTlNQVVItQ0EsQ049QUlBLENOPVB1YmxpYyUyMEtleSUyMFNlcnZpY2VzLENO
+PVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9aG9tZSxEQz1sYW5nY2hhbyxEQz1jb20/Y0FD
+ZXJ0aWZpY2F0ZT9iYXNlP29iamVjdENsYXNzPWNlcnRpZmljYXRpb25BdXRob3JpdHkwQwYDVR0R
+BDwwOqAjBgorBgEEAYI3FAIDoBUME3lhbmd5aTAxQGluc3B1ci5jb22BE3lhbmd5aTAxQGluc3B1
+ci5jb20wDQYJKoZIhvcNAQELBQADggEBAApWKZfwQ5Gbpv3Pg2mJyUz8jhno5OBy2Hdku/euDQfD
+aOOPsUxsvr8ZnWU03E9rwTAHgD9oB10Oe27CNeS6G/kqJubOZt5Emrw9EJBA6NMz4GLZYPmm82ph
+l+1iajL8+U2fINJbqvTlj9Dv0VOzW+952fk9K5JiArDhWskKRLnO31YAESFfUUKaHe54l2u+2+cn
+MeuQyyNOGXu2zT0XicYRUsZBOCisXzLD6I9/LgyBcqWcpLBdRK1JdO/oih2/uznyWUp1pCvpi89r
+SmyUUdbfFd/FN0j8Qok4ZdKwoHNj3oi+vLaN8SHmUNHISOuUZyWcmfVzd7c5ydIDB9nQiHoxggOT
+MIIDjwIBATBwMFkxEzARBgoJkiaJk/IsZAEZFgNjb20xGDAWBgoJkiaJk/IsZAEZFghsYW5nY2hh
+bzEUMBIGCgmSJomT8ixkARkWBGhvbWUxEjAQBgNVBAMTCUlOU1BVUi1DQQITfgAAPxhfXKY27C7W
+sQAAAAA/GDAJBgUrDgMCGgUAoIIB+DAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3
+DQEJBTEPFw0yMDA0MTQwMzQxMTJaMCMGCSqGSIb3DQEJBDEWBBQGtLItPiiEG2iH8LysnhP7QK1J
+zTB/BgkrBgEEAYI3EAQxcjBwMFkxEzARBgoJkiaJk/IsZAEZFgNjb20xGDAWBgoJkiaJk/IsZAEZ
+FghsYW5nY2hhbzEUMBIGCgmSJomT8ixkARkWBGhvbWUxEjAQBgNVBAMTCUlOU1BVUi1DQQITfgAA
+PxhfXKY27C7WsQAAAAA/GDCBgQYLKoZIhvcNAQkQAgsxcqBwMFkxEzARBgoJkiaJk/IsZAEZFgNj
+b20xGDAWBgoJkiaJk/IsZAEZFghsYW5nY2hhbzEUMBIGCgmSJomT8ixkARkWBGhvbWUxEjAQBgNV
+BAMTCUlOU1BVUi1DQQITfgAAPxhfXKY27C7WsQAAAAA/GDCBkwYJKoZIhvcNAQkPMYGFMIGCMAsG
+CWCGSAFlAwQBKjALBglghkgBZQMEARYwCgYIKoZIhvcNAwcwCwYJYIZIAWUDBAECMA4GCCqGSIb3
+DQMCAgIAgDANBggqhkiG9w0DAgIBQDAHBgUrDgMCGjALBglghkgBZQMEAgMwCwYJYIZIAWUDBAIC
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQA5EIAnQM+/5Pk2Eam32e9oqpEkYoHmMHb1
+2s3g7f4rhTMCSZy2DDlY0HTmb+zwkbLOfuutABPwBbaCx1vNNhEMys8N6V3/gYXp0aBbWf67X0p5
+YCNfHpjPpGmVJyL+UWPCNr9dKA/RTJ4etnpbOZeQHsP88kud6eeTJcFoHtZuWCh/25xsAAFRyoLJ
+rUW21VViGF1JLDJVA3crIma84iVTztqd2HjPyiNHcAIcRxwYsNXo7/WumLLtwBMNCFU1J/v8nNFM
+VAGpaZTfjpGQybdnqjWPTUPSso+g7XZ1AGBvl2KSXclKkgYDpIpCkN3r0tDz51SuXZtNYyI1482y
+80K4AAAAAAAA
+
+------=_NextPart_000_0026_01D61251.992CA860--
