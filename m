@@ -2,162 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 824161A8137
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 17:06:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D84D21A813A
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 17:06:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407240AbgDNPFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 11:05:21 -0400
-Received: from mout.kundenserver.de ([212.227.126.135]:39861 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407186AbgDNPFK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 11:05:10 -0400
-Received: from mail-qv1-f41.google.com ([209.85.219.41]) by
- mrelayeu.kundenserver.de (mreue010 [212.227.15.129]) with ESMTPSA (Nemesis)
- id 1N5FxN-1jE1tk22j7-0119dA; Tue, 14 Apr 2020 17:05:05 +0200
-Received: by mail-qv1-f41.google.com with SMTP id s18so6346431qvn.1;
-        Tue, 14 Apr 2020 08:05:05 -0700 (PDT)
-X-Gm-Message-State: AGi0PuYHrG6Y/RC1nTvdAEhTRv6LtJxtPzUGhWrBX519ff/Ytz9NERJD
-        BDOMYoC2hAPE8M0YNnlFG3LDVF0TydT0BWeDy+E=
-X-Google-Smtp-Source: APiQypLg53lbvwM7SS+vs6GZuu1V+f5ASJ1OTKDbmA6YwidcSTB5Gp26EmpzyTd2a0/A/WzgZ9UHn80nFHIsFLn9j2M=
-X-Received: by 2002:a0c:9e2f:: with SMTP id p47mr355001qve.211.1586876703988;
- Tue, 14 Apr 2020 08:05:03 -0700 (PDT)
+        id S2407265AbgDNPGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 11:06:01 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:35673 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2407251AbgDNPFw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 11:05:52 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1586876751; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=4IdPWOKkKu70gb9XZsmEuJuo7DR0jOPptRPhAGVcGa8=;
+ b=Jd7z282xV6z75F/QZaNHTX5RKpCWn+yDhTESYUEDZSph4FU7787HZNeLMlAOZfFKELba6v2w
+ 634rvyvDdMUUnVkKVQJEXsmlkuzv7WdSemameDTPryCzbo2kDEtqrAWMPKY/JWsBRFNTxWIn
+ gcCn1TpGecEGEsfjEh3C+xvrPxs=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e95d135.7f2672b35998-smtp-out-n05;
+ Tue, 14 Apr 2020 15:05:25 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 01C0AC44792; Tue, 14 Apr 2020 15:05:24 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id A555DC433CB;
+        Tue, 14 Apr 2020 15:05:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A555DC433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20200408202711.1198966-1-arnd@arndb.de> <CGME20200408202802eucas1p13a369a5c584245a1affee35d2c8cad32@eucas1p1.samsung.com>
- <20200408202711.1198966-5-arnd@arndb.de> <ff7809b6-f566-9c93-1838-610be5d22431@samsung.com>
-In-Reply-To: <ff7809b6-f566-9c93-1838-610be5d22431@samsung.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 14 Apr 2020 17:04:47 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2BXZAiHh83RZJ-v9HvoE1gSED59j8k0ydJKCnHzwYz=w@mail.gmail.com>
-Message-ID: <CAK8P3a2BXZAiHh83RZJ-v9HvoE1gSED59j8k0ydJKCnHzwYz=w@mail.gmail.com>
-Subject: Re: [RFC 4/6] drm/bridge/sii8620: fix extcon dependency
-To:     Andrzej Hajda <a.hajda@samsung.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        Leon Romanovsky <leon@kernel.org>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        David Airlie <airlied@linux.ie>,
-        Networking <netdev@vger.kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-rdma <linux-rdma@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:TZf60EAGSNVbxG8Ebo7CPWg5FOckWYVhjoT9Xj7S/35jyWVb6jX
- VqnP+fGk2LwQ7NXhEodQ4tL7G9yh2hVQvFLPtQW2Ev8RrzQjhtQcZWbdDTFjpmibzq1Y2Uf
- yI6D+SIgtO6SHF+UysDhdSu27gU9EH3z6JcIE6hHNep7gOavJYlCaX37C/klcU/3kcfemSV
- GK3BuRJFN99cFIrsfIo0w==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:NgjUJ1WFxn8=:T0Mu8bRZJgEzxY1Opk5mD3
- pv/dgnF685Icz2N/M0AU5alrBSGDTBRCX4g5/t5DUku2lIjGefOggdh0D21ngzUMQH9PUdtc8
- WTBBoYxpwJ2Ev29fgaJr3pEvGIGCapiMY4Gh54ZXcR/+66tO/kd7RKCm1qpuAbt85WKrrhvM8
- qS26C+oIql4zcWLB1W/u4NyB5CPNXeGdIQBZJVeZj55wo0uqcXtfqBWsbWa1b9t+YR0NhG6OR
- ySXVWjr9yB5HQiATOU4fl5PmF5FshZG15a266IGbYTG4QEsXIGAIIbdeVj8s8bgNx62bxAPhv
- tirDAQlUz1f1jaCYdBbR2xSpUBcycfPeHC+7VU2bgNnfziybwdR++bCZpScRtQclWhctutDss
- +QKC2UK+or58AX3H7vRSq4DlzWvU9V2DN0RvhPAfY3ohnffJL8XOxOX2cI1FrgJN8exAq33Eb
- FO+eamAElQr0cNEkWzkS2bW9O561ovuR7MfjRtd3X5jd7ETWddDIfqWl5lyWXBsy1fvZ85Kvt
- LNBm7lnrsxr4B7C/i9RbYHljkxaxcZ3MNjvm/FWChNSOJaOfmDHeuOO0oVFCjBShTjndjK8Aa
- aLb+GqGqwn2VmNhh2fjlT2kbqNQce3YZhwpu0glUaZAXutZ/4S+THEkdgebVdsFuCj30EaBoR
- uKZLA+9JGiwzpvq94KWpP++h78rsHnKutLGBASTeiwo/6iol3OUw6bveDVbD7NeLF0LDFnu8u
- GQPylWp7G9SydhVeQFD8LMN9CEBxlfMjxGzhCdahF7X6NMK95v5BzJNJNeH21GeFrEmqNzgBs
- cmeP8nqqFrOjzxZXuGG+yepdhmVRh/NzfgGtuUT7tblPXOIkDU=
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] brcm80211: remove redundant pointer 'address'
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200405133906.381358-1-colin.king@canonical.com>
+References: <20200405133906.381358-1-colin.king@canonical.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20200414150525.01C0AC44792@smtp.codeaurora.org>
+Date:   Tue, 14 Apr 2020 15:05:24 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 10, 2020 at 8:56 AM Andrzej Hajda <a.hajda@samsung.com> wrote:
->
->
-> On 08.04.2020 22:27, Arnd Bergmann wrote:
-> > Using 'imply' does not work here, it still cause the same build
-> > failure:
-> >
-> > arm-linux-gnueabi-ld: drivers/gpu/drm/bridge/sil-sii8620.o: in function `sii8620_remove':
-> > sil-sii8620.c:(.text+0x1b8): undefined reference to `extcon_unregister_notifier'
-> > arm-linux-gnueabi-ld: drivers/gpu/drm/bridge/sil-sii8620.o: in function `sii8620_probe':
-> > sil-sii8620.c:(.text+0x27e8): undefined reference to `extcon_find_edev_by_node'
-> > arm-linux-gnueabi-ld: sil-sii8620.c:(.text+0x2870): undefined reference to `extcon_register_notifier'
-> > arm-linux-gnueabi-ld: drivers/gpu/drm/bridge/sil-sii8620.o: in function `sii8620_extcon_work':
-> > sil-sii8620.c:(.text+0x2908): undefined reference to `extcon_get_state'
-> >
-> > I tried the usual 'depends on EXTCON || !EXTCON' logic, but that caused
-> > a circular Kconfig dependency. Using IS_REACHABLE() is ugly but works.
->
-> 'depends on EXTCON || !EXTCON' seems to be proper solution, maybe would be better to try to solve circular dependencies issue.
+Colin King <colin.king@canonical.com> wrote:
 
-I agree that would be nice, but I failed to come to a proper solution
-here. FWIW, there
-is one circular dependency that I managed to avoid by changing all
-drivers that select FB_DDC
-to depend on I2C rather than selecting it:
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> Pointer 'address' is being assigned and updated in a few places
+> by it is never read. Hence the assignments are redundant and can
+> be removed.
+> 
+> Addresses-Coverity: ("Unused value")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-drivers/i2c/Kconfig:8:error: recursive dependency detected!
-drivers/i2c/Kconfig:8: symbol I2C is selected by FB_DDC
-drivers/video/fbdev/Kconfig:63: symbol FB_DDC depends on FB
-drivers/video/fbdev/Kconfig:12: symbol FB is selected by DRM_KMS_FB_HELPER
-drivers/gpu/drm/Kconfig:80: symbol DRM_KMS_FB_HELPER depends on DRM_KMS_HELPER
-drivers/gpu/drm/Kconfig:74: symbol DRM_KMS_HELPER is selected by DRM_SIL_SII8620
-drivers/gpu/drm/bridge/Kconfig:89: symbol DRM_SIL_SII8620 depends on EXTCON
-drivers/extcon/Kconfig:2: symbol EXTCON is selected by CHARGER_MANAGER
-drivers/power/supply/Kconfig:482: symbol CHARGER_MANAGER depends on POWER_SUPPLY
-drivers/power/supply/Kconfig:2: symbol POWER_SUPPLY is selected by
-HID_BATTERY_STRENGTH
-drivers/hid/Kconfig:29: symbol HID_BATTERY_STRENGTH depends on HID
-drivers/hid/Kconfig:8: symbol HID is selected by I2C_HID
-drivers/hid/i2c-hid/Kconfig:5: symbol I2C_HID depends on I2C
+Patch applied to wireless-drivers-next.git, thanks.
 
-After that, Kconfig crashes with a segfault:
+09667ea7ce6d brcm80211: remove redundant pointer 'address'
 
-drivers/video/fbdev/Kconfig:12:error: recursive dependency detected!
-drivers/video/fbdev/Kconfig:12: symbol FB is selected by DRM_KMS_FB_HELPER
-drivers/gpu/drm/Kconfig:80: symbol DRM_KMS_FB_HELPER depends on DRM_KMS_HELPER
-drivers/gpu/drm/Kconfig:74: symbol DRM_KMS_HELPER is selected by DRM_SIL_SII8620
-drivers/gpu/drm/bridge/Kconfig:89: symbol DRM_SIL_SII8620 depends on EXTCON
-drivers/extcon/Kconfig:2: symbol EXTCON is selected by CHARGER_MANAGER
-drivers/power/supply/Kconfig:482: symbol CHARGER_MANAGER depends on POWER_SUPPLY
-drivers/power/supply/Kconfig:2: symbol POWER_SUPPLY is selected by HID_ASUS
-drivers/hid/Kconfig:150: symbol HID_ASUS depends on LEDS_CLASS
-drivers/leds/Kconfig:17: symbol LEDS_CLASS depends on NEW_LEDS
-drivers/leds/Kconfig:9: symbol NEW_LEDS is selected by SENSORS_APPLESMC
-drivers/hwmon/Kconfig:327: symbol SENSORS_APPLESMC depends on HWMON
-drivers/hwmon/Kconfig:6: symbol HWMON is selected by EEEPC_LAPTOP
-drivers/platform/x86/Kconfig:260: symbol EEEPC_LAPTOP depends on ACPI_VIDEO
-make[3]: *** [/git/arm-soc/scripts/kconfig/Makefile:71: randconfig]
-Segmentation fault (core dumped)
+-- 
+https://patchwork.kernel.org/patch/11474705/
 
-After changing EEEPC_LAPTOP and THINKPAD_ACPI to 'depends on HWMON' instead of
-'select HWMON', I get this one:
-
-drivers/video/fbdev/Kconfig:12:error: recursive dependency detected!
-drivers/video/fbdev/Kconfig:12: symbol FB is selected by DRM_KMS_FB_HELPER
-drivers/gpu/drm/Kconfig:80: symbol DRM_KMS_FB_HELPER depends on DRM_KMS_HELPER
-drivers/gpu/drm/Kconfig:74: symbol DRM_KMS_HELPER is selected by DRM_SIL_SII8620
-drivers/gpu/drm/bridge/Kconfig:89: symbol DRM_SIL_SII8620 depends on EXTCON
-drivers/extcon/Kconfig:2: symbol EXTCON is selected by CHARGER_MANAGER
-drivers/power/supply/Kconfig:482: symbol CHARGER_MANAGER depends on POWER_SUPPLY
-drivers/power/supply/Kconfig:2: symbol POWER_SUPPLY is selected by HID_ASUS
-drivers/hid/Kconfig:150: symbol HID_ASUS depends on LEDS_CLASS
-drivers/leds/Kconfig:17: symbol LEDS_CLASS depends on NEW_LEDS
-drivers/leds/Kconfig:9: symbol NEW_LEDS is selected by BACKLIGHT_ADP8860
-drivers/video/backlight/Kconfig:316: symbol BACKLIGHT_ADP8860 depends
-on BACKLIGHT_CLASS_DEVICE
-drivers/video/backlight/Kconfig:143: symbol BACKLIGHT_CLASS_DEVICE is
-selected by FB_BACKLIGHT
-drivers/video/fbdev/Kconfig:187: symbol FB_BACKLIGHT depends on FB
-
-Changing all drivers that select 'FB_BACKLIGHT' or 'BACKLIGHT_CLASS_DEVICE' to
-'depends on BACKLIGHT_CLASS_DEVICE' gets it to build.
-
-The steps each seem reasonable, in particular since they mostly clean
-up the legacy
-fbdev drivers to what they should have done anyway, but it is quite
-invasive in the end.
-Any other ideas?
-
-       Arnd
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
