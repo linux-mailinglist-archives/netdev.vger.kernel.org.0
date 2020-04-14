@@ -2,102 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21FAA1A77A0
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 11:48:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49C9D1A77F1
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 11:57:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437786AbgDNJsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 05:48:24 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:51626 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2437776AbgDNJsW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 05:48:22 -0400
+        id S2438043AbgDNJ5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 05:57:19 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:28809 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2438040AbgDNJ5R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 05:57:17 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586857701;
+        s=mimecast20190719; t=1586858236;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=RCUnMVTMhiXmQTIRtH4ig9vejIyMaafXsJBXVyt/T0o=;
-        b=Qx9SLKZnYhNTbLa8p/DYIAU0u2He3JEZV5OKgGMkD4j2ar8VvcMvI9spYac/1V3on30r2I
-        gbJce48bO5HPmbEmghmwYgdkOH95MFmGVN4ZtiTnORz2dRt/vYrruVIsTRvK9PJofjgjuB
-        2vmruUNOZBfI96c2As4BSe9rWipu3HM=
+        bh=H/zXi527zepbl7siVmXAa1ZCzhQAkrLalFUWLrUIrT0=;
+        b=EgW6RGZHVB7nPTx3+Mt+geYbgMlpkJ4jRyKVWUz+a/qF2b1TZGG+TLAJI+FpWGYFD+OSm7
+        L/JJKkbxObzMkbve+/u3zd/pEkrcX/pFYyMiLICydWEiEyPR0vwzV4u5NqWvtG12AcRIvH
+        cYngh4UCVKML/K8kA965unAbls9vY9g=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-295-qE1gTkkzPsijc6xmZp2iOg-1; Tue, 14 Apr 2020 05:48:17 -0400
-X-MC-Unique: qE1gTkkzPsijc6xmZp2iOg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+ us-mta-44-0lYqNjreN4yidKt2o6lW0w-1; Tue, 14 Apr 2020 05:57:10 -0400
+X-MC-Unique: 0lYqNjreN4yidKt2o6lW0w-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AF2DE800D53;
-        Tue, 14 Apr 2020 09:48:13 +0000 (UTC)
-Received: from [10.72.13.119] (ovpn-13-119.pek2.redhat.com [10.72.13.119])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7602F1001920;
-        Tue, 14 Apr 2020 09:48:05 +0000 (UTC)
-Subject: Re: [PATCH] vhost: do not enable VHOST_MENU by default
-To:     Christian Borntraeger <borntraeger@de.ibm.com>, mst@redhat.com
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, geert@linux-m68k.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Heiko Carstens <heiko.carstens@de.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-References: <20200414024438.19103-1-jasowang@redhat.com>
- <375181ee-08ec-77a6-2dfc-f3c9c26705a1@de.ibm.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <802e6da9-4827-a9a4-b409-f08a5de4e750@redhat.com>
-Date:   Tue, 14 Apr 2020 17:48:04 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AF1EA802685;
+        Tue, 14 Apr 2020 09:57:08 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.6])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2BB3C60BE1;
+        Tue, 14 Apr 2020 09:56:57 +0000 (UTC)
+Date:   Tue, 14 Apr 2020 11:56:56 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     sameehj@amazon.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, zorik@amazon.com,
+        akiyano@amazon.com, gtzalik@amazon.com,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4?= =?UTF-8?B?cmdlbnNlbg==?= 
+        <toke@redhat.com>, Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>, brouer@redhat.com
+Subject: Re: [PATCH RFC v2 29/33] xdp: allow bpf_xdp_adjust_tail() to grow
+ packet size
+Message-ID: <20200414115656.2f0e6ac0@carbon>
+In-Reply-To: <158634678170.707275.10720666808605360076.stgit@firesoul>
+References: <158634658714.707275.7903484085370879864.stgit@firesoul>
+        <158634678170.707275.10720666808605360076.stgit@firesoul>
 MIME-Version: 1.0
-In-Reply-To: <375181ee-08ec-77a6-2dfc-f3c9c26705a1@de.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2020/4/14 =E4=B8=8B=E5=8D=883:26, Christian Borntraeger wrote:
-> On 14.04.20 04:44, Jason Wang wrote:
->> We try to keep the defconfig untouched after decoupling CONFIG_VHOST
->> out of CONFIG_VIRTUALIZATION in commit 20c384f1ea1a
->> ("vhost: refine vhost and vringh kconfig") by enabling VHOST_MENU by
->> default. Then the defconfigs can keep enabling CONFIG_VHOST_NET
->> without the caring of CONFIG_VHOST.
->>
->> But this will leave a "CONFIG_VHOST_MENU=3Dy" in all defconfigs and ev=
-en
->> for the ones that doesn't want vhost. So it actually shifts the
->> burdens to the maintainers of all other to add "CONFIG_VHOST_MENU is
->> not set". So this patch tries to enable CONFIG_VHOST explicitly in
->> defconfigs that enables CONFIG_VHOST_NET and CONFIG_VHOST_VSOCK.
->>
->> Cc: Thomas Bogendoerfer<tsbogend@alpha.franken.de>
->> Cc: Benjamin Herrenschmidt<benh@kernel.crashing.org>
->> Cc: Paul Mackerras<paulus@samba.org>
->> Cc: Michael Ellerman<mpe@ellerman.id.au>
->> Cc: Heiko Carstens<heiko.carstens@de.ibm.com>
->> Cc: Vasily Gorbik<gor@linux.ibm.com>
->> Cc: Christian Borntraeger<borntraeger@de.ibm.com>
-> Fine with me.
-> s390 part
->
-> Acked-by: Christian Borntraeger<borntraeger@de.ibm.com>
->
->   That was my first approach to get things fixed before I reported
-> this to you.
+On Wed, 08 Apr 2020 13:53:01 +0200 Jesper Dangaard Brouer <brouer@redhat.com> wrote:
 
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 7628b947dbc3..4d58a147eed0 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -3422,12 +3422,26 @@ static const struct bpf_func_proto bpf_xdp_adjust_head_proto = {
+>  
+>  BPF_CALL_2(bpf_xdp_adjust_tail, struct xdp_buff *, xdp, int, offset)
+>  {
+> +	void *data_hard_end = xdp_data_hard_end(xdp);
+>  	void *data_end = xdp->data_end + offset;
+>  
+[...]
+> +	/* DANGER: ALL drivers MUST be converted to init xdp->frame_sz
+> +	 * - Adding some chicken checks below
+> +	 * - Will (likely) not be for upstream
+> +	 */
+> +	if (unlikely(xdp->frame_sz < (xdp->data_end - xdp->data_hard_start))) {
+> +		WARN(1, "Too small xdp->frame_sz = %d\n", xdp->frame_sz);
+> +		return -EINVAL;
+> +	}
+> +	if (unlikely(xdp->frame_sz > PAGE_SIZE)) {
+> +		WARN(1, "Too BIG xdp->frame_sz = %d\n", xdp->frame_sz);
+> +		return -EINVAL;
+> +	}
 
-Exactly.
+Any opinions on above checks?
+Should they be removed or kept?
 
-Thanks
+The idea is to catch drivers that forgot to update xdp_buff->frame_sz,
+by doing some sanity checks on this uninit value.  If I correctly
+updated all XDP drivers in this patchset, then these checks should be
+unnecessary, but will this be valuable for driver developers converting
+new drivers to XDP to have these WARN checks?
 
->
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
+Help for reviewers:
+
++/* Reserve memory area at end-of data area.
++ *
++ * This macro reserves tailroom in the XDP buffer by limiting the
++ * XDP/BPF data access to data_hard_end.  Notice same area (and size)
++ * is used for XDP_PASS, when constructing the SKB via build_skb().
++ */
++#define xdp_data_hard_end(xdp)				\
++	((xdp)->data_hard_start + (xdp)->frame_sz -	\
++	 SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
 
