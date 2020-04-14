@@ -2,106 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75F3E1A794B
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 13:19:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 911CD1A798A
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 13:32:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439012AbgDNLTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 07:19:10 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:45690 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2438988AbgDNLTI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 07:19:08 -0400
-Received: by mail-ed1-f68.google.com with SMTP id m12so16552857edl.12;
-        Tue, 14 Apr 2020 04:19:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=kLr1otCrFIODbPMjYkvy3aKgept10MpBYq6j6d3c97s=;
-        b=Lkpk71t5dUqBb1Br8APtSp2E/Ovfy4KU5iskMlVizPr3JdwxjAnHr0aXEDsGwBR8xd
-         DyXXXwDSRirPCe0zZn/ANlwYeyH1IEAFNgVzrgjafNQ0aR/wXNPvx7cedaMDmQHkXUYN
-         EZjHxD9vSd3a2RBbywqSQCEUUErYivDr2tg9MzL8cnZT2HrgkQ6fKzmTBT7aj4i+hDwZ
-         iyDe/1BqP++5vgKwITGM+57Cigfl1sRmfLNKlWMUKghBRWoxKjX5H1nxqZ7ljjcAzzMS
-         PQ8dyuxL9IjpvV3EvQGJOtYjvhiWQX04JQVY9BEURda+Uur3h7w+74+mbG2KLVXsmHID
-         c+yg==
-X-Gm-Message-State: AGi0PuYV65CIKOT8fCSmDGTerMGIH0/cZlI4KGDQMUxWEXo0IPHEol0n
-        lKs2fNXOaBj9ccPRI2pcf+4wcteO
-X-Google-Smtp-Source: APiQypI+e8NhZbH4s6s1t6e787WWdZVnlyyo3DThuzngTxyATZQvoEtvVJUA6KnpSKeyc8xiorGa1Q==
-X-Received: by 2002:a17:906:7e19:: with SMTP id e25mr20500556ejr.358.1586863146621;
-        Tue, 14 Apr 2020 04:19:06 -0700 (PDT)
-Received: from kozik-lap ([194.230.155.125])
-        by smtp.googlemail.com with ESMTPSA id j5sm1662117edh.4.2020.04.14.04.19.05
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 14 Apr 2020 04:19:05 -0700 (PDT)
-Date:   Tue, 14 Apr 2020 13:19:03 +0200
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org, virtualization@lists.linux-foundation.org
-Subject: Re: Build regressions/improvements in v5.7-rc1
-Message-ID: <20200414111903.GA1895@kozik-lap>
-References: <20200413093100.24470-1-geert@linux-m68k.org>
- <alpine.DEB.2.21.2004131232220.32713@ramsan.of.borg>
- <877dyijrh7.fsf@mpe.ellerman.id.au>
- <20200414110627.GA1373@kozik-lap>
+        id S2439041AbgDNL1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 07:27:15 -0400
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:18260 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2438988AbgDNL1N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 07:27:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1586863631; x=1618399631;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=FuYPDzhAp4AkJuDESIBbxHtSPd32PmaudYkGVipmWWU=;
+  b=qcoQumLJD9dEaLzbWbVNmg/NOvze3oDezsgF2ZtXtK/kztxWgxilx0/A
+   CDCHpmxuoJ0+65XVPm/o6e/VED6Hoq7AAB88FGlVBMQEXGavcgu2fwAu3
+   97Z6BINGlmoqZd1bMDEx3ixLW0TygbsuIPguUra+40lA0ULwdtZYYCdC/
+   b8XzU1jtlc6AgrTdXb0/ibVru3lP4fqkpBf1EG8LmjDMMn1I5l7CkmIiL
+   EFpKeK3d1STMSEHSq5CaM2esgvl/s3F3AbCecyzzGwTFYdQP8W8FtLSCc
+   GOFfXOMLmuDqzcV5kpeh33hO8rYgf62LEbXG4olntIyVjcCshgtY9ih7F
+   w==;
+IronPort-SDR: 3Haq7MpF9Bv8ERNY8ht+UQagAkRURtOTUxXpxcfloT2KEMXkGDMREpktYCgkTL4uEeu28kUR7m
+ wYgtGjJ6l1Taaj3sEbJ5BKbJyos3zeJCw1tygj/sUghwYpGNZtk667DqQ9YeMcSMy6Zfz2gw6B
+ oO50x/IDqgcv2OhWSgBYLW2XDTRq0wNlPSNb0KxJoQMJSW/62J20qgyDXtBYwXxCUahAklgZGm
+ lHBHJhsFG23THxDWuhDqYGpu75Ckw/III7SD+UzA50pqU32xN1pB0YTeS9D3p7MwoVHXS8dYPH
+ ThA=
+X-IronPort-AV: E=Sophos;i="5.72,382,1580799600"; 
+   d="scan'208";a="75809053"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Apr 2020 04:27:10 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 14 Apr 2020 04:26:57 -0700
+Received: from soft-dev3.microsemi.net (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.1713.5 via Frontend Transport; Tue, 14 Apr 2020 04:27:08 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <nikolay@cumulusnetworks.com>, <davem@davemloft.net>,
+        <jiri@resnulli.us>, <ivecera@redhat.com>, <kuba@kernel.org>,
+        <roopa@cumulusnetworks.com>, <olteanv@gmail.com>, <andrew@lunn.ch>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bridge@lists.linux-foundation.org>, <UNGLinuxDriver@microchip.com>
+CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [RFC net-next v5 0/9] net: bridge: mrp: Add support for Media Redundancy Protocol(MRP)
+Date:   Tue, 14 Apr 2020 13:26:09 +0200
+Message-ID: <20200414112618.3644-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200414110627.GA1373@kozik-lap>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 14, 2020 at 01:06:27PM +0200, Krzysztof Kozlowski wrote:
-> On Tue, Apr 14, 2020 at 08:23:32PM +1000, Michael Ellerman wrote:
- > >>  + /kisskb/src/arch/powerpc/include/asm/nohash/64/pgtable-4k.h: error: expected ')' before '!=' token:  => 58:40
-> > >>  + /kisskb/src/arch/powerpc/include/asm/nohash/64/pgtable-4k.h: error: expected ')' before '==' token:  => 57:37
-> > >>  + /kisskb/src/arch/powerpc/include/asm/nohash/64/pgtable-4k.h: error: expected identifier or '(' before '!' token:  => 56:25
-> > >>  + /kisskb/src/arch/powerpc/include/asm/nohash/64/pgtable.h: error: expected ')' before '!=' token:  => 163:40
-> > >>  + /kisskb/src/arch/powerpc/include/asm/nohash/64/pgtable.h: error: expected ')' before '==' token:  => 333:50
-> > >>  + /kisskb/src/arch/powerpc/include/asm/nohash/64/pgtable.h: error: expected ')' before '^' token:  => 333:36
-> > >>  + /kisskb/src/arch/powerpc/include/asm/nohash/64/pgtable.h: error: expected identifier or '(' before '!' token:  => 146:27, 144:24, 160:25, 161:24, 143:25
-> > >>  + /kisskb/src/arch/powerpc/include/asm/nohash/64/pgtable.h: error: expected identifier or '(' before 'struct':  => 77:21
-> > >>  + /kisskb/src/arch/powerpc/include/asm/nohash/pgtable.h: error: redefinition of 'pgd_huge':  => 291:19
-> > >>  + /kisskb/src/arch/powerpc/include/asm/nohash/pte-book3e.h: error: redefinition of 'pte_mkprivileged':  => 108:26
-> > >>  + /kisskb/src/arch/powerpc/include/asm/nohash/pte-book3e.h: error: redefinition of 'pte_mkuser':  => 115:20
-> > >>  + /kisskb/src/arch/powerpc/kvm/book3s_64_vio_hv.c: error: 'struct kvm_arch' has no member named 'spapr_tce_tables':  => 68:46, 68:2
-> > >
-> > > ppc64_book3e_allmodconfig
-> > 
-> > Caused by:
-> > 
-> > e93a1695d7fb ("iommu: Enable compile testing for some of drivers")
-> > 
-> > Which did:
-> > 
-> >  config SPAPR_TCE_IOMMU
-> >  	bool "sPAPR TCE IOMMU Support"
-> > -	depends on PPC_POWERNV || PPC_PSERIES
-> > +	depends on PPC_POWERNV || PPC_PSERIES || (PPC && COMPILE_TEST)
-> > 
-> > 
-> > Which is just ... not right, the dependencies on the correct platform
-> > are important, otherwise the build breaks.
-> 
-> The SPAPR_TCE_IOMMU should compile fine.  The actual trouble here is
-> that KVM_BOOK3S_64 selects SPAPR_TCE_IOMMU which is a user-visible
-> symbol.  This is generally discouraged because of exactly this error -
-> select ignores any dependencies.
-> 
-> I can revert the COMPILE_TEST for SPAPR_TCE_IOMMU or change
-> select->depends in KVM_BOOK3S_64.  I think the latter is the proper
-> change here.
+Media Redundancy Protocol is a data network protocol standardized by
+International Electrotechnical Commission as IEC 62439-2. It allows rings of
+Ethernet switches to overcome any single failure with recovery time faster than
+STP. It is primarily used in Industrial Ethernet applications.
 
-Eh, not really, it looks more complex because there are more
-dependencies (the book3s_64_vio_hv is pulled by KVM Makefile if
-SPAPR_TCE_IOMMU is set).
+Based on the previous RFC[1][2][3][4], the MRP state machine and all the timers
+were moved to userspace, except for the timers used to generate MRP Test frames.
+In this way the userspace doesn't know and should not know if the HW or the
+kernel will generate the MRP Test frames. The following changes were added to
+the bridge to support the MRP:
+- the existing netlink interface was extended with MRP support,
+- allow to detect when a MRP frame was received on a MRP ring port
+- allow MRP instance to forward/terminate MRP frames
+- generate MRP Test frames in case the HW doesn't have support for this
 
-I guess the revert of this part makes most sense.
+To be able to offload MRP support to HW, the switchdev API  was extend.
 
-Best regards,
-Krzysztof
+With these changes the userspace doesn't do the following because already the
+kernel/HW will do:
+- doesn't need to forward/terminate MRP frames
+- doesn't need to generate MRP Test frames
+- doesn't need to detect when the ring is open/closed.
+
+The userspace application that is using the new netlink can be found here[5].
+
+The current implementation both in kernel and userspace supports only 2 roles:
+  MRM - this one is responsible to send MRP_Test and MRP_Topo frames on both
+  ring ports. It needs to process MRP_Test to know if the ring is open or
+  closed. This operation is desired to be offloaded to the HW because it
+  requires to generate and process up to 4000 frames per second. Whenever it
+  detects that the ring is open it sends MRP_Topo frames to notify all MRC about
+  changes in the topology. MRM needs also to process MRP_LinkChange frames,
+  these frames are generated by the MRC. When the ring is open then the state
+  of both ports is to forward frames and when the ring is closed then the
+  secondary port is blocked.
+
+  MRC - this one is responsible to forward MRP frames between the ring ports.
+  In case one of the ring ports gets a link down or up, then MRC will generate
+  a MRP_LinkChange frames. This node should also process MRP_Topo frames and to
+  clear its FDB when it receives this frame.
+
+ Userspace
+               Deamon +----------+ Client
+                +
+                |
+ +--------------|-----------------------------------------+
+  Kernel        |
+                + Netlink
+
+                |                              + Interrupt
+                |                              |
+ +--------------|------------------------------|----------+
+  HW            | Switchdev                    |
+                +                              |
+
+The user interacts using the client (called 'mrp'), the client talks to the
+deamon (called 'mrp_server'), which talks with the kernel using netlink. The
+kernel will try to offload the requests to the HW via switchdev API.
+
+If this will be accepted then in the future the netlink interface can be
+expended with multiple attributes which are required by different roles of the
+MRP. Like Media Redundancy Automanager(MRA), Media Interconnect Manager(MIM) and
+Media Interconnect Client(MIC).
+
+[1] https://www.spinics.net/lists/netdev/msg623647.html
+[2] https://www.spinics.net/lists/netdev/msg624378.html
+[3] https://www.spinics.net/lists/netdev/msg627500.html
+[4] https://www.spinics.net/lists/netdev/msg641005.html
+[5] https://github.com/microchip-ung/mrp/tree/patch-v5
+
+-v5:
+  - use nla_parse_nested
+  - rework the usage of the rcu in br_mrp
+  - reorder patches
+  - few other small issues raised by Nikolay
+
+-v4:
+  - extend existing netlink interface to add mrp support
+  - use rcu locks
+
+-v3:
+  - move MRP state machine in userspace
+  - create generic netlink interface for configuring the HW using switchdev API
+
+-v2:
+  - extend switchdev API to offload to HW
+
+Horatiu Vultur (9):
+  bridge: uapi: mrp: Add mrp attributes.
+  bridge: mrp: Update Kconfig and Makefile
+  bridge: mrp: Expose function br_mrp_port_open
+  bridge: mrp: Add MRP interface.
+  switchdev: mrp: Extend switchdev API to offload MRP
+  bridge: switchdev: mrp: Implement MRP API for switchdev
+  bridge: mrp: Connect MRP API with the switchev API
+  bridge: mrp: Implement netlink interface to configure MRP
+  bridge: mrp: Integrate MRP into the bridge
+
+ include/linux/if_bridge.h       |   1 +
+ include/linux/mrp_bridge.h      |  24 ++
+ include/net/switchdev.h         |  62 ++++
+ include/uapi/linux/if_bridge.h  |  43 +++
+ include/uapi/linux/if_ether.h   |   1 +
+ include/uapi/linux/mrp_bridge.h |  84 +++++
+ net/bridge/Kconfig              |  12 +
+ net/bridge/Makefile             |   2 +
+ net/bridge/br_device.c          |   3 +
+ net/bridge/br_if.c              |   2 +
+ net/bridge/br_input.c           |   3 +
+ net/bridge/br_mrp.c             | 559 ++++++++++++++++++++++++++++++++
+ net/bridge/br_mrp_netlink.c     | 164 ++++++++++
+ net/bridge/br_mrp_switchdev.c   | 144 ++++++++
+ net/bridge/br_netlink.c         |   5 +
+ net/bridge/br_private.h         |  35 ++
+ net/bridge/br_private_mrp.h     |  61 ++++
+ net/bridge/br_stp.c             |   6 +
+ net/bridge/br_stp_if.c          |   5 +
+ 19 files changed, 1216 insertions(+)
+ create mode 100644 include/linux/mrp_bridge.h
+ create mode 100644 include/uapi/linux/mrp_bridge.h
+ create mode 100644 net/bridge/br_mrp.c
+ create mode 100644 net/bridge/br_mrp_netlink.c
+ create mode 100644 net/bridge/br_mrp_switchdev.c
+ create mode 100644 net/bridge/br_private_mrp.h
+
+-- 
+2.17.1
 
