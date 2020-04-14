@@ -2,144 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF51F1A8B14
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 21:39:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 943E31A8B4A
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 21:44:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504998AbgDNTi6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 15:38:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58922 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2504960AbgDNTi0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 15:38:26 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E76C061A10;
-        Tue, 14 Apr 2020 12:38:25 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id i19so8371712qtp.13;
-        Tue, 14 Apr 2020 12:38:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=S8Sruc3Mb8WtMEXL39Vf+5pyS5l53hxUElAAf0KjhFs=;
-        b=cjAXviUWk8tTEtFWCG//p3nWhyXBUMR2Lfn7u/D0H1PpsC/r9TMupxX+K8ZXXOoyMI
-         /qcQmJupyBOlMtEjj20jVuzInR84e+gXyEeHYhke/liFopXWkKKuxKZZVheUa63xDwBP
-         p7N4AGNepD2IHBoq8sLzGoKqRADvEyyiahRhd2R/7HzQBsc+rgJ8Jdfai79v3UqGelkj
-         yk94rLizD8DRktMoxO+ocMMHpALDqLIPKyhd8WPNpuQEBTdbJQr8dXuoTGLz7Tqo7URf
-         f9R39K+TmecKy8QcB9JEnyhIr9xXgo7tqaqd1jmnMMGYgn1KaYIfVnLRIdU/bhfNSSWR
-         v4gA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=S8Sruc3Mb8WtMEXL39Vf+5pyS5l53hxUElAAf0KjhFs=;
-        b=O1ix0Fa5+nf93xcAKcFJgwjQEco/r7ZpuisYCrwepHXvDkMDaL5+x+HplM16LT6pOE
-         tsMf0Wto7vL88883bKAnqYk6YjiMQIPUotWbh0K8x50wo5oZSUeUsj92pueyKCfv9F1H
-         o4EkTWHvWlT+W/gBMZh0ZzqWvw3RCrMs2Vt3SK6f+ik41Y6AcE9PR0tnQtMPanw2oq8L
-         pSRDB+OvdhASVgEa1+OCzofb6jogbC9tADXDbIBQSDILkL33ADln+HIv5Nvly/utE+t/
-         Y/wHE/5GmMnxB4Gl/+EwkSnhoY+bj+TLqqrt+OJSN9W1oxYJN5EYs1DiaFraKmhStpuo
-         AedA==
-X-Gm-Message-State: AGi0Pubtx2u3kF8cBbWafRXui++3OK6uj1uEqV73CZgyhgrMsVkg7z4y
-        DHwf9Mw9i70D7m1RZdMl5buVZxcMh8HlI2n1L29Wpjg4
-X-Google-Smtp-Source: APiQypIRm9IdbZt1nt7wsI3UOpvfQ1Bhvbptzy7Zb+eRZ9boFqJzudRUIjc6LaWofbsHrStP+vXxE9uMdrmXvjMHuf0=
-X-Received: by 2002:ac8:1744:: with SMTP id u4mr11044718qtk.141.1586893104295;
- Tue, 14 Apr 2020 12:38:24 -0700 (PDT)
+        id S2505131AbgDNTnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 15:43:46 -0400
+Received: from www62.your-server.de ([213.133.104.62]:51048 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731836AbgDNTnk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 15:43:40 -0400
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jORSs-0002KH-Mm; Tue, 14 Apr 2020 21:43:22 +0200
+Received: from [178.195.186.98] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jORSs-00044G-5p; Tue, 14 Apr 2020 21:43:22 +0200
+Subject: Re: [PATCH bpf] arm, bpf: Fix offset overflow for BPF_MEM BPF_DW
+To:     Luke Nelson <lukenels@cs.washington.edu>, bpf@vger.kernel.org
+Cc:     Luke Nelson <luke.r.nels@gmail.com>, Xi Wang <xi.wang@gmail.com>,
+        Shubham Bansal <illusionist.neo@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20200409221752.28448-1-luke.r.nels@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <0eb3fe81-973b-1a96-df00-a68c74b84eba@iogearbox.net>
+Date:   Tue, 14 Apr 2020 21:43:21 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20200414045613.2104756-1-andriin@fb.com> <20200414175608.GB54710@rdna-mbp>
- <CAEf4BzbM4-PvOgro-SjHx6h2ndYndSNkbQTA6xq74W=PuPTpjA@mail.gmail.com> <20200414184326.GA59623@rdna-mbp>
-In-Reply-To: <20200414184326.GA59623@rdna-mbp>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 14 Apr 2020 12:38:13 -0700
-Message-ID: <CAEf4BzYA6UvME-MLQVrYFPEuqzPtfB8aHbgps+VYqM7_nBn7jA@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next] libbpf: always specify expected_attach_type
- on program load if supported
-To:     Andrey Ignatov <rdna@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200409221752.28448-1-luke.r.nels@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25782/Tue Apr 14 13:57:42 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 14, 2020 at 11:44 AM Andrey Ignatov <rdna@fb.com> wrote:
->
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> [Tue, 2020-04-14 11:25 -0700]=
-:
-> > On Tue, Apr 14, 2020 at 10:56 AM Andrey Ignatov <rdna@fb.com> wrote:
-> > >
-> > > Andrii Nakryiko <andriin@fb.com> [Mon, 2020-04-13 21:56 -0700]:
->
-> ...
->
-> > > > v1->v2:
-> > > > - fixed prog_type/expected_attach_type combo (Andrey);
-> > > > - added comment explaining what we are doing in probe_exp_attach_ty=
-pe (Andrey).
-> > >
-> > > Thanks for changes.
-> > >
-> > > I built the patch (removing the double .sec Song mentioned since it
-> > > breaks compilation) and tested it: it fixes the problem with NET_XMIT=
-_CN
-> >
-> > Wait, what? How does it break compilation? I compiled and tested
-> > before submitting and just cleaned and built again, no compilation
-> > errors or even warnings. Can you share compilation error you got,
-> > please?
->
-> Sure:
->
->         11:37:28 1 rdna@dev082.prn2:~/bpf-next$>/home/rdna/bin/clang --ve=
-rsion
->         clang version 9.0.20190721
->         Target: x86_64-unknown-linux-gnu
->         Thread model: posix
->         InstalledDir: /home/rdna/bin
->         11:37:32 0 rdna@dev082.prn2:~/bpf-next$>env GCC=3D~/bin/gcc CLANG=
-=3D~/bin/clang CC=3D~/bin/clang LLC=3D~/bin/llc LLVM_STRIP=3D~/bin/llvm-str=
-ip  make V=3D1 -C tools/bpf/bpftool/
+On 4/10/20 12:17 AM, Luke Nelson wrote:
+> This patch fixes an incorrect check in how immediate memory offsets are
+> computed for BPF_DW on arm.
+> 
+> For BPF_LDX/ST/STX + BPF_DW, the 32-bit arm JIT breaks down an 8-byte
+> access into two separate 4-byte accesses using off+0 and off+4. If off
+> fits in imm12, the JIT emits a ldr/str instruction with the immediate
+> and avoids the use of a temporary register. While the current check off
+> <= 0xfff ensures that the first immediate off+0 doesn't overflow imm12,
+> it's not sufficient for the second immediate off+4, which may cause the
+> second access of BPF_DW to read/write the wrong address.
+> 
+> This patch fixes the problem by changing the check to
+> off <= 0xfff - 4 for BPF_DW, ensuring off+4 will never overflow.
+> 
+> A side effect of simplifying the check is that it now allows using
+> negative immediate offsets in ldr/str. This means that small negative
+> offsets can also avoid the use of a temporary register.
+> 
+> This patch introduces no new failures in test_verifier or test_bpf.c.
+> 
+> Fixes: c5eae692571d6 ("ARM: net: bpf: improve 64-bit store implementation")
+> Fixes: ec19e02b343db ("ARM: net: bpf: fix LDX instructions")
+> Co-developed-by: Xi Wang <xi.wang@gmail.com>
+> Signed-off-by: Xi Wang <xi.wang@gmail.com>
+> Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
 
-[...]
-
->
->         fatal error: too many errors emitted, stopping now [-ferror-limit=
-=3D]
->         20 errors generated.
->            ld -r -o staticobjs/libbpf-in.o  staticobjs/libbpf.o staticobj=
-s/bpf.o staticobjs/nlattr.o staticobjs/btf.o staticobjs/libbpf_errno.o stat=
-icobjs/str_error.o staticobjs/netlink.o staticobjs/bpf_prog_linfo.o statico=
-bjs/libbpf_probes.o staticobjs/xsk.o staticobjs/hashmap.o staticobjs/btf_du=
-mp.o
->         ld: cannot find staticobjs/libbpf.o: No such file or directory
->         make[2]: *** [staticobjs/libbpf-in.o] Error 1
->         make[1]: *** [staticobjs/libbpf-in.o] Error 2
->         make[1]: Leaving directory `/home/rdna/bpf-next/tools/lib/bpf'
->         make: *** [/home/rdna/bpf-next/tools/lib/bpf/libbpf.a] Error 2
->         make: Leaving directory `/home/rdna/bpf-next/tools/bpf/bpftool'
->         11:37:43 2 rdna@dev082.prn2:~/bpf-next$>
-
-Weird, I can't repro it locally neither with GCC, nor with clang-9 or
-latest clang...
-
->
-> > > I guess we can deal with selftest separately in the original thread.
-> >
-> > Sure, if this is going to be applied to bpf as a fix, I'd rather
-> > follow-up with selftests separately.
->
-> Sounds good.
->
-> > > Also a question about bpf vs bpf-next: since this fixes real problem
-> > > with loading cgroup skb programs, should it go to bpf tree instead?
-> >
-> > It will be up to maintainers, it's not so clear whether it's a new
-> > feature or a bug fix.. I don't mind either way.
->
-> Sounds good. Thanks.
->
-> --
-> Andrey Ignatov
+Applied, thanks!
