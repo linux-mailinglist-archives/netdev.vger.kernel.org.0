@@ -2,111 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 076FB1A7073
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 03:12:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 836A21A7082
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 03:20:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728666AbgDNBMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Apr 2020 21:12:39 -0400
-Received: from mail-eopbgr1410074.outbound.protection.outlook.com ([40.107.141.74]:23308
-        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728066AbgDNBMi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Apr 2020 21:12:38 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e/fthckY2ui0Cgls0+gapmTycvWtZaEWrOvpG9illFUJ1YJEJEr7NkHHyoADWX8NDMCEl+URs/bFUShxHvplgxYSdMG9SjR9ckS6sIsUg8XLbhu6KaBjti7c3dL9hh2GvgsonXDppxbVSA2+CGcjbV+ShVBC3DbPWMwR7btkn7EXwfye0Wp/khgwzDjTUYmJyselS5TqdzVWAqvcrF0gMxcKdtz0PNTYvZQcFRHTP7mmficX7359LhJht89Es1OkrsxdpUHupT3sCHQ0q5w+6LrGzAvwqfMp47YFksOIToMLfZ9l0oHYtojlpOC0asUQxrXaOkFIvdVGMTMuIk/UVA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=993ZGaEmrlgQlQKGXREPiIe1qOCimmieYk74kxk8zV8=;
- b=Z1JV2lY/Mz684d08ttxGdfnfeknMABbopcQGud6saQa6cxURv+zR0YQxQkPMDpFL+W26ugQpTu6OhVMDVi6Qn3xRbp6lkMcaGO/LROInvwyq0h2AD/KZPwpjFNvBzoc4kVY0RcZEAoBaj+vF37C3UIpRm5W6UFumhSW2IrwNrah28SukiOe1xH4rnn6j1Yoxx7IlXR3jiGnl9/1LlpdVdNq2BojdpZL++ZlvGadNYrqtk80PU639+zOIfwlVAhDRSOFkzL200PHvccR9hiBesd7P04+jv7fnemeQEcZPKz31kthlJT4YBJTMNC9WXgLofm9+yhE74ibsf9196LtJpA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=sord.co.jp; dmarc=pass action=none header.from=sord.co.jp;
- dkim=pass header.d=sord.co.jp; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=sordcorp.onmicrosoft.com; s=selector2-sordcorp-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=993ZGaEmrlgQlQKGXREPiIe1qOCimmieYk74kxk8zV8=;
- b=Jw6rvairCpTjfEVASr2aOXAVkoc63bfJI7olxOG+7+iiCf6vhL0BTdYTw4tBUWRDmJtJNaIZeWas90CQwccQh0qbe118eHMn3e/a76bXu/VTnHFwd41vF9DyZkkZmXQoQXC0CCo29IdzzTvZtNUiMQRwvDEOji2FQ9px5BcJAJE=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=atsushi.nemoto@sord.co.jp; 
-Received: from OSBPR01MB2087.jpnprd01.prod.outlook.com (52.134.241.18) by
- OSBPR01MB3560.jpnprd01.prod.outlook.com (20.178.97.202) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2900.20; Tue, 14 Apr 2020 01:12:35 +0000
-Received: from OSBPR01MB2087.jpnprd01.prod.outlook.com
- ([fe80::71ff:5526:838:a89a]) by OSBPR01MB2087.jpnprd01.prod.outlook.com
- ([fe80::71ff:5526:838:a89a%7]) with mapi id 15.20.2900.028; Tue, 14 Apr 2020
- 01:12:35 +0000
-Date:   Tue, 14 Apr 2020 10:12:34 +0900 (JST)
-Message-Id: <20200414.101234.1930009524396577448.atsushi.nemoto@sord.co.jp>
-To:     netdev@vger.kernel.org
-Cc:     tomonori.sakita@sord.co.jp
-Subject: [PATCH] net: stmmac: socfpga: Allow all RGMII modes
-From:   Atsushi Nemoto <atsushi.nemoto@sord.co.jp>
-X-Fingerprint: 6ACA 1623 39BD 9A94 9B1A  B746 CA77 FE94 2874 D52F
-X-Pgp-Public-Key: http://wwwkeys.pgp.net:11371/pks/lookup?op=get&search=0x2874D52F
-X-Mailer: Mew version 6.7 on Emacs 24.5 / Mule 6.0 (HANACHIRUSATO)
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: TYCPR01CA0065.jpnprd01.prod.outlook.com
- (2603:1096:405:2::29) To OSBPR01MB2087.jpnprd01.prod.outlook.com
- (2603:1096:603:22::18)
+        id S2390730AbgDNBTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Apr 2020 21:19:47 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:39054 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728066AbgDNBTp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Apr 2020 21:19:45 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03E1JhCF055849;
+        Tue, 14 Apr 2020 01:19:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : subject :
+ from : references : date : in-reply-to : message-id : mime-version :
+ content-type; s=corp-2020-01-29;
+ bh=4EDrHyItOx5LQY1DZik4qSxP4G3bwbP+YcN/xSRvfAs=;
+ b=WVsjZQzQ1/saRkAdS27NUajKeNB+4GxX5w8bx8KWUVhEBJ7YqZBPUP84XwHi/StcvcD4
+ 7j/RwP+dgVgh3CFj6Mi3IgqyVVMGagCtKgxKWCoxBMx1s3ivCGtO3GZLbsUmnxE2IHT6
+ sxUeEEQR0Eq2SpysCZSz002s1Q5jC6CHgiMrjIuaa086bYG0p6z6DQ7z9PsC1U5HGtPU
+ nEwa67wZetVgcMm5FKrv1S53CJGwxBFEcUYjleclKU8fUKo3I0mtFpX11v8MJAK38EXT
+ FysqH4u7VMSleriyuFXjHiBEh8o/g3pmKOizPpMwovGeSJfuzir3rL3Rf8qHE/QBdqWd GQ== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2130.oracle.com with ESMTP id 30b5ar1m97-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 14 Apr 2020 01:19:43 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03E1HipX196071;
+        Tue, 14 Apr 2020 01:19:42 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3030.oracle.com with ESMTP id 30bqcfvs48-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 14 Apr 2020 01:19:42 +0000
+Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 03E1Jgmn017687;
+        Tue, 14 Apr 2020 01:19:42 GMT
+Received: from ca-mkp.ca.oracle.com (/10.159.214.123)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 13 Apr 2020 18:19:40 -0700
+To:     Saurav Kashyap <skashyap@marvell.com>
+Cc:     <martin.petersen@oracle.com>,
+        <GR-QLogic-Storage-Upstream@marvell.com>,
+        <linux-scsi@vger.kernel.org>, <jhasan@marvell.com>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3 1/7] qedf: Keep track of num of pending flogi.
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+Organization: Oracle Corporation
+References: <20200403120957.2431-1-skashyap@marvell.com>
+        <20200403120957.2431-2-skashyap@marvell.com>
+Date:   Mon, 13 Apr 2020 21:19:38 -0400
+In-Reply-To: <20200403120957.2431-2-skashyap@marvell.com> (Saurav Kashyap's
+        message of "Fri, 3 Apr 2020 05:09:51 -0700")
+Message-ID: <yq17dyivp79.fsf@oracle.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1.92 (gnu/linux)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost (61.200.21.62) by TYCPR01CA0065.jpnprd01.prod.outlook.com (2603:1096:405:2::29) with Microsoft SMTP Server (version=TLS1_0, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.20.2900.24 via Frontend Transport; Tue, 14 Apr 2020 01:12:34 +0000
-X-Fingerprint: 6ACA 1623 39BD 9A94 9B1A  B746 CA77 FE94 2874 D52F
-X-Pgp-Public-Key: http://wwwkeys.pgp.net:11371/pks/lookup?op=get&search=0x2874D52F
-X-Mailer: Mew version 6.7 on Emacs 24.5 / Mule 6.0 (HANACHIRUSATO)
-X-Originating-IP: [61.200.21.62]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4903a2f5-efb4-45d8-09db-08d7e010ea20
-X-MS-TrafficTypeDiagnostic: OSBPR01MB3560:|OSBPR01MB3560:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <OSBPR01MB3560AC27DDCF2E866CE27F84BBDA0@OSBPR01MB3560.jpnprd01.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2000;
-X-Forefront-PRVS: 0373D94D15
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OSBPR01MB2087.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(396003)(346002)(136003)(376002)(39850400004)(366004)(8936002)(81156014)(66556008)(44832011)(66946007)(26005)(16526019)(186003)(86362001)(478600001)(66476007)(2616005)(956004)(103116003)(4326008)(6486002)(5660300002)(36756003)(6496006)(52116002)(6916009)(8676002)(2906002)(4744005)(316002)(107886003);DIR:OUT;SFP:1101;
-Received-SPF: None (protection.outlook.com: sord.co.jp does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yEG4yNSjgnoYqxAtp+TPL+7RGXIV1SXGxnyUkAQ/xIddR/mi8EqiD5EM1SgKldKEcmzWmMhJjWDbyfRHbWS6AkSWszszUjOra++DFIcThMUtTc9G+9KNspe5d8JA3+Oji9jlnWk1tQl32Fxkaq/OdJCf+UTG2xOhlVBDrPtz0zuRxQWTlGngTc1RGX1aE65maxpYcFc5a3XjJMxiIcWP8eA6kZfR3QvEMB4I1pRF2+Eqk2akjQCmCRf+Yv4PHrH0RIYqOivYyOLompLCyDAtxRxShQZbEu01ClC0OjrfpcKjezdfsUIXfmChG3Kx3FBatTm0mCwWB4W7AziBEH0NAHMncJ+Smlx0rLO16neu4tSxKpzwvMhPEpuktRs3q0OOxnDdRbchLW9msR4Zk+CdSLKTzouhr/VQ3xbs6JqYwzwe1bqxF/wgsLij9twLsKET
-X-MS-Exchange-AntiSpam-MessageData: UoXvD0M1MTGe+oqhX9KRdhyUbjUCG2B/MDhca8b/F5HfNxPO8JoQABGm5DmIGdWpOSLbs8g5KrzYJMofTK+r9TjBE/Jmv5e5NlVT4IU+uac7XR+RYFLIVakgGaAC5GMA4kFyDarcaY/hTwK6w4VfqA==
-X-OriginatorOrg: sord.co.jp
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4903a2f5-efb4-45d8-09db-08d7e010ea20
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2020 01:12:34.9540
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: cf867293-59a2-46d0-8328-dfdea9397b80
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pkl/rI0ZZgTWNm8pQzfKQdflrRD+g/DCJYt64Orx0qTKSmTVIrLj+aB3VHq2WKxrbh6ykL7JXEFBXuF+nPxQNsNWcdnfL4rkFxAJYynI/m0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSBPR01MB3560
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9590 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxlogscore=874
+ bulkscore=0 malwarescore=0 phishscore=0 mlxscore=0 spamscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2004140008
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9590 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 impostorscore=0
+ clxscore=1011 priorityscore=1501 malwarescore=0 phishscore=0 spamscore=0
+ mlxlogscore=942 suspectscore=0 adultscore=0 mlxscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
+ definitions=main-2004140008
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow all the RGMII modes to be used.  (Not only "rgmii", "rgmii-id"
-but "rgmii-txid", "rgmii-rxid")
 
-Signed-off-by: Atsushi Nemoto <atsushi.nemoto@sord.co.jp>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c | 2 ++
- 1 file changed, 2 insertions(+)
+Saurav,
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-index e0212d2..fa32cd5 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-@@ -241,6 +241,8 @@ static int socfpga_set_phy_mode_common(int phymode, u32 *val)
- 	switch (phymode) {
- 	case PHY_INTERFACE_MODE_RGMII:
- 	case PHY_INTERFACE_MODE_RGMII_ID:
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
- 		*val = SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RGMII;
- 		break;
- 	case PHY_INTERFACE_MODE_MII:
+Please, no "." at the end of Subject: lines.
+
+> - Problem: Port not coming up after bringing down the port
+>   for longer duration.
+> - Bring down the port from the switch
+> - wait for fipvlan to exhaust, driver will use
+>   default vlan (1002) and call fcoe_ctlr_link_up
+> - libfc/fcoe will start sending FLOGI
+> - bring back the port and switch discard FLOGI
+>   because vlan is different.
+> - keep track of pending flogi and if it increases
+>   certain number then do ctx reset and it will do
+>   fipvlan again.
+
+That doesn't look like a proper commit message.
+
+How about something like:
+
+    If a port is brought down for an extended period of time, the
+    fipvlan counter gets exhausted and the driver will fall back to
+    default VLAN 1002 and call fcoe_ctlr_link_up to log in. However, the
+    switch will discard the FLOGI attempt because the VLAN is now
+    different.
+
+    Keep track of the number of FLOGI attempts and if a threshold of
+    QEDF_FLOGI_RETRY_CNT is exceeded, perform a context soft reset.
+
 -- 
-2.1.4
-
+Martin K. Petersen	Oracle Linux Engineering
