@@ -2,94 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 770BF1A7B2B
-	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 14:49:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81F051A7B76
+	for <lists+netdev@lfdr.de>; Tue, 14 Apr 2020 14:55:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502215AbgDNMtg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Apr 2020 08:49:36 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:46983 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728803AbgDNMtd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Apr 2020 08:49:33 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1586868572; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=FEC6UXkgrlVz/1ReSPT9a5+LzjnDG2h4x4E5PpkB6Xk=;
- b=fLwZlNAPr8rC/RQUePxqUdl4jxmw0poTJj4WTp+S8UHSVuWHUQL0LPDeU67Z5M3D5CyxnPuL
- LiNCAGuIV011RkTLkeTNei8y65pecazZ4n+JsP8Wyn/lXNPq80VPK3b8CyEjt/zESZe2hP3Z
- X09RoK6aY8WWK+DzFzUf19gJMnY=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e95b157.7fc2ff541500-smtp-out-n04;
- Tue, 14 Apr 2020 12:49:27 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 25401C44788; Tue, 14 Apr 2020 12:49:27 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 265FEC433CB;
-        Tue, 14 Apr 2020 12:49:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 265FEC433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S2502391AbgDNMzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Apr 2020 08:55:43 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:36278 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2502380AbgDNMzl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 14 Apr 2020 08:55:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=lPJUTtOIuy5BU8KE3cbCX1+ZdoLjw8YCm2osvNCEtqA=; b=OQKalRLbHaPc/mThQHVJCQCVts
+        EfVmzRhb1CJnXwB/0mYpg64P5UqAlFbld5Z2fKyY4rqortNFWWbMw19bLFFY2+yNz8dPh7oLttV2v
+        2gePZkHhgS/eDO5UQBruCQ4OCwgYZhl+XrvO7MpXbQ0lSUCjlQGDWBi9qclBpT2UiQfs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jOL6D-002eMr-IC; Tue, 14 Apr 2020 14:55:33 +0200
+Date:   Tue, 14 Apr 2020 14:55:33 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Andy Duan <fugang.duan@nxp.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Chris Healy <Chris.Healy@zii.aero>,
+        Chris Heally <cphealy@gmail.com>
+Subject: Re: [EXT] [PATCH] net: ethernet: fec: Replace interrupt driven MDIO
+ with polled IO
+Message-ID: <20200414125533.GD611399@lunn.ch>
+References: <20200414004551.607503-1-andrew@lunn.ch>
+ <VI1PR0402MB3600B82EE105E43BD20E2190FFDA0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+ <20200414034920.GA611399@lunn.ch>
+ <VI1PR0402MB3600C15E60CB9436DFB59FCFFFDA0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] rtw88: avoid unused function warnings
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200408185413.218643-1-arnd@arndb.de>
-References: <20200408185413.218643-1-arnd@arndb.de>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
-        Chin-Yen Lee <timlee@realtek.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Brian Norris <briannorris@chromium.org>,
-        Chris Chiu <chiu@endlessm.com>,
-        Jian-Hong Pan <jian-hong@endlessm.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20200414124927.25401C44788@smtp.codeaurora.org>
-Date:   Tue, 14 Apr 2020 12:49:27 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <VI1PR0402MB3600C15E60CB9436DFB59FCFFFDA0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Arnd Bergmann <arnd@arndb.de> wrote:
+> If we switch to polling mode, it is better to add usleep or cpu relax between IO
+> Polling.
 
-> The rtw88 driver defines emtpy functions with multiple indirections
-> but gets one of these wrong:
+Hi Andy
+
+Yes. I can do that. I've been wanting to try iopoll.h. I will see what
+the performance impacts are.
+
+> > I also have follow up patches which allows the bus to be run at higher speeds.
+> > The Ethernet switch i have on the bus is happy to run a 5MHz rather than the
+> > default 2.5MHz. 
 > 
-> drivers/net/wireless/realtek/rtw88/pci.c:1347:12: error: 'rtw_pci_resume' defined but not used [-Werror=unused-function]
->  1347 | static int rtw_pci_resume(struct device *dev)
->       |            ^~~~~~~~~~~~~~
-> drivers/net/wireless/realtek/rtw88/pci.c:1342:12: error: 'rtw_pci_suspend' defined but not used [-Werror=unused-function]
->  1342 | static int rtw_pci_suspend(struct device *dev)
-> 
-> Better simplify it to rely on the conditional reference in
-> SIMPLE_DEV_PM_OPS(), and mark the functions as __maybe_unused to avoid
-> warning about it.
-> 
-> I'm not sure if these are needed at all given that the functions
-> don't do anything, but they were only recently added.
-> 
-> Fixes: 44bc17f7f5b3 ("rtw88: support wowlan feature for 8822c")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Please compatible with 2.5Hz for your following patches.
 
-Patch applied to wireless-drivers.git, thanks.
+Yes. I'm adding device tree properties. If the property is not
+present, it will default to 2.5MHz. Same for preamble suppression, if
+the boolean DT property is not present, it will not suppress it, so
+keeping backwards compatibility.
 
-7dc7c41607d1 rtw88: avoid unused function warnings
-
--- 
-https://patchwork.kernel.org/patch/11480657/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+	Andrew
