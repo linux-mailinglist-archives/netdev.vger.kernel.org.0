@@ -2,126 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FFE21A955A
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 10:00:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51C761A9728
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 10:44:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393740AbgDOH5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 03:57:15 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:47070 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390630AbgDOH5O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 03:57:14 -0400
-Received: by mail-ot1-f66.google.com with SMTP id w12so2455342otm.13;
-        Wed, 15 Apr 2020 00:57:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xXgXhC8bKKq0YWfVxUBiOfk11sjnb4Yq0MYMcyVOwhk=;
-        b=uoRzIelpJOTD6ZMbglgalFC1WQ7NtrSv/dpsZvfNxOanIKcMSPGRLm9a01/nBUdJQb
-         /TmmaGPZ018SqBsUwqOfz9Jiih/A9k2N/qJsU/3fo5jdX9/1j675K558ZVOd+Utu/Ra2
-         BwnY5ZzLTMa6m9ZJ3yCEPeIakUT8ekJDHq8w0kNQdtgg+/QB0/DXGCv5yhpxb7sSYo0V
-         777dEvkHEp+EOiMA0cEeGkAJUe6dNvTFn51WRs0I3dc5FvunKRxlLvXhW9DMQsQubUsM
-         PzqqUYDVNyuisd9pUR5bH0T20vZNr6O91WpibclaqN3zxKBJlSlvGl/3e6em5I5vXgx0
-         Nt9g==
-X-Gm-Message-State: AGi0PuYe6Qaj3tLkRTIlPAtmmtA5hBTRUWNfePMMNOXLAOfSbaQuP7eC
-        dMRVoQywdpVEjh9/Re5hp9We2capVCZKgaapDc0=
-X-Google-Smtp-Source: APiQypKtWgKI9+I/2zP/6rCs2aq7ytVskKsUD6aBuiS8gkRwKYf9/0AjV7QdalaJStUWOljfr92SzqIOyeuZJ1rcCx4=
-X-Received: by 2002:a9d:76c7:: with SMTP id p7mr20923391otl.145.1586937432508;
- Wed, 15 Apr 2020 00:57:12 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200413204253.84991-1-john.stultz@linaro.org> <20200413204253.84991-3-john.stultz@linaro.org>
-In-Reply-To: <20200413204253.84991-3-john.stultz@linaro.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 15 Apr 2020 09:57:01 +0200
-Message-ID: <CAMuHMdUMB2oMMk3dArA1s-VWWmhv0BKQq0=9k_u7t09tqiRJ-w@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] driver core: Ensure wait_for_device_probe() waits
- until the deferred_probe_timeout fires
-To:     John Stultz <john.stultz@linaro.org>
-Cc:     lkml <linux-kernel@vger.kernel.org>,
+        id S2894869AbgDOImn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 04:42:43 -0400
+Received: from mail.fudan.edu.cn ([202.120.224.73]:45575 "EHLO fudan.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2894846AbgDOImi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Apr 2020 04:42:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+        Message-Id; bh=OdG4JenZYuQ6SubtD8jAKOkRVrIevOaSd9jsn2zjJrw=; b=M
+        kExDy6LJS0gvKwy6z3k4oYyr9K/y9RITg0sWY43l/+MuwuQZ9qbq+Km088wIscOw
+        kvNjgtWMkSbRJZpCf+o3nmCJxYrRxuK7fSspXLesjdbPFELovEQltkQLiENkKErv
+        dEyDD/lqGqoaS7TPBr8DULO4RetQj+FbtzGSXjEL8o=
+Received: from localhost.localdomain (unknown [120.229.255.108])
+        by app2 (Coremail) with SMTP id XQUFCgCnr4P9xpZeiEtZAA--.61S3;
+        Wed, 15 Apr 2020 16:34:08 +0800 (CST)
+From:   Xiyu Yang <xiyuyang19@fudan.edu.cn>
+To:     Marek Lindner <mareklindner@neomailbox.ch>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Antonio Quartulli <a@unstable.cc>,
+        Sven Eckelmann <sven@narfation.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Rob Herring <robh@kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     yuanxzhang@fudan.edu.cn, kjlu@umn.edu,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>
+Subject: [PATCH] batman-adv: Fix refcnt leak in batadv_show_throughput_override
+Date:   Wed, 15 Apr 2020 16:31:50 +0800
+Message-Id: <1586939510-69461-1-git-send-email-xiyuyang19@fudan.edu.cn>
+X-Mailer: git-send-email 2.7.4
+X-CM-TRANSID: XQUFCgCnr4P9xpZeiEtZAA--.61S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7Zw43KF45Cw17Cr43WFy7trb_yoW8GrWfpr
+        Wjkr13Kr4vgw1DGwn0y3s8Wa4rAF43XFyUGF4rZ3WrArs5J3sayrySyFyjkr1UAFyrKw12
+        qF4avF98AFyDCFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9Y14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26rxl
+        6s0DM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
+        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8Jw
+        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAG
+        YxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4
+        AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE
+        17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMI
+        IF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq
+        3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCT
+        nIWIevJa73UjIFyTuYvjfUOlksUUUUU
+X-CM-SenderInfo: irzsiiysuqikmy6i3vldqovvfxof0/
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 13, 2020 at 10:43 PM John Stultz <john.stultz@linaro.org> wrote:
-> In commit c8c43cee29f6 ("driver core: Fix
-> driver_deferred_probe_check_state() logic"), we set the default
-> driver_deferred_probe_timeout value to 30 seconds to allow for
-> drivers that are missing dependencies to have some time so that
-> the dependency may be loaded from userland after initcalls_done
-> is set.
->
-> However, Yoshihiro Shimoda reported that on his device that
-> expects to have unmet dependencies (due to "optional links" in
-> its devicetree), was failing to mount the NFS root.
->
-> In digging further, it seemed the problem was that while the
-> device properly probes after waiting 30 seconds for any missing
-> modules to load, the ip_auto_config() had already failed,
-> resulting in NFS to fail. This was due to ip_auto_config()
-> calling wait_for_device_probe() which doesn't wait for the
-> driver_deferred_probe_timeout to fire.
->
-> This patch tries to fix the issue by creating a waitqueue
-> for the driver_deferred_probe_timeout, and calling wait_event()
-> to make sure driver_deferred_probe_timeout is zero in
-> wait_for_device_probe() to make sure all the probing is
-> finished.
->
-> The downside to this solution is that kernel functionality that
-> uses wait_for_device_probe(), will block until the
-> driver_deferred_probe_timeout fires, regardless of if there is
-> any missing dependencies.
->
-> However, the previous patch reverts the default timeout value to
-> zero, so this side-effect will only affect users who specify a
-> driver_deferred_probe_timeout= value as a boot argument, where
-> the additional delay would be beneficial to allow modules to
-> load later during boot.
->
-> Thanks to Geert for chasing down that ip_auto_config was why NFS
-> was failing in this case!
->
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-> Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Rafael J. Wysocki <rjw@rjwysocki.net>
-> Cc: Rob Herring <robh@kernel.org>
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> Cc: netdev <netdev@vger.kernel.org>
-> Cc: linux-pm@vger.kernel.org
-> Reported-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> Tested-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> Fixes: c8c43cee29f6 ("driver core: Fix driver_deferred_probe_check_state() logic")
-> Signed-off-by: John Stultz <john.stultz@linaro.org>
+batadv_show_throughput_override() invokes batadv_hardif_get_by_netdev(),
+which gets a batadv_hard_iface object from net_dev with increased refcnt
+and its reference is assigned to a local pointer 'hard_iface'.
 
-Works fine with all four combinations (CONFIG_IPMMU_VMSA=y/n and
-CONFIG_MODULES=y/n)  on Renesas Salvator-X(S) with R-Car Gen3.
+When batadv_show_throughput_override() returns, "hard_iface" becomes
+invalid, so the refcount should be decreased to keep refcount balanced.
 
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+The issue happens in the normal path of
+batadv_show_throughput_override(), which forgets to decrease the refcnt
+increased by batadv_hardif_get_by_netdev() before the function returns,
+causing a refcnt leak.
 
-Gr{oetje,eeting}s,
+Fix this issue by calling batadv_hardif_put() before the
+batadv_show_throughput_override() returns in the normal path.
 
-                        Geert
+Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+---
+ net/batman-adv/sysfs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/net/batman-adv/sysfs.c b/net/batman-adv/sysfs.c
+index 97736696d042..0f962dcd239e 100644
+--- a/net/batman-adv/sysfs.c
++++ b/net/batman-adv/sysfs.c
+@@ -1190,6 +1190,7 @@ static ssize_t batadv_show_throughput_override(struct kobject *kobj,
+ 
+ 	tp_override = atomic_read(&hard_iface->bat_v.throughput_override);
+ 
++	batadv_hardif_put(hard_iface);
+ 	return sprintf(buff, "%u.%u MBit\n", tp_override / 10,
+ 		       tp_override % 10);
+ }
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.7.4
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
