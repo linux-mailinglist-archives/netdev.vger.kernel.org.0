@@ -2,112 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C00AF1AA8DD
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 15:42:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 305911AA8F4
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 15:47:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S370718AbgDONji (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 09:39:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59286 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2636175AbgDONjd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 09:39:33 -0400
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA84C061A0F
-        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 06:39:32 -0700 (PDT)
-Received: by mail-lf1-x143.google.com with SMTP id j14so2639936lfg.9
-        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 06:39:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fYbKtTdIlAS2MrOYv3ktp5ynh9zmAurxtliyxz228HM=;
-        b=kNmfCTMrncJz3Mf/q8c7XdNw/+aM367/99PvPs2dC40uoDdbWKW1e5Ka1VrjrIIXZN
-         EWKQAeD41UH7JTlXSR2Oni+zm12n4KErP+aTQMcwUQTWszpBTKmX4onmjQL50Dec0ulk
-         Oi6VJylUjzXADIznlAe70TVHYFljOlYz5pmYHnDSHHRsshUyyxJR06c+zQkapSjGMpB2
-         GtKLORJXT3ydl4ITIvKl3QV77AjyB8MZPzxUdClUdDGnVVgideHJufH3CidXt3Wct8cI
-         VK11gylh6XQ1fno/KgxM+rHfVxV2tTg4uxUIPx6NlgWkQ/s19QJrUOzUUOsOInQ5q4B/
-         ZY+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fYbKtTdIlAS2MrOYv3ktp5ynh9zmAurxtliyxz228HM=;
-        b=T8o5S7oiHgoR9A/7BVRA0+GQw6lpRF3C1b6/WrmHqcKYy70QMRLlFbCd3LH4QWXAzr
-         adk6h54QWyuXx0BPbypjyLxhJaIAokHRACHBD+hxJxAlH3nJMWsvlk45jyBlermIT5ka
-         uZ4pThYZb6qKL+ZDAstPtyb8PryeUNjVBYtLDkBB5w4c/DiKuPMKGn9kCWZYz0KmTXIW
-         U218SxjK6klSMq9yoUMaEnzWCeAJ1MdrKZ3KFhHWxdBdnicSpcVxE+6Y+nm/Tdsjs0rO
-         v8jdNLe03dbnjQewF+gkpM2ltBirfFTwp+cjQMPynSz/CpRwbiVsJnZB2zYNEFD6zS60
-         6fOA==
-X-Gm-Message-State: AGi0PuaAe+Fsawg48fX3j1+8FqdGJlF/mfxjeOOaQefQNnVlghf9b+Ap
-        BdFW4LbieM/pRhffvq0J3uGDvsD0P9AryRaJZMDiOA==
-X-Google-Smtp-Source: APiQypKspEOb/rj3icJNNhJ9x/jVreqO36OImyQUXuDaYRNwL1zpsCDOBI49RUO4ArSUzLvFrl5EOyBzPKgoU8LVqX4=
-X-Received: by 2002:ac2:4c34:: with SMTP id u20mr3207171lfq.40.1586957969813;
- Wed, 15 Apr 2020 06:39:29 -0700 (PDT)
+        id S2636214AbgDONpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 09:45:22 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39628 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2636203AbgDONpT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Apr 2020 09:45:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=mFdulGoyzXjkcnbudHCs8v43UlFuR/6b6qFTHBhgztQ=; b=aT9ZDP6NUhJkvzVM5Rv4I0IaCH
+        2xBYHrQu7THMIFbFvSLSgbwRerLp0iMoF10yXHaGU8vYiNICcFX86T7lihyx6Ez+By+pVnGnvofi9
+        0KKSBL3xm4o2mzc4RJ83veghAOHV7plgcKDdCy5GdpK/S0YpoDNJmAidq6nW5MLEEGAo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jOiLn-002t3u-FB; Wed, 15 Apr 2020 15:45:11 +0200
+Date:   Wed, 15 Apr 2020 15:45:11 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        David Jander <david@protonic.nl>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de
+Subject: Re: [PATCH v1] ethtool: provide UAPI for PHY master/slave
+ configuration.
+Message-ID: <20200415134511.GB657811@lunn.ch>
+References: <20200415121209.12197-1-o.rempel@pengutronix.de>
+ <20200415131104.GA657811@lunn.ch>
+ <20200415133728.urvsdolwhaa4eknm@pengutronix.de>
 MIME-Version: 1.0
-References: <1586254255-28713-1-git-send-email-sumit.garg@linaro.org>
- <CABPxzY+hL=jD6Zy=netP3oqNXg69gDL2g0KiPe40eaXXgZBnxw@mail.gmail.com>
- <CAFA6WYMZAq6X5m++h33ySCa6jOQCq_tHL=8mUi-kPMcn4FH=jA@mail.gmail.com>
- <CAFA6WYOW9ne0iffwC1dc48a_aSaYkkxQzyHQXTV2Wkob9KOXQg@mail.gmail.com> <CA+icZUUDm=WPjmwh5ikp8t+xt7dqTgghCeB8F0+czaUh-sHXxA@mail.gmail.com>
-In-Reply-To: <CA+icZUUDm=WPjmwh5ikp8t+xt7dqTgghCeB8F0+czaUh-sHXxA@mail.gmail.com>
-From:   Sumit Garg <sumit.garg@linaro.org>
-Date:   Wed, 15 Apr 2020 19:09:18 +0530
-Message-ID: <CAFA6WYPdJMt-h=9HrV-DcHZnO7xCu74Dh9FuRMnp16qhotyo0g@mail.gmail.com>
-Subject: Re: [PATCH v2] mac80211: fix race in ieee80211_register_hw()
-To:     sedat.dilek@gmail.com, Johannes Berg <johannes@sipsolutions.net>
-Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
-        Krishna Chaitanya <chaitanya.mgit@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
-        Kalle Valo <kvalo@codeaurora.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        =?UTF-8?Q?Matthias=2DPeter_Sch=C3=B6pfer?= 
-        <matthias.schoepfer@ithinx.io>,
-        "Berg Philipp (HAU-EDS)" <Philipp.Berg@liebherr.com>,
-        "Weitner Michael (HAU-EDS)" <Michael.Weitner@liebherr.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Loic Poulain <loic.poulain@linaro.org>, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200415133728.urvsdolwhaa4eknm@pengutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Apr 2020 at 18:49, Sedat Dilek <sedat.dilek@gmail.com> wrote:
->
-> On Wed, Apr 15, 2020 at 3:10 PM Sumit Garg <sumit.garg@linaro.org> wrote:
->
-> [.. ]
->
-> > > In case we don't have any further comments, could you fix this nitpick
-> > > from Chaitanya while applying or would you like me to respin and send
-> > > v3?
-> >
-> > A gentle ping. Is this patch a good candidate for 5.7-rc2?
-> >
->
-> Hi Sumit,
->
-> it's in [1] (see [2]) with slightly mods by Johannes but not in Linus tree.
->
+> In the IEEE 802.3 it is described as:
+> ---------------------------------------------------------------------------
+> Port type: Bit 9.10 is to be used to indicate the preference to operate
+> as MASTER (multiport device) or as SLAVE (single-port device) if the
+> MASTER-SLAVE Manual Configuration Enable bit, 9.12, is not set.  Usage
+> of this bit is described in 40.5.2.
+> 1 = Multiport device
+> 0 = single-port device
 
-Thanks Sedat for this information.
+I really should go read the standard, but...
 
-> Johannes requested a pull-request means will be merged in a next step
-> in net.git and then hopefully land in Linus tree after Dave M.
-> requested a pull-request.
+> ---------------------------------------------------------------------------
+> 
+> Setting PORT_MODE_MASTER/PORT_MODE_SLAVE will increase the chance to get
+> MASTER or SLAVE mode, but not force it.
+> 
+> If we will follow strictly to the IEEE 802.3 spec, it should be named:
+> 
+> #define PORT_MODE_UNKNOWN	0x00
+> /* this two options will not force some specific mode, only influence
+>  * the chance to get it */
+> #define PORT_TYPE_MULTI_PORT	0x01
+> #define PORT_TYPE_SINGLE_PORT	0x02
+> /* this two options will force master or slave mode */
+> #define PORT_MODE_MASTER	0x03
+> #define PORT_MODE_SLAVE		0x04
 
-I didn't get this PR notification as currently I am not subscribed to
-linux-wireless ML. So apologies for the noise here.
+I prefer having FORCE in the name.
 
-BTW, thanks Johannes for picking up this patch.
+But let me read the standard and get up to speed.
 
--Sumit
-
->
-> Thanks for your patch.
->
-> Regards,
-> - Sedat -
->
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git/tag/?h=mac80211-for-net-2020-04-15
-> [2] https://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git/commit/?h=mac80211-for-net-2020-04-15&id=52e04b4ce5d03775b6a78f3ed1097480faacc9fd
+    Andrew
