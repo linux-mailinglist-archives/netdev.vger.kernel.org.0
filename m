@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA7A01AA153
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 14:46:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20CC71AA156
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 14:46:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S369898AbgDOMhN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 08:37:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36570 "EHLO mail.kernel.org"
+        id S369907AbgDOMhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 08:37:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36578 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2897561AbgDOLoF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2897563AbgDOLoF (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 15 Apr 2020 07:44:05 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1DFE72137B;
-        Wed, 15 Apr 2020 11:44:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9AFCC20768;
+        Wed, 15 Apr 2020 11:44:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586951042;
-        bh=bVX46KhkbkCHDIA/scQ1dBlN5PmtSFZfWNNUIRuWydQ=;
+        s=default; t=1586951045;
+        bh=OTum/8fGcEQAFUxcS0A1Vb92+pICUIgnAe39RUn/eMU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A/2NSaTlzsrvJl4x7uRVzU26yE5OB6YyUPBUNjU5CW0Lnw2zEFt67RdAkV4+YQOy2
-         gWh4V9U45fBowBzI25LcuCWEt2h1VLwVhnABg7gXSzYw1HrAR8skcpL78WPJFogBFl
-         xGAEX6v32mf+Zm6s+LFAmeIZc1ajR/5OEWfkmPII=
+        b=YwHDKe0XVJoRet30SSXe3p5398gbHuJscTOWHPSQdml4iQSIF+CCefXibnjqq/b94
+         ZSyWqFS9Y1ED87dgCaTe8CMXYoFUBm0K2LPNBTiL6ZrERVuyTnEHDwc+evAgOorXIR
+         ykqip1lJiTC/72QxaPKzd1B0PVuMFfI5M8RxXkU8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
+Cc:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.5 078/106] net: stmmac: xgmac: Fix VLAN register handling
-Date:   Wed, 15 Apr 2020 07:41:58 -0400
-Message-Id: <20200415114226.13103-78-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.5 080/106] cxgb4: free MQPRIO resources in shutdown path
+Date:   Wed, 15 Apr 2020 07:42:00 -0400
+Message-Id: <20200415114226.13103-80-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200415114226.13103-1-sashal@kernel.org>
 References: <20200415114226.13103-1-sashal@kernel.org>
@@ -45,62 +43,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jose Abreu <Jose.Abreu@synopsys.com>
+From: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
 
-[ Upstream commit 21f64e72e7073199a6f8d7d8efe52cd814d7d665 ]
+[ Upstream commit cef8dac96bc108633f5090bb3a9988d734dc1ee0 ]
 
-Commit 907a076881f1, forgot that we need to clear old values of
-XGMAC_VLAN_TAG register when we switch from VLAN perfect matching to
-HASH matching.
+Perform missing MQPRIO resource cleanup in PCI shutdown path. Also,
+fix MQPRIO MSIX bitmap leak in resource cleanup.
 
-Fix it.
-
-Fixes: 907a076881f1 ("net: stmmac: xgmac: fix incorrect XGMAC_VLAN_TAG register writting")
-Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
+Fixes: b1396c2bd675 ("cxgb4: parse and configure TC-MQPRIO offload")
+Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |  4 ++++
+ .../ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c  | 23 +++++++++++++++++++
+ .../ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h  |  1 +
+ 3 files changed, 28 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
-index e9bf54a579df6..f0b9c43f6e31e 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
-@@ -576,8 +576,13 @@ static void dwxgmac2_update_vlan_hash(struct mac_device_info *hw, u32 hash,
- 			value |= XGMAC_VLAN_EDVLP;
- 			value |= XGMAC_VLAN_ESVL;
- 			value |= XGMAC_VLAN_DOVLTC;
-+		} else {
-+			value &= ~XGMAC_VLAN_EDVLP;
-+			value &= ~XGMAC_VLAN_ESVL;
-+			value &= ~XGMAC_VLAN_DOVLTC;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+index 9934c8b0f0b07..a2fa4b1fd4435 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+@@ -6651,6 +6651,10 @@ static void shutdown_one(struct pci_dev *pdev)
+ 			if (adapter->port[i]->reg_state == NETREG_REGISTERED)
+ 				cxgb_close(adapter->port[i]);
+ 
++		rtnl_lock();
++		cxgb4_mqprio_stop_offload(adapter);
++		rtnl_unlock();
++
+ 		if (is_uld(adapter)) {
+ 			detach_ulds(adapter);
+ 			t4_uld_clean_up(adapter);
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c
+index ec3eb45ee3b48..e6af4906d6743 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c
+@@ -301,6 +301,7 @@ static void cxgb4_mqprio_free_hw_resources(struct net_device *dev)
+ 			cxgb4_clear_msix_aff(eorxq->msix->vec,
+ 					     eorxq->msix->aff_mask);
+ 			free_irq(eorxq->msix->vec, &eorxq->rspq);
++			cxgb4_free_msix_idx_in_bmap(adap, eorxq->msix->idx);
  		}
  
-+		value &= ~XGMAC_VLAN_VID;
- 		writel(value, ioaddr + XGMAC_VLAN_TAG);
- 	} else if (perfect_match) {
- 		u32 value = readl(ioaddr + XGMAC_PACKET_FILTER);
-@@ -588,13 +593,19 @@ static void dwxgmac2_update_vlan_hash(struct mac_device_info *hw, u32 hash,
+ 		free_rspq_fl(adap, &eorxq->rspq, &eorxq->fl);
+@@ -611,6 +612,28 @@ int cxgb4_setup_tc_mqprio(struct net_device *dev,
+ 	return ret;
+ }
  
- 		value = readl(ioaddr + XGMAC_VLAN_TAG);
++void cxgb4_mqprio_stop_offload(struct adapter *adap)
++{
++	struct cxgb4_tc_port_mqprio *tc_port_mqprio;
++	struct net_device *dev;
++	u8 i;
++
++	if (!adap->tc_mqprio || !adap->tc_mqprio->port_mqprio)
++		return;
++
++	for_each_port(adap, i) {
++		dev = adap->port[i];
++		if (!dev)
++			continue;
++
++		tc_port_mqprio = &adap->tc_mqprio->port_mqprio[i];
++		if (!tc_port_mqprio->mqprio.qopt.num_tc)
++			continue;
++
++		cxgb4_mqprio_disable_offload(dev);
++	}
++}
++
+ int cxgb4_init_tc_mqprio(struct adapter *adap)
+ {
+ 	struct cxgb4_tc_port_mqprio *tc_port_mqprio, *port_mqprio;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h
+index c532f1ef84517..ff8794132b22b 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h
+@@ -38,6 +38,7 @@ struct cxgb4_tc_mqprio {
  
-+		value &= ~XGMAC_VLAN_VTHM;
- 		value |= XGMAC_VLAN_ETV;
- 		if (is_double) {
- 			value |= XGMAC_VLAN_EDVLP;
- 			value |= XGMAC_VLAN_ESVL;
- 			value |= XGMAC_VLAN_DOVLTC;
-+		} else {
-+			value &= ~XGMAC_VLAN_EDVLP;
-+			value &= ~XGMAC_VLAN_ESVL;
-+			value &= ~XGMAC_VLAN_DOVLTC;
- 		}
- 
-+		value &= ~XGMAC_VLAN_VID;
- 		writel(value | perfect_match, ioaddr + XGMAC_VLAN_TAG);
- 	} else {
- 		u32 value = readl(ioaddr + XGMAC_PACKET_FILTER);
+ int cxgb4_setup_tc_mqprio(struct net_device *dev,
+ 			  struct tc_mqprio_qopt_offload *mqprio);
++void cxgb4_mqprio_stop_offload(struct adapter *adap);
+ int cxgb4_init_tc_mqprio(struct adapter *adap);
+ void cxgb4_cleanup_tc_mqprio(struct adapter *adap);
+ #endif /* __CXGB4_TC_MQPRIO_H__ */
 -- 
 2.20.1
 
