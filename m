@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 830841AA184
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 14:46:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CC851AA167
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 14:46:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S370040AbgDOMmS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 08:42:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35892 "EHLO mail.kernel.org"
+        id S369944AbgDOMjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 08:39:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36318 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2409033AbgDOLnp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Apr 2020 07:43:45 -0400
+        id S2897318AbgDOLn6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Apr 2020 07:43:58 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 15180206A2;
-        Wed, 15 Apr 2020 11:43:43 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 48E352078A;
+        Wed, 15 Apr 2020 11:43:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586951024;
-        bh=kV5PHKdnWW5GIJPoGrB+L9uPK8tPi3PljY8grFtfbbM=;
+        s=default; t=1586951038;
+        bh=JK538BeIo0coNiSuk8GXKuTZYWW8UsZlmT3Hs5VaTMk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MCkI+3YETXk1QNq655jfv/jl8yZG95FALuq1gJfY2pPnq7wCVdioVYwmUxxgO+/oR
-         GpIxhwk3qoOkzcetc0AuSqgeWLK/uhwMxDPfQpvJ74W8Dcl0QDJU2zTAI3eMS2WZLp
-         B8n/lnUNfp5Mc3fgRBNmDPwCdTSuUp9HSWZ6AyCw=
+        b=1Xp9ogQf9NKN3SGwTGn0jfrw4CaaTISGqrMHjcnYH4CM5mcqubRcEtzlY0noiHbpO
+         RNMa6lwnpbc5XeGb2INCkii9MLW6TV9xtmf/keRNsJjRWi15mEPV95L9NVx/jb3O0B
+         NL+X0fdvPITlHZ809hyW9gvVqHTM+pcOoO1OJWzw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 064/106] net: dsa: bcm_sf2: Do not register slave MDIO bus with OF
-Date:   Wed, 15 Apr 2020 07:41:44 -0400
-Message-Id: <20200415114226.13103-64-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.5 074/106] net: dsa: bcm_sf2: Ensure correct sub-node is parsed
+Date:   Wed, 15 Apr 2020 07:41:54 -0400
+Message-Id: <20200415114226.13103-74-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200415114226.13103-1-sashal@kernel.org>
 References: <20200415114226.13103-1-sashal@kernel.org>
@@ -46,54 +46,49 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit 536fab5bf5826404534a6c271f622ad2930d9119 ]
+[ Upstream commit afa3b592953bfaecfb4f2f335ec5f935cff56804 ]
 
-We were registering our slave MDIO bus with OF and doing so with
-assigning the newly created slave_mii_bus of_node to the master MDIO bus
-controller node. This is a bad thing to do for a number of reasons:
+When the bcm_sf2 was converted into a proper platform device driver and
+used the new dsa_register_switch() interface, we would still be parsing
+the legacy DSA node that contained all the port information since the
+platform firmware has intentionally maintained backward and forward
+compatibility to client programs. Ensure that we do parse the correct
+node, which is "ports" per the revised DSA binding.
 
-- we are completely lying about the slave MII bus is arranged and yet we
-  still want to control which MDIO devices it probes. It was attempted
-  before to play tricks with the bus_mask to perform that:
-  https://www.spinics.net/lists/netdev/msg429420.html but the approach
-  was rightfully rejected
-
-- the device_node reference counting is messed up and we are effectively
-  doing a double probe on the devices we already probed using the
-  master, this messes up all resources reference counts (such as clocks)
-
-The proper fix for this as indicated by David in his reply to the
-thread above is to use a platform data style registration so as to
-control exactly which devices we probe:
-https://www.spinics.net/lists/netdev/msg430083.html
-
-By using mdiobus_register(), our slave_mii_bus->phy_mask value is used
-as intended, and all the PHY addresses that must be redirected towards
-our slave MDIO bus is happening while other addresses get redirected
-towards the master MDIO bus.
-
-Fixes: 461cd1b03e32 ("net: dsa: bcm_sf2: Register our slave MDIO bus")
+Fixes: d9338023fb8e ("net: dsa: bcm_sf2: Make it a real platform device driver")
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/bcm_sf2.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/bcm_sf2.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index b0f5280a83cb6..4481afd323a97 100644
+index 4481afd323a97..e93c81c4062ed 100644
 --- a/drivers/net/dsa/bcm_sf2.c
 +++ b/drivers/net/dsa/bcm_sf2.c
-@@ -472,7 +472,7 @@ static int bcm_sf2_mdio_register(struct dsa_switch *ds)
- 	priv->slave_mii_bus->parent = ds->dev->parent;
- 	priv->slave_mii_bus->phy_mask = ~priv->indir_phy_mask;
+@@ -1069,6 +1069,7 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
+ 	const struct bcm_sf2_of_data *data;
+ 	struct b53_platform_data *pdata;
+ 	struct dsa_switch_ops *ops;
++	struct device_node *ports;
+ 	struct bcm_sf2_priv *priv;
+ 	struct b53_device *dev;
+ 	struct dsa_switch *ds;
+@@ -1136,7 +1137,11 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
+ 	set_bit(0, priv->cfp.used);
+ 	set_bit(0, priv->cfp.unique);
  
--	err = of_mdiobus_register(priv->slave_mii_bus, dn);
-+	err = mdiobus_register(priv->slave_mii_bus);
- 	if (err && dn)
- 		of_node_put(dn);
+-	bcm_sf2_identify_ports(priv, dn->child);
++	ports = of_find_node_by_name(dn, "ports");
++	if (ports) {
++		bcm_sf2_identify_ports(priv, ports);
++		of_node_put(ports);
++	}
  
+ 	priv->irq0 = irq_of_parse_and_map(dn, 0);
+ 	priv->irq1 = irq_of_parse_and_map(dn, 1);
 -- 
 2.20.1
 
