@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC0D41AA8D4
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 15:42:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92C4E1AA8D6
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 15:42:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2636160AbgDONhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 09:37:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34748 "EHLO mail.kernel.org"
+        id S2636169AbgDONhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 09:37:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34818 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2636151AbgDONhC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Apr 2020 09:37:02 -0400
+        id S2636155AbgDONhG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Apr 2020 09:37:06 -0400
 Received: from localhost (unknown [213.57.247.131])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EC54A206F9;
-        Wed, 15 Apr 2020 13:37:00 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A2A9020767;
+        Wed, 15 Apr 2020 13:37:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586957821;
-        bh=2zWyAcpuUG1VOc4O/xv9K6+T/CjelKrwg07VjYEh3d4=;
+        s=default; t=1586957825;
+        bh=pVJompFQB8f7mE6OBjwr+7sQOUc0iFfsT7NAmgcXI+c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=meXqeu+YSmgKSdbkuDMFAsG2HivQqSXWJ6g8QiaiTYSQTohZJvueL52vRc1r5qzEX
-         FnnVpTeLyGS+VVwbwlirhbp5LwkdIzLweJ77s1CqDdfab4izwuY3LZ/05f3mb5skIq
-         izC+zUv3E1MVPRfN6FDQwXirk5fS3HNsSEH+uzYc=
+        b=dp24RkI0s4Wlgx3gHDYxw3VQuNCSwiLVYg0JbCTUUiElNdldW9h5JTjvobvKW9EGo
+         sgsQUa3rw5D08FUtm2vByXALhdOMLowvjiiZWu12cuoH+3do03+yJXE5R7pAlbTOX5
+         m+Cahf5jPbwKiu1yevM+H0dzu9kvrD2/pxvzd9bY=
 From:   Leon Romanovsky <leon@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Leon Romanovsky <leonro@mellanox.com>,
         Borislav Petkov <bp@suse.de>, netdev@vger.kernel.org,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>
-Subject: [PATCH net-next v1 2/4] net/hns: Remove custom driver version in favour of global one
-Date:   Wed, 15 Apr 2020 16:36:46 +0300
-Message-Id: <20200415133648.1306956-3-leon@kernel.org>
+        oss-drivers@netronome.com
+Subject: [PATCH net-next v1 3/4] net/nfp: Update driver to use global kernel version
+Date:   Wed, 15 Apr 2020 16:36:47 +0300
+Message-Id: <20200415133648.1306956-4-leon@kernel.org>
 X-Mailer: git-send-email 2.25.2
 In-Reply-To: <20200415133648.1306956-1-leon@kernel.org>
 References: <20200415133648.1306956-1-leon@kernel.org>
@@ -45,71 +44,54 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@mellanox.com>
 
-Use globally defined kernel version instead of custom driver variant.
+Change nfp driver to use globally defined kernel version.
 
 Reported-by: Borislav Petkov <bp@suse.de>
+Acked-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 3 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    | 4 ----
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 4 ----
- 3 files changed, 11 deletions(-)
+ drivers/net/ethernet/netronome/nfp/nfp_main.c        | 3 ---
+ drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c | 2 --
+ 2 files changed, 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index da98fd7c8eca..ac3a48a24d86 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -15,7 +15,6 @@
- #include <linux/aer.h>
- #include <linux/skbuff.h>
- #include <linux/sctp.h>
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_main.c b/drivers/net/ethernet/netronome/nfp/nfp_main.c
+index 4d282fc56009..7ff2ccbd43b0 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_main.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_main.c
+@@ -14,7 +14,6 @@
+ #include <linux/mutex.h>
+ #include <linux/pci.h>
+ #include <linux/firmware.h>
 -#include <linux/vermagic.h>
- #include <net/gre.h>
- #include <net/ip6_checksum.h>
- #include <net/pkt_cls.h>
-@@ -44,7 +43,6 @@ static void hns3_clear_all_ring(struct hnae3_handle *h, bool force);
- static void hns3_remove_hw_addr(struct net_device *netdev);
+ #include <linux/vmalloc.h>
+ #include <net/devlink.h>
  
- static const char hns3_driver_name[] = "hns3";
--const char hns3_driver_version[] = VERMAGIC_STRING;
- static const char hns3_driver_string[] =
- 			"Hisilicon Ethernet Network Driver for Hip08 Family";
- static const char hns3_copyright[] = "Copyright (c) 2017 Huawei Corporation.";
-@@ -4765,4 +4763,3 @@ MODULE_DESCRIPTION("HNS3: Hisilicon Ethernet Driver");
- MODULE_AUTHOR("Huawei Tech. Co., Ltd.");
+@@ -31,7 +30,6 @@
+ #include "nfp_net.h"
+ 
+ static const char nfp_driver_name[] = "nfp";
+-const char nfp_driver_version[] = VERMAGIC_STRING;
+ 
+ static const struct pci_device_id nfp_pci_device_ids[] = {
+ 	{ PCI_VENDOR_ID_NETRONOME, PCI_DEVICE_ID_NETRONOME_NFP6000,
+@@ -920,4 +918,3 @@ MODULE_FIRMWARE("netronome/nic_AMDA0099-0001_1x10_1x25.nffw");
+ MODULE_AUTHOR("Netronome Systems <oss-drivers@netronome.com>");
  MODULE_LICENSE("GPL");
- MODULE_ALIAS("pci:hns-nic");
--MODULE_VERSION(HNS3_MOD_VERSION);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index abefd7a179f7..4b3f0abf0715 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -8,10 +8,6 @@
+ MODULE_DESCRIPTION("The Netronome Flow Processor (NFP) driver.");
+-MODULE_VERSION(UTS_RELEASE);
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
+index 2779f1526d1e..a5aa3219d112 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
+@@ -203,8 +203,6 @@ nfp_get_drvinfo(struct nfp_app *app, struct pci_dev *pdev,
+ 	char nsp_version[ETHTOOL_FWVERS_LEN] = {};
  
- #include "hnae3.h"
- 
--#define HNS3_MOD_VERSION "1.0"
+ 	strlcpy(drvinfo->driver, pdev->driver->name, sizeof(drvinfo->driver));
+-	strlcpy(drvinfo->version, nfp_driver_version, sizeof(drvinfo->version));
 -
--extern const char hns3_driver_version[];
--
- enum hns3_nic_state {
- 	HNS3_NIC_STATE_TESTING,
- 	HNS3_NIC_STATE_RESETTING,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 28b81f24afa1..6a0734be4a1a 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -546,10 +546,6 @@ static void hns3_get_drvinfo(struct net_device *netdev,
- 		return;
- 	}
- 
--	strncpy(drvinfo->version, hns3_driver_version,
--		sizeof(drvinfo->version));
--	drvinfo->version[sizeof(drvinfo->version) - 1] = '\0';
--
- 	strncpy(drvinfo->driver, h->pdev->driver->name,
- 		sizeof(drvinfo->driver));
- 	drvinfo->driver[sizeof(drvinfo->driver) - 1] = '\0';
+ 	nfp_net_get_nspinfo(app, nsp_version);
+ 	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
+ 		 "%s %s %s %s", vnic_version, nsp_version,
 -- 
 2.25.2
 
