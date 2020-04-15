@@ -2,83 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A344C1AAF6E
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 19:24:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79D471AB040
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 20:00:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2410893AbgDORWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 13:22:54 -0400
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:50063 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2410883AbgDORWs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 13:22:48 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 5AE2958054D;
-        Wed, 15 Apr 2020 13:22:46 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Wed, 15 Apr 2020 13:22:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm3; bh=+9pS+Lww9pp81wlpMSHXf6JJJqt
-        59DLNDjOv+mJX+Fo=; b=TX8yNEUFAVsOBedp5kU71xNy5+dKTRS3wK32rA9LmoR
-        JkRDf3NgmwfdNo0HWR65mMXUGxEUpy+ehRRpGkQvQJQNCM1EbKxVoLD7qkwB5tXq
-        foNdXnpB/cwC+MBwvD0uuUsZJ9ryvE8OsX6aDQY3kSD8+2+jCWkMysHt3hDjdmJ3
-        HL2Rs+9Wgmhjlj27diaPrvX8h8MeSiGxuoIZ6qCVjubERN7zoQnUULn+hclNfzme
-        ovM2AIZ0jKP7BWwUtDemy4YEAyHeD/tS4IVw3/ouAblZm08LIfkDWu+LHiacXZcB
-        cfhhYMf/xsN63UgRJfWIX92odxu16b+73lzuRz+RsGg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=+9pS+L
-        ww9pp81wlpMSHXf6JJJqt59DLNDjOv+mJX+Fo=; b=u9iuXcN8qiB7ininjhOfQN
-        L2ND+zrAz0I3vdOhLul7STU3IpQoYs6QxyfkILTWP3fzskU1Qj7qEFTSSg7QScsG
-        50ffkwXcLUGAhTCeJTRgiT1fjbjhe7efz3l7f36YTDzIelWP95YQ3rJbbapkmf/A
-        7UD2v8LycpqMC9S3t700yzC7A7RA7r9gXPHxHsR9wnpd+HcPCQdNGx0FjuWTQ1M0
-        vhMaF6WQWgUduEksaJVBcWUhM3fh8AnD4sd9JATOBUQ/rLk8TqNukFafCz2Sbjf6
-        4n3GjuXpXoqEvX0UH6m+QKm6Tih/2j1ASWRcTn3b6aAUw5ETS+h2xPmGJSr28oHw
-        ==
-X-ME-Sender: <xms:5UKXXsPHVwV25eeKv6wAPxK6kuYfWuK31vQSugDFMSR0v0asgCGdkw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrfeefgddutdefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
-    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucfkphepkeefrdekiedrkeelrddutd
-    ejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepghhr
-    vghgsehkrhhorghhrdgtohhm
-X-ME-Proxy: <xmx:5UKXXkg8pC5dMvc1k9xcjLEOTDYYiJ13H6H3hqSshYYQ8_e7spMJDg>
-    <xmx:5UKXXplBQuQaKW-VRAnippP3GHrkpTOcYeXqK3EveX-8p3RspPDNVA>
-    <xmx:5UKXXgid11FN-OACi0LpvSrCMSrk9f-1G8GEGvqpIaZojX2nTGSjWA>
-    <xmx:5kKXXsAbo-aeGlWQR78SNMQsgTTyyDCigVuQko-r6KC_H56Ev2dJOA>
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        by mail.messagingengine.com (Postfix) with ESMTPA id C69EA3280067;
-        Wed, 15 Apr 2020 13:22:44 -0400 (EDT)
-Date:   Wed, 15 Apr 2020 19:22:43 +0200
-From:   Greg KH <greg@kroah.com>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Richard Palethorpe <rpalethorpe@suse.com>,
-        Kees Cook <keescook@chromium.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, security@kernel.org, wg@grandegger.com,
-        mkl@pengutronix.de, davem@davemloft.net
-Subject: Re: [PATCH AUTOSEL 5.6 068/129] slcan: Don't transmit uninitialized
- stack data in padding
-Message-ID: <20200415172243.GA3661754@kroah.com>
-References: <20200415113445.11881-1-sashal@kernel.org>
- <20200415113445.11881-68-sashal@kernel.org>
- <87h7xkisln.fsf@x220.int.ebiederm.org>
+        id S2411659AbgDOR7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 13:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43358 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2407096AbgDOR7T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 13:59:19 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E496FC061A0F
+        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 10:59:18 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id a43so6128863edf.6
+        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 10:59:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=4YUFNITzuK7wgC7XT8WM74MpY9NN1VUY2WpHvT4wKI4=;
+        b=e1lprVRhZcWDtD8SxMdOgRZxZu+Jl3L2JK0mELg7Kfc9EDuSLhQosfxx73jLnOXpUk
+         u5kMeYl5kYZg84jLhKZSMHNYFD3qlcUig1NGV729qnZqNaya+3rXXpjHwyWOxZua2AO5
+         Mz50Xswt97Rw4gZJTWDprx+7dSBzfS4zfHiCRLiUDz8CSRrPYSxQyQD1Nkj/snBa/8EY
+         IXZ3PGxwOHNQwyDdL8x6ZDpG9d+gpWUVd3dTHth/I98dypgFFktrZUjxQKoxw2rHJMOh
+         Io7v4fHJXHMDqsXmSCGEnMi8lTgRxZgG8G5dprbKN5NxP6fUrAVLjixouu35ul9S43oR
+         ilDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=4YUFNITzuK7wgC7XT8WM74MpY9NN1VUY2WpHvT4wKI4=;
+        b=UJBO3CJHYAKA27T9aQOEcHAAOAp0QUTZo6FLl9aLTm+uCFpzlHRGDv0utpCgcCZmy6
+         Xe0VyZ6QwiaGPJH16IuE+gfrZMlwBXC+9wUv8f2yxlsdn+UA4V8UY/qhZ1CFb0/xasJ3
+         oWZ1QVf4A0VI2mHctdwAc5JMCaDv+RMRpFCpq6V5Q7xk/35Pgo/I7Z3fh04gdW4DvSkc
+         m3/RtwtEUl9kZY2WUtCxoGbBby/CjWjWSSvrBPjw+WL9NSsLwI1F+GPKL3PXXTjTfPFu
+         /iyItUSsO4XPlwn3eyX3mNt+L+SDjnHtXCh/otf+TaDdH1RzkrYNc5octaeK9DOGIUGV
+         76cQ==
+X-Gm-Message-State: AGi0PuZ37/TlS7BZQeFd8z4faE3cbONQcRhmsY7Gl8zA8oerO3bA2sR0
+        plQull16V7Prj4uqJjFFTXJRoWZdCpAwHIQX6PU=
+X-Google-Smtp-Source: APiQypJuEYo/AFyzN4ipw8ZOkFugd1kUQY1V1JbdOsgN18fhboriR7yxt8/0jSU2TXBekkoP41RCiVj9oSXOzNVnnOM=
+X-Received: by 2002:a50:d1d7:: with SMTP id i23mr27282704edg.118.1586973557631;
+ Wed, 15 Apr 2020 10:59:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87h7xkisln.fsf@x220.int.ebiederm.org>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 15 Apr 2020 20:59:06 +0300
+Message-ID: <CA+h21hoxwRdhq4y+w8Kwgm74d4cA0xLeiHTrmT-VpSaM7obhkg@mail.gmail.com>
+Subject: Correct tc-vlan usage
+To:     Jiri Pirko <jiri@resnulli.us>, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 15, 2020 at 12:09:08PM -0500, Eric W. Biederman wrote:
-> 
-> How does this differ from Greg's backports of this patches?
+Hi,
 
-His tool didn't catch that they are already in a merged tree, it's a few
-steps later that this happens :)
+I am trying to use tc-vlan to create a set of asymmetric tagging
+rules: push VID X on egress, and pop VID Y on ingress. I am using
+tc-vlan specifically because regular VLAN interfaces are unfit for
+this purpose - the VID that gets pushed by the 8021q driver is the
+same as the one that gets popped.
+The rules look like this:
 
-greg k-h
+# tc filter show dev eno2 ingress
+filter protocol 802.1Q pref 49150 flower chain 0
+filter protocol 802.1Q pref 49150 flower chain 0 handle 0x1
+  vlan_id 103
+  dst_mac 00:04:9f:63:35:eb
+  not_in_hw
+        action order 1: vlan  pop pipe
+         index 6 ref 1 bind 1
+
+filter protocol 802.1Q pref 49151 flower chain 0
+filter protocol 802.1Q pref 49151 flower chain 0 handle 0x1
+  vlan_id 102
+  dst_mac 00:04:9f:63:35:eb
+  not_in_hw
+        action order 1: vlan  pop pipe
+         index 5 ref 1 bind 1
+
+filter protocol 802.1Q pref 49152 flower chain 0
+filter protocol 802.1Q pref 49152 flower chain 0 handle 0x1
+  vlan_id 101
+  dst_mac 00:04:9f:63:35:eb
+  not_in_hw
+        action order 1: vlan  pop pipe
+         index 4 ref 1 bind 1
+
+# tc filter show dev eno2 egress
+filter protocol all pref 49150 flower chain 0
+filter protocol all pref 49150 flower chain 0 handle 0x1
+  dst_mac 00:04:9f:63:35:ec
+  not_in_hw
+        action order 1: vlan  push id 102 protocol 802.1Q priority 0 pipe
+         index 3 ref 1 bind 1
+
+filter protocol all pref 49151 flower chain 0
+filter protocol all pref 49151 flower chain 0 handle 0x1
+  dst_mac 00:04:9f:63:35:eb
+  not_in_hw
+        action order 1: vlan  push id 102 protocol 802.1Q priority 0 pipe
+         index 2 ref 1 bind 1
+
+filter protocol all pref 49152 flower chain 0
+filter protocol all pref 49152 flower chain 0 handle 0x1
+  dst_mac 00:04:9f:63:35:ea
+  not_in_hw
+        action order 1: vlan  push id 102 protocol 802.1Q priority 0 pipe
+         index 1 ref 1 bind 1
+
+My problem is that the VLAN tags are discarded by the network
+interface's RX filter:
+
+# ethtool -S eno2
+     SI VLAN nomatch u-cast discards: 1280
+
+and this is because nobody calls .ndo_vlan_rx_add_vid for these VLANs
+(only the 8021q driver does). This makes me think that I am using the
+tc-vlan driver incorrectly. What step am I missing?
+
+Thanks,
+-Vladimir
