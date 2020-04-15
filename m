@@ -2,80 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A35FE1A96F7
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 10:40:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAE781A9710
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 10:42:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2894766AbgDOIkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 04:40:07 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:23429 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2894744AbgDOIjz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 04:39:55 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1586939995; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=yt5GAkeWutdoRiLVjNmQh1PYnCw5y+LdfOz0sU6qfrQ=;
- b=GeFR2Mskh1cJUnaGSb3OGDuZwxF+LVQJa7qHBj53eH8H+LBeG4muSyhQcoWdjuX11FTpMcE2
- OUjUfMsXK9BkgsxhIp7pPv4T4DB2aYkZpJdFPxdQgabiYsYpN+jTnKa1KGrIqfnEjVHoUWZJ
- qhzE9JNiRQqRtYNlDG32Mkkq6uo=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e96c84b.7fc81aaa5810-smtp-out-n01;
- Wed, 15 Apr 2020 08:39:39 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 97264C4478C; Wed, 15 Apr 2020 08:39:39 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 33D41C433F2;
-        Wed, 15 Apr 2020 08:39:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 33D41C433F2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] libertas: make lbs_init_mesh() void
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200410090942.27239-1-yanaijie@huawei.com>
-References: <20200410090942.27239-1-yanaijie@huawei.com>
-To:     Jason Yan <yanaijie@huawei.com>
-Cc:     <davem@davemloft.net>, <colin.king@canonical.com>,
-        <yanaijie@huawei.com>, <dan.carpenter@oracle.com>,
-        <lkundrak@v3.sk>, <libertas-dev@lists.infradead.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20200415083939.97264C4478C@smtp.codeaurora.org>
-Date:   Wed, 15 Apr 2020 08:39:39 +0000 (UTC)
+        id S2894795AbgDOIkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 04:40:39 -0400
+Received: from mail.fudan.edu.cn ([202.120.224.10]:34153 "EHLO fudan.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2894777AbgDOIka (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Apr 2020 04:40:30 -0400
+X-Greylist: delayed 352 seconds by postgrey-1.27 at vger.kernel.org; Wed, 15 Apr 2020 04:40:27 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+        Message-Id; bh=+7ymPy9X5j+FaNt3AHq7PMuOVkMbwkiPlxtK3UBUMTw=; b=u
+        04oYSc7tk0cfjSIke3bOGW3JxrcDlCqpiux8KCJ5Eboeh9sb7NcnebuvYit1DemF
+        ZFeXCu6gKj5PyIWUkJQW0L0DbS/gqAOOd2ENh1tftYBQSoZLlM8pVEQOqJBNl/6h
+        lCs9vthKbMCat/c5wYs68Dx5B05jCyeR3dZAzm5MqA=
+Received: from localhost.localdomain (unknown [120.229.255.108])
+        by app1 (Coremail) with SMTP id XAUFCgAHzSxyyJZejoVFAA--.36467S3;
+        Wed, 15 Apr 2020 16:40:19 +0800 (CST)
+From:   Xiyu Yang <xiyuyang19@fudan.edu.cn>
+To:     Jon Maloy <jmaloy@redhat.com>, Ying Xue <ying.xue@windriver.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net, linux-kernel@vger.kernel.org
+Cc:     yuanxzhang@fudan.edu.cn, kjlu@umn.edu,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>
+Subject: [PATCH] tipc: Fix potential tipc_aead refcnt leak in tipc_crypto_rcv
+Date:   Wed, 15 Apr 2020 16:39:56 +0800
+Message-Id: <1586939996-69937-1-git-send-email-xiyuyang19@fudan.edu.cn>
+X-Mailer: git-send-email 2.7.4
+X-CM-TRANSID: XAUFCgAHzSxyyJZejoVFAA--.36467S3
+X-Coremail-Antispam: 1UD129KBjvJXoWrurW7XF1rAryUWw1rZr1rXrb_yoW8Jr1xp3
+        yUC39rArn5Gr4DKan5GF93K348Gry7urZxWFZ8uF15XFsFqw1IyrySqrWj9ry5uFWUArWq
+        vrZYvw1Y9F45uFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9K14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26rxl
+        6s0DM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
+        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r126r1DMcIj6I8E87Iv67AKxVWUJVW8Jw
+        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAG
+        YxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxkIecxEwVAFwVW8ZwCF04k20xvY0x0EwIxGrw
+        CFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE
+        14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2
+        IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1UMIIF0xvE42xK8VAv
+        wI8IcIk0rVW8JVW3JwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14
+        v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUePfQDUUUU
+X-CM-SenderInfo: irzsiiysuqikmy6i3vldqovvfxof0/
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jason Yan <yanaijie@huawei.com> wrote:
+tipc_crypto_rcv() invokes tipc_aead_get(), which returns a reference of
+the tipc_aead object to "aead" with increased refcnt.
 
-> Fix the following coccicheck warning:
-> 
-> drivers/net/wireless/marvell/libertas/mesh.c:833:5-8: Unneeded variable:
-> "ret". Return "0" on line 874
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Jason Yan <yanaijie@huawei.com>
-> Reviewed-by: Lubomir Rintel <lkundrak@v3.sk>
+When tipc_crypto_rcv() returns, the original local reference of "aead"
+becomes invalid, so the refcount should be decreased to keep refcount
+balanced.
 
-Patch applied to wireless-drivers-next.git, thanks.
+The issue happens in one error path of tipc_crypto_rcv(). When TIPC
+message decryption status is EINPROGRESS or EBUSY, the function forgets
+to decrease the refcnt increased by tipc_aead_get() and causes a refcnt
+leak.
 
-2fd5fdca6a3a libertas: make lbs_init_mesh() void
+Fix this issue by calling tipc_aead_put() on the error path when TIPC
+message decryption status is EINPROGRESS or EBUSY.
 
+Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+---
+ net/tipc/crypto.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
+index c8c47fc72653..8c47ded2edb6 100644
+--- a/net/tipc/crypto.c
++++ b/net/tipc/crypto.c
+@@ -1712,6 +1712,7 @@ int tipc_crypto_rcv(struct net *net, struct tipc_crypto *rx,
+ 	case -EBUSY:
+ 		this_cpu_inc(stats->stat[STAT_ASYNC]);
+ 		*skb = NULL;
++		tipc_aead_put(aead);
+ 		return rc;
+ 	default:
+ 		this_cpu_inc(stats->stat[STAT_NOK]);
 -- 
-https://patchwork.kernel.org/patch/11483039/
+2.7.4
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
