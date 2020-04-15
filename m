@@ -2,90 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CF941AA8F9
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 15:47:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A984D1AA952
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 16:02:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2636237AbgDONqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 09:46:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60276 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2636203AbgDONp6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 09:45:58 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E6BBC061A0C;
-        Wed, 15 Apr 2020 06:45:58 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id t14so6020706wrw.12;
-        Wed, 15 Apr 2020 06:45:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=6Y+n501v60+M9qU9BaDXmrwTBhvvERDvpQrXPhdTjpk=;
-        b=lxGxqGA/w4cma4aWMZOuekWkvzZjyQeK07gZxyiOlbOFOJdw/ty1G/gOjpJXkHhbtv
-         oec/4EyegckUWHV5YfR6K1DjhbJYMlVEOGcFGvFzW2YYSjDREe77l0eEkSIddkqfonVv
-         w/4pxZUN7S+iYpbqC2d6lFPe6j+JL6uXyjVl7JpZkS9c6nsZC7GzFqaRY9Aai665W2M0
-         SmoyMcrt/DYkfW/blgJIVnvNEBintUPPRXYH/Dy0aUJc58VQFOEE9zG2ERbhBvyA7vSG
-         8HV0nvpldH7tNH6MqDd5VCsdvTp4wvEKiB8XJpOI3WVE36xRezRwuu/xf/MIqHK2fuxh
-         0F3w==
+        id S2636341AbgDOOCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 10:02:11 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:48183 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730833AbgDOOCI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 10:02:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1586959324;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=DIieFSIFXcNK3bF2pki6xVm8oWsV0b5ZkJCX9uZyw50=;
+        b=KZ33e0VLavyY76tWRwTCyv7IBK8ZsFKWbDrw+yEyPOCXV45LplXZ8gwmseTWvgrlsolICL
+        llT0Ep0eCsM0v8StXe8rrrRJcaa4XXGVGyspwP7klp2Z/fLZM0kT1uRsQDVVT1qm0dvGOS
+        VRwBwr6WPX4Vu3gTPi33pqonc514UFc=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-24-O30OYCnyOVe8FZC5UOe6Yw-1; Wed, 15 Apr 2020 10:02:02 -0400
+X-MC-Unique: O30OYCnyOVe8FZC5UOe6Yw-1
+Received: by mail-lf1-f71.google.com with SMTP id 17so1340372lfo.12
+        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 07:02:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=6Y+n501v60+M9qU9BaDXmrwTBhvvERDvpQrXPhdTjpk=;
-        b=MgtoPyCAkQngTCqQyQNKSSIFO87VuDKaiPQVMBUpLbGLA4lI/9SvgY1RypsdUk8HRZ
-         hzt7B1zxdPGzoj+D/IRcwYRUesDQNlr19aN7Ak4z4+LKxOGlUO39i+YMnrNcNuc2rRd1
-         KyVf7PvGifIv6vR1MJ80c7BerG2kB3Z/DO5J1fJK5l+igOLsQSjYf+9J8SdYJIC2KNBS
-         dDlfQ87pOSY/K4cH3ah95V+kJSjJdVJsugG2R2F8kVw9ZBZZwZLiZOnIg8/7WFahR7x4
-         7giB0ZVOH2trrJt5ol2YceKcpDDOLxVZBiqD7zCzT1SKyxutTW4uuc0Cxv6J5jkwQPVH
-         XmOw==
-X-Gm-Message-State: AGi0PublyIf55ETKAoQNSZnEhiC4cSZPo2N5+ycm9FvDsPKNLr0jyhTw
-        H6319ZaX2LDZk+yQAcup91t21a2ciYTm24JNjTA=
-X-Google-Smtp-Source: APiQypLUp621VYLuDBG2y+9wV8uTBWCc0dq1pqejCsr4K8b9rnKIceDL3XZnGAu/SSvcrhnulcagnXmoVKq+rXEtXf4=
-X-Received: by 2002:a5d:5745:: with SMTP id q5mr22407388wrw.351.1586958357116;
- Wed, 15 Apr 2020 06:45:57 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DIieFSIFXcNK3bF2pki6xVm8oWsV0b5ZkJCX9uZyw50=;
+        b=efyrfeMWP2Mf3ooDT715rgoHmLgiPV95F19ZQ9eQL3Fv+3ypuXUE4NXdnnkcqfE9JS
+         HrWwuNZoZHc2fq4hycG+HRvHsfjuGar5+GUkJWZ0z4qgtigLnf3GMSc6AAvUKFr8uQp6
+         L5dTbct/y10I592RPAqn/eb0O/saEUVFk5bkUL6EcsAVREqlUgIRakgM5EPtTxTGEQfa
+         EumClQcQyJYJOgxphurrT1DG1APuYN2NHBEdktoPuMewTxPHrEzcEtTsONsLgKhDC2nI
+         gDCeoX8KTJoZMSZGXfr1Z6T3yM//HVj1tAMx4SqhxQTkV9xReai57qpml9ALet0878Yj
+         pvgQ==
+X-Gm-Message-State: AGi0PuYbwChDHR8RFv7ysKd6FVGbTO6PBrfVvuMm2mK4Nw01pMdlGZZb
+        aYqQIGVDGOU7nfC0NzQSWM+3LAy7eVqWe3Z7t9e44vHIMMWfc/fVMfcVOaPMExmCIsaP16qX1OK
+        wgnSeWDnz76+vDUYd
+X-Received: by 2002:ac2:43c6:: with SMTP id u6mr3294388lfl.170.1586959320623;
+        Wed, 15 Apr 2020 07:02:00 -0700 (PDT)
+X-Google-Smtp-Source: APiQypKQVrVF1keziwDymILwDFZQB1YR2QERfd2wejuW+1DEDbm2plwNgF7XGhJrMenNXH6bM9yzZQ==
+X-Received: by 2002:ac2:43c6:: with SMTP id u6mr3294372lfl.170.1586959320382;
+        Wed, 15 Apr 2020 07:02:00 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id u3sm13345180lff.26.2020.04.15.07.01.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Apr 2020 07:01:59 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 9171B181586; Wed, 15 Apr 2020 16:01:58 +0200 (CEST)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     daniel@iogearbox.net, ast@fb.com
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Xiumei Mu <xmu@redhat.com>
+Subject: [PATCH bpf] cpumap: Avoid warning when CONFIG_DEBUG_PER_CPU_MAPS is enabled
+Date:   Wed, 15 Apr 2020 16:01:51 +0200
+Message-Id: <20200415140151.439943-1-toke@redhat.com>
+X-Mailer: git-send-email 2.26.0
 MIME-Version: 1.0
-References: <1586254255-28713-1-git-send-email-sumit.garg@linaro.org>
- <CABPxzY+hL=jD6Zy=netP3oqNXg69gDL2g0KiPe40eaXXgZBnxw@mail.gmail.com>
- <CAFA6WYMZAq6X5m++h33ySCa6jOQCq_tHL=8mUi-kPMcn4FH=jA@mail.gmail.com>
- <CAFA6WYOW9ne0iffwC1dc48a_aSaYkkxQzyHQXTV2Wkob9KOXQg@mail.gmail.com>
- <CA+icZUUDm=WPjmwh5ikp8t+xt7dqTgghCeB8F0+czaUh-sHXxA@mail.gmail.com> <CAFA6WYPdJMt-h=9HrV-DcHZnO7xCu74Dh9FuRMnp16qhotyo0g@mail.gmail.com>
-In-Reply-To: <CAFA6WYPdJMt-h=9HrV-DcHZnO7xCu74Dh9FuRMnp16qhotyo0g@mail.gmail.com>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Wed, 15 Apr 2020 15:45:44 +0200
-Message-ID: <CA+icZUX9KqXbM822Qi_pKcBe8H7Fk1jUa-Vo1FVB4mnuJmZ+Qg@mail.gmail.com>
-Subject: Re: [PATCH v2] mac80211: fix race in ieee80211_register_hw()
-To:     Sumit Garg <sumit.garg@linaro.org>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Krishna Chaitanya <chaitanya.mgit@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
-        Kalle Valo <kvalo@codeaurora.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        =?UTF-8?Q?Matthias=2DPeter_Sch=C3=B6pfer?= 
-        <matthias.schoepfer@ithinx.io>,
-        "Berg Philipp (HAU-EDS)" <Philipp.Berg@liebherr.com>,
-        "Weitner Michael (HAU-EDS)" <Michael.Weitner@liebherr.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Loic Poulain <loic.poulain@linaro.org>, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 15, 2020 at 3:39 PM Sumit Garg <sumit.garg@linaro.org> wrote:
+When the kernel is built with CONFIG_DEBUG_PER_CPU_MAPS, the cpumap code
+can trigger a spurious warning if CONFIG_CPUMASK_OFFSTACK is also set. This
+happens because in this configuration, NR_CPUS can be larger than
+nr_cpumask_bits, so the initial check in cpu_map_alloc() is not sufficient
+to guard against hitting the warning in cpumask_check().
 
-[ ... ]
+Fix this by using the nr_cpumask_bits variable in the map creation code
+instead of the NR_CPUS constant.
 
-> I didn't get this PR notification as currently I am not subscribed to
-> linux-wireless ML. So apologies for the noise here.
->
+Fixes: 6710e1126934 ("bpf: introduce new bpf cpu map type BPF_MAP_TYPE_CPUMAP")
+Cc: Jesper Dangaard Brouer <brouer@redhat.com>
+Reported-by: Xiumei Mu <xmu@redhat.com>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+ kernel/bpf/cpumap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-There is/are a pr-tracker(s) and bots (for example tip tree) around
-which inform people automatically.
-But I have never dealt with that topic and thus do not know if there
-exists something for net/wireless/mac80211 around.
+diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
+index 70f71b154fa5..23902afb3bba 100644
+--- a/kernel/bpf/cpumap.c
++++ b/kernel/bpf/cpumap.c
+@@ -99,8 +99,8 @@ static struct bpf_map *cpu_map_alloc(union bpf_attr *attr)
+ 
+ 	bpf_map_init_from_attr(&cmap->map, attr);
+ 
+-	/* Pre-limit array size based on NR_CPUS, not final CPU check */
+-	if (cmap->map.max_entries > NR_CPUS) {
++	/* Pre-limit array size based on nr_cpumask_bits, not final CPU check */
++	if (cmap->map.max_entries > nr_cpumask_bits) {
+ 		err = -E2BIG;
+ 		goto free_cmap;
+ 	}
+-- 
+2.26.0
 
-- Sedat -
