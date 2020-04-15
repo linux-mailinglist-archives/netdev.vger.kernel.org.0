@@ -2,45 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46DC51AA031
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 14:31:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 341211A9F9D
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 14:22:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2409202AbgDOLpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 07:45:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39280 "EHLO mail.kernel.org"
+        id S2409227AbgDOLpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 07:45:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39298 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2409181AbgDOLpe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Apr 2020 07:45:34 -0400
+        id S2409182AbgDOLpf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Apr 2020 07:45:35 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 89DDE20768;
-        Wed, 15 Apr 2020 11:45:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 04029206A2;
+        Wed, 15 Apr 2020 11:45:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586951133;
-        bh=ZdQpdMXAuKXWa7gWPIpjYwpVyeQdiVktFAnHfPKPAMU=;
+        s=default; t=1586951135;
+        bh=2+/dJ4gHYaq3bNj/O1pI8tN/f6TAMbkW0u8kUJjb+oU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GcATTDqVReMMCGAKNSShEXVojRmSdAHa/S4R+atCH0YTNtLwjndPj+/FSu+IXVvkx
-         LN/xS3e5jlU5kBIgyXAVyg6YDG7mBkqabMDlN0IuO5Ar9XU6Wp8jYsAoO52BGgwaOW
-         UbfvPWozIQi8X9X9vsmDfiLl5NnDEy600sMlgUOA=
+        b=Lj9zKv1jrbUc/gnc5qaMpWhtaJ/Z/0ZkB9ik0NEnlG1C1oEoyyUepppQ1JzV6Ov8K
+         kcN9P/fsc2zwWaGRJRZTAS8QtBnwqnnsNlaISPcHb8wANC6DiQKTjY8AihltLHP0Lx
+         oekTrjMUgQi72QdGofvlOrCthr6DBS/arRSX/fUo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chuanhong Guo <gch981213@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Will Deacon <will@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jason Wang <jasowang@redhat.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 44/84] net: dsa: mt7530: fix null pointer dereferencing in port5 setup
-Date:   Wed, 15 Apr 2020 07:44:01 -0400
-Message-Id: <20200415114442.14166-44-sashal@kernel.org>
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 45/84] tun: Don't put_page() for all negative return values from XDP program
+Date:   Wed, 15 Apr 2020 07:44:02 -0400
+Message-Id: <20200415114442.14166-45-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200415114442.14166-1-sashal@kernel.org>
 References: <20200415114442.14166-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -49,44 +48,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chuanhong Guo <gch981213@gmail.com>
+From: Will Deacon <will@kernel.org>
 
-[ Upstream commit 0452800f6db4ed0a42ffb15867c0acfd68829f6a ]
+[ Upstream commit bee348907d19d654e8524d3a946dcd25b693aa7e ]
 
-The 2nd gmac of mediatek soc ethernet may not be connected to a PHY
-and a phy-handle isn't always available.
-Unfortunately, mt7530 dsa driver assumes that the 2nd gmac is always
-connected to switch port 5 and setup mt7530 according to phy address
-of 2nd gmac node, causing null pointer dereferencing when phy-handle
-isn't defined in dts.
-This commit fix this setup code by checking return value of
-of_parse_phandle before using it.
+When an XDP program is installed, tun_build_skb() grabs a reference to
+the current page fragment page if the program returns XDP_REDIRECT or
+XDP_TX. However, since tun_xdp_act() passes through negative return
+values from the XDP program, it is possible to trigger the error path by
+mistake and accidentally drop a reference to the fragments page without
+taking one, leading to a spurious free. This is believed to be the cause
+of some KASAN use-after-free reports from syzbot [1], although without a
+reproducer it is not possible to confirm whether this patch fixes the
+problem.
 
-Fixes: 38f790a80560 ("net: dsa: mt7530: Add support for port 5")
-Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
-Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Tested-by: René van Dorst <opensource@vdorst.com>
+Ensure that we only drop a reference to the fragments page if the XDP
+transmit or redirect operations actually fail.
+
+[1] https://syzkaller.appspot.com/bug?id=e76a6af1be4acd727ff6bbca669833f98cbf5d95
+
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+CC: Eric Dumazet <edumazet@google.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Fixes: 8ae1aff0b331 ("tuntap: split out XDP logic")
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/mt7530.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/tun.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index e0e932f0aed1e..8071c3fa3fb7c 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -1353,6 +1353,9 @@ mt7530_setup(struct dsa_switch *ds)
- 				continue;
- 
- 			phy_node = of_parse_phandle(mac_np, "phy-handle", 0);
-+			if (!phy_node)
-+				continue;
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index 69f553a028eee..16f5cb249ed59 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -1715,8 +1715,12 @@ static struct sk_buff *tun_build_skb(struct tun_struct *tun,
+ 			alloc_frag->offset += buflen;
+ 		}
+ 		err = tun_xdp_act(tun, xdp_prog, &xdp, act);
+-		if (err < 0)
+-			goto err_xdp;
++		if (err < 0) {
++			if (act == XDP_REDIRECT || act == XDP_TX)
++				put_page(alloc_frag->page);
++			goto out;
++		}
 +
- 			if (phy_node->parent == priv->dev->of_node->parent) {
- 				interface = of_get_phy_mode(mac_np);
- 				id = of_mdio_parse_addr(ds->dev, phy_node);
+ 		if (err == XDP_REDIRECT)
+ 			xdp_do_flush_map();
+ 		if (err != XDP_PASS)
+@@ -1730,8 +1734,6 @@ static struct sk_buff *tun_build_skb(struct tun_struct *tun,
+ 
+ 	return __tun_build_skb(tfile, alloc_frag, buf, buflen, len, pad);
+ 
+-err_xdp:
+-	put_page(alloc_frag->page);
+ out:
+ 	rcu_read_unlock();
+ 	local_bh_enable();
 -- 
 2.20.1
 
