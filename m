@@ -2,116 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18EC91A98A9
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 11:25:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3460B1A98CC
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 11:27:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2895402AbgDOJXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 05:23:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47738 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2895408AbgDOJXO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 05:23:14 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 777DAC061A41
-        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 02:23:13 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id k11so17615265wrp.5
-        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 02:23:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=p+pTtxbF6QRKm4ChjDfBhdzosGTJFivS8O2LYLc6THQ=;
-        b=wU0K3NA/8EqmM1ff21F2XRJIgW7Mcma7ec0tb8Vq97AT7ksJ4VfqAtHEjK4wV5jIy4
-         /yQFIqSk4PYe4fSkgSYWWgsf2SMd/XEpAUDZq9Jv+yx0ylFID3IH0MsxRdMJSjkikLnB
-         XnLhglk5wYF+wo5aXbTs0aoE7O/oCNmB8j19OCsJUX5cmDn5Dh6oTgeTDan0cHwcb7QT
-         SQskOHvgF5QlIxEfrXUEKamA5ifUB6l1MiFYHwpXk4gsHHZyrIX+MqlRzqDRLcZjs90f
-         v2tI+U1O56udSg6DR9X5hpCHQQYIXmg6uegtzv3uC35CaVBlQpjzrfzSekHAHgXewnuz
-         RLWQ==
+        id S2895464AbgDOJ0l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 05:26:41 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:36992 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2895484AbgDOJ0h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 05:26:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1586942796;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YILbIg5RMxm+GOxX8SMepjWj1MDSqzjfSprlUdY6PO8=;
+        b=F2fiiwQcj2JnQTEXDfcMZmQJro5sXauodbd7+kJIIzPYBR1h33Abje+E0bdRfZmsqG9J99
+        5dG88uatIsW8lfLfScnv6d2yQtp51AvNG07niJiynIvO7FGxGiLRWUS8a8GVt+0dUn4Dy9
+        oXQ/LFy/b1U2t8VYsECgRp46WZpalA8=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-22-z3gIXEUgMMK5w4MTPbbEGw-1; Wed, 15 Apr 2020 05:26:35 -0400
+X-MC-Unique: z3gIXEUgMMK5w4MTPbbEGw-1
+Received: by mail-lf1-f69.google.com with SMTP id b22so1139275lfa.18
+        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 02:26:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=p+pTtxbF6QRKm4ChjDfBhdzosGTJFivS8O2LYLc6THQ=;
-        b=JjYLNGRVQNazxgSQBRk32Bjp4qtxFvfgenwGRk90zbIJyk8zP/3K7aZPy50p5/fvzv
-         5mNuWH5hffHG2jDXG54cFWsPVgV6UELYwsckzLJGergeoI7S9aPpb1w0bWPnAk3SrAej
-         APU5nRNK8LNA5vosvXxm7Sbki118nht+OD4EMTcZgxAvjTHrCHdDK2hpQaYGMj8IRFwu
-         tis9EWYe1q9KdRZBJ87NYuMi331oOtxEUAK0qGBlPEn8psDigJZ6Nq+6lbIh4RPPUYzj
-         OGnUgTenoaPgWvXnmxlYONnfMTT6/GJaeq8QFwjIjJULcSaG3N9dbBFX+M8Qy7BHmN7l
-         vH5A==
-X-Gm-Message-State: AGi0PuYZHAHpW3PvZGM2sDx8fUxu/q9rR+RatXZMcCLSyEH0sikk2tB/
-        j+WJ5rZYhJW3cCi6NEcCPK5VkQ==
-X-Google-Smtp-Source: APiQypKZCE4jcvwyEetbY5z9ghNHFxXWQpEL5eKh/IZ5lv3p9Amt6yFTRtJP4keaPPNXhk4WY/KQtQ==
-X-Received: by 2002:adf:ea44:: with SMTP id j4mr4812531wrn.38.1586942591970;
-        Wed, 15 Apr 2020 02:23:11 -0700 (PDT)
-Received: from [192.168.0.41] (lns-bzn-59-82-252-135-148.adsl.proxad.net. [82.252.135.148])
-        by smtp.googlemail.com with ESMTPSA id 138sm23013314wmb.14.2020.04.15.02.23.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Apr 2020 02:23:11 -0700 (PDT)
-Subject: Re: [RFC v2 1/9] thermal: int3400_thermal: Statically initialize
- .get_mode()/.set_mode() ops
-To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
-        linux-pm@vger.kernel.org
-Cc:     Zhang Rui <rui.zhang@intel.com>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>, Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Peter Kaestle <peter@piie.net>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Amit Kucheria <amit.kucheria@verdurent.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Allison Randal <allison@lohutok.net>,
-        Enrico Weigelt <info@metux.net>,
-        Gayatri Kammela <gayatri.kammela@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, kernel@collabora.com,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-References: <2bc5a902-acde-526a-11a5-2357d899916c@linaro.org>
- <20200414180105.20042-1-andrzej.p@collabora.com>
- <20200414180105.20042-2-andrzej.p@collabora.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-Message-ID: <3f271ce1-b4bf-4516-7e6d-7a26bd6953de@linaro.org>
-Date:   Wed, 15 Apr 2020 11:23:09 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=YILbIg5RMxm+GOxX8SMepjWj1MDSqzjfSprlUdY6PO8=;
+        b=sBVgWPjWYWzZpIA0lFaEqSz430vZ9VcRsBGRLzqyVK2TkzcnqkIx7BFXmme/KgFCdP
+         BZ1XS2FqqLnEYKeVbdcqVDDjbaDO9R8pUcN2DZnrPr1QZKa5AjWUnXFrFUaOHjbXe5hh
+         pVwsPcRN6EKp6hsUIMbyA5cRl+XHdNKF8/LgGMeEJE4Qa8DfiersGMTVU/4hPpgtivPp
+         ogz7dYW5ULLlH2pklfSs9QKJWFWMYN/5bdWcu2b9HZ4lYTN9YrRi+Pngc1N5o5TjJZ2+
+         lSzEZ7yn69gNW6sOtV8LVZBiWuiUdU7fFYD+FDw8rNwVrkm6swmUsna/qCCL6DKZOIYl
+         9u4w==
+X-Gm-Message-State: AGi0Puacj2C6hK8EHuu4Ue8AoEjmcd7QDRlxNDeWz4Q0sg6HIp4nidjn
+        tgU6E0ROzjmo/rdFJsZOsM9MBuX8FR44wa76xaYr8WRNHHMG18AGHIwL/uW6A+LU6mGGW7+F0nl
+        qSSxnDxNnH8altLKP
+X-Received: by 2002:ac2:5474:: with SMTP id e20mr2482179lfn.200.1586942786877;
+        Wed, 15 Apr 2020 02:26:26 -0700 (PDT)
+X-Google-Smtp-Source: APiQypIpC4iSUH+DcwQIev20tlT2aEnv9dtLJppj3zSzwoV2zNQAhYweBM4Q9VakGs3CSMTHp2mXbA==
+X-Received: by 2002:ac2:5474:: with SMTP id e20mr2482149lfn.200.1586942786458;
+        Wed, 15 Apr 2020 02:26:26 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id h14sm12735825lfm.60.2020.04.15.02.26.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Apr 2020 02:26:25 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id C4872181586; Wed, 15 Apr 2020 11:26:23 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [RFC PATCH bpf-next 4/8] bpf: support GET_FD_BY_ID and GET_NEXT_ID for bpf_link
+In-Reply-To: <CAEf4BzZtJo5dKMX_ys_2rN+bx6QqDGz9DAEVFod6Ys9Rs93VgA@mail.gmail.com>
+References: <20200404000948.3980903-1-andriin@fb.com> <20200404000948.3980903-5-andriin@fb.com> <87pnckc0fr.fsf@toke.dk> <CAEf4BzYrW43EW_Uneqo4B6TLY4V9fKXJxWj+-gbq-7X0j7y86g@mail.gmail.com> <877dyq80x8.fsf@toke.dk> <CAEf4BzaiRYMc4QMjz8bEn1bgiSXZvW_e2N48-kTR4Fqgog2fBg@mail.gmail.com> <87tv1t65cr.fsf@toke.dk> <CAEf4BzbXCsHCJ6Tet0i5g=pKB_uYqvgiaBNuY-NMdZm8rdZN5g@mail.gmail.com> <87mu7enysb.fsf@toke.dk> <CAEf4BzZtJo5dKMX_ys_2rN+bx6QqDGz9DAEVFod6Ys9Rs93VgA@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 15 Apr 2020 11:26:23 +0200
+Message-ID: <87pnc9m75s.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20200414180105.20042-2-andrzej.p@collabora.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/04/2020 20:00, Andrzej Pietrasiewicz wrote:
-> int3400_thermal_ops is used inside int3400_thermal_probe() only after
-> the assignments, which can just as well be made statically at struct's
-> initizer.
-> 
-> Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-> ---
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-Applied this patch with Bartlomiej's tag.
+> On Tue, Apr 14, 2020 at 3:32 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>>
+>> >> > After that, one can pin bpf_link temporarily and re-open it as
+>> >> > writable one, provided CAP_DAC_OVERRIDE capability is present. All
+>> >> > that works already, because pinned bpf_link is just a file, so one =
+can
+>> >> > do fchmod on it and all that will go through normal file access
+>> >> > permission check code path.
+>> >>
+>> >> Ah, I did not know that was possible - I was assuming that bpffs was
+>> >> doing something special to prevent that. But if not, great!
+>> >>
+>> >> > Unfortunately, just re-opening same FD as writable (which would
+>> >> > be possible if fcntl(fd, F_SETFL, S_IRUSR
+>> >> >  S_IWUSR) was supported on Linux) without pinning is not possible.
+>> >> > Opening link from /proc/<pid>/fd/<link-fd> doesn't seem to work
+>> >> > either, because backing inode is not BPF FS inode. I'm not sure, but
+>> >> > maybe we can support the latter eventually. But either way, I think
+>> >> > given this is to be used for manual troubleshooting, going through =
+few
+>> >> > extra hoops to force-detach bpf_link is actually a good thing.
+>> >>
+>> >> Hmm, I disagree that deliberately making users jump through hoops is a
+>> >> good thing. Smells an awful lot like security through obscurity to me;
+>> >> and we all know how well that works anyway...
+>> >
+>> > Depends on who users are? bpftool can implement this as one of
+>> > `bpftool link` sub-commands and allow human operators to force-detach
+>> > bpf_link, if necessary.
+>>
+>> Yeah, I would expect this to be the common way this would be used: built
+>> into tools.
+>>
+>> > I think applications shouldn't do this (programmatically) at all,
+>> > which is why I think it's actually good that it's harder and not
+>> > obvious, this will make developer think again before implementing
+>> > this, hopefully. For me it's about discouraging bad practice.
+>>
+>> I guess I just don't share your optimism that making people jump through
+>> hoops will actually discourage them :)
+>
+> I understand. I just don't see why would anyone have to implement this
+> at all and especially would think it's a good idea to begin with?
+>
+>>
+>> If people know what they are doing it should be enough to document it as
+>> discouraged. And if they don't, they are perfectly capable of finding
+>> and copy-pasting the sequence of hoop-jumps required to achieve what
+>> they want, probably with more bugs added along the way.
+>>
+>> So in the end I think that all you're really achieving is annoying
+>> people who do have a legitimate reason to override the behaviour (which
+>> includes yourself as a bpftool developer :)). That's what I meant by the
+>> 'security through obscurity' comment.
+>
+> Can I please get a list of real examples of legitimate reasons to
+> override this behavior?
 
-Thanks
+Primarily, I expect that this would be built into admin tools (like
+bpftool as you suggested). I just don't see why such tools should be
+made to do the whole pin/reopen dance (which, BTW, adds an implicit
+dependency on having a mounted bpffs) when we could just add a
+capability check directly in bpf_link_get_fd_by_id()?
 
-  -- Daniel
+-Toke
 
-
-
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
