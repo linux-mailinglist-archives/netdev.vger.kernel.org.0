@@ -2,83 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 305911AA8F4
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 15:47:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CF941AA8F9
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 15:47:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2636214AbgDONpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 09:45:22 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:39628 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2636203AbgDONpT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Apr 2020 09:45:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=mFdulGoyzXjkcnbudHCs8v43UlFuR/6b6qFTHBhgztQ=; b=aT9ZDP6NUhJkvzVM5Rv4I0IaCH
-        2xBYHrQu7THMIFbFvSLSgbwRerLp0iMoF10yXHaGU8vYiNICcFX86T7lihyx6Ez+By+pVnGnvofi9
-        0KKSBL3xm4o2mzc4RJ83veghAOHV7plgcKDdCy5GdpK/S0YpoDNJmAidq6nW5MLEEGAo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jOiLn-002t3u-FB; Wed, 15 Apr 2020 15:45:11 +0200
-Date:   Wed, 15 Apr 2020 15:45:11 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        David Jander <david@protonic.nl>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de
-Subject: Re: [PATCH v1] ethtool: provide UAPI for PHY master/slave
- configuration.
-Message-ID: <20200415134511.GB657811@lunn.ch>
-References: <20200415121209.12197-1-o.rempel@pengutronix.de>
- <20200415131104.GA657811@lunn.ch>
- <20200415133728.urvsdolwhaa4eknm@pengutronix.de>
+        id S2636237AbgDONqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 09:46:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60276 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2636203AbgDONp6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 09:45:58 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E6BBC061A0C;
+        Wed, 15 Apr 2020 06:45:58 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id t14so6020706wrw.12;
+        Wed, 15 Apr 2020 06:45:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=6Y+n501v60+M9qU9BaDXmrwTBhvvERDvpQrXPhdTjpk=;
+        b=lxGxqGA/w4cma4aWMZOuekWkvzZjyQeK07gZxyiOlbOFOJdw/ty1G/gOjpJXkHhbtv
+         oec/4EyegckUWHV5YfR6K1DjhbJYMlVEOGcFGvFzW2YYSjDREe77l0eEkSIddkqfonVv
+         w/4pxZUN7S+iYpbqC2d6lFPe6j+JL6uXyjVl7JpZkS9c6nsZC7GzFqaRY9Aai665W2M0
+         SmoyMcrt/DYkfW/blgJIVnvNEBintUPPRXYH/Dy0aUJc58VQFOEE9zG2ERbhBvyA7vSG
+         8HV0nvpldH7tNH6MqDd5VCsdvTp4wvEKiB8XJpOI3WVE36xRezRwuu/xf/MIqHK2fuxh
+         0F3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=6Y+n501v60+M9qU9BaDXmrwTBhvvERDvpQrXPhdTjpk=;
+        b=MgtoPyCAkQngTCqQyQNKSSIFO87VuDKaiPQVMBUpLbGLA4lI/9SvgY1RypsdUk8HRZ
+         hzt7B1zxdPGzoj+D/IRcwYRUesDQNlr19aN7Ak4z4+LKxOGlUO39i+YMnrNcNuc2rRd1
+         KyVf7PvGifIv6vR1MJ80c7BerG2kB3Z/DO5J1fJK5l+igOLsQSjYf+9J8SdYJIC2KNBS
+         dDlfQ87pOSY/K4cH3ah95V+kJSjJdVJsugG2R2F8kVw9ZBZZwZLiZOnIg8/7WFahR7x4
+         7giB0ZVOH2trrJt5ol2YceKcpDDOLxVZBiqD7zCzT1SKyxutTW4uuc0Cxv6J5jkwQPVH
+         XmOw==
+X-Gm-Message-State: AGi0PublyIf55ETKAoQNSZnEhiC4cSZPo2N5+ycm9FvDsPKNLr0jyhTw
+        H6319ZaX2LDZk+yQAcup91t21a2ciYTm24JNjTA=
+X-Google-Smtp-Source: APiQypLUp621VYLuDBG2y+9wV8uTBWCc0dq1pqejCsr4K8b9rnKIceDL3XZnGAu/SSvcrhnulcagnXmoVKq+rXEtXf4=
+X-Received: by 2002:a5d:5745:: with SMTP id q5mr22407388wrw.351.1586958357116;
+ Wed, 15 Apr 2020 06:45:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200415133728.urvsdolwhaa4eknm@pengutronix.de>
+References: <1586254255-28713-1-git-send-email-sumit.garg@linaro.org>
+ <CABPxzY+hL=jD6Zy=netP3oqNXg69gDL2g0KiPe40eaXXgZBnxw@mail.gmail.com>
+ <CAFA6WYMZAq6X5m++h33ySCa6jOQCq_tHL=8mUi-kPMcn4FH=jA@mail.gmail.com>
+ <CAFA6WYOW9ne0iffwC1dc48a_aSaYkkxQzyHQXTV2Wkob9KOXQg@mail.gmail.com>
+ <CA+icZUUDm=WPjmwh5ikp8t+xt7dqTgghCeB8F0+czaUh-sHXxA@mail.gmail.com> <CAFA6WYPdJMt-h=9HrV-DcHZnO7xCu74Dh9FuRMnp16qhotyo0g@mail.gmail.com>
+In-Reply-To: <CAFA6WYPdJMt-h=9HrV-DcHZnO7xCu74Dh9FuRMnp16qhotyo0g@mail.gmail.com>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Wed, 15 Apr 2020 15:45:44 +0200
+Message-ID: <CA+icZUX9KqXbM822Qi_pKcBe8H7Fk1jUa-Vo1FVB4mnuJmZ+Qg@mail.gmail.com>
+Subject: Re: [PATCH v2] mac80211: fix race in ieee80211_register_hw()
+To:     Sumit Garg <sumit.garg@linaro.org>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Krishna Chaitanya <chaitanya.mgit@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Matthias=2DPeter_Sch=C3=B6pfer?= 
+        <matthias.schoepfer@ithinx.io>,
+        "Berg Philipp (HAU-EDS)" <Philipp.Berg@liebherr.com>,
+        "Weitner Michael (HAU-EDS)" <Michael.Weitner@liebherr.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Loic Poulain <loic.poulain@linaro.org>, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> In the IEEE 802.3 it is described as:
-> ---------------------------------------------------------------------------
-> Port type: Bit 9.10 is to be used to indicate the preference to operate
-> as MASTER (multiport device) or as SLAVE (single-port device) if the
-> MASTER-SLAVE Manual Configuration Enable bit, 9.12, is not set.  Usage
-> of this bit is described in 40.5.2.
-> 1 = Multiport device
-> 0 = single-port device
+On Wed, Apr 15, 2020 at 3:39 PM Sumit Garg <sumit.garg@linaro.org> wrote:
 
-I really should go read the standard, but...
+[ ... ]
 
-> ---------------------------------------------------------------------------
-> 
-> Setting PORT_MODE_MASTER/PORT_MODE_SLAVE will increase the chance to get
-> MASTER or SLAVE mode, but not force it.
-> 
-> If we will follow strictly to the IEEE 802.3 spec, it should be named:
-> 
-> #define PORT_MODE_UNKNOWN	0x00
-> /* this two options will not force some specific mode, only influence
->  * the chance to get it */
-> #define PORT_TYPE_MULTI_PORT	0x01
-> #define PORT_TYPE_SINGLE_PORT	0x02
-> /* this two options will force master or slave mode */
-> #define PORT_MODE_MASTER	0x03
-> #define PORT_MODE_SLAVE		0x04
+> I didn't get this PR notification as currently I am not subscribed to
+> linux-wireless ML. So apologies for the noise here.
+>
 
-I prefer having FORCE in the name.
+There is/are a pr-tracker(s) and bots (for example tip tree) around
+which inform people automatically.
+But I have never dealt with that topic and thus do not know if there
+exists something for net/wireless/mac80211 around.
 
-But let me read the standard and get up to speed.
-
-    Andrew
+- Sedat -
