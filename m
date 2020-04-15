@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C47E41AB47C
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 01:56:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE5641AB481
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 01:58:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390766AbgDOX4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 19:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42290 "EHLO
+        id S2390888AbgDOX54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 19:57:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2389935AbgDOX4Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 19:56:16 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78102C061A0C;
-        Wed, 15 Apr 2020 16:56:16 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id t16so652344plo.7;
-        Wed, 15 Apr 2020 16:56:16 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S2389935AbgDOX5y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 19:57:54 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EFCDC061A0C;
+        Wed, 15 Apr 2020 16:57:54 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id m21so772124pff.13;
+        Wed, 15 Apr 2020 16:57:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OYJsEwXlMKEipE9CLRCvkao9d4zNpZPCc0URa0skveg=;
-        b=tuOHH/eimvvGJq5ZN0OxHwBIdV4bEy84U1GSNWhokxntAt4D8gfjOeUsTJYzkdvV7U
-         O7hYq6YpDJ9ijPp7fOVe/b3E80vHLSQRjvlIMy0ZhlBwNbG9wWjNQtx4J0t9pwi1VctB
-         omuIw1oiK2JmWxgZv0PGEtSE6iJb/E4OvS1bxBxXkXoaIOtD0/bTl8sLfrlT21i665L/
-         N5xh61LU//SG+TAdQj8owHG18VmCNSLfFffeI0BrFY1PMJNxSH2ZhkSmGG8WRStG4SwX
-         OEoXq+n+An8QaTdBatezX1RNuxjOYe0FYn0ZbMUKFe9wnmNN+D8YVonVfXtYbULqAAl/
-         kjrA==
+        bh=6XVWvegwjkBtKDIL/m/TOa2z4OMyDMsl6BzKwWS9diE=;
+        b=qOr675zQ4f7Do58c+0t4AP1/5HP4sRtm4dUbC9WwDTygNtqBjcw4wsk55X3Yhf8LmI
+         Fk6AKwMX2yeRjNbCMmrrfdxFQ7Xa5mYe0v9onaazGCw86T9W3pxueIjPctjui+V6xKQ0
+         w3MGE99YvlZzKXEOODhhaAE+qveo/NKKYja6LiHz0YZMVVUBodLBDEkt7RgI4Vb1/wP7
+         cioKRz786UDxwILiYdtViN087vxJomRHwkv5LqVauuSlWKDXjfungLA7agJV7caVwERy
+         BcUMOi0DanRi0xzXGrwKQZiHuyMHqDqgQVq13jpOEh4pzSZjj5ng/tCYS1a5paAydaeD
+         rTGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=OYJsEwXlMKEipE9CLRCvkao9d4zNpZPCc0URa0skveg=;
-        b=hWYclLxolijBnk2vwBenqKDHsBj7A5QfvGXH++hpVQCEDJPWOWLMOjSFcTD3y5ZW0T
-         G9lxYHQfW8MO/QCI1+W2Nn78Vektv6gl6KpULgA7f7pMepfd4NBVK2bkAkGEMx8hPyDk
-         hUCmjD3oCjZtCptAfBGxkO7gnA0gKAN3nMCoOL22a8AJGi/9P8074CxbLnedjxebCf8R
-         RK9V9HT/0KbOH74P8tBlWDhsVRFwMdr2GaHSQlsEnnOGvqDYcn1qmJOWzepI+DXpZWf+
-         dl+xLK6yNrU36zrREYUDf4FvyAhO/k95HH15IeEq5jssPe6jq+ySGTV+2qyqPGgHThqI
-         LBRQ==
-X-Gm-Message-State: AGi0PuZK+jPaed46AjhZYqkS22hWRLmZBtLJfmfi36eHicTo9qJPywZJ
-        y4udMMKXf7PVQjeUumpa/es=
-X-Google-Smtp-Source: APiQypIOJ9IXnh4vbXOnM3Eb/Y1EPy9wAM1ZJfzRL7sswBOx6Efn01YpvI6QlvLjMJ0ysflY1flvZQ==
-X-Received: by 2002:a17:90a:3327:: with SMTP id m36mr1850655pjb.116.1586994975997;
-        Wed, 15 Apr 2020 16:56:15 -0700 (PDT)
+        bh=6XVWvegwjkBtKDIL/m/TOa2z4OMyDMsl6BzKwWS9diE=;
+        b=pPrqJiyVyoIpkRGuRLgwkcwrTFMkJTsrBZzkDXhZOO2AS1obe8GpKhPLQPBx3WyuKi
+         NKlRowUT9Zj7kCavFr2gxz5V27XMYl1VV/trJcX+fXyDHfRT4Hk25pnknQBOGo8NBObf
+         uIYWp25IIibTGq7GHk4UdNBfGVW47LHExR9HO/4A/C3kuXlf39Rs2zvVUKmmLJCgDsJA
+         nn77kSDwaeK8I++WgSVjaMEVV8iPu2mVVHVDY6xQWkMtrIXI8b/bq53IHtu2NWKGerxn
+         9Q/pz6H5Sw6Tqhp8cw/kDPLn4IGvQT6L7fdQMwQ71XDWDuSUpnSZwQu632odG8yO6650
+         E8lw==
+X-Gm-Message-State: AGi0PuZOWcr4hO3ftpOPI0sxdECVx28I5PSG2qTkEqIlijC5jak7iqgu
+        OjQHhVQR89ih/ftXEm5yA+w=
+X-Google-Smtp-Source: APiQypJxx5C4CQnpwUcwcY2p3ECJeumcoJszg33CjcVBv7Chlpu46XdqlWM/IXYFAaf47Yjuqvt1WQ==
+X-Received: by 2002:aa7:9484:: with SMTP id z4mr994585pfk.144.1586995073637;
+        Wed, 15 Apr 2020 16:57:53 -0700 (PDT)
 Received: from [10.230.188.26] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id u13sm653429pjb.45.2020.04.15.16.56.13
+        by smtp.gmail.com with ESMTPSA id np4sm681106pjb.48.2020.04.15.16.57.51
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Apr 2020 16:56:14 -0700 (PDT)
-Subject: Re: [PATCH v3 3/3] ARM: dts: qcom: ipq4019: add MDIO node
+        Wed, 15 Apr 2020 16:57:52 -0700 (PDT)
+Subject: Re: [PATCH v3 1/3] net: phy: mdio: add IPQ40xx MDIO driver
 To:     Robert Marko <robert.marko@sartura.hr>, andrew@lunn.ch,
         hkallweit1@gmail.com, linux@armlinux.org.uk,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
@@ -58,7 +58,6 @@ To:     Robert Marko <robert.marko@sartura.hr>, andrew@lunn.ch,
 Cc:     Christian Lamparter <chunkeey@gmail.com>,
         Luka Perkov <luka.perkov@sartura.hr>
 References: <20200415150244.2737206-1-robert.marko@sartura.hr>
- <20200415150244.2737206-3-robert.marko@sartura.hr>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -114,12 +113,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <4ce546e1-cc5a-ab70-12ce-345b3431e1f9@gmail.com>
-Date:   Wed, 15 Apr 2020 16:56:12 -0700
+Message-ID: <915ce152-d8d1-3dea-6cc8-3d21f24a4457@gmail.com>
+Date:   Wed, 15 Apr 2020 16:57:51 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200415150244.2737206-3-robert.marko@sartura.hr>
+In-Reply-To: <20200415150244.2737206-1-robert.marko@sartura.hr>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -131,11 +130,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 4/15/2020 8:02 AM, Robert Marko wrote:
-> This patch adds the necessary MDIO interface node
-> to the Qualcomm IPQ4019 DTSI.
-> 
-> Built-in QCA8337N switch is managed using it,
-> and since we have a driver for it lets add it.
+> This patch adds the driver for the MDIO interface
+> inside of Qualcomm IPQ40xx series SoC-s.
 > 
 > Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
 > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
