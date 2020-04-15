@@ -2,209 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7817C1AA280
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 14:59:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CCAB1AA2AD
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 15:00:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502626AbgDOM4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 08:56:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52546 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2441351AbgDOM4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 08:56:22 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD9B9C061A0E
-        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 05:56:21 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jOhaN-0005JG-O7; Wed, 15 Apr 2020 14:56:11 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jOhaM-0004gK-PK; Wed, 15 Apr 2020 14:56:10 +0200
-Date:   Wed, 15 Apr 2020 14:56:10 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michal Kubecek <mkubecek@suse.cz>
-Cc:     David Jander <david@protonic.nl>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
-        Marek Vasut <marex@denx.de>
-Subject: Re: [PATCH v1] net: phy: tja11xx: add support for master-slave
- configuration
-Message-ID: <20200415125610.mvvh3w6wtmeyhoxm@pengutronix.de>
-References: <20200415123447.29769-1-o.rempel@pengutronix.de>
+        id S2505663AbgDOM7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 08:59:55 -0400
+Received: from www62.your-server.de ([213.133.104.62]:47350 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2505660AbgDOM7W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 08:59:22 -0400
+Received: from 98.186.195.178.dynamic.wline.res.cust.swisscom.ch ([178.195.186.98] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jOhdB-00037I-7N; Wed, 15 Apr 2020 14:59:05 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf 2020-04-15
+Date:   Wed, 15 Apr 2020 14:59:04 +0200
+Message-Id: <20200415125904.22480-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="7x4bdxuiyzqo4jrq"
-Content-Disposition: inline
-In-Reply-To: <20200415123447.29769-1-o.rempel@pengutronix.de>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 14:35:06 up 152 days,  3:53, 170 users,  load average: 0.07, 0.04,
- 0.01
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25783/Wed Apr 15 14:03:13 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi David,
 
---7x4bdxuiyzqo4jrq
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The following pull-request contains BPF updates for your *net* tree.
 
-This is the followup patch to the:
-ethtool: provide UAPI for PHY master/slave configuration.
+We've added 10 non-merge commits during the last 3 day(s) which contain
+a total of 11 files changed, 238 insertions(+), 95 deletions(-).
 
-On Wed, Apr 15, 2020 at 02:34:47PM +0200, Oleksij Rempel wrote:
-> The TJA11xx PHYs have a vendor specific Master/Slave configuration bit,
-> which is not compatible with IEEE 803.2-2018 spec for 100Base-T1
-> devices. So, provide a custom config_ange call back to solve this
-> problem.
->=20
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  drivers/net/phy/nxp-tja11xx.c | 39 +++++++++++++++++++++++++++++++++++
->  1 file changed, 39 insertions(+)
->=20
-> diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
-> index 2bde9386baf1f..0042ee453cbd4 100644
-> --- a/drivers/net/phy/nxp-tja11xx.c
-> +++ b/drivers/net/phy/nxp-tja11xx.c
-> @@ -30,6 +30,7 @@
->  #define MII_ECTRL_WAKE_REQUEST		BIT(0)
-> =20
->  #define MII_CFG1			18
-> +#define MII_CFG1_MASTER_SLAVE		BIT(15)
->  #define MII_CFG1_AUTO_OP		BIT(14)
->  #define MII_CFG1_SLEEP_CONFIRM		BIT(6)
->  #define MII_CFG1_LED_MODE_MASK		GENMASK(5, 4)
-> @@ -177,6 +178,31 @@ static int tja11xx_soft_reset(struct phy_device *phy=
-dev)
->  	return genphy_soft_reset(phydev);
->  }
-> =20
-> +static int tja11xx_config_aneg(struct phy_device *phydev)
-> +{
-> +	u16 ctl =3D 0;
-> +	int ret;
-> +
-> +	switch (phydev->master_slave) {
-> +	case PORT_MODE_MASTER:
-> +		ctl |=3D MII_CFG1_MASTER_SLAVE;
-> +		break;
-> +	case PORT_MODE_SLAVE:
-> +		break;
-> +	case PORT_MODE_UNKNOWN:
-> +		return 0;
-> +	default:
-> +		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
-> +		return -ENOTSUPP;
-> +	}
-> +
-> +	ret =3D phy_modify_changed(phydev, MII_CFG1, MII_CFG1_MASTER_SLAVE, ctl=
-);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return __genphy_config_aneg(phydev, ret);
-> +}
-> +
->  static int tja11xx_config_init(struct phy_device *phydev)
->  {
->  	int ret;
-> @@ -245,6 +271,15 @@ static int tja11xx_read_status(struct phy_device *ph=
-ydev)
-> =20
->  		if (!(ret & MII_COMMSTAT_LINK_UP))
->  			phydev->link =3D 0;
-> +
-> +		ret =3D phy_read(phydev, MII_CFG1);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		if (ret & MII_CFG1_MASTER_SLAVE)
-> +			phydev->master_slave =3D PORT_MODE_MASTER;
-> +		else
-> +			phydev->master_slave =3D PORT_MODE_SLAVE;
->  	}
-> =20
->  	return 0;
-> @@ -514,6 +549,7 @@ static struct phy_driver tja11xx_driver[] =3D {
->  		.features       =3D PHY_BASIC_T1_FEATURES,
->  		.probe		=3D tja11xx_probe,
->  		.soft_reset	=3D tja11xx_soft_reset,
-> +		.config_aneg	=3D tja11xx_config_aneg,
->  		.config_init	=3D tja11xx_config_init,
->  		.read_status	=3D tja11xx_read_status,
->  		.suspend	=3D genphy_suspend,
-> @@ -529,6 +565,7 @@ static struct phy_driver tja11xx_driver[] =3D {
->  		.features       =3D PHY_BASIC_T1_FEATURES,
->  		.probe		=3D tja11xx_probe,
->  		.soft_reset	=3D tja11xx_soft_reset,
-> +		.config_aneg	=3D tja11xx_config_aneg,
->  		.config_init	=3D tja11xx_config_init,
->  		.read_status	=3D tja11xx_read_status,
->  		.suspend	=3D genphy_suspend,
-> @@ -543,6 +580,7 @@ static struct phy_driver tja11xx_driver[] =3D {
->  		.features       =3D PHY_BASIC_T1_FEATURES,
->  		.probe		=3D tja1102_p0_probe,
->  		.soft_reset	=3D tja11xx_soft_reset,
-> +		.config_aneg	=3D tja11xx_config_aneg,
->  		.config_init	=3D tja11xx_config_init,
->  		.read_status	=3D tja11xx_read_status,
->  		.match_phy_device =3D tja1102_p0_match_phy_device,
-> @@ -561,6 +599,7 @@ static struct phy_driver tja11xx_driver[] =3D {
->  		.features       =3D PHY_BASIC_T1_FEATURES,
->  		/* currently no probe for Port 1 is need */
->  		.soft_reset	=3D tja11xx_soft_reset,
-> +		.config_aneg	=3D tja11xx_config_aneg,
->  		.config_init	=3D tja11xx_config_init,
->  		.read_status	=3D tja11xx_read_status,
->  		.match_phy_device =3D tja1102_p1_match_phy_device,
-> --=20
-> 2.26.0.rc2
->=20
->=20
+The main changes are:
 
---=20
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+1) Fix offset overflow for BPF_MEM BPF_DW insn mapping on arm32 JIT,
+   from Luke Nelson and Xi Wang.
 
---7x4bdxuiyzqo4jrq
-Content-Type: application/pgp-signature; name="signature.asc"
+2) Prevent mprotect() to make frozen & mmap()'ed BPF map writeable
+   again, from Andrii Nakryiko and Jann Horn.
 
------BEGIN PGP SIGNATURE-----
+3) Fix type of old_fd in bpf_xdp_set_link_opts to int in libbpf and add
+   selftests, from Toke Høiland-Jørgensen.
 
-iQIzBAABCAAdFiEERBNZvwSgvmcMY/T74omh9DUaUbMFAl6XBGYACgkQ4omh9DUa
-UbNzUA//UwFEBtzEZ+9QtuKnPlYbe4AVhh8p3NmgLDK/R14V3Qz/igkgEEjrS+Dt
-p5pLDegx/zBc1xeTy7XFDkRlB7tEb680VcOE/rlnfYSzZTe5GNVRabXcmrX49U60
-QtHCgw7Eox5VX9jfVY0ppyFN0g1DsxWVhSVYyx0i4+D9fky/h2zT1fiqW+LDfCbc
-dbDAppPRtLhB9gCRYFd+VfQTsXjt0qB8p83vWi1MesL1rQOgFjcPllPN2E26LlQJ
-MXrN5SbgVxL4TDgo7qksJoD+o+qk9UA9RKH+bGr1uvbGEl/8YnACJWtvHJbpqZ6K
-K1ChEx3e3hgEw3lsVUVjv0INAp2WWw7o8w5DaX41MJl3CWfxuYYegDz9Qu1L32PX
-zQZfqAgQg/H19K8O3PhnCfl09kpqUfqWdwiibp7MT89y+khwkyCYUjRVTlROrWyp
-OLdTTiDmlBqjA6e+NS1EVqJTfRk44Vf1JyMkAzNI03nDDiYSTa8p8o7rm2d2W4kB
-YBFwxM7xNFpoTkA6QNkwN+SdxInujnQfhfkzMRcE6FenGovvoONz/DY8NAra6iMQ
-xMC7KzYrNUEY065PTx6t6+QdHpBQ5h1KurS2cf8Z6ZZFbvR7wgwIVFy5VhcTzXZK
-7iG3FffqOyeNKLAr/Scmu8Uw0nZ/Dgb93Sv9EXJcxZa9Av8Gkks=
-=zqwc
------END PGP SIGNATURE-----
+4) Fix AF_XDP to check that headroom cannot be larger than the available
+   space in the chunk, from Magnus Karlsson.
 
---7x4bdxuiyzqo4jrq--
+5) Fix reset of XDP prog when expected_fd is set, from David Ahern.
+
+6) Fix a segfault in bpftool's struct_ops command when BTF is not
+   available, from Daniel T. Lee.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Andrey Ignatov, Bui Quang Minh, David Ahern, Hulk Robot, Jakub Kicinski, 
+Jann Horn, Martin KaFai Lau, Song Liu, Toke Høiland-Jørgensen
+
+----------------------------------------------------------------
+
+The following changes since commit e154659ba39a1c2be576aaa0a5bda8088d707950:
+
+  mptcp: fix double-unlock in mptcp_poll (2020-04-12 21:04:08 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to c6c111523d9e697bfb463870759825be5d6caff6:
+
+  selftests/bpf: Check for correct program attach/detach in xdp_attach test (2020-04-15 13:26:08 +0200)
+
+----------------------------------------------------------------
+Andrii Nakryiko (3):
+      bpf: Prevent re-mmap()'ing BPF map as writable for initially r/o mapping
+      selftests/bpf: Validate frozen map contents stays frozen
+      libbpf: Always specify expected_attach_type on program load if supported
+
+Daniel T. Lee (1):
+      tools, bpftool: Fix struct_ops command invalid pointer free
+
+David Ahern (1):
+      xdp: Reset prog in dev_change_xdp_fd when fd is negative
+
+Luke Nelson (1):
+      arm, bpf: Fix offset overflow for BPF_MEM BPF_DW
+
+Magnus Karlsson (1):
+      xsk: Add missing check on user supplied headroom size
+
+Toke Høiland-Jørgensen (2):
+      libbpf: Fix type of old_fd in bpf_xdp_set_link_opts
+      selftests/bpf: Check for correct program attach/detach in xdp_attach test
+
+Zou Wei (1):
+      bpf: remove unneeded conversion to bool in __mark_reg_unknown
+
+ arch/arm/net/bpf_jit_32.c                          |  40 ++++---
+ kernel/bpf/syscall.c                               |  16 ++-
+ kernel/bpf/verifier.c                              |   3 +-
+ net/core/dev.c                                     |   3 +-
+ net/xdp/xdp_umem.c                                 |   5 +-
+ tools/bpf/bpftool/struct_ops.c                     |   4 +-
+ tools/lib/bpf/libbpf.c                             | 126 ++++++++++++++-------
+ tools/lib/bpf/libbpf.h                             |   2 +-
+ tools/testing/selftests/bpf/prog_tests/mmap.c      |  62 +++++++++-
+ .../selftests/bpf/prog_tests/section_names.c       |  42 ++++---
+ .../testing/selftests/bpf/prog_tests/xdp_attach.c  |  30 ++++-
+ 11 files changed, 238 insertions(+), 95 deletions(-)
