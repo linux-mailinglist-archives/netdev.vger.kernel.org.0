@@ -2,112 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEAAD1AABA1
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 17:20:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5DBB1AABAD
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 17:20:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1414601AbgDOPQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 11:16:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46222 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2393355AbgDOPQm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 11:16:42 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B153C061A0E
-        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 08:16:42 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id g74so17514894qke.13
-        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 08:16:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2qQPAGL2IMZ0eMjrwtJCIRCLqfeX6RhiXaeITvmueB4=;
-        b=PQEZoTsslxtO2VG1gZ9IEXJ+x1EGsPSa5w+d4wjTJVgOduX5sEJ6HZoJfJRBbXRsU9
-         EXHzIHgdRzFaKGGE+fT3peXwkYEIAHFi3cdXG68+ylSdKhZL8gWe9zBXPqhUeWc2cNdF
-         gsEt61yr3z2YAwQghdQbDx6ZcQjhSEnozaayKcy7LJF75jqkrlpPlsnvR009mnmOtVmq
-         rjYjjR2c7Z1XHNg9dZbS7hATI88O0Qk6m97LJX9sd2Ky24Y2RfKkcTujsfHYrgtSzudc
-         op08cFDcPhGoabbs8CyIn+yDkK6oWBZ58w+VvEJ/gPs6yUnaHhv7LTvRu4+UHccln//R
-         Fm6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2qQPAGL2IMZ0eMjrwtJCIRCLqfeX6RhiXaeITvmueB4=;
-        b=C1NPRACatkSQlC+AgU1jWm7EE9O2j1nrQMlp6JB1nRcmOU4C7ZoFVorZs5InUsp4ot
-         nwVVIfSysdxRMBbwv8FggQ87VeWnDn6i3h8hi4NkF+MTNsLRklprBHhCrlAaQF24s1o4
-         qSEMQV/RS6+QCr/aeOIGylTqb/YiKo/kiiTp6HcL22Rsra5R8rBXEWICQuvoCkY2xFVa
-         zJmn89OSI/AmWa2HcUpvxUxO270x4uGzpfYHYVBzySvdm4PyzlmjqkGnUEnc04HPnUsV
-         kOnQP7Vg/gDKaLspnZ+zrTFT6poVHYSPvHRRePWMofsEvItod69wLq41YV3tQCYY7DPM
-         Vrag==
-X-Gm-Message-State: AGi0PuYXCBRnrdQbUG7h9IR8fsPmNBsHI0qzy+mM33UxKvoc7GFtuCz5
-        0e7nw/9J6Tq58FbfiSUYuhcjPYfeoY9C2PiwJcnpOifCFKU=
-X-Google-Smtp-Source: APiQypJF3rrWtTJifwbFr2yPhwI9Guj+09QRJ+ZSsnlVpgr82MOSMQpPk7+ZCYHIQZ3xMrt25PXwdxnh13N+LBZi64Q=
-X-Received: by 2002:a37:8d86:: with SMTP id p128mr27408591qkd.250.1586963800654;
- Wed, 15 Apr 2020 08:16:40 -0700 (PDT)
+        id S1414664AbgDOPSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 11:18:44 -0400
+Received: from mout.kundenserver.de ([212.227.17.13]:56625 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1414655AbgDOPSl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 11:18:41 -0400
+Received: from mail-qk1-f181.google.com ([209.85.222.181]) by
+ mrelayeu.kundenserver.de (mreue107 [212.227.15.145]) with ESMTPSA (Nemesis)
+ id 1Mi23L-1il1DD0uZt-00e37A; Wed, 15 Apr 2020 17:18:38 +0200
+Received: by mail-qk1-f181.google.com with SMTP id c63so17606965qke.2;
+        Wed, 15 Apr 2020 08:18:37 -0700 (PDT)
+X-Gm-Message-State: AGi0PuYQ7iQhk/BikuN6BKO+BL3lPwjdOlvL37MtOvCFqqOG4wui5OGn
+        0cIjB+fYfemUFnWfZ5APRYOtoJstcXL1jjQMy9o=
+X-Google-Smtp-Source: APiQypKR0HaZQKe1NU2qEEDNoosGf+Eiif2YA3+bZv4o1jlLLMUkDmtAFRquqje/5krjrQpj3uXRFFr+JLm/a3RbNKI=
+X-Received: by 2002:a37:ba47:: with SMTP id k68mr15682834qkf.394.1586963916750;
+ Wed, 15 Apr 2020 08:18:36 -0700 (PDT)
 MIME-Version: 1.0
-References: <000000000000cb517b05a32c917b@google.com> <ed2b00dfda5b6ce46a2c2a33093ee56f77af6a8f.camel@sipsolutions.net>
-In-Reply-To: <ed2b00dfda5b6ce46a2c2a33093ee56f77af6a8f.camel@sipsolutions.net>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Wed, 15 Apr 2020 17:16:28 +0200
-Message-ID: <CACT4Y+YtT4_An1wtzNWe3_=kMAF3Yhj+pr=GM5ZYOJ9TN3ryXA@mail.gmail.com>
-Subject: Re: WARNING in hwsim_new_radio_nl
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        syzkaller <syzkaller@googlegroups.com>
-Cc:     syzbot <syzbot+a4aee3f42d7584d76761@syzkaller.appspotmail.com>,
-        David Miller <davem@davemloft.net>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-wireless@vger.kernel.org, mathew.j.martineau@linux.intel.com,
-        matthieu.baerts@tessares.net, netdev <netdev@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+References: <20200408202711.1198966-1-arnd@arndb.de> <20200408202711.1198966-6-arnd@arndb.de>
+ <20200414201739.GJ19819@pendragon.ideasonboard.com> <CAK8P3a0hd5bsezrJS3+GV2nRMui4P5yeD2Rk7wQpJsAZeOCOUg@mail.gmail.com>
+ <20200414205158.GM19819@pendragon.ideasonboard.com> <CAK8P3a1PZbwdvdH_Gi9UQVUz2+_a8QDxKuWLqPtjhK1stxzMBQ@mail.gmail.com>
+ <CAMuHMdUb=XXucGUbxt26tZ1xu9pdyVUB8RVsfB2SffURVVXwSg@mail.gmail.com>
+In-Reply-To: <CAMuHMdUb=XXucGUbxt26tZ1xu9pdyVUB8RVsfB2SffURVVXwSg@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 15 Apr 2020 17:18:20 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1uasBFg9dwvPEcokrRhYE2qh6iwOMW1fDTY+LBZMrTjg@mail.gmail.com>
+Message-ID: <CAK8P3a1uasBFg9dwvPEcokrRhYE2qh6iwOMW1fDTY+LBZMrTjg@mail.gmail.com>
+Subject: Re: [RFC 5/6] drm/rcar-du: fix selection of CMM driver
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Andrzej Hajda <a.hajda@samsung.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:LcT7bwGznqc8gtfgF2bfiglIsjD0HReWu/nHchEwDxrf+9vm5BH
+ rmdjTk0uOUNkmKoP4TP/efPp6Sd4lGmapqbt1l63xHODdE9k8x8ilzOIS4zVIE7rJAwPgP9
+ nv14ZKTD64pSJNEWvMGnfnTFEl7qLpGkCgk1VSBIzOAG5FvyjqcFClevQUtWagaxdqe70Vi
+ puR68X7pu8N6lETJMiAIw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:rJ5/p8u5JGQ=:gVqEX27W8WlhhlVVuppYhw
+ JyqF3pScGR9U4BjvZeVFBDID+rUE2rQ0KuPuwkLy+zaw8dkwKT5TBF2enfoMg5vPY7VwZWvP9
+ vfupHu/mPvuaiLi1AKTCDKPzUSIdaiApiIOh3cEMybo46gLRfZmBqZ/J/hZSqRsIS+vLmPuwg
+ sMXQ7c2s00DUvGHbdT3j7a7Rgn0/+wtM0hti3hxDOh+gKrjqemtVQKhCFesKpkAKm1YdytiX0
+ 0hhKtlq0AQmQdMh1tQ7lU1agyr75LwPnoXOO9VBvFEe3k1xMXZDde8z9s7EQSyBan6D4m2tVf
+ 6L1x0HOk2oRxloiZEceJ4uwAnbk2RyNEa52eKzpKWAIjAElLRCIM+vt8eQx7KsVVGoT+v/LfR
+ ed2ShkBR9f75Jdr81/tnXf9pVh6q8aG3m+0qvRHX4Bl0vVLFJO08jbmWUqOkNLEF7zMTXcajM
+ upeHDmBLR0mWFlBJ3j6dNwuzla/nOE5IC0pjp9HzM7062i2ioS8SK6Ymzs/QcOrJ9mq8aAH+h
+ AHk8r/ZfXxAZpMf8LASeNLo+0cluDkYIgGv2USXQEYAF8Dd1/ke3ZE+YhDbXlm2r5HDaDJHzx
+ pfnDCCgLnHJFCfiuJeoydljGjjVg6Ke3S9NWPk74dJgsTLy4SfNVJ6GHEwKVtmu6fcmV/+KGv
+ YiEUm4b0yF9GbqOytoeONWGo/bbkaH4BkXZjHbHSGjbKv6YLJKWFoghy7b/Hwd6TZNdOUH8nh
+ L9XmRJrRDca56ZO3dVfd8ZYxPOMI0iCDISUZ4RCvho8beBrx9uaeU/i+QvlIcN3QhP25d1+Aj
+ YWRg42iGcwguhIE/rxMHGkxFeTHXMtCrANnjYw5JzNGBBef0rg=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 14, 2020 at 12:41 PM Johannes Berg
-<johannes@sipsolutions.net> wrote:
->
-> Hi syzbot keepers,
->
-> On Mon, 2020-04-13 at 07:05 -0700, syzbot wrote:
-> > syzbot has bisected this bug to:
+On Wed, Apr 15, 2020 at 4:13 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> On Wed, Apr 15, 2020 at 3:47 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> > On Tue, Apr 14, 2020 at 10:52 PM Laurent Pinchart <laurent.pinchart@ideasonboard.com> wrote:
+> > > Doesn't "imply" mean it gets selected by default but can be manually
+> > > disabled ?
 > >
-> > commit 01cacb00b35cb62b139f07d5f84bcf0eeda8eff6
-> > Author: Paolo Abeni <pabeni@redhat.com>
-> > Date:   Fri Mar 27 21:48:51 2020 +0000
+> > That may be what it means now (I still don't understand how it's defined
+> > as of v5.7-rc1), but traditionally it was more like a 'select if all
+> > dependencies are met'.
+>
+> That's still what it is supposed to mean right now ;-)
+> Except that now it should correctly handle the modular case, too.
+
+Then there is a bug. If I run 'make menuconfig' now on a mainline kernel
+and enable CONFIG_DRM_RCAR_DU, I can set
+DRM_RCAR_CMM and DRM_RCAR_LVDS to 'y', 'n' or 'm' regardless
+of whether CONFIG_DRM_RCAR_DU is 'm' or 'y'. The 'implies'
+statement seems to be ignored entirely, except as reverse 'default'
+setting.
+
 > >
-> >     mptcp: add netlink-based PM
+> > In that case, a Makefile trick could also work, doing
 > >
-> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10225bb3e00000
+> > ifdef CONFIG_DRM_RCAR_CMM
+> > obj-$(CONFIG_DRM_RCAR_DU) += rcar-cmm.o
+> > endif
+> >
+> > Thereby making the cmm module have the same state (y or m) as
+> > the du module whenever the option is enabled.
 >
-> This is, fairly obviously, incorrect. Same with the bisection for
-> 6693adf1698864d21734, which is really the same underlying problem as
-> this one (though at a different code site).
+> What about dropping the "imply DRM_RCAR_CMM", but defaulting to
+> enable CMM if DU is enabled?
 >
-> However, it stands out that this was bisected to a commit that adds a
-> new generic netlink family in both cases.
->
-> This makes sense - the reproducer identifies the family by *number*, but
-> that number isn't stable, generic netlink families should be identified
-> by *name*.
->
-> Perhaps somehow syzbot could be taught that, so that the bisection is
-> stable across kernels with different generic netlink families
-> registered?
->
-> Alternatively, we _could_ add some kind of stable ID mode, but I'm not
-> sure we really want to ... since that would mean people start hardcoding
-> IDs?
+>     config DRM_RCAR_CMM
+>             tristate "R-Car DU Color Management Module (CMM) Support"
+>             depends on DRM_RCAR_DU && OF
+>             default DRM_RCAR_DU
 
-+syzkaller mailing list
+That doesn't work because it allows DRM_RCAR_DU=y with
+DRM_RCAR_CMM=m, which causes a link failure.
 
-Hi Johannes,
-
-syzkaller has a pseudo-syscall to map string genetlink family ID to
-int ID. If that syscall would have been used, then I assume it should
-have worked. However in this case, it managed to trigger the bug with
-a plain opaque blob with no knowledge about the blob contents
-whatsoever. I don't see any realistic way to preserve family ID in
-this case.
+         Arnd
