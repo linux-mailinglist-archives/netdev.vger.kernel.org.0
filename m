@@ -2,79 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5D631A9779
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 10:51:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCCEC1A978D
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 10:53:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2895089AbgDOIuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 04:50:22 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:17053 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2895076AbgDOIuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 04:50:16 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1586940615; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=auWezVjogQxMcK0gEJGFK4CBiymKmdxiKLZPjLM9pjI=;
- b=DQcmntl7LNdimiKgwowJ1mXDa8/3veYRSz2AdSsmDADthrOEWCDlvxlVIxdx2DVoxAYmhX5Y
- YP3+HSH3bxRm5BwsQ3jFirdq3XBbzoXZEm7HWsEweb3vxJ4MnxOOYMm18uHMy3eA+6Fy1obr
- kC0LN1jPIScG3MHGQIp1t0wmZHI=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e96cabc.7f3eed1643b0-smtp-out-n01;
- Wed, 15 Apr 2020 08:50:04 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 62E45C433F2; Wed, 15 Apr 2020 08:50:03 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 6AD8FC433CB;
-        Wed, 15 Apr 2020 08:50:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6AD8FC433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S2505555AbgDOIwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 04:52:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42780 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2895133AbgDOIv5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 04:51:57 -0400
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DFD8C061A0E
+        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 01:51:57 -0700 (PDT)
+Received: by mail-ot1-x342.google.com with SMTP id x11so2641534otp.6
+        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 01:51:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sartura-hr.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kZ8PEt8ilO1F7s0PZB2jEBFLypOtSGmLv+9HjFoznC8=;
+        b=kOKoxbSySQFWV4DTsd8hMXuUPciY0YdJjmtqavGBNtg6fmNgGRASTGJqeImXO941zR
+         i1ioZxDpnblsfXu/NTRnbq1hVPlN8Y8FI480+4TFTWPRH7dfkOIDCzMk7lt076WbZPqt
+         5wxioDQYlIOyq6EGcFZL7xQyuz7wtOotPGfIv0VTg1MyRrWMWFubIoc38+chQ05Zxtqh
+         8Ni72FCrRzrVxYw0tUSc73VaFeqsgCg4bIEV01XtO2N8/38ozd/AX979JOcZLH3WzrxR
+         tS71hzw1aGgyWSZDMKu9jyzo0tjsKGvGEG1j+zOF8bmZJPnE0/BUPC6ljQfSV4Y/eg6f
+         cwEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kZ8PEt8ilO1F7s0PZB2jEBFLypOtSGmLv+9HjFoznC8=;
+        b=lpQqJoxX0ZfJgBco4AUhi+iSQ4cA0Qel8+9lUkoqegf2TAio33xI0WRmmgUEJVSwxy
+         crns/B+vRWUAfYSsPixaVkmB/3hDpOxo8iH1xxT+SZc131ZKCUg1+G5LopEXcknEUzcs
+         Xtj3ZsI6wjqZDxl3Kc3ew6oJwsjWHrhBPhtL3wddt/zxPzlULmRq+pH6u3v4BSYpwzyR
+         Jxe/8+PGw09kUUpV5vwUhRmTSRwaIQki2RMtqHlAYqHoxYcDqNtpgIobua1mF6YR3VN9
+         6TUuo0Qm19icUQLqFww14TDnpOmAWGSkWKCHQPN2JWxkVNAJKLe2obsvOAr6KaDLwHR6
+         PvvA==
+X-Gm-Message-State: AGi0Pub9bS08+fFk//arbAvrlgJ9kVd4ecK/gDg6IVnG8GqTmlEZ4haw
+        UKo8F/dXd8UGOSYLtJyuwOuxcdwcs0+fds4KDx4U1Q==
+X-Google-Smtp-Source: APiQypJv9QyoDLeyzwLnHZJawTduDHOVTKjxTKzUFB3jLIOo6iaZRWcW/QaOxtRbC16DF6GTDfN9Pm4nKSu8DpTh2bg=
+X-Received: by 2002:a9d:ef8:: with SMTP id 111mr21981983otj.94.1586940716871;
+ Wed, 15 Apr 2020 01:51:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ipw2x00: make ipw_setup_deferred_work() void
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200414120251.35869-1-yanaijie@huawei.com>
-References: <20200414120251.35869-1-yanaijie@huawei.com>
-To:     Jason Yan <yanaijie@huawei.com>
-Cc:     <stas.yakovlev@gmail.com>, <davem@davemloft.net>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Jason Yan <yanaijie@huawei.com>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20200415085003.62E45C433F2@smtp.codeaurora.org>
-Date:   Wed, 15 Apr 2020 08:50:03 +0000 (UTC)
+References: <20200414181012.114905-1-robert.marko@sartura.hr>
+ <20200414181012.114905-3-robert.marko@sartura.hr> <076e0e54-ad3a-8cb7-d96d-8a83fc315b28@gmail.com>
+In-Reply-To: <076e0e54-ad3a-8cb7-d96d-8a83fc315b28@gmail.com>
+From:   Robert Marko <robert.marko@sartura.hr>
+Date:   Wed, 15 Apr 2020 10:51:45 +0200
+Message-ID: <CA+HBbNFm8PG87dBicYjfrvXjdBEyPzoy5vhrQuzSCsZL3o57Gw@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] dts: ipq4019: add MDIO node
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>, linux@armlinux.org.uk,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        robh+dt@kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        devicetree@vger.kernel.org,
+        Christian Lamparter <chunkeey@gmail.com>,
+        Luka Perkov <luka.perkov@sartura.hr>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jason Yan <yanaijie@huawei.com> wrote:
-
-> This function actually needs no return value. So remove the unneeded
-> variable 'ret' and make it void.
-> 
-> This also fixes the following coccicheck warning:
-> 
-> drivers/net/wireless/intel/ipw2x00/ipw2200.c:10648:5-8: Unneeded
-> variable: "ret". Return "0" on line 10684
-> 
-> Signed-off-by: Jason Yan <yanaijie@huawei.com>
-
-Patch applied to wireless-drivers-next.git, thanks.
-
-5a652b49b41b ipw2x00: make ipw_setup_deferred_work() void
-
--- 
-https://patchwork.kernel.org/patch/11487287/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+On Tue, Apr 14, 2020 at 11:13 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+>
+>
+> On 4/14/2020 11:10 AM, Robert Marko wrote:
+> > This patch adds the necessary MDIO interface node
+> > to the Qualcomm IPQ4019 DTSI.
+> >
+> > Built-in QCA8337N switch is managed using it,
+> > and since we have a driver for it lets add it.
+> >
+> > Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+> > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+> > Cc: Luka Perkov <luka.perkov@sartura.hr>
+> > ---
+> >  arch/arm/boot/dts/qcom-ipq4019.dtsi | 28 ++++++++++++++++++++++++++++
+> >  1 file changed, 28 insertions(+)
+>
+> Earlier contributions to that file seem to suggest that the preferred
+> subject is:
+>
+> ARM: dts: qcom: <subject>
+Will be changed in v3.
+Thanks
+> --
+> Florian
