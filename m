@@ -2,131 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C63171A9233
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 07:01:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36D1F1A9289
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 07:31:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393217AbgDOFB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 01:01:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35194 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2393197AbgDOFBM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 01:01:12 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 069D4C03C1AC
-        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 22:01:10 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id bu9so1069474qvb.13
-        for <netdev@vger.kernel.org>; Tue, 14 Apr 2020 22:01:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ef3HLI/XX5ogd42JRuoGnEbb/Ln3ZxgvuLj5jaeUWkI=;
-        b=Tcxzc6xC3iVTZShTUf3CIv3N8B5ZyCbru12fLV5+tpVooL5/Bo3MM2R4w1+y/qKNnw
-         9lu0zJBRs+VK1Bc14YzwiZC+K/efs95VT8GzxaoJoz3t2WhfDZxWX+BgsMNU20r8wRPv
-         WS98QN/V8NZIzymtO0juNqdA9Tg6/2OTyjU7Zm1KL9ejebzf7wo1d0uOEsRrlg17M8fg
-         qYmffi6H6MwGLJe4epZjwPPvjWIdIXS0xtejpuhYYUqQSrz2GfoywvJh6tC6sCJVyKe7
-         xzOQhWdIv/o82YQJCk9DtMPUw2B8iLWuNwugd4l1OepDEbLixuOHRPHRALsrInJO+Rsn
-         o1og==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ef3HLI/XX5ogd42JRuoGnEbb/Ln3ZxgvuLj5jaeUWkI=;
-        b=fhpYKn9eHbGlcdd6U/aNQgLvhjs5isB7JMoOMvJQNek3pdivncYhRLdoaVNg1ytJGz
-         xVAQIqmMjXZsJ66tsTg5aFG4idTIamg3D7czvg/aIJrv+/ESFGqK0AghjvS9mRREj04F
-         V5iSYHUmWpolvl825VW0PDybohz6Fc1iaVi95oW+i1QWh7qVTwDRL12asT9Hrec7cNvZ
-         j5dgFZUibFQEWnfL6o/dY0C997RvZHv75W7eAcAqVoEn7run790gcwcLw7gohUBPNp8d
-         Adasw+eEGY+9tVtZ1wktIeINd3fbyEsdStvhQOuhdSptn3OVV2Uam3li8A1WfnuleiTo
-         kPDw==
-X-Gm-Message-State: AGi0Puasfg4pIDJSPzvTniGVyn5s/fP+iaLdFMuURwKxHHsyMWsxD4Ig
-        CSIk571Ll8/TdNmmla8d+U6xug==
-X-Google-Smtp-Source: APiQypJRjg+PyUSZjrIkjpxdMfgyPb9bMEWnffTFRMxoE1aQMUITXzNurR0P/0BN6q0H0W5xTyhSBA==
-X-Received: by 2002:a0c:e88d:: with SMTP id b13mr3243342qvo.245.1586926868219;
-        Tue, 14 Apr 2020 22:01:08 -0700 (PDT)
-Received: from localhost ([2620:10d:c091:480::e623])
-        by smtp.gmail.com with ESMTPSA id 10sm6168833qtp.4.2020.04.14.22.01.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Apr 2020 22:01:07 -0700 (PDT)
-Date:   Wed, 15 Apr 2020 01:01:06 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Joe Perches <joe@perches.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Rientjes <rientjes@google.com>, linux-mm@kvack.org,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
-        x86@kernel.org, linux-crypto@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, linux-ppp@vger.kernel.org,
-        wireguard@lists.zx2c4.com, linux-wireless@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
-        linux-fscrypt@vger.kernel.org, ecryptfs@vger.kernel.org,
-        kasan-dev@googlegroups.com, linux-bluetooth@vger.kernel.org,
-        linux-wpan@vger.kernel.org, linux-sctp@vger.kernel.org,
-        linux-nfs@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        cocci@systeme.lip6.fr, linux-security-module@vger.kernel.org,
-        linux-integrity@vger.kernel.org
-Subject: Re: [PATCH 1/2] mm, treewide: Rename kzfree() to kfree_sensitive()
-Message-ID: <20200415050106.GA154671@cmpxchg.org>
-References: <20200413211550.8307-1-longman@redhat.com>
- <20200413211550.8307-2-longman@redhat.com>
+        id S2393334AbgDOFbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 01:31:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53394 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728590AbgDOFbH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Apr 2020 01:31:07 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id F372020767;
+        Wed, 15 Apr 2020 05:31:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1586928665;
+        bh=JIjqmDp1sR3dCa7tuSFYE8h4yUg3CUtUZbKogGuMrg4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DXfnAA8ykHLfwWvYnTxVAdeNxPE1hg/7KlpdZtFIuTg0SwqySNABqyEBTVRNsiFOU
+         wITpl8y71eiELF+l5o5uNuYMT99b1xZZncQACZHb2U8WTSrh+000m3vqfY9EJ5zugm
+         4npQzdLjCjI14bYMSdMaHQmXsRiV9Bt5yk74khN0=
+Date:   Wed, 15 Apr 2020 08:31:01 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, Edward Cree <ecree@solarflare.com>,
+        Or Gerlitz <gerlitz.or@gmail.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stable <stable@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        David Miller <davem@davemloft.net>
+Subject: Re: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for
+ representors
+Message-ID: <20200415053101.GC1239315@unreal>
+References: <20200411231413.26911-9-sashal@kernel.org>
+ <CAJ3xEMhhtj77M5vercHDMAHPPVZ8ZF-eyCVQgD4ZZ1Ur3Erbdw@mail.gmail.com>
+ <20200412105935.49dacbf7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200414015627.GA1068@sasha-vm>
+ <CAJ3xEMh=PGVSddBWOX7U6uAuazJLFkCpWQNxhg7dDRgnSdQ=xA@mail.gmail.com>
+ <20200414110911.GA341846@kroah.com>
+ <CAJ3xEMhnXZB-HU7aL3m9A1N_GPxgOC3U4skF_qWL8z3wnvSKPw@mail.gmail.com>
+ <a89a592a-5a11-5e56-a086-52b1694e00db@solarflare.com>
+ <20200414173718.GE1011271@unreal>
+ <20200414225009.GX3141@unicorn.suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200413211550.8307-2-longman@redhat.com>
+In-Reply-To: <20200414225009.GX3141@unicorn.suse.cz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 13, 2020 at 05:15:49PM -0400, Waiman Long wrote:
-> As said by Linus:
-> 
->   A symmetric naming is only helpful if it implies symmetries in use.
->   Otherwise it's actively misleading.
+On Wed, Apr 15, 2020 at 12:50:09AM +0200, Michal Kubecek wrote:
+> On Tue, Apr 14, 2020 at 08:37:18PM +0300, Leon Romanovsky wrote:
+> >
+> > The autoselection process works good enough for everything outside
+> > of netdev community.
+>
+> That's very far from true. I have seen and heard many complaints about
+> AUTOSEL and inflation of stable trees in general, both in private and in
+> public lists. It was also discussed on Kernel Summit few times - with
+> little success.
 
-As the btrfs example proves - people can be tempted by this false
-symmetry to pair kzalloc with kzfree, which isn't what we wanted.
+I'm aware of the discussions and the cases brought there. From what I
+saw, Sasha and Greg came with numbers and process that is much better
+than anything else we had before. While the opponents came with very
+narrow examples of imperfections in AUTOSEL machinery.
 
->   In "kzalloc()", the z is meaningful and an important part of what the
->   caller wants.
-> 
->   In "kzfree()", the z is actively detrimental, because maybe in the
->   future we really _might_ want to use that "memfill(0xdeadbeef)" or
->   something. The "zero" part of the interface isn't even _relevant_.
-> 
-> The main reason that kzfree() exists is to clear sensitive information
-> that should not be leaked to other future users of the same memory
-> objects.
-> 
-> Rename kzfree() to kfree_sensitive() to follow the example of the
-> recently added kvfree_sensitive() and make the intention of the API
-> more explicit. In addition, memzero_explicit() is used to clear the
-> memory to make sure that it won't get optimized away by the compiler.
-> 
-> The renaming is done by using the command sequence:
-> 
->   git grep -w --name-only kzfree |\
->   xargs sed -i 's/\bkzfree\b/kfree_sensitive/'
-> 
-> followed by some editing of the kfree_sensitive() kerneldoc and the
-> use of memzero_explicit() instead of memset().
-> 
-> Suggested-by: Joe Perches <joe@perches.com>
-> Signed-off-by: Waiman Long <longman@redhat.com>
+Of course, the AUTOSEL mechanism is not perfect and prone to errors,
+but it is much better than try to rely on the developers good will to
+add Fixes and stable@ tag.
 
-Looks good to me. Thanks for fixing this very old mistake.
+It is pretty easy to be biased while receiving those complaints, because
+people are contacting us only if something is broken. I imagine that no one
+is approaching you and expressing his happiness with stable@ or anything
+else.
 
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+Just for fun and to get perspective, for one my very popular tool, which
+I wrote two years ago, I received only ONE "thank you" email that says that
+this tool works as expected and helped to identify the problem.
+
+And personally, I'm running latest Fedora on all my servers and laptop and
+it works great - stable and reliable.
+
+Thanks
+
+>
+> Just for fun, I suggest everyone to read first section of
+> Documentation/process/stable-kernel-rules.rst and compare with today's
+> reality. Of course, rules can change over time but keeping that document
+> in kernel tree as a memento is rather sad - I went through the rules now
+> and there are only three which are not broken on a regular basis these
+> days.
+>
+> Michal Kubecek
