@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C003F1A9759
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 10:48:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19AF61A9767
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 10:48:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2895026AbgDOIrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 04:47:32 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:36832 "EHLO
+        id S2895052AbgDOIsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 04:48:30 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:17053 "EHLO
         mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2895027AbgDOIr2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 04:47:28 -0400
+        by vger.kernel.org with ESMTP id S2895027AbgDOIs0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 04:48:26 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1586940448; h=Date: Message-Id: Cc: To: References:
+ s=smtp; t=1586940506; h=Date: Message-Id: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=fvi4ED+QTGD3lFB2nEF4L9OZBm+1tfFfScpv1utfIDM=;
- b=OQYquMdQtA/7iOoBLCZSNjxZmrVMT/dWzPvFY7Oklj7o/V7/+QxMNXUPTLPCkvOoc0F3/wQX
- p1KtNv+hLDkmlP0d+htONlIoqFsM9PMkoOVCtL+cGIqdVhr+36qqJi6nETGkm6jZceYTgeKz
- YoMmsmtiy+8toyMhqSw7GdR87b0=
+ Content-Type: Sender; bh=rC0Hx9+l6eblcHjkei+jpjuKRcfOwI4xV70WkS6PWIs=;
+ b=mPtXqkN+IXipBUyq4qdyDwZd/LRJg8v4lyQ048d0e491Odio3YJPg3dH+3BvSEqa/JnxOMsq
+ 0oN4TYAO7J7cHVvgz1oET82TMo+FD/cs/Ew7dq5Y2ir+kmg9HGd68Jr1n3V9xLehDeHeOzMj
+ xILJOQ2Y+5IC7th28jKiwbxl8cU=
 X-Mailgun-Sending-Ip: 104.130.122.26
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e96ca1c.7fe7ecffb880-smtp-out-n02;
- Wed, 15 Apr 2020 08:47:24 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5e96ca4c.7f70bc1980d8-smtp-out-n04;
+ Wed, 15 Apr 2020 08:48:12 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id BC0D7C433F2; Wed, 15 Apr 2020 08:47:23 +0000 (UTC)
+        id 2D0AAC433F2; Wed, 15 Apr 2020 08:48:12 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -34,26 +34,29 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id B0301C433BA;
-        Wed, 15 Apr 2020 08:47:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B0301C433BA
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id D58A7C433CB;
+        Wed, 15 Apr 2020 08:48:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D58A7C433CB
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] orinoco: remove useless variable 'err' in
- spectrum_cs_suspend()
+Subject: Re: [PATCH] brcmsmac: make brcms_c_stf_ss_update() void
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200413082043.22468-1-yanaijie@huawei.com>
-References: <20200413082043.22468-1-yanaijie@huawei.com>
+In-Reply-To: <20200413082126.22572-1-yanaijie@huawei.com>
+References: <20200413082126.22572-1-yanaijie@huawei.com>
 To:     Jason Yan <yanaijie@huawei.com>
-Cc:     <davem@davemloft.net>, <yanaijie@huawei.com>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+Cc:     <arend.vanspriel@broadcom.com>, <franky.lin@broadcom.com>,
+        <hante.meuleman@broadcom.com>, <chi-hsien.lin@cypress.com>,
+        <wright.feng@cypress.com>, <davem@davemloft.net>,
+        <yanaijie@huawei.com>, <linux-wireless@vger.kernel.org>,
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        <brcm80211-dev-list@cypress.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, Hulk Robot <hulkci@huawei.com>
 User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20200415084723.BC0D7C433F2@smtp.codeaurora.org>
-Date:   Wed, 15 Apr 2020 08:47:23 +0000 (UTC)
+Message-Id: <20200415084812.2D0AAC433F2@smtp.codeaurora.org>
+Date:   Wed, 15 Apr 2020 08:48:12 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -63,17 +66,17 @@ Jason Yan <yanaijie@huawei.com> wrote:
 
 > Fix the following coccicheck warning:
 > 
-> drivers/net/wireless/intersil/orinoco/spectrum_cs.c:281:5-8: Unneeded
-> variable: "err". Return "0" on line 286
+> drivers/net/wireless/broadcom/brcm80211/brcmsmac/stf.c:309:5-13:
+> Unneeded variable: "ret_code". Return "0" on line 328
 > 
 > Reported-by: Hulk Robot <hulkci@huawei.com>
 > Signed-off-by: Jason Yan <yanaijie@huawei.com>
 
 Patch applied to wireless-drivers-next.git, thanks.
 
-7b9ae69d5441 orinoco: remove useless variable 'err' in spectrum_cs_suspend()
+e871b8bfedda brcmsmac: make brcms_c_stf_ss_update() void
 
 -- 
-https://patchwork.kernel.org/patch/11485247/
+https://patchwork.kernel.org/patch/11485249/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
