@@ -2,98 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 814B91A9730
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 10:44:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ECD71A9736
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 10:45:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2894923AbgDOIop (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 04:44:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41610 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2894908AbgDOIoh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 04:44:37 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 999E1C061A0C;
-        Wed, 15 Apr 2020 01:44:36 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.93)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1jOder-001exI-J4; Wed, 15 Apr 2020 10:44:33 +0200
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: mac80211 2020-04-15
-Date:   Wed, 15 Apr 2020 10:44:26 +0200
-Message-Id: <20200415084427.31107-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.25.1
+        id S2894935AbgDOIpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 04:45:34 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:36832 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2894936AbgDOIp1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 04:45:27 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1586940326; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=LLHAtAIAM78mFzS4R6StWkJhZeeVtwmJ8k6NH2UzjUQ=;
+ b=miSJwNAs1akb0zHMhKW4wVlFRuLRTxKoqCjPsRE+vg/Kw991xlc6ES8QrHCO+Sf7M7rvWZ0F
+ dXhcvPvcZlXqhr4IhBn3920+SMNjan5TpKllKxJa1qfTOA+aY0VcHKdZQRFCxk8972evAGzA
+ 1rUAMltBfQoNiQTFiT0yM25K8Xs=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e96c993.7f622155a650-smtp-out-n01;
+ Wed, 15 Apr 2020 08:45:07 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 6D00FC433BA; Wed, 15 Apr 2020 08:45:07 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 5264DC433CB;
+        Wed, 15 Apr 2020 08:45:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 5264DC433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH 5/9] brcmsmac: Add missing annotation for brcms_down()
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200411001933.10072-6-jbi.octave@gmail.com>
+References: <20200411001933.10072-6-jbi.octave@gmail.com>
+To:     Jules Irenge <jbi.octave@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, boqun.feng@gmail.com,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johannes Berg <johannes.berg@intel.com>,
+        linux-wireless@vger.kernel.org (open list:BROADCOM BRCM80211
+        IEEE802.11n WIRELESS DRIVER),
+        brcm80211-dev-list.pdl@broadcom.com (open list:BROADCOM BRCM80211
+        IEEE802.11n WIRELESS DRIVER),
+        brcm80211-dev-list@cypress.com (open list:BROADCOM BRCM80211
+        IEEE802.11n WIRELESS DRIVER),
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS)
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20200415084507.6D00FC433BA@smtp.codeaurora.org>
+Date:   Wed, 15 Apr 2020 08:45:07 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+Jules Irenge <jbi.octave@gmail.com> wrote:
 
-So far we only have a few fixes for wireless, nothing really
-that important.
+> Sparse reports a warning at brcms_down()
+> 
+> warning: context imbalance in brcms_down()
+> 	- unexpected unlock
+> The root cause is the missing annotation at brcms_down()
+> Add the missing __must_hold(&wl->lock) annotation
+> 
+> Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
 
-However, over Easter I found an Easter egg in the form of some
-netlink validation and the policy export patches that I made
-a little more than a year ago (and then evidently forgot about).
-I'll send those once you reopen net-next, but wanted to already
-say that they will depend on pulling the FTM responder policy
-fix into that. Obviously this isn't at all urgent, but for that
-I'd appreciate if you could pull net (with this pull request
-included) into net-next at some point.
+Patch applied to wireless-drivers-next.git, thanks.
 
-Please pull and let me know if there's any problem.
+40fb232c02d1 brcmsmac: Add missing annotation for brcms_down()
 
-Thanks,
-johannes
+-- 
+https://patchwork.kernel.org/patch/11483851/
 
-
-
-The following changes since commit e154659ba39a1c2be576aaa0a5bda8088d707950:
-
-  mptcp: fix double-unlock in mptcp_poll (2020-04-12 21:04:08 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git tags/mac80211-for-net-2020-04-15
-
-for you to fetch changes up to 93e2d04a1888668183f3fb48666e90b9b31d29e6:
-
-  mac80211: fix channel switch trigger from unknown mesh peer (2020-04-15 09:54:26 +0200)
-
-----------------------------------------------------------------
-A couple of fixes:
- * FTM responder policy netlink validation fix
-   (but the only user validates again later)
- * kernel-doc fixes
- * a fix for a race in mac80211 radio registration vs. userspace
- * a mesh channel switch fix
- * a fix for a syzbot reported kasprintf() issue
-
-----------------------------------------------------------------
-Johannes Berg (1):
-      nl80211: fix NL80211_ATTR_FTM_RESPONDER policy
-
-Lothar Rubusch (1):
-      cfg80211: fix kernel-doc notation
-
-Sumit Garg (1):
-      mac80211: fix race in ieee80211_register_hw()
-
-Tamizh chelvam (1):
-      mac80211: fix channel switch trigger from unknown mesh peer
-
-Tuomas Tynkkynen (1):
-      mac80211_hwsim: Use kstrndup() in place of kasprintf()
-
- drivers/net/wireless/mac80211_hwsim.c | 12 ++++++------
- include/net/cfg80211.h                | 10 ++++++++++
- net/mac80211/main.c                   | 24 +++++++++++++-----------
- net/mac80211/mesh.c                   | 11 +++++++----
- net/wireless/nl80211.c                |  6 ++----
- 5 files changed, 38 insertions(+), 25 deletions(-)
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
