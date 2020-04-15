@@ -2,41 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8F491A9540
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 09:55:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69EFA1A95A0
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 10:07:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2635385AbgDOHzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 03:55:09 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:46926 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2635370AbgDOHzG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 03:55:06 -0400
-Received: by mail-ot1-f65.google.com with SMTP id w12so2450918otm.13;
-        Wed, 15 Apr 2020 00:55:05 -0700 (PDT)
+        id S2635470AbgDOIEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 04:04:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35382 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2635459AbgDOIEr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 04:04:47 -0400
+Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C65C061A0C;
+        Wed, 15 Apr 2020 00:56:16 -0700 (PDT)
+Received: by mail-ot1-x344.google.com with SMTP id l21so2490770otd.9;
+        Wed, 15 Apr 2020 00:56:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=EMLxdzTx4bRDoBqt8TK6cHLOd2YxLMbrAy/qWm41Cl0=;
-        b=SA5cKDRzqkyo22EuXiXiRemfT3mZlJ9Ozp28BvCgzY6ZmC4gPu+U4ZCgkTXrV0hFLD
-         PfjZPke1LTmv21X4IIv019c5PMW5FAsu7KdSz/QuUphse7BtRTdW7do86bpnMt0EYicR
-         7X9THZcElIRG98SIPn2VUd3za/Ja8qe2U48ZAZB85yEWj4LuER0DFCxz9NVVRaKu5EIx
-         YMrteIYCSSikuqx5xUiikMWDqHg+6pV1ljhWwbTbKB0XlqEXyLd5HSHxl19IqaTXXmOf
-         c786VYraFkr03U0ZUzIrNj0SWwHGWopmrivgWXDXx5OXIG3Bz1oyNDZn5UVJgPP/r/LF
-         1JuQ==
-X-Gm-Message-State: AGi0PuaDS4eMOgXrUe4axsSK8yPHmYjoOlg/wj2oSFFctiJcivDqmgyj
-        6sFHrEkuooab6qlCvapTGK8NPTEzoA3Y0tI8GyQ=
-X-Google-Smtp-Source: APiQypJCQC4vZmDp8HzpEnQV0Odjn6XbUTubPM5oPHqW8cUfm+GJnNE6af5AI7VlbMmOJhYXOVlsJME3FaAvpGnybj0=
-X-Received: by 2002:a4a:95a9:: with SMTP id o38mr21663399ooi.76.1586937305074;
- Wed, 15 Apr 2020 00:55:05 -0700 (PDT)
+        bh=6qhEV4eqPDnKIu34Gai8AQEIGT47pXx8QxN7ktiAXKQ=;
+        b=Nd3F5t4wrHhf0Wkwgv880kLFsUkCJsvY+c0w6VrUGb+XYT/fAm3dt6O7vtn3G1D4fG
+         pxP2qvlPgvq2yD/VPFJRB5oF+JrSaDzE7WaPf1JcmNL+WEJCx9aFekeZzRhN8bxK0G3f
+         XjQBqw1WINqjIBUfQ5EsWb/TGJp+yzi5v+y/kwaoNGn/PaeWxQDS6ImlC7BijlBkHoUT
+         9KoE9rFTmRtuvjicppcpzpd+0d0ISgU4MhZIEMNjD6qBm1REAr0k1Gyy4gI9TGLnQraI
+         hvGb56eSXUCu5+NNOrVPYM9uMz8179uFumz8X/ww86wtXvtwdelvtq8D6obRlpC8G01t
+         kxqA==
+X-Gm-Message-State: AGi0Pubrwv9AbP6AgP2HPTKjGBE5xrsJB+BFy2uMyZtgCdHexKBGjm5w
+        2F3PQDq7dYW6XZ7Rk1UlPWIuO6Eo75K9QkCgb50=
+X-Google-Smtp-Source: APiQypLtBJDUnnZPjJTN7ovRvwZVePgbjaHZvRdaI+KHQH7TZ3/ZvzMzSdZoDHE2XeuJ/k6BT7ZEas4NquvjvmAykGA=
+X-Received: by 2002:a9d:7590:: with SMTP id s16mr21548855otk.250.1586937376197;
+ Wed, 15 Apr 2020 00:56:16 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200408072650.1731-1-john.stultz@linaro.org>
-In-Reply-To: <20200408072650.1731-1-john.stultz@linaro.org>
+References: <20200413204253.84991-1-john.stultz@linaro.org> <20200413204253.84991-2-john.stultz@linaro.org>
+In-Reply-To: <20200413204253.84991-2-john.stultz@linaro.org>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 15 Apr 2020 09:54:53 +0200
-Message-ID: <CAMuHMdWvG+0Wxbj9AdGb1Nwsy+xyoOCWd9xyry54HDSZDzu+HA@mail.gmail.com>
-Subject: Re: [RFC][PATCH v2 1/2] driver core: Revert default
- driver_deferred_probe_timeout value to 0
+Date:   Wed, 15 Apr 2020 09:56:05 +0200
+Message-ID: <CAMuHMdUqQ45=G29rJNa=FC42wdK_hvYA60FskqW496RbFOZMGw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] driver core: Revert default driver_deferred_probe_timeout
+ value to 0
 To:     John Stultz <john.stultz@linaro.org>
 Cc:     lkml <linux-kernel@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -55,7 +58,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 8, 2020 at 9:26 AM John Stultz <john.stultz@linaro.org> wrote:
+On Mon, Apr 13, 2020 at 10:43 PM John Stultz <john.stultz@linaro.org> wrote:
 > In commit c8c43cee29f6 ("driver core: Fix
 > driver_deferred_probe_check_state() logic"), we both cleaned up
 > the logic and also set the default driver_deferred_probe_timeout
@@ -100,6 +103,7 @@ On Wed, Apr 8, 2020 at 9:26 AM John Stultz <john.stultz@linaro.org> wrote:
 > Cc: netdev <netdev@vger.kernel.org>
 > Cc: linux-pm@vger.kernel.org
 > Reported-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> Tested-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 > Fixes: c8c43cee29f6 ("driver core: Fix driver_deferred_probe_check_state() logic")
 > Signed-off-by: John Stultz <john.stultz@linaro.org>
 
