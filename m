@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD34C1A9C96
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 13:36:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D189C1A9CF4
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 13:43:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2897173AbgDOLgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 07:36:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54800 "EHLO mail.kernel.org"
+        id S2897230AbgDOLhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 07:37:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55880 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2897113AbgDOLgG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Apr 2020 07:36:06 -0400
+        id S2897116AbgDOLgJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Apr 2020 07:36:09 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 25492208FE;
-        Wed, 15 Apr 2020 11:36:05 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2A7E82137B;
+        Wed, 15 Apr 2020 11:36:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586950565;
-        bh=Fb5r/XOVrXihGT7UJi2/W3a1v9RW/SP/vpu9XGfwCTQ=;
+        s=default; t=1586950569;
+        bh=evbnZiIFrAsIYXcCSJ9OBMYr3dZ/O+8OKQb8KFPAPjI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Uh9eGYFQoSaEB1FoEB9vdA9Pv1wrTDelPsAXMd5bHAiy4wXhRaZ/kM/YATmNsEDjr
-         01Qc+VPq/Z6AcBCNXS1b0oaYKSJ+QWWzhLaWWQA3109aBQvHNGNKV+v4NTlhnMlzq+
-         oEGMpcgzt5hulyRrhKPHjynOSgQdAGyaknRdZsow=
+        b=r5TqXNA7tTh4qWmzexXdtS4jZjfnJnP20UxCLDDWcjYRH9Fel/h6ucdDI53V5UtxU
+         Su3RpGLf8gzIhU1xPf3ioGyppncsYLZXgRHQvR2MP6+ZzmuuGYGUd8EiRhVpKug1s+
+         sUr6Om6aLy+OnhqIjRHKy/PVnHhqx9NnXX9WlZc0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Alex Elder <elder@linaro.org>,
-        Sean Tranchetti <stranche@codeaurora.org>,
+Cc:     Jisheng Zhang <Jisheng.Zhang@synaptics.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 069/129] net: qualcomm: rmnet: Allow configuration updates to existing devices
-Date:   Wed, 15 Apr 2020 07:33:44 -0400
-Message-Id: <20200415113445.11881-69-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.6 071/129] net: stmmac: dwmac1000: fix out-of-bounds mac address reg setting
+Date:   Wed, 15 Apr 2020 07:33:46 -0400
+Message-Id: <20200415113445.11881-71-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200415113445.11881-1-sashal@kernel.org>
 References: <20200415113445.11881-1-sashal@kernel.org>
@@ -45,75 +45,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
 
-[ Upstream commit 2abb5792387eb188b12051337d5dcd2cba615cb0 ]
+[ Upstream commit 3e1221acf6a8f8595b5ce354bab4327a69d54d18 ]
 
-This allows the changelink operation to succeed if the mux_id was
-specified as an argument. Note that the mux_id must match the
-existing mux_id of the rmnet device or should be an unused mux_id.
+Commit 9463c4455900 ("net: stmmac: dwmac1000: Clear unused address
+entries") cleared the unused mac address entries, but introduced an
+out-of bounds mac address register programming bug -- After setting
+the secondary unicast mac addresses, the "reg" value has reached
+netdev_uc_count() + 1, thus we should only clear address entries
+if (addr < perfect_addr_number)
 
-Fixes: 1dc49e9d164c ("net: rmnet: do not allow to change mux id if mux id is duplicated")
-Reported-and-tested-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Sean Tranchetti <stranche@codeaurora.org>
-Signed-off-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Fixes: 9463c4455900 ("net: stmmac: dwmac1000: Clear unused address entries")
+Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../ethernet/qualcomm/rmnet/rmnet_config.c    | 31 ++++++++++++-------
- 1 file changed, 19 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-index fbf4cbcf1a654..02cdbb22d3355 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-@@ -279,7 +279,6 @@ static int rmnet_changelink(struct net_device *dev, struct nlattr *tb[],
- {
- 	struct rmnet_priv *priv = netdev_priv(dev);
- 	struct net_device *real_dev;
--	struct rmnet_endpoint *ep;
- 	struct rmnet_port *port;
- 	u16 mux_id;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
+index 542784300620f..efc6ec1b8027c 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
+@@ -207,7 +207,7 @@ static void dwmac1000_set_filter(struct mac_device_info *hw,
+ 			reg++;
+ 		}
  
-@@ -294,19 +293,27 @@ static int rmnet_changelink(struct net_device *dev, struct nlattr *tb[],
- 
- 	if (data[IFLA_RMNET_MUX_ID]) {
- 		mux_id = nla_get_u16(data[IFLA_RMNET_MUX_ID]);
--		if (rmnet_get_endpoint(port, mux_id)) {
--			NL_SET_ERR_MSG_MOD(extack, "MUX ID already exists");
--			return -EINVAL;
--		}
--		ep = rmnet_get_endpoint(port, priv->mux_id);
--		if (!ep)
--			return -ENODEV;
- 
--		hlist_del_init_rcu(&ep->hlnode);
--		hlist_add_head_rcu(&ep->hlnode, &port->muxed_ep[mux_id]);
-+		if (mux_id != priv->mux_id) {
-+			struct rmnet_endpoint *ep;
-+
-+			ep = rmnet_get_endpoint(port, priv->mux_id);
-+			if (!ep)
-+				return -ENODEV;
- 
--		ep->mux_id = mux_id;
--		priv->mux_id = mux_id;
-+			if (rmnet_get_endpoint(port, mux_id)) {
-+				NL_SET_ERR_MSG_MOD(extack,
-+						   "MUX ID already exists");
-+				return -EINVAL;
-+			}
-+
-+			hlist_del_init_rcu(&ep->hlnode);
-+			hlist_add_head_rcu(&ep->hlnode,
-+					   &port->muxed_ep[mux_id]);
-+
-+			ep->mux_id = mux_id;
-+			priv->mux_id = mux_id;
-+		}
- 	}
- 
- 	if (data[IFLA_RMNET_FLAGS]) {
+-		while (reg <= perfect_addr_number) {
++		while (reg < perfect_addr_number) {
+ 			writel(0, ioaddr + GMAC_ADDR_HIGH(reg));
+ 			writel(0, ioaddr + GMAC_ADDR_LOW(reg));
+ 			reg++;
 -- 
 2.20.1
 
