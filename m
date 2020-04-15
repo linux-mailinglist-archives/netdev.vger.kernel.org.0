@@ -2,119 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 842231AA8D8
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 15:42:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A9D31AA8DA
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 15:42:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2636179AbgDONhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 09:37:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34896 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2636157AbgDONhJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Apr 2020 09:37:09 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 57A08206F9;
-        Wed, 15 Apr 2020 13:37:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586957829;
-        bh=UplFaPlcIonIevpQ2fKvq31zD8DuiqpQXFn4HXlzmVI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H+J3jd8HAduTSP10LpHtaJ2ktC8pC2t7rh1fUPU9kTSxqtzTFBrQpF+uNPs0VSwiy
-         aEQXax6V9cK7TKX3nCUv5G5KhaeGHs6J4gM4/46M8P0t7p2MpNyCXj+OfUwmkJJ4JY
-         +PM9fzbiiCs04FwCRhbbVxshEx6rAMzpdqz31LlU=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@mellanox.com>,
-        Borislav Petkov <bp@suse.de>, Jessica Yu <jeyu@kernel.org>,
-        linux-kbuild@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next v1 4/4] kernel/module: Hide vermagic header file from general use
-Date:   Wed, 15 Apr 2020 16:36:48 +0300
-Message-Id: <20200415133648.1306956-5-leon@kernel.org>
-X-Mailer: git-send-email 2.25.2
-In-Reply-To: <20200415133648.1306956-1-leon@kernel.org>
-References: <20200415133648.1306956-1-leon@kernel.org>
+        id S370712AbgDONhz convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 15 Apr 2020 09:37:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59000 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2636178AbgDONhl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 09:37:41 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11EF7C061A0C
+        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 06:37:41 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jOiEN-0002og-3x; Wed, 15 Apr 2020 15:37:31 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jOiEK-0006aW-Fd; Wed, 15 Apr 2020 15:37:28 +0200
+Date:   Wed, 15 Apr 2020 15:37:28 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        David Jander <david@protonic.nl>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de
+Subject: Re: [PATCH v1] ethtool: provide UAPI for PHY master/slave
+ configuration.
+Message-ID: <20200415133728.urvsdolwhaa4eknm@pengutronix.de>
+References: <20200415121209.12197-1-o.rempel@pengutronix.de>
+ <20200415131104.GA657811@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20200415131104.GA657811@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 15:23:06 up 152 days,  4:41, 170 users,  load average: 0.02, 0.06,
+ 0.01
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@mellanox.com>
+On Wed, Apr 15, 2020 at 03:11:04PM +0200, Andrew Lunn wrote:
+> On Wed, Apr 15, 2020 at 02:12:09PM +0200, Oleksij Rempel wrote:
+> > This UAPI is needed for BroadR-Reach 100BASE-T1 devices. Due to lack of
+> > auto-negotiation support, we needed to be able to configure the
+> > MASTER-SLAVE role of the port manually or from an application in user
+> > space.
+> 
+> Hi Oleksij
+> 
+> This is a nice way to do this.
+> 
+> > +/* Port mode */
+> > +#define PORT_MODE_MASTER	0x00
+> > +#define PORT_MODE_SLAVE		0x01
+> > +#define PORT_MODE_MASTER_FORCE	0x02
+> > +#define PORT_MODE_SLAVE_FORCE	0x03
+> > +#define PORT_MODE_UNKNOWN	0xff
+> 
+> It is not clear to me what PORT_MODE_MASTER and PORT_MODE_SLAVE. Do
+> these mean to negotiate master/slave? Maybe some comments, or clearer
+> names?
 
-VERMAGIC* definitions are not supposed to be used by the drivers,
-see this [1] bug report, so simply move this header file to be visible
-to kernel/* and scripts files only.
+In the IEEE 802.3 it is described as:
+---------------------------------------------------------------------------
+Port type: Bit 9.10 is to be used to indicate the preference to operate
+as MASTER (multiport device) or as SLAVE (single-port device) if the
+MASTER-SLAVE Manual Configuration Enable bit, 9.12, is not set.  Usage
+of this bit is described in 40.5.2.
+1 = Multiport device
+0 = single-port device
+---------------------------------------------------------------------------
 
-In-tree module build:
-➜  kernel git:(vermagic) ✗ make clean
-➜  kernel git:(vermagic) ✗ make M=drivers/infiniband/hw/mlx5
-➜  kernel git:(vermagic) ✗ modinfo drivers/infiniband/hw/mlx5/mlx5_ib.ko
-filename:	/images/leonro/src/kernel/drivers/infiniband/hw/mlx5/mlx5_ib.ko
-<...>
-vermagic:       5.6.0+ SMP mod_unload modversions
+Setting PORT_MODE_MASTER/PORT_MODE_SLAVE will increase the chance to get
+MASTER or SLAVE mode, but not force it.
 
-Out-of-tree module build:
-➜  mlx5 make -C /images/leonro/src/kernel clean M=/tmp/mlx5
-➜  mlx5 make -C /images/leonro/src/kernel M=/tmp/mlx5
-➜  mlx5 modinfo /tmp/mlx5/mlx5_ib.ko
-filename:       /tmp/mlx5/mlx5_ib.ko
-<...>
-vermagic:       5.6.0+ SMP mod_unload modversions
+If we will follow strictly to the IEEE 802.3 spec, it should be named:
 
-[1] https://lore.kernel.org/lkml/20200411155623.GA22175@zn.tnic
-Reported-by: Borislav Petkov <bp@suse.de>
-Acked-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
----
- kernel/module.c                      | 2 +-
- {include/linux => kernel}/vermagic.h | 0
- scripts/mod/modpost.c                | 2 +-
- 3 files changed, 2 insertions(+), 2 deletions(-)
- rename {include/linux => kernel}/vermagic.h (100%)
+#define PORT_MODE_UNKNOWN	0x00
+/* this two options will not force some specific mode, only influence
+ * the chance to get it */
+#define PORT_TYPE_MULTI_PORT	0x01
+#define PORT_TYPE_SINGLE_PORT	0x02
+/* this two options will force master or slave mode */
+#define PORT_MODE_MASTER	0x03
+#define PORT_MODE_SLAVE		0x04
 
-diff --git a/kernel/module.c b/kernel/module.c
-index 3447f3b74870..fce06095d341 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -29,7 +29,6 @@
- #include <linux/moduleparam.h>
- #include <linux/errno.h>
- #include <linux/err.h>
--#include <linux/vermagic.h>
- #include <linux/notifier.h>
- #include <linux/sched.h>
- #include <linux/device.h>
-@@ -55,6 +54,7 @@
- #include <linux/audit.h>
- #include <uapi/linux/module.h>
- #include "module-internal.h"
-+#include "vermagic.h"
+Please tell, if you have better ideas.
 
- #define CREATE_TRACE_POINTS
- #include <trace/events/module.h>
-diff --git a/include/linux/vermagic.h b/kernel/vermagic.h
-similarity index 100%
-rename from include/linux/vermagic.h
-rename to kernel/vermagic.h
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 5c3c50c5ec52..91f86261bcfe 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -2252,7 +2252,7 @@ static void add_header(struct buffer *b, struct module *mod)
- 	 * inherit the definitions.
- 	 */
- 	buf_printf(b, "#include <linux/build-salt.h>\n");
--	buf_printf(b, "#include <linux/vermagic.h>\n");
-+	buf_printf(b, "#include <../kernel/vermagic.h>\n");
- 	buf_printf(b, "#include <linux/compiler.h>\n");
- 	buf_printf(b, "\n");
- 	buf_printf(b, "BUILD_SALT;\n");
---
-2.25.2
-
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
