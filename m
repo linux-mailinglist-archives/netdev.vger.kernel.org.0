@@ -2,100 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 763011AA436
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 15:23:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D37D1AA8CF
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 15:42:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731030AbgDONUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 09:20:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56198 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2506285AbgDONTo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 09:19:44 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5EDCC061A0C;
-        Wed, 15 Apr 2020 06:19:43 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id b11so7742306wrs.6;
-        Wed, 15 Apr 2020 06:19:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=lfpK/xOIlDnyJhSEQBBYKy273A0qYIk6KaRxAULUFas=;
-        b=Xy0NAs50nauKNzelhrgCoZ1oAYS0by3FW/Xaw2GPXjjbxeHr7P51WtKfCf1iVTlDao
-         1cOOPmWg97iJ76qPu3Zf8K1JeiI+rzszWGk02qVHLNvlaAePVcN0Z1ZL+XQNVE5e9274
-         GYzX7MjCAThNITca93dboFwAqeKUQEJNeSp75p0d8awYnOijpfDLDm0N9I+yyxD6oci7
-         AUyJfwQuq1AqKugkFVaK5DG/Twamt2jjtWUBC/Q78V6LlzCa56wRZOhfgAQvg26w7Zfk
-         Ki+dfNNizSoeEwHuWdzLPllpRX8OzyQKILZp1EwCutUgg3ED3sqXDlxRzrDrAzQvSFX9
-         Bp/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=lfpK/xOIlDnyJhSEQBBYKy273A0qYIk6KaRxAULUFas=;
-        b=bBHeMvd4p6pfzZqUQ5yM8GBAZuuS/BtWb31bb32ABhqN6PUzGkDYSa0oWCCDPohrxD
-         BwZ1Fdv3wskLVDfKER+qhlsWGKPFDAZUjbuOAoIUlMzgRfxb/qLPkYAH/uTq3KgwuWkK
-         k/xowWap+PdKC3DTaJ3/oTkV5KOor9wXYFVibyiWuKGmEjsBeEdFevzUvO59ikxLVHEq
-         p3ELX/MQHAWVpJZIdgpw/GoCP3kyv6+ntp3CcjWwlV4djrWj+XGwRGEBsEygVLceArz4
-         Kzl/Gw1n3H6tTPVTUcUz/9nKQ0GJ23TT0aCpa9Vzoi2u5TAyn2w+s8Mq2vhaRy17Q68a
-         4oRA==
-X-Gm-Message-State: AGi0PuZ3MSLAa2hREzCktIdd/tShzn5rlfWHKSID5unkgZN9H13bkmxR
-        ztMB5Vo1dADsOcE7JxYNc9q81JybyWGRIAqsypM=
-X-Google-Smtp-Source: APiQypIW8Pb7KI2m47zG2TSNaiw4mMtQU1+5Wz2hxAJY83V2FfpcUzk0ZWhEopuJDFTjiX0vj3fcibyWGzm0sC1HtaI=
-X-Received: by 2002:adf:ef51:: with SMTP id c17mr28624905wrp.130.1586956782339;
- Wed, 15 Apr 2020 06:19:42 -0700 (PDT)
+        id S2636141AbgDONg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 09:36:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34662 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730053AbgDONgy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Apr 2020 09:36:54 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7670A206F9;
+        Wed, 15 Apr 2020 13:36:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1586957814;
+        bh=c42btVjX+Yo5ch+/fc7QG+39nnq0rypOoe5gU6XPg74=;
+        h=From:To:Cc:Subject:Date:From;
+        b=nj1f1cz02jLROcEL5+Bj4oaaLcObUQOq+uLYteUf4h0YVvHM+BJ1T6wsYUUXMy+Aj
+         2CiA8ZpGPmlweMjiFoSNN9CewJ5xWK9quglXdEoIXKcGfjrVp7DMLnNwGL6vmmICRd
+         lsYT+sxU+TbmnzRTfB6UtPTN1AmCTxemqLobXn5I=
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Borislav Petkov <bp@suse.de>, Ion Badulescu <ionut@badula.org>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Jessica Yu <jeyu@kernel.org>, linux-kbuild@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, Pensando Drivers <drivers@pensando.io>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Shannon Nelson <snelson@pensando.io>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>
+Subject: [PATCH net-next v1 0/4] Remove vermagic header from global include folder
+Date:   Wed, 15 Apr 2020 16:36:44 +0300
+Message-Id: <20200415133648.1306956-1-leon@kernel.org>
+X-Mailer: git-send-email 2.25.2
 MIME-Version: 1.0
-References: <1586254255-28713-1-git-send-email-sumit.garg@linaro.org>
- <CABPxzY+hL=jD6Zy=netP3oqNXg69gDL2g0KiPe40eaXXgZBnxw@mail.gmail.com>
- <CAFA6WYMZAq6X5m++h33ySCa6jOQCq_tHL=8mUi-kPMcn4FH=jA@mail.gmail.com> <CAFA6WYOW9ne0iffwC1dc48a_aSaYkkxQzyHQXTV2Wkob9KOXQg@mail.gmail.com>
-In-Reply-To: <CAFA6WYOW9ne0iffwC1dc48a_aSaYkkxQzyHQXTV2Wkob9KOXQg@mail.gmail.com>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Wed, 15 Apr 2020 15:19:30 +0200
-Message-ID: <CA+icZUUDm=WPjmwh5ikp8t+xt7dqTgghCeB8F0+czaUh-sHXxA@mail.gmail.com>
-Subject: Re: [PATCH v2] mac80211: fix race in ieee80211_register_hw()
-To:     Sumit Garg <sumit.garg@linaro.org>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Krishna Chaitanya <chaitanya.mgit@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
-        Kalle Valo <kvalo@codeaurora.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        =?UTF-8?Q?Matthias=2DPeter_Sch=C3=B6pfer?= 
-        <matthias.schoepfer@ithinx.io>,
-        "Berg Philipp (HAU-EDS)" <Philipp.Berg@liebherr.com>,
-        "Weitner Michael (HAU-EDS)" <Michael.Weitner@liebherr.com>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Loic Poulain <loic.poulain@linaro.org>, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 15, 2020 at 3:10 PM Sumit Garg <sumit.garg@linaro.org> wrote:
+From: Leon Romanovsky <leonro@mellanox.com>
 
-[.. ]
+Changelog:
+v1:
+ * Added tags
+ * Updated patch #4 with test results
+ * Changed scripts/mod/modpost.c to create inclusion of vermagic.h
+   from kernel folder and not from general include/linux. This is
+   needed to generate *.mod.c files, while building modules.
+v0: https://lore.kernel.org/lkml/20200414155732.1236944-1-leon@kernel.org
+----------------------------------------------------------------------------
 
-> > In case we don't have any further comments, could you fix this nitpick
-> > from Chaitanya while applying or would you like me to respin and send
-> > v3?
->
-> A gentle ping. Is this patch a good candidate for 5.7-rc2?
->
+Hi,
 
-Hi Sumit,
+This is followup to the failure reported by Borislav [1] and suggested
+fix later on [2].
 
-it's in [1] (see [2]) with slightly mods by Johannes but not in Linus tree.
+The series removes all includes of linux/vermagic.h, updates hns and
+nfp to use same kernel versioning scheme (exactly like we did for
+other drivers in previous cycle) and removes vermagic.h from global
+include folder.
 
-Johannes requested a pull-request means will be merged in a next step
-in net.git and then hopefully land in Linus tree after Dave M.
-requested a pull-request.
+[1] https://lore.kernel.org/lkml/20200411155623.GA22175@zn.tnic
+[2] https://lore.kernel.org/lkml/20200413080452.GA3772@zn.tnic
 
-Thanks for your patch.
+------------------------------------------------------------
+1. Honestly, I have no idea if it can go to net-rc, clearly not all my
+patches are fixes, so I'm sending them to the net-next.
+2. Still didn't get response from kbuild, but it passed my own
+compilation tests.
+https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/log/?h=vermagic
 
-Regards,
-- Sedat -
+Thanks
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git/tag/?h=mac80211-for-net-2020-04-15
-[2] https://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git/commit/?h=mac80211-for-net-2020-04-15&id=52e04b4ce5d03775b6a78f3ed1097480faacc9fd
+Leon Romanovsky (4):
+  drivers: Remove inclusion of vermagic header
+  net/hns: Remove custom driver version in favour of global one
+  net/nfp: Update driver to use global kernel version
+  kernel/module: Hide vermagic header file from general use
+
+ drivers/net/bonding/bonding_priv.h                   | 2 +-
+ drivers/net/ethernet/3com/3c509.c                    | 1 -
+ drivers/net/ethernet/3com/3c515.c                    | 1 -
+ drivers/net/ethernet/adaptec/starfire.c              | 1 -
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c      | 3 ---
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h      | 4 ----
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c   | 4 ----
+ drivers/net/ethernet/netronome/nfp/nfp_main.c        | 3 ---
+ drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c | 2 --
+ drivers/net/ethernet/pensando/ionic/ionic_main.c     | 2 +-
+ drivers/power/supply/test_power.c                    | 2 +-
+ kernel/module.c                                      | 2 +-
+ {include/linux => kernel}/vermagic.h                 | 0
+ net/ethtool/ioctl.c                                  | 3 +--
+ scripts/mod/modpost.c                                | 2 +-
+ 15 files changed, 6 insertions(+), 26 deletions(-)
+ rename {include/linux => kernel}/vermagic.h (100%)
+
+--
+2.25.2
+
