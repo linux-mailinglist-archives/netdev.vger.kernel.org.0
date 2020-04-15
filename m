@@ -2,118 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 849CA1AADBC
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 18:32:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F41CB1AAE9E
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 18:50:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1415553AbgDOQS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 12:18:56 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:59492 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2410362AbgDOQSw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 12:18:52 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.64])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A9C90600DC;
-        Wed, 15 Apr 2020 16:18:50 +0000 (UTC)
-Received: from us4-mdac16-6.ut7.mdlocal (unknown [10.7.65.74])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A563A2009B;
-        Wed, 15 Apr 2020 16:18:50 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.42])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 1853C220068;
-        Wed, 15 Apr 2020 16:18:50 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 9A017A4008C;
-        Wed, 15 Apr 2020 16:18:49 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 15 Apr
- 2020 17:18:42 +0100
-Subject: Re: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for
- representors
-To:     Sasha Levin <sashal@kernel.org>
-CC:     Or Gerlitz <gerlitz.or@gmail.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stable <stable@vger.kernel.org>,
-        "Linux Netdev List" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        David Miller <davem@davemloft.net>
-References: <20200411231413.26911-1-sashal@kernel.org>
- <20200411231413.26911-9-sashal@kernel.org>
- <CAJ3xEMhhtj77M5vercHDMAHPPVZ8ZF-eyCVQgD4ZZ1Ur3Erbdw@mail.gmail.com>
- <20200412105935.49dacbf7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200414015627.GA1068@sasha-vm>
- <CAJ3xEMh=PGVSddBWOX7U6uAuazJLFkCpWQNxhg7dDRgnSdQ=xA@mail.gmail.com>
- <20200414110911.GA341846@kroah.com>
- <CAJ3xEMhnXZB-HU7aL3m9A1N_GPxgOC3U4skF_qWL8z3wnvSKPw@mail.gmail.com>
- <a89a592a-5a11-5e56-a086-52b1694e00db@solarflare.com>
- <20200414205755.GF1068@sasha-vm>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <41174e71-00e1-aebf-b67d-1b24731e4ab3@solarflare.com>
-Date:   Wed, 15 Apr 2020 17:18:38 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1416222AbgDOQqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 12:46:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60332 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1416219AbgDOQqp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 12:46:45 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC45C061A0C;
+        Wed, 15 Apr 2020 09:46:45 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id u9so208642pfm.10;
+        Wed, 15 Apr 2020 09:46:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xk2jighx9JiHvd7VvJooQA7iX7mzZawcFCLCxrDuv44=;
+        b=iOIx9Yr6HSIN1+8RUMF12Vo54Qjfl4uc3xdPwBZmU+Sq/OfXOqB594qFHgaymCaJLL
+         ct0cC3cw5bG9eBRV21II87z6FeNuPDJ8gLgBUPiD6e2JYxn8j/r6MfGPpv/+712NFaz7
+         RProMzobaw8Qfa3rDLCbeAlwhUFcvfXGqWdxkym2jfdCcfgg659e0Na8JTqv+AsLJrfi
+         ONwiApA2hUrjyremxTAegejbjBnv4TjlKLCXH1mmUPTmkcMNdbuhpnS4difi0esSRmKc
+         BUBv1HOOkFGIehG5CZEdP8qFau6ErTf6wXw3dY6MjzbYXhphvsFX+ovsWQJrsO3pstGL
+         uxyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xk2jighx9JiHvd7VvJooQA7iX7mzZawcFCLCxrDuv44=;
+        b=EIPyXT3Mbu9b0MypQuq/W4IHJw8/2E6w2JZelfHFlIC8zi+L0mUzf2tiXJSYbUdEvX
+         l8iX3AWWNecnPpT+j5OCxAZJwymQOfu8wioCA8jUsAOckKGEAU+60KrReo72kb/UUr9s
+         zz0vMFSFQMN/g7+Omc+6mSGPiaGLv+7X2t01a/nghIc/tib0JnsLLYxXhoNBtUZD4eEm
+         AQU+c0ys1DDvjx5Zo3MKrbNIoz74UIy2ltWdIg3mpLVWEHEBwkpx/hsRf0J+2XsTXHTO
+         1R+1UUYok/rNXBlXTE+TxZLppDPWnHJPXh63pR25JgLr9vNquDVbpjGwf8z7hn6xNvbT
+         Vs5g==
+X-Gm-Message-State: AGi0PubpjCwRNaHq7cCEQHA5aDMksX32S42FFFRqifvN2lLHEArBXG9B
+        CXKYIgud/WBIR5gCx1BUKoHAg0Gx
+X-Google-Smtp-Source: APiQypIAdnrhWplB2+SV4yaozEDj4kJBKfcRqbCgAcgNw43SON2Gzw7FvY7A+us9et1bSAm3jSnBwg==
+X-Received: by 2002:a63:f658:: with SMTP id u24mr26784804pgj.357.1586969204758;
+        Wed, 15 Apr 2020 09:46:44 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:400::5:40b6])
+        by smtp.gmail.com with ESMTPSA id o9sm60244pje.47.2020.04.15.09.46.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Apr 2020 09:46:43 -0700 (PDT)
+Date:   Wed, 15 Apr 2020 09:46:40 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [RFC PATCH bpf-next 05/16] bpf: create file or anonymous dumpers
+Message-ID: <20200415164640.evaujoootr4n55sc@ast-mbp>
+References: <20200408232520.2675265-1-yhs@fb.com>
+ <20200408232526.2675664-1-yhs@fb.com>
+ <CAEf4Bzawu2dFXL7nvYhq1tKv9P7Bb9=6ksDpui5nBjxRrx=3_w@mail.gmail.com>
+ <4bf72b3c-5fee-269f-1d71-7f808f436db9@fb.com>
+ <CAEf4BzZnq958Guuusb9y65UCtB-DARxdk7_q7ZPBZ3WOwjSKaw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200414205755.GF1068@sasha-vm>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25356.003
-X-TM-AS-Result: No-0.162400-8.000000-10
-X-TMASE-MatchedRID: xcONGPdDH5rx4D8KxdMay56vBgoAbaC269aS+7/zbj+qvcIF1TcLYIB1
-        DC4vClW5aiz3Dq8BYk4U9E0FLUe/uTthmaU+uhdCRXdiukZQCgG/yN2q8U674hBEGklbuMi4ylA
-        YwPIY79Pf+V9vge8ELJfR5wEm5PRXT8T8t9BFA68BnSWdyp4eoToSfZud5+Gg4zCcMWWKsiZf1a
-        VK9zaoNTn5tACRiVgACBHnexUEYKbob/hVdrvnXuIfK/Jd5eHmAQ8mtiWx//od0WOKRkwsh9N+V
-        O8UR4MhfI34OzI/0AxYiZFrF8ZSst6khhVmPGCFDcJe2cgs17z/j4ZByyZz4mlzEo7bHFvOilvA
-        b18i4hNT/9dAnCjwEpFIUP7msLqCFvp4+NM7kPmiVU7u7I4INZ8z6yZBmpaQT7zqZowzdpKBWVe
-        fSkg0pcEsN0vJyKBrX7bicKxRIU3yABN92SNtPN0H8LFZNFG7GOa/xe+6dpEMI8Fusw1LKe20T2
-        3bS9MpyZD6i6vaeuKAtx3xCfZ+N3pGY1A9HF8YLTvkH7PgMHjcVG008kZv+C26w+M0jpt8a6y+p
-        kMFH4fwHX5+Q8jjw1wuriZ3P6dErIJZJbQfMXRqaM5LmpUkwz8UunPw/LQonqg/VrSZEiM=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10-0.162400-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25356.003
-X-MDID: 1586967530-s6amwzQHFOd0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZnq958Guuusb9y65UCtB-DARxdk7_q7ZPBZ3WOwjSKaw@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Firstly, let me apologise: my previous email was too harsh and too
- assertiveabout things that were really more uncertain and unclear.
+On Tue, Apr 14, 2020 at 09:45:08PM -0700, Andrii Nakryiko wrote:
+> >
+> > > FD is closed, dumper program is detached and dumper is destroyed
+> > > (unless pinned in bpffs, just like with any other bpf_link.
+> > > 3. At this point bpf_dumper_link can be treated like a factory of
+> > > seq_files. We can add a new BPF_DUMPER_OPEN_FILE (all names are for
+> > > illustration purposes) command, that accepts dumper link FD and
+> > > returns a new seq_file FD, which can be read() normally (or, e.g.,
+> > > cat'ed from shell).
+> >
+> > In this case, link_query may not be accurate if a bpf_dumper_link
+> > is created but no corresponding bpf_dumper_open_file. What we really
+> > need to iterate through all dumper seq_file FDs.
+> 
+> If the goal is to iterate all the open seq_files (i.e., bpfdump active
+> sessions), then bpf_link is clearly not the right approach. But I
+> thought we are talking about iterating all the bpfdump programs
+> attachments, not **sessions**, in which case bpf_link is exactly the
+> right approach.
 
-On 14/04/2020 21:57, Sasha Levin wrote:
-> I've pointed out that almost 50% of commits tagged for stable do not
-> have a fixes tag, and yet they are fixes. You really deduce things based
-> on coin flip probability?
-Yes, but far less than 50% of commits *not* tagged for stable have a fixes
- tag.  It's not about hard-and-fast Aristotelian "deductions", like "this
- doesn't have Fixes:, therefore it is not a stable candidate", it's about
- probabilistic "induction".
+That's an important point. What is the pinned /sys/kernel/bpfdump/tasks/foo ?
+Every time 'cat' opens it a new seq_file is created with new FD, right ?
+Reading of that file can take infinite amount of time, since 'cat' can be
+paused in the middle.
+I think we're dealing with several different kinds of objects here.
+1. "template" of seq_file that is seen with 'ls' in /sys/kernel/bpfdump/
+2. given instance of seq_file after "template" was open
+3. bpfdumper program
+4. and now links. One bpf_link from seq_file template to bpf prog and
+  many other bpf_links from actual seq_file kernel object to bpf prog.
+  I think both kinds of links need to be iteratable via get_next_id.
 
-> "it does increase the amount of countervailing evidence needed to
-> conclude a commit is a fix" - Please explain this argument given the
-> above.
-Are you familiar with Bayesian statistics?  If not, I'd suggest reading
- something like http://yudkowsky.net/rational/bayes/ which explains it.
-There's a big difference between a coin flip and a _correlated_ coin flip.
+At the same time I don't think 1 and 2 are links.
+read-ing link FD should not trigger program execution. link is the connecting
+abstraction. It shouldn't be used to trigger anything. It's static.
+Otherwise read-ing cgroup-bpf link would need to trigger cgroup bpf prog too.
+FD that points to actual seq_file is the one that should be triggering
+iteration of kernel objects and corresponding execution of linked prog.
+That FD can be anon_inode returned from raw_tp_open (or something else)
+or FD from open("/sys/kernel/bpfdump/foo").
 
-> This is great, but the kernel is more than just net/. Note that I also
-> do not look at net/ itself, but rather drivers/net/ as those end up with
-> a bunch of missed fixes.
-drivers/net/ goes through the same DaveM net/net-next trees, with the
- same rules.
->> To be honest, that this needs to be explained to you does not inspire
->> confidence in the quality of your autoselection process...
->
-> Nothing like a personal attack or two to try and make a point?
-It wasn't meant as a personal attack, more as an "it's worrying that this
- is not known to the people doing the stable selection".  But I did agonise
- over whether to say that and now wish I hadn't; sorry.  (I'm not exactly
- my best self right now, what with all the lockdown cabin fever.)
+The more I think about all the objects involved the more it feels that the
+whole process should consist of three steps (instead of two).
+1. load bpfdump prog
+2. create seq_file-template in /sys/kernel/bpfdump/
+   (not sure which api should do that)
+3. use bpf_link_create api to attach bpfdumper prog to that seq_file-template
 
--ed
+Then when the file is opened a new bpf_link is created for that reading session.
+At the same time both kinds of links (to teamplte and to seq_file) should be
+iteratable for observability reasons, but get_fd_from_id on them should probably
+be disallowed, since holding such FD to these special links by other process
+has odd semantics.
+
+Similarly for anon seq_file it should be three step process as well:
+1. load bpfdump prog
+2. create anon seq_file (api is tbd) that returns FD
+3. use bpf_link_create to attach prog to seq_file FD
+
+May be it's all overkill. These are just my thoughts so far.
