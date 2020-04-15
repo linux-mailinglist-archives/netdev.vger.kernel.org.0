@@ -2,166 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84B921AB2E3
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 23:00:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 405451AB334
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 23:15:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438286AbgDOUsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 16:48:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41332 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2438047AbgDOUsN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 16:48:13 -0400
-Received: from mail-wr1-x449.google.com (mail-wr1-x449.google.com [IPv6:2a00:1450:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFDBBC061A0F
-        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 13:48:12 -0700 (PDT)
-Received: by mail-wr1-x449.google.com with SMTP id y1so590015wrp.5
-        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 13:48:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=rjzcjb/bQPDNviyt2sPsZPltCFMp8BiGQ60Gy3cwjMA=;
-        b=ELPwg0wQpckplvDqgq/mtwUdENH/PVzfd8E6bELnegHBuHnLrtjiXKnZDrXtDBq/kG
-         wSRvwaYLD7fbcdIKOrNefWMQCkBW7QEWH7SMNM2jrf698FRNRJPR/E0bDGkXaZPDR0bE
-         pQuRQ/y1PThCzEkL1UOC4FSej/M+mzhKZth1JSQ2DISfsjUHCbrRM1kbL5ZvoGAjIOR6
-         mIpuzvCBn43L1gzAqd+De+ZuOMJElEbjYKAKhv5sjMPmDw+5grzZSNhvUoSiIMqzb8bg
-         XOs4H9+a+cxcJYUyAgN0czDkbdhPM2UJWZAxaXEm1wTbA4dEnzble/dOwdoRXZ7kUFMQ
-         deEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=rjzcjb/bQPDNviyt2sPsZPltCFMp8BiGQ60Gy3cwjMA=;
-        b=QwzHNmzaZzAWCRkkP2TFYvmylBeadsOs4IkN+6FcCTYzNvcPyhDaeuX1QF1oQX9Eds
-         JNFn+xkYWqLlsCphMoKGcDWgztV36+iWIhMG6YW5B5KjJFW9oRtyjtoKfdhTMdK5xrop
-         n74aKbyP/rVVk4dLHJG29m8+5bG/TFsMYeos6oEqdroN+eRGkeWXWMc98zgodIk5Y/CY
-         s/dhDyvsP414+zS55s3KiOlkQKUJDoOMjJCOmAf8iX/xPkTJmDWfnQWaVCYzEy25IP3b
-         NGz+Tbz4gsFnbnbMVbTeDGcqT+iOLV1xDlff9SM+HJKle9WkbuYMjMRm33B2uhS5tx2S
-         ilLw==
-X-Gm-Message-State: AGi0PuYU5G7LZSN1GQb/3sgAUEOAbSB+6tFLIRAJ9ALMkdu8Pwj6ogXo
-        fs9WRvq6Nh20vWQdEYPp3EkGT7PDcw==
-X-Google-Smtp-Source: APiQypKDe2g3J0jWNrqKmJ0h7aRpbt+PYxVirHwm7VJdlOH9O8Ia7a9ApmtarGVGFXMi+fsVUpRVLrWI7w==
-X-Received: by 2002:a5d:53c4:: with SMTP id a4mr29673340wrw.47.1586983690071;
- Wed, 15 Apr 2020 13:48:10 -0700 (PDT)
-Date:   Wed, 15 Apr 2020 22:47:43 +0200
-Message-Id: <20200415204743.206086-1-jannh@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.26.0.110.g2183baf09c-goog
-Subject: [PATCH bpf] bpf: Use pointer type whitelist for XADD
-From:   Jann Horn <jannh@google.com>
-To:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        id S371399AbgDOVMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 17:12:42 -0400
+Received: from perceval.ideasonboard.com ([213.167.242.64]:38226 "EHLO
+        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S371387AbgDOVMk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 17:12:40 -0400
+Received: from pendragon.ideasonboard.com (81-175-216-236.bb.dnainternet.fi [81.175.216.236])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 498802D1;
+        Wed, 15 Apr 2020 23:12:32 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1586985152;
+        bh=6ZsvRs7bRQKm2uUaVr3nSLa1kHFG0xzNrbDdN57gCCQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Asq687MHzIHKq43berIYmZ59aeoEo+vMV3L0Kmj60d9CPYdYFrSOTpzamKOx7ty4P
+         RovcFHD6tSHE6LH/oKFii6xcTJvMhpSzgSQSO/AwUu9TmSH0HB8/5jwj5kQHQpGG3I
+         HaqY0Wr/aUbcwlF7mJE34yCw4xZy4KOu4ykEJTyI=
+Date:   Thu, 16 Apr 2020 00:12:20 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Andrzej Hajda <a.hajda@samsung.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>
+Subject: Re: [RFC 5/6] drm/rcar-du: fix selection of CMM driver
+Message-ID: <20200415211220.GQ4758@pendragon.ideasonboard.com>
+References: <20200408202711.1198966-1-arnd@arndb.de>
+ <20200408202711.1198966-6-arnd@arndb.de>
+ <20200414201739.GJ19819@pendragon.ideasonboard.com>
+ <CAK8P3a0hd5bsezrJS3+GV2nRMui4P5yeD2Rk7wQpJsAZeOCOUg@mail.gmail.com>
+ <20200414205158.GM19819@pendragon.ideasonboard.com>
+ <CAK8P3a1PZbwdvdH_Gi9UQVUz2+_a8QDxKuWLqPtjhK1stxzMBQ@mail.gmail.com>
+ <CAMuHMdUb=XXucGUbxt26tZ1xu9pdyVUB8RVsfB2SffURVVXwSg@mail.gmail.com>
+ <CAK8P3a1uasBFg9dwvPEcokrRhYE2qh6iwOMW1fDTY+LBZMrTjg@mail.gmail.com>
+ <CAK8P3a0CoPUTSJp6ddDnmabo59iE73pugGSYayoeB5N57az9_w@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a0CoPUTSJp6ddDnmabo59iE73pugGSYayoeB5N57az9_w@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-At the moment, check_xadd() uses a blacklist to decide whether a given
-pointer type should be usable with the XADD instruction. Out of all the
-pointer types that check_mem_access() accepts, only four are currently let
-through by check_xadd():
+Hi Arnd,
 
-PTR_TO_MAP_VALUE
-PTR_TO_CTX           rejected
-PTR_TO_STACK
-PTR_TO_PACKET        rejected
-PTR_TO_PACKET_META   rejected
-PTR_TO_FLOW_KEYS     rejected
-PTR_TO_SOCKET        rejected
-PTR_TO_SOCK_COMMON   rejected
-PTR_TO_TCP_SOCK      rejected
-PTR_TO_XDP_SOCK      rejected
-PTR_TO_TP_BUFFER
-PTR_TO_BTF_ID
+On Wed, Apr 15, 2020 at 09:07:14PM +0200, Arnd Bergmann wrote:
+> On Wed, Apr 15, 2020 at 5:18 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> > On Wed, Apr 15, 2020 at 4:13 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > > On Wed, Apr 15, 2020 at 3:47 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> > > > On Tue, Apr 14, 2020 at 10:52 PM Laurent Pinchart <laurent.pinchart@ideasonboard.com> wrote:
+> > > > > Doesn't "imply" mean it gets selected by default but can be manually
+> > > > > disabled ?
+> > > >
+> > > > That may be what it means now (I still don't understand how it's defined
+> > > > as of v5.7-rc1), but traditionally it was more like a 'select if all
+> > > > dependencies are met'.
+> > >
+> > > That's still what it is supposed to mean right now ;-)
+> > > Except that now it should correctly handle the modular case, too.
+> >
+> > Then there is a bug. If I run 'make menuconfig' now on a mainline kernel
+> > and enable CONFIG_DRM_RCAR_DU, I can set
+> > DRM_RCAR_CMM and DRM_RCAR_LVDS to 'y', 'n' or 'm' regardless
+> > of whether CONFIG_DRM_RCAR_DU is 'm' or 'y'. The 'implies'
+> > statement seems to be ignored entirely, except as reverse 'default'
+> > setting.
+> 
+> Here is another version that should do what we want and is only
+> half-ugly. I can send that as a proper patch if it passes my testing
+> and nobody hates it too much.
 
-Looking at the currently permitted ones:
+This may be a stupid question, but doesn't this really call for fixing
+Kconfig ? This seems to be such a common pattern that requiring
+constructs similar to the ones below will be a never-ending chase of
+offenders.
 
- - PTR_TO_MAP_VALUE: This makes sense and is the primary usecase for XADD.
- - PTR_TO_STACK: This doesn't make much sense, there is no concurrency on
-   the BPF stack. It also causes confusion further down, because the first
-   check_mem_access() won't check whether the stack slot being read from is
-   STACK_SPILL and the second check_mem_access() assumes in
-   check_stack_write() that the value being written is a normal scalar.
-   This means that unprivileged users can leak kernel pointers.
- - PTR_TO_TP_BUFFER: This is a local output buffer without concurrency.
- - PTR_TO_BTF_ID: This is read-only, XADD can't work. When the verifier
-   tries to verify XADD on such memory, the first check_ptr_to_btf_access()
-   invocation gets confused by value_regno not being a valid array index
-   and writes to out-of-bounds memory.
+> diff --git a/drivers/gpu/drm/rcar-du/Kconfig b/drivers/gpu/drm/rcar-du/Kconfig
+> index 0919f1f159a4..d2fcec807dfa 100644
+> --- a/drivers/gpu/drm/rcar-du/Kconfig
+> +++ b/drivers/gpu/drm/rcar-du/Kconfig
+> @@ -4,8 +4,6 @@ config DRM_RCAR_DU
+>         depends on DRM && OF
+>         depends on ARM || ARM64
+>         depends on ARCH_RENESAS || COMPILE_TEST
+> -       imply DRM_RCAR_CMM
+> -       imply DRM_RCAR_LVDS
+>         select DRM_KMS_HELPER
+>         select DRM_KMS_CMA_HELPER
+>         select DRM_GEM_CMA_HELPER
+> @@ -14,13 +12,17 @@ config DRM_RCAR_DU
+>           Choose this option if you have an R-Car chipset.
+>           If M is selected the module will be called rcar-du-drm.
+> 
+> -config DRM_RCAR_CMM
+> -       tristate "R-Car DU Color Management Module (CMM) Support"
+> -       depends on DRM && OF
+> +config DRM_RCAR_USE_CMM
+> +       bool "R-Car DU Color Management Module (CMM) Support"
+>         depends on DRM_RCAR_DU
+> +       default DRM_RCAR_DU
+>         help
+>           Enable support for R-Car Color Management Module (CMM).
+> 
+> +config DRM_RCAR_CMM
+> +       def_tristate DRM_RCAR_DU
+> +       depends on DRM_RCAR_USE_CMM
+> +
+>  config DRM_RCAR_DW_HDMI
+>         tristate "R-Car DU Gen3 HDMI Encoder Support"
+>         depends on DRM && OF
+> @@ -28,15 +30,20 @@ config DRM_RCAR_DW_HDMI
+>         help
+>           Enable support for R-Car Gen3 internal HDMI encoder.
+> 
+> -config DRM_RCAR_LVDS
+> -       tristate "R-Car DU LVDS Encoder Support"
+> -       depends on DRM && DRM_BRIDGE && OF
+> +config DRM_RCAR_USE_LVDS
+> +       bool "R-Car DU LVDS Encoder Support"
+> +       depends on DRM_BRIDGE && OF
+> +       default DRM_RCAR_DU
+>         select DRM_PANEL
+>         select OF_FLATTREE
+>         select OF_OVERLAY
+>         help
+>           Enable support for the R-Car Display Unit embedded LVDS encoders.
+> 
+> +config DRM_RCAR_LVDS
+> +       def_tristate DRM_RCAR_DU
+> +       depends on DRM_RCAR_USE_LVDS
+> +
+>  config DRM_RCAR_VSP
+>         bool "R-Car DU VSP Compositor Support" if ARM
+>         default y if ARM64
 
-Limit XADD to PTR_TO_MAP_VALUE, since everything else at least doesn't make
-sense, and is sometimes broken on top of that.
-
-Fixes: 17a5267067f3 ("bpf: verifier (add verifier core)")
-Signed-off-by: Jann Horn <jannh@google.com>
----
-I'm just sending this on the public list, since the worst-case impact for
-non-root users is leaking kernel pointers to userspace. In a context where
-you can reach BPF (no sandboxing), I don't think that kernel ASLR is very
-effective at the moment anyway.
-
-This breaks ten unit tests that assume that XADD is possible on the stack,
-and I'm not sure how all of them should be fixed up; I'd appreciate it if
-someone else could figure out how to fix them. I think some of them might
-be using XADD to cast pointers to numbers, or something like that? But I'm
-not sure.
-
-Or is XADD on the stack actually something you want to support for some
-reason, meaning that that part would have to be fixed differently?
-
- kernel/bpf/verifier.c | 27 +--------------------------
- 1 file changed, 1 insertion(+), 26 deletions(-)
-
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 38cfcf701eeb7..397c17a2e970f 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -2699,28 +2699,6 @@ static bool is_ctx_reg(struct bpf_verifier_env *env, int regno)
- 	return reg->type == PTR_TO_CTX;
- }
- 
--static bool is_sk_reg(struct bpf_verifier_env *env, int regno)
--{
--	const struct bpf_reg_state *reg = reg_state(env, regno);
--
--	return type_is_sk_pointer(reg->type);
--}
--
--static bool is_pkt_reg(struct bpf_verifier_env *env, int regno)
--{
--	const struct bpf_reg_state *reg = reg_state(env, regno);
--
--	return type_is_pkt_pointer(reg->type);
--}
--
--static bool is_flow_key_reg(struct bpf_verifier_env *env, int regno)
--{
--	const struct bpf_reg_state *reg = reg_state(env, regno);
--
--	/* Separate to is_ctx_reg() since we still want to allow BPF_ST here. */
--	return reg->type == PTR_TO_FLOW_KEYS;
--}
--
- static int check_pkt_ptr_alignment(struct bpf_verifier_env *env,
- 				   const struct bpf_reg_state *reg,
- 				   int off, int size, bool strict)
-@@ -3298,10 +3276,7 @@ static int check_xadd(struct bpf_verifier_env *env, int insn_idx, struct bpf_ins
- 		return -EACCES;
- 	}
- 
--	if (is_ctx_reg(env, insn->dst_reg) ||
--	    is_pkt_reg(env, insn->dst_reg) ||
--	    is_flow_key_reg(env, insn->dst_reg) ||
--	    is_sk_reg(env, insn->dst_reg)) {
-+	if (reg_state(env, insn->dst_reg)->type != PTR_TO_MAP_VALUE) {
- 		verbose(env, "BPF_XADD stores into R%d %s is not allowed\n",
- 			insn->dst_reg,
- 			reg_type_str[reg_state(env, insn->dst_reg)->type]);
-
-base-commit: 87b0f983f66f23762921129fd35966eddc3f2dae
 -- 
-2.26.0.110.g2183baf09c-goog
+Regards,
 
+Laurent Pinchart
