@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 757261AA15F
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 14:46:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA7A01AA153
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 14:46:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2441297AbgDOMid (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 08:38:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36406 "EHLO mail.kernel.org"
+        id S369898AbgDOMhN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 08:37:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36570 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2897552AbgDOLoB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Apr 2020 07:44:01 -0400
+        id S2897561AbgDOLoF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Apr 2020 07:44:05 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C104F20936;
-        Wed, 15 Apr 2020 11:43:59 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1DFE72137B;
+        Wed, 15 Apr 2020 11:44:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586951040;
-        bh=RcHhJ91AHTGJVw8sl+DGn5fvCtyzvZPESe/szQp5q28=;
+        s=default; t=1586951042;
+        bh=bVX46KhkbkCHDIA/scQ1dBlN5PmtSFZfWNNUIRuWydQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o1HYrom2SdV4pKeZ7LVIe2Pc4FkPSFEBOisgJBNotz0Gx3DIO6H740UDaUkoay0EG
-         lePOTIFjwDBJs/UR24V19MQkwEedhmawSK0qNMJEcHioOk16pH70feTxujec1NpbzW
-         Abx6XH/Gxw5pbbxQCCJQs72YQFStqmAO6d2NrjH8=
+        b=A/2NSaTlzsrvJl4x7uRVzU26yE5OB6YyUPBUNjU5CW0Lnw2zEFt67RdAkV4+YQOy2
+         gWh4V9U45fBowBzI25LcuCWEt2h1VLwVhnABg7gXSzYw1HrAR8skcpL78WPJFogBFl
+         xGAEX6v32mf+Zm6s+LFAmeIZc1ajR/5OEWfkmPII=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 076/106] net: phy: micrel: kszphy_resume(): add delay after genphy_resume() before accessing PHY registers
-Date:   Wed, 15 Apr 2020 07:41:56 -0400
-Message-Id: <20200415114226.13103-76-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.5 078/106] net: stmmac: xgmac: Fix VLAN register handling
+Date:   Wed, 15 Apr 2020 07:41:58 -0400
+Message-Id: <20200415114226.13103-78-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200415114226.13103-1-sashal@kernel.org>
 References: <20200415114226.13103-1-sashal@kernel.org>
@@ -45,66 +45,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oleksij Rempel <o.rempel@pengutronix.de>
+From: Jose Abreu <Jose.Abreu@synopsys.com>
 
-[ Upstream commit 6110dff776f7fa65c35850ef65b41d3b39e2fac2 ]
+[ Upstream commit 21f64e72e7073199a6f8d7d8efe52cd814d7d665 ]
 
-After the power-down bit is cleared, the chip internally triggers a
-global reset. According to the KSZ9031 documentation, we have to wait at
-least 1ms for the reset to finish.
+Commit 907a076881f1, forgot that we need to clear old values of
+XGMAC_VLAN_TAG register when we switch from VLAN perfect matching to
+HASH matching.
 
-If the chip is accessed during reset, read will return 0xffff, while
-write will be ignored. Depending on the system performance and MDIO bus
-speed, we may or may not run in to this issue.
+Fix it.
 
-This bug was discovered on an iMX6QP system with KSZ9031 PHY and
-attached PHY interrupt line. If IRQ was used, the link status update was
-lost. In polling mode, the link status update was always correct.
-
-The investigation showed, that during a read-modify-write access, the
-read returned 0xffff (while the chip was still in reset) and
-corresponding write hit the chip _after_ reset and triggered (due to the
-0xffff) another reset in an undocumented bit (register 0x1f, bit 1),
-resulting in the next write being lost due to the new reset cycle.
-
-This patch fixes the issue by adding a 1...2 ms sleep after the
-genphy_resume().
-
-Fixes: 836384d2501d ("net: phy: micrel: Add specific suspend")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Fixes: 907a076881f1 ("net: stmmac: xgmac: fix incorrect XGMAC_VLAN_TAG register writting")
+Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/micrel.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 63dedec0433de..51b64f0877172 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -25,6 +25,7 @@
- #include <linux/micrel_phy.h>
- #include <linux/of.h>
- #include <linux/clk.h>
-+#include <linux/delay.h>
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
+index e9bf54a579df6..f0b9c43f6e31e 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
+@@ -576,8 +576,13 @@ static void dwxgmac2_update_vlan_hash(struct mac_device_info *hw, u32 hash,
+ 			value |= XGMAC_VLAN_EDVLP;
+ 			value |= XGMAC_VLAN_ESVL;
+ 			value |= XGMAC_VLAN_DOVLTC;
++		} else {
++			value &= ~XGMAC_VLAN_EDVLP;
++			value &= ~XGMAC_VLAN_ESVL;
++			value &= ~XGMAC_VLAN_DOVLTC;
+ 		}
  
- /* Operation Mode Strap Override */
- #define MII_KSZPHY_OMSO				0x16
-@@ -902,6 +903,12 @@ static int kszphy_resume(struct phy_device *phydev)
++		value &= ~XGMAC_VLAN_VID;
+ 		writel(value, ioaddr + XGMAC_VLAN_TAG);
+ 	} else if (perfect_match) {
+ 		u32 value = readl(ioaddr + XGMAC_PACKET_FILTER);
+@@ -588,13 +593,19 @@ static void dwxgmac2_update_vlan_hash(struct mac_device_info *hw, u32 hash,
  
- 	genphy_resume(phydev);
+ 		value = readl(ioaddr + XGMAC_VLAN_TAG);
  
-+	/* After switching from power-down to normal mode, an internal global
-+	 * reset is automatically generated. Wait a minimum of 1 ms before
-+	 * read/write access to the PHY registers.
-+	 */
-+	usleep_range(1000, 2000);
-+
- 	ret = kszphy_config_reset(phydev);
- 	if (ret)
- 		return ret;
++		value &= ~XGMAC_VLAN_VTHM;
+ 		value |= XGMAC_VLAN_ETV;
+ 		if (is_double) {
+ 			value |= XGMAC_VLAN_EDVLP;
+ 			value |= XGMAC_VLAN_ESVL;
+ 			value |= XGMAC_VLAN_DOVLTC;
++		} else {
++			value &= ~XGMAC_VLAN_EDVLP;
++			value &= ~XGMAC_VLAN_ESVL;
++			value &= ~XGMAC_VLAN_DOVLTC;
+ 		}
+ 
++		value &= ~XGMAC_VLAN_VID;
+ 		writel(value | perfect_match, ioaddr + XGMAC_VLAN_TAG);
+ 	} else {
+ 		u32 value = readl(ioaddr + XGMAC_PACKET_FILTER);
 -- 
 2.20.1
 
