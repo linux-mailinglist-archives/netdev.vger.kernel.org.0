@@ -2,100 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36D1F1A9289
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 07:31:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C66AD1A9297
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 07:42:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393334AbgDOFbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 01:31:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53394 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728590AbgDOFbH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Apr 2020 01:31:07 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F372020767;
-        Wed, 15 Apr 2020 05:31:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586928665;
-        bh=JIjqmDp1sR3dCa7tuSFYE8h4yUg3CUtUZbKogGuMrg4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DXfnAA8ykHLfwWvYnTxVAdeNxPE1hg/7KlpdZtFIuTg0SwqySNABqyEBTVRNsiFOU
-         wITpl8y71eiELF+l5o5uNuYMT99b1xZZncQACZHb2U8WTSrh+000m3vqfY9EJ5zugm
-         4npQzdLjCjI14bYMSdMaHQmXsRiV9Bt5yk74khN0=
-Date:   Wed, 15 Apr 2020 08:31:01 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, Edward Cree <ecree@solarflare.com>,
-        Or Gerlitz <gerlitz.or@gmail.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stable <stable@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for
- representors
-Message-ID: <20200415053101.GC1239315@unreal>
-References: <20200411231413.26911-9-sashal@kernel.org>
- <CAJ3xEMhhtj77M5vercHDMAHPPVZ8ZF-eyCVQgD4ZZ1Ur3Erbdw@mail.gmail.com>
- <20200412105935.49dacbf7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200414015627.GA1068@sasha-vm>
- <CAJ3xEMh=PGVSddBWOX7U6uAuazJLFkCpWQNxhg7dDRgnSdQ=xA@mail.gmail.com>
- <20200414110911.GA341846@kroah.com>
- <CAJ3xEMhnXZB-HU7aL3m9A1N_GPxgOC3U4skF_qWL8z3wnvSKPw@mail.gmail.com>
- <a89a592a-5a11-5e56-a086-52b1694e00db@solarflare.com>
- <20200414173718.GE1011271@unreal>
- <20200414225009.GX3141@unicorn.suse.cz>
+        id S2390403AbgDOFmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 01:42:08 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:44846 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2393366AbgDOFmA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 01:42:00 -0400
+Received: by mail-ed1-f65.google.com with SMTP id dm15so783211edb.11;
+        Tue, 14 Apr 2020 22:41:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8GnTx0izeYvyDZyS+vHAcMDpC99flKBZNWxhXwvZUWs=;
+        b=VUo1VXpmPj24j9xkbeVdkMd+L04jWL0kfZdB/gRDY0KeR5K3VLnKPQ0Rm/gfK0sCLD
+         IvKHdUmyiP2pzPzKUMTR0ieFZ2iUXZlGB8nkeL0BbiUB+3PS6yC9IWuUVY2iQFKF4FS6
+         JDIcNGiwV6TKuFbzSPYVb0dwx5T7OzW/OA0KXG3EbFpNE71QShmdTVz/rvVo41y7BIgk
+         bH18UK10XZRIjyQBTT6sGH/lceT3h+r5i9IgQFuFvqhtY24WtJl5gDZVDOzLBaJmx9u+
+         T7z9HUrhYyOVMAz7DwZ7/4W312hRA5iA8vFbGRn4io57EkiM/s7Dy1TZCE89848U94CB
+         qK3g==
+X-Gm-Message-State: AGi0PuYXfl+ixOxF+UQ6y1PyOut1UZfAtlJLFAjmq6zIRkYBzU/NC4wb
+        OZcshP2krUbhldIqlez9TrcCBRbx71U=
+X-Google-Smtp-Source: APiQypL/n8V+ZQZvugotPgd7z7T851tPo40Y+C9GSeXYEOpO2KRYIssrjtM+WKpLsET5dnbpFWruFA==
+X-Received: by 2002:a17:906:6b10:: with SMTP id q16mr3468776ejr.170.1586929317849;
+        Tue, 14 Apr 2020 22:41:57 -0700 (PDT)
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com. [209.85.221.51])
+        by smtp.gmail.com with ESMTPSA id ce16sm2445776ejc.74.2020.04.14.22.41.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Apr 2020 22:41:57 -0700 (PDT)
+Received: by mail-wr1-f51.google.com with SMTP id x18so13265426wrq.2;
+        Tue, 14 Apr 2020 22:41:57 -0700 (PDT)
+X-Received: by 2002:a5d:65d2:: with SMTP id e18mr19082552wrw.104.1586929316945;
+ Tue, 14 Apr 2020 22:41:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200414225009.GX3141@unicorn.suse.cz>
+References: <20200414223952.5886-1-f.fainelli@gmail.com>
+In-Reply-To: <20200414223952.5886-1-f.fainelli@gmail.com>
+From:   Chen-Yu Tsai <wens@csie.org>
+Date:   Wed, 15 Apr 2020 13:41:47 +0800
+X-Gmail-Original-Message-ID: <CAGb2v65XwJ30_g1qf5a=1LR63BZ=DEq0qG9GQae0YuZfH1C79g@mail.gmail.com>
+Message-ID: <CAGb2v65XwJ30_g1qf5a=1LR63BZ=DEq0qG9GQae0YuZfH1C79g@mail.gmail.com>
+Subject: Re: [PATCH net] net: stmmac: dwmac-sunxi: Provide TX and RX fifo sizes
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>, olteanv@gmail.com,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Ripard <mripard@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        "moderated list:ARM/Allwinner sunXi SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/STM32 ARCHITECTURE" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 15, 2020 at 12:50:09AM +0200, Michal Kubecek wrote:
-> On Tue, Apr 14, 2020 at 08:37:18PM +0300, Leon Romanovsky wrote:
-> >
-> > The autoselection process works good enough for everything outside
-> > of netdev community.
+On Wed, Apr 15, 2020 at 6:40 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
 >
-> That's very far from true. I have seen and heard many complaints about
-> AUTOSEL and inflation of stable trees in general, both in private and in
-> public lists. It was also discussed on Kernel Summit few times - with
-> little success.
-
-I'm aware of the discussions and the cases brought there. From what I
-saw, Sasha and Greg came with numbers and process that is much better
-than anything else we had before. While the opponents came with very
-narrow examples of imperfections in AUTOSEL machinery.
-
-Of course, the AUTOSEL mechanism is not perfect and prone to errors,
-but it is much better than try to rely on the developers good will to
-add Fixes and stable@ tag.
-
-It is pretty easy to be biased while receiving those complaints, because
-people are contacting us only if something is broken. I imagine that no one
-is approaching you and expressing his happiness with stable@ or anything
-else.
-
-Just for fun and to get perspective, for one my very popular tool, which
-I wrote two years ago, I received only ONE "thank you" email that says that
-this tool works as expected and helped to identify the problem.
-
-And personally, I'm running latest Fedora on all my servers and laptop and
-it works great - stable and reliable.
-
-Thanks
-
+> After commit bfcb813203e619a8960a819bf533ad2a108d8105 ("net: dsa:
+> configure the MTU for switch ports") my Lamobo R1 platform which uses
+> an allwinner,sun7i-a20-gmac compatible Ethernet MAC started to fail
+> by rejecting a MTU of 1536. The reason for that is that the DMA
+> capabilities are not readable on this version of the IP, and there
+> is also no 'tx-fifo-depth' property being provided in Device Tree. The
+> property is documented as optional, and is not provided.
 >
-> Just for fun, I suggest everyone to read first section of
-> Documentation/process/stable-kernel-rules.rst and compare with today's
-> reality. Of course, rules can change over time but keeping that document
-> in kernel tree as a memento is rather sad - I went through the rules now
-> and there are only three which are not broken on a regular basis these
-> days.
+> Chen-Yu indicated that the FIFO sizes are 4KB for TX and 16KB for RX, so
+> provide these values through platform data as an immediate fix until
+> various Device Tree sources get updated accordingly.
 >
-> Michal Kubecek
+> Fixes: eaf4fac47807 ("net: stmmac: Do not accept invalid MTU values")
+> Suggested-by: Chen-Yu Tsai <wens@csie.org>
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+
+Acked-by: Chen-Yu Tsai <wens@csie.org>
