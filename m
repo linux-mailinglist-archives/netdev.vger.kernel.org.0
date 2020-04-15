@@ -2,219 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89D8E1AA264
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 14:59:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 324061AA428
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 15:23:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S370618AbgDOMyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 08:54:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57196 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2897211AbgDOLhJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Apr 2020 07:37:09 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8945121655;
-        Wed, 15 Apr 2020 11:37:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586950628;
-        bh=rI3d2YA9aZuRLd7E17D8Cdw174lWSEQaOukM4bC5a0o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oJ89LTHQZLaWOMXZsnClK7jP3H+0+Ut8qjWjVRyzODAlxVcM7OfC6qqZrBCV/oAfo
-         KByPXrix4poR3vSpQA+4LcNGxWWo7t3INyF2j1GqMkgBPEAn8WfoE+ydRw3QzKUPe7
-         1TFDW13mv34PLw8hF6EqoaacZdis8J7MRi6sCeno=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chuck Lever <chuck.lever@oracle.com>,
-        Benjamin Coddington <bcodding@redhat.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 119/129] sunrpc: Fix gss_unwrap_resp_integ() again
-Date:   Wed, 15 Apr 2020 07:34:34 -0400
-Message-Id: <20200415113445.11881-119-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200415113445.11881-1-sashal@kernel.org>
-References: <20200415113445.11881-1-sashal@kernel.org>
+        id S370783AbgDONSi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 09:18:38 -0400
+Received: from mail-am6eur05on2107.outbound.protection.outlook.com ([40.107.22.107]:34112
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2897012AbgDOLfE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Apr 2020 07:35:04 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LhzP1uGNnQk6csSdnY0ACZ/q/TWh4j4oGbtaD9G0oi/FoAnkkeqf//DwVhfCpOFlzHIQh2e6KYHrz3R6FG0Hykdfm3DxJYZJvR5u5Q0ulYMXXcet8DMIuM2Hmuu0oMpOf09SwmSCXf8Z69a7CDNveKVZM4GVI3U8mpb+JTGrJaXHy0Q6v8WlClzdSH9+SCBxKZ8xcITgPEa4Oz7gAqeqOd6Bumk/Bix/PXmeBO5+mk15ge58P+6vSY0VB/lalh+7PXrYrO0dfdBq1Aa2utrEnLjqbWWbGRIqWnK/eLwp1dbIl7zfEvDomTbZYIN6+Z4numXd1F8/Buykv8y7vm42KA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5gh/2NdgvetxP4k4eQjfDU2laTC+uwc/yg5UlMCp2nk=;
+ b=ezYusPOkE7xMbSZy10OsWCI8DTLPjJPhN3mtaJerDaj7ox5ROKgJKNUxb9J9EdO5EiTDu64K9utHKmj5oXujTc1Mtgd7lGo0POSjhlF3jc3Rp/Wg66JMuhJmyGBxSCZuxc02duo5ZPWwumBpEtPBWOLROXL3YV9SvpSsgRVCD/ju8EOl8GYWBYV47J+3y3zj6qsloOqDRFYOa8H6j/j2VWIOldLibsVG0nBmIMiqPJ9sGU6+Ohz5Zl7bsxQMdPnx68rklgj3HLuTEWyTGglKMeAHgAf0kvhkr3MoaYEqRDw6b5h2hFGPExCh/dpBU1seVIHYJOfUwG1y5KDqkxfSKg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=dektech.com.au; dmarc=pass action=none
+ header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5gh/2NdgvetxP4k4eQjfDU2laTC+uwc/yg5UlMCp2nk=;
+ b=iyG1BWw5nOwepAjVWUr7QkVPVnVgfImZKmHkR0D0IEE56uNlLLZKVmszc63r/KlkSET/+vR+yoFc0SyUCZA99kBgE4k0O2NCAluYfQZQAsOuSsXLxslcPudacZYHXaOqNJq8h/DTZT8BogSS0wzWzGY4eGIU/UmJQeZxGMFa8W4=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=tuong.t.lien@dektech.com.au; 
+Received: from AM6PR0502MB3925.eurprd05.prod.outlook.com (2603:10a6:209:5::28)
+ by AM6PR0502MB3991.eurprd05.prod.outlook.com (2603:10a6:209:1e::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2900.26; Wed, 15 Apr
+ 2020 11:34:58 +0000
+Received: from AM6PR0502MB3925.eurprd05.prod.outlook.com
+ ([fe80::5941:e5bd:759c:dd8c]) by AM6PR0502MB3925.eurprd05.prod.outlook.com
+ ([fe80::5941:e5bd:759c:dd8c%6]) with mapi id 15.20.2900.028; Wed, 15 Apr 2020
+ 11:34:58 +0000
+From:   Tuong Lien <tuong.t.lien@dektech.com.au>
+To:     davem@davemloft.net, jmaloy@redhat.com, maloy@donjonn.com,
+        ying.xue@windriver.com, netdev@vger.kernel.org
+Cc:     tipc-discussion@lists.sourceforge.net
+Subject: [net] tipc: fix incorrect increasing of link window
+Date:   Wed, 15 Apr 2020 18:34:49 +0700
+Message-Id: <20200415113449.7289-1-tuong.t.lien@dektech.com.au>
+X-Mailer: git-send-email 2.13.7
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR01CA0101.apcprd01.prod.exchangelabs.com
+ (2603:1096:3:15::27) To AM6PR0502MB3925.eurprd05.prod.outlook.com
+ (2603:10a6:209:5::28)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from dektech.com.au (113.22.229.239) by SG2PR01CA0101.apcprd01.prod.exchangelabs.com (2603:1096:3:15::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.2921.25 via Frontend Transport; Wed, 15 Apr 2020 11:34:56 +0000
+X-Mailer: git-send-email 2.13.7
+X-Originating-IP: [113.22.229.239]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 86beeef1-20ae-4022-2edf-08d7e13106de
+X-MS-TrafficTypeDiagnostic: AM6PR0502MB3991:
+X-Microsoft-Antispam-PRVS: <AM6PR0502MB3991FD00AE1EA6DEDD1747ADE2DB0@AM6PR0502MB3991.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3826;
+X-Forefront-PRVS: 0374433C81
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR0502MB3925.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10019020)(366004)(136003)(39840400004)(376002)(346002)(396003)(4326008)(6666004)(316002)(66476007)(66556008)(2616005)(2906002)(8936002)(52116002)(956004)(7696005)(5660300002)(8676002)(55016002)(478600001)(86362001)(103116003)(1076003)(36756003)(16526019)(186003)(81156014)(26005)(66946007);DIR:OUT;SFP:1102;
+Received-SPF: None (protection.outlook.com: dektech.com.au does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 1bQw7psW8vQPTFWUHKOOmmwAXBiunW6dD+/kB3Tr9EsyAFx+MU6gWWqJCs1giRsXK9G80RsHTv4tEku5j1SgIXgwxhTLyceZddg8zoSmtj8e/8/sPAsrivCS4U+dVqdgorWRbvm82jdJI7OXbfDVOLe+yGB2Z0r0Wk9GEUzLua1W563P5sxRf920PFjkd4UNXrE1yOv5+jR86cz4DWLeKoDXK0PaCtDlDazSsoDLmoyE8Ns9lOIHPF6wf7SZ9l96bIaqQ+vIir4FGMAaB4nafDg9bZGZXMBhYuaTXNF2o2WS0K9QPRVdO1stuCmf2QFQv86AjGpddujEKcj/Yj7WzJMWsoehFLQU1MII1PWKEWtkx3CdTIlPBQzkUoTC0oV2W2oXbS6XmYGzZv7XuhTAOwborbH0CKVPcKD4oMVspFIcPcwVj09OTsOwZVMYQd7y
+X-MS-Exchange-AntiSpam-MessageData: L3FpgzSCyUNll8nva/eSmQGZlbsvRTnIqpv/YsW7vXz8wCyIuhJ1Lq6jFKBxkys5Uf0qZqxR7xwFX2Yam9TVu5c8OuMN7zJxUHHlqi/p4GVkBfx+jwn8M0hn9J/zOX4KMuvjB0Ky8URPtDoAgAr4Ig==
+X-OriginatorOrg: dektech.com.au
+X-MS-Exchange-CrossTenant-Network-Message-Id: 86beeef1-20ae-4022-2edf-08d7e13106de
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Apr 2020 11:34:58.4344
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KZ8NbuXKeqJSZHQ4DsS6+FgwgN/BvAX6OTnfDw8q8+mEyeybu3FdTmU9YxTBuPlRJnmR4gwOH6/rp98Z2/pRdozv0NX9AAJxOo054q33dWM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0502MB3991
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+In commit 16ad3f4022bb ("tipc: introduce variable window congestion
+control"), we allow link window to change with the congestion avoidance
+algorithm. However, there is a bug that during the slow-start if packet
+retransmission occurs, the link will enter the fast-recovery phase, set
+its window to the 'ssthresh' which is never less than 300, so the link
+window suddenly increases to that limit instead of decreasing.
 
-[ Upstream commit 4047aa909c4a40fceebc36fff708d465a4d3c6e2 ]
+Consequently, two issues have been observed:
 
-xdr_buf_read_mic() tries to find unused contiguous space in a
-received xdr_buf in order to linearize the checksum for the call
-to gss_verify_mic. However, the corner cases in this code are
-numerous and we seem to keep missing them. I've just hit yet
-another buffer overrun related to it.
+- For broadcast-link: it can leave a gap between the link queues that a
+new packet will be inserted and sent before the previous ones, i.e. not
+in-order.
 
-This overrun is at the end of xdr_buf_read_mic():
+- For unicast: the algorithm does not work as expected, the link window
+jumps to the slow-start threshold whereas packet retransmission occurs.
 
-1284         if (buf->tail[0].iov_len != 0)
-1285                 mic->data = buf->tail[0].iov_base + buf->tail[0].iov_len;
-1286         else
-1287                 mic->data = buf->head[0].iov_base + buf->head[0].iov_len;
-1288         __read_bytes_from_xdr_buf(&subbuf, mic->data, mic->len);
-1289         return 0;
+This commit fixes the issues by avoiding such the link window increase,
+but still decreasing if the 'ssthresh' is lowered.
 
-This logic assumes the transport has set the length of the tail
-based on the size of the received message. base + len is then
-supposed to be off the end of the message but still within the
-actual buffer.
-
-In fact, the length of the tail is set by the upper layer when the
-Call is encoded so that the end of the tail is actually the end of
-the allocated buffer itself. This causes the logic above to set
-mic->data to point past the end of the receive buffer.
-
-The "mic->data = head" arm of this if statement is no less fragile.
-
-As near as I can tell, this has been a problem forever. I'm not sure
-that minimizing au_rslack recently changed this pathology much.
-
-So instead, let's use a more straightforward approach: kmalloc a
-separate buffer to linearize the checksum. This is similar to
-how gss_validate() currently works.
-
-Coming back to this code, I had some trouble understanding what
-was going on. So I've cleaned up the variable naming and added
-a few comments that point back to the XDR definition in RFC 2203
-to help guide future spelunkers, including myself.
-
-As an added clean up, the functionality that was in
-xdr_buf_read_mic() is folded directly into gss_unwrap_resp_integ(),
-as that is its only caller.
-
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-Reviewed-by: Benjamin Coddington <bcodding@redhat.com>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 16ad3f4022bb ("tipc: introduce variable window congestion control")
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
 ---
- net/sunrpc/auth_gss/auth_gss.c | 77 +++++++++++++++++++++++++---------
- 1 file changed, 58 insertions(+), 19 deletions(-)
+ net/tipc/link.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sunrpc/auth_gss/auth_gss.c b/net/sunrpc/auth_gss/auth_gss.c
-index d6cd2a519d9fb..2dc740acb3bf3 100644
---- a/net/sunrpc/auth_gss/auth_gss.c
-+++ b/net/sunrpc/auth_gss/auth_gss.c
-@@ -1935,35 +1935,69 @@ gss_unwrap_resp_auth(struct rpc_cred *cred)
- 	return 0;
- }
- 
-+/*
-+ * RFC 2203, Section 5.3.2.2
-+ *
-+ *	struct rpc_gss_integ_data {
-+ *		opaque databody_integ<>;
-+ *		opaque checksum<>;
-+ *	};
-+ *
-+ *	struct rpc_gss_data_t {
-+ *		unsigned int seq_num;
-+ *		proc_req_arg_t arg;
-+ *	};
-+ */
- static int
- gss_unwrap_resp_integ(struct rpc_task *task, struct rpc_cred *cred,
- 		      struct gss_cl_ctx *ctx, struct rpc_rqst *rqstp,
- 		      struct xdr_stream *xdr)
- {
--	struct xdr_buf integ_buf, *rcv_buf = &rqstp->rq_rcv_buf;
--	u32 data_offset, mic_offset, integ_len, maj_stat;
-+	struct xdr_buf gss_data, *rcv_buf = &rqstp->rq_rcv_buf;
- 	struct rpc_auth *auth = cred->cr_auth;
-+	u32 len, offset, seqno, maj_stat;
- 	struct xdr_netobj mic;
--	__be32 *p;
-+	int ret;
- 
--	p = xdr_inline_decode(xdr, 2 * sizeof(*p));
--	if (unlikely(!p))
-+	ret = -EIO;
-+	mic.data = NULL;
-+
-+	/* opaque databody_integ<>; */
-+	if (xdr_stream_decode_u32(xdr, &len))
- 		goto unwrap_failed;
--	integ_len = be32_to_cpup(p++);
--	if (integ_len & 3)
-+	if (len & 3)
- 		goto unwrap_failed;
--	data_offset = (u8 *)(p) - (u8 *)rcv_buf->head[0].iov_base;
--	mic_offset = integ_len + data_offset;
--	if (mic_offset > rcv_buf->len)
-+	offset = rcv_buf->len - xdr_stream_remaining(xdr);
-+	if (xdr_stream_decode_u32(xdr, &seqno))
- 		goto unwrap_failed;
--	if (be32_to_cpup(p) != rqstp->rq_seqno)
-+	if (seqno != rqstp->rq_seqno)
- 		goto bad_seqno;
-+	if (xdr_buf_subsegment(rcv_buf, &gss_data, offset, len))
-+		goto unwrap_failed;
- 
--	if (xdr_buf_subsegment(rcv_buf, &integ_buf, data_offset, integ_len))
-+	/*
-+	 * The xdr_stream now points to the beginning of the
-+	 * upper layer payload, to be passed below to
-+	 * rpcauth_unwrap_resp_decode(). The checksum, which
-+	 * follows the upper layer payload in @rcv_buf, is
-+	 * located and parsed without updating the xdr_stream.
-+	 */
-+
-+	/* opaque checksum<>; */
-+	offset += len;
-+	if (xdr_decode_word(rcv_buf, offset, &len))
-+		goto unwrap_failed;
-+	offset += sizeof(__be32);
-+	if (offset + len > rcv_buf->len)
- 		goto unwrap_failed;
--	if (xdr_buf_read_mic(rcv_buf, &mic, mic_offset))
-+	mic.len = len;
-+	mic.data = kmalloc(len, GFP_NOFS);
-+	if (!mic.data)
-+		goto unwrap_failed;
-+	if (read_bytes_from_xdr_buf(rcv_buf, offset, mic.data, mic.len))
- 		goto unwrap_failed;
--	maj_stat = gss_verify_mic(ctx->gc_gss_ctx, &integ_buf, &mic);
-+
-+	maj_stat = gss_verify_mic(ctx->gc_gss_ctx, &gss_data, &mic);
- 	if (maj_stat == GSS_S_CONTEXT_EXPIRED)
- 		clear_bit(RPCAUTH_CRED_UPTODATE, &cred->cr_flags);
- 	if (maj_stat != GSS_S_COMPLETE)
-@@ -1971,16 +2005,21 @@ gss_unwrap_resp_integ(struct rpc_task *task, struct rpc_cred *cred,
- 
- 	auth->au_rslack = auth->au_verfsize + 2 + 1 + XDR_QUADLEN(mic.len);
- 	auth->au_ralign = auth->au_verfsize + 2;
--	return 0;
-+	ret = 0;
-+
-+out:
-+	kfree(mic.data);
-+	return ret;
-+
- unwrap_failed:
- 	trace_rpcgss_unwrap_failed(task);
--	return -EIO;
-+	goto out;
- bad_seqno:
--	trace_rpcgss_bad_seqno(task, rqstp->rq_seqno, be32_to_cpup(p));
--	return -EIO;
-+	trace_rpcgss_bad_seqno(task, rqstp->rq_seqno, seqno);
-+	goto out;
- bad_mic:
- 	trace_rpcgss_verify_mic(task, maj_stat);
--	return -EIO;
-+	goto out;
- }
- 
- static int
+diff --git a/net/tipc/link.c b/net/tipc/link.c
+index 467c53a1fb5c..d4675e922a8f 100644
+--- a/net/tipc/link.c
++++ b/net/tipc/link.c
+@@ -1065,7 +1065,7 @@ static void tipc_link_update_cwin(struct tipc_link *l, int released,
+ 	/* Enter fast recovery */
+ 	if (unlikely(retransmitted)) {
+ 		l->ssthresh = max_t(u16, l->window / 2, 300);
+-		l->window = l->ssthresh;
++		l->window = min_t(u16, l->ssthresh, l->window);
+ 		return;
+ 	}
+ 	/* Enter slow start */
 -- 
-2.20.1
+2.13.7
 
