@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B58B11A9CC7
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 13:39:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89D8E1AA264
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 14:59:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2897256AbgDOLi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 07:38:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56938 "EHLO mail.kernel.org"
+        id S370618AbgDOMyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 08:54:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57196 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2897191AbgDOLg6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Apr 2020 07:36:58 -0400
+        id S2897211AbgDOLhJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Apr 2020 07:37:09 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3067D20936;
-        Wed, 15 Apr 2020 11:36:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8945121655;
+        Wed, 15 Apr 2020 11:37:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586950618;
-        bh=5KeCAVtoMwPKXDT6A0LjaClAan+jh+idXoAY0C6EKHk=;
+        s=default; t=1586950628;
+        bh=rI3d2YA9aZuRLd7E17D8Cdw174lWSEQaOukM4bC5a0o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zjd5mGFnUPF/gRqXr4D3UMYjrHWAoJF4huiMSGwitJpaSHT4rZEMIDpPe7+8zVA9J
-         5Z0id42S/foXjyyHyfEPLlZGA6XLC3x3MOl/i00+1W1vrH3npoFXjJqZIbpsc11qFQ
-         E7pHMltYc6UREb4t/jnUNfK/shB03XT6hU+v15fw=
+        b=oJ89LTHQZLaWOMXZsnClK7jP3H+0+Ut8qjWjVRyzODAlxVcM7OfC6qqZrBCV/oAfo
+         KByPXrix4poR3vSpQA+4LcNGxWWo7t3INyF2j1GqMkgBPEAn8WfoE+ydRw3QzKUPe7
+         1TFDW13mv34PLw8hF6EqoaacZdis8J7MRi6sCeno=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Olga Kornievskaia <olga.kornievskaia@gmail.com>,
-        Olga Kornievskaia <kolga@netapp.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
+Cc:     Chuck Lever <chuck.lever@oracle.com>,
+        Benjamin Coddington <bcodding@redhat.com>,
         Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 110/129] SUNRPC: fix krb5p mount to provide large enough buffer in rq_rcvsize
-Date:   Wed, 15 Apr 2020 07:34:25 -0400
-Message-Id: <20200415113445.11881-110-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.6 119/129] sunrpc: Fix gss_unwrap_resp_integ() again
+Date:   Wed, 15 Apr 2020 07:34:34 -0400
+Message-Id: <20200415113445.11881-119-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200415113445.11881-1-sashal@kernel.org>
 References: <20200415113445.11881-1-sashal@kernel.org>
@@ -46,122 +45,176 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Olga Kornievskaia <olga.kornievskaia@gmail.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit df513a7711712758b9cb1a48d86712e7e1ee03f4 ]
+[ Upstream commit 4047aa909c4a40fceebc36fff708d465a4d3c6e2 ]
 
-Ever since commit 2c94b8eca1a2 ("SUNRPC: Use au_rslack when computing
-reply buffer size"). It changed how "req->rq_rcvsize" is calculated. It
-used to use au_cslack value which was nice and large and changed it to
-au_rslack value which turns out to be too small.
+xdr_buf_read_mic() tries to find unused contiguous space in a
+received xdr_buf in order to linearize the checksum for the call
+to gss_verify_mic. However, the corner cases in this code are
+numerous and we seem to keep missing them. I've just hit yet
+another buffer overrun related to it.
 
-Since 5.1, v3 mount with sec=krb5p fails against an Ontap server
-because client's receive buffer it too small.
+This overrun is at the end of xdr_buf_read_mic():
 
-For gss krb5p, we need to account for the mic token in the verifier,
-and the wrap token in the wrap token.
+1284         if (buf->tail[0].iov_len != 0)
+1285                 mic->data = buf->tail[0].iov_base + buf->tail[0].iov_len;
+1286         else
+1287                 mic->data = buf->head[0].iov_base + buf->head[0].iov_len;
+1288         __read_bytes_from_xdr_buf(&subbuf, mic->data, mic->len);
+1289         return 0;
 
-RFC 4121 defines:
-mic token
-Octet no   Name        Description
-         --------------------------------------------------------------
-         0..1     TOK_ID     Identification field.  Tokens emitted by
-                             GSS_GetMIC() contain the hex value 04 04
-                             expressed in big-endian order in this
-                             field.
-         2        Flags      Attributes field, as described in section
-                             4.2.2.
-         3..7     Filler     Contains five octets of hex value FF.
-         8..15    SND_SEQ    Sequence number field in clear text,
-                             expressed in big-endian order.
-         16..last SGN_CKSUM  Checksum of the "to-be-signed" data and
-                             octet 0..15, as described in section 4.2.4.
+This logic assumes the transport has set the length of the tail
+based on the size of the received message. base + len is then
+supposed to be off the end of the message but still within the
+actual buffer.
 
-that's 16bytes (GSS_KRB5_TOK_HDR_LEN) + chksum
+In fact, the length of the tail is set by the upper layer when the
+Call is encoded so that the end of the tail is actually the end of
+the allocated buffer itself. This causes the logic above to set
+mic->data to point past the end of the receive buffer.
 
-wrap token
-Octet no   Name        Description
-         --------------------------------------------------------------
-          0..1     TOK_ID    Identification field.  Tokens emitted by
-                             GSS_Wrap() contain the hex value 05 04
-                             expressed in big-endian order in this
-                             field.
-          2        Flags     Attributes field, as described in section
-                             4.2.2.
-          3        Filler    Contains the hex value FF.
-          4..5     EC        Contains the "extra count" field, in big-
-                             endian order as described in section 4.2.3.
-          6..7     RRC       Contains the "right rotation count" in big-
-                             endian order, as described in section
-                             4.2.5.
-          8..15    SND_SEQ   Sequence number field in clear text,
-                             expressed in big-endian order.
-          16..last Data      Encrypted data for Wrap tokens with
-                             confidentiality, or plaintext data followed
-                             by the checksum for Wrap tokens without
-                             confidentiality, as described in section
-                             4.2.4.
+The "mic->data = head" arm of this if statement is no less fragile.
 
-Also 16bytes of header (GSS_KRB5_TOK_HDR_LEN), encrypted data, and cksum
-(other things like padding)
+As near as I can tell, this has been a problem forever. I'm not sure
+that minimizing au_rslack recently changed this pathology much.
 
-RFC 3961 defines known cksum sizes:
-Checksum type              sumtype        checksum         section or
-                                value            size         reference
-   ---------------------------------------------------------------------
-   CRC32                            1               4           6.1.3
-   rsa-md4                          2              16           6.1.2
-   rsa-md4-des                      3              24           6.2.5
-   des-mac                          4              16           6.2.7
-   des-mac-k                        5               8           6.2.8
-   rsa-md4-des-k                    6              16           6.2.6
-   rsa-md5                          7              16           6.1.1
-   rsa-md5-des                      8              24           6.2.4
-   rsa-md5-des3                     9              24             ??
-   sha1 (unkeyed)                  10              20             ??
-   hmac-sha1-des3-kd               12              20            6.3
-   hmac-sha1-des3                  13              20             ??
-   sha1 (unkeyed)                  14              20             ??
-   hmac-sha1-96-aes128             15              20         [KRB5-AES]
-   hmac-sha1-96-aes256             16              20         [KRB5-AES]
-   [reserved]                  0x8003               ?         [GSS-KRB5]
+So instead, let's use a more straightforward approach: kmalloc a
+separate buffer to linearize the checksum. This is similar to
+how gss_validate() currently works.
 
-Linux kernel now mainly supports type 15,16 so max cksum size is 20bytes.
-(GSS_KRB5_MAX_CKSUM_LEN)
+Coming back to this code, I had some trouble understanding what
+was going on. So I've cleaned up the variable naming and added
+a few comments that point back to the XDR definition in RFC 2203
+to help guide future spelunkers, including myself.
 
-Re-use already existing define of GSS_KRB5_MAX_SLACK_NEEDED that's used
-for encoding the gss_wrap tokens (same tokens are used in reply).
+As an added clean up, the functionality that was in
+xdr_buf_read_mic() is folded directly into gss_unwrap_resp_integ(),
+as that is its only caller.
 
-Fixes: 2c94b8eca1a2 ("SUNRPC: Use au_rslack when computing reply buffer size")
-Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
-Reviewed-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Reviewed-by: Benjamin Coddington <bcodding@redhat.com>
 Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/auth_gss/auth_gss.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/sunrpc/auth_gss/auth_gss.c | 77 +++++++++++++++++++++++++---------
+ 1 file changed, 58 insertions(+), 19 deletions(-)
 
 diff --git a/net/sunrpc/auth_gss/auth_gss.c b/net/sunrpc/auth_gss/auth_gss.c
-index 24ca861815b1d..d6cd2a519d9fb 100644
+index d6cd2a519d9fb..2dc740acb3bf3 100644
 --- a/net/sunrpc/auth_gss/auth_gss.c
 +++ b/net/sunrpc/auth_gss/auth_gss.c
-@@ -20,6 +20,7 @@
- #include <linux/sunrpc/clnt.h>
- #include <linux/sunrpc/auth.h>
- #include <linux/sunrpc/auth_gss.h>
-+#include <linux/sunrpc/gss_krb5.h>
- #include <linux/sunrpc/svcauth_gss.h>
- #include <linux/sunrpc/gss_err.h>
- #include <linux/workqueue.h>
-@@ -1050,7 +1051,7 @@ gss_create_new(const struct rpc_auth_create_args *args, struct rpc_clnt *clnt)
- 		goto err_put_mech;
- 	auth = &gss_auth->rpc_auth;
- 	auth->au_cslack = GSS_CRED_SLACK >> 2;
--	auth->au_rslack = GSS_VERF_SLACK >> 2;
-+	auth->au_rslack = GSS_KRB5_MAX_SLACK_NEEDED >> 2;
- 	auth->au_verfsize = GSS_VERF_SLACK >> 2;
- 	auth->au_ralign = GSS_VERF_SLACK >> 2;
- 	auth->au_flags = 0;
+@@ -1935,35 +1935,69 @@ gss_unwrap_resp_auth(struct rpc_cred *cred)
+ 	return 0;
+ }
+ 
++/*
++ * RFC 2203, Section 5.3.2.2
++ *
++ *	struct rpc_gss_integ_data {
++ *		opaque databody_integ<>;
++ *		opaque checksum<>;
++ *	};
++ *
++ *	struct rpc_gss_data_t {
++ *		unsigned int seq_num;
++ *		proc_req_arg_t arg;
++ *	};
++ */
+ static int
+ gss_unwrap_resp_integ(struct rpc_task *task, struct rpc_cred *cred,
+ 		      struct gss_cl_ctx *ctx, struct rpc_rqst *rqstp,
+ 		      struct xdr_stream *xdr)
+ {
+-	struct xdr_buf integ_buf, *rcv_buf = &rqstp->rq_rcv_buf;
+-	u32 data_offset, mic_offset, integ_len, maj_stat;
++	struct xdr_buf gss_data, *rcv_buf = &rqstp->rq_rcv_buf;
+ 	struct rpc_auth *auth = cred->cr_auth;
++	u32 len, offset, seqno, maj_stat;
+ 	struct xdr_netobj mic;
+-	__be32 *p;
++	int ret;
+ 
+-	p = xdr_inline_decode(xdr, 2 * sizeof(*p));
+-	if (unlikely(!p))
++	ret = -EIO;
++	mic.data = NULL;
++
++	/* opaque databody_integ<>; */
++	if (xdr_stream_decode_u32(xdr, &len))
+ 		goto unwrap_failed;
+-	integ_len = be32_to_cpup(p++);
+-	if (integ_len & 3)
++	if (len & 3)
+ 		goto unwrap_failed;
+-	data_offset = (u8 *)(p) - (u8 *)rcv_buf->head[0].iov_base;
+-	mic_offset = integ_len + data_offset;
+-	if (mic_offset > rcv_buf->len)
++	offset = rcv_buf->len - xdr_stream_remaining(xdr);
++	if (xdr_stream_decode_u32(xdr, &seqno))
+ 		goto unwrap_failed;
+-	if (be32_to_cpup(p) != rqstp->rq_seqno)
++	if (seqno != rqstp->rq_seqno)
+ 		goto bad_seqno;
++	if (xdr_buf_subsegment(rcv_buf, &gss_data, offset, len))
++		goto unwrap_failed;
+ 
+-	if (xdr_buf_subsegment(rcv_buf, &integ_buf, data_offset, integ_len))
++	/*
++	 * The xdr_stream now points to the beginning of the
++	 * upper layer payload, to be passed below to
++	 * rpcauth_unwrap_resp_decode(). The checksum, which
++	 * follows the upper layer payload in @rcv_buf, is
++	 * located and parsed without updating the xdr_stream.
++	 */
++
++	/* opaque checksum<>; */
++	offset += len;
++	if (xdr_decode_word(rcv_buf, offset, &len))
++		goto unwrap_failed;
++	offset += sizeof(__be32);
++	if (offset + len > rcv_buf->len)
+ 		goto unwrap_failed;
+-	if (xdr_buf_read_mic(rcv_buf, &mic, mic_offset))
++	mic.len = len;
++	mic.data = kmalloc(len, GFP_NOFS);
++	if (!mic.data)
++		goto unwrap_failed;
++	if (read_bytes_from_xdr_buf(rcv_buf, offset, mic.data, mic.len))
+ 		goto unwrap_failed;
+-	maj_stat = gss_verify_mic(ctx->gc_gss_ctx, &integ_buf, &mic);
++
++	maj_stat = gss_verify_mic(ctx->gc_gss_ctx, &gss_data, &mic);
+ 	if (maj_stat == GSS_S_CONTEXT_EXPIRED)
+ 		clear_bit(RPCAUTH_CRED_UPTODATE, &cred->cr_flags);
+ 	if (maj_stat != GSS_S_COMPLETE)
+@@ -1971,16 +2005,21 @@ gss_unwrap_resp_integ(struct rpc_task *task, struct rpc_cred *cred,
+ 
+ 	auth->au_rslack = auth->au_verfsize + 2 + 1 + XDR_QUADLEN(mic.len);
+ 	auth->au_ralign = auth->au_verfsize + 2;
+-	return 0;
++	ret = 0;
++
++out:
++	kfree(mic.data);
++	return ret;
++
+ unwrap_failed:
+ 	trace_rpcgss_unwrap_failed(task);
+-	return -EIO;
++	goto out;
+ bad_seqno:
+-	trace_rpcgss_bad_seqno(task, rqstp->rq_seqno, be32_to_cpup(p));
+-	return -EIO;
++	trace_rpcgss_bad_seqno(task, rqstp->rq_seqno, seqno);
++	goto out;
+ bad_mic:
+ 	trace_rpcgss_verify_mic(task, maj_stat);
+-	return -EIO;
++	goto out;
+ }
+ 
+ static int
 -- 
 2.20.1
 
