@@ -2,173 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 304141A9815
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 11:13:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7F8D1A9823
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 11:15:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408360AbgDOJMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 05:12:15 -0400
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:45302 "EHLO
-        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2408344AbgDOJMK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 05:12:10 -0400
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20200415091205euoutp010893159ca2c8b4605b20032a268975bf~F80XsQSPs0469404694euoutp01S
-        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 09:12:05 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20200415091205euoutp010893159ca2c8b4605b20032a268975bf~F80XsQSPs0469404694euoutp01S
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1586941925;
-        bh=ihC2jkfz1d7lvDLRTfZk+C5FM292xjkHp1pNgRwCkcY=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=esKjF/iFoYWKAgEHe7Agp4FuHbibu7GBVaPX7atm5N1bacwBbegvAqr5OhAXoPWQG
-         ozxqkohTHab4LJX9cntPUxaHeDtExHqEWU2su5KXIFcOQv46C+vEalSGI2/FOBOZLl
-         Gl3gXIr2OxQ8//uhU9wDoBEQj7MqdY/U359JG7Tk=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20200415091204eucas1p101f6b173912d41a0557c373fb423fc9e~F80XR6yBY0356803568eucas1p1R;
-        Wed, 15 Apr 2020 09:12:04 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges1new.samsung.com (EUCPMTA) with SMTP id B4.96.61286.4EFC69E5; Wed, 15
-        Apr 2020 10:12:04 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20200415091204eucas1p1983548c2db52d8d0c2a5367034ec80dd~F80W6gWnA0526905269eucas1p1y;
-        Wed, 15 Apr 2020 09:12:04 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20200415091204eusmtrp266a5b0be9173f136d2c886655562da92~F80W5dOuM1005510055eusmtrp2J;
-        Wed, 15 Apr 2020 09:12:04 +0000 (GMT)
-X-AuditID: cbfec7f2-ef1ff7000001ef66-ac-5e96cfe488aa
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id 35.26.07950.4EFC69E5; Wed, 15
-        Apr 2020 10:12:04 +0100 (BST)
-Received: from [106.120.51.71] (unknown [106.120.51.71]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20200415091203eusmtip2d83bf0ed2ff415a4aa3b9e24afb549e3~F80VuLINp1653416534eusmtip2o;
-        Wed, 15 Apr 2020 09:12:03 +0000 (GMT)
-Subject: Re: [RFC 1/8] thermal: int3400_thermal: Statically initialize
- .get_mode()/.set_mode() ops
-To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-Cc:     linux-pm@vger.kernel.org, Zhang Rui <rui.zhang@intel.com>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>, Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Peter Kaestle <peter@piie.net>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amit.kucheria@verdurent.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Allison Randal <allison@lohutok.net>,
-        Enrico Weigelt <info@metux.net>,
-        Gayatri Kammela <gayatri.kammela@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, kernel@collabora.com
-From:   Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Message-ID: <7cbddc1c-0049-6b50-7bca-204bd9df2c30@samsung.com>
-Date:   Wed, 15 Apr 2020 11:12:02 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-        Thunderbird/60.8.0
+        id S2635945AbgDOJNj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 05:13:39 -0400
+Received: from mout.web.de ([212.227.17.12]:44603 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2635935AbgDOJN3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Apr 2020 05:13:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1586941975;
+        bh=aF/C7Wndq+5/EojKQWfWa0n9swu/SKYhBYliHCYiM1k=;
+        h=X-UI-Sender-Class:To:Cc:Subject:From:Date;
+        b=gCRce2tzBrlAFJx1eeMLqXHnHZz15R3Isrn9BET6G0hxd4Ee/gT8EZF+FHJrOqwCa
+         dkNOOavxCz8kHiH3MYLzXsEVlmm7oW5dHTHfdJEmtYztNLg7zHHUWHl48SrgySwPCd
+         JkAaQsHG6U2pRkuhUszwk7dVgAzKSIQwRZ8/jsEA=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.3] ([78.48.133.192]) by smtp.web.de (mrweb103
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0McFLP-1jeoCm2fJP-00JZAF; Wed, 15
+ Apr 2020 11:12:55 +0200
+To:     Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>, linux-wimax@intel.com,
+        netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>,
+        Kangjie Lu <kjlu@umn.edu>, Yuan Zhang <yuanxzhang@fudan.edu.cn>
+Subject: Re: [PATCH] wimax/i2400m: Fix potential urb refcnt leak
+From:   Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <517c4bae-d34c-855f-1872-2eed37eed54f@web.de>
+Date:   Wed, 15 Apr 2020 11:12:51 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200407174926.23971-2-andrzej.p@collabora.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA01Sa0wUVxj1zp2dHdCl18XK57PtVms0kUcweqVibNqYadJGf9ikYqXdygRM
-        WdjsCIiPiA9QtlpBi8KGWmypPKQCCwXWgq6oPKLu+kQQfGzc6KIssYsVIQJlHEj5d77znXPP
-        d5LLY62dm8lvTtgimhL08TrOn61pGnAudjuPRYdWOpfQkpZhlvY7Bhh66vEDlh7JHcH0RN8c
-        mu/cx1LzyVDqurOGZvTlstRl/5R27P6bofmeZFrlOKiipTk2ltpcXo4WnTuMqPVxm4qaB0sw
-        7Tt0CdGmgun0+vVv6Ol6D6ZXr9xUUbfrJ44O1VpZ6qkOog3pNzCtsubgVbOFuvuFSKgu6WCE
-        Yl+IYLPcVwtVxYuE3+u7GcFamskJXW31nNDrcIzyhbuEf3rcauHJ8YuMkPXCywmVvXWMcHgo
-        VHh9q0e1NjDKf0WMGL85WTSFrPzOP85dUKcyZmu29j5MR2kob7IZ+fFAloC7+TkyI39eS4oR
-        NFV0cMrwEkHnHw2sMvQhON/Szo5bzH8NqWWsJUUI3lRqFJEXwUhZFjYjng8kMeA6w8uaaSQc
-        Bmq8almDySs1NN7uxvKCIxGQvb8UyVhDVsK1P4dVMmbJfMjOtDMyfpd8Db5HF1WKZiq05rnf
-        HuFHIuFY3oO372ASBPfcvzIKfg9qvflYDgPyox9YujLUytWfQZe3jVNwIDxrrh7jZ8OITTbL
-        hjMIhg54xty1CIqODo85PoYuxyAnV8NkIZSfDVHoT+DlhT2MTAMJgHbvVOWIADhScxwrtAYO
-        ZGgV9UdQcaqCG48120pwFtJZJlSzTKhjmVDH8n9uAWJLUZCYJBliRSksQUwJlvQGKSkhNnhT
-        osGKRv/1leFmXx369+b3jYjwSDdF01KWE61V6ZOlVEMjAh7rpmnKDaOUJkafuk00JX5rSooX
-        pUY0i2d1QZrw37o3akmsfov4gygaRdP4luH9ZqahDw8FzIh4//O4ve3rEyN9X6zVp2HjpA05
-        upbC/Pj6gubw1obdL1KiitAH6xY401s9P3c+DIxKcc/r3zkwh4+OsT+Zsn3hqq+MbHTn4NKn
-        5ZEbJkdow27ZI3zmu8FPpS8hd8Xqdw6eGPkldfGa/svLlvekXDWW1c5I3fHmZOfc9c5rmev2
-        6VgpTh+2CJsk/X+BrTzB0wMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Sa0hTYRjHe885m0drcJqab2IlgwiDpnOaj2aj24fzISr0S+SlpjuotEvt
-        TKk+lGVWjspLaDqsVlnp7ELTbJaKWszCWmokJGatRtnFdRHL5aU2LfDbj+f5/x544E+T4l5B
-        KJ2jNXB6rVItEQZQ3dNdQ6tczyrSo47Yw6Du0TQFvxweAq6+G6KgrPIPCedHl0D1s6MUGC9G
-        gfPFVjg2WkmBs30jvDx8n4Dq4TxocJwUgKW8mYJm54gQrrUVI7C+6xeA8XcdCaOnHiKwmxdB
-        T08q1LcMk/Cku08ALudpIUzdtVIw3BgCrYW9JDRYy8l1YaztVQ1iG+teEmztj0i22fTKj22o
-        XclebvlIsFZLkZAd7G8Rsm6HwzuvOcR+/+LyY9+ffUCwJd9GhOxtt41gi6ei2PHnXwTbAndI
-        E/W6XAMXnq3jDWslKTKIlsriQRodEy+VyePSEqJjJZGKRBWnzsnj9JGKXdJsl9km2FMq2ud+
-        XYjyUdV8I/KnMRODjXem/IwogBYzVxA+9b4LGRHtXYThrlt5s5lAPNlvFM5mPiPsKjhD+TKB
-        jAo7b9K+TBAjx56mkZk7JDPuh8cGaknfQszo8M+v15CPhUwCLj1umWERo8BPb0wLfEwxy3Fp
-        UTvh42BmO35gM/3LLMSPq1yUj/2ZtbiiamjmJsmswJPn+/5xCB5wXSBmeRm+O1JNliCxaY5u
-        mqOY5iimOYoZURYUxOXymiwNHy3llRo+V5slzdRprMhbpya7p9GGjO7kTsTQSLJA9Oh6ebpY
-        oMzj92s6EaZJSZDolsY7EqmU+w9wet1Ofa6a4ztRrPe5UjI0OFPnLafWsFMWK4uDeFmcPE6+
-        GiQhohNMR6qYyVIauN0ct4fT//cI2j80H/WkTzhWz9tQNhm7iqxfs6wg7ZImKaJgX/BY5edD
-        5vlb1h8QJSnf5ttVSwY7anJibkjaeovC88PV6gDnaEnh0Yw/Hd+SVJuTP0UVbmr6cC9zwDMl
-        3t634U1EiqU2CD+8MyCf6F/MlZ2DZo8ieW/3waXFE4rsjNbB5/b1mVp3RdrN0xKKz1bKVpJ6
-        XvkXsOWk2GQDAAA=
-X-CMS-MailID: 20200415091204eucas1p1983548c2db52d8d0c2a5367034ec80dd
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20200415091204eucas1p1983548c2db52d8d0c2a5367034ec80dd
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20200415091204eucas1p1983548c2db52d8d0c2a5367034ec80dd
-References: <20200407174926.23971-1-andrzej.p@collabora.com>
-        <20200407174926.23971-2-andrzej.p@collabora.com>
-        <CGME20200415091204eucas1p1983548c2db52d8d0c2a5367034ec80dd@eucas1p1.samsung.com>
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:ZncVkhbtrnKLLwUNQ2aGkrSYO2tmuC/VkDiRQ6UC9Y/NTOTc/sZ
+ 2w41dsK7RMaXavT53d7UYqU5g2ethfuqWK9cD80YXwRcZz8yvnngeGAv2QiFTKO9TtrxKKV
+ l7Ux5QspBF3L5V33jPsj9CG1NxeGJCLZDAJ/ika8KePmwVkIMMTy66IFkBwN4sUb6Wv+PxY
+ rSMCISL3LXLAU7Atshx5A==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:PTnxMbnxWKk=:UoUC+bztBu9PYEECNA6P83
+ PuTZrEizWXvds+UFQnRz3iw3iI3rwyBZsXHgFhUhW8BuhhwyyhdR3RvakBIGhb8mm3atYttfU
+ nUfMqYQWRAWnoNwnPJy4EHBi5EuUzIiPcf1GT7eSzaSRS+IMFCly2zCiZ+BfABrT5yekIlvG7
+ K1ftKkSUY/d8aJPjHBnTYiLwilt4yZdDBh9aPgSLVQh5WBh+zwYcY+FHYhb4zdzz4LVVtkcBe
+ ogiK7U/j3qp3Tcl5ggstALRkz72vJIFAVjPZWFo8jZHpgg03DIxTNDNsaoAr8B7NSFyRJpk0N
+ LZYoxuRhaYSU7eHRFtPIf751Lynz20lFMKXS2uhviFZdyx1WhUDFBYdqDgutEeawnJQ44oZ/d
+ zSfW/nwxbItdV67S9EKwyC4+4zNuGsp88976YPIE5y1elUNASm9tJQ6SZQS6LU0Mg9aF/om4o
+ W3cp2TyPL+eG31Hkk8MSl4t0Fa6nRUEAq0U8beKJfwHyT1L7oQyYYRR6Ozicbm43viMSoHMqi
+ I8Gh5fqOA22oPQBDiYLD2zlla7BHjPz+eZvP+nVAeilqr8WbS8bfPJN5gRx+RFsjkrvVD+E+U
+ 3yozBs5gLjm9jKBCoSm1PlY3SQo3Er+5hpNez6Ct0ImDt8IVS8EP+2c77Uj+FJdjLcGWFhUSz
+ 4+bKE94mLSG2ayiD92yMZr01ivFT+cmQJ5pfw22vNID6RQ14yF7Imm/T3zMpwv/yhwwtbdvBV
+ 18TsEe5yODk2NbfU0PNAnQzd5wJz9wToxZN3Ec17lBd7q1QErHO2WbY7fnY2ghjYYjhDFiStI
+ d2G1WCLiV8iXChPPbO+6pY5xHvbKgOP+wpYuJm/jm8ejZob7lZAqcsOnDTydcwFxbcJhO+CO1
+ FgglKvrMg+IBvuyMPuX3YoO7nD2HCbnAzMZTrybr9nTah3nLbG8PDIofswYWutzhRQexp7CKT
+ YxweuTRdOOuaocGAcaXXjmhL/XfMAvy4lTbkJ1JyV1LAQm3Jb36kk3sMq2wWgLUbFMuhTI5T6
+ bbE2wJxzFbS2ldWztljA42Rrvc6wbmkBRZOp8QZlx75zNUQIw2CVT267xufbs4LL1MOPacWJO
+ 2y5VYY9eUqnxqCJJ5OPMpYq0gxHU+5z4KvQVsGa9dQGMp86lQLsr4PtRsWE2KIyijqhhlzdaf
+ Jkh6jj484n2uaHWyUMYksQyDpWOpqtZyh155Tr5SXCUKrtwXq46Sw9zZJHW07T4mn57OLyH1G
+ o811f8nJMYAAA+k8r
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> The issue happens in all paths of i2400mu_bus_bm_wait_for_ack(), which
+> forget to decrease the refcnt increased by usb_get_urb(), causing a
+> refcnt leak.
 
-On 4/7/20 7:49 PM, Andrzej Pietrasiewicz wrote:
-> int3400_thermal_ops is used inside int3400_thermal_probe() only after
-> the assignments, which can just as well be made statically at struct's
-> initizer.
-> 
-> Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+How do you think about to mention the term =E2=80=9Creference counting=E2=
+=80=9D in
+the commit message?
 
-Reviewed-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Would you like to add the tag =E2=80=9CFixes=E2=80=9D to the change descri=
+ption?
 
-Best regards,
---
-Bartlomiej Zolnierkiewicz
-Samsung R&D Institute Poland
-Samsung Electronics
-
-> ---
->  drivers/thermal/intel/int340x_thermal/int3400_thermal.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> index efae0c02d898..634b943e9e3d 100644
-> --- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> +++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
-> @@ -271,6 +271,8 @@ static int int3400_thermal_set_mode(struct thermal_zone_device *thermal,
->  
->  static struct thermal_zone_device_ops int3400_thermal_ops = {
->  	.get_temp = int3400_thermal_get_temp,
-> +	.get_mode = int3400_thermal_get_mode,
-> +	.set_mode = int3400_thermal_set_mode,
->  };
->  
->  static struct thermal_zone_params int3400_thermal_params = {
-> @@ -309,9 +311,6 @@ static int int3400_thermal_probe(struct platform_device *pdev)
->  
->  	platform_set_drvdata(pdev, priv);
->  
-> -	int3400_thermal_ops.get_mode = int3400_thermal_get_mode;
-> -	int3400_thermal_ops.set_mode = int3400_thermal_set_mode;
-> -
->  	priv->thermal = thermal_zone_device_register("INT3400 Thermal", 0, 0,
->  						priv, &int3400_thermal_ops,
->  						&int3400_thermal_params, 0, 0);
-> 
+Regards,
+Markus
