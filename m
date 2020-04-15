@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 920E91A9E62
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 13:55:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 402591A9DEE
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 13:50:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406393AbgDOLzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 07:55:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43746 "EHLO mail.kernel.org"
+        id S2409446AbgDOLsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 07:48:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43808 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2409409AbgDOLsC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Apr 2020 07:48:02 -0400
+        id S2409422AbgDOLsH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Apr 2020 07:48:07 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4124E2173E;
-        Wed, 15 Apr 2020 11:48:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 58F7C20775;
+        Wed, 15 Apr 2020 11:48:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586951282;
-        bh=uEWfoT1rRavNBuU+4OI50y23RzU1TGMxXF8/lnxtJhQ=;
+        s=default; t=1586951287;
+        bh=bUXNDQQRGaIuaP5JVoTNgFflarxDr46radtnMT9rNO0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OUo/NqC0CAcYjDYXipVRI1avzLLse8lek1nqjlGWma70jtpvUU0s3Mtl2d3PVr8bW
-         73L3QSWiHubR3rK2U3Iqk4BlX9FkBxN+l6SpDbau3R6jwhLzqMp/BdTTaeuZA2RoSz
-         o04fsoLqh9YAuaNQBLLHblKeAyGOnRmuqBkWHH+Q=
+        b=rAejOywbFFLt3IavI5Rxhnb/7UJfIE7+9CFZ2BhwpIdbaa1NaD0S205IEYn6Lrfj3
+         Zj/0Aqo9Y04YkxEyhPzCv4kxsSVQaWQ3fNIXibI4+8pNZrrpkMp96c7e+V3uDcM+TR
+         p0TPRi1v5o6NRYUU2vrvcTy3KCFHTzUPIO5bFVS4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jisheng Zhang <Jisheng.Zhang@synaptics.com>,
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.9 11/21] net: stmmac: dwmac1000: fix out-of-bounds mac address reg setting
-Date:   Wed, 15 Apr 2020 07:47:38 -0400
-Message-Id: <20200415114748.15713-11-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 15/21] net: dsa: bcm_sf2: Ensure correct sub-node is parsed
+Date:   Wed, 15 Apr 2020 07:47:42 -0400
+Message-Id: <20200415114748.15713-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200415114748.15713-1-sashal@kernel.org>
 References: <20200415114748.15713-1-sashal@kernel.org>
@@ -45,38 +44,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit 3e1221acf6a8f8595b5ce354bab4327a69d54d18 ]
+[ Upstream commit afa3b592953bfaecfb4f2f335ec5f935cff56804 ]
 
-Commit 9463c4455900 ("net: stmmac: dwmac1000: Clear unused address
-entries") cleared the unused mac address entries, but introduced an
-out-of bounds mac address register programming bug -- After setting
-the secondary unicast mac addresses, the "reg" value has reached
-netdev_uc_count() + 1, thus we should only clear address entries
-if (addr < perfect_addr_number)
+When the bcm_sf2 was converted into a proper platform device driver and
+used the new dsa_register_switch() interface, we would still be parsing
+the legacy DSA node that contained all the port information since the
+platform firmware has intentionally maintained backward and forward
+compatibility to client programs. Ensure that we do parse the correct
+node, which is "ports" per the revised DSA binding.
 
-Fixes: 9463c4455900 ("net: stmmac: dwmac1000: Clear unused address entries")
-Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+Fixes: d9338023fb8e ("net: dsa: bcm_sf2: Make it a real platform device driver")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/bcm_sf2.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
-index 093e58e94075a..3a2edf9f51e22 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
-@@ -214,7 +214,7 @@ static void dwmac1000_set_filter(struct mac_device_info *hw,
- 			reg++;
- 		}
+diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
+index a3a8d7b62f3fb..796571fccba70 100644
+--- a/drivers/net/dsa/bcm_sf2.c
++++ b/drivers/net/dsa/bcm_sf2.c
+@@ -976,6 +976,7 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
+ 	struct device_node *dn = pdev->dev.of_node;
+ 	struct b53_platform_data *pdata;
+ 	struct dsa_switch_ops *ops;
++	struct device_node *ports;
+ 	struct bcm_sf2_priv *priv;
+ 	struct b53_device *dev;
+ 	struct dsa_switch *ds;
+@@ -1038,7 +1039,11 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
+ 	spin_lock_init(&priv->indir_lock);
+ 	mutex_init(&priv->stats_mutex);
  
--		while (reg <= perfect_addr_number) {
-+		while (reg < perfect_addr_number) {
- 			writel(0, ioaddr + GMAC_ADDR_HIGH(reg));
- 			writel(0, ioaddr + GMAC_ADDR_LOW(reg));
- 			reg++;
+-	bcm_sf2_identify_ports(priv, dn->child);
++	ports = of_find_node_by_name(dn, "ports");
++	if (ports) {
++		bcm_sf2_identify_ports(priv, ports);
++		of_node_put(ports);
++	}
+ 
+ 	priv->irq0 = irq_of_parse_and_map(dn, 0);
+ 	priv->irq1 = irq_of_parse_and_map(dn, 1);
 -- 
 2.20.1
 
