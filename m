@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 718721A99DF
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 12:06:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 047CC1A9A01
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 12:10:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2896124AbgDOKFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 06:05:50 -0400
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:45166 "EHLO
+        id S2896212AbgDOKKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 06:10:04 -0400
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:46602 "EHLO
         mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2896125AbgDOKFr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 06:05:47 -0400
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20200415100544euoutp02acc15f4e2950eee6461d38a70d878935~F9jOBvPgq2867328673euoutp02G
-        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 10:05:44 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20200415100544euoutp02acc15f4e2950eee6461d38a70d878935~F9jOBvPgq2867328673euoutp02G
+        with ESMTP id S2896211AbgDOKJs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 06:09:48 -0400
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20200415100945euoutp0253251b8fb7cbaf8360ed3ce40a6d7190~F9mueJDfX3099130991euoutp02Z
+        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 10:09:45 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20200415100945euoutp0253251b8fb7cbaf8360ed3ce40a6d7190~F9mueJDfX3099130991euoutp02Z
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1586945144;
-        bh=jbNCtnfRBAFKgUuzv0KIEfDWAQjQVhjUG+x3ztvh+dM=;
+        s=mail20170921; t=1586945385;
+        bh=hy53jcbN1hQcobPDd2wliURBggIkGahlr5dTChgt6Fg=;
         h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=EJtkvJNoRMar0GHhiwWM8RRqjM8DXldjUXc7UZEo5wNC+3syvFv/r27PPqdbDVPZL
-         5aF7yAZw9XgLktiM3Girav+ZD5+t5RwZGsUuItndaVzzykHPz3VDORJUGGulckk8PT
-         X/Cr2WIQAh68qHfbWHdcZvOGJ5benTAXpGsp/3nY=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20200415100544eucas1p224d9d4ff6bfadc1542a469752de6612f~F9jNpIQDY2206722067eucas1p2d;
-        Wed, 15 Apr 2020 10:05:44 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges2new.samsung.com (EUCPMTA) with SMTP id BF.61.60679.87CD69E5; Wed, 15
-        Apr 2020 11:05:44 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20200415100543eucas1p24e24293da39844ca8791db86af5365a7~F9jNOqo0e0866108661eucas1p2T;
-        Wed, 15 Apr 2020 10:05:43 +0000 (GMT)
+        b=F+vVTrYT2IOhS0YRCMosN/7ROMce1gTETYgfWzd0KwitqkaHtf1BFldm2iI1+1mRG
+         4rXjz9LSqWtwxRC+BlkVamEqJWHC+scFy8YAXcT0lovJDEyP/v8Zgo1fbdIpmxDsjS
+         O43ByKS+d3nHly0g4V0diMXABmIoOdDn5uUIEuVg=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20200415100945eucas1p1aa4f8a443591406032d911421dd8d4b0~F9mt-N0ND3022630226eucas1p1l;
+        Wed, 15 Apr 2020 10:09:45 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id A2.AE.60698.96DD69E5; Wed, 15
+        Apr 2020 11:09:45 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+        20200415100944eucas1p1dcfeb784e790ca2fc3417fd2797e3f5d~F9mtpd1bi0596205962eucas1p1b;
+        Wed, 15 Apr 2020 10:09:44 +0000 (GMT)
 Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20200415100543eusmtrp2144d6a2cc5190571debfac319489d52e~F9jNNjygq1123511235eusmtrp2X;
-        Wed, 15 Apr 2020 10:05:43 +0000 (GMT)
-X-AuditID: cbfec7f4-0e5ff7000001ed07-c6-5e96dc781b9e
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id 73.4E.07950.77CD69E5; Wed, 15
-        Apr 2020 11:05:43 +0100 (BST)
+        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20200415100944eusmtrp133f86e2db262813d9ace24cbc70dda2e~F9mtodNUt1618016180eusmtrp1l;
+        Wed, 15 Apr 2020 10:09:44 +0000 (GMT)
+X-AuditID: cbfec7f5-a0fff7000001ed1a-97-5e96dd69b12f
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id 24.EE.07950.86DD69E5; Wed, 15
+        Apr 2020 11:09:44 +0100 (BST)
 Received: from [106.120.51.71] (unknown [106.120.51.71]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20200415100542eusmtip2a2c8c572db469eb5170c653c69afac17~F9jMLnmVy1701817018eusmtip2B;
-        Wed, 15 Apr 2020 10:05:42 +0000 (GMT)
-Subject: Re: [RFC 2/8] thermal: Properly handle mode values in .set_mode()
+        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20200415100943eusmtip137db8f225d7ca69f2d0d1757b57f8fd4~F9msZ0Gmi2340423404eusmtip1Z;
+        Wed, 15 Apr 2020 10:09:43 +0000 (GMT)
+Subject: Re: [RFC 3/8] thermal: Store thermal mode in a dedicated enum
 To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>
 Cc:     linux-pm@vger.kernel.org, Zhang Rui <rui.zhang@intel.com>,
         "Rafael J . Wysocki" <rjw@rjwysocki.net>,
@@ -71,57 +71,57 @@ Cc:     linux-pm@vger.kernel.org, Zhang Rui <rui.zhang@intel.com>,
         platform-driver-x86@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, kernel@collabora.com
 From:   Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Message-ID: <be73e437-8913-25f5-4abe-cad2caedcf74@samsung.com>
-Date:   Wed, 15 Apr 2020 12:05:42 +0200
+Message-ID: <4085ca11-5060-c786-93af-f77d6f5d6e60@samsung.com>
+Date:   Wed, 15 Apr 2020 12:09:43 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
         Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200407174926.23971-3-andrzej.p@collabora.com>
+In-Reply-To: <20200407174926.23971-4-andrzej.p@collabora.com>
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA02SbUxTZxTH89x7e3tprLm2Yk+chtlFzTSjaI154gtxcctuNJua+EGNL3R4
-        QSItpOVF+DAxatXODdQUXVOxAlLAbcWCQBlTUvCFAJ2yzaBBaqVZqKNGBF9AW9fLhYxvv3PO
-        ///8z0kehlS00fOZDEMObzToMtW0jGq8Pe777FB/6d6kkogS19yNUviNb5zAVYMDFD574QOJ
-        y0YXYvsfxyhsuZyEA39vwebRCxQOtG3ED4/8RmD7UB6u952W4Fqrh8KeQJjGzhvFCLsHH0iw
-        ZaKGxKM/dCB82zEP37u3G19tHSJxd1evBAcDP9I40uSm8FCDCv9+/D6J691WcsMCrvlxJeIa
-        ah4SXPVLDeexPZZy9dXLuIrWEMG5a0/RXP+DVpp77vPF+pWHuZHhoJT753w7wZW8CNPctefN
-        BFccSeLe/jks2arcJVu3n8/MyOONmuQU2YFotDD7xSeHfB1maRFyLrSgOAbYVeDyNyELkjEK
-        thrB064ySizGEJhHXLRYjCJwHq8mpy09A6+l4sCJwO95NlWEEVRVRCZVSnYT3Op4RQs8l9XC
-        eGN4UkSyr6Xg/Ss0KaLZNXDmRC0SWM4mQ+h6r0Rgil0M9VdLJ83x7A54+aRdImrmQOdPQUrg
-        OHY9HP23lxCYZFXwKHhpihOgKWwnhTBgv4+DS/1PCXHvL8Dyvk0ishKe3WmQirwAPngEs2D4
-        FUHk5NCUuyl29bkoLarWQr9vIsZMLOJTcLVoBAT2c7jRniPibOgLzxF3mA1nG8+TYlsOJ80K
-        8Y0lUFdVR0+nWjw1ZAlS22ZcZptxjW3GNbb/Yx2IqkUqPtekT+dNKw18fqJJpzflGtITU7P0
-        bhT7113RO2PNqOX9t17EMkg9S/6xy7pXIdHlmQr0XgQMqZ4rd+ljLfl+XUEhb8zaZ8zN5E1e
-        9BFDqVVybXloj4JN1+XwB3k+mzdOTwkmbn4ROuGG1Hatt1zbdbizryCtYORK5fKvhncrVhZv
-        w4GiztPB9aUpW0c049cStRnlm1P8CRO/rP6u2ZG6lDDEV9xX5jtW3XT07fkm84msUZu1r+yN
-        /6L9YHaPyp5Q8qU1NDbQkvZu0fb4JEt3XX5D2s5kZ/na7WbN4KafqUJr3YrEr4f9asp0QLdi
-        GWk06f4D8yV/ZtMDAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Se0hTYRjG+85tR2t13Cw/zC4swugy3dT2zWoKQh3KSBMiyrRRB63cJjvT
-        tKALldXQtGKmS9TI8haIm1dSy0tZVGsZCeWFxCFaKZWZGmZtWrD/fjzv8zwvL7w0LrKTvvQx
-        rYHTa9VJEsqTeDHb2b/pZG9uXOCnHyGo/NksgSZt0xi6P9hPoBt5f3BUOL4CFby+SCDjnUA0
-        8G4PyhjPI9DA4wj0/vxDDBUMpyKrLZNEFaZGAjUOjFKotCUbIMtgN4mMv8pxNJ7VAdDT4mXI
-        bo9FlU3DOHr5ootEjoFrFPpdbyHQcI0Par70BkdWiwkP92Mb+koAW1P+HmPLvgewjeY+AWst
-        W8/ebRrBWEvFVYrt7W6i2DGbzamXnGW/fXEI2KFb7Rib83WUYqvHGjA2+3cgO/X2CxklPiDd
-        qtelGLjViTresE1yUIbkUpkSSeXBSqksSHEoVB4iCVBtPcolHUvl9AGqw9LE2dlTyV/XpNk6
-        MgTnQOkKI/CgIRMMX/X/FBiBJy1i7gHYXD1NGgHtHPjBzqrUeY8YznQbqXnPZwBzZ1oI10DM
-        7IRPOiYoF3szQXC6bnSuCGemBHDiQxnuKhIxOljTG+3yUEwovH65ArhYyKjgSG0X6WKCWQut
-        lblzPUuZ/bC9wfzP4wWf5zvmdnkw2+CFz12Yi3HGH84UduHz7AM/OIr+6atg/WgBngNEZre4
-        2S1idouY3SLFgKgA3lwKr0nQ8HIpr9bwKdoE6RGdxgKc31T3dLqmARjHYtoAQwPJIuGzB6Y4
-        EalO5dM1bQDSuMRbWKVxSsKj6vRTnF4Xr09J4vg2EOI87jruu/SIzvmbWkO8LESmQEqZIkgR
-        tBlJfIRXmNZYEZOgNnAnOC6Z0//PYbSH7zlQqxxblPm6k41/FNHWU3g27xAXUWQWZpD2LU2b
-        EhbK2l95Nn9sxbxMi8eb96r8NwZsmNp1si9/+75SXXBPWNqWocaSvOJ6Vevk6dCfWWnExoyV
-        S7LPtFbp1034TR6XhpfcNqYbdmTS0fxViz3/baxdGRm1e0G3JidsuTrGK3JGfFNC8Ilq2Xpc
-        z6v/AlCm9/ZjAwAA
-X-CMS-MailID: 20200415100543eucas1p24e24293da39844ca8791db86af5365a7
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Sa0wTWRTHc2em06FLzaUoPYsSTRMfGIUa9sONrgajMZMYHzEb4wPQiiOS
+        pWhaYcUPClHAVnyBiDZ1QUWgNfIob0RieOmKFlZXIqtsZGmkNVbQgoAuuC0jkW+/8z//e//n
+        JIejFU1sMBefeETQJWoSVKyMqWkf71we33s5Rt055k8sDycZMmofp0hR/z8Myb7ylSa/e0KI
+        ufMUQ4zX1aTv+RaS4bnCkL7760hP2l2KmJ3JpNKeJSHW3HqG1Pe5WVLcdB4RW3+3hBg/W2ji
+        OduKSHtBEOnqiiK3G500edzxVEIcfedYMlFrY4izSknupf9Jk0pbLh05j6/rLUR8laWH4ks+
+        hvP1pl4pX1mylL/Z6KJ4m9XA8q+6G1n+vd3u1QtP8B/eOaT8m7wWir8w5Gb5ivd1FH9+Qs2P
+        PXsn2Rq4S/bzfiEhPlnQha/ZKzvoLKqmD1esOJrfcgelotzFRuTHAf4J3IMGqRHJOAUuQXDJ
+        cI8Si2EEQ18tlM+lwB4Erek/Tr8YOlMgFfViBKlFS0R2I5i8vNvHgXgDOMbaJT6ejSNgvMY9
+        lUDjT1Jo/stF+xosXgkXM63Ix3K8BkayH00xgxfCl8GTU8Fz8A74+LpFInoC4I+rDsbHfng1
+        DOa1Tv1DYyX87cinRJ4PtW4zLQ6a6Qc3rDEirwejLYsSORDePqiSijwPOnKyGN9wgEsRTJx2
+        0mJRi6A4Z5IVXavglf2zlzlvQiiUNYSL8lqwdvXSPhnwLHjhDhBnmAXZNXnfZDmczlCI7kVQ
+        XlTOTsca6y30BaQyzdjMNGMb04xtTN9zCxBjRUohSa+NE/QRicJvYXqNVp+UGBcWe0hrQ96r
+        7ph8MFKHmv7b14wwh1T+8gVluTEKiSZZn6JtRsDRqtnyMq1Xku/XpBwTdIf26JISBH0zmssx
+        KqU84oYrWoHjNEeEXwXhsKCb7lKcX3AqkvHl1TLl9U1hQoox55jr1rqdkU8+RD+NjhiODfp3
+        mXqIaysOCQqMMiSf697Y+HLbHMwef5nWn2keXMI6j6uuHYgMKHw4WuK2PI72r+ppG45Ke92Z
+        +Wn0h9ZSTyoaGQj9pSEuqGJl8NrYZwM30zG42u6aQ5ybM6qZamfDwPztaoOK0R/UrFhK6/Sa
+        /wG5JSu10QMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Sa0hTYRjHe885O5vS4jQtX6QbCzGCpmfLfAwTMYjzrcKiKM2WHjRyznY2
+        yz6Uod1W3iLL1igz89aNNvNSdtNllmFr1cArmKMWNa3E0rTLpgV++/H8/78HHngkpMwhCpbs
+        ztDzugx1upz2pzp+P+1bkdZ3dkf40QIWatp/U/Cjc5yAysF+Ck6X/iHh4shCML/Mo8B4ORwG
+        3q6HoyOlFAw8Wgtdh+8RYHZngbXzlAhqS5ooaBrw0FD1oBCBZdApAuPPGhJG8m0I2srmg92e
+        ANea3SS86HCIwDVQQMOvBgsF7roguH/kFQlWSwkZu4Br7KtAXF1NF8FVfwvjmkx9Ys5avZy7
+        0vyR4Cy1J2iu19lMc0Odnd55xSHu62eXmHt/rpXgir54aO72UCPBFf4K58ZefxZtCNimiNZp
+        DXp+SZpW0K+Rb2dBqWCjQKFcGaVgVZGJq5UR8rCY6BQ+fXcWrwuL2alIc1feITNvs/svtd5A
+        Oagk1Ij8JJhZib+cLBMbkb9ExlxFuKL9LmlEEm+wAD+9lTXdCcCTTiM93fmEcHlxDu0LAph1
+        2DXWJvJxIKPC4/WeqUUkMybGo93VpC+QMVrsKPxO+ZhmVuPiY7XIx1ImBo+efj7FFBOCJ4Zz
+        CR/PY7bi1kbTv85c/Oy8a8r1Y9bg4XO2qZ0kE4onLzr+cRDudl0ipnkxbvCYySIkM83QTTMU
+        0wzFNEMpQ1QtCuQNgiZVIygVglojGDJSFclajQV5/6m+bbyuERmH4lsQI0Hy2dL26yU7ZCJ1
+        lpCtaUFYQsoDpbc03pE0RZ19gNdpk3SGdF5oQRHe44rJ4HnJWu93ZuiT2Ag2EqLYSFWkahXI
+        g6THmccJMiZVref38Hwmr/vvERK/4ByUGOcCtj33AldVeZ62W6zrrFs2HuwJMX8oVXVN/tz1
+        pmF40URub67bIXdmVu11f5hjXpriIZIHlfmfRgt27X1i/5iStOwPUz9RcaY+btO7h/F5/M1s
+        i/+TwY0xK/qNx77Nmrt9c1t0gPNH+T7bTlt2XmvB9xs9hgmxLT6io8gemy+nhDQ1u5zUCeq/
+        DC6zDWUDAAA=
+X-CMS-MailID: 20200415100944eucas1p1dcfeb784e790ca2fc3417fd2797e3f5d
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20200415100543eucas1p24e24293da39844ca8791db86af5365a7
+X-RootMTR: 20200415100944eucas1p1dcfeb784e790ca2fc3417fd2797e3f5d
 X-EPHeader: CA
 CMS-TYPE: 201P
-X-CMS-RootMailID: 20200415100543eucas1p24e24293da39844ca8791db86af5365a7
+X-CMS-RootMailID: 20200415100944eucas1p1dcfeb784e790ca2fc3417fd2797e3f5d
 References: <20200407174926.23971-1-andrzej.p@collabora.com>
-        <20200407174926.23971-3-andrzej.p@collabora.com>
-        <CGME20200415100543eucas1p24e24293da39844ca8791db86af5365a7@eucas1p2.samsung.com>
+        <20200407174926.23971-4-andrzej.p@collabora.com>
+        <CGME20200415100944eucas1p1dcfeb784e790ca2fc3417fd2797e3f5d@eucas1p1.samsung.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -129,124 +129,201 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 4/7/20 7:49 PM, Andrzej Pietrasiewicz wrote:
-> Allow only THERMAL_DEVICE_ENABLED and THERMAL_DEVICE_DISABLED as valid
-> states to transition to.
+> Prepare for adding THERMAL_DEVICE_INITIAL mode.
 > 
 > Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
 > ---
->  drivers/net/ethernet/mellanox/mlxsw/core_thermal.c | 8 ++++++--
->  drivers/platform/x86/acerhdf.c                     | 4 ++++
->  drivers/thermal/imx_thermal.c                      | 4 +++-
->  drivers/thermal/intel/intel_quark_dts_thermal.c    | 5 ++++-
->  drivers/thermal/of-thermal.c                       | 4 +++-
->  5 files changed, 20 insertions(+), 5 deletions(-)
+>  drivers/acpi/thermal.c                        | 27 +++++++++----------
+>  drivers/platform/x86/acerhdf.c                | 12 ++++++---
+>  .../intel/int340x_thermal/int3400_thermal.c   | 18 +++++--------
+>  3 files changed, 27 insertions(+), 30 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-> index ce0a6837daa3..cd435ca7adbe 100644
-> --- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-> +++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-> @@ -296,8 +296,10 @@ static int mlxsw_thermal_set_mode(struct thermal_zone_device *tzdev,
+> diff --git a/drivers/acpi/thermal.c b/drivers/acpi/thermal.c
+> index 19067a5e5293..a93b0412dd6b 100644
+> --- a/drivers/acpi/thermal.c
+> +++ b/drivers/acpi/thermal.c
+> @@ -172,7 +172,7 @@ struct acpi_thermal {
+>  	struct acpi_thermal_trips trips;
+>  	struct acpi_handle_list devices;
+>  	struct thermal_zone_device *thermal_zone;
+> -	int tz_enabled;
+> +	enum thermal_device_mode mode;
+>  	int kelvin_offset;	/* in millidegrees */
+>  	struct work_struct thermal_check_work;
+>  };
+> @@ -500,7 +500,7 @@ static void acpi_thermal_check(void *data)
+>  {
+>  	struct acpi_thermal *tz = data;
 >  
->  	if (mode == THERMAL_DEVICE_ENABLED)
->  		tzdev->polling_delay = thermal->polling_delay;
-> -	else
-> +	else if (mode == THERMAL_DEVICE_DISABLED)
->  		tzdev->polling_delay = 0;
-> +	else
+> -	if (!tz->tz_enabled)
+> +	if (tz->mode != THERMAL_DEVICE_ENABLED)
+>  		return;
+>  
+>  	thermal_zone_device_update(tz->thermal_zone,
+> @@ -534,8 +534,7 @@ static int thermal_get_mode(struct thermal_zone_device *thermal,
+>  	if (!tz)
+>  		return -EINVAL;
+>  
+> -	*mode = tz->tz_enabled ? THERMAL_DEVICE_ENABLED :
+> -		THERMAL_DEVICE_DISABLED;
+> +	*mode = tz->mode;
+>  
+>  	return 0;
+>  }
+> @@ -544,27 +543,25 @@ static int thermal_set_mode(struct thermal_zone_device *thermal,
+>  				enum thermal_device_mode mode)
+>  {
+>  	struct acpi_thermal *tz = thermal->devdata;
+> -	int enable;
+>  
+>  	if (!tz)
+>  		return -EINVAL;
+>  
+> +	if (mode != THERMAL_DEVICE_DISABLED &&
+> +	    mode != THERMAL_DEVICE_ENABLED)
 > +		return -EINVAL;
+>  	/*
+>  	 * enable/disable thermal management from ACPI thermal driver
+>  	 */
+> -	if (mode == THERMAL_DEVICE_ENABLED)
+> -		enable = 1;
+> -	else if (mode == THERMAL_DEVICE_DISABLED) {
+> -		enable = 0;
+> +	if (mode == THERMAL_DEVICE_DISABLED)
+>  		pr_warn("thermal zone will be disabled\n");
+> -	} else
+> -		return -EINVAL;
+>  
+> -	if (enable != tz->tz_enabled) {
+> -		tz->tz_enabled = enable;
+> +	if (mode != tz->mode) {
+> +		tz->mode = mode;
+>  		ACPI_DEBUG_PRINT((ACPI_DB_INFO,
+>  			"%s kernel ACPI thermal control\n",
+> -			tz->tz_enabled ? "Enable" : "Disable"));
+> +			tz->mode == THERMAL_DEVICE_ENABLED ?
+> +			"Enable" : "Disable"));
+>  		acpi_thermal_check(tz);
+>  	}
+>  	return 0;
+> @@ -913,7 +910,7 @@ static int acpi_thermal_register_thermal_zone(struct acpi_thermal *tz)
+>  	if (ACPI_FAILURE(status))
+>  		return -ENODEV;
+>  
+> -	tz->tz_enabled = 1;
+> +	tz->mode = THERMAL_DEVICE_ENABLED;
+>  
+>  	dev_info(&tz->device->dev, "registered as thermal_zone%d\n",
+>  		 tz->thermal_zone->id);
+> diff --git a/drivers/platform/x86/acerhdf.c b/drivers/platform/x86/acerhdf.c
+> index d5188c1d688b..87e357017d4a 100644
+> --- a/drivers/platform/x86/acerhdf.c
+> +++ b/drivers/platform/x86/acerhdf.c
+> @@ -65,8 +65,10 @@
+>  
+>  #ifdef START_IN_KERNEL_MODE
+>  static int kernelmode = 1;
+> +static enum thermal_device_mode thermal_mode = THERMAL_DEVICE_ENABLED;
+>  #else
+>  static int kernelmode;
+> +static enum thermal_device_mode thermal_mode = THERMAL_DEVICE_DISABLED;
+>  #endif
+>  
+>  static unsigned int interval = 10;
+> @@ -416,8 +418,7 @@ static int acerhdf_get_mode(struct thermal_zone_device *thermal,
+>  	if (verbose)
+>  		pr_notice("kernel mode fan control %d\n", kernelmode);
+>  
+> -	*mode = (kernelmode) ? THERMAL_DEVICE_ENABLED
+> -			     : THERMAL_DEVICE_DISABLED;
+> +	*mode = thermal_mode;
+>  
+>  	return 0;
+>  }
+> @@ -435,10 +436,13 @@ static int acerhdf_set_mode(struct thermal_zone_device *thermal,
+>  	    mode != THERMAL_DEVICE_ENABLED)
+>  		return -EINVAL;
+>  
+> -	if (mode == THERMAL_DEVICE_DISABLED && kernelmode)
+> +	if (mode == THERMAL_DEVICE_DISABLED && kernelmode) {
+>  		acerhdf_revert_to_bios_mode();
+> -	else if (mode == THERMAL_DEVICE_ENABLED && !kernelmode)
+> +		thermal_mode = THERMAL_DEVICE_DISABLED;
+> +	} else if (mode == THERMAL_DEVICE_ENABLED && !kernelmode) {
+>  		acerhdf_enable_kernelmode();
+> +		thermal_mode = THERMAL_DEVICE_ENABLED;
+> +	}
+>  
+>  	return 0;
+>  }
 
-Making sure that the valid parameters are passed to driver specific
-->set_mode method should be handled in the higher layer (callers).
+The conversion missed:
+
+* handling of "force_bios" and force_product" kernel parameters:
+
+	if (force_bios[0]) {
+		version = force_bios;
+		pr_info("forcing BIOS version: %s\n", version);
+		kernelmode = 0;
+	}
+
+	if (force_product[0]) {
+		product = force_product;
+		pr_info("forcing BIOS product: %s\n", product);
+		kernelmode = 0;
+	}
+
+* acerhdf_revert_to_bios_mode() call on error in acerhdf_set_cur_state()
 
 Best regards,
 --
 Bartlomiej Zolnierkiewicz
 Samsung R&D Institute Poland
 Samsung Electronics
- 
->  	mutex_unlock(&tzdev->lock);
->  
-> @@ -486,8 +488,10 @@ static int mlxsw_thermal_module_mode_set(struct thermal_zone_device *tzdev,
->  
->  	if (mode == THERMAL_DEVICE_ENABLED)
->  		tzdev->polling_delay = thermal->polling_delay;
-> -	else
-> +	else if (mode == THERMAL_DEVICE_DISABLED)
->  		tzdev->polling_delay = 0;
-> +	else
-> +		return -EINVAL;
->  
->  	mutex_unlock(&tzdev->lock);
->  
-> diff --git a/drivers/platform/x86/acerhdf.c b/drivers/platform/x86/acerhdf.c
-> index 8cc86f4e3ac1..d5188c1d688b 100644
-> --- a/drivers/platform/x86/acerhdf.c
-> +++ b/drivers/platform/x86/acerhdf.c
-> @@ -431,6 +431,10 @@ static int acerhdf_get_mode(struct thermal_zone_device *thermal,
->  static int acerhdf_set_mode(struct thermal_zone_device *thermal,
->  			    enum thermal_device_mode mode)
+
+> diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+> index 634b943e9e3d..fcbd1b14fa74 100644
+> --- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+> +++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+> @@ -44,7 +44,7 @@ static char *int3400_thermal_uuids[INT3400_THERMAL_MAXIMUM_UUID] = {
+>  struct int3400_thermal_priv {
+>  	struct acpi_device *adev;
+>  	struct thermal_zone_device *thermal;
+> -	int mode;
+> +	enum thermal_device_mode mode;
+>  	int art_count;
+>  	struct art *arts;
+>  	int trt_count;
+> @@ -247,24 +247,20 @@ static int int3400_thermal_set_mode(struct thermal_zone_device *thermal,
+>  				enum thermal_device_mode mode)
 >  {
-> +	if (mode != THERMAL_DEVICE_DISABLED &&
-> +	    mode != THERMAL_DEVICE_ENABLED)
-> +		return -EINVAL;
-> +
->  	if (mode == THERMAL_DEVICE_DISABLED && kernelmode)
->  		acerhdf_revert_to_bios_mode();
->  	else if (mode == THERMAL_DEVICE_ENABLED && !kernelmode)
-> diff --git a/drivers/thermal/imx_thermal.c b/drivers/thermal/imx_thermal.c
-> index bb6754a5342c..014512581918 100644
-> --- a/drivers/thermal/imx_thermal.c
-> +++ b/drivers/thermal/imx_thermal.c
-> @@ -368,7 +368,7 @@ static int imx_set_mode(struct thermal_zone_device *tz,
->  			data->irq_enabled = true;
->  			enable_irq(data->irq);
->  		}
-> -	} else {
-> +	} else if (mode == THERMAL_DEVICE_DISABLED) {
->  		regmap_write(map, soc_data->sensor_ctrl + REG_CLR,
->  			     soc_data->measure_temp_mask);
->  		regmap_write(map, soc_data->sensor_ctrl + REG_SET,
-> @@ -381,6 +381,8 @@ static int imx_set_mode(struct thermal_zone_device *tz,
->  			disable_irq(data->irq);
->  			data->irq_enabled = false;
->  		}
-> +	} else {
-> +		return -EINVAL;
->  	}
+>  	struct int3400_thermal_priv *priv = thermal->devdata;
+> -	bool enable;
+>  	int result = 0;
 >  
->  	data->mode = mode;
-> diff --git a/drivers/thermal/intel/intel_quark_dts_thermal.c b/drivers/thermal/intel/intel_quark_dts_thermal.c
-> index 5d33b350da1c..5f4bcc0e4fd3 100644
-> --- a/drivers/thermal/intel/intel_quark_dts_thermal.c
-> +++ b/drivers/thermal/intel/intel_quark_dts_thermal.c
-> @@ -328,8 +328,11 @@ static int sys_set_mode(struct thermal_zone_device *tzd,
->  	mutex_lock(&dts_update_mutex);
->  	if (mode == THERMAL_DEVICE_ENABLED)
->  		ret = soc_dts_enable(tzd);
+>  	if (!priv)
+>  		return -EINVAL;
+>  
+> -	if (mode == THERMAL_DEVICE_ENABLED)
+> -		enable = true;
+> -	else if (mode == THERMAL_DEVICE_DISABLED)
+> -		enable = false;
 > -	else
-> +	else if (mode == THERMAL_DEVICE_DISABLED)
->  		ret = soc_dts_disable(tzd);
-> +	else
-> +		return -EINVAL;
-> +
->  	mutex_unlock(&dts_update_mutex);
+> +	if (mode != THERMAL_DEVICE_ENABLED &&
+> +	    mode != THERMAL_DEVICE_DISABLED)
+>  		return -EINVAL;
 >  
->  	return ret;
-> diff --git a/drivers/thermal/of-thermal.c b/drivers/thermal/of-thermal.c
-> index ef0baa954ff0..b7621dfab17c 100644
-> --- a/drivers/thermal/of-thermal.c
-> +++ b/drivers/thermal/of-thermal.c
-> @@ -289,9 +289,11 @@ static int of_thermal_set_mode(struct thermal_zone_device *tz,
->  	if (mode == THERMAL_DEVICE_ENABLED) {
->  		tz->polling_delay = data->polling_delay;
->  		tz->passive_delay = data->passive_delay;
-> -	} else {
-> +	} else if (mode == THERMAL_DEVICE_DISABLED) {
->  		tz->polling_delay = 0;
->  		tz->passive_delay = 0;
-> +	} else {
-> +		return -EINVAL;
+> -	if (enable != priv->mode) {
+> -		priv->mode = enable;
+> +	if (mode != priv->mode) {
+> +		priv->mode = mode;
+>  		result = int3400_thermal_run_osc(priv->adev->handle,
+> -						 priv->current_uuid_index,
+> -						 enable);
+> +						priv->current_uuid_index,
+> +						mode == THERMAL_DEVICE_ENABLED);
 >  	}
->  
->  	mutex_unlock(&tz->lock);
+>  	return result;
+>  }
 > 
+
