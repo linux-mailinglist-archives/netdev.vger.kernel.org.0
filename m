@@ -2,163 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 299BA1AA2E9
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 15:10:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39A3B1AA351
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 15:11:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S370649AbgDONAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 09:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53232 "EHLO
+        id S2503911AbgDONHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 09:07:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2505704AbgDONAl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 09:00:41 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F28C061A0C
-        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 06:00:41 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jOhed-00063e-5D; Wed, 15 Apr 2020 15:00:35 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jOhec-0004un-B2; Wed, 15 Apr 2020 15:00:34 +0200
-Date:   Wed, 15 Apr 2020 15:00:34 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        David Jander <david@protonic.nl>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        mkl@pengutronix.de, Marek Vasut <marex@denx.de>
-Subject: Re: [PATCH v1] ethtool: provide UAPI for PHY master/slave
- configuration.
-Message-ID: <20200415130034.7zbizr4x4vnxto6a@pengutronix.de>
-References: <20200415121209.12197-1-o.rempel@pengutronix.de>
- <20200415121940.2du33zckvayfqjrb@pengutronix.de>
- <20200415124343.GZ3141@unicorn.suse.cz>
+        by vger.kernel.org with ESMTP id S2506035AbgDONHO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 09:07:14 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D35A1C061A0C
+        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 06:07:13 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id fb4so749755qvb.7
+        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 06:07:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9S9paPCrXQHsHuQCHecjyKf5i+MDkrTmn5MJCAipxJQ=;
+        b=o/ZNcnmZW+ScqxZoAkhxcphNmhEnVXmRcHf3LS9LLLNz697MTK5Y0QzkYdd5nBPf/f
+         btQam4uizu0qeTs27NpFkc16QP+xCh8YZVSJ09qSwyx8wxXT/waFzJhwq9QsekVExxsH
+         mA8ZXG5Q2rtdjeNYpuD64DMi4nzk2QxUmp7wYjc5ve6fM+trtRzrXttuc27GVtCZOWOm
+         m2FZ1+h3cwEPQp90ItQaFVXTm49Hhu7eLbbEwPYnZweARvapzFqtJvvHlwhHXaH4njrw
+         PJmAOheltJ6h6WlbK6TmdmSYxk0NZiJZQB9BZgWyVEhrCzmFrDCjKfThnumbyAyN1TOA
+         5AWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9S9paPCrXQHsHuQCHecjyKf5i+MDkrTmn5MJCAipxJQ=;
+        b=h7+469LOsB2/nJA/Nh07FrWsuYbVAKqEMNzUT0HbnFgRFgR2f3MaYIy1ws9Lv/K3Ph
+         vXLZ7ocUVROHX0ne/ZF58KpRtXwOeVzkHARfhkY6QXLigvGuAxJF0lyOFeVDE5qaxEBD
+         tv/5nYFxZ+zCdZNCkv3yVWZrbHdf1fbaWfe69RBwznPmXlmNPJnlSSzpM4XNVah64tpN
+         wsUfCwuJXAeakE9jSAyl9EvWF2bQdWBrTBdNRRh0YbZPWyAbdhqts+8fRi+0FaFsBnan
+         +mUpQFTU+JYOKrjJJFGOU2QT3uifiNT3AdGk19LMAUHn4+twnCo4ngx3L7oKoEWg8764
+         Pn+w==
+X-Gm-Message-State: AGi0Puajr+guaMbJ3QBCJcBTciQqaP+vbtLx/lXeCuoHmuV0fPOEhm80
+        nLuHCttEm7bt6g9qzpNM0ZU=
+X-Google-Smtp-Source: APiQypJGmRkZIhTtzjl1/2obmD9YuF6+7qjVLIpKhZAUISYZYG8cl8SKady3xDvFkj8WbXnyZqlB0A==
+X-Received: by 2002:a0c:b905:: with SMTP id u5mr4802682qvf.125.1586956033006;
+        Wed, 15 Apr 2020 06:07:13 -0700 (PDT)
+Received: from localhost.localdomain ([45.72.161.207])
+        by smtp.gmail.com with ESMTPSA id n190sm12382321qkb.93.2020.04.15.06.07.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Apr 2020 06:07:12 -0700 (PDT)
+From:   Alexander Aring <alex.aring@gmail.com>
+To:     davem@davemloft.net
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        mcr@sandelman.ca, stefan@datenfreihafen.org,
+        netdev@vger.kernel.org, Alexander Aring <alex.aring@gmail.com>
+Subject: [PATCH net] ipv6: rpl: fix full address compression
+Date:   Wed, 15 Apr 2020 09:06:53 -0400
+Message-Id: <20200415130653.6791-1-alex.aring@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="wmkigrreuigkomxv"
-Content-Disposition: inline
-In-Reply-To: <20200415124343.GZ3141@unicorn.suse.cz>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 14:58:11 up 152 days,  4:16, 170 users,  load average: 0.03, 0.06,
- 0.01
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch makes it impossible that cmpri or cmpre values are set to the
+value 16 which is not possible, because these are 4 bit values. We
+currently run in an overflow when assigning the value 16 to it.
 
---wmkigrreuigkomxv
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+According to the standard a value of 16 can be interpreted as a full
+elided address which isn't possible to set as compression value. A reason
+why this cannot be set is that the current ipv6 header destination address
+should never show up inside the segments of the rpl header. In this case we
+run in a overflow and the address will have no compression at all. Means
+cmpri or compre is set to 0.
 
-On Wed, Apr 15, 2020 at 02:43:43PM +0200, Michal Kubecek wrote:
-> On Wed, Apr 15, 2020 at 02:19:40PM +0200, Oleksij Rempel wrote:
-> > Cc: Marek Vasut <marex@denx.de>
-> >=20
-> > On Wed, Apr 15, 2020 at 02:12:09PM +0200, Oleksij Rempel wrote:
-> > > This UAPI is needed for BroadR-Reach 100BASE-T1 devices. Due to lack =
-of
-> > > auto-negotiation support, we needed to be able to configure the
-> > > MASTER-SLAVE role of the port manually or from an application in user
-> > > space.
-> > >=20
-> > > The same UAPI can be used for 1000BASE-T or MultiGBASE-T devices to
-> > > force MASTER or SLAVE role. See IEEE 802.3-2018:
-> > > 22.2.4.3.7 MASTER-SLAVE control register (Register 9)
-> > > 22.2.4.3.8 MASTER-SLAVE status register (Register 10)
-> > > 40.5.2 MASTER-SLAVE configuration resolution
-> > > 45.2.1.185.1 MASTER-SLAVE config value (1.2100.14)
-> > > 45.2.7.10 MultiGBASE-T AN control 1 register (Register 7.32)
-> > >=20
-> > > The MASTER-SLAVE role affects the clock configuration:
-> > >=20
-> > > ---------------------------------------------------------------------=
-----------
-> > > When the  PHY is configured as MASTER, the PMA Transmit function shall
-> > > source TX_TCLK from a local clock source. When configured as SLAVE, t=
-he
-> > > PMA Transmit function shall source TX_TCLK from the clock recovered f=
-rom
-> > > data stream provided by MASTER.
-> > >=20
-> > > iMX6Q                     KSZ9031                XXX
-> > > ------\                /-----------\        /------------\
-> > >       |                |           |        |            |
-> > >  MAC  |<----RGMII----->| PHY Slave |<------>| PHY Master |
-> > >       |<--- 125 MHz ---+-<------/  |        | \          |
-> > > ------/                \-----------/        \------------/
-> > >                                                ^
-> > >                                                 \-TX_TCLK
-> > >=20
-> > > ---------------------------------------------------------------------=
-----------
-> > >=20
-> > > Since some clock or link related issues are only reproducible in a
-> > > specific MASTER-SLAVE-role, MAC and PHY configuration, it is benefici=
-al
-> > > to provide generic (not 100BASE-T1 specific) interface to the user sp=
-ace
-> > > for configuration flexibility and trouble shooting.
-> > >=20
-> > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > > ---
-> [...]
-> > > +/* Port mode */
-> > > +#define PORT_MODE_MASTER	0x00
-> > > +#define PORT_MODE_SLAVE		0x01
-> > > +#define PORT_MODE_MASTER_FORCE	0x02
-> > > +#define PORT_MODE_SLAVE_FORCE	0x03
-> > > +#define PORT_MODE_UNKNOWN	0xff
->=20
-> Shouldn't 0 rather be something like PORT_MODE_UNSUPPORTED or
-> PORT_MODE_NONE? If I see correctly, all drivers not setting the new
-> field (which would be all drivers right now and almost all later) will
-> leave the value at 0 which would be interpreted as PORT_MODE_MASTER.
+As we handle cmpri and cmpre sometimes as unsigned char or 4 bit value
+inside the rpl header the current behaviour ends in an invalid header
+format. This patch simple use the best compression method if we ever run
+into the case that the destination address is showed up inside the rpl
+segments. We avoid the overflow handling and the rpl header is still valid,
+even when we have the destination address inside the rpl segments.
 
-Yes, you right. I was thinking about it and decided to follow the duplex
-code pattern. Will fix in the next version.
+Signed-off-by: Alexander Aring <alex.aring@gmail.com>
+---
+ net/ipv6/rpl.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---=20
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+diff --git a/net/ipv6/rpl.c b/net/ipv6/rpl.c
+index d38b476fc7f2..307f336b5353 100644
+--- a/net/ipv6/rpl.c
++++ b/net/ipv6/rpl.c
+@@ -8,6 +8,7 @@
+ #include <net/rpl.h>
+ 
+ #define IPV6_PFXTAIL_LEN(x) (sizeof(struct in6_addr) - (x))
++#define IPV6_RPL_BEST_ADDR_COMPRESSION 15
+ 
+ static void ipv6_rpl_addr_decompress(struct in6_addr *dst,
+ 				     const struct in6_addr *daddr,
+@@ -73,7 +74,7 @@ static unsigned char ipv6_rpl_srh_calc_cmpri(const struct ipv6_rpl_sr_hdr *inhdr
+ 		}
+ 	}
+ 
+-	return plen;
++	return IPV6_RPL_BEST_ADDR_COMPRESSION;
+ }
+ 
+ static unsigned char ipv6_rpl_srh_calc_cmpre(const struct in6_addr *daddr,
+@@ -83,10 +84,10 @@ static unsigned char ipv6_rpl_srh_calc_cmpre(const struct in6_addr *daddr,
+ 
+ 	for (plen = 0; plen < sizeof(*daddr); plen++) {
+ 		if (daddr->s6_addr[plen] != last_segment->s6_addr[plen])
+-			break;
++			return plen;
+ 	}
+ 
+-	return plen;
++	return IPV6_RPL_BEST_ADDR_COMPRESSION;
+ }
+ 
+ void ipv6_rpl_srh_compress(struct ipv6_rpl_sr_hdr *outhdr,
+-- 
+2.20.1
 
---wmkigrreuigkomxv
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEERBNZvwSgvmcMY/T74omh9DUaUbMFAl6XBXEACgkQ4omh9DUa
-UbOglg//ZJyaMVRb7Ez1auRpbMdUrJ2zn7i1rb3lNG7CbUPgu6Ga2o+Vfr9VBXqv
-itDyVtiSnnMeamfoqpF+/2MguMcYdHfKDaEV9iZiDiWRqSHbpxqzK3HO8/rm6Ees
-aj2rb6WV2csMf2+yMGfpOdD21j2u3zwMHZJxPvGI0zzBQ3Q93X350k0Vq3+NdgL6
-P72GncsF2v9JXPcu6gqKkvBigQ6fHnIQTnD+O7PEDnyNII5acludGG/HysEILtcc
-jFGgZr38/pofHvLFEUYmeBYVKXulLN+iNEu6oD4dVkiV3z3N/s6fVHPu8grgRc0x
-tNOYfIePD3RjF7CjpxXJrZpDdd4Vc419eEmZxCEpTcJWm/sj4XNSF2g0VDWFGU78
-3K3vHODzwz1sO4Fn7gJwwF4RTZabftkpYMjXR7PCDqIhq2W3TlpZCojkqx7sn/zS
-2leZ0aqynSqgFxDBz+p9f09P6C7rTfhNeYWl6NsdPHQBZxnR6lAU01XZIR/C6r7m
-huP2iH8rUXYuyaNGqH5AY8tLc/EbZbfeR7QkWER6XrSbXE/bEsh6wr2CLjwhvyP4
-wHNQ7kNbZl402RLYjoUwhyvVfvYmBUqrWRZtw8Mr5W/oR/+4KA5OaBR31aYTd2AF
-mbY4uR7Q4tKOdo9a3gDHJ9O8Ti+5TGwLNu29PQVxy1Om3MgMb/k=
-=tQSm
------END PGP SIGNATURE-----
-
---wmkigrreuigkomxv--
