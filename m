@@ -2,98 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEF681AAA79
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 16:51:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BECD1AAB29
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 17:01:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S370839AbgDOOkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 10:40:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40506 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S370819AbgDOOkX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 10:40:23 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818DEC061A0F
-        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 07:40:23 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id k28so2798806lfe.10
-        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 07:40:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ugedal.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=AVCFFN+RExCPz+0pipPO4RfMJ3qPdoajAh19ljXWUko=;
-        b=SVCzrPxeeiSU5ag82YnjJPLo2dop6HOXzb4g+8flS00wPEQWGASjezHYu2Eba1knSq
-         Ze1qqK7XLyOZAGThCk7f3+rMNniy6hbNjfmxu5z1jqJcziQgQ/WmZwAFiXgik8yRlifc
-         kla7ESHSisr8ZT2zVwleYVWcScftBKuzo42NeqjRvr8fUknHOn2DdRbXdaptaTnVvePS
-         N5TTL04Q/Y7UUA7l8rHVUA2WWLKiMcKxpuqR3o7Lc8R/aMmlye5MJ1W3y05mOtaq+zAh
-         +HT8y92f3QCe54p1dqWb5hgPucf8FJLM6Lv0Kz+AIUN83q8iCy4HHUOe1kfORPr/0LFc
-         CsZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=AVCFFN+RExCPz+0pipPO4RfMJ3qPdoajAh19ljXWUko=;
-        b=NYvXu2ILNoAgDvbD1ZfAp/fnmI9JfF4KKqoRPZyolN2NXlSeWvAOwVQr/pIkKSE0EW
-         4dJHGKsH3GBGURm9e2cVDnHIDpPNzrS5yxiY9zN1RJlb40PpoH/X1UkajneSRUQJ2Rqm
-         j55oVmvGVBtxXu8lECyjK8Rhmh528X9UylUlayYszvWnqGN6ttkkNUR92NVbwZ32pdPn
-         1VVX3N+y7xNz6ZIhAQXa/zmw/LFRn0Ez1gEhfMWqi/5TchLqqrReXn5kLwv58z7f37fX
-         YCgnjhjwJJAcnwmJkbB7hbIA3IWjUVNInxo69J2/3Z9pWUgRWqBXDid8P4pUxZAZo3CD
-         Lsog==
-X-Gm-Message-State: AGi0PuaSuBD7st9hwnGSbkSapy+FrbPhRIA1YGjE7V+M01mzheWPwsJm
-        Ax7LYLVtfTAqJyN98/xvGK9iXQ==
-X-Google-Smtp-Source: APiQypKDYQCkzyaOKUKe2LPMESlaOckDDZ3AoQc3Lq3rJMXGR+6fUbKBnsVDzggemqBiIBpNsjoFCA==
-X-Received: by 2002:a05:6512:3b0:: with SMTP id v16mr3257804lfp.213.1586961621951;
-        Wed, 15 Apr 2020 07:40:21 -0700 (PDT)
-Received: from xps13.home ([2001:4649:7d40:0:4415:c24b:59d6:7e4a])
-        by smtp.gmail.com with ESMTPSA id l22sm1860327lja.74.2020.04.15.07.40.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Apr 2020 07:40:21 -0700 (PDT)
-From:   Odin Ugedal <odin@ugedal.com>
-To:     toke@redhat.com, netdev@vger.kernel.org
-Cc:     Odin Ugedal <odin@ugedal.com>
-Subject: [PATCH 3/3] q_cake: detect overflow in get_size
-Date:   Wed, 15 Apr 2020 16:39:36 +0200
-Message-Id: <20200415143936.18924-4-odin@ugedal.com>
-X-Mailer: git-send-email 2.26.1
-In-Reply-To: <20200415143936.18924-1-odin@ugedal.com>
-References: <20200415143936.18924-1-odin@ugedal.com>
+        id S2392977AbgDOO5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 10:57:45 -0400
+Received: from mail-out.m-online.net ([212.18.0.10]:35408 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390410AbgDOO5m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 10:57:42 -0400
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 492QSg754Fz1rwbB;
+        Wed, 15 Apr 2020 16:57:31 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 492QSV6ljBz1qtwb;
+        Wed, 15 Apr 2020 16:57:30 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id kHkuRFO95cpx; Wed, 15 Apr 2020 16:57:29 +0200 (CEST)
+X-Auth-Info: gHiBQ9iFWpAAW6Gh96Pyb7Aqz1I680Skh+VW/Nn9BCY=
+Received: from [IPv6:::1] (unknown [195.140.253.167])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Wed, 15 Apr 2020 16:57:29 +0200 (CEST)
+Subject: Re: [PATCH V4 00/19] net: ks8851: Unify KS8851 SPI and MLL drivers
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>
+References: <20200415143909.wmtmud3vkkwzjv73@wunner.de>
+From:   Marek Vasut <marex@denx.de>
+Message-ID: <ac0f7227-a4ae-b6cd-36ec-3bcb02b1adbe@denx.de>
+Date:   Wed, 15 Apr 2020 16:51:39 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200415143909.wmtmud3vkkwzjv73@wunner.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This detects overflow during parsing of value:
+On 4/15/20 4:39 PM, Lukas Wunner wrote:
+> On Tue, Apr 14, 2020 at 08:20:10PM +0200, Marek Vasut wrote:
+>> NOTE: The V4 is now tested on RPi3B with KSZ8851SNL DEMO Board at 25 MHz.
+>>       The "ping -c 1000 -i 0.01" latency test is fluctuating around
+>>       		rtt min/avg/max/mdev = 1.448/1.540/1.699/0.030 ms
+>>       either way, with or without this series.
+> 
+> Compiling this series fails if CONFIG_KS8851=m and CONFIG_KS8851_MLL=y:
+> 
+> arm-linux-gnueabihf-ld: drivers/net/ethernet/micrel/ks8851_common.o:(__param+0x4): undefined reference to `__this_module'
+> 
+> I already reported this in my e-mail of April 6th, it's caused by the
+> module_param_named() for msg_enable.
+> 
+> 
+> Reading the MAC address from an external EEPROM works with this series.
+> 
+> 
+> I still get worse performance with this series than without it
+> (perhaps unsurprisingly so because not much has changed from v3 to v4).
 
-eg. running:
+I reinstated the indirect access, so things did change. Besides, there
+performance for the parallel option is back where it was with the old
+driver, which is important for me.
 
-$ tc qdisc add dev lo root cake memlimit 11gb
+> We're using CONFIG_PREEMPT_RT_FULL=y.  I'm sorry for not mentioning this
+> earlier, I didn't assume it would make such a big difference but
+> apparently it does.
 
-currently gives a memlimit of "3072Mb", while with this patch it errors
-with 'illegal value for "memlimit": "11gb"', since memlinit is an
-unsigned integer.
+Do you also have the RT patch applied ?
 
-Signed-off-by: Odin Ugedal <odin@ugedal.com>
----
- tc/tc_util.c | 5 +++++
- 1 file changed, 5 insertions(+)
+> This is the branch I've tested today:
+> https://github.com/l1k/linux/commits/revpi-4.19-marek-v4
 
-diff --git a/tc/tc_util.c b/tc/tc_util.c
-index 5f13d729..68938fb0 100644
---- a/tc/tc_util.c
-+++ b/tc/tc_util.c
-@@ -385,6 +385,11 @@ int get_size(unsigned int *size, const char *str)
- 	}
- 
- 	*size = sz;
-+
-+	/* detect if an overflow happened */
-+	if (*size != floor(sz))
-+		return -1;
-+
- 	return 0;
- }
- 
--- 
-2.26.1
+You seem to have quite a few more patches in that repository than just
+this series, some of them even touching the RPi SPI driver and it's DMA
+implementation.
 
+Could it be that's why I don't see your performance problems too ?
+
+> Latency without this series (ping -A -c 100000):
+> rtt min/avg/max/mdev = 0.793/1.694/2.321/0.044 ms, ipg/ewma 2.000/1.691 ms
+> 
+> Latency with this series:
+> rtt min/avg/max/mdev = 0.957/1.715/2.652/0.043 ms, ipg/ewma 2.000/1.716 ms
+> 
+> 
+> RX throughput without this series (iperf3 -f k -i 0 -c):
+> [  5]   0.00-10.00  sec  19.0 MBytes  15960 Kbits/sec                  receiver
+> 
+> RX throughput with this series:
+> [  5]   0.00-10.00  sec  18.5 MBytes  15498 Kbits/sec                  receiver
+> 
+> 
+> TX throughput without this series (iperf3 -R -f k -i 0 -c):
+> [  5]   0.00-10.00  sec  18.6 MBytes  15614 Kbits/sec                  receiver
+> 
+> TX throughput with this series:
+> [  5]   0.00-10.00  sec  18.3 MBytes  15371 Kbits/sec                  receiver
+> 
+> So this is pretty much the same performance degredation as before.
+> 
+> 
+>>> I'm wondering where the
+>>> performance penalty is originating from:  Perhaps because of the
+>>> 16-bit read of RXFC in ks8851_rx_pkts()?
+>>
+>> Can you patch that part away to see whether that's the case ?
+> 
+> Will do.
+
+Thanks
+
+>>> Check if the driver for the SPI controller is buggy or somehow limits the
+>>> speed.
+>>
+>> I used two different drivers -- the iMX SPI and the STM32 SPI -- I would
+>> say that if both show the same behavior, it's unlikely to be the driver.
+> 
+> Hm, so why did it work with the RasPi but not with the others?
+
+I didn't have a chance to debug this yet.
