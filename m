@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B42C1A9D70
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 13:46:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 278081AA196
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 14:46:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2897537AbgDOLno (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 07:43:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35564 "EHLO mail.kernel.org"
+        id S370104AbgDOMn2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 08:43:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35652 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2409009AbgDOLnf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Apr 2020 07:43:35 -0400
+        id S2897525AbgDOLng (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Apr 2020 07:43:36 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C85CD206A2;
-        Wed, 15 Apr 2020 11:43:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 62CB5214D8;
+        Wed, 15 Apr 2020 11:43:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586951015;
-        bh=QItUvrmXwIFKGdPCDEj7r8GOfAZVsrSX1tBNdR0g2UM=;
+        s=default; t=1586951016;
+        bh=Fb5r/XOVrXihGT7UJi2/W3a1v9RW/SP/vpu9XGfwCTQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iKttPVYME1Ko3tSiK9DysFsPCLUzaoQJi74pAQpsO4hKLwnIRtWOqD3GVHMJ8dket
-         iIOGeOhfCJPZAgv4cBg9uPkVK3c3841XT+jxvOSUS22KpsphhgYm8u1Qv+onn8mfez
-         Ct5H8zYMXHINsDpCpZguLofP8+DAenFdli7IGXOo=
+        b=XrfhAswdFdRPrOeVnMC+if+q4g93y/skOG10cO9RU1WQ04KSItNMudk0jWrjpe+8Y
+         NCUiSnK0qTWqbAJlk0fjSvR+nyKO791IpMPfoU8OYOvqMaTbmg9n7DODpAj9yFFkKF
+         kY43z6wivEFK7xy7RrU5irsPvYOVsi4JhnBv2/pw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Richard Palethorpe <rpalethorpe@suse.com>,
-        Kees Cook <keescook@chromium.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, security@kernel.org, wg@grandegger.com,
-        mkl@pengutronix.de, davem@davemloft.net,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.5 057/106] slcan: Don't transmit uninitialized stack data in padding
-Date:   Wed, 15 Apr 2020 07:41:37 -0400
-Message-Id: <20200415114226.13103-57-sashal@kernel.org>
+Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Alex Elder <elder@linaro.org>,
+        Sean Tranchetti <stranche@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.5 058/106] net: qualcomm: rmnet: Allow configuration updates to existing devices
+Date:   Wed, 15 Apr 2020 07:41:38 -0400
+Message-Id: <20200415114226.13103-58-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200415114226.13103-1-sashal@kernel.org>
 References: <20200415114226.13103-1-sashal@kernel.org>
@@ -45,54 +45,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Richard Palethorpe <rpalethorpe@suse.com>
+From: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
 
-[ Upstream commit b9258a2cece4ec1f020715fe3554bc2e360f6264 ]
+[ Upstream commit 2abb5792387eb188b12051337d5dcd2cba615cb0 ]
 
-struct can_frame contains some padding which is not explicitly zeroed in
-slc_bump. This uninitialized data will then be transmitted if the stack
-initialization hardening feature is not enabled (CONFIG_INIT_STACK_ALL).
+This allows the changelink operation to succeed if the mux_id was
+specified as an argument. Note that the mux_id must match the
+existing mux_id of the rmnet device or should be an unused mux_id.
 
-This commit just zeroes the whole struct including the padding.
-
-Signed-off-by: Richard Palethorpe <rpalethorpe@suse.com>
-Fixes: a1044e36e457 ("can: add slcan driver for serial/USB-serial CAN adapters")
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Cc: linux-can@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: security@kernel.org
-Cc: wg@grandegger.com
-Cc: mkl@pengutronix.de
-Cc: davem@davemloft.net
-Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: 1dc49e9d164c ("net: rmnet: do not allow to change mux id if mux id is duplicated")
+Reported-and-tested-by: Alex Elder <elder@linaro.org>
+Signed-off-by: Sean Tranchetti <stranche@codeaurora.org>
+Signed-off-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/slcan.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ .../ethernet/qualcomm/rmnet/rmnet_config.c    | 31 ++++++++++++-------
+ 1 file changed, 19 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-index a3664281a33fc..4dfa459ef5c73 100644
---- a/drivers/net/can/slcan.c
-+++ b/drivers/net/can/slcan.c
-@@ -148,7 +148,7 @@ static void slc_bump(struct slcan *sl)
- 	u32 tmpid;
- 	char *cmd = sl->rbuff;
+diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
+index fbf4cbcf1a654..02cdbb22d3355 100644
+--- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
++++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
+@@ -279,7 +279,6 @@ static int rmnet_changelink(struct net_device *dev, struct nlattr *tb[],
+ {
+ 	struct rmnet_priv *priv = netdev_priv(dev);
+ 	struct net_device *real_dev;
+-	struct rmnet_endpoint *ep;
+ 	struct rmnet_port *port;
+ 	u16 mux_id;
  
--	cf.can_id = 0;
-+	memset(&cf, 0, sizeof(cf));
+@@ -294,19 +293,27 @@ static int rmnet_changelink(struct net_device *dev, struct nlattr *tb[],
  
- 	switch (*cmd) {
- 	case 'r':
-@@ -187,8 +187,6 @@ static void slc_bump(struct slcan *sl)
- 	else
- 		return;
+ 	if (data[IFLA_RMNET_MUX_ID]) {
+ 		mux_id = nla_get_u16(data[IFLA_RMNET_MUX_ID]);
+-		if (rmnet_get_endpoint(port, mux_id)) {
+-			NL_SET_ERR_MSG_MOD(extack, "MUX ID already exists");
+-			return -EINVAL;
+-		}
+-		ep = rmnet_get_endpoint(port, priv->mux_id);
+-		if (!ep)
+-			return -ENODEV;
  
--	*(u64 *) (&cf.data) = 0; /* clear payload */
--
- 	/* RTR frames may have a dlc > 0 but they never have any data bytes */
- 	if (!(cf.can_id & CAN_RTR_FLAG)) {
- 		for (i = 0; i < cf.can_dlc; i++) {
+-		hlist_del_init_rcu(&ep->hlnode);
+-		hlist_add_head_rcu(&ep->hlnode, &port->muxed_ep[mux_id]);
++		if (mux_id != priv->mux_id) {
++			struct rmnet_endpoint *ep;
++
++			ep = rmnet_get_endpoint(port, priv->mux_id);
++			if (!ep)
++				return -ENODEV;
+ 
+-		ep->mux_id = mux_id;
+-		priv->mux_id = mux_id;
++			if (rmnet_get_endpoint(port, mux_id)) {
++				NL_SET_ERR_MSG_MOD(extack,
++						   "MUX ID already exists");
++				return -EINVAL;
++			}
++
++			hlist_del_init_rcu(&ep->hlnode);
++			hlist_add_head_rcu(&ep->hlnode,
++					   &port->muxed_ep[mux_id]);
++
++			ep->mux_id = mux_id;
++			priv->mux_id = mux_id;
++		}
+ 	}
+ 
+ 	if (data[IFLA_RMNET_FLAGS]) {
 -- 
 2.20.1
 
