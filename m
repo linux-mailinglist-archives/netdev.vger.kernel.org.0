@@ -2,35 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20CC71AA156
-	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 14:46:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 095271AA0F4
+	for <lists+netdev@lfdr.de>; Wed, 15 Apr 2020 14:33:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S369907AbgDOMhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 08:37:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36578 "EHLO mail.kernel.org"
+        id S369703AbgDOMdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 08:33:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36946 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2897563AbgDOLoF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 15 Apr 2020 07:44:05 -0400
+        id S2897566AbgDOLoR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Apr 2020 07:44:17 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9AFCC20768;
-        Wed, 15 Apr 2020 11:44:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 26C73214D8;
+        Wed, 15 Apr 2020 11:44:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586951045;
-        bh=OTum/8fGcEQAFUxcS0A1Vb92+pICUIgnAe39RUn/eMU=;
+        s=default; t=1586951057;
+        bh=KumeSezBYFcfKEPN0JqzpgTR3COOhKtsh9LKtTxA6cU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YwHDKe0XVJoRet30SSXe3p5398gbHuJscTOWHPSQdml4iQSIF+CCefXibnjqq/b94
-         ZSyWqFS9Y1ED87dgCaTe8CMXYoFUBm0K2LPNBTiL6ZrERVuyTnEHDwc+evAgOorXIR
-         ykqip1lJiTC/72QxaPKzd1B0PVuMFfI5M8RxXkU8=
+        b=cHSrNryPVeBycYk9KpRVC5mzX9tsY7LD732a+8mi/560GoCTCMwXqCtKKFhk6Rwqu
+         neJji8lLMMtyE/cyYsJ+tk4H0yhO2ynYxuIiwgQYJs6kQSmj0j8VC19YyVAz+eVay2
+         y9GsEVxCRLRK7QeE5q5sv+3wE7wCIiwdiUlTJyVQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 080/106] cxgb4: free MQPRIO resources in shutdown path
-Date:   Wed, 15 Apr 2020 07:42:00 -0400
-Message-Id: <20200415114226.13103-80-sashal@kernel.org>
+Cc:     Olga Kornievskaia <olga.kornievskaia@gmail.com>,
+        Olga Kornievskaia <kolga@netapp.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.5 090/106] SUNRPC: fix krb5p mount to provide large enough buffer in rq_rcvsize
+Date:   Wed, 15 Apr 2020 07:42:10 -0400
+Message-Id: <20200415114226.13103-90-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200415114226.13103-1-sashal@kernel.org>
 References: <20200415114226.13103-1-sashal@kernel.org>
@@ -43,91 +46,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+From: Olga Kornievskaia <olga.kornievskaia@gmail.com>
 
-[ Upstream commit cef8dac96bc108633f5090bb3a9988d734dc1ee0 ]
+[ Upstream commit df513a7711712758b9cb1a48d86712e7e1ee03f4 ]
 
-Perform missing MQPRIO resource cleanup in PCI shutdown path. Also,
-fix MQPRIO MSIX bitmap leak in resource cleanup.
+Ever since commit 2c94b8eca1a2 ("SUNRPC: Use au_rslack when computing
+reply buffer size"). It changed how "req->rq_rcvsize" is calculated. It
+used to use au_cslack value which was nice and large and changed it to
+au_rslack value which turns out to be too small.
 
-Fixes: b1396c2bd675 ("cxgb4: parse and configure TC-MQPRIO offload")
-Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Since 5.1, v3 mount with sec=krb5p fails against an Ontap server
+because client's receive buffer it too small.
+
+For gss krb5p, we need to account for the mic token in the verifier,
+and the wrap token in the wrap token.
+
+RFC 4121 defines:
+mic token
+Octet no   Name        Description
+         --------------------------------------------------------------
+         0..1     TOK_ID     Identification field.  Tokens emitted by
+                             GSS_GetMIC() contain the hex value 04 04
+                             expressed in big-endian order in this
+                             field.
+         2        Flags      Attributes field, as described in section
+                             4.2.2.
+         3..7     Filler     Contains five octets of hex value FF.
+         8..15    SND_SEQ    Sequence number field in clear text,
+                             expressed in big-endian order.
+         16..last SGN_CKSUM  Checksum of the "to-be-signed" data and
+                             octet 0..15, as described in section 4.2.4.
+
+that's 16bytes (GSS_KRB5_TOK_HDR_LEN) + chksum
+
+wrap token
+Octet no   Name        Description
+         --------------------------------------------------------------
+          0..1     TOK_ID    Identification field.  Tokens emitted by
+                             GSS_Wrap() contain the hex value 05 04
+                             expressed in big-endian order in this
+                             field.
+          2        Flags     Attributes field, as described in section
+                             4.2.2.
+          3        Filler    Contains the hex value FF.
+          4..5     EC        Contains the "extra count" field, in big-
+                             endian order as described in section 4.2.3.
+          6..7     RRC       Contains the "right rotation count" in big-
+                             endian order, as described in section
+                             4.2.5.
+          8..15    SND_SEQ   Sequence number field in clear text,
+                             expressed in big-endian order.
+          16..last Data      Encrypted data for Wrap tokens with
+                             confidentiality, or plaintext data followed
+                             by the checksum for Wrap tokens without
+                             confidentiality, as described in section
+                             4.2.4.
+
+Also 16bytes of header (GSS_KRB5_TOK_HDR_LEN), encrypted data, and cksum
+(other things like padding)
+
+RFC 3961 defines known cksum sizes:
+Checksum type              sumtype        checksum         section or
+                                value            size         reference
+   ---------------------------------------------------------------------
+   CRC32                            1               4           6.1.3
+   rsa-md4                          2              16           6.1.2
+   rsa-md4-des                      3              24           6.2.5
+   des-mac                          4              16           6.2.7
+   des-mac-k                        5               8           6.2.8
+   rsa-md4-des-k                    6              16           6.2.6
+   rsa-md5                          7              16           6.1.1
+   rsa-md5-des                      8              24           6.2.4
+   rsa-md5-des3                     9              24             ??
+   sha1 (unkeyed)                  10              20             ??
+   hmac-sha1-des3-kd               12              20            6.3
+   hmac-sha1-des3                  13              20             ??
+   sha1 (unkeyed)                  14              20             ??
+   hmac-sha1-96-aes128             15              20         [KRB5-AES]
+   hmac-sha1-96-aes256             16              20         [KRB5-AES]
+   [reserved]                  0x8003               ?         [GSS-KRB5]
+
+Linux kernel now mainly supports type 15,16 so max cksum size is 20bytes.
+(GSS_KRB5_MAX_CKSUM_LEN)
+
+Re-use already existing define of GSS_KRB5_MAX_SLACK_NEEDED that's used
+for encoding the gss_wrap tokens (same tokens are used in reply).
+
+Fixes: 2c94b8eca1a2 ("SUNRPC: Use au_rslack when computing reply buffer size")
+Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
+Reviewed-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |  4 ++++
- .../ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c  | 23 +++++++++++++++++++
- .../ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h  |  1 +
- 3 files changed, 28 insertions(+)
+ net/sunrpc/auth_gss/auth_gss.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index 9934c8b0f0b07..a2fa4b1fd4435 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -6651,6 +6651,10 @@ static void shutdown_one(struct pci_dev *pdev)
- 			if (adapter->port[i]->reg_state == NETREG_REGISTERED)
- 				cxgb_close(adapter->port[i]);
- 
-+		rtnl_lock();
-+		cxgb4_mqprio_stop_offload(adapter);
-+		rtnl_unlock();
-+
- 		if (is_uld(adapter)) {
- 			detach_ulds(adapter);
- 			t4_uld_clean_up(adapter);
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c
-index ec3eb45ee3b48..e6af4906d6743 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c
-@@ -301,6 +301,7 @@ static void cxgb4_mqprio_free_hw_resources(struct net_device *dev)
- 			cxgb4_clear_msix_aff(eorxq->msix->vec,
- 					     eorxq->msix->aff_mask);
- 			free_irq(eorxq->msix->vec, &eorxq->rspq);
-+			cxgb4_free_msix_idx_in_bmap(adap, eorxq->msix->idx);
- 		}
- 
- 		free_rspq_fl(adap, &eorxq->rspq, &eorxq->fl);
-@@ -611,6 +612,28 @@ int cxgb4_setup_tc_mqprio(struct net_device *dev,
- 	return ret;
- }
- 
-+void cxgb4_mqprio_stop_offload(struct adapter *adap)
-+{
-+	struct cxgb4_tc_port_mqprio *tc_port_mqprio;
-+	struct net_device *dev;
-+	u8 i;
-+
-+	if (!adap->tc_mqprio || !adap->tc_mqprio->port_mqprio)
-+		return;
-+
-+	for_each_port(adap, i) {
-+		dev = adap->port[i];
-+		if (!dev)
-+			continue;
-+
-+		tc_port_mqprio = &adap->tc_mqprio->port_mqprio[i];
-+		if (!tc_port_mqprio->mqprio.qopt.num_tc)
-+			continue;
-+
-+		cxgb4_mqprio_disable_offload(dev);
-+	}
-+}
-+
- int cxgb4_init_tc_mqprio(struct adapter *adap)
- {
- 	struct cxgb4_tc_port_mqprio *tc_port_mqprio, *port_mqprio;
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h
-index c532f1ef84517..ff8794132b22b 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h
-@@ -38,6 +38,7 @@ struct cxgb4_tc_mqprio {
- 
- int cxgb4_setup_tc_mqprio(struct net_device *dev,
- 			  struct tc_mqprio_qopt_offload *mqprio);
-+void cxgb4_mqprio_stop_offload(struct adapter *adap);
- int cxgb4_init_tc_mqprio(struct adapter *adap);
- void cxgb4_cleanup_tc_mqprio(struct adapter *adap);
- #endif /* __CXGB4_TC_MQPRIO_H__ */
+diff --git a/net/sunrpc/auth_gss/auth_gss.c b/net/sunrpc/auth_gss/auth_gss.c
+index d75fddca44c94..f9e1a7e61eda0 100644
+--- a/net/sunrpc/auth_gss/auth_gss.c
++++ b/net/sunrpc/auth_gss/auth_gss.c
+@@ -20,6 +20,7 @@
+ #include <linux/sunrpc/clnt.h>
+ #include <linux/sunrpc/auth.h>
+ #include <linux/sunrpc/auth_gss.h>
++#include <linux/sunrpc/gss_krb5.h>
+ #include <linux/sunrpc/svcauth_gss.h>
+ #include <linux/sunrpc/gss_err.h>
+ #include <linux/workqueue.h>
+@@ -1050,7 +1051,7 @@ gss_create_new(const struct rpc_auth_create_args *args, struct rpc_clnt *clnt)
+ 		goto err_put_mech;
+ 	auth = &gss_auth->rpc_auth;
+ 	auth->au_cslack = GSS_CRED_SLACK >> 2;
+-	auth->au_rslack = GSS_VERF_SLACK >> 2;
++	auth->au_rslack = GSS_KRB5_MAX_SLACK_NEEDED >> 2;
+ 	auth->au_verfsize = GSS_VERF_SLACK >> 2;
+ 	auth->au_ralign = GSS_VERF_SLACK >> 2;
+ 	auth->au_flags = 0;
 -- 
 2.20.1
 
