@@ -2,198 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 534601AB9AC
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 09:21:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14EC31AB9B2
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 09:21:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439131AbgDPHTs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 03:19:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54464 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2438730AbgDPHTZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 03:19:25 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404D0C03C1A7
-        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 00:19:20 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id i10so3514526wrv.10
-        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 00:19:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=3AEaWn5XeJ7hcX74F4NzwZbogUqZr77xLF5d73BlBfw=;
-        b=x+7x1SRD1y/LTZJxHdO7NBoPBhyXEErUVgwIai9Txb2aqME7MbBYVN8PkA7MmFMlG/
-         +PTNeDQuJeOieuyql513BpDrE+TR0fX/mGtYOkCA4N6z7VRTvWgnydlKHHjdN1pHbDi6
-         FcrLT7q9Xm6W6XF2DKy+sVxRvrx2e8zXuCLbQfQ8d2nPd/iJ34SsziQVe8hgIZhAVDz1
-         X39oeCEgZoTyWJybNtbP4u4Ik4a22WiM6sS1Gf+7ektT/jxfmy4EaiaU+raISKCA976c
-         DL5uziLMISTg53DG/aGMYXA9DS9lwHatzi8LUvPjSHKrnZk+uf82Nr0GKjoaC8YAX62l
-         Ovyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=3AEaWn5XeJ7hcX74F4NzwZbogUqZr77xLF5d73BlBfw=;
-        b=XwrfEOB080iKEPPE+3KOC0RUKNk3nGxXp+1ZoIWzSJ1yvkG39luJoJeeXVaFOV9au/
-         +26R+ZkZEuZ5cY1yBvkYt97En7wdcWIa/17qvumA72uSpEXNc7FICYbqc3sISvW08NTf
-         EQpOIGGpb4Ix96w1HStQ38U5G+vQix+D+Cz8sM8/FwfwWKlX0OtG+n/OSXi8nFqcoYI5
-         exbWpqZIDPLmMwWv5KNvhloi1l2BU6CXsb0YtyRlJV0Yz4Uz3+ANTgY/78nHkILchcyU
-         Sd3ktgEMgz/6xksLcPLlHoc4mnzQk7VtMQ9gsDd/cbR/n7Ws1uthldfcTkJjqyWFoac5
-         4JYw==
-X-Gm-Message-State: AGi0PuYD0EnzeCIzcoG7bCMlxeK/mrgSr3VUdlGpFus8OZ7MTL4SqRD+
-        1UoSn192qHxjql74kWC6TDTtQQ==
-X-Google-Smtp-Source: APiQypLCNVZBL4RMlNf7UZFX5oU2xDT6SF7MjxuD7BsWZie9pUbnFA9tcL+f+7W6lePE+UdiJ1fBjg==
-X-Received: by 2002:adf:e4cc:: with SMTP id v12mr8967305wrm.106.1587021558557;
-        Thu, 16 Apr 2020 00:19:18 -0700 (PDT)
-Received: from dell ([95.149.164.124])
-        by smtp.gmail.com with ESMTPSA id p16sm19943946wro.21.2020.04.16.00.19.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Apr 2020 00:19:17 -0700 (PDT)
-Date:   Thu, 16 Apr 2020 08:20:18 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>, Vinod Koul <vkoul@kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Amit Kucheria <amit.kucheria@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-i2c@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: Clean-up schema indentation formatting
-Message-ID: <20200416072018.GS2167633@dell>
-References: <20200416005549.9683-1-robh@kernel.org>
+        id S2439028AbgDPHVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 03:21:06 -0400
+Received: from mout.kundenserver.de ([212.227.17.24]:58479 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2438244AbgDPHVC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 03:21:02 -0400
+Received: from mail-qt1-f177.google.com ([209.85.160.177]) by
+ mrelayeu.kundenserver.de (mreue107 [212.227.15.145]) with ESMTPSA (Nemesis)
+ id 1M8hEd-1jKs5j3Y6j-004k5c; Thu, 16 Apr 2020 09:20:59 +0200
+Received: by mail-qt1-f177.google.com with SMTP id 71so15585125qtc.12;
+        Thu, 16 Apr 2020 00:20:58 -0700 (PDT)
+X-Gm-Message-State: AGi0PuaMlE+7b4MtIkQ7NJeo34K0IZa8nyA8CIjvWWPMxhHiar5nIxSh
+        atSlhxjwEf1gKoxy36ck3qzr678uz11jWD+S9eI=
+X-Google-Smtp-Source: APiQypLki807vlF5rf3bUb/lMDePEthLpUaUBhHRg0/ZUfeGPkLYlO08Klb1Ee851xvIZfXGDxWFM30tec+bUhtYF5c=
+X-Received: by 2002:ac8:6757:: with SMTP id n23mr12043843qtp.304.1587021657410;
+ Thu, 16 Apr 2020 00:20:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200416005549.9683-1-robh@kernel.org>
+References: <20200408202711.1198966-1-arnd@arndb.de> <nycvar.YSQ.7.76.2004081633260.2671@knanqh.ubzr>
+ <CAK8P3a2frDf4BzEpEF0uwPTV2dv6Jve+6N97z1sSuSBUAPJquA@mail.gmail.com>
+ <20200408224224.GD11886@ziepe.ca> <87k12pgifv.fsf@intel.com>
+ <7d9410a4b7d0ef975f7cbd8f0b6762df114df539.camel@mellanox.com>
+ <20200410171320.GN11886@ziepe.ca> <16441479b793077cdef9658f35773739038c39dc.camel@mellanox.com>
+ <20200414132900.GD5100@ziepe.ca> <CAK8P3a0aFQ7h4zRDW=QLogXWc88JkJJXEOK0_CpWwsRjq6+T+w@mail.gmail.com>
+ <20200414152312.GF5100@ziepe.ca> <CAK8P3a1PjP9_b5NdmqTLeGN4y+3JXx_yyTE8YAf1u5rYHWPA9g@mail.gmail.com>
+ <f6d83b08fc0bc171b5ba5b2a0bc138727d92e2c0.camel@mellanox.com>
+ <CAK8P3a1-J=4EAxh7TtQxugxwXk239u8ffgxZNRdw_WWy8ExFoQ@mail.gmail.com> <834c7606743424c64951dd2193ca15e29799bf18.camel@mellanox.com>
+In-Reply-To: <834c7606743424c64951dd2193ca15e29799bf18.camel@mellanox.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 16 Apr 2020 09:20:40 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3Wx5_bUOKnN3_hG5nLOqv3WCUtMSq6vOkJzWZgsmAz+A@mail.gmail.com>
+Message-ID: <CAK8P3a3Wx5_bUOKnN3_hG5nLOqv3WCUtMSq6vOkJzWZgsmAz+A@mail.gmail.com>
+Subject: Re: [RFC 0/6] Regressions for "imply" behavior change
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "narmstrong@baylibre.com" <narmstrong@baylibre.com>,
+        "masahiroy@kernel.org" <masahiroy@kernel.org>,
+        "Laurent.pinchart@ideasonboard.com" 
+        <Laurent.pinchart@ideasonboard.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "nico@fluxnic.net" <nico@fluxnic.net>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "kieran.bingham+renesas@ideasonboard.com" 
+        <kieran.bingham+renesas@ideasonboard.com>,
+        "jani.nikula@linux.intel.com" <jani.nikula@linux.intel.com>,
+        "a.hajda@samsung.com" <a.hajda@samsung.com>,
+        "jonas@kwiboo.se" <jonas@kwiboo.se>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "airlied@linux.ie" <airlied@linux.ie>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>,
+        "jernej.skrabec@siol.net" <jernej.skrabec@siol.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:+TnTyNKhJDK+dsEpJffyVZIWG0bgsP3O9RWs5SO393nW1uj6vTQ
+ 6B4ki3fDo1SOTlDXHpTGVfXO7w3tJK4bwvvqhIbv2OQWsPx+mHItzowt6qn4RducloqM6OK
+ 06S7us5VAjq3qF+ileNWh3OigE9u5MoZjFrGUM5iC5/WT3TyZG0j9T5NmFlcnZLnb2zAS1o
+ yVUT+t3yU1oTYmYWmSp3g==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:7+2vD6+DWY8=:miIyPTnwA9PaTsUep21Rns
+ rOP5j2xIr13UIymyAxvzck+Eh1myIl0NLhPsk4d3qEXR4u8ADclGOlTF5/OSfK+W49ef+wT7F
+ OS+DJKSZ3FiFaR/eerOPEhLAvtCulxZurxT3IFX0LtlRDW3qDqm/WXN0tame1gRG26vNLluqN
+ dt0oiyRbYHeyleFJ3RTbbt9i8WfVZOLBZ4zURWJPYtNJogvHTL1m7StoLm7OQZfZrTz7OvNPc
+ kRZMDEhiF7yPfAKC5dOrf32FiqHmca7NEE9W1W2v7ujKRgL0laRT0XcNsHrZDnzynlpJB2myd
+ gAbN58YOVt0xViEOQmwKQRgB+ZSiHnKukhA1ouESJhLupY8b0C1HzeJanv/0TsYFkYz5qKDjK
+ 9wQUcc1V3QWKvdiPL7GRjHCIVYy0ENWLdtfedeCrscEqm8b9yMsE6uB1TSSoMatM8ro8gbQOa
+ R3wkYlGN4UKXFiyKv99GhoZcc3xjrq1i43OjLxQnQsoLLsQxdpxbM+X+URmwDt8aGLrLemImO
+ epKs6/MoIeqER2kkTGnT/JfJIKFCSUpl4bTtxnHFAsvCrIPteddlO+aoB1JGixp1TVUDdRLe7
+ 0jYQaveS4iKTiV9+gMPZimUdmR7UeieM/47BJ5NYNPNjpwxsLeHXVGyhyadOIdrlntb/r5J4f
+ Hd8LkDBDCsp7wBOvEMWZVrFjjREf4tla96TpgxBhbAH6qB3Y4czDovBX1zPhPysbeZl1fxvKT
+ bKhqBpOePQQgFYgLyVeJX1+zsTlY98RFeOTNijiS4EYZVaoULO9KQgZ8OAmbTf7btNLiL7dFV
+ S22dm0CGnES9R7UnISu1OcdlXYaIoGe/uDGsH74DjNGYNCioXg=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Apr 2020, Rob Herring wrote:
+On Thu, Apr 16, 2020 at 5:25 AM Saeed Mahameed <saeedm@mellanox.com> wrote:
+>
+> On Tue, 2020-04-14 at 20:47 +0200, Arnd Bergmann wrote:
+> > On Tue, Apr 14, 2020 at 7:49 PM Saeed Mahameed <saeedm@mellanox.com>
+> > wrote:
+> > > On Tue, 2020-04-14 at 17:25 +0200, Arnd Bergmann wrote:
+> > > > On Tue, Apr 14, 2020 at 5:23 PM Jason Gunthorpe <jgg@ziepe.ca>
+> > > > wrote:
+> > > > Correct.
+> > > >
+> > >
+> > > Great !
+> > >
+> > > Then bottom line we will change mlx5/Kconfig: to
+> > >
+> > > depends on VXLAN || !VXLAN
+> >
+> > Ok
+> >
+>
+> BTW how about adding a new Kconfig option to hide the details of
+> ( BAR || !BAR) ? as Jason already explained and suggested, this will
+> make it easier for the users and developers to understand the actual
+> meaning behind this tristate weird condition.
+>
+> e.g have a new keyword:
+>      reach VXLAN
+> which will be equivalent to:
+>      depends on VXLAN && !VXLAN
 
-> Fix various inconsistencies in schema indentation. Most of these are
-> list indentation which should be 2 spaces more than the start of the
-> enclosing keyword. This doesn't matter functionally, but affects running
-> scripts which do transforms on the schema files.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  .../devicetree/bindings/arm/altera.yaml       |  6 +-
->  .../amlogic/amlogic,meson-gx-ao-secure.yaml   |  2 +-
->  .../devicetree/bindings/arm/bitmain.yaml      |  2 +-
->  .../devicetree/bindings/arm/nxp/lpc32xx.yaml  |  9 ++-
->  .../bindings/arm/socionext/uniphier.yaml      | 26 ++++----
->  .../bindings/arm/stm32/st,mlahb.yaml          |  2 +-
->  .../bindings/arm/stm32/st,stm32-syscon.yaml   |  6 +-
->  .../bindings/ata/faraday,ftide010.yaml        |  4 +-
->  .../bindings/bus/allwinner,sun8i-a23-rsb.yaml |  4 +-
->  .../clock/allwinner,sun4i-a10-gates-clk.yaml  |  8 +--
->  .../devicetree/bindings/clock/fsl,plldig.yaml | 17 +++--
->  .../devicetree/bindings/clock/qcom,mmcc.yaml  | 16 ++---
->  .../bindings/connector/usb-connector.yaml     |  6 +-
->  .../crypto/allwinner,sun4i-a10-crypto.yaml    | 14 ++--
->  .../bindings/crypto/allwinner,sun8i-ce.yaml   | 16 ++---
->  .../bindings/crypto/amlogic,gxl-crypto.yaml   |  2 +-
->  .../display/allwinner,sun4i-a10-hdmi.yaml     | 40 ++++++------
->  .../display/allwinner,sun4i-a10-tcon.yaml     | 58 ++++++++---------
->  .../display/allwinner,sun6i-a31-mipi-dsi.yaml | 28 ++++----
->  .../display/allwinner,sun8i-a83t-dw-hdmi.yaml | 10 +--
->  .../bindings/display/bridge/lvds-codec.yaml   | 18 +++---
->  .../display/panel/sony,acx424akp.yaml         |  2 +-
->  .../display/panel/xinpeng,xpp055c272.yaml     |  4 +-
->  .../bindings/display/renesas,cmm.yaml         | 16 ++---
->  .../devicetree/bindings/dma/ti/k3-udma.yaml   |  8 +--
->  .../bindings/gpio/brcm,xgs-iproc-gpio.yaml    |  2 +-
->  .../bindings/gpu/arm,mali-midgard.yaml        | 18 +++---
->  .../devicetree/bindings/gpu/vivante,gc.yaml   |  2 +-
->  .../devicetree/bindings/i2c/i2c-rk3x.yaml     | 10 +--
->  .../bindings/iio/adc/adi,ad7124.yaml          |  4 +-
->  .../bindings/iio/adc/lltc,ltc2496.yaml        |  6 +-
->  .../input/allwinner,sun4i-a10-lradc-keys.yaml |  4 +-
->  .../bindings/input/touchscreen/goodix.yaml    |  2 +-
->  .../bindings/interconnect/qcom,msm8916.yaml   |  4 +-
->  .../bindings/interconnect/qcom,msm8974.yaml   |  4 +-
->  .../bindings/interconnect/qcom,qcs404.yaml    |  4 +-
->  .../allwinner,sun7i-a20-sc-nmi.yaml           | 12 ++--
->  .../intel,ixp4xx-interrupt.yaml               |  8 +--
->  .../interrupt-controller/st,stm32-exti.yaml   | 12 ++--
->  .../bindings/iommu/samsung,sysmmu.yaml        | 10 +--
->  .../bindings/mailbox/st,stm32-ipcc.yaml       |  2 +-
->  .../media/allwinner,sun4i-a10-csi.yaml        | 28 ++++----
->  .../bindings/media/amlogic,gx-vdec.yaml       | 14 ++--
->  .../bindings/media/renesas,ceu.yaml           | 28 ++++----
->  .../bindings/media/renesas,vin.yaml           |  8 +--
->  .../devicetree/bindings/media/ti,vpe.yaml     |  2 +-
->  .../memory-controllers/fsl/imx8m-ddrc.yaml    |  6 +-
+I'd love to see that, but I'm not sure what keyword is best. For your
+suggestion of "reach", that would probably do the job, but I'm not
+sure if this ends up being more or less confusing than what we have
+today.
 
->  .../bindings/mfd/st,stm32-lptimer.yaml        |  4 +-
->  .../bindings/mfd/st,stm32-timers.yaml         |  4 +-
->  .../devicetree/bindings/mfd/syscon.yaml       | 12 ++--
+> > > This will force MLX5_CORE to m when necessary to make vxlan
+> > > reachable
+> > > to mlx5_core.  So no need for explicit use of IS_REACHABLE().
+> > > in mlx5 there are 4 of these:
+> > >
+> > >         imply PTP_1588_CLOCK
+> > >         imply VXLAN
+> > >         imply MLXFW
+> > >         imply PCI_HYPERV_INTERFACE
+> >
+> > As mentioned earlier, we do need to replace the 'imply
+> > PTP_1588_CLOCK'
+> > with the same
+> >
+> >          depends on PTP_1588_CLOCK || !PTP_1588_CLOCK
+> >
+> > So far I have not seen problems for the other two options, so I
+> > assume they
+> > are fine for now -- it seems to build just fine without
+> > PCI_HYPERV_INTERFACE,
+> > and MLXFW has no other dependencies, meaning that 'imply' is the
+> > same as 'select' here. Using 'select MLXFW' would make it clearer
+> > perhaps.
+>
+> No, I would like to avoid select and allow building mlx5 without MLXFW,
+> MLXFW already has a stub protected with IS_REACHABLE(), this is why we
+> don't have an issue with it.
 
-Acked-by: Lee Jones <lee.jones@linaro.org>
+So the 'imply MLXFW' should be dropped then?
 
->  .../devicetree/bindings/mmc/cdns,sdhci.yaml   |  2 +-
->  .../bindings/mmc/rockchip-dw-mshc.yaml        | 16 ++---
->  .../bindings/mmc/socionext,uniphier-sd.yaml   | 14 ++--
->  .../devicetree/bindings/mtd/denali,nand.yaml  |  4 +-
->  .../net/allwinner,sun8i-a83t-emac.yaml        |  4 +-
->  .../bindings/net/can/bosch,m_can.yaml         | 52 +++++++--------
->  .../bindings/net/renesas,ether.yaml           |  4 +-
->  .../bindings/net/ti,cpsw-switch.yaml          | 12 ++--
->  .../bindings/net/ti,davinci-mdio.yaml         | 27 ++++----
->  .../bindings/phy/intel,lgm-emmc-phy.yaml      |  2 +-
->  .../devicetree/bindings/pwm/pwm-samsung.yaml  | 16 ++---
->  .../bindings/remoteproc/st,stm32-rproc.yaml   |  2 +-
->  .../reset/brcm,bcm7216-pcie-sata-rescal.yaml  |  4 +-
->  .../devicetree/bindings/rtc/st,stm32-rtc.yaml | 38 +++++------
->  .../bindings/serial/amlogic,meson-uart.yaml   | 16 ++---
->  .../devicetree/bindings/serial/rs485.yaml     | 17 ++---
->  .../bindings/soc/amlogic/amlogic,canvas.yaml  | 10 +--
->  .../bindings/sound/renesas,fsi.yaml           | 16 ++---
->  .../bindings/spi/qcom,spi-qcom-qspi.yaml      | 10 +--
->  .../devicetree/bindings/spi/renesas,hspi.yaml |  4 +-
->  .../devicetree/bindings/spi/spi-pl022.yaml    |  2 +-
->  .../bindings/spi/st,stm32-qspi.yaml           |  4 +-
->  .../allwinner,sun4i-a10-system-control.yaml   | 64 +++++++++----------
->  .../bindings/thermal/amlogic,thermal.yaml     | 10 +--
->  .../bindings/timer/arm,arch_timer.yaml        |  4 +-
->  .../bindings/timer/arm,arch_timer_mmio.yaml   |  4 +-
->  .../devicetree/bindings/usb/dwc2.yaml         |  8 +--
->  77 files changed, 450 insertions(+), 450 deletions(-)
-
--- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+        Arnd
