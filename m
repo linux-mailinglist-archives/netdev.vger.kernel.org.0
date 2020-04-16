@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61BB71AC6A3
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 16:43:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 686201AC66C
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 16:39:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394513AbgDPOme (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 10:42:34 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:37828 "EHLO
+        id S2394411AbgDPOjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 10:39:20 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:23063 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2389838AbgDPOAq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 10:00:46 -0400
+        by vger.kernel.org with ESMTP id S2409593AbgDPOCJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 10:02:09 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587045644;
+        s=mimecast20190719; t=1587045727;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=jTBfmRvBoWhtY7ibPYORYZ0NP6xKqRYpk6tRTXIzMoU=;
-        b=fYunJaTPla/CFFBf1iISASX5MKCADRPCDZUx790gSVrG1Q21sqBFoCT5K3vyHFCF7VWmtU
-        GP9AybUXt4TrmfaXCMsR7/FxjsofkkOccd2PO+qy2M3UcIATl7RTL/W4B/l/J4WOl36EMw
-        RvGVsO4NVs29Xb15/gox0ebrpw/lz1I=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-468-epS7NX1yOW6TIfvsu-ly_w-1; Thu, 16 Apr 2020 10:00:42 -0400
-X-MC-Unique: epS7NX1yOW6TIfvsu-ly_w-1
-Received: by mail-lj1-f197.google.com with SMTP id v22so1639696ljh.18
-        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 07:00:42 -0700 (PDT)
+        bh=ompQzSPLF05tcBnPen8IhB9uW78gGYPuZMj8nYtKz90=;
+        b=evcAn45O46J9NJc9/NfRw0xaQkugHFdWYx48Sa7lebv84DHdj8rQZCCMhLmHT/zh2M4AAp
+        akc7TTXv50nPmd2r08ctw3Ds4kOvOSAnDybU89eiGcPLw58WoxnFfsRwG78wfFENwDQVf0
+        kFxD5wfSon6G8iXpLbtc9Xj/z7CSUMI=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-214-iz8tm95EP_yojsjeMo89vw-1; Thu, 16 Apr 2020 10:02:02 -0400
+X-MC-Unique: iz8tm95EP_yojsjeMo89vw-1
+Received: by mail-lf1-f72.google.com with SMTP id l28so2322142lfp.8
+        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 07:02:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
          :message-id:mime-version;
-        bh=jTBfmRvBoWhtY7ibPYORYZ0NP6xKqRYpk6tRTXIzMoU=;
-        b=pxTY+dBm4pk+eTLMHujmn4MLOYDNdefrKRuwPKL/x1fMmQOz4n6IyLOG5khEAuuuBV
-         kmuxPbir9+NpzkpOzJGl3MZPjFZgkR0YACTkZ/lesoTgg7EgEC1gODGzJogUfS6Nwxh0
-         vtuPwMuVQw52dtnDQXPwE0/z0F2qNn9INejX4v8wPpm5et862l6NAcuHnQCV2q3Ku2A5
-         Y2Id6RaAsdtERrqPxbELH8LgliIkTZYPnciNBbvomEcUepBatwXOJEQOG91Nsw4sybqa
-         WpS7XeCDRLMRx1JuxDciHUq32CcInUVhLRiFjqcINJoTY2o93NT7NZG7P2h0yGgR0clZ
-         b+nQ==
-X-Gm-Message-State: AGi0PuaYmR7Im6OKf5gl+BpzRzogoapxjELEj25fSxZswQUlIgo3JPLa
-        mIVEOISeP5f/QvJ1lcnlPNcq3ASO9iaYhae+w/bpxK1HqlQytGK+0GrSJf53zFmMXKyNUtWx9JA
-        iEWVk6A7/9oyNmyFx
-X-Received: by 2002:a19:7507:: with SMTP id y7mr6098340lfe.121.1587045641227;
-        Thu, 16 Apr 2020 07:00:41 -0700 (PDT)
-X-Google-Smtp-Source: APiQypJ35pciRr7iqgGXYQERbbXgG5Q2Om80xcHg7l+jjf3iwf13Upj6OmsZualCNUw7qvUqvu8O9Q==
-X-Received: by 2002:a19:7507:: with SMTP id y7mr6098317lfe.121.1587045640960;
-        Thu, 16 Apr 2020 07:00:40 -0700 (PDT)
+        bh=ompQzSPLF05tcBnPen8IhB9uW78gGYPuZMj8nYtKz90=;
+        b=n2BAt6EfwiKacwQydzumDjYjjhU4f62EvQrHSvCtB60EzRk2pnWktUGYWbXEJ+COv0
+         9qrJ8IO11vWX3QCYvp6TCgz+8ypcNo6WYxa28WsG0RNg+fkK1QhbXYp3lCgSgjQX+Xoa
+         Su60DEMkklTziEP9k7jIAWU4/O0iuoETNEmbBDNghxCxaU87P/b+VlSGbrezA+8MbX5x
+         lxNdpSx5B4AzdIThUDbxv+xkHGfh4CL1Li/k7Swzi8EpOaJg7r0FQccf233RjKalM6sc
+         Tjmzsls4pB937hSRHTIMFWFaIfUOaiy9BxeeV5gjNkmWaTE9vBtXCLA0bpos5Zi7q5dv
+         FIrw==
+X-Gm-Message-State: AGi0PuZVRPSpIAdc4V6/PnOPAx5DGf/M6stq9+xZ46+PMGbqe5bM7Wbp
+        Rt77GWnzrF7Fc/Om4MFsaGokbLDbLCfKHcc8vhWP+qGP4WRr2JCxLjsVSSg6goImb8sUPxKMGWD
+        kSllZdzUGWx9NxBvP
+X-Received: by 2002:a2e:b162:: with SMTP id a2mr6590522ljm.25.1587045720863;
+        Thu, 16 Apr 2020 07:02:00 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJ0/CG4RiPNUWxf05I6tBiZl61O3GFDEc+kBap4zUibnD1v/RdcWyGKDtfU4wGlRdqzO0Tq5Q==
+X-Received: by 2002:a2e:b162:: with SMTP id a2mr6590498ljm.25.1587045720498;
+        Thu, 16 Apr 2020 07:02:00 -0700 (PDT)
 Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id t24sm18325872lfk.90.2020.04.16.07.00.40
+        by smtp.gmail.com with ESMTPSA id n9sm13887980ljo.89.2020.04.16.07.01.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Apr 2020 07:00:40 -0700 (PDT)
+        Thu, 16 Apr 2020 07:01:59 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7D9C4181587; Thu, 16 Apr 2020 16:00:38 +0200 (CEST)
+        id 3DD21181587; Thu, 16 Apr 2020 16:01:59 +0200 (CEST)
 From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -59,12 +59,12 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
         dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH RFC-v5 bpf-next 05/12] net: core: rename netif_receive_generic_xdp to do_generic_xdp_core
-In-Reply-To: <20200413171801.54406-6-dsahern@kernel.org>
-References: <20200413171801.54406-1-dsahern@kernel.org> <20200413171801.54406-6-dsahern@kernel.org>
+Subject: Re: [PATCH RFC-v5 bpf-next 02/12] net: Add BPF_XDP_EGRESS as a bpf_attach_type
+In-Reply-To: <20200413171801.54406-3-dsahern@kernel.org>
+References: <20200413171801.54406-1-dsahern@kernel.org> <20200413171801.54406-3-dsahern@kernel.org>
 X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 16 Apr 2020 16:00:38 +0200
-Message-ID: <87mu7bled5.fsf@toke.dk>
+Date:   Thu, 16 Apr 2020 16:01:59 +0200
+Message-ID: <87k12fleaw.fsf@toke.dk>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
@@ -76,108 +76,75 @@ David Ahern <dsahern@kernel.org> writes:
 
 > From: David Ahern <dahern@digitalocean.com>
 >
-> In skb generic path, we need a way to run XDP program on skb but
-> to have customized handling of XDP actions. netif_receive_generic_xdp
-> will be more helpful in such cases than do_xdp_generic.
+> Add new bpf_attach_type, BPF_XDP_EGRESS, for BPF programs attached
+> at the XDP layer, but the egress path.
 >
-> This patch prepares netif_receive_generic_xdp() to be used as general
-> purpose function for running xdp programs on skbs by renaming it to
-> do_xdp_generic_core, moving skb_is_redirected and rxq settings as well
-> as XDP return code checks to the callers.
+> Since egress path will not have ingress_ifindex and rx_queue_index
+> set, update xdp_is_valid_access to block access to these entries in
+> the xdp context when a program is attached to egress path.
 >
-> This allows this core function to be used from both Rx and Tx paths
-> with rxq and txq set based on context.
+> Update dev_change_xdp_fd to verify expected_attach_type for a program
+> is BPF_XDP_EGRESS if egress argument is set.
 >
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> The next patch adds support for the egress ifindex.
+>
 > Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
 > Signed-off-by: David Ahern <dahern@digitalocean.com>
 > ---
->  net/core/dev.c | 52 ++++++++++++++++++++++++--------------------------
->  1 file changed, 25 insertions(+), 27 deletions(-)
+>  include/uapi/linux/bpf.h       | 1 +
+>  net/core/dev.c                 | 6 ++++++
+>  net/core/filter.c              | 8 ++++++++
+>  tools/include/uapi/linux/bpf.h | 1 +
+>  4 files changed, 16 insertions(+)
 >
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 2e29a671d67e..a9d384998e8b 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -215,6 +215,7 @@ enum bpf_attach_type {
+>  	BPF_TRACE_FEXIT,
+>  	BPF_MODIFY_RETURN,
+>  	BPF_LSM_MAC,
+> +	BPF_XDP_EGRESS,
+>  	__MAX_BPF_ATTACH_TYPE
+>  };
+>  
 > diff --git a/net/core/dev.c b/net/core/dev.c
-> index e763b6cea8ff..4f0c4fee1125 100644
+> index 06e0872ecdae..e763b6cea8ff 100644
 > --- a/net/core/dev.c
 > +++ b/net/core/dev.c
-> @@ -4500,25 +4500,17 @@ static struct netdev_rx_queue *netif_get_rxqueue(struct sk_buff *skb)
->  	return rxqueue;
->  }
+> @@ -8731,6 +8731,12 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
+>  		if (IS_ERR(prog))
+>  			return PTR_ERR(prog);
 >  
-> -static u32 netif_receive_generic_xdp(struct sk_buff *skb,
-> -				     struct xdp_buff *xdp,
-> -				     struct bpf_prog *xdp_prog)
-> +static u32 do_xdp_generic_core(struct sk_buff *skb, struct xdp_buff *xdp,
-> +			       struct bpf_prog *xdp_prog)
+> +		if (egress && prog->expected_attach_type != BPF_XDP_EGRESS) {
+> +			NL_SET_ERR_MSG(extack, "XDP program in Tx path must use BPF_XDP_EGRESS attach type");
+> +			bpf_prog_put(prog);
+> +			return -EINVAL;
+> +		}
+> +
+>  		if (!offload && bpf_prog_is_dev_bound(prog->aux)) {
+>  			NL_SET_ERR_MSG(extack, "using device-bound program without HW_MODE flag is not supported");
+>  			bpf_prog_put(prog);
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 7628b947dbc3..c4e0e044722f 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -6935,6 +6935,14 @@ static bool xdp_is_valid_access(int off, int size,
+>  				const struct bpf_prog *prog,
+>  				struct bpf_insn_access_aux *info)
 >  {
-> -	struct netdev_rx_queue *rxqueue;
->  	void *orig_data, *orig_data_end;
-> -	u32 metalen, act = XDP_DROP;
->  	__be16 orig_eth_type;
->  	struct ethhdr *eth;
-> +	u32 metalen, act;
->  	bool orig_bcast;
->  	int hlen, off;
->  	u32 mac_len;
->  
-> -	/* Reinjected packets coming from act_mirred or similar should
-> -	 * not get XDP generic processing.
-> -	 */
-> -	if (skb_is_redirected(skb))
-> -		return XDP_PASS;
-> -
->  	/* XDP packets must be linear and must have sufficient headroom
->  	 * of XDP_PACKET_HEADROOM bytes. This is the guarantee that also
->  	 * native XDP provides, thus we need to do it here as well.
-> @@ -4534,9 +4526,9 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
->  		if (pskb_expand_head(skb,
->  				     hroom > 0 ? ALIGN(hroom, NET_SKB_PAD) : 0,
->  				     troom > 0 ? troom + 128 : 0, GFP_ATOMIC))
-> -			goto do_drop;
-> +			return XDP_DROP;
->  		if (skb_linearize(skb))
-> -			goto do_drop;
-> +			return XDP_DROP;
->  	}
->  
->  	/* The XDP program wants to see the packet starting at the MAC
-> @@ -4554,9 +4546,6 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
->  	orig_bcast = is_multicast_ether_addr_64bits(eth->h_dest);
->  	orig_eth_type = eth->h_proto;
->  
-> -	rxqueue = netif_get_rxqueue(skb);
-> -	xdp->rxq = &rxqueue->xdp_rxq;
-> -
->  	act = bpf_prog_run_xdp(xdp_prog, xdp);
->  
->  	/* check if bpf_xdp_adjust_head was used */
-> @@ -4599,16 +4588,6 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
->  		if (metalen)
->  			skb_metadata_set(skb, metalen);
->  		break;
-> -	default:
-> -		bpf_warn_invalid_xdp_action(act);
-> -		/* fall through */
-> -	case XDP_ABORTED:
-> -		trace_xdp_exception(skb->dev, xdp_prog, act);
-> -		/* fall through */
-> -	case XDP_DROP:
-> -	do_drop:
-> -		kfree_skb(skb);
-> -		break;
->  	}
->  
->  	return act;
-> @@ -4643,12 +4622,22 @@ static DEFINE_STATIC_KEY_FALSE(generic_xdp_needed_key);
->  
->  int do_xdp_generic(struct bpf_prog *xdp_prog, struct sk_buff *skb)
->  {
-> +	/* Reinjected packets coming from act_mirred or similar should
-> +	 * not get XDP generic processing.
-> +	 */
+> +	if (prog->expected_attach_type == BPF_XDP_EGRESS) {
+> +		switch (off) {
+> +		case offsetof(struct xdp_md, ingress_ifindex):
+> +		case offsetof(struct xdp_md, rx_queue_index):
+> +			return false;
+> +		}
+> +	}
+> +
 
-My immediate thought when reading this was "wait, we're doing TX now, is
-this still true?". And then I saw the next patch where you're renaming
-the function; so maybe switch those two patches, or merge them?
+How will this be handled for freplace programs - will they also
+"inherit" the expected_attach_type of the programs they attach to?
 
 -Toke
 
