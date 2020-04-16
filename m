@@ -2,166 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75A871AD31C
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 01:18:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 157851AD325
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 01:23:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727974AbgDPXSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 19:18:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34954 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725988AbgDPXSf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 19:18:35 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E30EC061A0F;
-        Thu, 16 Apr 2020 16:18:34 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id a32so236242pje.5;
-        Thu, 16 Apr 2020 16:18:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=XG57rR3E8DeijyO8lkg2NM/irBg+FSpnfdZfo3yuSgo=;
-        b=hb4TNWwsv8izF8rvJgU0XnPkPwX7f5golszhr2oxJn1ykhZu5ZqR56lwyLCzvvUvTg
-         glqlMNO54tUZnfT39hDZyoALcQyNnLS8E/L1gXwApA6qWXJbR3KEbxtSe9p+jP0OWi5K
-         CoCoeL02DcWjYZZocDU1fvJZVN32eOY7gI6qXtwtGXyC/vIXS59VZnC6I/619U5oWtf7
-         B/gX/YqQ4rblYvrzSk06yCmKUsY5oPBEzx7FbnoprW/ry9VxjEYJRTl6/iUAa2G5sDIz
-         Aa+fN+3ACc0y6AIXCaJ9b+vULZtcjuMMnppue23yZ3O3FoWEURfiWT4R314WvznwmCum
-         BUZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XG57rR3E8DeijyO8lkg2NM/irBg+FSpnfdZfo3yuSgo=;
-        b=M13F4wTCrYIin1HJ1UMqM/c+b8sS9NH5X1ncNbPTzcIJ7i2K4XdLb+END7tUq/GpyS
-         9OzlEySjo04kSBjdGi6qpf6ZSz+YAgFs/RMKyoY7X5+BiJOLGYPbFM/YSsase4+FEWZQ
-         EFtDOIUDfL16res1A+cM+daB6dkbH5sKrUq9TUrKGw3BqPiowDLV6rYuTD/a6/606xlC
-         IA+3QBwpF9yV4xgbZGPFJfeSDWkMuqzTTcIpOFwq8a4E7LSuuYIcVmFHqJZ6+GgHrGM1
-         yOGKCHW4qHrGWkTvQ1lFYvP3NhZ0VN6+1SDLxZdr40cqxjWQxqXRRY4mMKpBE9KfxW2G
-         5+Uw==
-X-Gm-Message-State: AGi0PuYvsxAAYQ037JndKRgYwLmQXs5d4KcvoYPRxurQdjCdsmq+BLbm
-        5c3SjA6SYnIpDzY0aW2aDcJr9E3+
-X-Google-Smtp-Source: APiQypLMrTaQKMREtD2kOvlx+/AhbMZm78+PylYZLCutxEXh6qNMdYjhrPe9plhp6PqBvLJBI0Dd2w==
-X-Received: by 2002:a17:90a:276a:: with SMTP id o97mr879785pje.194.1587079113469;
-        Thu, 16 Apr 2020 16:18:33 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:fff8])
-        by smtp.gmail.com with ESMTPSA id l71sm11994846pge.3.2020.04.16.16.18.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Apr 2020 16:18:32 -0700 (PDT)
-Date:   Thu, 16 Apr 2020 16:18:29 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [RFC PATCH bpf-next 05/16] bpf: create file or anonymous dumpers
-Message-ID: <20200416231829.o4yngurm5nzrakoj@ast-mbp.dhcp.thefacebook.com>
-References: <20200408232520.2675265-1-yhs@fb.com>
- <20200408232526.2675664-1-yhs@fb.com>
- <CAEf4Bzawu2dFXL7nvYhq1tKv9P7Bb9=6ksDpui5nBjxRrx=3_w@mail.gmail.com>
- <4bf72b3c-5fee-269f-1d71-7f808f436db9@fb.com>
- <CAEf4BzZnq958Guuusb9y65UCtB-DARxdk7_q7ZPBZ3WOwjSKaw@mail.gmail.com>
- <20200415164640.evaujoootr4n55sc@ast-mbp>
- <CAEf4Bza2YkmFMZ_d6d6keLqeWNDr8dbBQj=42xSrONaULK1PXg@mail.gmail.com>
- <20200416170414.ds3hcb3bgfetjt4v@ast-mbp>
- <CAEf4BzY0a_Rzt8vtLLSz3+xAhx0CWhetxcUNdyK7ZygMms7srA@mail.gmail.com>
+        id S1728322AbgDPXXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 19:23:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36758 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725970AbgDPXXE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Apr 2020 19:23:04 -0400
+Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8FE3C2078B;
+        Thu, 16 Apr 2020 23:23:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587079383;
+        bh=5noirhgriO9wYK1PbudBThy0C8L02azMslLMaA2CbMw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=X15/hBBkNgmo9CDdKrd58kYO2Wb2G/svsenYu6qEv5gwY9a5o1J07GnrepjO7cY75
+         mfIgH1jm8DNL+US68LcUrCI5t0QZWEFxzcucCiB7H7W+Y36V0ERSZKeLIk+bwcZyIc
+         EpFB1hgNpnuHCfiLUwgPUP3ZFwus+kKbp0u2EkG4=
+Date:   Thu, 16 Apr 2020 19:23:02 -0400
+From:   Sasha Levin <sashal@kernel.org>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "ecree@solarflare.com" <ecree@solarflare.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "gerlitz.or@gmail.com" <gerlitz.or@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for
+ representors
+Message-ID: <20200416232302.GR1068@sasha-vm>
+References: <CAJ3xEMhnXZB-HU7aL3m9A1N_GPxgOC3U4skF_qWL8z3wnvSKPw@mail.gmail.com>
+ <a89a592a-5a11-5e56-a086-52b1694e00db@solarflare.com>
+ <20200414205755.GF1068@sasha-vm>
+ <41174e71-00e1-aebf-b67d-1b24731e4ab3@solarflare.com>
+ <20200416000009.GL1068@sasha-vm>
+ <CAJ3xEMjfWL=c=voGqV4pUCzWXmiTn-R6mrRi82UAVHMVysKU1g@mail.gmail.com>
+ <20200416172001.GC1388618@kroah.com>
+ <b8651ce6d7d6c6dcb8b2d66f07148413892b48d0.camel@mellanox.com>
+ <20200416195329.GO1068@sasha-vm>
+ <829c2b8807b4e6c59843b3ab85ca3ccc6cae8373.camel@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzY0a_Rzt8vtLLSz3+xAhx0CWhetxcUNdyK7ZygMms7srA@mail.gmail.com>
+In-Reply-To: <829c2b8807b4e6c59843b3ab85ca3ccc6cae8373.camel@mellanox.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 16, 2020 at 12:35:07PM -0700, Andrii Nakryiko wrote:
-> >
-> > I slept on it and still fundamentally disagree that seq_file + bpf_prog
-> > is a derivative of link. Or in OoO terms it's not a child class of bpf_link.
-> > seq_file is its own class that should contain bpf_link as one of its
-> > members, but it shouldn't be derived from 'class bpf_link'.
-> 
-> Referring to inheritance here doesn't seem necessary or helpful, I'd
-> rather not confuse and complicate all this further.
-> 
-> bpfdump provider/target + bpf_prog = bpf_link. bpf_link is "a factory"
-> of seq_files. That's it, no inheritance.
+On Thu, Apr 16, 2020 at 09:32:47PM +0000, Saeed Mahameed wrote:
+>On Thu, 2020-04-16 at 15:53 -0400, Sasha Levin wrote:
+>> If we agree so far, then why do you assume that the same people who
+>> do
+>> the above also perfectly tag their commits, and do perfect selection
+>> of
+>> patches for stable? "I'm always right except when I'm wrong".
+>
+>I am welling to accept people making mistakes, but not the AI..
 
-named seq_file in bpfdumpfs does indeed look like "factory" pattern.
-And yes, there is no inheritance between named seq_file and given seq_file after open().
+This is where we disagree. If I can have an AI that performs on par with
+an "average" kernel engineer - I'm happy with it.
 
-> > In that sense Yonghong proposed api (raw_tp_open to create anon seq_file+prog
-> > and obj_pin to create a template of named seq_file+prog) are the best fit.
-> > Implementation wise his 'struct extra_priv_data' needs to include
-> > 'struct bpf_link' instead of 'struct bpf_prog *prog;' directly.
-> >
-> > So evertime 'cat' opens named seq_file there is bpf_link registered in IDR.
-> > Anon seq_file should have another bpf_link as well.
-> 
-> So that's where I disagree and don't see the point of having all those
-> short-lived bpf_links. cat opening seq_file doesn't create a bpf_link,
-> it creates a seq_file. If we want to associate some ID with it, it's
-> fine, but it's not a bpf_link ID (in my opinion, of course).
+The way I see AUTOSEL now is an "average" kernel engineer who does patch
+sorting for me to review.
 
-I thought we're on the same page with the definition of bpf_link ;)
-Let's recap. To make it easier I'll keep using object oriented analogy
-since I think it's the most appropriate to internalize all the concepts.
-- first what is file descriptor? It's nothing but std::shared_ptr<> to some kernel object.
-- then there is a key class == struct bpf_link
-- for raw tracepoints raw_tp_open() returns an FD to child class of bpf_link
-  which is 'struct bpf_raw_tp_link'.
-  In other words it returns std::shared_ptr<struct bpf_raw_tp_link>.
-- for fentry/fexit/freplace/lsm raw_tp_open() returns an FD to a different child
-  class of bpf_link which is "struct bpf_tracing_link".
-  This is std::share_ptr<struct bpf_trace_link>.
-- for cgroup-bpf progs bpf_link_create() returns an FD to child class of bpf_link
-  which is 'struct bpf_cgroup_link'.
-  This is std::share_ptr<struct bpf_cgroup_link>.
+Given I review everything that it spits out at me, it's technically a
+human error (mine), rather than a problem with the AI, right?
 
-In all those cases three different shared pointers are seen as file descriptors
-from the process pov but they point to different children of bpf_link base class.
-link_update() is a method of base class bpf_link and it has to work for
-all children classes.
-Similarly your future get_obj_info_by_fd() from any of these three shared pointers
-will return information specific to that child class.
-In all those cases one link attaches one program to one kernel object.
+>if it is necessary and we have a magical solution, i will write good AI
+>with no false positives to fix or help avoid memleacks.
 
-Now back to bpfdumpfs.
-In the latest Yonghong's patches raw_tp_open() returns an FD that is a pointer
-to seq_file. This is existing kernel base class. It has its own seq_operations
-virtual methods that are defined for bpfdumpfs_seq_file which is a child class
-of seq_file that keeps start/stop/next methods as-is and overrides show()
-method to be able to call bpf prog for every iteratable kernel object.
+Easier said than done :)
 
-What you're proposing is to make bpfdump_seq_file class to be a child of two
-base classes (seq_file and bpf_link) whereas I'm saying that it should be
-a child of seq_file only, since bpf_link methods do not apply to it.
-Like there is no sensible behavior for link_update() on such dual parent object.
+I think that the "Intelligence" in AI suggests that it can be making
+mistakes.
 
-In my proposal bpfdump_seq_file class keeps cat-ability and all methods of seq_file
-and no extra methods from bpf_link that don't belong in seq_file.
-But I'm arguing that bpfdump_seq_file class should have a member bpf_link
-instead of simply holding bpf_prog via refcnt.
-Let's call this child class of bpf_link the bpf_seq_file_link class. Having
-bpf_seq_file_link as member would mean that such link is discoverable via IDR,
-the user process can get an FD to it and can do get_obj_info_by_fd().
-The information returned for such link will be a pair (bpfdump_prog, bpfdump_seq_file).
-Meaning that at any given time 'bpftool link show' will show where every bpf
-prog in the system is attached to.
-Say named bpfdump_seq_file exists in /sys/kernel/bpfdump/tasks/foo.
-No one is doing a 'cat' on it yet.
-"bpftool link show" will show one link which is a pair (bpfdump_prog, "tasks/foo").
-Now two humans are doing 'cat' of that file.
-The bpfdump_prog refcnt is now 3 and there are two additional seq_files created
-by the kernel when user said open("/sys/kernel/bpfdump/tasks/foo").
-If these two humans are slow somebody could have done "rm /sys/kernel/bpfdump/tasks/foo"
-and that bpfdump_seq_file and it's member bpf_seq_file_link would be gone,
-but two other bpdump_seq_file-s are still active and they are different.
-"bpftool link show" should be showing two pairs (bpfdump_prog, seq_file_A) and
-(bpfdump_prog, seq_file_B).
-The users could have been in different pid namespaces. What seq_file_A is
-iterating could be completely different from seq_file_B, but I think it's
-useful for admin to know where all bpf progs in the system are attached and
-what kind of things are triggering them.
+>BUT if i can't achieve 100% success rate, and i might end up
+>introducing memleack with my AI, then I wouldn't use AI at all.
+>
+>We have different views on things.. if i know AI is using kmalloc
+>wrongly, I fix it, end of story :).
+>
+>fact: Your AI is broken, can introduce _new_ un-called for bugs, even
+>it is very very very good 99.99% of the cases.
+
+People are broken too, they introduce new bugs, so why are we accepting
+new commits into the kernel?
+
+My point is that everything is broken, you can't have 100% perfect
+anything.
+
+>> Here's my suggestion: give us a test rig we can run our stable
+>> release
+>> candidates through. Something that simulates "real" load that
+>> customers
+>> are using. We promise that we won't release a stable kernel if your
+>> tests are failing.
+>>
+>
+>I will be more than glad to do so, is there a formal process for such
+>thing ?
+
+I'd love to work with you on this if you're interested. There are a few
+options:
+
+1. Send us a mail when you detect a push to a stable-rc branch. Most
+people/bots reply to Greg's announce mail with pass/fail.
+
+2. Integrate your tests into kernelci (kernelci.org) - this means that
+you'll run a "lab" on prem, and kernelci will schedule builds and tests
+on it's own, sending reports to us.
+
+3. We're open to other solutions if you had something in mind, the first
+two usually work for people but if you have a different requirement
+we'll be happy to figure it out.
+
+-- 
+Thanks,
+Sasha
