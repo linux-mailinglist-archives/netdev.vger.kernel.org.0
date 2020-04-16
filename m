@@ -2,69 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F02D1ABDC4
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 12:19:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B14461ABD8B
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 12:06:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504808AbgDPKTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 06:19:16 -0400
-Received: from mail-out.m-online.net ([212.18.0.9]:59245 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2504770AbgDPKSw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 06:18:52 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 492wD76B9cz1qs0n;
-        Thu, 16 Apr 2020 12:18:23 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 492wCz42dDz1qql2;
-        Thu, 16 Apr 2020 12:18:23 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id kV0qKZZrGZqE; Thu, 16 Apr 2020 12:18:22 +0200 (CEST)
-X-Auth-Info: RFRCOMQ8A+wI4xnZzg2DDUYeiucb8V+HdF7CHstUXs8=
-Received: from [IPv6:::1] (unknown [195.140.253.167])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Thu, 16 Apr 2020 12:18:22 +0200 (CEST)
-From:   Marek Vasut <marex@denx.de>
-Subject: Re: [PATCH V4 17/19] net: ks8851: Separate SPI operations into
- separate file
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>
-References: <20200414182029.183594-1-marex@denx.de>
- <20200414182029.183594-18-marex@denx.de>
- <20200415145620.43mhdpqak7e36p23@wunner.de>
-Message-ID: <88d884c9-84b1-ca31-17f2-a3769346e753@denx.de>
-Date:   Thu, 16 Apr 2020 11:58:27 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S2504691AbgDPKGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 06:06:03 -0400
+Received: from mga02.intel.com ([134.134.136.20]:38870 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2504378AbgDPKFy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Apr 2020 06:05:54 -0400
+IronPort-SDR: bzu0HXqmTP3+zqUhauTmrfsa9nt1lFXliZt+g1E3dCLfiV+ZCxJSjA1epdpmxEtxuxmnwjidTC
+ +xbK+Vpcje3w==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2020 03:05:53 -0700
+IronPort-SDR: RjBv+uX+qdBSawkGTFreimgV4amAPsx7yEe1IJ3aQIXgdP4x219JR8hl3o9eqO/hwoAVeQq9M9
+ UXTLT5nwMsgA==
+X-IronPort-AV: E=Sophos;i="5.72,390,1580803200"; 
+   d="scan'208";a="427781153"
+Received: from ellenfax-mobl2.ger.corp.intel.com (HELO localhost) ([10.249.44.122])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2020 03:05:42 -0700
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ricardo Ribalda Delgado <ribalda@kernel.org>,
+        Luca Ceresoli <luca@lucaceresoli.net>,
+        dmaengine@vger.kernel.org, Matthias Maennich <maennich@google.com>,
+        Harry Wei <harryxiyou@gmail.com>, x86@kernel.org,
+        ecryptfs@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        target-devel@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Tyler Hicks <code@tyhicks.com>, Vinod Koul <vkoul@kernel.org>,
+        Alex Shi <alex.shi@linux.alibaba.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, linux-scsi@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linuxppc-dev@lists.ozlabs.org, Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH v2 0/2] Don't generate thousands of new warnings when building docs
+In-Reply-To: <20200320171020.78f045c5@lwn.net>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <cover.1584716446.git.mchehab+huawei@kernel.org> <20200320171020.78f045c5@lwn.net>
+Date:   Thu, 16 Apr 2020 13:05:39 +0300
+Message-ID: <87a73b4ufg.fsf@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20200415145620.43mhdpqak7e36p23@wunner.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/15/20 4:56 PM, Lukas Wunner wrote:
-> On Tue, Apr 14, 2020 at 08:20:27PM +0200, Marek Vasut wrote:
->> +static void __maybe_unused ks8851_done_tx(struct ks8851_net *ks,
-> 
-> If I'm not mistaken, the __maybe_unused is unnecessary here.
-> Was added in v3.
+On Fri, 20 Mar 2020, Jonathan Corbet <corbet@lwn.net> wrote:
+> On Fri, 20 Mar 2020 16:11:01 +0100
+> Mauro Carvalho Chehab <mchehab+huawei@kernel.org> wrote:
+>
+>> This small series address a regression caused by a new patch at
+>> docs-next (and at linux-next).
+>
+> I don't know how I missed that mess, sorry.  I plead distracting times or
+> something like that.  Heck, I think I'll blame everything on the plague
+> for at least the next few weeks.
+>
+> Anyway, I've applied this, thanks for cleaning it up.
 
-It is necessary, because the header is included by the ks8851_common.c
-as well as the ks8851_{par,spi,mll}.c, and it's only the later which use
-that function. So this is needed to prevent a warning when building the
-ks8851_common.c , where it is not used.
+There's still more fallout from the autosectionlabel extension
+introduced in 58ad30cf91f0 ("docs: fix reference to
+core-api/namespaces.rst"), e.g. in i915.rst.
 
->> +#endif
-> 
-> A "/* __KS8851_H__ */" comment here would be nice.
+The biggest trouble is, if you have headings in kernel-doc comments,
+Sphinx is unable pinpoint where the dupes are. For example:
 
-OK
+ Documentation/gpu/i915.rst:610: WARNING: duplicate label gpu/i915:layout, other instance in
+ Documentation/gpu/i915.rst
+
+However there is no "layout" label in i915.rst. The one being warned
+about I can dig into based on the line number, but not the second
+one. You have to resort to grepping the source. And avoiding duplicate
+subsection headings in completely isolated places is a minefield.
+
+BR,
+Jani.
+
+
+-- 
+Jani Nikula, Intel Open Source Graphics Center
