@@ -2,63 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBE271AB4C8
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 02:31:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDF791AB4F9
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 02:57:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404027AbgDPAai (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 20:30:38 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:50007 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2403977AbgDPAab (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 20:30:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586997027;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=s4rkdFZCt+CYPzp3/Qg70/GCXwWzZ5opTjJmcpHVXJY=;
-        b=RnwO9osy7m0802mDJB/mLOcITZoZbaq0b6cQ3EsjH1IPjDNHomwAqWlsQ+qdIa5ncG0fS2
-        I0uAfJ0g9BeJC6izuPQ/ct7yMpqqk6NlP97BVBiU8NKt9O3XzX3AMK++mcPgoTTffFdXBu
-        nSmFbKxYvYnaIzL4G08360NGkH3T60Q=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-441-u5im1Xo4PlegAf8ewrePhg-1; Wed, 15 Apr 2020 20:30:25 -0400
-X-MC-Unique: u5im1Xo4PlegAf8ewrePhg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B4F9C107ACC9;
-        Thu, 16 Apr 2020 00:30:21 +0000 (UTC)
-Received: from llong.remote.csb (ovpn-113-213.rdu2.redhat.com [10.10.113.213])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 041D15DA66;
-        Thu, 16 Apr 2020 00:30:09 +0000 (UTC)
-Subject: Re: WARNING in kernfs_create_dir_ns
-To:     syzbot <syzbot+38f5d5cf7ae88c46b11a@syzkaller.appspotmail.com>,
-        a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        davem@davemloft.net, gregkh@linuxfoundation.org, hdanton@sina.com,
-        hongjiefang@asrmicro.com, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, mareklindner@neomailbox.ch,
-        mingo@kernel.org, netdev@vger.kernel.org, peterz@infradead.org,
-        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com,
-        tj@kernel.org, ulf.hansson@linaro.org
-References: <000000000000ba8e5605a35d4465@google.com>
-From:   Waiman Long <longman@redhat.com>
-Organization: Red Hat
-Message-ID: <894635f4-772e-a28c-1078-be8a5093e351@redhat.com>
-Date:   Wed, 15 Apr 2020 20:30:09 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S2405341AbgDPAyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 20:54:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51358 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405328AbgDPAyg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 20:54:36 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A8EC061A0C
+        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 17:54:36 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id j20so7344492edj.0
+        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 17:54:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hzMDorCv1GZID9zsmGcg6OddhqYx722MVsuJ8PCoquU=;
+        b=PQbQU4mx+Y47Kp0VmJmY4pdmkyIFeOBpm/PuEBSauBtddR5AErvLkCUxYdB5QBq+Bl
+         hkSP5lJlqOjR6sKAAc+32Cg2e5kqRXpCMz9orUD/QAFTm2fIM2IpvXHQkVIn6FAEqQOR
+         he4mBko7bQTN6Ponzq1pQyRnUmWxWkRdsyIqM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hzMDorCv1GZID9zsmGcg6OddhqYx722MVsuJ8PCoquU=;
+        b=oJu78xMx/q1eUyJNpiBfWl8W//rZ09JyQgQm6P+U34G1+0xXYSDMOR6mS6HwFZNwit
+         Pp1xOo21h2o3yUja3w5783H1Efe4OAoaaB3+exHJ2b6zl3ox9Ry466q3sIQUFc9IPEKM
+         XMOMI8S8xivGSUzOKYEwnMiZY/o6EH4imdpWilE6kGq3wfXprIeh18TL8u/zNeSLPWh/
+         1Aq0Qh/j/WQAdoCKffrC3nKSWXEMXh0FE4d9W3/Q4je4T/pYG6FleO1atGWCOWxYx9QR
+         X6G1LFpVQHwlnXh+tXy2viTb5CQQnEVtkSMOCkncfEAd1zbTvZlVYNpPisekOIqkk7CP
+         PFdg==
+X-Gm-Message-State: AGi0PuYuOEbSyVlspAMUwVCpYRIkJ3lHsqKu82fsf8+3ctoqygiLvikq
+        taNuNvEJQ83FcuADK9Ua2nNBD/+GYHzGIA==
+X-Google-Smtp-Source: APiQypL9izHnCmKdlkJiw7Lx/75+5DEjng/qIq0BFSmfIQRzHf2DJl4ZBSprPkTWzIroO5PB6TJoQA==
+X-Received: by 2002:aa7:cf83:: with SMTP id z3mr13489109edx.65.1586998474370;
+        Wed, 15 Apr 2020 17:54:34 -0700 (PDT)
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com. [209.85.218.46])
+        by smtp.gmail.com with ESMTPSA id y7sm1568653edr.92.2020.04.15.17.54.34
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Apr 2020 17:54:34 -0700 (PDT)
+Received: by mail-ej1-f46.google.com with SMTP id re23so44453ejb.4
+        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 17:54:34 -0700 (PDT)
+X-Received: by 2002:a2e:870f:: with SMTP id m15mr4867889lji.16.1586998009252;
+ Wed, 15 Apr 2020 17:46:49 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <000000000000ba8e5605a35d4465@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+References: <20200414123606-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20200414123606-mutt-send-email-mst@kernel.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 15 Apr 2020 17:46:33 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgVQcD=JJVmowEorHHQSVmSw+vG+Ddc4FATZoTp9mfUmw@mail.gmail.com>
+Message-ID: <CAHk-=wgVQcD=JJVmowEorHHQSVmSw+vG+Ddc4FATZoTp9mfUmw@mail.gmail.com>
+Subject: Re: [GIT PULL] vhost: cleanups and fixes
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     KVM list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, ashutosh.dixit@intel.com,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Markus Elfring <elfring@users.sourceforge.net>,
+        eli@mellanox.com, eperezma@redhat.com,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>, hulkci@huawei.com,
+        "Cc: stable@vger.kernel.org, david@redhat.com, dverkamp@chromium.org,
+        hch@lst.de, jasowang@redhat.com, liang.z.li@intel.com, mst@redhat.com,
+        tiny.windzz@gmail.com," <jasowang@redhat.com>,
+        matej.genci@nutanix.com, Stephen Rothwell <sfr@canb.auug.org.au>,
+        yanaijie@huawei.com, YueHaibing <yuehaibing@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-#syz fix: locking/lockdep: Reuse freed chain_hlocks entries
+On Tue, Apr 14, 2020 at 9:36 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> virtio: fixes, cleanups
 
+Looking at this, about 75% of it looks like it should have come in
+during the merge window, not now.
+
+              Linus
