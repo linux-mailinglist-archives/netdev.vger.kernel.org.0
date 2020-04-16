@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E49EC1AD044
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 21:24:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C6D71AD045
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 21:24:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728275AbgDPTVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 15:21:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54478 "EHLO
+        id S1728694AbgDPTVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 15:21:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727844AbgDPTVJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 15:21:09 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 352DFC061A0C;
-        Thu, 16 Apr 2020 12:21:09 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id q16so1440758pje.1;
-        Thu, 16 Apr 2020 12:21:09 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1727844AbgDPTVv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 15:21:51 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7637C061A0C;
+        Thu, 16 Apr 2020 12:21:51 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id z9so1784023pjd.2;
+        Thu, 16 Apr 2020 12:21:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=czdAFM6p6v4HQnalKB/1Vj+iwWqk9dWQoxg5HWsT0cw=;
-        b=TCAsK+LJL2ZXC/c/k81+myBJTXrWpR8xZC9KxhbBqPsvm01uq4XHI/P/KEpPP4vtoo
-         4IEBoYoY2RKXvJ9DdBTzU6C5FOOWBVlzrfNtSY6ZAU/wrCm1b4gCCbJfbaZYia56nNO7
-         0m588yJUuLlLQi9P25zlOzNUQ2ViRpl9R8RhAu22F8BVUqJTnVot7WrBSq5xiqvSQBGc
-         xgJmOAAAeanK/8hvQs7NQ9vzakXSxyiDQ9c95cJTy4bK+TklDSWRW0InIHKddx9LnVz+
-         BmKEFLQsR9lyIJnDNPSkz0n/fhyokUYakgFcFUmZZOIboqjwIM+P3ITC860H3bxrFFiY
-         /i8g==
+        bh=dFDogiNpUViieseD8B7i4gvtR0lN48l0uboJ699HzYA=;
+        b=F8w4ZBPU9xUvd/XqTVXfpEGzJ6UvGc18kyPdt9NNzgZIPgK2YGN7E7UUf5suhykuBc
+         HVC3T0kfNEMVm5PARoiA0pEsZu3SG+q1xTTwu5cDM1kK+ZkcXk6CM9TN6nmWcH5UJk6+
+         Uvl3ZZW8R7LXNE39U3AA/kjFZ5qREJlqJpOOYG8si0uNNGqCV4yT7HP7TFN0juFWgWb8
+         I79Maxj70yPJa8T8s0FnOb6Vt0zCnRl7OHWEEKVBPOB6gS2HZKGGYwFmOfB510roPZcd
+         OY8WgwoTyzpRUmPNVwfjCVSd7wevVFMStKScXQeiTyny63qVw09vNOorv0PSJbmhIQUt
+         xvQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=czdAFM6p6v4HQnalKB/1Vj+iwWqk9dWQoxg5HWsT0cw=;
-        b=Bc6FE3CYinkOEIkwuDooLAaogv3gNNYkznW5fEEytdY7b9ZK5/nM1D11OQMV6gFF+n
-         2R4J/NzNb4oC41Q0Rw3Lko4QN5StKrpUf+1za7s2y5WrNmrpAMcuznimx4VzhV7E7a2/
-         WbHXqbDnwm5Q0xurw/rrbJ19Z+T9kGjybL05IM2McQNMrYuNxE5VuGgkV+qWZSNy45XL
-         MyOJYBjenVP9OAtsYvFH5EH5ik6n6+OwJ1gM0IQhF9ccztqQ607ZySn3n+32R39EysvG
-         gNDBsJvKydeRLpxIz2urn6M4XlFB7gJZMpRa7EKhXQWz6UNWm1HrHHoIEduFCUpy90X5
-         oLvg==
-X-Gm-Message-State: AGi0PuasFB6BXQQ65wfhYf4eI/X30EWAg27xTrnaPUJHzvR2f77usyxG
-        /isAY98WptAwS8sspdQVLVk=
-X-Google-Smtp-Source: APiQypK4k4ZVOOeLeqmkjjED5k/uXPYQlei03Asq4FRd/Gw+sVBDOwUYO6nOrjbZkSP6vWw+rOwfSg==
-X-Received: by 2002:a17:90a:d808:: with SMTP id a8mr6883176pjv.6.1587064868660;
-        Thu, 16 Apr 2020 12:21:08 -0700 (PDT)
+        bh=dFDogiNpUViieseD8B7i4gvtR0lN48l0uboJ699HzYA=;
+        b=UJKHBqYetIUaXt59vyE48U8iEaGGu+0wKwD25i3yDrfZC/xXRCKiWYV6XpvkrdEn8Z
+         K2GsuhH2qbW4TSgpfgn2KN/Q4kivj4KUeKhyccss5iVYsihmDCM1TUAKBjyDtRU6znSG
+         RTae+ADYG1BHt0QSNHO4tFkaTIcMSvbzMGkj/Ai6HAH4wfJDTxJd5lO7I3PoYTanTMiE
+         Syt2+qmen9jkkTTDK8YeSJKafJbdQd2baMspAtmE1OZX6/bsxenLpmBsISkG1H6woA9L
+         saCfmbnwRV6GaB4mb8HNG7Nhjua3IP+jAaOLv8tg9ohwz5qeZzaVpraYdl18gnJrBfqT
+         QUow==
+X-Gm-Message-State: AGi0PubiqmxKMQV3P8hdfyxaohLpfpJkyJMPrX4IJj9o1nDMHCsTOPqJ
+        JSzZYOii4cjV9Z8ubdlnw2w=
+X-Google-Smtp-Source: APiQypJIFpvXsaqK1CuKunLdTv+/kNGuIhIdVi5mAVZbcf9+poZ592wZxOzGRpiFbGsZPU0pwfeTRg==
+X-Received: by 2002:a17:90a:fa87:: with SMTP id cu7mr6856550pjb.92.1587064911434;
+        Thu, 16 Apr 2020 12:21:51 -0700 (PDT)
 Received: from [10.230.188.26] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p11sm15197764pff.173.2020.04.16.12.21.06
+        by smtp.gmail.com with ESMTPSA id mq18sm3834503pjb.6.2020.04.16.12.21.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 16 Apr 2020 12:21:07 -0700 (PDT)
-Subject: Re: [PATCH 1/5] net: macb: fix wakeup test in runtime suspend/resume
- routines
+        Thu, 16 Apr 2020 12:21:50 -0700 (PDT)
+Subject: Re: [PATCH 2/5] net: macb: mark device wake capable when
+ "magic-packet" property present
 To:     nicolas.ferre@microchip.com, linux-arm-kernel@lists.infradead.org,
         netdev@vger.kernel.org,
         Claudiu Beznea <claudiu.beznea@microchip.com>,
@@ -61,14 +61,14 @@ Cc:     linux-kernel@vger.kernel.org,
         antoine.tenart@bootlin.com, linux@armlinux.org.uk, andrew@lunn.ch,
         michal.simek@xilinx.com, Rafal Ozieblo <rafalo@cadence.com>
 References: <cover.1587058078.git.nicolas.ferre@microchip.com>
- <eba7f3605d6dcad37f875b2584d519cd6cae9fd1.1587058078.git.nicolas.ferre@microchip.com>
+ <3d41fc5ef84dfb2b1fa4bb41c0212417023d4d97.1587058078.git.nicolas.ferre@microchip.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <758a8d30-1065-c98f-3c8d-590be35935ff@gmail.com>
-Date:   Thu, 16 Apr 2020 12:21:05 -0700
+Message-ID: <631f9716-bb21-4309-ee6e-ef2594b93a4b@gmail.com>
+Date:   Thu, 16 Apr 2020 12:21:48 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <eba7f3605d6dcad37f875b2584d519cd6cae9fd1.1587058078.git.nicolas.ferre@microchip.com>
+In-Reply-To: <3d41fc5ef84dfb2b1fa4bb41c0212417023d4d97.1587058078.git.nicolas.ferre@microchip.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -82,18 +82,23 @@ X-Mailing-List: netdev@vger.kernel.org
 On 4/16/2020 10:44 AM, nicolas.ferre@microchip.com wrote:
 > From: Nicolas Ferre <nicolas.ferre@microchip.com>
 > 
-> Use the proper struct device pointer to check if the wakeup flag
-> and wakeup source are positioned.
-> Use the one passed by function call which is equivalent to
-> &bp->dev->dev.parent.
+> Change the way the "magic-packet" DT property is handled in the
+> macb_probe() function, matching DT binding documentation.
+> Now we mark the device as "wakeup capable" instead of calling the
+> device_init_wakeup() function that would enable the wakeup source.
 > 
-> It's preventing the trigger of a spurious interrupt in case the
-> Wake-on-Lan feature is used.
+> For Ethernet WoL, enabling the wakeup_source is done by
+> using ethtool and associated macb_set_wol() function that
+> already calls device_set_wakeup_enable() for this purpose.
 > 
-> Fixes: bc1109d04c39 ("net: macb: Add pm runtime support")
+> That would reduce power consumption by cutting more clocks if
+> "magic-packet" property is set but WoL is not configured by ethtool.
+> 
+> Fixes: 3e2a5e153906 ("net: macb: add wake-on-lan support via magic packet")
 > Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
 > Cc: Harini Katakam <harini.katakam@xilinx.com>
 > Cc: Rafal Ozieblo <rafalo@cadence.com>
+> Cc: Sergio Prado <sergio.prado@e-labworks.com>
 > Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
