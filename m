@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 632F81ABBAB
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 10:49:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9AD31ABC0C
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 11:03:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502849AbgDPIsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 04:48:45 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:55180 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2502900AbgDPIrs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 04:47:48 -0400
+        id S2502922AbgDPJCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 05:02:51 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:23080 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2502790AbgDPIsO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 04:48:14 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587026866;
+        s=mimecast20190719; t=1587026888;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=hLv2V74/okom8XQM5VUYo1cHtVIDyGEJ24uk+rS0wmg=;
-        b=SLV9UV7CkFGewlY0P/9iMAEOE9PcQSaWeFwzm6QPKlw5IBiSKWch1sAmFOmk2xyX+Pnqu7
-        yeY/liXk14ae9PLMLpOrJUWS3LhgdbPPjmyWi9rfCNxteg1gupDm9eihI2mcyniDNeXCUV
-        fa89fP1h1StO/P8YwPyWNKa/k8ciFWk=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-167-02PSLOA9OTmytz8bmfPaRQ-1; Thu, 16 Apr 2020 04:47:45 -0400
-X-MC-Unique: 02PSLOA9OTmytz8bmfPaRQ-1
-Received: by mail-lj1-f200.google.com with SMTP id j15so1097544lja.14
-        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 01:47:44 -0700 (PDT)
+        bh=h55+1NFubEowJcMzdahYTyZcdFK80pFu/8HHK8y24No=;
+        b=F8vBjtvLyHJ0bN6CzsxODQk9aK+vRx7juGw5V+T1/Sn3NqQxTMdowKQf0/0X/TJ10GDDPu
+        fNtIo3VEkvLbDhbB5UYE8TbNIxP2F5xlwiwgs7vpMHL25inyoL6XUxCnKtAXikMRY3g7N5
+        z+7IcnUqwWinwp55RdopNxSKrAUmnI8=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-14-Agqf9QsiPuqgATytTkUNcw-1; Thu, 16 Apr 2020 04:48:06 -0400
+X-MC-Unique: Agqf9QsiPuqgATytTkUNcw-1
+Received: by mail-lf1-f69.google.com with SMTP id h12so2165381lfk.22
+        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 01:48:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
          :message-id:mime-version:content-transfer-encoding;
-        bh=hLv2V74/okom8XQM5VUYo1cHtVIDyGEJ24uk+rS0wmg=;
-        b=X20IujvT6PskU+eGm6F0ugy9Puf9dDDQnxwcQxJ6Ls5lG7VwDLCfaYOKXVIFk5hIBe
-         llW3WKWE/u4G8fUbRH989HUA05ReWmNTYZSs7lilQO3KVsKufBsZEOsng+xiL9zcU63X
-         S/3IIajeEQcae5sixOoKcKlc5LLpUy+nvh99zXRjyZroEYcCsK+B2T9G9z0ie6WWraoS
-         PkObcVOWf34zWCvSTC7vY7UiIc1zn7TJ/Sr1mGDzIvroxmoJe9MPp3BHpiZ0Gg9vVnb4
-         E8XcgM13KZ9rN5hhnLS57U+d3wxPP4EY3QrufwksOOHn0ByxlyOfosqNz7e2buWfC4Zx
-         8yvg==
-X-Gm-Message-State: AGi0PuZLRtX8ZaoXqdRAIPn221SFQ3K8wCk0UrlYXF4/UIvOxBlsJ10m
-        A14l8AmCFIQFuwkhRpY9zN0YFmZdmTd7J2gsaMYHdJzLiE/tUMScdu4ZFq1ePXk1z98PZK2nORy
-        f8akbXxx6dU3DNWAI
-X-Received: by 2002:a2e:9c9a:: with SMTP id x26mr1506253lji.44.1587026863244;
-        Thu, 16 Apr 2020 01:47:43 -0700 (PDT)
-X-Google-Smtp-Source: APiQypI3dmIA2vUqeS7zRaeBy3Ztj2J2Yxxod5xsabISu1sBrS5O0an3v23WjQquhF+ZwkxFxnqIvg==
-X-Received: by 2002:a2e:9c9a:: with SMTP id x26mr1506231lji.44.1587026862891;
-        Thu, 16 Apr 2020 01:47:42 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id i3sm983120ljg.82.2020.04.16.01.47.42
+        bh=h55+1NFubEowJcMzdahYTyZcdFK80pFu/8HHK8y24No=;
+        b=BSgL6bMVdUQW2+EMUvgcyyQavqEPNc8BR4aDpioTBHiMcdcG6gK4TlM3vVqU++JEu/
+         eY2reyiLAj1sOMiJidlCLBdRW4Bwz3dOfRJWBSEE1dmd8GMCZOFENk8BG9wn+KWqJsnT
+         mQktpsgp3AsI0XjTnWtat6wGUFMlUPg6r1rjGl6aEemIBpptGETemwNyLT66cd+LeABd
+         fwRjbpI4+dCWESVEgvg1Od44ttp9UjgdDCEx5gD5B5vcbFGm3x8X/7O7fq/4LOiYPsvu
+         RWW2MX6y3Y12QXugdPZcPBuaU+MimHXnrqnx34C/I3ouTnwMbKDFKGl1Y28trqEhxHds
+         2fCA==
+X-Gm-Message-State: AGi0PuZhuL57ATiBlSV3hkURRbg2JH+BoZPAfo9+n+4/vQsEVXDvcYtU
+        ST7oVj7XQTnmdaIxy8H0DpNCoTZnO0b3BgHFbQVevM876qbFKnZfqwQaasi/SY7/tnb6lJpWMGp
+        plTcp9wfiTb1Fn+l4
+X-Received: by 2002:a2e:992:: with SMTP id 140mr5776203ljj.188.1587026884681;
+        Thu, 16 Apr 2020 01:48:04 -0700 (PDT)
+X-Google-Smtp-Source: APiQypK5cz9Hb8Z4nniRqUt7Rh8EsBHhOXUVaXVq/pDpiuuBw78BJhOJexX1QiYNeCqGUeRtBCIJ+w==
+X-Received: by 2002:a2e:992:: with SMTP id 140mr5776195ljj.188.1587026884520;
+        Thu, 16 Apr 2020 01:48:04 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id w24sm13383657ljh.57.2020.04.16.01.48.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Apr 2020 01:47:42 -0700 (PDT)
+        Thu, 16 Apr 2020 01:48:04 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 4B9C9181586; Thu, 16 Apr 2020 10:47:39 +0200 (CEST)
+        id 400A8181586; Thu, 16 Apr 2020 10:47:59 +0200 (CEST)
 From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Odin Ugedal <odin@ugedal.com>, netdev@vger.kernel.org
 Cc:     Odin Ugedal <odin@ugedal.com>
-Subject: Re: [PATCH 1/3] q_cake: Make fwmark uint instead of int
-In-Reply-To: <20200415143936.18924-2-odin@ugedal.com>
-References: <20200415143936.18924-1-odin@ugedal.com> <20200415143936.18924-2-odin@ugedal.com>
+Subject: Re: [PATCH 2/3] q_cake: properly print memlimit
+In-Reply-To: <20200415143936.18924-3-odin@ugedal.com>
+References: <20200415143936.18924-1-odin@ugedal.com> <20200415143936.18924-3-odin@ugedal.com>
 X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 16 Apr 2020 10:47:39 +0200
-Message-ID: <87d087n7f8.fsf@toke.dk>
+Date:   Thu, 16 Apr 2020 10:47:59 +0200
+Message-ID: <87a73bn7eo.fsf@toke.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -71,13 +71,11 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Odin Ugedal <odin@ugedal.com> writes:
 
-> This will help avoid overflow, since setting it to 0xffffffff would
-> result in -1 when converted to integer, resulting in being "-1", setting
-> the fwmark to 0x00.
+> Load memlimit so that it will be printed if it isn't set to zero.
+>
+> Also add a space to properly print it.
 >
 > Signed-off-by: Odin Ugedal <odin@ugedal.com>
-
-Thanks!
 
 Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 
