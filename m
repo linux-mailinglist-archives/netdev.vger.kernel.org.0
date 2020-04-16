@@ -2,150 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14EC31AB9B2
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 09:21:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16D961AB9BE
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 09:22:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439028AbgDPHVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 03:21:06 -0400
-Received: from mout.kundenserver.de ([212.227.17.24]:58479 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2438244AbgDPHVC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 03:21:02 -0400
-Received: from mail-qt1-f177.google.com ([209.85.160.177]) by
- mrelayeu.kundenserver.de (mreue107 [212.227.15.145]) with ESMTPSA (Nemesis)
- id 1M8hEd-1jKs5j3Y6j-004k5c; Thu, 16 Apr 2020 09:20:59 +0200
-Received: by mail-qt1-f177.google.com with SMTP id 71so15585125qtc.12;
-        Thu, 16 Apr 2020 00:20:58 -0700 (PDT)
-X-Gm-Message-State: AGi0PuaMlE+7b4MtIkQ7NJeo34K0IZa8nyA8CIjvWWPMxhHiar5nIxSh
-        atSlhxjwEf1gKoxy36ck3qzr678uz11jWD+S9eI=
-X-Google-Smtp-Source: APiQypLki807vlF5rf3bUb/lMDePEthLpUaUBhHRg0/ZUfeGPkLYlO08Klb1Ee851xvIZfXGDxWFM30tec+bUhtYF5c=
-X-Received: by 2002:ac8:6757:: with SMTP id n23mr12043843qtp.304.1587021657410;
- Thu, 16 Apr 2020 00:20:57 -0700 (PDT)
+        id S2439243AbgDPHVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 03:21:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54864 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2439227AbgDPHVm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 03:21:42 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF903C08C5F2
+        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 00:21:33 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id v8so1788919wma.0
+        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 00:21:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=PfcEIjHVOwJJoI3IG1yq+hLuJEPuCeMcpBtriOzJSVE=;
+        b=fWro629AKCHe7c1PY8qWNnc/MO1FUAtCQOwruVmdsj4Kyvr1SDGr9Xgc/VGuT4Ao08
+         aszgwv1hJNkmDxBtLtWK7K2S9mv6z5/c8TCmg4n+kwj4eAnnvC2Dt4pvdKuMnlfnbcGf
+         puxMyauwUmvCn/LNyQLnyjFrS1Kzkios1/MsF6m/I4GPnRVdRC2+tstnjmmO650ZwQzj
+         4aWRTSNgkZKvvDPkpZ/B7oqv4O1vvl2M0bRRRPUNQCjnZDrbzcP/JjjuClCaNvbDFuVJ
+         cZP/dedvaVFsRZKmIeGsiWSNvkLi9aAZR4c6U1deMU+GHzWLDixE4IBaBhe7BLuqYxXC
+         CRaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=PfcEIjHVOwJJoI3IG1yq+hLuJEPuCeMcpBtriOzJSVE=;
+        b=LvvssJHi6wk78Z9Nd4LvHedXLHqrTf049CeaXCTrdmj3S2N1EMf3q0G/x3J8POSdcK
+         rBgQRBNf9Uw2+TBqtc9Ej7F7vaD3PiwMJLINocbJlKqwxv6lpmxM37/WMz3xYpFSYKQS
+         NXM0YNAQtUrbiaC9n8KozYDT0Sp7/p/cUo/bc/humOs8YFY3rj5HBbkI5yHUaNY7k4vE
+         HvyJoWCxUjx+EfRkUsz6ANuPibvg7VgARwLG58u7NwfG2Hwxf+Q2rfjGHWArQOC6+joi
+         o7nI6anziHzFOEZHuh6yfFaVRBlOO4Ii48EtCXuU0L33sY2QimlBrPsW1ei4LIpHjO1Z
+         LoCg==
+X-Gm-Message-State: AGi0PuZUsu/X5EBGbzzMEsbTcvkyRSCDiefqgSTk/1/Ses6VpwRbZlpL
+        welQy+nJdvQ9Dh4NXpTggMCVpA==
+X-Google-Smtp-Source: APiQypKxoroogYo0WPMcKERsdRMrzAoaU5nNn92qAMbIpRzZIzICMY0kveTYaemzAUSe6fR6V9LLBA==
+X-Received: by 2002:a1c:990d:: with SMTP id b13mr3217540wme.179.1587021691888;
+        Thu, 16 Apr 2020 00:21:31 -0700 (PDT)
+Received: from dell ([95.149.164.124])
+        by smtp.gmail.com with ESMTPSA id h188sm2608116wme.8.2020.04.16.00.21.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Apr 2020 00:21:31 -0700 (PDT)
+Date:   Thu, 16 Apr 2020 08:22:31 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>, Vinod Koul <vkoul@kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Amit Kucheria <amit.kucheria@linaro.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-i2c@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org
+Subject: Re: [PATCH 2/2] dt-bindings: Remove cases of 'allOf' containing a
+ '$ref'
+Message-ID: <20200416072231.GT2167633@dell>
+References: <20200416005549.9683-1-robh@kernel.org>
+ <20200416005549.9683-2-robh@kernel.org>
 MIME-Version: 1.0
-References: <20200408202711.1198966-1-arnd@arndb.de> <nycvar.YSQ.7.76.2004081633260.2671@knanqh.ubzr>
- <CAK8P3a2frDf4BzEpEF0uwPTV2dv6Jve+6N97z1sSuSBUAPJquA@mail.gmail.com>
- <20200408224224.GD11886@ziepe.ca> <87k12pgifv.fsf@intel.com>
- <7d9410a4b7d0ef975f7cbd8f0b6762df114df539.camel@mellanox.com>
- <20200410171320.GN11886@ziepe.ca> <16441479b793077cdef9658f35773739038c39dc.camel@mellanox.com>
- <20200414132900.GD5100@ziepe.ca> <CAK8P3a0aFQ7h4zRDW=QLogXWc88JkJJXEOK0_CpWwsRjq6+T+w@mail.gmail.com>
- <20200414152312.GF5100@ziepe.ca> <CAK8P3a1PjP9_b5NdmqTLeGN4y+3JXx_yyTE8YAf1u5rYHWPA9g@mail.gmail.com>
- <f6d83b08fc0bc171b5ba5b2a0bc138727d92e2c0.camel@mellanox.com>
- <CAK8P3a1-J=4EAxh7TtQxugxwXk239u8ffgxZNRdw_WWy8ExFoQ@mail.gmail.com> <834c7606743424c64951dd2193ca15e29799bf18.camel@mellanox.com>
-In-Reply-To: <834c7606743424c64951dd2193ca15e29799bf18.camel@mellanox.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 16 Apr 2020 09:20:40 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3Wx5_bUOKnN3_hG5nLOqv3WCUtMSq6vOkJzWZgsmAz+A@mail.gmail.com>
-Message-ID: <CAK8P3a3Wx5_bUOKnN3_hG5nLOqv3WCUtMSq6vOkJzWZgsmAz+A@mail.gmail.com>
-Subject: Re: [RFC 0/6] Regressions for "imply" behavior change
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "narmstrong@baylibre.com" <narmstrong@baylibre.com>,
-        "masahiroy@kernel.org" <masahiroy@kernel.org>,
-        "Laurent.pinchart@ideasonboard.com" 
-        <Laurent.pinchart@ideasonboard.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "nico@fluxnic.net" <nico@fluxnic.net>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "kieran.bingham+renesas@ideasonboard.com" 
-        <kieran.bingham+renesas@ideasonboard.com>,
-        "jani.nikula@linux.intel.com" <jani.nikula@linux.intel.com>,
-        "a.hajda@samsung.com" <a.hajda@samsung.com>,
-        "jonas@kwiboo.se" <jonas@kwiboo.se>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "airlied@linux.ie" <airlied@linux.ie>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "jernej.skrabec@siol.net" <jernej.skrabec@siol.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:+TnTyNKhJDK+dsEpJffyVZIWG0bgsP3O9RWs5SO393nW1uj6vTQ
- 6B4ki3fDo1SOTlDXHpTGVfXO7w3tJK4bwvvqhIbv2OQWsPx+mHItzowt6qn4RducloqM6OK
- 06S7us5VAjq3qF+ileNWh3OigE9u5MoZjFrGUM5iC5/WT3TyZG0j9T5NmFlcnZLnb2zAS1o
- yVUT+t3yU1oTYmYWmSp3g==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:7+2vD6+DWY8=:miIyPTnwA9PaTsUep21Rns
- rOP5j2xIr13UIymyAxvzck+Eh1myIl0NLhPsk4d3qEXR4u8ADclGOlTF5/OSfK+W49ef+wT7F
- OS+DJKSZ3FiFaR/eerOPEhLAvtCulxZurxT3IFX0LtlRDW3qDqm/WXN0tame1gRG26vNLluqN
- dt0oiyRbYHeyleFJ3RTbbt9i8WfVZOLBZ4zURWJPYtNJogvHTL1m7StoLm7OQZfZrTz7OvNPc
- kRZMDEhiF7yPfAKC5dOrf32FiqHmca7NEE9W1W2v7ujKRgL0laRT0XcNsHrZDnzynlpJB2myd
- gAbN58YOVt0xViEOQmwKQRgB+ZSiHnKukhA1ouESJhLupY8b0C1HzeJanv/0TsYFkYz5qKDjK
- 9wQUcc1V3QWKvdiPL7GRjHCIVYy0ENWLdtfedeCrscEqm8b9yMsE6uB1TSSoMatM8ro8gbQOa
- R3wkYlGN4UKXFiyKv99GhoZcc3xjrq1i43OjLxQnQsoLLsQxdpxbM+X+URmwDt8aGLrLemImO
- epKs6/MoIeqER2kkTGnT/JfJIKFCSUpl4bTtxnHFAsvCrIPteddlO+aoB1JGixp1TVUDdRLe7
- 0jYQaveS4iKTiV9+gMPZimUdmR7UeieM/47BJ5NYNPNjpwxsLeHXVGyhyadOIdrlntb/r5J4f
- Hd8LkDBDCsp7wBOvEMWZVrFjjREf4tla96TpgxBhbAH6qB3Y4czDovBX1zPhPysbeZl1fxvKT
- bKhqBpOePQQgFYgLyVeJX1+zsTlY98RFeOTNijiS4EYZVaoULO9KQgZ8OAmbTf7btNLiL7dFV
- S22dm0CGnES9R7UnISu1OcdlXYaIoGe/uDGsH74DjNGYNCioXg=
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200416005549.9683-2-robh@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 16, 2020 at 5:25 AM Saeed Mahameed <saeedm@mellanox.com> wrote:
->
-> On Tue, 2020-04-14 at 20:47 +0200, Arnd Bergmann wrote:
-> > On Tue, Apr 14, 2020 at 7:49 PM Saeed Mahameed <saeedm@mellanox.com>
-> > wrote:
-> > > On Tue, 2020-04-14 at 17:25 +0200, Arnd Bergmann wrote:
-> > > > On Tue, Apr 14, 2020 at 5:23 PM Jason Gunthorpe <jgg@ziepe.ca>
-> > > > wrote:
-> > > > Correct.
-> > > >
-> > >
-> > > Great !
-> > >
-> > > Then bottom line we will change mlx5/Kconfig: to
-> > >
-> > > depends on VXLAN || !VXLAN
-> >
-> > Ok
-> >
->
-> BTW how about adding a new Kconfig option to hide the details of
-> ( BAR || !BAR) ? as Jason already explained and suggested, this will
-> make it easier for the users and developers to understand the actual
-> meaning behind this tristate weird condition.
->
-> e.g have a new keyword:
->      reach VXLAN
-> which will be equivalent to:
->      depends on VXLAN && !VXLAN
+On Wed, 15 Apr 2020, Rob Herring wrote:
 
-I'd love to see that, but I'm not sure what keyword is best. For your
-suggestion of "reach", that would probably do the job, but I'm not
-sure if this ends up being more or less confusing than what we have
-today.
+> json-schema versions draft7 and earlier have a weird behavior in that
+> any keywords combined with a '$ref' are ignored (silently). The correct
+> form was to put a '$ref' under an 'allOf'. This behavior is now changed
+> in the 2019-09 json-schema spec and '$ref' can be mixed with other
+> keywords. The json-schema library doesn't yet support this, but the
+> tooling now does a fixup for this and either way works.
+> 
+> This has been a constant source of review comments, so let's change this
+> treewide so everyone copies the simpler syntax.
+> 
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../devicetree/bindings/arm/cpus.yaml         |  81 +++---
+>  .../devicetree/bindings/arm/l2c2x0.yaml       |  87 +++---
+>  .../devicetree/bindings/arm/psci.yaml         |  15 +-
+>  .../bindings/arm/samsung/exynos-chipid.yaml   |   5 +-
+>  .../bus/allwinner,sun50i-a64-de2.yaml         |   5 +-
+>  .../bindings/clock/fixed-factor-clock.yaml    |   5 +-
+>  .../bindings/connector/usb-connector.yaml     |  28 +-
+>  .../bindings/crypto/st,stm32-hash.yaml        |   9 +-
+>  .../allwinner,sun4i-a10-display-engine.yaml   |   7 +-
+>  .../display/allwinner,sun4i-a10-tcon.yaml     |   5 +-
+>  .../bindings/display/panel/panel-common.yaml  |   5 +-
+>  .../devicetree/bindings/dma/dma-common.yaml   |   3 +-
+>  .../devicetree/bindings/dma/ti/k3-udma.yaml   |  18 +-
+>  .../devicetree/bindings/eeprom/at24.yaml      |  11 +-
+>  .../devicetree/bindings/example-schema.yaml   |  17 +-
+>  .../bindings/hwmon/adi,ltc2947.yaml           |  32 +--
+>  .../devicetree/bindings/hwmon/ti,tmp513.yaml  |  21 +-
+>  .../devicetree/bindings/i2c/st,stm32-i2c.yaml |   9 +-
+>  .../bindings/iio/adc/adi,ad7124.yaml          |   5 +-
+>  .../bindings/iio/adc/lltc,ltc2496.yaml        |   3 +-
+>  .../bindings/iio/adc/microchip,mcp3911.yaml   |   7 +-
+>  .../bindings/iio/adc/st,stm32-dfsdm-adc.yaml  |  31 +-
+>  .../bindings/iio/light/tsl2772.yaml           |  13 +-
+>  .../bindings/iio/temperature/adi,ltc2983.yaml |  56 ++--
+>  .../input/allwinner,sun4i-a10-lradc-keys.yaml |   5 +-
+>  .../devicetree/bindings/input/input.yaml      |   9 +-
+>  .../interrupt-controller/arm,gic-v3.yaml      |  39 ++-
+>  .../devicetree/bindings/iommu/arm,smmu.yaml   |   3 +-
+>  .../devicetree/bindings/leds/common.yaml      |  13 +-
+>  .../devicetree/bindings/leds/leds-gpio.yaml   |   3 +-
+>  .../bindings/leds/rohm,bd71828-leds.yaml      |  10 +-
+>  .../bindings/mailbox/st,stm32-ipcc.yaml       |   5 +-
+>  .../bindings/media/amlogic,gx-vdec.yaml       |   6 +-
+>  .../media/amlogic,meson-gx-ao-cec.yaml        |   3 +-
+>  .../devicetree/bindings/media/rc.yaml         | 265 +++++++++---------
+>  .../bindings/media/renesas,vin.yaml           |   7 +-
+>  .../memory-controllers/exynos-srom.yaml       |  14 +-
+>  .../nvidia,tegra124-emc.yaml                  |   9 +-
+>  .../nvidia,tegra124-mc.yaml                   |   3 +-
+>  .../nvidia,tegra30-emc.yaml                   |   9 +-
+>  .../memory-controllers/nvidia,tegra30-mc.yaml |   3 +-
 
-> > > This will force MLX5_CORE to m when necessary to make vxlan
-> > > reachable
-> > > to mlx5_core.  So no need for explicit use of IS_REACHABLE().
-> > > in mlx5 there are 4 of these:
-> > >
-> > >         imply PTP_1588_CLOCK
-> > >         imply VXLAN
-> > >         imply MLXFW
-> > >         imply PCI_HYPERV_INTERFACE
-> >
-> > As mentioned earlier, we do need to replace the 'imply
-> > PTP_1588_CLOCK'
-> > with the same
-> >
-> >          depends on PTP_1588_CLOCK || !PTP_1588_CLOCK
-> >
-> > So far I have not seen problems for the other two options, so I
-> > assume they
-> > are fine for now -- it seems to build just fine without
-> > PCI_HYPERV_INTERFACE,
-> > and MLXFW has no other dependencies, meaning that 'imply' is the
-> > same as 'select' here. Using 'select MLXFW' would make it clearer
-> > perhaps.
->
-> No, I would like to avoid select and allow building mlx5 without MLXFW,
-> MLXFW already has a stub protected with IS_REACHABLE(), this is why we
-> don't have an issue with it.
+>  .../bindings/mfd/allwinner,sun4i-a10-ts.yaml  |  20 +-
+>  .../bindings/mfd/st,stm32-timers.yaml         |  33 ++-
+>  .../devicetree/bindings/mfd/st,stpmic1.yaml   |   9 +-
+>  .../devicetree/bindings/mfd/syscon.yaml       |   5 +-
 
-So the 'imply MLXFW' should be dropped then?
+Acked-by: Lee Jones <lee.jones@linaro.org>
 
-        Arnd
+>  .../devicetree/bindings/mmc/aspeed,sdhci.yaml |   4 +-
+>  .../devicetree/bindings/mmc/cdns,sdhci.yaml   |  77 +++--
+>  .../bindings/mmc/mmc-controller.yaml          |  37 ++-
+>  .../bindings/mmc/rockchip-dw-mshc.yaml        |   6 +-
+>  .../bindings/mmc/synopsys-dw-mshc-common.yaml |  14 +-
+>  .../mtd/allwinner,sun4i-a10-nand.yaml         |  13 +-
+>  .../bindings/mtd/nand-controller.yaml         |  27 +-
+>  .../bindings/net/can/bosch,m_can.yaml         |  59 ++--
+>  .../bindings/net/ethernet-controller.yaml     |  34 +--
+>  .../devicetree/bindings/net/qca,ar803x.yaml   |  17 +-
+>  .../devicetree/bindings/net/snps,dwmac.yaml   |  22 +-
+>  .../bindings/net/ti,cpsw-switch.yaml          |   3 +-
+>  .../bindings/net/ti,davinci-mdio.yaml         |   7 +-
+>  .../bindings/pci/intel-gw-pcie.yaml           |   7 +-
+>  .../pinctrl/allwinner,sun4i-a10-pinctrl.yaml  |  12 +-
+>  .../pinctrl/aspeed,ast2400-pinctrl.yaml       |  37 ++-
+>  .../pinctrl/aspeed,ast2500-pinctrl.yaml       |  45 ++-
+>  .../pinctrl/aspeed,ast2600-pinctrl.yaml       | 108 ++++---
+>  .../bindings/pinctrl/fsl,imx8mp-pinctrl.yaml  |  31 +-
+>  .../bindings/pinctrl/intel,lgm-io.yaml        |   4 +-
+>  .../bindings/pinctrl/pinmux-node.yaml         |   3 +-
+>  .../bindings/pinctrl/st,stm32-pinctrl.yaml    |  56 ++--
+>  .../bindings/power/amlogic,meson-ee-pwrc.yaml |   3 +-
+>  .../devicetree/bindings/pwm/pwm-samsung.yaml  |  11 +-
+>  .../bindings/regulator/gpio-regulator.yaml    |  35 ++-
+>  .../bindings/regulator/mps,mpq7920.yaml       |  31 +-
+>  .../bindings/regulator/regulator.yaml         |   5 +-
+>  .../regulator/rohm,bd71828-regulator.yaml     |  34 +--
+>  .../bindings/regulator/st,stm32-booster.yaml  |   3 +-
+>  .../regulator/st,stm32mp1-pwr-reg.yaml        |   3 +-
+>  .../bindings/remoteproc/st,stm32-rproc.yaml   |   9 +-
+>  .../bindings/reset/intel,rcu-gw.yaml          |   3 +-
+>  .../devicetree/bindings/riscv/cpus.yaml       |  20 +-
+>  .../devicetree/bindings/rtc/st,stm32-rtc.yaml |   9 +-
+>  .../devicetree/bindings/serial/pl011.yaml     |  10 +-
+>  .../devicetree/bindings/serial/rs485.yaml     |  26 +-
+>  .../bindings/serial/samsung_uart.yaml         |   5 +-
+>  .../bindings/sound/adi,adau7118.yaml          |  20 +-
+>  .../sound/allwinner,sun4i-a10-codec.yaml      |  41 ++-
+>  .../bindings/sound/qcom,wcd934x.yaml          |   3 +-
+>  .../bindings/spi/renesas,sh-msiof.yaml        |  42 ++-
+>  .../bindings/spi/spi-controller.yaml          |  14 +-
+>  .../devicetree/bindings/spi/spi-pl022.yaml    |  55 ++--
+>  .../devicetree/bindings/spi/spi-sifive.yaml   |  14 +-
+>  .../bindings/thermal/qcom-tsens.yaml          |   7 +-
+>  .../bindings/timer/arm,arch_timer_mmio.yaml   |   7 +-
+>  91 files changed, 881 insertions(+), 1103 deletions(-)
+
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
