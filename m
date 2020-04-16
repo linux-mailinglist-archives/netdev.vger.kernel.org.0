@@ -2,121 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 631CD1AC174
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 14:39:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7748A1AC191
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 14:43:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2635870AbgDPMjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 08:39:24 -0400
-Received: from mout.kundenserver.de ([212.227.126.130]:49927 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2635720AbgDPMjL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 08:39:11 -0400
-Received: from mail-lj1-f177.google.com ([209.85.208.177]) by
- mrelayeu.kundenserver.de (mreue009 [212.227.15.129]) with ESMTPSA (Nemesis)
- id 1N7zJj-1jClw02wGx-0155ZG; Thu, 16 Apr 2020 14:39:07 +0200
-Received: by mail-lj1-f177.google.com with SMTP id y4so7622553ljn.7;
-        Thu, 16 Apr 2020 05:39:07 -0700 (PDT)
-X-Gm-Message-State: AGi0PuZCrYRbhBk6titTh0aN0KepnQmgROdDLy6FfIZ4bV/9xH4uJq/+
-        7CeBoTRRXBt2AuyNw0zYIfkmF8xcEalFZzPxAX8=
-X-Google-Smtp-Source: APiQypJBjKSJ60PBcmBCW4rJUa3iEMj8puJUFjtDtgFXYZenSiZo1kQ7qfLc3ugSe7HBLKnPyUhQlFliM3tyUpQ3SD4=
-X-Received: by 2002:a2e:6a08:: with SMTP id f8mr6773388ljc.8.1587040747110;
- Thu, 16 Apr 2020 05:39:07 -0700 (PDT)
+        id S2636034AbgDPMn2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 08:43:28 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:45453 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2635975AbgDPMnO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 08:43:14 -0400
+Received: by mail-io1-f71.google.com with SMTP id y4so19385879ioy.12
+        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 05:43:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=v779y82BJy6MKZS+0kJTYe+V/6NgiP+kTl/bmTEDrfc=;
+        b=Fs4dVU/5uBZrknMn0TsqeGs+53ggbOQ962zVE3Ya4RpI5WG1kd5ZcdNVrvUGEF//PU
+         1i0+Z22MkIt6pxTpqPiC6/CW3ZbhJmC4Xm9vGbnXNKDEoY5901dgjZnbBWqQGfK7I7wh
+         CX1OI81gcIexV2fgW0Oov3GP2X8BQzjv9Ww7xGwR/dCf4cGjpP5lcaUH1lYsjWEaAf4b
+         6QoKDPq69MKu2aUQLJ4cH6Dx/5DsYWAOXEd2KZxkI5o0QqBwXjWJS82fdGi+b34cm9Re
+         0Bw7ZGnNzrTo8l2gTDksg4UkW8DdDHCn3O9M7tsj52122aK821TfloVXAWsB3SLhZ48r
+         QeFw==
+X-Gm-Message-State: AGi0PuZkofoSYsGPLMwWc9khrNAXrX1n+O9p1H42TyU00qMm0fVGj+y0
+        3VWnun/0C0zBHUq4hTdDptAAkiwqHE7cctaqLwwxBYgtpL9I
+X-Google-Smtp-Source: APiQypKMnYxPxaGGAl2cOD7eeEOXoMXsFbWYPyW/ZxxwTU6g7/qemE6/IycCIRdOSdAIACf+ehAkYyrhfCZKrCrjeNAeOKwjcr2S
 MIME-Version: 1.0
-References: <20200408202711.1198966-1-arnd@arndb.de> <nycvar.YSQ.7.76.2004081633260.2671@knanqh.ubzr>
- <CAK8P3a2frDf4BzEpEF0uwPTV2dv6Jve+6N97z1sSuSBUAPJquA@mail.gmail.com>
- <20200408224224.GD11886@ziepe.ca> <87k12pgifv.fsf@intel.com>
- <7d9410a4b7d0ef975f7cbd8f0b6762df114df539.camel@mellanox.com>
- <20200410171320.GN11886@ziepe.ca> <16441479b793077cdef9658f35773739038c39dc.camel@mellanox.com>
- <20200414132900.GD5100@ziepe.ca> <CAK8P3a0aFQ7h4zRDW=QLogXWc88JkJJXEOK0_CpWwsRjq6+T+w@mail.gmail.com>
- <20200414152312.GF5100@ziepe.ca> <CAK8P3a1PjP9_b5NdmqTLeGN4y+3JXx_yyTE8YAf1u5rYHWPA9g@mail.gmail.com>
- <f6d83b08fc0bc171b5ba5b2a0bc138727d92e2c0.camel@mellanox.com>
- <CAK8P3a1-J=4EAxh7TtQxugxwXk239u8ffgxZNRdw_WWy8ExFoQ@mail.gmail.com>
- <834c7606743424c64951dd2193ca15e29799bf18.camel@mellanox.com>
- <CAK8P3a3Wx5_bUOKnN3_hG5nLOqv3WCUtMSq6vOkJzWZgsmAz+A@mail.gmail.com> <874ktj4tvn.fsf@intel.com>
-In-Reply-To: <874ktj4tvn.fsf@intel.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 16 Apr 2020 14:38:50 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1S2x1jnx9Q5B22vX8gBHs0Ztu-znA9hqZ5xp5tRAykGg@mail.gmail.com>
-Message-ID: <CAK8P3a1S2x1jnx9Q5B22vX8gBHs0Ztu-znA9hqZ5xp5tRAykGg@mail.gmail.com>
-Subject: Re: [RFC 0/6] Regressions for "imply" behavior change
-To:     Jani Nikula <jani.nikula@linux.intel.com>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        "narmstrong@baylibre.com" <narmstrong@baylibre.com>,
-        "masahiroy@kernel.org" <masahiroy@kernel.org>,
-        "Laurent.pinchart@ideasonboard.com" 
-        <Laurent.pinchart@ideasonboard.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "nico@fluxnic.net" <nico@fluxnic.net>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "kieran.bingham+renesas@ideasonboard.com" 
-        <kieran.bingham+renesas@ideasonboard.com>,
-        "a.hajda@samsung.com" <a.hajda@samsung.com>,
-        "jonas@kwiboo.se" <jonas@kwiboo.se>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "airlied@linux.ie" <airlied@linux.ie>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "jernej.skrabec@siol.net" <jernej.skrabec@siol.net>
+X-Received: by 2002:a92:750f:: with SMTP id q15mr10663775ilc.146.1587040993304;
+ Thu, 16 Apr 2020 05:43:13 -0700 (PDT)
+Date:   Thu, 16 Apr 2020 05:43:13 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a6661c05a367c669@google.com>
+Subject: WARNING in fib6_add (4)
+From:   syzbot <syzbot+5f122ebd258b7e43e492@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:F8U/N57N4ckbcTeNDfExN5yylgb+ezCMC5CxuKhm89y+pGLDcau
- TREUOKo1o7WqeUtbope5PEn3ZpW/vvn9CO6eTPp4FgVJSWUMLQkv9ZiwTNMlTrUksypdRkL
- iekpBmtIaw/V0rrPXVnRsSsS4KnQG9tja4TN0vUbG4n6n8i7TRUGcMnwdO/uVog7m/pWJMQ
- szUoSrbUSgkQ1PeMQ3Qhg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:EG5Pwn24R0E=:NEbJWW3YOe8tbYtXoYzQlB
- OYg76xqSVyfU+/ffXRtmY2F9L/jdC9+7winJhhdBcrgqy/cmI9hA1PzJ+O63YcHHjaKN/gghJ
- Rfp1wl6U7HQetDu3+0QYelsd+30GJVA03G9SL0JR6NY52MLgLMcXXjcbpBnR7HdRzB8OptiqP
- oUJfdahNM4nDohNOj+WsdsVatMuKlloeqszEytPxYNHOZHOiJNo3nlMHrhOFMnkc+c+rhCs01
- Tp5oyyUP+RRoLiEAvYn/YxY03443yZmMYCrOIfGDdmwc7wURorYc725p4fyKeT9X8CxzuPKMn
- 4QlugRQEkWhj9+0kUJLnelNqBjg/nRpzSgm5bdeNwoeH4o1ouafmEcMYPJ/qXpaANcDLIQpCd
- x4gPZmDJ+kxDxf+c/0v5LZJ75+sUQ4DPLfuOlUfAenV6xxU0lSpZVkdeDaUXXjbbRub6SOAHD
- srVyUcUFbDpXjch+HtEqUMQcQKepiKhm/bl4pDktj6VicPIkd3ZkEpA7o6wNOHgj4XK0GlSxB
- 01k415eeDnDwMhVrQqarpasfYw7yWI6ftUYtaOZMY5N6JP3nchBTSHOuuw2SX/t3+dBBF1akg
- J/dQilZQjOljqzOyKDfx/7/6lwexgABL7jI7ys3SApuTzsYIX5M8TD4vA59r0VoQlEWUJ1emQ
- 2ptxk0G9LLwXYi+SxR4sjzZ61XreMX+Jw7B7vi30YHtbHNH/FUTcAFDAjL1ytz5lYq6IYfMMq
- ihIyKkE8nLu0z0bsFkuo3GNPdUKZhstr81HUW7Tus5uYok8AMo/+Qxf1O5zOK1vfIeTOalrcO
- 3BNPsKq2lLZray15UpWQU5C20cOWblEffC2DJIUeh0mNPOqgMI=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 16, 2020 at 12:17 PM Jani Nikula
-<jani.nikula@linux.intel.com> wrote:
->
-> On Thu, 16 Apr 2020, Arnd Bergmann <arnd@arndb.de> wrote:
-> > On Thu, Apr 16, 2020 at 5:25 AM Saeed Mahameed <saeedm@mellanox.com> wrote:
-> >> BTW how about adding a new Kconfig option to hide the details of
-> >> ( BAR || !BAR) ? as Jason already explained and suggested, this will
-> >> make it easier for the users and developers to understand the actual
-> >> meaning behind this tristate weird condition.
-> >>
-> >> e.g have a new keyword:
-> >>      reach VXLAN
-> >> which will be equivalent to:
-> >>      depends on VXLAN && !VXLAN
-> >
-> > I'd love to see that, but I'm not sure what keyword is best. For your
-> > suggestion of "reach", that would probably do the job, but I'm not
-> > sure if this ends up being more or less confusing than what we have
-> > today.
->
-> Ah, perfect bikeshedding topic!
->
-> Perhaps "uses"? If the dependency is enabled it gets used as a
-> dependency.
+Hello,
 
-That seems to be the best naming suggestion so far
+syzbot found the following crash on:
 
-> Of course, this is all just talk until someone(tm) posts a patch
-> actually making the change. I've looked at the kconfig tool sources
-> before; not going to make the same mistake again.
+HEAD commit:    1a323ea5 x86: get rid of 'errret' argument to __get_user_x..
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=143443b3e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=8c1e98458335a7d1
+dashboard link: https://syzkaller.appspot.com/bug?extid=5f122ebd258b7e43e492
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
-Right. OTOH whoever implements it gets to pick the color of the
-bikeshed. ;-)
+Unfortunately, I don't have any reproducer for this crash yet.
 
-      Arnd
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+5f122ebd258b7e43e492@syzkaller.appspotmail.com
+
+IPv6: NLM_F_REPLACE set, but no existing node found!
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 31420 at net/ipv6/ip6_fib.c:1501 fib6_add+0x3405/0x3df0 net/ipv6/ip6_fib.c:1501
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 31420 Comm: syz-executor.4 Not tainted 5.6.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ panic+0x2e3/0x75c kernel/panic.c:221
+ __warn.cold+0x2f/0x35 kernel/panic.c:582
+ report_bug+0x27b/0x2f0 lib/bug.c:195
+ fixup_bug arch/x86/kernel/traps.c:175 [inline]
+ fixup_bug arch/x86/kernel/traps.c:170 [inline]
+ do_error_trap+0x12b/0x220 arch/x86/kernel/traps.c:267
+ do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:286
+ invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
+RIP: 0010:fib6_add+0x3405/0x3df0 net/ipv6/ip6_fib.c:1501
+Code: df 48 8d bb d0 09 00 00 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 7b 08 00 00 48 8b 9b d0 09 00 00 e9 45 f6 ff ff e8 6b 67 b2 fa <0f> 0b 48 b8 00 00 00 00 00 fc ff df 48 8b 54 24 20 48 c1 ea 03 80
+RSP: 0018:ffffc90015df7488 EFLAGS: 00010202
+RAX: 0000000000040000 RBX: 0000000000000000 RCX: ffffc90011987000
+RDX: 00000000000069f0 RSI: ffffffff86c081f5 RDI: ffff88809a03e3a0
+RBP: ffff8880952fb3a0 R08: ffff8880643820c0 R09: ffffed1013edef06
+R10: ffffed1013edef05 R11: ffff88809f6f782f R12: 00000000fffffffe
+R13: 0000000000000000 R14: ffff8880952fb380 R15: 0000000000000000
+ __ip6_ins_rt+0x4f/0x70 net/ipv6/route.c:1313
+ ip6_route_add+0x58/0x120 net/ipv6/route.c:3705
+ inet6_rtm_newroute+0x152/0x160 net/ipv6/route.c:5330
+ rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5454
+ netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2469
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6bf/0x7e0 net/socket.c:2362
+ ___sys_sendmsg+0x100/0x170 net/socket.c:2416
+ __sys_sendmsg+0xec/0x1b0 net/socket.c:2449
+ do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+ entry_SYSCALL_64_after_hwframe+0x49/0xb3
+RIP: 0033:0x45c889
+Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f1f04409c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f1f0440a6d4 RCX: 000000000045c889
+RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000003
+RBP: 000000000076bf00 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
+R13: 00000000000009f5 R14: 00000000004ccb09 R15: 000000000076bf0c
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
