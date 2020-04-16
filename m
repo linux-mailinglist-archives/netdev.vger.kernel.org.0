@@ -2,60 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39A5C1AB852
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 08:43:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95DD91AB8B8
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 08:53:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408413AbgDPGnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 02:43:40 -0400
-Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:43551 "EHLO
-        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2408168AbgDPGnf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 02:43:35 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id B09DC716
-        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 02:43:34 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Thu, 16 Apr 2020 02:43:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm2; bh=eYZf6ks0Ag4vWkdY+FBeNSBOYxZ
-        kZ9RWoI7L/wXDw/Q=; b=pG92PCpDKEaySEE6b3KK5owRlyOg6omtcBJRh6H2P9g
-        A4+dSJ8ZhNWYumPEo8RSeGX3Y1ofqBKY5EwBKyaQ4uWCzw59hiXAUOxV0z1366xq
-        iuHHZUldbuzXYDjsaxnBz0RsGbyN9Oo/wuSRdS/D5gtGdR/DOID4nUO++5rp07K7
-        LG4gEmPTqHamlJRrP5V34H6lR2pNC4zXGMW/GSE2CyOUmLq5FhAQ7reYixyNSF9S
-        Sk3l1mb29qIgPDMYY0/5m7I+DShBoF71j+C3gAVSuV2Nq12oir1/bimsDQytaFI9
-        rw3mdDAsOxKY1bvJX6PjvfGpx+6c3IrKClpgJXpZ0wA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=eYZf6k
-        s0Ag4vWkdY+FBeNSBOYxZkZ9RWoI7L/wXDw/Q=; b=l64IWX/+vA9VeLpOG1WZTj
-        ijXTy0PKYwRcQ3emfKH8ndi4IhCr3cOvCULhf1E42CRBXKpjYi5qDcvNtB6qgGf+
-        lv3nXzFTFD+OHHaD1wEnsEZwqThXxc1+YhEpR7nR350GKhV8Ag64FpjMoTuPfieQ
-        RptpRB+FxDQEUPlU2ERlyzkONSFHPg2nfQrtLJtZJX5hqB32R9yC2uz0K0i4PVJk
-        JjW1TJxb+0ntZ9AlrLd35o4UV3bA2pIC1p/4F8WnzbBCgWDyMFveqMBEj+Aavlzi
-        7tu8vov8sxab33Sbtow1Xp/rmgo+4obBCTPSZjQ7+yshI8w+SjlTgdc+EeFzSGQg
-        ==
-X-ME-Sender: <xms:lv6XXilC_YkXBe8Whsvt2G22oEeAuDFQSZ3UWUNh7FSCbrDfPP1wPA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrfeeggdduudduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecukfhppeeltd
-    drkeelrdeikedrjeeinecuvehluhhsthgvrhfuihiivgepvdenucfrrghrrghmpehmrghi
-    lhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:lv6XXs8DNqkoD8oaar1Oa6VtWtbSbtjIxDb06r-1-r0UqXRJEyp5ow>
-    <xmx:lv6XXuEqgLxDNfR7AN2ETjZKblc1TySK-wXnqkVNgEpW8MrGU-fNWA>
-    <xmx:lv6XXrLmph0NLlZB1jZgiUgujM5VNmiM_hVIy7JwI1EqnH7IxzlEcQ>
-    <xmx:lv6XXq_chfg60EabnQfNPaCcJFdNHe1CgBQWMWOoQoLAvoxS-7erCg>
-Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr [90.89.68.76])
-        by mail.messagingengine.com (Postfix) with ESMTPA id D7E56306005F;
-        Thu, 16 Apr 2020 02:43:33 -0400 (EDT)
-Date:   Thu, 16 Apr 2020 08:43:32 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzk@kernel.org>,
+        id S2436696AbgDPGxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 02:53:16 -0400
+Received: from smtprelay0116.hostedemail.com ([216.40.44.116]:37100 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2436919AbgDPGwq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 02:52:46 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 0A616100E7B43;
+        Thu, 16 Apr 2020 06:51:59 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1539:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:2911:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3868:3870:3871:3872:3874:4321:4425:5007:6742:6743:7903:10004:10400:10903:11232:11658:11914:12297:12346:12740:12760:12895:13069:13311:13357:13439:14096:14097:14659:14721:21080:21433:21627:21740:30054:30070:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: wheel34_84bb3b9f86d3c
+X-Filterd-Recvd-Size: 3344
+Received: from XPS-9350.home (unknown [47.151.136.130])
+        (Authenticated sender: joe@perches.com)
+        by omf07.hostedemail.com (Postfix) with ESMTPA;
+        Thu, 16 Apr 2020 06:51:52 +0000 (UTC)
+Message-ID: <d93f90bbcc99967ed5ba458ba99d7e73de12e3b2.camel@perches.com>
+Subject: Re: [PATCH 2/2] dt-bindings: Remove cases of 'allOf' containing a
+ '$ref'
+From:   Joe Perches <joe@perches.com>
+To:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
         Stephen Boyd <sboyd@kernel.org>,
         Alexandre Torgue <alexandre.torgue@st.com>,
         Thierry Reding <thierry.reding@gmail.com>,
@@ -90,53 +64,34 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-remoteproc@vger.kernel.org, linux-riscv@lists.infradead.org,
         linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
         alsa-devel@alsa-project.org, linux-spi@vger.kernel.org
-Subject: Re: [PATCH 2/2] dt-bindings: Remove cases of 'allOf' containing a
- '$ref'
-Message-ID: <20200416064332.cbtmgnbwjityninz@gilmour.lan>
-References: <20200416005549.9683-1-robh@kernel.org>
- <20200416005549.9683-2-robh@kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="wl56qmwukpbi7dfb"
-Content-Disposition: inline
+Date:   Wed, 15 Apr 2020 23:49:40 -0700
 In-Reply-To: <20200416005549.9683-2-robh@kernel.org>
+References: <20200416005549.9683-1-robh@kernel.org>
+         <20200416005549.9683-2-robh@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.34.1-2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---wl56qmwukpbi7dfb
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Wed, Apr 15, 2020 at 07:55:49PM -0500, Rob Herring wrote:
+On Wed, 2020-04-15 at 19:55 -0500, Rob Herring wrote:
 > json-schema versions draft7 and earlier have a weird behavior in that
 > any keywords combined with a '$ref' are ignored (silently). The correct
 > form was to put a '$ref' under an 'allOf'. This behavior is now changed
 > in the 2019-09 json-schema spec and '$ref' can be mixed with other
 > keywords. The json-schema library doesn't yet support this, but the
 > tooling now does a fixup for this and either way works.
->
+> 
 > This has been a constant source of review comments, so let's change this
 > treewide so everyone copies the simpler syntax.
->
-> Signed-off-by: Rob Herring <robh@kernel.org>
 
-For allwinner,
-Acked-by: Maxime Ripard <mripard@kernel.org>
+This is a large change.
 
-Maxime
+Was this done manually or by some script?
+If it was done manually, how likely is it there are defects
+in the conversion?
 
---wl56qmwukpbi7dfb
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXpf+lAAKCRDj7w1vZxhR
-xfXZAP9GMb4mpNd2CMjZwk5BxMrLzEIpKJTiQ4orqceXOWVHrwEA79RK8mnQLFzA
-6mFAQXdPtJjk58zdTQSSSDo30M+OtQk=
-=foV0
------END PGP SIGNATURE-----
-
---wl56qmwukpbi7dfb--
