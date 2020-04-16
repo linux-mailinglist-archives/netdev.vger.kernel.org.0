@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 936F71ABCA0
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 11:18:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C288E1ABB3C
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 10:31:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391109AbgDPJQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 05:16:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38254 "EHLO mail.kernel.org"
+        id S2441150AbgDPIak (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 04:30:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38708 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2441116AbgDPIHP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Apr 2020 04:07:15 -0400
+        id S2439552AbgDPILF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Apr 2020 04:11:05 -0400
 Received: from localhost (unknown [223.235.195.235])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 69F85206E9;
-        Thu, 16 Apr 2020 08:07:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1D38A206B9;
+        Thu, 16 Apr 2020 08:07:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587024434;
-        bh=6kwbxJH2RDveXqsZesbfmy1W3FzqE56YVY6CxJmBpFo=;
+        s=default; t=1587024458;
+        bh=+AtB2qrsVxt1QWCAagtuBV0iMzA+FqM4hoS9ArXVBXI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=O1d6NWlKFfnyKMYlp3FSfoZyP6WL58llnMOPAcukWE4NK15IAgUmTc9Oy1CJfBrQJ
-         FzFh77ntmk81ok6QNhBa7Fsxt0mRWxySPBmmQLISyBFjZXKruM2zAQoNUgGwtCZMXr
-         hATzQxclu6p7VFesf/GI28sOVbjEiU4zdOe4G2WA=
-Date:   Thu, 16 Apr 2020 13:37:10 +0530
+        b=2SDVAHMhpWjl2KgmMtDeMa4mCSN5E7syFhtD6nl+7e+uOtdm92iHSJh7of/HWeSKy
+         HDPx9eDy3/ziMPBERearhYxolH1rzEwouN2J1vLT/RYfJAdCvbbfyQVciDd7LjXhj3
+         Rm7XEVuyXLSwCmFC9enIFNjzAhrkqZPWIGTVc9wk=
+Date:   Thu, 16 Apr 2020 13:37:34 +0530
 From:   Vinod Koul <vkoul@kernel.org>
 To:     Rob Herring <robh@kernel.org>
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -63,51 +63,46 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-remoteproc@vger.kernel.org, linux-riscv@lists.infradead.org,
         linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
         alsa-devel@alsa-project.org, linux-spi@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: Clean-up schema indentation formatting
-Message-ID: <20200416080710.GI72691@vkoul-mobl>
+Subject: Re: [PATCH 2/2] dt-bindings: Remove cases of 'allOf' containing a
+ '$ref'
+Message-ID: <20200416080734.GJ72691@vkoul-mobl>
 References: <20200416005549.9683-1-robh@kernel.org>
+ <20200416005549.9683-2-robh@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200416005549.9683-1-robh@kernel.org>
+In-Reply-To: <20200416005549.9683-2-robh@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 15-04-20, 19:55, Rob Herring wrote:
-> Fix various inconsistencies in schema indentation. Most of these are
-> list indentation which should be 2 spaces more than the start of the
-> enclosing keyword. This doesn't matter functionally, but affects running
-> scripts which do transforms on the schema files.
+> json-schema versions draft7 and earlier have a weird behavior in that
+> any keywords combined with a '$ref' are ignored (silently). The correct
+> form was to put a '$ref' under an 'allOf'. This behavior is now changed
+> in the 2019-09 json-schema spec and '$ref' can be mixed with other
+> keywords. The json-schema library doesn't yet support this, but the
+> tooling now does a fixup for this and either way works.
+> 
+> This has been a constant source of review comments, so let's change this
+> treewide so everyone copies the simpler syntax.
 > 
 > Signed-off-by: Rob Herring <robh@kernel.org>
 > ---
->  .../devicetree/bindings/arm/altera.yaml       |  6 +-
->  .../amlogic/amlogic,meson-gx-ao-secure.yaml   |  2 +-
->  .../devicetree/bindings/arm/bitmain.yaml      |  2 +-
->  .../devicetree/bindings/arm/nxp/lpc32xx.yaml  |  9 ++-
->  .../bindings/arm/socionext/uniphier.yaml      | 26 ++++----
->  .../bindings/arm/stm32/st,mlahb.yaml          |  2 +-
->  .../bindings/arm/stm32/st,stm32-syscon.yaml   |  6 +-
->  .../bindings/ata/faraday,ftide010.yaml        |  4 +-
->  .../bindings/bus/allwinner,sun8i-a23-rsb.yaml |  4 +-
->  .../clock/allwinner,sun4i-a10-gates-clk.yaml  |  8 +--
->  .../devicetree/bindings/clock/fsl,plldig.yaml | 17 +++--
->  .../devicetree/bindings/clock/qcom,mmcc.yaml  | 16 ++---
->  .../bindings/connector/usb-connector.yaml     |  6 +-
->  .../crypto/allwinner,sun4i-a10-crypto.yaml    | 14 ++--
->  .../bindings/crypto/allwinner,sun8i-ce.yaml   | 16 ++---
->  .../bindings/crypto/amlogic,gxl-crypto.yaml   |  2 +-
->  .../display/allwinner,sun4i-a10-hdmi.yaml     | 40 ++++++------
->  .../display/allwinner,sun4i-a10-tcon.yaml     | 58 ++++++++---------
->  .../display/allwinner,sun6i-a31-mipi-dsi.yaml | 28 ++++----
->  .../display/allwinner,sun8i-a83t-dw-hdmi.yaml | 10 +--
->  .../bindings/display/bridge/lvds-codec.yaml   | 18 +++---
->  .../display/panel/sony,acx424akp.yaml         |  2 +-
->  .../display/panel/xinpeng,xpp055c272.yaml     |  4 +-
->  .../bindings/display/renesas,cmm.yaml         | 16 ++---
->  .../devicetree/bindings/dma/ti/k3-udma.yaml   |  8 +--
+>  .../devicetree/bindings/arm/cpus.yaml         |  81 +++---
+>  .../devicetree/bindings/arm/l2c2x0.yaml       |  87 +++---
+>  .../devicetree/bindings/arm/psci.yaml         |  15 +-
+>  .../bindings/arm/samsung/exynos-chipid.yaml   |   5 +-
+>  .../bus/allwinner,sun50i-a64-de2.yaml         |   5 +-
+>  .../bindings/clock/fixed-factor-clock.yaml    |   5 +-
+>  .../bindings/connector/usb-connector.yaml     |  28 +-
+>  .../bindings/crypto/st,stm32-hash.yaml        |   9 +-
+>  .../allwinner,sun4i-a10-display-engine.yaml   |   7 +-
+>  .../display/allwinner,sun4i-a10-tcon.yaml     |   5 +-
+>  .../bindings/display/panel/panel-common.yaml  |   5 +-
+>  .../devicetree/bindings/dma/dma-common.yaml   |   3 +-
+>  .../devicetree/bindings/dma/ti/k3-udma.yaml   |  18 +-
 
 Acked-By: Vinod Koul <vkoul@kernel.org>
 
