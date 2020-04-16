@@ -2,58 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B5371AD2FE
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 00:56:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECDDD1AD175
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 22:49:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729152AbgDPW4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 18:56:35 -0400
-Received: from mail.dsns.gov.ua ([194.0.148.99]:55704 "EHLO mail.dsns.gov.ua"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726111AbgDPW4e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Apr 2020 18:56:34 -0400
-X-Greylist: delayed 5041 seconds by postgrey-1.27 at vger.kernel.org; Thu, 16 Apr 2020 18:56:33 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dsns.gov.ua (Postfix) with ESMTP id 372451F609D4;
-        Thu, 16 Apr 2020 23:42:33 +0300 (EEST)
-Received: from mail.dsns.gov.ua ([127.0.0.1])
-        by localhost (mail.dsns.gov.ua [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id obNus7InzrPz; Thu, 16 Apr 2020 23:42:33 +0300 (EEST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dsns.gov.ua (Postfix) with ESMTP id 670B21F64EBF;
-        Thu, 16 Apr 2020 23:42:30 +0300 (EEST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.dsns.gov.ua 670B21F64EBF
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dsns.gov.ua;
-        s=1E60DAC0-2607-11E9-81E6-7A77C2B36653; t=1587069750;
-        bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-        h=Date:From:Message-ID:MIME-Version;
-        b=j4X4kENNzMQb6NRkF+4lX6oiHf984EkbLwJfnd91Xn5On21DIzMIgucL1LHNH38n1
-         TLCCPrL4KqHgR3uriFTwqcGwiUiSQJ3DK4HDTa4qtnk28ksbykslk2RBKwHPQLZ75n
-         SgJpbdExUMPshywjQ0YrgFL8d5pItSDfbLlgXdEiwrQ4ihF2srPAkvVDmThuUGIead
-         jCg6BflrqLLT3ow48HSPIxUSBmf9yRFvEf4xOLtXKv+wBRowt5SzjEG187EKZ6R+1P
-         tSmGBBgOrdinoUivnTRQf07BSrpGYFKRDr0UcWHQdgkIHlQlHbDYUYhJhBss31afsN
-         VTOt+Moyxe94Q==
-X-Virus-Scanned: amavisd-new at dsns.gov.ua
-Received: from mail.dsns.gov.ua ([127.0.0.1])
-        by localhost (mail.dsns.gov.ua [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 2ijHlGX77pcb; Thu, 16 Apr 2020 23:42:30 +0300 (EEST)
-Received: from mail.dsns.gov.ua (localhost [127.0.0.1])
-        by mail.dsns.gov.ua (Postfix) with ESMTP id 25CAD1F64E28;
-        Thu, 16 Apr 2020 23:42:28 +0300 (EEST)
-Date:   Thu, 16 Apr 2020 23:42:28 +0300 (EEST)
-From:   Saleem Netanyahu <duchenko@dsns.gov.ua>
-Reply-To: Saleem Netanyahu <saleemnetu@gmail.com>
-Message-ID: <1754022485.720255.1587069748108.JavaMail.zimbra@dsns.gov.ua>
-Subject: Hey, how are u, can we talk?
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        id S1727864AbgDPUs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 16:48:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39864 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725894AbgDPUs4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 16:48:56 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9802AC061A0C;
+        Thu, 16 Apr 2020 13:48:56 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 627C412757E6A;
+        Thu, 16 Apr 2020 13:48:55 -0700 (PDT)
+Date:   Thu, 16 Apr 2020 13:48:54 -0700 (PDT)
+Message-Id: <20200416.134854.89754180705215688.davem@davemloft.net>
+To:     f.fainelli@gmail.com
+Cc:     netdev@vger.kernel.org, olteanv@gmail.com, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, joabreu@synopsys.com, mripard@kernel.org,
+        wens@csie.org, mcoquelin.stm32@gmail.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: stmmac: dwmac-sunxi: Provide TX and RX fifo
+ sizes
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200414223952.5886-1-f.fainelli@gmail.com>
+References: <20200414223952.5886-1-f.fainelli@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [45.82.223.36, 172.69.54.54]
-X-Mailer: Zimbra 8.8.15_GA_3918 (zclient/8.8.15_GA_3918)
-Thread-Index: gm1m+Nc2tJU3/ptG48MjudMuIfx/7g==
-Thread-Topic: Hey, how are u, can we talk?
-To:     unlisted-recipients:; (no To-header on input)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 16 Apr 2020 13:48:56 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Florian Fainelli <f.fainelli@gmail.com>
+Date: Tue, 14 Apr 2020 15:39:52 -0700
+
+> After commit bfcb813203e619a8960a819bf533ad2a108d8105 ("net: dsa:
+> configure the MTU for switch ports") my Lamobo R1 platform which uses
+> an allwinner,sun7i-a20-gmac compatible Ethernet MAC started to fail
+> by rejecting a MTU of 1536. The reason for that is that the DMA
+> capabilities are not readable on this version of the IP, and there
+> is also no 'tx-fifo-depth' property being provided in Device Tree. The
+> property is documented as optional, and is not provided.
+> 
+> Chen-Yu indicated that the FIFO sizes are 4KB for TX and 16KB for RX, so
+> provide these values through platform data as an immediate fix until
+> various Device Tree sources get updated accordingly.
+> 
+> Fixes: eaf4fac47807 ("net: stmmac: Do not accept invalid MTU values")
+> Suggested-by: Chen-Yu Tsai <wens@csie.org>
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+
+Applied and queued up for -stable, thanks.
