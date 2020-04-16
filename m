@@ -2,157 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B682F1AC34C
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 15:41:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F29C11ACA55
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 17:34:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2898220AbgDPNkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 09:40:55 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:43404 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2898166AbgDPNko (ORCPT
+        id S2898200AbgDPNks (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 09:40:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57676 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2898167AbgDPNko (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 09:40:44 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03GDcKwv084649;
-        Thu, 16 Apr 2020 13:40:34 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to;
- s=corp-2020-01-29; bh=+FwckwE718nnFr/35g3gcj/92E89oTBl1ZMCTR5KEIM=;
- b=iqUrY2H9ib6Tqb8czeWAPq4BibUWiDCpkkPRWOnjSVYxuYoossgOsmNXjtBStklxsrN/
- BOrP9qPYV44t2frUqNHruNf9bA99+R1qP05U+WRC7YzNrDD4UzCq2QgGT4EAt3bshHe6
- uvecHlGvvSUAozs7pESH75q4v9OcVMlmTfFEh0f+eEkP2GqqF+jBS5y6ULF4Gts0ilKP
- UQfVBSJ7cQ7MzwTlxH2YR1ArDYswN+/zbvf8AinEnvTOh0UOv/IUc/kzXkl9LS1QrkrD
- UccoJqRh/62a5sd4sXPR5SXu9rhd4Vp7QE2zsD71SkinXrPHQBHbDi4LQL4ew9aox85j 2Q== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 30dn95sfm5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 16 Apr 2020 13:40:34 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03GDc55R134095;
-        Thu, 16 Apr 2020 13:40:33 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 30dynyqbr5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 16 Apr 2020 13:40:33 +0000
-Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 03GDeWWD019065;
-        Thu, 16 Apr 2020 13:40:32 GMT
-Received: from anon-dhcp-153.1015granger.net (/68.61.232.219)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 16 Apr 2020 06:40:32 -0700
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
-Subject: Re: What's a good default TTL for DNS keys in the kernel
-From:   Chuck Lever <chuck.lever@oracle.com>
-In-Reply-To: <128769.1587032833@warthog.procyon.org.uk>
-Date:   Thu, 16 Apr 2020 09:40:30 -0400
-Cc:     Florian Weimer <fweimer@redhat.com>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        linux-cifs@vger.kernel.org, linux-afs@lists.infradead.org,
-        ceph-devel@vger.kernel.org, keyrings@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <8DC44895-E904-4155-B7B8-B109A777F23C@oracle.com>
-References: <874ktl2ide.fsf@oldenburg2.str.redhat.com>
- <3865908.1586874010@warthog.procyon.org.uk>
- <128769.1587032833@warthog.procyon.org.uk>
-To:     David Howells <dhowells@redhat.com>
-X-Mailer: Apple Mail (2.3445.104.11)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9592 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 suspectscore=0
- malwarescore=0 phishscore=0 spamscore=0 adultscore=0 mlxscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004160097
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9592 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 clxscore=1011
- malwarescore=0 bulkscore=0 priorityscore=1501 lowpriorityscore=0
- mlxscore=0 phishscore=0 spamscore=0 impostorscore=0 suspectscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004160097
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECBBBC061A0C;
+        Thu, 16 Apr 2020 06:40:43 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id f13so2053141ybk.7;
+        Thu, 16 Apr 2020 06:40:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+FTxnb1SbF3l6f2HRSoVhs1qVsC4S/0hf0CM8kyAOOY=;
+        b=EdcH+dWl3unZRbOq2+w6f6bJpyha77vf9JTSti2BOfhZMK495Y6szJrVP6/n8TzdFD
+         HEWgD9y+m6a/x4vR/8GFubM87Mt5Rhz5RcERr15ed+KNKY8pqKOsCBO/PfgeXHuNyE/o
+         V5horba89yDNfX44wRqYxFVKfWavbzTTKgtIjceW38apAkiVXKjPoJkY9rRY4URhA/eY
+         q9IcG88zIchgOQkBsHdYpMmiq6GcwJfEjMNwXkMzMnq7c7e6YYXMcu11TJ+MrYH/SngF
+         OR6H90ZORBhI7KsofrGW1vN2g1RKsUh7upOKzhtzsCkjUyQ5cVHbWZ454CPP5oYGJAHp
+         Jdmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+FTxnb1SbF3l6f2HRSoVhs1qVsC4S/0hf0CM8kyAOOY=;
+        b=Fm9f0FjJ0rxEqRISc0grKz/OZ+btyPSmb1m5X4L2TzElqhYkJfXmzTdFZvcNwN/fqO
+         MeozXxoXRnxjrHhIrNBkkGgFoEb2QAi5RT8Ae9BFOf7jqzJmdRBtyyNTRlMIp851V/+1
+         qkdQwjyhSO2nh2eteDwETWRTxRYfbd5tPq4B6Z7aoDgI+/nEX4uREgPR78YjqAH6nne/
+         9prMZu3B041UFZkppYUUAWCjPO1xa62aCWNKymcn0bE5KgDxUZnuyOoNjYaNn0rfmgoa
+         DKhSCSQl3H27doHQ0fRor6AkweqPBWzuUJWs0AHaHnygeR0xMwOZIJT3/qmRSGVGmtd5
+         BNzg==
+X-Gm-Message-State: AGi0Pua1buU4i6S6i3Q7gJrc9mQokvxHZMpwwvM6DcVhDT+J8eyVAbPr
+        IYSHyIHCTzoUuOfXr79yMFpaDWabn+UtNQbGO9k=
+X-Google-Smtp-Source: APiQypJakW3ZFcDGjfwOFPNEPeIOKgZXKt96uuOtmmwmQZ/5Sc+e3wzdV4eH+fyex8AXApQgNU1oKuSwsaQKPC0wfSQ=
+X-Received: by 2002:a25:bec2:: with SMTP id k2mr17523747ybm.129.1587044443057;
+ Thu, 16 Apr 2020 06:40:43 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200411231413.26911-9-sashal@kernel.org> <CAJ3xEMhhtj77M5vercHDMAHPPVZ8ZF-eyCVQgD4ZZ1Ur3Erbdw@mail.gmail.com>
+ <20200412105935.49dacbf7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200414015627.GA1068@sasha-vm> <CAJ3xEMh=PGVSddBWOX7U6uAuazJLFkCpWQNxhg7dDRgnSdQ=xA@mail.gmail.com>
+ <20200414110911.GA341846@kroah.com> <CAJ3xEMhnXZB-HU7aL3m9A1N_GPxgOC3U4skF_qWL8z3wnvSKPw@mail.gmail.com>
+ <a89a592a-5a11-5e56-a086-52b1694e00db@solarflare.com> <20200414205755.GF1068@sasha-vm>
+ <41174e71-00e1-aebf-b67d-1b24731e4ab3@solarflare.com> <20200416000009.GL1068@sasha-vm>
+In-Reply-To: <20200416000009.GL1068@sasha-vm>
+From:   Or Gerlitz <gerlitz.or@gmail.com>
+Date:   Thu, 16 Apr 2020 16:40:31 +0300
+Message-ID: <CAJ3xEMjfWL=c=voGqV4pUCzWXmiTn-R6mrRi82UAVHMVysKU1g@mail.gmail.com>
+Subject: Re: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for representors
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     Edward Cree <ecree@solarflare.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stable <stable@vger.kernel.org>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        David Miller <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David-
+On Thu, Apr 16, 2020 at 3:00 AM Sasha Levin <sashal@kernel.org> wrote:
+> I'd maybe point out that the selection process is based on a neural
+> network which knows about the existence of a Fixes tag in a commit.
+>
+> It does exactly what you're describing, but also taking a bunch more
+> factors into it's desicion process ("panic"? "oops"? "overflow"? etc).
 
-> On Apr 16, 2020, at 6:27 AM, David Howells <dhowells@redhat.com> =
-wrote:
->=20
-> Florian Weimer <fweimer@redhat.com> wrote:
->=20
->> You can get the real TTL if you do a DNS resolution on the name and
->> match the addresses against what you get out of the NSS functions.  =
-If
->> they match, you can use the TTL from DNS.  Hackish, but it does give =
-you
->> *some* TTL value.
->=20
-> I guess I'd have to do that in parallel.  Would calling something like
-> res_mkquery() use local DNS caching?
->=20
->> The question remains what the expected impact of TTL expiry is.  Will
->> the kernel just perform a new DNS query if it needs one?  Or would =
-you
->> expect that (say) the NFS client rechecks the addresses after TTL =
-expiry
->> and if they change, reconnect to a new NFS server?
->=20
-> It depends on the filesystem.
+As Saeed commented, every extra line in stable / production kernel
+is wrong. IMHO it doesn't make any sense to take into stable automatically
+any patch that doesn't have fixes line. Do you have 1/2/3/4/5 concrete
+examples from your (referring to your Microsoft employee hat comment
+below) or other's people production environment where patches proved to
+be necessary but they lacked the fixes tag - would love to see them.
 
-Agreed. For example:
+We've been coaching new comers for years during internal and on-list
+code reviews to put proper fixes tag. This serves (A) for the upstream
+human review of the patch and (B) reasonable human stable considerations.
 
-The Linux NFS client won't connect to a new server when the server's
-DNS information changes. A fresh mount operation would be needed for
-the client to recognize and make use of it.
+You are practically saying that for cases we screwed up stage (A) you
+can somehow still get away with good results on stage (B) - I don't
+accept it. BTW - during my reviews I tend to ask/require developers to
+skip the word panic, and instead better explain the nature of the
+problem / result.
 
-There are mechanisms in the NFSv4 protocol to collect server IP =
-addresses
-from the server itself (fs_locations) and then try those locations if =
-the
-current server fails to respond. But currently that is not implemented =
-in
-Linux (and servers would need to be ready to provide that kind of =
-update).
+>>> This is great, but the kernel is more than just net/. Note that I also
+>>> do not look at net/ itself, but rather drivers/net/ as those end up with
+>>> a bunch of missed fixes.
 
+>>drivers/net/ goes through the same DaveM net/net-next trees, with the
+>> same rules.
 
-> AFS keeps track of the expiration on the record and will issue a new =
-lookup
-> when the data expires, but NFS doesn't make use of this information.  =
-The
-> keyring subsystem will itself dispose of dns_resolver keys that expire =
-and
-> request_key() will only upcall again if the key has expired.
+you ignored this comment, any more specific complaints?
 
-Our NFS colleagues working on Solaris have noted that handling the =
-expiry
-of DNS information can be tricky. It is usually desirable to continue =
-using
-expired information when a new DNS query fails temporarily (times out, =
-or
-the network is partitioned, etc). That makes for a more robust network =
-file
-service.
+> Let me put my Microsoft employee hat on here. We have driver/net/hyperv/
+> which definitely wasn't getting all the fixes it should have been
+> getting without AUTOSEL.
 
+> While net/ is doing great, drivers/net/ is not. If it's indeed following
+> the same rules then we need to talk about how we get done right.
 
-> The problem for NFS is that the host IP address is the primary key for =
-the
-> superblock (see nfs_compare_super_address()).
+I never [1] saw -stable push requests being ignored here in netdev.
+Your drivers have four listed maintainers and it's common habit by
+commercial companies to have paid && human (non autosel robots)
+maintainers that take care of their open source drivers. As in commercial
+SW products, Linux has a current, next and past (stable) releases, so
+something sounds as missing to me in your care matrix.
 
-I thought that NFSv4.1 and newer have server-provided unique information
-that might be used in place of the server's IP address. This information
-is supposed to be independent of a server's network addresses.
-
-
-> CIFS also doesn't make direct use of the TTL, and again this may be =
-because it
-> uses the server address as part of the primary key for the superblock =
-(see
-> cifs_match_super()).
-
---
-Chuck Lever
-
-
-
+[1] actually I do remember that once or twice out of the 2020 times we asked,  a
+patch was not sent to -stable by the sub-system maintainer mistake
+which he fixed(..) later
