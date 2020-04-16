@@ -2,73 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AF201AB49D
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 02:11:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBE271AB4C8
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 02:31:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391401AbgDPALM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 20:11:12 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:39019 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391380AbgDPALG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 20:11:06 -0400
-Received: by mail-io1-f69.google.com with SMTP id h141so22274254iof.6
-        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 17:11:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=fpoqVPhszf0NVg05C+Ce87uumBc0cG0RasYX5KRrK/A=;
-        b=Y+7kmIDfQ1tgLGQ2412gYX2eInXHZQu+uKBynrA7hJNRSwuSVHkW9aDYojUUVf9Vag
-         9zvHnVW2PZNlEfvym2BkDmx7rvYk1ZZI2EL8wg14D0KpoxWGFkciEbHKFdiwP17RhPvf
-         bZwdtxFYMnAKKaIGvXN5w+R4k5HDuhDoK8/Ot422pJs6FLud7aXPXwGSZVVQTNr4A/3I
-         4vGVIQzY61IAxiZreleg1tGLQHNtv+Lr7D4XtAPfw91VlwYlL8Udr41X2vhQgE7JglVm
-         CltzqKUHS7uOR8qDUDS61QQIpxz4OHZqgyWvBzZpkQqfAihxVA1W6+guEe2HEJp9jrGj
-         odEQ==
-X-Gm-Message-State: AGi0Puaj8agyx45SQ+tCkfqGiHz2+X5ljEDXM6XdA15SbP/xro6YTgEt
-        ECih9bNUBzlgi8b/SVKiQFUFxXuIOB6YoKV+bauXV0RU1Gf+
-X-Google-Smtp-Source: APiQypKcCgI3/2owP+Ax+avsl/BzFIkiA31xvFAOZDOMymkWaDm+4dJSPNPqeM8Ut+RNphNBCe4mDPpNDLKfGAmGhhXHK5QOcm+K
-MIME-Version: 1.0
-X-Received: by 2002:a02:7b05:: with SMTP id q5mr28919026jac.105.1586995863913;
- Wed, 15 Apr 2020 17:11:03 -0700 (PDT)
-Date:   Wed, 15 Apr 2020 17:11:03 -0700
-In-Reply-To: <0000000000003ec128058c7624ec@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ba8e5605a35d4465@google.com>
+        id S2404027AbgDPAai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 20:30:38 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:50007 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2403977AbgDPAab (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 20:30:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1586997027;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=s4rkdFZCt+CYPzp3/Qg70/GCXwWzZ5opTjJmcpHVXJY=;
+        b=RnwO9osy7m0802mDJB/mLOcITZoZbaq0b6cQ3EsjH1IPjDNHomwAqWlsQ+qdIa5ncG0fS2
+        I0uAfJ0g9BeJC6izuPQ/ct7yMpqqk6NlP97BVBiU8NKt9O3XzX3AMK++mcPgoTTffFdXBu
+        nSmFbKxYvYnaIzL4G08360NGkH3T60Q=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-441-u5im1Xo4PlegAf8ewrePhg-1; Wed, 15 Apr 2020 20:30:25 -0400
+X-MC-Unique: u5im1Xo4PlegAf8ewrePhg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B4F9C107ACC9;
+        Thu, 16 Apr 2020 00:30:21 +0000 (UTC)
+Received: from llong.remote.csb (ovpn-113-213.rdu2.redhat.com [10.10.113.213])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 041D15DA66;
+        Thu, 16 Apr 2020 00:30:09 +0000 (UTC)
 Subject: Re: WARNING in kernfs_create_dir_ns
-From:   syzbot <syzbot+38f5d5cf7ae88c46b11a@syzkaller.appspotmail.com>
-To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+To:     syzbot <syzbot+38f5d5cf7ae88c46b11a@syzkaller.appspotmail.com>,
+        a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
         davem@davemloft.net, gregkh@linuxfoundation.org, hdanton@sina.com,
         hongjiefang@asrmicro.com, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, longman@redhat.com,
-        mareklindner@neomailbox.ch, mingo@kernel.org,
-        netdev@vger.kernel.org, peterz@infradead.org,
+        linux-mmc@vger.kernel.org, mareklindner@neomailbox.ch,
+        mingo@kernel.org, netdev@vger.kernel.org, peterz@infradead.org,
         sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com,
         tj@kernel.org, ulf.hansson@linaro.org
-Content-Type: text/plain; charset="UTF-8"
+References: <000000000000ba8e5605a35d4465@google.com>
+From:   Waiman Long <longman@redhat.com>
+Organization: Red Hat
+Message-ID: <894635f4-772e-a28c-1078-be8a5093e351@redhat.com>
+Date:   Wed, 15 Apr 2020 20:30:09 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <000000000000ba8e5605a35d4465@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this bug was fixed by commit:
-
-commit 810507fe6fd5ff3de429121adff49523fabb643a
-Author: Waiman Long <longman@redhat.com>
-Date:   Thu Feb 6 15:24:08 2020 +0000
-
-    locking/lockdep: Reuse freed chain_hlocks entries
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1008138be00000
-start commit:   72825454 Merge branch 'x86-urgent-for-linus' of git://git...
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=9a31528e58cc12e2
-dashboard link: https://syzkaller.appspot.com/bug?extid=38f5d5cf7ae88c46b11a
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12a6c439a00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1353c323a00000
-
-If the result looks correct, please mark the bug fixed by replying with:
-
 #syz fix: locking/lockdep: Reuse freed chain_hlocks entries
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
