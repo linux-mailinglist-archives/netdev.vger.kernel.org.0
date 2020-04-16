@@ -2,237 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3071B1AB5A4
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 03:48:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A2141AB5B2
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 04:01:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387905AbgDPBsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Apr 2020 21:48:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59726 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729491AbgDPBsZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Apr 2020 21:48:25 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA549C061A0C;
-        Wed, 15 Apr 2020 18:48:25 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id l60so6804655qtd.8;
-        Wed, 15 Apr 2020 18:48:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XuNKYISD+t+PSFfwH7kSQ2EhRMhyMs5XQnzd/oOhuqc=;
-        b=gWAKb53gdSoPumI7uht2yPeY9c9OlNXOstqEnZYfyKjILVaSMjRbn/o2Lp/f73mybA
-         t2JTXIj40pU8KuM5yqoDM04ytRlXBwFeRbz+Fshmvhg1E15/hb/8IVbC/LX9yp8AMjzC
-         OaLcuaPJ9gRbIW8UVteF4FP2X4CtP1wLNfJOMkvzdsEbZIHKlZxv8hmA6IgRzh8l+vgE
-         yVgLcD9EmMyaKDFIrIYNG7o/BDdFOTgdqY69wn9N4tgjCBHxOQ60HUt02bz/mrN2YvNZ
-         n4jSlNrKQMzzsCjXVc7DFaenPOQ5LULtIKkCn3AP4+OUgLEvKpfApt7RSeTDaTiI1cOh
-         aM+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XuNKYISD+t+PSFfwH7kSQ2EhRMhyMs5XQnzd/oOhuqc=;
-        b=nkFSzZHE85uxyHYesOixdwx6gQ8N9iC94SUXcERT0rYMeH8HZDpAyo7n7Sdw6soJgN
-         P189YGM7bbtwF+CBLR3RRjP8954ohzDl/RozYjTS4AkKlt2omciujajKUaRZBkFdqS8E
-         sQwUwZ46L0MdQ1DqmsMezVomFuSk/4T8brLb//HB4bZh05SSx8gPux1fi6gkRKjag4eO
-         P/Qi8iPQp4ND0MZBIPb/yuCBcisp0RQAFnu2m3Le1LCikUyjSQ7uKYD/38IOx1eDIUz1
-         XkP1wE9kTUr+EGQi/5K+co1BP2D2+nXUCPFmq4ckiBf0IWT7pQGvjfgI1PyYmXmkl3/t
-         dpIw==
-X-Gm-Message-State: AGi0PuZQVaoj8gBZtpOPy//hsN+Rack1Nkvvb8BiCFpoupSIAwosoghi
-        F8aNS7Pmfvp59vWgPs08awlBAqJ7ebI0jhrVNrk=
-X-Google-Smtp-Source: APiQypKd2aOmvbKg8wW4hVF+k0trxmkcbJHJqSaM6unNTXwLyGhzpNCgpFMOK5Our6AX/tuLtGQVF++ZMjD03kQqT7o=
-X-Received: by 2002:aed:2e24:: with SMTP id j33mr23808435qtd.117.1587001704711;
- Wed, 15 Apr 2020 18:48:24 -0700 (PDT)
+        id S1729105AbgDPB6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Apr 2020 21:58:41 -0400
+Received: from mail-eopbgr50060.outbound.protection.outlook.com ([40.107.5.60]:7041
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728397AbgDPB6e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 15 Apr 2020 21:58:34 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JAq0dt38IiOuZ5fUo4tVC88zaUWbYe1cq+5h5p3H1/NdHrazhPMxJwNgPPQbRgVxiDuBDv9KZQ1TJfPt9McM+pq2JNKF4YLolM7iVXlq3efDyErNY0lKEAAoSDRaMTVAyWSSVcpj+uPiWcQ1p3//lBPHbmJXwsuXkxHdUp81sFnDNLCu+qKyc8BSTiIB8VqHBJNe2MlHpOC7i8fQLlVQkmTMdB2q2zEoz6+fqKduQvjbVncNbkAZbbCRSoN5FvvrLpOI3M66fr2lERhIXnHQHpWEc1muUHaDlxO9z+2ll7hEgAz4R0hX8g1ujzymewOZLJ2bH6izOkdVzK3TP1nWng==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uIfQSujFUZnE0VXH1h/Y1b9bxNSosfPgOTRfzypkSBo=;
+ b=n8PJFcX/HPetrbrsXqJxJB1vXJ+uPtCjT3GfVO+/YLfmpGApoP+buuTV2kgdPzOJh0P2P/sv9iL5cHfECpHa4BRCCj9i2pZiZhfhPffzWQHx61/Pvhxe+MyBIpgjk5yn1eV6amBTsaA7BL2qfa3Udmmt7iizIswexyHDzlxWVwgQ11ahiIttQ8IMSZ1batVFGfIfIXrwW0VmRyKTOIe3JfUg97W98fmlHvU00/zXKuKtf/5XfGi84A00tUZkt2Kq4QTmQwPfqafqhZlTi1ojcxevUtYDFVsQUvksPcBaV/9/g8+vJF8OtiQ2log3Om4SMpcrxG+MhZeX7J8szVISNg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uIfQSujFUZnE0VXH1h/Y1b9bxNSosfPgOTRfzypkSBo=;
+ b=tXmDNkILWkNvVm8Jjq7AwywuO+puvZwZ0NosyrhnJFN8ynpME5tpX/ErQmMUU2WC69s/QFdEaVpzbx2E5W2sc2x97UmnAZf4keWNO0vHOD9o+cTzhZTqs6s0z/Id5I2Onvm4SUs5eegACGu5ioBH/GPD3XLZ+hERfhYLxHWykQk=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR05MB6862.eurprd05.prod.outlook.com (2603:10a6:800:18e::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2900.26; Thu, 16 Apr
+ 2020 01:58:30 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2900.028; Thu, 16 Apr 2020
+ 01:58:30 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>
+CC:     "linux-next@vger.kernel.org" <linux-next@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: linux-next: Signed-off-by missing for commits in the net-next
+ tree
+Thread-Topic: linux-next: Signed-off-by missing for commits in the net-next
+ tree
+Thread-Index: AQHV9sLlUkLYzArmsEq8vpUsvhtdFahCgcgAgDPfMwCABNaJgA==
+Date:   Thu, 16 Apr 2020 01:58:30 +0000
+Message-ID: <0f7e01568ecda727b75fd417865a72767258fd3b.camel@mellanox.com>
+References: <20200310210130.04bd5e2f@canb.auug.org.au>
+         <ace96f9842592c35458e970af900ec7a43029ae5.camel@mellanox.com>
+         <20200413100534.057a688e@canb.auug.org.au>
+In-Reply-To: <20200413100534.057a688e@canb.auug.org.au>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.34.4 (3.34.4-1.fc31) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [73.15.39.150]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 6b0bd75e-2efe-4008-ec17-08d7e1a9a986
+x-ms-traffictypediagnostic: VI1PR05MB6862:
+x-microsoft-antispam-prvs: <VI1PR05MB68624CFCA14CA876D0FB2420BED80@VI1PR05MB6862.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-forefront-prvs: 0375972289
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(366004)(396003)(39860400002)(376002)(136003)(346002)(6486002)(64756008)(2906002)(71200400001)(8676002)(6512007)(4326008)(6506007)(54906003)(36756003)(4744005)(81156014)(8936002)(316002)(5660300002)(76116006)(66476007)(91956017)(6916009)(2616005)(86362001)(66946007)(186003)(26005)(66556008)(478600001)(66446008);DIR:OUT;SFP:1101;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2tILOHwXGJWN4rd/orfvr4NEbS7MYiLJgF+cScDPsc475sfoH0hnSKyvpRT7h5RE/DKJpNv1w1BfxYXEVbhgZj6O4CvqNPSfudKJ5n094jICVRM8eL57crReH6wOFDp7OEIcrE88sH2mIDQyekSOpfuA2s7vWYedksjpU+wdeb8gJ82xpQY2aYqpfQcCu5biqWXOczHNajvl00g+Ik23oOQIKSLFDIvOGU2+0iIP5OlQbCeXZbu9p/c2mvzDqn1amDWNcSExM30RhAO3S7G5gCpV8IC1gRI9KlNoHqIZb6gYIeVkEwk01FX98spNl/JEkls4gj5WhVlPeqOXw1GVymzOGbMaa/A4TwME+wB+u3Mam9g9hIQHs2/fzAZLY2Xq0MQO0iExBboU7fmR6BzNsZZc7c6Pl+kU648dDkxcQR6IfydmHJ5FCJ5GPg7AYj6U
+x-ms-exchange-antispam-messagedata: IqU8NTC1z/dfY6kDDvmKi0/akyNt9T0MKkqE3v31FvE51BFwPxepnCxqu3KVgKc6ADCwobFjnKl4LCV86oaIc4qMOlwoyR3EeS3tP6liNmKURBsoTHuA8aQ/daq61+8vO35bVWzusRA6PSD8/X2ZTg==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <D98E7EDA4C06524A89227587677DF3A7@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20200408232520.2675265-1-yhs@fb.com> <20200408232526.2675664-1-yhs@fb.com>
- <CAEf4Bzawu2dFXL7nvYhq1tKv9P7Bb9=6ksDpui5nBjxRrx=3_w@mail.gmail.com>
- <4bf72b3c-5fee-269f-1d71-7f808f436db9@fb.com> <CAEf4BzZnq958Guuusb9y65UCtB-DARxdk7_q7ZPBZ3WOwjSKaw@mail.gmail.com>
- <20200415164640.evaujoootr4n55sc@ast-mbp>
-In-Reply-To: <20200415164640.evaujoootr4n55sc@ast-mbp>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 15 Apr 2020 18:48:13 -0700
-Message-ID: <CAEf4Bza2YkmFMZ_d6d6keLqeWNDr8dbBQj=42xSrONaULK1PXg@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 05/16] bpf: create file or anonymous dumpers
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6b0bd75e-2efe-4008-ec17-08d7e1a9a986
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Apr 2020 01:58:30.4429
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tdY6VU6uTTTq3JeRTo19Zi245pswtmGb0l929kbAPadS4up1LnM4bm9i9+VhGJPYdvcyubRLE8hMEoEcr/65QQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6862
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 15, 2020 at 9:46 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Tue, Apr 14, 2020 at 09:45:08PM -0700, Andrii Nakryiko wrote:
-> > >
-> > > > FD is closed, dumper program is detached and dumper is destroyed
-> > > > (unless pinned in bpffs, just like with any other bpf_link.
-> > > > 3. At this point bpf_dumper_link can be treated like a factory of
-> > > > seq_files. We can add a new BPF_DUMPER_OPEN_FILE (all names are for
-> > > > illustration purposes) command, that accepts dumper link FD and
-> > > > returns a new seq_file FD, which can be read() normally (or, e.g.,
-> > > > cat'ed from shell).
-> > >
-> > > In this case, link_query may not be accurate if a bpf_dumper_link
-> > > is created but no corresponding bpf_dumper_open_file. What we really
-> > > need to iterate through all dumper seq_file FDs.
-> >
-> > If the goal is to iterate all the open seq_files (i.e., bpfdump active
-> > sessions), then bpf_link is clearly not the right approach. But I
-> > thought we are talking about iterating all the bpfdump programs
-> > attachments, not **sessions**, in which case bpf_link is exactly the
-> > right approach.
->
-> That's an important point. What is the pinned /sys/kernel/bpfdump/tasks/foo ?
-
-Assuming it's not a rhetorical question, foo is a pinned bpf_dumper
-link (in my interpretation of all this).
-
-> Every time 'cat' opens it a new seq_file is created with new FD, right ?
-
-yes
-
-> Reading of that file can take infinite amount of time, since 'cat' can be
-> paused in the middle.
-
-yep, correct (though most use case probably going to be very short-lived)
-
-> I think we're dealing with several different kinds of objects here.
-> 1. "template" of seq_file that is seen with 'ls' in /sys/kernel/bpfdump/
-
-Let's clarify here again, because this can be interpreted differently.
-
-Are you talking about, e.g., /sys/fs/bpfdump/task directory that
-defines what class of items should be iterated? Or you are talking
-about named dumper: /sys/fs/bpfdump/task/my_dumper?
-
-If the former, I agree that it's not a link. If the latter, then
-that's what we've been so far calling "a named bpfdumper". Which is
-what I argue is a link, pinned in bpfdumpfs (*not bpffs*).
-
-UPD: reading further, seems like it's some third interpretation, so
-please clarify.
-
-> 2. given instance of seq_file after "template" was open
-
-Right, corresponding to "bpfdump session" (has its own unique session_id).
-
-> 3. bpfdumper program
-
-Yep, BPF_PROG_LOAD returns FD to verified bpfdumper program.
-
-> 4. and now links. One bpf_link from seq_file template to bpf prog and
-
-So I guess "seq_file template" is /sys/kernel/bpfdump/tasks direntry
-itself, which has to be specified as FD during BPF_PROG_LOAD, is that
-right? If yes, I agree, "seq_file template" + attached bpf_prog is a
-link.
-
->   many other bpf_links from actual seq_file kernel object to bpf prog.
-
-I think this one is not a link at all. It's a bpfdumper session. For
-me this is equivalent of a single BPF program invocation on cgroup due
-to a single packet. I understand that in this case it's multiple BPF
-program invocations, so it's not exactly 1:1, but if we had an easy
-way to do iteration from inside BPF program over all, say, tasks, that
-would be one BPF program invocation with a loop inside. So to me one
-seq_file session is analogous to a single BPF program execution (or,
-say one hardware event triggering one execution of perf_event BPF
-program).
-
->   I think both kinds of links need to be iteratable via get_next_id.
->
-> At the same time I don't think 1 and 2 are links.
-> read-ing link FD should not trigger program execution. link is the connecting
-> abstraction. It shouldn't be used to trigger anything. It's static.
-> Otherwise read-ing cgroup-bpf link would need to trigger cgroup bpf prog too.
-> FD that points to actual seq_file is the one that should be triggering
-> iteration of kernel objects and corresponding execution of linked prog.
-
-Yep, I agree totally, reading bpf_link FD directly as if it was
-seq_file seems weird and would support only a single time to read.
-
-> That FD can be anon_inode returned from raw_tp_open (or something else)
-
-raw_tp_open currently always returns bpf_link FDs, so if this suddenly
-returns readable seq_file instead, that would be weird, IMO.
-
-
-> or FD from open("/sys/kernel/bpfdump/foo").
-
-Agreed.
-
->
-> The more I think about all the objects involved the more it feels that the
-> whole process should consist of three steps (instead of two).
-> 1. load bpfdump prog
-> 2. create seq_file-template in /sys/kernel/bpfdump/
->    (not sure which api should do that)
-
-Hm... ok, I think seq_file-template means something else entirely.
-It's not an attached BPF program, but also not a /sys/fs/bpfdump/task
-"provider". What is it and what is its purpose? Also, how is it
-cleaned up if application crashes between creating "seq_file-template"
-and attaching BPF program to it?
-
-> 3. use bpf_link_create api to attach bpfdumper prog to that seq_file-template
->
-> Then when the file is opened a new bpf_link is created for that reading session.
-> At the same time both kinds of links (to teamplte and to seq_file) should be
-> iteratable for observability reasons, but get_fd_from_id on them should probably
-> be disallowed, since holding such FD to these special links by other process
-> has odd semantics.
-
-This special get_fd_from_id handling for bpfdumper links (in your
-interpretation) looks like a sign that using bpf_link to represent a
-specific bpfdumper session is not the right design.
-
-As for obserabilitiy of bpfdumper sessions, I think using bpfdump
-program + task/file provider will give a good way to do this,
-actually, with no need to maintain a separate IDR just for bpfdumper
-sessions.
-
->
-> Similarly for anon seq_file it should be three step process as well:
-> 1. load bpfdump prog
-> 2. create anon seq_file (api is tbd) that returns FD
-> 3. use bpf_link_create to attach prog to seq_file FD
->
-> May be it's all overkill. These are just my thoughts so far.
-
-Just to contrast, in a condensed form, what I was proposing:
-
-For named dumper:
-1. load bpfdump prog
-2. attach prog to bpfdump "provider" (/sys/fs/bpfdump/task), get
-bpf_link anon FD back
-3. pin link in bpfdumpfs (e.g., /sys/fs/bpfdump/task/my_dumper)
-4. each open() of /sys/fs/bpfdump/task/my_dumper produces new
-bpfdumper session/seq_file
-
-For anon dumper:
-1. load bpfdump prog
-2. attach prog to bpfdump "provider" (/sys/fs/bpfdump/task), get
-bpf_link anon FD back
-3. give bpf_link FD to some new API (say, BPF_DUMP_NEW_SESSION or
-whatever name) to create seq_file/bpfdumper session, which will create
-FD that can be read(). One can do that many times, each time getting
-its own bpfdumper session.
-
-First two steps are exactly the same, as it should be, because
-named/anon dumper is still the same dumper. Note also that we can use
-bpf_link FD of named dumper and BPF_DUMP_NEW_SESSION command to also
-create sessions, which further underlines that the only difference
-between named and anon dumper is this bpfdumpfs direntry that allows
-to create new seq_file/session by doing normal open(), instead of
-BPF's BPF_DUMP_NEW_SESSION.
-
-Named vs anon dumper is like "named" vs "anon" bpf_link -- we don't
-even talk in those terms about bpf_link, because the only difference
-is pinned direntry in a special FS, really.
+T24gTW9uLCAyMDIwLTA0LTEzIGF0IDEwOjA1ICsxMDAwLCBTdGVwaGVuIFJvdGh3ZWxsIHdyb3Rl
+Og0KPiBIaSBTYWVlZCwNCj4gDQo+IE9uIFR1ZSwgMTAgTWFyIDIwMjAgMjM6NTc6MzEgKzAwMDAg
+U2FlZWQgTWFoYW1lZWQgPA0KPiBzYWVlZG1AbWVsbGFub3guY29tPiB3cm90ZToNCj4gPiBPbiBU
+dWUsIDIwMjAtMDMtMTAgYXQgMjE6MDEgKzExMDAsIFN0ZXBoZW4gUm90aHdlbGwgd3JvdGU6DQo+
+ID4gPiBIaSBhbGwsDQo+ID4gPiANCj4gPiA+IENvbW1pdHMNCj4gPiA+IA0KPiA+ID4gICBiNjMy
+OTNlNzU5YTEgKCJuZXQvbWx4NWU6IFNob3cvc2V0IFJ4IG5ldHdvcmsgZmxvdw0KPiA+ID4gY2xh
+c3NpZmljYXRpb24NCj4gPiA+IHJ1bGVzIG9uIHVsIHJlcCIpDQo+ID4gPiAgIDY3ODNlOGIyOWY2
+MyAoIm5ldC9tbHg1ZTogSW5pdCBldGh0b29sIHN0ZWVyaW5nIGZvcg0KPiA+ID4gcmVwcmVzZW50
+b3JzIikNCj4gPiA+ICAgMDEwMTNhZDM1NWQ2ICgibmV0L21seDVlOiBTaG93L3NldCBSeCBmbG93
+IGluZGlyIHRhYmxlIGFuZCBSU1MNCj4gPiA+IGhhc2gNCj4gPiA+IGtleSBvbiB1bCByZXAiKQ0K
+PiA+ID4gICANCj4gPiANCj4gPiBIaSBTdGVwaGVuLCANCj4gPiANCj4gPiBjaGVja3BhdGNoIGRv
+ZXNuJ3Qgc2VlbSB0byBjYXRjaCBzdWNoIHByb2JsZW1zLi4gDQo+ID4gDQo+ID4gSSBjb3VudCBv
+biBvdXIgQ0kgdG8gZG8gc3VjaCBjaGVja3MgZm9yIG1lLCBzbyBpbnN0ZWFkIG9mIG1lDQo+ID4g
+d3JpdGluZyBhIA0KPiA+IG5ldyBzY3JpcHQgZXZlcnkgdGltZSB3ZSBoaXQgYSBuZXcgdW5mb3Jl
+c2VlbiBpc3N1ZSwgaSB3YXMNCj4gPiB3b25kZXJpbmcNCj4gPiB3aGVyZSBjYW4gaSBmaW5kIHRo
+ZSBzZXQgb2YgdGVzdC9zY3JpcHRzIHlvdSBhcmUgcnVubmluZyA/IA0KPiANCj4gSSBoYXZlIGF0
+dGFjaGVkIG15IHNjcmlwdHMgLi4uDQo+IA0KDQpUaGFua3MgU3RlcGhlbiAhIG11Y2ggYXBwcmVj
+aWF0ZWQuDQoNClNhZWVkLg0K
