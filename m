@@ -2,104 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70B0A1ABC4C
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 11:11:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 632F81ABBAB
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 10:49:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502780AbgDPJKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 05:10:51 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:27700 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2502776AbgDPIok (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 04:44:40 -0400
+        id S2502849AbgDPIsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 04:48:45 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:55180 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2502900AbgDPIrs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 04:47:48 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587026631;
+        s=mimecast20190719; t=1587026866;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=4yfqMRGU6yHVFX9cCKgS+CRJdfA4wWPecTL3stc+FBg=;
-        b=VqqrFgrWkIKxqwAdxD9hjSGJXKRhwmRVC4utwx8SvNDFgOpna0gbs0HQXsR7z5PGh7R5Ua
-        dBIITFIeyO+YR/07oN4djHubleTB7TRjTFnUu4vmLD6mmC99s26T2Os160DhYCTSWk9KgY
-        JYMEHgIO39JXXh0fSJ5deq/7z1+vtZQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-481-LE1fw699Mvqmw4O02XVxAA-1; Thu, 16 Apr 2020 04:43:49 -0400
-X-MC-Unique: LE1fw699Mvqmw4O02XVxAA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1EC5C192D786;
-        Thu, 16 Apr 2020 08:43:48 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.6])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 383C494B40;
-        Thu, 16 Apr 2020 08:43:40 +0000 (UTC)
-Date:   Thu, 16 Apr 2020 10:43:39 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     daniel@iogearbox.net, ast@fb.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Xiumei Mu <xmu@redhat.com>,
-        brouer@redhat.com
-Subject: Re: [PATCH bpf v2] cpumap: Avoid warning when
- CONFIG_DEBUG_PER_CPU_MAPS is enabled
-Message-ID: <20200416104339.3a8b85c4@carbon>
-In-Reply-To: <20200416083120.453718-1-toke@redhat.com>
-References: <20200416083120.453718-1-toke@redhat.com>
+        bh=hLv2V74/okom8XQM5VUYo1cHtVIDyGEJ24uk+rS0wmg=;
+        b=SLV9UV7CkFGewlY0P/9iMAEOE9PcQSaWeFwzm6QPKlw5IBiSKWch1sAmFOmk2xyX+Pnqu7
+        yeY/liXk14ae9PLMLpOrJUWS3LhgdbPPjmyWi9rfCNxteg1gupDm9eihI2mcyniDNeXCUV
+        fa89fP1h1StO/P8YwPyWNKa/k8ciFWk=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-167-02PSLOA9OTmytz8bmfPaRQ-1; Thu, 16 Apr 2020 04:47:45 -0400
+X-MC-Unique: 02PSLOA9OTmytz8bmfPaRQ-1
+Received: by mail-lj1-f200.google.com with SMTP id j15so1097544lja.14
+        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 01:47:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=hLv2V74/okom8XQM5VUYo1cHtVIDyGEJ24uk+rS0wmg=;
+        b=X20IujvT6PskU+eGm6F0ugy9Puf9dDDQnxwcQxJ6Ls5lG7VwDLCfaYOKXVIFk5hIBe
+         llW3WKWE/u4G8fUbRH989HUA05ReWmNTYZSs7lilQO3KVsKufBsZEOsng+xiL9zcU63X
+         S/3IIajeEQcae5sixOoKcKlc5LLpUy+nvh99zXRjyZroEYcCsK+B2T9G9z0ie6WWraoS
+         PkObcVOWf34zWCvSTC7vY7UiIc1zn7TJ/Sr1mGDzIvroxmoJe9MPp3BHpiZ0Gg9vVnb4
+         E8XcgM13KZ9rN5hhnLS57U+d3wxPP4EY3QrufwksOOHn0ByxlyOfosqNz7e2buWfC4Zx
+         8yvg==
+X-Gm-Message-State: AGi0PuZLRtX8ZaoXqdRAIPn221SFQ3K8wCk0UrlYXF4/UIvOxBlsJ10m
+        A14l8AmCFIQFuwkhRpY9zN0YFmZdmTd7J2gsaMYHdJzLiE/tUMScdu4ZFq1ePXk1z98PZK2nORy
+        f8akbXxx6dU3DNWAI
+X-Received: by 2002:a2e:9c9a:: with SMTP id x26mr1506253lji.44.1587026863244;
+        Thu, 16 Apr 2020 01:47:43 -0700 (PDT)
+X-Google-Smtp-Source: APiQypI3dmIA2vUqeS7zRaeBy3Ztj2J2Yxxod5xsabISu1sBrS5O0an3v23WjQquhF+ZwkxFxnqIvg==
+X-Received: by 2002:a2e:9c9a:: with SMTP id x26mr1506231lji.44.1587026862891;
+        Thu, 16 Apr 2020 01:47:42 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id i3sm983120ljg.82.2020.04.16.01.47.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Apr 2020 01:47:42 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 4B9C9181586; Thu, 16 Apr 2020 10:47:39 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Odin Ugedal <odin@ugedal.com>, netdev@vger.kernel.org
+Cc:     Odin Ugedal <odin@ugedal.com>
+Subject: Re: [PATCH 1/3] q_cake: Make fwmark uint instead of int
+In-Reply-To: <20200415143936.18924-2-odin@ugedal.com>
+References: <20200415143936.18924-1-odin@ugedal.com> <20200415143936.18924-2-odin@ugedal.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 16 Apr 2020 10:47:39 +0200
+Message-ID: <87d087n7f8.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Apr 2020 10:31:20 +0200
-Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
+Odin Ugedal <odin@ugedal.com> writes:
 
-> When the kernel is built with CONFIG_DEBUG_PER_CPU_MAPS, the cpumap code
-> can trigger a spurious warning if CONFIG_CPUMASK_OFFSTACK is also set. Th=
-is
-> happens because in this configuration, NR_CPUS can be larger than
-> nr_cpumask_bits, so the initial check in cpu_map_alloc() is not sufficient
-> to guard against hitting the warning in cpumask_check().
->=20
-> Fix this by explicitly checking the supplied key against the
-> nr_cpumask_bits variable before calling cpu_possible().
->=20
-> Fixes: 6710e1126934 ("bpf: introduce new bpf cpu map type BPF_MAP_TYPE_CP=
-UMAP")
-> Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-> Reported-by: Xiumei Mu <xmu@redhat.com>
-> Tested-by: Xiumei Mu <xmu@redhat.com>
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
+> This will help avoid overflow, since setting it to 0xffffffff would
+> result in -1 when converted to integer, resulting in being "-1", setting
+> the fwmark to 0x00.
+>
+> Signed-off-by: Odin Ugedal <odin@ugedal.com>
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Thanks!
 
-> v2:
->   - Move check to cpu_map_update_elem() to not affect max size of map
->=20
->  kernel/bpf/cpumap.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-> index 70f71b154fa5..3fe0b006d2d2 100644
-> --- a/kernel/bpf/cpumap.c
-> +++ b/kernel/bpf/cpumap.c
-> @@ -469,7 +469,7 @@ static int cpu_map_update_elem(struct bpf_map *map, v=
-oid *key, void *value,
->  		return -EOVERFLOW;
-> =20
->  	/* Make sure CPU is a valid possible cpu */
-> -	if (!cpu_possible(key_cpu))
-> +	if (key_cpu >=3D nr_cpumask_bits || !cpu_possible(key_cpu))
-
-Toke use 'nr_cpumask_bits' here, because cpumask_check() also uses it,
-which is the warning we are trying to avoid.
-
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 
