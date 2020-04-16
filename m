@@ -2,97 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B14461ABD8B
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 12:06:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 345841ABDB4
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 12:16:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504691AbgDPKGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 06:06:03 -0400
-Received: from mga02.intel.com ([134.134.136.20]:38870 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2504378AbgDPKFy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Apr 2020 06:05:54 -0400
-IronPort-SDR: bzu0HXqmTP3+zqUhauTmrfsa9nt1lFXliZt+g1E3dCLfiV+ZCxJSjA1epdpmxEtxuxmnwjidTC
- +xbK+Vpcje3w==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2020 03:05:53 -0700
-IronPort-SDR: RjBv+uX+qdBSawkGTFreimgV4amAPsx7yEe1IJ3aQIXgdP4x219JR8hl3o9eqO/hwoAVeQq9M9
- UXTLT5nwMsgA==
-X-IronPort-AV: E=Sophos;i="5.72,390,1580803200"; 
-   d="scan'208";a="427781153"
-Received: from ellenfax-mobl2.ger.corp.intel.com (HELO localhost) ([10.249.44.122])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2020 03:05:42 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Madhuparna Bhowmik <madhuparnabhowmik04@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ricardo Ribalda Delgado <ribalda@kernel.org>,
-        Luca Ceresoli <luca@lucaceresoli.net>,
-        dmaengine@vger.kernel.org, Matthias Maennich <maennich@google.com>,
-        Harry Wei <harryxiyou@gmail.com>, x86@kernel.org,
-        ecryptfs@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        target-devel@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Tyler Hicks <code@tyhicks.com>, Vinod Koul <vkoul@kernel.org>,
-        Alex Shi <alex.shi@linux.alibaba.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, linux-scsi@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linuxppc-dev@lists.ozlabs.org, Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v2 0/2] Don't generate thousands of new warnings when building docs
-In-Reply-To: <20200320171020.78f045c5@lwn.net>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <cover.1584716446.git.mchehab+huawei@kernel.org> <20200320171020.78f045c5@lwn.net>
-Date:   Thu, 16 Apr 2020 13:05:39 +0300
-Message-ID: <87a73b4ufg.fsf@intel.com>
+        id S2441514AbgDPKQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 06:16:17 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:45859 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2441463AbgDPKP2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 06:15:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587032127;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=duQdUsOOdHGiX8X+SSFFtnhQDtBYHM0gSY3ojiBRAto=;
+        b=jME7/jt1K/4ELsgAoKvluDxwiHMLOcTB3G81EKkooBMBg7Uw/obiPuHXN37cOBjSvhfcM0
+        qX8x6Qvb49B5TK9HCAHlmMqkBK7E4ixfebeTfebYFpFyUozB8ZRiVy5DAcio9oRsGKYdvb
+        zDwKvaDLvuJrlblJHXWb2PyV8TeacTs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-341-lvRNdSpjMxOevcxPakXQlg-1; Thu, 16 Apr 2020 06:15:23 -0400
+X-MC-Unique: lvRNdSpjMxOevcxPakXQlg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3A21218C8C02;
+        Thu, 16 Apr 2020 10:15:22 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-113-129.rdu2.redhat.com [10.10.113.129])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7175E5C1D6;
+        Thu, 16 Apr 2020 10:15:20 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <CAH2r5mvj7GF3i8AE6E=+5f_Vigtb3uw=665F2uuBOgGzUhHObQ@mail.gmail.com>
+References: <CAH2r5mvj7GF3i8AE6E=+5f_Vigtb3uw=665F2uuBOgGzUhHObQ@mail.gmail.com> <3865908.1586874010@warthog.procyon.org.uk> <e751977dac616d93806d98f4ad3ce144bb1eb244.camel@kernel.org>
+To:     Steve French <smfrench@gmail.com>
+Cc:     dhowells@redhat.com, Jeff Layton <jlayton@kernel.org>,
+        linux-nfs <linux-nfs@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>, linux-afs@lists.infradead.org,
+        ceph-devel@vger.kernel.org, keyrings@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, fweimer@redhat.com
+Subject: Re: What's a good default TTL for DNS keys in the kernel
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <127742.1587032119.1@warthog.procyon.org.uk>
+Date:   Thu, 16 Apr 2020 11:15:19 +0100
+Message-ID: <127743.1587032119@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 20 Mar 2020, Jonathan Corbet <corbet@lwn.net> wrote:
-> On Fri, 20 Mar 2020 16:11:01 +0100
-> Mauro Carvalho Chehab <mchehab+huawei@kernel.org> wrote:
->
->> This small series address a regression caused by a new patch at
->> docs-next (and at linux-next).
->
-> I don't know how I missed that mess, sorry.  I plead distracting times or
-> something like that.  Heck, I think I'll blame everything on the plague
-> for at least the next few weeks.
->
-> Anyway, I've applied this, thanks for cleaning it up.
+Steve French <smfrench@gmail.com> wrote:
 
-There's still more fallout from the autosectionlabel extension
-introduced in 58ad30cf91f0 ("docs: fix reference to
-core-api/namespaces.rst"), e.g. in i915.rst.
+> > 10 mins sounds like a reasonable default to me.
+> 
+> I would lean toward slightly longer (20 minutes?) but aren't there
+> usually different timeouts for 'static' vs. 'dynamic' DNS records (so
+> static records would have longer timeouts)?
 
-The biggest trouble is, if you have headings in kernel-doc comments,
-Sphinx is unable pinpoint where the dupes are. For example:
+Unfortunately, getaddrinfo() doesn't give me that information.
 
- Documentation/gpu/i915.rst:610: WARNING: duplicate label gpu/i915:layout, other instance in
- Documentation/gpu/i915.rst
+David
 
-However there is no "layout" label in i915.rst. The one being warned
-about I can dig into based on the line number, but not the second
-one. You have to resort to grepping the source. And avoiding duplicate
-subsection headings in completely isolated places is a minefield.
-
-BR,
-Jani.
-
-
--- 
-Jani Nikula, Intel Open Source Graphics Center
