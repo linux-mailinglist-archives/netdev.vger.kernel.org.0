@@ -2,91 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80BCF1ABDBF
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 12:18:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C96B1ABDC9
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 12:24:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504678AbgDPKSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 06:18:18 -0400
-Received: from mga01.intel.com ([192.55.52.88]:45834 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2441495AbgDPKRx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Apr 2020 06:17:53 -0400
-IronPort-SDR: AwA41n4JgjKZuuNgZRCP6UHT3UZ1/Za8i4jvp+2iuw24g9JtB0A34lTmesKM6GH21CTwW6R8I8
- 0TXBR3vVAKnA==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2020 03:17:42 -0700
-IronPort-SDR: PabvyhK/GDPyBjaf0paWWd5oAAbGpqHHyicWhdVU0osJ1cJkrEV/y2jitUhatIDlUFj03yE+KQ
- +MY52IYzL9ng==
-X-IronPort-AV: E=Sophos;i="5.72,390,1580803200"; 
-   d="scan'208";a="400622555"
-Received: from ellenfax-mobl2.ger.corp.intel.com (HELO localhost) ([10.249.44.122])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2020 03:17:34 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>, Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "narmstrong\@baylibre.com" <narmstrong@baylibre.com>,
-        "masahiroy\@kernel.org" <masahiroy@kernel.org>,
-        "Laurent.pinchart\@ideasonboard.com" 
-        <Laurent.pinchart@ideasonboard.com>,
-        "leon\@kernel.org" <leon@kernel.org>,
-        "davem\@davemloft.net" <davem@davemloft.net>,
-        "linux-renesas-soc\@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "nico\@fluxnic.net" <nico@fluxnic.net>,
-        "linux-rdma\@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "dri-devel\@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "kieran.bingham+renesas\@ideasonboard.com" 
-        <kieran.bingham+renesas@ideasonboard.com>,
-        "a.hajda\@samsung.com" <a.hajda@samsung.com>,
-        "jonas\@kwiboo.se" <jonas@kwiboo.se>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "airlied\@linux.ie" <airlied@linux.ie>,
-        "jgg\@ziepe.ca" <jgg@ziepe.ca>,
-        "jernej.skrabec\@siol.net" <jernej.skrabec@siol.net>
-Subject: Re: [RFC 0/6] Regressions for "imply" behavior change
-In-Reply-To: <CAK8P3a3Wx5_bUOKnN3_hG5nLOqv3WCUtMSq6vOkJzWZgsmAz+A@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20200408202711.1198966-1-arnd@arndb.de> <nycvar.YSQ.7.76.2004081633260.2671@knanqh.ubzr> <CAK8P3a2frDf4BzEpEF0uwPTV2dv6Jve+6N97z1sSuSBUAPJquA@mail.gmail.com> <20200408224224.GD11886@ziepe.ca> <87k12pgifv.fsf@intel.com> <7d9410a4b7d0ef975f7cbd8f0b6762df114df539.camel@mellanox.com> <20200410171320.GN11886@ziepe.ca> <16441479b793077cdef9658f35773739038c39dc.camel@mellanox.com> <20200414132900.GD5100@ziepe.ca> <CAK8P3a0aFQ7h4zRDW=QLogXWc88JkJJXEOK0_CpWwsRjq6+T+w@mail.gmail.com> <20200414152312.GF5100@ziepe.ca> <CAK8P3a1PjP9_b5NdmqTLeGN4y+3JXx_yyTE8YAf1u5rYHWPA9g@mail.gmail.com> <f6d83b08fc0bc171b5ba5b2a0bc138727d92e2c0.camel@mellanox.com> <CAK8P3a1-J=4EAxh7TtQxugxwXk239u8ffgxZNRdw_WWy8ExFoQ@mail.gmail.com> <834c7606743424c64951dd2193ca15e29799bf18.camel@mellanox.com> <CAK8P3a3Wx5_bUOKnN3_hG5nLOqv3WCUtMSq6vOkJzWZgsmAz+A@mail.gmail.com>
-Date:   Thu, 16 Apr 2020 13:17:32 +0300
-Message-ID: <874ktj4tvn.fsf@intel.com>
+        id S2504815AbgDPKVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 06:21:07 -0400
+Received: from mail-out.m-online.net ([212.18.0.9]:60451 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2504719AbgDPKSi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 06:18:38 -0400
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 492wD73L8Nz1qs0h;
+        Thu, 16 Apr 2020 12:18:27 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 492wD33N72z1qql0;
+        Thu, 16 Apr 2020 12:18:27 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id PdO30bTPsrjo; Thu, 16 Apr 2020 12:18:24 +0200 (CEST)
+X-Auth-Info: 79TXxPoCzdaEAN6EY605hQWaeINUDqeOHYPeFLyprvM=
+Received: from [IPv6:::1] (unknown [195.140.253.167])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Thu, 16 Apr 2020 12:18:24 +0200 (CEST)
+Subject: Re: [PATCH V4 00/19] net: ks8851: Unify KS8851 SPI and MLL drivers
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>
+References: <20200415143909.wmtmud3vkkwzjv73@wunner.de>
+ <ac0f7227-a4ae-b6cd-36ec-3bcb02b1adbe@denx.de>
+ <20200415151236.ii5hib25eslbvmfk@wunner.de>
+From:   Marek Vasut <marex@denx.de>
+Message-ID: <e4cfbb61-1d54-b7ca-9ab7-653fbd59aeed@denx.de>
+Date:   Thu, 16 Apr 2020 12:18:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20200415151236.ii5hib25eslbvmfk@wunner.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Apr 2020, Arnd Bergmann <arnd@arndb.de> wrote:
-> On Thu, Apr 16, 2020 at 5:25 AM Saeed Mahameed <saeedm@mellanox.com> wrote:
->> BTW how about adding a new Kconfig option to hide the details of
->> ( BAR || !BAR) ? as Jason already explained and suggested, this will
->> make it easier for the users and developers to understand the actual
->> meaning behind this tristate weird condition.
+On 4/15/20 5:12 PM, Lukas Wunner wrote:
+> On Wed, Apr 15, 2020 at 04:51:39PM +0200, Marek Vasut wrote:
+>> On 4/15/20 4:39 PM, Lukas Wunner wrote:
+>> I reinstated the indirect access, so things did change. Besides, there
+>> performance for the parallel option is back where it was with the old
+>> driver, which is important for me.
+> 
+> Okay, I see.
+> 
+> 
+>>> We're using CONFIG_PREEMPT_RT_FULL=y.  I'm sorry for not mentioning this
+>>> earlier, I didn't assume it would make such a big difference but
+>>> apparently it does.
 >>
->> e.g have a new keyword:
->>      reach VXLAN
->> which will be equivalent to:
->>      depends on VXLAN && !VXLAN
->
-> I'd love to see that, but I'm not sure what keyword is best. For your
-> suggestion of "reach", that would probably do the job, but I'm not
-> sure if this ends up being more or less confusing than what we have
-> today.
+>> Do you also have the RT patch applied ?
+> 
+> Yes, the branch I linked to also contains the RT patches.
 
-Ah, perfect bikeshedding topic!
+OK, I see. I am only testing against latest linux-next with no extra
+patches. Can you do that as well ?
 
-Perhaps "uses"? If the dependency is enabled it gets used as a
-dependency.
+Here is all you need:
+https://git.kernel.org/pub/scm/linux/kernel/git/marex/linux-2.6.git/log/?h=ks8851-v5
 
-Of course, this is all just talk until someone(tm) posts a patch
-actually making the change. I've looked at the kconfig tool sources
-before; not going to make the same mistake again.
+>>> This is the branch I've tested today:
+>>> https://github.com/l1k/linux/commits/revpi-4.19-marek-v4
+>>
+>> You seem to have quite a few more patches in that repository than just
+>> this series, some of them even touching the RPi SPI driver and it's DMA
+>> implementation.
+> 
+> Those are just the patches I mainlined, but backported to v4.19.
+> This branch is based on the Raspberry Pi Foundation's downstream
+> repository, they still ship v4.19.  Their repo has more performant
+> drivers for USB, SD/MMC etc. which haven't been mainlined yet.
+> But the SPI portion is the same as in mainline because I always
+> submit to mainline and let the patches percolate down to their repo.
 
-BR,
-Jani.
+Above I linked current linux-next with KS8851 patches applied (plus
+fixes for the next version of this series, including the RPi3 DT patch
+and config I used to test the SPI version), so please use that.
 
+>>>> I used two different drivers -- the iMX SPI and the STM32 SPI -- I would
+>>>> say that if both show the same behavior, it's unlikely to be the driver.
+>>>
+>>> Hm, so why did it work with the RasPi but not with the others?
+>>
+>> I didn't have a chance to debug this yet.
+> 
+> I was just curious if those drivers don't work as well as the one
+> for the RasPi. :-)  That would be funny because the RasPi is generally
+> considered a toy in the embedded space and the platforms you've
+> mentioned are taken more seriously I think.
 
--- 
-Jani Nikula, Intel Open Source Graphics Center
+My guess would be that the SPI in the RPi is just ignoring various
+non-critical transmission errors to cater for all the "toy" hardware,
+but that's just pure speculation.
+
+[...]
