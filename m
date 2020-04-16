@@ -2,105 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEED01AD26C
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 23:58:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24B5F1AD273
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 00:00:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728640AbgDPV6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 17:58:53 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:37352 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728126AbgDPV6u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 17:58:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587074328;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=M6rrlZafhN6r+ubaAk51QbjlJxlyC5zfccAUUw8zuIQ=;
-        b=EjmCqUQUNepT3q3TW1CAHlKf2tMfLu4nMJKIy1zPpfGVeqUj+ElCpAo4zLQPZhwCXpBVu1
-        9Rp/DQbzQCdVt2o0QbZ/Q6GOS5dmqCyND45j3kuW1wwS50PuIchk4gxnv3LdCjT2AMUQei
-        22JbU079yHy5dxanIpDwXN6/Z7bLTWE=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-228-H31Bjav8MnO25uLQCFkbbg-1; Thu, 16 Apr 2020 17:58:47 -0400
-X-MC-Unique: H31Bjav8MnO25uLQCFkbbg-1
-Received: by mail-wm1-f70.google.com with SMTP id 72so1860359wmb.1
-        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 14:58:46 -0700 (PDT)
+        id S1728674AbgDPWA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 18:00:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51124 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727998AbgDPWAz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 18:00:55 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F3CC061A0C;
+        Thu, 16 Apr 2020 15:00:55 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id ay1so151484plb.0;
+        Thu, 16 Apr 2020 15:00:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:content-transfer-encoding:mime-version:subject:message-id:date
+         :cc:to;
+        bh=f7+Ji9iwyRin8bF/31Jh4PKZRcSeX5vOP4UH9FsYD94=;
+        b=E5IdDBB4L/OKqkLFUHMZFbtWTcxOc2AoCuLv/N7tmC4Kl4h3rH+BIKEnx0ioKABbVV
+         MlYIIxQL7uVuluHIw4Cx6+rNpjOcmTgOQbr+MFQpjOQrRW5+K3yYxi7ZiycD/0Y8xJQB
+         GMadALZ1J9hFZyiZ3DCNNYmGocky3rwaAt8REDl3v7rGvDOoLUds5nO/C5PVVxHCPwY5
+         sdXq31KX5j0rd7OX5vbVtzHRZwgV0Mn2y8VbPQabGNgtAFkdIw0oeqHwxn5zW8sNpFIr
+         PHfNZ5QD9hyfFn+tg4yGecZPKkJNGEorZFlZ8k4Cx3KutFowGPB5/Ehd9FHgjkKEhOQx
+         emYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=M6rrlZafhN6r+ubaAk51QbjlJxlyC5zfccAUUw8zuIQ=;
-        b=eKLj1CZvH49KKXLE+rBqz/nKcmjcwf5r2qIk2sAZOg/4U6ZomPHTZPKT71QMEvGWm9
-         ze8+IehxzVLOcgzCgZhAffo4N4jk00Cjmv4+m9jUPcjauS4TEZI64ZvVGjGz1EEmeBPf
-         0dsYuB044cux7xe3aDJQJDWF7QOcAEKePRD2daH6PpsaiQIiPEf68f45lttCGQ7pFGR4
-         /s2uXNgALOwYBB3ZAMrHVncx+/7ZSSZhx0nHUZspgsRPAH5KmGGSwuRUMoX8+jI/P20T
-         AzqXy67Yk/TFjjPJyl9YCG6DPonjHA4R60qwE30HKKuoJ3x5FkCAevKY8qmwfnCuteBN
-         A5nQ==
-X-Gm-Message-State: AGi0PuYciNF1M5tiIc/Ebnu23X2/Ygt2m6fXhTnigeAXLBD+t5FwDUcU
-        aYg65yrHCdmj2bpSc12cMuEb5QfeSHFS88tTzpQh8HQCMBt5nX7cMDm2z+cxSb8Pce6/lVdJgwg
-        yJKbuXrF4tCUWRU9Q
-X-Received: by 2002:a05:600c:2f17:: with SMTP id r23mr6583317wmn.81.1587074325858;
-        Thu, 16 Apr 2020 14:58:45 -0700 (PDT)
-X-Google-Smtp-Source: APiQypJuACRXU/ZXNyriL39YVRQFFxgHb4YC1TCpFzp0oXAv3mKwmNTGsmU40akcPlLbxfOx28D8Wg==
-X-Received: by 2002:a05:600c:2f17:: with SMTP id r23mr6583297wmn.81.1587074325695;
-        Thu, 16 Apr 2020 14:58:45 -0700 (PDT)
-Received: from redhat.com (bzq-79-183-51-3.red.bezeqint.net. [79.183.51.3])
-        by smtp.gmail.com with ESMTPSA id f79sm5629022wme.32.2020.04.16.14.58.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Apr 2020 14:58:45 -0700 (PDT)
-Date:   Thu, 16 Apr 2020 17:58:42 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     KVM list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, ashutosh.dixit@intel.com,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Markus Elfring <elfring@users.sourceforge.net>,
-        eli@mellanox.com, eperezma@redhat.com,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>, hulkci@huawei.com,
-        "Cc: stable@vger.kernel.org, david@redhat.com, dverkamp@chromium.org,
-        hch@lst.de, jasowang@redhat.com, liang.z.li@intel.com, mst@redhat.com,
-        tiny.windzz@gmail.com," <jasowang@redhat.com>,
-        matej.genci@nutanix.com, Stephen Rothwell <sfr@canb.auug.org.au>,
-        yanaijie@huawei.com, YueHaibing <yuehaibing@huawei.com>
-Subject: Re: [GIT PULL] vhost: cleanups and fixes
-Message-ID: <20200416175644-mutt-send-email-mst@kernel.org>
-References: <20200414123606-mutt-send-email-mst@kernel.org>
- <CAHk-=wgVQcD=JJVmowEorHHQSVmSw+vG+Ddc4FATZoTp9mfUmw@mail.gmail.com>
- <20200416081330-mutt-send-email-mst@kernel.org>
- <CAHk-=wjduPCAE-sr_XLUdExupiL0bOU5GBfpMd32cqMC-VVxeg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wjduPCAE-sr_XLUdExupiL0bOU5GBfpMd32cqMC-VVxeg@mail.gmail.com>
+        h=x-gm-message-state:from:content-transfer-encoding:mime-version
+         :subject:message-id:date:cc:to;
+        bh=f7+Ji9iwyRin8bF/31Jh4PKZRcSeX5vOP4UH9FsYD94=;
+        b=MQFs8W9MEO3h9KjQW7updH5dDgslxz94hDC/RwuDh3+Oa9oOIIPRElhpP1xP5QCLMS
+         GGMnKjGQX7URKHMYerr+vgD4sYzVQyakWIGjx1Yh1HKKxAMidYeuzr6CIf3coPZmfXGI
+         sYQCIEPnEmc4Hc6rVHAX72KUnIUvnZGlOtAHh/uCol+/jLy/DpMdIudBfnU6Jd47JOep
+         Gj6JHH7cFn1TVttktk/8aXBRcEQHBG0nQ/kzXbBQ4Q1obNnshs5jSsQzG/V0Be0836xz
+         tYFAmB+4D11Rv0LLGa26lOgrvOauhRY5/SajvnoG93CvTJlsJeNlynoBGTxPr7NL1Foe
+         T9LA==
+X-Gm-Message-State: AGi0PubjE+rnYDaa66G84zICCKy/fp7ji3h1oHSm7L63FI4XeA98nhsX
+        4np4XBeAeToTmlZRp0t/OmA=
+X-Google-Smtp-Source: APiQypI6Z9JJ7fEBKA5VHeBcpql11ojdROgYG4Kv2o+ScM38w0eVljhuMqzAkhiwlfDC+sK2K24Glg==
+X-Received: by 2002:a17:90b:1993:: with SMTP id mv19mr507130pjb.88.1587074454950;
+        Thu, 16 Apr 2020 15:00:54 -0700 (PDT)
+Received: from [10.227.185.29] ([216.113.160.71])
+        by smtp.gmail.com with ESMTPSA id o9sm3500862pje.47.2020.04.16.15.00.53
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 16 Apr 2020 15:00:54 -0700 (PDT)
+From:   yunhong-cgl jiang <xintian1976@gmail.com>
+Content-Type: text/plain;
+        charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.14\))
+Subject: Long delay on estimation_timer causes packet latency
+Message-Id: <D25792C1-1B89-45DE-9F10-EC350DC04ADC@gmail.com>
+Date:   Thu, 16 Apr 2020 15:00:53 -0700
+Cc:     netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        Yunhong Jiang <yunhjiang@ebay.com>
+To:     horms@verge.net.au, ja@ssi.bg
+X-Mailer: Apple Mail (2.3445.104.14)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 16, 2020 at 10:01:51AM -0700, Linus Torvalds wrote:
-> On Thu, Apr 16, 2020 at 5:20 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > Well it's all just fallout from
-> 
-> What? No. Half of it seems to be the moving of "struct vring" around
-> to other headers and stuff.
-> 
-> And then that is done very confusingly too, using two different
-> structures both called "struct vring".
-> 
-> No way can I pull that kind of craziness as a "fix".
-> 
->                 Linus
+Hi, Simon & Julian,
+	We noticed that on our kubernetes node utilizing IPVS, the =
+estimation_timer() takes very long (>200sm as shown below). Such long =
+delay on timer softirq causes long packet latency. =20
 
-OK, I'll just disable vhost on that config for now - it was
-suggested previously. Thanks for the comment and sorry about geeting it
-wrong!
+          <idle>-0     [007] dNH. 25652945.670814: softirq_raise: vec=3D1 =
+[action=3DTIMER]
+.....
+          <idle>-0     [007] .Ns. 25652945.992273: softirq_exit: vec=3D1 =
+[action=3DTIMER]
 
+	The long latency is caused by the big service number (>50k) and =
+large CPU number (>80 CPUs),
 
--- 
-MST
+	We tried to move the timer function into a kernel thread so that =
+it will not block the system and seems solves our problem. Is this the =
+right direction? If yes, we will do more testing and send out the RFC =
+patch. If not, can you give us some suggestion?
 
+Thanks
+=E2=80=94yunhong=20=
