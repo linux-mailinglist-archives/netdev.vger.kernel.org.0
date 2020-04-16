@@ -2,96 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95DD91AB8B8
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 08:53:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 183821AB892
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 08:51:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436696AbgDPGxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 02:53:16 -0400
-Received: from smtprelay0116.hostedemail.com ([216.40.44.116]:37100 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2436919AbgDPGwq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 02:52:46 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 0A616100E7B43;
-        Thu, 16 Apr 2020 06:51:59 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1539:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:2911:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3868:3870:3871:3872:3874:4321:4425:5007:6742:6743:7903:10004:10400:10903:11232:11658:11914:12297:12346:12740:12760:12895:13069:13311:13357:13439:14096:14097:14659:14721:21080:21433:21627:21740:30054:30070:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: wheel34_84bb3b9f86d3c
-X-Filterd-Recvd-Size: 3344
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf07.hostedemail.com (Postfix) with ESMTPA;
-        Thu, 16 Apr 2020 06:51:52 +0000 (UTC)
-Message-ID: <d93f90bbcc99967ed5ba458ba99d7e73de12e3b2.camel@perches.com>
-Subject: Re: [PATCH 2/2] dt-bindings: Remove cases of 'allOf' containing a
- '$ref'
-From:   Joe Perches <joe@perches.com>
-To:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>, Vinod Koul <vkoul@kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Amit Kucheria <amit.kucheria@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-i2c@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org
-Date:   Wed, 15 Apr 2020 23:49:40 -0700
-In-Reply-To: <20200416005549.9683-2-robh@kernel.org>
-References: <20200416005549.9683-1-robh@kernel.org>
-         <20200416005549.9683-2-robh@kernel.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.34.1-2 
+        id S2436803AbgDPGvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 02:51:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50068 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2408592AbgDPGv2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 02:51:28 -0400
+Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F53BC061A0C
+        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 23:51:26 -0700 (PDT)
+Received: by mail-oi1-x242.google.com with SMTP id b7so13198162oic.2
+        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 23:51:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pLZEHboHrVUvSiMzAU5mB2mWJMs+hZ8IHC8retFcrgk=;
+        b=JHwymh36ehjFDNDrb8YuMyQ1MkWFaqFQka5rlpHvpOpNowJkEQBJjUJHh6tEn9ItJf
+         44VDASM1Nm9+28OJ0BhPDfmpGS7h0JIyE4ei3cCTN1kvXMsSEqE7hJ6ugWHQLwwsjP4k
+         SXfyV81W2EeHu0cLCfENisqsTzpcXqPmUQBbg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pLZEHboHrVUvSiMzAU5mB2mWJMs+hZ8IHC8retFcrgk=;
+        b=Pf35o9A7TppBdOTG5xC1DNFr4d13Qjn0Yy0k7+YlzoeRSIYsWJy1JhWJ1cIjslzrw7
+         JDpQI3E+yNDTTySyWdtT3sOMCWbZznrysAQWiz8deiikr8xbV76f0GZHEG5BrH+QqMO7
+         xZCD7ZfZJei55Y/tv8D6KfZ5hNWxfAxJ9VHF/Vk4Km9EfeGJ7/KlDDlqLJjN9a7tjp1A
+         MJr8EG075OAuHXMw16kw3E+eR2aVnwpEZSVFeKAbRD14jR/g2+oU7TkS8d6sw4MaH/3T
+         yA5c8/FswwAooeBwmQ09TRUOM+0g8yRKXKIJjhbmAT11jZrgh/PLBofvK66ENHtoAUYS
+         qATg==
+X-Gm-Message-State: AGi0PuYjqpMXf4p3gCU2ak4SzvPuX9RlHEowinq7ylsj5f5kbqkAwst1
+        DMBlEK8SWrw5fWk2/fZATnK436z43y7O9wBAhzA5iA==
+X-Google-Smtp-Source: APiQypLyNc+eIs12WumzaBN5ipx1548wfPjx2IqBdj2oxsFx0exWa6GdqAAPbqs2svHCYqkW3eZbfQLmptUx4Q5ixiM=
+X-Received: by 2002:aca:2113:: with SMTP id 19mr2018002oiz.128.1587019885629;
+ Wed, 15 Apr 2020 23:51:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <20200408202711.1198966-1-arnd@arndb.de> <20200408202711.1198966-6-arnd@arndb.de>
+ <20200414201739.GJ19819@pendragon.ideasonboard.com> <CAK8P3a0hd5bsezrJS3+GV2nRMui4P5yeD2Rk7wQpJsAZeOCOUg@mail.gmail.com>
+ <20200414205158.GM19819@pendragon.ideasonboard.com> <CAK8P3a1PZbwdvdH_Gi9UQVUz2+_a8QDxKuWLqPtjhK1stxzMBQ@mail.gmail.com>
+ <CAMuHMdUb=XXucGUbxt26tZ1xu9pdyVUB8RVsfB2SffURVVXwSg@mail.gmail.com>
+ <CAK8P3a1uasBFg9dwvPEcokrRhYE2qh6iwOMW1fDTY+LBZMrTjg@mail.gmail.com>
+ <CAK8P3a0CoPUTSJp6ddDnmabo59iE73pugGSYayoeB5N57az9_w@mail.gmail.com>
+ <20200415211220.GQ4758@pendragon.ideasonboard.com> <CAK8P3a1rDZO4cuL6VAXgu9sOiedcHqOSL7ELhpvULz+YYRaGbA@mail.gmail.com>
+In-Reply-To: <CAK8P3a1rDZO4cuL6VAXgu9sOiedcHqOSL7ELhpvULz+YYRaGbA@mail.gmail.com>
+From:   Daniel Vetter <daniel@ffwll.ch>
+Date:   Thu, 16 Apr 2020 08:51:14 +0200
+Message-ID: <CAKMK7uEoZ1jC8c25tPVX20kcdC1=+TpUUNyf+-c=sg5iK2cTZA@mail.gmail.com>
+Subject: Re: [RFC 5/6] drm/rcar-du: fix selection of CMM driver
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Andrzej Hajda <a.hajda@samsung.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        David Airlie <airlied@linux.ie>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-04-15 at 19:55 -0500, Rob Herring wrote:
-> json-schema versions draft7 and earlier have a weird behavior in that
-> any keywords combined with a '$ref' are ignored (silently). The correct
-> form was to put a '$ref' under an 'allOf'. This behavior is now changed
-> in the 2019-09 json-schema spec and '$ref' can be mixed with other
-> keywords. The json-schema library doesn't yet support this, but the
-> tooling now does a fixup for this and either way works.
-> 
-> This has been a constant source of review comments, so let's change this
-> treewide so everyone copies the simpler syntax.
+On Wed, Apr 15, 2020 at 11:22 PM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> On Wed, Apr 15, 2020 at 11:12 PM Laurent Pinchart
+> <laurent.pinchart@ideasonboard.com> wrote:
+> > On Wed, Apr 15, 2020 at 09:07:14PM +0200, Arnd Bergmann wrote:
+> > > On Wed, Apr 15, 2020 at 5:18 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> > > > On Wed, Apr 15, 2020 at 4:13 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > > > > On Wed, Apr 15, 2020 at 3:47 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> > > > > > On Tue, Apr 14, 2020 at 10:52 PM Laurent Pinchart <laurent.pinchart@ideasonboard.com> wrote:
+> > > > > > > Doesn't "imply" mean it gets selected by default but can be manually
+> > > > > > > disabled ?
+> > > > > >
+> > > > > > That may be what it means now (I still don't understand how it's defined
+> > > > > > as of v5.7-rc1), but traditionally it was more like a 'select if all
+> > > > > > dependencies are met'.
+> > > > >
+> > > > > That's still what it is supposed to mean right now ;-)
+> > > > > Except that now it should correctly handle the modular case, too.
+> > > >
+> > > > Then there is a bug. If I run 'make menuconfig' now on a mainline kernel
+> > > > and enable CONFIG_DRM_RCAR_DU, I can set
+> > > > DRM_RCAR_CMM and DRM_RCAR_LVDS to 'y', 'n' or 'm' regardless
+> > > > of whether CONFIG_DRM_RCAR_DU is 'm' or 'y'. The 'implies'
+> > > > statement seems to be ignored entirely, except as reverse 'default'
+> > > > setting.
+> > >
+> > > Here is another version that should do what we want and is only
+> > > half-ugly. I can send that as a proper patch if it passes my testing
+> > > and nobody hates it too much.
+> >
+> > This may be a stupid question, but doesn't this really call for fixing
+> > Kconfig ? This seems to be such a common pattern that requiring
+> > constructs similar to the ones below will be a never-ending chase of
+> > offenders.
+>
+> Maybe, I suppose the hardest part here would be to come up with
+> an appropriate name for the keyword ;-)
+>
+> Any suggestions?
+>
+> This specific issue is fairly rare though, in most cases the dependencies
+> are in the right order so a Kconfig symbol 'depends on' a second one
+> when the corresponding loadable module uses symbols from that second
+> module. The problem here is that the two are mixed up.
+>
+> The much more common problem is the one where one needs to
+> wrong
+>
+> config FOO
+>        depends on BAR || !BAR
+>
+> To ensure the dependency is either met or BAR is disabled, but
+> not FOO=y with BAR=m. If you have any suggestions for a keyword
+> for that thing, we can clean up hundreds of such instances.
 
-This is a large change.
+Some ideas:
 
-Was this done manually or by some script?
-If it was done manually, how likely is it there are defects
-in the conversion?
+config FOO
+    can use  BAR
+    maybe BAR
+    optional BAR
 
-
+We should probably double-check that this is only ever used for when
+both FOO and BAR are tri-state, since without that it doesn't make
+much sense.
+-Daniel
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
++41 (0) 79 365 57 48 - http://blog.ffwll.ch
