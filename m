@@ -2,219 +2,277 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16D961AB9BE
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 09:22:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DA021AB9E8
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 09:28:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439243AbgDPHVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 03:21:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54864 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2439227AbgDPHVm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 03:21:42 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF903C08C5F2
-        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 00:21:33 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id v8so1788919wma.0
-        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 00:21:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=PfcEIjHVOwJJoI3IG1yq+hLuJEPuCeMcpBtriOzJSVE=;
-        b=fWro629AKCHe7c1PY8qWNnc/MO1FUAtCQOwruVmdsj4Kyvr1SDGr9Xgc/VGuT4Ao08
-         aszgwv1hJNkmDxBtLtWK7K2S9mv6z5/c8TCmg4n+kwj4eAnnvC2Dt4pvdKuMnlfnbcGf
-         puxMyauwUmvCn/LNyQLnyjFrS1Kzkios1/MsF6m/I4GPnRVdRC2+tstnjmmO650ZwQzj
-         4aWRTSNgkZKvvDPkpZ/B7oqv4O1vvl2M0bRRRPUNQCjnZDrbzcP/JjjuClCaNvbDFuVJ
-         cZP/dedvaVFsRZKmIeGsiWSNvkLi9aAZR4c6U1deMU+GHzWLDixE4IBaBhe7BLuqYxXC
-         CRaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=PfcEIjHVOwJJoI3IG1yq+hLuJEPuCeMcpBtriOzJSVE=;
-        b=LvvssJHi6wk78Z9Nd4LvHedXLHqrTf049CeaXCTrdmj3S2N1EMf3q0G/x3J8POSdcK
-         rBgQRBNf9Uw2+TBqtc9Ej7F7vaD3PiwMJLINocbJlKqwxv6lpmxM37/WMz3xYpFSYKQS
-         NXM0YNAQtUrbiaC9n8KozYDT0Sp7/p/cUo/bc/humOs8YFY3rj5HBbkI5yHUaNY7k4vE
-         HvyJoWCxUjx+EfRkUsz6ANuPibvg7VgARwLG58u7NwfG2Hwxf+Q2rfjGHWArQOC6+joi
-         o7nI6anziHzFOEZHuh6yfFaVRBlOO4Ii48EtCXuU0L33sY2QimlBrPsW1ei4LIpHjO1Z
-         LoCg==
-X-Gm-Message-State: AGi0PuZUsu/X5EBGbzzMEsbTcvkyRSCDiefqgSTk/1/Ses6VpwRbZlpL
-        welQy+nJdvQ9Dh4NXpTggMCVpA==
-X-Google-Smtp-Source: APiQypKxoroogYo0WPMcKERsdRMrzAoaU5nNn92qAMbIpRzZIzICMY0kveTYaemzAUSe6fR6V9LLBA==
-X-Received: by 2002:a1c:990d:: with SMTP id b13mr3217540wme.179.1587021691888;
-        Thu, 16 Apr 2020 00:21:31 -0700 (PDT)
-Received: from dell ([95.149.164.124])
-        by smtp.gmail.com with ESMTPSA id h188sm2608116wme.8.2020.04.16.00.21.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Apr 2020 00:21:31 -0700 (PDT)
-Date:   Thu, 16 Apr 2020 08:22:31 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>, Vinod Koul <vkoul@kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Amit Kucheria <amit.kucheria@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-i2c@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org
-Subject: Re: [PATCH 2/2] dt-bindings: Remove cases of 'allOf' containing a
- '$ref'
-Message-ID: <20200416072231.GT2167633@dell>
-References: <20200416005549.9683-1-robh@kernel.org>
- <20200416005549.9683-2-robh@kernel.org>
+        id S2439280AbgDPH2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 03:28:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57574 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2439264AbgDPH2F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Apr 2020 03:28:05 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EF201206D5;
+        Thu, 16 Apr 2020 07:28:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587022084;
+        bh=w+nPkuKj2fNBoyAqj0+LVj5YRJnCBFYLxnu4z9r5o3Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=p/+FaYsXXVpQvawW/bB5pBeFg94y8wvi68MZpusiUD9zf/VTvB/hqDWPT24gpNdlC
+         XDOTiQSFGQKDR4FJnfTeqH9jU6xA5AfbuZM10qjcO4GVgrJFZrTPoxnBiaVw8VyHKK
+         AUbK3qm9zutGjGBq1rIFNYoERjXWo70jPkwEChWo=
+Date:   Thu, 16 Apr 2020 10:28:01 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Robert Marko <robert.marko@sartura.hr>
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        mark.rutland@arm.com, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Christian Lamparter <chunkeey@gmail.com>,
+        Luka Perkov <luka.perkov@sartura.hr>
+Subject: Re: [PATCH v3 1/3] net: phy: mdio: add IPQ40xx MDIO driver
+Message-ID: <20200416072801.GG1309273@unreal>
+References: <20200415150244.2737206-1-robert.marko@sartura.hr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200416005549.9683-2-robh@kernel.org>
+In-Reply-To: <20200415150244.2737206-1-robert.marko@sartura.hr>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Apr 2020, Rob Herring wrote:
-
-> json-schema versions draft7 and earlier have a weird behavior in that
-> any keywords combined with a '$ref' are ignored (silently). The correct
-> form was to put a '$ref' under an 'allOf'. This behavior is now changed
-> in the 2019-09 json-schema spec and '$ref' can be mixed with other
-> keywords. The json-schema library doesn't yet support this, but the
-> tooling now does a fixup for this and either way works.
-> 
-> This has been a constant source of review comments, so let's change this
-> treewide so everyone copies the simpler syntax.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
+On Wed, Apr 15, 2020 at 05:02:43PM +0200, Robert Marko wrote:
+> This patch adds the driver for the MDIO interface
+> inside of Qualcomm IPQ40xx series SoC-s.
+>
+> Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+> Cc: Luka Perkov <luka.perkov@sartura.hr>
 > ---
->  .../devicetree/bindings/arm/cpus.yaml         |  81 +++---
->  .../devicetree/bindings/arm/l2c2x0.yaml       |  87 +++---
->  .../devicetree/bindings/arm/psci.yaml         |  15 +-
->  .../bindings/arm/samsung/exynos-chipid.yaml   |   5 +-
->  .../bus/allwinner,sun50i-a64-de2.yaml         |   5 +-
->  .../bindings/clock/fixed-factor-clock.yaml    |   5 +-
->  .../bindings/connector/usb-connector.yaml     |  28 +-
->  .../bindings/crypto/st,stm32-hash.yaml        |   9 +-
->  .../allwinner,sun4i-a10-display-engine.yaml   |   7 +-
->  .../display/allwinner,sun4i-a10-tcon.yaml     |   5 +-
->  .../bindings/display/panel/panel-common.yaml  |   5 +-
->  .../devicetree/bindings/dma/dma-common.yaml   |   3 +-
->  .../devicetree/bindings/dma/ti/k3-udma.yaml   |  18 +-
->  .../devicetree/bindings/eeprom/at24.yaml      |  11 +-
->  .../devicetree/bindings/example-schema.yaml   |  17 +-
->  .../bindings/hwmon/adi,ltc2947.yaml           |  32 +--
->  .../devicetree/bindings/hwmon/ti,tmp513.yaml  |  21 +-
->  .../devicetree/bindings/i2c/st,stm32-i2c.yaml |   9 +-
->  .../bindings/iio/adc/adi,ad7124.yaml          |   5 +-
->  .../bindings/iio/adc/lltc,ltc2496.yaml        |   3 +-
->  .../bindings/iio/adc/microchip,mcp3911.yaml   |   7 +-
->  .../bindings/iio/adc/st,stm32-dfsdm-adc.yaml  |  31 +-
->  .../bindings/iio/light/tsl2772.yaml           |  13 +-
->  .../bindings/iio/temperature/adi,ltc2983.yaml |  56 ++--
->  .../input/allwinner,sun4i-a10-lradc-keys.yaml |   5 +-
->  .../devicetree/bindings/input/input.yaml      |   9 +-
->  .../interrupt-controller/arm,gic-v3.yaml      |  39 ++-
->  .../devicetree/bindings/iommu/arm,smmu.yaml   |   3 +-
->  .../devicetree/bindings/leds/common.yaml      |  13 +-
->  .../devicetree/bindings/leds/leds-gpio.yaml   |   3 +-
->  .../bindings/leds/rohm,bd71828-leds.yaml      |  10 +-
->  .../bindings/mailbox/st,stm32-ipcc.yaml       |   5 +-
->  .../bindings/media/amlogic,gx-vdec.yaml       |   6 +-
->  .../media/amlogic,meson-gx-ao-cec.yaml        |   3 +-
->  .../devicetree/bindings/media/rc.yaml         | 265 +++++++++---------
->  .../bindings/media/renesas,vin.yaml           |   7 +-
->  .../memory-controllers/exynos-srom.yaml       |  14 +-
->  .../nvidia,tegra124-emc.yaml                  |   9 +-
->  .../nvidia,tegra124-mc.yaml                   |   3 +-
->  .../nvidia,tegra30-emc.yaml                   |   9 +-
->  .../memory-controllers/nvidia,tegra30-mc.yaml |   3 +-
+> Changes from v2 to v3:
+> * Rename registers
+> * Remove unnecessary variable initialisations
+> * Switch to readl_poll_timeout() instead of custom solution
+> * Drop unused header
+>
+> Changes from v1 to v2:
+> * Remove magic default value
+> * Remove lockdep_assert_held
+> * Add C45 check
+> * Simplify the driver
+> * Drop device and mii_bus structs from private struct
+> * Use devm_mdiobus_alloc_size()
+>
+>  drivers/net/phy/Kconfig        |   7 ++
+>  drivers/net/phy/Makefile       |   1 +
+>  drivers/net/phy/mdio-ipq40xx.c | 160 +++++++++++++++++++++++++++++++++
+>  3 files changed, 168 insertions(+)
+>  create mode 100644 drivers/net/phy/mdio-ipq40xx.c
+>
+> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+> index 3fa33d27eeba..23bb5db033e3 100644
+> --- a/drivers/net/phy/Kconfig
+> +++ b/drivers/net/phy/Kconfig
+> @@ -157,6 +157,13 @@ config MDIO_I2C
+>
+>  	  This is library mode.
+>
+> +config MDIO_IPQ40XX
+> +	tristate "Qualcomm IPQ40xx MDIO interface"
+> +	depends on HAS_IOMEM && OF_MDIO
+> +	help
+> +	  This driver supports the MDIO interface found in Qualcomm
+> +	  IPQ40xx series Soc-s.
+> +
+>  config MDIO_IPQ8064
+>  	tristate "Qualcomm IPQ8064 MDIO interface support"
+>  	depends on HAS_IOMEM && OF_MDIO
+> diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+> index 2f5c7093a65b..36aafc6128c4 100644
+> --- a/drivers/net/phy/Makefile
+> +++ b/drivers/net/phy/Makefile
+> @@ -37,6 +37,7 @@ obj-$(CONFIG_MDIO_CAVIUM)	+= mdio-cavium.o
+>  obj-$(CONFIG_MDIO_GPIO)		+= mdio-gpio.o
+>  obj-$(CONFIG_MDIO_HISI_FEMAC)	+= mdio-hisi-femac.o
+>  obj-$(CONFIG_MDIO_I2C)		+= mdio-i2c.o
+> +obj-$(CONFIG_MDIO_IPQ40XX)	+= mdio-ipq40xx.o
+>  obj-$(CONFIG_MDIO_IPQ8064)	+= mdio-ipq8064.o
+>  obj-$(CONFIG_MDIO_MOXART)	+= mdio-moxart.o
+>  obj-$(CONFIG_MDIO_MSCC_MIIM)	+= mdio-mscc-miim.o
+> diff --git a/drivers/net/phy/mdio-ipq40xx.c b/drivers/net/phy/mdio-ipq40xx.c
+> new file mode 100644
+> index 000000000000..acf1230341bd
+> --- /dev/null
+> +++ b/drivers/net/phy/mdio-ipq40xx.c
+> @@ -0,0 +1,160 @@
+> +// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
+> +/* Copyright (c) 2015, The Linux Foundation. All rights reserved. */
+> +/* Copyright (c) 2020 Sartura Ltd. */
+> +
+> +#include <linux/delay.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/io.h>
+> +#include <linux/iopoll.h>
+> +#include <linux/of_address.h>
+> +#include <linux/of_mdio.h>
+> +#include <linux/phy.h>
+> +#include <linux/platform_device.h>
+> +
+> +#define MDIO_ADDR_REG				0x44
+> +#define MDIO_DATA_WRITE_REG			0x48
+> +#define MDIO_DATA_READ_REG			0x4c
+> +#define MDIO_CMD_REG				0x50
+> +#define MDIO_CMD_ACCESS_BUSY		BIT(16)
+> +#define MDIO_CMD_ACCESS_START		BIT(8)
+> +#define MDIO_CMD_ACCESS_CODE_READ	0
+> +#define MDIO_CMD_ACCESS_CODE_WRITE	1
+> +
+> +#define IPQ40XX_MDIO_TIMEOUT	10000
+> +#define IPQ40XX_MDIO_SLEEP		10
+> +
+> +struct ipq40xx_mdio_data {
+> +	void __iomem	*membase;
+> +};
+> +
+> +static int ipq40xx_mdio_wait_busy(struct mii_bus *bus)
+> +{
+> +	struct ipq40xx_mdio_data *priv = bus->priv;
+> +	unsigned int busy;
+> +
+> +	return readl_poll_timeout(priv->membase + MDIO_CMD_REG, busy,
+> +				  (busy & MDIO_CMD_ACCESS_BUSY) == 0,
+> +				  IPQ40XX_MDIO_SLEEP, IPQ40XX_MDIO_TIMEOUT);
+> +}
+> +
+> +static int ipq40xx_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
+> +{
+> +	struct ipq40xx_mdio_data *priv = bus->priv;
+> +	unsigned int cmd;
+> +
+> +	/* Reject clause 45 */
+> +	if (regnum & MII_ADDR_C45)
+> +		return -EOPNOTSUPP;
+> +
+> +	if (ipq40xx_mdio_wait_busy(bus))
+> +		return -ETIMEDOUT;
+> +
+> +	/* issue the phy address and reg */
+> +	writel((mii_id << 8) | regnum, priv->membase + MDIO_ADDR_REG);
+> +
+> +	cmd = MDIO_CMD_ACCESS_START | MDIO_CMD_ACCESS_CODE_READ;
+> +
+> +	/* issue read command */
+> +	writel(cmd, priv->membase + MDIO_CMD_REG);
+> +
+> +	/* Wait read complete */
+> +	if (ipq40xx_mdio_wait_busy(bus))
+> +		return -ETIMEDOUT;
+> +
+> +	/* Read and return data */
+> +	return readl(priv->membase + MDIO_DATA_READ_REG);
+> +}
+> +
+> +static int ipq40xx_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
+> +							 u16 value)
+> +{
+> +	struct ipq40xx_mdio_data *priv = bus->priv;
+> +	unsigned int cmd;
+> +
+> +	/* Reject clause 45 */
+> +	if (regnum & MII_ADDR_C45)
+> +		return -EOPNOTSUPP;
+> +
+> +	if (ipq40xx_mdio_wait_busy(bus))
+> +		return -ETIMEDOUT;
+> +
+> +	/* issue the phy address and reg */
+> +	writel((mii_id << 8) | regnum, priv->membase + MDIO_ADDR_REG);
+> +
+> +	/* issue write data */
+> +	writel(value, priv->membase + MDIO_DATA_WRITE_REG);
+> +
+> +	cmd = MDIO_CMD_ACCESS_START | MDIO_CMD_ACCESS_CODE_WRITE;
+> +	/* issue write command */
+> +	writel(cmd, priv->membase + MDIO_CMD_REG);
+> +
+> +	/* Wait write complete */
+> +	if (ipq40xx_mdio_wait_busy(bus))
+> +		return -ETIMEDOUT;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ipq40xx_mdio_probe(struct platform_device *pdev)
+> +{
+> +	struct ipq40xx_mdio_data *priv;
+> +	struct mii_bus *bus;
+> +	int ret;
+> +
+> +	bus = devm_mdiobus_alloc_size(&pdev->dev, sizeof(*priv));
+> +	if (!bus)
+> +		return -ENOMEM;
+> +
+> +	priv = bus->priv;
+> +
+> +	priv->membase = devm_platform_ioremap_resource(pdev, 0);
+> +	if (IS_ERR(priv->membase))
+> +		return PTR_ERR(priv->membase);
+> +
+> +	bus->name = "ipq40xx_mdio";
+> +	bus->read = ipq40xx_mdio_read;
+> +	bus->write = ipq40xx_mdio_write;
+> +	bus->parent = &pdev->dev;
+> +	snprintf(bus->id, MII_BUS_ID_SIZE, "%s%d", pdev->name, pdev->id);
+> +
+> +	ret = of_mdiobus_register(bus, pdev->dev.of_node);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Cannot register MDIO bus!\n");
+> +		return ret;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, bus);
+> +
+> +	return 0;
+> +}
+> +
+> +static int ipq40xx_mdio_remove(struct platform_device *pdev)
+> +{
+> +	struct mii_bus *bus = platform_get_drvdata(pdev);
+> +
+> +	mdiobus_unregister(bus);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id ipq40xx_mdio_dt_ids[] = {
+> +	{ .compatible = "qcom,ipq40xx-mdio" },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, ipq40xx_mdio_dt_ids);
+> +
+> +static struct platform_driver ipq40xx_mdio_driver = {
+> +	.probe = ipq40xx_mdio_probe,
+> +	.remove = ipq40xx_mdio_remove,
+> +	.driver = {
+> +		.name = "ipq40xx-mdio",
+> +		.of_match_table = ipq40xx_mdio_dt_ids,
+> +	},
+> +};
+> +
+> +module_platform_driver(ipq40xx_mdio_driver);
+> +
+> +MODULE_DESCRIPTION("IPQ40XX MDIO interface driver");
+> +MODULE_AUTHOR("Qualcomm Atheros");
 
->  .../bindings/mfd/allwinner,sun4i-a10-ts.yaml  |  20 +-
->  .../bindings/mfd/st,stm32-timers.yaml         |  33 ++-
->  .../devicetree/bindings/mfd/st,stpmic1.yaml   |   9 +-
->  .../devicetree/bindings/mfd/syscon.yaml       |   5 +-
+Strictly saying, but author can't be company.
 
-Acked-by: Lee Jones <lee.jones@linaro.org>
-
->  .../devicetree/bindings/mmc/aspeed,sdhci.yaml |   4 +-
->  .../devicetree/bindings/mmc/cdns,sdhci.yaml   |  77 +++--
->  .../bindings/mmc/mmc-controller.yaml          |  37 ++-
->  .../bindings/mmc/rockchip-dw-mshc.yaml        |   6 +-
->  .../bindings/mmc/synopsys-dw-mshc-common.yaml |  14 +-
->  .../mtd/allwinner,sun4i-a10-nand.yaml         |  13 +-
->  .../bindings/mtd/nand-controller.yaml         |  27 +-
->  .../bindings/net/can/bosch,m_can.yaml         |  59 ++--
->  .../bindings/net/ethernet-controller.yaml     |  34 +--
->  .../devicetree/bindings/net/qca,ar803x.yaml   |  17 +-
->  .../devicetree/bindings/net/snps,dwmac.yaml   |  22 +-
->  .../bindings/net/ti,cpsw-switch.yaml          |   3 +-
->  .../bindings/net/ti,davinci-mdio.yaml         |   7 +-
->  .../bindings/pci/intel-gw-pcie.yaml           |   7 +-
->  .../pinctrl/allwinner,sun4i-a10-pinctrl.yaml  |  12 +-
->  .../pinctrl/aspeed,ast2400-pinctrl.yaml       |  37 ++-
->  .../pinctrl/aspeed,ast2500-pinctrl.yaml       |  45 ++-
->  .../pinctrl/aspeed,ast2600-pinctrl.yaml       | 108 ++++---
->  .../bindings/pinctrl/fsl,imx8mp-pinctrl.yaml  |  31 +-
->  .../bindings/pinctrl/intel,lgm-io.yaml        |   4 +-
->  .../bindings/pinctrl/pinmux-node.yaml         |   3 +-
->  .../bindings/pinctrl/st,stm32-pinctrl.yaml    |  56 ++--
->  .../bindings/power/amlogic,meson-ee-pwrc.yaml |   3 +-
->  .../devicetree/bindings/pwm/pwm-samsung.yaml  |  11 +-
->  .../bindings/regulator/gpio-regulator.yaml    |  35 ++-
->  .../bindings/regulator/mps,mpq7920.yaml       |  31 +-
->  .../bindings/regulator/regulator.yaml         |   5 +-
->  .../regulator/rohm,bd71828-regulator.yaml     |  34 +--
->  .../bindings/regulator/st,stm32-booster.yaml  |   3 +-
->  .../regulator/st,stm32mp1-pwr-reg.yaml        |   3 +-
->  .../bindings/remoteproc/st,stm32-rproc.yaml   |   9 +-
->  .../bindings/reset/intel,rcu-gw.yaml          |   3 +-
->  .../devicetree/bindings/riscv/cpus.yaml       |  20 +-
->  .../devicetree/bindings/rtc/st,stm32-rtc.yaml |   9 +-
->  .../devicetree/bindings/serial/pl011.yaml     |  10 +-
->  .../devicetree/bindings/serial/rs485.yaml     |  26 +-
->  .../bindings/serial/samsung_uart.yaml         |   5 +-
->  .../bindings/sound/adi,adau7118.yaml          |  20 +-
->  .../sound/allwinner,sun4i-a10-codec.yaml      |  41 ++-
->  .../bindings/sound/qcom,wcd934x.yaml          |   3 +-
->  .../bindings/spi/renesas,sh-msiof.yaml        |  42 ++-
->  .../bindings/spi/spi-controller.yaml          |  14 +-
->  .../devicetree/bindings/spi/spi-pl022.yaml    |  55 ++--
->  .../devicetree/bindings/spi/spi-sifive.yaml   |  14 +-
->  .../bindings/thermal/qcom-tsens.yaml          |   7 +-
->  .../bindings/timer/arm,arch_timer_mmio.yaml   |   7 +-
->  91 files changed, 881 insertions(+), 1103 deletions(-)
-
--- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+> +MODULE_LICENSE("Dual BSD/GPL");
+> --
+> 2.26.0
+>
