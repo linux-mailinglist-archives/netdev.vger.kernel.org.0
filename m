@@ -2,82 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71DEF1ACFF1
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 20:49:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E7C51ACFFF
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 20:57:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732147AbgDPSt2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 14:49:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41432 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727862AbgDPSt0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Apr 2020 14:49:26 -0400
-Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EF5372087E;
-        Thu, 16 Apr 2020 18:49:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587062966;
-        bh=vlrBxtC81mYtlfOvLHcdhi5JQu5vHuYNv8+xnB3cZbg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RCioU/BvryGGP3PiZg9a5tIRMhGYnd2W6P7D+MFRtf1NQ8Fe3Os2NmZgBa+4un6a2
-         jVNPRXbpNoRDXZXf/vm21HdpShgFohlgLLPN1kqDxTf0OcH+iTMKGigNWpOJtcSmzB
-         Z0CvUgvIvhN+nN4gHFpLRxVaGKgO/uDqHozWXtak=
-Date:   Thu, 16 Apr 2020 14:49:24 -0400
-From:   Sasha Levin <sashal@kernel.org>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     Or Gerlitz <gerlitz.or@gmail.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stable <stable@vger.kernel.org>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for
- representors
-Message-ID: <20200416184924.GN1068@sasha-vm>
-References: <20200412105935.49dacbf7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200414015627.GA1068@sasha-vm>
- <CAJ3xEMh=PGVSddBWOX7U6uAuazJLFkCpWQNxhg7dDRgnSdQ=xA@mail.gmail.com>
- <20200414110911.GA341846@kroah.com>
- <CAJ3xEMhnXZB-HU7aL3m9A1N_GPxgOC3U4skF_qWL8z3wnvSKPw@mail.gmail.com>
- <a89a592a-5a11-5e56-a086-52b1694e00db@solarflare.com>
- <20200414205755.GF1068@sasha-vm>
- <41174e71-00e1-aebf-b67d-1b24731e4ab3@solarflare.com>
- <20200416000009.GL1068@sasha-vm>
- <779d89c8-1e49-fbb6-8b4f-824767d70cc2@solarflare.com>
+        id S1728417AbgDPS5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 14:57:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50818 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726378AbgDPS5k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 14:57:40 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA18AC061A0C
+        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 11:57:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=aC9p43kblM+ukNSnO6nV0AFKOaM5VD/z8aphvnIQ3IY=; b=z1yu/cqkBOtLXyVUEbMXj4edo
+        1m0kAkflxFswRRXozh4JmMVpIL5lbyYfgzKz981AVWaU87cPd4djkTXbXoPmwVe6KwFVuaFUxM6/O
+        QdlmZfjNY5gWF05yRJHjHBFgW0e3ietK+dhRNmoBurDb2pbN7bxvSHxxkk6ckFDvwIG5rJgPrk2a4
+        EJ1mjNJHhXHRU+PJiUDVYtkeHGX4At+jEEfUHzItA59UjDQCaSMw2AFKs5Ah8/FIAF6lAt6IqLwhn
+        KArD5zvIk/3qmJ4BUT+FV1VYIPlVBw8PcfIbalGRrEZhMVYMn03BOlBUreY67MrdXoIjCPSFGCRMb
+        2g3U2NJMw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:50964)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jP9hc-0005uS-GO; Thu, 16 Apr 2020 19:57:32 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jP9hZ-00027K-NP; Thu, 16 Apr 2020 19:57:29 +0100
+Date:   Thu, 16 Apr 2020 19:57:29 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Baruch Siach <baruch@tkos.co.il>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>
+Subject: Re: [PATCH] net: phy: marvell10g: disable temperature sensor on 2110
+Message-ID: <20200416185729.GN25745@shell.armlinux.org.uk>
+References: <1eca8c654679764a64252072509ddc1bf59938a0.1587047556.git.baruch@tkos.co.il>
+ <20200416143858.GO657811@lunn.ch>
+ <87v9lzcwqz.fsf@tarshish>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <779d89c8-1e49-fbb6-8b4f-824767d70cc2@solarflare.com>
+In-Reply-To: <87v9lzcwqz.fsf@tarshish>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 16, 2020 at 05:06:46PM +0100, Edward Cree wrote:
->On 16/04/2020 01:00, Sasha Levin wrote:
->> I'd maybe point out that the selection process is based on a neural
->> network which knows about the existence of a Fixes tag in a commit.
->>
->> It does exactly what you're describing, but also taking a bunch more
->> factors into it's desicion process ("panic"? "oops"? "overflow"? etc).
->Yeah, that's why I found it odd that you were responding in a way that
-> _looked like_ classic confusion of P(A|B) and P(B|A).  I just wanted
-> to make sure we had that common ground before launching into a long
-> Bayesian explanation.
+On Thu, Apr 16, 2020 at 05:48:20PM +0300, Baruch Siach wrote:
+> Hi Andrew,
+> 
+> On Thu, Apr 16 2020, Andrew Lunn wrote:
+> > On Thu, Apr 16, 2020 at 05:32:36PM +0300, Baruch Siach wrote:
+> >> The 88E2110 temperature sensor is in a different location than 88X3310,
+> >> and it has no enable/disable option.
+> >
+> > Hi Buruch
+> >
+> > How easy would it be to support the new location? These things can get
+> > warm, specially if there is no heat sink attached. So it would be nice
+> > to support it, if possible.
+> 
+> Adding support should not be too hard. I might find some time to work on
+> this in the next few days.
+> 
+> I think this patch should go to -stable, so it is useful on its
+> own. Support for 2110 hwmon sensor is net-next material.
 
-Just a question while I process your explanation (thanks for doing it!):
-wouldn't this be done by the neural network?
-
-It learns what a stable worthy commit is (and what isn't), and applies
-weights based on these findings, right? So if it learns that most
-non-stable commits don't have a fixes tag, it's likely to use that and
-"require" other inputs to have enough weight to compensate over a
-missing fixes tag so that it'll pass the threshold, no?
+Irrespective of that, we really need some way to test changes to this
+driver on the 88E2110 PHYs.  Right now, there's a high chance of
+breakage because afaik no one tests the patches I send to netdev on
+this, so the only time we find out that something breaks is after the
+fact, and your patch shows that it takes many kernel revisions before
+breakage is spotted.
 
 -- 
-Thanks,
-Sasha
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
