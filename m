@@ -2,81 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27F2F1AD218
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 23:45:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B58E81AD23D
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 23:53:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728374AbgDPVpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 17:45:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58818 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727829AbgDPVpi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Apr 2020 17:45:38 -0400
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 65E43221F4;
-        Thu, 16 Apr 2020 21:45:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587073537;
-        bh=P7wZo1p241YIkVWUglCQI/DNZgi7LsWHvliQUsJOCiQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ueN6cjSBZw8hrgqxJA3wRCKDOs/jOxFe0+8GbHuFbv9TPj9TAbHnl04EV95ffev2F
-         TDAJ0ZPP/4TIqJSXpYg8+EuoyU+qQYetzBieYTx5VVcZB8WNZKjIrBSc0eWCgiJ4I5
-         dGn8ZdTS6nWrwZn4maz1IAAWG9xzD4pcwBSLifCE=
-Received: by mail-lf1-f42.google.com with SMTP id w145so61974lff.3;
-        Thu, 16 Apr 2020 14:45:37 -0700 (PDT)
-X-Gm-Message-State: AGi0PuZYMdiuyl/yRXwrY3aawl1Vrx0L5adPad/gHjofQxmRNV75s3sP
-        zIORpsg8adIv9EKKk+/BYW8u1DAQ+KCJ0qopLws=
-X-Google-Smtp-Source: APiQypId2J5XS004aACbFEMKESBsNYQOqsdEX8+LBnY6ZexYneL1r1mJjQCZGJTzGg481xeGI2tDi9ruAXTg+pNKQN8=
-X-Received: by 2002:a05:6512:1c5:: with SMTP id f5mr7110378lfp.138.1587073535576;
- Thu, 16 Apr 2020 14:45:35 -0700 (PDT)
+        id S1727943AbgDPVxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 17:53:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49986 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727938AbgDPVxi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 17:53:38 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1EBC061A41
+        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 14:53:36 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id a2so11110ejx.5
+        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 14:53:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eUNGgddkQnrL1o2hsZswaMALGVl9JsvHDg1XmEFxRXs=;
+        b=H/3328u8uHV5B3ZeA1mdyZ9xPFs8kyLs8IUIWPozDW9OfdnPF3NpugbioymI6/8jbX
+         tPmBnafFrVmmeM5qCkJe6iYYWMQGGNCaCIBTu9iKoTjKEnoqIk+PcKTpHZgE+/FY0MuQ
+         PeDR0uxOgSOnRc2hQRaU3VDAQAdfVv5922uyfk2kB4XocRvJL9WrovJY8zVDxj8AifvK
+         dQjxlq17MhIeFeAwrQ2ALcslyU4J+63Hv+v7D9gJECfbybcc7t3dDiczFn2juNoagtw4
+         M58yJrok07SL36Kqx67wdtwLyNUDDujZWYGVj6Cp7ofvKM+0LD9BpoiJx/Nn0LZhuM1V
+         WUOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eUNGgddkQnrL1o2hsZswaMALGVl9JsvHDg1XmEFxRXs=;
+        b=g4lj9ZLygpdiLTskG15IJ6ig1JVW+bLTV9N7PdY5vwTueCOSYlnmjiuLeXC3ZngjIE
+         PkHgCpv2/EG6J5q81TRCHDqTIMbzUITgYuk4SEzPXeMO9GcV7sAgGSglqoArP8wEeATE
+         8uP3klq29OCUu73q7e3IvTwRol5Esf0GF92z7KL8cWzPGcRJtvtwXZjNhi+uVdRiPSdR
+         yYNP1f48YIatI0cMr1xXGL74hP/DsvV0Zh4QYhVriyO3yBPWdhkPVZ8ZQ8XRqv+zeJU/
+         xV69rmAKUPsAoK9pWcT+olJ+gyEKkNOwJWH1Sv1rb68p8UdHAWbQb8/UoC5K4hrW3Py3
+         g04A==
+X-Gm-Message-State: AGi0PubM/YPQtqeGQZig6vSoB40USkJwItSDzqDAdAU7+nLlbpb/tBOq
+        NFk3vFyrNasPrHA+FSpLYJ2RpAMtQklvbFE6eUxS
+X-Google-Smtp-Source: APiQypL+BE3uA1SW0Bujmyp0BjjA9VEPrFMXVzQljtvXfQzPxFQdYF4edXGWSKCfJiLORwzoe3+Py9YdpYXjI/hRt+E=
+X-Received: by 2002:a17:906:d7a2:: with SMTP id pk2mr118612ejb.272.1587074015141;
+ Thu, 16 Apr 2020 14:53:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200416083120.453718-1-toke@redhat.com> <20200416104339.3a8b85c4@carbon>
-In-Reply-To: <20200416104339.3a8b85c4@carbon>
-From:   Song Liu <song@kernel.org>
-Date:   Thu, 16 Apr 2020 14:45:24 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW76RGkXBDPdWWFsN6xc6_0rUGBEGgwq-xAEtUU4O9y9ow@mail.gmail.com>
-Message-ID: <CAPhsuW76RGkXBDPdWWFsN6xc6_0rUGBEGgwq-xAEtUU4O9y9ow@mail.gmail.com>
-Subject: Re: [PATCH bpf v2] cpumap: Avoid warning when CONFIG_DEBUG_PER_CPU_MAPS
- is enabled
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, Xiumei Mu <xmu@redhat.com>
+References: <20200318215550.es4stkjwnefrfen2@madcap2.tricolour.ca>
+ <CAHC9VhSdDDP7Ec-w61NhGxZG5ZiekmrBCAg=Y=VJvEZcgQh46g@mail.gmail.com>
+ <20200319220249.jyr6xmwvflya5mks@madcap2.tricolour.ca> <CAHC9VhR84aN72yNB_j61zZgrQV1y6yvrBLNY7jp7BqQiEDL+cw@mail.gmail.com>
+ <20200324210152.5uydf3zqi3dwshfu@madcap2.tricolour.ca> <CAHC9VhTQUnVhoN3JXTAQ7ti+nNLfGNVXhT6D-GYJRSpJHCwDRg@mail.gmail.com>
+ <20200330134705.jlrkoiqpgjh3rvoh@madcap2.tricolour.ca> <CAHC9VhQTsEMcYAF1CSHrrVn07DR450W9j6sFVfKAQZ0VpheOfw@mail.gmail.com>
+ <20200330162156.mzh2tsnovngudlx2@madcap2.tricolour.ca> <CAHC9VhTRzZXJ6yUFL+xZWHNWZFTyiizBK12ntrcSwmgmySbkWw@mail.gmail.com>
+ <20200330174937.xalrsiev7q3yxsx2@madcap2.tricolour.ca> <CAHC9VhR_bKSHDn2WAUgkquu+COwZUanc0RV3GRjMDvpoJ5krjQ@mail.gmail.com>
+ <871ronf9x2.fsf@x220.int.ebiederm.org>
+In-Reply-To: <871ronf9x2.fsf@x220.int.ebiederm.org>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Thu, 16 Apr 2020 17:53:23 -0400
+Message-ID: <CAHC9VhR3gbmj5+5MY-whLtStKqDEHgvMRigU9hW0X1kpxF91ag@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling
+ the audit daemon
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Richard Guy Briggs <rgb@redhat.com>, nhorman@tuxdriver.com,
+        linux-api@vger.kernel.org, containers@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
+        linux-audit@redhat.com, netfilter-devel@vger.kernel.org,
+        simo@redhat.com, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
+        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 16, 2020 at 2:11 AM Jesper Dangaard Brouer
-<brouer@redhat.com> wrote:
->
-> On Thu, 16 Apr 2020 10:31:20 +0200
-> Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
->
-> > When the kernel is built with CONFIG_DEBUG_PER_CPU_MAPS, the cpumap cod=
-e
-> > can trigger a spurious warning if CONFIG_CPUMASK_OFFSTACK is also set. =
-This
-> > happens because in this configuration, NR_CPUS can be larger than
-> > nr_cpumask_bits, so the initial check in cpu_map_alloc() is not suffici=
-ent
-> > to guard against hitting the warning in cpumask_check().
+On Thu, Apr 16, 2020 at 4:36 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
+> Paul Moore <paul@paul-moore.com> writes:
+> > On Mon, Mar 30, 2020 at 1:49 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> >> On 2020-03-30 13:34, Paul Moore wrote:
+> >> > On Mon, Mar 30, 2020 at 12:22 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> >> > > On 2020-03-30 10:26, Paul Moore wrote:
+> >> > > > On Mon, Mar 30, 2020 at 9:47 AM Richard Guy Briggs <rgb@redhat.com> wrote:
+> >> > > > > On 2020-03-28 23:11, Paul Moore wrote:
+> >> > > > > > On Tue, Mar 24, 2020 at 5:02 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> >> > > > > > > On 2020-03-23 20:16, Paul Moore wrote:
+> >> > > > > > > > On Thu, Mar 19, 2020 at 6:03 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> >> > > > > > > > > On 2020-03-18 18:06, Paul Moore wrote:
 > >
-> > Fix this by explicitly checking the supplied key against the
-> > nr_cpumask_bits variable before calling cpu_possible().
+> > ...
 > >
-> > Fixes: 6710e1126934 ("bpf: introduce new bpf cpu map type BPF_MAP_TYPE_=
-CPUMAP")
-> > Cc: Jesper Dangaard Brouer <brouer@redhat.com>
-> > Reported-by: Xiumei Mu <xmu@redhat.com>
-> > Tested-by: Xiumei Mu <xmu@redhat.com>
-> > Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> > ---
+> >> > > Well, every time a record gets generated, *any* record gets generated,
+> >> > > we'll need to check for which audit daemons this record is in scope and
+> >> > > generate a different one for each depending on the content and whether
+> >> > > or not the content is influenced by the scope.
+> >> >
+> >> > That's the problem right there - we don't want to have to generate a
+> >> > unique record for *each* auditd on *every* record.  That is a recipe
+> >> > for disaster.
+> >> >
+> >> > Solving this for all of the known audit records is not something we
+> >> > need to worry about in depth at the moment (although giving it some
+> >> > casual thought is not a bad thing), but solving this for the audit
+> >> > container ID information *is* something we need to worry about right
+> >> > now.
+> >>
+> >> If you think that a different nested contid value string per daemon is
+> >> not acceptable, then we are back to issuing a record that has only *one*
+> >> contid listed without any nesting information.  This brings us back to
+> >> the original problem of keeping *all* audit log history since the boot
+> >> of the machine to be able to track the nesting of any particular contid.
+> >
+> > I'm not ruling anything out, except for the "let's just completely
+> > regenerate every record for each auditd instance".
 >
-> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Paul I am a bit confused about what you are referring to when you say
+> regenerate every record.
+>
+> Are you saying that you don't want to repeat the sequence:
+>         audit_log_start(...);
+>         audit_log_format(...);
+>         audit_log_end(...);
+> for every nested audit daemon?
 
-Acked-by: Song Liu <songliubraving@fb.com>
+If it can be avoided yes.  Audit performance is already not-awesome,
+this would make it even worse.
+
+> Or are you saying that you would like to literraly want to send the same
+> skb to each of the nested audit daemons?
+
+Ideally we would reuse the generated audit messages as much as
+possible.  Less work is better.  That's really my main concern here,
+let's make sure we aren't going to totally tank performance when we
+have a bunch of nested audit daemons.
+
+> Or are you thinking of something else?
+
+As mentioned above, I'm not thinking of anything specific, other than
+let's please not have to regenerate *all* of the audit record strings
+for each instance of an audit daemon, that's going to be a killer.
+
+Maybe we have to regenerate some, if we do, what would that look like
+in code?  How do we handle the regeneration aspect?  I worry that is
+going to be really ugly.
+
+Maybe we finally burn down the audit_log_format(...) function and pass
+structs/TLVs to the audit subsystem and the audit subsystem generates
+the strings in the auditd connection thread.  Some of the record
+strings could likely be shared, others would need to be ACID/auditd
+dependent.
+
+I'm open to any ideas people may have.  We have a problem, let's solve it.
+
+-- 
+paul moore
+www.paul-moore.com
