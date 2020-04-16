@@ -2,165 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38A0F1AD2BC
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 00:19:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C9CB1AD2C2
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 00:20:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728955AbgDPWTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 18:19:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53984 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728824AbgDPWTT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 18:19:19 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D45A1C061A10
-        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 15:19:17 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id i16so2061677ybq.9
-        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 15:19:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bEaKlFXLvZkTF1WbImU8k4TjAxStPFiDUhxy9HHTvfo=;
-        b=usOSe4MzkuxL5nKsgNMMsCqcXtZVMEN45JzLMSBeGYs9/bIZkhn/EJBjHeRBszfiV2
-         u6T+vjWVyfG+1qFiq/iID0tIJjuj4xPq5++MFFAvDO1aPuvlJY0ZxNAhg3SWfJu1RdQ4
-         aQn+9ljr4WqDs73oyrTY0nDeBiuyLUubH6vkRXAz11xZISE5kL+V+bUimCbkljZXDHW9
-         vmYqGN5tlCG9qyN9YXvVqyhJpX9i7TBGKksdAjB0wmjLs5r01eHIYFRMO+PmEBwqsqFM
-         VSrhkjNIKqxdMvbAswW+XT/Irt9H4wVLbpSSlqNqCNj4MjrhM2w5DXr7Xojp3EeltJIJ
-         j3uA==
+        id S1729027AbgDPWUh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 18:20:37 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:54043 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728006AbgDPWUg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 18:20:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587075635;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=LKcXo+p/uaeU/hsHRyKbdRNMgG4/p28XvmGbqiu1vto=;
+        b=h+XUgF8fNbmivRrbmWh3OCPTzT2pIToJpS+uI624hDwynyGBVCI2QJeEQ5hmVvg4i0DQDu
+        EHwbbF4Dw1IbH5TJAoD1T1Q0F8X3ajeWKG29ApAWMBMLGJX0zw1RLeWP0gfeNhUo/4ibR8
+        zodwIMYioRXlibUNpkPQpYRaeRBQ/1s=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-33-hV2Gw5zhMJi7dEI0hw3-kQ-1; Thu, 16 Apr 2020 18:20:24 -0400
+X-MC-Unique: hV2Gw5zhMJi7dEI0hw3-kQ-1
+Received: by mail-wr1-f69.google.com with SMTP id r11so2456813wrx.21
+        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 15:20:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bEaKlFXLvZkTF1WbImU8k4TjAxStPFiDUhxy9HHTvfo=;
-        b=hq90rdOq/vVDwoIiFgKSCVve19wvi12oe4EHuhHNfDiXXSQj+1+T9mk2cPTA9fmS5d
-         t/tmXv1Ujz3zFEWZFs82t06J4VeL4oObhfs8MySg2enCTPOA39A0qsUunpXWGAea5LDI
-         gLIsd9xyK9siwTyTWaP250W4uYfZ/378Z36Xon56XXuG1PrmHTKw5FHyK88Z5/54+QAw
-         ailM55mV8zLO5s0WmgXCUYrv2HePUEodhV+Krf3ZD4v4lCzkorckVIX9at5Qb7BczU3J
-         Om56hHStS+ClqPGkUASsRRWq72hYpjWkaCVRr0urmJkAHxkUbCKH4IE6GEV7g6Ot7/cV
-         WO9Q==
-X-Gm-Message-State: AGi0PubUF16QhbiH9Ah7eVs3sd1DFRgMaXJ0sX5l/5X+pO/EwMeTHBMo
-        PdxTYjw1N8UOXBsl0byhfZsotwLvVWamF6XsQOFZ9Q==
-X-Google-Smtp-Source: APiQypK/Raydb2Hwqc7lQkm0BcyExmPOSBeLJJw5JSAyZGslZAHoTfuyzKiVUyTTSyLITGOUPmLumbQj4KdqQYNdmGg=
-X-Received: by 2002:a05:6902:505:: with SMTP id x5mr905928ybs.286.1587075556390;
- Thu, 16 Apr 2020 15:19:16 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200416063551.47637-1-irogers@google.com> <20200416063551.47637-5-irogers@google.com>
- <20200416095501.GC369437@krava> <CAP-5=fVOb1nV2gdGGWLQvTApoMR=qzaSQHSwxsAKAXQ=wqQV+g@mail.gmail.com>
- <20200416201011.GB414900@krava>
-In-Reply-To: <20200416201011.GB414900@krava>
-From:   Ian Rogers <irogers@google.com>
-Date:   Thu, 16 Apr 2020 15:19:04 -0700
-Message-ID: <CAP-5=fVebXnQaQAVGszZtKg2DpUh-UXD12YDOzjo3k-SUNxYVw@mail.gmail.com>
-Subject: Re: [PATCH v9 4/4] perf tools: add support for libpfm4
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=LKcXo+p/uaeU/hsHRyKbdRNMgG4/p28XvmGbqiu1vto=;
+        b=QQzvyFqx5MdPRhEYAYdO2XBuu+TqvR7tPNkqnRcXPkHwzmFFlktEv82l6Hzxnr/WnP
+         sA/UNiACgBxvIrIb9OBeaRhKkTy/+JeQuoBqhpAvIvinI1yMaPEU+8Bp7ijr68iFPMHZ
+         vhBVodZzQPyThyDZNnO6HxNCi3NFEabW48zvw+lMYZ3ax/SfSkAasgCo6lNM8dsW4TdZ
+         dukru+eTlWs8Ny2raxTl/OcN6Gc7w7IR2wmGlbl6qzeFJeAkrBKnu+NcM0uYvt7rznkN
+         RxTntzCiJkKTHMBjsPdYS7cKMc4LUT80UMCz57efFY/ybzLplP+xa6Zq3+wBxwev5LCr
+         jJQQ==
+X-Gm-Message-State: AGi0PuYGI33GeiTyFwbX8puYNe1ruzaqBTQpuvZ/fmANas4J9kT9PFSL
+        SDw6UCZDcpXL5KSjhfC3L9D7Y28k/a3Zze+fbiGByjUZoIxWmPzNy9woLc4+NUaoForGAXvMB48
+        MrhSuYKE/s3yy5p33
+X-Received: by 2002:a7b:c955:: with SMTP id i21mr43712wml.25.1587075622981;
+        Thu, 16 Apr 2020 15:20:22 -0700 (PDT)
+X-Google-Smtp-Source: APiQypLTMzBiCaoZdbA9StOEic7q7PuNDUniFaAXDS0fu05xLaJzs2UfTHwtFzY0cbIA235H0bagiw==
+X-Received: by 2002:a7b:c955:: with SMTP id i21mr43692wml.25.1587075622724;
+        Thu, 16 Apr 2020 15:20:22 -0700 (PDT)
+Received: from redhat.com (bzq-79-183-51-3.red.bezeqint.net. [79.183.51.3])
+        by smtp.gmail.com with ESMTPSA id g186sm5712499wmg.36.2020.04.16.15.20.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Apr 2020 15:20:22 -0700 (PDT)
+Date:   Thu, 16 Apr 2020 18:20:20 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        Richard Earnshaw <Richard.Earnshaw@arm.com>,
+        Sudeep Dutt <sudeep.dutt@intel.com>,
+        Ashutosh Dixit <ashutosh.dixit@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Igor Lubashev <ilubashe@akamai.com>,
-        Alexey Budankov <alexey.budankov@linux.intel.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Jiwei Sun <jiwei.sun@windriver.com>,
-        yuzhoujian <yuzhoujian@didichuxing.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        John Garry <john.garry@huawei.com>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        Stephane Eranian <eranian@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        "David S. Miller" <davem@davemloft.net>,
+        Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org
+Subject: [PATCH v3] vhost: disable for OABI
+Message-ID: <20200416221902.5801-1-mst@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email 2.24.1.751.gd10ce2899c
+X-Mutt-Fcc: =sent
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 16, 2020 at 1:10 PM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> On Thu, Apr 16, 2020 at 09:02:54AM -0700, Ian Rogers wrote:
-> > On Thu, Apr 16, 2020 at 2:55 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> > >
-> > > On Wed, Apr 15, 2020 at 11:35:51PM -0700, Ian Rogers wrote:
-> > > > From: Stephane Eranian <eranian@google.com>
-> > > >
-> > > > This patch links perf with the libpfm4 library if it is available
-> > > > and NO_LIBPFM4 isn't passed to the build. The libpfm4 library
-> > > > contains hardware event tables for all processors supported by
-> > > > perf_events. It is a helper library that helps convert from a
-> > > > symbolic event name to the event encoding required by the
-> > > > underlying kernel interface. This library is open-source and
-> > > > available from: http://perfmon2.sf.net.
-> > > >
-> > > > With this patch, it is possible to specify full hardware events
-> > > > by name. Hardware filters are also supported. Events must be
-> > > > specified via the --pfm-events and not -e option. Both options
-> > > > are active at the same time and it is possible to mix and match:
-> > > >
-> > > > $ perf stat --pfm-events inst_retired:any_p:c=1:i -e cycles ....
-> > > >
-> > > > Signed-off-by: Stephane Eranian <eranian@google.com>
-> > > > Reviewed-by: Ian Rogers <irogers@google.com>
-> > >
-> > >         # perf list
-> > >         ...
-> > >         perf_raw pfm-events
-> > >           r0000
-> > >             [perf_events raw event syntax: r[0-9a-fA-F]+]
-> > >
-> > >         skl pfm-events
-> > >           UNHALTED_CORE_CYCLES
-> > >             [Count core clock cycles whenever the clock signal on the specific core is running (not halted)]
-> > >           UNHALTED_REFERENCE_CYCLES
-> > >
-> > > please add ':' behind the '* pfm-events' label
-> >
-> > Thanks! Not sure I follow here. skl here is the pmu. pfm-events is
-> > here just to make it clearer these are --pfm-events. The event is
-> > selected with '--pfm-events UNHALTED_CORE_CYCLES'. Will putting
-> > skl:pfm-events here make it look like that is part of the event
-> > encoding?
->
-> aah I might have misunderstood the output here then, we have preceeding
-> output like:
->
-> cache:
->   l1d.replacement
->        [L1D data line replacements]
->
-> so I thought the 'skl pfm-events' is just a label
->
->
-> how about we use the first current label in the middle like:
->
->         # perf list
->         List of pre-defined events (to be used in -e):
->
->           current events stuff
->
->         List of pfm events (to be used in --pfm-xxx):
->
->           pfm events stuff
->
-> or maybe put it under 'perf list --pfm', thoughts?
+vhost is currently broken on the some ARM configs.
 
-We decided on the former which is in the new patch set. However, the
-output isn't conditional on the pager being used, which it is in the
-regular event case.
-https://lore.kernel.org/lkml/20200416221457.46710-1-irogers@google.com/T/#t
+The reason is that that uses apcs-gnu which is the ancient OABI that is been
+deprecated for a long time.
 
-Let me know if there is more to address. Thanks!
-Ian
+Given that virtio support on such ancient systems is not needed in the
+first place, let's just add something along the lines of
 
-> jirka
->
+	depends on !ARM || AEABI
+
+to the virtio Kconfig declaration, and add a comment that it has to do
+with struct member alignment.
+
+Note: we can't make VHOST and VHOST_RING themselves have
+a dependency since these are selected. Add a new symbol for that.
+
+Link: https://lore.kernel.org/r/20200406121233.109889-3-mst@redhat.com
+Suggested-by: Ard Biesheuvel <ardb@kernel.org>
+Suggested-by: Richard Earnshaw <Richard.Earnshaw@arm.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+
+Changes from v2:
+	- drop prompt from VHOST_DPN
+	- typo fix in commit log
+	- OABI is a possible ARM config but not the default one
+
+ drivers/misc/mic/Kconfig |  2 +-
+ drivers/net/caif/Kconfig |  2 +-
+ drivers/vdpa/Kconfig     |  2 +-
+ drivers/vhost/Kconfig    | 17 +++++++++++++----
+ 4 files changed, 16 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/misc/mic/Kconfig b/drivers/misc/mic/Kconfig
+index 8f201d019f5a..3bfe72c59864 100644
+--- a/drivers/misc/mic/Kconfig
++++ b/drivers/misc/mic/Kconfig
+@@ -116,7 +116,7 @@ config MIC_COSM
+ 
+ config VOP
+ 	tristate "VOP Driver"
+-	depends on VOP_BUS
++	depends on VOP_BUS && VHOST_DPN
+ 	select VHOST_RING
+ 	select VIRTIO
+ 	help
+diff --git a/drivers/net/caif/Kconfig b/drivers/net/caif/Kconfig
+index 9db0570c5beb..661c25eb1c46 100644
+--- a/drivers/net/caif/Kconfig
++++ b/drivers/net/caif/Kconfig
+@@ -50,7 +50,7 @@ config CAIF_HSI
+ 
+ config CAIF_VIRTIO
+ 	tristate "CAIF virtio transport driver"
+-	depends on CAIF && HAS_DMA
++	depends on CAIF && HAS_DMA && VHOST_DPN
+ 	select VHOST_RING
+ 	select VIRTIO
+ 	select GENERIC_ALLOCATOR
+diff --git a/drivers/vdpa/Kconfig b/drivers/vdpa/Kconfig
+index 71d9a64f2c7d..ee35f8261a88 100644
+--- a/drivers/vdpa/Kconfig
++++ b/drivers/vdpa/Kconfig
+@@ -10,7 +10,7 @@ if VDPA
+ 
+ config VDPA_SIM
+ 	tristate "vDPA device simulator"
+-	depends on RUNTIME_TESTING_MENU && HAS_DMA
++	depends on RUNTIME_TESTING_MENU && HAS_DMA && VHOST_DPN
+ 	select VHOST_RING
+ 	select VHOST_IOTLB
+ 	default n
+diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
+index e79cbbdfea45..d9b3a3ec765a 100644
+--- a/drivers/vhost/Kconfig
++++ b/drivers/vhost/Kconfig
+@@ -12,6 +12,15 @@ config VHOST_RING
+ 	  This option is selected by any driver which needs to access
+ 	  the host side of a virtio ring.
+ 
++config VHOST_DPN
++	bool
++	depends on !ARM || AEABI
++	default y
++	help
++	  Anything selecting VHOST or VHOST_RING must depend on VHOST_DPN.
++	  This excludes the deprecated ARM ABI since that forces a 4 byte
++	  alignment on all structs - incompatible with virtio spec requirements.
++
+ config VHOST
+ 	tristate
+ 	select VHOST_IOTLB
+@@ -27,7 +36,7 @@ if VHOST_MENU
+ 
+ config VHOST_NET
+ 	tristate "Host kernel accelerator for virtio net"
+-	depends on NET && EVENTFD && (TUN || !TUN) && (TAP || !TAP)
++	depends on NET && EVENTFD && (TUN || !TUN) && (TAP || !TAP) && VHOST_DPN
+ 	select VHOST
+ 	---help---
+ 	  This kernel module can be loaded in host kernel to accelerate
+@@ -39,7 +48,7 @@ config VHOST_NET
+ 
+ config VHOST_SCSI
+ 	tristate "VHOST_SCSI TCM fabric driver"
+-	depends on TARGET_CORE && EVENTFD
++	depends on TARGET_CORE && EVENTFD && VHOST_DPN
+ 	select VHOST
+ 	default n
+ 	---help---
+@@ -48,7 +57,7 @@ config VHOST_SCSI
+ 
+ config VHOST_VSOCK
+ 	tristate "vhost virtio-vsock driver"
+-	depends on VSOCKETS && EVENTFD
++	depends on VSOCKETS && EVENTFD && VHOST_DPN
+ 	select VHOST
+ 	select VIRTIO_VSOCKETS_COMMON
+ 	default n
+@@ -62,7 +71,7 @@ config VHOST_VSOCK
+ 
+ config VHOST_VDPA
+ 	tristate "Vhost driver for vDPA-based backend"
+-	depends on EVENTFD
++	depends on EVENTFD && VHOST_DPN
+ 	select VHOST
+ 	depends on VDPA
+ 	help
+-- 
+MST
+
