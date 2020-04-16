@@ -2,173 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68B1F1AB7C2
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 08:10:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 682B01AB820
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 08:36:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436510AbgDPGKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 02:10:25 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:55054 "EHLO mx.0dd.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2407402AbgDPGKV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Apr 2020 02:10:21 -0400
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id 276A05FBB5;
-        Thu, 16 Apr 2020 08:10:14 +0200 (CEST)
-Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="kD6sh925";
-        dkim-atps=neutral
-Received: from www (www.vdorst.com [192.168.2.222])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.vdorst.com (Postfix) with ESMTPSA id D97992A03EA;
-        Thu, 16 Apr 2020 08:10:13 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com D97992A03EA
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1587017413;
-        bh=nsUoDdbxuJyBFOL3kaUcgefxmeJY9720rZIwMxaY2EM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=kD6sh9255OsEt+FUrF98MDpi27Q11sfgqbaMLr4boQ/r+/y/KzsSRP0mSAGoVxPid
-         BfdWlVhJjAkOnL8XlTQNL3/6So9hqWsiHaTJ68WdPIV39fF0K7yl6jTFXgc2pXBghQ
-         cHDzPFw0VbOsvZ6+c9NSYfCvVMFAzO3LI9Owpdspidqh+JdXYnFz5iBafVJPisenuv
-         hRKiyM8Xm2LI4Nl9f98nNLH6lJqcknntpEwC7LiSESx9l4+1mzNHD3PMR5CobEJDoY
-         kYSfEC9OzXMSOlXksfQHgq39c04m424PDaNdT6WHNIZU+PUgBluqBt5kfggZP0o0Dg
-         aJHj7SQOxurtw==
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
- www.vdorst.com (Horde Framework) with HTTPS; Thu, 16 Apr 2020 06:10:13 +0000
-Date:   Thu, 16 Apr 2020 06:10:13 +0000
-Message-ID: <20200416061013.Horde.Np5evwFOb2fNckWIEDCbhBI@www.vdorst.com>
-From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     netdev@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        linux-mediatek@lists.infradead.org,
-        John Crispin <john@phrozen.org>,
-        Stijn Segers <foss@volatilesystems.org>,
-        Chuanhong Guo <gch981213@gmail.com>, riddlariddla@hotmail.com,
-        Szabolcs Hubai <szab.hu@gmail.com>,
-        CHEN Minqiang <ptpt52@gmail.com>,
-        Paul Fertser <fercerpav@gmail.com>
-Subject: Re: [PATCH net-next v2] net: dsa: mt7530: fix tagged frames
- pass-through in VLAN-unaware mode
-In-Reply-To: <20200414063408.4026-1-dqfext@gmail.com>
-User-Agent: Horde Application Framework 5
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
-MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+        id S2408171AbgDPGgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 02:36:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47664 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2408134AbgDPGf4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 02:35:56 -0400
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E4DC061A10
+        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 23:35:56 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id h6so2264672pfr.16
+        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 23:35:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=KhRdNnm54eQUJjtSMuJOUHjnhJWAKBsxVSRTwuR/Fso=;
+        b=ijMbw9UU5JgH5GKna10rkpIl9jWCHys9OrETFHgX5TDLXSJNnq4hXAv26IkzFMaRNq
+         p7dEwi9RGcGhK76gpsa2hNP3Mww/un23PkJgSdlkWQZHA7H2MuRGBPfcUHnhS3/86aUX
+         kD5Db2Fc9NLaB9BN3pf8N8ccelKiJXh23xhvctLK8Wq1dM+bV9TsfCmsvNULNnCtbdI/
+         4bece0QPb1paToheesIQoeKlcatyfzBex4s4x7LyJP/I2urFrV45r0/ctV79TRc+GABX
+         qZGhWJSXHhJToMLz9/J1xl5D5WDU35tOaUL6JMLmUsCt5PBpoR1WwAR510qdTKEULKSz
+         v3Sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=KhRdNnm54eQUJjtSMuJOUHjnhJWAKBsxVSRTwuR/Fso=;
+        b=dF5axjO/LVF7R7u9+sh/g5MRv9hBOcG7UNxd/+bP+a3/ud3oQI9M+Erud7hxX7acDn
+         gLcGTFsnW6DerKAr2aFYi3TtGdrGr5eTYXyt+dQwC3KWYszZ1/auiI68ltXuxoaSeJx+
+         ocxGNcO/91QAHXk3qth8H9sQyx5Eb8BK+o13Kb6S5HfrnA6fcBCiOTQW+jlBm5dWSgv2
+         ZSmfTYktTt7IKjhjPchYAmLZYSjWjg4vSd9d+1/7b/747tDu0/mNv06yUQf7JXT8Gf43
+         54snPlrRf2F3f+/avPCkvj8VKxD09hav8H9hk4MYJY09Lt6/JvC4IeMw0BpTOG3+1/FH
+         vKMw==
+X-Gm-Message-State: AGi0PuaIg0QE3/rMLZbLWoM1yhOS46gYWuTHl8u35o7Bj1FwDibv1Qwk
+        26hFR17FFKS+wLJYRlkG/5N7pAjZJHi6
+X-Google-Smtp-Source: APiQypI7UXID7lirkky+K5t1P65Z7JhXhaH7GGJL00ifNMf1L/MU0E7Q7MyS5vyBBkWQiD4Cev2/PajqV2Qf
+X-Received: by 2002:a17:90b:246:: with SMTP id fz6mr3276299pjb.138.1587018956086;
+ Wed, 15 Apr 2020 23:35:56 -0700 (PDT)
+Date:   Wed, 15 Apr 2020 23:35:47 -0700
+Message-Id: <20200416063551.47637-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.26.0.110.g2183baf09c-goog
+Subject: [PATCH v9 0/4] perf tools: add support for libpfm4
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Igor Lubashev <ilubashe@akamai.com>,
+        Alexey Budankov <alexey.budankov@linux.intel.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Jiwei Sun <jiwei.sun@windriver.com>,
+        yuzhoujian <yuzhoujian@didichuxing.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org
+Cc:     Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Qingfang,
+This patch links perf with the libpfm4 library if it is available
+and NO_LIBPFM4 isn't passed to the build. The libpfm4 library
+contains hardware event tables for all processors supported by
+perf_events. It is a helper library that helps convert from a
+symbolic event name to the event encoding required by the
+underlying kernel interface. This library is open-source and
+available from: http://perfmon2.sf.net.
+    
+With this patch, it is possible to specify full hardware events
+by name. Hardware filters are also supported. Events must be
+specified via the --pfm-events and not -e option. Both options
+are active at the same time and it is possible to mix and match:
+    
+$ perf stat --pfm-events inst_retired:any_p:c=1:i -e cycles ....
 
+v9 removes some unnecessary #ifs.
+v8 addresses review comments from jolsa@redhat.com.
+   Breaks the patch into 4, adds a test and moves the libpfm code into its
+   own file. perf list encoding tries to be closer to existing:
+...
+skx pfm-events
+  UNHALTED_CORE_CYCLES
+    [Count core clock cycles whenever the clock signal on the specific ...
+  UNHALTED_REFERENCE_CYCLES
+    [Unhalted reference cycles]
+  INSTRUCTION_RETIRED
+    [Number of instructions at retirement]
+  INSTRUCTIONS_RETIRED
+    [This is an alias for INSTRUCTION_RETIRED]
+  BRANCH_INSTRUCTIONS_RETIRED
+    [Count branch instructions at retirement. Specifically, this event ...
+  MISPREDICTED_BRANCH_RETIRED
+    [Count mispredicted branch instructions at retirement. ...
+  BACLEARS
+    [Branch re-steered]
+      BACLEARS:ANY
+        [Number of front-end re-steers due to BPU misprediction]
+  BR_INST_RETIRED
+    [Branch instructions retired (Precise Event)]
+      BR_INST_RETIRED:CONDITIONAL
+        [Counts all taken and not taken macro conditional branch ...
+...
+  and supports --long-desc/-v:
+...
+  BACLEARS
+    [Branch re-steered]
+      Code  : 0xe6
+      BACLEARS:ANY
+        [Number of front-end re-steers due to BPU misprediction]
+        Umask : 0x01 : PMU: [default] 
+      Modif : PMU: [e] : edge level (may require counter-mask >= 1) ...
+      Modif : PMU: [i] : invert (boolean)
+      Modif : PMU: [c] : counter-mask in range [0-255] (integer)
+      Modif : PMU: [t] : measure any thread (boolean)
+      Modif : PMU: [intx] : monitor only inside transactional memory ...
+      Modif : PMU: [intxcp] : do not count occurrences inside aborted ...
+      Modif : perf_event: [u] : monitor at user level (boolean)
+      Modif : perf_event: [k] : monitor at kernel level (boolean)
+      Modif : perf_event: [period] : sampling period (integer)
+      Modif : perf_event: [freq] : sampling frequency (Hz) (integer)
+      Modif : perf_event: [excl] : exclusive access (boolean)
+      Modif : perf_event: [mg] : monitor guest execution (boolean)
+      Modif : perf_event: [mh] : monitor host execution (boolean)
+      Modif : perf_event: [cpu] : CPU to program (integer)
+      Modif : perf_event: [pinned] : pin event to counters (boolean)
+  BR_INST_RETIRED
+    [Branch instructions retired (Precise Event)]
+      Code  : 0xc4
+      BR_INST_RETIRED:CONDITIONAL
+        [Counts all taken and not taken macro conditional branch ...
+        Umask : 0x01 : PMU: [precise]
 
-Quoting DENG Qingfang <dqfext@gmail.com>:
+v7 rebases and adds fallback code for libpfm4 events.
+   The fallback code is to force user only priv level in case the
+   perf_event_open() syscall failed for permissions reason.
+   the fallback forces a user privilege level restriction on the event
+   string, so depending on the syntax either u or :u is needed.
+    
+   But libpfm4 can use a : or . as the separator, so simply searching
+   for ':' vs. '/' is not good enough to determine the syntax needed.
+   Therefore, this patch introduces a new evsel boolean field to mark
+   events coming from  libpfm4. The field is then used to adjust the
+   fallback string.
+v6 was a rebase.
+v5 was a rebase.
+v4 was a rebase on
+   git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git
+   branch perf/core and re-adds the tools/build/feature/test-libpfm4.c
+   missed in v3.
+v3 is against acme/perf/core and removes a diagnostic warning.
+v2 of this patch makes the --pfm-events man page documentation
+   conditional on libpfm4 behing configured. It tidies some of the
+   documentation and adds the feature test missed in the v1 patch.
 
-> In VLAN-unaware mode, the Egress Tag (EG_TAG) field in Port VLAN
-> Control register must be set to Consistent to let tagged frames pass
-> through as is, otherwise their tags will be stripped.
+Ian Rogers (1):
+  perf doc: allow ASCIIDOC_EXTRA to be an argument
 
-Thanks for fixing the vlan issues!
+Stephane Eranian (3):
+  tools feature: add support for detecting libpfm4
+  perf pmu: add perf_pmu__find_by_type helper
+  perf tools: add support for libpfm4
 
-Tested-by: René van Dorst <opensource@vdorst.com>
+ tools/build/Makefile.feature             |   3 +-
+ tools/build/feature/Makefile             |   6 +-
+ tools/build/feature/test-libpfm4.c       |   9 +
+ tools/perf/Documentation/Makefile        |   4 +-
+ tools/perf/Documentation/perf-record.txt |  11 +
+ tools/perf/Documentation/perf-stat.txt   |  10 +
+ tools/perf/Documentation/perf-top.txt    |  11 +
+ tools/perf/Makefile.config               |  12 +
+ tools/perf/Makefile.perf                 |   6 +-
+ tools/perf/builtin-list.c                |  12 +-
+ tools/perf/builtin-record.c              |  11 +
+ tools/perf/builtin-stat.c                |   8 +
+ tools/perf/builtin-top.c                 |   8 +
+ tools/perf/tests/Build                   |   1 +
+ tools/perf/tests/builtin-test.c          |   9 +
+ tools/perf/tests/pfm.c                   | 207 +++++++++++++++++
+ tools/perf/tests/tests.h                 |   3 +
+ tools/perf/util/Build                    |   2 +
+ tools/perf/util/evsel.c                  |   2 +-
+ tools/perf/util/evsel.h                  |   1 +
+ tools/perf/util/parse-events.c           |  30 ++-
+ tools/perf/util/parse-events.h           |   4 +
+ tools/perf/util/pfm.c                    | 277 +++++++++++++++++++++++
+ tools/perf/util/pfm.h                    |  43 ++++
+ tools/perf/util/pmu.c                    |  11 +
+ tools/perf/util/pmu.h                    |   1 +
+ 26 files changed, 687 insertions(+), 15 deletions(-)
+ create mode 100644 tools/build/feature/test-libpfm4.c
+ create mode 100644 tools/perf/tests/pfm.c
+ create mode 100644 tools/perf/util/pfm.c
+ create mode 100644 tools/perf/util/pfm.h
 
-Greats,
-
-René
->
-> Fixes: 83163f7dca56 ("net: dsa: mediatek: add VLAN support for MT7530")
-> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
-> ---
-> Changes since v1:
-> - Fix build error
->
-> ---
->  drivers/net/dsa/mt7530.c | 18 ++++++++++++------
->  drivers/net/dsa/mt7530.h |  7 +++++++
->  2 files changed, 19 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> index 2d0d91db0ddb..951a65ac7f73 100644
-> --- a/drivers/net/dsa/mt7530.c
-> +++ b/drivers/net/dsa/mt7530.c
-> @@ -846,8 +846,9 @@ mt7530_port_set_vlan_unaware(struct dsa_switch  
-> *ds, int port)
->  	 */
->  	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
->  		   MT7530_PORT_MATRIX_MODE);
-> -	mt7530_rmw(priv, MT7530_PVC_P(port), VLAN_ATTR_MASK,
-> -		   VLAN_ATTR(MT7530_VLAN_TRANSPARENT));
-> +	mt7530_rmw(priv, MT7530_PVC_P(port), VLAN_ATTR_MASK | PVC_EG_TAG_MASK,
-> +		   VLAN_ATTR(MT7530_VLAN_TRANSPARENT) |
-> +		   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
->
->  	for (i = 0; i < MT7530_NUM_PORTS; i++) {
->  		if (dsa_is_user_port(ds, i) &&
-> @@ -863,8 +864,8 @@ mt7530_port_set_vlan_unaware(struct dsa_switch  
-> *ds, int port)
->  	if (all_user_ports_removed) {
->  		mt7530_write(priv, MT7530_PCR_P(MT7530_CPU_PORT),
->  			     PCR_MATRIX(dsa_user_ports(priv->ds)));
-> -		mt7530_write(priv, MT7530_PVC_P(MT7530_CPU_PORT),
-> -			     PORT_SPEC_TAG);
-> +		mt7530_write(priv, MT7530_PVC_P(MT7530_CPU_PORT), PORT_SPEC_TAG
-> +			     | PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
->  	}
->  }
->
-> @@ -890,8 +891,9 @@ mt7530_port_set_vlan_aware(struct dsa_switch  
-> *ds, int port)
->  	/* Set the port as a user port which is to be able to recognize VID
->  	 * from incoming packets before fetching entry within the VLAN table.
->  	 */
-> -	mt7530_rmw(priv, MT7530_PVC_P(port), VLAN_ATTR_MASK,
-> -		   VLAN_ATTR(MT7530_VLAN_USER));
-> +	mt7530_rmw(priv, MT7530_PVC_P(port), VLAN_ATTR_MASK | PVC_EG_TAG_MASK,
-> +		   VLAN_ATTR(MT7530_VLAN_USER) |
-> +		   PVC_EG_TAG(MT7530_VLAN_EG_DISABLED));
->  }
->
->  static void
-> @@ -1380,6 +1382,10 @@ mt7530_setup(struct dsa_switch *ds)
->  			mt7530_cpu_port_enable(priv, i);
->  		else
->  			mt7530_port_disable(ds, i);
-> +
-> +		/* Enable consistent egress tag */
-> +		mt7530_rmw(priv, MT7530_PVC_P(i), PVC_EG_TAG_MASK,
-> +			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
->  	}
->
->  	/* Setup port 5 */
-> diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-> index ef9b52f3152b..2528232d3325 100644
-> --- a/drivers/net/dsa/mt7530.h
-> +++ b/drivers/net/dsa/mt7530.h
-> @@ -172,9 +172,16 @@ enum mt7530_port_mode {
->  /* Register for port vlan control */
->  #define MT7530_PVC_P(x)			(0x2010 + ((x) * 0x100))
->  #define  PORT_SPEC_TAG			BIT(5)
-> +#define  PVC_EG_TAG(x)			(((x) & 0x7) << 8)
-> +#define  PVC_EG_TAG_MASK		PVC_EG_TAG(7)
->  #define  VLAN_ATTR(x)			(((x) & 0x3) << 6)
->  #define  VLAN_ATTR_MASK			VLAN_ATTR(3)
->
-> +enum mt7530_vlan_port_eg_tag {
-> +	MT7530_VLAN_EG_DISABLED = 0,
-> +	MT7530_VLAN_EG_CONSISTENT = 1,
-> +};
-> +
->  enum mt7530_vlan_port_attr {
->  	MT7530_VLAN_USER = 0,
->  	MT7530_VLAN_TRANSPARENT = 3,
-> --
-> 2.26.0
-
-
+-- 
+2.26.0.110.g2183baf09c-goog
 
