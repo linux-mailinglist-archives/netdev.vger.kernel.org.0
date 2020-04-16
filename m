@@ -2,148 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2981C1AC1FA
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 15:02:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2BAC1AC205
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 15:03:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2894746AbgDPNBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 09:01:54 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:20321 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2894687AbgDPNBt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 09:01:49 -0400
+        id S2894790AbgDPNDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 09:03:01 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:53064 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2894629AbgDPNC7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 09:02:59 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587042104;
+        s=mimecast20190719; t=1587042177;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Eu6b6HDAloa0ypWgaxME9iI3u+iDHWfSGslG1thqHSI=;
-        b=Vs9mBwFJtn3uZ8Bld7z0BW26cBoLpNkKFwIaotRLczUbtX0Pv1hbJUlWbY8UfCQWQI42td
-        YVVc4csSYl07jpuVUC7zQhBADdSjRv2edYqqnk1GMjm76/RX5suUQtVl8usr6QVAICQsfN
-        ZEplv6tKl4afGoopIrOiUgOKIpUfvU0=
+        bh=l1CooQoBe2EOCTRwIhu5U2ak5zsiCPcmsvYRJMbBWGI=;
+        b=c93Y02KeijZyapNA3Wsc5xh5wdmzPOTOJu6vVpb8SzEwntT3KBj6+b5nTEcGCAmiwsx/6M
+        8X+yL6v+NcQGJ65ZMI34jQSEMwHfRJcsQLGFHN0SJfWM4JnBNnluHGhX1FSxBIM9lviQ+m
+        7c8oq5hISfB7hanWB0qPB/4Q9QXNHRI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-135-hChMLAzGMqqPJHzgmWdWww-1; Thu, 16 Apr 2020 09:01:43 -0400
-X-MC-Unique: hChMLAzGMqqPJHzgmWdWww-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+ us-mta-503-k3coq_pMPbO30blari8scg-1; Thu, 16 Apr 2020 09:02:53 -0400
+X-MC-Unique: k3coq_pMPbO30blari8scg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A7B32802564;
-        Thu, 16 Apr 2020 13:01:41 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-113-129.rdu2.redhat.com [10.10.113.129])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C45B75DA89;
-        Thu, 16 Apr 2020 13:01:39 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <87v9lzu3cx.fsf@oldenburg2.str.redhat.com>
-References: <87v9lzu3cx.fsf@oldenburg2.str.redhat.com> <874ktl2ide.fsf@oldenburg2.str.redhat.com> <3865908.1586874010@warthog.procyon.org.uk> <128769.1587032833@warthog.procyon.org.uk>
-To:     Florian Weimer <fweimer@redhat.com>
-Cc:     dhowells@redhat.com, linux-nfs@vger.kernel.org,
-        linux-cifs@vger.kernel.org, linux-afs@lists.infradead.org,
-        ceph-devel@vger.kernel.org, keyrings@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: What's a good default TTL for DNS keys in the kernel
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 752961005527;
+        Thu, 16 Apr 2020 13:02:51 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.6])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2AD4260C05;
+        Thu, 16 Apr 2020 13:02:39 +0000 (UTC)
+Date:   Thu, 16 Apr 2020 15:02:38 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "sameehj@amazon.com" <sameehj@amazon.com>,
+        "toke@redhat.com" <toke@redhat.com>,
+        "gtzalik@amazon.com" <gtzalik@amazon.com>,
+        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+        "borkmann@iogearbox.net" <borkmann@iogearbox.net>,
+        "alexander.duyck@gmail.com" <alexander.duyck@gmail.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "akiyano@amazon.com" <akiyano@amazon.com>,
+        "zorik@amazon.com" <zorik@amazon.com>,
+        "alexei.starovoitov@gmail.com" <alexei.starovoitov@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "dsahern@gmail.com" <dsahern@gmail.com>,
+        "lorenzo@kernel.org" <lorenzo@kernel.org>,
+        "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>,
+        brouer@redhat.com
+Subject: Re: [PATCH RFC v2 01/33] xdp: add frame size to xdp_buff
+Message-ID: <20200416150238.40560372@carbon>
+In-Reply-To: <7fb99df47a9eae1fd0fc8dc85336f7df2c120744.camel@mellanox.com>
+References: <158634658714.707275.7903484085370879864.stgit@firesoul>
+        <158634663936.707275.3156718045905620430.stgit@firesoul>
+        <7fb99df47a9eae1fd0fc8dc85336f7df2c120744.camel@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <142354.1587042098.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Thu, 16 Apr 2020 14:01:38 +0100
-Message-ID: <142355.1587042098@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Florian Weimer <fweimer@redhat.com> wrote:
+On Thu, 9 Apr 2020 00:50:02 +0000
+Saeed Mahameed <saeedm@mellanox.com> wrote:
 
-> > Florian Weimer <fweimer@redhat.com> wrote:
-> >
-> >> You can get the real TTL if you do a DNS resolution on the name and
-> >> match the addresses against what you get out of the NSS functions.  I=
-f
-> >> they match, you can use the TTL from DNS.  Hackish, but it does give =
-you
-> >> *some* TTL value.
-> >
-> > I guess I'd have to do that in parallel.
-> =
+> On Wed, 2020-04-08 at 13:50 +0200, Jesper Dangaard Brouer wrote:
+> > XDP have evolved to support several frame sizes, but xdp_buff was not
+> > updated with this information. The frame size (frame_sz) member of
+> > xdp_buff is introduced to know the real size of the memory the frame
+> > is
+> > delivered in.
+> > 
+> > When introducing this also make it clear that some tailroom is
+> > reserved/required when creating SKBs using build_skb().
+> > 
+> > It would also have been an option to introduce a pointer to
+> > data_hard_end (with reserved offset). The advantage with frame_sz is
+> > that (like rxq) drivers only need to setup/assign this value once per
+> > NAPI cycle. Due to XDP-generic (and some drivers) it's not possible
+> > to
+> > store frame_sz inside xdp_rxq_info, because it's varies per packet as
+> > it
+> > can be based/depend on packet length.
+> > 
+> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> > ---
+> >  include/net/xdp.h |   17 +++++++++++++++++
+> >  1 file changed, 17 insertions(+)
+> > 
+> > diff --git a/include/net/xdp.h b/include/net/xdp.h
+> > index 40c6d3398458..99f4374f6214 100644
+> > --- a/include/net/xdp.h
+> > +++ b/include/net/xdp.h
+> > @@ -6,6 +6,8 @@
+> >  #ifndef __LINUX_NET_XDP_H__
+> >  #define __LINUX_NET_XDP_H__
+> >  
+> > +#include <linux/skbuff.h> /* skb_shared_info */
+> > +  
+> 
+> I think it is wrong to make xdp.h depend on skbuff.h
+> we must keep xdp.h minimal and independent,
 
-> Not necessary.  You can do the getaddrinfo lookup first and then perform
-> the query.
+I agree, that it seems strange to have xdp.h include skbuff.h, and I'm
+not happy with that approach myself, but the alternatives all looked
+kind of ugly.
 
-That means that the latency of both is added together and causes the first
-mount to take longer - though as long as you have a local DNS cache, that'=
-s
-fine.
+> the new macros should be defined in skbuff.h 
 
-> > AFS keeps track of the expiration on the record and will issue a new l=
-ookup
-> > when the data expires, but NFS doesn't make use of this information.
-> =
+Moving #define xdp_data_hard_end(xdp) into skbuff.h also seems strange.
 
-> And it will switch servers at that point?  Or only if the existing
-> server association fails/times out?
 
-AFS will switch servers at the next operation if the server list changes. =
- And
-if the current op tries to access an old server and gets bounced, this sho=
-uld
-trigger an immediate reevaluation.  It also regularly probes the servers a=
-nd
-interfaces it knows about to find which one's accessible and which has the
-best response and can switch servers on that basis also.
+> >  /**
+> >   * DOC: XDP RX-queue information
+> >   *
+> > @@ -70,8 +72,23 @@ struct xdp_buff {
+> >  	void *data_hard_start;
+> >  	unsigned long handle;
+> >  	struct xdp_rxq_info *rxq;
+> > +	u32 frame_sz; /* frame size to deduct data_hard_end/reserved
+> > tailroom*/  
+> 
+> why u32 ? u16 should be more than enough.. 
 
-I should also note that AFS deletes the dns_resolver key after reading it =
-and
-maintains the expiry information in its internal structs.
+Nope.  It need to be able to store PAGE_SIZE == 65536.
 
-Note also that in AFS this only applies to locating the Volume Location
-servers (which is a layer of abstraction that hides which server(s) a volu=
-me
-resides on and what their addresses are).  The VL service is queried to fi=
-nd
-out where file servers are (giving you their addresses itself so you don't
-need to access the DNS there).
+$ echo $((1<<12))
+4096
+$ echo $((1<<16))
+65536
 
-> > The keyring subsystem will itself dispose of dns_resolver keys that
-> > expire and request_key() will only upcall again if the key has
-> > expired.
-> =
+$ printf "0x%X\n" 65536
+0x10000
 
-> What's are higher-level effects of that?
 
-If the record never expires (the current case), the address lookup in the
-kernel (dns_query()) will always return the same address until someone
-manually evicts it.
+> >  };
+> >  
+> > +/* Reserve memory area at end-of data area.
+> > + *
+> > + * This macro reserves tailroom in the XDP buffer by limiting the
+> > + * XDP/BPF data access to data_hard_end.  Notice same area (and size)
+> > + * is used for XDP_PASS, when constructing the SKB via build_skb().
+> > + */
+> > +#define xdp_data_hard_end(xdp)				\
+> > +	((xdp)->data_hard_start + (xdp)->frame_sz -	\
+> > +	 SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
+> > +  
+> 
+> this macro is not safe when unary operators are being used
 
-Otherwise, once the record expires, the kernel will just upcall again.
+The parentheses round (xdp) does make xdp_data_hard_end(&xdp) work
+correctly. What other cases are you worried about?
 
-> I'm still not convinced that the kernel *needs* accurate TTL
-> information.  The benefit from upcall avoidance likely vanishes quickly
-> after the in-kernel TTL increases beyond 5 or so.  That's just my guess,
-> though.
 
-You might be right - certainly for NFS and CIFS where the address ascribed=
- to
-a superblock is hard to change as it partly defines the superblock.  Chang=
-e
-the address and your superblock in now a different thing as far as the VFS=
- is
-concerned.
-
-This makes fscache indexing tricky for NFS.  How do you define a superbloc=
-k?
-Is it address?  Is it hostname?  What happens if one or the other changes?
-What happens if there are two or more addresses (say ipv4 and ipv6 addrs)?
-
-AFS defined some abstractions for this: the cell name and the volume ID
-number.  The physical location of the volume doesn't matter - and the volu=
-me
-can even be moved around whilst in use.
-
-David
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
