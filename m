@@ -2,252 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1D7D1AC4AA
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 16:03:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D26B1AC65F
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 16:38:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503921AbgDPOCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 10:02:44 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:35341 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2441898AbgDPOCl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 10:02:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587045757;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gSJyZLga7ER7EnbVkueeWn7ZBeTH6pAV8OAFKoF98DY=;
-        b=h0ZepTp4P+DQ7Wajyn1OYCZX0nw/0afMdsrZj9FfdBKdSyFArkaK39xzk1fr42qcU8hunx
-        xhGRotiinYVuvSR3cGNsNiAEps2h6UiDsvANL8Snl2WtBUHOBTmoXpGaIBGThK7YnTS05K
-        hMpb94LFJriWyPO+MbFFGD7atG5Db2w=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-425-CMwoOOZMN82TCHzZCumVPw-1; Thu, 16 Apr 2020 10:02:31 -0400
-X-MC-Unique: CMwoOOZMN82TCHzZCumVPw-1
-Received: by mail-lf1-f72.google.com with SMTP id l28so2322412lfp.8
-        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 07:02:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=gSJyZLga7ER7EnbVkueeWn7ZBeTH6pAV8OAFKoF98DY=;
-        b=s1BG41U36xlBtrZuq7TqH/HN/xg+zGgv+FteEa+yEd44lu7POjb1vXLoBPL9gtqVLE
-         wD8k7XX70UVgaPAwIlZFgua55hk+Czv1azO6ysXB0RAMhz2v8clWszwnekQKlmOE2x7Z
-         f2ZgeeviDdvZHpIY1L5UhnAcJIPDqQvJ8kBgF3KJkillv54QnlPO5SowSxFSh18kdLdQ
-         3EF1ywbc4xnFmmtBfZahOjfmzjRFIwa/6LvZ7EDByRHa+VIFwnIZv6JShB7O3PEwd2Qw
-         JIfo5QQh1yEHXDvutiy3MxNiaj3Ox3eW3XKPKC0giFgYdfycFcmYWKo3k1ae/pBNXopL
-         NNkg==
-X-Gm-Message-State: AGi0PuY1DJQ4nxIJSvG/2+9WnCdrYQnTfnfiRqzRn9jC7uaVDrV7n+7s
-        gH25YTBceiNfXI99Alzj2qvsXPD6iwnfS6wh1Lccd+WwMcqKkhcAIjqfJRxbLPV4cgW2x4SwU+R
-        4O+AqFC9DpDe9hSBv
-X-Received: by 2002:a2e:a548:: with SMTP id e8mr6538071ljn.151.1587045750070;
-        Thu, 16 Apr 2020 07:02:30 -0700 (PDT)
-X-Google-Smtp-Source: APiQypKCAs43V6pYsaF/TONUaSErzyvspDJpH+tLyhhYYu+8FdHmVylujRQrD23iAsSUMv/lGGT95w==
-X-Received: by 2002:a2e:a548:: with SMTP id e8mr6538048ljn.151.1587045749770;
-        Thu, 16 Apr 2020 07:02:29 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id t19sm15158531lfl.53.2020.04.16.07.02.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Apr 2020 07:02:29 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 6EAA6181587; Thu, 16 Apr 2020 16:02:28 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        brouer@redhat.com, toshiaki.makita1@gmail.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH RFC-v5 bpf-next 09/12] dev: Support xdp in the Tx path for xdp_frames
-In-Reply-To: <20200413171801.54406-10-dsahern@kernel.org>
-References: <20200413171801.54406-1-dsahern@kernel.org> <20200413171801.54406-10-dsahern@kernel.org>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 16 Apr 2020 16:02:28 +0200
-Message-ID: <87imhzlea3.fsf@toke.dk>
+        id S1731198AbgDPOiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 10:38:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51820 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2392873AbgDPOEn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Apr 2020 10:04:43 -0400
+Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AFEB6206D6;
+        Thu, 16 Apr 2020 14:04:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587045883;
+        bh=2g1gN5DEgBXWlBKecvAugzaSQ60Vp84WS7e/gvCb7hM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=yVXwStomo847snMg8JIhYi9TJq4OI+CNmq0esLtXJ1J6E/0naGeLSqnoH7Ue679IU
+         iMgXjEhtoIUKksuoJD9RcAanVJKcgO1QlEkzku49uklCcK0vFcoXBg3pZ6TwxvWEEm
+         amRIRuTYHz/LkriwQFREXG2+9DhqO6mPWvmN4fp8=
+Date:   Thu, 16 Apr 2020 10:04:41 -0400
+From:   Sasha Levin <sashal@kernel.org>
+To:     Or Gerlitz <gerlitz.or@gmail.com>
+Cc:     Edward Cree <ecree@solarflare.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stable <stable@vger.kernel.org>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        David Miller <davem@davemloft.net>
+Subject: Re: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for
+ representors
+Message-ID: <20200416140441.GL1068@sasha-vm>
+References: <20200412105935.49dacbf7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200414015627.GA1068@sasha-vm>
+ <CAJ3xEMh=PGVSddBWOX7U6uAuazJLFkCpWQNxhg7dDRgnSdQ=xA@mail.gmail.com>
+ <20200414110911.GA341846@kroah.com>
+ <CAJ3xEMhnXZB-HU7aL3m9A1N_GPxgOC3U4skF_qWL8z3wnvSKPw@mail.gmail.com>
+ <a89a592a-5a11-5e56-a086-52b1694e00db@solarflare.com>
+ <20200414205755.GF1068@sasha-vm>
+ <41174e71-00e1-aebf-b67d-1b24731e4ab3@solarflare.com>
+ <20200416000009.GL1068@sasha-vm>
+ <CAJ3xEMjfWL=c=voGqV4pUCzWXmiTn-R6mrRi82UAVHMVysKU1g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <CAJ3xEMjfWL=c=voGqV4pUCzWXmiTn-R6mrRi82UAVHMVysKU1g@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dsahern@kernel.org> writes:
-
-> From: David Ahern <dahern@digitalocean.com>
+On Thu, Apr 16, 2020 at 04:40:31PM +0300, Or Gerlitz wrote:
+>On Thu, Apr 16, 2020 at 3:00 AM Sasha Levin <sashal@kernel.org> wrote:
+>> I'd maybe point out that the selection process is based on a neural
+>> network which knows about the existence of a Fixes tag in a commit.
+>>
+>> It does exactly what you're describing, but also taking a bunch more
+>> factors into it's desicion process ("panic"? "oops"? "overflow"? etc).
 >
-> Add support to run Tx path program on xdp_frames by adding a hook to
-> bq_xmit_all before xdp_frames are passed to ndo_xdp_xmit for the device.
+>As Saeed commented, every extra line in stable / production kernel
+>is wrong. IMHO it doesn't make any sense to take into stable automatically
+>any patch that doesn't have fixes line. Do you have 1/2/3/4/5 concrete
+>examples from your (referring to your Microsoft employee hat comment
+>below) or other's people production environment where patches proved to
+>be necessary but they lacked the fixes tag - would love to see them.
+
+Sure, here are 5 from the past few months:
+
+e5e884b42639 ("libertas: Fix two buffer overflows at parsing bss descriptor")
+3d94a4a8373b ("mwifiex: fix possible heap overflow in mwifiex_process_country_ie()")
+39d170b3cb62 ("ath6kl: fix a NULL-ptr-deref bug in ath6kl_usb_alloc_urb_from_pipe()")
+8b51dc729147 ("rsi: fix a double free bug in rsi_91x_deinit()")
+5146f95df782 ("USB: hso: Fix OOB memory access in hso_probe/hso_get_config_data")
+
+5 Different drivers, neither has a stable tag or a Fixes: tag, all 5
+have a CVE number assigned to them.
+
+>We've been coaching new comers for years during internal and on-list
+>code reviews to put proper fixes tag. This serves (A) for the upstream
+>human review of the patch and (B) reasonable human stable considerations.
+
+Thanks for doing it - we do see more and more fixes tags.
+
+>You are practically saying that for cases we screwed up stage (A) you
+>can somehow still get away with good results on stage (B) - I don't
+>accept it. BTW - during my reviews I tend to ask/require developers to
+>skip the word panic, and instead better explain the nature of the
+>problem / result.
+
+Humans are still humans, and humans make mistakes. Fixes tags get
+forgotten, stable tags get forgotten.
+
+I very much belive you that the mellanox stuff are in good shape thanks
+to your efforts, but the kernel world is bigger than a few select
+drivers.
+
+>>>> This is great, but the kernel is more than just net/. Note that I also
+>>>> do not look at net/ itself, but rather drivers/net/ as those end up with
+>>>> a bunch of missed fixes.
 >
-> If an xdp_frame is dropped by the program, it is removed from the
-> xdp_frames array with subsequent entries moved up.
+>>>drivers/net/ goes through the same DaveM net/net-next trees, with the
+>>> same rules.
 >
-> Signed-off-by: David Ahern <dahern@digitalocean.com>
-> ---
->  include/linux/netdevice.h |  3 ++
->  kernel/bpf/devmap.c       | 19 ++++++++---
->  net/core/dev.c            | 70 +++++++++++++++++++++++++++++++++++++++
->  3 files changed, 87 insertions(+), 5 deletions(-)
+>you ignored this comment, any more specific complaints?
+
+See above (the example commits). The drivers/net/ stuff don't work as
+well as net/ sadly.
+
+>> Let me put my Microsoft employee hat on here. We have driver/net/hyperv/
+>> which definitely wasn't getting all the fixes it should have been
+>> getting without AUTOSEL.
 >
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 39e1b42c042f..d75e31ac2751 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -3715,6 +3715,9 @@ static inline void dev_consume_skb_any(struct sk_buff *skb)
->  void generic_xdp_tx(struct sk_buff *skb, struct bpf_prog *xdp_prog);
->  int do_xdp_generic_rx(struct bpf_prog *xdp_prog, struct sk_buff *skb);
->  u32 do_xdp_egress_skb(struct net_device *dev, struct sk_buff *skb);
-> +unsigned int do_xdp_egress_frame(struct net_device *dev,
-> +				 struct xdp_frame **frames,
-> +				 unsigned int *pcount);
->  int netif_rx(struct sk_buff *skb);
->  int netif_rx_ni(struct sk_buff *skb);
->  int netif_receive_skb(struct sk_buff *skb);
-> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-> index 58bdca5d978a..bedecd07d898 100644
-> --- a/kernel/bpf/devmap.c
-> +++ b/kernel/bpf/devmap.c
-> @@ -322,24 +322,33 @@ static int bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
->  {
->  	struct net_device *dev = bq->dev;
->  	int sent = 0, drops = 0, err = 0;
-> +	unsigned int count = bq->count;
->  	int i;
->  
-> -	if (unlikely(!bq->count))
-> +	if (unlikely(!count))
->  		return 0;
->  
-> -	for (i = 0; i < bq->count; i++) {
-> +	for (i = 0; i < count; i++) {
->  		struct xdp_frame *xdpf = bq->q[i];
->  
->  		prefetch(xdpf);
->  	}
->  
-> -	sent = dev->netdev_ops->ndo_xdp_xmit(dev, bq->count, bq->q, flags);
-> +	if (static_branch_unlikely(&xdp_egress_needed_key)) {
-> +		count = do_xdp_egress_frame(dev, bq->q, &count);
+>> While net/ is doing great, drivers/net/ is not. If it's indeed following
+>> the same rules then we need to talk about how we get done right.
+>
+>I never [1] saw -stable push requests being ignored here in netdev.
+>Your drivers have four listed maintainers and it's common habit by
+>commercial companies to have paid && human (non autosel robots)
+>maintainers that take care of their open source drivers. As in commercial
+>SW products, Linux has a current, next and past (stable) releases, so
+>something sounds as missing to me in your care matrix.
 
-nit: seems a bit odd to pass the point to count, then reassign it with
-the return value?
+How come? DaveM is specifically asking not to add stable tags because he
+will do the selection himself, right? So the hyperv stuff indeed don't
+include a stable tag, but all fixes should have a proper Fixes: tag.
 
-> +		drops += bq->count - count;
-> +		/* all frames consumed by the xdp program? */
-> +		if (!count)
-> +			goto out;
-> +	}
-> +
-> +	sent = dev->netdev_ops->ndo_xdp_xmit(dev, count, bq->q, flags);
->  	if (sent < 0) {
->  		err = sent;
->  		sent = 0;
->  		goto error;
->  	}
-> -	drops = bq->count - sent;
-> +	drops += count - sent;
->  out:
->  	bq->count = 0;
->  
-> @@ -351,7 +360,7 @@ static int bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
->  	/* If ndo_xdp_xmit fails with an errno, no frames have been
->  	 * xmit'ed and it's our responsibility to them free all.
->  	 */
-> -	for (i = 0; i < bq->count; i++) {
-> +	for (i = 0; i < count; i++) {
->  		struct xdp_frame *xdpf = bq->q[i];
->  
->  		xdp_return_frame_rx_napi(xdpf);
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 1bbaeb8842ed..f23dc6043329 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -4720,6 +4720,76 @@ u32 do_xdp_egress_skb(struct net_device *dev, struct sk_buff *skb)
->  }
->  EXPORT_SYMBOL_GPL(do_xdp_egress_skb);
->  
-> +static u32 __xdp_egress_frame(struct net_device *dev,
-> +			      struct bpf_prog *xdp_prog,
-> +			      struct xdp_frame *xdp_frame,
-> +			      struct xdp_txq_info *txq)
-> +{
-> +	struct xdp_buff xdp;
-> +	u32 act;
-> +
-> +	xdp.data_hard_start = xdp_frame->data - xdp_frame->headroom;
-> +	xdp.data = xdp_frame->data;
-> +	xdp.data_end = xdp.data + xdp_frame->len;
-> +	xdp_set_data_meta_invalid(&xdp);
+So why don't they end up in a stable tree?
 
-Why invalidate the metadata? On the contrary we'd want metadata from the
-RX side to survive, wouldn't we?
+If we need to send a mail saying which commits should go to stable, we
+might as well tag them for stable to begin with, right?
 
-> +	xdp.txq = txq;
-> +
-> +	act = bpf_prog_run_xdp(xdp_prog, &xdp);
-> +	act = handle_xdp_egress_act(act, dev, xdp_prog);
-> +
-> +	/* if not dropping frame, readjust pointers in case
-> +	 * program made changes to the buffer
-> +	 */
-> +	if (act != XDP_DROP) {
-> +		int headroom = xdp.data - xdp.data_hard_start;
-> +		int metasize = xdp.data - xdp.data_meta;
-> +
-> +		metasize = metasize > 0 ? metasize : 0;
-> +		if (unlikely((headroom - metasize) < sizeof(*xdp_frame)))
-> +			return XDP_DROP;
-> +
-> +		xdp_frame = xdp.data_hard_start;
-> +		xdp_frame->data = xdp.data;
-> +		xdp_frame->len  = xdp.data_end - xdp.data;
-> +		xdp_frame->headroom = headroom - sizeof(*xdp_frame);
-> +		xdp_frame->metasize = metasize;
-> +		/* xdp_frame->mem is unchanged */
-> +	}
-> +
-> +	return act;
-> +}
-> +
-> +unsigned int do_xdp_egress_frame(struct net_device *dev,
-> +				 struct xdp_frame **frames,
-> +				 unsigned int *pcount)
-> +{
-> +	struct bpf_prog *xdp_prog;
-> +	unsigned int count = *pcount;
-> +
-> +	xdp_prog = rcu_dereference(dev->xdp_egress_prog);
-> +	if (xdp_prog) {
-> +		struct xdp_txq_info txq = { .dev = dev };
+>[1] actually I do remember that once or twice out of the 2020 times we asked,  a
+>patch was not sent to -stable by the sub-system maintainer mistake
+>which he fixed(..) later
 
-Do you have any thoughts on how to populate this for the redirect case?
-I guess using Magnus' HWQ abstraction when that lands? Or did you have
-something different in mind?
-
-> +		unsigned int i, j;
-> +		u32 act;
-> +
-> +		for (i = 0, j = 0; i < count; i++) {
-> +			struct xdp_frame *frame = frames[i];
-> +
-> +			act = __xdp_egress_frame(dev, xdp_prog, frame, &txq);
-> +			if (act == XDP_DROP) {
-> +				xdp_return_frame_rx_napi(frame);
-> +				continue;
-> +			}
-> +
-> +			frames[j] = frame;
-> +			j++;
-> +		}
-> +		count = j;
-> +	}
-> +
-> +	return count;
-> +}
-> +
->  static int netif_rx_internal(struct sk_buff *skb)
->  {
->  	int ret;
-> -- 
-> 2.21.1 (Apple Git-122.3)
-
+-- 
+Thanks,
+Sasha
