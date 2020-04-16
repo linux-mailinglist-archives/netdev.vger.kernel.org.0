@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 946FA1AB843
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 08:42:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39A5C1AB852
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 08:43:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408275AbgDPGmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 02:42:52 -0400
-Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:42021 "EHLO
+        id S2408413AbgDPGnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 02:43:40 -0400
+Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:43551 "EHLO
         wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2407813AbgDPGmr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 02:42:47 -0400
+        by vger.kernel.org with ESMTP id S2408168AbgDPGnf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 02:43:35 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 6D75382F
-        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 02:42:45 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Thu, 16 Apr 2020 02:42:45 -0400
+        by mailout.west.internal (Postfix) with ESMTP id B09DC716
+        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 02:43:34 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Thu, 16 Apr 2020 02:43:34 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
         date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm2; bh=qCRyzl00MQBivzL68vkel39NEbd
-        7kC6dFuyLRxBAey0=; b=Mz6xjOhoyl6u3JLJF3XNH/WDRWC0mCT6w/uiIwB8GXd
-        UpxsH9oudz3X48RMKQfGJbGVDAHug8ZXney1LdfZdZRq90LqW1W0/A6iVYMtK1mN
-        EU59olTzwMNiYltMNJBPysQF0H63fbn5e/tsDm+LApzpl9Y1Sw18AZHKdzIsmaEf
-        9+M1vvWOyW669ZVwQQ7awZo8Cj7vc6UYa6yBhQm8s+v3rqgHnFf6xakj6sV5HtJy
-        j8vNj53XWuWvnoqroGZji7jvJbTKs9v3cgxRMfEEZdJgii7uQdjwtKHH0A6lf3I6
-        8ffKsfT/ph6VFQvi+fA3JKKLi4LFnglOMoqGVSlscBQ==
+        :content-type:in-reply-to; s=fm2; bh=eYZf6ks0Ag4vWkdY+FBeNSBOYxZ
+        kZ9RWoI7L/wXDw/Q=; b=pG92PCpDKEaySEE6b3KK5owRlyOg6omtcBJRh6H2P9g
+        A4+dSJ8ZhNWYumPEo8RSeGX3Y1ofqBKY5EwBKyaQ4uWCzw59hiXAUOxV0z1366xq
+        iuHHZUldbuzXYDjsaxnBz0RsGbyN9Oo/wuSRdS/D5gtGdR/DOID4nUO++5rp07K7
+        LG4gEmPTqHamlJRrP5V34H6lR2pNC4zXGMW/GSE2CyOUmLq5FhAQ7reYixyNSF9S
+        Sk3l1mb29qIgPDMYY0/5m7I+DShBoF71j+C3gAVSuV2Nq12oir1/bimsDQytaFI9
+        rw3mdDAsOxKY1bvJX6PjvfGpx+6c3IrKClpgJXpZ0wA==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-type:date:from:in-reply-to
         :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=qCRyzl
-        00MQBivzL68vkel39NEbd7kC6dFuyLRxBAey0=; b=tDpkfAjKToGh8h447tKOF2
-        X2xIgDbW/MQENCQcfijaBDeF5K/urFF+R0tGVcRr9w2UCaM3LF//6wZYA3gLxs2F
-        GpMtDMnjswNlZ1I/xR/jp09V08VkYewHcaTczvg9j4+5xeQsaNmx+me6Hl8RUUP3
-        yoRDHF1FNxd7/1KEBjPHyCsZKU6HN6SJYjrDyiVSpkPBsO9DylyW3lE6tknrdQhK
-        iiIyvjj1EAtHc7EfFU/rnrgS275sG+eJnCf3C+ZDvjNgeENDlM02/bxXHcNDQ23b
-        Iu0Ywvs0blINcWXlCqYRaSiwi+51AJIhh6dg3dWC77P9lDZ8dPpmiuv1vINlnKng
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=eYZf6k
+        s0Ag4vWkdY+FBeNSBOYxZkZ9RWoI7L/wXDw/Q=; b=l64IWX/+vA9VeLpOG1WZTj
+        ijXTy0PKYwRcQ3emfKH8ndi4IhCr3cOvCULhf1E42CRBXKpjYi5qDcvNtB6qgGf+
+        lv3nXzFTFD+OHHaD1wEnsEZwqThXxc1+YhEpR7nR350GKhV8Ag64FpjMoTuPfieQ
+        RptpRB+FxDQEUPlU2ERlyzkONSFHPg2nfQrtLJtZJX5hqB32R9yC2uz0K0i4PVJk
+        JjW1TJxb+0ntZ9AlrLd35o4UV3bA2pIC1p/4F8WnzbBCgWDyMFveqMBEj+Aavlzi
+        7tu8vov8sxab33Sbtow1Xp/rmgo+4obBCTPSZjQ7+yshI8w+SjlTgdc+EeFzSGQg
         ==
-X-ME-Sender: <xms:ZP6XXubrbnjaJmDSAezS58ctt5QLXiiKB16wiiRZgidQqqTsYRUGFQ>
+X-ME-Sender: <xms:lv6XXilC_YkXBe8Whsvt2G22oEeAuDFQSZ3UWUNh7FSCbrDfPP1wPA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrfeeggdduudduucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
     vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecukfhppeeltd
-    drkeelrdeikedrjeeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghi
+    drkeelrdeikedrjeeinecuvehluhhsthgvrhfuihiivgepvdenucfrrghrrghmpehmrghi
     lhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:ZP6XXloKWHxYHVVtgychG4-zVR4rGuvZo3AsOX95y52vtdgzm-bBdQ>
-    <xmx:ZP6XXj8xbGOWEWwK16jziTD8-LvUHMqFqGXmTErw041UfL8daCHx8g>
-    <xmx:ZP6XXk-bYqDqnEgl0VlPtnIwAfVzY1fE1L5l2axMcTQVVPs_tPcM1g>
-    <xmx:Zf6XXrwRCa4DD8fs1yxzZL2I7hCOqk_LaiZIxH0yE-ppqefVyaQ0-A>
+X-ME-Proxy: <xmx:lv6XXs8DNqkoD8oaar1Oa6VtWtbSbtjIxDb06r-1-r0UqXRJEyp5ow>
+    <xmx:lv6XXuEqgLxDNfR7AN2ETjZKblc1TySK-wXnqkVNgEpW8MrGU-fNWA>
+    <xmx:lv6XXrLmph0NLlZB1jZgiUgujM5VNmiM_hVIy7JwI1EqnH7IxzlEcQ>
+    <xmx:lv6XXq_chfg60EabnQfNPaCcJFdNHe1CgBQWMWOoQoLAvoxS-7erCg>
 Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr [90.89.68.76])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 59AE0328005E;
-        Thu, 16 Apr 2020 02:42:44 -0400 (EDT)
-Date:   Thu, 16 Apr 2020 08:42:42 +0200
+        by mail.messagingengine.com (Postfix) with ESMTPA id D7E56306005F;
+        Thu, 16 Apr 2020 02:43:33 -0400 (EDT)
+Date:   Thu, 16 Apr 2020 08:43:32 +0200
 From:   Maxime Ripard <maxime@cerno.tech>
 To:     Rob Herring <robh@kernel.org>
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -90,47 +90,53 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-remoteproc@vger.kernel.org, linux-riscv@lists.infradead.org,
         linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
         alsa-devel@alsa-project.org, linux-spi@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: Clean-up schema indentation formatting
-Message-ID: <20200416064242.azdjulo76ymwgpfq@gilmour.lan>
+Subject: Re: [PATCH 2/2] dt-bindings: Remove cases of 'allOf' containing a
+ '$ref'
+Message-ID: <20200416064332.cbtmgnbwjityninz@gilmour.lan>
 References: <20200416005549.9683-1-robh@kernel.org>
+ <20200416005549.9683-2-robh@kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="s675c5ai5d6avmtq"
+        protocol="application/pgp-signature"; boundary="wl56qmwukpbi7dfb"
 Content-Disposition: inline
-In-Reply-To: <20200416005549.9683-1-robh@kernel.org>
+In-Reply-To: <20200416005549.9683-2-robh@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---s675c5ai5d6avmtq
+--wl56qmwukpbi7dfb
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Wed, Apr 15, 2020 at 07:55:48PM -0500, Rob Herring wrote:
-> Fix various inconsistencies in schema indentation. Most of these are
-> list indentation which should be 2 spaces more than the start of the
-> enclosing keyword. This doesn't matter functionally, but affects running
-> scripts which do transforms on the schema files.
+On Wed, Apr 15, 2020 at 07:55:49PM -0500, Rob Herring wrote:
+> json-schema versions draft7 and earlier have a weird behavior in that
+> any keywords combined with a '$ref' are ignored (silently). The correct
+> form was to put a '$ref' under an 'allOf'. This behavior is now changed
+> in the 2019-09 json-schema spec and '$ref' can be mixed with other
+> keywords. The json-schema library doesn't yet support this, but the
+> tooling now does a fixup for this and either way works.
+>
+> This has been a constant source of review comments, so let's change this
+> treewide so everyone copies the simpler syntax.
 >
 > Signed-off-by: Rob Herring <robh@kernel.org>
 
 For allwinner,
 Acked-by: Maxime Ripard <mripard@kernel.org>
 
-Thanks!
 Maxime
 
---s675c5ai5d6avmtq
+--wl56qmwukpbi7dfb
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXpf+YgAKCRDj7w1vZxhR
-xZmqAPwLCqvPnd6KBgcsRgWmwe8BxcsE0xhduyc59wNSaliiHQEAhUMizDtya0EL
-yGrmpfvuS8/nRsvbMHGM2twyMWfc6QE=
-=F+e6
+iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXpf+lAAKCRDj7w1vZxhR
+xfXZAP9GMb4mpNd2CMjZwk5BxMrLzEIpKJTiQ4orqceXOWVHrwEA79RK8mnQLFzA
+6mFAQXdPtJjk58zdTQSSSDo30M+OtQk=
+=foV0
 -----END PGP SIGNATURE-----
 
---s675c5ai5d6avmtq--
+--wl56qmwukpbi7dfb--
