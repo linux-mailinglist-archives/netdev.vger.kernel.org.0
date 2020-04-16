@@ -2,133 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A135B1ACCA3
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 18:04:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 434BB1ACCB2
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 18:07:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2636722AbgDPQDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 12:03:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51720 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2636699AbgDPQDG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 12:03:06 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 640B1C061A0C
-        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 09:03:06 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id f14so2299930ybr.13
-        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 09:03:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8S1/Zns0w2R+tWbAqZwRs1WaDE0dC4Kc/yx5VLZAeGs=;
-        b=MTLQB+BVCxzC+oMRlPaO9Ob8QIjC0GTapJqaf3HNMHPLHkwGDnClFH/GSsUrHpeKe2
-         e6C8dkjphgKV8Im1RfV3qc28op+ocJJGSDzAZraTBdbWqqDkdOE51SDiZvt7xVnr3Wmy
-         9CbU0uTh7PisUHo/cP2HPDvDrKJ21aGOzdk1sW7Yu+1z0aAfV1gETke3KJBtCwPhA2zG
-         d/UzRrBU/eUE6E8o407hIgu4Kms1R7Sj8W314EXfaLtPcGnUBY64eakUdAxfqm7nwTTo
-         GpvfeHdrnGdpIMmKOv1HzBp1CtwcIXUb/joe8gxkGDS0wzs4C0o6evcdcJBlrY5mvyeI
-         5ZYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8S1/Zns0w2R+tWbAqZwRs1WaDE0dC4Kc/yx5VLZAeGs=;
-        b=mft1nNXuEDhZhc90i7TesECN7SpRBn11YvsG8Q292dePwTV8JOCG1I+UKH1npDPi5W
-         i4jMImeA1AeYZ/rklF+FIdkq6Re4NhNR1VirhZCyr9E2ue5jwWJEVvq30uYyx/wUC6QD
-         5+5h3fCbXtjvS4jkt/TzgU20mo9H8OhX3WqH6LTzulMWu8FA6illLr2gaXNDG9HxRGRU
-         Dkrfyfo21RjfACcW3wL31I7Ta3tzI4u5W7yn1cJfA1nGcWtpnuEW+dnlbmF8Tr6GW3KT
-         hFEGpvC5+EmekmVEduit1iHEk1lGtFU9eJMBQDaOVEQh6+yqhG+b5tvv0DGWLl1RejS1
-         aqdg==
-X-Gm-Message-State: AGi0PuarHiMjPQpyk2cxnNTyZpbM39IpFyopBunVszOeBLUJik7iPtsJ
-        VdhSvr3BYyLGFyfrdcGJlY28rn1nLqpx/OtE+V3h7A==
-X-Google-Smtp-Source: APiQypIhOc/b1doEKpGTc2ZxzB7I5cOsPCJcdcWW+Yz3YaPcVeVv30HCHQwVY1yq+kEq5mdjTQ3p0+llYJJaMyXa3Dc=
-X-Received: by 2002:a25:77d8:: with SMTP id s207mr17566908ybc.47.1587052985348;
- Thu, 16 Apr 2020 09:03:05 -0700 (PDT)
+        id S1727831AbgDPQHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 12:07:10 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:40010 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728114AbgDPQHF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 12:07:05 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.61])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 61F27600DD;
+        Thu, 16 Apr 2020 16:07:03 +0000 (UTC)
+Received: from us4-mdac16-6.ut7.mdlocal (unknown [10.7.65.74])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 5FBB38009E;
+        Thu, 16 Apr 2020 16:07:03 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.33])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id B376380051;
+        Thu, 16 Apr 2020 16:07:02 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 2765FA80061;
+        Thu, 16 Apr 2020 16:07:02 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 16 Apr
+ 2020 17:06:55 +0100
+Subject: Re: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for
+ representors
+To:     Sasha Levin <sashal@kernel.org>
+CC:     Or Gerlitz <gerlitz.or@gmail.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stable <stable@vger.kernel.org>,
+        "Linux Netdev List" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        David Miller <davem@davemloft.net>
+References: <20200411231413.26911-9-sashal@kernel.org>
+ <CAJ3xEMhhtj77M5vercHDMAHPPVZ8ZF-eyCVQgD4ZZ1Ur3Erbdw@mail.gmail.com>
+ <20200412105935.49dacbf7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200414015627.GA1068@sasha-vm>
+ <CAJ3xEMh=PGVSddBWOX7U6uAuazJLFkCpWQNxhg7dDRgnSdQ=xA@mail.gmail.com>
+ <20200414110911.GA341846@kroah.com>
+ <CAJ3xEMhnXZB-HU7aL3m9A1N_GPxgOC3U4skF_qWL8z3wnvSKPw@mail.gmail.com>
+ <a89a592a-5a11-5e56-a086-52b1694e00db@solarflare.com>
+ <20200414205755.GF1068@sasha-vm>
+ <41174e71-00e1-aebf-b67d-1b24731e4ab3@solarflare.com>
+ <20200416000009.GL1068@sasha-vm>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <779d89c8-1e49-fbb6-8b4f-824767d70cc2@solarflare.com>
+Date:   Thu, 16 Apr 2020 17:06:46 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <20200416063551.47637-1-irogers@google.com> <20200416063551.47637-5-irogers@google.com>
- <20200416095501.GC369437@krava>
-In-Reply-To: <20200416095501.GC369437@krava>
-From:   Ian Rogers <irogers@google.com>
-Date:   Thu, 16 Apr 2020 09:02:54 -0700
-Message-ID: <CAP-5=fVOb1nV2gdGGWLQvTApoMR=qzaSQHSwxsAKAXQ=wqQV+g@mail.gmail.com>
-Subject: Re: [PATCH v9 4/4] perf tools: add support for libpfm4
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Igor Lubashev <ilubashe@akamai.com>,
-        Alexey Budankov <alexey.budankov@linux.intel.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Jiwei Sun <jiwei.sun@windriver.com>,
-        yuzhoujian <yuzhoujian@didichuxing.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        John Garry <john.garry@huawei.com>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org,
-        linux-perf-users <linux-perf-users@vger.kernel.org>,
-        Stephane Eranian <eranian@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200416000009.GL1068@sasha-vm>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25358.003
+X-TM-AS-Result: No-7.422500-8.000000-10
+X-TMASE-MatchedRID: HLMPCFyIyBPmLzc6AOD8DfHkpkyUphL9HkWa9nMURC4W6M2A15L1QP1b
+        Ocztcrfi9y0si6rTiya4qyXQiR53STrl7gPhTJMPGiSKwLJUJ7Eb3zyRU6EBvh//bz4/xYKAIKR
+        piQCnYZveFNYjNC5x4tmXlTv6s91ssu1e6zO/XBC1GgeTcvlUnPic6Ma13+ufTGgmdNvqkl+4KN
+        oeDfLV7LlqiBHCCaa6mfHUPwJ5HXNRnOaI8J4pLzfu+RTlciXgDvc/j9oMIgUuZSs9lcBqfnEMX
+        oluwlO2jqQ82yy1I7Rb0BCI7wdwwLX1vo7+rLqGRXdiukZQCgE0aXTlOdj8kw5SzgJNSArLnCWT
+        aXAK9QNtL2HUCgveD+DcAHv31uCXCXUTYBf5b3ssYOarN8c4H1eOOwzb8N/GpjfLp08U3/W7LAA
+        thI3XRnk37+FwjZVfNaqAmzMMlzil+yWhjYUl7edNi+0D4LmKei6Cy+4dr9oS39b8+3nDx9skxt
+        NP0r9NEIy8vMxarTM2EqJn2nY8hoxpy4UOhqKrIv/tYKD045LFdEMoTK7bMYIXP2KSJplGxYQsK
+        eG/kyWDenTS3qzbzVgbYesIPWtSKgDmz5EUYuXBe89zsi5D0AKflB9+9kWVIyM6bqaAlyvwtZWt
+        kkk1NKsguwzsfUr7Gc7zSgqFEWC4vpKu9/6gMW6HurDH4PpPAZNQS8fWdZ12AfDzADsQvLJnPh8
+        w+R5o8WYhJSDf+eQvbO9ImVjdWC7bvTtKtQVC8KGJCiV+3/JGggmPZz/QYZsoi2XrUn/JmTDwp0
+        zM3zoqtq5d3cxkNQwWxr7XDKH8sV0ftnDC/TUiiictwS4K0+CplgVSWiDCBdhMlQAcDqXa0fdaV
+        0MQGUMMprcbiest
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--7.422500-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25358.003
+X-MDID: 1587053223-mSobTtx7W0UE
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 16, 2020 at 2:55 AM Jiri Olsa <jolsa@redhat.com> wrote:
+On 16/04/2020 01:00, Sasha Levin wrote:
+> I'd maybe point out that the selection process is based on a neural
+> network which knows about the existence of a Fixes tag in a commit.
 >
-> On Wed, Apr 15, 2020 at 11:35:51PM -0700, Ian Rogers wrote:
-> > From: Stephane Eranian <eranian@google.com>
-> >
-> > This patch links perf with the libpfm4 library if it is available
-> > and NO_LIBPFM4 isn't passed to the build. The libpfm4 library
-> > contains hardware event tables for all processors supported by
-> > perf_events. It is a helper library that helps convert from a
-> > symbolic event name to the event encoding required by the
-> > underlying kernel interface. This library is open-source and
-> > available from: http://perfmon2.sf.net.
-> >
-> > With this patch, it is possible to specify full hardware events
-> > by name. Hardware filters are also supported. Events must be
-> > specified via the --pfm-events and not -e option. Both options
-> > are active at the same time and it is possible to mix and match:
-> >
-> > $ perf stat --pfm-events inst_retired:any_p:c=1:i -e cycles ....
-> >
-> > Signed-off-by: Stephane Eranian <eranian@google.com>
-> > Reviewed-by: Ian Rogers <irogers@google.com>
->
->         # perf list
->         ...
->         perf_raw pfm-events
->           r0000
->             [perf_events raw event syntax: r[0-9a-fA-F]+]
->
->         skl pfm-events
->           UNHALTED_CORE_CYCLES
->             [Count core clock cycles whenever the clock signal on the specific core is running (not halted)]
->           UNHALTED_REFERENCE_CYCLES
->
-> please add ':' behind the '* pfm-events' label
+> It does exactly what you're describing, but also taking a bunch more
+> factors into it's desicion process ("panic"? "oops"? "overflow"? etc).
+Yeah, that's why I found it odd that you were responding in a way that
+ _looked like_ classic confusion of P(A|B) and P(B|A).  I just wanted
+ to make sure we had that common ground before launching into a long
+ Bayesian explanation.
 
-Thanks! Not sure I follow here. skl here is the pmu. pfm-events is
-here just to make it clearer these are --pfm-events. The event is
-selected with '--pfm-events UNHALTED_CORE_CYCLES'. Will putting
-skl:pfm-events here make it look like that is part of the event
-encoding?
+So, let's go:
+Let's imagine that 10% of all commits are stable-worthy, and we have a
+ threshold that says we autosel a patch if we think there's better than
+ 50% chance that it's stable-worthy.  Then 50% of stable-worthy commits
+ have a Fixes: tag (whose referent exists in the stable tree already),
+ whereas some unknown fraction, let's say 5%, of non-stable-worthy
+ commits have a Fixes: tag.
+Then P(S|F) = P(F|S)P(S) / (P(F|S)P(S) + P(F|¬S)P(¬S))
+            = 0.05 / (0.05 + 0.045) = 0.526...
+That is, a patch with a Fixes: tag is 52.6% likely to be stable-worthy,
+ *not* 50%.  (The disparity would be bigger if P(F|¬S) were smaller;
+ conversely, if P(F|¬S) were larger, P(S|F) could be _less than_ 50%.)
+But also, P(S|¬F) = P(¬F|S)P(S) / (P(¬F|S)P(S) + P(¬F|¬S)P(¬S))
+                  = 0.05 / (0.05 + 0.855) = 0.055...
+That is, a patch without a Fixes: tag is only 5.5% likely to be stable-
+ worthy, which is *less* than the 10% base rate for all patches.  So
+ now you need to get *more* of the positive evidence (panic/oops/overflow
+ etc.) before you get pushed over the 40% threshold.
+Thus "increase the amount of countervailing evidence needed".
 
-Thanks,
-Ian
+> most fixes in -stable *don't* have a fixes tag. Shouldn't
+> your argument be the opposite? If a patch has a fixes tag, it's probably
+> not a fix?
+I hope it's now clear that this statement confuses P(S|F) with P(F|S).
 
-> jirka
+> Let me put my Microsoft employee hat on here. We have driver/net/hyperv/
+> which definitely wasn't getting all the fixes it should have been
+> getting without AUTOSEL.
 >
+> While net/ is doing great, drivers/net/ is not. If it's indeed following
+> the same rules then we need to talk about how we get done right.
+>
+> I really have no objection to not looking in drivers/net/, it's just
+> that the experience I had with the process suggests that it's not
+> following the same process as net/.
+Again, I'm not saying "don't look in drivers/net/", I'm saying increase
+ the probability threshold there: because _some_ of the stable candidates
+ have already been picked up by our process, the pickings in what's left
+ are thinner, i.e. the base rate P(S) is lower, so you need _more_
+ evidence before deciding to autosel something.  (I don't know exactly
+ how your NN is set up; is it able to use information like "is in
+ drivers/net/" as an input node?)  Part of the trouble is that the NN is
+ trained on "did this go to stable eventually", whereas being in
+ drivers/net/ is (on this theory) only a signal in the case where it
+ didn't go to stable _initially_ and had to be caught later; is that
+ information also present in your training data?  The NN would only be
+ expected to learn about drivers/net/ for itself if that were the case,
+ otherwise it would have no way of knowing about the lowered base rate.
+Conversely, if it *did* have that information (was this sent to stable
+ by maintainer's own processes, or was it found later to have been
+ missed) in the training data, it could learn these things by itself and
+ there'd be no need to do anything special for drivers/net/ (or, arguably,
+ even for net/).
+
+> How come? DaveM is specifically asking not to add stable tags because he
+> will do the selection himself, right?
+Driver maintainers sending patch series to Dave often include in the
+ cover letter "please consider patches 4, 7, 8 for stable".  It's *directly*
+ CCing stable on patch submissions that Dave asks people not to do.
+And it sounds from your Microsoft-hat like the HyperV maintainers might be
+ under that same misapprehension, if their stuff isn't making it to stable
+ as much as it should be.  But I haven't checked.
+
+-ed
