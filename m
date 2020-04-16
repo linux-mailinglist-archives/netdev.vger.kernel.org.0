@@ -2,142 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48D011AC910
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 17:19:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0115F1AC927
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 17:21:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504070AbgDPPSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 11:18:15 -0400
-Received: from perceval.ideasonboard.com ([213.167.242.64]:42002 "EHLO
-        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2442384AbgDPPSH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 11:18:07 -0400
-Received: from pendragon.ideasonboard.com (81-175-216-236.bb.dnainternet.fi [81.175.216.236])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 20E5497D;
-        Thu, 16 Apr 2020 17:18:03 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1587050283;
-        bh=kRV0TK76jaLsKumnRx9oBxQ+fB9EZ/hBhcVvcCrUN8Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KunL1GHnZWE+ve/sOLaoFkAzYPKX6+/n+r78iuYJs7x5e+okkGATOqE6ApGMnuikF
-         /2ayUcQFN/Z9UdwuSHJbBCZB/V8aA1w7KUzO09ROtISEFr9rEn/3j6xTfoHtnx7/rk
-         eGxptalaFyRgrldUK2vtce1M8FhIp7rddugLnmJg=
-Date:   Thu, 16 Apr 2020 18:17:51 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Daniel Vetter <daniel@ffwll.ch>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        David Airlie <airlied@linux.ie>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>
-Subject: Re: [RFC 5/6] drm/rcar-du: fix selection of CMM driver
-Message-ID: <20200416151751.GD4796@pendragon.ideasonboard.com>
-References: <20200414201739.GJ19819@pendragon.ideasonboard.com>
- <CAK8P3a0hd5bsezrJS3+GV2nRMui4P5yeD2Rk7wQpJsAZeOCOUg@mail.gmail.com>
- <20200414205158.GM19819@pendragon.ideasonboard.com>
- <CAK8P3a1PZbwdvdH_Gi9UQVUz2+_a8QDxKuWLqPtjhK1stxzMBQ@mail.gmail.com>
- <CAMuHMdUb=XXucGUbxt26tZ1xu9pdyVUB8RVsfB2SffURVVXwSg@mail.gmail.com>
- <CAK8P3a1uasBFg9dwvPEcokrRhYE2qh6iwOMW1fDTY+LBZMrTjg@mail.gmail.com>
- <CAK8P3a0CoPUTSJp6ddDnmabo59iE73pugGSYayoeB5N57az9_w@mail.gmail.com>
- <20200415211220.GQ4758@pendragon.ideasonboard.com>
- <CAK8P3a1rDZO4cuL6VAXgu9sOiedcHqOSL7ELhpvULz+YYRaGbA@mail.gmail.com>
- <CAKMK7uEoZ1jC8c25tPVX20kcdC1=+TpUUNyf+-c=sg5iK2cTZA@mail.gmail.com>
+        id S2442446AbgDPPT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 11:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44784 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2504391AbgDPPTW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 11:19:22 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94F3DC061A0C
+        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 08:19:22 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id g6so1771609pgs.9
+        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 08:19:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=U7K24gXeIPWS1w0vDNTjBMrSJLP+Y/VYjZWfEiiiLh4=;
+        b=d+VYsx3u9qmo82wp9jsqbBN3zox3PlUodFbo8y910ffdaL6hOwIK6+9N08Bi0bhIly
+         WfPqOrcqyBZNQ5S93p9p68BEnzccXxJh60UneFRrmpOtXTx7or7YEXr1hZEEdTvpykxz
+         Pwp/sydOoBVeUESqSac4aInr2afz9sN/CeuI+p+Q40Y7KTMKWUzyD80BssRjf0ozgVbu
+         SAqZOrWXjbPnqyXEadUyr5ehxXW+tLbLqw4PQXfBCC0jW47r8c2hLo296zpcg+wWBBQ9
+         xgVB1t3dHnJ/CRlkBW9mVOCTu6INHrt9MIuAzlblIx6QFJB3UKO3uH7m6SWwTU6sPNT8
+         qZ1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=U7K24gXeIPWS1w0vDNTjBMrSJLP+Y/VYjZWfEiiiLh4=;
+        b=PEqKRzll+MbHMweKH6ZRxKZLTIeeJhuQEJWS1wY6ahRw9XDEl5XQdqOUP1qjxR2etY
+         qgRMbVTQZaMe5yBRV3mKCgmkFCCLUWxDDPYC3HXDyclccUbGIjEi2Gfn0SNY3UOLqsok
+         k4BeSBrYfe3Kudhf7eyym68RSRQiERScHqD7v2nvYOcA4mCZ1HIDdzriKZfZeuvEcx5D
+         McD/Z0y8bBeU3m+EhfBuXRaRR7A4+p23kSlIOOnV20hgHUiGy5VJ/mPurWeRofubqCl7
+         RXAJmoyKrtEbiK6EPl62Oyosc65NerzIY4xFuVraxyooOsjxcxYoBXXFpFcuSFNtEPIb
+         +WoA==
+X-Gm-Message-State: AGi0PuYsKiBJ1toZHc3yUSFg6kVvng5DkRLh9KNSSXtvoDOnyUqxwH5+
+        A45KA4YeIEFAHpwLWrfr0Nk=
+X-Google-Smtp-Source: APiQypIiaRHUeX13464zP/HTH/jwtKraet2JCWi8whGJUS3t0pm6sq3sKOav3zVyU6lAiEaH6BD74g==
+X-Received: by 2002:a62:1584:: with SMTP id 126mr26936155pfv.185.1587050362123;
+        Thu, 16 Apr 2020 08:19:22 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id ml24sm2659204pjb.48.2020.04.16.08.19.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Apr 2020 08:19:21 -0700 (PDT)
+Subject: Re: [PATCH net 1/2] amd-xgbe: Use __napi_schedule() in BH context
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
+References: <20191126222013.1904785-1-bigeasy@linutronix.de>
+ <20191126222013.1904785-2-bigeasy@linutronix.de>
+ <9c632f8c-96a5-bb01-bac5-6aa0be58166a@amd.com>
+ <20200416135202.txc5kwibczh5vl4c@linutronix.de>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <788f3b66-de61-bc11-a06f-3084c1937cf1@gmail.com>
+Date:   Thu, 16 Apr 2020 08:19:08 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
+In-Reply-To: <20200416135202.txc5kwibczh5vl4c@linutronix.de>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAKMK7uEoZ1jC8c25tPVX20kcdC1=+TpUUNyf+-c=sg5iK2cTZA@mail.gmail.com>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 16, 2020 at 08:51:14AM +0200, Daniel Vetter wrote:
-> On Wed, Apr 15, 2020 at 11:22 PM Arnd Bergmann wrote:
-> > On Wed, Apr 15, 2020 at 11:12 PM Laurent Pinchart wrote:
-> > > On Wed, Apr 15, 2020 at 09:07:14PM +0200, Arnd Bergmann wrote:
-> > > > On Wed, Apr 15, 2020 at 5:18 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> > > > > On Wed, Apr 15, 2020 at 4:13 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > > > > > On Wed, Apr 15, 2020 at 3:47 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> > > > > > > On Tue, Apr 14, 2020 at 10:52 PM Laurent Pinchart <laurent.pinchart@ideasonboard.com> wrote:
-> > > > > > > > Doesn't "imply" mean it gets selected by default but can be manually
-> > > > > > > > disabled ?
-> > > > > > >
-> > > > > > > That may be what it means now (I still don't understand how it's defined
-> > > > > > > as of v5.7-rc1), but traditionally it was more like a 'select if all
-> > > > > > > dependencies are met'.
-> > > > > >
-> > > > > > That's still what it is supposed to mean right now ;-)
-> > > > > > Except that now it should correctly handle the modular case, too.
-> > > > >
-> > > > > Then there is a bug. If I run 'make menuconfig' now on a mainline kernel
-> > > > > and enable CONFIG_DRM_RCAR_DU, I can set
-> > > > > DRM_RCAR_CMM and DRM_RCAR_LVDS to 'y', 'n' or 'm' regardless
-> > > > > of whether CONFIG_DRM_RCAR_DU is 'm' or 'y'. The 'implies'
-> > > > > statement seems to be ignored entirely, except as reverse 'default'
-> > > > > setting.
-> > > >
-> > > > Here is another version that should do what we want and is only
-> > > > half-ugly. I can send that as a proper patch if it passes my testing
-> > > > and nobody hates it too much.
-> > >
-> > > This may be a stupid question, but doesn't this really call for fixing
-> > > Kconfig ? This seems to be such a common pattern that requiring
-> > > constructs similar to the ones below will be a never-ending chase of
-> > > offenders.
-> >
-> > Maybe, I suppose the hardest part here would be to come up with
-> > an appropriate name for the keyword ;-)
-> >
-> > Any suggestions?
 
-Would it make sense to fix the imply semantics ? Or are they use cases
-for the current behaviour of imply ? "recommend" could be another
-keyword. I think we should try to limit the number of keywords though,
-as it would otherwise become quite messy.
 
-> > This specific issue is fairly rare though, in most cases the dependencies
-> > are in the right order so a Kconfig symbol 'depends on' a second one
-> > when the corresponding loadable module uses symbols from that second
-> > module. The problem here is that the two are mixed up.
-> >
-> > The much more common problem is the one where one needs to
-> > wrong
-> >
-> > config FOO
-> >        depends on BAR || !BAR
-> >
-> > To ensure the dependency is either met or BAR is disabled, but
-> > not FOO=y with BAR=m. If you have any suggestions for a keyword
-> > for that thing, we can clean up hundreds of such instances.
+On 4/16/20 6:52 AM, Sebastian Andrzej Siewior wrote:
+> On 2019-12-02 11:19:00 [-0600], Tom Lendacky wrote:
+>> On 11/26/19 4:20 PM, Sebastian Andrzej Siewior wrote:
+>>> The driver uses __napi_schedule_irqoff() which is fine as long as it is
+>>> invoked with disabled interrupts by everybody. Since the commit
+>>> mentioned below the driver may invoke xgbe_isr_task() in tasklet/softirq
+>>> context. This may lead to list corruption if another driver uses
+>>> __napi_schedule_irqoff() in IRQ context.
+>>>
+>>> Use __napi_schedule() which safe to use from IRQ and softirq context.
+>>>
+>>> Fixes: 85b85c853401d ("amd-xgbe: Re-issue interrupt if interrupt status not cleared")
+>>> Cc: Tom Lendacky <thomas.lendacky@amd.com>
+>>> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+>>
+>> Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
 > 
-> Some ideas:
+> *ping*
+> This still applies and is independent of the conversation in 2/2.
+
+Then resend this patch alone, including the Acked-by you collected so far.
+
+Thanks.
+
 > 
-> config FOO
->     can use  BAR
->     maybe BAR
->     optional BAR
-
-Another idea,
-
-	depends optionally on BAR
-
-> We should probably double-check that this is only ever used for when
-> both FOO and BAR are tri-state, since without that it doesn't make
-> much sense.
-
--- 
-Regards,
-
-Laurent Pinchart
+>>> ---
+>>>  drivers/net/ethernet/amd/xgbe/xgbe-drv.c | 2 +-
+>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
+>>> index 98f8f20331544..3bd20f7651207 100644
+>>> --- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
+>>> +++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
+>>> @@ -514,7 +514,7 @@ static void xgbe_isr_task(unsigned long data)
+>>>  				xgbe_disable_rx_tx_ints(pdata);
+>>>  
+>>>  				/* Turn on polling */
+>>> -				__napi_schedule_irqoff(&pdata->napi);
+>>> +				__napi_schedule(&pdata->napi);
+>>>  			}
+>>>  		} else {
+>>>  			/* Don't clear Rx/Tx status if doing per channel DMA
+>>>
+> 
+> Sebastian
+> 
