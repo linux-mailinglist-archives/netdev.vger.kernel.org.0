@@ -2,161 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 667981AC1A1
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 14:44:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05C861AC1AC
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 14:46:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2636163AbgDPMom (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 08:44:42 -0400
-Received: from asavdk4.altibox.net ([109.247.116.15]:33886 "EHLO
-        asavdk4.altibox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2636077AbgDPMoR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 08:44:17 -0400
-Received: from ravnborg.org (unknown [158.248.194.18])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S2636280AbgDPMp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 08:45:58 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:31784 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2636238AbgDPMpf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 08:45:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587041134;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MV2bEo574pzJ3B0W4ffirdlVAA/eslNG/6SGnwVO9zw=;
+        b=g4Tw1bdVdaTt0mL9Oj8Dh+E8hVFOr7BTL6JPoC4H7d0FEY6xWeHMckXVvPl6qesjuhIEky
+        JVifUicNL5Q4G6Gzld5+YCzcSr6w4GmhST+WP0HnsSA03loJ0F+9BDKXTSu8Tc/KpcFaOn
+        OpkX2QE2Lpoq+XjF9vlG8ff9ddNXIao=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-398-XO0Fg2ieO7qsSmJ1EX2xSw-1; Thu, 16 Apr 2020 08:45:32 -0400
+X-MC-Unique: XO0Fg2ieO7qsSmJ1EX2xSw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by asavdk4.altibox.net (Postfix) with ESMTPS id 924AA80487;
-        Thu, 16 Apr 2020 14:44:00 +0200 (CEST)
-Date:   Thu, 16 Apr 2020 14:43:59 +0200
-From:   Sam Ravnborg <sam@ravnborg.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Amit Kucheria <amit.kucheria@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-i2c@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: Clean-up schema indentation formatting
-Message-ID: <20200416124359.GB5785@ravnborg.org>
-References: <20200416005549.9683-1-robh@kernel.org>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DB68B8024CD;
+        Thu, 16 Apr 2020 12:45:30 +0000 (UTC)
+Received: from [10.36.113.44] (ovpn-113-44.ams2.redhat.com [10.36.113.44])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 038925DA7D;
+        Thu, 16 Apr 2020 12:45:28 +0000 (UTC)
+From:   "Eelco Chaudron" <echaudro@redhat.com>
+To:     "Yonghong Song" <yhs@fb.com>
+Cc:     bpf@vger.kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, andriin@fb.com
+Subject: Re: [RFC PATCH bpf-next 0/3] bpf: add tracing for XDP programs using
+ the BPF_PROG_TEST_RUN API
+Date:   Thu, 16 Apr 2020 14:45:26 +0200
+Message-ID: <D0164AC9-7AF7-4434-B6D1-0A761DC626FB@redhat.com>
+In-Reply-To: <819b1b3a-c801-754b-e805-7ec8266e5dfa@fb.com>
+References: <158453675319.3043.5779623595270458781.stgit@xdp-tutorial>
+ <819b1b3a-c801-754b-e805-7ec8266e5dfa@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200416005549.9683-1-robh@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-CMAE-Score: 0
-X-CMAE-Analysis: v=2.3 cv=XpTUx2N9 c=1 sm=1 tr=0
-        a=UWs3HLbX/2nnQ3s7vZ42gw==:117 a=UWs3HLbX/2nnQ3s7vZ42gw==:17
-        a=jpOVt7BSZ2e4Z31A5e1TngXxSK0=:19 a=kj9zAlcOel0A:10
-        a=xJWM5Xtqm7-vkBAKM1YA:9 a=bxeknKLoBf6BnO7k:21 a=StjP_oZuoJ7ca4eH:21
-        a=CjuIK1q_8ugA:10
+Content-Type: text/plain; charset="UTF-8"; format=flowed; markup=markdown
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rob.
-
-On Wed, Apr 15, 2020 at 07:55:48PM -0500, Rob Herring wrote:
-> Fix various inconsistencies in schema indentation. Most of these are
-> list indentation which should be 2 spaces more than the start of the
-> enclosing keyword. This doesn't matter functionally, but affects running
-> scripts which do transforms on the schema files.
-
-Are there any plans to improve the tooling so we get warnigns for this?
-Otherwise I am afraid we will see a lot of patches that gets this wrong.
-
-As a follow-up patch it would be good if example-schema.yaml
-could gain some comments about the correct indentions.
-
-Some comments in the following.
-
-> diff --git a/Documentation/devicetree/bindings/arm/altera.yaml b/Documentation/devicetree/bindings/arm/altera.yaml
-> index 49e0362ddc11..b388c5aa7984 100644
-> --- a/Documentation/devicetree/bindings/arm/altera.yaml
-> +++ b/Documentation/devicetree/bindings/arm/altera.yaml
-> @@ -13,8 +13,8 @@ properties:
->    compatible:
->      items:
->        - enum:
-> -        - altr,socfpga-cyclone5
-> -        - altr,socfpga-arria5
-> -        - altr,socfpga-arria10
-> +          - altr,socfpga-cyclone5
-> +          - altr,socfpga-arria5
-> +          - altr,socfpga-arria10
->        - const: altr,socfpga
-
-So here "- enum" do not need the extra indent.
-Is it because this is not a list?
-
->  ...
-> diff --git a/Documentation/devicetree/bindings/arm/amlogic/amlogic,meson-gx-ao-secure.yaml b/Documentation/devicetree/bindings/arm/amlogic/amlogic,meson-gx-ao-secure.yaml
-> index 66213bd95e6e..6cc74523ebfd 100644
-> --- a/Documentation/devicetree/bindings/arm/amlogic/amlogic,meson-gx-ao-secure.yaml
-> +++ b/Documentation/devicetree/bindings/arm/amlogic/amlogic,meson-gx-ao-secure.yaml
-> @@ -25,7 +25,7 @@ select:
-> 
->  properties:
->    compatible:
-> -   items:
-> +    items:
->        - const: amlogic,meson-gx-ao-secure
->        - const: syscon
-
-This is something I had expected the tooling to notice.
-I had expected the two "- const" to be indented with 4 spaces, not two.
-So there is something I do not understand.
 
 
-> diff --git a/Documentation/devicetree/bindings/arm/nxp/lpc32xx.yaml b/Documentation/devicetree/bindings/arm/nxp/lpc32xx.yaml
-> index 07f39d3eee7e..f7f024910e71 100644
-> --- a/Documentation/devicetree/bindings/arm/nxp/lpc32xx.yaml
-> +++ b/Documentation/devicetree/bindings/arm/nxp/lpc32xx.yaml
-> @@ -17,9 +17,8 @@ properties:
->            - nxp,lpc3230
->            - nxp,lpc3240
->        - items:
-> -        - enum:
-> -            - ea,ea3250
-> -            - phytec,phy3250
-> -        - const: nxp,lpc3250
-> -
-> +          - enum:
-> +              - ea,ea3250
-> +              - phytec,phy3250
-> +          - const: nxp,lpc3250
->  ...
+On 23 Mar 2020, at 23:47, Yonghong Song wrote:
 
-And here "- enum" receive extra indent.
+> On 3/18/20 6:06 AM, Eelco Chaudron wrote:
+>> I sent out this RFC to get an idea if the approach suggested here
+>> would be something other people would also like to see. In addition,
+>> this cover letter mentions some concerns and questions that need
+>> answers before we can move to an acceptable implementation.
+>>
+>> This patch adds support for tracing eBPF XDP programs that get
+>> executed using the __BPF_PROG_RUN syscall. This is done by switching
+>> from JIT (if enabled) to executing the program using the interpreter
+>> and record each executed instruction.
+>
+> Thanks for working on this! I think this is a useful feature
+> to do semi single step in a safe environment. The initial input,
+> e.g., packet or some other kernel context, may be captured
+> in production error path. People can use this to easily
+> do some post analysis. This feature can also be used for
+> initial single-step debugging with better bpftool support.
+>
+>>
+>> For now, the execution history is printed to the kernel ring buffer
+>> using pr_info(), the final version should have enough data stored in=20
+>> a
+>> user-supplied buffer to reconstruct this output. This should probably
+>> be part of bpftool, i.e. dump a similar output, and the ability to
+>> store all this in an elf-like format for dumping/analyzing/replaying
+>> at a later stage.
+>>
+>> This patch does not dump the XDP packet content before and after
+>> execution, however, this data is available to the caller of the API.
+>
+> I would like to see the feature is implemented in a way to apply
+> to all existing test_run program types and extensible to future
+> program types.
 
-I trust you know what you are doing - but I do not get it.
+Yes, this makes sense, but as I=E2=80=99m only familiar with the XDP part=
+, I=20
+focused on that.
 
-Some pointers or examples for the correct indention would be great.
-I cannot review this patch as long as I do not know the rules.
+> There are different ways to send data back to user. User buffer
+> is one way, ring buffer is another way, seq_file can also be used.
+> Performance is not a concern here, so we can choose the one with best
+> usability.
 
-My request to update example-schema.yaml was one way to teach me.
-(Some people will say that is difficult/impossible to teach me,
-but thats another story:-) ).
+As we need a buffer the easiest way would be to supply a user buffer. I=20
+guess a raw perf buffer might also work, but the API might get=20
+complex=E2=80=A6 I=E2=80=99ll dig into this a bit for the next RFC.
 
-	Sam
+>>
+>> The __bpf_prog_run_trace() interpreter is a copy of __bpf_prog_run()
+>> and we probably need a smarter way to re-use the code rather than a
+>> blind copy with some changes.
+>
+> Yes, reusing the code is a must. Using existing interpreter framework
+> is the easiest for semi single step support.
+
+Any idea how to do it cleanly? I guess I could move the interpreter code=20
+out of the core file and include it twice.
+
+>> Enabling the interpreter opens up the kernel for spectre variant 2,
+>> guess that's why the BPF_JIT_ALWAYS_ON option was introduced (commit
+>> 290af86629b2). Enabling it for debugging in the field does not sound
+>> like an option (talking to people doing kernel distributions).
+>> Any idea how to work around this (lfence before any call this will
+>> slow down, but I guess for debugging this does not matter)? I need to
+>> research this more as I'm no expert in this area. But I think this
+>> needs to be solved as I see this as a show stopper. So any input is
+>> welcome.
+>
+> lfence for indirect call is okay here for test_run. Just need to be
+> careful to no introduce any performance penalty for non-test-run
+> prog run.
+
+My idea here was to do it at compile time and only if the interpreter=20
+was disabled.
+
+>>
+>> To allow bpf_call support for tracing currently the general
+>> interpreter is enabled. See the fixup_call_args() function for why
+>> this is needed. We might need to find a way to fix this (see the=20
+>> above
+>> section on spectre).
+>>
+>> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+>>
+
+One final question did you (or anyone else) looked at the actual code=20
+and have some tips, thinks look at?
+
+
+I=E2=80=99ll try to do another RFC, cleaning up the duplicate interpreter=
+=20
+code, sent the actual trace data to userspace. Will hack some userspace=20
+decoder together, or maybe even start integrating it in bpftool (if not=20
+it will be part of the follow on RFC).
+
