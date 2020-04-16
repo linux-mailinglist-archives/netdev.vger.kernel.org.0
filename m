@@ -2,143 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABD8E1AB737
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 07:27:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68B1F1AB7C2
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 08:10:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406365AbgDPFYR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 01:24:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38214 "EHLO mail.kernel.org"
+        id S2436510AbgDPGKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 02:10:25 -0400
+Received: from mx.0dd.nl ([5.2.79.48]:55054 "EHLO mx.0dd.nl"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405910AbgDPFYP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Apr 2020 01:24:15 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S2407402AbgDPGKV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Apr 2020 02:10:21 -0400
+Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7D5112076A;
-        Thu, 16 Apr 2020 05:24:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587014654;
-        bh=iYO4LVZRKcLz0cvngXK6EAjXq/lLii0IT+WjYuImhl4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nw2Vp3O46zcBOJ6nbaCuf3JHinSjwxhq2A4FrpiBTquv3BGedjS0FkgU39aG/1MrB
-         lC+alBCqK+HDBCYEwl5rlMEmL2/7WGdcLZPy7MXwKv+5VxJHCrAJhcZrp9symhGvjo
-         y8oqLjv/KW3vdcdcS3hD2pCw0zs7DZQ552oAqBpg=
-Date:   Thu, 16 Apr 2020 08:24:09 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "sashal@kernel.org" <sashal@kernel.org>,
-        "ecree@solarflare.com" <ecree@solarflare.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "gerlitz.or@gmail.com" <gerlitz.or@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for
- representors
-Message-ID: <20200416052409.GC1309273@unreal>
-References: <20200412105935.49dacbf7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200414015627.GA1068@sasha-vm>
- <CAJ3xEMh=PGVSddBWOX7U6uAuazJLFkCpWQNxhg7dDRgnSdQ=xA@mail.gmail.com>
- <20200414110911.GA341846@kroah.com>
- <CAJ3xEMhnXZB-HU7aL3m9A1N_GPxgOC3U4skF_qWL8z3wnvSKPw@mail.gmail.com>
- <a89a592a-5a11-5e56-a086-52b1694e00db@solarflare.com>
- <20200414205755.GF1068@sasha-vm>
- <41174e71-00e1-aebf-b67d-1b24731e4ab3@solarflare.com>
- <20200416000009.GL1068@sasha-vm>
- <434329130384e656f712173558f6be88c4c57107.camel@mellanox.com>
+        by mx.0dd.nl (Postfix) with ESMTPS id 276A05FBB5;
+        Thu, 16 Apr 2020 08:10:14 +0200 (CEST)
+Authentication-Results: mx.0dd.nl;
+        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="kD6sh925";
+        dkim-atps=neutral
+Received: from www (www.vdorst.com [192.168.2.222])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.vdorst.com (Postfix) with ESMTPSA id D97992A03EA;
+        Thu, 16 Apr 2020 08:10:13 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com D97992A03EA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
+        s=default; t=1587017413;
+        bh=nsUoDdbxuJyBFOL3kaUcgefxmeJY9720rZIwMxaY2EM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=kD6sh9255OsEt+FUrF98MDpi27Q11sfgqbaMLr4boQ/r+/y/KzsSRP0mSAGoVxPid
+         BfdWlVhJjAkOnL8XlTQNL3/6So9hqWsiHaTJ68WdPIV39fF0K7yl6jTFXgc2pXBghQ
+         cHDzPFw0VbOsvZ6+c9NSYfCvVMFAzO3LI9Owpdspidqh+JdXYnFz5iBafVJPisenuv
+         hRKiyM8Xm2LI4Nl9f98nNLH6lJqcknntpEwC7LiSESx9l4+1mzNHD3PMR5CobEJDoY
+         kYSfEC9OzXMSOlXksfQHgq39c04m424PDaNdT6WHNIZU+PUgBluqBt5kfggZP0o0Dg
+         aJHj7SQOxurtw==
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
+ www.vdorst.com (Horde Framework) with HTTPS; Thu, 16 Apr 2020 06:10:13 +0000
+Date:   Thu, 16 Apr 2020 06:10:13 +0000
+Message-ID: <20200416061013.Horde.Np5evwFOb2fNckWIEDCbhBI@www.vdorst.com>
+From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     netdev@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        linux-mediatek@lists.infradead.org,
+        John Crispin <john@phrozen.org>,
+        Stijn Segers <foss@volatilesystems.org>,
+        Chuanhong Guo <gch981213@gmail.com>, riddlariddla@hotmail.com,
+        Szabolcs Hubai <szab.hu@gmail.com>,
+        CHEN Minqiang <ptpt52@gmail.com>,
+        Paul Fertser <fercerpav@gmail.com>
+Subject: Re: [PATCH net-next v2] net: dsa: mt7530: fix tagged frames
+ pass-through in VLAN-unaware mode
+In-Reply-To: <20200414063408.4026-1-dqfext@gmail.com>
+User-Agent: Horde Application Framework 5
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <434329130384e656f712173558f6be88c4c57107.camel@mellanox.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 16, 2020 at 04:08:10AM +0000, Saeed Mahameed wrote:
-> On Wed, 2020-04-15 at 20:00 -0400, Sasha Levin wrote:
-> > On Wed, Apr 15, 2020 at 05:18:38PM +0100, Edward Cree wrote:
-> > > Firstly, let me apologise: my previous email was too harsh and too
-> > >  assertiveabout things that were really more uncertain and unclear.
-> > >
-> > > On 14/04/2020 21:57, Sasha Levin wrote:
-> > > > I've pointed out that almost 50% of commits tagged for stable do
-> > > > not
-> > > > have a fixes tag, and yet they are fixes. You really deduce
-> > > > things based
-> > > > on coin flip probability?
-> > > Yes, but far less than 50% of commits *not* tagged for stable have
-> > > a fixes
-> > >  tag.  It's not about hard-and-fast Aristotelian "deductions", like
-> > > "this
-> > >  doesn't have Fixes:, therefore it is not a stable candidate", it's
-> > > about
-> > >  probabilistic "induction".
-> > >
-> > > > "it does increase the amount of countervailing evidence needed to
-> > > > conclude a commit is a fix" - Please explain this argument given
-> > > > the
-> > > > above.
-> > > Are you familiar with Bayesian statistics?  If not, I'd suggest
-> > > reading
-> > >  something like http://yudkowsky.net/rational/bayes/ which explains
-> > > it.
-> > > There's a big difference between a coin flip and a _correlated_
-> > > coin flip.
-> >
-> > I'd maybe point out that the selection process is based on a neural
-> > network which knows about the existence of a Fixes tag in a commit.
-> >
-> > It does exactly what you're describing, but also taking a bunch more
-> > factors into it's desicion process ("panic"? "oops"? "overflow"?
-> > etc).
-> >
+Hi Qingfang,
+
+
+Quoting DENG Qingfang <dqfext@gmail.com>:
+
+> In VLAN-unaware mode, the Egress Tag (EG_TAG) field in Port VLAN
+> Control register must be set to Consistent to let tagged frames pass
+> through as is, otherwise their tags will be stripped.
+
+Thanks for fixing the vlan issues!
+
+Tested-by: René van Dorst <opensource@vdorst.com>
+
+Greats,
+
+René
 >
-> I am not against AUTOSEL in general, as long as the decision to know
-> how far back it is allowed to take a patch is made deterministically
-> and not statistically based on some AI hunch.
+> Fixes: 83163f7dca56 ("net: dsa: mediatek: add VLAN support for MT7530")
+> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> ---
+> Changes since v1:
+> - Fix build error
 >
-> Any auto selection for a patch without a Fixes tags can be catastrophic
-> .. imagine a patch without a Fixes Tag with a single line that is
-> fixing some "oops", such patch can be easily applied cleanly to stable-
-> v.x and stable-v.y .. while it fixes the issue on v.x it might have
-> catastrophic results on v.y ..
-
-I tried to imagine such flow and failed to do so. Are you talking about
-anything specific or imaginary case?
-
-<...>
-> >
-> > Let me put my Microsoft employee hat on here. We have
-> > driver/net/hyperv/
-> > which definitely wasn't getting all the fixes it should have been
-> > getting without AUTOSEL.
-> >
+> ---
+>  drivers/net/dsa/mt7530.c | 18 ++++++++++++------
+>  drivers/net/dsa/mt7530.h |  7 +++++++
+>  2 files changed, 19 insertions(+), 6 deletions(-)
 >
-> until some patch which shouldn't get backported slips through, believe
-> me this will happen, just give it some time ..
-
-Bugs are inevitable, I don't see many differences between bugs
-introduced by manually cherry-picking or automatically one.
-
-Of course, it is true if this automatically cherry-picking works as
-expected and evolving.
-
+> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+> index 2d0d91db0ddb..951a65ac7f73 100644
+> --- a/drivers/net/dsa/mt7530.c
+> +++ b/drivers/net/dsa/mt7530.c
+> @@ -846,8 +846,9 @@ mt7530_port_set_vlan_unaware(struct dsa_switch  
+> *ds, int port)
+>  	 */
+>  	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_PORT_VLAN_MASK,
+>  		   MT7530_PORT_MATRIX_MODE);
+> -	mt7530_rmw(priv, MT7530_PVC_P(port), VLAN_ATTR_MASK,
+> -		   VLAN_ATTR(MT7530_VLAN_TRANSPARENT));
+> +	mt7530_rmw(priv, MT7530_PVC_P(port), VLAN_ATTR_MASK | PVC_EG_TAG_MASK,
+> +		   VLAN_ATTR(MT7530_VLAN_TRANSPARENT) |
+> +		   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
 >
-> > While net/ is doing great, drivers/net/ is not. If it's indeed
-> > following
-> > the same rules then we need to talk about how we get done right.
-> >
+>  	for (i = 0; i < MT7530_NUM_PORTS; i++) {
+>  		if (dsa_is_user_port(ds, i) &&
+> @@ -863,8 +864,8 @@ mt7530_port_set_vlan_unaware(struct dsa_switch  
+> *ds, int port)
+>  	if (all_user_ports_removed) {
+>  		mt7530_write(priv, MT7530_PCR_P(MT7530_CPU_PORT),
+>  			     PCR_MATRIX(dsa_user_ports(priv->ds)));
+> -		mt7530_write(priv, MT7530_PVC_P(MT7530_CPU_PORT),
+> -			     PORT_SPEC_TAG);
+> +		mt7530_write(priv, MT7530_PVC_P(MT7530_CPU_PORT), PORT_SPEC_TAG
+> +			     | PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
+>  	}
+>  }
 >
-> both net and drivers/net are managed by the same maitainer and follow
-> the same rules, can you elaborate on the difference ?
+> @@ -890,8 +891,9 @@ mt7530_port_set_vlan_aware(struct dsa_switch  
+> *ds, int port)
+>  	/* Set the port as a user port which is to be able to recognize VID
+>  	 * from incoming packets before fetching entry within the VLAN table.
+>  	 */
+> -	mt7530_rmw(priv, MT7530_PVC_P(port), VLAN_ATTR_MASK,
+> -		   VLAN_ATTR(MT7530_VLAN_USER));
+> +	mt7530_rmw(priv, MT7530_PVC_P(port), VLAN_ATTR_MASK | PVC_EG_TAG_MASK,
+> +		   VLAN_ATTR(MT7530_VLAN_USER) |
+> +		   PVC_EG_TAG(MT7530_VLAN_EG_DISABLED));
+>  }
+>
+>  static void
+> @@ -1380,6 +1382,10 @@ mt7530_setup(struct dsa_switch *ds)
+>  			mt7530_cpu_port_enable(priv, i);
+>  		else
+>  			mt7530_port_disable(ds, i);
+> +
+> +		/* Enable consistent egress tag */
+> +		mt7530_rmw(priv, MT7530_PVC_P(i), PVC_EG_TAG_MASK,
+> +			   PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
+>  	}
+>
+>  	/* Setup port 5 */
+> diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+> index ef9b52f3152b..2528232d3325 100644
+> --- a/drivers/net/dsa/mt7530.h
+> +++ b/drivers/net/dsa/mt7530.h
+> @@ -172,9 +172,16 @@ enum mt7530_port_mode {
+>  /* Register for port vlan control */
+>  #define MT7530_PVC_P(x)			(0x2010 + ((x) * 0x100))
+>  #define  PORT_SPEC_TAG			BIT(5)
+> +#define  PVC_EG_TAG(x)			(((x) & 0x7) << 8)
+> +#define  PVC_EG_TAG_MASK		PVC_EG_TAG(7)
+>  #define  VLAN_ATTR(x)			(((x) & 0x3) << 6)
+>  #define  VLAN_ATTR_MASK			VLAN_ATTR(3)
+>
+> +enum mt7530_vlan_port_eg_tag {
+> +	MT7530_VLAN_EG_DISABLED = 0,
+> +	MT7530_VLAN_EG_CONSISTENT = 1,
+> +};
+> +
+>  enum mt7530_vlan_port_attr {
+>  	MT7530_VLAN_USER = 0,
+>  	MT7530_VLAN_TRANSPARENT = 3,
+> --
+> 2.26.0
 
-The main reason is a difference in a volume between net and drivers/net.
-While net/* patches are watched by many eyes and carefully selected to be
-ported to stable@, most of the drivers/net patches are not.
 
-Except 3-5 the most active drivers, rest of the driver patches almost never
-asked to be backported.
 
-Thanks
