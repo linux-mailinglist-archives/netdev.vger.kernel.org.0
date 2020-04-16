@@ -2,108 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 457011ABE92
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 12:58:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A21481ABEA0
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 12:59:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2505809AbgDPK55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 06:57:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52438 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2505565AbgDPKtx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 16 Apr 2020 06:49:53 -0400
-Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C8860221E9;
-        Thu, 16 Apr 2020 10:41:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587033667;
-        bh=u5fMQDNAUuXaPw+89dTTA0ZVG5dJuZz63WEnr/aWCsA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xp/KXtyBC+AW47+w/EThPewPKJno4LpErrb9k/MShW8CSZOjoH/eQie3gyamQtAPZ
-         7+2VNJeLRNNDDKaVoGmzb7acrQ3F10p7zOFoaEDwJaxmNypi234utwSFrQnjNbswMB
-         9dE8DImjkqaSZMR+teMounUi1jKOEIZOXIrffOdk=
-Date:   Thu, 16 Apr 2020 11:41:04 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>, Vinod Koul <vkoul@kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Amit Kucheria <amit.kucheria@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-i2c@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org
-Subject: Re: [PATCH 2/2] dt-bindings: Remove cases of 'allOf' containing a
- '$ref'
-Message-ID: <20200416104104.GE5354@sirena.org.uk>
-References: <20200416005549.9683-1-robh@kernel.org>
- <20200416005549.9683-2-robh@kernel.org>
+        id S2505862AbgDPK7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 06:59:13 -0400
+Received: from regular1.263xmail.com ([211.150.70.199]:35094 "EHLO
+        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2505830AbgDPK6v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 06:58:51 -0400
+Received: from localhost (unknown [192.168.167.13])
+        by regular1.263xmail.com (Postfix) with ESMTP id 2D704405;
+        Thu, 16 Apr 2020 18:46:04 +0800 (CST)
+X-MAIL-GRAY: 0
+X-MAIL-DELIVERY: 1
+X-ADDR-CHECKED4: 1
+X-ANTISPAM-LEVEL: 2
+X-SKE-CHECKED: 1
+X-ABS-CHECKED: 1
+Received: from [172.16.12.20] (unknown [58.22.7.114])
+        by smtp.263.net (postfix) whith ESMTP id P18326T139707671365376S1587033963544784_;
+        Thu, 16 Apr 2020 18:46:04 +0800 (CST)
+X-IP-DOMAINF: 1
+X-UNIQUE-TAG: <a98a3eaf7f26672e4e75f7610d3b21fb>
+X-RL-SENDER: david.wu@rock-chips.com
+X-SENDER: wdc@rock-chips.com
+X-LOGIN-NAME: david.wu@rock-chips.com
+X-FST-TO: linux-kernel@vger.kernel.org
+X-SENDER-IP: 58.22.7.114
+X-ATTACHMENT-NUM: 0
+X-DNS-TYPE: 0
+X-System-Flag: 0
+Subject: Re: [RFC,PATCH 2/2] net: stmmac: Change the tx clean lock
+To:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20200324093828.30019-1-david.wu@rock-chips.com>
+ <20200324093828.30019-2-david.wu@rock-chips.com>
+ <BN8PR12MB32665A2AA9302F64C1F4871BD3DD0@BN8PR12MB3266.namprd12.prod.outlook.com>
+From:   David Wu <david.wu@rock-chips.com>
+Message-ID: <0031cd20-5131-b9d7-0a8e-f72f6c2de486@rock-chips.com>
+Date:   Thu, 16 Apr 2020 18:46:02 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="/2994txjAzEdQwm5"
-Content-Disposition: inline
-In-Reply-To: <20200416005549.9683-2-robh@kernel.org>
-X-Cookie: Tempt me with a spoon!
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <BN8PR12MB32665A2AA9302F64C1F4871BD3DD0@BN8PR12MB3266.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=gbk; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Jose,
 
---/2994txjAzEdQwm5
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+ From the test I did, there will be some improvement, an improvement of 
+tens Mbits/sec.
 
-On Wed, Apr 15, 2020 at 07:55:49PM -0500, Rob Herring wrote:
-> json-schema versions draft7 and earlier have a weird behavior in that
-> any keywords combined with a '$ref' are ignored (silently). The correct
-> form was to put a '$ref' under an 'allOf'. This behavior is now changed
+Before patch:
+# iperf -c 192.168.1.102 -i 1 -t 10 -w 300K -u -b 1000M
+------------------------------------------------------------
+Client connecting to 192.168.1.102, UDP port 5001
+Sending 1470 byte datagrams, IPG target: 11.76 us (kalman adjust)
+UDP buffer size:  600 KByte (WARNING: requested  300 KByte)
+------------------------------------------------------------
+[  3] local 192.168.1.103 port 45018 connected with 192.168.1.102 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0- 1.0 sec   103 MBytes   862 Mbits/sec
+[  3]  1.0- 2.0 sec   104 MBytes   868 Mbits/sec
+[  3]  2.0- 3.0 sec   104 MBytes   869 Mbits/sec
+[  3]  3.0- 4.0 sec   104 MBytes   869 Mbits/sec
+[  3]  4.0- 5.0 sec   104 MBytes   870 Mbits/sec
+[  3]  5.0- 6.0 sec   104 MBytes   869 Mbits/sec
+[  3]  6.0- 7.0 sec   104 MBytes   869 Mbits/sec
+[  3]  7.0- 8.0 sec   104 MBytes   870 Mbits/sec
+[  3]  8.0- 9.0 sec   104 MBytes   871 Mbits/sec
+[  3]  0.0-10.0 sec  1.01 GBytes   869 Mbits/sec
+[  3] Sent 738834 datagrams
 
-Acked-by: Mark Brown <broonie@kernel.org>
 
---/2994txjAzEdQwm5
-Content-Type: application/pgp-signature; name="signature.asc"
+After patch:
+# iperf -c 192.168.1.102 -i 1 -t 10 -w 300K -u -b 1000M
+------------------------------------------------------------
+Client connecting to 192.168.1.102, UDP port 5001
+Sending 1470 byte datagrams, IPG target: 11.76 us (kalman adjust)
+UDP buffer size:  600 KByte (WARNING: requested  300 KByte)
+------------------------------------------------------------
+[  3] local 192.168.1.103 port 35654 connected with 192.168.1.102 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0- 1.0 sec   114 MBytes   953 Mbits/sec
+[  3]  1.0- 2.0 sec   114 MBytes   956 Mbits/sec
+[  3]  2.0- 3.0 sec   115 MBytes   962 Mbits/sec
+[  3]  3.0- 4.0 sec   114 MBytes   955 Mbits/sec
+[  3]  4.0- 5.0 sec   114 MBytes   957 Mbits/sec
+[  3]  5.0- 6.0 sec   114 MBytes   957 Mbits/sec
+[  3]  6.0- 7.0 sec   114 MBytes   955 Mbits/sec
+[  3]  7.0- 8.0 sec   114 MBytes   956 Mbits/sec
+[  3]  8.0- 9.0 sec   114 MBytes   955 Mbits/sec
+[  3]  0.0- 9.9 sec  1.10 GBytes   957 Mbits/sec
+[  3] Sent 804442 datagrams
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl6YNkAACgkQJNaLcl1U
-h9B9Tgf/e6Ex42p5b/rjUYhiAhK+0T+nvTbdLGjxGyRfopnnVMMaYPWXmkdGdh0H
-/nGE0rn04EUyWfBkjgCeKuclbzRWJCfQBSl+4dlYbMuX1LKrybV3nRANP03o7A9y
-sqPsDL3Qq01Rgb8waJiwmXqcHjxKBbCZd5bzU8ff82hg8jGKMIDVzJdnYrzGJJm7
-wLygPWU+Nj65KniavgesiRhfwSLfveuWwAR6SsWCCiOhJOWgl0/KbhceiFTRLJ4c
-pQQeBPzy+/C5VH2sYPCZB3/MEQ4/6+CC1AchkSDqGwOooj4KsPXXCjiJtj4YZB86
-9wfRx0ePvlfgBQgHYw4LX6341lhYUw==
-=Rw7L
------END PGP SIGNATURE-----
+ÔÚ 2020/4/13 ÏÂÎç10:31, Jose Abreu Ð´µÀ:
+> From: David Wu <david.wu@rock-chips.com>
+> Date: Mar/24/2020, 09:38:28 (UTC+00:00)
+> 
+>> At tx clean, use a frozen queue instead of blocking
+>> the current queue, could still queue skb, which improve
+>> performance.
+> 
+> Please provide performance improvement numbers.
+> 
+> ---
+> Thanks,
+> Jose Miguel Abreu
+> 
+> 
+> 
+> 
 
---/2994txjAzEdQwm5--
+
