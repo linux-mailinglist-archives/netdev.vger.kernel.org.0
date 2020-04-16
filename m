@@ -2,123 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B91C1AB726
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 07:15:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABD8E1AB737
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 07:27:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406207AbgDPFOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 01:14:19 -0400
-Received: from mail-io1-f69.google.com ([209.85.166.69]:55984 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406008AbgDPFOS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 01:14:18 -0400
-Received: by mail-io1-f69.google.com with SMTP id f4so14864243iov.22
-        for <netdev@vger.kernel.org>; Wed, 15 Apr 2020 22:14:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=+tkq2PWqHihCPJd5MYmRAanWWTaoTF3iEkZiM1luTJs=;
-        b=jFkwPK/Qf0tiJVriK8hA7HbYCp2w7PDsIoNgZoaHR9ZPeVL9pxTomf81YAfONoO4uO
-         pnsOgBqmaoQYPn3uGk0HNQxACX6+5Nh8L5JlheUf08jlz+Bjg4a+VovCrVy934dbQTOg
-         BmZdx04yP82QKD2cY5rJyV0CEQIntk8H6bF778bqPF85BHYDKH9jtJTn9q4kp5zE1TUR
-         WNqGUDeqw+vQ7zbWtznCgOLLAp58IvKQGd74MQ3XmyHmRrcTS3jhf9JMnAb95N8hcmFX
-         s3BjLZ6vcRoDaAoKS3hYq0+GnIgJCkgN2CzvaDAS+/dyC2HiGUWPPD5cNZLkz5bmQ85l
-         elJg==
-X-Gm-Message-State: AGi0PuZJfKTMBFPCGsopZcOw/fIlNs6A41HVeHpbD8HZdHiJOkXysnzM
-        e47LkErJU61YfBalhz9ksFvN5qyf73t5H+7BM30Z9lt2Q9CN
-X-Google-Smtp-Source: APiQypIIkgaSS5KxsJxxZtoeThLQCgvaHrVQa1u2/INEiSzn8u/kI7a/migeVb+kDw86QSsjZU4CrWeMwBbZkDhIO5+OvGDk4gT7
+        id S2406365AbgDPFYR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 01:24:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38214 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2405910AbgDPFYP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Apr 2020 01:24:15 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7D5112076A;
+        Thu, 16 Apr 2020 05:24:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587014654;
+        bh=iYO4LVZRKcLz0cvngXK6EAjXq/lLii0IT+WjYuImhl4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nw2Vp3O46zcBOJ6nbaCuf3JHinSjwxhq2A4FrpiBTquv3BGedjS0FkgU39aG/1MrB
+         lC+alBCqK+HDBCYEwl5rlMEmL2/7WGdcLZPy7MXwKv+5VxJHCrAJhcZrp9symhGvjo
+         y8oqLjv/KW3vdcdcS3hD2pCw0zs7DZQ552oAqBpg=
+Date:   Thu, 16 Apr 2020 08:24:09 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "sashal@kernel.org" <sashal@kernel.org>,
+        "ecree@solarflare.com" <ecree@solarflare.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "gerlitz.or@gmail.com" <gerlitz.or@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for
+ representors
+Message-ID: <20200416052409.GC1309273@unreal>
+References: <20200412105935.49dacbf7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200414015627.GA1068@sasha-vm>
+ <CAJ3xEMh=PGVSddBWOX7U6uAuazJLFkCpWQNxhg7dDRgnSdQ=xA@mail.gmail.com>
+ <20200414110911.GA341846@kroah.com>
+ <CAJ3xEMhnXZB-HU7aL3m9A1N_GPxgOC3U4skF_qWL8z3wnvSKPw@mail.gmail.com>
+ <a89a592a-5a11-5e56-a086-52b1694e00db@solarflare.com>
+ <20200414205755.GF1068@sasha-vm>
+ <41174e71-00e1-aebf-b67d-1b24731e4ab3@solarflare.com>
+ <20200416000009.GL1068@sasha-vm>
+ <434329130384e656f712173558f6be88c4c57107.camel@mellanox.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:5aca:: with SMTP id b71mr9047035ilg.56.1587014055309;
- Wed, 15 Apr 2020 22:14:15 -0700 (PDT)
-Date:   Wed, 15 Apr 2020 22:14:15 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000005382805a36181b9@google.com>
-Subject: WARNING in add_one_compat_dev
-From:   syzbot <syzbot+283a75171cb87a7acb0e@syzkaller.appspotmail.com>
-To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, rafael@kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <434329130384e656f712173558f6be88c4c57107.camel@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Apr 16, 2020 at 04:08:10AM +0000, Saeed Mahameed wrote:
+> On Wed, 2020-04-15 at 20:00 -0400, Sasha Levin wrote:
+> > On Wed, Apr 15, 2020 at 05:18:38PM +0100, Edward Cree wrote:
+> > > Firstly, let me apologise: my previous email was too harsh and too
+> > >  assertiveabout things that were really more uncertain and unclear.
+> > >
+> > > On 14/04/2020 21:57, Sasha Levin wrote:
+> > > > I've pointed out that almost 50% of commits tagged for stable do
+> > > > not
+> > > > have a fixes tag, and yet they are fixes. You really deduce
+> > > > things based
+> > > > on coin flip probability?
+> > > Yes, but far less than 50% of commits *not* tagged for stable have
+> > > a fixes
+> > >  tag.  It's not about hard-and-fast Aristotelian "deductions", like
+> > > "this
+> > >  doesn't have Fixes:, therefore it is not a stable candidate", it's
+> > > about
+> > >  probabilistic "induction".
+> > >
+> > > > "it does increase the amount of countervailing evidence needed to
+> > > > conclude a commit is a fix" - Please explain this argument given
+> > > > the
+> > > > above.
+> > > Are you familiar with Bayesian statistics?  If not, I'd suggest
+> > > reading
+> > >  something like http://yudkowsky.net/rational/bayes/ which explains
+> > > it.
+> > > There's a big difference between a coin flip and a _correlated_
+> > > coin flip.
+> >
+> > I'd maybe point out that the selection process is based on a neural
+> > network which knows about the existence of a Fixes tag in a commit.
+> >
+> > It does exactly what you're describing, but also taking a bunch more
+> > factors into it's desicion process ("panic"? "oops"? "overflow"?
+> > etc).
+> >
+>
+> I am not against AUTOSEL in general, as long as the decision to know
+> how far back it is allowed to take a patch is made deterministically
+> and not statistically based on some AI hunch.
+>
+> Any auto selection for a patch without a Fixes tags can be catastrophic
+> .. imagine a patch without a Fixes Tag with a single line that is
+> fixing some "oops", such patch can be easily applied cleanly to stable-
+> v.x and stable-v.y .. while it fixes the issue on v.x it might have
+> catastrophic results on v.y ..
 
-syzbot found the following crash on:
+I tried to imagine such flow and failed to do so. Are you talking about
+anything specific or imaginary case?
 
-HEAD commit:    9d859289 docs: networking: add full DIM API
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=11230b2be00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=94a7f1dec460ee83
-dashboard link: https://syzkaller.appspot.com/bug?extid=283a75171cb87a7acb0e
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+<...>
+> >
+> > Let me put my Microsoft employee hat on here. We have
+> > driver/net/hyperv/
+> > which definitely wasn't getting all the fixes it should have been
+> > getting without AUTOSEL.
+> >
+>
+> until some patch which shouldn't get backported slips through, believe
+> me this will happen, just give it some time ..
 
-Unfortunately, I don't have any reproducer for this crash yet.
+Bugs are inevitable, I don't see many differences between bugs
+introduced by manually cherry-picking or automatically one.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+283a75171cb87a7acb0e@syzkaller.appspotmail.com
+Of course, it is true if this automatically cherry-picking works as
+expected and evolving.
 
-------------[ cut here ]------------
-sysfs group 'power' not found for kobject 'syz1'
-WARNING: CPU: 1 PID: 23343 at fs/sysfs/group.c:279 sysfs_remove_group fs/sysfs/group.c:279 [inline]
-WARNING: CPU: 1 PID: 23343 at fs/sysfs/group.c:279 sysfs_remove_group+0x155/0x1b0 fs/sysfs/group.c:270
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 1 PID: 23343 Comm: syz-executor.4 Not tainted 5.6.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- panic+0x2e3/0x75c kernel/panic.c:221
- __warn.cold+0x2f/0x35 kernel/panic.c:582
- report_bug+0x27b/0x2f0 lib/bug.c:195
- fixup_bug arch/x86/kernel/traps.c:175 [inline]
- fixup_bug arch/x86/kernel/traps.c:170 [inline]
- do_error_trap+0x12b/0x220 arch/x86/kernel/traps.c:267
- do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:286
- invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-RIP: 0010:sysfs_remove_group fs/sysfs/group.c:279 [inline]
-RIP: 0010:sysfs_remove_group+0x155/0x1b0 fs/sysfs/group.c:270
-Code: 48 89 d9 49 8b 14 24 48 b8 00 00 00 00 00 fc ff df 48 c1 e9 03 80 3c 01 00 75 41 48 8b 33 48 c7 c7 a0 e5 39 88 e8 13 b2 5e ff <0f> 0b eb 95 e8 f2 26 cb ff e9 d2 fe ff ff 48 89 df e8 e5 26 cb ff
-RSP: 0018:ffffc90004a57a80 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: ffffffff889256e0 RCX: 0000000000000000
-RDX: 0000000000040000 RSI: ffffffff815ce2b1 RDI: fffff5200094af42
-RBP: 0000000000000000 R08: ffff88808e0100c0 R09: ffffed1015ce66a9
-R10: ffff8880ae733547 R11: ffffed1015ce66a8 R12: ffff88803efdb000
-R13: ffffffff88925c80 R14: ffff888088b68e88 R15: ffff88803efdb518
- dpm_sysfs_remove+0x97/0xb0 drivers/base/power/sysfs.c:794
- device_del+0x18b/0xd30 drivers/base/core.c:2687
- add_one_compat_dev drivers/infiniband/core/device.c:921 [inline]
- add_one_compat_dev+0x59f/0x800 drivers/infiniband/core/device.c:857
- rdma_dev_init_net+0x2dc/0x480 drivers/infiniband/core/device.c:1122
- ops_init+0xaf/0x420 net/core/net_namespace.c:151
- setup_net+0x2de/0x860 net/core/net_namespace.c:341
- copy_net_ns+0x293/0x590 net/core/net_namespace.c:482
- create_new_namespaces+0x3fb/0xb30 kernel/nsproxy.c:108
- unshare_nsproxy_namespaces+0xbd/0x1f0 kernel/nsproxy.c:229
- ksys_unshare+0x43d/0x8e0 kernel/fork.c:2960
- __do_sys_unshare kernel/fork.c:3028 [inline]
- __se_sys_unshare kernel/fork.c:3026 [inline]
- __x64_sys_unshare+0x2d/0x40 kernel/fork.c:3026
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x45c889
-Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f65f7741c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000110
-RAX: ffffffffffffffda RBX: 00007f65f77426d4 RCX: 000000000045c889
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000040000000
-RBP: 000000000076bf00 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 0000000000000c40 R14: 00000000004ce690 R15: 000000000076bf0c
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+>
+> > While net/ is doing great, drivers/net/ is not. If it's indeed
+> > following
+> > the same rules then we need to talk about how we get done right.
+> >
+>
+> both net and drivers/net are managed by the same maitainer and follow
+> the same rules, can you elaborate on the difference ?
 
+The main reason is a difference in a volume between net and drivers/net.
+While net/* patches are watched by many eyes and carefully selected to be
+ported to stable@, most of the drivers/net patches are not.
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Except 3-5 the most active drivers, rest of the driver patches almost never
+asked to be backported.
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Thanks
