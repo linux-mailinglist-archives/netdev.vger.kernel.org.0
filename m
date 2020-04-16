@@ -2,206 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DA7C1AD0A9
-	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 21:59:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18F501AD0AD
+	for <lists+netdev@lfdr.de>; Thu, 16 Apr 2020 21:59:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729549AbgDPT4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 15:56:31 -0400
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:36703 "EHLO
-        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729275AbgDPT43 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 15:56:29 -0400
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20200416195627euoutp02a76fe520a57da16e4b4fb96fa2a8cc9b~GZQQj_zzg2223922239euoutp02G
-        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 19:56:27 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20200416195627euoutp02a76fe520a57da16e4b4fb96fa2a8cc9b~GZQQj_zzg2223922239euoutp02G
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1587066987;
-        bh=BOw44bJHIBFHurxhAMbHDokN2782/36M7XGTmR/A1xA=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=SKhtYDMcROFTsVGo3I71aZMkLzQ0QT8bFX3k3tCtx+KgwJ7NCtRw58YFadE2nbd72
-         VJi7dSHC2C5wY5X+E76Kly2tNMPpYMvyEVx5jZAFMNDMAgR6VdxfK8vRmZrDJEaFw3
-         WmtI519lIwPQmOtWOTMfCJ2q0SI/OFxD2KUhC9zM=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20200416195626eucas1p2f906c0499eeabc32169c93bedfeffb98~GZQQECp_J1396513965eucas1p2f;
-        Thu, 16 Apr 2020 19:56:26 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges2new.samsung.com (EUCPMTA) with SMTP id AD.78.60679.A68B89E5; Thu, 16
-        Apr 2020 20:56:26 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20200416195625eucas1p18d95d63a8fb2f997d4c2eb63d15726f5~GZQPTXBN01641516415eucas1p1p;
-        Thu, 16 Apr 2020 19:56:25 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20200416195625eusmtrp1dbd83e97ba803f69dadb91b7cc5e72c5~GZQPSjAJ50640106401eusmtrp1b;
-        Thu, 16 Apr 2020 19:56:25 +0000 (GMT)
-X-AuditID: cbfec7f4-0e5ff7000001ed07-81-5e98b86a0ece
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id 1C.2E.08375.968B89E5; Thu, 16
-        Apr 2020 20:56:25 +0100 (BST)
-Received: from [106.210.85.205] (unknown [106.210.85.205]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20200416195624eusmtip264d584c752fba6ab3caac4a381259466~GZQOPKqrq1596415964eusmtip2p;
-        Thu, 16 Apr 2020 19:56:24 +0000 (GMT)
-Subject: Re: [RFC 0/6] Regressions for "imply" behavior change
-To:     Jason Gunthorpe <jgg@ziepe.ca>, Nicolas Pitre <nico@fluxnic.net>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "narmstrong@baylibre.com" <narmstrong@baylibre.com>,
-        "masahiroy@kernel.org" <masahiroy@kernel.org>,
-        "Laurent.pinchart@ideasonboard.com" 
-        <Laurent.pinchart@ideasonboard.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "kieran.bingham+renesas@ideasonboard.com" 
-        <kieran.bingham+renesas@ideasonboard.com>,
-        "jonas@kwiboo.se" <jonas@kwiboo.se>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "airlied@linux.ie" <airlied@linux.ie>,
-        "jernej.skrabec@siol.net" <jernej.skrabec@siol.net>
-From:   Andrzej Hajda <a.hajda@samsung.com>
-Message-ID: <01f964ae-9c32-7531-1f07-2687616b6a71@samsung.com>
-Date:   Thu, 16 Apr 2020 21:56:24 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
-        Thunderbird/68.7.0
+        id S1728129AbgDPT6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 15:58:51 -0400
+Received: from mta-out1.inet.fi ([62.71.2.202]:41914 "EHLO johanna2.inet.fi"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727827AbgDPT6u (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 16 Apr 2020 15:58:50 -0400
+X-RazorGate-Vade-Verdict: clean 0
+X-RazorGate-Vade-Classification: clean
+X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgeduhedrfeehgddugeefucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuuffpveftnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefuhffvfhfkffgfgggjtgfgsehtkeertddtfeejnecuhfhrohhmpefnrghurhhiucflrghkkhhuuceolhgruhhrihdrjhgrkhhkuhesphhprdhinhgvthdrfhhiqeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgrdhinhenucfkphepkeegrddvgeekrdeftddrudelheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopegludelvddrudeikedruddrudefhegnpdhinhgvthepkeegrddvgeekrdeftddrudelhedpmhgrihhlfhhrohhmpeeolhgruhhjrghkqdefsehmsghogidrihhnvghtrdhfihequceuqfffjgepkeeukffvoffkoffgpdhrtghpthhtohepoehhkhgrlhhlfigvihhtudesghhmrghilhdrtghomheqpdhrtghpthhtohepoehlvghonheskhgvrhhnvghlrdhorhhgqedprhgtphhtthhopeeonhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhgqedprhgtphhtthhopeeonhhitggpshifshgusehrvggrlhhtvghkrdgtohhmqe
+Received: from [192.168.1.135] (84.248.30.195) by johanna2.inet.fi (9.0.019.26-1) (authenticated as laujak-3)
+        id 5E361F5934C5D541; Thu, 16 Apr 2020 22:58:39 +0300
+Subject: Re: NET: r8168/r8169 identifying fix
+From:   Lauri Jakku <lauri.jakku@pp.inet.fi>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
+        nic_swsd@realtek.com
+References: <4bc0fc0c-1437-fc41-1c50-38298214ec75@gmail.com>
+ <20200413105838.GK334007@unreal>
+ <dc2de414-0e6e-2531-0131-0f3db397680f@gmail.com>
+ <20200413113430.GM334007@unreal>
+ <03d9f8d9-620c-1f8b-9c58-60b824fa626c@gmail.com>
+ <d3adc7f2-06bb-45bc-ab02-3d443999cefd@gmail.com>
+ <f143b58d-4caa-7c9b-b98b-806ba8d2be99@gmail.com>
+ <4860e57e-93e4-24f5-6103-fa80acbdfa0d@pp.inet.fi>
+ <70cfcfb3-ce2a-9d47-b034-b94682e46e35@gmail.com>
+ <d4e622f1-7bd1-d884-20b2-c16e60b42bf2@pp.inet.fi>
+Message-ID: <8db3cdc1-b63d-9028-e4bd-659e6d213f8f@pp.inet.fi>
+Date:   Thu, 16 Apr 2020 22:58:32 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200416182106.GX5100@ziepe.ca>
-Content-Transfer-Encoding: 7bit
-Content-Language: pl
-X-Brightmail-Tracker: H4sIAAAAAAAAA01SaUwTQRjN7C7bhVhcSpEJKsaiiZpwKBon0aASoht/IZoYRYGqG+5CWrn0
-        h4jIIZRTOQo0xIgg0UDQApIQpECBcIhS5JAEahSBUIhUUDnUbhcj/9733vdm3psMhYuUpBMV
-        KrvJymXSCAlpQ9Trfr11DWssCvAoqHBByv5uDK3n6QSo9G0ygfRLCySqHKwBaOjHDI6Ki7oA
-        6p4bItDihwyA0nOfCNDDlQocDTaVkmhKqySQZmYeQ4bJESukzfJHuvJtSD09TaJCpRE/ac+s
-        ruQBZmHkvoB59WwUY6a6UkmmJK3YiqmrTieZrpz3GNOwPGnFqLvPMRMZneaNwjaMeaPMJxhT
-        nTOjMX0kfG0v2xy/wUaExrJyd68gm5DB8RJBdJM4fmVMTyaCfPoBsKYgfRiuvczCHgAbSkRX
-        AbiQqwL88B1AVV72xmACcLY+yTxQFsu7SV/OLaIrAfyZLeZ3FgA03KvCOMGe9oKTBUqCw2La
-        Bz5KMZHcEk6rBVBfVmkRSHo/XH85SnKHCs2GniRvjibovTA1566FdqCvwsIPFzhaSNvB7uLP
-        BEdb066wYN6No3F6F2wwluI8FsORT8mWyJBup+Dz4RLAt/SBhlWTgMf2cLbz1QbeAXvyMwke
-        34ETVck4b04DUFP7GueFY3C8f8WSBzdHrmly5+lTMHMxG+OfxBaOGO34DLYwr74Q52khTEsR
-        8du74USfZuNAR1gxsETmAIlqUzHVpjaqTW1U/+8tB0Q1cGRjFJHBrOKQjI1zU0gjFTGyYLfr
-        UZF1wPxJe353fm8ETWvXtICmgGSLMOhEUYDIShqrSIjUAkjhErHQ9oiZEt6QJtxi5VGB8pgI
-        VqEF2ylC4ij0fDxzVUQHS2+y4Swbzcr/qRhl7ZQIntY8netVO18cOPutlik7sy98q0Gz/Mut
-        1ujt37LWMvtVllvZ2/dH2nHpSvPFcrZgIEkX6KkPbN3TCgwzc+tG8ZdAWVxbw/x+/ahsy9Di
-        79uOKdVhwztT/cmh9tOZvTvjw16EuQaI/Y6eN4qzlS6hXh7z0w5TDqt2frqOsVjQHC8hFCHS
-        gwdwuUL6F1b/5nugAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Sa0hTYRjHec9tmzQ5zVkvhiWjoovOzmz6KmYSBudDhdW3ysvQg5puq50t
-        MgjM1HK50Kypy8woCYVuzltKUCumw0ukJes+o4aGc+HoZiptWrBvf378f8/DA48Ql9wgI4QF
-        Gj2n06iKZFQIMbjY/yGmoKc+c9vw7RhkGnFgaOGSXYAan5cR6OV3L4Vuj90D6NXPKRw11A8A
-        5Jh+RaDZ8QsAVdbcEqDLcy04GuttpJDbZiJQ59QMhiZcThLZLh5G9uZVqGlykkJ1Jg+eGsb+
-        mbsEWK+zXMB2tL7GWPfAOYq9er6BZNvbKil2oHoUY7t/uEi2ybGf/Xih39+oe4qxj021BOtr
-        X8t2+t4S6aGH5Mk6rUHPReVref0O2WEGKeRMIpIrtifKmbiEjCSFUhabkpzLFRWc4HSxKdny
-        /LF3VwXHeqUn5968pEpALW0EQiGkt8MXrnQjCBFK6BYA33rnMSMQ+flq2Hfdgy/nMDg/bqSW
-        Sx4Af7luLpXC6BToMpuIQJbSafBKhW+phNPNAnhn4Ay2bIyT0OybWBpF0ZvhgvU1FVgt9tuD
-        pbsCmKA3wHPVZ5ZwOJ0By15sDmAxvRI6Gj4TASyiY6B5Rh7AOB0Pm6zLA3F6Hez2NP7LUuj8
-        VAaqgcQSZFuCFEuQYglSmgHRBqScgVfnqXlGzqvUvEGTJ8/RqtuB/z267L+tPWD0wUEboIVA
-        tkKcvbM+U0KqTvDFahuAQlwmFYcq/Uicqyo+xem0WTpDEcfbgNJ/Wg0eEZ6j9T+bRp/FKJkE
-        lMgkxCXExSPZavF5+skRCZ2n0nOFHHeM0/33MKEoogSUL7TutV1xR41cO7DH+ZCITE8OmU3d
-        F3M/XdH35fQaPGdkqAk/e7y5ospmTzNPrvpT2bXb7V5bWphZjllFsUNweP2eo4sdyNxS6GlN
-        Nj6LLCmd7rPerXNVkeRExvukmuhiNvprm3frqMO3qVPtpB4d/GZYMz1r3JtT0Z4xtRHJCD5f
-        xWzBdbzqL6xp3kE0AwAA
-X-CMS-MailID: 20200416195625eucas1p18d95d63a8fb2f997d4c2eb63d15726f5
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20200416182112eucas1p1030595f63fe250ff02dbab2707df11e9
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20200416182112eucas1p1030595f63fe250ff02dbab2707df11e9
-References: <CAK8P3a0aFQ7h4zRDW=QLogXWc88JkJJXEOK0_CpWwsRjq6+T+w@mail.gmail.com>
-        <20200414152312.GF5100@ziepe.ca>
-        <CAK8P3a1PjP9_b5NdmqTLeGN4y+3JXx_yyTE8YAf1u5rYHWPA9g@mail.gmail.com>
-        <f6d83b08fc0bc171b5ba5b2a0bc138727d92e2c0.camel@mellanox.com>
-        <CAK8P3a1-J=4EAxh7TtQxugxwXk239u8ffgxZNRdw_WWy8ExFoQ@mail.gmail.com>
-        <834c7606743424c64951dd2193ca15e29799bf18.camel@mellanox.com>
-        <CAK8P3a3Wx5_bUOKnN3_hG5nLOqv3WCUtMSq6vOkJzWZgsmAz+A@mail.gmail.com>
-        <874ktj4tvn.fsf@intel.com>
-        <CAK8P3a1S2x1jnx9Q5B22vX8gBHs0Ztu-znA9hqZ5xp5tRAykGg@mail.gmail.com>
-        <nycvar.YSQ.7.76.2004161106140.2671@knanqh.ubzr>
-        <CGME20200416182112eucas1p1030595f63fe250ff02dbab2707df11e9@eucas1p1.samsung.com>
-        <20200416182106.GX5100@ziepe.ca>
+In-Reply-To: <d4e622f1-7bd1-d884-20b2-c16e60b42bf2@pp.inet.fi>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
-On 16.04.2020 20:21, Jason Gunthorpe wrote:
-> On Thu, Apr 16, 2020 at 11:12:56AM -0400, Nicolas Pitre wrote:
->> On Thu, 16 Apr 2020, Arnd Bergmann wrote:
+On 16.4.2020 21.37, Lauri Jakku wrote:
+> Hi,
+>
+> On 16.4.2020 21.26, Heiner Kallweit wrote:
+>> On 16.04.2020 13:30, Lauri Jakku wrote:
+>>> Hi,
+>>>
+>>>
+>>> 5.6.3-2-MANJARO: stock manjaro kernel, without modifications --> 
+>>> network does not work
+>>>
+>>> 5.6.3-2-MANJARO-lja: No attach check, modified kernel (r8169 mods 
+>>> only) --> network does not work
+>>>
+>>> 5.6.3-2-MANJARO-with-the-r8169-patch: phy patched + r8169 mods -> 
+>>> devices show up ok, network works
+>>>
+>>> All different initcpio's have realtek.ko in them.
+>>>
+>> Thanks for the logs. Based on the logs you're presumable affected by 
+>> a known BIOS bug.
+>> Check bug tickets 202275 and 207203 at bugzilla.kernel.org.
+>> In the first referenced tickets it's about the same mainboard (with 
+>> earlier BIOS version).
+>> BIOS on this mainboard seems to not initialize the network chip / PHY 
+>> correctly, it reports
+>> a random number as PHY ID, resulting in no PHY driver being found.
+>> Enable "Onboard LAN Boot ROM" in the BIOS, and your problem should be 
+>> gone.
 >>
->>> On Thu, Apr 16, 2020 at 12:17 PM Jani Nikula
->>> <jani.nikula@linux.intel.com> wrote:
->>>> On Thu, 16 Apr 2020, Arnd Bergmann <arnd@arndb.de> wrote:
->>>>> On Thu, Apr 16, 2020 at 5:25 AM Saeed Mahameed <saeedm@mellanox.com> wrote:
->>>>>> BTW how about adding a new Kconfig option to hide the details of
->>>>>> ( BAR || !BAR) ? as Jason already explained and suggested, this will
->>>>>> make it easier for the users and developers to understand the actual
->>>>>> meaning behind this tristate weird condition.
->>>>>>
->>>>>> e.g have a new keyword:
->>>>>>       reach VXLAN
->>>>>> which will be equivalent to:
->>>>>>       depends on VXLAN && !VXLAN
->>>>> I'd love to see that, but I'm not sure what keyword is best. For your
->>>>> suggestion of "reach", that would probably do the job, but I'm not
->>>>> sure if this ends up being more or less confusing than what we have
->>>>> today.
->>>> Ah, perfect bikeshedding topic!
->>>>
->>>> Perhaps "uses"? If the dependency is enabled it gets used as a
->>>> dependency.
->>> That seems to be the best naming suggestion so far
->> What I don't like about "uses" is that it doesn't convey the conditional
->> dependency. It could be mistaken as being synonymous to "select".
->>
->> What about "depends_if" ? The rationale is that this is actually a
->> dependency, but only if the related symbol is set (i.e. not n or empty).
-> I think that stretches the common understanding of 'depends' a bit too
-> far.. A depends where the target can be N is just too strange.
+> OK, I try that, thank you :)
 >
-> Somthing incorporating 'optional' seems like a better choice
-> 'optionally uses' seems particularly clear and doesn't overload
-> existing works like depends or select
+
+It seems that i DO have the ROM's enabled, i'm now testing some mutex 
+guard for phy state and try to use it as indicator
+
+that attach has been done. One thing i've noticed is that driver needs 
+to be reloaded to allow traffic (ie. ping works etc.)
 
 
-I think the whole misunderstanding with imply is that ppl try to use it 
-as weak 'depend on' but it is weak 'select' - ie it enforces value of 
-implied symbol in contrast to 'depends' which enforces value of current 
-symbol.
-
-So if we want to add new symbol 'weak depend' it would be good to stress 
-out that difference.
-
-Moreover name imply is already cryptic, adding another keyword which for 
-sure will be cryptic (as there are no natural candidates) will 
-complicate things more.
-
-Maybe adding some decorator would be better, like optionally or weak, 
-for example:
-
-optionally depends on X
-
-optionally select Y
-
-Even more readable:
-
-depends on X if on
-
-depends on Y if enabled
-
-
-Regards
-
-Andrzej
-
-
->
-> Jason
->
+>>> The problem with old method seems to be, that device does not have 
+>>> had time to attach before the
+>>> PHY driver check.
+>>>
+>>> The patch:
+>>>
+>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c 
+>>> b/drivers/net/ethernet/realtek/r8169_main.c
+>>> index bf5bf05970a2..acd122a88d4a 100644
+>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>>> @@ -5172,11 +5172,11 @@ static int r8169_mdio_register(struct 
+>>> rtl8169_private *tp)
+>>>          if (!tp->phydev) {
+>>>                  mdiobus_unregister(new_bus);
+>>>                  return -ENODEV;
+>>> -       } else if (!tp->phydev->drv) {
+>>> +       } else if (tp->mac_version == RTL_GIGA_MAC_NONE) {
+>>>                  /* Most chip versions fail with the genphy driver.
+>>>                   * Therefore ensure that the dedicated PHY driver 
+>>> is loaded.
+>>>                   */
+>>> -               dev_err(&pdev->dev, "realtek.ko not loaded, maybe it 
+>>> needs to be added to initramfs?\n");
+>>> +               dev_err(&pdev->dev, "Not known MAC version.\n");
+>>>                  mdiobus_unregister(new_bus);
+>>>                  return -EUNATCH;
+>>>          }
+>>> diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+>>> index 66b8c61ca74c..aba2b304b821 100644
+>>> --- a/drivers/net/phy/phy-core.c
+>>> +++ b/drivers/net/phy/phy-core.c
+>>> @@ -704,6 +704,10 @@ EXPORT_SYMBOL_GPL(phy_modify_mmd);
+>>>     static int __phy_read_page(struct phy_device *phydev)
+>>>   {
+>>> +       /* If not attached, do nothing (no warning) */
+>>> +       if (!phydev->attached_dev)
+>>> +               return -EOPNOTSUPP;
+>>> +
+>>>          if (WARN_ONCE(!phydev->drv->read_page, "read_page callback 
+>>> not available, PHY driver not loaded?\n"))
+>>>                  return -EOPNOTSUPP;
+>>>   @@ -712,12 +716,17 @@ static int __phy_read_page(struct phy_device 
+>>> *phydev)
+>>>     static int __phy_write_page(struct phy_device *phydev, int page)
+>>>   {
+>>> +       /* If not attached, do nothing (no warning) */
+>>> +       if (!phydev->attached_dev)
+>>> +               return -EOPNOTSUPP;
+>>> +
+>>>          if (WARN_ONCE(!phydev->drv->write_page, "write_page 
+>>> callback not available, PHY driver not loaded?\n"))
+>>>                  return -EOPNOTSUPP;
+>>>            return phydev->drv->write_page(phydev, page);
+>>>   }
+>>>   +
+>>>   /**
+>>>    * phy_save_page() - take the bus lock and save the current page
+>>>    * @phydev: a pointer to a &struct phy_device
+>>>
+>>>
+>>>
+>>> 15. huhtik. 2020, 19.18, Heiner Kallweit <hkallweit1@gmail.com 
+>>> <mailto:hkallweit1@gmail.com>> kirjoitti:
+>>>
+>>>      On 15.04.2020 16:39, Lauri Jakku wrote:
+>>>
+>>>          Hi, There seems to he Something odd problem, maybe timing 
+>>> related. Stripped version not workingas expected. I get back to you, 
+>>> when  i have it working.
+>>>
+>>>
+>>>      There's no point in working on your patch. W/o proper 
+>>> justification it
+>>>      isn't acceptable anyway. And so far we still don't know which 
+>>> problem
+>>>      you actually have.
+>>>      FIRST please provide the requested logs and explain the actual 
+>>> problem
+>>>      (incl. the commit that caused the regression).
+>>>
+>>>
+>>>
+>>>
+>>>          13. huhtik. 2020, 14.46, Lauri Jakku <ljakku77@gmail.com 
+>>> <mailto:ljakku77@gmail.com>> kirjoitti: Hi, Fair enough, i'll strip 
+>>> them. -lja On 2020-04-13 14:34, Leon Romanovsky wrote:
+>>>
+>>>          On Mon, Apr 13, 2020 at 02:02:01PM +0300, Lauri Jakku 
+>>> wrote: Hi, Comments inline. On 2020-04-13 13:58, Leon Romanovsky 
+>>> wrote: On Mon, Apr 13, 2020 at 01:30:13PM +0300, Lauri Jakku wrote: 
+>>> From 2d41edd4e6455187094f3a13d58c46eeee35aa31 Mon Sep 17 00:00:00 
+>>> 2001 From: Lauri Jakku <lja@iki.fi> Date: Mon, 13 Apr 2020 13:18:35 
+>>> +0300 Subject: [PATCH] NET: r8168/r8169 identifying fix The driver 
+>>> installation determination made properly by checking PHY vs DRIVER 
+>>> id's. --- drivers/net/ethernet/realtek/r8169_main.c | 70 
+>>> ++++++++++++++++++++--- drivers/net/phy/mdio_bus.c | 11 +++- 2 files 
+>>> changed, 72 insertions(+), 9 deletions(-) I would say that most of 
+>>> the code is debug prints. I tought that they are helpful to keep, 
+>>> they are using the debug calls, so they are not visible if user does 
+>>> not like those. You are missing the point of who are your users. 
+>>> Users want to have working device and the code. They don't need or 
+>>> like to debug their kernel. Thanks
+>>>
+>>>
