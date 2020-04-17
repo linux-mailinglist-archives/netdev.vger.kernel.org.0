@@ -2,44 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CF2C1AE357
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 19:13:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39EF81AE368
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 19:13:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729349AbgDQRK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 13:10:57 -0400
-Received: from mga06.intel.com ([134.134.136.31]:24555 "EHLO mga06.intel.com"
+        id S1729241AbgDQRND (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 13:13:03 -0400
+Received: from mga01.intel.com ([192.55.52.88]:30114 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729307AbgDQRKy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Apr 2020 13:10:54 -0400
-IronPort-SDR: y86lLjNQbdG62+hF3ZCQSnWMXqC9hIN446aIp7Z/0x7KqJBn8ds/5Vbv72zX50ckegBoSYS1Y3
- WH+n/+vIZ+Fw==
+        id S1728088AbgDQRNC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Apr 2020 13:13:02 -0400
+IronPort-SDR: Esd1h3+kmEutfEditqsuV104RtDbFqWdpcPIeS/70K/QOyJZ4GhuIC5ngLkdSEZDPIKLnIJjS8
+ BTJrC+yyy9Fg==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2020 10:10:43 -0700
-IronPort-SDR: s8pHHDNX9d3ZH/gjFIBslJp9uI0VrpMb7ELGEkgYOQjTypp5jabDMWG91Dt4Yy2jj9SqxbKa5o
- 2hYws//auA3A==
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2020 10:12:54 -0700
+IronPort-SDR: L+Zw4CMT6t7I7jBld6ZOYu7farwK5mNbmWMM6EKWCQcNufeu/CJ79jV2SJ6Yak8pwKsgvHiESi
+ mGEH5xjN5VeQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.72,395,1580803200"; 
-   d="scan'208";a="278442211"
+   d="scan'208";a="364383707"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by fmsmga004.fm.intel.com with ESMTP; 17 Apr 2020 10:10:42 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 17 Apr 2020 10:12:52 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net, gregkh@linuxfoundation.org
-Cc:     Shiraz Saleem <shiraz.saleem@intel.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, jgg@ziepe.ca,
-        ranjani.sridharan@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com,
-        Mustafa Ismail <mustafa.ismail@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 9/9] i40e: Register a virtbus device to provide RDMA
-Date:   Fri, 17 Apr 2020 10:10:34 -0700
-Message-Id: <20200417171034.1533253-10-jeffrey.t.kirsher@intel.com>
+To:     gregkh@linuxfoundation.org, jgg@ziepe.ca
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com
+Subject: [RFC PATCH v5 00/16] Add Intel Ethernet Protocol Driver for RDMA (irdma)
+Date:   Fri, 17 Apr 2020 10:12:35 -0700
+Message-Id: <20200417171251.1533371-1-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.25.2
-In-Reply-To: <20200417171034.1533253-1-jeffrey.t.kirsher@intel.com>
-References: <20200417171034.1533253-1-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -47,322 +39,212 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shiraz Saleem <shiraz.saleem@intel.com>
+This patchset adds a unified Intel Ethernet Protocol Driver for RDMA
+that supports a new network device E810 (iWARP and RoCEv2 capable)
+and the existing X722 iWARP device. The driver architecture
+provides the extensibility for future generations of Intel HW
+supporting RDMA.
 
-Register client virtbus device on the virtbus for the RDMA
-virtbus driver (irdma) to bind to. It allows to realize a
-single RDMA driver capable of working with multiple netdev
-drivers over multi-generation Intel HW supporting RDMA.
-There is also no load ordering dependencies between i40e and
-irdma.
+This driver replaces the legacy X722 driver i40iw and extends
+the ABI already defined for i40iw. It is backward compatible
+with legacy X722 rdma-core provider (libi40iw).
 
-Summary of changes:
-* Support to add/remove virtbus devices
-* Add 2 new client ops.
-	* i40e_client_device_register() which is called during RDMA
-	  probe() per PF. Validate client drv OPs and schedule service
-	  task to call open()
-	* i40e_client_device_unregister() called during RDMA remove()
-	  per PF. Call client close() and release_qvlist.
-* The global register/unregister calls exported for i40iw are retained
-  until i40iw is removed from the kernel.
+This series was built against the rdma for-next branch.
 
-Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/Kconfig            |   1 +
- drivers/net/ethernet/intel/i40e/i40e_client.c | 131 +++++++++++++++---
- include/linux/net/intel/i40e_client.h         |  15 ++
- 3 files changed, 127 insertions(+), 20 deletions(-)
+v4-->v5:
+*Drop driver_data usage from virtbus device id. Use string id
+match to identify virtbus device type.
+*Rename device discovery functions
+*Drop rdma_set_device_sysfs_group API usage
+*READ_ONCE annotations for netdev flags in rcu_read_lock
 
-diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
-index 1a5d51b0f294..7a61e9d5e36e 100644
---- a/drivers/net/ethernet/intel/Kconfig
-+++ b/drivers/net/ethernet/intel/Kconfig
-@@ -241,6 +241,7 @@ config I40E
- 	tristate "Intel(R) Ethernet Controller XL710 Family support"
- 	imply PTP_1588_CLOCK
- 	depends on PCI
-+	select VIRTUAL_BUS
- 	---help---
- 	  This driver supports Intel(R) Ethernet Controller XL710 Family of
- 	  devices.  For more information on how to identify your adapter, go
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_client.c b/drivers/net/ethernet/intel/i40e/i40e_client.c
-index befd3018183f..37e6dfbb8a59 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_client.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_client.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- /* Copyright(c) 2013 - 2018 Intel Corporation. */
- 
-+#include <linux/net/intel/i40e_client.h>
- #include <linux/list.h>
- #include <linux/errno.h>
- #include <linux/net/intel/i40e_client.h>
-@@ -30,11 +31,17 @@ static int i40e_client_update_vsi_ctxt(struct i40e_info *ldev,
- 				       bool is_vf, u32 vf_id,
- 				       u32 flag, u32 valid_flag);
- 
-+static int i40e_client_device_register(struct i40e_info *ldev);
-+
-+static void i40e_client_device_unregister(struct i40e_info *ldev);
-+
- static struct i40e_ops i40e_lan_ops = {
- 	.virtchnl_send = i40e_client_virtchnl_send,
- 	.setup_qvlist = i40e_client_setup_qvlist,
- 	.request_reset = i40e_client_request_reset,
- 	.update_vsi_ctxt = i40e_client_update_vsi_ctxt,
-+	.client_device_register = i40e_client_device_register,
-+	.client_device_unregister = i40e_client_device_unregister,
- };
- 
- /**
-@@ -275,6 +282,37 @@ void i40e_client_update_msix_info(struct i40e_pf *pf)
- 	cdev->lan_info.msix_entries = &pf->msix_entries[pf->iwarp_base_vector];
- }
- 
-+static void i40e_virtdev_release(struct virtbus_device *vdev)
-+{
-+	struct i40e_virtbus_device *i40e_vdev =
-+			container_of(vdev, struct i40e_virtbus_device, vdev);
-+
-+	kfree(i40e_vdev);
-+}
-+
-+static int i40e_init_client_virtdev(struct i40e_info *ldev)
-+{
-+	struct pci_dev *pdev = ldev->pcidev;
-+	struct i40e_virtbus_device *i40e_vdev;
-+	int ret;
-+
-+	i40e_vdev = kzalloc(sizeof(*i40e_vdev), GFP_KERNEL);
-+	if (!i40e_vdev)
-+		return -ENOMEM;
-+
-+	i40e_vdev->vdev.name = I40E_PEER_RDMA_NAME;
-+	i40e_vdev->vdev.dev.parent = &pdev->dev;
-+	i40e_vdev->vdev.release = i40e_virtdev_release;
-+	i40e_vdev->ldev = ldev;
-+	ldev->vdev = &i40e_vdev->vdev;
-+
-+	ret = virtbus_register_device(&i40e_vdev->vdev);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
- /**
-  * i40e_client_add_instance - add a client instance struct to the instance list
-  * @pf: pointer to the board struct
-@@ -288,9 +326,6 @@ static void i40e_client_add_instance(struct i40e_pf *pf)
- 	struct netdev_hw_addr *mac = NULL;
- 	struct i40e_vsi *vsi = pf->vsi[pf->lan_vsi];
- 
--	if (!registered_client || pf->cinst)
--		return;
--
- 	cdev = kzalloc(sizeof(*cdev), GFP_KERNEL);
- 	if (!cdev)
- 		return;
-@@ -310,11 +345,8 @@ static void i40e_client_add_instance(struct i40e_pf *pf)
- 	cdev->lan_info.fw_build = pf->hw.aq.fw_build;
- 	set_bit(__I40E_CLIENT_INSTANCE_NONE, &cdev->state);
- 
--	if (i40e_client_get_params(vsi, &cdev->lan_info.params)) {
--		kfree(cdev);
--		cdev = NULL;
--		return;
--	}
-+	if (i40e_client_get_params(vsi, &cdev->lan_info.params))
-+		goto free_cdev;
- 
- 	mac = list_first_entry(&cdev->lan_info.netdev->dev_addrs.list,
- 			       struct netdev_hw_addr, list);
-@@ -326,7 +358,17 @@ static void i40e_client_add_instance(struct i40e_pf *pf)
- 	cdev->client = registered_client;
- 	pf->cinst = cdev;
- 
--	i40e_client_update_msix_info(pf);
-+	cdev->lan_info.msix_count = pf->num_iwarp_msix;
-+	cdev->lan_info.msix_entries = &pf->msix_entries[pf->iwarp_base_vector];
-+
-+	if (i40e_init_client_virtdev(&cdev->lan_info))
-+		goto free_cdev;
-+
-+	return;
-+
-+free_cdev:
-+	kfree(cdev);
-+	pf->cinst = NULL;
- }
- 
- /**
-@@ -347,7 +389,7 @@ void i40e_client_del_instance(struct i40e_pf *pf)
-  **/
- void i40e_client_subtask(struct i40e_pf *pf)
- {
--	struct i40e_client *client = registered_client;
-+	struct i40e_client *client;
- 	struct i40e_client_instance *cdev;
- 	struct i40e_vsi *vsi = pf->vsi[pf->lan_vsi];
- 	int ret = 0;
-@@ -361,9 +403,11 @@ void i40e_client_subtask(struct i40e_pf *pf)
- 	    test_bit(__I40E_CONFIG_BUSY, pf->state))
- 		return;
- 
--	if (!client || !cdev)
-+	if (!cdev || !cdev->client)
- 		return;
- 
-+	client = cdev->client;
-+
- 	/* Here we handle client opens. If the client is down, and
- 	 * the netdev is registered, then open the client.
- 	 */
-@@ -424,16 +468,8 @@ int i40e_lan_add_device(struct i40e_pf *pf)
- 		 pf->hw.pf_id, pf->hw.bus.bus_id,
- 		 pf->hw.bus.device, pf->hw.bus.func);
- 
--	/* If a client has already been registered, we need to add an instance
--	 * of it to our new LAN device.
--	 */
--	if (registered_client)
--		i40e_client_add_instance(pf);
-+	i40e_client_add_instance(pf);
- 
--	/* Since in some cases register may have happened before a device gets
--	 * added, we can schedule a subtask to go initiate the clients if
--	 * they can be launched at probe time.
--	 */
- 	set_bit(__I40E_CLIENT_SERVICE_REQUESTED, pf->state);
- 	i40e_service_event_schedule(pf);
- 
-@@ -453,6 +489,8 @@ int i40e_lan_del_device(struct i40e_pf *pf)
- 	struct i40e_device *ldev, *tmp;
- 	int ret = -ENODEV;
- 
-+	virtbus_unregister_device(pf->cinst->lan_info.vdev);
-+
- 	/* First, remove any client instance. */
- 	i40e_client_del_instance(pf);
- 
-@@ -733,6 +771,59 @@ static int i40e_client_update_vsi_ctxt(struct i40e_info *ldev,
- 	return err;
- }
- 
-+static int i40e_client_device_register(struct i40e_info *ldev)
-+{
-+	struct i40e_client *client;
-+	struct i40e_pf *pf;
-+
-+	if (!ldev) {
-+		pr_err("Failed to reg client dev: ldev ptr NULL\n");
-+		return -EINVAL;
-+	}
-+
-+	client = ldev->client;
-+	pf = ldev->pf;
-+	if (!client) {
-+		pr_err("Failed to reg client dev: client ptr NULL\n");
-+		return -EINVAL;
-+	}
-+
-+	if (!ldev->ops || !client->ops) {
-+		pr_err("Failed to reg client dev: client dev peer_ops/ops NULL\n");
-+		return -EINVAL;
-+	}
-+
-+	pf->cinst->client = ldev->client;
-+	set_bit(__I40E_CLIENT_SERVICE_REQUESTED, pf->state);
-+	i40e_service_event_schedule(pf);
-+
-+	return 0;
-+}
-+
-+static void i40e_client_device_unregister(struct i40e_info *ldev)
-+{
-+	struct i40e_pf *pf = ldev->pf;
-+	struct i40e_client_instance *cdev = pf->cinst;
-+
-+	while (test_and_set_bit(__I40E_SERVICE_SCHED, pf->state))
-+		usleep_range(500, 1000);
-+
-+	if (!cdev || !cdev->client || !cdev->client->ops ||
-+	    !cdev->client->ops->close) {
-+		dev_err(&pf->pdev->dev, "Cannot close client device\n");
-+		return;
-+	}
-+	cdev->client->ops->close(&cdev->lan_info, cdev->client, false);
-+	clear_bit(__I40E_CLIENT_INSTANCE_OPENED, &cdev->state);
-+	i40e_client_release_qvlist(&cdev->lan_info);
-+	pf->cinst->client = NULL;
-+	clear_bit(__I40E_SERVICE_SCHED, pf->state);
-+}
-+
-+/* Retain legacy global registration/unregistration calls till i40iw is
-+ * deprecated from the kernel. The irdma unified driver does not use these
-+ * exported symbols.
-+ */
- /**
-  * i40e_register_client - Register a i40e client driver with the L2 driver
-  * @client: pointer to the i40e_client struct
-diff --git a/include/linux/net/intel/i40e_client.h b/include/linux/net/intel/i40e_client.h
-index 72994baf4941..4a83648cf5fd 100644
---- a/include/linux/net/intel/i40e_client.h
-+++ b/include/linux/net/intel/i40e_client.h
-@@ -4,6 +4,9 @@
- #ifndef _I40E_CLIENT_H_
- #define _I40E_CLIENT_H_
- 
-+#include <linux/virtual_bus.h>
-+
-+#define I40E_PEER_RDMA_NAME	"intel,i40e,rdma"
- #define I40E_CLIENT_STR_LENGTH 10
- 
- /* Client interface version should be updated anytime there is a change in the
-@@ -84,6 +87,7 @@ struct i40e_info {
- 	u8 lanmac[6];
- 	struct net_device *netdev;
- 	struct pci_dev *pcidev;
-+	struct virtbus_device *vdev;
- 	u8 __iomem *hw_addr;
- 	u8 fid;	/* function id, PF id or VF id */
- #define I40E_CLIENT_FTYPE_PF 0
-@@ -97,6 +101,7 @@ struct i40e_info {
- 	struct i40e_qvlist_info *qvlist_info;
- 	struct i40e_params params;
- 	struct i40e_ops *ops;
-+	struct i40e_client *client;
- 
- 	u16 msix_count;	 /* number of msix vectors*/
- 	/* Array down below will be dynamically allocated based on msix_count */
-@@ -107,6 +112,11 @@ struct i40e_info {
- 	u32 fw_build;                   /* firmware build number */
- };
- 
-+struct i40e_virtbus_device {
-+	struct virtbus_device vdev;
-+	struct i40e_info *ldev;
-+};
-+
- #define I40E_CLIENT_RESET_LEVEL_PF   1
- #define I40E_CLIENT_RESET_LEVEL_CORE 2
- #define I40E_CLIENT_VSI_FLAG_TCP_ENABLE  BIT(1)
-@@ -132,6 +142,11 @@ struct i40e_ops {
- 			       struct i40e_client *client,
- 			       bool is_vf, u32 vf_id,
- 			       u32 flag, u32 valid_flag);
-+
-+	int (*client_device_register)(struct i40e_info *ldev);
-+
-+	void (*client_device_unregister)(struct i40e_info *ldev);
-+
- };
- 
- struct i40e_client_ops {
+v4:
+*Remove redundant explicit casts
+*Scrub all WQs to define correct charateristics and use system WQ for reset recovery work
+*Remove all non-functional NULL checks on IDC peer dev OPs
+*Change all pr_* to dev_* if struct device present. Remove dev_info logging
+*Dont use test_bit on non-atomic IIDC_* event types
+*Remove all module parameters
+*Use bool bitfields in structures instead of bool
+*Change CQP completion handling from kthread to WQ
+*Use the generic devlink parameter enable_roce instead of driver specific one
+*Use meaningful labels for goto unwind
+*Use new RDMA mmap API
+*Use refcount_t APIs for refcounts on driver objects
+*Add support for ibdev OP dealloc_driver
+*Adapt to use new version of virtbus
+*Remove RCU locking in CM address resolve
+*Misc. driver fixes
+
+Michael J. Ruhl (1):
+  RDMA/irdma: Add dynamic tracing for CM
+
+Mustafa Ismail (13):
+  RDMA/irdma: Add driver framework definitions
+  RDMA/irdma: Implement device initialization definitions
+  RDMA/irdma: Implement HW Admin Queue OPs
+  RDMA/irdma: Add HMC backing store setup functions
+  RDMA/irdma: Add privileged UDA queue implementation
+  RDMA/irdma: Add QoS definitions
+  RDMA/irdma: Add connection manager
+  RDMA/irdma: Add PBLE resource manager
+  RDMA/irdma: Implement device supported verb APIs
+  RDMA/irdma: Add RoCEv2 UD OP support
+  RDMA/irdma: Add user/kernel shared libraries
+  RDMA/irdma: Add miscellaneous utility definitions
+  RDMA/irdma: Add ABI definitions
+
+Shiraz Saleem (2):
+  RDMA/irdma: Add irdma Kconfig/Makefile and remove i40iw
+  RDMA/irdma: Update MAINTAINERS file
+
+ .../ABI/stable/sysfs-class-infiniband         |   18 -
+ MAINTAINERS                                   |    8 +-
+ drivers/infiniband/Kconfig                    |    2 +-
+ drivers/infiniband/hw/Makefile                |    2 +-
+ drivers/infiniband/hw/i40iw/Kconfig           |    9 -
+ drivers/infiniband/hw/i40iw/Makefile          |    9 -
+ drivers/infiniband/hw/i40iw/i40iw.h           |  622 --
+ drivers/infiniband/hw/i40iw/i40iw_cm.c        | 4422 ------------
+ drivers/infiniband/hw/i40iw/i40iw_cm.h        |  462 --
+ drivers/infiniband/hw/i40iw/i40iw_ctrl.c      | 5294 ---------------
+ drivers/infiniband/hw/i40iw/i40iw_d.h         | 1757 -----
+ drivers/infiniband/hw/i40iw/i40iw_hmc.c       |  821 ---
+ drivers/infiniband/hw/i40iw/i40iw_hmc.h       |  241 -
+ drivers/infiniband/hw/i40iw/i40iw_hw.c        |  852 ---
+ drivers/infiniband/hw/i40iw/i40iw_main.c      | 2070 ------
+ drivers/infiniband/hw/i40iw/i40iw_osdep.h     |  217 -
+ drivers/infiniband/hw/i40iw/i40iw_p.h         |  129 -
+ drivers/infiniband/hw/i40iw/i40iw_pble.c      |  612 --
+ drivers/infiniband/hw/i40iw/i40iw_pble.h      |  131 -
+ drivers/infiniband/hw/i40iw/i40iw_puda.c      | 1493 ----
+ drivers/infiniband/hw/i40iw/i40iw_puda.h      |  188 -
+ drivers/infiniband/hw/i40iw/i40iw_register.h  | 1030 ---
+ drivers/infiniband/hw/i40iw/i40iw_status.h    |  102 -
+ drivers/infiniband/hw/i40iw/i40iw_type.h      | 1375 ----
+ drivers/infiniband/hw/i40iw/i40iw_uk.c        | 1232 ----
+ drivers/infiniband/hw/i40iw/i40iw_user.h      |  430 --
+ drivers/infiniband/hw/i40iw/i40iw_utils.c     | 1557 -----
+ drivers/infiniband/hw/i40iw/i40iw_verbs.c     | 2791 --------
+ drivers/infiniband/hw/i40iw/i40iw_verbs.h     |  179 -
+ drivers/infiniband/hw/i40iw/i40iw_vf.c        |   85 -
+ drivers/infiniband/hw/i40iw/i40iw_vf.h        |   62 -
+ drivers/infiniband/hw/i40iw/i40iw_virtchnl.c  |  756 ---
+ drivers/infiniband/hw/i40iw/i40iw_virtchnl.h  |  124 -
+ drivers/infiniband/hw/irdma/Kconfig           |   11 +
+ drivers/infiniband/hw/irdma/Makefile          |   28 +
+ drivers/infiniband/hw/irdma/cm.c              | 4499 +++++++++++++
+ drivers/infiniband/hw/irdma/cm.h              |  413 ++
+ drivers/infiniband/hw/irdma/ctrl.c            | 5985 +++++++++++++++++
+ drivers/infiniband/hw/irdma/defs.h            | 2132 ++++++
+ drivers/infiniband/hw/irdma/hmc.c             |  705 ++
+ drivers/infiniband/hw/irdma/hmc.h             |  217 +
+ drivers/infiniband/hw/irdma/hw.c              | 2597 +++++++
+ drivers/infiniband/hw/irdma/i40iw_hw.c        |  211 +
+ drivers/infiniband/hw/irdma/i40iw_hw.h        |  162 +
+ drivers/infiniband/hw/irdma/i40iw_if.c        |  228 +
+ drivers/infiniband/hw/irdma/icrdma_hw.c       |   76 +
+ drivers/infiniband/hw/irdma/icrdma_hw.h       |   62 +
+ drivers/infiniband/hw/irdma/irdma.h           |  190 +
+ drivers/infiniband/hw/irdma/irdma_if.c        |  449 ++
+ drivers/infiniband/hw/irdma/main.c            |  573 ++
+ drivers/infiniband/hw/irdma/main.h            |  599 ++
+ drivers/infiniband/hw/irdma/osdep.h           |  105 +
+ drivers/infiniband/hw/irdma/pble.c            |  510 ++
+ drivers/infiniband/hw/irdma/pble.h            |  135 +
+ drivers/infiniband/hw/irdma/protos.h          |   93 +
+ drivers/infiniband/hw/irdma/puda.c            | 1690 +++++
+ drivers/infiniband/hw/irdma/puda.h            |  186 +
+ drivers/infiniband/hw/irdma/status.h          |   69 +
+ drivers/infiniband/hw/irdma/trace.c           |  112 +
+ drivers/infiniband/hw/irdma/trace.h           |    3 +
+ drivers/infiniband/hw/irdma/trace_cm.h        |  458 ++
+ drivers/infiniband/hw/irdma/type.h            | 1714 +++++
+ drivers/infiniband/hw/irdma/uda.c             |  390 ++
+ drivers/infiniband/hw/irdma/uda.h             |   64 +
+ drivers/infiniband/hw/irdma/uda_d.h           |  382 ++
+ drivers/infiniband/hw/irdma/uk.c              | 1744 +++++
+ drivers/infiniband/hw/irdma/user.h            |  448 ++
+ drivers/infiniband/hw/irdma/utils.c           | 2445 +++++++
+ drivers/infiniband/hw/irdma/verbs.c           | 4555 +++++++++++++
+ drivers/infiniband/hw/irdma/verbs.h           |  213 +
+ drivers/infiniband/hw/irdma/ws.c              |  395 ++
+ drivers/infiniband/hw/irdma/ws.h              |   39 +
+ include/uapi/rdma/i40iw-abi.h                 |  107 -
+ include/uapi/rdma/ib_user_ioctl_verbs.h       |    1 +
+ include/uapi/rdma/irdma-abi.h                 |  140 +
+ 75 files changed, 35034 insertions(+), 29183 deletions(-)
+ delete mode 100644 drivers/infiniband/hw/i40iw/Kconfig
+ delete mode 100644 drivers/infiniband/hw/i40iw/Makefile
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_cm.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_cm.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_ctrl.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_d.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_hmc.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_hmc.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_hw.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_main.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_osdep.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_p.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_pble.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_pble.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_puda.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_puda.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_register.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_status.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_type.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_uk.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_user.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_utils.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_verbs.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_verbs.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_vf.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_vf.h
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_virtchnl.c
+ delete mode 100644 drivers/infiniband/hw/i40iw/i40iw_virtchnl.h
+ create mode 100644 drivers/infiniband/hw/irdma/Kconfig
+ create mode 100644 drivers/infiniband/hw/irdma/Makefile
+ create mode 100644 drivers/infiniband/hw/irdma/cm.c
+ create mode 100644 drivers/infiniband/hw/irdma/cm.h
+ create mode 100644 drivers/infiniband/hw/irdma/ctrl.c
+ create mode 100644 drivers/infiniband/hw/irdma/defs.h
+ create mode 100644 drivers/infiniband/hw/irdma/hmc.c
+ create mode 100644 drivers/infiniband/hw/irdma/hmc.h
+ create mode 100644 drivers/infiniband/hw/irdma/hw.c
+ create mode 100644 drivers/infiniband/hw/irdma/i40iw_hw.c
+ create mode 100644 drivers/infiniband/hw/irdma/i40iw_hw.h
+ create mode 100644 drivers/infiniband/hw/irdma/i40iw_if.c
+ create mode 100644 drivers/infiniband/hw/irdma/icrdma_hw.c
+ create mode 100644 drivers/infiniband/hw/irdma/icrdma_hw.h
+ create mode 100644 drivers/infiniband/hw/irdma/irdma.h
+ create mode 100644 drivers/infiniband/hw/irdma/irdma_if.c
+ create mode 100644 drivers/infiniband/hw/irdma/main.c
+ create mode 100644 drivers/infiniband/hw/irdma/main.h
+ create mode 100644 drivers/infiniband/hw/irdma/osdep.h
+ create mode 100644 drivers/infiniband/hw/irdma/pble.c
+ create mode 100644 drivers/infiniband/hw/irdma/pble.h
+ create mode 100644 drivers/infiniband/hw/irdma/protos.h
+ create mode 100644 drivers/infiniband/hw/irdma/puda.c
+ create mode 100644 drivers/infiniband/hw/irdma/puda.h
+ create mode 100644 drivers/infiniband/hw/irdma/status.h
+ create mode 100644 drivers/infiniband/hw/irdma/trace.c
+ create mode 100644 drivers/infiniband/hw/irdma/trace.h
+ create mode 100644 drivers/infiniband/hw/irdma/trace_cm.h
+ create mode 100644 drivers/infiniband/hw/irdma/type.h
+ create mode 100644 drivers/infiniband/hw/irdma/uda.c
+ create mode 100644 drivers/infiniband/hw/irdma/uda.h
+ create mode 100644 drivers/infiniband/hw/irdma/uda_d.h
+ create mode 100644 drivers/infiniband/hw/irdma/uk.c
+ create mode 100644 drivers/infiniband/hw/irdma/user.h
+ create mode 100644 drivers/infiniband/hw/irdma/utils.c
+ create mode 100644 drivers/infiniband/hw/irdma/verbs.c
+ create mode 100644 drivers/infiniband/hw/irdma/verbs.h
+ create mode 100644 drivers/infiniband/hw/irdma/ws.c
+ create mode 100644 drivers/infiniband/hw/irdma/ws.h
+ delete mode 100644 include/uapi/rdma/i40iw-abi.h
+ create mode 100644 include/uapi/rdma/irdma-abi.h
+
 -- 
 2.25.2
 
