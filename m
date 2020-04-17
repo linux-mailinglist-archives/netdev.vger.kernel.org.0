@@ -2,183 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 739231AE80B
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 00:17:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 456A01AE833
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 00:26:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728724AbgDQWPQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 18:15:16 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:40399 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728706AbgDQWPQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 18:15:16 -0400
-Received: by mail-il1-f198.google.com with SMTP id k5so4010686ilg.7
-        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 15:15:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=WEcygz2yiTkhcSymwPQaWfTbOHv0m+f9utC1k92dGvI=;
-        b=APhNV32RJZuVkKQwvK4Snjgs3XvoiHGPtWvrcn/JNXDFhQd1mVn29c0zahbZpYZoro
-         jLuAUUVTEpk8rLUoMb/lWDYs+SgXex6dw58BrwmL1vSTJK2mAa/gR+JzE9GJhGFb+m4e
-         B9hroazrcF3QqYqizakCFtVo05T1Lte6j1Adbwig0qplR0ine1xz76Iy2flMy+jInfkZ
-         2irZ9JHuNkYWOrXyjlwjtUaJPgxvGv2wHRT0ZQ6V0l0Q7T0NdzUTMC+eUBT6qJbW0otY
-         kwhdJ8WyzVZ1ctu01UnJjizCsrfKzVS0JKhjyGPDenvOg4B5RiknXs9ppFyh0pzNQrZ5
-         780A==
-X-Gm-Message-State: AGi0PuZCLUA8RB/FTO0vdkPRb2lek1cPQW+7Es4dM4FBOWCAUs06UyeY
-        kFaI28vOW+rB10dsZjF01PZ3wL6pvb7k4dIliMMNK0uRIXm/
-X-Google-Smtp-Source: APiQypLz91J++bbdaxnWO+tLXAVzyEHztNeUaUbTrzFAsi0kWHzaJJsszL47TVyJGvKnkGqeSqIa2qGqms/BCMpq2zimre8JILyu
+        id S1728864AbgDQW0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 18:26:18 -0400
+Received: from out02.mta.xmission.com ([166.70.13.232]:51506 "EHLO
+        out02.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728470AbgDQW0R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 18:26:17 -0400
+Received: from in01.mta.xmission.com ([166.70.13.51])
+        by out02.mta.xmission.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.90_1)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1jPZR5-0003bo-Sg; Fri, 17 Apr 2020 16:26:12 -0600
+Received: from ip68-227-160-95.om.om.cox.net ([68.227.160.95] helo=x220.xmission.com)
+        by in01.mta.xmission.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.87)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1jPZR4-0002qC-5z; Fri, 17 Apr 2020 16:26:11 -0600
+From:   ebiederm@xmission.com (Eric W. Biederman)
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Richard Guy Briggs <rgb@redhat.com>, nhorman@tuxdriver.com,
+        linux-api@vger.kernel.org, containers@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
+        linux-audit@redhat.com, netfilter-devel@vger.kernel.org,
+        simo@redhat.com, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
+        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
+References: <20200318215550.es4stkjwnefrfen2@madcap2.tricolour.ca>
+        <CAHC9VhSdDDP7Ec-w61NhGxZG5ZiekmrBCAg=Y=VJvEZcgQh46g@mail.gmail.com>
+        <20200319220249.jyr6xmwvflya5mks@madcap2.tricolour.ca>
+        <CAHC9VhR84aN72yNB_j61zZgrQV1y6yvrBLNY7jp7BqQiEDL+cw@mail.gmail.com>
+        <20200324210152.5uydf3zqi3dwshfu@madcap2.tricolour.ca>
+        <CAHC9VhTQUnVhoN3JXTAQ7ti+nNLfGNVXhT6D-GYJRSpJHCwDRg@mail.gmail.com>
+        <20200330134705.jlrkoiqpgjh3rvoh@madcap2.tricolour.ca>
+        <CAHC9VhQTsEMcYAF1CSHrrVn07DR450W9j6sFVfKAQZ0VpheOfw@mail.gmail.com>
+        <20200330162156.mzh2tsnovngudlx2@madcap2.tricolour.ca>
+        <CAHC9VhTRzZXJ6yUFL+xZWHNWZFTyiizBK12ntrcSwmgmySbkWw@mail.gmail.com>
+        <20200330174937.xalrsiev7q3yxsx2@madcap2.tricolour.ca>
+        <CAHC9VhR_bKSHDn2WAUgkquu+COwZUanc0RV3GRjMDvpoJ5krjQ@mail.gmail.com>
+        <871ronf9x2.fsf@x220.int.ebiederm.org>
+        <CAHC9VhR3gbmj5+5MY-whLtStKqDEHgvMRigU9hW0X1kpxF91ag@mail.gmail.com>
+Date:   Fri, 17 Apr 2020 17:23:08 -0500
+In-Reply-To: <CAHC9VhR3gbmj5+5MY-whLtStKqDEHgvMRigU9hW0X1kpxF91ag@mail.gmail.com>
+        (Paul Moore's message of "Thu, 16 Apr 2020 17:53:23 -0400")
+Message-ID: <871rol7nw3.fsf@x220.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-X-Received: by 2002:a02:5184:: with SMTP id s126mr4928223jaa.81.1587161714629;
- Fri, 17 Apr 2020 15:15:14 -0700 (PDT)
-Date:   Fri, 17 Apr 2020 15:15:14 -0700
-In-Reply-To: <0000000000006ed82e05a1c05dcc@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000033a1e005a383e276@google.com>
-Subject: Re: KASAN: use-after-free Read in hif_usb_regout_cb
-From:   syzbot <syzbot+b894396e6110e1df38c4@syzkaller.appspotmail.com>
-To:     andreyknvl@google.com, ath9k-devel@qca.qualcomm.com,
-        davem@davemloft.net, efault@gmx.de, hdanton@sina.com,
-        kvalo@codeaurora.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-XM-SPF: eid=1jPZR4-0002qC-5z;;;mid=<871rol7nw3.fsf@x220.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.160.95;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX19qZeMGpaRFmwABWE5nM2gXLxe0XB+DPDY=
+X-SA-Exim-Connect-IP: 68.227.160.95
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on sa06.xmission.com
+X-Spam-Level: **
+X-Spam-Status: No, score=2.0 required=8.0 tests=ALL_TRUSTED,BAYES_50,
+        DCC_CHECK_NEGATIVE,T_TM2_M_HEADER_IN_MSG,XMSlimDrugH,XMSubLong,
+        XM_Body_Dirty_Words autolearn=disabled version=3.4.2
+X-Spam-Report: * -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.4999]
+        *  0.7 XMSubLong Long Subject
+        *  1.0 XMSlimDrugH Weight loss drug headers
+        *  0.0 T_TM2_M_HEADER_IN_MSG BODY: No description available.
+        * -0.0 DCC_CHECK_NEGATIVE Not listed in DCC
+        *      [sa06 1397; Body=1 Fuz1=1 Fuz2=1]
+        *  0.5 XM_Body_Dirty_Words Contains a dirty word
+X-Spam-DCC: XMission; sa06 1397; Body=1 Fuz1=1 Fuz2=1 
+X-Spam-Combo: **;Paul Moore <paul@paul-moore.com>
+X-Spam-Relay-Country: 
+X-Spam-Timing: total 1095 ms - load_scoreonly_sql: 0.03 (0.0%),
+        signal_user_changed: 12 (1.1%), b_tie_ro: 10 (1.0%), parse: 1.33
+        (0.1%), extract_message_metadata: 19 (1.7%), get_uri_detail_list: 5
+        (0.5%), tests_pri_-1000: 22 (2.0%), tests_pri_-950: 1.23 (0.1%),
+        tests_pri_-900: 1.02 (0.1%), tests_pri_-90: 409 (37.4%), check_bayes:
+        407 (37.1%), b_tokenize: 13 (1.2%), b_tok_get_all: 244 (22.3%),
+        b_comp_prob: 4.8 (0.4%), b_tok_touch_all: 140 (12.8%), b_finish: 0.91
+        (0.1%), tests_pri_0: 608 (55.6%), check_dkim_signature: 0.60 (0.1%),
+        check_dkim_adsp: 2.5 (0.2%), poll_dns_idle: 0.28 (0.0%), tests_pri_10:
+        2.4 (0.2%), tests_pri_500: 14 (1.3%), rewrite_mail: 0.00 (0.0%)
+Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling the audit daemon
+X-Spam-Flag: No
+X-SA-Exim-Version: 4.2.1 (built Thu, 05 May 2016 13:38:54 -0600)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
+Paul Moore <paul@paul-moore.com> writes:
 
-HEAD commit:    0fa84af8 Merge tag 'usb-serial-5.7-rc1' of https://git.ker..
-git tree:       https://github.com/google/kasan.git usb-fuzzer
-console output: https://syzkaller.appspot.com/x/log.txt?x=160e64d7e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=6b9c154b0c23aecf
-dashboard link: https://syzkaller.appspot.com/bug?extid=b894396e6110e1df38c4
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=143956d7e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13dc3300100000
+> On Thu, Apr 16, 2020 at 4:36 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
+>> Paul Moore <paul@paul-moore.com> writes:
+>> > On Mon, Mar 30, 2020 at 1:49 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+>> >> On 2020-03-30 13:34, Paul Moore wrote:
+>> >> > On Mon, Mar 30, 2020 at 12:22 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+>> >> > > On 2020-03-30 10:26, Paul Moore wrote:
+>> >> > > > On Mon, Mar 30, 2020 at 9:47 AM Richard Guy Briggs <rgb@redhat.com> wrote:
+>> >> > > > > On 2020-03-28 23:11, Paul Moore wrote:
+>> >> > > > > > On Tue, Mar 24, 2020 at 5:02 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+>> >> > > > > > > On 2020-03-23 20:16, Paul Moore wrote:
+>> >> > > > > > > > On Thu, Mar 19, 2020 at 6:03 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+>> >> > > > > > > > > On 2020-03-18 18:06, Paul Moore wrote:
+>> >
+>> > ...
+>> >
+>> >> > > Well, every time a record gets generated, *any* record gets generated,
+>> >> > > we'll need to check for which audit daemons this record is in scope and
+>> >> > > generate a different one for each depending on the content and whether
+>> >> > > or not the content is influenced by the scope.
+>> >> >
+>> >> > That's the problem right there - we don't want to have to generate a
+>> >> > unique record for *each* auditd on *every* record.  That is a recipe
+>> >> > for disaster.
+>> >> >
+>> >> > Solving this for all of the known audit records is not something we
+>> >> > need to worry about in depth at the moment (although giving it some
+>> >> > casual thought is not a bad thing), but solving this for the audit
+>> >> > container ID information *is* something we need to worry about right
+>> >> > now.
+>> >>
+>> >> If you think that a different nested contid value string per daemon is
+>> >> not acceptable, then we are back to issuing a record that has only *one*
+>> >> contid listed without any nesting information.  This brings us back to
+>> >> the original problem of keeping *all* audit log history since the boot
+>> >> of the machine to be able to track the nesting of any particular contid.
+>> >
+>> > I'm not ruling anything out, except for the "let's just completely
+>> > regenerate every record for each auditd instance".
+>>
+>> Paul I am a bit confused about what you are referring to when you say
+>> regenerate every record.
+>>
+>> Are you saying that you don't want to repeat the sequence:
+>>         audit_log_start(...);
+>>         audit_log_format(...);
+>>         audit_log_end(...);
+>> for every nested audit daemon?
+>
+> If it can be avoided yes.  Audit performance is already not-awesome,
+> this would make it even worse.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+b894396e6110e1df38c4@syzkaller.appspotmail.com
+As far as I can see not repeating sequences like that is fundamental
+for making this work at all.  Just because only the audit subsystem
+should know about one or multiple audit daemons.  Nothing else should
+care.
 
-==================================================================
-BUG: KASAN: use-after-free in atomic_read include/asm-generic/atomic-instrumented.h:26 [inline]
-BUG: KASAN: use-after-free in refcount_read include/linux/refcount.h:134 [inline]
-BUG: KASAN: use-after-free in skb_unref include/linux/skbuff.h:1042 [inline]
-BUG: KASAN: use-after-free in kfree_skb+0x32/0x3d0 net/core/skbuff.c:692
-Read of size 4 at addr ffff8881d15fd854 by task swapper/1/0
+>> Or are you saying that you would like to literraly want to send the same
+>> skb to each of the nested audit daemons?
+>
+> Ideally we would reuse the generated audit messages as much as
+> possible.  Less work is better.  That's really my main concern here,
+> let's make sure we aren't going to totally tank performance when we
+> have a bunch of nested audit daemons.
 
-CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.6.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0xef/0x16e lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xd3/0x314 mm/kasan/report.c:374
- __kasan_report.cold+0x37/0x77 mm/kasan/report.c:506
- kasan_report+0xe/0x20 mm/kasan/common.c:641
- check_memory_region_inline mm/kasan/generic.c:185 [inline]
- check_memory_region+0x152/0x1c0 mm/kasan/generic.c:192
- atomic_read include/asm-generic/atomic-instrumented.h:26 [inline]
- refcount_read include/linux/refcount.h:134 [inline]
- skb_unref include/linux/skbuff.h:1042 [inline]
- kfree_skb+0x32/0x3d0 net/core/skbuff.c:692
- hif_usb_regout_cb+0x14c/0x1b0 drivers/net/wireless/ath/ath9k/hif_usb.c:97
- __usb_hcd_giveback_urb+0x1f2/0x470 drivers/usb/core/hcd.c:1648
- usb_hcd_giveback_urb+0x368/0x420 drivers/usb/core/hcd.c:1713
- dummy_timer+0x1258/0x32ae drivers/usb/gadget/udc/dummy_hcd.c:1966
- call_timer_fn+0x195/0x6f0 kernel/time/timer.c:1404
- expire_timers kernel/time/timer.c:1449 [inline]
- __run_timers kernel/time/timer.c:1773 [inline]
- __run_timers kernel/time/timer.c:1740 [inline]
- run_timer_softirq+0x5f9/0x1500 kernel/time/timer.c:1786
- __do_softirq+0x21e/0x950 kernel/softirq.c:292
- invoke_softirq kernel/softirq.c:373 [inline]
- irq_exit+0x178/0x1a0 kernel/softirq.c:413
- exiting_irq arch/x86/include/asm/apic.h:546 [inline]
- smp_apic_timer_interrupt+0x141/0x540 arch/x86/kernel/apic/apic.c:1146
- apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:829
- </IRQ>
-RIP: 0010:default_idle+0x28/0x300 arch/x86/kernel/process.c:696
-Code: cc cc 41 56 41 55 65 44 8b 2d 44 eb 71 7a 41 54 55 53 0f 1f 44 00 00 e8 f6 d7 b4 fb e9 07 00 00 00 0f 00 2d aa 7c 52 00 fb f4 <65> 44 8b 2d 20 eb 71 7a 0f 1f 44 00 00 5b 5d 41 5c 41 5d 41 5e c3
-RSP: 0018:ffff8881da22fda8 EFLAGS: 00000246 ORIG_RAX: ffffffffffffff13
-RAX: 0000000000000007 RBX: ffff8881da213100 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: 0000000000000006 RDI: ffff8881da21394c
-RBP: ffffed103b442620 R08: ffff8881da213100 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000001
-R13: 0000000000000001 R14: ffffffff87e629c0 R15: 0000000000000000
- cpuidle_idle_call kernel/sched/idle.c:154 [inline]
- do_idle+0x3e0/0x500 kernel/sched/idle.c:269
- cpu_startup_entry+0x14/0x20 kernel/sched/idle.c:361
- start_secondary+0x2a4/0x390 arch/x86/kernel/smpboot.c:264
- secondary_startup_64+0xb6/0xc0 arch/x86/kernel/head_64.S:242
+So I think there are two parts of this answer.  Assuming we are talking
+about nesting audit daemons in containers we will have different
+rulesets and I expect most of the events for a nested audit daemon won't
+be of interest to the outer audit daemon.
 
-Allocated by task 21:
- save_stack+0x1b/0x80 mm/kasan/common.c:72
- set_track mm/kasan/common.c:80 [inline]
- __kasan_kmalloc mm/kasan/common.c:515 [inline]
- __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:488
- slab_post_alloc_hook mm/slab.h:584 [inline]
- slab_alloc_node mm/slub.c:2786 [inline]
- kmem_cache_alloc_node+0xdc/0x330 mm/slub.c:2822
- __alloc_skb+0xba/0x5a0 net/core/skbuff.c:198
- alloc_skb include/linux/skbuff.h:1081 [inline]
- htc_connect_service+0x2cc/0x840 drivers/net/wireless/ath/ath9k/htc_hst.c:257
- ath9k_wmi_connect+0xd2/0x1a0 drivers/net/wireless/ath/ath9k/wmi.c:265
- ath9k_init_htc_services.constprop.0+0xb4/0x650 drivers/net/wireless/ath/ath9k/htc_drv_init.c:146
- ath9k_htc_probe_device+0x25a/0x1d80 drivers/net/wireless/ath/ath9k/htc_drv_init.c:959
- ath9k_htc_hw_init+0x31/0x60 drivers/net/wireless/ath/ath9k/htc_hst.c:501
- ath9k_hif_usb_firmware_cb+0x26b/0x500 drivers/net/wireless/ath/ath9k/hif_usb.c:1187
- request_firmware_work_func+0x126/0x242 drivers/base/firmware_loader/main.c:976
- process_one_work+0x94b/0x1620 kernel/workqueue.c:2266
- worker_thread+0x96/0xe20 kernel/workqueue.c:2412
- kthread+0x318/0x420 kernel/kthread.c:255
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+Beyond that it should be very straight forward to keep a pointer and
+leave the buffer as a scatter gather list until audit_log_end
+and translate pids, and rewrite ACIDs attributes in audit_log_end
+when we build the final packet.  Either through collaboration with
+audit_log_format or a special audit_log command that carefully sets
+up the handful of things that need that information.
 
-Freed by task 21:
- save_stack+0x1b/0x80 mm/kasan/common.c:72
- set_track mm/kasan/common.c:80 [inline]
- kasan_set_free_info mm/kasan/common.c:337 [inline]
- __kasan_slab_free+0x117/0x160 mm/kasan/common.c:476
- slab_free_hook mm/slub.c:1444 [inline]
- slab_free_freelist_hook mm/slub.c:1477 [inline]
- slab_free mm/slub.c:3034 [inline]
- kmem_cache_free+0x9b/0x360 mm/slub.c:3050
- kfree_skbmem net/core/skbuff.c:622 [inline]
- kfree_skbmem+0xef/0x1b0 net/core/skbuff.c:616
- __kfree_skb net/core/skbuff.c:679 [inline]
- kfree_skb net/core/skbuff.c:696 [inline]
- kfree_skb+0x102/0x3d0 net/core/skbuff.c:690
- htc_connect_service.cold+0xa9/0x109 drivers/net/wireless/ath/ath9k/htc_hst.c:282
- ath9k_wmi_connect+0xd2/0x1a0 drivers/net/wireless/ath/ath9k/wmi.c:265
- ath9k_init_htc_services.constprop.0+0xb4/0x650 drivers/net/wireless/ath/ath9k/htc_drv_init.c:146
- ath9k_htc_probe_device+0x25a/0x1d80 drivers/net/wireless/ath/ath9k/htc_drv_init.c:959
- ath9k_htc_hw_init+0x31/0x60 drivers/net/wireless/ath/ath9k/htc_hst.c:501
- ath9k_hif_usb_firmware_cb+0x26b/0x500 drivers/net/wireless/ath/ath9k/hif_usb.c:1187
- request_firmware_work_func+0x126/0x242 drivers/base/firmware_loader/main.c:976
- process_one_work+0x94b/0x1620 kernel/workqueue.c:2266
- worker_thread+0x96/0xe20 kernel/workqueue.c:2412
- kthread+0x318/0x420 kernel/kthread.c:255
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+Hmm.  I am seeing that we send skbs to kauditd and then kauditd
+sends those skbs to userspace.  I presume that is primary so that
+sending messages to userspace does not block the process being audited.
 
-The buggy address belongs to the object at ffff8881d15fd780
- which belongs to the cache skbuff_head_cache of size 224
-The buggy address is located 212 bytes inside of
- 224-byte region [ffff8881d15fd780, ffff8881d15fd860)
-The buggy address belongs to the page:
-page:ffffea0007457f40 refcount:1 mapcount:0 mapping:ffff8881da16b400 index:0x0
-flags: 0x200000000000200(slab)
-raw: 0200000000000200 0000000000000000 0000000300000001 ffff8881da16b400
-raw: 0000000000000000 00000000800c000c 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
+Plus a little bit so that the retry logic will work.
 
-Memory state around the buggy address:
- ffff8881d15fd700: fb fb fb fb fc fc fc fc fc fc fc fc fc fc fc fc
- ffff8881d15fd780: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff8881d15fd800: fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-                                                 ^
- ffff8881d15fd880: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
- ffff8881d15fd900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
+I think the naive implementation would be to simply have 1 kauditd
+per auditd (strictly and audit context/namespace).  Although that can be
+optimized if that is a problem.
 
+Beyond that I think we would need to look at profiles to really
+understand where the bottlenecks are.
+
+>> Or are you thinking of something else?
+>
+> As mentioned above, I'm not thinking of anything specific, other than
+> let's please not have to regenerate *all* of the audit record strings
+> for each instance of an audit daemon, that's going to be a killer.
+>
+> Maybe we have to regenerate some, if we do, what would that look like
+> in code?  How do we handle the regeneration aspect?  I worry that is
+> going to be really ugly.
+>
+> Maybe we finally burn down the audit_log_format(...) function and pass
+> structs/TLVs to the audit subsystem and the audit subsystem generates
+> the strings in the auditd connection thread.  Some of the record
+> strings could likely be shared, others would need to be ACID/auditd
+> dependent.
+
+I think we just a very limited amount of structs/TLVs for the cases that
+matter and one-one auditd and kauditd implementations we should still
+be able to do everything in audit_log_end.  Plus doing as much work as
+possible in audit_log_end where things are still cache hot is desirable.
+
+> I'm open to any ideas people may have.  We have a problem, let's solve
+> it.
+
+It definitely makes sense to look ahead to having audit daemons running
+in containers, but in the grand scheme of things that is a nice to have.
+Probably something we will and should get to, but we have lived a long
+time without auditd running in containers so I expect we can live a
+while longer.
+
+As I understand Richard patchset for the specific case of the ACID we
+are only talking about taking a subset of an existing string, and one
+string at that.  Not hard at all.  Especially when looking at the
+fundamental fact that we will need to send a different skb to
+userspace, for each audit daemon.
+
+Eric
