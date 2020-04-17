@@ -2,126 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFBF71AE49A
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 20:17:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23B201AE4C9
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 20:33:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730627AbgDQSRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 14:17:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42512 "EHLO
+        id S1727925AbgDQSdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 14:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730256AbgDQSRY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 14:17:24 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA94C061A0C;
-        Fri, 17 Apr 2020 11:17:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=vy45WYyAvnWC++4r2BeTmRg1PjZyiSd0b2OnG2cNJU4=; b=sWz2kV2wssYwweQnlTwBuJKzyR
-        7VUKhrbWXqHxSQj/1A0zpmh1Kqo3QLCka1o4544prwiy6c/4iHqUMzyGylYnt+McLHPs8lFc0/KpL
-        hyIbBsAFXl6M0QCeXVxGYe5bPGGM8dg+ksbZyoZ+ydLz33z62TIdQqic2u3XvtzhXEJtO1cTsorjz
-        sQPe/tkkyZEsFP757b455kygIg+AjxJSRfa+NbGYtL4e455Hu9kPaKsR4R9u5WmpmRav7TadG5cTF
-        R1FweRHYUnu2ref+DlWyLZMyRGCveeIPeoUwv6K/TXltQHb6w67+NoaQ+dysV3SPmKrH2sx96sJgt
-        tZbzUuXQ==;
-Received: from willy by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jPVYE-0007Jp-SN; Fri, 17 Apr 2020 18:17:18 +0000
-Date:   Fri, 17 Apr 2020 11:17:18 -0700
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH 6/6] sysctl: pass kernel pointers to ->proc_handler
-Message-ID: <20200417181718.GN5820@bombadil.infradead.org>
-References: <20200417064146.1086644-1-hch@lst.de>
- <20200417064146.1086644-7-hch@lst.de>
+        by vger.kernel.org with ESMTP id S1726054AbgDQSdr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 14:33:47 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF90C061A0C;
+        Fri, 17 Apr 2020 11:33:47 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id r4so1512451pgg.4;
+        Fri, 17 Apr 2020 11:33:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nDZqRs08yW8rmkLGicGD1U3ejEUDLw8Yn7W5t1UZPFo=;
+        b=Adm0UqbK4EhGULyk4ehca7RcMRTuQeudlh3i29+AzJINbhEdhrZxcJ8lq9vWB7EkkG
+         Dd/wx9AbcU1RTgKyNuRQmaqhuHjceXd7HFY7ASfaU6CK3oqpcRGl1/VwmFIRi9QdrTRJ
+         4SLt4EhBgjehg5E6m2ztMzD0pa+G0H0VQJJEcJn0QxhBUu72wn72D8rDd8D80X8URUZK
+         R+LowDO1EA+W33znbD7mYDIchCJ9GMkzHUwGjojYApaSQLBvHaye0qAk9fXwNtuwf0mV
+         yUTBuSzWQZ0psotjyeHwvm71k6fhmz9AzaKdSoUBQnY4rObH1Nuui6h1aZFYgrMyOiQw
+         VEiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nDZqRs08yW8rmkLGicGD1U3ejEUDLw8Yn7W5t1UZPFo=;
+        b=H9pWAv9b6x+N6gebAwKg9iyvXvAWayIpWOJv9Rlf9GunOra1B4nCRyJkFRRftMjbdX
+         U5tdH0L6AIf0aY3R4m/GQdaGPibAG+iWXUbaxsNhpFO5BcAy8/CdQXM6D6RbDKFp7Z6e
+         x9so391fFUI74zMJj68py7dhibOSp9lQ8k4+Ymz3HPEeQFFUBzb/gUb3DVdGcHQtS+vD
+         n6bmx7/JjHATFiuxaeIcx+VIO8rG7J7SM26IqIDx3hGtbE/PTkPZBIs2TDC4nRwE22Cs
+         sKX2ViQfzsJMqoHqJIdd+KzZzZDS8VG9cxourJOVL6l8kw+zjyU58ShG6Q7/118r9WSJ
+         t+SA==
+X-Gm-Message-State: AGi0PuZATz4eRuDx/hJeuvuT8LEW4jbLDuOkb637Ch0k2BnaquP6J3Pa
+        fCcKhKIeBntSCDgqHYQ2WrA1vFi8
+X-Google-Smtp-Source: APiQypJ7yu6e20Z9lERl9UPYAY4MjeVTTtJ925wGDt8BkyIlq5x1y+RrHbGafCp27Q0ZK8pKHd/Nhw==
+X-Received: by 2002:a63:1415:: with SMTP id u21mr4175888pgl.452.1587148426177;
+        Fri, 17 Apr 2020 11:33:46 -0700 (PDT)
+Received: from localhost.localdomain (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id u7sm18368297pfu.90.2020.04.17.11.33.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Apr 2020 11:33:45 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next] net: dsa: b53: per-port interrupts are optional
+Date:   Fri, 17 Apr 2020 11:33:41 -0700
+Message-Id: <20200417183341.8375-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200417064146.1086644-7-hch@lst.de>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 17, 2020 at 08:41:46AM +0200, Christoph Hellwig wrote:
-> diff --git a/fs/proc/proc_sysctl.c b/fs/proc/proc_sysctl.c
-> index b6f5d459b087..d5c9a9bf4e90 100644
-> --- a/fs/proc/proc_sysctl.c
-> +++ b/fs/proc/proc_sysctl.c
-> @@ -539,13 +539,13 @@ static struct dentry *proc_sys_lookup(struct inode *dir, struct dentry *dentry,
->  	return err;
->  }
->  
-> -static ssize_t proc_sys_call_handler(struct file *filp, void __user *buf,
-> +static ssize_t proc_sys_call_handler(struct file *filp, void __user *ubuf,
->  		size_t count, loff_t *ppos, int write)
->  {
->  	struct inode *inode = file_inode(filp);
->  	struct ctl_table_header *head = grab_header(inode);
->  	struct ctl_table *table = PROC_I(inode)->sysctl_entry;
-> -	void *new_buf = NULL;
-> +	void *kbuf;
->  	ssize_t error;
->  
->  	if (IS_ERR(head))
-> @@ -564,27 +564,36 @@ static ssize_t proc_sys_call_handler(struct file *filp, void __user *buf,
->  	if (!table->proc_handler)
->  		goto out;
->  
-> -	error = BPF_CGROUP_RUN_PROG_SYSCTL(head, table, write, buf, &count,
-> -					   ppos, &new_buf);
-> +	if (write) {
-> +		kbuf = memdup_user_nul(ubuf, count);
-> +		if (IS_ERR(kbuf)) {
-> +			error = PTR_ERR(kbuf);
-> +			goto out;
-> +		}
-> +	} else {
-> +		error = -ENOMEM;
-> +		kbuf = kzalloc(count, GFP_KERNEL);
-> +		if (!kbuf)
-> +			goto out;
-> +	}
-> +
-> +	error = BPF_CGROUP_RUN_PROG_SYSCTL(head, table, write, &kbuf, &count,
-> +					   ppos);
->  	if (error)
-> -		goto out;
-> +		goto out_free_buf;
->  
->  	/* careful: calling conventions are nasty here */
+Make use of platform_get_irq_byname_optional() to avoid printing
+messages on the kernel console that interrupts cannot be found.
 
-I think this comment can go now ;-)
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/dsa/b53/b53_srab.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> -	if (new_buf) {
-> -		mm_segment_t old_fs;
-> -
-> -		old_fs = get_fs();
-> -		set_fs(KERNEL_DS);
-> -		error = table->proc_handler(table, write, (void __user *)new_buf,
-> -					    &count, ppos);
-> -		set_fs(old_fs);
-> -		kfree(new_buf);
-> -	} else {
-> -		error = table->proc_handler(table, write, buf, &count, ppos);
-> -	}
-> +	error = table->proc_handler(table, write, kbuf, &count, ppos);
-> +	if (error)
-> +		goto out_free_buf;
-> +
-> +	error = -EFAULT;
-> +	if (copy_to_user(ubuf, kbuf, count))
-> +		goto out_free_buf;
-
-Can we skip this if !write?  Indeed, don't we have to in case the user has
-passed a pointer to a read-only memory page?
+diff --git a/drivers/net/dsa/b53/b53_srab.c b/drivers/net/dsa/b53/b53_srab.c
+index 0a1be5259be0..1207c3095027 100644
+--- a/drivers/net/dsa/b53/b53_srab.c
++++ b/drivers/net/dsa/b53/b53_srab.c
+@@ -524,7 +524,7 @@ static void b53_srab_prepare_irq(struct platform_device *pdev)
+ 
+ 		port->num = i;
+ 		port->dev = dev;
+-		port->irq = platform_get_irq_byname(pdev, name);
++		port->irq = platform_get_irq_byname_optional(pdev, name);
+ 		kfree(name);
+ 	}
+ 
+-- 
+2.19.1
 
