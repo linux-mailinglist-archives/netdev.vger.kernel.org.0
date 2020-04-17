@@ -2,92 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04AD41ADA5E
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 11:48:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF5351ADAC0
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 12:12:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727985AbgDQJsk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 05:48:40 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:30048 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726650AbgDQJsk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 05:48:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587116919;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EH1XZETTMUkBMVwE0SvYImZx8kDPUe6xlEK01XCSGX4=;
-        b=UAKRK6JS+P0J5af9L8MxR9GG/NM6Do6c13QCjcGSyJJSGtuHVU+T9zcd6+XfWYHPzPYigS
-        cmZJzRW2+OCCvyV9wgR+M7i23uuauU9hT58dnXbGHn4Oim33AsbSk1KKAiKRDhLMkiQEwx
-        Jxq+918twRwxvIs1raP/gZSo+8EcM0s=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-199-MzTmX318NzqE3LOEWqBCMw-1; Fri, 17 Apr 2020 05:48:35 -0400
-X-MC-Unique: MzTmX318NzqE3LOEWqBCMw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B26A51005509;
-        Fri, 17 Apr 2020 09:48:31 +0000 (UTC)
-Received: from [10.72.13.157] (ovpn-13-157.pek2.redhat.com [10.72.13.157])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 73F3611A088;
-        Fri, 17 Apr 2020 09:48:22 +0000 (UTC)
-Subject: Re: [PATCH V2] vhost: do not enable VHOST_MENU by default
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, geert@linux-m68k.org,
-        tsbogend@alpha.franken.de, benh@kernel.crashing.org,
-        paulus@samba.org, heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, Michael Ellerman <mpe@ellerman.id.au>
-References: <20200416185426-mutt-send-email-mst@kernel.org>
- <b7e2deb7-cb64-b625-aeb4-760c7b28c0c8@redhat.com>
- <20200417022929-mutt-send-email-mst@kernel.org>
- <4274625d-6feb-81b6-5b0a-695229e7c33d@redhat.com>
- <20200417042912-mutt-send-email-mst@kernel.org>
- <fdb555a6-4b8d-15b6-0849-3fe0e0786038@redhat.com>
- <20200417044230-mutt-send-email-mst@kernel.org>
- <73843240-3040-655d-baa9-683341ed4786@redhat.com>
- <20200417050029-mutt-send-email-mst@kernel.org>
- <ce8a18e5-3c74-73cc-57c5-10c40af838a3@redhat.com>
- <20200417053803-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <71b98c3b-1a38-b9aa-149c-f48c92a77448@redhat.com>
-Date:   Fri, 17 Apr 2020 17:48:20 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1728819AbgDQKMT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 06:12:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51746 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725830AbgDQKMS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 06:12:18 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F14EEC061A0C;
+        Fri, 17 Apr 2020 03:12:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=9eD/KNTKzmFdSU+cGBntMJsUHhw1OUvboBhI7LiIfIs=; b=0C+PvN75fAzrOEtsQ6MiuBzLB
+        ohWDvlGZYh259QQ+36dH9o2fzzYNLQGj/t1g89c9dbzP+S4JTYJkgiCujy6kCMLYEXsrrvXS0fB3w
+        X0n5sd8X214JIWdit8+t3K8nNGKgcVm/7jdQhpAgl0bL8RhvwShRYiDQX4B6cvvbgjFGCpzYrFzZG
+        tJiNQr8x1VdT50+5Ls/UISRFVtHJV/qhbN6tInck3WGRB5QGoVZmCmqeE6okkWrHu8ZYeXontZX2w
+        tpa+OSHIXsOOHQPfQgkx0Nxwp8hxyE73f0q1OTGrjHbXlCG64UjwpZ6JzYMbUSblCxSzijAjHfY+H
+        r9uM3lYFw==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:39596)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jPNyR-0001PV-1S; Fri, 17 Apr 2020 11:11:51 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jPNyM-0002nx-0L; Fri, 17 Apr 2020 11:11:46 +0100
+Date:   Fri, 17 Apr 2020 11:11:45 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        David Jander <david@protonic.nl>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        mkl@pengutronix.de
+Subject: Re: [PATCH v1] ethtool: provide UAPI for PHY master/slave
+ configuration.
+Message-ID: <20200417101145.GP25745@shell.armlinux.org.uk>
+References: <20200415121209.12197-1-o.rempel@pengutronix.de>
+ <20200415215739.GI657811@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <20200417053803-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200415215739.GI657811@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Apr 15, 2020 at 11:57:39PM +0200, Andrew Lunn wrote:
+> > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> > index c8b0c34030d32..d5edf2bc40e43 100644
+> > --- a/drivers/net/phy/phy_device.c
+> > +++ b/drivers/net/phy/phy_device.c
+> > @@ -604,6 +604,7 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
+> >  	dev->asym_pause = 0;
+> >  	dev->link = 0;
+> >  	dev->interface = PHY_INTERFACE_MODE_GMII;
+> > +	dev->master_slave = PORT_MODE_UNKNOWN;
+> 
+> phydev->master_slave is how we want the PHY to be configured. I don't
+> think PORT_MODE_UNKNOWN makes any sense in that contest. 802.3 gives
+> some defaults. 9.12 should be 0, meaning manual master/slave
+> configuration is disabled. The majority of linux devices are end
+> systems. So we should default to a single point device. So i would
+> initialise PORT_MODE_SLAVE, or whatever we end up calling that.
 
-On 2020/4/17 =E4=B8=8B=E5=8D=885:38, Michael S. Tsirkin wrote:
-> On Fri, Apr 17, 2020 at 05:33:56PM +0800, Jason Wang wrote:
->> On 2020/4/17 =E4=B8=8B=E5=8D=885:01, Michael S. Tsirkin wrote:
->>>> There could be some misunderstanding here. I thought it's somehow si=
-milar: a
->>>> CONFIG_VHOST_MENU=3Dy will be left in the defconfigs even if CONFIG_=
-VHOST is
->>>> not set.
->>>>
->>>> Thanks
->>>>
->>> BTW do entries with no prompt actually appear in defconfig?
->>>
->> Yes. I can see CONFIG_VHOST_DPN=3Dy after make ARCH=3Dm68k defconfig
-> You see it in .config right? So that's harmless right?
+I'm not sure that is a good idea given that we use phylib to drive
+the built-in PHYs in DSA switches, which ought to prefer master mode
+via the "is a multiport device" bit.
 
+Just to be clear, there are three bits that configure 1G PHYs, which
+I've framed in briefer terminology:
 
-Yes.
+- 9.12: auto/manual configuration (1= manual 0= slave)
+- 9.11: manual master/slave configuration (1= master, 0 = slave)
+- 9.10: auto master/slave preference (1= multiport / master)
 
-Thanks
+It is recommended that multiport devices (such as DSA switches) set
+9.10 so they prefer to be master.
 
+It's likely that the reason is to reduce cross-talk interference
+between neighbouring ports both inside the PHY, magnetics and the
+board itself. I would suspect that this becomes critical when
+operating at towards the maximum cable length.
+
+I've checked some of my DSA switches, and 9.10 appears to default to
+one, as expected given what's in the specs.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
