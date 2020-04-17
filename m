@@ -2,79 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F33871AE636
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 21:50:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A063D1AE639
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 21:50:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730696AbgDQTuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 15:50:07 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45068 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730449AbgDQTuH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Apr 2020 15:50:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=JrUP6g15FT5/8Geryp+mtn/Ve17rMbm00zVmqYtjaok=; b=PRngC387MEWoGSmi/62fiMKc/W
-        s8qIp27u7t3SvWGg5kauH/BoHlTCv8envCE93lnCzRi2rzafZ644ts1IJOx3Hn9Y0eG39Aju8hrrO
-        UQiF2/BrBdnjgpImxCrri7PFpvdEuBldJA6xXzvE5N2KwF5l79a7Hj/+PV5ZUQfdQ3HI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jPWzz-003LJP-7i; Fri, 17 Apr 2020 21:50:03 +0200
-Date:   Fri, 17 Apr 2020 21:50:03 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next 3/3] net: phy: bcm54140: add hwmon support
-Message-ID: <20200417195003.GG785713@lunn.ch>
-References: <20200417192858.6997-1-michael@walle.cc>
- <20200417192858.6997-3-michael@walle.cc>
+        id S1730734AbgDQTu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 15:50:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56952 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730449AbgDQTu0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 15:50:26 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 209CFC061A0C;
+        Fri, 17 Apr 2020 12:50:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=oZFKaAEx7x9RM0yplSN83xASDmB3ff/b3yogXeNlHSg=; b=MHwDf9SXtGhOxDOC9x1npNeXsu
+        dLvd8csRf6Q/wv1NcXob0gmK6bvBDyGUpM8ox6iV59gyXMbwRY6oI/dse4DNj7svbiPiGjz8KxWp3
+        CmSDdKo+QA+LAOHozOfSCUOoQ3cEHroZsR1k4tAtpc3ZAciJSxF6NSGzvl9hENveamfdch5oSSdT4
+        q4IniJbR9Cdze+AE4xNE2Td8S6Ug7viKtRySWJKbtp9IdTXYOPQ2uwVAZymcePdNcTbGv7UqPCOPB
+        Q6I5e8bI6GEtYRzpLT5qa6uBCrCu2I7OuTTlWhi2+rbXJdAx+sGsWGweKO0WeZSbxuhumFeWWwtTw
+        5f9T8OtQ==;
+Received: from willy by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jPX0B-0007D5-JD; Fri, 17 Apr 2020 19:50:15 +0000
+Date:   Fri, 17 Apr 2020 12:50:15 -0700
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Andrey Ignatov <rdna@fb.com>
+Cc:     Christoph Hellwig <hch@lst.de>, Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH 6/6] sysctl: pass kernel pointers to ->proc_handler
+Message-ID: <20200417195015.GO5820@bombadil.infradead.org>
+References: <20200417064146.1086644-1-hch@lst.de>
+ <20200417064146.1086644-7-hch@lst.de>
+ <20200417193910.GA7011@rdna-mbp>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200417192858.6997-3-michael@walle.cc>
+In-Reply-To: <20200417193910.GA7011@rdna-mbp>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +/* Check if one PHY has already done the init of the parts common to all PHYs
-> + * in the Quad PHY package.
-> + */
-> +static bool bcm54140_is_pkg_init(struct phy_device *phydev)
-> +{
-> +	struct mdio_device **map = phydev->mdio.bus->mdio_map;
-> +	struct bcm54140_phy_priv *priv;
-> +	struct phy_device *phy;
-> +	int i, addr;
-> +
-> +	/* Quad PHY */
-> +	for (i = 0; i < 4; i++) {
-> +		priv = phydev->priv;
-> +		addr = priv->base_addr + i;
-> +
-> +		if (!map[addr])
-> +			continue;
-> +
-> +		phy = container_of(map[addr], struct phy_device, mdio);
+On Fri, Apr 17, 2020 at 12:39:10PM -0700, Andrey Ignatov wrote:
+> Though it breaks tools/testing/selftests/bpf/test_sysctl.c. I spent some
+> time debugging and found a couple of problems -- see below. But there is
+> something else .. Still I figured it's a good idea to give an early
+> heads-up.
 
-I don't particularly like a PHY driver having knowledge of the mdio
-bus core. Please add a helper in the core to get you the phydev for a
-particular address.
+"see below"?  Really?  You're going to say that and then make people
+scroll through thousands of lines of quoted material to find your new
+contributions?  Please, learn to trim appropriately.
 
-There is also the question of locking. What happens if the PHY devices
-is unbound while you have an instance of its phydev? What happens if
-the base PHY is unbound? Are the three others then unusable?
+Here's about what you should have sent:
 
-I think we need to take a step back and look at how we handle quad
-PHYs in general. The VSC8584 has many of the same issues.
-
-    Andrew
+> > @@ -1156,52 +1153,41 @@ const struct bpf_verifier_ops cg_dev_verifier_ops = {
+> >   */
+> >  int __cgroup_bpf_run_filter_sysctl(struct ctl_table_header *head,
+> >  				   struct ctl_table *table, int write,
+> > -				   void __user *buf, size_t *pcount,
+> > -				   loff_t *ppos, void **new_buf,
+> > -				   enum bpf_attach_type type)
+> > +				   void **buf, size_t *pcount,
+> > +				   loff_t *ppos, enum bpf_attach_type type)
+> >  {
+> >  	struct bpf_sysctl_kern ctx = {
+> >  		.head = head,
+> >  		.table = table,
+> >  		.write = write,
+> >  		.ppos = ppos,
+> > -		.cur_val = NULL,
+> > +		.cur_val = *buf,
+> 
+> 
+> cur_val is allocated separately below to read current value of sysctl
+> and not interfere with user-passed buffer. 
+> 
+> >  		.cur_len = PAGE_SIZE,
+> >  		.new_val = NULL,
+> >  		.new_len = 0,
+> >  		.new_updated = 0,
+> >  	};
+> >  	struct cgroup *cgrp;
+> > +	loff_t pos = 0;
+> >  	int ret;
+> >  
+> > -	ctx.cur_val = kmalloc_track_caller(ctx.cur_len, GFP_KERNEL);
+> > -	if (ctx.cur_val) {
+> > -		mm_segment_t old_fs;
+> > -		loff_t pos = 0;
+> > -
+> > -		old_fs = get_fs();
+> > -		set_fs(KERNEL_DS);
+> > -		if (table->proc_handler(table, 0, (void __user *)ctx.cur_val,
+> > -					&ctx.cur_len, &pos)) {
+> > -			/* Let BPF program decide how to proceed. */
+> > -			ctx.cur_len = 0;
+> > -		}
+> > -		set_fs(old_fs);
+> > -	} else {
+> > +	if (table->proc_handler(table, 0, ctx.cur_val, &ctx.cur_len, &pos)) {
+> 
+> This call reads current value of sysclt into cur_val buffer.
+> 
+> Since you made cur_val point to kernel copy of user-passed buffer, this
+> call will always override whatever is there in that kernel copy.
+> 
+> For example, if user is writing to sysclt, then *buf is a pointer to new
+> value, but this call will override this new value and, corresondingly
+> new value will be lost.
+> 
+> I think cur_val should still be allocated separately.
+> 
+> 
+> >  		/* Let BPF program decide how to proceed. */
+> >  		ctx.cur_len = 0;
+> >  	}
+> >  
+> > -	if (write && buf && *pcount) {
+> > +	if (write && *pcount) {
+> >  		/* BPF program should be able to override new value with a
+> >  		 * buffer bigger than provided by user.
+> >  		 */
+> >  		ctx.new_val = kmalloc_track_caller(PAGE_SIZE, GFP_KERNEL);
+> > -		ctx.new_len = min_t(size_t, PAGE_SIZE, *pcount);
+> > -		if (!ctx.new_val ||
+> > -		    copy_from_user(ctx.new_val, buf, ctx.new_len))
+> > +		if (ctx.new_val) {
+> > +			ctx.new_len = min_t(size_t, PAGE_SIZE, *pcount);
+> > +			memcpy(ctx.new_val, buf, ctx.new_len);
+> 
+> This should be *buf, not buf. A typo I guess?
+> 
+> 
+> I applied the whole patchset to bpf-next tree and run selftests. This
+> patch breaks 4 of them:
+> 
+> 	% cd tools/testing/selftests/bpf/
+> 	% ./test_sysctl
+> 	...
+> 	Test case: sysctl_get_new_value sysctl:write ok .. [FAIL]
+> 	Test case: sysctl_get_new_value sysctl:write ok long .. [FAIL]
+> 	Test case: sysctl_get_new_value sysctl:write E2BIG .. [FAIL]
+> 	Test case: sysctl_set_new_value sysctl:read EINVAL .. [PASS]
+> 	Test case: sysctl_set_new_value sysctl:write ok .. [FAIL]
+> 	...
+> 	Summary: 36 PASSED, 4 FAILED
+> 
+> I applied both changes I suggested above and it reduces number of broken
+> selftests to one:
+> 
+> Test case: sysctl_set_new_value sysctl:write ok .. [FAIL]
+> 
+> I haven't debugged this last one though yet ..
+> 
+> All these tests are available in
+> tools/testing/selftests/bpf/test_sysctl.c.
+> 
+> I think it's a good idea to run these tests locally before sending the
+> next version of the patch set.
+> 
