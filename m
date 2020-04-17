@@ -2,89 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A8AA1AE310
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 19:02:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 942151AE33C
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 19:09:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728507AbgDQRBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 13:01:49 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44580 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728092AbgDQRBs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Apr 2020 13:01:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=GDt6Kg65vGRHTbVpxtwsO49QfnwXL2hG69odrZ95CMU=; b=hFTCB2elCtEZeaC6o6m91HbKSs
-        e+jNfounAVKh/FRtsRCRy+TsjFMezugcIv1OgyXfebFunp2bndZ8jG4CHHlKqnoaTJBumqO7iwjyn
-        hFoD69plmRq81SR0UsS5SnRTFij5AMkSacKykva5C4O/TS1PCPjGqwDbcRh+lgLGUwhc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jPUN0-003JwF-8T; Fri, 17 Apr 2020 19:01:38 +0200
-Date:   Fri, 17 Apr 2020 19:01:38 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jernej =?utf-8?Q?=C5=A0krabec?= <jernej.skrabec@siol.net>
-Cc:     robh+dt@kernel.org, f.fainelli@gmail.com,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux@armlinux.org.uk, mripard@kernel.org,
-        linux-kernel@vger.kernel.org, wens@csie.org, lee.jones@linaro.org,
-        davem@davemloft.net, linux-arm-kernel@lists.infradead.org
-Subject: Re: [RFC PATCH 2/4] net: phy: Add support for AC200 EPHY
-Message-ID: <20200417170138.GD785713@lunn.ch>
-References: <20200416185758.1388148-1-jernej.skrabec@siol.net>
- <20200416185758.1388148-3-jernej.skrabec@siol.net>
- <0340f85c-987f-900b-53c8-d29b4672a8fa@gmail.com>
- <6176364.4vTCxPXJkl@jernej-laptop>
+        id S1728907AbgDQRIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 13:08:46 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:51050 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728020AbgDQRIp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 13:08:45 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03HH8Emn164795;
+        Fri, 17 Apr 2020 17:08:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : in-reply-to : message-id : references : mime-version :
+ content-type; s=corp-2020-01-29;
+ bh=9AuAKei1InWbZiUi954FqxZ6IMH4o42cp4Zcjvsq5TU=;
+ b=GJJsNhUfXpcSqBvF7jDngmW0MRJw+h461HG+bRbezlfBsv0QFGTBw2XqkGRtCcwLu/xX
+ WDiT2eLR1yBIaT+Bl3wQShCLJ2z7X9078sV7ywYB83649n8lZXzdtggtusjLA+jLS8yN
+ shn8ZekAdpIOwaxXZAvyZvX0wquk7Q8Hx3fJ95gEAJqZlSlDiQ3CDddDmRUznPzV3Msd
+ 0jlV06+JJe17tuNh/XGqLxgTXktZTmEC9ISSjhbqA/R+xdGdi6BkdWg/yuAhZB9p27Jj
+ 85fWXr10S7q357QQ2oPsN9aFhZHOO11QLvLw+95z3Jmyq0oRQLS+RReSpYJf7iXmpyug 5g== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 30dn9608ra-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 17 Apr 2020 17:08:26 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03HH3PK2029576;
+        Fri, 17 Apr 2020 17:06:26 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3020.oracle.com with ESMTP id 30emerd6j6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 17 Apr 2020 17:06:25 +0000
+Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 03HH6Obc009578;
+        Fri, 17 Apr 2020 17:06:24 GMT
+Received: from dhcp-10-175-205-33.vpn.oracle.com (/10.175.205.33)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 17 Apr 2020 10:06:24 -0700
+Date:   Fri, 17 Apr 2020 18:06:16 +0100 (BST)
+From:   Alan Maguire <alan.maguire@oracle.com>
+X-X-Sender: alan@localhost
+To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+cc:     Alan Maguire <alan.maguire@oracle.com>, ast@kernel.org,
+        daniel@iogearbox.net, yhs@fb.com, kafai@fb.com,
+        songliubraving@fb.com, andriin@fb.com, john.fastabend@gmail.com,
+        kpsingh@chromium.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [RFC PATCH bpf-next 0/6] bpf, printk: add BTF-based type
+ printing
+In-Reply-To: <20200417164747.GD17973@kernel.org>
+Message-ID: <alpine.LRH.2.21.2004171803550.29397@localhost>
+References: <1587120160-3030-1-git-send-email-alan.maguire@oracle.com> <20200417164747.GD17973@kernel.org>
+User-Agent: Alpine 2.21 (LRH 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6176364.4vTCxPXJkl@jernej-laptop>
+Content-Type: text/plain; charset=US-ASCII
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9594 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxscore=0 suspectscore=3
+ mlxlogscore=999 phishscore=0 spamscore=0 bulkscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
+ definitions=main-2004170131
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9594 signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 clxscore=1011
+ malwarescore=0 bulkscore=0 priorityscore=1501 lowpriorityscore=0
+ mlxscore=0 phishscore=0 spamscore=0 impostorscore=0 suspectscore=3
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2004170132
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > You could use PHY_ID_MATCH_MODEL() here.
+On Fri, 17 Apr 2020, Arnaldo Carvalho de Melo wrote:
+
+> Em Fri, Apr 17, 2020 at 11:42:34AM +0100, Alan Maguire escreveu:
+> > To give a flavour for what the printed-out data looks like,
+> > here we use pr_info() to display a struct sk_buff *.  Note
+> > we specify the 'N' modifier to show type field names:
+> > 
+> >   struct sk_buff *skb = alloc_skb(64, GFP_KERNEL);
+> > 
+> >   pr_info("%pTN<struct sk_buff>", skb);
+> > 
+> > ...gives us:
+> > 
+> > {{{.next=00000000c7916e9c,.prev=00000000c7916e9c,{.dev=00000000c7916e9c|.dev_scratch=0}}|.rbnode={.__rb_parent_color=0,.rb_right=00000000c7916e9c,.rb_left=00000000c7916e9c}|.list={.next=00000000c7916e9c,.prev=00000000c7916e9c}},{.sk=00000000c7916e9c|.ip_defrag_offset=0},{.tstamp=0|.skb_mstamp_ns=0},.cb=['\0'],{{._skb_refdst=0,.destructor=00000000c7916e9c}|.tcp_tsorted_anchor={.next=00000000c7916e9c,.prev=00000000c7916e9c}},._nfct=0,.len=0,.data_len=0,.mac_len=0,.hdr_len=0,.queue_mapping=0,.__cloned_offset=[],.cloned=0x0,.nohdr=0x0,.fclone=0x0,.peeked=0x0,.head_frag=0x0,.pfmemalloc=0x0,.active_extensions=0,.headers_start=[],.__pkt_type_offset=[],.pkt_type=0x0,.ignore_df=0x0,.nf_trace=0x0,.ip_summed=0x0,.ooo_okay=0x0,.l4_hash=0x0,.sw_hash=0x0,.wifi_acked_valid=0x0,.wifi_acked=0x0,.no_fcs=0x0,.encapsulation=0x0,.encap_hdr_csum=0x0,.csum_valid=0x0,.__pkt_vlan_present_offset=[],.vlan_present=0x0,.csum_complete_sw=0x0,.csum_level=0x0,.csum_not_inet=0x0,.dst_pending_co
 > 
-> Hm... This doesn't work with dynamically allocated memory, right?
+> One suggestion, to make this more compact, one could have %pTNz<struct
+> sk_buff>" that wouldn't print any integral type member that is zeroed
+> :-)
+>
 
-I would suggest we get the right structure first, then figure out
-details like this.
+That's a great idea, thanks Arnaldo! I'll add that.
 
-Depending on when the device will respond to MDIO, we might be able to
-make this a normal PHY driver. It then probes in the normal way, and
-all the horrible dependencies you talked about, module loading order,
-etc all go away.
-
-There were 3 things you talked about to make the PHY usable:
-
-1) Clock
-2) Reset
-3) Must be enabled and configured through I2C
-
-We already have the concept of a PHY device having a reset controller
-as a property. e.g. Documentation/devicetree/bindings/net/ethernet-phy.yaml
-
-resets = <&rst 8>;
-
-So if the MFD exports a reset controller, we can control that from the
-PHY core. If the MFD has not probed yet, the reset core code will
-return EPROBE_DEFFER, and the PHY probe will get differed until late.
-That solves a lot of probe order issues.
-
-The clock can be handled in two different ways, depending on if the
-clock needs to be ticking to read the PHY ID registers. If it does
-need to be ticking, we add support for a clks property in just the
-same way we have support for the reset property. The PHY core will
-clk_enable_prepare() the clock before probing the PHY. If the clock is
-not needed for probing, the PHY driver can enable the clock as needed.
-
-The last part, Must be enabled and configured through I2C, we need to
-look at the details. It could be the reset controller also enabled the
-PHY. If that is enough that the PHY then probes, the PHY driver can
-then configure the PHY as needed via i2c.
-
-     Andrew
+Alan
+ 
+> - Arnaldo
+> 
