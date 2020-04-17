@@ -2,91 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C868C1ADD53
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 14:30:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6573F1ADD5D
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 14:37:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728925AbgDQM2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 08:28:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44652 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728071AbgDQM2a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 08:28:30 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43EACC061A0C
-        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 05:28:30 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id c63so2151584qke.2
-        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 05:28:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=aZefJ2eeeg5YJ8LbNLwmZ0QsC9kKV35KaDs/t6j0M1g=;
-        b=K9+oC8zpTs7eoXwYoNCM97j0wAjePnqvg1MIHJIH7ous//tMV1Jr3cBr+kIJfIT6tw
-         3OcVpAAq67QKQZkGQMvO3bNsWwbJBnCUPX+HM2kSXjzzVPxyBC33diZFfVD7g36eaQ8V
-         qfI7KDcfKd2QX+EUZ3jdUHgnHovu2cehHa1LIeWfd5uLrxhCooatkyANNHv7afAV7XJT
-         obDDx3gIJGnGLvMi6zrE6ny3daHSgAl4TGZNNZtepoDTUoHKeOtld3APKqR8zMhi0jaR
-         hYAiqzB2jOWifkzgQ5CnHvC62GPxGS/ig8I2V4XV7ODMhCnKVLz6AW73AfOwbKI5YsJ5
-         eQcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=aZefJ2eeeg5YJ8LbNLwmZ0QsC9kKV35KaDs/t6j0M1g=;
-        b=uOmWafu/FMVwHByB9PouYtUg/KdpLZQsdsc/6uEv38ptE+kIAGHeWPdqec1ktAIm/h
-         EzQH8RXxZ4jss6VmHCe7TWKftp9T5L/Dal/R84AbGEkJM/QdpGZII0s7ZRkX7hMoST3L
-         rY1dpl9YAfkvKwKfhkZN9W38idWXpJVgn46JAbYST9G8rydlEQiaPFYktbKZP4/6nSSi
-         V3WH9pjKCbcD593yzoG+E7Y/RD8TRen/1v4QsL2xX9+z6SsbtXh8C+CTbQIY9Q77h3/g
-         1fWeFzrlPNxZO0qunyKqS8Zye3PXIngkXtf8go+tBprEvBFp6sDV6y2d0pzeWDKQ4zvY
-         Z+8A==
-X-Gm-Message-State: AGi0PuY3yRlxZG6rnQRHEOIBQNyN8RyPIN+6lOkbgmOFfVsNTTrssJ9G
-        e6jxsHb8iigGEX/UHG8FE1Yn8Q==
-X-Google-Smtp-Source: APiQypJ1vYJs1OcOpG6NFzpsPpo2EzISzAbbiESS6yc0Q6fShvvLk7GfaJtAZP1aoEPPARaV+dFckA==
-X-Received: by 2002:a05:620a:39b:: with SMTP id q27mr3018858qkm.94.1587126509481;
-        Fri, 17 Apr 2020 05:28:29 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id u17sm8223117qka.0.2020.04.17.05.28.27
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 17 Apr 2020 05:28:28 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jPQ6d-0006gf-52; Fri, 17 Apr 2020 09:28:27 -0300
-Date:   Fri, 17 Apr 2020 09:28:27 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Jani Nikula <jani.nikula@linux.intel.com>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kbuild@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Nicolas Pitre <nico@fluxnic.net>, narmstrong@baylibre.com,
-        Laurent.pinchart@ideasonboard.com, leon@kernel.org,
-        kieran.bingham+renesas@ideasonboard.com, jonas@kwiboo.se,
-        airlied@linux.ie, jernej.skrabec@siol.net,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: Re: [RFC PATCH 1/2] Kconfig: Introduce "uses" keyword
-Message-ID: <20200417122827.GD5100@ziepe.ca>
-References: <20200417011146.83973-1-saeedm@mellanox.com>
- <87v9ly3a0w.fsf@intel.com>
+        id S1728835AbgDQMdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 08:33:12 -0400
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:46091 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727877AbgDQMdM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 08:33:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1587126791; x=1618662791;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=KoXqWzqYq/w2d+HZn8byhgpTiDLf6r5C2Ybuny75IaM=;
+  b=lEkRi338fpxiPrzC9aJzRjUyPBe7RecCPnaXou8o50KgDn+7o+3uM+0G
+   WSwSeQwyXW+AszRtYdQjG5Iny+kM6zIy40CwydmikGvFy2ljmdc+poBMT
+   gp4XRrMfDGNtcdYpTRhInq2pHfG0VcKYtI50rqDEODEae9um0Valbo5cC
+   wU+uB4SYniFp/DSGFOseJkkdY3lO+Qk8jv2GFIcZfcheV6nbl7gwn5KsV
+   DAJ2las9SXssP+ruEbrWP1AY+Q67TogET2zY2VfnEgIQct9pOXKvZ1LZq
+   kvhoeKwxSm88+skr6Kq8umRfYNKOozQZZX5Uisbo1yPzcgey8kHvwZFYZ
+   A==;
+IronPort-SDR: gWqIczFLyA96iDGpH5JnlYbjBaosq3zeGhSGMYW1MpmLw6wBaKd/m5lzsnC5A5lxqflsMkBCcl
+ iK3RqGgR+ZruiKh3p0qZfV+wvJTGOrxpeOi9iag8qESRYzg2gs/CxlvksC7ml19M6F1iGRXOpa
+ nd+76P8dKowiZQG9+x5WTbDs5pggHwxnCKqxAVlqgnhIbOPr3JYqNOI0fYG9beh4qv/8dkYCkD
+ COoII3vOvnVHdONyprH1PlugE6r8DyEwdj1OSQ1yPjbWyp62/+406rTyTtTNE1tsmvbEtnvmp8
+ eNc=
+X-IronPort-AV: E=Sophos;i="5.72,395,1580799600"; 
+   d="scan'208";a="9534003"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Apr 2020 05:33:10 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 17 Apr 2020 05:33:10 -0700
+Received: from [10.205.29.56] (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Fri, 17 Apr 2020 05:32:45 -0700
+Subject: Re: [PATCH 1/5] net: macb: fix wakeup test in runtime suspend/resume
+ routines
+To:     Harini Katakam <harinik@xilinx.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "pthombar@cadence.com" <pthombar@cadence.com>,
+        "sergio.prado@e-labworks.com" <sergio.prado@e-labworks.com>,
+        "antoine.tenart@bootlin.com" <antoine.tenart@bootlin.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        Michal Simek <michals@xilinx.com>,
+        Rafal Ozieblo <rafalo@cadence.com>
+References: <cover.1587058078.git.nicolas.ferre@microchip.com>
+ <eba7f3605d6dcad37f875b2584d519cd6cae9fd1.1587058078.git.nicolas.ferre@microchip.com>
+ <MW2PR02MB37706E6E182F19F278B35707C9D80@MW2PR02MB3770.namprd02.prod.outlook.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+Message-ID: <ba239f44-b3e4-723e-ad3d-3fbb90e8bfc1@microchip.com>
+Date:   Fri, 17 Apr 2020 14:33:04 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87v9ly3a0w.fsf@intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <MW2PR02MB37706E6E182F19F278B35707C9D80@MW2PR02MB3770.namprd02.prod.outlook.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 17, 2020 at 09:23:59AM +0300, Jani Nikula wrote:
+On 16/04/2020 at 20:26, Harini Katakam wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> Hi Nicolas,
+> 
+>> -----Original Message-----
+>> From: nicolas.ferre@microchip.com [mailto:nicolas.ferre@microchip.com]
+>> Sent: Thursday, April 16, 2020 11:14 PM
+>> To: linux-arm-kernel@lists.infradead.org; netdev@vger.kernel.org; Claudiu
+>> Beznea <claudiu.beznea@microchip.com>; Harini Katakam
+>> <harinik@xilinx.com>
+>> Cc: linux-kernel@vger.kernel.org; David S. Miller <davem@davemloft.net>;
+>> Alexandre Belloni <alexandre.belloni@bootlin.com>; pthombar@cadence.com;
+>> sergio.prado@e-labworks.com; antoine.tenart@bootlin.com;
+>> f.fainelli@gmail.com; linux@armlinux.org.uk; andrew@lunn.ch; Michal Simek
+>> <michals@xilinx.com>; Nicolas Ferre <nicolas.ferre@microchip.com>; Rafal
+>> Ozieblo <rafalo@cadence.com>
+>> Subject: [PATCH 1/5] net: macb: fix wakeup test in runtime suspend/resume
+>> routines
+>>
+>> From: Nicolas Ferre <nicolas.ferre@microchip.com>
+>>
+>> Use the proper struct device pointer to check if the wakeup flag and wakeup
+>> source are positioned.
+>> Use the one passed by function call which is equivalent to &bp->dev-
+>>> dev.parent.
+>>
+>> It's preventing the trigger of a spurious interrupt in case the Wake-on-Lan
+>> feature is used.
+> 
+> Sorry I have some mail issues; meant to reply earlier.
+> Tested patches 1, 2, 3 in this set and they work for me.
 
-> Which means that would have to split up to two. Not ideal, but
-> doable.
+Brilliant! Thanks for the feedback.
 
-Why is this not ideal?
+> I'll try patch 4; it looks similar to what I'm using locally but I'll add whatever
+> tie-off queue handling is required on top of your series, thanks.
 
-I think the one per line is easier to maintain (eg for merge
-conflicts) and easier to read than a giant && expression.
+Alright, I'll hold my v2 for a few days then. Thanks. Best regards,
+   Nicolas
 
-I would not complicate things further by extending the boolean
-language..
 
-Jason
+-- 
+Nicolas Ferre
