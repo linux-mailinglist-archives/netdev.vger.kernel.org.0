@@ -2,89 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DC121AE278
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 18:47:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4552A1AE2D4
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 18:57:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726659AbgDQQrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 12:47:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56876 "EHLO
+        id S1727934AbgDQQ4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 12:56:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725877AbgDQQrx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 12:47:53 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A854AC061A0C;
-        Fri, 17 Apr 2020 09:47:51 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id x66so3059965qkd.9;
-        Fri, 17 Apr 2020 09:47:51 -0700 (PDT)
+        with ESMTP id S1728416AbgDQQ4M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 12:56:12 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2264C061A0C;
+        Fri, 17 Apr 2020 09:56:11 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id j2so3830725wrs.9;
+        Fri, 17 Apr 2020 09:56:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jvi5l+Cvi7+NgWuXgV5x5iR99VCJS8AvoQUrjoNh1iw=;
-        b=fwAAS0Z8VVEix3VtEOuCR8z9wpk2fNcZK7Qkvt3g3XkUfLhz/kIb5d4M7u6NpWHWJA
-         +bYMFMTScvLn9wjE031jSdS+wkhDzoHPy64Afx8sguBoLms/sM+Ty4laFKJ60kAXeCwz
-         mMD4/ReAbq8GHpRhWugXIxemWk+iLiaiBI2bHZ3oiwwa9STBZPIjkMog8sgVq/cKAf9d
-         I1SI6dig7shAOIPBVbWtWb0Ej0RC0Od3haL8GEk5/CcDpj0YVxKqxtyaypmccG0RnPBA
-         5QUsbUmiVJ57IRhgC9ungYg63FWOgNXnlMa307KvzqwoCmoEk0yz+Ck/isfocLrmZHIN
-         vLgw==
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=5vRyt3gyMvMWOByiQup7/iuoQyfsqpdRhoS1efdjEY4=;
+        b=r96iYaAJUFqutvLlNPFb8i3j1V2Dc4shFIQjqagN+c4HoNWeaVzgEOSlDtF/nXoxKL
+         4rl8ksUKanZyBWaTMkATLdET25r9HIQPScCqXELA3cNyylFog/fLtdWR2J2aD+Aot1YA
+         uwzDq6E2MD1Fe/5FgD0dGmraCG6JeLOj7/OyHK2DIfWJbfzGImluPYqoqPSWmebwHv5Q
+         iKppF+24I3/OXUS/3ulHsPzPByHZ9+gmoz9J4zWOJqfyl9mNR9vlRfthl3wJm6mGw3VN
+         JMVkTgidHeBShG/JYVSsBUIJtXjX5RM3PMY0iQQDebm+PE6pl5ItFx7y8X87P4CVLeEr
+         MIBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jvi5l+Cvi7+NgWuXgV5x5iR99VCJS8AvoQUrjoNh1iw=;
-        b=VQrbDvJZDAkXuB8Ijh5VconkwlbqUNoQbAAKcI8Ey0tfMlYXXIO7wwTyczaUUmKj4D
-         ECXnIjDBywOjcSmKwjLSk1sswCNei2+ZTXk1yfNQ9ic23OwceU7esMd5zj6cHiX6yIrm
-         U2OP//LydSOGLkA8UScjCQSBNtnS4r+1/c2/YNkhj24yGYMlcFueUu0ijbm5RXIq68XP
-         fqZxPDF126vdJd5zwd0Q7Oga6c2Bt5AP7n+OECIthbT/oyQpFCJb2sCu4uiqMrbq3sUr
-         aO9D6vn6iYmHGgMaqwbeI5SkW59wZq8XKOoWxYF1NYl8t5DEsJMfgsiOkaiK4I8KH8Ya
-         s3ng==
-X-Gm-Message-State: AGi0PubfuSN9lYmdZC3QHBp7L4SJ8C44qA5eB+7V4StAhVRcSnoSF2HE
-        QrkUQKz5JstDcEXH9SXEzg0=
-X-Google-Smtp-Source: APiQypIGbp1/VjpCIVYUMxOaqqwFJua/la/07UT+Ab8011YYmPU3sQyokDfvSOJ697BZwJE8V4RtjA==
-X-Received: by 2002:a37:508:: with SMTP id 8mr4325358qkf.265.1587142070761;
-        Fri, 17 Apr 2020 09:47:50 -0700 (PDT)
-Received: from quaco.ghostprotocols.net ([179.97.37.151])
-        by smtp.gmail.com with ESMTPSA id k2sm17714599qte.16.2020.04.17.09.47.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Apr 2020 09:47:49 -0700 (PDT)
-From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 1FD9F409A3; Fri, 17 Apr 2020 13:47:47 -0300 (-03)
-Date:   Fri, 17 Apr 2020 13:47:47 -0300
-To:     Alan Maguire <alan.maguire@oracle.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com, kafai@fb.com,
-        songliubraving@fb.com, andriin@fb.com, john.fastabend@gmail.com,
-        kpsingh@chromium.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [RFC PATCH bpf-next 0/6] bpf, printk: add BTF-based type printing
-Message-ID: <20200417164747.GD17973@kernel.org>
-References: <1587120160-3030-1-git-send-email-alan.maguire@oracle.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1587120160-3030-1-git-send-email-alan.maguire@oracle.com>
-X-Url:  http://acmel.wordpress.com
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=5vRyt3gyMvMWOByiQup7/iuoQyfsqpdRhoS1efdjEY4=;
+        b=UE0I9H/HsnLjhv1Vu0WW6Ys7SNeADfwGSA6wGXrR7IuHCyMIpMfFOO7g3rhNR+upmR
+         ssgL64O8NzndwJ3lAPg+zn0u5KhYEXGVUNNSuwwj8uBMCEIDKBmbumTatPSfrFtk+fVv
+         nnOfLIlzUn3+RwKaf6Wusd+h9W+zvhgRkKGjjKMbkO2V9EW0KhIp1FcONxnff8frapV3
+         nbIaRc9wbX/su9ygOFFG2/QfjfzTeFxCUej3+S4/8mS/W2jMOOP9nQf2xrgrFjl8c2SM
+         gsxwdrUJBhGPKgrdu0sN/3NlVma0/QwtCDyH1fjOa1oNprgHw9N/vXCD626gZM6TeTim
+         Cwzg==
+X-Gm-Message-State: AGi0PuZLfVxcCNXKuTNS0iUnatQiv+kbYeL3uTorhgfFVdVSgx3TAW1t
+        FThbmYa8jytGVcmlVPG993d36HSF6ZbkYw==
+X-Google-Smtp-Source: APiQypIwZ/jq8AtZYyR5t/lj17pbtyhqWpW7mYXgNj9fweYAkXGNJPa4XJpjF5ga1tQ25cPm02FudA==
+X-Received: by 2002:a5d:4106:: with SMTP id l6mr4809878wrp.111.1587142570430;
+        Fri, 17 Apr 2020 09:56:10 -0700 (PDT)
+Received: from [10.227.177.177] ([216.113.160.71])
+        by smtp.gmail.com with ESMTPSA id y7sm33634702wrq.54.2020.04.17.09.56.08
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 17 Apr 2020 09:56:09 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.14\))
+Subject: Re: Long delay on estimation_timer causes packet latency
+From:   yunhong-cgl jiang <xintian1976@gmail.com>
+In-Reply-To: <alpine.LFD.2.21.2004171029240.3962@ja.home.ssi.bg>
+Date:   Fri, 17 Apr 2020 09:56:06 -0700
+Cc:     horms@verge.net.au, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org, Yunhong Jiang <yunhjiang@ebay.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <F48099A3-ECB3-46AF-8330-B829ED2ADA3F@gmail.com>
+References: <D25792C1-1B89-45DE-9F10-EC350DC04ADC@gmail.com>
+ <alpine.LFD.2.21.2004171029240.3962@ja.home.ssi.bg>
+To:     Julian Anastasov <ja@ssi.bg>
+X-Mailer: Apple Mail (2.3445.104.14)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Fri, Apr 17, 2020 at 11:42:34AM +0100, Alan Maguire escreveu:
-> To give a flavour for what the printed-out data looks like,
-> here we use pr_info() to display a struct sk_buff *.  Note
-> we specify the 'N' modifier to show type field names:
-> 
->   struct sk_buff *skb = alloc_skb(64, GFP_KERNEL);
-> 
->   pr_info("%pTN<struct sk_buff>", skb);
-> 
-> ...gives us:
-> 
-> {{{.next=00000000c7916e9c,.prev=00000000c7916e9c,{.dev=00000000c7916e9c|.dev_scratch=0}}|.rbnode={.__rb_parent_color=0,.rb_right=00000000c7916e9c,.rb_left=00000000c7916e9c}|.list={.next=00000000c7916e9c,.prev=00000000c7916e9c}},{.sk=00000000c7916e9c|.ip_defrag_offset=0},{.tstamp=0|.skb_mstamp_ns=0},.cb=['\0'],{{._skb_refdst=0,.destructor=00000000c7916e9c}|.tcp_tsorted_anchor={.next=00000000c7916e9c,.prev=00000000c7916e9c}},._nfct=0,.len=0,.data_len=0,.mac_len=0,.hdr_len=0,.queue_mapping=0,.__cloned_offset=[],.cloned=0x0,.nohdr=0x0,.fclone=0x0,.peeked=0x0,.head_frag=0x0,.pfmemalloc=0x0,.active_extensions=0,.headers_start=[],.__pkt_type_offset=[],.pkt_type=0x0,.ignore_df=0x0,.nf_trace=0x0,.ip_summed=0x0,.ooo_okay=0x0,.l4_hash=0x0,.sw_hash=0x0,.wifi_acked_valid=0x0,.wifi_acked=0x0,.no_fcs=0x0,.encapsulation=0x0,.encap_hdr_csum=0x0,.csum_valid=0x0,.__pkt_vlan_present_offset=[],.vlan_present=0x0,.csum_complete_sw=0x0,.csum_level=0x0,.csum_not_inet=0x0,.dst_pending_co
+Thanks for reply.
 
-One suggestion, to make this more compact, one could have %pTNz<struct
-sk_buff>" that wouldn't print any integral type member that is zeroed
-:-)
- 
-- Arnaldo
+Yes, our patch changes the est_list to a RCU list. Will do more testing =
+and send out the patch.
+
+Thanks
+=E2=80=94Yunhong
+
+
+> On Apr 17, 2020, at 12:47 AM, Julian Anastasov <ja@ssi.bg> wrote:
+>=20
+>=20
+> 	Hello,
+>=20
+> On Thu, 16 Apr 2020, yunhong-cgl jiang wrote:
+>=20
+>> Hi, Simon & Julian,
+>> 	We noticed that on our kubernetes node utilizing IPVS, the =
+estimation_timer() takes very long (>200sm as shown below). Such long =
+delay on timer softirq causes long packet latency. =20
+>>=20
+>>          <idle>-0     [007] dNH. 25652945.670814: softirq_raise: =
+vec=3D1 [action=3DTIMER]
+>> .....
+>>          <idle>-0     [007] .Ns. 25652945.992273: softirq_exit: vec=3D1=
+ [action=3DTIMER]
+>>=20
+>> 	The long latency is caused by the big service number (>50k) and =
+large CPU number (>80 CPUs),
+>>=20
+>> 	We tried to move the timer function into a kernel thread so that =
+it will not block the system and seems solves our problem. Is this the =
+right direction? If yes, we will do more testing and send out the RFC =
+patch. If not, can you give us some suggestion?
+>=20
+> 	Using kernel thread is a good idea. For this to work, we can
+> also remove the est_lock and to use RCU for est_list.
+> The writers ip_vs_start_estimator() and ip_vs_stop_estimator() already
+> run under common mutex __ip_vs_mutex, so they not need any
+> synchronization. We need _bh lock usage in estimation_timer().
+> Let me know if you need any help with the patch.
+>=20
+> Regards
+>=20
+> --
+> Julian Anastasov <ja@ssi.bg>
+
