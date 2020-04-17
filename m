@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FEE61AE504
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 20:43:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C9861AE507
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 20:44:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729901AbgDQSm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 14:42:58 -0400
+        id S1730006AbgDQSnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 14:43:07 -0400
 Received: from mga03.intel.com ([134.134.136.65]:31355 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729774AbgDQSm4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728801AbgDQSm4 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 17 Apr 2020 14:42:56 -0400
-IronPort-SDR: FEXWCEnqFhOP8Wcdj6gvlig/JKD8GeDJwmyY69TU44kq/QC2O3iEi3nwoDEv7FiqhPHfrVW9kR
- 6IF6xCO7nP1w==
+IronPort-SDR: 2XYJP4Ott7gsmday+HVbGafdN8lnV4/nEUsxHYgBi2x1Ad/yDS78hWT+usptLMSc/VzgHZi/Wa
+ bBz1J0PezYYg==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2020 11:42:53 -0700
-IronPort-SDR: /Fy9q18mpJrgSM8hvPMK7P4n6mITXEI2E+x+BahsgLDYWIFlB/yILF5mE/yvAT7KcYlmG39J5y
- gqRzE4+z5n7Q==
+IronPort-SDR: 5AAE3dLN3BKf2wOiKg3Wx5nEmUzk/w0r8eZsXoUTt3kswEUgTgyIp2N0f8TYp6R+PipwxP4gvG
+ wI5x7wu5DLBw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.72,395,1580803200"; 
-   d="scan'208";a="254294390"
+   d="scan'208";a="254294392"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by orsmga003.jf.intel.com with ESMTP; 17 Apr 2020 11:42:52 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
+Cc:     Andre Guedes <andre.guedes@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
+        Sasha Neftin <sasha.neftin@intel.com>,
         Aaron Brown <aaron.f.brown@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 11/14] igc: Remove copper fiber switch control
-Date:   Fri, 17 Apr 2020 11:42:48 -0700
-Message-Id: <20200417184251.1962762-12-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 12/14] igc: Fix NFC queue redirection support
+Date:   Fri, 17 Apr 2020 11:42:49 -0700
+Message-Id: <20200417184251.1962762-13-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.25.2
 In-Reply-To: <20200417184251.1962762-1-jeffrey.t.kirsher@intel.com>
 References: <20200417184251.1962762-1-jeffrey.t.kirsher@intel.com>
@@ -43,60 +44,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Andre Guedes <andre.guedes@intel.com>
 
-i225 device support copper mode only
-PHY signal detect indication for copper fiber switch
-not applicable to i225 part
+The support for ethtool Network Flow Classification (NFC) queue
+redirection based on destination MAC address is currently broken in IGC.
+For instance, if we add the following rule, matching frames aren't
+enqueued on the expected rx queue.
 
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+$ ethtool -N IFNAME flow-type ether dst 3c:fd:fe:9e:7f:71 queue 2
+
+The issue here is due to the fact that igc_rar_set_index() is missing
+code to enable the queue selection feature from Receive Address High
+(RAH) register. This patch adds the missing code and fixes the issue.
+
+Signed-off-by: Andre Guedes <andre.guedes@intel.com>
+Acked-by: Sasha Neftin <sasha.neftin@intel.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_defines.h | 2 --
- drivers/net/ethernet/intel/igc/igc_main.c    | 9 ---------
- 2 files changed, 11 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_defines.h |  5 ++++-
+ drivers/net/ethernet/intel/igc/igc_main.c    | 11 ++++++++---
+ 2 files changed, 12 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/igc/igc_defines.h b/drivers/net/ethernet/intel/igc/igc_defines.h
-index 40d6f557079b..42fe4d75cc0d 100644
+index 42fe4d75cc0d..af0c03d77a39 100644
 --- a/drivers/net/ethernet/intel/igc/igc_defines.h
 +++ b/drivers/net/ethernet/intel/igc/igc_defines.h
-@@ -91,8 +91,6 @@
- #define IGC_CTRL_RFCE		0x08000000  /* Receive Flow Control enable */
- #define IGC_CTRL_TFCE		0x10000000  /* Transmit flow control enable */
- 
--#define IGC_CONNSW_AUTOSENSE_EN	0x1
--
- /* As per the EAS the maximum supported size is 9.5KB (9728 bytes) */
- #define MAX_JUMBO_FRAME_SIZE	0x2600
+@@ -63,8 +63,11 @@
+  * (RAR[15]) for our directed address used by controllers with
+  * manageability enabled, allowing us room for 15 multicast addresses.
+  */
++#define IGC_RAH_QSEL_MASK	0x000C0000
++#define IGC_RAH_QSEL_SHIFT	18
++#define IGC_RAH_QSEL_ENABLE	BIT(28)
+ #define IGC_RAH_AV		0x80000000 /* Receive descriptor valid */
+-#define IGC_RAH_POOL_1		0x00040000
++
+ #define IGC_RAL_MAC_ADDR_LEN	4
+ #define IGC_RAH_MAC_ADDR_LEN	2
  
 diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 800268da0834..44366c1bec19 100644
+index 44366c1bec19..85df9366e172 100644
 --- a/drivers/net/ethernet/intel/igc/igc_main.c
 +++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -4033,7 +4033,6 @@ static void igc_watchdog_task(struct work_struct *work)
- 	struct igc_hw *hw = &adapter->hw;
- 	struct igc_phy_info *phy = &hw->phy;
- 	u16 phy_data, retry_count = 20;
--	u32 connsw;
- 	u32 link;
- 	int i;
+@@ -780,13 +780,18 @@ static void igc_rar_set_index(struct igc_adapter *adapter, u32 index)
+ 	rar_low = le32_to_cpup((__le32 *)(addr));
+ 	rar_high = le16_to_cpup((__le16 *)(addr + 4));
  
-@@ -4046,14 +4045,6 @@ static void igc_watchdog_task(struct work_struct *work)
- 			link = false;
++	if (adapter->mac_table[index].state & IGC_MAC_STATE_QUEUE_STEERING) {
++		u8 queue = adapter->mac_table[index].queue;
++		u32 qsel = IGC_RAH_QSEL_MASK & (queue << IGC_RAH_QSEL_SHIFT);
++
++		rar_high |= qsel;
++		rar_high |= IGC_RAH_QSEL_ENABLE;
++	}
++
+ 	/* Indicate to hardware the Address is Valid. */
+ 	if (adapter->mac_table[index].state & IGC_MAC_STATE_IN_USE) {
+ 		if (is_valid_ether_addr(addr))
+ 			rar_high |= IGC_RAH_AV;
+-
+-		rar_high |= IGC_RAH_POOL_1 <<
+-			adapter->mac_table[index].queue;
  	}
  
--	/* Force link down if we have fiber to swap to */
--	if (adapter->flags & IGC_FLAG_MAS_ENABLE) {
--		if (hw->phy.media_type == igc_media_type_copper) {
--			connsw = rd32(IGC_CONNSW);
--			if (!(connsw & IGC_CONNSW_AUTOSENSE_EN))
--				link = 0;
--		}
--	}
- 	if (link) {
- 		/* Cancel scheduled suspend requests. */
- 		pm_runtime_resume(netdev->dev.parent);
+ 	wr32(IGC_RAL(index), rar_low);
 -- 
 2.25.2
 
