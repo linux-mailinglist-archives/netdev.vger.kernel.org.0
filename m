@@ -2,81 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 482361AD559
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 06:38:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5D951AD5A3
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 07:22:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726554AbgDQEiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 00:38:11 -0400
-Received: from www262.sakura.ne.jp ([202.181.97.72]:56637 "EHLO
-        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725900AbgDQEiL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 00:38:11 -0400
-Received: from fsav110.sakura.ne.jp (fsav110.sakura.ne.jp [27.133.134.237])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 03H4bbSN080607;
-        Fri, 17 Apr 2020 13:37:37 +0900 (JST)
-        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav110.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav110.sakura.ne.jp);
- Fri, 17 Apr 2020 13:37:37 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav110.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 03H4bUS2080400
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO);
-        Fri, 17 Apr 2020 13:37:37 +0900 (JST)
-        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
-Subject: Re: WARNING: locking bug in tomoyo_supervisor
-To:     syzbot <syzbot+1c36440b364ea3774701@syzkaller.appspotmail.com>,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        Network Development <netdev@vger.kernel.org>,
-        James Chapman <jchapman@katalix.com>
-References: <000000000000a475ac05a36fa01e@google.com>
-From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-Message-ID: <5b71a079-54bb-57a0-360d-33fce141504f@i-love.sakura.ne.jp>
-Date:   Fri, 17 Apr 2020 13:37:31 +0900
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726728AbgDQFWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 01:22:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34864 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726661AbgDQFWn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 01:22:43 -0400
+X-Greylist: delayed 1429 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Apr 2020 22:22:43 PDT
+Received: from fbk21.megaegg.ne.jp (fbk21.megaegg.ne.jp [IPv6:2402:bc00:0:a216::19:131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C8AEC061A0C
+        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 22:22:43 -0700 (PDT)
+Received: from zmta24.megaegg.ne.jp (zmta24-snat.megaegg.ne.jp.internal [10.62.19.124])
+        by fbk21.megaegg.ne.jp (Postfix) with ESMTP id C4BA9687E8B
+        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 13:58:55 +0900 (JST)
+Received: from vss22.megaegg.ne.jp.internal (vss22-snat.megaegg.ne.jp.internal [10.62.19.92])
+        by zmta24.megaegg.ne.jp.internal (Postfix) with ESMTP id AE97580271;
+        Fri, 17 Apr 2020 13:58:48 +0900 (JST)
+Received: from smtp22.megaegg.ne.jp (smtp22-snat.megaegg.ne.jp.internal [10.62.19.102])
+        by vss22.megaegg.ne.jp.internal (Postfix) with ESMTP id 8569CDF949;
+        Fri, 17 Apr 2020 13:58:48 +0900 (JST)
+Received: from zmbs22.megaegg.ne.jp.internal (zmbs22-snat.megaegg.ne.jp.internal [10.62.19.152])
+        by smtp22.megaegg.ne.jp (Postfix) with ESMTP id DC467C0042;
+        Fri, 17 Apr 2020 13:58:47 +0900 (JST)
+Date:   Fri, 17 Apr 2020 13:58:47 +0900 (JST)
+From:   Bill Lawrence <w2u42su8@ene.megaegg.ne.jp>
+Reply-To: Bill Lawrence <bill_lawrence01@aol.com>
+Message-ID: <1218539052.53436625.1587099527451.JavaMail.zimbra@ene.megaegg.ne.jp>
+Subject: Re: I HAVE $2MILLION DONATION FOR YOU.
 MIME-Version: 1.0
-In-Reply-To: <000000000000a475ac05a36fa01e@google.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [::ffff:105.163.128.152]
+X-Mailer: Zimbra 8.0.4_GA_5740 (ZimbraWebClient - GC55 (Win)/8.0.4_GA_5737)
+Thread-Topic: I HAVE $2MILLION DONATION FOR YOU.
+Thread-Index: sAtzPmuo+oF31WV4Px6cPyRbbQ9K+w==
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/04/17 7:05, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following crash on:
-> 
-> HEAD commit:    4f8a3cc1 Merge tag 'x86-urgent-2020-04-12' of git://git.ke..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1599027de00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3bfbde87e8e65624
-> dashboard link: https://syzkaller.appspot.com/bug?extid=1c36440b364ea3774701
-> compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=150733cde00000
 
-This seems to be a misattributed report explained at https://lkml.kernel.org/r/20190924140241.be77u2jne3melzte@pathway.suse.cz .
-Petr and Sergey, how is the progress of making printk() asynchronous? When can we expect that work to be merged?
-If it is delaying, can we implement storing these metadata into the per-CPU buffers?
 
-Anyway,
+We bring greetings to you in the name of the lord. This message is sent to you as a notification that you have been chosen to benefit from our charity project aimed at touching lives and helping those that we can across the world as God has blessed us.
 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10aacf5de00000
+I won the Powerball lottery of $150Million on December 16, 2019 and I have voluntarily decided to donate the sum of $10Million to charity, I try to reach people randomly from different sources and modes so as to touch lives from different angles, Hence you are getting a message here.
 
-bisection log says this will be a duplicate of
+You have been listed as one of the lucky recipients to receive $2M This donation is made out to you so to enable you strengthen your personal issues and mostly to generously help us extend hands of giving to the less privileged, orphans and charity organizations within your locality
 
-#syz dup: WARNING: locking bug in inet_autobind
+To verify
+https://www.powerball.com/winner-story/150-million-powerball-ticket-claimed
 
-. This misattribution by chance served as a reminder for "locking bug in inet_autobind" bug. ;-)
+Get back to me on how to receive the donation
 
-According to https://syzkaller.appspot.com/bug?id=a7d678fba80c34b5770cc1b5638b8a2709ae9f3f ,
-this bug is happening on "2020/04/01 19:28", "2020/04/09 06:24" and "2020/04/10 20:48"
-which are after the opening of the merge window for 5.7-rc1. Reproducer suggests that
-pppl2tp and inet6_udp are relevant.
+Thanks
+Bill Lawrence
+
 
