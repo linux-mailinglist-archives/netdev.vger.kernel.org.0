@@ -2,59 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDDFE1AD7E8
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 09:48:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98ECE1AD7ED
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 09:48:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729481AbgDQHrw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 03:47:52 -0400
-Received: from ja.ssi.bg ([178.16.129.10]:33596 "EHLO ja.ssi.bg"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725768AbgDQHrv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Apr 2020 03:47:51 -0400
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id 03H7lYlV005268;
-        Fri, 17 Apr 2020 10:47:34 +0300
-Date:   Fri, 17 Apr 2020 10:47:34 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     yunhong-cgl jiang <xintian1976@gmail.com>
-cc:     horms@verge.net.au, netdev@vger.kernel.org,
-        lvs-devel@vger.kernel.org, Yunhong Jiang <yunhjiang@ebay.com>
-Subject: Re: Long delay on estimation_timer causes packet latency
-In-Reply-To: <D25792C1-1B89-45DE-9F10-EC350DC04ADC@gmail.com>
-Message-ID: <alpine.LFD.2.21.2004171029240.3962@ja.home.ssi.bg>
-References: <D25792C1-1B89-45DE-9F10-EC350DC04ADC@gmail.com>
-User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
+        id S1729511AbgDQHsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 03:48:13 -0400
+Received: from verein.lst.de ([213.95.11.211]:56236 "EHLO verein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729049AbgDQHsM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Apr 2020 03:48:12 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id E8D2E68BEB; Fri, 17 Apr 2020 09:48:07 +0200 (CEST)
+Date:   Fri, 17 Apr 2020 09:48:07 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Christoph Hellwig <hch@lst.de>, Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH 2/6] firmware_loader: remove unused exports
+Message-ID: <20200417074807.GA19954@lst.de>
+References: <20200417064146.1086644-1-hch@lst.de> <20200417064146.1086644-3-hch@lst.de> <20200417074330.GB23015@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200417074330.GB23015@kroah.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-	Hello,
-
-On Thu, 16 Apr 2020, yunhong-cgl jiang wrote:
-
-> Hi, Simon & Julian,
-> 	We noticed that on our kubernetes node utilizing IPVS, the estimation_timer() takes very long (>200sm as shown below). Such long delay on timer softirq causes long packet latency.  
+On Fri, Apr 17, 2020 at 09:43:30AM +0200, Greg Kroah-Hartman wrote:
+> On Fri, Apr 17, 2020 at 08:41:42AM +0200, Christoph Hellwig wrote:
+> > Neither fw_fallback_config nor firmware_config_table are used by modules.
+> > 
+> > Signed-off-by: Christoph Hellwig <hch@lst.de>
+> > ---
+> >  drivers/base/firmware_loader/fallback_table.c | 2 --
+> >  1 file changed, 2 deletions(-)
 > 
->           <idle>-0     [007] dNH. 25652945.670814: softirq_raise: vec=1 [action=TIMER]
-> .....
->           <idle>-0     [007] .Ns. 25652945.992273: softirq_exit: vec=1 [action=TIMER]
-> 
-> 	The long latency is caused by the big service number (>50k) and large CPU number (>80 CPUs),
-> 
-> 	We tried to move the timer function into a kernel thread so that it will not block the system and seems solves our problem. Is this the right direction? If yes, we will do more testing and send out the RFC patch. If not, can you give us some suggestion?
+> I have no objection to this patch, and can take it in my tree, but I
+> don't see how it fits in with your larger patch series...
 
-	Using kernel thread is a good idea. For this to work, we can
-also remove the est_lock and to use RCU for est_list.
-The writers ip_vs_start_estimator() and ip_vs_stop_estimator() already
-run under common mutex __ip_vs_mutex, so they not need any
-synchronization. We need _bh lock usage in estimation_timer().
-Let me know if you need any help with the patch.
-
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
+firmware_config_table is a sysctl table, and I looked for users but
+didn't find them.  But yes, it isn't really related and you can take
+it separately.
