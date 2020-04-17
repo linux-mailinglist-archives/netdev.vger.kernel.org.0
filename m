@@ -2,91 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E50E1AE5B0
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 21:18:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 803651AE5CF
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 21:29:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730149AbgDQTSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 15:18:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51906 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728260AbgDQTR7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 15:17:59 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E09CC061A0F
-        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 12:17:58 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id w29so2946642qtv.3
-        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 12:17:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=/Oi42cOfLbaOjiiRpWir3gqYxnlbkTfrUk82hw110P8=;
-        b=U3w3yUuRA0Bux5GTafIWqYUkz3yptuzj0D0nw0MYWA6Lbd2685UTEL2bKTUB3h/fCM
-         oR0Z0ZcnW7oz4b+T4aC5dLxQIhCPnKHuCs1H+dw4BV46AkYzVayJ54SRfrk7Z0yu44Jp
-         euYU1f8P+R3Gf1/yOTiW01m6txdp29AcDcOro8Ym/gAIVeHhslaQ0ik//V+YnLjO5Mta
-         L2IbZgDXgAF8fE+1ClVRPlklcyAsuaEM4b/gMIPBCLdfWsjeDOg9Q2EkhkM9H4ITnnMS
-         pmZt8ynfu/2w+v8E69vX10gCFrPej9SN9cJh3h4JdrPmxGUv1YhpNWYqwzk98u1n6evU
-         dYsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=/Oi42cOfLbaOjiiRpWir3gqYxnlbkTfrUk82hw110P8=;
-        b=M7TFbr8NXtq1g4Wu1Uk9hacAJvAJAO9XjDCIShWCha+x0Jmkjy2ABR0NI2lBwpZZCC
-         5kiYFN6oT7JZLfBujGMjIRRgyyAhKLboLbQuB6S+I0HvoOpVcA4DWKZX0QJXURO4+Nay
-         qt9y74CoGk/zAPJLt63tEd3630LN4pUAssqQpKEaO/sBgRNresoMhiOje440JSXyWt3W
-         DWJNEXpZbBScDDI/dSjouiSbe9HwNz4ZxtwaADUcWjYZIfZ99bqsP1rNT2Ic6BkGR6Y9
-         C12+QLXQa9fG5hwW2JImoRRPvPVwXwyw4g6dGh4tqTxwSjKeF+dg3eBhC+eTSwHC/uq1
-         tvKw==
-X-Gm-Message-State: AGi0PuZYuNC5/egYOf1ZOmi6VrQHCteRZJiHM+XZHJdjZ2+7WGbyLJUM
-        X5oaZsLBciJqYuY9IkEkdtXCPw==
-X-Google-Smtp-Source: APiQypIqdiX95PWlLYsNoy7N72z+i+xgzUdtRqmi2BW7GjCcsIRtlp1po486Xo3o1K7kE8HFuYt2aQ==
-X-Received: by 2002:aed:20e3:: with SMTP id 90mr4570092qtb.142.1587151077333;
-        Fri, 17 Apr 2020 12:17:57 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id n10sm16675337qkk.105.2020.04.17.12.17.56
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 17 Apr 2020 12:17:56 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jPWUu-0004hn-9k; Fri, 17 Apr 2020 16:17:56 -0300
-Date:   Fri, 17 Apr 2020 16:17:56 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
-        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, ranjani.sridharan@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: Re: [net-next 2/9] ice: Create and register virtual bus for RDMA
-Message-ID: <20200417191756.GJ26002@ziepe.ca>
-References: <20200417171034.1533253-1-jeffrey.t.kirsher@intel.com>
- <20200417171034.1533253-3-jeffrey.t.kirsher@intel.com>
+        id S1730526AbgDQT3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 15:29:31 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:41913 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730283AbgDQT3U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 15:29:20 -0400
+Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id D792523058;
+        Fri, 17 Apr 2020 21:29:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1587151754;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=xQGI6RECM8CGglVwJZboptE0gLfAM+KqsH6P6ueOYAo=;
+        b=eBU2pk7Gs9pOnv+ZlU65YAeyDFbR31HWcnUaZgfyaOlRmRRFEDEhkYZy5/FDSWUi26hycf
+        hQvo/iR3KcY/YjyHtCYgB3P1IFqq2NzSx/1ebBVisSWxtBhs2V/2cbYP4kS9LHwBSzYKTZ
+        yOKrvVUY2UmFz3OhL/uxhsdeiqu9ZNo=
+From:   Michael Walle <michael@walle.cc>
+To:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next 1/3] net: phy: broadcom: add helper to write/read RDB registers
+Date:   Fri, 17 Apr 2020 21:28:56 +0200
+Message-Id: <20200417192858.6997-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200417171034.1533253-3-jeffrey.t.kirsher@intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+X-Spamd-Bar: ++++++
+X-Spam-Level: ******
+X-Rspamd-Server: web
+X-Spam-Status: Yes, score=6.40
+X-Spam-Score: 6.40
+X-Rspamd-Queue-Id: D792523058
+X-Spamd-Result: default: False [6.40 / 15.00];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         R_MISSING_CHARSET(2.50)[];
+         FREEMAIL_ENVRCPT(0.00)[gmail.com];
+         TAGGED_RCPT(0.00)[];
+         MIME_GOOD(-0.10)[text/plain];
+         BROKEN_CONTENT_TYPE(1.50)[];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         NEURAL_SPAM(0.00)[0.942];
+         DKIM_SIGNED(0.00)[];
+         RCPT_COUNT_SEVEN(0.00)[11];
+         MID_CONTAINS_FROM(1.00)[];
+         RCVD_COUNT_ZERO(0.00)[0];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         ASN(0.00)[asn:31334, ipnet:2a02:810c:8000::/33, country:DE];
+         FREEMAIL_CC(0.00)[suse.com,roeck-us.net,lunn.ch,gmail.com,armlinux.org.uk,davemloft.net,walle.cc];
+         SUSPICIOUS_RECIPS(1.50)[]
+X-Spam: Yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 17, 2020 at 10:10:27AM -0700, Jeff Kirsher wrote:
-> From: Dave Ertman <david.m.ertman@intel.com>
-> 
-> The RDMA block does not have its own PCI function, instead it must utilize
-> the ice driver to gain access to the PCI device. Create a virtual bus
-> device so the irdma driver can register a virtual bus driver to bind to it
-> and receive device data. The device data contains all of the relevant
-> information that the irdma peer will need to access this PF's IIDC API
-> callbacks.
+RDB regsiters are used on newer Broadcom PHYs. Add helper to read, write
+and modify these registers.
 
-Can you please provide examples of what the sysfs paths for all this
-stuff looks like?
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ drivers/net/phy/bcm-phy-lib.c | 80 +++++++++++++++++++++++++++++++++++
+ drivers/net/phy/bcm-phy-lib.h |  9 ++++
+ include/linux/brcmphy.h       |  3 ++
+ 3 files changed, 92 insertions(+)
 
-Does power management work right?
+diff --git a/drivers/net/phy/bcm-phy-lib.c b/drivers/net/phy/bcm-phy-lib.c
+index e77b274a09fd..d5f9a2701989 100644
+--- a/drivers/net/phy/bcm-phy-lib.c
++++ b/drivers/net/phy/bcm-phy-lib.c
+@@ -155,6 +155,86 @@ int bcm_phy_write_shadow(struct phy_device *phydev, u16 shadow,
+ }
+ EXPORT_SYMBOL_GPL(bcm_phy_write_shadow);
+ 
++int __bcm_phy_read_rdb(struct phy_device *phydev, u16 rdb)
++{
++	int val;
++
++	val = __phy_write(phydev, MII_BCM54XX_RDB_ADDR, rdb);
++	if (val < 0)
++		return val;
++
++	return __phy_read(phydev, MII_BCM54XX_RDB_DATA);
++}
++EXPORT_SYMBOL_GPL(__bcm_phy_read_rdb);
++
++int bcm_phy_read_rdb(struct phy_device *phydev, u16 rdb)
++{
++	int ret;
++
++	phy_lock_mdio_bus(phydev);
++	ret = __bcm_phy_read_rdb(phydev, rdb);
++	phy_unlock_mdio_bus(phydev);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(bcm_phy_read_rdb);
++
++int __bcm_phy_write_rdb(struct phy_device *phydev, u16 rdb, u16 val)
++{
++	int ret;
++
++	ret = __phy_write(phydev, MII_BCM54XX_RDB_ADDR, rdb);
++	if (ret < 0)
++		return ret;
++
++	return __phy_write(phydev, MII_BCM54XX_RDB_DATA, val);
++}
++EXPORT_SYMBOL_GPL(__bcm_phy_write_rdb);
++
++int bcm_phy_write_rdb(struct phy_device *phydev, u16 rdb, u16 val)
++{
++	int ret;
++
++	phy_lock_mdio_bus(phydev);
++	ret = __bcm_phy_write_rdb(phydev, rdb, val);
++	phy_unlock_mdio_bus(phydev);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(bcm_phy_write_rdb);
++
++int __bcm_phy_modify_rdb(struct phy_device *phydev, u16 rdb, u16 mask, u16 set)
++{
++	int new, ret;
++
++	ret = __phy_write(phydev, MII_BCM54XX_RDB_ADDR, rdb);
++	if (ret < 0)
++		return ret;
++
++	ret = __phy_read(phydev, MII_BCM54XX_RDB_DATA);
++	if (ret < 0)
++		return ret;
++
++	new = (ret & ~mask) | set;
++	if (new == ret)
++		return 0;
++
++	return __phy_write(phydev, MII_BCM54XX_RDB_DATA, new);
++}
++EXPORT_SYMBOL_GPL(__bcm_phy_modify_rdb);
++
++int bcm_phy_modify_rdb(struct phy_device *phydev, u16 rdb, u16 mask, u16 set)
++{
++	int ret;
++
++	phy_lock_mdio_bus(phydev);
++	ret = __bcm_phy_modify_rdb(phydev, rdb, mask, set);
++	phy_unlock_mdio_bus(phydev);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(bcm_phy_modify_rdb);
++
+ int bcm_phy_enable_apd(struct phy_device *phydev, bool dll_pwr_down)
+ {
+ 	int val;
+diff --git a/drivers/net/phy/bcm-phy-lib.h b/drivers/net/phy/bcm-phy-lib.h
+index 129df819be8c..4d3de91cda6c 100644
+--- a/drivers/net/phy/bcm-phy-lib.h
++++ b/drivers/net/phy/bcm-phy-lib.h
+@@ -48,6 +48,15 @@ int bcm_phy_write_shadow(struct phy_device *phydev, u16 shadow,
+ 			 u16 val);
+ int bcm_phy_read_shadow(struct phy_device *phydev, u16 shadow);
+ 
++int __bcm_phy_write_rdb(struct phy_device *phydev, u16 rdb, u16 val);
++int bcm_phy_write_rdb(struct phy_device *phydev, u16 rdb, u16 val);
++int __bcm_phy_read_rdb(struct phy_device *phydev, u16 rdb);
++int bcm_phy_read_rdb(struct phy_device *phydev, u16 rdb);
++int __bcm_phy_modify_rdb(struct phy_device *phydev, u16 rdb, u16 mask,
++			 u16 set);
++int bcm_phy_modify_rdb(struct phy_device *phydev, u16 rdb, u16 mask,
++		       u16 set);
++
+ int bcm_phy_ack_intr(struct phy_device *phydev);
+ int bcm_phy_config_intr(struct phy_device *phydev);
+ 
+diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
+index 6462c5447872..e14f78b3c8a4 100644
+--- a/include/linux/brcmphy.h
++++ b/include/linux/brcmphy.h
+@@ -114,6 +114,9 @@
+ #define MII_BCM54XX_SHD_VAL(x)	((x & 0x1f) << 10)
+ #define MII_BCM54XX_SHD_DATA(x)	((x & 0x3ff) << 0)
+ 
++#define MII_BCM54XX_RDB_ADDR	0x1e
++#define MII_BCM54XX_RDB_DATA	0x1f
++
+ /*
+  * AUXILIARY CONTROL SHADOW ACCESS REGISTERS.  (PHY REG 0x18)
+  */
+-- 
+2.20.1
 
-Jason
