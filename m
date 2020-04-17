@@ -2,119 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 877A61AD556
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 06:37:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 482361AD559
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 06:38:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726476AbgDQEhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 00:37:14 -0400
-Received: from m12-15.163.com ([220.181.12.15]:50219 "EHLO m12-15.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725900AbgDQEhO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Apr 2020 00:37:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Subject:From:Message-ID:Date:MIME-Version; bh=aWKfV
-        BxNwZSmPg7YqfkeHzmbJCUlgrXNh/oAP9D/I/s=; b=NQcq+5+3+tiRx5J0/aswM
-        dzmX0qrg+ecHvj8dYTEY2jLQ0xzJlpeqQH/srKerx01yTVPHALz1oUEDXb0eQI+v
-        m6KD2aYwpEgZENx+KXg8JW8iJEkzaRj2LSOkrXEhSxiXDTyeEwAYK8fW+OWjTXQS
-        VWdp4gCjMwyrPVB1joAlr4=
-Received: from [192.168.0.6] (unknown [125.82.15.62])
-        by smtp11 (Coremail) with SMTP id D8CowACXnBjwMZlexhfjDg--.23S2;
-        Fri, 17 Apr 2020 12:35:02 +0800 (CST)
-Subject: Re: [PATCH v2] net/mlx5: add the missing space character
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "leon@kernel.org" <leon@kernel.org>
-Cc:     "cai@lca.pw" <cai@lca.pw>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "lsahlber@redhat.com" <lsahlber@redhat.com>,
-        "kw@linux.com" <kw@linux.com>,
-        "xiubli@redhat.com" <xiubli@redhat.com>,
-        "airlied@redhat.com" <airlied@redhat.com>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "wqu@suse.com" <wqu@suse.com>,
-        "chris@chris-wilson.co.uk" <chris@chris-wilson.co.uk>,
-        "yamada.masahiro@socionext.com" <yamada.masahiro@socionext.com>,
-        "stfrench@microsoft.com" <stfrench@microsoft.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20200403042659.9167-1-xianfengting221@163.com>
- <14df0ecf093bb2df4efaf9e6f5220ea2bf863f53.camel@mellanox.com>
- <fae7a094-62e8-d797-a89b-23faf0eb374e@163.com>
- <a77ddcfad6bfd68b9d69e0d5a18cf5d66692d270.camel@mellanox.com>
-From:   Hu Haowen <xianfengting221@163.com>
-Message-ID: <4861c789-a333-efea-6d51-ab5511645dcf@163.com>
-Date:   Fri, 17 Apr 2020 12:34:56 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1726554AbgDQEiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 00:38:11 -0400
+Received: from www262.sakura.ne.jp ([202.181.97.72]:56637 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725900AbgDQEiL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 00:38:11 -0400
+Received: from fsav110.sakura.ne.jp (fsav110.sakura.ne.jp [27.133.134.237])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 03H4bbSN080607;
+        Fri, 17 Apr 2020 13:37:37 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav110.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav110.sakura.ne.jp);
+ Fri, 17 Apr 2020 13:37:37 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav110.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 03H4bUS2080400
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO);
+        Fri, 17 Apr 2020 13:37:37 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Subject: Re: WARNING: locking bug in tomoyo_supervisor
+To:     syzbot <syzbot+1c36440b364ea3774701@syzkaller.appspotmail.com>,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        Network Development <netdev@vger.kernel.org>,
+        James Chapman <jchapman@katalix.com>
+References: <000000000000a475ac05a36fa01e@google.com>
+From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Message-ID: <5b71a079-54bb-57a0-360d-33fce141504f@i-love.sakura.ne.jp>
+Date:   Fri, 17 Apr 2020 13:37:31 +0900
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <a77ddcfad6bfd68b9d69e0d5a18cf5d66692d270.camel@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <000000000000a475ac05a36fa01e@google.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-CM-TRANSID: D8CowACXnBjwMZlexhfjDg--.23S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7ZF4DAFyfGr18WrykWFW7urg_yoW8WF1kpF
-        98J3Z8Cr48Jrn7Aa1vy3WjqayFyws3Jry5Xrn8Wr95KwnFqr1ftr48K3yYkF9I9rn5G390
-        vF4jq3sFgayrJaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07bzNtxUUUUU=
-X-Originating-IP: [125.82.15.62]
-X-CM-SenderInfo: h0ld0wxhqj3xtqjsjii6rwjhhfrp/1tbi6xgJAFXlqaPofQAAsV
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2020/04/17 7:05, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following crash on:
+> 
+> HEAD commit:    4f8a3cc1 Merge tag 'x86-urgent-2020-04-12' of git://git.ke..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1599027de00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=3bfbde87e8e65624
+> dashboard link: https://syzkaller.appspot.com/bug?extid=1c36440b364ea3774701
+> compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=150733cde00000
 
-On 2020/4/17 11:44 AM, Saeed Mahameed wrote:
-> On Thu, 2020-04-16 at 22:44 +0800, Hu Haowen wrote:
->> On 2020/4/9 3:42 AM, Saeed Mahameed wrote:
->>> On Fri, 2020-04-03 at 12:26 +0800, Hu Haowen wrote:
->>>> Commit 91b56d8462a9 ("net/mlx5: improve some comments") did not
->>>> add
->>>> that missing space character and this commit is used to fix it
->>>> up.
->>>>
->>>> Fixes: 91b56d8462a9 ("net/mlx5: improve some comments")
->>>>
->>> Please re-spin and submit to net-next once net-next re-opens,
->>> avoid referencing the above commit since this patch is a stand
->>> alone
->>> and has nothing to do with that patch.. just have a stand alone
->>> commit
->>> message explaining the space fix.
->> Sorry for my late reply. Because I'm a kernel newbie, I know nothing
->> about the basic methods and manners in the kernel development. Thanks
->> a lot for your patience on my mistake, pointing it out and fixing it
->> up.
->>
->> Btw, did net-next re-open and did my changes get into the mainline?
->>
->>
-> Normally net-next closes once merge window is open at the end of
-> rc7/rc8 kernel cycle.
->
-> and reopens on the week of the kernel release, after the merge window
-> is closed (2 weeks after rc7/8 is closed).
->
-> you can use this link.
-> http://vger.kernel.org/~davem/net-next.html
+This seems to be a misattributed report explained at https://lkml.kernel.org/r/20190924140241.be77u2jne3melzte@pathway.suse.cz .
+Petr and Sergey, how is the progress of making printk() asynchronous? When can we expect that work to be merged?
+If it is delaying, can we implement storing these metadata into the per-CPU buffers?
 
+Anyway,
 
-Oh... Thanks.
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10aacf5de00000
 
-But it's more than 2 weeks since Linux 5.6 was released, so net-next
-should be open now according to your words. But it's still closed.
+bisection log says this will be a duplicate of
 
-Is my idea wrong? Does "kernel release" mean an -rc release or a formal
-release?
+#syz dup: WARNING: locking bug in inet_autobind
 
+. This misattribution by chance served as a reminder for "locking bug in inet_autobind" bug. ;-)
 
->
-> Or just monitor netdev mailing list for an email announcement from
-> David Miller.
->
-> Thanks and welcome to the netdev family.
->
->
->   
->
+According to https://syzkaller.appspot.com/bug?id=a7d678fba80c34b5770cc1b5638b8a2709ae9f3f ,
+this bug is happening on "2020/04/01 19:28", "2020/04/09 06:24" and "2020/04/10 20:48"
+which are after the opening of the merge window for 5.7-rc1. Reproducer suggests that
+pppl2tp and inet6_udp are relevant.
 
