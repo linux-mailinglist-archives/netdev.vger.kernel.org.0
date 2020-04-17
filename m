@@ -2,90 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE7351AE874
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 01:01:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 204A31AE87B
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 01:04:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727837AbgDQXA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 19:00:56 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:24520 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726167AbgDQXAz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 19:00:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587164454;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7KGdTF+NLD8Xhkwl5nwHw+l3VQ9HqFkDHm1TE3ZyggA=;
-        b=eNBLzQuU8Ikz3QWGUauuojkNSu+inZ1bXJLGAN7PMyVV/7M722jq5Jt3yw1T2rVWjgA0du
-        y3LG51hmWvrQCuDjNyXLGsOeJI3owsZtG6A6ymqm98MzaLTWHzJDMUhE3v6vAFXUmSkgDk
-        4gAP2LWzmSwEQOn73RIHnvFjsQ9P7xk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-156-Z6jo86v3Ng6PycfQ4J7_1g-1; Fri, 17 Apr 2020 19:00:50 -0400
-X-MC-Unique: Z6jo86v3Ng6PycfQ4J7_1g-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8094BDB60;
-        Fri, 17 Apr 2020 23:00:48 +0000 (UTC)
-Received: from elisabeth (unknown [10.36.110.53])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 03C479E0D4;
-        Fri, 17 Apr 2020 23:00:43 +0000 (UTC)
-Date:   Sat, 18 Apr 2020 01:00:38 +0200
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        syzbot <syzbot+33e06702fd6cffc24c40@syzkaller.appspotmail.com>,
-        coreteam@netfilter.org, davem@davemloft.net, kadlec@netfilter.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
-Subject: Re: WARNING in nf_nat_unregister_fn
-Message-ID: <20200418010038.57d5e5cf@elisabeth>
-In-Reply-To: <20200417213348.GC32392@breakpoint.cc>
-References: <000000000000490f1005a375ed34@google.com>
- <20200417094250.21872-1-hdanton@sina.com>
- <20200417213348.GC32392@breakpoint.cc>
-Organization: Red Hat
+        id S1726442AbgDQXEm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 19:04:42 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45428 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725953AbgDQXEl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Apr 2020 19:04:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=mXGhsbO55OqpVS23bZLvvLACKdoyvlM4ttlf+cTXwnY=; b=w9dlGmaskHBTYxnR/Hs2eUxFYn
+        KqfRMKTjjkhDZArofprOi12YeAp6Q00gh2YmaQrCX8WPuLlGDc7sT0LsNY0H+vpjtsluRThyrf4K5
+        GZl4gG/2a14QG9TrmU0OYrfz28ZnLdWP/ebB+ftiHjdjscE7FYBLkOqVJVCVm6ThopHk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jPa2J-003MpR-0I; Sat, 18 Apr 2020 01:04:39 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net-next 0/3] RFC 2863 Testing Oper status
+Date:   Sat, 18 Apr 2020 01:03:47 +0200
+Message-Id: <20200417230350.802675-1-andrew@lunn.ch>
+X-Mailer: git-send-email 2.26.0.rc2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hillf,
+This patchset add support for RFC 2863 Oper status testing.  An
+interface is placed into this state when a self test is performed
+using ethtool.
 
-On Fri, 17 Apr 2020 23:33:48 +0200
-Florian Westphal <fw@strlen.de> wrote:
+Andrew Lunn (3):
+  net: Add IF_OPER_TESTING
+  net: Add testing sysfs attribute
+  net: ethtool: self_test: Mark interface in testing operative status
 
-> Hillf Danton <hdanton@sina.com> wrote:
-> > In case of failure to register NFPROTO_IPV4, unregister NFPROTO_IPV6
-> > instead of ops->pf (== NFPROTO_INET).
-
-Note that the patch you sent didn't reach any list you probably sent it
-to (netfilter-devel, netdev, lkml). I'm seeing it just because Florian
-answered.
-
-This is probably the same issue we had with your openvswitch patch last
-year. By the way, the IP address you used last time is now reported as
-being "blocked" by:
-
-	zen.spamhaus.org
-	pbl.spamhaus.org
-
-I guess vger might filter using Spamhaus lists (including their "PBL"),
-which won't let your email through if you're running a mail server with
-an dynamic IP address.
-
-I don't support this practice, but this might be the issue. You can
-quickly get an overview of blacklists your address might be on at e.g.:
-	http://www.anti-abuse.org/
+ Documentation/ABI/testing/sysfs-class-net | 13 +++++++
+ include/linux/netdevice.h                 | 41 +++++++++++++++++++++++
+ include/uapi/linux/if.h                   |  1 +
+ net/core/dev.c                            |  5 +++
+ net/core/link_watch.c                     | 12 +++++--
+ net/core/net-sysfs.c                      | 15 ++++++++-
+ net/core/rtnetlink.c                      |  9 ++++-
+ net/ethtool/ioctl.c                       |  2 ++
+ 8 files changed, 94 insertions(+), 4 deletions(-)
 
 -- 
-Stefano
+2.26.1
 
