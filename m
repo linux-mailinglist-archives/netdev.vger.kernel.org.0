@@ -2,157 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9BA41AD451
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 04:07:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A64681AD4BD
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 05:12:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729061AbgDQCHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Apr 2020 22:07:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33164 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728954AbgDQCHh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 22:07:37 -0400
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C26C061A0C;
-        Thu, 16 Apr 2020 19:07:36 -0700 (PDT)
-Received: by mail-lf1-x141.google.com with SMTP id k28so527206lfe.10;
-        Thu, 16 Apr 2020 19:07:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Z5UauXv3T3lNNJ0/0diC0AbK2ulXIVjOMGPs3F4o77s=;
-        b=h9wA1LBVuDDR944gGoZSy/Ri51k2LfffWD4psvV4ZvNhYi6/U1L/KZr7Ygh2ks58Rw
-         iV60YCU8UfxpdT0cQjFzxRI8lTgPF8b+4gPRTTIGG1kBZwc7s57Pd919De4HiSIsriEq
-         H7AifcVGzpE7OGTgs8KALmP86fN8WZPSn5Ifs6maPH/KsVJg0ERrahFpHHponB9wiT4q
-         Hq2vrpPbJzftEJgN0INYs0Ez7FcY4CGYvFXktfVK5Qx+uinrBcBzTi4NQbHbaYXBH5IG
-         /A6YkTWkK7a5+KbcJm5H7AIw46Lm5wdk2bXg9SjvuoL444S1zUIe1uRFRf2y0B7DEPG/
-         lzdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Z5UauXv3T3lNNJ0/0diC0AbK2ulXIVjOMGPs3F4o77s=;
-        b=loqlaplDOCumaOnglHVdABf6ddCZlE8ZdqHGYrF7luFagXrl7XLZBexA3pLQPYpGn/
-         PcbGX9pucxAICehWSyQmRKdykWdWQI78vgETCICHE1GqeiFL0XB71vbdE6cERMqqLKxi
-         rHBP8VB+/NS0X2BJKwjOGMcOjj8/LgzYLc+im1XHW1CFZJgvaA062sEjmWcinI4/0sqW
-         hQ8UDqhYBZSGLXDRPGpqpdGwBwusS60asvEmZcklIlFO8DMhoJceIcYhhodQ08FCGV/e
-         eCmpfaVf9vqTFaNjqh9jav84dc2dYwmvuQGvH+NM2SQQZfGnvh02LiglaU7NUcjlnGBR
-         wP0A==
-X-Gm-Message-State: AGi0PuZit264E6RyuN48QXwkfs26feAFK/yJNIF7B0Iq4iu9mC65NY0U
-        LPVJG8TTKSgXkJhJXP5LABykRRKEAKQCCZn4IPg=
-X-Google-Smtp-Source: APiQypJlS6Ef7aXdEndbxlbH8P7dNeYcZs/XmVgjNPrsU9toDbskCnMAQcQIowXAWF87gw/cIwUfVzLuHtMtTs4/mP4=
-X-Received: by 2002:ac2:569b:: with SMTP id 27mr491953lfr.134.1587089254584;
- Thu, 16 Apr 2020 19:07:34 -0700 (PDT)
+        id S1729492AbgDQDMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Apr 2020 23:12:34 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:51141 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729477AbgDQDMd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Apr 2020 23:12:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587093151;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9kod4sBVNZl13j111ZtiqdMeSXjTm/Tfeat7xy/R1z0=;
+        b=UmkpulOEhPVyx1Nhm0K6LXPQr5R/7TvL960h1wlck/vdXIXgiokkHbrNSs5mvkpk+1LUhp
+        9zSQKUjShkBE/FmNn/mg5pEHsdgoaa7+1O0qamfIA2KhxhE4v7q4UJcPPy3Iw0mG1IraWa
+        tjcvTRemqXlhdCAnQiPHxf3Yd4UR2m4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-92-IdiGn_JcMJi4EAOTBKuGeg-1; Thu, 16 Apr 2020 23:12:26 -0400
+X-MC-Unique: IdiGn_JcMJi4EAOTBKuGeg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1D22E8017F3;
+        Fri, 17 Apr 2020 03:12:24 +0000 (UTC)
+Received: from [10.72.13.254] (ovpn-13-254.pek2.redhat.com [10.72.13.254])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F061027BD7;
+        Fri, 17 Apr 2020 03:12:15 +0000 (UTC)
+Subject: Re: [PATCH V2] vhost: do not enable VHOST_MENU by default
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, geert@linux-m68k.org,
+        tsbogend@alpha.franken.de, benh@kernel.crashing.org,
+        paulus@samba.org, heiko.carstens@de.ibm.com, gor@linux.ibm.com,
+        borntraeger@de.ibm.com, Michael Ellerman <mpe@ellerman.id.au>
+References: <20200415024356.23751-1-jasowang@redhat.com>
+ <20200416185426-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <b7e2deb7-cb64-b625-aeb4-760c7b28c0c8@redhat.com>
+Date:   Fri, 17 Apr 2020 11:12:14 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-References: <20200415204743.206086-1-jannh@google.com> <20200416211116.qxqcza5vo2ddnkdq@ast-mbp.dhcp.thefacebook.com>
- <CAG48ez0ZaSo-fC0bXnYChAmEZvv_0sGsxUG5HdFn6YJdOf1=Mg@mail.gmail.com>
- <20200417004119.owbpb7pavdf3nt5t@ast-mbp.dhcp.thefacebook.com> <CAG48ez11vjn3PgAEJyz=xa6R9txuyNk+bD0dsRzguhYCHgF6dQ@mail.gmail.com>
-In-Reply-To: <CAG48ez11vjn3PgAEJyz=xa6R9txuyNk+bD0dsRzguhYCHgF6dQ@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 16 Apr 2020 19:07:23 -0700
-Message-ID: <CAADnVQK=ivC0Dy9OXEGvNcU11YW5iW7V-yM0G24NdsGAm+wnQw@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: Use pointer type whitelist for XADD
-To:     Jann Horn <jannh@google.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200416185426-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 16, 2020 at 6:40 PM Jann Horn <jannh@google.com> wrote:
->
-> On Fri, Apr 17, 2020 at 2:41 AM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> > On Fri, Apr 17, 2020 at 12:34:42AM +0200, Jann Horn wrote:
-> > > On Thu, Apr 16, 2020 at 11:11 PM Alexei Starovoitov
-> > > <alexei.starovoitov@gmail.com> wrote:
-> > > > On Wed, Apr 15, 2020 at 10:47:43PM +0200, Jann Horn wrote:
-> > > > > At the moment, check_xadd() uses a blacklist to decide whether a given
-> > > > > pointer type should be usable with the XADD instruction. Out of all the
-> > > > > pointer types that check_mem_access() accepts, only four are currently let
-> > > > > through by check_xadd():
-> > > > >
-> > > > > PTR_TO_MAP_VALUE
-> > > > > PTR_TO_CTX           rejected
-> > > > > PTR_TO_STACK
-> > > > > PTR_TO_PACKET        rejected
-> > > > > PTR_TO_PACKET_META   rejected
-> > > > > PTR_TO_FLOW_KEYS     rejected
-> > > > > PTR_TO_SOCKET        rejected
-> > > > > PTR_TO_SOCK_COMMON   rejected
-> > > > > PTR_TO_TCP_SOCK      rejected
-> > > > > PTR_TO_XDP_SOCK      rejected
-> > > > > PTR_TO_TP_BUFFER
-> > > > > PTR_TO_BTF_ID
-> > > > >
-> > > > > Looking at the currently permitted ones:
-> > > > >
-> > > > >  - PTR_TO_MAP_VALUE: This makes sense and is the primary usecase for XADD.
-> > > > >  - PTR_TO_STACK: This doesn't make much sense, there is no concurrency on
-> > > > >    the BPF stack. It also causes confusion further down, because the first
-> > > > >    check_mem_access() won't check whether the stack slot being read from is
-> > > > >    STACK_SPILL and the second check_mem_access() assumes in
-> > > > >    check_stack_write() that the value being written is a normal scalar.
-> > > > >    This means that unprivileged users can leak kernel pointers.
-> > > > >  - PTR_TO_TP_BUFFER: This is a local output buffer without concurrency.
-> > > > >  - PTR_TO_BTF_ID: This is read-only, XADD can't work. When the verifier
-> > > > >    tries to verify XADD on such memory, the first check_ptr_to_btf_access()
-> > > > >    invocation gets confused by value_regno not being a valid array index
-> > > > >    and writes to out-of-bounds memory.
-> > > >
-> > > > > Limit XADD to PTR_TO_MAP_VALUE, since everything else at least doesn't make
-> > > > > sense, and is sometimes broken on top of that.
-> > > > >
-> > > > > Fixes: 17a5267067f3 ("bpf: verifier (add verifier core)")
-> > > > > Signed-off-by: Jann Horn <jannh@google.com>
-> > > > > ---
-> > > > > I'm just sending this on the public list, since the worst-case impact for
-> > > > > non-root users is leaking kernel pointers to userspace. In a context where
-> > > > > you can reach BPF (no sandboxing), I don't think that kernel ASLR is very
-> > > > > effective at the moment anyway.
-> > > > >
-> > > > > This breaks ten unit tests that assume that XADD is possible on the stack,
-> > > > > and I'm not sure how all of them should be fixed up; I'd appreciate it if
-> > > > > someone else could figure out how to fix them. I think some of them might
-> > > > > be using XADD to cast pointers to numbers, or something like that? But I'm
-> > > > > not sure.
-> > > > >
-> > > > > Or is XADD on the stack actually something you want to support for some
-> > > > > reason, meaning that that part would have to be fixed differently?
-> > > >
-> > > > yeah. 'doesnt make sense' is relative.
-> > > > I prefer to fix the issues instead of disabling them.
-> > > > xadd to PTR_TO_STACK, PTR_TO_TP_BUFFER, PTR_TO_BTF_ID should all work
-> > > > because they are direct pointers to objects.
-> > >
-> > > PTR_TO_STACK and PTR_TO_TP_BUFFER I can sort of understand. But
-> > > PTR_TO_BTF_ID is always readonly, so XADD on PTR_TO_BTF_ID really
-> > > doesn't make any sense AFAICS.
-> >
-> > Not quite. See bpf_tcp_ca_btf_struct_access(). Few fields of one specific
-> > 'struct tcp_sock' are whitelisted for write.
->
-> Oh... but that kind of thing is not really safe, right? While there
-> aren't really any pointers to struct tcp_sock in the kernel, I've
-> noticed that there are also some helpers that take ARG_PTR_TO_BTF_ID
-> arguments, which is kind of similar; and those look like it wouldn't
-> be hard for root to abuse them to corrupt kernel memory. E.g.
-> bpf_skb_output_proto is reachable from tracing programs, so I expect
-> that it'd be pretty easy to corrupt kernel memory with that.
->
-> As far as I can tell, fundamentally, BPF must not write through BTF
-> pointers because the BPF verifier can't guarantee that BTF pointers
-> actually point to the type they're supposed to point to.
 
-In general case of tracing yes. There is no 100% guarantee
-that's why there is no write there.
-But in case of bpf-tcp-cc it's guaranteed to be a valid pointer.
-Or I'm missing your point.
+On 2020/4/17 =E4=B8=8A=E5=8D=886:55, Michael S. Tsirkin wrote:
+> On Wed, Apr 15, 2020 at 10:43:56AM +0800, Jason Wang wrote:
+>> We try to keep the defconfig untouched after decoupling CONFIG_VHOST
+>> out of CONFIG_VIRTUALIZATION in commit 20c384f1ea1a
+>> ("vhost: refine vhost and vringh kconfig") by enabling VHOST_MENU by
+>> default. Then the defconfigs can keep enabling CONFIG_VHOST_NET
+>> without the caring of CONFIG_VHOST.
+>>
+>> But this will leave a "CONFIG_VHOST_MENU=3Dy" in all defconfigs and ev=
+en
+>> for the ones that doesn't want vhost. So it actually shifts the
+>> burdens to the maintainers of all other to add "CONFIG_VHOST_MENU is
+>> not set". So this patch tries to enable CONFIG_VHOST explicitly in
+>> defconfigs that enables CONFIG_VHOST_NET and CONFIG_VHOST_VSOCK.
+>>
+>> Acked-by: Christian Borntraeger<borntraeger@de.ibm.com>  (s390)
+>> Acked-by: Michael Ellerman<mpe@ellerman.id.au>  (powerpc)
+>> Cc: Thomas Bogendoerfer<tsbogend@alpha.franken.de>
+>> Cc: Benjamin Herrenschmidt<benh@kernel.crashing.org>
+>> Cc: Paul Mackerras<paulus@samba.org>
+>> Cc: Michael Ellerman<mpe@ellerman.id.au>
+>> Cc: Heiko Carstens<heiko.carstens@de.ibm.com>
+>> Cc: Vasily Gorbik<gor@linux.ibm.com>
+>> Cc: Christian Borntraeger<borntraeger@de.ibm.com>
+>> Reported-by: Geert Uytterhoeven<geert@linux-m68k.org>
+>> Signed-off-by: Jason Wang<jasowang@redhat.com>
+> I rebased this on top of OABI fix since that
+> seems more orgent to fix.
+> Pushed to my vhost branch pls take a look and
+> if possible test.
+> Thanks!
+
+
+I test this patch by generating the defconfigs that wants vhost_net or=20
+vhost_vsock. All looks fine.
+
+But having CONFIG_VHOST_DPN=3Dy may end up with the similar situation tha=
+t=20
+this patch want to address.
+
+Maybe we can let CONFIG_VHOST depends on !ARM || AEABI then add another=20
+menuconfig for VHOST_RING and do something similar?
+
+Thanks
+
+
