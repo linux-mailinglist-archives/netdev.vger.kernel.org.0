@@ -2,220 +2,288 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 456A01AE833
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 00:26:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 324F71AE826
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 00:23:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728864AbgDQW0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 18:26:18 -0400
-Received: from out02.mta.xmission.com ([166.70.13.232]:51506 "EHLO
-        out02.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728470AbgDQW0R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 18:26:17 -0400
-Received: from in01.mta.xmission.com ([166.70.13.51])
-        by out02.mta.xmission.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.90_1)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1jPZR5-0003bo-Sg; Fri, 17 Apr 2020 16:26:12 -0600
-Received: from ip68-227-160-95.om.om.cox.net ([68.227.160.95] helo=x220.xmission.com)
-        by in01.mta.xmission.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.87)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1jPZR4-0002qC-5z; Fri, 17 Apr 2020 16:26:11 -0600
-From:   ebiederm@xmission.com (Eric W. Biederman)
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Richard Guy Briggs <rgb@redhat.com>, nhorman@tuxdriver.com,
-        linux-api@vger.kernel.org, containers@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
-        linux-audit@redhat.com, netfilter-devel@vger.kernel.org,
-        simo@redhat.com, netdev@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
-        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
-References: <20200318215550.es4stkjwnefrfen2@madcap2.tricolour.ca>
-        <CAHC9VhSdDDP7Ec-w61NhGxZG5ZiekmrBCAg=Y=VJvEZcgQh46g@mail.gmail.com>
-        <20200319220249.jyr6xmwvflya5mks@madcap2.tricolour.ca>
-        <CAHC9VhR84aN72yNB_j61zZgrQV1y6yvrBLNY7jp7BqQiEDL+cw@mail.gmail.com>
-        <20200324210152.5uydf3zqi3dwshfu@madcap2.tricolour.ca>
-        <CAHC9VhTQUnVhoN3JXTAQ7ti+nNLfGNVXhT6D-GYJRSpJHCwDRg@mail.gmail.com>
-        <20200330134705.jlrkoiqpgjh3rvoh@madcap2.tricolour.ca>
-        <CAHC9VhQTsEMcYAF1CSHrrVn07DR450W9j6sFVfKAQZ0VpheOfw@mail.gmail.com>
-        <20200330162156.mzh2tsnovngudlx2@madcap2.tricolour.ca>
-        <CAHC9VhTRzZXJ6yUFL+xZWHNWZFTyiizBK12ntrcSwmgmySbkWw@mail.gmail.com>
-        <20200330174937.xalrsiev7q3yxsx2@madcap2.tricolour.ca>
-        <CAHC9VhR_bKSHDn2WAUgkquu+COwZUanc0RV3GRjMDvpoJ5krjQ@mail.gmail.com>
-        <871ronf9x2.fsf@x220.int.ebiederm.org>
-        <CAHC9VhR3gbmj5+5MY-whLtStKqDEHgvMRigU9hW0X1kpxF91ag@mail.gmail.com>
-Date:   Fri, 17 Apr 2020 17:23:08 -0500
-In-Reply-To: <CAHC9VhR3gbmj5+5MY-whLtStKqDEHgvMRigU9hW0X1kpxF91ag@mail.gmail.com>
-        (Paul Moore's message of "Thu, 16 Apr 2020 17:53:23 -0400")
-Message-ID: <871rol7nw3.fsf@x220.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S1728730AbgDQWXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 18:23:46 -0400
+Received: from mail-eopbgr140073.outbound.protection.outlook.com ([40.107.14.73]:3630
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728470AbgDQWXp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Apr 2020 18:23:45 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CS1oe8/Wk/setQjVtWF9QyWz+re63/26TOgVKLzxnhsr7ohkuotV+ZmYciWa7EL22WS/WFBjhMBdKdfAOp0NdbmhTUSmkZ3t7SzlS2WU5hDcj3GrV47VKanjgESypfoTRbfwCvnjt3C4lGH3rjKMNcUJt7RgUwJsHPHlEnflbOFbZ1TKRN9jzDFOnKs3BlMfZzqVzgE2KzaWV0VqECmTxeS028f7D6x7lXLMcawsZlajWMmBHQG5TeTF4q+3QqqvGAZNh5A95FjRUUHewD4tLJKkwq2nrFpxewA/K0SS8r43npHsUwWS2uEAPTMcBL1yfWobu1BzKSen9TmT5C+3nA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z4IeztCPY6KaVkQhS2lOyNavq8BKXsGnIBC/91AQi64=;
+ b=OmOFNIRfG988UEy7cTS1AbMZ3ORXuW8BN2VPt/3WMIXSctQHfhDUTE3ASF8WKVNyxlKMc9NzBwksjZa3JWGuaYpmjNK6dNokJxFOqq5DEhF6GJpLJCkRyb/YXA7uhxx7xBEr2Tc3+GqiWzCjesgLOGi0/HZIFJ5hIOMJkDid8RwNT2fIEOqvdn/Vdt19BxGHa4VyKfFKyJ6ZGiRotqgLcA5WknijjltY3C+79jT2gFFXbZzO43e7FXWr8xwn0gAR+oksln5raWlLlOkKornqDKGaJQ9SZraCgQfefPB95CzDJbdgWE5iSM6ICX7rr9YYpxWjpvYX95f1xCuyUwngqA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z4IeztCPY6KaVkQhS2lOyNavq8BKXsGnIBC/91AQi64=;
+ b=jrJ1c049Oh++gvnNw8JABjXv2WZIF4Up+z14WxwE7BYRPTg/GqdWJ0WVEQARa3xDHFyQ0ZcG+o7/5DXG3O6k9moUDRRqt4nL4nkvVAuA1xqgkZaOTuxFSpV/hyOWhCMIN6+SDnMkBfNZT8CJnopfZFeCBxCRS6S7brNtkigeHCo=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR05MB4672.eurprd05.prod.outlook.com (2603:10a6:802:66::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.27; Fri, 17 Apr
+ 2020 22:23:38 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2900.030; Fri, 17 Apr 2020
+ 22:23:37 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     "ecree@solarflare.com" <ecree@solarflare.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gerlitz.or@gmail.com" <gerlitz.or@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "sashal@kernel.org" <sashal@kernel.org>,
+        "leon@kernel.org" <leon@kernel.org>
+Subject: Re: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for
+ representors
+Thread-Topic: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for
+ representors
+Thread-Index: AQHWEFb6WRVOJO0/j0GE4IB+QkA/0qh1Ei4AgAC1ZICAAheSAIAAjYWAgAAM6ICAADp+AIAAE8gAgABWOICAAURNAIAAgPKAgABFSICAABU+gIAAh8CAgABeMwCAAA56gIAAE00AgAC9/gCAAOlvAA==
+Date:   Fri, 17 Apr 2020 22:23:37 +0000
+Message-ID: <934a503d2f75f614c040d300fc080fb76c3725fb.camel@mellanox.com>
+References: <a89a592a-5a11-5e56-a086-52b1694e00db@solarflare.com>
+         <20200414205755.GF1068@sasha-vm>
+         <41174e71-00e1-aebf-b67d-1b24731e4ab3@solarflare.com>
+         <20200416000009.GL1068@sasha-vm>
+         <434329130384e656f712173558f6be88c4c57107.camel@mellanox.com>
+         <20200416052409.GC1309273@unreal> <20200416133001.GK1068@sasha-vm>
+         <550d615e14258c744cb76dd06c417d08d9e4de16.camel@mellanox.com>
+         <20200416195859.GP1068@sasha-vm>
+         <3226e1df60666c0c4e3256ec069fee2d814d9a03.camel@mellanox.com>
+         <20200417082804.GB140064@kroah.com>
+In-Reply-To: <20200417082804.GB140064@kroah.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.34.4 (3.34.4-1.fc31) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [73.15.39.150]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 24023e51-6e5f-43c6-63f0-08d7e31df9c1
+x-ms-traffictypediagnostic: VI1PR05MB4672:
+x-microsoft-antispam-prvs: <VI1PR05MB46722AAF9B3CDE65FC67CCA2BED90@VI1PR05MB4672.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4502;
+x-forefront-prvs: 0376ECF4DD
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(376002)(39860400002)(396003)(136003)(366004)(346002)(966005)(316002)(76116006)(66946007)(91956017)(478600001)(66556008)(66446008)(86362001)(66476007)(64756008)(4326008)(54906003)(6512007)(36756003)(45080400002)(71200400001)(26005)(2616005)(6916009)(8936002)(6506007)(5660300002)(81156014)(2906002)(186003)(8676002)(53546011)(6486002)(60764002);DIR:OUT;SFP:1101;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: HHAyCudrU1YtO/9rG7AIeC0+vYXRo5WYV7WRqkOxsekgP8hxB72KgHB3F9sfWgMrJZdcaOtVLq1gZ1W01vHncAvDCAHW936ccLEJ7N7yPcRhYOCInGCElr8pZLGTZrUJMBgRw6ouEObdMfuzGKZmYffaGsV7dNWguKMoRwmTHCRoDSmfCukwozmjqZmpfVZVS5bXHxowcyXrgBTek+CSg/rPO24CPz06tXQeFHTgjShuSV7Yr9/725vQQx75uiCY8ybv/CZNGKmhy+qApZEE8Wm9KFdFSRlymLlt5CbIx9BGd8QtDWKiSIll9iJcWm8ZMHcCqcETtXfSE5j73/71G5jKY8zPP5HEieIWZehD7tuIuIs4ieGZwpLhWFbyiIRysMN38IsZ2D6zoddalvoxfvadBN/04136PR0tNvCrDp4nPd9bi0IFlbi3WncjhVfrOvdKKSsPTdu/R48ttEkWHup/aAxqX+lSeyNJhiVM1gYcG9zbMHI8FZDXMzVWBsSjhntYTpZw61h2rqCFdsVIjgR/osHcU4iJodXfamSASSWjitdMPTmJF6/WiNyYv2J1
+x-ms-exchange-antispam-messagedata: SaQG2w5Hz08uRTfJP4PlEdwMEsVE2qQnALwAJvSjyotOqkPQgmefCT8wmydkc9estCHDBK09cjYQCF8i+l1XHtwa4CSLQF3QBPGtojmMwnoRRzCnKR886kjO33/Vl2+dNYy//CQvDZnS7t+sbgfRJg==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <916334890AE42B429891A4635D6682BE@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1jPZR4-0002qC-5z;;;mid=<871rol7nw3.fsf@x220.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.160.95;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX19qZeMGpaRFmwABWE5nM2gXLxe0XB+DPDY=
-X-SA-Exim-Connect-IP: 68.227.160.95
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on sa06.xmission.com
-X-Spam-Level: **
-X-Spam-Status: No, score=2.0 required=8.0 tests=ALL_TRUSTED,BAYES_50,
-        DCC_CHECK_NEGATIVE,T_TM2_M_HEADER_IN_MSG,XMSlimDrugH,XMSubLong,
-        XM_Body_Dirty_Words autolearn=disabled version=3.4.2
-X-Spam-Report: * -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.4999]
-        *  0.7 XMSubLong Long Subject
-        *  1.0 XMSlimDrugH Weight loss drug headers
-        *  0.0 T_TM2_M_HEADER_IN_MSG BODY: No description available.
-        * -0.0 DCC_CHECK_NEGATIVE Not listed in DCC
-        *      [sa06 1397; Body=1 Fuz1=1 Fuz2=1]
-        *  0.5 XM_Body_Dirty_Words Contains a dirty word
-X-Spam-DCC: XMission; sa06 1397; Body=1 Fuz1=1 Fuz2=1 
-X-Spam-Combo: **;Paul Moore <paul@paul-moore.com>
-X-Spam-Relay-Country: 
-X-Spam-Timing: total 1095 ms - load_scoreonly_sql: 0.03 (0.0%),
-        signal_user_changed: 12 (1.1%), b_tie_ro: 10 (1.0%), parse: 1.33
-        (0.1%), extract_message_metadata: 19 (1.7%), get_uri_detail_list: 5
-        (0.5%), tests_pri_-1000: 22 (2.0%), tests_pri_-950: 1.23 (0.1%),
-        tests_pri_-900: 1.02 (0.1%), tests_pri_-90: 409 (37.4%), check_bayes:
-        407 (37.1%), b_tokenize: 13 (1.2%), b_tok_get_all: 244 (22.3%),
-        b_comp_prob: 4.8 (0.4%), b_tok_touch_all: 140 (12.8%), b_finish: 0.91
-        (0.1%), tests_pri_0: 608 (55.6%), check_dkim_signature: 0.60 (0.1%),
-        check_dkim_adsp: 2.5 (0.2%), poll_dns_idle: 0.28 (0.0%), tests_pri_10:
-        2.4 (0.2%), tests_pri_500: 14 (1.3%), rewrite_mail: 0.00 (0.0%)
-Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling the audit daemon
-X-Spam-Flag: No
-X-SA-Exim-Version: 4.2.1 (built Thu, 05 May 2016 13:38:54 -0600)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24023e51-6e5f-43c6-63f0-08d7e31df9c1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Apr 2020 22:23:37.8732
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: fS9HxuSXN/GX87AHeCf+iaSxiwwc/aWhXt9VMh1IYrIBrlD/u1yZVODegqJyi+9C4SPRkRaPSuZkNThXdkPFrg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4672
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Paul Moore <paul@paul-moore.com> writes:
-
-> On Thu, Apr 16, 2020 at 4:36 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
->> Paul Moore <paul@paul-moore.com> writes:
->> > On Mon, Mar 30, 2020 at 1:49 PM Richard Guy Briggs <rgb@redhat.com> wrote:
->> >> On 2020-03-30 13:34, Paul Moore wrote:
->> >> > On Mon, Mar 30, 2020 at 12:22 PM Richard Guy Briggs <rgb@redhat.com> wrote:
->> >> > > On 2020-03-30 10:26, Paul Moore wrote:
->> >> > > > On Mon, Mar 30, 2020 at 9:47 AM Richard Guy Briggs <rgb@redhat.com> wrote:
->> >> > > > > On 2020-03-28 23:11, Paul Moore wrote:
->> >> > > > > > On Tue, Mar 24, 2020 at 5:02 PM Richard Guy Briggs <rgb@redhat.com> wrote:
->> >> > > > > > > On 2020-03-23 20:16, Paul Moore wrote:
->> >> > > > > > > > On Thu, Mar 19, 2020 at 6:03 PM Richard Guy Briggs <rgb@redhat.com> wrote:
->> >> > > > > > > > > On 2020-03-18 18:06, Paul Moore wrote:
->> >
->> > ...
->> >
->> >> > > Well, every time a record gets generated, *any* record gets generated,
->> >> > > we'll need to check for which audit daemons this record is in scope and
->> >> > > generate a different one for each depending on the content and whether
->> >> > > or not the content is influenced by the scope.
->> >> >
->> >> > That's the problem right there - we don't want to have to generate a
->> >> > unique record for *each* auditd on *every* record.  That is a recipe
->> >> > for disaster.
->> >> >
->> >> > Solving this for all of the known audit records is not something we
->> >> > need to worry about in depth at the moment (although giving it some
->> >> > casual thought is not a bad thing), but solving this for the audit
->> >> > container ID information *is* something we need to worry about right
->> >> > now.
->> >>
->> >> If you think that a different nested contid value string per daemon is
->> >> not acceptable, then we are back to issuing a record that has only *one*
->> >> contid listed without any nesting information.  This brings us back to
->> >> the original problem of keeping *all* audit log history since the boot
->> >> of the machine to be able to track the nesting of any particular contid.
->> >
->> > I'm not ruling anything out, except for the "let's just completely
->> > regenerate every record for each auditd instance".
->>
->> Paul I am a bit confused about what you are referring to when you say
->> regenerate every record.
->>
->> Are you saying that you don't want to repeat the sequence:
->>         audit_log_start(...);
->>         audit_log_format(...);
->>         audit_log_end(...);
->> for every nested audit daemon?
->
-> If it can be avoided yes.  Audit performance is already not-awesome,
-> this would make it even worse.
-
-As far as I can see not repeating sequences like that is fundamental
-for making this work at all.  Just because only the audit subsystem
-should know about one or multiple audit daemons.  Nothing else should
-care.
-
->> Or are you saying that you would like to literraly want to send the same
->> skb to each of the nested audit daemons?
->
-> Ideally we would reuse the generated audit messages as much as
-> possible.  Less work is better.  That's really my main concern here,
-> let's make sure we aren't going to totally tank performance when we
-> have a bunch of nested audit daemons.
-
-So I think there are two parts of this answer.  Assuming we are talking
-about nesting audit daemons in containers we will have different
-rulesets and I expect most of the events for a nested audit daemon won't
-be of interest to the outer audit daemon.
-
-Beyond that it should be very straight forward to keep a pointer and
-leave the buffer as a scatter gather list until audit_log_end
-and translate pids, and rewrite ACIDs attributes in audit_log_end
-when we build the final packet.  Either through collaboration with
-audit_log_format or a special audit_log command that carefully sets
-up the handful of things that need that information.
-
-Hmm.  I am seeing that we send skbs to kauditd and then kauditd
-sends those skbs to userspace.  I presume that is primary so that
-sending messages to userspace does not block the process being audited.
-
-Plus a little bit so that the retry logic will work.
-
-I think the naive implementation would be to simply have 1 kauditd
-per auditd (strictly and audit context/namespace).  Although that can be
-optimized if that is a problem.
-
-Beyond that I think we would need to look at profiles to really
-understand where the bottlenecks are.
-
->> Or are you thinking of something else?
->
-> As mentioned above, I'm not thinking of anything specific, other than
-> let's please not have to regenerate *all* of the audit record strings
-> for each instance of an audit daemon, that's going to be a killer.
->
-> Maybe we have to regenerate some, if we do, what would that look like
-> in code?  How do we handle the regeneration aspect?  I worry that is
-> going to be really ugly.
->
-> Maybe we finally burn down the audit_log_format(...) function and pass
-> structs/TLVs to the audit subsystem and the audit subsystem generates
-> the strings in the auditd connection thread.  Some of the record
-> strings could likely be shared, others would need to be ACID/auditd
-> dependent.
-
-I think we just a very limited amount of structs/TLVs for the cases that
-matter and one-one auditd and kauditd implementations we should still
-be able to do everything in audit_log_end.  Plus doing as much work as
-possible in audit_log_end where things are still cache hot is desirable.
-
-> I'm open to any ideas people may have.  We have a problem, let's solve
-> it.
-
-It definitely makes sense to look ahead to having audit daemons running
-in containers, but in the grand scheme of things that is a nice to have.
-Probably something we will and should get to, but we have lived a long
-time without auditd running in containers so I expect we can live a
-while longer.
-
-As I understand Richard patchset for the specific case of the ACID we
-are only talking about taking a subset of an existing string, and one
-string at that.  Not hard at all.  Especially when looking at the
-fundamental fact that we will need to send a different skb to
-userspace, for each audit daemon.
-
-Eric
+T24gRnJpLCAyMDIwLTA0LTE3IGF0IDEwOjI4ICswMjAwLCBncmVna2hAbGludXhmb3VuZGF0aW9u
+Lm9yZyB3cm90ZToNCj4gT24gVGh1LCBBcHIgMTYsIDIwMjAgYXQgMDk6MDg6MDZQTSArMDAwMCwg
+U2FlZWQgTWFoYW1lZWQgd3JvdGU6DQo+ID4gT24gVGh1LCAyMDIwLTA0LTE2IGF0IDE1OjU4IC0w
+NDAwLCBTYXNoYSBMZXZpbiB3cm90ZToNCj4gPiA+IE9uIFRodSwgQXByIDE2LCAyMDIwIGF0IDA3
+OjA3OjEzUE0gKzAwMDAsIFNhZWVkIE1haGFtZWVkIHdyb3RlOg0KPiA+ID4gPiBPbiBUaHUsIDIw
+MjAtMDQtMTYgYXQgMDk6MzAgLTA0MDAsIFNhc2hhIExldmluIHdyb3RlOg0KPiA+ID4gPiA+IE9u
+IFRodSwgQXByIDE2LCAyMDIwIGF0IDA4OjI0OjA5QU0gKzAzMDAsIExlb24gUm9tYW5vdnNreQ0K
+PiA+ID4gPiA+IHdyb3RlOg0KPiA+ID4gPiA+ID4gT24gVGh1LCBBcHIgMTYsIDIwMjAgYXQgMDQ6
+MDg6MTBBTSArMDAwMCwgU2FlZWQgTWFoYW1lZWQNCj4gPiA+ID4gPiA+IHdyb3RlOg0KPiA+ID4g
+PiA+ID4gPiBPbiBXZWQsIDIwMjAtMDQtMTUgYXQgMjA6MDAgLTA0MDAsIFNhc2hhIExldmluIHdy
+b3RlOg0KPiA+ID4gPiA+ID4gPiA+IE9uIFdlZCwgQXByIDE1LCAyMDIwIGF0IDA1OjE4OjM4UE0g
+KzAxMDAsIEVkd2FyZCBDcmVlDQo+ID4gPiA+ID4gPiA+ID4gd3JvdGU6DQo+ID4gPiA+ID4gPiA+
+ID4gPiBGaXJzdGx5LCBsZXQgbWUgYXBvbG9naXNlOiBteSBwcmV2aW91cyBlbWFpbCB3YXMgdG9v
+DQo+ID4gPiA+ID4gPiA+ID4gPiBoYXJzaA0KPiA+ID4gPiA+ID4gPiA+ID4gYW5kIHRvbw0KPiA+
+ID4gPiA+ID4gPiA+ID4gIGFzc2VydGl2ZWFib3V0IHRoaW5ncyB0aGF0IHdlcmUgcmVhbGx5IG1v
+cmUNCj4gPiA+ID4gPiA+ID4gPiA+IHVuY2VydGFpbg0KPiA+ID4gPiA+ID4gPiA+ID4gYW5kDQo+
+ID4gPiA+ID4gPiA+ID4gPiB1bmNsZWFyLg0KPiA+ID4gPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4g
+PiA+ID4gPiBPbiAxNC8wNC8yMDIwIDIxOjU3LCBTYXNoYSBMZXZpbiB3cm90ZToNCj4gPiA+ID4g
+PiA+ID4gPiA+ID4gSSd2ZSBwb2ludGVkIG91dCB0aGF0IGFsbW9zdCA1MCUgb2YgY29tbWl0cyB0
+YWdnZWQNCj4gPiA+ID4gPiA+ID4gPiA+ID4gZm9yDQo+ID4gPiA+ID4gPiA+ID4gPiA+IHN0YWJs
+ZSBkbw0KPiA+ID4gPiA+ID4gPiA+ID4gPiBub3QNCj4gPiA+ID4gPiA+ID4gPiA+ID4gaGF2ZSBh
+IGZpeGVzIHRhZywgYW5kIHlldCB0aGV5IGFyZSBmaXhlcy4gWW91DQo+ID4gPiA+ID4gPiA+ID4g
+PiA+IHJlYWxseQ0KPiA+ID4gPiA+ID4gPiA+ID4gPiBkZWR1Y2UNCj4gPiA+ID4gPiA+ID4gPiA+
+ID4gdGhpbmdzIGJhc2VkDQo+ID4gPiA+ID4gPiA+ID4gPiA+IG9uIGNvaW4gZmxpcCBwcm9iYWJp
+bGl0eT8NCj4gPiA+ID4gPiA+ID4gPiA+IFllcywgYnV0IGZhciBsZXNzIHRoYW4gNTAlIG9mIGNv
+bW1pdHMgKm5vdCogdGFnZ2VkDQo+ID4gPiA+ID4gPiA+ID4gPiBmb3INCj4gPiA+ID4gPiA+ID4g
+PiA+IHN0YWJsZQ0KPiA+ID4gPiA+ID4gPiA+ID4gaGF2ZQ0KPiA+ID4gPiA+ID4gPiA+ID4gYSBm
+aXhlcw0KPiA+ID4gPiA+ID4gPiA+ID4gIHRhZy4gIEl0J3Mgbm90IGFib3V0IGhhcmQtYW5kLWZh
+c3QgQXJpc3RvdGVsaWFuDQo+ID4gPiA+ID4gPiA+ID4gPiAiZGVkdWN0aW9ucyIsIGxpa2UNCj4g
+PiA+ID4gPiA+ID4gPiA+ICJ0aGlzDQo+ID4gPiA+ID4gPiA+ID4gPiAgZG9lc24ndCBoYXZlIEZp
+eGVzOiwgdGhlcmVmb3JlIGl0IGlzIG5vdCBhIHN0YWJsZQ0KPiA+ID4gPiA+ID4gPiA+ID4gY2Fu
+ZGlkYXRlIiwgaXQncw0KPiA+ID4gPiA+ID4gPiA+ID4gYWJvdXQNCj4gPiA+ID4gPiA+ID4gPiA+
+ICBwcm9iYWJpbGlzdGljICJpbmR1Y3Rpb24iLg0KPiA+ID4gPiA+ID4gPiA+ID4gDQo+ID4gPiA+
+ID4gPiA+ID4gPiA+ICJpdCBkb2VzIGluY3JlYXNlIHRoZSBhbW91bnQgb2YgY291bnRlcnZhaWxp
+bmcNCj4gPiA+ID4gPiA+ID4gPiA+ID4gZXZpZGVuY2UNCj4gPiA+ID4gPiA+ID4gPiA+ID4gbmVl
+ZGVkIHRvDQo+ID4gPiA+ID4gPiA+ID4gPiA+IGNvbmNsdWRlIGEgY29tbWl0IGlzIGEgZml4IiAt
+IFBsZWFzZSBleHBsYWluIHRoaXMNCj4gPiA+ID4gPiA+ID4gPiA+ID4gYXJndW1lbnQNCj4gPiA+
+ID4gPiA+ID4gPiA+ID4gZ2l2ZW4NCj4gPiA+ID4gPiA+ID4gPiA+ID4gdGhlDQo+ID4gPiA+ID4g
+PiA+ID4gPiA+IGFib3ZlLg0KPiA+ID4gPiA+ID4gPiA+ID4gQXJlIHlvdSBmYW1pbGlhciB3aXRo
+IEJheWVzaWFuIHN0YXRpc3RpY3M/ICBJZiBub3QsDQo+ID4gPiA+ID4gPiA+ID4gPiBJJ2QNCj4g
+PiA+ID4gPiA+ID4gPiA+IHN1Z2dlc3QNCj4gPiA+ID4gPiA+ID4gPiA+IHJlYWRpbmcNCj4gPiA+
+ID4gPiA+ID4gPiA+ICBzb21ldGhpbmcgbGlrZSBodHRwOi8veXVka293c2t5Lm5ldC9yYXRpb25h
+bC9iYXllcy8NCj4gPiA+ID4gPiA+ID4gPiA+IHdoaWNoDQo+ID4gPiA+ID4gPiA+ID4gPiBleHBs
+YWlucw0KPiA+ID4gPiA+ID4gPiA+ID4gaXQuDQo+ID4gPiA+ID4gPiA+ID4gPiBUaGVyZSdzIGEg
+YmlnIGRpZmZlcmVuY2UgYmV0d2VlbiBhIGNvaW4gZmxpcCBhbmQgYQ0KPiA+ID4gPiA+ID4gPiA+
+ID4gX2NvcnJlbGF0ZWRfDQo+ID4gPiA+ID4gPiA+ID4gPiBjb2luIGZsaXAuDQo+ID4gPiA+ID4g
+PiA+ID4gDQo+ID4gPiA+ID4gPiA+ID4gSSdkIG1heWJlIHBvaW50IG91dCB0aGF0IHRoZSBzZWxl
+Y3Rpb24gcHJvY2VzcyBpcyBiYXNlZA0KPiA+ID4gPiA+ID4gPiA+IG9uDQo+ID4gPiA+ID4gPiA+
+ID4gYQ0KPiA+ID4gPiA+ID4gPiA+IG5ldXJhbA0KPiA+ID4gPiA+ID4gPiA+IG5ldHdvcmsgd2hp
+Y2gga25vd3MgYWJvdXQgdGhlIGV4aXN0ZW5jZSBvZiBhIEZpeGVzIHRhZw0KPiA+ID4gPiA+ID4g
+PiA+IGluIGENCj4gPiA+ID4gPiA+ID4gPiBjb21taXQuDQo+ID4gPiA+ID4gPiA+ID4gDQo+ID4g
+PiA+ID4gPiA+ID4gSXQgZG9lcyBleGFjdGx5IHdoYXQgeW91J3JlIGRlc2NyaWJpbmcsIGJ1dCBh
+bHNvIHRha2luZw0KPiA+ID4gPiA+ID4gPiA+IGENCj4gPiA+ID4gPiA+ID4gPiBidW5jaA0KPiA+
+ID4gPiA+ID4gPiA+IG1vcmUNCj4gPiA+ID4gPiA+ID4gPiBmYWN0b3JzIGludG8gaXQncyBkZXNp
+Y2lvbiBwcm9jZXNzICgicGFuaWMiPyAib29wcyI/DQo+ID4gPiA+ID4gPiA+ID4gIm92ZXJmbG93
+Ij8NCj4gPiA+ID4gPiA+ID4gPiBldGMpLg0KPiA+ID4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4g
+PiANCj4gPiA+ID4gPiA+ID4gSSBhbSBub3QgYWdhaW5zdCBBVVRPU0VMIGluIGdlbmVyYWwsIGFz
+IGxvbmcgYXMgdGhlDQo+ID4gPiA+ID4gPiA+IGRlY2lzaW9uDQo+ID4gPiA+ID4gPiA+IHRvDQo+
+ID4gPiA+ID4gPiA+IGtub3cNCj4gPiA+ID4gPiA+ID4gaG93IGZhciBiYWNrIGl0IGlzIGFsbG93
+ZWQgdG8gdGFrZSBhIHBhdGNoIGlzIG1hZGUNCj4gPiA+ID4gPiA+ID4gZGV0ZXJtaW5pc3RpY2Fs
+bHkNCj4gPiA+ID4gPiA+ID4gYW5kIG5vdCBzdGF0aXN0aWNhbGx5IGJhc2VkIG9uIHNvbWUgQUkg
+aHVuY2guDQo+ID4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gPiBBbnkgYXV0byBzZWxlY3Rpb24g
+Zm9yIGEgcGF0Y2ggd2l0aG91dCBhIEZpeGVzIHRhZ3MgY2FuDQo+ID4gPiA+ID4gPiA+IGJlDQo+
+ID4gPiA+ID4gPiA+IGNhdGFzdHJvcGhpYw0KPiA+ID4gPiA+ID4gPiAuLiBpbWFnaW5lIGEgcGF0
+Y2ggd2l0aG91dCBhIEZpeGVzIFRhZyB3aXRoIGEgc2luZ2xlIGxpbmUNCj4gPiA+ID4gPiA+ID4g
+dGhhdCBpcw0KPiA+ID4gPiA+ID4gPiBmaXhpbmcgc29tZSAib29wcyIsIHN1Y2ggcGF0Y2ggY2Fu
+IGJlIGVhc2lseSBhcHBsaWVkDQo+ID4gPiA+ID4gPiA+IGNsZWFubHkNCj4gPiA+ID4gPiA+ID4g
+dG8NCj4gPiA+ID4gPiA+ID4gc3RhYmxlLQ0KPiA+ID4gPiA+ID4gPiB2LnggYW5kIHN0YWJsZS12
+LnkgLi4gd2hpbGUgaXQgZml4ZXMgdGhlIGlzc3VlIG9uIHYueCBpdA0KPiA+ID4gPiA+ID4gPiBt
+aWdodA0KPiA+ID4gPiA+ID4gPiBoYXZlDQo+ID4gPiA+ID4gPiA+IGNhdGFzdHJvcGhpYyByZXN1
+bHRzIG9uIHYueSAuLg0KPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiBJIHRyaWVkIHRvIGltYWdp
+bmUgc3VjaCBmbG93IGFuZCBmYWlsZWQgdG8gZG8gc28uIEFyZSB5b3UNCj4gPiA+ID4gPiA+IHRh
+bGtpbmcNCj4gPiA+ID4gPiA+IGFib3V0DQo+ID4gPiA+ID4gPiBhbnl0aGluZyBzcGVjaWZpYyBv
+ciBpbWFnaW5hcnkgY2FzZT8NCj4gPiA+ID4gPiANCj4gPiA+ID4gPiBJdCBoYXBwZW5zLCByYXJl
+bHksIGJ1dCBpdCBkb2VzLiBIb3dldmVyLCBhbGwgdGhlIGNhc2VzIEkgY2FuDQo+ID4gPiA+ID4g
+dGhpbmsNCj4gPiA+ID4gPiBvZg0KPiA+ID4gPiA+IGhhcHBlbmVkIHdpdGggYSBzdGFibGUgdGFn
+Z2VkIGNvbW1pdCB3aXRob3V0IGEgZml4ZXMgd2hlcmUNCj4gPiA+ID4gPiBpdCdzDQo+ID4gPiA+
+ID4gYmFja3BvcnQNCj4gPiA+ID4gPiB0byBhbiBvbGRlciB0cmVlIGNhdXNlZCB1bmludGVuZGVk
+IGJlaGF2aW9yIChsb2NhbCBkZW5pYWwgb2YNCj4gPiA+ID4gPiBzZXJ2aWNlDQo+ID4gPiA+ID4g
+aW4NCj4gPiA+ID4gPiBvbmUgY2FzZSkuDQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4gVGhlIHNjZW5h
+cmlvIHlvdSBoYXZlIGluIG1pbmQgaXMgdHJ1ZSBmb3IgYm90aCBzdGFibGUgYW5kDQo+ID4gPiA+
+ID4gbm9uLQ0KPiA+ID4gPiA+IHN0YWJsZQ0KPiA+ID4gPiA+IHRhZ2dlZCBwYXRjaGVzLCBzbyBp
+dCB5b3Ugd2FudCB0byByZXN0cmljdCBob3cgd2UgZGVhbCB3aXRoDQo+ID4gPiA+ID4gY29tbWl0
+cw0KPiA+ID4gPiA+IHRoYXQNCj4gPiA+ID4gPiBkb24ndCBoYXZlIGEgZml4ZXMgdGFnIHNob3Vs
+ZG4ndCBpdCBiZSB0cnVlIGZvciAqYWxsKg0KPiA+ID4gPiA+IGNvbW1pdHM/DQo+ID4gPiA+IA0K
+PiA+ID4gPiBBbGwgY29tbWl0cz8gZXZlbiB0aGUgb25lcyB3aXRob3V0ICJvb3BzIiBpbiB0aGVt
+ID8gd2hlcmUgZG9lcw0KPiA+ID4gPiB0aGlzDQo+ID4gPiA+IHN0b3AgPyA6KQ0KPiA+ID4gPiBX
+ZSBfbXVzdF8gaGF2ZSBhIGhhcmQgYW5kIGRldGVybWluaXN0aWMgY3V0IGZvciBob3cgZmFyIGJh
+Y2sgdG8NCj4gPiA+ID4gdGFrZSBhDQo+ID4gPiA+IHBhdGNoIGJhc2VkIG9uIGEgaHVtYW4gZGVj
+aXNpb24uLiB1bmxlc3Mgd2UgYXJlIDEwMCUgcG9zaXRpdmUNCj4gPiA+ID4gYXV0b3NlbGVjdGlv
+biBBSSBjYW4gbmV2ZXIgbWFrZSBhIG1pc3Rha2UuDQo+ID4gPiA+IA0KPiA+ID4gPiBIdW1hbnMg
+YXJlIGFsbG93ZWQgdG8gbWFrZSBtaXN0YWtlcywgQUkgaXMgbm90Lg0KPiA+ID4gDQo+ID4gPiBP
+aCBJJ20gcmV2aWV3aW5nIGFsbCBwYXRjaGVzIG15c2VsZiBhZnRlciB0aGUgYm90IGRvZXMgaXQn
+cw0KPiA+ID4gc2VsZWN0aW9uLA0KPiA+ID4geW91IGNhbiBibGFtZSBtZSBmb3IgdGhlc2Ugc2Ny
+ZXcgdXBzLg0KPiA+ID4gDQo+ID4gPiA+IElmIGEgRml4ZXMgdGFnIGlzIHdyb25nLCB0aGVuIGEg
+aHVtYW4gd2lsbCBiZSBibGFtZWQsIGFuZCB0aGF0DQo+ID4gPiA+IGlzDQo+ID4gPiA+IHBlcmZl
+Y3RseSBmaW5lLCBidXQgaWYgd2UgaGF2ZSBzb21lIHN0YXRpc3RpY2FsIG1vZGVsIHRoYXQgd2UN
+Cj4gPiA+ID4ga25vdw0KPiA+ID4gPiBpdA0KPiA+ID4gPiBpcyBnb2luZyB0byBiZSB3cm9uZyAw
+LjAwMSUgb2YgdGhlIHRpbWUuLiBhbmQgd2Ugc3RpbGwgbGV0IGl0DQo+ID4gPiA+IHJ1bi4uDQo+
+ID4gPiA+IHRoZW4gc29tZXRoaW5nIG5lZWRzIHRvIGJlIGRvbmUgYWJvdXQgdGhpcy4NCj4gPiA+
+ID4gDQo+ID4gPiA+IEkga25vdyB0aGVyZSBhcmUgYmVuZWZpdHMgdG8gYXV0b3NlbCwgYnV0IG92
+ZXJ0aW1lLCBpZiB0aGlzIGlzDQo+ID4gPiA+IG5vdA0KPiA+ID4gPiBiZWluZyBhdWRpdGVkLCBt
+YW55IHBpZWNlcyBvZiB0aGUga2VybmVsIHdpbGwgZ2V0IGJyb2tlbg0KPiA+ID4gPiB1bm5vdGlj
+ZWQNCj4gPiA+ID4gdW50aWwgc29tZSBwb29yIGRpc3RybyBkZWNpZGVzIHRvIHVwZ3JhZGUgdGhl
+aXIga2VybmVsIHZlcnNpb24uDQo+ID4gPiANCj4gPiA+IFF1aXRlIGEgZmV3IGRpc3Ryb3MgYXJl
+IGFsd2F5cyBydW5uaW5nIG9uIHRoZSBsYXRlc3QgTFRTDQo+ID4gPiByZWxlYXNlcywNCj4gPiA+
+IEFuZHJvaWQgaXNuJ3QgdGhhdCBmYXIgYmVoaW5kIGVpdGhlciBhdCB0aGlzIHBvaW50Lg0KPiA+
+ID4gDQo+ID4gPiBUaGVyZSBhcmUgYWN0dWFsbHkgdmVyeSBmZXcgbm9uLUxUUyB1c2VycyBhdCB0
+aGlzIHBvaW50Li4uDQo+ID4gPiANCj4gPiA+ID4gPiA+IDwuLi4+DQo+ID4gPiA+ID4gPiA+ID4g
+TGV0IG1lIHB1dCBteSBNaWNyb3NvZnQgZW1wbG95ZWUgaGF0IG9uIGhlcmUuIFdlIGhhdmUNCj4g
+PiA+ID4gPiA+ID4gPiBkcml2ZXIvbmV0L2h5cGVydi8NCj4gPiA+ID4gPiA+ID4gPiB3aGljaCBk
+ZWZpbml0ZWx5IHdhc24ndCBnZXR0aW5nIGFsbCB0aGUgZml4ZXMgaXQgc2hvdWxkDQo+ID4gPiA+
+ID4gPiA+ID4gaGF2ZQ0KPiA+ID4gPiA+ID4gPiA+IGJlZW4NCj4gPiA+ID4gPiA+ID4gPiBnZXR0
+aW5nIHdpdGhvdXQgQVVUT1NFTC4NCj4gPiA+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+ID4gDQo+
+ID4gPiA+ID4gPiA+IHVudGlsIHNvbWUgcGF0Y2ggd2hpY2ggc2hvdWxkbid0IGdldCBiYWNrcG9y
+dGVkIHNsaXBzDQo+ID4gPiA+ID4gPiA+IHRocm91Z2gsDQo+ID4gPiA+ID4gPiA+IGJlbGlldmUN
+Cj4gPiA+ID4gPiA+ID4gbWUgdGhpcyB3aWxsIGhhcHBlbiwganVzdCBnaXZlIGl0IHNvbWUgdGlt
+ZSAuLg0KPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiBCdWdzIGFyZSBpbmV2aXRhYmxlLCBJIGRv
+bid0IHNlZSBtYW55IGRpZmZlcmVuY2VzIGJldHdlZW4NCj4gPiA+ID4gPiA+IGJ1Z3MNCj4gPiA+
+ID4gPiA+IGludHJvZHVjZWQgYnkgbWFudWFsbHkgY2hlcnJ5LXBpY2tpbmcgb3IgYXV0b21hdGlj
+YWxseSBvbmUuDQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4gT2ggYnVncyBzbGlwIGluLCB0aGF0J3Mg
+d2h5IEkgdHJhY2sgaG93IG1hbnkgYnVncyBzbGlwcGVkIHZpYQ0KPiA+ID4gPiA+IHN0YWJsZQ0K
+PiA+ID4gPiA+IHRhZ2dlZCBjb21taXRzIHZzIG5vbi1zdGFibGUgdGFnZ2VkIG9uZXMsIGFuZCB0
+aGUgc3RhdGlzdGljDQo+ID4gPiA+ID4gbWF5DQo+ID4gPiA+ID4gc3VycHJpc2UNCj4gPiA+ID4g
+PiB5b3UuDQo+ID4gPiA+ID4gDQo+ID4gPiA+IA0KPiA+ID4gPiBTdGF0aXN0aWNzIGRvIG5vdCBt
+YXR0ZXIgaGVyZSwgd2hhdCByZWFsbHkgbWF0dGVycyBpcyB0aGF0DQo+ID4gPiA+IHRoZXJlIGlz
+DQo+ID4gPiA+IGENCj4gPiA+ID4gcG9zc2liaWxpdHkgb2YgYSBub24taHVtYW4gaW5kdWNlZCBl
+cnJvciwgdGhpcyBzaG91bGQgYmUgYSBubw0KPiA+ID4gPiBuby4NCj4gPiA+ID4gb3IgYXQgbGVh
+c3QgbWFrZSBpdCBhbiBvcHQtaW4gdGhpbmcgZm9yIHRob3NlIHdobyB3YW50IHRvIHRha2UNCj4g
+PiA+ID4gdGhlaXINCj4gPiA+ID4gY2hhbmNlcyBhbmQga2VlcCBhIGNsb3NlIGV5ZSBvbiBpdC4u
+DQo+ID4gPiANCj4gPiA+IEhybSwgd2h5PyBQcmV0ZW5kIHRoYXQgdGhlIGJvdCBpcyBhIGh1bWFu
+IHNpdHRpbmcgc29tZXdoZXJlDQo+ID4gPiBzZW5kaW5nDQo+ID4gPiBtYWlscyBvdXQsIGhvdyBk
+b2VzIGl0IGNoYW5nZSBhbnl0aGluZz8NCj4gPiA+IA0KPiA+IA0KPiA+IElmIGkga25vdyBhIGJv
+dCBtaWdodCBkbyBzb21ldGhpbmcgd3JvbmcsIGkgRml4IGl0IGFuZCBtYWtlIHN1cmUgaXQNCj4g
+PiB3aWxsIG5ldmVyIGRvIGl0IGFnYWluLiBGb3IgaHVtYW5zIGkganVzdCBjYW4ndCBkbyB0aGF0
+LCBjYW4gSSA/IDopDQo+ID4gc28gdGhpcyBpcyB0aGUgZGlmZmVyZW5jZSBhbmQgd2h5IHdlIGFs
+bCBoYXZlIGpvYnMgLi4gDQo+ID4gDQo+ID4gPiA+ID4gVGhlIHNvbHV0aW9uIGhlcmUgaXMgdG8g
+YmVlZiB1cCB5b3VyIHRlc3RpbmcgaW5mcmFzdHJ1Y3R1cmUNCj4gPiA+ID4gPiByYXRoZXINCj4g
+PiA+ID4gPiB0aGFuDQo+ID4gPiA+IA0KPiA+ID4gPiBTbyBwbGVhc2UgbGV0IG1lIG9wdC1pbiB1
+bnRpbCBJIGJlZWYgdXAgbXkgdGVzdGluZyBpbmZyYS4NCj4gPiA+IA0KPiA+ID4gQWxyZWFkeSBk
+aWQgOikNCj4gPiANCj4gPiBObyB5b3UgZGlkbid0IDopLCBJIHJlY2VpdmVkIG1vcmUgdGhhbiA1
+IEFVVE9TRUwgZW1haWxzIG9ubHkgdG9kYXkNCj4gPiBhbmQNCj4gPiB5ZXN0ZXJkYXkuDQo+ID4g
+DQo+ID4gUGxlYXNlIGRvbid0IG9wdCBtbHg1IG91dCBqdXN0IHlldCA7LSksIGkgbmVlZCB0byBk
+byBzb21lIG1vcmUNCj4gPiByZXNlYXJjaA0KPiA+IGFuZCBtYWtlIHVwIG15IG1pbmQuLg0KPiA+
+IA0KPiA+ID4gPiA+IHRha2luZyBsZXNzIHBhdGNoZXM7IHdlIHN0aWxsIHdhbnQgdG8gaGF2ZSAq
+YWxsKiB0aGUgZml4ZXMsDQo+ID4gPiA+ID4gcmlnaHQ/DQo+ID4gPiA+ID4gDQo+ID4gPiA+IA0K
+PiA+ID4gPiBpZiB5b3UgY2FuIGJlIHN1cmUgMTAwJSBpdCBpcyB0aGUgcmlnaHQgdGhpbmcgdG8g
+ZG8sIHRoZW4geWVzLA0KPiA+ID4gPiBwbGVhc2UNCj4gPiA+ID4gZG9uJ3QgaGVzaXRhdGUgdG8g
+dGFrZSB0aGF0IHBhdGNoLCBldmVuIHdpdGhvdXQgYXNraW5nIGFueW9uZQ0KPiA+ID4gPiAhIQ0K
+PiA+ID4gPiANCj4gPiA+ID4gQWdhaW4sIEh1bWFucyBhcmUgYWxsb3dlZCB0byBtYWtlIG1pc3Rh
+a2VzLi4gQUkgaXMgbm90Lg0KPiA+ID4gDQo+ID4gPiBBZ2Fpbiwgd2h5Pw0KPiA+ID4gDQo+ID4g
+DQo+ID4gQmVjYXVzZSBBSSBpcyBub3QgdGhlcmUgeWV0Li4gYW5kIHRoaXMgaXMgYSB2ZXJ5IGJp
+ZyBwaGlsb3NvcGhpY2FsDQo+ID4gcXVlc3Rpb24uDQo+ID4gDQo+ID4gTGV0IG1lIHNpbXBsaWZ5
+OiB0aGVyZSBpcyBhIGJ1ZyBpbiB0aGUgQUksIHdoZXJlIGl0IGNhbiBjaG9vc2UgYQ0KPiA+IHdy
+b25nDQo+ID4gcGF0Y2gsIGxldCdzIGZpeCBpdC4NCj4gDQo+IFlvdSBkbyByZWFsaXplIHRoYXQg
+dGhlcmUgYXJlIGF0IGxlYXN0IDIgc3RlcHMgaW4gdGhpcyAiQUkiIHdoZXJlDQo+IHBlb3BsZQ0K
+PiBhcmUgaW52b2x2ZWQuICBUaGUgZmlyc3QgaXMgd2hlbiBTYXNoYSBnb2VzIHRob3JvdWdoIHRo
+ZSBwYXRjaGVzIGFuZA0KPiB3ZWVkcyBvdXQgYWxsIG9mIHRoZSAiYmFkIG9uZXMiLg0KPiANCj4g
+VGhlIHNlY29uZCBpcyB3aGVuIHlvdSwgdGhlIG1haW50YWluZXIsIGlzIGFza2VkIGlmIHlvdSB0
+aGluayB0aGVyZQ0KPiBpcyBhDQo+IHByb2JsZW0gaWYgdGhlIHBhdGNoIGlzIHRvIGJlIG1lcmdl
+ZC4NCj4gDQo+IFRoZW4gdGhlcmUncyBhbHNvIHRoZSB0aGlyZCwgd2hlbiBhZ2FpbiwgSSBzZW5k
+IG91dCBlbWFpbHMgZm9yIHRoZQ0KPiAtcmMNCj4gcHJvY2VzcyB3aXRoIHRoZSBwYXRjaGVzIGlu
+dm9sdmVkLCBhbmQgeW91IGFyZSBjYzplZCBvbiBpdC4NCj4gDQo+IFRoaXMgaXNuJ3QgYW4gdW5j
+aGVja2VkIHByb2Nlc3MgaGVyZSBydW5uaW5nIHdpdGggbm8gaHVtYW4gY2hlY2tzIGF0DQo+IGFs
+bA0KPiBpbiBpdCwgc28gcGxlYXNlIGRvbid0IHNwZWFrIG9mIGl0IGxpa2UgaXQgaXMuDQo+IA0K
+DQpTdXJlIEkgdW5kZXJzdGFuZCwNCg0KQnV0IHdpdGggYWxsIGRvIHJlc3BlY3QgdG8gU2FzaGEg
+YW5kIGkga25vdyBoZSBpcyBkb2luZyBhIGdyZWF0IGpvYiwgaGUNCmp1c3QgY2FuJ3Qgc2lnbi1v
+ZmYgb24gYWxsIG9mIHRoZSBwYXRjaGVzIG9uIGFsbCBvZiB0aGUgbGludXgga2VybmVsDQphbmQg
+ZGV0ZXJtaW5lIGp1c3QgYnkgaGltc2VsZiBpZiBhIHBhdGNoIGlzIGdvb2Qgb3Igbm90Li4gYW5k
+IHRoZQ0KbWFpbnRhaW5lciByZXZpZXcgaXMgd2hhdCBhY3R1YWxseSBtYXR0ZXJzIGhlcmUuDQoN
+CkJ1dCB0aGUgbWFpbnRhaW5lciBhY2sgaXMgYW4gb3B0aW9uYWwgdGhpbmcsIGFuZCBJIGJldCB0
+aGF0IHRoZSB2YXN0DQptYWpvcml0eSBkb24ndCBldmVuIGxvb2sgYXQgdGhlc2UgZS1tYWlscy4N
+Cg0KTXkgdmlzaW9uIGlzIHRoYXQgd2UgbWFrZSB0aGlzIGFuIG9wdC1pbiB0aGluZywgYW5kIHdl
+IHNvbWVob3cgZm9yY2UNCmFsbCBhY3RpdmUgYW5kIGltcG9ydGFudCBrZXJuZWwgc3Vic3lzdGVt
+cyB0byBvcHQtaW4sIGFuZCBtYWtlIGl0IHRoZQ0KbWFpbnRhaW5lciByZXNwb25zaWJpbGl0eSBp
+ZiBzb21ldGhpbmcgZ29lcyB3cm9uZy4gDQoNCkkgdW5kZXJzdGFuZCBmcm9tIHlvdXIgc3RhdGlz
+dGljcyB0aGF0IHRoaXMgc3lzdGVtIGlzIHdvcmtpbmcgdmVyeQ0Kd2VsbCwgc28gaSBiZWxpZXZl
+IGV2ZW50dWFsbHkgZXZlcnkgbWFpbnRhaW5lciB3aXRoIGEgY29kZSB0aGF0IG1hdHRlcnMNCndp
+bGwgY29tZSBvbiBib2FyZC4NCg0KdGhpcyB3YXkgd2UgZG9uJ3QgcmlzayBpdCBmb3IgaW5hY3Rp
+dmUgYW5kIGxlc3MgaW1wb3J0YW50DQpzdWJzeXN0ZW1zL2RyaXZlcnMuLiBhbmQgd2UgZ3VhcmFu
+dGVlIHRoZSB3aG9sZSB0aGluZyBpcyBwcm9wZXJseQ0KYXVkaXRlZCB3aXRoIHRoZSBtYWludGFp
+bmVycyBvbi1ib2FyZC4uIA0KDQoNCg0K
