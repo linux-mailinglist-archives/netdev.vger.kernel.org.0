@@ -2,292 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86CE11ADB5C
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 12:45:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8E0E1ADBAD
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 12:57:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729679AbgDQKn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 06:43:29 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:48058 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729602AbgDQKn2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 06:43:28 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03HAfUjO012411;
-        Fri, 17 Apr 2020 10:43:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references; s=corp-2020-01-29;
- bh=Cq4VT437BLaGdbgVvFtN8qE/htncl1Vwmg+lam7F+GA=;
- b=oRfgUHfI6hw8I0E5nZ+WJqd7EEPRUr+s2v4cWQ0q48PjZ+n8mvXplvpj0rXG0hX9A4f6
- PwNciujcHR0uonzIecc4ITJYFPeiAPWTOPtBJxyZFCvSkeBbg0Kz5DLR1sqsbBRSCSa/
- v1Yw1+3yRrVZPL7eRs7wSu256ew1hWL4hWoepsOTzeOMMhK54UMbu6UrfVATu6hdMCqf
- wc5CFo+q3uPuWURXaXXo9r5RKiTOFSlUAK1+Ye+RAOz51fXBqATwpLQmHwAm7Xp8wVpG
- z2scl3gqAux9Zh/Pmz0kwwMCc5Ot2a1s9YZOqzRj5kZCc7+1q99AuZ7oY8sd8zgbndmF 6w== 
+        id S1730000AbgDQK42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 06:56:28 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:60798 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729985AbgDQK41 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 06:56:27 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03HArgTY052659;
+        Fri, 17 Apr 2020 10:56:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : in-reply-to : message-id : references : mime-version :
+ content-type; s=corp-2020-01-29;
+ bh=5etWj1bGduracVPl8axt8DZrMd40qx6Pd4VIwocWsKE=;
+ b=duLYF5jtQtRF4KQwzFxtAeIdx/brHeL2aTgskddjrUQnaxsP7QmxxIWao+Rh3QbMgV26
+ kMSRX7alEpvw+sTKEL8YhuIB0rVrw404hDnp6hmkOTn0y78ehgDW+L19Bfp+Dtr7VYd8
+ nPr1F5s490iCP8Ieix4TbQpZqOipE0pxONnvVAAAIOMg7PJOf8i5mm2UzFf9uzJba9j7
+ B4H2QAqchv4NnL2yFZMJMCLuebEeLYhDLHjr0/Qyoz6zKMv++WOd2KvBtPx8gw24FNOB
+ qaZAF67Y0c44SXtfOo2rlRu2PrV1sapJl5c0/5JL9h1FCt5OGkAMLdP3JgBVkPMCFQFH Tw== 
 Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2120.oracle.com with ESMTP id 30emejp7e8-1
+        by userp2130.oracle.com with ESMTP id 30e0aac0d3-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 17 Apr 2020 10:43:12 +0000
+        Fri, 17 Apr 2020 10:56:11 +0000
 Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03HAbQFV037635;
-        Fri, 17 Apr 2020 10:43:11 GMT
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03HArIIm103855;
+        Fri, 17 Apr 2020 10:54:11 GMT
 Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3030.oracle.com with ESMTP id 30dn91afag-1
+        by aserp3030.oracle.com with ESMTP id 30dn91awcp-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 17 Apr 2020 10:43:11 +0000
-Received: from abhmp0015.oracle.com (abhmp0015.oracle.com [141.146.116.21])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 03HAh9CJ019441;
-        Fri, 17 Apr 2020 10:43:10 GMT
-Received: from localhost.uk.oracle.com (/10.175.205.33)
+        Fri, 17 Apr 2020 10:54:11 +0000
+Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 03HAs9mn024068;
+        Fri, 17 Apr 2020 10:54:09 GMT
+Received: from dhcp-10-175-205-33.vpn.oracle.com (/10.175.205.33)
         by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 17 Apr 2020 03:43:09 -0700
+        with ESMTP ; Fri, 17 Apr 2020 03:54:08 -0700
+Date:   Fri, 17 Apr 2020 11:54:01 +0100 (BST)
 From:   Alan Maguire <alan.maguire@oracle.com>
-To:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com
-Cc:     kafai@fb.com, songliubraving@fb.com, andriin@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Alan Maguire <alan.maguire@oracle.com>
-Subject: [RFC PATCH bpf-next 6/6] printk: extend test_printf to test %pT BTF-based format specifier
-Date:   Fri, 17 Apr 2020 11:42:40 +0100
-Message-Id: <1587120160-3030-7-git-send-email-alan.maguire@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1587120160-3030-1-git-send-email-alan.maguire@oracle.com>
-References: <1587120160-3030-1-git-send-email-alan.maguire@oracle.com>
+X-X-Sender: alan@localhost
+To:     David Ahern <dsahern@gmail.com>
+cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com
+Subject: Re: [RFC PATCH bpf-next v2 00/17] bpf: implement bpf based dumping
+ of kernel data structures
+In-Reply-To: <40e427e2-5b15-e9aa-e2cb-42dc1b53d047@gmail.com>
+Message-ID: <alpine.LRH.2.21.2004171106580.32559@localhost>
+References: <20200415192740.4082659-1-yhs@fb.com> <40e427e2-5b15-e9aa-e2cb-42dc1b53d047@gmail.com>
+User-Agent: Alpine 2.21 (LRH 202 2017-01-01)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9593 signatures=668686
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 mlxlogscore=999
  suspectscore=0 malwarescore=0 spamscore=0 phishscore=0 adultscore=0
  bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004170084
+ engine=8.12.0-2003020000 definitions=main-2004170086
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9593 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 impostorscore=0
- mlxscore=0 suspectscore=0 lowpriorityscore=0 spamscore=0 mlxlogscore=999
- bulkscore=0 adultscore=0 phishscore=0 clxscore=1015 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
- definitions=main-2004170084
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 clxscore=1011
+ impostorscore=0 mlxlogscore=999 mlxscore=0 lowpriorityscore=0
+ suspectscore=0 adultscore=0 spamscore=0 malwarescore=0 phishscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2004170086
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add tests to verify basic types and to iterate through all
-enums, structs, unions and typedefs ensuring expected behaviour
-occurs.  Since test_printf can be built as a module we need to
-export a BTF kind iterator function to allow us to iterate over
-all names of a particular BTF kind.
+On Wed, 15 Apr 2020, David Ahern wrote:
 
-These changes add up to approximately 10,000 new tests covering
-all enum, struct, union and typedefs in vmlinux BTF.
+> On 4/15/20 1:27 PM, Yonghong Song wrote:
+> > 
+> > As there are some discussions regarding to the kernel interface/steps to
+> > create file/anonymous dumpers, I think it will be beneficial for
+> > discussion with this work in progress.
+> > 
+> > Motivation:
+> >   The current way to dump kernel data structures mostly:
+> >     1. /proc system
+> >     2. various specific tools like "ss" which requires kernel support.
+> >     3. drgn
+> >   The dropback for the first two is that whenever you want to dump more, you
+> >   need change the kernel. For example, Martin wants to dump socket local
+> 
+> If kernel support is needed for bpfdump of kernel data structures, you
+> are not really solving the kernel support problem. i.e., to dump
+> ipv4_route's you need to modify the relevant proc show function.
+>
 
-Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
----
- include/linux/btf.h |  10 +++++
- kernel/bpf/btf.c    |  35 ++++++++++++++++
- lib/test_printf.c   | 118 ++++++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 163 insertions(+)
+I need to dig into this patchset a bit more, but if there is
+a need for in-kernel BTF-based structure dumping I've got a
+work-in-progress patchset that does this by generalizing the code
+that  deals with seq output in the verifier. I've posted it
+as an RFC in case it has anything useful to offer here:
 
-diff --git a/include/linux/btf.h b/include/linux/btf.h
-index 456bd8f..ef66d2e 100644
---- a/include/linux/btf.h
-+++ b/include/linux/btf.h
-@@ -177,4 +177,14 @@ static inline const char *btf_name_by_offset(const struct btf *btf,
- }
- #endif
- 
-+/* Following function used for testing BTF-based printk-family support */
-+#ifdef CONFIG_BTF_PRINTF
-+const char *btf_vmlinux_next_type_name(u8 kind, s32 *id);
-+#else
-+static inline const char *btf_vmlinux_next_type_name(u8 kind, s32 *id)
-+{
-+	return NULL;
-+}
-+#endif /* CONFIG_BTF_PRINTF */
-+
- #endif
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index ae453f0..0703d1d 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -4867,3 +4867,38 @@ u32 btf_id(const struct btf *btf)
- {
- 	return btf->id;
- }
-+
-+#ifdef CONFIG_BTF_PRINTF
-+/*
-+ * btf_vmlinux_next_type_name():  used in test_printf.c to
-+ * iterate over types for testing.
-+ * Exported as test_printf can be built as a module.
-+ *
-+ * @kind: BTF_KIND_* value
-+ * @id: pointer to last id; value/result argument. When next
-+ *      type name is found, we set *id to associated id.
-+ * Returns:
-+ *	Next type name, sets *id to associated id.
-+ */
-+const char *btf_vmlinux_next_type_name(u8 kind, s32 *id)
-+{
-+	const struct btf *btf = bpf_get_btf_vmlinux();
-+	const struct btf_type *t;
-+	const char *name;
-+
-+	if (!btf || !id)
-+		return NULL;
-+
-+	for ((*id)++; *id <= btf->nr_types; (*id)++) {
-+		t = btf->types[*id];
-+		if (BTF_INFO_KIND(t->info) != kind)
-+			continue;
-+		name = btf_name_by_offset(btf, t->name_off);
-+		if (name && strlen(name) > 0)
-+			return name;
-+	}
-+
-+	return NULL;
-+}
-+EXPORT_SYMBOL_GPL(btf_vmlinux_next_type_name);
-+#endif /* CONFIG_BTF_PRINTF */
-diff --git a/lib/test_printf.c b/lib/test_printf.c
-index 2d9f520..9743e96 100644
---- a/lib/test_printf.c
-+++ b/lib/test_printf.c
-@@ -23,6 +23,9 @@
- #include <linux/mm.h>
- 
- #include <linux/property.h>
-+#include <linux/bpf.h>
-+#include <linux/btf.h>
-+#include <linux/skbuff.h>
- 
- #include "../tools/testing/selftests/kselftest_module.h"
- 
-@@ -644,6 +647,120 @@ static void __init fwnode_pointer(void)
- #endif
- }
- 
-+#define	__TEST_BTF(type, var, expected)	test(expected, "%pT<"#type">", &var)
-+
-+#define TEST_BTF(type, var, ...)					\
-+	do {								\
-+		type var = __VA_ARGS__;					\
-+		pr_debug("type %s: %pT<" #type ">", #type, &var);	\
-+		__TEST_BTF(type, var, #__VA_ARGS__);			\
-+	} while (0)
-+
-+#define	BTF_MAX_DATA_SIZE	8192
-+#define	BTF_MAX_BUF_SIZE	(BTF_MAX_DATA_SIZE * 8)
-+
-+static void __init
-+btf_print_kind(u8 kind, const char *kind_name)
-+{
-+	char fmt1[256], fmt2[256];
-+	int res1, res2, res3;
-+	const char *name;
-+	u64 *dummy_data;
-+	s32 id = 0;
-+	char *buf;
-+
-+	dummy_data = kzalloc(BTF_MAX_DATA_SIZE, GFP_KERNEL);
-+	buf = kzalloc(BTF_MAX_BUF_SIZE, GFP_KERNEL);
-+	for (;;) {
-+		name = btf_vmlinux_next_type_name(kind, &id);
-+		if (!name)
-+			break;
-+
-+		total_tests++;
-+
-+		strncpy(fmt1, "%pT<", sizeof(fmt1));
-+		strncat(fmt1, kind_name, sizeof(fmt1));
-+		strncat(fmt1, name, sizeof(fmt1));
-+		strncat(fmt1, ">", sizeof(fmt1));
-+
-+		strncpy(fmt2, "%pTN<", sizeof(fmt2));
-+		strncat(fmt2, kind_name, sizeof(fmt2));
-+		strncat(fmt2, name, sizeof(fmt2));
-+		strncat(fmt2, ">", sizeof(fmt2));
-+
-+		res1 = snprintf(buf, BTF_MAX_BUF_SIZE, fmt1, dummy_data);
-+		res2 = snprintf(buf, 0, fmt1, dummy_data);
-+		res3 = snprintf(buf, BTF_MAX_BUF_SIZE, fmt2, dummy_data);
-+
-+		/*
-+		 * Ensure return value is > 0 and identical irrespective
-+		 * of whether we pass in a big enough buffer;
-+		 * also ensure that printing names always results in as
-+		 * long/longer buffer length.
-+		 */
-+		if (res1 <= 0 || res2 <= 0 || res3 <= 0) {
-+			pr_warn("snprintf(%s%s); %d <= 0",
-+				kind_name, name,
-+				res1 <= 0 ? res1 : res2 <= 0 ? res2 : res3);
-+			failed_tests++;
-+		} else if (res1 != res2) {
-+			pr_warn("snprintf(%s%s): %d != %d",
-+				kind_name, name, res1, res2);
-+			failed_tests++;
-+		} else if (res3 < res2) {
-+			pr_warn("snprintf(%s%s); %d < %d",
-+				kind_name, name, res3, res2);
-+			failed_tests++;
-+		} else {
-+			pr_debug("Printed %s%s (%d bytes, %d bytes with names)",
-+				 kind_name, name, res1, res3);
-+		}
-+	}
-+	kfree(dummy_data);
-+	kfree(buf);
-+}
-+
-+static void __init
-+btf_pointer(void)
-+{
-+	struct sk_buff *skb = alloc_skb(64, GFP_KERNEL);
-+#ifdef CONFIG_BTF_PRINTF
-+	TEST_BTF(int, testint, 0);
-+	TEST_BTF(int, testint, 1234);
-+	TEST_BTF(int, testint, -4567);
-+	TEST_BTF(bool, testbool, 0);
-+	TEST_BTF(bool, testbool, 1);
-+	TEST_BTF(int64_t, testint64, 0);
-+	TEST_BTF(int64_t, testint64, 1234);
-+	TEST_BTF(int64_t, testint64, -4567);
-+	TEST_BTF(char, testchar, 100);
-+	TEST_BTF(enum bpf_arg_type, testenum, ARG_CONST_MAP_PTR);
-+#endif /* CONFIG_BTF_PRINTF */
-+
-+	/*
-+	 * Iterate every instance of each kind, printing each associated type.
-+	 * This constitutes around 10k tests.
-+	 */
-+	btf_print_kind(BTF_KIND_STRUCT, "struct ");
-+	btf_print_kind(BTF_KIND_UNION, "union ");
-+	btf_print_kind(BTF_KIND_ENUM, "enum ");
-+	btf_print_kind(BTF_KIND_TYPEDEF, "");
-+
-+	/* verify unknown type falls back to hashed pointer display */
-+	test_hashed("%pT<unknown_type>", NULL);
-+	test_hashed("%pT<unknown_type>", skb);
-+
-+	/* verify use of unknown modifier X returns error string */
-+	test("(%pT?)<unknown_type>", "%pTX<unknown_type>", skb);
-+
-+	/* No space separation is allowed other than for struct|enum|union */
-+	test("(%pT?)", "%pT<invalid format>", skb);
-+	/* Missing ">" format error */
-+	test("(%pT?)", "%pT<struct sk_buff", skb);
-+
-+	kfree_skb(skb);
-+}
-+
- static void __init
- test_pointer(void)
- {
-@@ -668,6 +785,7 @@ static void __init fwnode_pointer(void)
- 	flags();
- 	errptr();
- 	fwnode_pointer();
-+	btf_pointer();
- }
- 
- static void __init selftest(void)
--- 
-1.8.3.1
+https://lore.kernel.org/bpf/1587120160-3030-1-git-send-email-alan.maguire@oracle.com/T/#t
 
+The idea is that by using different callback function we can achieve
+seq, snprintf or other output in-kernel using the kernel BTF data. 
+I created one consumer as a proof-of-concept; it's a printk pointer 
+format specifier.  Since the dump format is determined in kernel
+it's a bit constrained format-wise, but may be good enough for
+some cases.
+
+To give a flavour for what the printed-out data looks like,
+here we use pr_info() to display a struct sk_buff *.  Note
+we specify the 'N' modifier to show type field names:
+
+  struct sk_buff *skb = alloc_skb(64, GFP_KERNEL);
+
+  pr_info("%pTN<struct sk_buff>", skb);
+
+...gives us:
+
+{{{.next=00000000c7916e9c,.prev=00000000c7916e9c,{.dev=00000000c7916e9c|.dev_scratch=0}}|.rbnode={.__rb_parent_color=0,.rb_right=00000000c7916e9c,.rb_left=00000000c7916e9c}|.list={.next=00000000c7916e9c,.prev=00000000c7916e9c}},{.sk=00000000c7916e9c|.ip_defrag_offset=0},{.tstamp=0|.skb_mstamp_ns=0},.cb=['\0'],{{._skb_refdst=0,.destructor=00000000c7916e9c}|.tcp_tsorted_anchor={.next=00000000c7916e9c,.prev=00000000c7916e9c}},._nfct=0,.len=0,.data_len=0,.mac_len=0,.hdr_len=0,.queue_mapping=0,.__cloned_offset=[],.cloned=0x0,.nohdr=0x0,.fclone=0x0,.peeked=0x0,.head_frag=0x0,.pfmemalloc=0x0,.active_extensions=0,.headers_start=[],.__pkt_type_offset=[],.pkt_type=0x0,.ignore_df=0x0,.nf_trace=0x0,.ip_summed=0x0,.ooo_okay=0x0,.l4_hash=0x0,.sw_hash=0x0,.wifi_acked_valid=0x0,.wifi_acked=0x0,.no_fcs=0x0,.encapsulation=0x0,.encap_hdr_csum=0x0,.csum_valid=0x0,.__pkt_vlan_present_offset=[],.vlan_present=0x0,.csum_complete_sw=0x0,.csum_level=0x0,.csum_not_inet=0x0,.dst_pending_co
+
+[printk output is truncated at 1024 bytes, but more
+compact output can be achieved by not specifying 'N'
+for type names. I may need to add a specifier to avoid
+pointer obfuscation]
+
+With a printk format specifier, trace_printk() in BPF then
+inherits this dumping behaviour for free, but I think it
+would also be possible to add a helper so that the type
+name didn't have to be specified.  The verifier could insert
+BTF ids and type data could be dumped for tracing arguments
+via a flavour of bpf_perf_event_output() helper or similar.
+To be clear I haven't done any of that yet in the RFC patchset,
+but it seems feasible at least.
+
+Anyway perhaps there's something useful in it which can help
+towards the goal of easier dumping of data structures.
+
+I'll spend some time over the weekend looking at the
+BTF dumper patchset; apologies I haven't got very far
+with it yet.
+
+Thanks!
+
+Alan
+
+> 
+> >   storage with "ss". Kernel change is needed for it to work ([1]).
+> >   This is also the direct motivation for this work.
+> > 
+> >   drgn ([2]) solves this proble nicely and no kernel change is not needed.
+> >   But since drgn is not able to verify the validity of a particular pointer value,
+> >   it might present the wrong results in rare cases.
+> > 
+> >   In this patch set, we introduce bpf based dumping. Initial kernel changes are
+> >   still needed, but a data structure change will not require kernel changes
+> >   any more. bpf program itself is used to adapt to new data structure
+> >   changes. This will give certain flexibility with guaranteed correctness.
+> > 
+> >   Here, kernel seq_ops is used to facilitate dumping, similar to current
+> >   /proc and many other lossless kernel dumping facilities.
+> > 
+> > User Interfaces:
+> >   1. A new mount file system, bpfdump at /sys/kernel/bpfdump is introduced.
+> >      Different from /sys/fs/bpf, this is a single user mount. Mount command
+> >      can be:
+> >         mount -t bpfdump bpfdump /sys/kernel/bpfdump
+> >   2. Kernel bpf dumpable data structures are represented as directories
+> >      under /sys/kernel/bpfdump, e.g.,
+> >        /sys/kernel/bpfdump/ipv6_route/
+> >        /sys/kernel/bpfdump/netlink/
+> 
+> The names of bpfdump fs entries do not match actual data structure names
+> - e.g., there is no ipv6_route struct. On the one hand that is a good
+> thing since structure names can change, but that also means a mapping is
+> needed between the dumper filesystem entries and what you get for context.
+> 
+> Further, what is the expectation in terms of stable API for these fs
+> entries? Entries in the context can change. Data structure names can
+> change. Entries in the structs can change. All of that breaks the idea
+> of stable programs that are compiled once and run for all future
+> releases. When structs change, those programs will break - and
+> structures will change.
+> 
+> What does bpfdumper provide that you can not do with a tracepoint on a
+> relevant function and then putting a program on the tracepoint? ie., why
+> not just put a tracepoint in the relevant dump functions.
+> 
