@@ -2,81 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C3FD1AE8C0
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 01:58:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBC1E1AE8C3
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 01:58:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726009AbgDQXxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 19:53:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38368 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725784AbgDQXxX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 19:53:23 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6716FC061A0C
-        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 16:53:23 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id r4so1864910pgg.4
-        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 16:53:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=58/oLJudoLqvrBSL5NtQSIXKcbSsmq77pfuMAGQYuEw=;
-        b=kkzr/3uxaRWB3B2yF8g8G+VPgvV+CCJzjmB2NIPBDKZDH+WtSSzU3DtVfjidIK1zaj
-         eQF1an2MIAQXXn/i5o0qlXIYLerLaJVv4MlFgQ2eZXMNzroqtTXL/xjWfLqsZkU89BVC
-         XRsHc3RoY3a73t5CGeD7rLewISg7IuueKu+VnZs4fGxHoTP7Ui3o5mjO5TgrL6VWxhtP
-         N86WoVVpc9PbKrQXexp/qKcxlN758kTeMKK99OnGooTpcqQ41v9DhrVfjtaYwIVC4KwP
-         ibg4uFANBIeR7+QalWCZn2N1B/mcsp1GkYaAGaVQ29xVYyBWc9CLTmW2PNzDrO0ggs/D
-         afbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=58/oLJudoLqvrBSL5NtQSIXKcbSsmq77pfuMAGQYuEw=;
-        b=Glwobkn8qVXMq+ZDoMqkbOJgmRZEDIf4N6lYGKNjqeIQFXDlGHqHrr8VhwUZNd4zkH
-         LkGQ8VAfJFTaw/PBHNH1LbLL1bphlseksW4o9xgXDx6KuSotwl3tOyi60miCNB7OB9qp
-         nsku4BYql/bn/CctoD1MwMdBto52qou6MX1rOtNvZwKGdbVkHfNh7rQKfYP/+h7pia6B
-         jKgssVf/OVHXbUOMubJMajhPmtERfgiUhkyhdxKBExehnIHV0kpES3JpUpq46S2Fqmde
-         heMxUi867C9RsRSRKPHTDqK1fHegXVtk6yesqIU/38deFP3CBL0vmcXtjfZ409IaFBZC
-         TY4Q==
-X-Gm-Message-State: AGi0PuaPsq8LW69MDhcoPpfMwpXplR4zQuY1wrzPLeahqBzyWLTBJALk
-        XgrLWCJi7hkGaEecKrTeCnMRrhVr
-X-Google-Smtp-Source: APiQypK4S9bDUlKcajl6vAAegJMggDPFJgZrUvd4NwfA4+pIS7YGz0NhL1+zAVSnv74+lM97YCsTyg==
-X-Received: by 2002:a62:3147:: with SMTP id x68mr5739545pfx.62.1587167602477;
-        Fri, 17 Apr 2020 16:53:22 -0700 (PDT)
-Received: from [10.230.188.26] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id w185sm555399pgb.12.2020.04.17.16.53.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Apr 2020 16:53:21 -0700 (PDT)
-Subject: Re: [PATCH net-next 3/3] net: ethtool: self_test: Mark interface in
- testing operative status
-To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>
+        id S1726326AbgDQXym (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 19:54:42 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45522 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725784AbgDQXyc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Apr 2020 19:54:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=J1vo0AGaXBzBFlKv+bt0P96FJZcfRzVVqZSrTg/altA=; b=qCk39G4fwlKOe3+5F0zD7iEWAp
+        J9AFuV+7oK82eETmnrClIGZh58X97tjfRCPeLmCsjwXTP1Mw2+PyWsaQQuIrTMTWZEkNNHaQ3mnU4
+        95hj9/dSzkn57P0eTAd8gTjuO1L0TyGqFwPTHnzRPKzzo4/85t8iTUqxxiof1MmLvHjE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jPaoY-003NFa-6N; Sat, 18 Apr 2020 01:54:30 +0200
+Date:   Sat, 18 Apr 2020 01:54:30 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     David Miller <davem@davemloft.net>, netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 2/3] net: Add testing sysfs attribute
+Message-ID: <20200417235430.GA802899@lunn.ch>
 References: <20200417230350.802675-1-andrew@lunn.ch>
- <20200417230350.802675-4-andrew@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <8747f9f3-4c0e-ef42-02ea-fef635afb4b3@gmail.com>
-Date:   Fri, 17 Apr 2020 16:53:19 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.7.0
+ <20200417230350.802675-3-andrew@lunn.ch>
+ <cbecabd6-391c-88e4-6d4e-2ec7b43650fa@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200417230350.802675-4-andrew@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cbecabd6-391c-88e4-6d4e-2ec7b43650fa@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 4/17/2020 4:03 PM, Andrew Lunn wrote:
-> When an interface is executing a self test, put the interface into
-> operative status testing.
+On Fri, Apr 17, 2020 at 04:49:23PM -0700, Florian Fainelli wrote:
 > 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> 
+> On 4/17/2020 4:03 PM, Andrew Lunn wrote:
+> > Similar to speed, duplex and dorment, report the testing status
+> > in sysfs.
+> > 
+> > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> > ---
+> >   Documentation/ABI/testing/sysfs-class-net | 13 +++++++++++++
+> >   net/core/net-sysfs.c                      | 15 ++++++++++++++-
+> >   2 files changed, 27 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/Documentation/ABI/testing/sysfs-class-net b/Documentation/ABI/testing/sysfs-class-net
+> > index 664a8f6a634f..5e8b09743e04 100644
+> > --- a/Documentation/ABI/testing/sysfs-class-net
+> > +++ b/Documentation/ABI/testing/sysfs-class-net
+> > @@ -124,6 +124,19 @@ Description:
+> >   		authentication is performed (e.g: 802.1x). 'link_mode' attribute
+> >   		will also reflect the dormant state.
+> > +What:		/sys/class/net/<iface>/testing
+> > +Date:		Jun 2019
+> > +KernelVersion:	5.2
+> 
+> This should probably be 5.8 now, other than that:
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Ah, yes. Shows how long this has been sat in my tree.
+
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+
+Thanks
+	Andrew
