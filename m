@@ -2,208 +2,283 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBF5E1AD607
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 08:23:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 667211AD60B
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 08:24:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727850AbgDQGXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 02:23:44 -0400
-Received: from mta-out1.inet.fi ([62.71.2.194]:33074 "EHLO johanna1.inet.fi"
+        id S1727883AbgDQGYJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 02:24:09 -0400
+Received: from mga04.intel.com ([192.55.52.120]:31426 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726065AbgDQGXo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Apr 2020 02:23:44 -0400
-X-RazorGate-Vade-Verdict: clean 0
-X-RazorGate-Vade-Classification: clean
-X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgeduhedrfeeigddutdejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuuffpveftnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefuvfhfhffkffgfgggjtgfgsehtkeertddtfeejnecuhfhrohhmpefnrghurhhiucflrghkkhhuuceolhgruhhrihdrjhgrkhhkuhesphhprdhinhgvthdrfhhiqeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgrdhinhenucfkphepkeegrddvgeekrdeftddrudelheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopegludelvddrudeikedruddrudefhegnpdhinhgvthepkeegrddvgeekrdeftddrudelhedpmhgrihhlfhhrohhmpeeolhgruhhjrghkqdefsehmsghogidrihhnvghtrdhfihequceuqfffjgepkeeukffvoffkoffgpdhrtghpthhtohepoehhkhgrlhhlfigvihhtudesghhmrghilhdrtghomheqpdhrtghpthhtohepoehlvghonheskhgvrhhnvghlrdhorhhgqedprhgtphhtthhopeeonhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhgqedprhgtphhtthhopeeonhhitggpshifshgusehrvggrlhhtvghkrdgtohhmqe
-Received: from [192.168.1.135] (84.248.30.195) by johanna1.inet.fi (9.0.019.26-1) (authenticated as laujak-3)
-        id 5E1C39AA489BB6B1; Fri, 17 Apr 2020 09:23:33 +0300
-Subject: Re: NET: r8168/r8169 identifying fix
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
-        nic_swsd@realtek.com
-References: <4bc0fc0c-1437-fc41-1c50-38298214ec75@gmail.com>
- <20200413105838.GK334007@unreal>
- <dc2de414-0e6e-2531-0131-0f3db397680f@gmail.com>
- <20200413113430.GM334007@unreal>
- <03d9f8d9-620c-1f8b-9c58-60b824fa626c@gmail.com>
- <d3adc7f2-06bb-45bc-ab02-3d443999cefd@gmail.com>
- <f143b58d-4caa-7c9b-b98b-806ba8d2be99@gmail.com>
- <4860e57e-93e4-24f5-6103-fa80acbdfa0d@pp.inet.fi>
- <70cfcfb3-ce2a-9d47-b034-b94682e46e35@gmail.com>
- <d4e622f1-7bd1-d884-20b2-c16e60b42bf2@pp.inet.fi>
- <8db3cdc1-b63d-9028-e4bd-659e6d213f8f@pp.inet.fi>
- <2f7aeeb2-2a19-da7c-7436-71203a29f9e8@gmail.com>
- <d9781ac2-c7b7-0399-578e-cc43c4629147@pp.inet.fi>
- <04107d6d-d07b-7589-0cef-0d39d86484f3@pp.inet.fi>
- <b9a31f5a-e140-5cd4-d7aa-21a2fa2c27a0@gmail.com>
-From:   Lauri Jakku <lauri.jakku@pp.inet.fi>
-Message-ID: <de1bf1a4-8ce3-3352-3ff6-339206fa871e@pp.inet.fi>
-Date:   Fri, 17 Apr 2020 09:23:25 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726065AbgDQGYI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Apr 2020 02:24:08 -0400
+IronPort-SDR: 0d/PtWEf/IikgNXNLGsv5umIKbwDP44duDWf/MxINKK72yItyirMDKl0MIh+ZFUvSAe+8+oMjl
+ glnWQ2FQXKYA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2020 23:24:08 -0700
+IronPort-SDR: s1OVE8Gab0x5ILCWljlWbNIGmN4O1SlykUkrbTuUi6cxOCBGldpq4lB+f1s3kFuJD29nrjdOVs
+ 1YH7vYflEVjw==
+X-IronPort-AV: E=Sophos;i="5.72,394,1580803200"; 
+   d="scan'208";a="428127032"
+Received: from mcintra-mobl.ger.corp.intel.com (HELO localhost) ([10.249.44.191])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2020 23:24:02 -0700
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kbuild@vger.kernel.org
+Cc:     Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Saeed Mahameed <saeedm@mellanox.com>, narmstrong@baylibre.com,
+        Laurent.pinchart@ideasonboard.com, leon@kernel.org,
+        kieran.bingham+renesas@ideasonboard.com, jonas@kwiboo.se,
+        airlied@linux.ie, jernej.skrabec@siol.net,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: Re: [RFC PATCH 1/2] Kconfig: Introduce "uses" keyword
+In-Reply-To: <20200417011146.83973-1-saeedm@mellanox.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20200417011146.83973-1-saeedm@mellanox.com>
+Date:   Fri, 17 Apr 2020 09:23:59 +0300
+Message-ID: <87v9ly3a0w.fsf@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <b9a31f5a-e140-5cd4-d7aa-21a2fa2c27a0@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 16.4.2020 23.50, Heiner Kallweit wrote:
-> On 16.04.2020 22:38, Lauri Jakku wrote:
->> Hi
->>
->> On 16.4.2020 23.10, Lauri Jakku wrote:
->>> On 16.4.2020 23.02, Heiner Kallweit wrote:
->>>> On 16.04.2020 21:58, Lauri Jakku wrote:
->>>>> Hi,
->>>>>
->>>>> On 16.4.2020 21.37, Lauri Jakku wrote:
->>>>>> Hi,
->>>>>>
->>>>>> On 16.4.2020 21.26, Heiner Kallweit wrote:
->>>>>>> On 16.04.2020 13:30, Lauri Jakku wrote:
->>>>>>>> Hi,
->>>>>>>>
->>>>>>>>
->>>>>>>> 5.6.3-2-MANJARO: stock manjaro kernel, without modifications --> network does not work
->>>>>>>>
->>>>>>>> 5.6.3-2-MANJARO-lja: No attach check, modified kernel (r8169 mods only) --> network does not work
->>>>>>>>
->>>>>>>> 5.6.3-2-MANJARO-with-the-r8169-patch: phy patched + r8169 mods -> devices show up ok, network works
->>>>>>>>
->>>>>>>> All different initcpio's have realtek.ko in them.
->>>>>>>>
->>>>>>> Thanks for the logs. Based on the logs you're presumable affected by a known BIOS bug.
->>>>>>> Check bug tickets 202275 and 207203 at bugzilla.kernel.org.
->>>>>>> In the first referenced tickets it's about the same mainboard (with earlier BIOS version).
->>>>>>> BIOS on this mainboard seems to not initialize the network chip / PHY correctly, it reports
->>>>>>> a random number as PHY ID, resulting in no PHY driver being found.
->>>>>>> Enable "Onboard LAN Boot ROM" in the BIOS, and your problem should be gone.
->>>>>>>
->>>>>> OK, I try that, thank you :)
->>>>>>
->>>>> It seems that i DO have the ROM's enabled, i'm now testing some mutex guard for phy state and try to use it as indicator
->>>>>
->>>>> that attach has been done. One thing i've noticed is that driver needs to be reloaded to allow traffic (ie. ping works etc.)
->>>>>
->>>> All that shouldn't be needed. Just check with which PHY ID the PHY comes up.
->>>> And what do you mean with "it seems"? Is the option enabled or not?
->>>>
->>> I do have ROM's enabled, and it does not help with my issue.
-> Your BIOS is a beta version, downgrading to F7 may help. Then you have the same
-> mainboard + BIOS as the user who opened bug ticket 202275.
+On Thu, 16 Apr 2020, Saeed Mahameed <saeedm@mellanox.com> wrote:
+> Due to the changes to the semantics of imply keyword [1], which now
+> doesn't force any config options to the implied configs any more.
 >
-huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
-version: 0xc2077002
-huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: MAC 
-version: 23
+> A module (FOO) that has a weak dependency on some other modules (BAR)
+> is now broken if it was using imply to force dependency restrictions.
+> e.g.: FOO needs BAR to be reachable, especially when FOO=y and BAR=m.
+> Which might now introduce build/link errors.
+>
+> There are two options to solve this:
+> 1. use IS_REACHABLE(BAR), everywhere BAR is referenced inside FOO.
+> 2. in FOO's Kconfig add: depends on (BAR || !BAR)
+>
+> The first option is not desirable, and will leave the user confused when
+> setting FOO=y and BAR=m, FOO will never reach BAR even though both are
+> compiled.
+>
+> The 2nd one is the preferred approach, and will guarantee BAR is always
+> reachable by FOO if both are compiled. But, (BAR || !BAR) is really
+> confusing for those who don't really get how kconfig tristate arithmetics
+> work.
+>
+> To solve this and hide this weird expression and to avoid repetition
+> across the tree, we introduce new keyword "uses" to the Kconfig options
+> family.
+>
+> uses BAR:
+> Equivalent to: depends on symbol || !symbol
+> Semantically it means, if FOO is enabled (y/m) and has the option:
+> uses BAR, make sure it can reach/use BAR when possible.
+>
+> For example: if FOO=y and BAR=m, FOO will be forced to m.
 
-....
+Thanks for doing this. I think *something* needs to be done to help
+people grasp the "depends on FOO || FOO=n" construct; I've seen many
+experienced stumble on this, it's not a rookie mistake.
 
-huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
-version: 0x1cc912
+I suggested "uses" as a keyword, but I'm not hung up on it.
 
-huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: MAC 
-version: 23
+Grepping some Kconfigs a problem I realized with *any* new keyword is
+that (FOO || FOO=n) or (FOO || !FOO) is a construct that can be part of
+a larger depends on.
 
-.. after module unload & load cycle:
+For example,
 
-huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
-version: 0x1cc912
-huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: MAC 
-version: 23
+drivers/net/ethernet/broadcom/Kconfig:  depends on PCI && (IPV6 || IPV6=n)
+
+Which means that would have to split up to two. Not ideal, but doable. I
+did not find any (FOO || FOO=n) || BAR which would not work with a new
+keyword.
+
+An alternative approach that I thought of is adding a lower level
+expression to tackle this? "FOO=optional" would expand to (FOO || FOO=n)
+anywhere. I have no clue how hard this would be to implement.
+
+For example:
+
+	depends on FOO=optional
+=>	
+	depends on (FOO || FOO=n)
+
+and:
+
+	depends on FOO=optional || BAR
+=>
+	depends on (FOO || FOO=n) || BAR
 
 
-it seem to be the case that the phy_id chances onetime, then stays the 
-same. I'll do few shutdowns and see
+The "optional" keyword is of course open for bikeshedding, but the key
+part here I think is that the "depends on" remains, and should be
+obvious. And also the =optional ties better to the actual symbol being
+depended on.
 
-is there a pattern at all .. next i'm going to try how it behaves, if i 
-read mac/phy versions twice on MAC version 23.
+Thoughts?
 
-
-The BIOS downgrade: I'd like to solve this without downgrading BIOS. If 
-I can't, then I'll do systemd-service that
-
-reloads r8169 driver at boot, cause then network is just fine.
+BR,
+Jani.
 
 
->> I check the ID, and revert all other changes, and check how it is working after adding the PHY id to list.
->>
->>>>>>>> The problem with old method seems to be, that device does not have had time to attach before the
->>>>>>>> PHY driver check.
->>>>>>>>
->>>>>>>> The patch:
->>>>>>>>
->>>>>>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
->>>>>>>> index bf5bf05970a2..acd122a88d4a 100644
->>>>>>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
->>>>>>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
->>>>>>>> @@ -5172,11 +5172,11 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
->>>>>>>>            if (!tp->phydev) {
->>>>>>>>                    mdiobus_unregister(new_bus);
->>>>>>>>                    return -ENODEV;
->>>>>>>> -       } else if (!tp->phydev->drv) {
->>>>>>>> +       } else if (tp->mac_version == RTL_GIGA_MAC_NONE) {
->>>>>>>>                    /* Most chip versions fail with the genphy driver.
->>>>>>>>                     * Therefore ensure that the dedicated PHY driver is loaded.
->>>>>>>>                     */
->>>>>>>> -               dev_err(&pdev->dev, "realtek.ko not loaded, maybe it needs to be added to initramfs?\n");
->>>>>>>> +               dev_err(&pdev->dev, "Not known MAC version.\n");
->>>>>>>>                    mdiobus_unregister(new_bus);
->>>>>>>>                    return -EUNATCH;
->>>>>>>>            }
->>>>>>>> diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
->>>>>>>> index 66b8c61ca74c..aba2b304b821 100644
->>>>>>>> --- a/drivers/net/phy/phy-core.c
->>>>>>>> +++ b/drivers/net/phy/phy-core.c
->>>>>>>> @@ -704,6 +704,10 @@ EXPORT_SYMBOL_GPL(phy_modify_mmd);
->>>>>>>>       static int __phy_read_page(struct phy_device *phydev)
->>>>>>>>     {
->>>>>>>> +       /* If not attached, do nothing (no warning) */
->>>>>>>> +       if (!phydev->attached_dev)
->>>>>>>> +               return -EOPNOTSUPP;
->>>>>>>> +
->>>>>>>>            if (WARN_ONCE(!phydev->drv->read_page, "read_page callback not available, PHY driver not loaded?\n"))
->>>>>>>>                    return -EOPNOTSUPP;
->>>>>>>>     @@ -712,12 +716,17 @@ static int __phy_read_page(struct phy_device *phydev)
->>>>>>>>       static int __phy_write_page(struct phy_device *phydev, int page)
->>>>>>>>     {
->>>>>>>> +       /* If not attached, do nothing (no warning) */
->>>>>>>> +       if (!phydev->attached_dev)
->>>>>>>> +               return -EOPNOTSUPP;
->>>>>>>> +
->>>>>>>>            if (WARN_ONCE(!phydev->drv->write_page, "write_page callback not available, PHY driver not loaded?\n"))
->>>>>>>>                    return -EOPNOTSUPP;
->>>>>>>>              return phydev->drv->write_page(phydev, page);
->>>>>>>>     }
->>>>>>>>     +
->>>>>>>>     /**
->>>>>>>>      * phy_save_page() - take the bus lock and save the current page
->>>>>>>>      * @phydev: a pointer to a &struct phy_device
->>>>>>>>
->>>>>>>>
->>>>>>>>
->>>>>>>> 15. huhtik. 2020, 19.18, Heiner Kallweit <hkallweit1@gmail.com <mailto:hkallweit1@gmail.com>> kirjoitti:
->>>>>>>>
->>>>>>>>        On 15.04.2020 16:39, Lauri Jakku wrote:
->>>>>>>>
->>>>>>>>            Hi, There seems to he Something odd problem, maybe timing related. Stripped version not workingas expected. I get back to you, when  i have it working.
->>>>>>>>
->>>>>>>>
->>>>>>>>        There's no point in working on your patch. W/o proper justification it
->>>>>>>>        isn't acceptable anyway. And so far we still don't know which problem
->>>>>>>>        you actually have.
->>>>>>>>        FIRST please provide the requested logs and explain the actual problem
->>>>>>>>        (incl. the commit that caused the regression).
->>>>>>>>
->>>>>>>>
->>>>>>>>
->>>>>>>>
->>>>>>>>            13. huhtik. 2020, 14.46, Lauri Jakku <ljakku77@gmail.com <mailto:ljakku77@gmail.com>> kirjoitti: Hi, Fair enough, i'll strip them. -lja On 2020-04-13 14:34, Leon Romanovsky wrote:
->>>>>>>>
->>>>>>>>            On Mon, Apr 13, 2020 at 02:02:01PM +0300, Lauri Jakku wrote: Hi, Comments inline. On 2020-04-13 13:58, Leon Romanovsky wrote: On Mon, Apr 13, 2020 at 01:30:13PM +0300, Lauri Jakku wrote: From 2d41edd4e6455187094f3a13d58c46eeee35aa31 Mon Sep 17 00:00:00 2001 From: Lauri Jakku <lja@iki.fi> Date: Mon, 13 Apr 2020 13:18:35 +0300 Subject: [PATCH] NET: r8168/r8169 identifying fix The driver installation determination made properly by checking PHY vs DRIVER id's. --- drivers/net/ethernet/realtek/r8169_main.c | 70 ++++++++++++++++++++--- drivers/net/phy/mdio_bus.c | 11 +++- 2 files changed, 72 insertions(+), 9 deletions(-) I would say that most of the code is debug prints. I tought that they are helpful to keep, they are using the debug calls, so they are not visible if user does not like those. You are missing the point of who are your users. Users want to have working device and the code. They don't need or like to debug their kernel. Thanks
->>>>>>>>
->>>>>>>>
+
+>
+> [1] https://lore.kernel.org/linux-doc/20200302062340.21453-1-masahiroy@kernel.org/
+>
+> Link: https://lkml.org/lkml/2020/4/8/839
+> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+> Cc: Masahiro Yamada <masahiroy@kernel.org>
+> Cc: linux-kbuild@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> ---
+>  Documentation/kbuild/kconfig-language.rst | 10 ++++++++++
+>  scripts/kconfig/expr.h                    |  1 +
+>  scripts/kconfig/lexer.l                   |  1 +
+>  scripts/kconfig/menu.c                    |  4 +++-
+>  scripts/kconfig/parser.y                  | 15 +++++++++++++++
+>  scripts/kconfig/symbol.c                  |  2 ++
+>  6 files changed, 32 insertions(+), 1 deletion(-)
+>
+> diff --git a/Documentation/kbuild/kconfig-language.rst b/Documentation/kbuild/kconfig-language.rst
+> index a1601ec3317b..8db8c2d80794 100644
+> --- a/Documentation/kbuild/kconfig-language.rst
+> +++ b/Documentation/kbuild/kconfig-language.rst
+> @@ -130,6 +130,16 @@ applicable everywhere (see syntax).
+>  	bool "foo"
+>  	default y
+>  
+> +- uses dependencies: "uses" <symbol>
+> +
+> +  Equivalent to: depends on symbol || !symbol
+> +  Semantically it means, if FOO is enabled (y/m) and has the option:
+> +  uses BAR, make sure it can reach/use BAR when possible.
+> +  For example: if FOO=y and BAR=m, FOO will be forced to m.
+> +
+> +  Note:
+> +      To understand how (symbol || !symbol) is actually computed, please see `Menu dependencies`_
+> +
+>  - reverse dependencies: "select" <symbol> ["if" <expr>]
+>  
+>    While normal dependencies reduce the upper limit of a symbol (see
+> diff --git a/scripts/kconfig/expr.h b/scripts/kconfig/expr.h
+> index 5c3443692f34..face672fb4b4 100644
+> --- a/scripts/kconfig/expr.h
+> +++ b/scripts/kconfig/expr.h
+> @@ -185,6 +185,7 @@ enum prop_type {
+>  	P_CHOICE,   /* choice value */
+>  	P_SELECT,   /* select BAR */
+>  	P_IMPLY,    /* imply BAR */
+> +	P_USES,     /* uses BAR */
+>  	P_RANGE,    /* range 7..100 (for a symbol) */
+>  	P_SYMBOL,   /* where a symbol is defined */
+>  };
+> diff --git a/scripts/kconfig/lexer.l b/scripts/kconfig/lexer.l
+> index 6354c905b006..c6a0017b10d4 100644
+> --- a/scripts/kconfig/lexer.l
+> +++ b/scripts/kconfig/lexer.l
+> @@ -102,6 +102,7 @@ n	[A-Za-z0-9_-]
+>  "default"		return T_DEFAULT;
+>  "defconfig_list"	return T_DEFCONFIG_LIST;
+>  "depends"		return T_DEPENDS;
+> +"uses"			return T_USES;
+>  "endchoice"		return T_ENDCHOICE;
+>  "endif"			return T_ENDIF;
+>  "endmenu"		return T_ENDMENU;
+> diff --git a/scripts/kconfig/menu.c b/scripts/kconfig/menu.c
+> index e436ba44c9c5..e26161b31a11 100644
+> --- a/scripts/kconfig/menu.c
+> +++ b/scripts/kconfig/menu.c
+> @@ -274,7 +274,9 @@ static void sym_check_prop(struct symbol *sym)
+>  			break;
+>  		case P_SELECT:
+>  		case P_IMPLY:
+> -			use = prop->type == P_SELECT ? "select" : "imply";
+> +		case P_USES:
+> +			use = prop->type == P_SELECT ? "select" :
+> +				prop->type == P_IMPLY ? "imply" : "uses";
+>  			sym2 = prop_get_symbol(prop);
+>  			if (sym->type != S_BOOLEAN && sym->type != S_TRISTATE)
+>  				prop_warn(prop,
+> diff --git a/scripts/kconfig/parser.y b/scripts/kconfig/parser.y
+> index 708b6c4b13ca..c5e9abb49d29 100644
+> --- a/scripts/kconfig/parser.y
+> +++ b/scripts/kconfig/parser.y
+> @@ -57,6 +57,7 @@ static struct menu *current_menu, *current_entry;
+>  %token T_DEF_BOOL
+>  %token T_DEF_TRISTATE
+>  %token T_DEPENDS
+> +%token T_USES
+>  %token T_ENDCHOICE
+>  %token T_ENDIF
+>  %token T_ENDMENU
+> @@ -169,6 +170,7 @@ config_option_list:
+>  	  /* empty */
+>  	| config_option_list config_option
+>  	| config_option_list depends
+> +	| config_option_list uses
+>  	| config_option_list help
+>  ;
+>  
+> @@ -261,6 +263,7 @@ choice_option_list:
+>  	  /* empty */
+>  	| choice_option_list choice_option
+>  	| choice_option_list depends
+> +	| choice_option_list uses
+>  	| choice_option_list help
+>  ;
+>  
+> @@ -360,6 +363,7 @@ menu_option_list:
+>  	  /* empty */
+>  	| menu_option_list visible
+>  	| menu_option_list depends
+> +	| menu_option_list uses
+>  ;
+>  
+>  source_stmt: T_SOURCE T_WORD_QUOTE T_EOL
+> @@ -384,6 +388,7 @@ comment_stmt: comment comment_option_list
+>  comment_option_list:
+>  	  /* empty */
+>  	| comment_option_list depends
+> +	| comment_option_list uses
+>  ;
+>  
+>  /* help option */
+> @@ -418,6 +423,16 @@ depends: T_DEPENDS T_ON expr T_EOL
+>  	printd(DEBUG_PARSE, "%s:%d:depends on\n", zconf_curname(), zconf_lineno());
+>  };
+>  
+> +/* uses symbol: depends on symbol || !symbol */
+> +uses: T_USES symbol T_EOL
+> +{
+> +	struct expr *symexpr = expr_alloc_symbol($2);
+> +
+> +	menu_add_dep(expr_alloc_two(E_OR, symexpr, expr_alloc_one(E_NOT, symexpr)));
+> +	printd(DEBUG_PARSE, "%s:%d: uses: depends on %s || ! %s\n",
+> +	       zconf_curname(), zconf_lineno(), $2->name, $2->name);
+> +};
+> +
+>  /* visibility option */
+>  visible: T_VISIBLE if_expr T_EOL
+>  {
+> diff --git a/scripts/kconfig/symbol.c b/scripts/kconfig/symbol.c
+> index 3dc81397d003..422f7ea47722 100644
+> --- a/scripts/kconfig/symbol.c
+> +++ b/scripts/kconfig/symbol.c
+> @@ -1295,6 +1295,8 @@ const char *prop_get_type_name(enum prop_type type)
+>  		return "choice";
+>  	case P_SELECT:
+>  		return "select";
+> +	case P_USES:
+> +		return "uses";
+>  	case P_IMPLY:
+>  		return "imply";
+>  	case P_RANGE:
+
+-- 
+Jani Nikula, Intel Open Source Graphics Center
