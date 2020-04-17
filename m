@@ -2,283 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 667211AD60B
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 08:24:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 955731AD62A
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 08:34:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727883AbgDQGYJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 02:24:09 -0400
-Received: from mga04.intel.com ([192.55.52.120]:31426 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726065AbgDQGYI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Apr 2020 02:24:08 -0400
-IronPort-SDR: 0d/PtWEf/IikgNXNLGsv5umIKbwDP44duDWf/MxINKK72yItyirMDKl0MIh+ZFUvSAe+8+oMjl
- glnWQ2FQXKYA==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2020 23:24:08 -0700
-IronPort-SDR: s1OVE8Gab0x5ILCWljlWbNIGmN4O1SlykUkrbTuUi6cxOCBGldpq4lB+f1s3kFuJD29nrjdOVs
- 1YH7vYflEVjw==
-X-IronPort-AV: E=Sophos;i="5.72,394,1580803200"; 
-   d="scan'208";a="428127032"
-Received: from mcintra-mobl.ger.corp.intel.com (HELO localhost) ([10.249.44.191])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2020 23:24:02 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kbuild@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Saeed Mahameed <saeedm@mellanox.com>, narmstrong@baylibre.com,
-        Laurent.pinchart@ideasonboard.com, leon@kernel.org,
-        kieran.bingham+renesas@ideasonboard.com, jonas@kwiboo.se,
-        airlied@linux.ie, jernej.skrabec@siol.net,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: Re: [RFC PATCH 1/2] Kconfig: Introduce "uses" keyword
-In-Reply-To: <20200417011146.83973-1-saeedm@mellanox.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20200417011146.83973-1-saeedm@mellanox.com>
-Date:   Fri, 17 Apr 2020 09:23:59 +0300
-Message-ID: <87v9ly3a0w.fsf@intel.com>
+        id S1727988AbgDQGdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 02:33:55 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:35419 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727912AbgDQGdw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 02:33:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587105230;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aRp3vqzXNggkBlbb5TjXuZYOr8GevPVbWARU6hChYxw=;
+        b=a5gzAXzJIrV0XgpXiIwM454VPvFtu3tbmICqq68YzQBOoEqCgtJiWyrE64HVk8/vNQJmR6
+        JgBoCNmvbaDvijkLc6KpYvHR7N+Fs9HWObAKPmwaQuRKYawNmvRIXz5iWbdcFbv+zDiYWQ
+        lyL51RdZuF6rgP1R+5ruoDKcPnUg7w4=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-184-xIDUPjP3M0W8AjMxl1e_0A-1; Fri, 17 Apr 2020 02:33:48 -0400
+X-MC-Unique: xIDUPjP3M0W8AjMxl1e_0A-1
+Received: by mail-wm1-f69.google.com with SMTP id d134so2190696wmd.0
+        for <netdev@vger.kernel.org>; Thu, 16 Apr 2020 23:33:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=aRp3vqzXNggkBlbb5TjXuZYOr8GevPVbWARU6hChYxw=;
+        b=FD2x2egJajyHUMMZmbHrnEicIDKsIAP0OfFT25iEJPoeJMpLCUvnMGbj7zKD1LtLAa
+         2WBL4+4bxjqQU5OhvRXyx9DCJgjBTwMspofNBdXfQprG9f6ED/+QZJHQYdX/nXfBNef8
+         Id2xwkW0jV/H+GHL5NIV7uQ8/OrghokaW2XkHQU8MKQircddd4dZidDqfYIS1ePR0OfH
+         9FNdM9bSrcEMlmxNiF5MbZ/TPius5FhNSlUtiW9pMxrIcSzVfeYUQw6FIb7l/L+AKn+S
+         RnKFoobJv3U1s/KNEyfIDVozSRsEG5jDIEY0BEsSu2SHxDwr3MOW504B45Dcu7VgVinu
+         lnxA==
+X-Gm-Message-State: AGi0PuarXETJJgyer/h374ap24fvv8IfLECTg1+tWiyaODMdzgIR3AjO
+        dFNMQIjzqzOWLj0ZTvHITEJOxN/w/1pCx+vYmigCdsMBhR/+doN33STrmdQUUNF8OscZ8Ofqf23
+        GPcIqqap7kDBbNMfM
+X-Received: by 2002:a1c:5a06:: with SMTP id o6mr1725645wmb.34.1587105227212;
+        Thu, 16 Apr 2020 23:33:47 -0700 (PDT)
+X-Google-Smtp-Source: APiQypLC+56jzTsL7mtJ8WJVomZZD1bGAAbZ16bTvi8qD3oQHVUMVTlOszcQ+jGs26hCvKjQJ7zNyQ==
+X-Received: by 2002:a1c:5a06:: with SMTP id o6mr1725618wmb.34.1587105226999;
+        Thu, 16 Apr 2020 23:33:46 -0700 (PDT)
+Received: from redhat.com (bzq-79-183-51-3.red.bezeqint.net. [79.183.51.3])
+        by smtp.gmail.com with ESMTPSA id k184sm6461323wmf.9.2020.04.16.23.33.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Apr 2020 23:33:46 -0700 (PDT)
+Date:   Fri, 17 Apr 2020 02:33:43 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, geert@linux-m68k.org,
+        tsbogend@alpha.franken.de, benh@kernel.crashing.org,
+        paulus@samba.org, heiko.carstens@de.ibm.com, gor@linux.ibm.com,
+        borntraeger@de.ibm.com, Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH V2] vhost: do not enable VHOST_MENU by default
+Message-ID: <20200417022929-mutt-send-email-mst@kernel.org>
+References: <20200415024356.23751-1-jasowang@redhat.com>
+ <20200416185426-mutt-send-email-mst@kernel.org>
+ <b7e2deb7-cb64-b625-aeb4-760c7b28c0c8@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b7e2deb7-cb64-b625-aeb4-760c7b28c0c8@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Apr 2020, Saeed Mahameed <saeedm@mellanox.com> wrote:
-> Due to the changes to the semantics of imply keyword [1], which now
-> doesn't force any config options to the implied configs any more.
->
-> A module (FOO) that has a weak dependency on some other modules (BAR)
-> is now broken if it was using imply to force dependency restrictions.
-> e.g.: FOO needs BAR to be reachable, especially when FOO=y and BAR=m.
-> Which might now introduce build/link errors.
->
-> There are two options to solve this:
-> 1. use IS_REACHABLE(BAR), everywhere BAR is referenced inside FOO.
-> 2. in FOO's Kconfig add: depends on (BAR || !BAR)
->
-> The first option is not desirable, and will leave the user confused when
-> setting FOO=y and BAR=m, FOO will never reach BAR even though both are
-> compiled.
->
-> The 2nd one is the preferred approach, and will guarantee BAR is always
-> reachable by FOO if both are compiled. But, (BAR || !BAR) is really
-> confusing for those who don't really get how kconfig tristate arithmetics
-> work.
->
-> To solve this and hide this weird expression and to avoid repetition
-> across the tree, we introduce new keyword "uses" to the Kconfig options
-> family.
->
-> uses BAR:
-> Equivalent to: depends on symbol || !symbol
-> Semantically it means, if FOO is enabled (y/m) and has the option:
-> uses BAR, make sure it can reach/use BAR when possible.
->
-> For example: if FOO=y and BAR=m, FOO will be forced to m.
+On Fri, Apr 17, 2020 at 11:12:14AM +0800, Jason Wang wrote:
+> 
+> On 2020/4/17 上午6:55, Michael S. Tsirkin wrote:
+> > On Wed, Apr 15, 2020 at 10:43:56AM +0800, Jason Wang wrote:
+> > > We try to keep the defconfig untouched after decoupling CONFIG_VHOST
+> > > out of CONFIG_VIRTUALIZATION in commit 20c384f1ea1a
+> > > ("vhost: refine vhost and vringh kconfig") by enabling VHOST_MENU by
+> > > default. Then the defconfigs can keep enabling CONFIG_VHOST_NET
+> > > without the caring of CONFIG_VHOST.
+> > > 
+> > > But this will leave a "CONFIG_VHOST_MENU=y" in all defconfigs and even
+> > > for the ones that doesn't want vhost. So it actually shifts the
+> > > burdens to the maintainers of all other to add "CONFIG_VHOST_MENU is
+> > > not set". So this patch tries to enable CONFIG_VHOST explicitly in
+> > > defconfigs that enables CONFIG_VHOST_NET and CONFIG_VHOST_VSOCK.
+> > > 
+> > > Acked-by: Christian Borntraeger<borntraeger@de.ibm.com>  (s390)
+> > > Acked-by: Michael Ellerman<mpe@ellerman.id.au>  (powerpc)
+> > > Cc: Thomas Bogendoerfer<tsbogend@alpha.franken.de>
+> > > Cc: Benjamin Herrenschmidt<benh@kernel.crashing.org>
+> > > Cc: Paul Mackerras<paulus@samba.org>
+> > > Cc: Michael Ellerman<mpe@ellerman.id.au>
+> > > Cc: Heiko Carstens<heiko.carstens@de.ibm.com>
+> > > Cc: Vasily Gorbik<gor@linux.ibm.com>
+> > > Cc: Christian Borntraeger<borntraeger@de.ibm.com>
+> > > Reported-by: Geert Uytterhoeven<geert@linux-m68k.org>
+> > > Signed-off-by: Jason Wang<jasowang@redhat.com>
+> > I rebased this on top of OABI fix since that
+> > seems more orgent to fix.
+> > Pushed to my vhost branch pls take a look and
+> > if possible test.
+> > Thanks!
+> 
+> 
+> I test this patch by generating the defconfigs that wants vhost_net or
+> vhost_vsock. All looks fine.
+> 
+> But having CONFIG_VHOST_DPN=y may end up with the similar situation that
+> this patch want to address.
+> Maybe we can let CONFIG_VHOST depends on !ARM || AEABI then add another
+> menuconfig for VHOST_RING and do something similar?
+> 
+> Thanks
 
-Thanks for doing this. I think *something* needs to be done to help
-people grasp the "depends on FOO || FOO=n" construct; I've seen many
-experienced stumble on this, it's not a rookie mistake.
-
-I suggested "uses" as a keyword, but I'm not hung up on it.
-
-Grepping some Kconfigs a problem I realized with *any* new keyword is
-that (FOO || FOO=n) or (FOO || !FOO) is a construct that can be part of
-a larger depends on.
-
-For example,
-
-drivers/net/ethernet/broadcom/Kconfig:  depends on PCI && (IPV6 || IPV6=n)
-
-Which means that would have to split up to two. Not ideal, but doable. I
-did not find any (FOO || FOO=n) || BAR which would not work with a new
-keyword.
-
-An alternative approach that I thought of is adding a lower level
-expression to tackle this? "FOO=optional" would expand to (FOO || FOO=n)
-anywhere. I have no clue how hard this would be to implement.
-
-For example:
-
-	depends on FOO=optional
-=>	
-	depends on (FOO || FOO=n)
-
-and:
-
-	depends on FOO=optional || BAR
-=>
-	depends on (FOO || FOO=n) || BAR
-
-
-The "optional" keyword is of course open for bikeshedding, but the key
-part here I think is that the "depends on" remains, and should be
-obvious. And also the =optional ties better to the actual symbol being
-depended on.
-
-Thoughts?
-
-BR,
-Jani.
-
-
-
->
-> [1] https://lore.kernel.org/linux-doc/20200302062340.21453-1-masahiroy@kernel.org/
->
-> Link: https://lkml.org/lkml/2020/4/8/839
-> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
-> Cc: Masahiro Yamada <masahiroy@kernel.org>
-> Cc: linux-kbuild@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> ---
->  Documentation/kbuild/kconfig-language.rst | 10 ++++++++++
->  scripts/kconfig/expr.h                    |  1 +
->  scripts/kconfig/lexer.l                   |  1 +
->  scripts/kconfig/menu.c                    |  4 +++-
->  scripts/kconfig/parser.y                  | 15 +++++++++++++++
->  scripts/kconfig/symbol.c                  |  2 ++
->  6 files changed, 32 insertions(+), 1 deletion(-)
->
-> diff --git a/Documentation/kbuild/kconfig-language.rst b/Documentation/kbuild/kconfig-language.rst
-> index a1601ec3317b..8db8c2d80794 100644
-> --- a/Documentation/kbuild/kconfig-language.rst
-> +++ b/Documentation/kbuild/kconfig-language.rst
-> @@ -130,6 +130,16 @@ applicable everywhere (see syntax).
->  	bool "foo"
->  	default y
->  
-> +- uses dependencies: "uses" <symbol>
-> +
-> +  Equivalent to: depends on symbol || !symbol
-> +  Semantically it means, if FOO is enabled (y/m) and has the option:
-> +  uses BAR, make sure it can reach/use BAR when possible.
-> +  For example: if FOO=y and BAR=m, FOO will be forced to m.
-> +
-> +  Note:
-> +      To understand how (symbol || !symbol) is actually computed, please see `Menu dependencies`_
-> +
->  - reverse dependencies: "select" <symbol> ["if" <expr>]
->  
->    While normal dependencies reduce the upper limit of a symbol (see
-> diff --git a/scripts/kconfig/expr.h b/scripts/kconfig/expr.h
-> index 5c3443692f34..face672fb4b4 100644
-> --- a/scripts/kconfig/expr.h
-> +++ b/scripts/kconfig/expr.h
-> @@ -185,6 +185,7 @@ enum prop_type {
->  	P_CHOICE,   /* choice value */
->  	P_SELECT,   /* select BAR */
->  	P_IMPLY,    /* imply BAR */
-> +	P_USES,     /* uses BAR */
->  	P_RANGE,    /* range 7..100 (for a symbol) */
->  	P_SYMBOL,   /* where a symbol is defined */
->  };
-> diff --git a/scripts/kconfig/lexer.l b/scripts/kconfig/lexer.l
-> index 6354c905b006..c6a0017b10d4 100644
-> --- a/scripts/kconfig/lexer.l
-> +++ b/scripts/kconfig/lexer.l
-> @@ -102,6 +102,7 @@ n	[A-Za-z0-9_-]
->  "default"		return T_DEFAULT;
->  "defconfig_list"	return T_DEFCONFIG_LIST;
->  "depends"		return T_DEPENDS;
-> +"uses"			return T_USES;
->  "endchoice"		return T_ENDCHOICE;
->  "endif"			return T_ENDIF;
->  "endmenu"		return T_ENDMENU;
-> diff --git a/scripts/kconfig/menu.c b/scripts/kconfig/menu.c
-> index e436ba44c9c5..e26161b31a11 100644
-> --- a/scripts/kconfig/menu.c
-> +++ b/scripts/kconfig/menu.c
-> @@ -274,7 +274,9 @@ static void sym_check_prop(struct symbol *sym)
->  			break;
->  		case P_SELECT:
->  		case P_IMPLY:
-> -			use = prop->type == P_SELECT ? "select" : "imply";
-> +		case P_USES:
-> +			use = prop->type == P_SELECT ? "select" :
-> +				prop->type == P_IMPLY ? "imply" : "uses";
->  			sym2 = prop_get_symbol(prop);
->  			if (sym->type != S_BOOLEAN && sym->type != S_TRISTATE)
->  				prop_warn(prop,
-> diff --git a/scripts/kconfig/parser.y b/scripts/kconfig/parser.y
-> index 708b6c4b13ca..c5e9abb49d29 100644
-> --- a/scripts/kconfig/parser.y
-> +++ b/scripts/kconfig/parser.y
-> @@ -57,6 +57,7 @@ static struct menu *current_menu, *current_entry;
->  %token T_DEF_BOOL
->  %token T_DEF_TRISTATE
->  %token T_DEPENDS
-> +%token T_USES
->  %token T_ENDCHOICE
->  %token T_ENDIF
->  %token T_ENDMENU
-> @@ -169,6 +170,7 @@ config_option_list:
->  	  /* empty */
->  	| config_option_list config_option
->  	| config_option_list depends
-> +	| config_option_list uses
->  	| config_option_list help
->  ;
->  
-> @@ -261,6 +263,7 @@ choice_option_list:
->  	  /* empty */
->  	| choice_option_list choice_option
->  	| choice_option_list depends
-> +	| choice_option_list uses
->  	| choice_option_list help
->  ;
->  
-> @@ -360,6 +363,7 @@ menu_option_list:
->  	  /* empty */
->  	| menu_option_list visible
->  	| menu_option_list depends
-> +	| menu_option_list uses
->  ;
->  
->  source_stmt: T_SOURCE T_WORD_QUOTE T_EOL
-> @@ -384,6 +388,7 @@ comment_stmt: comment comment_option_list
->  comment_option_list:
->  	  /* empty */
->  	| comment_option_list depends
-> +	| comment_option_list uses
->  ;
->  
->  /* help option */
-> @@ -418,6 +423,16 @@ depends: T_DEPENDS T_ON expr T_EOL
->  	printd(DEBUG_PARSE, "%s:%d:depends on\n", zconf_curname(), zconf_lineno());
->  };
->  
-> +/* uses symbol: depends on symbol || !symbol */
-> +uses: T_USES symbol T_EOL
-> +{
-> +	struct expr *symexpr = expr_alloc_symbol($2);
-> +
-> +	menu_add_dep(expr_alloc_two(E_OR, symexpr, expr_alloc_one(E_NOT, symexpr)));
-> +	printd(DEBUG_PARSE, "%s:%d: uses: depends on %s || ! %s\n",
-> +	       zconf_curname(), zconf_lineno(), $2->name, $2->name);
-> +};
-> +
->  /* visibility option */
->  visible: T_VISIBLE if_expr T_EOL
->  {
-> diff --git a/scripts/kconfig/symbol.c b/scripts/kconfig/symbol.c
-> index 3dc81397d003..422f7ea47722 100644
-> --- a/scripts/kconfig/symbol.c
-> +++ b/scripts/kconfig/symbol.c
-> @@ -1295,6 +1295,8 @@ const char *prop_get_type_name(enum prop_type type)
->  		return "choice";
->  	case P_SELECT:
->  		return "select";
-> +	case P_USES:
-> +		return "uses";
->  	case P_IMPLY:
->  		return "imply";
->  	case P_RANGE:
+Sorry I don't understand. After this patch CONFIG_VHOST_DPN is just
+an internal variable for the OABI fix. I kept it separate
+so it's easy to revert for 5.8. Yes we could squash it into
+VHOST directly but I don't see how that changes logic at all.
 
 -- 
-Jani Nikula, Intel Open Source Graphics Center
+MST
+
