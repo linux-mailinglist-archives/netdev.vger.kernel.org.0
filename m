@@ -2,91 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7828E1ADEA0
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 15:42:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA4EA1ADEEB
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 16:03:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730701AbgDQNmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 09:42:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56074 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730597AbgDQNmL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 09:42:11 -0400
-X-Greylist: delayed 3889 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 17 Apr 2020 06:42:11 PDT
-Received: from mail.blocktrron.ovh (mars.blocktrron.ovh [IPv6:2001:41d0:401:3000::cbd])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC5CC061A0C
-        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 06:42:11 -0700 (PDT)
-Received: from dbauer-t470.home.david-bauer.net (p200300E53F0BB000FCE978B80865F4DD.dip0.t-ipconnect.de [IPv6:2003:e5:3f0b:b000:fce9:78b8:865:f4dd])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.blocktrron.ovh (Postfix) with ESMTPSA id 8BCA222E3F
-        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 15:42:09 +0200 (CEST)
-From:   David Bauer <mail@david-bauer.net>
-To:     netdev@vger.kernel.org
-Subject: [PATCH v2] net: phy: at803x: add support for AR8032 PHY
-Date:   Fri, 17 Apr 2020 15:41:59 +0200
-Message-Id: <20200417134159.427556-1-mail@david-bauer.net>
-X-Mailer: git-send-email 2.26.0
+        id S1730812AbgDQOB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 10:01:26 -0400
+Received: from mga07.intel.com ([134.134.136.100]:17012 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730563AbgDQOB0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Apr 2020 10:01:26 -0400
+IronPort-SDR: 9G5Y4n+m+tA+3V/ar4rIO5XZI6Yb6RI7j8XrjHT+4sPh9x9DXqb28r4DM5LGQvpv8KH5D2q2dd
+ BZ/bAv7CJvHw==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2020 07:01:25 -0700
+IronPort-SDR: xEz2/0SJGhLBRYrVu2I7Ws34KqqK5pqUSvSLjjTEr/7tqRLaMzE2OaYX4cGlmmJzKLKuMfyUU7
+ r5HAKpcCqDyA==
+X-IronPort-AV: E=Sophos;i="5.72,395,1580803200"; 
+   d="scan'208";a="428234168"
+Received: from mcintra-mobl.ger.corp.intel.com (HELO localhost) ([10.249.44.191])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2020 07:01:20 -0700
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kbuild@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Nicolas Pitre <nico@fluxnic.net>, narmstrong@baylibre.com,
+        Laurent.pinchart@ideasonboard.com, leon@kernel.org,
+        kieran.bingham+renesas@ideasonboard.com, jonas@kwiboo.se,
+        airlied@linux.ie, jernej.skrabec@siol.net,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Andrzej Hajda <a.hajda@samsung.com>
+Subject: Re: [RFC PATCH 1/2] Kconfig: Introduce "uses" keyword
+In-Reply-To: <20200417122827.GD5100@ziepe.ca>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20200417011146.83973-1-saeedm@mellanox.com> <87v9ly3a0w.fsf@intel.com> <20200417122827.GD5100@ziepe.ca>
+Date:   Fri, 17 Apr 2020 17:01:18 +0300
+Message-ID: <87h7xi2oup.fsf@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds support for the Qualcomm Atheros AR8032 Fast Ethernet PHY.
+On Fri, 17 Apr 2020, Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> On Fri, Apr 17, 2020 at 09:23:59AM +0300, Jani Nikula wrote:
+>
+>> Which means that would have to split up to two. Not ideal, but
+>> doable.
+>
+> Why is this not ideal?
+>
+> I think the one per line is easier to maintain (eg for merge
+> conflicts) and easier to read than a giant && expression.
+>
+> I would not complicate things further by extending the boolean
+> language..
 
-It shares many similarities with the already supported AR8030 PHY but
-additionally supports MII connection to the MAC.
+Fair enough. I only found one instance where the patch at hand does not
+cut it:
 
-Signed-off-by: David Bauer <mail@david-bauer.net>
----
-Accidentally sent a very old WIP as v1.
+drivers/hwmon/Kconfig:  depends on !OF || IIO=n || IIO
 
- drivers/net/phy/at803x.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+That can of course be left as it is.
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 31f731e6df72..31b6edcc1fd1 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -106,6 +106,7 @@
- #define ATH9331_PHY_ID 0x004dd041
- #define ATH8030_PHY_ID 0x004dd076
- #define ATH8031_PHY_ID 0x004dd074
-+#define ATH8032_PHY_ID 0x004dd023
- #define ATH8035_PHY_ID 0x004dd072
- #define AT803X_PHY_ID_MASK			0xffffffef
- 
-@@ -762,6 +763,21 @@ static struct phy_driver at803x_driver[] = {
- 	.aneg_done		= at803x_aneg_done,
- 	.ack_interrupt		= &at803x_ack_interrupt,
- 	.config_intr		= &at803x_config_intr,
-+}, {
-+	/* Qualcomm Atheros AR8032 */
-+	PHY_ID_MATCH_EXACT(ATH8032_PHY_ID),
-+	.name			= "Qualcomm Atheros AR8032",
-+	.probe			= at803x_probe,
-+	.remove			= at803x_remove,
-+	.config_init		= at803x_config_init,
-+	.link_change_notify	= at803x_link_change_notify,
-+	.set_wol		= at803x_set_wol,
-+	.get_wol		= at803x_get_wol,
-+	.suspend		= at803x_suspend,
-+	.resume			= at803x_resume,
-+	/* PHY_BASIC_FEATURES */
-+	.ack_interrupt		= at803x_ack_interrupt,
-+	.config_intr		= at803x_config_intr,
- }, {
- 	/* ATHEROS AR9331 */
- 	PHY_ID_MATCH_EXACT(ATH9331_PHY_ID),
-@@ -778,6 +794,7 @@ module_phy_driver(at803x_driver);
- static struct mdio_device_id __maybe_unused atheros_tbl[] = {
- 	{ ATH8030_PHY_ID, AT803X_PHY_ID_MASK },
- 	{ ATH8031_PHY_ID, AT803X_PHY_ID_MASK },
-+	{ PHY_ID_MATCH_EXACT(ATH8032_PHY_ID) },
- 	{ ATH8035_PHY_ID, AT803X_PHY_ID_MASK },
- 	{ PHY_ID_MATCH_EXACT(ATH9331_PHY_ID) },
- 	{ }
+As to the bikeshedding topic, I think I'm now leaning towards Andrzej's
+suggestion:
+
+	optionally depends on FOO
+
+in [1]. But I reserve my right to change my mind. ;)
+
+BR,
+Jani.
+
+
+[1] http://lore.kernel.org/r/01f964ae-9c32-7531-1f07-2687616b6a71@samsung.com
+
 -- 
-2.26.0
-
+Jani Nikula, Intel Open Source Graphics Center
