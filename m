@@ -2,73 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FD9F1AE5DA
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 21:34:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EE671AE5DD
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 21:34:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730407AbgDQTe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 15:34:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44866 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728826AbgDQTe0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Apr 2020 15:34:26 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 47803206B9;
-        Fri, 17 Apr 2020 19:34:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587152066;
-        bh=cgTuU2wq4VHHMob0ArleEq1p95SpnlUXFK7duK8u4Hs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zqVxr4ILCmq1pKp/UpPNhgwbYVAPoEpxsmbVcRTYk/Hl+5lWEBWcQHdDlnFwyWZE6
-         zDz2yZ9knh0CRBlxgJ1N4T7bkwypzAHLo9DwTT2ja4CY1OPElA4g7H7DXF8mkPm1k0
-         rLzih/cyKZr67zoOV826m1xwqqrxIOAmysu+rfJQ=
-Date:   Fri, 17 Apr 2020 22:34:21 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     gregkh@linuxfoundation.org, jgg@ziepe.ca,
-        Mustafa Ismail <mustafa.ismail@intel.com>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Shiraz Saleem <shiraz.saleem@intel.com>
-Subject: Re: [RFC PATCH v5 01/16] RDMA/irdma: Add driver framework definitions
-Message-ID: <20200417193421.GB3083@unreal>
-References: <20200417171251.1533371-1-jeffrey.t.kirsher@intel.com>
- <20200417171251.1533371-2-jeffrey.t.kirsher@intel.com>
+        id S1730457AbgDQTej (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 15:34:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54476 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728826AbgDQTei (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 15:34:38 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C404C061A0C;
+        Fri, 17 Apr 2020 12:34:38 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id ms17so1493965pjb.0;
+        Fri, 17 Apr 2020 12:34:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=tQnh9bMknhmK0SLjhY8GYeOkFSZfOfpp0SuxWOSDDX0=;
+        b=IMMzb43Rae3Ny+NkzukzwSVkTodIPkm8EK9cG6V+/8cgcsYlezidqynTgJB7haepXz
+         NNx7KxIuli5YAMPp1VzJVr37tuXzI7G3C9T53REH+Qyp4UJ6z2DzXKGu/HZSSqKlJhpC
+         XpR2Z0CweEAMPGJeivq90NuYlb33XbXjbrWG6tyTQYSvWH07N8sxr4gh+zoOMIecba3Y
+         5M+cKgkVYpyO3gT3TE3Bh602GSfWtRG14NDrsDp2AGkg5OwzZ4Mt7Xg+WVkjkiATfVi8
+         5SVfpbUOPFE/NNEzDYeCj2DGcG8DoDFRoHH7taWk4CKhBfpp9JCuXdkINa5yJYTxeBPB
+         5sHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=tQnh9bMknhmK0SLjhY8GYeOkFSZfOfpp0SuxWOSDDX0=;
+        b=MXJ7oKaX0zzs7f6VlraEHhgNIHqSm+vWRDIjZnS4Sglcd+zE9F2B+D7ekjV7EiFBrZ
+         O+AWTZZVyTlLeWqKAXSvTZaBP11vsAmUTRKQgKxbzSeu2AhYrzrPqK3Kef+Ew+xn7kIa
+         178U6VW9Roa2za3g4vhhDQsx+Jo2LD1Kvw9ZGqsFHI2wILZupW37Mwz2m3/2V8nSRXq1
+         PP8CF7hvn9xgLjmIrMdvIpagKttr+TEZ7R09m8wbKl9SMu9DN0beXFlxFrwSqNJBGjYm
+         I39n34pDkYeBVSqdrq26dNsqqPgnc6Rb9nq/HPKmUaK3W/OCVh525ntVJShNw23bw0S7
+         HTaA==
+X-Gm-Message-State: AGi0Pua8KoojXhY97l+RdEuW1MKHXE16a5TkKXdAc7zRWuDDkwrMbbI0
+        wv9KDdbQN2YAP0YdjHCwDvY=
+X-Google-Smtp-Source: APiQypIL6KyowX9unVOk4wA2Mdi6nQNAg2BioJEZe34qxKKWZRXAypJ+sBFiBKMg3329barooUFNBA==
+X-Received: by 2002:a17:902:d70f:: with SMTP id w15mr5027642ply.138.1587152077669;
+        Fri, 17 Apr 2020 12:34:37 -0700 (PDT)
+Received: from [10.230.188.26] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id g22sm6299187pju.21.2020.04.17.12.34.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Apr 2020 12:34:36 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/3] net: phy: broadcom: add helper to write/read
+ RDB registers
+To:     Michael Walle <michael@walle.cc>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>
+References: <20200417192858.6997-1-michael@walle.cc>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <ddc9c4e1-0bbb-a058-be70-e6cb772271da@gmail.com>
+Date:   Fri, 17 Apr 2020 12:34:34 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200417171251.1533371-2-jeffrey.t.kirsher@intel.com>
+In-Reply-To: <20200417192858.6997-1-michael@walle.cc>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 17, 2020 at 10:12:36AM -0700, Jeff Kirsher wrote:
-> From: Mustafa Ismail <mustafa.ismail@intel.com>
->
-> Register irdma as a virtbus driver capable of supporting virtbus
-> devices from multi-generation RDMA capable Intel HW. Establish the
-> interface with all supported netdev peer drivers and initialize HW.
->
-> Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-> Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> ---
->  drivers/infiniband/hw/irdma/i40iw_if.c | 228 ++++++++++
->  drivers/infiniband/hw/irdma/irdma_if.c | 449 ++++++++++++++++++
->  drivers/infiniband/hw/irdma/main.c     | 573 +++++++++++++++++++++++
->  drivers/infiniband/hw/irdma/main.h     | 599 +++++++++++++++++++++++++
->  4 files changed, 1849 insertions(+)
->  create mode 100644 drivers/infiniband/hw/irdma/i40iw_if.c
->  create mode 100644 drivers/infiniband/hw/irdma/irdma_if.c
->  create mode 100644 drivers/infiniband/hw/irdma/main.c
->  create mode 100644 drivers/infiniband/hw/irdma/main.h
->
 
-I didn't look in too much details, but three things caught my
-attention immediately:
-1. Existence of ARP cache management logic in RDMA driver.
-2. Extensive use of dev_*() prints while we have ibdev_*() prints
-3. Extra includes (moduleparam.h ???).
 
-Thanks
+On 4/17/2020 12:28 PM, Michael Walle wrote:
+> RDB regsiters are used on newer Broadcom PHYs. Add helper to read, write
+> and modify these registers.
+
+Only if you have to respin: please correct the typo above: regsiters vs. 
+registers.
+
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
