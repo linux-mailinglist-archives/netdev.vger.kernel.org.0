@@ -2,110 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E4B91ADF72
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 16:11:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C88D1ADF89
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 16:11:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730888AbgDQOHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 10:07:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60156 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730843AbgDQOHx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 10:07:53 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B93BC061A10
-        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 07:07:53 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id bu9so892576qvb.13
-        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 07:07:53 -0700 (PDT)
+        id S1730849AbgDQOK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 10:10:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60560 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730563AbgDQOK2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 10:10:28 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C602C061A0C
+        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 07:10:28 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id c22so591186pgb.7
+        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 07:10:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=+LqhOO57sChESg9+cIngyrXtjaLelgEgf+v+L/tbLWk=;
-        b=gy59aPv8zMj56Mv03vyLFGLBjHJ7J1u+UArIzN0R+rT72xnw/cutPk5HRKX2d/1xSE
-         hKj5WfRwjwgNBiBwpu21u9UkwU1NN7FZGkJLCpxItWEKZUwsINzhO6JPR6PivXLj7MQo
-         DzlEdqiF/kNV0iIENDraE2hef4Q3wXijNqzULS2WDLUwm63Q6O7Y1oO0EPjvaSWN7MD0
-         AunwqeklzSrYcvc3UTO2x5yR3FPVWYFM74ybRxl3Xmx6E1s4oWCv/m8igVBmhfwOLa12
-         kXgIX2z40DDQpn1mBfE7DJmt9RJZ1SuirkW4fEIj9HgNfMqTedHLx/oI8bh09LtR45/s
-         R9gQ==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=l/ubaUKeAg8N1Fd1hG4KHPkWsmXk4oxdzdO6tlSczSw=;
+        b=rswe3m6ZkBhYk60C7EqcAsWBxMswWed3fMpumuTLViKJfN04hFuO00WvJ4bS+F45Ng
+         N2kP9rVumzJpgMAHjs+WQufMLkx3S9a4G9VUYWNEey3cdlepQuPsqwFnh1mFT1TZO8WL
+         qf2iw7HHlsoWUDJ8d9MMnA5o3/yCH9dj5dHULJApgmG6N/JvOj1QJvu9xUiuh8HOKX2g
+         Za3vxkWy0i8gh+KzkQXbrclCB4/ibclh4Ps5C5dnCQNohFxvlJ97LW04yIOUwGJ3IaOm
+         tQmg2rUXpngW+skvwYMkzmMpgUB6vek7KbcGiTw87pc+li8dZLChXyOHy3yHsEcghSfy
+         di2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=+LqhOO57sChESg9+cIngyrXtjaLelgEgf+v+L/tbLWk=;
-        b=IvFvlWqnSurOUseCbelBzz6whB+SM9Dty6rFAthEhDmzZci+xgc4eejkGXn2Ui79ht
-         mRvLEnvF97L9QwP9Tfbk9Ii6Do9zGd4f4ZgECUUdg3KViYzjlX5Pcvyhen+rDbS9WfUj
-         9gmgtzQ1adqfhPrpwS9VhITQWuxEC29X2uV+YtvyZ2oN7syze27Ia2uUmbo2vvlUXOA3
-         J2sbvpPwXlzp/DHsCWVAnq1R2PQeo+/+ebB9CCjGL4r5rmGYCDQT3wMoJqg4al13Z/E4
-         fQ2ZPLmpZpGkuNBoFtPEgXOAGNS2o77YzJBuqJ2gFE5w5yXNx5Bg/PqjYFEvpWOvVjPQ
-         z2tw==
-X-Gm-Message-State: AGi0PublyyN8QZoQ6ACMg/KM1lrAD8jDwsoCoqGVxsiA54iaJX7smPKs
-        LuFke7J/k4d8WFq0uxWndilyrw==
-X-Google-Smtp-Source: APiQypKaGok3DQChb57xxsDjD/Iyacg7EOqm08DjV1CqcQ8BJaa7llQ5QiLWdRU37gbKKcQtu2odUg==
-X-Received: by 2002:a0c:b790:: with SMTP id l16mr2844426qve.244.1587132472350;
-        Fri, 17 Apr 2020 07:07:52 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id n190sm16749764qkb.93.2020.04.17.07.07.51
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 17 Apr 2020 07:07:51 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jPReo-0000hP-VC; Fri, 17 Apr 2020 11:07:50 -0300
-Date:   Fri, 17 Apr 2020 11:07:50 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Jani Nikula <jani.nikula@linux.intel.com>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kbuild@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Nicolas Pitre <nico@fluxnic.net>, narmstrong@baylibre.com,
-        Laurent.pinchart@ideasonboard.com, leon@kernel.org,
-        kieran.bingham+renesas@ideasonboard.com, jonas@kwiboo.se,
-        airlied@linux.ie, jernej.skrabec@siol.net,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, Andrzej Hajda <a.hajda@samsung.com>
-Subject: Re: [RFC PATCH 1/2] Kconfig: Introduce "uses" keyword
-Message-ID: <20200417140750.GF26002@ziepe.ca>
-References: <20200417011146.83973-1-saeedm@mellanox.com>
- <87v9ly3a0w.fsf@intel.com>
- <20200417122827.GD5100@ziepe.ca>
- <87h7xi2oup.fsf@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87h7xi2oup.fsf@intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=l/ubaUKeAg8N1Fd1hG4KHPkWsmXk4oxdzdO6tlSczSw=;
+        b=iXnApIMd/CO2GroMSIrPksS4W2Ih/ONpPT5f3zewtavfS84MZcBCttL1KaCAahM12n
+         C6+k6KCIxgIttccMHl51FWbybqnyz7YYQujHOxZIiIXAIipPC/u/lKUVkif3FzLX1EN5
+         OM0Mf/9QUTTJidZHbrB+Hb80QDpWM5OPcT0uPP8MQ8C1hdh5weUPQZ6qzYtoULkb/Kbg
+         lR1hT+pk9Othyh0+J/rqKQ1kjHu3gpOnhLL1sFu/XuWujmmRKgV3QM5wqfMK2aVIAt81
+         zdKhIPmpVYGCfxeVW96B22I28K82CpgpToW60B86d6wkOaoXxmMJKiJ21GM6OsPlIYaO
+         XVxw==
+X-Gm-Message-State: AGi0PuZmByVqTDpLTJDe1XR5s/lXR0O1sPC01Or9FuOOZFAgMrbWMgQo
+        Wty63wIs4+r6Q7N2SazHPqAOhVRloXag0g==
+X-Google-Smtp-Source: APiQypKTwVX6TmSzHsTnQtBfoPl/CRNmbNjUPh1EyI7PsEJ9aGEpfg2Zz1/AZQLVJZw4tfatVCr2rORjsr72/Q==
+X-Received: by 2002:a17:90a:23ad:: with SMTP id g42mr4487754pje.35.1587132627955;
+ Fri, 17 Apr 2020 07:10:27 -0700 (PDT)
+Date:   Fri, 17 Apr 2020 07:10:23 -0700
+Message-Id: <20200417141023.113008-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.26.1.301.g55bc3eb7cb9-goog
+Subject: [PATCH net] tcp: cache line align MAX_TCP_HEADER
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 17, 2020 at 05:01:18PM +0300, Jani Nikula wrote:
-> On Fri, 17 Apr 2020, Jason Gunthorpe <jgg@ziepe.ca> wrote:
-> > On Fri, Apr 17, 2020 at 09:23:59AM +0300, Jani Nikula wrote:
-> >
-> >> Which means that would have to split up to two. Not ideal, but
-> >> doable.
-> >
-> > Why is this not ideal?
-> >
-> > I think the one per line is easier to maintain (eg for merge
-> > conflicts) and easier to read than a giant && expression.
-> >
-> > I would not complicate things further by extending the boolean
-> > language..
-> 
-> Fair enough. I only found one instance where the patch at hand does not
-> cut it:
-> 
-> drivers/hwmon/Kconfig:  depends on !OF || IIO=n || IIO
+TCP stack is dumb in how it cooks its output packets.
 
-Ideally this constraint would be expressed as:
+Depending on MAX_HEADER value, we might chose a bad ending point
+for the headers.
 
-   optionally depends on OF && IIO
+If we align the end of TCP headers to cache line boundary, we
+make sure to always use the smallest number of cache lines,
+which always help.
 
-And if the expression is n then IIO is not prevented from being y.
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Soheil Hassas Yeganeh <soheil@google.com>
+---
+ include/net/tcp.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Ie the code is just doing:
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 5fa9eacd965a4abd6a4dd5262fa0d439aa9fe64e..dcf9a72eeaa6912202e8a1ca6cf800f7401bf517 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -51,7 +51,7 @@ extern struct inet_hashinfo tcp_hashinfo;
+ extern struct percpu_counter tcp_orphan_count;
+ void tcp_time_wait(struct sock *sk, int state, int timeo);
+ 
+-#define MAX_TCP_HEADER	(128 + MAX_HEADER)
++#define MAX_TCP_HEADER	L1_CACHE_ALIGN(128 + MAX_HEADER)
+ #define MAX_TCP_OPTION_SPACE 40
+ #define TCP_MIN_SND_MSS		48
+ #define TCP_MIN_GSO_SIZE	(TCP_MIN_SND_MSS - MAX_TCP_OPTION_SPACE)
+-- 
+2.26.1.301.g55bc3eb7cb9-goog
 
-#if defined(CONFIG_OF) && IS_ENABLED(CONFIG_IIO)
-
-Jason
