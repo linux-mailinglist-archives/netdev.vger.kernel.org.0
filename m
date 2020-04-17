@@ -2,160 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCDDD1ADCF6
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 14:10:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C868C1ADD53
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 14:30:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728100AbgDQMJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 08:09:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41748 "EHLO
+        id S1728925AbgDQM2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 08:28:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726050AbgDQMJg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 08:09:36 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A5FDC061A0C
-        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 05:09:36 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id i2so920778ybk.2
-        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 05:09:36 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1728071AbgDQM2a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 08:28:30 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43EACC061A0C
+        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 05:28:30 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id c63so2151584qke.2
+        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 05:28:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=J2VwpMHDruurLAkZ8tY6Y0C7uBDHQtpeGJUXXg0TbCk=;
-        b=TPe89O3WSr/0OH6HO4NM2orfODdxqxCbcRNtiMBsx69+KaPhsi6mSA5fw30Ynq6afU
-         Dv1Mh3mbXTo4tqLpAAW5ufSaduq3w6NbAOmB4ZHFC4ReYbVLYyTphRQhKpAbyrRL0ooe
-         7+n9bJ55mAOZilft0Mdo6fyk8WuOAB7W+bc7griIAROVqz0A9D53DlmD0vbZAFfVJ542
-         jfYkjYop5J0jVDgXnK8by7eJfz3oSirjSkk2SlxWjLWTnIG4DGyYghJ/NJPpif3JVIBX
-         CkYot+0vhaRxU5adCxyZmtx8+/11LIn3+Owwfs4HEYI522S82CqjIFvU2iINC46fWEsa
-         Qw9Q==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=aZefJ2eeeg5YJ8LbNLwmZ0QsC9kKV35KaDs/t6j0M1g=;
+        b=K9+oC8zpTs7eoXwYoNCM97j0wAjePnqvg1MIHJIH7ous//tMV1Jr3cBr+kIJfIT6tw
+         3OcVpAAq67QKQZkGQMvO3bNsWwbJBnCUPX+HM2kSXjzzVPxyBC33diZFfVD7g36eaQ8V
+         qfI7KDcfKd2QX+EUZ3jdUHgnHovu2cehHa1LIeWfd5uLrxhCooatkyANNHv7afAV7XJT
+         obDDx3gIJGnGLvMi6zrE6ny3daHSgAl4TGZNNZtepoDTUoHKeOtld3APKqR8zMhi0jaR
+         hYAiqzB2jOWifkzgQ5CnHvC62GPxGS/ig8I2V4XV7ODMhCnKVLz6AW73AfOwbKI5YsJ5
+         eQcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=J2VwpMHDruurLAkZ8tY6Y0C7uBDHQtpeGJUXXg0TbCk=;
-        b=HXfgY5u4h5p5IxNIVgOQnHQ5V0BXvswiGEy5acGLbxwyMIkoYniQ9eACY0oNfSBt5o
-         1jsbKnSuYPZO0tZVp6oq2MkKL+erGvCtxbk+UzlckMuYGFDn9u7PbIcUcUmJ2OZCVHd3
-         vmGH9U2FHm5vg6V16uanchSa71HV0yoIezVbTKXCyOC7CLYMV4rrenmsc6+gFALvtub+
-         PwsqWvgq1AI4piKPrYuJ63SSq/J6nxujpFqGdcftwiEA4C196bGXJk97BaY/q8ADWHW7
-         /B26/d3DSxCaM+kA26ZdfZJMV+KIFZM2OmGkH9RAK8qX5qat6mca6P1fSsiI2KyRbZBg
-         gpug==
-X-Gm-Message-State: AGi0PuZTRm2/8Ix24MnBL+HvTbyoHSBB5vVI6nBajoA3wc8Haw+OvyaW
-        woPVKyvKgJWMtJajXDWYkt/cvn2hVU9VGpPWzIQjYg==
-X-Google-Smtp-Source: APiQypLDw76Jv74Z0sxM1XlJHRn2lM/dlcSYQXGQGn0B65cU9pX+gBSoy+DBB0Qg2EY4F9CQFw23db/094gyIEf2Css=
-X-Received: by 2002:a5b:58a:: with SMTP id l10mr5294503ybp.173.1587125374855;
- Fri, 17 Apr 2020 05:09:34 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=aZefJ2eeeg5YJ8LbNLwmZ0QsC9kKV35KaDs/t6j0M1g=;
+        b=uOmWafu/FMVwHByB9PouYtUg/KdpLZQsdsc/6uEv38ptE+kIAGHeWPdqec1ktAIm/h
+         EzQH8RXxZ4jss6VmHCe7TWKftp9T5L/Dal/R84AbGEkJM/QdpGZII0s7ZRkX7hMoST3L
+         rY1dpl9YAfkvKwKfhkZN9W38idWXpJVgn46JAbYST9G8rydlEQiaPFYktbKZP4/6nSSi
+         V3WH9pjKCbcD593yzoG+E7Y/RD8TRen/1v4QsL2xX9+z6SsbtXh8C+CTbQIY9Q77h3/g
+         1fWeFzrlPNxZO0qunyKqS8Zye3PXIngkXtf8go+tBprEvBFp6sDV6y2d0pzeWDKQ4zvY
+         Z+8A==
+X-Gm-Message-State: AGi0PuY3yRlxZG6rnQRHEOIBQNyN8RyPIN+6lOkbgmOFfVsNTTrssJ9G
+        e6jxsHb8iigGEX/UHG8FE1Yn8Q==
+X-Google-Smtp-Source: APiQypJ1vYJs1OcOpG6NFzpsPpo2EzISzAbbiESS6yc0Q6fShvvLk7GfaJtAZP1aoEPPARaV+dFckA==
+X-Received: by 2002:a05:620a:39b:: with SMTP id q27mr3018858qkm.94.1587126509481;
+        Fri, 17 Apr 2020 05:28:29 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
+        by smtp.gmail.com with ESMTPSA id u17sm8223117qka.0.2020.04.17.05.28.27
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 17 Apr 2020 05:28:28 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1jPQ6d-0006gf-52; Fri, 17 Apr 2020 09:28:27 -0300
+Date:   Fri, 17 Apr 2020 09:28:27 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Jani Nikula <jani.nikula@linux.intel.com>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kbuild@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Nicolas Pitre <nico@fluxnic.net>, narmstrong@baylibre.com,
+        Laurent.pinchart@ideasonboard.com, leon@kernel.org,
+        kieran.bingham+renesas@ideasonboard.com, jonas@kwiboo.se,
+        airlied@linux.ie, jernej.skrabec@siol.net,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: Re: [RFC PATCH 1/2] Kconfig: Introduce "uses" keyword
+Message-ID: <20200417122827.GD5100@ziepe.ca>
+References: <20200417011146.83973-1-saeedm@mellanox.com>
+ <87v9ly3a0w.fsf@intel.com>
 MIME-Version: 1.0
-References: <20200415164652.68245-1-edumazet@google.com> <761fa4422e5576b087c8e6d26a9046126f5dff2f.camel@mellanox.com>
-In-Reply-To: <761fa4422e5576b087c8e6d26a9046126f5dff2f.camel@mellanox.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 17 Apr 2020 05:09:23 -0700
-Message-ID: <CANn89i+Vs63kwJZXXHTvhnNgDLPsPmXzJ99pSD5GimXd5Qt0EA@mail.gmail.com>
-Subject: Re: [PATCH net-next] net/mlx4_en: avoid indirect call in TX completion
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "willemb@google.com" <willemb@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "eric.dumazet@gmail.com" <eric.dumazet@gmail.com>,
-        Tariq Toukan <tariqt@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87v9ly3a0w.fsf@intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 16, 2020 at 8:55 PM Saeed Mahameed <saeedm@mellanox.com> wrote:
->
-> On Wed, 2020-04-15 at 09:46 -0700, Eric Dumazet wrote:
-> > Commit 9ecc2d86171a ("net/mlx4_en: add xdp forwarding and data write
-> > support")
-> > brought another indirect call in fast path.
-> >
-> > Use INDIRECT_CALL_2() helper to avoid the cost of the indirect call
-> > when/if CONFIG_RETPOLINE=y
-> >
-> > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > Cc: Tariq Toukan <tariqt@mellanox.com>
-> > Cc: Willem de Bruijn <willemb@google.com>
-> > ---
->
-> Hi Eric, I believe net-next is still closed.
->
-> But FWIW,
->
-> Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
->
+On Fri, Apr 17, 2020 at 09:23:59AM +0300, Jani Nikula wrote:
 
-Well, this can be pushed to net then, since this is a trivial patch
-that helps performance.
+> Which means that would have to split up to two. Not ideal, but
+> doable.
 
-With this COVID-19 thing, we need more capacity from the serving fleet
-(Youtube and all..)
-distributed all over the world and using a high number of CX-3 NIC.
+Why is this not ideal?
 
-Thanks.
+I think the one per line is easier to maintain (eg for merge
+conflicts) and easier to read than a giant && expression.
 
+I would not complicate things further by extending the boolean
+language..
 
->
-> >  drivers/net/ethernet/mellanox/mlx4/en_tx.c | 14 +++++++++++++-
-> >  1 file changed, 13 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-> > b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-> > index
-> > 4d5ca302c067126b8627cb4809485b45c10e2460..a30edb436f4af11526e04c09623
-> > 840288ebe4a29 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-> > +++ b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
-> > @@ -43,6 +43,7 @@
-> >  #include <linux/ip.h>
-> >  #include <linux/ipv6.h>
-> >  #include <linux/moduleparam.h>
-> > +#include <linux/indirect_call_wrapper.h>
-> >
-> >  #include "mlx4_en.h"
-> >
-> > @@ -261,6 +262,10 @@ static void mlx4_en_stamp_wqe(struct
-> > mlx4_en_priv *priv,
-> >       }
-> >  }
-> >
-> > +INDIRECT_CALLABLE_DECLARE(u32 mlx4_en_free_tx_desc(struct
-> > mlx4_en_priv *priv,
-> > +                                                struct
-> > mlx4_en_tx_ring *ring,
-> > +                                                int index, u64
-> > timestamp,
-> > +                                                int napi_mode));
-> >
-> >  u32 mlx4_en_free_tx_desc(struct mlx4_en_priv *priv,
-> >                        struct mlx4_en_tx_ring *ring,
-> > @@ -329,6 +334,11 @@ u32 mlx4_en_free_tx_desc(struct mlx4_en_priv
-> > *priv,
-> >       return tx_info->nr_txbb;
-> >  }
-> >
-> > +INDIRECT_CALLABLE_DECLARE(u32 mlx4_en_recycle_tx_desc(struct
-> > mlx4_en_priv *priv,
-> > +                                                   struct
-> > mlx4_en_tx_ring *ring,
-> > +                                                   int index, u64
-> > timestamp,
-> > +                                                   int napi_mode));
-> > +
-> >  u32 mlx4_en_recycle_tx_desc(struct mlx4_en_priv *priv,
-> >                           struct mlx4_en_tx_ring *ring,
-> >                           int index, u64 timestamp,
-> > @@ -449,7 +459,9 @@ bool mlx4_en_process_tx_cq(struct net_device
-> > *dev,
-> >                               timestamp = mlx4_en_get_cqe_ts(cqe);
-> >
-> >                       /* free next descriptor */
-> > -                     last_nr_txbb = ring->free_tx_desc(
-> > +                     last_nr_txbb = INDIRECT_CALL_2(ring-
-> > >free_tx_desc,
-> > +                                                    mlx4_en_free_tx_
-> > desc,
-> > +                                                    mlx4_en_recycle_
-> > tx_desc,
-> >                                       priv, ring, ring_index,
-> >                                       timestamp, napi_budget);
-> >
+Jason
