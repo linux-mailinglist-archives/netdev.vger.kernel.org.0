@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEE111AE4D5
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 20:34:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B23A1AE4E3
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 20:38:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728953AbgDQSea (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 14:34:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45174 "EHLO
+        id S1728132AbgDQSiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 14:38:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726750AbgDQSe3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 14:34:29 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 867A6C061A0C;
-        Fri, 17 Apr 2020 11:34:28 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id t40so1435117pjb.3;
-        Fri, 17 Apr 2020 11:34:28 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726750AbgDQSiP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 14:38:15 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FAFCC061A0C;
+        Fri, 17 Apr 2020 11:38:15 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id p8so1514792pgi.5;
+        Fri, 17 Apr 2020 11:38:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=KldHZTnr7jqdruc1snUYVZ+gDF1RtUxdIYHh8TAAFPY=;
-        b=uaAWu+d/OmQIgs6fP6iNvKsTDVfi41RwuXLxUNi7g59TACc4Wu2eOjBRNgdgDZ88mU
-         IWvCova0KaKuJ3/yPlmRUG7P75A9gheFEtjCtOyZmfbCZKXtAqG53SwYWSUEXsa3P5Eb
-         U4P97eazQIOysH3i8IgCkfuqdYldLMHge52RsX8CcTBtBvrSC53qZOJwA+l97gtv16YA
-         Iz3z0Mge613VqHwEsBTjvsoljc1v1XpWG4hT0s+98PUTwFJKYFmv8DzZSUS/r3K18XEa
-         zX/ATBcX5AevlXOCsD5KNznlqUOi1288u1NEDUGaE0n8bDiAX8eeqtWcn1eAKuJwFSBx
-         NkMw==
+        bh=l4ymR3rP3ebjknnAHpxFsTgWKlyKO3VmlyIU0nWQg9M=;
+        b=PMurcRxCPBrnoaYcHjSl290MvaIU6M1dYt27aEs2rTXk3yop59P2+eV2kAddC5qpMr
+         EA35ZcE4nuTtW4UPjMa5jBrx4OjZqQESsf9n3sIJfCU58ltQcP38ql8lm7hhRJCWlbj4
+         XQ9kfXWrBMFBvKSLX6C5zD+gQ56oNbFQO3PG6GvKwZHNoKDkGy+vcy+jpVuXm3Zq+ihT
+         rS3U/2U3tWlGGui/KYvblo8JOK5zDAJEcXLXuemxYzqN8IkYzWzCEgpIKvWg7Lt5/nwG
+         bRJDDAvYl/kDisWS+cVRuQJPlfIagvDujTshCXxJfF16UwtgSCSlJPAzZQLvi7QaXEkp
+         b2wQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=KldHZTnr7jqdruc1snUYVZ+gDF1RtUxdIYHh8TAAFPY=;
-        b=XREpRQ1exoIxaY3R3tbmtnLhQGWrynrDT4gsNSyxT07R0H5Myd7LQlN/n1Uob32I8u
-         IqW30+NcdUnGiLz6Achwogi9+hQynWY5Bj/a/FwMgeEPSi7xfgHarYDrIhJAVFaEYBt5
-         uGLzI+yZ6yA0kCPdAUslt2OP/GzucmxGq9WWSq/lwJWA/DAmOHFMt5IyCf6nK1AB/ZJk
-         MNrbKD+amQDNLI/C6huRUXc5Yijk5dSML08X3MlWIU/PyJdQZyQ+RqypJdPyk9adGcBn
-         h1QdVnhrtKMxfkOOt3O6JDfuDfbrM0vAw0rMGXRfDNJCej62TGh294CgA6LQE6byIC/o
-         beGQ==
-X-Gm-Message-State: AGi0PuatxG0zuXEa6D0GOur50GYDwNIzENZ8/xsRnpvE1FoYCGk/W50s
-        7237UQH3xVx3ehhofhmFaNxcdE2F
-X-Google-Smtp-Source: APiQypIkH5Cq/WH/rUflEuZ754+vLCbmlo4nFnm4eDXOOhyU3fJyIkobX28d3PLqNzSNlnJaEKJbbA==
-X-Received: by 2002:a17:902:444:: with SMTP id 62mr4697411ple.301.1587148467552;
-        Fri, 17 Apr 2020 11:34:27 -0700 (PDT)
+        bh=l4ymR3rP3ebjknnAHpxFsTgWKlyKO3VmlyIU0nWQg9M=;
+        b=K7CX3BpCYtUZbAYdE+cHQXVf+w1ydsetaczHexUIRQ+Zz4SC3uoXpC+eARD7VyVxVs
+         9UKRi+Htwq6NtziDnms0MfxSOAILsjdeIqlQH2/WQs3LwrrIUqTjlIb+V4tLvtTXJjKB
+         lZoVD1eWvyYWc1QRcotcpfYRntu0kMwXgFuw9sxW2v01gTwHpHufnusHa+xArC03sZ/2
+         fEiiBH7O5ioO25PvWvoY2fY8J6fZE7ivmfgr2BXAVTMHwxH9ddg68o8yEVaj5GdX/sg3
+         kJxQJmoPbyOEbNOP7e/3AlHS9jQoFBGiHhVmwCInDe7QmrGtiS29SW/21jJbb2k9vQoZ
+         Yrsg==
+X-Gm-Message-State: AGi0PuarUKXICOVOdow3Tn1lKfTcDGhJP9wKnnlXuggVyepltpPOXDzz
+        7MkY3Quoz7G6b1PVyMluV6hEFX0/
+X-Google-Smtp-Source: APiQypKnZF+XANLa4RkZ2DTB7ARbXTKsAeMHSnGVQ3KGnYiGa3AxyjqRnVrS/GWscFtd03G09FcFMA==
+X-Received: by 2002:a63:575f:: with SMTP id h31mr3847957pgm.200.1587148694441;
+        Fri, 17 Apr 2020 11:38:14 -0700 (PDT)
 Received: from localhost.localdomain (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id o63sm6544022pjb.40.2020.04.17.11.34.26
+        by smtp.gmail.com with ESMTPSA id 135sm17728608pfx.58.2020.04.17.11.38.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Apr 2020 11:34:26 -0700 (PDT)
+        Fri, 17 Apr 2020 11:38:13 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -54,15 +54,14 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com (maintainer:BROADCOM IPROC ARM
-        ARCHITECTURE),
-        linux-arm-kernel@lists.infradead.org (moderated list:BROADCOM IPROC ARM
-        ARCHITECTURE), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next] net: phy: mdio-bcm-iproc: Do not show kernel pointer
-Date:   Fri, 17 Apr 2020 11:34:20 -0700
-Message-Id: <20200417183420.8514-1-f.fainelli@gmail.com>
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Scott Branden <scott.branden@broadcom.com>,
+        Murali Krishna Policharla <murali.policharla@broadcom.com>,
+        Tao Ren <taoren@fb.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next] net: phy: broadcom: Add support for BCM53125 internal PHYs
+Date:   Fri, 17 Apr 2020 11:38:02 -0700
+Message-Id: <20200417183805.8702-1-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -71,29 +70,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Displaying the virtual address at which the MDIO base register address
-has been mapped is not useful and is not visible with pointer hashing in
-place, replace the message with something indicating successful
-registration instead.
+BCM53125 has internal Gigabit PHYs which support interrupts as well as
+statistics, make it possible to configure both of those features with a
+PHY driver entry.
 
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/phy/mdio-bcm-iproc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/broadcom.c | 14 ++++++++++++++
+ include/linux/brcmphy.h    |  1 +
+ 2 files changed, 15 insertions(+)
 
-diff --git a/drivers/net/phy/mdio-bcm-iproc.c b/drivers/net/phy/mdio-bcm-iproc.c
-index f1ded03f0229..38bf40e0d673 100644
---- a/drivers/net/phy/mdio-bcm-iproc.c
-+++ b/drivers/net/phy/mdio-bcm-iproc.c
-@@ -159,7 +159,7 @@ static int iproc_mdio_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, priv);
- 
--	dev_info(&pdev->dev, "Broadcom iProc MDIO bus at 0x%p\n", priv->base);
-+	dev_info(&pdev->dev, "Broadcom iProc MDIO bus registered\n");
- 
- 	return 0;
- 
+diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
+index ae4873f2f86e..97201d5cf007 100644
+--- a/drivers/net/phy/broadcom.c
++++ b/drivers/net/phy/broadcom.c
+@@ -781,6 +781,19 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.get_strings	= bcm_phy_get_strings,
+ 	.get_stats	= bcm53xx_phy_get_stats,
+ 	.probe		= bcm53xx_phy_probe,
++}, {
++	.phy_id		= PHY_ID_BCM53125,
++	.phy_id_mask	= 0xfffffff0,
++	.name		= "Broadcom BCM53125",
++	.flags		= PHY_IS_INTERNAL,
++	/* PHY_GBIT_FEATURES */
++	.get_sset_count	= bcm_phy_get_sset_count,
++	.get_strings	= bcm_phy_get_strings,
++	.get_stats	= bcm53xx_phy_get_stats,
++	.probe		= bcm53xx_phy_probe,
++	.config_init	= bcm54xx_config_init,
++	.ack_interrupt	= bcm_phy_ack_intr,
++	.config_intr	= bcm_phy_config_intr,
+ }, {
+ 	.phy_id         = PHY_ID_BCM89610,
+ 	.phy_id_mask    = 0xfffffff0,
+@@ -810,6 +823,7 @@ static struct mdio_device_id __maybe_unused broadcom_tbl[] = {
+ 	{ PHY_ID_BCMAC131, 0xfffffff0 },
+ 	{ PHY_ID_BCM5241, 0xfffffff0 },
+ 	{ PHY_ID_BCM5395, 0xfffffff0 },
++	{ PHY_ID_BCM53125, 0xfffffff0 },
+ 	{ PHY_ID_BCM89610, 0xfffffff0 },
+ 	{ }
+ };
+diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
+index 6462c5447872..7e1d857c8468 100644
+--- a/include/linux/brcmphy.h
++++ b/include/linux/brcmphy.h
+@@ -15,6 +15,7 @@
+ #define PHY_ID_BCMAC131			0x0143bc70
+ #define PHY_ID_BCM5481			0x0143bca0
+ #define PHY_ID_BCM5395			0x0143bcf0
++#define PHY_ID_BCM53125			0x03625f20
+ #define PHY_ID_BCM54810			0x03625d00
+ #define PHY_ID_BCM5482			0x0143bcb0
+ #define PHY_ID_BCM5411			0x00206070
 -- 
 2.19.1
 
