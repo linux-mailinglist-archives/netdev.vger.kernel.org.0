@@ -2,283 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 634AE1AD882
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 10:28:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 637521AD88C
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 10:30:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729744AbgDQI2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 04:28:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56910 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729166AbgDQI2H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 17 Apr 2020 04:28:07 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 05E71207FC;
-        Fri, 17 Apr 2020 08:28:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587112086;
-        bh=QQPzFCVlCGkCSBFNb28/iOz36ajcfDrwqM74tyC4Rlk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ykRPkOqdb3bmWZUJYvUIrR1xDHeyXWh8QvFUWLfjq/x7xYxQCKWlHNXLwnH7UuVoB
-         H9m78bQhnyUSXGapxOjCkCvaWSMCNAM/pJcVvJVbqhvFVM76pMAh4UQWReXrIqJqfq
-         P8XGQYMA2PgenqKMYeZit5y1omcEd1pMDeOMOAcA=
-Date:   Fri, 17 Apr 2020 10:28:04 +0200
-From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "sashal@kernel.org" <sashal@kernel.org>,
-        "ecree@solarflare.com" <ecree@solarflare.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gerlitz.or@gmail.com" <gerlitz.or@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "leon@kernel.org" <leon@kernel.org>
-Subject: Re: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for
- representors
-Message-ID: <20200417082804.GB140064@kroah.com>
-References: <a89a592a-5a11-5e56-a086-52b1694e00db@solarflare.com>
- <20200414205755.GF1068@sasha-vm>
- <41174e71-00e1-aebf-b67d-1b24731e4ab3@solarflare.com>
- <20200416000009.GL1068@sasha-vm>
- <434329130384e656f712173558f6be88c4c57107.camel@mellanox.com>
- <20200416052409.GC1309273@unreal>
- <20200416133001.GK1068@sasha-vm>
- <550d615e14258c744cb76dd06c417d08d9e4de16.camel@mellanox.com>
- <20200416195859.GP1068@sasha-vm>
- <3226e1df60666c0c4e3256ec069fee2d814d9a03.camel@mellanox.com>
+        id S1729763AbgDQIaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 04:30:00 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:29469 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729732AbgDQI37 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 04:29:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587112197;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sq2go4oE4wkjjJo/d/qCXW8H/F2CZmjvC27LSvnbq6k=;
+        b=dHsko3NR6rka/qtPRVA3eqRLGXE1KoWuOiKb3yQ970F9UhN+NqNwHkp19p/Xu955dD+/q9
+        WmJavrh4+WW+PjuqgzvLUAODRhCtHjruB18NQbOvNZdQFFRXOeyEqr2A58HZo34JBC/vc4
+        dyMCJpj0yIyLVSxjGEqSTCvoydl8ZnU=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-267-haZXoYk-N5-BTmuo_dRiVQ-1; Fri, 17 Apr 2020 04:29:56 -0400
+X-MC-Unique: haZXoYk-N5-BTmuo_dRiVQ-1
+Received: by mail-wr1-f72.google.com with SMTP id q10so631414wrv.10
+        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 01:29:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=sq2go4oE4wkjjJo/d/qCXW8H/F2CZmjvC27LSvnbq6k=;
+        b=bTchWKEHVZ0/7pK1MbzerM67E07cMLCqOuyE+plE8fF7S3p0v5S1ZX3jvgSD9Tl6JI
+         WE14ojO4LY+/VFvB9pGOsHDpI6Qo6p5m2gV32536SXhjedlc86ZAaZdyOVrwG5xcqck6
+         uTSW4BoVIfxXgs+HLpr/ony8K8wgA7ge8lyDZMnpd57R1Ztnd20WTsVeQex6gHYQzYcS
+         QVfhrcf3tzKCmzr+qa6x7Q/FrvydOzf3yGiKxR7dzrV5zxkoYfmLH9rAW8RE9z/FU7eR
+         eseupyWX0CUK0hcfYrZHUHUewY/WIo4e323+ZVrETQezk76DMX9IW7uhBqTpcOjKiIPD
+         7jRg==
+X-Gm-Message-State: AGi0PuYJJU++b7aOrdWcBALqt0yzt56fQ8qmrkXlueV5bmGNUW0X7lMS
+        uufW1XCUAMTYziX5w16yocONEu9fMtZEGRQ4UPFPjtsFig1K8F7Xsot1lED36acp8I1F13SdPOC
+        9/njo6w39BNIJdBZZ
+X-Received: by 2002:a05:600c:2214:: with SMTP id z20mr2319813wml.189.1587112195127;
+        Fri, 17 Apr 2020 01:29:55 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJKNV66xDbZPbEJ9pvldY03mzn5rKaoaGWZw2nM8sRe1qQQQA0lQolXxgIpPJn0ZvUYcb5Wmw==
+X-Received: by 2002:a05:600c:2214:: with SMTP id z20mr2319790wml.189.1587112194907;
+        Fri, 17 Apr 2020 01:29:54 -0700 (PDT)
+Received: from redhat.com (bzq-79-183-51-3.red.bezeqint.net. [79.183.51.3])
+        by smtp.gmail.com with ESMTPSA id k133sm7277794wma.0.2020.04.17.01.29.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Apr 2020 01:29:54 -0700 (PDT)
+Date:   Fri, 17 Apr 2020 04:29:50 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, geert@linux-m68k.org,
+        tsbogend@alpha.franken.de, benh@kernel.crashing.org,
+        paulus@samba.org, heiko.carstens@de.ibm.com, gor@linux.ibm.com,
+        borntraeger@de.ibm.com, Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH V2] vhost: do not enable VHOST_MENU by default
+Message-ID: <20200417042912-mutt-send-email-mst@kernel.org>
+References: <20200415024356.23751-1-jasowang@redhat.com>
+ <20200416185426-mutt-send-email-mst@kernel.org>
+ <b7e2deb7-cb64-b625-aeb4-760c7b28c0c8@redhat.com>
+ <20200417022929-mutt-send-email-mst@kernel.org>
+ <4274625d-6feb-81b6-5b0a-695229e7c33d@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <3226e1df60666c0c4e3256ec069fee2d814d9a03.camel@mellanox.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <4274625d-6feb-81b6-5b0a-695229e7c33d@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 16, 2020 at 09:08:06PM +0000, Saeed Mahameed wrote:
-> On Thu, 2020-04-16 at 15:58 -0400, Sasha Levin wrote:
-> > On Thu, Apr 16, 2020 at 07:07:13PM +0000, Saeed Mahameed wrote:
-> > > On Thu, 2020-04-16 at 09:30 -0400, Sasha Levin wrote:
-> > > > On Thu, Apr 16, 2020 at 08:24:09AM +0300, Leon Romanovsky wrote:
-> > > > > On Thu, Apr 16, 2020 at 04:08:10AM +0000, Saeed Mahameed wrote:
-> > > > > > On Wed, 2020-04-15 at 20:00 -0400, Sasha Levin wrote:
-> > > > > > > On Wed, Apr 15, 2020 at 05:18:38PM +0100, Edward Cree
-> > > > > > > wrote:
-> > > > > > > > Firstly, let me apologise: my previous email was too
-> > > > > > > > harsh
-> > > > > > > > and too
-> > > > > > > >  assertiveabout things that were really more uncertain
-> > > > > > > > and
-> > > > > > > > unclear.
-> > > > > > > > 
-> > > > > > > > On 14/04/2020 21:57, Sasha Levin wrote:
-> > > > > > > > > I've pointed out that almost 50% of commits tagged for
-> > > > > > > > > stable do
-> > > > > > > > > not
-> > > > > > > > > have a fixes tag, and yet they are fixes. You really
-> > > > > > > > > deduce
-> > > > > > > > > things based
-> > > > > > > > > on coin flip probability?
-> > > > > > > > Yes, but far less than 50% of commits *not* tagged for
-> > > > > > > > stable
-> > > > > > > > have
-> > > > > > > > a fixes
-> > > > > > > >  tag.  It's not about hard-and-fast Aristotelian
-> > > > > > > > "deductions", like
-> > > > > > > > "this
-> > > > > > > >  doesn't have Fixes:, therefore it is not a stable
-> > > > > > > > candidate", it's
-> > > > > > > > about
-> > > > > > > >  probabilistic "induction".
-> > > > > > > > 
-> > > > > > > > > "it does increase the amount of countervailing evidence
-> > > > > > > > > needed to
-> > > > > > > > > conclude a commit is a fix" - Please explain this
-> > > > > > > > > argument
-> > > > > > > > > given
-> > > > > > > > > the
-> > > > > > > > > above.
-> > > > > > > > Are you familiar with Bayesian statistics?  If not, I'd
-> > > > > > > > suggest
-> > > > > > > > reading
-> > > > > > > >  something like http://yudkowsky.net/rational/bayes/
-> > > > > > > > which
-> > > > > > > > explains
-> > > > > > > > it.
-> > > > > > > > There's a big difference between a coin flip and a
-> > > > > > > > _correlated_
-> > > > > > > > coin flip.
-> > > > > > > 
-> > > > > > > I'd maybe point out that the selection process is based on
-> > > > > > > a
-> > > > > > > neural
-> > > > > > > network which knows about the existence of a Fixes tag in a
-> > > > > > > commit.
-> > > > > > > 
-> > > > > > > It does exactly what you're describing, but also taking a
-> > > > > > > bunch
-> > > > > > > more
-> > > > > > > factors into it's desicion process ("panic"? "oops"?
-> > > > > > > "overflow"?
-> > > > > > > etc).
-> > > > > > > 
-> > > > > > 
-> > > > > > I am not against AUTOSEL in general, as long as the decision
-> > > > > > to
-> > > > > > know
-> > > > > > how far back it is allowed to take a patch is made
-> > > > > > deterministically
-> > > > > > and not statistically based on some AI hunch.
-> > > > > > 
-> > > > > > Any auto selection for a patch without a Fixes tags can be
-> > > > > > catastrophic
-> > > > > > .. imagine a patch without a Fixes Tag with a single line
-> > > > > > that is
-> > > > > > fixing some "oops", such patch can be easily applied cleanly
-> > > > > > to
-> > > > > > stable-
-> > > > > > v.x and stable-v.y .. while it fixes the issue on v.x it
-> > > > > > might
-> > > > > > have
-> > > > > > catastrophic results on v.y ..
+On Fri, Apr 17, 2020 at 03:36:52PM +0800, Jason Wang wrote:
+> 
+> On 2020/4/17 下午2:33, Michael S. Tsirkin wrote:
+> > On Fri, Apr 17, 2020 at 11:12:14AM +0800, Jason Wang wrote:
+> > > On 2020/4/17 上午6:55, Michael S. Tsirkin wrote:
+> > > > On Wed, Apr 15, 2020 at 10:43:56AM +0800, Jason Wang wrote:
+> > > > > We try to keep the defconfig untouched after decoupling CONFIG_VHOST
+> > > > > out of CONFIG_VIRTUALIZATION in commit 20c384f1ea1a
+> > > > > ("vhost: refine vhost and vringh kconfig") by enabling VHOST_MENU by
+> > > > > default. Then the defconfigs can keep enabling CONFIG_VHOST_NET
+> > > > > without the caring of CONFIG_VHOST.
 > > > > > 
-> > > > > I tried to imagine such flow and failed to do so. Are you
-> > > > > talking
-> > > > > about
-> > > > > anything specific or imaginary case?
-> > > > 
-> > > > It happens, rarely, but it does. However, all the cases I can
-> > > > think
-> > > > of
-> > > > happened with a stable tagged commit without a fixes where it's
-> > > > backport
-> > > > to an older tree caused unintended behavior (local denial of
-> > > > service
-> > > > in
-> > > > one case).
-> > > > 
-> > > > The scenario you have in mind is true for both stable and non-
-> > > > stable
-> > > > tagged patches, so it you want to restrict how we deal with
-> > > > commits
-> > > > that
-> > > > don't have a fixes tag shouldn't it be true for *all* commits?
-> > > 
-> > > All commits? even the ones without "oops" in them ? where does this
-> > > stop ? :)
-> > > We _must_ have a hard and deterministic cut for how far back to
-> > > take a
-> > > patch based on a human decision.. unless we are 100% positive
-> > > autoselection AI can never make a mistake.
-> > > 
-> > > Humans are allowed to make mistakes, AI is not.
-> > 
-> > Oh I'm reviewing all patches myself after the bot does it's
-> > selection,
-> > you can blame me for these screw ups.
-> > 
-> > > If a Fixes tag is wrong, then a human will be blamed, and that is
-> > > perfectly fine, but if we have some statistical model that we know
-> > > it
-> > > is going to be wrong 0.001% of the time.. and we still let it run..
-> > > then something needs to be done about this.
-> > > 
-> > > I know there are benefits to autosel, but overtime, if this is not
-> > > being audited, many pieces of the kernel will get broken unnoticed
-> > > until some poor distro decides to upgrade their kernel version.
-> > 
-> > Quite a few distros are always running on the latest LTS releases,
-> > Android isn't that far behind either at this point.
-> > 
-> > There are actually very few non-LTS users at this point...
-> > 
-> > > > > <...>
-> > > > > > > Let me put my Microsoft employee hat on here. We have
-> > > > > > > driver/net/hyperv/
-> > > > > > > which definitely wasn't getting all the fixes it should
-> > > > > > > have
-> > > > > > > been
-> > > > > > > getting without AUTOSEL.
-> > > > > > > 
-> > > > > > 
-> > > > > > until some patch which shouldn't get backported slips
-> > > > > > through,
-> > > > > > believe
-> > > > > > me this will happen, just give it some time ..
+> > > > > But this will leave a "CONFIG_VHOST_MENU=y" in all defconfigs and even
+> > > > > for the ones that doesn't want vhost. So it actually shifts the
+> > > > > burdens to the maintainers of all other to add "CONFIG_VHOST_MENU is
+> > > > > not set". So this patch tries to enable CONFIG_VHOST explicitly in
+> > > > > defconfigs that enables CONFIG_VHOST_NET and CONFIG_VHOST_VSOCK.
 > > > > > 
-> > > > > Bugs are inevitable, I don't see many differences between bugs
-> > > > > introduced by manually cherry-picking or automatically one.
-> > > > 
-> > > > Oh bugs slip in, that's why I track how many bugs slipped via
-> > > > stable
-> > > > tagged commits vs non-stable tagged ones, and the statistic may
-> > > > surprise
-> > > > you.
-> > > > 
+> > > > > Acked-by: Christian Borntraeger<borntraeger@de.ibm.com>  (s390)
+> > > > > Acked-by: Michael Ellerman<mpe@ellerman.id.au>  (powerpc)
+> > > > > Cc: Thomas Bogendoerfer<tsbogend@alpha.franken.de>
+> > > > > Cc: Benjamin Herrenschmidt<benh@kernel.crashing.org>
+> > > > > Cc: Paul Mackerras<paulus@samba.org>
+> > > > > Cc: Michael Ellerman<mpe@ellerman.id.au>
+> > > > > Cc: Heiko Carstens<heiko.carstens@de.ibm.com>
+> > > > > Cc: Vasily Gorbik<gor@linux.ibm.com>
+> > > > > Cc: Christian Borntraeger<borntraeger@de.ibm.com>
+> > > > > Reported-by: Geert Uytterhoeven<geert@linux-m68k.org>
+> > > > > Signed-off-by: Jason Wang<jasowang@redhat.com>
+> > > > I rebased this on top of OABI fix since that
+> > > > seems more orgent to fix.
+> > > > Pushed to my vhost branch pls take a look and
+> > > > if possible test.
+> > > > Thanks!
 > > > 
-> > > Statistics do not matter here, what really matters is that there is
-> > > a
-> > > possibility of a non-human induced error, this should be a no no.
-> > > or at least make it an opt-in thing for those who want to take
-> > > their
-> > > chances and keep a close eye on it..
-> > 
-> > Hrm, why? Pretend that the bot is a human sitting somewhere sending
-> > mails out, how does it change anything?
-> > 
-> 
-> If i know a bot might do something wrong, i Fix it and make sure it
-> will never do it again. For humans i just can't do that, can I ? :)
-> so this is the difference and why we all have jobs .. 
-> 
-> > > > The solution here is to beef up your testing infrastructure
-> > > > rather
-> > > > than
+> > > I test this patch by generating the defconfigs that wants vhost_net or
+> > > vhost_vsock. All looks fine.
 > > > 
-> > > So please let me opt-in until I beef up my testing infra.
-> > 
-> > Already did :)
-> 
-> No you didn't :), I received more than 5 AUTOSEL emails only today and
-> yesterday.
-> 
-> Please don't opt mlx5 out just yet ;-), i need to do some more research
-> and make up my mind..
-> 
-> > 
-> > > > taking less patches; we still want to have *all* the fixes,
-> > > > right?
-> > > > 
+> > > But having CONFIG_VHOST_DPN=y may end up with the similar situation that
+> > > this patch want to address.
+> > > Maybe we can let CONFIG_VHOST depends on !ARM || AEABI then add another
+> > > menuconfig for VHOST_RING and do something similar?
 > > > 
-> > > if you can be sure 100% it is the right thing to do, then yes,
-> > > please
-> > > don't hesitate to take that patch, even without asking anyone !!
-> > > 
-> > > Again, Humans are allowed to make mistakes.. AI is not.
-> > 
-> > Again, why?
-> > 
+> > > Thanks
+> > Sorry I don't understand. After this patch CONFIG_VHOST_DPN is just
+> > an internal variable for the OABI fix. I kept it separate
+> > so it's easy to revert for 5.8. Yes we could squash it into
+> > VHOST directly but I don't see how that changes logic at all.
 > 
-> Because AI is not there yet.. and this is a very big philosophical
-> question.
 > 
-> Let me simplify: there is a bug in the AI, where it can choose a wrong
-> patch, let's fix it.
+> Sorry for being unclear.
+> 
+> I meant since it was enabled by default, "CONFIG_VHOST_DPN=y" will be left
+> in the defconfigs.
 
-You do realize that there are at least 2 steps in this "AI" where people
-are involved.  The first is when Sasha goes thorough the patches and
-weeds out all of the "bad ones".
+But who cares? That does not add any code, does it?
 
-The second is when you, the maintainer, is asked if you think there is a
-problem if the patch is to be merged.
+> This requires the arch maintainers to add
+> "CONFIG_VHOST_VDPN is not set". (Geert complains about this)
+> 
+> Thanks
+> 
+> 
+> > 
 
-Then there's also the third, when again, I send out emails for the -rc
-process with the patches involved, and you are cc:ed on it.
-
-This isn't an unchecked process here running with no human checks at all
-in it, so please don't speak of it like it is.
-
-thanks,
-
-greg k-h
