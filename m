@@ -2,75 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B20711ADBB9
-	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 12:59:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EE241ADBCE
+	for <lists+netdev@lfdr.de>; Fri, 17 Apr 2020 13:03:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730119AbgDQK5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 06:57:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58916 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729568AbgDQK5x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 06:57:53 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF6AC061A0C
-        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 03:57:52 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id c63so1923819qke.2
-        for <netdev@vger.kernel.org>; Fri, 17 Apr 2020 03:57:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=af06dVXGk4x+as+Hj/TUUAlqR4g3a7HMmtDknGMmX+8=;
-        b=K8lvZjw7A8xflUUvJ953gcFTboWmQEsJZ5kkQbMTUrGkzzZ2fqAmwiY1jlY9ZTcfHX
-         XObDst0JYiAv1neO2hF9JJ/sHE0K8ekEkuxAGYHixL6CJ/pCDxhQLToSh2O+MkJms4bY
-         VeLrgJUlvA3Z3xhN5h5mKNirTDJ13Jw0IUMczeOUGe/EVNnFStWxzfrNDX59YA3gmzkd
-         hbHxVqIoxkiTidZ9/kZQp79TU0WQtvqX+yxkaI6lNOSsrcSU3R05zbclJzDgoKFGzGM8
-         LF5O9PEdOb9EoQX6VpHhSSoeHeXVq3x7dvORpIEvnkl0hYqYcyzY7IY/3yxJbCJUeHss
-         o1Lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=af06dVXGk4x+as+Hj/TUUAlqR4g3a7HMmtDknGMmX+8=;
-        b=C2g5X3iYGxS84uvKDdQc8bX2SNG8fVdmj/lXhG7dV2Cb+FrbOxbvgtNelBpg8sK1Si
-         3A4D3RDCUG9ZFcgOrXNFQgHABky63XoNKp2FSR0VqeHx9qYCyys/hatyizjUstjTJ7qh
-         KDGLZjafIGPbS3LhHPwa3VNzecYsW1HTy3Y+qtih55v2duLiGc8KxjUY7CA3Yshh7p4H
-         PtWtE7SjihRHfloVS/iZlDb5TQZ9g6e1a37mBvx0IJJSUU+RKQhJDp5On+xSKtRJ3RU+
-         K5ApNNUWjdW7lJ10XSGt2c6vwDucR1h8sNmQWdtk2i/bg1L9slbnPiSNUPpjD0Sr71nC
-         MLhQ==
-X-Gm-Message-State: AGi0PuaXfSV+xiQZYg6Gbb9vmeTlu5mNNG+hG3V56wohYkGTQOjmABnV
-        09ovocOx0y15WuInRdn/RosGDNAUSxmMmjiv4so=
-X-Google-Smtp-Source: APiQypLwxzcCiZZg4O+XwhsIz7J0qmuJCm3eY8MHHEs0hcB6DQf20fNyUI2whMDOavakvaCxSe0b0bHvJNBAehe6d28=
-X-Received: by 2002:a05:620a:1647:: with SMTP id c7mr2532403qko.473.1587121071699;
- Fri, 17 Apr 2020 03:57:51 -0700 (PDT)
+        id S1729989AbgDQLCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 07:02:01 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:55870 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729558AbgDQLCA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 17 Apr 2020 07:02:00 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id AD378619751386BAEFC1;
+        Fri, 17 Apr 2020 19:01:58 +0800 (CST)
+Received: from [127.0.0.1] (10.166.215.154) by DGGEMS410-HUB.china.huawei.com
+ (10.3.19.210) with Microsoft SMTP Server id 14.3.487.0; Fri, 17 Apr 2020
+ 19:01:53 +0800
+Subject: Re: [PATCH net-next] xfrm: policy: Remove obsolete WARN while xfrm
+ policy inserting
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+References: <20200327123443.12408-1-yuehaibing@huawei.com>
+ <20200328112302.GA13121@gauss3.secunet.de>
+ <1d3596fb-c7e3-16c9-f48f-fe58e9a2569a@huawei.com>
+ <20200406090327.GF13121@gauss3.secunet.de>
+ <ff4b3d2c-e6b3-33d6-141b-b093db084a18@huawei.com>
+ <20200415071443.GV13121@gauss3.secunet.de>
+CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+From:   Yuehaibing <yuehaibing@huawei.com>
+Message-ID: <f8c7d907-b6f4-c95f-b1f1-57131d19715c@huawei.com>
+Date:   Fri, 17 Apr 2020 19:01:52 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Fri, 17 Apr 2020 18:57:15 +0800
-Message-ID: <CAMDZJNWm5Vu-G4_het+CyxdbZYPJuidihUPK0ZhPC1HfKXsM2A@mail.gmail.com>
-Subject: discussion mlx5e vlan forwarding
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200415071443.GV13121@gauss3.secunet.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.166.215.154]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Saeed and maintainers
+On 2020/4/15 15:14, Steffen Klassert wrote:
+> On Thu, Apr 09, 2020 at 04:19:37PM +0800, Yuehaibing wrote:
+>>
+>>
+>> On 2020/4/6 17:03, Steffen Klassert wrote:
+>>> On Mon, Mar 30, 2020 at 10:05:32PM +0800, Yuehaibing wrote:
+>>>> On 2020/3/28 19:23, Steffen Klassert wrote:
+>>>>> On Fri, Mar 27, 2020 at 08:34:43PM +0800, YueHaibing wrote:
+>>>>>> Since commit 7cb8a93968e3 ("xfrm: Allow inserting policies with matching
+>>>>>> mark and different priorities"), we allow duplicate policies with
+>>>>>> different priority, this WARN is not needed any more.
+>>>>>
+>>>>> Can you please describe a bit more detailed why this warning
+>>>>> can't trigger anymore?
+>>>>
+>>>> No, this warning is triggered while detect a duplicate entry in the policy list
+>>>>
+>>>> regardless of the priority. If we insert policy like this:
+>>>>
+>>>> policy A (mark.v = 3475289, mark.m = 0, priority = 1)	//A is inserted
+>>>> policy B (mark.v = 0, mark.m = 0, priority = 0) 	//B is inserted
+>>>> policy C (mark.v = 3475289, mark.m = 0, priority = 0)	//C is inserted and B is deleted
+>>>
+>>> The codepath that replaces a policy by another should just trigger
+>>> on policy updates (XFRM_MSG_UPDPOLICY). Is that the case in your
+>>> test?
+>>
+>> Yes, this is triggered by XFRM_MSG_UPDPOLICY
+>>
+>>>
+>>> It should not be possible to add policy C with XFRM_MSG_NEWPOLICY
+>>> as long as you have policy B inserted.
+>>>
+>>> The update replaces an old policy by a new one, the lookup keys of
+>>> the old policy must match the lookup keys of the new one. But policy
+>>> B has not the same lookup keys as C, the mark is different. So B should
+>>> not be replaced with C.
+>>
+>> 1436 static bool xfrm_policy_mark_match(struct xfrm_policy *policy,
+>> 1437                                    struct xfrm_policy *pol)
+>> 1438 {
+>> 1439         u32 mark = policy->mark.v & policy->mark.m;
+>> 1440
+>> 1441         if (policy->mark.v == pol->mark.v && policy->mark.m == pol->mark.m)
+>> 1442                 return true;
+>> 1443
+>> 1444         if ((mark & pol->mark.m) == pol->mark.v &&    //policy is C, pol is B, so mark is 0, pol->mark.m is 0, pol->mark.v is 0
+>> 1445             policy->priority == pol->priority)	   //priority is same zero, so return true, B is replaced with C
+>> 1446                 return true;
+>> 1447
+>> 1448         return false;
+>> 1449 }
+>>
+>> Should xfrm_policy_mark_match be fixed？
+> 
+> Yes, xfrm_policy_mark_match should only replace if the found
+> policy has the same lookup keys.
 
-In one case, I want to push vlan and forward the packets to one VF. Tc
-command shown as below
-$ tc filter add dev $PF0_REP0 parent ffff: protocol ip prio 1 chain 0 \
-    flower src_mac 0a:47:da:d6:40:04 dst_mac 00:11:22:33:44:66 \
-    action vlan push id 200 pipe action mirred egress redirect dev $PF_REP1
+I'm wonder that lookup keys means association of mark.v and mark.m, or the mark (mark.v & mark.m).
 
-dmesg:
-mlx5_core 0000:82:00.0: mlx5_cmd_check:756:(pid 10735):
-SET_FLOW_TABLE_ENTRY(0x936) op_mod(0x0) failed, status bad
-parameter(0x3), syndrome (0xa9c090)
+In above my case, policy B and C has the same mark (that is 0), if the lookup keys is mark, replacement is permitted.
 
-So do we support that forwarding ?
+If lookup keys is association of mark.v and mark.m, then:
 
-kernel version: 5.6.0-rc7+ [OFED 5.0 has that issue too]
-firmware-version: 16.27.1016
-NIC: Mellanox Technologies MT27800 Family [ConnectX-5]
--- 
-Best regards, Tonghao
+policy E (mark.v = 0x1, mark.m = 0x3, priority = 1)
+policy F (mark.v = 0x1, mark.m = 0x5, priority = 1)
+
+E should not be replaced by F, but this is permitted now.
+
+> 
+> .
+> 
+
