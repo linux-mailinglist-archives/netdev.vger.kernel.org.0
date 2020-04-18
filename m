@@ -2,85 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03D6D1AECA1
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 14:50:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D360C1AECA6
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 14:57:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725923AbgDRMuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Apr 2020 08:50:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43356 "EHLO mail.kernel.org"
+        id S1725939AbgDRM51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Apr 2020 08:57:27 -0400
+Received: from m12-13.163.com ([220.181.12.13]:48629 "EHLO m12-13.163.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725873AbgDRMuz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 Apr 2020 08:50:55 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D8C3821D79;
-        Sat, 18 Apr 2020 12:50:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587214253;
-        bh=YA9ircK04lHIXBvqfidwJGcIuaIdkoipM8rQTMjnsiY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Mmh7m/qJRhDeinxPfMoZwl13o+Ur5NluQGZJRg0SKUyYudmxA35rTxtcWmQi6F53Q
-         SwejsXpFOKA3AC1AyinOoVm6ZVvuoO2/wQoklqgFvkzr1DvvLtDucxuTxtGJIADuNz
-         +AyDHLjUt8fyKYyyHWq9lGXtfqhPDqccsUT08wWA=
-Date:   Sat, 18 Apr 2020 14:50:51 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, Dave Ertman <david.m.ertman@intel.com>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com, jgg@ziepe.ca,
-        parav@mellanox.com, galpress@amazon.com,
-        selvin.xavier@broadcom.com, sriharsha.basavapatna@broadcom.com,
-        benve@cisco.com, bharat@chelsio.com, xavier.huwei@huawei.com,
-        yishaih@mellanox.com, leonro@mellanox.com, mkalderon@marvell.com,
-        aditr@vmware.com, ranjani.sridharan@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com,
-        Kiran Patil <kiran.patil@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: Re: [net-next 1/9] Implementation of Virtual Bus
-Message-ID: <20200418125051.GA3473692@kroah.com>
-References: <20200417171034.1533253-1-jeffrey.t.kirsher@intel.com>
- <20200417171034.1533253-2-jeffrey.t.kirsher@intel.com>
+        id S1725804AbgDRM50 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 Apr 2020 08:57:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Subject:From:Message-ID:Date:MIME-Version; bh=xD9xK
+        XYZNL/Vit+6cJR+RPQY72J4KP547a4t/fRaSn4=; b=UhSAMzQxH7dD6fydqplqQ
+        yCl7R94mH4sgajhgz0pf7r6+fQ1t95k65fEaYayLkBT3eKxxFQCIddsUu3RZ4COS
+        7u9vWrzLN5udiMfnYn/Pv/RACDMOozEY0wOl1zqm4GFl8LXzHVKO63hcw3PksVER
+        mNwO0h4wYeFhfNJDAkFCig=
+Received: from [192.168.0.6] (unknown [125.82.15.62])
+        by smtp9 (Coremail) with SMTP id DcCowAAXHVGH+JpeTeZVAg--.214S2;
+        Sat, 18 Apr 2020 20:54:32 +0800 (CST)
+Subject: Re: [PATCH v2] net/mlx5: add the missing space character
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "leon@kernel.org" <leon@kernel.org>
+Cc:     "cai@lca.pw" <cai@lca.pw>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "lsahlber@redhat.com" <lsahlber@redhat.com>,
+        "kw@linux.com" <kw@linux.com>,
+        "xiubli@redhat.com" <xiubli@redhat.com>,
+        "airlied@redhat.com" <airlied@redhat.com>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "wqu@suse.com" <wqu@suse.com>,
+        "chris@chris-wilson.co.uk" <chris@chris-wilson.co.uk>,
+        "yamada.masahiro@socionext.com" <yamada.masahiro@socionext.com>,
+        "stfrench@microsoft.com" <stfrench@microsoft.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20200403042659.9167-1-xianfengting221@163.com>
+ <14df0ecf093bb2df4efaf9e6f5220ea2bf863f53.camel@mellanox.com>
+ <fae7a094-62e8-d797-a89b-23faf0eb374e@163.com>
+ <a77ddcfad6bfd68b9d69e0d5a18cf5d66692d270.camel@mellanox.com>
+ <4861c789-a333-efea-6d51-ab5511645dcf@163.com>
+ <cc28a4bf79e8edbe4a27fac068ce556e8b9da2da.camel@mellanox.com>
+From:   Hu Haowen <xianfengting221@163.com>
+Message-ID: <525ec92f-d46e-d883-2fd4-c1928ed8df79@163.com>
+Date:   Sat, 18 Apr 2020 20:54:31 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200417171034.1533253-2-jeffrey.t.kirsher@intel.com>
+In-Reply-To: <cc28a4bf79e8edbe4a27fac068ce556e8b9da2da.camel@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-CM-TRANSID: DcCowAAXHVGH+JpeTeZVAg--.214S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7ZFWruw4rXFy5Cw4fZr4kXrb_yoW8Cw45pF
+        WrGan0kF4DJrykAFsakF1Yqa40yw4fJr15Xrn8Wr9xKwnFqr1fJr48G3yYkF9Igr1fGw4j
+        vF1UJ3sFvry8Ja7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07bzT5LUUUUU=
+X-Originating-IP: [125.82.15.62]
+X-CM-SenderInfo: h0ld0wxhqj3xtqjsjii6rwjhhfrp/1tbiMgoKAFWBoXvQuQAAsV
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 17, 2020 at 10:10:26AM -0700, Jeff Kirsher wrote:
-> @@ -0,0 +1,53 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * virtual_bus.h - lightweight software bus
-> + *
-> + * Copyright (c) 2019-20 Intel Corporation
-> + *
-> + * Please see Documentation/driver-api/virtual_bus.rst for more information
-> + */
-> +
-> +#ifndef _VIRTUAL_BUS_H_
-> +#define _VIRTUAL_BUS_H_
-> +
-> +#include <linux/device.h>
-> +
-> +struct virtbus_device {
-> +	struct device dev;
-> +	const char *name;
 
-struct device already has a name, why do you need another one?
+On 2020/4/18 6:40 AM, Saeed Mahameed wrote:
+> On Fri, 2020-04-17 at 12:34 +0800, Hu Haowen wrote:
+>> On 2020/4/17 11:44 AM, Saeed Mahameed wrote:
+>>> On Thu, 2020-04-16 at 22:44 +0800, Hu Haowen wrote:
+>>>> On 2020/4/9 3:42 AM, Saeed Mahameed wrote:
+>>>>> On Fri, 2020-04-03 at 12:26 +0800, Hu Haowen wrote:
+>>>>>> Commit 91b56d8462a9 ("net/mlx5: improve some comments") did
+>>>>>> not
+>>>>>> add
+>>>>>> that missing space character and this commit is used to fix
+>>>>>> it
+>>>>>> up.
+>>>>>>
+>>>>>> Fixes: 91b56d8462a9 ("net/mlx5: improve some comments")
+>>>>>>
+>>>>> Please re-spin and submit to net-next once net-next re-opens,
+>>>>> avoid referencing the above commit since this patch is a stand
+>>>>> alone
+>>>>> and has nothing to do with that patch.. just have a stand alone
+>>>>> commit
+>>>>> message explaining the space fix.
+>>>> Sorry for my late reply. Because I'm a kernel newbie, I know
+>>>> nothing
+>>>> about the basic methods and manners in the kernel development.
+>>>> Thanks
+>>>> a lot for your patience on my mistake, pointing it out and fixing
+>>>> it
+>>>> up.
+>>>>
+>>>> Btw, did net-next re-open and did my changes get into the
+>>>> mainline?
+>>>>
+>>>>
+>>> Normally net-next closes once merge window is open at the end of
+>>> rc7/rc8 kernel cycle.
+>>>
+>>> and reopens on the week of the kernel release, after the merge
+>>> window
+>>> is closed (2 weeks after rc7/8 is closed).
+>>>
+>>> you can use this link.
+>>> http://vger.kernel.org/~davem/net-next.html
+>> Oh... Thanks.
+>>
+>> But it's more than 2 weeks since Linux 5.6 was released, so net-next
+>> should be open now according to your words. But it's still closed.
+>>
+>> Is my idea wrong? Does "kernel release" mean an -rc release or a
+>> formal
+>> release?
+> Oh, my bad,
+> yes release means a kernel release .. 5.x
+> what i meant is when the rc1 is out two weeks after the kernel release.
 
-> +	void (*release)(struct virtbus_device *);
 
-A bus should have the release function, not the actual device itself.  A
-device should not need function pointers.
+So... Is net-next open now? It was closed when I checked yesterday.
 
-> +	int id;
 
-Shouldn't that be a specific type, like u64 or something?
+>
 
-thanks,
-
-greg k-h
