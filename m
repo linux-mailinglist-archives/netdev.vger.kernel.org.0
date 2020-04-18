@@ -2,115 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BEAA1AF263
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 18:36:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 716581AF26E
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 18:49:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726087AbgDRQgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Apr 2020 12:36:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50396 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725893AbgDRQgi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 12:36:38 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2FAAC061A0C
-        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 09:36:36 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id j1so1215355wrt.1
-        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 09:36:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QXZjjGdj94Q6jmXyjC2XhVfmUAWdFFKOnsdjNyV+kbU=;
-        b=QxGT81HTVbaP+kPmC1fmIKGXBPG3vCBOFXve9mj4+VW7Qm2Rq4GGHxNTLFHvbY3eJm
-         F5saC5d2wf8GkNfRwzQHpl2AY7H2cdTdfhPSMjt4P695mrSjxDc5CUrkDojUO6SMOhsk
-         i2oRhwuVn6hk4nev605TIzrQHL1FmZM4aTwSu3p/FrwYRXSMGxQ0OzdQhhSc/Wlu6PEK
-         YyTB8vvhFFwyc/QfMnVT+UZE4Q5G6a4KTLJ787+uQbOYU/fPy/x3UKOSYFq5mRJQXX4t
-         rqCiT6j7L+bns67h9xL4XTLsvW0yZARdcOY5VI98X0lblwPJvA8/l9U3FxqdYzisq2cq
-         pTwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QXZjjGdj94Q6jmXyjC2XhVfmUAWdFFKOnsdjNyV+kbU=;
-        b=PJis16bs1SfI0UrG4ptT8VzSatY5qlUIRC50CEi2eNQXXuZ/imFvQxHDpMnymb/mrr
-         GHyw845rbsXRBtwXQ62XkhkPioBk4y4Lw16hSFazxAhB78cHVtZlghIM58Ml8+JTT3LK
-         i5dtshMgyaz/dwe+yyajk2AzHSTfMlCG+jLJyeEbFc1+oJ3VIlKsvRiFMGAU5Sw5Q9+/
-         xMG1fi8AECgMvAMfzxSn5q7T5rf74P5IT8LOZSiRd+jPR4TyIhBbvPMKAy3clcujpCOP
-         WH1CduVYuB+M8UgFvykvBUDtjh2VWNxbD6N72ZYjVgJhEOOIwAqKV135nDgVX5OWkIa6
-         SogA==
-X-Gm-Message-State: AGi0PubUQQ0Jv8M212XZjdofYf8+ayKqFYPnYlcK+h1Z8+3LfoGfarOo
-        i6ZhlyCqf1TzHqNHMf4fBBaGo1+cCGM=
-X-Google-Smtp-Source: APiQypLA9TWANXHwiN/DNbMVet+Soxo1orScpqJ/wFWzbcz/V8sPYK1hL3vbuW+fWd1WFi1u3fFvNg==
-X-Received: by 2002:a5d:4306:: with SMTP id h6mr9252972wrq.234.1587227795368;
-        Sat, 18 Apr 2020 09:36:35 -0700 (PDT)
-Received: from [192.168.0.129] ([86.125.28.12])
-        by smtp.gmail.com with ESMTPSA id h188sm13155514wme.8.2020.04.18.09.36.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Apr 2020 09:36:34 -0700 (PDT)
-Subject: Re: [PATCH net-next] enetc: permit configuration of rx-vlan-filter
- with ethtool
-To:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net
-Cc:     claudiu.manoil@nxp.com, netdev@vger.kernel.org,
-        alexandru.marginean@nxp.com, xiaoliang.yang_1@nxp.com,
-        yangbo.lu@nxp.com, po.liu@nxp.com
-References: <20200417190755.1394-1-olteanv@gmail.com>
-From:   Claudiu Manoil <claudiu.manoil@gmail.com>
-Message-ID: <e1f30b6c-6ac5-c234-400d-8ee92190e9e9@gmail.com>
-Date:   Sat, 18 Apr 2020 19:36:33 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726083AbgDRQtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Apr 2020 12:49:07 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:46762 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725893AbgDRQtH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 Apr 2020 12:49:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=P/b34RLe96NmHWroAboNYyXEivVycOpXriadams37Hs=; b=lki8jxpWBjdXTfpdnAsq1HvNNn
+        ci05HuhFkbdBie3I6GkCoxPRkLWV6vxlMJNDyQ29+4OlfLMXajWo7b6zIZXZBNgv1YJj6vynFkX+D
+        B+KEteHqvnOH6BZ5WZDTo4TA8gTHOHLZIOvMOdBb67XWZ/bZaCqjTvkqIPeh5RQmMmQI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jPqeM-003UWm-HF; Sat, 18 Apr 2020 18:49:02 +0200
+Date:   Sat, 18 Apr 2020 18:49:02 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>, fugang.duan@nxp.com,
+        Chris Healy <Chris.Healy@zii.aero>
+Subject: Re: [PATCH net-next v2 2/3] net: ethernet: fec: Allow configuration
+ of MDIO bus speed
+Message-ID: <20200418164902.GK804711@lunn.ch>
+References: <20200418000355.804617-1-andrew@lunn.ch>
+ <20200418000355.804617-3-andrew@lunn.ch>
+ <3cb32a99-c684-03fd-c471-1d061ca97d4b@gmail.com>
+ <20200418142336.GB804711@lunn.ch>
+ <b6b6c42b-aa2d-8036-958e-4f9929752536@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200417190755.1394-1-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b6b6c42b-aa2d-8036-958e-4f9929752536@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17.04.2020 22:07, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > I don't see how that would work. Each device on the bus needs to be
+> > able to receiver the transaction in order to decode the device
+> > address, and then either discard it, or act on it. So the same as I2C
+> > where the device address is part of the transaction. You need the bus
+> > to run as fast as the slowest device on the bus. So a bus property is
+> > the simplest. You could have per device properties, and during the bus
+> > scan, figure out what the slowest device is, but that seems to add
+> > complexity for no real gain. I2C does not have this either.
+> > 
+> > If MDIO was more like SPI, with per device chip select lines, then a
+> > per device frequency would make sense.
 > 
-> Each ENETC station interface (SI) has a VLAN filter list and a port
-> flag (PSIPVMR) by which it can be put in "VLAN promiscuous" mode, which
-> enables the reception of VLAN-tagged traffic even if it is not in the
-> VLAN filtering list.
-> 
-> Currently the handling of this setting works like this: the port starts
-> off as VLAN promiscuous, then it switches to enabling VLAN filtering as
-> soon as the first VLAN is installed in its filter via
-> .ndo_vlan_rx_add_vid. In practice that does not work out very well,
-> because more often than not, the first VLAN to be installed is out of
-> the control of the user: the 8021q module, if loaded, adds its rule for
-> 802.1p (VID 0) traffic upon bringing the interface up.
-> 
-> What the user is currently seeing in ethtool is this:
-> ethtool -k eno2
-> rx-vlan-filter: on [fixed]
-> 
-> which doesn't match the intention of the code, but the practical reality
-> of having the 8021q module install its VID which has the side-effect of
-> turning on VLAN filtering in this driver. All in all, a slightly
-> confusing experience.
-> 
-> So instead of letting this driver switch the VLAN filtering state by
-> itself, just wire it up with the rx-vlan-filter feature from ethtool,
-> and let it be user-configurable just through that knob, except for one
-> case, see below.
-> 
-> In promiscuous mode, it is more intuitive that all traffic is received,
-> including VLAN tagged traffic. It appears that it is necessary to set
-> the flag in PSIPVMR for that to be the case, so VLAN promiscuous mode is
-> also temporarily enabled. On exit from promiscuous mode, the setting
-> made by ethtool is restored.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> OK, that is a good point, but then again, just like patch #3 you need to
+> ensure that you are setting a MDIO bus controller frequency that is the
+> lowest common denominator of all MDIO slaves on the bus, which means that
+> you need to know about what devices do support.
 
-Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+Hi Florian
 
-This patch is a good candidate for the net tree.
+I've been following what I2C does, since MDIO and I2C is very similar.
+I2C has none of what you are asking for. If I2C does not need any of
+this, does MDIO? I2C assumes what whoever writes the DT knows what
+they are doing and will set a valid clock frequency which works for
+all devices on the bus. This seems to work for I2C, so why should it
+not work for MDIO?
 
-Thanks,
-Claudiu
+My preference is KISS.
+
+    Andrew
