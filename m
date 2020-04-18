@@ -2,99 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 174CF1AEB10
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 11:01:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E3771AEBE9
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 12:52:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725960AbgDRJBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Apr 2020 05:01:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37306 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725862AbgDRJBI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 05:01:08 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C5EC061A0C
-        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 02:01:07 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id w145so3764039lff.3
-        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 02:01:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=v2r1LNfcfZSMQjP8dr2xBneKdKcMoniQ02EHOw8mPkg=;
-        b=Qehbzq/lwAQz4mxTlNzPxp6RB0mgqSy6uthfto33Yze71yukx+lvwUC0wtejhWPCrB
-         ZR61llSdswVXVylEAI0rCx9MSdy836jyhFHESLcLn/3O6xufpGPw8Q3mEhjvTON1BAQn
-         OWcR3LP0XXCqINT2trWlumMb9ADMtQLqZnEfk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=v2r1LNfcfZSMQjP8dr2xBneKdKcMoniQ02EHOw8mPkg=;
-        b=tjenI9RzoU+O13D3OzyLzrzjlaqhvRZJhlOAwED843GYiFqsA25ns8e9ynU3LHkTsT
-         MVCRFFAwSIpd2ZYoRlLjGBtE8BkPBpE0KbsLLlg9rTl7T8KdCfpjAWL+jMUICfzrPVCa
-         Vbmf3rU3nhgsNL6wUMA7OLC9vgjMf0TGBP4inJOPs3KokuXECqW2jMYi91W01TIvFKo8
-         mnx1pTzTStuBLJ5FWXFbExDNjbZ/H2KXeWm2FmFRE5LDSMxO9O6ozJ2B2GYbcAzZYOqX
-         kTc+vI00kWDbRC6Ygl/BqzSFq+5v6ftCpr4/FViiDCQQXNyztIOstUbXGNgSj0tL/X30
-         ek2Q==
-X-Gm-Message-State: AGi0PuYVIuDWlvgytI6NrGJI+aIz096155zbr+oMHZEGvf4cg1LqjzbF
-        0X1Qma1r6xuAaMky45mSya4B0A==
-X-Google-Smtp-Source: APiQypJB7StCrR9XTUXa/d7LPRLIwRuUYoumhbZUVEivdD5SyjUZLN5f+omoQA5zGMpiIA17F4dZcw==
-X-Received: by 2002:a19:4014:: with SMTP id n20mr4332985lfa.6.1587200465617;
-        Sat, 18 Apr 2020 02:01:05 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id q16sm6063952ljj.23.2020.04.18.02.01.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Apr 2020 02:01:04 -0700 (PDT)
-Subject: Re: [RFC net-next v5 0/9] net: bridge: mrp: Add support for Media
- Redundancy Protocol(MRP)
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>, davem@davemloft.net,
-        jiri@resnulli.us, ivecera@redhat.com, kuba@kernel.org,
-        roopa@cumulusnetworks.com, olteanv@gmail.com, andrew@lunn.ch,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org, UNGLinuxDriver@microchip.com
-References: <20200414112618.3644-1-horatiu.vultur@microchip.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <59ccd697-3c97-207e-a89d-f73e594ec7eb@cumulusnetworks.com>
-Date:   Sat, 18 Apr 2020 12:01:03 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1725958AbgDRKvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Apr 2020 06:51:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42724 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725857AbgDRKvn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 Apr 2020 06:51:43 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AF32E21D82;
+        Sat, 18 Apr 2020 10:51:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587207101;
+        bh=c4H2T6YfJ3r5S2AwBtnFzXTEb/H4k9+x1+5GaBZ096E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=azhHfcCEKHxcswoieB3tZa8ifKQVj/wB/PYpPyLhv0BUJjqLvcSA8WALHCKwt/Gfe
+         lNWecU4qU1zBVHvjpqN/J5SJDSOWYJZZmykEH5h/qN7fIW0OVYCdFcxiP/s9z1pANr
+         9QpzemyJMzSN+r7kePkvc3yUuaPYISCHSwOy7MUs=
+Date:   Sat, 18 Apr 2020 12:51:39 +0200
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "ecree@solarflare.com" <ecree@solarflare.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gerlitz.or@gmail.com" <gerlitz.or@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "sashal@kernel.org" <sashal@kernel.org>,
+        "leon@kernel.org" <leon@kernel.org>
+Subject: Re: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for
+ representors
+Message-ID: <20200418105139.GA2867185@kroah.com>
+References: <41174e71-00e1-aebf-b67d-1b24731e4ab3@solarflare.com>
+ <20200416000009.GL1068@sasha-vm>
+ <434329130384e656f712173558f6be88c4c57107.camel@mellanox.com>
+ <20200416052409.GC1309273@unreal>
+ <20200416133001.GK1068@sasha-vm>
+ <550d615e14258c744cb76dd06c417d08d9e4de16.camel@mellanox.com>
+ <20200416195859.GP1068@sasha-vm>
+ <3226e1df60666c0c4e3256ec069fee2d814d9a03.camel@mellanox.com>
+ <20200417082804.GB140064@kroah.com>
+ <934a503d2f75f614c040d300fc080fb76c3725fb.camel@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <20200414112618.3644-1-horatiu.vultur@microchip.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <934a503d2f75f614c040d300fc080fb76c3725fb.camel@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/04/2020 14:26, Horatiu Vultur wrote:
-> Media Redundancy Protocol is a data network protocol standardized by
-> International Electrotechnical Commission as IEC 62439-2. It allows rings of
-> Ethernet switches to overcome any single failure with recovery time faster than
-> STP. It is primarily used in Industrial Ethernet applications.
+On Fri, Apr 17, 2020 at 10:23:37PM +0000, Saeed Mahameed wrote:
+> On Fri, 2020-04-17 at 10:28 +0200, gregkh@linuxfoundation.org wrote:
+> > > Let me simplify: there is a bug in the AI, where it can choose a
+> > > wrong
+> > > patch, let's fix it.
+> > 
+> > You do realize that there are at least 2 steps in this "AI" where
+> > people
+> > are involved.  The first is when Sasha goes thorough the patches and
+> > weeds out all of the "bad ones".
+> > 
+> > The second is when you, the maintainer, is asked if you think there
+> > is a
+> > problem if the patch is to be merged.
+> > 
+> > Then there's also the third, when again, I send out emails for the
+> > -rc
+> > process with the patches involved, and you are cc:ed on it.
+> > 
+> > This isn't an unchecked process here running with no human checks at
+> > all
+> > in it, so please don't speak of it like it is.
+> > 
 > 
-> Based on the previous RFC[1][2][3][4], the MRP state machine and all the timers
-> were moved to userspace, except for the timers used to generate MRP Test frames.
-> In this way the userspace doesn't know and should not know if the HW or the
-> kernel will generate the MRP Test frames. The following changes were added to
-> the bridge to support the MRP:
-> - the existing netlink interface was extended with MRP support,
-> - allow to detect when a MRP frame was received on a MRP ring port
-> - allow MRP instance to forward/terminate MRP frames
-> - generate MRP Test frames in case the HW doesn't have support for this
+> Sure I understand,
 > 
-> To be able to offload MRP support to HW, the switchdev API  was extend.
-> 
+> But with all do respect to Sasha and i know he is doing a great job, he
+> just can't sign-off on all of the patches on all of the linux kernel
+> and determine just by himself if a patch is good or not.. and the
+> maintainer review is what actually matters here.
 
-Hi Horatiu,
-The set still has a few blocker issues (bisectability, sysfs error return, use of extack)
-and a few other cleanup tasks as I've noted in my replies to the respective patches.
-I think with those out of the way you can submit it for inclusion.
+The maintainer review already happened when the patch went into Linus's
+tree.
 
-Cheers,
- Nik
+> But the maintainer ack is an optional thing, and I bet that the vast
+> majority don't even look at these e-mails.
 
+That is true.
 
+> My vision is that we make this an opt-in thing, and we somehow force
+> all active and important kernel subsystems to opt-in, and make it the
+> maintainer responsibility if something goes wrong. 
 
+That's a nice vision, and I too want a pony :)
 
+Seriously, the first rule of the stable trees being created was that it
+was not going to cause any extra work for a maintainer to do, given that
+even 18 years ago, our maintainers were overloaded.  Now that didn't
+totally happen, as I do ask for a cc: stable line to be added to patches
+to give me a hint as to what to apply.
+
+Now some maintainers really don't care about stable trees, and don't
+even put those lines, which is fine for them, but not fine for me in
+wanting to make stable trees that contain the needed fixes for them that
+are going into Linus's tree.  So over the years we have come up with
+tools to dig these patches out of Linus's tree.  The latest version of
+that is this AUTOSEL tool, and after a number of maintainers complained
+that being notified at the last possible second (i.e. during a -rc
+cycle) was not early enough to stop some AUTOSEL patches from being
+merged, Sasha started up the process you see now, giving maintainers a
+few _weeks_ to object.
+
+For the maintainers that don't care, fine, they just write a nice
+procmail rule and send the email to the round filing cabinet.  For the
+maintainers that do care, they get a chance to object.  For the
+maintainers that insist they are doing this all right and marking things
+correctly and don't want AUTOSEL running on their subsystems, they too
+have that option, which a few have already taken.
+
+So that's where we are today, a process that has evolved over the
+decades into the one that at the moment, is producing pretty solid and
+good stable kernels as per the review of external parties.  Yes, we can
+do better and find more patches that need to be backported, and are
+working on that.  But to stop and try to go to an opt-in-only process
+would cause us to go backwards in the ability for us to provide kernels
+with useful bugfixes to users.
+
+> I understand from your statistics that this system is working very
+> well, so i believe eventually every maintainer with a code that matters
+> will come on board.
+
+Sorry, that just will not happen.  As proof of that, look at all of the
+maintainers today that are not "on board" with just a simple "cc:
+stable".  And as I say above, that's fine, I am not going to ask them to
+do extra work that they do not want to do.  And because of that, I, and
+others like Sasha, are going to have to do _extra_ work to make a better
+stable kernel release, and that's fine, we are the crazy ones here.
+
+> this way we don't risk it for inactive and less important
+> subsystems/drivers.. and we guarantee the whole thing is properly
+> audited with the maintainers on-board.. 
+
+Have you met these maintainers that you can tell what to do despite not
+being their manager?  If you think you can get them on board, then
+please, try to get them to do the simple thing first (cc: stable) and
+then we can talk :)
+
+good luck!
+
+greg k-h
