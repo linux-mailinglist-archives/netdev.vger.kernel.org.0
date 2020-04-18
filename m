@@ -2,66 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15F691AF513
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 23:11:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1526F1AF50E
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 23:07:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727951AbgDRVLq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Apr 2020 17:11:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36202 "EHLO
+        id S1728134AbgDRVHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Apr 2020 17:07:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726014AbgDRVLp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 17:11:45 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75DD6C061A0C
-        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 14:11:45 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id k11so7269576wrp.5
-        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 14:11:45 -0700 (PDT)
+        with ESMTP id S1726014AbgDRVHa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 17:07:30 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9EFC061A0C
+        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 14:07:30 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id nu11so2707120pjb.1
+        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 14:07:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
+        h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6WsBh7yC9GGHOCAEQNNmkhM5QJFhiatS38rIa73bN3Y=;
-        b=obsWQ0ae3T1yrJByVs/Qtgei9GUlKBN99qoY78U4sw+njjqpShqAXSJGbfCa7nHT9A
-         O6MG5ShZhDbbjele9Nxjd7+8pQoAD4JPUZnjvwnU0Q99mfjPDC95nipuYjh/dgp0KRvx
-         /cYDvGY+qhChc1BGdJmLNQlnTznqpJAs6Wy5CE1ePRV0hwh26M0NtMVqasTOxmI6E1az
-         A5U3CsWNBeaHsOxVZbYPLB0upqFb9N/uPglvUiJsojCiqIdTyb1ZfrjgutskmRBbpwk5
-         w2kuzWoICI0Xe8vXxYmSE53Qi9y3us36FRJ31fPsoLM5YFlUx/F4ztUTPvj6v/xbT5I+
-         mqTg==
+        bh=+jcXILCwbFeeKJcwb4IZAN7BkSQSrArqH03+JgMsLSw=;
+        b=ftwPxoD3kbarVm6Ea6m7SbgurKXbZexsw/vxhq8fruZSJD7c2DkhCcpXFiaEvywlTf
+         7j4pyDh7tQcBtTf1sy2v+pBaPeN/pyICKLV06xCHf+DbZlpi0c9X+6kkYNTtsvh+zbZ8
+         RSSvRwOyV4AYy7SGT5RDWe2nJo7YJO11e0R+0ggDfEAh9maXTvOSuC35fohYwLM7Exss
+         HjKxwgND5xE+r/lY2kj3gMXmF5ds+sWHQ8rgJkxcaqm1gz9J53k5uZ4KXFOT/jAhnwRb
+         BmR7euwEiJfbN+pbjYCiomqz4rfQstffJLYWOucicrDy+H6CsfKkLnsC2I5BJuw/e7Iq
+         bupw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=6WsBh7yC9GGHOCAEQNNmkhM5QJFhiatS38rIa73bN3Y=;
-        b=gohv47DuljTcW/4/GJfny1jauREsbcmn+MhnDkZxP1OVRinfO2lPE9NrBWgnMrWfDj
-         i3c8K1kf3OaW8PUAvZ/doKLbeJIRLwooepRpIkx39lrO0pdSzjK9AFPIRkx6cas9UIqj
-         royY1a1Owc6AQ3KEIqcUNck3GIK+PWIbRZ9PsQ25n64T4MDWroMTaKyO5e0znVKQVFQl
-         1+LtnsLmSZx2N9s17ft/60cnylo3eA7TUvQz9GweWiDSGnIWjF/+RZnApwFp/7IssXbL
-         oRNh/SnrTARyNDC3VrgFWnI2mP3aw5FWTdkEqvsJ8A/yDSjL+vmgjEHFy+kod1L6vf/r
-         ky/Q==
-X-Gm-Message-State: AGi0PuZkUlYkXYBpZNSaOIshyR3pYV+c0PSBwB2TY+6iKZ3r2U+6M4j5
-        M0vzn5RDttX9JPRNraj2YpKWnlww
-X-Google-Smtp-Source: APiQypLQ9QFG/zMkm+66E3udSIoTWfyptE7EjuZ6cO41xa5u02GZGnVSHegOL92OqKvEqVT4KmrnsQ==
-X-Received: by 2002:adf:fc92:: with SMTP id g18mr11009860wrr.10.1587244303745;
-        Sat, 18 Apr 2020 14:11:43 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:939:e10c:14c5:fe9f? (p200300EA8F2960000939E10C14C5FE9F.dip0.t-ipconnect.de. [2003:ea:8f29:6000:939:e10c:14c5:fe9f])
-        by smtp.googlemail.com with ESMTPSA id z10sm35504852wrg.69.2020.04.18.14.11.43
+        bh=+jcXILCwbFeeKJcwb4IZAN7BkSQSrArqH03+JgMsLSw=;
+        b=cOkcJVQIvs2zJVuibTd1IEPAyT48ZMmymn7dVyBu+VL4ysDC/iTjwlmLROSivioKtn
+         MifFBhnc/y2NSLkBeZPIrVSWPL/7pan4GVZVoM83omAXyOcT+iYoX7Rx0ZF63LGHM+pB
+         8PGlsGcCCFVGMhff63KXoM0ZNrnSZcAHQlYWU7i3jBQh5l7lmoAv6H+uciXF8dJziDUo
+         /JQY1MBqhRh+zlKqkwjvk7pgwvweL/cqB2L0yOyyvxTwKfT+cQlsND+5Ijjw+NR2fSeK
+         26iSzOzu0xW8jbZNYGKOtpnS2xqOZKLxeUMCLYmrglhwAmbneFc5au7ZuXmzC8L77YSw
+         YVDg==
+X-Gm-Message-State: AGi0PuZ7Qg2s4WsvjawObUgLwv6S9Jf96c6B626XOowAZlRz1NNZ/Aps
+        zIP5hDIDfTdeRYxO+POCMNk=
+X-Google-Smtp-Source: APiQypJPgENk5MKubokl0e4z+7Uxl2P5M8u77276CCI5gxaH8cVh9tGOnbhhMkU+QUeLNGbZu0E/+g==
+X-Received: by 2002:a17:90a:f197:: with SMTP id bv23mr12089042pjb.3.1587244050050;
+        Sat, 18 Apr 2020 14:07:30 -0700 (PDT)
+Received: from [10.230.188.26] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id j4sm18944045pfa.214.2020.04.18.14.07.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Apr 2020 14:11:43 -0700 (PDT)
-Subject: [PATCH net-next 1/6] r8169: move setting OCP base to generic init
- code
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <f7c53dc0-768c-7eb9-ffc0-b2e39b1ddfa4@gmail.com>
-Message-ID: <7843ebdf-1910-c95a-453b-829e75409669@gmail.com>
-Date:   Sat, 18 Apr 2020 23:06:51 +0200
+        Sat, 18 Apr 2020 14:07:29 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 2/3] net: ethernet: fec: Allow configuration
+ of MDIO bus speed
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>, fugang.duan@nxp.com,
+        Chris Healy <Chris.Healy@zii.aero>
+References: <20200418000355.804617-1-andrew@lunn.ch>
+ <20200418000355.804617-3-andrew@lunn.ch>
+ <3cb32a99-c684-03fd-c471-1d061ca97d4b@gmail.com>
+ <20200418142336.GB804711@lunn.ch>
+ <b6b6c42b-aa2d-8036-958e-4f9929752536@gmail.com>
+ <20200418164902.GK804711@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <a0b9a840-aea3-ab23-1d0d-5b5c33aa1fe2@gmail.com>
+Date:   Sat, 18 Apr 2020 14:07:22 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+ Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <f7c53dc0-768c-7eb9-ffc0-b2e39b1ddfa4@gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20200418164902.GK804711@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -69,63 +76,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move setting the ocp_base to rtl_init_one(). Where supported the value
-is always the same, and if not supported it doesn't hurt.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index cac56bd67..7bb423a0e 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -75,6 +75,8 @@
- #define R8169_TX_RING_BYTES	(NUM_TX_DESC * sizeof(struct TxDesc))
- #define R8169_RX_RING_BYTES	(NUM_RX_DESC * sizeof(struct RxDesc))
- 
-+#define OCP_STD_PHY_BASE	0xa400
-+
- #define RTL_CFG_NO_GBIT	1
- 
- /* write/read MMIO register */
-@@ -847,8 +849,6 @@ static void r8168_mac_ocp_modify(struct rtl8169_private *tp, u32 reg, u16 mask,
- 	r8168_mac_ocp_write(tp, reg, (data & ~mask) | set);
- }
- 
--#define OCP_STD_PHY_BASE	0xa400
--
- static void r8168g_mdio_write(struct rtl8169_private *tp, int reg, int value)
- {
- 	if (reg == 0x1f) {
-@@ -5187,8 +5187,6 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
- 
- static void rtl_hw_init_8168g(struct rtl8169_private *tp)
- {
--	tp->ocp_base = OCP_STD_PHY_BASE;
--
- 	RTL_W32(tp, MISC, RTL_R32(tp, MISC) | RXDV_GATED_EN);
- 
- 	if (!rtl_udelay_loop_wait_high(tp, &rtl_txcfg_empty_cond, 100, 42))
-@@ -5213,8 +5211,6 @@ static void rtl_hw_init_8168g(struct rtl8169_private *tp)
- 
- static void rtl_hw_init_8125(struct rtl8169_private *tp)
- {
--	tp->ocp_base = OCP_STD_PHY_BASE;
--
- 	RTL_W32(tp, MISC, RTL_R32(tp, MISC) | RXDV_GATED_EN);
- 
- 	if (!rtl_udelay_loop_wait_high(tp, &rtl_rxtx_empty_cond, 100, 42))
-@@ -5351,6 +5347,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	tp->msg_enable = netif_msg_init(debug.msg_enable, R8169_MSG_DEFAULT);
- 	tp->supports_gmii = ent->driver_data == RTL_CFG_NO_GBIT ? 0 : 1;
- 	tp->eee_adv = -1;
-+	tp->ocp_base = OCP_STD_PHY_BASE;
- 
- 	/* Get the *optional* external "ether_clk" used on some boards */
- 	rc = rtl_get_ether_clk(tp);
+On 4/18/2020 9:49 AM, Andrew Lunn wrote:
+>>> I don't see how that would work. Each device on the bus needs to be
+>>> able to receiver the transaction in order to decode the device
+>>> address, and then either discard it, or act on it. So the same as I2C
+>>> where the device address is part of the transaction. You need the bus
+>>> to run as fast as the slowest device on the bus. So a bus property is
+>>> the simplest. You could have per device properties, and during the bus
+>>> scan, figure out what the slowest device is, but that seems to add
+>>> complexity for no real gain. I2C does not have this either.
+>>>
+>>> If MDIO was more like SPI, with per device chip select lines, then a
+>>> per device frequency would make sense.
+>>
+>> OK, that is a good point, but then again, just like patch #3 you need to
+>> ensure that you are setting a MDIO bus controller frequency that is the
+>> lowest common denominator of all MDIO slaves on the bus, which means that
+>> you need to know about what devices do support.
+> 
+> Hi Florian
+> 
+> I've been following what I2C does, since MDIO and I2C is very similar.
+> I2C has none of what you are asking for. If I2C does not need any of
+> this, does MDIO? I2C assumes what whoever writes the DT knows what
+> they are doing and will set a valid clock frequency which works for
+> all devices on the bus. This seems to work for I2C, so why should it
+> not work for MDIO?
+> 
+> My preference is KISS.
+
+OK, you have convinced me.
 -- 
-2.26.1
-
-
+Florian
