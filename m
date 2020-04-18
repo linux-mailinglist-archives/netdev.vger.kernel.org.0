@@ -2,157 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E3771AEBE9
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 12:52:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC2D11AEBF6
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 12:55:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725958AbgDRKvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Apr 2020 06:51:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42724 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725857AbgDRKvn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 Apr 2020 06:51:43 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AF32E21D82;
-        Sat, 18 Apr 2020 10:51:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587207101;
-        bh=c4H2T6YfJ3r5S2AwBtnFzXTEb/H4k9+x1+5GaBZ096E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=azhHfcCEKHxcswoieB3tZa8ifKQVj/wB/PYpPyLhv0BUJjqLvcSA8WALHCKwt/Gfe
-         lNWecU4qU1zBVHvjpqN/J5SJDSOWYJZZmykEH5h/qN7fIW0OVYCdFcxiP/s9z1pANr
-         9QpzemyJMzSN+r7kePkvc3yUuaPYISCHSwOy7MUs=
-Date:   Sat, 18 Apr 2020 12:51:39 +0200
-From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "ecree@solarflare.com" <ecree@solarflare.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gerlitz.or@gmail.com" <gerlitz.or@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "sashal@kernel.org" <sashal@kernel.org>,
-        "leon@kernel.org" <leon@kernel.org>
-Subject: Re: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for
- representors
-Message-ID: <20200418105139.GA2867185@kroah.com>
-References: <41174e71-00e1-aebf-b67d-1b24731e4ab3@solarflare.com>
- <20200416000009.GL1068@sasha-vm>
- <434329130384e656f712173558f6be88c4c57107.camel@mellanox.com>
- <20200416052409.GC1309273@unreal>
- <20200416133001.GK1068@sasha-vm>
- <550d615e14258c744cb76dd06c417d08d9e4de16.camel@mellanox.com>
- <20200416195859.GP1068@sasha-vm>
- <3226e1df60666c0c4e3256ec069fee2d814d9a03.camel@mellanox.com>
- <20200417082804.GB140064@kroah.com>
- <934a503d2f75f614c040d300fc080fb76c3725fb.camel@mellanox.com>
+        id S1726105AbgDRKz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Apr 2020 06:55:28 -0400
+Received: from mail-eopbgr50048.outbound.protection.outlook.com ([40.107.5.48]:23175
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726006AbgDRKz1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 Apr 2020 06:55:27 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=F8R+BnJoEUBUQpUFGbZSSf+2/vi8NKa11KOc+AVxCjVGpoXTP1Mp0zvqsq33YKxSZf5n8TIoVQEwv6v+XA/DuFPQHo49Cxb3tTSNHxPZA65nOjNmkejFGlhETlvzK+CgnApMtlX5WO6U8SvYXyLM++PEybuGU+WevtNs6F0KJiNVXTdCDqrb6EW1mmfq29Oz9LA0/Qef9tOTRNWSb0Q7auvovkrLeIViyBtekU9ydKEmdeSsnM/OQ2/k6OXUzzIXY4gnBlU5kfd06IA0A82EKJqVKzMhFbl+YjvyZhwVoosnndV1tgTAzJwzzu+5csAZ1WJMpNg4JdnywhCq+ZboIg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=u3pQ5qbh6fZKhTz+r3wfdBfyccKt2U9UYOERnNSZgSc=;
+ b=Qz+4XwtgNPZoHj2vWXR+q9Gdv3/wtDYA1AjMsEbrLNyXt3nyQacYbs4xWf8U9yoZniV+B7u3+BxUXfEmhVrJUCZmyqTLcJdRJi/K1MYZkMeIPCjwsF6gDyDGULvwKzocT1HhkTJp1GuGgb3G2m4WQUHjTm3TBc6y58NOhO/Es5jGBCJaXNv9/8UQCW5ZBA15dWWBKKot1jgwDz2dUE8f98eUJF9kNEExgcfyBhclM0pAubl0+4vB9Q/FQJFR/3Qv9Tp3sh/ca/TX5yLiQmL3ELQXF0Qe0YyAgGI18thbMkyozSQK8s5FsWfzNwkVp2MUiO+4/yuXhCAqrWs12lVzJw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=u3pQ5qbh6fZKhTz+r3wfdBfyccKt2U9UYOERnNSZgSc=;
+ b=IYzPk/ZsWaMtMXQ7PN9id7lUyXN8DsYdTr0PbW6TkTSlN93N242zJEPl7vFNz1SdRIesH43kPKqWyGbesAzsGvSUFPc5vukdjHsc5R8AHGij25/6uo8xYwhKc4PXz6A4+6ioxrYFFNY4BJaNI9xnl4YTjYdfpiBVRSo5KhUYJxo=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=calvin.johnson@oss.nxp.com; 
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
+ by AM0PR04MB6899.eurprd04.prod.outlook.com (2603:10a6:208:183::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.29; Sat, 18 Apr
+ 2020 10:55:22 +0000
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::c4fe:d4a4:f0e1:a75b]) by AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::c4fe:d4a4:f0e1:a75b%4]) with mapi id 15.20.2921.027; Sat, 18 Apr 2020
+ 10:55:22 +0000
+From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
+To:     linux.cj@gmail.com, Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>
+Cc:     netdev@vger.kernel.org, Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        linux-kernel@vger.kernel.org, Varun Sethi <V.Sethi@nxp.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>
+Subject: [RFC net-next PATCH v2 0/2] ACPI support for xgmac_mdio and dpaa2-mac drivers
+Date:   Sat, 18 Apr 2020 16:24:30 +0530
+Message-Id: <20200418105432.11233-1-calvin.johnson@oss.nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR03CA0099.apcprd03.prod.outlook.com
+ (2603:1096:4:7c::27) To AM0PR04MB5636.eurprd04.prod.outlook.com
+ (2603:10a6:208:130::22)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <934a503d2f75f614c040d300fc080fb76c3725fb.camel@mellanox.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR03CA0099.apcprd03.prod.outlook.com (2603:1096:4:7c::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.6 via Frontend Transport; Sat, 18 Apr 2020 10:55:16 +0000
+X-Mailer: git-send-email 2.17.1
+X-Originating-IP: [14.142.151.118]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 5108313c-21c2-484f-288a-08d7e386fdd6
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6899:|AM0PR04MB6899:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR04MB6899E7CD1B0E4156B376BD69D2D60@AM0PR04MB6899.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3276;
+X-Forefront-PRVS: 0377802854
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(346002)(376002)(39860400002)(366004)(136003)(396003)(478600001)(1076003)(86362001)(81156014)(26005)(4326008)(966005)(8676002)(8936002)(1006002)(6666004)(6512007)(316002)(6636002)(7416002)(186003)(16526019)(54906003)(110136005)(44832011)(2616005)(2906002)(956004)(52116002)(66476007)(55236004)(66556008)(6506007)(5660300002)(6486002)(66946007)(110426005)(921003);DIR:OUT;SFP:1101;
+Received-SPF: None (protection.outlook.com: oss.nxp.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dSlqQ2auVSP/DMX1X32Ou6Qh7i+eotyFL8obA5aeCX57dmqOSZV0TNEdW/doa8ACni4BLWOT12YKdbhZ9nEqf6VjBVnU/o3zJ3W1sJzYt/r9b0F6asQ4jqBFb4xTTKzNucH+alNVSSYEMSBn/lJFjZZlB7g0O+HwI35tKM0r7902GTaVQdBPVifudoWzvlzNJAuM0Scx7yrD5pICzLS9rOM/QgVsoYdXIWxJ2sUhJFbPlxhji8BMaOPcV6SxhnU5dk+OC8x5ojZu6mBJDnJdb51Jzotg+62PbskGpRYIF7T2nz/gApVPcAaGJsEBBMsjE5IJbjLFaAtoa6JzyGDBYmYeJ8w1HmIj0mA9I39QiB+L8RjAsiF3sKgEvnscVgtYUU5tx30fQKbqX1QMz9fQiElae/H0yKKmziM2JtgOFOXP02lXZJ3XiqMrsgBa7lOGsFfJYNd3MCg1cciLc2CpwU8+i+J/avS/c6I5TB9SQcVvFie3eqBXwwOa5ZTQ1hZa6fOlOH6ke9GR+XCW4Z11odOZsMeLkFuHHw8iQrGehQbuhaO8BCWvlC5JzHHc5ilNbXLzGHypvMPn9s4wayf9DQ==
+X-MS-Exchange-AntiSpam-MessageData: 8oCsgWDs0f8ol1dwTAz4ib7erGi2xL+XD1nsMK6FPidAkRJhd5iBARdaUqZHzzrykcdbkB4aVkJQYQxDxtlmzFkUa92ULh9jtryMia/r1VG846kmRl7vQbFzjV2MMLKyezv1XAqaM5jOYkjTvgYxyg==
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5108313c-21c2-484f-288a-08d7e386fdd6
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Apr 2020 10:55:22.5115
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ghnAzu4hc6cTcSkPgkCcQZs5oegK8OqL8S0AfJ6A6vf60JpIOPUrYHJo+SW9LE6xQD8myMbgH2Y31BZGqGLu7A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6899
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 17, 2020 at 10:23:37PM +0000, Saeed Mahameed wrote:
-> On Fri, 2020-04-17 at 10:28 +0200, gregkh@linuxfoundation.org wrote:
-> > > Let me simplify: there is a bug in the AI, where it can choose a
-> > > wrong
-> > > patch, let's fix it.
-> > 
-> > You do realize that there are at least 2 steps in this "AI" where
-> > people
-> > are involved.  The first is when Sasha goes thorough the patches and
-> > weeds out all of the "bad ones".
-> > 
-> > The second is when you, the maintainer, is asked if you think there
-> > is a
-> > problem if the patch is to be merged.
-> > 
-> > Then there's also the third, when again, I send out emails for the
-> > -rc
-> > process with the patches involved, and you are cc:ed on it.
-> > 
-> > This isn't an unchecked process here running with no human checks at
-> > all
-> > in it, so please don't speak of it like it is.
-> > 
-> 
-> Sure I understand,
-> 
-> But with all do respect to Sasha and i know he is doing a great job, he
-> just can't sign-off on all of the patches on all of the linux kernel
-> and determine just by himself if a patch is good or not.. and the
-> maintainer review is what actually matters here.
+Following other network drivers that supports ACPI,
+v2 of this patchset uses non-DT APIs to register mdiobus,
+register PHYs, create phylink and connect phy to mac.
 
-The maintainer review already happened when the patch went into Linus's
-tree.
+This patchset is dependent on fsl-mc-bus patch:
+https://lkml.org/lkml/2020/1/28/91
 
-> But the maintainer ack is an optional thing, and I bet that the vast
-> majority don't even look at these e-mails.
+Two helper functions are borrowed from an old patch by Marcin
+Wojtas:(mdio_bus: Introduce fwnode MDIO helpers).
+https://lkml.org/lkml/2017/12/18/211
 
-That is true.
+Changes in v2:
+- Use IS_ERR_OR_NULL for priv->mdio_base instead of plain NULL check
+- Add missing terminator of struct acpi_device_id
+- Use device_property_read_bool and avoid redundancy
+- Add helper functions xgmac_get_phy_id() and xgmac_mdiobus_register_phy()
+- Major change following other network drivers supporting ACPI
+- dropped v1 patches 1, 2, 4, 5 and 6 as they are no longer valid
+- incorporated other v1 review comments
 
-> My vision is that we make this an opt-in thing, and we somehow force
-> all active and important kernel subsystems to opt-in, and make it the
-> maintainer responsibility if something goes wrong. 
+Calvin Johnson (2):
+  net/fsl: add ACPI support for mdio bus
+  net: dpaa2-mac: Add ACPI support for DPAA2 MAC driver
 
-That's a nice vision, and I too want a pony :)
+ .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 122 +++++++++++----
+ drivers/net/ethernet/freescale/xgmac_mdio.c   | 143 +++++++++++++++---
+ 2 files changed, 215 insertions(+), 50 deletions(-)
 
-Seriously, the first rule of the stable trees being created was that it
-was not going to cause any extra work for a maintainer to do, given that
-even 18 years ago, our maintainers were overloaded.  Now that didn't
-totally happen, as I do ask for a cc: stable line to be added to patches
-to give me a hint as to what to apply.
+-- 
+2.17.1
 
-Now some maintainers really don't care about stable trees, and don't
-even put those lines, which is fine for them, but not fine for me in
-wanting to make stable trees that contain the needed fixes for them that
-are going into Linus's tree.  So over the years we have come up with
-tools to dig these patches out of Linus's tree.  The latest version of
-that is this AUTOSEL tool, and after a number of maintainers complained
-that being notified at the last possible second (i.e. during a -rc
-cycle) was not early enough to stop some AUTOSEL patches from being
-merged, Sasha started up the process you see now, giving maintainers a
-few _weeks_ to object.
-
-For the maintainers that don't care, fine, they just write a nice
-procmail rule and send the email to the round filing cabinet.  For the
-maintainers that do care, they get a chance to object.  For the
-maintainers that insist they are doing this all right and marking things
-correctly and don't want AUTOSEL running on their subsystems, they too
-have that option, which a few have already taken.
-
-So that's where we are today, a process that has evolved over the
-decades into the one that at the moment, is producing pretty solid and
-good stable kernels as per the review of external parties.  Yes, we can
-do better and find more patches that need to be backported, and are
-working on that.  But to stop and try to go to an opt-in-only process
-would cause us to go backwards in the ability for us to provide kernels
-with useful bugfixes to users.
-
-> I understand from your statistics that this system is working very
-> well, so i believe eventually every maintainer with a code that matters
-> will come on board.
-
-Sorry, that just will not happen.  As proof of that, look at all of the
-maintainers today that are not "on board" with just a simple "cc:
-stable".  And as I say above, that's fine, I am not going to ask them to
-do extra work that they do not want to do.  And because of that, I, and
-others like Sasha, are going to have to do _extra_ work to make a better
-stable kernel release, and that's fine, we are the crazy ones here.
-
-> this way we don't risk it for inactive and less important
-> subsystems/drivers.. and we guarantee the whole thing is properly
-> audited with the maintainers on-board.. 
-
-Have you met these maintainers that you can tell what to do despite not
-being their manager?  If you think you can get them on board, then
-please, try to get them to do the simple thing first (cc: stable) and
-then we can talk :)
-
-good luck!
-
-greg k-h
