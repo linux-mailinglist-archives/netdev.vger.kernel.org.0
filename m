@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DE331AF511
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 23:09:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F09CE1AF512
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 23:09:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728241AbgDRVI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Apr 2020 17:08:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35776 "EHLO
+        id S1726894AbgDRVJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Apr 2020 17:09:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726464AbgDRVI5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 17:08:57 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA731C061A0C
-        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 14:08:57 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id nu11so2708114pjb.1
-        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 14:08:57 -0700 (PDT)
+        with ESMTP id S1726014AbgDRVJg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 17:09:36 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7581C061A0C
+        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 14:09:36 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id d24so2414469pll.8
+        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 14:09:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2R3d+t42V1gQ/yEZojtMi3x4F1G8tamN0heS+xvn+t8=;
-        b=pjrs9RUxJcixgDwSyPc2Mabri/hw4Xu757WBHdIfOKnC0zWO9HHBKyOdl7EEuesU5I
-         ziHDxBujGS1b6IQhi2jvDuQtv5oEUZjhylSRsKphSsXRPCFk7LY8yW1Z95S5av7FtNip
-         oEoEGVCknKlH08ePiw+N6Grjr53k9t3bfTkDoJUkN/h7h6+COYWst25NZ+S+tSpGg/nn
-         2Bz1lRXrRP1UdA19QpelI3bteIIqmIWMl9e5Vs4SEAZDIREKpLub6wR1WbgFmjrt631O
-         9j7e4wqdpE39AOJbXjkc273pQyoo87Hep6fJF/8lgoyiihExg5RUBxlG6pF6GVARHp9i
-         Wh+A==
+        bh=htnd/tpTBRKw8O529djAhayPoh02gn92EDLM8d3I3EE=;
+        b=rI5awVDv7m4ircUalOALGFtsSS5W3eDxfbStYwbZr6zzUU30Dma2IMssUGZ64DI63N
+         d/lw52LU07o5Icz7NPabsR4s3QdP4jL7PkcrzKJqF5YfM72M6byiziqp6h9utKWPQI9g
+         LzXUtj6OliwHwccuzFOVSozH7Zm/QeAlt5bju3UUV9YYwkFq/lEZ6jN672hkyjgCYJnO
+         Vxw0TA+m513tR/qL2B0D5ulmVfbebR+aEMBB3eL/+lncM/7GwwrTs92P+t+UdLJpHYDC
+         Q74p32iBome4Kj6U09NlfIXBgxqhD/R+y5LITtuCQMOn4bhbZ+oJSSsAMOFT5Yjkqict
+         RlCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=2R3d+t42V1gQ/yEZojtMi3x4F1G8tamN0heS+xvn+t8=;
-        b=LN5Qu1/Cs46VEc2ZUGvvUxnsY6kKRuFF/EU+zljkoO2DftnKG8qbCvq9WVqBXAPyaU
-         ppfoHNOSHtQplLUJgwHnlx+DBWsUNhy2Xk24E8vLay4ROO2wm4r/x2XxypxL1nEweoyQ
-         D/QeXv8uQYmg61O2/4HyZIEFgluWqpTYrAK/othHm4tjTlLTCghtvP2vraseAiZpJR+g
-         05rgbEPjYPMZI9x1SGSeDL2OsiaswYbB74+K8B1GJuqnDBiF/erLMORhqNLJONjGv/zQ
-         /C0bR9ENDydOkOrazw7aT5GkyImjDp0cQrrVzX2FSgAuLklakUDYYqZMRsqEdKcACVJn
-         nyZg==
-X-Gm-Message-State: AGi0Pua8M5Oa+CpTcUEUd46WtMIR1qopkSs0TSA81c4BGiDfOb4s1GOH
-        MCzWqCVAHj4NG9vio0GGNa0=
-X-Google-Smtp-Source: APiQypKgrxnNOvINRPj5dYzaerVI25wLJ6sASMMdB4MguaREULRf19nl+DhCx/Udgej+R+nMwWP+7w==
-X-Received: by 2002:a17:90a:2170:: with SMTP id a103mr12508895pje.181.1587244137220;
-        Sat, 18 Apr 2020 14:08:57 -0700 (PDT)
+        bh=htnd/tpTBRKw8O529djAhayPoh02gn92EDLM8d3I3EE=;
+        b=aWiP5xT1GEbqA6gYaBj8ET0LvBBAAouYhD5PNgblL4dKx5sx5uq7kBRc4F3Wl9w96P
+         7+xATdsibpRxHTYOnxHkv7fcTtPVyBLqGbLb4l+B1IaYpqoaV0+14NVRLkrIWL2AQKoq
+         C5lJ0OxN9BZoRfuw5OxQF8TDFSkwfJrrNN6z3chGWXBaJoyEOIm182wqFQcT9CUNHZuv
+         Lp7p+bav+5VkEzFDOmL722zVwaNMQPWR9DBu4DxHLzAHYgU1Xq6E6hZkDd50HIkU4J+8
+         pgE/KJL/OjvL5LfHTQ6Rowh4sZ4ckgs3bDZJIdApLNJGOqjVmPLxO4NklPHLOp+cewQM
+         KXNA==
+X-Gm-Message-State: AGi0Pubu03AdnkiXNGq4/BmNVUcf8CvT5FIaiJZzKE2HP4FeEXhf3leP
+        oiTuf0gyS0pR8kEtvsj5qMFEQjLo
+X-Google-Smtp-Source: APiQypLaJoW9dKBRSq3wcf1v/xJbyOuSvrouiEHy3ORzXwqV6c2r/NpBz+01xkFpAUjOL8JxSS208A==
+X-Received: by 2002:a17:90b:1953:: with SMTP id nk19mr12189363pjb.16.1587244176339;
+        Sat, 18 Apr 2020 14:09:36 -0700 (PDT)
 Received: from [10.230.188.26] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id r24sm19328216pfh.1.2020.04.18.14.08.54
+        by smtp.gmail.com with ESMTPSA id s66sm8523233pgb.84.2020.04.18.14.09.33
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Apr 2020 14:08:56 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 2/3] net: ethernet: fec: Allow configuration
- of MDIO bus speed
+        Sat, 18 Apr 2020 14:09:35 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 3/3] net: ethernet: fec: Allow the MDIO
+ preamble to be disabled
 To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>, fugang.duan@nxp.com,
         Chris Healy <Chris.Healy@zii.aero>
 References: <20200418000355.804617-1-andrew@lunn.ch>
- <20200418000355.804617-3-andrew@lunn.ch>
+ <20200418000355.804617-4-andrew@lunn.ch>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <273c5e3d-3821-bc9f-4cb6-6a18bac7f738@gmail.com>
-Date:   Sat, 18 Apr 2020 14:08:50 -0700
+Message-ID: <733512b9-aa39-2a4f-6b01-b12823eb92c2@gmail.com>
+Date:   Sat, 18 Apr 2020 14:09:29 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200418000355.804617-3-andrew@lunn.ch>
+In-Reply-To: <20200418000355.804617-4-andrew@lunn.ch>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -74,12 +74,10 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 4/17/2020 5:03 PM, Andrew Lunn wrote:
-> MDIO busses typically operate at 2.5MHz. However many devices can
-> operate at faster speeds. This then allows more MDIO transactions per
-> second, useful for Ethernet switch statistics, or Ethernet PHY TDR
-> data. Allow the bus speed to be configured, using the standard
-> "clock-frequency" property, which i2c busses use to indicate the bus
-> speed.
+> An MDIO transaction normally starts with 32 1s as a preamble. However
+> not all devices requires such a preamble. Add a device tree property
+> which allows the preamble to be suppressed. This will half the size of
+> the MDIO transaction, allowing faster transactions.
 > 
 > Suggested-by: Chris Healy <Chris.Healy@zii.aero>
 > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
