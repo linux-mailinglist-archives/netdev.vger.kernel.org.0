@@ -2,78 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68C991AF417
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 21:11:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 855031AF46A
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 21:53:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728052AbgDRTLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Apr 2020 15:11:23 -0400
-Received: from pb-smtp20.pobox.com ([173.228.157.52]:58167 "EHLO
-        pb-smtp20.pobox.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726751AbgDRTLW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 15:11:22 -0400
-Received: from pb-smtp20.pobox.com (unknown [127.0.0.1])
-        by pb-smtp20.pobox.com (Postfix) with ESMTP id AC690C0F89;
-        Sat, 18 Apr 2020 15:11:20 -0400 (EDT)
-        (envelope-from nico@fluxnic.net)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=pobox.com; h=date:from:to
-        :cc:subject:in-reply-to:message-id:references:mime-version
-        :content-type; s=sasl; bh=VZi9Lq6WjEW2CMj7HADAyLMP9ZI=; b=ZLJbYg
-        4nliaG/wB0lpsHa9Ci3Ow858DxY3MSXbTL18SlWGyEOyg3pYK/1u/hodTrFUc2Zh
-        Pt8Muie1h9OY4vYRcfU48T2E23QAW11LwUri+mhm8h6gpdZJHAnu3n3wzbJFDDLm
-        b1LrWxyhFeW1Z2U1kqesZRruoqrGAfu6m9iWc=
-Received: from pb-smtp20.sea.icgroup.com (unknown [127.0.0.1])
-        by pb-smtp20.pobox.com (Postfix) with ESMTP id A322EC0F88;
-        Sat, 18 Apr 2020 15:11:20 -0400 (EDT)
-        (envelope-from nico@fluxnic.net)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=fluxnic.net;
- h=date:from:to:cc:subject:in-reply-to:message-id:references:mime-version:content-type; s=2016-12.pbsmtp; bh=tENhMTZ0DxDYPUZYBdHPCEQinqDZrI5H7ppeCRcGjKI=; b=unAv7lpBJ5hzW6YKxPPwiJaNbdzqxPfBLiZD0AZwW/+b0DjQD2STZ8xXtXxgO2/QDAcgR7LPXneVP9p5rJyAtdcNbD4PqSz/e5RTfd5AHN65Nek3vt0+2ZpaeS3kjoGzIpk1ue+PSNGlrK7rXV/rABLIbpo0yWip+9oe8GdYQb8=
-Received: from yoda.home (unknown [24.203.50.76])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by pb-smtp20.pobox.com (Postfix) with ESMTPSA id 9CC5CC0F87;
-        Sat, 18 Apr 2020 15:11:17 -0400 (EDT)
-        (envelope-from nico@fluxnic.net)
-Received: from xanadu.home (xanadu.home [192.168.2.2])
-        by yoda.home (Postfix) with ESMTPSA id 9E36C2DA0A70;
-        Sat, 18 Apr 2020 15:11:15 -0400 (EDT)
-Date:   Sat, 18 Apr 2020 15:11:15 -0400 (EDT)
-From:   Nicolas Pitre <nico@fluxnic.net>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        jonas@kwiboo.se, David Airlie <airlied@linux.ie>,
-        jernej.skrabec@siol.net,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, linux-rdma@vger.kernel.org
-Subject: Re: [RFC PATCH 1/2] Kconfig: Introduce "uses" keyword
-In-Reply-To: <CAK7LNAQZd_LUyA2V_pCvMTr_201nSX1Nm0TDw5kOeNV64rOfpA@mail.gmail.com>
-Message-ID: <nycvar.YSQ.7.76.2004181509030.2671@knanqh.ubzr>
-References: <20200417011146.83973-1-saeedm@mellanox.com> <CAK7LNAQZd_LUyA2V_pCvMTr_201nSX1Nm0TDw5kOeNV64rOfpA@mail.gmail.com>
-User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
+        id S1728223AbgDRTxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Apr 2020 15:53:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52192 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727951AbgDRTxL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 15:53:11 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85990C061A0C;
+        Sat, 18 Apr 2020 12:53:11 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id h205so3023144ybg.6;
+        Sat, 18 Apr 2020 12:53:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oN/swMoM8H/0UNKPqrkT/bcy9j0GVDm0VW4M633/9q4=;
+        b=Kan8r+1WdU9fvLczn+6hQXY7yNfA9YW2YXU9og4kDOt46aKh1VrXuzkvomzvRoMcJI
+         4te4QKQa36qfvAuRhJvR2BW3ksrc4+wJqM/5VfCFmHpaDjgUzmbCpInWWvzIyR/EAPiN
+         cJ9qsTpIfk/JfplUSeTXGUzotNJIR65bXnjMMLRu833sOK9QzZqda66Z2cqogZvRYfZa
+         DGGpfzZSJiNTqgSdx+moCwEXyFaW9kov1RWkMnHE3RlDuqvt9AYL3JSbp9S50Ena0kOb
+         h7fINamfAadrnDmyoQsbRS6v9litETGdAHqV6zbNUAaiciZvKTjp26zLD1gXaU80dEAt
+         4xQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oN/swMoM8H/0UNKPqrkT/bcy9j0GVDm0VW4M633/9q4=;
+        b=G4sYOhq7jwz0DQcADvjKMwGsma62PoOTrTBZd0fEcohI5XzGFGS1+5RMfYZDfQMGgq
+         dTIhyUwA+Ot7sN+mshWrVr8fmv9e+/vmXbMvzkut7r20FdUbALD2wBIecwBaFEHrRIlo
+         Fd89k5+t708IoNvJzxA543F41vr2/phMXGcALgtWARzIreT4FWQ0fttNlhfROR3Zzvqr
+         q0d/DFybupjPe2yabnVPDDnZX8+jJJ1klDcsMxS7WY7RKM7qLljyVy21+k1o5/OL6t2S
+         7sNBjvyCKM8l/9PbP4VXTX8toidWFbyqLEbXDu350LEUEshXLTsdZm63HB/MTZBdFMXa
+         vJ1Q==
+X-Gm-Message-State: AGi0PuboJXLeQtg183t8uEfllNW9m1MwD963jC0zxkwnlmfZmseOZObD
+        VIC8ob2ZO1qiw8jxozBWOwMyc7orCTnsM+3WFXc=
+X-Google-Smtp-Source: APiQypKVFnFO8mZhTArIuQ0CHlq0ZL82vMqUNd/CgIgLt24zwRtHxo1XNzZECgX0y2fblOhmQl4PGaEIc06WKoOXfGE=
+X-Received: by 2002:a25:d047:: with SMTP id h68mr8061830ybg.257.1587239590655;
+ Sat, 18 Apr 2020 12:53:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Pobox-Relay-ID: 61636EB6-81A8-11EA-ACEA-B0405B776F7B-78420484!pb-smtp20.pobox.com
+References: <20200415114226.13103-1-sashal@kernel.org> <20200415114226.13103-6-sashal@kernel.org>
+In-Reply-To: <20200415114226.13103-6-sashal@kernel.org>
+From:   Or Gerlitz <gerlitz.or@gmail.com>
+Date:   Sat, 18 Apr 2020 22:52:59 +0300
+Message-ID: <CAJ3xEMjKozXW1h8Dwv96VzCegOsyvyyeZ4hapWzwStirLGnAqg@mail.gmail.com>
+Subject: Re: [PATCH AUTOSEL 5.5 006/106] net/mlx5e: Enforce setting of a
+ single FEC mode
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     Stable <stable@vger.kernel.org>, Aya Levin <ayal@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Linux Netdev List <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 19 Apr 2020, Masahiro Yamada wrote:
+On Thu, Apr 16, 2020 at 2:56 AM Sasha Levin <sashal@kernel.org> wrote:
+> From: Aya Levin <ayal@mellanox.com>
+> [ Upstream commit 4bd9d5070b92da012f2715cf8e4859acb78b8f35 ]
+>
+> Ethtool command allow setting of several FEC modes in a single set
+> command. The driver can only set a single FEC mode at a time. With this
+> patch driver will reply not-supported on setting several FEC modes.
+>
+> Signed-off-by: Aya Levin <ayal@mellanox.com>
+> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c | 4 ++++
 
-> (FOO || !FOO) is difficult to understand, but
-> the behavior of "uses FOO" is as difficult to grasp.
-
-Can't this be expressed as the following instead:
-
-	depends on FOO if FOO
-
-That would be a little clearer.
-
-
-Nicolas
+Haven't we agreed that drivers/net/ethernet/mellanox/mlx5 is not
+subject to autosel anymore?!
