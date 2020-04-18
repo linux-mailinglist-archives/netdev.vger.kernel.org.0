@@ -2,60 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 059221AEEB3
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 16:28:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9387C1AEEBF
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 16:35:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726168AbgDRO2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Apr 2020 10:28:01 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46442 "EHLO vps0.lunn.ch"
+        id S1726089AbgDROfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Apr 2020 10:35:16 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:46466 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725903AbgDRO2A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 Apr 2020 10:28:00 -0400
+        id S1725903AbgDROfQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 Apr 2020 10:35:16 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=kqthyuF73mZXFPzFmwO4BGMkX1oZYQytgVrK8v5HwGs=; b=EtcgDxXTl61F+0rw6jPyhCryzy
-        0vFrF+3OiqiuKR0l8hxg+X133aN7yXOKuMsHntVWeolILUI9ueRZZFQkXKzCp81zaTNjWT/hgb51v
-        2POHCg2debFm5AUlA+1ZG5SK1kCZ3ParRUkr8Aq8euvgrDyZMZbS9Gnt79Lk3r1pwNWo=;
+        bh=AZ/RMhwSUwQdo6J0IUbGcZIvgJfSETQ2FQQOLcJdtl4=; b=JoYHbgnQKNg8ELfaeVny9/OIK4
+        /aBwVhAONEQbN7jZtN6XnTXuSLlkLV4qe1CJdpyDqSdhvi+k4xyxPGwzbG8a59i2WjFKDhffnxMkX
+        mv2sAovqYEYe2TkU3ztt2F//DgZc/iqRZQlC4U8kwUpCxe74l7RDqPBreAm+yBfnSMUk=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
         (envelope-from <andrew@lunn.ch>)
-        id 1jPoRq-003T6w-Hi; Sat, 18 Apr 2020 16:27:58 +0200
-Date:   Sat, 18 Apr 2020 16:27:58 +0200
+        id 1jPoYp-003TBM-5f; Sat, 18 Apr 2020 16:35:11 +0200
+Date:   Sat, 18 Apr 2020 16:35:11 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>, fugang.duan@nxp.com,
-        Chris Healy <Chris.Healy@zii.aero>
-Subject: Re: [PATCH net-next v2 3/3] net: ethernet: fec: Allow the MDIO
- preamble to be disabled
-Message-ID: <20200418142758.GC804711@lunn.ch>
-References: <20200418000355.804617-1-andrew@lunn.ch>
- <20200418000355.804617-4-andrew@lunn.ch>
- <bde059d8-5a95-d32b-7e28-ac7385cc0415@gmail.com>
+Cc:     netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next] dt-bindings: net: mdio: Document common
+ properties
+Message-ID: <20200418143511.GE804711@lunn.ch>
+References: <20200418005126.15305-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <bde059d8-5a95-d32b-7e28-ac7385cc0415@gmail.com>
+In-Reply-To: <20200418005126.15305-1-f.fainelli@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> This is a property of the MDIO device node and the MDIO bus controller as
-> well, so I would assume that it has to be treated a little it like the
-> 'broken-turn-around' property and it would have to be a bitmask per MDIO
-> device address that is set/clear depending on what the device support. If it
-> is set for the device and your controller supports it, then you an suppress
-> preamble.
+On Fri, Apr 17, 2020 at 05:51:26PM -0700, Florian Fainelli wrote:
+> Some of the properties pertaining to the broken turn around or resets
+> were only documented in ethernet-phy.yaml while they are applicable
+> across all MDIO devices and not Ethernet PHYs specifically which are a
+> superset.
+> 
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>  .../devicetree/bindings/net/mdio.yaml         | 27 +++++++++++++++++++
+>  1 file changed, 27 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/mdio.yaml b/Documentation/devicetree/bindings/net/mdio.yaml
+> index 50c3397a82bc..58d486db5651 100644
+> --- a/Documentation/devicetree/bindings/net/mdio.yaml
+> +++ b/Documentation/devicetree/bindings/net/mdio.yaml
+> @@ -50,6 +50,33 @@ patternProperties:
+>          description:
+>            The ID number for the PHY.
+>  
+> +      broken-turn-around:
+> +        $ref: /schemas/types.yaml#definitions/flag
+> +        description:
+> +          If set, indicates the PHY device does not correctly release
+> +          the turn around line low at the end of a MDIO transaction.
 
-Again, i don't see how this can work. You need all the devices on the
-bus to support preamble suppression, otherwise you cannot use it. As
-with a maximum clock frequency, we could add the complexity to check
-as bus scan time that all devices have the necessary property, but i
-don't think it brings anything.
+Hi Florian
 
-    Andrew
+Since this is a generic property, maybe this should be "the MDIO
+device"? Probably the whole document needs s/PHY/MDIO/g ?
+
+	 Andrew
