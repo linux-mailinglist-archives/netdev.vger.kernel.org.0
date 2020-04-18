@@ -2,86 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D51761AF164
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 17:00:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E5111AF16B
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 17:04:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726441AbgDRPAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Apr 2020 11:00:36 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46608 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725903AbgDRPAf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 Apr 2020 11:00:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=3k2dnf2InJf5CY0m1dDSEfIyndBrROF/WgHcjwyBxz4=; b=KZEI8tMMhflTCK9sm+aYt1BQh5
-        r0QGwzESr7kJXvksintdRLT/3sVUATQbUgfHf//Cv4Cf24va5mHEZd+9Unk7p33MfBJzdChpPBqwI
-        ZzvR2BzA0fosErF5fON5HkgcP9thFH1bSG/lL3sbiM3NhEgkqJF1bTUWe24BwDKqlkoQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jPoxJ-003TWR-36; Sat, 18 Apr 2020 17:00:29 +0200
-Date:   Sat, 18 Apr 2020 17:00:29 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     linux.cj@gmail.com, Jeremy Linton <jeremy.linton@arm.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        netdev@vger.kernel.org, Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        linux-kernel@vger.kernel.org, Varun Sethi <V.Sethi@nxp.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
-        Pankaj Bansal <pankaj.bansal@nxp.com>,
-        Makarand Pawagi <makarand.pawagi@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>
-Subject: Re: [RFC net-next PATCH v2 2/2] net: dpaa2-mac: Add ACPI support for
- DPAA2 MAC driver
-Message-ID: <20200418150029.GH804711@lunn.ch>
-References: <20200418105432.11233-1-calvin.johnson@oss.nxp.com>
- <20200418105432.11233-3-calvin.johnson@oss.nxp.com>
+        id S1726240AbgDRPEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Apr 2020 11:04:02 -0400
+Received: from esa4.microchip.iphmx.com ([68.232.154.123]:65410 "EHLO
+        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725914AbgDRPEC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 11:04:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1587222242; x=1618758242;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=P9QFx2m+EdJ/Sth2lo4BRux+9U5rJNWn4YuJ3jtIOzo=;
+  b=Opwic/DtKR4PaGtUgfDQ4B7TZeNMjVTBYxsiK2PgiFXgKuvHosSiIcN1
+   48oxBUmCE7oyqDVRgSOQFOA3c+He6Uj/u2IfVg/Wt7aj72cBO7fDJ2IqI
+   jUwf7sbhZZJ5ZIlWomHXegvKT5ujp/noIw04FwBVs6Z8mSmDPDhqLyFGA
+   IgwKZGoLTrak1G+S4Z01miN24XXNi27kNUv7aPFv0gltC71F84xMog2h4
+   y6LAt/PRzKo3NSoNXjPYxX2Q0kNnU0nznBnhfR7rYKktkFvpix/uydxG8
+   9/9X96QB8xeYGEI8/3PRNHPZkcUEV+vId11bk62+j9DIE4T5Sz8FrgyAO
+   A==;
+IronPort-SDR: m7UcQDlev/MKt25edmp7CE/m0IENiTcZaDPWD8ceyvWol8WUyzRYDRfwZGSvJDCwktDKYlJhdv
+ zova4dlOsJ+O0w24fAC3g8ZY5heKnK8FbwEOoEdQDRaof1nLJes/a82bgUqN8wfCLhGckv4bZ2
+ e2ezL5uEzWJ17uLjStcDpP27Katm+mLag5egXFW9yGSvIEzR/kAfI134xrSVjdibjiHCstvrkj
+ KZ2EdDzT+rAdenqomMynesgheJDMNLkwL/sieSaZwX81nig3xxw1LKDr1VRp9sPMO0/Izd5XS5
+ e18=
+X-IronPort-AV: E=Sophos;i="5.72,399,1580799600"; 
+   d="scan'208";a="70766323"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Apr 2020 08:04:01 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Sat, 18 Apr 2020 08:04:06 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Sat, 18 Apr 2020 08:04:00 -0700
+Date:   Sat, 18 Apr 2020 17:03:59 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+CC:     <davem@davemloft.net>, <jiri@resnulli.us>, <ivecera@redhat.com>,
+        <kuba@kernel.org>, <roopa@cumulusnetworks.com>,
+        <olteanv@gmail.com>, <andrew@lunn.ch>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bridge@lists.linux-foundation.org>, <UNGLinuxDriver@microchip.com>
+Subject: Re: [RFC net-next v5 0/9] net: bridge: mrp: Add support for Media
+ Redundancy Protocol(MRP)
+Message-ID: <20200418150359.no4qcgc7oxqunkjp@soft-dev3.microsemi.net>
+References: <20200414112618.3644-1-horatiu.vultur@microchip.com>
+ <59ccd697-3c97-207e-a89d-f73e594ec7eb@cumulusnetworks.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <20200418105432.11233-3-calvin.johnson@oss.nxp.com>
+In-Reply-To: <59ccd697-3c97-207e-a89d-f73e594ec7eb@cumulusnetworks.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -	err = phylink_of_phy_connect(mac->phylink, dpmac_node, 0);
-> +	if (is_of_node(dpmac_node))
-> +		err = phylink_of_phy_connect(mac->phylink,
-> +					     to_of_node(dpmac_node), 0);
-> +	else if (is_acpi_node(dpmac_node)) {
-> +		status = acpi_node_get_property_reference(dpmac_node,
-> +							  "phy-handle",
-> +							  0, &args);
-> +		if (ACPI_FAILURE(status))
-> +			goto err_phylink_destroy;
-> +		phy_dev = fwnode_phy_find_device(args.fwnode);
-> +		if (!phy_dev)
-> +			goto err_phylink_destroy;
-> +
-> +		err = phylink_connect_phy(mac->phylink, phy_dev);
-> +		if (err)
-> +			phy_detach(phy_dev);
+The 04/18/2020 12:01, Nikolay Aleksandrov wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> On 14/04/2020 14:26, Horatiu Vultur wrote:
+> > Media Redundancy Protocol is a data network protocol standardized by
+> > International Electrotechnical Commission as IEC 62439-2. It allows rings of
+> > Ethernet switches to overcome any single failure with recovery time faster than
+> > STP. It is primarily used in Industrial Ethernet applications.
+> >
+> > Based on the previous RFC[1][2][3][4], the MRP state machine and all the timers
+> > were moved to userspace, except for the timers used to generate MRP Test frames.
+> > In this way the userspace doesn't know and should not know if the HW or the
+> > kernel will generate the MRP Test frames. The following changes were added to
+> > the bridge to support the MRP:
+> > - the existing netlink interface was extended with MRP support,
+> > - allow to detect when a MRP frame was received on a MRP ring port
+> > - allow MRP instance to forward/terminate MRP frames
+> > - generate MRP Test frames in case the HW doesn't have support for this
+> >
+> > To be able to offload MRP support to HW, the switchdev API  was extend.
+> >
+> 
+> Hi Horatiu,
+> The set still has a few blocker issues (bisectability, sysfs error return, use of extack)
+> and a few other cleanup tasks as I've noted in my replies to the respective patches.
+> I think with those out of the way you can submit it for inclusion.
 
-So it looks like you need to add a phylink_fwnode_phy_connect(). And
-maybe on top of that you need a phylink_device_phy_connect()?
+Hi Nik,
 
-So please stop. Take a step back, look at how the of_, device_,
-fwnode_, and acpi_ abstractions all stack on top of each other, then
-propose phylib and phylink core changes to implement these
-abstractions.
+Thanks for the review. I really need to be more careful with the
+bisectability. I will update the code based on your comments and then
+send the patch series again.
 
-	Andrew
+> 
+> Cheers,
+>  Nik
+> 
+> 
+> 
+> 
+
+-- 
+/Horatiu
