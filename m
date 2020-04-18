@@ -2,66 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C6C11AF1CB
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 17:51:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83C6E1AF1D1
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 17:55:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726459AbgDRPvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Apr 2020 11:51:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43540 "EHLO
+        id S1726581AbgDRPzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Apr 2020 11:55:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725879AbgDRPvg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 11:51:36 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6930C061A0C;
-        Sat, 18 Apr 2020 08:51:36 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id e6so30138pjt.4;
-        Sat, 18 Apr 2020 08:51:36 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725879AbgDRPzF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 11:55:05 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3605C061A0C;
+        Sat, 18 Apr 2020 08:55:04 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id o15so2166414pgi.1;
+        Sat, 18 Apr 2020 08:55:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0TKQZ7Y52qkZE5tRa53qohqKu4aHiJzFT5U1ZhFT2Ho=;
-        b=inlWLnNhW0N6VWPrG1+xl4+2SvK3e3jybJXOw3fAz7kpLnitpyv6+7Ptjal/0PqDfd
-         7J9YeS9hvI6z6r07YdnB3G4nlH9srwLN803UwyyZB9qv++Ph7RaE7En/5s9kV6CGOVc+
-         b8nzoJnHf2wlbgHmy9RlK1xKnuuL6UiF+SRHB7C4qqV5cTKTyEx4kDz5VJdNRQQFij1c
-         raR8W6C8BQalbr28fmN6kkPPD+O0svAJYZfg5QEWD6GhoyUwMd1dyic+K915keqgP8zt
-         +ZQpNDsBwbv8v7WsN60V7SF+ABSTQfi9Tm+kTiSid3pDQax4eezAsySF+UyRFrQ+YiGk
-         TETA==
+        bh=os49Kt86JlY5pSJZvK5uq8qx4Lix7y20IpAizDOhSSc=;
+        b=EGq/fHWaGaj+LDNS6MsnymRJjUB301/nGdnoysoRF+LqqUCRab9pSeGh6YppYacG5c
+         y6L+b3Lk09qtW5rETj2uBMoTc6TOQJ4RSRHSzYGjnuphAblK8Y0krKWFhZnfumHSz16D
+         FV32wQEIOrBjlNy2CIgNsG5f32frq/yONRIBu8Mwf6XmXuGlx64Pk7avugXyZO80Qf7M
+         PcR5/n9dMPWIAUlIdiN6B6UZylljO6AfRXXwzPHMuBKT5lz2V7lhPWe7KxYr1rqo5La6
+         39E9TUlgMu4W0Xcu5dd2grXg/DXXuJQX+pU3SwQgIv7dMjxQ1bKajdDCwNUDvC3zL0a/
+         mIRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=0TKQZ7Y52qkZE5tRa53qohqKu4aHiJzFT5U1ZhFT2Ho=;
-        b=oWmwsqNBcLXTVbDEuHCZSrWKh41SLQiXw6c0kXCp6OX3rNDtMxqqyDchcc/DTFx/m/
-         bqJlYjLTr/UfoMZVPU0hpDhnnTpCyR06ohhTx7gnjJk+EbIwh8c2NJ66mGPEptRjxvtB
-         BUs/hsJM0cXdXMhte3FRyG/z/GOFrcDz0BU5S35gfIncH3c0YIVKO+uav5asbaYg3Ewc
-         jyKE/nqkcLuC4u4165AIWWMUfC3kNxHWQXy3FuAa8f5Ht74b8Z1jYJ0IF67sTyzsrP0E
-         /TF5MYQhE4teJ9PQQ2kmhyusidxMNZnVhqcRllergBygebj6jjoyZxjDRQQPL6S3FoJo
-         86Cw==
-X-Gm-Message-State: AGi0PubfMMWfVzp6gE/5w160vIW3BiiQrHpCgREbX0qz4lKR3nV6DfGg
-        hhOk5rLkmfS8ODXYUEm2hVYB+xet
-X-Google-Smtp-Source: APiQypKtx8mEU3M5odve966NmskfRG9yFqqh4p3dHqHz77XNujWnD5vT68YT7sBC5CXhs6oVug7gLg==
-X-Received: by 2002:a17:90a:1743:: with SMTP id 3mr11250029pjm.106.1587225095709;
-        Sat, 18 Apr 2020 08:51:35 -0700 (PDT)
+        bh=os49Kt86JlY5pSJZvK5uq8qx4Lix7y20IpAizDOhSSc=;
+        b=LYNzymJ+t5S3dDiL1gOjbdQMJApoVk+KP16AON9C48iftE2yEsB3WjwVO7LRXXfeC0
+         RJRzWlvMitjmIUlNiqlXoQzWqo4JqK5UuU4VSo5mG64ZXMalW/kWH9fJXxXl1WqLh1pK
+         sNowPVB4aQDOMxfcri/WrWfHmmDZoUyznzJcNjWAbCe12Y7zjI0wKa4uWqugEQ8nk8S/
+         TBAJTZG+TP70FKLYRfZYM+btbyDkT2laJ3FR7LEIHIYCrMu18l5e/oSa/Z2c3AgCVgrd
+         3Nc22YUbRhf1hdQaApAweD3Ify3mGESa2bNkEXs5YDvFdPGaRXnNV/omPD3catdVduS9
+         YCaQ==
+X-Gm-Message-State: AGi0PubYB4orSckPYSx+MUqpEcwPE5cGWTpnn+al2OUgfM5JZq6DrQFv
+        wzJzfjeyndvfO9WH/zf9LGY=
+X-Google-Smtp-Source: APiQypKLqMXLNbCranlRJZSuXcCuy2WnCq3zPNou+S7rkJbtgxSIE97wWIKBiuX0UyXVPW5LK9EVNQ==
+X-Received: by 2002:a63:c007:: with SMTP id h7mr8248283pgg.428.1587225304244;
+        Sat, 18 Apr 2020 08:55:04 -0700 (PDT)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id v26sm3859404pff.45.2020.04.18.08.51.33
+        by smtp.gmail.com with ESMTPSA id i9sm4622888pfk.199.2020.04.18.08.55.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Apr 2020 08:51:34 -0700 (PDT)
-Subject: Re: [PATCH] net: systemport: Omit superfluous error message in
- bcm_sysport_probe()
-To:     Tang Bin <tangbin@cmss.chinamobile.com>, f.fainelli@gmail.com,
-        davem@davemloft.net
-Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200418085105.12584-1-tangbin@cmss.chinamobile.com>
+        Sat, 18 Apr 2020 08:55:03 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/3] net: phy: broadcom: add helper to write/read
+ RDB registers
+To:     Andrew Lunn <andrew@lunn.ch>, Michael Walle <michael@walle.cc>
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>
+References: <20200417192858.6997-1-michael@walle.cc>
+ <20200418141348.GA804711@lunn.ch>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <170ca41c-caa5-572b-9178-71e7235e05f6@gmail.com>
-Date:   Sat, 18 Apr 2020 08:51:32 -0700
+Message-ID: <aa126ad1-ae29-3da6-bd50-2c0444cfd691@gmail.com>
+Date:   Sat, 18 Apr 2020 08:55:01 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200418085105.12584-1-tangbin@cmss.chinamobile.com>
+In-Reply-To: <20200418141348.GA804711@lunn.ch>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -72,13 +76,15 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 4/18/2020 1:51 AM, Tang Bin wrote:
-> In the function bcm_sysport_probe(), when get irq failed, the function
-> platform_get_irq() logs an error message, so remove redundant message
-> here.
+On 4/18/2020 7:13 AM, Andrew Lunn wrote:
+> On Fri, Apr 17, 2020 at 09:28:56PM +0200, Michael Walle wrote:
+>> RDB regsiters are used on newer Broadcom PHYs. Add helper to read, write
+>> and modify these registers.
 > 
-> Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
+> It would be nice to give a hint what RDB means?
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+It means Register Data Base, it is meant to be a linear register offset 
+as opposed to the more convulated shadow 18, 1c or other expansion 
+registers.
 -- 
 Florian
