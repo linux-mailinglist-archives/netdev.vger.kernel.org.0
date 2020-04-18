@@ -2,331 +2,394 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BDDA1AEBFD
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 12:55:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FF861AEC04
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 13:06:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726228AbgDRKzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Apr 2020 06:55:46 -0400
-Received: from mail-eopbgr50084.outbound.protection.outlook.com ([40.107.5.84]:30181
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726224AbgDRKzp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 Apr 2020 06:55:45 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cPlJoMUay0neJ2YFBMHG5XsqVOL+dMcq4WUoyd7gbd/j6yevoHFBy27LYkH6ohVMnhHZpWmgwSLH8/7FOwStOYy4GgyfAi2l+UkUMXf3mpd4sc+GChymXXXIpwDNXx/H4Nb6Pyly6ej96QdSttYmqLNcrJtAxNwi4MnaVAuweP2EI/qk5A/hQ/LmWgv8idxJRrdZ+czRaHfxPPPTDFuJfyEnA3oySaBmaEjCH09PmzKe2gZYDr0U/YywAH8b+388Pzht+rp9GZqHyVgoeYJCvFh9/0saFSLob6dn9f+XZPhx4QK1G0RbGNNfSMMzPtLOu51GVBRRZboQUeJBVYGpyA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0l56irLD1C8aWBRjDKWr+jrOD801c2V+/NafQPp0oyM=;
- b=BBv5Y2hgXv1qpUg+wMg8Zun+Zyy2pZOBy6J7cMlivpd137Q6/99iraVLQ0IZV+UOE70UFfVh4leMGYDzEQOzoesmY4UKGLzpSSePWjWIIMYHtbb4BkrQIBy7zHNFUXV9ZiRecPFytqDIWU7unX4ot5JWWmG8LeLDUjYtn/XW8NZK182vEgm4AVc+14VobQ9trW8lDNSeUzpIZsE19yJhA9483h09SKH+PJj1FNAumbFHv6BAx5zjtMxJr5NSdFu824AeHgPlryvOMTmOrVYqM7vKFDMql9DGUUkbD2k4rnLebnL9uya43pwYthVCUx4hnK5ELRqSRYrsWTqgweR6Yg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0l56irLD1C8aWBRjDKWr+jrOD801c2V+/NafQPp0oyM=;
- b=Gk35Q4397vR6z+eippu3i4S79NuUM8QRWcv4DNBEvqyjvelHu9nj99edMj8zRO4ZJfvCtB9EuAzkCj7GmisgveE/MrZXC5p2R0qToXIsMDzL+c9uS9CDjQ0DcrMGNx0ka3N9rMn10pHut3Xsprq/GkQs27mwlDKGSEMUX3gS0rA=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=calvin.johnson@oss.nxp.com; 
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
- by AM0PR04MB6899.eurprd04.prod.outlook.com (2603:10a6:208:183::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.29; Sat, 18 Apr
- 2020 10:55:40 +0000
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::c4fe:d4a4:f0e1:a75b]) by AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::c4fe:d4a4:f0e1:a75b%4]) with mapi id 15.20.2921.027; Sat, 18 Apr 2020
- 10:55:40 +0000
-From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
-To:     linux.cj@gmail.com, Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>
-Cc:     netdev@vger.kernel.org, Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        linux-kernel@vger.kernel.org, Varun Sethi <V.Sethi@nxp.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
-        Pankaj Bansal <pankaj.bansal@nxp.com>,
-        Makarand Pawagi <makarand.pawagi@nxp.com>,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>
-Subject: [RFC net-next PATCH v2 2/2] net: dpaa2-mac: Add ACPI support for DPAA2 MAC driver
-Date:   Sat, 18 Apr 2020 16:24:32 +0530
-Message-Id: <20200418105432.11233-3-calvin.johnson@oss.nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200418105432.11233-1-calvin.johnson@oss.nxp.com>
-References: <20200418105432.11233-1-calvin.johnson@oss.nxp.com>
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR03CA0099.apcprd03.prod.outlook.com
- (2603:1096:4:7c::27) To AM0PR04MB5636.eurprd04.prod.outlook.com
- (2603:10a6:208:130::22)
+        id S1725879AbgDRLGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Apr 2020 07:06:50 -0400
+Received: from mta-out1.inet.fi ([62.71.2.202]:59132 "EHLO johanna2.inet.fi"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725857AbgDRLGu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 Apr 2020 07:06:50 -0400
+X-RazorGate-Vade-Verdict: clean 0
+X-RazorGate-Vade-Classification: clean
+X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgeduhedrfeelgdefjecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfupfevtfenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepuffhvfhfkffffgggjggtsehmtderredtfeejnecuhfhrohhmpefnrghurhhiucflrghkkhhuuceolhgruhhrihdrjhgrkhhkuhesphhprdhinhgvthdrfhhiqeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgrdhinhenucfkphepkeegrddvgeekrdeftddrudelheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopegludelvddrudeikedruddrudefhegnpdhinhgvthepkeegrddvgeekrdeftddrudelhedpmhgrihhlfhhrohhmpeeolhgruhhjrghkqdefsehmsghogidrihhnvghtrdhfihequceuqfffjgepkeeukffvoffkoffgpdhrtghpthhtohepoehhkhgrlhhlfigvihhtudesghhmrghilhdrtghomheqpdhrtghpthhtohepoehlvghonheskhgvrhhnvghlrdhorhhgqedprhgtphhtthhopeeonhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhgqedprhgtphhtthhopeeonhhitggpshifshgusehrvggrlhhtvghkrdgtohhmqe
+Received: from [192.168.1.135] (84.248.30.195) by johanna2.inet.fi (9.0.019.26-1) (authenticated as laujak-3)
+        id 5E361F59355C69BA; Sat, 18 Apr 2020 14:06:32 +0300
+Subject: Re: NET: r8168/r8169 identifying fix
+From:   Lauri Jakku <lauri.jakku@pp.inet.fi>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
+        nic_swsd@realtek.com
+References: <4bc0fc0c-1437-fc41-1c50-38298214ec75@gmail.com>
+ <20200413105838.GK334007@unreal>
+ <dc2de414-0e6e-2531-0131-0f3db397680f@gmail.com>
+ <20200413113430.GM334007@unreal>
+ <03d9f8d9-620c-1f8b-9c58-60b824fa626c@gmail.com>
+ <d3adc7f2-06bb-45bc-ab02-3d443999cefd@gmail.com>
+ <f143b58d-4caa-7c9b-b98b-806ba8d2be99@gmail.com>
+ <4860e57e-93e4-24f5-6103-fa80acbdfa0d@pp.inet.fi>
+ <70cfcfb3-ce2a-9d47-b034-b94682e46e35@gmail.com>
+ <d4e622f1-7bd1-d884-20b2-c16e60b42bf2@pp.inet.fi>
+ <8db3cdc1-b63d-9028-e4bd-659e6d213f8f@pp.inet.fi>
+ <2f7aeeb2-2a19-da7c-7436-71203a29f9e8@gmail.com>
+ <d9781ac2-c7b7-0399-578e-cc43c4629147@pp.inet.fi>
+ <04107d6d-d07b-7589-0cef-0d39d86484f3@pp.inet.fi>
+ <b9a31f5a-e140-5cd4-d7aa-21a2fa2c27a0@gmail.com>
+ <de1bf1a4-8ce3-3352-3ff6-339206fa871e@pp.inet.fi>
+ <a940416a-2cc9-c27b-1660-df19273b7478@pp.inet.fi>
+Message-ID: <ae6fe5f1-d7d5-c0ca-a206-48940ee80681@pp.inet.fi>
+Date:   Sat, 18 Apr 2020 14:06:21 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR03CA0099.apcprd03.prod.outlook.com (2603:1096:4:7c::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.6 via Frontend Transport; Sat, 18 Apr 2020 10:55:35 +0000
-X-Mailer: git-send-email 2.17.1
-X-Originating-IP: [14.142.151.118]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: aaa37b56-c8e5-4716-8e7c-08d7e38708df
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6899:|AM0PR04MB6899:
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB68993E7CB3C4B47FA2086D06D2D60@AM0PR04MB6899.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:901;
-X-Forefront-PRVS: 0377802854
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(346002)(376002)(39860400002)(366004)(136003)(396003)(478600001)(1076003)(86362001)(81156014)(26005)(4326008)(8676002)(8936002)(1006002)(6666004)(6512007)(316002)(6636002)(7416002)(186003)(16526019)(54906003)(110136005)(44832011)(2616005)(2906002)(956004)(52116002)(66476007)(55236004)(66556008)(6506007)(5660300002)(6486002)(66946007)(110426005)(921003);DIR:OUT;SFP:1101;
-Received-SPF: None (protection.outlook.com: oss.nxp.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: brPSHiWwotiIHQDrLbwCqFzUYDGR58NfIQUaUYALiKFHckn1Q3crXt/3I3FdeDi5gRujM/S+saBGOwtSEO77CuSP1CxQt4BKMz9ncLVIn9oRBti0+U9fXzcOKgcho8eYaWHRxF8AVlINJRYxOmMt3eb2B+kT628CkuDorNcQgkeNND+5b7yuDehK2psdaXwBTQYS4KuUrxKRl1L5230gsBZjQYrfyXte0caphtM8KZh/IdYSRJkBYonJGZ6+pu73uPJKZ2jYJqDtd8hDQm3hCkT6xCVW/SX6hyqAYZtor4fE39vSLKYlTD4xAfM5Y32p+mDGsaozeWbTXi2Lg/hJy6N0AR0O3GHcPD7/gjsYpZUg1vWoY2yGhJ88rCCohj2X8JNu4UiZ2bIqUg+5ckwUi3B+UTeN/29w3lFMfjsnhCqgmwRDybVzSINgUsvVyKbNWzvj2mTkdqp2uwBDMD7nbd0uA8Gz3+AkrL8B36q6nlM8A5sPy4wC6cuUZ92JKurrfPv4IE1jYQ6v4Uw2vAhyTQ==
-X-MS-Exchange-AntiSpam-MessageData: Skux+se3JHrbCP+Z4P/s0gh/swcBHFVO591IqMvMU+rBpuSdUTAx4PJ0XdyHO5FL7K7G3Gh1o9tt31y7/S7Tusx0bWE/ucup3iU/A1wk53aWGUY4sE+5d9snfEhuNY16hCyZiac0TyFtnbls/y7yHA==
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aaa37b56-c8e5-4716-8e7c-08d7e38708df
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Apr 2020 10:55:40.7002
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wNbqPS09TEesK751nNCYMabUcQQ2rV9mwtLiIJhLeBatf99BjHGMBXS0iDvrKRtcfW+hRNauXpiXVFwzaLsxGQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6899
+In-Reply-To: <a940416a-2cc9-c27b-1660-df19273b7478@pp.inet.fi>
+Content-Type: multipart/mixed;
+ boundary="------------A5AE4EBF92834433A523C67A"
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Modify dpaa2_mac_connect() to support ACPI along with DT.
-Modify dpaa2_mac_get_node() to get the dpmac fwnode from either
-DT or ACPI.
-Replace of_get_phy_mode with fwnode_get_phy_mode to get
-phy-mode for a dpmac_node.
-Define and use helper functions fwnode_phy_match() and
-fwnode_phy_find_device() to find phy_dev that is later
-connected to mac->phylink.
+This is a multi-part message in MIME format.
+--------------A5AE4EBF92834433A523C67A
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
----
+Hi,
 
-Changes in v2:
-- Major change following other network drivers supporting ACPI
-- dropped v1 patches 1, 2, 4, 5 and 6 as they are no longer valid
-- incorporated other v1 review comments
+On 17.4.2020 10.30, Lauri Jakku wrote:
+> Hi,
+>
+> On 17.4.2020 9.23, Lauri Jakku wrote:
+>>
+>> On 16.4.2020 23.50, Heiner Kallweit wrote:
+>>> On 16.04.2020 22:38, Lauri Jakku wrote:
+>>>> Hi
+>>>>
+>>>> On 16.4.2020 23.10, Lauri Jakku wrote:
+>>>>> On 16.4.2020 23.02, Heiner Kallweit wrote:
+>>>>>> On 16.04.2020 21:58, Lauri Jakku wrote:
+>>>>>>> Hi,
+>>>>>>>
+>>>>>>> On 16.4.2020 21.37, Lauri Jakku wrote:
+>>>>>>>> Hi,
+>>>>>>>>
+>>>>>>>> On 16.4.2020 21.26, Heiner Kallweit wrote:
+>>>>>>>>> On 16.04.2020 13:30, Lauri Jakku wrote:
+>>>>>>>>>> Hi,
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> 5.6.3-2-MANJARO: stock manjaro kernel, without modifications 
+>>>>>>>>>> --> network does not work
+>>>>>>>>>>
+>>>>>>>>>> 5.6.3-2-MANJARO-lja: No attach check, modified kernel (r8169 
+>>>>>>>>>> mods only) --> network does not work
+>>>>>>>>>>
+>>>>>>>>>> 5.6.3-2-MANJARO-with-the-r8169-patch: phy patched + r8169 
+>>>>>>>>>> mods -> devices show up ok, network works
+>>>>>>>>>>
+>>>>>>>>>> All different initcpio's have realtek.ko in them.
+>>>>>>>>>>
+>>>>>>>>> Thanks for the logs. Based on the logs you're presumable 
+>>>>>>>>> affected by a known BIOS bug.
+>>>>>>>>> Check bug tickets 202275 and 207203 at bugzilla.kernel.org.
+>>>>>>>>> In the first referenced tickets it's about the same mainboard 
+>>>>>>>>> (with earlier BIOS version).
+>>>>>>>>> BIOS on this mainboard seems to not initialize the network 
+>>>>>>>>> chip / PHY correctly, it reports
+>>>>>>>>> a random number as PHY ID, resulting in no PHY driver being 
+>>>>>>>>> found.
+>>>>>>>>> Enable "Onboard LAN Boot ROM" in the BIOS, and your problem 
+>>>>>>>>> should be gone.
+>>>>>>>>>
+>>>>>>>> OK, I try that, thank you :)
+>>>>>>>>
+>>>>>>> It seems that i DO have the ROM's enabled, i'm now testing some 
+>>>>>>> mutex guard for phy state and try to use it as indicator
+>>>>>>>
+>>>>>>> that attach has been done. One thing i've noticed is that driver 
+>>>>>>> needs to be reloaded to allow traffic (ie. ping works etc.)
+>>>>>>>
+>>>>>> All that shouldn't be needed. Just check with which PHY ID the 
+>>>>>> PHY comes up.
+>>>>>> And what do you mean with "it seems"? Is the option enabled or not?
+>>>>>>
+>>>>> I do have ROM's enabled, and it does not help with my issue.
+>>> Your BIOS is a beta version, downgrading to F7 may help. Then you 
+>>> have the same
+>>> mainboard + BIOS as the user who opened bug ticket 202275.
+>>>
+>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+>> version: 0xc2077002
+>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: MAC 
+>> version: 23
+>>
+>> ....
+>>
+>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+>> version: 0x1cc912
+>>
+>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: MAC 
+>> version: 23
+>>
+>> .. after module unload & load cycle:
+>>
+>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+>> version: 0x1cc912
+>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: MAC 
+>> version: 23
+>>
+>>
+>> it seem to be the case that the phy_id chances onetime, then stays 
+>> the same. I'll do few shutdowns and see
+>>
+>> is there a pattern at all .. next i'm going to try how it behaves, if 
+>> i read mac/phy versions twice on MAC version 23.
+>>
+>>
+>> The BIOS downgrade: I'd like to solve this without downgrading BIOS. 
+>> If I can't, then I'll do systemd-service that
+>>
+>> reloads r8169 driver at boot, cause then network is just fine.
+>>
+>>
+> What i've gathered samples now, there is three values for PHY ID:
+>
+> [sillyme@MinistryOfSillyWalk KernelStuff]$ sudo journalctl |grep "PHY 
+> ver"
+> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+> version: 0xc2077002
+> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+> version: 0xc2077002
+> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+> version: 0x1cc912
+> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+> version: 0x1cc912
+> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+> version: 0x1cc912
+> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+> version: 0x1cc912
+> huhti 17 09:24:53 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+> version: 0xc1071002
+> huhti 17 09:24:53 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+> version: 0xc1071002
+> huhti 17 09:27:59 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+> version: 0x1cc912
+> huhti 17 09:27:59 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+> version: 0x1cc912
+> huhti 17 10:08:42 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+> version: 0xc1071002
+> huhti 17 10:08:42 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+> version: 0xc1071002
+> huhti 17 10:12:07 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+> version: 0x1cc912
+> huhti 17 10:12:07 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+> version: 0x1cc912
+> huhti 17 10:20:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+> version: 0xc1071002
+> huhti 17 10:20:35 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+> version: 0xc1071002
+> huhti 17 10:23:46 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+> version: 0x1cc912
+> huhti 17 10:23:46 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+> version: 0x1cc912
+>
+> I dont know are those hard coded or what, and are they device specific 
+> how much.
+>
+> i haven't coldbooted things up, that may be that something to check do 
+> they vary how per coldboot.
+>
+>>>> I check the ID, and revert all other changes, and check how it is 
+>>>> working after adding the PHY id to list.
+>>>>
+What i've now learned: the patch + script + journald services -> Results 
+working network, but it is still a workaround.
 
- .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 122 ++++++++++++++----
- 1 file changed, 94 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-index 3ee236c5fc37..5a03da54a67f 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-@@ -3,6 +3,9 @@
- 
- #include "dpaa2-eth.h"
- #include "dpaa2-mac.h"
-+#include <linux/acpi.h>
-+#include <linux/phy.h>
-+#include <linux/phylink.h>
- 
- #define phylink_to_dpaa2_mac(config) \
- 	container_of((config), struct dpaa2_mac, phylink_config)
-@@ -23,38 +26,56 @@ static int phy_mode(enum dpmac_eth_if eth_if, phy_interface_t *if_mode)
- }
- 
- /* Caller must call of_node_put on the returned value */
--static struct device_node *dpaa2_mac_get_node(u16 dpmac_id)
-+static struct fwnode_handle *dpaa2_mac_get_node(struct device *dev,
-+						u16 dpmac_id)
- {
--	struct device_node *dpmacs, *dpmac = NULL;
--	u32 id;
-+	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
-+	struct fwnode_handle *dpmacs, *dpmac = NULL;
-+	unsigned long long adr;
-+	acpi_status status;
- 	int err;
-+	u32 id;
- 
--	dpmacs = of_find_node_by_name(NULL, "dpmacs");
--	if (!dpmacs)
--		return NULL;
-+	if (is_of_node(dev->parent->fwnode)) {
-+		dpmacs = device_get_named_child_node(dev->parent, "dpmacs");
-+		if (!dpmacs)
-+			return NULL;
-+
-+		while ((dpmac = fwnode_get_next_child_node(dpmacs, dpmac))) {
-+			err = fwnode_property_read_u32(dpmac, "reg", &id);
-+			if (err)
-+				continue;
-+			if (id == dpmac_id)
-+				return dpmac;
-+		}
- 
--	while ((dpmac = of_get_next_child(dpmacs, dpmac)) != NULL) {
--		err = of_property_read_u32(dpmac, "reg", &id);
--		if (err)
--			continue;
--		if (id == dpmac_id)
--			break;
-+	} else if (is_acpi_node(dev->parent->fwnode)) {
-+		device_for_each_child_node(dev->parent, dpmac) {
-+			status = acpi_evaluate_integer(ACPI_HANDLE_FWNODE(dpmac),
-+						       "_ADR", NULL, &adr);
-+			if (ACPI_FAILURE(status)) {
-+				pr_debug("_ADR returned %d on %s\n",
-+					 status, (char *)buffer.pointer);
-+				continue;
-+			} else {
-+				id = (u32)adr;
-+				if (id == dpmac_id)
-+					return dpmac;
-+			}
-+		}
- 	}
--
--	of_node_put(dpmacs);
--
--	return dpmac;
-+	return NULL;
- }
- 
--static int dpaa2_mac_get_if_mode(struct device_node *node,
-+static int dpaa2_mac_get_if_mode(struct fwnode_handle *dpmac_node,
- 				 struct dpmac_attr attr)
- {
- 	phy_interface_t if_mode;
- 	int err;
- 
--	err = of_get_phy_mode(node, &if_mode);
--	if (!err)
--		return if_mode;
-+	err = fwnode_get_phy_mode(dpmac_node);
-+	if (err > 0)
-+		return err;
- 
- 	err = phy_mode(attr.eth_if, &if_mode);
- 	if (!err)
-@@ -227,13 +248,40 @@ bool dpaa2_mac_is_type_fixed(struct fsl_mc_device *dpmac_dev,
- 	return fixed;
- }
- 
-+static int fwnode_phy_match(struct device *dev, const void *phy_fwnode)
-+{
-+	return dev->fwnode == phy_fwnode;
-+}
-+
-+static struct phy_device *fwnode_phy_find_device(struct fwnode_handle *phy_fwnode)
-+{
-+	struct device *d;
-+	struct mdio_device *mdiodev;
-+
-+	if (!phy_fwnode)
-+		return NULL;
-+
-+	d = bus_find_device(&mdio_bus_type, NULL, phy_fwnode, fwnode_phy_match);
-+	if (d) {
-+		mdiodev = to_mdio_device(d);
-+		if (mdiodev->flags & MDIO_DEVICE_FLAG_PHY)
-+			return to_phy_device(d);
-+		put_device(d);
-+	}
-+
-+	return NULL;
-+}
-+
- int dpaa2_mac_connect(struct dpaa2_mac *mac)
- {
- 	struct fsl_mc_device *dpmac_dev = mac->mc_dev;
- 	struct net_device *net_dev = mac->net_dev;
--	struct device_node *dpmac_node;
-+	struct fwnode_handle *dpmac_node = NULL;
-+	struct fwnode_reference_args args;
-+	struct phy_device *phy_dev;
- 	struct phylink *phylink;
- 	struct dpmac_attr attr;
-+	int status;
- 	int err;
- 
- 	err = dpmac_open(mac->mc_io, 0, dpmac_dev->obj_desc.id,
-@@ -251,7 +299,7 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
- 
- 	mac->if_link_type = attr.link_type;
- 
--	dpmac_node = dpaa2_mac_get_node(attr.id);
-+	dpmac_node = dpaa2_mac_get_node(&mac->mc_dev->dev, attr.id);
- 	if (!dpmac_node) {
- 		netdev_err(net_dev, "No dpmac@%d node found.\n", attr.id);
- 		err = -ENODEV;
-@@ -269,7 +317,7 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
- 	 * error out if the interface mode requests them and there is no PHY
- 	 * to act upon them
- 	 */
--	if (of_phy_is_fixed_link(dpmac_node) &&
-+	if (of_phy_is_fixed_link(to_of_node(dpmac_node)) &&
- 	    (mac->if_mode == PHY_INTERFACE_MODE_RGMII_ID ||
- 	     mac->if_mode == PHY_INTERFACE_MODE_RGMII_RXID ||
- 	     mac->if_mode == PHY_INTERFACE_MODE_RGMII_TXID)) {
-@@ -282,7 +330,7 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
- 	mac->phylink_config.type = PHYLINK_NETDEV;
- 
- 	phylink = phylink_create(&mac->phylink_config,
--				 of_fwnode_handle(dpmac_node), mac->if_mode,
-+				 dpmac_node, mac->if_mode,
- 				 &dpaa2_mac_phylink_ops);
- 	if (IS_ERR(phylink)) {
- 		err = PTR_ERR(phylink);
-@@ -290,20 +338,38 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
- 	}
- 	mac->phylink = phylink;
- 
--	err = phylink_of_phy_connect(mac->phylink, dpmac_node, 0);
-+	if (is_of_node(dpmac_node))
-+		err = phylink_of_phy_connect(mac->phylink,
-+					     to_of_node(dpmac_node), 0);
-+	else if (is_acpi_node(dpmac_node)) {
-+		status = acpi_node_get_property_reference(dpmac_node,
-+							  "phy-handle",
-+							  0, &args);
-+		if (ACPI_FAILURE(status))
-+			goto err_phylink_destroy;
-+		phy_dev = fwnode_phy_find_device(args.fwnode);
-+		if (!phy_dev)
-+			goto err_phylink_destroy;
-+
-+		err = phylink_connect_phy(mac->phylink, phy_dev);
-+		if (err)
-+			phy_detach(phy_dev);
-+	}
- 	if (err) {
--		netdev_err(net_dev, "phylink_of_phy_connect() = %d\n", err);
-+		netdev_err(net_dev, "phylink_fwnode_phy_connect() = %d\n", err);
- 		goto err_phylink_destroy;
- 	}
- 
--	of_node_put(dpmac_node);
-+	if (is_of_node(dpmac_node))
-+		of_node_put(to_of_node(dpmac_node));
- 
- 	return 0;
- 
- err_phylink_destroy:
- 	phylink_destroy(mac->phylink);
- err_put_node:
--	of_node_put(dpmac_node);
-+	if (is_of_node(dpmac_node))
-+		of_node_put(to_of_node(dpmac_node));
- err_close_dpmac:
- 	dpmac_close(mac->mc_io, 0, dpmac_dev->mc_handle);
- 	return err;
--- 
-2.17.1
+>>>>>>>>>> The problem with old method seems to be, that device does not 
+>>>>>>>>>> have had time to attach before the
+>>>>>>>>>> PHY driver check.
+>>>>>>>>>>
+>>>>>>>>>> The patch:
+>>>>>>>>>>
+>>>>>>>>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c 
+>>>>>>>>>> b/drivers/net/ethernet/realtek/r8169_main.c
+>>>>>>>>>> index bf5bf05970a2..acd122a88d4a 100644
+>>>>>>>>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>>>>>>>>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>>>>>>>>>> @@ -5172,11 +5172,11 @@ static int r8169_mdio_register(struct 
+>>>>>>>>>> rtl8169_private *tp)
+>>>>>>>>>>            if (!tp->phydev) {
+>>>>>>>>>>                    mdiobus_unregister(new_bus);
+>>>>>>>>>>                    return -ENODEV;
+>>>>>>>>>> -       } else if (!tp->phydev->drv) {
+>>>>>>>>>> +       } else if (tp->mac_version == RTL_GIGA_MAC_NONE) {
+>>>>>>>>>>                    /* Most chip versions fail with the genphy 
+>>>>>>>>>> driver.
+>>>>>>>>>>                     * Therefore ensure that the dedicated PHY 
+>>>>>>>>>> driver is loaded.
+>>>>>>>>>>                     */
+>>>>>>>>>> -               dev_err(&pdev->dev, "realtek.ko not loaded, 
+>>>>>>>>>> maybe it needs to be added to initramfs?\n");
+>>>>>>>>>> +               dev_err(&pdev->dev, "Not known MAC version.\n");
+>>>>>>>>>>                    mdiobus_unregister(new_bus);
+>>>>>>>>>>                    return -EUNATCH;
+>>>>>>>>>>            }
+>>>>>>>>>> diff --git a/drivers/net/phy/phy-core.c 
+>>>>>>>>>> b/drivers/net/phy/phy-core.c
+>>>>>>>>>> index 66b8c61ca74c..aba2b304b821 100644
+>>>>>>>>>> --- a/drivers/net/phy/phy-core.c
+>>>>>>>>>> +++ b/drivers/net/phy/phy-core.c
+>>>>>>>>>> @@ -704,6 +704,10 @@ EXPORT_SYMBOL_GPL(phy_modify_mmd);
+>>>>>>>>>>       static int __phy_read_page(struct phy_device *phydev)
+>>>>>>>>>>     {
+>>>>>>>>>> +       /* If not attached, do nothing (no warning) */
+>>>>>>>>>> +       if (!phydev->attached_dev)
+>>>>>>>>>> +               return -EOPNOTSUPP;
+>>>>>>>>>> +
+>>>>>>>>>>            if (WARN_ONCE(!phydev->drv->read_page, "read_page 
+>>>>>>>>>> callback not available, PHY driver not loaded?\n"))
+>>>>>>>>>>                    return -EOPNOTSUPP;
+>>>>>>>>>>     @@ -712,12 +716,17 @@ static int __phy_read_page(struct 
+>>>>>>>>>> phy_device *phydev)
+>>>>>>>>>>       static int __phy_write_page(struct phy_device *phydev, 
+>>>>>>>>>> int page)
+>>>>>>>>>>     {
+>>>>>>>>>> +       /* If not attached, do nothing (no warning) */
+>>>>>>>>>> +       if (!phydev->attached_dev)
+>>>>>>>>>> +               return -EOPNOTSUPP;
+>>>>>>>>>> +
+>>>>>>>>>>            if (WARN_ONCE(!phydev->drv->write_page, 
+>>>>>>>>>> "write_page callback not available, PHY driver not loaded?\n"))
+>>>>>>>>>>                    return -EOPNOTSUPP;
+>>>>>>>>>>              return phydev->drv->write_page(phydev, page);
+>>>>>>>>>>     }
+>>>>>>>>>>     +
+>>>>>>>>>>     /**
+>>>>>>>>>>      * phy_save_page() - take the bus lock and save the 
+>>>>>>>>>> current page
+>>>>>>>>>>      * @phydev: a pointer to a &struct phy_device
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> 15. huhtik. 2020, 19.18, Heiner Kallweit 
+>>>>>>>>>> <hkallweit1@gmail.com <mailto:hkallweit1@gmail.com>> kirjoitti:
+>>>>>>>>>>
+>>>>>>>>>>        On 15.04.2020 16:39, Lauri Jakku wrote:
+>>>>>>>>>>
+>>>>>>>>>>            Hi, There seems to he Something odd problem, maybe 
+>>>>>>>>>> timing related. Stripped version not workingas expected. I 
+>>>>>>>>>> get back to you, when i have it working.
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>        There's no point in working on your patch. W/o proper 
+>>>>>>>>>> justification it
+>>>>>>>>>>        isn't acceptable anyway. And so far we still don't 
+>>>>>>>>>> know which problem
+>>>>>>>>>>        you actually have.
+>>>>>>>>>>        FIRST please provide the requested logs and explain 
+>>>>>>>>>> the actual problem
+>>>>>>>>>>        (incl. the commit that caused the regression).
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>            13. huhtik. 2020, 14.46, Lauri Jakku 
+>>>>>>>>>> <ljakku77@gmail.com <mailto:ljakku77@gmail.com>> kirjoitti: 
+>>>>>>>>>> Hi, Fair enough, i'll strip them. -lja On 2020-04-13 14:34, 
+>>>>>>>>>> Leon Romanovsky wrote:
+>>>>>>>>>>
+>>>>>>>>>>            On Mon, Apr 13, 2020 at 02:02:01PM +0300, Lauri 
+>>>>>>>>>> Jakku wrote: Hi, Comments inline. On 2020-04-13 13:58, Leon 
+>>>>>>>>>> Romanovsky wrote: On Mon, Apr 13, 2020 at 01:30:13PM +0300, 
+>>>>>>>>>> Lauri Jakku wrote: From 
+>>>>>>>>>> 2d41edd4e6455187094f3a13d58c46eeee35aa31 Mon Sep 17 00:00:00 
+>>>>>>>>>> 2001 From: Lauri Jakku <lja@iki.fi> Date: Mon, 13 Apr 2020 
+>>>>>>>>>> 13:18:35 +0300 Subject: [PATCH] NET: r8168/r8169 identifying 
+>>>>>>>>>> fix The driver installation determination made properly by 
+>>>>>>>>>> checking PHY vs DRIVER id's. --- 
+>>>>>>>>>> drivers/net/ethernet/realtek/r8169_main.c | 70 
+>>>>>>>>>> ++++++++++++++++++++--- drivers/net/phy/mdio_bus.c | 11 +++- 
+>>>>>>>>>> 2 files changed, 72 insertions(+), 9 deletions(-) I would say 
+>>>>>>>>>> that most of the code is debug prints. I tought that they are 
+>>>>>>>>>> helpful to keep, they are using the debug calls, so they are 
+>>>>>>>>>> not visible if user does not like those. You are missing the 
+>>>>>>>>>> point of who are your users. Users want to have working 
+>>>>>>>>>> device and the code. They don't need or like to debug their 
+>>>>>>>>>> kernel. Thanks
+>>>>>>>>>>
+>>>>>>>>>>
 
+--------------A5AE4EBF92834433A523C67A
+Content-Type: text/x-dbus-service; charset=UTF-8;
+ name="refresh-network.service"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="refresh-network.service"
+
+#  SPDX-License-Identifier: LGPL-2.1+
+#
+#  This file is part of systemd.
+#
+#  systemd is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation; either version 2.1 of the License, or
+#  (at your option) any later version.
+[Unit]
+Description=Refresh network
+After=refresh-network.target
+Before=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/refresh-network.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+
+--------------A5AE4EBF92834433A523C67A
+Content-Type: text/x-systemd-unit; charset=UTF-8;
+ name="refresh-network.target"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="refresh-network.target"
+
+#  SPDX-License-Identifier: LGPL-2.1+
+#
+#  This file is part of systemd.
+#
+#  systemd is free software; you can redistribute it and/or modify it
+#  under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation; either version 2.1 of the License, or
+#  (at your option) any later version.
+
+[Unit]
+Description=Refresh network
+After=network.target refresh-network.service
+Before=multi-user.target
+Requires=network.target
+
+[Install]
+WantedBy=refresh-network.service multi-user.target
+
+--------------A5AE4EBF92834433A523C67A
+Content-Type: application/x-shellscript;
+ name="refresh-network.sh"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="refresh-network.sh"
+
+IyEvYmluL3NoCmNvbW1hbmQoKSB7CglzdD0kMQoJc2hpZnQKCWVjaG8gIiQqIC4uLi4uLi4u
+Li4uLi4uLi4uLiIKCWV2YWwgJCoKCWVjaG8gIiQqIC4uLi4uLiBSVjogJD8iCiAgICAgICAg
+c2xlZXAgJHN0Cn0KCmNvbW1hbmQgMCBubWNsaSBuZXR3b3JraW5nIG9mZgpjb21tYW5kIDMg
+c3VkbyBzeXN0ZW1jdGwgc3RvcCBOZXR3b3JrTWFuYWdlcgpjb21tYW5kIDAgc3VkbyBpcCBs
+aW5rIHNldCBlbnAzczAgZG93bgpjb21tYW5kIDAgc3VkbyBtb2Rwcm9iZSAtciByODE2OQpj
+b21tYW5kIDAgc3VkbyBtb2Rwcm9iZSByODE2OQpjb21tYW5kIDAgc3VkbyBpcCBsaW5rIHNl
+dCBlbnAzczAgbW9kZSBERUZBVUxUCmNvbW1hbmQgMCBzdWRvIGlwIGxpbmsgc2V0IGVucDNz
+MCB1cApjb21tYW5kIDMgc3VkbyBzeXN0ZW1jdGwgc3RhcnQgTmV0d29ya01hbmFnZXIKY29t
+bWFuZCAwIG5tY2xpIG5ldHdvcmtpbmcgb24K
+--------------A5AE4EBF92834433A523C67A--
