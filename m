@@ -2,134 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E8041AF17E
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 17:14:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B899A1AF19E
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 17:29:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726522AbgDRPOQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Apr 2020 11:14:16 -0400
-Received: from pegase1.c-s.fr ([93.17.236.30]:31710 "EHLO pegase1.c-s.fr"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725903AbgDRPOQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 Apr 2020 11:14:16 -0400
-Received: from localhost (mailhub1-int [192.168.12.234])
-        by localhost (Postfix) with ESMTP id 494GhN3XV3zB09Zc;
-        Sat, 18 Apr 2020 17:14:12 +0200 (CEST)
-Authentication-Results: localhost; dkim=pass
-        reason="1024-bit key; insecure key"
-        header.d=c-s.fr header.i=@c-s.fr header.b=Ys2kOrQf; dkim-adsp=pass;
-        dkim-atps=neutral
-X-Virus-Scanned: Debian amavisd-new at c-s.fr
-Received: from pegase1.c-s.fr ([192.168.12.234])
-        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
-        with ESMTP id 2lcJkaGzkoJJ; Sat, 18 Apr 2020 17:14:12 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase1.c-s.fr (Postfix) with ESMTP id 494GhN2SjkzB09Zb;
-        Sat, 18 Apr 2020 17:14:12 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=c-s.fr; s=mail;
-        t=1587222852; bh=gkdO6wXUCMcpz7NxpipTTUJqjJLTk5RmhAdRmmr2lPk=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=Ys2kOrQf8+IsQpw3uLxwRHJvEe2aifLm5D4UpWeMK0kDv1AR/2xUb1tP1bpBnc6tU
-         /FXFqj/0reLL0AhKcAmepR4fiN+Nst88VgI4jysw3UkXqTDfBFUmEuw5zgvR7IUyfx
-         GD8U+NDoD3gPnh1LMFlS4lGOU/NlhxN/aglDeXYA=
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 129F48BBCF;
-        Sat, 18 Apr 2020 17:14:14 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id CTX-Cucux1p0; Sat, 18 Apr 2020 17:14:14 +0200 (CEST)
-Received: from pc16570vm.idsi0.si.c-s.fr (unknown [192.168.4.90])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 5D8FE8B75E;
-        Sat, 18 Apr 2020 17:14:13 +0200 (CEST)
-Subject: Re: [PATCH] iommu: spapr_tce: Disable compile testing to fix build on
- book3s_32 config
-To:     Krzysztof Kozlowski <krzk@kernel.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc:     virtualization@lists.linux-foundation.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>
-References: <20200414142630.21153-1-krzk@kernel.org>
-From:   Christophe Leroy <christophe.leroy@c-s.fr>
-Message-ID: <a99ee461-664c-51ae-cb3a-cf5d87048d86@c-s.fr>
-Date:   Sat, 18 Apr 2020 15:14:02 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.7.0
+        id S1726601AbgDRP3K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Apr 2020 11:29:10 -0400
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:10231 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726069AbgDRP3K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 11:29:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1587223750; x=1618759750;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=6TbKFtDMJl3rttAHpd29hde3tTCeTElBmhYZKfSkNuc=;
+  b=c/yienQce+YqSIOtNLWSEU4zXVgxXq9cvpkdWhVtvyVAvSrxJbWt2kPd
+   1QwApfT16DBTtoyS0TvP3gm9K0FOWqyRdnSBhKur9Hug+Y4Xz3eTNZEWm
+   NNFXL/rZqDmbAE3fu7Im4IcgTIu82JF7pZSlI+BWPVfjdR6uXyylx7p0l
+   6PnpNbvDcv7D3ghONJ/D54RAkZ3NhGIVrSXNuTnOJR7FBTUD54CYvq9Cz
+   x7i3fM36gy43TDA4mscjJpcmzKbhxRFeAMFdUahkX45UmRKQU3mxTxzYt
+   DqWUDy3S3qtfW5mEj9NFe6u1AcVZRC65AuiCR8UpemBm80acKjQYLiRyz
+   Q==;
+IronPort-SDR: B9lp62wR2RTd0Bt4sIkoPdQI56fqjp29Mcrpk0ZuqKuZyCvK59gkkLN74BKBLtEh41w3xRmopd
+ 4vW2ymh284qVIiNteuxPyqeZkQTYaWRfbpeoCNXyOxnVSQ1j6kRY2SiVrZH/9GptLprD7B9Jex
+ fnQVh0S3DWLGImYx6aZIrjpAAyTtiSUWtSY3uISjS3btWXWdNR5KV7BEFIoJ+CDT1FKCoRQXMQ
+ 2y00nDTtryrvt5QCzdAZmo8/nsjW1xVG9f8qbEN6gQlXu+jfWFnMmEvtx7DNk0+prz1c5+0U5c
+ r5I=
+X-IronPort-AV: E=Sophos;i="5.72,399,1580799600"; 
+   d="scan'208";a="72974964"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Apr 2020 08:29:10 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Sat, 18 Apr 2020 08:28:46 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Sat, 18 Apr 2020 08:29:14 -0700
+Date:   Sat, 18 Apr 2020 17:29:08 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+CC:     <davem@davemloft.net>, <jiri@resnulli.us>, <ivecera@redhat.com>,
+        <kuba@kernel.org>, <roopa@cumulusnetworks.com>,
+        <olteanv@gmail.com>, <andrew@lunn.ch>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bridge@lists.linux-foundation.org>, <UNGLinuxDriver@microchip.com>
+Subject: Re: [RFC net-next v5 3/9] bridge: mrp: Expose function
+ br_mrp_port_open
+Message-ID: <20200418152908.ifaszlvmp5htr3x7@soft-dev3.microsemi.net>
+References: <20200414112618.3644-1-horatiu.vultur@microchip.com>
+ <20200414112618.3644-4-horatiu.vultur@microchip.com>
+ <2b387697-0e4c-7d8a-ae52-d1e8ce1f6bf4@cumulusnetworks.com>
 MIME-Version: 1.0
-In-Reply-To: <20200414142630.21153-1-krzk@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <2b387697-0e4c-7d8a-ae52-d1e8ce1f6bf4@cumulusnetworks.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 04/14/2020 02:26 PM, Krzysztof Kozlowski wrote:
-> Although SPAPR_TCE_IOMMU itself can be compile tested on certain PowerPC
-> configurations, its presence makes arch/powerpc/kvm/Makefile to select
-> modules which do not build in such configuration.
+The 04/18/2020 11:11, Nikolay Aleksandrov wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
 > 
-> The arch/powerpc/kvm/ modules use kvm_arch.spapr_tce_tables which exists
-> only with CONFIG_PPC_BOOK3S_64.  However these modules are selected when
-> COMPILE_TEST and SPAPR_TCE_IOMMU are chosen leading to build failures:
+> On 14/04/2020 14:26, Horatiu Vultur wrote:
+> > In case the HW is capable to detect when the MRP ring is open or closed. It is
+> > expected that the network driver will notify the SW that the ring is open or
+> > closed.
+> >
+> > The function br_mrp_port_open is used to notify the kernel that one of the ports
+> > stopped receiving MRP_Test frames. The argument 'loc' has a value of '1' when
+> > the port stopped receiving MRP_Test and '0' when it started to receive MRP_Test.
+> >
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> > ---
+> >  include/linux/mrp_bridge.h | 24 ++++++++++++++++++++++++
+> >  1 file changed, 24 insertions(+)
+> >  create mode 100644 include/linux/mrp_bridge.h
+> >
+> > diff --git a/include/linux/mrp_bridge.h b/include/linux/mrp_bridge.h
+> > new file mode 100644
+> > index 000000000000..23d46b356263
+> > --- /dev/null
+> > +++ b/include/linux/mrp_bridge.h
+> > @@ -0,0 +1,24 @@
+> > +/* SPDX-License-Identifier: GPL-2.0-or-later */
+> > +
+> > +#ifndef _LINUX_MRP_BRIDGE_H
+> > +#define _LINUX_MRO_BRIDGE_H
+> > +
+> > +#include <linux/netdevice.h>
+> > +
+> > +/* The drivers are responsible to call this function when it detects that the
+> > + * MRP port stopped receiving MRP_Test frames or it started to receive MRP_Test.
+> > + * The argument dev represents the port and loc(Lost of Continuity) has a value
+> > + * of 1 when it stopped receiving MRP_Test frames and a value of 0 when it
+> > + * started to receive frames.
+> > + *
+> > + * This eventually notify the userspace which is required to react on these
+> > + * changes.
+> > + */
+> > +
+> > +#if IS_ENABLED(CONFIG_BRIDGE_MRP)
+> > +int br_mrp_port_open(struct net_device *dev, u8 loc);
+> > +#else
+> > +inline int br_mrp_port_open(struct net_device *dev, u8 loc)  {}
 > 
->      In file included from arch/powerpc/include/asm/book3s/64/mmu-hash.h:20:0,
->                       from arch/powerpc/kvm/book3s_64_vio_hv.c:22:
->      arch/powerpc/include/asm/book3s/64/pgtable.h:17:0: error: "_PAGE_EXEC" redefined [-Werror]
->       #define _PAGE_EXEC  0x00001 /* execute permission */
+> static and put {} on their own, check how such functions are defined in other places (e.g. br_private.h)
+> but in general I think you can drop this function favor of br_ifinfo_notify(). More about that in my review
+> of next patches.
+
+I have seen the other reviews but I am not sure I can completly drop
+this function. I can have this function as a small wrapper over
+br_ifinfo_notify.  The reason is that I want that also the drivers to be
+able to notify when a port get lost of continuity.
+
 > 
->      In file included from arch/powerpc/include/asm/book3s/32/pgtable.h:8:0,
->                       from arch/powerpc/include/asm/book3s/pgtable.h:8,
->                       from arch/powerpc/include/asm/pgtable.h:18,
->                       from include/linux/mm.h:95,
->                       from arch/powerpc/include/asm/io.h:29,
->                       from include/linux/io.h:13,
->                       from include/linux/irq.h:20,
->                       from arch/powerpc/include/asm/hardirq.h:6,
->                       from include/linux/hardirq.h:9,
->                       from include/linux/kvm_host.h:7,
->                       from arch/powerpc/kvm/book3s_64_vio_hv.c:12:
->      arch/powerpc/include/asm/book3s/32/hash.h:29:0: note: this is the location of the previous definition
->       #define _PAGE_EXEC 0x200 /* software: exec allowed */
-> 
-> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Fixes: e93a1695d7fb ("iommu: Enable compile testing for some of drivers")
-> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-> ---
->   drivers/iommu/Kconfig | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index 58b4a4dbfc78..3532b1ead19d 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -362,7 +362,7 @@ config IPMMU_VMSA
->   
->   config SPAPR_TCE_IOMMU
->   	bool "sPAPR TCE IOMMU Support"
-> -	depends on PPC_POWERNV || PPC_PSERIES || (PPC && COMPILE_TEST)
-> +	depends on PPC_POWERNV || PPC_PSERIES
->   	select IOMMU_API
->   	help
->   	  Enables bits of IOMMU API required by VFIO. The iommu_ops
+> > +#endif
+> > +
+> > +#endif
+> >
 > 
 
-Should it be fixed the other way round, something like:
-
-diff --git a/arch/powerpc/kvm/Makefile b/arch/powerpc/kvm/Makefile
-index 2bfeaa13befb..906707d15810 100644
---- a/arch/powerpc/kvm/Makefile
-+++ b/arch/powerpc/kvm/Makefile
-@@ -135,4 +135,4 @@ obj-$(CONFIG_KVM_BOOK3S_32) += kvm.o
-  obj-$(CONFIG_KVM_BOOK3S_64_PR) += kvm-pr.o
-  obj-$(CONFIG_KVM_BOOK3S_64_HV) += kvm-hv.o
-
--obj-y += $(kvm-book3s_64-builtin-objs-y)
-+obj-$(CONFIG_KVM_BOOK3S_64) += $(kvm-book3s_64-builtin-objs-y)
-
-
-Christophe
+-- 
+/Horatiu
