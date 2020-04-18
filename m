@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C3291AF0FF
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 16:55:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 231801AF100
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 16:55:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728813AbgDROxd convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 18 Apr 2020 10:53:33 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:36940 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726720AbgDROxa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 10:53:30 -0400
+        id S1728876AbgDROxg convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 18 Apr 2020 10:53:36 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:28100 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728542AbgDROxe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 10:53:34 -0400
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-409-wGqbWrdCN56cc0WRf9ifiA-1; Sat, 18 Apr 2020 10:53:24 -0400
-X-MC-Unique: wGqbWrdCN56cc0WRf9ifiA-1
+ us-mta-443-kP1iWUiuMQq-D38Y4i7D6w-1; Sat, 18 Apr 2020 10:53:26 -0400
+X-MC-Unique: kP1iWUiuMQq-D38Y4i7D6w-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E14848018A6;
-        Sat, 18 Apr 2020 14:53:23 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5734A13FC;
+        Sat, 18 Apr 2020 14:53:25 +0000 (UTC)
 Received: from hog.localdomain, (unknown [10.40.192.14])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 723BF5C1C3;
-        Sat, 18 Apr 2020 14:53:22 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4C4095C1C3;
+        Sat, 18 Apr 2020 14:53:24 +0000 (UTC)
 From:   Sabrina Dubroca <sd@queasysnail.net>
 To:     netdev@vger.kernel.org
 Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
         Sabrina Dubroca <sd@queasysnail.net>
-Subject: [PATCH ipsec-next 1/2] xfrm: add support for UDPv6 encapsulation of ESP
-Date:   Sat, 18 Apr 2020 16:52:55 +0200
-Message-Id: <171a0c14575013cbd634fbb634b82eaa6423a994.1587219054.git.sd@queasysnail.net>
+Subject: [PATCH ipsec-next 2/2] xfrm: add IPv6 support for espintcp
+Date:   Sat, 18 Apr 2020 16:52:56 +0200
+Message-Id: <f6f556b47d885297f3541f220b354fca909ba513.1587219054.git.sd@queasysnail.net>
 In-Reply-To: <cover.1587219054.git.sd@queasysnail.net>
 References: <cover.1587219054.git.sd@queasysnail.net>
 MIME-Version: 1.0
@@ -43,882 +43,471 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for encapsulation of ESP over UDPv6. The code
-is very similar to the IPv4 encapsulation implementation, and allows
-to easily add espintcp on IPv6 as a follow-up.
+This extends espintcp to support IPv6, building on the existing code
+and the new UDPv6 encapsulation support. Most of the code is either
+reused directly (stream parser, ULP) or very similar to the IPv4
+variant (net/ipv6/esp6.c changes).
+
+The separation of config options for IPv4 and IPv6 espintcp requires a
+bit of Kconfig gymnastics to enable the core code.
 
 Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
 ---
- include/net/ipv6_stubs.h  |   3 +
- include/net/xfrm.h        |   5 +
- net/ipv4/udp.c            |  10 +-
- net/ipv6/af_inet6.c       |   4 +
- net/ipv6/ah6.c            |   1 +
- net/ipv6/esp6.c           | 225 +++++++++++++++++++++++++++++++++-----
- net/ipv6/esp6_offload.c   |   7 +-
- net/ipv6/ip6_vti.c        |  18 ++-
- net/ipv6/ipcomp6.c        |   1 +
- net/ipv6/xfrm6_input.c    | 106 +++++++++++++++++-
- net/ipv6/xfrm6_protocol.c |  48 ++++++++
- net/xfrm/xfrm_interface.c |   3 +
- 12 files changed, 394 insertions(+), 37 deletions(-)
+ include/net/ipv6_stubs.h |   2 +
+ net/ipv4/Kconfig         |   1 +
+ net/ipv6/Kconfig         |  12 +++
+ net/ipv6/af_inet6.c      |   1 +
+ net/ipv6/esp6.c          | 188 ++++++++++++++++++++++++++++++++++++++-
+ net/xfrm/Kconfig         |   3 +
+ net/xfrm/Makefile        |   2 +-
+ net/xfrm/espintcp.c      |  56 +++++++++---
+ 8 files changed, 252 insertions(+), 13 deletions(-)
 
 diff --git a/include/net/ipv6_stubs.h b/include/net/ipv6_stubs.h
-index 3e7d2c0e79ca..f033a17b53b6 100644
+index f033a17b53b6..1e9e0cf7dc75 100644
 --- a/include/net/ipv6_stubs.h
 +++ b/include/net/ipv6_stubs.h
-@@ -56,6 +56,9 @@ struct ipv6_stub {
- 	void (*ndisc_send_na)(struct net_device *dev, const struct in6_addr *daddr,
- 			      const struct in6_addr *solicited_addr,
+@@ -58,6 +58,8 @@ struct ipv6_stub {
  			      bool router, bool solicited, bool override, bool inc_opt);
-+#if IS_ENABLED(CONFIG_XFRM)
-+	int (*xfrm6_udp_encap_rcv)(struct sock *sk, struct sk_buff *skb);
-+#endif
+ #if IS_ENABLED(CONFIG_XFRM)
+ 	int (*xfrm6_udp_encap_rcv)(struct sock *sk, struct sk_buff *skb);
++	int (*xfrm6_rcv_encap)(struct sk_buff *skb, int nexthdr, __be32 spi,
++			       int encap_type);
+ #endif
  	struct neigh_table *nd_tbl;
  };
- extern const struct ipv6_stub *ipv6_stub __read_mostly;
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 8f71c111e65a..2577666c34c8 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1406,6 +1406,8 @@ struct xfrm4_protocol {
+diff --git a/net/ipv4/Kconfig b/net/ipv4/Kconfig
+index f96bd489b362..8e0c654da2bd 100644
+--- a/net/ipv4/Kconfig
++++ b/net/ipv4/Kconfig
+@@ -383,6 +383,7 @@ config INET_ESPINTCP
+ 	depends on XFRM && INET_ESP
+ 	select STREAM_PARSER
+ 	select NET_SOCK_MSG
++	select XFRM_ESPINTCP
+ 	help
+ 	  Support for RFC 8229 encapsulation of ESP and IKE over
+ 	  TCP/IPv4 sockets.
+diff --git a/net/ipv6/Kconfig b/net/ipv6/Kconfig
+index ae1344e4cec5..49ca80b5a317 100644
+--- a/net/ipv6/Kconfig
++++ b/net/ipv6/Kconfig
+@@ -88,6 +88,18 @@ config INET6_ESP_OFFLOAD
  
- struct xfrm6_protocol {
- 	int (*handler)(struct sk_buff *skb);
-+	int (*input_handler)(struct sk_buff *skb, int nexthdr, __be32 spi,
-+			     int encap_type);
- 	int (*cb_handler)(struct sk_buff *skb, int err);
- 	int (*err_handler)(struct sk_buff *skb, struct inet6_skb_parm *opt,
- 			   u8 type, u8 code, int offset, __be32 info);
-@@ -1590,6 +1592,8 @@ int xfrm6_extract_header(struct sk_buff *skb);
- int xfrm6_extract_input(struct xfrm_state *x, struct sk_buff *skb);
- int xfrm6_rcv_spi(struct sk_buff *skb, int nexthdr, __be32 spi,
- 		  struct ip6_tnl *t);
-+int xfrm6_rcv_encap(struct sk_buff *skb, int nexthdr, __be32 spi,
-+		    int encap_type);
- int xfrm6_transport_finish(struct sk_buff *skb, int async);
- int xfrm6_rcv_tnl(struct sk_buff *skb, struct ip6_tnl *t);
- int xfrm6_rcv(struct sk_buff *skb);
-@@ -1610,6 +1614,7 @@ int xfrm6_find_1stfragopt(struct xfrm_state *x, struct sk_buff *skb,
+ 	  If unsure, say N.
  
- #ifdef CONFIG_XFRM
- int xfrm4_udp_encap_rcv(struct sock *sk, struct sk_buff *skb);
-+int xfrm6_udp_encap_rcv(struct sock *sk, struct sk_buff *skb);
- int xfrm_user_policy(struct sock *sk, int optname,
- 		     u8 __user *optval, int optlen);
- #else
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index db76b9609299..23732210aade 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -112,6 +112,9 @@
- #include <net/sock_reuseport.h>
- #include <net/addrconf.h>
- #include <net/udp_tunnel.h>
-+#if IS_ENABLED(CONFIG_IPV6)
-+#include <net/ipv6_stubs.h>
-+#endif
- 
- struct udp_table udp_table __read_mostly;
- EXPORT_SYMBOL(udp_table);
-@@ -2555,7 +2558,12 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
- #ifdef CONFIG_XFRM
- 		case UDP_ENCAP_ESPINUDP:
- 		case UDP_ENCAP_ESPINUDP_NON_IKE:
--			up->encap_rcv = xfrm4_udp_encap_rcv;
-+#if IS_ENABLED(CONFIG_IPV6)
-+			if (sk->sk_family == AF_INET6)
-+				up->encap_rcv = ipv6_stub->xfrm6_udp_encap_rcv;
-+			else
-+#endif
-+				up->encap_rcv = xfrm4_udp_encap_rcv;
- #endif
- 			/* FALLTHROUGH */
- 		case UDP_ENCAP_L2TPINUDP:
++config INET6_ESPINTCP
++	bool "IPv6: ESP in TCP encapsulation (RFC 8229)"
++	depends on XFRM && INET6_ESP
++	select STREAM_PARSER
++	select NET_SOCK_MSG
++	select XFRM_ESPINTCP
++	help
++	  Support for RFC 8229 encapsulation of ESP and IKE over
++	  TCP/IPv6 sockets.
++
++	  If unsure, say N.
++
+ config INET6_IPCOMP
+ 	tristate "IPv6: IPComp transformation"
+ 	select INET6_XFRM_TUNNEL
 diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index d727c3b41495..65a34c3fa209 100644
+index 65a34c3fa209..7ce903f88000 100644
 --- a/net/ipv6/af_inet6.c
 +++ b/net/ipv6/af_inet6.c
-@@ -59,6 +59,7 @@
- #endif
- #include <net/calipso.h>
- #include <net/seg6.h>
-+#include <net/xfrm.h>
- 
- #include <linux/uaccess.h>
- #include <linux/mroute6.h>
-@@ -960,6 +961,9 @@ static const struct ipv6_stub ipv6_stub_impl = {
- 	.ip6_del_rt	   = ip6_del_rt,
- 	.udpv6_encap_enable = udpv6_encap_enable,
+@@ -963,6 +963,7 @@ static const struct ipv6_stub ipv6_stub_impl = {
  	.ndisc_send_na = ndisc_send_na,
-+#if IS_ENABLED(CONFIG_XFRM)
-+	.xfrm6_udp_encap_rcv = xfrm6_udp_encap_rcv,
-+#endif
+ #if IS_ENABLED(CONFIG_XFRM)
+ 	.xfrm6_udp_encap_rcv = xfrm6_udp_encap_rcv,
++	.xfrm6_rcv_encap = xfrm6_rcv_encap,
+ #endif
  	.nd_tbl	= &nd_tbl,
  };
- 
-diff --git a/net/ipv6/ah6.c b/net/ipv6/ah6.c
-index 95835e8d99aa..fc186ff4efd1 100644
---- a/net/ipv6/ah6.c
-+++ b/net/ipv6/ah6.c
-@@ -767,6 +767,7 @@ static const struct xfrm_type ah6_type = {
- 
- static struct xfrm6_protocol ah6_protocol = {
- 	.handler	=	xfrm6_rcv,
-+	.input_handler	=	xfrm_input,
- 	.cb_handler	=	ah6_rcv_cb,
- 	.err_handler	=	ah6_err,
- 	.priority	=	0,
 diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
-index 11143d039f16..baab0fc35e59 100644
+index baab0fc35e59..e210991d1aa0 100644
 --- a/net/ipv6/esp6.c
 +++ b/net/ipv6/esp6.c
-@@ -30,6 +30,7 @@
- #include <net/icmp.h>
- #include <net/ipv6.h>
+@@ -32,6 +32,9 @@
  #include <net/protocol.h>
-+#include <net/udp.h>
+ #include <net/udp.h>
  #include <linux/icmpv6.h>
++#include <net/tcp.h>
++#include <net/espintcp.h>
++#include <net/inet6_hashtables.h>
  
  #include <linux/highmem.h>
-@@ -39,6 +40,11 @@ struct esp_skb_cb {
- 	void *tmp;
- };
  
-+struct esp_output_extra {
-+	__be32 seqhi;
-+	u32 esphoff;
-+};
-+
- #define ESP_SKB_CB(__skb) ((struct esp_skb_cb *)&((__skb)->cb[0]))
- 
- /*
-@@ -72,9 +78,9 @@ static void *esp_alloc_tmp(struct crypto_aead *aead, int nfrags, int seqihlen)
- 	return kmalloc(len, GFP_ATOMIC);
- }
- 
--static inline __be32 *esp_tmp_seqhi(void *tmp)
-+static inline void *esp_tmp_extra(void *tmp)
- {
--	return PTR_ALIGN((__be32 *)tmp, __alignof__(__be32));
-+	return PTR_ALIGN(tmp, __alignof__(struct esp_output_extra));
- }
- 
- static inline u8 *esp_tmp_iv(struct crypto_aead *aead, void *tmp, int seqhilen)
-@@ -104,16 +110,17 @@ static inline struct scatterlist *esp_req_sg(struct crypto_aead *aead,
- 
- static void esp_ssg_unref(struct xfrm_state *x, void *tmp)
- {
-+	struct esp_output_extra *extra = esp_tmp_extra(tmp);
- 	struct crypto_aead *aead = x->data;
--	int seqhilen = 0;
-+	int extralen = 0;
- 	u8 *iv;
- 	struct aead_request *req;
- 	struct scatterlist *sg;
- 
- 	if (x->props.flags & XFRM_STATE_ESN)
--		seqhilen += sizeof(__be32);
-+		extralen += sizeof(*extra);
- 
--	iv = esp_tmp_iv(aead, tmp, seqhilen);
-+	iv = esp_tmp_iv(aead, tmp, extralen);
- 	req = esp_tmp_req(aead, iv);
- 
- 	/* Unref skb_frag_pages in the src scatterlist if necessary.
-@@ -124,6 +131,23 @@ static void esp_ssg_unref(struct xfrm_state *x, void *tmp)
+@@ -131,6 +134,132 @@ static void esp_ssg_unref(struct xfrm_state *x, void *tmp)
  			put_page(sg_page(sg));
  }
  
-+static void esp_output_encap_csum(struct sk_buff *skb)
-+{
-+	/* UDP encap with IPv6 requires a valid checksum */
-+	if (*skb_mac_header(skb) == IPPROTO_UDP) {
-+		struct udphdr *uh = udp_hdr(skb);
-+		struct ipv6hdr *ip6h = ipv6_hdr(skb);
-+		int len = ntohs(uh->len);
-+		unsigned int offset = skb_transport_offset(skb);
-+		__wsum csum = skb_checksum(skb, offset, skb->len - offset, 0);
++#ifdef CONFIG_INET6_ESPINTCP
++struct esp_tcp_sk {
++	struct sock *sk;
++	struct rcu_head rcu;
++};
 +
-+		uh->check = csum_ipv6_magic(&ip6h->saddr, &ip6h->daddr,
-+					    len, IPPROTO_UDP, csum);
-+		if (uh->check == 0)
-+			uh->check = CSUM_MANGLED_0;
-+	}
++static void esp_free_tcp_sk(struct rcu_head *head)
++{
++	struct esp_tcp_sk *esk = container_of(head, struct esp_tcp_sk, rcu);
++
++	sock_put(esk->sk);
++	kfree(esk);
 +}
 +
- static void esp_output_done(struct crypto_async_request *base, int err)
- {
- 	struct sk_buff *skb = base->data;
-@@ -143,6 +167,8 @@ static void esp_output_done(struct crypto_async_request *base, int err)
- 	esp_ssg_unref(x, tmp);
- 	kfree(tmp);
- 
-+	esp_output_encap_csum(skb);
-+
- 	if (xo && (xo->flags & XFRM_DEV_RESUME)) {
- 		if (err) {
- 			XFRM_INC_STATS(xs_net(x), LINUX_MIB_XFRMOUTSTATEPROTOERROR);
-@@ -163,7 +189,7 @@ static void esp_restore_header(struct sk_buff *skb, unsigned int offset)
- {
- 	struct ip_esp_hdr *esph = (void *)(skb->data + offset);
- 	void *tmp = ESP_SKB_CB(skb)->tmp;
--	__be32 *seqhi = esp_tmp_seqhi(tmp);
-+	__be32 *seqhi = esp_tmp_extra(tmp);
- 
- 	esph->seq_no = esph->spi;
- 	esph->spi = *seqhi;
-@@ -171,27 +197,36 @@ static void esp_restore_header(struct sk_buff *skb, unsigned int offset)
- 
- static void esp_output_restore_header(struct sk_buff *skb)
- {
--	esp_restore_header(skb, skb_transport_offset(skb) - sizeof(__be32));
-+	void *tmp = ESP_SKB_CB(skb)->tmp;
-+	struct esp_output_extra *extra = esp_tmp_extra(tmp);
-+
-+	esp_restore_header(skb, skb_transport_offset(skb) + extra->esphoff -
-+				sizeof(__be32));
- }
- 
- static struct ip_esp_hdr *esp_output_set_esn(struct sk_buff *skb,
- 					     struct xfrm_state *x,
- 					     struct ip_esp_hdr *esph,
--					     __be32 *seqhi)
-+					     struct esp_output_extra *extra)
- {
- 	/* For ESN we move the header forward by 4 bytes to
- 	 * accomodate the high bits.  We will move it back after
- 	 * encryption.
- 	 */
- 	if ((x->props.flags & XFRM_STATE_ESN)) {
-+		__u32 seqhi;
- 		struct xfrm_offload *xo = xfrm_offload(skb);
- 
--		esph = (void *)(skb_transport_header(skb) - sizeof(__be32));
--		*seqhi = esph->spi;
- 		if (xo)
--			esph->seq_no = htonl(xo->seq.hi);
-+			seqhi = xo->seq.hi;
- 		else
--			esph->seq_no = htonl(XFRM_SKB_CB(skb)->seq.output.hi);
-+			seqhi = XFRM_SKB_CB(skb)->seq.output.hi;
-+
-+		extra->esphoff = (unsigned char *)esph -
-+				 skb_transport_header(skb);
-+		esph = (struct ip_esp_hdr *)((unsigned char *)esph - 4);
-+		extra->seqhi = esph->spi;
-+		esph->seq_no = htonl(seqhi);
- 	}
- 
- 	esph->spi = x->id.spi;
-@@ -207,15 +242,84 @@ static void esp_output_done_esn(struct crypto_async_request *base, int err)
- 	esp_output_done(base, err);
- }
- 
-+static struct ip_esp_hdr *esp6_output_udp_encap(struct sk_buff *skb,
-+					       int encap_type,
-+					       struct esp_info *esp,
-+					       __be16 sport,
-+					       __be16 dport)
-+{
-+	struct udphdr *uh;
-+	__be32 *udpdata32;
-+	unsigned int len;
-+
-+	len = skb->len + esp->tailen - skb_transport_offset(skb);
-+	if (len > U16_MAX)
-+		return ERR_PTR(-EMSGSIZE);
-+
-+	uh = (struct udphdr *)esp->esph;
-+	uh->source = sport;
-+	uh->dest = dport;
-+	uh->len = htons(len);
-+	uh->check = 0;
-+
-+	*skb_mac_header(skb) = IPPROTO_UDP;
-+
-+	if (encap_type == UDP_ENCAP_ESPINUDP_NON_IKE) {
-+		udpdata32 = (__be32 *)(uh + 1);
-+		udpdata32[0] = udpdata32[1] = 0;
-+		return (struct ip_esp_hdr *)(udpdata32 + 2);
-+	}
-+
-+	return (struct ip_esp_hdr *)(uh + 1);
-+}
-+
-+static int esp6_output_encap(struct xfrm_state *x, struct sk_buff *skb,
-+			    struct esp_info *esp)
++static struct sock *esp6_find_tcp_sk(struct xfrm_state *x)
 +{
 +	struct xfrm_encap_tmpl *encap = x->encap;
-+	struct ip_esp_hdr *esph;
++	struct esp_tcp_sk *esk;
 +	__be16 sport, dport;
-+	int encap_type;
++	struct sock *nsk;
++	struct sock *sk;
++
++	sk = rcu_dereference(x->encap_sk);
++	if (sk && sk->sk_state == TCP_ESTABLISHED)
++		return sk;
 +
 +	spin_lock_bh(&x->lock);
 +	sport = encap->encap_sport;
 +	dport = encap->encap_dport;
-+	encap_type = encap->encap_type;
++	nsk = rcu_dereference_protected(x->encap_sk,
++					lockdep_is_held(&x->lock));
++	if (sk && sk == nsk) {
++		esk = kmalloc(sizeof(*esk), GFP_ATOMIC);
++		if (!esk) {
++			spin_unlock_bh(&x->lock);
++			return ERR_PTR(-ENOMEM);
++		}
++		RCU_INIT_POINTER(x->encap_sk, NULL);
++		esk->sk = sk;
++		call_rcu(&esk->rcu, esp_free_tcp_sk);
++	}
 +	spin_unlock_bh(&x->lock);
 +
-+	switch (encap_type) {
-+	default:
-+	case UDP_ENCAP_ESPINUDP:
-+	case UDP_ENCAP_ESPINUDP_NON_IKE:
-+		esph = esp6_output_udp_encap(skb, encap_type, esp, sport, dport);
-+		break;
++	sk = __inet6_lookup_established(xs_net(x), &tcp_hashinfo, &x->id.daddr.in6,
++					dport, &x->props.saddr.in6, ntohs(sport), 0, 0);
++	if (!sk)
++		return ERR_PTR(-ENOENT);
++
++	if (!tcp_is_ulp_esp(sk)) {
++		sock_put(sk);
++		return ERR_PTR(-EINVAL);
 +	}
 +
-+	if (IS_ERR(esph))
-+		return PTR_ERR(esph);
++	spin_lock_bh(&x->lock);
++	nsk = rcu_dereference_protected(x->encap_sk,
++					lockdep_is_held(&x->lock));
++	if (encap->encap_sport != sport ||
++	    encap->encap_dport != dport) {
++		sock_put(sk);
++		sk = nsk ?: ERR_PTR(-EREMCHG);
++	} else if (sk == nsk) {
++		sock_put(sk);
++	} else {
++		rcu_assign_pointer(x->encap_sk, sk);
++	}
++	spin_unlock_bh(&x->lock);
 +
-+	esp->esph = esph;
-+
-+	return 0;
++	return sk;
 +}
 +
- int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp)
- {
- 	u8 *tail;
- 	u8 *vaddr;
- 	int nfrags;
-+	int esph_offset;
- 	struct page *page;
- 	struct sk_buff *trailer;
- 	int tailen = esp->tailen;
- 
-+	if (x->encap) {
-+		int err = esp6_output_encap(x, skb, esp);
-+
-+		if (err < 0)
-+			return err;
-+	}
-+
- 	if (!skb_cloned(skb)) {
- 		if (tailen <= skb_tailroom(skb)) {
- 			nfrags = 1;
-@@ -274,10 +378,13 @@ int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
- 	}
- 
- cow:
-+	esph_offset = (unsigned char *)esp->esph - skb_transport_header(skb);
-+
- 	nfrags = skb_cow_data(skb, tailen, &trailer);
- 	if (nfrags < 0)
- 		goto out;
- 	tail = skb_tail_pointer(trailer);
-+	esp->esph = (struct ip_esp_hdr *)(skb_transport_header(skb) + esph_offset);
- 
- skip_cow:
- 	esp_output_fill_trailer(tail, esp->tfclen, esp->plen, esp->proto);
-@@ -295,20 +402,20 @@ int esp6_output_tail(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
- 	void *tmp;
- 	int ivlen;
- 	int assoclen;
--	int seqhilen;
--	__be32 *seqhi;
-+	int extralen;
- 	struct page *page;
- 	struct ip_esp_hdr *esph;
- 	struct aead_request *req;
- 	struct crypto_aead *aead;
- 	struct scatterlist *sg, *dsg;
-+	struct esp_output_extra *extra;
- 	int err = -ENOMEM;
- 
- 	assoclen = sizeof(struct ip_esp_hdr);
--	seqhilen = 0;
-+	extralen = 0;
- 
- 	if (x->props.flags & XFRM_STATE_ESN) {
--		seqhilen += sizeof(__be32);
-+		extralen += sizeof(*extra);
- 		assoclen += sizeof(__be32);
- 	}
- 
-@@ -316,12 +423,12 @@ int esp6_output_tail(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
- 	alen = crypto_aead_authsize(aead);
- 	ivlen = crypto_aead_ivsize(aead);
- 
--	tmp = esp_alloc_tmp(aead, esp->nfrags + 2, seqhilen);
-+	tmp = esp_alloc_tmp(aead, esp->nfrags + 2, extralen);
- 	if (!tmp)
- 		goto error;
- 
--	seqhi = esp_tmp_seqhi(tmp);
--	iv = esp_tmp_iv(aead, tmp, seqhilen);
-+	extra = esp_tmp_extra(tmp);
-+	iv = esp_tmp_iv(aead, tmp, extralen);
- 	req = esp_tmp_req(aead, iv);
- 	sg = esp_req_sg(aead, req);
- 
-@@ -330,7 +437,8 @@ int esp6_output_tail(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
- 	else
- 		dsg = &sg[esp->nfrags];
- 
--	esph = esp_output_set_esn(skb, x, ip_esp_hdr(skb), seqhi);
-+	esph = esp_output_set_esn(skb, x, esp->esph, extra);
-+	esp->esph = esph;
- 
- 	sg_init_table(sg, esp->nfrags);
- 	err = skb_to_sgvec(skb, sg,
-@@ -394,6 +502,7 @@ int esp6_output_tail(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
- 	case 0:
- 		if ((x->props.flags & XFRM_STATE_ESN))
- 			esp_output_restore_header(skb);
-+		esp_output_encap_csum(skb);
- 	}
- 
- 	if (sg != dsg)
-@@ -438,11 +547,13 @@ static int esp6_output(struct xfrm_state *x, struct sk_buff *skb)
- 	esp.plen = esp.clen - skb->len - esp.tfclen;
- 	esp.tailen = esp.tfclen + esp.plen + alen;
- 
-+	esp.esph = ip_esp_hdr(skb);
-+
- 	esp.nfrags = esp6_output_head(x, skb, &esp);
- 	if (esp.nfrags < 0)
- 		return esp.nfrags;
- 
--	esph = ip_esp_hdr(skb);
-+	esph = esp.esph;
- 	esph->spi = x->id.spi;
- 
- 	esph->seq_no = htonl(XFRM_SKB_CB(skb)->seq.output.low);
-@@ -517,6 +628,56 @@ int esp6_input_done2(struct sk_buff *skb, int err)
- 	if (unlikely(err < 0))
- 		goto out;
- 
-+	if (x->encap) {
-+		const struct ipv6hdr *ip6h = ipv6_hdr(skb);
-+		struct xfrm_encap_tmpl *encap = x->encap;
-+		struct udphdr *uh = (void *)(skb_network_header(skb) + hdr_len);
-+		__be16 source;
-+
-+		switch (x->encap->encap_type) {
-+		case UDP_ENCAP_ESPINUDP:
-+		case UDP_ENCAP_ESPINUDP_NON_IKE:
-+			source = uh->source;
-+			break;
-+		default:
-+			WARN_ON_ONCE(1);
-+			err = -EINVAL;
-+			goto out;
-+		}
-+
-+		/*
-+		 * 1) if the NAT-T peer's IP or port changed then
-+		 *    advertize the change to the keying daemon.
-+		 *    This is an inbound SA, so just compare
-+		 *    SRC ports.
-+		 */
-+		if (!ipv6_addr_equal(&ip6h->saddr, &x->props.saddr.in6) ||
-+		    source != encap->encap_sport) {
-+			xfrm_address_t ipaddr;
-+
-+			memcpy(&ipaddr.a6, &ip6h->saddr.s6_addr, sizeof(ipaddr.a6));
-+			km_new_mapping(x, &ipaddr, source);
-+
-+			/* XXX: perhaps add an extra
-+			 * policy check here, to see
-+			 * if we should allow or
-+			 * reject a packet from a
-+			 * different source
-+			 * address/port.
-+			 */
-+		}
-+
-+		/*
-+		 * 2) ignore UDP/TCP checksums in case
-+		 *    of NAT-T in Transport Mode, or
-+		 *    perform other post-processing fixes
-+		 *    as per draft-ietf-ipsec-udp-encaps-06,
-+		 *    section 3.1.2
-+		 */
-+		if (x->props.mode == XFRM_MODE_TRANSPORT)
-+			skb->ip_summed = CHECKSUM_UNNECESSARY;
-+	}
-+
- 	skb_postpull_rcsum(skb, skb_network_header(skb),
- 			   skb_network_header_len(skb));
- 	skb_pull_rcsum(skb, hlen);
-@@ -632,7 +793,7 @@ static int esp6_input(struct xfrm_state *x, struct sk_buff *skb)
- 		goto out;
- 
- 	ESP_SKB_CB(skb)->tmp = tmp;
--	seqhi = esp_tmp_seqhi(tmp);
-+	seqhi = esp_tmp_extra(tmp);
- 	iv = esp_tmp_iv(aead, tmp, seqhilen);
- 	req = esp_tmp_req(aead, iv);
- 	sg = esp_req_sg(aead, req);
-@@ -836,9 +997,6 @@ static int esp6_init_state(struct xfrm_state *x)
- 	u32 align;
- 	int err;
- 
--	if (x->encap)
--		return -EINVAL;
--
- 	x->data = NULL;
- 
- 	if (x->aead)
-@@ -867,6 +1025,22 @@ static int esp6_init_state(struct xfrm_state *x)
- 		break;
- 	}
- 
-+	if (x->encap) {
-+		struct xfrm_encap_tmpl *encap = x->encap;
-+
-+		switch (encap->encap_type) {
-+		default:
-+			err = -EINVAL;
-+			goto error;
-+		case UDP_ENCAP_ESPINUDP:
-+			x->props.header_len += sizeof(struct udphdr);
-+			break;
-+		case UDP_ENCAP_ESPINUDP_NON_IKE:
-+			x->props.header_len += sizeof(struct udphdr) + 2 * sizeof(u32);
-+			break;
-+		}
-+	}
-+
- 	align = ALIGN(crypto_aead_blocksize(aead), 4);
- 	x->props.trailer_len = align + 1 + crypto_aead_authsize(aead);
- 
-@@ -893,6 +1067,7 @@ static const struct xfrm_type esp6_type = {
- 
- static struct xfrm6_protocol esp6_protocol = {
- 	.handler	=	xfrm6_rcv,
-+	.input_handler	=	xfrm_input,
- 	.cb_handler	=	esp6_rcv_cb,
- 	.err_handler	=	esp6_err,
- 	.priority	=	0,
-diff --git a/net/ipv6/esp6_offload.c b/net/ipv6/esp6_offload.c
-index fd535053245b..40b15fbcc2cb 100644
---- a/net/ipv6/esp6_offload.c
-+++ b/net/ipv6/esp6_offload.c
-@@ -235,7 +235,6 @@ static int esp6_xmit(struct xfrm_state *x, struct sk_buff *skb,  netdev_features
- 	int alen;
- 	int blksize;
- 	struct xfrm_offload *xo;
--	struct ip_esp_hdr *esph;
- 	struct crypto_aead *aead;
- 	struct esp_info esp;
- 	bool hw_offload = true;
-@@ -276,13 +275,13 @@ static int esp6_xmit(struct xfrm_state *x, struct sk_buff *skb,  netdev_features
- 
- 	seq = xo->seq.low;
- 
--	esph = ip_esp_hdr(skb);
--	esph->spi = x->id.spi;
-+	esp.esph = ip_esp_hdr(skb);
-+	esp.esph->spi = x->id.spi;
- 
- 	skb_push(skb, -skb_network_offset(skb));
- 
- 	if (xo->flags & XFRM_GSO_SEGMENT) {
--		esph->seq_no = htonl(seq);
-+		esp.esph->seq_no = htonl(seq);
- 
- 		if (!skb_is_gso(skb))
- 			xo->seq.low++;
-diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
-index 524006aa0d78..ffa6f792cdf6 100644
---- a/net/ipv6/ip6_vti.c
-+++ b/net/ipv6/ip6_vti.c
-@@ -296,7 +296,8 @@ static void vti6_dev_uninit(struct net_device *dev)
- 	dev_put(dev);
- }
- 
--static int vti6_rcv(struct sk_buff *skb)
-+static int vti6_input_proto(struct sk_buff *skb, int nexthdr, __be32 spi,
-+			    int encap_type)
- {
- 	struct ip6_tnl *t;
- 	const struct ipv6hdr *ipv6h = ipv6_hdr(skb);
-@@ -323,7 +324,10 @@ static int vti6_rcv(struct sk_buff *skb)
- 
- 		rcu_read_unlock();
- 
--		return xfrm6_rcv_tnl(skb, t);
-+		XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip6 = t;
-+		XFRM_SPI_SKB_CB(skb)->family = AF_INET6;
-+		XFRM_SPI_SKB_CB(skb)->daddroff = offsetof(struct ipv6hdr, daddr);
-+		return xfrm_input(skb, nexthdr, spi, encap_type);
- 	}
- 	rcu_read_unlock();
- 	return -EINVAL;
-@@ -332,6 +336,13 @@ static int vti6_rcv(struct sk_buff *skb)
- 	return 0;
- }
- 
-+static int vti6_rcv(struct sk_buff *skb)
++static int esp_output_tcp_finish(struct xfrm_state *x, struct sk_buff *skb)
 +{
-+	int nexthdr = skb_network_header(skb)[IP6CB(skb)->nhoff];
++	struct sock *sk;
++	int err;
 +
-+	return vti6_input_proto(skb, nexthdr, 0, 0);
-+}
++	rcu_read_lock();
 +
- static int vti6_rcv_cb(struct sk_buff *skb, int err)
- {
- 	unsigned short family;
-@@ -1167,6 +1178,7 @@ static struct pernet_operations vti6_net_ops = {
- 
- static struct xfrm6_protocol vti_esp6_protocol __read_mostly = {
- 	.handler	=	vti6_rcv,
-+	.input_handler	=	vti6_input_proto,
- 	.cb_handler	=	vti6_rcv_cb,
- 	.err_handler	=	vti6_err,
- 	.priority	=	100,
-@@ -1174,6 +1186,7 @@ static struct xfrm6_protocol vti_esp6_protocol __read_mostly = {
- 
- static struct xfrm6_protocol vti_ah6_protocol __read_mostly = {
- 	.handler	=	vti6_rcv,
-+	.input_handler	=	vti6_input_proto,
- 	.cb_handler	=	vti6_rcv_cb,
- 	.err_handler	=	vti6_err,
- 	.priority	=	100,
-@@ -1181,6 +1194,7 @@ static struct xfrm6_protocol vti_ah6_protocol __read_mostly = {
- 
- static struct xfrm6_protocol vti_ipcomp6_protocol __read_mostly = {
- 	.handler	=	vti6_rcv,
-+	.input_handler	=	vti6_input_proto,
- 	.cb_handler	=	vti6_rcv_cb,
- 	.err_handler	=	vti6_err,
- 	.priority	=	100,
-diff --git a/net/ipv6/ipcomp6.c b/net/ipv6/ipcomp6.c
-index 3752bd3e92ce..99668bfebd85 100644
---- a/net/ipv6/ipcomp6.c
-+++ b/net/ipv6/ipcomp6.c
-@@ -183,6 +183,7 @@ static const struct xfrm_type ipcomp6_type = {
- 
- static struct xfrm6_protocol ipcomp6_protocol = {
- 	.handler	= xfrm6_rcv,
-+	.input_handler	= xfrm_input,
- 	.cb_handler	= ipcomp6_rcv_cb,
- 	.err_handler	= ipcomp6_err,
- 	.priority	= 0,
-diff --git a/net/ipv6/xfrm6_input.c b/net/ipv6/xfrm6_input.c
-index a52cb3fc6df5..56f52353b324 100644
---- a/net/ipv6/xfrm6_input.c
-+++ b/net/ipv6/xfrm6_input.c
-@@ -35,9 +35,12 @@ EXPORT_SYMBOL(xfrm6_rcv_spi);
- static int xfrm6_transport_finish2(struct net *net, struct sock *sk,
- 				   struct sk_buff *skb)
- {
--	if (xfrm_trans_queue(skb, ip6_rcv_finish))
--		__kfree_skb(skb);
--	return -1;
-+	if (xfrm_trans_queue(skb, ip6_rcv_finish)) {
-+		kfree_skb(skb);
-+		return NET_RX_DROP;
-+	}
-+
-+	return 0;
- }
- 
- int xfrm6_transport_finish(struct sk_buff *skb, int async)
-@@ -60,13 +63,106 @@ int xfrm6_transport_finish(struct sk_buff *skb, int async)
- 	if (xo && (xo->flags & XFRM_GRO)) {
- 		skb_mac_header_rebuild(skb);
- 		skb_reset_transport_header(skb);
--		return -1;
-+		return 0;
- 	}
- 
- 	NF_HOOK(NFPROTO_IPV6, NF_INET_PRE_ROUTING,
- 		dev_net(skb->dev), NULL, skb, skb->dev, NULL,
- 		xfrm6_transport_finish2);
--	return -1;
-+	return 0;
-+}
-+
-+/* If it's a keepalive packet, then just eat it.
-+ * If it's an encapsulated packet, then pass it to the
-+ * IPsec xfrm input.
-+ * Returns 0 if skb passed to xfrm or was dropped.
-+ * Returns >0 if skb should be passed to UDP.
-+ * Returns <0 if skb should be resubmitted (-ret is protocol)
-+ */
-+int xfrm6_udp_encap_rcv(struct sock *sk, struct sk_buff *skb)
-+{
-+	struct udp_sock *up = udp_sk(sk);
-+	struct udphdr *uh;
-+	struct ipv6hdr *ip6h;
-+	int len;
-+	int ip6hlen = sizeof(struct ipv6hdr);
-+
-+	__u8 *udpdata;
-+	__be32 *udpdata32;
-+	__u16 encap_type = up->encap_type;
-+
-+	/* if this is not encapsulated socket, then just return now */
-+	if (!encap_type)
-+		return 1;
-+
-+	/* If this is a paged skb, make sure we pull up
-+	 * whatever data we need to look at. */
-+	len = skb->len - sizeof(struct udphdr);
-+	if (!pskb_may_pull(skb, sizeof(struct udphdr) + min(len, 8)))
-+		return 1;
-+
-+	/* Now we can get the pointers */
-+	uh = udp_hdr(skb);
-+	udpdata = (__u8 *)uh + sizeof(struct udphdr);
-+	udpdata32 = (__be32 *)udpdata;
-+
-+	switch (encap_type) {
-+	default:
-+	case UDP_ENCAP_ESPINUDP:
-+		/* Check if this is a keepalive packet.  If so, eat it. */
-+		if (len == 1 && udpdata[0] == 0xff) {
-+			goto drop;
-+		} else if (len > sizeof(struct ip_esp_hdr) && udpdata32[0] != 0) {
-+			/* ESP Packet without Non-ESP header */
-+			len = sizeof(struct udphdr);
-+		} else
-+			/* Must be an IKE packet.. pass it through */
-+			return 1;
-+		break;
-+	case UDP_ENCAP_ESPINUDP_NON_IKE:
-+		/* Check if this is a keepalive packet.  If so, eat it. */
-+		if (len == 1 && udpdata[0] == 0xff) {
-+			goto drop;
-+		} else if (len > 2 * sizeof(u32) + sizeof(struct ip_esp_hdr) &&
-+			   udpdata32[0] == 0 && udpdata32[1] == 0) {
-+
-+			/* ESP Packet with Non-IKE marker */
-+			len = sizeof(struct udphdr) + 2 * sizeof(u32);
-+		} else
-+			/* Must be an IKE packet.. pass it through */
-+			return 1;
-+		break;
-+	}
-+
-+	/* At this point we are sure that this is an ESPinUDP packet,
-+	 * so we need to remove 'len' bytes from the packet (the UDP
-+	 * header and optional ESP marker bytes) and then modify the
-+	 * protocol to ESP, and then call into the transform receiver.
-+	 */
-+	if (skb_unclone(skb, GFP_ATOMIC))
-+		goto drop;
-+
-+	/* Now we can update and verify the packet length... */
-+	ip6h = ipv6_hdr(skb);
-+	ip6h->payload_len = htons(ntohs(ip6h->payload_len) - len);
-+	if (skb->len < ip6hlen + len) {
-+		/* packet is too small!?! */
-+		goto drop;
-+	}
-+
-+	/* pull the data buffer up to the ESP header and set the
-+	 * transport header to point to ESP.  Keep UDP on the stack
-+	 * for later.
-+	 */
-+	__skb_pull(skb, len);
-+	skb_reset_transport_header(skb);
-+
-+	/* process ESP */
-+	return xfrm6_rcv_encap(skb, IPPROTO_ESP, 0, encap_type);
-+
-+drop:
-+	kfree_skb(skb);
-+	return 0;
- }
- 
- int xfrm6_rcv_tnl(struct sk_buff *skb, struct ip6_tnl *t)
-diff --git a/net/ipv6/xfrm6_protocol.c b/net/ipv6/xfrm6_protocol.c
-index 34cb65c7d5a7..ea2f805d3b01 100644
---- a/net/ipv6/xfrm6_protocol.c
-+++ b/net/ipv6/xfrm6_protocol.c
-@@ -14,6 +14,7 @@
- #include <linux/mutex.h>
- #include <linux/skbuff.h>
- #include <linux/icmpv6.h>
-+#include <net/ip6_route.h>
- #include <net/ipv6.h>
- #include <net/protocol.h>
- #include <net/xfrm.h>
-@@ -58,6 +59,53 @@ static int xfrm6_rcv_cb(struct sk_buff *skb, u8 protocol, int err)
- 	return 0;
- }
- 
-+int xfrm6_rcv_encap(struct sk_buff *skb, int nexthdr, __be32 spi,
-+		    int encap_type)
-+{
-+	int ret;
-+	struct xfrm6_protocol *handler;
-+	struct xfrm6_protocol __rcu **head = proto_handlers(nexthdr);
-+
-+	XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip6 = NULL;
-+	XFRM_SPI_SKB_CB(skb)->family = AF_INET6;
-+	XFRM_SPI_SKB_CB(skb)->daddroff = offsetof(struct ipv6hdr, daddr);
-+
-+	if (!head)
++	sk = esp6_find_tcp_sk(x);
++	err = PTR_ERR_OR_ZERO(sk);
++	if (err)
 +		goto out;
 +
-+	if (!skb_dst(skb)) {
-+		const struct ipv6hdr *ip6h = ipv6_hdr(skb);
-+		int flags = RT6_LOOKUP_F_HAS_SADDR;
-+		struct dst_entry *dst;
-+		struct flowi6 fl6 = {
-+			.flowi6_iif   = skb->dev->ifindex,
-+			.daddr        = ip6h->daddr,
-+			.saddr        = ip6h->saddr,
-+			.flowlabel    = ip6_flowinfo(ip6h),
-+			.flowi6_mark  = skb->mark,
-+			.flowi6_proto = ip6h->nexthdr,
-+		};
-+
-+		dst = ip6_route_input_lookup(dev_net(skb->dev), skb->dev, &fl6,
-+					     skb, flags);
-+		if (dst->error)
-+			goto drop;
-+		skb_dst_set(skb, dst);
-+	}
-+
-+	for_each_protocol_rcu(*head, handler)
-+		if ((ret = handler->input_handler(skb, nexthdr, spi, encap_type)) != -EINVAL)
-+			return ret;
++	bh_lock_sock(sk);
++	if (sock_owned_by_user(sk))
++		err = espintcp_queue_out(sk, skb);
++	else
++		err = espintcp_push_skb(sk, skb);
++	bh_unlock_sock(sk);
 +
 +out:
-+	icmpv6_send(skb, ICMPV6_DEST_UNREACH, ICMPV6_PORT_UNREACH, 0);
-+
-+drop:
-+	kfree_skb(skb);
-+	return 0;
++	rcu_read_unlock();
++	return err;
 +}
-+EXPORT_SYMBOL(xfrm6_rcv_encap);
 +
- static int xfrm6_esp_rcv(struct sk_buff *skb)
++static int esp_output_tcp_encap_cb(struct net *net, struct sock *sk,
++				   struct sk_buff *skb)
++{
++	struct dst_entry *dst = skb_dst(skb);
++	struct xfrm_state *x = dst->xfrm;
++
++	return esp_output_tcp_finish(x, skb);
++}
++
++static int esp_output_tail_tcp(struct xfrm_state *x, struct sk_buff *skb)
++{
++	int err;
++
++	local_bh_disable();
++	err = xfrm_trans_queue_net(xs_net(x), skb, esp_output_tcp_encap_cb);
++	local_bh_enable();
++
++	/* EINPROGRESS just happens to do the right thing.  It
++	 * actually means that the skb has been consumed and
++	 * isn't coming back.
++	 */
++	return err ?: -EINPROGRESS;
++}
++#else
++static int esp_output_tail_tcp(struct xfrm_state *x, struct sk_buff *skb)
++{
++	kfree_skb(skb);
++
++	return -EOPNOTSUPP;
++}
++#endif
++
+ static void esp_output_encap_csum(struct sk_buff *skb)
  {
- 	int ret;
-diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
-index 3361e3ac5714..ce045cadd00b 100644
---- a/net/xfrm/xfrm_interface.c
-+++ b/net/xfrm/xfrm_interface.c
-@@ -757,6 +757,7 @@ static struct pernet_operations xfrmi_net_ops = {
+ 	/* UDP encap with IPv6 requires a valid checksum */
+@@ -180,7 +309,11 @@ static void esp_output_done(struct crypto_async_request *base, int err)
+ 		secpath_reset(skb);
+ 		xfrm_dev_resume(skb);
+ 	} else {
+-		xfrm_output_resume(skb, err);
++		if (!err &&
++		    x->encap && x->encap->encap_type == TCP_ENCAP_ESPINTCP)
++			esp_output_tail_tcp(x, skb);
++		else
++			xfrm_output_resume(skb, err);
+ 	}
+ }
  
- static struct xfrm6_protocol xfrmi_esp6_protocol __read_mostly = {
- 	.handler	=	xfrm6_rcv,
-+	.input_handler	=	xfrm_input,
- 	.cb_handler	=	xfrmi_rcv_cb,
- 	.err_handler	=	xfrmi6_err,
- 	.priority	=	10,
-@@ -764,6 +765,7 @@ static struct xfrm6_protocol xfrmi_esp6_protocol __read_mostly = {
+@@ -273,6 +406,41 @@ static struct ip_esp_hdr *esp6_output_udp_encap(struct sk_buff *skb,
+ 	return (struct ip_esp_hdr *)(uh + 1);
+ }
  
- static struct xfrm6_protocol xfrmi_ah6_protocol __read_mostly = {
- 	.handler	=	xfrm6_rcv,
-+	.input_handler	=	xfrm_input,
- 	.cb_handler	=	xfrmi_rcv_cb,
- 	.err_handler	=	xfrmi6_err,
- 	.priority	=	10,
-@@ -771,6 +773,7 @@ static struct xfrm6_protocol xfrmi_ah6_protocol __read_mostly = {
++#ifdef CONFIG_INET6_ESPINTCP
++static struct ip_esp_hdr *esp6_output_tcp_encap(struct xfrm_state *x,
++						struct sk_buff *skb,
++						struct esp_info *esp)
++{
++	__be16 *lenp = (void *)esp->esph;
++	struct ip_esp_hdr *esph;
++	unsigned int len;
++	struct sock *sk;
++
++	len = skb->len + esp->tailen - skb_transport_offset(skb);
++	if (len > IP_MAX_MTU)
++		return ERR_PTR(-EMSGSIZE);
++
++	rcu_read_lock();
++	sk = esp6_find_tcp_sk(x);
++	rcu_read_unlock();
++
++	if (IS_ERR(sk))
++		return ERR_CAST(sk);
++
++	*lenp = htons(len);
++	esph = (struct ip_esp_hdr *)(lenp + 1);
++
++	return esph;
++}
++#else
++static struct ip_esp_hdr *esp6_output_tcp_encap(struct xfrm_state *x,
++						struct sk_buff *skb,
++						struct esp_info *esp)
++{
++	return ERR_PTR(-EOPNOTSUPP);
++}
++#endif
++
+ static int esp6_output_encap(struct xfrm_state *x, struct sk_buff *skb,
+ 			    struct esp_info *esp)
+ {
+@@ -293,6 +461,9 @@ static int esp6_output_encap(struct xfrm_state *x, struct sk_buff *skb,
+ 	case UDP_ENCAP_ESPINUDP_NON_IKE:
+ 		esph = esp6_output_udp_encap(skb, encap_type, esp, sport, dport);
+ 		break;
++	case TCP_ENCAP_ESPINTCP:
++		esph = esp6_output_tcp_encap(x, skb, esp);
++		break;
+ 	}
  
- static struct xfrm6_protocol xfrmi_ipcomp6_protocol __read_mostly = {
- 	.handler	=	xfrm6_rcv,
-+	.input_handler	=	xfrm_input,
- 	.cb_handler	=	xfrmi_rcv_cb,
- 	.err_handler	=	xfrmi6_err,
- 	.priority	=	10,
+ 	if (IS_ERR(esph))
+@@ -508,6 +679,9 @@ int esp6_output_tail(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
+ 	if (sg != dsg)
+ 		esp_ssg_unref(x, tmp);
+ 
++	if (!err && x->encap && x->encap->encap_type == TCP_ENCAP_ESPINTCP)
++		err = esp_output_tail_tcp(x, skb);
++
+ error_free:
+ 	kfree(tmp);
+ error:
+@@ -632,9 +806,13 @@ int esp6_input_done2(struct sk_buff *skb, int err)
+ 		const struct ipv6hdr *ip6h = ipv6_hdr(skb);
+ 		struct xfrm_encap_tmpl *encap = x->encap;
+ 		struct udphdr *uh = (void *)(skb_network_header(skb) + hdr_len);
++		struct tcphdr *th = (void *)(skb_network_header(skb) + hdr_len);
+ 		__be16 source;
+ 
+ 		switch (x->encap->encap_type) {
++		case TCP_ENCAP_ESPINTCP:
++			source = th->source;
++			break;
+ 		case UDP_ENCAP_ESPINUDP:
+ 		case UDP_ENCAP_ESPINUDP_NON_IKE:
+ 			source = uh->source;
+@@ -1038,6 +1216,14 @@ static int esp6_init_state(struct xfrm_state *x)
+ 		case UDP_ENCAP_ESPINUDP_NON_IKE:
+ 			x->props.header_len += sizeof(struct udphdr) + 2 * sizeof(u32);
+ 			break;
++#ifdef CONFIG_INET6_ESPINTCP
++		case TCP_ENCAP_ESPINTCP:
++			/* only the length field, TCP encap is done by
++			 * the socket
++			 */
++			x->props.header_len += 2;
++			break;
++#endif
+ 		}
+ 	}
+ 
+diff --git a/net/xfrm/Kconfig b/net/xfrm/Kconfig
+index 6921a18201a0..b7fd9c838416 100644
+--- a/net/xfrm/Kconfig
++++ b/net/xfrm/Kconfig
+@@ -99,4 +99,7 @@ config NET_KEY_MIGRATE
+ 
+ 	  If unsure, say N.
+ 
++config XFRM_ESPINTCP
++	bool
++
+ endif # INET
+diff --git a/net/xfrm/Makefile b/net/xfrm/Makefile
+index 212a4fcb4a88..2d4bb4b9f75e 100644
+--- a/net/xfrm/Makefile
++++ b/net/xfrm/Makefile
+@@ -11,4 +11,4 @@ obj-$(CONFIG_XFRM_ALGO) += xfrm_algo.o
+ obj-$(CONFIG_XFRM_USER) += xfrm_user.o
+ obj-$(CONFIG_XFRM_IPCOMP) += xfrm_ipcomp.o
+ obj-$(CONFIG_XFRM_INTERFACE) += xfrm_interface.o
+-obj-$(CONFIG_INET_ESPINTCP) += espintcp.o
++obj-$(CONFIG_XFRM_ESPINTCP) += espintcp.o
+diff --git a/net/xfrm/espintcp.c b/net/xfrm/espintcp.c
+index 36abb6750ffe..5444c3923712 100644
+--- a/net/xfrm/espintcp.c
++++ b/net/xfrm/espintcp.c
+@@ -6,6 +6,9 @@
+ #include <net/espintcp.h>
+ #include <linux/skmsg.h>
+ #include <net/inet_common.h>
++#if IS_ENABLED(CONFIG_IPV6)
++#include <net/ipv6_stubs.h>
++#endif
+ 
+ static void handle_nonesp(struct espintcp_ctx *ctx, struct sk_buff *skb,
+ 			  struct sock *sk)
+@@ -31,7 +34,12 @@ static void handle_esp(struct sk_buff *skb, struct sock *sk)
+ 	rcu_read_lock();
+ 	skb->dev = dev_get_by_index_rcu(sock_net(sk), skb->skb_iif);
+ 	local_bh_disable();
+-	xfrm4_rcv_encap(skb, IPPROTO_ESP, 0, TCP_ENCAP_ESPINTCP);
++#if IS_ENABLED(CONFIG_IPV6)
++	if (sk->sk_family == AF_INET6)
++		ipv6_stub->xfrm6_rcv_encap(skb, IPPROTO_ESP, 0, TCP_ENCAP_ESPINTCP);
++	else
++#endif
++		xfrm4_rcv_encap(skb, IPPROTO_ESP, 0, TCP_ENCAP_ESPINTCP);
+ 	local_bh_enable();
+ 	rcu_read_unlock();
+ }
+@@ -347,6 +355,9 @@ static int espintcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
+ 
+ static struct proto espintcp_prot __ro_after_init;
+ static struct proto_ops espintcp_ops __ro_after_init;
++static struct proto espintcp6_prot;
++static struct proto_ops espintcp6_ops;
++static DEFINE_MUTEX(tcpv6_prot_mutex);
+ 
+ static void espintcp_data_ready(struct sock *sk)
+ {
+@@ -385,10 +396,14 @@ static void espintcp_destruct(struct sock *sk)
+ 
+ bool tcp_is_ulp_esp(struct sock *sk)
+ {
+-	return sk->sk_prot == &espintcp_prot;
++	return sk->sk_prot == &espintcp_prot || sk->sk_prot == &espintcp6_prot;
+ }
+ EXPORT_SYMBOL_GPL(tcp_is_ulp_esp);
+ 
++static void build_protos(struct proto *espintcp_prot,
++			 struct proto_ops *espintcp_ops,
++			 const struct proto *orig_prot,
++			 const struct proto_ops *orig_ops);
+ static int espintcp_init_sk(struct sock *sk)
+ {
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+@@ -416,8 +431,19 @@ static int espintcp_init_sk(struct sock *sk)
+ 	strp_check_rcv(&ctx->strp);
+ 	skb_queue_head_init(&ctx->ike_queue);
+ 	skb_queue_head_init(&ctx->out_queue);
+-	sk->sk_prot = &espintcp_prot;
+-	sk->sk_socket->ops = &espintcp_ops;
++
++	if (sk->sk_family == AF_INET) {
++		sk->sk_prot = &espintcp_prot;
++		sk->sk_socket->ops = &espintcp_ops;
++	} else {
++		mutex_lock(&tcpv6_prot_mutex);
++		if (!espintcp6_prot.recvmsg)
++			build_protos(&espintcp6_prot, &espintcp6_ops, sk->sk_prot, sk->sk_socket->ops);
++		mutex_unlock(&tcpv6_prot_mutex);
++
++		sk->sk_prot = &espintcp6_prot;
++		sk->sk_socket->ops = &espintcp6_ops;
++	}
+ 	ctx->saved_data_ready = sk->sk_data_ready;
+ 	ctx->saved_write_space = sk->sk_write_space;
+ 	ctx->saved_destruct = sk->sk_destruct;
+@@ -491,6 +517,20 @@ static __poll_t espintcp_poll(struct file *file, struct socket *sock,
+ 	return mask;
+ }
+ 
++static void build_protos(struct proto *espintcp_prot,
++			 struct proto_ops *espintcp_ops,
++			 const struct proto *orig_prot,
++			 const struct proto_ops *orig_ops)
++{
++	memcpy(espintcp_prot, orig_prot, sizeof(struct proto));
++	memcpy(espintcp_ops, orig_ops, sizeof(struct proto_ops));
++	espintcp_prot->sendmsg = espintcp_sendmsg;
++	espintcp_prot->recvmsg = espintcp_recvmsg;
++	espintcp_prot->close = espintcp_close;
++	espintcp_prot->release_cb = espintcp_release;
++	espintcp_ops->poll = espintcp_poll;
++}
++
+ static struct tcp_ulp_ops espintcp_ulp __read_mostly = {
+ 	.name = "espintcp",
+ 	.owner = THIS_MODULE,
+@@ -499,13 +539,7 @@ static struct tcp_ulp_ops espintcp_ulp __read_mostly = {
+ 
+ void __init espintcp_init(void)
+ {
+-	memcpy(&espintcp_prot, &tcp_prot, sizeof(tcp_prot));
+-	memcpy(&espintcp_ops, &inet_stream_ops, sizeof(inet_stream_ops));
+-	espintcp_prot.sendmsg = espintcp_sendmsg;
+-	espintcp_prot.recvmsg = espintcp_recvmsg;
+-	espintcp_prot.close = espintcp_close;
+-	espintcp_prot.release_cb = espintcp_release;
+-	espintcp_ops.poll = espintcp_poll;
++	build_protos(&espintcp_prot, &espintcp_ops, &tcp_prot, &inet_stream_ops);
+ 
+ 	tcp_register_ulp(&espintcp_ulp);
+ }
 -- 
 2.26.1
 
