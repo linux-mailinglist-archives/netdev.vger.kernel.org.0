@@ -2,98 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 793221AF481
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 22:10:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B20D1AF47E
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 22:09:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728296AbgDRUJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Apr 2020 16:09:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54824 "EHLO
+        id S1728269AbgDRUJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Apr 2020 16:09:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728287AbgDRUJ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 16:09:58 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF690C061A0C
-        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 13:09:57 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id e26so6473799wmk.5
-        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 13:09:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=bXU1GMC3crE6wZvmjHayWqOikz0CzzcRhHsydXn+bio=;
-        b=E9GBF4fUYJ3c/BB3VufvxuLFj+y/R8yLkbi8M6by+S8NPbldYESraqVLI48rBp9tzE
-         BsTERZiEfgc3PRNk5Q2XV3BEVQtrpVvr3j0aB4tE2fUyFS1fdZp6wEuxSDLC5L7zzeb4
-         1GT0mwVJSYecPdfSuBfnqRALk6Jm+vI30N3rGIsBoaCdqUezc3Py/Ax9tAN3lrE5fb9l
-         K0Ufc6ux2uQXJHXkn5pQlMYvn1CLsOjVt7iYwbkxZNTpci33GX0IdE+jwKoNTtS3QrBp
-         KGr15ug9kICVs5ceN9k/KC7NvfJpD4QJH+Q07ofxmncoKxt//hQFcdoMgODT2bYzjFte
-         FCeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=bXU1GMC3crE6wZvmjHayWqOikz0CzzcRhHsydXn+bio=;
-        b=aNHg9LUp8Ws9g3cFxH7qAKD0QjA2ZZwriv+ORrJdd02oytQUvsaBaBuCHF7GytjwDQ
-         fTwgvfFjBHVhlEqrF/zjUe3cQvbFge6zqGEYdbq+crS08KMv2wvUaGCWjPpj9QCCr1XZ
-         DbshhjUeqEeNJ58ikK+zTuAygJaZWtP1qWzFUhqsCtDvIBI5FMjoKq6NUcXBmDHJBewO
-         /JEPVQwMppq46TiNVcyarwnZx4mbRa7rJt5fff9hChH2Tz5W5MikjhRjkr3WYjiPVypE
-         uD3TPU39RWaJBhgZ9F4LPPfUYJnEy+VzJ6yHCcYAIoYZ2UfIIDbzpV176ZllH22Z9ZMm
-         TT0w==
-X-Gm-Message-State: AGi0PuY5dn07eN4DE0BL56uPN+9YEWECa8QqH8SxUrGc5rlY5iP80w9H
-        gOQ6XvqMYhvgQ6CkYIPX5XLXReyt
-X-Google-Smtp-Source: APiQypKFR3xBZbIolBQLPSmZZZHuiIYQ2zkLuQsY5dDFnXnAkjiDC/5VHsKEksjvERR5cXEUZes63w==
-X-Received: by 2002:a1c:5683:: with SMTP id k125mr9299777wmb.17.1587240596313;
-        Sat, 18 Apr 2020 13:09:56 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:939:e10c:14c5:fe9f? (p200300EA8F2960000939E10C14C5FE9F.dip0.t-ipconnect.de. [2003:ea:8f29:6000:939:e10c:14c5:fe9f])
-        by smtp.googlemail.com with ESMTPSA id h5sm19158009wrp.97.2020.04.18.13.09.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Apr 2020 13:09:55 -0700 (PDT)
-Subject: [PATCH net-next 2/2] r8169: remove PHY resume delay that is handled
- in the PHY driver now
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <c4e18f15-7c37-13a2-4e26-1203da318f67@gmail.com>
-Message-ID: <84800b8b-8f38-5288-5845-6fb5e940a072@gmail.com>
-Date:   Sat, 18 Apr 2020 22:09:42 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        by vger.kernel.org with ESMTP id S1727927AbgDRUJw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 16:09:52 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B7EFC061A0C;
+        Sat, 18 Apr 2020 13:09:52 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 5469423061;
+        Sat, 18 Apr 2020 22:09:48 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1587240589;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lwbpohXkgA8LBRIp0lZ4q/XzjtDAPv3LIIeZKlx0qvo=;
+        b=D10MxJEUiC26rbD4lax+8UpzBji3cbsEhy6svKSmVTYs/aTYhWTaMNM79dEclTETomSKbS
+        4+Aa6fjWCkGhSbX24oo7qi9QGEyH3qgS+j1X9uOO6V4z/havW82dBC9vCFm8qniqhdyltm
+        vQHjJZkaRmNlylWtjnzbpTGTZLs7UbU=
 MIME-Version: 1.0
-In-Reply-To: <c4e18f15-7c37-13a2-4e26-1203da318f67@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
+Date:   Sat, 18 Apr 2020 22:09:48 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next 1/3] net: phy: broadcom: add helper to write/read
+ RDB registers
+In-Reply-To: <aa126ad1-ae29-3da6-bd50-2c0444cfd691@gmail.com>
+References: <20200417192858.6997-1-michael@walle.cc>
+ <20200418141348.GA804711@lunn.ch>
+ <aa126ad1-ae29-3da6-bd50-2c0444cfd691@gmail.com>
+Message-ID: <f264bcad85571a44fabf33fe7e13664e@walle.cc>
+X-Sender: michael@walle.cc
+User-Agent: Roundcube Webmail/1.3.10
+X-Spamd-Bar: +
+X-Spam-Level: *
+X-Rspamd-Server: web
+X-Spam-Status: No, score=1.40
+X-Spam-Score: 1.40
+X-Rspamd-Queue-Id: 5469423061
+X-Spamd-Result: default: False [1.40 / 15.00];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         FREEMAIL_ENVRCPT(0.00)[gmail.com];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         TAGGED_RCPT(0.00)[];
+         MIME_GOOD(-0.10)[text/plain];
+         DKIM_SIGNED(0.00)[];
+         RCPT_COUNT_SEVEN(0.00)[10];
+         NEURAL_HAM(-0.00)[-0.968];
+         FREEMAIL_TO(0.00)[gmail.com];
+         RCVD_COUNT_ZERO(0.00)[0];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         FREEMAIL_CC(0.00)[lunn.ch,vger.kernel.org,suse.com,roeck-us.net,gmail.com,armlinux.org.uk,davemloft.net];
+         MID_RHS_MATCH_FROM(0.00)[];
+         SUSPICIOUS_RECIPS(1.50)[]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Realtek PHY driver takes care of adding the needed delay now,
-therefore we can remove the delay here.
+Am 2020-04-18 17:55, schrieb Florian Fainelli:
+> On 4/18/2020 7:13 AM, Andrew Lunn wrote:
+>> On Fri, Apr 17, 2020 at 09:28:56PM +0200, Michael Walle wrote:
+>>> RDB regsiters are used on newer Broadcom PHYs. Add helper to read, 
+>>> write
+>>> and modify these registers.
+>> 
+>> It would be nice to give a hint what RDB means?
+> 
+> It means Register Data Base, it is meant to be a linear register
+> offset as opposed to the more convulated shadow 18, 1c or other
+> expansion registers.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 2 --
- 1 file changed, 2 deletions(-)
+Oh I just found some comment to another linux patch explaining this.
+Because there is no trace what RDB actually means in the datasheets
+from Broadcom I've seen so far.
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index bf5bf0597..cac56bd67 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2391,8 +2391,6 @@ static void rtl_pll_power_up(struct rtl8169_private *tp)
- 	}
- 
- 	phy_resume(tp->phydev);
--	/* give MAC/PHY some time to resume */
--	msleep(20);
- }
- 
- static void rtl_init_rxcfg(struct rtl8169_private *tp)
--- 
-2.26.1
-
-
+-michael
