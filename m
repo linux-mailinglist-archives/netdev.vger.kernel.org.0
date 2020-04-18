@@ -2,74 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6A781AE99F
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 05:24:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 385E21AE9A3
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 05:25:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725877AbgDRDYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Apr 2020 23:24:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42436 "EHLO
+        id S1726039AbgDRDZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Apr 2020 23:25:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725320AbgDRDYt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 23:24:49 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048C3C061A0C;
-        Fri, 17 Apr 2020 20:24:48 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id b8so2007399pfp.8;
-        Fri, 17 Apr 2020 20:24:48 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725320AbgDRDZi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Apr 2020 23:25:38 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247E8C061A0C;
+        Fri, 17 Apr 2020 20:25:38 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id o185so1534500pgo.3;
+        Fri, 17 Apr 2020 20:25:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=BzICRuRvjPRdTPirDnTzrOCvzqk/XEDtlZnEDCIYLoY=;
-        b=rjvdAzlZKp6w6jFqmhVeYNTx5/gXO78Z5vRQAOBCHGIedmsm2elEBEitm+SCF82de0
-         wNCShDOZN4fbKSjPlK8hPQ95i9d7+RypUGG0rZ3jKMXkiHJjnioQ27BZI5lf7JSfXTyv
-         VA2PzizITqrlX+WSNiNXR9Z3foy514oe5RUIPANGcTPgJHzr0QNlbS9vQdKFppWRsqyC
-         acQ6Ut4HPVZ8SpgGgAXRCzccwlFIx7TYPgW6sAGcN3l9hTB3bHru4pjMYGdCRmxiKeOy
-         ma4PxJ+z1g9cXvjiOFrTHvXsfaYDZn1Jt6DIo8STBp7c+A2ipguCe60FPMmc8eR08BGa
-         dGgQ==
+        bh=vahrfACs2y5f37nxGcM9iphK6jP0kqTw/nGTVidSrU4=;
+        b=BY4777laUdrE7cgHl1hmTc+43MZS4nROL/ue2OPhg+EJ0Iere97wciqaj6q/UhAOQ7
+         /4JAS7ngMxizUAfsrdLSFNEvAMZs+AOFKQ7L+J8NbXc2wUGzPsJifL/0MQ9xg03R+oxs
+         Rqn64qDr2qCzLIRLoZ0Bl1+VnL6eTE070DF6+2oSB0E4zWBE9hL/Lg4sgliFPExqFo8e
+         fbMtrzxw3uzHJGA96PKVvUCcNfURuHx2SV5Gh6T1b6xep9pr6rG+p/IKZ25j+uB2X1q6
+         /ZPih+Bo34xyhJwhctRXY+64AC+6l+fnXbUHUQG+dywoqhxl/xukf6kkFrjYPeR2AavT
+         qQAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=BzICRuRvjPRdTPirDnTzrOCvzqk/XEDtlZnEDCIYLoY=;
-        b=rGVnYSPEA/1zBk9zXSawUWmZkQ+WNO/XCg8hlc4EWgsYQX2PdJuB3T1B81ccRapfBr
-         GRyDTKyXQlmGGjCuRbT44+gyxZaTA/szCiOCYkicNr9sDH2nY87JetxmZD/OxaPGRiJn
-         buNhLAASlNy3seTQSrI9l/AcXyGHIqj2W/gyvmOSQG7Ru6Xe8BaQNL2JtXNDqVXTdarI
-         NMnwEu74lDyCzk8AuuX5hNvkaHUGf9u6gWfAApTriyV7pif5PqXSwleUz4ELtsGSCSIH
-         Y5U+x2LqMJXqasT8v40TtZAOGSlGwAwlOW3TG+NKeHL9RCNp52IqV8PDiYfQmendfwW4
-         hLHg==
-X-Gm-Message-State: AGi0PuYJbPcNyc4TJiaHa0BDuuwNzfVg6UGgTiO+fZq9har243beAxQ+
-        NT8qRWq4Dh/j4fHcyeR+JYI=
-X-Google-Smtp-Source: APiQypIaI9zcregVywXTVg0wstUgRLl2Y1nF+aRzqE+UNWB4X8Pmj7nS8U8vgyfS/AbX5ck02DsoyQ==
-X-Received: by 2002:a62:5c1:: with SMTP id 184mr6768393pff.68.1587180288477;
-        Fri, 17 Apr 2020 20:24:48 -0700 (PDT)
+        bh=vahrfACs2y5f37nxGcM9iphK6jP0kqTw/nGTVidSrU4=;
+        b=rF4GqARlBRuHj8DA6E2ISZ0xL9WPQQpx6SZxuIk4ReRbzy26HYiH7OeR1dBKO1PvBD
+         VwRpn0Kilbz8W0uHMTuZ0xyxpv63C3TmY59yXAcqY8KQUvEP6KEZ74vsgGl1BZeIEHdN
+         4T1Twqm3FLQ8fDd9rT5dyteiz/2Iv1x434YMyO8ZYJr2miBjytbpeNXO3bQK5fTtb/Gg
+         X/Q49NW3/avHVmDgH3aU5HAfWouLZZV2gWkpLwR5BYNpAvrYqneIJ4SeOAd5FtzRpXmZ
+         cv8VzR8KW2pDGzzOy//58Nv8ZrnBy5s36d/aL/PLAT4KG+SaVyaIahAffqUKKlqS4BLK
+         Qn+w==
+X-Gm-Message-State: AGi0PuYLZVXG0lQQ4KOPJiac1jJ9799qEIYGb8kIzQFLsEZsMvcVjhQO
+        yA7h3PkG1X+Aps1OPwKIc+g=
+X-Google-Smtp-Source: APiQypJ+aekVZMbjelG1TXLVHBqkky4BJJ9cQ7zpGFWqJ7Qyz5lysYEg9oajKYCxduEdYeFd+un2JA==
+X-Received: by 2002:a63:5f01:: with SMTP id t1mr5944884pgb.186.1587180337749;
+        Fri, 17 Apr 2020 20:25:37 -0700 (PDT)
 Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id f9sm19573203pgj.2.2020.04.17.20.24.47
+        by smtp.gmail.com with ESMTPSA id u13sm3776231pgf.10.2020.04.17.20.25.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Apr 2020 20:24:48 -0700 (PDT)
-Date:   Fri, 17 Apr 2020 20:24:46 -0700
+        Fri, 17 Apr 2020 20:25:37 -0700 (PDT)
+Date:   Fri, 17 Apr 2020 20:25:35 -0700
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     min.li.xe@renesas.com, davem@davemloft.net, netdev@vger.kernel.org,
+Cc:     davem@davemloft.net, pbonzini@redhat.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] ptp: idt82p33: Make two variables static
-Message-ID: <20200418032446.GB9457@localhost>
-References: <20200418020149.29796-1-yuehaibing@huawei.com>
+Subject: Re: [PATCH net-next] ptp_kvm: Make kvm_ptp_lock static
+Message-ID: <20200418032535.GC9457@localhost>
+References: <20200418015154.45976-1-yuehaibing@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200418020149.29796-1-yuehaibing@huawei.com>
+In-Reply-To: <20200418015154.45976-1-yuehaibing@huawei.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 18, 2020 at 10:01:49AM +0800, YueHaibing wrote:
-> Fix sparse warnings:
+On Sat, Apr 18, 2020 at 09:51:54AM +0800, YueHaibing wrote:
+> Fix sparse warning:
 > 
-> drivers/ptp/ptp_idt82p33.c:26:5: warning: symbol 'sync_tod_timeout' was not declared. Should it be static?
-> drivers/ptp/ptp_idt82p33.c:31:5: warning: symbol 'phase_snap_threshold' was not declared. Should it be static?
+> drivers/ptp/ptp_kvm.c:25:1: warning:
+>  symbol 'kvm_ptp_lock' was not declared. Should it be static?
 > 
 > Reported-by: Hulk Robot <hulkci@huawei.com>
 > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
