@@ -2,77 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 716581AF26E
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 18:49:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1EAA1AF2EA
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 19:43:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726083AbgDRQtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Apr 2020 12:49:07 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46762 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725893AbgDRQtH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 Apr 2020 12:49:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=P/b34RLe96NmHWroAboNYyXEivVycOpXriadams37Hs=; b=lki8jxpWBjdXTfpdnAsq1HvNNn
-        ci05HuhFkbdBie3I6GkCoxPRkLWV6vxlMJNDyQ29+4OlfLMXajWo7b6zIZXZBNgv1YJj6vynFkX+D
-        B+KEteHqvnOH6BZ5WZDTo4TA8gTHOHLZIOvMOdBb67XWZ/bZaCqjTvkqIPeh5RQmMmQI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jPqeM-003UWm-HF; Sat, 18 Apr 2020 18:49:02 +0200
-Date:   Sat, 18 Apr 2020 18:49:02 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>, fugang.duan@nxp.com,
-        Chris Healy <Chris.Healy@zii.aero>
-Subject: Re: [PATCH net-next v2 2/3] net: ethernet: fec: Allow configuration
- of MDIO bus speed
-Message-ID: <20200418164902.GK804711@lunn.ch>
-References: <20200418000355.804617-1-andrew@lunn.ch>
- <20200418000355.804617-3-andrew@lunn.ch>
- <3cb32a99-c684-03fd-c471-1d061ca97d4b@gmail.com>
- <20200418142336.GB804711@lunn.ch>
- <b6b6c42b-aa2d-8036-958e-4f9929752536@gmail.com>
+        id S1726751AbgDRRni (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Apr 2020 13:43:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725903AbgDRRnh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 13:43:37 -0400
+Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62FEEC061A0C
+        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 10:43:37 -0700 (PDT)
+Received: by mail-ot1-x344.google.com with SMTP id i27so4287542ota.7
+        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 10:43:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=a1MWZa28xwgPjT+OFuRsfw4kJuogk09TE09kvstojwM=;
+        b=sLzwHz0GfKRZ9VExqH6w+W0NR9glBFUFbYQKAgLEhFitK2alvDKGHic89+d6WXghQp
+         5zle852e128hnRQP+nAZSIrBQ2/wa32a7w9gZN0QXoS7wt8GxSacFYtWDVVBnKxyBnPH
+         5oTWp6u46B3IgXBAQ3PGhhgz/mRze8PK1VaJHsg5cAQHlUU1CKvSuEpVUhEOU9Mihaa+
+         La+bq1guyaKSr0336EAZGvAbSz4fq8IHy5zRhvvNpVtrv9ovu7HREmxfnT3P7iLOKRT7
+         PsQei1gcCVTsRt2RPk8QCJfI/oid5JxlLIdRsbyITci6c1eLlmfTTKAuhC1GGoESZCmJ
+         rsxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=a1MWZa28xwgPjT+OFuRsfw4kJuogk09TE09kvstojwM=;
+        b=nhtprffwqW5InRWh8mRWrFXoeGSVBT/4jfzFMGa8srDX/+Dt8FZZAJar4fbp6yJjCW
+         Y1OddM+Y3d3xD9y80HsC5DKgKgZ4+IuC6tHNTmxjTUGAYW5UxSpYZ60kKUbCJakNmj5G
+         Uk5poSteiREJYFIx2RroBNZPxQwEAkjok4XoaZZVCdWYkrgc4/BgA1MCssGWcou3otDc
+         ne0DVgQy78M0vZvqjiGpqGfdFtQ/g5uD1Fn2QHcnBKHd0k/WqjwdgdN/Z0hgbRfrSUl2
+         k+tBKy83Ev1p+cbW9vVWACj0G3ecU2CgPw6ezNZek4F6QC0VfF+FGLll2OR5av7qcKbj
+         50xQ==
+X-Gm-Message-State: AGi0PuYs9tpBJrDBt+pPc/oJ29rcQNJQOIb421H7znYSVZcrl2ApNtCS
+        DhzWtKx7rFchjdMdMDNVbnUKkpHI4el/5tg4oBQ=
+X-Google-Smtp-Source: APiQypKF8YkWfQR4+YtRh6CxnwfCtiaoNl6xaNazWxm8lBq75KLi3ujAkrj5evOA4P6P7TUxW2BxfZwb38x/BTgmSkk=
+X-Received: by 2002:a9d:4792:: with SMTP id b18mr3753839otf.308.1587231816752;
+ Sat, 18 Apr 2020 10:43:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b6b6c42b-aa2d-8036-958e-4f9929752536@gmail.com>
+Received: by 2002:a9d:190f:0:0:0:0:0 with HTTP; Sat, 18 Apr 2020 10:43:36
+ -0700 (PDT)
+Reply-To: edwinroland469@gmail.com
+From:   EDWIN ROLAND <fre7777d3030@gmail.com>
+Date:   Sat, 18 Apr 2020 10:43:36 -0700
+Message-ID: <CAExyguWgqyZn3+_GF8bQV5n8T_7h6Vq4zOCkUngz7k=C22HThg@mail.gmail.com>
+Subject: Dear Friend
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > I don't see how that would work. Each device on the bus needs to be
-> > able to receiver the transaction in order to decode the device
-> > address, and then either discard it, or act on it. So the same as I2C
-> > where the device address is part of the transaction. You need the bus
-> > to run as fast as the slowest device on the bus. So a bus property is
-> > the simplest. You could have per device properties, and during the bus
-> > scan, figure out what the slowest device is, but that seems to add
-> > complexity for no real gain. I2C does not have this either.
-> > 
-> > If MDIO was more like SPI, with per device chip select lines, then a
-> > per device frequency would make sense.
-> 
-> OK, that is a good point, but then again, just like patch #3 you need to
-> ensure that you are setting a MDIO bus controller frequency that is the
-> lowest common denominator of all MDIO slaves on the bus, which means that
-> you need to know about what devices do support.
+I sent you an email, did you received it? If you did not get it reply back to
+enable resend it back.
 
-Hi Florian
-
-I've been following what I2C does, since MDIO and I2C is very similar.
-I2C has none of what you are asking for. If I2C does not need any of
-this, does MDIO? I2C assumes what whoever writes the DT knows what
-they are doing and will set a valid clock frequency which works for
-all devices on the bus. This seems to work for I2C, so why should it
-not work for MDIO?
-
-My preference is KISS.
-
-    Andrew
+Mr Edwin Roland
