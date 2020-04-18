@@ -2,146 +2,364 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 058EC1AF319
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 20:15:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8CDE1AF39A
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 20:46:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726089AbgDRSPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Apr 2020 14:15:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47666 "EHLO mail.kernel.org"
+        id S1726751AbgDRSqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Apr 2020 14:46:33 -0400
+Received: from mta-out1.inet.fi ([62.71.2.194]:56462 "EHLO johanna2.inet.fi"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725824AbgDRSPI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 18 Apr 2020 14:15:08 -0400
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D1B9D20724;
-        Sat, 18 Apr 2020 18:15:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587233707;
-        bh=KtXXKvkVx6nmTgkrhaXXeJdQ0VBttc8MSA5biUMFsqQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=mZK6C8xriOzlOLhzPA+VSzfm+EUGTXGNXDO3l4P7tiVGYEO0qcojJR+8PoWnon19w
-         HKquJE5GZkfoFHYjP4RqBurmxQ13BamYSZ/BgnfV0yeGlrRbqFb7QN/PBtlsR6idfq
-         EuGG1cqIJM9CjoBroVtm35bewlJOddyyGLl14yfM=
-Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <maz@kernel.org>)
-        id 1jPrzd-004UT4-4q; Sat, 18 Apr 2020 19:15:05 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        stable@vger.kernel.org
-Subject: [PATCH] net: stmmac: dwmac-meson8b: Add missing boundary to RGMII TX clock array
-Date:   Sat, 18 Apr 2020 19:14:57 +0100
-Message-Id: <20200418181457.3193175-1-maz@kernel.org>
-X-Mailer: git-send-email 2.26.1
+        id S1725824AbgDRSqd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 Apr 2020 14:46:33 -0400
+X-RazorGate-Vade-Verdict: clean 0
+X-RazorGate-Vade-Classification: clean
+X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgeduhedrfeelgddufedvucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuuffpveftnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefuhffvfhfkffgfgggjtgfgsehtkeertddtfeejnecuhfhrohhmpefnrghurhhiucflrghkkhhuuceolhgruhhrihdrjhgrkhhkuhesphhprdhinhgvthdrfhhiqeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgrdhinhenucfkphepkeegrddvgeekrdeftddrudelheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopegludelvddrudeikedruddrudefhegnpdhinhgvthepkeegrddvgeekrdeftddrudelhedpmhgrihhlfhhrohhmpeeolhgruhhjrghkqdefsehmsghogidrihhnvghtrdhfihequceuqfffjgepkeeukffvoffkoffgpdhrtghpthhtohepoehhkhgrlhhlfigvihhtudesghhmrghilhdrtghomheqpdhrtghpthhtohepoehlvghonheskhgvrhhnvghlrdhorhhgqedprhgtphhtthhopeeonhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhgqedprhgtphhtthhopeeonhhitggpshifshgusehrvggrlhhtvghkrdgtohhmqe
+Received: from [192.168.1.135] (84.248.30.195) by johanna2.inet.fi (9.0.019.26-1) (authenticated as laujak-3)
+        id 5E361F59357FE71B; Sat, 18 Apr 2020 21:46:20 +0300
+Subject: Re: NET: r8168/r8169 identifying fix
+From:   Lauri Jakku <lauri.jakku@pp.inet.fi>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
+        nic_swsd@realtek.com
+References: <4bc0fc0c-1437-fc41-1c50-38298214ec75@gmail.com>
+ <20200413105838.GK334007@unreal>
+ <dc2de414-0e6e-2531-0131-0f3db397680f@gmail.com>
+ <20200413113430.GM334007@unreal>
+ <03d9f8d9-620c-1f8b-9c58-60b824fa626c@gmail.com>
+ <d3adc7f2-06bb-45bc-ab02-3d443999cefd@gmail.com>
+ <f143b58d-4caa-7c9b-b98b-806ba8d2be99@gmail.com>
+ <4860e57e-93e4-24f5-6103-fa80acbdfa0d@pp.inet.fi>
+ <70cfcfb3-ce2a-9d47-b034-b94682e46e35@gmail.com>
+ <d4e622f1-7bd1-d884-20b2-c16e60b42bf2@pp.inet.fi>
+ <8db3cdc1-b63d-9028-e4bd-659e6d213f8f@pp.inet.fi>
+ <2f7aeeb2-2a19-da7c-7436-71203a29f9e8@gmail.com>
+ <d9781ac2-c7b7-0399-578e-cc43c4629147@pp.inet.fi>
+ <04107d6d-d07b-7589-0cef-0d39d86484f3@pp.inet.fi>
+ <b9a31f5a-e140-5cd4-d7aa-21a2fa2c27a0@gmail.com>
+ <de1bf1a4-8ce3-3352-3ff6-339206fa871e@pp.inet.fi>
+ <a940416a-2cc9-c27b-1660-df19273b7478@pp.inet.fi>
+ <ae6fe5f1-d7d5-c0ca-a206-48940ee80681@pp.inet.fi>
+Message-ID: <303643ef-91b1-462a-5ecd-6217ca7b325f@pp.inet.fi>
+Date:   Sat, 18 Apr 2020 21:46:10 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
+In-Reply-To: <ae6fe5f1-d7d5-c0ca-a206-48940ee80681@pp.inet.fi>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 62.31.163.78
-X-SA-Exim-Rcpt-To: netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org, peppe.cavallaro@st.com, alexandre.torgue@st.com, joabreu@synopsys.com, davem@davemloft.net, khilman@baylibre.com, martin.blumenstingl@googlemail.com, stable@vger.kernel.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Running with KASAN on a VIM3L systems leads to the following splat
-when probing the Ethernet device:
+Hi,
 
-==================================================================
-BUG: KASAN: global-out-of-bounds in _get_maxdiv+0x74/0xd8
-Read of size 4 at addr ffffa000090615f4 by task systemd-udevd/139
-CPU: 1 PID: 139 Comm: systemd-udevd Tainted: G            E     5.7.0-rc1-00101-g8624b7577b9c #781
-Hardware name: amlogic w400/w400, BIOS 2020.01-rc5 03/12/2020
-Call trace:
- dump_backtrace+0x0/0x2a0
- show_stack+0x20/0x30
- dump_stack+0xec/0x148
- print_address_description.isra.12+0x70/0x35c
- __kasan_report+0xfc/0x1d4
- kasan_report+0x4c/0x68
- __asan_load4+0x9c/0xd8
- _get_maxdiv+0x74/0xd8
- clk_divider_bestdiv+0x74/0x5e0
- clk_divider_round_rate+0x80/0x1a8
- clk_core_determine_round_nolock.part.9+0x9c/0xd0
- clk_core_round_rate_nolock+0xf0/0x108
- clk_hw_round_rate+0xac/0xf0
- clk_factor_round_rate+0xb8/0xd0
- clk_core_determine_round_nolock.part.9+0x9c/0xd0
- clk_core_round_rate_nolock+0xf0/0x108
- clk_core_round_rate_nolock+0xbc/0x108
- clk_core_set_rate_nolock+0xc4/0x2e8
- clk_set_rate+0x58/0xe0
- meson8b_dwmac_probe+0x588/0x72c [dwmac_meson8b]
- platform_drv_probe+0x78/0xd8
- really_probe+0x158/0x610
- driver_probe_device+0x140/0x1b0
- device_driver_attach+0xa4/0xb0
- __driver_attach+0xcc/0x1c8
- bus_for_each_dev+0xf4/0x168
- driver_attach+0x3c/0x50
- bus_add_driver+0x238/0x2e8
- driver_register+0xc8/0x1e8
- __platform_driver_register+0x88/0x98
- meson8b_dwmac_driver_init+0x28/0x1000 [dwmac_meson8b]
- do_one_initcall+0xa8/0x328
- do_init_module+0xe8/0x368
- load_module+0x3300/0x36b0
- __do_sys_finit_module+0x120/0x1a8
- __arm64_sys_finit_module+0x4c/0x60
- el0_svc_common.constprop.2+0xe4/0x268
- do_el0_svc+0x98/0xa8
- el0_svc+0x24/0x68
- el0_sync_handler+0x12c/0x318
- el0_sync+0x158/0x180
+On 18.4.2020 14.06, Lauri Jakku wrote:
+> Hi,
+>
+> On 17.4.2020 10.30, Lauri Jakku wrote:
+>> Hi,
+>>
+>> On 17.4.2020 9.23, Lauri Jakku wrote:
+>>>
+>>> On 16.4.2020 23.50, Heiner Kallweit wrote:
+>>>> On 16.04.2020 22:38, Lauri Jakku wrote:
+>>>>> Hi
+>>>>>
+>>>>> On 16.4.2020 23.10, Lauri Jakku wrote:
+>>>>>> On 16.4.2020 23.02, Heiner Kallweit wrote:
+>>>>>>> On 16.04.2020 21:58, Lauri Jakku wrote:
+>>>>>>>> Hi,
+>>>>>>>>
+>>>>>>>> On 16.4.2020 21.37, Lauri Jakku wrote:
+>>>>>>>>> Hi,
+>>>>>>>>>
+>>>>>>>>> On 16.4.2020 21.26, Heiner Kallweit wrote:
+>>>>>>>>>> On 16.04.2020 13:30, Lauri Jakku wrote:
+>>>>>>>>>>> Hi,
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> 5.6.3-2-MANJARO: stock manjaro kernel, without modifications 
+>>>>>>>>>>> --> network does not work
+>>>>>>>>>>>
+>>>>>>>>>>> 5.6.3-2-MANJARO-lja: No attach check, modified kernel (r8169 
+>>>>>>>>>>> mods only) --> network does not work
+>>>>>>>>>>>
+>>>>>>>>>>> 5.6.3-2-MANJARO-with-the-r8169-patch: phy patched + r8169 
+>>>>>>>>>>> mods -> devices show up ok, network works
+>>>>>>>>>>>
+>>>>>>>>>>> All different initcpio's have realtek.ko in them.
+>>>>>>>>>>>
+>>>>>>>>>> Thanks for the logs. Based on the logs you're presumable 
+>>>>>>>>>> affected by a known BIOS bug.
+>>>>>>>>>> Check bug tickets 202275 and 207203 at bugzilla.kernel.org.
+>>>>>>>>>> In the first referenced tickets it's about the same mainboard 
+>>>>>>>>>> (with earlier BIOS version).
+>>>>>>>>>> BIOS on this mainboard seems to not initialize the network 
+>>>>>>>>>> chip / PHY correctly, it reports
+>>>>>>>>>> a random number as PHY ID, resulting in no PHY driver being 
+>>>>>>>>>> found.
+>>>>>>>>>> Enable "Onboard LAN Boot ROM" in the BIOS, and your problem 
+>>>>>>>>>> should be gone.
+>>>>>>>>>>
+>>>>>>>>> OK, I try that, thank you :)
+>>>>>>>>>
+>>>>>>>> It seems that i DO have the ROM's enabled, i'm now testing some 
+>>>>>>>> mutex guard for phy state and try to use it as indicator
+>>>>>>>>
+>>>>>>>> that attach has been done. One thing i've noticed is that 
+>>>>>>>> driver needs to be reloaded to allow traffic (ie. ping works etc.)
+>>>>>>>>
+>>>>>>> All that shouldn't be needed. Just check with which PHY ID the 
+>>>>>>> PHY comes up.
+>>>>>>> And what do you mean with "it seems"? Is the option enabled or not?
+>>>>>>>
+>>>>>> I do have ROM's enabled, and it does not help with my issue.
+>>>> Your BIOS is a beta version, downgrading to F7 may help. Then you 
+>>>> have the same
+>>>> mainboard + BIOS as the user who opened bug ticket 202275.
+>>>>
+>>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: 
+>>> PHY version: 0xc2077002
+>>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: 
+>>> MAC version: 23
+>>>
+>>> ....
+>>>
+>>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: 
+>>> PHY version: 0x1cc912
+>>>
+>>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: 
+>>> MAC version: 23
+>>>
+>>> .. after module unload & load cycle:
+>>>
+>>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: 
+>>> PHY version: 0x1cc912
+>>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: 
+>>> MAC version: 23
+>>>
+>>>
+>>> it seem to be the case that the phy_id chances onetime, then stays 
+>>> the same. I'll do few shutdowns and see
+>>>
+>>> is there a pattern at all .. next i'm going to try how it behaves, 
+>>> if i read mac/phy versions twice on MAC version 23.
+>>>
+>>>
+>>> The BIOS downgrade: I'd like to solve this without downgrading BIOS. 
+>>> If I can't, then I'll do systemd-service that
+>>>
+>>> reloads r8169 driver at boot, cause then network is just fine.
+>>>
+>>>
+>> What i've gathered samples now, there is three values for PHY ID:
+>>
+>> [sillyme@MinistryOfSillyWalk KernelStuff]$ sudo journalctl |grep "PHY 
+>> ver"
+>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+>> version: 0xc2077002
+>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+>> version: 0xc2077002
+>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+>> version: 0x1cc912
+>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+>> version: 0x1cc912
+>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+>> version: 0x1cc912
+>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+>> version: 0x1cc912
+>> huhti 17 09:24:53 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+>> version: 0xc1071002
+>> huhti 17 09:24:53 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+>> version: 0xc1071002
+>> huhti 17 09:27:59 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+>> version: 0x1cc912
+>> huhti 17 09:27:59 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+>> version: 0x1cc912
+>> huhti 17 10:08:42 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+>> version: 0xc1071002
+>> huhti 17 10:08:42 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+>> version: 0xc1071002
+>> huhti 17 10:12:07 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+>> version: 0x1cc912
+>> huhti 17 10:12:07 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+>> version: 0x1cc912
+>> huhti 17 10:20:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+>> version: 0xc1071002
+>> huhti 17 10:20:35 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+>> version: 0xc1071002
+>> huhti 17 10:23:46 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY 
+>> version: 0x1cc912
+>> huhti 17 10:23:46 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY 
+>> version: 0x1cc912
+>>
+>> I dont know are those hard coded or what, and are they device 
+>> specific how much.
+>>
+>> i haven't coldbooted things up, that may be that something to check 
+>> do they vary how per coldboot.
+>>
+>>>>> I check the ID, and revert all other changes, and check how it is 
+>>>>> working after adding the PHY id to list.
+>>>>>
+> What i've now learned: the patch + script + journald services -> 
+> Results working network, but it is still a workaround.
+>
+Following patch trusts the MAC version, another thing witch could help 
+is to derive method to do 2dn pass of the probeing:
 
-The buggy address belongs to the variable:
- div_table.63646+0x34/0xfffffffffffffa40 [dwmac_meson8b]
+if specific MAC version is found.
 
-Memory state around the buggy address:
- ffffa00009061480: fa fa fa fa 00 00 00 01 fa fa fa fa 00 00 00 00
- ffffa00009061500: 05 fa fa fa fa fa fa fa 00 04 fa fa fa fa fa fa
->ffffa00009061580: 00 03 fa fa fa fa fa fa 00 00 00 00 00 00 fa fa
-                                                             ^
- ffffa00009061600: fa fa fa fa 00 01 fa fa fa fa fa fa 01 fa fa fa
- ffffa00009061680: fa fa fa fa 00 01 fa fa fa fa fa fa 04 fa fa fa
-==================================================================
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c 
+b/drivers/net/ethernet/realtek/r8169_main.c
+index acd122a88d4a..62b37a1abc24 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -5172,13 +5172,18 @@ static int r8169_mdio_register(struct 
+rtl8169_private *tp)
+         if (!tp->phydev) {
+                 mdiobus_unregister(new_bus);
+                 return -ENODEV;
+-       } else if (tp->mac_version == RTL_GIGA_MAC_NONE) {
+-               /* Most chip versions fail with the genphy driver.
+-                * Therefore ensure that the dedicated PHY driver is loaded.
+-                */
+-               dev_err(&pdev->dev, "Not known MAC version.\n");
+-               mdiobus_unregister(new_bus);
+-               return -EUNATCH;
++       } else {
++               dev_info(&pdev->dev, "PHY version: 0x%x\n", 
+tp->phydev->phy_id);
++               dev_info(&pdev->dev, "MAC version: %d\n", tp->mac_version);
++
++               if (tp->mac_version == RTL_GIGA_MAC_NONE) {
++                       /* Most chip versions fail with the genphy driver.
++                        * Therefore ensure that the dedicated PHY 
+driver is loaded.
++                        */
++                       dev_err(&pdev->dev, "Not known MAC/PHY 
+version.\n", tp->phydev->phy_id);
++                       mdiobus_unregister(new_bus);
++                       return -EUNATCH;
++               }
+         }
 
-Digging into this indeed shows that the clock divider array is
-lacking a final fence, and that the clock subsystems goes in the
-weeds. Oh well.
+         /* PHY will be woken up in rtl_open() */
 
-Let's add the empty structure that indicates the end of the array.
-
-Fixes: bd6f48546b9c ("net: stmmac: dwmac-meson8b: Fix the RGMII TX delay on Meson8b/8m2 SoCs")
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc: stable@vger.kernel.org
----
- drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-index 0e2fa14f14237..a3934ca6a043b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-@@ -119,6 +119,7 @@ static int meson8b_init_rgmii_tx_clk(struct meson8b_dwmac *dwmac)
- 		{ .div = 5, .val = 5, },
- 		{ .div = 6, .val = 6, },
- 		{ .div = 7, .val = 7, },
-+		{ /* end of array */ }
- 	};
- 
- 	clk_configs = devm_kzalloc(dev, sizeof(*clk_configs), GFP_KERNEL);
--- 
-2.26.1
-
+>
+>>>>>>>>>>> The problem with old method seems to be, that device does 
+>>>>>>>>>>> not have had time to attach before the
+>>>>>>>>>>> PHY driver check.
+>>>>>>>>>>>
+>>>>>>>>>>> The patch:
+>>>>>>>>>>>
+>>>>>>>>>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c 
+>>>>>>>>>>> b/drivers/net/ethernet/realtek/r8169_main.c
+>>>>>>>>>>> index bf5bf05970a2..acd122a88d4a 100644
+>>>>>>>>>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>>>>>>>>>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>>>>>>>>>>> @@ -5172,11 +5172,11 @@ static int 
+>>>>>>>>>>> r8169_mdio_register(struct rtl8169_private *tp)
+>>>>>>>>>>>            if (!tp->phydev) {
+>>>>>>>>>>> mdiobus_unregister(new_bus);
+>>>>>>>>>>>                    return -ENODEV;
+>>>>>>>>>>> -       } else if (!tp->phydev->drv) {
+>>>>>>>>>>> +       } else if (tp->mac_version == RTL_GIGA_MAC_NONE) {
+>>>>>>>>>>>                    /* Most chip versions fail with the 
+>>>>>>>>>>> genphy driver.
+>>>>>>>>>>>                     * Therefore ensure that the dedicated 
+>>>>>>>>>>> PHY driver is loaded.
+>>>>>>>>>>>                     */
+>>>>>>>>>>> -               dev_err(&pdev->dev, "realtek.ko not loaded, 
+>>>>>>>>>>> maybe it needs to be added to initramfs?\n");
+>>>>>>>>>>> +               dev_err(&pdev->dev, "Not known MAC 
+>>>>>>>>>>> version.\n");
+>>>>>>>>>>> mdiobus_unregister(new_bus);
+>>>>>>>>>>>                    return -EUNATCH;
+>>>>>>>>>>>            }
+>>>>>>>>>>> diff --git a/drivers/net/phy/phy-core.c 
+>>>>>>>>>>> b/drivers/net/phy/phy-core.c
+>>>>>>>>>>> index 66b8c61ca74c..aba2b304b821 100644
+>>>>>>>>>>> --- a/drivers/net/phy/phy-core.c
+>>>>>>>>>>> +++ b/drivers/net/phy/phy-core.c
+>>>>>>>>>>> @@ -704,6 +704,10 @@ EXPORT_SYMBOL_GPL(phy_modify_mmd);
+>>>>>>>>>>>       static int __phy_read_page(struct phy_device *phydev)
+>>>>>>>>>>>     {
+>>>>>>>>>>> +       /* If not attached, do nothing (no warning) */
+>>>>>>>>>>> +       if (!phydev->attached_dev)
+>>>>>>>>>>> +               return -EOPNOTSUPP;
+>>>>>>>>>>> +
+>>>>>>>>>>>            if (WARN_ONCE(!phydev->drv->read_page, "read_page 
+>>>>>>>>>>> callback not available, PHY driver not loaded?\n"))
+>>>>>>>>>>>                    return -EOPNOTSUPP;
+>>>>>>>>>>>     @@ -712,12 +716,17 @@ static int __phy_read_page(struct 
+>>>>>>>>>>> phy_device *phydev)
+>>>>>>>>>>>       static int __phy_write_page(struct phy_device *phydev, 
+>>>>>>>>>>> int page)
+>>>>>>>>>>>     {
+>>>>>>>>>>> +       /* If not attached, do nothing (no warning) */
+>>>>>>>>>>> +       if (!phydev->attached_dev)
+>>>>>>>>>>> +               return -EOPNOTSUPP;
+>>>>>>>>>>> +
+>>>>>>>>>>>            if (WARN_ONCE(!phydev->drv->write_page, 
+>>>>>>>>>>> "write_page callback not available, PHY driver not loaded?\n"))
+>>>>>>>>>>>                    return -EOPNOTSUPP;
+>>>>>>>>>>>              return phydev->drv->write_page(phydev, page);
+>>>>>>>>>>>     }
+>>>>>>>>>>>     +
+>>>>>>>>>>>     /**
+>>>>>>>>>>>      * phy_save_page() - take the bus lock and save the 
+>>>>>>>>>>> current page
+>>>>>>>>>>>      * @phydev: a pointer to a &struct phy_device
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> 15. huhtik. 2020, 19.18, Heiner Kallweit 
+>>>>>>>>>>> <hkallweit1@gmail.com <mailto:hkallweit1@gmail.com>> kirjoitti:
+>>>>>>>>>>>
+>>>>>>>>>>>        On 15.04.2020 16:39, Lauri Jakku wrote:
+>>>>>>>>>>>
+>>>>>>>>>>>            Hi, There seems to he Something odd problem, 
+>>>>>>>>>>> maybe timing related. Stripped version not workingas 
+>>>>>>>>>>> expected. I get back to you, when i have it working.
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>>        There's no point in working on your patch. W/o proper 
+>>>>>>>>>>> justification it
+>>>>>>>>>>>        isn't acceptable anyway. And so far we still don't 
+>>>>>>>>>>> know which problem
+>>>>>>>>>>>        you actually have.
+>>>>>>>>>>>        FIRST please provide the requested logs and explain 
+>>>>>>>>>>> the actual problem
+>>>>>>>>>>>        (incl. the commit that caused the regression).
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>>            13. huhtik. 2020, 14.46, Lauri Jakku 
+>>>>>>>>>>> <ljakku77@gmail.com <mailto:ljakku77@gmail.com>> kirjoitti: 
+>>>>>>>>>>> Hi, Fair enough, i'll strip them. -lja On 2020-04-13 14:34, 
+>>>>>>>>>>> Leon Romanovsky wrote:
+>>>>>>>>>>>
+>>>>>>>>>>>            On Mon, Apr 13, 2020 at 02:02:01PM +0300, Lauri 
+>>>>>>>>>>> Jakku wrote: Hi, Comments inline. On 2020-04-13 13:58, Leon 
+>>>>>>>>>>> Romanovsky wrote: On Mon, Apr 13, 2020 at 01:30:13PM +0300, 
+>>>>>>>>>>> Lauri Jakku wrote: From 
+>>>>>>>>>>> 2d41edd4e6455187094f3a13d58c46eeee35aa31 Mon Sep 17 00:00:00 
+>>>>>>>>>>> 2001 From: Lauri Jakku <lja@iki.fi> Date: Mon, 13 Apr 2020 
+>>>>>>>>>>> 13:18:35 +0300 Subject: [PATCH] NET: r8168/r8169 identifying 
+>>>>>>>>>>> fix The driver installation determination made properly by 
+>>>>>>>>>>> checking PHY vs DRIVER id's. --- 
+>>>>>>>>>>> drivers/net/ethernet/realtek/r8169_main.c | 70 
+>>>>>>>>>>> ++++++++++++++++++++--- drivers/net/phy/mdio_bus.c | 11 +++- 
+>>>>>>>>>>> 2 files changed, 72 insertions(+), 9 deletions(-) I would 
+>>>>>>>>>>> say that most of the code is debug prints. I tought that 
+>>>>>>>>>>> they are helpful to keep, they are using the debug calls, so 
+>>>>>>>>>>> they are not visible if user does not like those. You are 
+>>>>>>>>>>> missing the point of who are your users. Users want to have 
+>>>>>>>>>>> working device and the code. They don't need or like to 
+>>>>>>>>>>> debug their kernel. Thanks
+>>>>>>>>>>>
+>>>>>>>>>>>
