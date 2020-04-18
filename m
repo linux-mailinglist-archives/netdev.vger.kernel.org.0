@@ -2,96 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33C721AF3C8
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 20:51:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 177FB1AF40E
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 21:01:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728107AbgDRSu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Apr 2020 14:50:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42722 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728070AbgDRSu6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 14:50:58 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE170C061A10
-        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 11:50:58 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id e127so6223187iof.6
-        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 11:50:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=PI6bN2TwuXAnUeEB7r5EGKOhXtJqXnmWMKRoB9eT2s0=;
-        b=WFxwDKkzpiwZp169C5/z5A6c2YWP/KbMvRS5sWVEEDorkeLlh/ttS1HXrE27JWou/i
-         cXWi0ZL3UaTfmdcn0okR/1iYlQMqBR83vCw57i6UMKz/nki+Wjei487GSjcStijhVD9N
-         BgAxDMAk+J4aKNjf1cz+B+x9lx00pEN5qqOHQu+akBsMxtx9fTcgMckc2P7yVk0lRVIi
-         gfHm0/a/Lzmu81aCCOe2ZUVkmjQ4YQv2HTn5V61BbVZYjL53L7H3febteZ6jh7cBspzW
-         EXfcX8s05X0D62gGFylKmo7C03T3vbUhU6xBsmsBRfxt6YInwPTC+r05IhaM8PF9pAtC
-         WlrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=PI6bN2TwuXAnUeEB7r5EGKOhXtJqXnmWMKRoB9eT2s0=;
-        b=trbGxhx5KnIqVjVjrvy1EDrBRxyI9nL66wKlbdyOCH7EgfccV1QVjHNYC8tsC8bK3f
-         r4493J4hoph7Np/n2lelPDgyA/LyP8mA1OglLfwCtLSsRrMb0k1wmnquu9cFdnwtHTQh
-         uvHWzxL15MwHKgdNkP3F20eUc5+WjiXE1Flds10WrsUvsfDTw7s9kIJnovFEZrxDQlKq
-         XzIlpD6kw31+2CQphYkEbf270VXmoZrt+mLzqygATRKkghuX7IuzFu9cuTXdcyEWuhU2
-         kU8gdHki/jRJoYLIGgtWYS6wegMcGez1qQOVAuG6gg4X3DHOerdC8I3uZ1Smcwr1x1G2
-         ++lA==
-X-Gm-Message-State: AGi0PuadUxipAQMbjv52zmpvjzzcWc31DC6571s8uYIQe8cyz/m9JpkR
-        +sxblhhvXpQar3NJazqvyekduJjizCciipaI3mg=
-X-Google-Smtp-Source: APiQypLR5DITB1etJbBY1yPCvY7YUb1hkwNScO2pZfByUQTLi9vICwh2lUrQq8hdm6NriT7XV7Pzg708VRejHCEdAa4=
-X-Received: by 2002:a6b:c045:: with SMTP id q66mr9027796iof.10.1587235857736;
- Sat, 18 Apr 2020 11:50:57 -0700 (PDT)
+        id S1728052AbgDRTBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Apr 2020 15:01:36 -0400
+Received: from conssluserg-04.nifty.com ([210.131.2.83]:40962 "EHLO
+        conssluserg-04.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726382AbgDRTBf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 15:01:35 -0400
+Received: from mail-vs1-f47.google.com (mail-vs1-f47.google.com [209.85.217.47]) (authenticated)
+        by conssluserg-04.nifty.com with ESMTP id 03IJ1JqZ013789;
+        Sun, 19 Apr 2020 04:01:20 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 03IJ1JqZ013789
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1587236480;
+        bh=GMWTNYzKx2p6AtuFISRqos/DJ7YLVq9yd6sy0E83Y1g=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=LY2hnNJss/p/DNWumoPJe9gAxXBpbVoMn0t2qRNhlQQxjVYS0JB3OrNSi/keiWn63
+         qUnt2aRQuhmxHHrQw7xWa+eKAOJ8RcEuWZGU+e2MarByOILha83js6TWc3pU9wamhW
+         rSZ9JkyLNEFZHYAkYRtygosYGywyvChLBrx8JFXpqn7qvm5aVPOnLhyXQ8JBHHw9P9
+         T4cY2qtdZTxlR9mWd8DnW8ypzIW4K/HXQQAzMMWl8G+roCNcq8HlYapAIbOdxKGuDu
+         0udehiLgV2PCn0xVlijudxgzLIQgkSS0jvaDsWqA4t8reBddTl5XFEJAiC6ffP0mxA
+         mRezBbUXIw0Aw==
+X-Nifty-SrcIP: [209.85.217.47]
+Received: by mail-vs1-f47.google.com with SMTP id l25so644580vso.6;
+        Sat, 18 Apr 2020 12:01:20 -0700 (PDT)
+X-Gm-Message-State: AGi0PuYfws6fd8mY31j+wOcPlh7D+JMusWqwWzEdg2ZKFoOkK5BNj5/i
+        ue1FUkgU7vX8pkv2jAuHGzMNzCS7NZzXG6Cbk1Y=
+X-Google-Smtp-Source: APiQypL+1S2WFAmpkq0fehgFFzc8Ik838EWpRiGLQJSMMlxW7U+WjbXpVebmVboQpFuBxiXm25G25lJOBStn4Xyga6E=
+X-Received: by 2002:a67:3293:: with SMTP id y141mr6907237vsy.54.1587236479217;
+ Sat, 18 Apr 2020 12:01:19 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a92:ce84:0:0:0:0:0 with HTTP; Sat, 18 Apr 2020 11:50:57
- -0700 (PDT)
-Reply-To: Mms.tash_alfred010@gmx.us
-From:   "Mrs. Tash Alfred" <barrister.c.o.mathins@gmail.com>
-Date:   Sat, 18 Apr 2020 11:50:57 -0700
-Message-ID: <CALWmkas=XP4iWehC1Ury9oWUyNe2W98w2StVrCZ6S12i3dEc8Q@mail.gmail.com>
-Subject: Hello My Dearest
-To:     undisclosed-recipients:;
+References: <20200417011146.83973-1-saeedm@mellanox.com>
+In-Reply-To: <20200417011146.83973-1-saeedm@mellanox.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Sun, 19 Apr 2020 04:00:43 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAQZd_LUyA2V_pCvMTr_201nSX1Nm0TDw5kOeNV64rOfpA@mail.gmail.com>
+Message-ID: <CAK7LNAQZd_LUyA2V_pCvMTr_201nSX1Nm0TDw5kOeNV64rOfpA@mail.gmail.com>
+Subject: Re: [RFC PATCH 1/2] Kconfig: Introduce "uses" keyword
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        jonas@kwiboo.se, David Airlie <airlied@linux.ie>,
+        jernej.skrabec@siol.net,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, linux-rdma@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello My Dearest
+On Fri, Apr 17, 2020 at 10:12 AM Saeed Mahameed <saeedm@mellanox.com> wrote:
+>
+> Due to the changes to the semantics of imply keyword [1], which now
+> doesn't force any config options to the implied configs any more.
+>
+> A module (FOO) that has a weak dependency on some other modules (BAR)
+> is now broken if it was using imply to force dependency restrictions.
+> e.g.: FOO needs BAR to be reachable, especially when FOO=y and BAR=m.
+> Which might now introduce build/link errors.
+>
+> There are two options to solve this:
+> 1. use IS_REACHABLE(BAR), everywhere BAR is referenced inside FOO.
+> 2. in FOO's Kconfig add: depends on (BAR || !BAR)
+>
+> The first option is not desirable, and will leave the user confused when
+> setting FOO=y and BAR=m, FOO will never reach BAR even though both are
+> compiled.
+>
+> The 2nd one is the preferred approach, and will guarantee BAR is always
+> reachable by FOO if both are compiled. But, (BAR || !BAR) is really
+> confusing for those who don't really get how kconfig tristate arithmetics
+> work.
+>
+> To solve this and hide this weird expression and to avoid repetition
+> across the tree, we introduce new keyword "uses" to the Kconfig options
+> family.
+>
+> uses BAR:
+> Equivalent to: depends on symbol || !symbol
+> Semantically it means, if FOO is enabled (y/m) and has the option:
+> uses BAR, make sure it can reach/use BAR when possible.
+>
+> For example: if FOO=y and BAR=m, FOO will be forced to m.
+>
+> [1] https://lore.kernel.org/linux-doc/20200302062340.21453-1-masahiroy@kernel.org/
+>
+> Link: https://lkml.org/lkml/2020/4/8/839
+> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+> Cc: Masahiro Yamada <masahiroy@kernel.org>
+> Cc: linux-kbuild@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> ---
 
-Please I appeal to you to exercise a little patience and read through
-my mail carefully, I am contacting you personally for an investment
-assistance and a long term business relationship in your Country.
-I am Mrs. Tash  Alfred a citizen of the united state of America 41 old
-,  I work in HSBC Bank in Madrid Spain as a Telex Manager charge of
-wire transfer department.
-I want the bank to transfer the money left by Dr. Cheng Chao,  A
-Chinese   Politicians who  died on Corona Virus disease  in March 17th
-2020,  he used our bank to launder money overseas through the help of
-their Political advisers. Most of the funds which they transferred out
-of the shores of Chinese  were gold and oil money that was supposed to
-have been used to develop the continent.
 
-Can you invest this money and also help the poor ? The amount value at
-($22.5million Dollars), left in his account still unclaimed, if you
-know that you are capable to invest this fund into any   profitable
-business in your country kindly send me your details information as
-listed below to enable me draft you an application form of claim along
-with the deposit certificate which you are going to fill with your
-bank account detail necessary and contact the HSBC Bank in Madrid
-Spain for immediate transfer of the Amount into your bank account
-direct.
-Percentage share will be 60,for me/ 40, for you.
-(1) Your full name..................................................
-(2) Your address....................................................
-(3) Your Nationality.................................................
-(4) Your Age / Sex.....................................................
-(5) Your  Occupation............................................
-(6) Your marital status......................................
-(7) Your direct telephone number..................
-(8) Your photo.......................................
+I am not convinced with this patch.
 
-Thanks with my best regards.
-Mrs. Tash Alfred
-Telex Manager
-Spain Madrid (H.S.B.C)
+This patch adds another way to do the same thing.
+It is true that it _hides_ the problems, and
+makes the _surface_  cleaner at best,
+but the internal will be more complicated.
+
+(FOO || !FOO) is difficult to understand, but
+the behavior of "uses FOO" is as difficult to grasp.
+
+People would wonder, "what 'uses FOO' means?",
+then they would find the explanation in kconfig-language.rst:
+
+  "Equivalent to: depends on symbol || !symbol
+  Semantically it means, if FOO is enabled (y/m) and has the option:
+  uses BAR, make sure it can reach/use BAR when possible."
+
+To understand this correctly, people must study
+the arithmetic of (symbol || !symbol) anyway.
+
+I do not want to extend Kconfig for the iffy syntax sugar.
+
+
+(symbol || !symbol) is horrible.
+But, I am also scared to see people would think 'uses symbol'
+is the right thing to do, and start using it liberally
+all over the place.
+
+
+
+
+
+--
+Best Regards
+
+Masahiro Yamada
