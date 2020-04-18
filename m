@@ -2,73 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1526F1AF50E
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 23:07:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01E9C1AF514
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 23:11:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728134AbgDRVHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Apr 2020 17:07:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35544 "EHLO
+        id S1728206AbgDRVLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Apr 2020 17:11:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726014AbgDRVHa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 17:07:30 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9EFC061A0C
-        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 14:07:30 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id nu11so2707120pjb.1
-        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 14:07:30 -0700 (PDT)
+        with ESMTP id S1726014AbgDRVLq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 17:11:46 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C41C061A0C
+        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 14:11:46 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id j2so7244631wrs.9
+        for <netdev@vger.kernel.org>; Sat, 18 Apr 2020 14:11:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
+        h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+jcXILCwbFeeKJcwb4IZAN7BkSQSrArqH03+JgMsLSw=;
-        b=ftwPxoD3kbarVm6Ea6m7SbgurKXbZexsw/vxhq8fruZSJD7c2DkhCcpXFiaEvywlTf
-         7j4pyDh7tQcBtTf1sy2v+pBaPeN/pyICKLV06xCHf+DbZlpi0c9X+6kkYNTtsvh+zbZ8
-         RSSvRwOyV4AYy7SGT5RDWe2nJo7YJO11e0R+0ggDfEAh9maXTvOSuC35fohYwLM7Exss
-         HjKxwgND5xE+r/lY2kj3gMXmF5ds+sWHQ8rgJkxcaqm1gz9J53k5uZ4KXFOT/jAhnwRb
-         BmR7euwEiJfbN+pbjYCiomqz4rfQstffJLYWOucicrDy+H6CsfKkLnsC2I5BJuw/e7Iq
-         bupw==
+        bh=cox5DtRmgKiterZaFcKYqvfuGiXPaz9CXT61oFEKnRo=;
+        b=g+aJ3lMSQjVSpu3Pu0xTyRZEIhZL8bHsMRFplsmXqYXMctnTEbK6wOFN/y8cbJ66Zb
+         aX97Nwe1WEnCGlV8d9SQiTFRcQcN6esTEktPb9z2hZA+2Xxm0f79SB9GiC7VzsW5FhAa
+         O9nHLnKTE1K0woWwI3M95u1HRkdVoOjQknsaUbRDp27lEqkYz9hc1PKwpsxzcaWSekKv
+         u+Q9iB3SwHQKN9zZr01tODml6vAEPqbekima8djdknr9n0mDM9ZlHqtYa86j3LNocM21
+         7Jfc+/wZPTZisU28wauJ31bG4wutzzY9x0Qn6FYNyG2AjtcSS8HfND3KSGT8e4ay/noq
+         Fvfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=+jcXILCwbFeeKJcwb4IZAN7BkSQSrArqH03+JgMsLSw=;
-        b=cOkcJVQIvs2zJVuibTd1IEPAyT48ZMmymn7dVyBu+VL4ysDC/iTjwlmLROSivioKtn
-         MifFBhnc/y2NSLkBeZPIrVSWPL/7pan4GVZVoM83omAXyOcT+iYoX7Rx0ZF63LGHM+pB
-         8PGlsGcCCFVGMhff63KXoM0ZNrnSZcAHQlYWU7i3jBQh5l7lmoAv6H+uciXF8dJziDUo
-         /JQY1MBqhRh+zlKqkwjvk7pgwvweL/cqB2L0yOyyvxTwKfT+cQlsND+5Ijjw+NR2fSeK
-         26iSzOzu0xW8jbZNYGKOtpnS2xqOZKLxeUMCLYmrglhwAmbneFc5au7ZuXmzC8L77YSw
-         YVDg==
-X-Gm-Message-State: AGi0PuZ7Qg2s4WsvjawObUgLwv6S9Jf96c6B626XOowAZlRz1NNZ/Aps
-        zIP5hDIDfTdeRYxO+POCMNk=
-X-Google-Smtp-Source: APiQypJPgENk5MKubokl0e4z+7Uxl2P5M8u77276CCI5gxaH8cVh9tGOnbhhMkU+QUeLNGbZu0E/+g==
-X-Received: by 2002:a17:90a:f197:: with SMTP id bv23mr12089042pjb.3.1587244050050;
-        Sat, 18 Apr 2020 14:07:30 -0700 (PDT)
-Received: from [10.230.188.26] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id j4sm18944045pfa.214.2020.04.18.14.07.26
+        bh=cox5DtRmgKiterZaFcKYqvfuGiXPaz9CXT61oFEKnRo=;
+        b=j6+RTd8q+VtHXiXS0f68BNqRlsED71zBGEPtdXP3pPfryPw1VAgmtstJc08VgacZgz
+         6A8OnUWhNmbqwFWkh4E+0+xcUnis2rfXuN8e0mUk6gPnzKEVwrsX30J7eIj3hVffzGT/
+         cRxy0TFQI9teuWMO+z3gF9q6HCXssPaC12wbv+3FuncvvgqWrOUSQsfFlZKFZ34WchU0
+         sHaj5fuFZte4v6BV1LP9CYvjP06JX4RKIgJF5I0m7NXi6mBUi/Pbu7sJFAIvBXoBWfoL
+         11yAkUE/3jyZCxnNGnrjJfCy+d65jH41pFOQnip9nBVIiR8RY5MSSQkVQuCSm6LNxxP7
+         8vVA==
+X-Gm-Message-State: AGi0PuYwl+QoVPTj4MdXGdS06Yhrv8tRwZTLs5fGsySHg7YSO7xOn1Wt
+        /hvcG/9OPP4m7mNw/Si8K+4LN1i8
+X-Google-Smtp-Source: APiQypLULQVmyGsAChppl6cCQ/N9Bm7p0AWLqiGzZLBonIMh/DWiB79xO/ZQnx7G3da4Ub7OD1X4rQ==
+X-Received: by 2002:adf:f704:: with SMTP id r4mr10926561wrp.5.1587244304729;
+        Sat, 18 Apr 2020 14:11:44 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:6000:939:e10c:14c5:fe9f? (p200300EA8F2960000939E10C14C5FE9F.dip0.t-ipconnect.de. [2003:ea:8f29:6000:939:e10c:14c5:fe9f])
+        by smtp.googlemail.com with ESMTPSA id f23sm12432933wml.4.2020.04.18.14.11.44
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 18 Apr 2020 14:07:29 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 2/3] net: ethernet: fec: Allow configuration
- of MDIO bus speed
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>, fugang.duan@nxp.com,
-        Chris Healy <Chris.Healy@zii.aero>
-References: <20200418000355.804617-1-andrew@lunn.ch>
- <20200418000355.804617-3-andrew@lunn.ch>
- <3cb32a99-c684-03fd-c471-1d061ca97d4b@gmail.com>
- <20200418142336.GB804711@lunn.ch>
- <b6b6c42b-aa2d-8036-958e-4f9929752536@gmail.com>
- <20200418164902.GK804711@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <a0b9a840-aea3-ab23-1d0d-5b5c33aa1fe2@gmail.com>
-Date:   Sat, 18 Apr 2020 14:07:22 -0700
+        Sat, 18 Apr 2020 14:11:44 -0700 (PDT)
+Subject: [PATCH net-next 2/6] r8169: remove NETIF_F_HIGHDMA from vlan_features
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <f7c53dc0-768c-7eb9-ffc0-b2e39b1ddfa4@gmail.com>
+Message-ID: <ea6bac26-4702-5dca-94cf-34cf5dc4a1c1@gmail.com>
+Date:   Sat, 18 Apr 2020 23:07:41 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.7.0
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200418164902.GK804711@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <f7c53dc0-768c-7eb9-ffc0-b2e39b1ddfa4@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -76,37 +68,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+NETIF_F_HIGHDMA is added to vlan_features by register_netdev(),
+therefore we can omit this here.
 
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-On 4/18/2020 9:49 AM, Andrew Lunn wrote:
->>> I don't see how that would work. Each device on the bus needs to be
->>> able to receiver the transaction in order to decode the device
->>> address, and then either discard it, or act on it. So the same as I2C
->>> where the device address is part of the transaction. You need the bus
->>> to run as fast as the slowest device on the bus. So a bus property is
->>> the simplest. You could have per device properties, and during the bus
->>> scan, figure out what the slowest device is, but that seems to add
->>> complexity for no real gain. I2C does not have this either.
->>>
->>> If MDIO was more like SPI, with per device chip select lines, then a
->>> per device frequency would make sense.
->>
->> OK, that is a good point, but then again, just like patch #3 you need to
->> ensure that you are setting a MDIO bus controller frequency that is the
->> lowest common denominator of all MDIO slaves on the bus, which means that
->> you need to know about what devices do support.
-> 
-> Hi Florian
-> 
-> I've been following what I2C does, since MDIO and I2C is very similar.
-> I2C has none of what you are asking for. If I2C does not need any of
-> this, does MDIO? I2C assumes what whoever writes the DT knows what
-> they are doing and will set a valid clock frequency which works for
-> all devices on the bus. This seems to work for I2C, so why should it
-> not work for MDIO?
-> 
-> My preference is KISS.
-
-OK, you have convinced me.
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 7bb423a0e..2e4353071 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -5438,8 +5438,7 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	dev->hw_features = NETIF_F_IP_CSUM | NETIF_F_RXCSUM |
+ 			   NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX;
+-	dev->vlan_features = NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_TSO |
+-		NETIF_F_HIGHDMA;
++	dev->vlan_features = NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_TSO;
+ 	dev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
+ 
+ 	tp->cp_cmd |= RxChkSum;
 -- 
-Florian
+2.26.1
+
+
