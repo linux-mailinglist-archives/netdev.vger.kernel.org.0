@@ -2,107 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E5111AF16B
-	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 17:04:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E8041AF17E
+	for <lists+netdev@lfdr.de>; Sat, 18 Apr 2020 17:14:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726240AbgDRPEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Apr 2020 11:04:02 -0400
-Received: from esa4.microchip.iphmx.com ([68.232.154.123]:65410 "EHLO
-        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725914AbgDRPEC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Apr 2020 11:04:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1587222242; x=1618758242;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=P9QFx2m+EdJ/Sth2lo4BRux+9U5rJNWn4YuJ3jtIOzo=;
-  b=Opwic/DtKR4PaGtUgfDQ4B7TZeNMjVTBYxsiK2PgiFXgKuvHosSiIcN1
-   48oxBUmCE7oyqDVRgSOQFOA3c+He6Uj/u2IfVg/Wt7aj72cBO7fDJ2IqI
-   jUwf7sbhZZJ5ZIlWomHXegvKT5ujp/noIw04FwBVs6Z8mSmDPDhqLyFGA
-   IgwKZGoLTrak1G+S4Z01miN24XXNi27kNUv7aPFv0gltC71F84xMog2h4
-   y6LAt/PRzKo3NSoNXjPYxX2Q0kNnU0nznBnhfR7rYKktkFvpix/uydxG8
-   9/9X96QB8xeYGEI8/3PRNHPZkcUEV+vId11bk62+j9DIE4T5Sz8FrgyAO
-   A==;
-IronPort-SDR: m7UcQDlev/MKt25edmp7CE/m0IENiTcZaDPWD8ceyvWol8WUyzRYDRfwZGSvJDCwktDKYlJhdv
- zova4dlOsJ+O0w24fAC3g8ZY5heKnK8FbwEOoEdQDRaof1nLJes/a82bgUqN8wfCLhGckv4bZ2
- e2ezL5uEzWJ17uLjStcDpP27Katm+mLag5egXFW9yGSvIEzR/kAfI134xrSVjdibjiHCstvrkj
- KZ2EdDzT+rAdenqomMynesgheJDMNLkwL/sieSaZwX81nig3xxw1LKDr1VRp9sPMO0/Izd5XS5
- e18=
-X-IronPort-AV: E=Sophos;i="5.72,399,1580799600"; 
-   d="scan'208";a="70766323"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Apr 2020 08:04:01 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Sat, 18 Apr 2020 08:04:06 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Sat, 18 Apr 2020 08:04:00 -0700
-Date:   Sat, 18 Apr 2020 17:03:59 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-CC:     <davem@davemloft.net>, <jiri@resnulli.us>, <ivecera@redhat.com>,
-        <kuba@kernel.org>, <roopa@cumulusnetworks.com>,
-        <olteanv@gmail.com>, <andrew@lunn.ch>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>, <UNGLinuxDriver@microchip.com>
-Subject: Re: [RFC net-next v5 0/9] net: bridge: mrp: Add support for Media
- Redundancy Protocol(MRP)
-Message-ID: <20200418150359.no4qcgc7oxqunkjp@soft-dev3.microsemi.net>
-References: <20200414112618.3644-1-horatiu.vultur@microchip.com>
- <59ccd697-3c97-207e-a89d-f73e594ec7eb@cumulusnetworks.com>
+        id S1726522AbgDRPOQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Apr 2020 11:14:16 -0400
+Received: from pegase1.c-s.fr ([93.17.236.30]:31710 "EHLO pegase1.c-s.fr"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725903AbgDRPOQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 18 Apr 2020 11:14:16 -0400
+Received: from localhost (mailhub1-int [192.168.12.234])
+        by localhost (Postfix) with ESMTP id 494GhN3XV3zB09Zc;
+        Sat, 18 Apr 2020 17:14:12 +0200 (CEST)
+Authentication-Results: localhost; dkim=pass
+        reason="1024-bit key; insecure key"
+        header.d=c-s.fr header.i=@c-s.fr header.b=Ys2kOrQf; dkim-adsp=pass;
+        dkim-atps=neutral
+X-Virus-Scanned: Debian amavisd-new at c-s.fr
+Received: from pegase1.c-s.fr ([192.168.12.234])
+        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
+        with ESMTP id 2lcJkaGzkoJJ; Sat, 18 Apr 2020 17:14:12 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase1.c-s.fr (Postfix) with ESMTP id 494GhN2SjkzB09Zb;
+        Sat, 18 Apr 2020 17:14:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=c-s.fr; s=mail;
+        t=1587222852; bh=gkdO6wXUCMcpz7NxpipTTUJqjJLTk5RmhAdRmmr2lPk=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=Ys2kOrQf8+IsQpw3uLxwRHJvEe2aifLm5D4UpWeMK0kDv1AR/2xUb1tP1bpBnc6tU
+         /FXFqj/0reLL0AhKcAmepR4fiN+Nst88VgI4jysw3UkXqTDfBFUmEuw5zgvR7IUyfx
+         GD8U+NDoD3gPnh1LMFlS4lGOU/NlhxN/aglDeXYA=
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 129F48BBCF;
+        Sat, 18 Apr 2020 17:14:14 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id CTX-Cucux1p0; Sat, 18 Apr 2020 17:14:14 +0200 (CEST)
+Received: from pc16570vm.idsi0.si.c-s.fr (unknown [192.168.4.90])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 5D8FE8B75E;
+        Sat, 18 Apr 2020 17:14:13 +0200 (CEST)
+Subject: Re: [PATCH] iommu: spapr_tce: Disable compile testing to fix build on
+ book3s_32 config
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc:     virtualization@lists.linux-foundation.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>
+References: <20200414142630.21153-1-krzk@kernel.org>
+From:   Christophe Leroy <christophe.leroy@c-s.fr>
+Message-ID: <a99ee461-664c-51ae-cb3a-cf5d87048d86@c-s.fr>
+Date:   Sat, 18 Apr 2020 15:14:02 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <59ccd697-3c97-207e-a89d-f73e594ec7eb@cumulusnetworks.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20200414142630.21153-1-krzk@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 04/18/2020 12:01, Nikolay Aleksandrov wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> On 14/04/2020 14:26, Horatiu Vultur wrote:
-> > Media Redundancy Protocol is a data network protocol standardized by
-> > International Electrotechnical Commission as IEC 62439-2. It allows rings of
-> > Ethernet switches to overcome any single failure with recovery time faster than
-> > STP. It is primarily used in Industrial Ethernet applications.
-> >
-> > Based on the previous RFC[1][2][3][4], the MRP state machine and all the timers
-> > were moved to userspace, except for the timers used to generate MRP Test frames.
-> > In this way the userspace doesn't know and should not know if the HW or the
-> > kernel will generate the MRP Test frames. The following changes were added to
-> > the bridge to support the MRP:
-> > - the existing netlink interface was extended with MRP support,
-> > - allow to detect when a MRP frame was received on a MRP ring port
-> > - allow MRP instance to forward/terminate MRP frames
-> > - generate MRP Test frames in case the HW doesn't have support for this
-> >
-> > To be able to offload MRP support to HW, the switchdev API  was extend.
-> >
-> 
-> Hi Horatiu,
-> The set still has a few blocker issues (bisectability, sysfs error return, use of extack)
-> and a few other cleanup tasks as I've noted in my replies to the respective patches.
-> I think with those out of the way you can submit it for inclusion.
 
-Hi Nik,
 
-Thanks for the review. I really need to be more careful with the
-bisectability. I will update the code based on your comments and then
-send the patch series again.
+On 04/14/2020 02:26 PM, Krzysztof Kozlowski wrote:
+> Although SPAPR_TCE_IOMMU itself can be compile tested on certain PowerPC
+> configurations, its presence makes arch/powerpc/kvm/Makefile to select
+> modules which do not build in such configuration.
+> 
+> The arch/powerpc/kvm/ modules use kvm_arch.spapr_tce_tables which exists
+> only with CONFIG_PPC_BOOK3S_64.  However these modules are selected when
+> COMPILE_TEST and SPAPR_TCE_IOMMU are chosen leading to build failures:
+> 
+>      In file included from arch/powerpc/include/asm/book3s/64/mmu-hash.h:20:0,
+>                       from arch/powerpc/kvm/book3s_64_vio_hv.c:22:
+>      arch/powerpc/include/asm/book3s/64/pgtable.h:17:0: error: "_PAGE_EXEC" redefined [-Werror]
+>       #define _PAGE_EXEC  0x00001 /* execute permission */
+> 
+>      In file included from arch/powerpc/include/asm/book3s/32/pgtable.h:8:0,
+>                       from arch/powerpc/include/asm/book3s/pgtable.h:8,
+>                       from arch/powerpc/include/asm/pgtable.h:18,
+>                       from include/linux/mm.h:95,
+>                       from arch/powerpc/include/asm/io.h:29,
+>                       from include/linux/io.h:13,
+>                       from include/linux/irq.h:20,
+>                       from arch/powerpc/include/asm/hardirq.h:6,
+>                       from include/linux/hardirq.h:9,
+>                       from include/linux/kvm_host.h:7,
+>                       from arch/powerpc/kvm/book3s_64_vio_hv.c:12:
+>      arch/powerpc/include/asm/book3s/32/hash.h:29:0: note: this is the location of the previous definition
+>       #define _PAGE_EXEC 0x200 /* software: exec allowed */
+> 
+> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> Fixes: e93a1695d7fb ("iommu: Enable compile testing for some of drivers")
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> ---
+>   drivers/iommu/Kconfig | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 58b4a4dbfc78..3532b1ead19d 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -362,7 +362,7 @@ config IPMMU_VMSA
+>   
+>   config SPAPR_TCE_IOMMU
+>   	bool "sPAPR TCE IOMMU Support"
+> -	depends on PPC_POWERNV || PPC_PSERIES || (PPC && COMPILE_TEST)
+> +	depends on PPC_POWERNV || PPC_PSERIES
+>   	select IOMMU_API
+>   	help
+>   	  Enables bits of IOMMU API required by VFIO. The iommu_ops
+> 
 
-> 
-> Cheers,
->  Nik
-> 
-> 
-> 
-> 
+Should it be fixed the other way round, something like:
 
--- 
-/Horatiu
+diff --git a/arch/powerpc/kvm/Makefile b/arch/powerpc/kvm/Makefile
+index 2bfeaa13befb..906707d15810 100644
+--- a/arch/powerpc/kvm/Makefile
++++ b/arch/powerpc/kvm/Makefile
+@@ -135,4 +135,4 @@ obj-$(CONFIG_KVM_BOOK3S_32) += kvm.o
+  obj-$(CONFIG_KVM_BOOK3S_64_PR) += kvm-pr.o
+  obj-$(CONFIG_KVM_BOOK3S_64_HV) += kvm-hv.o
+
+-obj-y += $(kvm-book3s_64-builtin-objs-y)
++obj-$(CONFIG_KVM_BOOK3S_64) += $(kvm-book3s_64-builtin-objs-y)
+
+
+Christophe
