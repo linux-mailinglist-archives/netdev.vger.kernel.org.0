@@ -2,138 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C38A1AF726
-	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 07:08:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02FC41AF72D
+	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 07:30:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725994AbgDSFIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 01:08:31 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:17576 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725769AbgDSFIa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 01:08:30 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03J57iuO019262;
-        Sat, 18 Apr 2020 22:07:44 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=pfpt0818;
- bh=Hze6eJcQaBvBwRk4Uu8GpnnohOomUk3J0gv4mNvf8vM=;
- b=Pt3bl+9ZC2iQrHb9khdTf2HZWKmdlnxT5TmxEFV7BH/b22Te91Jm5AMv0zlOKtW+wPpn
- 6rEZbYMpgmMES8N940N52JTCbx/NaKV1fwVD4FnY2Lm0XTUjLP3wQazwZKImUhxY6Shp
- 7No21rKp6zi3NuVBvn+4SSVrpeYpESyTzmJoY7eYrq/GdJ21wbHLbvcEVAAVuHP9X/AV
- oMP5svtc1+5wqRS/Ffp7Z3rRix4RsgFgAxEQjFLo8bMi0Wl655pPAwM2nYPZ4MKwZWbS
- PAQDcmADR/leLT+2xQVj7kxXHVtbgC6Dps2r0h/2ocUi2Kk3v58RsD/JxxyqZiB9FXpc CQ== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 30fxwp2s25-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sat, 18 Apr 2020 22:07:44 -0700
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sat, 18 Apr
- 2020 22:07:43 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.108)
- by SC-EXCH01.marvell.com (10.93.176.81) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Sat, 18 Apr 2020 22:07:43 -0700
+        id S1725950AbgDSFaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 01:30:46 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:31846 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725446AbgDSFaq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 01:30:46 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03J5OkfH027816;
+        Sat, 18 Apr 2020 22:30:30 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=WBm2tDGxLaLul3ZrIPa0MbysJdoLVIAbCTCkCTuEFQo=;
+ b=Kf2ysipW8XuUrfKlRWu51q5J5zWy/bd0dzQux8QWOOLbwpCKZBNJPomFZeln0Esizs3e
+ R6Vq7mVrPvnuaYlAvY6q9dlt8KpmLE9kHmz3jBsM2h8IQXEmInPMo4qqFSnWq/6lCh92
+ nLdz+Atg1U7k2KLMSzKY4SmeakJnwaoBeq0= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 30fxng3j3y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Sat, 18 Apr 2020 22:30:30 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.198) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Sat, 18 Apr 2020 22:30:30 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P0dWnN/FsBNHNEvt7xRdKmLbrpUcLZ4nwi5iR3y+tpZSaOhofebAOVwgK0xY8sw6pvam/kqNk2NLfgj/wK2qO68RXjwLqnolbxKqwbAMRIPmpbwKsXvw73gHUw4r9y4oVzW0WBMCOAY6dIQucrb3e8XDSeHutubAyRDmrQBcmPSLGMloCHAx89TxcjLgcPNW0PlyNmNxJqY+XA4hF22NiOHcZ97YucjstF+6I5pVsTffzrJ2gXp/tb/9ZAy/vO9RXzqOE+W4/KTTdyUxg6H0+ra3ESxuXNbWR4sANHG8NH6Jz4WH/i9xeM6jPtpJMFGwwTOZsvbHDGHomAwnMwBoXw==
+ b=V3h64uN0/eN81aKE6yDDA948LYoGCyJJBUYQvnFct1EjkAbgy4gUuLLRr1rkDg67X5OeSxYSr2qllLgr1yYJkHOKzwkpXaRC4WUYha5MpZPW3zBvslHJPGcKpUSISBYui3yyY5pYLHX/YzF+QRetRs0iZYJaUSmN4FGdTiDYLo39aH5TRKY0AjdOWRdkk2RjhxsGqRelC+3gkf6FqZpb4N+EOIJrQ135aaMKWYXhWA1DDf7H2NJzXUr+TCtR1YHs7zRAT+5viP6PItDI3BsJXyBz6GqD6r8e9y/HZ+eC6PUTVCnLtbijDWINBp24M8BnPevCh+ZeFyirRHHny282Yg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Hze6eJcQaBvBwRk4Uu8GpnnohOomUk3J0gv4mNvf8vM=;
- b=jzzZmnbcjtmybp3lm5PY45QcULi+lzPjQ2QFK1IKxnykuAYivZkupn2l8IDj/K1kmaUH1UD1Z+bFmjfgxdDOa/lKb+r0qnA9rUoKQCE82pnWXBEKiBlXBNm9wSOqqVnrAHh+Nd1ITLcWn+lAL92Vx2RX7+alk57g3x+LKR6sEyiTI8jAfKIpUxKJ4lcIOPZEQb2Ngfu9R4UFvs7Ct7fNsgz838rPP7yJ7JGk3JWEdb6S6Kx+7jZe75+r7ZU6EGBg5Kpjw4GpRxxgFR6GcNeVgxu6zkBWjd1Zb4bvj0zX28oxmvNb1Q5QVYMDuMKilzaVeds7Tk9v9HHzv30fiD3tnA==
+ bh=WBm2tDGxLaLul3ZrIPa0MbysJdoLVIAbCTCkCTuEFQo=;
+ b=Yf+3lJ0Nr9v8cfygyIeR13/t0e0OQgdHtI+Dpj96VlNKr2ErOz9A1s9p7WKKo6izVnqfdy+uKtnoXC0gvp1msKyLDG8O/M7TZN0lHpPjLHV6HNGLGUUaV8WrK5xPLjDYVfcIRbv/x+7r9d8ie25EOsolAU51Wtnmc1blvk/wIavTnWiKJpEtOIwZwDi7aU5NCRKijTKwH+cRCboJk2WXUvhQjffdPmgL5qmFdpX71Y7Buv4rVyBu1JlxjZTuNILe4NUuZq1By1yL6EKLvGDeWQdiv2zhAv67Ma0UL34hbB/5m2L9Yc/iYiJwnVt9djC63aV89QrvOl8mWXIZ353U1Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Hze6eJcQaBvBwRk4Uu8GpnnohOomUk3J0gv4mNvf8vM=;
- b=hNqDcqvETGN66slKJ8iKPL2V9YAWQq/7Pbh7AP8bVmzNuCtiHxn7JlVsiAmQE5zqYMTb98cn4Pl2TCYyWntqoJN64SD4CDKQMEo40Ku+fraG+vp01ka+xadBCdetO39KNZxoMcz5uvCqloBiZuUsp0EEmXqNDsVCjgXj7WTlhZM=
-Received: from BYAPR18MB2535.namprd18.prod.outlook.com (2603:10b6:a03:137::17)
- by BYAPR18MB2933.namprd18.prod.outlook.com (2603:10b6:a03:10e::33) with
+ bh=WBm2tDGxLaLul3ZrIPa0MbysJdoLVIAbCTCkCTuEFQo=;
+ b=MKHX8rnkHiEejjz3bA5zQJhqD0YoBZLgLmf7Q7TT5sdaFbsHRMVW8SAmkvaNzjGdZGAQoaTOrFBNoe74RCyB6PyTqJho18BX52aCFk8T2Lz5T5zBd0b/21zJlhC/HSldWWBMBwqbi4+tHNgvB5TnKQRLP/1/pJvqmVGqXiJ9KTE=
+Received: from MW3PR15MB3883.namprd15.prod.outlook.com (2603:10b6:303:51::22)
+ by MW3PR15MB3929.namprd15.prod.outlook.com (2603:10b6:303:4a::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.29; Sun, 19 Apr
- 2020 05:07:42 +0000
-Received: from BYAPR18MB2535.namprd18.prod.outlook.com
- ([fe80::65f8:9bfe:5fa5:1280]) by BYAPR18MB2535.namprd18.prod.outlook.com
- ([fe80::65f8:9bfe:5fa5:1280%3]) with mapi id 15.20.2921.027; Sun, 19 Apr 2020
- 05:07:41 +0000
-From:   Alex Belits <abelits@marvell.com>
-To:     "luto@amacapital.net" <luto@amacapital.net>
-CC:     "mingo@kernel.org" <mingo@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        Prasun Kapoor <pkapoor@marvell.com>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "frederic@kernel.org" <frederic@kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "will@kernel.org" <will@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH v3 04/13] task_isolation: userspace hard isolation from
- kernel
-Thread-Topic: [PATCH v3 04/13] task_isolation: userspace hard isolation from
- kernel
-Thread-Index: AQHWFgh0Cq6Sp1qrB0WB/pY8n1YWIQ==
-Date:   Sun, 19 Apr 2020 05:07:41 +0000
-Message-ID: <bdea1b5d70460386303e59fdc7438d9013293147.camel@marvell.com>
-References: <58995f108f1af4d59aa8ccd412cdff92711a9990.camel@marvell.com>
-         <915489BC-B2C9-4D47-A205-FC597FC68B98@amacapital.net>
-In-Reply-To: <915489BC-B2C9-4D47-A205-FC597FC68B98@amacapital.net>
-Accept-Language: en-US
+ 2020 05:30:27 +0000
+Received: from MW3PR15MB3883.namprd15.prod.outlook.com
+ ([fe80::7d15:e3c5:d815:a075]) by MW3PR15MB3883.namprd15.prod.outlook.com
+ ([fe80::7d15:e3c5:d815:a075%7]) with mapi id 15.20.2921.027; Sun, 19 Apr 2020
+ 05:30:27 +0000
+Subject: Re: [RFC PATCH bpf-next v2 00/17] bpf: implement bpf based dumping of
+ kernel data structures
+To:     Alan Maguire <alan.maguire@oracle.com>,
+        David Ahern <dsahern@gmail.com>
+CC:     Andrii Nakryiko <andriin@fb.com>, <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
+References: <20200415192740.4082659-1-yhs@fb.com>
+ <40e427e2-5b15-e9aa-e2cb-42dc1b53d047@gmail.com>
+ <alpine.LRH.2.21.2004171106580.32559@localhost>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <08d95e5f-9b14-4e61-8b71-f7be3b5cc30f@fb.com>
+Date:   Sat, 18 Apr 2020 22:30:24 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.7.0
+In-Reply-To: <alpine.LRH.2.21.2004171106580.32559@localhost>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [173.228.7.197]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a76721a9-0958-463b-db22-08d7e41f96b0
-x-ms-traffictypediagnostic: BYAPR18MB2933:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR18MB2933646E962406E3700A9CB5BCD70@BYAPR18MB2933.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 0378F1E47A
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR18MB2535.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(366004)(136003)(396003)(346002)(39850400004)(376002)(316002)(66476007)(26005)(66446008)(64756008)(76116006)(66556008)(66946007)(186003)(478600001)(2616005)(6916009)(7416002)(966005)(54906003)(6506007)(5660300002)(8676002)(6486002)(8936002)(81156014)(71200400001)(6512007)(2906002)(4744005)(4326008)(36756003)(86362001);DIR:OUT;SFP:1101;
-received-spf: None (protection.outlook.com: marvell.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: jIOsfThepBKKZbqgekvEPqCT6xjC7BhjUDrDTxtujcZiFrXCaTwsOMGTwfZUmtN/AfLmMN9eW5wLT3ceWTcHR3+p6vSdwUJRg/iFXciapok0YPgnQjjZ0mkbVmB15IFPfS3wWQnqkcCYaSwA6IPqLp0u4iC5CHPmcUx12qAaCd9fekI8I9LwsbN/U8aWqH9bcMO9IzexUwyDt+NpITlTS6vr7XLUWzaK/ermrZOoidvpcdInSpoM8Fdu/2bWchYWMGNVuK+SGgmx1FNIae2+ew3wWlmObWCsTCOfgzA4NadZ/zB/jZdR7Pt0MHQaT+xxew5OppMwy1yyssOplggBycz9qXyOXZTb0gA6ebssYLcItTBpSb6d18bnpkU42GWItLtYeQribprVhA+yabheZrDOE2RwhqXGzL3K0bpIpcqDq08es3Q34YaaZV+O/suqlhWted9FKlL6ergj/v4srQ1/03DDFKuleHL16bID6p+a1zak+YljFFU4rsBmVhIu8yox0kNaT8GfhXwL/j/TyQ==
-x-ms-exchange-antispam-messagedata: HfwMLOOr/4m5fZ3OxVU9q/ib++cpJxWwoprn88tLImVBvEZCgqtyaRoyamrE+HnLqJQO4T1IWmiMeSAfP3P8I0uSuTndoVVUaTHh+kI1GwuxlDbpsaUeNelWDHP3RexB7zIwhIx4tK1gkC4NLNlwYHUeJbX5njTzTsqX5Q2jn/zZ+np5fQW8xpbMcgTonhNwzoyTtnaTTUL3tlLMJpr7ZkhSC0BmTSJsqBWKc6bBXLgOho3y+5uo8AM3bAjOOInZoxhDx9u0AvZS98bLGhX3YpzSQJxSVOCVaPeNpWxInFx+TSZFDG/Jyp6MxD5uI8WpWDNd7hufWzG9ACFjTcByuzb3uWddyIUKYvGJ02huHgUy/2UTxRh27Lvx1q3TwU57KxJsQtTldkXcHiS64veof9+sAXMo9edZU24bsPbE6dHWCvLjcel40gV84XPD0t5s9GTTYt+hI+RWwkyLPu2AZ4/r+Rfj2y2bhZvEabzS0E0A8OGE0YII+fNgfUD2ziGf0y59+dWgyS8kX8avYhp5UVT4iJDoGTEVOBllUSyrSGACF+TNHjMaCaGf4lalL0evpKZ/dRIhXFR5zEyuQ7itQ7//WavHCyKtjLUuy9rJbJyw7FqcjoYJojH9rBX66zL6IhcUwrvQAQ5TL9ZHg9pnvy5MuNnDR6ZC36ycaOBf42mJHCVvcZmpTEiVFkG8vfwx/jGLS5E4g/TF3Koo9HKFUx7QprHQXSQVsRXtPJ7xP0EJ63mhHNyXhp8oVxgSqYFUGHFfD5JhgiyQCEUB8vqwml0zk4y7d4eFHc6yArt687Q=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <C53B81AD43CDF74E93D23C0D24037623@namprd18.prod.outlook.com>
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: CO2PR04CA0170.namprd04.prod.outlook.com
+ (2603:10b6:104:4::24) To MW3PR15MB3883.namprd15.prod.outlook.com
+ (2603:10b6:303:51::22)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: a76721a9-0958-463b-db22-08d7e41f96b0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Apr 2020 05:07:41.8407
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from wongal-imac.dhcp.thefacebook.com (2620:10d:c090:400::5:7ab3) by CO2PR04CA0170.namprd04.prod.outlook.com (2603:10b6:104:4::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.27 via Frontend Transport; Sun, 19 Apr 2020 05:30:26 +0000
+X-Originating-IP: [2620:10d:c090:400::5:7ab3]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5c2c7ad3-b11d-4319-dc07-08d7e422c462
+X-MS-TrafficTypeDiagnostic: MW3PR15MB3929:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <MW3PR15MB3929F8F90A53B4B61B2F981CD3D70@MW3PR15MB3929.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-Forefront-PRVS: 0378F1E47A
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR15MB3883.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10019020)(136003)(346002)(366004)(39860400002)(376002)(396003)(31696002)(4326008)(54906003)(52116002)(31686004)(316002)(2616005)(110136005)(186003)(6486002)(53546011)(6506007)(6512007)(16526019)(86362001)(8676002)(478600001)(66476007)(8936002)(36756003)(66556008)(5660300002)(66946007)(81156014)(966005)(2906002);DIR:OUT;SFP:1102;
+Received-SPF: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SwAqUTqGbDeA8XcgnGRmfqPFQpMoyA+FsYNx8HxfKspIujCEUxHOvvN7cYWYM5ZdZl5ihrW7sPThOlG9sRftAYBCvZXFNS6TIlWVUFLudC63fg1QDMFmoZWOPwyyePbqn4h3T8vGaHyf+VNdxai/hAKqJEvRMPb22OPDJE9GiozTDPByk4D8aenrpuja/HoKoWfkxoY6JBdg6RhIWFcxbo0VvXB0XLmpqsZTyCHStXQvLCKef4p2DFF7c+12Iw/IC9UQO4UU+h2lf9QEmDypmeFPReyvLXpFsEX2YA6Lw5+ixFK5UrNL2heozf56vxGO0Si4zS/h4NV3slki5oh8raAoFh1fkXCyuE40t30Sby/MBL5g5fraCR85RU5isDcj2zZDPruGANhlB8cNWBslmFJEqZBU0q0IlnUo3vETUfydyJ785J0kssOmPuAL43z+cC2u+nLXxB5/aKl5eAgiyiQqh5D2LVtFuSrJpRFmPKQX+hvHl4bkivWBSBSp+YHs0DQaKNN0mj80YMZwcwKFHQ==
+X-MS-Exchange-AntiSpam-MessageData: L4gjs/4oPkIMyBuQY5NH0PuDX5pVJ/q0ck3FqyTKjW2weTyedI82ci7aiz6r5gR2vpg5iFdnc/dgGQqW0lSOtAYqtEO8To4nuBW/lPhiNr5z1BAHlte/KUumvnMRiocp1Ddd745AoQ8sU3AGuhG/0D0V8cipCLdOHGRw31C2MQfi8Ngp0dSVbhF10UmoTWRKZE3rKNJeKXFUNqAK8ErJdBzplyi6UpvNa4t1IrVRmxLxuWMLJkv1gO1LxQ/LE+YkKEgpNo2iTXypTEXD/G7qSZ+t34EaxB7p3oXzBooqXth2ZGQtVMTFYQUu+SBAYN7Xf4EjPp3mo5yw/+SVvFw7rwq1FfcgHFOLGpMunLYgVTpRIFLmKCUAytoVqfEUEmd22yo9AMGOXxfRCXQYyKSodYM+ePWLN7k9xTJUB7rpvBZjYFOpOz/YEF6zfALteYpllyH8yvuEDRKBqqlSjugkb4Tfboq6J3UC+LHlIzExdiFZz+0hN3G07M8LVePlgoUblPyeuECOEfBiGWB28JpxYyly9Gb4qq4FBbEiVoEDgR4HsL7LlnpDnVSdMB3rgKxtrQ4cYvhCGX2eqf/DLDUA6ml2QZD0DQyUEfSDJOjeWQVDIzyAXIKC8spEqhoEDkxbl6SG+wznmDE+MhVD1brvsgrskcBJnNvsiq+N8NSxjpDU8ZYxP3Jj6F/F95Ky/8+vRh/5iXhow15b5Lm7DaqJEyX+gB+UPtosD3v3IE1PBDdUZh9q6pmG2B4QGc/yFFTmEXt0NyG1ChLH2vaEMdORaoPVTqjkiE8t7E5548cbvO8v7k6JLI3QFd8u9jV9+Y43kiANFKxmBct5iRFbRbJ2ZA==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c2c7ad3-b11d-4319-dc07-08d7e422c462
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2020 05:30:27.3139
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: MfbkLB4IQWWoIfrbGP9p9M9GYlXjMGkWZ7tLbQ7fl75JGvjUefZs/cOaR+R6jyReTTyF2iaoDZpHIB7GfDqIzA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR18MB2933
-X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: nLdPIrMp0+cCn2o45pUDuq3hDw9+u8pItsyMxllOuahnUAMoAk7FmIsJkGdiR+KS
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR15MB3929
+X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
  definitions=2020-04-18_10:2020-04-17,2020-04-18 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 phishscore=0
+ impostorscore=0 clxscore=1011 lowpriorityscore=0 spamscore=0
+ priorityscore=1501 mlxlogscore=999 bulkscore=0 adultscore=0 suspectscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2004190048
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiBUaHUsIDIwMjAtMDQtMDkgYXQgMTE6MDAgLTA3MDAsIEFuZHkgTHV0b21pcnNraSB3cm90
-ZToNCj4gDQo+ID4gDQo+ID4gT25jZSB0aGUgdGFzayBoYXMgcmV0dXJuZWQgdG8gdXNlcnNwYWNl
-IGFmdGVyIGlzc3VpbmcgdGhlIHByY3RsKCksDQo+ID4gaWYgaXQgZW50ZXJzIHRoZSBrZXJuZWwg
-YWdhaW4gdmlhIHN5c3RlbSBjYWxsLCBwYWdlIGZhdWx0LCBvciBhbnkNCj4gPiBvdGhlciBleGNl
-cHRpb24gb3IgaXJxLCB0aGUga2VybmVsIHdpbGwga2lsbCBpdCB3aXRoIFNJR0tJTEwuDQo+IA0K
-PiBJIGNvdWxkIGVhc2lseSBpbWFnaW5lIG15c2VsZiB1c2luZyB0YXNrIGlzb2xhdGlvbiwgYnV0
-IG5vdCB3aXRoIHRoZQ0KPiBTSUdLSUxMIHNlbWFudGljcy4gU0lHS0lMTCBjYXVzZXMgZGF0YSBs
-b3NzLiBQbGVhc2UgYXQgbGVhc3QgbGV0DQo+IHVzZXJzIGNob29zZSB3aGF0IHNpZ25hbCB0byBz
-ZW5kLg0KDQpUaGlzIGlzIGFscmVhZHkgZG9uZSwgZXZlbiB0aG91Z2ggdGhlIGRvY3VtZW50YXRp
-b24gaXMgbm90IHVwZGF0ZWQuDQpUaGVyZSBpcyBldmVuIGEgdXNlcnNwYWNlIGxpYnJhcnkgdGhh
-dCBkZWFscyB3aXRoIHRoaXMgd2hpbGUNCmNvbXBlbnNhdGluZyBmb3IgcG9zc2libGUgcmFjZSBj
-b25kaXRpb25zIG9uIGlzb2xhdGlvbiBlbnRyeSBhbmQNCmF1dG9tYXRpYyByZS1lbnRyeSBhZnRl
-ciBpc29sYXRpb24gaXMgYnJva2VuOiANCmh0dHBzOi8vZ2l0aHViLmNvbS9hYmVsaXRzL2xpYnRt
-Yw0KDQotLSANCkFsZXgNCg==
+
+
+On 4/17/20 3:54 AM, Alan Maguire wrote:
+> On Wed, 15 Apr 2020, David Ahern wrote:
+> 
+>> On 4/15/20 1:27 PM, Yonghong Song wrote:
+>>>
+>>> As there are some discussions regarding to the kernel interface/steps to
+>>> create file/anonymous dumpers, I think it will be beneficial for
+>>> discussion with this work in progress.
+>>>
+>>> Motivation:
+>>>    The current way to dump kernel data structures mostly:
+>>>      1. /proc system
+>>>      2. various specific tools like "ss" which requires kernel support.
+>>>      3. drgn
+>>>    The dropback for the first two is that whenever you want to dump more, you
+>>>    need change the kernel. For example, Martin wants to dump socket local
+>>
+>> If kernel support is needed for bpfdump of kernel data structures, you
+>> are not really solving the kernel support problem. i.e., to dump
+>> ipv4_route's you need to modify the relevant proc show function.
+>>
+> 
+> I need to dig into this patchset a bit more, but if there is
+> a need for in-kernel BTF-based structure dumping I've got a
+> work-in-progress patchset that does this by generalizing the code
+> that  deals with seq output in the verifier. I've posted it
+> as an RFC in case it has anything useful to offer here:
+> 
+> https://lore.kernel.org/bpf/1587120160-3030-1-git-send-email-alan.maguire@oracle.com/T/#t
+> 
+> The idea is that by using different callback function we can achieve
+> seq, snprintf or other output in-kernel using the kernel BTF data.
+> I created one consumer as a proof-of-concept; it's a printk pointer
+> format specifier.  Since the dump format is determined in kernel
+> it's a bit constrained format-wise, but may be good enough for
+> some cases.
+
+The bpfdump work and here in-kernel btf dumping are different.
+The bpfdump BPF programs are triggered with a user syscall, e.g.,
+    cat /sys/kernel/bpfdump/task/my_dumper (also calling open())
+or when user open() an anonymous dumper.
+
+The BPF program can "print" some data through bpf_seq_printf()
+helper. These printed data will be received by user space
+through read() syscall.
+
+Your work is greater as it makes kernel print more readable.
+There is no overlap between your work and bpfdump.
