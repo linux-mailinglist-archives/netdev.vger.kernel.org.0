@@ -2,117 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EE5A1AFBFB
-	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 18:47:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46CF51AFBFD
+	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 18:47:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726456AbgDSQ31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 12:29:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43914 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726181AbgDSQ31 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 12:29:27 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7E4EC061A0C;
-        Sun, 19 Apr 2020 09:29:26 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id d17so3831450pgo.0;
-        Sun, 19 Apr 2020 09:29:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=0FiYUfEJjdc2qCXXLulXM9aMdQx537xDQqCGw0jD4yQ=;
-        b=jXLgxdKlSxG1q+KJVknY8KH+LOVrwgIXqfkbVXb1AyPU5A2XFZiItsMW4HDDiTHC4K
-         uQsjbGuE5effVjnpC7Gnq7gi2j64euL2zx/fO3Uh6skqEfV6e0CGUdLKqlBfV5klDRqb
-         BK3bCArjuwvKonXLHd5qmT4eyKdBvauvfR7LkMBbGPWoGkZs6Enr4rb5c02lgS+8wMva
-         0zEDVyBWzz45zwBnNqCZ9ZnXriRz/9GbHJsTU2rzf9LDC/as6FzKGcuqbdz+jTQrEGzq
-         SDGTjr/lLFYImJI7iYvo/9X6YA+bIVVGuJA0LWNrgf6i8qdMupqKIo+h7s52AKx0d5to
-         BN0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=0FiYUfEJjdc2qCXXLulXM9aMdQx537xDQqCGw0jD4yQ=;
-        b=cpEY4buKRVAsvzVUX9LiIetvhpGfLDpqHyQ2jTg4Iwf1RNIrmF8+hgjlM5VrKshM/6
-         Kd9H+kSEsvnm1Le95KfwY00H1qa9Cu0S8e3p3DyvauDVuwv0ZHFI8Ja/tI7OMPEyOY+F
-         i4JowPAwQVAgozGOdp4fMMLkjX35EbExxSfP4bLUDjJWdpRVeJO4sfOra+F+0cJim4FJ
-         YpGhzQizsRvMduwKtzGWFewzavTKeZn64XzNqs0aV/9wLmqfVYAxd1VI0LO6mC4bvcPx
-         8ThVX4WW8wlF5d2mInIC93Z5I1GLNRst3lpET+eg4UygU5piQtx5OuE17V+abmYI5Vgx
-         QVUQ==
-X-Gm-Message-State: AGi0Pua4SUx3AKaCeaHM4TCNhtvgEfYsKHjaCw9O/KrqwGCkiLfR94Zz
-        px36T+8vEkB/qmImeAqSQ2E=
-X-Google-Smtp-Source: APiQypK1N/mC/hRovML5gGDssyc7j0IQSUwmDtRMCItqXJMWAZ3Z5O6cGwYu07wdf7ow+A62kfIJPQ==
-X-Received: by 2002:a62:dd4e:: with SMTP id w75mr1576877pff.221.1587313766325;
-        Sun, 19 Apr 2020 09:29:26 -0700 (PDT)
-Received: from localhost.localdomain ([2409:4072:610d:f65:24cf:c6c4:f8fd:66fc])
-        by smtp.gmail.com with ESMTPSA id x16sm11319197pfc.61.2020.04.19.09.29.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 19 Apr 2020 09:29:25 -0700 (PDT)
-From:   Aishwarya Ramakrishnan <aishwaryarj100@gmail.com>
-To:     Ariel Elior <aelior@marvell.com>, GR-everest-linux-l2@marvell.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     aishwaryarj100@gmail.com
-Subject: [PATCH] net: qed: Remove unneeded cast from memory allocation
-Date:   Sun, 19 Apr 2020 21:59:17 +0530
-Message-Id: <20200419162917.23030-1-aishwaryarj100@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726488AbgDSQ3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 12:29:34 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48516 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726181AbgDSQ3d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Apr 2020 12:29:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=X0MRD5CzLwX8JPnqO6SANjVQWQPEK4R3ADbwkBqXpro=; b=uoTly+RPsTeTrEWTyInn0FHblW
+        Pd+P28zEjuOBg91hX+E/7at6FIQ/FfPJVneAProYw1zzA07P68s06MGArA1wPfUJ5sCGkJDOJjELL
+        oVKGZ3VkE1xCiBiALJc1ZMGsN/me6dld/GFOQN0dGr/8mr2gJexn/gr4m0XbzrZk9yKE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jQCoy-003epS-Mq; Sun, 19 Apr 2020 18:29:28 +0200
+Date:   Sun, 19 Apr 2020 18:29:28 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next 3/3] net: phy: bcm54140: add hwmon support
+Message-ID: <20200419162928.GL836632@lunn.ch>
+References: <20200417192858.6997-1-michael@walle.cc>
+ <20200417192858.6997-3-michael@walle.cc>
+ <20200417195003.GG785713@lunn.ch>
+ <35d00dfe1ad24b580dc247d882aa2e39@walle.cc>
+ <20200417201338.GI785713@lunn.ch>
+ <84679226df03bdd8060cb95761724d3a@walle.cc>
+ <20200417212829.GJ785713@lunn.ch>
+ <4f3ff33f78472f547212f87f75a37b66@walle.cc>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4f3ff33f78472f547212f87f75a37b66@walle.cc>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove casting the values returned by memory allocation function.
+On Sun, Apr 19, 2020 at 12:29:23PM +0200, Michael Walle wrote:
+> Am 2020-04-17 23:28, schrieb Andrew Lunn:
+> > On Fri, Apr 17, 2020 at 11:08:56PM +0200, Michael Walle wrote:
+> > > Am 2020-04-17 22:13, schrieb Andrew Lunn:
+> > > > > Correct, and this function was actually stolen from there ;) This was
+> > > > > actually stolen from the mscc PHY ;)
+> > > >
+> > > > Which in itself indicates it is time to make it a helper :-)
+> > > 
+> > > Sure, do you have any suggestions?
+> > 
+> > mdiobus_get_phy() does the bit i was complaining about, the mdiobus
+> > internal knowledge.
+> 
+> But that doesn't address your other comment.
 
-Coccinelle emits WARNING: casting value returned by memory allocation
-function to struct pointer is useless.
+Yes, you are right. But i don't think you can easily generalize the
+rest. It needs knowledge of the driver private structure to reference
+pkg_init. You would have to move that into phy_device.
 
-This issue was detected by using the Coccinelle.
+> 
+> > There is also the question of locking. What happens if the PHY devices
+> > is unbound while you have an instance of its phydev?
+> 
+> Is there any lock one could take to avoid that?
 
-Signed-off-by: Aishwarya Ramakrishnan <aishwaryarj100@gmail.com>
----
- drivers/net/ethernet/qlogic/qed/qed_roce.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+phy_attach_direct() does a get_device(). That at least means the
+struct device will not go away. I don't know the code well enough to
+know if that will also stop the phy_device structure from being freed.
+We might need mdiobus_get_phy() to also do a get_device(), and add a
+mdiobus_put_phy() which does a put_device().
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_roce.c b/drivers/net/ethernet/qlogic/qed/qed_roce.c
-index 37e70562a964..475b89903f46 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_roce.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_roce.c
-@@ -736,9 +736,9 @@ static int qed_roce_sp_destroy_qp_responder(struct qed_hwfn *p_hwfn,
- 
- 	p_ramrod = &p_ent->ramrod.roce_destroy_qp_resp;
- 
--	p_ramrod_res = (struct roce_destroy_qp_resp_output_params *)
--	    dma_alloc_coherent(&p_hwfn->cdev->pdev->dev, sizeof(*p_ramrod_res),
--			       &ramrod_res_phys, GFP_KERNEL);
-+	p_ramrod_res = dma_alloc_coherent(&p_hwfn->cdev->pdev->dev,
-+					  sizeof(*p_ramrod_res),
-+					  &ramrod_res_phys, GFP_KERNEL);
- 
- 	if (!p_ramrod_res) {
- 		rc = -ENOMEM;
-@@ -872,10 +872,10 @@ int qed_roce_query_qp(struct qed_hwfn *p_hwfn,
- 	}
- 
- 	/* Send a query responder ramrod to FW to get RQ-PSN and state */
--	p_resp_ramrod_res = (struct roce_query_qp_resp_output_params *)
--	    dma_alloc_coherent(&p_hwfn->cdev->pdev->dev,
--			       sizeof(*p_resp_ramrod_res),
--			       &resp_ramrod_res_phys, GFP_KERNEL);
-+	p_resp_ramrod_res =
-+		dma_alloc_coherent(&p_hwfn->cdev->pdev->dev,
-+				   sizeof(*p_resp_ramrod_res),
-+				   &resp_ramrod_res_phys, GFP_KERNEL);
- 	if (!p_resp_ramrod_res) {
- 		DP_NOTICE(p_hwfn,
- 			  "qed query qp failed: cannot allocate memory (ramrod)\n");
-@@ -920,8 +920,7 @@ int qed_roce_query_qp(struct qed_hwfn *p_hwfn,
- 	}
- 
- 	/* Send a query requester ramrod to FW to get SQ-PSN and state */
--	p_req_ramrod_res = (struct roce_query_qp_req_output_params *)
--			   dma_alloc_coherent(&p_hwfn->cdev->pdev->dev,
-+	p_req_ramrod_res = dma_alloc_coherent(&p_hwfn->cdev->pdev->dev,
- 					      sizeof(*p_req_ramrod_res),
- 					      &req_ramrod_res_phys,
- 					      GFP_KERNEL);
--- 
-2.17.1
+> > What happens if the base PHY is unbound? Are the three others then
+> > unusable?
+> 
+> In my case, this would mean the hwmon device is also removed. I don't
+> see any other way to do it right now. I guess it would be better to
+> have the hwmon device registered to some kind of parent device.
 
+The phydev structure might go away. But the hardware is still
+there. You can access it via address on the bus. What you have to be
+careful of is using the phydev for a different phy.
+
+> For the BCM54140 there are three different functions:
+>  (1) PHY functions accessible by the PHYs own address (ie PHY
+>      status/control)
+>  (2) PHY functions but only accessible by the global registers (ie
+>      interrupt enables per PHY of the shared interrupt pin)
+>  (3) global functions (like sensors, global configuration)
+> 
+> (1) is already supported in the current PHY framework. (2) and (3)
+> need the "hack" which uses mdiobus_read/write() with the base
+> address.
+
+Is the _is_pkg_init() function the only place you need to access some
+other phy_device structure.
+
+Maybe we need a phydev->shared structure, which all PHYs in one
+package share? Get the core to do reference counting on the structure?
+Add helpers phy_read_shared(), phy_write_shared(), etc, which does
+MDIO accesses on the base device, taking care of the locking. pkg_init
+is a member of this shared structure. And have a void * priv in shared
+for shared driver private data?
+
+Just "thinking out loud"
+
+    Andrew
