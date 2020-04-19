@@ -2,92 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2DB11AFD09
-	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 20:14:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D71F1AFD26
+	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 20:16:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726741AbgDSSOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 14:14:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37082 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726440AbgDSSOk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Apr 2020 14:14:40 -0400
-Received: from kernel.org (unknown [104.132.0.74])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3440920771;
-        Sun, 19 Apr 2020 18:14:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587320079;
-        bh=bOt9BTn/I9BtpLW6MYPux7kH7zXf1KQ4OwttSbOUgxw=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=F96kxGnwb5hbRo2uaveExMkh4pG5tmsfXC/X4f7LcIR9NVVk3+CXqwPimCRGIZsLq
-         200DZ+NlYkyxPrNFkbuYootDCzDqqWFu0hJkAVPZpKUAgkDDPBPfI6mIZvHi8k+VtM
-         aJNXnDOzYimf/GSU7Z8wIQIZEF7kJxvbDOxdjZqA=
-Content-Type: text/plain; charset="utf-8"
+        id S1726755AbgDSSQk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 14:16:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60352 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725970AbgDSSQj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 14:16:39 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0603C061A0C
+        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 11:16:38 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id h2so8402084wmb.4
+        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 11:16:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=agQxSnV3uf+VTUq+2pXVGSO4KIcp8OMEWHxBYus81bM=;
+        b=T9ratNl3NT9r1L7rmv/O6+CkO6BucVRv+uRQ3qs+JVVKeycy+nRum4x56L+bTA5Z9J
+         O9jta65NlxakxOKi7RdKI0a2KSRx9i88vPL0tkIFTrY1AR+ep1ySA1UYeSARw+Dw5QuU
+         Rb9IbC817UD2vggVdvNtB4062dwWaWhZwwDs8jXvgvPICR2dHEgzjYCJCm64a3/QJ5xV
+         YslnL+eDvSX3Hn8NXcoLNinLWgJranmZeasKrSI8HSgKAgWh4sVQX9lxMAbeFix8xzci
+         pb7BdMSvCeuzhteTu7RswuiBKoFCu7UVIZIyb6iZaI/tbGMaAR3S+8Uq92seU0J+pr12
+         hLmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=agQxSnV3uf+VTUq+2pXVGSO4KIcp8OMEWHxBYus81bM=;
+        b=K2cZaJ/BHdnVQnhbYVtzolUnIrqAmnRmHqp8g6m4n2FvTUc4LTtwaPYZ++90gt21vR
+         F8jt4o7ClHge8GKDZdn67W5+Me1cE0nkcWUl/B2fPhZS15N1v/Fs4/wmBFy/593Nw3OD
+         wZDgIXgmjVu83WCDxKIp12IV/h59nXP2nY7fyefVY0Nk+j9MxdOSAfLKktkW/jxeswFa
+         zu8ZdLNQiKFRn170yxjzIjnQR66FVnPTp+aNBpcMXTfDDAvrMjhGaK4Y3EpEWYkwB/Yj
+         P5vnQM0hqbW04EmuUQYmwWlDH73NBzussd9k2VgjU40UeGK43cDLBSYunKcZHMaAYMmb
+         gKqQ==
+X-Gm-Message-State: AGi0PuZf5Q9dlbj1uraSKVPTUJAP8Y1d2gKqEwlQD4GcMDQdVHjH80eJ
+        cwf5wzgG4U4EpT08hhTMqfUQBZzS
+X-Google-Smtp-Source: APiQypLc9cevN8MgpO3YHzOln3jVyVBmjzXJHq/s/Hq8NWEZeKUQbi1K/+v7+dYM6zExklWD0fLCVw==
+X-Received: by 2002:a1c:4144:: with SMTP id o65mr14362674wma.78.1587320197060;
+        Sun, 19 Apr 2020 11:16:37 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:6000:39dc:7003:657c:dd6e? (p200300EA8F29600039DC7003657CDD6E.dip0.t-ipconnect.de. [2003:ea:8f29:6000:39dc:7003:657c:dd6e])
+        by smtp.googlemail.com with ESMTPSA id w11sm16204004wmi.32.2020.04.19.11.16.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 19 Apr 2020 11:16:36 -0700 (PDT)
+Subject: [PATCH net-next v2 2/3] r8169: replace dma_rmb with READ_ONCE in
+ rtl_rx
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <a7e1d491-bede-6f86-cff0-f2b74d8af2b3@gmail.com>
+Message-ID: <70576d8a-1bb3-c692-6dbd-2304c233e592@gmail.com>
+Date:   Sun, 19 Apr 2020 20:15:29 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20200416005549.9683-2-robh@kernel.org>
-References: <20200416005549.9683-1-robh@kernel.org> <20200416005549.9683-2-robh@kernel.org>
-Subject: Re: [PATCH 2/2] dt-bindings: Remove cases of 'allOf' containing a '$ref'
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>, Vinod Koul <vkoul@kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Amit Kucheria <amit.kucheria@linaro.org>,
-        Danie l Lezcano <daniel.lezcano@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-i2c@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org
-To:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Sun, 19 Apr 2020 11:14:38 -0700
-Message-ID: <158732007844.132238.3936257450130949073@swboyd.mtv.corp.google.com>
-User-Agent: alot/0.9
+In-Reply-To: <a7e1d491-bede-6f86-cff0-f2b74d8af2b3@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Rob Herring (2020-04-15 17:55:49)
-> json-schema versions draft7 and earlier have a weird behavior in that
-> any keywords combined with a '$ref' are ignored (silently). The correct
-> form was to put a '$ref' under an 'allOf'. This behavior is now changed
-> in the 2019-09 json-schema spec and '$ref' can be mixed with other
-> keywords. The json-schema library doesn't yet support this, but the
-> tooling now does a fixup for this and either way works.
->=20
-> This has been a constant source of review comments, so let's change this
-> treewide so everyone copies the simpler syntax.
->=20
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  .../bindings/clock/fixed-factor-clock.yaml    |   5 +-
+We want to ensure that desc->opts1 is read before desc->opts2.
+This doesn't require a full compiler barrier. READ_ONCE provides
+the ordering guarantee we need.
 
-Reviewed-by: Stephen Boyd <sboyd@kernel.org> # clock
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index dd6113fd7..2fc65aca3 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -1548,7 +1548,7 @@ static inline u32 rtl8169_tx_vlan_tag(struct sk_buff *skb)
+ 
+ static void rtl8169_rx_vlan_tag(struct RxDesc *desc, struct sk_buff *skb)
+ {
+-	u32 opts2 = le32_to_cpu(desc->opts2);
++	u32 opts2 = le32_to_cpu(READ_ONCE(desc->opts2));
+ 
+ 	if (opts2 & RxVlanTag)
+ 		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), swab16(opts2 & 0xffff));
+@@ -4490,16 +4490,11 @@ static int rtl_rx(struct net_device *dev, struct rtl8169_private *tp, u32 budget
+ 		struct RxDesc *desc = tp->RxDescArray + entry;
+ 		u32 status;
+ 
+-		status = le32_to_cpu(desc->opts1);
++		/* Use READ_ONCE to order descriptor field reads */
++		status = le32_to_cpu(READ_ONCE(desc->opts1));
+ 		if (status & DescOwn)
+ 			break;
+ 
+-		/* This barrier is needed to keep us from reading
+-		 * any other fields out of the Rx descriptor until
+-		 * we know the status of DescOwn
+-		 */
+-		dma_rmb();
+-
+ 		if (unlikely(status & RxRES)) {
+ 			netif_info(tp, rx_err, dev, "Rx ERROR. status = %08x\n",
+ 				   status);
+-- 
+2.26.1
+
+
