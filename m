@@ -2,112 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E16861AFBCA
-	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 17:49:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A50F1AFBCF
+	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 17:55:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726318AbgDSPtr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 11:49:47 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:48432 "EHLO vps0.lunn.ch"
+        id S1726287AbgDSPzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 11:55:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46168 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725939AbgDSPtq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Apr 2020 11:49:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=9MvkBXmiEdANg+HoZVypf5aaCZQcXxBtGb3cmIo49e4=; b=oOU/p5eBY6McgT+ZdYrf2lGtEp
-        8xEBF8J9m8asiWfs8rSVsrIX3a97REZg/9Oa4w0hk4fT8jI/O4BtNjN8PhVIAHSfGp87zgx4ZbOQC
-        +wKpRD8ugKNiZ+Xq2WVMXxvtr+C/MSPbLeWEUIH9NK+Va9/Q6+/c8e5BqPg5WcmpYeXM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jQCCV-003eaj-5k; Sun, 19 Apr 2020 17:49:43 +0200
-Date:   Sun, 19 Apr 2020 17:49:43 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v2 2/3] net: phy: add Broadcom BCM54140 support
-Message-ID: <20200419154943.GJ836632@lunn.ch>
-References: <20200419101249.28991-1-michael@walle.cc>
- <20200419101249.28991-2-michael@walle.cc>
+        id S1725939AbgDSPzg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Apr 2020 11:55:36 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E2C4E21744;
+        Sun, 19 Apr 2020 15:55:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587311735;
+        bh=AXjjzm0OAJt2Bp3VoxLeT77TO2+mdY+nGusLXaZbMbU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=B9qZpO+eBiFSNRCmnj5JJrPgrEj+pseH3LcGKrUmk5Q6FmMx7WUOaKY6C53+ktwhw
+         4ris4gcbbEUYe4azOVzwuIotnS+9YgGrmo/TXSaF9wP3TCPEk9+6DZEVHwCj74T1R6
+         OHRS8/wGel8+Emno/5wGdsR5aVtZ3h/XWDL+kua8=
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
+        Borislav Petkov <bp@suse.de>, Jessica Yu <jeyu@kernel.org>,
+        linux-kbuild@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>, netdev@vger.kernel.org
+Subject: [PATCH net-next v2 4/4] kernel/module: Hide vermagic header file from general use
+Date:   Sun, 19 Apr 2020 18:55:06 +0300
+Message-Id: <20200419155506.129392-1-leon@kernel.org>
+X-Mailer: git-send-email 2.25.2
+In-Reply-To: <20200419141850.126507-1-leon@kernel.org>
+References: <20200419141850.126507-1-leon@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200419101249.28991-2-michael@walle.cc>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 19, 2020 at 12:12:48PM +0200, Michael Walle wrote:
+From: Leon Romanovsky <leonro@mellanox.com>
 
-Hi Michael
+VERMAGIC* definitions are not supposed to be used by the drivers,
+see this [1] bug report, so introduce special define to guard inclusion
+of this header file and define it in kernel/modules.h and in internal
+script that generates *.mod.c files.
 
-> +static int bcm54140_b0_workaround(struct phy_device *phydev)
-> +{
-> +	int spare3;
-> +	int ret;
+In-tree module build:
+➜  kernel git:(vermagic) ✗ make clean
+➜  kernel git:(vermagic) ✗ make M=drivers/infiniband/hw/mlx5
+➜  kernel git:(vermagic) ✗ modinfo drivers/infiniband/hw/mlx5/mlx5_ib.ko
+filename:	/images/leonro/src/kernel/drivers/infiniband/hw/mlx5/mlx5_ib.ko
+<...>
+vermagic:       5.6.0+ SMP mod_unload modversions
 
-Could you add a comment about what this is working around?
+Out-of-tree module build:
+➜  mlx5 make -C /images/leonro/src/kernel clean M=/tmp/mlx5
+➜  mlx5 make -C /images/leonro/src/kernel M=/tmp/mlx5
+➜  mlx5 modinfo /tmp/mlx5/mlx5_ib.ko
+filename:       /tmp/mlx5/mlx5_ib.ko
+<...>
+vermagic:       5.6.0+ SMP mod_unload modversions
 
-> +static int bcm54140_phy_probe(struct phy_device *phydev)
-> +{
-> +	struct bcm54140_phy_priv *priv;
-> +	int ret;
-> +
-> +	priv = devm_kzalloc(&phydev->mdio.dev, sizeof(*priv), GFP_KERNEL);
-> +	if (!priv)
-> +		return -ENOMEM;
-> +
-> +	phydev->priv = priv;
-> +
-> +	ret = bcm54140_get_base_addr_and_port(phydev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	dev_info(&phydev->mdio.dev,
-> +		 "probed (port %d, base PHY address %d)\n",
-> +		 priv->port, priv->base_addr);
+[1] https://lore.kernel.org/lkml/20200411155623.GA22175@zn.tnic
+Reported-by: Borislav Petkov <bp@suse.de>
+Acked-by: Borislav Petkov <bp@suse.de>
+Acked-by: Jessica Yu <jeyu@kernel.org>
+Co-developed-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+---
+ include/linux/vermagic.h | 5 +++++
+ kernel/module.c          | 3 +++
+ scripts/mod/modpost.c    | 1 +
+ 3 files changed, 9 insertions(+)
 
-phydev_dbg() ? Do we need to see this message four times?
+diff --git a/include/linux/vermagic.h b/include/linux/vermagic.h
+index 9aced11e9000..7768d20ada39 100644
+--- a/include/linux/vermagic.h
++++ b/include/linux/vermagic.h
+@@ -1,4 +1,9 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
++
++#ifndef INCLUDE_VERMAGIC
++#error "This header can be included from kernel/module.c or *.mod.c only"
++#endif
++
+ #include <generated/utsrelease.h>
 
-> +
-> +	return 0;
-> +}
-> +
-> +static int bcm54140_config_init(struct phy_device *phydev)
-> +{
-> +	u16 reg = 0xffff;
-> +	int ret;
-> +
-> +	/* Apply hardware errata */
-> +	ret = bcm54140_b0_workaround(phydev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Unmask events we are interested in. */
-> +	reg &= ~(BCM54140_RDB_INT_DUPLEX |
-> +		 BCM54140_RDB_INT_SPEED |
-> +		 BCM54140_RDB_INT_LINK);
-> +	ret = bcm_phy_write_rdb(phydev, BCM54140_RDB_IMR, reg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* LED1=LINKSPD[1], LED2=LINKSPD[2], LED3=ACTIVITY */
-> +	ret = bcm_phy_modify_rdb(phydev, BCM54140_RDB_SPARE1,
-> +				 0, BCM54140_RDB_SPARE1_LSLM);
-> +	if (ret)
-> +		return ret;
+ /* Simply sanity version stamp for modules. */
+diff --git a/kernel/module.c b/kernel/module.c
+index 646f1e2330d2..8833e848b73c 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -4,6 +4,9 @@
+    Copyright (C) 2001 Rusty Russell, 2002, 2010 Rusty Russell IBM.
 
-What are the reset default for LEDs? Can the LEDs be configured via
-strapping pins? There is currently no good solution for this. Whatever
-you pick will be wrong for somebody else. At minimum, strapping pins,
-if they exist, should not be overridden.
+ */
++
++#define INCLUDE_VERMAGIC
++
+ #include <linux/export.h>
+ #include <linux/extable.h>
+ #include <linux/moduleloader.h>
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index 5c3c50c5ec52..7f7d4ee7b652 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -2251,6 +2251,7 @@ static void add_header(struct buffer *b, struct module *mod)
+ 	 * Include build-salt.h after module.h in order to
+ 	 * inherit the definitions.
+ 	 */
++	buf_printf(b, "#define INCLUDE_VERMAGIC\n");
+ 	buf_printf(b, "#include <linux/build-salt.h>\n");
+ 	buf_printf(b, "#include <linux/vermagic.h>\n");
+ 	buf_printf(b, "#include <linux/compiler.h>\n");
+--
+2.25.2
 
