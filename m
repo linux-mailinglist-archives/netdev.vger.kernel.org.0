@@ -2,85 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B52021AFCF1
-	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 20:02:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 494BA1AFD01
+	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 20:11:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726498AbgDSSBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 14:01:47 -0400
-Received: from esa4.microchip.iphmx.com ([68.232.154.123]:7940 "EHLO
-        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725793AbgDSSBq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 14:01:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1587319306; x=1618855306;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=PZCe66rtkt6vuLucf0J+7oucMB4zIT+Ne++JDKdkHQg=;
-  b=GjpaINbWXKj6y85umgM03pc416NVXAPzahEfShYZ9Jjt07QSz71CQNJQ
-   TIe4/cYcwFVOt/1FrEUlpFdOhRAcvbSyd1agoC0FxCQzESwyijjHG5+jf
-   sBnsJmpFdSmfUKxb2zKpR3/loBz/3zgAiDZi/hLmF9gniCn42FQCkyZOA
-   wgLRFZP3u7XakVJzEEA22mRaR42jXztwn02Orr/lm0sR6COlxZbDg5KmY
-   sZJhlAmCro3iCmoyMQ/MIIpcBDGnS/7CW0KSfvDtWxwSXJ5ERdFW9CIeD
-   SkZjWuGrPPGWmOqlp9T8evf2R/cs1wn9aCdcyKKOCUo12GTYVNGVzALuY
-   g==;
-IronPort-SDR: ndD5hgwaFYlzoS1114exR2HsETDw0vHMdt9IGjRBoJ/m/RsJCc++T1C1b8udexQhVvPOj/2ye/
- zQ1iwYW3k4Kg4CSZLF9XLMPz9TPemaFzkXTHm/IagZ3tdQyauUmZt6+YR8Z08P3Vw66pGjUxhf
- E0Oe518L13zUX3O4HmPWlX2nRVWAXq1B9Ml7+T0lYvLmkRmEXtAG+e4rQPJVxaHszwuud0fxqA
- 8C5+mgGFlIVJ5bm3AYb89OJkBKm+yMKkRZ5t0ZZqlYg3umzK8B8cqfVTDZrlcaU9EJJhwZ1N8H
- Yjc=
-X-IronPort-AV: E=Sophos;i="5.72,403,1580799600"; 
-   d="scan'208";a="70826916"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Apr 2020 11:01:45 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Sun, 19 Apr 2020 11:01:51 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Sun, 19 Apr 2020 11:01:44 -0700
-Date:   Sun, 19 Apr 2020 20:01:43 +0200
-From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
-To:     Ido Schimmel <idosch@idosch.org>
-CC:     Vladimir Oltean <olteanv@gmail.com>, <davem@davemloft.net>,
-        <horatiu.vultur@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <antoine.tenart@bootlin.com>, <andrew@lunn.ch>,
-        <f.fainelli@gmail.com>, <vivien.didelot@gmail.com>,
-        <joergen.andreasen@microchip.com>, <claudiu.manoil@nxp.com>,
-        <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
-        <alexandru.marginean@nxp.com>, <xiaoliang.yang_1@nxp.com>,
-        <yangbo.lu@nxp.com>, <po.liu@nxp.com>, <jiri@mellanox.com>,
-        <kuba@kernel.org>
-Subject: Re: [PATCH net-next] net: mscc: ocelot: deal with problematic
- MAC_ETYPE VCAP IS2 rules
-Message-ID: <20200419180143.ibexwjrlp3flla6z@ws.localdomain>
-References: <20200417190308.32598-1-olteanv@gmail.com>
- <20200419073307.uhm3w2jhsczpchvi@ws.localdomain>
- <20200419083032.GA3479405@splinter>
+        id S1726498AbgDSSLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 14:11:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59478 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726441AbgDSSLM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 14:11:12 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57E97C061A0C
+        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 11:11:12 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id g13so7249794wrb.8
+        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 11:11:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=QH24Qq+Xskcfr6K9mWUZgfebjvcLZYaWh4QReTplnhw=;
+        b=IHpQs36wy95y1Bjlb4nt31pMOd+fLJYVwOX0+rh6R1cChQFoW4T5sd4vpDHtfl5wcJ
+         pGG6feUYMsla4qBPevRjyFo+aO9CJ125t00E2nkQK4fgkTCDLf74QQLM1d7DDqYXlJLY
+         txDTMwzKRmLoY16r56fxEhlFUZRMz1uPUXJeupz+0+DkQXrBS7Wuq7hX5N7jbNipZtfT
+         kyL9xhQoJQ69XWwW+3HOUe83xO0vuM5M3SvHAXtBOR+BcBSSp+RRG/8fPmEqoat6/qw7
+         KlCBfh1Pru4jljcfVrOCGtysoqk4OrDouJFcRQPn4heB0nK1v1hQQ9LnxW88VIu9QtUc
+         iLdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=QH24Qq+Xskcfr6K9mWUZgfebjvcLZYaWh4QReTplnhw=;
+        b=hKUH0Zlzu10VrX600ANzLZlCFei1Y6Aq3Bbh2/u2LOioBv2xHDRzzNUqM5uoW0iEJj
+         ftzFaCd6hBLsidzEFGV37ZmwcTmmuuaw6oYVySMlZzBmPscvDvz5dlOSzO2VwZKu0Jbw
+         goph3Dp3sH+arKIacCiqwCAog6wLtoav5J/A+ty0kMxkCaDTAfQlCdRc/qn6K8KeZfxf
+         GrnKwhEP+SyuWuzqSUdXqDFCUNgfhydKvaYNAtADyDN3nEFBfcNgdsrgfEzlPDW+GJ5j
+         /fYF3Zla4yuf8P59aCTA43yE3cmUNU/nVFQCfprEy79mOxYgONjOO3hklvp5RzFI0I+o
+         CfBQ==
+X-Gm-Message-State: AGi0PuaNtwmZOUh4JJvfF6KvdPINCxPv1aGXDWH/foW9iMzVq7zL2ZGg
+        +3Ezw8PdKN8LfvaInSBMZ2MEu0S7
+X-Google-Smtp-Source: APiQypLgGf3Ay3UUf+7HwDbKChSKUG76IxMvw478S08gv2SX32i0owCM9bf5NFdVnbBRzxlt+FnsXg==
+X-Received: by 2002:adf:916f:: with SMTP id j102mr14161957wrj.335.1587319870894;
+        Sun, 19 Apr 2020 11:11:10 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:6000:39dc:7003:657c:dd6e? (p200300EA8F29600039DC7003657CDD6E.dip0.t-ipconnect.de. [2003:ea:8f29:6000:39dc:7003:657c:dd6e])
+        by smtp.googlemail.com with ESMTPSA id a187sm16373394wmh.40.2020.04.19.11.11.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 19 Apr 2020 11:11:10 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/4] r8169: improve memory barriers
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <c1df4a9e-6be8-d529-7eb0-ea5bdf2b77ec@gmail.com>
+Message-ID: <89304075-b079-2489-070c-5934e1d34e0c@gmail.com>
+Date:   Sun, 19 Apr 2020 20:11:06 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20200419083032.GA3479405@splinter>
+In-Reply-To: <c1df4a9e-6be8-d529-7eb0-ea5bdf2b77ec@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19.04.2020 11:30, Ido Schimmel wrote:
->Not sure I completely understand the difficulties you are facing, but it
->sounds similar to a problem we had in mlxsw. You might want to look into
->"chain templates" [1] in order to restrict the keys that can be used
->simultaneously.
-Not sure I understood the details, but but sure it is the same issue we
-are trying to solve.
+On 19.04.2020 19:38, Heiner Kallweit wrote:
+> This series includes improvements for (too heavy) memory barriers.
+> Tested on x86-64 with RTL8168g chip version.
+> 
+> Heiner Kallweit (4):
+>   r8169: use smp_store_mb in rtl_tx
+>   r8169: change wmb to dma_wmb in rtl8169_start_xmit
 
->I don't mind participating in an online discussion if you think it can
->help.
-I'm sure it would be helpfull to have someone with insight in the MLX
-driver. I have been looking a lot at it, and there are large part of it
-which I still have not understood.
+I think I'll have to drip this patch from the series. These Realtek
+chips are also used on non-x86 platforms, and these platforms may
+not be coherent. I'll send a v2.
 
-If you get too borrowed you can always leave ;-)
+>   r8169: replace dma_rmb with READ_ONCE in rtl_rx
+>   r8169: use WRITE_ONCE instead of dma_wmb in rtl8169_mark_to_asic
+> 
+>  drivers/net/ethernet/realtek/r8169_main.c | 26 ++++++++---------------
+>  1 file changed, 9 insertions(+), 17 deletions(-)
+> 
 
-/Allan
