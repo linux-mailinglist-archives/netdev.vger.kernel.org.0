@@ -2,111 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 849C71AF8BF
-	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 10:28:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C4D61AF8C3
+	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 10:30:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725947AbgDSI2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 04:28:17 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:34769 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725446AbgDSI2R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 04:28:17 -0400
-Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id E81AA2305A;
-        Sun, 19 Apr 2020 10:28:11 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1587284893;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=N4f/9VBPhLcDkVM1aNxaUNDPUksCBDZa/OfflSf7YKw=;
-        b=ZoaByf8Jmeub8ToPvGK6RF6T7dRIyRys/a+ZNgoxwfbvWrXDGtWc+QuqZ8EIWN3kCAEQPA
-        Sd4KjusP9+fqIvJlPN+aK0RXugJmtPgHJ71QjAa26aP3sA1eKldGO/V9/WTz/YQ5ELbE/G
-        9yfbYlcRxyyLIGU2ImYcNFR+dN08gdg=
-From:   Michael Walle <michael@walle.cc>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next] net: phy: mscc: use mdiobus_get_phy()
-Date:   Sun, 19 Apr 2020 10:27:57 +0200
-Message-Id: <20200419082757.5650-1-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
+        id S1725959AbgDSIah (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 04:30:37 -0400
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:56259 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725905AbgDSIag (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 04:30:36 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id B65B4580274;
+        Sun, 19 Apr 2020 04:30:35 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Sun, 19 Apr 2020 04:30:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=xFsT5O
+        q/6TltH8ujvN3TMeI7egC0+L5x/aExf1ACPNg=; b=XNP4eH2stJlWOiaNzQsNIe
+        2QSG6RuFttzD57rY6Y8YTTdZusSs5aNwOWgic6np/PHAHV+pq614v5GYygpf8f2x
+        HzoHRe6+6PkeELKHz6fesnolop1q294s9gl7LbXwOa1UdER5XiG2kazDdvJ+pTPQ
+        crCZcGNin8G9cX6WOnsiHKK7KajOgDp7Efyl4JYi12YE4aOa6HyRnONmRqEjrVBd
+        9gV+Zep/ik2E08iDDfYeyTt7SlYW/6HvSYK/wDRGJLF2mN0ADk0trbN+pOynCexa
+        Xsmb91tCEuXXDpseOKhgAsF/BdNgm8KmD+qwA14laq0oy9eubLyaVZSTUqu/Ko5Q
+        ==
+X-ME-Sender: <xms:KgycXsLKU9B5a6LFRHVDcCcRD1Q-H8M52Ss6697rV_o1PAjxE95nFw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrgedugddthecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuffhomhgrihhnpe
+    hgihhthhhusgdrtghomhenucfkphepjeelrddukedtrdehgedrudduieenucevlhhushht
+    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguoh
+    hstghhrdhorhhg
+X-ME-Proxy: <xmx:KgycXkVdX_0LPPoewFJ6XoVS57SPIz4ZqJeyRBYHLQaZ00Dz0bwmiA>
+    <xmx:KgycXimjonaCSYfw0SY1q0-v8QtgUqdGk07F5VfqaTCMs4U_eRBWAg>
+    <xmx:KgycXidNdDxbYe7ra0L6AM3ypZhQVzKVRDth9EYZce-NMRifg7vKQw>
+    <xmx:KwycXigU4nZp6b5MOiGDnNv9hdmG8iQvJFhPlm5r2AOR3lpmbxjgXw>
+Received: from localhost (bzq-79-180-54-116.red.bezeqint.net [79.180.54.116])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 3927F328005A;
+        Sun, 19 Apr 2020 04:30:34 -0400 (EDT)
+Date:   Sun, 19 Apr 2020 11:30:32 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
+        horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
+        antoine.tenart@bootlin.com, andrew@lunn.ch, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, joergen.andreasen@microchip.com,
+        claudiu.manoil@nxp.com, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, alexandru.marginean@nxp.com,
+        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com, po.liu@nxp.com,
+        jiri@mellanox.com, kuba@kernel.org
+Subject: Re: [PATCH net-next] net: mscc: ocelot: deal with problematic
+ MAC_ETYPE VCAP IS2 rules
+Message-ID: <20200419083032.GA3479405@splinter>
+References: <20200417190308.32598-1-olteanv@gmail.com>
+ <20200419073307.uhm3w2jhsczpchvi@ws.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spamd-Bar: ++++++
-X-Spam-Level: ******
-X-Rspamd-Server: web
-X-Spam-Status: Yes, score=6.40
-X-Spam-Score: 6.40
-X-Rspamd-Queue-Id: E81AA2305A
-X-Spamd-Result: default: False [6.40 / 15.00];
-         FROM_HAS_DN(0.00)[];
-         TO_DN_SOME(0.00)[];
-         R_MISSING_CHARSET(2.50)[];
-         FREEMAIL_ENVRCPT(0.00)[gmail.com];
-         TAGGED_RCPT(0.00)[];
-         MIME_GOOD(-0.10)[text/plain];
-         BROKEN_CONTENT_TYPE(1.50)[];
-         TO_MATCH_ENVRCPT_ALL(0.00)[];
-         NEURAL_SPAM(0.00)[0.864];
-         DKIM_SIGNED(0.00)[];
-         RCPT_COUNT_SEVEN(0.00)[9];
-         MID_CONTAINS_FROM(1.00)[];
-         RCVD_COUNT_ZERO(0.00)[0];
-         FROM_EQ_ENVFROM(0.00)[];
-         MIME_TRACE(0.00)[0:+];
-         ASN(0.00)[asn:31334, ipnet:2a02:810c:8000::/33, country:DE];
-         FREEMAIL_CC(0.00)[lunn.ch,gmail.com,armlinux.org.uk,davemloft.net,nxp.com,walle.cc];
-         SUSPICIOUS_RECIPS(1.50)[]
-X-Spam: Yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200419073307.uhm3w2jhsczpchvi@ws.localdomain>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't use internal knowledge of the mdio bus core, instead use
-mdiobus_get_phy() which does the same thing.
+On Sun, Apr 19, 2020 at 09:33:07AM +0200, Allan W. Nielsen wrote:
+> Hi,
+> 
+> Sorry I did not manage to provide feedback before it was merged (I will
+> need to consult some of my colleagues Monday before I can provide the
+> foll feedback).
+> 
+> There are many good things in this patch, but it is not only good.
+> 
+> The problem is that these TCAMs/VCAPs are insanely complicated and it is
+> really hard to make them fit nicely into the existing tc frame-work
+> (being hard does not mean that we should not try).
+> 
+> In this patch, you try to automatic figure out who the user want the
+> TCAM to be configured. It works for 1 use-case but it breaks others.
+> 
+> Before this patch you could do a:
+>     tc filter add dev swp0 ingress protocol ipv4 \
+>             flower skip_sw src_ip 10.0.0.1 action drop
+>     tc filter add dev swp0 ingress \
+>             flower skip_sw src_mac 96:18:82:00:04:01 action drop
+> 
+> But the second rule would not apply to the ICMP over IPv4 over Ethernet
+> packet, it would however apply to non-IP packets.
+> 
+> With this patch it not possible. Your use-case is more common, but the
+> other one is not unrealistic.
+> 
+> My concern with this, is that I do not think it is possible to automatic
+> detect how these TCAMs needs to be configured by only looking at the
+> rules installed by the user. Trying to do this automatic, also makes the
+> TCAM logic even harder to understand for the user.
+> 
+> I would prefer that we by default uses some conservative default
+> settings which are easy to understand, and then expose some expert
+> settings in the sysfs, which can be used to achieve different
+> behavioral.
+> 
+> Maybe forcing MAC_ETYPE matches is the most conservative and easiest to
+> understand default.
+> 
+> But I do seem to recall that there is a way to allow matching on both
+> SMAC and SIP (your original motivation). This may be a better default
+> (despite that it consumes more TCAM resources). I will follow up and
+> check if this is possible.
+> 
+> Vladimir (and anyone else whom interested): would you be interested in
+> spending some time discussion the more high-level architectures and
+> use-cases on how to best integrate this TCAM architecture into the Linux
+> kernel. Not sure on the outlook for the various conferences, but we
+> could arrange some online session to discuss this.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/net/phy/mscc/mscc_main.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+Not sure I completely understand the difficulties you are facing, but it
+sounds similar to a problem we had in mlxsw. You might want to look into
+"chain templates" [1] in order to restrict the keys that can be used
+simultaneously.
 
-diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-index acddef79f4e8..5391acdece05 100644
---- a/drivers/net/phy/mscc/mscc_main.c
-+++ b/drivers/net/phy/mscc/mscc_main.c
-@@ -1292,7 +1292,7 @@ static int vsc8584_config_pre_init(struct phy_device *phydev)
-  */
- static bool vsc8584_is_pkg_init(struct phy_device *phydev, bool reversed)
- {
--	struct mdio_device **map = phydev->mdio.bus->mdio_map;
-+	struct mii_bus *bus = phydev->mdio.bus;
- 	struct vsc8531_private *vsc8531;
- 	struct phy_device *phy;
- 	int i, addr;
-@@ -1306,11 +1306,10 @@ static bool vsc8584_is_pkg_init(struct phy_device *phydev, bool reversed)
- 		else
- 			addr = vsc8531->base_addr + i;
- 
--		if (!map[addr])
-+		phy = mdiobus_get_phy(bus, addr);
-+		if (!phy)
- 			continue;
- 
--		phy = container_of(map[addr], struct phy_device, mdio);
--
- 		if ((phy->phy_id & phydev->drv->phy_id_mask) !=
- 		    (phydev->drv->phy_id & phydev->drv->phy_id_mask))
- 			continue;
--- 
-2.20.1
+I don't mind participating in an online discussion if you think it can
+help.
 
+[1] https://github.com/Mellanox/mlxsw/wiki/ACLs#chain-templates
