@@ -2,118 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1958B1AF89F
-	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 10:11:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 849C71AF8BF
+	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 10:28:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725949AbgDSILM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 04:11:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52426 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725446AbgDSILM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 04:11:12 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC6B6C061A0C
-        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 01:11:10 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id x26so3467812pgc.10
-        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 01:11:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=6J/mPMYONo5gu7uLY9QKdJaHPBRNRwBNp5lkyS11tDs=;
-        b=jKUneVDi+J09a9WDwWf00+VveVDLUDDaqkTMxqb3nt0ltwsNTcqMDXaPlOU2FqHhmk
-         Qg8VpFTbeyD8EA28MB/ML07u2vvOIHbrdnOz32QEdEz0xG3Wt8ywMOpJsyPaXtQ5NcGO
-         iULedyp+9TJA7dlwGw6s9/eSgseHwonLV7JL0Z3Jr0kr2y8l3BtNqvjPqu+DmAqrZyKF
-         GBYPnZ4EeQxeYm3QJcuCyIwEdhIdZiCzaJksLizuidqTO4fBInEYKiEW72BtUyrSENo5
-         DsyviPvQTQpczAvM+hsWjfLQ5ABAyBi3/sDqTCPGshOzJx0Vyim+j84to7VtBafSRMmu
-         dyfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=6J/mPMYONo5gu7uLY9QKdJaHPBRNRwBNp5lkyS11tDs=;
-        b=IV++fVxPqZ7g6mXaqhUbFMgbkRSj2D+gUqp/olJNmKWs/IIxSBL5s8W09qYI1WJwuT
-         icncrhNuvSMorNh7VI12x+cuOIM7zE81vLPuLlCmZBUdEnSqXm+8fqmN+cf5kwI0arkv
-         2JkrcDCbiQXPTIiYWsIaXFFZmuJL5s2NqugPaJTtra9d308ZxTL37DzENKAF9lUqRlT6
-         L2h3/9UVUmeAt7R0gsoUxkOcPX6GKOHjF6HDZHRQ3qjubdwh6q8dFa76UzgolAcNmerm
-         Q3BS58blO7Jgq6mesk14qCb7FwwiUEIkDS/LZqfK3cbfvNxp/IVQyiigfelfIob8rhZe
-         pWJw==
-X-Gm-Message-State: AGi0Pub7MPkHF1ga7cYrwhbDWIbJPzWPiu4H35y+4dn0BWWaqVR4O3Xo
-        sd7wG2C8z/E4zZJgm4+ZZwg9t/gd
-X-Google-Smtp-Source: APiQypKNmFS76F/FSwPdqHnxPBmZldAlLjaIDaLGg6Z6qDRo3ml3c5MRrzBMK5X/LryZy1PpE96EFA==
-X-Received: by 2002:a62:7515:: with SMTP id q21mr11939467pfc.1.1587283870112;
-        Sun, 19 Apr 2020 01:11:10 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id y29sm7335037pfq.162.2020.04.19.01.11.08
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 19 Apr 2020 01:11:09 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sabrina Dubroca <sd@queasysnail.net>
-Subject: [PATCHv2 ipsec] esp4: support ipv6 nexthdrs process for beet gso segment
-Date:   Sun, 19 Apr 2020 16:11:02 +0800
-Message-Id: <234f0732bd3bff63ea88febcd4107a32ac4d9f95.1587283862.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
+        id S1725947AbgDSI2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 04:28:17 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:34769 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725446AbgDSI2R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 04:28:17 -0400
+Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id E81AA2305A;
+        Sun, 19 Apr 2020 10:28:11 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1587284893;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=N4f/9VBPhLcDkVM1aNxaUNDPUksCBDZa/OfflSf7YKw=;
+        b=ZoaByf8Jmeub8ToPvGK6RF6T7dRIyRys/a+ZNgoxwfbvWrXDGtWc+QuqZ8EIWN3kCAEQPA
+        Sd4KjusP9+fqIvJlPN+aK0RXugJmtPgHJ71QjAa26aP3sA1eKldGO/V9/WTz/YQ5ELbE/G
+        9yfbYlcRxyyLIGU2ImYcNFR+dN08gdg=
+From:   Michael Walle <michael@walle.cc>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next] net: phy: mscc: use mdiobus_get_phy()
+Date:   Sun, 19 Apr 2020 10:27:57 +0200
+Message-Id: <20200419082757.5650-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spamd-Bar: ++++++
+X-Spam-Level: ******
+X-Rspamd-Server: web
+X-Spam-Status: Yes, score=6.40
+X-Spam-Score: 6.40
+X-Rspamd-Queue-Id: E81AA2305A
+X-Spamd-Result: default: False [6.40 / 15.00];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         R_MISSING_CHARSET(2.50)[];
+         FREEMAIL_ENVRCPT(0.00)[gmail.com];
+         TAGGED_RCPT(0.00)[];
+         MIME_GOOD(-0.10)[text/plain];
+         BROKEN_CONTENT_TYPE(1.50)[];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         NEURAL_SPAM(0.00)[0.864];
+         DKIM_SIGNED(0.00)[];
+         RCPT_COUNT_SEVEN(0.00)[9];
+         MID_CONTAINS_FROM(1.00)[];
+         RCVD_COUNT_ZERO(0.00)[0];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         ASN(0.00)[asn:31334, ipnet:2a02:810c:8000::/33, country:DE];
+         FREEMAIL_CC(0.00)[lunn.ch,gmail.com,armlinux.org.uk,davemloft.net,nxp.com,walle.cc];
+         SUSPICIOUS_RECIPS(1.50)[]
+X-Spam: Yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For beet mode, when it's ipv6 inner address with nexthdrs set,
-the packet format might be:
+Don't use internal knowledge of the mdio bus core, instead use
+mdiobus_get_phy() which does the same thing.
 
-    ----------------------------------------------------
-    | outer  |     | dest |     |      |  ESP    | ESP |
-    | IP hdr | ESP | opts.| TCP | Data | Trailer | ICV |
-    ----------------------------------------------------
-
-Before doing gso segment in xfrm4_beet_gso_segment(), the same
-thing is needed as it does in xfrm6_beet_gso_segment() in last
-patch 'esp6: support ipv6 nexthdrs process for beet gso segment'.
-
-v1->v2:
-  - remove skb_transport_offset(), as it will always return 0
-    in xfrm6_beet_gso_segment(), thank Sabrina's check.
-
-Fixes: 384a46ea7bdc ("esp4: add gso_segment for esp4 beet mode")
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- net/ipv4/esp4_offload.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/net/phy/mscc/mscc_main.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv4/esp4_offload.c b/net/ipv4/esp4_offload.c
-index 731022c..31eb976 100644
---- a/net/ipv4/esp4_offload.c
-+++ b/net/ipv4/esp4_offload.c
-@@ -139,7 +139,7 @@ static struct sk_buff *xfrm4_beet_gso_segment(struct xfrm_state *x,
- 	struct xfrm_offload *xo = xfrm_offload(skb);
- 	struct sk_buff *segs = ERR_PTR(-EINVAL);
- 	const struct net_offload *ops;
--	int proto = xo->proto;
-+	u8 proto = xo->proto;
+diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
+index acddef79f4e8..5391acdece05 100644
+--- a/drivers/net/phy/mscc/mscc_main.c
++++ b/drivers/net/phy/mscc/mscc_main.c
+@@ -1292,7 +1292,7 @@ static int vsc8584_config_pre_init(struct phy_device *phydev)
+  */
+ static bool vsc8584_is_pkg_init(struct phy_device *phydev, bool reversed)
+ {
+-	struct mdio_device **map = phydev->mdio.bus->mdio_map;
++	struct mii_bus *bus = phydev->mdio.bus;
+ 	struct vsc8531_private *vsc8531;
+ 	struct phy_device *phy;
+ 	int i, addr;
+@@ -1306,11 +1306,10 @@ static bool vsc8584_is_pkg_init(struct phy_device *phydev, bool reversed)
+ 		else
+ 			addr = vsc8531->base_addr + i;
  
- 	skb->transport_header += x->props.header_len;
+-		if (!map[addr])
++		phy = mdiobus_get_phy(bus, addr);
++		if (!phy)
+ 			continue;
  
-@@ -148,10 +148,15 @@ static struct sk_buff *xfrm4_beet_gso_segment(struct xfrm_state *x,
- 
- 		skb->transport_header += ph->hdrlen * 8;
- 		proto = ph->nexthdr;
--	} else if (x->sel.family != AF_INET6) {
-+	} else if (x->sel.family == AF_INET6) {
-+		__be16 frag;
-+
-+		skb->transport_header +=
-+			ipv6_skip_exthdr(skb, 0, &proto, &frag);
-+		if (proto == IPPROTO_TCP)
-+			skb_shinfo(skb)->gso_type |= SKB_GSO_TCPV4;
-+	} else {
- 		skb->transport_header -= IPV4_BEET_PHMAXLEN;
--	} else if (proto == IPPROTO_TCP) {
--		skb_shinfo(skb)->gso_type |= SKB_GSO_TCPV4;
- 	}
- 
- 	__skb_pull(skb, skb_transport_offset(skb));
+-		phy = container_of(map[addr], struct phy_device, mdio);
+-
+ 		if ((phy->phy_id & phydev->drv->phy_id_mask) !=
+ 		    (phydev->drv->phy_id & phydev->drv->phy_id_mask))
+ 			continue;
 -- 
-2.1.0
+2.20.1
 
