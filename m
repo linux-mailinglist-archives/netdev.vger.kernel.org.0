@@ -2,106 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE6E81AFDA0
-	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 21:44:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3978B1AFDD8
+	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 21:52:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726498AbgDSToj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 15:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45598 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726472AbgDSToi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 15:44:38 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89950C061A0C;
-        Sun, 19 Apr 2020 12:44:38 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id n143so1651983qkn.8;
-        Sun, 19 Apr 2020 12:44:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/a00SXdtPLR1UXli00oeOMOKBStwD3QxEoGYBvjNXKA=;
-        b=NVDCPA8l7oqxgZUR2EN4/un6Ni8ocqk++OuNEvIbTjfzEAfBnXRBQzHD4YgoVSd4xz
-         qCZCbCeE9OIYjGhQ1U1UiCSSkdMJGisqkw/oVPAUbDaYU3d75ez5Hc+pggzYrbSVfC9Z
-         5w+N3GoY/58c+82ZI5m6wfeMR5Qx8RNX1Jva9hJfSABVEYRCydsav4OgzRp7WIZQDhIv
-         TvlqoVL85v2UhDxz+sneQhJKtazPExPqxdA1BS4r/fq/tl9Fl28eZBVyfBsy07ulH0Nq
-         6lu2x2CRa6yLLOWT4+by8EYUAfpm89yZlqm4qFEBwn5kXjr8SAm3DhqrGg2A/X7aijAT
-         iEDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/a00SXdtPLR1UXli00oeOMOKBStwD3QxEoGYBvjNXKA=;
-        b=awXJGFrlrQyz5VQsvbJA6Ts3wKng1ICvdIEOQzHO5EjDGSOgHXa7aOjG/RRw2EuIYQ
-         zO5caY4WidtXbUyJi93vnwAwMt5M8JrUMH6NgprRhRP1VKBRzomn4Q3ipcWpt2DmITR0
-         huA75V4idloDMARIj2pBq2zsxUYMB6ffY9mo0RQN2mwilsCUwv9/J2J3tSkIdItRpHgt
-         4v+wIXXyewhcqCieT56lxmK8OZcorvltVyOTPRZ7MNhmPVQxKjNCBOZGYlZUe5ubhsQA
-         gH5BoauI6Dg1YatVYRHuOM4dBBgn0yuabACgCMUUm1vijr8dueZJNykOLPSQPy7qwdOj
-         kS2g==
-X-Gm-Message-State: AGi0PuYDh/vQBYoxdIEa/a0Ipvbir4hsSAwDjk8rF0MqwsHrhTTg8M+0
-        CcGV4eHA6l3Ht3GZTmb8jK6Bgrpl
-X-Google-Smtp-Source: APiQypLQyJLMB8U7Ux4CMOC/JrBsRNv9p50j/KhDzT+BgNL0o8BcydpRFHifdyGKjn+y1AGBPsGZqA==
-X-Received: by 2002:a37:4885:: with SMTP id v127mr12647564qka.253.1587325477837;
-        Sun, 19 Apr 2020 12:44:37 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:b4ef:508c:423e:3e6a? ([2601:282:803:7700:b4ef:508c:423e:3e6a])
-        by smtp.googlemail.com with ESMTPSA id b201sm1531138qkg.32.2020.04.19.12.44.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 19 Apr 2020 12:44:37 -0700 (PDT)
-Subject: Re: [PATCH mlx5-next 00/10] Add support to get xmit slave
-To:     Maor Gottlieb <maorg@mellanox.com>, davem@davemloft.net,
-        jgg@mellanox.com, dledford@redhat.com, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org
-Cc:     leonro@mellanox.com, saeedm@mellanox.com, jiri@mellanox.com,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        alexr@mellanox.com
-References: <20200419133933.28258-1-maorg@mellanox.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <ac373456-b838-29cf-645f-b1ea1a93e3b0@gmail.com>
-Date:   Sun, 19 Apr 2020 13:44:34 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
+        id S1726327AbgDSTvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 15:51:33 -0400
+Received: from mga01.intel.com ([192.55.52.88]:45111 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725848AbgDSTvd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Apr 2020 15:51:33 -0400
+IronPort-SDR: ca8GZOK44RcRuhSFtYC/l6YasB8GAAo6nA6+2k+Y9aNkwWbFLyuvry0k1xH80AusPJf63UoTni
+ e45JyXQ3BI8Q==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2020 12:51:32 -0700
+IronPort-SDR: Z+hz8Yq+rjaQuhkv4OhcGse6W8W/qPXXF7sO5M7q3saYUlOcFge1DLsspBIDimhoDIal3kSc2f
+ gZh1JAvQTlOA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,404,1580803200"; 
+   d="scan'208";a="279034390"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
+  by fmsmga004.fm.intel.com with ESMTP; 19 Apr 2020 12:51:32 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next 00/14][pull request] 1GbE Intel Wired LAN Driver Updates 2020-04-19
+Date:   Sun, 19 Apr 2020 12:51:17 -0700
+Message-Id: <20200419195131.1068144-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.25.2
 MIME-Version: 1.0
-In-Reply-To: <20200419133933.28258-1-maorg@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/19/20 7:39 AM, Maor Gottlieb wrote:
-> Hi Dave,
-> 
-> This series is a combination of netdev and RDMA, so in order to avoid
-> conflicts, we would like to ask you to route this series through
-> mlx5-next shared branch. It is based on v5.7-rc1 tag.
-> 
-> ---------------------------------------------------------------------
-> 
-> The following series adds support to get the LAG master xmit slave by
-> introducing new .ndo - ndo_xmit_slave_get. Every LAG module can
+This series contains updates to e1000e and igc only.
 
-I do not see ndo_xmit_slave_get  introduced ...
+Sasha adds new device IDs supported by the igc driver.
 
+Vitaly fixes the S0ix entry and exit flows in e1000e for TGP and newer
+MAC types when a cable is connected.
 
-> 
->  drivers/infiniband/core/Makefile              |   2 +-
->  drivers/infiniband/core/lag.c                 | 139 +++++++++
->  drivers/infiniband/core/verbs.c               |  44 ++-
->  drivers/infiniband/hw/mlx5/ah.c               |   4 +
->  drivers/infiniband/hw/mlx5/gsi.c              |  34 ++-
->  drivers/infiniband/hw/mlx5/main.c             |   2 +
->  drivers/infiniband/hw/mlx5/mlx5_ib.h          |   1 +
->  drivers/infiniband/hw/mlx5/qp.c               | 123 +++++---
->  drivers/net/bonding/bond_alb.c                |  39 ++-
->  drivers/net/bonding/bond_main.c               | 272 +++++++++++++-----
->  drivers/net/ethernet/mellanox/mlx5/core/lag.c |  66 +++--
->  include/linux/mlx5/driver.h                   |   2 +
->  include/linux/mlx5/mlx5_ifc.h                 |   4 +-
->  include/linux/mlx5/qp.h                       |   2 +
->  include/linux/netdevice.h                     |   3 +
+Andre has the remaining changes in the series, starting with cleanup of
+the igc driver of duplicate code.  Added a check for
+IGC_MAC_STATE_SRC_ADDR flag which is unsupported for MAC filters in igc.
+Cleaned up the return values for igc_add_mac_filter(), where the return
+value was not being used, so update the function to only return success
+or failure.  Fix the return value of igc_uc_unsync() as well.  Refactor
+the igc driver in several functions to help reduce the convoluted logic
+and simplify the driver filtering mechanisms.  Improve the MAC address
+checks when adding a MAC filter.  Lastly, improve the log messages
+related to MAC address filtering to ease debugging.
 
-nor any changes to netdevice.h. Bad spin of the patches?
+The following are changes since commit 0fde6e3b55a15a13f3b5aa484a79fe5298c1ed40:
+  Merge branch 'r8169-series-with-improvements'
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 1GbE
+
+Andre Guedes (12):
+  igc: Remove duplicate code in MAC filtering logic
+  igc: Check unsupported flag in igc_add_mac_filter()
+  igc: Change igc_add_mac_filter() returning value
+  igc: Fix igc_uc_unsync()
+  igc: Refactor igc_rar_set_index()
+  igc: Improve address check in igc_del_mac_filter()
+  igc: Remove 'queue' check in igc_del_mac_filter()
+  igc: Remove IGC_MAC_STATE_QUEUE_STEERING
+  igc: Remove igc_*_mac_steering_filter() wrappers
+  igc: Refactor igc_mac_entry_can_be_used()
+  igc: Refactor igc_del_mac_filter()
+  igc: Add debug messages to MAC filter code
+
+Sasha Neftin (1):
+  igc: Add new device IDs for i225 part
+
+Vitaly Lifshits (1):
+  e1000e: fix S0ix flows for cable connected case
+
+ drivers/net/ethernet/intel/e1000e/netdev.c   |  54 +++
+ drivers/net/ethernet/intel/e1000e/regs.h     |   3 +
+ drivers/net/ethernet/intel/igc/igc.h         |  11 +-
+ drivers/net/ethernet/intel/igc/igc_base.c    |   3 +
+ drivers/net/ethernet/intel/igc/igc_ethtool.c |  22 +-
+ drivers/net/ethernet/intel/igc/igc_hw.h      |   3 +
+ drivers/net/ethernet/intel/igc/igc_main.c    | 371 ++++++++-----------
+ 7 files changed, 233 insertions(+), 234 deletions(-)
+
+-- 
+2.25.2
 
