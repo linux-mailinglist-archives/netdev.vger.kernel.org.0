@@ -2,149 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43C001AFCCE
-	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 19:31:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F30921AFCD0
+	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 19:32:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726209AbgDSRbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 13:31:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53348 "EHLO
+        id S1726372AbgDSRcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 13:32:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725969AbgDSRbB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 13:31:01 -0400
-Received: from mail-ua1-x941.google.com (mail-ua1-x941.google.com [IPv6:2607:f8b0:4864:20::941])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD75C061A0C
-        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 10:31:01 -0700 (PDT)
-Received: by mail-ua1-x941.google.com with SMTP id n26so1011996uap.11
-        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 10:31:01 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725969AbgDSRcm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 13:32:42 -0400
+Received: from mail-vk1-xa43.google.com (mail-vk1-xa43.google.com [IPv6:2607:f8b0:4864:20::a43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92187C061A0C;
+        Sun, 19 Apr 2020 10:32:42 -0700 (PDT)
+Received: by mail-vk1-xa43.google.com with SMTP id x9so276973vkd.4;
+        Sun, 19 Apr 2020 10:32:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=cTlrT1AZ5TO2A0iVMUTHb8HrUwpakbS5yueKYOUGINA=;
-        b=UOC25IQlKWvAK04rkPlRyUCrXFet0ixg4NNdbrHq0rMCVkVhovHWZRVcdJBVSmitPz
-         nwsc1sP3zX+UMUCgNnVpNrusbN1ULjDdxRq25o2EEU1vWNQU6Gsh4US89mUq2uXbX95r
-         Z84PmTzCeoxAyf55Hyjy+MPpYgQfaSXi9P0G2afoTTLGR5IzLMYAnvnaUbS53okqe0Wy
-         sujPt+vK5GkpF0IbJJqFWc4/cMdHTELD5XdpJiyxp/e7zQpBAy9n4ZMd6Pdp7KtdFGdC
-         sxumMZ7o0YNx+8JBQxv77aZbkTWFiG1A5Ogu9ZyJKgOm/rF0z7YwjE23zuDJtYfcuwFy
-         gv+A==
+        bh=/TqDWfB8cUBXogmz2+ksGks4wWKUG39YBeLr7SZP+ks=;
+        b=pHtaVDFtydBeKDed2OkXR74O6lwGCWGCPOpMyFaMnoTbYzVb9LOxEELnsnyU5gNI7n
+         vxJu8pj/jiyo0ihToGPpMbeH6qhYy0NuPfwppmILjJs/7T6CiG70FNEOnxce9+aN2Zoe
+         ZZd7XDyWTYT28pPN8Y6k5IC2kPaJCnbPWweKSPzVEgw3ueiqTV22ZXdNgpX7w9Qdl7/w
+         NrtR55HklfXY8sd8wskRbN8C9nmfTVhxpxubKATjpDH9iAJMJAeONSmGD9aI+UaHV0sc
+         rXP5BOuf6YyW1DGimSjbtJPNp9RmIPuYbfbCzIoSuxtnPviC1OBfip2GpgGMeLLbTItv
+         A9Fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=cTlrT1AZ5TO2A0iVMUTHb8HrUwpakbS5yueKYOUGINA=;
-        b=TlRORyHsRABW7ODQ0xc9F8j5Hcepf79Ns0FqyK3UwF8CRR15UK96jkPGqtrEExoQK9
-         Rjbf5rm+X+bvuZc8osZxxAKiMUqw6DLQueVqPq73MDiYDD5wEcjXVKI3iR4jWvRhx5UK
-         DEGX4wMy1d9dPxkiU8pQ9T+dBW/IgQUahttgV5uFpcHNa/y4f6HYoHhWkhsRedlnM9cM
-         ZWpLUWegodvY3v8LpdQdWqCDSbbF6f9JZe36daW9Sh0+s+Ezv1UqlklZ2nWlZLRcpBW7
-         S+xjt4R6qiB1lwBciF4finiYM8N7QGnxsRkqxdzo1ToUamaF6bDw7h7XcvR+J2jNF12Q
-         4coA==
-X-Gm-Message-State: AGi0PuYeVWqE+iL47fr93k83o88ZHg/tD9ijRHM9odeHP4UgoDLuIOBl
-        /glvWDjdUC9MfZ8859rZyI/x9C2u7wWTlSQe8J0=
-X-Google-Smtp-Source: APiQypIfIj8rRdpY5Qch+dfMbNRg2co7FWWuaeKTrLBO+M5IwQ9kt7VuszcAWTO8KVlk2oyAMR4Jlplna4ITkum8DYA=
-X-Received: by 2002:ab0:770b:: with SMTP id z11mr2869663uaq.64.1587317460474;
- Sun, 19 Apr 2020 10:31:00 -0700 (PDT)
+        bh=/TqDWfB8cUBXogmz2+ksGks4wWKUG39YBeLr7SZP+ks=;
+        b=jxYj+to1ec5nnd5KYDPfWHcwc7I9w31QF5YA4WP7bbGc1B3hNv58IgezrLQXRXQ7HQ
+         O21IBNmT8EItiw8hdnse1r6pj9zAexuL9QwXtP+Z+fKGDCZOSLMmx9kMJrgCT57zDgbo
+         lB+PbZgfDU8OKllftNZ0NBikC8tut9r/MuBjiX4ZVD4/rzPOhHVAw1d55N33Seau208c
+         VbR2y1p+W40ckD53THc0eT8/zo9/EETDHfzsES+TByeVF37lhXeuvm8MqwvYU9ahjlHC
+         FzZVpPg0K3b9fqpZYOI+nGTkCrcR2uo9kEv/W5shBf1EmqCRcuuNmoXmhbvrKUlIXt8+
+         lBqA==
+X-Gm-Message-State: AGi0PuZWuou+T92MbtajAHeoXMxTR+AHokO+28Kd2OZHfk3+RlKvMK9F
+        0+8DRu1DpjNIeiei0eiW1B+rCh76JlYeinlXniceTZgS
+X-Google-Smtp-Source: APiQypKN8NI7vCpugHw0jz+xvmW0SEVc2PQIK2816SpywZShPmiXtMbVtbRRT9+GWJ9ibc5w2VQZRsG9y8mnHjArHAo=
+X-Received: by 2002:a1f:9541:: with SMTP id x62mr8357446vkd.82.1587317561712;
+ Sun, 19 Apr 2020 10:32:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <1584969039-74113-1-git-send-email-xiangxia.m.yue@gmail.com>
- <1587032223-49460-1-git-send-email-xiangxia.m.yue@gmail.com> <1587032223-49460-3-git-send-email-xiangxia.m.yue@gmail.com>
-In-Reply-To: <1587032223-49460-3-git-send-email-xiangxia.m.yue@gmail.com>
+References: <000000000000e642a905a0cbee6e@google.com> <1587063451-54027-1-git-send-email-xiangxia.m.yue@gmail.com>
+In-Reply-To: <1587063451-54027-1-git-send-email-xiangxia.m.yue@gmail.com>
 From:   Pravin Shelar <pravin.ovn@gmail.com>
-Date:   Sun, 19 Apr 2020 10:30:49 -0700
-Message-ID: <CAOrHB_D1OQujNyw9StmHRknDQZywHB02z8berxm+aPUNgQhYnA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 2/5] net: openvswitch: set max limitation to meters
+Date:   Sun, 19 Apr 2020 10:32:30 -0700
+Message-ID: <CAOrHB_CjZ1oyNyuj7tgZLZ1XXFahCSO76BfHX7YFo_O68FfrXQ@mail.gmail.com>
+Subject: Re: [PATCH] net: openvswitch: ovs_ct_exit to be done under ovs_lock
 To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Andy Zhou <azhou@ovn.org>, Ben Pfaff <blp@ovn.org>,
-        William Tu <u9012063@gmail.com>,
+Cc:     syzbot+7ef50afd3a211f879112@syzkaller.appspotmail.com,
+        "David S. Miller" <davem@davemloft.net>,
+        ovs dev <dev@openvswitch.org>, kuba@kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
         Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        ovs dev <dev@openvswitch.org>
+        syzkaller-bugs@googlegroups.com, Yi-Hung Wei <yihung.wei@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 18, 2020 at 10:25 AM <xiangxia.m.yue@gmail.com> wrote:
+On Sun, Apr 19, 2020 at 1:44 AM <xiangxia.m.yue@gmail.com> wrote:
 >
 > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 >
-> Don't allow user to create meter unlimitedly,
-> which may cause to consume a large amount of kernel memory.
-> The 200,000 meters may be fine in general case.
+> syzbot wrote:
+> | =============================
+> | WARNING: suspicious RCU usage
+> | 5.7.0-rc1+ #45 Not tainted
+> | -----------------------------
+> | net/openvswitch/conntrack.c:1898 RCU-list traversed in non-reader section!!
+> |
+> | other info that might help us debug this:
+> | rcu_scheduler_active = 2, debug_locks = 1
+> | ...
+> |
+> | stack backtrace:
+> | Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.0-0-ga698c8995f-prebuilt.qemu.org 04/01/2014
+> | Workqueue: netns cleanup_net
+> | Call Trace:
+> | ...
+> | ovs_ct_exit
+> | ovs_exit_net
+> | ops_exit_list.isra.7
+> | cleanup_net
+> | process_one_work
+> | worker_thread
 >
+> To avoid that warning, invoke the ovs_ct_exit under ovs_lock and add
+> lockdep_ovsl_is_held as optional lockdep expression.
+>
+> Link: https://lore.kernel.org/lkml/000000000000e642a905a0cbee6e@google.com
+> Fixes: 11efd5cb04a1 ("openvswitch: Support conntrack zone limit")
 > Cc: Pravin B Shelar <pshelar@ovn.org>
-> Cc: Andy Zhou <azhou@ovn.org>
+> Cc: Yi-Hung Wei <yihung.wei@gmail.com>
+> Reported-by: syzbot+7ef50afd3a211f879112@syzkaller.appspotmail.com
 > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> ---
->  net/openvswitch/meter.c | 21 +++++++++++++++------
->  net/openvswitch/meter.h |  1 +
->  2 files changed, 16 insertions(+), 6 deletions(-)
->
-> diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
-> index 494a0014ecd8..1b6776f9c109 100644
-> --- a/net/openvswitch/meter.c
-> +++ b/net/openvswitch/meter.c
-> @@ -137,6 +137,7 @@ static int attach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
->  {
->         struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
->         u32 hash = meter_hash(ti, meter->id);
-> +       int err;
->
->         /*
->          * In generally, slot selected should be empty, because
-> @@ -148,16 +149,24 @@ static int attach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
->         dp_meter_instance_insert(ti, meter);
->
->         /* That function is thread-safe. */
-> -       if (++tbl->count >= ti->n_meters)
-> -               if (dp_meter_instance_realloc(tbl, ti->n_meters * 2))
-> -                       goto expand_err;
-> +       tbl->count++;
-> +       if (tbl->count > DP_METER_NUM_MAX) {
-> +               err = -EFBIG;
-> +               goto attach_err;
-> +       }
-> +
-> +       if (tbl->count >= ti->n_meters &&
-> +           dp_meter_instance_realloc(tbl, ti->n_meters * 2)) {
-> +               err = -ENOMEM;
-> +               goto attach_err;
-> +       }
->
->         return 0;
->
-> -expand_err:
-> +attach_err:
->         dp_meter_instance_remove(ti, meter);
->         tbl->count--;
-> -       return -ENOMEM;
-> +       return err;
->  }
->
->  static void detach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
-> @@ -264,7 +273,7 @@ static int ovs_meter_cmd_features(struct sk_buff *skb, struct genl_info *info)
->         if (IS_ERR(reply))
->                 return PTR_ERR(reply);
->
-> -       if (nla_put_u32(reply, OVS_METER_ATTR_MAX_METERS, U32_MAX) ||
-> +       if (nla_put_u32(reply, OVS_METER_ATTR_MAX_METERS, DP_METER_NUM_MAX) ||
->             nla_put_u32(reply, OVS_METER_ATTR_MAX_BANDS, DP_MAX_BANDS))
->                 goto nla_put_failure;
->
-> diff --git a/net/openvswitch/meter.h b/net/openvswitch/meter.h
-> index d91940383bbe..cdfc6b9dbd42 100644
-> --- a/net/openvswitch/meter.h
-> +++ b/net/openvswitch/meter.h
-> @@ -19,6 +19,7 @@ struct datapath;
->
->  #define DP_MAX_BANDS           1
->  #define DP_METER_ARRAY_SIZE_MIN        (1ULL << 10)
-> +#define DP_METER_NUM_MAX       (200000ULL)
->
-Lets make it configurable and default could 200k to allow
-customization on different memory configurations.
 
+Acked-by: Pravin B Shelar <pshelar@ovn.org>
 
->  struct dp_meter_band {
->         u32 type;
-> --
-> 2.23.0
->
+Thanks.
