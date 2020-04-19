@@ -2,77 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 511961AF9B3
-	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 13:54:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2312A1AF9BC
+	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 14:03:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725988AbgDSLxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 07:53:46 -0400
-Received: from correo.us.es ([193.147.175.20]:55908 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725841AbgDSLxp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Apr 2020 07:53:45 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 58F1E191904
-        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 13:53:44 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 4C4DA20672
-        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 13:53:44 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 401BFDA8E6; Sun, 19 Apr 2020 13:53:44 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 552A8DA736;
-        Sun, 19 Apr 2020 13:53:42 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Sun, 19 Apr 2020 13:53:42 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (unknown [90.77.255.23])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 1474E41E4800;
-        Sun, 19 Apr 2020 13:53:42 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        jiri@resnulli.us
-Subject: [PATCH net] net: flow_offload: skip hw stats check for FLOW_ACTION_HW_STATS_DISABLED
-Date:   Sun, 19 Apr 2020 13:53:38 +0200
-Message-Id: <20200419115338.659487-1-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1725948AbgDSMDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 08:03:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59604 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725841AbgDSMDC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 08:03:02 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20075C061A0C;
+        Sun, 19 Apr 2020 05:03:02 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id k18so2857837pll.6;
+        Sun, 19 Apr 2020 05:03:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mUMGk88U5GL86FJoQ9V9Sy5+QGtoY7CINQIBYemngGk=;
+        b=mGNCuOkJ1DqqRMQ/kQKpBjTPFmssVItDq4hi+RubmRd6V25lx3Rlg66wUxHjukAQVy
+         bCenWKIJuovAwd+EFIq0SDw43317uVGcOtk68a/qD7oXB7fvoLZZGIui2IXzfhHLFsNa
+         szLPWiuh7pEgXqIFo8oZcckGIN1oqCU+LYmgywWly6hTqsBsmf5zAI8lvIfmfe69IQiM
+         0faeVDeZCtz8aiNltK/ErIa/P/+R5mtt0sLHphidTBKyZjqs5/6jj4mrMLg5PVcOjI8a
+         ajNl9joot/hgx2AUPLp6u6fp7OfjisdoK0yOZFmMJfQTJEtTgjDAxCNRa9h/KPgF+BcK
+         CIMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mUMGk88U5GL86FJoQ9V9Sy5+QGtoY7CINQIBYemngGk=;
+        b=QN6yRyC3sPCf6J8Uwv5eOCy9Z6Natyr+erFbvbUQlIefh1N+C6EhrGoCj63QjxUe9C
+         ++7SrTQQfs8d8SyWLOLr/AvGkdbKm1Kh6XeV9vYTtknvDS2vPu2mwgepdNo6+KJseDyE
+         cRUtkPcwVoEV+B5TqLgqjqqtcXGjGOWzVFCjC7qAcDCbt97NwAAyuvdoZf5ckNylKm8C
+         b/YH0wlLzAj9F2U2TeONR91UqzT0f05uwsRv0CLUjqFpTh5gwQb3WfjrhxkzfzT392aO
+         3TEcbvejhTUVhNZyRbJ0WTmnXRRRYH9/LwbzXAT4yO8wmRxwP1HFc1LWQjUoHnChFPhv
+         YHhQ==
+X-Gm-Message-State: AGi0PubMogSTLY4fkfjTtvixdXtfm+MoFy/eKWzfO/T0IQHbB0a4f5KP
+        YJCKWmCxEgbrwJyYaY/z79I=
+X-Google-Smtp-Source: APiQypJ/bZH9MaTcH3mji4rprQa0VyYDHahZTEsbrXAoIJQXeW5SfXA+4idYBGMyIfl6i6Su2wVDSA==
+X-Received: by 2002:a17:902:b487:: with SMTP id y7mr4856941plr.230.1587297781641;
+        Sun, 19 Apr 2020 05:03:01 -0700 (PDT)
+Received: from localhost ([89.208.244.140])
+        by smtp.gmail.com with ESMTPSA id o11sm16358199pgb.71.2020.04.19.05.03.00
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 19 Apr 2020 05:03:00 -0700 (PDT)
+From:   Dejin Zheng <zhengdejin5@gmail.com>
+To:     davem@davemloft.net, f.fainelli@gmail.com, timur@kernel.org,
+        kstewart@linuxfoundation.org, hkallweit1@gmail.com,
+        tglx@linutronix.de, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>
+Subject: [PATCH net-next v1] net: ethernet: dnet: convert to devm_platform_get_and_ioremap_resource
+Date:   Sun, 19 Apr 2020 20:02:53 +0800
+Message-Id: <20200419120253.25742-1-zhengdejin5@gmail.com>
+X-Mailer: git-send-email 2.25.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the frontend requests no stats through FLOW_ACTION_HW_STATS_DISABLED,
-drivers that are checking for the hw stats configuration bail out with
-EOPNOTSUPP.
+use devm_platform_get_and_ioremap_resource() to simplify code, which
+contains platform_get_resource() and devm_ioremap_resource(), it also
+get the resource for use by the following code.
 
-Fixes: 319a1d19471e ("flow_offload: check for basic action hw stats type")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
 ---
- include/net/flow_offload.h | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/dnet.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index 3619c6acf60f..c2519a25d0bd 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -326,6 +326,9 @@ __flow_action_hw_stats_check(const struct flow_action *action,
- 	if (!flow_action_mixed_hw_stats_check(action, extack))
- 		return false;
- 	action_entry = flow_action_first_entry_get(action);
-+	if (action_entry->hw_stats == FLOW_ACTION_HW_STATS_DISABLED)
-+		return true;
-+
- 	if (!check_allow_bit &&
- 	    action_entry->hw_stats != FLOW_ACTION_HW_STATS_ANY) {
- 		NL_SET_ERR_MSG_MOD(extack, "Driver supports only default HW stats type \"any\"");
+diff --git a/drivers/net/ethernet/dnet.c b/drivers/net/ethernet/dnet.c
+index 057a508dd6e2..db98274501a0 100644
+--- a/drivers/net/ethernet/dnet.c
++++ b/drivers/net/ethernet/dnet.c
+@@ -776,8 +776,7 @@ static int dnet_probe(struct platform_device *pdev)
+ 
+ 	spin_lock_init(&bp->lock);
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	bp->regs = devm_ioremap_resource(&pdev->dev, res);
++	bp->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+ 	if (IS_ERR(bp->regs)) {
+ 		err = PTR_ERR(bp->regs);
+ 		goto err_out_free_dev;
 -- 
-2.11.0
+2.25.0
 
