@@ -2,79 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F04751AFEA3
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 00:28:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34D7C1AFEAB
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 00:33:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726024AbgDSW2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 18:28:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42508 "EHLO
+        id S1725950AbgDSWdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 18:33:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725848AbgDSW2S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 18:28:18 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC1CC061A0C
-        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 15:28:17 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id s63so8720394qke.4
-        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 15:28:17 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725891AbgDSWdU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 18:33:20 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC338C061A0C
+        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 15:33:20 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id x77so1394622pfc.0
+        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 15:33:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yrSgLjmmk5lOjNgpDsC00AX/ddXDa1OkvRFiq3xKDGo=;
-        b=m9HcrMK3UYjatj0tgM0vJp5rz3QMrbWn21pkoO2k36kEPgCgPecWmJdq3pl9da514h
-         AeeZqlLdjHT7r3hNc9fN1vzXiG63oGB0kFX6bpguvUPYWaVACuNisrqJwqJ7BBu1W3IP
-         qqtCAmhohiVGSI6vxQ66VendmKQvds6Y/jVoZ/kefjqdkdfRORdW/+ltiX1taU5ssFjW
-         iBMkh9HRvz3e0Y/oelV6/HuuSmff4nSkUORfdI1CZoHUfKwc/oRu85Ph7oac/A86JXjA
-         V4e/KNHLe0tl8UolNrFz32190WmO8eS1Tzr8F7J8oXRWfWHkCicnCC5QwIW0s6o294iN
-         gnqA==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=vyGAQsXwqIfR4e40mfxI7RqlHu0Kl9GLF1zWxRL003k=;
+        b=ACrIMxg0Yl4WmXNEO/JHHwHrCnLvzg7mI7ITkNtFBZmoMTE/55wpVt0+AMxgiMSLAM
+         tNtvIg4VX0K1QcmodKLgn+FNPm9pdK8lgYAYJNVEBiHQAwzSUcJ2iv3i73KsSonZnQPJ
+         Vu3lCm48BRRotpOtYim+PJw0QhCJA0YhlIgSEO9U7abHiLF1QHce4DZMtwnmIt6ddmrl
+         55bdRxpGqQqVyNeXJ/wPb83pLbiTLJcOvUZ7EKoIorL7StCL2XuJUuVTlh2vBm+WVwl3
+         pDjTuG9+Ylzna10ZMtm3KbzlYSqpa+cF7Dyo729tcANcu/MA6EVj6vCzCFNMbS3IVUR8
+         mjtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=yrSgLjmmk5lOjNgpDsC00AX/ddXDa1OkvRFiq3xKDGo=;
-        b=JCM9Il/VHeNkeTPdfgOBrlIgBBS/6mjqNXNAcDQ3PhvVpjcQiK6kuFx7wDsyUlO4fU
-         JkNxjHM194ravNnrdy7iWKjxdWBPs/n3VjyaiJOfE5BmakOZ2vWsZK8bsitCCtDWJ+4j
-         iSAlbdLmns5YxfjT+/HBGt5yHJYjf+OV/q78m6D7iQTb2jick8Nk0wKAQzlToPBGxo5M
-         KRjgnbgdg3yCLJNxKn1E2T6B5eSni/6Q0R5s8IBJl9UwDBXTS/iHp3WFsJxuzVerJqYm
-         Gpmq+9C2NpWbeUCtP8OmD4uH5orEcodW4MpIz33F3Yh+3u/JWUqbhMw4wqzTv9urm+e1
-         ScIw==
-X-Gm-Message-State: AGi0Pubol0RId6cn3hDCBB09cmoOH/Ly1tIoJMGnugAYoNTFfbGoqslO
-        4JxTofJ2esAnXHzQrKa2ItkWU2pK
-X-Google-Smtp-Source: APiQypKDHGmZV6uvRakOSe65wDoKZiDJJtPkNS9nJJbjgAU70+ZzaBeFcsIpuEYDOiHS6TwoQ8qoIg==
-X-Received: by 2002:a37:7a84:: with SMTP id v126mr13084883qkc.423.1587335296381;
-        Sun, 19 Apr 2020 15:28:16 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:1168:6eff:89a1:d7f0? ([2601:282:803:7700:1168:6eff:89a1:d7f0])
-        by smtp.googlemail.com with ESMTPSA id g3sm18296448qkk.24.2020.04.19.15.28.15
+        bh=vyGAQsXwqIfR4e40mfxI7RqlHu0Kl9GLF1zWxRL003k=;
+        b=N5C4VWgN35qz/LReC7jmGy7hUkT0ukoo+WRrxOmfTeiGA/JdP7mfz/gGZ853mUbdbb
+         NWu+Ro+OA7bgbgnVvgZjyuzKlIHJwj61xQ5wjSycJDVpksUwQ4VGWVioK2x/TDLZjkJT
+         JrofzZebM3vs+N8O+EANtxyk+RvzyV3OvHCdMShiBXDIhEdIAHBO7MLaLybIKLcSDCLv
+         sp42chP2bc9NctQYfgNx7LGZ8KlzxrR8p174Ia0aQofY/qF8K/rPx8FXUYEpz9kjef5J
+         HNkLlaYyqp/vMFl90J5a/pIF4wHGn18pvLyYrC6dJKecCxFINARkS43t4Bobh1mtmjNW
+         Zc4A==
+X-Gm-Message-State: AGi0PuaJKIq5fdD/+ZZVuq8hVRBWgBnVFBQlCS3+JPnOKshpCQab4x/s
+        kn06y3x9W9iho9qGlyuCowmS+B4M
+X-Google-Smtp-Source: APiQypKfKfjlRxleW/wOfe4pArZ0MdmRtzFL+GyV5A2q2x673/AMX4pzqQsfnEtihW2YKDNx/pzyBw==
+X-Received: by 2002:a62:5209:: with SMTP id g9mr7586702pfb.220.1587335599899;
+        Sun, 19 Apr 2020 15:33:19 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id o125sm23808055pgo.74.2020.04.19.15.33.18
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 19 Apr 2020 15:28:15 -0700 (PDT)
-Subject: Re: [PATCHv3 iproute2-next 3/7] iproute_lwtunnel: add options support
- for erspan metadata
-To:     Xin Long <lucien.xin@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     network dev <netdev@vger.kernel.org>,
-        Simon Horman <simon.horman@netronome.com>
-References: <cover.1581676056.git.lucien.xin@gmail.com>
- <44db73e423003e95740f831e1d16a4043bb75034.1581676056.git.lucien.xin@gmail.com>
- <77f68795aeb3faeaf76078be9311fded7f716ea5.1581676056.git.lucien.xin@gmail.com>
- <290ab5d2dc06b183159d293ab216962a3cc0df6d.1581676056.git.lucien.xin@gmail.com>
- <20200214081324.48dc2090@hermes.lan>
- <CADvbK_dYwQ6LTuNPfGjdZPkFbrV2_vrX7OL7q3oR9830Mb8NcQ@mail.gmail.com>
- <20200214162104.04e0bb71@hermes.lan>
- <CADvbK_eSiGXuZqHAdQTJugLa7mNUkuQTDmcuVYMHO=1VB+Cs8w@mail.gmail.com>
- <793b8ff4-c04a-f962-f54f-3eae87a42963@gmail.com>
- <CADvbK_fOfEC0kG8wY_xbg_Yj4t=Y1oRKxo4h5CsYxN6Keo9YBQ@mail.gmail.com>
- <d0ec991a-77fc-84dd-b4cc-9ae649f7a0ac@gmail.com>
- <20200217130255.06644553@hermes.lan>
- <CADvbK_c4=FesEqfjLxtCf712e3_1aLJYv9ebkomWYs+J=vcLpg@mail.gmail.com>
- <CADvbK_fYTaCYgyiMog4RohJxYqp=B+HAj1H8aVKuEp6gPCPNXA@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <edcf3540-da91-d7af-12ff-8ca7d708bd3a@gmail.com>
-Date:   Sun, 19 Apr 2020 16:28:14 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
+        Sun, 19 Apr 2020 15:33:19 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 3/3] r8169: use WRITE_ONCE instead of dma_wmb
+ in rtl8169_mark_to_asic
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <a7e1d491-bede-6f86-cff0-f2b74d8af2b3@gmail.com>
+ <612105ff-f21d-40c4-2b02-0ac0c12615fb@gmail.com>
+ <20200419190029.GA37084@carbon>
+ <3bd2992b-e0da-0ee6-ae82-03d75e8fa706@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <b899d4c7-6332-f10a-7049-821bdd1086b0@gmail.com>
+Date:   Sun, 19 Apr 2020 15:33:17 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <CADvbK_fYTaCYgyiMog4RohJxYqp=B+HAj1H8aVKuEp6gPCPNXA@mail.gmail.com>
+In-Reply-To: <3bd2992b-e0da-0ee6-ae82-03d75e8fa706@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -83,9 +73,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/19/20 2:39 AM, Xin Long wrote:
-> This patchset is in "deferred" status for a long time.
-> What should we do about this one?
-> should I improve something then repost or the lastest one will be fine.
 
-I am fine with this set as is; Stephen had some concerns.
+
+On 4/19/20 2:03 PM, Heiner Kallweit wrote:
+> On 19.04.2020 21:00, Petko Manolov wrote:
+>> On 20-04-19 20:16:21, Heiner Kallweit wrote:
+>>> We want to ensure that desc->opts1 is written as last descriptor field.
+>>> This doesn't require a full compiler barrier, WRITE_ONCE provides the
+>>> ordering guarantee we need.
+>>>
+>>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+>>> ---
+>>>  drivers/net/ethernet/realtek/r8169_main.c | 10 ++++------
+>>>  1 file changed, 4 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+>>> index 2fc65aca3..3e4ed2528 100644
+>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>>> @@ -3892,11 +3892,9 @@ static inline void rtl8169_mark_to_asic(struct RxDesc *desc)
+>>>  {
+>>>  	u32 eor = le32_to_cpu(desc->opts1) & RingEnd;
+>>>  
+>>> -	desc->opts2 = 0;
+>>> -	/* Force memory writes to complete before releasing descriptor */
+>>> -	dma_wmb();
+>>
+>> If dma_wmb() was really ever needed here you should leave it even after you 
+>> order these writes with WRITE_ONCE().  If not, then good riddance.
+>>
+> My understanding is that we have to avoid transferring ownership of
+> descriptor to device (by setting DescOwn bit) before opts2 field
+> has been written. Using WRITE_ONCE() should be sufficient to prevent
+> the compiler from merging or reordering the writes.
+> At least that's how I read the process_level() example in
+> https://www.kernel.org/doc/Documentation/memory-barriers.txt
+> 
+>> Just saying, i am not familiar with the hardware nor with the driver. :)
+>>
+>>
+>> 		Petko
+>>
+>>
+>>> -
+>>> -	desc->opts1 = cpu_to_le32(DescOwn | eor | R8169_RX_BUF_SIZE);
+>>> +	/* Ensure ordering of writes */
+>>> +	WRITE_ONCE(desc->opts2, 0);
+>>> +	WRITE_ONCE(desc->opts1, cpu_to_le32(DescOwn | eor | R8169_RX_BUF_SIZE));
+
+
+No, this is not correct.
+
+WRITE_ONCE(X, ...)
+WRITE_ONCE(Y, ...)
+
+has no guarantee X is written before Y
+
+Sure, the compiler is making sure to perform one write for X, one for Y,
+but you want stronger semantic than that. You want to keep dma_wmb()
+
+However, this part of your patch seems fine :
+
+-	desc->opts1 = cpu_to_le32(DescOwn | eor | R8169_RX_BUF_SIZE);
++       WRITE_ONCE(desc->opts1, cpu_to_le32(DescOwn | eor | R8169_RX_BUF_SIZE));
+
+
+
+>>>  }
+>>>  
+>>>  static struct page *rtl8169_alloc_rx_data(struct rtl8169_private *tp,
+>>> @@ -3919,7 +3917,7 @@ static struct page *rtl8169_alloc_rx_data(struct rtl8169_private *tp,
+>>>  		return NULL;
+>>>  	}
+>>>  
+>>> -	desc->addr = cpu_to_le64(mapping);
+>>> +	WRITE_ONCE(desc->addr, cpu_to_le64(mapping));
+>>>  	rtl8169_mark_to_asic(desc);
+>>>  
+>>>  	return data;
+>>> -- 
+>>> 2.26.1
+>>>
+>>>
+> 
