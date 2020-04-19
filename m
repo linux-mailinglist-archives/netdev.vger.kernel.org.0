@@ -2,157 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34D7C1AFEAB
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 00:33:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18DB51AFEC2
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 00:54:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725950AbgDSWdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 18:33:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43274 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725891AbgDSWdU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 18:33:20 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC338C061A0C
-        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 15:33:20 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id x77so1394622pfc.0
-        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 15:33:20 -0700 (PDT)
+        id S1725953AbgDSWyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 18:54:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46514 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725834AbgDSWyp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 18:54:45 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B04DC061A0C;
+        Sun, 19 Apr 2020 15:54:45 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id e25so7906864ljg.5;
+        Sun, 19 Apr 2020 15:54:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=vyGAQsXwqIfR4e40mfxI7RqlHu0Kl9GLF1zWxRL003k=;
-        b=ACrIMxg0Yl4WmXNEO/JHHwHrCnLvzg7mI7ITkNtFBZmoMTE/55wpVt0+AMxgiMSLAM
-         tNtvIg4VX0K1QcmodKLgn+FNPm9pdK8lgYAYJNVEBiHQAwzSUcJ2iv3i73KsSonZnQPJ
-         Vu3lCm48BRRotpOtYim+PJw0QhCJA0YhlIgSEO9U7abHiLF1QHce4DZMtwnmIt6ddmrl
-         55bdRxpGqQqVyNeXJ/wPb83pLbiTLJcOvUZ7EKoIorL7StCL2XuJUuVTlh2vBm+WVwl3
-         pDjTuG9+Ylzna10ZMtm3KbzlYSqpa+cF7Dyo729tcANcu/MA6EVj6vCzCFNMbS3IVUR8
-         mjtg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ntM046E5HJcxfBlLPk1ijgLAx/PfjNLAWCb2+sKhF6g=;
+        b=T5Vdob4uZO1ZuUEwYJZdWwf9Lecw6L4+jWONz47OoLBNhf+qzdvkT+F9D36N/UmBEp
+         6x5aWGTfUaJlFF3CNnFU1gC3MpKROP+zL6qfY4YWU3zlDCYQVa1YeoA7YTZcWJB9ppCO
+         J+uVJ0jDiWBvrctM8GsM8/iD8oWfj+KQymjM/CKqdCVaMOneTEfkO8dWVVdquCXENnLt
+         N9COwt2yuyHqkASkZQZ18Pojgdvq5KtwlAIUNfZ9oQpn+4BX7Q2+0Hm9hZKM1Z/jhr2G
+         +HyuYZ752pEqCZXBgKtrNTzWi/4SMBPX/Xrrwz+dC0PTSygUAOXk1acOEl3gQR9RMfpK
+         uyCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vyGAQsXwqIfR4e40mfxI7RqlHu0Kl9GLF1zWxRL003k=;
-        b=N5C4VWgN35qz/LReC7jmGy7hUkT0ukoo+WRrxOmfTeiGA/JdP7mfz/gGZ853mUbdbb
-         NWu+Ro+OA7bgbgnVvgZjyuzKlIHJwj61xQ5wjSycJDVpksUwQ4VGWVioK2x/TDLZjkJT
-         JrofzZebM3vs+N8O+EANtxyk+RvzyV3OvHCdMShiBXDIhEdIAHBO7MLaLybIKLcSDCLv
-         sp42chP2bc9NctQYfgNx7LGZ8KlzxrR8p174Ia0aQofY/qF8K/rPx8FXUYEpz9kjef5J
-         HNkLlaYyqp/vMFl90J5a/pIF4wHGn18pvLyYrC6dJKecCxFINARkS43t4Bobh1mtmjNW
-         Zc4A==
-X-Gm-Message-State: AGi0PuaJKIq5fdD/+ZZVuq8hVRBWgBnVFBQlCS3+JPnOKshpCQab4x/s
-        kn06y3x9W9iho9qGlyuCowmS+B4M
-X-Google-Smtp-Source: APiQypKfKfjlRxleW/wOfe4pArZ0MdmRtzFL+GyV5A2q2x673/AMX4pzqQsfnEtihW2YKDNx/pzyBw==
-X-Received: by 2002:a62:5209:: with SMTP id g9mr7586702pfb.220.1587335599899;
-        Sun, 19 Apr 2020 15:33:19 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id o125sm23808055pgo.74.2020.04.19.15.33.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 19 Apr 2020 15:33:19 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 3/3] r8169: use WRITE_ONCE instead of dma_wmb
- in rtl8169_mark_to_asic
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <a7e1d491-bede-6f86-cff0-f2b74d8af2b3@gmail.com>
- <612105ff-f21d-40c4-2b02-0ac0c12615fb@gmail.com>
- <20200419190029.GA37084@carbon>
- <3bd2992b-e0da-0ee6-ae82-03d75e8fa706@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <b899d4c7-6332-f10a-7049-821bdd1086b0@gmail.com>
-Date:   Sun, 19 Apr 2020 15:33:17 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ntM046E5HJcxfBlLPk1ijgLAx/PfjNLAWCb2+sKhF6g=;
+        b=kF1b1I6DIgvliGIa9BJfL8fRUK8V8gIiLmT7maJr2BvSPCgI5vLplDbCb/OgeqND7v
+         N029bN0Ng2X40Szq9AQD7UWoF7XihzqjDHCLvIelV5HdRppaNdaEfYAQoFOpddjN+6mP
+         ISWyZT78HnF7siO4SpE355dKCMSA5rVu1EOyBm/CRAtNdzxuJCcqVVrwgcsU4dukKYn+
+         DPUhp5j3nxUk4PF+6jyiLxsXdpcu3jIdFS414WMRDpEcI0HcvvrriA/EWKVw/Ik/yk1y
+         NQ96drK+2UxLUMmE2NAiapZv8gHLBxocYNZJmqjrJ1XmpsNoaCFuDsef79H8gb5q3ysG
+         h9ng==
+X-Gm-Message-State: AGi0PuYNA3HS8l08fQpJ2nI/HujiDoQW9Hwq7eZEWrhUtrSuJBPebOlr
+        7C1RZekUIU6PwbKRYLPF4V7sPhiY8m1tsmJApZE=
+X-Google-Smtp-Source: APiQypJTq9Ajt1NL5ar5ugl7gEQC+QRSCd1RbxDw+TPEaCRakCE8oAn8GdSGBHBSzrHu/bfQp10eWfYCm0WhLDod7T4=
+X-Received: by 2002:a2e:9011:: with SMTP id h17mr8598280ljg.138.1587336883900;
+ Sun, 19 Apr 2020 15:54:43 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <3bd2992b-e0da-0ee6-ae82-03d75e8fa706@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <158453675319.3043.5779623595270458781.stgit@xdp-tutorial>
+ <819b1b3a-c801-754b-e805-7ec8266e5dfa@fb.com> <D0164AC9-7AF7-4434-B6D1-0A761DC626FB@redhat.com>
+ <fefda00a-1a08-3a53-efbc-93c36292b77d@fb.com>
+In-Reply-To: <fefda00a-1a08-3a53-efbc-93c36292b77d@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sun, 19 Apr 2020 15:54:32 -0700
+Message-ID: <CAADnVQ+SCu97cF5Li6nBBCkshjF45U-nPEO5jO8DQrY5PqPqyg@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 0/3] bpf: add tracing for XDP programs using
+ the BPF_PROG_TEST_RUN API
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Eelco Chaudron <echaudro@redhat.com>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Apr 19, 2020 at 12:02 AM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 4/16/20 5:45 AM, Eelco Chaudron wrote:
+> >
+> >
+> > On 23 Mar 2020, at 23:47, Yonghong Song wrote:
+> >
+> >> On 3/18/20 6:06 AM, Eelco Chaudron wrote:
+> >>> I sent out this RFC to get an idea if the approach suggested here
+> >>> would be something other people would also like to see. In addition,
+> >>> this cover letter mentions some concerns and questions that need
+> >>> answers before we can move to an acceptable implementation.
+> >>>
+> >>> This patch adds support for tracing eBPF XDP programs that get
+> >>> executed using the __BPF_PROG_RUN syscall. This is done by switching
+> >>> from JIT (if enabled) to executing the program using the interpreter
+> >>> and record each executed instruction.
 
+sorry for delay. I only noticed these patches after Yonghong replied.
 
-On 4/19/20 2:03 PM, Heiner Kallweit wrote:
-> On 19.04.2020 21:00, Petko Manolov wrote:
->> On 20-04-19 20:16:21, Heiner Kallweit wrote:
->>> We want to ensure that desc->opts1 is written as last descriptor field.
->>> This doesn't require a full compiler barrier, WRITE_ONCE provides the
->>> ordering guarantee we need.
->>>
->>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
->>> ---
->>>  drivers/net/ethernet/realtek/r8169_main.c | 10 ++++------
->>>  1 file changed, 4 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
->>> index 2fc65aca3..3e4ed2528 100644
->>> --- a/drivers/net/ethernet/realtek/r8169_main.c
->>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
->>> @@ -3892,11 +3892,9 @@ static inline void rtl8169_mark_to_asic(struct RxDesc *desc)
->>>  {
->>>  	u32 eor = le32_to_cpu(desc->opts1) & RingEnd;
->>>  
->>> -	desc->opts2 = 0;
->>> -	/* Force memory writes to complete before releasing descriptor */
->>> -	dma_wmb();
->>
->> If dma_wmb() was really ever needed here you should leave it even after you 
->> order these writes with WRITE_ONCE().  If not, then good riddance.
->>
-> My understanding is that we have to avoid transferring ownership of
-> descriptor to device (by setting DescOwn bit) before opts2 field
-> has been written. Using WRITE_ONCE() should be sufficient to prevent
-> the compiler from merging or reordering the writes.
-> At least that's how I read the process_level() example in
-> https://www.kernel.org/doc/Documentation/memory-barriers.txt
-> 
->> Just saying, i am not familiar with the hardware nor with the driver. :)
->>
->>
->> 		Petko
->>
->>
->>> -
->>> -	desc->opts1 = cpu_to_le32(DescOwn | eor | R8169_RX_BUF_SIZE);
->>> +	/* Ensure ordering of writes */
->>> +	WRITE_ONCE(desc->opts2, 0);
->>> +	WRITE_ONCE(desc->opts1, cpu_to_le32(DescOwn | eor | R8169_RX_BUF_SIZE));
+I think hacking interpreter to pr_info after every instruction is too
+much of a hack.
+Not working with JIT-ed code is imo red flag for the approach as well.
+When every insn is spamming the logs the only use case I can see
+is to feed the test program with one packet and read thousand lines dump.
+Even that is quite user unfriendly.
 
-
-No, this is not correct.
-
-WRITE_ONCE(X, ...)
-WRITE_ONCE(Y, ...)
-
-has no guarantee X is written before Y
-
-Sure, the compiler is making sure to perform one write for X, one for Y,
-but you want stronger semantic than that. You want to keep dma_wmb()
-
-However, this part of your patch seems fine :
-
--	desc->opts1 = cpu_to_le32(DescOwn | eor | R8169_RX_BUF_SIZE);
-+       WRITE_ONCE(desc->opts1, cpu_to_le32(DescOwn | eor | R8169_RX_BUF_SIZE));
-
-
-
->>>  }
->>>  
->>>  static struct page *rtl8169_alloc_rx_data(struct rtl8169_private *tp,
->>> @@ -3919,7 +3917,7 @@ static struct page *rtl8169_alloc_rx_data(struct rtl8169_private *tp,
->>>  		return NULL;
->>>  	}
->>>  
->>> -	desc->addr = cpu_to_le64(mapping);
->>> +	WRITE_ONCE(desc->addr, cpu_to_le64(mapping));
->>>  	rtl8169_mark_to_asic(desc);
->>>  
->>>  	return data;
->>> -- 
->>> 2.26.1
->>>
->>>
-> 
+How about enabling kprobe in JITed code instead?
+Then if you really need to trap and print regs for every instruction you can
+still do so by placing kprobe on every JITed insn.
+But in reality I think few kprobes in the prog will be enough
+to debug the program and XDP prog may still process millions of packets
+because your kprobe could be in error path and the user may want to
+capture only specific things when it triggers.
+kprobe bpf prog will execute in such case and it can capture necessary
+state from xdp prog, from packet or from maps that xdp prog is using.
+Some sort of bpf-gdb would be needed in user space.
+Obviously people shouldn't be writing such kprob-bpf progs that debug
+other bpf progs by hand. bpf-gdb should be able to generate them automatically.
