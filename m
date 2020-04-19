@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2312A1AF9BC
-	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 14:03:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82D611AF9C6
+	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 14:06:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725948AbgDSMDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 08:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59604 "EHLO
+        id S1726054AbgDSMF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 08:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725841AbgDSMDC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 08:03:02 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20075C061A0C;
-        Sun, 19 Apr 2020 05:03:02 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id k18so2857837pll.6;
-        Sun, 19 Apr 2020 05:03:02 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725841AbgDSMF4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 08:05:56 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7169C061A0C;
+        Sun, 19 Apr 2020 05:05:54 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id a22so3174856pjk.5;
+        Sun, 19 Apr 2020 05:05:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=mUMGk88U5GL86FJoQ9V9Sy5+QGtoY7CINQIBYemngGk=;
-        b=mGNCuOkJ1DqqRMQ/kQKpBjTPFmssVItDq4hi+RubmRd6V25lx3Rlg66wUxHjukAQVy
-         bCenWKIJuovAwd+EFIq0SDw43317uVGcOtk68a/qD7oXB7fvoLZZGIui2IXzfhHLFsNa
-         szLPWiuh7pEgXqIFo8oZcckGIN1oqCU+LYmgywWly6hTqsBsmf5zAI8lvIfmfe69IQiM
-         0faeVDeZCtz8aiNltK/ErIa/P/+R5mtt0sLHphidTBKyZjqs5/6jj4mrMLg5PVcOjI8a
-         ajNl9joot/hgx2AUPLp6u6fp7OfjisdoK0yOZFmMJfQTJEtTgjDAxCNRa9h/KPgF+BcK
-         CIMg==
+        bh=GwrJxs1zh7z1DaG/GHIwSQc+vhTOtEIokowtpmXYUsw=;
+        b=rOcLj8bJ7LNhOyMMXGfbbbtjdCIT09l5+IpxUU3tC/hrKVUDUMT9v1FqvuoVGnHQ/w
+         r386xZeJXtrqAXkwVDk51oesx7Y6+mtOs4W9Fj4nbi2gOCO6cpD9IpWVB3f5KcCdJfLC
+         JLPfTBY0LoAFcbOpJcjkPucBV6xxcifXCNU+XrEsmu4qPwb9M6OO1HcqxhN8epepAMvx
+         Wpc/BP/nYIhfg/GWtDtibnHDRj0KrrRGIL02c67YKY2uQ/XGKWGdfZYzpMYww/Txmyrl
+         LoRxTSALWgNrfLDl/DiAtf7qo3l8VPv6CTsrWVwXMU5VyAN+ssIJVnu1YyFwL9hEzCiW
+         c0vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=mUMGk88U5GL86FJoQ9V9Sy5+QGtoY7CINQIBYemngGk=;
-        b=QN6yRyC3sPCf6J8Uwv5eOCy9Z6Natyr+erFbvbUQlIefh1N+C6EhrGoCj63QjxUe9C
-         ++7SrTQQfs8d8SyWLOLr/AvGkdbKm1Kh6XeV9vYTtknvDS2vPu2mwgepdNo6+KJseDyE
-         cRUtkPcwVoEV+B5TqLgqjqqtcXGjGOWzVFCjC7qAcDCbt97NwAAyuvdoZf5ckNylKm8C
-         b/YH0wlLzAj9F2U2TeONR91UqzT0f05uwsRv0CLUjqFpTh5gwQb3WfjrhxkzfzT392aO
-         3TEcbvejhTUVhNZyRbJ0WTmnXRRRYH9/LwbzXAT4yO8wmRxwP1HFc1LWQjUoHnChFPhv
-         YHhQ==
-X-Gm-Message-State: AGi0PubMogSTLY4fkfjTtvixdXtfm+MoFy/eKWzfO/T0IQHbB0a4f5KP
-        YJCKWmCxEgbrwJyYaY/z79I=
-X-Google-Smtp-Source: APiQypJ/bZH9MaTcH3mji4rprQa0VyYDHahZTEsbrXAoIJQXeW5SfXA+4idYBGMyIfl6i6Su2wVDSA==
-X-Received: by 2002:a17:902:b487:: with SMTP id y7mr4856941plr.230.1587297781641;
-        Sun, 19 Apr 2020 05:03:01 -0700 (PDT)
+        bh=GwrJxs1zh7z1DaG/GHIwSQc+vhTOtEIokowtpmXYUsw=;
+        b=q9hJJSevaIguZhRJtFCP3jz775H3BCKicr4EIg405+OqR8W61Gnlw59y1TveKAC4HL
+         HdxxqXtJjzDnpr5eRiy9MXmsF4SYat9/Kf+Ib1CLYc06LHW8whe/lfhYbN+ZWvAGFzsU
+         jK1Qrt4E6tPI+Af0/3B5R0UoEWoPrdPn1cDxonO+mR/EplhibQ6bLo6p7uYsNO8Ww8KE
+         t3YBNzchT9VF7m6QESZkPZG73XH85LpEVwtsRRmQfIuIHgla8K4V1FaDrkgymNuxUZmG
+         7+geaqmIHvQnp+zhdG2k0pBiXBiwIAnVnFok8yuip+2sUJ/9cA2dCMLq1EJkIsnWFV6D
+         R10g==
+X-Gm-Message-State: AGi0PuZnACwVKkkKkYv7SPpYJ3DC+2cvaA9gKOzRwKdzk9crgsuc5saA
+        88OSsLfRy18hf9Mv798nuQI0gzJv
+X-Google-Smtp-Source: APiQypJLy7lglmwwH2E6csyb0a/1gqpOmdQNFGnD5A5Y7E4hXWFCTBJ3zhRvciyc7zt0/4jJ4THHcA==
+X-Received: by 2002:a17:902:760c:: with SMTP id k12mr2662762pll.98.1587297954349;
+        Sun, 19 Apr 2020 05:05:54 -0700 (PDT)
 Received: from localhost ([89.208.244.140])
-        by smtp.gmail.com with ESMTPSA id o11sm16358199pgb.71.2020.04.19.05.03.00
+        by smtp.gmail.com with ESMTPSA id x16sm10825038pfc.61.2020.04.19.05.05.53
         (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 19 Apr 2020 05:03:00 -0700 (PDT)
+        Sun, 19 Apr 2020 05:05:54 -0700 (PDT)
 From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     davem@davemloft.net, f.fainelli@gmail.com, timur@kernel.org,
-        kstewart@linuxfoundation.org, hkallweit1@gmail.com,
-        tglx@linutronix.de, netdev@vger.kernel.org
+To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>
-Subject: [PATCH net-next v1] net: ethernet: dnet: convert to devm_platform_get_and_ioremap_resource
-Date:   Sun, 19 Apr 2020 20:02:53 +0800
-Message-Id: <20200419120253.25742-1-zhengdejin5@gmail.com>
+Subject: [PATCH net-next v1] can: ti_hecc: convert to devm_platform_ioremap_resource_byname()
+Date:   Sun, 19 Apr 2020 20:05:47 +0800
+Message-Id: <20200419120547.25836-1-zhengdejin5@gmail.com>
 X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -63,29 +62,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-use devm_platform_get_and_ioremap_resource() to simplify code, which
-contains platform_get_resource() and devm_ioremap_resource(), it also
-get the resource for use by the following code.
+use devm_platform_ioremap_resource_byname() to simplify code,
+it contains platform_get_resource_byname() and
+devm_ioremap_resource(), and also remove some duplicate error
+message.
 
 Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
 ---
- drivers/net/ethernet/dnet.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/can/ti_hecc.c | 27 +++++----------------------
+ 1 file changed, 5 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/ethernet/dnet.c b/drivers/net/ethernet/dnet.c
-index 057a508dd6e2..db98274501a0 100644
---- a/drivers/net/ethernet/dnet.c
-+++ b/drivers/net/ethernet/dnet.c
-@@ -776,8 +776,7 @@ static int dnet_probe(struct platform_device *pdev)
+diff --git a/drivers/net/can/ti_hecc.c b/drivers/net/can/ti_hecc.c
+index 94b1491b569f..5f39a4c668b5 100644
+--- a/drivers/net/can/ti_hecc.c
++++ b/drivers/net/can/ti_hecc.c
+@@ -857,7 +857,7 @@ static int ti_hecc_probe(struct platform_device *pdev)
+ 	struct net_device *ndev = (struct net_device *)0;
+ 	struct ti_hecc_priv *priv;
+ 	struct device_node *np = pdev->dev.of_node;
+-	struct resource *res, *irq;
++	struct resource *irq;
+ 	struct regulator *reg_xceiver;
+ 	int err = -ENODEV;
  
- 	spin_lock_init(&bp->lock);
+@@ -878,39 +878,22 @@ static int ti_hecc_probe(struct platform_device *pdev)
+ 	priv = netdev_priv(ndev);
  
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	bp->regs = devm_ioremap_resource(&pdev->dev, res);
-+	bp->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
- 	if (IS_ERR(bp->regs)) {
- 		err = PTR_ERR(bp->regs);
- 		goto err_out_free_dev;
+ 	/* handle hecc memory */
+-	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "hecc");
+-	if (!res) {
+-		dev_err(&pdev->dev, "can't get IORESOURCE_MEM hecc\n");
+-		return -EINVAL;
+-	}
+-
+-	priv->base = devm_ioremap_resource(&pdev->dev, res);
++	priv->base = devm_platform_ioremap_resource_byname(pdev, "hecc");
+ 	if (IS_ERR(priv->base)) {
+ 		dev_err(&pdev->dev, "hecc ioremap failed\n");
+ 		return PTR_ERR(priv->base);
+ 	}
+ 
+ 	/* handle hecc-ram memory */
+-	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "hecc-ram");
+-	if (!res) {
+-		dev_err(&pdev->dev, "can't get IORESOURCE_MEM hecc-ram\n");
+-		return -EINVAL;
+-	}
+-
+-	priv->hecc_ram = devm_ioremap_resource(&pdev->dev, res);
++	priv->hecc_ram = devm_platform_ioremap_resource_byname(pdev,
++							       "hecc-ram");
+ 	if (IS_ERR(priv->hecc_ram)) {
+ 		dev_err(&pdev->dev, "hecc-ram ioremap failed\n");
+ 		return PTR_ERR(priv->hecc_ram);
+ 	}
+ 
+ 	/* handle mbx memory */
+-	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "mbx");
+-	if (!res) {
+-		dev_err(&pdev->dev, "can't get IORESOURCE_MEM mbx\n");
+-		return -EINVAL;
+-	}
+-
+-	priv->mbx = devm_ioremap_resource(&pdev->dev, res);
++	priv->mbx = devm_platform_ioremap_resource_byname(pdev, "mbx");
+ 	if (IS_ERR(priv->mbx)) {
+ 		dev_err(&pdev->dev, "mbx ioremap failed\n");
+ 		return PTR_ERR(priv->mbx);
 -- 
 2.25.0
 
