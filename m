@@ -2,307 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E97C1AFCEE
-	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 20:01:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 830AA1AFE45
+	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 23:04:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726472AbgDSSA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 14:00:59 -0400
-Received: from mta-out1.inet.fi ([62.71.2.202]:54988 "EHLO johanna3.inet.fi"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725793AbgDSSA6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Apr 2020 14:00:58 -0400
-X-RazorGate-Vade-Verdict: clean 0
-X-RazorGate-Vade-Classification: clean
-X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgeduhedrgedugdduvddtucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuuffpveftnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefuvfhfhffkffgfgggjtgfgsehtkeertddtfeejnecuhfhrohhmpefnrghurhhiucflrghkkhhuuceolhgruhhrihdrjhgrkhhkuhesphhprdhinhgvthdrfhhiqeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgrdhinhenucfkphepkeegrddvgeekrdeftddrudelheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopegludelvddrudeikedruddrudefhegnpdhinhgvthepkeegrddvgeekrdeftddrudelhedpmhgrihhlfhhrohhmpeeolhgruhhjrghkqdefsehmsghogidrihhnvghtrdhfihequceuqfffjgepkeeukffvoffkoffgpdhrtghpthhtohepoehhkhgrlhhlfigvihhtudesghhmrghilhdrtghomheqpdhrtghpthhtohepoehlvghonheskhgvrhhnvghlrdhorhhgqedprhgtphhtthhopeeonhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhgqedprhgtphhtthhopeeonhhitggpshifshgusehrvggrlhhtvghkrdgtohhmqe
-Received: from [192.168.1.135] (84.248.30.195) by johanna3.inet.fi (9.0.019.26-1) (authenticated as laujak-3)
-        id 5E1C39D549C4EA96; Sun, 19 Apr 2020 21:00:44 +0300
-Subject: Re: NET: r8168/r8169 identifying fix
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
-        nic_swsd@realtek.com
-References: <4bc0fc0c-1437-fc41-1c50-38298214ec75@gmail.com>
- <20200413113430.GM334007@unreal>
- <03d9f8d9-620c-1f8b-9c58-60b824fa626c@gmail.com>
- <d3adc7f2-06bb-45bc-ab02-3d443999cefd@gmail.com>
- <f143b58d-4caa-7c9b-b98b-806ba8d2be99@gmail.com>
- <4860e57e-93e4-24f5-6103-fa80acbdfa0d@pp.inet.fi>
- <70cfcfb3-ce2a-9d47-b034-b94682e46e35@gmail.com>
- <d4e622f1-7bd1-d884-20b2-c16e60b42bf2@pp.inet.fi>
- <8db3cdc1-b63d-9028-e4bd-659e6d213f8f@pp.inet.fi>
- <2f7aeeb2-2a19-da7c-7436-71203a29f9e8@gmail.com>
- <d9781ac2-c7b7-0399-578e-cc43c4629147@pp.inet.fi>
- <04107d6d-d07b-7589-0cef-0d39d86484f3@pp.inet.fi>
- <b9a31f5a-e140-5cd4-d7aa-21a2fa2c27a0@gmail.com>
- <de1bf1a4-8ce3-3352-3ff6-339206fa871e@pp.inet.fi>
- <a940416a-2cc9-c27b-1660-df19273b7478@pp.inet.fi>
- <ae6fe5f1-d7d5-c0ca-a206-48940ee80681@pp.inet.fi>
- <303643ef-91b1-462a-5ecd-6217ca7b325f@pp.inet.fi>
- <db508b70-e5fb-2abf-8012-c168fe7535a7@pp.inet.fi>
- <f3faeea9-13b7-d6ca-7cce-6ec0278d7437@pp.inet.fi>
- <2c9b8110-3be9-28d8-a5e1-729686fe6f12@gmail.com>
-From:   Lauri Jakku <lauri.jakku@pp.inet.fi>
-Message-ID: <4368e540-4d90-09bb-7399-8df91d0c8040@pp.inet.fi>
-Date:   Mon, 20 Apr 2020 00:00:42 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+        id S1725988AbgDSVEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 17:04:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57862 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725891AbgDSVEG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 17:04:06 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66ADFC061A0C
+        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 14:04:06 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id x4so8754696wmj.1
+        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 14:04:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=f19cLCmMJgavyF8w71UStps1xPazBu/R/dbm7fFYcSU=;
+        b=QgeDnUEeLGmA/VA4doRVbkGDt4K+zK5jOFPM7popoGm0kWHK7ceWSQhmVvCnJDV66T
+         G3bSJlECNpDp67R4vM4KgpVHJbzjJ4oTRz9oZ1z67OIr7t1xKato4/cF1FqH/dfNeK38
+         DjTFPbC7QLhqxLiTv5SOAU0MYpB0//NE4miLiyh4zWRLDQ1qeYluocaeP3PnUIgBSHsv
+         aSn8qaXkj8ehUmYWBoBEDJrWC6RkouxpjsoSDZ4qwKfmTLIYPZ9WRnc6nVdPPW+Wwi1P
+         l4mmYDYuMzze/0jOuLaml/L3oZ0hTbeIc/EUaSClbqWs/67o/ywjssgF2DJx2z7voCL3
+         Gt/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=f19cLCmMJgavyF8w71UStps1xPazBu/R/dbm7fFYcSU=;
+        b=V+2f+cX/KqIiCCkrI80beEcBIddN6jYXXbBoXcOam9u+DCSwm5BnvPfX6OqYHiJJOZ
+         3SMRiWxnWwhxdeBoaYk61IYlG87dkbVcAYZy6xvTzUtfaglSgt3NVaVwIHixZWrQpp35
+         ysq3Zyy+do/MckiGrhgVJaWiMP85uzf6D+jk7J5eVRGdgpm/HBZ+UEVz0kdwrZoLlSrL
+         DEeJvd8tGlEQ7BI0QutOJMYJ74zj5g6vu6wlvz3p+koHRK1y5WCHfQy05Xw8UmvmOvdA
+         DTZDR6m11XTQo/iWshZS6PsAphPanBGDbaNXLn7urUlHmqNFutbQiGRZv06wlLpKWFQv
+         ruBQ==
+X-Gm-Message-State: AGi0PuaNnQYY7Lyp9g9OQah36WAZjixG+AyzVZNFluHTC4dejRtvDX8y
+        /lWcSWe0OsGCZnzB8wG0Cfyg7RbC
+X-Google-Smtp-Source: APiQypKFl/mypY7tJbFSTIx48AMC6Ku0BkjEGm0A+Gixe/vPYtr1YZy7usdDy4Y/T8d0U7LM4cMlaA==
+X-Received: by 2002:a1c:8141:: with SMTP id c62mr14132666wmd.87.1587330244710;
+        Sun, 19 Apr 2020 14:04:04 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:6000:39dc:7003:657c:dd6e? (p200300EA8F29600039DC7003657CDD6E.dip0.t-ipconnect.de. [2003:ea:8f29:6000:39dc:7003:657c:dd6e])
+        by smtp.googlemail.com with ESMTPSA id w12sm27083632wrk.56.2020.04.19.14.04.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 19 Apr 2020 14:04:04 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 3/3] r8169: use WRITE_ONCE instead of dma_wmb
+ in rtl8169_mark_to_asic
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <a7e1d491-bede-6f86-cff0-f2b74d8af2b3@gmail.com>
+ <612105ff-f21d-40c4-2b02-0ac0c12615fb@gmail.com>
+ <20200419190029.GA37084@carbon>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <3bd2992b-e0da-0ee6-ae82-03d75e8fa706@gmail.com>
+Date:   Sun, 19 Apr 2020 23:03:57 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <2c9b8110-3be9-28d8-a5e1-729686fe6f12@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200419190029.GA37084@carbon>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 19.4.2020 19.00, Heiner Kallweit wrote:
-> On 19.04.2020 18:49, Lauri Jakku wrote:
->> Hi,
+On 19.04.2020 21:00, Petko Manolov wrote:
+> On 20-04-19 20:16:21, Heiner Kallweit wrote:
+>> We want to ensure that desc->opts1 is written as last descriptor field.
+>> This doesn't require a full compiler barrier, WRITE_ONCE provides the
+>> ordering guarantee we need.
 >>
->> On 19.4.2020 18.09, Lauri Jakku wrote:
->>> Hi,
->>>
->>> On 18.4.2020 21.46, Lauri Jakku wrote:
->>>
->>>> Hi,
->>>>
->>>> On 18.4.2020 14.06, Lauri Jakku wrote:
->>>>> Hi,
->>>>>
->>>>> On 17.4.2020 10.30, Lauri Jakku wrote:
->>>>>> Hi,
->>>>>>
->>>>>> On 17.4.2020 9.23, Lauri Jakku wrote:
->>>>>>> On 16.4.2020 23.50, Heiner Kallweit wrote:
->>>>>>>> On 16.04.2020 22:38, Lauri Jakku wrote:
->>>>>>>>> Hi
->>>>>>>>>
->>>>>>>>> On 16.4.2020 23.10, Lauri Jakku wrote:
->>>>>>>>>> On 16.4.2020 23.02, Heiner Kallweit wrote:
->>>>>>>>>>> On 16.04.2020 21:58, Lauri Jakku wrote:
->>>>>>>>>>>> Hi,
->>>>>>>>>>>>
->>>>>>>>>>>> On 16.4.2020 21.37, Lauri Jakku wrote:
->>>>>>>>>>>>> Hi,
->>>>>>>>>>>>>
->>>>>>>>>>>>> On 16.4.2020 21.26, Heiner Kallweit wrote:
->>>>>>>>>>>>>> On 16.04.2020 13:30, Lauri Jakku wrote:
->>>>>>>>>>>>>>> Hi,
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> 5.6.3-2-MANJARO: stock manjaro kernel, without modifications --> network does not work
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> 5.6.3-2-MANJARO-lja: No attach check, modified kernel (r8169 mods only) --> network does not work
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> 5.6.3-2-MANJARO-with-the-r8169-patch: phy patched + r8169 mods -> devices show up ok, network works
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> All different initcpio's have realtek.ko in them.
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>> Thanks for the logs. Based on the logs you're presumable affected by a known BIOS bug.
->>>>>>>>>>>>>> Check bug tickets 202275 and 207203 at bugzilla.kernel.org.
->>>>>>>>>>>>>> In the first referenced tickets it's about the same mainboard (with earlier BIOS version).
->>>>>>>>>>>>>> BIOS on this mainboard seems to not initialize the network chip / PHY correctly, it reports
->>>>>>>>>>>>>> a random number as PHY ID, resulting in no PHY driver being found.
->>>>>>>>>>>>>> Enable "Onboard LAN Boot ROM" in the BIOS, and your problem should be gone.
->>>>>>>>>>>>>>
->>>>>>>>>>>>> OK, I try that, thank you :)
->>>>>>>>>>>>>
->>>>>>>>>>>> It seems that i DO have the ROM's enabled, i'm now testing some mutex guard for phy state and try to use it as indicator
->>>>>>>>>>>>
->>>>>>>>>>>> that attach has been done. One thing i've noticed is that driver needs to be reloaded to allow traffic (ie. ping works etc.)
->>>>>>>>>>>>
->>>>>>>>>>> All that shouldn't be needed. Just check with which PHY ID the PHY comes up.
->>>>>>>>>>> And what do you mean with "it seems"? Is the option enabled or not?
->>>>>>>>>>>
->>>>>>>>>> I do have ROM's enabled, and it does not help with my issue.
->>>>>>>> Your BIOS is a beta version, downgrading to F7 may help. Then you have the same
->>>>>>>> mainboard + BIOS as the user who opened bug ticket 202275.
->>>>>>>>
->>>>>>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0xc2077002
->>>>>>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: MAC version: 23
->>>>>>>
->>>>>>> ....
->>>>>>>
->>>>>>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0x1cc912
->>>>>>>
->>>>>>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: MAC version: 23
->>>>>>>
->>>>>>> .. after module unload & load cycle:
->>>>>>>
->>>>>>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0x1cc912
->>>>>>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: MAC version: 23
->>>>>>>
->>>>>>>
->>>>>>> it seem to be the case that the phy_id chances onetime, then stays the same. I'll do few shutdowns and see
->>>>>>>
->>>>>>> is there a pattern at all .. next i'm going to try how it behaves, if i read mac/phy versions twice on MAC version 23.
->>>>>>>
->>>>>>>
->>>>>>> The BIOS downgrade: I'd like to solve this without downgrading BIOS. If I can't, then I'll do systemd-service that
->>>>>>>
->>>>>>> reloads r8169 driver at boot, cause then network is just fine.
->>>>>>>
->>>>>>>
->>>>>> What i've gathered samples now, there is three values for PHY ID:
->>>>>>
->>>>>> [sillyme@MinistryOfSillyWalk KernelStuff]$ sudo journalctl |grep "PHY ver"
->>>>>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0xc2077002
->>>>>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0xc2077002
->>>>>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0x1cc912
->>>>>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0x1cc912
->>>>>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0x1cc912
->>>>>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0x1cc912
->>>>>> huhti 17 09:24:53 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0xc1071002
->>>>>> huhti 17 09:24:53 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0xc1071002
->>>>>> huhti 17 09:27:59 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0x1cc912
->>>>>> huhti 17 09:27:59 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0x1cc912
->>>>>> huhti 17 10:08:42 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0xc1071002
->>>>>> huhti 17 10:08:42 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0xc1071002
->>>>>> huhti 17 10:12:07 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0x1cc912
->>>>>> huhti 17 10:12:07 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0x1cc912
->>>>>> huhti 17 10:20:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0xc1071002
->>>>>> huhti 17 10:20:35 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0xc1071002
->>>>>> huhti 17 10:23:46 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: PHY version: 0x1cc912
->>>>>> huhti 17 10:23:46 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: PHY version: 0x1cc912
->>>>>>
->>>>>> I dont know are those hard coded or what, and are they device specific how much.
->>>>>>
->>>>>> i haven't coldbooted things up, that may be that something to check do they vary how per coldboot.
->>>>>>
->>>>>>>>> I check the ID, and revert all other changes, and check how it is working after adding the PHY id to list.
->>>>>>>>>
->>>>> What i've now learned: the patch + script + journald services -> Results working network, but it is still a workaround.
->>>>>
->>>> Following patch trusts the MAC version, another thing witch could help is to derive method to do 2dn pass of the probeing:
->>>>
->>>> if specific MAC version is found.
->>>>
->>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
->>>> index acd122a88d4a..62b37a1abc24 100644
->>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
->>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
->>>> @@ -5172,13 +5172,18 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
->>>>          if (!tp->phydev) {
->>>>                  mdiobus_unregister(new_bus);
->>>>                  return -ENODEV;
->>>> -       } else if (tp->mac_version == RTL_GIGA_MAC_NONE) {
->>>> -               /* Most chip versions fail with the genphy driver.
->>>> -                * Therefore ensure that the dedicated PHY driver is loaded.
->>>> -                */
->>>> -               dev_err(&pdev->dev, "Not known MAC version.\n");
->>>> -               mdiobus_unregister(new_bus);
->>>> -               return -EUNATCH;
->>>> +       } else {
->>>> +               dev_info(&pdev->dev, "PHY version: 0x%x\n", tp->phydev->phy_id);
->>>> +               dev_info(&pdev->dev, "MAC version: %d\n", tp->mac_version);
->>>> +
->>>> +               if (tp->mac_version == RTL_GIGA_MAC_NONE) {
->>>> +                       /* Most chip versions fail with the genphy driver.
->>>> +                        * Therefore ensure that the dedicated PHY driver is loaded.
->>>> +                        */
->>>> +                       dev_err(&pdev->dev, "Not known MAC/PHY version.\n", tp->phydev->phy_id);
->>>> +                       mdiobus_unregister(new_bus);
->>>> +                       return -EUNATCH;
->>>> +               }
->>>>          }
->>>>
->>>>          /* PHY will be woken up in rtl_open() */
->>>>
->>> I just got bleeding edge 5.7.0-1 kernel compiled + firmware's updated.. and  now up'n'running. There is one (WARN_ONCE) stack trace coming from driver, i think i tinker with it next, with above patch the network devices shows up and they can be configured.
->>>
->> I tought to ask first, before going to make new probe_type for errorneus hw (propetype + retry counter) to do re-probe if requested, N times. Or should the r8169_main.c return deferred probe on error on some MAC enums ? Which approach is design-wise sound ?
+>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+>> ---
+>>  drivers/net/ethernet/realtek/r8169_main.c | 10 ++++------
+>>  1 file changed, 4 insertions(+), 6 deletions(-)
 >>
->> I just tought that the DEFERRED probe may just do the trick i'm looking ways to implement the re-probeing... hmm. I try the deferred thing and check would that help.
+>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+>> index 2fc65aca3..3e4ed2528 100644
+>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>> @@ -3892,11 +3892,9 @@ static inline void rtl8169_mark_to_asic(struct RxDesc *desc)
+>>  {
+>>  	u32 eor = le32_to_cpu(desc->opts1) & RingEnd;
+>>  
+>> -	desc->opts2 = 0;
+>> -	/* Force memory writes to complete before releasing descriptor */
+>> -	dma_wmb();
+> 
+> If dma_wmb() was really ever needed here you should leave it even after you 
+> order these writes with WRITE_ONCE().  If not, then good riddance.
+> 
+My understanding is that we have to avoid transferring ownership of
+descriptor to device (by setting DescOwn bit) before opts2 field
+has been written. Using WRITE_ONCE() should be sufficient to prevent
+the compiler from merging or reordering the writes.
+At least that's how I read the process_level() example in
+https://www.kernel.org/doc/Documentation/memory-barriers.txt
+
+> Just saying, i am not familiar with the hardware nor with the driver. :)
+> 
+> 
+> 		Petko
+> 
+> 
+>> -
+>> -	desc->opts1 = cpu_to_le32(DescOwn | eor | R8169_RX_BUF_SIZE);
+>> +	/* Ensure ordering of writes */
+>> +	WRITE_ONCE(desc->opts2, 0);
+>> +	WRITE_ONCE(desc->opts1, cpu_to_le32(DescOwn | eor | R8169_RX_BUF_SIZE));
+>>  }
+>>  
+>>  static struct page *rtl8169_alloc_rx_data(struct rtl8169_private *tp,
+>> @@ -3919,7 +3917,7 @@ static struct page *rtl8169_alloc_rx_data(struct rtl8169_private *tp,
+>>  		return NULL;
+>>  	}
+>>  
+>> -	desc->addr = cpu_to_le64(mapping);
+>> +	WRITE_ONCE(desc->addr, cpu_to_le64(mapping));
+>>  	rtl8169_mark_to_asic(desc);
+>>  
+>>  	return data;
+>> -- 
+>> 2.26.1
 >>
-> Playing with options to work around the issue is of course a great way to
-> learn about the kernel. However it's questionable whether a workaround in
-> the driver is acceptable for dealing with the broken BIOS of exactly one
+>>
 
-Hmm, I think that it is better to have devices supported, even if the HW 
-is old, and cause it has had support.
-
-There are even older harddisk & network drivers, so the argument is not 
-good, thus i see no reason why not
-
-to take patch in.
-
-
->> 10 yrs old board (for which even a userspace workaround exists).
-The age of driver has never been the thing .. there are very old 
-drivers, HDD and Network etc.
->>>>>>>>>>>>>>> The problem with old method seems to be, that device does not have had time to attach before the
->>>>>>>>>>>>>>> PHY driver check.
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> The patch:
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
->>>>>>>>>>>>>>> index bf5bf05970a2..acd122a88d4a 100644
->>>>>>>>>>>>>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
->>>>>>>>>>>>>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
->>>>>>>>>>>>>>> @@ -5172,11 +5172,11 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
->>>>>>>>>>>>>>>             if (!tp->phydev) {
->>>>>>>>>>>>>>> mdiobus_unregister(new_bus);
->>>>>>>>>>>>>>>                     return -ENODEV;
->>>>>>>>>>>>>>> -       } else if (!tp->phydev->drv) {
->>>>>>>>>>>>>>> +       } else if (tp->mac_version == RTL_GIGA_MAC_NONE) {
->>>>>>>>>>>>>>>                     /* Most chip versions fail with the genphy driver.
->>>>>>>>>>>>>>>                      * Therefore ensure that the dedicated PHY driver is loaded.
->>>>>>>>>>>>>>>                      */
->>>>>>>>>>>>>>> -               dev_err(&pdev->dev, "realtek.ko not loaded, maybe it needs to be added to initramfs?\n");
->>>>>>>>>>>>>>> +               dev_err(&pdev->dev, "Not known MAC version.\n");
->>>>>>>>>>>>>>> mdiobus_unregister(new_bus);
->>>>>>>>>>>>>>>                     return -EUNATCH;
->>>>>>>>>>>>>>>             }
->>>>>>>>>>>>>>> diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
->>>>>>>>>>>>>>> index 66b8c61ca74c..aba2b304b821 100644
->>>>>>>>>>>>>>> --- a/drivers/net/phy/phy-core.c
->>>>>>>>>>>>>>> +++ b/drivers/net/phy/phy-core.c
->>>>>>>>>>>>>>> @@ -704,6 +704,10 @@ EXPORT_SYMBOL_GPL(phy_modify_mmd);
->>>>>>>>>>>>>>>        static int __phy_read_page(struct phy_device *phydev)
->>>>>>>>>>>>>>>      {
->>>>>>>>>>>>>>> +       /* If not attached, do nothing (no warning) */
->>>>>>>>>>>>>>> +       if (!phydev->attached_dev)
->>>>>>>>>>>>>>> +               return -EOPNOTSUPP;
->>>>>>>>>>>>>>> +
->>>>>>>>>>>>>>>             if (WARN_ONCE(!phydev->drv->read_page, "read_page callback not available, PHY driver not loaded?\n"))
->>>>>>>>>>>>>>>                     return -EOPNOTSUPP;
->>>>>>>>>>>>>>>      @@ -712,12 +716,17 @@ static int __phy_read_page(struct phy_device *phydev)
->>>>>>>>>>>>>>>        static int __phy_write_page(struct phy_device *phydev, int page)
->>>>>>>>>>>>>>>      {
->>>>>>>>>>>>>>> +       /* If not attached, do nothing (no warning) */
->>>>>>>>>>>>>>> +       if (!phydev->attached_dev)
->>>>>>>>>>>>>>> +               return -EOPNOTSUPP;
->>>>>>>>>>>>>>> +
->>>>>>>>>>>>>>>             if (WARN_ONCE(!phydev->drv->write_page, "write_page callback not available, PHY driver not loaded?\n"))
->>>>>>>>>>>>>>>                     return -EOPNOTSUPP;
->>>>>>>>>>>>>>>               return phydev->drv->write_page(phydev, page);
->>>>>>>>>>>>>>>      }
->>>>>>>>>>>>>>>      +
->>>>>>>>>>>>>>>      /**
->>>>>>>>>>>>>>>       * phy_save_page() - take the bus lock and save the current page
->>>>>>>>>>>>>>>       * @phydev: a pointer to a &struct phy_device
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> 15. huhtik. 2020, 19.18, Heiner Kallweit <hkallweit1@gmail.com <mailto:hkallweit1@gmail.com>> kirjoitti:
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>         On 15.04.2020 16:39, Lauri Jakku wrote:
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>             Hi, There seems to he Something odd problem, maybe timing related. Stripped version not workingas expected. I get back to you, when i have it working.
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>         There's no point in working on your patch. W/o proper justification it
->>>>>>>>>>>>>>>         isn't acceptable anyway. And so far we still don't know which problem
->>>>>>>>>>>>>>>         you actually have.
->>>>>>>>>>>>>>>         FIRST please provide the requested logs and explain the actual problem
->>>>>>>>>>>>>>>         (incl. the commit that caused the regression).
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>             13. huhtik. 2020, 14.46, Lauri Jakku <ljakku77@gmail.com <mailto:ljakku77@gmail.com>> kirjoitti: Hi, Fair enough, i'll strip them. -lja On 2020-04-13 14:34, Leon Romanovsky wrote:
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>             On Mon, Apr 13, 2020 at 02:02:01PM +0300, Lauri Jakku wrote: Hi, Comments inline. On 2020-04-13 13:58, Leon Romanovsky wrote: On Mon, Apr 13, 2020 at 01:30:13PM +0300, Lauri Jakku wrote: From 2d41edd4e6455187094f3a13d58c46eeee35aa31 Mon Sep 17 00:00:00 2001 From: Lauri Jakku <lja@iki.fi> Date: Mon, 13 Apr 2020 13:18:35 +0300 Subject: [PATCH] NET: r8168/r8169 identifying fix The driver installation determination made properly by checking PHY vs DRIVER id's. --- drivers/net/ethernet/realtek/r8169_main.c | 70 ++++++++++++++++++++--- drivers/net/phy/mdio_bus.c | 11 +++- 2 files changed, 72 insertions(+), 9 deletions(-) I would say that most of the code is debug prints. I tought that they are helpful to keep, they are using the debug calls, so they are not visible if user does not like those. You are missing the point of who are your users. Users want to have working device and the code. They don't need or like to debug their kernel. Thanks
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>
