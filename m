@@ -2,111 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E2E81AFCDE
-	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 19:44:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B52021AFCF1
+	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 20:02:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726420AbgDSRop (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 13:44:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55442 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726362AbgDSRok (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 13:44:40 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929D7C061A0F
-        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 10:44:40 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id z6so8646599wml.2
-        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 10:44:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=nnbu7QD2qyTA6JaxSpYxb4MzZ17/wb+qBFxK9gvWoZc=;
-        b=Q60rGzm7mdiPiT8sGUJKVuukukiQVpNebx3U3M5tyTizSdVcTcaL74H2R3szWZWlg+
-         jbzL72n2EgyhoXHPiLiOdvfq8VRYJS0uQaMDCBZhZku9xEo1Yvt6svgVf8tMxFc6d3VO
-         WbmcrwmwurPFb8veN1GaQzCY1aLmxrOoyvApga/nOf9PNa3iKLNYDzuKDA5/v1IzcY9S
-         5nP4o5UgzY3az3eYZODK7T2jgcp/8uYS31rmg12Y6Rfk+mJrbk3lTnQzJwhS58PZFYQC
-         3KIucs/3h/D/3K41eCytxoTOkgWJiBBVT6uDbLT0ZXyb6dgzq+dK/6xwqlBV14Erm+OY
-         8MCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=nnbu7QD2qyTA6JaxSpYxb4MzZ17/wb+qBFxK9gvWoZc=;
-        b=ofioJPk1EAzIVehD18+Kd1TG7vrqMDpXb5W4is2xiizIciBK9VSjSV/sC2yE97VbTy
-         e8TchZGgm4B6sloDsYDi8O1+SFfMwTd6xCMDb8Ma56YzGjyuxmym/P0eGqXk1Jhvnq0W
-         /diEJlfuvifwMMlWmQF1HpSMD6bWWCgsCkC220q3XO9leN43hIv5XGxUAA5SJQEPspSU
-         zUlM3DyxVYDQfUpOqLiCRR5n6HE08NOENCQBHaiclJqbxS1gQyOW5hfa3sZl3b40OOMY
-         HzFccEDDfYTEV+A9STVO7yvLumx54XAAv6rVSRXENGSSUNIPaY0gQDq4LyK5TaUPH1P3
-         08MQ==
-X-Gm-Message-State: AGi0PuaDXkhjzkfxeIRJwKaWJHUhAZHPULrM8/IeUexhOnyV931RjdWf
-        n//pCSDx6Us2BWb0CYtcSLa2BmPR
-X-Google-Smtp-Source: APiQypK4707u36I8Gw2Whot3FjGeJNqyYy90Cm/Kbvx/4KZYLS71bl2YmXqq/Unq6Sk+ODbOXrbVdQ==
-X-Received: by 2002:a1c:c2d4:: with SMTP id s203mr14606040wmf.128.1587318279114;
-        Sun, 19 Apr 2020 10:44:39 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:39dc:7003:657c:dd6e? (p200300EA8F29600039DC7003657CDD6E.dip0.t-ipconnect.de. [2003:ea:8f29:6000:39dc:7003:657c:dd6e])
-        by smtp.googlemail.com with ESMTPSA id s18sm7183713wra.94.2020.04.19.10.44.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 19 Apr 2020 10:44:38 -0700 (PDT)
-Subject: [PATCH net-next 4/4] r8169: use WRITE_ONCE instead of dma_wmb in
- rtl8169_mark_to_asic
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <c1df4a9e-6be8-d529-7eb0-ea5bdf2b77ec@gmail.com>
-Message-ID: <3b2f28d9-8161-ce07-a7f6-01163664c410@gmail.com>
-Date:   Sun, 19 Apr 2020 19:44:21 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726498AbgDSSBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 14:01:47 -0400
+Received: from esa4.microchip.iphmx.com ([68.232.154.123]:7940 "EHLO
+        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725793AbgDSSBq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 14:01:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1587319306; x=1618855306;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=PZCe66rtkt6vuLucf0J+7oucMB4zIT+Ne++JDKdkHQg=;
+  b=GjpaINbWXKj6y85umgM03pc416NVXAPzahEfShYZ9Jjt07QSz71CQNJQ
+   TIe4/cYcwFVOt/1FrEUlpFdOhRAcvbSyd1agoC0FxCQzESwyijjHG5+jf
+   sBnsJmpFdSmfUKxb2zKpR3/loBz/3zgAiDZi/hLmF9gniCn42FQCkyZOA
+   wgLRFZP3u7XakVJzEEA22mRaR42jXztwn02Orr/lm0sR6COlxZbDg5KmY
+   sZJhlAmCro3iCmoyMQ/MIIpcBDGnS/7CW0KSfvDtWxwSXJ5ERdFW9CIeD
+   SkZjWuGrPPGWmOqlp9T8evf2R/cs1wn9aCdcyKKOCUo12GTYVNGVzALuY
+   g==;
+IronPort-SDR: ndD5hgwaFYlzoS1114exR2HsETDw0vHMdt9IGjRBoJ/m/RsJCc++T1C1b8udexQhVvPOj/2ye/
+ zQ1iwYW3k4Kg4CSZLF9XLMPz9TPemaFzkXTHm/IagZ3tdQyauUmZt6+YR8Z08P3Vw66pGjUxhf
+ E0Oe518L13zUX3O4HmPWlX2nRVWAXq1B9Ml7+T0lYvLmkRmEXtAG+e4rQPJVxaHszwuud0fxqA
+ 8C5+mgGFlIVJ5bm3AYb89OJkBKm+yMKkRZ5t0ZZqlYg3umzK8B8cqfVTDZrlcaU9EJJhwZ1N8H
+ Yjc=
+X-IronPort-AV: E=Sophos;i="5.72,403,1580799600"; 
+   d="scan'208";a="70826916"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Apr 2020 11:01:45 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Sun, 19 Apr 2020 11:01:51 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Sun, 19 Apr 2020 11:01:44 -0700
+Date:   Sun, 19 Apr 2020 20:01:43 +0200
+From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
+To:     Ido Schimmel <idosch@idosch.org>
+CC:     Vladimir Oltean <olteanv@gmail.com>, <davem@davemloft.net>,
+        <horatiu.vultur@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <antoine.tenart@bootlin.com>, <andrew@lunn.ch>,
+        <f.fainelli@gmail.com>, <vivien.didelot@gmail.com>,
+        <joergen.andreasen@microchip.com>, <claudiu.manoil@nxp.com>,
+        <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <alexandru.marginean@nxp.com>, <xiaoliang.yang_1@nxp.com>,
+        <yangbo.lu@nxp.com>, <po.liu@nxp.com>, <jiri@mellanox.com>,
+        <kuba@kernel.org>
+Subject: Re: [PATCH net-next] net: mscc: ocelot: deal with problematic
+ MAC_ETYPE VCAP IS2 rules
+Message-ID: <20200419180143.ibexwjrlp3flla6z@ws.localdomain>
+References: <20200417190308.32598-1-olteanv@gmail.com>
+ <20200419073307.uhm3w2jhsczpchvi@ws.localdomain>
+ <20200419083032.GA3479405@splinter>
 MIME-Version: 1.0
-In-Reply-To: <c1df4a9e-6be8-d529-7eb0-ea5bdf2b77ec@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20200419083032.GA3479405@splinter>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We want to ensure that desc->opts1 is written as last descriptor field.
-This doesn't require a full compiler barrier, WRITE_ONCE provides the
-ordering guarantee we need.
+On 19.04.2020 11:30, Ido Schimmel wrote:
+>Not sure I completely understand the difficulties you are facing, but it
+>sounds similar to a problem we had in mlxsw. You might want to look into
+>"chain templates" [1] in order to restrict the keys that can be used
+>simultaneously.
+Not sure I understood the details, but but sure it is the same issue we
+are trying to solve.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+>I don't mind participating in an online discussion if you think it can
+>help.
+I'm sure it would be helpfull to have someone with insight in the MLX
+driver. I have been looking a lot at it, and there are large part of it
+which I still have not understood.
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index df788063e..8e9944692 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -3892,11 +3892,9 @@ static inline void rtl8169_mark_to_asic(struct RxDesc *desc)
- {
- 	u32 eor = le32_to_cpu(desc->opts1) & RingEnd;
- 
--	desc->opts2 = 0;
--	/* Force memory writes to complete before releasing descriptor */
--	dma_wmb();
--
--	desc->opts1 = cpu_to_le32(DescOwn | eor | R8169_RX_BUF_SIZE);
-+	/* Ensure ordering of writes */
-+	WRITE_ONCE(desc->opts2, 0);
-+	WRITE_ONCE(desc->opts1, cpu_to_le32(DescOwn | eor | R8169_RX_BUF_SIZE));
- }
- 
- static struct page *rtl8169_alloc_rx_data(struct rtl8169_private *tp,
-@@ -3919,7 +3917,7 @@ static struct page *rtl8169_alloc_rx_data(struct rtl8169_private *tp,
- 		return NULL;
- 	}
- 
--	desc->addr = cpu_to_le64(mapping);
-+	WRITE_ONCE(desc->addr, cpu_to_le64(mapping));
- 	rtl8169_mark_to_asic(desc);
- 
- 	return data;
--- 
-2.26.1
+If you get too borrowed you can always leave ;-)
 
-
+/Allan
