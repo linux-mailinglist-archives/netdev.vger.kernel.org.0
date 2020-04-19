@@ -2,632 +2,382 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F4E91AFB6F
-	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 16:37:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F07D1AF9D3
+	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 14:09:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726232AbgDSOhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 10:37:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55020 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725793AbgDSOhK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 10:37:10 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB8A4C061A0C;
-        Sun, 19 Apr 2020 07:37:09 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id a23so2954653plm.1;
-        Sun, 19 Apr 2020 07:37:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=mWODrhQKU1c8jt+vMsqj35aaNFkoUPevdekdBimU1rI=;
-        b=ikALhqbl7HUXUpEPgB/8wEpEM9O917Cw1Wx7aFiK4TY4Wh2Ow492KSFBnsC1APPgHt
-         W5FNlLlIeghPFW7euAS843cZKhZqbRfm7ZFtzZ9sqf7H8t7wGkqCCmNygWatmxw1SltP
-         YjGJSCM9a0LNYXqb/W6LhEE7FbGKwcAMwz/bMobnMtGbfFTcu8R2cApzPnyTetqg73iD
-         cbJPY2CuCste4PR5iW8KvndSHiyGlWF4FS9+b96mm2OWc70hhcLnE99vgIZIKhni6HtP
-         ZuuEOWEilhhoT5kbaHl6CAnA4umMgkB8mxshu2NI6sLqoLQKsaCA0o6Mf97AFGVYxz3a
-         /IFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :mime-version:content-disposition:user-agent;
-        bh=mWODrhQKU1c8jt+vMsqj35aaNFkoUPevdekdBimU1rI=;
-        b=c9yoL6JzHZ/Jotf2qcX7wYJuwqp9M1i6CBERo4j9GjxncCYaN/SvhW7cJ6ZQ0pZOgz
-         VHrJa1RwRqMrLYJHNrISiM485/5FkWLLXdzuoeZSpKSkd4inieOeGI57JL4POznO0Iv0
-         /3GG+6/GUOm4EY7pQ3aR9ltXOxnSTgN/by5xF1Xv3OElBXxSzqePI54armK08IbZsfOJ
-         0d/8UsaTtGxm3qUo7739d1f884157TK0RZKQQTUeD+I1PjC/eEOz7p9g5sMyb/HTMBxQ
-         bZFLeLM3Yb4/GyJaqnvv8jhzeUqvO1v0L5euJE1R2/DKQmE0HuawcPBW6u0j2UqWKwfk
-         U9gQ==
-X-Gm-Message-State: AGi0PubfnSvKzA+DghOSOhytAGuzenT4Ba0cGPCQCaAfAXK66Igqfj9y
-        pEgioTFhS534Fq/ACejE7eA=
-X-Google-Smtp-Source: APiQypJPd7+wQoQibPoOIfLvEQUSFgCRGHxSMTAyBZS7oGjf1yO26Vw2053esq9PqOe75iGtsgv6Bg==
-X-Received: by 2002:a17:90a:f68d:: with SMTP id cl13mr10959345pjb.107.1587307029361;
-        Sun, 19 Apr 2020 07:37:09 -0700 (PDT)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id u13sm11652710pjb.45.2020.04.19.07.37.08
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 19 Apr 2020 07:37:08 -0700 (PDT)
-Date:   Sun, 19 Apr 2020 07:37:07 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Michael Walle <michael@walle.cc>
-Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v2 3/3] net: phy: bcm54140: add hwmon support
-Message-ID: <20200419143707.GA226840@roeck-us.net>
+        id S1726006AbgDSMJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 08:09:26 -0400
+Received: from mta-out1.inet.fi ([62.71.2.194]:43882 "EHLO johanna4.inet.fi"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725841AbgDSMJ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Apr 2020 08:09:26 -0400
+X-RazorGate-Vade-Verdict: clean 0
+X-RazorGate-Vade-Classification: clean
+X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgedufedrudeliedgleefucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuuffpveftnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefuhffvfhfkffgfgggjtgfgsehtkeertddtfeejnecuhfhrohhmpefnrghurhhiucflrghkkhhuuceolhgruhhrihdrjhgrkhhkuhesphhprdhinhgvthdrfhhiqeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgrdhinhenucfkphepkeegrddvgeekrdeftddrudelheenucfrrghrrghmpehhvghloheplgduledvrdduieekrddurddufeehngdpihhnvghtpeekgedrvdegkedrfedtrdduleehpdhmrghilhhfrhhomhepoehlrghujhgrkhdqfeesmhgsohigrdhinhgvthdrfhhiqecuuefqffgjpeekuefkvffokffogfdprhgtphhtthhopeeohhhkrghllhifvghithdusehgmhgrihhlrdgtohhmqedprhgtphhtthhopeeolhgvohhnsehkvghrnhgvlhdrohhrgheqpdhrtghpthhtohepoehnvghtuggvvhesvhhgvghrrdhkvghrnhgvlhdrohhrgheqpdhrtghpthhtohepoehnihgtpghsfihsugesrhgvrghlthgvkhdrtghomheqnecuvehluhhsthgvrhfuihiivgeptd
+Received: from [192.168.1.135] (84.248.30.195) by johanna4.inet.fi (9.0.019.26-1) (authenticated as laujak-3)
+        id 5E1C3A434AFE79E6; Sun, 19 Apr 2020 15:09:08 +0300
+Subject: Re: NET: r8168/r8169 identifying fix
+From:   Lauri Jakku <lauri.jakku@pp.inet.fi>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Leon Romanovsky <leon@kernel.org>, netdev@vger.kernel.org,
+        nic_swsd@realtek.com
+References: <4bc0fc0c-1437-fc41-1c50-38298214ec75@gmail.com>
+ <20200413105838.GK334007@unreal>
+ <dc2de414-0e6e-2531-0131-0f3db397680f@gmail.com>
+ <20200413113430.GM334007@unreal>
+ <03d9f8d9-620c-1f8b-9c58-60b824fa626c@gmail.com>
+ <d3adc7f2-06bb-45bc-ab02-3d443999cefd@gmail.com>
+ <f143b58d-4caa-7c9b-b98b-806ba8d2be99@gmail.com>
+ <4860e57e-93e4-24f5-6103-fa80acbdfa0d@pp.inet.fi>
+ <70cfcfb3-ce2a-9d47-b034-b94682e46e35@gmail.com>
+ <d4e622f1-7bd1-d884-20b2-c16e60b42bf2@pp.inet.fi>
+ <8db3cdc1-b63d-9028-e4bd-659e6d213f8f@pp.inet.fi>
+ <2f7aeeb2-2a19-da7c-7436-71203a29f9e8@gmail.com>
+ <d9781ac2-c7b7-0399-578e-cc43c4629147@pp.inet.fi>
+ <04107d6d-d07b-7589-0cef-0d39d86484f3@pp.inet.fi>
+ <b9a31f5a-e140-5cd4-d7aa-21a2fa2c27a0@gmail.com>
+ <de1bf1a4-8ce3-3352-3ff6-339206fa871e@pp.inet.fi>
+ <a940416a-2cc9-c27b-1660-df19273b7478@pp.inet.fi>
+ <ae6fe5f1-d7d5-c0ca-a206-48940ee80681@pp.inet.fi>
+ <303643ef-91b1-462a-5ecd-6217ca7b325f@pp.inet.fi>
+Message-ID: <db508b70-e5fb-2abf-8012-c168fe7535a7@pp.inet.fi>
+Date:   Sun, 19 Apr 2020 18:09:06 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <303643ef-91b1-462a-5ecd-6217ca7b325f@pp.inet.fi>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 19, 2020 at 12:12:49PM +0200, Michael Walle wrote:
-> The PHY supports monitoring its die temperature as well as two analog
-> voltages. Add support for it.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
-> changes since v1:
->  - add IS_ENABLED(CONFIG_HWMON) guards
->  - clamp values before conversion
->  - add mutex alarm_lock
->  - use mdiobus_get_phy()
->  - make CONFIG_BCM54140_PHY depend on HWMON (or disabled altogether)
->  - add BCM54140_HWMON_IN_xx(ch) macros
-> 
-> Btw. is it possible to rely on the compiler to strip away unused
-> function calls. For exmaple, instead of using the
-> #if IS_ENABLED(CONFIG_HWMON) guards, one could use the following:
-> 
->   if (IS_ENABLED(CONFIG_HWMON))
->     if (!bcm54140_is_pkg_init(phydev)) {
->       ret = bcm54140_phy_probe_once(phydev);
->       if (ret)
->         return ret;
->     }
->   }
-> 
-> This will then optimize away the devm_hwmon_device_register() call.
-> 
+Hi,
 
-Personally I'd probably implement the hwmon functionality in a separate
-file instead, but that it really your and the maintainer's call.
+On 18.4.2020 21.46, Lauri Jakku wrote:
 
-Nitpick below, in case you resend. Either case, feel free to add
+> Hi,
+>
+> On 18.4.2020 14.06, Lauri Jakku wrote:
+>> Hi,
+>>
+>> On 17.4.2020 10.30, Lauri Jakku wrote:
+>>> Hi,
+>>>
+>>> On 17.4.2020 9.23, Lauri Jakku wrote:
+>>>>
+>>>> On 16.4.2020 23.50, Heiner Kallweit wrote:
+>>>>> On 16.04.2020 22:38, Lauri Jakku wrote:
+>>>>>> Hi
+>>>>>>
+>>>>>> On 16.4.2020 23.10, Lauri Jakku wrote:
+>>>>>>> On 16.4.2020 23.02, Heiner Kallweit wrote:
+>>>>>>>> On 16.04.2020 21:58, Lauri Jakku wrote:
+>>>>>>>>> Hi,
+>>>>>>>>>
+>>>>>>>>> On 16.4.2020 21.37, Lauri Jakku wrote:
+>>>>>>>>>> Hi,
+>>>>>>>>>>
+>>>>>>>>>> On 16.4.2020 21.26, Heiner Kallweit wrote:
+>>>>>>>>>>> On 16.04.2020 13:30, Lauri Jakku wrote:
+>>>>>>>>>>>> Hi,
+>>>>>>>>>>>>
+>>>>>>>>>>>>
+>>>>>>>>>>>> 5.6.3-2-MANJARO: stock manjaro kernel, without 
+>>>>>>>>>>>> modifications --> network does not work
+>>>>>>>>>>>>
+>>>>>>>>>>>> 5.6.3-2-MANJARO-lja: No attach check, modified kernel 
+>>>>>>>>>>>> (r8169 mods only) --> network does not work
+>>>>>>>>>>>>
+>>>>>>>>>>>> 5.6.3-2-MANJARO-with-the-r8169-patch: phy patched + r8169 
+>>>>>>>>>>>> mods -> devices show up ok, network works
+>>>>>>>>>>>>
+>>>>>>>>>>>> All different initcpio's have realtek.ko in them.
+>>>>>>>>>>>>
+>>>>>>>>>>> Thanks for the logs. Based on the logs you're presumable 
+>>>>>>>>>>> affected by a known BIOS bug.
+>>>>>>>>>>> Check bug tickets 202275 and 207203 at bugzilla.kernel.org.
+>>>>>>>>>>> In the first referenced tickets it's about the same 
+>>>>>>>>>>> mainboard (with earlier BIOS version).
+>>>>>>>>>>> BIOS on this mainboard seems to not initialize the network 
+>>>>>>>>>>> chip / PHY correctly, it reports
+>>>>>>>>>>> a random number as PHY ID, resulting in no PHY driver being 
+>>>>>>>>>>> found.
+>>>>>>>>>>> Enable "Onboard LAN Boot ROM" in the BIOS, and your problem 
+>>>>>>>>>>> should be gone.
+>>>>>>>>>>>
+>>>>>>>>>> OK, I try that, thank you :)
+>>>>>>>>>>
+>>>>>>>>> It seems that i DO have the ROM's enabled, i'm now testing 
+>>>>>>>>> some mutex guard for phy state and try to use it as indicator
+>>>>>>>>>
+>>>>>>>>> that attach has been done. One thing i've noticed is that 
+>>>>>>>>> driver needs to be reloaded to allow traffic (ie. ping works 
+>>>>>>>>> etc.)
+>>>>>>>>>
+>>>>>>>> All that shouldn't be needed. Just check with which PHY ID the 
+>>>>>>>> PHY comes up.
+>>>>>>>> And what do you mean with "it seems"? Is the option enabled or 
+>>>>>>>> not?
+>>>>>>>>
+>>>>>>> I do have ROM's enabled, and it does not help with my issue.
+>>>>> Your BIOS is a beta version, downgrading to F7 may help. Then you 
+>>>>> have the same
+>>>>> mainboard + BIOS as the user who opened bug ticket 202275.
+>>>>>
+>>>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: 
+>>>> PHY version: 0xc2077002
+>>>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: 
+>>>> MAC version: 23
+>>>>
+>>>> ....
+>>>>
+>>>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: 
+>>>> PHY version: 0x1cc912
+>>>>
+>>>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: 
+>>>> MAC version: 23
+>>>>
+>>>> .. after module unload & load cycle:
+>>>>
+>>>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: 
+>>>> PHY version: 0x1cc912
+>>>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: 
+>>>> MAC version: 23
+>>>>
+>>>>
+>>>> it seem to be the case that the phy_id chances onetime, then stays 
+>>>> the same. I'll do few shutdowns and see
+>>>>
+>>>> is there a pattern at all .. next i'm going to try how it behaves, 
+>>>> if i read mac/phy versions twice on MAC version 23.
+>>>>
+>>>>
+>>>> The BIOS downgrade: I'd like to solve this without downgrading 
+>>>> BIOS. If I can't, then I'll do systemd-service that
+>>>>
+>>>> reloads r8169 driver at boot, cause then network is just fine.
+>>>>
+>>>>
+>>> What i've gathered samples now, there is three values for PHY ID:
+>>>
+>>> [sillyme@MinistryOfSillyWalk KernelStuff]$ sudo journalctl |grep 
+>>> "PHY ver"
+>>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: 
+>>> PHY version: 0xc2077002
+>>> huhti 17 09:01:49 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: 
+>>> PHY version: 0xc2077002
+>>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: 
+>>> PHY version: 0x1cc912
+>>> huhti 17 09:03:29 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: 
+>>> PHY version: 0x1cc912
+>>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: 
+>>> PHY version: 0x1cc912
+>>> huhti 17 09:17:35 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: 
+>>> PHY version: 0x1cc912
+>>> huhti 17 09:24:53 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: 
+>>> PHY version: 0xc1071002
+>>> huhti 17 09:24:53 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: 
+>>> PHY version: 0xc1071002
+>>> huhti 17 09:27:59 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: 
+>>> PHY version: 0x1cc912
+>>> huhti 17 09:27:59 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: 
+>>> PHY version: 0x1cc912
+>>> huhti 17 10:08:42 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: 
+>>> PHY version: 0xc1071002
+>>> huhti 17 10:08:42 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: 
+>>> PHY version: 0xc1071002
+>>> huhti 17 10:12:07 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: 
+>>> PHY version: 0x1cc912
+>>> huhti 17 10:12:07 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: 
+>>> PHY version: 0x1cc912
+>>> huhti 17 10:20:35 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: 
+>>> PHY version: 0xc1071002
+>>> huhti 17 10:20:35 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: 
+>>> PHY version: 0xc1071002
+>>> huhti 17 10:23:46 MinistryOfSillyWalk kernel: r8169 0000:02:00.0: 
+>>> PHY version: 0x1cc912
+>>> huhti 17 10:23:46 MinistryOfSillyWalk kernel: r8169 0000:03:00.0: 
+>>> PHY version: 0x1cc912
+>>>
+>>> I dont know are those hard coded or what, and are they device 
+>>> specific how much.
+>>>
+>>> i haven't coldbooted things up, that may be that something to check 
+>>> do they vary how per coldboot.
+>>>
+>>>>>> I check the ID, and revert all other changes, and check how it is 
+>>>>>> working after adding the PHY id to list.
+>>>>>>
+>> What i've now learned: the patch + script + journald services -> 
+>> Results working network, but it is still a workaround.
+>>
+> Following patch trusts the MAC version, another thing witch could help 
+> is to derive method to do 2dn pass of the probeing:
+>
+> if specific MAC version is found.
+>
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c 
+> b/drivers/net/ethernet/realtek/r8169_main.c
+> index acd122a88d4a..62b37a1abc24 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -5172,13 +5172,18 @@ static int r8169_mdio_register(struct 
+> rtl8169_private *tp)
+>         if (!tp->phydev) {
+>                 mdiobus_unregister(new_bus);
+>                 return -ENODEV;
+> -       } else if (tp->mac_version == RTL_GIGA_MAC_NONE) {
+> -               /* Most chip versions fail with the genphy driver.
+> -                * Therefore ensure that the dedicated PHY driver is 
+> loaded.
+> -                */
+> -               dev_err(&pdev->dev, "Not known MAC version.\n");
+> -               mdiobus_unregister(new_bus);
+> -               return -EUNATCH;
+> +       } else {
+> +               dev_info(&pdev->dev, "PHY version: 0x%x\n", 
+> tp->phydev->phy_id);
+> +               dev_info(&pdev->dev, "MAC version: %d\n", 
+> tp->mac_version);
+> +
+> +               if (tp->mac_version == RTL_GIGA_MAC_NONE) {
+> +                       /* Most chip versions fail with the genphy 
+> driver.
+> +                        * Therefore ensure that the dedicated PHY 
+> driver is loaded.
+> +                        */
+> +                       dev_err(&pdev->dev, "Not known MAC/PHY 
+> version.\n", tp->phydev->phy_id);
+> +                       mdiobus_unregister(new_bus);
+> +                       return -EUNATCH;
+> +               }
+>         }
+>
+>         /* PHY will be woken up in rtl_open() */
+>
 
-Acked-by: Guenter Roeck <linux@roeck-us.net>
+I just got bleeding edge 5.7.0-1 kernel compiled + firmware's updated.. 
+and  now up'n'running. There is one (WARN_ONCE) stack trace coming from 
+driver, i think i tinker with it next, with above patch the network 
+devices shows up and they can be configured.
 
-Guenter
-
->  Documentation/hwmon/bcm54140.rst |  45 ++++
->  Documentation/hwmon/index.rst    |   1 +
->  drivers/net/phy/Kconfig          |   1 +
->  drivers/net/phy/bcm54140.c       | 397 +++++++++++++++++++++++++++++++
->  4 files changed, 444 insertions(+)
->  create mode 100644 Documentation/hwmon/bcm54140.rst
-> 
-> diff --git a/Documentation/hwmon/bcm54140.rst b/Documentation/hwmon/bcm54140.rst
-> new file mode 100644
-> index 000000000000..bc6ea4b45966
-> --- /dev/null
-> +++ b/Documentation/hwmon/bcm54140.rst
-> @@ -0,0 +1,45 @@
-> +.. SPDX-License-Identifier: GPL-2.0-only
-> +
-> +Broadcom BCM54140 Quad SGMII/QSGMII PHY
-> +=======================================
-> +
-> +Supported chips:
-> +
-> +   * Broadcom BCM54140
-> +
-> +     Datasheet: not public
-> +
-> +Author: Michael Walle <michael@walle.cc>
-> +
-> +Description
-> +-----------
-> +
-> +The Broadcom BCM54140 is a Quad SGMII/QSGMII PHY which supports monitoring
-> +its die temperature as well as two analog voltages.
-> +
-> +The AVDDL is a 1.0V analogue voltage, the AVDDH is a 3.3V analogue voltage.
-> +Both voltages and the temperature are measured in a round-robin fashion.
-> +
-> +Sysfs entries
-> +-------------
-> +
-> +The following attributes are supported.
-> +
-> +======================= ========================================================
-> +in0_label		"AVDDL"
-> +in0_input		Measured AVDDL voltage.
-> +in0_min			Minimum AVDDL voltage.
-> +in0_max			Maximum AVDDL voltage.
-> +in0_alarm		AVDDL voltage alarm.
-> +
-> +in1_label		"AVDDH"
-> +in1_input		Measured AVDDH voltage.
-> +in1_min			Minimum AVDDH voltage.
-> +in1_max			Maximum AVDDH voltage.
-> +in1_alarm		AVDDH voltage alarm.
-> +
-> +temp1_input		Die temperature.
-> +temp1_min		Minimum die temperature.
-> +temp1_max		Maximum die temperature.
-> +temp1_alarm		Die temperature alarm.
-> +======================= ========================================================
-> diff --git a/Documentation/hwmon/index.rst b/Documentation/hwmon/index.rst
-> index f022583f96f6..19ad0846736d 100644
-> --- a/Documentation/hwmon/index.rst
-> +++ b/Documentation/hwmon/index.rst
-> @@ -42,6 +42,7 @@ Hardware Monitoring Kernel Drivers
->     asb100
->     asc7621
->     aspeed-pwm-tacho
-> +   bcm54140
->     bel-pfe
->     coretemp
->     da9052
-> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-> index cb7936b577de..bacfee41b564 100644
-> --- a/drivers/net/phy/Kconfig
-> +++ b/drivers/net/phy/Kconfig
-> @@ -349,6 +349,7 @@ config BROADCOM_PHY
->  config BCM54140_PHY
->  	tristate "Broadcom BCM54140 PHY"
->  	depends on PHYLIB
-> +	depends on HWMON || HWMON=n
->  	select BCM_NET_PHYLIB
->  	help
->  	  Support the Broadcom BCM54140 Quad SGMII/QSGMII PHY.
-> diff --git a/drivers/net/phy/bcm54140.c b/drivers/net/phy/bcm54140.c
-> index 97465491b41b..cb0eb58eec76 100644
-> --- a/drivers/net/phy/bcm54140.c
-> +++ b/drivers/net/phy/bcm54140.c
-> @@ -6,6 +6,7 @@
->  
->  #include <linux/bitfield.h>
->  #include <linux/brcmphy.h>
-> +#include <linux/hwmon.h>
->  #include <linux/module.h>
->  #include <linux/phy.h>
->  
-> @@ -50,6 +51,69 @@
->  #define  BCM54140_RDB_TOP_IMR_PORT1	BIT(5)
->  #define  BCM54140_RDB_TOP_IMR_PORT2	BIT(6)
->  #define  BCM54140_RDB_TOP_IMR_PORT3	BIT(7)
-> +#define BCM54140_RDB_MON_CTRL		0x831	/* monitor control */
-> +#define  BCM54140_RDB_MON_CTRL_V_MODE	BIT(3)	/* voltage mode */
-> +#define  BCM54140_RDB_MON_CTRL_SEL_MASK	GENMASK(2, 1)
-> +#define  BCM54140_RDB_MON_CTRL_SEL_TEMP	0	/* meassure temperature */
-> +#define  BCM54140_RDB_MON_CTRL_SEL_1V0	1	/* meassure AVDDL 1.0V */
-> +#define  BCM54140_RDB_MON_CTRL_SEL_3V3	2	/* meassure AVDDH 3.3V */
-> +#define  BCM54140_RDB_MON_CTRL_SEL_RR	3	/* meassure all round-robin */
-> +#define  BCM54140_RDB_MON_CTRL_PWR_DOWN	BIT(0)	/* power-down monitor */
-> +#define BCM54140_RDB_MON_TEMP_VAL	0x832	/* temperature value */
-> +#define BCM54140_RDB_MON_TEMP_MAX	0x833	/* temperature high thresh */
-> +#define BCM54140_RDB_MON_TEMP_MIN	0x834	/* temperature low thresh */
-> +#define  BCM54140_RDB_MON_TEMP_DATA_MASK GENMASK(9, 0)
-> +#define BCM54140_RDB_MON_1V0_VAL	0x835	/* AVDDL 1.0V value */
-> +#define BCM54140_RDB_MON_1V0_MAX	0x836	/* AVDDL 1.0V high thresh */
-> +#define BCM54140_RDB_MON_1V0_MIN	0x837	/* AVDDL 1.0V low thresh */
-> +#define  BCM54140_RDB_MON_1V0_DATA_MASK	GENMASK(10, 0)
-> +#define BCM54140_RDB_MON_3V3_VAL	0x838	/* AVDDH 3.3V value */
-> +#define BCM54140_RDB_MON_3V3_MAX	0x839	/* AVDDH 3.3V high thresh */
-> +#define BCM54140_RDB_MON_3V3_MIN	0x83a	/* AVDDH 3.3V low thresh */
-> +#define  BCM54140_RDB_MON_3V3_DATA_MASK	GENMASK(11, 0)
-> +#define BCM54140_RDB_MON_ISR		0x83b	/* interrupt status */
-> +#define  BCM54140_RDB_MON_ISR_3V3	BIT(2)	/* AVDDH 3.3V alarm */
-> +#define  BCM54140_RDB_MON_ISR_1V0	BIT(1)	/* AVDDL 1.0V alarm */
-> +#define  BCM54140_RDB_MON_ISR_TEMP	BIT(0)	/* temperature alarm */
-> +
-> +/* According to the datasheet the formula is:
-> + *   T = 413.35 - (0.49055 * bits[9:0])
-> + */
-> +#define BCM54140_HWMON_TO_TEMP(v) (413350L - (v) * 491)
-> +#define BCM54140_HWMON_FROM_TEMP(v) DIV_ROUND_CLOSEST_ULL(413350L - (v), 491)
-> +
-> +/* According to the datasheet the formula is:
-> + *   U = bits[11:0] / 1024 * 220 / 0.2
-> + *
-> + * Normalized:
-> + *   U = bits[11:0] / 4096 * 2514
-> + */
-> +#define BCM54140_HWMON_TO_IN_1V0(v) ((v) * 2514 >> 11)
-> +#define BCM54140_HWMON_FROM_IN_1V0(v) DIV_ROUND_CLOSEST_ULL(((v) << 11), 2514)
-> +
-> +/* According to the datasheet the formula is:
-> + *   U = bits[10:0] / 1024 * 880 / 0.7
-> + *
-> + * Normalized:
-> + *   U = bits[10:0] / 2048 * 4400
-> + */
-> +#define BCM54140_HWMON_TO_IN_3V3(v) ((v) * 4400 >> 12)
-> +#define BCM54140_HWMON_FROM_IN_3V3(v) DIV_ROUND_CLOSEST_ULL(((v) << 12), 4400)
-> +
-> +#define BCM54140_HWMON_TO_IN(ch, v) ((ch) ? BCM54140_HWMON_TO_IN_3V3(v) \
-> +					  : BCM54140_HWMON_TO_IN_1V0(v))
-> +#define BCM54140_HWMON_FROM_IN(ch, v) ((ch) ? BCM54140_HWMON_FROM_IN_3V3(v) \
-> +					    : BCM54140_HWMON_FROM_IN_1V0(v))
-> +#define BCM54140_HWMON_IN_MASK(ch) ((ch) ? BCM54140_RDB_MON_3V3_DATA_MASK \
-> +					 : BCM54140_RDB_MON_1V0_DATA_MASK)
-> +#define BCM54140_HWMON_IN_VAL_REG(ch) ((ch) ? BCM54140_RDB_MON_3V3_VAL \
-> +					    : BCM54140_RDB_MON_1V0_VAL)
-> +#define BCM54140_HWMON_IN_MIN_REG(ch) ((ch) ? BCM54140_RDB_MON_3V3_MIN \
-> +					    : BCM54140_RDB_MON_1V0_MIN)
-> +#define BCM54140_HWMON_IN_MAX_REG(ch) ((ch) ? BCM54140_RDB_MON_3V3_MAX \
-> +					    : BCM54140_RDB_MON_1V0_MAX)
-> +#define BCM54140_HWMON_IN_ALARM_BIT(ch) ((ch) ? BCM54140_RDB_MON_ISR_3V3 \
-> +					      : BCM54140_RDB_MON_ISR_1V0)
->  
->  #define BCM54140_DEFAULT_DOWNSHIFT 5
->  #define BCM54140_MAX_DOWNSHIFT 9
-> @@ -57,6 +121,261 @@
->  struct bcm54140_phy_priv {
->  	int port;
->  	int base_addr;
-> +#if IS_ENABLED(CONFIG_HWMON)
-> +	bool pkg_init;
-> +	/* protect the alarm bits */
-> +	struct mutex alarm_lock;
-> +	u16 alarm;
-> +#endif
-> +};
-> +
-> +#if IS_ENABLED(CONFIG_HWMON)
-> +static umode_t bcm54140_hwmon_is_visible(const void *data,
-> +					 enum hwmon_sensor_types type,
-> +					 u32 attr, int channel)
-> +{
-> +	switch (type) {
-> +	case hwmon_in:
-> +		switch (attr) {
-> +		case hwmon_in_min:
-> +		case hwmon_in_max:
-> +			return 0644;
-> +		case hwmon_in_label:
-> +		case hwmon_in_input:
-> +		case hwmon_in_alarm:
-> +			return 0444;
-> +		default:
-> +			return 0;
-> +		}
-> +	case hwmon_temp:
-> +		switch (attr) {
-> +		case hwmon_temp_min:
-> +		case hwmon_temp_max:
-> +			return 0644;
-> +		case hwmon_temp_input:
-> +		case hwmon_temp_alarm:
-> +			return 0444;
-> +		default:
-> +			return 0;
-> +		}
-> +	default:
-> +		return 0;
-> +	}
-> +}
-> +
-> +static int bcm54140_hwmon_read_alarm(struct device *dev, unsigned int bit,
-> +				     long *val)
-> +{
-> +	struct phy_device *phydev = dev_get_drvdata(dev);
-> +	struct bcm54140_phy_priv *priv = phydev->priv;
-> +	int tmp, ret = 0;
-> +
-> +	mutex_lock(&priv->alarm_lock);
-> +
-> +	/* latch any alarm bits */
-> +	tmp = bcm_phy_read_rdb(phydev, BCM54140_RDB_MON_ISR);
-> +	if (tmp < 0) {
-> +		ret = tmp;
-> +		goto out;
-> +	}
-> +	priv->alarm |= tmp;
-> +
-> +	*val = !!(priv->alarm & bit);
-> +	priv->alarm &= ~bit;
-> +
-> +out:
-> +	mutex_unlock(&priv->alarm_lock);
-> +	return ret;
-> +}
-> +
-> +static int bcm54140_hwmon_read_temp(struct device *dev, u32 attr,
-> +				    int channel, long *val)
-> +{
-
-This function and the matching write function don't use the 'channel'
-argument, so passing it as parameter is not necessary.
-
-> +	struct phy_device *phydev = dev_get_drvdata(dev);
-> +	u16 reg, tmp;
-> +
-> +	switch (attr) {
-> +	case hwmon_temp_input:
-> +		reg = BCM54140_RDB_MON_TEMP_VAL;
-> +		break;
-> +	case hwmon_temp_min:
-> +		reg = BCM54140_RDB_MON_TEMP_MIN;
-> +		break;
-> +	case hwmon_temp_max:
-> +		reg = BCM54140_RDB_MON_TEMP_MAX;
-> +		break;
-> +	case hwmon_temp_alarm:
-> +		return bcm54140_hwmon_read_alarm(dev,
-> +						 BCM54140_RDB_MON_ISR_TEMP,
-> +						 val);
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	tmp = bcm_phy_read_rdb(phydev, reg);
-> +	if (tmp < 0)
-> +		return tmp;
-> +
-> +	*val = BCM54140_HWMON_TO_TEMP(tmp & BCM54140_RDB_MON_TEMP_DATA_MASK);
-> +
-> +	return 0;
-> +}
-> +
-> +static int bcm54140_hwmon_read_in(struct device *dev, u32 attr,
-> +				  int channel, long *val)
-> +{
-> +	struct phy_device *phydev = dev_get_drvdata(dev);
-> +	u16 bit, reg, tmp;
-> +
-> +	switch (attr) {
-> +	case hwmon_in_input:
-> +		reg = BCM54140_HWMON_IN_VAL_REG(channel);
-> +		break;
-> +	case hwmon_in_min:
-> +		reg = BCM54140_HWMON_IN_MIN_REG(channel);
-> +		break;
-> +	case hwmon_in_max:
-> +		reg = BCM54140_HWMON_IN_MAX_REG(channel);
-> +		break;
-> +	case hwmon_in_alarm:
-> +		bit = BCM54140_HWMON_IN_ALARM_BIT(channel);
-> +		return bcm54140_hwmon_read_alarm(dev, bit, val);
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	tmp = bcm_phy_read_rdb(phydev, reg);
-> +	if (tmp < 0)
-> +		return tmp;
-> +
-> +	tmp &= BCM54140_HWMON_IN_MASK(channel);
-> +	*val = BCM54140_HWMON_TO_IN(channel, tmp);
-> +
-> +	return 0;
-> +}
-> +
-> +static int bcm54140_hwmon_read(struct device *dev,
-> +			       enum hwmon_sensor_types type, u32 attr,
-> +			       int channel, long *val)
-> +{
-> +	switch (type) {
-> +	case hwmon_temp:
-> +		return bcm54140_hwmon_read_temp(dev, attr, channel, val);
-> +	case hwmon_in:
-> +		return bcm54140_hwmon_read_in(dev, attr, channel, val);
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +}
-> +
-> +static const char *const bcm54140_hwmon_in_labels[] = {
-> +	"AVDDL",
-> +	"AVDDH",
-> +};
-> +
-> +static int bcm54140_hwmon_read_string(struct device *dev,
-> +				      enum hwmon_sensor_types type, u32 attr,
-> +				      int channel, const char **str)
-> +{
-> +	switch (type) {
-> +	case hwmon_in:
-> +		switch (attr) {
-> +		case hwmon_in_label:
-> +			*str = bcm54140_hwmon_in_labels[channel];
-> +			return 0;
-> +		default:
-> +			return -EOPNOTSUPP;
-> +		}
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +}
-> +
-> +static int bcm54140_hwmon_write_temp(struct device *dev, u32 attr,
-> +				     int channel, long val)
-> +{
-> +	struct phy_device *phydev = dev_get_drvdata(dev);
-> +	u16 mask = BCM54140_RDB_MON_TEMP_DATA_MASK;
-> +	u16 reg;
-> +
-> +	val = clamp_val(val, BCM54140_HWMON_TO_TEMP(mask),
-> +			BCM54140_HWMON_TO_TEMP(0));
-> +
-> +	switch (attr) {
-> +	case hwmon_temp_min:
-> +		reg = BCM54140_RDB_MON_TEMP_MIN;
-> +		break;
-> +	case hwmon_temp_max:
-> +		reg = BCM54140_RDB_MON_TEMP_MAX;
-> +		break;
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	return bcm_phy_modify_rdb(phydev, reg, mask,
-> +				  BCM54140_HWMON_FROM_TEMP(val));
-> +}
-> +
-> +static int bcm54140_hwmon_write_in(struct device *dev, u32 attr,
-> +				   int channel, long val)
-> +{
-> +	struct phy_device *phydev = dev_get_drvdata(dev);
-> +	u16 mask = BCM54140_HWMON_IN_MASK(channel);
-> +	u16 reg;
-> +
-> +	val = clamp_val(val, 0, BCM54140_HWMON_TO_IN(channel, mask));
-> +
-> +	switch (attr) {
-> +	case hwmon_in_min:
-> +		reg = BCM54140_HWMON_IN_MIN_REG(channel);
-> +		break;
-> +	case hwmon_in_max:
-> +		reg = BCM54140_HWMON_IN_MAX_REG(channel);
-> +		break;
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	return bcm_phy_modify_rdb(phydev, reg, mask,
-> +				  BCM54140_HWMON_FROM_IN(channel, val));
-> +}
-> +
-> +static int bcm54140_hwmon_write(struct device *dev,
-> +				enum hwmon_sensor_types type, u32 attr,
-> +				int channel, long val)
-> +{
-> +	switch (type) {
-> +	case hwmon_temp:
-> +		return bcm54140_hwmon_write_temp(dev, attr, channel, val);
-> +	case hwmon_in:
-> +		return bcm54140_hwmon_write_in(dev, attr, channel, val);
-> +	default:
-> +		return -EOPNOTSUPP;
-> +	}
-> +}
-> +
-> +static const struct hwmon_channel_info *bcm54140_hwmon_info[] = {
-> +	HWMON_CHANNEL_INFO(temp,
-> +			   HWMON_T_INPUT | HWMON_T_MIN | HWMON_T_MAX |
-> +			   HWMON_T_ALARM),
-> +	HWMON_CHANNEL_INFO(in,
-> +			   HWMON_I_INPUT | HWMON_I_MIN | HWMON_I_MAX |
-> +			   HWMON_I_ALARM | HWMON_I_LABEL,
-> +			   HWMON_I_INPUT | HWMON_I_MIN | HWMON_I_MAX |
-> +			   HWMON_I_ALARM | HWMON_I_LABEL),
-> +	NULL
-> +};
-> +
-> +static const struct hwmon_ops bcm54140_hwmon_ops = {
-> +	.is_visible = bcm54140_hwmon_is_visible,
-> +	.read = bcm54140_hwmon_read,
-> +	.read_string = bcm54140_hwmon_read_string,
-> +	.write = bcm54140_hwmon_write,
-> +};
-> +
-> +static const struct hwmon_chip_info bcm54140_chip_info = {
-> +	.ops = &bcm54140_hwmon_ops,
-> +	.info = bcm54140_hwmon_info,
->  };
->  
->  static int bcm54140_phy_base_read_rdb(struct phy_device *phydev, u16 rdb)
-> @@ -203,6 +522,72 @@ static int bcm54140_get_base_addr_and_port(struct phy_device *phydev)
->  	return 0;
->  }
->  
-> +/* Check if one PHY has already done the init of the parts common to all PHYs
-> + * in the Quad PHY package.
-> + */
-> +static bool bcm54140_is_pkg_init(struct phy_device *phydev)
-> +{
-> +	struct bcm54140_phy_priv *priv = phydev->priv;
-> +	struct mii_bus *bus = phydev->mdio.bus;
-> +	int base_addr = priv->base_addr;
-> +	struct phy_device *phy;
-> +	int i;
-> +
-> +	/* Quad PHY */
-> +	for (i = 0; i < 4; i++) {
-> +		phy = mdiobus_get_phy(bus, base_addr + i);
-> +		if (!phy)
-> +			continue;
-> +
-> +		if ((phy->phy_id & phydev->drv->phy_id_mask) !=
-> +		    (phydev->drv->phy_id & phydev->drv->phy_id_mask))
-> +			continue;
-> +
-> +		priv = phy->priv;
-> +
-> +		if (priv && priv->pkg_init)
-> +			return true;
-> +	}
-> +
-> +	return false;
-> +}
-> +
-> +static int bcm54140_enable_monitoring(struct phy_device *phydev)
-> +{
-> +	u16 mask, set;
-> +
-> +	/* 3.3V voltage mode */
-> +	set = BCM54140_RDB_MON_CTRL_V_MODE;
-> +
-> +	/* select round-robin */
-> +	mask = BCM54140_RDB_MON_CTRL_SEL_MASK;
-> +	set |= FIELD_PREP(BCM54140_RDB_MON_CTRL_SEL_MASK,
-> +			  BCM54140_RDB_MON_CTRL_SEL_RR);
-> +
-> +	/* remove power-down bit */
-> +	mask |= BCM54140_RDB_MON_CTRL_PWR_DOWN;
-> +
-> +	return bcm_phy_modify_rdb(phydev, BCM54140_RDB_MON_CTRL, mask, set);
-> +}
-> +
-> +static int bcm54140_phy_probe_once(struct phy_device *phydev)
-> +{
-> +	struct device *hwmon;
-> +	int ret;
-> +
-> +	/* enable hardware monitoring */
-> +	ret = bcm54140_enable_monitoring(phydev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	hwmon = devm_hwmon_device_register_with_info(&phydev->mdio.dev,
-> +						     "BCM54140", phydev,
-> +						     &bcm54140_chip_info,
-> +						     NULL);
-> +	return PTR_ERR_OR_ZERO(hwmon);
-> +}
-> +#endif
-> +
->  static int bcm54140_phy_probe(struct phy_device *phydev)
->  {
->  	struct bcm54140_phy_priv *priv;
-> @@ -218,6 +603,18 @@ static int bcm54140_phy_probe(struct phy_device *phydev)
->  	if (ret)
->  		return ret;
->  
-> +#if IS_ENABLED(CONFIG_HWMON)
-> +	mutex_init(&priv->alarm_lock);
-> +
-> +	if (!bcm54140_is_pkg_init(phydev)) {
-> +		ret = bcm54140_phy_probe_once(phydev);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	priv->pkg_init = true;
-> +#endif
-> +
->  	dev_info(&phydev->mdio.dev,
->  		 "probed (port %d, base PHY address %d)\n",
->  		 priv->port, priv->base_addr);
-> -- 
-> 2.20.1
-> 
+>>
+>>>>>>>>>>>> The problem with old method seems to be, that device does 
+>>>>>>>>>>>> not have had time to attach before the
+>>>>>>>>>>>> PHY driver check.
+>>>>>>>>>>>>
+>>>>>>>>>>>> The patch:
+>>>>>>>>>>>>
+>>>>>>>>>>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c 
+>>>>>>>>>>>> b/drivers/net/ethernet/realtek/r8169_main.c
+>>>>>>>>>>>> index bf5bf05970a2..acd122a88d4a 100644
+>>>>>>>>>>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>>>>>>>>>>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>>>>>>>>>>>> @@ -5172,11 +5172,11 @@ static int 
+>>>>>>>>>>>> r8169_mdio_register(struct rtl8169_private *tp)
+>>>>>>>>>>>>            if (!tp->phydev) {
+>>>>>>>>>>>> mdiobus_unregister(new_bus);
+>>>>>>>>>>>>                    return -ENODEV;
+>>>>>>>>>>>> -       } else if (!tp->phydev->drv) {
+>>>>>>>>>>>> +       } else if (tp->mac_version == RTL_GIGA_MAC_NONE) {
+>>>>>>>>>>>>                    /* Most chip versions fail with the 
+>>>>>>>>>>>> genphy driver.
+>>>>>>>>>>>>                     * Therefore ensure that the dedicated 
+>>>>>>>>>>>> PHY driver is loaded.
+>>>>>>>>>>>>                     */
+>>>>>>>>>>>> -               dev_err(&pdev->dev, "realtek.ko not loaded, 
+>>>>>>>>>>>> maybe it needs to be added to initramfs?\n");
+>>>>>>>>>>>> +               dev_err(&pdev->dev, "Not known MAC 
+>>>>>>>>>>>> version.\n");
+>>>>>>>>>>>> mdiobus_unregister(new_bus);
+>>>>>>>>>>>>                    return -EUNATCH;
+>>>>>>>>>>>>            }
+>>>>>>>>>>>> diff --git a/drivers/net/phy/phy-core.c 
+>>>>>>>>>>>> b/drivers/net/phy/phy-core.c
+>>>>>>>>>>>> index 66b8c61ca74c..aba2b304b821 100644
+>>>>>>>>>>>> --- a/drivers/net/phy/phy-core.c
+>>>>>>>>>>>> +++ b/drivers/net/phy/phy-core.c
+>>>>>>>>>>>> @@ -704,6 +704,10 @@ EXPORT_SYMBOL_GPL(phy_modify_mmd);
+>>>>>>>>>>>>       static int __phy_read_page(struct phy_device *phydev)
+>>>>>>>>>>>>     {
+>>>>>>>>>>>> +       /* If not attached, do nothing (no warning) */
+>>>>>>>>>>>> +       if (!phydev->attached_dev)
+>>>>>>>>>>>> +               return -EOPNOTSUPP;
+>>>>>>>>>>>> +
+>>>>>>>>>>>>            if (WARN_ONCE(!phydev->drv->read_page, 
+>>>>>>>>>>>> "read_page callback not available, PHY driver not loaded?\n"))
+>>>>>>>>>>>>                    return -EOPNOTSUPP;
+>>>>>>>>>>>>     @@ -712,12 +716,17 @@ static int __phy_read_page(struct 
+>>>>>>>>>>>> phy_device *phydev)
+>>>>>>>>>>>>       static int __phy_write_page(struct phy_device 
+>>>>>>>>>>>> *phydev, int page)
+>>>>>>>>>>>>     {
+>>>>>>>>>>>> +       /* If not attached, do nothing (no warning) */
+>>>>>>>>>>>> +       if (!phydev->attached_dev)
+>>>>>>>>>>>> +               return -EOPNOTSUPP;
+>>>>>>>>>>>> +
+>>>>>>>>>>>>            if (WARN_ONCE(!phydev->drv->write_page, 
+>>>>>>>>>>>> "write_page callback not available, PHY driver not 
+>>>>>>>>>>>> loaded?\n"))
+>>>>>>>>>>>>                    return -EOPNOTSUPP;
+>>>>>>>>>>>>              return phydev->drv->write_page(phydev, page);
+>>>>>>>>>>>>     }
+>>>>>>>>>>>>     +
+>>>>>>>>>>>>     /**
+>>>>>>>>>>>>      * phy_save_page() - take the bus lock and save the 
+>>>>>>>>>>>> current page
+>>>>>>>>>>>>      * @phydev: a pointer to a &struct phy_device
+>>>>>>>>>>>>
+>>>>>>>>>>>>
+>>>>>>>>>>>>
+>>>>>>>>>>>> 15. huhtik. 2020, 19.18, Heiner Kallweit 
+>>>>>>>>>>>> <hkallweit1@gmail.com <mailto:hkallweit1@gmail.com>> 
+>>>>>>>>>>>> kirjoitti:
+>>>>>>>>>>>>
+>>>>>>>>>>>>        On 15.04.2020 16:39, Lauri Jakku wrote:
+>>>>>>>>>>>>
+>>>>>>>>>>>>            Hi, There seems to he Something odd problem, 
+>>>>>>>>>>>> maybe timing related. Stripped version not workingas 
+>>>>>>>>>>>> expected. I get back to you, when i have it working.
+>>>>>>>>>>>>
+>>>>>>>>>>>>
+>>>>>>>>>>>>        There's no point in working on your patch. W/o 
+>>>>>>>>>>>> proper justification it
+>>>>>>>>>>>>        isn't acceptable anyway. And so far we still don't 
+>>>>>>>>>>>> know which problem
+>>>>>>>>>>>>        you actually have.
+>>>>>>>>>>>>        FIRST please provide the requested logs and explain 
+>>>>>>>>>>>> the actual problem
+>>>>>>>>>>>>        (incl. the commit that caused the regression).
+>>>>>>>>>>>>
+>>>>>>>>>>>>
+>>>>>>>>>>>>
+>>>>>>>>>>>>
+>>>>>>>>>>>>            13. huhtik. 2020, 14.46, Lauri Jakku 
+>>>>>>>>>>>> <ljakku77@gmail.com <mailto:ljakku77@gmail.com>> kirjoitti: 
+>>>>>>>>>>>> Hi, Fair enough, i'll strip them. -lja On 2020-04-13 14:34, 
+>>>>>>>>>>>> Leon Romanovsky wrote:
+>>>>>>>>>>>>
+>>>>>>>>>>>>            On Mon, Apr 13, 2020 at 02:02:01PM +0300, Lauri 
+>>>>>>>>>>>> Jakku wrote: Hi, Comments inline. On 2020-04-13 13:58, Leon 
+>>>>>>>>>>>> Romanovsky wrote: On Mon, Apr 13, 2020 at 01:30:13PM +0300, 
+>>>>>>>>>>>> Lauri Jakku wrote: From 
+>>>>>>>>>>>> 2d41edd4e6455187094f3a13d58c46eeee35aa31 Mon Sep 17 
+>>>>>>>>>>>> 00:00:00 2001 From: Lauri Jakku <lja@iki.fi> Date: Mon, 13 
+>>>>>>>>>>>> Apr 2020 13:18:35 +0300 Subject: [PATCH] NET: r8168/r8169 
+>>>>>>>>>>>> identifying fix The driver installation determination made 
+>>>>>>>>>>>> properly by checking PHY vs DRIVER id's. --- 
+>>>>>>>>>>>> drivers/net/ethernet/realtek/r8169_main.c | 70 
+>>>>>>>>>>>> ++++++++++++++++++++--- drivers/net/phy/mdio_bus.c | 11 
+>>>>>>>>>>>> +++- 2 files changed, 72 insertions(+), 9 deletions(-) I 
+>>>>>>>>>>>> would say that most of the code is debug prints. I tought 
+>>>>>>>>>>>> that they are helpful to keep, they are using the debug 
+>>>>>>>>>>>> calls, so they are not visible if user does not like those. 
+>>>>>>>>>>>> You are missing the point of who are your users. Users want 
+>>>>>>>>>>>> to have working device and the code. They don't need or 
+>>>>>>>>>>>> like to debug their kernel. Thanks
+>>>>>>>>>>>>
+>>>>>>>>>>>>
