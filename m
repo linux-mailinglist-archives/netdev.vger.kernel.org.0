@@ -2,35 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9877C1AFC34
-	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 18:51:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54A181AFC41
+	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 18:57:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726363AbgDSQvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 12:51:37 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:33125 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725927AbgDSQvg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 12:51:36 -0400
+        id S1726613AbgDSQ5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 12:57:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48140 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725970AbgDSQ5A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 12:57:00 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F4FC061A0C;
+        Sun, 19 Apr 2020 09:56:59 -0700 (PDT)
 Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id F0C0323059;
-        Sun, 19 Apr 2020 18:51:33 +0200 (CEST)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 25FEC23059;
+        Sun, 19 Apr 2020 18:56:58 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1587315094;
+        t=1587315418;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=2HyE6TBA3XUAdH/omLPdoIHFpzwyQMgKdLGgjukg4lo=;
-        b=Ob1/31ZFRYQJJPTGK82mDe3+zpDvyCoCyRVnIVhqOJ0fLqI2fzCUsB/DgeXj/j7cmy7DxP
-        U5wVZfro1sgJ533gBycwNf3jqMfQvfTHzhJjhMEM3yCZgF1EhSAe21Obgb6v8hIfX/7Y3m
-        1cXZISHxzUFdBDu1DU82lb8QbRSkEfQ=
+        bh=/XyGS8Ih2jliMK5tWK4NrlSo2vV1w+fYZEjP9GEbFHQ=;
+        b=VL8lHcY891HUtQsplwCdu2HO0oAmA8YZ+BzC7x4Va83HsABuf8gAgtHnOU7B4Ntd+hFHIT
+        xH6Pfb/wiP5NHafpYNVgy/eqVUFmYRq1pKrAkW8RYrOfXdgEM9HFGxCobbAcew5TX59qWA
+        jBhDFKZ7wFCS9NU/GTos+TuQxqVJ0nI=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII;
  format=flowed
 Content-Transfer-Encoding: 7bit
-Date:   Sun, 19 Apr 2020 18:51:33 +0200
+Date:   Sun, 19 Apr 2020 18:56:58 +0200
 From:   Michael Walle <michael@walle.cc>
 To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -40,11 +43,13 @@ Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
         "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v2 3/3] net: phy: bcm54140: add hwmon support
-In-Reply-To: <20200419155655.GK836632@lunn.ch>
+Subject: Re: [PATCH net-next v2 2/3] net: phy: add Broadcom BCM54140 support
+In-Reply-To: <20200419164958.GN836632@lunn.ch>
 References: <20200419101249.28991-1-michael@walle.cc>
- <20200419101249.28991-3-michael@walle.cc> <20200419155655.GK836632@lunn.ch>
-Message-ID: <4fd6d06636898560c405713eb91327e3@walle.cc>
+ <20200419101249.28991-2-michael@walle.cc> <20200419154943.GJ836632@lunn.ch>
+ <d40eafc5ed95b62886e10159dcb7a509@walle.cc>
+ <20200419164958.GN836632@lunn.ch>
+Message-ID: <8478a8bb5542f8e40fa17a003893f08d@walle.cc>
 X-Sender: michael@walle.cc
 User-Agent: Roundcube Webmail/1.3.10
 X-Spamd-Bar: +
@@ -52,7 +57,7 @@ X-Spam-Level: *
 X-Rspamd-Server: web
 X-Spam-Status: No, score=1.40
 X-Spam-Score: 1.40
-X-Rspamd-Queue-Id: F0C0323059
+X-Rspamd-Queue-Id: 25FEC23059
 X-Spamd-Result: default: False [1.40 / 15.00];
          FROM_HAS_DN(0.00)[];
          TO_DN_SOME(0.00)[];
@@ -62,7 +67,7 @@ X-Spamd-Result: default: False [1.40 / 15.00];
          MIME_GOOD(-0.10)[text/plain];
          DKIM_SIGNED(0.00)[];
          RCPT_COUNT_SEVEN(0.00)[10];
-         NEURAL_HAM(-0.00)[-0.975];
+         NEURAL_HAM(-0.00)[-0.977];
          RCVD_COUNT_ZERO(0.00)[0];
          FROM_EQ_ENVFROM(0.00)[];
          MIME_TRACE(0.00)[0:+];
@@ -74,107 +79,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2020-04-19 17:56, schrieb Andrew Lunn:
-> On Sun, Apr 19, 2020 at 12:12:49PM +0200, Michael Walle wrote:
-> 
-> Hi Michael
-> 
-> You have an #if here...
-> 
->> +#if IS_ENABLED(CONFIG_HWMON)
->> +static umode_t bcm54140_hwmon_is_visible(const void *data,
->> +					 enum hwmon_sensor_types type,
->> +					 u32 attr, int channel)
->> +{
->> +	switch (type) {
->> +	case hwmon_in:
->> +		switch (attr) {
->> +		case hwmon_in_min:
->> +		case hwmon_in_max:
->> +			return 0644;
->> +		case hwmon_in_label:
->> +		case hwmon_in_input:
->> +		case hwmon_in_alarm:
->> +			return 0444;
->> +		default:
->> +			return 0;
->> +		}
->> +	case hwmon_temp:
->> +		switch (attr) {
->> +		case hwmon_temp_min:
->> +		case hwmon_temp_max:
->> +			return 0644;
->> +		case hwmon_temp_input:
->> +		case hwmon_temp_alarm:
->> +			return 0444;
->> +		default:
->> +			return 0;
->> +		}
->> +	default:
->> +		return 0;
->> +	}
->> +}
-> 
-> ...
-> 
-> 
->> +static const struct hwmon_chip_info bcm54140_chip_info = {
->> +	.ops = &bcm54140_hwmon_ops,
->> +	.info = bcm54140_hwmon_info,
->>  };
+Am 2020-04-19 18:49, schrieb Andrew Lunn:
+> On Sun, Apr 19, 2020 at 06:33:40PM +0200, Michael Walle wrote:
+>> >
+>> > > +
+>> > > +	return 0;
+>> > > +}
+>> > > +
+>> > > +static int bcm54140_config_init(struct phy_device *phydev)
+>> > > +{
+>> > > +	u16 reg = 0xffff;
+>> > > +	int ret;
+>> > > +
+>> > > +	/* Apply hardware errata */
+>> > > +	ret = bcm54140_b0_workaround(phydev);
+>> > > +	if (ret)
+>> > > +		return ret;
+>> > > +
+>> > > +	/* Unmask events we are interested in. */
+>> > > +	reg &= ~(BCM54140_RDB_INT_DUPLEX |
+>> > > +		 BCM54140_RDB_INT_SPEED |
+>> > > +		 BCM54140_RDB_INT_LINK);
+>> > > +	ret = bcm_phy_write_rdb(phydev, BCM54140_RDB_IMR, reg);
+>> > > +	if (ret)
+>> > > +		return ret;
+>> > > +
+>> > > +	/* LED1=LINKSPD[1], LED2=LINKSPD[2], LED3=ACTIVITY */
+>> > > +	ret = bcm_phy_modify_rdb(phydev, BCM54140_RDB_SPARE1,
+>> > > +				 0, BCM54140_RDB_SPARE1_LSLM);
+>> > > +	if (ret)
+>> > > +		return ret;
+>> >
+>> > What are the reset default for LEDs? Can the LEDs be configured via
+>> > strapping pins? There is currently no good solution for this. Whatever
+>> > you pick will be wrong for somebody else. At minimum, strapping pins,
+>> > if they exist, should not be overridden.
 >> 
->>  static int bcm54140_phy_base_read_rdb(struct phy_device *phydev, u16 
->> rdb)
->> @@ -203,6 +522,72 @@ static int bcm54140_get_base_addr_and_port(struct 
->> phy_device *phydev)
->>  	return 0;
->>  }
+>> Fair enough. There are no strapping options, just the "default 
+>> behaviour",
+>> where LED1/2 indicates the speed, and LED3 just activity (no link
+>> indication). And I just noticed that in this case the comment above is
+>> wrong, because it is actually link/activity. Further, there are myriad
+>> configuration options which I didn't want to encode altogether. So 
+>> I've
+>> just chosen the typical one (which actually matches our hardware), ie.
+>> to have the "activity/led mode". The application note mentions some 
+>> other
+>> concrete modes, but I don't know if its worth implementing them. Maybe 
+>> we
+>> can have a enumeration of some distinct modes? Ie.
+>> 
+>>    broadcom,led-mode = <BCM54140_NO_CHANGE>;
+>>    broadcom,led-mode = <BCM54140_ACT_LINK_MODE>;
 > 
+> Configuring LEDs is a mess at the moment. No two PHYs do it the
+> same. For a long time i've had a TODO item to make PHY LEDs work just
+> like every other LED in linux, and you can set trigger actions which
+> are then implemented in hardware.
 > 
-> Still inside the #if. Some original code is now inside the #if/#endif.
-> Is this correct? Hard to see from just the patch.
+> We have been pushing back on adding DT properties, it just makes the
+> problem worse. If reset defaults are good enough for you, please leave
+> it at that.
 
-Whoops you're correct, something got messed up here. Will
-fix that in the next version.
+Unfortunately not. We need the link/act, which I presume will also be
+used by most other users, thus the driver enables this setting. I don't
+know any board which just have an activity led, that is just off and
+blinks for a short time if there is RX or TX, which is the reset default
+setting of this PHY.
 
 -michael
-
-
-> 
->> 
->> +/* Check if one PHY has already done the init of the parts common to 
->> all PHYs
->> + * in the Quad PHY package.
->> + */
->> +static bool bcm54140_is_pkg_init(struct phy_device *phydev)
->> +{
->> +	struct bcm54140_phy_priv *priv = phydev->priv;
->> +	struct mii_bus *bus = phydev->mdio.bus;
->> +	int base_addr = priv->base_addr;
->> +	struct phy_device *phy;
->> +	int i;
->> +
-> 
-> ...
-> 
->> +static int bcm54140_phy_probe_once(struct phy_device *phydev)
->> +{
->> +	struct device *hwmon;
->> +	int ret;
->> +
->> +	/* enable hardware monitoring */
->> +	ret = bcm54140_enable_monitoring(phydev);
->> +	if (ret)
->> +		return ret;
->> +
->> +	hwmon = devm_hwmon_device_register_with_info(&phydev->mdio.dev,
->> +						     "BCM54140", phydev,
->> +						     &bcm54140_chip_info,
->> +						     NULL);
->> +	return PTR_ERR_OR_ZERO(hwmon);
->> +}
->> +#endif
-> 
-> 
-> Thanks
->   Andrew
