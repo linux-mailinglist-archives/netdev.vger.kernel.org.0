@@ -2,96 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 928E81AFB57
-	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 16:19:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E84421AFB5F
+	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 16:21:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726384AbgDSOTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 10:19:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40992 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725905AbgDSOTL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Apr 2020 10:19:11 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3787021D94;
-        Sun, 19 Apr 2020 14:19:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587305950;
-        bh=eMAahVBSz8d5aaCU1X5EriaX5AXtMKr9e1XqHQzajYg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PzmzhbzItK6mB4CuAKhoaee/syZM/E3kHXSejWUJKRa8grd42Rg/hIu005KOMrEj8
-         SeKXX7heEvmjhcCkk93MpFfshTQ45zkAObnmCI7aCL/Y32tU5L7zkJCHUOb0PmVpf3
-         cMJEZrWiRVvQAKFoFNLSdP7bqtSr3qTkstX0OqcM=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@mellanox.com>,
-        Borislav Petkov <bp@suse.de>, netdev@vger.kernel.org,
-        oss-drivers@netronome.com
-Subject: [PATCH net-next v2 3/4] net/nfp: Update driver to use global kernel version
-Date:   Sun, 19 Apr 2020 17:18:49 +0300
-Message-Id: <20200419141850.126507-4-leon@kernel.org>
-X-Mailer: git-send-email 2.25.2
-In-Reply-To: <20200419141850.126507-1-leon@kernel.org>
-References: <20200419141850.126507-1-leon@kernel.org>
+        id S1726009AbgDSOVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 10:21:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52552 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725793AbgDSOVB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 10:21:01 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B66C061A0C
+        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 07:21:01 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id s3so5695257eji.6
+        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 07:21:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sheYKXBGB4wnRB1mB40wii+pxy9iBUxAkM1H7XFRuJ4=;
+        b=Jj/Lt54/CqEDcnEo0Pv97RLnwSwXNh9qpBP5vxJG9W7ZZf1q5TOxlj7QM/31sasm1e
+         OcNvaw8X929j5pLlH9wjMJj7LMVgFtDk9ERUncXvvtk6tzqG8iH/juN2IZlcJ28vTZe+
+         fKDsvrabslkmkxjOv+XSMTF58HWHIlvGZYZxBFITA31b9mb3xakH0NDEuI6C6Yfzhsmm
+         9Hv0aHD+6MY4mbEeMUyRhL2Ic4Kfip7N1kK1go7QnovX80o+vSxVrwFRbEUVGVNY8LI+
+         Pkfnkqu/FRpHPeOBuDwrpJZxsIgNZF8etDGhhc9tp+dXHSddUQTrwJKRDb/BT4aVqR0+
+         OeeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sheYKXBGB4wnRB1mB40wii+pxy9iBUxAkM1H7XFRuJ4=;
+        b=YWG5fnIW8nMYefVn4tOyD2IGNWXGdAPDTURbHjLcYJApw+IeiRNfouy9IHjj7rs196
+         QRNrCOYsEU89GF8pNCJZNasCqLxOOkN0lOFlzPozwbT/LwDGCM5PE/EiX3bdAKptEtza
+         S3GoebIswy6I1zAGAKZdrIqq2iwpy0+YrGh3zKN6RbdlAT/lObWBHzVXcf9AuNbX8t4E
+         JQ5XBy6+p8wmD+6EtAhNmfq0ICJYtKR6xvNZJLVL/2S4tw+6OcIfNCg645khoIhtRlda
+         3Vh7i5s7OvKvdaBYjfBn1+9Sos9gSMjpIGE6FTBBX39r3OMJjE5+2LJqkcgoLsZaJdEn
+         U3tg==
+X-Gm-Message-State: AGi0PuY7yXcXxNKgeb8QDgQ80um4Oi7k4QSIegHRlAb5qcpxx/W4cKTJ
+        Q9e/Uc57Twygje/mV52NCFlGwfx1Hydo7PdaUbk=
+X-Google-Smtp-Source: APiQypIIlF5lBjjvGTx1yd42s7orNWvs5ct5MVJT8ZtJcnf+labQ+lqVdEUCIpwIDklm2FmMAyEqvP+Fp+iCc5zJm4g=
+X-Received: by 2002:a17:906:78c:: with SMTP id l12mr11265193ejc.189.1587306059838;
+ Sun, 19 Apr 2020 07:20:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200417190308.32598-1-olteanv@gmail.com> <20200419073307.uhm3w2jhsczpchvi@ws.localdomain>
+In-Reply-To: <20200419073307.uhm3w2jhsczpchvi@ws.localdomain>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Sun, 19 Apr 2020 17:20:48 +0300
+Message-ID: <CA+h21hrvSjRwDORZosxDt5YA+uMckaypT51f-COr+wtB7EjVAQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: mscc: ocelot: deal with problematic
+ MAC_ETYPE VCAP IS2 rules
+To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        netdev <netdev@vger.kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "Y.b. Lu" <yangbo.lu@nxp.com>, Po Liu <po.liu@nxp.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@idosch.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@mellanox.com>
+On Sun, 19 Apr 2020 at 10:33, Allan W. Nielsen
+<allan.nielsen@microchip.com> wrote:
+>
+> Hi,
+>
+> Sorry I did not manage to provide feedback before it was merged (I will
+> need to consult some of my colleagues Monday before I can provide the
+> foll feedback).
+>
+> There are many good things in this patch, but it is not only good.
+>
+> The problem is that these TCAMs/VCAPs are insanely complicated and it is
+> really hard to make them fit nicely into the existing tc frame-work
+> (being hard does not mean that we should not try).
+>
+> In this patch, you try to automatic figure out who the user want the
+> TCAM to be configured. It works for 1 use-case but it breaks others.
+>
+> Before this patch you could do a:
+>      tc filter add dev swp0 ingress protocol ipv4 \
+>              flower skip_sw src_ip 10.0.0.1 action drop
+>      tc filter add dev swp0 ingress \
+>              flower skip_sw src_mac 96:18:82:00:04:01 action drop
+>
+> But the second rule would not apply to the ICMP over IPv4 over Ethernet
+> packet, it would however apply to non-IP packets.
+>
+> With this patch it not possible. Your use-case is more common, but the
+> other one is not unrealistic.
+>
+> My concern with this, is that I do not think it is possible to automatic
+> detect how these TCAMs needs to be configured by only looking at the
+> rules installed by the user. Trying to do this automatic, also makes the
+> TCAM logic even harder to understand for the user.
+>
+> I would prefer that we by default uses some conservative default
+> settings which are easy to understand, and then expose some expert
+> settings in the sysfs, which can be used to achieve different
+> behavioral.
+>
+> Maybe forcing MAC_ETYPE matches is the most conservative and easiest to
+> understand default.
+>
+> But I do seem to recall that there is a way to allow matching on both
+> SMAC and SIP (your original motivation). This may be a better default
+> (despite that it consumes more TCAM resources). I will follow up and
+> check if this is possible.
+>
+> Vladimir (and anyone else whom interested): would you be interested in
+> spending some time discussion the more high-level architectures and
+> use-cases on how to best integrate this TCAM architecture into the Linux
+> kernel. Not sure on the outlook for the various conferences, but we
+> could arrange some online session to discuss this.
+>
+> /Allan
+>
 
-Change nfp driver to use globally defined kernel version.
+And yes, we would be very interested in attending a call for syncing
+up on integrating the TCAM hardware with the flow offload
+infrastructure from Linux. Actually at the moment we are trying to add
+support for offloaded VLAN retagging with the VCAP IS1 and ES0 blocks.
 
-Reported-by: Borislav Petkov <bp@suse.de>
-Acked-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
----
- drivers/net/ethernet/netronome/nfp/nfp_main.c        | 3 ---
- drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c | 2 --
- 2 files changed, 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_main.c b/drivers/net/ethernet/netronome/nfp/nfp_main.c
-index 4d282fc56009..7ff2ccbd43b0 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_main.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_main.c
-@@ -14,7 +14,6 @@
- #include <linux/mutex.h>
- #include <linux/pci.h>
- #include <linux/firmware.h>
--#include <linux/vermagic.h>
- #include <linux/vmalloc.h>
- #include <net/devlink.h>
-
-@@ -31,7 +30,6 @@
- #include "nfp_net.h"
-
- static const char nfp_driver_name[] = "nfp";
--const char nfp_driver_version[] = VERMAGIC_STRING;
-
- static const struct pci_device_id nfp_pci_device_ids[] = {
- 	{ PCI_VENDOR_ID_NETRONOME, PCI_DEVICE_ID_NETRONOME_NFP6000,
-@@ -920,4 +918,3 @@ MODULE_FIRMWARE("netronome/nic_AMDA0099-0001_1x10_1x25.nffw");
- MODULE_AUTHOR("Netronome Systems <oss-drivers@netronome.com>");
- MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("The Netronome Flow Processor (NFP) driver.");
--MODULE_VERSION(UTS_RELEASE);
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-index 2779f1526d1e..a5aa3219d112 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-@@ -203,8 +203,6 @@ nfp_get_drvinfo(struct nfp_app *app, struct pci_dev *pdev,
- 	char nsp_version[ETHTOOL_FWVERS_LEN] = {};
-
- 	strlcpy(drvinfo->driver, pdev->driver->name, sizeof(drvinfo->driver));
--	strlcpy(drvinfo->version, nfp_driver_version, sizeof(drvinfo->version));
--
- 	nfp_net_get_nspinfo(app, nsp_version);
- 	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
- 		 "%s %s %s %s", vnic_version, nsp_version,
---
-2.25.2
-
+Thanks,
+-Vladimir
