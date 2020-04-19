@@ -2,37 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EADC31AFE8B
+	by mail.lfdr.de (Postfix) with ESMTP id 1379F1AFE89
 	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 00:12:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726105AbgDSWMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 18:12:25 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49136 "EHLO vps0.lunn.ch"
+        id S1726048AbgDSWMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 18:12:10 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:49120 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725848AbgDSWMZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Apr 2020 18:12:25 -0400
+        id S1725848AbgDSWMK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Apr 2020 18:12:10 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
-        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=Wv93w1GBmx10pGoTzPJXf3zqeg3gjP7XumG5wNRQ1eE=; b=keuwFi8FHFYImsx8tkyFuM1D3/
-        typn78YXMTEofFV6JZig7ZEoeBkDKf4QvpQn+X6uED5uh8YWymNCd6JqSBmsrvfr/h3xqrbhr47pQ
-        ni/82boYNw5itqTqhO8vd/3fSPhqS1WlO+r4vgbdITFVqYKJP3xcDiiI/dP+WBDT+uw8=;
+        bh=bcC2F6UWuLePq6HSHxKGCa/LvP9GuTbpDW+8vhfrnX8=; b=ZbMmMP8TFLAUhYEuxXSKKsDtUr
+        QV6USL/L+CIubBsJX7rKB+NtrReFy3TZGwbwBF2OJ5bBZ4QXOsy2c1UWDMiRaPWsaTYrBBrmghij9
+        BuF3kWe24pyyQhyt/WEyjK8ZlK47cx5t7ydi2y5qYs+E/Ve7aYtgfMZ3vxiZ1Xv+e208=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
         (envelope-from <andrew@lunn.ch>)
-        id 1jQIAZ-003hzq-JR; Mon, 20 Apr 2020 00:12:07 +0200
+        id 1jQIAZ-003hzt-KC; Mon, 20 Apr 2020 00:12:07 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next v2 0/3] RFC 2863 Testing Oper status
-Date:   Mon, 20 Apr 2020 00:11:49 +0200
-Message-Id: <20200419221152.884053-1-andrew@lunn.ch>
+Subject: [PATCH net-next v2 1/3] net: Add IF_OPER_TESTING
+Date:   Mon, 20 Apr 2020 00:11:50 +0200
+Message-Id: <20200419221152.884053-2-andrew@lunn.ch>
 X-Mailer: git-send-email 2.26.0.rc2
+In-Reply-To: <20200419221152.884053-1-andrew@lunn.ch>
+References: <20200419221152.884053-1-andrew@lunn.ch>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -40,29 +42,170 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset add support for RFC 2863 Oper status testing.  An
-interface is placed into this state when a self test is performed
-using ethtool.
+RFC 2863 defines the operational state testing. Add support for this
+state, both as a IF_LINK_MODE_ and __LINK_STATE_.
 
-v2:
-Fix date/kernel version in Documentation
-Add reviewed-by tags
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+---
+ include/linux/netdevice.h | 41 +++++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/if.h   |  1 +
+ net/core/dev.c            |  5 +++++
+ net/core/link_watch.c     | 12 ++++++++++--
+ net/core/rtnetlink.c      |  9 ++++++++-
+ 5 files changed, 65 insertions(+), 3 deletions(-)
 
-Andrew Lunn (3):
-  net: Add IF_OPER_TESTING
-  net: Add testing sysfs attribute
-  net: ethtool: self_test: Mark interface in testing operative status
-
- Documentation/ABI/testing/sysfs-class-net | 13 +++++++
- include/linux/netdevice.h                 | 41 +++++++++++++++++++++++
- include/uapi/linux/if.h                   |  1 +
- net/core/dev.c                            |  5 +++
- net/core/link_watch.c                     | 12 +++++--
- net/core/net-sysfs.c                      | 15 ++++++++-
- net/core/rtnetlink.c                      |  9 ++++-
- net/ethtool/ioctl.c                       |  2 ++
- 8 files changed, 94 insertions(+), 4 deletions(-)
-
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 130a668049ab..0750b54b3765 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -288,6 +288,7 @@ enum netdev_state_t {
+ 	__LINK_STATE_NOCARRIER,
+ 	__LINK_STATE_LINKWATCH_PENDING,
+ 	__LINK_STATE_DORMANT,
++	__LINK_STATE_TESTING,
+ };
+ 
+ 
+@@ -3907,6 +3908,46 @@ static inline bool netif_dormant(const struct net_device *dev)
+ }
+ 
+ 
++/**
++ *	netif_testing_on - mark device as under test.
++ *	@dev: network device
++ *
++ * Mark device as under test (as per RFC2863).
++ *
++ * The testing state indicates that some test(s) must be performed on
++ * the interface. After completion, of the test, the interface state
++ * will change to up, dormant, or down, as appropriate.
++ */
++static inline void netif_testing_on(struct net_device *dev)
++{
++	if (!test_and_set_bit(__LINK_STATE_TESTING, &dev->state))
++		linkwatch_fire_event(dev);
++}
++
++/**
++ *	netif_testing_off - set device as not under test.
++ *	@dev: network device
++ *
++ * Device is not in testing state.
++ */
++static inline void netif_testing_off(struct net_device *dev)
++{
++	if (test_and_clear_bit(__LINK_STATE_TESTING, &dev->state))
++		linkwatch_fire_event(dev);
++}
++
++/**
++ *	netif_testing - test if device is under test
++ *	@dev: network device
++ *
++ * Check if device is under test
++ */
++static inline bool netif_testing(const struct net_device *dev)
++{
++	return test_bit(__LINK_STATE_TESTING, &dev->state);
++}
++
++
+ /**
+  *	netif_oper_up - test if device is operational
+  *	@dev: network device
+diff --git a/include/uapi/linux/if.h b/include/uapi/linux/if.h
+index be714cd8c826..797ba2c1562a 100644
+--- a/include/uapi/linux/if.h
++++ b/include/uapi/linux/if.h
+@@ -178,6 +178,7 @@ enum {
+ enum {
+ 	IF_LINK_MODE_DEFAULT,
+ 	IF_LINK_MODE_DORMANT,	/* limit upward transition to dormant */
++	IF_LINK_MODE_TESTING,	/* limit upward transition to testing */
+ };
+ 
+ /*
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 522288177bbd..fb61522b1ce1 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9136,6 +9136,11 @@ void netif_stacked_transfer_operstate(const struct net_device *rootdev,
+ 	else
+ 		netif_dormant_off(dev);
+ 
++	if (rootdev->operstate == IF_OPER_TESTING)
++		netif_testing_on(dev);
++	else
++		netif_testing_off(dev);
++
+ 	if (netif_carrier_ok(rootdev))
+ 		netif_carrier_on(dev);
+ 	else
+diff --git a/net/core/link_watch.c b/net/core/link_watch.c
+index f153e0601838..75431ca9300f 100644
+--- a/net/core/link_watch.c
++++ b/net/core/link_watch.c
+@@ -34,6 +34,9 @@ static DEFINE_SPINLOCK(lweventlist_lock);
+ 
+ static unsigned char default_operstate(const struct net_device *dev)
+ {
++	if (netif_testing(dev))
++		return IF_OPER_TESTING;
++
+ 	if (!netif_carrier_ok(dev))
+ 		return (dev->ifindex != dev_get_iflink(dev) ?
+ 			IF_OPER_LOWERLAYERDOWN : IF_OPER_DOWN);
+@@ -55,11 +58,15 @@ static void rfc2863_policy(struct net_device *dev)
+ 	write_lock_bh(&dev_base_lock);
+ 
+ 	switch(dev->link_mode) {
++	case IF_LINK_MODE_TESTING:
++		if (operstate == IF_OPER_UP)
++			operstate = IF_OPER_TESTING;
++		break;
++
+ 	case IF_LINK_MODE_DORMANT:
+ 		if (operstate == IF_OPER_UP)
+ 			operstate = IF_OPER_DORMANT;
+ 		break;
+-
+ 	case IF_LINK_MODE_DEFAULT:
+ 	default:
+ 		break;
+@@ -74,7 +81,8 @@ static void rfc2863_policy(struct net_device *dev)
+ void linkwatch_init_dev(struct net_device *dev)
+ {
+ 	/* Handle pre-registration link state changes */
+-	if (!netif_carrier_ok(dev) || netif_dormant(dev))
++	if (!netif_carrier_ok(dev) || netif_dormant(dev) ||
++	    netif_testing(dev))
+ 		rfc2863_policy(dev);
+ }
+ 
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 709ebbf8ab5b..d6f4f4a9e8ba 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -829,11 +829,18 @@ static void set_operstate(struct net_device *dev, unsigned char transition)
+ 	switch (transition) {
+ 	case IF_OPER_UP:
+ 		if ((operstate == IF_OPER_DORMANT ||
++		     operstate == IF_OPER_TESTING ||
+ 		     operstate == IF_OPER_UNKNOWN) &&
+-		    !netif_dormant(dev))
++		    !netif_dormant(dev) && !netif_testing(dev))
+ 			operstate = IF_OPER_UP;
+ 		break;
+ 
++	case IF_OPER_TESTING:
++		if (operstate == IF_OPER_UP ||
++		    operstate == IF_OPER_UNKNOWN)
++			operstate = IF_OPER_TESTING;
++		break;
++
+ 	case IF_OPER_DORMANT:
+ 		if (operstate == IF_OPER_UP ||
+ 		    operstate == IF_OPER_UNKNOWN)
 -- 
 2.26.1
 
