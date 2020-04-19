@@ -2,70 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62B311AFE7A
-	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 23:56:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A1D11AFE85
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 00:04:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726117AbgDSVzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 17:55:54 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49042 "EHLO vps0.lunn.ch"
+        id S1726121AbgDSWEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 18:04:40 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:49106 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725848AbgDSVzx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Apr 2020 17:55:53 -0400
+        id S1725848AbgDSWEj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Apr 2020 18:04:39 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=j46L+tn/U2w9KaKzwAJtWpSSbKCNxNLhJe4DrV1FHzA=; b=wjzgc90gDM3LyszNv3KxFSqR9Y
-        U/nBQdqgMv5h6YLPaM9tpkFAkQgEevPjZPs21m5YYFyDi1u1gAR2WfwyEoAgYgUrYm02uQzEJfLQq
-        grfldMBY+w8IoAXrq1AWPmkIYh4Db1+EU8Isc4Mqz0MRau8ZZQ3d54jAmAGONP13tlGs=;
+        bh=QCpRfTzn+Yg9F1+scAAlsswP1NPJCxiI1Ni4Eq66Wjo=; b=crNCljqK+gzm/g2Aao0abGOJTG
+        CZKa/X5bxSh2N6+3epewoWvF42PXR0M68eZibH4MGRvMsW/meUD/zwpN8wQhNuIhjO11llZH7k2zK
+        LlzpSPqyE7kIb8u+Fo1EJck++BtJpQoexummhmUQGKMNEG2KKQeRnl9H4f7UOYo9Rp6c=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
         (envelope-from <andrew@lunn.ch>)
-        id 1jQHun-003hht-BS; Sun, 19 Apr 2020 23:55:49 +0200
-Date:   Sun, 19 Apr 2020 23:55:49 +0200
+        id 1jQI2w-003hqh-4c; Mon, 20 Apr 2020 00:04:14 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next 3/3] net: phy: bcm54140: add hwmon support
-Message-ID: <20200419215549.GR836632@lunn.ch>
-References: <20200417195003.GG785713@lunn.ch>
- <35d00dfe1ad24b580dc247d882aa2e39@walle.cc>
- <20200417201338.GI785713@lunn.ch>
- <84679226df03bdd8060cb95761724d3a@walle.cc>
- <20200417212829.GJ785713@lunn.ch>
- <4f3ff33f78472f547212f87f75a37b66@walle.cc>
- <20200419162928.GL836632@lunn.ch>
- <ebc026792e09d5702d031398e96d34f2@walle.cc>
- <20200419170547.GO836632@lunn.ch>
- <0f7ea4522a76f977f3aa3a80dd62201d@walle.cc>
+        Heiner Kallweit <hkallweit1@gmail.com>, fugang.duan@nxp.com,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net-next v3 0/3]  FEC MDIO speedups
+Date:   Mon, 20 Apr 2020 00:03:59 +0200
+Message-Id: <20200419220402.883493-1-andrew@lunn.ch>
+X-Mailer: git-send-email 2.26.0.rc2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0f7ea4522a76f977f3aa3a80dd62201d@walle.cc>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> But what does that have to do with the shared structure? I don't think
-> you have to "bundle" the shared structure with the "access the global
-> registers" method.
+This patchset gives a number of speedups for MDIO with the FEC.
+Replacing interrupt driven with polled IO brings a big speedup due to
+the overheads of interrupts compared to the short time interval.
+Clocking the bus faster, when the MDIO targets supports it, can double
+the transfer rate. And suppressing the preamble, if devices support
+it, makes each transaction faster.
 
-We don't need to. But it would be a good way to clean up code which
-locks the mdio bus, does a register access on some other device, and
-then unlocks the bus.
+By default the MDIO clock remains 2.5MHz and preables are used. But
+these can now be controlled from the device tree. Since these are
+generic properties applicable to more than just FEC, these have been
+added to the generic MDIO binding documentation.
 
-As a general rule of thumb, it is better to have the core do the
-locking, rather than the driver. Driver writers don't always think
-about locking, so it is better to give driver writers safe APIs to
-use.
+v2:
+readl_poll_timeout()
+Add patches to set bus frequency and preamble disable
 
-	Andrew
+v3:
+Add Reviewed tags
+uS->us
+readl_poll_timeout_atomic()
+Extend DT binding documentation
+
+Andrew Lunn (3):
+  net: ethernet: fec: Replace interrupt driven MDIO with polled IO
+  net: ethernet: fec: Allow configuration of MDIO bus speed
+  net: ethernet: fec: Allow the MDIO preamble to be disabled
+
+ .../devicetree/bindings/net/fsl-fec.txt       |  1 +
+ .../devicetree/bindings/net/mdio.yaml         | 12 +++
+ drivers/net/ethernet/freescale/fec.h          |  4 +-
+ drivers/net/ethernet/freescale/fec_main.c     | 85 +++++++++++--------
+ 4 files changed, 63 insertions(+), 39 deletions(-)
+
+-- 
+2.26.1
 
