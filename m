@@ -2,80 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC6D41AFC44
-	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 18:59:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 227DA1AFC4B
+	for <lists+netdev@lfdr.de>; Sun, 19 Apr 2020 19:05:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726372AbgDSQ7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 12:59:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48462 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725932AbgDSQ7F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 12:59:05 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAAC7C061A0C;
-        Sun, 19 Apr 2020 09:59:04 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id x1so5888880ejd.8;
-        Sun, 19 Apr 2020 09:59:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Yaz56HMp/S89gaKfJpEhbFFnazFPo/RmIrwLmVduCoI=;
-        b=GSVsDoWNqHMk1a/muWiXRDv5VANp+vqo4c08fPkDbG9pNXGJRYCfhBZv19nTVghEV/
-         rR1emnmvALzm3mBWNYCb0tCXhj/GfMY3BYzeoBauJhrrRlhcvWODFDzalNcgQiZnlPhB
-         ZDPKvd6TuNENzsUlt/+aJ2D4KeYw7DbL1Xu9ryn67NfucngIFG5j7z0q7ocNEJzbJmUx
-         SRU25/mNFOHWOVjhmQajYOOgAngNAQCBuYtLc56flZ0Z6Bgu4BqB/z/zgXf0Kl/Ks4k6
-         ymF3jNCnP0eu5hL1crG77BCfqeE3R/o0nZR2x4u83cHj1p0GHFmOpVOfyN+/sztPbXWj
-         vM/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Yaz56HMp/S89gaKfJpEhbFFnazFPo/RmIrwLmVduCoI=;
-        b=jX7BFkqFG6HCm/0BEAdHy9BHUx1xpD76V5CBDyFW7kjg8pDLEWYtBdwFGhTivQEKpY
-         8M0+r2qBp9Xu1+Fw7aYybZLy1Ze+vMMlaEegnOAyD7wrZjFtZkrpTNugjLBJJ8LWJtDC
-         NdROxFBsiMoRcYF6B6GxXgbXIKRjddWAV1pr5mifampVr4FTqLVUKiZE+kE0u8HJbBtO
-         QYOBbl3YT7ltLttrKH7INlPfHvuAl+0RUJqfoNNEFiF45o8FqCj5ScvVWoamVesuUTcb
-         b9SOxByxA1ZLs2KB26jqQ9Hm7fVY7/KnIWA8yOW1i5szFvGaimF4HbBnelhttZXyU+is
-         nxKg==
-X-Gm-Message-State: AGi0PuYFgCbyLmqwFFzqTK3xiFoT+t9FbaWWGNqW1Ww0NwJtz7AVscvC
-        549zmcQz8ekGep7ZhPiAVrVo3hV31pH2KzyT/PE=
-X-Google-Smtp-Source: APiQypInUWs4bxD4QvtZtJ/yVZmP+/efzMlqnIUknrqdkFj4i6HrJej16oCfUeGD8zDR58ToIyQMVGpbDdwIYRbGjLs=
-X-Received: by 2002:a17:906:4048:: with SMTP id y8mr12436425ejj.258.1587315543506;
- Sun, 19 Apr 2020 09:59:03 -0700 (PDT)
+        id S1726450AbgDSRFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 13:05:50 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48620 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725932AbgDSRFu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Apr 2020 13:05:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=df22MOiMiBWPmZ9Unkx77qadZVa96KWysrhmpciDQY4=; b=K0nBRNGsQY3lkkO4oT1w01NaQm
+        nsDK8Xw6vAdXBHItWPAKhsaJskg/SyCU26sC4OXoKm4a1n88nk/yKjKauW9aQp6J9N2FytLzfNegB
+        dH5MZ2s8pHB7v1r8/KTY4j56if+warOy6nrLRn00wMUIC+3w0FIBRQo+E+Ab1hZOOTqM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jQDO7-003f7D-KM; Sun, 19 Apr 2020 19:05:47 +0200
+Date:   Sun, 19 Apr 2020 19:05:47 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next 3/3] net: phy: bcm54140: add hwmon support
+Message-ID: <20200419170547.GO836632@lunn.ch>
+References: <20200417192858.6997-1-michael@walle.cc>
+ <20200417192858.6997-3-michael@walle.cc>
+ <20200417195003.GG785713@lunn.ch>
+ <35d00dfe1ad24b580dc247d882aa2e39@walle.cc>
+ <20200417201338.GI785713@lunn.ch>
+ <84679226df03bdd8060cb95761724d3a@walle.cc>
+ <20200417212829.GJ785713@lunn.ch>
+ <4f3ff33f78472f547212f87f75a37b66@walle.cc>
+ <20200419162928.GL836632@lunn.ch>
+ <ebc026792e09d5702d031398e96d34f2@walle.cc>
 MIME-Version: 1.0
-References: <20200418181457.3193175-1-maz@kernel.org>
-In-Reply-To: <20200418181457.3193175-1-maz@kernel.org>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Sun, 19 Apr 2020 18:58:52 +0200
-Message-ID: <CAFBinCDOw07_MHa=EBiLZsw24z3x5ngcW8_xmN6fJ8SqPmyyqg@mail.gmail.com>
-Subject: Re: [PATCH] net: stmmac: dwmac-meson8b: Add missing boundary to RGMII
- TX clock array
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kevin Hilman <khilman@baylibre.com>, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ebc026792e09d5702d031398e96d34f2@walle.cc>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
+> > Maybe we need a phydev->shared structure, which all PHYs in one
+> > package share?
+> 
+> That came to my mind too. But how could the PHY core find out which
+> shared structure belongs to which phydev? I guess the phydev have to
+> find out, but then how does it tell the PHY core that it wants such
+> a shared structure. Have the (base) PHY address as an identifier?
 
-On Sat, Apr 18, 2020 at 8:15 PM Marc Zyngier <maz@kernel.org> wrote:
-[...]
-> Digging into this indeed shows that the clock divider array is
-> lacking a final fence, and that the clock subsystems goes in the
-> weeds. Oh well.
->
-> Let's add the empty structure that indicates the end of the array.
-oh. Thank you for fixing this!
+Yes. I was thinking along those lines.
 
-> Fixes: bd6f48546b9c ("net: stmmac: dwmac-meson8b: Fix the RGMII TX delay on Meson8b/8m2 SoCs")
-> Signed-off-by: Marc Zyngier <maz@kernel.org>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+phy_package_join(phydev, base)
+
+If this is the first call with that value of base, allocate the
+structure, set the ref count to 1, and set phydev->shared to point to
+it. For subsequent calls, increment the reference count, and set
+phydev->shared.
+
+phy_package_leave(phydev)
+
+Decrement the reference count, and set phydev->shared to NULL. If the
+reference count goes to 0, free the structure.
+
+> > Get the core to do reference counting on the structure?
+> > Add helpers phy_read_shared(), phy_write_shared(), etc, which does
+> > MDIO accesses on the base device, taking care of the locking.
+> 
+> The "base" access is another thing, I guess, which has nothing to do
+> with the shared structure.
+
+I'm making the assumption that all global addresses are at the base
+address. If we don't want to make that assumption, we need the change
+the API above so you pass a cookie, and all PHYs need to use the same
+cookie to identify the package.
+
+Maybe base is the wrong name, since MSCC can have the base as the high
+address of the four, not the low?
+
+Still just thinking aloud....
+
+       Andrew
