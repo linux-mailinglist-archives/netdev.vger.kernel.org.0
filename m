@@ -2,122 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F334C1B05CA
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 11:36:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA97D1B05F2
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 11:51:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726328AbgDTJgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 05:36:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60552 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726307AbgDTJgU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 05:36:20 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DB9BC061A0F
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 02:36:20 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id a7so3970958pju.2
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 02:36:20 -0700 (PDT)
+        id S1725971AbgDTJvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 05:51:31 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:50626 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725773AbgDTJva (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 05:51:30 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03K9pH70018129;
+        Mon, 20 Apr 2020 02:51:27 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0818;
+ bh=6woLa9gUdSXm9NeJvgHybHQHymx01VgLfzHB0lh6BpY=;
+ b=hOhSxbZ4/8lkwmc9RXFiqiWdIVtVKDncI2eL8wuGdu5Cy6364VLEgQcabEF2mmFlSD2v
+ o/7yqqlARHmNKu5pdmTFdrFzp/sBtze1wvv7kHW3OQh/VX/Hn6LGzCiMVI97MMNhbqDJ
+ sJnlKlKPsfV+NmD/VXAqagtO6eIwsevIdPPCheNN6SI971qZCKE3GqjJCNBKKLsS3VYU
+ YapRYCuoR/IJmBOvJRXjRqyD18VTFr8DzPYk7GqjAwtbGbFAD6WNhgbiks6W/eyGWpsy
+ P+iaSCV0T3vDSl/9oShLQuBNP2UZRkcc0/ZfssNvLIi2gkj0lRWBDmwNsiO2Q4WRG8WH Wg== 
+Received: from sc-exch04.marvell.com ([199.233.58.184])
+        by mx0a-0016f401.pphosted.com with ESMTP id 30fxwp6jr1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 20 Apr 2020 02:51:27 -0700
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 20 Apr
+ 2020 02:51:24 -0700
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (104.47.37.53) by
+ SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Mon, 20 Apr 2020 02:51:24 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nq2MZ2AGm4LjuVOsNtD1QSRudMfOfBoIUDVXJNviUBOSDAIpjr6tY7GbHuDpIS+GXAWBgo6aS3SCJiDAW57EjGQJJTZu98KtYzM9/0yaFvecBlG5PDFNCBPNUCIEe5l8X3qTEIfNWQBAcEUSQq0B6islioYDDWzMAX/WqfXo7RqU1E7H9O8NsTa/tV2kxrXAfSOSHvLNZr7skzcbqPz3z0ljcEpZXz4Fo5JSEc7C3gLeZRQ91R4EM+iv+E6wNJ47dXNm2IqeQGYRBHGXCggu87YlP+3nLCIhxMpzFyE3B6FecgHBRBediP6biPek2WluFRMX/hEWByISHfp3+MPBZw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6woLa9gUdSXm9NeJvgHybHQHymx01VgLfzHB0lh6BpY=;
+ b=bFZ5md/JH0Y9JYBe5Lz9L2qKnYLMGq1vO0YhdJTcCwkZ3R7zFrUD5PZlKa3a9Xt9l6BlYjQgMRCYf2UbPkAwKzXkzONNwe6/HoMutLKaxMo/Qvd3CA5uUC62VSoc77fr5vM2Zb4+tYDPVUF4Q6qNXPNthkV5QOzfdygsZmLvQGv8oI0vtxNWRwlMJD60InoVve/6mxKzdd6POVnQtlIX6r1DaMwSi/pa4hU/imJhTHkipUwWrWkyDYxktvWPHb4fosYknLFW+eJNnUxAWYc0WMsXjKGT8d9UdOrjV+umF+QNVfKi7ylMbxrcakPARkyM94qN2zi6alZc8hkOOqTltw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daemons-net.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=3DGhAD7IJSYwN5Mh5wLkFIUQWPuH8Xyr5nhCfZdhrRE=;
-        b=zBk0M5IVJTUHZhgTJvFVpuI50jKguU5uoGrX54baKAYHE3pFHiaWlt+kDCmF45FGY9
-         J/qX6D+oHD+PEzRPiyyGOdn/sMaFkKT9QBk5NCK1xWLKcyQakpCQQtO8/2jrEXGU9t4V
-         +srfyBTS/ERMCJSmCejLk0o/fWlPGPo0BXoUmxHqshzGIDuNT1PL6za/0tvgI/GltBWg
-         +QjypSIht2By96xTrQ4Lifzuei9gj/dac64sJgtL/Gzyorq4BJUubtILITWTp+8Uo7Iv
-         3lNXNiGJgIVg0JBWnfqJE3spIiCVVZ3YrQ7hNF1dXnp3SF34CzfbpsDcEPXuSKBCEpAA
-         WLCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=3DGhAD7IJSYwN5Mh5wLkFIUQWPuH8Xyr5nhCfZdhrRE=;
-        b=o6eBeMmh/blNquedKXsnesaacbP7Xo7dvYbgXwpZQHatoYgQI+chLEMRmJM2VUyjga
-         MkNd3AcVesSvX7VLbpUwTctbd4rYrpoxFSpLG2/3b88QCQ7BeWxBzQ0BhvtzLzXKpQaD
-         iOWyyfkAZJzrwIDE70X61WRc/W0lE8pZGtO6FjC8DF0NXP7s46idC+78eJR4U/emEPaV
-         uWara+NWzRGO2wklRtRV1xjOcweqDfqH7HGGPI8dvZ6E/CdEE9hcACcL3e6iliwYwbY1
-         XDFUEhG5WgJx5y2h77glZukWYGFY4hvJ8jo7rQ+7hmJUC/rP3IgzC6MSypclotHz+YfS
-         7loA==
-X-Gm-Message-State: AGi0Pua1SMBHLdZ+w9eYrnCv9eN1K5E2NYelw3cA5EYbhicADyFpnUqN
-        vRNTakt4j51f0wA6i66Rfo7z
-X-Google-Smtp-Source: APiQypIFyoGdo5N2UATcTDeToHVhHOExE0hyeqDVi9r+wjICYlrbxxJlpXV9YK979M9CMtO6YnDT+Q==
-X-Received: by 2002:a17:902:b101:: with SMTP id q1mr15411011plr.246.1587375379433;
-        Mon, 20 Apr 2020 02:36:19 -0700 (PDT)
-Received: from arctic-shiba-lx ([47.156.151.166])
-        by smtp.gmail.com with ESMTPSA id u21sm677223pga.21.2020.04.20.02.36.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2020 02:36:18 -0700 (PDT)
-Date:   Mon, 20 Apr 2020 02:36:10 -0700
-From:   Clay McClure <clay@daemons.net>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Sekhar Nori <nsekhar@ti.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: cpts: Condition WARN_ON on PTP_1588_CLOCK
-Message-ID: <20200420093610.GA28162@arctic-shiba-lx>
-References: <20200416085627.1882-1-clay@daemons.net>
- <6fef3a00-6c18-b775-d1b4-dfd692261bd3@ti.com>
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6woLa9gUdSXm9NeJvgHybHQHymx01VgLfzHB0lh6BpY=;
+ b=sLkfBe0CYGMHStHwCqVUNgbqnqxuv9eg/N/wr8LaqrXFGq62kwZWVBf2BsEihr+Y/h569SW0MXrYg4IZ1BBjWIYePdZ4RkazWVBphPrkKTwepmFOUdZqSuR/bGw2K2zi2T6lg1S7dg76u3czxTRrBpuf7eTmY6MqWLLr3E06/Pk=
+Received: from BYAPR18MB2357.namprd18.prod.outlook.com (2603:10b6:a03:133::11)
+ by BYAPR18MB3063.namprd18.prod.outlook.com (2603:10b6:a03:108::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.25; Mon, 20 Apr
+ 2020 09:51:23 +0000
+Received: from BYAPR18MB2357.namprd18.prod.outlook.com
+ ([fe80::5d2d:5935:98d3:9693]) by BYAPR18MB2357.namprd18.prod.outlook.com
+ ([fe80::5d2d:5935:98d3:9693%4]) with mapi id 15.20.2921.027; Mon, 20 Apr 2020
+ 09:51:23 +0000
+From:   Dmitry Bogdanov <dbogdanov@marvell.com>
+To:     Sabrina Dubroca <sd@queasysnail.net>,
+        Igor Russkikh <irusskikh@marvell.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Mark Starovoytov <mstarovoitov@marvell.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>
+Subject: RE: [EXT] Re: [PATCH net 1/2] net: macsec: update SCI upon MAC
+ address change.
+Thread-Topic: [EXT] Re: [PATCH net 1/2] net: macsec: update SCI upon MAC
+ address change.
+Thread-Index: AQHV9u/RVec0u4zjc020MYyT4v27vah9QOSAgABYI0A=
+Date:   Mon, 20 Apr 2020 09:51:23 +0000
+Message-ID: <BYAPR18MB235709AA95C28FAD4C6C39C2A4D40@BYAPR18MB2357.namprd18.prod.outlook.com>
+References: <20200310152225.2338-1-irusskikh@marvell.com>
+ <20200310152225.2338-2-irusskikh@marvell.com>
+ <20200417090547.GA3874480@bistromath.localdomain>
+In-Reply-To: <20200417090547.GA3874480@bistromath.localdomain>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [95.79.108.179]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 26d770e1-bc34-4fab-024c-08d7e51062d7
+x-ms-traffictypediagnostic: BYAPR18MB3063:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR18MB3063D05A7D1C80AA76E24D45A4D40@BYAPR18MB3063.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 03793408BA
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR18MB2357.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(376002)(136003)(39850400004)(396003)(366004)(346002)(6636002)(110136005)(54906003)(5660300002)(316002)(6506007)(478600001)(7696005)(53546011)(26005)(2906002)(186003)(86362001)(66446008)(64756008)(81156014)(9686003)(76116006)(4326008)(52536014)(66556008)(66476007)(55016002)(66946007)(8676002)(8936002)(33656002)(71200400001)(15650500001);DIR:OUT;SFP:1101;
+received-spf: None (protection.outlook.com: marvell.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: kVGhbwkzlfnEXEysv8RWtyAN5TlJxdzYBjO1TPUzfpN68Epoj5ySMQb3DIsbIVDI7y+Z0duGZvfR7BNCmCX/h17Oh2JQBOKjkcTST6o9luG9aCiksPFB2ag2OaIA2G0SBKelQoYr7O7eJBnSiTiTaXxK0IyFAAxY4YFLVMtlL/Qe+QxQ8XD5zz4aNPYyHqU4MnBc+K4BXlRIilAA4lxf4roFn5FFgjMYWUTxFI+hWEHoIU9NH9KYxlgtgB4Xojyzck5uPoyV9eu1C19P0hEg3JUOg7oyVP3AFvzka3EEDLRpXE/JeYGSt44mXZTRud15LD4UU7yB4o+XZERt3cDiAO8aQfRfXPFwNW9dIejmdyfIJLDMhmJ7JTLf2nQF3m2oV4DL9Q6I5sNmytTlSL6cQI1rTNpao3+FIwQRsqcS8kvM87uw3RRWbdadZNLa4vlz
+x-ms-exchange-antispam-messagedata: wIXHuwjyu3J9xNoHQg1YNCyeFeyxGhzToZ/ZqNW64XwfAdAIEuzTFoI1zluZD76gIpi5JQHTAN0mpVUpfvxN3ZAPlQrrRa61heyGYepErEgPDPnspWEr1xFBPvgnP2HAclrmsH9Y6zegnr6l0ktr3g==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <6fef3a00-6c18-b775-d1b4-dfd692261bd3@ti.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 26d770e1-bc34-4fab-024c-08d7e51062d7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Apr 2020 09:51:23.2752
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 5v/K7zm8plZu1YuG2WK4CD4A+A0/bhnPcjiZjb6oX25ONdysdq/4nCQuT19bLqfy9BQ86KGk8M90S+ZtKtUv7w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR18MB3063
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-20_03:2020-04-17,2020-04-20 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 16, 2020 at 02:11:45PM +0300, Grygorii Strashko wrote:
-
-Grygorii,
-
-> > CPTS_MOD merely implies PTP_1588_CLOCK; it is possible to build cpts
-> > without PTP clock support. In that case, ptp_clock_register() returns
-> > NULL and we should not WARN_ON(cpts->clock) when downing the interface.
-> > The ptp_*() functions are stubbed without PTP_1588_CLOCK, so it's safe
-> > to pass them a null pointer.
-> 
-> Could you explain the purpose of the exercise (Enabling CPTS with
-> PTP_1588_CLOCK disabled), pls?
-
-Hardware timestamping with a free-running PHC _almost_ works without
-PTP_1588_CLOCK, but since PHC rollover is handled by the PTP kworker
-in this driver the timestamps end up not being monotonic.
-
-And of course the moment you want to syntonize/synchronize the PHC with
-another clock (say, CLOCK_REALTIME), you'll need a PTP clock device. So
-you're right, there's not much point in building CPTS_MOD without
-PTP_1588_CLOCK.
-
-Given that, I wonder why all the Ethernet drivers seem to just `imply`
-PTP_1588_CLOCK, rather than `depends on` it?
-
-In any case, I was surprised to get a warning during `ifdown` but not
-during `ifup`. What do you think of this change, which prints an error
-like this during `ifup` if PTP_1588_CLOCK is not enabled:
-
-[    6.192707] 000: cpsw 4a100000.ethernet: error registering cpts device
-
---- 
-diff --git a/drivers/net/ethernet/ti/cpts.c b/drivers/net/ethernet/ti/cpts.c
-index 10ad706dda53..70b15039cd37 100644
---- a/drivers/net/ethernet/ti/cpts.c
-+++ b/drivers/net/ethernet/ti/cpts.c
-@@ -462,8 +462,8 @@ int cpts_register(struct cpts *cpts)
-        timecounter_init(&cpts->tc, &cpts->cc, ktime_get_real_ns());
- 
-        cpts->clock = ptp_clock_register(&cpts->info, cpts->dev);
--       if (IS_ERR(cpts->clock)) {
--               err = PTR_ERR(cpts->clock);
-+       if (IS_ERR_OR_NULL(cpts->clock)) {
-+               err = cpts->clock ? PTR_ERR(cpts->clock) : -EOPNOTSUPP;
-                cpts->clock = NULL;
-                goto err_ptp;
-        }
-
--- 
-Clay
+SGkgU2FicmluYSwNCg0KVGhhbmtzIGZvciB0aGUgZmVlZGJhY2suDQpCdXQgdGhpcyBwYXRjaCAg
+ZG9lcyBub3QgZGlyZWN0bHkgcmVsYXRlZCB0byBzZW5kX3NjaSBwYXJhbWV0ZXIuDQoNCkFueSAg
+bWFudWFsIGNoYW5nZSBvZiBtYWNzZWMgaW50ZXJmYWNlIGJ5IGlwIHRvb2wgd2lsbCBicmVhayB3
+cGFfc3VwcGxpY2FudCB3b3JrLiBJdCdzIE9LLCB0aGV5IGFyZSBub3QgaW50ZW5kZWQgdG8gYmUg
+dXNlZCB0b2dldGhlci4NCg0KSGF2aW5nIGEgZGlmZmVyZW50IE1BQyBhZGRyZXNzIG9uICBlYWNo
+IG1hY3NlYyBpbnRlcmZhY2UgYWxsb3dzIHRvIG1ha2UgYSBjb25maWd1cmF0aW9uIHdpdGggc2V2
+ZXJhbCAqb2ZmbG9hZGVkKiBTZWNZLiAgVGhhdCBpcyB0byBtYWtlIGZlYXNpYmxlIHRvIHJvdXRl
+IHRoZSBpbmdyZXNzIGRlY3J5cHRlZCB0cmFmZmljIHRvIHRoZSByaWdodCAobWFjc2VjWCAvZXRo
+WCkgaW50ZXJmYWNlIGJ5IERTVCBhZGRyZXNzLiBBbmQgdG8gYXBwbHkgYSBkaWZmZXJlbnQgU2Vj
+WSBmb3IgdGhlIGVncmVzcyBwYWNrZXRzIGJ5IFNSQyBhZGRyZXNzLiBUaGF0IGlzIHRoZSBvbmx5
+IG9wdGlvbiBmb3IgdGhlIG1hY3NlYyBvZmZsb2FkIGF0IFBIWSBsZXZlbCB3aGVuIHVwcGVyIGxh
+eWVycyBrbm93IG5vdGhpbmcgYWJvdXQgbWFjc2VjLg0KDQoNCkJSLA0KIERtaXRyeQ0KDQotLS0t
+LU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogU2FicmluYSBEdWJyb2NhIDxzZEBxdWVhc3lz
+bmFpbC5uZXQ+IA0KU2VudDogRnJpZGF5LCBBcHJpbCAxNywgMjAyMCAxMjowNiBQTQ0KVG86IEln
+b3IgUnVzc2tpa2ggPGlydXNza2lraEBtYXJ2ZWxsLmNvbT4NCkNjOiBuZXRkZXZAdmdlci5rZXJu
+ZWwub3JnOyBNYXJrIFN0YXJvdm95dG92IDxtc3Rhcm92b2l0b3ZAbWFydmVsbC5jb20+OyBBbnRv
+aW5lIFRlbmFydCA8YW50b2luZS50ZW5hcnRAYm9vdGxpbi5jb20+OyBEbWl0cnkgQm9nZGFub3Yg
+PGRib2dkYW5vdkBtYXJ2ZWxsLmNvbT4NClN1YmplY3Q6IFtFWFRdIFJlOiBbUEFUQ0ggbmV0IDEv
+Ml0gbmV0OiBtYWNzZWM6IHVwZGF0ZSBTQ0kgdXBvbiBNQUMgYWRkcmVzcyBjaGFuZ2UuDQoNCkV4
+dGVybmFsIEVtYWlsDQoNCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCkhlbGxvLA0KDQoyMDIwLTAzLTEwLCAxODoy
+MjoyNCArMDMwMCwgSWdvciBSdXNza2lraCB3cm90ZToNCj4gRnJvbTogRG1pdHJ5IEJvZ2Rhbm92
+IDxkYm9nZGFub3ZAbWFydmVsbC5jb20+DQo+IA0KPiBTQ0kgc2hvdWxkIGJlIHVwZGF0ZWQsIGJl
+Y2F1c2UgaXQgY29udGFpbnMgTUFDIGluIGl0cyBmaXJzdCA2IG9jdGV0cy4NCg0KU29ycnkgZm9y
+IGNhdGNoaW5nIHRoaXMgc28gbGF0ZS4gSSBkb24ndCB0aGluayB0aGlzIGNoYW5nZSBpcyBjb3Jy
+ZWN0Lg0KDQpDaGFuZ2luZyB0aGUgU0NJIG1lYW5zIHdwYV9zdXBwbGljYW50IChvciB3aGF0ZXZl
+ciBNS0EgeW91J3JlIHVzaW5nKSB3aWxsIGRpc2FncmVlIGFzIHRvIHdoaWNoIFNDSSBpcyBpbiB1
+c2UuIFRoZSBwZWVyIHByb2JhYmx5IGRvZXNuJ3QgaGF2ZSBhbiBSWFNDIGZvciB0aGUgbmV3IFND
+SSBlaXRoZXIsIHNvIHRoZSBwYWNrZXRzIHdpbGwgYmUgZHJvcHBlZCBhbnl3YXkuDQoNClBsdXMs
+IGlmIHlvdSdyZSB1c2luZyAic2VuZF9zY2kgb24iLCB0aGVyZSdzIG5vIHJlYWwgcmVhc29uIHRv
+IGNoYW5nZSB0aGUgU0NJLCBzaW5jZSBpdCdzIGFsc28gaW4gdGhlIHBhY2tldCwgYW5kIG1heSBv
+ciBtYXkgbm90IGhhdmUgYW55IHJlbGF0aW9uc2hpcCB0byB0aGUgTUFDIGFkZHJlc3Mgb2YgdGhl
+IGRldmljZS4NCg0KSSdtIGd1ZXNzaW5nIHRoZSBpc3N1ZSB5b3UncmUgdHJ5aW5nIHRvIHNvbHZl
+IGlzIHRoYXQgaW4gdGhlICJzZW5kX3NjaSBvZmYiIGNhc2UsIG1hY3NlY19lbmNyeXB0KCkgd2ls
+bCB1c2UgdGhlIFNDSSBzdG9yZWQgaW4gdGhlIHNlY3ksIGJ1dCB0aGUgcmVjZWl2ZXIgd2lsbCBj
+b25zdHJ1Y3QgdGhlIFNDSSBiYXNlZCBvbiB0aGUgc291cmNlIE1BQyBhZGRyZXNzLiBDYW4geW91
+IGNvbmZpcm0gdGhhdD8gSWYgdGhhdCdzIHRoZSByZWFsIHByb2JsZW0sIEkgaGF2ZSBhIGNvdXBs
+ZSBvZiBpZGVhcyB0byBzb2x2ZSBpdC4NCg0KDQpUaGFua3MsIGFuZCBzb3JyeSBhZ2FpbiBmb3Ig
+dGhlIGRlbGF5IGluIGxvb2tpbmcgYXQgdGhpcywNCg0KLS0NClNhYnJpbmENCg0K
