@@ -2,68 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C6E71B1053
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 17:36:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71C561B1056
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 17:38:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728403AbgDTPgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 11:36:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59956 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726136AbgDTPgq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 11:36:46 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D27C061A0C;
-        Mon, 20 Apr 2020 08:36:46 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id n10so11433732iom.3;
-        Mon, 20 Apr 2020 08:36:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=xpyyjOah+SNmSyAdLM/sULwsGots46QSaLyc9pMiVp8=;
-        b=SMpcvUKPCrnBP/1D1GILH+9dJhg3Ew+RFSzyapFmYW5cNEKpZ2Gq9D1Ls3qJFdS+F/
-         dsoSz4CRHqHUey9tvUldedqHmIvVS9GwpbShans2Dh7YTN433ROdaTpMMqa6eD1ZJ+P/
-         zM3oSGEWDajMTh9xHdxEPfz8UGDx4g4QcBtpYts/lUdhpFI7jzPEdyrlfH2FDBWaEXWU
-         9amNNkxhIUo4zzP3IUEa1qs+7+10qWl0J6MhVCoYOkYFy+yT8f3AVfycLupVQZSssu8U
-         Mc6hh7H8mPQCn0yo1XbB0E/UvlzUBN0rK3VsE+TVfA8YMml0Je0E1WF8xR6kBLCPmuip
-         crOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=xpyyjOah+SNmSyAdLM/sULwsGots46QSaLyc9pMiVp8=;
-        b=tZvdWgpVEz0ukKw+XHHg2t33vULiavMndsXeKdEAVmsctc+E+WXIRJMwfZN6dh/ru4
-         /WiuPTDoCU73vzSMI169zm5qdLkwlz0zN51aVEYABgUjCYr8zBXrVGNVvkrXCGi/mDQ4
-         8ZRAZxh3SFkyM7AmYQIBsZHXAHmQij8lGg3FDpnSqfHxqCjQKKOGey5i1nFv2N66l1ve
-         pbFqYRoXcJTXaY2jymJHKc+NmwUE4NcYWDhnpQjeE7LjfW7GmfhdgnrxBGoBhXZEY3b8
-         TiIPic5n3Kgb3H0F+s0M0VOD4EVg7LbMisRocaF5mBHrw92cNbNpdqpTRsxEH6jo206z
-         +wCQ==
-X-Gm-Message-State: AGi0Pubd24cK429OOOqZxepuqwlnau5NfO8w5AUPMgzxvALNAXEF8xEB
-        FXqzmbT8wK/p9eXcDs6Xj6s=
-X-Google-Smtp-Source: APiQypI+awmNegG6xdj0dsgCCfaJbp6HXicBBTWHS3T8N9PqMnXTpfvQAh9tsadBsceYudkqYa2peQ==
-X-Received: by 2002:a6b:6c01:: with SMTP id a1mr16165914ioh.196.1587397005739;
-        Mon, 20 Apr 2020 08:36:45 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:294e:2b15:7b00:d585? ([2601:282:803:7700:294e:2b15:7b00:d585])
-        by smtp.googlemail.com with ESMTPSA id k24sm377646ior.49.2020.04.20.08.36.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Apr 2020 08:36:45 -0700 (PDT)
-Subject: Re: [PATCH V2 mlx5-next 04/10] bonding: Implement ndo_xmit_slave_get
-To:     Maor Gottlieb <maorg@mellanox.com>, davem@davemloft.net,
-        jgg@mellanox.com, dledford@redhat.com, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org
-Cc:     leonro@mellanox.com, saeedm@mellanox.com, jiri@mellanox.com,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        alexr@mellanox.com
-References: <20200420075426.31462-1-maorg@mellanox.com>
- <20200420075426.31462-5-maorg@mellanox.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <d01c874f-419e-36b1-5ddd-72daabcc0b83@gmail.com>
-Date:   Mon, 20 Apr 2020 09:36:43 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
+        id S1726838AbgDTPiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 11:38:22 -0400
+Received: from mail-out.m-online.net ([212.18.0.9]:38901 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726458AbgDTPiW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 11:38:22 -0400
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 495W7H6SD5z1r76J;
+        Mon, 20 Apr 2020 17:38:18 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 495W7G3mHXz1qtwY;
+        Mon, 20 Apr 2020 17:38:18 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id qqbZnqMMz5eD; Mon, 20 Apr 2020 17:38:16 +0200 (CEST)
+X-Auth-Info: PIpsRW0wARhrzYIQa+S1GAq68j/sSx1VJx7d9JAUTNI=
+Received: from [IPv6:::1] (unknown [195.140.253.167])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Mon, 20 Apr 2020 17:38:16 +0200 (CEST)
+Subject: Re: [PATCH V4 07/19] net: ks8851: Remove ks8851_rdreg32()
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>
+References: <20200414182029.183594-1-marex@denx.de>
+ <20200414182029.183594-8-marex@denx.de>
+ <20200420140700.6632hztejwcgjwsf@wunner.de>
+ <99104102-7973-e80f-9006-9a448403562b@denx.de>
+ <20200420142002.2l57umsi3rh5ka7e@wunner.de>
+ <e8924fbc-b515-527c-a772-b5ac5cfc1cf4@denx.de>
+ <20200420144403.eoo47sq7pwp6yc7d@wunner.de>
+From:   Marek Vasut <marex@denx.de>
+Message-ID: <0edb18eb-0c18-c3cd-a0b7-4ba23428f354@denx.de>
+Date:   Mon, 20 Apr 2020 17:38:16 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200420075426.31462-5-maorg@mellanox.com>
+In-Reply-To: <20200420144403.eoo47sq7pwp6yc7d@wunner.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -72,143 +54,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/20/20 1:54 AM, Maor Gottlieb wrote:
-> Add implementation of ndo_xmit_slave_get.
-> When user sets the LAG_FLAGS_HASH_ALL_SLAVES bit and the xmit slave
-> result is based on the hash, then the slave will be selected from the
-> array of all the slaves.
+On 4/20/20 4:44 PM, Lukas Wunner wrote:
+> On Mon, Apr 20, 2020 at 04:24:05PM +0200, Marek Vasut wrote:
+>> On 4/20/20 4:20 PM, Lukas Wunner wrote:
+>>> On Mon, Apr 20, 2020 at 04:12:59PM +0200, Marek Vasut wrote:
+>>>> On 4/20/20 4:07 PM, Lukas Wunner wrote:
+>>>>> On Tue, Apr 14, 2020 at 08:20:17PM +0200, Marek Vasut wrote:
+>>>>>> The ks8851_rdreg32() is used only in one place, to read two registers
+>>>>>> using a single read. To make it easier to support 16-bit accesses via
+>>>>>> parallel bus later on, replace this single read with two 16-bit reads
+>>>>>> from each of the registers and drop the ks8851_rdreg32() altogether.
+>>>>>>
+>>>>>> If this has noticeable performance impact on the SPI variant of KS8851,
+>>>>>> then we should consider using regmap to abstract the SPI and parallel
+>>>>>> bus options and in case of SPI, permit regmap to merge register reads
+>>>>>> of neighboring registers into single, longer, read.
+>>>>>
+>>>>> Bisection has shown this patch to be the biggest cause of the performance
+>>>>> regression introduced by this series:  Latency increases by about 9 usec.
+>>>>
+>>>> Just for completeness, did you perform this bisect on current linux-next
+>>>> without any patches except this series OR your patched rpi downstream
+>>>> vendor tree Linux 4.19 with preempt-rt patch applied ?
+>>>
+>>> The latter because latency without CONFIG_PREEMPT_RT_FULL=y is too imprecise
+>>> to really see the difference and that's the configuration we care about.
+>>
+>> Why am I not able to see the same on the RPi3 then ?
+>> How can I replicate this observation ?
 > 
-> Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
-> ---
->  drivers/net/bonding/bond_main.c | 123 +++++++++++++++++++++++++++-----
->  include/net/bonding.h           |   1 +
->  2 files changed, 105 insertions(+), 19 deletions(-)
+> Compile this branch with CONFIG_PREEMPT_RT_FULL=y:
 > 
-> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> index 7e04be86fda8..320bcb1394fd 100644
-> --- a/drivers/net/bonding/bond_main.c
-> +++ b/drivers/net/bonding/bond_main.c
-> @@ -4137,6 +4137,40 @@ static void bond_skip_slave(struct bond_up_slave *slaves,
->  	}
->  }
->  
-> +static void bond_set_slave_arr(struct bonding *bond,
-> +			       struct bond_up_slave *usable_slaves,
-> +			       struct bond_up_slave *all_slaves)
-> +{
-> +	struct bond_up_slave *usable, *all;
-> +
-> +	usable = rtnl_dereference(bond->usable_slaves);
-> +	rcu_assign_pointer(bond->usable_slaves, usable_slaves);
-> +	if (usable)
-> +		kfree_rcu(usable, rcu);
-> +
-> +	all = rtnl_dereference(bond->all_slaves);
-> +	rcu_assign_pointer(bond->all_slaves, all_slaves);
-> +	if (all)
-> +		kfree_rcu(all, rcu);
-> +}
-> +
-> +static void bond_reset_slave_arr(struct bonding *bond)
-> +{
-> +	struct bond_up_slave *usable, *all;
-> +
-> +	usable = rtnl_dereference(bond->usable_slaves);
-> +	if (usable) {
-> +		RCU_INIT_POINTER(bond->usable_slaves, NULL);
-> +		kfree_rcu(usable, rcu);
-> +	}
-> +
-> +	all = rtnl_dereference(bond->all_slaves);
-> +	if (all) {
-> +		RCU_INIT_POINTER(bond->all_slaves, NULL);
-> +		kfree_rcu(all, rcu);
-> +	}
-> +}
-> +
->  /* Build the usable slaves array in control path for modes that use xmit-hash
->   * to determine the slave interface -
->   * (a) BOND_MODE_8023AD
-> @@ -4147,7 +4181,7 @@ static void bond_skip_slave(struct bond_up_slave *slaves,
->   */
->  int bond_update_slave_arr(struct bonding *bond, struct slave *skipslave)
->  {
-> -	struct bond_up_slave *usable_slaves, *old_usable_slaves;
-> +	struct bond_up_slave *usable_slaves = NULL, *all_slaves = NULL;
->  	struct slave *slave;
->  	struct list_head *iter;
->  	int agg_id = 0;
-> @@ -4159,7 +4193,9 @@ int bond_update_slave_arr(struct bonding *bond, struct slave *skipslave)
->  
->  	usable_slaves = kzalloc(struct_size(usable_slaves, arr,
->  					    bond->slave_cnt), GFP_KERNEL);
-> -	if (!usable_slaves) {
-> +	all_slaves = kzalloc(struct_size(all_slaves, arr,
-> +					 bond->slave_cnt), GFP_KERNEL);
-> +	if (!usable_slaves || !all_slaves) {
->  		ret = -ENOMEM;
->  		goto out;
->  	}
-> @@ -4168,20 +4204,19 @@ int bond_update_slave_arr(struct bonding *bond, struct slave *skipslave)
->  
->  		if (bond_3ad_get_active_agg_info(bond, &ad_info)) {
->  			pr_debug("bond_3ad_get_active_agg_info failed\n");
-> -			kfree_rcu(usable_slaves, rcu);
->  			/* No active aggragator means it's not safe to use
->  			 * the previous array.
->  			 */
-> -			old_usable_slaves = rtnl_dereference(bond->usable_slaves);
-> -			if (old_usable_slaves) {
-> -				RCU_INIT_POINTER(bond->usable_slaves, NULL);
-> -				kfree_rcu(old_usable_slaves, rcu);
-> -			}
-> +			bond_reset_slave_arr(bond);
->  			goto out;
->  		}
->  		agg_id = ad_info.aggregator_id;
->  	}
->  	bond_for_each_slave(bond, slave, iter) {
-> +		if (skipslave == slave)
-> +			continue;
-> +
-> +		all_slaves->arr[all_slaves->count++] = slave;
->  		if (BOND_MODE(bond) == BOND_MODE_8023AD) {
->  			struct aggregator *agg;
->  
-> @@ -4191,8 +4226,6 @@ int bond_update_slave_arr(struct bonding *bond, struct slave *skipslave)
->  		}
->  		if (!bond_slave_can_tx(slave))
->  			continue;
-> -		if (skipslave == slave)
-> -			continue;
->  
->  		slave_dbg(bond->dev, slave->dev, "Adding slave to tx hash array[%d]\n",
->  			  usable_slaves->count);
-> @@ -4200,14 +4233,17 @@ int bond_update_slave_arr(struct bonding *bond, struct slave *skipslave)
->  		usable_slaves->arr[usable_slaves->count++] = slave;
->  	}
->  
-> -	old_usable_slaves = rtnl_dereference(bond->usable_slaves);
-> -	rcu_assign_pointer(bond->usable_slaves, usable_slaves);
-> -	if (old_usable_slaves)
-> -		kfree_rcu(old_usable_slaves, rcu);
-> +	bond_set_slave_arr(bond, usable_slaves, all_slaves);
-> +	return ret;
->  out:
-> -	if (ret != 0 && skipslave)
-> +	if (ret != 0 && skipslave) {
-> +		bond_skip_slave(rtnl_dereference(bond->all_slaves),
-> +				skipslave);
->  		bond_skip_slave(rtnl_dereference(bond->usable_slaves),
->  				skipslave);
-> +	}
-> +	kfree_rcu(all_slaves, rcu);
-> +	kfree_rcu(usable_slaves, rcu);
->  
->  	return ret;
->  }
+> https://github.com/l1k/linux/commits/revpi-4.19-marek-v4
+> 
+> Alternatively, download this file:
+> 
+> http://wunner.de/ks8851-marekv4.tar
+> 
+> Install the "raspberrypi-kernel" deb-package included in the tarball on a
+> stock Raspbian image and copy one of the included ks8851.ko to:
+> /lib/modules/4.19.95-rt38-v7+/kernel/drivers/net/ethernet/micrel
 
-none of the above code has anything to do directly with looking up the
-bond slave in bond_xmit_get_slave; all of that and the bond_uninit
-changes should be done in refactoring patch(es) that prepare existing
-code to be called from the new ndo.
+Why don't you rather try to replicate this problem in linux-next?
