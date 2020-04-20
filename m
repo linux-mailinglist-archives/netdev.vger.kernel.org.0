@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 556ED1B1392
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 19:53:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A2A21B1397
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 19:54:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726838AbgDTRxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 13:53:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53146 "EHLO
+        id S1726913AbgDTRy0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 13:54:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726021AbgDTRxD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 13:53:03 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E3A7C061A0F
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 10:53:03 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id v4so585620wme.1
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 10:53:03 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726492AbgDTRy0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 13:54:26 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88FE7C061A0F
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 10:54:24 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id x25so548717wmc.0
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 10:54:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=yDuO8Fy+S+m6nIrVDWWNcZdA24FwvT2RNi23FDb9mcA=;
-        b=wZh4dUSIsT++chKcs9TsZrdt3CRuxK24BgaZLY9EV3IQz4AKIavJ27hJTDCGEiRXOW
-         1T/ugrAgb6lMmtgJU8+oAawg76cFQ3ZKkem9gQ3Xgog7wo1ciRRIhX9Ivzx59hfzZpNz
-         gjYTZIeMGgm4y9MLiZrJOFiy4zl5D2viA00nMQqCJzeueyo41X2EHGSUVLNSSJKTDJrA
-         5sJgEGAhMr32RYBpuJATcOV9fPH4ChAuaA7roLbmFBqmLzg7TnRS/nLweMFAqDEQ4goL
-         8v+FmnaZ4zKP0u2+lvLIoTKtgkW3xz66HT9OShhl4Q/wM98T8s1duZulw/BsNgzMApk0
-         PoaQ==
+        bh=h1n2LDsKs2ZcCDnsffeY3+kx5gfdzTP7+l7Fl31ryGA=;
+        b=P9nYT7kfEgtbNd184oMBgsQqh5u0bO05OS0SKN5dcH39uRgwHkV/sWww5BxY9eFu2Y
+         Oj98C9PGJm8wIwItMqbc3ztu78RRapkRvEIn3zOH10L3X/uC2yls733oYGYGxqz1cGYP
+         /Aiok3Au7IuyG24FXydggmCg874A2f9HZ3DEP2j5KWgEXgFqPrT6cOSIh+412VMjUf4i
+         cbNIgyklkKxSprHG+AA2B+IF0CFky84M/n4lD+lW47dEUtJTLa+n43Pu6G3/We30ow8k
+         x63qmRLfB8C8Y2Dqwf/gr61S+a0Xqz5b0XIGmgj3mPzR6+iDenIUupqbHXsc5ih+MPmE
+         MSoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=yDuO8Fy+S+m6nIrVDWWNcZdA24FwvT2RNi23FDb9mcA=;
-        b=uIYqO08cdrWXbX9TW4R9txChzKo5RXfYAdGLgTm/uBtQFAt7HpFjnbGPCOQl7jEgBY
-         iKWYpoi4Gm7K1DG2d/9ZWDEiUcTt+byReQokCrilC7hSyvDNqkzKIWnOhCxKB/bMF7+E
-         ByOhjv8C5ea76Tb57s3Z1sy4fRT3Zja6E/5dbOjUp9A3guW5sSCzQjIuF/FSqa1LYDYx
-         QScNj0uo/U3APqVHGfowKry4NgIoOFclW14ud2IrMbGoyyWVQc26FiDEgNLDu9GKO0Bz
-         7wV9+EfLG5t5NcF87Ve3ZV2i1VqGAOvHigzhaSxiJWxnk+rsTAgsAOWDdiBWJwLU/kYJ
-         uNSw==
-X-Gm-Message-State: AGi0PuZT1hzRWvTrZA++pSBH0BCsdSEmcSOOATZVa7GduV4zLaM0eEfq
-        EI1+7bya96/M7v0VunthAYBbzQ==
-X-Google-Smtp-Source: APiQypIHKSEcn+aW53ScKIz/JY3CqqZ1wYM5Ayb2cADscQPoffOjdjw/AOo18YeaXVnsFRWz0hRwSA==
-X-Received: by 2002:a1c:e906:: with SMTP id q6mr521770wmc.62.1587405182233;
-        Mon, 20 Apr 2020 10:53:02 -0700 (PDT)
+        bh=h1n2LDsKs2ZcCDnsffeY3+kx5gfdzTP7+l7Fl31ryGA=;
+        b=JONufGVLhOylH6NrygAMyUoz2zFmSuEf8RAzBCM0ET2UjasxKU2aJTFH1JvHk9htaL
+         CggvWNjR6xhqn9HI7k5RIvnBzhraAHW2rSEHvATjQzUNDL5Djcs15mWpsA60FL2R6bkv
+         WFSwrdDrlbwnnDVNVs9Rw1n5auK6yhdq1vLEV+2/t97KBRPWph3E8eK/5wN1iRBJvaUj
+         ePXFKTeehWwxJFHcPAsByS4M0a34T+bI8z/tHVwvnUiBPNEM7A4m+2YsKPMpTseslOXm
+         8E78YqgVWd8s9OlhE7c5g1gshjrLOsLQVmYWaqIxz/QdfspFgUGng5IBRwUI1XQ0NDVN
+         2Aeg==
+X-Gm-Message-State: AGi0PuYPysVF1DBxECD0repPJqI5Jeboy01PWFB52QLbsUnb/3gLfk+m
+        jMzPaSL/gGw1efOhFwc39iuVp/OXBr4=
+X-Google-Smtp-Source: APiQypJHq3mGdKXHjNgPVeEAE9WhACJtkYcVWIVY6yHZUqEQoblDL9SFXNQY0GjOV9iSs/anHV7HVQ==
+X-Received: by 2002:a1c:4989:: with SMTP id w131mr517985wma.137.1587405263276;
+        Mon, 20 Apr 2020 10:54:23 -0700 (PDT)
 Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id s6sm195298wmh.17.2020.04.20.10.53.01
+        by smtp.gmail.com with ESMTPSA id w12sm291943wrk.56.2020.04.20.10.54.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2020 10:53:01 -0700 (PDT)
-Date:   Mon, 20 Apr 2020 19:53:00 +0200
+        Mon, 20 Apr 2020 10:54:22 -0700 (PDT)
+Date:   Mon, 20 Apr 2020 19:54:21 +0200
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     David Ahern <dsahern@gmail.com>
 Cc:     Maor Gottlieb <maorg@mellanox.com>, davem@davemloft.net,
@@ -58,35 +58,51 @@ Cc:     Maor Gottlieb <maorg@mellanox.com>, davem@davemloft.net,
         alexr@mellanox.com
 Subject: Re: [PATCH V2 mlx5-next 01/10] net/core: Introduce
  master_xmit_slave_get
-Message-ID: <20200420175300.GT6581@nanopsycho.orion>
+Message-ID: <20200420175421.GU6581@nanopsycho.orion>
 References: <20200420075426.31462-1-maorg@mellanox.com>
  <20200420075426.31462-2-maorg@mellanox.com>
  <20200420140118.GJ6581@nanopsycho.orion>
  <a9e00f31-2f4e-1dfc-2464-d3d25376a4b8@gmail.com>
- <20200420174124.GS6581@nanopsycho.orion>
- <c1c0bed3-3841-8e08-f4bb-297d4420cbf4@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c1c0bed3-3841-8e08-f4bb-297d4420cbf4@gmail.com>
+In-Reply-To: <a9e00f31-2f4e-1dfc-2464-d3d25376a4b8@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Apr 20, 2020 at 07:43:14PM CEST, dsahern@gmail.com wrote:
->On 4/20/20 11:41 AM, Jiri Pirko wrote:
+Mon, Apr 20, 2020 at 07:29:15PM CEST, dsahern@gmail.com wrote:
+>On 4/20/20 8:01 AM, Jiri Pirko wrote:
+>> Mon, Apr 20, 2020 at 09:54:17AM CEST, maorg@mellanox.com wrote:
+>>> Add new ndo to get the xmit slave of master device.
+>>> User should release the slave when it's not longer needed.
+>>> When slave selection method is based on hash, then the user can ask to
+>>> get the xmit slave assume all the slaves can transmit by setting the
+>>> LAG_FLAGS_HASH_ALL_SLAVES bit in the flags argument.
 >>>
->>> I disagree. There are multiple master devices and no reason to have a
->>> LAG specific get_slave.
+>>> Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
+>>> ---
+>>> include/linux/netdevice.h |  3 +++
+>>> include/net/lag.h         | 32 ++++++++++++++++++++++++++++++++
+>>> 2 files changed, 35 insertions(+)
+>>>
+>>> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+>>> index 130a668049ab..e8852f3ad0b6 100644
+>>> --- a/include/linux/netdevice.h
+>>> +++ b/include/linux/netdevice.h
+>>> @@ -1389,6 +1389,9 @@ struct net_device_ops {
+>>> 						 struct netlink_ext_ack *extack);
+>>> 	int			(*ndo_del_slave)(struct net_device *dev,
+>>> 						 struct net_device *slave_dev);
+>>> +	struct net_device*	(*ndo_xmit_get_slave)(struct net_device *master_dev,
+>>> +						      struct sk_buff *skb,
+>>> +						      u16 flags);
 >> 
->> Do you have usecase for any other non-lag master type device?
->> Note the ndo name can change whenever needed. I think the name should
->> reflect the usage.
->> 
+>> Please adjust the name to:
+>> ndo_get_lag_xmit_slave
 >
->right now, no. But nothing about the current need is LAG specific, so
->don't make it seem like it is LAG specific with the name.
+>I disagree. There are multiple master devices and no reason to have a
+>LAG specific get_slave.
 
-I don't care really, I just thought we can make the connection by the
-name. Makes sense to me.
+Btw, did you notice that Maor is passing "lag" named values in the flags?
