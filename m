@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8D561AFFFD
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 04:51:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDC051B0001
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 04:51:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726100AbgDTCvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 22:51:24 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:50400 "EHLO inva021.nxp.com"
+        id S1726440AbgDTCvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 22:51:40 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:55908 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726303AbgDTCvW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Apr 2020 22:51:22 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 8A6F620069E;
-        Mon, 20 Apr 2020 04:51:19 +0200 (CEST)
+        id S1725988AbgDTCvX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Apr 2020 22:51:23 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id AE2031A0616;
+        Mon, 20 Apr 2020 04:51:21 +0200 (CEST)
 Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 9EE7F2005D5;
-        Mon, 20 Apr 2020 04:51:14 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id BECEE1A0642;
+        Mon, 20 Apr 2020 04:51:16 +0200 (CEST)
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 77225402E8;
-        Mon, 20 Apr 2020 10:51:07 +0800 (SGT)
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id CF7C7402ED;
+        Mon, 20 Apr 2020 10:51:08 +0800 (SGT)
 From:   Yangbo Lu <yangbo.lu@nxp.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
@@ -32,9 +32,9 @@ Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Subject: [v3, 6/7] net: mscc: ocelot: enable PTP programmable pin
-Date:   Mon, 20 Apr 2020 10:46:50 +0800
-Message-Id: <20200420024651.47353-7-yangbo.lu@nxp.com>
+Subject: [v3, 7/7] net: dsa: felix: enable PTP programmable pin
+Date:   Mon, 20 Apr 2020 10:46:51 +0800
+Message-Id: <20200420024651.47353-8-yangbo.lu@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200420024651.47353-1-yangbo.lu@nxp.com>
 References: <20200420024651.47353-1-yangbo.lu@nxp.com>
@@ -53,14 +53,14 @@ Changes for v2:
 Changes for v3:
 	- None.
 ---
- drivers/net/ethernet/mscc/ocelot_board.c | 6 ++++--
+ drivers/net/dsa/ocelot/felix.c | 6 ++++--
  1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_board.c b/drivers/net/ethernet/mscc/ocelot_board.c
-index ee016f7..67a8d61 100644
---- a/drivers/net/ethernet/mscc/ocelot_board.c
-+++ b/drivers/net/ethernet/mscc/ocelot_board.c
-@@ -372,13 +372,15 @@ static struct ptp_clock_info ocelot_ptp_clock_info = {
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index e1573bc..bfa4c12 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -504,13 +504,15 @@ static struct ptp_clock_info ocelot_ptp_clock_info = {
  	.max_adj	= 0x7fffffff,
  	.n_alarm	= 0,
  	.n_ext_ts	= 0,
@@ -77,7 +77,7 @@ index ee016f7..67a8d61 100644
 +	.enable		= ocelot_ptp_enable,
  };
  
- static int mscc_ocelot_probe(struct platform_device *pdev)
+ /* Hardware initialization done here so that we can allocate structures with
 -- 
 2.7.4
 
