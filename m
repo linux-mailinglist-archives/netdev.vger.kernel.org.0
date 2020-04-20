@@ -2,200 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDA331AFECB
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 01:00:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73EE71AFF15
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 02:03:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725950AbgDSXA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 19:00:29 -0400
-Received: from conssluserg-06.nifty.com ([210.131.2.91]:26069 "EHLO
-        conssluserg-06.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725834AbgDSXA3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 19:00:29 -0400
-Received: from mail-vs1-f41.google.com (mail-vs1-f41.google.com [209.85.217.41]) (authenticated)
-        by conssluserg-06.nifty.com with ESMTP id 03JN0BGX017389;
-        Mon, 20 Apr 2020 08:00:12 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 03JN0BGX017389
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1587337212;
-        bh=YNizVeGWFo2/WvthoWUUciW8SZPxzz1gJjOSXCLzSqM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=wMRgjy+SSpmFOuUhA9NUAIXWiWpqw33qDsV37wfmADFupkouIJ5Tbjx1F8FaaI/iJ
-         iicfJ0dJJutmVqZZx8pMnv4tr+0Jx52QvPxvypj+tnWecbI3TdK7hOuOAYl/M9imVq
-         66wPFk8+grawzzWg2zMj8WvpjIkDuQdwHSqWYTytRQR5zJPl/QjrcTI1voGZjPEQIb
-         KbMlD/D0xXD3gYO2Yyr4mL/7tXNjUduDQ3rgs25JmplTYvcyfOmDC+AYTN8/IbP4nK
-         IOtaI+1lXC+qEwNP+Ofpv7fNwoQCsfDtFxkqAfRTh6q6azPslETYw9e/BkTR8paOG6
-         eLoitJxCySmXA==
-X-Nifty-SrcIP: [209.85.217.41]
-Received: by mail-vs1-f41.google.com with SMTP id h30so4401110vsr.5;
-        Sun, 19 Apr 2020 16:00:12 -0700 (PDT)
-X-Gm-Message-State: AGi0PuYqO7+DOsOuIlBAgBOtjL0j5H290gGm8tJw7ds4hEd7xJKpOHB9
-        d+W+jdaJ/bQlet2ITYrItoqr0ZJXFbENdwCRgP0=
-X-Google-Smtp-Source: APiQypJo4GzV7ITygIIonBowK+fJlCVDmlPouh/9Xqp/970Ci3/7ux99LT2twsSWp719B+GK/gJK9qxKicU2tIylQH4=
-X-Received: by 2002:a67:3293:: with SMTP id y141mr9756161vsy.54.1587337211018;
- Sun, 19 Apr 2020 16:00:11 -0700 (PDT)
+        id S1726012AbgDTADi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 20:03:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57024 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725947AbgDTADh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 20:03:37 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C97C061A0C
+        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 17:03:37 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id w2so6006654edx.4
+        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 17:03:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9XWofAVQkjwidFtFUDcNUdf83dNoUggf1miPbWtg11U=;
+        b=qbkemFXf2+qCGXxw8A3wYNmJRjb7704c4ChXeACsSCbEGpx/ui3l/sGGedoom1S0tk
+         BVXlSBsL1vKPYoIOfq75U3kVZF5LQGkA04HpvlmO2R4ZLXA4HzsZElDBq8PLdSAwDmfo
+         ASTTJnytMMGXvOy1VP3mbkIVm/MY0H2FU7JDoaqfIQ9C2Vaz3GpUKRZG8KsOILOrD9Wx
+         uU0xDECTLAU9lWF33s8V9ga+vGWJYFy/DPayqPMyGew+2F85oHpp+QgeVqjybKkWgxRI
+         o8fujxb53KZWhc3H9b6N+Fd36A2VyoQjL5iJrV7ygyHCa3psJWgYhp5qQSgnVe10GGQu
+         xtBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9XWofAVQkjwidFtFUDcNUdf83dNoUggf1miPbWtg11U=;
+        b=Kazz5fFkgmXmG18xCUJr7TNXgHEYeftQK0+4rRaDtIzeRtfqJORytpB7fQZ6w0Ef71
+         ZFRlaavKN4L3gWPhqeV2r6THezTHObTwXQ0AzyK9EAyvgTGu6QG2l51L2gMwWSpKth2V
+         B7uby3gNWgktwDrJdv0v2w2t21WA67hWICZl4rE58lR7fstLIvc1ZpXrddAqQnU+glCy
+         /5qIqx9JZhdhYVm/K10yHwifUWNpcwlvFZVaHj/wDMA9m1GWarhKG/esY8T9avzHouAm
+         J/rmDllUA+BLEqmyJDaR7PPsJepYKM4O30dBgqts7HciIXUWIDttMmgoIM4IXo4sQsVJ
+         RndA==
+X-Gm-Message-State: AGi0PuZEBuuwTnhu+jr9Yq/e8BIE4Qcro5OoEplqb0m98GbCHG1kS8tt
+        CELCmC3vJz8XUfsOueIaFWBUx3/ZkES4Aejcsol9Pg==
+X-Google-Smtp-Source: APiQypKNzHLRqOycG2Qy2+7B4rLXItG6Fo2fFLRt5yvaCZ8lYTJrxHjVnQgZsAmex0kXmm5CMVK2/GqgTBFAlA9Hgd4=
+X-Received: by 2002:a50:aca3:: with SMTP id x32mr12372250edc.368.1587341014539;
+ Sun, 19 Apr 2020 17:03:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200419141850.126507-1-leon@kernel.org> <20200419155506.129392-1-leon@kernel.org>
-In-Reply-To: <20200419155506.129392-1-leon@kernel.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Mon, 20 Apr 2020 07:59:35 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASdOf0inF_-f8Gn7_mn1QSdXEi1HTR2zj3DEs38sf96xA@mail.gmail.com>
-Message-ID: <CAK7LNASdOf0inF_-f8Gn7_mn1QSdXEi1HTR2zj3DEs38sf96xA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 4/4] kernel/module: Hide vermagic header file
- from general use
-To:     Leon Romanovsky <leon@kernel.org>
+References: <20200417190308.32598-1-olteanv@gmail.com> <20200419073307.uhm3w2jhsczpchvi@ws.localdomain>
+ <CA+h21hrvSjRwDORZosxDt5YA+uMckaypT51f-COr+wtB7EjVAQ@mail.gmail.com> <20200419182534.o42v5fiw34qxhenu@ws.localdomain>
+In-Reply-To: <20200419182534.o42v5fiw34qxhenu@ws.localdomain>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Mon, 20 Apr 2020 03:03:23 +0300
+Message-ID: <CA+h21hoBxX3GWQ7+ehov2eGzhsqodH9RjN0FfVTW6beFFjETBQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: mscc: ocelot: deal with problematic
+ MAC_ETYPE VCAP IS2 rules
+To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        netdev <netdev@vger.kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "Y.b. Lu" <yangbo.lu@nxp.com>, Po Liu <po.liu@nxp.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@idosch.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        Borislav Petkov <bp@suse.de>, Jessica Yu <jeyu@kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Networking <netdev@vger.kernel.org>
+        Mingkai Hu <mingkai.hu@nxp.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi Allan,
 
-On Mon, Apr 20, 2020 at 12:55 AM Leon Romanovsky <leon@kernel.org> wrote:
+On Sun, 19 Apr 2020 at 21:25, Allan W. Nielsen
+<allan.nielsen@microchip.com> wrote:
 >
-> From: Leon Romanovsky <leonro@mellanox.com>
+> On 19.04.2020 17:20, Vladimir Oltean wrote:
+> >EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> >
+> >On Sun, 19 Apr 2020 at 10:33, Allan W. Nielsen
+> ><allan.nielsen@microchip.com> wrote:
+> >>
+> >> Hi,
+> >>
+> >> Sorry I did not manage to provide feedback before it was merged (I will
+> >> need to consult some of my colleagues Monday before I can provide the
+> >> foll feedback).
+> >>
+> >> There are many good things in this patch, but it is not only good.
+> >>
+> >> The problem is that these TCAMs/VCAPs are insanely complicated and it is
+> >> really hard to make them fit nicely into the existing tc frame-work
+> >> (being hard does not mean that we should not try).
+> >>
+> >> In this patch, you try to automatic figure out who the user want the
+> >> TCAM to be configured. It works for 1 use-case but it breaks others.
+> >>
+> >> Before this patch you could do a:
+> >>      tc filter add dev swp0 ingress protocol ipv4 \
+> >>              flower skip_sw src_ip 10.0.0.1 action drop
+> >>      tc filter add dev swp0 ingress \
+> >>              flower skip_sw src_mac 96:18:82:00:04:01 action drop
+> >>
+> >> But the second rule would not apply to the ICMP over IPv4 over Ethernet
+> >> packet, it would however apply to non-IP packets.
+> >>
+> >> With this patch it not possible. Your use-case is more common, but the
+> >> other one is not unrealistic.
+> >>
+> >> My concern with this, is that I do not think it is possible to automatic
+> >> detect how these TCAMs needs to be configured by only looking at the
+> >> rules installed by the user. Trying to do this automatic, also makes the
+> >> TCAM logic even harder to understand for the user.
+> >>
+> >> I would prefer that we by default uses some conservative default
+> >> settings which are easy to understand, and then expose some expert
+> >> settings in the sysfs, which can be used to achieve different
+> >> behavioral.
+> >>
+> >> Maybe forcing MAC_ETYPE matches is the most conservative and easiest to
+> >> understand default.
+> >>
+> >> But I do seem to recall that there is a way to allow matching on both
+> >> SMAC and SIP (your original motivation). This may be a better default
+> >> (despite that it consumes more TCAM resources). I will follow up and
+> >> check if this is possible.
+> >>
+> >> Vladimir (and anyone else whom interested): would you be interested in
+> >> spending some time discussion the more high-level architectures and
+> >> use-cases on how to best integrate this TCAM architecture into the Linux
+> >> kernel. Not sure on the outlook for the various conferences, but we
+> >> could arrange some online session to discuss this.
+> >>
+> >> /Allan
+> >>
+> >
+> >And yes, we would be very interested in attending a call for syncing
+> >up on integrating the TCAM hardware with the flow offload
+> >infrastructure from Linux. Actually at the moment we are trying to add
+> >support for offloaded VLAN retagging with the VCAP IS1 and ES0 blocks.
 >
-> VERMAGIC* definitions are not supposed to be used by the drivers,
-> see this [1] bug report, so introduce special define to guard inclusion
-> of this header file and define it in kernel/modules.h and in internal
-> script that generates *.mod.c files.
+> Sounds good - lets spend some time to talk discuss this and see what
+> comes out of it.
 >
-> In-tree module build:
-> =E2=9E=9C  kernel git:(vermagic) =E2=9C=97 make clean
-> =E2=9E=9C  kernel git:(vermagic) =E2=9C=97 make M=3Ddrivers/infiniband/hw=
-/mlx5
-> =E2=9E=9C  kernel git:(vermagic) =E2=9C=97 modinfo drivers/infiniband/hw/=
-mlx5/mlx5_ib.ko
-> filename:       /images/leonro/src/kernel/drivers/infiniband/hw/mlx5/mlx5=
-_ib.ko
-> <...>
-> vermagic:       5.6.0+ SMP mod_unload modversions
+> Ido, if you want to join us, pleaes comment with your preferences. If
+> others want to join please let me know.
 >
-> Out-of-tree module build:
-> =E2=9E=9C  mlx5 make -C /images/leonro/src/kernel clean M=3D/tmp/mlx5
-> =E2=9E=9C  mlx5 make -C /images/leonro/src/kernel M=3D/tmp/mlx5
-> =E2=9E=9C  mlx5 modinfo /tmp/mlx5/mlx5_ib.ko
-> filename:       /tmp/mlx5/mlx5_ib.ko
-> <...>
-> vermagic:       5.6.0+ SMP mod_unload modversions
+> I can setup a meeting in WebEx or Teams. I'm happy to join on other
+> platformws if you prefer. They both works fine from Linux in Chrome and
+> FireFox (sometimes tricky to get the sound working in FF).
 >
-> [1] https://lore.kernel.org/lkml/20200411155623.GA22175@zn.tnic
-> Reported-by: Borislav Petkov <bp@suse.de>
-> Acked-by: Borislav Petkov <bp@suse.de>
-> Acked-by: Jessica Yu <jeyu@kernel.org>
-> Co-developed-by: Masahiro Yamada <masahiroy@kernel.org>
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
-> ---
-
-
-I did not read the full thread of [1],
-and perhaps may miss something.
-
-But, this series is trying to solve a different problem
-"driver code should not include <linux/vermagic.h>"
-isn't it?
-
-
-IIUC, Borislav reported conflict of MODULE_ARCH_VERMAGIC
-if <linux/vermagic.h> is included before <linux/module.h>.
-
-With your cleanups, the include site of <linux/vermagic.h>
-will be limited to kernel/module.c and scripts/mod/module.c
-
-Assuming those two files include them in the *correct* order,
-this problem will be suppressed.
-
-But, I do not think it addresses the problem properly.
-
-
-If
-  #include <foo.h>
-  #include <bar.h>
-
-works, but
-
-  #include <bar.h>
-  #include <foo.h>
-
-does not, the root cause is very likely
-that <bar.h> is not self-contained.
-The problem is solved by including <foo.h> from <bar.h>
-
-
-Please see my thoughts in this:
-https://lore.kernel.org/patchwork/patch/1227024/
-
-
-Of course, we are solving different issues, so I think
-we can merge both.
-
-
-What do you think?
-
-
-
-
->  include/linux/vermagic.h | 5 +++++
->  kernel/module.c          | 3 +++
->  scripts/mod/modpost.c    | 1 +
->  3 files changed, 9 insertions(+)
+> Proposed agenda:
 >
-> diff --git a/include/linux/vermagic.h b/include/linux/vermagic.h
-> index 9aced11e9000..7768d20ada39 100644
-> --- a/include/linux/vermagic.h
-> +++ b/include/linux/vermagic.h
-> @@ -1,4 +1,9 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
-> +
-> +#ifndef INCLUDE_VERMAGIC
-> +#error "This header can be included from kernel/module.c or *.mod.c only=
-"
-> +#endif
-> +
->  #include <generated/utsrelease.h>
+> - Cover the TCAM architecture in Ocelot/Felix (just to make sure we are
+>    all on the same page).
+> - Present some use-cases MCHP would like to address in future.
+> - Open discussion.
 >
->  /* Simply sanity version stamp for modules. */
-> diff --git a/kernel/module.c b/kernel/module.c
-> index 646f1e2330d2..8833e848b73c 100644
-> --- a/kernel/module.c
-> +++ b/kernel/module.c
-> @@ -4,6 +4,9 @@
->     Copyright (C) 2001 Rusty Russell, 2002, 2010 Rusty Russell IBM.
+> I think we will need something between 30-120 minutes depending on how
+> the discussion goes.
 >
->  */
-> +
-> +#define INCLUDE_VERMAGIC
-> +
->  #include <linux/export.h>
->  #include <linux/extable.h>
->  #include <linux/moduleloader.h>
-> diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-> index 5c3c50c5ec52..7f7d4ee7b652 100644
-> --- a/scripts/mod/modpost.c
-> +++ b/scripts/mod/modpost.c
-> @@ -2251,6 +2251,7 @@ static void add_header(struct buffer *b, struct mod=
-ule *mod)
->          * Include build-salt.h after module.h in order to
->          * inherit the definitions.
->          */
-> +       buf_printf(b, "#define INCLUDE_VERMAGIC\n");
->         buf_printf(b, "#include <linux/build-salt.h>\n");
->         buf_printf(b, "#include <linux/vermagic.h>\n");
->         buf_printf(b, "#include <linux/compiler.h>\n");
-> --
-> 2.25.2
+> We are in CEST time - and I'm okay to attend from 7-22.
 >
+> What about you.
+>
+> /Allan
 
+From my side I am available for the entire time interval you
+mentioned, since the time zone in Bucharest (GMT+3) is rather close to
+Copenhagen. Our colleagues from NXP Beijing might also be interested,
+which is probably going to restrict the time interval to the first
+half of the day. And you can also schedule for Tuesday if tomorrow is
+on too short notice.
+Both WebEx and Teams should work, with a slight preference to Teams
+since NXP people are already using it.
 
---
-Best Regards
-Masahiro Yamada
+Thanks,
+-Vladimir
