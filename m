@@ -2,134 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 889E11B03D7
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 10:05:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5356F1B0441
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 10:23:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726377AbgDTIFY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 04:05:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46262 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726017AbgDTIFY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 04:05:24 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7A60A218AC;
-        Mon, 20 Apr 2020 08:05:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587369923;
-        bh=JFX+PqkhRvwNBakJkGhcUZ9y1fPjU6PC9WuNF//vw9E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=wqewF8JbWUTYVPTE18GOHtWxNhAF/7cyZlBhSvKh4mE8gfReuKSmnOpI+jbWz6dr/
-         Uu6v01JDZvtNKedc2CNXetBFjAdTtwJbLI6mK5aP7mJDnGNaelb08xfwHsShmaWI5l
-         bEUXWzmldczVVZ1HFSjVl8hmcC/gMwltsgJxcEEk=
-Date:   Mon, 20 Apr 2020 11:05:18 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Borislav Petkov <bp@suse.de>,
-        Jessica Yu <jeyu@kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v2 4/4] kernel/module: Hide vermagic header file
- from general use
-Message-ID: <20200420080518.GC121146@unreal>
-References: <20200419141850.126507-1-leon@kernel.org>
- <20200419155506.129392-1-leon@kernel.org>
- <CAK7LNASdOf0inF_-f8Gn7_mn1QSdXEi1HTR2zj3DEs38sf96xA@mail.gmail.com>
+        id S1726228AbgDTIXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 04:23:03 -0400
+Received: from wnew1-smtp.messagingengine.com ([64.147.123.26]:33025 "EHLO
+        wnew1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725773AbgDTIXD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 04:23:03 -0400
+X-Greylist: delayed 558 seconds by postgrey-1.27 at vger.kernel.org; Mon, 20 Apr 2020 04:23:02 EDT
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.west.internal (Postfix) with ESMTP id 2C9A7434;
+        Mon, 20 Apr 2020 04:13:43 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Mon, 20 Apr 2020 04:13:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm2; bh=SXSTFribf+OBJQkU3j6jVIz3bY6
+        eV4OkRjDaFUbGPVw=; b=dE5h4joV1X2zyfsk9mJ41dSV9Gw9Z/YVaMMRGJ820cJ
+        NOM2XNUzGMrQc6ydYn/Zic69B5NNRAo6QYHu7GiXTukZObTUlEBXjml6kZ/h7tAT
+        KMRH6rsLmKGHMxHRm7KJLGWmYRqhGKyvler6AycFGuPEGCumuG7dlYNh0te1Urjx
+        B6h7D1L21WQxrWq9rbIg2awGPkD9xDLlas4gTjOZhaRUMmGgHQg+K1OSe1L7j+F6
+        bmwm6FQYhRHRkEqK671hDPeOeYQIt9YyhceNDEnvh2vN6YHgeij3N4pO5N+DJN7w
+        9V+2zj+aOoX22lyD9EziS9+y0v/eOMqyQ7U5xATaBqw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=SXSTFr
+        ibf+OBJQkU3j6jVIz3bY6eV4OkRjDaFUbGPVw=; b=G23U+tfw+wQH0rkso4eEwx
+        yQrM7P5msXz/OSSuwywZHpLw59W7M9piQzgYDymuZ/YKvqo9EW4FYeWdNyEoH+Ed
+        qmqsr4Sy9SCUAWo+U7Xi8UaefRJgr1xVvCWCNwhs0s9c7HwcgF9NnbIaBi1jxF8Q
+        z/QcFe7e+rHQBP1rEmpE2U43OrZLm5wRDGIiSoDuD1YdwkM+WbU5zoyBvHMF5KMW
+        C7vFCc8JDlwMTEP39M/PyYTBAbvRGE/SyZ1pVAhaeuNueZSROb33Z+uvkYT1/7c3
+        cpFJBI0Uq5E1XdygU8RLJ53HUPy2gALcm2KVAsWjq0oho1PeFfIGNg0GONbW7ZHA
+        ==
+X-ME-Sender: <xms:tFmdXrjoBzIgx--8HKQXgDrtxO5gVSCcQrfVsGCBN7W7YGtfh-qHEA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrgeefucetufdoteggodetrfdotffvucfrrh
+    hofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgenuceurghi
+    lhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurh
+    epfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhmvgcutfhi
+    phgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecukfhppeeltddrkeelrd
+    eikedrjeeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhho
+    mhepmhgrgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:tFmdXix3P9qkRjDO69NN5eUQUL2gZwUhPrg6E8e4InQODtjq81Pbsw>
+    <xmx:tFmdXp8VSgOzUNGzxjXDXf0hmnasH9Zn98KD4SKEGNOKFRqoWr01-w>
+    <xmx:tFmdXvBn1GLk5m2Pm5avHEkDYkDZzYF2fWl4nUyo3FlyH1VrQfUqxg>
+    <xmx:tlmdXt6FXLOMGmuXYEy2LsOWngKuRKcExd-_FWiOCNilGysnqab04_8LDgI>
+Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr [90.89.68.76])
+        by mail.messagingengine.com (Postfix) with ESMTPA id A92B33280060;
+        Mon, 20 Apr 2020 04:13:40 -0400 (EDT)
+Date:   Mon, 20 Apr 2020 10:13:39 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Alistair Francis <alistair@alistair23.me>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        marcel@holtmann.org, johan.hedberg@gmail.com,
+        linux-bluetooth@vger.kernel.org, wens@csie.org, anarsoul@gmail.com,
+        devicetree@vger.kernel.org, alistair23@gmail.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v3 3/3] arm64: allwinner: Enable Bluetooth and WiFi on
+ sopine baseboard
+Message-ID: <20200420081339.znoxmshq2z74slvg@gilmour.lan>
+References: <20200412020644.355142-1-alistair@alistair23.me>
+ <20200412020644.355142-3-alistair@alistair23.me>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="ejtot7cm3kxebrar"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAK7LNASdOf0inF_-f8Gn7_mn1QSdXEi1HTR2zj3DEs38sf96xA@mail.gmail.com>
+In-Reply-To: <20200412020644.355142-3-alistair@alistair23.me>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 20, 2020 at 07:59:35AM +0900, Masahiro Yamada wrote:
-> Hi,
->
-> On Mon, Apr 20, 2020 at 12:55 AM Leon Romanovsky <leon@kernel.org> wrote:
-> >
-> > From: Leon Romanovsky <leonro@mellanox.com>
-> >
-> > VERMAGIC* definitions are not supposed to be used by the drivers,
-> > see this [1] bug report, so introduce special define to guard inclusion
-> > of this header file and define it in kernel/modules.h and in internal
-> > script that generates *.mod.c files.
-> >
-> > In-tree module build:
-> > ➜  kernel git:(vermagic) ✗ make clean
-> > ➜  kernel git:(vermagic) ✗ make M=drivers/infiniband/hw/mlx5
-> > ➜  kernel git:(vermagic) ✗ modinfo drivers/infiniband/hw/mlx5/mlx5_ib.ko
-> > filename:       /images/leonro/src/kernel/drivers/infiniband/hw/mlx5/mlx5_ib.ko
-> > <...>
-> > vermagic:       5.6.0+ SMP mod_unload modversions
-> >
-> > Out-of-tree module build:
-> > ➜  mlx5 make -C /images/leonro/src/kernel clean M=/tmp/mlx5
-> > ➜  mlx5 make -C /images/leonro/src/kernel M=/tmp/mlx5
-> > ➜  mlx5 modinfo /tmp/mlx5/mlx5_ib.ko
-> > filename:       /tmp/mlx5/mlx5_ib.ko
-> > <...>
-> > vermagic:       5.6.0+ SMP mod_unload modversions
-> >
-> > [1] https://lore.kernel.org/lkml/20200411155623.GA22175@zn.tnic
-> > Reported-by: Borislav Petkov <bp@suse.de>
-> > Acked-by: Borislav Petkov <bp@suse.de>
-> > Acked-by: Jessica Yu <jeyu@kernel.org>
-> > Co-developed-by: Masahiro Yamada <masahiroy@kernel.org>
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> > Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
-> > ---
->
->
-> I did not read the full thread of [1],
-> and perhaps may miss something.
->
-> But, this series is trying to solve a different problem
-> "driver code should not include <linux/vermagic.h>"
-> isn't it?
->
->
-> IIUC, Borislav reported conflict of MODULE_ARCH_VERMAGIC
-> if <linux/vermagic.h> is included before <linux/module.h>.
->
-> With your cleanups, the include site of <linux/vermagic.h>
-> will be limited to kernel/module.c and scripts/mod/module.c
->
-> Assuming those two files include them in the *correct* order,
-> this problem will be suppressed.
->
-> But, I do not think it addresses the problem properly.
->
->
-> If
->   #include <foo.h>
->   #include <bar.h>
->
-> works, but
->
->   #include <bar.h>
->   #include <foo.h>
->
-> does not, the root cause is very likely
-> that <bar.h> is not self-contained.
-> The problem is solved by including <foo.h> from <bar.h>
->
->
-> Please see my thoughts in this:
-> https://lore.kernel.org/patchwork/patch/1227024/
->
->
-> Of course, we are solving different issues, so I think
-> we can merge both.
->
->
-> What do you think?
 
-The idea and rationale are right, include order should not be important.
+--ejtot7cm3kxebrar
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks
+Hi,
+
+On Sat, Apr 11, 2020 at 07:06:44PM -0700, Alistair Francis wrote:
+> The sopine board has an optional RTL8723BS WiFi + BT module that can be
+> connected to UART1. Add this to the device tree so that it will work
+> for users if connected.
+>=20
+> Signed-off-by: Alistair Francis <alistair@alistair23.me>
+
+Like Vasily said in a previous iteration, this should be an overlay.
+
+Maxime
+
+--ejtot7cm3kxebrar
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXp1ZswAKCRDj7w1vZxhR
+xRHnAQDHNvHWo1zmq8o4pNF0FFVzFdG9ZW4B0hE0ap3rEg3u+QEAtFnUoV0c8i8g
+nKNO32LMpG2lK/In+8B74ILYTIcZpAQ=
+=IRUG
+-----END PGP SIGNATURE-----
+
+--ejtot7cm3kxebrar--
