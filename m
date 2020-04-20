@@ -2,139 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39BAB1B0564
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 11:17:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50E841B05B9
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 11:34:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726116AbgDTJQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 05:16:52 -0400
-Received: from mx1.tq-group.com ([62.157.118.193]:28970 "EHLO mx1.tq-group.com"
+        id S1725994AbgDTJeJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 05:34:09 -0400
+Received: from mout.gmx.net ([212.227.17.22]:40055 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725865AbgDTJQv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 05:16:51 -0400
-IronPort-SDR: 2ys5ASrXSbcmVL+4NIw63pOAsLRT+HX/T8VTq5XCDymrms7XkAaUO3Ms8NQ8AWUHf33n9UUGKk
- wY9hC3uxchSHHARCVSIC+ed5O33c4Y/BTY0SYzC8e4L0Ev/VkMB3wJc3LoKtni2FiiRG5fcnri
- KKUGcenNyVMfMFZh5VhGhLzv+RAWODG5Uzbz/vt5BG2MYZrqijiYQrb4AK77lsQeatkuwTHKWC
- UMFTj2bbWfcEu26J00XaxPJ+dUImnEQZQ/kAF/vRfhNt+me/IiDGbeFrR/kA22WfeLf0hQ2Vnf
- KFA=
-X-IronPort-AV: E=Sophos;i="5.72,406,1580770800"; 
-   d="scan'208";a="11886200"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 20 Apr 2020 11:16:49 +0200
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Mon, 20 Apr 2020 11:16:49 +0200
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Mon, 20 Apr 2020 11:16:49 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1587374209; x=1618910209;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=oSH4PE9XUEzsC5hY5Yl58pEZ9iVdMK0ATZmTRJuWy9I=;
-  b=ac5gOFDjEWBUoWCuv/9qNa1bTBJ7OVUyXwt1PIkSXdWosuj2Wy9TeU9a
-   uH+fFlRfHgExn+PB19kwgBWaoiQFfZDBALxSIKdPZzUadPc4Tltz/Tz7e
-   mQfIZhP2/4/QrcnHHtaiuWj/sZ9JWbRxc0DgNbEN9dRlQxGNfoOWFtn/j
-   Giw1Y1PGWVmx5Db6NkaT2Bzy7sDYHDdgi+kbTvI4EI+WLFO86OcQAp3Nc
-   Ud6m8HtPJaL2jFmq3C7uzlasY3EI4ZxZw7SyDhzSmONfrodw7cDwNA7Tt
-   W9Uk/ViJJy8gDY2NGawMuM7jX81YbdsxGG0rWPfhgviW6LPtCPUJkne5W
-   A==;
-IronPort-SDR: VAaUGW9OFiUDqtCiMG47M9f1Qvx33mJ6omOs+p+lue1C9j1oOUAQymQCiVF9QsgAdt763n54Ym
- ItjjHfJjY+venTKKHG/OoF39QYFCvVa75vEjUrafECUIqod95BbByM24NDkMmkMeHw/A7vkk50
- +BxOfbRFatY6ZlMVZk7bi0ksJM3md3uPcM3laONwbLTorrH9FzfYo6XFKymsT7wQ1f/tyD9LSn
- nQ6Be86QaCKWLNPnJb7HocyM42ia2w5vhYkq6HzlMLwpnPIyCNVrdc1Fb9M/1kxa8PZ3dXw4kJ
- Lfo=
-X-IronPort-AV: E=Sophos;i="5.72,406,1580770800"; 
-   d="scan'208";a="11886199"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 20 Apr 2020 11:16:49 +0200
-Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.117.49.26])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 3A902280065;
-        Mon, 20 Apr 2020 11:16:49 +0200 (CEST)
-Message-ID: <f7b9de1b0caa4b27ccfe23c969ff586ec7ecefea.camel@ew.tq-group.com>
-Subject: Re: [PATCH net-next 1/4] net: dsa: allow switch drivers to override
- default slave PHY addresses
-From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        andrew@lunn.ch, vivien.didelot@gmail.com, davem@davemloft.net,
-        kuba@kernel.org
-Date:   Mon, 20 Apr 2020 11:16:46 +0200
-In-Reply-To: <a796bf7cfb1f72a888522050320624546950c281.camel@ew.tq-group.com>
-References: <20200330135345.4361-1-matthias.schiffer@ew.tq-group.com>
-         <6a306ad4-c029-03a3-7a1c-0fdadc13d386@gmail.com>
-         <a796bf7cfb1f72a888522050320624546950c281.camel@ew.tq-group.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1725773AbgDTJeI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 05:34:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1587375247;
+        bh=J2Z74hgcwHHGGdPBH0C5iJA/8hhsUGYOmZw/I4UMpV8=;
+        h=X-UI-Sender-Class:Reply-To:To:From:Subject:Date;
+        b=gmMgEL5cSTvGVtaAbzAXtlXT5QPF0UUEFn0fgGs0KA/iF5/7Ha72HT847BodVZ1UU
+         P+78j6K13ULQ0h0AJDU4uNn4/QPHUlt0idCNg4homcP65QCN4H1+21LsJze8WiyqqQ
+         Sxb83M5lmDvfQOb1GD53Et/dzGUmkXQQwnt0aEsU=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.84.205] ([134.101.139.191]) by mail.gmx.com (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mirng-1ilurz0ve0-00eqf2 for
+ <netdev@vger.kernel.org>; Mon, 20 Apr 2020 11:34:07 +0200
+Reply-To: vtol@gmx.net
+To:     netdev@vger.kernel.org
+From:   =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
+Subject: [switchdev] bridge fdb vs. switch's ATU - connection timeout when
+ roaming from LAN port to WLan port
+Message-ID: <5c0744ff-d233-8135-50ac-4e7cfbc400ba@gmx.net>
+Date:   Mon, 20 Apr 2020 09:34:00 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-GB
+X-Provags-ID: V03:K1:YN04cE4ovlppuxwjwdlzv9ZfSdmqeK3qFT0ETo1/QWl5aEsNJPq
+ GQV5IyRDlCSJ3aqHDLsFhn5qws0E+Wovpi0wDMZQ+LLR8jh6pGHvrU8eB+ajRLEa0OerMHE
+ Y4RkBlL9qbfgT0NyTlmP4o3IvURQ+DUwMfs+FXZ6YDNwtRLocqfy3ToDD3KAy4QUCTYFDKn
+ lv6tcXAd0v9emnP3LcfdA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Fcl9jH7N1Ow=:ebSlaAfjdh+Kaq1/2s5XMb
+ 0eB8zn/WdV5rWX2+fBYrF/Or40OjxwtVervREWp05ddEjlGRpl+hw4RxlxaLUqCA0TQzJ8bEc
+ DTI+xIisXVBxdWCUGo0ckl7cv2MHaCdwae7QnGl91u1YHxHakUYEIePIalZ+t/U/tCO56XRpL
+ D1IboDwHOig/xVMX2zkJB1K/U8p2oBS18C4XIUSDpFt/025dptj5OPiQqyCCK1hLeo7WUMgTS
+ mwJURV0CEqmjHFZVi/etyplWcEWFGux8JMdE5KUMsHURB5xjuRNoy3CdILUGf8UaFxCiuW8ZA
+ Jpu9nw+uOL3C0bhC2PH6UuhhjXbMWyIeAQU+naxxGJfiCIkRTyRGJYPN7lcxLr5Unv5fxmnkM
+ RWdqR2SycNwycCTrSJZXVlnv2Y1O+LN4ZGR9bz5za2JcRvidvBkWDNRlDNh0RohBFDWcTYeCh
+ 10Vn4StGOKg2/a4nJF4A6i+mI6UMVuZhD8j4nZRodbDv3znt1313ZYnDV3a5eI6oQow+3S7P8
+ UljmXr/f1NelIfZoDqthnoto9WmnxFt35N20Oqb/wGRSVA3YS8KFc0wgHveEtVzuQfQT0uJwf
+ 7QnrNIxco9W01gcTT1b4Fqn6qryJtuZ9N/dJkr37yj2lqOc8px8HoGQgf5hJnjyO+BZ88sC1/
+ xWH1b75aaeo6iFylXGNwqKQAq9BLA2kld7TULx+Xaob0fG6KAIDXU6viYKnAKAPIw24ylZG/4
+ AUbXyFFOJ+9vfhuePpomFKEVSr4G83tasp62o8QesbREABni32r0V/2hCPs08ncim2QVWPA5U
+ oNEm5nUonNGB7F/psw7nm+T93Kba20repUzmJGu7QPeAHCVfQtkDCWiIikVFyA7RFWB76/Rv+
+ RkIRAPgO8NY0DOHFvFL4w1YHLt5/WHUDto3c4J4YxU3buO2DbNuXX45iMxl1iiA6hv75rIe2I
+ RtfzM7kVAeyZgYAZ8FcL7l+fJgKj2eCqh+B5Dfqbh1CY2cryRpCee3P/cjjqNm4iGuWOvELBz
+ XhRTy4rcXRRbl07nJzuFLErekLUVnPfMs6X7jy8OCHTK3fwbn1GoeLXtXexKVrPDYx3MaJlIf
+ +XxSXBzfQGSeqSlt5mEYivq/KjC32BQt4C90qoMKse0ko3Qt/cOEEeSAWrN4NG1Pe2pcXEACu
+ 4XRf/s4v/iKDHIR8enYDYkqfaRDuklcj0GG2aI0rcH/g4MHcYH6bMnY8DlAC8c10Rw6Go=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-03-31 at 11:09 +0200, Matthias Schiffer wrote:
-> On Mon, 2020-03-30 at 20:04 -0700, Florian Fainelli wrote:
-> > 
-> > On 3/30/2020 6:53 AM, Matthias Schiffer wrote:
-> > > Avoid having to define a PHY for every physical port when PHY
-> > > addresses
-> > > are fixed, but port index != PHY address.
-> > > 
-> > > Signed-off-by: Matthias Schiffer <
-> > > matthias.schiffer@ew.tq-group.com
-> > > > 
-> > 
-> > You could do this much more elegantly by doing this with Device
-> > Tree
-> > and
-> > specifying the built-in PHYs to be hanging off the switch's
-> > internal
-> > MDIO bus and specifying the port to PHY address mapping, you would
-> > only
-> > patch #4 then.
-> 
-> This does work indeed, but it seems we have different ideas on
-> elegance.
-> 
-> I'm not happy about the fact that an implementor needs to study the
-> switch manual in great detail to find out about things like the PHY
-> address offsets when the driver could just to the right thing by
-> default. Requiring this only for some switch configurations, while
-> others work fine with the defaults, doesn't make this any less
-> confusing (I'd even argue that it would be better if there weren't
-> any
-> default PHY and IRQ mappings for the switch ports, but I also
-> understand that this can't easily be removed at this point...)
-> 
-> In particular when PHY IRQ support is desired (not implemented on the
-> PHY driver side for this switch yet; not sure if my current project
-> will require it), indices are easy to get wrong - which might not be
-> noticed as long as there is no PHY driver with IRQ support for the
-> port
-> PHYs, potentially breaking existing Device Trees with future kernel
-> updates. For this reason, I think at least patch #2 should be
-> considered even if #1 and #3 are rejected.
-> 
-> Kind regards,
-> Matthias
+HOST config
+* kernel 4.19.93
+* SoC Cortex-A9 (armv7l)
+* switch Marvell 88E6176 via PHY lane (mdio-mii) to SoC
+* switch's downstream port driven by DSA
+* switch's ATU=E2=80=99s /AgeTime/ control register default value =3D 0x13=
+ (19 x
+16 =3D 304 seconds)
+* WLan card via mPCIe to SoC
+________
 
-net-next is open again, and I'd like to come to a conclusion regarding
-this patch series before I resend it (or parts of it).
+Moving a client node from a (HOST) switch's downstream port (either
+directly wired or indirectly via wireless AP that is wired into a switch
+downstream port) to the HOST provided AP results in the client node not
+being able to reach any other client node connected to a (HOST) switch's
+downstream port.
+Only after the switch's ATU=E2=80=99s /AgeTime/ has expired (and the MAC a=
+ddress
+of the roaming client node been cleared in the ATU) the client node
+(that been moved/roamed) is able to establish connectivity with any
+other client node connected to a (HOST) switch's downstream port.
 
-It is my impression that a detailed configuration in the Device Tree is
-most useful when the driver that it configures is very generic, so
-different values are useful in practice.
+Whilst bridge fdb is learning on the switch's downstream ports and the
+WLan ports the switch's ATU is learning only on its downstream ports.
+That sort of constitutes a communication gap and leading to the
+aforementioned connectivity issue in the described roaming scenario.
 
-The mv88e6xxx driver is not generic in this sense: It already lists
-every single piece of supported hardware, often using completely
-different code for different chips - which is already not configurable
-in the Device Tree (and being able to wouldn't make much sense IMO).
+Should switchdev be expected to communicate (align) changes from the
+bridge fdb to the switch's ATU and thus prevent the aforementioned
+connectivity issue? Or else, how to remedy?
 
-Having the additional pieces of sane defaults in the driver that are
-introduced by the patches 1..3 of this series avoids mistakes in the DT
-configuration, for settings that never need to be modified for a given
-switch model supported by mv88e6xxx.
 
-Kind regards,
-Matthias
 
