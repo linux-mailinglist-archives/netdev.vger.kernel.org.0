@@ -2,356 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15BE81B002B
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 05:16:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D10EB1B0039
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 05:31:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726012AbgDTDQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 23:16:44 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:58824 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725988AbgDTDQo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 23:16:44 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03K3GWaa001695
-        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 20:16:43 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=+hoBqUow1hbeDvjUgBH0h5zqB8rcJHa+CRdrtFUn5YA=;
- b=CKLLTu6t/kyMntjZ4aO4kw92Tf/mfcXP3N4yUXtku/Wwv1b+MrlqcGsyNvMDj+kUmdip
- THsx4Hedh71EkZlx0Ra2PEnmjMrArzt9Qy9s/MDhgHaZRhNPjazfnPsGxckWaOaMtD+N
- 3IauDxM5sjbbm+wscA4Rpf2LAaqLw+T0c00= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 30ghpwaw03-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 20:16:43 -0700
-Received: from intmgw001.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Sun, 19 Apr 2020 20:16:41 -0700
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 53C9E62E4B8A; Sun, 19 Apr 2020 20:16:37 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Song Liu <songliubraving@fb.com>
-Smtp-Origin-Hostname: devbig006.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Song Liu <songliubraving@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v3 bpf-next] bpf: sharing bpf runtime stats with BPF_ENABLE_STATS
-Date:   Sun, 19 Apr 2020 20:16:34 -0700
-Message-ID: <20200420031634.1319102-1-songliubraving@fb.com>
-X-Mailer: git-send-email 2.24.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-19_06:2020-04-17,2020-04-19 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
- impostorscore=0 lowpriorityscore=0 spamscore=0 mlxlogscore=999
- suspectscore=8 adultscore=0 malwarescore=0 mlxscore=0 phishscore=0
- clxscore=1015 priorityscore=1501 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2004200029
-X-FB-Internal: deliver
+        id S1726151AbgDTDbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 23:31:31 -0400
+Received: from mga17.intel.com ([192.55.52.151]:35291 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725896AbgDTDba (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Apr 2020 23:31:30 -0400
+IronPort-SDR: I07uk5suiviV70XibrfyO0m9eSbfYjbBx7INzIyPLCKW/8XjM3/ssgL+xLNeSNOqDUkVTlH0IC
+ lifRZsFmy+Rw==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2020 20:31:30 -0700
+IronPort-SDR: edhuHMjqHP9ErywtRRWHrLaytJmqVEjKvc7uIf+5na+R+BKrRYIRKDtE2lsM3pbSBKyN7z6L8e
+ VL3qFI+42lnQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,405,1580803200"; 
+   d="scan'208";a="273046498"
+Received: from glass.png.intel.com ([172.30.181.92])
+  by orsmga002.jf.intel.com with ESMTP; 19 Apr 2020 20:31:24 -0700
+From:   Wong Vee Khee <vee.khee.wong@intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Wei Feng <weifeng.voon@intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>
+Subject: [PATCH net-next 1/1] net: stmmac: Add support for VLAN promiscuous mode
+Date:   Mon, 20 Apr 2020 11:33:59 +0800
+Message-Id: <20200420033359.11610-1-vee.khee.wong@intel.com>
+X-Mailer: git-send-email 2.17.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, sysctl kernel.bpf_stats_enabled controls BPF runtime stats.
-Typical userspace tools use kernel.bpf_stats_enabled as follows:
+From: "Chuah, Kim Tatt" <kim.tatt.chuah@intel.com>
 
-  1. Enable kernel.bpf_stats_enabled;
-  2. Check program run_time_ns;
-  3. Sleep for the monitoring period;
-  4. Check program run_time_ns again, calculate the difference;
-  5. Disable kernel.bpf_stats_enabled.
+For dwmac4, enable VLAN promiscuity when MAC controller is requested to
+enter promiscuous mode.
 
-The problem with this approach is that only one userspace tool can toggle
-this sysctl. If multiple tools toggle the sysctl at the same time, the
-measurement may be inaccurate.
-
-To fix this problem while keep backward compatibility, introduce a new
-bpf command BPF_ENABLE_STATS. On success, this command enables stats and
-returns a valid fd. BPF_ENABLE_STATS takes argument "type". Currently,
-only one type, BPF_STATS_RUNTIME_CNT, is supported. We can extend the
-command to support other types of stats in the future.
-
-With BPF_ENABLE_STATS, user space tool would have the following flow:
-
-  1. Get a fd with BPF_ENABLE_STATS, and make sure it is valid;
-  2. Check program run_time_ns;
-  3. Sleep for the monitoring period;
-  4. Check program run_time_ns again, calculate the difference;
-  5. Close the fd.
-
-Signed-off-by: Song Liu <songliubraving@fb.com>
-
+Signed-off-by: Chuah, Kim Tatt <kim.tatt.chuah@intel.com>
+Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+Signed-off-by: Tan, Tee Min <tee.min.tan@intel.com>
+Signed-off-by: Wong Vee Khee <vee.khee.wong@intel.com>
 ---
-Changes v2 =3D> v3:
-1. Rename the command to BPF_ENABLE_STATS, and make it extendible.
-2. fix commit log;
-3. remove unnecessary headers.
+ drivers/net/ethernet/stmicro/stmmac/common.h  |  1 +
+ drivers/net/ethernet/stmicro/stmmac/dwmac4.h  |  1 +
+ .../net/ethernet/stmicro/stmmac/dwmac4_core.c | 67 +++++++++++++++++++
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |  2 +-
+ 4 files changed, 70 insertions(+), 1 deletion(-)
 
-Changes RFC =3D> v2:
-1. Add a new bpf command instead of /dev/bpf_stats;
-2. Remove the jump_label patch, which is no longer needed;
-3. Add a static variable to save previous value of the sysctl.
----
- include/linux/bpf.h            |  1 +
- include/uapi/linux/bpf.h       | 17 ++++++++++--
- kernel/bpf/syscall.c           | 50 ++++++++++++++++++++++++++++++++++
- kernel/sysctl.c                | 36 +++++++++++++++++++++++-
- tools/include/uapi/linux/bpf.h | 17 ++++++++++--
- 5 files changed, 114 insertions(+), 7 deletions(-)
-
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index fd2b2322412d..415be9d71f42 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -987,6 +987,7 @@ _out:							\
-=20
- #ifdef CONFIG_BPF_SYSCALL
- DECLARE_PER_CPU(int, bpf_prog_active);
-+extern struct mutex bpf_stats_enabled_mutex;
-=20
- /*
-  * Block execution of BPF programs attached to instrumentation (perf,
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 2e29a671d67e..7ad3f0f4b461 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -113,6 +113,7 @@ enum bpf_cmd {
- 	BPF_MAP_DELETE_BATCH,
- 	BPF_LINK_CREATE,
- 	BPF_LINK_UPDATE,
-+	BPF_ENABLE_STATS,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
+index 6208a68a331d..127f75862962 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/common.h
++++ b/drivers/net/ethernet/stmicro/stmmac/common.h
+@@ -473,6 +473,7 @@ struct mac_device_info {
+ 	unsigned int xlgmac;
+ 	unsigned int num_vlan;
+ 	u32 vlan_filter[32];
++	unsigned int promisc;
  };
-=20
- enum bpf_map_type {
-@@ -379,6 +380,12 @@ enum {
-  */
- #define BPF_F_QUERY_EFFECTIVE	(1U << 0)
-=20
-+/* type for BPF_ENABLE_STATS */
-+enum {
-+	/* enabled run_time_ns and run_cnt */
-+	BPF_STATS_RUNTIME_CNT =3D 0,
-+};
+ 
+ struct stmmac_rx_routing {
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
+index 28cac28253b8..61f3249bd724 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
+@@ -90,6 +90,7 @@
+ #define GMAC_VLAN_CSVL			BIT(19)
+ #define GMAC_VLAN_VLC			GENMASK(17, 16)
+ #define GMAC_VLAN_VLC_SHIFT		16
++#define GMAC_VLAN_VLHT			GENMASK(15, 0)
+ 
+ /* MAC VLAN Tag */
+ #define GMAC_VLAN_TAG_VID		GENMASK(15, 0)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
+index 39692d15d80c..ecd834e0e121 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
+@@ -450,6 +450,12 @@ static int dwmac4_add_hw_vlan_rx_fltr(struct net_device *dev,
+ 	if (vid > 4095)
+ 		return -EINVAL;
+ 
++	if (hw->promisc) {
++		netdev_err(dev,
++			   "Adding VLAN in promisc mode not supported\n");
++		return -EPERM;
++	}
 +
- enum bpf_stack_build_id_status {
- 	/* user space need an empty entry to identify end of a trace */
- 	BPF_STACK_BUILD_ID_EMPTY =3D 0,
-@@ -589,6 +596,10 @@ union bpf_attr {
- 		__u32		old_prog_fd;
- 	} link_update;
-=20
-+	struct { /* struct used by BPF_ENABLE_STATS command */
-+		__u32		type;
-+	} enable_stats;
+ 	/* Single Rx VLAN Filter */
+ 	if (hw->num_vlan == 1) {
+ 		/* For single VLAN filter, VID 0 means VLAN promiscuous */
+@@ -499,6 +505,12 @@ static int dwmac4_del_hw_vlan_rx_fltr(struct net_device *dev,
+ {
+ 	int i, ret = 0;
+ 
++	if (hw->promisc) {
++		netdev_err(dev,
++			   "Deleting VLAN in promisc mode not supported\n");
++		return -EPERM;
++	}
 +
- } __attribute__((aligned(8)));
-=20
- /* The description below is an attempt at providing documentation to eBP=
-F
-@@ -971,14 +982,14 @@ union bpf_attr {
-  *
-  * 			int ret;
-  * 			struct bpf_tunnel_key key =3D {};
-- * 		=09
-+ *
-  * 			ret =3D bpf_skb_get_tunnel_key(skb, &key, sizeof(key), 0);
-  * 			if (ret < 0)
-  * 				return TC_ACT_SHOT;	// drop packet
-- * 		=09
-+ *
-  * 			if (key.remote_ipv4 !=3D 0x0a000001)
-  * 				return TC_ACT_SHOT;	// drop packet
-- * 		=09
-+ *
-  * 			return TC_ACT_OK;		// accept packet
-  *
-  * 		This interface can also be used with all encapsulation devices
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index d85f37239540..766778368c5f 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -3656,6 +3656,53 @@ static int link_update(union bpf_attr *attr)
+ 	/* Single Rx VLAN Filter */
+ 	if (hw->num_vlan == 1) {
+ 		if ((hw->vlan_filter[0] & GMAC_VLAN_TAG_VID) == vid) {
+@@ -523,9 +535,45 @@ static int dwmac4_del_hw_vlan_rx_fltr(struct net_device *dev,
  	return ret;
  }
-=20
-+DEFINE_MUTEX(bpf_stats_enabled_mutex);
-+
-+static int bpf_stats_release(struct inode *inode, struct file *file)
+ 
++static void dwmac4_vlan_promisc_enable(struct net_device *dev,
++				       struct mac_device_info *hw)
 +{
-+	mutex_lock(&bpf_stats_enabled_mutex);
-+	static_key_slow_dec(&bpf_stats_enabled_key.key);
-+	mutex_unlock(&bpf_stats_enabled_mutex);
-+	return 0;
-+}
++	void __iomem *ioaddr = hw->pcsr;
++	u32 value;
++	u32 hash;
++	u32 val;
++	int i;
 +
-+static const struct file_operations bpf_stats_fops =3D {
-+	.release =3D bpf_stats_release,
-+};
-+
-+static int bpf_enable_runtime_stats(void)
-+{
-+	int fd;
-+
-+	if (!capable(CAP_SYS_ADMIN))
-+		return -EPERM;
-+
-+	mutex_lock(&bpf_stats_enabled_mutex);
-+	/* Set a very high limit to avoid overflow */
-+	if (static_key_count(&bpf_stats_enabled_key.key) > INT_MAX / 2) {
-+		mutex_unlock(&bpf_stats_enabled_mutex);
-+		return -EBUSY;
++	/* Single Rx VLAN Filter */
++	if (hw->num_vlan == 1) {
++		dwmac4_write_single_vlan(dev, 0);
++		return;
 +	}
 +
-+	fd =3D anon_inode_getfd("bpf-stats", &bpf_stats_fops, NULL, 0);
-+	if (fd >=3D 0)
-+		static_key_slow_inc(&bpf_stats_enabled_key.key);
-+
-+	mutex_unlock(&bpf_stats_enabled_mutex);
-+	return fd;
-+}
-+
-+static int bpf_enable_stats(union bpf_attr *attr)
-+{
-+	switch (attr->enable_stats.type) {
-+	case BPF_STATS_RUNTIME_CNT:
-+		return bpf_enable_runtime_stats();
-+	default:
-+		break;
++	/* Extended Rx VLAN Filter Enable */
++	for (i = 0; i < hw->num_vlan; i++) {
++		if (hw->vlan_filter[i] & GMAC_VLAN_TAG_DATA_VEN) {
++			val = hw->vlan_filter[i] & ~GMAC_VLAN_TAG_DATA_VEN;
++			dwmac4_write_vlan_filter(dev, hw, i, val);
++		}
 +	}
-+	return -EINVAL;
++
++	hash = readl(ioaddr + GMAC_VLAN_HASH_TABLE);
++	if (hash & GMAC_VLAN_VLHT) {
++		value = readl(ioaddr + GMAC_VLAN_TAG);
++		if (value & GMAC_VLAN_VTHM) {
++			value &= ~GMAC_VLAN_VTHM;
++			writel(value, ioaddr + GMAC_VLAN_TAG);
++		}
++	}
 +}
 +
- SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned =
-int, size)
+ static void dwmac4_restore_hw_vlan_rx_fltr(struct net_device *dev,
+ 					   struct mac_device_info *hw)
  {
- 	union bpf_attr attr;
-@@ -3773,6 +3820,9 @@ SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __use=
-r *, uattr, unsigned int, siz
- 	case BPF_LINK_UPDATE:
- 		err =3D link_update(&attr);
- 		break;
-+	case BPF_ENABLE_STATS:
-+		err =3D bpf_enable_stats(&attr);
-+		break;
- 	default:
- 		err =3D -EINVAL;
- 		break;
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 8a176d8727a3..2d72f4ad3063 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -304,6 +304,40 @@ static int min_extfrag_threshold;
- static int max_extfrag_threshold =3D 1000;
- #endif
-=20
-+#ifdef CONFIG_BPF_SYSCALL
-+static int bpf_stats_handler(struct ctl_table *table, int write,
-+			     void __user *buffer, size_t *lenp,
-+			     loff_t *ppos)
-+{
-+	struct static_key *key =3D (struct static_key *)table->data;
-+	static int saved_val;
-+	int val, ret;
-+	struct ctl_table tmp =3D {
-+		.data   =3D &val,
-+		.maxlen =3D sizeof(val),
-+		.mode   =3D table->mode,
-+		.extra1 =3D SYSCTL_ZERO,
-+		.extra2 =3D SYSCTL_ONE,
-+	};
++	void __iomem *ioaddr = hw->pcsr;
++	u32 value;
++	u32 hash;
+ 	u32 val;
+ 	int i;
+ 
+@@ -542,6 +590,13 @@ static void dwmac4_restore_hw_vlan_rx_fltr(struct net_device *dev,
+ 			dwmac4_write_vlan_filter(dev, hw, i, val);
+ 		}
+ 	}
 +
-+	if (write && !capable(CAP_SYS_ADMIN))
-+		return -EPERM;
-+
-+	mutex_lock(&bpf_stats_enabled_mutex);
-+	val =3D saved_val;
-+	ret =3D proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
-+	if (write && !ret && val !=3D saved_val) {
-+		if (val)
-+			static_key_slow_inc(key);
-+		else
-+			static_key_slow_dec(key);
-+		saved_val =3D val;
++	hash = readl(ioaddr + GMAC_VLAN_HASH_TABLE);
++	if (hash & GMAC_VLAN_VLHT) {
++		value = readl(ioaddr + GMAC_VLAN_TAG);
++		value |= GMAC_VLAN_VTHM;
++		writel(value, ioaddr + GMAC_VLAN_TAG);
 +	}
-+	mutex_unlock(&bpf_stats_enabled_mutex);
-+	return ret;
-+}
-+#endif
+ }
+ 
+ static void dwmac4_set_filter(struct mac_device_info *hw,
+@@ -624,6 +679,18 @@ static void dwmac4_set_filter(struct mac_device_info *hw,
+ 		value |= GMAC_PACKET_FILTER_VTFE;
+ 
+ 	writel(value, ioaddr + GMAC_PACKET_FILTER);
 +
- static struct ctl_table kern_table[] =3D {
- 	{
- 		.procname	=3D "sched_child_runs_first",
-@@ -1244,7 +1278,7 @@ static struct ctl_table kern_table[] =3D {
- 		.data		=3D &bpf_stats_enabled_key.key,
- 		.maxlen		=3D sizeof(bpf_stats_enabled_key),
- 		.mode		=3D 0644,
--		.proc_handler	=3D proc_do_static_key,
-+		.proc_handler	=3D bpf_stats_handler,
- 	},
++	if (dev->flags & IFF_PROMISC) {
++		if (!hw->promisc) {
++			hw->promisc = 1;
++			dwmac4_vlan_promisc_enable(dev, hw);
++		}
++	} else {
++		if (hw->promisc) {
++			hw->promisc = 0;
++			dwmac4_restore_hw_vlan_rx_fltr(dev, hw);
++		}
++	}
+ }
+ 
+ static void dwmac4_flow_ctrl(struct mac_device_info *hw, unsigned int duplex,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index e6898fd5223f..80250c7be783 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -4877,7 +4877,6 @@ int stmmac_dvr_probe(struct device *device,
+ 		}
+ 	}
+ 
+-	ndev->features |= ndev->hw_features | NETIF_F_HIGHDMA;
+ 	ndev->watchdog_timeo = msecs_to_jiffies(watchdog);
+ #ifdef STMMAC_VLAN_TAG_USED
+ 	/* Both mac100 and gmac support receive VLAN tag detection */
+@@ -4892,6 +4891,7 @@ int stmmac_dvr_probe(struct device *device,
+ 			ndev->features |= NETIF_F_HW_VLAN_STAG_TX;
+ 	}
  #endif
- #if defined(CONFIG_TREE_RCU)
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bp=
-f.h
-index 2e29a671d67e..7ad3f0f4b461 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -113,6 +113,7 @@ enum bpf_cmd {
- 	BPF_MAP_DELETE_BATCH,
- 	BPF_LINK_CREATE,
- 	BPF_LINK_UPDATE,
-+	BPF_ENABLE_STATS,
- };
-=20
- enum bpf_map_type {
-@@ -379,6 +380,12 @@ enum {
-  */
- #define BPF_F_QUERY_EFFECTIVE	(1U << 0)
-=20
-+/* type for BPF_ENABLE_STATS */
-+enum {
-+	/* enabled run_time_ns and run_cnt */
-+	BPF_STATS_RUNTIME_CNT =3D 0,
-+};
-+
- enum bpf_stack_build_id_status {
- 	/* user space need an empty entry to identify end of a trace */
- 	BPF_STACK_BUILD_ID_EMPTY =3D 0,
-@@ -589,6 +596,10 @@ union bpf_attr {
- 		__u32		old_prog_fd;
- 	} link_update;
-=20
-+	struct { /* struct used by BPF_ENABLE_STATS command */
-+		__u32		type;
-+	} enable_stats;
-+
- } __attribute__((aligned(8)));
-=20
- /* The description below is an attempt at providing documentation to eBP=
-F
-@@ -971,14 +982,14 @@ union bpf_attr {
-  *
-  * 			int ret;
-  * 			struct bpf_tunnel_key key =3D {};
-- * 		=09
-+ *
-  * 			ret =3D bpf_skb_get_tunnel_key(skb, &key, sizeof(key), 0);
-  * 			if (ret < 0)
-  * 				return TC_ACT_SHOT;	// drop packet
-- * 		=09
-+ *
-  * 			if (key.remote_ipv4 !=3D 0x0a000001)
-  * 				return TC_ACT_SHOT;	// drop packet
-- * 		=09
-+ *
-  * 			return TC_ACT_OK;		// accept packet
-  *
-  * 		This interface can also be used with all encapsulation devices
---=20
-2.24.1
++	ndev->features |= ndev->hw_features | NETIF_F_HIGHDMA;
+ 	priv->msg_enable = netif_msg_init(debug, default_msg_level);
+ 
+ 	/* Initialize RSS */
+-- 
+2.17.0
 
