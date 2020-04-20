@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE07C1B18B3
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 23:44:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2935D1B18B8
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 23:45:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726294AbgDTVnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 17:43:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33756 "EHLO
+        id S1726457AbgDTVpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 17:45:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728091AbgDTVnp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 17:43:45 -0400
-Received: from mail-ua1-x942.google.com (mail-ua1-x942.google.com [IPv6:2607:f8b0:4864:20::942])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8549CC061A0C
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 14:43:45 -0700 (PDT)
-Received: by mail-ua1-x942.google.com with SMTP id n26so2574160uap.11
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 14:43:45 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726017AbgDTVpF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 17:45:05 -0400
+Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F6BC061A0C
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 14:45:05 -0700 (PDT)
+Received: by mail-vs1-xe43.google.com with SMTP id g184so7145580vsc.0
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 14:45:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=g6mslA+ZAlFPPiF3/X0cAe5Oou9a45SAhWdz0xEMkbQ=;
-        b=rUKo50ePOvmWy4AD5K1fItw/ZVHR+koWpT9awCFpRrT41GHTWG2Lb4yn8OgaVgZJQw
-         E810No7MGcQ1oeuOYonKQlqUs89htMXjGmoVlNX/ijdM53KIzFx9CqNLHIVDJpBqAKOo
-         NaU4XhFPh+0gK3W/6/sU9fvL8Jtgrg5wGn3QdR5n7V5MzQy+z21r18UCZUe2DED5Q2oC
-         HSOu3YwWazMHZRbL6R4NypVR9lR8luSVJC/Jv4dE58t4b79R5nd1HsHcApCqsMwH9F/8
-         svz5ypiyHM/971KPEuefGZjd1KnoQXAqWlk6A1kbQOHxPer1EqG5kPpWbQMry8p8v1t5
-         YVTg==
+        bh=WJvtHUsmM2XGggvrbH5EnGO2H1pl2qAHhvmlK+GkpEk=;
+        b=mhrchzWJ7WgZfkpo5wATbkNPOgglFWt6gWhkX3hFRoIbYAiQ97NZZWHpmJbKLU3CK6
+         sAHxckqysT2k1NplhRu7Pd92usV9XQ5PmnZI0LwR6CRtAqf87eNkI+gWdMb9kWFh+Ywi
+         S6qQs6a3+czJHwBJg6W7bUpwAf+X3TOmxgqWWi+hQpKxOGTmK6HYs3Gs0Aj1VIrB88Hr
+         geLbwKbdtlOT7rJU0/ItiQ1zJUxaNgTszeQL4nRgdmQ7iY3fKPVTHRg5Ijq5G8zeFlK9
+         EBAVrL0vNaz9Jm78imIo5ZhbVt14HQxBwS9zcTfIWzStK1yQIqRtcGM8UY/o6quIlUPt
+         avfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=g6mslA+ZAlFPPiF3/X0cAe5Oou9a45SAhWdz0xEMkbQ=;
-        b=cTmQZ9lBJPs1lX6UpMdUb29UmGwOazmXFRAWZU43SIm/nrxLgomukkON3jhtO2AhJv
-         rUsWg6YJN1LWguhaV/FlE0RdfVluY0y/t4IAZNHA29l/W8ZFzJuljlosQ4dAwzXwGEPM
-         qlI+b8zgcm1gxKuT3F3VHA8t+t3VIBhPelP2+pFy4xgEI+CRKY+cWw3m51wDFGhlrF8w
-         zpH20pz2Bx9cpeiVNACIctFfv1ejyXJRoCxYvQ60jeiqDfdSA0U4SachxIw0k8XkYbee
-         OKxnCMyuwKZJXBOPBaNZ7Xg81o3V1df5ejxzmPMd65B0c9grDMeB75tz8pGfPEMfmwof
-         D84Q==
-X-Gm-Message-State: AGi0PuZYIODm6oyEaNNCiHS3oen0zBlNyxkr6nqEdbh0+W3oYVqFqOer
-        GphZxEBOhTSbHjDE9g7q22yY+FzrHk2WkwTrQhM=
-X-Google-Smtp-Source: APiQypI1QWqpJqkJztVS9aLMHCJiugHFKAEMYltBq+KtHGjyP858BuZLEhYfGL6bpcZ7D71HCp6lysSjrf8AC3ysg1U=
-X-Received: by 2002:ab0:74cf:: with SMTP id f15mr8010124uaq.118.1587419024571;
- Mon, 20 Apr 2020 14:43:44 -0700 (PDT)
+        bh=WJvtHUsmM2XGggvrbH5EnGO2H1pl2qAHhvmlK+GkpEk=;
+        b=AVQXaqQ94K99i8hMnGKabKPpUNe9VtEnWXIdCwIojajzmpCq9UVZhAa8raHSZYaYmp
+         7o9LX0eJLutu+zWEmz8pGPaJqAf+XqkVNjdt6ZO+RHLIZ+tyxt6vVTsNzH/ujPcotLpu
+         GAUZeEB6rKm0F0Wx0IkzVNPXfKF9CbwrdhX/Seih3ohxh5j/44WtTfGoldiqD79iW8Z2
+         Se3SckD3+v8DYPM7ZRSOOx3LIBBpysjdNJ6jUG5DqB17ylgGnhaB4BWyPSfmm8OkE72O
+         PbbMutNR1YhcGf9C5UF3pEvYW4Oc6SiWz72Z0MFm5nh+asXjyd7ABoSEPL/pfMbKP88/
+         OotQ==
+X-Gm-Message-State: AGi0PuZJtnKFjKhCzDBL/ajkA5MURHjeu6WzVndM/vj3flCGfggXO4Jr
+        DaIIwXwMUzTGeVOgU3SdeboQpPKEM1zVggB9B4TIAA==
+X-Google-Smtp-Source: APiQypIj4LxqENy060CztLRyF25agmMlsmX9zJRHd2WkTdwA3AkRY4T+FK/3vpSFj4mheEXVfy3A1E9nPPmdIYkqT+o=
+X-Received: by 2002:a05:6102:2d3:: with SMTP id h19mr10811378vsh.58.1587419104551;
+ Mon, 20 Apr 2020 14:45:04 -0700 (PDT)
 MIME-Version: 1.0
 References: <1584969039-74113-1-git-send-email-xiangxia.m.yue@gmail.com>
  <1587032223-49460-1-git-send-email-xiangxia.m.yue@gmail.com>
- <1587032223-49460-2-git-send-email-xiangxia.m.yue@gmail.com>
- <CAOrHB_Ape956tPpdMaRv-J2CdaWxkLf5ph57wxSL-6E7pUQ6vg@mail.gmail.com> <CAMDZJNXh_1BFRnypUNLgmF5E4s-qN1cg=0Jqr5RoR5bSNgV-FQ@mail.gmail.com>
-In-Reply-To: <CAMDZJNXh_1BFRnypUNLgmF5E4s-qN1cg=0Jqr5RoR5bSNgV-FQ@mail.gmail.com>
+ <1587032223-49460-3-git-send-email-xiangxia.m.yue@gmail.com>
+ <CAOrHB_D1OQujNyw9StmHRknDQZywHB02z8berxm+aPUNgQhYnA@mail.gmail.com> <CAMDZJNUFHi1Gfw0rZ1hK3s0Ux29E3QxQe7M0=-BdWCW30O10Sg@mail.gmail.com>
+In-Reply-To: <CAMDZJNUFHi1Gfw0rZ1hK3s0Ux29E3QxQe7M0=-BdWCW30O10Sg@mail.gmail.com>
 From:   Pravin Shelar <pravin.ovn@gmail.com>
-Date:   Mon, 20 Apr 2020 14:43:33 -0700
-Message-ID: <CAOrHB_BXnoBsNiExF4NsDvXaLO5RAqZ7e8keLVR1Vd2z7y_sOQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/5] net: openvswitch: expand the meters
- supported number
+Date:   Mon, 20 Apr 2020 14:44:53 -0700
+Message-ID: <CAOrHB_DAhbh3BROCgzAkCuMYE-f2gNEWfWGR5mfpRZWJDa8QHg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 2/5] net: openvswitch: set max limitation to meters
 To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
 Cc:     Andy Zhou <azhou@ovn.org>, Ben Pfaff <blp@ovn.org>,
         William Tu <u9012063@gmail.com>,
@@ -65,136 +64,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 19, 2020 at 5:23 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+On Sun, Apr 19, 2020 at 5:28 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
 >
-> On Mon, Apr 20, 2020 at 1:29 AM Pravin Shelar <pravin.ovn@gmail.com> wrote:
+> On Mon, Apr 20, 2020 at 1:31 AM Pravin Shelar <pravin.ovn@gmail.com> wrote:
 > >
 > > On Sat, Apr 18, 2020 at 10:25 AM <xiangxia.m.yue@gmail.com> wrote:
 > > >
 > > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 > > >
-> > > In kernel datapath of Open vSwitch, there are only 1024
-> > > buckets of meter in one dp. If installing more than 1024
-> > > (e.g. 8192) meters, it may lead to the performance drop.
-> > > But in some case, for example, Open vSwitch used as edge
-> > > gateway, there should be 200,000+ at least, meters used for
-> > > IP address bandwidth limitation.
-> > >
-> > > [Open vSwitch userspace datapath has this issue too.]
-> > >
-> > > For more scalable meter, this patch expands the buckets
-> > > when necessary, so we can install more meters in the datapath.
-> > > Introducing the struct *dp_meter_instance*, it's easy to
-> > > expand meter though changing the *ti* point in the struct
-> > > *dp_meter_table*.
+> > > Don't allow user to create meter unlimitedly,
+> > > which may cause to consume a large amount of kernel memory.
+> > > The 200,000 meters may be fine in general case.
 > > >
 > > > Cc: Pravin B Shelar <pshelar@ovn.org>
 > > > Cc: Andy Zhou <azhou@ovn.org>
 > > > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 > > > ---
-> > >  net/openvswitch/datapath.h |   2 +-
-> > >  net/openvswitch/meter.c    | 200 +++++++++++++++++++++++++++++--------
-> > >  net/openvswitch/meter.h    |  15 ++-
-> > >  3 files changed, 169 insertions(+), 48 deletions(-)
+> > >  net/openvswitch/meter.c | 21 +++++++++++++++------
+> > >  net/openvswitch/meter.h |  1 +
+> > >  2 files changed, 16 insertions(+), 6 deletions(-)
 > > >
-> > > diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
-> > > index e239a46c2f94..785105578448 100644
-> > > --- a/net/openvswitch/datapath.h
-> > > +++ b/net/openvswitch/datapath.h
-> > > @@ -82,7 +82,7 @@ struct datapath {
-> > >         u32 max_headroom;
-> > >
-> > >         /* Switch meters. */
-> > > -       struct hlist_head *meters;
-> > > +       struct dp_meter_table *meters;
-> > lets define it as part of this struct to avoid indirection.
-> >
-> > >  };
-> > >
-> > >  /**
 > > > diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
-> > > index 5010d1ddd4bd..494a0014ecd8 100644
+> > > index 494a0014ecd8..1b6776f9c109 100644
 > > > --- a/net/openvswitch/meter.c
 > > > +++ b/net/openvswitch/meter.c
-> > > @@ -19,8 +19,6 @@
-> > >  #include "datapath.h"
-> > >  #include "meter.h"
-> > >
-> > > -#define METER_HASH_BUCKETS 1024
-> > > -
-> > >  static const struct nla_policy meter_policy[OVS_METER_ATTR_MAX + 1] = {
-> > >         [OVS_METER_ATTR_ID] = { .type = NLA_U32, },
-> > >         [OVS_METER_ATTR_KBPS] = { .type = NLA_FLAG },
-> > > @@ -39,6 +37,11 @@ static const struct nla_policy band_policy[OVS_BAND_ATTR_MAX + 1] = {
-> > >         [OVS_BAND_ATTR_STATS] = { .len = sizeof(struct ovs_flow_stats) },
-> > >  };
-> > >
-> > > +static u32 meter_hash(struct dp_meter_instance *ti, u32 id)
-> > > +{
-> > > +       return id % ti->n_meters;
-> > > +}
-> > > +
-> > >  static void ovs_meter_free(struct dp_meter *meter)
+> > > @@ -137,6 +137,7 @@ static int attach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
 > > >  {
-> > >         if (!meter)
-> > > @@ -47,40 +50,141 @@ static void ovs_meter_free(struct dp_meter *meter)
-> > >         kfree_rcu(meter, rcu);
+> > >         struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
+> > >         u32 hash = meter_hash(ti, meter->id);
+> > > +       int err;
+> > >
+> > >         /*
+> > >          * In generally, slot selected should be empty, because
+> > > @@ -148,16 +149,24 @@ static int attach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
+> > >         dp_meter_instance_insert(ti, meter);
+> > >
+> > >         /* That function is thread-safe. */
+> > > -       if (++tbl->count >= ti->n_meters)
+> > > -               if (dp_meter_instance_realloc(tbl, ti->n_meters * 2))
+> > > -                       goto expand_err;
+> > > +       tbl->count++;
+> > > +       if (tbl->count > DP_METER_NUM_MAX) {
+> > > +               err = -EFBIG;
+> > > +               goto attach_err;
+> > > +       }
+> > > +
+> > > +       if (tbl->count >= ti->n_meters &&
+> > > +           dp_meter_instance_realloc(tbl, ti->n_meters * 2)) {
+> > > +               err = -ENOMEM;
+> > > +               goto attach_err;
+> > > +       }
+> > >
+> > >         return 0;
+> > >
+> > > -expand_err:
+> > > +attach_err:
+> > >         dp_meter_instance_remove(ti, meter);
+> > >         tbl->count--;
+> > > -       return -ENOMEM;
+> > > +       return err;
 > > >  }
 > > >
-> > > -static struct hlist_head *meter_hash_bucket(const struct datapath *dp,
-> > > -                                           u32 meter_id)
-> > > -{
-> > > -       return &dp->meters[meter_id & (METER_HASH_BUCKETS - 1)];
-> > > -}
-> > > -
-> > >  /* Call with ovs_mutex or RCU read lock. */
-> > > -static struct dp_meter *lookup_meter(const struct datapath *dp,
-> > > +static struct dp_meter *lookup_meter(const struct dp_meter_table *tbl,
-> > >                                      u32 meter_id)
-> > >  {
-> > > +       struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
-> > > +       u32 hash = meter_hash(ti, meter_id);
-> > >         struct dp_meter *meter;
-> > > -       struct hlist_head *head;
+> > >  static void detach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
+> > > @@ -264,7 +273,7 @@ static int ovs_meter_cmd_features(struct sk_buff *skb, struct genl_info *info)
+> > >         if (IS_ERR(reply))
+> > >                 return PTR_ERR(reply);
 > > >
-> > > -       head = meter_hash_bucket(dp, meter_id);
-> > > -       hlist_for_each_entry_rcu(meter, head, dp_hash_node,
-> > > -                               lockdep_ovsl_is_held()) {
-> > > -               if (meter->id == meter_id)
-> > > -                       return meter;
-> > > -       }
-> > > +       meter = rcu_dereference_ovsl(ti->dp_meters[hash]);
-> > > +       if (meter && likely(meter->id == meter_id))
-> > > +               return meter;
-> > > +
-> > >         return NULL;
-> > >  }
+> > > -       if (nla_put_u32(reply, OVS_METER_ATTR_MAX_METERS, U32_MAX) ||
+> > > +       if (nla_put_u32(reply, OVS_METER_ATTR_MAX_METERS, DP_METER_NUM_MAX) ||
+> > >             nla_put_u32(reply, OVS_METER_ATTR_MAX_BANDS, DP_MAX_BANDS))
+> > >                 goto nla_put_failure;
 > > >
-> > > -static void attach_meter(struct datapath *dp, struct dp_meter *meter)
-> > > +static struct dp_meter_instance *dp_meter_instance_alloc(const u32 size)
-> > > +{
-> > > +       struct dp_meter_instance *ti;
-> > > +
-> > > +       ti = kvzalloc(sizeof(*ti) +
-> > > +                     sizeof(struct dp_meter *) * size,
-> > > +                     GFP_KERNEL);
-> > > +       if (!ti)
-> > > +               return NULL;
-> > Given this is a kernel space array we need to have hard limit inplace.
-> In patch 2, I limited the meter number, should we add hard limit here ?
-I guess its not needed here.
-...
+> > > diff --git a/net/openvswitch/meter.h b/net/openvswitch/meter.h
+> > > index d91940383bbe..cdfc6b9dbd42 100644
+> > > --- a/net/openvswitch/meter.h
+> > > +++ b/net/openvswitch/meter.h
+> > > @@ -19,6 +19,7 @@ struct datapath;
+> > >
+> > >  #define DP_MAX_BANDS           1
+> > >  #define DP_METER_ARRAY_SIZE_MIN        (1ULL << 10)
+> > > +#define DP_METER_NUM_MAX       (200000ULL)
+> > >
+> > Lets make it configurable and default could 200k to allow
+> > customization on different memory configurations.
+> Great, set different limit depend on current system memory size like tcp ?
 
-> > >  static struct sk_buff *
-> > > @@ -303,9 +407,13 @@ static int ovs_meter_cmd_set(struct sk_buff *skb, struct genl_info *info)
-> > >         meter_id = nla_get_u32(a[OVS_METER_ATTR_ID]);
-> > >
-> > >         /* Cannot fail after this. */
-> > > -       old_meter = lookup_meter(dp, meter_id);
-> > > -       detach_meter(old_meter);
-> > > -       attach_meter(dp, meter);
-> > > +       old_meter = lookup_meter(dp->meters, meter_id);
-> > in new scheme this can fail due to hash collision, lets check for NULL.
-> If old_meter is NULL, detach_meter will do nothing.
-
-Lets return error.
+Yes. that could be useful.
