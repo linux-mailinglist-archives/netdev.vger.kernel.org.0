@@ -2,87 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5A3E1B1449
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 20:19:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD2161B145C
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 20:22:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727931AbgDTST4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 14:19:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57434 "EHLO
+        id S1727805AbgDTSVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 14:21:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726392AbgDTSTz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 14:19:55 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1CCC061A0C
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 11:19:54 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id a23so4258309plm.1
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 11:19:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=+7Q/wlivJUTL5EHEkQxh6IjKR1UaRZCz+crv7wjFOzE=;
-        b=hk7lAfIR+mda0y8MViOMJUEoZRbYEEO1qgpYHlDyNH+A+lP3T840CQCM70PgVhrxTI
-         bQ7MZ3GBi9B53VWXFj46meTqgjSYbkqMRmQlGLPtdVGcK0bdR1gDxqPb6Cp4hGKmap7C
-         ABM1NAACvpXwy+kK/cVLhoZB7lFbK9/lgQdWuAfGg12dVlcJy8tdJefbRRHhr6zVjJJ+
-         yK5HQjoKQAcSDrgftVFlV/c7iACANlAPF6l8SsINyRVChP0tg2ryEse0mUcQ95djzGMz
-         RyD73Oebl7jVs5HftXtqlCyMViODmwZlX7fELOJYO+c5s88bHfuKYt7TLhGpdIQNCUBk
-         llXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+7Q/wlivJUTL5EHEkQxh6IjKR1UaRZCz+crv7wjFOzE=;
-        b=rgnd7I4Lb7rmFRDT9+OPKT7eHUOzdQq7Qye25/hp6h6mDcTHH0TOSMqrLULd1siEpl
-         pSu/6km/2ozm+Jz8m8nRknwz+imEVWdlvr3Lex6YCCnNQPEdn5HBDt/Mo+eQCKTgKLa7
-         p/8quT++BQW7gI+YoQyqpElh539CdW9etVS1kRlB/EW9QDYJyR/dc0mzV+jutHTyiG8F
-         kvWMqaD34w0ua0aTx17itDq10631Noapi5HVcHcz83y2er86BBLRrD1sUpv+9rDT3cU0
-         SD9z1nhfwGWs4aACejwniS91b9e39OEgHmy0kS1KpvPUG2A7Z+Fdzwyz0hZI2EAnPMfR
-         AmjQ==
-X-Gm-Message-State: AGi0Pubp96Yy0V8h6bPwSYr/QxwkjFhrqh5I1fkCEoPmdyIj2+wF4RGk
-        OSmNFh/gsOLYb48wH1QhQihC+94u
-X-Google-Smtp-Source: APiQypKkMjtEX31tMkRRYC3IbeodoaGXmDcs1J0m/609KBUXZ00sp4fKJBIYeqbOxP8dt4hAPY1P3A==
-X-Received: by 2002:a17:902:6949:: with SMTP id k9mr5477720plt.211.1587406793699;
-        Mon, 20 Apr 2020 11:19:53 -0700 (PDT)
-Received: from [10.230.188.26] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 128sm139953pfx.187.2020.04.20.11.19.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Apr 2020 11:19:53 -0700 (PDT)
-Subject: Re: [PATCH v1 2/2] net: bcmgenet: Drop useless OF code
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Doug Berger <opendmb@gmail.com>,
+        with ESMTP id S1726534AbgDTSVb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 14:21:31 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8466CC061A0C;
+        Mon, 20 Apr 2020 11:21:28 -0700 (PDT)
+Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 6856423EE1;
+        Mon, 20 Apr 2020 20:21:23 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1587406885;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Ksawt5Xe7oAzLSynplACqdx1saqa6POHLRoqhe8eZbk=;
+        b=qHmMzco9TGQg57uDMpKi2hf+qMVnLlhA73UTBl/uzDTR+fQ+/jwrYga036Vs56HGkCRVwM
+        tEugWZPoSi8u5TzCYa37NsWsMgrwNVkqHhNB0ktQqtcKeJEhGfbtDjbR6Yh79QMm24kqsF
+        rbrWSb3A+CBMdC9S4TatO8IWGl4SXZE=
+From:   Michael Walle <michael@walle.cc>
+To:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20200420181652.34620-1-andriy.shevchenko@linux.intel.com>
- <20200420181652.34620-2-andriy.shevchenko@linux.intel.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <452b0089-1f01-2100-3ef4-44998a1559fe@gmail.com>
-Date:   Mon, 20 Apr 2020 11:19:51 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.7.0
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next v3 1/3] net: phy: broadcom: add helper to write/read RDB registers
+Date:   Mon, 20 Apr 2020 20:21:11 +0200
+Message-Id: <20200420182113.22577-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20200420181652.34620-2-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Spamd-Bar: ++++++
+X-Spam-Level: ******
+X-Rspamd-Server: web
+X-Spam-Status: Yes, score=6.40
+X-Spam-Score: 6.40
+X-Rspamd-Queue-Id: 6856423EE1
+X-Spamd-Result: default: False [6.40 / 15.00];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         R_MISSING_CHARSET(2.50)[];
+         FREEMAIL_ENVRCPT(0.00)[gmail.com];
+         TAGGED_RCPT(0.00)[];
+         MIME_GOOD(-0.10)[text/plain];
+         BROKEN_CONTENT_TYPE(1.50)[];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         NEURAL_SPAM(0.00)[0.841];
+         DKIM_SIGNED(0.00)[];
+         RCPT_COUNT_SEVEN(0.00)[11];
+         MID_CONTAINS_FROM(1.00)[];
+         RCVD_COUNT_ZERO(0.00)[0];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         ASN(0.00)[asn:31334, ipnet:2a02:810c:8000::/33, country:DE];
+         FREEMAIL_CC(0.00)[suse.com,roeck-us.net,lunn.ch,gmail.com,armlinux.org.uk,davemloft.net,walle.cc];
+         SUSPICIOUS_RECIPS(1.50)[]
+X-Spam: Yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+RDB (Register Data Base) registers are used on newer Broadcom PHYs. Add
+helper to read, write and modify these registers.
 
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+changes since v2:
+ none
 
-On 4/20/2020 11:16 AM, Andy Shevchenko wrote:
-> There is nothing which needs a set of OF headers, followed by redundant
-> OF node ID check. Drop them for good.
+changes since v1:
+ - corrected typo
+ - added Reviewed-by
 
-After commit 99c6b06a37d4cab118c45448fef9d28df62d35d8 ("net: bcmgenet: 
-Initial bcmgenet ACPI support") yes, this is true.
+ drivers/net/phy/bcm-phy-lib.c | 80 +++++++++++++++++++++++++++++++++++
+ drivers/net/phy/bcm-phy-lib.h |  9 ++++
+ include/linux/brcmphy.h       |  3 ++
+ 3 files changed, 92 insertions(+)
 
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+diff --git a/drivers/net/phy/bcm-phy-lib.c b/drivers/net/phy/bcm-phy-lib.c
+index e77b274a09fd..d5f9a2701989 100644
+--- a/drivers/net/phy/bcm-phy-lib.c
++++ b/drivers/net/phy/bcm-phy-lib.c
+@@ -155,6 +155,86 @@ int bcm_phy_write_shadow(struct phy_device *phydev, u16 shadow,
+ }
+ EXPORT_SYMBOL_GPL(bcm_phy_write_shadow);
+ 
++int __bcm_phy_read_rdb(struct phy_device *phydev, u16 rdb)
++{
++	int val;
++
++	val = __phy_write(phydev, MII_BCM54XX_RDB_ADDR, rdb);
++	if (val < 0)
++		return val;
++
++	return __phy_read(phydev, MII_BCM54XX_RDB_DATA);
++}
++EXPORT_SYMBOL_GPL(__bcm_phy_read_rdb);
++
++int bcm_phy_read_rdb(struct phy_device *phydev, u16 rdb)
++{
++	int ret;
++
++	phy_lock_mdio_bus(phydev);
++	ret = __bcm_phy_read_rdb(phydev, rdb);
++	phy_unlock_mdio_bus(phydev);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(bcm_phy_read_rdb);
++
++int __bcm_phy_write_rdb(struct phy_device *phydev, u16 rdb, u16 val)
++{
++	int ret;
++
++	ret = __phy_write(phydev, MII_BCM54XX_RDB_ADDR, rdb);
++	if (ret < 0)
++		return ret;
++
++	return __phy_write(phydev, MII_BCM54XX_RDB_DATA, val);
++}
++EXPORT_SYMBOL_GPL(__bcm_phy_write_rdb);
++
++int bcm_phy_write_rdb(struct phy_device *phydev, u16 rdb, u16 val)
++{
++	int ret;
++
++	phy_lock_mdio_bus(phydev);
++	ret = __bcm_phy_write_rdb(phydev, rdb, val);
++	phy_unlock_mdio_bus(phydev);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(bcm_phy_write_rdb);
++
++int __bcm_phy_modify_rdb(struct phy_device *phydev, u16 rdb, u16 mask, u16 set)
++{
++	int new, ret;
++
++	ret = __phy_write(phydev, MII_BCM54XX_RDB_ADDR, rdb);
++	if (ret < 0)
++		return ret;
++
++	ret = __phy_read(phydev, MII_BCM54XX_RDB_DATA);
++	if (ret < 0)
++		return ret;
++
++	new = (ret & ~mask) | set;
++	if (new == ret)
++		return 0;
++
++	return __phy_write(phydev, MII_BCM54XX_RDB_DATA, new);
++}
++EXPORT_SYMBOL_GPL(__bcm_phy_modify_rdb);
++
++int bcm_phy_modify_rdb(struct phy_device *phydev, u16 rdb, u16 mask, u16 set)
++{
++	int ret;
++
++	phy_lock_mdio_bus(phydev);
++	ret = __bcm_phy_modify_rdb(phydev, rdb, mask, set);
++	phy_unlock_mdio_bus(phydev);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(bcm_phy_modify_rdb);
++
+ int bcm_phy_enable_apd(struct phy_device *phydev, bool dll_pwr_down)
+ {
+ 	int val;
+diff --git a/drivers/net/phy/bcm-phy-lib.h b/drivers/net/phy/bcm-phy-lib.h
+index 129df819be8c..4d3de91cda6c 100644
+--- a/drivers/net/phy/bcm-phy-lib.h
++++ b/drivers/net/phy/bcm-phy-lib.h
+@@ -48,6 +48,15 @@ int bcm_phy_write_shadow(struct phy_device *phydev, u16 shadow,
+ 			 u16 val);
+ int bcm_phy_read_shadow(struct phy_device *phydev, u16 shadow);
+ 
++int __bcm_phy_write_rdb(struct phy_device *phydev, u16 rdb, u16 val);
++int bcm_phy_write_rdb(struct phy_device *phydev, u16 rdb, u16 val);
++int __bcm_phy_read_rdb(struct phy_device *phydev, u16 rdb);
++int bcm_phy_read_rdb(struct phy_device *phydev, u16 rdb);
++int __bcm_phy_modify_rdb(struct phy_device *phydev, u16 rdb, u16 mask,
++			 u16 set);
++int bcm_phy_modify_rdb(struct phy_device *phydev, u16 rdb, u16 mask,
++		       u16 set);
++
+ int bcm_phy_ack_intr(struct phy_device *phydev);
+ int bcm_phy_config_intr(struct phy_device *phydev);
+ 
+diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
+index 7e1d857c8468..897b69309964 100644
+--- a/include/linux/brcmphy.h
++++ b/include/linux/brcmphy.h
+@@ -115,6 +115,9 @@
+ #define MII_BCM54XX_SHD_VAL(x)	((x & 0x1f) << 10)
+ #define MII_BCM54XX_SHD_DATA(x)	((x & 0x3ff) << 0)
+ 
++#define MII_BCM54XX_RDB_ADDR	0x1e
++#define MII_BCM54XX_RDB_DATA	0x1f
++
+ /*
+  * AUXILIARY CONTROL SHADOW ACCESS REGISTERS.  (PHY REG 0x18)
+  */
 -- 
-Florian
+2.20.1
+
