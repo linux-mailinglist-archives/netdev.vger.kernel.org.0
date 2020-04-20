@@ -2,77 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AB441B1454
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 20:21:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06D651B1469
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 20:24:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728050AbgDTSVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 14:21:37 -0400
-Received: from mx.cjr.nz ([51.158.111.142]:21034 "EHLO mx.cjr.nz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727980AbgDTSVd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 14:21:33 -0400
-Received: from authenticated-user (mx.cjr.nz [51.158.111.142])
-        (Authenticated sender: pc)
-        by mx.cjr.nz (Postfix) with ESMTPSA id 701BB7FCFC;
-        Mon, 20 Apr 2020 18:21:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cjr.nz; s=dkim;
-        t=1587406891;
+        id S1726532AbgDTSYJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 14:24:09 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:26695 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725784AbgDTSYJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 14:24:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587407048;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XLtiuMGzfer0pae2SDTC3iJPxGcLgbM+htJ0fXQblHE=;
-        b=JeY6U99PmBoc7K2kOj51HYcjWJeX3//jnLGabU3mmTwXpybaIMRJQSxLX8x/+7gxTOCSTr
-        Hv9mwFQRIWgFkU0lT98JLFFXxsnrL4qfqJunWNNOnIL/KrXOyC5lZOjKcC3YlFTbGDQtU6
-        xiDiGgZdH4R3VvQD3aMCGUX/PVZDmGHawAflJgUTW+n36YLIYoSEEDxOfqo/4tk0toZJoJ
-        QvV5XbHnd5OBz63WIKMLqBxjEsMaOct1YcZv5TRbzGMxha3OUejx3dbWx7r5NQRWS/QhUO
-        DPFmdQUzLUwfD0GPDW+5vaZskSiTqXTNvqVn7Ckm/7Bq1RKQO5JmzPsQb+bzrA==
-From:   Paulo Alcantara <pc@cjr.nz>
-To:     David Howells <dhowells@redhat.com>
-Cc:     dhowells@redhat.com, Steve French <smfrench@gmail.com>,
-        linux-nfs <linux-nfs@vger.kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>, linux-afs@lists.infradead.org,
-        ceph-devel@vger.kernel.org, keyrings@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, fweimer@redhat.com
-Subject: Re: What's a good default TTL for DNS keys in the kernel
-In-Reply-To: <1136024.1587388420@warthog.procyon.org.uk>
-References: <87imhvj7m6.fsf@cjr.nz>
- <CAH2r5mv5p=WJQu2SbTn53FeTsXyN6ke_CgEjVARQ3fX8QAtK_w@mail.gmail.com>
- <3865908.1586874010@warthog.procyon.org.uk>
- <927453.1587285472@warthog.procyon.org.uk>
- <1136024.1587388420@warthog.procyon.org.uk>
-Date:   Mon, 20 Apr 2020 15:21:23 -0300
-Message-ID: <878siq587w.fsf@cjr.nz>
+         content-transfer-encoding:content-transfer-encoding;
+        bh=LcnFxEMNLiKP5TIbKhSSCdffl2X3e3gp7tGFyL2Tb1g=;
+        b=b6FOj/phrRVfsAI8gD7CwoV6YrqoluXrNJ663LBena/7WRmCU7Ps+TfHY3jYwb16uay4Sx
+        TJ9q3FACo+WiBPrCg7Z65ztwNvpXrBp7JEb05FzTuUurxqlmSJzUkxcmdmrGNApQBh4n/Y
+        TYtxU2hPdOlTS/djqj4ctzSN6QYzVb4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-99-J10Z2pWjMeO4HkIGu6IQ3A-1; Mon, 20 Apr 2020 14:24:04 -0400
+X-MC-Unique: J10Z2pWjMeO4HkIGu6IQ3A-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D2E2310753FE
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 18:23:59 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-116-22.rdu2.redhat.com [10.10.116.22])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 65284277C8;
+        Mon, 20 Apr 2020 18:23:59 +0000 (UTC)
+To:     netdev@vger.kernel.org
+Cc:     Jan Stancek <jstancek@redhat.com>
+From:   Rachel Sibley <rasibley@redhat.com>
+Subject: WARNING: CPU: 0 PID: 805 at net/core/dev.c:1595
+ dev_disable_lro+0xb2/0xf0
+Message-ID: <a47b6a3b-c064-2f53-7cf6-d0d0720e9d99@redhat.com>
+Date:   Mon, 20 Apr 2020 14:23:58 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Howells <dhowells@redhat.com> writes:
+Hello,
 
-> Paulo Alcantara <pc@cjr.nz> wrote:
->
->> >> For SMB3/CIFS mounts, Paulo added support last year for automatic
->> >> reconnect if the IP address of the server changes.  It also is helpful
->> >> when DFS (global name space) addresses change.
->> >
->> > What happens if the IP address the superblock is going to changes, then
->> > another mount is made back to the original IP address?  Does the second mount
->> > just pick the original superblock?
->> 
->> It is going to transparently reconnect to the new ip address, SMB share,
->> and cifs superblock is kept unchanged.  We, however, update internal
->> TCP_Server_Info structure to reflect new destination ip address.
->> 
->> For the second mount, since the hostname (extracted out of the UNC path
->> at mount time) resolves to a new ip address and that address was saved earlier
->> in TCP_Server_Info structure during reconnect, we will end up
->> reusing same cifs superblock as per fs/cifs/connect.c:cifs_match_super().
->
-> Would that be a bug?
+Apologies if I'm sending to the wrong ML, hopefully this is the right place. During
+podman[1] testing in CKI[2](Continuous Kernel Integration), we found a potential kernel
+bug when running the "podman images - history output" test. An issue was filed against
+libpod project [3], however it was later closed and advised to file a kernel bug instead.
+Hoping someone can follow up or point me in the right direction.
 
-Probably.
+Thanks,
+Rachel
 
-I'm not sure how that code is supposed to work, TBH.
+[1] https://github.com/CKI-project/tests-beaker/tree/master/container/podman
+[2] https://cki-project.org/
+[3] https://github.com/containers/libpod/issues/5815
+
