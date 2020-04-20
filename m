@@ -2,136 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C5711B1796
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 22:54:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 367591B1834
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 23:18:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726764AbgDTUya (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 16:54:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54380 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725897AbgDTUya (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 16:54:30 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEC6BC061A0C;
-        Mon, 20 Apr 2020 13:54:28 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id x2so9876239qtr.0;
-        Mon, 20 Apr 2020 13:54:28 -0700 (PDT)
+        id S1726532AbgDTVSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 17:18:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58102 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726021AbgDTVSX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 17:18:23 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CAFEC061A0C;
+        Mon, 20 Apr 2020 14:18:22 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id nu11so420550pjb.1;
+        Mon, 20 Apr 2020 14:18:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3aM6ySTt1JA7jga8iVB04qoFk3fpif9WQjyZ29LThzI=;
-        b=YaogCojRTUgSB+jUNI3fSG5ccXoSk8Bw04wQouLVShhv0/tv3ct4nWsJ1N6sTBtH1d
-         KHxP3O0TsOPoMafNckeSZ4az+t3rMKL4AQikakeuQ0n4lTQuAa57kVVoZbrojZDOvh77
-         5G2zgjvQBZUmJiUwck+2DsZevexBIvDyU6+xfcOTRUp1fbqCzpGvLKpGid8a8pMM79A1
-         D1AeR9G5k/NVmy3JptxkOjCalx2VGzbnQghGRSWr+ww+vWu+XzdI8t6YYHaIb19nE/e7
-         35XHyTLZNLfsreGwwo/EHjQFoIPGN9vNr6K/zxjTKWKciWaGF5+ktS0I+fwzRKMSIDUK
-         fiCw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=rD4w4N0eJ/tfjt2nOo1kPiXoCAMHsRlgxj04yDslYRs=;
+        b=kzHaCZzX8drpVdZSnnPVhfnPKX39XGAMIiA0q15HENDe0cq/Y9D8gXW3yEmog2ubYT
+         KhdaizTMFXTJXEjISbw4CQA45qGFjVcMtHi6FWFBMZTcNxFFWSoIOKaBf6BERFRzYj9R
+         SuJjslTeOC0cQkesuXN5Fj4+KmOKou2DLb3pyd4TmvbD1lm4PiR4lNMovZgmpVTCcFoH
+         5oTqyXiFK8XO1GiruFDUJuJGjEuhcNIBnSGautxifFMz1n+bHVSrxN0OquXRjP3M1HFe
+         s7z0OST29eNf6RexT+KDuQ9pJYCPafX64EcICpudMBCPQXFN/ybD/NdRXtgy1Yo5etwy
+         8PRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3aM6ySTt1JA7jga8iVB04qoFk3fpif9WQjyZ29LThzI=;
-        b=PkHv8ch1JxONg+iAUirxDFtmybW+CtTAajiTghc/n/lmJssqVORrnMWVy2vWOrEfEN
-         k0f+xdenSCOoe8Gvzvv7rdWRWKP8fenX9jTTsBBiMf+Bdv8KURoNWydii3zpBK4q9dxy
-         3Ihmr8MfO1UqfU2Bgzwhsyv9FNfDYveZ5mf7Q5HqUgWWEVuPrIZKAPJJbwo4t1N78otg
-         otsQwEtPozy8nU6+fUbCiXgwI5VTd6S85n8Vs/SJX9pzCnoAFe+7pfM3IdH6PMzIfFrt
-         bFc5LPHkpesvH4x+zx2gIW2+43RFliPp2Y/rHe0+AWzEBf/S+wYvYJ9wCg/xEZ6gueh5
-         I9NA==
-X-Gm-Message-State: AGi0PubSXwbqHLFDFEaho/FFrclp0Pfowk7W/gx9eZdte6z6yIG/wDpQ
-        7gpRgflpeFSEGz2rv5ofJSb8ud6XOws=
-X-Google-Smtp-Source: APiQypI7P5JXpytVExer74SB7iMdYf7opTKWYEUzYs39TbQSovr9cn03dXWRNr7pSH51VqVffCl5Dw==
-X-Received: by 2002:ac8:33f9:: with SMTP id d54mr18512969qtb.239.1587416067884;
-        Mon, 20 Apr 2020 13:54:27 -0700 (PDT)
-Received: from quaco.ghostprotocols.net ([179.97.37.151])
-        by smtp.gmail.com with ESMTPSA id a17sm480190qka.37.2020.04.20.13.54.26
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=rD4w4N0eJ/tfjt2nOo1kPiXoCAMHsRlgxj04yDslYRs=;
+        b=dwwg77qO28RKUg4xCRXi99KzjcA/3I1y2DgGfUSL63spM2JwDR8XhpE21ykkmfyzWB
+         QivQYRtzWTbgyhthHDiTel6fWN6yySFMyxiwt8d7adSDfBHdOF+GC+OAc5sr98tDUMJG
+         6ZlW1StT5cOxKBpb8KE/4nEooqJbFdMx/SQ/lM3vXJsaum/7Qs37hORk90CDVH6HAQn8
+         U4WympOuNtOix4jB7yNSF7WZ7H585day9Wtvg/K/Rplh1A1shcFiPVBn/HKaJAgp+Hrh
+         z2Edh7a/WDpNnuabBm5byVRdAExk39zOIH2Lcp+DhYkDNlkPX1N6Vn7bGPNOkQHbAzjF
+         0IUg==
+X-Gm-Message-State: AGi0Puax5O6e32Lq3vqsfWWvixurOXGnupBHG2SKH1yDrvSxM/tib507
+        7W8KTEdA6vHuBXxa8ypcS1E=
+X-Google-Smtp-Source: APiQypJigBAyfOOqMaLzbmABgjo6O1iASj/v9DXutuMgcBbVnCf+Skaxu8njJykcYQeqh4Z6tdZPdQ==
+X-Received: by 2002:a17:90a:7349:: with SMTP id j9mr1592194pjs.196.1587417502082;
+        Mon, 20 Apr 2020 14:18:22 -0700 (PDT)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id c144sm398337pfb.172.2020.04.20.14.18.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2020 13:54:26 -0700 (PDT)
-From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 8E2FC409A3; Mon, 20 Apr 2020 17:54:24 -0300 (-03)
-Date:   Mon, 20 Apr 2020 17:54:24 -0300
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alan Maguire <alan.maguire@oracle.com>, ast@kernel.org,
-        daniel@iogearbox.net, yhs@fb.com, kafai@fb.com,
-        songliubraving@fb.com, andriin@fb.com, john.fastabend@gmail.com,
-        kpsingh@chromium.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [RFC PATCH bpf-next 0/6] bpf, printk: add BTF-based type printing
-Message-ID: <20200420205424.GB23638@kernel.org>
-References: <1587120160-3030-1-git-send-email-alan.maguire@oracle.com>
- <20200418160536.4mrvqh2lasqbyk77@ast-mbp>
+        Mon, 20 Apr 2020 14:18:21 -0700 (PDT)
+Date:   Mon, 20 Apr 2020 14:18:19 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Clay McClure <clay@daemons.net>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sekhar Nori <nsekhar@ti.com>,
+        Networking <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: cpts: Condition WARN_ON on PTP_1588_CLOCK
+Message-ID: <20200420211819.GA16930@localhost>
+References: <20200416085627.1882-1-clay@daemons.net>
+ <6fef3a00-6c18-b775-d1b4-dfd692261bd3@ti.com>
+ <20200420093610.GA28162@arctic-shiba-lx>
+ <CAK8P3a36ZxNJxUS4UzrwJiMx8UrgYPkcv4X6yYw7EC4jRBbbGQ@mail.gmail.com>
+ <20200420170051.GB11862@localhost>
+ <CAK8P3a11CqpDJzjy5QfV-ebHgRxUu8SRVTJPPmsus1O1+OL72Q@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200418160536.4mrvqh2lasqbyk77@ast-mbp>
-X-Url:  http://acmel.wordpress.com
+In-Reply-To: <CAK8P3a11CqpDJzjy5QfV-ebHgRxUu8SRVTJPPmsus1O1+OL72Q@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Sat, Apr 18, 2020 at 09:05:36AM -0700, Alexei Starovoitov escreveu:
-> On Fri, Apr 17, 2020 at 11:42:34AM +0100, Alan Maguire wrote:
-> > ...gives us:
-> > 
-> > {{{.next=00000000c7916e9c,.prev=00000000c7916e9c,{.dev=00000000c7916e9c|.dev_scratch=0}}|.rbnode={.__rb_parent_color=0,
- 
-> This is unreadable.
-> I like the choice of C style output, but please format it similar to drgn. Like:
-> *(struct task_struct *)0xffff889ff8a08000 = {
-> 	.thread_info = (struct thread_info){
-> 		.flags = (unsigned long)0,
-> 		.status = (u32)0,
-> 	},
-> 	.state = (volatile long)1,
-> 	.stack = (void *)0xffffc9000c4dc000,
-> 	.usage = (refcount_t){
-> 		.refs = (atomic_t){
-> 			.counter = (int)2,
-> 		},
-> 	},
-> 	.flags = (unsigned int)4194560,
-> 	.ptrace = (unsigned int)0,
- 
-> I like Arnaldo's idea as well, but I prefer zeros to be dropped by default.
-> Just like %d doesn't print leading zeros by default.
-> "%p0<struct sk_buff>" would print them.
+On Mon, Apr 20, 2020 at 08:57:05PM +0200, Arnd Bergmann wrote:
+> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 172) #if IS_REACHABLE(CONFIG_PTP_1588_CLOCK)
+> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 173)
+> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 174) /**
+> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 175)  * ptp_clock_register() - register a PTP hardware clock driver
+> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 176)  *
+> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 177)  * @info:   Structure describing the new clock.
+> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 178)  * @parent: Pointer to the parent device of the new clock.
+> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 179)  *
+> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 180)  * Returns a valid pointer on success or PTR_ERR on failure.  If PHC
+> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 181)  * support is missing at the configuration level, this function
+> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 182)  * returns NULL, and drivers are expected to gracefully handle that
+> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 183)  * case separately.
+> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 184)  */
+> 
+> The key here is "gracefully". The second patch from Clay just turns NULL into
+>  -EOPNOTSUPP and treats the compile-time condition into a runtime error.
 
-I was thinking about another way to compress the output of a given data
-structure someone is tracking, having to print it from time to time,
-which is to store a copy of the struct as you print it and then, when
-printing it again, print just its pointer, i.e. that:
+You are talking about the cpts driver, no?
 
-*(struct task_struct *)0xffff889ff8a08000 = {
+I'm worried about ptp_clock_register(), because it does return NULL if
+IS_REACHABLE(CONFIG_PTP_1588_CLOCK), and this is the "correct"
+behavior ever since November 2016.
 
-Line, then just printing the fields that changed, say just that refcount
-was bumped, so it first print:
+If somebody wants to change that stub to return EOPNOTSUPP, then fine,
+but please have them audit the callers and submit a patch series.
 
-*(struct task_struct *)0xffff889ff8a08000 = {
-      .thread_info = (struct thread_info){
-              .flags = (unsigned long)0,
-              .status = (u32)0,
-      },
-      .state = (volatile long)1,
-      .stack = (void *)0xffffc9000c4dc000,
-      .usage = (refcount_t){
-              .refs = (atomic_t){
-                      .counter = (int)2,
-              },
-      },
-      .flags = (unsigned int)4194560,
-      .ptrace = (unsigned int)0,
-
-Then, the next time it would print:
-
-*(struct task_struct *)0xffff889ff8a08000 = {
-      .usage = (refcount_t){
-              .refs = (atomic_t){
-                      .counter = (int)3,
-              },
-      },
-},
-
-- Arnaldo
+Thanks,
+Richard
