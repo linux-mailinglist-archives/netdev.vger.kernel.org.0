@@ -2,84 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 826191B1909
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 00:10:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E7631B193D
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 00:14:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726539AbgDTWJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 18:09:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37806 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726362AbgDTWJ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 18:09:59 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7DF9C061A0C
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 15:09:58 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id y24so1354482wma.4
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 15:09:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=XVDACxGXYhFvIQWcTaBbbajwmLnCSBNwA/uR2imEzWs=;
-        b=ryPLo9Qnjob7nlxTrnk2KuIq1lFcWwIn/+KN50zoi6+f25vS+tXrbQFlTg0jNVR3qh
-         tEmkBA9vVkPUiYcuM5kmI138WkFtUegisbaP/lco1vCe3MxImq64xatOtxRLLbH7tht6
-         x1gQS4imeyQmyu7la9GUyBqNfSeAbDaPK3M/lhSsz91MrufgAtE8T1DrlfOH5CGRqYM9
-         RY1A62IAAdMG/9aTAl/T7febGgqQ4zUFNknrIFOWX69Bw7XYAL9TGrh8pPvc7BbjtRkW
-         wWByyeCC+2LEL+CZVcuY0j/G4yZ4RrESdKsGvxf2gkxGxyO0uwZcMwP72pJMhb3da6gs
-         9+Hw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XVDACxGXYhFvIQWcTaBbbajwmLnCSBNwA/uR2imEzWs=;
-        b=iYP5Q/Kzvkuo3O6brTEsoeuCzS26/vM34/GEiA7vR89pLGzGaKCHSEZXlWl6CxdKuk
-         lcfjLNdBPPpgPYPOEfHZO0aZmSkD44q2eqBj3pvUcqrT+ex/Wl4qskCKMWD7CKcEWt6q
-         OjkPazz7J4A4je1QulPDXh9A++lrDRPD+J7Vl5tyHqzTarE7m+FTgu65bruvQ0oxPGd0
-         0YRaajPxdF/ADY/PlnNoByNc+X/NdlSaPXD8iuzxggFuMH6J4H/TSJwWVbJEolKMNoRW
-         ELRgHTawpymZl/B936qBcalqGxHKI9QSevmsms0Kh2H2UeHw3cRUjfx1oMpueWQB4TG6
-         1UuQ==
-X-Gm-Message-State: AGi0PublmHN9QqSrqHdIs81z5oznT1alD8Dt4diQTgHui4BXMDyzqACV
-        XLppv4axpZL444JHdxQ6feQ=
-X-Google-Smtp-Source: APiQypJUS7z69P5jPAyMktz/HwnyjGzfoWw5UfLei9DLazU3E26WWMmVDaXIbB242bdUX4QEvoxnGg==
-X-Received: by 2002:a1c:99d3:: with SMTP id b202mr1601298wme.126.1587420597547;
-        Mon, 20 Apr 2020 15:09:57 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id n2sm1206520wrq.74.2020.04.20.15.09.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Apr 2020 15:09:56 -0700 (PDT)
-Subject: Re: [PATCH v2 5/5] net: bcmgenet: Drop too many parentheses in
- bcmgenet_probe()
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Doug Berger <opendmb@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jeremy Linton <jeremy.linton@arm.com>
-References: <20200420215121.17735-1-andriy.shevchenko@linux.intel.com>
- <20200420215121.17735-6-andriy.shevchenko@linux.intel.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <62b9086c-e129-3796-9ab9-f6b8a007874a@gmail.com>
-Date:   Mon, 20 Apr 2020 15:09:54 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.7.0
+        id S1726983AbgDTWOs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 18:14:48 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:21970 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726371AbgDTWOr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 18:14:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587420886;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MiSDbiTo+2+0bF+oftBWtRobU1R64CceTEeiiGvXzRk=;
+        b=WeENLdUECtNUJblMqbb/nZmabXuDc+QE8ThLrx5QTdYx3eueUaDGnaS8dIJUB/6qUT7mOA
+        U7Pad0ZTIfXupxjIKqa07/aeew6MN84qyGRt31t3xcGxZJCWdSaBBc2pY3HCeUW5R5fhng
+        SRDZIFHRjrGcs6g9a97Nxyg/ggyTax0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-78-aoNIUofJN7OwJncvIaYdTg-1; Mon, 20 Apr 2020 18:14:44 -0400
+X-MC-Unique: aoNIUofJN7OwJncvIaYdTg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 893061005509;
+        Mon, 20 Apr 2020 22:14:42 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-113-129.rdu2.redhat.com [10.10.113.129])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D8BB676E60;
+        Mon, 20 Apr 2020 22:14:39 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <878siq587w.fsf@cjr.nz>
+References: <878siq587w.fsf@cjr.nz> <87imhvj7m6.fsf@cjr.nz> <CAH2r5mv5p=WJQu2SbTn53FeTsXyN6ke_CgEjVARQ3fX8QAtK_w@mail.gmail.com> <3865908.1586874010@warthog.procyon.org.uk> <927453.1587285472@warthog.procyon.org.uk> <1136024.1587388420@warthog.procyon.org.uk>
+To:     Paulo Alcantara <pc@cjr.nz>
+Cc:     dhowells@redhat.com, viro@zeniv.linux.org.uk,
+        Steve French <smfrench@gmail.com>, jlayton@redhat.com,
+        linux-nfs <linux-nfs@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>, linux-afs@lists.infradead.org,
+        ceph-devel@vger.kernel.org, keyrings@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, fweimer@redhat.com
+Subject: cifs - Race between IP address change and sget()?
 MIME-Version: 1.0
-In-Reply-To: <20200420215121.17735-6-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1986039.1587420879.1@warthog.procyon.org.uk>
+Date:   Mon, 20 Apr 2020 23:14:39 +0100
+Message-ID: <1986040.1587420879@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Paulo Alcantara <pc@cjr.nz> wrote:
 
-
-On 4/20/2020 2:51 PM, Andy Shevchenko wrote:
-> No need to have parentheses around plain pointer variable or
-> negation operator. Drop them for good.
+> >> > What happens if the IP address the superblock is going to changes, then
+> >> > another mount is made back to the original IP address?  Does the second
+> >> > mount just pick the original superblock?
+> >> 
+> >> It is going to transparently reconnect to the new ip address, SMB share,
+> >> and cifs superblock is kept unchanged.  We, however, update internal
+> >> TCP_Server_Info structure to reflect new destination ip address.
+> >> 
+> >> For the second mount, since the hostname (extracted out of the UNC path
+> >> at mount time) resolves to a new ip address and that address was saved
+> >> earlier in TCP_Server_Info structure during reconnect, we will end up
+> >> reusing same cifs superblock as per fs/cifs/connect.c:cifs_match_super().
+> >
+> > Would that be a bug?
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Probably.
+> 
+> I'm not sure how that code is supposed to work, TBH.
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Hmmm...  I think there may be a race here then - but I'm not sure it can be
+avoided or if it matters.
+
+Since the address is part of the primary key to sget() for cifs, changing the
+IP address will change the primary key.  Jeff tells me that this is governed
+by a spinlock taken by cifs_match_super().  However, sget() may be busy
+attaching a new mount to the old superblock under the sb_lock core vfs lock,
+having already found a match.
+
+Should the change of parameters made by cifs be effected with sb_lock held to
+try and avoid ending up using the wrong superblock?
+
+However, because the TCP_Server_Info is apparently updated, it looks like my
+original concern is not actually a problem (the idea that if a mounted server
+changes its IP address and then a new server comes online at the old IP
+address, it might end up sharing superblocks because the IP address is part of
+the key).
+
+David
+
