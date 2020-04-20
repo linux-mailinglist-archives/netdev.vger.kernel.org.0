@@ -2,104 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 367591B1834
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 23:18:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4C401B184E
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 23:21:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726532AbgDTVSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 17:18:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58102 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726021AbgDTVSX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 17:18:23 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CAFEC061A0C;
-        Mon, 20 Apr 2020 14:18:22 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id nu11so420550pjb.1;
-        Mon, 20 Apr 2020 14:18:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=rD4w4N0eJ/tfjt2nOo1kPiXoCAMHsRlgxj04yDslYRs=;
-        b=kzHaCZzX8drpVdZSnnPVhfnPKX39XGAMIiA0q15HENDe0cq/Y9D8gXW3yEmog2ubYT
-         KhdaizTMFXTJXEjISbw4CQA45qGFjVcMtHi6FWFBMZTcNxFFWSoIOKaBf6BERFRzYj9R
-         SuJjslTeOC0cQkesuXN5Fj4+KmOKou2DLb3pyd4TmvbD1lm4PiR4lNMovZgmpVTCcFoH
-         5oTqyXiFK8XO1GiruFDUJuJGjEuhcNIBnSGautxifFMz1n+bHVSrxN0OquXRjP3M1HFe
-         s7z0OST29eNf6RexT+KDuQ9pJYCPafX64EcICpudMBCPQXFN/ybD/NdRXtgy1Yo5etwy
-         8PRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=rD4w4N0eJ/tfjt2nOo1kPiXoCAMHsRlgxj04yDslYRs=;
-        b=dwwg77qO28RKUg4xCRXi99KzjcA/3I1y2DgGfUSL63spM2JwDR8XhpE21ykkmfyzWB
-         QivQYRtzWTbgyhthHDiTel6fWN6yySFMyxiwt8d7adSDfBHdOF+GC+OAc5sr98tDUMJG
-         6ZlW1StT5cOxKBpb8KE/4nEooqJbFdMx/SQ/lM3vXJsaum/7Qs37hORk90CDVH6HAQn8
-         U4WympOuNtOix4jB7yNSF7WZ7H585day9Wtvg/K/Rplh1A1shcFiPVBn/HKaJAgp+Hrh
-         z2Edh7a/WDpNnuabBm5byVRdAExk39zOIH2Lcp+DhYkDNlkPX1N6Vn7bGPNOkQHbAzjF
-         0IUg==
-X-Gm-Message-State: AGi0Puax5O6e32Lq3vqsfWWvixurOXGnupBHG2SKH1yDrvSxM/tib507
-        7W8KTEdA6vHuBXxa8ypcS1E=
-X-Google-Smtp-Source: APiQypJigBAyfOOqMaLzbmABgjo6O1iASj/v9DXutuMgcBbVnCf+Skaxu8njJykcYQeqh4Z6tdZPdQ==
-X-Received: by 2002:a17:90a:7349:: with SMTP id j9mr1592194pjs.196.1587417502082;
-        Mon, 20 Apr 2020 14:18:22 -0700 (PDT)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id c144sm398337pfb.172.2020.04.20.14.18.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2020 14:18:21 -0700 (PDT)
-Date:   Mon, 20 Apr 2020 14:18:19 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Arnd Bergmann <arnd@arndb.de>
+        id S1727836AbgDTVVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 17:21:40 -0400
+Received: from mout.kundenserver.de ([217.72.192.73]:50713 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726532AbgDTVVk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 17:21:40 -0400
+Received: from mail-qk1-f175.google.com ([209.85.222.175]) by
+ mrelayeu.kundenserver.de (mreue106 [212.227.15.145]) with ESMTPSA (Nemesis)
+ id 1M8QBa-1jME0w0w8u-004WBT; Mon, 20 Apr 2020 23:21:38 +0200
+Received: by mail-qk1-f175.google.com with SMTP id s63so12424977qke.4;
+        Mon, 20 Apr 2020 14:21:37 -0700 (PDT)
+X-Gm-Message-State: AGi0Puapn3pzsSjFq8EOH0000TaDlRf81+g4XIcKDgtDuqTCpi7K4m/K
+        O1u18aqNmoBTklQJR9zSWuKlKkTig7VMIuuL5QA=
+X-Google-Smtp-Source: APiQypIaFeSdV4og7SRTXrUGDCD7aWTwle449qQck76jzO7TzeWF3vHD7ARk5tzDYrr6baMd38PaTIvn3e99YTS70l8=
+X-Received: by 2002:a37:9d08:: with SMTP id g8mr18060484qke.138.1587417696998;
+ Mon, 20 Apr 2020 14:21:36 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200416085627.1882-1-clay@daemons.net> <6fef3a00-6c18-b775-d1b4-dfd692261bd3@ti.com>
+ <20200420093610.GA28162@arctic-shiba-lx> <CAK8P3a36ZxNJxUS4UzrwJiMx8UrgYPkcv4X6yYw7EC4jRBbbGQ@mail.gmail.com>
+ <20200420170051.GB11862@localhost> <CAK8P3a11CqpDJzjy5QfV-ebHgRxUu8SRVTJPPmsus1O1+OL72Q@mail.gmail.com>
+ <20200420211819.GA16930@localhost>
+In-Reply-To: <20200420211819.GA16930@localhost>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 20 Apr 2020 23:21:20 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a18540y3zqR=mqKhj-goinN3c-FGKvAnTHnLgBxiPa4mA@mail.gmail.com>
+Message-ID: <CAK8P3a18540y3zqR=mqKhj-goinN3c-FGKvAnTHnLgBxiPa4mA@mail.gmail.com>
+Subject: Re: [PATCH] net: cpts: Condition WARN_ON on PTP_1588_CLOCK
+To:     Richard Cochran <richardcochran@gmail.com>
 Cc:     Clay McClure <clay@daemons.net>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sekhar Nori <nsekhar@ti.com>,
         Networking <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: cpts: Condition WARN_ON on PTP_1588_CLOCK
-Message-ID: <20200420211819.GA16930@localhost>
-References: <20200416085627.1882-1-clay@daemons.net>
- <6fef3a00-6c18-b775-d1b4-dfd692261bd3@ti.com>
- <20200420093610.GA28162@arctic-shiba-lx>
- <CAK8P3a36ZxNJxUS4UzrwJiMx8UrgYPkcv4X6yYw7EC4jRBbbGQ@mail.gmail.com>
- <20200420170051.GB11862@localhost>
- <CAK8P3a11CqpDJzjy5QfV-ebHgRxUu8SRVTJPPmsus1O1+OL72Q@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a11CqpDJzjy5QfV-ebHgRxUu8SRVTJPPmsus1O1+OL72Q@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:VuckYJQW3oH7FVW16mR1NS4ocgKR0A04GbOmCFnjBog9jsI1GHM
+ 1jm5mdU76kGOxyQI8dokpWr0qL++f6aZJt7DXC39XxhreKox9UfzWlCL1Nrr6jphAWSDmH0
+ +3o7OPQ/TJcfn0Tn9+aTI0EkPnW38ZY6UUOXEYLVoXwJkfy+oTYWFlAX6iyH0dkH7SzPYzu
+ etrVZlimMtoqzhMSshQeg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:xZlgQyBcYEU=:X4MCE7AFb4Bn46kKMxTKfc
+ Cl7MQlR3Zdxcoun90U7N45+vbS1IikNf6BMmDD0aeqoHUxl31PSbvBdkjPxA0e62DdTH3ysc4
+ Dh68ouTgFVjC+yDBRqeczax9NGUK8movbgVrR7hGPIkMaOcPrQuyYDjM0L1oATmv5O3sNs9Fl
+ wKXspeZFHE3oiEnmXwQSFXkKnrIWLjTzPW3Ak1MVVVIix8iZtTDuqbq5tvYwKqeEyAdgCr5V0
+ f31RsE45x1o4ssxU9ciYwkmLpAi/vlcLZPH8a3d+vNoJaHcdQdfS4Ax3jmnGinr/vApxLaYdb
+ h+BE44BpP0HIBgFvl6Voks61quX1acxg9GDs1RbClm0aoQRpCCzp8uEUW6qAvhPsoBDkrnyDj
+ IXGrm3cb8R80Fl4TzwH0ompYko8Nqd1oHU+ByA8ODQRge/tSa2nqQE3aw71QhH+c4SGSLb44L
+ F0CRBt9fD6F76ZrhQAJWjnBwKRY/REjlI4aQZ5Nr3dZuqFVwX38i1s6OnWlVBj8DOrLMpzijf
+ dbKA/ung3nhiVUT9j/2ZrTWRbzwBkE9S96E9n178IJJ+BUiwJOHrcWdOvwag5w4dPynLtbU6/
+ Y9s/ltogSvrAU6+6pYjdSHS1bgpqqogrjz1XmkcRcpTV1EYV9aVB0TJge0kOXGSJNcKPUn6e7
+ wH7lc/NSDA7/4gquCqJ4hjdtR3umsQ+OmrDG6iR2D3oeJMIidxzLNlsMJ3SBeNbZAD749bXle
+ EBxijgnWUgJfWA+95k8OWhyyws2QGbsuY5dqaDAw2N4pY2ARKiqAGQpXGk8J6KldStQxuUaJr
+ igRLY7sV5wqZe3nvI/9wpJ6vWSu/Zfx6JHh7dZkZ/XATSuGnNg=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 20, 2020 at 08:57:05PM +0200, Arnd Bergmann wrote:
-> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 172) #if IS_REACHABLE(CONFIG_PTP_1588_CLOCK)
-> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 173)
-> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 174) /**
-> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 175)  * ptp_clock_register() - register a PTP hardware clock driver
-> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 176)  *
-> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 177)  * @info:   Structure describing the new clock.
-> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 178)  * @parent: Pointer to the parent device of the new clock.
-> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 179)  *
-> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 180)  * Returns a valid pointer on success or PTR_ERR on failure.  If PHC
-> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 181)  * support is missing at the configuration level, this function
-> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 182)  * returns NULL, and drivers are expected to gracefully handle that
-> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 183)  * case separately.
-> > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 184)  */
-> 
-> The key here is "gracefully". The second patch from Clay just turns NULL into
->  -EOPNOTSUPP and treats the compile-time condition into a runtime error.
+On Mon, Apr 20, 2020 at 11:18 PM Richard Cochran
+<richardcochran@gmail.com> wrote:
+> On Mon, Apr 20, 2020 at 08:57:05PM +0200, Arnd Bergmann wrote:
+> > > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 172) #if IS_REACHABLE(CONFIG_PTP_1588_CLOCK)
+> > > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 173)
+> > > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 174) /**
+> > > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 175)  * ptp_clock_register() - register a PTP hardware clock driver
+> > > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 176)  *
+> > > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 177)  * @info:   Structure describing the new clock.
+> > > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 178)  * @parent: Pointer to the parent device of the new clock.
+> > > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 179)  *
+> > > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 180)  * Returns a valid pointer on success or PTR_ERR on failure.  If PHC
+> > > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 181)  * support is missing at the configuration level, this function
+> > > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 182)  * returns NULL, and drivers are expected to gracefully handle that
+> > > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 183)  * case separately.
+> > > d1cbfd771ce82 (Nicolas Pitre       2016-11-11 184)  */
+> >
+> > The key here is "gracefully". The second patch from Clay just turns NULL into
+> >  -EOPNOTSUPP and treats the compile-time condition into a runtime error.
+>
+> You are talking about the cpts driver, no?
+>
+> I'm worried about ptp_clock_register(), because it does return NULL if
+> IS_REACHABLE(CONFIG_PTP_1588_CLOCK), and this is the "correct"
+> behavior ever since November 2016.
+>
+> If somebody wants to change that stub to return EOPNOTSUPP, then fine,
+> but please have them audit the callers and submit a patch series.
 
-You are talking about the cpts driver, no?
+It's not great, but we have other interfaces like this that can return NULL for
+success when the subsystem is disabled. The problem is when there is
+a mismatch between the caller treating NULL as failure when it is meant to
+be "successful lack of object returned".
 
-I'm worried about ptp_clock_register(), because it does return NULL if
-IS_REACHABLE(CONFIG_PTP_1588_CLOCK), and this is the "correct"
-behavior ever since November 2016.
-
-If somebody wants to change that stub to return EOPNOTSUPP, then fine,
-but please have them audit the callers and submit a patch series.
-
-Thanks,
-Richard
+       Arnd
