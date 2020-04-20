@@ -2,94 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B99D21B15BE
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 21:17:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4CCC1B15C6
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 21:19:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726993AbgDTTRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 15:17:07 -0400
-Received: from mga05.intel.com ([192.55.52.43]:37954 "EHLO mga05.intel.com"
+        id S1726563AbgDTTTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 15:19:17 -0400
+Received: from correo.us.es ([193.147.175.20]:37132 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725897AbgDTTRH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 15:17:07 -0400
-IronPort-SDR: fMI7/mdWCQJ0FMiLZJatti7d4Xr5n/KPX0CL6aRIWyYaegEEnu3Bz64B6hJ/G3mWN+bjZpQUoA
- KwrvPdKSZ/Lw==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 12:17:07 -0700
-IronPort-SDR: FogFN+UwXkNp5mBUPgbO//e3Ajk9w6cvCNNPDvOXHaFVKsdTZ/f2RLOohcF+zoVn+EgZIEai2j
- U3bndUTloCKg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,407,1580803200"; 
-   d="scan'208";a="245460787"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga007.fm.intel.com with ESMTP; 20 Apr 2020 12:17:03 -0700
-Received: from andy by smile with local (Exim 4.93)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1jQbuk-0026vi-Gw; Mon, 20 Apr 2020 22:17:06 +0300
-Date:   Mon, 20 Apr 2020 22:17:06 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Doug Berger <opendmb@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH v1] net: bcmgenet: Use devm_clk_get_optional() to get the
- clocks
-Message-ID: <20200420191706.GB185537@smile.fi.intel.com>
-References: <20200420183058.67457-1-andriy.shevchenko@linux.intel.com>
- <c8d2dfb4-2833-7b68-3641-4f3ce2139cb2@gmail.com>
+        id S1726079AbgDTTTR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 15:19:17 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id BDE83E8B70
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 21:19:13 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id AB791207A2
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 21:19:13 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id A0AE9DA7B2; Mon, 20 Apr 2020 21:19:13 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id B1E84FA551;
+        Mon, 20 Apr 2020 21:18:32 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 20 Apr 2020 21:18:32 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 8317742EF42A;
+        Mon, 20 Apr 2020 21:18:32 +0200 (CEST)
+Date:   Mon, 20 Apr 2020 21:18:32 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Edward Cree <ecree@solarflare.com>,
+        netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org
+Subject: Re: [PATCH net] net: flow_offload: skip hw stats check for
+ FLOW_ACTION_HW_STATS_DISABLED
+Message-ID: <20200420191832.ppxjjebls2idrshh@salvia>
+References: <20200420080200.GA6581@nanopsycho.orion>
+ <20200420090505.pr6wsunozfh7afaj@salvia>
+ <20200420091302.GB6581@nanopsycho.orion>
+ <20200420100341.6qehcgz66wq4ysax@salvia>
+ <20200420115210.GE6581@nanopsycho.orion>
+ <3980eea4-18d8-5e62-2d6d-fce0a7e7ed4c@solarflare.com>
+ <20200420123915.nrqancwjb7226l7e@salvia>
+ <20200420134826.GH6581@nanopsycho.orion>
+ <20200420135754.GD32392@breakpoint.cc>
+ <20200420141422.GK6581@nanopsycho.orion>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/mixed; boundary="deaja572kukvzixv"
 Content-Disposition: inline
-In-Reply-To: <c8d2dfb4-2833-7b68-3641-4f3ce2139cb2@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20200420141422.GK6581@nanopsycho.orion>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 20, 2020 at 11:33:07AM -0700, Florian Fainelli wrote:
-> On 4/20/2020 11:30 AM, Andy Shevchenko wrote:
-> > Conversion to devm_clk_get_optional() makes it explicit that clocks are
-> > optional. This change allows to handle deferred probe in case clocks are
-> > defined, but not yet probed. Due to above changes replace dev_dbg() by
-> > dev_err() and bail out in error case.
-> > 
-> > While here, check potential error when enable main clock.
-> > 
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > ---
-> >   .../net/ethernet/broadcom/genet/bcmgenet.c    | 25 +++++++++++--------
-> >   1 file changed, 15 insertions(+), 10 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> > index ef275db018f73..045f7b7f0b5d3 100644
-> > --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> > +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> > @@ -3487,13 +3487,16 @@ static int bcmgenet_probe(struct platform_device *pdev)
-> >   		priv->dma_max_burst_length = DMA_MAX_BURST_LENGTH;
-> >   	}
-> > -	priv->clk = devm_clk_get(&priv->pdev->dev, "enet");
-> > +	priv->clk = devm_clk_get_optional(&priv->pdev->dev, "enet");
-> >   	if (IS_ERR(priv->clk)) {
-> > -		dev_dbg(&priv->pdev->dev, "failed to get enet clock\n");
-> > -		priv->clk = NULL;
-> > +		dev_err(&priv->pdev->dev, "failed to get enet clock\n");
+
+--deaja572kukvzixv
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Mon, Apr 20, 2020 at 04:14:22PM +0200, Jiri Pirko wrote:
+> Mon, Apr 20, 2020 at 03:57:54PM CEST, fw@strlen.de wrote:
+[...]
+> >I mean, the user is forced to use SW datapath just because HW can't turn
+> >off stats?!  Same for a config change, why do i need to change my rules
 > 
-> Please maintain the dev_dbg() here and likewise for the rest of your
-> changes. With that:
-> 
-> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+> By default, they are on. That is what user should do in most of the
+> cases.
 
-Ah, I see, actually dev_err() will make too much noise in case of deferred probe.
+Fair enough, I can workaround this problem by using
+FLOW_ACTION_HW_STATS_ANY. However, I still don't need counters and
+there is no way to say "I don't care" to the drivers.
 
-Perhaps
-	if (err != -EPROBE_DEFER)
-		dev_err(...);
-?
+Note that the flow_offload infrastructure is used by ethtool,
+netfilter, flowtable and tc these days.
 
--- 
-With Best Regards,
-Andy Shevchenko
+* ethtool's default behaviour is no counters.
+* netfilter's default behaviour is no counters.
+* flowtable's default behaviour is no counters.
 
 
+I understand FLOW_ACTION_HW_STATS_DISABLED means disabled, strictly.
+But would you allow me to introduce FLOW_ACTION_HW_STATS_DONT_CARE to
+fix ethtool, netfilter and flowtable? :-)
+
+FLOW_ACTION_HW_STATS_DONT_CARE means "this front-end doesn't need
+counters, let driver decide what it is best".
+
+Thank you.
+
+--deaja572kukvzixv
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="x.patch"
+
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 3619c6acf60f..ae09d1911912 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -164,17 +164,21 @@ enum flow_action_mangle_base {
+ };
+ 
+ enum flow_action_hw_stats_bit {
++	FLOW_ACTION_HW_STATS_DONT_CARE_BIT,
+ 	FLOW_ACTION_HW_STATS_IMMEDIATE_BIT,
+ 	FLOW_ACTION_HW_STATS_DELAYED_BIT,
+ };
+ 
+ enum flow_action_hw_stats {
+ 	FLOW_ACTION_HW_STATS_DISABLED = 0,
++	FLOW_ACTION_HW_STATS_DONT_CARE =
++		BIT(FLOW_ACTION_HW_STATS_DONT_CARE_BIT),
+ 	FLOW_ACTION_HW_STATS_IMMEDIATE =
+ 		BIT(FLOW_ACTION_HW_STATS_IMMEDIATE_BIT),
+ 	FLOW_ACTION_HW_STATS_DELAYED = BIT(FLOW_ACTION_HW_STATS_DELAYED_BIT),
+ 	FLOW_ACTION_HW_STATS_ANY = FLOW_ACTION_HW_STATS_IMMEDIATE |
+-				   FLOW_ACTION_HW_STATS_DELAYED,
++				   FLOW_ACTION_HW_STATS_DELAYED |
++				   FLOW_ACTION_HW_STATS_DONT_CARE,
+ };
+ 
+ typedef void (*action_destr)(void *priv);
+
+--deaja572kukvzixv--
