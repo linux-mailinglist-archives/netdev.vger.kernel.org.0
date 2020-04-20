@@ -2,91 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 673621B0976
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 14:36:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D838A1B0978
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 14:36:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726690AbgDTMgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 08:36:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60020 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726020AbgDTMgP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 08:36:15 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 848F8C061A0C
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 05:36:14 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id j2so11910894wrs.9
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 05:36:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=Z4/xy7X3oWoDkDmPzaL2HQu2ZWDkC4ezmSq0koOpoUU=;
-        b=lpNctCvZhLPQ7oWE28zFY9YMyuZxg5e02PVFaZmwoawTrrQvLMNR75kLG8SILESLaw
-         oZErwoT3+C33OF+GnHvVH83e/88bI3G7A9kmoRc//pkDwRrAxoJTK8OkcKT9lAlTHm08
-         zbav+sszB9lMt9Aqkc/BfeCR29GuTsxtmCIUKFctykWL0O6kgqslF7Fqb30udg3myfTh
-         75J0t8EBXDX70iy1mlD8qbEwQpHIbggeyedN+rsAa/m868mXLMbpanlrHJ+UBgWfOngv
-         tbVnDX/1O/VUrAqw3xQ/3uUJx7z54OPqZPAOOfI/iXQYrUEdgXVfDFpmFPi2P/R8V71c
-         1alA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Z4/xy7X3oWoDkDmPzaL2HQu2ZWDkC4ezmSq0koOpoUU=;
-        b=gwEiYyT3APH0TXRH6y2qQFHkUY2TNkD6ItKxZCpHSD86Wb1k6dxTkJz7/tv+LunJqV
-         4jB7Q/UkVejZlTzKu9W0lFonWBnmlnBMHbBmMGVmHocRVCFZFprcAQcNkHxtlxP62YpV
-         hb60JhkIj2Fxe55rKWTwjIGl4FE+1ZZeMlBeO2i6UAYb03fDYSb1oVTvEAHAtMWNYZWe
-         dlDbHN2jGJgwhKxzvxc/6vYWjIyERN4Ep3u65M0ax3x2NwtPnarwuL8IhzYn+gR7smei
-         wpqZ8IJyI1VIL8QhSHmD+EarV9j2wbC1bX/z8YzknWLnU5j9IMqsEA47dCmMOtveY+b4
-         uDQA==
-X-Gm-Message-State: AGi0PubHruEApNjEd1DlLrVilWiAp8JspVQtZVj0zBrJX0+XN+7hDSwI
-        QOJCO30G5Di+9R/RWMMblNrAeA==
-X-Google-Smtp-Source: APiQypJO3jcZBO8lCs9ycTrA7xhamt5DaGgiDLW+xeG1nyRmUd/j1gm07DlJIFDkSY4CH2355g93Ag==
-X-Received: by 2002:adf:f343:: with SMTP id e3mr17855249wrp.51.1587386173251;
-        Mon, 20 Apr 2020 05:36:13 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id p7sm1024561wrf.31.2020.04.20.05.36.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2020 05:36:12 -0700 (PDT)
-Date:   Mon, 20 Apr 2020 14:36:11 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org
-Subject: Re: [PATCH net] net: flow_offload: skip hw stats check for
- FLOW_ACTION_HW_STATS_DISABLED
-Message-ID: <20200420123611.GF6581@nanopsycho.orion>
-References: <20200419115338.659487-1-pablo@netfilter.org>
- <20200420080200.GA6581@nanopsycho.orion>
- <20200420090505.pr6wsunozfh7afaj@salvia>
- <20200420091302.GB6581@nanopsycho.orion>
- <20200420100341.6qehcgz66wq4ysax@salvia>
- <20200420115210.GE6581@nanopsycho.orion>
- <3980eea4-18d8-5e62-2d6d-fce0a7e7ed4c@solarflare.com>
+        id S1726875AbgDTMgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 08:36:35 -0400
+Received: from foss.arm.com ([217.140.110.172]:47652 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726801AbgDTMgf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 08:36:35 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DAF211FB;
+        Mon, 20 Apr 2020 05:36:34 -0700 (PDT)
+Received: from C02TD0UTHF1T.local (unknown [10.57.30.55])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5F1423F237;
+        Mon, 20 Apr 2020 05:36:31 -0700 (PDT)
+Date:   Mon, 20 Apr 2020 13:36:28 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Will Deacon <will@kernel.org>
+Cc:     Alex Belits <abelits@marvell.com>,
+        "mingo@kernel.org" <mingo@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        Prasun Kapoor <pkapoor@marvell.com>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "frederic@kernel.org" <frederic@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [EXT] Re: [PATCH v3 03/13] task_isolation: add instruction
+ synchronization memory barrier
+Message-ID: <20200420123628.GB69441@C02TD0UTHF1T.local>
+References: <4473787e1b6bc3cc226067e8d122092a678b63de.camel@marvell.com>
+ <aed12dd15ea2981bc9554cfa8b5e273c1342c756.camel@marvell.com>
+ <07c25c246c55012981ec0296eee23e68c719333a.camel@marvell.com>
+ <d995795c731d6ecceb36bdf1c1df3d72fefd023d.camel@marvell.com>
+ <20200415124427.GB28304@C02TD0UTHF1T.local>
+ <e4d2cda6f011e80a0d8e482b85bca1c57665fcfd.camel@marvell.com>
+ <20200420122350.GB12889@willie-the-truck>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <3980eea4-18d8-5e62-2d6d-fce0a7e7ed4c@solarflare.com>
+In-Reply-To: <20200420122350.GB12889@willie-the-truck>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Apr 20, 2020 at 02:28:22PM CEST, ecree@solarflare.com wrote:
->On 20/04/2020 12:52, Jiri Pirko wrote:
->> However for TC, when user specifies "HW_STATS_DISABLED", the driver
->> should not do stats.
->What should a driver do if the user specifies DISABLED, but the stats
-> are still needed for internal bookkeeping (e.g. to prod an ARP entry
-> that's in use for encapsulation offload, so that it doesn't get
-> expired out of the cache)?  Enable the stats on the HW anyway but
-> not report them to FLOW_CLS_STATS?  Or return an error?
+On Mon, Apr 20, 2020 at 01:23:51PM +0100, Will Deacon wrote:
+> On Sun, Apr 19, 2020 at 05:02:01AM +0000, Alex Belits wrote:
+> > On Wed, 2020-04-15 at 13:44 +0100, Mark Rutland wrote:
+> > > On Thu, Apr 09, 2020 at 03:17:40PM +0000, Alex Belits wrote:
+> > > > Some architectures implement memory synchronization instructions
+> > > > for
+> > > > instruction cache. Make a separate kind of barrier that calls them.
+> > > 
+> > > Modifying the instruction caches requries more than an ISB, and the
+> > > 'IMB' naming implies you're trying to order against memory accesses,
+> > > which isn't what ISB (generally) does.
+> > > 
+> > > What exactly do you want to use this for?
+> > 
+> > I guess, there should be different explanation and naming.
+> > 
+> > The intention is to have a separate barrier that causes cache
+> > synchronization event, for use in architecture-independent code. I am
+> > not sure, what exactly it should do to be implemented in architecture-
+> > independent manner, so it probably only makes sense along with a
+> > regular memory barrier.
+> > 
+> > The particular place where I had to use is the code that has to run
+> > after isolated task returns to the kernel. In the model that I propose
+> > for task isolation, remote context synchronization is skipped while
+> > task is in isolated in userspace (it doesn't run kernel, and kernel
+> > does not modify its userspace code, so it's harmless until entering the
+> > kernel).
+> 
+> > So it will skip the results of kick_all_cpus_sync() that was
+> > that was called from flush_icache_range() and other similar places.
+> > This means that once it's out of userspace, it should only run
+> > some "safe" kernel entry code, and then synchronize in some manner that
+> > avoids race conditions with possible IPIs intended for context
+> > synchronization that may happen at the same time. My next patch in the
+> > series uses it in that one place.
+> > 
+> > Synchronization will have to be implemented without a mandatory
+> > interrupt because it may be triggered locally, on the same CPU. On ARM,
+> > ISB is definitely necessary there, however I am not sure, how this
+> > should look like on x86 and other architectures. On ARM this probably
+> > still should be combined with a real memory barrier and cache
+> > synchronization, however I am not entirely sure about details. Would
+> > it make more sense to run DMB, IC and ISB? 
+> 
+> IIUC, we don't need to do anything on arm64 because taking an exception acts
+> as a context synchronization event, so I don't think you should try to
+> expose this as a new barrier macro. Instead, just make it a pre-requisite
+> that architectures need to ensure this behaviour when entering the kernel
+> from userspace if they are to select HAVE_ARCH_TASK_ISOLATION.
 
-If internally needed, it means they cannot be disabled. So returning
-error would make sense, as what the user requested is not supported.
+The CSE from the exception isn't sufficient here, because it needs to
+occur after the CPU has re-registered to receive IPIs for
+kick_all_cpus_sync(). Otherwise there's a window between taking the
+exception and re-registering where a necessary context synchronization
+event can be missed. e.g.
 
+CPU A				CPU B
+[ Modifies some code ]		
+				[ enters exception ]
+[ D cache maintenance ]
+[ I cache maintenance ]
+[ IPI ]				// IPI not taken
+  ...				[ register for IPI ] 
+[ IPI completes ] 
+				[ execute stale code here ]
 
->
->-ed
+However, I think 'IMB' is far too generic, and we should have an arch
+hook specific to task isolation, as it's far less likely to be abused as
+IMB will.
+
+Thanks,
+Mark.
