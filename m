@@ -2,93 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DB551B0FB0
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 17:15:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0AC91B0FCF
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 17:19:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726458AbgDTPPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 11:15:20 -0400
-Received: from mail.fudan.edu.cn ([202.120.224.73]:33686 "EHLO fudan.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725865AbgDTPPT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 11:15:19 -0400
+        id S1726838AbgDTPTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 11:19:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57186 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725988AbgDTPTP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 11:19:15 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99DBC061A0C;
+        Mon, 20 Apr 2020 08:19:15 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id ay1so4068190plb.0;
+        Mon, 20 Apr 2020 08:19:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-        Message-Id; bh=j04KOWK7oiQmUIJaNm9oBICc+BDi64eNQbDFosd6GAc=; b=O
-        62Hh01nRPnqzdOOXRJBwPCqr2UDY3DOTlZATbevd/ObcSAWL7KgWQL0sDcBMZ7LJ
-        kGxzdz1++TMkEI/En/EeTpEOXMQpjeZKSJ8jWioH4uONIU9GcnG6EKO21XAM3pLX
-        U3qiTCZjCtWnELGaFn90k6DnmoT0HMDAjTbn21FI6s=
-Received: from localhost.localdomain (unknown [120.229.255.67])
-        by app2 (Coremail) with SMTP id XQUFCgCHj+NwvJ1eNKwjAA--.950S3;
-        Mon, 20 Apr 2020 23:14:58 +0800 (CST)
-From:   Xiyu Yang <xiyuyang19@fudan.edu.cn>
-To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=P2OEB7M0ylUcoE1wgndBCjI9OKWAQ2w0wOIcSTBkJC0=;
+        b=WnsVyX2mcf3PDNma6HPk6iHi19XrsshqairTcDIuOLhJzXuFEaKv6GRX8l4zFQ++4n
+         yH3nCdXSQ75S2X06tdW8XLmqIc7QzyaXIb1/0ro2W7jv9hIGEblQTj8LfpPp3YPPD2QU
+         wF03b/qjU1Q9x9ZstHzq2whZs1EYu+h76LDGMHPFzbo23S8vBn3rSd4ZUe3oahSbGLVJ
+         BEg7u3Vf9JKr8s8EUiK+yMQTJlhjzdSikwq1ybt90HRmptUoWm1xyzbzqAqTDI7p8NLr
+         +Brngh/Ti2JVvCFgmpiklzkrdfEOAubSUIPsQbdDgLAmSP4USivxeQn7wtkNEtI4kybT
+         HuRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=P2OEB7M0ylUcoE1wgndBCjI9OKWAQ2w0wOIcSTBkJC0=;
+        b=IlQCqb48tCbFBctdqbLy+Jtu0wGwucpF8i3pM9Qt2FAgjq58Tlrb4QkhHzkkofZhI5
+         mv9+cPX76Yh8pGal8eZfCjmIGSPaC7kvfqckED60VQuvNYfV20gwt80OoMEBJti1cTs0
+         5x38d7R1T/OohwKH5hsMPxQzlFmhYOea+UPaT/8lbeK+8+e5nMdeqAErZzk+VT/LePsH
+         lqGfmYu2CdmgLSstnqxPJ9OOiJ201J0TEemHDyy8j9k0BBD0leJx+cRDHjLOlcGN7r/j
+         yidys1kngbLm0lL85VRl995UoGX86R9zFgAelxF2zHqrNPkFPsWVjyyDskSAajFdgZMI
+         wkTA==
+X-Gm-Message-State: AGi0Pua2PDCxGmdLoy2+k3kx0gm/apMONXjGuI/g/wwc9LDw90v61W8T
+        +V/jNuKh5QHTgq8TaMQNwNA=
+X-Google-Smtp-Source: APiQypLFwk9EBj0++4IlA6Ssc0Aau8vBJ3gw57Ph71HZTR6YzcO4A7JJNLdjenqSVkhVbrt1bXBgcg==
+X-Received: by 2002:a17:902:a985:: with SMTP id bh5mr7152210plb.163.1587395955364;
+        Mon, 20 Apr 2020 08:19:15 -0700 (PDT)
+Received: from localhost (89.208.244.140.16clouds.com. [89.208.244.140])
+        by smtp.gmail.com with ESMTPSA id y21sm977980pfm.219.2020.04.20.08.19.14
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 20 Apr 2020 08:19:14 -0700 (PDT)
+Date:   Mon, 20 Apr 2020 23:19:11 +0800
+From:   Dejin Zheng <zhengdejin5@gmail.com>
+To:     Markus Elfring <Markus.Elfring@web.de>
+Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     yuanxzhang@fudan.edu.cn, kjlu@umn.edu,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>
-Subject: [PATCH v2] SUNRPC: Remove unreachable error condition
-Date:   Mon, 20 Apr 2020 23:14:19 +0800
-Message-Id: <1587395659-86206-1-git-send-email-xiyuyang19@fudan.edu.cn>
-X-Mailer: git-send-email 2.7.4
-X-CM-TRANSID: XQUFCgCHj+NwvJ1eNKwjAA--.950S3
-X-Coremail-Antispam: 1UD129KBjvdXoW7Gw48Kr4rAryUZry3Gr47CFg_yoWkAwc_XF
-        4IqFykX34DGF4qyFZrCr40yFy7C3y5Kr18Gwn7G34xG3Wjv3Z0vFs5CFn3ArWfurWfuF13
-        CrZrGry3Zw13tjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUba8FF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr1j
-        6rxdM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
-        0DM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
-        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8Jw
-        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAG
-        YxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4
-        AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE
-        17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMI
-        IF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq
-        3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4UJVWxJrUvcS
-        sGvfC2KfnxnUUI43ZEXa7VUbHa0DUUUUU==
-X-CM-SenderInfo: irzsiiysuqikmy6i3vldqovvfxof0/
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>
+Subject: Re: [net-next v2] can: ti_hecc: convert to
+ devm_platform_ioremap_resource_byname()
+Message-ID: <20200420151911.GA2698@nuc8i5>
+References: <20200420132207.8536-1-zhengdejin5@gmail.com>
+ <940fcaa1-8500-e534-2380-39419f1ac5a0@web.de>
+ <20200420141921.GA10880@nuc8i5>
+ <3fd53b73-87b3-b788-d984-cb1c719f9e7f@web.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3fd53b73-87b3-b788-d984-cb1c719f9e7f@web.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rpc_clnt_test_and_add_xprt() invokes rpc_call_null_helper(), which
-return the value of rpc_run_task() to "task". Since rpc_run_task() is
-impossible to return an ERR pointer, there is no need to add the
-IS_ERR() condition on "task" here. So we need to remove it.
+On Mon, Apr 20, 2020 at 04:54:22PM +0200, Markus Elfring wrote:
+> >> Example:
+> >> bgmac_probe()
+> >> https://elixir.bootlin.com/linux/v5.7-rc2/source/drivers/net/ethernet/broadcom/bgmac-platform.c#L201
+> >> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/ethernet/broadcom/bgmac-platform.c?id=ae83d0b416db002fe95601e7f97f64b59514d936#n201
+> >>
+> > Markus, Thanks very much for your info, I will do it. Thanks again.
+> 
+> If you would use another script (like for the semantic patch language),
+> you could find remaining update candidates in a convenient way,
+> couldn't you?
+>
+Markus, could you share the script? Thanks very much!
 
-Fixes: 7f554890587c ("SUNRPC: Allow addition of new transports to a
-struct rpc_clnt")
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
----
-Changes in v2:
-- Remove useless IS_ERR check instead of fixing a refcnt leak in this
-error path
----
- net/sunrpc/clnt.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+BR,
+Dejin
 
-diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index 7324b21f923e..5957e336caf7 100644
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -2803,8 +2803,7 @@ int rpc_clnt_test_and_add_xprt(struct rpc_clnt *clnt,
- 	task = rpc_call_null_helper(clnt, xprt, NULL,
- 			RPC_TASK_SOFT|RPC_TASK_SOFTCONN|RPC_TASK_ASYNC|RPC_TASK_NULLCREDS,
- 			&rpc_cb_add_xprt_call_ops, data);
--	if (IS_ERR(task))
--		return PTR_ERR(task);
-+
- 	rpc_put_task(task);
- success:
- 	return 1;
--- 
-2.7.4
-
+> Regards,
+> Markus
