@@ -2,152 +2,524 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA97D1B05F2
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 11:51:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7DAA1B05FA
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 11:52:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725971AbgDTJvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 05:51:31 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:50626 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725773AbgDTJva (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 05:51:30 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03K9pH70018129;
-        Mon, 20 Apr 2020 02:51:27 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0818;
- bh=6woLa9gUdSXm9NeJvgHybHQHymx01VgLfzHB0lh6BpY=;
- b=hOhSxbZ4/8lkwmc9RXFiqiWdIVtVKDncI2eL8wuGdu5Cy6364VLEgQcabEF2mmFlSD2v
- o/7yqqlARHmNKu5pdmTFdrFzp/sBtze1wvv7kHW3OQh/VX/Hn6LGzCiMVI97MMNhbqDJ
- sJnlKlKPsfV+NmD/VXAqagtO6eIwsevIdPPCheNN6SI971qZCKE3GqjJCNBKKLsS3VYU
- YapRYCuoR/IJmBOvJRXjRqyD18VTFr8DzPYk7GqjAwtbGbFAD6WNhgbiks6W/eyGWpsy
- P+iaSCV0T3vDSl/9oShLQuBNP2UZRkcc0/ZfssNvLIi2gkj0lRWBDmwNsiO2Q4WRG8WH Wg== 
-Received: from sc-exch04.marvell.com ([199.233.58.184])
-        by mx0a-0016f401.pphosted.com with ESMTP id 30fxwp6jr1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 20 Apr 2020 02:51:27 -0700
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 20 Apr
- 2020 02:51:24 -0700
-Received: from NAM02-CY1-obe.outbound.protection.outlook.com (104.47.37.53) by
- SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Mon, 20 Apr 2020 02:51:24 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nq2MZ2AGm4LjuVOsNtD1QSRudMfOfBoIUDVXJNviUBOSDAIpjr6tY7GbHuDpIS+GXAWBgo6aS3SCJiDAW57EjGQJJTZu98KtYzM9/0yaFvecBlG5PDFNCBPNUCIEe5l8X3qTEIfNWQBAcEUSQq0B6islioYDDWzMAX/WqfXo7RqU1E7H9O8NsTa/tV2kxrXAfSOSHvLNZr7skzcbqPz3z0ljcEpZXz4Fo5JSEc7C3gLeZRQ91R4EM+iv+E6wNJ47dXNm2IqeQGYRBHGXCggu87YlP+3nLCIhxMpzFyE3B6FecgHBRBediP6biPek2WluFRMX/hEWByISHfp3+MPBZw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6woLa9gUdSXm9NeJvgHybHQHymx01VgLfzHB0lh6BpY=;
- b=bFZ5md/JH0Y9JYBe5Lz9L2qKnYLMGq1vO0YhdJTcCwkZ3R7zFrUD5PZlKa3a9Xt9l6BlYjQgMRCYf2UbPkAwKzXkzONNwe6/HoMutLKaxMo/Qvd3CA5uUC62VSoc77fr5vM2Zb4+tYDPVUF4Q6qNXPNthkV5QOzfdygsZmLvQGv8oI0vtxNWRwlMJD60InoVve/6mxKzdd6POVnQtlIX6r1DaMwSi/pa4hU/imJhTHkipUwWrWkyDYxktvWPHb4fosYknLFW+eJNnUxAWYc0WMsXjKGT8d9UdOrjV+umF+QNVfKi7ylMbxrcakPARkyM94qN2zi6alZc8hkOOqTltw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
+        id S1726294AbgDTJwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 05:52:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34818 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725773AbgDTJwf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 05:52:35 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3EBC061A0C;
+        Mon, 20 Apr 2020 02:52:35 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id s63so9840232qke.4;
+        Mon, 20 Apr 2020 02:52:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6woLa9gUdSXm9NeJvgHybHQHymx01VgLfzHB0lh6BpY=;
- b=sLkfBe0CYGMHStHwCqVUNgbqnqxuv9eg/N/wr8LaqrXFGq62kwZWVBf2BsEihr+Y/h569SW0MXrYg4IZ1BBjWIYePdZ4RkazWVBphPrkKTwepmFOUdZqSuR/bGw2K2zi2T6lg1S7dg76u3czxTRrBpuf7eTmY6MqWLLr3E06/Pk=
-Received: from BYAPR18MB2357.namprd18.prod.outlook.com (2603:10b6:a03:133::11)
- by BYAPR18MB3063.namprd18.prod.outlook.com (2603:10b6:a03:108::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.25; Mon, 20 Apr
- 2020 09:51:23 +0000
-Received: from BYAPR18MB2357.namprd18.prod.outlook.com
- ([fe80::5d2d:5935:98d3:9693]) by BYAPR18MB2357.namprd18.prod.outlook.com
- ([fe80::5d2d:5935:98d3:9693%4]) with mapi id 15.20.2921.027; Mon, 20 Apr 2020
- 09:51:23 +0000
-From:   Dmitry Bogdanov <dbogdanov@marvell.com>
-To:     Sabrina Dubroca <sd@queasysnail.net>,
-        Igor Russkikh <irusskikh@marvell.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Mark Starovoytov <mstarovoitov@marvell.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>
-Subject: RE: [EXT] Re: [PATCH net 1/2] net: macsec: update SCI upon MAC
- address change.
-Thread-Topic: [EXT] Re: [PATCH net 1/2] net: macsec: update SCI upon MAC
- address change.
-Thread-Index: AQHV9u/RVec0u4zjc020MYyT4v27vah9QOSAgABYI0A=
-Date:   Mon, 20 Apr 2020 09:51:23 +0000
-Message-ID: <BYAPR18MB235709AA95C28FAD4C6C39C2A4D40@BYAPR18MB2357.namprd18.prod.outlook.com>
-References: <20200310152225.2338-1-irusskikh@marvell.com>
- <20200310152225.2338-2-irusskikh@marvell.com>
- <20200417090547.GA3874480@bistromath.localdomain>
-In-Reply-To: <20200417090547.GA3874480@bistromath.localdomain>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [95.79.108.179]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 26d770e1-bc34-4fab-024c-08d7e51062d7
-x-ms-traffictypediagnostic: BYAPR18MB3063:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR18MB3063D05A7D1C80AA76E24D45A4D40@BYAPR18MB3063.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 03793408BA
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR18MB2357.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(376002)(136003)(39850400004)(396003)(366004)(346002)(6636002)(110136005)(54906003)(5660300002)(316002)(6506007)(478600001)(7696005)(53546011)(26005)(2906002)(186003)(86362001)(66446008)(64756008)(81156014)(9686003)(76116006)(4326008)(52536014)(66556008)(66476007)(55016002)(66946007)(8676002)(8936002)(33656002)(71200400001)(15650500001);DIR:OUT;SFP:1101;
-received-spf: None (protection.outlook.com: marvell.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: kVGhbwkzlfnEXEysv8RWtyAN5TlJxdzYBjO1TPUzfpN68Epoj5ySMQb3DIsbIVDI7y+Z0duGZvfR7BNCmCX/h17Oh2JQBOKjkcTST6o9luG9aCiksPFB2ag2OaIA2G0SBKelQoYr7O7eJBnSiTiTaXxK0IyFAAxY4YFLVMtlL/Qe+QxQ8XD5zz4aNPYyHqU4MnBc+K4BXlRIilAA4lxf4roFn5FFgjMYWUTxFI+hWEHoIU9NH9KYxlgtgB4Xojyzck5uPoyV9eu1C19P0hEg3JUOg7oyVP3AFvzka3EEDLRpXE/JeYGSt44mXZTRud15LD4UU7yB4o+XZERt3cDiAO8aQfRfXPFwNW9dIejmdyfIJLDMhmJ7JTLf2nQF3m2oV4DL9Q6I5sNmytTlSL6cQI1rTNpao3+FIwQRsqcS8kvM87uw3RRWbdadZNLa4vlz
-x-ms-exchange-antispam-messagedata: wIXHuwjyu3J9xNoHQg1YNCyeFeyxGhzToZ/ZqNW64XwfAdAIEuzTFoI1zluZD76gIpi5JQHTAN0mpVUpfvxN3ZAPlQrrRa61heyGYepErEgPDPnspWEr1xFBPvgnP2HAclrmsH9Y6zegnr6l0ktr3g==
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=oUbgZkV2b2YjQncs6xJl0qIAmIC6z4JNsiWiRG6CyM8=;
+        b=OV98tFWvMeT86/iR+qjm0Sw4TshgMfUUksaYgvUGWwwRBDbxQuz5VGhzydSb+sNG1N
+         580e5C03VCHyQwVPBMg71FhxSQvtI9+jiKd4mLkQCeRZVSmU25KafO3RR5cQpLuxDkWV
+         Zp9eyqcfTP4aZwWMTV2oEmAXfG067JYbAyfZoCUD0arzXo5bdZcTK+RBn972ejRiwfgo
+         YrM68QNTqFZI4Dj9wUt9SQO9/h6K1thTe14Rcvh/808E84roorPG6DVYlvbuh5KD7EZV
+         YmI8GDPA8w6As4Akcj1IaMr9Op9m1RJji4MfeYJsPaPKAo287M4QAe+v5KNdUBJXHryT
+         yuaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=oUbgZkV2b2YjQncs6xJl0qIAmIC6z4JNsiWiRG6CyM8=;
+        b=iTMr3Bt7jAyhuJUffMyhdlBY9lVxrsI2o4alY9NqOvUWN8nE2E259jNcezUItC9RGO
+         Ptopfd2YFdVmh588nK+pmUKppH/PVviwir0CigQxzIVnwps8OFJw3siRAtR3o8wtWCSM
+         z79XaQQHnDxId46SQxiGqftOQfAagL/NSGNzvbDEEvlfR5GD38r9gZtrRf9/DGtJH5iw
+         QIj5xEsl3VbSYPV2jOB+kVNiqYUhkqJo2SEfOBA2wxMYJaMqd6M/eMhUPKaDuTHEpLej
+         vBY5oc1Jp+vZ2FyXOowToVSeXuPSeChBKYX52WSzMGtk7PZpBLoI/s2KaxeQ2QloxxmJ
+         Tkcw==
+X-Gm-Message-State: AGi0PuYEKyH5vY8KyXGhBPfAm3IkPd3R3nMvbz8mvL8TmldfKhu5caOj
+        d/EmrocI3wxCciU9jjxcrWXk06J1oSs=
+X-Google-Smtp-Source: APiQypLPZkdflHSYJip3Azvk2mTnl1K2arY00W3nh2mvoYewBtd0ybhdFe2JC1m2/7h60jOj49UBcA==
+X-Received: by 2002:a37:a649:: with SMTP id p70mr14974153qke.458.1587376354556;
+        Mon, 20 Apr 2020 02:52:34 -0700 (PDT)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id m7sm246103qke.124.2020.04.20.02.52.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Apr 2020 02:52:33 -0700 (PDT)
+Date:   Mon, 20 Apr 2020 17:52:27 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org
+Subject: Re: [RFC PATCH bpf-next 1/2] xdp: add dev map multicast support
+Message-ID: <20200420095227.GJ2159@dhcp-12-139.nay.redhat.com>
+References: <20200415085437.23028-1-liuhangbin@gmail.com>
+ <20200415085437.23028-2-liuhangbin@gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 26d770e1-bc34-4fab-024c-08d7e51062d7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Apr 2020 09:51:23.2752
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5v/K7zm8plZu1YuG2WK4CD4A+A0/bhnPcjiZjb6oX25ONdysdq/4nCQuT19bLqfy9BQ86KGk8M90S+ZtKtUv7w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR18MB3063
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-20_03:2020-04-17,2020-04-20 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200415085437.23028-2-liuhangbin@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgU2FicmluYSwNCg0KVGhhbmtzIGZvciB0aGUgZmVlZGJhY2suDQpCdXQgdGhpcyBwYXRjaCAg
-ZG9lcyBub3QgZGlyZWN0bHkgcmVsYXRlZCB0byBzZW5kX3NjaSBwYXJhbWV0ZXIuDQoNCkFueSAg
-bWFudWFsIGNoYW5nZSBvZiBtYWNzZWMgaW50ZXJmYWNlIGJ5IGlwIHRvb2wgd2lsbCBicmVhayB3
-cGFfc3VwcGxpY2FudCB3b3JrLiBJdCdzIE9LLCB0aGV5IGFyZSBub3QgaW50ZW5kZWQgdG8gYmUg
-dXNlZCB0b2dldGhlci4NCg0KSGF2aW5nIGEgZGlmZmVyZW50IE1BQyBhZGRyZXNzIG9uICBlYWNo
-IG1hY3NlYyBpbnRlcmZhY2UgYWxsb3dzIHRvIG1ha2UgYSBjb25maWd1cmF0aW9uIHdpdGggc2V2
-ZXJhbCAqb2ZmbG9hZGVkKiBTZWNZLiAgVGhhdCBpcyB0byBtYWtlIGZlYXNpYmxlIHRvIHJvdXRl
-IHRoZSBpbmdyZXNzIGRlY3J5cHRlZCB0cmFmZmljIHRvIHRoZSByaWdodCAobWFjc2VjWCAvZXRo
-WCkgaW50ZXJmYWNlIGJ5IERTVCBhZGRyZXNzLiBBbmQgdG8gYXBwbHkgYSBkaWZmZXJlbnQgU2Vj
-WSBmb3IgdGhlIGVncmVzcyBwYWNrZXRzIGJ5IFNSQyBhZGRyZXNzLiBUaGF0IGlzIHRoZSBvbmx5
-IG9wdGlvbiBmb3IgdGhlIG1hY3NlYyBvZmZsb2FkIGF0IFBIWSBsZXZlbCB3aGVuIHVwcGVyIGxh
-eWVycyBrbm93IG5vdGhpbmcgYWJvdXQgbWFjc2VjLg0KDQoNCkJSLA0KIERtaXRyeQ0KDQotLS0t
-LU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogU2FicmluYSBEdWJyb2NhIDxzZEBxdWVhc3lz
-bmFpbC5uZXQ+IA0KU2VudDogRnJpZGF5LCBBcHJpbCAxNywgMjAyMCAxMjowNiBQTQ0KVG86IEln
-b3IgUnVzc2tpa2ggPGlydXNza2lraEBtYXJ2ZWxsLmNvbT4NCkNjOiBuZXRkZXZAdmdlci5rZXJu
-ZWwub3JnOyBNYXJrIFN0YXJvdm95dG92IDxtc3Rhcm92b2l0b3ZAbWFydmVsbC5jb20+OyBBbnRv
-aW5lIFRlbmFydCA8YW50b2luZS50ZW5hcnRAYm9vdGxpbi5jb20+OyBEbWl0cnkgQm9nZGFub3Yg
-PGRib2dkYW5vdkBtYXJ2ZWxsLmNvbT4NClN1YmplY3Q6IFtFWFRdIFJlOiBbUEFUQ0ggbmV0IDEv
-Ml0gbmV0OiBtYWNzZWM6IHVwZGF0ZSBTQ0kgdXBvbiBNQUMgYWRkcmVzcyBjaGFuZ2UuDQoNCkV4
-dGVybmFsIEVtYWlsDQoNCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCkhlbGxvLA0KDQoyMDIwLTAzLTEwLCAxODoy
-MjoyNCArMDMwMCwgSWdvciBSdXNza2lraCB3cm90ZToNCj4gRnJvbTogRG1pdHJ5IEJvZ2Rhbm92
-IDxkYm9nZGFub3ZAbWFydmVsbC5jb20+DQo+IA0KPiBTQ0kgc2hvdWxkIGJlIHVwZGF0ZWQsIGJl
-Y2F1c2UgaXQgY29udGFpbnMgTUFDIGluIGl0cyBmaXJzdCA2IG9jdGV0cy4NCg0KU29ycnkgZm9y
-IGNhdGNoaW5nIHRoaXMgc28gbGF0ZS4gSSBkb24ndCB0aGluayB0aGlzIGNoYW5nZSBpcyBjb3Jy
-ZWN0Lg0KDQpDaGFuZ2luZyB0aGUgU0NJIG1lYW5zIHdwYV9zdXBwbGljYW50IChvciB3aGF0ZXZl
-ciBNS0EgeW91J3JlIHVzaW5nKSB3aWxsIGRpc2FncmVlIGFzIHRvIHdoaWNoIFNDSSBpcyBpbiB1
-c2UuIFRoZSBwZWVyIHByb2JhYmx5IGRvZXNuJ3QgaGF2ZSBhbiBSWFNDIGZvciB0aGUgbmV3IFND
-SSBlaXRoZXIsIHNvIHRoZSBwYWNrZXRzIHdpbGwgYmUgZHJvcHBlZCBhbnl3YXkuDQoNClBsdXMs
-IGlmIHlvdSdyZSB1c2luZyAic2VuZF9zY2kgb24iLCB0aGVyZSdzIG5vIHJlYWwgcmVhc29uIHRv
-IGNoYW5nZSB0aGUgU0NJLCBzaW5jZSBpdCdzIGFsc28gaW4gdGhlIHBhY2tldCwgYW5kIG1heSBv
-ciBtYXkgbm90IGhhdmUgYW55IHJlbGF0aW9uc2hpcCB0byB0aGUgTUFDIGFkZHJlc3Mgb2YgdGhl
-IGRldmljZS4NCg0KSSdtIGd1ZXNzaW5nIHRoZSBpc3N1ZSB5b3UncmUgdHJ5aW5nIHRvIHNvbHZl
-IGlzIHRoYXQgaW4gdGhlICJzZW5kX3NjaSBvZmYiIGNhc2UsIG1hY3NlY19lbmNyeXB0KCkgd2ls
-bCB1c2UgdGhlIFNDSSBzdG9yZWQgaW4gdGhlIHNlY3ksIGJ1dCB0aGUgcmVjZWl2ZXIgd2lsbCBj
-b25zdHJ1Y3QgdGhlIFNDSSBiYXNlZCBvbiB0aGUgc291cmNlIE1BQyBhZGRyZXNzLiBDYW4geW91
-IGNvbmZpcm0gdGhhdD8gSWYgdGhhdCdzIHRoZSByZWFsIHByb2JsZW0sIEkgaGF2ZSBhIGNvdXBs
-ZSBvZiBpZGVhcyB0byBzb2x2ZSBpdC4NCg0KDQpUaGFua3MsIGFuZCBzb3JyeSBhZ2FpbiBmb3Ig
-dGhlIGRlbGF5IGluIGxvb2tpbmcgYXQgdGhpcywNCg0KLS0NClNhYnJpbmENCg0K
+Hi Daniel,
+
+Would you please help review the RFC and give some comments?
+Especially for the ifindex parameter of bpf_redirect_map() which
+contains both include and exclude map id. Should we keep the current
+designing, or find a way to make it flexible, or even add a new syscall
+to accept two index parameters?
+
+Thanks
+Hangbin
+
+On Wed, Apr 15, 2020 at 04:54:36PM +0800, Hangbin Liu wrote:
+> This is a prototype for xdp multicast support. In this implemention we
+> use map-in-map to store the multicast groups, because we may have both
+> include and exclude groups on one interface.
+> 
+> The include and exclude groups are seperated by a 32 bits map key.
+> the high 16 bits keys are used for include groups and low 16 bits
+> keys are for exclude groups.
+> 
+> The general data path is kept in net/core/filter.c. The native data
+> path is in kernel/bpf/devmap.c so we can use direct calls to
+> get better performace.
+> 
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> ---
+>  include/linux/bpf.h   |  29 +++++++++++
+>  include/net/xdp.h     |   1 +
+>  kernel/bpf/arraymap.c |   2 +-
+>  kernel/bpf/devmap.c   | 118 ++++++++++++++++++++++++++++++++++++++++++
+>  kernel/bpf/hashtab.c  |   2 +-
+>  kernel/bpf/verifier.c |  15 +++++-
+>  net/core/filter.c     |  69 +++++++++++++++++++++++-
+>  net/core/xdp.c        |  26 ++++++++++
+>  8 files changed, 256 insertions(+), 6 deletions(-)
+> 
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index fd2b2322412d..72797667bca8 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1156,11 +1156,17 @@ struct sk_buff;
+>  
+>  struct bpf_dtab_netdev *__dev_map_lookup_elem(struct bpf_map *map, u32 key);
+>  struct bpf_dtab_netdev *__dev_map_hash_lookup_elem(struct bpf_map *map, u32 key);
+> +void *array_of_map_lookup_elem(struct bpf_map *map, void *key);
+> +void *htab_of_map_lookup_elem(struct bpf_map *map, void *key);
+>  void __dev_flush(void);
+>  int dev_xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
+>  		    struct net_device *dev_rx);
+>  int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
+>  		    struct net_device *dev_rx);
+> +bool dev_in_exclude_map(struct bpf_dtab_netdev *obj, struct bpf_map *map);
+> +int dev_map_enqueue_multi(struct xdp_buff *xdp, struct net_device *dev_rx,
+> +			  struct bpf_map *map, u32 index);
+> +
+>  int dev_map_generic_redirect(struct bpf_dtab_netdev *dst, struct sk_buff *skb,
+>  			     struct bpf_prog *xdp_prog);
+>  
+> @@ -1276,6 +1282,16 @@ static inline struct net_device  *__dev_map_hash_lookup_elem(struct bpf_map *map
+>  	return NULL;
+>  }
+>  
+> +static void *array_of_map_lookup_elem(struct bpf_map *map, void *key)
+> +{
+> +
+> +}
+> +
+> +static void *htab_of_map_lookup_elem(struct bpf_map *map, void *key)
+> +{
+> +
+> +}
+> +
+>  static inline void __dev_flush(void)
+>  {
+>  }
+> @@ -1297,6 +1313,19 @@ int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
+>  	return 0;
+>  }
+>  
+> +static inline
+> +bool dev_in_exclude_map(struct bpf_dtab_netdev *obj, struct bpf_map *map)
+> +{
+> +	return true;
+> +}
+> +
+> +static inline
+> +int dev_map_enqueue_multi(struct xdp_buff *xdp, struct net_device *dev_rx,
+> +			  struct bpf_map *map, u32 index)
+> +{
+> +	return 0;
+> +}
+> +
+>  struct sk_buff;
+>  
+>  static inline int dev_map_generic_redirect(struct bpf_dtab_netdev *dst,
+> diff --git a/include/net/xdp.h b/include/net/xdp.h
+> index 40c6d3398458..a214dce8579c 100644
+> --- a/include/net/xdp.h
+> +++ b/include/net/xdp.h
+> @@ -92,6 +92,7 @@ static inline void xdp_scrub_frame(struct xdp_frame *frame)
+>  }
+>  
+>  struct xdp_frame *xdp_convert_zc_to_xdp_frame(struct xdp_buff *xdp);
+> +struct xdp_frame *xdpf_clone(struct xdp_frame *xdpf);
+>  
+>  /* Convert xdp_buff to xdp_frame */
+>  static inline
+> diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+> index 95d77770353c..26ac66a05015 100644
+> --- a/kernel/bpf/arraymap.c
+> +++ b/kernel/bpf/arraymap.c
+> @@ -1031,7 +1031,7 @@ static void array_of_map_free(struct bpf_map *map)
+>  	fd_array_map_free(map);
+>  }
+>  
+> -static void *array_of_map_lookup_elem(struct bpf_map *map, void *key)
+> +void *array_of_map_lookup_elem(struct bpf_map *map, void *key)
+>  {
+>  	struct bpf_map **inner_map = array_map_lookup_elem(map, key);
+>  
+> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+> index 58bdca5d978a..3a60cb209ae1 100644
+> --- a/kernel/bpf/devmap.c
+> +++ b/kernel/bpf/devmap.c
+> @@ -85,6 +85,9 @@ static DEFINE_PER_CPU(struct list_head, dev_flush_list);
+>  static DEFINE_SPINLOCK(dev_map_lock);
+>  static LIST_HEAD(dev_map_list);
+>  
+> +static void *dev_map_lookup_elem(struct bpf_map *map, void *key);
+> +static void *dev_map_hash_lookup_elem(struct bpf_map *map, void *key);
+> +
+>  static struct hlist_head *dev_map_create_hash(unsigned int entries)
+>  {
+>  	int i;
+> @@ -456,6 +459,121 @@ int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
+>  	return __xdp_enqueue(dev, xdp, dev_rx);
+>  }
+>  
+> +/* Use direct call in fast path instead of  map->ops->map_get_next_key() */
+> +static int devmap_get_next_key(struct bpf_map *map, void *key, void *next_key)
+> +{
+> +
+> +	switch (map->map_type) {
+> +	case BPF_MAP_TYPE_DEVMAP:
+> +		return dev_map_get_next_key(map, key, next_key);
+> +	case BPF_MAP_TYPE_DEVMAP_HASH:
+> +		return dev_map_hash_get_next_key(map, key, next_key);
+> +	default:
+> +		break;
+> +	}
+> +
+> +	return -ENOENT;
+> +}
+> +
+> +bool dev_in_exclude_map(struct bpf_dtab_netdev *obj, struct bpf_map *map)
+> +{
+> +	struct bpf_dtab_netdev *in_obj = NULL;
+> +	u32 key, next_key;
+> +	int err;
+> +
+> +	devmap_get_next_key(map, NULL, &key);
+> +
+> +	for (;;) {
+> +		switch (map->map_type) {
+> +		case BPF_MAP_TYPE_DEVMAP:
+> +			in_obj = __dev_map_lookup_elem(map, key);
+> +			break;
+> +		case BPF_MAP_TYPE_DEVMAP_HASH:
+> +			in_obj = __dev_map_hash_lookup_elem(map, key);
+> +			break;
+> +		default:
+> +			break;
+> +		}
+> +
+> +		if (in_obj && in_obj->dev->ifindex == obj->dev->ifindex)
+> +			return true;
+> +
+> +		err = devmap_get_next_key(map, &key, &next_key);
+> +
+> +		if (err)
+> +			break;
+> +
+> +		key = next_key;
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +int dev_map_enqueue_multi(struct xdp_buff *xdp, struct net_device *dev_rx,
+> +			  struct bpf_map *map, u32 index)
+> +{
+> +	struct bpf_dtab_netdev *obj = NULL;
+> +	struct bpf_map *in_map, *ex_map;
+> +	struct xdp_frame *xdpf, *nxdpf;
+> +	struct net_device *dev;
+> +	u32 in_index, ex_index;
+> +	u32 key, next_key;
+> +	int err;
+> +
+> +	in_index = index >> 16;
+> +	in_index = in_index << 16;
+> +	ex_index = in_index ^ index;
+> +
+> +	in_map = map->ops->map_lookup_elem(map, &in_index);
+> +	/* ex_map could be NULL */
+> +	ex_map = map->ops->map_lookup_elem(map, &ex_index);
+> +
+> +	devmap_get_next_key(in_map, NULL, &key);
+> +
+> +	xdpf = convert_to_xdp_frame(xdp);
+> +	if (unlikely(!xdpf))
+> +		return -EOVERFLOW;
+> +
+> +	for (;;) {
+> +		switch (in_map->map_type) {
+> +		case BPF_MAP_TYPE_DEVMAP:
+> +			obj = __dev_map_lookup_elem(in_map, key);
+> +			break;
+> +		case BPF_MAP_TYPE_DEVMAP_HASH:
+> +			obj = __dev_map_hash_lookup_elem(in_map, key);
+> +			break;
+> +		default:
+> +			break;
+> +		}
+> +		if (!obj)
+> +			goto find_next;
+> +
+> +		if (ex_map && !dev_in_exclude_map(obj, ex_map)) {
+> +			dev = obj->dev;
+> +
+> +			if (!dev->netdev_ops->ndo_xdp_xmit)
+> +				return -EOPNOTSUPP;
+> +
+> +			err = xdp_ok_fwd_dev(dev, xdp->data_end - xdp->data);
+> +			if (unlikely(err))
+> +				return err;
+> +
+> +			nxdpf = xdpf_clone(xdpf);
+> +			if (unlikely(!nxdpf))
+> +				return -ENOMEM;
+> +
+> +			bq_enqueue(dev, nxdpf, dev_rx);
+> +		}
+> +find_next:
+> +		err = devmap_get_next_key(in_map, &key, &next_key);
+> +		if (err)
+> +			break;
+> +		key = next_key;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  int dev_map_generic_redirect(struct bpf_dtab_netdev *dst, struct sk_buff *skb,
+>  			     struct bpf_prog *xdp_prog)
+>  {
+> diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+> index d541c8486c95..4e0a2eebd38d 100644
+> --- a/kernel/bpf/hashtab.c
+> +++ b/kernel/bpf/hashtab.c
+> @@ -1853,7 +1853,7 @@ static struct bpf_map *htab_of_map_alloc(union bpf_attr *attr)
+>  	return map;
+>  }
+>  
+> -static void *htab_of_map_lookup_elem(struct bpf_map *map, void *key)
+> +void *htab_of_map_lookup_elem(struct bpf_map *map, void *key)
+>  {
+>  	struct bpf_map **inner_map  = htab_map_lookup_elem(map, key);
+>  
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 04c6630cc18f..84d23418823a 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -3898,7 +3898,9 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
+>  		break;
+>  	case BPF_MAP_TYPE_ARRAY_OF_MAPS:
+>  	case BPF_MAP_TYPE_HASH_OF_MAPS:
+> -		if (func_id != BPF_FUNC_map_lookup_elem)
+> +		/* Used by multicast redirect */
+> +		if (func_id != BPF_FUNC_redirect_map &&
+> +		    func_id != BPF_FUNC_map_lookup_elem)
+>  			goto error;
+>  		break;
+>  	case BPF_MAP_TYPE_SOCKMAP:
+> @@ -3968,8 +3970,17 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
+>  		if (map->map_type != BPF_MAP_TYPE_DEVMAP &&
+>  		    map->map_type != BPF_MAP_TYPE_DEVMAP_HASH &&
+>  		    map->map_type != BPF_MAP_TYPE_CPUMAP &&
+> -		    map->map_type != BPF_MAP_TYPE_XSKMAP)
+> +		    map->map_type != BPF_MAP_TYPE_XSKMAP &&
+> +		    map->map_type != BPF_MAP_TYPE_ARRAY_OF_MAPS &&
+> +		    map->map_type != BPF_MAP_TYPE_HASH_OF_MAPS)
+>  			goto error;
+> +		if (map->map_type == BPF_MAP_TYPE_ARRAY_OF_MAPS ||
+> +		    map->map_type == BPF_MAP_TYPE_HASH_OF_MAPS) {
+> +			/* FIXME: Maybe we should also strict the key size here ?? */
+> +			if (map->inner_map_meta->map_type != BPF_MAP_TYPE_DEVMAP &&
+> +			    map->inner_map_meta->map_type != BPF_MAP_TYPE_DEVMAP_HASH)
+> +				goto error;
+> +		}
+>  		break;
+>  	case BPF_FUNC_sk_redirect_map:
+>  	case BPF_FUNC_msg_redirect_map:
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 7628b947dbc3..7d2076f5b0a4 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -3473,12 +3473,17 @@ static const struct bpf_func_proto bpf_xdp_adjust_meta_proto = {
+>  };
+>  
+>  static int __bpf_tx_xdp_map(struct net_device *dev_rx, void *fwd,
+> -			    struct bpf_map *map, struct xdp_buff *xdp)
+> +			    struct bpf_map *map, struct xdp_buff *xdp,
+> +			    u32 index)
+>  {
+>  	switch (map->map_type) {
+>  	case BPF_MAP_TYPE_DEVMAP:
+> +		/* fall through */
+>  	case BPF_MAP_TYPE_DEVMAP_HASH:
+>  		return dev_map_enqueue(fwd, xdp, dev_rx);
+> +	case BPF_MAP_TYPE_HASH_OF_MAPS:
+> +	case BPF_MAP_TYPE_ARRAY_OF_MAPS:
+> +		return dev_map_enqueue_multi(xdp, dev_rx, map, index);
+>  	case BPF_MAP_TYPE_CPUMAP:
+>  		return cpu_map_enqueue(fwd, xdp, dev_rx);
+>  	case BPF_MAP_TYPE_XSKMAP:
+> @@ -3508,6 +3513,10 @@ static inline void *__xdp_map_lookup_elem(struct bpf_map *map, u32 index)
+>  		return __cpu_map_lookup_elem(map, index);
+>  	case BPF_MAP_TYPE_XSKMAP:
+>  		return __xsk_map_lookup_elem(map, index);
+> +	case BPF_MAP_TYPE_ARRAY_OF_MAPS:
+> +		return array_of_map_lookup_elem(map, (index >> 16) << 16);
+> +	case BPF_MAP_TYPE_HASH_OF_MAPS:
+> +		return htab_of_map_lookup_elem(map, (index >> 16) << 16);
+>  	default:
+>  		return NULL;
+>  	}
+> @@ -3552,7 +3561,7 @@ int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
+>  
+>  		err = dev_xdp_enqueue(fwd, xdp, dev);
+>  	} else {
+> -		err = __bpf_tx_xdp_map(dev, fwd, map, xdp);
+> +		err = __bpf_tx_xdp_map(dev, fwd, map, xdp, index);
+>  	}
+>  
+>  	if (unlikely(err))
+> @@ -3566,6 +3575,55 @@ int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
+>  }
+>  EXPORT_SYMBOL_GPL(xdp_do_redirect);
+>  
+> +static int dev_map_redirect_multi(struct sk_buff *skb, struct bpf_prog *xdp_prog,
+> +				  struct bpf_map *map, u32 index)
+> +
+> +{
+> +	struct bpf_map *in_map, *ex_map;
+> +	struct bpf_dtab_netdev *dst;
+> +	u32 in_index, ex_index;
+> +	struct sk_buff *nskb;
+> +	u32 key, next_key;
+> +	int err;
+> +	void *fwd;
+> +
+> +	in_index = index >> 16;
+> +	in_index = in_index << 16;
+> +	ex_index = in_index ^ index;
+> +
+> +	in_map = map->ops->map_lookup_elem(map, &in_index);
+> +	/* ex_map could be NULL */
+> +	ex_map = map->ops->map_lookup_elem(map, &ex_index);
+> +
+> +	in_map->ops->map_get_next_key(in_map, NULL, &key);
+> +
+> +	for (;;) {
+> +		fwd = __xdp_map_lookup_elem(in_map, key);
+> +		if (fwd) {
+> +			dst = (struct bpf_dtab_netdev *)fwd;
+> +			if (ex_map && dev_in_exclude_map(dst, ex_map))
+> +				goto find_next;
+> +
+> +			nskb = skb_clone(skb, GFP_ATOMIC);
+> +			if (!nskb)
+> +				return -EOVERFLOW;
+> +
+> +			err = dev_map_generic_redirect(dst, nskb, xdp_prog);
+> +			if (unlikely(err))
+> +				return err;
+> +		}
+> +
+> +find_next:
+> +		err = in_map->ops->map_get_next_key(in_map, &key, &next_key);
+> +		if (err)
+> +			break;
+> +
+> +		key = next_key;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  static int xdp_do_generic_redirect_map(struct net_device *dev,
+>  				       struct sk_buff *skb,
+>  				       struct xdp_buff *xdp,
+> @@ -3588,6 +3646,13 @@ static int xdp_do_generic_redirect_map(struct net_device *dev,
+>  		err = dev_map_generic_redirect(dst, skb, xdp_prog);
+>  		if (unlikely(err))
+>  			goto err;
+> +	} else if (map->map_type == BPF_MAP_TYPE_ARRAY_OF_MAPS ||
+> +		   map->map_type == BPF_MAP_TYPE_HASH_OF_MAPS) {
+> +		/* Do multicast redirecting */
+> +		err = dev_map_redirect_multi(skb, xdp_prog, map, index);
+> +		if (unlikely(err))
+> +			goto err;
+> +		consume_skb(skb);
+>  	} else if (map->map_type == BPF_MAP_TYPE_XSKMAP) {
+>  		struct xdp_sock *xs = fwd;
+>  
+> diff --git a/net/core/xdp.c b/net/core/xdp.c
+> index 4c7ea85486af..70dfb4910f84 100644
+> --- a/net/core/xdp.c
+> +++ b/net/core/xdp.c
+> @@ -496,3 +496,29 @@ struct xdp_frame *xdp_convert_zc_to_xdp_frame(struct xdp_buff *xdp)
+>  	return xdpf;
+>  }
+>  EXPORT_SYMBOL_GPL(xdp_convert_zc_to_xdp_frame);
+> +
+> +struct xdp_frame *xdpf_clone(struct xdp_frame *xdpf)
+> +{
+> +	unsigned int headroom, totalsize;
+> +	struct xdp_frame *nxdpf;
+> +	struct page *page;
+> +	void *addr;
+> +
+> +	headroom = xdpf->headroom + sizeof(*xdpf);
+> +	totalsize = headroom + xdpf->len;
+> +
+> +	if (unlikely(totalsize > PAGE_SIZE))
+> +		return NULL;
+> +	page = dev_alloc_page();
+> +	if (!page)
+> +		return NULL;
+> +	addr = page_to_virt(page);
+> +
+> +	memcpy(addr, xdpf, totalsize);
+> +
+> +	nxdpf = addr;
+> +	nxdpf->data = addr + headroom;
+> +
+> +	return nxdpf;
+> +}
+> +EXPORT_SYMBOL_GPL(xdpf_clone);
+> -- 
+> 2.19.2
+> 
