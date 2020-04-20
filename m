@@ -2,108 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E1221B1485
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 20:33:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 282E31B1490
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 20:34:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727877AbgDTSdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 14:33:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59494 "EHLO
+        id S1728022AbgDTSeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 14:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727813AbgDTSdL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 14:33:11 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67013C061A0F
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 11:33:11 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id t40so227391pjb.3
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 11:33:11 -0700 (PDT)
+        with ESMTP id S1725613AbgDTSeX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 14:34:23 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA3AAC061A0C;
+        Mon, 20 Apr 2020 11:34:22 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id j7so1920079pgj.13;
+        Mon, 20 Apr 2020 11:34:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=wdK+ZmyHJ8BuX0/w8SfTfOuwr/SBH6XRoaemgO2Ls4k=;
-        b=TDWwmuOPrMw4BsnZqSutMWg7WSm34HIymiEuI21b//vwc8Ww7xHBJugsufaMyRS0XU
-         hq1/JpYxQuS8mOEE2j5xcJ5HbKdrGXk5Y+TqkmFC6VUixx5bK5E4hNF+pN65Chq8VWpu
-         7eC3NORw0GIAGRU9irVR6UL43dRo24HAz0d2NUQCYcnDeyS9qm58V89HKAm95om9/iRA
-         0biBxxm4gDFnaCnwl38FfSONyLeMmhw7KpHhNGBvPi4EERLQbd6pvg1aFh5HF074oihq
-         FOkZYcu5mBikgrkDtEe3jNhNs0JcMEq4U2U9UIWhwq8SvjZIEX//KGkbNGYEjENgaGtJ
-         Wkjg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZMXNXOn18ztbuDgZhLYqZA8C0KLTfCYAabuhHQdVEgc=;
+        b=bRQ+zQcNerLNraD0+K3XcVBhR8In6GYgzcEMJFJy3EM54s+7VpeUkpewJywI7Dlu1C
+         0NV6aw+rdb72SW046ScVrndy1qT+OWeSe3F3WSs53I1INh7jHAF9cPmu3fl1IcxNn52n
+         AnetC47v2j8aUaRMwfkjEOPqArnLCpBIEJNTtwh61lLv79b4b7JFaI9clE8aL+U+Ar3O
+         x3fwGUBvZHP9tg20oIWd7+Fc+GOkI4AmMoUl0RWU1xZy2Sxts3XpSJxE3WTfbl4weMcc
+         bctl/oKZj8sU83vRHoR7vEpuR1MqVevHmTrqEuHJMDIpyrkau/6SCqN4O4gIZ5qHWM5E
+         q/nQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=wdK+ZmyHJ8BuX0/w8SfTfOuwr/SBH6XRoaemgO2Ls4k=;
-        b=SkXu5QSfXE/2JQDyLu1dv/hTVTgWQciRI2Ikz9EVp9UVF2gqkJejODk9xqj0eONMiV
-         LyEhknw1n5FNE8FOu8SBw6eDEDS90cRCDhsIwtH7NzmbECPTcGKIMc17MLfjL5Koc0Lf
-         VnpqkI7mNE2TGxomMdPKF3HrrZlT7a391fDNSio0ALWlpNVaraAzM2vTurZc3nq1Cmpv
-         qgJ93d0X1dM73zIyYOGtA4VYuiugck7gZPHmWOBZFQzR7HdGgL8QvTUSXsQ1dBXhHjb7
-         cwl5tbNjW5+K7wL7f0JdALoo6KKtzSN0PoVbw6EVqNeub7A3BNM3aSW/YAeyQ6DQVN/F
-         IPuQ==
-X-Gm-Message-State: AGi0PuaAVKNopiBYu3pC1Jinp7GaC0kRrHve5QltHAwoVAwYZCZl/Kfz
-        qh7ALhB88Pw+lp7aQthNTy4G+FJu
-X-Google-Smtp-Source: APiQypLRTdLbzTQn9KB6UKdzWAfjZEhM71ToOgaiu0P/1XoPeDZoaArvoT5ZWIw4sQlOowURMKCLVA==
-X-Received: by 2002:a17:90a:224a:: with SMTP id c68mr919270pje.160.1587407590385;
-        Mon, 20 Apr 2020 11:33:10 -0700 (PDT)
-Received: from [10.230.188.26] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id t80sm197110pfc.23.2020.04.20.11.33.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Apr 2020 11:33:09 -0700 (PDT)
-Subject: Re: [PATCH v1] net: bcmgenet: Use devm_clk_get_optional() to get the
- clocks
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20200420183058.67457-1-andriy.shevchenko@linux.intel.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <c8d2dfb4-2833-7b68-3641-4f3ce2139cb2@gmail.com>
-Date:   Mon, 20 Apr 2020 11:33:07 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.7.0
+        bh=ZMXNXOn18ztbuDgZhLYqZA8C0KLTfCYAabuhHQdVEgc=;
+        b=dNrossLpumFVEvv1x9ZT6UpqDWdb98xqsEyjUfwnnzuOQlf8++iG/AYDjEQfyluB7W
+         cOmluDD+5Y+dahCSxCiIVY5zCKeBZxFCoFNZaQCSjUg+OcN9qP/QZU+LLKMOTVA0C1Jc
+         +1dMwycNoWDpukYkodRoeZPrQ9++6k/bFjCDze/ATTBIz2iqunxm8NAs5iytIZSDo6zU
+         1lAC69AXaEBSFukG8/2KIUeafRHVSvmGTvgknw9g9qUR4anF2FXb1oLE0inAdl6Yagjm
+         YynxcGzM5SxwvZ4jejlBmffHty35dC8jqZ6FKCPkr+DxLgMnatIM0j5NNowEhVt7VQxg
+         sASw==
+X-Gm-Message-State: AGi0PuZUHX2gnk1vTdJocqBV34BykNo6PQ381Y7bMRhdgDCeRsqWG+L6
+        GQg+eEsg1T03QQolg/j/g+4=
+X-Google-Smtp-Source: APiQypLLXx1+KoTFJBQwTmqbsymwlQm5i4LeHNqlSUAsMlO3wtSMB/tpw2gZ7VXql4tTCRNgPnJaxQ==
+X-Received: by 2002:a62:880f:: with SMTP id l15mr17900763pfd.218.1587407662356;
+        Mon, 20 Apr 2020 11:34:22 -0700 (PDT)
+Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
+        by smtp.gmail.com with ESMTPSA id mq6sm51661pjb.38.2020.04.20.11.34.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Apr 2020 11:34:21 -0700 (PDT)
+From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
+To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Lorenzo Colitti <lorenzo@google.com>
+Subject: [PATCH] net: bpf: Allow TC programs to call BPF_FUNC_skb_change_head
+Date:   Mon, 20 Apr 2020 11:34:08 -0700
+Message-Id: <20200420183409.210660-1-zenczykowski@gmail.com>
+X-Mailer: git-send-email 2.26.1.301.g55bc3eb7cb9-goog
 MIME-Version: 1.0
-In-Reply-To: <20200420183058.67457-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Lorenzo Colitti <lorenzo@google.com>
 
+This allows TC eBPF programs to modify and forward (redirect) packets
+from interfaces without ethernet headers (for example cellular)
+to interfaces with (for example ethernet/wifi).
 
-On 4/20/2020 11:30 AM, Andy Shevchenko wrote:
-> Conversion to devm_clk_get_optional() makes it explicit that clocks are
-> optional. This change allows to handle deferred probe in case clocks are
-> defined, but not yet probed. Due to above changes replace dev_dbg() by
-> dev_err() and bail out in error case.
-> 
-> While here, check potential error when enable main clock.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->   .../net/ethernet/broadcom/genet/bcmgenet.c    | 25 +++++++++++--------
->   1 file changed, 15 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> index ef275db018f73..045f7b7f0b5d3 100644
-> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> @@ -3487,13 +3487,16 @@ static int bcmgenet_probe(struct platform_device *pdev)
->   		priv->dma_max_burst_length = DMA_MAX_BURST_LENGTH;
->   	}
->   
-> -	priv->clk = devm_clk_get(&priv->pdev->dev, "enet");
-> +	priv->clk = devm_clk_get_optional(&priv->pdev->dev, "enet");
->   	if (IS_ERR(priv->clk)) {
-> -		dev_dbg(&priv->pdev->dev, "failed to get enet clock\n");
-> -		priv->clk = NULL;
-> +		dev_err(&priv->pdev->dev, "failed to get enet clock\n");
+The lack of this appears to simply be an oversight.
 
-Please maintain the dev_dbg() here and likewise for the rest of your 
-changes. With that:
+Tested:
+  in active use in Android R on 4.14+ devices for ipv6
+  cellular to wifi tethering offload.
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Lorenzo Colitti <lorenzo@google.com>
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
+---
+ net/core/filter.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 7d6ceaa54d21..755867867e57 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -6213,6 +6213,8 @@ tc_cls_act_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_skb_adjust_room_proto;
+ 	case BPF_FUNC_skb_change_tail:
+ 		return &bpf_skb_change_tail_proto;
++	case BPF_FUNC_skb_change_head:
++		return &bpf_skb_change_head_proto;
+ 	case BPF_FUNC_skb_get_tunnel_key:
+ 		return &bpf_skb_get_tunnel_key_proto;
+ 	case BPF_FUNC_skb_set_tunnel_key:
 -- 
-Florian
+2.26.1.301.g55bc3eb7cb9-goog
+
