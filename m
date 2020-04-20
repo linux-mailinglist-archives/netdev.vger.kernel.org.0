@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18A171B19FA
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 01:13:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 674641B19FB
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 01:14:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726954AbgDTXNz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 19:13:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39642 "EHLO mail.kernel.org"
+        id S1727109AbgDTXN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 19:13:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39664 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726847AbgDTXNz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726884AbgDTXNz (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 20 Apr 2020 19:13:55 -0400
 Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7D62A21D79;
+        by mail.kernel.org (Postfix) with ESMTPSA id F027B22209;
         Mon, 20 Apr 2020 23:13:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587424434;
-        bh=IJoblJrKmdPBE7qDj3flqI5r1dSjI70VvE8SNpNW+wM=;
+        s=default; t=1587424435;
+        bh=5Zi8x0JeurjhIcP7IV2nyMkTa9RGGpTHwyKcRvFzluY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UQiP9/cowrrI0iHJRRy0qoU4IKzQeTMJ9xPQ+hM9uEEiki1ei64CHogB/rSqOfTDN
-         ylnu8FqCmaxsnv02/kMyWE1aRLvZIepoTJfWTLPHCGuemWUBsCIpeC7JlC4MSqdfaE
-         nU8djT1qS4O2TcUoHvLfc7LtDrpzd/Ufn/wP1QM0=
+        b=fhJtYA/ySMP7uK1r4Z3JEMiTveJo5vqkHwlyAlYNH1+UGbK09aounUHnHQE5vSh9C
+         y2Z4VAtlg2Cdk+OcdwYq+3EA80wL96WW2ArAiKLRT4XkXuaHkJ47S73Hwx8tY8ww7Y
+         FX9FhwbSpK+MkP6yW4bzBOqgRmyhAgtzfabKhhVA=
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, trev@larock.ca,
         David Ahern <dsahern@gmail.com>
-Subject: [PATCH net 1/2] xfrm: Always set XFRM_TRANSFORMED in xfrm{4,6}_output_finish
-Date:   Mon, 20 Apr 2020 17:13:51 -0600
-Message-Id: <20200420231352.50855-2-dsahern@kernel.org>
+Subject: [PATCH net 2/2] vrf: Check skb for XFRM_TRANSFORMED flag
+Date:   Mon, 20 Apr 2020 17:13:52 -0600
+Message-Id: <20200420231352.50855-3-dsahern@kernel.org>
 X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 In-Reply-To: <20200420231352.50855-1-dsahern@kernel.org>
 References: <20200420231352.50855-1-dsahern@kernel.org>
@@ -42,46 +42,41 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-IPSKB_XFRM_TRANSFORMED and IP6SKB_XFRM_TRANSFORMED are skb flags set by
-xfrm code to tell other skb handlers that the packet has been passed
-through the xfrm output functions. Simplify the code and just always
-set them rather than conditionally based on netfilter enabled thus
-making the flag available for other users.
+To avoid a loop with qdiscs and xfrms, check if the skb has already gone
+through the qdisc attached to the VRF device and then to the xfrm layer.
+If so, no need for a second redirect.
 
+Fixes: 193125dbd8eb ("net: Introduce VRF device driver")
+Reported-by: Trev Larock <trev@larock.ca>
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- net/ipv4/xfrm4_output.c | 2 --
- net/ipv6/xfrm6_output.c | 2 --
- 2 files changed, 4 deletions(-)
+ drivers/net/vrf.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/xfrm4_output.c b/net/ipv4/xfrm4_output.c
-index 89ba7c87de5d..30ddb9dc9398 100644
---- a/net/ipv4/xfrm4_output.c
-+++ b/net/ipv4/xfrm4_output.c
-@@ -58,9 +58,7 @@ int xfrm4_output_finish(struct sock *sk, struct sk_buff *skb)
- {
- 	memset(IPCB(skb), 0, sizeof(*IPCB(skb)));
+diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
+index 66e00ddc0d42..6f5d03b7d9c0 100644
+--- a/drivers/net/vrf.c
++++ b/drivers/net/vrf.c
+@@ -474,7 +474,8 @@ static struct sk_buff *vrf_ip6_out(struct net_device *vrf_dev,
+ 	if (rt6_need_strict(&ipv6_hdr(skb)->daddr))
+ 		return skb;
  
--#ifdef CONFIG_NETFILTER
- 	IPCB(skb)->flags |= IPSKB_XFRM_TRANSFORMED;
--#endif
+-	if (qdisc_tx_is_default(vrf_dev))
++	if (qdisc_tx_is_default(vrf_dev) ||
++	    IP6CB(skb)->flags & IP6SKB_XFRM_TRANSFORMED)
+ 		return vrf_ip6_out_direct(vrf_dev, sk, skb);
  
- 	return xfrm_output(sk, skb);
- }
-diff --git a/net/ipv6/xfrm6_output.c b/net/ipv6/xfrm6_output.c
-index fbe51d40bd7e..e34167f790e6 100644
---- a/net/ipv6/xfrm6_output.c
-+++ b/net/ipv6/xfrm6_output.c
-@@ -111,9 +111,7 @@ int xfrm6_output_finish(struct sock *sk, struct sk_buff *skb)
- {
- 	memset(IP6CB(skb), 0, sizeof(*IP6CB(skb)));
+ 	return vrf_ip6_out_redirect(vrf_dev, skb);
+@@ -686,7 +687,8 @@ static struct sk_buff *vrf_ip_out(struct net_device *vrf_dev,
+ 	    ipv4_is_lbcast(ip_hdr(skb)->daddr))
+ 		return skb;
  
--#ifdef CONFIG_NETFILTER
- 	IP6CB(skb)->flags |= IP6SKB_XFRM_TRANSFORMED;
--#endif
+-	if (qdisc_tx_is_default(vrf_dev))
++	if (qdisc_tx_is_default(vrf_dev) ||
++	    IPCB(skb)->flags & IPSKB_XFRM_TRANSFORMED)
+ 		return vrf_ip_out_direct(vrf_dev, sk, skb);
  
- 	return xfrm_output(sk, skb);
- }
+ 	return vrf_ip_out_redirect(vrf_dev, skb);
 -- 
 2.20.1
 
