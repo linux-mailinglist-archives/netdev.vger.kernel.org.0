@@ -2,203 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FBDE1B16A3
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 22:05:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DACA31B16B2
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 22:09:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726099AbgDTUFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 16:05:43 -0400
-Received: from mga04.intel.com ([192.55.52.120]:5555 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725918AbgDTUFn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 16:05:43 -0400
-IronPort-SDR: c5uFNaCvkXW5kZ6chk2njoMUSb1IJgV+DlHimWciJbLP9RvopFAoePGK/ldmtE6v7lEJifySVy
- jfxRLyQfKTBQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 13:05:39 -0700
-IronPort-SDR: 4RIdgRIZeMuNZ69C1wzMNay6G2NDMzz/yFB43K0u3RWOwywYoBtITsrL2EwktZyFnSTCZ4nIdi
- nmAPYvll0hjw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,407,1580803200"; 
-   d="scan'208";a="245471641"
-Received: from chall-mobl1.amr.corp.intel.com ([10.255.231.110])
-  by fmsmga007.fm.intel.com with ESMTP; 20 Apr 2020 13:05:38 -0700
-Date:   Mon, 20 Apr 2020 13:05:37 -0700 (PDT)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-X-X-Sender: mjmartin@chall-mobl1.amr.corp.intel.com
-To:     Paolo Abeni <pabeni@redhat.com>
-cc:     netdev@vger.kernel.org,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Christoph Paasch <cpaasch@apple.com>,
-        Florian Westphal <fw@strlen.de>
-Subject: Re: [PATCH net 3/3] mptcp: drop req socket remote_key* fields
-In-Reply-To: <0fc5ffc1b598e18e6c488331b0a756e45205f64b.1587389294.git.pabeni@redhat.com>
-Message-ID: <alpine.OSX.2.22.394.2004201254570.98347@chall-mobl1.amr.corp.intel.com>
-References: <cover.1587389294.git.pabeni@redhat.com> <0fc5ffc1b598e18e6c488331b0a756e45205f64b.1587389294.git.pabeni@redhat.com>
-User-Agent: Alpine 2.22 (OSX 394 2020-01-19)
+        id S1726729AbgDTUJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 16:09:15 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:36329 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726147AbgDTUJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 16:09:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587413352;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=3cdUNjir+RJ29IhWI2+VQqP/CP/QCzQGQxj8crbt+CU=;
+        b=ZwmxI4M7/usPm0jf49pg3ANFqH3rQY4bWt3+d9VrE6okk9eZtADXu5JDCPDTtlTfCOnKkS
+        r2szUzTqMP8mjdjoa8+18kvWttXSVfiKm40punHVTYiXqbwCyYAP6tKjwOAZCEmobkGtZi
+        to5sediPD4xlIk7tdFn6VqJjhNr8KlU=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-5-v_R4EnbPM52p6vxoYiGEHA-1; Mon, 20 Apr 2020 16:09:08 -0400
+X-MC-Unique: v_R4EnbPM52p6vxoYiGEHA-1
+Received: by mail-wr1-f71.google.com with SMTP id f15so6325086wrj.2
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 13:09:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=3cdUNjir+RJ29IhWI2+VQqP/CP/QCzQGQxj8crbt+CU=;
+        b=FogGm8AtO3/N7M3peQ6EupifuGUE2hmylbuv+zp3oGJkgc0VovjFA1ibunGFP7InUG
+         N8P4kASsYZtuJQZ5kse/oXGFEmZkRIFx7iwnMs+YogY6L3mFAqXLs7C7VykMCRMrPXUN
+         TDvMpEo2cMSibeFAn7Ru6jKJ2RdF9MQTNKlITOcWvxtkLUUEJ0jZn21osbOql6qBVebx
+         9/A2cicZ//o32xoVphp3JVI6cMpawjwUghUvjQcR+a0pVTq63TntR89+8CdwOpC9JMhn
+         O2IsWOrGPUcIFflJcZI6yq41VhqF7BIIjkRw2CuCG08nG2qUvuzpS68Avx703nEX/WnJ
+         BoaA==
+X-Gm-Message-State: AGi0Pua3dsgCyTOp/abUtGzJDoblfwH0hPRRqsN26u+GYV8PVIXV1XfI
+        q1eV0Ysj7yN1DR0hp5DUvatIQe+fN/WUxpA69QAP47T37qMMfKOWB0C0mqx62/FHXluaVNS97dQ
+        GT1/RgzYvoIQ//iFQ
+X-Received: by 2002:adf:f48f:: with SMTP id l15mr14175273wro.161.1587413347520;
+        Mon, 20 Apr 2020 13:09:07 -0700 (PDT)
+X-Google-Smtp-Source: APiQypLkaZVhyiGNviDtldj3DJMdeZ39eLj1tjCm5p8aa1AKRsrwnukiu6MtIA4c2rwxsEck4bJl5Q==
+X-Received: by 2002:adf:f48f:: with SMTP id l15mr14175249wro.161.1587413347145;
+        Mon, 20 Apr 2020 13:09:07 -0700 (PDT)
+Received: from redhat.com (bzq-79-183-51-3.red.bezeqint.net. [79.183.51.3])
+        by smtp.gmail.com with ESMTPSA id c83sm618373wmd.23.2020.04.20.13.09.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Apr 2020 13:09:06 -0700 (PDT)
+Date:   Mon, 20 Apr 2020 16:09:04 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH v2] virtio: force spec specified alignment on types
+Message-ID: <20200420200550.254983-1-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email 2.24.1.751.gd10ce2899c
+X-Mutt-Fcc: =sent
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The ring element addresses are passed between components with different
+alignments assumptions. Thus, if guest/userspace selects a pointer and
+host then gets and dereferences it, we might need to decrease the
+compiler-selected alignment to prevent compiler on the host from
+assuming pointer is aligned.
 
-On Mon, 20 Apr 2020, Paolo Abeni wrote:
+This actually triggers on ARM with -mabi=apcs-gnu - which is a
+deprecated configuration, but it seems safer to handle this
+generally.
 
-> We don't need them, as we can use the current ingress opt
-> data instead. Setting them in syn_recv_sock() may causes
-> inconsistent mptcp socket status, as per previous commit.
->
-> Fixes: cc7972ea1932 ("mptcp: parse and emit MP_CAPABLE option according to v1 spec")
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
-> net/mptcp/protocol.c |  8 +++++---
-> net/mptcp/protocol.h |  8 ++++----
-> net/mptcp/subflow.c  | 20 ++++++++++----------
-> 3 files changed, 19 insertions(+), 17 deletions(-)
->
-> diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-> index d275c1e827fe..58ad03fc1bbc 100644
-> --- a/net/mptcp/protocol.c
-> +++ b/net/mptcp/protocol.c
-> @@ -1345,7 +1345,9 @@ static struct ipv6_pinfo *mptcp_inet6_sk(const struct sock *sk)
-> }
-> #endif
->
-> -struct sock *mptcp_sk_clone(const struct sock *sk, struct request_sock *req)
-> +struct sock *mptcp_sk_clone(const struct sock *sk,
-> +			    const struct tcp_options_received *opt_rx,
-> +			    struct request_sock *req)
-> {
-> 	struct mptcp_subflow_request_sock *subflow_req = mptcp_subflow_rsk(req);
-> 	struct sock *nsk = sk_clone_lock(sk, GFP_ATOMIC);
-> @@ -1383,9 +1385,9 @@ struct sock *mptcp_sk_clone(const struct sock *sk, struct request_sock *req)
->
-> 	msk->write_seq = subflow_req->idsn + 1;
-> 	atomic64_set(&msk->snd_una, msk->write_seq);
-> -	if (subflow_req->remote_key_valid) {
-> +	if (opt_rx->mptcp.mp_capable) {
-> 		msk->can_ack = true;
-> -		msk->remote_key = subflow_req->remote_key;
-> +		msk->remote_key = opt_rx->mptcp.sndr_key;
-> 		mptcp_crypto_key_sha(msk->remote_key, NULL, &ack_seq);
-> 		ack_seq++;
-> 		msk->ack_seq = ack_seq;
-> diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-> index 67448002a2d7..a2b3048037d0 100644
-> --- a/net/mptcp/protocol.h
-> +++ b/net/mptcp/protocol.h
-> @@ -206,12 +206,10 @@ struct mptcp_subflow_request_sock {
-> 	struct	tcp_request_sock sk;
-> 	u16	mp_capable : 1,
-> 		mp_join : 1,
-> -		backup : 1,
-> -		remote_key_valid : 1;
-> +		backup : 1;
-> 	u8	local_id;
-> 	u8	remote_id;
-> 	u64	local_key;
-> -	u64	remote_key;
-> 	u64	idsn;
-> 	u32	token;
-> 	u32	ssn_offset;
-> @@ -332,7 +330,9 @@ void mptcp_proto_init(void);
-> int mptcp_proto_v6_init(void);
-> #endif
->
-> -struct sock *mptcp_sk_clone(const struct sock *sk, struct request_sock *req);
-> +struct sock *mptcp_sk_clone(const struct sock *sk,
-> +			    const struct tcp_options_received *opt_rx,
-> +			    struct request_sock *req);
-> void mptcp_get_options(const struct sk_buff *skb,
-> 		       struct tcp_options_received *opt_rx);
->
-> diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-> index 10090ca3d3e0..87c094702d63 100644
-> --- a/net/mptcp/subflow.c
-> +++ b/net/mptcp/subflow.c
-> @@ -133,7 +133,6 @@ static void subflow_init_req(struct request_sock *req,
->
-> 	subflow_req->mp_capable = 0;
-> 	subflow_req->mp_join = 0;
-> -	subflow_req->remote_key_valid = 0;
->
-> #ifdef CONFIG_TCP_MD5SIG
-> 	/* no MPTCP if MD5SIG is enabled on this socket or we may run out of
-> @@ -404,6 +403,7 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
->
-> 	pr_debug("listener=%p, req=%p, conn=%p", listener, req, listener->conn);
->
-> +	opt_rx.mptcp.mp_capable = 0;
-> 	if (tcp_rsk(req)->is_mptcp == 0)
-> 		goto create_child;
->
-> @@ -418,18 +418,14 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
-> 			goto create_msk;
-> 		}
->
-> -		opt_rx.mptcp.mp_capable = 0;
-> 		mptcp_get_options(skb, &opt_rx);
-> -		if (opt_rx.mptcp.mp_capable) {
-> -			subflow_req->remote_key = opt_rx.mptcp.sndr_key;
-> -			subflow_req->remote_key_valid = 1;
-> -		} else {
-> +		if (!opt_rx.mptcp.mp_capable) {
-> 			fallback = true;
-> 			goto create_child;
-> 		}
->
-> create_msk:
-> -		new_msk = mptcp_sk_clone(listener->conn, req);
-> +		new_msk = mptcp_sk_clone(listener->conn, &opt_rx, req);
-> 		if (!new_msk)
-> 			fallback = true;
-> 	} else if (subflow_req->mp_join) {
-> @@ -473,6 +469,13 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
-> 			mptcp_pm_new_connection(mptcp_sk(new_msk), 1);
-> 			ctx->conn = new_msk;
-> 			new_msk = NULL;
-> +
-> +			/* with OoO packets we can reach here without ingress
-> +			 * mpc option
-> +			 */
-> +			ctx->remote_key = opt_rx.mptcp.sndr_key;
-> +			ctx->fully_established = opt_rx.mptcp.mp_capable;
-> +			ctx->can_ack = opt_rx.mptcp.mp_capable;
+Note that userspace that allocates the memory is actually OK and does
+not need to be fixed, but userspace that gets it from guest or another
+process does need to be fixed. The later doesn't generally talk to the
+kernel so while it might be buggy it's not talking to the kernel in the
+buggy way - it's just using the header in the buggy way - so fixing
+header and asking userspace to recompile is the best we can do.
 
-If this code is reached without an incoming mpc option, it looks like 
-ctx->remote_key gets junk off the stack. Maybe this instead?
+I verified that the produced kernel binary on x86 is exactly identical
+before and after the change.
 
-+			if (opt_rx.mptcp.mp_capable) {
-+				ctx->remote_key = opt_rx.mptcp.sndr_key;
-+				ctx->fully_established = 1;
-+				ctx->can_ack = 1;
-+			}
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
 
+Changes from v1:
+	update vhost, vringh pointers to use the new typedefs
 
-Mat
+ drivers/vhost/vhost.c            |  8 +++----
+ drivers/vhost/vhost.h            |  6 ++---
+ drivers/vhost/vringh.c           |  6 ++---
+ include/linux/vringh.h           |  6 ++---
+ include/uapi/linux/virtio_ring.h | 38 +++++++++++++++++++++++---------
+ 5 files changed, 41 insertions(+), 23 deletions(-)
 
-> 		} else if (ctx->mp_join) {
-> 			struct mptcp_sock *owner;
->
-> @@ -1152,9 +1155,6 @@ static void subflow_ulp_clone(const struct request_sock *req,
-> 		 * is fully established only after we receive the remote key
-> 		 */
-> 		new_ctx->mp_capable = 1;
-> -		new_ctx->fully_established = subflow_req->remote_key_valid;
-> -		new_ctx->can_ack = subflow_req->remote_key_valid;
-> -		new_ctx->remote_key = subflow_req->remote_key;
-> 		new_ctx->local_key = subflow_req->local_key;
-> 		new_ctx->token = subflow_req->token;
-> 		new_ctx->ssn_offset = subflow_req->ssn_offset;
-> -- 
-> 2.21.1
->
->
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index d450e16c5c25..21706759377e 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -1244,9 +1244,9 @@ static int vhost_iotlb_miss(struct vhost_virtqueue *vq, u64 iova, int access)
+ }
+ 
+ static bool vq_access_ok(struct vhost_virtqueue *vq, unsigned int num,
+-			 struct vring_desc __user *desc,
+-			 struct vring_avail __user *avail,
+-			 struct vring_used __user *used)
++			 vring_desc_t __user *desc,
++			 vring_avail_t __user *avail,
++			 vring_used_t __user *used)
+ 
+ {
+ 	return access_ok(desc, vhost_get_desc_size(vq, num)) &&
+@@ -2301,7 +2301,7 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
+ 			    struct vring_used_elem *heads,
+ 			    unsigned count)
+ {
+-	struct vring_used_elem __user *used;
++	vring_used_t __user *used;
+ 	u16 old, new;
+ 	int start;
+ 
+diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+index f8403bd46b85..60cab4c78229 100644
+--- a/drivers/vhost/vhost.h
++++ b/drivers/vhost/vhost.h
+@@ -67,9 +67,9 @@ struct vhost_virtqueue {
+ 	/* The actual ring of buffers. */
+ 	struct mutex mutex;
+ 	unsigned int num;
+-	struct vring_desc __user *desc;
+-	struct vring_avail __user *avail;
+-	struct vring_used __user *used;
++	vring_desc_t __user *desc;
++	vring_avail_t __user *avail;
++	vring_used_t __user *used;
+ 	const struct vhost_iotlb_map *meta_iotlb[VHOST_NUM_ADDRS];
+ 	struct file *kick;
+ 	struct eventfd_ctx *call_ctx;
+diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+index ba8e0d6cfd97..e059a9a47cdf 100644
+--- a/drivers/vhost/vringh.c
++++ b/drivers/vhost/vringh.c
+@@ -620,9 +620,9 @@ static inline int xfer_to_user(const struct vringh *vrh,
+  */
+ int vringh_init_user(struct vringh *vrh, u64 features,
+ 		     unsigned int num, bool weak_barriers,
+-		     struct vring_desc __user *desc,
+-		     struct vring_avail __user *avail,
+-		     struct vring_used __user *used)
++		     vring_desc_t __user *desc,
++		     vring_avail_t __user *avail,
++		     vring_used_t __user *used)
+ {
+ 	/* Sane power of 2 please! */
+ 	if (!num || num > 0xffff || (num & (num - 1))) {
+diff --git a/include/linux/vringh.h b/include/linux/vringh.h
+index 9e2763d7c159..59bd50f99291 100644
+--- a/include/linux/vringh.h
++++ b/include/linux/vringh.h
+@@ -105,9 +105,9 @@ struct vringh_kiov {
+ /* Helpers for userspace vrings. */
+ int vringh_init_user(struct vringh *vrh, u64 features,
+ 		     unsigned int num, bool weak_barriers,
+-		     struct vring_desc __user *desc,
+-		     struct vring_avail __user *avail,
+-		     struct vring_used __user *used);
++		     vring_desc_t __user *desc,
++		     vring_avail_t __user *avail,
++		     vring_used_t __user *used);
+ 
+ static inline void vringh_iov_init(struct vringh_iov *iov,
+ 				   struct iovec *iovec, unsigned num)
+diff --git a/include/uapi/linux/virtio_ring.h b/include/uapi/linux/virtio_ring.h
+index 9223c3a5c46a..177227f0d9cd 100644
+--- a/include/uapi/linux/virtio_ring.h
++++ b/include/uapi/linux/virtio_ring.h
+@@ -118,16 +118,6 @@ struct vring_used {
+ 	struct vring_used_elem ring[];
+ };
+ 
+-struct vring {
+-	unsigned int num;
+-
+-	struct vring_desc *desc;
+-
+-	struct vring_avail *avail;
+-
+-	struct vring_used *used;
+-};
+-
+ /* Alignment requirements for vring elements.
+  * When using pre-virtio 1.0 layout, these fall out naturally.
+  */
+@@ -135,6 +125,34 @@ struct vring {
+ #define VRING_USED_ALIGN_SIZE 4
+ #define VRING_DESC_ALIGN_SIZE 16
+ 
++/*
++ * The ring element addresses are passed between components with different
++ * alignments assumptions. Thus, we might need to decrease the compiler-selected
++ * alignment, and so must use a typedef to make sure the __aligned attribute
++ * actually takes hold:
++ *
++ * https://gcc.gnu.org/onlinedocs//gcc/Common-Type-Attributes.html#Common-Type-Attributes
++ *
++ * When used on a struct, or struct member, the aligned attribute can only
++ * increase the alignment; in order to decrease it, the packed attribute must
++ * be specified as well. When used as part of a typedef, the aligned attribute
++ * can both increase and decrease alignment, and specifying the packed
++ * attribute generates a warning.
++ */
++typedef struct vring_desc __aligned(VRING_DESC_ALIGN_SIZE) vring_desc_t;
++typedef struct vring_avail __aligned(VRING_AVAIL_ALIGN_SIZE) vring_avail_t;
++typedef struct vring_used __aligned(VRING_USED_ALIGN_SIZE) vring_used_t;
++
++struct vring {
++	unsigned int num;
++
++	vring_desc_t *desc;
++
++	vring_avail_t *avail;
++
++	vring_used_t *used;
++};
++
+ #ifndef VIRTIO_RING_NO_LEGACY
+ 
+ /* The standard layout for the ring is a continuous chunk of memory which looks
+-- 
+MST
 
---
-Mat Martineau
-Intel
