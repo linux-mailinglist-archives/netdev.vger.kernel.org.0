@@ -2,235 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DACA31B16B2
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 22:09:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 705E51B1703
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 22:27:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726729AbgDTUJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 16:09:15 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:36329 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726147AbgDTUJO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 16:09:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587413352;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=3cdUNjir+RJ29IhWI2+VQqP/CP/QCzQGQxj8crbt+CU=;
-        b=ZwmxI4M7/usPm0jf49pg3ANFqH3rQY4bWt3+d9VrE6okk9eZtADXu5JDCPDTtlTfCOnKkS
-        r2szUzTqMP8mjdjoa8+18kvWttXSVfiKm40punHVTYiXqbwCyYAP6tKjwOAZCEmobkGtZi
-        to5sediPD4xlIk7tdFn6VqJjhNr8KlU=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-5-v_R4EnbPM52p6vxoYiGEHA-1; Mon, 20 Apr 2020 16:09:08 -0400
-X-MC-Unique: v_R4EnbPM52p6vxoYiGEHA-1
-Received: by mail-wr1-f71.google.com with SMTP id f15so6325086wrj.2
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 13:09:08 -0700 (PDT)
+        id S1728297AbgDTU07 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 16:26:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50140 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728284AbgDTU04 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 16:26:56 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8FC9C061A0C;
+        Mon, 20 Apr 2020 13:26:56 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id u9so5490625pfm.10;
+        Mon, 20 Apr 2020 13:26:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Fu9Uhr2WUQ553mJsjojbg9oYJpUAQFW34/wi7Gm0amg=;
+        b=Itehx/knDWwHPwVe6STk6VcC+aEK0W7ooUGEb791KaDO1o/vwOdA/JN9yFNuVtdy4+
+         n0dN1Nkmzau/ARNpn+G/YI3Fjguagorp8ldTOIgQqQVPHPPh4/bmjoFvrh0J50vXjq8p
+         URpW1BpKuPjhkIoxDFzspsPzM5KbiynyR3oBXa+wqtAXeFvlug5Sx+OTMQhCl6pKlGQj
+         WjUzdRMAr97FopmwNN2FxRfR9yuqm9Vbzh4breKXDnoDuL4DiU5tolDk37r2OiDhHCa4
+         oKvMWOql1K3zGjOSClA9u+ShXFYMFZL/TheBb6w4qnqdyslWRGwFUl3d4FwZ7eOkjrEb
+         Gxvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=3cdUNjir+RJ29IhWI2+VQqP/CP/QCzQGQxj8crbt+CU=;
-        b=FogGm8AtO3/N7M3peQ6EupifuGUE2hmylbuv+zp3oGJkgc0VovjFA1ibunGFP7InUG
-         N8P4kASsYZtuJQZ5kse/oXGFEmZkRIFx7iwnMs+YogY6L3mFAqXLs7C7VykMCRMrPXUN
-         TDvMpEo2cMSibeFAn7Ru6jKJ2RdF9MQTNKlITOcWvxtkLUUEJ0jZn21osbOql6qBVebx
-         9/A2cicZ//o32xoVphp3JVI6cMpawjwUghUvjQcR+a0pVTq63TntR89+8CdwOpC9JMhn
-         O2IsWOrGPUcIFflJcZI6yq41VhqF7BIIjkRw2CuCG08nG2qUvuzpS68Avx703nEX/WnJ
-         BoaA==
-X-Gm-Message-State: AGi0Pua3dsgCyTOp/abUtGzJDoblfwH0hPRRqsN26u+GYV8PVIXV1XfI
-        q1eV0Ysj7yN1DR0hp5DUvatIQe+fN/WUxpA69QAP47T37qMMfKOWB0C0mqx62/FHXluaVNS97dQ
-        GT1/RgzYvoIQ//iFQ
-X-Received: by 2002:adf:f48f:: with SMTP id l15mr14175273wro.161.1587413347520;
-        Mon, 20 Apr 2020 13:09:07 -0700 (PDT)
-X-Google-Smtp-Source: APiQypLkaZVhyiGNviDtldj3DJMdeZ39eLj1tjCm5p8aa1AKRsrwnukiu6MtIA4c2rwxsEck4bJl5Q==
-X-Received: by 2002:adf:f48f:: with SMTP id l15mr14175249wro.161.1587413347145;
-        Mon, 20 Apr 2020 13:09:07 -0700 (PDT)
-Received: from redhat.com (bzq-79-183-51-3.red.bezeqint.net. [79.183.51.3])
-        by smtp.gmail.com with ESMTPSA id c83sm618373wmd.23.2020.04.20.13.09.05
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Fu9Uhr2WUQ553mJsjojbg9oYJpUAQFW34/wi7Gm0amg=;
+        b=jq5ruqMCxcNO1zhKXdA5R2P24YtX057eveL6V7IbekrOFr1Kkn9Lub0r5PEaIsIGRW
+         3Vi39vwICsd6YiLQriG1pivUIAtPkHwRXyCX93XD54hGeGyfMe3Hjg97UWNiPo7P80xF
+         aPv/gnJvwAmM8orn5gVZQkxz/+FIesH2frvZnShcx1zvmHk2ncqrOXw5HiGLDuZ/9Qm5
+         4NifBy86XuaQlA0+xU0Q/pngfLxagVAB2xXHdrYx24HZ1iybt7WJy4p6e+kGr13zPpMB
+         3IgmY4eZeZ2PyxALsKxtsWdNoDXHBGVLkEm4gxhzRxzV2qkDySrIPG3yNk11+j4rozCK
+         3yoQ==
+X-Gm-Message-State: AGi0PubrONvy8qL9m1Lav8ZCyYh06UmFv2FvlQMiGMkr5nBPkfJWGQhj
+        uvr8XRwrVe3P4WZI5+JJt7c=
+X-Google-Smtp-Source: APiQypJpug56tVoemXOW5dw56pzrYkEFCOENPtf7Pdhh01jNMlZXJtyzWZDH5fcD2MEZ9xpXjlcP3g==
+X-Received: by 2002:a63:1820:: with SMTP id y32mr17486948pgl.182.1587414416044;
+        Mon, 20 Apr 2020 13:26:56 -0700 (PDT)
+Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
+        by smtp.gmail.com with ESMTPSA id 141sm338899pfz.171.2020.04.20.13.26.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2020 13:09:06 -0700 (PDT)
-Date:   Mon, 20 Apr 2020 16:09:04 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH v2] virtio: force spec specified alignment on types
-Message-ID: <20200420200550.254983-1-mst@redhat.com>
+        Mon, 20 Apr 2020 13:26:55 -0700 (PDT)
+From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
+To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>
+Subject: [PATCH] net: bpf: add bpf_ktime_get_boot_ns()
+Date:   Mon, 20 Apr 2020 13:26:43 -0700
+Message-Id: <20200420202643.87198-1-zenczykowski@gmail.com>
+X-Mailer: git-send-email 2.26.1.301.g55bc3eb7cb9-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email 2.24.1.751.gd10ce2899c
-X-Mutt-Fcc: =sent
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ring element addresses are passed between components with different
-alignments assumptions. Thus, if guest/userspace selects a pointer and
-host then gets and dereferences it, we might need to decrease the
-compiler-selected alignment to prevent compiler on the host from
-assuming pointer is aligned.
+From: Maciej Żenczykowski <maze@google.com>
 
-This actually triggers on ARM with -mabi=apcs-gnu - which is a
-deprecated configuration, but it seems safer to handle this
-generally.
+On a device like a cellphone which is constantly suspending
+and resuming CLOCK_MONOTONIC is not particularly useful for
+keeping track of or reacting to external network events.
+Instead you want to use CLOCK_BOOTTIME.
 
-Note that userspace that allocates the memory is actually OK and does
-not need to be fixed, but userspace that gets it from guest or another
-process does need to be fixed. The later doesn't generally talk to the
-kernel so while it might be buggy it's not talking to the kernel in the
-buggy way - it's just using the header in the buggy way - so fixing
-header and asking userspace to recompile is the best we can do.
+Hence add bpf_ktime_get_boot_ns() as a mirror of bpf_ktime_get_ns()
+based around CLOCK_BOOTTIME instead of CLOCK_MONOTONIC.
 
-I verified that the produced kernel binary on x86 is exactly identical
-before and after the change.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
 ---
+ drivers/media/rc/bpf-lirc.c    |  2 ++
+ include/linux/bpf.h            |  1 +
+ include/uapi/linux/bpf.h       | 13 ++++++++++++-
+ kernel/bpf/core.c              |  1 +
+ kernel/bpf/helpers.c           | 12 ++++++++++++
+ kernel/trace/bpf_trace.c       |  2 ++
+ net/core/filter.c              |  2 ++
+ tools/include/uapi/linux/bpf.h | 13 ++++++++++++-
+ 8 files changed, 44 insertions(+), 2 deletions(-)
 
-Changes from v1:
-	update vhost, vringh pointers to use the new typedefs
-
- drivers/vhost/vhost.c            |  8 +++----
- drivers/vhost/vhost.h            |  6 ++---
- drivers/vhost/vringh.c           |  6 ++---
- include/linux/vringh.h           |  6 ++---
- include/uapi/linux/virtio_ring.h | 38 +++++++++++++++++++++++---------
- 5 files changed, 41 insertions(+), 23 deletions(-)
-
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index d450e16c5c25..21706759377e 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -1244,9 +1244,9 @@ static int vhost_iotlb_miss(struct vhost_virtqueue *vq, u64 iova, int access)
- }
+diff --git a/drivers/media/rc/bpf-lirc.c b/drivers/media/rc/bpf-lirc.c
+index 0f3417d161b8..069c42f22a8c 100644
+--- a/drivers/media/rc/bpf-lirc.c
++++ b/drivers/media/rc/bpf-lirc.c
+@@ -103,6 +103,8 @@ lirc_mode2_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_map_peek_elem_proto;
+ 	case BPF_FUNC_ktime_get_ns:
+ 		return &bpf_ktime_get_ns_proto;
++	case BPF_FUNC_ktime_get_boot_ns:
++		return &bpf_ktime_get_boot_ns_proto;
+ 	case BPF_FUNC_tail_call:
+ 		return &bpf_tail_call_proto;
+ 	case BPF_FUNC_get_prandom_u32:
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index fd2b2322412d..65217c52474d 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1502,6 +1502,7 @@ extern const struct bpf_func_proto bpf_get_smp_processor_id_proto;
+ extern const struct bpf_func_proto bpf_get_numa_node_id_proto;
+ extern const struct bpf_func_proto bpf_tail_call_proto;
+ extern const struct bpf_func_proto bpf_ktime_get_ns_proto;
++extern const struct bpf_func_proto bpf_ktime_get_boot_ns_proto;
+ extern const struct bpf_func_proto bpf_get_current_pid_tgid_proto;
+ extern const struct bpf_func_proto bpf_get_current_uid_gid_proto;
+ extern const struct bpf_func_proto bpf_get_current_comm_proto;
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 2e29a671d67e..2e13b094438d 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -652,6 +652,16 @@ union bpf_attr {
+  * u64 bpf_ktime_get_ns(void)
+  * 	Description
+  * 		Return the time elapsed since system boot, in nanoseconds.
++ * 		Does not include time the system was suspended.
++ * 		See: clock_gettime(CLOCK_MONOTONIC)
++ * 	Return
++ * 		Current *ktime*.
++ *
++ * u64 bpf_ktime_get_boot_ns(void)
++ * 	Description
++ * 		Return the time elapsed since system boot, in nanoseconds.
++ * 		Does include the time the system was suspended.
++ * 		See: clock_gettime(CLOCK_BOOTTIME)
+  * 	Return
+  * 		Current *ktime*.
+  *
+@@ -3151,7 +3161,8 @@ union bpf_attr {
+ 	FN(xdp_output),			\
+ 	FN(get_netns_cookie),		\
+ 	FN(get_current_ancestor_cgroup_id),	\
+-	FN(sk_assign),
++	FN(sk_assign),			\
++	FN(ktime_get_boot_ns),
  
- static bool vq_access_ok(struct vhost_virtqueue *vq, unsigned int num,
--			 struct vring_desc __user *desc,
--			 struct vring_avail __user *avail,
--			 struct vring_used __user *used)
-+			 vring_desc_t __user *desc,
-+			 vring_avail_t __user *avail,
-+			 vring_used_t __user *used)
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+  * function eBPF program intends to call
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 916f5132a984..d87877cd99c1 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -2151,6 +2151,7 @@ const struct bpf_func_proto bpf_get_prandom_u32_proto __weak;
+ const struct bpf_func_proto bpf_get_smp_processor_id_proto __weak;
+ const struct bpf_func_proto bpf_get_numa_node_id_proto __weak;
+ const struct bpf_func_proto bpf_ktime_get_ns_proto __weak;
++const struct bpf_func_proto bpf_ktime_get_boot_ns_proto __weak;
  
- {
- 	return access_ok(desc, vhost_get_desc_size(vq, num)) &&
-@@ -2301,7 +2301,7 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
- 			    struct vring_used_elem *heads,
- 			    unsigned count)
- {
--	struct vring_used_elem __user *used;
-+	vring_used_t __user *used;
- 	u16 old, new;
- 	int start;
- 
-diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-index f8403bd46b85..60cab4c78229 100644
---- a/drivers/vhost/vhost.h
-+++ b/drivers/vhost/vhost.h
-@@ -67,9 +67,9 @@ struct vhost_virtqueue {
- 	/* The actual ring of buffers. */
- 	struct mutex mutex;
- 	unsigned int num;
--	struct vring_desc __user *desc;
--	struct vring_avail __user *avail;
--	struct vring_used __user *used;
-+	vring_desc_t __user *desc;
-+	vring_avail_t __user *avail;
-+	vring_used_t __user *used;
- 	const struct vhost_iotlb_map *meta_iotlb[VHOST_NUM_ADDRS];
- 	struct file *kick;
- 	struct eventfd_ctx *call_ctx;
-diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-index ba8e0d6cfd97..e059a9a47cdf 100644
---- a/drivers/vhost/vringh.c
-+++ b/drivers/vhost/vringh.c
-@@ -620,9 +620,9 @@ static inline int xfer_to_user(const struct vringh *vrh,
-  */
- int vringh_init_user(struct vringh *vrh, u64 features,
- 		     unsigned int num, bool weak_barriers,
--		     struct vring_desc __user *desc,
--		     struct vring_avail __user *avail,
--		     struct vring_used __user *used)
-+		     vring_desc_t __user *desc,
-+		     vring_avail_t __user *avail,
-+		     vring_used_t __user *used)
- {
- 	/* Sane power of 2 please! */
- 	if (!num || num > 0xffff || (num & (num - 1))) {
-diff --git a/include/linux/vringh.h b/include/linux/vringh.h
-index 9e2763d7c159..59bd50f99291 100644
---- a/include/linux/vringh.h
-+++ b/include/linux/vringh.h
-@@ -105,9 +105,9 @@ struct vringh_kiov {
- /* Helpers for userspace vrings. */
- int vringh_init_user(struct vringh *vrh, u64 features,
- 		     unsigned int num, bool weak_barriers,
--		     struct vring_desc __user *desc,
--		     struct vring_avail __user *avail,
--		     struct vring_used __user *used);
-+		     vring_desc_t __user *desc,
-+		     vring_avail_t __user *avail,
-+		     vring_used_t __user *used);
- 
- static inline void vringh_iov_init(struct vringh_iov *iov,
- 				   struct iovec *iovec, unsigned num)
-diff --git a/include/uapi/linux/virtio_ring.h b/include/uapi/linux/virtio_ring.h
-index 9223c3a5c46a..177227f0d9cd 100644
---- a/include/uapi/linux/virtio_ring.h
-+++ b/include/uapi/linux/virtio_ring.h
-@@ -118,16 +118,6 @@ struct vring_used {
- 	struct vring_used_elem ring[];
+ const struct bpf_func_proto bpf_get_current_pid_tgid_proto __weak;
+ const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index a5158a179e81..fb3ecc5dee7f 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -155,6 +155,18 @@ const struct bpf_func_proto bpf_ktime_get_ns_proto = {
+ 	.ret_type	= RET_INTEGER,
  };
  
--struct vring {
--	unsigned int num;
--
--	struct vring_desc *desc;
--
--	struct vring_avail *avail;
--
--	struct vring_used *used;
--};
--
- /* Alignment requirements for vring elements.
-  * When using pre-virtio 1.0 layout, these fall out naturally.
-  */
-@@ -135,6 +125,34 @@ struct vring {
- #define VRING_USED_ALIGN_SIZE 4
- #define VRING_DESC_ALIGN_SIZE 16
- 
-+/*
-+ * The ring element addresses are passed between components with different
-+ * alignments assumptions. Thus, we might need to decrease the compiler-selected
-+ * alignment, and so must use a typedef to make sure the __aligned attribute
-+ * actually takes hold:
-+ *
-+ * https://gcc.gnu.org/onlinedocs//gcc/Common-Type-Attributes.html#Common-Type-Attributes
-+ *
-+ * When used on a struct, or struct member, the aligned attribute can only
-+ * increase the alignment; in order to decrease it, the packed attribute must
-+ * be specified as well. When used as part of a typedef, the aligned attribute
-+ * can both increase and decrease alignment, and specifying the packed
-+ * attribute generates a warning.
-+ */
-+typedef struct vring_desc __aligned(VRING_DESC_ALIGN_SIZE) vring_desc_t;
-+typedef struct vring_avail __aligned(VRING_AVAIL_ALIGN_SIZE) vring_avail_t;
-+typedef struct vring_used __aligned(VRING_USED_ALIGN_SIZE) vring_used_t;
++BPF_CALL_0(bpf_ktime_get_boot_ns)
++{
++	/* NMI safe access to clock boottime */
++	return ktime_get_boot_fast_ns();
++}
 +
-+struct vring {
-+	unsigned int num;
-+
-+	vring_desc_t *desc;
-+
-+	vring_avail_t *avail;
-+
-+	vring_used_t *used;
++const struct bpf_func_proto bpf_ktime_get_boot_ns_proto = {
++	.func		= bpf_ktime_get_boot_ns,
++	.gpl_only	= false,
++	.ret_type	= RET_INTEGER,
 +};
 +
- #ifndef VIRTIO_RING_NO_LEGACY
+ BPF_CALL_0(bpf_get_current_pid_tgid)
+ {
+ 	struct task_struct *task = current;
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index ca1796747a77..e875c95d3ced 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -797,6 +797,8 @@ bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_map_peek_elem_proto;
+ 	case BPF_FUNC_ktime_get_ns:
+ 		return &bpf_ktime_get_ns_proto;
++	case BPF_FUNC_ktime_get_boot_ns:
++		return &bpf_ktime_get_boot_ns_proto;
+ 	case BPF_FUNC_tail_call:
+ 		return &bpf_tail_call_proto;
+ 	case BPF_FUNC_get_current_pid_tgid:
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 755867867e57..ec567d1e6fb9 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -6009,6 +6009,8 @@ bpf_base_func_proto(enum bpf_func_id func_id)
+ 		return &bpf_tail_call_proto;
+ 	case BPF_FUNC_ktime_get_ns:
+ 		return &bpf_ktime_get_ns_proto;
++	case BPF_FUNC_ktime_get_boot_ns:
++		return &bpf_ktime_get_boot_ns_proto;
+ 	default:
+ 		break;
+ 	}
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 2e29a671d67e..2e13b094438d 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -652,6 +652,16 @@ union bpf_attr {
+  * u64 bpf_ktime_get_ns(void)
+  * 	Description
+  * 		Return the time elapsed since system boot, in nanoseconds.
++ * 		Does not include time the system was suspended.
++ * 		See: clock_gettime(CLOCK_MONOTONIC)
++ * 	Return
++ * 		Current *ktime*.
++ *
++ * u64 bpf_ktime_get_boot_ns(void)
++ * 	Description
++ * 		Return the time elapsed since system boot, in nanoseconds.
++ * 		Does include the time the system was suspended.
++ * 		See: clock_gettime(CLOCK_BOOTTIME)
+  * 	Return
+  * 		Current *ktime*.
+  *
+@@ -3151,7 +3161,8 @@ union bpf_attr {
+ 	FN(xdp_output),			\
+ 	FN(get_netns_cookie),		\
+ 	FN(get_current_ancestor_cgroup_id),	\
+-	FN(sk_assign),
++	FN(sk_assign),			\
++	FN(ktime_get_boot_ns),
  
- /* The standard layout for the ring is a continuous chunk of memory which looks
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+  * function eBPF program intends to call
 -- 
-MST
+2.26.1.301.g55bc3eb7cb9-goog
 
