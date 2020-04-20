@@ -2,96 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E9D61B12D8
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 19:20:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D7721B1300
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 19:29:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726525AbgDTRUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 13:20:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48078 "EHLO
+        id S1726774AbgDTR3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 13:29:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726013AbgDTRUa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 13:20:30 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC37C061A0C;
-        Mon, 20 Apr 2020 10:20:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=d8hn8TYhXkanozCI896xHfztLh3G1m8lpd0qQJenmuE=; b=Ie5TFC4xXLvpH8VIdZhJgD/vQ
-        U0UnL3buhmistVbJaceQe2O08t0R8ajzlMqcANzrvhpG7EVkigE99IQIPz3V21WX7wXNlCAWbbMg+
-        KacUXQy44xapf7PVhh6B1RCbSqXheTXfugi9pzz/TTW33QFoxAqUov3nKP1dUV9CRISq5YoV5ghrx
-        rD2eDKRilSdZiaks8OJHTv47vE1YMWE2b7KqwcsRi15gvUfmm6bWCBvE1GZ7xEdsB4M8v+TpHf9wc
-        k6fPgbq22LikuV14yTqjXD1DOX/TvSXJkhxDqsC3tN5kXgezZ2+SzwXbtb13DjMhMBjzZwDiPn8xT
-        Dle/kOZKA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52812)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jQa5i-0004i2-Nw; Mon, 20 Apr 2020 18:20:18 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jQa5d-00060E-8D; Mon, 20 Apr 2020 18:20:13 +0100
-Date:   Mon, 20 Apr 2020 18:20:13 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Andrew Lunn <andrew@lunn.ch>, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next 3/3] net: phy: bcm54140: add hwmon support
-Message-ID: <20200420172013.GZ25745@shell.armlinux.org.uk>
-References: <20200417201338.GI785713@lunn.ch>
- <84679226df03bdd8060cb95761724d3a@walle.cc>
- <20200417212829.GJ785713@lunn.ch>
- <4f3ff33f78472f547212f87f75a37b66@walle.cc>
- <20200419162928.GL836632@lunn.ch>
- <ebc026792e09d5702d031398e96d34f2@walle.cc>
- <20200419170547.GO836632@lunn.ch>
- <0f7ea4522a76f977f3aa3a80dd62201d@walle.cc>
- <20200419215549.GR836632@lunn.ch>
- <75428c5faab7fc656051ab227663e6e6@walle.cc>
+        by vger.kernel.org with ESMTP id S1725774AbgDTR3T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 13:29:19 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0C0C061A0C;
+        Mon, 20 Apr 2020 10:29:19 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id j4so11487152qkc.11;
+        Mon, 20 Apr 2020 10:29:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Vq8/mG/0NTMC+GWRfgwaZ9CicThHR8b18Gos20H/OCI=;
+        b=JLUlTz7ucNninrUoHI9Nk1wLF7R8zDm5vtysTzcYn6WE8S8uRFmDPaCEYajcqHexpz
+         KvYq+OEQ8nX7PHZFurF7zZEgvtP/hc+JHWeOrFxk+8Xec2qf0czukOlEnu8xxj65GD8L
+         YwxvuJ+xLxiYRjONFox8Su/gKTLbLBZs41nib5w3A1EETBBC4O6J5OVUtuiKIIkoFTOe
+         sC5fki9DZtt/AwG9yUz8k4xsJduHbJRRvjAU6hBbxzTgd34SEkUPcXVEqgQCfaVECCsl
+         dGqMo88EF8QqKkA4wAf7DeFXxO48cQwKT1+EVMd8o4n4+jPORvExlmV7BdHaPWQkYUvI
+         5+dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Vq8/mG/0NTMC+GWRfgwaZ9CicThHR8b18Gos20H/OCI=;
+        b=jWrIpwuhSHDXtGv/HaGRMPIzwzXy03SpV8UVKDNhGyYcWjwUsAQvLbmdgbWZl9fjkP
+         kQ/WS62cTSrDegmFvKWcrur+ZH+MAxXkI+OkDZGLZB2n6fWyWiyzYHr69gN02D61/Vd1
+         AaS64TP+zHdye1DsTI/FEkwKhIAI8fItoHIdeFyX7vaCeg63KZNUZx59SPnliqIuaMWQ
+         TNS5P0+XHJ8Zdhz7s9s4jEocdIwtkAE1gGMjUiyQ54neE8zxzPpvsDZ7Y2Uz6dcNEreG
+         ZqC4RxxJ3y2JZNFxBt4w0WuRhpw1aTcELCH/eikd12PFMQiQ6nJoQ4ibBXruJPvr7BGx
+         MmbQ==
+X-Gm-Message-State: AGi0PuY4gPVd5naarewGrzzVgkrzL4J/9aV4CF0dFisBgBk9N/tQkMmg
+        8/OOflqooAFn7Ey6vX7zctg=
+X-Google-Smtp-Source: APiQypKW29NctZAiE1u2v5LWwnt3O12q0ClWkByA4TJ/nW4i6LyBcFbUM118S6HTsTnmT49/jHcjcg==
+X-Received: by 2002:a37:7744:: with SMTP id s65mr16282734qkc.54.1587403758396;
+        Mon, 20 Apr 2020 10:29:18 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:294e:2b15:7b00:d585? ([2601:282:803:7700:294e:2b15:7b00:d585])
+        by smtp.googlemail.com with ESMTPSA id z6sm116005qke.56.2020.04.20.10.29.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Apr 2020 10:29:17 -0700 (PDT)
+Subject: Re: [PATCH V2 mlx5-next 01/10] net/core: Introduce
+ master_xmit_slave_get
+To:     Jiri Pirko <jiri@resnulli.us>, Maor Gottlieb <maorg@mellanox.com>
+Cc:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        kuba@kernel.org, leonro@mellanox.com, saeedm@mellanox.com,
+        jiri@mellanox.com, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, alexr@mellanox.com
+References: <20200420075426.31462-1-maorg@mellanox.com>
+ <20200420075426.31462-2-maorg@mellanox.com>
+ <20200420140118.GJ6581@nanopsycho.orion>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <a9e00f31-2f4e-1dfc-2464-d3d25376a4b8@gmail.com>
+Date:   Mon, 20 Apr 2020 11:29:15 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <75428c5faab7fc656051ab227663e6e6@walle.cc>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200420140118.GJ6581@nanopsycho.orion>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 20, 2020 at 05:10:19PM +0200, Michael Walle wrote:
-> Hi Andrew,
+On 4/20/20 8:01 AM, Jiri Pirko wrote:
+> Mon, Apr 20, 2020 at 09:54:17AM CEST, maorg@mellanox.com wrote:
+>> Add new ndo to get the xmit slave of master device.
+>> User should release the slave when it's not longer needed.
+>> When slave selection method is based on hash, then the user can ask to
+>> get the xmit slave assume all the slaves can transmit by setting the
+>> LAG_FLAGS_HASH_ALL_SLAVES bit in the flags argument.
+>>
+>> Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
+>> ---
+>> include/linux/netdevice.h |  3 +++
+>> include/net/lag.h         | 32 ++++++++++++++++++++++++++++++++
+>> 2 files changed, 35 insertions(+)
+>>
+>> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+>> index 130a668049ab..e8852f3ad0b6 100644
+>> --- a/include/linux/netdevice.h
+>> +++ b/include/linux/netdevice.h
+>> @@ -1389,6 +1389,9 @@ struct net_device_ops {
+>> 						 struct netlink_ext_ack *extack);
+>> 	int			(*ndo_del_slave)(struct net_device *dev,
+>> 						 struct net_device *slave_dev);
+>> +	struct net_device*	(*ndo_xmit_get_slave)(struct net_device *master_dev,
+>> +						      struct sk_buff *skb,
+>> +						      u16 flags);
 > 
-> Am 2020-04-19 23:55, schrieb Andrew Lunn:
-> > > But what does that have to do with the shared structure? I don't think
-> > > you have to "bundle" the shared structure with the "access the global
-> > > registers" method.
-> > 
-> > We don't need to. But it would be a good way to clean up code which
-> > locks the mdio bus, does a register access on some other device, and
-> > then unlocks the bus.
-> 
-> I'd like do an RFC for that. But how should I proceed with the original
-> patch series? Should I send an updated version; you didn't reply to the
-> LED stuff. That is the last remark for now.
+> Please adjust the name to:
+> ndo_get_lag_xmit_slave
 
-The LED stuff is something that there isn't a solution for at the
-moment.  There's been talk about coming up with some generic way
-to describe the PHY LED configuration in DT, but given that almost
-every PHY has quite different ways to configure LEDs, I fear such
-a task is virtually impossible.
+I disagree. There are multiple master devices and no reason to have a
+LAG specific get_slave.
 
-Very few PHYs under Linux have their LEDs operating "correctly" or
-in a meaningful or sensible way because of this, and it's been this
-way for years.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+
