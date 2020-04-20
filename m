@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 604D91B0F94
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 17:12:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E66461B0F93
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 17:12:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728878AbgDTPMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 11:12:22 -0400
+        id S1730270AbgDTPM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 11:12:27 -0400
 Received: from esa6.microchip.iphmx.com ([216.71.154.253]:24412 "EHLO
         esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730253AbgDTPMU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 11:12:20 -0400
+        with ESMTP id S1730266AbgDTPMZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 11:12:25 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1587395540; x=1618931540;
+  t=1587395544; x=1618931544;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=M30Yp5CS0j3wWpw8B0uEVdM61N+iFSy/Z5GCWGfXb5Y=;
-  b=Tiyw475iLQKIzKQn/RKx+MQPWM4YYiVZCa4bK1hVyWlokgx0hWxEM49D
-   lThai/RxOvKa0GboHTNrVokGYiQFJ3yT3p6PY9VhKy6CYGmV5HFNjBcN3
-   MeqaM2QuqGEFqPRmnOtWyEKaoGpzqCeukczJUQ6kov8hAByVnajgMMmkl
-   J99eqDTdxDK06iIOXD0jnRi0p1ilXNiewhKCLKFuNzyV/AaC7jgdlyMi/
-   PxR6RKUJnOEfeay4CnzDzh8Us5ww9m7KWu5e8VRka6N+wd2MOXz8jv7Dm
-   YpQsfAtG7mcQOsZQ1mYdkbAm84osxaDSlQ/PLzKjNtZpx+Hcqd+dCtRWu
-   w==;
-IronPort-SDR: TsOJ0s9Mue+wN9TG6R/U+gJiH+nZSJPdQi3aad8MV9Mx61krOtUKTo3lfd/OLS7Ydw3LVsnez9
- 84tXtWI/KTYVPU2oQNYZw5fhnGGbK01bE3mLN50UAL7A1ytv/Uspd1K2HroGp0h5EPRkOgTGIO
- q93jewwWCHuH8rHbmfzBxdl3QA8XQDuWVDzznHhVbf///zJsrNx2s76P4Z7xhs/KpnaVMKOkfV
- IyelVzltXWc2UTOQizPiVepjP5FoXJlitUiMESNZa4zSiuMWKYun6z1PMQxsF0MAYjdkTdp8dH
- LVU=
+  bh=ftp7xSwi7rxzsVo0k0Kw+rDFAUz/DiSW/6uUfIvkmrM=;
+  b=a+MI3BLt+4aD1ZfwbyTLnlwRYNMHiKdQg+d972QUC3dI1tOx/mvlbmc+
+   PXsVZd/0AL4XOM0QtV/VRGgrKxvZCZ32nQgCJgWaOmtzgsYgVMtt4RmOA
+   jOZhkD1MraewOtMedzFG9gPA3ptfs+WgeT3UG/a0US05DjmhrmDR2M+Jz
+   Jnjn+keNhv8HpkGCVJTqDBq6gCaJk5HfeuH4WVtqUCsSI5snv7r7/8vcX
+   vDaQvRtUk8bEsVKNYTHFY1COB/Ist4OkD8kZalr1ckLxHzRhP/NiugYLK
+   Gxhz3NuoS1HdjHPWTCssVmV7vTDILsxY48kJypg1U4+67h+HPTSR46q6O
+   g==;
+IronPort-SDR: uEAoTSkFU6kmXKmm06xIfurVoJPXDrvTgWOHzJFTa1YtBq1vfEe1yki5MVDtR0gT5nbevzZPqb
+ Ca47M3UTTk8xvszhA36upuVHzB3h9kPZ2etDhRZDHXWKDDZVVHe3jDdU1m3rQiybZuhTUFEFJA
+ xjIBlVDwPhsoCR3MtJNUzM46hxrpP/KS+ZdV2EPecJDNSJhDoRNNCaSqaoEtnPwCWxAurzuuOu
+ CoSfPIgX8ZKSRC1Fqx90Uq/lURKVWWXG+wnydyFFMY0/77IKcLA9BkvMx5QR111LQyur0jrnr1
+ 9cA=
 X-IronPort-AV: E=Sophos;i="5.72,406,1580799600"; 
-   d="scan'208";a="9780058"
+   d="scan'208";a="9780084"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Apr 2020 08:12:18 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Apr 2020 08:12:23 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
  chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 20 Apr 2020 08:11:51 -0700
+ 15.1.1713.5; Mon, 20 Apr 2020 08:11:54 -0700
 Received: from soft-dev3.microsemi.net (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.1713.5 via Frontend Transport; Mon, 20 Apr 2020 08:11:48 -0700
+ 15.1.1713.5 via Frontend Transport; Mon, 20 Apr 2020 08:11:51 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <nikolay@cumulusnetworks.com>, <davem@davemloft.net>,
         <jiri@resnulli.us>, <ivecera@redhat.com>, <kuba@kernel.org>,
@@ -47,9 +47,9 @@ To:     <nikolay@cumulusnetworks.com>, <davem@davemloft.net>,
         <UNGLinuxDriver@microchip.com>, <linux-kernel@vger.kernel.org>,
         <netdev@vger.kernel.org>, <bridge@lists.linux-foundation.org>
 CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 12/13] bridge: mrp: Integrate MRP into the bridge
-Date:   Mon, 20 Apr 2020 17:09:46 +0200
-Message-ID: <20200420150947.30974-13-horatiu.vultur@microchip.com>
+Subject: [PATCH net-next 13/13] net: bridge: Add checks for enabling the STP.
+Date:   Mon, 20 Apr 2020 17:09:47 +0200
+Message-ID: <20200420150947.30974-14-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200420150947.30974-1-horatiu.vultur@microchip.com>
 References: <20200420150947.30974-1-horatiu.vultur@microchip.com>
@@ -60,124 +60,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To integrate MRP into the bridge, the bridge needs to do the following:
-- detect if the MRP frame was received on MRP ring port in that case it would be
-  processed otherwise just forward it as usual.
-- enable parsing of MRP
-- before whenever the bridge was set up, it would set all the ports in
-  forwarding state. Add an extra check to not set ports in forwarding state if
-  the port is an MRP ring port. The reason of this change is that if the MRP
-  instance initially sets the port in blocked state by setting the bridge up it
-  would overwrite this setting.
+It is not possible to have the MRP and STP running at the same time on the
+bridge, therefore add check when enabling the STP to check if MRP is already
+enabled. In that case return error.
 
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- net/bridge/br_device.c  |  3 +++
- net/bridge/br_if.c      |  2 ++
- net/bridge/br_input.c   |  3 +++
- net/bridge/br_netlink.c |  5 +++++
- net/bridge/br_private.h | 31 +++++++++++++++++++++++++++++++
- 5 files changed, 44 insertions(+)
+ net/bridge/br_ioctl.c    |  3 +--
+ net/bridge/br_netlink.c  |  4 +++-
+ net/bridge/br_private.h  |  3 ++-
+ net/bridge/br_stp.c      |  6 ++++++
+ net/bridge/br_stp_if.c   | 11 ++++++++++-
+ net/bridge/br_sysfs_br.c |  4 +---
+ 6 files changed, 23 insertions(+), 8 deletions(-)
 
-diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
-index 0e3dbc5f3c34..8ec1362588af 100644
---- a/net/bridge/br_device.c
-+++ b/net/bridge/br_device.c
-@@ -463,6 +463,9 @@ void br_dev_setup(struct net_device *dev)
- 	spin_lock_init(&br->lock);
- 	INIT_LIST_HEAD(&br->port_list);
- 	INIT_HLIST_HEAD(&br->fdb_list);
-+#if IS_ENABLED(CONFIG_BRIDGE_MRP)
-+	INIT_LIST_HEAD(&br->mrp_list);
-+#endif
- 	spin_lock_init(&br->hash_lock);
+diff --git a/net/bridge/br_ioctl.c b/net/bridge/br_ioctl.c
+index ae22d784b88a..5e71fc8b826f 100644
+--- a/net/bridge/br_ioctl.c
++++ b/net/bridge/br_ioctl.c
+@@ -242,8 +242,7 @@ static int old_dev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+ 		if (!ns_capable(dev_net(dev)->user_ns, CAP_NET_ADMIN))
+ 			return -EPERM;
  
- 	br->bridge_id.prio[0] = 0x80;
-diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
-index 4fe30b182ee7..ca685c0cdf95 100644
---- a/net/bridge/br_if.c
-+++ b/net/bridge/br_if.c
-@@ -333,6 +333,8 @@ static void del_nbp(struct net_bridge_port *p)
- 	br_stp_disable_port(p);
- 	spin_unlock_bh(&br->lock);
+-		br_stp_set_enabled(br, args[1]);
+-		ret = 0;
++		ret = br_stp_set_enabled(br, args[1], NULL);
+ 		break;
  
-+	br_mrp_port_del(br, p);
-+
- 	br_ifinfo_notify(RTM_DELLINK, NULL, p);
- 
- 	list_del_rcu(&p->list);
-diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index fcc260840028..d5c34f36f0f4 100644
---- a/net/bridge/br_input.c
-+++ b/net/bridge/br_input.c
-@@ -342,6 +342,9 @@ rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
- 		}
- 	}
- 
-+	if (unlikely(br_mrp_process(p, skb)))
-+		return RX_HANDLER_PASS;
-+
- forward:
- 	switch (p->state) {
- 	case BR_STATE_FORWARDING:
+ 	case BRCTL_SET_BRIDGE_PRIORITY:
 diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index 2f3a9e50c168..52f7bbd3f382 100644
+index 52f7bbd3f382..dfdf076616c6 100644
 --- a/net/bridge/br_netlink.c
 +++ b/net/bridge/br_netlink.c
-@@ -675,6 +675,11 @@ static int br_afspec(struct net_bridge *br,
- 			if (err)
- 				return err;
- 			break;
-+		case IFLA_BRIDGE_MRP:
-+			err = br_mrp_parse(br, p, attr, cmd, extack);
-+			if (err)
-+				return err;
-+			break;
- 		}
+@@ -1112,7 +1112,9 @@ static int br_changelink(struct net_device *brdev, struct nlattr *tb[],
+ 	if (data[IFLA_BR_STP_STATE]) {
+ 		u32 stp_enabled = nla_get_u32(data[IFLA_BR_STP_STATE]);
+ 
+-		br_stp_set_enabled(br, stp_enabled);
++		err = br_stp_set_enabled(br, stp_enabled, extack);
++		if (err)
++			return err;
  	}
  
+ 	if (data[IFLA_BR_PRIORITY]) {
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index b3c176a0a136..bbc496fcb181 100644
+index bbc496fcb181..5c24ff92352c 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -1312,6 +1312,37 @@ unsigned long br_timer_value(const struct timer_list *timer);
- extern int (*br_fdb_test_addr_hook)(struct net_device *dev, unsigned char *addr);
- #endif
+@@ -1287,7 +1287,8 @@ int br_set_ageing_time(struct net_bridge *br, clock_t ageing_time);
+ /* br_stp_if.c */
+ void br_stp_enable_bridge(struct net_bridge *br);
+ void br_stp_disable_bridge(struct net_bridge *br);
+-void br_stp_set_enabled(struct net_bridge *br, unsigned long val);
++int br_stp_set_enabled(struct net_bridge *br, unsigned long val,
++		       struct netlink_ext_ack *extack);
+ void br_stp_enable_port(struct net_bridge_port *p);
+ void br_stp_disable_port(struct net_bridge_port *p);
+ bool br_stp_recalculate_bridge_id(struct net_bridge *br);
+diff --git a/net/bridge/br_stp.c b/net/bridge/br_stp.c
+index 1f14b8455345..3e88be7aa269 100644
+--- a/net/bridge/br_stp.c
++++ b/net/bridge/br_stp.c
+@@ -36,6 +36,12 @@ void br_set_state(struct net_bridge_port *p, unsigned int state)
+ 	};
+ 	int err;
  
-+/* br_mrp.c */
-+#if IS_ENABLED(CONFIG_BRIDGE_MRP)
-+int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
-+		 struct nlattr *attr, int cmd, struct netlink_ext_ack *extack);
-+int br_mrp_process(struct net_bridge_port *p, struct sk_buff *skb);
-+bool br_mrp_enabled(struct net_bridge *br);
-+void br_mrp_port_del(struct net_bridge *br, struct net_bridge_port *p);
-+#else
-+static inline int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
-+			       struct nlattr *attr, int cmd,
-+			       struct netlink_ext_ack *extack)
-+{
-+	return -EOPNOTSUPP;
-+}
++	/* Don't change the state of the ports if they are driven by a different
++	 * protocol.
++	 */
++	if (p->flags & BR_MRP_AWARE)
++		return;
 +
-+static inline int br_mrp_process(struct net_bridge_port *p, struct sk_buff *skb)
-+{
+ 	p->state = state;
+ 	err = switchdev_port_attr_set(p->dev, &attr);
+ 	if (err && err != -EOPNOTSUPP)
+diff --git a/net/bridge/br_stp_if.c b/net/bridge/br_stp_if.c
+index d174d3a566aa..a42850b7eb9a 100644
+--- a/net/bridge/br_stp_if.c
++++ b/net/bridge/br_stp_if.c
+@@ -196,10 +196,17 @@ static void br_stp_stop(struct net_bridge *br)
+ 	br->stp_enabled = BR_NO_STP;
+ }
+ 
+-void br_stp_set_enabled(struct net_bridge *br, unsigned long val)
++int br_stp_set_enabled(struct net_bridge *br, unsigned long val,
++		       struct netlink_ext_ack *extack)
+ {
+ 	ASSERT_RTNL();
+ 
++	if (br_mrp_enabled(br)) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "STP can't be enabled if MRP is already enabled\n");
++		return -EINVAL;
++	}
++
+ 	if (val) {
+ 		if (br->stp_enabled == BR_NO_STP)
+ 			br_stp_start(br);
+@@ -207,6 +214,8 @@ void br_stp_set_enabled(struct net_bridge *br, unsigned long val)
+ 		if (br->stp_enabled != BR_NO_STP)
+ 			br_stp_stop(br);
+ 	}
++
 +	return 0;
-+}
-+
-+static inline bool br_mrp_enabled(struct net_bridge *br)
-+{
-+	return 0;
-+}
-+
-+static inline void br_mrp_port_del(struct net_bridge *br,
-+				   struct net_bridge_port *p)
-+{
-+}
-+#endif
-+
- /* br_netlink.c */
- extern struct rtnl_link_ops br_link_ops;
- int br_netlink_init(void);
+ }
+ 
+ /* called under bridge lock */
+diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
+index 9ab0f00b1081..7db06e3f642a 100644
+--- a/net/bridge/br_sysfs_br.c
++++ b/net/bridge/br_sysfs_br.c
+@@ -126,9 +126,7 @@ static ssize_t stp_state_show(struct device *d,
+ 
+ static int set_stp_state(struct net_bridge *br, unsigned long val)
+ {
+-	br_stp_set_enabled(br, val);
+-
+-	return 0;
++	return br_stp_set_enabled(br, val, NULL);
+ }
+ 
+ static ssize_t stp_state_store(struct device *d,
 -- 
 2.17.1
 
