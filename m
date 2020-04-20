@@ -2,139 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8F871B0E8C
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 16:38:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82AAD1B0EA7
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 16:38:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729957AbgDTOh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 10:37:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50650 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729341AbgDTOh7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 10:37:59 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B79C061A0C
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 07:37:57 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id t14so12433236wrw.12
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 07:37:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1T1z3NA+A36tUztklmP8/ZYI8QmN4V/oKSOXgeTqccE=;
-        b=UnmXppBG93wnQks27U/PPDQk2gj2WSKsYuRBODH3pUbc/S0zBENFoNO24yoeNt3aKU
-         yfUbL8U68Y6hAFZFLTCZAGeJlhHoSw13PTGR5irI9bNFkUnQWeaO11if2GSSNZNNgiAJ
-         cwHEBvzi6yvHh+Mn0UNbwFFNSOnV87QXtWrJinTvvhx4gVv5yhMc0jyM3+1/D98+Ipuw
-         Y7yU33pil3omd1/Vcm/IYuhuTrq4xsSqhcbOyYz8pWl6IMtxsy8aaRYCekwYN8zKSSZ9
-         DBjrxro595sx+2Ef0cO4sAKXNCEN7h9Zh4KwG+JECOqHiECzcKY5ZUMUxifMRtO//zLo
-         QN0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1T1z3NA+A36tUztklmP8/ZYI8QmN4V/oKSOXgeTqccE=;
-        b=UseBfiCENeD1mz1erIZ6pKlPxOC2gF+9qR0ZB7XjkxhJ1a4kLJw9lZgTSkWLu4X6ii
-         WgaCOExiRNjbU0IXrmkwoCKn6uET8xQRbTxBGqC5p7/gjyJ2rKwEau+O6G9dreCw9IYt
-         +JCIoKVgU1jaAwXlQJbJT0PaHLSAkXco8kAllQx6dKxqAIvvoP+Pc8GSgWt4nQWUPtkK
-         d/M8yvd6sev924lx8PPZqfaZmGOD+TmuZ00zBvCdz5gaDyER8Dy7yps78zVotgGRurFl
-         cPBMK/LfjFqp/UHe7wHsv6jmx7IAwJJpSDqwbwF/25Co8hrF5ApADSgcRNKGbr1AGHr0
-         Cg0w==
-X-Gm-Message-State: AGi0PubqQLvaPs5d+JhGyWb9CuMMFVR9eIKQ3GEZEIINKJE+tHmOeg4Y
-        dj2kbqJ1kJuCOsU9Wdb1JMtC4Q==
-X-Google-Smtp-Source: APiQypKQVBPffmF4R9ucTVHkDxdQzV7rbV+nMFdGv/rj3+LBeVf0XPJ/CtguxOwRE3W/4PCWJG/RIw==
-X-Received: by 2002:adf:e986:: with SMTP id h6mr18835149wrm.256.1587393476521;
-        Mon, 20 Apr 2020 07:37:56 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id q8sm1592323wmg.22.2020.04.20.07.37.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2020 07:37:55 -0700 (PDT)
-Date:   Mon, 20 Apr 2020 16:37:54 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>
-Subject: Re: Correct tc-vlan usage
-Message-ID: <20200420143754.GP6581@nanopsycho.orion>
-References: <CA+h21hoxwRdhq4y+w8Kwgm74d4cA0xLeiHTrmT-VpSaM7obhkg@mail.gmail.com>
+        id S1730033AbgDTOiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 10:38:52 -0400
+Received: from mout.kundenserver.de ([212.227.17.13]:56123 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730030AbgDTOiv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 10:38:51 -0400
+Received: from mail-qv1-f43.google.com ([209.85.219.43]) by
+ mrelayeu.kundenserver.de (mreue106 [212.227.15.145]) with ESMTPSA (Nemesis)
+ id 1M5g68-1jKTp51flS-007GCE; Mon, 20 Apr 2020 16:38:49 +0200
+Received: by mail-qv1-f43.google.com with SMTP id p13so4739694qvt.12;
+        Mon, 20 Apr 2020 07:38:49 -0700 (PDT)
+X-Gm-Message-State: AGi0PubeLOHIFr+q6MdDkl4lsROusM2wrT+4cZYEpYJ85VuMcyrmcMDT
+        KklW3S3g2K8LdxeYbmezCkcjKspwlF+fcXrjwwI=
+X-Google-Smtp-Source: APiQypI3lMjarwBrOvk5z/7dRwm3+aExp21uRLy8rLXkUHXJMJ56+Iub039Oa9WO9CTS7wUa1aJc481OluDjX+031BM=
+X-Received: by 2002:a0c:eb11:: with SMTP id j17mr15247436qvp.197.1587393528146;
+ Mon, 20 Apr 2020 07:38:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hoxwRdhq4y+w8Kwgm74d4cA0xLeiHTrmT-VpSaM7obhkg@mail.gmail.com>
+References: <20200416085627.1882-1-clay@daemons.net> <6fef3a00-6c18-b775-d1b4-dfd692261bd3@ti.com>
+ <20200420093610.GA28162@arctic-shiba-lx>
+In-Reply-To: <20200420093610.GA28162@arctic-shiba-lx>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 20 Apr 2020 16:38:32 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a36ZxNJxUS4UzrwJiMx8UrgYPkcv4X6yYw7EC4jRBbbGQ@mail.gmail.com>
+Message-ID: <CAK8P3a36ZxNJxUS4UzrwJiMx8UrgYPkcv4X6yYw7EC4jRBbbGQ@mail.gmail.com>
+Subject: Re: [PATCH] net: cpts: Condition WARN_ON on PTP_1588_CLOCK
+To:     Clay McClure <clay@daemons.net>
+Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sekhar Nori <nsekhar@ti.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Networking <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:Lmfro+z52/v9+PRc0aC+yIa6QG4vLVKhVAGm/vpSmVpGr58hA8V
+ NTX2p+r9e5q/P34ZBCXfCsacArwKIQjfaANvptrHm7Z4a26Gsae+G3uSFLQlRnnpf5dvbim
+ SIRd6bsCWFA1TvTksc9ps2YAcje4zwfvbCzY3UzGDbDG5XvFidAFJ1jxsFPrOFfxBVasdKi
+ x42089Ni2C2x5j/X7R9bA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:w2gl9SsonXU=:hNvQCu59NPRR1VA4T2tUWe
+ nIYuK5PQIUEoh3vp9EhTJeR0bQy1iHFhnt2CcDjl1bst5f77ker+ryoBJR6UP9f3lfYwOFCXL
+ aIXjpZHcvl/rPHswaqc8DLUuwZ6iMk64oH7mWiR3eJN6Pxw2DzyTq+ZS1J/oorSTsrLgjA+3U
+ aqgauk07rMq6ei5eevYTasZIrW56vXFLOmtoU1rPgIAoQRJ2z4OIKsqcQUzpm2USlUwtleuN7
+ t2YDlKO4s5Txy0PYDaJGT3HKyMiBax8oiaGVB4ljPKjsjK7fisV6rNc1+SprfL3QDI+wXpJFF
+ z4zLSZ4Uuf3gXz13Xf7owHlu13f3AXneTJO9bhzkD1gE0SoiOgf+AKqBGrjdJKsv40h4mzxGZ
+ H5oOZaHGxy7oT8HsnyPcSYgXmxvah8OdrI2Y35HtrTRqURi+aEUwRzbD+t61HgdUl+E7MjsVk
+ G9GxeB1Cc+evXpNISQWJolDffwXXwcIlwZukN4CAtchLxKIYt7jrFwUFpHBzl9Wj2l4P+87gq
+ VFtQjOfaddxBCCfW3yL5Hcs9ioqK83MmQ+udp08qPLGxRzwBswiP2IfZmuwlFS0LOhB6RvfL0
+ yIWaE82l8W23TlUw1gVzcjsRqCVUMxZJ6xm9MoOK/EBK66tRGD2CD7+1/J23a9jDXMH92VqJ+
+ rYVT98KFfH6p0pgFbgqWJCQt3xRePBx8rGUGUFI2HYVPRqgXPrNKfM6CMyNpH+iq6stGsexUs
+ PxjsVf1EgfBrqPBuZhFfJAzs5O+2plhi2G+eUBPcCbTYn6L15r7ZHUkdNlZTo1jqvtiAA6xNq
+ IQJi8g0XEZ6L7FLNyhNuZZfdsQSz7nRAbJxz/hnGPut84/fyUo=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Apr 15, 2020 at 07:59:06PM CEST, olteanv@gmail.com wrote:
->Hi,
+On Mon, Apr 20, 2020 at 11:38 AM Clay McClure <clay@daemons.net> wrote:
+> On Thu, Apr 16, 2020 at 02:11:45PM +0300, Grygorii Strashko wrote:
 >
->I am trying to use tc-vlan to create a set of asymmetric tagging
->rules: push VID X on egress, and pop VID Y on ingress. I am using
->tc-vlan specifically because regular VLAN interfaces are unfit for
->this purpose - the VID that gets pushed by the 8021q driver is the
->same as the one that gets popped.
->The rules look like this:
+> > > CPTS_MOD merely implies PTP_1588_CLOCK; it is possible to build cpts
+> > > without PTP clock support. In that case, ptp_clock_register() returns
+> > > NULL and we should not WARN_ON(cpts->clock) when downing the interface.
+> > > The ptp_*() functions are stubbed without PTP_1588_CLOCK, so it's safe
+> > > to pass them a null pointer.
+> >
+> > Could you explain the purpose of the exercise (Enabling CPTS with
+> > PTP_1588_CLOCK disabled), pls?
 >
-># tc filter show dev eno2 ingress
->filter protocol 802.1Q pref 49150 flower chain 0
->filter protocol 802.1Q pref 49150 flower chain 0 handle 0x1
->  vlan_id 103
->  dst_mac 00:04:9f:63:35:eb
->  not_in_hw
->        action order 1: vlan  pop pipe
->         index 6 ref 1 bind 1
+> Hardware timestamping with a free-running PHC _almost_ works without
+> PTP_1588_CLOCK, but since PHC rollover is handled by the PTP kworker
+> in this driver the timestamps end up not being monotonic.
 >
->filter protocol 802.1Q pref 49151 flower chain 0
->filter protocol 802.1Q pref 49151 flower chain 0 handle 0x1
->  vlan_id 102
->  dst_mac 00:04:9f:63:35:eb
->  not_in_hw
->        action order 1: vlan  pop pipe
->         index 5 ref 1 bind 1
+> And of course the moment you want to syntonize/synchronize the PHC with
+> another clock (say, CLOCK_REALTIME), you'll need a PTP clock device. So
+> you're right, there's not much point in building CPTS_MOD without
+> PTP_1588_CLOCK.
 >
->filter protocol 802.1Q pref 49152 flower chain 0
->filter protocol 802.1Q pref 49152 flower chain 0 handle 0x1
->  vlan_id 101
->  dst_mac 00:04:9f:63:35:eb
->  not_in_hw
->        action order 1: vlan  pop pipe
->         index 4 ref 1 bind 1
->
-># tc filter show dev eno2 egress
->filter protocol all pref 49150 flower chain 0
->filter protocol all pref 49150 flower chain 0 handle 0x1
->  dst_mac 00:04:9f:63:35:ec
->  not_in_hw
->        action order 1: vlan  push id 102 protocol 802.1Q priority 0 pipe
->         index 3 ref 1 bind 1
->
->filter protocol all pref 49151 flower chain 0
->filter protocol all pref 49151 flower chain 0 handle 0x1
->  dst_mac 00:04:9f:63:35:eb
->  not_in_hw
->        action order 1: vlan  push id 102 protocol 802.1Q priority 0 pipe
->         index 2 ref 1 bind 1
->
->filter protocol all pref 49152 flower chain 0
->filter protocol all pref 49152 flower chain 0 handle 0x1
->  dst_mac 00:04:9f:63:35:ea
->  not_in_hw
->        action order 1: vlan  push id 102 protocol 802.1Q priority 0 pipe
->         index 1 ref 1 bind 1
->
->My problem is that the VLAN tags are discarded by the network
->interface's RX filter:
->
-># ethtool -S eno2
->     SI VLAN nomatch u-cast discards: 1280
->
->and this is because nobody calls .ndo_vlan_rx_add_vid for these VLANs
->(only the 8021q driver does). This makes me think that I am using the
->tc-vlan driver incorrectly. What step am I missing?
+> Given that, I wonder why all the Ethernet drivers seem to just `imply`
+> PTP_1588_CLOCK, rather than `depends on` it?
 
-Hmm, that is a good point. Someone should add the vid to the filter. I
-believe that "someone" should be the driver in case of flow_offload.
+I suspect we should move all of them back. This was an early user
+of 'imply', but the meaning of that keyword has now changed
+in the latest Kconfig.
 
-
-
+> diff --git a/drivers/net/ethernet/ti/cpts.c b/drivers/net/ethernet/ti/cpts.c
+> index 10ad706dda53..70b15039cd37 100644
+> --- a/drivers/net/ethernet/ti/cpts.c
+> +++ b/drivers/net/ethernet/ti/cpts.c
+> @@ -462,8 +462,8 @@ int cpts_register(struct cpts *cpts)
+>         timecounter_init(&cpts->tc, &cpts->cc, ktime_get_real_ns());
 >
->Thanks,
->-Vladimir
+>         cpts->clock = ptp_clock_register(&cpts->info, cpts->dev);
+> -       if (IS_ERR(cpts->clock)) {
+> -               err = PTR_ERR(cpts->clock);
+> +       if (IS_ERR_OR_NULL(cpts->clock)) {
+> +               err = cpts->clock ? PTR_ERR(cpts->clock) : -EOPNOTSUPP;
+>                 cpts->clock = NULL;
+>                 goto err_ptp;
+
+Something else is wrong if you need IS_ERR_OR_NULL(). Any
+kernel interface should either return an negative error code when
+something goes wrong, or should return NULL for all errors, but
+not mix the two.
+
+        Arnd
