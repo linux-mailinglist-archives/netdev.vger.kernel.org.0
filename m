@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 578DF1B118C
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 18:28:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AB3B1B118E
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 18:28:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729506AbgDTQ15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 12:27:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39866 "EHLO
+        id S1729495AbgDTQ2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 12:28:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729526AbgDTQ1z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 12:27:55 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2E46C061A0C
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 09:27:53 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id u13so12973506wrp.3
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 09:27:53 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1729562AbgDTQ14 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 12:27:56 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B45A6C061A0F
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 09:27:55 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id z6so224477wml.2
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 09:27:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=0JRG0YANHlaDrsdL6zAtAcfGdVROdNU0WIv4cLW5emg=;
-        b=hM0E8gJc4Q8Yno/fYAZ9st6WbUWg23oOeWIU7wAKm4drSezQLBZnNpBKM4X1Ji0aiM
-         Y+X2y9nqyx0HXBljKQ54DrhtGemfCUYLXrLIM0Al0Dc9PY1Dlw9K4Nos3n3kv1Fm3MiN
-         aQ9MpPqM3H/uKG+NthVF4wcY4xlavXyp6m9btFbFiFmG0zgUuRvX1Y8vtJk3V6gb5DfK
-         rPbvhG9gk/oBvONz56WKOdx67lWtJ0iY6F0bzQvJUFwTRLOz7w7qiAOxBnh0GIMqJiPG
-         o6TMsny8GHFD3iQv6nW4/XA/ihWRYY34pRASDe84LrhBoxpgzsL55JcKo+IE2pAEcFmX
-         EdDQ==
+        bh=VHdsdAesxb897xNk78shOA6FsoU13ElE8ZB5Lp98kWY=;
+        b=m4wivmyT7DmkQWTH7q5hrgxDzraOIY7E0Ho7JlXDE13FlFqoEG6NIYYWRfRxrADeSp
+         KBZX9J851yXkMx7SMYZ2ufcq1sKCcako/5O3vuWsiRr5vf6uYi13P/9E1bcMFC5YGcp5
+         q1pSIfacU19NcozOG00YoMMCHvdC0dYx81lWJp0XngCgI4yAeuzhS//VzgrLVJ7epAGv
+         8vNGBJwEDnwdXFdxD4wouczIV2xEipfE3Q+zXNzJBoxnrs0GUbg1eapROL+l8Xrhe44C
+         GxxP8wRL3PgbBMc+3II36aHn22llRTBusFSrfrQJVZVmn6str6l+WfDYdv2Bk1qUtL0Q
+         k0ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=0JRG0YANHlaDrsdL6zAtAcfGdVROdNU0WIv4cLW5emg=;
-        b=MAxhRZ6QNHNWNYn4vxuRHyKks1dhPjwXxlKqBA9mQN4GL3ngpbaH6HdpvsoomJpgJz
-         eACCXQCskl6Y3QdYjsx7kiWZN3a9Zw0LG29ZaZKduKJnO9sQqd1S+ka5jQGkrUP2Qkyn
-         5hq6fX6oQc7vJ5sR3+8eFs8HR9s/OJvN+Tlrt7D9UxOO/jyyfpu15cTfgmnrFGpLUVdT
-         yPE1mW1aOO58xePN5cIBkOPh0PRFBkWeVJPK/YT23ICOFjp6SqLKb4ZpKyX3VItsG3CR
-         J6VBVEXANAUMvDY/4RV7cA5Wrt21JWHxScwtH24J2kHFLi5WMfDJgNqHzxUwNDmmQhEx
-         sLxQ==
-X-Gm-Message-State: AGi0PuZbq0tgSOkuv12qmHo50gx2q9oQYeJnd4bti1NMbVrN+Oc/8LlF
-        nmEkJtZw6AsYFHpcASLXhwXtXgVUX8I=
-X-Google-Smtp-Source: APiQypKH8xrYlvU8P62i4XC3yjztIFMbJ8tmhPee+gfkIaOt8rbff9BamAIdFAknYs6+NV351eVY3w==
-X-Received: by 2002:adf:fe03:: with SMTP id n3mr18970198wrr.315.1587400072627;
-        Mon, 20 Apr 2020 09:27:52 -0700 (PDT)
+        bh=VHdsdAesxb897xNk78shOA6FsoU13ElE8ZB5Lp98kWY=;
+        b=jjJRib556ufK5GhV2QmS109e5gZDOAS7Cg1yHlzJdOImxdrgOvSSmmtFqt8EbrV0KN
+         RZ8unwGiOvG2DYsT38x4eePN0nQl1a3uHKf8zduNqt6X6tspyRUHFmFR/mCG11R4k6Og
+         2+i5XM2ZOFdplDtKNBT6MOzpdcrbN+D995N80WY6o5ZMtgNWFNwFG4r1L1Fovigcc5Y2
+         D988MyWI+deWT1Dt9mEFeLX2elLMSPB0D0cZCOYrbukdsWtU+zMf/jqtZIvbTRV4/Src
+         yRi0BBtudC9lXE8CEZb8u2D+2fN4uJ/PF57QLE9zpupQ0gK7Xjfck0inVraefmDkgW2C
+         WTvA==
+X-Gm-Message-State: AGi0PuZJtX3bZbVlEmjpUlWqNTKZ7T5yWZwX8fOWzNoKNaVnjPB+qtJu
+        yZDTjjvMTgG0tkPsv+FXk3o=
+X-Google-Smtp-Source: APiQypLxbyru6QpjP8D45VkPK3cDQGjbku+8+DbylbT8a13x1A3lOzQb4b6QHAyim+IbCWH0R2PdgQ==
+X-Received: by 2002:a05:600c:2314:: with SMTP id 20mr137203wmo.35.1587400074451;
+        Mon, 20 Apr 2020 09:27:54 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.102.96])
-        by smtp.gmail.com with ESMTPSA id 185sm146245wmc.32.2020.04.20.09.27.51
+        by smtp.gmail.com with ESMTPSA id 185sm146245wmc.32.2020.04.20.09.27.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2020 09:27:52 -0700 (PDT)
+        Mon, 20 Apr 2020 09:27:53 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     idosch@idosch.org, allan.nielsen@microchip.com,
@@ -56,9 +56,9 @@ Cc:     idosch@idosch.org, allan.nielsen@microchip.com,
         alexandru.marginean@nxp.com, xiaoliang.yang_1@nxp.com,
         yangbo.lu@nxp.com, po.liu@nxp.com, jiri@mellanox.com,
         kuba@kernel.org
-Subject: [PATCH net-next 2/3] net: mscc: ocelot: refine the ocelot_ace_is_problematic_mac_etype function
-Date:   Mon, 20 Apr 2020 19:27:42 +0300
-Message-Id: <20200420162743.15847-3-olteanv@gmail.com>
+Subject: [PATCH net-next 3/3] net: mscc: ocelot: lift protocol restriction for flow_match_eth_addrs keys
+Date:   Mon, 20 Apr 2020 19:27:43 +0300
+Message-Id: <20200420162743.15847-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200420162743.15847-1-olteanv@gmail.com>
 References: <20200420162743.15847-1-olteanv@gmail.com>
@@ -69,73 +69,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The commit mentioned below was a bit too harsh, and while it restricted
-the invalid key combinations which are known to not work, such as:
+An attempt was made in commit fe3490e6107e ("net: mscc: ocelot: Hardware
+ofload for tc flower filter") to avoid clashes between MAC_ETYPE rules
+and IP rules. Because the protocol blacklist should have included
+ETH_P_ALL too, it created some confusion, but now the situation should
+be dealt with a bit better by the patch immediately previous to this one
+("net: mscc: ocelot: refine the ocelot_ace_is_problematic_mac_etype
+function").
 
-tc filter add dev swp0 ingress proto ip \
-      flower src_ip 192.0.2.1 action drop
-tc filter add dev swp0 ingress proto all \
-      flower src_mac 00:11:22:33:44:55 action drop
+So now we can remove that check. MAC_ETYPE rules with a protocol of
+ETH_P_IP, ETH_P_IPV6, ETH_P_ARP and ETH_P_ALL _are_ supported, with some
+restrictions regarding per-port exclusivity which are enforced now.
 
-it also restricted some which still should work, such as:
-
-tc filter add dev swp0 ingress proto ip \
-      flower src_ip 192.0.2.1 action drop
-tc filter add dev swp0 ingress proto 0x22f0 \
-      flower src_mac 00:11:22:33:44:55 action drop
-
-What actually does not match "sanely" is a MAC_ETYPE rule on frames
-having an EtherType of ARP, IPv4, IPv6, in addition to SNAP and OAM
-frames (which the ocelot tc-flower implementation does not parse yet, so
-the function might need to be revisited again in the future).
-
-So just make the function recognize the problematic MAC_ETYPE rules by
-EtherType - thus the VCAP IS2 can be forced to match even on those
-packets.
-
-This patch makes it possible for IP rules to live on a port together
-with MAC_ETYPE rules that are non-all, non-arp, non-ip and non-ipv6.
-
-Fixes: d4d0cb741d7b ("net: mscc: ocelot: deal with problematic MAC_ETYPE VCAP IS2 rules")
-Reported-by: Allan W. Nielsen <allan.nielsen@microchip.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/mscc/ocelot_ace.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mscc/ocelot_flower.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_ace.c b/drivers/net/ethernet/mscc/ocelot_ace.c
-index 8a2f7d13ef6d..dfd82a3baab2 100644
---- a/drivers/net/ethernet/mscc/ocelot_ace.c
-+++ b/drivers/net/ethernet/mscc/ocelot_ace.c
-@@ -739,14 +739,24 @@ static void ocelot_match_all_as_mac_etype(struct ocelot *ocelot, int port,
+diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
+index 67f0f5455ff0..5ce172e22b43 100644
+--- a/drivers/net/ethernet/mscc/ocelot_flower.c
++++ b/drivers/net/ethernet/mscc/ocelot_flower.c
+@@ -87,11 +87,6 @@ static int ocelot_flower_parse(struct flow_cls_offload *f,
+ 		     BIT(FLOW_DISSECTOR_KEY_CONTROL)))
+ 			return -EOPNOTSUPP;
  
- static bool ocelot_ace_is_problematic_mac_etype(struct ocelot_ace_rule *ace)
- {
-+	u16 proto, mask;
-+
- 	if (ace->type != OCELOT_ACE_TYPE_ETYPE)
- 		return false;
--	if (ether_addr_to_u64(ace->frame.etype.dmac.value) &
--	    ether_addr_to_u64(ace->frame.etype.dmac.mask))
-+
-+	proto = ntohs(*(u16 *)ace->frame.etype.etype.value);
-+	mask = ntohs(*(u16 *)ace->frame.etype.etype.mask);
-+
-+	/* ETH_P_ALL match, so all protocols below are included */
-+	if (mask == 0)
- 		return true;
--	if (ether_addr_to_u64(ace->frame.etype.smac.value) &
--	    ether_addr_to_u64(ace->frame.etype.smac.mask))
-+	if (proto == ETH_P_ARP)
- 		return true;
-+	if (proto == ETH_P_IP)
-+		return true;
-+	if (proto == ETH_P_IPV6)
-+		return true;
-+
- 	return false;
- }
- 
+-		if (proto == ETH_P_IP ||
+-		    proto == ETH_P_IPV6 ||
+-		    proto == ETH_P_ARP)
+-			return -EOPNOTSUPP;
+-
+ 		flow_rule_match_eth_addrs(rule, &match);
+ 		ace->type = OCELOT_ACE_TYPE_ETYPE;
+ 		ether_addr_copy(ace->frame.etype.dmac.value,
 -- 
 2.17.1
 
