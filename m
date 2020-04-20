@@ -2,49 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A58F1B1850
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 23:23:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4292B1B1851
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 23:23:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726764AbgDTVW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 17:22:56 -0400
-Received: from mail-eopbgr30067.outbound.protection.outlook.com ([40.107.3.67]:27996
+        id S1727123AbgDTVW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 17:22:59 -0400
+Received: from mail-eopbgr30042.outbound.protection.outlook.com ([40.107.3.42]:11830
         "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726050AbgDTVW4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 17:22:56 -0400
+        id S1726050AbgDTVW6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 17:22:58 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q8Nd4uH+d5YnqBiAZPUI2/cUrHbHm3JEyw78/udFs0rfVjZlfkgvQLWGk/72Tg9FeSXpFNxeVpmgomtySi0+tEZIiXeok7aKJrTQKvX30TWCTDpobmYdSf/zfO0axc5FGMCB6YidVaebc04ItLTBtAmyl2D4uMSPGRWu+87qmrtXtAgHMEEtN3tIpskuWbORZ7zWERQ5p5i9/SV4CRS59wBcHl2p95Y4yjZyODKf537F7Wj3WHz4yyV6XPmmZoGWYYw1key+w8iJnt1I48hp5NCCLEWUiIZUFB0memHqPUmIr3oZ19V3twhuI7TD5i0wwvTbsEODWjsDJ7/gt0ji8Q==
+ b=KFPFk4Sds1XmS/lwE2lwCijR7JpxzmX+EXmkmVC4ohfncWQeYA1nGhXGdZG+j/WiZq/ad+m0ilBzVv213Il26/0OA2oUlF/Dh8a+5R0SMXZy9/DB6lvJI03TvgBLIDGE4EQyNGsk09bC7mdOfMC1DY1aNCVpbEm/kVMMQfrxh5gFw4rbGb+NzwLT4zfEqSJPyoMhcStSHj/zi9Llo1XuOgR7+c2fkbuptdbOzFZgA6fkwmAZYZwoh45+cHwJyjNLzAJhM1MO0Y4MEGRNcUg4p8BCk7J7me64vOSLlTz1J/H6jdEYdOXdwaV/l4rBur4ROK256yhf7v/8HwhqzVUD9g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0gyH5Dw+Rr3xpqPZuJIjEuC2oCfwiM9t7vWOW0lK0/Q=;
- b=SkbbNhjBrxijYwHOm/h9xwmg3D/McIvqDWsoKcon/KK23cMn5PkCgg98ACzUqoRn4VtrPXWutCxBNN74D50UtOepiDGZqbsHNRGbBYZE7Qavx4L40RCo8Tk9zMQA6xyZE+ORGE57ujmSHZ3Nn6r7KHKRjY3WjUCRq8isjuuoFX7JdWlKZoelU1OrTs37wkhcq6MtYtlrYqgoFViQkxF+FhxNWspPvS1M+HcxifE5bOYob4Iz06UmqYyYm1fKmPvuL5qD59b3bl78dXG5JwDuVQZnQ1LZxh/i/uZ2Ea78gMkAnaAgFq62bia8I+JK68Or5g44PqVVva0yFVG8knA+dQ==
+ bh=2GLWmictuiMELEPc22A1CQcKt551pd8cGYqJp2TYC1k=;
+ b=e1LjybwFh4AC5xFjiwuHArsZN1qx8EaGiCdMQGxgnvpIdoo9SUmFm8hlkYDh/Zr6XAjHJduHGrkaNswRL4cAm4TAmd3qtPz0zGy4s19VpuBUTjWmXXycpOeK5bI3RXlxZf0Xi2CoReAptP4T+Fc+RU2X7rf7wgb6q5Fo+laxINUdq3Rxfp2V55YmcMcIOulihbliY6qrQG+VhX2g8+JvDriWf6Db7zOamEXuOXHy/tFfPxZHTsYVTafcBDXYRqX7FHytG0OU5RoFaAN/VgDfY5qbYV1lldYsdz1llhi0sqqeV2C4hZznqRDYgSspIFKYxPngDn7MKDUW/liZ5Sud8w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0gyH5Dw+Rr3xpqPZuJIjEuC2oCfwiM9t7vWOW0lK0/Q=;
- b=lGVDbcZu43uKKpJKQu0p9X5Kjy914kzGACAxim19wPcdFR98n6ULORMGuAebUdzaZF+PRBTO1/uFeGD22TIpBx2u+InIq67nTmWf3nvc1a1ASHkTTr3J7BPc9XJP1/R/7UsGl6sJQamsNTiK7BCW0KQjTIqW7ik2r12MxFRgXMw=
+ bh=2GLWmictuiMELEPc22A1CQcKt551pd8cGYqJp2TYC1k=;
+ b=sLKdwM8vxUBmw4QgR17hMJ7X75Swc2FQy9eJ0Ahk5c4cOV9WI++uM2P8LqVjW9svhLOyElLa0woa3A5b9fjj4L73pfAJBXi4VjEe9wGA8mR2g9/AT8ubVudDRvyERCm+8+YJ8EwfLOJqptDpMkdcfKAkKeb1nZi30AnD1e1RoPY=
 Authentication-Results: spf=none (sender IP is )
  smtp.mailfrom=saeedm@mellanox.com; 
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR05MB6478.eurprd05.prod.outlook.com (2603:10a6:803:f3::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.29; Mon, 20 Apr
- 2020 21:22:52 +0000
+ 2020 21:22:56 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2921.027; Mon, 20 Apr 2020
- 21:22:52 +0000
+ 21:22:56 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>
-Subject: [pull request][net-next 00/10] Mellanox, mlx5 updates 2020-04-20
-Date:   Mon, 20 Apr 2020 14:22:13 -0700
-Message-Id: <20200420212223.41574-1-saeedm@mellanox.com>
+Cc:     netdev@vger.kernel.org, Raed Salem <raeds@mellanox.com>,
+        Boris Pismenny <borisp@mellanox.com>,
+        Huy Nguyen <huyn@mellanox.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [net-next 01/10] net/mlx5: Use the correct IPsec capability function for FPGA ops
+Date:   Mon, 20 Apr 2020 14:22:14 -0700
+Message-Id: <20200420212223.41574-2-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.25.3
+In-Reply-To: <20200420212223.41574-1-saeedm@mellanox.com>
+References: <20200420212223.41574-1-saeedm@mellanox.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: BYAPR04CA0032.namprd04.prod.outlook.com
@@ -52,112 +58,130 @@ X-ClientProxiedBy: BYAPR04CA0032.namprd04.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR04CA0032.namprd04.prod.outlook.com (2603:10b6:a03:40::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.27 via Frontend Transport; Mon, 20 Apr 2020 21:22:50 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR04CA0032.namprd04.prod.outlook.com (2603:10b6:a03:40::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.27 via Frontend Transport; Mon, 20 Apr 2020 21:22:53 +0000
 X-Mailer: git-send-email 2.25.3
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: fe226ea4-77bd-4ff7-25fc-08d7e570fba8
+X-MS-Office365-Filtering-Correlation-Id: 5873fe03-ff1a-4fe2-6546-08d7e570fdb1
 X-MS-TrafficTypeDiagnostic: VI1PR05MB6478:|VI1PR05MB6478:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB6478030C42C9554717CDC060BED40@VI1PR05MB6478.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB647817DD7D7D0768D28D4BD1BED40@VI1PR05MB6478.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-Forefront-PRVS: 03793408BA
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(136003)(346002)(376002)(396003)(39860400002)(366004)(107886003)(6506007)(86362001)(2906002)(186003)(16526019)(26005)(4326008)(5660300002)(36756003)(316002)(1076003)(66556008)(478600001)(956004)(6666004)(15650500001)(66946007)(52116002)(66476007)(6512007)(6486002)(2616005)(8676002)(8936002)(81156014)(54420400002);DIR:OUT;SFP:1101;
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(136003)(346002)(376002)(396003)(39860400002)(366004)(107886003)(6506007)(86362001)(2906002)(186003)(16526019)(26005)(4326008)(5660300002)(36756003)(316002)(1076003)(66556008)(478600001)(956004)(6666004)(66946007)(52116002)(66476007)(6512007)(6486002)(2616005)(54906003)(8676002)(8936002)(81156014)(54420400002);DIR:OUT;SFP:1101;
 Received-SPF: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JRgs5D4/sPwN925K1y5n4dAXuTUhFCZJq52KSWqs1wGzWo6osvRcIQRWvWsd78oTc1ZGZfmQrZg6rTk60KV96Enpcu0Dhya/OfdiSp4LNxpLPa2AXW3hZyH3gOPG1VPuF+XZA0ihhiziZAidMvi0UlpiM8kQkcuM2pIas895MDAs20IVTRSLErKEJZRwiBJ4XzL9/9SM96Duv12qbtcJsLLSyPqZREgBprb2A6grw+KiJ4VkmDLPu5PIJ5rfifghw579nKoSouqRnkuEyBj16LsNcOeNv7NG8lcOSSH1y8EkRLsJKLtsXlkoJHm9t03qxB0PxgRKSVirhrRk8nnqQhjrtDmtDgjBMHRSExdhWwfgDvbmZQc8hYKVBQxdCSJGAgUynriCK8d9xBxQ/VnNXSFYuLQDOkU9fXdbGDcMjbrKJraPTwLlaes5gbJgwBhSV3xBohHVU1NNHHK4mWtgaHtOGaYqjWrpBEhd5lZropkqV+xDEsy+jhJmC+mh+iyb
-X-MS-Exchange-AntiSpam-MessageData: 4ceADtYqKbmaNLOqwhw9yPzmOV6urnqHvR4DaM/YOv3ba0SG+zU/2agWJKZQVK3j5uwb+4PJF5g8sLMLgY5zr1j961P0KUNSNN5ug6m2BCN/OAI6khGhavFcuM1hs2SRA315ItA5e0/soo2Otwfolw==
+X-Microsoft-Antispam-Message-Info: bggR04sn6677q4R2sHe+c8lKUw7UAq7rYo+BRX6Fp8AVdTsLex0qbqmYwRg+Xk3doSSo79R+2GjucaGrUzAgs1WFEAlaUimK49LGILF+xSBYwodhAtsME7XlyBsyxMLu4D77cvPh7l8NBcbP88p+IgbF8HB7ec3MDmuUqF9uxidLd+JMm1+QnfS7Z6QlCJ4UG8ta5zI5B/L3/mXPt/7YbbnHQY7vl3FmnVseM9l6zQva+06nM46WRFJsXlqK8palCxranfW9HB4gvnVN7lUyNoMDCjPO/0W2LZwPZogKksE/3uHbbuXg7P4puK79xSJjzqqR0h+BUQ2DQ/y9SjgIYfDa5ePZdP5gztK+tkXpAYItCqunQUpVl1ck1F2sSozeqjsiofbH6A6pXwIiIWs6FATlaPg1VFdnmxcfFUqf3lJ4x+AOkwAINIYhrQZT2YqPXqSv1zcbpr2kgz52qzpTspSmpjeyroSj+uTN89IoihDh52EpWT8yq604fovB9qnd
+X-MS-Exchange-AntiSpam-MessageData: G+3VU0ktcNA1Nc3Ju5lUgFy3Xz6tFeTqtkK20C8Gf5/eW9A7kVuktTWDOT7FenLGzrMkAF0RSJFRtIp3305oDOoN+faD/fQBl+51jGwYUOJnAlnXspPv0C3YdCE84u06+IjtNX8hZ4MG/X3mKnfkvw==
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fe226ea4-77bd-4ff7-25fc-08d7e570fba8
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2020 21:22:51.9891
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5873fe03-ff1a-4fe2-6546-08d7e570fdb1
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2020 21:22:55.7180
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ltoQdC3ko0H4ooRwVK819/S+RGv2/Hx9hCmlicUA0Xr+SKvZmq+OIekOF7QZQe1YHdF05+Xl3BpeuTbRV3+Fuw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: Gau9PaMZ2fb7toRjGCEwz0KoQbXIPZH74axaSja5ydOIMNTwvH2RUp90mDXYZj6SaUMRzKztAsp0xc9WUcRodA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6478
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+From: Raed Salem <raeds@mellanox.com>
 
-This series adds misc updates and cleanup to mlx5.
+Currently the IPsec acceleration capability function is also used
+at IPsec fpga capable device code.
 
-For more information please see tag log below.
+This could cause a future bug as the acceleration layer is agnostic
+to the device implementing its API.
 
-Please pull and let me know if there is any problem.
+Fix by using the IPsec FPGA capability function instead of acceleration
+layer capability function in case of FPGA IPsec only related operations.
 
-Thanks,
-Saeed.
+Downstream patches will add support for Connect-X IPsec, this can avoid
+a future bug.
 
+Signed-off-by: Raed Salem <raeds@mellanox.com>
+Reviewed-by: Boris Pismenny <borisp@mellanox.com>
+Reviewed-by: Huy Nguyen <huyn@mellanox.com>
+Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
+Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
-The following changes since commit b66c9b8de22b666718c2fcb0ae84ce620f9b81c0:
+ .../net/ethernet/mellanox/mlx5/core/fpga/ipsec.c  |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/fpga/ipsec.h  | 15 ++++++++++++++-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c |  5 +++--
+ 3 files changed, 18 insertions(+), 4 deletions(-)
 
-  selftests: pmtu: implement IPIP, SIT and ip6tnl PMTU discovery tests (2020-04-20 12:08:06 -0700)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.c
+index b794888fa3ba..c8736b6b4172 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.c
+@@ -602,7 +602,7 @@ static bool mlx5_is_fpga_ipsec_rule(struct mlx5_core_dev *dev,
+ 				    const u32 *match_c,
+ 				    const u32 *match_v)
+ {
+-	u32 ipsec_dev_caps = mlx5_accel_ipsec_device_caps(dev);
++	u32 ipsec_dev_caps = mlx5_fpga_ipsec_device_caps(dev);
+ 	bool ipv6_flow;
+ 
+ 	ipv6_flow = mlx5_fs_is_outer_ipv6_flow(dev, match_c, match_v);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.h
+index 382985e65b48..d01b1fc8e11b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fpga/ipsec.h
+@@ -37,6 +37,7 @@
+ #include "accel/ipsec.h"
+ #include "fs_cmd.h"
+ 
++#ifdef CONFIG_MLX5_FPGA_IPSEC
+ u32 mlx5_fpga_ipsec_device_caps(struct mlx5_core_dev *mdev);
+ unsigned int mlx5_fpga_ipsec_counters_count(struct mlx5_core_dev *mdev);
+ int mlx5_fpga_ipsec_counters_read(struct mlx5_core_dev *mdev, u64 *counters,
+@@ -63,5 +64,17 @@ int mlx5_fpga_esp_modify_xfrm(struct mlx5_accel_esp_xfrm *xfrm,
+ 
+ const struct mlx5_flow_cmds *
+ mlx5_fs_cmd_get_default_ipsec_fpga_cmds(enum fs_flow_table_type type);
++#else
++static inline u32 mlx5_fpga_ipsec_device_caps(struct mlx5_core_dev *mdev)
++{
++	return 0;
++}
+ 
+-#endif	/* __MLX5_FPGA_SADB_H__ */
++static inline const struct mlx5_flow_cmds *
++mlx5_fs_cmd_get_default_ipsec_fpga_cmds(enum fs_flow_table_type type)
++{
++	return mlx5_fs_cmd_get_default(type);
++}
++
++#endif /* CONFIG_MLX5_FPGA_IPSEC */
++#endif	/* __MLX5_FPGA_IPSEC_H__ */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+index d5defe09339a..2da45e9b9b6d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+@@ -2359,7 +2359,7 @@ static struct mlx5_flow_root_namespace
+ 	struct mlx5_flow_root_namespace *root_ns;
+ 	struct mlx5_flow_namespace *ns;
+ 
+-	if (mlx5_accel_ipsec_device_caps(steering->dev) & MLX5_ACCEL_IPSEC_CAP_DEVICE &&
++	if (mlx5_fpga_ipsec_device_caps(steering->dev) & MLX5_ACCEL_IPSEC_CAP_DEVICE &&
+ 	    (table_type == FS_FT_NIC_RX || table_type == FS_FT_NIC_TX))
+ 		cmds = mlx5_fs_cmd_get_default_ipsec_fpga_cmds(table_type);
+ 
+@@ -2943,7 +2943,8 @@ int mlx5_init_fs(struct mlx5_core_dev *dev)
+ 			goto err;
+ 	}
+ 
+-	if (MLX5_IPSEC_DEV(dev) || MLX5_CAP_FLOWTABLE_NIC_TX(dev, ft_support)) {
++	if (mlx5_fpga_ipsec_device_caps(steering->dev) & MLX5_ACCEL_IPSEC_CAP_DEVICE ||
++	    MLX5_CAP_FLOWTABLE_NIC_TX(dev, ft_support)) {
+ 		err = init_egress_root_ns(steering);
+ 		if (err)
+ 			goto err;
+-- 
+2.25.3
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2020-04-20
-
-for you to fetch changes up to 6533380dfd003ea7636cb5672f4f85124b56328b:
-
-  net/mlx5: improve some comments (2020-04-20 14:20:21 -0700)
-
-----------------------------------------------------------------
-mlx5-updates-2020-04-20
-
-This series includes misc updates and clean ups to mlx5 driver:
-
-1) improve some comments from Hu Haowen.
-2) Handles errors of netif_set_real_num_{tx,rx}_queues, from Maxim
-3) IPsec and FPGA related code cleanup to prepare for ASIC devices
-   IPsec offloads, from Raed
-4) Allow partial mask for tunnel options, from Roi.
-
-----------------------------------------------------------------
-Hu Haowen (1):
-      net/mlx5: improve some comments
-
-Maxim Mikityanskiy (1):
-      net/mlx5e: Handle errors from netif_set_real_num_{tx,rx}_queues
-
-Parav Pandit (1):
-      net/mlx5: Read embedded cpu bit only once
-
-Raed Salem (5):
-      net/mlx5: Use the correct IPsec capability function for FPGA ops
-      net/mlx5e: en_accel, Add missing net/geneve.h include
-      net/mlx5: Refactor mlx5_accel_esp_create_hw_context parameter list
-      net/mlx5e: IPSec, Expose IPsec HW stat only for supporting HW
-      net/mlx5: IPsec, Refactor SA handle creation and destruction
-
-Roi Dayan (1):
-      net/mlx5e: Allow partial data mask for tunnel options
-
-Tariq Toukan (1):
-      net/mlx5e: Set of completion request bit should not clear other adjacent bits
-
- .../net/ethernet/mellanox/mlx5/core/accel/ipsec.c  | 19 +++--
- .../net/ethernet/mellanox/mlx5/core/accel/ipsec.h  |  8 +-
- .../ethernet/mellanox/mlx5/core/diag/fw_tracer.c   |  2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h  |  2 +-
- .../mellanox/mlx5/core/en_accel/en_accel.h         |  2 +
- .../ethernet/mellanox/mlx5/core/en_accel/ipsec.c   | 87 +++++++++------------
- .../ethernet/mellanox/mlx5/core/en_accel/ipsec.h   | 25 ------
- .../mellanox/mlx5/core/en_accel/ipsec_stats.c      | 88 +++++++++++++---------
- .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 59 ++++++++++++---
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.c | 29 ++-----
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.h |  2 +
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 32 +++++---
- .../net/ethernet/mellanox/mlx5/core/fpga/ipsec.c   | 31 +++++++-
- .../net/ethernet/mellanox/mlx5/core/fpga/ipsec.h   | 18 ++++-
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |  5 +-
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |  3 +-
- include/linux/mlx5/accel.h                         | 12 +++
- 18 files changed, 242 insertions(+), 184 deletions(-)
