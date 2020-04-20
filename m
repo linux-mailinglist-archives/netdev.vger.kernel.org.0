@@ -2,63 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2A281B186E
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 23:28:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 962841B1877
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 23:30:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726757AbgDTV22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 17:28:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59640 "EHLO
+        id S1726679AbgDTVaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 17:30:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726017AbgDTV21 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 17:28:27 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE902C061A0C
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 14:28:26 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id k1so14052970wrx.4
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 14:28:26 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726017AbgDTVaD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 17:30:03 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9EF4C061A0C
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 14:30:01 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id u13so14041360wrp.3
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 14:30:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=y/8qxNS2lE2X/WZKAfpXbqN9FsJsB+BySP2Oyp6oHoE=;
-        b=Uab2RZcltfLZBjlbQLx+RZxfywJo42U/H2C5In5WnHg5cGYcVnl+WSqYN3eqZn+OlI
-         cMlRMYBYo9Wrjcd+RwQbWrKjdVek4Cbss5vM2cQe/dbLkBWlDTZSCWNh2NzaFxhmp3V7
-         xAgkNqBR9GEz4/VmIGBwUW4NS0ATGKwxZB3qLEAlE2ho+JQXj1VUhONcc5Q7FoNANujs
-         qBVpAc93JABSpmfm5LdVlgkZL4XhoIP+9l4SUU9gHHH9q2VkYAcgqFAgSCONfRkoGoxa
-         pPt7lwGWRyj2JOR05+hU4EnVqT01YaWXasckcWiq1is+XOjS/4Vt/WiR9gEiVB58PRFI
-         4ngA==
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=QdHpGUAL8RwiD5RDXG+jB/gLFUGiEc9a1TWH4G+ztzs=;
+        b=vhGUNVYpED0EJlfXfunGGVmRP6SURn9vX80kIwNYteAGzoY1un9hlJjyVhYY0OTIrp
+         p0BgOA4QjAcG+jS/OY0RPu7TT3RPIzzTCljslJ42krKrl31S8AdBOjSbQpuf9Ypkkevr
+         jGuZEaieHYBax4/NWomHWvVqMDUSqBL15EefyLcR2McwhG1BFDrPG3gtsgIJNuXXYhMA
+         ShhXN5Iw7/KEe04NOj4pgAatiYfcwf2Vv7uHjicn5CLPwAa8E0A/Q1N2O/kqVfIMZJW4
+         dnlbyIVcr7DQlSqhAIZunPKmg43u5YN6dDbhNDynu8pzFFgn0obcbGNv6/Yn9fCQRi4S
+         8HuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=y/8qxNS2lE2X/WZKAfpXbqN9FsJsB+BySP2Oyp6oHoE=;
-        b=QQxNmw5iBah7sVTwI/uTwqYZH1rDSaC5ddLHlIjOyB3CTpFcaUVPV6VY7Kmy60SBQY
-         vJSgapL/ADm/IyXGIabkM0CJ0b63nbpFcqEzLeI7dFw78a60XXs8zXc1m2RjjRp3A7eW
-         vuYdYIsNPU0ci477tHKc9yCHdiaHnbOGUaYU1h/yyPA4uEOll6Nd+anYShibN+dONfKR
-         rWXDMAKVgwkXRrbgHeb8eRf5yakHzgfVNqTqJUUDRLCRR1GUR2jExr1zqepLL8ECRJ0I
-         Uultu13OnfPCZ+PsY8x3j+DRpNKPuCTRQ5TdNNYnsovsiC7P0wPTQ8oBQpEK8/eUtuIP
-         VHmA==
-X-Gm-Message-State: AGi0PuaLmWLEiyzw/auKxcBeVOkfoLYMXXtWh2Vdo9ARNwhWMyrjuHFJ
-        A6cr0s6JvYG3wugVfFy1ofQXzwWr
-X-Google-Smtp-Source: APiQypKVXdw9YDqMw22YT3raTTHb+B590RGJRUs6e4wa+UhDursPyIb7gVnwpiI1UuTXP72/ObbfHA==
-X-Received: by 2002:adf:ea48:: with SMTP id j8mr16493233wrn.108.1587418105267;
-        Mon, 20 Apr 2020 14:28:25 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=QdHpGUAL8RwiD5RDXG+jB/gLFUGiEc9a1TWH4G+ztzs=;
+        b=nHq6BgpcDZ691eoU+nFs1MGwd4g4NZQMhKdjbHBPdgDYkdH991jqze+K/F3p4g/piN
+         o9bFc3t0sVx2iRZmoXvmLsOOnYennPZXPBkzlvnaKX7n6zJ7vNsV3pGWy7m5H5qa7WMy
+         XIbG+TNOd9ozg/VzbX+y9da16IfKhNknvYc+9WvOXUxDXo1ozlsEXj8KGvDVTypio9Sa
+         +/x0ZJP6UEhvpIcEbn00nSHB2RSuHTDSuCOti7zWMM5JRWdXWNMQyp4pJUMCaBlvH5lT
+         ywpKXbBw1s4VmSfvi/g2jM7c792xNrd42/Ea6BAHHnCyZ4wexPyqR4ZupB12T95sq8Ck
+         DK2g==
+X-Gm-Message-State: AGi0PuZdq8XHNxM1uG+Ln6rvXXH8BY1ou1ncTXCXPJeBoyKLFGUK4dwr
+        B7NyKC/t25ySHA+V2irz1/tIUuHj
+X-Google-Smtp-Source: APiQypIgc+aQ6EqQ7YRM8T1i2zaa40+HtXH121JXS2PdXFRnFByGdBodfmeeBSKAdfVVM+7k+Eo+Dw==
+X-Received: by 2002:adf:e3c2:: with SMTP id k2mr20073071wrm.287.1587418200396;
+        Mon, 20 Apr 2020 14:30:00 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8f29:6000:7101:507:3ef2:1ef1? (p200300EA8F296000710105073EF21EF1.dip0.t-ipconnect.de. [2003:ea:8f29:6000:7101:507:3ef2:1ef1])
-        by smtp.googlemail.com with ESMTPSA id n9sm980856wrx.61.2020.04.20.14.28.24
+        by smtp.googlemail.com with ESMTPSA id l19sm845133wmj.14.2020.04.20.14.29.59
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Apr 2020 14:28:24 -0700 (PDT)
+        Mon, 20 Apr 2020 14:29:59 -0700 (PDT)
+Subject: [PATCH net-next 1/2] net: phy: add device-managed
+ devm_mdiobus_register
+From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         David Miller <davem@davemloft.net>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next 0/2] net: phy: add device-managed
- devm_mdiobus_register
-Message-ID: <9b83837d-d246-ffb0-0c52-8d4c5064e7e4@gmail.com>
-Date:   Mon, 20 Apr 2020 23:28:19 +0200
+References: <9b83837d-d246-ffb0-0c52-8d4c5064e7e4@gmail.com>
+Message-ID: <1b4d4d38-4bb3-af3d-76d0-7526d67a2a9d@gmail.com>
+Date:   Mon, 20 Apr 2020 23:29:05 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
 MIME-Version: 1.0
+In-Reply-To: <9b83837d-d246-ffb0-0c52-8d4c5064e7e4@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -75,17 +78,74 @@ bus is still registered, resulting in a BUG_ON(). Therefore let
 devm_mdiobus_register() return -EPERM if bus was allocated
 non-managed.
 
-First user of the new functionality is r8169 driver.
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/phy/mdio_bus.c |  8 +++++++-
+ include/linux/phy.h        | 17 +++++++++++++++++
+ 2 files changed, 24 insertions(+), 1 deletion(-)
 
-Heiner Kallweit (2):
-  net: phy: add device-managed devm_mdiobus_register
-  r8169: use devm_mdiobus_register
-
- drivers/net/ethernet/realtek/r8169_main.c | 10 ++--------
- drivers/net/phy/mdio_bus.c                |  8 +++++++-
- include/linux/phy.h                       | 17 +++++++++++++++++
- 3 files changed, 26 insertions(+), 9 deletions(-)
-
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 7a4eb3f2c..77f647873 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -170,7 +170,12 @@ EXPORT_SYMBOL(mdiobus_alloc_size);
+ 
+ static void _devm_mdiobus_free(struct device *dev, void *res)
+ {
+-	mdiobus_free(*(struct mii_bus **)res);
++	struct mii_bus *bus = *(struct mii_bus **)res;
++
++	if (bus->is_managed_registered && bus->state == MDIOBUS_REGISTERED)
++		mdiobus_unregister(bus);
++
++	mdiobus_free(bus);
+ }
+ 
+ static int devm_mdiobus_match(struct device *dev, void *res, void *data)
+@@ -210,6 +215,7 @@ struct mii_bus *devm_mdiobus_alloc_size(struct device *dev, int sizeof_priv)
+ 	if (bus) {
+ 		*ptr = bus;
+ 		devres_add(dev, ptr);
++		bus->is_managed = 1;
+ 	} else {
+ 		devres_free(ptr);
+ 	}
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 2432ca463..3941a6bcb 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -241,6 +241,9 @@ struct mii_bus {
+ 	int (*reset)(struct mii_bus *bus);
+ 	struct mdio_bus_stats stats[PHY_MAX_ADDR];
+ 
++	unsigned int is_managed:1;	/* is device-managed */
++	unsigned int is_managed_registered:1;
++
+ 	/*
+ 	 * A lock to ensure that only one thing can read/write
+ 	 * the MDIO bus at a time
+@@ -286,6 +289,20 @@ static inline struct mii_bus *mdiobus_alloc(void)
+ 
+ int __mdiobus_register(struct mii_bus *bus, struct module *owner);
+ #define mdiobus_register(bus) __mdiobus_register(bus, THIS_MODULE)
++static inline int devm_mdiobus_register(struct mii_bus *bus)
++{
++	int ret;
++
++	if (!bus->is_managed)
++		return -EPERM;
++
++	ret = mdiobus_register(bus);
++	if (!ret)
++		bus->is_managed_registered = 1;
++
++	return ret;
++}
++
+ void mdiobus_unregister(struct mii_bus *bus);
+ void mdiobus_free(struct mii_bus *bus);
+ struct mii_bus *devm_mdiobus_alloc_size(struct device *dev, int sizeof_priv);
 -- 
 2.26.1
+
 
