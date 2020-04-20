@@ -2,185 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E66461B0F93
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 17:12:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4349F1B0F58
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 17:10:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730270AbgDTPM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 11:12:27 -0400
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:24412 "EHLO
-        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730266AbgDTPMZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 11:12:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1587395544; x=1618931544;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=ftp7xSwi7rxzsVo0k0Kw+rDFAUz/DiSW/6uUfIvkmrM=;
-  b=a+MI3BLt+4aD1ZfwbyTLnlwRYNMHiKdQg+d972QUC3dI1tOx/mvlbmc+
-   PXsVZd/0AL4XOM0QtV/VRGgrKxvZCZ32nQgCJgWaOmtzgsYgVMtt4RmOA
-   jOZhkD1MraewOtMedzFG9gPA3ptfs+WgeT3UG/a0US05DjmhrmDR2M+Jz
-   Jnjn+keNhv8HpkGCVJTqDBq6gCaJk5HfeuH4WVtqUCsSI5snv7r7/8vcX
-   vDaQvRtUk8bEsVKNYTHFY1COB/Ist4OkD8kZalr1ckLxHzRhP/NiugYLK
-   Gxhz3NuoS1HdjHPWTCssVmV7vTDILsxY48kJypg1U4+67h+HPTSR46q6O
-   g==;
-IronPort-SDR: uEAoTSkFU6kmXKmm06xIfurVoJPXDrvTgWOHzJFTa1YtBq1vfEe1yki5MVDtR0gT5nbevzZPqb
- Ca47M3UTTk8xvszhA36upuVHzB3h9kPZ2etDhRZDHXWKDDZVVHe3jDdU1m3rQiybZuhTUFEFJA
- xjIBlVDwPhsoCR3MtJNUzM46hxrpP/KS+ZdV2EPecJDNSJhDoRNNCaSqaoEtnPwCWxAurzuuOu
- CoSfPIgX8ZKSRC1Fqx90Uq/lURKVWWXG+wnydyFFMY0/77IKcLA9BkvMx5QR111LQyur0jrnr1
- 9cA=
-X-IronPort-AV: E=Sophos;i="5.72,406,1580799600"; 
-   d="scan'208";a="9780084"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Apr 2020 08:12:23 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 20 Apr 2020 08:11:54 -0700
-Received: from soft-dev3.microsemi.net (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.1713.5 via Frontend Transport; Mon, 20 Apr 2020 08:11:51 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <nikolay@cumulusnetworks.com>, <davem@davemloft.net>,
-        <jiri@resnulli.us>, <ivecera@redhat.com>, <kuba@kernel.org>,
-        <roopa@cumulusnetworks.com>, <olteanv@gmail.com>, <andrew@lunn.ch>,
-        <UNGLinuxDriver@microchip.com>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <bridge@lists.linux-foundation.org>
-CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 13/13] net: bridge: Add checks for enabling the STP.
-Date:   Mon, 20 Apr 2020 17:09:47 +0200
-Message-ID: <20200420150947.30974-14-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200420150947.30974-1-horatiu.vultur@microchip.com>
-References: <20200420150947.30974-1-horatiu.vultur@microchip.com>
+        id S1730083AbgDTPKX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 11:10:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55758 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726905AbgDTPKW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 11:10:22 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9BE0C061A0C;
+        Mon, 20 Apr 2020 08:10:22 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 5491423058;
+        Mon, 20 Apr 2020 17:10:20 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1587395421;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0ltuHb7l1+7HEhaCHMWAHJsVLlBWvFM9cUwwU6Q/+H8=;
+        b=GXh55I+p1XeHFEEJ6lgxqTmXqMK/e3uuEU+gkGUFZobafGr56JCOwSt3Ejd2lU/MFAVeNe
+        zF9AjRTaLC3ZhH6pvE07AhQcKnziOrFttyI5FSynVv5TDOORoeDisFYhDCf/1KAvvcTqnp
+        hiS2S5vSYapB9uU8mmb0/8a4s2CVQg4=
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 20 Apr 2020 17:10:19 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next 3/3] net: phy: bcm54140: add hwmon support
+In-Reply-To: <20200419215549.GR836632@lunn.ch>
+References: <20200417195003.GG785713@lunn.ch>
+ <35d00dfe1ad24b580dc247d882aa2e39@walle.cc>
+ <20200417201338.GI785713@lunn.ch>
+ <84679226df03bdd8060cb95761724d3a@walle.cc>
+ <20200417212829.GJ785713@lunn.ch>
+ <4f3ff33f78472f547212f87f75a37b66@walle.cc>
+ <20200419162928.GL836632@lunn.ch>
+ <ebc026792e09d5702d031398e96d34f2@walle.cc>
+ <20200419170547.GO836632@lunn.ch>
+ <0f7ea4522a76f977f3aa3a80dd62201d@walle.cc>
+ <20200419215549.GR836632@lunn.ch>
+Message-ID: <75428c5faab7fc656051ab227663e6e6@walle.cc>
+X-Sender: michael@walle.cc
+User-Agent: Roundcube Webmail/1.3.10
+X-Spamd-Bar: +
+X-Spam-Level: *
+X-Rspamd-Server: web
+X-Spam-Status: No, score=1.40
+X-Spam-Score: 1.40
+X-Rspamd-Queue-Id: 5491423058
+X-Spamd-Result: default: False [1.40 / 15.00];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         FREEMAIL_ENVRCPT(0.00)[gmail.com];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         TAGGED_RCPT(0.00)[];
+         MIME_GOOD(-0.10)[text/plain];
+         DKIM_SIGNED(0.00)[];
+         RCPT_COUNT_SEVEN(0.00)[10];
+         NEURAL_HAM(-0.00)[-0.969];
+         RCVD_COUNT_ZERO(0.00)[0];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         FREEMAIL_CC(0.00)[vger.kernel.org,suse.com,roeck-us.net,gmail.com,armlinux.org.uk,davemloft.net];
+         MID_RHS_MATCH_FROM(0.00)[];
+         SUSPICIOUS_RECIPS(1.50)[]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is not possible to have the MRP and STP running at the same time on the
-bridge, therefore add check when enabling the STP to check if MRP is already
-enabled. In that case return error.
+Hi Andrew,
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- net/bridge/br_ioctl.c    |  3 +--
- net/bridge/br_netlink.c  |  4 +++-
- net/bridge/br_private.h  |  3 ++-
- net/bridge/br_stp.c      |  6 ++++++
- net/bridge/br_stp_if.c   | 11 ++++++++++-
- net/bridge/br_sysfs_br.c |  4 +---
- 6 files changed, 23 insertions(+), 8 deletions(-)
+Am 2020-04-19 23:55, schrieb Andrew Lunn:
+>> But what does that have to do with the shared structure? I don't think
+>> you have to "bundle" the shared structure with the "access the global
+>> registers" method.
+> 
+> We don't need to. But it would be a good way to clean up code which
+> locks the mdio bus, does a register access on some other device, and
+> then unlocks the bus.
 
-diff --git a/net/bridge/br_ioctl.c b/net/bridge/br_ioctl.c
-index ae22d784b88a..5e71fc8b826f 100644
---- a/net/bridge/br_ioctl.c
-+++ b/net/bridge/br_ioctl.c
-@@ -242,8 +242,7 @@ static int old_dev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
- 		if (!ns_capable(dev_net(dev)->user_ns, CAP_NET_ADMIN))
- 			return -EPERM;
- 
--		br_stp_set_enabled(br, args[1]);
--		ret = 0;
-+		ret = br_stp_set_enabled(br, args[1], NULL);
- 		break;
- 
- 	case BRCTL_SET_BRIDGE_PRIORITY:
-diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index 52f7bbd3f382..dfdf076616c6 100644
---- a/net/bridge/br_netlink.c
-+++ b/net/bridge/br_netlink.c
-@@ -1112,7 +1112,9 @@ static int br_changelink(struct net_device *brdev, struct nlattr *tb[],
- 	if (data[IFLA_BR_STP_STATE]) {
- 		u32 stp_enabled = nla_get_u32(data[IFLA_BR_STP_STATE]);
- 
--		br_stp_set_enabled(br, stp_enabled);
-+		err = br_stp_set_enabled(br, stp_enabled, extack);
-+		if (err)
-+			return err;
- 	}
- 
- 	if (data[IFLA_BR_PRIORITY]) {
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index bbc496fcb181..5c24ff92352c 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -1287,7 +1287,8 @@ int br_set_ageing_time(struct net_bridge *br, clock_t ageing_time);
- /* br_stp_if.c */
- void br_stp_enable_bridge(struct net_bridge *br);
- void br_stp_disable_bridge(struct net_bridge *br);
--void br_stp_set_enabled(struct net_bridge *br, unsigned long val);
-+int br_stp_set_enabled(struct net_bridge *br, unsigned long val,
-+		       struct netlink_ext_ack *extack);
- void br_stp_enable_port(struct net_bridge_port *p);
- void br_stp_disable_port(struct net_bridge_port *p);
- bool br_stp_recalculate_bridge_id(struct net_bridge *br);
-diff --git a/net/bridge/br_stp.c b/net/bridge/br_stp.c
-index 1f14b8455345..3e88be7aa269 100644
---- a/net/bridge/br_stp.c
-+++ b/net/bridge/br_stp.c
-@@ -36,6 +36,12 @@ void br_set_state(struct net_bridge_port *p, unsigned int state)
- 	};
- 	int err;
- 
-+	/* Don't change the state of the ports if they are driven by a different
-+	 * protocol.
-+	 */
-+	if (p->flags & BR_MRP_AWARE)
-+		return;
-+
- 	p->state = state;
- 	err = switchdev_port_attr_set(p->dev, &attr);
- 	if (err && err != -EOPNOTSUPP)
-diff --git a/net/bridge/br_stp_if.c b/net/bridge/br_stp_if.c
-index d174d3a566aa..a42850b7eb9a 100644
---- a/net/bridge/br_stp_if.c
-+++ b/net/bridge/br_stp_if.c
-@@ -196,10 +196,17 @@ static void br_stp_stop(struct net_bridge *br)
- 	br->stp_enabled = BR_NO_STP;
- }
- 
--void br_stp_set_enabled(struct net_bridge *br, unsigned long val)
-+int br_stp_set_enabled(struct net_bridge *br, unsigned long val,
-+		       struct netlink_ext_ack *extack)
- {
- 	ASSERT_RTNL();
- 
-+	if (br_mrp_enabled(br)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "STP can't be enabled if MRP is already enabled\n");
-+		return -EINVAL;
-+	}
-+
- 	if (val) {
- 		if (br->stp_enabled == BR_NO_STP)
- 			br_stp_start(br);
-@@ -207,6 +214,8 @@ void br_stp_set_enabled(struct net_bridge *br, unsigned long val)
- 		if (br->stp_enabled != BR_NO_STP)
- 			br_stp_stop(br);
- 	}
-+
-+	return 0;
- }
- 
- /* called under bridge lock */
-diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
-index 9ab0f00b1081..7db06e3f642a 100644
---- a/net/bridge/br_sysfs_br.c
-+++ b/net/bridge/br_sysfs_br.c
-@@ -126,9 +126,7 @@ static ssize_t stp_state_show(struct device *d,
- 
- static int set_stp_state(struct net_bridge *br, unsigned long val)
- {
--	br_stp_set_enabled(br, val);
--
--	return 0;
-+	return br_stp_set_enabled(br, val, NULL);
- }
- 
- static ssize_t stp_state_store(struct device *d,
--- 
-2.17.1
+I'd like do an RFC for that. But how should I proceed with the original
+patch series? Should I send an updated version; you didn't reply to the
+LED stuff. That is the last remark for now.
 
+> As a general rule of thumb, it is better to have the core do the
+> locking, rather than the driver. Driver writers don't always think
+> about locking, so it is better to give driver writers safe APIs to
+> use.
+
+Ok I see, but what locking do you have in mind? We could have something
+like
+
+__phy_package_write(struct phy_device *dev, u32 regnum, u16 val)
+{
+   return __mdiobus_write(phydev->mdio.bus, phydev->shared->addr,
+                          regnum, val);
+}
+
+and its phy_package_write() equivalent. But that would just be
+convenience functions, nothing where you actually help the user with
+locking. Am I missing something?
+
+>>> Get the core to do reference counting on the structure?
+>>> Add helpers phy_read_shared(), phy_write_shared(), etc, which does
+>>> MDIO accesses on the base device, taking care of the locking.
+>>> 
+>> The "base" access is another thing, I guess, which has nothing to do
+>> with the shared structure.
+>> 
+> I'm making the assumption that all global addresses are at the base
+> address. If we don't want to make that assumption, we need the change
+> the API above so you pass a cookie, and all PHYs need to use the same
+> cookie to identify the package.
+
+how would a phy driver deduce a common cookie? And how would that be a
+difference to using a PHY address.
+
+> Maybe base is the wrong name, since MSCC can have the base as the high
+> address of the four, not the low?
+
+I'd say it might be any of the four addresses as long as it is the same
+across the PHYs in the same package. And in that case you can also have
+the phy_package_read/write() functions.
+
+-michael
