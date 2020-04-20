@@ -2,114 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 104A61B0008
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 04:54:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D3511B0017
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 05:04:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726173AbgDTCyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 22:54:02 -0400
-Received: from mail-eopbgr30055.outbound.protection.outlook.com ([40.107.3.55]:37958
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725896AbgDTCyC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 19 Apr 2020 22:54:02 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GXK6oeFqmk+cMcx+c2Bd4QyPUe+kMMfBbPemBCBv/5eSHPOlWftDTaVtlQCYuXXfbJd5PfvN5Pdk0SKubgeuNFPdSjrsNG12J6c7zS/AjlBWLPfzfv2QVusg6hPMXtCyHIXGEahOsGUWIuU1Ob02Vhmrx1kDKu9uow50l7o6qO7UcjB9HGFc64EQ/9rTKD+V7tnNeJngwVmFNY5RPj/IWHpkw92JzefyXItf4JUY1fthsm5aiMV3SNErDVYVbZfg9H6/+TXBmwiG6FwW+N96iAJxeTnUAkVZoF8bGcdmInk879Ge4nFu3vNsIoHSSbUIxOz0SOSTI8HRu8rip7dXew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0a0cSmpQOEv3tWV1nKHiyRBzdnqnN4WnCuZfmyXXLYc=;
- b=hHRL/RPlczl6ebS0scPYq1m2wr/sfVUKOZCvPq7q5jywTXy3Vr6lUBXlt8NtSuyRInWpbriC1qWS11W9voa5eaihHoWQXIFUe94gvtsuR6ZY2TS3HuhOcEmISodgRtNQxYmpugt3NXh6aFsDuf3BwPu96QTnsAxiN4Nr1Bhv46clM29yoEFfx2CawCWgDqFfPi5TrxOhLaylocSPUBbnzFJgmivfIUcP6s7E0Z6AOrloKML+KmBPCJFtOXQKSICwIQnH+nXmo0w1w9YPeNsMt8S3b/0A8/JHOVnReUE20w7FYkSviyMIjNE93mEd72QPEt4UUMXPqjMpjjv3e8Qw7w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0a0cSmpQOEv3tWV1nKHiyRBzdnqnN4WnCuZfmyXXLYc=;
- b=rFPKZgkRwHg12dbco60OpkGq0g8FnbiHOLz45Dbp0JF0dgZFI8ita/fui4S08vMCdGsIz0ZmitxLzSMpkvAEHf5azWRJMB5XqKBhPFcj2lys1CDVqJg72sb3kPvnf21wvc1FVbcaOClFQvTQlD3OW6LJgsSgE0VG5oAq8UWtlio=
-Received: from AM7PR04MB6885.eurprd04.prod.outlook.com (2603:10a6:20b:10d::24)
- by AM7PR04MB6871.eurprd04.prod.outlook.com (2603:10a6:20b:109::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.25; Mon, 20 Apr
- 2020 02:53:59 +0000
-Received: from AM7PR04MB6885.eurprd04.prod.outlook.com
- ([fe80::fdc0:9eff:2931:d11b]) by AM7PR04MB6885.eurprd04.prod.outlook.com
- ([fe80::fdc0:9eff:2931:d11b%5]) with mapi id 15.20.2921.027; Mon, 20 Apr 2020
- 02:53:59 +0000
-From:   "Y.b. Lu" <yangbo.lu@nxp.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>
-Subject: RE: [v2, 0/7] Support programmable pins for Ocelot PTP driver
-Thread-Topic: [v2, 0/7] Support programmable pins for Ocelot PTP driver
-Thread-Index: AQHWBxL03Cs51oqVYUqmHzAo138hlKhiG/oAgB9TUxA=
-Date:   Mon, 20 Apr 2020 02:53:59 +0000
-Message-ID: <AM7PR04MB6885C6159F01EC9EECB78885F8D40@AM7PR04MB6885.eurprd04.prod.outlook.com>
-References: <20200331041113.15873-1-yangbo.lu@nxp.com>
- <20200330.213010.176136354629521349.davem@davemloft.net>
-In-Reply-To: <20200330.213010.176136354629521349.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=yangbo.lu@nxp.com; 
-x-originating-ip: [92.121.68.129]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 6b24b98a-c49c-4cf1-c1ad-08d7e4d61338
-x-ms-traffictypediagnostic: AM7PR04MB6871:|AM7PR04MB6871:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM7PR04MB68710E41E252F193F94CE679F8D40@AM7PR04MB6871.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 03793408BA
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR04MB6885.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(376002)(346002)(39860400002)(396003)(136003)(366004)(8676002)(316002)(55016002)(66556008)(66476007)(66946007)(64756008)(33656002)(66446008)(9686003)(5660300002)(7696005)(86362001)(478600001)(2906002)(4744005)(26005)(186003)(6506007)(52536014)(53546011)(4326008)(76116006)(54906003)(8936002)(6916009)(81156014)(71200400001);DIR:OUT;SFP:1101;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: y0MTL+H44KS75AJuzG2UEQCEtMO5z/j501tdm4yAlVfudQH3n1uNWEyiwBuros2dfSOBjpVniMOpE3s5swlb6gRknqXM97eQ1xJVsQeMsVn/riQLzeohcFr+R4rGBzQSZIC6djFqs67pacHxkf8hWYiCKtd9pWPBKw6MEo1mvf4BZ9DX/k/EHiZLoXjEHaiYbrCu4wQUdEQlj8xsmPWTfmGuayJQ5iQGJDMUXElkxt1B1Z1B+HbHpmB7C7UaRDyNecODfxajEpq88rbevyuNq0+cU4Ow7fUp3gKZqhisJ23NVt0/pzZJlDZf+H4QJRr+D2Hx/LeqONfWjFKOnQLED2pREWj+D9BrwUqCU0xTDOnlNYxBBvSQpUzI04y/52Xy2Y1BHQAL/KjejL9MZgvh/rTERaKHv+EjkAQFVKThPuo8jwkuaOanPPexzi2j43Pa
-x-ms-exchange-antispam-messagedata: Z8dty2FN8Yu2RVMOIliH2LKuBJ/bgrjkP2NK+XIi6MbEwgeEYPiOF0gv4AEFv/LFsPTm5Obd6aQhUF9p4v29+fZ3lvgBbAaynezx1gji9gvpUngWOaZ6hE0aP4aiEHjCygcTXkLRN8MMqWW21YhWoQ==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726050AbgDTDEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 23:04:37 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:36817 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725896AbgDTDEh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Apr 2020 23:04:37 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 495BPY1B6Sz9sR4;
+        Mon, 20 Apr 2020 13:04:33 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
+        s=201909; t=1587351874;
+        bh=zqFglfs+OWwiFYdz+pg3YEVVbd/md31jahle7Ih0HU4=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=Gdf0lZfuhRtXWn9XYKXxepVVuDOfiv59WFv1PTE2PQfslSmIGkxjwQqS9XEdGF7W9
+         QR/uesda+C73aEg+f1PQ+m8355evDSUOoxV8DIjYahUJ/ZYQoCoT7hZ6Kg8Z31hF6+
+         a3OMF1pX9eZYurylCG6+u9z7sGwffoOz+sSLn2vWw1d0FhMaaZZwrfWj4M9iTioCqO
+         eIyWKkGK0p+b6Gp3XRrE7PVPdFEtB9hRR1eHqWZe+iumg9WDjt+PNlyFLyJlYQ4aqQ
+         kVs9kfQiA99CtIFHnF9vJVqVq4HwpVWdAfLTptcbYjkqt05vc2TSg9wVf6+7hu/A91
+         DCnoO0yM3nxiQ==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Christophe Leroy <christophe.leroy@c-s.fr>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc:     virtualization@lists.linux-foundation.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] iommu: spapr_tce: Disable compile testing to fix build on book3s_32 config
+In-Reply-To: <a99ee461-664c-51ae-cb3a-cf5d87048d86@c-s.fr>
+References: <20200414142630.21153-1-krzk@kernel.org> <a99ee461-664c-51ae-cb3a-cf5d87048d86@c-s.fr>
+Date:   Mon, 20 Apr 2020 13:04:47 +1000
+Message-ID: <874ktej1rk.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6b24b98a-c49c-4cf1-c1ad-08d7e4d61338
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Apr 2020 02:53:59.1680
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: MGe4BT3GgNZfZGFmy8Qob9XyvvCFzAZG6h2kMIhBO/moamtt2Faqy+wLuIIPtjwwYwCcOoCTxl5uIDGJjBheDA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6871
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: David Miller <davem@davemloft.net>
-> Sent: Tuesday, March 31, 2020 12:30 PM
-> To: Y.b. Lu <yangbo.lu@nxp.com>
-> Cc: linux-kernel@vger.kernel.org; netdev@vger.kernel.org;
-> richardcochran@gmail.com; Vladimir Oltean <vladimir.oltean@nxp.com>;
-> Claudiu Manoil <claudiu.manoil@nxp.com>; andrew@lunn.ch;
-> vivien.didelot@gmail.com; f.fainelli@gmail.com;
-> alexandre.belloni@bootlin.com; UNGLinuxDriver@microchip.com
-> Subject: Re: [v2, 0/7] Support programmable pins for Ocelot PTP driver
->=20
->=20
-> net-next is closed, please resubmit this when net-next opens again
+Christophe Leroy <christophe.leroy@c-s.fr> writes:
+> On 04/14/2020 02:26 PM, Krzysztof Kozlowski wrote:
+>> Although SPAPR_TCE_IOMMU itself can be compile tested on certain PowerPC
+>> configurations, its presence makes arch/powerpc/kvm/Makefile to select
+>> modules which do not build in such configuration.
+>> 
+>> The arch/powerpc/kvm/ modules use kvm_arch.spapr_tce_tables which exists
+>> only with CONFIG_PPC_BOOK3S_64.  However these modules are selected when
+>> COMPILE_TEST and SPAPR_TCE_IOMMU are chosen leading to build failures:
+>> 
+>>      In file included from arch/powerpc/include/asm/book3s/64/mmu-hash.h:20:0,
+>>                       from arch/powerpc/kvm/book3s_64_vio_hv.c:22:
+>>      arch/powerpc/include/asm/book3s/64/pgtable.h:17:0: error: "_PAGE_EXEC" redefined [-Werror]
+>>       #define _PAGE_EXEC  0x00001 /* execute permission */
+>> 
+>>      In file included from arch/powerpc/include/asm/book3s/32/pgtable.h:8:0,
+>>                       from arch/powerpc/include/asm/book3s/pgtable.h:8,
+>>                       from arch/powerpc/include/asm/pgtable.h:18,
+>>                       from include/linux/mm.h:95,
+>>                       from arch/powerpc/include/asm/io.h:29,
+>>                       from include/linux/io.h:13,
+>>                       from include/linux/irq.h:20,
+>>                       from arch/powerpc/include/asm/hardirq.h:6,
+>>                       from include/linux/hardirq.h:9,
+>>                       from include/linux/kvm_host.h:7,
+>>                       from arch/powerpc/kvm/book3s_64_vio_hv.c:12:
+>>      arch/powerpc/include/asm/book3s/32/hash.h:29:0: note: this is the location of the previous definition
+>>       #define _PAGE_EXEC 0x200 /* software: exec allowed */
+>> 
+>> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+>> Fixes: e93a1695d7fb ("iommu: Enable compile testing for some of drivers")
+>> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+>> ---
+>>   drivers/iommu/Kconfig | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>> 
+>> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+>> index 58b4a4dbfc78..3532b1ead19d 100644
+>> --- a/drivers/iommu/Kconfig
+>> +++ b/drivers/iommu/Kconfig
+>> @@ -362,7 +362,7 @@ config IPMMU_VMSA
+>>   
+>>   config SPAPR_TCE_IOMMU
+>>   	bool "sPAPR TCE IOMMU Support"
+>> -	depends on PPC_POWERNV || PPC_PSERIES || (PPC && COMPILE_TEST)
+>> +	depends on PPC_POWERNV || PPC_PSERIES
+>>   	select IOMMU_API
+>>   	help
+>>   	  Enables bits of IOMMU API required by VFIO. The iommu_ops
+>> 
+>
+> Should it be fixed the other way round, something like:
 
-Resubmit the patch-set as V3.
-Thanks!
+That doesn't actually fix this specific issue, the code will build but
+then not link:
 
->=20
-> Thank you.
+  ld: arch/powerpc/../../virt/kvm/vfio.o: in function `.kvm_spapr_tce_release_vfio_group':
+  vfio.c:(.text.kvm_spapr_tce_release_vfio_group+0xb0): undefined reference to `.kvm_spapr_tce_release_iommu_group'
+  ld: arch/powerpc/../../virt/kvm/vfio.o: in function `.kvm_vfio_set_group':
+  vfio.c:(.text.kvm_vfio_set_group+0x7f4): undefined reference to `.kvm_spapr_tce_attach_iommu_group'
+  ld: arch/powerpc/kvm/powerpc.o: in function `.kvm_arch_vm_ioctl':
+  (.text.kvm_arch_vm_ioctl+0x1a4): undefined reference to `.kvm_vm_ioctl_create_spapr_tce'
+  ld: (.text.kvm_arch_vm_ioctl+0x230): undefined reference to `.kvm_vm_ioctl_create_spapr_tce'
+  make[1]: *** [/home/michael/linux/Makefile:1106: vmlinux] Error 1
+
+> diff --git a/arch/powerpc/kvm/Makefile b/arch/powerpc/kvm/Makefile
+> index 2bfeaa13befb..906707d15810 100644
+> --- a/arch/powerpc/kvm/Makefile
+> +++ b/arch/powerpc/kvm/Makefile
+> @@ -135,4 +135,4 @@ obj-$(CONFIG_KVM_BOOK3S_32) += kvm.o
+>   obj-$(CONFIG_KVM_BOOK3S_64_PR) += kvm-pr.o
+>   obj-$(CONFIG_KVM_BOOK3S_64_HV) += kvm-hv.o
+>
+> -obj-y += $(kvm-book3s_64-builtin-objs-y)
+> +obj-$(CONFIG_KVM_BOOK3S_64) += $(kvm-book3s_64-builtin-objs-y)
+
+But this is probably still a good thing to do, as it would have made the
+error messages clearer in this case I think.
+
+cheers
