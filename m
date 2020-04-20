@@ -2,164 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0C7A1B1683
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 22:02:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B82641B168A
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 22:02:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728310AbgDTUBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 16:01:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58020 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728296AbgDTUBP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 16:01:15 -0400
-Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1EF262145D;
-        Mon, 20 Apr 2020 20:01:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587412875;
-        bh=fW1BC6x7tMfCNt++/v7F2D1iENTMOQg79pviDBE/3s8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=waFjZvI0IxVKDZfd2CueAw6ZjzMYdgR8WQ+wphVZmLaKUCB9TDUr3+NJjuRTXYBBE
-         1IpwtHAYvXe7RkFH/w22lpyE495k1GFy6nGxv+WRQORiLm8H81a+7h7X/OdZUrIPmi
-         3e/ar0EQwDy8qcEl8UEtrERrLUF0ZsIF6a+JMb8Q=
-From:   David Ahern <dsahern@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        brouer@redhat.com, toke@redhat.com, toshiaki.makita1@gmail.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-Subject: [PATCH bpf-next 16/16] samples/bpf: add XDP egress support to xdp1
-Date:   Mon, 20 Apr 2020 14:00:55 -0600
-Message-Id: <20200420200055.49033-17-dsahern@kernel.org>
-X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
-In-Reply-To: <20200420200055.49033-1-dsahern@kernel.org>
-References: <20200420200055.49033-1-dsahern@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726611AbgDTUCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 16:02:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46314 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725918AbgDTUCT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 16:02:19 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBF1C061A0C
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 13:02:19 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 32D97128042D4;
+        Mon, 20 Apr 2020 13:02:17 -0700 (PDT)
+Date:   Mon, 20 Apr 2020 13:02:15 -0700 (PDT)
+Message-Id: <20200420.130215.721617466987117194.davem@davemloft.net>
+To:     pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, mathew.j.martineau@linux.intel.com,
+        matthieu.baerts@tessares.net, kuba@kernel.org, cpaasch@apple.com,
+        fw@strlen.de
+Subject: Re: [PATCH net 0/3] mptcp: fix races on accept()
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <cover.1587389294.git.pabeni@redhat.com>
+References: <cover.1587389294.git.pabeni@redhat.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 20 Apr 2020 13:02:17 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dahern@digitalocean.com>
+From: Paolo Abeni <pabeni@redhat.com>
+Date: Mon, 20 Apr 2020 16:25:03 +0200
 
-xdp1 and xdp2 now accept -E flag to set XDP program in the egress
-path.
+> This series includes some fixes for accept() races which may cause inconsistent
+> MPTCP socket status and oops. Please see the individual patches for the
+> technical details.
 
-Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
-Signed-off-by: David Ahern <dahern@digitalocean.com>
----
- samples/bpf/xdp1_user.c | 39 ++++++++++++++++++++++++++++++++-------
- 1 file changed, 32 insertions(+), 7 deletions(-)
+Series applied, thanks.
 
-diff --git a/samples/bpf/xdp1_user.c b/samples/bpf/xdp1_user.c
-index c447ad9e3a1d..9f79bd537763 100644
---- a/samples/bpf/xdp1_user.c
-+++ b/samples/bpf/xdp1_user.c
-@@ -20,22 +20,37 @@
- 
- static int ifindex;
- static __u32 xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
-+static struct bpf_xdp_set_link_opts opts;
- static __u32 prog_id;
- 
- static void int_exit(int sig)
- {
- 	__u32 curr_prog_id = 0;
-+	int rc;
- 
--	if (bpf_get_link_xdp_id(ifindex, &curr_prog_id, xdp_flags)) {
--		printf("bpf_get_link_xdp_id failed\n");
-+	if (opts.egress)
-+		rc = bpf_get_link_xdp_egress_id(ifindex, &curr_prog_id, xdp_flags);
-+	else
-+		rc = bpf_get_link_xdp_id(ifindex, &curr_prog_id, xdp_flags);
-+
-+	if (rc) {
-+		printf("Failed to get existing prog id for device");
- 		exit(1);
- 	}
-+
-+	if (curr_prog_id)
-+		opts.old_fd = bpf_prog_get_fd_by_id(curr_prog_id);
-+
- 	if (prog_id == curr_prog_id)
--		bpf_set_link_xdp_fd(ifindex, -1, xdp_flags);
-+		bpf_set_link_xdp_fd_opts(ifindex, -1, xdp_flags, &opts);
- 	else if (!curr_prog_id)
- 		printf("couldn't find a prog id on a given interface\n");
- 	else
- 		printf("program on interface changed, not removing\n");
-+
-+	if (opts.old_fd >= 0)
-+		close(opts.old_fd);
-+
- 	exit(0);
- }
- 
-@@ -73,7 +88,8 @@ static void usage(const char *prog)
- 		"OPTS:\n"
- 		"    -S    use skb-mode\n"
- 		"    -N    enforce native mode\n"
--		"    -F    force loading prog\n",
-+		"    -F    force loading prog\n"
-+		"    -E	   egress path program\n",
- 		prog);
- }
- 
-@@ -83,15 +99,20 @@ int main(int argc, char **argv)
- 	struct bpf_prog_load_attr prog_load_attr = {
- 		.prog_type	= BPF_PROG_TYPE_XDP,
- 	};
-+	struct bpf_xdp_set_link_opts opts;
- 	struct bpf_prog_info info = {};
- 	__u32 info_len = sizeof(info);
--	const char *optstr = "FSN";
-+	const char *optstr = "FSNE";
- 	int prog_fd, map_fd, opt;
- 	struct bpf_object *obj;
- 	struct bpf_map *map;
- 	char filename[256];
- 	int err;
- 
-+	memset(&opts, 0, sizeof(opts));
-+	opts.sz = sizeof(opts);
-+	opts.old_fd = -1;
-+
- 	while ((opt = getopt(argc, argv, optstr)) != -1) {
- 		switch (opt) {
- 		case 'S':
-@@ -103,13 +124,17 @@ int main(int argc, char **argv)
- 		case 'F':
- 			xdp_flags &= ~XDP_FLAGS_UPDATE_IF_NOEXIST;
- 			break;
-+		case 'E':
-+			opts.egress = true;
-+			prog_load_attr.expected_attach_type = BPF_XDP_EGRESS;
-+			break;
- 		default:
- 			usage(basename(argv[0]));
- 			return 1;
- 		}
- 	}
- 
--	if (!(xdp_flags & XDP_FLAGS_SKB_MODE))
-+	if (!(xdp_flags & XDP_FLAGS_SKB_MODE) && !opts.egress)
- 		xdp_flags |= XDP_FLAGS_DRV_MODE;
- 
- 	if (optind == argc) {
-@@ -149,7 +174,7 @@ int main(int argc, char **argv)
- 	signal(SIGINT, int_exit);
- 	signal(SIGTERM, int_exit);
- 
--	if (bpf_set_link_xdp_fd(ifindex, prog_fd, xdp_flags) < 0) {
-+	if (bpf_set_link_xdp_fd_opts(ifindex, prog_fd, xdp_flags, &opts) < 0) {
- 		printf("link set xdp fd failed\n");
- 		return 1;
- 	}
--- 
-2.21.1 (Apple Git-122.3)
-
+It seems like patch #3 might be relevant for v5.6 -stable, what's the
+story here?
