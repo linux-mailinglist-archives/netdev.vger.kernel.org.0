@@ -2,116 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ADDF1B151F
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 20:48:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2B201B1522
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 20:48:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728196AbgDTSsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 14:48:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33738 "EHLO
+        id S1727972AbgDTSsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 14:48:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728168AbgDTSr7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 14:47:59 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59AD5C061A0F;
-        Mon, 20 Apr 2020 11:47:59 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id t11so5521628pgg.2;
-        Mon, 20 Apr 2020 11:47:59 -0700 (PDT)
+        with ESMTP id S1726933AbgDTSsO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 14:48:14 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80902C061A0C
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 11:48:14 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id d17so13465092wrg.11
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 11:48:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ea2mQmg+8A1lXBRsTjPBIeegijXnIt7tuxUQQkZzy6E=;
-        b=bGO3EnGp37YefoPOMGqxeZCcQpdOthASA1zuI4spziRipgcHghEPa8DiSSvHKGQQ2R
-         iUR2SzSCKMB4HieMEyUr9Afr7N4KP0piStTgw1Or6T3I2K5mbGr/4RA24ghWkeyUdqVr
-         SGX3Nr/lT+E4lx2SVnBHQgLQh42Mu2FjprPVApV1BsBPJlr3bgSGu4N1F9bWz2IKFu8n
-         s3K38nKJphvK/DoHWwRJDbwiah8RoMS1hTRNmbzk4TqSVMkF2vJqTLGZ8q/2+BXPOi/B
-         myEfHRWpBR7XyDdYoj0IYhyMR4gJWJQ9YTCOisLjrdDJV6CSH1dbAqzeMIljA7FWV63p
-         vf/g==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2cSdc7HOKNn19uIovkBV2qQLh5+gmDP21h5U9G3vQpg=;
+        b=AWt7dvWRP+vAoE+odGSw7XNnLZObieoTenf9eCtsh7RVN/TGFvcAACtffqBThNrcS3
+         zlsMF/jJreikztfpiqVKzjgSIFM4qjed8tvPnuxNNDLP15XzxLkr0h/PGgSII0P0sAqF
+         lmVeVm3FrGFdKB9eeAyOzIeGYwO8v/NwLvBei3p0LWS3CINC+60AS1V5JXMUEs5ANHZI
+         QKB+6lyaSIJTmKFQSohenGvdTEm+yBs4CtxG6NyqvCiCKgj0F9C+aT26ElLTWuwdi0m9
+         rFDTH48y22+S/y70iDfaE+cpCiet5XiTzu+otbKEcVlIXWzbkw32YpaEkctMGDMAZGp8
+         ym3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ea2mQmg+8A1lXBRsTjPBIeegijXnIt7tuxUQQkZzy6E=;
-        b=W4pzqRI56745+seOyeaCir7ZKd4TLmPStqfjixFjTPeG30rlj236/Mtxu+CiIDuV8G
-         3ao8goq7bpBOg917j2uEokA06A7EF18oMLBPJkx6hIG4drvR0oSxxgLN9miaA/C2skKS
-         C8HgLsorbSVzjrtHZ4ONxIGUo8D9RV0aOiEow5OniK3LFgIcvx068xs977nQia7zuteT
-         ZL0LZyDqZ+3p+MT8C7V3thdcu+5PTsOQopoo0LvnV1GugLyvD4u5Q0/fFkL/AHyYK2F/
-         j4VdOP9DpSuDqYD25MZv25RHylGkH1IXDxEa81/w4AjODGb54/ExWydkA8QKYkiK8VNE
-         omiA==
-X-Gm-Message-State: AGi0PuZeXc0c4hFaDBjnyjLknQ2sEAVsV/6x6GwgJoZOJbOvSyWm5WDP
-        ZhD/eVB7CHtkfRqnd5UKC98=
-X-Google-Smtp-Source: APiQypLBNsqEEPAJKnvnqIwMMbARdlUEMBALoL7bX+jkAponvZxUydUnURCABEPk8a7h6QZfEjd0TQ==
-X-Received: by 2002:a62:520e:: with SMTP id g14mr17488593pfb.216.1587408478794;
-        Mon, 20 Apr 2020 11:47:58 -0700 (PDT)
-Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
-        by smtp.gmail.com with ESMTPSA id h14sm61979pjc.46.2020.04.20.11.47.57
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2cSdc7HOKNn19uIovkBV2qQLh5+gmDP21h5U9G3vQpg=;
+        b=dAIZQ0wTYXkWUrrA169WwcIElpShz8UwihNF7ZsVSgLauD4WYealdoSruAQX54yi/r
+         YU9iYQdl6fUcfBidempS0U8+aQ82IxfskBGJtgP5H1g8RoskpIskMgZjV5YLYqOWsEpa
+         MdyEu61o2jDmL5QG2AanE5xyzgak7rZnU4Tyi+tCFWHx4xKW7+T8YFrlVcQbeCVGMuM9
+         40W7wgqBhJz3x+B4fWYPhPyWzKLEbFnwSwNtSppgovPpY27K74folEGTcsrb6R2MHZT5
+         gq3XuYujD9BDTp4C2+7jGBc9p0hHHsG4jf0OjAM4+a39grdj0w/v+DHUymTtmQusCf/K
+         ztaQ==
+X-Gm-Message-State: AGi0PuYGmyfa7M3em08MkttFFSrnzIhAlUL+XlvvKdjxKn5q1lYPMZ9N
+        cxo5PHM/LVdtqHXaztaOowJXzA==
+X-Google-Smtp-Source: APiQypJTmGD6w4kcJc/Jb8LZ9aIRN3E+NN52Jim9VsAd/ZOeMB8QLIvIrgK3iYSjr2bKc6PscVe0HQ==
+X-Received: by 2002:a5d:610e:: with SMTP id v14mr19672293wrt.159.1587408493333;
+        Mon, 20 Apr 2020 11:48:13 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id y63sm386040wmg.21.2020.04.20.11.48.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2020 11:47:58 -0700 (PDT)
-From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
-To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH] net: bpf: make bpf_ktime_get_ns() available to non GPL programs
-Date:   Mon, 20 Apr 2020 11:47:50 -0700
-Message-Id: <20200420184750.218489-1-zenczykowski@gmail.com>
-X-Mailer: git-send-email 2.26.1.301.g55bc3eb7cb9-goog
+        Mon, 20 Apr 2020 11:48:12 -0700 (PDT)
+Date:   Mon, 20 Apr 2020 20:48:11 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Maor Gottlieb <maorg@mellanox.com>, davem@davemloft.net,
+        jgg@mellanox.com, dledford@redhat.com, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org,
+        leonro@mellanox.com, saeedm@mellanox.com, jiri@mellanox.com,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        alexr@mellanox.com
+Subject: Re: [PATCH V2 mlx5-next 01/10] net/core: Introduce
+ master_xmit_slave_get
+Message-ID: <20200420184811.GW6581@nanopsycho.orion>
+References: <20200420075426.31462-1-maorg@mellanox.com>
+ <20200420075426.31462-2-maorg@mellanox.com>
+ <20200420140118.GJ6581@nanopsycho.orion>
+ <a9e00f31-2f4e-1dfc-2464-d3d25376a4b8@gmail.com>
+ <20200420175421.GU6581@nanopsycho.orion>
+ <916ab047-3b50-7104-311a-6dcf604bcf6d@gmail.com>
+ <20200420180144.GV6581@nanopsycho.orion>
+ <75dffa6a-c14f-45c9-44e1-bf5b5c650a9b@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <75dffa6a-c14f-45c9-44e1-bf5b5c650a9b@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
+Mon, Apr 20, 2020 at 08:04:01PM CEST, dsahern@gmail.com wrote:
+>On 4/20/20 12:01 PM, Jiri Pirko wrote:
+>> Generic ndo with lag-specific arg? Odd. Plus, there is a small chance
+>> this is ever going to be used for other master. And if so, could be very
+>> easily renamed then...
+>
+>core code should be generic, not specific and renamed at a later date
+>when a second use case arises.
 
-The entire implementation is in kernel/bpf/helpers.c:
-
-BPF_CALL_0(bpf_ktime_get_ns) {
-       /* NMI safe access to clock monotonic */
-       return ktime_get_mono_fast_ns();
-}
-
-const struct bpf_func_proto bpf_ktime_get_ns_proto = {
-       .func           = bpf_ktime_get_ns,
-       .gpl_only       = false,
-       .ret_type       = RET_INTEGER,
-};
-
-and this was presumably marked GPL due to kernel/time/timekeeping.c:
-  EXPORT_SYMBOL_GPL(ktime_get_mono_fast_ns);
-
-and while that may make sense for kernel modules (although even that
-is doubtful), there is currently AFAICT no other source of time
-available to ebpf.
-
-Furthermore this is really just equivalent to clock_gettime(CLOCK_MONOTONIC)
-which is exposed to userspace (via vdso even to make it performant)...
-
-As such, I see no reason to keep the GPL restriction.
-(In the future I'd like to have access to time from Apache licensed ebpf code)
-
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
----
- kernel/bpf/helpers.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index bafc53ddd350..a5158a179e81 100644
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -151,7 +151,7 @@ BPF_CALL_0(bpf_ktime_get_ns)
- 
- const struct bpf_func_proto bpf_ktime_get_ns_proto = {
- 	.func		= bpf_ktime_get_ns,
--	.gpl_only	= true,
-+	.gpl_only	= false,
- 	.ret_type	= RET_INTEGER,
- };
- 
--- 
-2.26.1.301.g55bc3eb7cb9-goog
+Yeah, I guess we just have to agree to disagree :)
 
