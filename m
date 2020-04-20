@@ -2,99 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF3C51B0D4B
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 15:48:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 705C81B0D59
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 15:49:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726997AbgDTNsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 09:48:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42892 "EHLO
+        id S1726167AbgDTNts (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 09:49:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728798AbgDTNs3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 09:48:29 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359A3C061A0F
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 06:48:29 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id u13so12263836wrp.3
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 06:48:29 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1727830AbgDTNtr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 09:49:47 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94E01C061A0F
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 06:49:47 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id g12so11481463wmh.3
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 06:49:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=imtZsjSmtZ9lToO+D+hdQXHxKttVZf90A06FjfqjHgc=;
-        b=ir2H+e8NqatcbEggL19HMjCjkGRk5EAGvdNVTcSDsBYhlzFb5AuMXzUBL5z0VGkZDz
-         b/XYHADkstcPUaN5RIpw8+RNcM1oT7JXTRz5leG2xSMa1t+qT3Dfww+3kOyhfoSCQzLr
-         WFinwdmyeVE3/o4dsJX8bds420Y37JxZKH50WbT5AKulAe+VsURWfJJZDy6Pc79v4Xk/
-         M3RI5Th47urxvir4Y1cP07LQQsvr8fTGgDEMU+f9MkbzTx+qm5gM44YFVAEcpgFNh9po
-         2wquc7+1a4Kgd2uNhmprCKNeUReCjnXONX743OS9bR7wksm8NW2I1I8oZsHSTjfCX2y7
-         1kfA==
+         :content-disposition:in-reply-to;
+        bh=ZojA4pqADCBsVqB1CaJT0LsrmwwUhQsSEqijcwbkwAY=;
+        b=T/buWphyjcJ6FvBntY431uiOY/BvaB+1+1pK2FJhSJVANyFgDvzjl/g7NN/JTZs50p
+         hZ/XJ4KKDVHM4rd+BsKchbCJUTK3OimSgnpoASzE0919ZORbmD2FYDIQmx3UrNITCVlg
+         /4UBheA0eNCR2kwfoDmBBcI36jmf5xvjh3/ljgrPXgvTqvlPq0Z9Es0sx6EFETl1Qvzh
+         0vAKCvduffF1RWElwVbDUmnKBdpUvinYHGU26Esj4kRMA4Tz7QUauweuUG+gJkPp/KBF
+         ypU6wIXzWhJGhbDvHC/eOqmomk0NMtNSUc14c/LJ0d8grpNv+rT7LeZQf9DT798uSXXw
+         NSqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=imtZsjSmtZ9lToO+D+hdQXHxKttVZf90A06FjfqjHgc=;
-        b=dTxPqXPkSLQb3fhyakB/TXyzazy0xQHtuSk0RhpYNepgAQQM7nx8XeqUbhIxFz18Lc
-         7ki7EWety7fecU7iXQA1Li5MoTA8XAdxUzjJ7IjgI5T7WFdHW2pz1Bhf/rpUA8ScF32I
-         tNZjt05fNNbwT974/HyNvoJQDDXyHzGRRowWg1mauGGKwwHjjro4Ahic0S37osUxXVCK
-         nYGcUwUuyOem5PZYQmgU2qIH0N5YfKyYqofsN4xVp06Au89Z3t+HUsSEk4BwBpU46ieu
-         3YKNA3x321Uac8rzbQ8D4WhfnMkSpCMlRrjOC+TQxf2CE54zUVWLsYqZU9ooXSfEsxaV
-         a/2Q==
-X-Gm-Message-State: AGi0PuaNEOsp6HjPNoGKSgeZzuaa+D6J3f53VPdrLPjgK7mOC23NoIpn
-        /7/mE7EGSyH+4iZoeVNJ14wHDT2d5H8=
-X-Google-Smtp-Source: APiQypJ4sFE3+IEwO4LkKimwzsi0HGaG8Tciw6b3yX+IEtQkIQ/+CuCOb2yn4iZQrYtHx0zbIfWmXQ==
-X-Received: by 2002:a5d:4712:: with SMTP id y18mr19261460wrq.306.1587390508020;
-        Mon, 20 Apr 2020 06:48:28 -0700 (PDT)
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZojA4pqADCBsVqB1CaJT0LsrmwwUhQsSEqijcwbkwAY=;
+        b=oogM95n9Y2Qmyrskg6EW9XJkX49hgwc81UcEz9uK+MSrfVvl5pgot/zvA+6NpHSHqd
+         wu4CyDs1yOnJ5potBKAhoHquBYfRKtovFcPinATF+56MLPd8MeGhLz9ZRslJmTV66ps0
+         StdSKV5Rh7e8Qh3+Wex5k3choykQibCqhrVTpg9dn2pLDB4lHHwyv16xL8EcPFk1zu50
+         tvdYKtd2jS5NDahnuuyIHCH+o+zlpLCj67mh/vyLPJnUolJhI+qrMOnli/ijcZSrUL8N
+         3seeWisoO1As70yqAzfIkz/kWSNjVPI2t9kPQx/cTIqSivBDlYFqhYOv2q+F9aq5gozn
+         U3AQ==
+X-Gm-Message-State: AGi0PubC2Rbid3HKonFyzgW4qv+b8n1KmGN7nnSRpJXH7zRkZ0Ef2nGX
+        aet2gnAjmiz/sZz/XDGl/IH7Zg==
+X-Google-Smtp-Source: APiQypKXhjtYH3ROG2igsBKqtFQJQaTFm7ddAb2mdwPDYhUM6o3ckOZEyvEGkiP4rVHbzD87HsLsiQ==
+X-Received: by 2002:a7b:c250:: with SMTP id b16mr18559734wmj.100.1587390586309;
+        Mon, 20 Apr 2020 06:49:46 -0700 (PDT)
 Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id i17sm1264756wru.39.2020.04.20.06.48.27
+        by smtp.gmail.com with ESMTPSA id s6sm1374576wmh.17.2020.04.20.06.49.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2020 06:48:27 -0700 (PDT)
-Date:   Mon, 20 Apr 2020 15:48:26 +0200
+        Mon, 20 Apr 2020 06:49:45 -0700 (PDT)
+Date:   Mon, 20 Apr 2020 15:49:44 +0200
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Edward Cree <ecree@solarflare.com>,
-        netfilter-devel@vger.kernel.org, davem@davemloft.net,
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
         netdev@vger.kernel.org, kuba@kernel.org
 Subject: Re: [PATCH net] net: flow_offload: skip hw stats check for
  FLOW_ACTION_HW_STATS_DISABLED
-Message-ID: <20200420134826.GH6581@nanopsycho.orion>
+Message-ID: <20200420134944.GI6581@nanopsycho.orion>
 References: <20200419115338.659487-1-pablo@netfilter.org>
  <20200420080200.GA6581@nanopsycho.orion>
  <20200420090505.pr6wsunozfh7afaj@salvia>
  <20200420091302.GB6581@nanopsycho.orion>
  <20200420100341.6qehcgz66wq4ysax@salvia>
  <20200420115210.GE6581@nanopsycho.orion>
- <3980eea4-18d8-5e62-2d6d-fce0a7e7ed4c@solarflare.com>
- <20200420123915.nrqancwjb7226l7e@salvia>
+ <20200420121351.f5akqetiy6nc7fpq@salvia>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200420123915.nrqancwjb7226l7e@salvia>
+In-Reply-To: <20200420121351.f5akqetiy6nc7fpq@salvia>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Apr 20, 2020 at 02:39:15PM CEST, pablo@netfilter.org wrote:
->On Mon, Apr 20, 2020 at 01:28:22PM +0100, Edward Cree wrote:
->> On 20/04/2020 12:52, Jiri Pirko wrote:
->> > However for TC, when user specifies "HW_STATS_DISABLED", the driver
->> > should not do stats.
->>
->> What should a driver do if the user specifies DISABLED, but the stats
->>  are still needed for internal bookkeeping (e.g. to prod an ARP entry
->>  that's in use for encapsulation offload, so that it doesn't get
->>  expired out of the cache)?  Enable the stats on the HW anyway but
->>  not report them to FLOW_CLS_STATS?  Or return an error?
+Mon, Apr 20, 2020 at 02:13:51PM CEST, pablo@netfilter.org wrote:
+>On Mon, Apr 20, 2020 at 01:52:10PM +0200, Jiri Pirko wrote:
+>> Mon, Apr 20, 2020 at 12:03:41PM CEST, pablo@netfilter.org wrote:
+>> >On Mon, Apr 20, 2020 at 11:13:02AM +0200, Jiri Pirko wrote:
+>> >> Mon, Apr 20, 2020 at 11:05:05AM CEST, pablo@netfilter.org wrote:
+>> >> >On Mon, Apr 20, 2020 at 10:02:00AM +0200, Jiri Pirko wrote:
+>> >> >> Sun, Apr 19, 2020 at 01:53:38PM CEST, pablo@netfilter.org wrote:
+>> >> >> >If the frontend requests no stats through FLOW_ACTION_HW_STATS_DISABLED,
+>> >> >> >drivers that are checking for the hw stats configuration bail out with
+>> >> >> >EOPNOTSUPP.
+>> >> >>
+>> >> >> Wait, that was a point. Driver has to support stats disabling.
+>> >> >
+>> >> >Hm, some drivers used to accept FLOW_ACTION_HW_STATS_DISABLED, now
+>> >> >rulesets that used to work don't work anymore.
+>> >>
+>> >> How? This check is here since the introduction of hw stats types.
+>> >
+>> >Netfilter is setting the counter support to
+>> >FLOW_ACTION_HW_STATS_DISABLED in this example below:
+>> >
+>> >  table netdev filter {
+>> >        chain ingress {
+>> >                type filter hook ingress device eth0 priority 0; flags offload;
+>> >
+>> >                tcp dport 22 drop
+>> >        }
+>> >  }
+>> 
+>> Hmm. In TC the HW_STATS_DISABLED has to be explicitly asked by the user,
+>> as the sw stats are always on. Your case is different.
 >
->My interpretation is that HW_STATS_DISABLED means that the front-end
->does not care / does not need counters. The driver can still allocate
+>I see, I think requesting HW_STATS_DISABLED in tc fails with the
+>existing code though.
+>
+>> However so far (before HW_STATS patchset), the offload just did the
+>> stats and you ignored them in netfilter code, correct?
+>
+>Yes, netfilter is not collecting stats yet.
+>
+>> Perhaps we need another value of this, like "HW_STATS_MAY_DISABLED" for
+>> such case.
+>
+>Or just redefine FLOW_ACTION_HW_STATS_DISABLED to define a bit in
+>enum flow_action_hw_stats_bit.
+>
+>enum flow_action_hw_stats_bit {
+>        FLOW_ACTION_HW_STATES_DISABLED_BIT,
+>        FLOW_ACTION_HW_STATS_IMMEDIATE_BIT,
+>        FLOW_ACTION_HW_STATS_DELAYED_BIT,
+>};
+>
+>Then update:
+>
+>        FLOW_ACTION_HW_STATS_ANY = FLOW_ACTION_HW_STATS_DISABLED |
+>                                   FLOW_ACTION_HW_STATS_IMMEDIATE |
+>                                   FLOW_ACTION_HW_STATS_DELAYED,
 
-That is wrong interpretation. If user does not care, he specifies "ANY".
-That is the default.
-
-When he says "DISABLED" he means disabled. Not "I don't care".
+No! That would break the default. "ANY" can never mean "disabled".
 
 
->them if needed. So the enum flow_action_hw_stats flags represent what
->the front-end requires.
+>
+>?
+>
+>> Because you don't care if the HW actually does the stats or
+>> not. It is an optimization for you.
+>>
+>> However for TC, when user specifies "HW_STATS_DISABLED", the driver
+>> should not do stats.
+>
+>My interpretation is that _DISABLED means that front-end does not
+>request counters to the driver.
+>
+>> >The user did not specify a counter in this case.
+>> >
+>> >I think __flow_action_hw_stats_check() cannot work with
+>> >FLOW_ACTION_HW_STATS_DISABLED.
+>> >
+>> >If check_allow_bit is false and FLOW_ACTION_HW_STATS_DISABLED is
+>> >specified, then this always evaluates true:
+>> >
+>> >        if (!check_allow_bit &&
+>> >            action_entry->hw_stats != FLOW_ACTION_HW_STATS_ANY) {
+>> >
+>> >Similarly:
+>> >
+>> >        } else if (check_allow_bit &&
+>> >                   !(action_entry->hw_stats & BIT(allow_bit))) {
+>> >
+>> >evaluates true for FLOW_ACTION_HW_STATS_DISABLED, assuming allow_bit is
+>> >set, which I think it is the intention.
+>> 
+>> That is correct. __flow_action_hw_stats_check() helper is here for
+>> simple drivers that support just one type of hw stats
+>> (immediate/delayed).
+>
+>If this is solved as I'm proposing above, then
+>__flow_action_hw_stats_check() need to take a bitmask instead of enum
+>flow_action_hw_stats_bit as parameter, because a driver need to
+>specify what they support, eg.
+>
+>        if (!__flow_action_hw_stats_check(action, &extack,
+>                                         FLOW_ACTION_HW_STATS_DISABLED |
+>                                         FLOW_ACTION_HW_STATS_DELAYED))
+>                return -EOPNOSUPP;
+>
+>or alternatively, if the driver supports any case:
+>
+>        if (!__flow_action_hw_stats_check(action, &extack,
+>                                         FLOW_ACTION_HW_STATS_ANY))
+>                return -EOPNOSUPP;
