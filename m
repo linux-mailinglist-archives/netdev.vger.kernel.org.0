@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3A981B07B3
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 13:42:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE36B1B07B5
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 13:42:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726539AbgDTLmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 07:42:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45962 "EHLO mail.kernel.org"
+        id S1726557AbgDTLmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 07:42:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46112 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725886AbgDTLmU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 07:42:20 -0400
+        id S1725886AbgDTLmX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 07:42:23 -0400
 Received: from localhost (unknown [213.57.247.131])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 69B41218AC;
-        Mon, 20 Apr 2020 11:42:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 17D9121744;
+        Mon, 20 Apr 2020 11:42:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587382939;
-        bh=qCfIoBmFi0W25EXlC0rndYZI8y4yRIOkJmVP75iIUj8=;
+        s=default; t=1587382942;
+        bh=y9aNNmd2bqYZUtvuidS2zLELX5Dvs8o+bARSGSem6jI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R1QLLMkchn0MCntnmsay7yWkls6v/1Uigni8IatEhHr4udJyqEoDtIhmk9MMW+dUw
-         EwiSmrUhEZ/PFtLDVwCfdNG8bSBdbKt2y5gdiRGLyN71+AoKKTLrakIDV5k1OkL75v
-         bVQ6vnFME6dEVKtRWjSawOoP0ijBXu7xzXMLwVdY=
+        b=2t2lseI8SI0BqhdYBMVu7kVcvBhz2cOkaajNstGdRzEZBmuplZVzRrCrhma7OL0UA
+         lyC6l4pIog7AohGuYzZT64kIQsWDm/VDrLyv4JZ3EW9SBwcPeBa7If4fWR32jP7xpY
+         uMz9I40cV6MCFvKuM7X4eORTtxrz60VvfeC+Ge0M=
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@mellanox.com>
 Cc:     Leon Romanovsky <leonro@mellanox.com>, linux-rdma@vger.kernel.org,
         Moshe Shemesh <moshe@mellanox.com>, netdev@vger.kernel.org,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [PATCH mlx5-next 11/24] net/mlx5: Update lag.c new cmd interface
-Date:   Mon, 20 Apr 2020 14:41:23 +0300
-Message-Id: <20200420114136.264924-12-leon@kernel.org>
+Subject: [PATCH mlx5-next 12/24] net/mlx5: Update gid.c new cmd interface
+Date:   Mon, 20 Apr 2020 14:41:24 +0300
+Message-Id: <20200420114136.264924-13-leon@kernel.org>
 X-Mailer: git-send-email 2.25.2
 In-Reply-To: <20200420114136.264924-1-leon@kernel.org>
 References: <20200420114136.264924-1-leon@kernel.org>
@@ -44,134 +44,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@mellanox.com>
 
-Do mass update of lag.c to reuse newly introduced
+Do mass update of gid.c to reuse newly introduced
 mlx5_cmd_exec_in*() interfaces.
 
 Reviewed-by: Moshe Shemesh <moshe@mellanox.com>
 Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lag.c | 52 ++++++-------------
- 1 file changed, 17 insertions(+), 35 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/lib/gid.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-index 5461fbe47c0d..874c70e8cc54 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-@@ -47,8 +47,7 @@ static DEFINE_SPINLOCK(lag_lock);
- static int mlx5_cmd_create_lag(struct mlx5_core_dev *dev, u8 remap_port1,
- 			       u8 remap_port2)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/gid.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/gid.c
+index 7722a3f9bb68..a68738c8f4bc 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/gid.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/gid.c
+@@ -124,8 +124,7 @@ int mlx5_core_roce_gid_set(struct mlx5_core_dev *dev, unsigned int index,
+ 			   const u8 *mac, bool vlan, u16 vlan_id, u8 port_num)
  {
--	u32   in[MLX5_ST_SZ_DW(create_lag_in)]   = {0};
--	u32   out[MLX5_ST_SZ_DW(create_lag_out)] = {0};
-+	u32 in[MLX5_ST_SZ_DW(create_lag_in)] = {};
- 	void *lag_ctx = MLX5_ADDR_OF(create_lag_in, in, ctx);
+ #define MLX5_SET_RA(p, f, v) MLX5_SET(roce_addr_layout, p, f, v)
+-	u32  in[MLX5_ST_SZ_DW(set_roce_address_in)] = {0};
+-	u32 out[MLX5_ST_SZ_DW(set_roce_address_out)] = {0};
++	u32 in[MLX5_ST_SZ_DW(set_roce_address_in)] = {};
+ 	void *in_addr = MLX5_ADDR_OF(set_roce_address_in, in, roce_address);
+ 	char *addr_l3_addr = MLX5_ADDR_OF(roce_addr_layout, in_addr,
+ 					  source_l3_address);
+@@ -153,6 +152,6 @@ int mlx5_core_roce_gid_set(struct mlx5_core_dev *dev, unsigned int index,
  
- 	MLX5_SET(create_lag_in, in, opcode, MLX5_CMD_OP_CREATE_LAG);
-@@ -56,14 +55,13 @@ static int mlx5_cmd_create_lag(struct mlx5_core_dev *dev, u8 remap_port1,
- 	MLX5_SET(lagc, lag_ctx, tx_remap_affinity_1, remap_port1);
- 	MLX5_SET(lagc, lag_ctx, tx_remap_affinity_2, remap_port2);
- 
+ 	MLX5_SET(set_roce_address_in, in, roce_address_index, index);
+ 	MLX5_SET(set_roce_address_in, in, opcode, MLX5_CMD_OP_SET_ROCE_ADDRESS);
 -	return mlx5_cmd_exec(dev, in, sizeof(in), out, sizeof(out));
-+	return mlx5_cmd_exec_in(dev, create_lag, in);
++	return mlx5_cmd_exec_in(dev, set_roce_address, in);
  }
- 
- static int mlx5_cmd_modify_lag(struct mlx5_core_dev *dev, u8 remap_port1,
- 			       u8 remap_port2)
- {
--	u32   in[MLX5_ST_SZ_DW(modify_lag_in)]   = {0};
--	u32   out[MLX5_ST_SZ_DW(modify_lag_out)] = {0};
-+	u32 in[MLX5_ST_SZ_DW(modify_lag_in)] = {};
- 	void *lag_ctx = MLX5_ADDR_OF(modify_lag_in, in, ctx);
- 
- 	MLX5_SET(modify_lag_in, in, opcode, MLX5_CMD_OP_MODIFY_LAG);
-@@ -72,52 +70,29 @@ static int mlx5_cmd_modify_lag(struct mlx5_core_dev *dev, u8 remap_port1,
- 	MLX5_SET(lagc, lag_ctx, tx_remap_affinity_1, remap_port1);
- 	MLX5_SET(lagc, lag_ctx, tx_remap_affinity_2, remap_port2);
- 
--	return mlx5_cmd_exec(dev, in, sizeof(in), out, sizeof(out));
--}
--
--static int mlx5_cmd_destroy_lag(struct mlx5_core_dev *dev)
--{
--	u32  in[MLX5_ST_SZ_DW(destroy_lag_in)]  = {0};
--	u32 out[MLX5_ST_SZ_DW(destroy_lag_out)] = {0};
--
--	MLX5_SET(destroy_lag_in, in, opcode, MLX5_CMD_OP_DESTROY_LAG);
--
--	return mlx5_cmd_exec(dev, in, sizeof(in), out, sizeof(out));
-+	return mlx5_cmd_exec_in(dev, modify_lag, in);
- }
- 
- int mlx5_cmd_create_vport_lag(struct mlx5_core_dev *dev)
- {
--	u32  in[MLX5_ST_SZ_DW(create_vport_lag_in)]  = {0};
--	u32 out[MLX5_ST_SZ_DW(create_vport_lag_out)] = {0};
-+	u32 in[MLX5_ST_SZ_DW(create_vport_lag_in)] = {};
- 
- 	MLX5_SET(create_vport_lag_in, in, opcode, MLX5_CMD_OP_CREATE_VPORT_LAG);
- 
--	return mlx5_cmd_exec(dev, in, sizeof(in), out, sizeof(out));
-+	return mlx5_cmd_exec_in(dev, create_vport_lag, in);
- }
- EXPORT_SYMBOL(mlx5_cmd_create_vport_lag);
- 
- int mlx5_cmd_destroy_vport_lag(struct mlx5_core_dev *dev)
- {
--	u32  in[MLX5_ST_SZ_DW(destroy_vport_lag_in)]  = {0};
--	u32 out[MLX5_ST_SZ_DW(destroy_vport_lag_out)] = {0};
-+	u32 in[MLX5_ST_SZ_DW(destroy_vport_lag_in)] = {};
- 
- 	MLX5_SET(destroy_vport_lag_in, in, opcode, MLX5_CMD_OP_DESTROY_VPORT_LAG);
- 
--	return mlx5_cmd_exec(dev, in, sizeof(in), out, sizeof(out));
-+	return mlx5_cmd_exec_in(dev, destroy_vport_lag, in);
- }
- EXPORT_SYMBOL(mlx5_cmd_destroy_vport_lag);
- 
--static int mlx5_cmd_query_cong_counter(struct mlx5_core_dev *dev,
--				       bool reset, void *out, int out_size)
--{
--	u32 in[MLX5_ST_SZ_DW(query_cong_statistics_in)] = { };
--
--	MLX5_SET(query_cong_statistics_in, in, opcode,
--		 MLX5_CMD_OP_QUERY_CONG_STATISTICS);
--	MLX5_SET(query_cong_statistics_in, in, clear, reset);
--	return mlx5_cmd_exec(dev, in, sizeof(in), out, out_size);
--}
--
- int mlx5_lag_dev_get_netdev_idx(struct mlx5_lag *ldev,
- 				struct net_device *ndev)
- {
-@@ -232,12 +207,14 @@ int mlx5_activate_lag(struct mlx5_lag *ldev,
- static int mlx5_deactivate_lag(struct mlx5_lag *ldev)
- {
- 	struct mlx5_core_dev *dev0 = ldev->pf[MLX5_LAG_P1].dev;
-+	u32 in[MLX5_ST_SZ_DW(destroy_lag_in)] = {};
- 	bool roce_lag = __mlx5_lag_is_roce(ldev);
- 	int err;
- 
- 	ldev->flags &= ~MLX5_LAG_MODE_FLAGS;
- 
--	err = mlx5_cmd_destroy_lag(dev0);
-+	MLX5_SET(destroy_lag_in, in, opcode, MLX5_CMD_OP_DESTROY_LAG);
-+	err = mlx5_cmd_exec_in(dev0, destroy_lag, in);
- 	if (err) {
- 		if (roce_lag) {
- 			mlx5_core_err(dev0,
-@@ -783,7 +760,12 @@ int mlx5_lag_query_cong_counters(struct mlx5_core_dev *dev,
- 	spin_unlock(&lag_lock);
- 
- 	for (i = 0; i < num_ports; ++i) {
--		ret = mlx5_cmd_query_cong_counter(mdev[i], false, out, outlen);
-+		u32 in[MLX5_ST_SZ_DW(query_cong_statistics_in)] = {};
-+
-+		MLX5_SET(query_cong_statistics_in, in, opcode,
-+			 MLX5_CMD_OP_QUERY_CONG_STATISTICS);
-+		ret = mlx5_cmd_exec_inout(mdev[i], query_cong_statistics, in,
-+					  out);
- 		if (ret)
- 			goto free;
- 
+ EXPORT_SYMBOL(mlx5_core_roce_gid_set);
 -- 
 2.25.2
 
