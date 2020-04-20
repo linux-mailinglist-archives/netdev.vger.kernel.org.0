@@ -2,71 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0C0E1B1864
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 23:26:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2A281B186E
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 23:28:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726525AbgDTV0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 17:26:07 -0400
-Received: from mga06.intel.com ([134.134.136.31]:57542 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726050AbgDTV0H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 17:26:07 -0400
-IronPort-SDR: Sx8C34kV9vvDvn7eq09Qelo9l+BlN1AFursp8V6+YaTTvVfx7UsBhbJHI7vH/0tZ4Fk92LfE/9
- StJ4hEgtk52w==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 14:26:07 -0700
-IronPort-SDR: yvliXu2qriBQcDWzHbcW81UNPs+z5/SAqq1AKjA4J7R3QaNQFx40nchFr8qNTv8oo2BYta0Yhf
- oIsvrXtYSwfA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,407,1580803200"; 
-   d="scan'208";a="273308923"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga002.jf.intel.com with ESMTP; 20 Apr 2020 14:26:03 -0700
-Received: from andy by smile with local (Exim 4.93)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1jQdva-0027yQ-9T; Tue, 21 Apr 2020 00:26:06 +0300
-Date:   Tue, 21 Apr 2020 00:26:06 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Doug Berger <opendmb@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH v1 1/2] net: bcmgenet: Drop ACPI_PTR() to avoid compiler
- warning
-Message-ID: <20200420212606.GD185537@smile.fi.intel.com>
-References: <20200420181652.34620-1-andriy.shevchenko@linux.intel.com>
- <d193529a-57af-b694-32e4-cd64455c6a96@gmail.com>
+        id S1726757AbgDTV22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 17:28:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59640 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726017AbgDTV21 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 17:28:27 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE902C061A0C
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 14:28:26 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id k1so14052970wrx.4
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 14:28:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=y/8qxNS2lE2X/WZKAfpXbqN9FsJsB+BySP2Oyp6oHoE=;
+        b=Uab2RZcltfLZBjlbQLx+RZxfywJo42U/H2C5In5WnHg5cGYcVnl+WSqYN3eqZn+OlI
+         cMlRMYBYo9Wrjcd+RwQbWrKjdVek4Cbss5vM2cQe/dbLkBWlDTZSCWNh2NzaFxhmp3V7
+         xAgkNqBR9GEz4/VmIGBwUW4NS0ATGKwxZB3qLEAlE2ho+JQXj1VUhONcc5Q7FoNANujs
+         qBVpAc93JABSpmfm5LdVlgkZL4XhoIP+9l4SUU9gHHH9q2VkYAcgqFAgSCONfRkoGoxa
+         pPt7lwGWRyj2JOR05+hU4EnVqT01YaWXasckcWiq1is+XOjS/4Vt/WiR9gEiVB58PRFI
+         4ngA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=y/8qxNS2lE2X/WZKAfpXbqN9FsJsB+BySP2Oyp6oHoE=;
+        b=QQxNmw5iBah7sVTwI/uTwqYZH1rDSaC5ddLHlIjOyB3CTpFcaUVPV6VY7Kmy60SBQY
+         vJSgapL/ADm/IyXGIabkM0CJ0b63nbpFcqEzLeI7dFw78a60XXs8zXc1m2RjjRp3A7eW
+         vuYdYIsNPU0ci477tHKc9yCHdiaHnbOGUaYU1h/yyPA4uEOll6Nd+anYShibN+dONfKR
+         rWXDMAKVgwkXRrbgHeb8eRf5yakHzgfVNqTqJUUDRLCRR1GUR2jExr1zqepLL8ECRJ0I
+         Uultu13OnfPCZ+PsY8x3j+DRpNKPuCTRQ5TdNNYnsovsiC7P0wPTQ8oBQpEK8/eUtuIP
+         VHmA==
+X-Gm-Message-State: AGi0PuaLmWLEiyzw/auKxcBeVOkfoLYMXXtWh2Vdo9ARNwhWMyrjuHFJ
+        A6cr0s6JvYG3wugVfFy1ofQXzwWr
+X-Google-Smtp-Source: APiQypKVXdw9YDqMw22YT3raTTHb+B590RGJRUs6e4wa+UhDursPyIb7gVnwpiI1UuTXP72/ObbfHA==
+X-Received: by 2002:adf:ea48:: with SMTP id j8mr16493233wrn.108.1587418105267;
+        Mon, 20 Apr 2020 14:28:25 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:6000:7101:507:3ef2:1ef1? (p200300EA8F296000710105073EF21EF1.dip0.t-ipconnect.de. [2003:ea:8f29:6000:7101:507:3ef2:1ef1])
+        by smtp.googlemail.com with ESMTPSA id n9sm980856wrx.61.2020.04.20.14.28.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Apr 2020 14:28:24 -0700 (PDT)
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next 0/2] net: phy: add device-managed
+ devm_mdiobus_register
+Message-ID: <9b83837d-d246-ffb0-0c52-8d4c5064e7e4@gmail.com>
+Date:   Mon, 20 Apr 2020 23:28:19 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d193529a-57af-b694-32e4-cd64455c6a96@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 20, 2020 at 11:18:34AM -0700, Florian Fainelli wrote:
-> 
-> 
-> On 4/20/2020 11:16 AM, Andy Shevchenko wrote:
-> > When compiled with CONFIG_ACPI=n, ACPI_PTR() will be no-op, and thus
-> > genet_acpi_match table defined, but not used. Compiler is not happy about
-> > such data. Drop ACPI_PTR() for good.
-> > 
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
-> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+If there's no special ordering requirement for mdiobus_unregister(),
+then driver code can be simplified by using a device-managed version
+of mdiobus_register(). Prerequisite is that bus allocation has been
+done device-managed too. Else mdiobus_free() may be called whilst
+bus is still registered, resulting in a BUG_ON(). Therefore let
+devm_mdiobus_register() return -EPERM if bus was allocated
+non-managed.
 
-Thank you!
+First user of the new functionality is r8169 driver.
 
-Please, do not apply this, I will combine all patches together in a series.
-I have more because of that ACPI enabling work.
+Heiner Kallweit (2):
+  net: phy: add device-managed devm_mdiobus_register
+  r8169: use devm_mdiobus_register
+
+ drivers/net/ethernet/realtek/r8169_main.c | 10 ++--------
+ drivers/net/phy/mdio_bus.c                |  8 +++++++-
+ include/linux/phy.h                       | 17 +++++++++++++++++
+ 3 files changed, 26 insertions(+), 9 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.26.1
 
