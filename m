@@ -2,98 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87D551B1791
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 22:53:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C5711B1796
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 22:54:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726319AbgDTUxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 16:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54172 "EHLO
+        id S1726764AbgDTUya (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 16:54:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725774AbgDTUxF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 16:53:05 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E58DC061A0C
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 13:53:05 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id y24so1146117wma.4
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 13:53:05 -0700 (PDT)
+        with ESMTP id S1725897AbgDTUya (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 16:54:30 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEC6BC061A0C;
+        Mon, 20 Apr 2020 13:54:28 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id x2so9876239qtr.0;
+        Mon, 20 Apr 2020 13:54:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=5Kp7z0CX0i6p32pwFtDfib5b3WOjZcfufxs57+9cgBE=;
-        b=VsXyjwZqf8dLlj3syHyNcIKaw/vZ9vNHBtNR9t0m+MHBdgg73Wzcgja2qUH1I9f4Dk
-         as25nToYxAKN8EXbrJn4pRKbudajW45JQ3bgdpg8dDRIDta/6u/qvJDiPm7LjdytVS4Y
-         jfh1W+dPj037JB8Gej2+Q7cmCeaRQRyDiAGAb3J6SJIZ9luaxCRb4opyKWFOMZ5h1yGq
-         21WwCyWMUGng95GJAPx0+BOeuleAq+4fvf9caoPwZnF4kNyc2zB0h81X0ZbKRPXwq5BZ
-         1R9F5HTjFc0ESeIbckITnylBxHHK1gdMB7o2hsPdfV8cyBiw81gSLqzEyzI9dwWoZkFz
-         /pLg==
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3aM6ySTt1JA7jga8iVB04qoFk3fpif9WQjyZ29LThzI=;
+        b=YaogCojRTUgSB+jUNI3fSG5ccXoSk8Bw04wQouLVShhv0/tv3ct4nWsJ1N6sTBtH1d
+         KHxP3O0TsOPoMafNckeSZ4az+t3rMKL4AQikakeuQ0n4lTQuAa57kVVoZbrojZDOvh77
+         5G2zgjvQBZUmJiUwck+2DsZevexBIvDyU6+xfcOTRUp1fbqCzpGvLKpGid8a8pMM79A1
+         D1AeR9G5k/NVmy3JptxkOjCalx2VGzbnQghGRSWr+ww+vWu+XzdI8t6YYHaIb19nE/e7
+         35XHyTLZNLfsreGwwo/EHjQFoIPGN9vNr6K/zxjTKWKciWaGF5+ktS0I+fwzRKMSIDUK
+         fiCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=5Kp7z0CX0i6p32pwFtDfib5b3WOjZcfufxs57+9cgBE=;
-        b=fsEor6c/mLvemgU8XHuslKQVvgMJFP7Dyhnysz/k854DQxULOAnIsJJtRpDD2qma8p
-         T8ngFHz8I+U7SMXriNMEhuNe1HVA7RJnskQIygy4J+xvnGcZE9Gh1sj40/6MBLmJRYK/
-         9o8pMh5PJHQMyhB35kFo4Nc2Kwo4BWMlN3WlDA0jrpD+zmFrd+y0ZJ2S5Si+cj6XTlV1
-         v7okKW8Yi9IjFZCZSWK88cKniSRfntrdsWp/F3CTNecQLql8sUqq9povMrnlKI4Mec+3
-         9cjgLWOYvf7wo0TzDRq7Nc+9eUgxhLzQzo9Nrq3jMwpgDnkrYCDQiEF/W23WAwp3IRSt
-         PzLA==
-X-Gm-Message-State: AGi0PuZ1zCTf7GaRzvolDA7VjSCLOXPd56tppw4AVNrnP94MXD6OUk4O
-        bRy74VCpEzxd1YJ1pPWsTso5yUZv
-X-Google-Smtp-Source: APiQypIRXcYqcq7sBlAfXC9dGHZVYfnyMAJ01bYuYsDZGGaccUMxmgIz7lfT6Kl7F1hGCaJaTdZhug==
-X-Received: by 2002:a1c:4c10:: with SMTP id z16mr1267988wmf.77.1587415983605;
-        Mon, 20 Apr 2020 13:53:03 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:7101:507:3ef2:1ef1? (p200300EA8F296000710105073EF21EF1.dip0.t-ipconnect.de. [2003:ea:8f29:6000:7101:507:3ef2:1ef1])
-        by smtp.googlemail.com with ESMTPSA id l185sm675162wml.44.2020.04.20.13.53.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Apr 2020 13:53:03 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: change wmb to smb_wmb in rtl8169_start_xmit
-Message-ID: <3cb5e0d1-15c6-ff98-dced-44e75f1341b9@gmail.com>
-Date:   Mon, 20 Apr 2020 22:52:59 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3aM6ySTt1JA7jga8iVB04qoFk3fpif9WQjyZ29LThzI=;
+        b=PkHv8ch1JxONg+iAUirxDFtmybW+CtTAajiTghc/n/lmJssqVORrnMWVy2vWOrEfEN
+         k0f+xdenSCOoe8Gvzvv7rdWRWKP8fenX9jTTsBBiMf+Bdv8KURoNWydii3zpBK4q9dxy
+         3Ihmr8MfO1UqfU2Bgzwhsyv9FNfDYveZ5mf7Q5HqUgWWEVuPrIZKAPJJbwo4t1N78otg
+         otsQwEtPozy8nU6+fUbCiXgwI5VTd6S85n8Vs/SJX9pzCnoAFe+7pfM3IdH6PMzIfFrt
+         bFc5LPHkpesvH4x+zx2gIW2+43RFliPp2Y/rHe0+AWzEBf/S+wYvYJ9wCg/xEZ6gueh5
+         I9NA==
+X-Gm-Message-State: AGi0PubSXwbqHLFDFEaho/FFrclp0Pfowk7W/gx9eZdte6z6yIG/wDpQ
+        7gpRgflpeFSEGz2rv5ofJSb8ud6XOws=
+X-Google-Smtp-Source: APiQypI7P5JXpytVExer74SB7iMdYf7opTKWYEUzYs39TbQSovr9cn03dXWRNr7pSH51VqVffCl5Dw==
+X-Received: by 2002:ac8:33f9:: with SMTP id d54mr18512969qtb.239.1587416067884;
+        Mon, 20 Apr 2020 13:54:27 -0700 (PDT)
+Received: from quaco.ghostprotocols.net ([179.97.37.151])
+        by smtp.gmail.com with ESMTPSA id a17sm480190qka.37.2020.04.20.13.54.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Apr 2020 13:54:26 -0700 (PDT)
+From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 8E2FC409A3; Mon, 20 Apr 2020 17:54:24 -0300 (-03)
+Date:   Mon, 20 Apr 2020 17:54:24 -0300
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alan Maguire <alan.maguire@oracle.com>, ast@kernel.org,
+        daniel@iogearbox.net, yhs@fb.com, kafai@fb.com,
+        songliubraving@fb.com, andriin@fb.com, john.fastabend@gmail.com,
+        kpsingh@chromium.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [RFC PATCH bpf-next 0/6] bpf, printk: add BTF-based type printing
+Message-ID: <20200420205424.GB23638@kernel.org>
+References: <1587120160-3030-1-git-send-email-alan.maguire@oracle.com>
+ <20200418160536.4mrvqh2lasqbyk77@ast-mbp>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200418160536.4mrvqh2lasqbyk77@ast-mbp>
+X-Url:  http://acmel.wordpress.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A barrier is needed here to ensure that rtl_tx sees the descriptor
-changes (DescOwn set) before the updated tp->cur_tx value. Else it may
-wrongly assume that the transfer has been finished already. For this
-purpose smp_wmb() is sufficient.
-
-No separate barrier is needed for ordering the descriptor changes
-with the MMIO doorbell write. The needed barrier is included in
-the non-relaxed writel() used by rtl8169_doorbell().
-
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index ece899be9..bb8dcdb17 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4251,8 +4251,8 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
+Em Sat, Apr 18, 2020 at 09:05:36AM -0700, Alexei Starovoitov escreveu:
+> On Fri, Apr 17, 2020 at 11:42:34AM +0100, Alan Maguire wrote:
+> > ...gives us:
+> > 
+> > {{{.next=00000000c7916e9c,.prev=00000000c7916e9c,{.dev=00000000c7916e9c|.dev_scratch=0}}|.rbnode={.__rb_parent_color=0,
  
- 	txd_first->opts1 |= cpu_to_le32(DescOwn | FirstFrag);
+> This is unreadable.
+> I like the choice of C style output, but please format it similar to drgn. Like:
+> *(struct task_struct *)0xffff889ff8a08000 = {
+> 	.thread_info = (struct thread_info){
+> 		.flags = (unsigned long)0,
+> 		.status = (u32)0,
+> 	},
+> 	.state = (volatile long)1,
+> 	.stack = (void *)0xffffc9000c4dc000,
+> 	.usage = (refcount_t){
+> 		.refs = (atomic_t){
+> 			.counter = (int)2,
+> 		},
+> 	},
+> 	.flags = (unsigned int)4194560,
+> 	.ptrace = (unsigned int)0,
  
--	/* Force all memory writes to complete before notifying device */
--	wmb();
-+	/* rtl_tx needs to see descriptor changes before updated tp->cur_tx */
-+	smp_wmb();
- 
- 	tp->cur_tx += frags + 1;
- 
--- 
-2.26.1
+> I like Arnaldo's idea as well, but I prefer zeros to be dropped by default.
+> Just like %d doesn't print leading zeros by default.
+> "%p0<struct sk_buff>" would print them.
 
+I was thinking about another way to compress the output of a given data
+structure someone is tracking, having to print it from time to time,
+which is to store a copy of the struct as you print it and then, when
+printing it again, print just its pointer, i.e. that:
+
+*(struct task_struct *)0xffff889ff8a08000 = {
+
+Line, then just printing the fields that changed, say just that refcount
+was bumped, so it first print:
+
+*(struct task_struct *)0xffff889ff8a08000 = {
+      .thread_info = (struct thread_info){
+              .flags = (unsigned long)0,
+              .status = (u32)0,
+      },
+      .state = (volatile long)1,
+      .stack = (void *)0xffffc9000c4dc000,
+      .usage = (refcount_t){
+              .refs = (atomic_t){
+                      .counter = (int)2,
+              },
+      },
+      .flags = (unsigned int)4194560,
+      .ptrace = (unsigned int)0,
+
+Then, the next time it would print:
+
+*(struct task_struct *)0xffff889ff8a08000 = {
+      .usage = (refcount_t){
+              .refs = (atomic_t){
+                      .counter = (int)3,
+              },
+      },
+},
+
+- Arnaldo
