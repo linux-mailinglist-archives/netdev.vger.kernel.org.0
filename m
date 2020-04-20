@@ -2,126 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A205B1B0D9B
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 16:01:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8A4C1B0DA0
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 16:01:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728303AbgDTOBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 10:01:16 -0400
-Received: from mout.web.de ([212.227.17.11]:39629 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726006AbgDTOBO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 10:01:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1587391259;
-        bh=lCOOgXGJ32O2IDoCBu8TvnQLoHY8iJa5CYd9za4Bvio=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=LqEssRfo0sRP4eL1j1jjHNc4EVGMhjpZTgUa/n/ZShxqKEAfZGasSRPhPzAK+fora
-         gLXGKT+h0EFN6Wks/+ON78WHGdH8f8dgPUTASY14ks6GftEjjihzuVqOu258lbqvz0
-         R3plwvINVALPu/MRW/rdrH+A/hn+dvI2Kal79Xpg=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([2.244.153.203]) by smtp.web.de (mrweb103
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0MJCWU-1jOs1A40k6-002sgF; Mon, 20
- Apr 2020 16:00:59 +0200
-Subject: Re: [net-next v2] can: ti_hecc: convert to
- devm_platform_ioremap_resource_byname()
-To:     Dejin Zheng <zhengdejin5@gmail.com>, netdev@vger.kernel.org
-Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>
-References: <20200420132207.8536-1-zhengdejin5@gmail.com>
-From:   Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <940fcaa1-8500-e534-2380-39419f1ac5a0@web.de>
-Date:   Mon, 20 Apr 2020 16:00:54 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1729037AbgDTOBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 10:01:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44902 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729055AbgDTOBX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 10:01:23 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83A4C061A0C
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 07:01:21 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id i10so12278783wrv.10
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 07:01:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3vSFuictiXaH6DTHu7ZG1ytuLG8BYZy4W0CQuxmGYs8=;
+        b=tOb745zS5TEEe0RI6MG40EcpZ2e0YDjeI4tcBRazKqgW9b05jceB+8bWT6NL+vjvME
+         rvDTR+Ypc+OjwtlP5YlYSH7jGdmBbaVgNxWV10TeikynNfoUqh07OzxC2uiCf/cayhpV
+         MKv0J79CD9Y4FEgzumG1Bt13lLHytInG39uX+qjyN7AGsXo1HQDE/88bVFhDJyl/FPFm
+         6sZo4ZvqUX8UkQLzET6tjq0cLTjvBuDSr2F8kvfhGeTee0yjyt1TKsbXoX1i920wnH9/
+         D6PLgwzp2adrSx8eTljTAbf8NeD0VfDvyIKvd+lbfOlBE4axFZghWtszc03HaHcs51Dp
+         eP6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3vSFuictiXaH6DTHu7ZG1ytuLG8BYZy4W0CQuxmGYs8=;
+        b=Wvv1bvYAqvvdZzves/i/YcbvOEVqJ1KYPm4t2DB1whPtx1otD3CIjW1+VuKenWYGA4
+         gs3x+Efn7U1jdPmswbyzLglqDYPsWtZqZJZ11bHUf1OHKSZKdsbkjm1fmCCVv9sNqev6
+         eyrQaTNrRQXQ7zzmfUOorJZqbSOO5JZ1KyMsQOZg1rM2mkmwwDdAGD33BgUnoGyHm5cA
+         Bst1MH/nHsYnqocZKWW7pmoQphxLYoWyMo09LfvnBkj7BmpVt8ZWl+UbJB/jPjZb3Wu6
+         JyO/AvkKThZVw8O6X0XRBeTbifYsuso+tuDosOlOBz95pokDk5/781WgEmBAn2yM5j7I
+         4wPA==
+X-Gm-Message-State: AGi0PuaGrpC10j4x+uFHajbjaaoQhSDKfVkftOinIJO6iXicz00DQ4Jl
+        RW/J4xSVEXGG1WyOHBLgnl0TOg==
+X-Google-Smtp-Source: APiQypI1i3OBkNY85OHtJAVy/MKsMr7pD6uqP5IhPCPyUl24ZnXaNs4STsSyn6JmvDssY+dK7WCG7g==
+X-Received: by 2002:a5d:5085:: with SMTP id a5mr20425454wrt.394.1587391280517;
+        Mon, 20 Apr 2020 07:01:20 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id i5sm1301926wrw.77.2020.04.20.07.01.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Apr 2020 07:01:19 -0700 (PDT)
+Date:   Mon, 20 Apr 2020 16:01:18 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Maor Gottlieb <maorg@mellanox.com>
+Cc:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        kuba@kernel.org, leonro@mellanox.com, saeedm@mellanox.com,
+        jiri@mellanox.com, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, alexr@mellanox.com
+Subject: Re: [PATCH V2 mlx5-next 01/10] net/core: Introduce
+ master_xmit_slave_get
+Message-ID: <20200420140118.GJ6581@nanopsycho.orion>
+References: <20200420075426.31462-1-maorg@mellanox.com>
+ <20200420075426.31462-2-maorg@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <20200420132207.8536-1-zhengdejin5@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-X-Provags-ID: V03:K1:9l2O5DK3JUcDmsaQMm4bDg+TZdm07Sozdqgnln8ISEyCsfnnjl3
- aG4UK1nGs7xevBcFd5Xb3dzRIwXsQ6s8n+lpXc4T2015oRCgWJINmsXhMXRaEQVjChLht4p
- qBITa1OYM7Iloosi8PKBX5P9fGReFcN9bavXsnV4PZpbxBPhIQW8+AyMt+CBMkzrgQEcpkl
- 1BxV8MuK/Jk0uUO8Wbk5Q==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:dCQmUc/jzio=:3peXCgS/XlwM+LT6QZNFS2
- FerFxh1jVj9MEETcSyWtJcBVaA2r7mC4K+QBQM2X0/pLOCA3sX/ktVfv3AKf9ZmB0WlgYP1dH
- kspeaxp3Axla7pywFB4wdEPAdhBpwF+9EdOuHCa2JuFp8OyPB6zNGxIZTSRoLpkCZNWKtzbAy
- G09A1kYxcPj+r+QRLHgXydJ0z0GnWcagpdqmgkZtpeOvXJ6Adr6fmrGy3Z/iFzRp55yJo58t5
- 0RXtsNPvKSA06TfHmZM0QtDjRg73ICUDS4xbJck4mYAcbJKSO53YZXKjUv89jhxEd0wyNsfbQ
- vpFySBZ2gL8ce0nuCehUSGEdjbkYFYyTaZmZQJNLh4uo0ASE7/n/+Ft4oOU5qkiLalK3DH4uK
- OBZNinYEPsmCP8VtuDNLyVZwaB2S68MpCcrSGBa7hFvA1+yhWKaIj/Zb2FE+I13yRGELf4du4
- wl8UPxd0MdALkN+Aa32+wkMnvsd8a80kME/K7Gzqa9njmZWqP1mFCm78RCfPkxNiH/MdosbDi
- MTGcjlR40wk6epVK6p5uVCdSnvkdOSYyw8R76jf/g9I07Uj3DxepnK1XaXD1fGX4RXMv+clD+
- Jq3K/xgofHj/ZCPgS2JQY+4KxJFvWAX71TgOgTyaxDfF8hqiIXvUlzpSJuUTWHwclyz40ul0Y
- XGBeAMjkHXB58niHriF0H4AxB9WGs37eLV3wK/TXDAZtSM6mLDOmg2mwbrLUZj24vpYroLrfS
- tFuPiPk+j+cvv0yv+Mfi/AVATSyxNsutuJ5E4PVhN23bXkXZtPzAfZoZQxSaqs/Cs5kPh6uLt
- Fj0wlv1twA/Cxk9X9uTWVhTZZNaNTFSyvsQ3IWgf07zXa7KmRMteoZBXhZ/W2f/ighBaUfhhq
- aAwwand++MldTKea8gd/t/Ufu1n8Z38nl+R2t393mG6fNNtAfb0L0GIYzW1YSItXNnYm1J8C2
- F/6omKUkLtdll4OelPvfVeE+pGVvFEY6oLvoGL4E9wfpfck6JSqI6ERfRN96iUAldGgEKZgBc
- HZipNY0d9oYduwKMjGfZXuF1UQq/7bXkQ+Dk8agFwmNZ9wujtpY3bizJeesuD9ymOKx3lUWF8
- pui4FxLyTWf6U7E0DJKl1xAe6CcVv8ke2YpgLsKt8NDHJTqhaS9grxaAv0yXCdRvcqomZLZi4
- F1ErV2VXnja3Bz590vZuzLi08JU683pUc+9uTOv0VtweJlE0Sbx5IHe4NYY+tYXl1GvYRIkkp
- MgxaW1yJpQwdXwZSO
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200420075426.31462-2-maorg@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> v1 -> v2:
-> 	- modify the commit comments by Markus's suggestion.
+Mon, Apr 20, 2020 at 09:54:17AM CEST, maorg@mellanox.com wrote:
+>Add new ndo to get the xmit slave of master device.
+>User should release the slave when it's not longer needed.
+>When slave selection method is based on hash, then the user can ask to
+>get the xmit slave assume all the slaves can transmit by setting the
+>LAG_FLAGS_HASH_ALL_SLAVES bit in the flags argument.
+>
+>Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
+>---
+> include/linux/netdevice.h |  3 +++
+> include/net/lag.h         | 32 ++++++++++++++++++++++++++++++++
+> 2 files changed, 35 insertions(+)
+>
+>diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+>index 130a668049ab..e8852f3ad0b6 100644
+>--- a/include/linux/netdevice.h
+>+++ b/include/linux/netdevice.h
+>@@ -1389,6 +1389,9 @@ struct net_device_ops {
+> 						 struct netlink_ext_ack *extack);
+> 	int			(*ndo_del_slave)(struct net_device *dev,
+> 						 struct net_device *slave_dev);
+>+	struct net_device*	(*ndo_xmit_get_slave)(struct net_device *master_dev,
+>+						      struct sk_buff *skb,
+>+						      u16 flags);
 
-Thanks for another wording fine-tuning.
+Please adjust the name to:
+ndo_get_lag_xmit_slave
 
-Would you like to extend your adjustment interests to similar update candidates?
 
-Example:
-bgmac_probe()
-https://elixir.bootlin.com/linux/v5.7-rc2/source/drivers/net/ethernet/broadcom/bgmac-platform.c#L201
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/ethernet/broadcom/bgmac-platform.c?id=ae83d0b416db002fe95601e7f97f64b59514d936#n201
 
-Regards,
-Markus
+> 	netdev_features_t	(*ndo_fix_features)(struct net_device *dev,
+> 						    netdev_features_t features);
+> 	int			(*ndo_set_features)(struct net_device *dev,
+>diff --git a/include/net/lag.h b/include/net/lag.h
+>index 95b880e6fdde..c43b035989c4 100644
+>--- a/include/net/lag.h
+>+++ b/include/net/lag.h
+>@@ -6,6 +6,38 @@
+> #include <linux/if_team.h>
+> #include <net/bonding.h>
+> 
+>+enum lag_get_slaves_flags {
+>+	LAG_FLAGS_HASH_ALL_SLAVES = 1<<0
+
+Enum name and the values should be in sync. Also sync with the ndo name.
+
+Why exactly do you need these flags? Do you anticipate more of them?
+A simple bool arg to the ndo would do I believe. Can be changed later if
+needed.
+
+
+
+>+};
+>+
+>+/**
+>+ * master_xmit_slave_get - Get the xmit slave of master device
+>+ * @skb: The packet
+>+ * @flags: lag_get_slaves_flags
+>+ *
+>+ * This can be called from any context and does its own locking.
+>+ * The returned handle has the usage count incremented and the caller must
+>+ * use dev_put() to release it when it is no longer needed.
+>+ * %NULL is returned if no slave is found.
+>+ */
+>+
+>+static inline
+>+struct net_device *master_xmit_get_slave(struct net_device *master_dev,
+
+Please honor the namespace:
+net_lag_get_xmit_slave
+
+Also, just "struct net_device *dev" would be enough.
+
+
+
+>+					 struct sk_buff *skb,
+>+					 u16 flags)
+>+{
+>+	const struct net_device_ops *ops = master_dev->netdev_ops;
+>+	struct net_device *slave = NULL;
+
+"slave_dev" please.
+
+Just check the ndo here and return NULL if it is not defined. That way
+you avoid unnecessary NULL initialization and rcu lock.
+
+
+>+
+>+	rcu_read_lock();
+>+	if (ops->ndo_xmit_get_slave)
+>+		slave = ops->ndo_xmit_get_slave(master_dev, skb, flags);
+>+	if (slave)
+>+		dev_hold(slave);
+>+	rcu_read_unlock();
+>+	return slave;
+>+}
+>+
+> static inline bool net_lag_port_dev_txable(const struct net_device *port_dev)
+> {
+> 	if (netif_is_team_port(port_dev))
+>-- 
+>2.17.2
+>
