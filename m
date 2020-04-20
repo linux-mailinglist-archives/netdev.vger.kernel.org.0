@@ -2,97 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCB651B0239
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 09:06:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 830EA1B026F
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 09:13:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726006AbgDTHGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 03:06:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37322 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725815AbgDTHGp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 03:06:45 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A5CC061A0C
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 00:06:45 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id a2so3280291oia.11
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 00:06:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pCKv38QqOc3KeqRBzcElFqmdtcE90GfK2tcNEFNDP5E=;
-        b=YIrvJqTq9mDXcDElHClH4DMSAk3XzKOxlxK4DQUNIdWHSzfNYJWuFYknuwnJsjG2EL
-         KCF3U0+w5Limmi8UhRCyDnfDuGdmLDYz9SKKT6yWOyzSCqcwFZ1cky8HhqbxTCVqppT7
-         4YNqdN+iaWJjdUaV+B10y9S5/WQ0J2fGervw1Jf2Ot5w0gBSThwSsJysCGd1Uim5sAl0
-         36/EBV++E9v20nzLqO4aUQ0RJx5tTihxiAFhRjwltNdkBTs+V/vCYaKnE8gfrwa+mSw2
-         m0KSqEu2z6A5WpbQieN/GA/rCRzLIcxHl4M2gZNsJbzeR3BL9kKRUtq42bhWvBsDY4QY
-         4gWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pCKv38QqOc3KeqRBzcElFqmdtcE90GfK2tcNEFNDP5E=;
-        b=IwnHQPwNSYf1JYrEVJKsRj7yfQdaBfxnT7r10v0PmUal3jTq+0n9koi8irFH2DUVv5
-         sjzNmlCXZ1heaTOVhxmJkVDczIe0pT8Qhny9y/QhohVeY4Mzs5JK4GH5+d8N18IbW0ej
-         WWyho6WvZWVMz+P/hn2c6TBTozOkMDTGlZYO2wuRswoY5E0EdcYOt2d40FwICMzpjlfG
-         xXWIkNXn7fLwuVbHhCETuY14Vtb/YSWIa6OEj06/LcULCi6rluPSQke0txOOahpo25YX
-         znFNrOkFZwHPy3SNiu00RquK+vq3bY4si29lsxP3NFvDttBXzKuqj0HpZhNu4plVY0Ag
-         hF5g==
-X-Gm-Message-State: AGi0PuZmulNbtd4wg9+4e5yCuhekE6hIp5wOQqIsgJ1gFZ+PJjVEzjjK
-        jl4PXrQ5Agr4XW+/QTaVJpCmmKhvLVdtvEXLGWjGSAtr
-X-Google-Smtp-Source: APiQypIBfPb3vrRzGzrqq6lKu6V0K+2xnPxMLTfPjH4D1RpJ2O3tPVKu5b3L93FHJwo5uAYtZs9ZIPkUE4mGHKHtpkY=
-X-Received: by 2002:aca:e08a:: with SMTP id x132mr9663708oig.93.1587366404735;
- Mon, 20 Apr 2020 00:06:44 -0700 (PDT)
+        id S1726271AbgDTHM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 03:12:59 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:58785 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725773AbgDTHM5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 03:12:57 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 29CCA5800B5;
+        Mon, 20 Apr 2020 03:12:56 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Mon, 20 Apr 2020 03:12:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=OWfzPS
+        Mnqln9F10GZ9m/x7vimLL3Fg0IMFwCbVsmz40=; b=zUw56l0CmdLLIzVtRNSUwE
+        PII+1g5G4/ah2m0LAsnYTckjtC1NCCuuakosmzhc7zmxzxS5cfRONjZqmbLN9yZX
+        m9M5lvqBHPELZIS07p1hpKvXF3v1Jj+iinnCQMN2JMLhOUhAl+cKuxR6TDfEEUlO
+        LrYsCXkTWG+++1C0DnE51+VNVNPH2DTTDPgFmqODIFT2hs9+Jm9zeiuxPGe/t5MK
+        kRQMnSGAX43vmJ6oiEVOCaijz1oAKF4H/BBcRUqHQRDzyhzgSM606tr2vONsh8mi
+        cciCesBcQoqI/cVHFLc9wMoZou6lB0Nuboiz0zl3w/37Htoaji9Qv0vG47bqh5ng
+        ==
+X-ME-Sender: <xms:dkudXtUW3FgORsgJuHq3lzv-cr1QHfzvMh_mIKApLsR6P-AWSsroKg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrgedvgdduudejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepjeelrd
+    dukedtrdehgedrudduieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgr
+    ihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:dkudXrPRNKKXB68ZswOI6Jwm9PKpgsdqsvzpoOdellwhUCyAeRlUNA>
+    <xmx:dkudXgytIN8x4t6gVoDUnaTPc_yvVy5PoEOvgLV9MJsmuvV1Gc-3xg>
+    <xmx:dkudXohCmh0fkXS-1oBS893gHg_hD96jsYMufT6Ojl-IFjjw-ydMHw>
+    <xmx:eEudXrmxRgvCe4p9CvLNJ2rszqKOnFhfoTPtY3zV_43PVs2oYfI3YQ>
+Received: from localhost (bzq-79-180-54-116.red.bezeqint.net [79.180.54.116])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 433373065AFD;
+        Mon, 20 Apr 2020 03:12:54 -0400 (EDT)
+Date:   Mon, 20 Apr 2020 10:12:51 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        netdev <netdev@vger.kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "Y.b. Lu" <yangbo.lu@nxp.com>, Po Liu <po.liu@nxp.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next] net: mscc: ocelot: deal with problematic
+ MAC_ETYPE VCAP IS2 rules
+Message-ID: <20200420071251.GA3502524@splinter>
+References: <20200417190308.32598-1-olteanv@gmail.com>
+ <20200419073307.uhm3w2jhsczpchvi@ws.localdomain>
+ <CA+h21hrvSjRwDORZosxDt5YA+uMckaypT51f-COr+wtB7EjVAQ@mail.gmail.com>
+ <20200419182534.o42v5fiw34qxhenu@ws.localdomain>
 MIME-Version: 1.0
-References: <CANTwqXAak_=JJqptqSjqQQU28yMbrrKJ7E=a2Vfwqoh8XdTDuw@mail.gmail.com>
-In-Reply-To: <CANTwqXAak_=JJqptqSjqQQU28yMbrrKJ7E=a2Vfwqoh8XdTDuw@mail.gmail.com>
-From:   =?UTF-8?B?5Lq/5LiA?= <teroincn@gmail.com>
-Date:   Mon, 20 Apr 2020 15:06:33 +0800
-Message-ID: <CANTwqXB6cN3OH48JLOfiPORDqFOATWGK7A0aSo1fODDC9EQsbA@mail.gmail.com>
-Subject: =?UTF-8?Q?Fwd=3A_drivers=EF=BC=9A_target=EF=BC=9A_iscsi=3A_cxgbit=3A_is_there_ex?=
-        =?UTF-8?Q?ist_a_memleak_in_cxgbit=5Fcreate=5Fserver4=3F?=
-To:     vishal@chelsio.com
-Cc:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200419182534.o42v5fiw34qxhenu@ws.localdomain>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, all:
-When reviewing code of cxgbit_create_server4, what if
-cxgb4_create_server return a  >0 value, the cnp reference wouldn't be
-released. Or, when cxgb4_create_server  return >0 value, cnp has been
-released somewhere.
+On Sun, Apr 19, 2020 at 08:25:34PM +0200, Allan W. Nielsen wrote:
+> Sounds good - lets spend some time to talk discuss this and see what
+> comes out of it.
+> 
+> Ido, if you want to join us, pleaes comment with your preferences. If
+> others want to join please let me know.
+> 
+> I can setup a meeting in WebEx or Teams. I'm happy to join on other
+> platformws if you prefer. They both works fine from Linux in Chrome and
+> FireFox (sometimes tricky to get the sound working in FF).
+> 
+> Proposed agenda:
+> 
+> - Cover the TCAM architecture in Ocelot/Felix (just to make sure we are
+>   all on the same page).
+> - Present some use-cases MCHP would like to address in future.
+> - Open discussion.
+> 
+> I think we will need something between 30-120 minutes depending on how
+> the discussion goes.
+> 
+> We are in CEST time - and I'm okay to attend from 7-22.
 
-static int
-cxgbit_create_server4(struct cxgbit_device *cdev, unsigned int stid,
-     struct cxgbit_np *cnp)
-{
-     struct sockaddr_in *sin = (struct sockaddr_in *)
-                                         &cnp->com.local_addr;
-    int ret;
+I'm in GMT+3 like Vladimir. Don't mind if it's WebEx or Teams. Jiri
+might join as well, so please send the invitation to him as well.
 
-    pr_debug("%s: dev = %s; stid = %u; sin_port = %u\n",
-                    __func__, cdev->lldi.ports[0]->name, stid, sin->sin_port);
-
-    cxgbit_get_cnp(cnp);
-    cxgbit_init_wr_wait(&cnp->com.wr_wait);
-
-    ret = cxgb4_create_server(cdev->lldi.ports[0],
-                                               stid, sin->sin_addr.s_addr,
-                                               sin->sin_port, 0,
-                                               cdev->lldi.rxq_ids[0]);
-    if (!ret)
-        ret = cxgbit_wait_for_reply(cdev,    &cnp->com.wr_wait,
-                                                    0, 10, __func__);
-    else if (ret > 0)
-           ret = net_xmit_errno(ret);
-    else
-           cxgbit_put_cnp(cnp);
-
-    if (ret)
-           pr_err("create server failed err %d stid %d laddr %pI4 lport %d\n",
-                     ret, stid, &sin->sin_addr, ntohs(sin->sin_port));
-    return ret;
-}
+Thanks!
