@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B90751B1681
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 22:02:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 940B41B1685
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 22:02:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728298AbgDTUBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 16:01:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57916 "EHLO mail.kernel.org"
+        id S1728315AbgDTUBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 16:01:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57958 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728281AbgDTUBM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 16:01:12 -0400
+        id S1728285AbgDTUBN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 16:01:13 -0400
 Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DFAD220BED;
-        Mon, 20 Apr 2020 20:01:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0B34D22244;
+        Mon, 20 Apr 2020 20:01:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587412871;
-        bh=pKf5fmUuifbzSkFFm34UgjUO5Llvgpx5QEtqM3eucO4=;
+        s=default; t=1587412872;
+        bh=9k5DuKPK9QafFMJDsCkcJIkV/kJjn4gkjxfpfyi/54w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=evAxDHOJyI1+uAEFz1tF7fbssRZtSce56iCmxKYVdy2iWY+6D/tYmiNa69TMUu8W0
-         jFmLsm4jrYHIU2KQX52HwJL9+w0l6DsNAbDY+l/tauAw3B/WvNaxd6MHoJ+mI87aZf
-         HSihMfEaZwTXLZDUA6sT0WtbmroiEl5ipoegsVZY=
+        b=wGF8e3RPLmRbAGgXzO+2saHxceeYV+Dt3ozNEA/r7dbeFexy7B1D2ZnlWOStUpkGd
+         hLSdJo3m6Tk62OYWv80XC/el7B1wBoR1clGcV8b9+pnFmgxJRiJBc0+1zohCShey04
+         ENocp+UVbVlKlo6hUIU6BeNaxbSuzefsfSLaqMMk=
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -31,9 +31,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
         dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-Subject: [PATCH bpf-next 13/16] bpftool: Add support for XDP egress
-Date:   Mon, 20 Apr 2020 14:00:52 -0600
-Message-Id: <20200420200055.49033-14-dsahern@kernel.org>
+Subject: [PATCH bpf-next 14/16] selftest: Add test for xdp_egress
+Date:   Mon, 20 Apr 2020 14:00:53 -0600
+Message-Id: <20200420200055.49033-15-dsahern@kernel.org>
 X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 In-Reply-To: <20200420200055.49033-1-dsahern@kernel.org>
 References: <20200420200055.49033-1-dsahern@kernel.org>
@@ -46,208 +46,226 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dahern@digitalocean.com>
 
-Add NET_ATTACH_TYPE_XDP_EGRESS and update attach_type_strings to
-allow a user to specify 'xdp_egress' as the attach or detach point.
-
-libbpf handles egress config via bpf_set_link_xdp_fd_opts, so
-update do_attach_detach_xdp to use it. Specifically, the new API
-requires old_fd to be set based on any currently loaded program,
-so use bpf_get_link_xdp_id and bpf_get_link_xdp_egress_id to get
-an fd to any existing program.
-
-Update 'net show' command to dump egress programs.
+Add selftest for xdp_egress. Add xdp_drop program to veth connecting
+a namespace to drop packets and break connectivity.
 
 Signed-off-by: David Ahern <dahern@digitalocean.com>
 ---
- tools/bpf/bpftool/main.h           |  2 +-
- tools/bpf/bpftool/net.c            | 48 +++++++++++++++++++++++++++---
- tools/bpf/bpftool/netlink_dumper.c | 12 ++++++--
- tools/bpf/bpftool/prog.c           |  2 +-
- 4 files changed, 55 insertions(+), 9 deletions(-)
+ tools/testing/selftests/bpf/Makefile          |   1 +
+ tools/testing/selftests/bpf/progs/xdp_drop.c  |  25 +++
+ .../testing/selftests/bpf/test_xdp_egress.sh  | 159 ++++++++++++++++++
+ 3 files changed, 185 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/xdp_drop.c
+ create mode 100755 tools/testing/selftests/bpf/test_xdp_egress.sh
 
-diff --git a/tools/bpf/bpftool/main.h b/tools/bpf/bpftool/main.h
-index 86f14ce26fd7..cbc0cc2257eb 100644
---- a/tools/bpf/bpftool/main.h
-+++ b/tools/bpf/bpftool/main.h
-@@ -230,7 +230,7 @@ void btf_dump_linfo_json(const struct btf *btf,
- struct nlattr;
- struct ifinfomsg;
- struct tcmsg;
--int do_xdp_dump(struct ifinfomsg *ifinfo, struct nlattr **tb);
-+int do_xdp_dump(struct ifinfomsg *ifinfo, struct nlattr **tb, bool egress);
- int do_filter_dump(struct tcmsg *ifinfo, struct nlattr **tb, const char *kind,
- 		   const char *devname, int ifindex);
- 
-diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
-index c5e3895b7c8b..d09272a53734 100644
---- a/tools/bpf/bpftool/net.c
-+++ b/tools/bpf/bpftool/net.c
-@@ -32,6 +32,7 @@ struct bpf_netdev_t {
- 	int	used_len;
- 	int	array_len;
- 	int	filter_idx;
-+	bool	egress;
- };
- 
- struct tc_kind_handle {
-@@ -61,6 +62,7 @@ enum net_attach_type {
- 	NET_ATTACH_TYPE_XDP_GENERIC,
- 	NET_ATTACH_TYPE_XDP_DRIVER,
- 	NET_ATTACH_TYPE_XDP_OFFLOAD,
-+	NET_ATTACH_TYPE_XDP_EGRESS,
- };
- 
- static const char * const attach_type_strings[] = {
-@@ -68,6 +70,7 @@ static const char * const attach_type_strings[] = {
- 	[NET_ATTACH_TYPE_XDP_GENERIC]	= "xdpgeneric",
- 	[NET_ATTACH_TYPE_XDP_DRIVER]	= "xdpdrv",
- 	[NET_ATTACH_TYPE_XDP_OFFLOAD]	= "xdpoffload",
-+	[NET_ATTACH_TYPE_XDP_EGRESS]	= "xdp_egress",
- };
- 
- const size_t net_attach_type_size = ARRAY_SIZE(attach_type_strings);
-@@ -111,7 +114,7 @@ static int dump_link_nlmsg(void *cookie, void *msg, struct nlattr **tb)
- 			 : "");
- 	netinfo->used_len++;
- 
--	return do_xdp_dump(ifinfo, tb);
-+	return do_xdp_dump(ifinfo, tb, netinfo->egress);
- }
- 
- static int dump_class_qdisc_nlmsg(void *cookie, void *msg, struct nlattr **tb)
-@@ -276,10 +279,20 @@ static int net_parse_dev(int *argc, char ***argv)
- static int do_attach_detach_xdp(int progfd, enum net_attach_type attach_type,
- 				int ifindex, bool overwrite)
- {
--	__u32 flags = 0;
-+	struct bpf_xdp_set_link_opts opts;
-+	__u32 flags = 0, id = 0;
-+	int rc;
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 7729892e0b04..5dae18ebac13 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -50,6 +50,7 @@ TEST_PROGS := test_kmod.sh \
+ 	test_xdp_redirect.sh \
+ 	test_xdp_meta.sh \
+ 	test_xdp_veth.sh \
++	test_xdp_egress.sh \
+ 	test_offload.py \
+ 	test_sock_addr.sh \
+ 	test_tunnel.sh \
+diff --git a/tools/testing/selftests/bpf/progs/xdp_drop.c b/tools/testing/selftests/bpf/progs/xdp_drop.c
+new file mode 100644
+index 000000000000..cffabc53a5e1
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/xdp_drop.c
+@@ -0,0 +1,25 @@
++// SPDX-License-Identifier: GPL-2.0
 +
-+	memset(&opts, 0, sizeof(opts));
-+	opts.sz = sizeof(opts);
-+	opts.old_fd = -1;
- 
- 	if (!overwrite)
- 		flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
++#include <linux/bpf.h>
++#include <linux/if_ether.h>
++#include <bpf/bpf_helpers.h>
 +
-+	if (attach_type == NET_ATTACH_TYPE_XDP_EGRESS)
-+		opts.egress = 1;
++SEC("drop")
++int xdp_drop(struct xdp_md *ctx)
++{
++	void *data_end = (void *)(long)ctx->data_end;
++	void *data = (void *)(long)ctx->data;
++	struct ethhdr *eth = data;
++	void *nh;
 +
- 	if (attach_type == NET_ATTACH_TYPE_XDP_GENERIC)
- 		flags |= XDP_FLAGS_SKB_MODE;
- 	if (attach_type == NET_ATTACH_TYPE_XDP_DRIVER)
-@@ -287,7 +300,25 @@ static int do_attach_detach_xdp(int progfd, enum net_attach_type attach_type,
- 	if (attach_type == NET_ATTACH_TYPE_XDP_OFFLOAD)
- 		flags |= XDP_FLAGS_HW_MODE;
- 
--	return bpf_set_link_xdp_fd(ifindex, progfd, flags);
-+	if (opts.egress)
-+		rc = bpf_get_link_xdp_egress_id(ifindex, &id, flags);
++	nh = data + sizeof(*eth);
++	if (nh > data_end)
++		return XDP_DROP;
++
++	if (eth->h_proto == 0x0008)
++		return XDP_DROP;
++
++	return XDP_PASS;
++}
++
++char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/test_xdp_egress.sh b/tools/testing/selftests/bpf/test_xdp_egress.sh
+new file mode 100755
+index 000000000000..64cc9a8486a6
+--- /dev/null
++++ b/tools/testing/selftests/bpf/test_xdp_egress.sh
+@@ -0,0 +1,159 @@
++#!/bin/sh
++# SPDX-License-Identifier: GPL-2.0
++#
++# XDP egress tests.
++
++# Kselftest framework requirement - SKIP code is 4.
++ksft_skip=4
++
++TESTNAME=xdp_egress
++BPF_FS=$(awk '$3 == "bpf" {print $2; exit}' /proc/mounts)
++
++ret=0
++
++################################################################################
++#
++log_test()
++{
++	local rc=$1
++	local expected=$2
++	local msg="$3"
++
++	if [ ${rc} -eq ${expected} ]; then
++		printf "TEST: %-60s  [ OK ]\n" "${msg}"
 +	else
-+		rc = bpf_get_link_xdp_id(ifindex, &id, flags);
++		ret=1
++		printf "TEST: %-60s  [FAIL]\n" "${msg}"
++	fi
++}
 +
-+	if (rc) {
-+		p_err("Failed to get existing prog id for device");
-+		return rc;
-+	}
++################################################################################
++# create namespaces and connect them
 +
-+	if (id)
-+		opts.old_fd = bpf_prog_get_fd_by_id(id);
++create_ns()
++{
++	local ns=$1
++	local addr=$2
++	local addr6=$3
 +
-+	rc = bpf_set_link_xdp_fd_opts(ifindex, progfd, flags, &opts);
++	ip netns add ${ns}
 +
-+	if (opts.old_fd != -1)
-+		close(opts.old_fd);
++	ip -netns ${ns} link set lo up
++	ip -netns ${ns} addr add dev lo ${addr}
++	ip -netns ${ns} -6 addr add dev lo ${addr6}
 +
-+	return rc;
- }
- 
- static int do_attach(int argc, char **argv)
-@@ -411,6 +442,7 @@ static int do_show(int argc, char **argv)
- 	dev_array.used_len = 0;
- 	dev_array.array_len = 0;
- 	dev_array.filter_idx = filter_idx;
-+	dev_array.egress = 0;
- 
- 	if (json_output)
- 		jsonw_start_array(json_wtr);
-@@ -419,6 +451,14 @@ static int do_show(int argc, char **argv)
- 	ret = libbpf_nl_get_link(sock, nl_pid, dump_link_nlmsg, &dev_array);
- 	NET_END_ARRAY("\n");
- 
-+	if (!ret) {
-+		dev_array.egress = true;
-+		NET_START_ARRAY("xdp_egress", "%s:\n");
-+		ret = libbpf_nl_get_link(sock, nl_pid, dump_link_nlmsg,
-+					 &dev_array);
-+		NET_END_ARRAY("\n");
-+	}
++	ip -netns ${ns} ro add unreachable default metric 8192
++	ip -netns ${ns} -6 ro add unreachable default metric 8192
 +
- 	if (!ret) {
- 		NET_START_ARRAY("tc", "%s:\n");
- 		for (i = 0; i < dev_array.used_len; i++) {
-@@ -464,7 +504,7 @@ static int do_help(int argc, char **argv)
- 		"       %s %s help\n"
- 		"\n"
- 		"       " HELP_SPEC_PROGRAM "\n"
--		"       ATTACH_TYPE := { xdp | xdpgeneric | xdpdrv | xdpoffload }\n"
-+		"       ATTACH_TYPE := { xdp | xdpgeneric | xdpdrv | xdpoffload | xdp_egress}\n"
- 		"\n"
- 		"Note: Only xdp and tc attachments are supported now.\n"
- 		"      For progs attached to cgroups, use \"bpftool cgroup\"\n"
-diff --git a/tools/bpf/bpftool/netlink_dumper.c b/tools/bpf/bpftool/netlink_dumper.c
-index 5f65140b003b..e4a2b6f8e50b 100644
---- a/tools/bpf/bpftool/netlink_dumper.c
-+++ b/tools/bpf/bpftool/netlink_dumper.c
-@@ -55,6 +55,7 @@ static int do_xdp_dump_one(struct nlattr *attr, unsigned int ifindex,
- 		xdp_dump_prog_id(tb, IFLA_XDP_SKB_PROG_ID, "generic", true);
- 		xdp_dump_prog_id(tb, IFLA_XDP_DRV_PROG_ID, "driver", true);
- 		xdp_dump_prog_id(tb, IFLA_XDP_HW_PROG_ID, "offload", true);
-+		xdp_dump_prog_id(tb, IFLA_XDP_EGRESS_CORE_PROG_ID, "core", true);
- 		if (json_output)
- 			jsonw_end_array(json_wtr);
- 	} else if (mode == XDP_ATTACHED_DRV) {
-@@ -63,18 +64,23 @@ static int do_xdp_dump_one(struct nlattr *attr, unsigned int ifindex,
- 		xdp_dump_prog_id(tb, IFLA_XDP_PROG_ID, "generic", false);
- 	} else if (mode == XDP_ATTACHED_HW) {
- 		xdp_dump_prog_id(tb, IFLA_XDP_PROG_ID, "offload", false);
-+	} else if (mode == XDP_ATTACHED_EGRESS_CORE) {
-+		xdp_dump_prog_id(tb, IFLA_XDP_EGRESS_CORE_PROG_ID, "core",
-+				 false);
- 	}
- 
- 	NET_END_OBJECT_FINAL;
- 	return 0;
- }
- 
--int do_xdp_dump(struct ifinfomsg *ifinfo, struct nlattr **tb)
-+int do_xdp_dump(struct ifinfomsg *ifinfo, struct nlattr **tb, bool egress)
- {
--	if (!tb[IFLA_XDP])
-+	__u16 atype = egress ? IFLA_XDP_EGRESS : IFLA_XDP;
++	ip netns exec ${ns} sysctl -qw net.ipv4.ip_forward=1
++	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.keep_addr_on_down=1
++	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.forwarding=1
++	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.forwarding=1
++	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.accept_dad=0
++}
 +
-+	if (!tb[atype])
- 		return 0;
- 
--	return do_xdp_dump_one(tb[IFLA_XDP], ifinfo->ifi_index,
-+	return do_xdp_dump_one(tb[atype], ifinfo->ifi_index,
- 			       libbpf_nla_getattr_str(tb[IFLA_IFNAME]));
- }
- 
-diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
-index f6a5974a7b0a..64695ccdcf9d 100644
---- a/tools/bpf/bpftool/prog.c
-+++ b/tools/bpf/bpftool/prog.c
-@@ -2014,7 +2014,7 @@ static int do_help(int argc, char **argv)
- 		"                 cgroup/post_bind6 | cgroup/connect4 | cgroup/connect6 |\n"
- 		"                 cgroup/sendmsg4 | cgroup/sendmsg6 | cgroup/recvmsg4 |\n"
- 		"                 cgroup/recvmsg6 | cgroup/getsockopt | cgroup/setsockopt |\n"
--		"                 struct_ops | fentry | fexit | freplace }\n"
-+		"                 struct_ops | fentry | fexit | freplace | xdp_egress }\n"
- 		"       ATTACH_TYPE := { msg_verdict | stream_verdict | stream_parser |\n"
- 		"                        flow_dissector }\n"
- 		"       METRIC := { cycles | instructions | l1d_loads | llc_misses }\n"
++connect_ns()
++{
++	local ns1=$1
++	local ns1_dev=$2
++	local ns1_addr=$3
++	local ns1_addr6=$4
++	local ns2=$5
++	local ns2_dev=$6
++	local ns2_addr=$7
++	local ns2_addr6=$8
++	local ns1arg
++	local ns2arg
++
++	if [ -n "${ns1}" ]; then
++		ns1arg="-netns ${ns1}"
++	fi
++	if [ -n "${ns2}" ]; then
++		ns2arg="-netns ${ns2}"
++	fi
++
++	ip ${ns1arg} li add ${ns1_dev} type veth peer name tmp
++	ip ${ns1arg} li set ${ns1_dev} up
++	ip ${ns1arg} li set tmp netns ${ns2} name ${ns2_dev}
++	ip ${ns2arg} li set ${ns2_dev} up
++
++	ip ${ns1arg} addr add dev ${ns1_dev} ${ns1_addr}
++	ip ${ns2arg} addr add dev ${ns2_dev} ${ns2_addr}
++
++	ip ${ns1arg} addr add dev ${ns1_dev} ${ns1_addr6} nodad
++	ip ${ns2arg} addr add dev ${ns2_dev} ${ns2_addr6} nodad
++}
++
++################################################################################
++#
++
++setup()
++{
++	create_ns host 172.16.101.1/32 2001:db8:101::1/128
++	connect_ns "" veth-host 172.16.1.1/24 2001:db8:1::1/64 host eth0 172.16.1.2/24 2001:db8:1::2/64
++	ip ro add 172.16.101.1 via 172.16.1.2
++	ip -6 ro add 2001:db8:101::1 via 2001:db8:1::2
++	ping -c1 -w1 172.16.101.1 >/dev/null 2>&1
++	ping -c1 -w1 2001:db8:101::1 >/dev/null 2>&1
++}
++
++cleanup()
++{
++	ip li del veth-host 2>/dev/null
++	ip netns del host 2>/dev/null
++	rm -f $BPF_FS/test_$TESTNAME
++}
++
++################################################################################
++# main
++
++if [ $(id -u) -ne 0 ]; then
++	echo "selftests: $TESTNAME [SKIP] Need root privileges"
++	exit $ksft_skip
++fi
++
++if ! ip link set dev lo xdp off > /dev/null 2>&1; then
++	echo "selftests: $TESTNAME [SKIP] Could not run test without the ip xdp support"
++	exit $ksft_skip
++fi
++
++if [ -z "$BPF_FS" ]; then
++	echo "selftests: $TESTNAME [SKIP] Could not run test without bpffs mounted"
++	exit $ksft_skip
++fi
++
++if ! bpftool version > /dev/null 2>&1; then
++	echo "selftests: $TESTNAME [SKIP] Could not run test without bpftool"
++	exit $ksft_skip
++fi
++
++cleanup
++trap cleanup EXIT
++
++set -e
++setup
++set +e
++
++bpftool prog load xdp_drop.o $BPF_FS/test_$TESTNAME type xdp_egress
++ID=$(bpftool prog show name xdp_drop | awk '$4 == "xdp_drop" {print $1}')
++
++# attach egress program
++bpftool net attach xdp_egress id ${ID/:/} dev veth-host
++ping -c1 -w1 172.16.101.1 >/dev/null 2>&1
++log_test $? 1 "IPv4 connectivity disabled by xdp_egress"
++ping -c1 -w1 2001:db8:101::1 >/dev/null 2>&1
++log_test $? 0 "IPv6 connectivity not disabled by egress drop program"
++
++# detach program should restore connectivity
++bpftool net detach xdp_egress dev veth-host
++ping -c1 -w1 172.16.101.1 >/dev/null 2>&1
++log_test $? 0 "IPv4 connectivity restored"
++
++# cleanup on delete
++ip netns exec host bpftool net attach xdp_egress id ${ID/:/} dev eth0
++bpftool net attach xdp_egress id ${ID/:/} dev veth-host
++ip li del veth-host
++rm -f $BPF_FS/test_$TESTNAME
++bpftool prog show name xdp_drop
++
++exit $ret
 -- 
 2.21.1 (Apple Git-122.3)
 
