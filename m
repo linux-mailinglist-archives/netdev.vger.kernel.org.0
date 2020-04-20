@@ -2,171 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C783A1AFFF3
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 04:49:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 104A61B0008
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 04:54:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726112AbgDTCtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 22:49:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54204 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725988AbgDTCtO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 22:49:14 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BD14C061A0C
-        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 19:49:14 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id e26so9287982wmk.5
-        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 19:49:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XF4ZBNY8eOltoWS9DH59FU+3eJBejRyDMSM+6kiUWqs=;
-        b=sIdmnxUmhis69w8p6uw4qmYP2Z5v6mqLxYksEbF/6q/iomvUq7MkebfX+6r4hNQtal
-         nNRM3pLi5spDPsCuJdQUSaweESsriBDcscu9ILu+qw8SXNpkdpjE9ZbNcpK4/AjZzahU
-         zgpBYkoUT8c4dNz102AQ7IP1+7o5pPQkQJILX/qBu3ZycrmeCcxJnWsGJSrkcsFZLpuu
-         4XQycMOdPQR/32xwQ1yw9rOZS6SUno7a5wu4N4dnzrdaia/NTEjicPrKa0vyJRiAIn5O
-         V0andon9Y84RJ17UaLC51x7qsGNU9mhLKZ98PqMq/W9jPzLpS7nkSi48uR+CiEqVZjZw
-         ALyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XF4ZBNY8eOltoWS9DH59FU+3eJBejRyDMSM+6kiUWqs=;
-        b=HIaDV9WveAg03YlArPUd/SAdZ/mkcVB1u/HBuX0b1KkdLUcGfAFwrQVs2ZojDJzuZy
-         mc0fOuxG4WRl9l4va+Jgp5VvEM56Th2S+Z9ed5HPJPyLujQ020TP81ttCfcrlApO6m/2
-         5q7QEHBn8f9ewJga1hEG1vLDHqin0TY/QrDfBKspLmlYu03uKR0V0USykbldz0x7+Eol
-         2l/ap8M3r5A8NHZSSvqmhXubYOOzNtOIMt3pCRCxC89Iawp1SlnfAnPUVZf/5XIofxSa
-         BOLwp92xIfiu+wefm4txCpo2QgSBJ1DoAsUy2xLJTh1pAkeAfh3jkhGbas3dxArqA3XY
-         BQ0A==
-X-Gm-Message-State: AGi0PuaO1AHeZglhIdqJTr8jIBdnX8+moo2ruCa2wrBnMj7Txq92+MiV
-        St061/j1mjZsJrAZajKAGTV3vYHiK+pMIF+xOzH+IA==
-X-Google-Smtp-Source: APiQypJD4f70XggReG9ai4HI1qrC5N8k0+rIXKntIyZBl9gMP9tGuxcdatP5lyiSjxCWOTDefnNPkW96yX1rkLY7e/w=
-X-Received: by 2002:a1c:2e91:: with SMTP id u139mr14898263wmu.18.1587350952435;
- Sun, 19 Apr 2020 19:49:12 -0700 (PDT)
+        id S1726173AbgDTCyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 22:54:02 -0400
+Received: from mail-eopbgr30055.outbound.protection.outlook.com ([40.107.3.55]:37958
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725896AbgDTCyC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 19 Apr 2020 22:54:02 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GXK6oeFqmk+cMcx+c2Bd4QyPUe+kMMfBbPemBCBv/5eSHPOlWftDTaVtlQCYuXXfbJd5PfvN5Pdk0SKubgeuNFPdSjrsNG12J6c7zS/AjlBWLPfzfv2QVusg6hPMXtCyHIXGEahOsGUWIuU1Ob02Vhmrx1kDKu9uow50l7o6qO7UcjB9HGFc64EQ/9rTKD+V7tnNeJngwVmFNY5RPj/IWHpkw92JzefyXItf4JUY1fthsm5aiMV3SNErDVYVbZfg9H6/+TXBmwiG6FwW+N96iAJxeTnUAkVZoF8bGcdmInk879Ge4nFu3vNsIoHSSbUIxOz0SOSTI8HRu8rip7dXew==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0a0cSmpQOEv3tWV1nKHiyRBzdnqnN4WnCuZfmyXXLYc=;
+ b=hHRL/RPlczl6ebS0scPYq1m2wr/sfVUKOZCvPq7q5jywTXy3Vr6lUBXlt8NtSuyRInWpbriC1qWS11W9voa5eaihHoWQXIFUe94gvtsuR6ZY2TS3HuhOcEmISodgRtNQxYmpugt3NXh6aFsDuf3BwPu96QTnsAxiN4Nr1Bhv46clM29yoEFfx2CawCWgDqFfPi5TrxOhLaylocSPUBbnzFJgmivfIUcP6s7E0Z6AOrloKML+KmBPCJFtOXQKSICwIQnH+nXmo0w1w9YPeNsMt8S3b/0A8/JHOVnReUE20w7FYkSviyMIjNE93mEd72QPEt4UUMXPqjMpjjv3e8Qw7w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0a0cSmpQOEv3tWV1nKHiyRBzdnqnN4WnCuZfmyXXLYc=;
+ b=rFPKZgkRwHg12dbco60OpkGq0g8FnbiHOLz45Dbp0JF0dgZFI8ita/fui4S08vMCdGsIz0ZmitxLzSMpkvAEHf5azWRJMB5XqKBhPFcj2lys1CDVqJg72sb3kPvnf21wvc1FVbcaOClFQvTQlD3OW6LJgsSgE0VG5oAq8UWtlio=
+Received: from AM7PR04MB6885.eurprd04.prod.outlook.com (2603:10a6:20b:10d::24)
+ by AM7PR04MB6871.eurprd04.prod.outlook.com (2603:10a6:20b:109::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.25; Mon, 20 Apr
+ 2020 02:53:59 +0000
+Received: from AM7PR04MB6885.eurprd04.prod.outlook.com
+ ([fe80::fdc0:9eff:2931:d11b]) by AM7PR04MB6885.eurprd04.prod.outlook.com
+ ([fe80::fdc0:9eff:2931:d11b%5]) with mapi id 15.20.2921.027; Mon, 20 Apr 2020
+ 02:53:59 +0000
+From:   "Y.b. Lu" <yangbo.lu@nxp.com>
+To:     David Miller <davem@davemloft.net>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>
+Subject: RE: [v2, 0/7] Support programmable pins for Ocelot PTP driver
+Thread-Topic: [v2, 0/7] Support programmable pins for Ocelot PTP driver
+Thread-Index: AQHWBxL03Cs51oqVYUqmHzAo138hlKhiG/oAgB9TUxA=
+Date:   Mon, 20 Apr 2020 02:53:59 +0000
+Message-ID: <AM7PR04MB6885C6159F01EC9EECB78885F8D40@AM7PR04MB6885.eurprd04.prod.outlook.com>
+References: <20200331041113.15873-1-yangbo.lu@nxp.com>
+ <20200330.213010.176136354629521349.davem@davemloft.net>
+In-Reply-To: <20200330.213010.176136354629521349.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=yangbo.lu@nxp.com; 
+x-originating-ip: [92.121.68.129]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 6b24b98a-c49c-4cf1-c1ad-08d7e4d61338
+x-ms-traffictypediagnostic: AM7PR04MB6871:|AM7PR04MB6871:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM7PR04MB68710E41E252F193F94CE679F8D40@AM7PR04MB6871.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 03793408BA
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR04MB6885.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(376002)(346002)(39860400002)(396003)(136003)(366004)(8676002)(316002)(55016002)(66556008)(66476007)(66946007)(64756008)(33656002)(66446008)(9686003)(5660300002)(7696005)(86362001)(478600001)(2906002)(4744005)(26005)(186003)(6506007)(52536014)(53546011)(4326008)(76116006)(54906003)(8936002)(6916009)(81156014)(71200400001);DIR:OUT;SFP:1101;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: y0MTL+H44KS75AJuzG2UEQCEtMO5z/j501tdm4yAlVfudQH3n1uNWEyiwBuros2dfSOBjpVniMOpE3s5swlb6gRknqXM97eQ1xJVsQeMsVn/riQLzeohcFr+R4rGBzQSZIC6djFqs67pacHxkf8hWYiCKtd9pWPBKw6MEo1mvf4BZ9DX/k/EHiZLoXjEHaiYbrCu4wQUdEQlj8xsmPWTfmGuayJQ5iQGJDMUXElkxt1B1Z1B+HbHpmB7C7UaRDyNecODfxajEpq88rbevyuNq0+cU4Ow7fUp3gKZqhisJ23NVt0/pzZJlDZf+H4QJRr+D2Hx/LeqONfWjFKOnQLED2pREWj+D9BrwUqCU0xTDOnlNYxBBvSQpUzI04y/52Xy2Y1BHQAL/KjejL9MZgvh/rTERaKHv+EjkAQFVKThPuo8jwkuaOanPPexzi2j43Pa
+x-ms-exchange-antispam-messagedata: Z8dty2FN8Yu2RVMOIliH2LKuBJ/bgrjkP2NK+XIi6MbEwgeEYPiOF0gv4AEFv/LFsPTm5Obd6aQhUF9p4v29+fZ3lvgBbAaynezx1gji9gvpUngWOaZ6hE0aP4aiEHjCygcTXkLRN8MMqWW21YhWoQ==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20200414160758.v1.1.Idab9dcdc7da549ed1fd5c66341fb8baffaee8d10@changeid>
-In-Reply-To: <20200414160758.v1.1.Idab9dcdc7da549ed1fd5c66341fb8baffaee8d10@changeid>
-From:   Archie Pusaka <apusaka@google.com>
-Date:   Mon, 20 Apr 2020 10:49:01 +0800
-Message-ID: <CAJQfnxF+Sw2tDf4-WwUdJNV9nxjjwr3H48=pt8Ja0eTt8jEdeA@mail.gmail.com>
-Subject: Re: [PATCH v1] Bluetooth: L2CAP: add support for waiting
- disconnection resp
-To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Cc:     Archie Pusaka <apusaka@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6b24b98a-c49c-4cf1-c1ad-08d7e4d61338
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Apr 2020 02:53:59.1680
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: MGe4BT3GgNZfZGFmy8Qob9XyvvCFzAZG6h2kMIhBO/moamtt2Faqy+wLuIIPtjwwYwCcOoCTxl5uIDGJjBheDA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6871
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[Re-sending in plain text]
-Hi bluetooth maintainers,
+> -----Original Message-----
+> From: David Miller <davem@davemloft.net>
+> Sent: Tuesday, March 31, 2020 12:30 PM
+> To: Y.b. Lu <yangbo.lu@nxp.com>
+> Cc: linux-kernel@vger.kernel.org; netdev@vger.kernel.org;
+> richardcochran@gmail.com; Vladimir Oltean <vladimir.oltean@nxp.com>;
+> Claudiu Manoil <claudiu.manoil@nxp.com>; andrew@lunn.ch;
+> vivien.didelot@gmail.com; f.fainelli@gmail.com;
+> alexandre.belloni@bootlin.com; UNGLinuxDriver@microchip.com
+> Subject: Re: [v2, 0/7] Support programmable pins for Ocelot PTP driver
+>=20
+>=20
+> net-next is closed, please resubmit this when net-next opens again
 
-May I ask for your review on this?
+Resubmit the patch-set as V3.
+Thanks!
 
-Thanks,
-Archie
-
-
-On Tue, 14 Apr 2020 at 16:09, Archie Pusaka <apusaka@google.com> wrote:
->
-> From: Archie Pusaka <apusaka@chromium.org>
->
-> Whenever we disconnect a L2CAP connection, we would immediately
-> report a disconnection event (EPOLLHUP) to the upper layer, without
-> waiting for the response of the other device.
->
-> This patch offers an option to wait until we receive a disconnection
-> response before reporting disconnection event, by using the "how"
-> parameter in l2cap_sock_shutdown(). Therefore, upper layer can opt
-> to wait for disconnection response by shutdown(sock, SHUT_WR).
->
-> This can be used to enforce proper disconnection order in HID,
-> where the disconnection of the interrupt channel must be complete
-> before attempting to disconnect the control channel.
->
-> Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-> ---
->
->  net/bluetooth/l2cap_sock.c | 30 +++++++++++++++++++++++-------
->  1 file changed, 23 insertions(+), 7 deletions(-)
->
-> diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
-> index 1cea42ee1e922..a995d2c51fa7f 100644
-> --- a/net/bluetooth/l2cap_sock.c
-> +++ b/net/bluetooth/l2cap_sock.c
-> @@ -1271,14 +1271,21 @@ static int l2cap_sock_shutdown(struct socket *sock, int how)
->         struct l2cap_conn *conn;
->         int err = 0;
->
-> -       BT_DBG("sock %p, sk %p", sock, sk);
-> +       BT_DBG("sock %p, sk %p, how %d", sock, sk, how);
-> +
-> +       /* 'how' parameter is mapped to sk_shutdown as follows:
-> +        * SHUT_RD   (0) --> RCV_SHUTDOWN  (1)
-> +        * SHUT_WR   (1) --> SEND_SHUTDOWN (2)
-> +        * SHUT_RDWR (2) --> SHUTDOWN_MASK (3)
-> +        */
-> +       how++;
->
->         if (!sk)
->                 return 0;
->
->         lock_sock(sk);
->
-> -       if (sk->sk_shutdown)
-> +       if ((sk->sk_shutdown & how) == how)
->                 goto shutdown_already;
->
->         BT_DBG("Handling sock shutdown");
-> @@ -1301,11 +1308,20 @@ static int l2cap_sock_shutdown(struct socket *sock, int how)
->                  * has already been actioned to close the L2CAP
->                  * link such as by l2cap_disconnection_req().
->                  */
-> -               if (sk->sk_shutdown)
-> -                       goto has_shutdown;
-> +               if ((sk->sk_shutdown & how) == how)
-> +                       goto shutdown_matched;
->         }
->
-> -       sk->sk_shutdown = SHUTDOWN_MASK;
-> +       /* Try setting the RCV_SHUTDOWN bit, return early if SEND_SHUTDOWN
-> +        * is already set
-> +        */
-> +       if ((how & RCV_SHUTDOWN) && !(sk->sk_shutdown & RCV_SHUTDOWN)) {
-> +               sk->sk_shutdown |= RCV_SHUTDOWN;
-> +               if ((sk->sk_shutdown & how) == how)
-> +                       goto shutdown_matched;
-> +       }
-> +
-> +       sk->sk_shutdown |= SEND_SHUTDOWN;
->         release_sock(sk);
->
->         l2cap_chan_lock(chan);
-> @@ -1335,7 +1351,7 @@ static int l2cap_sock_shutdown(struct socket *sock, int how)
->                 err = bt_sock_wait_state(sk, BT_CLOSED,
->                                          sk->sk_lingertime);
->
-> -has_shutdown:
-> +shutdown_matched:
->         l2cap_chan_put(chan);
->         sock_put(sk);
->
-> @@ -1363,7 +1379,7 @@ static int l2cap_sock_release(struct socket *sock)
->
->         bt_sock_unlink(&l2cap_sk_list, sk);
->
-> -       err = l2cap_sock_shutdown(sock, 2);
-> +       err = l2cap_sock_shutdown(sock, SHUT_RDWR);
->         chan = l2cap_pi(sk)->chan;
->
->         l2cap_chan_hold(chan);
-> --
-> 2.26.0.110.g2183baf09c-goog
->
+>=20
+> Thank you.
