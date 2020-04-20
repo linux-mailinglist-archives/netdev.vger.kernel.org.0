@@ -2,107 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5356F1B0441
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 10:23:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1F501B0458
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 10:27:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726228AbgDTIXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 04:23:03 -0400
-Received: from wnew1-smtp.messagingengine.com ([64.147.123.26]:33025 "EHLO
-        wnew1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725773AbgDTIXD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 04:23:03 -0400
-X-Greylist: delayed 558 seconds by postgrey-1.27 at vger.kernel.org; Mon, 20 Apr 2020 04:23:02 EDT
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.west.internal (Postfix) with ESMTP id 2C9A7434;
-        Mon, 20 Apr 2020 04:13:43 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Mon, 20 Apr 2020 04:13:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm2; bh=SXSTFribf+OBJQkU3j6jVIz3bY6
-        eV4OkRjDaFUbGPVw=; b=dE5h4joV1X2zyfsk9mJ41dSV9Gw9Z/YVaMMRGJ820cJ
-        NOM2XNUzGMrQc6ydYn/Zic69B5NNRAo6QYHu7GiXTukZObTUlEBXjml6kZ/h7tAT
-        KMRH6rsLmKGHMxHRm7KJLGWmYRqhGKyvler6AycFGuPEGCumuG7dlYNh0te1Urjx
-        B6h7D1L21WQxrWq9rbIg2awGPkD9xDLlas4gTjOZhaRUMmGgHQg+K1OSe1L7j+F6
-        bmwm6FQYhRHRkEqK671hDPeOeYQIt9YyhceNDEnvh2vN6YHgeij3N4pO5N+DJN7w
-        9V+2zj+aOoX22lyD9EziS9+y0v/eOMqyQ7U5xATaBqw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=SXSTFr
-        ibf+OBJQkU3j6jVIz3bY6eV4OkRjDaFUbGPVw=; b=G23U+tfw+wQH0rkso4eEwx
-        yQrM7P5msXz/OSSuwywZHpLw59W7M9piQzgYDymuZ/YKvqo9EW4FYeWdNyEoH+Ed
-        qmqsr4Sy9SCUAWo+U7Xi8UaefRJgr1xVvCWCNwhs0s9c7HwcgF9NnbIaBi1jxF8Q
-        z/QcFe7e+rHQBP1rEmpE2U43OrZLm5wRDGIiSoDuD1YdwkM+WbU5zoyBvHMF5KMW
-        C7vFCc8JDlwMTEP39M/PyYTBAbvRGE/SyZ1pVAhaeuNueZSROb33Z+uvkYT1/7c3
-        cpFJBI0Uq5E1XdygU8RLJ53HUPy2gALcm2KVAsWjq0oho1PeFfIGNg0GONbW7ZHA
-        ==
-X-ME-Sender: <xms:tFmdXrjoBzIgx--8HKQXgDrtxO5gVSCcQrfVsGCBN7W7YGtfh-qHEA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrgeefucetufdoteggodetrfdotffvucfrrh
-    hofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgenuceurghi
-    lhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurh
-    epfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhmvgcutfhi
-    phgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecukfhppeeltddrkeelrd
-    eikedrjeeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhho
-    mhepmhgrgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:tFmdXix3P9qkRjDO69NN5eUQUL2gZwUhPrg6E8e4InQODtjq81Pbsw>
-    <xmx:tFmdXp8VSgOzUNGzxjXDXf0hmnasH9Zn98KD4SKEGNOKFRqoWr01-w>
-    <xmx:tFmdXvBn1GLk5m2Pm5avHEkDYkDZzYF2fWl4nUyo3FlyH1VrQfUqxg>
-    <xmx:tlmdXt6FXLOMGmuXYEy2LsOWngKuRKcExd-_FWiOCNilGysnqab04_8LDgI>
-Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr [90.89.68.76])
-        by mail.messagingengine.com (Postfix) with ESMTPA id A92B33280060;
-        Mon, 20 Apr 2020 04:13:40 -0400 (EDT)
-Date:   Mon, 20 Apr 2020 10:13:39 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Alistair Francis <alistair@alistair23.me>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcel@holtmann.org, johan.hedberg@gmail.com,
-        linux-bluetooth@vger.kernel.org, wens@csie.org, anarsoul@gmail.com,
-        devicetree@vger.kernel.org, alistair23@gmail.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v3 3/3] arm64: allwinner: Enable Bluetooth and WiFi on
- sopine baseboard
-Message-ID: <20200420081339.znoxmshq2z74slvg@gilmour.lan>
-References: <20200412020644.355142-1-alistair@alistair23.me>
- <20200412020644.355142-3-alistair@alistair23.me>
+        id S1726089AbgDTI1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 04:27:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49848 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726006AbgDTI1D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 04:27:03 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF96C061A0C
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 01:27:03 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id j1so5560276wrt.1
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 01:27:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=wkEZmDKPCZqLa+I7uPirPFiS5mbiwVYc3uRVerQjM/Y=;
+        b=hjvbl8XYgTxLME9BGU7smyZ7khRszvrb6dX3Ryb89UbCXhMncwAvXaAUVsqX5IBsMG
+         /XJ0Q4xpByADyUsRWUNrfs4d22vUO7D4c1mB4PtBkfG8MaCEpHexd4HOCL09KLtpvJdP
+         uDZLtla9ZjOuYnFEI3UMt/6VA3WIYPt35+aHRzPFMALONTpE7ie0PMNYxKk/i7r5PDWp
+         pj5TOVKkZTtrqGn7b9lJ3Q/8OHt0uwP+NKg66cvp2y1S1/CU/aP1cKPys5cXS2sJyjvA
+         CcuNK0d9B6U8Co9gNV+vJExJHn7Yep2Yj62w56BH2cYZWnQUYZckCJZhVnfs+4W4rjtV
+         nA0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=wkEZmDKPCZqLa+I7uPirPFiS5mbiwVYc3uRVerQjM/Y=;
+        b=JNtztCSCAB936UuhfM6MAC1R8zAfrky3FLl3NUMBW+pZylpTIRVuqik0ZmE8Sb40Zy
+         2211zftxxQIq/rtMeHnf9oO1QiQyfMY9amjPyso45IWFO/mO/XgX7Fwn/Nz/TtjcNVe+
+         teICbIOsljHk2L2A5djeupkErpnKycc3/JMwhRvu/YHwYO6+kU+R9NsRYrWLRt/WnjPq
+         7iumIl6gLgxU7wHx7DpvP9pbL7LuddQMNGi1QzjRj+pA8DVB3HpX+BwZrRFmNBOzSJLz
+         OJWFiCddqfOJl8LN6wNnn978ydmQU7Ap9MPo7dGKJqZO5zPHjzKg9kPKGHFFESh+1hwk
+         nTIg==
+X-Gm-Message-State: AGi0PuZISxqJZITIjksvjeeHUZN1Jk1nzkW2a2+4dv8oF/Tic1ss3h35
+        Y0AT7IIG4Bu2DK3eWAqG/C503w==
+X-Google-Smtp-Source: APiQypK0fFftccsHGnmezQIyKk6jPNNWfDtYkenMG3g6vtHtAaoP/aM6TTb4Eisu3T9jYgTPOx4Z4Q==
+X-Received: by 2002:a05:6000:1007:: with SMTP id a7mr16642104wrx.279.1587371222065;
+        Mon, 20 Apr 2020 01:27:02 -0700 (PDT)
+Received: from [192.168.1.10] ([194.35.116.120])
+        by smtp.gmail.com with ESMTPSA id t16sm257756wrb.8.2020.04.20.01.27.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Apr 2020 01:27:01 -0700 (PDT)
+Subject: Re: [PATCH] tools/bpf/bpftool: Remove duplicate headers
+To:     jagdsh.linux@gmail.com, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org, kuba@kernel.org,
+        jolsa@kernel.org, toke@redhat.com,
+        Paul Chaigno <paul@isovalent.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1587274757-14101-1-git-send-email-jagdsh.linux@gmail.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <5c63c379-9b91-c134-1c23-18133ac0f88c@isovalent.com>
+Date:   Mon, 20 Apr 2020 09:27:00 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ejtot7cm3kxebrar"
-Content-Disposition: inline
-In-Reply-To: <20200412020644.355142-3-alistair@alistair23.me>
+In-Reply-To: <1587274757-14101-1-git-send-email-jagdsh.linux@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+2020-04-19 11:09 UTC+0530 ~ jagdsh.linux@gmail.com
+> From: Jagadeesh Pagadala <jagdsh.linux@gmail.com>
+> 
+> Code cleanup: Remove duplicate headers which are included twice.
+> 
+> Signed-off-by: Jagadeesh Pagadala <jagdsh.linux@gmail.com>
 
---ejtot7cm3kxebrar
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Reviewed-by: Quentin Monnet <quentin@isovalent.com>
 
-Hi,
+Thank you!
 
-On Sat, Apr 11, 2020 at 07:06:44PM -0700, Alistair Francis wrote:
-> The sopine board has an optional RTL8723BS WiFi + BT module that can be
-> connected to UART1. Add this to the device tree so that it will work
-> for users if connected.
->=20
-> Signed-off-by: Alistair Francis <alistair@alistair23.me>
-
-Like Vasily said in a previous iteration, this should be an overlay.
-
-Maxime
-
---ejtot7cm3kxebrar
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXp1ZswAKCRDj7w1vZxhR
-xRHnAQDHNvHWo1zmq8o4pNF0FFVzFdG9ZW4B0hE0ap3rEg3u+QEAtFnUoV0c8i8g
-nKNO32LMpG2lK/In+8B74ILYTIcZpAQ=
-=IRUG
------END PGP SIGNATURE-----
-
---ejtot7cm3kxebrar--
