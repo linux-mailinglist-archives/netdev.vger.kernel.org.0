@@ -2,131 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DEA71B11A7
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 18:35:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA1731B1727
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 22:31:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726493AbgDTQfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 12:35:17 -0400
-Received: from smtprelay0171.hostedemail.com ([216.40.44.171]:38196 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725287AbgDTQfR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 12:35:17 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay03.hostedemail.com (Postfix) with ESMTP id C26278384364;
-        Mon, 20 Apr 2020 16:35:15 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 30,2,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:491:599:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1543:1593:1594:1605:1711:1730:1747:1777:1792:2194:2199:2393:2553:2559:2562:2691:2828:2892:2907:3138:3139:3140:3141:3142:3622:3743:3865:3866:3867:3868:3870:3871:3872:3874:4250:4321:5007:6119:6120:6248:6691:6742:7903:7904:9040:10004:10400:10848:11232:11658:11914:12043:12109:12219:12296:12297:12555:12740:12760:12895:13138:13153:13161:13228:13229:13231:13439:14096:14097:14181:14659:14721:21063:21080:21433:21627:21796:21939:30036:30045:30046:30054:30056:30074:30075:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: lock50_4abfde65a5055
-X-Filterd-Recvd-Size: 4328
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf02.hostedemail.com (Postfix) with ESMTPA;
-        Mon, 20 Apr 2020 16:35:13 +0000 (UTC)
-Message-ID: <7d6019da19d52c851d884731b1f16328fdbe2e3d.camel@perches.com>
-Subject: Re: [RFC PATCH bpf-next 0/6] bpf, printk: add BTF-based type
- printing
-From:   Joe Perches <joe@perches.com>
-To:     Alan Maguire <alan.maguire@oracle.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com, kafai@fb.com,
-        songliubraving@fb.com, andriin@fb.com, john.fastabend@gmail.com,
-        kpsingh@chromium.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Date:   Mon, 20 Apr 2020 09:32:57 -0700
-In-Reply-To: <alpine.LRH.2.21.2004201623390.12711@localhost>
-References: <1587120160-3030-1-git-send-email-alan.maguire@oracle.com>
-         <20200418160536.4mrvqh2lasqbyk77@ast-mbp>
-         <alpine.LRH.2.21.2004201623390.12711@localhost>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.34.1-2 
+        id S1726803AbgDTUbm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 16:31:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50890 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725774AbgDTUbm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 16:31:42 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6E8C061A0C
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 13:31:42 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id a22so353659pjk.5
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 13:31:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=2+zi3reqJJ/j1XwoOD2Fg4wdVvgSi2y9lZyyQ3CUI+Y=;
+        b=RpiYDVnUpgcnNWAIJ7nLwn5S4PBY9JhGDxS8QgVJfjQgUQsp7p6P6Xq+7CVr6x/d0d
+         YAP4yxtYWfANqeIQp1yhg6okOHpFNw2rvXuNSN3s61PPpc/Bu7eagmEf2YhqbcAAsNdL
+         KaKhAXQsj66Pc6Wt63TNyhPDpZIkGZffBmVNhJaMUbZj3bXm3RBD2h+1mEebTVcIdAAi
+         s/skOAOZHRTuApyZnpC7ohUHQkyjOLWCitcm7RLvFcimoBFD5INQVq/GatlaHFxXsalV
+         n6lRIgViFKUSPSvIP5wcNDgbFHuH87VquJvVTuihyy+R5sWuVMNbkq318UheXlIvBveo
+         ebrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2+zi3reqJJ/j1XwoOD2Fg4wdVvgSi2y9lZyyQ3CUI+Y=;
+        b=rsn/jBCNndUUP7hExofbbE5CoruzRraH+P5CZLEhRtXG/bTN9V8Vw/cI4Tc2bekglI
+         CdMdeKQ4O5JSIxxSVSSkbFVgQQ1zQ856btfwYLMqav6emlTAAb9ulotrDWTcfznQ6tdQ
+         P4Txa4TVAJjIfm6rHHJ5kVNm58LXc4EctCZ4Sl1jL5FDhfQ8mTvirN9JZnvNyLoRO2XO
+         7qNGRBClTP10KQrIpLR4mscwSaYm74I7HDulsWQ0eoMO/gBhg/n8+KfCdSn4X4UcHsqW
+         RLAKhXg5BHfvvlQRI5bpoCkeWCBFvSg/37tZTDrwKn/hGti+Q0FzjMXiGL0vtn6cgSZ8
+         aEfA==
+X-Gm-Message-State: AGi0PuZvzCkbEkvjHcN2wcOOAZLnjikmUKcnBmIM9ioWzpUntaLkasuZ
+        KTqvJ1zL+a0qxjfl94GwgZ1wjA==
+X-Google-Smtp-Source: APiQypIW7w2QNYFc1kT4a32mO2ARe0lzgAIuF84MErQ34vcatsq/6019WpzYDMZKT4NEuaM03tqXJg==
+X-Received: by 2002:a17:90a:df88:: with SMTP id p8mr1404824pjv.119.1587414701875;
+        Mon, 20 Apr 2020 13:31:41 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id l63sm199026pga.83.2020.04.20.13.31.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Apr 2020 13:31:41 -0700 (PDT)
+Date:   Mon, 20 Apr 2020 09:37:04 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Odin Ugedal <odin@ugedal.com>
+Cc:     toke@redhat.com, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/3] q_cake: minor fixes and cleanups
+Message-ID: <20200420093704.591e8082@hermes.lan>
+In-Reply-To: <20200415143936.18924-1-odin@ugedal.com>
+References: <20200415143936.18924-1-odin@ugedal.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2020-04-20 at 16:29 +0100, Alan Maguire wrote:
-> On Sat, 18 Apr 2020, Alexei Starovoitov wrote:
+On Wed, 15 Apr 2020 16:39:33 +0200
+Odin Ugedal <odin@ugedal.com> wrote:
+
+> Some minor changes/fixes to the qdisc cake implementation.
 > 
-> > On Fri, Apr 17, 2020 at 11:42:34AM +0100, Alan Maguire wrote:
-> > > The printk family of functions support printing specific pointer types
-> > > using %p format specifiers (MAC addresses, IP addresses, etc).  For
-> > > full details see Documentation/core-api/printk-formats.rst.
-> > > 
-> > > This RFC patchset proposes introducing a "print typed pointer" format
-> > > specifier "%pT<type>"; the type specified is then looked up in the BPF
-> > > Type Format (BTF) information provided for vmlinux to support display.
-> > 
-> > This is great idea! Love it.
-> > 
+> Odin Ugedal (3):
+>   q_cake: Make fwmark uint instead of int
+>   q_cake: properly print memlimit
+>   q_cake: detect overflow in get_size
 > 
-> Thanks for taking a look!
->  
-> > > The above potential use cases hint at a potential reply to
-> > > a reasonable objection that such typed display should be
-> > > solved by tracing programs, where the in kernel tracing records
-> > > data and the userspace program prints it out.  While this
-> > > is certainly the recommended approach for most cases, I
-> > > believe having an in-kernel mechanism would be valuable
-> > > also.
-> > 
-> > yep. This is useful for general purpose printk.
-> > The only piece that must be highlighted in the printk documentation
-> > that unlike the rest of BPF there are zero safety guarantees here.
-> > The programmer can pass wrong pointer to printk() and the kernel _will_ crash.
-> > 
+>  tc/q_cake.c  | 15 ++++++++-------
+>  tc/tc_util.c |  5 +++++
+>  2 files changed, 13 insertions(+), 7 deletions(-)
 > 
-> Good point; I'll highlight the fact that we aren't
-> executing in BPF context, no verifier etc.
-> 
-> > >   struct sk_buff *skb = alloc_skb(64, GFP_KERNEL);
-> > > 
-> > >   pr_info("%pTN<struct sk_buff>", skb);
-> > 
-> > why follow "TN" convention?
-> > I think "%p<struct sk_buff>" is much more obvious, unambiguous, and
-> > equally easy to parse.
-> > 
-> 
-> That was my first choice, but the first character
-> after the 'p' in the '%p' specifier signifies the
-> pointer format specifier. If we use '<', and have
-> '%p<', where do we put the modifiers? '%p<xYz struct foo>'
-> seems clunky to me.
 
-While I don't really like the %p<struct type> block,
-it's at least obvious what's being attempted.
-
-Modifiers could easily go after the <struct type> block.
-
-It appears a %p<struct type> output might be a lot of
-total characters so another potential issue might be
-the maximum length of each individual printk.
-
-> > I like the choice of C style output, but please format it similar to drgn. Like:
-> > *(struct task_struct *)0xffff889ff8a08000 = {
-> > 	.thread_info = (struct thread_info){
-> > 		.flags = (unsigned long)0,
-> > 		.status = (u32)0,
-> > 	},
-> > 	.state = (volatile long)1,
-> > 	.stack = (void *)0xffffc9000c4dc000,
-> > 	.usage = (refcount_t){
-> > 		.refs = (atomic_t){
-> > 			.counter = (int)2,
-> > 		},
-> > 	},
-> > 	.flags = (unsigned int)4194560,
-> > 	.ptrace = (unsigned int)0,
-
-And here, the issue might be duplicating the log level
-for each line of output and/or prefixing each line with
-whatever struct type is being dumped as interleaving
-with other concurrent logging is possible.
-
-Here as well the individual field types don't contain
-enough information to determine if a field should be
-output as %x or %u.
-
-
+Applied, thanks.
