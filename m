@@ -2,170 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 894421B066E
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 12:21:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 008D71B0684
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 12:26:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725988AbgDTKV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 06:21:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39272 "EHLO
+        id S1726228AbgDTKZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 06:25:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725775AbgDTKV0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 06:21:26 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3D82C061A0C
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 03:21:25 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id z6so10728130wml.2
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 03:21:25 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725773AbgDTKZy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 06:25:54 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0238DC061A0C;
+        Mon, 20 Apr 2020 03:25:53 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id p8so4830736pgi.5;
+        Mon, 20 Apr 2020 03:25:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xP7s9vcEbHDrLgPOLOc0yPuuzUfEWMrRlJt6+CvzmS4=;
-        b=J03T5qL+HPFkNiy+ye+45rUCOIWjwC2BS4MSSM6KnKT7d3GeJjBLjwIgGi2v/91PbC
-         xaNxBHykScrfk+vJ0ewOern/wEqROeZmDkdlZy/Nm0XYx+KXD8HTe75HNjt3OHWrj+nQ
-         9uUBaTzRKzA3H7DfEkhdZWyKOaNyxJOLNdbf54eiHIJPzcJzHAkpKIrGdOigZV8Qh4Ee
-         1BuhiYmbPhlFHSBpjq8UhvkKd+Lhm3nksBEr49HDAgcRAzzPMTQo72AW52z7o2EMTan4
-         UumocX/2O5o8ZpUNNwkBmS6r8QpKTWc+GOOVlJraAlaEU82Klo0mxn2wmPB3Bi/84r/9
-         PxbQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=yypQDahjbXqJhDbVQSiASHihfGpSC0JMzsgU8Cz/AiY=;
+        b=HdCWUfWuE1u+XaXD9Ms85gt4izU8DyOrmmvb1s/Jb/Vh5rKqf9BQq9h5pCmTjXXb8E
+         i1UeedwF++2a3WAWjZe5irqGqtuCmn1sqTn985LVCgLRPFMufdeksavjuiSojGUipIdZ
+         KuEf+TG/qxTGRCRUtJ2GKY3NIj3P93vGRM0HLck6KdcKx4DGwm+0M9vy2nIlfVF7NNsx
+         sye5nxxQEOtR0dyZ/uTdz2bHo6IPo03UlAOiO7CTUc83i4baqLwa3JKWU4scp5Bb9LZB
+         pg1dl1F8j76CX5u1r2aZ9/L9ZVP5bNKuWBRNtyK6n4Bidq3Wq9nle2G3W7KDxUqkhV/I
+         iVOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xP7s9vcEbHDrLgPOLOc0yPuuzUfEWMrRlJt6+CvzmS4=;
-        b=Sb3UMwzlA0PaBBKcxxirh9qxXTqbJ/Tl9ytN+lixfN7S0B4HsUR9MCNKTyY4tZiESR
-         lKpRXoSERwZ9cRfhXBkPis2St41a1xn7+ME7luwcjYqREt9G34O1fu6KASgHZs5TI0C5
-         ZVH0v17UNZSr7d2GXa+nNOzH217/ItCVt20NSQH2SjP6xj/tPeMgBu0p2ZRPuom4Efaj
-         HMC7TFWkOiG3+BULDE9s4/0TBmw8xLxZ1ooHQMRIVu63LiucY3rJIaBAzJoimErz9k+8
-         cEONYPci/rjAtweEKcEIV9hvRY7W8ZfSJmE5yHiar6o7ZpUxueUbLAchK6zwIfG/ndfx
-         OM5w==
-X-Gm-Message-State: AGi0PuYCOm3iTll0oIgEzcRc5qN18967u+PFGM7x3htPk78a9Wf8c1jt
-        Emdlc1XoeqCD8yTXARA3jTBkWAXLz8U=
-X-Google-Smtp-Source: APiQypKukWYMc59NdZisrx9cG22Rqm5MMAv3ea6WUu4t4yxHY1ueLPWkbm8m21LsqqgIdceibHgN9Q==
-X-Received: by 2002:a1c:abc3:: with SMTP id u186mr14331852wme.42.1587378084303;
-        Mon, 20 Apr 2020 03:21:24 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id u7sm794386wmg.41.2020.04.20.03.21.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2020 03:21:23 -0700 (PDT)
-Date:   Mon, 20 Apr 2020 12:21:23 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net] team: fix hang in team_mode_get()
-Message-ID: <20200420102123.GD6581@nanopsycho.orion>
-References: <20200418161729.14422-1-ap420073@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=yypQDahjbXqJhDbVQSiASHihfGpSC0JMzsgU8Cz/AiY=;
+        b=J/a94mo1ZdoSSAE6gC0TkDuX8Lc1jt9IUMOaIuVwAsPZXZuqGu7FVYDPDS8ZBBxkwZ
+         F6zOV1wP0UbxHHP2mJ+OngHu5ojTwVz6C8au44jeYuKNppv/MuhT98lGkeCN5GgAkXal
+         yjdPoYW8TC0hSKe5Y24RdL0ll68NuA+iEy/r+COiZs3SgZ3H1b1u+Dxxwd18oHpPJ4QM
+         AdkZz5msh3/QbVLYHiBynaU/apzmxvV2tNXbgrbfaSmCpH71xA/q1uW2pepHcotwWDBZ
+         7tSANFv7cuesU2EUWRpW5qIojQVjIeNgxqqrc7UYvvgLl7GTVQeYHXKrLcuZmqybYCNk
+         uC/Q==
+X-Gm-Message-State: AGi0PuZ7fNOJM0hFzBy4LKDO+qBUH2uxXXWbsuWLzsoAAF4IZxbeyHnT
+        aKu7kLtCltjPkDyX7J/3kM0=
+X-Google-Smtp-Source: APiQypLziiZ4XFGGVOnDb/VHoxNBse93+oqNzvsu4l35WhyBRM2f0vKvSNofiSie8P1sNgYipNPpAg==
+X-Received: by 2002:a62:2a8c:: with SMTP id q134mr16642242pfq.35.1587378352530;
+        Mon, 20 Apr 2020 03:25:52 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id h14sm651899pjc.46.2020.04.20.03.25.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Apr 2020 03:25:51 -0700 (PDT)
+Subject: Re: [PATCH 1/4] fs: Implement close-on-fork
+To:     Nate Karstens <nate.karstens@garmin.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-alpha@vger.kernel.org, linux-parisc@vger.kernel.org,
+        sparclinux@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Changli Gao <xiaosuo@gmail.com>
+References: <20200420071548.62112-1-nate.karstens@garmin.com>
+ <20200420071548.62112-2-nate.karstens@garmin.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <36dce9b4-a0bf-0015-f6bc-1006938545b1@gmail.com>
+Date:   Mon, 20 Apr 2020 03:25:49 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200418161729.14422-1-ap420073@gmail.com>
+In-Reply-To: <20200420071548.62112-2-nate.karstens@garmin.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sat, Apr 18, 2020 at 06:17:29PM CEST, ap420073@gmail.com wrote:
->When team mode is changed or set, the team_mode_get() is called to check
->whether the mode module is inserted or not. If the mode module is not
->inserted, it calls the request_module().
->In the request_module(), it creates a child process, which is
->the "modprobe" process and waits for the done of the child process.
->At this point, the following locks were used.
->down_read(&cb_lock()); by genl_rcv()
->    genl_lock(); by genl_rcv_msc()
->        rtnl_lock(); by team_nl_cmd_options_set()
->            mutex_lock(&team->lock); by team_nl_team_get()
->
->Concurrently, the team module could be removed by rmmod or "modprobe -r"
->The __exit function of team module is team_module_exit(), which calls
->team_nl_fini() and it tries to acquire following locks.
->down_write(&cb_lock);
->    genl_lock();
->Because of the genl_lock() and cb_lock, this process can't be finished
->earlier than request_module() routine.
->
->The problem secenario.
->CPU0                                     CPU1
->team_mode_get
->    request_module()
->                                         modprobe -r team_mode_roundrobin
->                                                     team <--(B)
->        modprobe team <--(A)
->                 team_mode_roundrobin
->
->By request_module(), the "modprobe team_mode_roundrobin" command
->will be executed. At this point, the modprobe process will decide
->that the team module should be inserted before team_mode_roundrobin.
->Because the team module is being removed.
->
->By the module infrastructure, the same module insert/remove operations
->can't be executed concurrently.
->So, (A) waits for (B) but (B) also waits for (A) because of locks.
->So that the hang occurs at this point.
->
->Test commands:
->    while :
->    do
->        teamd -d &
->	killall teamd &
->	modprobe -rv team_mode_roundrobin &
->    done
->
->The approach of this patch is to hold the reference count of the team
->module if the team module is compiled as a module. If the reference count
->of the team module is not zero while request_module() is being called,
->the team module will not be removed at that moment.
->So that the above scenario could not occur.
->
->Fixes: 3d249d4ca7d0 ("net: introduce ethernet teaming device")
->Signed-off-by: Taehee Yoo <ap420073@gmail.com>
->---
-> drivers/net/team/team.c | 10 +++++++++-
-> 1 file changed, 9 insertions(+), 1 deletion(-)
->
->diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
->index 4004f98e50d9..21702bc23705 100644
->--- a/drivers/net/team/team.c
->+++ b/drivers/net/team/team.c
->@@ -465,9 +465,15 @@ EXPORT_SYMBOL(team_mode_unregister);
+
+
+On 4/20/20 12:15 AM, Nate Karstens wrote:
+> The close-on-fork flag causes the file descriptor to be closed
+> atomically in the child process before the child process returns
+> from fork(). Implement this feature and provide a method to
+> get/set the close-on-fork flag using fcntl(2).
 > 
-> static const struct team_mode *team_mode_get(const char *kind)
-> {
->-	struct team_mode_item *mitem;
-> 	const struct team_mode *mode = NULL;
->+	struct team_mode_item *mitem;
->+	bool put = false;
+> This functionality was approved by the Austin Common Standards
+> Revision Group for inclusion in the next revision of the POSIX
+> standard (see issue 1318 in the Austin Group Defect Tracker).
+
+Oh well... yet another feature slowing down a critical path.
+
 > 
->+#if IS_MODULE(CONFIG_NET_TEAM)
->+	if (!try_module_get(THIS_MODULE))
-
-Can't you call this in case this is not a module? Wouldn't THIS_MODULE
-be NULL then? try_module_get() handles that correctly.
-
-
->+		return NULL;
->+	put = true;
->+#endif
-> 	spin_lock(&mode_list_lock);
-> 	mitem = __find_mode(kind);
-> 	if (!mitem) {
->@@ -483,6 +489,8 @@ static const struct team_mode *team_mode_get(const char *kind)
-> 	}
+> Co-developed-by: Changli Gao <xiaosuo@gmail.com>
+> Signed-off-by: Changli Gao <xiaosuo@gmail.com>
+> Signed-off-by: Nate Karstens <nate.karstens@garmin.com>
+> ---
+>  fs/fcntl.c                             |  2 ++
+>  fs/file.c                              | 50 +++++++++++++++++++++++++-
+>  include/linux/fdtable.h                |  7 ++++
+>  include/linux/file.h                   |  2 ++
+>  include/uapi/asm-generic/fcntl.h       |  5 +--
+>  tools/include/uapi/asm-generic/fcntl.h |  5 +--
+>  6 files changed, 66 insertions(+), 5 deletions(-)
 > 
-> 	spin_unlock(&mode_list_lock);
->+	if (put)
->+		module_put(THIS_MODULE);
+> diff --git a/fs/fcntl.c b/fs/fcntl.c
+> index 2e4c0fa2074b..23964abf4a1a 100644
+> --- a/fs/fcntl.c
+> +++ b/fs/fcntl.c
+> @@ -335,10 +335,12 @@ static long do_fcntl(int fd, unsigned int cmd, unsigned long arg,
+>  		break;
+>  	case F_GETFD:
+>  		err = get_close_on_exec(fd) ? FD_CLOEXEC : 0;
+> +		err |= get_close_on_fork(fd) ? FD_CLOFORK : 0;
+>  		break;
+>  	case F_SETFD:
+>  		err = 0;
+>  		set_close_on_exec(fd, arg & FD_CLOEXEC);
+> +		set_close_on_fork(fd, arg & FD_CLOFORK);
+>  		break;
+>  	case F_GETFL:
+>  		err = filp->f_flags;
+> diff --git a/fs/file.c b/fs/file.c
+> index c8a4e4c86e55..de7260ba718d 100644
+> --- a/fs/file.c
+> +++ b/fs/file.c
+> @@ -57,6 +57,8 @@ static void copy_fd_bitmaps(struct fdtable *nfdt, struct fdtable *ofdt,
+>  	memset((char *)nfdt->open_fds + cpy, 0, set);
+>  	memcpy(nfdt->close_on_exec, ofdt->close_on_exec, cpy);
+>  	memset((char *)nfdt->close_on_exec + cpy, 0, set);
+> +	memcpy(nfdt->close_on_fork, ofdt->close_on_fork, cpy);
+> +	memset((char *)nfdt->close_on_fork + cpy, 0, set);
+>  
 
-Can't you just put this under the same "if IS_MODULE" statement and
-avoid the "put" variable? Or in case the statement is not needed, just
-do plain module_put call.
+I suggest we group the two bits of a file (close_on_exec, close_on_fork) together,
+so that we do not have to dirty two separate cache lines.
 
-Otherwise, the patch looks fine.
+Otherwise we will add yet another cache line miss at every file opening/closing for processes
+with big file tables.
+
+Ie having a _single_ bitmap array, even bit for close_on_exec, odd bit for close_on_fork
+
+static inline void __set_close_on_exec(unsigned int fd, struct fdtable *fdt)
+{
+	__set_bit(fd * 2, fdt->close_on_fork_exec);
+}
+
+static inline void __set_close_on_fork(unsigned int fd, struct fdtable *fdt)
+{
+	__set_bit(fd * 2 + 1, fdt->close_on_fork_exec);
+}
+
+Also the F_GETFD/F_SETFD implementation must use a single function call,
+to not acquire the spinlock twice.
 
 
-
-> 	return mode;
-> }
-> 
->-- 
->2.17.1
->
