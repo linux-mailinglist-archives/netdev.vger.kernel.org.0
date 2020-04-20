@@ -2,96 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50E841B05B9
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 11:34:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F334C1B05CA
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 11:36:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725994AbgDTJeJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 05:34:09 -0400
-Received: from mout.gmx.net ([212.227.17.22]:40055 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725773AbgDTJeI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 05:34:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1587375247;
-        bh=J2Z74hgcwHHGGdPBH0C5iJA/8hhsUGYOmZw/I4UMpV8=;
-        h=X-UI-Sender-Class:Reply-To:To:From:Subject:Date;
-        b=gmMgEL5cSTvGVtaAbzAXtlXT5QPF0UUEFn0fgGs0KA/iF5/7Ha72HT847BodVZ1UU
-         P+78j6K13ULQ0h0AJDU4uNn4/QPHUlt0idCNg4homcP65QCN4H1+21LsJze8WiyqqQ
-         Sxb83M5lmDvfQOb1GD53Et/dzGUmkXQQwnt0aEsU=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.84.205] ([134.101.139.191]) by mail.gmx.com (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mirng-1ilurz0ve0-00eqf2 for
- <netdev@vger.kernel.org>; Mon, 20 Apr 2020 11:34:07 +0200
-Reply-To: vtol@gmx.net
-To:     netdev@vger.kernel.org
-From:   =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
-Subject: [switchdev] bridge fdb vs. switch's ATU - connection timeout when
- roaming from LAN port to WLan port
-Message-ID: <5c0744ff-d233-8135-50ac-4e7cfbc400ba@gmx.net>
-Date:   Mon, 20 Apr 2020 09:34:00 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0
+        id S1726328AbgDTJgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 05:36:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60552 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726307AbgDTJgU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 05:36:20 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DB9BC061A0F
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 02:36:20 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id a7so3970958pju.2
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 02:36:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=daemons-net.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=3DGhAD7IJSYwN5Mh5wLkFIUQWPuH8Xyr5nhCfZdhrRE=;
+        b=zBk0M5IVJTUHZhgTJvFVpuI50jKguU5uoGrX54baKAYHE3pFHiaWlt+kDCmF45FGY9
+         J/qX6D+oHD+PEzRPiyyGOdn/sMaFkKT9QBk5NCK1xWLKcyQakpCQQtO8/2jrEXGU9t4V
+         +srfyBTS/ERMCJSmCejLk0o/fWlPGPo0BXoUmxHqshzGIDuNT1PL6za/0tvgI/GltBWg
+         +QjypSIht2By96xTrQ4Lifzuei9gj/dac64sJgtL/Gzyorq4BJUubtILITWTp+8Uo7Iv
+         3lNXNiGJgIVg0JBWnfqJE3spIiCVVZ3YrQ7hNF1dXnp3SF34CzfbpsDcEPXuSKBCEpAA
+         WLCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=3DGhAD7IJSYwN5Mh5wLkFIUQWPuH8Xyr5nhCfZdhrRE=;
+        b=o6eBeMmh/blNquedKXsnesaacbP7Xo7dvYbgXwpZQHatoYgQI+chLEMRmJM2VUyjga
+         MkNd3AcVesSvX7VLbpUwTctbd4rYrpoxFSpLG2/3b88QCQ7BeWxBzQ0BhvtzLzXKpQaD
+         iOWyyfkAZJzrwIDE70X61WRc/W0lE8pZGtO6FjC8DF0NXP7s46idC+78eJR4U/emEPaV
+         uWara+NWzRGO2wklRtRV1xjOcweqDfqH7HGGPI8dvZ6E/CdEE9hcACcL3e6iliwYwbY1
+         XDFUEhG5WgJx5y2h77glZukWYGFY4hvJ8jo7rQ+7hmJUC/rP3IgzC6MSypclotHz+YfS
+         7loA==
+X-Gm-Message-State: AGi0Pua1SMBHLdZ+w9eYrnCv9eN1K5E2NYelw3cA5EYbhicADyFpnUqN
+        vRNTakt4j51f0wA6i66Rfo7z
+X-Google-Smtp-Source: APiQypIFyoGdo5N2UATcTDeToHVhHOExE0hyeqDVi9r+wjICYlrbxxJlpXV9YK979M9CMtO6YnDT+Q==
+X-Received: by 2002:a17:902:b101:: with SMTP id q1mr15411011plr.246.1587375379433;
+        Mon, 20 Apr 2020 02:36:19 -0700 (PDT)
+Received: from arctic-shiba-lx ([47.156.151.166])
+        by smtp.gmail.com with ESMTPSA id u21sm677223pga.21.2020.04.20.02.36.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Apr 2020 02:36:18 -0700 (PDT)
+Date:   Mon, 20 Apr 2020 02:36:10 -0700
+From:   Clay McClure <clay@daemons.net>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Sekhar Nori <nsekhar@ti.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: cpts: Condition WARN_ON on PTP_1588_CLOCK
+Message-ID: <20200420093610.GA28162@arctic-shiba-lx>
+References: <20200416085627.1882-1-clay@daemons.net>
+ <6fef3a00-6c18-b775-d1b4-dfd692261bd3@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Content-Language: en-GB
-X-Provags-ID: V03:K1:YN04cE4ovlppuxwjwdlzv9ZfSdmqeK3qFT0ETo1/QWl5aEsNJPq
- GQV5IyRDlCSJ3aqHDLsFhn5qws0E+Wovpi0wDMZQ+LLR8jh6pGHvrU8eB+ajRLEa0OerMHE
- Y4RkBlL9qbfgT0NyTlmP4o3IvURQ+DUwMfs+FXZ6YDNwtRLocqfy3ToDD3KAy4QUCTYFDKn
- lv6tcXAd0v9emnP3LcfdA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Fcl9jH7N1Ow=:ebSlaAfjdh+Kaq1/2s5XMb
- 0eB8zn/WdV5rWX2+fBYrF/Or40OjxwtVervREWp05ddEjlGRpl+hw4RxlxaLUqCA0TQzJ8bEc
- DTI+xIisXVBxdWCUGo0ckl7cv2MHaCdwae7QnGl91u1YHxHakUYEIePIalZ+t/U/tCO56XRpL
- D1IboDwHOig/xVMX2zkJB1K/U8p2oBS18C4XIUSDpFt/025dptj5OPiQqyCCK1hLeo7WUMgTS
- mwJURV0CEqmjHFZVi/etyplWcEWFGux8JMdE5KUMsHURB5xjuRNoy3CdILUGf8UaFxCiuW8ZA
- Jpu9nw+uOL3C0bhC2PH6UuhhjXbMWyIeAQU+naxxGJfiCIkRTyRGJYPN7lcxLr5Unv5fxmnkM
- RWdqR2SycNwycCTrSJZXVlnv2Y1O+LN4ZGR9bz5za2JcRvidvBkWDNRlDNh0RohBFDWcTYeCh
- 10Vn4StGOKg2/a4nJF4A6i+mI6UMVuZhD8j4nZRodbDv3znt1313ZYnDV3a5eI6oQow+3S7P8
- UljmXr/f1NelIfZoDqthnoto9WmnxFt35N20Oqb/wGRSVA3YS8KFc0wgHveEtVzuQfQT0uJwf
- 7QnrNIxco9W01gcTT1b4Fqn6qryJtuZ9N/dJkr37yj2lqOc8px8HoGQgf5hJnjyO+BZ88sC1/
- xWH1b75aaeo6iFylXGNwqKQAq9BLA2kld7TULx+Xaob0fG6KAIDXU6viYKnAKAPIw24ylZG/4
- AUbXyFFOJ+9vfhuePpomFKEVSr4G83tasp62o8QesbREABni32r0V/2hCPs08ncim2QVWPA5U
- oNEm5nUonNGB7F/psw7nm+T93Kba20repUzmJGu7QPeAHCVfQtkDCWiIikVFyA7RFWB76/Rv+
- RkIRAPgO8NY0DOHFvFL4w1YHLt5/WHUDto3c4J4YxU3buO2DbNuXX45iMxl1iiA6hv75rIe2I
- RtfzM7kVAeyZgYAZ8FcL7l+fJgKj2eCqh+B5Dfqbh1CY2cryRpCee3P/cjjqNm4iGuWOvELBz
- XhRTy4rcXRRbl07nJzuFLErekLUVnPfMs6X7jy8OCHTK3fwbn1GoeLXtXexKVrPDYx3MaJlIf
- +XxSXBzfQGSeqSlt5mEYivq/KjC32BQt4C90qoMKse0ko3Qt/cOEEeSAWrN4NG1Pe2pcXEACu
- 4XRf/s4v/iKDHIR8enYDYkqfaRDuklcj0GG2aI0rcH/g4MHcYH6bMnY8DlAC8c10Rw6Go=
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <6fef3a00-6c18-b775-d1b4-dfd692261bd3@ti.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-HOST config
-* kernel 4.19.93
-* SoC Cortex-A9 (armv7l)
-* switch Marvell 88E6176 via PHY lane (mdio-mii) to SoC
-* switch's downstream port driven by DSA
-* switch's ATU=E2=80=99s /AgeTime/ control register default value =3D 0x13=
- (19 x
-16 =3D 304 seconds)
-* WLan card via mPCIe to SoC
-________
+On Thu, Apr 16, 2020 at 02:11:45PM +0300, Grygorii Strashko wrote:
 
-Moving a client node from a (HOST) switch's downstream port (either
-directly wired or indirectly via wireless AP that is wired into a switch
-downstream port) to the HOST provided AP results in the client node not
-being able to reach any other client node connected to a (HOST) switch's
-downstream port.
-Only after the switch's ATU=E2=80=99s /AgeTime/ has expired (and the MAC a=
-ddress
-of the roaming client node been cleared in the ATU) the client node
-(that been moved/roamed) is able to establish connectivity with any
-other client node connected to a (HOST) switch's downstream port.
+Grygorii,
 
-Whilst bridge fdb is learning on the switch's downstream ports and the
-WLan ports the switch's ATU is learning only on its downstream ports.
-That sort of constitutes a communication gap and leading to the
-aforementioned connectivity issue in the described roaming scenario.
+> > CPTS_MOD merely implies PTP_1588_CLOCK; it is possible to build cpts
+> > without PTP clock support. In that case, ptp_clock_register() returns
+> > NULL and we should not WARN_ON(cpts->clock) when downing the interface.
+> > The ptp_*() functions are stubbed without PTP_1588_CLOCK, so it's safe
+> > to pass them a null pointer.
+> 
+> Could you explain the purpose of the exercise (Enabling CPTS with
+> PTP_1588_CLOCK disabled), pls?
 
-Should switchdev be expected to communicate (align) changes from the
-bridge fdb to the switch's ATU and thus prevent the aforementioned
-connectivity issue? Or else, how to remedy?
+Hardware timestamping with a free-running PHC _almost_ works without
+PTP_1588_CLOCK, but since PHC rollover is handled by the PTP kworker
+in this driver the timestamps end up not being monotonic.
 
+And of course the moment you want to syntonize/synchronize the PHC with
+another clock (say, CLOCK_REALTIME), you'll need a PTP clock device. So
+you're right, there's not much point in building CPTS_MOD without
+PTP_1588_CLOCK.
 
+Given that, I wonder why all the Ethernet drivers seem to just `imply`
+PTP_1588_CLOCK, rather than `depends on` it?
 
+In any case, I was surprised to get a warning during `ifdown` but not
+during `ifup`. What do you think of this change, which prints an error
+like this during `ifup` if PTP_1588_CLOCK is not enabled:
+
+[    6.192707] 000: cpsw 4a100000.ethernet: error registering cpts device
+
+--- 
+diff --git a/drivers/net/ethernet/ti/cpts.c b/drivers/net/ethernet/ti/cpts.c
+index 10ad706dda53..70b15039cd37 100644
+--- a/drivers/net/ethernet/ti/cpts.c
++++ b/drivers/net/ethernet/ti/cpts.c
+@@ -462,8 +462,8 @@ int cpts_register(struct cpts *cpts)
+        timecounter_init(&cpts->tc, &cpts->cc, ktime_get_real_ns());
+ 
+        cpts->clock = ptp_clock_register(&cpts->info, cpts->dev);
+-       if (IS_ERR(cpts->clock)) {
+-               err = PTR_ERR(cpts->clock);
++       if (IS_ERR_OR_NULL(cpts->clock)) {
++               err = cpts->clock ? PTR_ERR(cpts->clock) : -EOPNOTSUPP;
+                cpts->clock = NULL;
+                goto err_ptp;
+        }
+
+-- 
+Clay
