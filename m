@@ -2,97 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71C561B1056
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 17:38:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC6591B1063
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 17:42:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726838AbgDTPiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 11:38:22 -0400
-Received: from mail-out.m-online.net ([212.18.0.9]:38901 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726458AbgDTPiW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 11:38:22 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 495W7H6SD5z1r76J;
-        Mon, 20 Apr 2020 17:38:18 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 495W7G3mHXz1qtwY;
-        Mon, 20 Apr 2020 17:38:18 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id qqbZnqMMz5eD; Mon, 20 Apr 2020 17:38:16 +0200 (CEST)
-X-Auth-Info: PIpsRW0wARhrzYIQa+S1GAq68j/sSx1VJx7d9JAUTNI=
-Received: from [IPv6:::1] (unknown [195.140.253.167])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Mon, 20 Apr 2020 17:38:16 +0200 (CEST)
-Subject: Re: [PATCH V4 07/19] net: ks8851: Remove ks8851_rdreg32()
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>
-References: <20200414182029.183594-1-marex@denx.de>
- <20200414182029.183594-8-marex@denx.de>
- <20200420140700.6632hztejwcgjwsf@wunner.de>
- <99104102-7973-e80f-9006-9a448403562b@denx.de>
- <20200420142002.2l57umsi3rh5ka7e@wunner.de>
- <e8924fbc-b515-527c-a772-b5ac5cfc1cf4@denx.de>
- <20200420144403.eoo47sq7pwp6yc7d@wunner.de>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <0edb18eb-0c18-c3cd-a0b7-4ba23428f354@denx.de>
-Date:   Mon, 20 Apr 2020 17:38:16 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1728233AbgDTPmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 11:42:20 -0400
+Received: from mail-eopbgr60050.outbound.protection.outlook.com ([40.107.6.50]:59877
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726756AbgDTPmS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 11:42:18 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=keYPZHid56H1OkopylqDMRrdL5I2fXexqBknwWroQl1d+zGeG9zPDrs3PyRBgqa4Rmo4R3nGKNoQPRh3mtaxmQElPEvKuuyTkkTdP1hT1+O4qN/dd1J1Rfw0GIDxKJ7tU7tvNLR6Nddkzo9vuQdywTHnOldKmGyvBnEIXFDJJogFmEfvlc8rZrxWrQIsEND3NKP6siHqjZHJO9rpg22GE849CW6jLeO7O1RbK464o9eI6OpMUmctnrXn1Q49/3rhPWLviSgwZDXAhjjti0lpXFTIES8Dbng/oixw4R6F7oAxNSZaw8KyfLaamEAyWq0nr4XESC+9a4/pc9OSHUMBQg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=w/II/Ycv1coMzjXGzGCL9JnrbmlZ8FYi1sjsVKxTGjI=;
+ b=fL563Gm7B9BBgBBYjcttlGm9eA67kRH4aL4RWcyQtxZn2k9rgIEHloa56G3wgKZqI9eLdhDBAKaI6+LzI/5HltUoDoeaq8cw4MiJsf134J6XEvbM71P9z66Z6YwHxK0Bx99KY7J+KgmFVXZXyb7EeWuPcYeUv+DsHynKFYJ7KB38olu6PmTmZYFEmqGIs16OpSSpYwZfomLhgt8yAEg379voEOS8hSouRsuWv2bSeIxO4cBS3qXmn1EKnDVqqeg7Blqm1vzDWvNdVE+zT/nMocowtPRp8jiWgV0bAfW5YexwnJm9A5BEuD+4Mb9yLnjxX7x3KZ9ryIx3IAFtqvnK2g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=w/II/Ycv1coMzjXGzGCL9JnrbmlZ8FYi1sjsVKxTGjI=;
+ b=A6oQYxrGpezvwLBuqsJHGIu30xSzy0Uo36mnrJUv8idg+p5UzoORqRN50dSMAhOEkJDl10F9g/iQ1LKnfRbDCGbX2WbDCftOxwvLZPCiVtq3aBx6Kou8nj3QVeYVd1IkDCrEtcq5BG+Zag61hfxRRKZkD3I/DaPxeCHQOFg/Huk=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=calvin.johnson@oss.nxp.com; 
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
+ by AM0PR04MB6084.eurprd04.prod.outlook.com (2603:10a6:208:13e::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.27; Mon, 20 Apr
+ 2020 15:42:15 +0000
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::c4fe:d4a4:f0e1:a75b]) by AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::c4fe:d4a4:f0e1:a75b%4]) with mapi id 15.20.2921.027; Mon, 20 Apr 2020
+ 15:42:15 +0000
+Date:   Mon, 20 Apr 2020 21:12:02 +0530
+From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     linux.cj@gmail.com, Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        netdev@vger.kernel.org, Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        linux-kernel@vger.kernel.org, Varun Sethi <V.Sethi@nxp.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [RFC net-next PATCH v2 1/2] net/fsl: add ACPI support for mdio
+ bus
+Message-ID: <20200420154202.GB27078@lsv03152.swis.in-blr01.nxp.com>
+References: <20200418105432.11233-1-calvin.johnson@oss.nxp.com>
+ <20200418105432.11233-2-calvin.johnson@oss.nxp.com>
+ <20200418114116.GU25745@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200418114116.GU25745@shell.armlinux.org.uk>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: SG2PR06CA0186.apcprd06.prod.outlook.com (2603:1096:4:1::18)
+ To AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
 MIME-Version: 1.0
-In-Reply-To: <20200420144403.eoo47sq7pwp6yc7d@wunner.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR06CA0186.apcprd06.prod.outlook.com (2603:1096:4:1::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.26 via Frontend Transport; Mon, 20 Apr 2020 15:42:09 +0000
+X-Originating-IP: [14.142.151.118]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 9e1d9552-0ad0-468f-ac60-08d7e5416632
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6084:|AM0PR04MB6084:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR04MB6084A45BC26BD48725513287D2D40@AM0PR04MB6084.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-Forefront-PRVS: 03793408BA
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(39860400002)(346002)(376002)(366004)(396003)(136003)(6916009)(8936002)(8676002)(81156014)(55016002)(966005)(9686003)(7416002)(478600001)(26005)(5660300002)(6506007)(1076003)(86362001)(55236004)(66476007)(66556008)(6666004)(316002)(4326008)(33656002)(54906003)(1006002)(7696005)(52116002)(186003)(2906002)(44832011)(16526019)(66946007)(956004)(110426005);DIR:OUT;SFP:1101;
+Received-SPF: None (protection.outlook.com: oss.nxp.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2fBlHXC33NnvInoBMszuuONW4dSIDTknBLfZkiSxyWfM4qosBEBCE7YWGtssSxIu+46QgnD8t+l5xKk+CfNJZI9FYUQpSSAkrUFnVkAyXVq2yYNI9mMHPxOV/2YlAA7BV/dEjS2w9P9SbLrtncxUigKlVbs20PM+Dt4krxwZFQCby8m9UIJSCblFk0mxuDWg4cPb5bvlwktDDYfViG8xqt0DcMnPAqOYP0iXACCSsy54xzMN30ZbeTLpA/cOGPjHrlXRpKttCJJZ1z4jW1S76B8Rr/YfCchlv+32QktDjCN62XFXqDGUI/3YfBxF5YLjVH/RxXqUrcFdBIN5S58yzVo/kY6Y/2Qrz9BrDMa2HJY9OK3JwpXxpxjtUgH5QmCsJLSrFjdY3EOZHucH8DbBOwtMlZYMzmqBy58mCw7ICeqQnI7KG4ckWCvlzKCIin6654KBdiOIB5+ZuDFSTQSy8+G4LwZ/pAuULH/ZMDt5mQoOMcd8bwYvFvT7V7Kwm3wxMka8TsyP/1Xq7LQuQcOrp3t3sYOyrZbKmCLJE5cF3XPgR6O/ghc35pRyW42kp4hK+SmweYhcPeaA551O1PaWuQ==
+X-MS-Exchange-AntiSpam-MessageData: ZWuZZYuCnBotM3fcTpiZMGuCTa5canTiv7uc30Ifr+9Rz14cMxn6OkcxU1KBZKm7FDG3oOlbidWWxd3O8BNwRTqw7MHQFTu+V/fMTYRJLOtvS927ubKLP6AraMzkce+IC2ZH/zwQw7mRroANza7kag==
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e1d9552-0ad0-468f-ac60-08d7e5416632
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2020 15:42:15.2183
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /7nShog1vvtx9yeiTswYBMGgD8MuLMCpaT9+qKe3jXS6EvWVsTe2jATLiqLScgXeqhevwoZXHRauHklW0qRfxg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6084
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/20/20 4:44 PM, Lukas Wunner wrote:
-> On Mon, Apr 20, 2020 at 04:24:05PM +0200, Marek Vasut wrote:
->> On 4/20/20 4:20 PM, Lukas Wunner wrote:
->>> On Mon, Apr 20, 2020 at 04:12:59PM +0200, Marek Vasut wrote:
->>>> On 4/20/20 4:07 PM, Lukas Wunner wrote:
->>>>> On Tue, Apr 14, 2020 at 08:20:17PM +0200, Marek Vasut wrote:
->>>>>> The ks8851_rdreg32() is used only in one place, to read two registers
->>>>>> using a single read. To make it easier to support 16-bit accesses via
->>>>>> parallel bus later on, replace this single read with two 16-bit reads
->>>>>> from each of the registers and drop the ks8851_rdreg32() altogether.
->>>>>>
->>>>>> If this has noticeable performance impact on the SPI variant of KS8851,
->>>>>> then we should consider using regmap to abstract the SPI and parallel
->>>>>> bus options and in case of SPI, permit regmap to merge register reads
->>>>>> of neighboring registers into single, longer, read.
->>>>>
->>>>> Bisection has shown this patch to be the biggest cause of the performance
->>>>> regression introduced by this series:  Latency increases by about 9 usec.
->>>>
->>>> Just for completeness, did you perform this bisect on current linux-next
->>>> without any patches except this series OR your patched rpi downstream
->>>> vendor tree Linux 4.19 with preempt-rt patch applied ?
->>>
->>> The latter because latency without CONFIG_PREEMPT_RT_FULL=y is too imprecise
->>> to really see the difference and that's the configuration we care about.
->>
->> Why am I not able to see the same on the RPi3 then ?
->> How can I replicate this observation ?
+On Sat, Apr 18, 2020 at 12:41:16PM +0100, Russell King - ARM Linux admin wrote:
+> On Sat, Apr 18, 2020 at 04:24:31PM +0530, Calvin Johnson wrote:
+> > @@ -241,18 +244,81 @@ static int xgmac_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
+> >  	return value;
+> >  }
+> >  
+> > +/* Extract the clause 22 phy ID from the compatible string of the form
+> > + * ethernet-phy-idAAAA.BBBB
 > 
-> Compile this branch with CONFIG_PREEMPT_RT_FULL=y:
-> 
-> https://github.com/l1k/linux/commits/revpi-4.19-marek-v4
-> 
-> Alternatively, download this file:
-> 
-> http://wunner.de/ks8851-marekv4.tar
-> 
-> Install the "raspberrypi-kernel" deb-package included in the tarball on a
-> stock Raspbian image and copy one of the included ks8851.ko to:
-> /lib/modules/4.19.95-rt38-v7+/kernel/drivers/net/ethernet/micrel
+> This comment is incorrect.  What about clause 45 PHYs?
 
-Why don't you rather try to replicate this problem in linux-next?
+Agree. Will correct it.
+May be we need a comment update for of_get_phy_id() also.
+https://elixir.bootlin.com/linux/v5.7-rc2/source/drivers/of/of_mdio.c#L28
+
+<snip>
+
+> > +	/* All data is now stored in the phy struct, so register it */
+> > +	rc = phy_device_register(phy);
+> > +	if (rc) {
+> > +		phy_device_free(phy);
+> > +		fwnode_handle_put(child);
+> > +		return rc;
+> > +	}
+> > +
+> > +	dev_dbg(&bus->dev, "registered phy at address %i\n", addr);
+> > +
+> > +	return 0;
+> 
+> You seem to be duplicating the OF implementation in a private driver,
+> converting it to fwnode.  This is not how we develop the Linux kernel.
+> We fix subsystem problems by fixing the subsystems, not by throwing
+> what should be subsystem code into private drivers.
+
+I've used some part of the of_mdiobus_register_phy(). Looks like some
+other network drivers using acpi had also taken similar approach.
+Anyway, I'll try to make it generic and move out to subsystem.
+
+Thanks
+Calvin
+
