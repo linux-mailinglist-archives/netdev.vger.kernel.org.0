@@ -2,102 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 282E31B1490
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 20:34:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11BA61B14E6
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 20:42:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728022AbgDTSeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 14:34:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59682 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725613AbgDTSeX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 14:34:23 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA3AAC061A0C;
-        Mon, 20 Apr 2020 11:34:22 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id j7so1920079pgj.13;
-        Mon, 20 Apr 2020 11:34:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZMXNXOn18ztbuDgZhLYqZA8C0KLTfCYAabuhHQdVEgc=;
-        b=bRQ+zQcNerLNraD0+K3XcVBhR8In6GYgzcEMJFJy3EM54s+7VpeUkpewJywI7Dlu1C
-         0NV6aw+rdb72SW046ScVrndy1qT+OWeSe3F3WSs53I1INh7jHAF9cPmu3fl1IcxNn52n
-         AnetC47v2j8aUaRMwfkjEOPqArnLCpBIEJNTtwh61lLv79b4b7JFaI9clE8aL+U+Ar3O
-         x3fwGUBvZHP9tg20oIWd7+Fc+GOkI4AmMoUl0RWU1xZy2Sxts3XpSJxE3WTfbl4weMcc
-         bctl/oKZj8sU83vRHoR7vEpuR1MqVevHmTrqEuHJMDIpyrkau/6SCqN4O4gIZ5qHWM5E
-         q/nQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZMXNXOn18ztbuDgZhLYqZA8C0KLTfCYAabuhHQdVEgc=;
-        b=dNrossLpumFVEvv1x9ZT6UpqDWdb98xqsEyjUfwnnzuOQlf8++iG/AYDjEQfyluB7W
-         cOmluDD+5Y+dahCSxCiIVY5zCKeBZxFCoFNZaQCSjUg+OcN9qP/QZU+LLKMOTVA0C1Jc
-         +1dMwycNoWDpukYkodRoeZPrQ9++6k/bFjCDze/ATTBIz2iqunxm8NAs5iytIZSDo6zU
-         1lAC69AXaEBSFukG8/2KIUeafRHVSvmGTvgknw9g9qUR4anF2FXb1oLE0inAdl6Yagjm
-         YynxcGzM5SxwvZ4jejlBmffHty35dC8jqZ6FKCPkr+DxLgMnatIM0j5NNowEhVt7VQxg
-         sASw==
-X-Gm-Message-State: AGi0PuZUHX2gnk1vTdJocqBV34BykNo6PQ381Y7bMRhdgDCeRsqWG+L6
-        GQg+eEsg1T03QQolg/j/g+4=
-X-Google-Smtp-Source: APiQypLLXx1+KoTFJBQwTmqbsymwlQm5i4LeHNqlSUAsMlO3wtSMB/tpw2gZ7VXql4tTCRNgPnJaxQ==
-X-Received: by 2002:a62:880f:: with SMTP id l15mr17900763pfd.218.1587407662356;
-        Mon, 20 Apr 2020 11:34:22 -0700 (PDT)
-Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
-        by smtp.gmail.com with ESMTPSA id mq6sm51661pjb.38.2020.04.20.11.34.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2020 11:34:21 -0700 (PDT)
-From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
-To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Lorenzo Colitti <lorenzo@google.com>
-Subject: [PATCH] net: bpf: Allow TC programs to call BPF_FUNC_skb_change_head
-Date:   Mon, 20 Apr 2020 11:34:08 -0700
-Message-Id: <20200420183409.210660-1-zenczykowski@gmail.com>
-X-Mailer: git-send-email 2.26.1.301.g55bc3eb7cb9-goog
+        id S1726905AbgDTSmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 14:42:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49518 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725613AbgDTSmU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 14:42:20 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9F4802074F;
+        Mon, 20 Apr 2020 18:42:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587408140;
+        bh=J1Pz4saX9jEjbkW/1+ZB7lzOWI+VGAU8j2Mv8AfiHU4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JsAB6+t1dHV6pvoNwy2P8v+KHnBGozzcYEBAsOqCqaQK7HENSdA/Epo8cuYKfdaeH
+         UQmrYop56C28Q6adcFqTx4BaxJjZ9m7iZ1VJO4KIbv7oJr7VzX8Xfj1938D62gu5ay
+         CxfzWhjJbvIpNgzF6SClWGl8oh09kyNCstcquWOI=
+Date:   Mon, 20 Apr 2020 11:42:18 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jani Nikula <jani.nikula@linux.intel.com>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        jonas@kwiboo.se, David Airlie <airlied@linux.ie>,
+        jernej.skrabec@siol.net,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, linux-rdma@vger.kernel.org
+Subject: Re: [RFC PATCH 1/2] Kconfig: Introduce "uses" keyword
+Message-ID: <20200420114218.30b373d4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87v9lu1ra6.fsf@intel.com>
+References: <20200417011146.83973-1-saeedm@mellanox.com>
+        <CAK7LNAQZd_LUyA2V_pCvMTr_201nSX1Nm0TDw5kOeNV64rOfpA@mail.gmail.com>
+        <nycvar.YSQ.7.76.2004181509030.2671@knanqh.ubzr>
+        <CAK7LNATmPD1R+Ranis2u3yohx8b0+dGKAvFpjg8Eo9yEHRT6zQ@mail.gmail.com>
+        <87v9lu1ra6.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lorenzo Colitti <lorenzo@google.com>
+On Mon, 20 Apr 2020 11:43:13 +0300 Jani Nikula wrote:
+> On Sun, 19 Apr 2020, Masahiro Yamada <masahiroy@kernel.org> wrote:
+> > On Sun, Apr 19, 2020 at 4:11 AM Nicolas Pitre <nico@fluxnic.net> wrote:  
+> >>
+> >> On Sun, 19 Apr 2020, Masahiro Yamada wrote:
+> >>  
+> >> > (FOO || !FOO) is difficult to understand, but
+> >> > the behavior of "uses FOO" is as difficult to grasp.  
+> >>
+> >> Can't this be expressed as the following instead:
+> >>
+> >>         depends on FOO if FOO
+> >>
+> >> That would be a little clearer.
+> >>
+> >>
+> >> Nicolas  
+> >
+> > 'depends on' does not take the 'if <expr>'
+> >
+> > 'depends on A if B' is the syntax sugar of
+> > 'depends on (A || !B), right ?
+> >
+> > I do not know how clearer it would make things.
+> >
+> > depends on (m || FOO != m)
+> > is another equivalent, but we are always
+> > talking about a matter of expression.
+> >
+> >
+> > How important is it to stick to
+> > depends on (FOO || !FOO)
+> > or its equivalents?
+> >
+> >
+> > If a driver wants to use the feature FOO
+> > in most usecases, 'depends on FOO' is sensible.
+> >
+> > If FOO is just optional, you can get rid of the dependency,
+> > and IS_REACHABLE() will do logically correct things.  
+> 
+> If by logically correct you mean the kernel builds, you're
+> right. However the proliferation of IS_REACHABLE() is making the kernel
+> config *harder* to understand. User enables FOO=m and expects BAR to use
+> it, however if BAR=y it silently gets ignored. I have and I will oppose
+> adding IS_REACHABLE() usage to i915 because it's just silently accepting
+> configurations that should be flagged and forbidden at kconfig stage.
 
-This allows TC eBPF programs to modify and forward (redirect) packets
-from interfaces without ethernet headers (for example cellular)
-to interfaces with (for example ethernet/wifi).
++1
 
-The lack of this appears to simply be an oversight.
-
-Tested:
-  in active use in Android R on 4.14+ devices for ipv6
-  cellular to wifi tethering offload.
-
-Signed-off-by: Lorenzo Colitti <lorenzo@google.com>
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
----
- net/core/filter.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 7d6ceaa54d21..755867867e57 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -6213,6 +6213,8 @@ tc_cls_act_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return &bpf_skb_adjust_room_proto;
- 	case BPF_FUNC_skb_change_tail:
- 		return &bpf_skb_change_tail_proto;
-+	case BPF_FUNC_skb_change_head:
-+		return &bpf_skb_change_head_proto;
- 	case BPF_FUNC_skb_get_tunnel_key:
- 		return &bpf_skb_get_tunnel_key_proto;
- 	case BPF_FUNC_skb_set_tunnel_key:
--- 
-2.26.1.301.g55bc3eb7cb9-goog
-
+I wholeheartedly agree. In case of Ethernet drivers having higher
+layers of the stack not able to communicate with drivers is just 
+broken IMHO.
