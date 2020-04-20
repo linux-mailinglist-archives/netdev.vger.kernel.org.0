@@ -2,98 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68A171B146E
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 20:25:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42E181B147F
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 20:31:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726905AbgDTSZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 14:25:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58270 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726021AbgDTSZT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 14:25:19 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30BE2C061A0C
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 11:25:19 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id a32so224237pje.5
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 11:25:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0ByFAymEmjbb2sAEloaG2LX/Jp4mza/WuuwAmbbqqrk=;
-        b=dPVYhqdc+eJ+l29aElrNxgMjUB3ctP2AuqddUU8HqBzdhGjlSgxDseRmhmIpQswNli
-         hERpBAJW0klF0OFfmHd+sN6f6FG+9ExoxvSm9lvt6Bp7Ae3JPD5zvxIdUK93zGJ/nhi2
-         uW2zbUdv75sXBbpx+ZfP+iHm6wUVWFBImzbjA66tMG3ieSxXNVSJj95ZVDEhVkTtAYKH
-         90pPDi+MoQ+89NP63FyLuskULPdUrEkvbXIr0wd+bqBbiNjo4eYoULn0e4Z7xM0zUk6x
-         UTzA1YKR6/k731+jO7vOIbo7OG2a4TTPz85Xs/EqvYFdVvwVtiFm31MliScwecqT9XGT
-         soLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0ByFAymEmjbb2sAEloaG2LX/Jp4mza/WuuwAmbbqqrk=;
-        b=dI1VGraeDExy9dfGb/vl4iZfY2hCGYR/4ikt5xew57Fa93d8DHwsgwHp5PR8Wj/sJf
-         1f19hPxWOvFWNR/PbjDs/FsZDLP2qiginCvNPfZTw67ZbmoWcZNraOXy15Bhflq+FN4e
-         IwEW/8ohk45OoF79xk9KC4qRB0hRe0qFeFw91ePrP77y95Rouj3QyEdz0B1CKfqwYO+7
-         m9WJRWP2ZCFvuWjtMSJ3FZRX6yrj3a0abWA/kmM6IXfoD3x1zeWsLCFwkN4uVyWQeGLB
-         qaB0X9n+7Eq3cdH6fARavSAauSJPpP+sTcIk4krM8TdwofSfq/+ebx6vHBZIFl7rUik/
-         w8GQ==
-X-Gm-Message-State: AGi0PuaLAE8eyvLWUV3HEGrIJgD3JZUJQxWSucGfot/44IVyt60EAgvG
-        TZz+pkvHXlrFiYXl2q/rgao=
-X-Google-Smtp-Source: APiQypKZZS88vPRrijpuUky5uiwm7Gzq7OObx/DYlhO3NtIRdliasoyAxIfCILVaaftZUwok6j4VOg==
-X-Received: by 2002:a17:90a:630b:: with SMTP id e11mr761055pjj.167.1587407118645;
-        Mon, 20 Apr 2020 11:25:18 -0700 (PDT)
-Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
-        by smtp.gmail.com with ESMTPSA id c1sm169974pfc.94.2020.04.20.11.25.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2020 11:25:17 -0700 (PDT)
-From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
-To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
-        Erik Kline <ek@google.com>, Jen Linkova <furry@google.com>,
-        Lorenzo Colitti <lorenzo@google.com>,
-        Michael Haro <mharo@google.com>
-Subject: [PATCH] ipv6: ndisc: RFC-ietf-6man-ra-pref64-09 is now published as RFC8781
-Date:   Mon, 20 Apr 2020 11:25:07 -0700
-Message-Id: <20200420182507.110436-1-zenczykowski@gmail.com>
-X-Mailer: git-send-email 2.26.1.301.g55bc3eb7cb9-goog
+        id S1726905AbgDTSbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 14:31:03 -0400
+Received: from mga03.intel.com ([134.134.136.65]:6362 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725784AbgDTSbD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 14:31:03 -0400
+IronPort-SDR: kh/2HXxybPwI/M4TCM0lJgtxjygkszFbrfw4IBBqr9sj3DnobmGSTQnV4wnGKL1CxGlu3POidu
+ g0h1gkRaw3vQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 11:31:02 -0700
+IronPort-SDR: PwUn+A0tvfLr7WppRE2E68Zli3/EXsKSeY4pUOPJnWVmpgtSXzhHNc/wTM0q2/ApfEGF3+2Bvj
+ wc+lRHsRMEhg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,407,1580803200"; 
+   d="scan'208";a="290674476"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga008.jf.intel.com with ESMTP; 20 Apr 2020 11:31:00 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 96018190; Mon, 20 Apr 2020 21:30:58 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1] net: bcmgenet: Use devm_clk_get_optional() to get the clocks
+Date:   Mon, 20 Apr 2020 21:30:58 +0300
+Message-Id: <20200420183058.67457-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.26.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
+Conversion to devm_clk_get_optional() makes it explicit that clocks are
+optional. This change allows to handle deferred probe in case clocks are
+defined, but not yet probed. Due to above changes replace dev_dbg() by
+dev_err() and bail out in error case.
 
-See:
-  https://www.rfc-editor.org/authors/rfc8781.txt
+While here, check potential error when enable main clock.
 
-Cc: Erik Kline <ek@google.com>
-Cc: Jen Linkova <furry@google.com>
-Cc: Lorenzo Colitti <lorenzo@google.com>
-Cc: Michael Haro <mharo@google.com>
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
-Fixes: c24a77edc9a7 ("ipv6: ndisc: add support for 'PREF64' dns64 prefix identifier")
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- include/net/ndisc.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/ethernet/broadcom/genet/bcmgenet.c    | 25 +++++++++++--------
+ 1 file changed, 15 insertions(+), 10 deletions(-)
 
-diff --git a/include/net/ndisc.h b/include/net/ndisc.h
-index 7d107113f988..9205a76d967a 100644
---- a/include/net/ndisc.h
-+++ b/include/net/ndisc.h
-@@ -41,7 +41,7 @@ enum {
- 	ND_OPT_DNSSL = 31,		/* RFC6106 */
- 	ND_OPT_6CO = 34,		/* RFC6775 */
- 	ND_OPT_CAPTIVE_PORTAL = 37,	/* RFC7710 */
--	ND_OPT_PREF64 = 38,		/* RFC-ietf-6man-ra-pref64-09 */
-+	ND_OPT_PREF64 = 38,		/* RFC8781 */
- 	__ND_OPT_MAX
- };
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index ef275db018f73..045f7b7f0b5d3 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -3487,13 +3487,16 @@ static int bcmgenet_probe(struct platform_device *pdev)
+ 		priv->dma_max_burst_length = DMA_MAX_BURST_LENGTH;
+ 	}
  
+-	priv->clk = devm_clk_get(&priv->pdev->dev, "enet");
++	priv->clk = devm_clk_get_optional(&priv->pdev->dev, "enet");
+ 	if (IS_ERR(priv->clk)) {
+-		dev_dbg(&priv->pdev->dev, "failed to get enet clock\n");
+-		priv->clk = NULL;
++		dev_err(&priv->pdev->dev, "failed to get enet clock\n");
++		err = PTR_ERR(priv->clk);
++		goto err;
+ 	}
+ 
+-	clk_prepare_enable(priv->clk);
++	err = clk_prepare_enable(priv->clk);
++	if (err)
++		goto err;
+ 
+ 	bcmgenet_set_hw_params(priv);
+ 
+@@ -3511,16 +3514,18 @@ static int bcmgenet_probe(struct platform_device *pdev)
+ 	priv->rx_buf_len = RX_BUF_LENGTH;
+ 	INIT_WORK(&priv->bcmgenet_irq_work, bcmgenet_irq_task);
+ 
+-	priv->clk_wol = devm_clk_get(&priv->pdev->dev, "enet-wol");
++	priv->clk_wol = devm_clk_get_optional(&priv->pdev->dev, "enet-wol");
+ 	if (IS_ERR(priv->clk_wol)) {
+-		dev_dbg(&priv->pdev->dev, "failed to get enet-wol clock\n");
+-		priv->clk_wol = NULL;
++		dev_err(&priv->pdev->dev, "failed to get enet-wol clock\n");
++		err = PTR_ERR(priv->clk_wol);
++		goto err;
+ 	}
+ 
+-	priv->clk_eee = devm_clk_get(&priv->pdev->dev, "enet-eee");
++	priv->clk_eee = devm_clk_get_optional(&priv->pdev->dev, "enet-eee");
+ 	if (IS_ERR(priv->clk_eee)) {
+-		dev_dbg(&priv->pdev->dev, "failed to get enet-eee clock\n");
+-		priv->clk_eee = NULL;
++		dev_err(&priv->pdev->dev, "failed to get enet-eee clock\n");
++		err = PTR_ERR(priv->clk_eee);
++		goto err;
+ 	}
+ 
+ 	/* If this is an internal GPHY, power it on now, before UniMAC is
 -- 
-2.26.1.301.g55bc3eb7cb9-goog
+2.26.1
 
