@@ -2,216 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 326E31B15BB
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 21:16:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B99D21B15BE
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 21:17:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726692AbgDTTQk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 15:16:40 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:64359 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725897AbgDTTQj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 15:16:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1587410199; x=1618946199;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=y3VTXHw8/f/xzZpAPTTosZewiTx9SOPuKmC7E3cHTv4=;
-  b=vyTKZ1YlHRD39N+dAJDm5+EWYwLsLIGAYdQO5b1KXZy6dheNbJtsXSnq
-   WsIW5w569Gei58SpYh61qJk3yvxO2cK2nItduE5PyLx7zLSUdBQVfrE8a
-   +3IRCqNDiJ9TL9o4XoV7uK3e9Jgl2C5dwgz8XaZVp5rSlwO7XBvL8+cab
-   Zd4aYzlpbVAIUO0/wWknSuKeiKMPFqCoMmJ3AmUrWhtZcI4w+G6xVmyaF
-   xqcupmWcxlrjjsxUU7AuDUCzWgfzUnB1CuZ+gH0EGKpuR1BDIS1BXt+Kj
-   awRmfdpT7R3LvEQjJwUebjImzzQDkcb70L6ch9r27lnDU147y61AldPGA
-   Q==;
-IronPort-SDR: NyJlXEwE8/F6tkBUNF9bQ4OUeLqf3BkWSbD0EjmwcE3yA1OXfvfHqLCnyOHT3GOB0aQnU7jwZO
- /Qb1smcr7uj+3CrNQK6zenih5jjXOA+nnXc6HQ+2Hle9g/BHj+rdQWI655Pc/AAPN1VGKAP+WL
- lLqOmv8bN+I3cb+DkW8OfUtCOx4+rytacmd7Q4tEHf8XvuWIKf6totsgHWJqdpEUT1D5bseDX0
- rhuiu7epO35UMOJq+ioLl7hD2cNqSmmSR80SuPA2waW7H4bQQf7t5JgkVvj8gwo5w8q/hq4jqd
- k4M=
-X-IronPort-AV: E=Sophos;i="5.72,407,1580799600"; 
-   d="scan'208";a="72780182"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Apr 2020 12:16:39 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 20 Apr 2020 12:16:45 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Mon, 20 Apr 2020 12:16:38 -0700
-Date:   Mon, 20 Apr 2020 21:16:37 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-CC:     <davem@davemloft.net>, <jiri@resnulli.us>, <ivecera@redhat.com>,
-        <kuba@kernel.org>, <roopa@cumulusnetworks.com>,
-        <olteanv@gmail.com>, <andrew@lunn.ch>,
-        <UNGLinuxDriver@microchip.com>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <bridge@lists.linux-foundation.org>
-Subject: Re: [PATCH net-next 10/13] bridge: mrp: Implement netlink interface
- to configure MRP
-Message-ID: <20200420191637.5skfpcayidzkb43w@soft-dev3.microsemi.net>
-References: <20200420150947.30974-1-horatiu.vultur@microchip.com>
- <20200420150947.30974-11-horatiu.vultur@microchip.com>
- <066720c4-ddc4-ce71-734f-932b6a342e01@cumulusnetworks.com>
+        id S1726993AbgDTTRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 15:17:07 -0400
+Received: from mga05.intel.com ([192.55.52.43]:37954 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725897AbgDTTRH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 15:17:07 -0400
+IronPort-SDR: fMI7/mdWCQJ0FMiLZJatti7d4Xr5n/KPX0CL6aRIWyYaegEEnu3Bz64B6hJ/G3mWN+bjZpQUoA
+ KwrvPdKSZ/Lw==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 12:17:07 -0700
+IronPort-SDR: FogFN+UwXkNp5mBUPgbO//e3Ajk9w6cvCNNPDvOXHaFVKsdTZ/f2RLOohcF+zoVn+EgZIEai2j
+ U3bndUTloCKg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,407,1580803200"; 
+   d="scan'208";a="245460787"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by fmsmga007.fm.intel.com with ESMTP; 20 Apr 2020 12:17:03 -0700
+Received: from andy by smile with local (Exim 4.93)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1jQbuk-0026vi-Gw; Mon, 20 Apr 2020 22:17:06 +0300
+Date:   Mon, 20 Apr 2020 22:17:06 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Doug Berger <opendmb@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH v1] net: bcmgenet: Use devm_clk_get_optional() to get the
+ clocks
+Message-ID: <20200420191706.GB185537@smile.fi.intel.com>
+References: <20200420183058.67457-1-andriy.shevchenko@linux.intel.com>
+ <c8d2dfb4-2833-7b68-3641-4f3ce2139cb2@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <066720c4-ddc4-ce71-734f-932b6a342e01@cumulusnetworks.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <c8d2dfb4-2833-7b68-3641-4f3ce2139cb2@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 04/20/2020 20:18, Nikolay Aleksandrov wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> On 20/04/2020 18:09, Horatiu Vultur wrote:
-> > Implement netlink interface to configure MRP. The implementation
-> > will do sanity checks over the attributes and then eventually call the MRP
-> > interface.
-> >
-> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+On Mon, Apr 20, 2020 at 11:33:07AM -0700, Florian Fainelli wrote:
+> On 4/20/2020 11:30 AM, Andy Shevchenko wrote:
+> > Conversion to devm_clk_get_optional() makes it explicit that clocks are
+> > optional. This change allows to handle deferred probe in case clocks are
+> > defined, but not yet probed. Due to above changes replace dev_dbg() by
+> > dev_err() and bail out in error case.
+> > 
+> > While here, check potential error when enable main clock.
+> > 
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > > ---
-> >  net/bridge/br_mrp_netlink.c | 117 ++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 117 insertions(+)
-> >  create mode 100644 net/bridge/br_mrp_netlink.c
-> >
-> > diff --git a/net/bridge/br_mrp_netlink.c b/net/bridge/br_mrp_netlink.c
-> > new file mode 100644
-> > index 000000000000..0ff42e7c7f57
-> > --- /dev/null
-> > +++ b/net/bridge/br_mrp_netlink.c
-> > @@ -0,0 +1,117 @@
-> > +// SPDX-License-Identifier: GPL-2.0-or-later
-> > +
-> > +#include <net/genetlink.h>
-> > +
-> > +#include <uapi/linux/mrp_bridge.h>
-> > +#include "br_private.h"
-> > +#include "br_private_mrp.h"
-> > +
-> > +static const struct nla_policy br_mrp_policy[IFLA_BRIDGE_MRP_MAX + 1] = {
-> > +     [IFLA_BRIDGE_MRP_UNSPEC]        = { .type = NLA_REJECT },
-> > +     [IFLA_BRIDGE_MRP_INSTANCE]      = { .type = NLA_EXACT_LEN,
-> > +                                         .len = sizeof(struct br_mrp_instance)},
-> > +     [IFLA_BRIDGE_MRP_PORT_STATE]    = { .type = NLA_U32 },
-> > +     [IFLA_BRIDGE_MRP_PORT_ROLE]     = { .type = NLA_EXACT_LEN,
-> > +                                         .len = sizeof(struct br_mrp_port_role)},
-> > +     [IFLA_BRIDGE_MRP_RING_STATE]    = { .type = NLA_EXACT_LEN,
-> > +                                         .len = sizeof(struct br_mrp_ring_state)},
-> > +     [IFLA_BRIDGE_MRP_RING_ROLE]     = { .type = NLA_EXACT_LEN,
-> > +                                         .len = sizeof(struct br_mrp_ring_role)},
-> > +     [IFLA_BRIDGE_MRP_START_TEST]    = { .type = NLA_EXACT_LEN,
-> > +                                         .len = sizeof(struct br_mrp_start_test)},
-> > +};
-> > +
-> > +int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
-> > +              struct nlattr *attr, int cmd, struct netlink_ext_ack *extack)
-> > +{
-> > +     struct nlattr *tb[IFLA_BRIDGE_MRP_MAX + 1];
-> > +     int err;
-> > +
-> > +     if (br->stp_enabled != BR_NO_STP) {
-> > +             NL_SET_ERR_MSG_MOD(extack, "MRP can't be enabled if STP is already enabled\n");
-> > +             return -EINVAL;
-> > +     }
-> > +
-> > +     err = nla_parse_nested(tb, IFLA_BRIDGE_MRP_MAX, attr,
-> > +                            NULL, extack);
-> > +     if (err)
-> > +             return err;
-> > +
-> > +     if (tb[IFLA_BRIDGE_MRP_INSTANCE]) {
-> > +             struct br_mrp_instance *instance =
-> > +                     nla_data(tb[IFLA_BRIDGE_MRP_INSTANCE]);
-> > +
-> > +             if (cmd == RTM_SETLINK)
-> > +                     err = br_mrp_add(br, instance);
-> > +             else
-> > +                     err = br_mrp_del(br, instance);
-> > +             if (err)
-> > +                     return err;
-> > +     }
-> > +
-> > +     if (tb[IFLA_BRIDGE_MRP_PORT_STATE]) {
-> > +             enum br_mrp_port_state_type state =
-> > +                     nla_get_u32(tb[IFLA_BRIDGE_MRP_PORT_STATE]);
-> > +
-> > +             err = br_mrp_set_port_state(p, state);
-> > +             if (err)
-> > +                     return err;
-> > +     }
-> > +
-> > +     if (tb[IFLA_BRIDGE_MRP_PORT_ROLE]) {
-> > +             struct br_mrp_port_role *role =
-> > +                     nla_data(tb[IFLA_BRIDGE_MRP_PORT_ROLE]);
-> > +
-> > +             err = br_mrp_set_port_role(p, role);
-> > +             if (err)
-> > +                     return err;
-> > +     }
-> > +
-> > +     if (tb[IFLA_BRIDGE_MRP_RING_STATE]) {
-> > +             struct br_mrp_ring_state *state =
-> > +                     nla_data(tb[IFLA_BRIDGE_MRP_RING_STATE]);
-> > +
-> > +             err = br_mrp_set_ring_state(br, state);
-> > +             if (err)
-> > +                     return err;
-> > +     }
-> > +
-> > +     if (tb[IFLA_BRIDGE_MRP_RING_ROLE]) {
-> > +             struct br_mrp_ring_role *role =
-> > +                     nla_data(tb[IFLA_BRIDGE_MRP_RING_ROLE]);
-> > +
-> > +             err = br_mrp_set_ring_role(br, role);
-> > +             if (err)
-> > +                     return err;
-> > +     }
-> > +
-> > +     if (tb[IFLA_BRIDGE_MRP_START_TEST]) {
-> > +             struct br_mrp_start_test *test =
-> > +                     nla_data(tb[IFLA_BRIDGE_MRP_START_TEST]);
-> > +
-> > +             err = br_mrp_start_test(br, test);
-> > +             if (err)
-> > +                     return err;
-> > +     }
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +int br_mrp_port_open(struct net_device *dev, u8 loc)
-> > +{
-> > +     struct net_bridge_port *p;
-> > +     int err = 0;
-> > +
-> > +     p = br_port_get_rcu(dev);
-> > +     if (!p) {
-> > +             err = -EINVAL;
-> > +             goto out;
-> > +     }
-> > +
-> > +     p->loc = loc;
-> > +     br_ifinfo_notify(RTM_NEWLINK, NULL, p);
-> > +
-> > +out:
-> > +     return err;
-> > +}
-> > +EXPORT_SYMBOL(br_mrp_port_open);
-> >
+> >   .../net/ethernet/broadcom/genet/bcmgenet.c    | 25 +++++++++++--------
+> >   1 file changed, 15 insertions(+), 10 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> > index ef275db018f73..045f7b7f0b5d3 100644
+> > --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> > +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> > @@ -3487,13 +3487,16 @@ static int bcmgenet_probe(struct platform_device *pdev)
+> >   		priv->dma_max_burst_length = DMA_MAX_BURST_LENGTH;
+> >   	}
+> > -	priv->clk = devm_clk_get(&priv->pdev->dev, "enet");
+> > +	priv->clk = devm_clk_get_optional(&priv->pdev->dev, "enet");
+> >   	if (IS_ERR(priv->clk)) {
+> > -		dev_dbg(&priv->pdev->dev, "failed to get enet clock\n");
+> > -		priv->clk = NULL;
+> > +		dev_err(&priv->pdev->dev, "failed to get enet clock\n");
 > 
-> I just noticed the EXPORT_SYMBOL() here, why do you need it?
-
-Actually is not needed. But I am thinking to drop patch 4. The reason
-for patch nr 4, was that the drivers should notify when the ports lost
-the continuity. But currently there is no driver using the MRP then
-there is no point to have. I will add it back once the drivers start to
-use the MRP.
-
+> Please maintain the dev_dbg() here and likewise for the rest of your
+> changes. With that:
 > 
+> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+
+Ah, I see, actually dev_err() will make too much noise in case of deferred probe.
+
+Perhaps
+	if (err != -EPROBE_DEFER)
+		dev_err(...);
+?
 
 -- 
-/Horatiu
+With Best Regards,
+Andy Shevchenko
+
+
