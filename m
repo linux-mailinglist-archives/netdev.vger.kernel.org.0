@@ -2,102 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBA261B0C4A
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 15:13:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 119A21B0C53
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 15:14:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726614AbgDTNNc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 09:13:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37510 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726050AbgDTNNc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 09:13:32 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFC50C061A0C;
-        Mon, 20 Apr 2020 06:13:30 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id ng8so4566134pjb.2;
-        Mon, 20 Apr 2020 06:13:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=1TAgcxIt86/pBZoXVfOkKX7rv0NrEGvRTPnHP44Lt+w=;
-        b=WWDlb6SFnnPcrUNjIa1hQgMf2be2Ej55anqWOXEjcohow9GEJAFR8b2vFR/+Z6b3Ay
-         ES6An7SYMLfKug3SNa/XyetLtJEmclrWAMjyWRWOP6nkoPcnCBeBl18P8Akes2xDHlYf
-         y0vPqjQrRHxOBfxM9QeY5WcBYBnidKhOAlY2mo1DI64fwJK2LAEp9MgulN/oFINeDUTQ
-         5M2MmSFQWHC2GMkIBOyf0ULo0o/m9S9qmj+NKeugqEFi3T2nxXWnBsx4RPFCw20cKMaJ
-         FJ4Ks0a7HYY4CzGfhQjFwnSbKWA6c98nn0IjRp8aCRkzAlBLj1FH3WfKtL7YgSIwqjQZ
-         PBOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=1TAgcxIt86/pBZoXVfOkKX7rv0NrEGvRTPnHP44Lt+w=;
-        b=V4mtj8XeFYNc/JADQ9zMYxVhz9YkS7S1ITt7YVMnAgDSLFKXA2ZfcLzSWt7dYugJfX
-         SETF7Ej9A2KqIfB6NiXxU5cvUuAZJO+DnQtbEhWRv4ekehjTIhmUzqCPPZbfV+fJYbG0
-         tYW+//ghQ4aK1DMC/8eEyPbC8TbR4Fifk/a0pqfnWezZhcZ46f0Zv17dCsgfpke0iQSX
-         pePEA+q4Bog86928zvxXPFHhJpm180BfTEdil9YLPiGmx7YVLsFIs6n3d8nmPs3mQGGL
-         plzDaGRDkXpp8JSBxLYWPtMWJ08w9AMwwtIF08TXH79Jsas3ePsLhq3NR7SNGxIOgGBX
-         CsBQ==
-X-Gm-Message-State: AGi0PuZeBysAtgM9bsapfVOoyO1Cx/ge4vqUxhbQGcRWW/AB5gxNDd2i
-        P/WFjFaBDicPi6Rl9S3tLN4=
-X-Google-Smtp-Source: APiQypJU5VK8wVTpvE19z47A8p3kMYjIqaAA/yNAWadv9cPJFQp+9mZYnwvBoQhFFvunoy0bECEV6w==
-X-Received: by 2002:a17:90a:32ea:: with SMTP id l97mr21405427pjb.50.1587388410421;
-        Mon, 20 Apr 2020 06:13:30 -0700 (PDT)
-Received: from localhost (89.208.244.140.16clouds.com. [89.208.244.140])
-        by smtp.gmail.com with ESMTPSA id o187sm1052194pfb.12.2020.04.20.06.13.29
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 20 Apr 2020 06:13:29 -0700 (PDT)
-Date:   Mon, 20 Apr 2020 21:13:27 +0800
-From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     Markus Elfring <Markus.Elfring@web.de>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Coccinelle <cocci@systeme.lip6.fr>
-Subject: Re: [PATCH net-next v1] can: ti_hecc: convert to
- devm_platform_ioremap_resource_byname()
-Message-ID: <20200420131327.GA8103@nuc8i5>
-References: <08979629-d9b8-6656-222f-4e84667651a1@web.de>
+        id S1726827AbgDTNNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 09:13:52 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:60948 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726806AbgDTNNu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 09:13:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587388429;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IYew2ybNbEYlxnWhOLAX8rprgalSjY8htLDKj7llLh0=;
+        b=cT8k9C5smoLW0DSaOLLzw+VTs4gBE+1T9Rc4srv4ftYcSzdnR+Aw64zoloUkH8+/k0RuFP
+        EkyrUxUDLJ+VIa9R9Hu0AQzhAGsgnhfPbPtYD10iQtc1N06UKZixShS8vSlFegtNEehV3Q
+        PXJwxdFduackCjQ6YamQCcwaY7v6ozE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-109-8q1U0xdCNU2fff9u2tmIGQ-1; Mon, 20 Apr 2020 09:13:45 -0400
+X-MC-Unique: 8q1U0xdCNU2fff9u2tmIGQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 80352149C1;
+        Mon, 20 Apr 2020 13:13:43 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-113-129.rdu2.redhat.com [10.10.113.129])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0BDD510013A1;
+        Mon, 20 Apr 2020 13:13:40 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <87imhvj7m6.fsf@cjr.nz>
+References: <87imhvj7m6.fsf@cjr.nz> <CAH2r5mv5p=WJQu2SbTn53FeTsXyN6ke_CgEjVARQ3fX8QAtK_w@mail.gmail.com> <3865908.1586874010@warthog.procyon.org.uk> <927453.1587285472@warthog.procyon.org.uk>
+To:     Paulo Alcantara <pc@cjr.nz>
+Cc:     dhowells@redhat.com, Steve French <smfrench@gmail.com>,
+        linux-nfs <linux-nfs@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>, linux-afs@lists.infradead.org,
+        ceph-devel@vger.kernel.org, keyrings@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, fweimer@redhat.com
+Subject: Re: What's a good default TTL for DNS keys in the kernel
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <08979629-d9b8-6656-222f-4e84667651a1@web.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1136023.1587388420.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Mon, 20 Apr 2020 14:13:40 +0100
+Message-ID: <1136024.1587388420@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 19, 2020 at 06:19:12PM +0200, Markus Elfring wrote:
-> > use devm_platform_ioremap_resource_byname() to simplify code,
-> > it contains platform_get_resource_byname() and
-> > devm_ioremap_resource(), and also remove some duplicate error
-> > message.
-> 
-> How do you think about a wording variant like the following?
-> 
->    Use the function “devm_platform_ioremap_resource_byname” to simplify
->    source code which calls the functions “platform_get_resource_byname”
->    and “devm_ioremap_resource”.
->    Remove also a few error messages which became unnecessary with this
->    software refactoring.
->
-Markus, Thank you very much！yes, your comments is better. I will send
-the patch v2. Thanks again!
+Paulo Alcantara <pc@cjr.nz> wrote:
 
-> 
-> Will any more contributors get into the development mood to achieve
-> similar collateral evolution by the means of the semantic patch language?
-> Would you like to increase applications of the Coccinelle software?
->
-I want, but currently I don't have much free time, sorry！
+> >> For SMB3/CIFS mounts, Paulo added support last year for automatic
+> >> reconnect if the IP address of the server changes.  It also is helpfu=
+l
+> >> when DFS (global name space) addresses change.
+> >
+> > What happens if the IP address the superblock is going to changes, the=
+n
+> > another mount is made back to the original IP address?  Does the secon=
+d mount
+> > just pick the original superblock?
+> =
 
-BR,
-Dejin
-> Regards,
-> Markus
+> It is going to transparently reconnect to the new ip address, SMB share,
+> and cifs superblock is kept unchanged.  We, however, update internal
+> TCP_Server_Info structure to reflect new destination ip address.
+> =
+
+> For the second mount, since the hostname (extracted out of the UNC path
+> at mount time) resolves to a new ip address and that address was saved e=
+arlier
+> in TCP_Server_Info structure during reconnect, we will end up
+> reusing same cifs superblock as per fs/cifs/connect.c:cifs_match_super()=
+.
+
+Would that be a bug?
+
+David
+
