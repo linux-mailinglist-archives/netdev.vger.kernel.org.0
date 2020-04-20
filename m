@@ -2,50 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB1761B1855
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 23:23:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A18C1B185C
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 23:24:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728268AbgDTVXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 17:23:20 -0400
-Received: from mail-vi1eur05on2042.outbound.protection.outlook.com ([40.107.21.42]:29847
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        id S1728284AbgDTVX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 17:23:58 -0400
+Received: from mail-eopbgr30068.outbound.protection.outlook.com ([40.107.3.68]:52910
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726457AbgDTVXU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 17:23:20 -0400
+        id S1726056AbgDTVX5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 17:23:57 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ncrJUEmipH0/Fntr21cdsD71wJGpTfrMzkwEqiDNiM7u8brW15z1DLiNtEITBcKrtBCjSF2Mml0hXh7gQOkg9XQwlx7UeeDhDwt5GYktzf6hcorJYKaqLptvKjJkVmqfeOFPBgQ2W+JQz9vlCJZ5D+WqUiDI40xHtVD0sRf6gGv0UOYO1wgooFZZ0imVcc3xRlgH2VbOCE5sFI8BkcH9bsRG8LqO7peRwoct8M7QkglMIwlRTbmRzg7zpQPs++CJT6YYZBsieF/Bi/LPTgI/xg0oLKuyxYz27Pot+QppSojO/mMKPxjbvT4VBXwWsVIMrq5hjOfhctKmnq31dn/jDQ==
+ b=fMXnq2MelJN5NlHbJ7AtM/7xK/6iZ1KX8u+j64Ern0XMUrUPa3prCPSuC8vF+oF3z8yLbftQhbRVihgY4XQFJxhoyQV8pWqfE/yvWCu0Ws08VILgNiVsP84c+4mMqhI8Wlj+qm6sVa9u/O3I/CZfTKUrtBuctomGuKB7xoL13VwKFoFhMXh46nRyLqRE80Ce3KvoXGyKmOGFW//rUf0ZaluH7U4PNkKs9Y95WwlfQEt2XmYkS4EldHNpv+nex8BE/FrSGwRw5ayyLjZ4SCKEdGt3nY+tXNpiXXIK7eiyJ5Ly2DmhrOHiF7feFAjbqOYIX3KBAesWvFraQmVLF6Ycyg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HyGwYGwCRTjPtIEQ82Spsc3NYfL+kmVx6TcNy/V2L7M=;
- b=N9bfSJfKOQ8Oj9hlutl27WLRr5LlRxbjawjOVzSQfNYTsNv2hTd5jPPwSCQUfUag1ZVEk1VU47mm3hErh5GgJIYeUDObQT5hzdWzFIhbvzJf/WRcmQIgVRDEAVjvzALO5bf6dN8CjIFuQ6SzQEMnyWPLJ0bH264uPq0kyhlO305IhMNxZ0HrO/XavA1c55kwb5vdQsRVmS6g8QXTf8GkOeRIBqIG+xgbye9LZl/3YWR65l0TcMctLPFLSbeJhZfs/3nJ5Qm1LQ+DfoS1EsXuDgLXyXq62ZFib7qX42gjdhdCmFfFtkv2qWw79o04/03u00Addt0kQbJuYiWNbioNbg==
+ bh=q6/knVzbPmrOFjfjjDSorwuQC49iwOEqKl+wa1qmOEI=;
+ b=h1Mths269hSr7KddFk0XebJQqM/zZuEsUefetA7Jr3SsdJkourYWlSFjuo1kDGDjYrrpZsgbdHWR5RZpsyuRqYV5FYObbcW+817FwWHZ+yUYbkmFrOkHpV/3kGED0OYMUaxAMkoaevSDBEyKic8NNCU4q9KlP658JBaOg0hYC2ZdTVWn5Gj719ibwFZbDwIaNwklCfMN1+1+MVVZjcB463wf6C2Bc8RAgwspLxzEiUe2F+iIxJzjfb8lgX3QQINbfKTI/eFPO7iA/vb3Rq3Th8nZRULSzlBJmXpNkNqg36I+B9qHSnPJ6Gu07cnOBEflMvWgAXV0uto+Y7wg5H4VrA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HyGwYGwCRTjPtIEQ82Spsc3NYfL+kmVx6TcNy/V2L7M=;
- b=SzvdWS6eYRcEuN4g2jZScEnnlPDd9E9sZ1lx8aw3zTuGbeiFxxsI00Qzby3rP95guLobvvlUXdJx5Q9cJ5eXJ5ztacMhX9YKFC4wtrXiNN3VJZ3daLB3rcKN0V7SA94+xeOoLJU2RzptueiiTuxF3g4fOdy/8enDXr0SeOtiM10=
+ bh=q6/knVzbPmrOFjfjjDSorwuQC49iwOEqKl+wa1qmOEI=;
+ b=Y8Kj/LnVe7D4jLh5uJRws+3ETBf82OoKZJrYexuh4HirC/u+gTKl1QAH7de4VwbUshcfq47zkhxSHj5F2gjRxF9kCXuCnrZ2phnXVBxePK9NSJ+gTIZYrVS8GTSrAdJGNceSnZeCHhh1bpy8OjKqzSC0004ZjLZSF9ntHs7FCOs=
 Authentication-Results: spf=none (sender IP is )
  smtp.mailfrom=saeedm@mellanox.com; 
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
- by VI1PR05MB6382.eurprd05.prod.outlook.com (2603:10a6:803:ff::14) with
+ by VI1PR05MB6478.eurprd05.prod.outlook.com (2603:10a6:803:f3::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.28; Mon, 20 Apr
- 2020 21:23:17 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.29; Mon, 20 Apr
+ 2020 21:23:20 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2921.027; Mon, 20 Apr 2020
- 21:23:17 +0000
+ 21:23:20 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Parav Pandit <parav@mellanox.com>,
-        Bodong Wang <bodong@mellanox.com>,
+Cc:     netdev@vger.kernel.org, Hu Haowen <xianfengting221@163.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 09/10] net/mlx5: Read embedded cpu bit only once
-Date:   Mon, 20 Apr 2020 14:22:22 -0700
-Message-Id: <20200420212223.41574-10-saeedm@mellanox.com>
+Subject: [net-next 10/10] net/mlx5: improve some comments
+Date:   Mon, 20 Apr 2020 14:22:23 -0700
+Message-Id: <20200420212223.41574-11-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.25.3
 In-Reply-To: <20200420212223.41574-1-saeedm@mellanox.com>
 References: <20200420212223.41574-1-saeedm@mellanox.com>
@@ -56,71 +55,61 @@ X-ClientProxiedBy: BYAPR04CA0032.namprd04.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR04CA0032.namprd04.prod.outlook.com (2603:10b6:a03:40::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.27 via Frontend Transport; Mon, 20 Apr 2020 21:23:15 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR04CA0032.namprd04.prod.outlook.com (2603:10b6:a03:40::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.27 via Frontend Transport; Mon, 20 Apr 2020 21:23:18 +0000
 X-Mailer: git-send-email 2.25.3
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 93969138-ae47-47df-e595-08d7e5710ada
-X-MS-TrafficTypeDiagnostic: VI1PR05MB6382:|VI1PR05MB6382:
+X-MS-Office365-Filtering-Correlation-Id: 479b43d8-f882-4d20-917b-08d7e5710c28
+X-MS-TrafficTypeDiagnostic: VI1PR05MB6478:|VI1PR05MB6478:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB6382EF62903BD7DA4FBB3445BED40@VI1PR05MB6382.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:343;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB6478C58BD2F4BAEF777A7165BED40@VI1PR05MB6478.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
 X-Forefront-PRVS: 03793408BA
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(346002)(396003)(376002)(136003)(39860400002)(366004)(6486002)(54906003)(956004)(186003)(8936002)(16526019)(52116002)(26005)(6512007)(2616005)(81156014)(6506007)(8676002)(478600001)(1076003)(2906002)(36756003)(316002)(4326008)(66476007)(66946007)(66556008)(107886003)(6666004)(86362001)(5660300002)(54420400002);DIR:OUT;SFP:1101;
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(136003)(346002)(376002)(396003)(39860400002)(366004)(107886003)(6506007)(86362001)(2906002)(186003)(16526019)(26005)(4326008)(5660300002)(36756003)(316002)(1076003)(66556008)(478600001)(956004)(6666004)(66946007)(52116002)(66476007)(6512007)(6486002)(2616005)(54906003)(8676002)(8936002)(81156014)(54420400002);DIR:OUT;SFP:1101;
 Received-SPF: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wBSrTq64AoPfgFdPqQyVcHUjUfxmpvEE9o61D6JsYVHvmagHntNew4ALXrWMqMOxeAgqlrcZc33efhexKsli6BjX4IQtxe3G1JWLf3B/D6vyjohOWb69fKyZolyyasu0/5/I0qoo5dN9dPi4fs3gxZbR4DvSHEqO0wjdlF6SNEtnB1kiKEzIgveiaCEc0Y4KP+EF3J+kcvEFff2EqlwAKmsLCAgn/sY3+5HDPJ67ftOM44UHoYU6fc7g884HrJAcakFUmBIIyQu1iibDaCeEJs6dUyLyK4paZNEOnE4l05jDnPY7oZPFRLnAVRFzlXi34kHRN06mmSSg/Ry05XpHH7aVZ4/erxe0rncTzHLfyEVrRnIFNwYga87uIRr6TzZcUV0fYVpuWos4wnpmBExWnV+NXHG3eFyUWDNlkE4Dfl3P3nSFQL8GiYqNd0l/Ib9R+Pu19KBIWicxLkz/DnplrgEUm6MiFQyjcJJOJ11K2UtWyjmH3MVs1BhjAo/1QsZR
-X-MS-Exchange-AntiSpam-MessageData: TX3E/txXUXoP8N64JJEM3PCfGPAM/3Jgnxwmgq5PwvUu0Z9/PF8wlBGp59c/g1/glXdmwScJdLV1evncpsq0cUQY4YLpb6D8Jyz+3AVjG9A7+eEzIWSL7HJQl4UcL3ta5Zg6UymrFz52XKiUfQmocQ==
+X-Microsoft-Antispam-Message-Info: BQFjUKQ0d3gsQAf6fjU2nsJs9iqKYoprJmDfIIscZNmJlxD1rLpzpBoJCRmlgfQmg/1cYG7gWwldzE4B/aMmMLR+5TM4tU4Hb9lttfqeZZvY0IIDtw7hd7VU2LB9JzIMfUU1czdwSMSnvlVFnuruzjcVLJQe6xnmdpa9rGLZHF98PKJCYU2kemKseVp/v/E31n+DR3ZvWTwulKxgfEyDiWlmxrpldQrYOphqj3myyMFTu4jl/kdeKzBUs1Zp7UhLABh6YCvgR2rmejIl7qfNG9FK6rQKUA4sXxzBr+/MwaJVWwEPlu/GMAiq/yBAUqBM0cU7fJrEdCHgD6ljg3I3eEujKmfdplZDBzJey6ZmwcBTR9J6WsrZ/vvD0zQmWBYOZKDvOt3ZGCg+erY3ng9WxQPqmS8kNIfVNso402mN7aKkESsZgWEijKKOX3wlqbofhSzbZpSjMvxb93fK8s1FCU3HQTAGqntTcobUI+LnyNS/KaaujZUp2Bh31qAcbkO4
+X-MS-Exchange-AntiSpam-MessageData: 6+HIubMgU9hVqfKtouKfiVZD5CFH25IDNKP3yk3r92rIW0apIbSr5pZK+UsETek7ls4njVLH7Koy99YL3kBMGCFl78RyjpSbnKhVCOsJJ/GMf5hceL8FrhWuVFGCCN5qedjG4cLH8SR9Q4JHMKjDbA==
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 93969138-ae47-47df-e595-08d7e5710ada
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2020 21:23:17.6784
+X-MS-Exchange-CrossTenant-Network-Message-Id: 479b43d8-f882-4d20-917b-08d7e5710c28
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2020 21:23:19.9152
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CXK1vWdFgi6C9jpB4i8tKfH6LKxWQ9+grQPfoI4me29CA1SWILoWMzouwPrK+NKzGGZ07LEDwQPTAAiyf3ykgQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6382
+X-MS-Exchange-CrossTenant-UserPrincipalName: SOkB6vCAofUUCRLwL3aVBYqcKH2dLS13bBlZKrYg3qq3xW1typBUHq6DPo3UtGNwhrwz7ptbn9RZJ9PHg0D6dw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6478
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Parav Pandit <parav@mellanox.com>
+From: Hu Haowen <xianfengting221@163.com>
 
-Embedded CPU bit doesn't change with PCI resume/suspend.
-Hence read it only once while probing the PCI device.
+Replaced "its" with "it's".
 
-Signed-off-by: Parav Pandit <parav@mellanox.com>
-Reviewed-by: Bodong Wang <bodong@mellanox.com>
+Signed-off-by: Hu Haowen <xianfengting221@163.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 7af4210c1b96..5a97e98e937c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -782,7 +782,7 @@ static int mlx5_pci_init(struct mlx5_core_dev *dev, struct pci_dev *pdev,
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
+index c9c9b479bda5..0a8adda073c2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
+@@ -684,7 +684,7 @@ static void mlx5_fw_tracer_handle_traces(struct work_struct *work)
+ 		get_block_timestamp(tracer, &tmp_trace_block[TRACES_PER_BLOCK - 1]);
  
- 	mlx5_pci_vsc_init(dev);
--
-+	dev->caps.embedded_cpu = mlx5_read_embedded_cpu(dev);
- 	return 0;
- 
- err_clr_master:
-@@ -1180,7 +1180,6 @@ int mlx5_load_one(struct mlx5_core_dev *dev, bool boot)
- {
- 	int err = 0;
- 
--	dev->caps.embedded_cpu = mlx5_read_embedded_cpu(dev);
- 	mutex_lock(&dev->intf_state_mutex);
- 	if (test_bit(MLX5_INTERFACE_STATE_UP, &dev->intf_state)) {
- 		mlx5_core_warn(dev, "interface is up, NOP\n");
+ 	while (block_timestamp > tracer->last_timestamp) {
+-		/* Check block override if its not the first block */
++		/* Check block override if it's not the first block */
+ 		if (!tracer->last_timestamp) {
+ 			u64 *ts_event;
+ 			/* To avoid block override be the HW in case of buffer
 -- 
 2.25.3
 
