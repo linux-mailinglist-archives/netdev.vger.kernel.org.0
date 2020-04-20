@@ -2,94 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73A3D1B0A9D
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 14:51:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 867911B0B2A
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 14:54:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729420AbgDTMt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 08:49:27 -0400
-Received: from correo.us.es ([193.147.175.20]:60226 "EHLO mail.us.es"
+        id S1729659AbgDTMyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 08:54:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50414 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729403AbgDTMtY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 08:49:24 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id C654BB4975
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 14:49:22 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id B7F1B100789
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 14:49:22 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 9D9EC100788; Mon, 20 Apr 2020 14:49:22 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id AAB74FA525;
-        Mon, 20 Apr 2020 14:49:20 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 20 Apr 2020 14:49:20 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
+        id S1728950AbgDTMxv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 08:53:51 -0400
+Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 894D742EF42A;
-        Mon, 20 Apr 2020 14:49:20 +0200 (CEST)
-Date:   Mon, 20 Apr 2020 14:49:20 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Edward Cree <ecree@solarflare.com>,
-        netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org
-Subject: Re: [PATCH net] net: flow_offload: skip hw stats check for
- FLOW_ACTION_HW_STATS_DISABLED
-Message-ID: <20200420124920.j3edwvc5fwobqhyg@salvia>
-References: <20200419115338.659487-1-pablo@netfilter.org>
- <20200420080200.GA6581@nanopsycho.orion>
- <20200420090505.pr6wsunozfh7afaj@salvia>
- <20200420091302.GB6581@nanopsycho.orion>
- <20200420100341.6qehcgz66wq4ysax@salvia>
- <20200420115210.GE6581@nanopsycho.orion>
- <3980eea4-18d8-5e62-2d6d-fce0a7e7ed4c@solarflare.com>
- <20200420123611.GF6581@nanopsycho.orion>
+        by mail.kernel.org (Postfix) with ESMTPSA id AAE1C206DD;
+        Mon, 20 Apr 2020 12:53:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587387231;
+        bh=AqeoMsaREBe+ByYuI8OlaAnafpi4yqJaR+sdlU66q9E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gExvF0YWY7t5RpU5+awzuSaCYAQbIPLTySe7GqX5OKMa9TZjZIOx+lrtjiXGgPd4O
+         fsWs7So0kA9LO2Mqb/p+Fxleb/Gk2qx/dYRSPvMHlCcCTPLY4aR/iimh6lWug8aj57
+         GVWFQTN+uvqBcbzidArAttUIrfcTRfZ+k/NKNwAo=
+Date:   Mon, 20 Apr 2020 08:53:49 -0400
+From:   Sasha Levin <sashal@kernel.org>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     Or Gerlitz <gerlitz.or@gmail.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stable <stable@vger.kernel.org>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        David Miller <davem@davemloft.net>
+Subject: Re: [PATCH AUTOSEL 4.9 09/26] net/mlx5e: Init ethtool steering for
+ representors
+Message-ID: <20200420125349.GI1809@sasha-vm>
+References: <CAJ3xEMh=PGVSddBWOX7U6uAuazJLFkCpWQNxhg7dDRgnSdQ=xA@mail.gmail.com>
+ <20200414110911.GA341846@kroah.com>
+ <CAJ3xEMhnXZB-HU7aL3m9A1N_GPxgOC3U4skF_qWL8z3wnvSKPw@mail.gmail.com>
+ <a89a592a-5a11-5e56-a086-52b1694e00db@solarflare.com>
+ <20200414205755.GF1068@sasha-vm>
+ <41174e71-00e1-aebf-b67d-1b24731e4ab3@solarflare.com>
+ <20200416000009.GL1068@sasha-vm>
+ <779d89c8-1e49-fbb6-8b4f-824767d70cc2@solarflare.com>
+ <20200416184924.GN1068@sasha-vm>
+ <c9496a54-1b68-5d49-6866-d357c75f7a82@solarflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200420123611.GF6581@nanopsycho.orion>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <c9496a54-1b68-5d49-6866-d357c75f7a82@solarflare.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 20, 2020 at 02:36:11PM +0200, Jiri Pirko wrote:
-> Mon, Apr 20, 2020 at 02:28:22PM CEST, ecree@solarflare.com wrote:
-> >On 20/04/2020 12:52, Jiri Pirko wrote:
-> >> However for TC, when user specifies "HW_STATS_DISABLED", the driver
-> >> should not do stats.
-> >What should a driver do if the user specifies DISABLED, but the stats
-> > are still needed for internal bookkeeping (e.g. to prod an ARP entry
-> > that's in use for encapsulation offload, so that it doesn't get
-> > expired out of the cache)?  Enable the stats on the HW anyway but
-> > not report them to FLOW_CLS_STATS?  Or return an error?
-> 
-> If internally needed, it means they cannot be disabled. So returning
-> error would make sense, as what the user requested is not supported.
+On Mon, Apr 20, 2020 at 12:45:36PM +0100, Edward Cree wrote:
+>On 16/04/2020 19:49, Sasha Levin wrote:
+>> Just a question while I process your explanation (thanks for doing it!):
+>> wouldn't this be done by the neural network?
+>Yes, in the basic case.  (Hopefully we're agreed that this is a long way
+> from "I'm not sure what a fixes tag has to do with inclusion in a stable
+> tree.", which is how this whole brouhaha started.)
 
-Hm.
+My point was more that having or not having a fixes tag on it's own
+doesn't guarantee inclusion in the stable trees - that's why we have and
+explicit stable tag. What was said was (for me) the equivalent of "my
+commit message contains the word 'panic', why wasn't it picked?"
 
-Then, if the user disables counters but there is internal dependency
-on them, the tc rule fails to be loaded for this reason.
+A Fixes tag affects the probability of a commit being picked up by
+AUTOSEL, yes, but it's not a reliable way to include or exclude patches
+from the stable tree.
 
-After this the user is forced to re-load the rule, specifying enable
-counters.
+It may also sound counter-intuitive but my long term plan (hope) is for
+AUTOSEL to die because maintainers got better at tagging patches. I
+don't want to keep doing this forever :)
 
-Why does the user need to force in this case to reload? It seems more
-natural to me to give the user what it is requesting (disabled
-counters / front-end doesn't care) and the driver internally allocates
-the resources that it needs (actually turn them on if there is a
-dependency like tunneling).
+>> It learns what a stable worthy commit is (and what isn't), and applies
+>> weights based on these findings, right? So if it learns that most
+>> non-stable commits don't have a fixes tag, it's likely to use that and
+>> "require" other inputs to have enough weight to compensate over a
+>> missing fixes tag so that it'll pass the threshold, no?
+>Yes.  The problem comes when there are other inputs the NN doesn't have,
+> that ought to screen off some of the information it's using.  This is
+> probably best illustrated by an unrealistic extreme case...
+
+It's actually not that unrealistic. We have a few subsystems that
+do a great job with patch selection, and I usually don't find any other
+patches to pick up from there, while some other subsystems in the kernel
+require us to pick almost every patch that flows in there (think files
+that contain device quirks for example).
+
+I've tried to address that by also including the modified filename into
+the inputs of the NN, so that the NN is better at acting differently
+based on the subsystem/filename being patched.
+
+For mlx5, for example, there are two ways it would differentiate it from
+everything else:
+
+ - Commit subject lines usually start with net/mlx5, which is used as
+   input to the NN.
+ - Filenames touch drivers/net/ethernet/mellanox/mlx5/*
+
+Anyway, yes - I understand your bigger point here around missing
+information from the NN. I'd like to think that based on previous
+experience it does a good job of balancing everything, but I might be
+mistaken.
+
+>Let's imagine hypothetically that the maintainer of drivers/blub is an
+> absolutely perfect judge of which patches should go to -stable, and
+> that the transmission path from him to the stable trees never loses a
+> patch.  This would mean that every autosel patch in drivers/blub is
+> necessarily a false positive, because all the 'true positives' it might
+> have found have already been taken out of the pool, so to speak.  But
+> if the NN is just trained to discriminate patches on whether they end
+> up going to stable, it won't see any difference between a drivers/blub
+> patch that the maintainer sent to stable straight away and a
+> drivers/wibble patch that the latter's less diligent maintainer didn't
+> forward and that only got picked up later when a stable kernel user
+> encountered the bug it was fixing.
+>As long as the NN doesn't have that piece of information, it's going to
+> either generate lots of false positives in drivers/blub or lots of
+> false negatives in drivers/wibble.
+>Now obviously drivers/blub doesn't exist, no maintainer is 100% perfect
+> at -stable submissions; but any difference will produce the same
+> effect on a smaller scale, with the 'blubbish' maintainers seeing a
+> high false positive fraction while from the 'wibblesome' maintainer's
+> point of view autosel is working great.  And since the 'blubs' are the
+> ones who're putting effort of their own into stable selection already,
+> they get aggrieved at having to also put effort into catching the
+> false positives from a system that doesn't seem to be doing much for
+> them, and everyone ends up shouting at each other as we're seeing here.
+>
+>(Do you want me to do another worked numerical example demonstrating the
+> above, or does it make enough sense in words not to need one?)
+
+Nope, the example above works, thanks!
+
+-- 
+Thanks,
+Sasha
