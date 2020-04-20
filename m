@@ -2,106 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AB3B1B118E
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 18:28:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DEA71B11A7
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 18:35:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729495AbgDTQ2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 12:28:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39868 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729562AbgDTQ14 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 12:27:56 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B45A6C061A0F
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 09:27:55 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id z6so224477wml.2
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 09:27:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=VHdsdAesxb897xNk78shOA6FsoU13ElE8ZB5Lp98kWY=;
-        b=m4wivmyT7DmkQWTH7q5hrgxDzraOIY7E0Ho7JlXDE13FlFqoEG6NIYYWRfRxrADeSp
-         KBZX9J851yXkMx7SMYZ2ufcq1sKCcako/5O3vuWsiRr5vf6uYi13P/9E1bcMFC5YGcp5
-         q1pSIfacU19NcozOG00YoMMCHvdC0dYx81lWJp0XngCgI4yAeuzhS//VzgrLVJ7epAGv
-         8vNGBJwEDnwdXFdxD4wouczIV2xEipfE3Q+zXNzJBoxnrs0GUbg1eapROL+l8Xrhe44C
-         GxxP8wRL3PgbBMc+3II36aHn22llRTBusFSrfrQJVZVmn6str6l+WfDYdv2Bk1qUtL0Q
-         k0ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=VHdsdAesxb897xNk78shOA6FsoU13ElE8ZB5Lp98kWY=;
-        b=jjJRib556ufK5GhV2QmS109e5gZDOAS7Cg1yHlzJdOImxdrgOvSSmmtFqt8EbrV0KN
-         RZ8unwGiOvG2DYsT38x4eePN0nQl1a3uHKf8zduNqt6X6tspyRUHFmFR/mCG11R4k6Og
-         2+i5XM2ZOFdplDtKNBT6MOzpdcrbN+D995N80WY6o5ZMtgNWFNwFG4r1L1Fovigcc5Y2
-         D988MyWI+deWT1Dt9mEFeLX2elLMSPB0D0cZCOYrbukdsWtU+zMf/jqtZIvbTRV4/Src
-         yRi0BBtudC9lXE8CEZb8u2D+2fN4uJ/PF57QLE9zpupQ0gK7Xjfck0inVraefmDkgW2C
-         WTvA==
-X-Gm-Message-State: AGi0PuZJtX3bZbVlEmjpUlWqNTKZ7T5yWZwX8fOWzNoKNaVnjPB+qtJu
-        yZDTjjvMTgG0tkPsv+FXk3o=
-X-Google-Smtp-Source: APiQypLxbyru6QpjP8D45VkPK3cDQGjbku+8+DbylbT8a13x1A3lOzQb4b6QHAyim+IbCWH0R2PdgQ==
-X-Received: by 2002:a05:600c:2314:: with SMTP id 20mr137203wmo.35.1587400074451;
-        Mon, 20 Apr 2020 09:27:54 -0700 (PDT)
-Received: from localhost.localdomain ([188.25.102.96])
-        by smtp.gmail.com with ESMTPSA id 185sm146245wmc.32.2020.04.20.09.27.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2020 09:27:53 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     idosch@idosch.org, allan.nielsen@microchip.com,
-        horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
-        antoine.tenart@bootlin.com, andrew@lunn.ch, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, joergen.andreasen@microchip.com,
-        claudiu.manoil@nxp.com, UNGLinuxDriver@microchip.com,
-        alexandru.marginean@nxp.com, xiaoliang.yang_1@nxp.com,
-        yangbo.lu@nxp.com, po.liu@nxp.com, jiri@mellanox.com,
-        kuba@kernel.org
-Subject: [PATCH net-next 3/3] net: mscc: ocelot: lift protocol restriction for flow_match_eth_addrs keys
-Date:   Mon, 20 Apr 2020 19:27:43 +0300
-Message-Id: <20200420162743.15847-4-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200420162743.15847-1-olteanv@gmail.com>
-References: <20200420162743.15847-1-olteanv@gmail.com>
+        id S1726493AbgDTQfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 12:35:17 -0400
+Received: from smtprelay0171.hostedemail.com ([216.40.44.171]:38196 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725287AbgDTQfR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 12:35:17 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay03.hostedemail.com (Postfix) with ESMTP id C26278384364;
+        Mon, 20 Apr 2020 16:35:15 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 30,2,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:491:599:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1543:1593:1594:1605:1711:1730:1747:1777:1792:2194:2199:2393:2553:2559:2562:2691:2828:2892:2907:3138:3139:3140:3141:3142:3622:3743:3865:3866:3867:3868:3870:3871:3872:3874:4250:4321:5007:6119:6120:6248:6691:6742:7903:7904:9040:10004:10400:10848:11232:11658:11914:12043:12109:12219:12296:12297:12555:12740:12760:12895:13138:13153:13161:13228:13229:13231:13439:14096:14097:14181:14659:14721:21063:21080:21433:21627:21796:21939:30036:30045:30046:30054:30056:30074:30075:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: lock50_4abfde65a5055
+X-Filterd-Recvd-Size: 4328
+Received: from XPS-9350.home (unknown [47.151.136.130])
+        (Authenticated sender: joe@perches.com)
+        by omf02.hostedemail.com (Postfix) with ESMTPA;
+        Mon, 20 Apr 2020 16:35:13 +0000 (UTC)
+Message-ID: <7d6019da19d52c851d884731b1f16328fdbe2e3d.camel@perches.com>
+Subject: Re: [RFC PATCH bpf-next 0/6] bpf, printk: add BTF-based type
+ printing
+From:   Joe Perches <joe@perches.com>
+To:     Alan Maguire <alan.maguire@oracle.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com, kafai@fb.com,
+        songliubraving@fb.com, andriin@fb.com, john.fastabend@gmail.com,
+        kpsingh@chromium.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Date:   Mon, 20 Apr 2020 09:32:57 -0700
+In-Reply-To: <alpine.LRH.2.21.2004201623390.12711@localhost>
+References: <1587120160-3030-1-git-send-email-alan.maguire@oracle.com>
+         <20200418160536.4mrvqh2lasqbyk77@ast-mbp>
+         <alpine.LRH.2.21.2004201623390.12711@localhost>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.34.1-2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Mon, 2020-04-20 at 16:29 +0100, Alan Maguire wrote:
+> On Sat, 18 Apr 2020, Alexei Starovoitov wrote:
+> 
+> > On Fri, Apr 17, 2020 at 11:42:34AM +0100, Alan Maguire wrote:
+> > > The printk family of functions support printing specific pointer types
+> > > using %p format specifiers (MAC addresses, IP addresses, etc).  For
+> > > full details see Documentation/core-api/printk-formats.rst.
+> > > 
+> > > This RFC patchset proposes introducing a "print typed pointer" format
+> > > specifier "%pT<type>"; the type specified is then looked up in the BPF
+> > > Type Format (BTF) information provided for vmlinux to support display.
+> > 
+> > This is great idea! Love it.
+> > 
+> 
+> Thanks for taking a look!
+>  
+> > > The above potential use cases hint at a potential reply to
+> > > a reasonable objection that such typed display should be
+> > > solved by tracing programs, where the in kernel tracing records
+> > > data and the userspace program prints it out.  While this
+> > > is certainly the recommended approach for most cases, I
+> > > believe having an in-kernel mechanism would be valuable
+> > > also.
+> > 
+> > yep. This is useful for general purpose printk.
+> > The only piece that must be highlighted in the printk documentation
+> > that unlike the rest of BPF there are zero safety guarantees here.
+> > The programmer can pass wrong pointer to printk() and the kernel _will_ crash.
+> > 
+> 
+> Good point; I'll highlight the fact that we aren't
+> executing in BPF context, no verifier etc.
+> 
+> > >   struct sk_buff *skb = alloc_skb(64, GFP_KERNEL);
+> > > 
+> > >   pr_info("%pTN<struct sk_buff>", skb);
+> > 
+> > why follow "TN" convention?
+> > I think "%p<struct sk_buff>" is much more obvious, unambiguous, and
+> > equally easy to parse.
+> > 
+> 
+> That was my first choice, but the first character
+> after the 'p' in the '%p' specifier signifies the
+> pointer format specifier. If we use '<', and have
+> '%p<', where do we put the modifiers? '%p<xYz struct foo>'
+> seems clunky to me.
 
-An attempt was made in commit fe3490e6107e ("net: mscc: ocelot: Hardware
-ofload for tc flower filter") to avoid clashes between MAC_ETYPE rules
-and IP rules. Because the protocol blacklist should have included
-ETH_P_ALL too, it created some confusion, but now the situation should
-be dealt with a bit better by the patch immediately previous to this one
-("net: mscc: ocelot: refine the ocelot_ace_is_problematic_mac_etype
-function").
+While I don't really like the %p<struct type> block,
+it's at least obvious what's being attempted.
 
-So now we can remove that check. MAC_ETYPE rules with a protocol of
-ETH_P_IP, ETH_P_IPV6, ETH_P_ARP and ETH_P_ALL _are_ supported, with some
-restrictions regarding per-port exclusivity which are enforced now.
+Modifiers could easily go after the <struct type> block.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/ethernet/mscc/ocelot_flower.c | 5 -----
- 1 file changed, 5 deletions(-)
+It appears a %p<struct type> output might be a lot of
+total characters so another potential issue might be
+the maximum length of each individual printk.
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
-index 67f0f5455ff0..5ce172e22b43 100644
---- a/drivers/net/ethernet/mscc/ocelot_flower.c
-+++ b/drivers/net/ethernet/mscc/ocelot_flower.c
-@@ -87,11 +87,6 @@ static int ocelot_flower_parse(struct flow_cls_offload *f,
- 		     BIT(FLOW_DISSECTOR_KEY_CONTROL)))
- 			return -EOPNOTSUPP;
- 
--		if (proto == ETH_P_IP ||
--		    proto == ETH_P_IPV6 ||
--		    proto == ETH_P_ARP)
--			return -EOPNOTSUPP;
--
- 		flow_rule_match_eth_addrs(rule, &match);
- 		ace->type = OCELOT_ACE_TYPE_ETYPE;
- 		ether_addr_copy(ace->frame.etype.dmac.value,
--- 
-2.17.1
+> > I like the choice of C style output, but please format it similar to drgn. Like:
+> > *(struct task_struct *)0xffff889ff8a08000 = {
+> > 	.thread_info = (struct thread_info){
+> > 		.flags = (unsigned long)0,
+> > 		.status = (u32)0,
+> > 	},
+> > 	.state = (volatile long)1,
+> > 	.stack = (void *)0xffffc9000c4dc000,
+> > 	.usage = (refcount_t){
+> > 		.refs = (atomic_t){
+> > 			.counter = (int)2,
+> > 		},
+> > 	},
+> > 	.flags = (unsigned int)4194560,
+> > 	.ptrace = (unsigned int)0,
+
+And here, the issue might be duplicating the log level
+for each line of output and/or prefixing each line with
+whatever struct type is being dumped as interleaving
+with other concurrent logging is possible.
+
+Here as well the individual field types don't contain
+enough information to determine if a field should be
+output as %x or %u.
+
 
