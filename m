@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDDC21B02A7
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 09:17:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5498D1B0294
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 09:17:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726432AbgDTHQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 03:16:28 -0400
-Received: from mail-co1nam11on2115.outbound.protection.outlook.com ([40.107.220.115]:9664
-        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726147AbgDTHQX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726359AbgDTHQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 20 Apr 2020 03:16:23 -0400
+Received: from mail-bn7nam10on2139.outbound.protection.outlook.com ([40.107.92.139]:45312
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725773AbgDTHQW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 03:16:22 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oYRtlngSVn8ezUrM5WryFSIT6hZhPdfuuiX/ktGIGMx7XpmXczJKfli6ORG7i4x6yuLtekpW7MGXa8P1qF+DtqhfGm6qks5k+ugeFrRZZ2S24yd19+uNFRayok+NybW+nLCxM2nn3Vi0m54kFpNDx7ab1w+4NLfXoZg/CRrWFdmEHyIjbYYUsKS6yD1XwTaateGi1f2iyhLX6BL/PHN6EDQAjl6wzTrHo0e0uEjvq7HJJ3gaqnc35IQXnKCxppxWYGZ6xm/ENrCrhAM0SMH7pMRkwd+951J1ooJ6ej7PnAP4EVxVW7vRFHovW3N9TGvm/ZVkqxOL4uD4cC8Rh9eINw==
+ b=mMZxtmgcFEwXlOQN3NZJeESwjTXvcSk21FrnNGhcOGc0NXebgv4RWmCkM5mLCFzTZVKo7ZZuXWVs54ctysP+ut+LeEHnDmRu6qILSPRi4g2Y6g+t5FAor/l4BoMal22ZxuXZ0o8lcHQ09S8TdINTN7glhWJoZfC5wLaxl7LrGry7HbTIdWsPS6WH5qOY6IW/9HI29J0ti3+GYmGjwUE8abuFzEwR7yE6/A8BOc+mszyNxBkwgFAxBMRSsvydfRLs71QogTGjNvYpi/Adhp/KkfZA/eZlVUmeKk8y/gXSizIVvdROasCWjhSlgk0ubM1aelL4S2ItxqLNz28mtOQXXw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KxGBEzQn5cuKkX7mLr+s7bTq6EpNG8Hh4TggrLFv1+M=;
- b=ITod/aAs8rFqpygPAAt9e9jX6rmKrGPNVLBWJp9gfvDBPlzBqU7oAOxcnJCQqcP51X9GcEQ6o80LGuMovOlYrlj/sPJi91Y/iY6w3I6YcgZCwFd7Oks5dXPesk++NEgcGsStsBioUCDnnqn1DG7+68CRgi9w8MiMJmVIJK4pmsNgVfkuVjN/seRnYW0CWZeE9WVktKDB9/Ia/5Z3VlJWUkWhHzkWlkG/V+8EXnc/pyyBf0GWD4RfT4Ey9YBJ7lC8qCytatKAoS1QzVbsEF/gPKQwmFSwuSOP0lTEwHjzpq8beJTmSDGaSr5gOxb8Nf7e5+HZpOX0a7phjjYM5Wg8Dw==
+ bh=ZOYvnp7bJqq5anIhuffI1wsXH6vHP2jlj1SDx9yGSv8=;
+ b=LZuEPUzNXJ4d6Dn29tTBbittAhHKB3bmEc4JDeiQThUd8ZloiuIqiP67h3xhl+ckigFxWfm89MxiGMYydLE/nk5JPTjyRwIgeyUrrYAxJ8DB8aMH2G+KsaIUYU6gAAgxb2rXgQHQmB0fB/PegCis6MViS2HASLBEc9OK6BbJlvabZzadeA2tsFjQX44u6297TnRGjK+QTK0aQWN0FHqwxOu/zLN56ADiItLK9p9wTYcGsQmyZiORRzmvcV0C2h2wj3FgkB7o0JwW3IKLBjG1JUmSyAm4ddibKihD3y81Rkr1ACMnuj6oOvl0LAt7Ka/U2ePpw2RCtJeDFUsXiGzQ8w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  204.77.163.244) smtp.rcpttodomain=zeniv.linux.org.uk
  smtp.mailfrom=garmin.com; dmarc=pass (p=quarantine sp=quarantine pct=20)
@@ -26,17 +26,17 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garmin.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KxGBEzQn5cuKkX7mLr+s7bTq6EpNG8Hh4TggrLFv1+M=;
- b=k9EENX3dnEjzvCQU8w4pSxPqAnh9dg+h4xshaAGwTaL/iWcbiLyRlRo+pkVA7zbL2rX0mSiyFCEe4qiuTVomoc5VOO8km8+tLm8+3igRz6uU1gW/eb8UuHYsnhZf6gxYvHJ9jAGR+L1cHBnVmU+auSJwC1SN1D9oLIcAZB7W3o2a5eR8Do39A8XChO6kb+8AHZjksGailV8OhAJsQEWQjLtLMIEa3UOZvL/Di7H5I6u5Ecnhy5qkg2EAjWOzxcEL1CqI1ldVKrSQmXb7nLB5+HlYpfHBRMbV6KgZAZwxgHU2ZMulaZRut8/+4xJYLirPUlp1BmhKMRJeP3EbfB6M4g==
-Received: from MWHPR10CA0052.namprd10.prod.outlook.com (2603:10b6:300:2c::14)
- by BN3PR04MB2242.namprd04.prod.outlook.com (2a01:111:e400:7bb8::11) with
+ bh=ZOYvnp7bJqq5anIhuffI1wsXH6vHP2jlj1SDx9yGSv8=;
+ b=GD2rUKFQHpPI28/vU5DE0lbVWY/TIq+0dJEorFtSomb/XynkllZxnl7ZWTTS+j4xyGLZJGtvaMCiGgPJYsCgS8vluppKNGTPjwGC11P7PzDoyYRx2bvQQIQERPl34wklBe2w/QDB++AaLOaNM+JtwggExobZ/zsD4xuLd9LH5xz5FgnclvH1cSpx1QXGHXGd6TSWaWkmxJlbdujLLMNldZg7V0to2fk7e6kkRyOp26ajHt57zPh6zhEWdp2X41bwN896tsiKDaDBcDsce4pgdWvyBAy/gDAwbLrLwRz+Cl+6JuVjdXW1Hnfo8UHb7jC0wZBnMQwa9MXgO0tqM0jCDA==
+Received: from CO2PR05CA0089.namprd05.prod.outlook.com (2603:10b6:104:1::15)
+ by MN2PR04MB5630.namprd04.prod.outlook.com (2603:10b6:208:ff::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.29; Mon, 20 Apr
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2900.26; Mon, 20 Apr
  2020 07:16:18 +0000
-Received: from MW2NAM10FT022.eop-nam10.prod.protection.outlook.com
- (2603:10b6:300:2c:cafe::d2) by MWHPR10CA0052.outlook.office365.com
- (2603:10b6:300:2c::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.25 via Frontend
+Received: from MW2NAM10FT016.eop-nam10.prod.protection.outlook.com
+ (2603:10b6:104:1:cafe::fd) by CO2PR05CA0089.outlook.office365.com
+ (2603:10b6:104:1::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.6 via Frontend
  Transport; Mon, 20 Apr 2020 07:16:18 +0000
 Authentication-Results: spf=pass (sender IP is 204.77.163.244)
  smtp.mailfrom=garmin.com; zeniv.linux.org.uk; dkim=none (message not signed)
@@ -46,11 +46,11 @@ Received-SPF: Pass (protection.outlook.com: domain of garmin.com designates
  204.77.163.244 as permitted sender) receiver=protection.outlook.com;
  client-ip=204.77.163.244; helo=edgetransport.garmin.com;
 Received: from edgetransport.garmin.com (204.77.163.244) by
- MW2NAM10FT022.mail.protection.outlook.com (10.13.155.101) with Microsoft SMTP
+ MW2NAM10FT016.mail.protection.outlook.com (10.13.155.169) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
  15.20.2921.25 via Frontend Transport; Mon, 20 Apr 2020 07:16:17 +0000
 Received: from OLAWPA-EXMB7.ad.garmin.com (10.5.144.21) by
- olawpa-edge3.garmin.com (10.60.4.226) with Microsoft SMTP Server
+ olawpa-edge2.garmin.com (10.60.4.35) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
  15.1.1466.3; Mon, 20 Apr 2020 02:16:16 -0500
 Received: from ola-d01c000-vm.ad.garmin.com (10.5.84.15) by
@@ -75,9 +75,9 @@ To:     Alexander Viro <viro@zeniv.linux.org.uk>,
         <linux-kernel@vger.kernel.org>
 CC:     Changli Gao <xiaosuo@gmail.com>,
         Nate Karstens <nate.karstens@garmin.com>
-Subject: [PATCH 2/4] fs: Add O_CLOFORK flag for open(2) and dup3(2)
-Date:   Mon, 20 Apr 2020 02:15:46 -0500
-Message-ID: <20200420071548.62112-3-nate.karstens@garmin.com>
+Subject: [PATCH 3/4] fs: Add F_DUPFD_CLOFORK to fcntl(2)
+Date:   Mon, 20 Apr 2020 02:15:47 -0500
+Message-ID: <20200420071548.62112-4-nate.karstens@garmin.com>
 X-Mailer: git-send-email 2.26.1
 In-Reply-To: <20200420071548.62112-1-nate.karstens@garmin.com>
 References: <20200420071548.62112-1-nate.karstens@garmin.com>
@@ -87,227 +87,102 @@ Content-Type: text/plain
 X-ClientProxiedBy: OLAWPA-EXMB3.ad.garmin.com (10.5.144.15) To
  OLAWPA-EXMB7.ad.garmin.com (10.5.144.21)
 X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25366.005
-X-TM-AS-Result: No-9.399500-8.000000-10
-X-TMASE-MatchedRID: 9FKQq2Ubc8b1HKFnt7/e8tKhw1CGAxrIlHLUcNM85doAZTQQTIkkc93N
-        NJQDizxeGDXccV5w1UP1q35E6lDQr2+4O3SBmLlW9u1rQ4BgXPIBmf/gD11vZAaYevV4zG3ZQBz
-        oPKhLashZ3hT8koiLOx4fZrHGL7yoEVfyWRZcVuVZMZ6MZ0H1UhACJh4BWAPePTublrdV/SPAgD
-        8QYQcBsjk4XrS69X2i0/NbBMSkGddoWWTS0CIqzlgUnyU84hcfquFC73XPA2ffc2Xd6VJ+ym9Ih
-        irTclUbTnj5SlaoRXUaH2v8HV+LCsBvT9NZRcVl4vM1YF6AJbbCCfuIMF6xLcK21zBg2KlfFAQv
-        QYa7pIOjr4CAOuztuw1Dkx0IaMzoPwR95aMFg0Nbic5W0OLHgw==
+X-TM-AS-Result: No-5.713000-8.000000-10
+X-TMASE-MatchedRID: eeq60RTJBf0Y5XJhZJs6SDCMW7zNwFaIvj5VWb6CNmV+SLLtNOiBhgml
+        i9Nhz+dFfGzuoVn0Vs6PQi9XuOWoOHI/MxNRI7UkzNIobH2DzGExgXFacxiSBt9zZd3pUn7Kg7l
+        N9LOvFDucmKqWNzxVSaWKPIetqooLqNz1cokKoAVCOHkvZleP7OuLFZZYlisfHxPMjOKY7A9qHX
+        ONfTwSQsRB0bsfrpPIXzYxeQR1Dvs+lQOfpVOOU1nQzOr+jM9o0Y74GdR0vcESeUlcAF2N8EW/6
+        xYikolL
 X-TM-AS-User-Approved-Sender: No
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--9.399500-8.000000
+X-TMASE-Result: 10--5.713000-8.000000
 X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25366.005
 X-EOPAttributedMessage: 0
 X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:204.77.163.244;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:edgetransport.garmin.com;PTR:extedge.garmin.com;CAT:NONE;SFTY:;SFS:(10019020)(346002)(396003)(39860400002)(136003)(376002)(46966005)(2906002)(86362001)(5660300002)(4326008)(82740400003)(44832011)(1076003)(478600001)(186003)(36756003)(26005)(356005)(7636003)(426003)(2616005)(336012)(54906003)(70206006)(70586007)(6666004)(47076004)(7696005)(110136005)(8676002)(7416002)(246002)(8936002)(107886003)(316002)(921003);DIR:OUT;SFP:1102;
+X-Forefront-Antispam-Report: CIP:204.77.163.244;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:edgetransport.garmin.com;PTR:extedge.garmin.com;CAT:NONE;SFTY:;SFS:(10019020)(376002)(39860400002)(346002)(136003)(396003)(46966005)(110136005)(54906003)(86362001)(2906002)(8676002)(107886003)(36756003)(47076004)(70586007)(70206006)(1076003)(316002)(5660300002)(2616005)(246002)(7636003)(7696005)(8936002)(356005)(6666004)(4326008)(44832011)(186003)(26005)(478600001)(82740400003)(426003)(336012)(7416002)(921003);DIR:OUT;SFP:1102;
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2505f673-7eb2-4b32-c190-08d7e4fab80a
-X-MS-TrafficTypeDiagnostic: BN3PR04MB2242:
-X-Microsoft-Antispam-PRVS: <BN3PR04MB224227376F5CE68D10F125D39CD40@BN3PR04MB2242.namprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Office365-Filtering-Correlation-Id: 890b902e-1863-4a1f-367e-08d7e4fab838
+X-MS-TrafficTypeDiagnostic: MN2PR04MB5630:
+X-Microsoft-Antispam-PRVS: <MN2PR04MB56304E8E37277EE48279BD689CD40@MN2PR04MB5630.namprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
 X-Forefront-PRVS: 03793408BA
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6Znyy5NvGD3VCN/zcDlmuOhWEz7295J1Hw0NUT2P895wP7PAC7bn//oggDs3kB6EhF4+qSUr8Fzy65VyDmgNKUye7cBwdSw9CG97N5CcUMTiUqQFM1anq6SMNhcNM6+rQCgsF1YNcXJDKgNXpPfwHAShZwguNIp0bIfqdhRWER1ZQwpwMLzcsqeaOH88axEJ6L2LwN05E0RZaCWsa1WmMPRT0AZSzJfwaKsRHDpvX0fA9qCeu5UPMUWrGpGHy3pf/l7ntGTt7EHTjYBiKpUI32rw1v2Uj/351M9agkiRwasVbMoh81wX3RKl99QXLgsKLUVW3ZFnonykTjzosBkF13qSqjJ2yJfmOCYc8mbhWv8aAKXhmmTwqy6KNyh3DtRs56Gaj92+MsBvYsDpS5SJcz4zt0Y/WwG86R6sEzi0fFbEriSQFV9IHAvH4SdlR9lmQ0ieBewan2mQidqglo7SOaeKSQkOOcIAazw3TCWOrUHxG+Rwk+XhqRQYEPl2U2JSE51VYLyO0ARotpwYryzlfw==
+X-Microsoft-Antispam-Message-Info: 63nbtYsEnWbgMp1mOgFKnp2HufTuWZry0p8SAGgeBNVv6Chc4EGItGv2W+jfFI8nNl0Fb0yvc//pYPuK6ZfN7gOSNzqc2FqW9fzK+KOZzA4K0T0PZZzO+9PH3I0NLkPifP8RkcdjSJgGLEnKuWm253bJJyeU99b2S8v4b8oTuaUMhoNB+CjXiHiYo+vuvxebtfwuKPfS/S/6AYaWU/RCO2wV9HnP4OFJepRfniCxL2D5jlPMZP/bif0nNJdgB3jXGkDf/GR2GZn6XRDvxIeeUu+aUDbW4LViaECJtHj5YvwEJuNHomD12vCsyBAwPe2OUrGsTK+OHTzcICPWUWMF3X9gMsBIRlIqI/l0MayalY2CR4u3/ulfVuvQ66lkZHzGWBhsa95eejQ4BgWmtI1WoRiJM+/vN5O+3Vk2e8kNV365PBdFwRzVuaeJumljpjEiFXRPCWOoCqUBUEkIaNK1clTYDJaCxn3c4Gx71Z3sAmofIsTUaRBjw+aTHs/EwtZqxooIohIItFBvv9440dPEog==
 X-OriginatorOrg: garmin.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2020 07:16:17.5554
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2020 07:16:17.8533
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2505f673-7eb2-4b32-c190-08d7e4fab80a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 890b902e-1863-4a1f-367e-08d7e4fab838
 X-MS-Exchange-CrossTenant-Id: 38d0d425-ba52-4c0a-a03e-2a65c8e82e2d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38d0d425-ba52-4c0a-a03e-2a65c8e82e2d;Ip=[204.77.163.244];Helo=[edgetransport.garmin.com]
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN3PR04MB2242
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR04MB5630
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the O_CLOFORK flag to open(2) and dup3(2) to automatically
-set the close-on-fork flag in the new file descriptor, saving
-a separate call to fcntl(2).
+Implement functionality for duplicating a file descriptor
+and having the close-on-fork flag automatically set in the
+new file descriptor.
 
-Co-developed-by: Changli Gao <xiaosuo@gmail.com>
-Signed-off-by: Changli Gao <xiaosuo@gmail.com>
 Signed-off-by: Nate Karstens <nate.karstens@garmin.com>
 ---
- arch/alpha/include/uapi/asm/fcntl.h    |  2 ++
- arch/parisc/include/uapi/asm/fcntl.h   | 39 +++++++++++++-------------
- arch/sparc/include/uapi/asm/fcntl.h    |  1 +
- fs/fcntl.c                             |  2 +-
- fs/file.c                              | 10 ++++++-
- include/linux/fcntl.h                  |  2 +-
- include/uapi/asm-generic/fcntl.h       |  4 +++
- tools/include/uapi/asm-generic/fcntl.h |  4 +++
- 8 files changed, 42 insertions(+), 22 deletions(-)
+ fs/fcntl.c                       | 4 ++++
+ include/uapi/linux/fcntl.h       | 3 +++
+ tools/include/uapi/linux/fcntl.h | 3 +++
+ 3 files changed, 10 insertions(+)
 
-diff --git a/arch/alpha/include/uapi/asm/fcntl.h b/arch/alpha/include/uapi/asm/fcntl.h
-index 50bdc8e8a271..fbab69b15f7f 100644
---- a/arch/alpha/include/uapi/asm/fcntl.h
-+++ b/arch/alpha/include/uapi/asm/fcntl.h
-@@ -35,6 +35,8 @@
- #define O_PATH		040000000
- #define __O_TMPFILE	0100000000
- 
-+#define O_CLOFORK	0200000000 /* set close_on_fork */
-+
- #define F_GETLK		7
- #define F_SETLK		8
- #define F_SETLKW	9
-diff --git a/arch/parisc/include/uapi/asm/fcntl.h b/arch/parisc/include/uapi/asm/fcntl.h
-index 03ce20e5ad7d..8f5989e75b05 100644
---- a/arch/parisc/include/uapi/asm/fcntl.h
-+++ b/arch/parisc/include/uapi/asm/fcntl.h
-@@ -2,26 +2,27 @@
- #ifndef _PARISC_FCNTL_H
- #define _PARISC_FCNTL_H
- 
--#define O_APPEND	000000010
--#define O_BLKSEEK	000000100 /* HPUX only */
--#define O_CREAT		000000400 /* not fcntl */
--#define O_EXCL		000002000 /* not fcntl */
--#define O_LARGEFILE	000004000
--#define __O_SYNC	000100000
-+#define O_APPEND	0000000010
-+#define O_BLKSEEK	0000000100 /* HPUX only */
-+#define O_CREAT		0000000400 /* not fcntl */
-+#define O_EXCL		0000002000 /* not fcntl */
-+#define O_LARGEFILE	0000004000
-+#define __O_SYNC	0000100000
- #define O_SYNC		(__O_SYNC|O_DSYNC)
--#define O_NONBLOCK	000200004 /* HPUX has separate NDELAY & NONBLOCK */
--#define O_NOCTTY	000400000 /* not fcntl */
--#define O_DSYNC		001000000 /* HPUX only */
--#define O_RSYNC		002000000 /* HPUX only */
--#define O_NOATIME	004000000
--#define O_CLOEXEC	010000000 /* set close_on_exec */
--
--#define O_DIRECTORY	000010000 /* must be a directory */
--#define O_NOFOLLOW	000000200 /* don't follow links */
--#define O_INVISIBLE	004000000 /* invisible I/O, for DMAPI/XDSM */
--
--#define O_PATH		020000000
--#define __O_TMPFILE	040000000
-+#define O_NONBLOCK	0000200004 /* HPUX has separate NDELAY & NONBLOCK */
-+#define O_NOCTTY	0000400000 /* not fcntl */
-+#define O_DSYNC		0001000000 /* HPUX only */
-+#define O_RSYNC		0002000000 /* HPUX only */
-+#define O_NOATIME	0004000000
-+#define O_CLOEXEC	0010000000 /* set close_on_exec */
-+
-+#define O_DIRECTORY	0000010000 /* must be a directory */
-+#define O_NOFOLLOW	0000000200 /* don't follow links */
-+#define O_INVISIBLE	0004000000 /* invisible I/O, for DMAPI/XDSM */
-+
-+#define O_PATH		0020000000
-+#define __O_TMPFILE	0040000000
-+#define O_CLOFORK	0100000000
- 
- #define F_GETLK64	8
- #define F_SETLK64	9
-diff --git a/arch/sparc/include/uapi/asm/fcntl.h b/arch/sparc/include/uapi/asm/fcntl.h
-index 67dae75e5274..d631ea13bac3 100644
---- a/arch/sparc/include/uapi/asm/fcntl.h
-+++ b/arch/sparc/include/uapi/asm/fcntl.h
-@@ -37,6 +37,7 @@
- 
- #define O_PATH		0x1000000
- #define __O_TMPFILE	0x2000000
-+#define O_CLOFORK	0x4000000
- 
- #define F_GETOWN	5	/*  for sockets. */
- #define F_SETOWN	6	/*  for sockets. */
 diff --git a/fs/fcntl.c b/fs/fcntl.c
-index 23964abf4a1a..b59b27c3a338 100644
+index b59b27c3a338..43ca3e3dacc5 100644
 --- a/fs/fcntl.c
 +++ b/fs/fcntl.c
-@@ -1035,7 +1035,7 @@ static int __init fcntl_init(void)
- 	 * Exceptions: O_NONBLOCK is a two bit define on parisc; O_NDELAY
- 	 * is defined as O_NONBLOCK on some platforms and not on others.
- 	 */
--	BUILD_BUG_ON(21 - 1 /* for O_RDONLY being 0 */ !=
-+	BUILD_BUG_ON(22 - 1 /* for O_RDONLY being 0 */ !=
- 		HWEIGHT32(
- 			(VALID_OPEN_FLAGS & ~(O_NONBLOCK | O_NDELAY)) |
- 			__FMODE_EXEC | __FMODE_NONOTIFY));
-diff --git a/fs/file.c b/fs/file.c
-index de7260ba718d..95774b7962d1 100644
---- a/fs/file.c
-+++ b/fs/file.c
-@@ -544,6 +544,10 @@ int __alloc_fd(struct files_struct *files,
- 		__set_close_on_exec(fd, fdt);
- 	else
- 		__clear_close_on_exec(fd, fdt);
-+	if (flags & O_CLOFORK)
-+		__set_close_on_fork(fd, fdt);
-+	else
-+		__clear_close_on_fork(fd, fdt);
- 	error = fd;
- #if 1
- 	/* Sanity check */
-@@ -945,6 +949,10 @@ __releases(&files->file_lock)
- 		__set_close_on_exec(fd, fdt);
- 	else
- 		__clear_close_on_exec(fd, fdt);
-+	if (flags & O_CLOFORK)
-+		__set_close_on_fork(fd, fdt);
-+	else
-+		__clear_close_on_fork(fd, fdt);
- 	spin_unlock(&files->file_lock);
+@@ -333,6 +333,9 @@ static long do_fcntl(int fd, unsigned int cmd, unsigned long arg,
+ 	case F_DUPFD_CLOEXEC:
+ 		err = f_dupfd(arg, filp, O_CLOEXEC);
+ 		break;
++	case F_DUPFD_CLOFORK:
++		err = f_dupfd(arg, filp, O_CLOFORK);
++		break;
+ 	case F_GETFD:
+ 		err = get_close_on_exec(fd) ? FD_CLOEXEC : 0;
+ 		err |= get_close_on_fork(fd) ? FD_CLOFORK : 0;
+@@ -439,6 +442,7 @@ static int check_fcntl_cmd(unsigned cmd)
+ 	switch (cmd) {
+ 	case F_DUPFD:
+ 	case F_DUPFD_CLOEXEC:
++	case F_DUPFD_CLOFORK:
+ 	case F_GETFD:
+ 	case F_SETFD:
+ 	case F_GETFL:
+diff --git a/include/uapi/linux/fcntl.h b/include/uapi/linux/fcntl.h
+index ca88b7bce553..9e1069ff3a22 100644
+--- a/include/uapi/linux/fcntl.h
++++ b/include/uapi/linux/fcntl.h
+@@ -55,6 +55,9 @@
+ #define F_GET_FILE_RW_HINT	(F_LINUX_SPECIFIC_BASE + 13)
+ #define F_SET_FILE_RW_HINT	(F_LINUX_SPECIFIC_BASE + 14)
  
- 	if (tofree)
-@@ -985,7 +993,7 @@ static int ksys_dup3(unsigned int oldfd, unsigned int newfd, int flags)
- 	struct file *file;
- 	struct files_struct *files = current->files;
- 
--	if ((flags & ~O_CLOEXEC) != 0)
-+	if ((flags & ~(O_CLOEXEC | O_CLOFORK)) != 0)
- 		return -EINVAL;
- 
- 	if (unlikely(oldfd == newfd))
-diff --git a/include/linux/fcntl.h b/include/linux/fcntl.h
-index 7bcdcf4f6ab2..cd4c625647db 100644
---- a/include/linux/fcntl.h
-+++ b/include/linux/fcntl.h
-@@ -10,7 +10,7 @@
- 	(O_RDONLY | O_WRONLY | O_RDWR | O_CREAT | O_EXCL | O_NOCTTY | O_TRUNC | \
- 	 O_APPEND | O_NDELAY | O_NONBLOCK | O_NDELAY | __O_SYNC | O_DSYNC | \
- 	 FASYNC	| O_DIRECT | O_LARGEFILE | O_DIRECTORY | O_NOFOLLOW | \
--	 O_NOATIME | O_CLOEXEC | O_PATH | __O_TMPFILE)
-+	 O_NOATIME | O_CLOEXEC | O_PATH | __O_TMPFILE | O_CLOFORK)
- 
- /* List of all valid flags for the how->upgrade_mask argument: */
- #define VALID_UPGRADE_FLAGS \
-diff --git a/include/uapi/asm-generic/fcntl.h b/include/uapi/asm-generic/fcntl.h
-index 0cb7199a7743..165a0736a3aa 100644
---- a/include/uapi/asm-generic/fcntl.h
-+++ b/include/uapi/asm-generic/fcntl.h
-@@ -89,6 +89,10 @@
- #define __O_TMPFILE	020000000
- #endif
- 
-+#ifndef O_CLOFORK
-+#define O_CLOFORK	040000000	/* set close_on_fork */
-+#endif
++/* Create a file descriptor with FD_CLOFORK set. */
++#define F_DUPFD_CLOFORK	(F_LINUX_SPECIFIC_BASE + 15)
 +
- /* a horrid kludge trying to make sure that this will fail on old kernels */
- #define O_TMPFILE (__O_TMPFILE | O_DIRECTORY)
- #define O_TMPFILE_MASK (__O_TMPFILE | O_DIRECTORY | O_CREAT)      
-diff --git a/tools/include/uapi/asm-generic/fcntl.h b/tools/include/uapi/asm-generic/fcntl.h
-index e04a00fecb4a..69d8a000ec65 100644
---- a/tools/include/uapi/asm-generic/fcntl.h
-+++ b/tools/include/uapi/asm-generic/fcntl.h
-@@ -88,6 +88,10 @@
- #define __O_TMPFILE	020000000
- #endif
+ /*
+  * Valid hint values for F_{GET,SET}_RW_HINT. 0 is "not set", or can be
+  * used to clear any hints previously set.
+diff --git a/tools/include/uapi/linux/fcntl.h b/tools/include/uapi/linux/fcntl.h
+index ca88b7bce553..9e1069ff3a22 100644
+--- a/tools/include/uapi/linux/fcntl.h
++++ b/tools/include/uapi/linux/fcntl.h
+@@ -55,6 +55,9 @@
+ #define F_GET_FILE_RW_HINT	(F_LINUX_SPECIFIC_BASE + 13)
+ #define F_SET_FILE_RW_HINT	(F_LINUX_SPECIFIC_BASE + 14)
  
-+#ifndef O_CLOFORK
-+#define O_CLOFORK	040000000	/* set close_on_fork */
-+#endif
++/* Create a file descriptor with FD_CLOFORK set. */
++#define F_DUPFD_CLOFORK	(F_LINUX_SPECIFIC_BASE + 15)
 +
- /* a horrid kludge trying to make sure that this will fail on old kernels */
- #define O_TMPFILE (__O_TMPFILE | O_DIRECTORY)
- #define O_TMPFILE_MASK (__O_TMPFILE | O_DIRECTORY | O_CREAT)
+ /*
+  * Valid hint values for F_{GET,SET}_RW_HINT. 0 is "not set", or can be
+  * used to clear any hints previously set.
 -- 
 2.26.1
 
