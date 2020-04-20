@@ -2,132 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 843091B1307
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 19:30:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5BD41B1357
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 19:41:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726802AbgDTRaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 13:30:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49650 "EHLO
+        id S1727039AbgDTRl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 13:41:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726792AbgDTRaj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 13:30:39 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B1BC061A0C
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 10:30:38 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id g4so2792275ljl.2
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 10:30:38 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726798AbgDTRl2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 13:41:28 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ABCBC061A0F
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 10:41:27 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id 188so488705wmc.2
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 10:41:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=1wjTQ8kSFEtHQTXiFNn5xmo0XMmmUMj65r7WNBjKJEs=;
-        b=NXWy+rZceFxcX4Q1BJl0H6GFSnc8ZUNALstxT4T+qvd8/wDRTj6ZJJvxrBNPnQNrqv
-         yxCIbphz2+7r3DPHzNv2pmmsU3LBsO8/U8o4rR5OyMC7a/0ye+6Wx/LpBfCxCrhkLoYC
-         qjxGOvLw3i7MDYFX+YK+9yRHVnuKJWeB0zWeU=
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jjN4klF78TqCsstuudiTHIE+jPyDjeX0x32L+YWiINA=;
+        b=memIumnBAmHJ1MrHMTO/bcnbaIaH6nTK3gk8jEqQoWLxow8YC3SXahCLRGP5UIX8T9
+         6tiC8zFmq5d2uD+IG4YMCSH5/wBcXwMikppvRjOjViphFZoZF4OWYQ6bA/r/NBFGdB2y
+         PsEJOptG0zW97BoV96tD8Slt8CPeNykul7xTaHtyTdT3vNv+k63qITJVJNIqO3WnNIBK
+         +/a5gFgn1mSAQqjk9gginSgM7SFTdY/e7fj5QzjXb4Pf0fUYHFQjx8k8Keo9aBVZIipn
+         y+U5aVIAviXIY0vsz3qBwIWk+5q77cUF6EXYw/+2QPGPq25TZVJ1pzA2pMBiBUlpzSHN
+         FUiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=1wjTQ8kSFEtHQTXiFNn5xmo0XMmmUMj65r7WNBjKJEs=;
-        b=sogXs0MGDYKU0ePe6n/LQeBAuPzvbM8iRbA0tABmAyOEGotmIFE6I3x1nCDxmUbHL4
-         Nk1B2DjxNQQQ6ueV/460XJYoy90+6isbgYzTqpE+5r4c68EwAhPl2tjkX4K/wlzf0aZq
-         xopBF+pYq3BTY9h0V4WbuFbrs9TDXij1DheCgtRg/PBOtMhZWH8Nymu9n5w/TIA3fhnd
-         qGee+lcqj5b3x7s/4V/s+uU2tc9CUfXj2NQQHcXB1SaN/W1EoFKRXvjTNdr8YB1nb4SP
-         cMPncy+cfQWjUw0K6XxhdP7dyY527IId+FqSoGeFJm7NryEFWdOOjnfKv99/aYO5HCRT
-         6Ilw==
-X-Gm-Message-State: AGi0PuZ2dAPsh3Ft8v1cc/Ehbk21Hp7r9BjJO6nuHPu+v2TTzJnOitBP
-        HEW2+MVoVaRggTJqMdHRQZ0U2w==
-X-Google-Smtp-Source: APiQypKQO2gTG7fbfBVsthNRTh8bjAdJR0WFz6Vc4MxI2oM3VrAN/sw/+3NkB9IDtkhdbML676NqOA==
-X-Received: by 2002:a05:651c:385:: with SMTP id e5mr10993014ljp.208.1587403837014;
-        Mon, 20 Apr 2020 10:30:37 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id d3sm33429lfq.63.2020.04.20.10.30.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Apr 2020 10:30:36 -0700 (PDT)
-Subject: Re: [PATCH net-next 04/13] bridge: mrp: Expose function
- br_mrp_port_open
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>, davem@davemloft.net,
-        jiri@resnulli.us, ivecera@redhat.com, kuba@kernel.org,
-        roopa@cumulusnetworks.com, olteanv@gmail.com, andrew@lunn.ch,
-        UNGLinuxDriver@microchip.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-References: <20200420150947.30974-1-horatiu.vultur@microchip.com>
- <20200420150947.30974-5-horatiu.vultur@microchip.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <cc388b70-701c-4600-791b-8170683a7666@cumulusnetworks.com>
-Date:   Mon, 20 Apr 2020 20:30:34 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jjN4klF78TqCsstuudiTHIE+jPyDjeX0x32L+YWiINA=;
+        b=qjV3J+fiNL+D0Yo892OOAl4vUr1djIkV3UoHBel+NoxXzrArXvmTyzqkEipJ1lusbi
+         ArhNYXVwV/TMgm1wxlmGaYD5xcHXHPZ1iFSDjUk6nrXbgc57Xr1pkSO9tFeVS5uSPQcJ
+         uHlpImwyJ5qb1bbxYDmEKC5QHf1XyAoQzG3nCkWvhe50EzQK+moPq77GUVpokNYyLrl5
+         FTHSWb6PpOZI2hzyFKq2T4+fU3FxgqsorgkAIMODoI40APVMzrrnKVRYtc14t4U2Fdvp
+         i9Nt1nEq332laMJQjaAU/bGVYZlKe0j+BVz49Jajqxp7LZh4dlpXFHIZA1D87M91h9Sc
+         WhnA==
+X-Gm-Message-State: AGi0PuYgmJ7FZtvzH9Oq1Bu0Sn1MXuJfC0L7Oa70E2tyCBq1/JS1amN+
+        aeMDT+IQ4zN8UOIzcAtU3WPaUg==
+X-Google-Smtp-Source: APiQypIopkck8cgFiG1J6Ej4UB9FguCCubTckqk0OwhawHyo3rPfoerNFe/fIWuDrqKVBA3B4ceKFw==
+X-Received: by 2002:a7b:cb88:: with SMTP id m8mr445542wmi.103.1587404486252;
+        Mon, 20 Apr 2020 10:41:26 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id 33sm276340wrp.5.2020.04.20.10.41.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Apr 2020 10:41:25 -0700 (PDT)
+Date:   Mon, 20 Apr 2020 19:41:24 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Maor Gottlieb <maorg@mellanox.com>, davem@davemloft.net,
+        jgg@mellanox.com, dledford@redhat.com, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org,
+        leonro@mellanox.com, saeedm@mellanox.com, jiri@mellanox.com,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        alexr@mellanox.com
+Subject: Re: [PATCH V2 mlx5-next 01/10] net/core: Introduce
+ master_xmit_slave_get
+Message-ID: <20200420174124.GS6581@nanopsycho.orion>
+References: <20200420075426.31462-1-maorg@mellanox.com>
+ <20200420075426.31462-2-maorg@mellanox.com>
+ <20200420140118.GJ6581@nanopsycho.orion>
+ <a9e00f31-2f4e-1dfc-2464-d3d25376a4b8@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200420150947.30974-5-horatiu.vultur@microchip.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a9e00f31-2f4e-1dfc-2464-d3d25376a4b8@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/04/2020 18:09, Horatiu Vultur wrote:
-> In case the HW is capable to detect when the MRP ring is open or closed. It is
-> expected that the network driver will notify the SW that the ring is open or
-> closed.
-> 
-> The function br_mrp_port_open is used to notify the kernel that one of the ports
-> stopped receiving MRP_Test frames. The argument 'loc' has a value of '1' when
-> the port stopped receiving MRP_Test and '0' when it started to receive MRP_Test.
-> 
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> ---
->  include/linux/mrp_bridge.h | 27 +++++++++++++++++++++++++++
->  1 file changed, 27 insertions(+)
->  create mode 100644 include/linux/mrp_bridge.h
-> 
-> diff --git a/include/linux/mrp_bridge.h b/include/linux/mrp_bridge.h
-> new file mode 100644
-> index 000000000000..61c1f0d395c7
-> --- /dev/null
-> +++ b/include/linux/mrp_bridge.h
-> @@ -0,0 +1,27 @@
-> +/* SPDX-License-Identifier: GPL-2.0-or-later */
-> +
-> +#ifndef _LINUX_MRP_BRIDGE_H
-> +#define _LINUX_MRO_BRIDGE_H
-> +
-> +#include <linux/netdevice.h>
-> +
-> +/* The drivers are responsible to call this function when it detects that the
-> + * MRP port stopped receiving MRP_Test frames or it started to receive MRP_Test.
-> + * The argument dev represents the port and loc(Lost of Continuity) has a value
-> + * of 1 when it stopped receiving MRP_Test frames and a value of 0 when it
-> + * started to receive frames.
-> + * Needs to be called with rcu_read_lock().
-> + *
-> + * This eventually notify the userspace which is required to react on these
-> + * changes.
-> + */
-> +
-> +#if IS_ENABLED(CONFIG_BRIDGE_MRP)
-> +int br_mrp_port_open(struct net_device *dev, u8 loc);
-> +#else
-> +static inline int br_mrp_port_open(struct net_device *dev, u8 loc)
-> +{
-> +}
-> +#endif
-> +
-> +#endif
-> 
+Mon, Apr 20, 2020 at 07:29:15PM CEST, dsahern@gmail.com wrote:
+>On 4/20/20 8:01 AM, Jiri Pirko wrote:
+>> Mon, Apr 20, 2020 at 09:54:17AM CEST, maorg@mellanox.com wrote:
+>>> Add new ndo to get the xmit slave of master device.
+>>> User should release the slave when it's not longer needed.
+>>> When slave selection method is based on hash, then the user can ask to
+>>> get the xmit slave assume all the slaves can transmit by setting the
+>>> LAG_FLAGS_HASH_ALL_SLAVES bit in the flags argument.
+>>>
+>>> Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
+>>> ---
+>>> include/linux/netdevice.h |  3 +++
+>>> include/net/lag.h         | 32 ++++++++++++++++++++++++++++++++
+>>> 2 files changed, 35 insertions(+)
+>>>
+>>> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+>>> index 130a668049ab..e8852f3ad0b6 100644
+>>> --- a/include/linux/netdevice.h
+>>> +++ b/include/linux/netdevice.h
+>>> @@ -1389,6 +1389,9 @@ struct net_device_ops {
+>>> 						 struct netlink_ext_ack *extack);
+>>> 	int			(*ndo_del_slave)(struct net_device *dev,
+>>> 						 struct net_device *slave_dev);
+>>> +	struct net_device*	(*ndo_xmit_get_slave)(struct net_device *master_dev,
+>>> +						      struct sk_buff *skb,
+>>> +						      u16 flags);
+>> 
+>> Please adjust the name to:
+>> ndo_get_lag_xmit_slave
+>
+>I disagree. There are multiple master devices and no reason to have a
+>LAG specific get_slave.
 
-I see that in order to pass this "loc" to br_ifinfo_notify() you add a new port variable,
-but it's a boolean, so you can just use the port flags for it which will simplify things a lot
-and remove some ifdefs along the way. And please rename it to something longer (so it's easier
-to get what it does).
-
-One question - now that it's always sent to user-space as IFLA_BRPORT_MRP_RING_OPEN attribute
-wouldn't it be a problem, or is it read as a current state?
-I mean you'll receive that attribute about a port even if you get a completely unrelated to MRP
-notification (e.g. about a vlan change).
-
-Thanks,
- Nik
+Do you have usecase for any other non-lag master type device?
+Note the ndo name can change whenever needed. I think the name should
+reflect the usage.
