@@ -2,92 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 853C71B187F
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 23:34:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFF951B1881
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 23:36:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726494AbgDTVeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 17:34:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60516 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726017AbgDTVeL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 17:34:11 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08CC0C061A0C;
-        Mon, 20 Apr 2020 14:34:10 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id w3so4441450plz.5;
-        Mon, 20 Apr 2020 14:34:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ngBQy1ShJKeMNEcOYtB0Goj5+Rtf1XPN16PoTzN6Leg=;
-        b=W2Us/jbX10J6JgHcI+yTDBmtiIXCW2MFCTUAFrkq9lmd0IzSUCsb6VMRR3yDsW/dfu
-         GWdEUrjtMdzc+hFFsRjzH24fON/tRNB8vmtK4JNGXEWElZPD5//pUlH1+P07dvGsKmPH
-         xDFzpe2whUTSpZYCZHIgkoJQtz3Y7OxaDLbWIBIaemUZSIelJJ2ZukeLJTn0Ma0GPlDm
-         lLjn1xSDgI158rHQpq8qzCW0wTUsXdWNEBDAoB4sxJ+/x4XqBmDrEm7TmKc7dw+SiOLF
-         RwZyiBP5JWcxUP5RQsn9/OWkEiOuygonpC9C0WMg6hufuYrd6kDSYRKAv+y0Fjaymyi5
-         Vd4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ngBQy1ShJKeMNEcOYtB0Goj5+Rtf1XPN16PoTzN6Leg=;
-        b=EonIEsDWnYtCo3jAzNdOdsGcgHQvfue+20uRcxPgEeC+xYwSlmsjgeFnhI68tAQ0wB
-         ukdqOfD91kpHbWArMeI5qZf56h1A66IO+fT4dmm1zuYXn7k4CCrPS4vtNrC7wVUDJXu3
-         MyQkQH4DmLBPNqgWCl1suZHKFuVF5SG94YgVF3YO3WubiZKaqkYQRrqx+JoKCENIPsoS
-         mGsSBB2ZkSfxdwV2bTNxyfIZKrwx/bjh4eAyHXgcF4uRSmTgt4uwfGxxOE57ozjwHbgU
-         4FySa2Qzz6bNT31u05eQhZr3z5MQtvMTWWXip+96YfoAXXZNH0ybqvxUB0yY1mP402H8
-         6PbA==
-X-Gm-Message-State: AGi0Puage3GKCy4R7301UaZV3RqmOVOjP34tRuaBbqc5Ej3sjBnVTk3t
-        LxspDteV4Qzq04qo7StmZ5is91wv
-X-Google-Smtp-Source: APiQypLOFKtNhGFo0UvjO6gLP4+Jh1qO0rA232c3p3m636GsPllrstk3XMhjakiQXenT8r+xhwXdHA==
-X-Received: by 2002:a17:902:8345:: with SMTP id z5mr14890188pln.97.1587418449491;
-        Mon, 20 Apr 2020 14:34:09 -0700 (PDT)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id i10sm416268pfa.166.2020.04.20.14.34.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2020 14:34:08 -0700 (PDT)
-Date:   Mon, 20 Apr 2020 14:34:06 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Clay McClure <clay@daemons.net>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sekhar Nori <nsekhar@ti.com>,
-        Networking <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: cpts: Condition WARN_ON on PTP_1588_CLOCK
-Message-ID: <20200420213406.GB20996@localhost>
-References: <20200416085627.1882-1-clay@daemons.net>
- <6fef3a00-6c18-b775-d1b4-dfd692261bd3@ti.com>
- <20200420093610.GA28162@arctic-shiba-lx>
- <CAK8P3a36ZxNJxUS4UzrwJiMx8UrgYPkcv4X6yYw7EC4jRBbbGQ@mail.gmail.com>
- <20200420170051.GB11862@localhost>
- <CAK8P3a11CqpDJzjy5QfV-ebHgRxUu8SRVTJPPmsus1O1+OL72Q@mail.gmail.com>
- <20200420211819.GA16930@localhost>
- <CAK8P3a18540y3zqR=mqKhj-goinN3c-FGKvAnTHnLgBxiPa4mA@mail.gmail.com>
+        id S1726757AbgDTVgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 17:36:45 -0400
+Received: from mail-eopbgr40071.outbound.protection.outlook.com ([40.107.4.71]:25204
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726039AbgDTVgo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 17:36:44 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Y7hg3vLVCQeUTtMQe08VnCcOydO111UBasdVxZDgmGWYCqdLeFYV/T6m8T8zb3axlGD+qO0/OWeMBZ/ClBRuwFOsChQWq9dlmW2SkmwlbxrX2twdU3PaL7orCqpSK6XlVO6I095PEf+4h0XXdxeU1V3/aUkdVW5JXkocpy7sz5HzX3zFDjVtGei+05TLxriykxg3YiBP9btXdigFpZRgwijA509B8v6CLKPFppcpxZLJxpl+OJ2L0WobCIUUw7YaZUiRG3P1UsmeZzFK2G3QD/7uWEAyUU6rYYM23xWVIsE78Zx0F73G7hDyXeL8+o/zi84b7AoJfVK0IJPlBzIHEQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FULtSzHqRPsLM/F9vF/GdEvkXb3/gucUVJnTcJFCdWM=;
+ b=byctvRlpWswDmF6jBykkk26IuKbXhoFlXpROMOLjpNqRNc2+XjOKEUrrWQfcEyE28lKk67xEIrTih5/JVRfJ3hEz0Us2aN4ictkJ3evUrqJ+akV5uPUoa3k1gafg3tnA+ZhEY18GAqw88BKurxciAKeWucUCBK/8F8HITYcn/SrbTn7DZNA8XpR5F+i7bo+b9wfxe5/o5ymGf9auw1Ylhhv9hSqXzThz05/UehTdeLuqZn1imTPVZSUhr2wqtlSx+j+jp40yrHRbJgiFJJETYmRgjm1qlX3H1Tk6kG2YmcYGVkNA0Sw+KQqhHZM1RY3waHIKvZKYx32ZZt9+uZZb7A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FULtSzHqRPsLM/F9vF/GdEvkXb3/gucUVJnTcJFCdWM=;
+ b=NDpEV4N4K3QvBaf/SzEcaQLU2kLmgiJOOZqxB96a4JCwJBolYRM743htd4Rbl4ky4xyfZORwyF7c0gRFZcTrp4STHbNp3E25/YgxU1IQq3mINRG+XkDP53/NyMg1RdLJ54TzfjCkOUIWiPN+47Q5WCJIIFnIDTkuoeAA+EV6Ox8=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR05MB5005.eurprd05.prod.outlook.com (2603:10a6:803:57::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.29; Mon, 20 Apr
+ 2020 21:36:40 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2921.027; Mon, 20 Apr 2020
+ 21:36:40 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net 0/5] Mellanox, mlx5 fixes 2020-04-20
+Date:   Mon, 20 Apr 2020 14:36:01 -0700
+Message-Id: <20200420213606.44292-1-saeedm@mellanox.com>
+X-Mailer: git-send-email 2.25.3
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BY5PR20CA0017.namprd20.prod.outlook.com
+ (2603:10b6:a03:1f4::30) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a18540y3zqR=mqKhj-goinN3c-FGKvAnTHnLgBxiPa4mA@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from smtp.office365.com (73.15.39.150) by BY5PR20CA0017.namprd20.prod.outlook.com (2603:10b6:a03:1f4::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.25 via Frontend Transport; Mon, 20 Apr 2020 21:36:38 +0000
+X-Mailer: git-send-email 2.25.3
+X-Originating-IP: [73.15.39.150]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 6168090e-a430-4b6a-f44e-08d7e572e92f
+X-MS-TrafficTypeDiagnostic: VI1PR05MB5005:|VI1PR05MB5005:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB50054D9FC56B095046F270BBBED40@VI1PR05MB5005.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2276;
+X-Forefront-PRVS: 03793408BA
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(396003)(376002)(39860400002)(346002)(136003)(366004)(186003)(16526019)(86362001)(8676002)(6512007)(6486002)(26005)(316002)(81156014)(36756003)(8936002)(6506007)(478600001)(956004)(66946007)(2616005)(107886003)(4326008)(66476007)(66556008)(52116002)(2906002)(1076003)(6666004)(6916009)(5660300002)(54420400002);DIR:OUT;SFP:1101;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Y+o/fg7LDDY80NAylQLUwjp6Ul2UHrcmPp/zyMX7v3qP6mui5Lk2BBeX0rGlC36/Tqo074DyHiE+rDHBQapwsgqnDFmT1epwudnBrEbtuLgufVeFCqHr9sgsEKYSaJmTbcICjsIBiY2LztRo29HA4suZZvM0njxoC1PevwYdv9ggSh9vleZ0ski49aflY8tcijUwqz04IVlzMSvEv40XD9wtHS0eNV4QzBRv+1DilZ1h6dYF8GnFajuU0WWoFpz4gcSjv9dpJi3pCnmvWwdy3+QC7OjjWTZkf0dg3k4ACLB3+98DZErOhQMlWC77Gx7mk8TTtEGWKVmXGidBdKBCtJx/aTPr9CNNP/6FnnfZTDh2v+SjagqSUa7z5s7MhDZh2wTuMc1LWDN5yyvYcCOG/49Wws8DOhAaNjjKxyrEIFt0UzCy9V+uSZcGQQP+DIDjEEppyGkfmVRJs1DHmPviEyJ3IUl6ljMiNcbwYpSEdh7gLdsw5g8lZFw5LC6wSlXL
+X-MS-Exchange-AntiSpam-MessageData: 8FQ/PmH5fNVYz4dhpRL8tCXmHPohO9PsA5tuG4gWoql6q5MpzmdmnT4GtPgNQgy84x/wMDLnMy0TIs6cw4XeKcZcsRwmOh8N0k6PxbC8HkaTnWQeP5INIwIFooLyfJRh6DzgnW1CNiEE1Vec01iLag==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6168090e-a430-4b6a-f44e-08d7e572e92f
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2020 21:36:39.9469
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: howmBT7T9p7288Dqt0iQ0zKmWQk4+tGQsXwX809lGzJdx09JRJRN2aGuyK3psVzVqVyTNR7QpH316WF6AajEHg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5005
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 20, 2020 at 11:21:20PM +0200, Arnd Bergmann wrote:
-> It's not great, but we have other interfaces like this that can return NULL for
-> success when the subsystem is disabled. The problem is when there is
-> a mismatch between the caller treating NULL as failure when it is meant to
-> be "successful lack of object returned".
+Hi Dave,
 
-Yeah, that should be fixed.
+This series introduces some fixes to mlx5 driver.
 
-To be clear, do you all see a need to change the stubbed version of
-ptp_clock_register() or not?
+Please pull and let me know if there is any problem.
 
 Thanks,
-Richard
+Saeed.
 
+---
+The following changes since commit 1c30fbc76b8f0c07c92a8ca4cd7c456612e17eb5:
 
+  team: fix hang in team_mode_get() (2020-04-20 13:03:44 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2020-04-20
+
+for you to fetch changes up to dcdf4ce0ff4ba206fc362e149c8ae81d6a2f849c:
+
+  net/mlx5e: Get the latest values from counters in switchdev mode (2020-04-20 14:30:22 -0700)
+
+----------------------------------------------------------------
+mlx5-fixes-2020-04-20
+
+----------------------------------------------------------------
+Maxim Mikityanskiy (1):
+      net/mlx5e: Don't trigger IRQ multiple times on XSK wakeup to avoid WQ overruns
+
+Niklas Schnelle (1):
+      net/mlx5: Fix failing fw tracer allocation on s390
+
+Paul Blakey (1):
+      net/mlx5: CT: Change idr to xarray to protect parallel tuple id allocation
+
+Saeed Mahameed (1):
+      net/mlx5: Kconfig: convert imply usage to weak dependency
+
+Zhu Yanjun (1):
+      net/mlx5e: Get the latest values from counters in switchdev mode
+
+ drivers/net/ethernet/mellanox/mlx5/core/Kconfig    |  8 ++++----
+ .../ethernet/mellanox/mlx5/core/diag/fw_tracer.c   |  6 +++---
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |  3 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 23 +++++++++++-----------
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/tx.c    |  3 +++
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  7 ++++++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |  8 +++++---
+ drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c  |  6 +++++-
+ 8 files changed, 40 insertions(+), 24 deletions(-)
