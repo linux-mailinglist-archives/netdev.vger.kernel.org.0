@@ -2,93 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC1BD1B15A3
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 21:15:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 326E31B15BB
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 21:16:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727968AbgDTTPG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 15:15:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38338 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726023AbgDTTPF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 15:15:05 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12DD4C061A0C
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 12:15:04 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id f8so8970233lfe.12
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 12:15:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=XIGdWOVtbodKH7KvRibIzNlT/ZZ/OU1N+hL52W0xR1A=;
-        b=o/ASvASZ0Rq3LdtaMQMzUbiZePt8issQwDN59kAV0uH5zhpwNDZrc0UYPQRILC1eGT
-         8gD9m75LfLr24KdGdArSiITj71lRyhHwpBvyZx/+9FUNdloDsiMqUTTj+Bpr7XZdvjvb
-         vIGLVpTQ7LyRPFf60Tpna4SnwnCl3dNXh1tGbv0Gg6PnXqr4mX9RgJwFpj9S/Nc1Upmv
-         eVNC4ICRNrEpd3urtbAxZr+l6mQEujPZLD9jHoOmZUb13HcZrENm/N86XOEywYLCIVh7
-         d28/Dv0pd7ML9Fy8Eeh6aVaqNw0EHuVu5ajoY0wpYryWXuX+3EgUj7DIsT3n02GxudUi
-         NA8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=XIGdWOVtbodKH7KvRibIzNlT/ZZ/OU1N+hL52W0xR1A=;
-        b=UmNZbTZh0B2Ouvngg7rIabNEaaSwm2QG4p+1tJFE/Y5IzAlPRoLrOahbtypNNeFoha
-         zUQlzVxnsrWjhi2SegXg61FfcF3gRTDfiPukC6df31EUtMvpix3KCISg7gtuKKM6WuVw
-         7UJkSZPau1x7iRXeQYvatRtfmga1UymHUHs0PPH9w3q4u2PNl7Rp4bOnOhsm7YWmTsR1
-         sLkOjHjYD/AxMB6nOQMuPzO4o+guftG9belmBwWWw9nopfczskytQkR5QKMNTX/rSCjo
-         Vq/VNj8Sy+JBWWDroYIV0o8ADFJ8yTRIw+qHP/HDhu8EG6TWKqcHO86U8JR3f+ENbYMk
-         VOqw==
-X-Gm-Message-State: AGi0PuYyQjD5OpFqaog2v7EMcITy5tVp+xo5Bhoq6JqrSF/JhJpCy96y
-        Lby9Gqy5+tcyNIZjwYAcAshnijMjF1c1Uoz3Qy8=
-X-Google-Smtp-Source: APiQypIWB6c5e/rJV/rSuCeYp8S44z5c5zvCf1mnioYpq8S1PfFgSoNgkSzcw7kknH5zw3KdTSfNImhMnfYZ77rtu54=
-X-Received: by 2002:a19:ad45:: with SMTP id s5mr11429039lfd.106.1587410102532;
- Mon, 20 Apr 2020 12:15:02 -0700 (PDT)
+        id S1726692AbgDTTQk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 15:16:40 -0400
+Received: from esa2.microchip.iphmx.com ([68.232.149.84]:64359 "EHLO
+        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725897AbgDTTQj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 15:16:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1587410199; x=1618946199;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=y3VTXHw8/f/xzZpAPTTosZewiTx9SOPuKmC7E3cHTv4=;
+  b=vyTKZ1YlHRD39N+dAJDm5+EWYwLsLIGAYdQO5b1KXZy6dheNbJtsXSnq
+   WsIW5w569Gei58SpYh61qJk3yvxO2cK2nItduE5PyLx7zLSUdBQVfrE8a
+   +3IRCqNDiJ9TL9o4XoV7uK3e9Jgl2C5dwgz8XaZVp5rSlwO7XBvL8+cab
+   Zd4aYzlpbVAIUO0/wWknSuKeiKMPFqCoMmJ3AmUrWhtZcI4w+G6xVmyaF
+   xqcupmWcxlrjjsxUU7AuDUCzWgfzUnB1CuZ+gH0EGKpuR1BDIS1BXt+Kj
+   awRmfdpT7R3LvEQjJwUebjImzzQDkcb70L6ch9r27lnDU147y61AldPGA
+   Q==;
+IronPort-SDR: NyJlXEwE8/F6tkBUNF9bQ4OUeLqf3BkWSbD0EjmwcE3yA1OXfvfHqLCnyOHT3GOB0aQnU7jwZO
+ /Qb1smcr7uj+3CrNQK6zenih5jjXOA+nnXc6HQ+2Hle9g/BHj+rdQWI655Pc/AAPN1VGKAP+WL
+ lLqOmv8bN+I3cb+DkW8OfUtCOx4+rytacmd7Q4tEHf8XvuWIKf6totsgHWJqdpEUT1D5bseDX0
+ rhuiu7epO35UMOJq+ioLl7hD2cNqSmmSR80SuPA2waW7H4bQQf7t5JgkVvj8gwo5w8q/hq4jqd
+ k4M=
+X-IronPort-AV: E=Sophos;i="5.72,407,1580799600"; 
+   d="scan'208";a="72780182"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Apr 2020 12:16:39 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 20 Apr 2020 12:16:45 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Mon, 20 Apr 2020 12:16:38 -0700
+Date:   Mon, 20 Apr 2020 21:16:37 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+CC:     <davem@davemloft.net>, <jiri@resnulli.us>, <ivecera@redhat.com>,
+        <kuba@kernel.org>, <roopa@cumulusnetworks.com>,
+        <olteanv@gmail.com>, <andrew@lunn.ch>,
+        <UNGLinuxDriver@microchip.com>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <bridge@lists.linux-foundation.org>
+Subject: Re: [PATCH net-next 10/13] bridge: mrp: Implement netlink interface
+ to configure MRP
+Message-ID: <20200420191637.5skfpcayidzkb43w@soft-dev3.microsemi.net>
+References: <20200420150947.30974-1-horatiu.vultur@microchip.com>
+ <20200420150947.30974-11-horatiu.vultur@microchip.com>
+ <066720c4-ddc4-ce71-734f-932b6a342e01@cumulusnetworks.com>
 MIME-Version: 1.0
-Received: by 2002:a2e:96cd:0:0:0:0:0 with HTTP; Mon, 20 Apr 2020 12:15:01
- -0700 (PDT)
-From:   Jak Abdullah mishail <jakabdullahmishail@gmail.com>
-Date:   Mon, 20 Apr 2020 12:15:01 -0700
-X-Google-Sender-Auth: hi8NYGMaygCMNzOc80yiA77nxhQ
-Message-ID: <CAAfYP6MWm9F+Ucho=htk-bDS_k20hoBM+jnTHU9koCo4oVksgg@mail.gmail.com>
-Subject: I NEED YOUR ASSISTANCE AND CO-OPERATION TO INVEST IN YOUR COUNTRY,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <066720c4-ddc4-ce71-734f-932b6a342e01@cumulusnetworks.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greeting,
+The 04/20/2020 20:18, Nikolay Aleksandrov wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> On 20/04/2020 18:09, Horatiu Vultur wrote:
+> > Implement netlink interface to configure MRP. The implementation
+> > will do sanity checks over the attributes and then eventually call the MRP
+> > interface.
+> >
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> > ---
+> >  net/bridge/br_mrp_netlink.c | 117 ++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 117 insertions(+)
+> >  create mode 100644 net/bridge/br_mrp_netlink.c
+> >
+> > diff --git a/net/bridge/br_mrp_netlink.c b/net/bridge/br_mrp_netlink.c
+> > new file mode 100644
+> > index 000000000000..0ff42e7c7f57
+> > --- /dev/null
+> > +++ b/net/bridge/br_mrp_netlink.c
+> > @@ -0,0 +1,117 @@
+> > +// SPDX-License-Identifier: GPL-2.0-or-later
+> > +
+> > +#include <net/genetlink.h>
+> > +
+> > +#include <uapi/linux/mrp_bridge.h>
+> > +#include "br_private.h"
+> > +#include "br_private_mrp.h"
+> > +
+> > +static const struct nla_policy br_mrp_policy[IFLA_BRIDGE_MRP_MAX + 1] = {
+> > +     [IFLA_BRIDGE_MRP_UNSPEC]        = { .type = NLA_REJECT },
+> > +     [IFLA_BRIDGE_MRP_INSTANCE]      = { .type = NLA_EXACT_LEN,
+> > +                                         .len = sizeof(struct br_mrp_instance)},
+> > +     [IFLA_BRIDGE_MRP_PORT_STATE]    = { .type = NLA_U32 },
+> > +     [IFLA_BRIDGE_MRP_PORT_ROLE]     = { .type = NLA_EXACT_LEN,
+> > +                                         .len = sizeof(struct br_mrp_port_role)},
+> > +     [IFLA_BRIDGE_MRP_RING_STATE]    = { .type = NLA_EXACT_LEN,
+> > +                                         .len = sizeof(struct br_mrp_ring_state)},
+> > +     [IFLA_BRIDGE_MRP_RING_ROLE]     = { .type = NLA_EXACT_LEN,
+> > +                                         .len = sizeof(struct br_mrp_ring_role)},
+> > +     [IFLA_BRIDGE_MRP_START_TEST]    = { .type = NLA_EXACT_LEN,
+> > +                                         .len = sizeof(struct br_mrp_start_test)},
+> > +};
+> > +
+> > +int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
+> > +              struct nlattr *attr, int cmd, struct netlink_ext_ack *extack)
+> > +{
+> > +     struct nlattr *tb[IFLA_BRIDGE_MRP_MAX + 1];
+> > +     int err;
+> > +
+> > +     if (br->stp_enabled != BR_NO_STP) {
+> > +             NL_SET_ERR_MSG_MOD(extack, "MRP can't be enabled if STP is already enabled\n");
+> > +             return -EINVAL;
+> > +     }
+> > +
+> > +     err = nla_parse_nested(tb, IFLA_BRIDGE_MRP_MAX, attr,
+> > +                            NULL, extack);
+> > +     if (err)
+> > +             return err;
+> > +
+> > +     if (tb[IFLA_BRIDGE_MRP_INSTANCE]) {
+> > +             struct br_mrp_instance *instance =
+> > +                     nla_data(tb[IFLA_BRIDGE_MRP_INSTANCE]);
+> > +
+> > +             if (cmd == RTM_SETLINK)
+> > +                     err = br_mrp_add(br, instance);
+> > +             else
+> > +                     err = br_mrp_del(br, instance);
+> > +             if (err)
+> > +                     return err;
+> > +     }
+> > +
+> > +     if (tb[IFLA_BRIDGE_MRP_PORT_STATE]) {
+> > +             enum br_mrp_port_state_type state =
+> > +                     nla_get_u32(tb[IFLA_BRIDGE_MRP_PORT_STATE]);
+> > +
+> > +             err = br_mrp_set_port_state(p, state);
+> > +             if (err)
+> > +                     return err;
+> > +     }
+> > +
+> > +     if (tb[IFLA_BRIDGE_MRP_PORT_ROLE]) {
+> > +             struct br_mrp_port_role *role =
+> > +                     nla_data(tb[IFLA_BRIDGE_MRP_PORT_ROLE]);
+> > +
+> > +             err = br_mrp_set_port_role(p, role);
+> > +             if (err)
+> > +                     return err;
+> > +     }
+> > +
+> > +     if (tb[IFLA_BRIDGE_MRP_RING_STATE]) {
+> > +             struct br_mrp_ring_state *state =
+> > +                     nla_data(tb[IFLA_BRIDGE_MRP_RING_STATE]);
+> > +
+> > +             err = br_mrp_set_ring_state(br, state);
+> > +             if (err)
+> > +                     return err;
+> > +     }
+> > +
+> > +     if (tb[IFLA_BRIDGE_MRP_RING_ROLE]) {
+> > +             struct br_mrp_ring_role *role =
+> > +                     nla_data(tb[IFLA_BRIDGE_MRP_RING_ROLE]);
+> > +
+> > +             err = br_mrp_set_ring_role(br, role);
+> > +             if (err)
+> > +                     return err;
+> > +     }
+> > +
+> > +     if (tb[IFLA_BRIDGE_MRP_START_TEST]) {
+> > +             struct br_mrp_start_test *test =
+> > +                     nla_data(tb[IFLA_BRIDGE_MRP_START_TEST]);
+> > +
+> > +             err = br_mrp_start_test(br, test);
+> > +             if (err)
+> > +                     return err;
+> > +     }
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +int br_mrp_port_open(struct net_device *dev, u8 loc)
+> > +{
+> > +     struct net_bridge_port *p;
+> > +     int err = 0;
+> > +
+> > +     p = br_port_get_rcu(dev);
+> > +     if (!p) {
+> > +             err = -EINVAL;
+> > +             goto out;
+> > +     }
+> > +
+> > +     p->loc = loc;
+> > +     br_ifinfo_notify(RTM_NEWLINK, NULL, p);
+> > +
+> > +out:
+> > +     return err;
+> > +}
+> > +EXPORT_SYMBOL(br_mrp_port_open);
+> >
+> 
+> I just noticed the EXPORT_SYMBOL() here, why do you need it?
 
-My Name is Mr.Jak Abdullah mishail from Damascus Syria, and I am now
-resigned from the government. I am a member of an opposition party
-government in Syria and a business man also,
+Actually is not needed. But I am thinking to drop patch 4. The reason
+for patch nr 4, was that the drivers should notify when the ports lost
+the continuity. But currently there is no driver using the MRP then
+there is no point to have. I will add it back once the drivers start to
+use the MRP.
 
-I need a foreign partner to enable me transport my investment capital
-and then Relocate with my family, honestly I wish I will discuss more
-and get along I need a partner because my investment capital is in my
-international account. Am interested in buying Properties, houses,
-building real estates and some tourist places, my capital for
-investment is ($16.5 million USD) Meanwhile if there is any profitable
-investment that you have so much experience on it then we can join
-together as partners since I=E2=80=99m a foreigner.
+> 
 
-I came across your e-mail contact through private search while in need
-of your assistance and I decided to contact you directly to ask you if
-you know any Lucrative Business Investment in your Country I can
-invest my Money since my Country Syria Security and Economic
-Independent has lost to the Greatest Lower level, and our Culture has
-lost forever including our happiness has been taken away from us. Our
-Country has been on fire for many years now.
-
-If you are capable of handling this business Contact me for more
-details i will appreciate it if you can contact me immediately.
-You may as well tell me little more about yourself. Contact me
-urgently to enable us proceed with the business.
-
-I will be waiting for your respond.
-
-Sincerely Yours,
-
-Jak Abdullah mishail
+-- 
+/Horatiu
