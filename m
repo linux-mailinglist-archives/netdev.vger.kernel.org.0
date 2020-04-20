@@ -2,185 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73EE71AFF15
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 02:03:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF9EB1AFF1C
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 02:12:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726012AbgDTADi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Apr 2020 20:03:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57024 "EHLO
+        id S1725988AbgDTAMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Apr 2020 20:12:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725947AbgDTADh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 20:03:37 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C97C061A0C
-        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 17:03:37 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id w2so6006654edx.4
-        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 17:03:37 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725947AbgDTAMb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Apr 2020 20:12:31 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34ABEC061A0C
+        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 17:12:31 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id b62so8881086qkf.6
+        for <netdev@vger.kernel.org>; Sun, 19 Apr 2020 17:12:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=9XWofAVQkjwidFtFUDcNUdf83dNoUggf1miPbWtg11U=;
-        b=qbkemFXf2+qCGXxw8A3wYNmJRjb7704c4ChXeACsSCbEGpx/ui3l/sGGedoom1S0tk
-         BVXlSBsL1vKPYoIOfq75U3kVZF5LQGkA04HpvlmO2R4ZLXA4HzsZElDBq8PLdSAwDmfo
-         ASTTJnytMMGXvOy1VP3mbkIVm/MY0H2FU7JDoaqfIQ9C2Vaz3GpUKRZG8KsOILOrD9Wx
-         uU0xDECTLAU9lWF33s8V9ga+vGWJYFy/DPayqPMyGew+2F85oHpp+QgeVqjybKkWgxRI
-         o8fujxb53KZWhc3H9b6N+Fd36A2VyoQjL5iJrV7ygyHCa3psJWgYhp5qQSgnVe10GGQu
-         xtBQ==
+        bh=Nl4MyICdsucZjE6+CYv2FKrZxRZiX6lloSfFYM6/Y6o=;
+        b=boeMkjj9qy9nyt6SV1ZSWYNJ1lEN1GssxKAL00Bv2v2mT2CSxmQSNuSWYeR5aJlY6T
+         qXWIfb5SBsP0C8X3/ArsOrXSd2F2Tjaa94YTcryfSaItCtYOjpBP8T4nQ3VtkQz+nhPC
+         Ibw/7kNiSYxSc8XCm81Oi8q8R6qEPSD+ufqSQ+VOSOX+4P9A3us5lyc+SA8bUu5A0vug
+         SGPl/am0hQoXmWTErQHuXeG4QN0ORh6/C6n7ahC2HyAQo3sNvae236HLzOyQVDYV3Lgi
+         vxPbPNTSuiELOemMdCnEbRevkWesKHxTmqO+3y1xB3IoiUfWNhdUh04k1qWuKNpQoq0P
+         Lgfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=9XWofAVQkjwidFtFUDcNUdf83dNoUggf1miPbWtg11U=;
-        b=Kazz5fFkgmXmG18xCUJr7TNXgHEYeftQK0+4rRaDtIzeRtfqJORytpB7fQZ6w0Ef71
-         ZFRlaavKN4L3gWPhqeV2r6THezTHObTwXQ0AzyK9EAyvgTGu6QG2l51L2gMwWSpKth2V
-         B7uby3gNWgktwDrJdv0v2w2t21WA67hWICZl4rE58lR7fstLIvc1ZpXrddAqQnU+glCy
-         /5qIqx9JZhdhYVm/K10yHwifUWNpcwlvFZVaHj/wDMA9m1GWarhKG/esY8T9avzHouAm
-         J/rmDllUA+BLEqmyJDaR7PPsJepYKM4O30dBgqts7HciIXUWIDttMmgoIM4IXo4sQsVJ
-         RndA==
-X-Gm-Message-State: AGi0PuZEBuuwTnhu+jr9Yq/e8BIE4Qcro5OoEplqb0m98GbCHG1kS8tt
-        CELCmC3vJz8XUfsOueIaFWBUx3/ZkES4Aejcsol9Pg==
-X-Google-Smtp-Source: APiQypKNzHLRqOycG2Qy2+7B4rLXItG6Fo2fFLRt5yvaCZ8lYTJrxHjVnQgZsAmex0kXmm5CMVK2/GqgTBFAlA9Hgd4=
-X-Received: by 2002:a50:aca3:: with SMTP id x32mr12372250edc.368.1587341014539;
- Sun, 19 Apr 2020 17:03:34 -0700 (PDT)
+        bh=Nl4MyICdsucZjE6+CYv2FKrZxRZiX6lloSfFYM6/Y6o=;
+        b=MkzJ2Ptu59c4SGo2z1wcATQFnll6CvtfXY78Y0rrCWL4QhmYoDI2nLFaota6CCkiAY
+         1g5tim3GNPHWFUZclcYMs+mPSyA7QWRtZj/RvJ5cVXI87JjUsJrWSQ1pz0XzVwMp6Wxh
+         5e0LqoOKnv5zS4QXXR5afHL6NLXw658V0tqZWgPgZSVx2oClVtFCOprbArnCP/AmR2DP
+         m/kflXHMzLf2HAose+4Y1fsmbVMHpHt7REtyYvu4yf05GigaQZvhN/k28aJ/fuOwGXEK
+         mcjmL6lH2eQFelAWyWWAo1IqF0cdwtSJqd1wpZTZHFRLgvHYbR3ifRBS5+z+pUSVMsBF
+         ST8A==
+X-Gm-Message-State: AGi0PuZPboGzK4i+MYBIai4s5MsBK/d46VcqIuj8XKD2D+kV0RWEogAe
+        KqyG6yZUoOoyZgWMlD2Ty+YZ/XgohMvicyhAHZA=
+X-Google-Smtp-Source: APiQypKBs5DxOsNTsm/qMCOAQzAbTDACMrirStxGDA5kDZfPwoRWUPIW/KtvB8tpWrE+HCjJ6bBbdLU9waBZxJUhTbI=
+X-Received: by 2002:a05:620a:1647:: with SMTP id c7mr13874978qko.473.1587341550248;
+ Sun, 19 Apr 2020 17:12:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200417190308.32598-1-olteanv@gmail.com> <20200419073307.uhm3w2jhsczpchvi@ws.localdomain>
- <CA+h21hrvSjRwDORZosxDt5YA+uMckaypT51f-COr+wtB7EjVAQ@mail.gmail.com> <20200419182534.o42v5fiw34qxhenu@ws.localdomain>
-In-Reply-To: <20200419182534.o42v5fiw34qxhenu@ws.localdomain>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 20 Apr 2020 03:03:23 +0300
-Message-ID: <CA+h21hoBxX3GWQ7+ehov2eGzhsqodH9RjN0FfVTW6beFFjETBQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: mscc: ocelot: deal with problematic
- MAC_ETYPE VCAP IS2 rules
-To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        "Y.b. Lu" <yangbo.lu@nxp.com>, Po Liu <po.liu@nxp.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mingkai Hu <mingkai.hu@nxp.com>
+References: <CAMDZJNWm5Vu-G4_het+CyxdbZYPJuidihUPK0ZhPC1HfKXsM2A@mail.gmail.com>
+ <5e5bc4248759f4a1bfc449fa2b8854dd56c0e281.camel@mellanox.com>
+In-Reply-To: <5e5bc4248759f4a1bfc449fa2b8854dd56c0e281.camel@mellanox.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Mon, 20 Apr 2020 08:11:54 +0800
+Message-ID: <CAMDZJNU_3G83tHs+khV9wwpXdoFrOngDTq6kS0TMWXdj9hRkeA@mail.gmail.com>
+Subject: Re: discussion mlx5e vlan forwarding
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     Roi Dayan <roid@mellanox.com>,
+        "gerlitz.or@gmail.com" <gerlitz.or@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Allan,
-
-On Sun, 19 Apr 2020 at 21:25, Allan W. Nielsen
-<allan.nielsen@microchip.com> wrote:
+On Sat, Apr 18, 2020 at 6:48 AM Saeed Mahameed <saeedm@mellanox.com> wrote:
 >
-> On 19.04.2020 17:20, Vladimir Oltean wrote:
-> >EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> On Fri, 2020-04-17 at 18:57 +0800, Tonghao Zhang wrote:
+> > Hi Saeed and maintainers
 > >
-> >On Sun, 19 Apr 2020 at 10:33, Allan W. Nielsen
-> ><allan.nielsen@microchip.com> wrote:
-> >>
-> >> Hi,
-> >>
-> >> Sorry I did not manage to provide feedback before it was merged (I will
-> >> need to consult some of my colleagues Monday before I can provide the
-> >> foll feedback).
-> >>
-> >> There are many good things in this patch, but it is not only good.
-> >>
-> >> The problem is that these TCAMs/VCAPs are insanely complicated and it is
-> >> really hard to make them fit nicely into the existing tc frame-work
-> >> (being hard does not mean that we should not try).
-> >>
-> >> In this patch, you try to automatic figure out who the user want the
-> >> TCAM to be configured. It works for 1 use-case but it breaks others.
-> >>
-> >> Before this patch you could do a:
-> >>      tc filter add dev swp0 ingress protocol ipv4 \
-> >>              flower skip_sw src_ip 10.0.0.1 action drop
-> >>      tc filter add dev swp0 ingress \
-> >>              flower skip_sw src_mac 96:18:82:00:04:01 action drop
-> >>
-> >> But the second rule would not apply to the ICMP over IPv4 over Ethernet
-> >> packet, it would however apply to non-IP packets.
-> >>
-> >> With this patch it not possible. Your use-case is more common, but the
-> >> other one is not unrealistic.
-> >>
-> >> My concern with this, is that I do not think it is possible to automatic
-> >> detect how these TCAMs needs to be configured by only looking at the
-> >> rules installed by the user. Trying to do this automatic, also makes the
-> >> TCAM logic even harder to understand for the user.
-> >>
-> >> I would prefer that we by default uses some conservative default
-> >> settings which are easy to understand, and then expose some expert
-> >> settings in the sysfs, which can be used to achieve different
-> >> behavioral.
-> >>
-> >> Maybe forcing MAC_ETYPE matches is the most conservative and easiest to
-> >> understand default.
-> >>
-> >> But I do seem to recall that there is a way to allow matching on both
-> >> SMAC and SIP (your original motivation). This may be a better default
-> >> (despite that it consumes more TCAM resources). I will follow up and
-> >> check if this is possible.
-> >>
-> >> Vladimir (and anyone else whom interested): would you be interested in
-> >> spending some time discussion the more high-level architectures and
-> >> use-cases on how to best integrate this TCAM architecture into the Linux
-> >> kernel. Not sure on the outlook for the various conferences, but we
-> >> could arrange some online session to discuss this.
-> >>
-> >> /Allan
-> >>
+> > In one case, I want to push vlan and forward the packets to one VF.
+> > Tc
+> > command shown as below
+> > $ tc filter add dev $PF0_REP0 parent ffff: protocol ip prio 1 chain 0
+> > \
+> >     flower src_mac 0a:47:da:d6:40:04 dst_mac 00:11:22:33:44:66 \
+> >     action vlan push id 200 pipe action mirred egress redirect dev
+> > $PF_REP1
 > >
-> >And yes, we would be very interested in attending a call for syncing
-> >up on integrating the TCAM hardware with the flow offload
-> >infrastructure from Linux. Actually at the moment we are trying to add
-> >support for offloaded VLAN retagging with the VCAP IS1 and ES0 blocks.
+> > dmesg:
+> > mlx5_core 0000:82:00.0: mlx5_cmd_check:756:(pid 10735):
+> > SET_FLOW_TABLE_ENTRY(0x936) op_mod(0x0) failed, status bad
+> > parameter(0x3), syndrome (0xa9c090)
+> >
+> > So do we support that forwarding ?
+> >
 >
-> Sounds good - lets spend some time to talk discuss this and see what
-> comes out of it.
+> Hi Tonghao,
 >
-> Ido, if you want to join us, pleaes comment with your preferences. If
-> others want to join please let me know.
+> CC'ing more experts, Or and Roi, they might have more useful info for
+> you.
 >
-> I can setup a meeting in WebEx or Teams. I'm happy to join on other
-> platformws if you prefer. They both works fine from Linux in Chrome and
-> FireFox (sometimes tricky to get the sound working in FF).
->
-> Proposed agenda:
->
-> - Cover the TCAM architecture in Ocelot/Felix (just to make sure we are
->    all on the same page).
-> - Present some use-cases MCHP would like to address in future.
-> - Open discussion.
->
-> I think we will need something between 30-120 minutes depending on how
-> the discussion goes.
->
-> We are in CEST time - and I'm okay to attend from 7-22.
->
-> What about you.
->
-> /Allan
+> but as far as i recall, this can only work on uplink port and not a VF.
+Do we have plan to support that function? I guess that this feature is
+important for us.
+Because I use vlan id as metadata, and that will be matched in future.
+> > kernel version: 5.6.0-rc7+ [OFED 5.0 has that issue too]
+> > firmware-version: 16.27.1016
+> > NIC: Mellanox Technologies MT27800 Family [ConnectX-5]
 
-From my side I am available for the entire time interval you
-mentioned, since the time zone in Bucharest (GMT+3) is rather close to
-Copenhagen. Our colleagues from NXP Beijing might also be interested,
-which is probably going to restrict the time interval to the first
-half of the day. And you can also schedule for Tuesday if tomorrow is
-on too short notice.
-Both WebEx and Teams should work, with a slight preference to Teams
-since NXP people are already using it.
 
-Thanks,
--Vladimir
+
+-- 
+Best regards, Tonghao
