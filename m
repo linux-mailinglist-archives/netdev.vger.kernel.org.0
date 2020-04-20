@@ -2,37 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F28481B1A37
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 01:43:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBE171B1A3B
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 01:43:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726623AbgDTXnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 19:43:17 -0400
+        id S1726961AbgDTXn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 19:43:27 -0400
 Received: from mga01.intel.com ([192.55.52.88]:14655 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726050AbgDTXnQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 19:43:16 -0400
-IronPort-SDR: mLl1XU8bUyJB9/BwREk29uid7MY+2LjkcsZdd0LxISV1aRCKW6IuxjA1kAlG39UUwX24TtkKUU
- 7+QWMSiXgXHA==
+        id S1726006AbgDTXnS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 19:43:18 -0400
+IronPort-SDR: c7u9OWyeCoDkWKTYwlD0IlYcEGV/tajwmfztnM6DWhDrypTq1FEG7m0JukgzMCn+/D1rv24G5z
+ w2xMtl5w5yVA==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 16:43:15 -0700
-IronPort-SDR: e5kkqP+oDfXJa49Uk8FTdxFzeecMWSX0vkGVjDcvg3XiGlBQ3r5UqGCJhGfWs+8mrP+KpgTmA2
- erc+1IT56gCw==
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 16:43:16 -0700
+IronPort-SDR: SQ/T/xYwgLgin9GzWQhsLn8FzhXKZgLg5o51Y+R/fLbJJ4yz7dx+jxKoqYk2qglsenlbqlHEgp
+ C5u+La8eMl9A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.72,408,1580803200"; 
-   d="scan'208";a="300428844"
+   d="scan'208";a="300428848"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by FMSMGA003.fm.intel.com with ESMTP; 20 Apr 2020 16:43:15 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Andre Guedes <andre.guedes@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Vitaly Lifshits <vitaly.lifshits@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        kbuild test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Andre Guedes <andre.guedes@intel.com>,
         Aaron Brown <aaron.f.brown@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 02/13] igc: Use netdev log helpers in igc_main.c
-Date:   Mon, 20 Apr 2020 16:43:02 -0700
-Message-Id: <20200420234313.2184282-3-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 03/13] igc: add support to interrupt, eeprom, registers and link self-tests
+Date:   Mon, 20 Apr 2020 16:43:03 -0700
+Message-Id: <20200420234313.2184282-4-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.25.3
 In-Reply-To: <20200420234313.2184282-1-jeffrey.t.kirsher@intel.com>
 References: <20200420234313.2184282-1-jeffrey.t.kirsher@intel.com>
@@ -43,423 +46,579 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andre Guedes <andre.guedes@intel.com>
+From: Vitaly Lifshits <vitaly.lifshits@intel.com>
 
-In igc_main.c we print log messages using both dev_* and netdev_*
-helpers, generating inconsistent output. Since this is a network device
-driver, we should preferably use netdev_* helpers because they append
-the interface name to the message, helping making sense out of the logs.
+Introduced igc_diag.c and igc_diag.h, these files have the
+diagnostics functionality of igc driver. For the time being
+these files are being used by ethtool self-test callbacks.
+Which mean that interrupt, eeprom, registers and link self-tests for
+ethtool were implemented.
 
-This patch converts all dev_* calls to netdev_*. There is only two
-exceptions: one in igc_probe (net_device has not been allocated yet),
-and another one in igc_init_module (module initialization). It also
-takes this opportunity to improve some messages and remove the '\n'
-character at the end of messages since it is automatically added to by
-netdev_* log helpers.
-
-Signed-off-by: Andre Guedes <andre.guedes@intel.com>
+Signed-off-by: Vitaly Lifshits <vitaly.lifshits@intel.com>
+Reported-by: kbuild test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Andre Guedes <andre.guedes@intel.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc_main.c | 129 ++++++++++------------
- 1 file changed, 59 insertions(+), 70 deletions(-)
+ drivers/net/ethernet/intel/igc/Makefile      |   2 +-
+ drivers/net/ethernet/intel/igc/igc.h         |   4 +
+ drivers/net/ethernet/intel/igc/igc_diag.c    | 336 +++++++++++++++++++
+ drivers/net/ethernet/intel/igc/igc_diag.h    |  37 ++
+ drivers/net/ethernet/intel/igc/igc_ethtool.c |  63 ++++
+ drivers/net/ethernet/intel/igc/igc_main.c    |   4 +-
+ drivers/net/ethernet/intel/igc/igc_regs.h    |   2 +
+ 7 files changed, 445 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/net/ethernet/intel/igc/igc_diag.c
+ create mode 100644 drivers/net/ethernet/intel/igc/igc_diag.h
 
+diff --git a/drivers/net/ethernet/intel/igc/Makefile b/drivers/net/ethernet/intel/igc/Makefile
+index 3652f211f351..1c3051db9085 100644
+--- a/drivers/net/ethernet/intel/igc/Makefile
++++ b/drivers/net/ethernet/intel/igc/Makefile
+@@ -8,4 +8,4 @@
+ obj-$(CONFIG_IGC) += igc.o
+ 
+ igc-objs := igc_main.o igc_mac.o igc_i225.o igc_base.o igc_nvm.o igc_phy.o \
+-igc_ethtool.o igc_ptp.o igc_dump.o igc_tsn.o
++igc_diag.o igc_ethtool.o igc_ptp.o igc_dump.o igc_tsn.o
+diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
+index 8ddc39482a8e..661dc8875f3f 100644
+--- a/drivers/net/ethernet/intel/igc/igc.h
++++ b/drivers/net/ethernet/intel/igc/igc.h
+@@ -198,6 +198,8 @@ struct igc_adapter {
+ 	unsigned long link_check_timeout;
+ 	struct igc_info ei;
+ 
++	u32 test_icr;
++
+ 	struct ptp_clock *ptp_clock;
+ 	struct ptp_clock_info ptp_caps;
+ 	struct work_struct ptp_tx_work;
+@@ -215,6 +217,8 @@ struct igc_adapter {
+ 
+ void igc_up(struct igc_adapter *adapter);
+ void igc_down(struct igc_adapter *adapter);
++int igc_open(struct net_device *netdev);
++int igc_close(struct net_device *netdev);
+ int igc_setup_tx_resources(struct igc_ring *ring);
+ int igc_setup_rx_resources(struct igc_ring *ring);
+ void igc_free_tx_resources(struct igc_ring *ring);
+diff --git a/drivers/net/ethernet/intel/igc/igc_diag.c b/drivers/net/ethernet/intel/igc/igc_diag.c
+new file mode 100644
+index 000000000000..4197ceac5d28
+--- /dev/null
++++ b/drivers/net/ethernet/intel/igc/igc_diag.c
+@@ -0,0 +1,336 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c)  2020 Intel Corporation */
++
++#include "igc.h"
++#include "igc_diag.h"
++
++struct igc_reg_test reg_test[] = {
++	{ IGC_FCAL,	1,	PATTERN_TEST,	0xFFFFFFFF,	0xFFFFFFFF },
++	{ IGC_FCAH,	1,	PATTERN_TEST,	0x0000FFFF,	0xFFFFFFFF },
++	{ IGC_FCT,	1,	PATTERN_TEST,	0x0000FFFF,	0xFFFFFFFF },
++	{ IGC_RDBAH(0),	4,	PATTERN_TEST,	0xFFFFFFFF,	0xFFFFFFFF },
++	{ IGC_RDBAL(0),	4,	PATTERN_TEST,	0xFFFFFF80,	0xFFFFFF80 },
++	{ IGC_RDLEN(0),	4,	PATTERN_TEST,	0x000FFF80,	0x000FFFFF },
++	{ IGC_RDT(0),	4,	PATTERN_TEST,	0x0000FFFF,	0x0000FFFF },
++	{ IGC_FCRTH,	1,	PATTERN_TEST,	0x0003FFF0,	0x0003FFF0 },
++	{ IGC_FCTTV,	1,	PATTERN_TEST,	0x0000FFFF,	0x0000FFFF },
++	{ IGC_TIPG,	1,	PATTERN_TEST,	0x3FFFFFFF,	0x3FFFFFFF },
++	{ IGC_TDBAH(0),	4,	PATTERN_TEST,	0xFFFFFFFF,	0xFFFFFFFF },
++	{ IGC_TDBAL(0),	4,	PATTERN_TEST,	0xFFFFFF80,	0xFFFFFF80 },
++	{ IGC_TDLEN(0),	4,	PATTERN_TEST,	0x000FFF80,	0x000FFFFF },
++	{ IGC_TDT(0),	4,	PATTERN_TEST,	0x0000FFFF,	0x0000FFFF },
++	{ IGC_RCTL,	1,	SET_READ_TEST,	0xFFFFFFFF,	0x00000000 },
++	{ IGC_RCTL,	1,	SET_READ_TEST,	0x04CFB2FE,	0x003FFFFB },
++	{ IGC_RCTL,	1,	SET_READ_TEST,	0x04CFB2FE,	0xFFFFFFFF },
++	{ IGC_TCTL,	1,	SET_READ_TEST,	0xFFFFFFFF,	0x00000000 },
++	{ IGC_RA,	16,	TABLE64_TEST_LO,
++						0xFFFFFFFF,	0xFFFFFFFF },
++	{ IGC_RA,	16,	TABLE64_TEST_HI,
++						0x900FFFFF,	0xFFFFFFFF },
++	{ IGC_MTA,	128,	TABLE32_TEST,
++						0xFFFFFFFF,	0xFFFFFFFF },
++	{ 0, 0, 0, 0}
++};
++
++static bool reg_pattern_test(struct igc_adapter *adapter, u64 *data, int reg,
++			     u32 mask, u32 write)
++{
++	struct igc_hw *hw = &adapter->hw;
++	u32 pat, val, before;
++	static const u32 test_pattern[] = {
++		0x5A5A5A5A, 0xA5A5A5A5, 0x00000000, 0xFFFFFFFF
++	};
++
++	for (pat = 0; pat < ARRAY_SIZE(test_pattern); pat++) {
++		before = rd32(reg);
++		wr32(reg, test_pattern[pat] & write);
++		val = rd32(reg);
++		if (val != (test_pattern[pat] & write & mask)) {
++			netdev_err(adapter->netdev,
++				   "pattern test reg %04X failed: got 0x%08X expected 0x%08X",
++				   reg, val, test_pattern[pat] & write & mask);
++			*data = reg;
++			wr32(reg, before);
++			return false;
++		}
++		wr32(reg, before);
++	}
++	return true;
++}
++
++static bool reg_set_and_check(struct igc_adapter *adapter, u64 *data, int reg,
++			      u32 mask, u32 write)
++{
++	struct igc_hw *hw = &adapter->hw;
++	u32 val, before;
++
++	before = rd32(reg);
++	wr32(reg, write & mask);
++	val = rd32(reg);
++	if ((write & mask) != (val & mask)) {
++		netdev_err(adapter->netdev,
++			   "set/check reg %04X test failed: got 0x%08X expected 0x%08X",
++			   reg, (val & mask), (write & mask));
++		*data = reg;
++		wr32(reg, before);
++		return false;
++	}
++	wr32(reg, before);
++	return true;
++}
++
++bool igc_reg_test(struct igc_adapter *adapter, u64 *data)
++{
++	struct igc_reg_test *test = reg_test;
++	struct igc_hw *hw = &adapter->hw;
++	u32 value, before, after;
++	u32 i, toggle, b = false;
++
++	/* Because the status register is such a special case,
++	 * we handle it separately from the rest of the register
++	 * tests.  Some bits are read-only, some toggle, and some
++	 * are writeable.
++	 */
++	toggle = 0x6800D3;
++	before = rd32(IGC_STATUS);
++	value = before & toggle;
++	wr32(IGC_STATUS, toggle);
++	after = rd32(IGC_STATUS) & toggle;
++	if (value != after) {
++		netdev_err(adapter->netdev,
++			   "failed STATUS register test got: 0x%08X expected: 0x%08X",
++			   after, value);
++		*data = 1;
++		return false;
++	}
++	/* restore previous status */
++	wr32(IGC_STATUS, before);
++
++	/* Perform the remainder of the register test, looping through
++	 * the test table until we either fail or reach the null entry.
++	 */
++	while (test->reg) {
++		for (i = 0; i < test->array_len; i++) {
++			switch (test->test_type) {
++			case PATTERN_TEST:
++				b = reg_pattern_test(adapter, data,
++						     test->reg + (i * 0x40),
++						     test->mask,
++						     test->write);
++				break;
++			case SET_READ_TEST:
++				b = reg_set_and_check(adapter, data,
++						      test->reg + (i * 0x40),
++						      test->mask,
++						      test->write);
++				break;
++			case TABLE64_TEST_LO:
++				b = reg_pattern_test(adapter, data,
++						     test->reg + (i * 8),
++						     test->mask,
++						     test->write);
++				break;
++			case TABLE64_TEST_HI:
++				b = reg_pattern_test(adapter, data,
++						     test->reg + 4 + (i * 8),
++						     test->mask,
++						     test->write);
++				break;
++			case TABLE32_TEST:
++				b = reg_pattern_test(adapter, data,
++						     test->reg + (i * 4),
++						     test->mask,
++						     test->write);
++				break;
++			}
++			if (!b)
++				return false;
++		}
++		test++;
++	}
++	*data = 0;
++	return true;
++}
++
++bool igc_eeprom_test(struct igc_adapter *adapter, u64 *data)
++{
++	struct igc_hw *hw = &adapter->hw;
++
++	*data = 0;
++
++	if (hw->nvm.ops.validate(hw) != IGC_SUCCESS) {
++		*data = 1;
++		return false;
++	}
++
++	return true;
++}
++
++static irqreturn_t igc_test_intr(int irq, void *data)
++{
++	struct igc_adapter *adapter = (struct igc_adapter *)data;
++	struct igc_hw *hw = &adapter->hw;
++
++	adapter->test_icr |= rd32(IGC_ICR);
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t igc_test_intr_msix(int irq, void *data)
++{
++	struct igc_adapter *adapter = (struct igc_adapter *)data;
++	struct igc_hw *hw = &adapter->hw;
++
++	adapter->test_icr |= rd32(IGC_EICR);
++
++	return IRQ_HANDLED;
++}
++
++bool igc_intr_test(struct igc_adapter *adapter, u64 *data)
++{
++	struct igc_hw *hw = &adapter->hw;
++	struct net_device *netdev = adapter->netdev;
++	u32 mask, ics_mask = IGC_ICS_MASK_OTHER, i = 0, shared_int = true;
++	u32 irq = adapter->pdev->irq;
++
++	*data = 0;
++
++	/* Hook up test interrupt handler just for this test */
++	if (adapter->msix_entries) {
++		if (request_irq(adapter->msix_entries[0].vector,
++				&igc_test_intr_msix, 0,
++				netdev->name, adapter)) {
++			*data = 1;
++			return false;
++		}
++		ics_mask = IGC_ICS_MASK_MSIX;
++	} else if (adapter->flags & IGC_FLAG_HAS_MSI) {
++		shared_int = false;
++		if (request_irq(irq,
++				igc_test_intr, 0, netdev->name, adapter)) {
++			*data = 1;
++			return false;
++		}
++	} else if (!request_irq(irq, igc_test_intr, IRQF_PROBE_SHARED,
++				netdev->name, adapter)) {
++		shared_int = false;
++	} else if (request_irq(irq, &igc_test_intr, IRQF_SHARED,
++		 netdev->name, adapter)) {
++		*data = 1;
++		return false;
++	}
++	netdev_info(adapter->netdev, "testing %s interrupt",
++		    (shared_int ? "shared" : "unshared"));
++
++	/* Disable all the interrupts */
++	wr32(IGC_IMC, ~0);
++	wr32(IGC_EIMC, ~0);
++	wrfl();
++	usleep_range(10000, 20000);
++
++	/* Test each interrupt */
++	for (; i < 31; i++) {
++		/* Interrupt to test */
++		mask = BIT(i);
++
++		if (!(mask & ics_mask))
++			continue;
++
++		if (!shared_int) {
++			/* Disable the interrupt to be reported in
++			 * the cause register and then force the same
++			 * interrupt and see if one gets posted.  If
++			 * an interrupt was posted to the bus, the
++			 * test failed.
++			 */
++			adapter->test_icr = 0;
++
++			/* Flush any pending interrupts */
++			wr32(IGC_ICR, ~0);
++
++			wr32(IGC_IMC, mask);
++			wr32(IGC_ICS, mask);
++			wrfl();
++			usleep_range(10000, 20000);
++
++			if (adapter->test_icr & mask) {
++				*data = 3;
++				break;
++			}
++		}
++
++		/* Enable the interrupt to be reported in
++		 * the cause register and then force the same
++		 * interrupt and see if one gets posted.  If
++		 * an interrupt was not posted to the bus, the
++		 * test failed.
++		 */
++		adapter->test_icr = 0;
++
++		wr32(IGC_EIMS, mask);
++		wr32(IGC_EICS, mask);
++		wrfl();
++		usleep_range(10000, 20000);
++
++		if (!(adapter->test_icr & mask)) {
++			*data = 4;
++			break;
++		}
++
++		if (!shared_int) {
++			/* Disable the other interrupts to be reported in
++			 * the cause register and then force the other
++			 * interrupts and see if any get posted.  If
++			 * an interrupt was posted to the bus, the
++			 * test failed.
++			 */
++			adapter->test_icr = 0;
++
++			/* Flush any pending interrupts */
++			wr32(IGC_ICR, ~0);
++
++			wr32(IGC_IMC, ~mask);
++			wr32(IGC_ICS, ~mask);
++			wrfl();
++			usleep_range(10000, 20000);
++
++			if (adapter->test_icr & mask) {
++				*data = 5;
++				break;
++			}
++		}
++	}
++
++	/* Disable all the interrupts */
++	wr32(IGC_EIMC, ~0);
++	wr32(IGC_IMC, ~0);
++	wrfl();
++	usleep_range(10000, 20000);
++
++	/* Unhook test interrupt handler */
++	if (adapter->msix_entries)
++		free_irq(adapter->msix_entries[0].vector, adapter);
++	else
++		free_irq(irq, adapter);
++
++	return true;
++}
++
++bool igc_link_test(struct igc_adapter *adapter, u64 *data)
++{
++	bool link_up;
++
++	*data = 0;
++
++	/* add delay to give enough time for autonegotioation to finish */
++	if (adapter->hw.mac.autoneg)
++		ssleep(5);
++
++	link_up = igc_has_link(adapter);
++	if (!link_up) {
++		*data = 1;
++		return false;
++	}
++
++	return true;
++}
+diff --git a/drivers/net/ethernet/intel/igc/igc_diag.h b/drivers/net/ethernet/intel/igc/igc_diag.h
+new file mode 100644
+index 000000000000..3cffaad01d50
+--- /dev/null
++++ b/drivers/net/ethernet/intel/igc/igc_diag.h
+@@ -0,0 +1,37 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (c)  2020 Intel Corporation */
++
++bool igc_reg_test(struct igc_adapter *adapter, u64 *data);
++bool igc_eeprom_test(struct igc_adapter *adapter, u64 *data);
++bool igc_intr_test(struct igc_adapter *adapter, u64 *data);
++bool igc_link_test(struct igc_adapter *adapter, u64 *data);
++
++struct igc_reg_test {
++	u16 reg;
++	u8 array_len;
++	u8 test_type;
++	u32 mask;
++	u32 write;
++};
++
++/* In the hardware, registers are laid out either singly, in arrays
++ * spaced 0x40 bytes apart, or in contiguous tables.  We assume
++ * most tests take place on arrays or single registers (handled
++ * as a single-element array) and special-case the tables.
++ * Table tests are always pattern tests.
++ *
++ * We also make provision for some required setup steps by specifying
++ * registers to be written without any read-back testing.
++ */
++
++#define PATTERN_TEST	1
++#define SET_READ_TEST	2
++#define TABLE32_TEST	3
++#define TABLE64_TEST_LO	4
++#define TABLE64_TEST_HI	5
++
++/* For interrupt test we are using different registers
++ * and masks for msi-x interrupts and the other methods
++ */
++#define IGC_ICS_MASK_OTHER	0x774CFED5
++#define IGC_ICS_MASK_MSIX	0xF
+diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c b/drivers/net/ethernet/intel/igc/igc_ethtool.c
+index 0a8c4a7412a4..c14196663ebb 100644
+--- a/drivers/net/ethernet/intel/igc/igc_ethtool.c
++++ b/drivers/net/ethernet/intel/igc/igc_ethtool.c
+@@ -6,6 +6,7 @@
+ #include <linux/pm_runtime.h>
+ 
+ #include "igc.h"
++#include "igc_diag.h"
+ 
+ /* forward declaration */
+ struct igc_stats {
+@@ -1896,6 +1897,67 @@ static int igc_set_link_ksettings(struct net_device *netdev,
+ 	return 0;
+ }
+ 
++static void igc_diag_test(struct net_device *netdev,
++			  struct ethtool_test *eth_test, u64 *data)
++{
++	struct igc_adapter *adapter = netdev_priv(netdev);
++	bool if_running = netif_running(netdev);
++
++	if (eth_test->flags == ETH_TEST_FL_OFFLINE) {
++		netdev_info(adapter->netdev, "offline testing starting");
++		set_bit(__IGC_TESTING, &adapter->state);
++
++		/* Link test performed before hardware reset so autoneg doesn't
++		 * interfere with test result
++		 */
++		if (!igc_link_test(adapter, &data[TEST_LINK]))
++			eth_test->flags |= ETH_TEST_FL_FAILED;
++
++		if (if_running)
++			igc_close(netdev);
++		else
++			igc_reset(adapter);
++
++		netdev_info(adapter->netdev, "register testing starting");
++		if (!igc_reg_test(adapter, &data[TEST_REG]))
++			eth_test->flags |= ETH_TEST_FL_FAILED;
++
++		igc_reset(adapter);
++
++		netdev_info(adapter->netdev, "eeprom testing starting");
++		if (!igc_eeprom_test(adapter, &data[TEST_EEP]))
++			eth_test->flags |= ETH_TEST_FL_FAILED;
++
++		igc_reset(adapter);
++
++		netdev_info(adapter->netdev, "interrupt testing starting");
++		if (!igc_intr_test(adapter, &data[TEST_IRQ]))
++			eth_test->flags |= ETH_TEST_FL_FAILED;
++
++		igc_reset(adapter);
++
++		/* loopback test will be implemented in the future */
++		data[TEST_LOOP] = 0;
++
++		clear_bit(__IGC_TESTING, &adapter->state);
++		if (if_running)
++			igc_open(netdev);
++	} else {
++		netdev_info(adapter->netdev, "online testing starting");
++
++		/* register, eeprom, intr and loopback tests not run online */
++		data[TEST_REG] = 0;
++		data[TEST_EEP] = 0;
++		data[TEST_IRQ] = 0;
++		data[TEST_LOOP] = 0;
++
++		if (!igc_link_test(adapter, &data[TEST_LINK]))
++			eth_test->flags |= ETH_TEST_FL_FAILED;
++	}
++
++	msleep_interruptible(4 * 1000);
++}
++
+ static const struct ethtool_ops igc_ethtool_ops = {
+ 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS,
+ 	.get_drvinfo		= igc_get_drvinfo,
+@@ -1933,6 +1995,7 @@ static const struct ethtool_ops igc_ethtool_ops = {
+ 	.complete		= igc_ethtool_complete,
+ 	.get_link_ksettings	= igc_get_link_ksettings,
+ 	.set_link_ksettings	= igc_set_link_ksettings,
++	.self_test		= igc_diag_test,
+ };
+ 
+ void igc_set_ethtool_ops(struct net_device *netdev)
 diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 7556fcdf1fd7..c67d141def1d 100644
+index c67d141def1d..ecf074093a42 100644
 --- a/drivers/net/ethernet/intel/igc/igc_main.c
 +++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -76,7 +76,7 @@ static void igc_power_down_link(struct igc_adapter *adapter)
- 
- void igc_reset(struct igc_adapter *adapter)
- {
--	struct pci_dev *pdev = adapter->pdev;
-+	struct net_device *dev = adapter->netdev;
- 	struct igc_hw *hw = &adapter->hw;
- 	struct igc_fc_info *fc = &hw->fc;
- 	u32 pba, hwm;
-@@ -103,7 +103,7 @@ void igc_reset(struct igc_adapter *adapter)
- 	hw->mac.ops.reset_hw(hw);
- 
- 	if (hw->mac.ops.init_hw(hw))
--		dev_err(&pdev->dev, "Hardware Error\n");
-+		netdev_err(dev, "Error on hardware initialization");
- 
- 	if (!netif_running(adapter->netdev))
- 		igc_power_down_link(adapter);
-@@ -288,6 +288,7 @@ static void igc_clean_all_tx_rings(struct igc_adapter *adapter)
-  */
- int igc_setup_tx_resources(struct igc_ring *tx_ring)
- {
-+	struct net_device *ndev = tx_ring->netdev;
- 	struct device *dev = tx_ring->dev;
- 	int size = 0;
- 
-@@ -313,8 +314,7 @@ int igc_setup_tx_resources(struct igc_ring *tx_ring)
- 
- err:
- 	vfree(tx_ring->tx_buffer_info);
--	dev_err(dev,
--		"Unable to allocate memory for the transmit descriptor ring\n");
-+	netdev_err(ndev, "Unable to allocate memory for tx descriptor ring");
- 	return -ENOMEM;
- }
- 
-@@ -326,14 +326,13 @@ int igc_setup_tx_resources(struct igc_ring *tx_ring)
-  */
- static int igc_setup_all_tx_resources(struct igc_adapter *adapter)
- {
--	struct pci_dev *pdev = adapter->pdev;
-+	struct net_device *dev = adapter->netdev;
- 	int i, err = 0;
- 
- 	for (i = 0; i < adapter->num_tx_queues; i++) {
- 		err = igc_setup_tx_resources(adapter->tx_ring[i]);
- 		if (err) {
--			dev_err(&pdev->dev,
--				"Allocation for Tx Queue %u failed\n", i);
-+			netdev_err(dev, "Error on tx queue %u setup", i);
- 			for (i--; i >= 0; i--)
- 				igc_free_tx_resources(adapter->tx_ring[i]);
- 			break;
-@@ -444,6 +443,7 @@ static void igc_free_all_rx_resources(struct igc_adapter *adapter)
-  */
- int igc_setup_rx_resources(struct igc_ring *rx_ring)
- {
-+	struct net_device *ndev = rx_ring->netdev;
- 	struct device *dev = rx_ring->dev;
- 	int size, desc_len;
- 
-@@ -473,8 +473,7 @@ int igc_setup_rx_resources(struct igc_ring *rx_ring)
- err:
- 	vfree(rx_ring->rx_buffer_info);
- 	rx_ring->rx_buffer_info = NULL;
--	dev_err(dev,
--		"Unable to allocate memory for the receive descriptor ring\n");
-+	netdev_err(ndev, "Unable to allocate memory for rx descriptor ring");
- 	return -ENOMEM;
- }
- 
-@@ -487,14 +486,13 @@ int igc_setup_rx_resources(struct igc_ring *rx_ring)
-  */
- static int igc_setup_all_rx_resources(struct igc_adapter *adapter)
- {
--	struct pci_dev *pdev = adapter->pdev;
-+	struct net_device *dev = adapter->netdev;
- 	int i, err = 0;
- 
- 	for (i = 0; i < adapter->num_rx_queues; i++) {
- 		err = igc_setup_rx_resources(adapter->rx_ring[i]);
- 		if (err) {
--			dev_err(&pdev->dev,
--				"Allocation for Rx Queue %u failed\n", i);
-+			netdev_err(dev, "Error on rx queue %u setup", i);
- 			for (i--; i >= 0; i--)
- 				igc_free_rx_resources(adapter->rx_ring[i]);
- 			break;
-@@ -1196,7 +1194,7 @@ static int igc_tx_map(struct igc_ring *tx_ring,
- 
- 	return 0;
- dma_error:
--	dev_err(tx_ring->dev, "TX DMA map failed\n");
-+	netdev_err(tx_ring->netdev, "TX DMA map failed");
- 	tx_buffer = &tx_ring->tx_buffer_info[i];
- 
- 	/* clear dma mappings for failed tx_buffer_info map */
-@@ -1459,8 +1457,8 @@ static void igc_rx_checksum(struct igc_ring *ring,
- 				      IGC_RXD_STAT_UDPCS))
- 		skb->ip_summed = CHECKSUM_UNNECESSARY;
- 
--	dev_dbg(ring->dev, "cksum success: bits %08X\n",
--		le32_to_cpu(rx_desc->wb.upper.status_error));
-+	netdev_dbg(ring->netdev, "cksum success: bits %08X",
-+		   le32_to_cpu(rx_desc->wb.upper.status_error));
- }
- 
- static inline void igc_rx_hash(struct igc_ring *ring,
-@@ -2122,27 +2120,27 @@ static bool igc_clean_tx_irq(struct igc_q_vector *q_vector, int napi_budget)
- 		    (adapter->tx_timeout_factor * HZ)) &&
- 		    !(rd32(IGC_STATUS) & IGC_STATUS_TXOFF)) {
- 			/* detected Tx unit hang */
--			dev_err(tx_ring->dev,
--				"Detected Tx Unit Hang\n"
--				"  Tx Queue             <%d>\n"
--				"  TDH                  <%x>\n"
--				"  TDT                  <%x>\n"
--				"  next_to_use          <%x>\n"
--				"  next_to_clean        <%x>\n"
--				"buffer_info[next_to_clean]\n"
--				"  time_stamp           <%lx>\n"
--				"  next_to_watch        <%p>\n"
--				"  jiffies              <%lx>\n"
--				"  desc.status          <%x>\n",
--				tx_ring->queue_index,
--				rd32(IGC_TDH(tx_ring->reg_idx)),
--				readl(tx_ring->tail),
--				tx_ring->next_to_use,
--				tx_ring->next_to_clean,
--				tx_buffer->time_stamp,
--				tx_buffer->next_to_watch,
--				jiffies,
--				tx_buffer->next_to_watch->wb.status);
-+			netdev_err(tx_ring->netdev,
-+				   "Detected Tx Unit Hang\n"
-+				   "  Tx Queue             <%d>\n"
-+				   "  TDH                  <%x>\n"
-+				   "  TDT                  <%x>\n"
-+				   "  next_to_use          <%x>\n"
-+				   "  next_to_clean        <%x>\n"
-+				   "buffer_info[next_to_clean]\n"
-+				   "  time_stamp           <%lx>\n"
-+				   "  next_to_watch        <%p>\n"
-+				   "  jiffies              <%lx>\n"
-+				   "  desc.status          <%x>\n",
-+				   tx_ring->queue_index,
-+				   rd32(IGC_TDH(tx_ring->reg_idx)),
-+				   readl(tx_ring->tail),
-+				   tx_ring->next_to_use,
-+				   tx_ring->next_to_clean,
-+				   tx_buffer->time_stamp,
-+				   tx_buffer->next_to_watch,
-+				   jiffies,
-+				   tx_buffer->next_to_watch->wb.status);
- 			netif_stop_subqueue(tx_ring->netdev,
- 					    tx_ring->queue_index);
- 
-@@ -3238,14 +3236,14 @@ static int igc_alloc_q_vectors(struct igc_adapter *adapter)
-  */
- static int igc_init_interrupt_scheme(struct igc_adapter *adapter, bool msix)
- {
--	struct pci_dev *pdev = adapter->pdev;
-+	struct net_device *dev = adapter->netdev;
- 	int err = 0;
- 
- 	igc_set_interrupt_capability(adapter, msix);
- 
- 	err = igc_alloc_q_vectors(adapter);
- 	if (err) {
--		dev_err(&pdev->dev, "Unable to allocate memory for vectors\n");
-+		netdev_err(dev, "Unable to allocate memory for vectors");
- 		goto err_alloc_q_vectors;
- 	}
- 
-@@ -3305,7 +3303,7 @@ static int igc_sw_init(struct igc_adapter *adapter)
- 
- 	/* This call may decrease the number of queues */
- 	if (igc_init_interrupt_scheme(adapter, true)) {
--		dev_err(&pdev->dev, "Unable to allocate memory for queues\n");
-+		netdev_err(netdev, "Unable to allocate memory for queues");
- 		return -ENOMEM;
- 	}
- 
-@@ -3619,7 +3617,7 @@ static void igc_reset_task(struct work_struct *work)
- 
- 	igc_rings_dump(adapter);
- 	igc_regs_dump(adapter);
--	netdev_err(adapter->netdev, "Reset adapter\n");
-+	netdev_err(adapter->netdev, "Reset adapter");
- 	igc_reinit_locked(adapter);
- }
- 
-@@ -3648,8 +3646,7 @@ static int igc_change_mtu(struct net_device *netdev, int new_mtu)
- 	if (netif_running(netdev))
- 		igc_down(adapter);
- 
--	netdev_dbg(netdev, "changing MTU from %d to %d\n",
--		   netdev->mtu, new_mtu);
-+	netdev_dbg(netdev, "changing MTU from %d to %d", netdev->mtu, new_mtu);
- 	netdev->mtu = new_mtu;
- 
- 	if (netif_running(netdev))
-@@ -4006,8 +4003,7 @@ static void igc_watchdog_task(struct work_struct *work)
- 			ctrl = rd32(IGC_CTRL);
- 			/* Link status message must follow this format */
- 			netdev_info(netdev,
--				    "igc: %s NIC Link is Up %d Mbps %s Duplex, Flow Control: %s\n",
--				    netdev->name,
-+				    "NIC Link is Up %d Mbps %s Duplex, Flow Control: %s",
- 				    adapter->link_speed,
- 				    adapter->link_duplex == FULL_DUPLEX ?
- 				    "Full" : "Half",
-@@ -4019,7 +4015,7 @@ static void igc_watchdog_task(struct work_struct *work)
- 			/* check if SmartSpeed worked */
- 			igc_check_downshift(hw);
- 			if (phy->speed_downgraded)
--				netdev_warn(netdev, "Link Speed was downgraded by SmartSpeed\n");
-+				netdev_warn(netdev, "Link Speed was downgraded by SmartSpeed");
- 
- 			/* adjust timeout factor according to speed/duplex */
- 			adapter->tx_timeout_factor = 1;
-@@ -4045,10 +4041,10 @@ static void igc_watchdog_task(struct work_struct *work)
- 					retry_count--;
- 					goto retry_read_status;
- 				} else if (!retry_count) {
--					dev_err(&adapter->pdev->dev, "exceed max 2 second\n");
-+					netdev_err(netdev, "exceed max 2 second");
- 				}
- 			} else {
--				dev_err(&adapter->pdev->dev, "read 1000Base-T Status Reg\n");
-+				netdev_err(netdev, "read 1000Base-T Status Reg");
- 			}
- no_wait:
- 			netif_carrier_on(netdev);
-@@ -4064,8 +4060,7 @@ static void igc_watchdog_task(struct work_struct *work)
- 			adapter->link_duplex = 0;
- 
- 			/* Links status message must follow this format */
--			netdev_info(netdev, "igc: %s NIC Link is Down\n",
--				    netdev->name);
-+			netdev_info(netdev, "NIC Link is Down");
- 			netif_carrier_off(netdev);
- 
- 			/* link state has changed, schedule phy info update */
-@@ -4283,8 +4278,7 @@ static int igc_request_irq(struct igc_adapter *adapter)
- 			  netdev->name, adapter);
- 
- 	if (err)
--		dev_err(&pdev->dev, "Error %d getting interrupt\n",
--			err);
-+		netdev_err(netdev, "Error %d getting interrupt", err);
- 
- request_done:
+@@ -4380,7 +4380,7 @@ static int __igc_open(struct net_device *netdev, bool resuming)
  	return err;
-@@ -4676,7 +4670,7 @@ u32 igc_rd32(struct igc_hw *hw, u32 reg)
- 
- 		hw->hw_addr = NULL;
- 		netif_device_detach(netdev);
--		netdev_err(netdev, "PCIe link lost, device now detached\n");
-+		netdev_err(netdev, "PCIe link lost, device now detached");
- 		WARN(pci_device_is_present(igc->pdev),
- 		     "igc: Failed to read reg 0x%x!\n", reg);
- 	}
-@@ -4686,7 +4680,6 @@ u32 igc_rd32(struct igc_hw *hw, u32 reg)
- 
- int igc_set_spd_dplx(struct igc_adapter *adapter, u32 spd, u8 dplx)
- {
--	struct pci_dev *pdev = adapter->pdev;
- 	struct igc_mac_info *mac = &adapter->hw.mac;
- 
- 	mac->autoneg = 0;
-@@ -4731,7 +4724,7 @@ int igc_set_spd_dplx(struct igc_adapter *adapter, u32 spd, u8 dplx)
- 	return 0;
- 
- err_inval:
--	dev_err(&pdev->dev, "Unsupported Speed/Duplex configuration\n");
-+	netdev_err(adapter->netdev, "Unsupported Speed/Duplex configuration");
- 	return -EINVAL;
  }
  
-@@ -4767,7 +4760,7 @@ static int igc_probe(struct pci_dev *pdev,
- 		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
- 		if (err) {
- 			dev_err(&pdev->dev,
--				"No usable DMA configuration, aborting\n");
-+				"No usable DMA configuration, aborting");
- 			goto err_dma;
- 		}
- 	}
-@@ -4877,8 +4870,7 @@ static int igc_probe(struct pci_dev *pdev,
- 
- 	if (igc_get_flash_presence_i225(hw)) {
- 		if (hw->nvm.ops.validate(hw) < 0) {
--			dev_err(&pdev->dev,
--				"The NVM Checksum Is Not Valid\n");
-+			netdev_err(netdev, "The NVM Checksum Is Not Valid");
- 			err = -EIO;
- 			goto err_eeprom;
- 		}
-@@ -4887,13 +4879,13 @@ static int igc_probe(struct pci_dev *pdev,
- 	if (eth_platform_get_mac_address(&pdev->dev, hw->mac.addr)) {
- 		/* copy the MAC address out of the NVM */
- 		if (hw->mac.ops.read_mac_addr(hw))
--			dev_err(&pdev->dev, "NVM Read Error\n");
-+			netdev_err(netdev, "NVM Read Error");
- 	}
- 
- 	memcpy(netdev->dev_addr, hw->mac.addr, netdev->addr_len);
- 
- 	if (!is_valid_ether_addr(netdev->dev_addr)) {
--		dev_err(&pdev->dev, "Invalid MAC Address\n");
-+		netdev_err(netdev, "Invalid MAC Address");
- 		err = -EIO;
- 		goto err_eeprom;
- 	}
-@@ -4950,7 +4942,7 @@ static int igc_probe(struct pci_dev *pdev,
- 
- 	/* print pcie link status and MAC address */
- 	pcie_print_link_status(pdev);
--	netdev_info(netdev, "MAC: %pM\n", netdev->dev_addr);
-+	netdev_info(netdev, "MAC: %pM", netdev->dev_addr);
- 
- 	dev_pm_set_driver_flags(&pdev->dev, DPM_FLAG_NEVER_SKIP);
- 
-@@ -5141,8 +5133,7 @@ static int __maybe_unused igc_resume(struct device *dev)
- 		return -ENODEV;
- 	err = pci_enable_device_mem(pdev);
- 	if (err) {
--		dev_err(&pdev->dev,
--			"igc: Cannot enable PCI device from suspend\n");
-+		netdev_err(netdev, "Cannot enable PCI device from suspend");
- 		return err;
- 	}
- 	pci_set_master(pdev);
-@@ -5151,7 +5142,7 @@ static int __maybe_unused igc_resume(struct device *dev)
- 	pci_enable_wake(pdev, PCI_D3cold, 0);
- 
- 	if (igc_init_interrupt_scheme(adapter, true)) {
--		dev_err(&pdev->dev, "Unable to allocate memory for queues\n");
-+		netdev_err(netdev, "Unable to allocate memory for queues");
- 		return -ENOMEM;
- 	}
- 
-@@ -5255,8 +5246,7 @@ static pci_ers_result_t igc_io_slot_reset(struct pci_dev *pdev)
- 	pci_ers_result_t result;
- 
- 	if (pci_enable_device_mem(pdev)) {
--		dev_err(&pdev->dev,
--			"Could not re-enable PCI device after reset.\n");
-+		netdev_err(netdev, "Could not re-enable PCI device after reset");
- 		result = PCI_ERS_RESULT_DISCONNECT;
- 	} else {
- 		pci_set_master(pdev);
-@@ -5295,7 +5285,7 @@ static void igc_io_resume(struct pci_dev *pdev)
- 	rtnl_lock();
- 	if (netif_running(netdev)) {
- 		if (igc_open(netdev)) {
--			dev_err(&pdev->dev, "igc_open failed after reset\n");
-+			netdev_err(netdev, "igc_open failed after reset");
- 			return;
- 		}
- 	}
-@@ -5342,7 +5332,6 @@ static struct pci_driver igc_driver = {
- int igc_reinit_queues(struct igc_adapter *adapter)
+-static int igc_open(struct net_device *netdev)
++int igc_open(struct net_device *netdev)
  {
- 	struct net_device *netdev = adapter->netdev;
--	struct pci_dev *pdev = adapter->pdev;
- 	int err = 0;
+ 	return __igc_open(netdev, false);
+ }
+@@ -4422,7 +4422,7 @@ static int __igc_close(struct net_device *netdev, bool suspending)
+ 	return 0;
+ }
  
- 	if (netif_running(netdev))
-@@ -5351,7 +5340,7 @@ int igc_reinit_queues(struct igc_adapter *adapter)
- 	igc_reset_interrupt_capability(adapter);
- 
- 	if (igc_init_interrupt_scheme(adapter, true)) {
--		dev_err(&pdev->dev, "Unable to allocate memory for queues\n");
-+		netdev_err(netdev, "Unable to allocate memory for queues");
- 		return -ENOMEM;
- 	}
- 
-@@ -5384,10 +5373,10 @@ static int __init igc_init_module(void)
+-static int igc_close(struct net_device *netdev)
++int igc_close(struct net_device *netdev)
  {
- 	int ret;
+ 	if (netif_device_present(netdev) || netdev->dismantle)
+ 		return __igc_close(netdev, false);
+diff --git a/drivers/net/ethernet/intel/igc/igc_regs.h b/drivers/net/ethernet/intel/igc/igc_regs.h
+index 6093cde2351c..633545977a65 100644
+--- a/drivers/net/ethernet/intel/igc/igc_regs.h
++++ b/drivers/net/ethernet/intel/igc/igc_regs.h
+@@ -49,6 +49,7 @@
+ #define IGC_FACTPS		0x05B30
  
--	pr_info("%s - version %s\n",
-+	pr_info("%s - version %s",
- 		igc_driver_string, igc_driver_version);
- 
--	pr_info("%s\n", igc_copyright);
-+	pr_info("%s", igc_copyright);
- 
- 	ret = pci_register_driver(&igc_driver);
- 	return ret;
+ /* Interrupt Register Description */
++#define IGC_EICR		0x01580  /* Ext. Interrupt Cause read - W0 */
+ #define IGC_EICS		0x01520  /* Ext. Interrupt Cause Set - W0 */
+ #define IGC_EIMS		0x01524  /* Ext. Interrupt Mask Set/Read - RW */
+ #define IGC_EIMC		0x01528  /* Ext. Interrupt Mask Clear - WO */
+@@ -119,6 +120,7 @@
+ #define IGC_RLPML		0x05004  /* Rx Long Packet Max Length */
+ #define IGC_RFCTL		0x05008  /* Receive Filter Control*/
+ #define IGC_MTA			0x05200  /* Multicast Table Array - RW Array */
++#define IGC_RA			0x05400  /* Receive Address - RW Array */
+ #define IGC_UTA			0x0A000  /* Unicast Table Array - RW */
+ #define IGC_RAL(_n)		(0x05400 + ((_n) * 0x08))
+ #define IGC_RAH(_n)		(0x05404 + ((_n) * 0x08))
 -- 
 2.25.3
 
