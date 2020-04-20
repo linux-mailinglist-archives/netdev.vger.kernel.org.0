@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D30491B13FD
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 20:07:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F6E21B1400
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 20:08:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727781AbgDTSHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 14:07:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55484 "EHLO
+        id S1727923AbgDTSHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 14:07:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726067AbgDTSH3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 14:07:29 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00DBBC061A0C;
-        Mon, 20 Apr 2020 11:07:29 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id np9so202596pjb.4;
-        Mon, 20 Apr 2020 11:07:28 -0700 (PDT)
+        with ESMTP id S1726067AbgDTSHa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 14:07:30 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8217DC061A0C;
+        Mon, 20 Apr 2020 11:07:30 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id d17so5468839pgo.0;
+        Mon, 20 Apr 2020 11:07:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SN+5NQh5GO88eOTvwunTZ0nqR3Nb9UtRYbfk0MSr7bY=;
-        b=Qx09VHFf98yTcYTnvwSEuiXgDBGzA2cEh9hU+9fXyRF1r89n7O02AEfWo5K9PIvT97
-         ipXJkS8m8TogUQn4xmopNWZ3kuVEe5N6YObvYzyF8SM715dpnFc/5i2WuGB+baGzeek8
-         YlGaq7Ue7v399Sg+sF9eQGfdn7ROXy8EfBugSnZfoTL67KORaSMipCbw7zwh4GX8FIfC
-         wHirEn7BdWoBJzL4GIQ5xCfAM0J9mvd1PLzr9+cdVgY5UcDhQG2TQnKLINk13Pcm6CRe
-         XOL4fWem4bD7yVEAe3AJu8KdDaYvJ5GAJMPDMP7uPsxOzeortooI+FTxDVL1Ri5tni+J
-         L7hA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=NjbIZ9kXNtH610iEU0/oYrdkcb6b6Mn+yf22ebIwisQ=;
+        b=pC/QH3MnIqxV8fIjXPl/Q4XSa3qODVsDaUdtGydW5Az5HhFk9jIrxI/8DYwVk9qc8b
+         vKb0X44fx/Um5z0EC2SN4RAJP94VeoQ0YUVLkKdVJ3ajPc4IM5KEggMPRaO1oebzKh9x
+         yIm/vPkmm5dixFINI2AloGtN1uYD5LjYwPgG76xA3TcTQlAGl/ZuS7f+jzFZqRG3ddUw
+         Hxy7XKaDFQM2Y7OoY9uQeSGJI4Z59ZbNIp3TUskRLnTR50qyVsgCXcS9rA4kTtsjU65G
+         +SfZMrOTYULO/CwZvGv9GNyIygvTAROTwIUxm7xmtnz0erhVJvNTavOr+9+8+urtsPbm
+         IeOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SN+5NQh5GO88eOTvwunTZ0nqR3Nb9UtRYbfk0MSr7bY=;
-        b=NVXwL89j8es/OEmkH1PFPE4gKsfnjclLnAv6L0vluG8CeRZEvPm+iZvfb090LK4WkX
-         1QMt1HB/PHzBqZoeqUoVeidBIAqhjwxb7/dyusuvLS0c/0PhI+TludT1OXYmhhVwu40I
-         1Kmtv+2osupc1B1+G+kWT06wCcHDUclCnd/l3X82GHLYmyKUb0o8uqURTc16mdlrRKse
-         hndSwOSWxY+IT2Ww7KL1DeW2+q8iy978MWD2e0G9URwINZ5Al8rJTg+TjyaV+zWmLmcW
-         ot+JRu1VeYbxsR2v8hQ8cKYaJ32voa2KokCn9zycl8b+K4xDLmdYExs0jibeWspygpH3
-         Xbgg==
-X-Gm-Message-State: AGi0PubYlFvTxKMsMRkUT78BtGi3nTvo3FmXdmqR1ocDFDYpyKs5amPX
-        v2eUsP9KXS7rD8tiMQh0vHGo4z7S
-X-Google-Smtp-Source: APiQypKalceZVtLrFMB4bapQ/qPhpIz0IoQfWZ4qPleh/uBeWC28RetThiV9xgvcWA+j1JMS/KyVcA==
-X-Received: by 2002:a17:90a:1946:: with SMTP id 6mr789203pjh.42.1587406048026;
-        Mon, 20 Apr 2020 11:07:28 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=NjbIZ9kXNtH610iEU0/oYrdkcb6b6Mn+yf22ebIwisQ=;
+        b=E6/tIx6C1myJMDe6HFycYaokwlMAtkoCeZ99NR5MM3ykbjwcf/7XFlJNg/o0r4ncHv
+         nHUrngjwd4q/eIBNf6LeAcOuY0MvxUW/Y2vMs7nEmD/tq14zStPkIqcXjfuJAf0VOiDE
+         ZW3Kmxq5YWZFlknFs20xGJvU62eDsCk/xT7EcjcEEIu4cPNJ4dXFVnxuXycC9UHwsGjf
+         BcfKP6KVAq6stPwvee4WBRZX5/+PuRz8ReFp7k2kTUSdzdXTW61+dKUVzNSdJf184E6p
+         aZik4LwYsi+1nfIloP3ogoX5BeNxDEdkla0DrFdZ6jjaawzGSfh7Q5GKmT8jsS8zYBCZ
+         gyzg==
+X-Gm-Message-State: AGi0PubmAaTu7ch/ZpeOMrGbvqVB/cDO9R9Dc6+gFOynod/l5tXZalFm
+        4DBXAL+UB94jUSpneMzE0QLTFVhf
+X-Google-Smtp-Source: APiQypKkoO5Z14ZkGCHBYJTFhJvvyTod6ubuSurjHB94GYvaUi739IFI7INaOKLm/b8Iuy6v327UBQ==
+X-Received: by 2002:a62:e80e:: with SMTP id c14mr17303729pfi.83.1587406049673;
+        Mon, 20 Apr 2020 11:07:29 -0700 (PDT)
 Received: from localhost.localdomain (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id e7sm131193pfh.161.2020.04.20.11.07.26
+        by smtp.gmail.com with ESMTPSA id e7sm131193pfh.161.2020.04.20.11.07.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2020 11:07:26 -0700 (PDT)
+        Mon, 20 Apr 2020 11:07:28 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -57,10 +57,12 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
         DEVICE TREE BINDINGS), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next v3 0/3] dt-bindings: net: mdio.yaml fixes
-Date:   Mon, 20 Apr 2020 11:07:20 -0700
-Message-Id: <20200420180723.27936-1-f.fainelli@gmail.com>
+Subject: [PATCH net-next v3 1/3] dt-bindings: net: Correct description of 'broken-turn-around'
+Date:   Mon, 20 Apr 2020 11:07:21 -0700
+Message-Id: <20200420180723.27936-2-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.19.1
+In-Reply-To: <20200420180723.27936-1-f.fainelli@gmail.com>
+References: <20200420180723.27936-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -68,27 +70,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+The turn around bytes (2) are placed between the control phase of the
+MDIO transaction and the data phase, correct the wording to be more
+exact.
 
-This patch series documents some common MDIO devices properties such as
-resets (and delays) and broken-turn-around. The second patch also
-rephrases some descriptions to be more general towards MDIO devices and
-not specific towards Ethernet PHYs.
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ Documentation/devicetree/bindings/net/ethernet-phy.yaml | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Changes in v3:
-
-- corrected wording of 'broken-turn-around' in ethernet-phy.yaml and
-  mdio.yaml, add Andrew's R-b tag to patch #3
-
-Florian Fainelli (3):
-  dt-bindings: net: Correct description of 'broken-turn-around'
-  dt-bindings: net: mdio: Document common properties
-  dt-bindings: net: mdio: Make descriptions more general
-
- .../devicetree/bindings/net/ethernet-phy.yaml |  3 +-
- .../devicetree/bindings/net/mdio.yaml         | 38 ++++++++++++++++---
- 2 files changed, 35 insertions(+), 6 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+index 5aa141ccc113..9b1f1147ca36 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+@@ -81,7 +81,8 @@ properties:
+     $ref: /schemas/types.yaml#definitions/flag
+     description:
+       If set, indicates the PHY device does not correctly release
+-      the turn around line low at the end of a MDIO transaction.
++      the turn around line low at end of the control phase of the
++      MDIO transaction.
+ 
+   enet-phy-lane-swap:
+     $ref: /schemas/types.yaml#definitions/flag
 -- 
 2.19.1
 
