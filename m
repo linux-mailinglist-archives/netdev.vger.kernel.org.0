@@ -2,438 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C5851B106D
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 17:43:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68A3E1B1077
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 17:44:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728761AbgDTPnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 11:43:01 -0400
-Received: from mga11.intel.com ([192.55.52.93]:12546 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725989AbgDTPnA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 11:43:00 -0400
-IronPort-SDR: qmO0NLDHVXW+ZxVSLhxktclRAojP8DSBeYA0E8GCQtOLuDMs3D7qTTPOSKdU2QIc46Ernzgjju
- ZUDA2ORUaSDQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 08:42:59 -0700
-IronPort-SDR: tGIYQ/8jXtt0Gi4cMrmtuBCH1XeutUPCZsqE6F/ysEEiQ9lB8A52Nv7Xw81fkxl7EU9QCE/oBY
- 5sYjPZAmYuyQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,407,1580803200"; 
-   d="scan'208";a="429169860"
-Received: from unknown (HELO climb.png.intel.com) ([10.221.118.165])
-  by orsmga005.jf.intel.com with ESMTP; 20 Apr 2020 08:42:56 -0700
-From:   Voon Weifeng <weifeng.voon@intel.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jose Abreu <joabreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>
-Subject: [net-next,v1, 1/1] net: stmmac: Enable SERDES power up/down sequence
-Date:   Mon, 20 Apr 2020 23:42:52 +0800
-Message-Id: <20200420154252.8000-2-weifeng.voon@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200420154252.8000-1-weifeng.voon@intel.com>
-References: <20200420154252.8000-1-weifeng.voon@intel.com>
+        id S1728959AbgDTPo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 11:44:29 -0400
+Received: from mail-eopbgr150040.outbound.protection.outlook.com ([40.107.15.40]:60823
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725989AbgDTPo2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 11:44:28 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=G1ZNt/5+icvVACrvv0kD+gig4kK44FTU12R+sagunPj7l07wjqIHXRmj36v8r3NOjPzWFT4JK4pyqT2l1mtjXDPORbiHkynFEBY+7/b/nBs+WUEYhetQ83xqYYFN4lePX/6JFjNIdxobfMEOg+i1gjj9ENI/SFEB893GzHjgiQMgK3QC4MKSFIr5HhtxgJHtcMH7ajp9EQZ4up/Coaczcuo12czNlrDQkA4rwJrHaD9WiHKh+8jcH+dwSKRQf5maHLVJxjpSvdm6o/U0uls4puyC0psQi2JFcnix6XknFgH/2hMDuk2SPJhsRGwP1+IvZ3FRnieT1N4EoYqm8x4P8g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CKmi6CM6lrwXIV4zE+fnNheHW5ZNafCTDcsZL1gvaHM=;
+ b=K1WLTRqlzvQDd3ki+RD39d4zRXzyEAVmvLUFjCRreMpwsvkWpsrHZgo8xvyKDEJkkW9JYfRqD9/mX2EwvjEpvVdR9XMHLQCzhuTovg3Cx+bnwbyFdEm6FlW2brYMliUQrr67LpIYOSY18Jp8KcG5dX0ULs12naVuQZfrhfmgfpbZvOeKvmIlRpOxY7Bft0XVc+CARwl7uJ48uHC92HHZ6nUzXTuq/XC8YXBCru6Uo9JTzumF5ZutdNxXZ4+Wy+1pI+nmpRet6pAZTQnlbYqpBYFGT2IeY2GPsBBQNLFHBTWgR9u97d2eeZkIrkmUSOasFmVd/udnB7Ef/QQXkfwCGw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CKmi6CM6lrwXIV4zE+fnNheHW5ZNafCTDcsZL1gvaHM=;
+ b=TXh2XOFZ3cdaYYX4qLqgrRzUMc2DRe412TkhHIdSuTlHMgtd/lTe7+45MUKwZ6Aiuu3ASr9fi5LQWddI1m1xWmLFR60Cke01IBE717H3lGLRZFzhSCyd5KVfWY77ynLYNlsmuWPjmZfLGxhsIAkgU3HQqM5v+qE7voJ3jkLgMBI=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=calvin.johnson@oss.nxp.com; 
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
+ by AM0PR04MB4674.eurprd04.prod.outlook.com (2603:10a6:208:75::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.29; Mon, 20 Apr
+ 2020 15:44:25 +0000
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::c4fe:d4a4:f0e1:a75b]) by AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::c4fe:d4a4:f0e1:a75b%4]) with mapi id 15.20.2921.027; Mon, 20 Apr 2020
+ 15:44:25 +0000
+Date:   Mon, 20 Apr 2020 21:14:13 +0530
+From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     linux.cj@gmail.com, Jeremy Linton <jeremy.linton@arm.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        netdev@vger.kernel.org, Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        linux-kernel@vger.kernel.org, Varun Sethi <V.Sethi@nxp.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [RFC net-next PATCH v2 1/2] net/fsl: add ACPI support for mdio
+ bus
+Message-ID: <20200420154413.GC27078@lsv03152.swis.in-blr01.nxp.com>
+References: <20200418105432.11233-1-calvin.johnson@oss.nxp.com>
+ <20200418105432.11233-2-calvin.johnson@oss.nxp.com>
+ <20200418144606.GG804711@lunn.ch>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200418144606.GG804711@lunn.ch>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: SG2P153CA0016.APCP153.PROD.OUTLOOK.COM (2603:1096::26) To
+ AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2P153CA0016.APCP153.PROD.OUTLOOK.COM (2603:1096::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.2 via Frontend Transport; Mon, 20 Apr 2020 15:44:19 +0000
+X-Originating-IP: [14.142.151.118]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 1e8a6f6c-ed36-4980-67a7-08d7e541b3c4
+X-MS-TrafficTypeDiagnostic: AM0PR04MB4674:|AM0PR04MB4674:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR04MB4674188729AB4A97ED138C42D2D40@AM0PR04MB4674.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Forefront-PRVS: 03793408BA
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(376002)(366004)(346002)(136003)(396003)(39860400002)(52116002)(54906003)(44832011)(2906002)(956004)(4326008)(1076003)(7416002)(316002)(55016002)(186003)(6916009)(33656002)(8936002)(8676002)(81156014)(4744005)(66946007)(66476007)(66556008)(16526019)(55236004)(86362001)(26005)(9686003)(1006002)(6506007)(7696005)(6666004)(5660300002)(478600001)(110426005);DIR:OUT;SFP:1101;
+Received-SPF: None (protection.outlook.com: oss.nxp.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FNb0fx92b4ChTKVz987kUU/gXEh84AghI5d02/4DvC7pe4tfBrLBSX4pTfnNjKSoSj8SNz2it0oPJWDKfMeWpR+lo6VbfQGAzYW4YKIx0aIHbpyZ8q6Z2JeONacWVMtvypVKS22jgFJ/r31g/cB7jHm5ULLmIDdGSa1t95W91Ob/1jtGZS7bbOUN1DiC3QY1hsPi/517wkvjWX2+UkTuRjuUs/nKhaphhYeEK3FoIirPje1xdcAQ1pOo+Kf7Ro/wnKUIgoFsZ7ZXMVpA1QPTQGuxio25PTIHN5a7cKSS/wPOuYbqU2XD3NTyBzP6dbB1kUqKC3LgMI/83apdGNGXOKlxivtllq4SX3AtMOniRHqA26Q0MlcJGmtYDQMUQgBa/NhbgXFIxPk/fGEla85SeSEUhl/oODXgp2CoPnWaZcm4VTUSEdaSdyDTD6zQ9FLq14o5AfBNAzu+kZitNbLTFW/n5Loe+gr5ACqFbebBGvAl0BSYNkJSipGSl9nJnlis
+X-MS-Exchange-AntiSpam-MessageData: E8EgMCd1mFpqvArF3OzE+hMF6MPPrg3W1j61b4mhn1iJ1kkP0XdNR6m+Xp0ln7B7fcg8+El9U5RGIRjxzCOYaRCQqwHdhx2tKuyqV3j0O2K7EIaKfctZWlGq0cAFgV+pGqKELnTDt5Q/tXG9c3hddw==
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1e8a6f6c-ed36-4980-67a7-08d7e541b3c4
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2020 15:44:25.2849
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fSajlLAu5oBjSpnwtH37+c7fsbf6ntm7N3qcIWm8n1gBFVA6edDqemBRpaWwwLGbtUclAqW0Bv6NBKA9WvjTDQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4674
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to enable Intel SERDES power up/down sequence. The SERDES
-converts 8/10 bits data to SGMII signal. Below is an example of
-HW configuration for SGMII mode. The SERDES is located in the PHY IF
-in the diagram below.
+On Sat, Apr 18, 2020 at 04:46:06PM +0200, Andrew Lunn wrote:
+> > -	ret = of_mdiobus_register(bus, np);
+> 
+> So this is the interesting part. What you really want to be doing is
+> adding a device_mdiobus_register(bus, dev) to the core. And it needs
+> to share as much as possible with the of_mdiobus_register()
+> implementation.
 
-<-----------------GBE Controller---------->|<--External PHY chip-->
-+----------+         +----+            +---+           +----------+
-|   EQoS   | <-GMII->| DW | < ------ > |PHY| <-SGMII-> | External |
-|   MAC    |         |xPCS|            |IF |           | PHY      |
-+----------+         +----+            +---+           +----------+
-       ^               ^                 ^                ^
-       |               |                 |                |
-       +---------------------MDIO-------------------------+
+Sure, will take this approach and submit v3.
 
-PHY IF configuration and status registers are accessible through
-mdio address 0x15 which is defined as mdio_adhoc_addr. During D0,
-The driver will need to power up PHY IF by changing the power state
-to P0. Likewise, for D3, the driver sets PHY IF power state to P3.
-
-Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
----
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 189 ++++++++++++++++++
- .../net/ethernet/stmicro/stmmac/dwmac-intel.h |  23 +++
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |  23 +++
- include/linux/stmmac.h                        |   2 +
- 4 files changed, 237 insertions(+)
- create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-intel.h
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 5419d4e478c0..2e4aaedb93f5 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -5,8 +5,13 @@
- #include <linux/clk-provider.h>
- #include <linux/pci.h>
- #include <linux/dmi.h>
-+#include "dwmac-intel.h"
- #include "stmmac.h"
- 
-+struct intel_priv_data {
-+	int mdio_adhoc_addr;	/* mdio address for serdes & etc */
-+};
-+
- /* This struct is used to associate PCI Function of MAC controller on a board,
-  * discovered via DMI, with the address of PHY connected to the MAC. The
-  * negative value of the address means that MAC controller is not connected
-@@ -49,6 +54,172 @@ static int stmmac_pci_find_phy_addr(struct pci_dev *pdev,
- 	return -ENODEV;
- }
- 
-+static int serdes_status_poll(struct stmmac_priv *priv, int phyaddr,
-+			      int phyreg, u32 mask, u32 val)
-+{
-+	unsigned int retries = 10;
-+	int val_rd;
-+
-+	do {
-+		val_rd = mdiobus_read(priv->mii, phyaddr, phyreg);
-+		if ((val_rd & mask) == (val & mask))
-+			return 0;
-+		udelay(POLL_DELAY_US);
-+	} while (--retries);
-+
-+	return -ETIMEDOUT;
-+}
-+
-+static int intel_serdes_powerup(struct net_device *ndev, void *priv_data)
-+{
-+	struct intel_priv_data *intel_priv = priv_data;
-+	struct stmmac_priv *priv = netdev_priv(ndev);
-+	int serdes_phy_addr = 0;
-+	u32 data = 0;
-+
-+	if (!intel_priv->mdio_adhoc_addr)
-+		return 0;
-+
-+	serdes_phy_addr = intel_priv->mdio_adhoc_addr;
-+
-+	/* assert clk_req */
-+	data = mdiobus_read(priv->mii, serdes_phy_addr,
-+			    SERDES_GCR0);
-+
-+	data |= SERDES_PLL_CLK;
-+
-+	mdiobus_write(priv->mii, serdes_phy_addr,
-+		      SERDES_GCR0, data);
-+
-+	/* check for clk_ack assertion */
-+	data = serdes_status_poll(priv, serdes_phy_addr,
-+				  SERDES_GSR0,
-+				  SERDES_PLL_CLK,
-+				  SERDES_PLL_CLK);
-+
-+	if (data) {
-+		dev_err(priv->device, "Serdes PLL clk request timeout\n");
-+		return data;
-+	}
-+
-+	/* assert lane reset */
-+	data = mdiobus_read(priv->mii, serdes_phy_addr,
-+			    SERDES_GCR0);
-+
-+	data |= SERDES_RST;
-+
-+	mdiobus_write(priv->mii, serdes_phy_addr,
-+		      SERDES_GCR0, data);
-+
-+	/* check for assert lane reset reflection */
-+	data = serdes_status_poll(priv, serdes_phy_addr,
-+				  SERDES_GSR0,
-+				  SERDES_RST,
-+				  SERDES_RST);
-+
-+	if (data) {
-+		dev_err(priv->device, "Serdes assert lane reset timeout\n");
-+		return data;
-+	}
-+
-+	/*  move power state to P0 */
-+	data = mdiobus_read(priv->mii, serdes_phy_addr,
-+			    SERDES_GCR0);
-+
-+	data &= ~SERDES_PWR_ST_MASK;
-+	data |= SERDES_PWR_ST_P0 << SERDES_PWR_ST_SHIFT;
-+
-+	mdiobus_write(priv->mii, serdes_phy_addr,
-+		      SERDES_GCR0, data);
-+
-+	/* Check for P0 state */
-+	data = serdes_status_poll(priv, serdes_phy_addr,
-+				  SERDES_GSR0,
-+				  SERDES_PWR_ST_MASK,
-+				  SERDES_PWR_ST_P0 << SERDES_PWR_ST_SHIFT);
-+
-+	if (data) {
-+		dev_err(priv->device, "Serdes power state P0 timeout.\n");
-+		return data;
-+	}
-+
-+	return 0;
-+}
-+
-+static void intel_serdes_powerdown(struct net_device *ndev, void *intel_data)
-+{
-+	struct intel_priv_data *intel_priv = intel_data;
-+	struct stmmac_priv *priv = netdev_priv(ndev);
-+	int serdes_phy_addr = 0;
-+	u32 data = 0;
-+
-+	if (!intel_priv->mdio_adhoc_addr)
-+		return;
-+
-+	serdes_phy_addr = intel_priv->mdio_adhoc_addr;
-+
-+	/*  move power state to P3 */
-+	data = mdiobus_read(priv->mii, serdes_phy_addr,
-+			    SERDES_GCR0);
-+
-+	data &= ~SERDES_PWR_ST_MASK;
-+	data |= SERDES_PWR_ST_P3 << SERDES_PWR_ST_SHIFT;
-+
-+	mdiobus_write(priv->mii, serdes_phy_addr,
-+		      SERDES_GCR0, data);
-+
-+	/* Check for P3 state */
-+	data = serdes_status_poll(priv, serdes_phy_addr,
-+				  SERDES_GSR0,
-+				  SERDES_PWR_ST_MASK,
-+				  SERDES_PWR_ST_P3 << SERDES_PWR_ST_SHIFT);
-+
-+	if (data) {
-+		dev_err(priv->device, "Serdes power state P3 timeout\n");
-+		return;
-+	}
-+
-+	/* de-assert clk_req */
-+	data = mdiobus_read(priv->mii, serdes_phy_addr,
-+			    SERDES_GCR0);
-+
-+	data &= ~SERDES_PLL_CLK;
-+
-+	mdiobus_write(priv->mii, serdes_phy_addr,
-+		      SERDES_GCR0, data);
-+
-+	/* check for clk_ack de-assert */
-+	data = serdes_status_poll(priv, serdes_phy_addr,
-+				  SERDES_GSR0,
-+				  SERDES_PLL_CLK,
-+				  (u32)~SERDES_PLL_CLK);
-+
-+	if (data) {
-+		dev_err(priv->device, "Serdes PLL clk de-assert timeout\n");
-+		return;
-+	}
-+
-+	/* de-assert lane reset */
-+	data = mdiobus_read(priv->mii, serdes_phy_addr,
-+			    SERDES_GCR0);
-+
-+	data &= ~SERDES_RST;
-+
-+	mdiobus_write(priv->mii, serdes_phy_addr,
-+		      SERDES_GCR0, data);
-+
-+	/* check for de-assert lane reset reflection */
-+	data = serdes_status_poll(priv, serdes_phy_addr,
-+				  SERDES_GSR0,
-+				  SERDES_RST,
-+				  (u32)~SERDES_RST);
-+
-+	if (data) {
-+		dev_err(priv->device, "Serdes de-assert lane reset timeout\n");
-+		return;
-+	}
-+}
-+
- static void common_default_data(struct plat_stmmacenet_data *plat)
- {
- 	plat->clk_csr = 2;	/* clk_csr_i = 20-35MHz & MDC = clk_csr_i/16 */
-@@ -189,6 +360,9 @@ static int ehl_sgmii_data(struct pci_dev *pdev,
- 	plat->phy_addr = 0;
- 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
- 
-+	plat->serdes_powerup = intel_serdes_powerup;
-+	plat->serdes_powerdown = intel_serdes_powerdown;
-+
- 	return ehl_common_data(pdev, plat);
- }
- 
-@@ -233,6 +407,8 @@ static int ehl_pse0_sgmii1g_data(struct pci_dev *pdev,
- 				 struct plat_stmmacenet_data *plat)
- {
- 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
-+	plat->serdes_powerup = intel_serdes_powerup;
-+	plat->serdes_powerdown = intel_serdes_powerdown;
- 	return ehl_pse0_common_data(pdev, plat);
- }
- 
-@@ -263,6 +439,8 @@ static int ehl_pse1_sgmii1g_data(struct pci_dev *pdev,
- 				 struct plat_stmmacenet_data *plat)
- {
- 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
-+	plat->serdes_powerup = intel_serdes_powerup;
-+	plat->serdes_powerdown = intel_serdes_powerdown;
- 	return ehl_pse1_common_data(pdev, plat);
- }
- 
-@@ -291,6 +469,8 @@ static int tgl_sgmii_data(struct pci_dev *pdev,
- 	plat->bus_id = 1;
- 	plat->phy_addr = 0;
- 	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
-+	plat->serdes_powerup = intel_serdes_powerup;
-+	plat->serdes_powerdown = intel_serdes_powerdown;
- 	return tgl_common_data(pdev, plat);
- }
- 
-@@ -417,11 +597,17 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
- 			       const struct pci_device_id *id)
- {
- 	struct stmmac_pci_info *info = (struct stmmac_pci_info *)id->driver_data;
-+	struct intel_priv_data *intel_priv;
- 	struct plat_stmmacenet_data *plat;
- 	struct stmmac_resources res;
- 	int i;
- 	int ret;
- 
-+	intel_priv = devm_kzalloc(&pdev->dev, sizeof(*intel_priv),
-+				  GFP_KERNEL);
-+	if (!intel_priv)
-+		return -ENOMEM;
-+
- 	plat = devm_kzalloc(&pdev->dev, sizeof(*plat), GFP_KERNEL);
- 	if (!plat)
- 		return -ENOMEM;
-@@ -457,6 +643,9 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
- 
- 	pci_set_master(pdev);
- 
-+	plat->bsp_priv = intel_priv;
-+	intel_priv->mdio_adhoc_addr = 0x15;
-+
- 	ret = info->setup(pdev, plat);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.h b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.h
-new file mode 100644
-index 000000000000..e723096c0b15
---- /dev/null
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.h
-@@ -0,0 +1,23 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (c) 2020, Intel Corporation
-+ * DWMAC Intel header file
-+ */
-+
-+#ifndef __DWMAC_INTEL_H__
-+#define __DWMAC_INTEL_H__
-+
-+#define POLL_DELAY_US 8
-+
-+/* SERDES Register */
-+#define SERDES_GSR0	0x5	/* Global Status Reg0 */
-+#define SERDES_GCR0	0xb	/* Global Configuration Reg0 */
-+
-+/* SERDES defines */
-+#define SERDES_PLL_CLK		BIT(0)		/* PLL clk valid signal */
-+#define SERDES_RST		BIT(2)		/* Serdes Reset */
-+#define SERDES_PWR_ST_MASK	GENMASK(6, 4)	/* Serdes Power state*/
-+#define SERDES_PWR_ST_SHIFT	4
-+#define SERDES_PWR_ST_P0	0x0
-+#define SERDES_PWR_ST_P3	0x3
-+
-+#endif /* __DWMAC_INTEL_H__ */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index e6898fd5223f..565da6498c84 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -4986,6 +4986,14 @@ int stmmac_dvr_probe(struct device *device,
- 		goto error_netdev_register;
- 	}
- 
-+	if (priv->plat->serdes_powerup) {
-+		ret = priv->plat->serdes_powerup(ndev,
-+						 priv->plat->bsp_priv);
-+
-+		if (ret < 0)
-+			return ret;
-+	}
-+
- #ifdef CONFIG_DEBUG_FS
- 	stmmac_init_fs(ndev);
- #endif
-@@ -5029,6 +5037,9 @@ int stmmac_dvr_remove(struct device *dev)
- 
- 	stmmac_stop_all_dma(priv);
- 
-+	if (priv->plat->serdes_powerdown)
-+		priv->plat->serdes_powerdown(ndev, priv->plat->bsp_priv);
-+
- 	stmmac_mac_set(priv, priv->ioaddr, false);
- 	netif_carrier_off(ndev);
- 	unregister_netdev(ndev);
-@@ -5081,6 +5092,9 @@ int stmmac_suspend(struct device *dev)
- 	/* Stop TX/RX DMA */
- 	stmmac_stop_all_dma(priv);
- 
-+	if (priv->plat->serdes_powerdown)
-+		priv->plat->serdes_powerdown(ndev, priv->plat->bsp_priv);
-+
- 	/* Enable Power down mode by programming the PMT regs */
- 	if (device_may_wakeup(priv->device)) {
- 		stmmac_pmt(priv, priv->hw, priv->wolopts);
-@@ -5143,6 +5157,7 @@ int stmmac_resume(struct device *dev)
- {
- 	struct net_device *ndev = dev_get_drvdata(dev);
- 	struct stmmac_priv *priv = netdev_priv(ndev);
-+	int ret;
- 
- 	if (!netif_running(ndev))
- 		return 0;
-@@ -5170,6 +5185,14 @@ int stmmac_resume(struct device *dev)
- 			stmmac_mdio_reset(priv->mii);
- 	}
- 
-+	if (priv->plat->serdes_powerup) {
-+		ret = priv->plat->serdes_powerup(ndev,
-+						 priv->plat->bsp_priv);
-+
-+		if (ret < 0)
-+			return ret;
-+	}
-+
- 	netif_device_attach(ndev);
- 
- 	mutex_lock(&priv->lock);
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index fbafb353e9be..bd964c31d333 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -177,6 +177,8 @@ struct plat_stmmacenet_data {
- 	struct stmmac_rxq_cfg rx_queues_cfg[MTL_MAX_RX_QUEUES];
- 	struct stmmac_txq_cfg tx_queues_cfg[MTL_MAX_TX_QUEUES];
- 	void (*fix_mac_speed)(void *priv, unsigned int speed);
-+	int (*serdes_powerup)(struct net_device *ndev, void *priv);
-+	void (*serdes_powerdown)(struct net_device *ndev, void *priv);
- 	int (*init)(struct platform_device *pdev, void *priv);
- 	void (*exit)(struct platform_device *pdev, void *priv);
- 	struct mac_device_info *(*setup)(void *priv);
--- 
-2.17.1
-
+Thanks
+Calvin
