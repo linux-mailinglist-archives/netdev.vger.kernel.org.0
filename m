@@ -2,118 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA1D71B10A9
-	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 17:48:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E323F1B10B3
+	for <lists+netdev@lfdr.de>; Mon, 20 Apr 2020 17:51:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726691AbgDTPsl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 11:48:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33654 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725971AbgDTPsk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 11:48:40 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C8E4C061A0C
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 08:48:39 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id g2so4099540plo.3
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 08:48:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=K998MhLuLT+vSFATUL8b4xc6Vw/qBHjQUarB0WVoK0w=;
-        b=VWlxiYkdg7ZASykfdVwMuVwwmmUwW/ze47cX2l7Y1w3VzUsnAkRrcOtOAnvgkyjHmQ
-         44x8YqazaSZWI9RAjd0K8YuZMScLvcyzJkfRgcmBx4KWtJ2Wz58V32dOx96+PFhvImHL
-         ipOVek1OOWccFXIebK4lQBABXlng10BF3a9qYMWDGoOvCiswp8xadPt+DcmEpiQcmVlh
-         xWa/ZWftr5bHGjML+h/bRfkPWfuOS24t9MKj5n/AUo6yGQoCaQDCWkCDl+rHKrNYflM/
-         QOy/L4PBG2971ZDRdTVynVuEiaVZu4rI8msrIna/b5AITy069N9GBnNYGweGFBxqxGcG
-         q2LA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=K998MhLuLT+vSFATUL8b4xc6Vw/qBHjQUarB0WVoK0w=;
-        b=GzPKX9geS9D1z9VYbPlYumEhQJ9VNkN0JT/BFfuoQPwfxEgMYWeZNKlcMw7caJGnEh
-         NkYu94z5FF5968h4TDjSxfuwBlxaLE5oRlt8YS8iqJnKqeM0HOktgyLj8GHogK1W43DV
-         EBaXcNOiOpfRG5Zd5pjc6YSWPafdhhe5NT/nxRgxDSw58/cSQTyGFFo4VyCBc9CoBZr+
-         jgpilK3lv70DVqMDU/F2MXSCoDz+jpqrAPtTPbPmzlYf62xabQKEXfJzYUksKxjL54tK
-         xjCnfmBa9XyRCSMugB/kHQ3GNqr1PleWG9g2FGv5HyZDPf1DAN+RB4zZxggf/hFmKjZ7
-         OF7Q==
-X-Gm-Message-State: AGi0PuagtGAj/CPZppqFOEuMd0WbONgcf/zAkVjh/zwo97KaJveDws3w
-        f3vgl6YZggbf2aAq7LpHRQDU/mLJ
-X-Google-Smtp-Source: APiQypLIUG+z4q4dS+7KqRwsh85e9SHqg3aaKebEhWXrmjLiyqZ/Qy/+5UR1wowOa9kKVP9Aw3wyqw==
-X-Received: by 2002:a17:902:a601:: with SMTP id u1mr17392975plq.300.1587397718368;
-        Mon, 20 Apr 2020 08:48:38 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id c10sm1489257pgh.48.2020.04.20.08.48.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 20 Apr 2020 08:48:37 -0700 (PDT)
-Subject: Re: [PATCH net-next] macvlan: silence RCU list debugging warning
-To:     Wei Yongjun <weiyongjun1@huawei.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Cc:     netdev@vger.kernel.org
-References: <20200420115930.135509-1-weiyongjun1@huawei.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <643f9363-9e25-7e13-a5cf-fe189268b445@gmail.com>
-Date:   Mon, 20 Apr 2020 08:48:36 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1727007AbgDTPvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 11:51:05 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:51174 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725971AbgDTPvF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 11:51:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=Lh77a99giPljqfF36wbR0jOKjoMG3OF3sHupKS46WYE=; b=lopszBcHlHRYucGagBBMuuJfuc
+        ZEegBviREAiKs4htL8mldriJ5rojFadfRnLfU5IeenyJ9b82skgC/JV2VgmkWXJx1hAtaobs8ZXUQ
+        sArq730y/W8m8rvohR8RiT5tUg3wGNCWJg6/eHLIYpnd5Yj8bv27nqj1D456miFm02+I=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jQYhF-003r2w-Ox; Mon, 20 Apr 2020 17:50:57 +0200
+Date:   Mon, 20 Apr 2020 17:50:57 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek Vasut <marex@denx.de>
+Cc:     Lukas Wunner <lukas@wunner.de>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: Re: [PATCH V4 07/19] net: ks8851: Remove ks8851_rdreg32()
+Message-ID: <20200420155057.GC917792@lunn.ch>
+References: <20200414182029.183594-1-marex@denx.de>
+ <20200414182029.183594-8-marex@denx.de>
+ <20200420140700.6632hztejwcgjwsf@wunner.de>
+ <99104102-7973-e80f-9006-9a448403562b@denx.de>
+ <20200420142002.2l57umsi3rh5ka7e@wunner.de>
+ <e8924fbc-b515-527c-a772-b5ac5cfc1cf4@denx.de>
+ <20200420144403.eoo47sq7pwp6yc7d@wunner.de>
+ <0edb18eb-0c18-c3cd-a0b7-4ba23428f354@denx.de>
 MIME-Version: 1.0
-In-Reply-To: <20200420115930.135509-1-weiyongjun1@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0edb18eb-0c18-c3cd-a0b7-4ba23428f354@denx.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 4/20/20 4:59 AM, Wei Yongjun wrote:
-> macvlan_hash_lookup() uses list_for_each_entry_rcu() for traversing
-> outside of an RCU read side critical section but under the protection
-> of rtnl_mutex. Hence, add the corresponding lockdep expression to
-> silence the following false-positive warning:
->
-
-
-This changelog is misleading.
-
-macvlan_hash_lookup() _can_ be used under RCU only, in its fast path.
-
-So you can not claim that it is run with RTNL held.
-
-Please be precise in the changelogs
-
-Thanks.
- 
-> =============================
-> WARNING: suspicious RCU usage
-> 5.7.0-rc1-next-20200416-00003-ga3b8d28bc #1 Not tainted
-> -----------------------------
-> drivers/net/macvlan.c:126 RCU-list traversed in non-reader section!!
+On Mon, Apr 20, 2020 at 05:38:16PM +0200, Marek Vasut wrote:
+> On 4/20/20 4:44 PM, Lukas Wunner wrote:
+> > On Mon, Apr 20, 2020 at 04:24:05PM +0200, Marek Vasut wrote:
+> >> On 4/20/20 4:20 PM, Lukas Wunner wrote:
+> >>> On Mon, Apr 20, 2020 at 04:12:59PM +0200, Marek Vasut wrote:
+> >>>> On 4/20/20 4:07 PM, Lukas Wunner wrote:
+> >>>>> On Tue, Apr 14, 2020 at 08:20:17PM +0200, Marek Vasut wrote:
+> >>>>>> The ks8851_rdreg32() is used only in one place, to read two registers
+> >>>>>> using a single read. To make it easier to support 16-bit accesses via
+> >>>>>> parallel bus later on, replace this single read with two 16-bit reads
+> >>>>>> from each of the registers and drop the ks8851_rdreg32() altogether.
+> >>>>>>
+> >>>>>> If this has noticeable performance impact on the SPI variant of KS8851,
+> >>>>>> then we should consider using regmap to abstract the SPI and parallel
+> >>>>>> bus options and in case of SPI, permit regmap to merge register reads
+> >>>>>> of neighboring registers into single, longer, read.
+> >>>>>
+> >>>>> Bisection has shown this patch to be the biggest cause of the performance
+> >>>>> regression introduced by this series:  Latency increases by about 9 usec.
+> >>>>
+> >>>> Just for completeness, did you perform this bisect on current linux-next
+> >>>> without any patches except this series OR your patched rpi downstream
+> >>>> vendor tree Linux 4.19 with preempt-rt patch applied ?
+> >>>
+> >>> The latter because latency without CONFIG_PREEMPT_RT_FULL=y is too imprecise
+> >>> to really see the difference and that's the configuration we care about.
+> >>
+> >> Why am I not able to see the same on the RPi3 then ?
+> >> How can I replicate this observation ?
+> > 
+> > Compile this branch with CONFIG_PREEMPT_RT_FULL=y:
+> > 
+> > https://github.com/l1k/linux/commits/revpi-4.19-marek-v4
+> > 
+> > Alternatively, download this file:
+> > 
+> > http://wunner.de/ks8851-marekv4.tar
+> > 
+> > Install the "raspberrypi-kernel" deb-package included in the tarball on a
+> > stock Raspbian image and copy one of the included ks8851.ko to:
+> > /lib/modules/4.19.95-rt38-v7+/kernel/drivers/net/ethernet/micrel
 > 
-> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-> ---
->  drivers/net/macvlan.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-> index e7289d67268f..654c1fa11826 100644
-> --- a/drivers/net/macvlan.c
-> +++ b/drivers/net/macvlan.c
-> @@ -123,7 +123,8 @@ static struct macvlan_dev *macvlan_hash_lookup(const struct macvlan_port *port,
->  	struct macvlan_dev *vlan;
->  	u32 idx = macvlan_eth_hash(addr);
->  
-> -	hlist_for_each_entry_rcu(vlan, &port->vlan_hash[idx], hlist) {
-> +	hlist_for_each_entry_rcu(vlan, &port->vlan_hash[idx], hlist,
-> +				 lockdep_rtnl_is_held()) {
->  		if (ether_addr_equal_64bits(vlan->dev->dev_addr, addr))
->  			return vlan;
->  	}
-> 
+> Why don't you rather try to replicate this problem in linux-next?
+
+Hi Lukas
+
+4.19 is dead in terms of development work. It is now over 18 months
+old. All mainline development work is done against either the last
+-rc1 kernel, or a subsystems specific 'for-next' branch.
+
+Please test Marek patches against net-next. If there are performance
+regressions with net-next, they should be addressed, but mainline does
+not care about some random long time dead tree.
+
+    Andrew
