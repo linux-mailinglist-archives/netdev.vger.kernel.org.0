@@ -2,127 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE4CE1B1EC3
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 08:28:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 410251B1F40
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 08:52:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726733AbgDUG2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 02:28:14 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:39098 "EHLO a.mx.secunet.com"
+        id S1727084AbgDUGw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 02:52:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56068 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725904AbgDUG2N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Apr 2020 02:28:13 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id B40BD20512;
-        Tue, 21 Apr 2020 08:28:11 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id j5fW46zN1PrC; Tue, 21 Apr 2020 08:28:11 +0200 (CEST)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        id S1726123AbgDUGw0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Apr 2020 02:52:26 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 3E53620082;
-        Tue, 21 Apr 2020 08:28:11 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- MAIL-ESSEN-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
- 14.3.487.0; Tue, 21 Apr 2020 08:28:11 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Tue, 21 Apr
- 2020 08:28:10 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 798873180126;
- Tue, 21 Apr 2020 08:28:10 +0200 (CEST)
-Date:   Tue, 21 Apr 2020 08:28:10 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Yuehaibing <yuehaibing@huawei.com>
-CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] xfrm: policy: Remove obsolete WARN while xfrm
- policy inserting
-Message-ID: <20200421062810.GR13121@gauss3.secunet.de>
-References: <20200327123443.12408-1-yuehaibing@huawei.com>
- <20200328112302.GA13121@gauss3.secunet.de>
- <1d3596fb-c7e3-16c9-f48f-fe58e9a2569a@huawei.com>
- <20200406090327.GF13121@gauss3.secunet.de>
- <ff4b3d2c-e6b3-33d6-141b-b093db084a18@huawei.com>
- <20200415071443.GV13121@gauss3.secunet.de>
- <f8c7d907-b6f4-c95f-b1f1-57131d19715c@huawei.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id 346802072D;
+        Tue, 21 Apr 2020 06:52:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587451945;
+        bh=OHlqcF306QhYIeTd9bYZQ5LtHbsOIHrlGcnT1sqQsKA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EqZ1nHxwagrKTX0o/mqD6JUX0yUnRx6L644kP2uXi8mO3IvDEcYhpWkRBgsmD/Mc6
+         mPk6juFXZ9W3fsGVZucDJ5nkwAz9sJfRZBzeKz5pWeAjXXx2Z4wAGfZyc6W8/rTRHT
+         p+Y2cpeHpiKSCCFpay6Or4E81YF6/syoMK1cfVRw=
+Date:   Tue, 21 Apr 2020 08:52:23 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Ertman, David M" <david.m.ertman@intel.com>
+Cc:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>,
+        "parav@mellanox.com" <parav@mellanox.com>,
+        "galpress@amazon.com" <galpress@amazon.com>,
+        "selvin.xavier@broadcom.com" <selvin.xavier@broadcom.com>,
+        "sriharsha.basavapatna@broadcom.com" 
+        <sriharsha.basavapatna@broadcom.com>,
+        "benve@cisco.com" <benve@cisco.com>,
+        "bharat@chelsio.com" <bharat@chelsio.com>,
+        "xavier.huwei@huawei.com" <xavier.huwei@huawei.com>,
+        "yishaih@mellanox.com" <yishaih@mellanox.com>,
+        "leonro@mellanox.com" <leonro@mellanox.com>,
+        "mkalderon@marvell.com" <mkalderon@marvell.com>,
+        "aditr@vmware.com" <aditr@vmware.com>,
+        "ranjani.sridharan@linux.intel.com" 
+        <ranjani.sridharan@linux.intel.com>,
+        "pierre-louis.bossart@linux.intel.com" 
+        <pierre-louis.bossart@linux.intel.com>,
+        "Patil, Kiran" <kiran.patil@intel.com>,
+        "Bowers, AndrewX" <andrewx.bowers@intel.com>
+Subject: Re: [net-next 1/9] Implementation of Virtual Bus
+Message-ID: <20200421065223.GB347130@kroah.com>
+References: <20200417171034.1533253-1-jeffrey.t.kirsher@intel.com>
+ <20200417171034.1533253-2-jeffrey.t.kirsher@intel.com>
+ <20200418125051.GA3473692@kroah.com>
+ <DM6PR11MB28418BEB2385E7E2929C2FF6DDD40@DM6PR11MB2841.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f8c7d907-b6f4-c95f-b1f1-57131d19715c@huawei.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+In-Reply-To: <DM6PR11MB28418BEB2385E7E2929C2FF6DDD40@DM6PR11MB2841.namprd11.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 17, 2020 at 07:01:52PM +0800, Yuehaibing wrote:
-> On 2020/4/15 15:14, Steffen Klassert wrote:
-> > On Thu, Apr 09, 2020 at 04:19:37PM +0800, Yuehaibing wrote:
-> >>
-> >>
-> >> On 2020/4/6 17:03, Steffen Klassert wrote:
-> >>> On Mon, Mar 30, 2020 at 10:05:32PM +0800, Yuehaibing wrote:
-> >>>> On 2020/3/28 19:23, Steffen Klassert wrote:
-> >>>>> On Fri, Mar 27, 2020 at 08:34:43PM +0800, YueHaibing wrote:
-> >>>>>> Since commit 7cb8a93968e3 ("xfrm: Allow inserting policies with matching
-> >>>>>> mark and different priorities"), we allow duplicate policies with
-> >>>>>> different priority, this WARN is not needed any more.
-> >>>>>
-> >>>>> Can you please describe a bit more detailed why this warning
-> >>>>> can't trigger anymore?
-> >>>>
-> >>>> No, this warning is triggered while detect a duplicate entry in the policy list
-> >>>>
-> >>>> regardless of the priority. If we insert policy like this:
-> >>>>
-> >>>> policy A (mark.v = 3475289, mark.m = 0, priority = 1)	//A is inserted
-> >>>> policy B (mark.v = 0, mark.m = 0, priority = 0) 	//B is inserted
-> >>>> policy C (mark.v = 3475289, mark.m = 0, priority = 0)	//C is inserted and B is deleted
-> >>>
-> >>> The codepath that replaces a policy by another should just trigger
-> >>> on policy updates (XFRM_MSG_UPDPOLICY). Is that the case in your
-> >>> test?
-> >>
-> >> Yes, this is triggered by XFRM_MSG_UPDPOLICY
-> >>
-> >>>
-> >>> It should not be possible to add policy C with XFRM_MSG_NEWPOLICY
-> >>> as long as you have policy B inserted.
-> >>>
-> >>> The update replaces an old policy by a new one, the lookup keys of
-> >>> the old policy must match the lookup keys of the new one. But policy
-> >>> B has not the same lookup keys as C, the mark is different. So B should
-> >>> not be replaced with C.
-> >>
-> >> 1436 static bool xfrm_policy_mark_match(struct xfrm_policy *policy,
-> >> 1437                                    struct xfrm_policy *pol)
-> >> 1438 {
-> >> 1439         u32 mark = policy->mark.v & policy->mark.m;
-> >> 1440
-> >> 1441         if (policy->mark.v == pol->mark.v && policy->mark.m == pol->mark.m)
-> >> 1442                 return true;
-> >> 1443
-> >> 1444         if ((mark & pol->mark.m) == pol->mark.v &&    //policy is C, pol is B, so mark is 0, pol->mark.m is 0, pol->mark.v is 0
-> >> 1445             policy->priority == pol->priority)	   //priority is same zero, so return true, B is replaced with C
-> >> 1446                 return true;
-> >> 1447
-> >> 1448         return false;
-> >> 1449 }
-> >>
-> >> Should xfrm_policy_mark_match be fixed？
+On Mon, Apr 20, 2020 at 10:59:12PM +0000, Ertman, David M wrote:
+> > -----Original Message-----
+> > From: Greg KH <gregkh@linuxfoundation.org>
+> > Sent: Saturday, April 18, 2020 5:51 AM
+> > To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
+> > Cc: davem@davemloft.net; Ertman, David M <david.m.ertman@intel.com>;
+> > netdev@vger.kernel.org; linux-rdma@vger.kernel.org; nhorman@redhat.com;
+> > sassmann@redhat.com; jgg@ziepe.ca; parav@mellanox.com;
+> > galpress@amazon.com; selvin.xavier@broadcom.com;
+> > sriharsha.basavapatna@broadcom.com; benve@cisco.com;
+> > bharat@chelsio.com; xavier.huwei@huawei.com; yishaih@mellanox.com;
+> > leonro@mellanox.com; mkalderon@marvell.com; aditr@vmware.com;
+> > ranjani.sridharan@linux.intel.com; pierre-louis.bossart@linux.intel.com; Patil,
+> > Kiran <kiran.patil@intel.com>; Bowers, AndrewX <andrewx.bowers@intel.com>
+> > Subject: Re: [net-next 1/9] Implementation of Virtual Bus
 > > 
-> > Yes, xfrm_policy_mark_match should only replace if the found
-> > policy has the same lookup keys.
+> > On Fri, Apr 17, 2020 at 10:10:26AM -0700, Jeff Kirsher wrote:
+> > > @@ -0,0 +1,53 @@
+> > > +/* SPDX-License-Identifier: GPL-2.0-only */
+> > > +/*
+> > > + * virtual_bus.h - lightweight software bus
+> > > + *
+> > > + * Copyright (c) 2019-20 Intel Corporation
+> > > + *
+> > > + * Please see Documentation/driver-api/virtual_bus.rst for more information
+> > > + */
+> > > +
+> > > +#ifndef _VIRTUAL_BUS_H_
+> > > +#define _VIRTUAL_BUS_H_
+> > > +
+> > > +#include <linux/device.h>
+> > > +
+> > > +struct virtbus_device {
+> > > +	struct device dev;
+> > > +	const char *name;
+> > 
+> > struct device already has a name, why do you need another one?
 > 
-> I'm wonder that lookup keys means association of mark.v and mark.m, or the mark (mark.v & mark.m).
+> The name in dev is the base name appended with the id to make sure each device
+> has unique name.  The name in vdev is the abbreviated one (without the id) which
+> will be used in the matching function, so that a driver can claim to support
+> <name> and will be matched with all <name>.<id> devices for all id's.
+> 
+> This is similar logic to platform_device's name field.
 
-Good point. I'd say the lookup lookup keys are identical if the policy
-lookup can't distinguish between the policies. So (mark.v & mark.m)
-should be it.
+Don't treat platform_device as a good example of much :)
+
+I still think this is duplicated stuff, but I'll let it go for now...
+
+> > > +	void (*release)(struct virtbus_device *);
+> > 
+> > A bus should have the release function, not the actual device itself.  A
+> > device should not need function pointers.
+> > 
+> 
+> The bus does have a release function, but it is a wrapper to call the release defined by
+> the device.
+
+odd.  That is normally handled by the bus, not by the device itself.
+
+> This is where the KO registering the virtbus_device is expected to clean up
+> the resources allocated for this device (e.g. free memory, etc).  Having the virtual_bus_release
+> call a release callback in the virtual_device allows for extra cleanup from the originating KO
+> if necessary.
+> 
+> The memory model of virtual bus is for the originating KO to manage the lifespan of the
+> memory for the virtual_device.  The virtual_bus expects the KO defining the virtbus_device
+> have the memory allocated before registering a virtbus_device and to clean up that memory
+> when the release is called.
+> 
+> The platform_device also has function pointers in it, by including a MFD object, but the
+> platform_bus is managing the memory for the platform_bus_object that contains the
+> platform_device which it why it using a generic kref_put to free memory.
+
+Again, platform_devices are not good things to emulate, they have grown
+into a total mess.
+
+Ok, given that you are going to be putting lots of different things on
+this "generic" type of bus, a release function for the device can make
+sense.  Still feels odd, I wonder if you should just do something with
+the type of the device instead.
+
+thanks,
+
+greg k-h
