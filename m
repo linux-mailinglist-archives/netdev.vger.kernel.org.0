@@ -2,80 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4AE11B2EB1
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 20:02:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F3EE1B2EB8
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 20:04:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729166AbgDUSCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 14:02:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53376 "EHLO
+        id S1726012AbgDUSEm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 14:04:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725990AbgDUSCU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 14:02:20 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA464C0610D6
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 11:02:19 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id i10so17472185wrv.10
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 11:02:19 -0700 (PDT)
+        with ESMTP id S1725930AbgDUSEl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 14:04:41 -0400
+Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35F3C0610D5
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 11:04:41 -0700 (PDT)
+Received: by mail-qv1-xf41.google.com with SMTP id bu9so6990488qvb.13
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 11:04:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jedhYkajSim5x68P8O0CUqvP83cf6iUjoesP9C8hiFo=;
-        b=y0jxbo7JS7pxVkOy/EQ0lO3zteC4bGOkZkqbUZRJQd7HhXj6yfYMqFVWevOPavaBHo
-         AFqy/902jMWpJnce+p+A1JLKmUK5qTjvKFBqmBpaqpIKNpxLMMGWACUQxVb+6hSvP0zi
-         Oqb8M9Q2CAKCUcH1kEijfL1M2DtrgEj6IV59dAJ+mvRowOmfUcCxlAdWEPE70obTFuWl
-         tBpgBiUK4YZgV4na/9a2gfiiLyAVCgDomVDkMEtblX0ng17W8ziunFi/DA/jjz4Qn4S5
-         4reUSJAOAWdeOvToxya/GkVT2spj7Qy1YYKjOcve3FBvBnU34z3ZYh504HC++2XCJvR2
-         c+Ag==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=27OO6okPsl+Rgn9zh/Aewmvoc4itPJ/ehOiPRiBbC+Q=;
+        b=Gf5h8nUrzQhCTeF7O2pVTa8UlE4p1q7Xd8SoCKfaIHbyNb+OTSRdyUS7kxqk/ePtJo
+         XjW3/JG7NqoPWigOIpvQKXo1o9WiXyJCm6HE39Fjmzmp9V5YV2BVNl8OaVw6BiE8ME8F
+         sAeR4r+dvz10Mc9BZ6lWiIm/sMPRhZ7NWGwUjyFW3IFFkP2leoFYFStadi19R7qTMXCh
+         3HlfcQPnih9Rgkj4XAKDlq2ka29VgAvvaMaNXJlbqLaIOGlEa6kmgwcHRcq4yeR5rq14
+         tFrNI/zavZ/qL5Wj5yvgsAP75QkLyjcB61fcS7fgqc95NeQKLgCjnwPj9Sy/tXvJD/Oa
+         9tzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jedhYkajSim5x68P8O0CUqvP83cf6iUjoesP9C8hiFo=;
-        b=jIM4FeDKVYGgh0y2HGTg6txWAysptb0Kg3idMqVd2/EHOJbFrPwq6af5fv3t7RgGiR
-         fPqXkYSzD/T3K0nhyPg+lBPsKOuq5bNo7krqfvWhjIT2F2ty2aq82jMTjK88DO9Kdy7E
-         OoJV2yrBQXrLTHbm8VGe4e2S8GN+aU/YNx7FjQYdE5cfIuss7aT2i9apwCS1/5OX9ELl
-         Rm1+86XessWNdgFLaa1Vvzdndxqp2eC8+7tjrKbSOcpnOp74/B3oJygOAj2AH4vSg8kh
-         TPiCpFb9A1jl+c/u2Hi/wPHZKn3On1VZOkq4sBiOKBprQRAcz1n2TIX8ZrU+VtR+EYPG
-         ouVA==
-X-Gm-Message-State: AGi0Pubi7moLYhz0DM3zhKvmGdcCrpQqWc8Kzx/TyVNT1INwDx6bf0J3
-        o/U7FGIAB5v6VeUyA0Ek/Gkzuw==
-X-Google-Smtp-Source: APiQypJMYW6cEnVWFYz9B0ZC92+21FY7D4okV6fO2/AswQMRRwkBPJYHxakkd9GsxWVfl/WYo91lNg==
-X-Received: by 2002:a5d:4dd1:: with SMTP id f17mr24133262wru.383.1587492138434;
-        Tue, 21 Apr 2020 11:02:18 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id s30sm4864502wrb.67.2020.04.21.11.02.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Apr 2020 11:02:17 -0700 (PDT)
-Date:   Tue, 21 Apr 2020 20:02:16 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Maor Gottlieb <maorg@mellanox.com>
-Cc:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        kuba@kernel.org, jiri@mellanox.com, dsahern@kernel.org,
-        leonro@mellanox.com, saeedm@mellanox.com,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        alexr@mellanox.com
-Subject: Re: [PATCH V3 mlx5-next 07/15] bonding: Add function to get the xmit
- slave in active-backup mode
-Message-ID: <20200421180216.GF6581@nanopsycho.orion>
-References: <20200421102844.23640-1-maorg@mellanox.com>
- <20200421102844.23640-8-maorg@mellanox.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=27OO6okPsl+Rgn9zh/Aewmvoc4itPJ/ehOiPRiBbC+Q=;
+        b=Cb5mBuajmos6qoN9//GlRquPIWiyECLtee5GGfqh0GS2/CLkXLXM+PS7A7tERf/zP8
+         xmJq6xIvBtraNrVpaGlRM66fABo4v5PPDnKMBammsvEtIRtoH9TvOe+WxJEmGUhkz+Tm
+         nK75X+qOcFPtHpSWm6AeWOmrYjPwTJ+oxFaFCbYdoz10aN1wmVtNMgyKf6W2NhLbWRtO
+         4+XchI6SvQ0NAwXo0mvuo6SZw/1jNlAayi0cD8lVC4T8jbZXqetosoESJJPdsPRxaA3r
+         0FWGD3i3SG7Bfj02obsOkU6OOe0igzXp8vkYAhFk9Z4xufh8KD4ttRI8CeKhy3VwXgtH
+         2TXw==
+X-Gm-Message-State: AGi0PuakcLC9D5fVEKqjmBoMLxYvucfbsB4fG0BwSsgSfsfvJWATbpCI
+        fY+fvYoHTdB/RV/Yo5U/YJ089w==
+X-Google-Smtp-Source: APiQypLes30RzfoWF7O2nMpio7cM1yxDIj2fHzZ7A/T8n0AYHuy7Qobyq5is5rZSL6f+XxlIvaG40A==
+X-Received: by 2002:a0c:9e2f:: with SMTP id p47mr19766285qve.211.1587492280971;
+        Tue, 21 Apr 2020 11:04:40 -0700 (PDT)
+Received: from mojaone.lan (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
+        by smtp.gmail.com with ESMTPSA id t67sm2203827qka.17.2020.04.21.11.04.39
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 21 Apr 2020 11:04:39 -0700 (PDT)
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+X-Google-Original-From: Jamal Hadi Salim <jhs@emojatatu.com>
+To:     stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com, aclaudi@redhat.com,
+        daniel@iogearbox.net, Jamal Hadi Salim <hadi@mojatatu.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>
+Subject: [PATCH iproute2 1/1] bpf: Fix segfault when custom pinning is used
+Date:   Tue, 21 Apr 2020 14:04:26 -0400
+Message-Id: <20200421180426.6945-1-jhs@emojatatu.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200421102844.23640-8-maorg@mellanox.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Apr 21, 2020 at 12:28:36PM CEST, maorg@mellanox.com wrote:
->Add helper function to get the xmit slave in active-backup mode.
->It's only one line function that return the curr_active_slave,
->but it will used both in the xmit flow and by the new .ndo to get
->the xmit slave.
->
->Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
+From: Jamal Hadi Salim <hadi@mojatatu.com>
 
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+Fixes: c0325b06382 ("bpf: replace snprintf with asprintf when dealing with long buffers")
+
+Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
+---
+ lib/bpf.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/lib/bpf.c b/lib/bpf.c
+index 10cf9bf4..cf636c9e 100644
+--- a/lib/bpf.c
++++ b/lib/bpf.c
+@@ -1509,12 +1509,12 @@ out:
+ static int bpf_make_custom_path(const struct bpf_elf_ctx *ctx,
+ 				const char *todo)
+ {
+-	char *tmp = NULL;
++	char tmp[PATH_MAX] = {};
+ 	char *rem = NULL;
+ 	char *sub;
+ 	int ret;
+ 
+-	ret = asprintf(&tmp, "%s/../", bpf_get_work_dir(ctx->type));
++	ret = sprintf(tmp, "%s/../", bpf_get_work_dir(ctx->type));
+ 	if (ret < 0) {
+ 		fprintf(stderr, "asprintf failed: %s\n", strerror(errno));
+ 		goto out;
+@@ -1547,7 +1547,6 @@ static int bpf_make_custom_path(const struct bpf_elf_ctx *ctx,
+ 	ret = 0;
+ out:
+ 	free(rem);
+-	free(tmp);
+ 	return ret;
+ }
+ 
+-- 
+2.20.1
+
