@@ -2,97 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCC821B2471
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 12:56:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7CD71B24F6
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 13:21:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728524AbgDUK4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 06:56:31 -0400
-Received: from guitar.tcltek.co.il ([192.115.133.116]:51709 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726120AbgDUK4T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Apr 2020 06:56:19 -0400
-Received: from tarshish.tkos.co.il (unknown [10.0.8.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id DE495440610;
-        Tue, 21 Apr 2020 13:56:17 +0300 (IDT)
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Russell King <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Baruch Siach <baruch@tkos.co.il>
-Subject: [PATCH net v2 2/2] net: phy: marvell10g: hwmon support for 2110
-Date:   Tue, 21 Apr 2020 13:56:15 +0300
-Message-Id: <78041607522313c5224832c205586d58a170361c.1587466575.git.baruch@tkos.co.il>
-X-Mailer: git-send-email 2.26.1
-In-Reply-To: <efeacbb6b1f2fc4581e675f9f7a37a75bb898b51.1587466575.git.baruch@tkos.co.il>
-References: <efeacbb6b1f2fc4581e675f9f7a37a75bb898b51.1587466575.git.baruch@tkos.co.il>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1728791AbgDULVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 07:21:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47796 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728780AbgDULVv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 07:21:51 -0400
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE2E9C061A0F
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 04:21:50 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id p13so6304097qvt.12
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 04:21:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=lca.pw; s=google;
+        h=content-transfer-encoding:from:mime-version:subject:date:message-id
+         :references:cc:in-reply-to:to;
+        bh=kNM2KRkAMSsc+pYLKtlKu09j47YU3pGF6ToSVV1GC2A=;
+        b=j/6HQPLHk6ynL/FoB4R7yMl5t9W90U39EGGlAjJdv3xTVLAGO1U3fwtR876zviUMgS
+         8h19VkOF136hk6Kyq+tM4kn+M4lYQ5SozOlH39NpV9v5nmttnocXoC+YaoiEJE5/p02I
+         1iSnlkan6Hr5DiOqZoHCgxS5KWE0xbJ6uSN73gAhfr7MuJBmDX8J4oldsj9jWdCiK/BQ
+         BITOyFoOFwJuRR9ZpmxV7fI7yEIX2/C19JDFdOKYGaCavcKouLbSOWDD0gJq4NShxH3I
+         YSzGbmqOUGUhXfIowlrMH/xBmwuVg3pcvOEKpTteoYRaw5IPqLzES5e2e7ptjMBWlOFB
+         Gltw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:content-transfer-encoding:from:mime-version
+         :subject:date:message-id:references:cc:in-reply-to:to;
+        bh=kNM2KRkAMSsc+pYLKtlKu09j47YU3pGF6ToSVV1GC2A=;
+        b=ZObiriG5wTAZeO1ipHj+/ga+9N6e+EZIUeihH2PR7x1QpRIlKPzWiD/qKvHdpdpLfF
+         ZF9yi2rNXxMv4110WqP6I9f7ULp8Ku1UQDwUeUud1s5ltvfcElnwnmvMKnMMHs7bqNDC
+         5xi6fevJrxXt5QlnNxe5GlmOCINzwLIBVlZP+DcRu/79UN5DJVfkdEOq5p1hMmgYbk30
+         zgtJ1NvFEsDsr/aA1RIFVVbqR9LUCcJWk4nw2hZ/4d4tILMbuu+djLa5FMT8y07tZZ4f
+         S98M/zILVMFjBqN47VDOHP3DRbNkRbesdteyHDN+zdPU/TOOeohprVnmtIBbuHN53HOK
+         AkEg==
+X-Gm-Message-State: AGi0PuYJ+mNVDle8Mfkh5uNUQMFNtgkjfcPYmoxnx+KmFyBp41l5CGs+
+        uHsehub/CjGuBShrNjdD7Wm74g==
+X-Google-Smtp-Source: APiQypIz8KpdLC2geW/BC+9l/tMpLTLdQdGdy4IFB0lhF2Q+hFfDhzRYrnPW8u4g9GZV1E2ef7eESg==
+X-Received: by 2002:a0c:b501:: with SMTP id d1mr31042qve.63.1587468110010;
+        Tue, 21 Apr 2020 04:21:50 -0700 (PDT)
+Received: from [192.168.1.183] (pool-71-184-117-43.bstnma.fios.verizon.net. [71.184.117.43])
+        by smtp.gmail.com with ESMTPSA id i56sm1625973qte.6.2020.04.21.04.21.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Apr 2020 04:21:49 -0700 (PDT)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+From:   Qian Cai <cai@lca.pw>
+Mime-Version: 1.0 (1.0)
+Subject: Re: linux-next test error: WARNING: suspicious RCU usage in ipmr_device_event
+Date:   Tue, 21 Apr 2020 07:21:48 -0400
+Message-Id: <36C7F018-510E-4555-BC6B-42DEB0468CBA@lca.pw>
+References: <CACT4Y+ZuGaeyyVsCkqJRo4+0hoMP8Eq_JTuU0L-NFqTrQP_czA@mail.gmail.com>
+Cc:     syzbot <syzbot+21f82f61c24a7295edf5@syzkaller.appspotmail.com>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+In-Reply-To: <CACT4Y+ZuGaeyyVsCkqJRo4+0hoMP8Eq_JTuU0L-NFqTrQP_czA@mail.gmail.com>
+To:     Dmitry Vyukov <dvyukov@google.com>
+X-Mailer: iPhone Mail (17D50)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Read the temperature sensor register from the correct location for the
-88E2110 PHY. There is no enable/disable bit, so leave
-mv3310_hwmon_config() for 88X3310 only.
 
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
----
-v2: Fix indentation (Andrew Lunn)
----
- drivers/net/phy/marvell10g.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-index 69530a84450f..b6115537eb66 100644
---- a/drivers/net/phy/marvell10g.c
-+++ b/drivers/net/phy/marvell10g.c
-@@ -66,6 +66,8 @@ enum {
- 	MV_PCS_CSSR1_SPD2_2500	= 0x0004,
- 	MV_PCS_CSSR1_SPD2_10000	= 0x0000,
- 
-+	MV_PCS_TEMP		= 0x8042,
-+
- 	/* These registers appear at 0x800X and 0xa00X - the 0xa00X control
- 	 * registers appear to set themselves to the 0x800X when AN is
- 	 * restarted, but status registers appear readable from either.
-@@ -104,6 +106,14 @@ static umode_t mv3310_hwmon_is_visible(const void *data,
- 	return 0;
- }
- 
-+static int mv3310_hwmon_read_temp_reg(struct phy_device *phydev)
-+{
-+	if (phydev->drv->phy_id == MARVELL_PHY_ID_88X3310)
-+		return phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_TEMP);
-+	else /* MARVELL_PHY_ID_88E2110 */
-+		return phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_TEMP);
-+}
-+
- static int mv3310_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
- 			     u32 attr, int channel, long *value)
- {
-@@ -116,7 +126,7 @@ static int mv3310_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
- 	}
- 
- 	if (type == hwmon_temp && attr == hwmon_temp_input) {
--		temp = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_TEMP);
-+		temp = mv3310_hwmon_read_temp_reg(phydev);
- 		if (temp < 0)
- 			return temp;
- 
-@@ -196,7 +206,8 @@ static int mv3310_hwmon_probe(struct phy_device *phydev)
- 	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
- 	int i, j, ret;
- 
--	if (phydev->drv->phy_id != MARVELL_PHY_ID_88X3310)
-+	if (phydev->drv->phy_id != MARVELL_PHY_ID_88X3310 &&
-+	    phydev->drv->phy_id != MARVELL_PHY_ID_88E2110)
- 		return 0;
- 
- 	priv->hwmon_name = devm_kstrdup(dev, dev_name(dev), GFP_KERNEL);
--- 
-2.26.1
+> On Apr 21, 2020, at 6:51 AM, Dmitry Vyukov <dvyukov@google.com> wrote:
+>=20
+> +linux-next, Stephen for a new linux-next breakage
 
+I don=E2=80=99t know why you keep sending the same thing over and over again=
+ where I replied you just two days ago for the same thing.=
