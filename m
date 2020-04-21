@@ -2,246 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96F3E1B26B9
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 14:52:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 726511B26E7
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 14:58:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728878AbgDUMwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 08:52:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33606 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728873AbgDUMwc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 08:52:32 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57125C061A41
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 05:52:32 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jQsNz-0004N6-SH; Tue, 21 Apr 2020 14:52:23 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jQsNx-0002JF-Gk; Tue, 21 Apr 2020 14:52:21 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Marek Vasut <marex@denx.de>, David Jander <david@protonic.nl>,
-        devicetree@vger.kernel.org
-Subject: [PATCH net-next v4 4/4] net: phy: tja11xx: add delayed registration of TJA1102 PHY1
-Date:   Tue, 21 Apr 2020 14:52:19 +0200
-Message-Id: <20200421125219.8402-5-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.26.1
-In-Reply-To: <20200421125219.8402-1-o.rempel@pengutronix.de>
-References: <20200421125219.8402-1-o.rempel@pengutronix.de>
+        id S1728902AbgDUM62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 08:58:28 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:52789 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728337AbgDUM61 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 08:58:27 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1587473907; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=jo0br9dg4CvETK0pU6lhBnpTh/mb+eL8ZbmzHSNlw2M=;
+ b=iGftj7TpobcVDOdVdSMyw/syiYqVaDcxDMfCuqK5kGN1kvdQXModT5dmtnpNHzBvVqc2VALf
+ nciqzHeO0Scx/p/aOBjJFXpB1HfFjnMQUBibUHPUlG3DhzFFUfrchypNBBOWpUW32AAOXaPB
+ EBR3yypbDNf032syj/oGyQNqgKc=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e9eedf2.7f8673e960a0-smtp-out-n01;
+ Tue, 21 Apr 2020 12:58:26 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id B9968C433BA; Tue, 21 Apr 2020 12:58:26 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 37292C432C2;
+        Tue, 21 Apr 2020 12:58:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 37292C432C2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH 1/5] rtlwifi: rtl8188ee: use true,false for bool variables
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200418070236.9620-2-yanaijie@huawei.com>
+References: <20200418070236.9620-2-yanaijie@huawei.com>
+To:     Jason Yan <yanaijie@huawei.com>
+Cc:     <pkshih@realtek.com>, <davem@davemloft.net>, <amade@asmblr.net>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Jason Yan <yanaijie@huawei.com>, Hulk Robot <hulkci@huawei.com>
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20200421125826.B9968C433BA@smtp.codeaurora.org>
+Date:   Tue, 21 Apr 2020 12:58:26 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TJA1102 is a dual PHY package with PHY0 having proper PHYID and PHY1
-having no ID. On one hand it is possible to for PHY detection by
-compatible, on other hand we should be able to reset complete chip
-before PHY1 configured it, and we need to define dependencies for proper
-power management.
+Jason Yan <yanaijie@huawei.com> wrote:
 
-We can solve it by defining PHY1 as child of PHY0:
-	tja1102_phy0: ethernet-phy@4 {
-		reg = <0x4>;
+> Fix the following coccicheck warning:
+> 
+> drivers/net/wireless/realtek/rtlwifi/rtl8188ee/sw.c:70:1-34: WARNING:
+> Assignment of 0/1 to bool variable
+> drivers/net/wireless/realtek/rtlwifi/rtl8188ee/sw.c:72:1-34: WARNING:
+> Assignment of 0/1 to bool variable
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Jason Yan <yanaijie@huawei.com>
 
-		interrupts-extended = <&gpio5 8 IRQ_TYPE_LEVEL_LOW>;
+5 patches applied to wireless-drivers-next.git, thanks.
 
-		reset-gpios = <&gpio5 9 GPIO_ACTIVE_LOW>;
-		reset-assert-us = <20>;
-		reset-deassert-us = <2000>;
+bec095ab477d rtlwifi: rtl8188ee: use true,false for bool variables
+23c2ddb574c6 rtlwifi: rtl8723ae: use true,false for bool variables
+c13a83b01010 rtlwifi: rtl8192ee: use true,false for bool variables
+47361089d987 rtlwifi: rtl8723be: use true,false for bool variables
+e8277abd453d rtlwifi: rtl8821ae: use true,false for bool variables
 
-		tja1102_phy1: ethernet-phy@5 {
-			reg = <0x5>;
-
-			interrupts-extended = <&gpio5 8 IRQ_TYPE_LEVEL_LOW>;
-		};
-	};
-
-The PHY1 should be a subnode of PHY0 and registered only after PHY0 was
-completely reset and initialized.
-
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/phy/nxp-tja11xx.c | 112 +++++++++++++++++++++++++++++++---
- 1 file changed, 105 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
-index a064e4ab3616..2bde9386baf1 100644
---- a/drivers/net/phy/nxp-tja11xx.c
-+++ b/drivers/net/phy/nxp-tja11xx.c
-@@ -6,11 +6,14 @@
- #include <linux/delay.h>
- #include <linux/ethtool.h>
- #include <linux/kernel.h>
-+#include <linux/mdio.h>
- #include <linux/mii.h>
- #include <linux/module.h>
- #include <linux/phy.h>
- #include <linux/hwmon.h>
- #include <linux/bitfield.h>
-+#include <linux/of_mdio.h>
-+#include <linux/of_irq.h>
- 
- #define PHY_ID_MASK			0xfffffff0
- #define PHY_ID_TJA1100			0x0180dc40
-@@ -57,6 +60,8 @@
- struct tja11xx_priv {
- 	char		*hwmon_name;
- 	struct device	*hwmon_dev;
-+	struct phy_device *phydev;
-+	struct work_struct phy_register_work;
- };
- 
- struct tja11xx_phy_stats {
-@@ -333,16 +338,12 @@ static const struct hwmon_chip_info tja11xx_hwmon_chip_info = {
- 	.info		= tja11xx_hwmon_info,
- };
- 
--static int tja11xx_probe(struct phy_device *phydev)
-+static int tja11xx_hwmon_register(struct phy_device *phydev,
-+				  struct tja11xx_priv *priv)
- {
- 	struct device *dev = &phydev->mdio.dev;
--	struct tja11xx_priv *priv;
- 	int i;
- 
--	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
--	if (!priv)
--		return -ENOMEM;
--
- 	priv->hwmon_name = devm_kstrdup(dev, dev_name(dev), GFP_KERNEL);
- 	if (!priv->hwmon_name)
- 		return -ENOMEM;
-@@ -360,6 +361,103 @@ static int tja11xx_probe(struct phy_device *phydev)
- 	return PTR_ERR_OR_ZERO(priv->hwmon_dev);
- }
- 
-+static int tja11xx_probe(struct phy_device *phydev)
-+{
-+	struct device *dev = &phydev->mdio.dev;
-+	struct tja11xx_priv *priv;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->phydev = phydev;
-+
-+	return tja11xx_hwmon_register(phydev, priv);
-+}
-+
-+static void tja1102_p1_register(struct work_struct *work)
-+{
-+	struct tja11xx_priv *priv = container_of(work, struct tja11xx_priv,
-+						 phy_register_work);
-+	struct phy_device *phydev_phy0 = priv->phydev;
-+	struct mii_bus *bus = phydev_phy0->mdio.bus;
-+	struct device *dev = &phydev_phy0->mdio.dev;
-+	struct device_node *np = dev->of_node;
-+	struct device_node *child;
-+	int ret;
-+
-+	for_each_available_child_of_node(np, child) {
-+		struct phy_device *phy;
-+		int addr;
-+
-+		addr = of_mdio_parse_addr(dev, child);
-+		if (addr < 0) {
-+			dev_err(dev, "Can't parse addr\n");
-+			continue;
-+		} else if (addr != phydev_phy0->mdio.addr + 1) {
-+			/* Currently we care only about double PHY chip TJA1102.
-+			 * If some day NXP will decide to bring chips with more
-+			 * PHYs, this logic should be reworked.
-+			 */
-+			dev_err(dev, "Unexpected address. Should be: %i\n",
-+				phydev_phy0->mdio.addr + 1);
-+			continue;
-+		}
-+
-+		if (mdiobus_is_registered_device(bus, addr)) {
-+			dev_err(dev, "device is already registered\n");
-+			continue;
-+		}
-+
-+		/* Real PHY ID of Port 1 is 0 */
-+		phy = phy_device_create(bus, addr, PHY_ID_TJA1102, false, NULL);
-+		if (IS_ERR(phy)) {
-+			dev_err(dev, "Can't create PHY device for Port 1: %i\n",
-+				addr);
-+			continue;
-+		}
-+
-+		/* Overwrite parent device. phy_device_create() set parent to
-+		 * the mii_bus->dev, which is not correct in case.
-+		 */
-+		phy->mdio.dev.parent = dev;
-+
-+		ret = __of_mdiobus_register_phy(bus, phy, child, addr);
-+		if (ret) {
-+			/* All resources needed for Port 1 should be already
-+			 * available for Port 0. Both ports use the same
-+			 * interrupt line, so -EPROBE_DEFER would make no sense
-+			 * here.
-+			 */
-+			dev_err(dev, "Can't register Port 1. Unexpected error: %i\n",
-+				ret);
-+			phy_device_free(phy);
-+		}
-+	}
-+}
-+
-+static int tja1102_p0_probe(struct phy_device *phydev)
-+{
-+	struct device *dev = &phydev->mdio.dev;
-+	struct tja11xx_priv *priv;
-+	int ret;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->phydev = phydev;
-+	INIT_WORK(&priv->phy_register_work, tja1102_p1_register);
-+
-+	ret = tja11xx_hwmon_register(phydev, priv);
-+	if (ret)
-+		return ret;
-+
-+	schedule_work(&priv->phy_register_work);
-+
-+	return 0;
-+}
-+
- static int tja1102_match_phy_device(struct phy_device *phydev, bool port0)
- {
- 	int ret;
-@@ -443,7 +541,7 @@ static struct phy_driver tja11xx_driver[] = {
- 	}, {
- 		.name		= "NXP TJA1102 Port 0",
- 		.features       = PHY_BASIC_T1_FEATURES,
--		.probe		= tja11xx_probe,
-+		.probe		= tja1102_p0_probe,
- 		.soft_reset	= tja11xx_soft_reset,
- 		.config_init	= tja11xx_config_init,
- 		.read_status	= tja11xx_read_status,
 -- 
-2.25.1
+https://patchwork.kernel.org/patch/11496299/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
