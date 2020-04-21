@@ -2,76 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C08C81B28F6
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 16:03:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 298FE1B2904
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 16:06:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728391AbgDUODc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 10:03:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44600 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726691AbgDUODb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 10:03:31 -0400
-Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B2BC061A41
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 07:03:31 -0700 (PDT)
-Received: by mail-vs1-xe42.google.com with SMTP id t189so8471103vst.7
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 07:03:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=B35D0jI8LN5q5XNwCoa3xE2PFpxh4HO6z4DdY1MmZKM=;
-        b=iNSoReSC0kN5p6Y+MK4OFOOaKrGbah8BGCr8hjwdtA72KNIiYj5XuqGXN866kveKg5
-         FM2SUgPN/hTG2ShC2XfHQd/m6Sv1W76lqVnZXpNx9b1R9/GO5ro6Gc+tUPyRmytejuGj
-         YlD+3DF1GXOLJk2CZUzupQg69SlPMOrhat73MUNL+wlmow968rTHnsUahxo9UILh52+q
-         MlYreJcFCIgj3bvIcS3WInXyR2Mp0RVhgFNS3Yhfj5eHOYtIaqEx3vZHbCQ7eL+qUCXd
-         gddXzzCudDGnWIYiWwGZVwv8yt2zOO2PfMioOqNDiQleQiwY/54Uey7NoZZNDD8qHtLk
-         G7eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=B35D0jI8LN5q5XNwCoa3xE2PFpxh4HO6z4DdY1MmZKM=;
-        b=XwiPXnmA39DyQq6ZnzLtXgTMy7YPCh5XIV7FJNpmPht+oCIVr3sx8CXtVpMr/+qCAT
-         6FPWLqxUR2r5M4fqsn5moCupQ8VLeBkL4U/Zig5Rxvk2jqj4feTVMHN6rmTb7Tbg7xCr
-         M2N+CHnhU1sJhckQneJKtPw7EOBCJ0dDqc26LGVEi9nqbMntxV4KlLaX6mn04TOiIJ1M
-         JZph560cmJp6zi8P77cusg8/LOyJ1WV3iTd08Jy7qv/BCR5FKS9t6LTiwOW2g113td8K
-         VHQ54+dECaCphdIOKk5GK14+rRYpaujm78azvjgdOjCm7934MK4/WtlvsRPipSajUiSH
-         M33Q==
-X-Gm-Message-State: AGi0PuasviD7M4T4OmwV8tFD8EgZIuDPa6VOIkdAOq+5YmvLhjI6heB3
-        qnr1oBNry9uoNllQ2kS95OHNyVVuPSzx/I6ci/mizA==
-X-Google-Smtp-Source: APiQypI6rpa4fTokweP9tN5YW2kreIutvpDWa2397Huu3gbq/EKTFkf0vMVJ7PLmjqC7piulvc8Dg1StcxUm8fSuLms=
-X-Received: by 2002:a67:7d83:: with SMTP id y125mr13956104vsc.96.1587477810356;
- Tue, 21 Apr 2020 07:03:30 -0700 (PDT)
+        id S1728807AbgDUOG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 10:06:57 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:53980 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728803AbgDUOG5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Apr 2020 10:06:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=ZE7ZPZNWpZOx6t4slyFG28BbRXDnbL4Q+ZDXIqQsbnw=; b=lz9qCO50t/Hg0HRv77g0hKhirQ
+        GTSlsi0hC6fbqYV+GQyhy2Pbq4hcd3cHqMREgyMCdmjyukPTVBeuCNfb7CMefPykSGunle0IxN5uM
+        rlyrDNkLP8f0TiNM6EEmVC8lgMjarSqRbCRsqZn9F6CJiixBfi+6N6alo4k6iMfWODzo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jQtY5-00427K-L3; Tue, 21 Apr 2020 16:06:53 +0200
+Date:   Tue, 21 Apr 2020 16:06:53 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net 1/2] net: dsa: be compatible with DSA masters with
+ max_mtu of 1500 or less
+Message-ID: <20200421140653.GA933345@lunn.ch>
+References: <20200421123110.13733-1-olteanv@gmail.com>
+ <20200421123110.13733-2-olteanv@gmail.com>
+ <20200421133321.GD937199@lunn.ch>
+ <CA+h21hrXJf1vm-5b3O7zQciznKF-jGSTpe_v6Mgtv8dXNOCt7g@mail.gmail.com>
 MIME-Version: 1.0
-References: <20200421081507.108023-1-zenczykowski@gmail.com>
- <20200421104014.7xfnfphpavmy6yqg@salvia> <CANP3RGfBtFhP8ESVprekuGB-664RHoSYC50mHEKYZwosfHHLxA@mail.gmail.com>
-In-Reply-To: <CANP3RGfBtFhP8ESVprekuGB-664RHoSYC50mHEKYZwosfHHLxA@mail.gmail.com>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Tue, 21 Apr 2020 07:03:18 -0700
-Message-ID: <CANP3RGdpJDbfQVSSHh6YM5kD7HAsU-Qrk=Hn7Jf_HrOD-Go2PA@mail.gmail.com>
-Subject: Re: [PATCH] libipt_ULOG.c - include strings.h for the definition of ffs()
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Netfilter Development Mailing List 
-        <netfilter-devel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hrXJf1vm-5b3O7zQciznKF-jGSTpe_v6Mgtv8dXNOCt7g@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-note: I guess it could also be bionic vs libc header files...
-but per man ffs:
-http://man7.org/linux/man-pages/man3/ffs.3.html
+On Tue, Apr 21, 2020 at 04:42:41PM +0300, Vladimir Oltean wrote:
+> Hi Andrew,
+> 
+> On Tue, 21 Apr 2020 at 16:33, Andrew Lunn <andrew@lunn.ch> wrote:
+> >
+> > On Tue, Apr 21, 2020 at 03:31:09PM +0300, Vladimir Oltean wrote:
+> > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > >
+> > > It would be ideal if the DSA switch ports would support an MTU of 1500
+> > > bytes by default, same as any other net device. But there are 2 cases of
+> > > issues with trying to do that:
+> > >
+> > > - Drivers that are legitimately MTU-challenged and don't support
+> > >   anything larger than ETH_DATA_LEN. A very quick search shows that
+> > >   sungem.c is one such example - there may be many others.
+> > >
+> > > - Drivers that simply don't populate netdev->max_mtu. In that case, it
+> > >   seems that the ether_setup function sets dev->max_mtu to a default
+> > >   value of ETH_DATA_LEN. And due to the above cases which really are
+> > >   MTU-challenged, we can't really make any guesses.
+> > >
+> > > So for these cases, if the max_mtu of the master net_device is lower
+> > > than 1500, use that (minus the tagger overhead) as the max MTU of the
+> > > switch ports.
+> >
+> > I don't like this. I suspect this will also break in subtle ways.
+> >
+> > Please go back to the original behaviour. Make the call to request the
+> > minimum needed for DSA.
+> 
+> In what sense "minimum needed"? It is minimum needed. If
+> master->max_mtu is 1500, the MTU will be set to 1496.
 
-       #include <strings.h>
-       int ffs(int i);
+Ah, sorry. This is the slave. I was thinking it was the master.
 
-       #include <string.h>
-       int ffsl(long int i);
-       int ffsll(long long int i);
+We have always assumed the slave can send normal sized frames,
+independent of what the master supports. This is just a follow on from
+the fact we ignore errors setting the MTU on the master for the DSA
+overhead for normal size frames. So don't set the MTU to 1496, leave
+it at 1500. For all working boards out in the wild, 1500 will work.
 
-strings.h is the right header file.
+	 Andrew
