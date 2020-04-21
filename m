@@ -2,146 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 476581B2EA7
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 19:58:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1F6E1B2EA9
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 19:59:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729083AbgDUR6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 13:58:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56678 "EHLO mail.kernel.org"
+        id S1728419AbgDUR7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 13:59:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57516 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725870AbgDUR6U (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Apr 2020 13:58:20 -0400
-Received: from paulmck-ThinkPad-P72.home (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
+        id S1725870AbgDUR7j (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Apr 2020 13:59:39 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3592820663;
-        Tue, 21 Apr 2020 17:58:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A2808206D5;
+        Tue, 21 Apr 2020 17:59:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587491899;
-        bh=oH3D3wW81vM+XAyd0PlDCJfJGYGDphzLmObR7cqzafY=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=0SWGGMZ06asXScTJ8MfuNaK9TrSpnZy+/ZKmI3vB6kEXBj6d7PVVtroBvv/FuslGZ
-         wlUsp+e3ncKpnFGhHiX2h53nORYZz/6Z9bqZRgPMPrgfvKIu/xxb2KuBq0CkF1e6+f
-         8uJeZkBe1pyUKQXI93w21sYPEPfiC03QO5Az217g=
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id 08D133523441; Tue, 21 Apr 2020 10:58:19 -0700 (PDT)
-Date:   Tue, 21 Apr 2020 10:58:19 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Vito Caputo <vcaputo@pengaru.com>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Joe Stringer <joe@wand.net.nz>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>, rcu@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>,
-        zhanglin <zhang.lin16@zte.com.cn>, netdev@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 00/10] Manually convert RCU text files to ReST format
-Message-ID: <20200421175818.GS17661@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <cover.1587488137.git.mchehab+huawei@kernel.org>
+        s=default; t=1587491979;
+        bh=sLOSxNI1GEgsMyFACt6uHinTA75l4f85Z5eh3FNgds4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=T5nrjXdY03Du2hdCtMMPup3A0cpiKWjIpkKNIMBpr8nPnSO+81sq9sIZfCm8XjshJ
+         3+invsmFu1Tq3K9wYh0DuxHr4Fm7gHkVe5Wo+bYT8D+8q1ZgFV8NvCAQELEaGOzC1h
+         82zwh6CZNVYNL+mN5TfI6FrzCCilEirBnU02/o+I=
+Date:   Tue, 21 Apr 2020 10:59:35 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, Todd Fujinaka <todd.fujinaka@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>
+Subject: Re: [net-next 4/4] i40e: Add a check to see if MFS is set
+Message-ID: <20200421105935.4a92485f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200421014932.2743607-5-jeffrey.t.kirsher@intel.com>
+References: <20200421014932.2743607-1-jeffrey.t.kirsher@intel.com>
+        <20200421014932.2743607-5-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1587488137.git.mchehab+huawei@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 21, 2020 at 07:04:01PM +0200, Mauro Carvalho Chehab wrote:
-> This patch series convert RCU patches to ReST.
+On Mon, 20 Apr 2020 18:49:32 -0700 Jeff Kirsher wrote:
+> From: Todd Fujinaka <todd.fujinaka@intel.com>
 > 
-> One interesting point to be noticed hereis that the RTFP.txt file contain a 
-> broken TeX bib file. I suspect that someone added some new articles
-> directly there without trying to use LaTeX to check if the addition is
-> valid. Or maybe it is just due to some version differences from the time
-> such references were added.
+> A customer was chain-booting to provision his systems and one of the
+> steps was setting MFS. MFS isn't cleared by normal warm reboots
+> (clearing requires a GLOBR) and there was no indication of why Jumbo
+> Frame receives were failing.
 > 
-> During the RTFP.txt conversion, I fixed the bibtex problems in order for it
-> to be properly parsed by LaTeX, and used the fixed file to produce a list of
-> the actually used references inside the RTFP.txt file., manually adding them
-> to the converted RTFP.rst. 
+> Add a warning if MFS is set to anything lower than the default.
 > 
-> As not all references were mentioned there, I opted to preserve the 
-> converted RTFP.bib, as it could be useful for someone doing any 
-> research around RCU.
+> Signed-off-by: Todd Fujinaka <todd.fujinaka@intel.com>
+> Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+> ---
+>  drivers/net/ethernet/intel/i40e/i40e_main.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
 > 
-> The results of those changes (together with other changes from my pending
-> doc patches) are available at:
-> 
->    https://www.infradead.org/~mchehab/kernel_docs/RCU/index.html
-> 
-> And the series is on my git tree:
-> 
->   https://git.linuxtv.org/mchehab/experimental.git/log/?h=rcu-docs
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+> index 4c414208a22a..3fdbfede0b87 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
+> +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+> @@ -15347,6 +15347,15 @@ static int i40e_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  			i40e_stat_str(&pf->hw, err),
+>  			i40e_aq_str(&pf->hw, pf->hw.aq.asq_last_status));
+>  
+> +	/* make sure the MFS hasn't been set lower than the default */
+> +#define MAX_FRAME_SIZE_DEFAULT 0x2600
+> +	for (i = 0; i < 4; i++) {
 
-I queued all but 7/10 and 8/10, for which I have the bibtex-to-ReST
-conversion question.  Thank you for dragging these files kicking and
-screaming into the year 2020!  ;-)
+Why is this a loop? AFAICS @i is only used in the warning message
 
-							Thanx, Paul
+> +		val = ((rd32(&pf->hw, I40E_PRTGL_SAH) & I40E_PRTGL_SAH_MFS_MASK)
+> +			>> I40E_PRTGL_SAH_MFS_SHIFT);
 
-> Mauro Carvalho Chehab (10):
->   docs: RCU: convert checklist.txt to ReST
->   docs: RCU: convert lockdep-splat.txt to ReST
->   docs: RCU: convert lockdep.txt to ReST
->   docs: RCU: convert rculist_nulls.txt to ReST
->   docs: RCU: convert torture.txt to ReST
->   docs: RCU: convert rcuref.txt to ReST
->   docs: RCU: RTFP: fix bibtex entries
->   docs: RCU: convert RTFP.txt to ReST
->   docs: RCU: stallwarn.txt: convert it to ReST
->   docs: RCU: rculist_nulls.rst: don't duplicate chapter names
-> 
->  Documentation/RCU/{RTFP.txt => RTFP.bib}      | 323 ++--------
->  Documentation/RCU/RTFP.rst                    | 593 ++++++++++++++++++
->  .../RCU/{checklist.txt => checklist.rst}      |  17 +-
->  Documentation/RCU/index.rst                   |  11 +
->  .../{lockdep-splat.txt => lockdep-splat.rst}  |  99 +--
->  .../RCU/{lockdep.txt => lockdep.rst}          |  12 +-
->  Documentation/RCU/rcu.rst                     |   4 +-
->  Documentation/RCU/rculist_nulls.rst           | 200 ++++++
->  Documentation/RCU/rculist_nulls.txt           | 172 -----
->  Documentation/RCU/{rcuref.txt => rcuref.rst}  | 193 +++---
->  .../RCU/{stallwarn.txt => stallwarn.rst}      |  55 +-
->  .../RCU/{torture.txt => torture.rst}          | 115 ++--
->  Documentation/locking/locktorture.rst         |   2 +-
->  MAINTAINERS                                   |   4 +-
->  include/linux/rculist_nulls.h                 |   2 +-
->  kernel/rcu/rcutorture.c                       |   2 +-
->  kernel/rcu/tree_stall.h                       |   4 +-
->  net/core/sock.c                               |   4 +-
->  18 files changed, 1139 insertions(+), 673 deletions(-)
->  rename Documentation/RCU/{RTFP.txt => RTFP.bib} (82%)
->  create mode 100644 Documentation/RCU/RTFP.rst
->  rename Documentation/RCU/{checklist.txt => checklist.rst} (98%)
->  rename Documentation/RCU/{lockdep-splat.txt => lockdep-splat.rst} (54%)
->  rename Documentation/RCU/{lockdep.txt => lockdep.rst} (96%)
->  create mode 100644 Documentation/RCU/rculist_nulls.rst
->  delete mode 100644 Documentation/RCU/rculist_nulls.txt
->  rename Documentation/RCU/{rcuref.txt => rcuref.rst} (50%)
->  rename Documentation/RCU/{stallwarn.txt => stallwarn.rst} (90%)
->  rename Documentation/RCU/{torture.txt => torture.rst} (76%)
-> 
-> -- 
-> 2.25.2
-> 
-> 
+outer parens unnecessary
+
+> +		if (val < MAX_FRAME_SIZE_DEFAULT)
+> +			dev_warn(&pdev->dev, "MFS for port %x has been set below the default: %x\n", i, val);
+
+Shouldn't you just reset it to default at this point? If the value is
+not reset on warm boot this is not really a surprise.
+
+> +	}
+> +
+>  	/* Add a filter to drop all Flow control frames from any VSI from being
+>  	 * transmitted. By doing so we stop a malicious VF from sending out
+>  	 * PAUSE or PFC frames and potentially controlling traffic for other
+
