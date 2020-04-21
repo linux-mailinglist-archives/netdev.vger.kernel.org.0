@@ -2,152 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 540FF1B2415
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 12:42:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 914501B2431
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 12:46:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728743AbgDUKmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 06:42:11 -0400
-Received: from esa5.microchip.iphmx.com ([216.71.150.166]:49903 "EHLO
-        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728711AbgDUKmD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 06:42:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1587465724; x=1619001724;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=T+SHH7oxvWS5aNKMFbJfCt0u557PHi+U5oRX3v2DzvA=;
-  b=Z9O2kjSablrS87X8e68dGdvDp6qERJ+5AQTHHoLJGgtQ9zy4LuiMZRCv
-   QnZmcq6w1Y7tKPVTouiZeO06n3/iufajtvs/6IX/K/MzEHucEuu+GUZc0
-   EKaWSC3TlgRmZyRZq5u6Tscd0uPPZD2QPiQMn1wPZzqSs5DR+I/gJ7+QM
-   8UdTso3Z5NIOvL7CwCypJ9oe3IfdBVy52maJYqiF0b8gTjlW10NIbSuY+
-   nNk66eO4/KCVu3RYNdzZJ9gp31E84JH8ep0ZghzTqZv2NUnLGvBdmoDs4
-   aVfI+eVfL7w3wGkGZpkmWy9rd89wjBeRFLiy1IUEbTr9E8gfOzwvLuUyf
-   A==;
-IronPort-SDR: c1zZGebHpOG5PEqgnAxaF1BZUCGDMkmuc4r5A+tf/W190ebzTdttTkarIMJuR35W00Eh2Ir+Cd
- DH2xL4wUumpmsdKUN5I/Si+g28adu2E6Uzy8VEH9AUx5UOzYlIwlrt03rFDXPterGaBEwXLJMj
- OrdDKGVRfLW8TaTKeGK2L5rLl+l9DHFCz4B5H8/hlS06KWA2RtNLrjC0bnh+hPx+oZCdBcn5QB
- XD3Up1wD0SZQsFvxVFWn4K3GDeGdL3+xjN+1bsYyBO1iIYnCshGcwXilNR56BpUOoiWZCskXzi
- irA=
-X-IronPort-AV: E=Sophos;i="5.72,410,1580799600"; 
-   d="scan'208";a="73257541"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Apr 2020 03:42:03 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 21 Apr 2020 03:42:05 -0700
-Received: from ness.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Tue, 21 Apr 2020 03:42:00 -0700
-From:   <nicolas.ferre@microchip.com>
-To:     <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
-        "Claudiu Beznea" <claudiu.beznea@microchip.com>,
-        <harini.katakam@xilinx.com>
-CC:     <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        <sergio.prado@e-labworks.com>, <antoine.tenart@bootlin.com>,
-        <f.fainelli@gmail.com>, <linux@armlinux.org.uk>, <andrew@lunn.ch>,
-        <michal.simek@xilinx.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: [PATCH v2 7/7] net: macb: Add WoL interrupt support for MACB type of Ethernet controller
-Date:   Tue, 21 Apr 2020 12:41:04 +0200
-Message-ID: <bebb6e87da4be4b000c059351f3a4d82ecffa561.1587463802.git.nicolas.ferre@microchip.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <cover.1587463802.git.nicolas.ferre@microchip.com>
-References: <cover.1587463802.git.nicolas.ferre@microchip.com>
+        id S1728618AbgDUKqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 06:46:19 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:48142 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728490AbgDUKqM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 06:46:12 -0400
+Received: by mail-il1-f197.google.com with SMTP id h26so15808504ilf.15
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 03:46:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=sa7Y5R2sGhGJ3qXxP5E7lP4PFHiYpnlo3ykudnVt4nE=;
+        b=aNkWOyoqPlC+mDadKuKLHGpIKSXmWIUyj5uPE6V2XFWQQocI/7fraawQJR/Jchbcei
+         vout8eJDZTBkZpQijaM8ns+x2RvmmLmuD6ru6NRkBZhZxpA2Rf9nln8C8syZcoJvQ8RO
+         dvW4LB4vSCWZ2t8wUQd5lvYzFXuMZ3ytKF5IRFBum51JMPDQPlGs99oJ6hk4C6yOksXT
+         GZLNQhca97le8kR9M4+8Bmb6Aky3bUqglWVFG/AyX795uaPscfZ6miZe/6oKnSZQECnn
+         PDJ0MzX4P8EcdepR1gRVabYyoG/R7oTvP9rY9UzfLP8vffrPZKutVdcTiFjThTOWxo37
+         iveA==
+X-Gm-Message-State: AGi0Puavi6jZpuR9No0vEsNQIBqaMR1Dxd3H0GX0sy+F/gyMnexG63FV
+        WKblmLpThcvdhTX6m53vKpc7QufBEpuiYHZNbbzFTKAIiG4s
+X-Google-Smtp-Source: APiQypIs+V/4TWNR8NDKHxupXyvu26FjAAQ85NasPOBXB3O1bUokJQI2sNv5SdTbW9dkO5i0E40tXq3H+wj8HMRwMPRGbfvvHHfq
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-Received: by 2002:a02:3341:: with SMTP id k1mr20413258jak.74.1587465971226;
+ Tue, 21 Apr 2020 03:46:11 -0700 (PDT)
+Date:   Tue, 21 Apr 2020 03:46:11 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004ede4505a3cab90e@google.com>
+Subject: linux-next test error: WARNING: suspicious RCU usage in ipmr_device_event
+From:   syzbot <syzbot+21f82f61c24a7295edf5@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nicolas Ferre <nicolas.ferre@microchip.com>
+Hello,
 
-Handle the Wake-on-Lan interrupt for the Cadence MACB Ethernet
-controller.
-As we do for the GEM version, we handle of WoL interrupt in a
-specialized interrupt handler for MACB version that is positionned
-just between suspend() and resume() calls.
+syzbot found the following crash on:
 
-Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc: Harini Katakam <harini.katakam@xilinx.com>
-Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+HEAD commit:    39a314cd Add linux-next specific files for 20200421
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=127ede73e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=8ef80c3f5d43f5bd
+dashboard link: https://syzkaller.appspot.com/bug?extid=21f82f61c24a7295edf5
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+21f82f61c24a7295edf5@syzkaller.appspotmail.com
+
+tipc: TX() has been purged, node left!
+=============================
+WARNING: suspicious RCU usage
+5.7.0-rc2-next-20200421-syzkaller #0 Not tainted
+-----------------------------
+net/ipv4/ipmr.c:1757 RCU-list traversed in non-reader section!!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+4 locks held by kworker/u4:0/7:
+ #0: ffff8880a9772138 ((wq_completion)netns){+.+.}-{0:0}, at: __write_once_size include/linux/compiler.h:250 [inline]
+ #0: ffff8880a9772138 ((wq_completion)netns){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff8880a9772138 ((wq_completion)netns){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
+ #0: ffff8880a9772138 ((wq_completion)netns){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
+ #0: ffff8880a9772138 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:615 [inline]
+ #0: ffff8880a9772138 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:642 [inline]
+ #0: ffff8880a9772138 ((wq_completion)netns){+.+.}-{0:0}, at: process_one_work+0x844/0x16a0 kernel/workqueue.c:2239
+ #1: ffffc90000cdfdc0 (net_cleanup_work){+.+.}-{0:0}, at: process_one_work+0x878/0x16a0 kernel/workqueue.c:2243
+ #2: ffffffff8a5a2b70 (pernet_ops_rwsem){++++}-{3:3}, at: cleanup_net+0x9b/0xa50 net/core/net_namespace.c:565
+ #3: ffffffff8a5aeae8 (rtnl_mutex){+.+.}-{3:3}, at: ip6gre_exit_batch_net+0x88/0x700 net/ipv6/ip6_gre.c:1602
+
+stack backtrace:
+CPU: 0 PID: 7 Comm: kworker/u4:0 Not tainted 5.7.0-rc2-next-20200421-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: netns cleanup_net
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ ipmr_device_event+0x240/0x2b0 net/ipv4/ipmr.c:1757
+ notifier_call_chain+0xc0/0x230 kernel/notifier.c:83
+ call_netdevice_notifiers_info net/core/dev.c:1948 [inline]
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1933
+ call_netdevice_notifiers_extack net/core/dev.c:1960 [inline]
+ call_netdevice_notifiers net/core/dev.c:1974 [inline]
+ rollback_registered_many+0x75c/0xe70 net/core/dev.c:8828
+ unregister_netdevice_many.part.0+0x16/0x1e0 net/core/dev.c:9993
+ unregister_netdevice_many+0x36/0x50 net/core/dev.c:9992
+ ip6gre_exit_batch_net+0x4e8/0x700 net/ipv6/ip6_gre.c:1605
+ ops_exit_list.isra.0+0x103/0x150 net/core/net_namespace.c:189
+ cleanup_net+0x511/0xa50 net/core/net_namespace.c:603
+ process_one_work+0x965/0x16a0 kernel/workqueue.c:2268
+ worker_thread+0x96/0xe20 kernel/workqueue.c:2414
+ kthread+0x38b/0x470 kernel/kthread.c:274
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+
+
 ---
-Changes in v2:
-- Addition of pm_wakeup_event() in WoL IRQ
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
- drivers/net/ethernet/cadence/macb_main.c | 39 +++++++++++++++++++++++-
- 1 file changed, 38 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 56ce39dd1cc0..4249be829aaf 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -1513,6 +1513,35 @@ static void macb_tx_restart(struct macb_queue *queue)
- 	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(TSTART));
- }
- 
-+static irqreturn_t macb_wol_interrupt(int irq, void *dev_id)
-+{
-+	struct macb_queue *queue = dev_id;
-+	struct macb *bp = queue->bp;
-+	u32 status;
-+
-+	status = queue_readl(queue, ISR);
-+
-+	if (unlikely(!status))
-+		return IRQ_NONE;
-+
-+	spin_lock(&bp->lock);
-+
-+	if (status & MACB_BIT(WOL)) {
-+		queue_writel(queue, IDR, MACB_BIT(WOL));
-+		macb_writel(bp, WOL, 0);
-+		netdev_vdbg(bp->dev, "MACB WoL: queue = %u, isr = 0x%08lx\n",
-+			    (unsigned int)(queue - bp->queues),
-+			    (unsigned long)status);
-+		if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
-+			queue_writel(queue, ISR, MACB_BIT(WOL));
-+		pm_wakeup_event(&bp->pdev->dev, 0);
-+	}
-+
-+	spin_unlock(&bp->lock);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static irqreturn_t gem_wol_interrupt(int irq, void *dev_id)
- {
- 	struct macb_queue *queue = dev_id;
-@@ -4586,8 +4615,8 @@ static int __maybe_unused macb_suspend(struct device *dev)
- 		/* Change interrupt handler and
- 		 * Enable WoL IRQ on queue 0
- 		 */
-+		devm_free_irq(dev, bp->queues[0].irq, bp->queues);
- 		if (macb_is_gem(bp)) {
--			devm_free_irq(dev, bp->queues[0].irq, bp->queues);
- 			err = devm_request_irq(dev, bp->queues[0].irq, gem_wol_interrupt,
- 					       IRQF_SHARED, netdev->name, bp->queues);
- 			if (err) {
-@@ -4599,6 +4628,14 @@ static int __maybe_unused macb_suspend(struct device *dev)
- 			queue_writel(bp->queues, IER, GEM_BIT(WOL));
- 			gem_writel(bp, WOL, MACB_BIT(MAG));
- 		} else {
-+			err = devm_request_irq(dev, bp->queues[0].irq, macb_wol_interrupt,
-+					       IRQF_SHARED, netdev->name, bp->queues);
-+			if (err) {
-+				dev_err(dev,
-+					"Unable to request IRQ %d (error %d)\n",
-+					bp->queues[0].irq, err);
-+				return err;
-+			}
- 			queue_writel(bp->queues, IER, MACB_BIT(WOL));
- 			macb_writel(bp, WOL, MACB_BIT(MAG));
- 		}
--- 
-2.20.1
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
