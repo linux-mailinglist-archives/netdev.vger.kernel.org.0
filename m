@@ -2,79 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AA9B1B2BF4
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 18:10:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F2171B2C6B
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 18:19:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726157AbgDUQKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 12:10:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35920 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726054AbgDUQKG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 12:10:06 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 673ECC061A41
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 09:10:06 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id j1so11653506wrt.1
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 09:10:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=hA9Qy954PSJGRon4N4Cpq+72wrsDpq/uc+Pe7zQ5JsY=;
-        b=oxCsWEzswHj2MaEpSxl/QADcEw1hN35FU4WiBXvI6vVfiD6TlHSaKPGF8aw00nK5Bp
-         ghi0sAivCjUVnyiZ3HpbwXd+CrWsgPN+K6IDBL4cANe23GSPknxDdGGiNMCySGJlBFEC
-         CVYO6yraohLczq6Dgeou94jj1TeIuIvNpfymlklDB86WaauscXwFIOBA6TI8EaDzBwTk
-         MsJcRUjkrJjyWZuTwVXsJM4o9/DU9yqyIrvJlVScOulQWmrJR7Q14cJJoWTcaC4QjAju
-         mmbDe1rw1NRmDr88tcb+LzqOEr4KXPxBGfOwChN7fA5wIHarmNKfjTWmT0v3wpilYlu3
-         czLw==
+        id S1728422AbgDUQRh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 12:17:37 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:23641 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726168AbgDUQRf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 12:17:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587485854;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6AGRVLAb8VV2GGBt9FCUOJrCOZqz3yE3pnkPMqPpaZ4=;
+        b=FMtdgkMnMJ1OgpstLAbrp+TAPL2xJoTs6OZRgKQlWrJo5L1qkQFlw2vetUf4M96nQ9BNnn
+        vf7R/cgp8phhtZQWTmHg36rGEJIXwMm1/+kJU/7LN3llIUm5+Vs6eChUnSM1ROhMOwi90l
+        2JLNnhE2tCw3me/yG4/ulAuq4E+YCUg=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-326-iT_YMuokOhaigeJPqwb-wQ-1; Tue, 21 Apr 2020 12:17:30 -0400
+X-MC-Unique: iT_YMuokOhaigeJPqwb-wQ-1
+Received: by mail-wm1-f72.google.com with SMTP id h22so1716750wml.1
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 09:17:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=hA9Qy954PSJGRon4N4Cpq+72wrsDpq/uc+Pe7zQ5JsY=;
-        b=RA5bKq+wwY6QMG6FdWbTby59tE2r1Z+nGMoWM9s5cKQzohxRGo3dBov0cnS6iAJZLc
-         jxMMiB1t0sgra69f2GMmZ9rLbpcS9fNlN2fdcjD3JAsl6iI3A5LoVPYlaFmniO0Ozo2W
-         to6iNzevaDbxr+B926SJkhSbVBeGJoTF1wHRjmlGqhG3JHDpjfqTsI28fG8qTpAliLs0
-         EsJ63LdjmPZuuNmdNQCiHa7tPJOvZyLh2OgNb0lalpORaVY5CWZzM/ZqmZVyse+1wfn8
-         5iKvtz3VS+V5aTUye5lMsHaGu2+foA3xD/NYD+sshIh1D7peucdSqhqKx71MAWflXk3s
-         Q5zw==
-X-Gm-Message-State: AGi0PuYfaikUtsMyRmL4/B1pbIcjfF5Rvz5OnZV6hxnREkXmxLt5B3/4
-        XY0VQDdMuXZ73TrkwZSxKE2/Hw==
-X-Google-Smtp-Source: APiQypKPUwxF1m/meOxyo8UT2vUuEDn8/V6cvLDCU2CzM11alSgsO9WAvOE6f6NV5Bw13UsE+oOM3Q==
-X-Received: by 2002:a5d:6a92:: with SMTP id s18mr23093353wru.50.1587485405162;
-        Tue, 21 Apr 2020 09:10:05 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id h5sm4587107wrp.97.2020.04.21.09.10.04
+        bh=6AGRVLAb8VV2GGBt9FCUOJrCOZqz3yE3pnkPMqPpaZ4=;
+        b=dMn/YKGmVlSDPRZqceh7K+Wh6moU52x7pHkh19qNJfYAZeczz4SnH9j4VFIH67kRfO
+         yHHbPB+BQUkNijM94MMqSWxhVO+5JtA++2GGXxj1y5i3RHjy+KInOdqCTH73mVkWybG+
+         8gXNVQn/Wsm6QL/cxcNk4TsGEl7TMmSdTqcSfqC8jgM+lzgBUn6p6tbAJYfADV61493W
+         7LUBO+SRPl7w3BcD4U9imQvcJ4tU7OOfDLBk+UEMXyoLcJGQJjTsKauTM4CDdLusirgO
+         VlREc86NiqlTkLFriBkeXxY59MFzFTfQZpK92ZwOXZCzTjgtcNT7LDHJ4ejgC3SePT3K
+         6M9Q==
+X-Gm-Message-State: AGi0PuaPZiOa0/SNA8aQEUyooVUG+7zfauJc7r8uL+fAP1GIHB3/L04y
+        0KJo2GDqDBV1kktqb7NVdPpwWgb3cmZSoC6AW3qE/0OCLkD8O2h98CgyihpWHai6DCk5iQqukd5
+        daX062oG6rCBD7XDI
+X-Received: by 2002:adf:db41:: with SMTP id f1mr23709653wrj.13.1587485849055;
+        Tue, 21 Apr 2020 09:17:29 -0700 (PDT)
+X-Google-Smtp-Source: APiQypINqkJ2dm7HlXLMWrMoVJcXlSBgzF2ec7b2hdUNDNYkmeWZUjNIFZKliARHFyJyRzZXDY7ReQ==
+X-Received: by 2002:adf:db41:: with SMTP id f1mr23709639wrj.13.1587485848793;
+        Tue, 21 Apr 2020 09:17:28 -0700 (PDT)
+Received: from steredhat (host108-207-dynamic.49-79-r.retail.telecomitalia.it. [79.49.207.108])
+        by smtp.gmail.com with ESMTPSA id h2sm4500324wro.9.2020.04.21.09.17.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Apr 2020 09:10:04 -0700 (PDT)
-Date:   Tue, 21 Apr 2020 18:10:03 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Maor Gottlieb <maorg@mellanox.com>
-Cc:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        kuba@kernel.org, jiri@mellanox.com, dsahern@kernel.org,
-        leonro@mellanox.com, saeedm@mellanox.com,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        alexr@mellanox.com
-Subject: Re: [PATCH V3 mlx5-next 05/15] bonding: Add helper function to get
- the xmit slave based on hash
-Message-ID: <20200421161003.GD6581@nanopsycho.orion>
-References: <20200421102844.23640-1-maorg@mellanox.com>
- <20200421102844.23640-6-maorg@mellanox.com>
+        Tue, 21 Apr 2020 09:17:27 -0700 (PDT)
+Date:   Tue, 21 Apr 2020 18:17:24 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Stefan Hajnoczi <stefanha@gmail.com>
+Cc:     davem@davemloft.net, Gerard Garcia <ggarcia@abra.uab.cat>,
+        kvm@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net] vsock/virtio: postpone packet delivery to monitoring
+ devices
+Message-ID: <20200421161724.c3pnecltfz4jajww@steredhat>
+References: <20200421092527.41651-1-sgarzare@redhat.com>
+ <20200421154246.GA47385@stefanha-x1.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200421102844.23640-6-maorg@mellanox.com>
+In-Reply-To: <20200421154246.GA47385@stefanha-x1.localdomain>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Apr 21, 2020 at 12:28:34PM CEST, maorg@mellanox.com wrote:
->Both xor and 802.3ad modes use bond_xmit_hash to get the xmit slave.
->Export the logic to helper function so it could be used in the
->following patches by the .ndo to get the xmit slave.
->
->Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
+On Tue, Apr 21, 2020 at 04:42:46PM +0100, Stefan Hajnoczi wrote:
+> On Tue, Apr 21, 2020 at 11:25:27AM +0200, Stefano Garzarella wrote:
+> > We delivering packets to monitoring devices, before to check if
+> > the virtqueue has enough space.
+> 
+> "We [are] delivering packets" and "before to check" -> "before
+> checking".  Perhaps it can be rewritten as:
+> 
+>   Packets are delivered to monitoring devices before checking if the
+>   virtqueue has enough space.
+> 
 
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+Yeah, it is better :-)
+
+> > 
+> > If the virtqueue is full, the transmitting packet is queued up
+> > and it will be sent in the next iteration. This causes the same
+> > packet to be delivered multiple times to monitoring devices.
+> > 
+> > This patch fixes this issue, postponing the packet delivery
+> > to monitoring devices, only when it is properly queued in the
+> 
+> s/,//
+> 
+> > virqueue.
+> 
+> s/virqueue/virtqueue/
+> 
+
+Thanks, I'll fix in the v2!
+
+> > @@ -137,6 +135,11 @@ virtio_transport_send_pkt_work(struct work_struct *work)
+> >  			break;
+> >  		}
+> >  
+> > +		/* Deliver to monitoring devices all correctly transmitted
+> > +		 * packets.
+> > +		 */
+> > +		virtio_transport_deliver_tap_pkt(pkt);
+> > +
+> 
+> The device may see the tx packet and therefore receive a reply to it
+> before we can call virtio_transport_deliver_tap_pkt().  Does this mean
+> that replies can now appear in the packet capture before the transmitted
+> packet?
+
+hmm, you are right!
+
+And the same thing can already happen in vhost-vsock where we call
+virtio_transport_deliver_tap_pkt() after the vhost_add_used(), right?
+
+The vhost-vsock case can be fixed in a simple way, but here do you think
+we should serialize them? (e.g. mutex, spinlock)
+
+In this case I'm worried about performance.
+
+Or is there some virtqueue API to check availability?
+
+Thanks,
+Stefano
+
