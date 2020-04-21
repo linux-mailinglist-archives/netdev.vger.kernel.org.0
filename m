@@ -2,512 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61F501B2BDE
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 18:05:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AA9B1B2BF4
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 18:10:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726688AbgDUQEt convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Apr 2020 12:04:49 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:59097 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726157AbgDUQEs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 12:04:48 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-257-doCo0FZbPYKhBpmVjEBpEA-1; Tue, 21 Apr 2020 12:04:38 -0400
-X-MC-Unique: doCo0FZbPYKhBpmVjEBpEA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B7374107B267;
-        Tue, 21 Apr 2020 16:04:35 +0000 (UTC)
-Received: from hog.localdomain, (unknown [10.40.194.66])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A8A1710027A8;
-        Tue, 21 Apr 2020 16:04:34 +0000 (UTC)
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     netdev@vger.kernel.org
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Sabrina Dubroca <sd@queasysnail.net>
-Subject: [PATCH ipsec-next v2 2/2] xfrm: add IPv6 support for espintcp
-Date:   Tue, 21 Apr 2020 18:04:23 +0200
-Message-Id: <58b84b2af566138279348470b7ad27a8b9650372.1587484164.git.sd@queasysnail.net>
-In-Reply-To: <cover.1587484164.git.sd@queasysnail.net>
-References: <cover.1587484164.git.sd@queasysnail.net>
+        id S1726157AbgDUQKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 12:10:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35920 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726054AbgDUQKG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 12:10:06 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 673ECC061A41
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 09:10:06 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id j1so11653506wrt.1
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 09:10:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hA9Qy954PSJGRon4N4Cpq+72wrsDpq/uc+Pe7zQ5JsY=;
+        b=oxCsWEzswHj2MaEpSxl/QADcEw1hN35FU4WiBXvI6vVfiD6TlHSaKPGF8aw00nK5Bp
+         ghi0sAivCjUVnyiZ3HpbwXd+CrWsgPN+K6IDBL4cANe23GSPknxDdGGiNMCySGJlBFEC
+         CVYO6yraohLczq6Dgeou94jj1TeIuIvNpfymlklDB86WaauscXwFIOBA6TI8EaDzBwTk
+         MsJcRUjkrJjyWZuTwVXsJM4o9/DU9yqyIrvJlVScOulQWmrJR7Q14cJJoWTcaC4QjAju
+         mmbDe1rw1NRmDr88tcb+LzqOEr4KXPxBGfOwChN7fA5wIHarmNKfjTWmT0v3wpilYlu3
+         czLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hA9Qy954PSJGRon4N4Cpq+72wrsDpq/uc+Pe7zQ5JsY=;
+        b=RA5bKq+wwY6QMG6FdWbTby59tE2r1Z+nGMoWM9s5cKQzohxRGo3dBov0cnS6iAJZLc
+         jxMMiB1t0sgra69f2GMmZ9rLbpcS9fNlN2fdcjD3JAsl6iI3A5LoVPYlaFmniO0Ozo2W
+         to6iNzevaDbxr+B926SJkhSbVBeGJoTF1wHRjmlGqhG3JHDpjfqTsI28fG8qTpAliLs0
+         EsJ63LdjmPZuuNmdNQCiHa7tPJOvZyLh2OgNb0lalpORaVY5CWZzM/ZqmZVyse+1wfn8
+         5iKvtz3VS+V5aTUye5lMsHaGu2+foA3xD/NYD+sshIh1D7peucdSqhqKx71MAWflXk3s
+         Q5zw==
+X-Gm-Message-State: AGi0PuYfaikUtsMyRmL4/B1pbIcjfF5Rvz5OnZV6hxnREkXmxLt5B3/4
+        XY0VQDdMuXZ73TrkwZSxKE2/Hw==
+X-Google-Smtp-Source: APiQypKPUwxF1m/meOxyo8UT2vUuEDn8/V6cvLDCU2CzM11alSgsO9WAvOE6f6NV5Bw13UsE+oOM3Q==
+X-Received: by 2002:a5d:6a92:: with SMTP id s18mr23093353wru.50.1587485405162;
+        Tue, 21 Apr 2020 09:10:05 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id h5sm4587107wrp.97.2020.04.21.09.10.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Apr 2020 09:10:04 -0700 (PDT)
+Date:   Tue, 21 Apr 2020 18:10:03 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Maor Gottlieb <maorg@mellanox.com>
+Cc:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        kuba@kernel.org, jiri@mellanox.com, dsahern@kernel.org,
+        leonro@mellanox.com, saeedm@mellanox.com,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        alexr@mellanox.com
+Subject: Re: [PATCH V3 mlx5-next 05/15] bonding: Add helper function to get
+ the xmit slave based on hash
+Message-ID: <20200421161003.GD6581@nanopsycho.orion>
+References: <20200421102844.23640-1-maorg@mellanox.com>
+ <20200421102844.23640-6-maorg@mellanox.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200421102844.23640-6-maorg@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This extends espintcp to support IPv6, building on the existing code
-and the new UDPv6 encapsulation support. Most of the code is either
-reused directly (stream parser, ULP) or very similar to the IPv4
-variant (net/ipv6/esp6.c changes).
+Tue, Apr 21, 2020 at 12:28:34PM CEST, maorg@mellanox.com wrote:
+>Both xor and 802.3ad modes use bond_xmit_hash to get the xmit slave.
+>Export the logic to helper function so it could be used in the
+>following patches by the .ndo to get the xmit slave.
+>
+>Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
 
-The separation of config options for IPv4 and IPv6 espintcp requires a
-bit of Kconfig gymnastics to enable the core code.
-
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
----
- include/net/ipv6_stubs.h |   2 +
- net/ipv4/Kconfig         |   1 +
- net/ipv6/Kconfig         |  12 +++
- net/ipv6/af_inet6.c      |   1 +
- net/ipv6/esp6.c          | 188 ++++++++++++++++++++++++++++++++++++++-
- net/xfrm/Kconfig         |   3 +
- net/xfrm/Makefile        |   2 +-
- net/xfrm/espintcp.c      |  56 +++++++++---
- 8 files changed, 252 insertions(+), 13 deletions(-)
-
-diff --git a/include/net/ipv6_stubs.h b/include/net/ipv6_stubs.h
-index f033a17b53b6..1e9e0cf7dc75 100644
---- a/include/net/ipv6_stubs.h
-+++ b/include/net/ipv6_stubs.h
-@@ -58,6 +58,8 @@ struct ipv6_stub {
- 			      bool router, bool solicited, bool override, bool inc_opt);
- #if IS_ENABLED(CONFIG_XFRM)
- 	int (*xfrm6_udp_encap_rcv)(struct sock *sk, struct sk_buff *skb);
-+	int (*xfrm6_rcv_encap)(struct sk_buff *skb, int nexthdr, __be32 spi,
-+			       int encap_type);
- #endif
- 	struct neigh_table *nd_tbl;
- };
-diff --git a/net/ipv4/Kconfig b/net/ipv4/Kconfig
-index 25a8888826b8..014aaa17dc79 100644
---- a/net/ipv4/Kconfig
-+++ b/net/ipv4/Kconfig
-@@ -384,6 +384,7 @@ config INET_ESPINTCP
- 	depends on XFRM && INET_ESP
- 	select STREAM_PARSER
- 	select NET_SOCK_MSG
-+	select XFRM_ESPINTCP
- 	help
- 	  Support for RFC 8229 encapsulation of ESP and IKE over
- 	  TCP/IPv4 sockets.
-diff --git a/net/ipv6/Kconfig b/net/ipv6/Kconfig
-index 2ccaee98fddb..468a2faadc7d 100644
---- a/net/ipv6/Kconfig
-+++ b/net/ipv6/Kconfig
-@@ -88,6 +88,18 @@ config INET6_ESP_OFFLOAD
- 
- 	  If unsure, say N.
- 
-+config INET6_ESPINTCP
-+	bool "IPv6: ESP in TCP encapsulation (RFC 8229)"
-+	depends on XFRM && INET6_ESP
-+	select STREAM_PARSER
-+	select NET_SOCK_MSG
-+	select XFRM_ESPINTCP
-+	help
-+	  Support for RFC 8229 encapsulation of ESP and IKE over
-+	  TCP/IPv6 sockets.
-+
-+	  If unsure, say N.
-+
- config INET6_IPCOMP
- 	tristate "IPv6: IPComp transformation"
- 	select INET6_XFRM_TUNNEL
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index b0b99c08350a..cbbb00bad20e 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -964,6 +964,7 @@ static const struct ipv6_stub ipv6_stub_impl = {
- 	.ndisc_send_na = ndisc_send_na,
- #if IS_ENABLED(CONFIG_XFRM)
- 	.xfrm6_udp_encap_rcv = xfrm6_udp_encap_rcv,
-+	.xfrm6_rcv_encap = xfrm6_rcv_encap,
- #endif
- 	.nd_tbl	= &nd_tbl,
- };
-diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
-index baab0fc35e59..e210991d1aa0 100644
---- a/net/ipv6/esp6.c
-+++ b/net/ipv6/esp6.c
-@@ -32,6 +32,9 @@
- #include <net/protocol.h>
- #include <net/udp.h>
- #include <linux/icmpv6.h>
-+#include <net/tcp.h>
-+#include <net/espintcp.h>
-+#include <net/inet6_hashtables.h>
- 
- #include <linux/highmem.h>
- 
-@@ -131,6 +134,132 @@ static void esp_ssg_unref(struct xfrm_state *x, void *tmp)
- 			put_page(sg_page(sg));
- }
- 
-+#ifdef CONFIG_INET6_ESPINTCP
-+struct esp_tcp_sk {
-+	struct sock *sk;
-+	struct rcu_head rcu;
-+};
-+
-+static void esp_free_tcp_sk(struct rcu_head *head)
-+{
-+	struct esp_tcp_sk *esk = container_of(head, struct esp_tcp_sk, rcu);
-+
-+	sock_put(esk->sk);
-+	kfree(esk);
-+}
-+
-+static struct sock *esp6_find_tcp_sk(struct xfrm_state *x)
-+{
-+	struct xfrm_encap_tmpl *encap = x->encap;
-+	struct esp_tcp_sk *esk;
-+	__be16 sport, dport;
-+	struct sock *nsk;
-+	struct sock *sk;
-+
-+	sk = rcu_dereference(x->encap_sk);
-+	if (sk && sk->sk_state == TCP_ESTABLISHED)
-+		return sk;
-+
-+	spin_lock_bh(&x->lock);
-+	sport = encap->encap_sport;
-+	dport = encap->encap_dport;
-+	nsk = rcu_dereference_protected(x->encap_sk,
-+					lockdep_is_held(&x->lock));
-+	if (sk && sk == nsk) {
-+		esk = kmalloc(sizeof(*esk), GFP_ATOMIC);
-+		if (!esk) {
-+			spin_unlock_bh(&x->lock);
-+			return ERR_PTR(-ENOMEM);
-+		}
-+		RCU_INIT_POINTER(x->encap_sk, NULL);
-+		esk->sk = sk;
-+		call_rcu(&esk->rcu, esp_free_tcp_sk);
-+	}
-+	spin_unlock_bh(&x->lock);
-+
-+	sk = __inet6_lookup_established(xs_net(x), &tcp_hashinfo, &x->id.daddr.in6,
-+					dport, &x->props.saddr.in6, ntohs(sport), 0, 0);
-+	if (!sk)
-+		return ERR_PTR(-ENOENT);
-+
-+	if (!tcp_is_ulp_esp(sk)) {
-+		sock_put(sk);
-+		return ERR_PTR(-EINVAL);
-+	}
-+
-+	spin_lock_bh(&x->lock);
-+	nsk = rcu_dereference_protected(x->encap_sk,
-+					lockdep_is_held(&x->lock));
-+	if (encap->encap_sport != sport ||
-+	    encap->encap_dport != dport) {
-+		sock_put(sk);
-+		sk = nsk ?: ERR_PTR(-EREMCHG);
-+	} else if (sk == nsk) {
-+		sock_put(sk);
-+	} else {
-+		rcu_assign_pointer(x->encap_sk, sk);
-+	}
-+	spin_unlock_bh(&x->lock);
-+
-+	return sk;
-+}
-+
-+static int esp_output_tcp_finish(struct xfrm_state *x, struct sk_buff *skb)
-+{
-+	struct sock *sk;
-+	int err;
-+
-+	rcu_read_lock();
-+
-+	sk = esp6_find_tcp_sk(x);
-+	err = PTR_ERR_OR_ZERO(sk);
-+	if (err)
-+		goto out;
-+
-+	bh_lock_sock(sk);
-+	if (sock_owned_by_user(sk))
-+		err = espintcp_queue_out(sk, skb);
-+	else
-+		err = espintcp_push_skb(sk, skb);
-+	bh_unlock_sock(sk);
-+
-+out:
-+	rcu_read_unlock();
-+	return err;
-+}
-+
-+static int esp_output_tcp_encap_cb(struct net *net, struct sock *sk,
-+				   struct sk_buff *skb)
-+{
-+	struct dst_entry *dst = skb_dst(skb);
-+	struct xfrm_state *x = dst->xfrm;
-+
-+	return esp_output_tcp_finish(x, skb);
-+}
-+
-+static int esp_output_tail_tcp(struct xfrm_state *x, struct sk_buff *skb)
-+{
-+	int err;
-+
-+	local_bh_disable();
-+	err = xfrm_trans_queue_net(xs_net(x), skb, esp_output_tcp_encap_cb);
-+	local_bh_enable();
-+
-+	/* EINPROGRESS just happens to do the right thing.  It
-+	 * actually means that the skb has been consumed and
-+	 * isn't coming back.
-+	 */
-+	return err ?: -EINPROGRESS;
-+}
-+#else
-+static int esp_output_tail_tcp(struct xfrm_state *x, struct sk_buff *skb)
-+{
-+	kfree_skb(skb);
-+
-+	return -EOPNOTSUPP;
-+}
-+#endif
-+
- static void esp_output_encap_csum(struct sk_buff *skb)
- {
- 	/* UDP encap with IPv6 requires a valid checksum */
-@@ -180,7 +309,11 @@ static void esp_output_done(struct crypto_async_request *base, int err)
- 		secpath_reset(skb);
- 		xfrm_dev_resume(skb);
- 	} else {
--		xfrm_output_resume(skb, err);
-+		if (!err &&
-+		    x->encap && x->encap->encap_type == TCP_ENCAP_ESPINTCP)
-+			esp_output_tail_tcp(x, skb);
-+		else
-+			xfrm_output_resume(skb, err);
- 	}
- }
- 
-@@ -273,6 +406,41 @@ static struct ip_esp_hdr *esp6_output_udp_encap(struct sk_buff *skb,
- 	return (struct ip_esp_hdr *)(uh + 1);
- }
- 
-+#ifdef CONFIG_INET6_ESPINTCP
-+static struct ip_esp_hdr *esp6_output_tcp_encap(struct xfrm_state *x,
-+						struct sk_buff *skb,
-+						struct esp_info *esp)
-+{
-+	__be16 *lenp = (void *)esp->esph;
-+	struct ip_esp_hdr *esph;
-+	unsigned int len;
-+	struct sock *sk;
-+
-+	len = skb->len + esp->tailen - skb_transport_offset(skb);
-+	if (len > IP_MAX_MTU)
-+		return ERR_PTR(-EMSGSIZE);
-+
-+	rcu_read_lock();
-+	sk = esp6_find_tcp_sk(x);
-+	rcu_read_unlock();
-+
-+	if (IS_ERR(sk))
-+		return ERR_CAST(sk);
-+
-+	*lenp = htons(len);
-+	esph = (struct ip_esp_hdr *)(lenp + 1);
-+
-+	return esph;
-+}
-+#else
-+static struct ip_esp_hdr *esp6_output_tcp_encap(struct xfrm_state *x,
-+						struct sk_buff *skb,
-+						struct esp_info *esp)
-+{
-+	return ERR_PTR(-EOPNOTSUPP);
-+}
-+#endif
-+
- static int esp6_output_encap(struct xfrm_state *x, struct sk_buff *skb,
- 			    struct esp_info *esp)
- {
-@@ -293,6 +461,9 @@ static int esp6_output_encap(struct xfrm_state *x, struct sk_buff *skb,
- 	case UDP_ENCAP_ESPINUDP_NON_IKE:
- 		esph = esp6_output_udp_encap(skb, encap_type, esp, sport, dport);
- 		break;
-+	case TCP_ENCAP_ESPINTCP:
-+		esph = esp6_output_tcp_encap(x, skb, esp);
-+		break;
- 	}
- 
- 	if (IS_ERR(esph))
-@@ -508,6 +679,9 @@ int esp6_output_tail(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
- 	if (sg != dsg)
- 		esp_ssg_unref(x, tmp);
- 
-+	if (!err && x->encap && x->encap->encap_type == TCP_ENCAP_ESPINTCP)
-+		err = esp_output_tail_tcp(x, skb);
-+
- error_free:
- 	kfree(tmp);
- error:
-@@ -632,9 +806,13 @@ int esp6_input_done2(struct sk_buff *skb, int err)
- 		const struct ipv6hdr *ip6h = ipv6_hdr(skb);
- 		struct xfrm_encap_tmpl *encap = x->encap;
- 		struct udphdr *uh = (void *)(skb_network_header(skb) + hdr_len);
-+		struct tcphdr *th = (void *)(skb_network_header(skb) + hdr_len);
- 		__be16 source;
- 
- 		switch (x->encap->encap_type) {
-+		case TCP_ENCAP_ESPINTCP:
-+			source = th->source;
-+			break;
- 		case UDP_ENCAP_ESPINUDP:
- 		case UDP_ENCAP_ESPINUDP_NON_IKE:
- 			source = uh->source;
-@@ -1038,6 +1216,14 @@ static int esp6_init_state(struct xfrm_state *x)
- 		case UDP_ENCAP_ESPINUDP_NON_IKE:
- 			x->props.header_len += sizeof(struct udphdr) + 2 * sizeof(u32);
- 			break;
-+#ifdef CONFIG_INET6_ESPINTCP
-+		case TCP_ENCAP_ESPINTCP:
-+			/* only the length field, TCP encap is done by
-+			 * the socket
-+			 */
-+			x->props.header_len += 2;
-+			break;
-+#endif
- 		}
- 	}
- 
-diff --git a/net/xfrm/Kconfig b/net/xfrm/Kconfig
-index 6921a18201a0..b7fd9c838416 100644
---- a/net/xfrm/Kconfig
-+++ b/net/xfrm/Kconfig
-@@ -99,4 +99,7 @@ config NET_KEY_MIGRATE
- 
- 	  If unsure, say N.
- 
-+config XFRM_ESPINTCP
-+	bool
-+
- endif # INET
-diff --git a/net/xfrm/Makefile b/net/xfrm/Makefile
-index 212a4fcb4a88..2d4bb4b9f75e 100644
---- a/net/xfrm/Makefile
-+++ b/net/xfrm/Makefile
-@@ -11,4 +11,4 @@ obj-$(CONFIG_XFRM_ALGO) += xfrm_algo.o
- obj-$(CONFIG_XFRM_USER) += xfrm_user.o
- obj-$(CONFIG_XFRM_IPCOMP) += xfrm_ipcomp.o
- obj-$(CONFIG_XFRM_INTERFACE) += xfrm_interface.o
--obj-$(CONFIG_INET_ESPINTCP) += espintcp.o
-+obj-$(CONFIG_XFRM_ESPINTCP) += espintcp.o
-diff --git a/net/xfrm/espintcp.c b/net/xfrm/espintcp.c
-index 5a0ff665b71a..100e29682b48 100644
---- a/net/xfrm/espintcp.c
-+++ b/net/xfrm/espintcp.c
-@@ -6,6 +6,9 @@
- #include <net/espintcp.h>
- #include <linux/skmsg.h>
- #include <net/inet_common.h>
-+#if IS_ENABLED(CONFIG_IPV6)
-+#include <net/ipv6_stubs.h>
-+#endif
- 
- static void handle_nonesp(struct espintcp_ctx *ctx, struct sk_buff *skb,
- 			  struct sock *sk)
-@@ -31,7 +34,12 @@ static void handle_esp(struct sk_buff *skb, struct sock *sk)
- 	rcu_read_lock();
- 	skb->dev = dev_get_by_index_rcu(sock_net(sk), skb->skb_iif);
- 	local_bh_disable();
--	xfrm4_rcv_encap(skb, IPPROTO_ESP, 0, TCP_ENCAP_ESPINTCP);
-+#if IS_ENABLED(CONFIG_IPV6)
-+	if (sk->sk_family == AF_INET6)
-+		ipv6_stub->xfrm6_rcv_encap(skb, IPPROTO_ESP, 0, TCP_ENCAP_ESPINTCP);
-+	else
-+#endif
-+		xfrm4_rcv_encap(skb, IPPROTO_ESP, 0, TCP_ENCAP_ESPINTCP);
- 	local_bh_enable();
- 	rcu_read_unlock();
- }
-@@ -347,6 +355,9 @@ static int espintcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- 
- static struct proto espintcp_prot __ro_after_init;
- static struct proto_ops espintcp_ops __ro_after_init;
-+static struct proto espintcp6_prot;
-+static struct proto_ops espintcp6_ops;
-+static DEFINE_MUTEX(tcpv6_prot_mutex);
- 
- static void espintcp_data_ready(struct sock *sk)
- {
-@@ -385,10 +396,14 @@ static void espintcp_destruct(struct sock *sk)
- 
- bool tcp_is_ulp_esp(struct sock *sk)
- {
--	return sk->sk_prot == &espintcp_prot;
-+	return sk->sk_prot == &espintcp_prot || sk->sk_prot == &espintcp6_prot;
- }
- EXPORT_SYMBOL_GPL(tcp_is_ulp_esp);
- 
-+static void build_protos(struct proto *espintcp_prot,
-+			 struct proto_ops *espintcp_ops,
-+			 const struct proto *orig_prot,
-+			 const struct proto_ops *orig_ops);
- static int espintcp_init_sk(struct sock *sk)
- {
- 	struct inet_connection_sock *icsk = inet_csk(sk);
-@@ -416,8 +431,19 @@ static int espintcp_init_sk(struct sock *sk)
- 	strp_check_rcv(&ctx->strp);
- 	skb_queue_head_init(&ctx->ike_queue);
- 	skb_queue_head_init(&ctx->out_queue);
--	sk->sk_prot = &espintcp_prot;
--	sk->sk_socket->ops = &espintcp_ops;
-+
-+	if (sk->sk_family == AF_INET) {
-+		sk->sk_prot = &espintcp_prot;
-+		sk->sk_socket->ops = &espintcp_ops;
-+	} else {
-+		mutex_lock(&tcpv6_prot_mutex);
-+		if (!espintcp6_prot.recvmsg)
-+			build_protos(&espintcp6_prot, &espintcp6_ops, sk->sk_prot, sk->sk_socket->ops);
-+		mutex_unlock(&tcpv6_prot_mutex);
-+
-+		sk->sk_prot = &espintcp6_prot;
-+		sk->sk_socket->ops = &espintcp6_ops;
-+	}
- 	ctx->saved_data_ready = sk->sk_data_ready;
- 	ctx->saved_write_space = sk->sk_write_space;
- 	ctx->saved_destruct = sk->sk_destruct;
-@@ -491,6 +517,20 @@ static __poll_t espintcp_poll(struct file *file, struct socket *sock,
- 	return mask;
- }
- 
-+static void build_protos(struct proto *espintcp_prot,
-+			 struct proto_ops *espintcp_ops,
-+			 const struct proto *orig_prot,
-+			 const struct proto_ops *orig_ops)
-+{
-+	memcpy(espintcp_prot, orig_prot, sizeof(struct proto));
-+	memcpy(espintcp_ops, orig_ops, sizeof(struct proto_ops));
-+	espintcp_prot->sendmsg = espintcp_sendmsg;
-+	espintcp_prot->recvmsg = espintcp_recvmsg;
-+	espintcp_prot->close = espintcp_close;
-+	espintcp_prot->release_cb = espintcp_release;
-+	espintcp_ops->poll = espintcp_poll;
-+}
-+
- static struct tcp_ulp_ops espintcp_ulp __read_mostly = {
- 	.name = "espintcp",
- 	.owner = THIS_MODULE,
-@@ -499,13 +539,7 @@ static struct tcp_ulp_ops espintcp_ulp __read_mostly = {
- 
- void __init espintcp_init(void)
- {
--	memcpy(&espintcp_prot, &tcp_prot, sizeof(tcp_prot));
--	memcpy(&espintcp_ops, &inet_stream_ops, sizeof(inet_stream_ops));
--	espintcp_prot.sendmsg = espintcp_sendmsg;
--	espintcp_prot.recvmsg = espintcp_recvmsg;
--	espintcp_prot.close = espintcp_close;
--	espintcp_prot.release_cb = espintcp_release;
--	espintcp_ops.poll = espintcp_poll;
-+	build_protos(&espintcp_prot, &espintcp_ops, &tcp_prot, &inet_stream_ops);
- 
- 	tcp_register_ulp(&espintcp_ulp);
- }
--- 
-2.26.1
-
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
