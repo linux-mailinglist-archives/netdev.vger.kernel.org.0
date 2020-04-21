@@ -2,108 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 291781B213D
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 10:16:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E8E21B213F
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 10:16:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728345AbgDUIPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 04:15:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728162AbgDUIPy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 04:15:54 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ECE2C061A0F;
-        Tue, 21 Apr 2020 01:15:54 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id y25so6284994pfn.5;
-        Tue, 21 Apr 2020 01:15:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WrK5RDoX+ITS5jlanPN4W/vCSCVtaPWzKdj2s4nN0ho=;
-        b=D2i7tbj3BJWJR2VD/nZjbnjbB5PA4de2EK+UTsGT84gbRv3ruxoUojCrV7iZLxTZVf
-         TKZNHUP3RHuFNeILfHW/4CmNgAxjvVe+hFzNy556VIMrgWpqwKPPouOSwoq/2/VR2FdG
-         YhFIX8CN+tKfhU8mftdG2kGn5NvmvoyYgi/Sqkv3WsPPkq37g/Z3eUejLMAppcLnF8XG
-         leSIOtIHniHgd2VIJInm0mviLiwbLJgVeRZTMb8LX+XTaitS0g1PBbYVS1s95ngZLGJT
-         YaEzEnl/4+zV+MrzDYHHzpwnXgpXTdiKfnTA8IErmP9HVH/9pzch8FEk8FtK3k4Eizim
-         qwFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WrK5RDoX+ITS5jlanPN4W/vCSCVtaPWzKdj2s4nN0ho=;
-        b=Vj8K1BVV6no+uHAhpElbgxcvbeR3mUwCcB8nsWvzp3U/Izf4+8fe9QQeAo5guWtNla
-         1Cuc1g9ow5d8oeXhoXcmANyOwhGVJSfK2UboKhVCnExt5KrVXI9PQ5atO3LqxoUk5+yO
-         yElb9nxOJpJIPiySn6Q0vOGkG7pwonkzoBh/IdL3E3EXtFk8YfK4wyrfw/V/FsGbAO8/
-         GPUj8PmFjewYvrtu4DKq3xKe9uihNmolw/xTg19U9GxHNhNNYxmGnGP5i/blrrMGHdpJ
-         N0A8uSrYemrjKWrwUMLlomwx9T6Bu6Yn6m6ObJ3pW5CiK9aWDaXXBiCR8QWga0p31MSc
-         VGNA==
-X-Gm-Message-State: AGi0PuYatED161O6aS+G1nFWhdEMdVC3y964P5tkJTKbtzQOB+cGPd82
-        g4wNlWJaRDZTJzpM8VReXke/HBP15nA=
-X-Google-Smtp-Source: APiQypJnOxmujskatWfve2JobXmI+b2FIYwEk5/pCzcNvD+ScmA05B7k1/kU0T3pZmJsKe+1p43H6Q==
-X-Received: by 2002:aa7:85c2:: with SMTP id z2mr19853810pfn.25.1587456953747;
-        Tue, 21 Apr 2020 01:15:53 -0700 (PDT)
-Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
-        by smtp.gmail.com with ESMTPSA id m4sm1733803pfm.26.2020.04.21.01.15.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Apr 2020 01:15:53 -0700 (PDT)
-From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
-To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
-        Netfilter Development Mailing List 
-        <netfilter-devel@vger.kernel.org>
-Subject: [PATCH] do not typedef socklen_t on Android
-Date:   Tue, 21 Apr 2020 01:15:49 -0700
-Message-Id: <20200421081549.108375-1-zenczykowski@gmail.com>
-X-Mailer: git-send-email 2.26.1.301.g55bc3eb7cb9-goog
+        id S1728363AbgDUIQH convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Apr 2020 04:16:07 -0400
+Received: from mga03.intel.com ([134.134.136.65]:45624 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728162AbgDUIQG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Apr 2020 04:16:06 -0400
+IronPort-SDR: 6JrmxbE9NwThM+Q45CjODXzd3vGJv0K9Smov1/0SIP4IM2rTPMNtr6nYI9cjIWEfBHKTNE9gVi
+ WL8Wnm3T/jbA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2020 01:16:02 -0700
+IronPort-SDR: 8nUKFyHXy1Pskhs/mHLqd1HlKc/128kEtxuW+Y92U7ZCRuzBwzqZwzMiW3022po2E74MD4JzaV
+ GYLulULvPnyw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,409,1580803200"; 
+   d="scan'208";a="279556242"
+Received: from orsmsx104.amr.corp.intel.com ([10.22.225.131])
+  by fmsmga004.fm.intel.com with ESMTP; 21 Apr 2020 01:16:01 -0700
+Received: from orsmsx152.amr.corp.intel.com (10.22.226.39) by
+ ORSMSX104.amr.corp.intel.com (10.22.225.131) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Tue, 21 Apr 2020 01:16:00 -0700
+Received: from orsmsx112.amr.corp.intel.com ([169.254.3.248]) by
+ ORSMSX152.amr.corp.intel.com ([169.254.8.85]) with mapi id 14.03.0439.000;
+ Tue, 21 Apr 2020 01:16:00 -0700
+From:   "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+To:     "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>,
+        "parav@mellanox.com" <parav@mellanox.com>,
+        "galpress@amazon.com" <galpress@amazon.com>,
+        "selvin.xavier@broadcom.com" <selvin.xavier@broadcom.com>,
+        "sriharsha.basavapatna@broadcom.com" 
+        <sriharsha.basavapatna@broadcom.com>,
+        "benve@cisco.com" <benve@cisco.com>,
+        "bharat@chelsio.com" <bharat@chelsio.com>,
+        "xavier.huwei@huawei.com" <xavier.huwei@huawei.com>,
+        "yishaih@mellanox.com" <yishaih@mellanox.com>,
+        "leonro@mellanox.com" <leonro@mellanox.com>,
+        "mkalderon@marvell.com" <mkalderon@marvell.com>,
+        "aditr@vmware.com" <aditr@vmware.com>,
+        "ranjani.sridharan@linux.intel.com" 
+        <ranjani.sridharan@linux.intel.com>,
+        "pierre-louis.bossart@linux.intel.com" 
+        <pierre-louis.bossart@linux.intel.com>
+Subject: RE: [net-next v2 0/9][pull request] 100GbE Intel Wired LAN Driver
+ Updates 2020-04-20
+Thread-Topic: [net-next v2 0/9][pull request] 100GbE Intel Wired LAN Driver
+ Updates 2020-04-20
+Thread-Index: AQHWF7M+ytg6HKzOoEituinftxWI0KiDOHUA
+Date:   Tue, 21 Apr 2020 08:15:59 +0000
+Message-ID: <61CC2BC414934749BD9F5BF3D5D940449866D71D@ORSMSX112.amr.corp.intel.com>
+References: <20200421080235.6515-1-jeffrey.t.kirsher@intel.com>
+In-Reply-To: <20200421080235.6515-1-jeffrey.t.kirsher@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.139]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
+> -----Original Message-----
+> From: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
+> Sent: Tuesday, April 21, 2020 01:02
+> To: davem@davemloft.net; gregkh@linuxfoundation.org
+> Cc: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; netdev@vger.kernel.org;
+> linux-rdma@vger.kernel.org; nhorman@redhat.com; sassmann@redhat.com;
+> jgg@ziepe.ca; parav@mellanox.com; galpress@amazon.com;
+> selvin.xavier@broadcom.com; sriharsha.basavapatna@broadcom.com;
+> benve@cisco.com; bharat@chelsio.com; xavier.huwei@huawei.com;
+> yishaih@mellanox.com; leonro@mellanox.com; mkalderon@marvell.com;
+> aditr@vmware.com; ranjani.sridharan@linux.intel.com; pierre-
+> louis.bossart@linux.intel.com
+> Subject: [net-next v2 0/9][pull request] 100GbE Intel Wired LAN Driver Updates
+> 2020-04-20
+> 
+> This series contains the initial implementation of the Virtual Bus, virtbus_device,
+> virtbus_driver, updates to 'ice' and 'i40e' to use the new Virtual Bus.
+> 
+> The primary purpose of the Virtual bus is to put devices on it and hook the
+> devices up to drivers.  This will allow drivers, like the RDMA drivers, to hook up
+> to devices via this Virtual bus.
+> 
+> This series currently builds against net-next tree.
+> 
+> Revision history:
+> v2: Made changes based on community feedback, like Pierre-Louis's and
+>     Jason's comments to update virtual bus interface.
+[Kirsher, Jeffrey T] 
 
-This is present in bionic header files regardless of compiler
-being used (likely clang)
+David Miller, I know we have heard from Greg KH and Jason Gunthorpe on the patch
+series and have responded accordingly, I would like your personal opinion on the
+patch series.  I respect your opinion and would like to make sure we appease all the
+maintainers and users involved to get this accepted into the 5.8 kernel.
 
-Test: builds
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
----
- libiptc/libip4tc.c | 2 +-
- libiptc/libip6tc.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/libiptc/libip4tc.c b/libiptc/libip4tc.c
-index 55540638..08147055 100644
---- a/libiptc/libip4tc.c
-+++ b/libiptc/libip4tc.c
-@@ -22,7 +22,7 @@
- #define inline
- #endif
- 
--#if !defined(__GLIBC__) || (__GLIBC__ < 2)
-+#if !defined(__ANDROID__) && (!defined(__GLIBC__) || (__GLIBC__ < 2))
- typedef unsigned int socklen_t;
- #endif
- 
-diff --git a/libiptc/libip6tc.c b/libiptc/libip6tc.c
-index b7dd1e33..91676c4a 100644
---- a/libiptc/libip6tc.c
-+++ b/libiptc/libip6tc.c
-@@ -23,7 +23,7 @@
- #define inline
- #endif
- 
--#if !defined(__GLIBC__) || (__GLIBC__ < 2)
-+#if !defined(__ANDROID__) && (!defined(__GLIBC__) || (__GLIBC__ < 2))
- typedef unsigned int socklen_t;
- #endif
- 
--- 
-2.26.1.301.g55bc3eb7cb9-goog
+> 
+> The following are changes since commit
+> 82ebc889091a488b4dd95e682b3c3b889a50713c:
+>   qed: use true,false for bool variables and are available in the git repository at:
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 100GbE
+> 
+> Dave Ertman (7):
+>   Implementation of Virtual Bus
+>   ice: Create and register virtual bus for RDMA
+>   ice: Complete RDMA peer registration
+>   ice: Support resource allocation requests
+>   ice: Enable event notifications
+>   ice: Allow reset operations
+>   ice: Pass through communications to VF
+> 
+> Shiraz Saleem (2):
+>   i40e: Move client header location
+>   i40e: Register a virtbus device to provide RDMA
+> 
+>  Documentation/driver-api/virtual_bus.rst      |   62 +
+>  MAINTAINERS                                   |    1 +
+>  drivers/bus/Kconfig                           |   10 +
+>  drivers/bus/Makefile                          |    2 +
+>  drivers/bus/virtual_bus.c                     |  279 ++++
+>  drivers/infiniband/hw/i40iw/Makefile          |    1 -
+>  drivers/infiniband/hw/i40iw/i40iw.h           |    2 +-
+>  drivers/net/ethernet/intel/Kconfig            |    2 +
+>  drivers/net/ethernet/intel/i40e/i40e.h        |    2 +-
+>  drivers/net/ethernet/intel/i40e/i40e_client.c |  133 +-
+>  drivers/net/ethernet/intel/ice/Makefile       |    1 +
+>  drivers/net/ethernet/intel/ice/ice.h          |   15 +
+>  .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   33 +
+>  drivers/net/ethernet/intel/ice/ice_common.c   |  206 ++-
+>  drivers/net/ethernet/intel/ice/ice_common.h   |    9 +
+>  drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |   68 +
+>  drivers/net/ethernet/intel/ice/ice_dcb_lib.h  |    3 +
+>  .../net/ethernet/intel/ice/ice_hw_autogen.h   |    1 +
+>  drivers/net/ethernet/intel/ice/ice_idc.c      | 1327 +++++++++++++++++
+>  drivers/net/ethernet/intel/ice/ice_idc_int.h  |  105 ++
+>  drivers/net/ethernet/intel/ice/ice_lib.c      |   50 +
+>  drivers/net/ethernet/intel/ice/ice_lib.h      |    4 +
+>  drivers/net/ethernet/intel/ice/ice_main.c     |  104 +-
+>  drivers/net/ethernet/intel/ice/ice_sched.c    |   69 +-
+>  drivers/net/ethernet/intel/ice/ice_switch.c   |   27 +
+>  drivers/net/ethernet/intel/ice/ice_switch.h   |    4 +
+>  drivers/net/ethernet/intel/ice/ice_type.h     |    4 +
+>  .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |   59 +-
+>  include/linux/mod_devicetable.h               |    8 +
+>  .../linux/net/intel}/i40e_client.h            |   15 +
+>  include/linux/net/intel/iidc.h                |  337 +++++
+>  include/linux/virtual_bus.h                   |   53 +
+>  scripts/mod/devicetable-offsets.c             |    3 +
+>  scripts/mod/file2alias.c                      |    7 +
+>  34 files changed, 2942 insertions(+), 64 deletions(-)  create mode 100644
+> Documentation/driver-api/virtual_bus.rst
+>  create mode 100644 drivers/bus/virtual_bus.c  create mode 100644
+> drivers/net/ethernet/intel/ice/ice_idc.c
+>  create mode 100644 drivers/net/ethernet/intel/ice/ice_idc_int.h
+>  rename {drivers/net/ethernet/intel/i40e => include/linux/net/intel}/i40e_client.h
+> (94%)  create mode 100644 include/linux/net/intel/iidc.h  create mode 100644
+> include/linux/virtual_bus.h
+> 
+> --
+> 2.25.3
 
