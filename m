@@ -2,99 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 038F11B2EA4
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 19:55:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 476581B2EA7
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 19:58:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728419AbgDURzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 13:55:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55904 "EHLO mail.kernel.org"
+        id S1729083AbgDUR6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 13:58:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56678 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725930AbgDURzx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Apr 2020 13:55:53 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        id S1725870AbgDUR6U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Apr 2020 13:58:20 -0400
+Received: from paulmck-ThinkPad-P72.home (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0172220663;
-        Tue, 21 Apr 2020 17:55:52 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3592820663;
+        Tue, 21 Apr 2020 17:58:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587491753;
-        bh=5fM1xxeS4RFDsWX/PVANuOzUGIYCgXH23ehRNDGKFAU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=1D4gJynJyhNtzpK+SJncthZk2yDowdBA+KkiyQHwZZMzy7juw3r2ep8AA0E3xwhMx
-         NRHy3i1MWWkaUyEHwG2e4upxChtWHytoyDTXjGBGFd9Fmsi5r6Es5/MIlVrozz8iBg
-         VW2jrxxheT31aOSC4mJwSBnxzxXbOVJ2Lell6jKI=
-Date:   Tue, 21 Apr 2020 10:55:51 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Piotr Kwapulinski <piotr.kwapulinski@intel.com>,
-        Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: Re: [net-next 3/4] i40e: Add support for a new feature: Total Port
- Shutdown
-Message-ID: <20200421105551.6f41673a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200421014932.2743607-4-jeffrey.t.kirsher@intel.com>
-References: <20200421014932.2743607-1-jeffrey.t.kirsher@intel.com>
-        <20200421014932.2743607-4-jeffrey.t.kirsher@intel.com>
+        s=default; t=1587491899;
+        bh=oH3D3wW81vM+XAyd0PlDCJfJGYGDphzLmObR7cqzafY=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=0SWGGMZ06asXScTJ8MfuNaK9TrSpnZy+/ZKmI3vB6kEXBj6d7PVVtroBvv/FuslGZ
+         wlUsp+e3ncKpnFGhHiX2h53nORYZz/6Z9bqZRgPMPrgfvKIu/xxb2KuBq0CkF1e6+f
+         8uJeZkBe1pyUKQXI93w21sYPEPfiC03QO5Az217g=
+Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
+        id 08D133523441; Tue, 21 Apr 2020 10:58:19 -0700 (PDT)
+Date:   Tue, 21 Apr 2020 10:58:19 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Vito Caputo <vcaputo@pengaru.com>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Joe Stringer <joe@wand.net.nz>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>, rcu@vger.kernel.org,
+        Ingo Molnar <mingo@redhat.com>,
+        zhanglin <zhang.lin16@zte.com.cn>, netdev@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Will Deacon <will@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 00/10] Manually convert RCU text files to ReST format
+Message-ID: <20200421175818.GS17661@paulmck-ThinkPad-P72>
+Reply-To: paulmck@kernel.org
+References: <cover.1587488137.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1587488137.git.mchehab+huawei@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 Apr 2020 18:49:31 -0700 Jeff Kirsher wrote:
-> From: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+On Tue, Apr 21, 2020 at 07:04:01PM +0200, Mauro Carvalho Chehab wrote:
+> This patch series convert RCU patches to ReST.
 > 
-> Currently after requesting to down a link on a physical network port,
-> the traffic is no longer being processed but the physical link
-> with a link partner is still established.
+> One interesting point to be noticed hereis that the RTFP.txt file contain a 
+> broken TeX bib file. I suspect that someone added some new articles
+> directly there without trying to use LaTeX to check if the addition is
+> valid. Or maybe it is just due to some version differences from the time
+> such references were added.
 > 
-> Total Port Shutdown allows to completely shutdown the port on the
-> link-down procedure by physically removing the link from the port.
+> During the RTFP.txt conversion, I fixed the bibtex problems in order for it
+> to be properly parsed by LaTeX, and used the fixed file to produce a list of
+> the actually used references inside the RTFP.txt file., manually adding them
+> to the converted RTFP.rst. 
 > 
-> Introduced changes:
-> - probe NVM if the feature was enabled at initialization of the port
-> - special handling on link-down procedure to let FW physically
-> shutdown the port if the feature was enabled
-
-How is this different than link-down-on-close?
-
-Perhaps it'd be good to start documenting the private flags in
-Documentation/
-
-> Testing Hints (required if no HSD):
-> Link up/down, link-down-on-close
+> As not all references were mentioned there, I opted to preserve the 
+> converted RTFP.bib, as it could be useful for someone doing any 
+> research around RCU.
 > 
-> Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-> Signed-off-by: Piotr Kwapulinski <piotr.kwapulinski@intel.com>
-> Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
-> Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+> The results of those changes (together with other changes from my pending
+> doc patches) are available at:
+> 
+>    https://www.infradead.org/~mchehab/kernel_docs/RCU/index.html
+> 
+> And the series is on my git tree:
+> 
+>   https://git.linuxtv.org/mchehab/experimental.git/log/?h=rcu-docs
 
-> @@ -12012,6 +12085,16 @@ static int i40e_sw_init(struct i40e_pf *pf)
->  
->  	pf->tx_timeout_recovery_level = 1;
->  
-> +	if (pf->hw.mac.type != I40E_MAC_X722 &&
-> +	    i40e_is_total_port_shutdown_enabled(pf)) {
-> +		/* Link down on close must be on when total port shutdown
-> +		 * is enabled for a given port
-> +		 */
-> +		pf->flags |= (I40E_FLAG_TOTAL_PORT_SHUTDOWN
-> +			  | I40E_FLAG_LINK_DOWN_ON_CLOSE_ENABLED);
+I queued all but 7/10 and 8/10, for which I have the bibtex-to-ReST
+conversion question.  Thank you for dragging these files kicking and
+screaming into the year 2020!  ;-)
 
-FWIW this is the correct code style in the kernel:
+							Thanx, Paul
 
-flags = BLA |
-        BLA2;
-
-> +		dev_info(&pf->pdev->dev,
-> +			 "Total Port Shutdown is enabled, link-down-on-close forced on\n");
-> +	}
->  	mutex_init(&pf->switch_mutex);
->  
->  sw_init_done:
+> Mauro Carvalho Chehab (10):
+>   docs: RCU: convert checklist.txt to ReST
+>   docs: RCU: convert lockdep-splat.txt to ReST
+>   docs: RCU: convert lockdep.txt to ReST
+>   docs: RCU: convert rculist_nulls.txt to ReST
+>   docs: RCU: convert torture.txt to ReST
+>   docs: RCU: convert rcuref.txt to ReST
+>   docs: RCU: RTFP: fix bibtex entries
+>   docs: RCU: convert RTFP.txt to ReST
+>   docs: RCU: stallwarn.txt: convert it to ReST
+>   docs: RCU: rculist_nulls.rst: don't duplicate chapter names
+> 
+>  Documentation/RCU/{RTFP.txt => RTFP.bib}      | 323 ++--------
+>  Documentation/RCU/RTFP.rst                    | 593 ++++++++++++++++++
+>  .../RCU/{checklist.txt => checklist.rst}      |  17 +-
+>  Documentation/RCU/index.rst                   |  11 +
+>  .../{lockdep-splat.txt => lockdep-splat.rst}  |  99 +--
+>  .../RCU/{lockdep.txt => lockdep.rst}          |  12 +-
+>  Documentation/RCU/rcu.rst                     |   4 +-
+>  Documentation/RCU/rculist_nulls.rst           | 200 ++++++
+>  Documentation/RCU/rculist_nulls.txt           | 172 -----
+>  Documentation/RCU/{rcuref.txt => rcuref.rst}  | 193 +++---
+>  .../RCU/{stallwarn.txt => stallwarn.rst}      |  55 +-
+>  .../RCU/{torture.txt => torture.rst}          | 115 ++--
+>  Documentation/locking/locktorture.rst         |   2 +-
+>  MAINTAINERS                                   |   4 +-
+>  include/linux/rculist_nulls.h                 |   2 +-
+>  kernel/rcu/rcutorture.c                       |   2 +-
+>  kernel/rcu/tree_stall.h                       |   4 +-
+>  net/core/sock.c                               |   4 +-
+>  18 files changed, 1139 insertions(+), 673 deletions(-)
+>  rename Documentation/RCU/{RTFP.txt => RTFP.bib} (82%)
+>  create mode 100644 Documentation/RCU/RTFP.rst
+>  rename Documentation/RCU/{checklist.txt => checklist.rst} (98%)
+>  rename Documentation/RCU/{lockdep-splat.txt => lockdep-splat.rst} (54%)
+>  rename Documentation/RCU/{lockdep.txt => lockdep.rst} (96%)
+>  create mode 100644 Documentation/RCU/rculist_nulls.rst
+>  delete mode 100644 Documentation/RCU/rculist_nulls.txt
+>  rename Documentation/RCU/{rcuref.txt => rcuref.rst} (50%)
+>  rename Documentation/RCU/{stallwarn.txt => stallwarn.rst} (90%)
+>  rename Documentation/RCU/{torture.txt => torture.rst} (76%)
+> 
+> -- 
+> 2.25.2
+> 
+> 
