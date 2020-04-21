@@ -2,219 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21D8C1B2837
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 15:41:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFD931B283C
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 15:42:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728847AbgDUNl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 09:41:29 -0400
-Received: from forward104j.mail.yandex.net ([5.45.198.247]:47698 "EHLO
-        forward104j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728337AbgDUNl3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 09:41:29 -0400
-Received: from forward101q.mail.yandex.net (forward101q.mail.yandex.net [IPv6:2a02:6b8:c0e:4b:0:640:4012:bb98])
-        by forward104j.mail.yandex.net (Yandex) with ESMTP id 4E4314A20FC;
-        Tue, 21 Apr 2020 16:41:21 +0300 (MSK)
-Received: from mxback12q.mail.yandex.net (mxback12q.mail.yandex.net [IPv6:2a02:6b8:c0e:1b3:0:640:3818:d096])
-        by forward101q.mail.yandex.net (Yandex) with ESMTP id 460A9CF40002;
-        Tue, 21 Apr 2020 16:41:21 +0300 (MSK)
-Received: from vla4-d1b041059520.qloud-c.yandex.net (vla4-d1b041059520.qloud-c.yandex.net [2a02:6b8:c17:914:0:640:d1b0:4105])
-        by mxback12q.mail.yandex.net (mxback/Yandex) with ESMTP id 93xlLFHrpE-fIB0fnjQ;
-        Tue, 21 Apr 2020 16:41:21 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1587476481;
-        bh=xCogxVJggB4U0WxqK21fNHt81GXV7XMyn6/5t3LcMbA=;
-        h=Subject:To:From:Cc:Date:Message-Id;
-        b=h8iyN+76zznVlaSgkJSHKBzd+V/7zOQG160+7quNxObd2jljOUq6wQchjPfcyKg0K
-         thZ5XwDNLtpkM4Md/ngAUb5yr4YWuraTezhtDrcr2yzM3Gf+apfwx80soLY+5PacVo
-         zC8b3m2igt0SSBbBj4jIojJ1w5FqtG9xXL0ulWEc=
-Authentication-Results: mxback12q.mail.yandex.net; dkim=pass header.i=@yandex.ru
-Received: by vla4-d1b041059520.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id X5d09Yh5QJ-fG2W9Rr2;
-        Tue, 21 Apr 2020 16:41:17 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-From:   Alexander Lobakin <bloodyreaper@yandex.ru>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Mao Wenan <maowenan@huawei.com>,
-        Alexander Lobakin <bloodyreaper@yandex.ru>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH v2 net-next] net: dsa: add GRO support via gro_cells
-Date:   Tue, 21 Apr 2020 16:41:08 +0300
-Message-Id: <20200421134108.167646-1-bloodyreaper@yandex.ru>
-X-Mailer: git-send-email 2.26.2
+        id S1728786AbgDUNmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 09:42:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41422 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728337AbgDUNmw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 09:42:52 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38A09C061A10
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 06:42:52 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id w2so10255906edx.4
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 06:42:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YsASCIS8S3T2wPmCafkJcaiF5p7SzhXhSHfhiSWpoP4=;
+        b=CtdIHa3CsBHNMgrdSkPv+1KLu2TITwESYddlAhj/S4kl3hkamyGcxvtPq6tdtF1myr
+         uBIxpSIbegMtDgxai7FUrJlzUFo5qqrYvvsh44FOfqbl7K5Al3YlCjjIsd1/aB3Er6vi
+         TyLHxhdeqD5ZN7hjJlolcmQJWr2b4R4LzfjzFzdjsJkvDfaRR4IgH6igewMPcN4BKMRT
+         ED4gWIV9lB65GafFxETiBXby9xudrNUcbwvWxXUCFTcj73yyD28dFpogJDe8m1iFlxWa
+         nDgSi7SzKk6EMmU8RJfUUBhG6Gv45JR8JjGvd1BiRk1MZk2nIiGkk4T0wuOBynmhW167
+         nl0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YsASCIS8S3T2wPmCafkJcaiF5p7SzhXhSHfhiSWpoP4=;
+        b=Ev2/CbzFfqH1hflGtO5Clr0AcWGhqFoh0pVNwOpE4XVuNkGwEQRHNukkioC+5duu2j
+         +qZW7Ph5WyOeIr3HqmrlE3n2VZ++mc2190fhlnvZyUd4s4g90OfoNJFeD84GWah6PMej
+         F5TRNcIMKqyYwg/doXppiPlSsUC56Pg2fJGVweDUmpGX5f2kqb1K2yDfg0IrY02A0U0b
+         BsieocEvLTIE/fE+HUVRdisxGaNY+XHKjE5QvoU7uJKPTuSOqqp7YP3M/V9nO+cpIBue
+         7YiZlZ0CW6QWrXqsWTP16iYwBd1MMJYpdW/GYnrnffk1OWfKse3WfhpRV5SI0rOYTb8/
+         CHiQ==
+X-Gm-Message-State: AGi0Pubokz7ki2O3mPI94VLwnb0UCR3qKKpRJekpWKQzjP+Ct1kD3mmd
+        uDjUSNcM3pD3AB1eNsqgMvS2LkCEZYeY8pzZYv4=
+X-Google-Smtp-Source: APiQypITDjlS27netwpinsRDIinsWee1YYxSmDNsmoWrqoBwsttHyNmhxTyY+vEeitFEAsgp46pGTj16EVmScbK+YJM=
+X-Received: by 2002:a50:f288:: with SMTP id f8mr14124169edm.337.1587476570889;
+ Tue, 21 Apr 2020 06:42:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200421123110.13733-1-olteanv@gmail.com> <20200421123110.13733-2-olteanv@gmail.com>
+ <20200421133321.GD937199@lunn.ch>
+In-Reply-To: <20200421133321.GD937199@lunn.ch>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Tue, 21 Apr 2020 16:42:41 +0300
+Message-ID: <CA+h21hrXJf1vm-5b3O7zQciznKF-jGSTpe_v6Mgtv8dXNOCt7g@mail.gmail.com>
+Subject: Re: [PATCH net 1/2] net: dsa: be compatible with DSA masters with
+ max_mtu of 1500 or less
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-gro_cells lib is used by different encapsulating netdevices, such as
-geneve, macsec, vxlan etc. to speed up decapsulated traffic processing.
-CPU tag is a sort of "encapsulation", and we can use the same mechs to
-greatly improve overall DSA performance.
-skbs are passed to the GRO layer after removing CPU tags, so we don't
-need any new packet offload types as it was firstly proposed by me in
-the first GRO-over-DSA variant [1].
+Hi Andrew,
 
-The size of struct gro_cells is sizeof(void *), so hot struct
-dsa_slave_priv becomes only 4/8 bytes bigger, and all critical fields
-remain in one 32-byte cacheline.
-The other positive side effect is that drivers for network devices
-that can be shipped as CPU ports of DSA-driven switches can now use
-napi_gro_frags() to pass skbs to kernel. Packets built that way are
-completely non-linear and are likely being dropped without GRO.
+On Tue, 21 Apr 2020 at 16:33, Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Tue, Apr 21, 2020 at 03:31:09PM +0300, Vladimir Oltean wrote:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> >
+> > It would be ideal if the DSA switch ports would support an MTU of 1500
+> > bytes by default, same as any other net device. But there are 2 cases of
+> > issues with trying to do that:
+> >
+> > - Drivers that are legitimately MTU-challenged and don't support
+> >   anything larger than ETH_DATA_LEN. A very quick search shows that
+> >   sungem.c is one such example - there may be many others.
+> >
+> > - Drivers that simply don't populate netdev->max_mtu. In that case, it
+> >   seems that the ether_setup function sets dev->max_mtu to a default
+> >   value of ETH_DATA_LEN. And due to the above cases which really are
+> >   MTU-challenged, we can't really make any guesses.
+> >
+> > So for these cases, if the max_mtu of the master net_device is lower
+> > than 1500, use that (minus the tagger overhead) as the max MTU of the
+> > switch ports.
+>
+> I don't like this. I suspect this will also break in subtle ways.
+>
+> Please go back to the original behaviour. Make the call to request the
+> minimum needed for DSA.
 
-This was tested on to-be-mainlined-soon Ethernet driver that uses
-napi_gro_frags(), and the overall performance was on par with the
-variant from [1], sometimes even better due to minimal overhead.
-net.core.gro_normal_batch tuning may help to push it to the limit
-on particular setups and platforms.
+In what sense "minimum needed"? It is minimum needed. If
+master->max_mtu is 1500, the MTU will be set to 1496.
 
-iperf3 IPoE VLAN NAT TCP forwarding (port1.218 -> port0) setup
-on 1.2 GHz MIPS board:
+> And don't care at all if it fails. For jumbo
+> frames then you can error out.
 
-5.7-rc2 baseline:
+Yes, that is patch 2/2.
 
-[ID]  Interval         Transfer     Bitrate        Retr
-[ 5]  0.00-120.01 sec  9.00 GBytes  644 Mbits/sec  413  sender
-[ 5]  0.00-120.00 sec  8.99 GBytes  644 Mbits/sec       receiver
+>
+>        Andrew
 
-Iface      RX packets  TX packets
-eth0       7097731     7097702
-port0      426050      6671829
-port1      6671681     425862
-port1.218  6671677     425851
-
-With this patch:
-
-[ID]  Interval         Transfer     Bitrate        Retr
-[ 5]  0.00-120.01 sec  12.2 GBytes  870 Mbits/sec  122  sender
-[ 5]  0.00-120.00 sec  12.2 GBytes  870 Mbits/sec       receiver
-
-Iface      RX packets  TX packets
-eth0       9474792     9474777
-port0      455200      353288
-port1      9019592     455035
-port1.218  353144      455024
-
-v2:
- - Add some performance examples in the commit message;
- - No functional changes.
-
-[1] https://lore.kernel.org/netdev/20191230143028.27313-1-alobakin@dlink.ru/
-
-Signed-off-by: Alexander Lobakin <bloodyreaper@yandex.ru>
----
- net/dsa/Kconfig    |  1 +
- net/dsa/dsa.c      |  2 +-
- net/dsa/dsa_priv.h |  3 +++
- net/dsa/slave.c    | 10 +++++++++-
- 4 files changed, 14 insertions(+), 2 deletions(-)
-
-diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-index 92663dcb3aa2..739613070d07 100644
---- a/net/dsa/Kconfig
-+++ b/net/dsa/Kconfig
-@@ -9,6 +9,7 @@ menuconfig NET_DSA
- 	tristate "Distributed Switch Architecture"
- 	depends on HAVE_NET_DSA
- 	depends on BRIDGE || BRIDGE=n
-+	select GRO_CELLS
- 	select NET_SWITCHDEV
- 	select PHYLINK
- 	select NET_DEVLINK
-diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-index ee2610c4d46a..0384a911779e 100644
---- a/net/dsa/dsa.c
-+++ b/net/dsa/dsa.c
-@@ -234,7 +234,7 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
- 	if (dsa_skb_defer_rx_timestamp(p, skb))
- 		return 0;
- 
--	netif_receive_skb(skb);
-+	gro_cells_receive(&p->gcells, skb);
- 
- 	return 0;
- }
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 904cc7c9b882..6d9a1ef65fa0 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -11,6 +11,7 @@
- #include <linux/netdevice.h>
- #include <linux/netpoll.h>
- #include <net/dsa.h>
-+#include <net/gro_cells.h>
- 
- enum {
- 	DSA_NOTIFIER_AGEING_TIME,
-@@ -77,6 +78,8 @@ struct dsa_slave_priv {
- 
- 	struct pcpu_sw_netstats	*stats64;
- 
-+	struct gro_cells	gcells;
-+
- 	/* DSA port data, such as switch, port index, etc. */
- 	struct dsa_port		*dp;
- 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 5390ff541658..36c7491e8e5f 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1762,6 +1762,11 @@ int dsa_slave_create(struct dsa_port *port)
- 		free_netdev(slave_dev);
- 		return -ENOMEM;
- 	}
-+
-+	ret = gro_cells_init(&p->gcells, slave_dev);
-+	if (ret)
-+		goto out_free;
-+
- 	p->dp = port;
- 	INIT_LIST_HEAD(&p->mall_tc_list);
- 	p->xmit = cpu_dp->tag_ops->xmit;
-@@ -1781,7 +1786,7 @@ int dsa_slave_create(struct dsa_port *port)
- 	ret = dsa_slave_phy_setup(slave_dev);
- 	if (ret) {
- 		netdev_err(master, "error %d setting up slave phy\n", ret);
--		goto out_free;
-+		goto out_gcells;
- 	}
- 
- 	dsa_slave_notify(slave_dev, DSA_PORT_REGISTER);
-@@ -1800,6 +1805,8 @@ int dsa_slave_create(struct dsa_port *port)
- 	phylink_disconnect_phy(p->dp->pl);
- 	rtnl_unlock();
- 	phylink_destroy(p->dp->pl);
-+out_gcells:
-+	gro_cells_destroy(&p->gcells);
- out_free:
- 	free_percpu(p->stats64);
- 	free_netdev(slave_dev);
-@@ -1820,6 +1827,7 @@ void dsa_slave_destroy(struct net_device *slave_dev)
- 	dsa_slave_notify(slave_dev, DSA_PORT_UNREGISTER);
- 	unregister_netdev(slave_dev);
- 	phylink_destroy(dp->pl);
-+	gro_cells_destroy(&p->gcells);
- 	free_percpu(p->stats64);
- 	free_netdev(slave_dev);
- }
--- 
-2.26.0
-
+Thanks,
+-Vladimir
