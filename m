@@ -2,134 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F2171B2C6B
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 18:19:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 360D11B2C73
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 18:19:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728422AbgDUQRh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 12:17:37 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:23641 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726168AbgDUQRf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 12:17:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587485854;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6AGRVLAb8VV2GGBt9FCUOJrCOZqz3yE3pnkPMqPpaZ4=;
-        b=FMtdgkMnMJ1OgpstLAbrp+TAPL2xJoTs6OZRgKQlWrJo5L1qkQFlw2vetUf4M96nQ9BNnn
-        vf7R/cgp8phhtZQWTmHg36rGEJIXwMm1/+kJU/7LN3llIUm5+Vs6eChUnSM1ROhMOwi90l
-        2JLNnhE2tCw3me/yG4/ulAuq4E+YCUg=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-326-iT_YMuokOhaigeJPqwb-wQ-1; Tue, 21 Apr 2020 12:17:30 -0400
-X-MC-Unique: iT_YMuokOhaigeJPqwb-wQ-1
-Received: by mail-wm1-f72.google.com with SMTP id h22so1716750wml.1
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 09:17:29 -0700 (PDT)
+        id S1726878AbgDUQSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 12:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37308 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725987AbgDUQSq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 12:18:46 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2FF6C061A10
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 09:18:46 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id n16so6964254pgb.7
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 09:18:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=90m5gduL81UmpkEuVTZZS7Hmlotva3IFRX+Uvj/JP4k=;
+        b=L/jDjiKcQNKx4vpZwpsI+339wQUmOLEmzRDsM3SWDnewGGbOtHPFeZnSc1+b8PdMCD
+         YYoYopItTNUlHA6zN2ASkpG+6clAs+Mtt+R+ta8pQPnmATZ7OMSr4EDZTGUBoGwsE5nl
+         Nos/V83gfgjFoLdsfLBtkqIc4tWQqqwk2DWDA+A232j4uOZK4HHGgJvhbYns6yt1WKBA
+         Fvi6SzYUGgV/Q1Fpw9/OkBMxwBjpN9nb6ZcAyblIdLAm36uwrjDrliiAmQF/B863+j4m
+         Hj5ke+gGbRKwZPyC+Gga1wHznMMAH/DKZOSYLBJCdKyjVfy8el5oAPKWrYL368Vv0ps2
+         qw+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6AGRVLAb8VV2GGBt9FCUOJrCOZqz3yE3pnkPMqPpaZ4=;
-        b=dMn/YKGmVlSDPRZqceh7K+Wh6moU52x7pHkh19qNJfYAZeczz4SnH9j4VFIH67kRfO
-         yHHbPB+BQUkNijM94MMqSWxhVO+5JtA++2GGXxj1y5i3RHjy+KInOdqCTH73mVkWybG+
-         8gXNVQn/Wsm6QL/cxcNk4TsGEl7TMmSdTqcSfqC8jgM+lzgBUn6p6tbAJYfADV61493W
-         7LUBO+SRPl7w3BcD4U9imQvcJ4tU7OOfDLBk+UEMXyoLcJGQJjTsKauTM4CDdLusirgO
-         VlREc86NiqlTkLFriBkeXxY59MFzFTfQZpK92ZwOXZCzTjgtcNT7LDHJ4ejgC3SePT3K
-         6M9Q==
-X-Gm-Message-State: AGi0PuaPZiOa0/SNA8aQEUyooVUG+7zfauJc7r8uL+fAP1GIHB3/L04y
-        0KJo2GDqDBV1kktqb7NVdPpwWgb3cmZSoC6AW3qE/0OCLkD8O2h98CgyihpWHai6DCk5iQqukd5
-        daX062oG6rCBD7XDI
-X-Received: by 2002:adf:db41:: with SMTP id f1mr23709653wrj.13.1587485849055;
-        Tue, 21 Apr 2020 09:17:29 -0700 (PDT)
-X-Google-Smtp-Source: APiQypINqkJ2dm7HlXLMWrMoVJcXlSBgzF2ec7b2hdUNDNYkmeWZUjNIFZKliARHFyJyRzZXDY7ReQ==
-X-Received: by 2002:adf:db41:: with SMTP id f1mr23709639wrj.13.1587485848793;
-        Tue, 21 Apr 2020 09:17:28 -0700 (PDT)
-Received: from steredhat (host108-207-dynamic.49-79-r.retail.telecomitalia.it. [79.49.207.108])
-        by smtp.gmail.com with ESMTPSA id h2sm4500324wro.9.2020.04.21.09.17.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Apr 2020 09:17:27 -0700 (PDT)
-Date:   Tue, 21 Apr 2020 18:17:24 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Stefan Hajnoczi <stefanha@gmail.com>
-Cc:     davem@davemloft.net, Gerard Garcia <ggarcia@abra.uab.cat>,
-        kvm@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net] vsock/virtio: postpone packet delivery to monitoring
- devices
-Message-ID: <20200421161724.c3pnecltfz4jajww@steredhat>
-References: <20200421092527.41651-1-sgarzare@redhat.com>
- <20200421154246.GA47385@stefanha-x1.localdomain>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=90m5gduL81UmpkEuVTZZS7Hmlotva3IFRX+Uvj/JP4k=;
+        b=Io1ZBP6Ywcrnt4+SUF+iZoN5QMPcZHyUFGHPQVM7a5YZaIzd3f2oJsDbpnyEW7uGnq
+         pULS1XF2Y7A8il63jFobgrZn8nrnsYk+bKHN8RvlKI/EjDOYtIjEb6QJ0FdIa8qNEliq
+         IReI6prYIkXf6pox0RhgOwFImKUKSIrc37EuXONeQkD+KyNVhbEc5zBdz39HY/sz7TQU
+         toRR2kcL/+5EOyjK1qBZ7WJHC8ky1OiZX4pGWdvtHraTtuEtdP2KFbrOfUsDu90e6nv1
+         3pLSL5AuLRHGvPT5k+hkEg8iSO0lzecHwmaqNZeYO1MSoI3AcVbWH7JdW73zoy9hlPly
+         cHZg==
+X-Gm-Message-State: AGi0PuamdnahZLkfuIfZuEOM4bdc3Gg0c501B6mBrAt/NeVppO85kjig
+        F7CgW6paSZefyDwyxwJvgsw=
+X-Google-Smtp-Source: APiQypJLofDrT9BHR3l4PnR/lU1FGWUVcMq4hyRhl62A93gnFCIAGNf5xu308PXBDjFc0UJ7DrUWAA==
+X-Received: by 2002:a65:6704:: with SMTP id u4mr22870576pgf.263.1587485926301;
+        Tue, 21 Apr 2020 09:18:46 -0700 (PDT)
+Received: from host ([154.223.71.61])
+        by smtp.gmail.com with ESMTPSA id i8sm2583716pgr.82.2020.04.21.09.18.42
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 21 Apr 2020 09:18:44 -0700 (PDT)
+Date:   Wed, 22 Apr 2020 00:18:40 +0800
+From:   Bo YU <tsu.yubo@gmail.com>
+To:     matthieu.baerts@tessares.net, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, mathew.j.martineau@linux.intel.com
+Cc:     netdev@vger.kernel.org, mptcp@lists.01.org, tsu.yubo@gmail.com
+Subject: [PATCH -next] mptcp/pm_netlink.c : add check for nla_put_in6_addr
+Message-ID: <20200421161830.uaiwr5il6kh5texr@host>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200421154246.GA47385@stefanha-x1.localdomain>
+User-Agent: NeoMutt/20171215
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 21, 2020 at 04:42:46PM +0100, Stefan Hajnoczi wrote:
-> On Tue, Apr 21, 2020 at 11:25:27AM +0200, Stefano Garzarella wrote:
-> > We delivering packets to monitoring devices, before to check if
-> > the virtqueue has enough space.
-> 
-> "We [are] delivering packets" and "before to check" -> "before
-> checking".  Perhaps it can be rewritten as:
-> 
->   Packets are delivered to monitoring devices before checking if the
->   virtqueue has enough space.
-> 
+Normal there should be checked for nla_put_in6_addr like other
+usage in net.
 
-Yeah, it is better :-)
+Detected by CoverityScan, CID# 1461639
 
-> > 
-> > If the virtqueue is full, the transmitting packet is queued up
-> > and it will be sent in the next iteration. This causes the same
-> > packet to be delivered multiple times to monitoring devices.
-> > 
-> > This patch fixes this issue, postponing the packet delivery
-> > to monitoring devices, only when it is properly queued in the
-> 
-> s/,//
-> 
-> > virqueue.
-> 
-> s/virqueue/virtqueue/
-> 
+Fixes: 01cacb00b35c("mptcp: add netlink-based PM")
+Signed-off-by: Bo YU <tsu.yubo@gmail.com>
+---
+BWT, I am not sure nla_put_in_addr whether or not to do such that
+---
+ net/mptcp/pm_netlink.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Thanks, I'll fix in the v2!
-
-> > @@ -137,6 +135,11 @@ virtio_transport_send_pkt_work(struct work_struct *work)
-> >  			break;
-> >  		}
-> >  
-> > +		/* Deliver to monitoring devices all correctly transmitted
-> > +		 * packets.
-> > +		 */
-> > +		virtio_transport_deliver_tap_pkt(pkt);
-> > +
-> 
-> The device may see the tx packet and therefore receive a reply to it
-> before we can call virtio_transport_deliver_tap_pkt().  Does this mean
-> that replies can now appear in the packet capture before the transmitted
-> packet?
-
-hmm, you are right!
-
-And the same thing can already happen in vhost-vsock where we call
-virtio_transport_deliver_tap_pkt() after the vhost_add_used(), right?
-
-The vhost-vsock case can be fixed in a simple way, but here do you think
-we should serialize them? (e.g. mutex, spinlock)
-
-In this case I'm worried about performance.
-
-Or is there some virtqueue API to check availability?
-
-Thanks,
-Stefano
+diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+index 86d61ab34c7c..f340b00672e1 100644
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -603,8 +603,9 @@ static int mptcp_nl_fill_addr(struct sk_buff *skb,
+ 		nla_put_in_addr(skb, MPTCP_PM_ADDR_ATTR_ADDR4,
+ 				addr->addr.s_addr);
+ #if IS_ENABLED(CONFIG_MPTCP_IPV6)
+-	else if (addr->family == AF_INET6)
+-		nla_put_in6_addr(skb, MPTCP_PM_ADDR_ATTR_ADDR6, &addr->addr6);
++	else if (addr->family == AF_INET6 &&
++		nla_put_in6_addr(skb, MPTCP_PM_ADDR_ATTR_ADDR6, &addr->addr6))
++		goto nla_put_failure;
+ #endif
+ 	nla_nest_end(skb, attr);
+ 	return 0;
+-- 
+2.11.0
 
