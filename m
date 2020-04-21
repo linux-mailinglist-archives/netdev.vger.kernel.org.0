@@ -2,149 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4B4D1B21CC
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 10:38:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E065F1B21D4
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 10:38:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728396AbgDUIiD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Apr 2020 04:38:03 -0400
-Received: from mga01.intel.com ([192.55.52.88]:43448 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726018AbgDUIiB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Apr 2020 04:38:01 -0400
-IronPort-SDR: qRlxKjQD0Tng2ISZ2tPRHeQIIiBXUE59yjeG9jRl45QmnlnbHFDVyNX7lwRl8lVHGd9U3ksYEE
- z0N6IqMJ0/Fw==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2020 01:38:01 -0700
-IronPort-SDR: 8IW+2PE/fR+gwgM4knYj4Zc1jYAtrinha2oujA0dDKHRB3T1dtUQudt4Z8EfJZkr219po/MAzt
- +aIqesChNmOQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,409,1580803200"; 
-   d="scan'208";a="456024496"
-Received: from orsmsx104.amr.corp.intel.com ([10.22.225.131])
-  by fmsmga005.fm.intel.com with ESMTP; 21 Apr 2020 01:38:00 -0700
-Received: from orsmsx155.amr.corp.intel.com (10.22.240.21) by
- ORSMSX104.amr.corp.intel.com (10.22.225.131) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 21 Apr 2020 01:38:00 -0700
-Received: from orsmsx112.amr.corp.intel.com ([169.254.3.248]) by
- ORSMSX155.amr.corp.intel.com ([169.254.7.34]) with mapi id 14.03.0439.000;
- Tue, 21 Apr 2020 01:37:59 -0700
-From:   "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "parav@mellanox.com" <parav@mellanox.com>,
-        "galpress@amazon.com" <galpress@amazon.com>,
-        "selvin.xavier@broadcom.com" <selvin.xavier@broadcom.com>,
-        "sriharsha.basavapatna@broadcom.com" 
-        <sriharsha.basavapatna@broadcom.com>,
-        "benve@cisco.com" <benve@cisco.com>,
-        "bharat@chelsio.com" <bharat@chelsio.com>,
-        "xavier.huwei@huawei.com" <xavier.huwei@huawei.com>,
-        "yishaih@mellanox.com" <yishaih@mellanox.com>,
-        "leonro@mellanox.com" <leonro@mellanox.com>,
-        "mkalderon@marvell.com" <mkalderon@marvell.com>,
-        "aditr@vmware.com" <aditr@vmware.com>,
-        "ranjani.sridharan@linux.intel.com" 
-        <ranjani.sridharan@linux.intel.com>,
-        "pierre-louis.bossart@linux.intel.com" 
-        <pierre-louis.bossart@linux.intel.com>
-Subject: RE: [net-next v2 0/9][pull request] 100GbE Intel Wired LAN Driver
- Updates 2020-04-20
-Thread-Topic: [net-next v2 0/9][pull request] 100GbE Intel Wired LAN Driver
- Updates 2020-04-20
-Thread-Index: AQHWF7M+ytg6HKzOoEituinftxWI0KiDOHUAgAB7mQD//4wT0A==
-Date:   Tue, 21 Apr 2020 08:37:59 +0000
-Message-ID: <61CC2BC414934749BD9F5BF3D5D940449866D8D2@ORSMSX112.amr.corp.intel.com>
-References: <20200421080235.6515-1-jeffrey.t.kirsher@intel.com>
- <61CC2BC414934749BD9F5BF3D5D940449866D71D@ORSMSX112.amr.corp.intel.com>
- <20200421083004.GB716720@kroah.com>
-In-Reply-To: <20200421083004.GB716720@kroah.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.139]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1728452AbgDUIih (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 04:38:37 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:32400 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726018AbgDUIig (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 04:38:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587458315;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OK6qYuByoFv5/7Xc9brNny50E++JaILi1ivdrTp3evM=;
+        b=fHBViVBmFwuLqrUg0bsv5RJkH7h7VflJF++zGiJglOE+4vdeH8vgqJ0QwZXvDtB9NmzTjE
+        PvfCH8PUPtDCBns4UbB1y+12VMhNDMjxY/QjYq4QF01zcNh+OI3bMSEai443ibhtJqeQFb
+        +asxSzO3bJYw6acKuxGRKp2mNn7QVQ8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-477-Av7wbNAsO6GwIKEL3WTIqg-1; Tue, 21 Apr 2020 04:38:33 -0400
+X-MC-Unique: Av7wbNAsO6GwIKEL3WTIqg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DE1BD190B2A1;
+        Tue, 21 Apr 2020 08:38:31 +0000 (UTC)
+Received: from ovpn-115-18.ams2.redhat.com (ovpn-115-18.ams2.redhat.com [10.36.115.18])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EC75DA18A5;
+        Tue, 21 Apr 2020 08:38:29 +0000 (UTC)
+Message-ID: <a708ac7ff0119d07c2a0873d05f840982179441b.camel@redhat.com>
+Subject: Re: [PATCH net 0/3] mptcp: fix races on accept()
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, mathew.j.martineau@linux.intel.com,
+        matthieu.baerts@tessares.net, kuba@kernel.org, cpaasch@apple.com,
+        fw@strlen.de
+Date:   Tue, 21 Apr 2020 10:38:28 +0200
+In-Reply-To: <20200420.130215.721617466987117194.davem@davemloft.net>
+References: <cover.1587389294.git.pabeni@redhat.com>
+         <20200420.130215.721617466987117194.davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
 MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> -----Original Message-----
-> From: gregkh@linuxfoundation.org <gregkh@linuxfoundation.org>
-> Sent: Tuesday, April 21, 2020 01:30
-> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
-> Cc: davem@davemloft.net; netdev@vger.kernel.org; linux-
-> rdma@vger.kernel.org; nhorman@redhat.com; sassmann@redhat.com;
-> jgg@ziepe.ca; parav@mellanox.com; galpress@amazon.com;
-> selvin.xavier@broadcom.com; sriharsha.basavapatna@broadcom.com;
-> benve@cisco.com; bharat@chelsio.com; xavier.huwei@huawei.com;
-> yishaih@mellanox.com; leonro@mellanox.com; mkalderon@marvell.com;
-> aditr@vmware.com; ranjani.sridharan@linux.intel.com; pierre-
-> louis.bossart@linux.intel.com
-> Subject: Re: [net-next v2 0/9][pull request] 100GbE Intel Wired LAN Driver
-> Updates 2020-04-20
+On Mon, 2020-04-20 at 13:02 -0700, David Miller wrote:
+> From: Paolo Abeni <pabeni@redhat.com>
+> Date: Mon, 20 Apr 2020 16:25:03 +0200
 > 
-> On Tue, Apr 21, 2020 at 08:15:59AM +0000, Kirsher, Jeffrey T wrote:
-> > > -----Original Message-----
-> > > From: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
-> > > Sent: Tuesday, April 21, 2020 01:02
-> > > To: davem@davemloft.net; gregkh@linuxfoundation.org
-> > > Cc: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>;
-> > > netdev@vger.kernel.org; linux-rdma@vger.kernel.org;
-> > > nhorman@redhat.com; sassmann@redhat.com; jgg@ziepe.ca;
-> > > parav@mellanox.com; galpress@amazon.com;
-> selvin.xavier@broadcom.com;
-> > > sriharsha.basavapatna@broadcom.com;
-> > > benve@cisco.com; bharat@chelsio.com; xavier.huwei@huawei.com;
-> > > yishaih@mellanox.com; leonro@mellanox.com; mkalderon@marvell.com;
-> > > aditr@vmware.com; ranjani.sridharan@linux.intel.com; pierre-
-> > > louis.bossart@linux.intel.com
-> > > Subject: [net-next v2 0/9][pull request] 100GbE Intel Wired LAN
-> > > Driver Updates
-> > > 2020-04-20
-> > >
-> > > This series contains the initial implementation of the Virtual Bus,
-> > > virtbus_device, virtbus_driver, updates to 'ice' and 'i40e' to use the new
-> Virtual Bus.
-> > >
-> > > The primary purpose of the Virtual bus is to put devices on it and
-> > > hook the devices up to drivers.  This will allow drivers, like the
-> > > RDMA drivers, to hook up to devices via this Virtual bus.
-> > >
-> > > This series currently builds against net-next tree.
-> > >
-> > > Revision history:
-> > > v2: Made changes based on community feedback, like Pierre-Louis's and
-> > >     Jason's comments to update virtual bus interface.
-> > [Kirsher, Jeffrey T]
-> >
-> > David Miller, I know we have heard from Greg KH and Jason Gunthorpe on
-> > the patch series and have responded accordingly, I would like your
-> > personal opinion on the patch series.  I respect your opinion and
-> > would like to make sure we appease all the maintainers and users involved to
-> get this accepted into the 5.8 kernel.
+> > This series includes some fixes for accept() races which may cause inconsistent
+> > MPTCP socket status and oops. Please see the individual patches for the
+> > technical details.
 > 
-> Wait, you haven't gotten my ack on that code, why are you asking for it to be
-> merged already???
+> Series applied, thanks.
 > 
-[Kirsher, Jeffrey T] 
+> It seems like patch #3 might be relevant for v5.6 -stable, what's the
+> story here?
 
-I was just asking for Dave's review, I was not asking that get merged without your or anyone's ACK.
+Yes, it addresses a race condition present since cc7972ea1932 ("mptcp:
+parse and emit MP_CAPABLE option according to v1 spec"). I see now that
+the changelog is probably a bit too vague, I'm sorry.
 
-> {sigh}
-> 
-> greg k-h
+Cheers,
+
+Paolo
+
