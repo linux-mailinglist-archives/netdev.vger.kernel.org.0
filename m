@@ -2,203 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63FFA1B3219
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 23:49:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A212C1B3283
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 00:10:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726400AbgDUVta (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 17:49:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60446 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726112AbgDUVt3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 17:49:29 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F13C0610D5;
-        Tue, 21 Apr 2020 14:49:29 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id v10so3301527qvr.2;
-        Tue, 21 Apr 2020 14:49:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HlobnsamuaJir+BuWuVJAFrORgSh+GZQTDJieK+KurI=;
-        b=JW1VLAjw+XdVtJZStaU+ubD0AHQRcvgGzZZDlFV8FtxuJH8T8El1F5EclmqoBy6ltO
-         bxxg+vs2RUzbzNAScvIwnjlfoziMaBlEnJkszYSMoGmfnYVwO6c27ShknaSNKEcaziRT
-         2R/caaY+tiUcBL8yB4ruhOE0YDc1gDWFLfSUgqgKPGxg0u8eUwpVHVobX8BsGXE7KgX5
-         z+masLScG/LrTaZD49YGQwpN2BJqxiJRJyFXq4M1Qf8bAXD79p1DuPIp6iwyuLf7PIbL
-         43Z8HHXpnW5sU8RJiK4bdGxPrCM+JckUM5nRZ5vIMxJfcfsIpBRhiaA9Kv8QA8v60zUr
-         jKVQ==
+        id S1726116AbgDUWKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 18:10:42 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:33822 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725850AbgDUWKl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 18:10:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587507040;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=loEY4ZF+6OH9eK6l+2nyMaeSciC81b/sLFgxrmeT9uo=;
+        b=MdW2x5NGZbPUq8t86vBz4F8BHadGM5Igi2ED1AWdmt4TyOr2PAvU9TTZCESdzXUjUMiGAp
+        A8obtq3DF27Kgiwaoxlb65VyZ+YsZXGBic8HYpxMEEne+NBTuwL5BDYARB/nhYvZZ7F3H+
+        9m67R8Xm6rEi7mgxMxYWPo0d2lNC6Kw=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-67-urQbZWKTPSO4DOqeb1gsPw-1; Tue, 21 Apr 2020 18:10:37 -0400
+X-MC-Unique: urQbZWKTPSO4DOqeb1gsPw-1
+Received: by mail-ej1-f70.google.com with SMTP id q24so227819ejb.3
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 15:10:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=HlobnsamuaJir+BuWuVJAFrORgSh+GZQTDJieK+KurI=;
-        b=XsS+VrJHkAF9wRQR61kTr3DtUna77NGO+DKqWhvs2f8wb1WmcNr7qtt52bON+Mp1le
-         CCk9EqzqUeC+ZWleZlM7H49Yht0Df6Bz98iwZf0+t/9zsCyMpbLiJ7mTM7yOdWLySmOV
-         Ha7uewz/TvjM25fbRK1H9YCU5Io3V9Nf9goknzWqkU5jdXVXC1fvo6jY1dUnspiufn+L
-         zeAGxpscvXvAwrRmssjXdivMLiDb040oen06Tl7+uG/gTgXRrhRe+WwICEBLXtDzF29P
-         7OgTu+kdRITmfOhSJHtoiGjQiNGxsPlFfo3250iCsgUBwEmVZ17poh6IRrY7uhgdGwFo
-         lIDw==
-X-Gm-Message-State: AGi0PuYZ0pDXOxiyvDD6o9MvkDY6hE0rBcXh7Cz0n1NnYZFe3ZAK+DW/
-        3qTbTn8H7zUo0MaU1iCil6JDfuQGSipF6Mfcd0g=
-X-Google-Smtp-Source: APiQypLbFmUS5KmD4fMiIXc/5ExaWkSlCsSBYwEd/JWJ3vppr67ZQsHM9cMIN2Hx8c4SM4lsFznqmFZc6pxF0ENcRvo=
-X-Received: by 2002:a0c:eb09:: with SMTP id j9mr274761qvp.196.1587505768851;
- Tue, 21 Apr 2020 14:49:28 -0700 (PDT)
+        bh=loEY4ZF+6OH9eK6l+2nyMaeSciC81b/sLFgxrmeT9uo=;
+        b=L52vxwraGtse4SlblLzk0Uk9OnrLzczAPGw2WBcecxsQ0LSxa17c+OZYHgFmFQvqj+
+         NRSTWghsJpuNIxRhxR6j9x0nAXmfxWIZW8pmbYHJn/0gBuF5jT7m2qHdDyBw4QkFDVTw
+         tIeWmnlQVz7YgPMqgy3/ZWuDt8TGfWjQZWs57hG+YBf2B2CGyXFGSxq6Vz/6c2feolIw
+         UuoJ8I+P8fLScYvHIeiYMrIN9dug/9YdlIZ1R+N1D9G7VwI5/mtwnSZuICl8jqq+Gz/G
+         Fk4WVnhSfo+u0HCvWpeyyUVSl1pVbl92X2xbRZwW56L8RRYLUCJEqOJjPJ+Ez+RRj41/
+         Sguw==
+X-Gm-Message-State: AGi0PuZuS9HQaHQ31sW4SHB6lueMkCfDeCcoTRXTRnCdN9/kJBCDHJrE
+        NuzLqY4rDMYW7BosyuDnllZTNlPOW+tTPFGjuH0dhFedrD2BmrMTJ8wcgvt+5wvUqdhsQhvahUS
+        dAR8SpdpivMtU8tljtEX64hcBf2yE41F4
+X-Received: by 2002:a17:906:a990:: with SMTP id jr16mr23263454ejb.338.1587507035585;
+        Tue, 21 Apr 2020 15:10:35 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJREQz/k3X5KXIFvvX35UuJ3qj4AntmPhHFYqs19VtU6vaAuUz9P4L/cV+vUbnqZASaXwPJG2E7X4eUIeqCA0A=
+X-Received: by 2002:a17:906:a990:: with SMTP id jr16mr23263438ejb.338.1587507035404;
+ Tue, 21 Apr 2020 15:10:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200301081045.3491005-1-andriin@fb.com> <20200303005951.72szj5sb5rveh4xp@ast-mbp>
- <CAEf4BzYsC-5j_+je1pZ_JNsyuPV9_JrLSzpp6tfUvm=3KBNL-A@mail.gmail.com> <CAEf4Bza+oHc4eJESnPCQh0rRcKtPWqu3SYkzP52B4BLu2O0=6w@mail.gmail.com>
-In-Reply-To: <CAEf4Bza+oHc4eJESnPCQh0rRcKtPWqu3SYkzP52B4BLu2O0=6w@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 21 Apr 2020 14:49:17 -0700
-Message-ID: <CAEf4BzbOw3=NAMA4GJq9s6KvDHfh9a3_vTHM940P+jYWfoty2Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/3] Improve raw tracepoint BTF types preservation
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
+References: <20200421180426.6945-1-jhs@emojatatu.com> <CAPpH65zGO02uQyWQXXq6Yg_zsZcVZg+4-KWfRo_q3iACHr6s_Q@mail.gmail.com>
+ <478bfaf8-6418-2d37-cae6-88b113d686b0@mojatatu.com>
+In-Reply-To: <478bfaf8-6418-2d37-cae6-88b113d686b0@mojatatu.com>
+From:   Andrea Claudi <aclaudi@redhat.com>
+Date:   Wed, 22 Apr 2020 00:10:23 +0200
+Message-ID: <CAPpH65wgkg4g4074pSMhShOuYfTX6ye8bbP3OVnVN6oQ9EwcYg@mail.gmail.com>
+Subject: Re: [PATCH iproute2 1/1] bpf: Fix segfault when custom pinning is used
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        linux-netdev <netdev@vger.kernel.org>,
+        David Ahern <dsahern@gmail.com>, daniel@iogearbox.net,
+        Jamal Hadi Salim <hadi@mojatatu.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 2, 2020 at 8:59 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
+On Tue, Apr 21, 2020 at 9:58 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
 >
-> On Mon, Mar 2, 2020 at 8:10 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
+> Hi Andrea,
+>
+> On 2020-04-21 3:38 p.m., Andrea Claudi wrote:
+> [..]
 > >
-> > On Mon, Mar 2, 2020 at 4:59 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Sun, Mar 01, 2020 at 12:10:42AM -0800, Andrii Nakryiko wrote:
-> > > > Fix issue with not preserving btf_trace_##call structs when compiled under
-> > > > Clang. Additionally, capture raw tracepoint arguments in raw_tp_##call
-> > > > structs, directly usable from BPF programs. Convert runqslower to use those
-> > > > for proof of concept and to simplify code further.
-> > >
-> > > Not only folks compile kernel with clang they use the latest BPF/BTF features
-> > > with it. This is very nice to see!
-> > > I've applied 1st patch to make clang compiled kernel emit proper BTF.
-> > >
-> > > As far as patch 2 I'm not sure about 'raw_tp_' prefix. tp_btf type of progs can
-> > > use the same structs. So I think there could be a better name. Also bpftool can
-> > > generate them as well while emitting vmlinux.h. I think that will avoid adding
-> > > few kilobytes to vmlinux BTF that kernel isn't going to use atm.
-> >
-> > Fair enough, I'll follow up with bpftool changes to generate such
-> > structs. I'm thinking to use tp_args_xxx name pattern, unless someone
-> > has a better idea :)
+> > Hi Jamal,
+> > Are you sure this fixes your issue?
 >
-> Bad news. BTF_KIND_FUNC_PROTOs don't capture argument names and having
-> something like:
+> Yes.
 >
-> struct tp_args_sched_switch {
->     bool arg1;
->     struct task_struct *arg2;
->     struct task_struct *arg3;
-> };
+> > I think asprintf could segfault
+> > only if ctx is null, but this case is not addressed in your patch.
 >
-> doesn't seem like a good solution...
+> The issue is tmp(after it is created by asprintf) gets trampled.
+> This:
+> ret = asprintf(&tmp, "%s/../", bpf_get_work_dir(ctx->type));
+> allocates enough space for tmp.
+> But then later:
+> strcat(tmp, sub);
+> strcat(tmp...);
+> creates a buffer overrun.
+>
+> It is easy to overlook things like these when making a large
+> semantically-equivalent change - so i would suggest to also
+> review the general patch that went from sprintf->asprintf.
+>
 
-I'd like to surface this one more time. I'd like to give just a bit
-more context first, though.
+Oh, now I see. Thanks for pointing it out and making it clear to me.
+I agree with you, this needs to be carefully reviewed to ensure we are
+not falling into the same error pattern somewhere else.
 
-Currently, when using various types of BPF programs (kprobe,
-fentry/fexit, lsm, etc), one can use few ways to extract input
-arguments of the "intercepted" function. One of the more user-friendly
-ways to do it is through BPF_PROG macro. So BPF code would look like
-this:
+Acked-by: Andrea Claudi <aclaudi@redhat.com>
 
-SEC("lsm/file_mprotect")
-int BPF_PROG(test_int_hook, struct vm_area_struct *vma,
-             unsigned long reqprot, unsigned long prot, int ret)
-{
-    if (ret != 0) { ... }
-    /* use cma, reqprot, etc directly as variables */
-}
+> > I remember that Stephen asked me to use asprintf to avoid allocating
+> > huge buffers on stack; anyway I've no objection to sprintf, if needed.
+>
+> Generally that is good practise. And even for this case
+> you could probably find a simpler way to solve it with asprintf
+> or realloc trickery. I am not sure it is worth the bother - 4K on
+> the stack in user space is not a big deal really.
 
-This is kind of nice, but involves quite a bit of macro magic and
-requires user to find and copy/paste those function prototypes and
-track whether they ever change.
+Stephen, what do you think about using sprintf instead of asprintf in
+these functions?
+When dealing with paths, asprintf can indeed be a bit error-prone. I
+can easily imagine this error pattern to happen again in the future.
+If you agree, I can send a patch taking care of this.
 
-The alternative for this would be to have a memory-layout-compatible
-struct, that can be used directly as a context. For the above example:
+> cheers,
+> jamal
+>
 
-struct btf_lsm_file_mprotect_ctx {
-    struct vm_area_struct *vma;
-    unsigned long reqprot;
-    int ret __attribute__((aligned(8)));
-};
+Andrea
 
-With that, one can do a nice pure C code:
-
-int test_int_hook(struct btf_lsm_file_mprotect_ctx *ctx)
-{
-    if (ctx->ret != 0) { ... }
-    /* here instead of using vma, reqprot and ret directly,
-     * one would access them as ctx fields: ctx->vma, ctx->reqprot
-     */
-}
-
-The benefit of the latter is that, hopefully, no one will have to
-write such struct definitions by hand, they would be generated as part
-of vmlinux.h and would come directly from kernel BTF (in one way or
-another, see below). One added benefit is that such struct is
-CO-RE-relocatable, so if fields are ever, say, reordered or removed,
-by using CO-RE mechanisms one can write a compiled-once BPF program to
-accommodate such changes and even incompatibilities.
-
-Now to why I'm bringing this up again.
-
-The original plan was to use bpftool to convert func_protos that are
-used directly by kernel (e.g., btf_trace_xxx ones for raw tracepoints)
-to dump them as memory layout-compatible structs at the end of
-vmlinux.h for use by BPF programs. Unfortunately, I don't think that
-will work because func_proto arguments don't preserve their names in
-BTF. Which, as I pointed out in previous email, ruins usability of
-generated structs.
-
-So I'd like to solicit feedback on how we can proceed from here. I see
-few possible ways to go about this:
-
-1. Do nothing. Always an option. It sucks for users (they need to
-copy-paste function definitions, use BPF_PROG macro, etc), but is
-awesome for kernel (no changes, no extra stuff).
-
-2. Bite a bullet and add compatible struct definitions into kernel
-itself. It will slightly increase kernel BTF, but will require no
-changes on user-space and tooling side. vmlinux.h just magically gets
-proper structs that are directly usable from BPF programs. One
-objection to that is that those structs are not directly used by
-kernel and thus are just a dead weight.
-
-3. Bite even bigger bullet and convert current uses of func_proto in
-kernel to struct. That way we don't have unnecessary types laying
-around in the kernel, verifier actually will use these structs for
-verification. There might be a concern about backwards compatibility.
-Libbpf can easily accommodate such changes by searching for either
-struct or func_proto, whichever is available, but one can argue that
-we have to leave existing btf_trace_xxx func protos intact if that's
-considered to be part of UAPI.
-
-4. Milder variant of #3 would be to convert typedef of func_protos
-into a use of proper FUNCs. They still use func_proto, but that
-func_proto actually preserves argument names, and would allow bpftool
-to dump proper structs. Same considerations of what to do with
-backwards compatibility of btf_trace_xxx typedefs+func_proto, but
-won't require much verifier changes, because it's still going to be
-func_proto that need to be used for verification. This is what
-Yonghong's bpfdump changes actually do: they use __init empty funcs to
-provide types for verifier.
-
-I think it's important to discuss this, because more and more BPF
-program types are relying on using similar approach (e.g., LSM,
-bpfdump), and it would be nice to provide a good **and uniform**
-solution to let users just use a proper context structure directly,
-instead of using BPF_PROG macro (best case, worst case it's a direct
-u64 array conversions) and copy-pasting definition.
-
-Thanks for any feedback upfront!
