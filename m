@@ -2,135 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 544101B2568
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 13:56:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6F3F1B2597
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 14:08:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728677AbgDUL4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 07:56:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53184 "EHLO
+        id S1728621AbgDUMIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 08:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726403AbgDUL4t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 07:56:49 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F6DC061A0F;
-        Tue, 21 Apr 2020 04:56:49 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id l3so7081752edq.13;
-        Tue, 21 Apr 2020 04:56:49 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726018AbgDUMIv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 08:08:51 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C11BC061A10
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 05:08:50 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id l25so14196818qkk.3
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 05:08:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HDl4PcryGuPjgJh8iajtlR3OBsl1Kn7J0vY5z+ZmlDQ=;
-        b=FQK8jSBm3fq1kmBDwPBY92h9XWiG4/47OGHLQx7mjNgD0YuiMeLzKlLHV06th5Tghl
-         6JjDzkbBNWH/jxmQj8kpLLjdS9cvxmYVMQA7jxf5ljQc7AKr6e6MzSS/l2bbPXopaAXS
-         DmsWdo9943w3scHjLvFOHDfDeCffjlY6DnAIkAS5Ulqoa6D5fzZ5bTjAlYzbklCHQ66T
-         95wzL4IsPparxs0UYYk1qMEfk6KMAX9sGf3tZE6vELjjTNA11Wdh7tFW7HV5vQjr3BYX
-         6eGc9lgmpO7uY/aVX66i3Hv24F2PhKOALyHOq2GZBEu7J0kGPkU8zk6DCqNjJ7msUrl+
-         +Gjg==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=3FhjQ0bL3FcnfxRJzwU2birDevO5bn+c/zKDG6q4ojY=;
+        b=N5hGOnvmCUPCUcy5qlF8TnpMPyS5NrUDPwMg5ziycNEn6xaHz+vUgwmOfqMDzovFqM
+         KitZtnSid0LTXK7MGOmRnsmIOeaZ8zMh8hq9FUSjgBj2njm4ACScqR6yvId/hNp2z7lE
+         wiu/eXTamuCQ8Z1XkqPoim29eogc0Pv45t865NTWzrAty898+iGQ27i9IVdEaBjMRZ+7
+         bqmvujumQb3naOHgLwk9ik7dvsnrtaVuYuDMjn7Go91BpmZE8ImRtGMy8ULNmFRKJGWd
+         Gi6J7w2usbq0oBlSR50+KazBhWUS918rRZzzuLs5bEsFq2YkWA3DQ0og6zkppm2QjEnY
+         2BZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HDl4PcryGuPjgJh8iajtlR3OBsl1Kn7J0vY5z+ZmlDQ=;
-        b=mVT8omN+WM0vFHfE/ykTNzrW0FgQpXUTIRujsMji8zTODdE14+JO2xI7vSQVEbInoz
-         Ofn9eVB7PccBmQos6qI1o/Kx0wYn9fcZ7dOr/qBpNEJx9E4lx3GXRG3JtVw+3mNiwCCr
-         M6gIwS5WDUmyR2nWuO+HY/ulXDrO5Nkp13tasVgun/F5sy8RF+aTOgf5RLCVltgFjaC+
-         W8JbrVKpNw+Q/1LJ7YAT4SL7LJ4cQMsckpEJDuyOmnSeH4GrltXqc+wxnn+WFUICO4zY
-         MOAuJ6w3heeea8fx8T2Bu75FZ67PmRh6Fw2ujtsTlUTeEwdh+26YaIFOKjcflN6W2R8D
-         vV9w==
-X-Gm-Message-State: AGi0Pua540wdUV1mi7ahtO3D0WsyKnMJU9w4txZWkbqGyHkr4qBN/iXq
-        yvMKmc6b3S2j6625y/fkoCT3mU3yqfeDNwdoKec=
-X-Google-Smtp-Source: APiQypI0MWThGq6YBjMemZa0yhIY9LEoNJt9Db1HDYRxRrxiOj9Aio9OF32UVFWaOjR1CDfAOJPT+nthCqzMLc1vWG0=
-X-Received: by 2002:a50:f288:: with SMTP id f8mr13696974edm.337.1587470208280;
- Tue, 21 Apr 2020 04:56:48 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=3FhjQ0bL3FcnfxRJzwU2birDevO5bn+c/zKDG6q4ojY=;
+        b=Siv7i0HBT8TXh3a1tEaqAqFu6/rT668h0w8GsZ0y9vuRnzAx7B/jfbTee9PyL9lsa0
+         MjV7W7A/lFlm2XQkMxfTyMaVZFuKhv3soThjfHVbT927fB2JdkghqGNHK7zlXlg3fJpD
+         XqNtC68x61TLyitMY45rk7dbd2sGUTt1534dwaMAg7AdIN/bEUWuQ9hg3L4wJ8fmxDxA
+         KQV7ML1QiprHTiXmKgGY41ucaGbhzkkXGfJcH8Ln7aw/Mk5EZqNwY1+gh3Io2/Ewrfj1
+         IgNKUIEmjn20epDFHhYfg7+FchnuL56e7SohqNmiJzt9KzeLRgGV3HGTDMbOnXXFHiAw
+         2R0Q==
+X-Gm-Message-State: AGi0PubEufcYe9mtZxldDVg78q/G2kdyFfBbsz9lzqfCwqBgw//cO+rB
+        BW5y7JHjmWDBLMJLhJiY6Qj2TA==
+X-Google-Smtp-Source: APiQypIj0hH3787ssUZ6URQylyWbMjelHPcljWGv7eRHlsoDIsY260nUcnsi5hmoo4c/Ctks8RpB0A==
+X-Received: by 2002:a37:7906:: with SMTP id u6mr19843423qkc.489.1587470929241;
+        Tue, 21 Apr 2020 05:08:49 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
+        by smtp.gmail.com with ESMTPSA id o27sm1583527qko.71.2020.04.21.05.08.48
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 21 Apr 2020 05:08:48 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1jQrho-0007vI-1O; Tue, 21 Apr 2020 09:08:48 -0300
+Date:   Tue, 21 Apr 2020 09:08:48 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
+        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, parav@mellanox.com, galpress@amazon.com,
+        selvin.xavier@broadcom.com, sriharsha.basavapatna@broadcom.com,
+        benve@cisco.com, bharat@chelsio.com, xavier.huwei@huawei.com,
+        yishaih@mellanox.com, leonro@mellanox.com, mkalderon@marvell.com,
+        aditr@vmware.com, ranjani.sridharan@linux.intel.com,
+        pierre-louis.bossart@linux.intel.com,
+        Kiran Patil <kiran.patil@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>
+Subject: Re: [net-next v2 1/9] Implementation of Virtual Bus
+Message-ID: <20200421120848.GR26002@ziepe.ca>
+References: <20200421080235.6515-1-jeffrey.t.kirsher@intel.com>
+ <20200421080235.6515-2-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
-References: <20200421113324.vxh2lyasylf5kgkz@pengutronix.de>
-In-Reply-To: <20200421113324.vxh2lyasylf5kgkz@pengutronix.de>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 21 Apr 2020 14:56:37 +0300
-Message-ID: <CA+h21ho2YnUfzMja1Y7=B7Yrqk=WD6jm-OoKKzX4uS3WJiU5aw@mail.gmail.com>
-Subject: Re: dsa: sja1105: regression after patch: "net: dsa: configure the
- MTU for switch ports"
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     mkl@pengutronix.de, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, kernel@pengutronix.de,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        David Jander <david@protonic.nl>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200421080235.6515-2-jeffrey.t.kirsher@intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Oleksij,
+On Tue, Apr 21, 2020 at 01:02:27AM -0700, Jeff Kirsher wrote:
+> +/**
+> + * virtbus_release_device - Destroy a virtbus device
+> + * @_dev: device to release
+> + */
+> +static void virtbus_release_device(struct device *_dev)
+> +{
+> +	struct virtbus_device *vdev = to_virtbus_dev(_dev);
+> +	int ida = vdev->id;
+> +
+> +	vdev->release(vdev);
+> +	ida_simple_remove(&virtbus_dev_ida, ida);
+> +}
+> +
+> +/**
+> + * virtbus_register_device - add a virtual bus device
+> + * @vdev: virtual bus device to add
+> + */
+> +int virtbus_register_device(struct virtbus_device *vdev)
+> +{
+> +	int ret;
+> +
+> +	if (!vdev->release) {
+> +		dev_err(&vdev->dev, "virtbus_device MUST have a .release callback that does something.\n");
+> +		return -EINVAL;
+> +	}
+> +	
+> +	/* Don't return on error here before the device_initialize.
+> +	 * All error paths out of this function must perform a
+> +	 * put_device(), unless the release callback does not exist,
+> +	 * so that the .release() callback is called, and thus have
+> +	 * to occur after the device_initialize.
+> +	 */
+> +	device_initialize(&vdev->dev);
+> +
+> +	vdev->dev.bus = &virtual_bus_type;
+> +	vdev->dev.release = virtbus_release_device;
+> +
+> +	/* All device IDs are automatically allocated */
+> +	ret = ida_simple_get(&virtbus_dev_ida, 0, 0, GFP_KERNEL);
+> +
+> +	if (ret < 0) {
+> +		dev_err(&vdev->dev, "get IDA idx for virtbus device failed!\n");
+> +		goto device_pre_err;
 
-On Tue, 21 Apr 2020 at 14:33, Oleksij Rempel <o.rempel@pengutronix.de> wrote:
->
-> Hi Vladimir,
->
-> I have a regression after this patch:
-> |commit bfcb813203e619a8960a819bf533ad2a108d8105
-> |Author:     Vladimir Oltean <vladimir.oltean@nxp.com>
-> |
-> |  net: dsa: configure the MTU for switch ports
->
-> with following log:
-> [    3.044065] sja1105 spi1.0: Probed switch chip: SJA1105Q
-> [    3.071385] sja1105 spi1.0: Enabled switch tagging
-> [    3.076484] sja1105 spi1.0: error -34 setting MTU on port 0
-> [    3.082795] sja1105: probe of spi1.0 failed with error -34
->
-> this is devicetree snippet for the port 0:
->         port@0 {
->                 reg = <0>;
->                 label = "usb";
->                 phy-handle = <&usbeth_phy>;
->                 phy-mode = "rmii";
->         };
->
->
-> Is it know issue?
->
-> Regards,
-> Oleksij
-> --
-> Pengutronix e.K.                           |                             |
-> Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-> 31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-> Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+This still has the problem I described, why are you resending without
+fixing?
 
-The code which is causing problems seems to be this one:
-
-    mtu_limit = min_t(int, master->max_mtu, dev->max_mtu);
-    old_master_mtu = master->mtu;
-    new_master_mtu = largest_mtu + cpu_dp->tag_ops->overhead;
-    if (new_master_mtu > mtu_limit)
-        return -ERANGE;
-
-called from
-
-    rtnl_lock();
-    ret = dsa_slave_change_mtu(slave_dev, ETH_DATA_LEN);
-    rtnl_unlock();
-    if (ret && ret != -EOPNOTSUPP) {
-        dev_err(ds->dev, "error %d setting MTU on port %d\n",
-            ret, port->index);
-        goto out_free;
-    }
-
-Before this patch, it was silently failing, now it's preventing the
-probing of the ports which I might agree with you is not better.
-Andrew warned about this, and I guess that during probe, we should
-warn but ignore any nonzero return code, not just EOPNOTSUPP. I'll
-send a patch out shortly to correct this.
-
-Out of curiosity, what DSA master port do you have? Does it not
-support an MTU of 1504 bytes? Does MTU-sized traffic pass correctly
-through your interface? (you can test with iperf3)
-
-Thanks,
--Vladimir
+Jason
