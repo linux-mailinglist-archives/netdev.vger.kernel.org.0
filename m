@@ -2,205 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 296A01B1AE1
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 02:45:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4E381B1AE4
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 02:46:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726691AbgDUAo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 20:44:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34386 "EHLO
+        id S1726398AbgDUAqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 20:46:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726161AbgDUAo5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 20:44:57 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F026C061A0E
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 17:44:56 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id t3so12937208qkg.1
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 17:44:56 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726067AbgDUAqa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 20:46:30 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA90EC061A0F
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 17:46:30 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id y19so5781870qvv.4
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 17:46:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ziepe.ca; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=x91/ZYzYkmQg9m8d0IVBnaTRXLpBPzU3AODYJJ1vy4k=;
-        b=YDP9zqlP1MCIhXjqiTaUeZdM6Fpb0U7ngh89QFOobUMQeOw9cGxU5C7ls0c4qWTZ4d
-         k0zUDBDnQp17GC5ilGS7ij/GY8K/pypGqx+Z734YZyWTndwz4a91nLmXyaoHh33c7AeD
-         1LGy+Ae/rjft7SzboxjBUbabM0ykrmdpHu+jo0PWf46mW4sJYDtzu9mpf8DU5U3Jrt88
-         4cntCciCQ/LuRh9bRTb+Vc5qKbPOtdJPxDuWG4fK20PPSgLETPjyocvnVw3zjDer/bjN
-         yFB/DDqnV86kj4VSY7YGWzAJ8wcCaXv+zvvxo/ul5b6dpB543VTnsrvZO+cCMTnnNZTC
-         4c7w==
+        bh=CpA8wSQ8byNPsMYVE5Rjnk8CAuAusP7U/zaZRU5KlyY=;
+        b=RAZ4/McBEOeDt0IgZoJk+OWSyrUUe2pPiWJprjZy8cAZWz2tsq+ZIeRgadAXiFIEjj
+         KMiFqyjh1HmzwGH4+9b0sc+1JwlbV6iddeNoDggA49LHik3/CemYfrS+Wm/UExD5zS55
+         mSGEUUrREV50ev0Vh833T6Wyo7lXb8n19W5mjZzVs+l31j+H/mhOou0Aq7vQgctD8n7i
+         Su+FWBMq8VSzIu9l8SCWEtglq7GD0YbR12G5VgbFnD2KadKs11tLIpKCZh4YUj13sXad
+         OSKLlwMuG/SxoscHW3FjKB2qHkFsEtQCXUZJKHUe/jHEXHw2N4g8YL7dYtBApu6XkpXP
+         qRmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=x91/ZYzYkmQg9m8d0IVBnaTRXLpBPzU3AODYJJ1vy4k=;
-        b=j7RaRphD+ZKm+a6NEyLeAthEHY2ecPtVsSUmeMmnNt2jCJMuBdFHt0mhV+RieBFUFw
-         ynQlieysxuWZdCijuTFP78R5ZKfhL7R1QmpzN5g2h6IZEdJ5BxYsF3otgHgEA/oiQlEs
-         VafmVEBhVT/rf1AX8EfZq81Q/jiSVkTNu9N99nL3mwqP8YHQNzSo/eQ4sh4p8HlWbfV0
-         kuk/jAJDm4171wga2RL4aye2Yv3kdJ83j4LiTLptQpe7CB5Oj3ckswTSqtKRobCwZ8wY
-         iwiYZEbNi5XEHJsUpO/4prvpGjsp7W74W2aKzs62A7heMTXhgUO5goV/ph3KDvJm7jAB
-         iN1Q==
-X-Gm-Message-State: AGi0PuawGK0EHLQ1LCEcug+M/GOu0Tg+KlgbG++idEAGhT4dl1+1Seih
-        ZSCNjKCHdjwGr3cHAEZQtImCjg==
-X-Google-Smtp-Source: APiQypLpAawcTprI4p8JJq5XF8xlKLVPh959xCmQtZ+XZiB9WLa4JZe6SBjXN8xr2867p4oBbZp3MQ==
-X-Received: by 2002:a05:620a:844:: with SMTP id u4mr2154881qku.20.1587429895694;
-        Mon, 20 Apr 2020 17:44:55 -0700 (PDT)
+        bh=CpA8wSQ8byNPsMYVE5Rjnk8CAuAusP7U/zaZRU5KlyY=;
+        b=pPSczTaR02pIJnxVRO5poQav2ABeCK/0y+MKVE2WCF+AvobCr+W5K7eK+p6Zf9hffG
+         XN2oZ63Mi4pJ49HpfZmjO6KZmx+pvue8GsCx7dnlqJl8xxrUxrnX7o18djOwcefZoqeT
+         t01lFSVJANRQw2DRb/t85glK8vLhyobu04wgzmXCpatKgext7vuxoF2abDYNmNmbIRwG
+         KnHIPOkM7NcHyGeThMi8PZUcPlZ9g5mXAYbGGR3Yjc35Aqsu2vFJw00hCKqVeiru9IWE
+         R4n3a4LFDiTRTCdsCO1iQwIA1Nhaw2//9PNZRzChcXEMWn9C7FIp7ZQkVmjqn6TW16SC
+         ICng==
+X-Gm-Message-State: AGi0PuZZDwkjbcb/jcs/sI7EF/M678PCzxfeaUbhVx7DrQ4IBkdFJGi/
+        8z6yEBoFOf1Z9JnXWvzZmCJ9eQ==
+X-Google-Smtp-Source: APiQypIbUsp30HMvlg+X8PHAkWxkcLaeW4mFWhJbvGvMy5lB6lCyQEFfI685BncrZn/EOee09Ky1XA==
+X-Received: by 2002:a0c:aadc:: with SMTP id g28mr18295551qvb.0.1587429989717;
+        Mon, 20 Apr 2020 17:46:29 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id o94sm727048qtd.34.2020.04.20.17.44.54
+        by smtp.gmail.com with ESMTPSA id j14sm707529qtv.27.2020.04.20.17.46.29
         (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 20 Apr 2020 17:44:55 -0700 (PDT)
+        Mon, 20 Apr 2020 17:46:29 -0700 (PDT)
 Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
         (envelope-from <jgg@ziepe.ca>)
-        id 1jQh1y-00059E-6n; Mon, 20 Apr 2020 21:44:54 -0300
-Date:   Mon, 20 Apr 2020 21:44:54 -0300
+        id 1jQh3U-0005B5-Ph; Mon, 20 Apr 2020 21:46:28 -0300
+Date:   Mon, 20 Apr 2020 21:46:28 -0300
 From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     "Ertman, David M" <david.m.ertman@intel.com>
-Cc:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
+To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
         "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
         "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "parav@mellanox.com" <parav@mellanox.com>,
-        "galpress@amazon.com" <galpress@amazon.com>,
-        "selvin.xavier@broadcom.com" <selvin.xavier@broadcom.com>,
-        "sriharsha.basavapatna@broadcom.com" 
-        <sriharsha.basavapatna@broadcom.com>,
-        "benve@cisco.com" <benve@cisco.com>,
-        "bharat@chelsio.com" <bharat@chelsio.com>,
-        "xavier.huwei@huawei.com" <xavier.huwei@huawei.com>,
-        "yishaih@mellanox.com" <yishaih@mellanox.com>,
-        "leonro@mellanox.com" <leonro@mellanox.com>,
-        "mkalderon@marvell.com" <mkalderon@marvell.com>,
-        "aditr@vmware.com" <aditr@vmware.com>,
-        "ranjani.sridharan@linux.intel.com" 
-        <ranjani.sridharan@linux.intel.com>,
-        "pierre-louis.bossart@linux.intel.com" 
-        <pierre-louis.bossart@linux.intel.com>,
-        "Patil, Kiran" <kiran.patil@intel.com>,
-        "Bowers, AndrewX" <andrewx.bowers@intel.com>
-Subject: Re: [net-next 1/9] Implementation of Virtual Bus
-Message-ID: <20200421004454.GP26002@ziepe.ca>
-References: <20200417171034.1533253-1-jeffrey.t.kirsher@intel.com>
- <20200417171034.1533253-2-jeffrey.t.kirsher@intel.com>
- <20200417195148.GL26002@ziepe.ca>
- <DM6PR11MB284111B69E966E68EBC2C508DDD40@DM6PR11MB2841.namprd11.prod.outlook.com>
+        "sassmann@redhat.com" <sassmann@redhat.com>
+Subject: Re: [RFC PATCH v5 01/16] RDMA/irdma: Add driver framework definitions
+Message-ID: <20200421004628.GQ26002@ziepe.ca>
+References: <20200417171251.1533371-1-jeffrey.t.kirsher@intel.com>
+ <20200417171251.1533371-2-jeffrey.t.kirsher@intel.com>
+ <20200417193421.GB3083@unreal>
+ <9DD61F30A802C4429A01CA4200E302A7DCD4853F@fmsmsx124.amr.corp.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <DM6PR11MB284111B69E966E68EBC2C508DDD40@DM6PR11MB2841.namprd11.prod.outlook.com>
+In-Reply-To: <9DD61F30A802C4429A01CA4200E302A7DCD4853F@fmsmsx124.amr.corp.intel.com>
 User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 20, 2020 at 11:16:38PM +0000, Ertman, David M wrote:
-> > > +/**
-> > > + * virtbus_register_device - add a virtual bus device
-> > > + * @vdev: virtual bus device to add
-> > > + */
-> > > +int virtbus_register_device(struct virtbus_device *vdev)
-> > > +{
-> > > +	int ret;
-> > > +
-> > > +	/* Do this first so that all error paths perform a put_device */
-> > > +	device_initialize(&vdev->dev);
-> > > +
-> > > +	if (!vdev->release) {
-> > > +		ret = -EINVAL;
-> > > +		dev_err(&vdev->dev, "virtbus_device MUST have a .release
-> > callback that does something.\n");
-> > > +		goto device_pre_err;
+On Tue, Apr 21, 2020 at 12:23:45AM +0000, Saleem, Shiraz wrote:
+> > Subject: Re: [RFC PATCH v5 01/16] RDMA/irdma: Add driver framework
+> > definitions
 > > 
-> > This does put_device but the release() hasn't been set yet. Doesn't it
-> > leak memory?
-> 
-> The KO registering the virtbus_device is responsible for allocating
-> and freeing the memory for the virtbus_device (which should be done
-> in the release() function).  If there is no release function
-> defined, then the originating KO needs to handle this.  We are
-> trying to not recreate the platform_bus, so the design philosophy
-> behind virtual_bus is minimalist.
-
-Oh, a precondition assertion should just be written as something like:
-
-   if (WARN_ON(!vdev->release))
-       return -EINVAL;
-
-And done before device_initialize
-
-But I wouldn't bother, things will just reliably crash on null pointer
-exceptions if a driver mis-uses the API.
-
-> > > +	}
-> > > +
-> > > +	/* All device IDs are automatically allocated */
-> > > +	ret = ida_simple_get(&virtbus_dev_ida, 0, 0, GFP_KERNEL);
-> > > +	if (ret < 0) {
-> > > +		dev_err(&vdev->dev, "get IDA idx for virtbus device failed!\n");
-> > > +		goto device_pre_err;
+> > On Fri, Apr 17, 2020 at 10:12:36AM -0700, Jeff Kirsher wrote:
+> > > From: Mustafa Ismail <mustafa.ismail@intel.com>
+> > >
+> > > Register irdma as a virtbus driver capable of supporting virtbus
+> > > devices from multi-generation RDMA capable Intel HW. Establish the
+> > > interface with all supported netdev peer drivers and initialize HW.
+> > >
+> > > Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+> > > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+> > >  drivers/infiniband/hw/irdma/i40iw_if.c | 228 ++++++++++
+> > > drivers/infiniband/hw/irdma/irdma_if.c | 449 ++++++++++++++++++
+> > >  drivers/infiniband/hw/irdma/main.c     | 573 +++++++++++++++++++++++
+> > >  drivers/infiniband/hw/irdma/main.h     | 599 +++++++++++++++++++++++++
+> > >  4 files changed, 1849 insertions(+)
+> > >  create mode 100644 drivers/infiniband/hw/irdma/i40iw_if.c
+> > >  create mode 100644 drivers/infiniband/hw/irdma/irdma_if.c
+> > >  create mode 100644 drivers/infiniband/hw/irdma/main.c
+> > >  create mode 100644 drivers/infiniband/hw/irdma/main.h
+> > >
 > > 
-> > Do this before device_initialize()
->
-> The memory for virtbus device is allocated by the KO registering the
-> virtbus_device before it calls virtbus_register_device().  If this
-> function is exiting on an error, then we have to do a put_device()
-> so that the release is called (if it exists) to clean up the memory.
-
-put_device() must call virtbus_release_device(), which does
-ida_simple_remove() on vdev->id which hasn't been set yet.
-
-Also ->release wasn't initialized at this point so its leaks memory..
-
-> The ida_simple_get is not used until later in the function when
-> setting the vdev->id.  It doesn't matter what IDA it is used, as
-> long as it is unique.  So, since we cannot have the error state
-> before the device_initialize, there is no reason to have the
-> ida_sinple_get before the device_initialization.
-
-I was a bit wrong on this advice because no matter what you have to do
-put_device(), so you need to add some kind of flag that the vdev->id
-is not valid.
-
-It is ugly. It is nicer to arrange thing so initialization is done
-after kalloc but before device_initialize. For instance look how
-vdpa_alloc_device() and vdpa_register() work, very clean, very simple
-goto error unwinds everywhere.
-
-> GregKH was pretty insistent that all error paths out of this
-> function go through a put_device() when possible.
-
-After device_initialize() is called all error paths must go through
-put_device.
-
-> > Can't understand why vdev->name is being passed in with the struct,
-> > why not just a function argument?
+> > I didn't look in too much details, but three things caught my attention immediately:
+> > 1. Existence of ARP cache management logic in RDMA driver.
 > 
-> This avoids having the calling KO have to manage a separate piece of memory
-> to hold the name during the call to virtbus_device_regsiter.  It is a cleaner
-> memory model to just store it once in the virtbus_device itself.  This name is
-> the abbreviated name without the ID appended on the end, which will be used
-> for matching drivers and devices.
-
-Your other explanation was better. This would be less confusing if it
-was called match_name/device_label/driver_key or something, as it is
-not the 'name'.
-
-> > > + * virtbus_unregister_device - remove a virtual bus device
-> > > + * @vdev: virtual bus device we are removing
-> > > + */
-> > > +void virtbus_unregister_device(struct virtbus_device *vdev)
-> > > +{
-> > > +	device_del(&vdev->dev);
-> > > +	put_device(&vdev->dev);
-> > > +}
-> > > +EXPORT_SYMBOL_GPL(virtbus_unregister_device);
-> > 
-> > Just inline this as wrapper around device_unregister
+> Our HW has an independent ARP table for the rdma block. 
+> driver needs to add an ARP table entry via an rdma admin
+> queue command before QP transitions to RTS.
 > 
-> I thought that EXPORT_SYMBOL makes inline meaningless?
-> But, putting device_unregister here is a good catch.
+> > 2. Extensive use of dev_*() prints while we have ibdev_*() prints
+> The ib device object is not available till the end of the device init
+> similarly its unavailable early on in device deinit flows. So dev_*
+> is all we can use in those places.
 
-I mean move it to the header file and inline it
+hns guys were thinking about changing this. It looks fine to just move
+the name assignment to the device allocation, then we don't have this
+weirdness
+
+Alternatively, you could do as netdev does and have a special name
+string when the name is NULL
+
+Either way, I feel like this should be fixed up it is very fragile to
+have two different print functions running around.
 
 Jason
