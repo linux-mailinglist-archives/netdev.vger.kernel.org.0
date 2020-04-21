@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A27E1B23D3
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 12:29:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8C2B1B23B9
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 12:28:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728696AbgDUK3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 06:29:35 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:38077 "EHLO
+        id S1728584AbgDUK25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 06:28:57 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:60581 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728549AbgDUK26 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 06:28:58 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from maorg@mellanox.com)
+        with ESMTP id S1728490AbgDUK24 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 06:28:56 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from maorg@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 21 Apr 2020 13:28:53 +0300
 Received: from dev-l-vrt-201.mtl.labs.mlnx (dev-l-vrt-201.mtl.labs.mlnx [10.134.201.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 03LASrmm019072;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 03LASrmn019072;
         Tue, 21 Apr 2020 13:28:53 +0300
 From:   Maor Gottlieb <maorg@mellanox.com>
 To:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
@@ -23,95 +23,78 @@ To:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
 Cc:     leonro@mellanox.com, saeedm@mellanox.com,
         linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         alexr@mellanox.com, Maor Gottlieb <maorg@mellanox.com>
-Subject: [PATCH V3 mlx5-next 00/15] Add support to get xmit slave
-Date:   Tue, 21 Apr 2020 13:28:29 +0300
-Message-Id: <20200421102844.23640-1-maorg@mellanox.com>
+Subject: [PATCH V3 mlx5-next 01/15] net/core: Introduce master_get_xmit_slave
+Date:   Tue, 21 Apr 2020 13:28:30 +0300
+Message-Id: <20200421102844.23640-2-maorg@mellanox.com>
 X-Mailer: git-send-email 2.17.2
+In-Reply-To: <20200421102844.23640-1-maorg@mellanox.com>
+References: <20200421102844.23640-1-maorg@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+Add new ndo to get the xmit slave of master device.
+User should release the slave when it's not longer needed.
+When slave selection method is based on hash, then the user can ask to
+get the xmit slave assume all the slaves can transmit.
 
-This series is a combination of netdev and RDMA, so in order to avoid
-conflicts, we would like to ask you to route this series through
-mlx5-next shared branch. It is based on v5.7-rc1 tag.
+Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
+---
+ include/linux/netdevice.h | 33 +++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
----------------------------------------------------------------------
-
-The following series adds support to get the LAG master xmit slave by
-introducing new .ndo - ndo_xmit_slave_get. Every LAG module can
-implement it and it first implemented in the bond driver. 
-This is follow-up to the RFC discussion [1].
-
-The main motivation for doing this is for drivers that offload part
-of the LAG functionality. For example, Mellanox Connect-X hardware
-implements RoCE LAG which selects the TX affinity when the resources
-are created and port is remapped when it goes down.
-
-The first part of this patchset introduces the new .ndo and add the
-support to the bonding module.
-
-The second part adds support to get the RoCE LAG xmit slave by building
-skb of the RoCE packet based on the AH attributes and call to the new .ndo.
-
-The third part change the mlx5 driver driver to set the QP's affinity
-port according to the slave which found by the .ndo.
-
-Thanks
-
-[1] https://lore.kernel.org/netdev/20200126132126.9981-1-maorg@mellanox.com/
-
-Change log:
-v3: 1. Move master_get_xmit_slave to netdevice.h and change the flags arg.
-to bool.
-    2. Split helper functions commit to multiple commits for each bond
-mode.
-    3. Extract refcotring changes to seperate commits.
-v2: The first patch wasn't sent in v1.
-v1: https://lore.kernel.org/netdev/ac373456-b838-29cf-645f-b1ea1a93e3b0@gmail.com/T/#t 
-
-Maor Gottlieb (15):
-  net/core: Introduce master_xmit_slave_get
-  bonding: Export skip slave logic to function
-  bonding: Rename slave_arr to usable_slaves
-  bonding/alb: Add helper functions to get the xmit slave
-  bonding: Add helper function to get the xmit slave based on hash
-  bonding: Add helper function to get the xmit slave in rr mode
-  bonding: Add function to get the xmit slave in active-backup mode
-  bonding: Add array of all salves
-  bonding: Implement ndo_get_xmit_slave
-  RDMA/core: Add LAG functionality
-  RDMA/core: Get xmit slave for LAG
-  net/mlx5: Change lag mutex lock to spin lock
-  net/mlx5: Add support to get lag physical port
-  RDMA/mlx5: Refactor affinity related code
-  RDMA/mlx5: Set lag tx affinity according to slave
-
- drivers/infiniband/core/Makefile              |   2 +-
- drivers/infiniband/core/lag.c                 | 138 +++++++++
- drivers/infiniband/core/verbs.c               |  44 ++-
- drivers/infiniband/hw/mlx5/ah.c               |   4 +
- drivers/infiniband/hw/mlx5/gsi.c              |  34 ++-
- drivers/infiniband/hw/mlx5/main.c             |   2 +
- drivers/infiniband/hw/mlx5/mlx5_ib.h          |   1 +
- drivers/infiniband/hw/mlx5/qp.c               | 123 +++++---
- drivers/net/bonding/bond_alb.c                |  39 ++-
- drivers/net/bonding/bond_main.c               | 270 +++++++++++++-----
- drivers/net/ethernet/mellanox/mlx5/core/lag.c |  66 +++--
- include/linux/mlx5/driver.h                   |   2 +
- include/linux/mlx5/mlx5_ifc.h                 |   4 +-
- include/linux/mlx5/qp.h                       |   2 +
- include/linux/netdevice.h                     |  33 +++
- include/net/bond_alb.h                        |   4 +
- include/net/bonding.h                         |   3 +-
- include/rdma/ib_verbs.h                       |   2 +
- include/rdma/lag.h                            |  22 ++
- 19 files changed, 617 insertions(+), 178 deletions(-)
- create mode 100644 drivers/infiniband/core/lag.c
- create mode 100644 include/rdma/lag.h
-
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 130a668049ab..ab324a2b04c8 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1389,6 +1389,9 @@ struct net_device_ops {
+ 						 struct netlink_ext_ack *extack);
+ 	int			(*ndo_del_slave)(struct net_device *dev,
+ 						 struct net_device *slave_dev);
++	struct net_device*	(*ndo_get_xmit_slave)(struct net_device *dev,
++						      struct sk_buff *skb,
++						      bool all_slaves);
+ 	netdev_features_t	(*ndo_fix_features)(struct net_device *dev,
+ 						    netdev_features_t features);
+ 	int			(*ndo_set_features)(struct net_device *dev,
+@@ -4676,6 +4679,36 @@ static inline void skb_gso_error_unwind(struct sk_buff *skb, __be16 protocol,
+ 	skb->mac_len = mac_len;
+ }
+ 
++/**
++ * master_get_xmit_slave - Get the xmit slave of master device
++ * @skb: The packet
++ * @all_slaves: assume all the slaves are active
++ *
++ * This can be called from any context and does its own locking.
++ * The returned handle has the usage count incremented and the caller must
++ * use dev_put() to release it when it is no longer needed.
++ * %NULL is returned if no slave is found.
++ */
++
++static inline
++struct net_device *master_get_xmit_slave(struct net_device *dev,
++					 struct sk_buff *skb,
++					 bool all_slaves)
++{
++	const struct net_device_ops *ops = dev->netdev_ops;
++	struct net_device *slave_dev;
++
++	if (!ops->ndo_get_xmit_slave)
++		return NULL;
++
++	rcu_read_lock();
++	slave_dev = ops->ndo_get_xmit_slave(dev, skb, all_slaves);
++	if (slave_dev)
++		dev_hold(slave_dev);
++	rcu_read_unlock();
++	return slave_dev;
++}
++
+ static inline bool netif_is_macsec(const struct net_device *dev)
+ {
+ 	return dev->priv_flags & IFF_MACSEC;
 -- 
 2.17.2
 
