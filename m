@@ -2,140 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 011CF1B2ED6
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 20:14:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D4AB1B2EE4
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 20:19:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729211AbgDUSNz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 14:13:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60970 "EHLO mail.kernel.org"
+        id S1729144AbgDUSTK convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Apr 2020 14:19:10 -0400
+Received: from mga09.intel.com ([134.134.136.24]:31362 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725963AbgDUSNz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Apr 2020 14:13:55 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1DEBF206D5;
-        Tue, 21 Apr 2020 18:13:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587492834;
-        bh=0TT0L66H3oFxmX6WwJme2Bh+aMVhD0ckmx2GZykmn4c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tI0tBHitsSsvQV5/YVgJ70h59rYxHJIl5Wm7OUyc/dwDkclA7eB2CdO856exPzXRD
-         P1S9HlOcAOIBMbQCEmC7MCaIh6X8yjbvrCoyb2qxVXnSvJy0w87jiwouTfkroN90ci
-         LgaS/N9I5EZNcR4mA8MyqKkrYeyAcdgWiSvZTdVY=
-Date:   Tue, 21 Apr 2020 11:13:52 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Luo bin <luobin9@huawei.com>
-Cc:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
-        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>
-Subject: Re: [PATCH net-next 1/3] hinic: add mailbox function support
-Message-ID: <20200421111352.263c7cbb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200421045635.8128-2-luobin9@huawei.com>
-References: <20200421045635.8128-1-luobin9@huawei.com>
-        <20200421045635.8128-2-luobin9@huawei.com>
+        id S1725870AbgDUSTJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Apr 2020 14:19:09 -0400
+IronPort-SDR: 3aSFHUG9/6LdmgXiPzF/Zy4PjEmo58ukJyvCi1Cczz3CZuqp6EzywVNAD8tB8L7dk0oEgNqRzF
+ dYJ6SwW/n5aw==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2020 11:19:08 -0700
+IronPort-SDR: iStkaU/kMMZL+66F3ELUhcNNYH+kYeaxlCMkdWywj9mJwrKyIyZMEeAAUG/GjjM4szn1Zy9Eds
+ gDzI3uzv2K5g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,411,1580803200"; 
+   d="scan'208";a="258794871"
+Received: from fmsmsx108.amr.corp.intel.com ([10.18.124.206])
+  by orsmga006.jf.intel.com with ESMTP; 21 Apr 2020 11:19:08 -0700
+Received: from fmsmsx115.amr.corp.intel.com (10.18.116.19) by
+ FMSMSX108.amr.corp.intel.com (10.18.124.206) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Tue, 21 Apr 2020 11:19:08 -0700
+Received: from fmsmsx124.amr.corp.intel.com ([169.254.8.70]) by
+ fmsmsx115.amr.corp.intel.com ([169.254.4.151]) with mapi id 14.03.0439.000;
+ Tue, 21 Apr 2020 11:19:08 -0700
+From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+CC:     Leon Romanovsky <leon@kernel.org>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>
+Subject: RE: [RFC PATCH v5 01/16] RDMA/irdma: Add driver framework
+ definitions
+Thread-Topic: [RFC PATCH v5 01/16] RDMA/irdma: Add driver framework
+ definitions
+Thread-Index: AQHWFNtu4ugEuh6AnUe8PZpOjYV9PKh+KgSAgAPqlNCAASOfAIAAk97A
+Date:   Tue, 21 Apr 2020 18:19:07 +0000
+Message-ID: <9DD61F30A802C4429A01CA4200E302A7DCD4A3E9@fmsmsx124.amr.corp.intel.com>
+References: <20200417171251.1533371-1-jeffrey.t.kirsher@intel.com>
+ <20200417171251.1533371-2-jeffrey.t.kirsher@intel.com>
+ <20200417193421.GB3083@unreal>
+ <9DD61F30A802C4429A01CA4200E302A7DCD4853F@fmsmsx124.amr.corp.intel.com>
+ <20200421004628.GQ26002@ziepe.ca>
+In-Reply-To: <20200421004628.GQ26002@ziepe.ca>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.1.200.107]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Apr 2020 04:56:33 +0000 Luo bin wrote:
-> virtual function and physical function can communicate with each
-> other through mailbox channel supported by hw
+> Subject: Re: [RFC PATCH v5 01/16] RDMA/irdma: Add driver framework
+> definitions
 > 
-> Signed-off-by: Luo bin <luobin9@huawei.com>
+> On Tue, Apr 21, 2020 at 12:23:45AM +0000, Saleem, Shiraz wrote:
+> > > Subject: Re: [RFC PATCH v5 01/16] RDMA/irdma: Add driver framework
+> > > definitions
+> > >
+> > > On Fri, Apr 17, 2020 at 10:12:36AM -0700, Jeff Kirsher wrote:
+> > > > From: Mustafa Ismail <mustafa.ismail@intel.com>
+> > > >
+> > > > Register irdma as a virtbus driver capable of supporting virtbus
+> > > > devices from multi-generation RDMA capable Intel HW. Establish the
+> > > > interface with all supported netdev peer drivers and initialize HW.
+> > > >
+> > > > Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+> > > > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+> > > > drivers/infiniband/hw/irdma/i40iw_if.c | 228 ++++++++++
+> > > > drivers/infiniband/hw/irdma/irdma_if.c | 449 ++++++++++++++++++
+> > > >  drivers/infiniband/hw/irdma/main.c     | 573 +++++++++++++++++++++++
+> > > >  drivers/infiniband/hw/irdma/main.h     | 599
+> +++++++++++++++++++++++++
+> > > >  4 files changed, 1849 insertions(+)  create mode 100644
+> > > > drivers/infiniband/hw/irdma/i40iw_if.c
+> > > >  create mode 100644 drivers/infiniband/hw/irdma/irdma_if.c
+> > > >  create mode 100644 drivers/infiniband/hw/irdma/main.c
+> > > >  create mode 100644 drivers/infiniband/hw/irdma/main.h
+> > > >
+> > >
+> > > I didn't look in too much details, but three things caught my attention
+> immediately:
+> > > 1. Existence of ARP cache management logic in RDMA driver.
+> >
+> > Our HW has an independent ARP table for the rdma block.
+> > driver needs to add an ARP table entry via an rdma admin queue command
+> > before QP transitions to RTS.
+> >
+> > > 2. Extensive use of dev_*() prints while we have ibdev_*() prints
+> > The ib device object is not available till the end of the device init
+> > similarly its unavailable early on in device deinit flows. So dev_* is
+> > all we can use in those places.
+> 
+> hns guys were thinking about changing this. It looks fine to just move the name
+> assignment to the device allocation, then we don't have this weirdness
 
-> +static int recv_vf_mbox_handler(struct hinic_mbox_func_to_func *func_to_func,
-> +				struct hinic_recv_mbox *recv_mbox,
-> +				void *buf_out, u16 *out_size)
-> +{
-> +	hinic_vf_mbox_cb cb;
-> +	int ret = 0;
-> +
-> +	if (recv_mbox->mod >= HINIC_MOD_MAX) {
-> +		dev_err(&func_to_func->hwif->pdev->dev, "Receive illegal mbox message, mod = %d\n",
-> +			recv_mbox->mod);
+Did you mean moving name setting from ib_register_device to ib_device_alloc?
+Will that work ok for how rvt is handling the names in rvt_set_ibdev_name
+and its register?
 
-You may want to rate limit these, otherwise VF may spam PFs logs.
+This could migrate a lot of the dev_* to ibdev_* but there is still going to be a handful of
+dev_* usages from our HW initialization in irdma_prob_dev since ib device allocation is
+done in irdma_open.
 
-> +		return -EINVAL;
-> +	}
+> 
+> Alternatively, you could do as netdev does and have a special name string when
+> the name is NULL
 
-> +static int mbox_func_params_valid(struct hinic_mbox_func_to_func *func_to_func,
-> +				  void *buf_in, u16 in_size)
-> +{
-> +	if (!buf_in || !in_size)
-> +		return -EINVAL;
+Not sure I found what your referring to. 
+Did you mean similar to use of netdev_name in __netdev_printk?
 
-This is defensive programming, we don't do that in the kernel, callers
-should not pass NULL buffer and 0 size.
-
-Also you probably want the size to be size_t, otherwise it may get
-truncated before the check below.
-
-> +	if (in_size > HINIC_MBOX_DATA_SIZE) {
-> +		dev_err(&func_to_func->hwif->pdev->dev,
-> +			"Mbox msg len(%d) exceed limit(%d)\n",
-> +			in_size, HINIC_MBOX_DATA_SIZE);
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +int hinic_mbox_to_pf(struct hinic_hwdev *hwdev,
-> +		     enum hinic_mod_type mod, u8 cmd, void *buf_in,
-> +		     u16 in_size, void *buf_out, u16 *out_size, u32 timeout)
-> +{
-> +	struct hinic_mbox_func_to_func *func_to_func = hwdev->func_to_func;
-> +	int err = mbox_func_params_valid(func_to_func, buf_in, in_size);
-> +
-> +	if (err)
-> +		return err;
-> +
-> +	if (!HINIC_IS_VF(hwdev->hwif)) {
-> +		dev_err(&hwdev->hwif->pdev->dev, "Params error, func_type: %d\n",
-> +			HINIC_FUNC_TYPE(hwdev->hwif));
-> +		return -EINVAL;
-> +	}
-> +
-> +	err = hinic_mbox_to_func(func_to_func, mod, cmd,
-> +				 hinic_pf_id_of_vf_hw(hwdev->hwif), buf_in,
-> +				 in_size, buf_out, out_size, timeout);
-> +	return err;
-
-return hinic_mbox_to...
-
-directly
-
-> +}
-
-> +static int comm_pf_mbox_handler(void *handle, u16 vf_id, u8 cmd, void *buf_in,
-> +				u16 in_size, void *buf_out, u16 *out_size)
-> +{
-> +	struct hinic_hwdev *hwdev = handle;
-> +	struct hinic_pfhwdev *pfhwdev;
-> +	int err = 0;
-> +
-> +	pfhwdev = container_of(hwdev, struct hinic_pfhwdev, hwdev);
-> +
-> +	if (cmd == HINIC_COMM_CMD_START_FLR) {
-> +		*out_size = 0;
-> +	} else {
-> +		err = hinic_msg_to_mgmt(&pfhwdev->pf_to_mgmt, HINIC_MOD_COMM,
-> +					cmd, buf_in, in_size, buf_out, out_size,
-> +					HINIC_MGMT_MSG_SYNC);
-> +		if (err  && err != HINIC_MBOX_PF_BUSY_ACTIVE_FW)
-
-Double space, please run checkpatch --strict on the patches
-
-> +			dev_err(&hwdev->hwif->pdev->dev,
-> +				"PF mbox common callback handler err: %d\n",
-> +				err);
-> +	}
-> +
-> +	return err;
-> +}
+> 
+> Either way, I feel like this should be fixed up it is very fragile to have two different
+> print functions running around.
+> 
+> Jason
