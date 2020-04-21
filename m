@@ -2,127 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 122991B2966
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 16:25:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E03BF1B29F5
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 16:33:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729013AbgDUOZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 10:25:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47914 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726691AbgDUOZG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 10:25:06 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C324C061A10
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 07:25:06 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id l3so7423113edq.13
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 07:25:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=72ffQ5ODb8U0vC6vg6y9VRJ/3CN/DrqEKm/QWUNdrgo=;
-        b=W99e/F1xFPVSJT6YNzNr0WtrOxze5S3cghoAQWUbFJ1z3Ltwxub6ql3VJyrWFyZpCo
-         ozAWthD3w7dtr0cDYMz9bIQXsyq9Bdcr3/71B0duWofprRfmpd/KnEK44uiwib+vDK7V
-         eL+29yEWRZcnobR7ZnAI+1+I20d3Qx7wS3tSvxdHm22VhsgyTDCDhXDcL1XGov5nstAc
-         9328wHpmT3U/CwOvMwnnAaKXn6nnnm5PP7mRnLJc2q7BcxJIRyuGpAIyUHR9QMoBLNEA
-         ooJYfD7QHOPciz0XuBbMuiMIBJNxvBNV7+jzr+lopTIlphuXk8JXoU0IA0ASYg/9eVvm
-         idWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=72ffQ5ODb8U0vC6vg6y9VRJ/3CN/DrqEKm/QWUNdrgo=;
-        b=p42WonnEjWQxO9dE0a+RZnUf38bz+utnGmhtQgYxIe5mOKyJo8sKwDX7vtXH9XQT9V
-         TQrODL2Xdsb7HL4TUAjserZrjzksleU0eeWxSexBzRw9eR9m6Y1B6wi/UpJsjjPM4TOX
-         q4+ytMOfZqO3rPybXtucOVvP+x4K3bfIs5+EXh7VUdGdJmfiyNWAV7L+m0OZGbCCWqyv
-         Q0c3XR6iLeJCqL5mRKA4MPkgzl6enrVtruDjGSYKW5x4krqBo2GF7F+P3mTULzjrpOmJ
-         FuLHeWiAj2JGklv11KdA9c5JgYrTLWC5aFn2Kv/9YnsHkM+8c1mgwcF7/QMWKjFrehtM
-         5iFA==
-X-Gm-Message-State: AGi0PuZFLZ/Y8/PxVcvhdSY66m3hJCv98umwf3Uv0h0XInGnVadwvaKL
-        T14vaChUi6l0bWKBYAE6fZxagadjU3DX+mccJtA=
-X-Google-Smtp-Source: APiQypJiZbTvyqj7dENEVhVlLta/tXzIuMsgGj+Fee5VxUqjtS/WpB5JA4IwsgmUkGjc3aItLEZrqfoPg/knlTFeFEY=
-X-Received: by 2002:a50:aca3:: with SMTP id x32mr19488760edc.368.1587479104876;
- Tue, 21 Apr 2020 07:25:04 -0700 (PDT)
+        id S1729365AbgDUOda (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 10:33:30 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:33942 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729174AbgDUOd2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Apr 2020 10:33:28 -0400
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 36298267342B093BC7CE;
+        Tue, 21 Apr 2020 22:33:21 +0800 (CST)
+Received: from localhost (10.166.215.154) by DGGEMS406-HUB.china.huawei.com
+ (10.3.19.206) with Microsoft SMTP Server id 14.3.487.0; Tue, 21 Apr 2020
+ 22:33:11 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <steffen.klassert@secunet.com>, <herbert@gondor.apana.org.au>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lucien.xin@gmail.com>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH] xfrm: policy: Only use mark as policy lookup key
+Date:   Tue, 21 Apr 2020 22:31:49 +0800
+Message-ID: <20200421143149.45108-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-References: <20200421123110.13733-1-olteanv@gmail.com> <20200421123110.13733-2-olteanv@gmail.com>
- <20200421133321.GD937199@lunn.ch> <CA+h21hrXJf1vm-5b3O7zQciznKF-jGSTpe_v6Mgtv8dXNOCt7g@mail.gmail.com>
- <20200421140653.GA933345@lunn.ch>
-In-Reply-To: <20200421140653.GA933345@lunn.ch>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 21 Apr 2020 17:24:54 +0300
-Message-ID: <CA+h21hq4deLKEp80Kt4Gboxon4MLsOYaXPk6Tz2JBAH0yF2q9Q@mail.gmail.com>
-Subject: Re: [PATCH net 1/2] net: dsa: be compatible with DSA masters with
- max_mtu of 1500 or less
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.166.215.154]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Apr 2020 at 17:06, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Tue, Apr 21, 2020 at 04:42:41PM +0300, Vladimir Oltean wrote:
-> > Hi Andrew,
-> >
-> > On Tue, 21 Apr 2020 at 16:33, Andrew Lunn <andrew@lunn.ch> wrote:
-> > >
-> > > On Tue, Apr 21, 2020 at 03:31:09PM +0300, Vladimir Oltean wrote:
-> > > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > > >
-> > > > It would be ideal if the DSA switch ports would support an MTU of 1500
-> > > > bytes by default, same as any other net device. But there are 2 cases of
-> > > > issues with trying to do that:
-> > > >
-> > > > - Drivers that are legitimately MTU-challenged and don't support
-> > > >   anything larger than ETH_DATA_LEN. A very quick search shows that
-> > > >   sungem.c is one such example - there may be many others.
-> > > >
-> > > > - Drivers that simply don't populate netdev->max_mtu. In that case, it
-> > > >   seems that the ether_setup function sets dev->max_mtu to a default
-> > > >   value of ETH_DATA_LEN. And due to the above cases which really are
-> > > >   MTU-challenged, we can't really make any guesses.
-> > > >
-> > > > So for these cases, if the max_mtu of the master net_device is lower
-> > > > than 1500, use that (minus the tagger overhead) as the max MTU of the
-> > > > switch ports.
-> > >
-> > > I don't like this. I suspect this will also break in subtle ways.
-> > >
-> > > Please go back to the original behaviour. Make the call to request the
-> > > minimum needed for DSA.
-> >
-> > In what sense "minimum needed"? It is minimum needed. If
-> > master->max_mtu is 1500, the MTU will be set to 1496.
->
-> Ah, sorry. This is the slave. I was thinking it was the master.
->
-> We have always assumed the slave can send normal sized frames,
-> independent of what the master supports. This is just a follow on from
-> the fact we ignore errors setting the MTU on the master for the DSA
-> overhead for normal size frames. So don't set the MTU to 1496, leave
-> it at 1500. For all working boards out in the wild, 1500 will work.
->
->          Andrew
+While update xfrm policy as follow:
 
-Does iperf3 TCP work on your Vybrid board with the master MTU equal to
-the slave MTU equal to 1500 (without IP fragmentation, that is)? If it
-does, ok, this patch can maybe be dropped.
+ip -6 xfrm policy update src fd00::1/128 dst fd00::2/128 dir in \
+ priority 1 mark 0 mask 0x10
+ip -6 xfrm policy update src fd00::1/128 dst fd00::2/128 dir in \
+ priority 2 mark 0 mask 0x00
+ip -6 xfrm policy update src fd00::1/128 dst fd00::2/128 dir in \
+ priority 2 mark 0 mask 0x10
 
-qca7000 doesn't support packets larger than 1500 MTU either, neither
-does broadcom b44, and neither do probably more adapters which I
-didn't find now.
+We get this warning:
 
-Why would I not limit the MTU to 1496 if the master's max_mtu is 1500?
-Just to provoke more warnings in people's logs? I just don't want to
-have further issue reports, but I am basically reading your reply as
-"don't try to be correct". If you don't like this behavior for FEC,
-you can set its max_mtu since it doesn't do that by itself.
+WARNING: CPU: 0 PID: 4808 at net/xfrm/xfrm_policy.c:1548
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 4808 Comm: ip Not tainted 5.7.0-rc1+ #151
+Call Trace:
+RIP: 0010:xfrm_policy_insert_list+0x153/0x1e0
+ xfrm_policy_inexact_insert+0x70/0x330
+ xfrm_policy_insert+0x1df/0x250
+ xfrm_add_policy+0xcc/0x190 [xfrm_user]
+ xfrm_user_rcv_msg+0x1d1/0x1f0 [xfrm_user]
+ netlink_rcv_skb+0x4c/0x120
+ xfrm_netlink_rcv+0x32/0x40 [xfrm_user]
+ netlink_unicast+0x1b3/0x270
+ netlink_sendmsg+0x350/0x470
+ sock_sendmsg+0x4f/0x60
 
-Thanks,
--Vladimir
+Policy C and policy A has the same mark.v and mark.m, so policy A is
+matched in first round lookup while updating C. However policy C and
+policy B has same mark and priority, which also leads to matched. So
+the WARN_ON is triggered.
+
+xfrm policy lookup should only be matched when the found policy has the
+same lookup keys (mark.v & mark.m) no matter priority.
+
+Fixes: 7cb8a93968e3 ("xfrm: Allow inserting policies with matching mark and different priorities")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ net/xfrm/xfrm_policy.c | 16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
+
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 297b2fd..67d0469 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -1436,13 +1436,7 @@ static void xfrm_policy_requeue(struct xfrm_policy *old,
+ static bool xfrm_policy_mark_match(struct xfrm_policy *policy,
+ 				   struct xfrm_policy *pol)
+ {
+-	u32 mark = policy->mark.v & policy->mark.m;
+-
+-	if (policy->mark.v == pol->mark.v && policy->mark.m == pol->mark.m)
+-		return true;
+-
+-	if ((mark & pol->mark.m) == pol->mark.v &&
+-	    policy->priority == pol->priority)
++	if ((policy->mark.v & policy->mark.m) == (pol->mark.v & pol->mark.m))
+ 		return true;
+ 
+ 	return false;
+@@ -1628,7 +1622,7 @@ int xfrm_policy_insert(int dir, struct xfrm_policy *policy, int excl)
+ 	hlist_for_each_entry(pol, chain, bydst) {
+ 		if (pol->type == type &&
+ 		    pol->if_id == if_id &&
+-		    (mark & pol->mark.m) == pol->mark.v &&
++		    mark == (pol->mark.m & pol->mark.v) &&
+ 		    !selector_cmp(sel, &pol->selector) &&
+ 		    xfrm_sec_ctx_match(ctx, pol->security))
+ 			return pol;
+@@ -1726,7 +1720,7 @@ struct xfrm_policy *xfrm_policy_byid(struct net *net, u32 mark, u32 if_id,
+ 	hlist_for_each_entry(pol, chain, byidx) {
+ 		if (pol->type == type && pol->index == id &&
+ 		    pol->if_id == if_id &&
+-		    (mark & pol->mark.m) == pol->mark.v) {
++		    mark == (pol->mark.m & pol->mark.v)) {
+ 			xfrm_pol_hold(pol);
+ 			if (delete) {
+ 				*err = security_xfrm_policy_delete(
+@@ -1898,7 +1892,7 @@ static int xfrm_policy_match(const struct xfrm_policy *pol,
+ 
+ 	if (pol->family != family ||
+ 	    pol->if_id != if_id ||
+-	    (fl->flowi_mark & pol->mark.m) != pol->mark.v ||
++	    fl->flowi_mark != (pol->mark.m & pol->mark.v) ||
+ 	    pol->type != type)
+ 		return ret;
+ 
+@@ -2177,7 +2171,7 @@ static struct xfrm_policy *xfrm_sk_policy_lookup(const struct sock *sk, int dir,
+ 
+ 		match = xfrm_selector_match(&pol->selector, fl, family);
+ 		if (match) {
+-			if ((sk->sk_mark & pol->mark.m) != pol->mark.v ||
++			if (sk->sk_mark != (pol->mark.m & pol->mark.v) ||
+ 			    pol->if_id != if_id) {
+ 				pol = NULL;
+ 				goto out;
+-- 
+1.8.3.1
+
+
