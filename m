@@ -2,190 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2CF81B236E
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 11:57:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BF6F1B23A3
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 12:15:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728630AbgDUJ5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 05:57:45 -0400
-Received: from foss.arm.com ([217.140.110.172]:60790 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725920AbgDUJ5o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Apr 2020 05:57:44 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A1BB01FB;
-        Tue, 21 Apr 2020 02:57:43 -0700 (PDT)
-Received: from C02TD0UTHF1T.local (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 554A83F73D;
-        Tue, 21 Apr 2020 02:57:39 -0700 (PDT)
-Date:   Tue, 21 Apr 2020 10:57:36 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Jianyong Wu <jianyong.wu@arm.com>
-Cc:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
-        tglx@linutronix.de, pbonzini@redhat.com,
-        sean.j.christopherson@intel.com, maz@kernel.org,
-        richardcochran@gmail.com, will@kernel.org, suzuki.poulose@arm.com,
-        steven.price@arm.com, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        kvm@vger.kernel.org, Steve.Capper@arm.com, Kaly.Xin@arm.com,
-        justin.he@arm.com, nd@arm.com
-Subject: Re: [RFC PATCH v11 5/9] psci: Add hypercall service for ptp_kvm.
-Message-ID: <20200421095736.GB16306@C02TD0UTHF1T.local>
-References: <20200421032304.26300-1-jianyong.wu@arm.com>
- <20200421032304.26300-6-jianyong.wu@arm.com>
+        id S1728285AbgDUKPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 06:15:07 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:59470 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725920AbgDUKPF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 06:15:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587464103;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JMXCCN2HDOIJrfbYQQ/wgmrrJgdlZiV7fsSSc0nzaH4=;
+        b=J+/oASgDFb+5qxsrDcOL0iEL0OX64xOTmxbXPhXY70Nmoy7jUvnVG6aupubELzqxEtKlyJ
+        GZXssomKlKxnhP3crSJATlmWCURARMjrVAinEtuSa+YGaMs616Qx/zYycjtfSrsOBVdxvx
+        Q1INf0BA7N3ye4WewkQdzztaPtpGs8s=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-306-MYyaG7fWNmKxFC2HYCCTKQ-1; Tue, 21 Apr 2020 06:15:01 -0400
+X-MC-Unique: MYyaG7fWNmKxFC2HYCCTKQ-1
+Received: by mail-lj1-f197.google.com with SMTP id c2so1986742ljj.2
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 03:15:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=JMXCCN2HDOIJrfbYQQ/wgmrrJgdlZiV7fsSSc0nzaH4=;
+        b=TRhO91k4Gf9fAIMEpZoPcUU9neH9EdkgkIx8zBY9I2aWsOBuP3TrxVXUuEuZTElZWg
+         u9m9iR0d/tKLI5RqIZExo7SfGLJeFoSo4yx69PRb7a2OiLodpSY9vFz81tzcyh5F0iE1
+         Xh/E9nBsD4tUZgxxiCWLznUjC1uu3TTpFkPYphO3becb2EJnsYoYG8ndn5Zydto96sI8
+         nG3HRLpp7jh8qPJZsGSAk3Bx5seWtJr3QKAfXJpaks0GKgZ7M8SeqoaE3/LJwOSB3246
+         gV6j+jLkvyu+qZODCJQrianAJ1uGJHtzuNlrcEehshHPMjRydXxyZUiOWu80VAbHDf5I
+         1TXw==
+X-Gm-Message-State: AGi0PubFu71xDwBWaxVXKTV1A0cAQuG3L+o8Un1OalCnfNRpsNyu1OBo
+        UA7wu6aQL+LHpGoXDOf8uZfGHZ2wqTJK4OTS3jr+tvhJD93VUPvZIqWcjcuFwcBArZtgcl10Fef
+        YpTi5OGXblA1/k92O
+X-Received: by 2002:a19:4a03:: with SMTP id x3mr13325522lfa.159.1587464099110;
+        Tue, 21 Apr 2020 03:14:59 -0700 (PDT)
+X-Google-Smtp-Source: APiQypLPugM2/PIyyWx1s9aYMf1aiV6E8MHVxMDi5D07/bBVKY5tY0Z89rNA6L/uGBl4gVVrL4zQcQ==
+X-Received: by 2002:a19:4a03:: with SMTP id x3mr13325502lfa.159.1587464098838;
+        Tue, 21 Apr 2020 03:14:58 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id w16sm1513572ljd.101.2020.04.21.03.14.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Apr 2020 03:14:58 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 5453418157F; Tue, 21 Apr 2020 12:14:56 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        prashantbhole.linux@gmail.com, jasowang@redhat.com,
+        brouer@redhat.com, toshiaki.makita1@gmail.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
+Subject: Re: [PATCH bpf-next 04/16] net: Add BPF_XDP_EGRESS as a bpf_attach_type
+In-Reply-To: <20200420200055.49033-5-dsahern@kernel.org>
+References: <20200420200055.49033-1-dsahern@kernel.org> <20200420200055.49033-5-dsahern@kernel.org>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 21 Apr 2020 12:14:56 +0200
+Message-ID: <87ftcx9mcf.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200421032304.26300-6-jianyong.wu@arm.com>
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 21, 2020 at 11:23:00AM +0800, Jianyong Wu wrote:
-> ptp_kvm modules will get this service through smccc call.
-> The service offers real time and counter cycle of host for guest.
-> Also let caller determine which cycle of virtual counter or physical counter
-> to return.
-> 
-> Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
+David Ahern <dsahern@kernel.org> writes:
+
+> From: David Ahern <dahern@digitalocean.com>
+>
+> Add new bpf_attach_type, BPF_XDP_EGRESS, for BPF programs attached
+> at the XDP layer, but the egress path.
+>
+> Since egress path will not have ingress_ifindex and rx_queue_index
+> set, update xdp_is_valid_access to block access to these entries in
+> the xdp context when a program is attached to egress path.
+>
+> Update dev_change_xdp_fd to verify expected_attach_type for a program
+> is BPF_XDP_EGRESS if egress argument is set.
+>
+> The next patch adds support for the egress ifindex.
+>
+> Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
+> Signed-off-by: David Ahern <dahern@digitalocean.com>
 > ---
->  include/linux/arm-smccc.h | 21 +++++++++++++++++++
->  virt/kvm/arm/hypercalls.c | 44 ++++++++++++++++++++++++++++++++++++++-
->  2 files changed, 64 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/arm-smccc.h b/include/linux/arm-smccc.h
-> index 59494df0f55b..747b7595d0c6 100644
-> --- a/include/linux/arm-smccc.h
-> +++ b/include/linux/arm-smccc.h
-> @@ -77,6 +77,27 @@
->  			   ARM_SMCCC_SMC_32,				\
->  			   0, 0x7fff)
+>  include/uapi/linux/bpf.h       |  1 +
+>  net/core/dev.c                 | 11 +++++++++++
+>  net/core/filter.c              |  8 ++++++++
+>  tools/include/uapi/linux/bpf.h |  1 +
+>  4 files changed, 21 insertions(+)
+>
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 2e29a671d67e..a9d384998e8b 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -215,6 +215,7 @@ enum bpf_attach_type {
+>  	BPF_TRACE_FEXIT,
+>  	BPF_MODIFY_RETURN,
+>  	BPF_LSM_MAC,
+> +	BPF_XDP_EGRESS,
+>  	__MAX_BPF_ATTACH_TYPE
+>  };
 >  
-> +/* PTP KVM call requests clock time from guest OS to host */
-> +#define ARM_SMCCC_HYP_KVM_PTP_FUNC_ID				\
-> +	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,			\
-> +			   ARM_SMCCC_SMC_32,			\
-> +			   ARM_SMCCC_OWNER_STANDARD_HYP,	\
-> +			   0)
-> +
-> +/* request for virtual counter from ptp_kvm guest */
-> +#define ARM_SMCCC_HYP_KVM_PTP_VIRT				\
-> +	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,			\
-> +			   ARM_SMCCC_SMC_32,			\
-> +			   ARM_SMCCC_OWNER_STANDARD_HYP,	\
-> +			   1)
-> +
-> +/* request for physical counter from ptp_kvm guest */
-> +#define ARM_SMCCC_HYP_KVM_PTP_PHY				\
-> +	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,			\
-> +			   ARM_SMCCC_SMC_32,			\
-> +			   ARM_SMCCC_OWNER_STANDARD_HYP,	\
-> +			   2)
-
-ARM_SMCCC_OWNER_STANDARD_HYP is for standard calls as defined in SMCCC
-and companion documents, so we should refer to the specific
-documentation here. Where are these calls defined?
-
-If these calls are Linux-specific then ARM_SMCCC_OWNER_STANDARD_HYP
-isn't appropriate to use, as they are vendor-specific hypervisor service
-call.
-
-It looks like we don't currently have a ARM_SMCCC_OWNER_HYP for that
-(which IIUC would be 6), but we can add one as necessary. I think that
-Will might have added that as part of his SMCCC probing bits.
-
-> +
->  #ifndef __ASSEMBLY__
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 97180458e7cb..e8a62bdb395b 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -8732,6 +8732,17 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
+>  		if (IS_ERR(prog))
+>  			return PTR_ERR(prog);
 >  
->  #include <linux/linkage.h>
-> diff --git a/virt/kvm/arm/hypercalls.c b/virt/kvm/arm/hypercalls.c
-> index 550dfa3e53cd..a5309c28d4dc 100644
-> --- a/virt/kvm/arm/hypercalls.c
-> +++ b/virt/kvm/arm/hypercalls.c
-> @@ -3,6 +3,7 @@
->  
->  #include <linux/arm-smccc.h>
->  #include <linux/kvm_host.h>
-> +#include <linux/clocksource_ids.h>
->  
->  #include <asm/kvm_emulate.h>
->  
-> @@ -11,8 +12,11 @@
->  
->  int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
->  {
-> -	u32 func_id = smccc_get_function(vcpu);
-> +	struct system_time_snapshot systime_snapshot;
-> +	long arg[4];
-> +	u64 cycles;
->  	long val = SMCCC_RET_NOT_SUPPORTED;
-> +	u32 func_id = smccc_get_function(vcpu);
->  	u32 feature;
->  	gpa_t gpa;
->  
-> @@ -62,6 +66,44 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
->  		if (gpa != GPA_INVALID)
->  			val = gpa;
->  		break;
-> +	/*
-> +	 * This serves virtual kvm_ptp.
-> +	 * Four values will be passed back.
-> +	 * reg0 stores high 32-bit host ktime;
-> +	 * reg1 stores low 32-bit host ktime;
-> +	 * reg2 stores high 32-bit difference of host cycles and cntvoff;
-> +	 * reg3 stores low 32-bit difference of host cycles and cntvoff.
-> +	 */
-> +	case ARM_SMCCC_HYP_KVM_PTP_FUNC_ID:
-
-Shouldn't the host opt-in to providing this to the guest, as with other
-features?
-
-> +		/*
-> +		 * system time and counter value must captured in the same
-> +		 * time to keep consistency and precision.
-> +		 */
-> +		ktime_get_snapshot(&systime_snapshot);
-> +		if (systime_snapshot.cs_id != CSID_ARM_ARCH_COUNTER)
-> +			break;
-> +		arg[0] = upper_32_bits(systime_snapshot.real);
-> +		arg[1] = lower_32_bits(systime_snapshot.real);
-
-Why exactly does the guest need the host's real time? Neither the cover
-letter nor this commit message have explained that, and for those of us
-unfamliar with PTP it would be very helpful to know that to understand
-what's going on.
-
-> +		/*
-> +		 * which of virtual counter or physical counter being
-> +		 * asked for is decided by the first argument.
-> +		 */
-> +		feature = smccc_get_arg1(vcpu);
-> +		switch (feature) {
-> +		case ARM_SMCCC_HYP_KVM_PTP_PHY:
-> +			cycles = systime_snapshot.cycles;
-> +			break;
-> +		case ARM_SMCCC_HYP_KVM_PTP_VIRT:
-> +		default:
-> +			cycles = systime_snapshot.cycles -
-> +			vcpu_vtimer(vcpu)->cntvoff;
+> +		if (egress && prog->expected_attach_type != BPF_XDP_EGRESS) {
+> +			NL_SET_ERR_MSG(extack, "XDP program in Tx path must use BPF_XDP_EGRESS attach type");
+> +			bpf_prog_put(prog);
+> +			return -EINVAL;
 > +		}
-> +		arg[2] = upper_32_bits(cycles);
-> +		arg[3] = lower_32_bits(cycles);
+> +		if (!egress && prog->expected_attach_type == BPF_XDP_EGRESS) {
+> +			NL_SET_ERR_MSG(extack, "XDP program in Rx path can not use BPF_XDP_EGRESS attach type");
+> +			bpf_prog_put(prog);
+> +			return -EINVAL;
+> +		}
 > +
-> +		smccc_set_retval(vcpu, arg[0], arg[1], arg[2], arg[3]);
+>  		if (!offload && bpf_prog_is_dev_bound(prog->aux)) {
+>  			NL_SET_ERR_MSG(extack, "using device-bound program without HW_MODE flag is not supported");
+>  			bpf_prog_put(prog);
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 7d6ceaa54d21..bcb56448f336 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -6935,6 +6935,14 @@ static bool xdp_is_valid_access(int off, int size,
+>  				const struct bpf_prog *prog,
+>  				struct bpf_insn_access_aux *info)
+>  {
+> +	if (prog->expected_attach_type == BPF_XDP_EGRESS) {
+> +		switch (off) {
+> +		case offsetof(struct xdp_md, ingress_ifindex):
+> +		case offsetof(struct xdp_md, rx_queue_index):
+> +			return false;
+> +		}
+> +	}
 
-I think the 'arg' buffer is confusing here, and it'd be clearer to have:
+As I pointed out on the RFC patch, I'm concerned whether this will work
+right with freplace programs attaching to XDP programs. It may just be
+that I'm missing something, but in that case please explain why it
+works? :)
 
-	u64 snaphot;
-	u64 cycles;
+-Toke
 
-... and here do:
-
-		smccc_set_retval(vcpu,
-				 upper_32_bits(snaphot),
-				 lower_32_bits(snapshot), 
-				 upper_32_bits(cycles),
-				 lower_32_bits(cycles));
-
-Thanks,
-Mark.
