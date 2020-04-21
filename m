@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26EC61B2E34
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 19:21:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDD1C1B2E37
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 19:22:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729179AbgDURVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 13:21:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47040 "EHLO
+        id S1728686AbgDURWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 13:22:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725963AbgDURVV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 13:21:21 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2927BC061A41;
-        Tue, 21 Apr 2020 10:21:20 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id j7so3486957pgj.13;
-        Tue, 21 Apr 2020 10:21:20 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725930AbgDURWG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 13:22:06 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F70C061A41;
+        Tue, 21 Apr 2020 10:22:06 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id e6so1638184pjt.4;
+        Tue, 21 Apr 2020 10:22:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ugtg5hHpJFG35qHHQCnbS1MFWmfROkCZGRcRHzPASYg=;
-        b=sS5qUOfbkv48i8UKD7QbuYoz6NO+vv9wkELxwAJNYaaOFnRNYBrlUwNjqqBxAtawwA
-         YbRUyrffYN1I5K5cEg8/h7z2cXlMx7mD5xjMsKQ5oJwhR3gbl8/QxSEMMj+6iNLlcOmS
-         6bKSCqcAgi7QciaGB+uRCBUnSMQwAlSIjdfbOq3iqWxwQnEfCOke72xy5YBlzG0qK7sI
-         O/6Nr2nrAsBs5IFMONeB5zzVr680L5JLuSUXf/umCgpNP3HZFqiBDACXlQ/1q1ON8jnA
-         hiFHbOsz5gJK9d+mgC71tEgcnKt0ZFZGK3xKExFvI2EHHt4oEGjS3jqEzUFnZrUkULgB
-         YL6Q==
+        bh=8hpKp+pJXXfl8SBiWG0TW18VKTy23Dsewpq1B1vdSJY=;
+        b=hHejU0rMzhttmHS5vUp5pxh33T4JcOLWAypQy/fUBG1Apb8uDmoT95JSblrteDSZQZ
+         xvsW0UucX/Cd9DvlJ3CUWNP1DVwSaKLC57uqNwXjCmxnaLw2h9rb63cY8Qru81Q3xPfp
+         qycWLBWyS6iXfsbHVF6QW5kDGmo3eK3kFGUWu8tOw0xELURcixxqT5QqEC0kmsQ8TGJA
+         aaQ/7AMUqeztG9Rt3V2WNzfAM13Yq/0JFY48yF+yH9+Ln9AV6t/QuF0PJiAzJj0LTbGp
+         gUNQxqexoQzX98bfberRppzngChJQD+1qtFGtayUMb1XaRc7hdJnxJxYpzUZ4OvyhPOi
+         ASXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=ugtg5hHpJFG35qHHQCnbS1MFWmfROkCZGRcRHzPASYg=;
-        b=J00CT+5tKYvaNujKL15BKtfoCIoc2uJ9hGdIMqccv6XMMr/Ef1Htn2O28Hr3lUJYpk
-         dZQzedYFan0uO2ujwZh16K6ez+JsGHRVulOErVWDSx4T/B/sCd0otk9V4dST1B4fylJv
-         ZN3AKOXxtE4zy+10tCdEfsFIHAko/AhmLyjb4eeNcvEju+1kQNDfiJSxZKNUtNDA4Orq
-         On8B/IDdBLJhB4EkFP98ixb+1AeEcZxs1FJ3B+xW8uNayydU2moyqm4unxjtS3mEXgcO
-         /A5qiJvQuBs44IbxD0CsmxqP9LP/bSLGtuVzltEkv7jAYPO/F4SWMShUZBq2N2lLC8Bu
-         HjEg==
-X-Gm-Message-State: AGi0Publ23AVmSRFmcmKprG9c4YoQyB9OajeR+/fx7y4mQb3lgUU4l6M
-        4iI45vKOox85tOhS0VHBnCA=
-X-Google-Smtp-Source: APiQypJ93iOmcQRIEJQVE+px4eeCYWBzb9IOA+IXbz+Gzs3J+soATOjbpmk8tT2rvNN53eTJEfwUbg==
-X-Received: by 2002:a63:d454:: with SMTP id i20mr22228409pgj.209.1587489679728;
-        Tue, 21 Apr 2020 10:21:19 -0700 (PDT)
+        bh=8hpKp+pJXXfl8SBiWG0TW18VKTy23Dsewpq1B1vdSJY=;
+        b=ioGqQjjJPNOOD+J6/B0/NTYZ7SfhtKFIm7GshmwR7ufBdKailDuCJrVPy9u9Sg9S0d
+         f2BjE2ovYfvyC70l/13qMXU0/6KBZNHZbIY+tTn0pHFLzEvt0aWETQ9OCkxmV0v+WjNi
+         BvinRr/yeoE7623nuAodGdzw7T9CPtwKQOgJAkE8COK8lVtES+yYKFribbquQxONLoyV
+         DnSVTvPS6IJPR/y/4t/s3QyGo59aYN7LkLmnzk92fhK/t2eTRpgGoKa97rjme0nYvpYW
+         mw2rqu8LoXotSLpcaMw1j5GPTMJDuLeFQERzK9ii6LcIwgHgR6wUayyookB1E71vQEpa
+         KAUw==
+X-Gm-Message-State: AGi0PuaVm+izuinO6lsa2d/ztWJE1OYqbfzrNtGkgUhXKi4ycBh8nUjG
+        RMH7qytEqRvzR6iprZ3+cXw=
+X-Google-Smtp-Source: APiQypKtd8K22hCEJJdMxKo8xuqS7YFQ6JSbezNOUdnFWa3AHXmTV38tSA0y2M/IYGSVG2IKZcHLlQ==
+X-Received: by 2002:a17:902:bf09:: with SMTP id bi9mr6325241plb.193.1587489725627;
+        Tue, 21 Apr 2020 10:22:05 -0700 (PDT)
 Received: from [10.230.188.26] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 23sm2871247pjb.11.2020.04.21.10.21.17
+        by smtp.gmail.com with ESMTPSA id k12sm2939328pfp.158.2020.04.21.10.22.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Apr 2020 10:21:18 -0700 (PDT)
-Subject: Re: [PATCH v2 5/7] net: macb: fix call to pm_runtime in the
- suspend/resume functions
+        Tue, 21 Apr 2020 10:22:04 -0700 (PDT)
+Subject: Re: [PATCH v2 7/7] net: macb: Add WoL interrupt support for MACB type
+ of Ethernet controller
 To:     nicolas.ferre@microchip.com, linux-arm-kernel@lists.infradead.org,
         netdev@vger.kernel.org,
         Claudiu Beznea <claudiu.beznea@microchip.com>,
@@ -60,14 +60,14 @@ Cc:     linux-kernel@vger.kernel.org,
         sergio.prado@e-labworks.com, antoine.tenart@bootlin.com,
         linux@armlinux.org.uk, andrew@lunn.ch, michal.simek@xilinx.com
 References: <cover.1587463802.git.nicolas.ferre@microchip.com>
- <1c537d1287aaf57b8b20a923686dbb551e1727f0.1587463802.git.nicolas.ferre@microchip.com>
+ <bebb6e87da4be4b000c059351f3a4d82ecffa561.1587463802.git.nicolas.ferre@microchip.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <1bd761fc-5eeb-bef5-5a6b-86d67fed3a7f@gmail.com>
-Date:   Tue, 21 Apr 2020 10:21:18 -0700
+Message-ID: <845410b0-f0fb-957b-e8ea-5a7cc2f152ac@gmail.com>
+Date:   Tue, 21 Apr 2020 10:22:04 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <1c537d1287aaf57b8b20a923686dbb551e1727f0.1587463802.git.nicolas.ferre@microchip.com>
+In-Reply-To: <bebb6e87da4be4b000c059351f3a4d82ecffa561.1587463802.git.nicolas.ferre@microchip.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -81,36 +81,15 @@ X-Mailing-List: netdev@vger.kernel.org
 On 4/21/2020 3:41 AM, nicolas.ferre@microchip.com wrote:
 > From: Nicolas Ferre <nicolas.ferre@microchip.com>
 > 
-> The calls to pm_runtime_force_suspend/resume() functions are only
-> relevant if the device is not configured to act as a WoL wakeup source.
-> Add the device_may_wakeup() test before calling them.
+> Handle the Wake-on-Lan interrupt for the Cadence MACB Ethernet
+> controller.
+> As we do for the GEM version, we handle of WoL interrupt in a
+> specialized interrupt handler for MACB version that is positionned
+> just between suspend() and resume() calls.
 > 
-> Fixes: 3e2a5e153906 ("net: macb: add wake-on-lan support via magic packet")
 > Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
 > Cc: Harini Katakam <harini.katakam@xilinx.com>
-> Cc: Sergio Prado <sergio.prado@e-labworks.com>
 > Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-> ---
-> Changes in v2:
-> - new in v2 serries
-> 
->   drivers/net/ethernet/cadence/macb_main.c | 6 ++++--
->   1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-> index 72b8983a763a..8cf8e21fbb07 100644
-> --- a/drivers/net/ethernet/cadence/macb_main.c
-> +++ b/drivers/net/ethernet/cadence/macb_main.c
-> @@ -4564,7 +4564,8 @@ static int __maybe_unused macb_suspend(struct device *dev)
->   
->   	if (bp->ptp_info)
->   		bp->ptp_info->ptp_remove(netdev);
-> -	pm_runtime_force_suspend(dev);
-> +	if (!(device_may_wakeup(dev)))
-> +		pm_runtime_force_suspend(dev);
-
-Only if you need to respin, the parenthesis around device_may_wakeup() 
-are not required:
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
