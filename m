@@ -2,94 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5ABFC1B2DA9
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 19:03:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A0F11B2DAC
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 19:04:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726878AbgDURC7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Apr 2020 13:02:59 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:54228 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726018AbgDURC6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 13:02:58 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-109-eSZZRY8RNHi-d2noMcwb7w-1; Tue, 21 Apr 2020 13:02:53 -0400
-X-MC-Unique: eSZZRY8RNHi-d2noMcwb7w-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1729166AbgDUREQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 13:04:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33578 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726741AbgDUREO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Apr 2020 13:04:14 -0400
+Received: from mail.kernel.org (ip5f5ad4d8.dynamic.kabel-deutschland.de [95.90.212.216])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A14188017F6;
-        Tue, 21 Apr 2020 17:02:52 +0000 (UTC)
-Received: from bistromath.localdomain (ovpn-112-35.ams2.redhat.com [10.36.112.35])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1AD9660BEC;
-        Tue, 21 Apr 2020 17:02:50 +0000 (UTC)
-Date:   Tue, 21 Apr 2020 19:02:49 +0200
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Dmitry Bogdanov <dbogdanov@marvell.com>
-Cc:     Igor Russkikh <irusskikh@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Mark Starovoytov <mstarovoitov@marvell.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>
-Subject: Re: [EXT] Re: [PATCH net 1/2] net: macsec: update SCI upon MAC
- address change.
-Message-ID: <20200421170249.GA4054840@bistromath.localdomain>
-References: <20200310152225.2338-1-irusskikh@marvell.com>
- <20200310152225.2338-2-irusskikh@marvell.com>
- <20200417090547.GA3874480@bistromath.localdomain>
- <BYAPR18MB235709AA95C28FAD4C6C39C2A4D40@BYAPR18MB2357.namprd18.prod.outlook.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id ED9F22071C;
+        Tue, 21 Apr 2020 17:04:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587488654;
+        bh=TKwQ9ykgax7V0in9J67Gf5It6T8tA6kFCL0qRblfIrI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LafIXWddU/e0Xydt4GgYYdU5GaDFxqylQCmJxnpFAsQ2UlzspnKjfAIwz2UuDLwVR
+         gVRmCny6BzaRVHvJXgLBylroC8orFZoRb4sX4+u8lcB7JlovofGV6Wl8JEqDnyKk4s
+         6Hxr9plhj/JBx6aui9oOtVZHaggRYuIbiXDgG/rM=
+Received: from mchehab by mail.kernel.org with local (Exim 4.92.3)
+        (envelope-from <mchehab@kernel.org>)
+        id 1jQwJg-00CmLT-1Q; Tue, 21 Apr 2020 19:04:12 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Vito Caputo <vcaputo@pengaru.com>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Joe Stringer <joe@wand.net.nz>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>, rcu@vger.kernel.org,
+        Ingo Molnar <mingo@redhat.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        zhanglin <zhang.lin16@zte.com.cn>, netdev@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Will Deacon <will@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH 00/10] Manually convert RCU text files to ReST format
+Date:   Tue, 21 Apr 2020 19:04:01 +0200
+Message-Id: <cover.1587488137.git.mchehab+huawei@kernel.org>
+X-Mailer: git-send-email 2.25.2
 MIME-Version: 1.0
-In-Reply-To: <BYAPR18MB235709AA95C28FAD4C6C39C2A4D40@BYAPR18MB2357.namprd18.prod.outlook.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2020-04-20, 09:51:23 +0000, Dmitry Bogdanov wrote:
-> Hi Sabrina,
-> 
-> Thanks for the feedback.
-> But this patch  does not directly related to send_sci parameter.
->
-> Any manual change of macsec interface by ip tool will break
-> wpa_supplicant work. It's OK, they are not intended to be used
-> together.
+This patch series convert RCU patches to ReST.
 
-Are you sure?  Before this patch, if you change the MAC address on a
-macsec device with "send_sci on", packets can still be encrypted and
-decrypted correctly.
+One interesting point to be noticed hereis that the RTFP.txt file contain a 
+broken TeX bib file. I suspect that someone added some new articles
+directly there without trying to use LaTeX to check if the addition is
+valid. Or maybe it is just due to some version differences from the time
+such references were added.
 
-> Having a different MAC address on each macsec interface allows to
-> make a configuration with several *offloaded* SecY.
+During the RTFP.txt conversion, I fixed the bibtex problems in order for it
+to be properly parsed by LaTeX, and used the fixed file to produce a list of
+the actually used references inside the RTFP.txt file., manually adding them
+to the converted RTFP.rst. 
 
-If you need to change the MAC address on the macsec device anyway, why
-not do that at creation? Then the SCI is already picked:
+As not all references were mentioned there, I opted to preserve the 
+converted RTFP.bib, as it could be useful for someone doing any 
+research around RCU.
 
-  ip link add link ens3 macsec0 addr 92:23:25:22:bf:bc type macsec
-  ip macsec show
-      13: macsec0: [...]
-          [...]
-          TXSC: 92232522bfbc0001 on SA 0
+The results of those changes (together with other changes from my pending
+doc patches) are available at:
 
+   https://www.infradead.org/~mchehab/kernel_docs/RCU/index.html
 
-> That is to make
-> feasible to route the ingress decrypted traffic to the right
-> (macsecX /ethX) interface by DST address. And to apply a different
-> SecY for the egress packets by SRC address. That is the only option
-> for the macsec offload at PHY level when upper layers know nothing
-> about macsec.
+And the series is on my git tree:
 
-I see. It would have been nice to have all this information in the
-commit message.
+  https://git.linuxtv.org/mchehab/experimental.git/log/?h=rcu-docs
 
-I'm concerned about the software implementation, and that patch
-is changing its behavior, AFAICT without fixing a bug in it.
+Mauro Carvalho Chehab (10):
+  docs: RCU: convert checklist.txt to ReST
+  docs: RCU: convert lockdep-splat.txt to ReST
+  docs: RCU: convert lockdep.txt to ReST
+  docs: RCU: convert rculist_nulls.txt to ReST
+  docs: RCU: convert torture.txt to ReST
+  docs: RCU: convert rcuref.txt to ReST
+  docs: RCU: RTFP: fix bibtex entries
+  docs: RCU: convert RTFP.txt to ReST
+  docs: RCU: stallwarn.txt: convert it to ReST
+  docs: RCU: rculist_nulls.rst: don't duplicate chapter names
+
+ Documentation/RCU/{RTFP.txt => RTFP.bib}      | 323 ++--------
+ Documentation/RCU/RTFP.rst                    | 593 ++++++++++++++++++
+ .../RCU/{checklist.txt => checklist.rst}      |  17 +-
+ Documentation/RCU/index.rst                   |  11 +
+ .../{lockdep-splat.txt => lockdep-splat.rst}  |  99 +--
+ .../RCU/{lockdep.txt => lockdep.rst}          |  12 +-
+ Documentation/RCU/rcu.rst                     |   4 +-
+ Documentation/RCU/rculist_nulls.rst           | 200 ++++++
+ Documentation/RCU/rculist_nulls.txt           | 172 -----
+ Documentation/RCU/{rcuref.txt => rcuref.rst}  | 193 +++---
+ .../RCU/{stallwarn.txt => stallwarn.rst}      |  55 +-
+ .../RCU/{torture.txt => torture.rst}          | 115 ++--
+ Documentation/locking/locktorture.rst         |   2 +-
+ MAINTAINERS                                   |   4 +-
+ include/linux/rculist_nulls.h                 |   2 +-
+ kernel/rcu/rcutorture.c                       |   2 +-
+ kernel/rcu/tree_stall.h                       |   4 +-
+ net/core/sock.c                               |   4 +-
+ 18 files changed, 1139 insertions(+), 673 deletions(-)
+ rename Documentation/RCU/{RTFP.txt => RTFP.bib} (82%)
+ create mode 100644 Documentation/RCU/RTFP.rst
+ rename Documentation/RCU/{checklist.txt => checklist.rst} (98%)
+ rename Documentation/RCU/{lockdep-splat.txt => lockdep-splat.rst} (54%)
+ rename Documentation/RCU/{lockdep.txt => lockdep.rst} (96%)
+ create mode 100644 Documentation/RCU/rculist_nulls.rst
+ delete mode 100644 Documentation/RCU/rculist_nulls.txt
+ rename Documentation/RCU/{rcuref.txt => rcuref.rst} (50%)
+ rename Documentation/RCU/{stallwarn.txt => stallwarn.rst} (90%)
+ rename Documentation/RCU/{torture.txt => torture.rst} (76%)
 
 -- 
-Sabrina
+2.25.2
+
 
