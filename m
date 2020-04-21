@@ -2,112 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C1661B2FCC
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 21:08:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 251C71B2FD8
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 21:12:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726102AbgDUTIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 15:08:46 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:54821 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725902AbgDUTIq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 15:08:46 -0400
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id C17EB22723;
-        Tue, 21 Apr 2020 21:08:40 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1587496121;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=73o0/lLPbuNG3CEmG0vdyF6uHhA+u4rQ0S0mMdDJmPA=;
-        b=PLNHhMYXQt8s5WACaP/047QMnhgp8j5FVaiDUVikAvB428loQHyNLw/hQEYD4uu/LqY4on
-        Xpa2Ulf75Y5UD0cdPo6CgGLjdum2kNqmdPOIg/sB1QxXK4eYAbhZdCjQnB3ecsHg2QagJP
-        imoerBWrEN89HiNL92AFPZ20WOmijDU=
+        id S1726017AbgDUTMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 15:12:36 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54806 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725987AbgDUTMg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Apr 2020 15:12:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=IJIJtX44kNH+McJ2JiITCQ1W1kz6JwwWEuCA2rHNl6Y=; b=QtNy3aB/4bpodlLWyZSryfVl6z
+        qFUx7fhostNm7eXDKGl2rA9JuYo3yWLm1Y0FdCjiLk1K9tyKAXX+GpMAvSQmGsCnTMqiZ8gE3m9q6
+        ukXuD3bmWt51fYDGZqfAmUE4FRcd0E3jsjmUIwxVjl+Sw5K5ybMYmWMQD4sVUraEx9l8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jQyJp-0044kv-0d; Tue, 21 Apr 2020 21:12:29 +0200
+Date:   Tue, 21 Apr 2020 21:12:29 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net,
+        Jack Ping CHNG <jack.ping.chng@linux.intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Amireddy Mallikarjuna reddy 
+        <mallikarjunax.reddy@linux.intel.com>
+Subject: Re: [net-next 1/1] gwdpa: gswip: Introduce Gigabit Ethernet Switch
+ (GSWIP) device driver
+Message-ID: <20200421191229.GH933345@lunn.ch>
+References: <20200421032202.3293500-1-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 21 Apr 2020 21:08:40 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [RFC PATCH net-next 1/3] net: phy: add concept of shared storage
- for PHYs
-In-Reply-To: <20200421155031.GE933345@lunn.ch>
-References: <20200420232624.9127-1-michael@walle.cc>
- <7bcd7a65740a6f85637ef17ed6b6a1e3@walle.cc>
- <20200421155031.GE933345@lunn.ch>
-Message-ID: <47bdeaf298a09f20ad6631db13df37d2@walle.cc>
-X-Sender: michael@walle.cc
-User-Agent: Roundcube Webmail/1.3.10
-X-Spamd-Bar: +
-X-Spam-Level: *
-X-Rspamd-Server: web
-X-Spam-Status: No, score=1.40
-X-Spam-Score: 1.40
-X-Rspamd-Queue-Id: C17EB22723
-X-Spamd-Result: default: False [1.40 / 15.00];
-         FROM_HAS_DN(0.00)[];
-         TO_DN_SOME(0.00)[];
-         FREEMAIL_ENVRCPT(0.00)[gmail.com];
-         TO_MATCH_ENVRCPT_ALL(0.00)[];
-         TAGGED_RCPT(0.00)[];
-         MIME_GOOD(-0.10)[text/plain];
-         DKIM_SIGNED(0.00)[];
-         RCPT_COUNT_SEVEN(0.00)[8];
-         NEURAL_HAM(-0.00)[-0.972];
-         RCVD_COUNT_ZERO(0.00)[0];
-         FROM_EQ_ENVFROM(0.00)[];
-         MIME_TRACE(0.00)[0:+];
-         FREEMAIL_CC(0.00)[vger.kernel.org,gmail.com,armlinux.org.uk,davemloft.net,nxp.com];
-         MID_RHS_MATCH_FROM(0.00)[];
-         SUSPICIOUS_RECIPS(1.50)[]
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200421032202.3293500-1-jeffrey.t.kirsher@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2020-04-21 17:50, schrieb Andrew Lunn:
-> On Tue, Apr 21, 2020 at 05:25:19PM +0200, Michael Walle wrote:
->> Am 2020-04-21 01:26, schrieb Michael Walle:
->> > +
->> > +/* Represents a shared structure between different phydev's in the same
->> > + * package, for example a quad PHY. See phy_package_join() and
->> > + * phy_package_leave().
->> > + */
->> > +struct phy_package_shared {
->> > +	int addr;
->> > +	refcount_t refcnt;
->> > +	unsigned long flags;
->> > +
->> > +	/* private data pointer */
->> > +	/* note that this pointer is shared between different phydevs and
->> > +	 * the user has to take care of appropriate locking.
->> > +	 */
->> > +	void *priv;
->> 
->> btw. how should a driver actually use this? I mean, it can allocate
->> memory if its still NULL but when will it be freed again. Do we need
->> a callback? Is there something better than a callback?
+On Mon, Apr 20, 2020 at 08:22:02PM -0700, Jeff Kirsher wrote:
+> From: Jack Ping CHNG <jack.ping.chng@linux.intel.com>
 > 
-> Good point. phy_package_join() should take a size_t and do the
-> allocation. phy_package_leave() would then free it.
-> 
-> But since we don't have a user at the moment, maybe leave it out.
+> This driver enables the Intel's LGM SoC GSWIP block. GSWIP is a core module
+> tailored for L2/L3/L4+ data plane and QoS functions. It allows CPUs and
+> other accelerators connected to the SoC datapath to enqueue and dequeue
+> packets through DMAs. Most configuration values are stored in tables
+> such as Parsing and Classification Engine tables, Buffer Manager tables
+> and Pseudo MAC tables.
 
-Speaking of it. Does anyone have an idea how I could create the hwmon
-device without the PHY device? At the moment it is attached to the
-first PHY device and is removed when the PHY is removed, although
-there might be still other PHYs in this package. Its unlikely to
-happen though, but if someone has a good idea how to handle that,
-I'd give it a try.
+I don't find any netdev calls in this. No alloc_netdev or
+register_netdev. How are you supposed to use this code?
 
--michael
+The device tree binding documentation is missing.
+
+There are also a number of inline functions.
+
+Has this code been reviewed by the usual Intel Open Source Technology
+people? GregKH kept pushing for this code to go through those people
+so that the code gets a good internal review and fixed up before it is
+posted yet again.
+
+       Andrew
