@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 431B11B213A
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 10:16:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 291781B213D
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 10:16:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728315AbgDUIPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 04:15:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47302 "EHLO
+        id S1728345AbgDUIPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 04:15:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728162AbgDUIPr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 04:15:47 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F9BC061A0F;
-        Tue, 21 Apr 2020 01:15:46 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id w65so6265760pfc.12;
-        Tue, 21 Apr 2020 01:15:46 -0700 (PDT)
+        with ESMTP id S1728162AbgDUIPy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 04:15:54 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ECE2C061A0F;
+        Tue, 21 Apr 2020 01:15:54 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id y25so6284994pfn.5;
+        Tue, 21 Apr 2020 01:15:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=0RAH1OBC5pqOSxBIiNHotyddqZCxrjXPXpxfj0PqJxs=;
-        b=RyGy93pAfm0LPIk3gi4Uupp1/Ge89nDaAHZ/2W+nP1IScyhYcbUO3a5S7taVJiUPx6
-         2/26OokrfAeuaOvZg0v+7UyeA5fnz24P3unlM9dRBKzrxsMgSB2DejgS4j+UJip7lIDe
-         u5xI+SyPR6eoKkUE69C3+OGpq3geJbVsCC2GofUMNH3YJ+3/ecIkKtfictQIWTwxDdm1
-         vQQWk6hpbw57aXuwX3FmafNMYxrqMhoqYo/mwdZCFgXYEFCgHOpFHBqCRssIfPK11P3v
-         PjB3q7000WODgpu5sWG+odVYW5XX9v5MyKx4E/Fud1bR491YY8uvvY0F2VQpKdpacJVQ
-         bSYA==
+        bh=WrK5RDoX+ITS5jlanPN4W/vCSCVtaPWzKdj2s4nN0ho=;
+        b=D2i7tbj3BJWJR2VD/nZjbnjbB5PA4de2EK+UTsGT84gbRv3ruxoUojCrV7iZLxTZVf
+         TKZNHUP3RHuFNeILfHW/4CmNgAxjvVe+hFzNy556VIMrgWpqwKPPouOSwoq/2/VR2FdG
+         YhFIX8CN+tKfhU8mftdG2kGn5NvmvoyYgi/Sqkv3WsPPkq37g/Z3eUejLMAppcLnF8XG
+         leSIOtIHniHgd2VIJInm0mviLiwbLJgVeRZTMb8LX+XTaitS0g1PBbYVS1s95ngZLGJT
+         YaEzEnl/4+zV+MrzDYHHzpwnXgpXTdiKfnTA8IErmP9HVH/9pzch8FEk8FtK3k4Eizim
+         qwFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=0RAH1OBC5pqOSxBIiNHotyddqZCxrjXPXpxfj0PqJxs=;
-        b=I8D8HJikrQYZFg0yi0oUj3SSj7gov6ruJOECkVJbhz/x7WwO1cfcP5kvi4WP/UX+R5
-         5lkHB6cx8bkabglXDVTkRVeJnVnh/pE2rnTVBZOEkNuwfRgxq2PS1vQHvx967TmD3/gq
-         rP2M3ZgPQw5FS2M2lGao+LbwlgsY0ZHu5cg/NqTaWiBHvAFBt+X59JqvVJYkrD+cir1q
-         +gIiWZAC/P0Tr+WzFbAXbkxq1EEc0Zt1hvFw/Gk/UgPOvBuegIPvitqHqRr/B6t3kaoh
-         MFdlNirlsZJIz7+IAJ1jPJQjlSvQgukmQxWzmr5SyapqDhe6TOCq+4s7+OT5SN4SeOGM
-         qEkg==
-X-Gm-Message-State: AGi0PubbqSi08eVug1oIx5/I5uFP7/7pMfSg5dQZGSPJ9pIXiUcJGDKa
-        8t8YZu/2xYRbajcJWrA/loughDqrzRU=
-X-Google-Smtp-Source: APiQypL7eKRqDffDGsmFnirox9xycxzwButq+CAOpchNojdC5vN3nnKGloQV7r4QUolm1rXu3iQAag==
-X-Received: by 2002:a63:111a:: with SMTP id g26mr13825477pgl.245.1587456946371;
-        Tue, 21 Apr 2020 01:15:46 -0700 (PDT)
+        bh=WrK5RDoX+ITS5jlanPN4W/vCSCVtaPWzKdj2s4nN0ho=;
+        b=Vj8K1BVV6no+uHAhpElbgxcvbeR3mUwCcB8nsWvzp3U/Izf4+8fe9QQeAo5guWtNla
+         1Cuc1g9ow5d8oeXhoXcmANyOwhGVJSfK2UboKhVCnExt5KrVXI9PQ5atO3LqxoUk5+yO
+         yElb9nxOJpJIPiySn6Q0vOGkG7pwonkzoBh/IdL3E3EXtFk8YfK4wyrfw/V/FsGbAO8/
+         GPUj8PmFjewYvrtu4DKq3xKe9uihNmolw/xTg19U9GxHNhNNYxmGnGP5i/blrrMGHdpJ
+         N0A8uSrYemrjKWrwUMLlomwx9T6Bu6Yn6m6ObJ3pW5CiK9aWDaXXBiCR8QWga0p31MSc
+         VGNA==
+X-Gm-Message-State: AGi0PuYatED161O6aS+G1nFWhdEMdVC3y964P5tkJTKbtzQOB+cGPd82
+        g4wNlWJaRDZTJzpM8VReXke/HBP15nA=
+X-Google-Smtp-Source: APiQypJnOxmujskatWfve2JobXmI+b2FIYwEk5/pCzcNvD+ScmA05B7k1/kU0T3pZmJsKe+1p43H6Q==
+X-Received: by 2002:aa7:85c2:: with SMTP id z2mr19853810pfn.25.1587456953747;
+        Tue, 21 Apr 2020 01:15:53 -0700 (PDT)
 Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
-        by smtp.gmail.com with ESMTPSA id j134sm1494768pgc.7.2020.04.21.01.15.45
+        by smtp.gmail.com with ESMTPSA id m4sm1733803pfm.26.2020.04.21.01.15.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Apr 2020 01:15:45 -0700 (PDT)
+        Tue, 21 Apr 2020 01:15:53 -0700 (PDT)
 From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
 To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
@@ -54,9 +54,9 @@ To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
 Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
         Netfilter Development Mailing List 
         <netfilter-devel@vger.kernel.org>
-Subject: [PATCH] iptables: flush stdout after every verbose log.
-Date:   Tue, 21 Apr 2020 01:15:42 -0700
-Message-Id: <20200421081542.108296-1-zenczykowski@gmail.com>
+Subject: [PATCH] do not typedef socklen_t on Android
+Date:   Tue, 21 Apr 2020 01:15:49 -0700
+Message-Id: <20200421081549.108375-1-zenczykowski@gmail.com>
 X-Mailer: git-send-email 2.26.1.301.g55bc3eb7cb9-goog
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -68,60 +68,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maciej Żenczykowski <maze@google.com>
 
-Ensures that each logged line is flushed to stdout after it's
-written, and not held in any buffer.
+This is present in bionic header files regardless of compiler
+being used (likely clang)
 
-Places to modify found via:
-  git grep -C5 'fputs[(]buffer, stdout[)];'
-
-On Android iptables-restore -v is run as netd daemon's child process
-and fed actions via pipe.  '#PING' is used to verify the child
-is still responsive, and thus needs to be unbuffered.
-
-Luckily if you're running iptables-restore in verbose mode you
-probably either don't care about performance or - like Android
-- actually need this.
-
-Test: builds, required on Android for ip6?tables-restore netd
-  subprocess health monitoring.
+Test: builds
 Signed-off-by: Maciej Żenczykowski <maze@google.com>
 ---
- iptables/iptables-restore.c | 4 +++-
- iptables/xtables-restore.c  | 4 +++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ libiptc/libip4tc.c | 2 +-
+ libiptc/libip6tc.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/iptables/iptables-restore.c b/iptables/iptables-restore.c
-index b0a51d49..fea04842 100644
---- a/iptables/iptables-restore.c
-+++ b/iptables/iptables-restore.c
-@@ -178,8 +178,10 @@ ip46tables_restore_main(const struct iptables_restore_cb *cb,
- 		if (buffer[0] == '\n')
- 			continue;
- 		else if (buffer[0] == '#') {
--			if (verbose)
-+			if (verbose) {
- 				fputs(buffer, stdout);
-+				fflush(stdout);
-+			}
- 			continue;
- 		} else if ((strcmp(buffer, "COMMIT\n") == 0) && (in_table)) {
- 			if (!testing) {
-diff --git a/iptables/xtables-restore.c b/iptables/xtables-restore.c
-index c472ac9b..8c25e5b2 100644
---- a/iptables/xtables-restore.c
-+++ b/iptables/xtables-restore.c
-@@ -85,8 +85,10 @@ static void xtables_restore_parse_line(struct nft_handle *h,
- 	if (buffer[0] == '\n')
- 		return;
- 	else if (buffer[0] == '#') {
--		if (verbose)
-+		if (verbose) {
- 			fputs(buffer, stdout);
-+			fflush(stdout);
-+		}
- 		return;
- 	} else if (state->in_table &&
- 		   (strncmp(buffer, "COMMIT", 6) == 0) &&
+diff --git a/libiptc/libip4tc.c b/libiptc/libip4tc.c
+index 55540638..08147055 100644
+--- a/libiptc/libip4tc.c
++++ b/libiptc/libip4tc.c
+@@ -22,7 +22,7 @@
+ #define inline
+ #endif
+ 
+-#if !defined(__GLIBC__) || (__GLIBC__ < 2)
++#if !defined(__ANDROID__) && (!defined(__GLIBC__) || (__GLIBC__ < 2))
+ typedef unsigned int socklen_t;
+ #endif
+ 
+diff --git a/libiptc/libip6tc.c b/libiptc/libip6tc.c
+index b7dd1e33..91676c4a 100644
+--- a/libiptc/libip6tc.c
++++ b/libiptc/libip6tc.c
+@@ -23,7 +23,7 @@
+ #define inline
+ #endif
+ 
+-#if !defined(__GLIBC__) || (__GLIBC__ < 2)
++#if !defined(__ANDROID__) && (!defined(__GLIBC__) || (__GLIBC__ < 2))
+ typedef unsigned int socklen_t;
+ #endif
+ 
 -- 
 2.26.1.301.g55bc3eb7cb9-goog
 
