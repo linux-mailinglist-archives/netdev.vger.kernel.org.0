@@ -2,652 +2,259 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55E971B21EB
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 10:44:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB7B41B21E7
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 10:44:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728178AbgDUIoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 04:44:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51718 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727911AbgDUIoU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 04:44:20 -0400
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED4C8C061A10
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 01:44:18 -0700 (PDT)
-Received: by mail-lf1-x141.google.com with SMTP id f8so10436057lfe.12
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 01:44:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=BC2wT+sKuiR4zJbHid9KefpLDnLmCKk8QIahFEaXIbI=;
-        b=EiJPfPpQeA9QRk4yklBdf4LYw17kfiCYJrdE/ss6E2WontLP0scmb87tX/tJ4s0YFw
-         vwhJy9sQIyliAmgoEbhqRowEjjQpj3i6HOQbkV2sdhBeBytkpZMKWsh+itGQp1aXXprM
-         41Dm2XhHCOvPyio5CUtBIsl6uxSghj01O0PL0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=BC2wT+sKuiR4zJbHid9KefpLDnLmCKk8QIahFEaXIbI=;
-        b=LTUDXON8HYoEytn+LyyMrVoomFKmwSAyZfGGlSQJ9l4Ctx7OeYa4gSg+FlyBHPcJVk
-         uBj89o+GLr94uQLKHDoOjgpY1qUcTOk+uyy+FT6oHB8HblVHf8SA61zSRxKlOLo1BLxS
-         ri9AosuJft4lei3LPMmW+AqOwRFqpuLEKuPqJsR0ER7/sysyoauiiiCNwbf00rK8SOt1
-         86hifyRbvrgYTX2/rgWQZ3NX6GU3KU04ANc3beCe075y/Pd+ZqYdyK3pX+pZ0+g6C2uc
-         IjV4i5tevhFco6+o5hILBdXlDFi8Q+hClzb8F/zS+TrDU/cRPjtOEBITHAfpvqsAI/4Q
-         ioKA==
-X-Gm-Message-State: AGi0PuYVDSwy/pyEnPBTQe69tHHI23dI1/PI/io5iIE6/nyS4YPqk3hE
-        hBzzMmCxF/3JlkvR5scJqX9AnET3afVplA==
-X-Google-Smtp-Source: APiQypJL4GH2EGNF9+JiAVKkuAjT9+qMVww0qF9zIlkdruVdZMkLxqkzuXlGBaag1prrw83t3Ja5Aw==
-X-Received: by 2002:ac2:47f0:: with SMTP id b16mr13396732lfp.81.1587458657192;
-        Tue, 21 Apr 2020 01:44:17 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id j22sm1577029lfg.96.2020.04.21.01.44.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Apr 2020 01:44:16 -0700 (PDT)
-Subject: Re: [PATCH net-next 09/13] bridge: mrp: Connect MRP API with the
- switchev API
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>, davem@davemloft.net,
-        jiri@resnulli.us, ivecera@redhat.com, kuba@kernel.org,
-        roopa@cumulusnetworks.com, olteanv@gmail.com, andrew@lunn.ch,
-        UNGLinuxDriver@microchip.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-References: <20200420150947.30974-1-horatiu.vultur@microchip.com>
- <20200420150947.30974-10-horatiu.vultur@microchip.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <f50f5adb-dd22-4122-33cb-78effa0242a6@cumulusnetworks.com>
-Date:   Tue, 21 Apr 2020 11:44:13 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1727889AbgDUIoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 04:44:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52166 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726018AbgDUIoS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Apr 2020 04:44:18 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 31FC72072D;
+        Tue, 21 Apr 2020 08:44:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587458657;
+        bh=vsQlr1gciJx4R74jHKq+EyyVwW79oBb2TKFKEJ8IcMs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=vOec6tn0iR35kS8JmmG2fzZLnQF2nqyX77Ya9mM4Vh6sJBq2dEt/6XsQftBJ2Az+S
+         aX5431JOq4P4Zw7leWx4+Jg8Ty5EDDwtJX6ZPVpqmcOm6oYCfk3QK6f2M5oCurpaC4
+         r0I4QmXnuMRuOoLaoqZGMkvZhd8lVzT1hUU2EQqQ=
+Date:   Tue, 21 Apr 2020 10:44:15 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, Dave Ertman <david.m.ertman@intel.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com, jgg@ziepe.ca,
+        ranjani.sridharan@linux.intel.com,
+        pierre-louis.bossart@linux.intel.com,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>
+Subject: Re: [net-next v2 2/9] ice: Create and register virtual bus for RDMA
+Message-ID: <20200421084415.GD716720@kroah.com>
+References: <20200421080235.6515-1-jeffrey.t.kirsher@intel.com>
+ <20200421080235.6515-3-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20200420150947.30974-10-horatiu.vultur@microchip.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200421080235.6515-3-jeffrey.t.kirsher@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/04/2020 18:09, Horatiu Vultur wrote:
-> Implement the MRP API.
-> 
-> In case the HW can't generate MRP Test frames then the SW will try to generate
-> the frames. In case that also the SW will fail in generating the frames then a
-> error is return to the userspace. The userspace is responsible to generate all
-> the other MRP frames regardless if the test frames are generated by HW or SW.
-> 
-> The forwarding/termination of MRP frames is happening in the kernel and is done
-> by the MRP instance. The userspace application doesn't do the forwarding.
-> 
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> ---
->  net/bridge/br_mrp.c | 551 ++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 551 insertions(+)
->  create mode 100644 net/bridge/br_mrp.c
-> 
-> diff --git a/net/bridge/br_mrp.c b/net/bridge/br_mrp.c
-> new file mode 100644
-> index 000000000000..a52f02f174c3
-> --- /dev/null
-> +++ b/net/bridge/br_mrp.c
-> @@ -0,0 +1,551 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +
-> +#include <linux/mrp_bridge.h>
-> +#include "br_private_mrp.h"
-> +
-> +static const u8 mrp_test_dmac[ETH_ALEN] = { 0x1, 0x15, 0x4e, 0x0, 0x0, 0x1 };
-> +
-> +static struct net_bridge_port *br_mrp_get_port(struct net_bridge *br,
-> +					       u32 ifindex)
-> +{
-> +	struct net_bridge_port *res = NULL;
-> +	struct net_bridge_port *port;
-> +
-> +	list_for_each_entry(port, &br->port_list, list) {
-> +		if (port->dev->ifindex == ifindex) {
-> +			res = port;
+On Tue, Apr 21, 2020 at 01:02:28AM -0700, Jeff Kirsher wrote:
+> diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+> index 5c11448bfbb3..529a6743fd4e 100644
+> --- a/drivers/net/ethernet/intel/ice/ice.h
+> +++ b/drivers/net/ethernet/intel/ice/ice.h
+> @@ -33,6 +33,7 @@
+>  #include <linux/if_bridge.h>
+>  #include <linux/ctype.h>
+>  #include <linux/bpf.h>
+> +#include <linux/virtual_bus.h>
+
+Why do you need this #include?  You don't use anything from this file in
+this .h file.
+
+> --- a/drivers/net/ethernet/intel/ice/ice_common.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_common.c
+> @@ -825,7 +825,8 @@ enum ice_status ice_check_reset(struct ice_hw *hw)
+>  				 GLNVM_ULD_POR_DONE_1_M |\
+>  				 GLNVM_ULD_PCIER_DONE_2_M)
+>  
+> -	uld_mask = ICE_RESET_DONE_MASK;
+> +	uld_mask = ICE_RESET_DONE_MASK | (hw->func_caps.common_cap.iwarp ?
+> +					  GLNVM_ULD_PE_DONE_M : 0);
+>  
+>  	/* Device is Active; check Global Reset processes are done */
+>  	for (cnt = 0; cnt < ICE_PF_RESET_WAIT_COUNT; cnt++) {
+> @@ -1678,6 +1679,11 @@ ice_parse_caps(struct ice_hw *hw, void *buf, u32 cap_count,
+>  				  "%s: msix_vector_first_id = %d\n", prefix,
+>  				  caps->msix_vector_first_id);
+>  			break;
+> +		case ICE_AQC_CAPS_IWARP:
+> +			caps->iwarp = (number == 1);
+> +			ice_debug(hw, ICE_DBG_INIT,
+> +				  "%s: iwarp = %d\n", prefix, caps->iwarp);
 > +			break;
+>  		case ICE_AQC_CAPS_MAX_MTU:
+>  			caps->max_mtu = number;
+>  			ice_debug(hw, ICE_DBG_INIT, "%s: max_mtu = %d\n",
+> @@ -1701,6 +1707,16 @@ ice_parse_caps(struct ice_hw *hw, void *buf, u32 cap_count,
+>  		ice_debug(hw, ICE_DBG_INIT,
+>  			  "%s: maxtc = %d (based on #ports)\n", prefix,
+>  			  caps->maxtc);
+> +		if (caps->iwarp) {
+> +			ice_debug(hw, ICE_DBG_INIT, "%s: forcing RDMA off\n",
+> +				  prefix);
+> +			caps->iwarp = 0;
 > +		}
+> +
+> +		/* print message only when processing device capabilities */
+> +		if (dev_p)
+> +			dev_info(ice_hw_to_dev(hw),
+> +				 "RDMA functionality is not available with the current device configuration.\n");
+
+Shouldn't that be dev_err()?
+
+And why are you adding new functionality to the driver when you should
+only be adding virtual bus support?  This feels like you are mixing two
+different things into one patch, making it _really_ hard to review.
+
+
+> +/**
+> + * ice_init_peer_devices - initializes peer devices
+> + * @pf: ptr to ice_pf
+> + *
+> + * This function initializes peer devices on the virtual bus.
+> + */
+> +int ice_init_peer_devices(struct ice_pf *pf)
+> +{
+> +	struct ice_vsi *vsi = pf->vsi[0];
+> +	struct pci_dev *pdev = pf->pdev;
+> +	struct device *dev = &pdev->dev;
+> +	int status = 0;
+> +	unsigned int i;
+> +
+> +	/* Reserve vector resources */
+> +	status = ice_reserve_peer_qvector(pf);
+> +	if (status < 0) {
+> +		dev_err(dev, "failed to reserve vectors for peer drivers\n");
+> +		return status;
 > +	}
+> +	for (i = 0; i < ARRAY_SIZE(ice_peers); i++) {
+> +		struct ice_peer_dev_int *peer_dev_int;
+> +		struct ice_peer_drv_int *peer_drv_int;
+> +		struct iidc_qos_params *qos_info;
+> +		struct iidc_virtbus_object *vbo;
+> +		struct msix_entry *entry = NULL;
+> +		struct iidc_peer_dev *peer_dev;
+> +		struct virtbus_device *vdev;
+> +		int j;
 > +
-> +	return res;
-> +}
-> +
-> +static struct br_mrp *br_mrp_find_id(struct net_bridge *br, u32 ring_id)
-> +{
-> +	struct br_mrp *res = NULL;
-> +	struct br_mrp *mrp;
-> +
-> +	list_for_each_entry_rcu(mrp, &br->mrp_list, list,
-> +				lockdep_rtnl_is_held()) {
-> +		if (mrp->ring_id == ring_id) {
-> +			res = mrp;
-> +			break;
-> +		}
-> +	}
-> +
-> +	return res;
-> +}
-> +
-> +static struct br_mrp *br_mrp_find_port(struct net_bridge *br,
-> +				       struct net_bridge_port *p)
-> +{
-> +	struct br_mrp *res = NULL;
-> +	struct br_mrp *mrp;
-> +
-> +	list_for_each_entry_rcu(mrp, &br->mrp_list, list,
-> +				lockdep_rtnl_is_held()) {
-> +		if (rcu_access_pointer(mrp->p_port) == p ||
-> +		    rcu_access_pointer(mrp->s_port) == p) {
-> +			res = mrp;
-> +			break;
-> +		}
-> +	}
-> +
-> +	return res;
-> +}
-> +
-> +static int br_mrp_next_seq(struct br_mrp *mrp)
-> +{
-> +	mrp->seq_id++;
-> +	return mrp->seq_id;
-> +}
-> +
-> +static struct sk_buff *br_mrp_skb_alloc(struct net_bridge_port *p,
-> +					const u8 *src, const u8 *dst)
-> +{
-> +	struct ethhdr *eth_hdr;
-> +	struct sk_buff *skb;
-> +	u16 *version;
-> +
-> +	skb = dev_alloc_skb(MRP_MAX_FRAME_LENGTH);
-> +	if (!skb)
-> +		return NULL;
-> +
-> +	skb->dev = p->dev;
-> +	skb->protocol = htons(ETH_P_MRP);
-> +	skb->priority = MRP_FRAME_PRIO;
-> +	skb_reserve(skb, sizeof(*eth_hdr));
-> +
-> +	eth_hdr = skb_push(skb, sizeof(*eth_hdr));
-> +	ether_addr_copy(eth_hdr->h_dest, dst);
-> +	ether_addr_copy(eth_hdr->h_source, src);
-> +	eth_hdr->h_proto = htons(ETH_P_MRP);
-> +
-> +	version = skb_put(skb, sizeof(*version));
-> +	*version = cpu_to_be16(MRP_VERSION);
-> +
-> +	return skb;
-> +}
-> +
-> +static void br_mrp_skb_tlv(struct sk_buff *skb,
-> +			   enum br_mrp_tlv_header_type type,
-> +			   u8 length)
-> +{
-> +	struct br_mrp_tlv_hdr *hdr;
-> +
-> +	hdr = skb_put(skb, sizeof(*hdr));
-> +	hdr->type = type;
-> +	hdr->length = length;
-> +}
-> +
-> +static void br_mrp_skb_common(struct sk_buff *skb, struct br_mrp *mrp)
-> +{
-> +	struct br_mrp_common_hdr *hdr;
-> +
-> +	br_mrp_skb_tlv(skb, BR_MRP_TLV_HEADER_COMMON, sizeof(*hdr));
-> +
-> +	hdr = skb_put(skb, sizeof(*hdr));
-> +	hdr->seq_id = cpu_to_be16(br_mrp_next_seq(mrp));
-> +	memset(hdr->domain, 0xff, MRP_DOMAIN_UUID_LENGTH);
-> +}
-> +
-> +static struct sk_buff *br_mrp_alloc_test_skb(struct br_mrp *mrp,
-> +					     struct net_bridge_port *p,
-> +					     enum br_mrp_port_role_type port_role)
-> +{
-> +	struct br_mrp_ring_test_hdr *hdr = NULL;
-> +	struct net_bridge *br = p->br;
-> +	struct sk_buff *skb = NULL;
-> +
-> +	if (!p)
-> +		return NULL;
-> +
-> +	br = p->br;
-> +
-> +	skb = br_mrp_skb_alloc(p, p->dev->dev_addr, mrp_test_dmac);
-> +	if (!skb)
-> +		return NULL;
-> +
-> +	br_mrp_skb_tlv(skb, BR_MRP_TLV_HEADER_RING_TEST, sizeof(*hdr));
-> +	hdr = skb_put(skb, sizeof(*hdr));
-> +
-> +	hdr->prio = cpu_to_be16(MRP_DEFAULT_PRIO);
-> +	ether_addr_copy(hdr->sa, p->br->dev->dev_addr);
-> +	hdr->port_role = cpu_to_be16(port_role);
-> +	hdr->state = cpu_to_be16(mrp->ring_state);
-> +	hdr->transitions = cpu_to_be16(mrp->ring_transitions);
-> +	hdr->timestamp = cpu_to_be32(jiffies_to_msecs(jiffies));
-> +
-> +	br_mrp_skb_common(skb, mrp);
-> +	br_mrp_skb_tlv(skb, BR_MRP_TLV_HEADER_END, 0x0);
-> +
-> +	return skb;
-> +}
-> +
-> +static void br_mrp_test_work_expired(struct work_struct *work)
-> +{
-> +	struct delayed_work *del_work = to_delayed_work(work);
-> +	struct br_mrp *mrp = container_of(del_work, struct br_mrp, test_work);
-> +	struct net_bridge_port *p;
-> +	bool notify_open = false;
-> +	struct sk_buff *skb;
-> +
-> +	if (time_before_eq(mrp->test_end, jiffies))
-> +		return;
-> +
-> +	if (mrp->test_count_miss < mrp->test_max_miss) {
-> +		mrp->test_count_miss++;
-> +	} else {
-> +		/* Notify that the ring is open only if the ring state is
-> +		 * closed, otherwise it would continue to notify at every
-> +		 * interval.
+> +		/* structure layout needed for container_of's looks like:
+> +		 * ice_peer_dev_int (internal only ice peer superstruct)
+> +		 * |--> iidc_peer_dev
+> +		 * |--> *ice_peer_drv_int
+> +		 *
+> +		 * iidc_virtbus_object (container_of parent for vdev)
+> +		 * |--> virtbus_device
+> +		 * |--> *iidc_peer_dev (pointer from internal struct)
+> +		 *
+> +		 * ice_peer_drv_int (internal only peer_drv struct)
 > +		 */
-> +		if (mrp->ring_state == BR_MRP_RING_STATE_CLOSED)
-> +			notify_open = true;
-> +	}
+> +		peer_dev_int = kzalloc(sizeof(*peer_dev_int), GFP_KERNEL);
+> +		if (!peer_dev_int)
+> +			return -ENOMEM;
 > +
-> +	rcu_read_lock();
+> +		vbo = kzalloc(sizeof(*vbo), GFP_KERNEL);
+> +		if (!vbo) {
+> +			kfree(peer_dev_int);
+> +			return -ENOMEM;
+> +		}
 > +
-> +	p = rcu_dereference(mrp->p_port);
-> +	if (p) {
-> +		skb = br_mrp_alloc_test_skb(mrp, p, BR_MRP_PORT_ROLE_PRIMARY);
-> +		if (!skb)
-> +			goto out;
-> +
-> +		skb_reset_network_header(skb);
-> +		dev_queue_xmit(skb);
-> +
-> +		if (notify_open && !mrp->ring_role_offloaded)
-> +			br_mrp_port_open(p->dev, true);
-> +	}
-> +
-> +	p = rcu_dereference(mrp->s_port);
-> +	if (p) {
-> +		skb = br_mrp_alloc_test_skb(mrp, p, BR_MRP_PORT_ROLE_SECONDARY);
-> +		if (!skb)
-> +			goto out;
-> +
-> +		skb_reset_network_header(skb);
-> +		dev_queue_xmit(skb);
-> +
-> +		if (notify_open && !mrp->ring_role_offloaded)
-> +			br_mrp_port_open(p->dev, true);
-> +	}
-> +
-> +out:
-> +	rcu_read_unlock();
-> +
-> +	queue_delayed_work(system_wq, &mrp->test_work,
-> +			   usecs_to_jiffies(mrp->test_interval));
-> +}
-> +
-> +/* Deletes the MRP instance.
-> + * note: called under rtnl_lock
-> + */
-> +static void br_mrp_del_impl(struct net_bridge *br, struct br_mrp *mrp)
-> +{
-> +	struct net_bridge_port *p;
-> +
-> +	/* Stop sending MRP_Test frames */
-> +	cancel_delayed_work_sync(&mrp->test_work);
-> +	br_mrp_switchdev_send_ring_test(br, mrp, 0, 0, 0);
-> +
-> +	br_mrp_switchdev_del(br, mrp);
-> +
-> +	/* Reset the ports */
-> +	p = rtnl_dereference(mrp->p_port);
-> +	if (p) {
-> +		spin_lock_bh(&br->lock);
-> +		p->state = BR_STATE_FORWARDING;
-> +		p->flags &= ~BR_MRP_AWARE;
-> +		spin_unlock_bh(&br->lock);
-> +		br_mrp_port_switchdev_set_state(p, BR_STATE_FORWARDING);
-> +		rcu_assign_pointer(mrp->p_port, NULL);
-> +	}
-> +
-> +	p = rtnl_dereference(mrp->s_port);
-> +	if (p) {
-> +		spin_lock_bh(&br->lock);
-> +		p->state = BR_STATE_FORWARDING;
-> +		p->flags &= ~BR_MRP_AWARE;
-> +		spin_unlock_bh(&br->lock);
-> +		br_mrp_port_switchdev_set_state(p, BR_STATE_FORWARDING);
-> +		rcu_assign_pointer(mrp->s_port, NULL);
-> +	}
-> +
-> +	list_del_rcu(&mrp->list);
-> +	kfree_rcu(mrp, rcu);
-> +}
-> +
-> +/* Adds a new MRP instance.
-> + * note: called under rtnl_lock
-> + */
-> +int br_mrp_add(struct net_bridge *br, struct br_mrp_instance *instance)
-> +{
-> +	struct net_bridge_port *p;
-> +	struct br_mrp *mrp;
-> +	int err;
-> +
-> +	/* If the ring exists, it is not possible to create another one with the
-> +	 * same ring_id
-> +	 */
-> +	mrp = br_mrp_find_id(br, instance->ring_id);
-> +	if (mrp)
-> +		return -EINVAL;
-> +
-> +	if (!br_mrp_get_port(br, instance->p_ifindex) ||
-> +	    !br_mrp_get_port(br, instance->s_ifindex))
-> +		return -EINVAL;
-> +
-> +	mrp = kzalloc(sizeof(*mrp), GFP_KERNEL);
-> +	if (!mrp)
-> +		return -ENOMEM;
-> +
-> +	mrp->ring_id = instance->ring_id;
-> +
-> +	p = br_mrp_get_port(br, instance->p_ifindex);
-> +	spin_lock_bh(&br->lock);
-> +	p->state = BR_STATE_FORWARDING;
-> +	p->flags |= BR_MRP_AWARE;
-> +	spin_unlock_bh(&br->lock);
-> +	rcu_assign_pointer(mrp->p_port, p);
-> +
-> +	p = br_mrp_get_port(br, instance->s_ifindex);
-> +	spin_lock_bh(&br->lock);
-> +	p->state = BR_STATE_FORWARDING;
-> +	p->flags |= BR_MRP_AWARE;
-> +	spin_unlock_bh(&br->lock);
-> +	rcu_assign_pointer(mrp->s_port, p);
-> +
-> +	INIT_DELAYED_WORK(&mrp->test_work, br_mrp_test_work_expired);
-> +	list_add_tail_rcu(&mrp->list, &br->mrp_list);
-> +
-> +	err = br_mrp_switchdev_add(br, mrp);
-> +	if (err)
-> +		goto delete_mrp;
-> +
-> +	return 0;
-> +
-> +delete_mrp:
-> +	br_mrp_del_impl(br, mrp);
-> +
-> +	return err;
-> +}
-> +
-> +/* Deletes the MRP instance from which the port is part of
-> + * note: called under rtnl_lock
-> + */
-> +void br_mrp_port_del(struct net_bridge *br, struct net_bridge_port *p)
-> +{
-> +	struct br_mrp *mrp = br_mrp_find_port(br, p);
-> +
-> +	/* If the port is not part of a MRP instance just bail out */
-> +	if (!mrp)
-> +		return;
-> +
-> +	br_mrp_del_impl(br, mrp);
-> +}
-> +
-> +/* Deletes existing MRP instance based on ring_id
-> + * note: called under rtnl_lock
-> + */
-> +int br_mrp_del(struct net_bridge *br, struct br_mrp_instance *instance)
-> +{
-> +	struct br_mrp *mrp = br_mrp_find_id(br, instance->ring_id);
-> +
-> +	if (!mrp)
-> +		return -EINVAL;
-> +
-> +	br_mrp_del_impl(br, mrp);
-> +
-> +	return 0;
-> +}
-> +
-> +/* Set port state, port state can be forwarding, blocked or disabled
-> + * note: already called with rcu_read_lock
-> + */
-> +int br_mrp_set_port_state(struct net_bridge_port *p,
-> +			  enum br_mrp_port_state_type state)
-> +{
-> +	spin_lock_bh(&p->br->lock);
-> +
-> +	if (state == BR_MRP_PORT_STATE_FORWARDING)
-> +		p->state = BR_STATE_FORWARDING;
-> +	else
-> +		p->state = BR_STATE_BLOCKING;
-> +
-> +	spin_unlock_bh(&p->br->lock);
-> +
-> +	br_mrp_port_switchdev_set_state(p, state);
-> +
-> +	return 0;
-> +}
-> +
-> +/* Set port role, port role can be primary or secondary
-> + * note: already called with rcu_read_lock
-> + */
-> +int br_mrp_set_port_role(struct net_bridge_port *p,
-> +			 struct br_mrp_port_role *role)
-> +{
+> +		peer_drv_int = kzalloc(sizeof(*peer_drv_int), GFP_KERNEL);
+> +		if (!peer_drv_int) {
+> +			kfree(peer_dev_int);
+> +			kfree(vbo);
+> +			return -ENOMEM;
 
-In the previous review I was talking about this function which is called directly from
-the MRP netlink code, one could invoke it with any port - it doesn't need to be MRP_AWARE
-and then upon MRP delete you'll remove the flag from the wrong port. In addition the flag
-on the original port will stay set.
+So any errors cause you to break out of your loop and leave things
+around?
 
-> +	struct br_mrp *mrp = br_mrp_find_id(p->br, role->ring_id);
-> +
-> +	if (!mrp)
-> +		return -EINVAL;
-> +
-> +	if (role->role == BR_MRP_PORT_ROLE_PRIMARY)
-> +		rcu_assign_pointer(mrp->p_port, p);
-> +	else
-> +		rcu_assign_pointer(mrp->s_port, p);
-> +
-> +	br_mrp_port_switchdev_set_role(p, role->role);
-> +
-> +	return 0;
-> +}
-> +
-> +/* Set ring state, ring state can be only Open or Closed
-> + * note: already called with rcu_read_lock
-> + */
-> +int br_mrp_set_ring_state(struct net_bridge *br,
-> +			  struct br_mrp_ring_state *state)
-> +{
-> +	struct br_mrp *mrp = br_mrp_find_id(br, state->ring_id);
-> +
-> +	if (!mrp)
-> +		return -EINVAL;
-> +
-> +	if (mrp->ring_state == BR_MRP_RING_STATE_CLOSED &&
-> +	    state->ring_state != BR_MRP_RING_STATE_CLOSED)
-> +		mrp->ring_transitions++;
-> +
-> +	mrp->ring_state = state->ring_state;
-> +
-> +	br_mrp_switchdev_set_ring_state(br, mrp, state->ring_state);
-> +
-> +	return 0;
-> +}
-> +
-> +/* Set ring role, ring role can be only MRM(Media Redundancy Manager) or
-> + * MRC(Media Redundancy Client).
-> + * note: already called with rcu_read_lock
-> + */
-> +int br_mrp_set_ring_role(struct net_bridge *br,
-> +			 struct br_mrp_ring_role *role)
-> +{
-> +	struct br_mrp *mrp = br_mrp_find_id(br, role->ring_id);
-> +	int err;
-> +
-> +	if (!mrp)
-> +		return -EINVAL;
-> +
-> +	mrp->ring_role = role->ring_role;
-> +
-> +	/* If there is an error just bailed out */
-> +	err = br_mrp_switchdev_set_ring_role(br, mrp, role->ring_role);
-> +	if (err && err != -EOPNOTSUPP)
-> +		return err;
-> +
-> +	/* Now detect if the HW actually applied the role or not. If the HW
-> +	 * applied the role it means that the SW will not to do those operations
-> +	 * anymore. For example if the role ir MRM then the HW will notify the
-> +	 * SW when ring is open, but if the is not pushed to the HW the SW will
-> +	 * need to detect when the ring is open
-> +	 */
-> +	mrp->ring_role_offloaded = err == -EOPNOTSUPP ? 0 : 1;
-> +
-> +	return 0;
-> +}
-> +
-> +/* Start to generate MRP test frames, the frames are generated by HW and if it
-> + * fails, they are generated by the SW.
-> + * note: already called with rcu_read_lock
-> + */
-> +int br_mrp_start_test(struct net_bridge *br,
-> +		      struct br_mrp_start_test *test)
-> +{
-> +	struct br_mrp *mrp = br_mrp_find_id(br, test->ring_id);
-> +
-> +	if (!mrp)
-> +		return -EINVAL;
-> +
-> +	/* Try to push is to the HW and if it fails then continue to generate in
-> +	 * SW and if that also fails then return error
-> +	 */
-> +	if (!br_mrp_switchdev_send_ring_test(br, mrp, test->interval,
-> +					     test->max_miss, test->period))
-> +		return 0;
-> +
-> +	mrp->test_interval = test->interval;
-> +	mrp->test_end = jiffies + usecs_to_jiffies(test->period);
-> +	mrp->test_max_miss = test->max_miss;
-> +	mrp->test_count_miss = 0;
-> +	queue_delayed_work(system_wq, &mrp->test_work,
-> +			   usecs_to_jiffies(test->interval));
-> +
-> +	return 0;
-> +}
-> +
-> +/* Process only MRP Test frame. All the other MRP frames are processed by
-> + * userspace application
-> + * note: already called with rcu_read_lock
-> + */
-> +static void br_mrp_mrm_process(struct br_mrp *mrp, struct net_bridge_port *port,
-> +			       struct sk_buff *skb)
-> +{
-> +	struct br_mrp_tlv_hdr *hdr;
-> +
-> +	hdr = (struct br_mrp_tlv_hdr *)(skb->data + sizeof(uint16_t));
-> +
-> +	if (!hdr)
-> +		return;
-> +
-> +	if (hdr->type != BR_MRP_TLV_HEADER_RING_TEST)
-> +		return;
-> +
-> +	mrp->test_count_miss = 0;
-> +
-> +	/* Notify the userspace that the ring is closed only when the ring is
-> +	 * not closed
-> +	 */
-> +	if (mrp->ring_state != BR_MRP_RING_STATE_CLOSED)
-> +		br_mrp_port_open(port->dev, false);
-> +}
-> +
-> +/* This will just forward the frame to the other mrp ring port(MRC role) or will
-> + * not do anything.
-> + * note: already called with rcu_read_lock
-> + */
-> +static int br_mrp_rcv(struct net_bridge_port *p,
-> +		      struct sk_buff *skb, struct net_device *dev)
-> +{
-> +	struct net_device *s_dev, *p_dev, *d_dev;
-> +	struct net_bridge_port *p_port, *s_port;
-> +	struct net_bridge *br;
-> +	struct sk_buff *nskb;
-> +	struct br_mrp *mrp;
-> +
-> +	/* If port is disabled don't accept any frames */
-> +	if (p->state == BR_STATE_DISABLED)
-> +		return 0;
-> +
-> +	br = p->br;
-> +	mrp =  br_mrp_find_port(br, p);
-> +	if (unlikely(!mrp))
-> +		return 0;
-> +
-> +	p_port = rcu_dereference(mrp->p_port);
-> +	if (!p_port)
-> +		return 0;
-> +
-> +	s_port = rcu_dereference(mrp->s_port);
-> +	if (!s_port)
-> +		return 0;
-> +
-> +	/* If the role is MRM then don't forward the frames */
-> +	if (mrp->ring_role == BR_MRP_RING_ROLE_MRM) {
-> +		br_mrp_mrm_process(mrp, p, skb);
-> +		return 1;
-> +	}
-> +
-> +	/* Clone the frame and forward it on the other MRP port */
-> +	nskb = skb_clone(skb, GFP_ATOMIC);
-> +	if (!nskb)
-> +		return 0;
-> +
-> +	p_dev = p_port->dev;
-> +	s_dev = s_port->dev;
-> +
-> +	if (p_dev == dev)
-> +		d_dev = s_dev;
-> +	else
-> +		d_dev = p_dev;
-> +
-> +	nskb->dev = d_dev;
-> +	skb_push(nskb, ETH_HLEN);
-> +	dev_queue_xmit(nskb);
-> +
-> +	return 1;
-> +}
-> +
-> +/* Check if the frame was received on a port that is part of MRP ring
-> + * and if the frame has MRP eth. In that case process the frame otherwise do
-> + * normal forwarding.
-> + * note: already called with rcu_read_lock
-> + */
-> +int br_mrp_process(struct net_bridge_port *p, struct sk_buff *skb)
-> +{
-> +	/* If there is no MRP instance do normal forwarding */
-> +	if (likely(!(p->flags & BR_MRP_AWARE)))
-> +		goto out;
-> +
-> +	if (unlikely(skb->protocol == htons(ETH_P_MRP)))
-> +		return br_mrp_rcv(p, skb, p->dev);
-> +
-> +out:
-> +	return 0;
-> +}
-> +
-> +bool br_mrp_enabled(struct net_bridge *br)
-> +{
-> +	return !list_empty(&br->mrp_list);
-> +}
-> 
+And isn't goto the best thing for unwinding stuff?
 
+
+> +		}
+> +
+> +		pf->peers[i] = peer_dev_int;
+> +		vbo->peer_dev = &peer_dev_int->peer_dev;
+> +		peer_dev_int->peer_drv_int = peer_drv_int;
+> +		peer_dev_int->peer_dev.vdev = &vbo->vdev;
+> +
+> +		/* Initialize driver values */
+> +		for (j = 0; j < IIDC_EVENT_NBITS; j++)
+> +			bitmap_zero(peer_drv_int->current_events[j].type,
+> +				    IIDC_EVENT_NBITS);
+> +
+> +		mutex_init(&peer_dev_int->peer_dev_state_mutex);
+> +
+> +		peer_dev = &peer_dev_int->peer_dev;
+> +		peer_dev->peer_ops = NULL;
+> +		peer_dev->hw_addr = (u8 __iomem *)pf->hw.hw_addr;
+> +		peer_dev->peer_dev_id = ice_peers[i].id;
+> +		peer_dev->pf_vsi_num = vsi->vsi_num;
+> +		peer_dev->netdev = vsi->netdev;
+> +
+> +		peer_dev_int->ice_peer_wq =
+> +			alloc_ordered_workqueue("ice_peer_wq_%d", WQ_UNBOUND,
+> +						i);
+> +		if (!peer_dev_int->ice_peer_wq) {
+> +			kfree(peer_dev_int);
+> +			kfree(peer_drv_int);
+> +			kfree(vbo);
+> +			return -ENOMEM;
+> +		}
+> +
+> +		peer_dev->pdev = pdev;
+> +		qos_info = &peer_dev->initial_qos_info;
+> +
+> +		/* setup qos_info fields with defaults */
+> +		qos_info->num_apps = 0;
+> +		qos_info->num_tc = 1;
+> +
+> +		for (j = 0; j < IIDC_MAX_USER_PRIORITY; j++)
+> +			qos_info->up2tc[j] = 0;
+> +
+> +		qos_info->tc_info[0].rel_bw = 100;
+> +		for (j = 1; j < IEEE_8021QAZ_MAX_TCS; j++)
+> +			qos_info->tc_info[j].rel_bw = 0;
+> +
+> +		/* for DCB, override the qos_info defaults. */
+> +		ice_setup_dcb_qos_info(pf, qos_info);
+> +
+> +		/* make sure peer specific resources such as msix_count and
+> +		 * msix_entries are initialized
+> +		 */
+> +		switch (ice_peers[i].id) {
+> +		case IIDC_PEER_RDMA_ID:
+> +			if (test_bit(ICE_FLAG_IWARP_ENA, pf->flags)) {
+> +				peer_dev->msix_count = pf->num_rdma_msix;
+> +				entry = &pf->msix_entries[pf->rdma_base_vector];
+> +			}
+> +			break;
+> +		default:
+> +			break;
+> +		}
+> +
+> +		peer_dev->msix_entries = entry;
+> +		ice_peer_state_change(peer_dev_int, ICE_PEER_DEV_STATE_INIT,
+> +				      false);
+> +
+> +		vdev = &vbo->vdev;
+> +		vdev->name = ice_peers[i].name;
+> +		vdev->release = ice_peer_vdev_release;
+> +		vdev->dev.parent = &pdev->dev;
+> +
+> +		status = virtbus_register_device(vdev);
+> +		if (status) {
+> +			kfree(peer_dev_int);
+> +			kfree(peer_drv_int);
+> +			vdev = NULL;
+
+I doubt you need to set a local variable to NULL right before exiting
+the function :)
+
+And what about all of the other things you need to unwind that you
+created above here?
+
+> +			return status;
+
+Again, you are breaking out of here and leaving the other things
+allocated in this loop around to just stay there for forever???
+
+greg k-h
