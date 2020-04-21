@@ -2,259 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB7B41B21E7
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 10:44:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87CD61B21F7
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 10:47:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727889AbgDUIoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 04:44:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52166 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726018AbgDUIoS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Apr 2020 04:44:18 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 31FC72072D;
-        Tue, 21 Apr 2020 08:44:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587458657;
-        bh=vsQlr1gciJx4R74jHKq+EyyVwW79oBb2TKFKEJ8IcMs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vOec6tn0iR35kS8JmmG2fzZLnQF2nqyX77Ya9mM4Vh6sJBq2dEt/6XsQftBJ2Az+S
-         aX5431JOq4P4Zw7leWx4+Jg8Ty5EDDwtJX6ZPVpqmcOm6oYCfk3QK6f2M5oCurpaC4
-         r0I4QmXnuMRuOoLaoqZGMkvZhd8lVzT1hUU2EQqQ=
-Date:   Tue, 21 Apr 2020 10:44:15 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, Dave Ertman <david.m.ertman@intel.com>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com, jgg@ziepe.ca,
-        ranjani.sridharan@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: Re: [net-next v2 2/9] ice: Create and register virtual bus for RDMA
-Message-ID: <20200421084415.GD716720@kroah.com>
-References: <20200421080235.6515-1-jeffrey.t.kirsher@intel.com>
- <20200421080235.6515-3-jeffrey.t.kirsher@intel.com>
+        id S1728119AbgDUIrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 04:47:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52184 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726018AbgDUIrT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 04:47:19 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C4CEC061A0F
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 01:47:19 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id k28so10451066lfe.10
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 01:47:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=sGIJHh/puT6NxbufoFpsfxcnGoUe2JqTWxhpfJYWZlA=;
+        b=VdSpN6leoifwtGtjB3IGgSy/AZ+Mo5F4Bd+mqGoCnHE/dKoMc6b+xU6PV3Mrcfm1Xl
+         7RX2TybRi+nrKN4IaMdvg6eux8iYv58gDxh6PjJ8L9yTfvtu2Y72us1ZJsnnbO8pSgQW
+         v5OjFrZkaBe1/6g/wDNDdhIKnertxEyMqs2ss=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sGIJHh/puT6NxbufoFpsfxcnGoUe2JqTWxhpfJYWZlA=;
+        b=cSxL5J6RTMPbwxDrW4YqlVn7Dj1cTEx5kF1SK8PquvorHidPJ2Lk0ZyNYE4qTtbwX2
+         NsaUbV3xIIUvdrGzw/qqkbpHX1XGhRI6UoXh1Ww/VYziZbaGdK4sEmrE1NmkksczWxsM
+         lSbmUAXz2LeTfzPde8mLBxyLAKSZQP8Bo6GPJ5vLW4IyhuFZZFh5JKOvbN9a3YnAbkuc
+         FBa74bFLoJwtmqFdfNVZQLt2b1PAEMJuAMoiDf4HbnERB1GGhkxfxtXGq+YT8PvzHSG/
+         CfO++pghWXH51JbMnZC4CoPg4dHy2J3qOT+L3/nKio7boKwDKEOZ2+6F13eUHHyxAa62
+         81hg==
+X-Gm-Message-State: AGi0PubaztpBPqZk/RLC4mRezRogevscbaeZEWR4Tzc3SCC1VBbTb5nA
+        cCRSSq5qy1gkHJ0SGtiB7oGeQg==
+X-Google-Smtp-Source: APiQypIp+ogKAd8XLPsuyNcaf1ueDSdIbnt3T72uCftWix9EPz/LgOfEGyJFERgsfWE2wG6EPZBQPQ==
+X-Received: by 2002:ac2:5559:: with SMTP id l25mr13237048lfk.55.1587458837586;
+        Tue, 21 Apr 2020 01:47:17 -0700 (PDT)
+Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id h7sm1414259ljg.37.2020.04.21.01.47.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Apr 2020 01:47:16 -0700 (PDT)
+Subject: Re: [PATCH net-next 10/13] bridge: mrp: Implement netlink interface
+ to configure MRP
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>, davem@davemloft.net,
+        jiri@resnulli.us, ivecera@redhat.com, kuba@kernel.org,
+        roopa@cumulusnetworks.com, olteanv@gmail.com, andrew@lunn.ch,
+        UNGLinuxDriver@microchip.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
+References: <20200420150947.30974-1-horatiu.vultur@microchip.com>
+ <20200420150947.30974-11-horatiu.vultur@microchip.com>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <4d989958-0c2b-69de-2015-1808e2ce94db@cumulusnetworks.com>
+Date:   Tue, 21 Apr 2020 11:47:15 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200421080235.6515-3-jeffrey.t.kirsher@intel.com>
+In-Reply-To: <20200420150947.30974-11-horatiu.vultur@microchip.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 21, 2020 at 01:02:28AM -0700, Jeff Kirsher wrote:
-> diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-> index 5c11448bfbb3..529a6743fd4e 100644
-> --- a/drivers/net/ethernet/intel/ice/ice.h
-> +++ b/drivers/net/ethernet/intel/ice/ice.h
-> @@ -33,6 +33,7 @@
->  #include <linux/if_bridge.h>
->  #include <linux/ctype.h>
->  #include <linux/bpf.h>
-> +#include <linux/virtual_bus.h>
-
-Why do you need this #include?  You don't use anything from this file in
-this .h file.
-
-> --- a/drivers/net/ethernet/intel/ice/ice_common.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_common.c
-> @@ -825,7 +825,8 @@ enum ice_status ice_check_reset(struct ice_hw *hw)
->  				 GLNVM_ULD_POR_DONE_1_M |\
->  				 GLNVM_ULD_PCIER_DONE_2_M)
->  
-> -	uld_mask = ICE_RESET_DONE_MASK;
-> +	uld_mask = ICE_RESET_DONE_MASK | (hw->func_caps.common_cap.iwarp ?
-> +					  GLNVM_ULD_PE_DONE_M : 0);
->  
->  	/* Device is Active; check Global Reset processes are done */
->  	for (cnt = 0; cnt < ICE_PF_RESET_WAIT_COUNT; cnt++) {
-> @@ -1678,6 +1679,11 @@ ice_parse_caps(struct ice_hw *hw, void *buf, u32 cap_count,
->  				  "%s: msix_vector_first_id = %d\n", prefix,
->  				  caps->msix_vector_first_id);
->  			break;
-> +		case ICE_AQC_CAPS_IWARP:
-> +			caps->iwarp = (number == 1);
-> +			ice_debug(hw, ICE_DBG_INIT,
-> +				  "%s: iwarp = %d\n", prefix, caps->iwarp);
-> +			break;
->  		case ICE_AQC_CAPS_MAX_MTU:
->  			caps->max_mtu = number;
->  			ice_debug(hw, ICE_DBG_INIT, "%s: max_mtu = %d\n",
-> @@ -1701,6 +1707,16 @@ ice_parse_caps(struct ice_hw *hw, void *buf, u32 cap_count,
->  		ice_debug(hw, ICE_DBG_INIT,
->  			  "%s: maxtc = %d (based on #ports)\n", prefix,
->  			  caps->maxtc);
-> +		if (caps->iwarp) {
-> +			ice_debug(hw, ICE_DBG_INIT, "%s: forcing RDMA off\n",
-> +				  prefix);
-> +			caps->iwarp = 0;
-> +		}
+On 20/04/2020 18:09, Horatiu Vultur wrote:
+> Implement netlink interface to configure MRP. The implementation
+> will do sanity checks over the attributes and then eventually call the MRP
+> interface.
+> 
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> ---
+>  net/bridge/br_mrp_netlink.c | 117 ++++++++++++++++++++++++++++++++++++
+>  1 file changed, 117 insertions(+)
+>  create mode 100644 net/bridge/br_mrp_netlink.c
+> 
+> diff --git a/net/bridge/br_mrp_netlink.c b/net/bridge/br_mrp_netlink.c
+> new file mode 100644
+> index 000000000000..0ff42e7c7f57
+> --- /dev/null
+> +++ b/net/bridge/br_mrp_netlink.c
+> @@ -0,0 +1,117 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
 > +
-> +		/* print message only when processing device capabilities */
-> +		if (dev_p)
-> +			dev_info(ice_hw_to_dev(hw),
-> +				 "RDMA functionality is not available with the current device configuration.\n");
-
-Shouldn't that be dev_err()?
-
-And why are you adding new functionality to the driver when you should
-only be adding virtual bus support?  This feels like you are mixing two
-different things into one patch, making it _really_ hard to review.
-
-
-> +/**
-> + * ice_init_peer_devices - initializes peer devices
-> + * @pf: ptr to ice_pf
-> + *
-> + * This function initializes peer devices on the virtual bus.
-> + */
-> +int ice_init_peer_devices(struct ice_pf *pf)
+> +#include <net/genetlink.h>
+> +
+> +#include <uapi/linux/mrp_bridge.h>
+> +#include "br_private.h"
+> +#include "br_private_mrp.h"
+> +
+> +static const struct nla_policy br_mrp_policy[IFLA_BRIDGE_MRP_MAX + 1] = {
+> +	[IFLA_BRIDGE_MRP_UNSPEC]	= { .type = NLA_REJECT },
+> +	[IFLA_BRIDGE_MRP_INSTANCE]	= { .type = NLA_EXACT_LEN,
+> +					    .len = sizeof(struct br_mrp_instance)},
+> +	[IFLA_BRIDGE_MRP_PORT_STATE]	= { .type = NLA_U32 },
+> +	[IFLA_BRIDGE_MRP_PORT_ROLE]	= { .type = NLA_EXACT_LEN,
+> +					    .len = sizeof(struct br_mrp_port_role)},
+> +	[IFLA_BRIDGE_MRP_RING_STATE]	= { .type = NLA_EXACT_LEN,
+> +					    .len = sizeof(struct br_mrp_ring_state)},
+> +	[IFLA_BRIDGE_MRP_RING_ROLE]	= { .type = NLA_EXACT_LEN,
+> +					    .len = sizeof(struct br_mrp_ring_role)},
+> +	[IFLA_BRIDGE_MRP_START_TEST]	= { .type = NLA_EXACT_LEN,
+> +					    .len = sizeof(struct br_mrp_start_test)},
+> +};
+> +
+> +int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
+> +		 struct nlattr *attr, int cmd, struct netlink_ext_ack *extack)
 > +{
-> +	struct ice_vsi *vsi = pf->vsi[0];
-> +	struct pci_dev *pdev = pf->pdev;
-> +	struct device *dev = &pdev->dev;
-> +	int status = 0;
-> +	unsigned int i;
+
+Note that "p" can be NULL here if br_afspec() was called for the bridge device.
+Some of the functions below dereference it without any checks and will deref a
+null ptr.
+
+> +	struct nlattr *tb[IFLA_BRIDGE_MRP_MAX + 1];
+> +	int err;
 > +
-> +	/* Reserve vector resources */
-> +	status = ice_reserve_peer_qvector(pf);
-> +	if (status < 0) {
-> +		dev_err(dev, "failed to reserve vectors for peer drivers\n");
-> +		return status;
+> +	if (br->stp_enabled != BR_NO_STP) {
+> +		NL_SET_ERR_MSG_MOD(extack, "MRP can't be enabled if STP is already enabled\n");
+> +		return -EINVAL;
 > +	}
-> +	for (i = 0; i < ARRAY_SIZE(ice_peers); i++) {
-> +		struct ice_peer_dev_int *peer_dev_int;
-> +		struct ice_peer_drv_int *peer_drv_int;
-> +		struct iidc_qos_params *qos_info;
-> +		struct iidc_virtbus_object *vbo;
-> +		struct msix_entry *entry = NULL;
-> +		struct iidc_peer_dev *peer_dev;
-> +		struct virtbus_device *vdev;
-> +		int j;
 > +
-> +		/* structure layout needed for container_of's looks like:
-> +		 * ice_peer_dev_int (internal only ice peer superstruct)
-> +		 * |--> iidc_peer_dev
-> +		 * |--> *ice_peer_drv_int
-> +		 *
-> +		 * iidc_virtbus_object (container_of parent for vdev)
-> +		 * |--> virtbus_device
-> +		 * |--> *iidc_peer_dev (pointer from internal struct)
-> +		 *
-> +		 * ice_peer_drv_int (internal only peer_drv struct)
-> +		 */
-> +		peer_dev_int = kzalloc(sizeof(*peer_dev_int), GFP_KERNEL);
-> +		if (!peer_dev_int)
-> +			return -ENOMEM;
+> +	err = nla_parse_nested(tb, IFLA_BRIDGE_MRP_MAX, attr,
+> +			       NULL, extack);
+> +	if (err)
+> +		return err;
 > +
-> +		vbo = kzalloc(sizeof(*vbo), GFP_KERNEL);
-> +		if (!vbo) {
-> +			kfree(peer_dev_int);
-> +			return -ENOMEM;
-> +		}
+> +	if (tb[IFLA_BRIDGE_MRP_INSTANCE]) {
+> +		struct br_mrp_instance *instance =
+> +			nla_data(tb[IFLA_BRIDGE_MRP_INSTANCE]);
 > +
-> +		peer_drv_int = kzalloc(sizeof(*peer_drv_int), GFP_KERNEL);
-> +		if (!peer_drv_int) {
-> +			kfree(peer_dev_int);
-> +			kfree(vbo);
-> +			return -ENOMEM;
+> +		if (cmd == RTM_SETLINK)
+> +			err = br_mrp_add(br, instance);
+> +		else
+> +			err = br_mrp_del(br, instance);
+> +		if (err)
+> +			return err;
+> +	}
+> +
+> +	if (tb[IFLA_BRIDGE_MRP_PORT_STATE]) {
+> +		enum br_mrp_port_state_type state =
+> +			nla_get_u32(tb[IFLA_BRIDGE_MRP_PORT_STATE]);
+> +
+> +		err = br_mrp_set_port_state(p, state);
+> +		if (err)
+> +			return err;
+> +	}
+> +
+> +	if (tb[IFLA_BRIDGE_MRP_PORT_ROLE]) {
+> +		struct br_mrp_port_role *role =
+> +			nla_data(tb[IFLA_BRIDGE_MRP_PORT_ROLE]);
+> +
+> +		err = br_mrp_set_port_role(p, role);
+> +		if (err)
+> +			return err;
+> +	}
+> +
+> +	if (tb[IFLA_BRIDGE_MRP_RING_STATE]) {
+> +		struct br_mrp_ring_state *state =
+> +			nla_data(tb[IFLA_BRIDGE_MRP_RING_STATE]);
+> +
+> +		err = br_mrp_set_ring_state(br, state);
+> +		if (err)
+> +			return err;
+> +	}
+> +
+> +	if (tb[IFLA_BRIDGE_MRP_RING_ROLE]) {
+> +		struct br_mrp_ring_role *role =
+> +			nla_data(tb[IFLA_BRIDGE_MRP_RING_ROLE]);
+> +
+> +		err = br_mrp_set_ring_role(br, role);
+> +		if (err)
+> +			return err;
+> +	}
+> +
+> +	if (tb[IFLA_BRIDGE_MRP_START_TEST]) {
+> +		struct br_mrp_start_test *test =
+> +			nla_data(tb[IFLA_BRIDGE_MRP_START_TEST]);
+> +
+> +		err = br_mrp_start_test(br, test);
+> +		if (err)
+> +			return err;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +int br_mrp_port_open(struct net_device *dev, u8 loc)
+> +{
+> +	struct net_bridge_port *p;
+> +	int err = 0;
+> +
+> +	p = br_port_get_rcu(dev);
+> +	if (!p) {
+> +		err = -EINVAL;
+> +		goto out;
+> +	}
+> +
+> +	p->loc = loc;
+> +	br_ifinfo_notify(RTM_NEWLINK, NULL, p);
+> +
+> +out:
+> +	return err;
+> +}
+> +EXPORT_SYMBOL(br_mrp_port_open);
+> 
 
-So any errors cause you to break out of your loop and leave things
-around?
-
-And isn't goto the best thing for unwinding stuff?
-
-
-> +		}
-> +
-> +		pf->peers[i] = peer_dev_int;
-> +		vbo->peer_dev = &peer_dev_int->peer_dev;
-> +		peer_dev_int->peer_drv_int = peer_drv_int;
-> +		peer_dev_int->peer_dev.vdev = &vbo->vdev;
-> +
-> +		/* Initialize driver values */
-> +		for (j = 0; j < IIDC_EVENT_NBITS; j++)
-> +			bitmap_zero(peer_drv_int->current_events[j].type,
-> +				    IIDC_EVENT_NBITS);
-> +
-> +		mutex_init(&peer_dev_int->peer_dev_state_mutex);
-> +
-> +		peer_dev = &peer_dev_int->peer_dev;
-> +		peer_dev->peer_ops = NULL;
-> +		peer_dev->hw_addr = (u8 __iomem *)pf->hw.hw_addr;
-> +		peer_dev->peer_dev_id = ice_peers[i].id;
-> +		peer_dev->pf_vsi_num = vsi->vsi_num;
-> +		peer_dev->netdev = vsi->netdev;
-> +
-> +		peer_dev_int->ice_peer_wq =
-> +			alloc_ordered_workqueue("ice_peer_wq_%d", WQ_UNBOUND,
-> +						i);
-> +		if (!peer_dev_int->ice_peer_wq) {
-> +			kfree(peer_dev_int);
-> +			kfree(peer_drv_int);
-> +			kfree(vbo);
-> +			return -ENOMEM;
-> +		}
-> +
-> +		peer_dev->pdev = pdev;
-> +		qos_info = &peer_dev->initial_qos_info;
-> +
-> +		/* setup qos_info fields with defaults */
-> +		qos_info->num_apps = 0;
-> +		qos_info->num_tc = 1;
-> +
-> +		for (j = 0; j < IIDC_MAX_USER_PRIORITY; j++)
-> +			qos_info->up2tc[j] = 0;
-> +
-> +		qos_info->tc_info[0].rel_bw = 100;
-> +		for (j = 1; j < IEEE_8021QAZ_MAX_TCS; j++)
-> +			qos_info->tc_info[j].rel_bw = 0;
-> +
-> +		/* for DCB, override the qos_info defaults. */
-> +		ice_setup_dcb_qos_info(pf, qos_info);
-> +
-> +		/* make sure peer specific resources such as msix_count and
-> +		 * msix_entries are initialized
-> +		 */
-> +		switch (ice_peers[i].id) {
-> +		case IIDC_PEER_RDMA_ID:
-> +			if (test_bit(ICE_FLAG_IWARP_ENA, pf->flags)) {
-> +				peer_dev->msix_count = pf->num_rdma_msix;
-> +				entry = &pf->msix_entries[pf->rdma_base_vector];
-> +			}
-> +			break;
-> +		default:
-> +			break;
-> +		}
-> +
-> +		peer_dev->msix_entries = entry;
-> +		ice_peer_state_change(peer_dev_int, ICE_PEER_DEV_STATE_INIT,
-> +				      false);
-> +
-> +		vdev = &vbo->vdev;
-> +		vdev->name = ice_peers[i].name;
-> +		vdev->release = ice_peer_vdev_release;
-> +		vdev->dev.parent = &pdev->dev;
-> +
-> +		status = virtbus_register_device(vdev);
-> +		if (status) {
-> +			kfree(peer_dev_int);
-> +			kfree(peer_drv_int);
-> +			vdev = NULL;
-
-I doubt you need to set a local variable to NULL right before exiting
-the function :)
-
-And what about all of the other things you need to unwind that you
-created above here?
-
-> +			return status;
-
-Again, you are breaking out of here and leaving the other things
-allocated in this loop around to just stay there for forever???
-
-greg k-h
