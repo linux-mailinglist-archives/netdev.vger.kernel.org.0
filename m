@@ -2,122 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A22D31B1AB6
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 02:29:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 596F01B1AD8
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 02:42:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726420AbgDUA3o convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 20 Apr 2020 20:29:44 -0400
-Received: from mga11.intel.com ([192.55.52.93]:44559 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726121AbgDUA3o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 20:29:44 -0400
-IronPort-SDR: OvVK+plTFZ62uS1tKTeVnv2oTmbQ3942D4ji6d5/rfZ+4PnKlsie6fkIONNo7tE+gmcp0vYfQw
- nAw4mw6cS0rA==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 17:29:44 -0700
-IronPort-SDR: SzZmwwagHYDY8kTucYUCUK2k/o2rPtsQlDZh+BByhEpPRTYIwFMp+jyoE2+NSFaf8UvUr3d+lm
- H5nGwygFU+jA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,408,1580803200"; 
-   d="scan'208";a="258527862"
-Received: from fmsmsx108.amr.corp.intel.com ([10.18.124.206])
-  by orsmga006.jf.intel.com with ESMTP; 20 Apr 2020 17:29:43 -0700
-Received: from fmsmsx124.amr.corp.intel.com ([169.254.8.70]) by
- FMSMSX108.amr.corp.intel.com ([169.254.9.13]) with mapi id 14.03.0439.000;
- Mon, 20 Apr 2020 17:29:43 -0700
-From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
-To:     Leon Romanovsky <leon@kernel.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-CC:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>
-Subject: RE: [RFC PATCH v5 09/16] RDMA/irdma: Implement device supported
- verb APIs
-Thread-Topic: [RFC PATCH v5 09/16] RDMA/irdma: Implement device supported
- verb APIs
-Thread-Index: AQHWFNtxOKnxm7SxOkGbTv2AkbFNkah+MQgAgAQg5jA=
-Date:   Tue, 21 Apr 2020 00:29:43 +0000
-Message-ID: <9DD61F30A802C4429A01CA4200E302A7DCD485DF@fmsmsx124.amr.corp.intel.com>
-References: <20200417171251.1533371-1-jeffrey.t.kirsher@intel.com>
- <20200417171251.1533371-10-jeffrey.t.kirsher@intel.com>
- <20200417195928.GE3083@unreal>
-In-Reply-To: <20200417195928.GE3083@unreal>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.1.200.108]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1726756AbgDUAm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 20:42:27 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:42266 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726469AbgDUAm0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 20:42:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587429745;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=w0NkVU3TNjEifXe3WvjLawOGXnEzBsNxlMBTVKCi8/I=;
+        b=ORDSmaz4Hq5LJFMJfa+vtCRRMEDdICpIV6hYV+0KCSCuPel5P9O71UNX9HyG71GiYn0nwo
+        mOlhHgKsRVShx0d6dgKshxvFmyy34d503XwD7J8oxZtvJnyrJEMKyvm+hhreO0JdBmqtaU
+        MV2hXmDaf5h6xo/fMhRTRAhly0xM5nE=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-179-0qb4jCoiP7OJmWE2xdKL3Q-1; Mon, 20 Apr 2020 20:42:23 -0400
+X-MC-Unique: 0qb4jCoiP7OJmWE2xdKL3Q-1
+Received: by mail-wr1-f71.google.com with SMTP id i10so6668789wrq.8
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 17:42:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=w0NkVU3TNjEifXe3WvjLawOGXnEzBsNxlMBTVKCi8/I=;
+        b=qXSkhblz6/UysGWXEIzXQaePVachmDh+uJLdsK9GSzS4Yw573GKxr7bHnd/vbOaETW
+         OqpU+BJjdPxFQXbwuwhaHI4s9o+BQTGk81t+iX38mTefQC18W71Q8h8HL+rN4KthHjXc
+         NvDBjAOvBrNoJ/FQXmnV6hmIFXA8MLwdSrP3sK7gsXWAm0secV3gVe9ALKa4jo9XqlEe
+         4GGjjS/KfhHY7mFpeRNJF0SfmF6MKcoP/7rI72YVaQGhpHyM1520lQqSZ4WCtaZZxefl
+         xobhNr2lRrxKQfx5hdhzYJOnp3QeFrnP98CK6dgyAwJtQbSFG72FHvQAymEQOAylNx+J
+         QmUQ==
+X-Gm-Message-State: AGi0PubAOz3IpTL8vLfLxhQgOiApXno6lhqkTGHt6QGpmGqA24tySarz
+        h8dqRX3f7BDguZjJ2v6T0QW0aa2VieeOIO7Dw5q5FQJieJ4DE7vhp/kElMxV2UktF6SMIrNhgoi
+        1gDe+DSAFFVEnPy8h
+X-Received: by 2002:adf:e986:: with SMTP id h6mr21099178wrm.256.1587429742400;
+        Mon, 20 Apr 2020 17:42:22 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJMHdAwMbl0bBkqMcuJKFNhGzWRL80tdswcBVt5e+NqmPF1FdTfYo2SLeibTLAYgxlSJRwIKg==
+X-Received: by 2002:adf:e986:: with SMTP id h6mr21099165wrm.256.1587429742144;
+        Mon, 20 Apr 2020 17:42:22 -0700 (PDT)
+Received: from pc-3.home (2a01cb0585138800b113760e11343d15.ipv6.abo.wanadoo.fr. [2a01:cb05:8513:8800:b113:760e:1134:3d15])
+        by smtp.gmail.com with ESMTPSA id q18sm1356366wmj.11.2020.04.20.17.42.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Apr 2020 17:42:21 -0700 (PDT)
+Date:   Tue, 21 Apr 2020 02:42:19 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net] netfilter: nat: never update the UDP checksum when it's 0
+Message-ID: <335a95d93767f2b58ad89975e4a0b342ee00db91.1587429321.git.gnault@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [RFC PATCH v5 09/16] RDMA/irdma: Implement device supported
-> verb APIs
-> 
-> On Fri, Apr 17, 2020 at 10:12:44AM -0700, Jeff Kirsher wrote:
-> > From: Mustafa Ismail <mustafa.ismail@intel.com>
-> >
-> > Implement device supported verb APIs. The supported APIs vary based on
-> > the underlying transport the ibdev is registered as (i.e. iWARP or
-> > RoCEv2).
-> >
-> > Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-> > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> > ---
-> >  drivers/infiniband/hw/irdma/verbs.c     | 4555 +++++++++++++++++++++++
-> >  drivers/infiniband/hw/irdma/verbs.h     |  213 ++
-> >  include/uapi/rdma/ib_user_ioctl_verbs.h |    1 +
-> >  3 files changed, 4769 insertions(+)
-> >  create mode 100644 drivers/infiniband/hw/irdma/verbs.c
-> >  create mode 100644 drivers/infiniband/hw/irdma/verbs.h
-> 
-> <...>
-> 
-> > +static int irdma_destroy_qp(struct ib_qp *ibqp, struct ib_udata
-> > +*udata) {
-> > +	struct irdma_qp *iwqp = to_iwqp(ibqp);
-> > +
-> > +	iwqp->destroyed = 1;
-> > +	if (iwqp->ibqp_state >= IB_QPS_INIT && iwqp->ibqp_state <
-> IB_QPS_RTS)
-> > +		irdma_next_iw_state(iwqp, IRDMA_QP_STATE_ERROR, 0, 0, 0);
-> > +
-> > +	if (!iwqp->user_mode) {
-> > +		if (iwqp->iwscq) {
-> > +			irdma_clean_cqes(iwqp, iwqp->iwscq);
-> > +			if (iwqp->iwrcq != iwqp->iwscq)
-> > +				irdma_clean_cqes(iwqp, iwqp->iwrcq);
-> > +		}
-> > +	}
-> > +
-> > +	irdma_remove_push_mmap_entries(iwqp);
-> > +	irdma_free_lsmm_rsrc(iwqp);
-> > +	irdma_rem_ref(&iwqp->ibqp);
-> 
-> No, please ensure that call to destroy_qp is kfree QP without any need in reference
-> counting. We need this to move QP allocation to be IB/core responsibility. I hope
-> that all other verbs objects (with MR as
-> exception) follow the same pattern: create->kzalloc->destroy>kfree.
+If the UDP header of a local VXLAN endpoint is NAT-ed, and the VXLAN
+device has disabled UDP checksums and enabled Tx checksum offloading,
+then the skb passed to udp_manip_pkt() has hdr->check == 0 (outer
+checksum disabled) and skb->ip_summed == CHECKSUM_PARTIAL (inner packet
+checksum offloaded).
 
-Yes. I did see the other verb objects allocation move to IB core
-responsibility but not QP. Since we are headed in that direction,
-I do think it's a reasonable expectation to make destroy QP
-synchronous in providers. We ll look to change it in next rev.
+Because of the ->ip_summed value, udp_manip_pkt() tries to update the
+outer checksum with the new address and port, leading to an invalid
+checksum sent on the wire, as the original null checksum obviously
+didn't take the old address and port into account.
 
-Thank you Leon for taking the time to review and provide
-feedback.
+So, we can't take ->ip_summed into account in udp_manip_pkt(), as it
+might not refer to the checksum we're acting on. Instead, we can base
+the decision to update the UDP checksum entirely on the value of
+hdr->check, because it's null if and only if checksum is disabled:
 
-Shiraz
+  * A fully computed checksum can't be 0, since a 0 checksum is
+    represented by the CSUM_MANGLED_0 value instead.
+
+  * A partial checksum can't be 0, since the pseudo-header always adds
+    at least one non-zero value (the UDP protocol type 0x11) and adding
+    more values to the sum can't make it wrap to 0 as the carry is then
+    added to the wrapped number.
+
+  * A disabled checksum uses the special value 0.
+
+The problem seems to be there from day one, although it was probably
+not visible before UDP tunnels were implemented.
+
+Fixes: 5b1158e909ec ("[NETFILTER]: Add NAT support for nf_conntrack")
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+---
+ net/netfilter/nf_nat_proto.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/net/netfilter/nf_nat_proto.c b/net/netfilter/nf_nat_proto.c
+index 64eedc17037a..a69e6fc16296 100644
+--- a/net/netfilter/nf_nat_proto.c
++++ b/net/netfilter/nf_nat_proto.c
+@@ -68,15 +68,13 @@ static bool udp_manip_pkt(struct sk_buff *skb,
+ 			  enum nf_nat_manip_type maniptype)
+ {
+ 	struct udphdr *hdr;
+-	bool do_csum;
+ 
+ 	if (skb_ensure_writable(skb, hdroff + sizeof(*hdr)))
+ 		return false;
+ 
+ 	hdr = (struct udphdr *)(skb->data + hdroff);
+-	do_csum = hdr->check || skb->ip_summed == CHECKSUM_PARTIAL;
++	__udp_manip_pkt(skb, iphdroff, hdr, tuple, maniptype, !!hdr->check);
+ 
+-	__udp_manip_pkt(skb, iphdroff, hdr, tuple, maniptype, do_csum);
+ 	return true;
+ }
+ 
+-- 
+2.21.1
+
