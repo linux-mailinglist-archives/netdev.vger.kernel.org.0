@@ -2,104 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B23CE1B1AB0
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 02:28:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6478E1B1AB4
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 02:29:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726796AbgDUA2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 20:28:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59228 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726056AbgDUA2Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 20:28:16 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140F7C061A0E
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 17:28:16 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id a32so625187pje.5
-        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 17:28:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cs.washington.edu; s=goo201206;
-        h=from:to:cc:subject:date:message-id;
-        bh=FMzj+KBAT9oKczxa74v3DQRv9Cfu8gbIxOZJWY/KwN4=;
-        b=F5Ecnjii1wOD6Z8F6N/EQ+BJvmRcCDXykdLJXNecm3nPcHmSBK8LG/V4JXCAT7Cxqp
-         2L9yQo5z9bM5Ftq6Sye8tV3ZsqCdsgQXBH3nSq0DSBdCoOXb9i8pPKoHRCmYHNiLy4T0
-         E+RWpg//Wu7E6ucg7Vm0c4gvUqHngOsJU/um4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=FMzj+KBAT9oKczxa74v3DQRv9Cfu8gbIxOZJWY/KwN4=;
-        b=MG2Fnbn8A418mFix7ZGk02zxGia7jy27DJetmYGvJTMsEXIt7EbjfixlmG8OHeY2nv
-         PzNobI/VHXyP9cUP637qLDJF7geaPY5O1E+z9SK3Tz5myDF50grMfmwJkpIO9+s3/VUj
-         BBpAkSB9T2zt/MtgcMovf+nzBzZgVNsw/BGyk3XLqrQs3LhiITG17AD67B/MwyBh+ubg
-         AoedzSU8LuKwJQPT2bdN1EtYAkS6lV9cZ9Zkqo3j4qdgtN4vyJztrag09Y4GSj73MiMz
-         q2MYp7oUy7BczluP1bKmLSU0mS+N1eoMRvkvPav29xA9EI8d9A5t644HTpBVoGtC8gwF
-         ih8g==
-X-Gm-Message-State: AGi0PuYwnzlSpQmiSQrL6eRf1QZWrN9BpteHoZyqsLwIPmbzcHfdAy6/
-        UlKH3a/7hk/Qba32U6IiGuLyhA==
-X-Google-Smtp-Source: APiQypJfRL/P24IvYTwSBmOVCK9iHgVzsETnPpci6H5O5Yc64EM8WVFWpSkRtjhEl62+jhSjad3bFQ==
-X-Received: by 2002:a17:90b:19c1:: with SMTP id nm1mr2367164pjb.73.1587428895331;
-        Mon, 20 Apr 2020 17:28:15 -0700 (PDT)
-Received: from localhost.localdomain (c-73-53-94-119.hsd1.wa.comcast.net. [73.53.94.119])
-        by smtp.gmail.com with ESMTPSA id f2sm547247pju.32.2020.04.20.17.28.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2020 17:28:14 -0700 (PDT)
-From:   Luke Nelson <lukenels@cs.washington.edu>
-X-Google-Original-From: Luke Nelson <luke.r.nels@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     Luke Nelson <luke.r.nels@gmail.com>, Xi Wang <xi.wang@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
-        netdev@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf] bpf, riscv: Fix tail call count off by one in RV32 BPF JIT
-Date:   Mon, 20 Apr 2020 17:28:04 -0700
-Message-Id: <20200421002804.5118-1-luke.r.nels@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726262AbgDUA3T convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 20 Apr 2020 20:29:19 -0400
+Received: from mga17.intel.com ([192.55.52.151]:42971 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726121AbgDUA3T (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 20:29:19 -0400
+IronPort-SDR: RIDOzg6tBNtIqymTEjmtCHlzHCqG45p6d9bbS0oMc08Fak1y12ku9m0VFsdrdRZiYCTsO+fieK
+ oUV2/Is8PqzA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 17:29:18 -0700
+IronPort-SDR: GFrU2bphq8fbbyieWo/xF3lssZFlz5ivxT1aiwnxQjFJCMBZJMj13VEpH6y8jRU6gLTzQCmckc
+ UoQNNBvAvyWg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,408,1580803200"; 
+   d="scan'208";a="258527808"
+Received: from fmsmsx108.amr.corp.intel.com ([10.18.124.206])
+  by orsmga006.jf.intel.com with ESMTP; 20 Apr 2020 17:29:16 -0700
+Received: from fmsmsx157.amr.corp.intel.com (10.18.116.73) by
+ FMSMSX108.amr.corp.intel.com (10.18.124.206) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 20 Apr 2020 17:29:16 -0700
+Received: from fmsmsx124.amr.corp.intel.com ([169.254.8.70]) by
+ FMSMSX157.amr.corp.intel.com ([169.254.14.45]) with mapi id 14.03.0439.000;
+ Mon, 20 Apr 2020 17:29:15 -0700
+From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
+To:     Leon Romanovsky <leon@kernel.org>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+CC:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>
+Subject: RE: [RFC PATCH v5 14/16] RDMA/irdma: Add ABI definitions
+Thread-Topic: [RFC PATCH v5 14/16] RDMA/irdma: Add ABI definitions
+Thread-Index: AQHWFNtzJfrlc+cOi0iSpR8LbIFurKh+LG8AgAQMx1A=
+Date:   Tue, 21 Apr 2020 00:29:15 +0000
+Message-ID: <9DD61F30A802C4429A01CA4200E302A7DCD485D1@fmsmsx124.amr.corp.intel.com>
+References: <20200417171251.1533371-1-jeffrey.t.kirsher@intel.com>
+ <20200417171251.1533371-15-jeffrey.t.kirsher@intel.com>
+ <20200417194300.GC3083@unreal>
+In-Reply-To: <20200417194300.GC3083@unreal>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.1.200.108]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes an off by one error in the RV32 JIT handling for BPF
-tail call. Currently, the code decrements TCC before checking if it
-is less than zero. This limits the maximum number of tail calls to 32
-instead of 33 as in other JITs. The fix is to instead check the old
-value of TCC before decrementing.
-
-Fixes: 5f316b65e99f ("riscv, bpf: Add RV32G eBPF JIT")
-Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
----
- arch/riscv/net/bpf_jit_comp32.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/arch/riscv/net/bpf_jit_comp32.c b/arch/riscv/net/bpf_jit_comp32.c
-index 302934177760..11083d4d5f2d 100644
---- a/arch/riscv/net/bpf_jit_comp32.c
-+++ b/arch/riscv/net/bpf_jit_comp32.c
-@@ -770,12 +770,13 @@ static int emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
- 	emit_bcc(BPF_JGE, lo(idx_reg), RV_REG_T1, off, ctx);
+> Subject: Re: [RFC PATCH v5 14/16] RDMA/irdma: Add ABI definitions
+> 
+> On Fri, Apr 17, 2020 at 10:12:49AM -0700, Jeff Kirsher wrote:
+> > From: Mustafa Ismail <mustafa.ismail@intel.com>
+> >
+> > Add ABI definitions for irdma.
+> >
+> > Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+> > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+> > ---
+> >  include/uapi/rdma/irdma-abi.h | 140
+> > ++++++++++++++++++++++++++++++++++
+> >  1 file changed, 140 insertions(+)
+> >  create mode 100644 include/uapi/rdma/irdma-abi.h
+> >
+> > diff --git a/include/uapi/rdma/irdma-abi.h
+> > b/include/uapi/rdma/irdma-abi.h new file mode 100644 index
+> > 000000000000..2eb253220161
+> > --- /dev/null
+> > +++ b/include/uapi/rdma/irdma-abi.h
+> > @@ -0,0 +1,140 @@
+> > +/* SPDX-License-Identifier: (GPL-2.0 WITH Linux-syscall-note) OR
+> > +Linux-OpenIB) */
+> > +/*
+> > + * Copyright (c) 2006 - 2019 Intel Corporation.  All rights reserved.
+> > + * Copyright (c) 2005 Topspin Communications.  All rights reserved.
+> > + * Copyright (c) 2005 Cisco Systems.  All rights reserved.
+> > + * Copyright (c) 2005 Open Grid Computing, Inc. All rights reserved.
+> > + */
+> > +
+> > +#ifndef IRDMA_ABI_H
+> > +#define IRDMA_ABI_H
+> > +
+> > +#include <linux/types.h>
+> > +
+> > +/* irdma must support legacy GEN_1 i40iw kernel
+> > + * and user-space whose last ABI ver is 5  */ #define IRDMA_ABI_VER 6
+> > +
+> > +enum irdma_memreg_type {
+> > +	IW_MEMREG_TYPE_MEM  = 0,
+> > +	IW_MEMREG_TYPE_QP   = 1,
+> > +	IW_MEMREG_TYPE_CQ   = 2,
+> > +	IW_MEMREG_TYPE_RSVD = 3,
+> > +	IW_MEMREG_TYPE_MW   = 4,
+> > +};
+> > +
+> > +struct irdma_alloc_ucontext_req {
+> > +	__u32 rsvd32;
+> > +	__u8 userspace_ver;
+> > +	__u8 rsvd8[3];
+> > +};
+> > +
+> > +struct i40iw_alloc_ucontext_req {
+> > +	__u32 rsvd32;
+> > +	__u8 userspace_ver;
+> > +	__u8 rsvd8[3];
+> > +};
+> > +
+> > +struct irdma_alloc_ucontext_resp {
+> > +	__aligned_u64 feature_flags;
+> > +	__aligned_u64 db_mmap_key;
+> > +	__u32 max_hw_wq_frags;
+> > +	__u32 max_hw_read_sges;
+> > +	__u32 max_hw_inline;
+> > +	__u32 max_hw_rq_quanta;
+> > +	__u32 max_hw_wq_quanta;
+> > +	__u32 min_hw_cq_size;
+> > +	__u32 max_hw_cq_size;
+> > +	__u32 rsvd1[7];
+> > +	__u16 max_hw_sq_chunk;
+> > +	__u16 rsvd2[11];
+> > +	__u8 kernel_ver;
+> 
+> Why do you need to copy this kernel_ver from i40iw?
+> Especially given the fact that i40iw didn't use it too much
+>  120 static int i40iw_alloc_ucontext(struct ib_ucontext *uctx,
+>  121                                 struct ib_udata *udata)
+>  <...>
+>  140         uresp.kernel_ver = req.userspace_ver;
+> 
+Its used to pass the current driver ABI ver. to user-space so that
+there is compatibility check in user-space as well.
+for example: old i40iw user-space provider wont bind to gen_2 devices
+by checking the kernel_ver and finding its incompatible. It will bind with
+gen_1 devices though..
  
- 	/*
--	 * if ((temp_tcc = tcc - 1) < 0)
-+	 * temp_tcc = tcc - 1;
-+	 * if (tcc < 0)
- 	 *   goto out;
- 	 */
- 	emit(rv_addi(RV_REG_T1, RV_REG_TCC, -1), ctx);
- 	off = (tc_ninsn - (ctx->ninsns - start_insn)) << 2;
--	emit_bcc(BPF_JSLT, RV_REG_T1, RV_REG_ZERO, off, ctx);
-+	emit_bcc(BPF_JSLT, RV_REG_TCC, RV_REG_ZERO, off, ctx);
- 
- 	/*
- 	 * prog = array->ptrs[index];
--- 
-2.17.1
-
