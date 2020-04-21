@@ -2,75 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E92811B2B9B
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 17:51:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA00C1B2BA8
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 17:53:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727787AbgDUPuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 11:50:37 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54358 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726136AbgDUPug (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Apr 2020 11:50:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=5qIVm+VEhaAZXfrUTN1Hcg+z9YeHBWm2Ws5qZHcGi48=; b=H+/EcYID4Kt7aTdTdWNZXw/C2w
-        3e9L6+TpNonbGI6S4KyaBIrnK5INPL0mko38WwpWJM8BcpFH1nvcnqs+PfwTSSeSfmghWRgkEuZIS
-        Ar+4hFzTwu++n2Li5qwcFAPFJ15sqjlNaAnbNiTBfWg24ot7/LCCiAMxspu1KQR3XOgU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jQvAN-00433J-BF; Tue, 21 Apr 2020 17:50:31 +0200
-Date:   Tue, 21 Apr 2020 17:50:31 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [RFC PATCH net-next 1/3] net: phy: add concept of shared storage
- for PHYs
-Message-ID: <20200421155031.GE933345@lunn.ch>
-References: <20200420232624.9127-1-michael@walle.cc>
- <7bcd7a65740a6f85637ef17ed6b6a1e3@walle.cc>
+        id S1726641AbgDUPwL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 11:52:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33102 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725990AbgDUPwL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 11:52:11 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAAC2C061A10
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 08:52:09 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id j1so11589768wrt.1
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 08:52:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=u0wltD4ulxCkwqlLtvngLBvyLIzVHV6sPWpGQHNj2Gc=;
+        b=tPKYSq998p9C1Q/10nqU/ysDB6yyPCnSsFKd0wDR1AZ9zEVStdv+LvYj36Ndd97TiM
+         8qbYkZtgTgHbyYnvNpPNI+i++sbZxIH67tcDt2Jc9Yw+EolYC+4sG97wxakWEhVbge3v
+         npcNmFfwG1He05UPHy7JTL1fh5vXWQ8OIVzzvmtIp7E7cJqGoJ4fJeNiZrEOFp/3Sfuz
+         ApjeW5Fo1G3Jt3NmHNZkmDCggZ9pDRE3qZOTs1n0HCzkU0snSSjt8axaspJp4YU5/YVv
+         YZ9NYSSsCvgsVN4jzU0xev9+KiwQmB1pM1QIcCWND5xAysdYkOpfUIhm3lcis700fDsD
+         7sDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=u0wltD4ulxCkwqlLtvngLBvyLIzVHV6sPWpGQHNj2Gc=;
+        b=mVwn/dsWn3dgA1sYcf+vTpZM5ZlLPs0IYjSeRo17leHaeQLCUi0km0WtIHzX1oVr92
+         Q9ekBKNw1FoJphSxO3LUnZk9wWis+YTI3xHhy/dK2z1oufS9sBC6BGaZUUgRj70dBpSp
+         AOQJ/r5PHAuocXerL4lCsOWWoQEohjheSr+Uv9un7vZyG1QcVOOUFqekAAeQ77mIzPzD
+         DUEG9PaPP50qat2u0MUSU0NkjwhFvI7AM8QCnh7nr5uYrJHJQMVvoNuN8IJRIhc3VlaW
+         fvJEcL8qnT6Dqzng51fK06h7wGh6GH8uMSl3bXaHtrhiJdwrlIxS6E2tOOD8tyfnNqGT
+         LyXw==
+X-Gm-Message-State: AGi0PuaBRdZQYzZ6r8ZFuCc6q2SvF99J7yfFn5XexUS/FqqzBT6OKPG7
+        gsGLrsrKSX6hqYdyqYFHmTU5lQ==
+X-Google-Smtp-Source: APiQypIL/PW1mtTGeYYsEpuNsBi/zLJsEtOcd9WPaF6Vli2ytTzZWrXEG9j7tzeNJ+PPg1q5mYXzRg==
+X-Received: by 2002:a5d:4fc6:: with SMTP id h6mr26231154wrw.277.1587484328663;
+        Tue, 21 Apr 2020 08:52:08 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id g25sm3859102wmh.24.2020.04.21.08.52.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Apr 2020 08:52:08 -0700 (PDT)
+Date:   Tue, 21 Apr 2020 17:52:07 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Maor Gottlieb <maorg@mellanox.com>
+Cc:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        kuba@kernel.org, jiri@mellanox.com, dsahern@kernel.org,
+        leonro@mellanox.com, saeedm@mellanox.com,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        alexr@mellanox.com
+Subject: Re: [PATCH V3 mlx5-next 03/15] bonding: Rename slave_arr to
+ usable_slaves
+Message-ID: <20200421155207.GB6581@nanopsycho.orion>
+References: <20200421102844.23640-1-maorg@mellanox.com>
+ <20200421102844.23640-4-maorg@mellanox.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7bcd7a65740a6f85637ef17ed6b6a1e3@walle.cc>
+In-Reply-To: <20200421102844.23640-4-maorg@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 21, 2020 at 05:25:19PM +0200, Michael Walle wrote:
-> Am 2020-04-21 01:26, schrieb Michael Walle:
-> > +
-> > +/* Represents a shared structure between different phydev's in the same
-> > + * package, for example a quad PHY. See phy_package_join() and
-> > + * phy_package_leave().
-> > + */
-> > +struct phy_package_shared {
-> > +	int addr;
-> > +	refcount_t refcnt;
-> > +	unsigned long flags;
-> > +
-> > +	/* private data pointer */
-> > +	/* note that this pointer is shared between different phydevs and
-> > +	 * the user has to take care of appropriate locking.
-> > +	 */
-> > +	void *priv;
-> 
-> btw. how should a driver actually use this? I mean, it can allocate
-> memory if its still NULL but when will it be freed again. Do we need
-> a callback? Is there something better than a callback?
+Tue, Apr 21, 2020 at 12:28:32PM CEST, maorg@mellanox.com wrote:
+>Rename slave_arr to usable_slaves, since we will have two arrays,
+>one for the usable slaves and the other to all slaves.
+>
+>Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
 
-Good point. phy_package_join() should take a size_t and do the
-allocation. phy_package_leave() would then free it.
-
-But since we don't have a user at the moment, maybe leave it out.
-
-    Andrew
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
