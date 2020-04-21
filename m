@@ -2,80 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C89831B3064
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 21:32:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5609E1B307C
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 21:38:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726335AbgDUTb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 15:31:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39146 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725930AbgDUTb5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 15:31:57 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 606BCC061BD3
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 12:31:57 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id e6so1830505pjt.4
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 12:31:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :user-agent:mime-version;
-        bh=NZNBzPPg39ZyrA+9K1+5SfyJG/p/D3ab1EaiN8kOOpQ=;
-        b=D5E4GkQI8kMxBOpuDMOjkCGLYjzhv9SzQx5s04xfcN97rcZAXp10VOjQbSAr2Va2Ep
-         xOLMpcHjY6zHeW3ZNP3LQzJ0SI8bn5J7t4sslKU5XoQ8Hh7f/hmV2OTnxPoAF8Ci6nyN
-         khM6ZLtn45Nblr0G9fbnMUFmCSjbE687sAfFlBF1OaQI60mi6gjnomTCbesFpqhm3BVV
-         RD+IOKedrI/zH7nugKGj5JxvNaJpwHc7iAPT/cZDE2h8z/lyWZ5haQUSHayyaaVJjnis
-         3vFRPZc89wAtD42w3NPuMAAgRbODqu8Ixx1ApaoC8jSjx15fAdrO1g+HM4T+YSNo5KeE
-         imow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:user-agent:mime-version;
-        bh=NZNBzPPg39ZyrA+9K1+5SfyJG/p/D3ab1EaiN8kOOpQ=;
-        b=ATmd6VVtA4HXnhfqx4D/1vSboQtY+aAokKJwfyRyOzZNEOQxOTzkquZ/ICiGYxqbWm
-         /y4HW9AJvVu07dMbuUSEgdYOHLBfMC3CHs2EvGWemUPOc6+vDogHvPCPdbGsHvFF1zFZ
-         r/eoV8TIzBZ43Vm8oUWODTo34EQyrIPxBp0sI3E+9e9JagQlFgXInOsAvzprPfabcXK9
-         yVSdn8ODk8Njx94L36QQxjx/d+0KxiYjD3KmFuWv1BYB4gjA7Q23drt9aAzWvL85vuou
-         IkZlwJVJX1qBptwSGF5GOJ+OWPNX4AsMlKVL+AI64N/AYDDcsLATNKwe6f5+c3SU2lZt
-         f34Q==
-X-Gm-Message-State: AGi0PuaaP8HjmSd7euOq5+ub+T7cs5b2Ia/E0st8oOgHXJxOMCOcZGnp
-        Oi5K64GZWvt8gWAHfBV/9Yc6jw==
-X-Google-Smtp-Source: APiQypJFBgqr1TsKQVWWIkIK19DIg+mC/W2jjmH2JPSKGjxUsdqPajleKdFLi5uyE7M2nN3ydVuYqg==
-X-Received: by 2002:a17:902:c193:: with SMTP id d19mr21224614pld.184.1587497516540;
-        Tue, 21 Apr 2020 12:31:56 -0700 (PDT)
-Received: from [2620:15c:17:3:3a5:23a7:5e32:4598] ([2620:15c:17:3:3a5:23a7:5e32:4598])
-        by smtp.gmail.com with ESMTPSA id y25sm2998977pgc.36.2020.04.21.12.31.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Apr 2020 12:31:55 -0700 (PDT)
-Date:   Tue, 21 Apr 2020 12:31:54 -0700 (PDT)
-From:   David Rientjes <rientjes@google.com>
-X-X-Sender: rientjes@chino.kir.corp.google.com
-To:     Christoph Hellwig <hch@lst.de>
-cc:     Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH 2/5] mm: remove watermark_boost_factor_sysctl_handler
-In-Reply-To: <20200421171539.288622-3-hch@lst.de>
-Message-ID: <alpine.DEB.2.22.394.2004211231410.54578@chino.kir.corp.google.com>
-References: <20200421171539.288622-1-hch@lst.de> <20200421171539.288622-3-hch@lst.de>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        id S1726115AbgDUTi0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 15:38:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40150 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725930AbgDUTi0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 15:38:26 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F362C0610D5;
+        Tue, 21 Apr 2020 12:38:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=cQsbu7/VTrxDt2wl/6zjIgUVlXPWFhpG3HWKnJn11j0=; b=UwgipCLEv4VRJvh0EI+1mBAf8
+        Iuq/z4yh3iTgqvZPzxULlQ/BDdakKc/7ry5tZuLjhF/cnIfyZSFpOKEg30JSgaH6+u/WdFZgGELbH
+        UF/ub5FlN7GU6nFZORUZnB9+n5juuEY5/Lk1+aruWMoq7YBEQrXxvp/8sxEj3XM5wRzfEHA+ECkdH
+        j0NULigdL7d/8sB3c4WuJYL1SDZr/6Dvb38XBa2xm6ptsMG4Ca96gOtWdLPRa0tqPTuAFJN/NwGuu
+        8uS5ZdV2j5oPfhAgTifnoudd7g99CtwhATAHpYTNnzWF5U/4J4th4nbASoik1KGchfevNNyt+8SfP
+        RX7CickgA==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:49226)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jQyie-0003Y9-4J; Tue, 21 Apr 2020 20:38:08 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jQyiY-0007I3-Ig; Tue, 21 Apr 2020 20:38:02 +0100
+Date:   Tue, 21 Apr 2020 20:38:02 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Michael Walle <michael@walle.cc>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [RFC PATCH net-next 1/3] net: phy: add concept of shared storage
+ for PHYs
+Message-ID: <20200421193802.GG25745@shell.armlinux.org.uk>
+References: <20200420232624.9127-1-michael@walle.cc>
+ <7bcd7a65740a6f85637ef17ed6b6a1e3@walle.cc>
+ <20200421155031.GE933345@lunn.ch>
+ <47bdeaf298a09f20ad6631db13df37d2@walle.cc>
+ <20200421193055.GI933345@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200421193055.GI933345@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Apr 2020, Christoph Hellwig wrote:
-
-> watermark_boost_factor_sysctl_handler is just a pointless wrapper for
-> proc_dointvec_minmax, so remove it and use proc_dointvec_minmax
-> directly.
+On Tue, Apr 21, 2020 at 09:30:55PM +0200, Andrew Lunn wrote:
+> > Speaking of it. Does anyone have an idea how I could create the hwmon
+> > device without the PHY device? At the moment it is attached to the
+> > first PHY device and is removed when the PHY is removed, although
+> > there might be still other PHYs in this package. Its unlikely to
+> > happen though, but if someone has a good idea how to handle that,
+> > I'd give it a try.
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> There is a somewhat similar problem with Marvell Ethernet switches and
+> their internal PHYs. The PHYs are the same as the discrete PHYs, and
+> the usual Marvell PHY driver is used. But there is only one
+> temperature sensor for the whole switch, and it is mapped into all the
+> PHYs. So we end up creating multiple hwmon devices for the one
+> temperature sensor, one per PHY.
 
-Acked-by: David Rientjes <rientjes@google.com>
+And sometimes we really mess it up - like on the 88e6141:
+
+cp1configspacef4000000mdio12a200switch04mdio14-mdio-e
+Adapter: MDIO adapter
+temp1:        -75.0°C
+
+because DSA forces the 6390 PHY ID for this PHY, and the marvell
+driver tries to drive the PHY as if it's a different switch, so
+we end up reading a register that isn't meaningful.
+
+So, imho, the current approach isn't as good as you think it is.
+
+That aside from wasting memory allocating multiple sensors when
+there's really only one.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
