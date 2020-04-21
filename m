@@ -2,98 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C556B1B2218
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 10:55:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4313D1B2223
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 10:57:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728309AbgDUIzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 04:55:13 -0400
-Received: from mout.gmx.net ([212.227.15.15]:35087 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726018AbgDUIzM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Apr 2020 04:55:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1587459310;
-        bh=J2Z74hgcwHHGGdPBH0C5iJA/8hhsUGYOmZw/I4UMpV8=;
-        h=X-UI-Sender-Class:From:Subject:Reply-To:To:Date;
-        b=gYP7yHQuSNW+mb8UHQtytO9W8RH0uiX4rd9m0w8cA0FjzpnDd2BJMt7vy2+bBqFSa
-         9LkmpDiVcqFLnhsFpF4lU7tgA0P6tL6650djQYXxNMc4We+vdiJhuFzA4dlEAJ8MRP
-         0Dqzrt+bzIC5KJ9KEexXN0Wwvp01uunkJ9h6Iiqs=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.84.205] ([95.81.9.244]) by mail.gmx.com (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MybKp-1j1iBk3VhF-00yuW3 for
- <netdev@vger.kernel.org>; Tue, 21 Apr 2020 10:55:10 +0200
-From:   =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
-Subject: [switchdev] bridge fdb vs. switch's ATU - connection timeout when
- roaming from LAN port to WLan port
-Reply-To: vtol@gmx.net
+        id S1726691AbgDUI5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 04:57:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53794 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726018AbgDUI5y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 04:57:54 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC6D3C061A0F
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 01:57:53 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id t9so1100896pjw.0
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 01:57:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=aquYh4pU/4+7/1HXgDG98yftKqcnfXoiWswEo35HNkk=;
+        b=k/4l0tiGfspz6eRuom16UQHBnnx/VD5jPLRj2X3ngQJr6iekEMylVmJJkwvwt7lRE3
+         0rVjXemxiwj8S2WNXBtLG7cLlyAyLeIMazgdB9qbwchbeosN8g2S3syhJmqcIe3IsD89
+         ri1bkCdlPnq6xjE9ci6UCyfQeviyUvCqB1pAF1shPKPNfScUslDokcHhUns6e3w88aVl
+         7Uu2VVdSlzc3xI5bT5t92r5legpJIOa8+AOW5ZztTc1Ts1sxB/hMkkx3ikyvftNrC97P
+         YUI7u4Um93mrHiHGvyad1W9ddBA51MR0j5rr20eOaV8dF84IZj5qJNAEYxU5qCJAldqp
+         s2Kw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=aquYh4pU/4+7/1HXgDG98yftKqcnfXoiWswEo35HNkk=;
+        b=UxC2yilUFyR/AyBtZ+Lnci8iRsyZIqmB1FPszA/hzG8VeXQ1n/3tUJDBI7djGYf3VD
+         e/DyO2H8X48bj8TChnDiYo+EmDPRiP4F80iPy/rJfimTz/4KG9Dcv030agey3NIyVrL4
+         L70m64G2Pd4px9rbzMOReyuaS3geUp6ieY7bY9VIMaqqeQtnmgbf/VArA8Qx29PeYuOc
+         M9b+KGRzrkMLbExz/j/7eTZSTiVRSpy+GbAfblwS4PHWnQYMgrEPHyDRHd1fgdbRwykv
+         XXdx2voJa5omHNispjtFJJ/Yim3lqEVu6P6OxdwxIuF/vrM9z4lxrgsTpfhDW2c6WeWw
+         U9kg==
+X-Gm-Message-State: AGi0PubxHDyh+9JZ1syQAhD0SzFgyg6DzCF/rk/j9yynlzR5UVfGS3Pq
+        G3eU6DpS7hQkCGDnKpcVQAHHk2da
+X-Google-Smtp-Source: APiQypLmagXqUmLc15vw2utF9W/CnbaNHAj3wIoIl6u760OcGFvh04Wcea+vRIURR+gJkwVNM5xU3g==
+X-Received: by 2002:a17:90a:fd94:: with SMTP id cx20mr4199886pjb.157.1587459472867;
+        Tue, 21 Apr 2020 01:57:52 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id b9sm1831700pfp.12.2020.04.21.01.57.51
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 21 Apr 2020 01:57:52 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
 To:     netdev@vger.kernel.org
-Message-ID: <9a060c11-1f41-f3a4-3135-1045524bb9b5@gmx.net>
-Date:   Tue, 21 Apr 2020 08:55:00 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Content-Language: en-GB
-X-Provags-ID: V03:K1:BGP7jM6d4n8Xt6lejuAP10DEJTUJh+ppZKVUGCjdaAzemdP89B4
- tV36u0ngPI2MJ2nNd+KlNbGHiKb/ZyEObU6aVWborPYngIy7UoSgW6Oh2JC9YHvVgHc9BxD
- mZFOIO6xdHB+df9cGl2dT3txRZ8CgxnDVUO1wWfO+iCUiwq4lRuQdxSQLVmF0r/rDS6aKdt
- WLY+vx3WJBnq5XlF/bN0w==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:mjrrjtWY8bQ=:zD7aubO3wtZGuvhViBq0My
- 3XyvqNxXGrkv/E3o/jvB+M/U25TanT6iun2u4KGz2z6apLqln/0+fwyFnLr7n3izU3Ek1dUVB
- 4jl3eZ6JYiYgU1hWjbA8rs96nx/ZoykXZzthvZcyp+SsspE1xSRCIiisYFVrTK6GGdZ9S0b3Y
- r1JAdcRr2BqdOUOYx0i8pvOzmZILtASWFn+KWgi+8yfRS0GSTpZwfZiYup6uRMfLweGqBi75P
- P38mSK2WLwefxETHtyVNQAFPeV6hflOEwiKHgSgZMXb2jsHzlqy9UlT5CTaEXBfWmCJl5LMRt
- C7OuItCiqtfcezD+HuuXd9Npq3gsZVHZSkGh1yXAlp/xq/x1WAY0uZTIeFSFAUcCK7AdwzzeH
- irQ8UtCMVjG5UyDOhzP8GhMK2SLlzsXEt+M35AE7mx7Ia85ZadIh9a1QXfWgiCELAk1HJKUaw
- EZET2LP1mnrPAfdnQVnPdvYeFgYBPvFk5NwdtSnGDbyqKbM7pKjTj0ptoqlbw3kJC1jfGwOn+
- WIy1Z9Ry242Q12GRmiSXZ+A2+4D0uphm00q9ONfGUagbhp3IrUDnCJe+5mZHaciDEW6o5qqz5
- LB4ydUmqBHZ9B757LwAcAcWvT3hRTq69KCYxrrydT5ZKH4S62FjujR9+rbkUa932egH1ngUJW
- uW8M5sMpa/Q73ICtt8+dXuo1l4P69pK4DSyS3qa82PfWDVU1qfJzFcP8jkErbXN6Y0Y2Y8zlF
- o1HsEeDyWa7tGWmUs9528cWavM+99KsI+7Cfp14p/7cy1DjwOI48sUxmjPSKcRDm9ZRMPW96t
- YzeKyDgV2xHgS1ypFNCaxCw/J+HQRxZOk8DAgpfBRCy8A7tJW4ilrsTorifrGkLYhbX+fnPlr
- f/fuJuO6w3MhV/KS9Z8rnowJfjVKSPrWCZlFT4n0xbyu7wbJ32DkpICIyNM5Saj3XYv03JUEs
- jFlaKlGnbnBjKBq5/v+E0PLUmidlY0fQNtCH/ojh9ngeSQ+VaYPtJmp7XUo/UkeoskooC3M09
- W906+x9z0FYKOiVyP7XZ+qWirNYgDJdtc/aXpd0nJLZEv5OqxKYHEM22pigZs5l+S2jmLYH/o
- jFSOJy90xiiK3w50WA3+ja4oQMUm5EEJefCSMd2UTSu+xT7Q+zQo1aK7dw3KqwJx9U6/XyvU3
- 9vtB/8PoEtlaq0+wKJAxy3Tb1wBcyFEnKW3Ex+UB1IVyr88VzFYOus5f1EvmJfRUzYvVdav4D
- PTTow9JJRcXQ/l8o2
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Subject: [PATCH ipsec] xfrm: fix a warning in xfrm_policy_insert_list
+Date:   Tue, 21 Apr 2020 16:57:44 +0800
+Message-Id: <b328381f956215debcaa2fb70c6a10159ba1f5db.1587459464.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-HOST config
-* kernel 4.19.93
-* SoC Cortex-A9 (armv7l)
-* switch Marvell 88E6176 via PHY lane (mdio-mii) to SoC
-* switch's downstream port driven by DSA
-* switch's ATU=E2=80=99s /AgeTime/ control register default value =3D 0x13=
- (19 x
-16 =3D 304 seconds)
-* WLan card via mPCIe to SoC
-________
+This waring can be triggered simply by:
 
-Moving a client node from a (HOST) switch's downstream port (either
-directly wired or indirectly via wireless AP that is wired into a switch
-downstream port) to the HOST provided AP results in the client node not
-being able to reach any other client node connected to a (HOST) switch's
-downstream port.
-Only after the switch's ATU=E2=80=99s /AgeTime/ has expired (and the MAC a=
-ddress
-of the roaming client node been cleared in the ATU) the client node
-(that been moved/roamed) is able to establish connectivity with any
-other client node connected to a (HOST) switch's downstream port.
+  # ip xfrm policy update src 192.168.1.1/24 dst 192.168.1.2/24 dir in \
+    priority 1 mark 0 mask 0x10  #[1]
+  # ip xfrm policy update src 192.168.1.1/24 dst 192.168.1.2/24 dir in \
+    priority 2 mark 0 mask 0x1   #[2]
+  # ip xfrm policy update src 192.168.1.1/24 dst 192.168.1.2/24 dir in \
+    priority 2 mark 0 mask 0x10  #[3]
 
-Whilst bridge fdb is learning on the switch's downstream ports and the
-WLan ports the switch's ATU is learning only on its downstream ports.
-That sort of constitutes a communication gap and leading to the
-aforementioned connectivity issue in the described roaming scenario.
+Then dmesg shows:
 
-Should switchdev be expected to communicate (align) changes from the
-bridge fdb to the switch's ATU and thus prevent the aforementioned
-connectivity issue? Or else, how to remedy?
+  [ ] WARNING: CPU: 1 PID: 7265 at net/xfrm/xfrm_policy.c:1548
+  [ ] RIP: 0010:xfrm_policy_insert_list+0x2f2/0x1030
+  [ ] Call Trace:
+  [ ]  xfrm_policy_inexact_insert+0x85/0xe50
+  [ ]  xfrm_policy_insert+0x4ba/0x680
+  [ ]  xfrm_add_policy+0x246/0x4d0
+  [ ]  xfrm_user_rcv_msg+0x331/0x5c0
+  [ ]  netlink_rcv_skb+0x121/0x350
+  [ ]  xfrm_netlink_rcv+0x66/0x80
+  [ ]  netlink_unicast+0x439/0x630
+  [ ]  netlink_sendmsg+0x714/0xbf0
+  [ ]  sock_sendmsg+0xe2/0x110
 
+The issue was introduced by Commit 7cb8a93968e3 ("xfrm: Allow inserting
+policies with matching mark and different priorities"). After that, the
+policies [1] and [2] would be able to be added with different priorities.
 
+However, policy [3] will actually match both [1] and [2]. Policy [1]
+was matched due to the 1st 'return true' in xfrm_policy_mark_match(),
+and policy [2] was matched due to the 2nd 'return true' in there. It
+caused WARN_ON() in xfrm_policy_insert_list().
 
+This patch is to fix it by removing the 1st 'return true', as it should
+not be how value and mask work.
+
+Fixes: 7cb8a93968e3 ("xfrm: Allow inserting policies with matching mark and different priorities")
+Reported-by: Xiumei Mu <xmu@redhat.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/xfrm/xfrm_policy.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 297b2fd..3db2db6 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -1438,9 +1438,6 @@ static bool xfrm_policy_mark_match(struct xfrm_policy *policy,
+ {
+ 	u32 mark = policy->mark.v & policy->mark.m;
+ 
+-	if (policy->mark.v == pol->mark.v && policy->mark.m == pol->mark.m)
+-		return true;
+-
+ 	if ((mark & pol->mark.m) == pol->mark.v &&
+ 	    policy->priority == pol->priority)
+ 		return true;
+-- 
+2.1.0
 
