@@ -2,81 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A8461B2711
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 15:03:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92B081B2748
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 15:14:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728909AbgDUNDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 09:03:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35346 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726780AbgDUNDh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 09:03:37 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F3BCC061A10
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 06:03:37 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id p10so5334165ioh.7
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 06:03:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pyRfRhgyNf8wbP6cqiGlQ94JbUz+zQqhJSA1jkRBFvU=;
-        b=Xxc45HminLlDwh20JNBlKpLqQU4w+4xoQGX+Ewi/FjGOCUosLRAAoY9Rf3JI4tO9BE
-         9cA1IzVPMxEwmrYOd6YOhiMeKjIhZxqrriBQKe1IrX7C5NDqZ28ZreZ+LA8QZO+EufCo
-         TI+/CJAb5AwRMAYAzQxNbj9QT3ZrCVRFOKU2/t6vGiaYr/F99+87F8UJhkEg0NRRsmGv
-         Zx2VleXhZTwAMbJ6Ay8QVePVZFlcpEzWKCp9Fc5TCDz0l6r7ICDeNt/8bcIosVHlBifT
-         43GsrCioxlGnC7VfTl813dsicmt2lD7ZlUSrbxjhfA5707PwBg+tE3kFr2+BBd1iUOHo
-         mW6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=pyRfRhgyNf8wbP6cqiGlQ94JbUz+zQqhJSA1jkRBFvU=;
-        b=YX0pK770lXgjkfCWVvqiCms4wYBErNM2qQ9qzTwk5SWvd8zpOwFKxGUBaYj4S1vPjO
-         pmGg2Kw6wodPn09GTOFhZd5euhd9MF/xuBpT2EbWrchKJIIYj8KgMqp2SIXzxymv6R+f
-         KvR4uZnC36d7zohBubR56JAJqZqI7WECzgFn4KHqZ4USZXTFf19i/G32biHH1n7FZdC3
-         8r8uN7E24wBn+nv2I7czTPfwBgJC1DWqacfFssCKJbUtnx+9W7IzcrLKdSHJIBAvkZIc
-         iR9OrFE7sg9sPmEeLICgOdcDfAoUC2c0aAqeoIBvjDS5DY5Mlikdp7Ovh0Rlarh3TwI2
-         f58Q==
-X-Gm-Message-State: AGi0PuakJEO3z3s2cb2yFEwtzj5wh31X1W40etSe2s/2P1PCNFqNMaRh
-        N3glqM98oltm346ShIH+au8=
-X-Google-Smtp-Source: APiQypL/m5aBpuoVfgsqi0VSBI4c7rmNIsOYV/h6w7C6SzJpLKlMxZh/Bo7m0+Ya4M0pdF6enfeEcg==
-X-Received: by 2002:a05:6638:3f1:: with SMTP id s17mr20088663jaq.44.1587474216544;
-        Tue, 21 Apr 2020 06:03:36 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:294e:2b15:7b00:d585? ([2601:282:803:7700:294e:2b15:7b00:d585])
-        by smtp.googlemail.com with ESMTPSA id x1sm747624iol.5.2020.04.21.06.03.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Apr 2020 06:03:35 -0700 (PDT)
-Subject: Re: [PATCH bpf-next 12/16] libbpf: Add egress XDP support
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        brouer@redhat.com, toshiaki.makita1@gmail.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dahern@digitalocean.com>
-References: <20200420200055.49033-1-dsahern@kernel.org>
- <20200420200055.49033-13-dsahern@kernel.org> <87a7359m3j.fsf@toke.dk>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <f2385dfc-87de-b289-c2f0-7ef79de74872@gmail.com>
-Date:   Tue, 21 Apr 2020 07:03:34 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
+        id S1728908AbgDUNOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 09:14:36 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:33463 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726780AbgDUNOg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 09:14:36 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id A0A285C018D;
+        Tue, 21 Apr 2020 09:14:34 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Tue, 21 Apr 2020 09:14:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm3; bh=zycOR+6bwJZ4JHSqR6NX+uiN3Tw
+        /gGPTY7r2R6DKCBw=; b=cKWjnJNrRwmj77Rinqy5MmebASJv6OyeEPlnrRQl+p3
+        G9JvXjDqrzf1tZ/3O4Ic2p4JpeE9+Cwr1ZWdzRZJBITdh9Ui9l/OY4u7q+Dm3U89
+        nBBJMAFU0vRVbSTrzRbR9rqbeyl5pn3/B9wv0NdEvL9BDZB3o8Dy5ErjGjI3jJXa
+        n1RKTgh64lWaMDLuWYizBr3ShEsctDePpkj+KHt+WnNs0xo7ecg+kHiNcgbADhDf
+        W7m+01HpvXrJYmSFYeVRnWbjPyq7lea6naMsl7vjqA4cfx2PTb5nc2tZuTkz17xn
+        xT4+Ct2l79UvVyuElyRsgTgvOu34ZYeewRSYM9KbUwg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=zycOR+
+        6bwJZ4JHSqR6NX+uiN3Tw/gGPTY7r2R6DKCBw=; b=4P15AjXzP6+3Vg8BvUAboo
+        dRYlSfXBPfdaBwPEY+QKBhLBlsMYOAOc50Q402RqxhEmrrnolZRSJaIzUzMjpU3o
+        4Kh2dAinou8YVMqmAreOLJufb2V/f/+mPkg6CZh055FywUikeWh1F7OwAkYetPp5
+        DcMV15QxW+cQLe9YxbQ10W9VUiRWCl7UCrpI0oT8XxEdV9S0ZJMZQqclzwd6+PzM
+        vWlQf3MJNE21ldXZUdC/p1D0bkzUyq4sjtcMaS0I4LhjbOqRreGYGkJVHTWzevzn
+        svoJLAC5R2EzL5/d9ULy1OVpRTvu2oA8AYmSxKg6sdIoy4tyqcZ6JmLoIOQlGBZQ
+        ==
+X-ME-Sender: <xms:ufGeXsNgwLibxkBMiItC1pgLrc_HMaGVsmZAWJp-HfizbnH2Ji3aUg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrgeehgdeitdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghgucfm
+    jfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecukfhppeekfedrkeeirdekledruddtje
+    enucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgv
+    gheskhhrohgrhhdrtghomh
+X-ME-Proxy: <xmx:ufGeXjvDcsn9MyfggEELC2s8TcZ8GbTJ8-ftSQws3A1wS5B0RXyDwQ>
+    <xmx:ufGeXnFhnZmsVAWRq2CAPj830ZPNIhgIQkShXsWZ7mI_OviAAGYJOg>
+    <xmx:ufGeXmSx0_me1dYA5FsUcEwYunKSVW89YauQ9r3EE1nZRgwBL-Bqog>
+    <xmx:uvGeXn6bNMRg48tAFBjfXpxN8ksNoyy72wvR8kiQNyBqa0n185eddQ>
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 16FA73065C82;
+        Tue, 21 Apr 2020 09:14:32 -0400 (EDT)
+Date:   Tue, 21 Apr 2020 15:14:31 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Sasha Levin <sashal@kernel.org>,
+        Stefano Brivio <sbrivio@redhat.com>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Phil Sutter <phil@nwl.cc>, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.5 27/35] netfilter: nf_tables: Allow set
+ back-ends to report partial overlaps on insertion
+Message-ID: <20200421131431.GA793882@kroah.com>
+References: <20200407000058.16423-1-sashal@kernel.org>
+ <20200407000058.16423-27-sashal@kernel.org>
+ <20200407021848.626df832@redhat.com>
+ <20200413163900.GO27528@sasha-vm>
+ <20200413223858.17b0f487@redhat.com>
+ <20200414150840.GD1068@sasha-vm>
+ <20200421113221.rvh3jkjet32m6ng4@salvia>
 MIME-Version: 1.0
-In-Reply-To: <87a7359m3j.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200421113221.rvh3jkjet32m6ng4@salvia>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/21/20 4:20 AM, Toke Høiland-Jørgensen wrote:
-> Isn't the kernel returning both program types in the same message when
-> dumping an interface? So do we really need a separate getter instead of
-> just populating xdp_link_info with the egress ID in the existing getter?
+On Tue, Apr 21, 2020 at 01:32:21PM +0200, Pablo Neira Ayuso wrote:
+> Hi Sasha,
+> 
+> On Tue, Apr 14, 2020 at 11:08:40AM -0400, Sasha Levin wrote:
+> > On Mon, Apr 13, 2020 at 10:38:58PM +0200, Stefano Brivio wrote:
+> > > On Mon, 13 Apr 2020 12:39:00 -0400
+> > > Sasha Levin <sashal@kernel.org> wrote:
+> > > 
+> > > > On Tue, Apr 07, 2020 at 02:18:48AM +0200, Stefano Brivio wrote:
+> > > > 
+> > > > >I'm used to not Cc: stable on networking patches (Dave's net.git),
+> > > > >but I guess I should instead if they go through nf.git (Pablo's tree),
+> > > > >right?
+> > > > 
+> > > > Yup, this confusion has caused for quite a few netfilter fixes to not
+> > > > land in -stable. If it goes through Pablo's tree (and unless he intructs
+> > > > otherwise), you should Cc stable.
+> > > 
+> > > Hah, thanks for clarifying.
+> > > 
+> > > What do you think I should do specifically with 72239f2795fa
+> > > ("netfilter: nft_set_rbtree: Drop spurious condition for overlap detection
+> > > on insertion")?
+> > > 
+> > > I haven't Cc'ed stable on that one. Can I expect AUTOSEL to pick it up
+> > > anyway?
+> > 
+> > I'll make sure it gets queued up when it hits Linus's tree :)
+> 
+> 5.6.6 is out and this fix is still not included...
+> 
+> Would you please enqueue...
+> 
+> commit 72239f2795fab9a58633bd0399698ff7581534a3
+> Author: Stefano Brivio <sbrivio@redhat.com>
+> Date:   Wed Apr 1 17:14:38 2020 +0200
+> 
+>     netfilter: nft_set_rbtree: Drop spurious condition for overlap detection on insertion
+> 
+> for 5.6.x -stable ?
 
-That might work with some refactoring of get_xdp_info. I'll take a look.
+Now queued up, thanks.
+
+greg k-h
