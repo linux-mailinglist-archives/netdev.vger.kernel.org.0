@@ -2,269 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E92591B1C05
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 04:39:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C45E81B1C1C
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 04:46:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726726AbgDUCjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 22:39:33 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:26374 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726013AbgDUCjd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 22:39:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587436770;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kmunxmRPWgsddlc22setU4RrPRi7Q8TgmUrkV++FWQ0=;
-        b=RpyVpNCWna/wX5c9CFJrslMXY0dMABUjCqkIAOk2Xsb2tLE/ja9PhN6i/NEA8Dr9j5Qf0o
-        GinQp2B9pJQ4zAdloDa/po3hlCI0h4uHVx4X+mjGRZpxCU7CxAzjzYKt2aM3aRSo3r/T27
-        TugmqrM2sTh4HFetStGvszxdtoWK06s=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-260-897cG6v6OymdM3U0rEwCQA-1; Mon, 20 Apr 2020 22:39:26 -0400
-X-MC-Unique: 897cG6v6OymdM3U0rEwCQA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3E70C8017F3;
-        Tue, 21 Apr 2020 02:39:25 +0000 (UTC)
-Received: from [10.72.12.74] (ovpn-12-74.pek2.redhat.com [10.72.12.74])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id ACD1C48;
-        Tue, 21 Apr 2020 02:39:20 +0000 (UTC)
-Subject: Re: [PATCH v3] virtio: force spec specified alignment on types
-To:     "Michael S. Tsirkin" <mst@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org
-References: <20200420204448.377168-1-mst@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <a4939aeb-ed9d-a6af-1c70-c6c2513e86e2@redhat.com>
-Date:   Tue, 21 Apr 2020 10:39:19 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1726793AbgDUCqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 22:46:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53058 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725829AbgDUCqT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 22:46:19 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78445C061A0E;
+        Mon, 20 Apr 2020 19:46:19 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id 198so9845340lfo.7;
+        Mon, 20 Apr 2020 19:46:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=o5OcbUGHwiU1CmRyAs5hmz04gA+MaTAsH/b/sIzr7cU=;
+        b=KN56EWmXtN8o0IvMzCvJH3XSM9pOdbqZ5nAD9AoPLE+MXetTf0Rykt8SGBHkjtiMS9
+         lx6EJ2iYn+Pb7oDrdVUyQf7mjWvfGr6bjVmSI2zJUN4SnupxsawEOPpdj7GfJcQ+wLPk
+         rX95L534Ob9XyS3Wm8xeShzZ9JidZZjbOjujWoyKdJ2xgW1/EmsUsC0L1kS9IZNVOI3r
+         9wvLdfnenrs9mKqyvz1DX8++9R1cGxFuWwrrnCWOZ/6X9tCTnzD7c4Zpkh0ozM3vrIsD
+         niO5m1SZibfXVqrMMxg1a9P3xw00ZBqaXUquszXVRjEM29HVQudqy7jl+E2zhaPVv0W9
+         xvCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=o5OcbUGHwiU1CmRyAs5hmz04gA+MaTAsH/b/sIzr7cU=;
+        b=YWtBOgANUjI/n8MbEFksXwCf7ffDM30zSotpjtgZee0VTj1htfiC/u6vk1GOmaWOU7
+         j0qITZf7J6/V/N0CRezWMbg3k2vEi8tsYT40KsnaWWAleOCcxxmjkKM7LHoRlt2p5FHd
+         1mq9Y7N0ilIRo3ey9AAlqiUALL+kXJnqmuaeOHHsZwdiAMFl8wbcb+dVAZz+9xH7oHU1
+         IH0PBdUWRVD/B+nxqyjPClyZTzhYWEMtCWT9hiSGPH5tCPXvXyj1MkvUBijNdVTVX0cF
+         E5dt2jeH+aVdzjv5zLNApnMdZx9RWFIpg5t16IiSOsDDS9LI3BtBRAsLdEQ7B/LjRHoc
+         8coA==
+X-Gm-Message-State: AGi0PuaJWoDkf5QU0IscHS7RF+2320m4NvJpvSCAzoASuSRBFUK+B8UE
+        IY7gbWnKcbJLSO/IHRSzXsJ/fW8ws7F0it/lo7U=
+X-Google-Smtp-Source: APiQypIqJWu9QiVesaaTnVGOdtYMSxVQY4sEJwiueOtyt8iKdNYmFMDvnjRUOFgNvj+br6RKUBHnoBWXACbWLX9LPe0=
+X-Received: by 2002:ac2:569b:: with SMTP id 27mr12499931lfr.134.1587437177744;
+ Mon, 20 Apr 2020 19:46:17 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200420204448.377168-1-mst@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-Content-Transfer-Encoding: quoted-printable
+References: <20200418232655.23870-1-luke.r.nels@gmail.com>
+In-Reply-To: <20200418232655.23870-1-luke.r.nels@gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 20 Apr 2020 19:46:05 -0700
+Message-ID: <CAADnVQL+--GLyaPdj2cRncQ9X-EAravt1_2fjfPhORWA-VUWuQ@mail.gmail.com>
+Subject: Re: [PATCH bpf 1/2] bpf, x86: Fix encoding for lower 8-bit registers
+ in BPF_STX BPF_B
+To:     Luke Nelson <lukenels@cs.washington.edu>
+Cc:     bpf <bpf@vger.kernel.org>, Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, X86 ML <x86@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2020/4/21 =E4=B8=8A=E5=8D=884:46, Michael S. Tsirkin wrote:
-> The ring element addresses are passed between components with different
-> alignments assumptions. Thus, if guest/userspace selects a pointer and
-> host then gets and dereferences it, we might need to decrease the
-> compiler-selected alignment to prevent compiler on the host from
-> assuming pointer is aligned.
+On Sat, Apr 18, 2020 at 4:27 PM Luke Nelson <lukenels@cs.washington.edu> wrote:
 >
-> This actually triggers on ARM with -mabi=3Dapcs-gnu - which is a
-> deprecated configuration, but it seems safer to handle this
-> generally.
+> This patch fixes an encoding bug in emit_stx for BPF_B when the source
+> register is BPF_REG_FP.
 >
-> Note that userspace that allocates the memory is actually OK and does
-> not need to be fixed, but userspace that gets it from guest or another
-> process does need to be fixed. The later doesn't generally talk to the
-> kernel so while it might be buggy it's not talking to the kernel in the
-> buggy way - it's just using the header in the buggy way - so fixing
-> header and asking userspace to recompile is the best we can do.
+> The current implementation for BPF_STX BPF_B in emit_stx saves one REX
+> byte when the operands can be encoded using Mod-R/M alone. The lower 8
+> bits of registers %rax, %rbx, %rcx, and %rdx can be accessed without using
+> a REX prefix via %al, %bl, %cl, and %dl, respectively. Other registers,
+> (e.g., %rsi, %rdi, %rbp, %rsp) require a REX prefix to use their 8-bit
+> equivalents (%sil, %dil, %bpl, %spl).
 >
-> I verified that the produced kernel binary on x86 is exactly identical
-> before and after the change.
+> The current code checks if the source for BPF_STX BPF_B is BPF_REG_1
+> or BPF_REG_2 (which map to %rdi and %rsi), in which case it emits the
+> required REX prefix. However, it misses the case when the source is
+> BPF_REG_FP (mapped to %rbp).
 >
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
+> The result is that BPF_STX BPF_B with BPF_REG_FP as the source operand
+> will read from register %ch instead of the correct %bpl. This patch fixes
+> the problem by fixing and refactoring the check on which registers need
+> the extra REX byte. Since no BPF registers map to %rsp, there is no need
+> to handle %spl.
 >
-> changes from v2:
-> 	add vring_used_elem_t to ensure alignment for substructures
-> changes from v1:
-> 	swicth all __user to the new typedefs
->
->   drivers/vhost/vhost.c            |  8 +++---
->   drivers/vhost/vhost.h            |  6 ++---
->   drivers/vhost/vringh.c           |  6 ++---
->   include/linux/vringh.h           |  6 ++---
->   include/uapi/linux/virtio_ring.h | 43 ++++++++++++++++++++++++-------=
--
->   5 files changed, 45 insertions(+), 24 deletions(-)
->
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index d450e16c5c25..bc77b0f465fd 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -1244,9 +1244,9 @@ static int vhost_iotlb_miss(struct vhost_virtqueu=
-e *vq, u64 iova, int access)
->   }
->  =20
->   static bool vq_access_ok(struct vhost_virtqueue *vq, unsigned int num=
-,
-> -			 struct vring_desc __user *desc,
-> -			 struct vring_avail __user *avail,
-> -			 struct vring_used __user *used)
-> +			 vring_desc_t __user *desc,
-> +			 vring_avail_t __user *avail,
-> +			 vring_used_t __user *used)
->  =20
->   {
->   	return access_ok(desc, vhost_get_desc_size(vq, num)) &&
-> @@ -2301,7 +2301,7 @@ static int __vhost_add_used_n(struct vhost_virtqu=
-eue *vq,
->   			    struct vring_used_elem *heads,
->   			    unsigned count)
->   {
-> -	struct vring_used_elem __user *used;
-> +	vring_used_elem_t __user *used;
->   	u16 old, new;
->   	int start;
->  =20
-> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-> index f8403bd46b85..60cab4c78229 100644
-> --- a/drivers/vhost/vhost.h
-> +++ b/drivers/vhost/vhost.h
-> @@ -67,9 +67,9 @@ struct vhost_virtqueue {
->   	/* The actual ring of buffers. */
->   	struct mutex mutex;
->   	unsigned int num;
-> -	struct vring_desc __user *desc;
-> -	struct vring_avail __user *avail;
-> -	struct vring_used __user *used;
-> +	vring_desc_t __user *desc;
-> +	vring_avail_t __user *avail;
-> +	vring_used_t __user *used;
->   	const struct vhost_iotlb_map *meta_iotlb[VHOST_NUM_ADDRS];
->   	struct file *kick;
->   	struct eventfd_ctx *call_ctx;
-> diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-> index ba8e0d6cfd97..e059a9a47cdf 100644
-> --- a/drivers/vhost/vringh.c
-> +++ b/drivers/vhost/vringh.c
-> @@ -620,9 +620,9 @@ static inline int xfer_to_user(const struct vringh =
-*vrh,
->    */
->   int vringh_init_user(struct vringh *vrh, u64 features,
->   		     unsigned int num, bool weak_barriers,
-> -		     struct vring_desc __user *desc,
-> -		     struct vring_avail __user *avail,
-> -		     struct vring_used __user *used)
-> +		     vring_desc_t __user *desc,
-> +		     vring_avail_t __user *avail,
-> +		     vring_used_t __user *used)
->   {
->   	/* Sane power of 2 please! */
->   	if (!num || num > 0xffff || (num & (num - 1))) {
-> diff --git a/include/linux/vringh.h b/include/linux/vringh.h
-> index 9e2763d7c159..59bd50f99291 100644
-> --- a/include/linux/vringh.h
-> +++ b/include/linux/vringh.h
-> @@ -105,9 +105,9 @@ struct vringh_kiov {
->   /* Helpers for userspace vrings. */
->   int vringh_init_user(struct vringh *vrh, u64 features,
->   		     unsigned int num, bool weak_barriers,
-> -		     struct vring_desc __user *desc,
-> -		     struct vring_avail __user *avail,
-> -		     struct vring_used __user *used);
-> +		     vring_desc_t __user *desc,
-> +		     vring_avail_t __user *avail,
-> +		     vring_used_t __user *used);
->  =20
->   static inline void vringh_iov_init(struct vringh_iov *iov,
->   				   struct iovec *iovec, unsigned num)
-> diff --git a/include/uapi/linux/virtio_ring.h b/include/uapi/linux/virt=
-io_ring.h
-> index 9223c3a5c46a..b2c20f794472 100644
-> --- a/include/uapi/linux/virtio_ring.h
-> +++ b/include/uapi/linux/virtio_ring.h
-> @@ -86,6 +86,13 @@
->    * at the end of the used ring. Guest should ignore the used->flags f=
-ield. */
->   #define VIRTIO_RING_F_EVENT_IDX		29
->  =20
-> +/* Alignment requirements for vring elements.
-> + * When using pre-virtio 1.0 layout, these fall out naturally.
-> + */
-> +#define VRING_AVAIL_ALIGN_SIZE 2
-> +#define VRING_USED_ALIGN_SIZE 4
-> +#define VRING_DESC_ALIGN_SIZE 16
-> +
->   /* Virtio ring descriptors: 16 bytes.  These can chain together via "=
-next". */
->   struct vring_desc {
->   	/* Address (guest-physical). */
-> @@ -112,29 +119,43 @@ struct vring_used_elem {
->   	__virtio32 len;
->   };
->  =20
-> +typedef struct vring_used_elem __aligned(VRING_USED_ALIGN_SIZE)
-> +	vring_used_elem_t;
-> +
->   struct vring_used {
->   	__virtio16 flags;
->   	__virtio16 idx;
-> -	struct vring_used_elem ring[];
-> +	vring_used_elem_t ring[];
->   };
->  =20
-> +/*
-> + * The ring element addresses are passed between components with diffe=
-rent
-> + * alignments assumptions. Thus, we might need to decrease the compile=
-r-selected
-> + * alignment, and so must use a typedef to make sure the __aligned att=
-ribute
-> + * actually takes hold:
-> + *
-> + * https://gcc.gnu.org/onlinedocs//gcc/Common-Type-Attributes.html#Com=
-mon-Type-Attributes
-> + *
-> + * When used on a struct, or struct member, the aligned attribute can =
-only
-> + * increase the alignment; in order to decrease it, the packed attribu=
-te must
-> + * be specified as well. When used as part of a typedef, the aligned a=
-ttribute
-> + * can both increase and decrease alignment, and specifying the packed
-> + * attribute generates a warning.
-> + */
-> +typedef struct vring_desc __aligned(VRING_DESC_ALIGN_SIZE) vring_desc_=
-t;
-> +typedef struct vring_avail __aligned(VRING_AVAIL_ALIGN_SIZE) vring_ava=
-il_t;
-> +typedef struct vring_used __aligned(VRING_USED_ALIGN_SIZE) vring_used_=
-t;
+> Fixes: 622582786c9e0 ("net: filter: x86: internal BPF JIT")
+> Signed-off-by: Xi Wang <xi.wang@gmail.com>
+> Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
 
-
-I wonder whether we can simply use __attribute__(packed) instead?
-
-Thanks
-
-
-> +
->   struct vring {
->   	unsigned int num;
->  =20
-> -	struct vring_desc *desc;
-> +	vring_desc_t *desc;
->  =20
-> -	struct vring_avail *avail;
-> +	vring_avail_t *avail;
->  =20
-> -	struct vring_used *used;
-> +	vring_used_t *used;
->   };
->  =20
-> -/* Alignment requirements for vring elements.
-> - * When using pre-virtio 1.0 layout, these fall out naturally.
-> - */
-> -#define VRING_AVAIL_ALIGN_SIZE 2
-> -#define VRING_USED_ALIGN_SIZE 4
-> -#define VRING_DESC_ALIGN_SIZE 16
-> -
->   #ifndef VIRTIO_RING_NO_LEGACY
->  =20
->   /* The standard layout for the ring is a continuous chunk of memory w=
-hich looks
-
+Applied. Thanks for the fix.
+It's questionable whether the verifier should have allowed such insn
+in the first place, but JIT fix is good regardless.
