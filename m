@@ -2,133 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 852911B2B77
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 17:43:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57E7B1B2B93
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 17:50:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729038AbgDUPmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 11:42:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59890 "EHLO
+        id S1726671AbgDUPuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 11:50:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726043AbgDUPmx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 11:42:53 -0400
+        by vger.kernel.org with ESMTP id S1725990AbgDUPuT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 11:50:19 -0400
 Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770B9C061A10;
-        Tue, 21 Apr 2020 08:42:51 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id u13so16992646wrp.3;
-        Tue, 21 Apr 2020 08:42:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D1FC061A41
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 08:50:18 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id j2so16993102wrs.9
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 08:50:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=smCulfeM0i6IfFInFyIPYZ1woXDKmy7XMohFywAgL4M=;
-        b=onCE8a9sWDTMpHJ5MLfvbv+ZBUE9S/7Cs3Xj9v4QkmAOq146uMO5Q88FIh8aXfQI5Y
-         S5YfUqv+qeERvhQWTYVuY3JFHiVAHuW3PkT9/FFhAFrpc0JdmvZS/pM/knaJqY134q8d
-         e9aS1UdmHDsVjdyyXVBIirNFNxefJ+GJ/M4zBG3bBftaJzoMOBcicD44bKlI22xHawvX
-         Jr0rfBxUllcL0/m985SIa/9kUhDjqPhwWxSwSPS809RIT/w6F3avUqO09VZQopgtm7SM
-         NAyszST8DbAVDFgcqYB9jWb2BAi0byTeYKdvhOOtay3WGhEB1OWQLf/9bs8UkV3Z3TKr
-         nZtg==
+        bh=dXutNfzEPPBIzXty8l2eHHHrm6BjNMm38FPBlcpDxUo=;
+        b=K7DrT8VMr3mDm7ooXxgQgk/tXFdqfAUvBXmJXeCgJLphU3s8GbCrp/LWX1sjZHSgtu
+         NnKo8/oQpCepO1+dRNMyeGXoAFiQ5Hc3vJodl5IldsGzBhCZClqWJ/oCBDm3yVLasRmp
+         NfM2XtmHz+odyb4zdd9QUAhcP48UleXn57Te41f5iPGjrZ0fCi22HpSH1jmbg9mFp7+J
+         P2KRlq91HEl9SKcTZLz8lnS9zXPyh69SC+/dB9e12kuHTEvtcv48dMxDw/C6DYZ58EvM
+         qI4vWrUKAGTJ7QMjLNy0LP6/Or4OMsPlawaDpugVX0/acngL+gi6WVVVN6P2Olm3Upyh
+         Os6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=smCulfeM0i6IfFInFyIPYZ1woXDKmy7XMohFywAgL4M=;
-        b=UXgG1vdHycWVsaA4cIpRepZf4cybBIF2iZF7Cn29yl7wUJghmUkJZN3+oBHpIPyflc
-         wrcbCeVaAcgz4LOpMSbbyeNPeIeloY+hJfwI9PqlCBCUXgkOTIVN/NxGH4B1HIGdF8C/
-         RqBRq+gwFB72h6OMEAoEl8hMZ/jSYwJbLfn8QxxPR0yvYdjeYKF1TmaKGA2ryCOty5R/
-         muhbbOIdKiSnMNUgKjj+LE1OG+l40BwOT+t516fKqgLUapfsHIuV454SRQxM6zFWgcvI
-         KTVMjyjvxq5Hpxd3Vy1CF/BCWHNrGedoF7oH3jeK7fW1K7bR4w4YT4XoiMuijUEQ/reA
-         buyw==
-X-Gm-Message-State: AGi0Pube5k/d55r+PMhXDhqYTC1BzT73o5DR65kdDg3b19FVJvw0ZPgO
-        rDGSrwiFydZabQ+7YjXoz+k=
-X-Google-Smtp-Source: APiQypLxhyUQuMLlC/lZYEOaNY6oE6EnQ7qLe9/IuAI2gTFFfZgl+/1BfhPKJow73lUllSKMMFd6mA==
-X-Received: by 2002:adf:e7ca:: with SMTP id e10mr25267486wrn.18.1587483770237;
-        Tue, 21 Apr 2020 08:42:50 -0700 (PDT)
-Received: from localhost ([51.15.41.238])
-        by smtp.gmail.com with ESMTPSA id a20sm4428579wra.26.2020.04.21.08.42.47
+        bh=dXutNfzEPPBIzXty8l2eHHHrm6BjNMm38FPBlcpDxUo=;
+        b=jfIbCUBmV5NuzPzUeL7DXUHSAnijzBg5vv3ykl9ipBjUaw06yCBWk7TzBWoABuquWm
+         atvRwIkRoT4b3L/KTJf69uD3Mb1vh4WB1xVtTtB0NFLe7tUzkoPx9q0CEu2ZMcOzNPQF
+         MG9V4qzSEYHawD5frc/QJ9hTBO+XjFx4QRwNx4+nTtCz2Wa5iplszbZrOdf0BE8gc1Yb
+         +vwj+oisl4TVETebwFVH1p8mKBh4AGC+GkMHy51SE4ec0bh40agkeTssUXDgvkHBS4rQ
+         kMx2Hj32PDQpbStnbjTJcjCjjU+OUfPWjTDrtIRB9JFmxLkQp3dhA+Qdt1AKygcmth3h
+         Y53Q==
+X-Gm-Message-State: AGi0PuazAN1HHFUXLtNX6M7fL2l904ivoLCOvRj8FvrWyLXg4BIGcONa
+        5zU+RQ1GbzWzR2bXTlf9MbfmXQ==
+X-Google-Smtp-Source: APiQypKsPsSyavO3XM4LnsBGvwkeDRyDzVCJKnACoJCk2EMzBYPOT/O/I2096wlZR8tWs0wCL2Gplw==
+X-Received: by 2002:a5d:6082:: with SMTP id w2mr15674110wrt.163.1587484217570;
+        Tue, 21 Apr 2020 08:50:17 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id k9sm4196577wrd.17.2020.04.21.08.50.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Apr 2020 08:42:48 -0700 (PDT)
-Date:   Tue, 21 Apr 2020 16:42:46 +0100
-From:   Stefan Hajnoczi <stefanha@gmail.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     davem@davemloft.net, Gerard Garcia <ggarcia@abra.uab.cat>,
-        kvm@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net] vsock/virtio: postpone packet delivery to monitoring
- devices
-Message-ID: <20200421154246.GA47385@stefanha-x1.localdomain>
-References: <20200421092527.41651-1-sgarzare@redhat.com>
+        Tue, 21 Apr 2020 08:50:17 -0700 (PDT)
+Date:   Tue, 21 Apr 2020 17:50:16 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Maor Gottlieb <maorg@mellanox.com>
+Cc:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        kuba@kernel.org, jiri@mellanox.com, dsahern@kernel.org,
+        leonro@mellanox.com, saeedm@mellanox.com,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        alexr@mellanox.com
+Subject: Re: [PATCH V3 mlx5-next 02/15] bonding: Export skip slave logic to
+ function
+Message-ID: <20200421155016.GA6581@nanopsycho.orion>
+References: <20200421102844.23640-1-maorg@mellanox.com>
+ <20200421102844.23640-3-maorg@mellanox.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="jRHKVT23PllUwdXP"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200421092527.41651-1-sgarzare@redhat.com>
+In-Reply-To: <20200421102844.23640-3-maorg@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Tue, Apr 21, 2020 at 12:28:31PM CEST, maorg@mellanox.com wrote:
+>As a preparation for following change that add array of
+>all slaves, extract code that skip slave to function.
+>
+>Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
 
---jRHKVT23PllUwdXP
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Apr 21, 2020 at 11:25:27AM +0200, Stefano Garzarella wrote:
-> We delivering packets to monitoring devices, before to check if
-> the virtqueue has enough space.
-
-"We [are] delivering packets" and "before to check" -> "before
-checking".  Perhaps it can be rewritten as:
-
-  Packets are delivered to monitoring devices before checking if the
-  virtqueue has enough space.
-
->=20
-> If the virtqueue is full, the transmitting packet is queued up
-> and it will be sent in the next iteration. This causes the same
-> packet to be delivered multiple times to monitoring devices.
->=20
-> This patch fixes this issue, postponing the packet delivery
-> to monitoring devices, only when it is properly queued in the
-
-s/,//
-
-> virqueue.
-
-s/virqueue/virtqueue/
-
-> @@ -137,6 +135,11 @@ virtio_transport_send_pkt_work(struct work_struct *w=
-ork)
->  			break;
->  		}
-> =20
-> +		/* Deliver to monitoring devices all correctly transmitted
-> +		 * packets.
-> +		 */
-> +		virtio_transport_deliver_tap_pkt(pkt);
-> +
-
-The device may see the tx packet and therefore receive a reply to it
-before we can call virtio_transport_deliver_tap_pkt().  Does this mean
-that replies can now appear in the packet capture before the transmitted
-packet?
-
---jRHKVT23PllUwdXP
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl6fFHYACgkQnKSrs4Gr
-c8gyawf/T+a2xJRtBkyZjuaj7XH+djH+xU923vloo0YRur+sYDLhisPt7kU7x0E9
-NXQvUSZKmd8iUUUDDBeJPpa86l7OisNvebRkWrpj1pOWKl0aOiRG7h7nsRM7+0O4
-hZZ84Hpaq05u6KYAJvtwMXGBtb+Vn3m3CqLf2fEt+Z1xZ+laJhgQD66f/6/HEeVz
-Y2bBrSwjULMJSzy5rGaqDAeewofwWYdK6XPnNXsOHcfcCN3a3Ioy9/GcRfx/8paa
-vswqRKN0nbWhj/xk0dsWoK64CmBFZ7S2wDOztjQ6gtqZ9oG1LzMCWvv/JZADJAPX
-Z64ss/NhhySeVpAIhPrpkFXBVYFuLA==
-=zD+X
------END PGP SIGNATURE-----
-
---jRHKVT23PllUwdXP--
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
