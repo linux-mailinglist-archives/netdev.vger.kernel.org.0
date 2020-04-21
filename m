@@ -2,93 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84FA51B3149
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 22:35:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 538C71B314D
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 22:36:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726296AbgDUUe7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 16:34:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48932 "EHLO
+        id S1726168AbgDUUgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 16:36:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725850AbgDUUe7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 16:34:59 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BEE8C0610D5
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 13:34:58 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id y25so7147930pfn.5
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 13:34:58 -0700 (PDT)
+        with ESMTP id S1725850AbgDUUgV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 16:36:21 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DA33C0610D5;
+        Tue, 21 Apr 2020 13:36:21 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id s10so11241481edy.9;
+        Tue, 21 Apr 2020 13:36:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zwuJuvskhxZ4Rrv0tr0IjFWkC6EB4CBrNAqM37bcwjM=;
-        b=o6oWKjpbAQEbd9QhLij6Ofb69hT0fG352NXleflgAvTaWJxNqXigp0Ow3KhjDi8c3h
-         l3jY6nkDndnAVPeqexd+AKMNlq8YZA6xZMNQmC6Blv+5BgjWlMAvych0CSN0rRfkjkW0
-         vcjC0tVyyG1yjy6EDajwKtSQ8S++lw2FV3jz+fCnax8z4jmBYFGnK32tn2IUZ5vM8juV
-         L5JWrN4ZWLu78UpdnHsIyxXJnLg1JOmrzEu4vSe21ygsAOi7yVFvmOT2i+1aLboIPVJh
-         iAhpf80xkSyu3LuQ2vSROe/nvps1H1eVOzFUFcOQKIPwgxX9bJIwHEE99NU3fVRlMztn
-         fmeg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Cq4xp3yqaFWuVE7YUa9jI1S3bx7YhIAC44OnIS8bLMg=;
+        b=TYpAdqtY+WYHur0QZHOYxX1lb3l5xjdZUPT30oVoxED9kbgpO9Mey3zEe3QgrLiRhs
+         nQVwGaHX885ABAEy59Oy4nVmufv/km/Jl0VCaTj0OoJOLoLQp7Y+8W48hReDfyJjROeu
+         C4EBin0sH5LTLq8lDREl2XY7vZ271PeB5caL+bYMgGrcca4VJLgGI61HO/qBdsnyaYqJ
+         kSi7+3gx88O+UItOUGXnaQ8069KC4osA0V0/CgDUuPadUyXkjH9laY0r/+21IKc4g+Od
+         VlAhOQfc7dw1JrCgIFOs6uClnBG6NRKPFJ13hE/xx8inm7zlNO/YtSJzRPQmTbARSblM
+         fIlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zwuJuvskhxZ4Rrv0tr0IjFWkC6EB4CBrNAqM37bcwjM=;
-        b=tx17+Wp6g1YJO+Yf8FY7s9h2Xy1KYcin+2ouWnWn/B3tAWOhKZcddEBKaQ5+yq9E5g
-         0g2z7UmVD9E+Y+0R7c/vTGL65tbuwx9UVJAEkWBbGS9mitBFw8f/w7+S2/Hs/pfJxX/W
-         t7vTaXZU0YXqaj1eu0IeWenw+DofaxSSObrlaLQOMN1Itme4FgCHuebhPYcrvat2Zwlq
-         aCTm8BG/PUjtK1PeEPHPftgiBhmtIV7FFofXuZPUX8177wGnXWtaEHL/Ad3hQmdGzPtR
-         2BoWt6urMX0DrLP+oxaK3F0LqYSm0l9EH6lLjbld3C9jU30CEJoeIHrQWDN6oJLXaCrp
-         Oc/g==
-X-Gm-Message-State: AGi0PuazEcxprCepfiU3hutXWN8VF5z8btMRUIHtCg36FP2ZfjQU36Pl
-        EwKcK4irGeQBpsA5bvFWigKJWJxIkY5s5w==
-X-Google-Smtp-Source: APiQypJE0Avw/ejGkERla6nINzpim7anwERK5Mm3FT0gc+8wPqbAAObpkPUfSvN9oTn3UReXXVHTuw==
-X-Received: by 2002:a63:1c25:: with SMTP id c37mr23660716pgc.320.1587501297106;
-        Tue, 21 Apr 2020 13:34:57 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id l30sm3073901pgu.29.2020.04.21.13.34.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Apr 2020 13:34:55 -0700 (PDT)
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Cc:     linux-doc@vger.kernel.org,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH] Documentation: add documentation of ping_group_range
-Date:   Tue, 21 Apr 2020 13:34:48 -0700
-Message-Id: <20200421203448.17937-1-stephen@networkplumber.org>
-X-Mailer: git-send-email 2.20.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Cq4xp3yqaFWuVE7YUa9jI1S3bx7YhIAC44OnIS8bLMg=;
+        b=t5vy+pTWUOeTi/lSz1dV/PH6CZiBQn+Y08gCpaL9hAQ66vChoTuO9K9OhPbE1C9u6j
+         gs4IQfpLAKLDHCcZlWVjMKXqe2Q9ihWLrVJlWr8T8qIZfC0i8hQPq+lkWXB7QIbn1nah
+         +sZr34HMHESPSkQ1E+HHv/4vTLAs4R5X7uVCP5zKy0CO2Zla+26LMGfOLhLF47z1g3Qx
+         8nQNd6L0sXPQHUSLrxdLeifcIOmPZKZnPxDcLI2Ww0xxvstK4iLaknJzvvUjRuw1Vuec
+         QjADqit3rYfkk0T1Wf+C92BmNvLXFlaouhAuJBaiyOEKNpvsYN4yglvHJ1NriPJVyfb5
+         j4eg==
+X-Gm-Message-State: AGi0PubHpdTzbrKTIEQkCwL1tWukxuYeDkqHcOAVtZvr922z2k7boDPn
+        b6H6+nPOUcxk/VkEYS3II8lQR5rAKOR1WlwVeG0=
+X-Google-Smtp-Source: APiQypIn1hspAlk6ZrcuJ4HihtEE8LTEvJaVMPywTNTlikTbpFH9mMowmZrHsLXUAOZvStsR9pH2IheX7L1jaXrQLVs=
+X-Received: by 2002:a05:6402:1b91:: with SMTP id cc17mr11556572edb.46.1587501379927;
+ Tue, 21 Apr 2020 13:36:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200420231427.63894-1-zenczykowski@gmail.com> <20200421102719.06bdfe02@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200421102719.06bdfe02@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Date:   Tue, 21 Apr 2020 13:36:08 -0700
+Message-ID: <CAHo-Oow5HZAYNT6UZsCvzAG89R4KkERYCaoTzwefXerN3+UZ9A@mail.gmail.com>
+Subject: Re: [PATCH] [RFC] net: bpf: make __bpf_skb_max_len(skb) an
+ skb-independent constant
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support for non-root users to send ICMP ECHO requests was added
-back in Linux 3.0 kernel, but the documentation for the sysctl
-to enable it has been missing.
+> > This function is used from:
+> >   bpf_skb_adjust_room
+> >   __bpf_skb_change_tail
+> >   __bpf_skb_change_head
+> >
+> > but in the case of forwarding we're likely calling these functions
+> > during receive processing on ingress and bpf_redirect()'ing at
+> > a later point in time to egress on another interface, thus these
+> > mtu checks are for the wrong device.
+>
+> Interesting. Without redirecting there should also be no reason
+> to do this check at ingress, right? So at ingress it's either
+> incorrect or unnecessary?
 
-Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
----
- Documentation/networking/ip-sysctl.txt | 7 +++++++
- 1 file changed, 7 insertions(+)
+Well, I guess there's technically a chance that you'd want to mutate
+the packet somehow during ingress pre-receive processing (without
+redirecting)...
+But yeah, I can't really think of a case where that would be
+increasing the size of the packet.
 
-diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
-index 6fcfd313dbe4..9375324aa8e1 100644
---- a/Documentation/networking/ip-sysctl.txt
-+++ b/Documentation/networking/ip-sysctl.txt
-@@ -983,6 +983,13 @@ ip_early_demux - BOOLEAN
- 	reduces overall throughput, in such case you should disable it.
- 	Default: 1
- 
-+ping_group_range - 2 INTEGERS
-+	Restrict ICMP_PROTO datagram sockets to users in the group range.
-+	The default is "1 0", meaning, that nobody (not even root) may
-+	create ping sockets.  Setting it to "100 100" would grant permissions
-+	to the single group. "0 4294967295" would enable it for the world, "100
-+	4294967295" would enable it for the users, but not daemons.
-+
- tcp_early_demux - BOOLEAN
- 	Enable early demux for established TCP sockets.
- 	Default: 1
--- 
-2.20.1
+Usually you'd be decapsulating at ingress and encapsulating at egress,
+or doing ingress rewrite & redirect to egress...
 
+(Also, note that relying on a sequence where at ingress you first call
+bpf_redirect(ifindex, EGRESS); then change the packet size, and then
+return TC_ACT_REDIRECT; thus being able to use the redirect ifindex
+for mtu checks in the packet mutation functions is potentially buggy,
+since there's no guarantee you won't call bpf_redirect again to change
+the ifinidex, or even return from the bpf program without returning
+TC_ACT_REDIRECT --- so while that could be *more* correct, it would
+still have holes...)
