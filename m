@@ -2,76 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D50B91B230C
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 11:41:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 187BC1B231F
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 11:45:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728308AbgDUJlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 05:41:12 -0400
-Received: from foss.arm.com ([217.140.110.172]:60606 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725920AbgDUJlM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Apr 2020 05:41:12 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D9B701FB;
-        Tue, 21 Apr 2020 02:41:11 -0700 (PDT)
-Received: from C02TD0UTHF1T.local (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9A3563F68F;
-        Tue, 21 Apr 2020 02:41:07 -0700 (PDT)
-Date:   Tue, 21 Apr 2020 10:40:58 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Jianyong Wu <jianyong.wu@arm.com>
-Cc:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
-        tglx@linutronix.de, pbonzini@redhat.com,
-        sean.j.christopherson@intel.com, maz@kernel.org,
-        richardcochran@gmail.com, will@kernel.org, suzuki.poulose@arm.com,
-        steven.price@arm.com, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        kvm@vger.kernel.org, Steve.Capper@arm.com, Kaly.Xin@arm.com,
-        justin.he@arm.com, nd@arm.com
-Subject: Re: [RFC PATCH v11 1/9] psci: export psci conduit get helper.
-Message-ID: <20200421094058.GA16306@C02TD0UTHF1T.local>
-References: <20200421032304.26300-1-jianyong.wu@arm.com>
- <20200421032304.26300-2-jianyong.wu@arm.com>
+        id S1728345AbgDUJpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 05:45:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32912 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728162AbgDUJpU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 05:45:20 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B268C061A0F;
+        Tue, 21 Apr 2020 02:45:20 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id e6so1135134pjt.4;
+        Tue, 21 Apr 2020 02:45:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=63dlfBrKorbJ+FwMRBgb43Uw19Cb7qy/VHJKu/L+1jo=;
+        b=uFlVqQtoMEXJofyar5xlWMsXKHPaJ5IfFs1bYkDAcMygct54MuFIdYvTaMEeMHT7V6
+         qO9KUHelwHwrNa9DZB7zmgbDsdHklLam9Aa6vUM3xO6IAGV18W2ZPGJTuWPKobjHOAAI
+         cMzmwoVoBB0jFKxKWco38VVC9A2DHYqMmwrtG8FlUtKWRqdQTj4Sc5P+DmuzV0CSsE3v
+         wxQnjixIdgU3ohCMAx8rXVONsR6S6zBkGG88X7SgNHTMpdEY4ccuJRdZNAI+8jR69z1g
+         sofJh1oVbnN6SsGRbUGva33uN3ZC0z95Q3aR22bjjl4LoQpsxoojRCvXqP2Z+NiSkmTs
+         4VJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=63dlfBrKorbJ+FwMRBgb43Uw19Cb7qy/VHJKu/L+1jo=;
+        b=lA5f4xHTKC+TWvkAIoBmM7aHzCyGPUn9N9SeCljAjWos9FLm9zl2Cx5ksLXrFCP5Qu
+         hglzPYKqtvausF9q7AGRC1nDSr0cy/DhH9Yw2oSiwFBueAsHmNQ6HImHvgJPtFIq0w6a
+         I838hDS3aDEobC0vrsUZHEUchowgq2S8H1kamabWNb3O3/6UivywrjWHvao5HzfTVlYD
+         OPq+SMKTNXi15vzrXAJVVqRlfyNJlHNxYqntG9ksVvuTph+/gt6nnT1C+6xTHBqxwyQy
+         Z4k3jJOQtGd3GRzAgLIaW0yTpocO51P28JfvGlSZZdWqRQczk1MDb9VJLXfXUEi4CR5S
+         dotw==
+X-Gm-Message-State: AGi0PubUfrKZwPEiFZloxhctb2SFLb7m6DMOX3h/B9EUiBboXgXTMGUS
+        PC/VwmUBccCZGYfrAqn0Y3Q=
+X-Google-Smtp-Source: APiQypL1xj4xNKUg43U4SUtQmw/Hr5BuApYChUbtuQ+3RFQkN1ofC5PbpmqT7rJtDVB10m+n0FOlBQ==
+X-Received: by 2002:a17:90a:8994:: with SMTP id v20mr4669161pjn.76.1587462319819;
+        Tue, 21 Apr 2020 02:45:19 -0700 (PDT)
+Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
+        by smtp.gmail.com with ESMTPSA id h193sm1966886pfe.30.2020.04.21.02.45.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Apr 2020 02:45:19 -0700 (PDT)
+From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
+To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Netfilter Development Mailing List 
+        <netfilter-devel@vger.kernel.org>
+Subject: [PATCH] libxt_IDLETIMER.c - fix target v1 help alignment and doc
+Date:   Tue, 21 Apr 2020 02:45:10 -0700
+Message-Id: <20200421094510.126375-1-zenczykowski@gmail.com>
+X-Mailer: git-send-email 2.26.1.301.g55bc3eb7cb9-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200421032304.26300-2-jianyong.wu@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 21, 2020 at 11:22:56AM +0800, Jianyong Wu wrote:
-> Export arm_smccc_1_1_get_conduit then modules can use smccc helper which
-> adopts it.
-> 
-> Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
+From: Maciej Żenczykowski <maze@google.com>
 
-Nit: please say 'smccc conduit' in the commit title.
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
+---
+ extensions/libxt_IDLETIMER.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Otherwise, I see not problem with this provided an in-tree module uses
-this, so:
+diff --git a/extensions/libxt_IDLETIMER.c b/extensions/libxt_IDLETIMER.c
+index 68b223f4..216b6257 100644
+--- a/extensions/libxt_IDLETIMER.c
++++ b/extensions/libxt_IDLETIMER.c
+@@ -66,7 +66,7 @@ static void idletimer_tg_help_v1(void)
+ "IDLETIMER target options:\n"
+ " --timeout time	Timeout until the notification is sent (in seconds)\n"
+ " --label string	Unique rule identifier\n"
+-" --alarm none	    Use alarm instead of default timer\n"
++" --alarm	Use alarm instead of default timer\n"
+ "\n");
+ }
+ 
+-- 
+2.26.1.301.g55bc3eb7cb9-goog
 
-Acked-by: Mark Rutland <mark.rutland@arm.com>
-
-Mark.
-
-> ---
->  drivers/firmware/psci/psci.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/firmware/psci/psci.c b/drivers/firmware/psci/psci.c
-> index 2937d44b5df4..fd3c88f21b6a 100644
-> --- a/drivers/firmware/psci/psci.c
-> +++ b/drivers/firmware/psci/psci.c
-> @@ -64,6 +64,7 @@ enum arm_smccc_conduit arm_smccc_1_1_get_conduit(void)
->  
->  	return psci_ops.conduit;
->  }
-> +EXPORT_SYMBOL(arm_smccc_1_1_get_conduit);
->  
->  typedef unsigned long (psci_fn)(unsigned long, unsigned long,
->  				unsigned long, unsigned long);
-> -- 
-> 2.17.1
-> 
