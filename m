@@ -2,174 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9BE01B1AAE
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 02:27:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B23CE1B1AB0
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 02:28:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726736AbgDUA1a convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 20 Apr 2020 20:27:30 -0400
-Received: from mga04.intel.com ([192.55.52.120]:19903 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726056AbgDUA13 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 20 Apr 2020 20:27:29 -0400
-IronPort-SDR: slLJu45iqLR/bZHVS/uBX89QxfOJ4ySnZwLq8L9fcmtx+vJSmNTLXlOqYv2xLK/uYbAfVEx9Yj
- 44QHn75v+Jqg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 17:27:29 -0700
-IronPort-SDR: RGtpzhphnE7xijZKTGYBYd26lfS40/D+1tWa1ZabP+CfxStgLnI18BBXZ0yWl9qGsnXusrQYwg
- m9yizxIzKg1A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,408,1580803200"; 
-   d="scan'208";a="244002024"
-Received: from fmsmsx106.amr.corp.intel.com ([10.18.124.204])
-  by orsmga007.jf.intel.com with ESMTP; 20 Apr 2020 17:27:29 -0700
-Received: from fmsmsx101.amr.corp.intel.com (10.18.124.199) by
- FMSMSX106.amr.corp.intel.com (10.18.124.204) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 20 Apr 2020 17:27:28 -0700
-Received: from fmsmsx124.amr.corp.intel.com ([169.254.8.70]) by
- fmsmsx101.amr.corp.intel.com ([169.254.1.121]) with mapi id 14.03.0439.000;
- Mon, 20 Apr 2020 17:27:28 -0700
-From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
-To:     Leon Romanovsky <leon@kernel.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-CC:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>
-Subject: RE: [RFC PATCH v5 12/16] RDMA/irdma: Add miscellaneous utility
- definitions
-Thread-Topic: [RFC PATCH v5 12/16] RDMA/irdma: Add miscellaneous utility
- definitions
-Thread-Index: AQHWFNtzYxwJ525w0UOK+2ymyeL4bqh+OjIAgAQT/QA=
-Date:   Tue, 21 Apr 2020 00:27:28 +0000
-Message-ID: <9DD61F30A802C4429A01CA4200E302A7DCD485B7@fmsmsx124.amr.corp.intel.com>
-References: <20200417171251.1533371-1-jeffrey.t.kirsher@intel.com>
- <20200417171251.1533371-13-jeffrey.t.kirsher@intel.com>
- <20200417203216.GH3083@unreal>
-In-Reply-To: <20200417203216.GH3083@unreal>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.1.200.108]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-MIME-Version: 1.0
+        id S1726796AbgDUA2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 20:28:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59228 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726056AbgDUA2Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 20:28:16 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140F7C061A0E
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 17:28:16 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id a32so625187pje.5
+        for <netdev@vger.kernel.org>; Mon, 20 Apr 2020 17:28:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cs.washington.edu; s=goo201206;
+        h=from:to:cc:subject:date:message-id;
+        bh=FMzj+KBAT9oKczxa74v3DQRv9Cfu8gbIxOZJWY/KwN4=;
+        b=F5Ecnjii1wOD6Z8F6N/EQ+BJvmRcCDXykdLJXNecm3nPcHmSBK8LG/V4JXCAT7Cxqp
+         2L9yQo5z9bM5Ftq6Sye8tV3ZsqCdsgQXBH3nSq0DSBdCoOXb9i8pPKoHRCmYHNiLy4T0
+         E+RWpg//Wu7E6ucg7Vm0c4gvUqHngOsJU/um4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=FMzj+KBAT9oKczxa74v3DQRv9Cfu8gbIxOZJWY/KwN4=;
+        b=MG2Fnbn8A418mFix7ZGk02zxGia7jy27DJetmYGvJTMsEXIt7EbjfixlmG8OHeY2nv
+         PzNobI/VHXyP9cUP637qLDJF7geaPY5O1E+z9SK3Tz5myDF50grMfmwJkpIO9+s3/VUj
+         BBpAkSB9T2zt/MtgcMovf+nzBzZgVNsw/BGyk3XLqrQs3LhiITG17AD67B/MwyBh+ubg
+         AoedzSU8LuKwJQPT2bdN1EtYAkS6lV9cZ9Zkqo3j4qdgtN4vyJztrag09Y4GSj73MiMz
+         q2MYp7oUy7BczluP1bKmLSU0mS+N1eoMRvkvPav29xA9EI8d9A5t644HTpBVoGtC8gwF
+         ih8g==
+X-Gm-Message-State: AGi0PuYwnzlSpQmiSQrL6eRf1QZWrN9BpteHoZyqsLwIPmbzcHfdAy6/
+        UlKH3a/7hk/Qba32U6IiGuLyhA==
+X-Google-Smtp-Source: APiQypJfRL/P24IvYTwSBmOVCK9iHgVzsETnPpci6H5O5Yc64EM8WVFWpSkRtjhEl62+jhSjad3bFQ==
+X-Received: by 2002:a17:90b:19c1:: with SMTP id nm1mr2367164pjb.73.1587428895331;
+        Mon, 20 Apr 2020 17:28:15 -0700 (PDT)
+Received: from localhost.localdomain (c-73-53-94-119.hsd1.wa.comcast.net. [73.53.94.119])
+        by smtp.gmail.com with ESMTPSA id f2sm547247pju.32.2020.04.20.17.28.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Apr 2020 17:28:14 -0700 (PDT)
+From:   Luke Nelson <lukenels@cs.washington.edu>
+X-Google-Original-From: Luke Nelson <luke.r.nels@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     Luke Nelson <luke.r.nels@gmail.com>, Xi Wang <xi.wang@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        netdev@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH bpf] bpf, riscv: Fix tail call count off by one in RV32 BPF JIT
+Date:   Mon, 20 Apr 2020 17:28:04 -0700
+Message-Id: <20200421002804.5118-1-luke.r.nels@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [RFC PATCH v5 12/16] RDMA/irdma: Add miscellaneous utility
-> definitions
-> 
-> On Fri, Apr 17, 2020 at 10:12:47AM -0700, Jeff Kirsher wrote:
-> > From: Mustafa Ismail <mustafa.ismail@intel.com>
-> >
-> > Add miscellaneous utility functions and headers.
-> >
-> > Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-> > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> > ---
-> >  drivers/infiniband/hw/irdma/osdep.h  |  105 ++
-> >  drivers/infiniband/hw/irdma/protos.h |   93 +
-> >  drivers/infiniband/hw/irdma/status.h |   69 +
-> >  drivers/infiniband/hw/irdma/utils.c  | 2445
-> > ++++++++++++++++++++++++++
-> >  4 files changed, 2712 insertions(+)
-> >  create mode 100644 drivers/infiniband/hw/irdma/osdep.h
-> >  create mode 100644 drivers/infiniband/hw/irdma/protos.h
-> >  create mode 100644 drivers/infiniband/hw/irdma/status.h
-> >  create mode 100644 drivers/infiniband/hw/irdma/utils.c
-> >
-> > diff --git a/drivers/infiniband/hw/irdma/osdep.h
-> > b/drivers/infiniband/hw/irdma/osdep.h
-> > new file mode 100644
-> > index 000000000000..23ddfb8e9568
-> > --- /dev/null
-> > +++ b/drivers/infiniband/hw/irdma/osdep.h
-> > @@ -0,0 +1,105 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-> > +/* Copyright (c) 2015 - 2019 Intel Corporation */ #ifndef
-> > +IRDMA_OSDEP_H #define IRDMA_OSDEP_H
-> > +
-> > +#include <linux/version.h>
-> 
-> Why is that?
-Not needed. Thanks!
+This patch fixes an off by one error in the RV32 JIT handling for BPF
+tail call. Currently, the code decrements TCC before checking if it
+is less than zero. This limits the maximum number of tail calls to 32
+instead of 33 as in other JITs. The fix is to instead check the old
+value of TCC before decrementing.
 
-> 
-> > +#define irdma_debug_buf(dev, prefix, desc, buf, size)	\
-> > +	print_hex_dump_debug(prefix ": " desc " ",	\
-> > +			     DUMP_PREFIX_OFFSET,	\
-> > +			     16, 8, buf, size, false)
-> > +
-> 
-> I think that it can be beneficial to be as ibdev_print_buf().
+Fixes: 5f316b65e99f ("riscv, bpf: Add RV32G eBPF JIT")
+Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
+---
+ arch/riscv/net/bpf_jit_comp32.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Macro itself looks a little weird since dev is not used and needs to be fixed.
-I wonder why there isn't a struct device ver. of this print buf
-to start with.
+diff --git a/arch/riscv/net/bpf_jit_comp32.c b/arch/riscv/net/bpf_jit_comp32.c
+index 302934177760..11083d4d5f2d 100644
+--- a/arch/riscv/net/bpf_jit_comp32.c
++++ b/arch/riscv/net/bpf_jit_comp32.c
+@@ -770,12 +770,13 @@ static int emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
+ 	emit_bcc(BPF_JGE, lo(idx_reg), RV_REG_T1, off, ctx);
+ 
+ 	/*
+-	 * if ((temp_tcc = tcc - 1) < 0)
++	 * temp_tcc = tcc - 1;
++	 * if (tcc < 0)
+ 	 *   goto out;
+ 	 */
+ 	emit(rv_addi(RV_REG_T1, RV_REG_TCC, -1), ctx);
+ 	off = (tc_ninsn - (ctx->ninsns - start_insn)) << 2;
+-	emit_bcc(BPF_JSLT, RV_REG_T1, RV_REG_ZERO, off, ctx);
++	emit_bcc(BPF_JSLT, RV_REG_TCC, RV_REG_ZERO, off, ctx);
+ 
+ 	/*
+ 	 * prog = array->ptrs[index];
+-- 
+2.17.1
 
-[...]
-
-> > +	IRDMA_ERR_BAD_STAG			= -66,
-> > +	IRDMA_ERR_CQ_COMPL_ERROR		= -67,
-> > +	IRDMA_ERR_Q_DESTROYED			= -68,
-> > +	IRDMA_ERR_INVALID_FEAT_CNT		= -69,
-> > +	IRDMA_ERR_REG_CQ_FULL			= -70,
-> > +	IRDMA_ERR_VF_MSG_ERROR			= -71,
-> > +};
-> 
-> Please don't do vertical space alignment in all the places
-
-vertically aligning groups of defines that are related or enum constants
-look more readable.
-
-+       IRDMA_ERR_BAD_STAG = -66,
-+       IRDMA_ERR_CQ_COMPL_ERROR = -67,
-+       IRDMA_ERR_Q_DESTROYED = -68,
-+       IRDMA_ERR_INVALID_FEAT_CNT = -69,
-+       IRDMA_ERR_REG_CQ_FULL = -70,
-+       IRDMA_ERR_VF_MSG_ERROR = -71,
-
-This looks less readable IMHO.
-
-> 
-> > +#endif /* IRDMA_STATUS_H */
-> > diff --git a/drivers/infiniband/hw/irdma/utils.c
-> > b/drivers/infiniband/hw/irdma/utils.c
-> > new file mode 100644
-> > index 000000000000..be46d672afc5
-> > --- /dev/null
-> > +++ b/drivers/infiniband/hw/irdma/utils.c
-> > @@ -0,0 +1,2445 @@
-> > +// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
-> > +/* Copyright (c) 2015 - 2019 Intel Corporation */ #include
-> > +<linux/mii.h> #include <linux/in.h> #include <linux/init.h> #include
-> > +<asm/irq.h> #include <asm/byteorder.h> #include <net/neighbour.h>
-> > +#include "main.h"
-> > +
-> > +/**
-> > + * irdma_arp_table -manage arp table
-> > + * @rf: RDMA PCI function
-> > + * @ip_addr: ip address for device
-> > + * @ipv4: IPv4 flag
-> > + * @mac_addr: mac address ptr
-> > + * @action: modify, delete or add
-> > + */
-> > +int irdma_arp_table(struct irdma_pci_f *rf, u32 *ip_addr, bool ipv4,
-> > +		    u8 *mac_addr, u32 action)
-> 
-> ARP table in the RDMA driver looks strange, I see that it is legacy from i40iw, but
-> wonder if it is the right thing to do the same for the new driver.
-> 
-
-See response in Patch #1.
