@@ -2,133 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13F8B1B1C99
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 05:24:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94AF41B1CC6
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 05:28:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728140AbgDUDXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 23:23:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58800 "EHLO
+        id S1728015AbgDUD1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 23:27:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728117AbgDUDXd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 23:23:33 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5BAC061A0E;
-        Mon, 20 Apr 2020 20:23:33 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id w65so5967225pfc.12;
-        Mon, 20 Apr 2020 20:23:33 -0700 (PDT)
+        with ESMTP id S1726628AbgDUD1w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 23:27:52 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCCD5C061A0E;
+        Mon, 20 Apr 2020 20:27:51 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id k22so4833975eds.6;
+        Mon, 20 Apr 2020 20:27:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=hAkHMsgW8GMOATHz1y5uXLHZRbJthuEQUyFwW1zRZQM=;
-        b=VPXUahDC4egr5T5AOQWCcO4zp+GKmqPNumciQBEnRpnZbz9csSEtIbonJvKgNgbNAC
-         /26RtixkoiejDvxn5y5XE+0PoTMvwCzM+pmbIPBX50MKcxzCkABeQbwMpmTIqU5HdcMI
-         tGF2eAq/W2XwbV3etne63aQT4EtjHtPRs+22FyNTB7VBrcIHyAK2U9Fx21ZnojRvl8et
-         0x5FPnq2+1qBC3V8vqgaWUnuT2x3opB1vKKq2uUJAJnUeNWlbi3+BwSyf0NZoPCDV6/P
-         dlilEaFTlMgUR+gMg5gpvz/Jqpc5xCy5e6SvWDnWH9oPCP15vUTRrZdhHq3fBdyX7Ljp
-         noNQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=fTnFtlLIjQ4ctTNxrYfruz6kYD2EM/yEpfWSdk9GMA0=;
+        b=VbTon4J/UoWS/hBDxZt0Hdw07OQZzRffPSlAK8XZWwHbDhpWL+G6AAuSXly287FpJD
+         DmvZOKcLYeMx9c2iNHKtR/zSWtiyQb9nJRFxp69Q+18U+vupaniQH3OVAma8jamGWZ05
+         gCNbrp3lsZTV/8ELT0dx8qLjmmSn5dJPtrG3BB/LuB+PpQ21jxDgWVRniQyP4Fw/wa/V
+         IyV5al2MF3A7Py33xwj6GteS0VEr5vEBfY766Z/YcHJ7Tq7G+41UOi/Sn9rZzA0aFDSo
+         895aQBVqBneIIXNex6MZY8Om8D28ZdcqLfnk76f7FkgVGNfbiJLfgctLgunnSKR6i80b
+         EYaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=hAkHMsgW8GMOATHz1y5uXLHZRbJthuEQUyFwW1zRZQM=;
-        b=FVcikftf/MX7uL23/gVC84jd2B31pQO/CfW3JLgHFeTeqrnVqutbBZ6vicB3jqaq2j
-         R6MqDuAxiGVQzlAPsVztC+48UqIeBPS5DDJVc3bOxsNyp4GMBUZXyY4BYmgwJ5lX4Kvv
-         5v2WbF6wjmhuqdok0KF4j2EOG4gAjTn/XPpAnSXzhMVU9T0M8gyyf36IlG+8iYC5+eib
-         YlworEJLL09eABM1wmonlTqAeMMNtGS5WN4pJaa1Bgpb1b3A0abtvbyXbmawF85tPvBo
-         73QPc0wlTCqonMh53Hix5y2+ajHHUAGLxFoZz3DIfSYPAx5S2XYGUIdFH2hZtBl5j7d4
-         y9Sg==
-X-Gm-Message-State: AGi0PuaRApg566bADF7IU8WX/y4Es+Mz2Mj0HACHtjGjdThQ1a2TrNod
-        jdf4jVll258Fa/aiFurA800=
-X-Google-Smtp-Source: APiQypLhKGgG/jGFDVrWB+3ZbTxFK/mnqBBi4Q7+MoUlz67fb9NBBXaTrapsFcW+jfbqx8p5W2arGw==
-X-Received: by 2002:a63:6d4a:: with SMTP id i71mr19464270pgc.445.1587439412118;
-        Mon, 20 Apr 2020 20:23:32 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:f163])
-        by smtp.gmail.com with ESMTPSA id i4sm866747pjg.4.2020.04.20.20.23.30
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=fTnFtlLIjQ4ctTNxrYfruz6kYD2EM/yEpfWSdk9GMA0=;
+        b=meOboO9bUfhQM+5/r/AudVc4U6kYWVqk8uPmBFij/aZq9/3NmvywaEqfYn46W9di9o
+         ghbDzzjEXHYseUmMnsLsdkKsgvVxcLcrde6kOwsf7N8Qc2g4U+NdwzWnhrDV56xAlZCt
+         JX/rDXAgnPB+ve8amd0uhvZJ8FRXDYEtzOSwdgNzr79Qroqm0I5j4pKFwAGxS7v6hDhh
+         uIUjrD6KEY65JtGCA8tmxM+A4xAxKtiL8Id+XfOmjljD0cxV30Vacb2mll9bXGikbGVn
+         YKyFIC12n1XEqGgSdFyObCvfdPWhY5EHYx83bcvLO0i2bmtSSvkZz42iWrx3NAWf3Ao9
+         Mwvw==
+X-Gm-Message-State: AGi0PuYKzlJjlHLGY7cPds5RjOB0lUWttN7cr4xdUnzhuPXELHTM9WKW
+        dJDmalPedtKmo0UUrOYX9LmNouaH
+X-Google-Smtp-Source: APiQypIYi3y7Wh5qcpYEcvjWC0bma98ysy4nV2i7LcuvuGH+/tvCTEsrNxpR4NZaIPIMq5iSHDhQHQ==
+X-Received: by 2002:aa7:cd01:: with SMTP id b1mr7053880edw.163.1587439670080;
+        Mon, 20 Apr 2020 20:27:50 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id j9sm216836edl.67.2020.04.20.20.27.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Apr 2020 20:23:31 -0700 (PDT)
-Date:   Mon, 20 Apr 2020 20:23:28 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Mao Wenan <maowenan@huawei.com>, "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "kpsingh@chromium.org" <kpsingh@chromium.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        kernel-team@fb.com
-Subject: Re: [PATCH bpf-next v2] bpf: remove set but not used variable
- 'dst_known'
-Message-ID: <20200421032328.fglmpdmnwnjts375@ast-mbp.dhcp.thefacebook.com>
-References: <8855e82a-88d0-8d1e-e5e0-47e781f9653c@huawei.com>
- <20200418013735.67882-1-maowenan@huawei.com>
- <C7067847-8EDB-49B5-8DDF-C8504BB82962@fb.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <C7067847-8EDB-49B5-8DDF-C8504BB82962@fb.com>
+        Mon, 20 Apr 2020 20:27:49 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        linux-kernel@vger.kernel.org (open list), davem@davemloft.net,
+        kuba@kernel.org
+Subject: [PATCH net v2 0/5] net: dsa: b53: Various ARL fixes
+Date:   Mon, 20 Apr 2020 20:26:50 -0700
+Message-Id: <20200421032655.5537-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 18, 2020 at 06:13:48AM +0000, Song Liu wrote:
-> 
-> 
-> > On Apr 17, 2020, at 6:37 PM, Mao Wenan <maowenan@huawei.com> wrote:
-> > 
-> > Fixes gcc '-Wunused-but-set-variable' warning:
-> > 
-> > kernel/bpf/verifier.c:5603:18: warning: variable ‘dst_known’
-> > set but not used [-Wunused-but-set-variable], delete this
-> > variable.
-> > 
-> > Signed-off-by: Mao Wenan <maowenan@huawei.com>
-> 
-> Acked-by: Song Liu <songliubraving@fb.com>
-> 
-> With one nit below. 
-> 
-> > ---
-> > v2: remove fixes tag in commit log. 
-> > kernel/bpf/verifier.c | 4 +---
-> > 1 file changed, 1 insertion(+), 3 deletions(-)
-> > 
-> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > index 04c6630cc18f..c9f50969a689 100644
-> > --- a/kernel/bpf/verifier.c
-> > +++ b/kernel/bpf/verifier.c
-> > @@ -5600,7 +5600,7 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
-> > {
-> > 	struct bpf_reg_state *regs = cur_regs(env);
-> > 	u8 opcode = BPF_OP(insn->code);
-> > -	bool src_known, dst_known;
-> > +	bool src_known;
-> 
-> This is not a hard rule, but we prefer to keep variable definition in 
-> "reverse Christmas tree" order. Since we are on this function, let's 
-> reorder these definitions to something like:
-> 
->         u64 insn_bitness = (BPF_CLASS(insn->code) == BPF_ALU64) ? 64 : 32;
->         struct bpf_reg_state *regs = cur_regs(env);
->         u8 opcode = BPF_OP(insn->code);
->         u32 dst = insn->dst_reg;
->         s64 smin_val, smax_val;
->         u64 umin_val, umax_val;
->         bool src_known;
->         int ret;
+Hi David, Andrew, Vivien, Jakub,
 
-I don't want folks to keep re-sorting variables and making patches difficult
-to backport, do git blame, causing bpf vs bpf-next conflicts, etc.
+This patch series fixes a number of short comings in the existing b53
+driver ARL management logic in particular:
 
-reverse xmas tree is not mandatory. It's a style preference.
-I personally do it for new code, but very rarely for fixes.
-And certainly not for this kind of cleanup.
+- we were not looking up the {MAC,VID} tuples against their VID, despite
+  having VLANs enabled
 
-Applied. Thanks
+- the MDB entries (multicast) would lose their validity as soon as a
+  single port in the vector would leave the entry
+
+- the ARL was currently under utilized because we would always place new
+  entries in bin index #1, instead of using all possible bins available,
+  thus reducing the ARL effective size by 50% or 75% depending on the
+  switch generation
+
+- it was possible to overwrite the ARL entries because no proper space
+  verification was done
+
+This patch series addresses all of these issues.
+
+Changes in v2:
+- added a new patch to correctly flip invidual VLAN learning vs. shared
+  VLAN learning depending on the global VLAN state
+
+- added Andrew's R-b tags for patches which did not change
+
+- corrected some verbosity and minor issues in patch #4 to match caller
+  expectations, also avoid a variable length DECLARE_BITMAP() call
+
+Florian Fainelli (5):
+  net: dsa: b53: Lookup VID in ARL searches when VLAN is enabled
+  net: dsa: b53: Fix valid setting for MDB entries
+  net: dsa: b53: Fix ARL register definitions
+  net: dsa: b53: Rework ARL bin logic
+  net: dsa: b53: b53_arl_rw_op() needs to select IVL or SVL
+
+ drivers/net/dsa/b53/b53_common.c | 38 +++++++++++++++++++++++++++-----
+ drivers/net/dsa/b53/b53_regs.h   |  8 +++++--
+ 2 files changed, 39 insertions(+), 7 deletions(-)
+
+-- 
+2.17.1
+
