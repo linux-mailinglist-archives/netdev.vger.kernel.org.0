@@ -2,77 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A09681B305B
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 21:31:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C89831B3064
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 21:32:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726141AbgDUTa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 15:30:58 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54842 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725930AbgDUTa6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Apr 2020 15:30:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=869WgTAm8fPzHRXk0oXeeK3XJ3W9FcEBHCf2mBhSQ8A=; b=UhkMmxc5rqjccfJlOUb2dLymev
-        FkmPpIzQPLpgPvbZQTymH6ckC4KQ290Bf+VA/7DqWrGBz2AXOif24oj03RgSwL5uVRqRUsneEeEND
-        KBMiGYQQ1d7hYGHxolQFrl02K/4dNhxwBK5qhTSdWzdKs+hJTYINL3FmYiFBDJ1ouySk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jQybf-0044tp-73; Tue, 21 Apr 2020 21:30:55 +0200
-Date:   Tue, 21 Apr 2020 21:30:55 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [RFC PATCH net-next 1/3] net: phy: add concept of shared storage
- for PHYs
-Message-ID: <20200421193055.GI933345@lunn.ch>
-References: <20200420232624.9127-1-michael@walle.cc>
- <7bcd7a65740a6f85637ef17ed6b6a1e3@walle.cc>
- <20200421155031.GE933345@lunn.ch>
- <47bdeaf298a09f20ad6631db13df37d2@walle.cc>
+        id S1726335AbgDUTb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 15:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39146 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725930AbgDUTb5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 15:31:57 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 606BCC061BD3
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 12:31:57 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id e6so1830505pjt.4
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 12:31:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :user-agent:mime-version;
+        bh=NZNBzPPg39ZyrA+9K1+5SfyJG/p/D3ab1EaiN8kOOpQ=;
+        b=D5E4GkQI8kMxBOpuDMOjkCGLYjzhv9SzQx5s04xfcN97rcZAXp10VOjQbSAr2Va2Ep
+         xOLMpcHjY6zHeW3ZNP3LQzJ0SI8bn5J7t4sslKU5XoQ8Hh7f/hmV2OTnxPoAF8Ci6nyN
+         khM6ZLtn45Nblr0G9fbnMUFmCSjbE687sAfFlBF1OaQI60mi6gjnomTCbesFpqhm3BVV
+         RD+IOKedrI/zH7nugKGj5JxvNaJpwHc7iAPT/cZDE2h8z/lyWZ5haQUSHayyaaVJjnis
+         3vFRPZc89wAtD42w3NPuMAAgRbODqu8Ixx1ApaoC8jSjx15fAdrO1g+HM4T+YSNo5KeE
+         imow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:user-agent:mime-version;
+        bh=NZNBzPPg39ZyrA+9K1+5SfyJG/p/D3ab1EaiN8kOOpQ=;
+        b=ATmd6VVtA4HXnhfqx4D/1vSboQtY+aAokKJwfyRyOzZNEOQxOTzkquZ/ICiGYxqbWm
+         /y4HW9AJvVu07dMbuUSEgdYOHLBfMC3CHs2EvGWemUPOc6+vDogHvPCPdbGsHvFF1zFZ
+         r/eoV8TIzBZ43Vm8oUWODTo34EQyrIPxBp0sI3E+9e9JagQlFgXInOsAvzprPfabcXK9
+         yVSdn8ODk8Njx94L36QQxjx/d+0KxiYjD3KmFuWv1BYB4gjA7Q23drt9aAzWvL85vuou
+         IkZlwJVJX1qBptwSGF5GOJ+OWPNX4AsMlKVL+AI64N/AYDDcsLATNKwe6f5+c3SU2lZt
+         f34Q==
+X-Gm-Message-State: AGi0PuaaP8HjmSd7euOq5+ub+T7cs5b2Ia/E0st8oOgHXJxOMCOcZGnp
+        Oi5K64GZWvt8gWAHfBV/9Yc6jw==
+X-Google-Smtp-Source: APiQypJFBgqr1TsKQVWWIkIK19DIg+mC/W2jjmH2JPSKGjxUsdqPajleKdFLi5uyE7M2nN3ydVuYqg==
+X-Received: by 2002:a17:902:c193:: with SMTP id d19mr21224614pld.184.1587497516540;
+        Tue, 21 Apr 2020 12:31:56 -0700 (PDT)
+Received: from [2620:15c:17:3:3a5:23a7:5e32:4598] ([2620:15c:17:3:3a5:23a7:5e32:4598])
+        by smtp.gmail.com with ESMTPSA id y25sm2998977pgc.36.2020.04.21.12.31.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Apr 2020 12:31:55 -0700 (PDT)
+Date:   Tue, 21 Apr 2020 12:31:54 -0700 (PDT)
+From:   David Rientjes <rientjes@google.com>
+X-X-Sender: rientjes@chino.kir.corp.google.com
+To:     Christoph Hellwig <hch@lst.de>
+cc:     Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH 2/5] mm: remove watermark_boost_factor_sysctl_handler
+In-Reply-To: <20200421171539.288622-3-hch@lst.de>
+Message-ID: <alpine.DEB.2.22.394.2004211231410.54578@chino.kir.corp.google.com>
+References: <20200421171539.288622-1-hch@lst.de> <20200421171539.288622-3-hch@lst.de>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <47bdeaf298a09f20ad6631db13df37d2@walle.cc>
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Speaking of it. Does anyone have an idea how I could create the hwmon
-> device without the PHY device? At the moment it is attached to the
-> first PHY device and is removed when the PHY is removed, although
-> there might be still other PHYs in this package. Its unlikely to
-> happen though, but if someone has a good idea how to handle that,
-> I'd give it a try.
+On Tue, 21 Apr 2020, Christoph Hellwig wrote:
 
-There is a somewhat similar problem with Marvell Ethernet switches and
-their internal PHYs. The PHYs are the same as the discrete PHYs, and
-the usual Marvell PHY driver is used. But there is only one
-temperature sensor for the whole switch, and it is mapped into all the
-PHYs. So we end up creating multiple hwmon devices for the one
-temperature sensor, one per PHY.
+> watermark_boost_factor_sysctl_handler is just a pointless wrapper for
+> proc_dointvec_minmax, so remove it and use proc_dointvec_minmax
+> directly.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-You could take the same approach here. Each PHY exposes a hwmon
-device?
-
-Looking at
-static struct device *
-__hwmon_device_register(struct device *dev, const char *name, void *drvdata,
-                        const struct hwmon_chip_info *chip,
-                        const struct attribute_group **groups)
-
-I think it is O.K. to pass dev as NULL. You don't have to associate it
-to a device. So you could create the hwmon device as part of package
-initialisation and put it into shared->priv.
-
-	Andrew
+Acked-by: David Rientjes <rientjes@google.com>
