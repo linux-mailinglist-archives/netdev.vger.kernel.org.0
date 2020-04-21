@@ -2,89 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E6311B27CF
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 15:28:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 858CE1B27F6
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 15:33:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728899AbgDUN2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 09:28:23 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:32011 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726018AbgDUN2X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 09:28:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587475702;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Kgaefng3mD2dYf3gVvRv9YQpTDJ5185X3czBi1FHafs=;
-        b=N0s/Ad0hL884Wdfs8mlPLNfs5ebcZv0/ioh2PuPUi6vkeSKICsew11WtwajaIiwWXSBxUU
-        7ITSbY7lWWrMNMoe6Hdt02FbHHFw/OYkKL5MLsOaEmsT+OF+0VnXCUp1ueZEZsELXPY+uC
-        h/dQ2vGBgkgRs35x7ZvZE4t/QLk0XbE=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-501-X1w7q5UIOCaydDvhWIE0nw-1; Tue, 21 Apr 2020 09:28:20 -0400
-X-MC-Unique: X1w7q5UIOCaydDvhWIE0nw-1
-Received: by mail-lf1-f70.google.com with SMTP id h12so5741870lfk.22
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 06:28:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=Kgaefng3mD2dYf3gVvRv9YQpTDJ5185X3czBi1FHafs=;
-        b=VFGLGVzaVxR2BgH7wWSy2uZbwE/j0gYS/b9YZt8LyREaWl0nwunOzcjTVWwdKR7OPV
-         tKY8l1PycYVsa9qh6JGBdlGmpY9BaoDAWLJUrt8gqCFX88qqNRecFZOE6Cub8vVucpcJ
-         +8YKoI83G4Mhfr1GvAK5ZceVPTTjX/QGDGTC3tQpsffO3VmRba3QjUIxDQLlZ+pqZeZw
-         bhkidieZEcJjtvNaeZP85rJSyt7lDJX7K4VdDfW9pCQHj1yYC1uDAdQFu1g/r9I10CGR
-         gndeGNwcksvp4Ed/ltJlPTN3vDo5nRWmO9DpEofHIQU+VKWx8xt2Dlfw0LZ9bwaNae/e
-         fmkw==
-X-Gm-Message-State: AGi0PuZAMdX6OIaPppfOUaUtIF+d9NDa1Rkzghj3jqGjaZ5/4m8Cc2zb
-        C0T5+Jj2/41F5f9iitRGb3lfZa31U4TY7h+1M5LEWOgMDiD9EMb6JKXteMurbDJHcg+Nqe4zg9E
-        otk/bWPKtCOSxqVGg
-X-Received: by 2002:a2e:8590:: with SMTP id b16mr7696209lji.45.1587475699289;
-        Tue, 21 Apr 2020 06:28:19 -0700 (PDT)
-X-Google-Smtp-Source: APiQypI5WRoJ91SZNkpU6DOzUnUtEqS4B6s/g4iq5252n3k1NdKvi9L6H3LaxTPH5I8xgTZ5DuBvhg==
-X-Received: by 2002:a2e:8590:: with SMTP id b16mr7696182lji.45.1587475699120;
-        Tue, 21 Apr 2020 06:28:19 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id z13sm1951682ljn.77.2020.04.21.06.28.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Apr 2020 06:28:18 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id EB5A618157F; Tue, 21 Apr 2020 15:28:17 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
+        id S1728676AbgDUNdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 09:33:25 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:53890 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726018AbgDUNdZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Apr 2020 09:33:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=Hd6p5zjiYkcPEim6KtaG+k48Q99YDf85euD7J4C7f3o=; b=zPTHWmEzB/y5boBagO/gkIgLHv
+        0xe9Han6kg2ItAftPWm1nVMv98KbqZLGjTRpopuyHmjoJPMGFux9optYc8iBPc5waO0ZsL6PHvrbm
+        F08Dpnf9lBR95uw8fnBVygZx7weM6NmOmvYw/vrqLvwonK0Ofs4gAqoqenRNnGUDtFVE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jQt1d-0041qs-L4; Tue, 21 Apr 2020 15:33:21 +0200
+Date:   Tue, 21 Apr 2020 15:33:21 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        davem@davemloft.net, o.rempel@pengutronix.de,
         netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        brouer@redhat.com, toshiaki.makita1@gmail.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH bpf-next 12/16] libbpf: Add egress XDP support
-In-Reply-To: <f2385dfc-87de-b289-c2f0-7ef79de74872@gmail.com>
-References: <20200420200055.49033-1-dsahern@kernel.org> <20200420200055.49033-13-dsahern@kernel.org> <87a7359m3j.fsf@toke.dk> <f2385dfc-87de-b289-c2f0-7ef79de74872@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 21 Apr 2020 15:28:17 +0200
-Message-ID: <87k1297ytq.fsf@toke.dk>
+Subject: Re: [PATCH net 1/2] net: dsa: be compatible with DSA masters with
+ max_mtu of 1500 or less
+Message-ID: <20200421133321.GD937199@lunn.ch>
+References: <20200421123110.13733-1-olteanv@gmail.com>
+ <20200421123110.13733-2-olteanv@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200421123110.13733-2-olteanv@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dsahern@gmail.com> writes:
+On Tue, Apr 21, 2020 at 03:31:09PM +0300, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> It would be ideal if the DSA switch ports would support an MTU of 1500
+> bytes by default, same as any other net device. But there are 2 cases of
+> issues with trying to do that:
+> 
+> - Drivers that are legitimately MTU-challenged and don't support
+>   anything larger than ETH_DATA_LEN. A very quick search shows that
+>   sungem.c is one such example - there may be many others.
+> 
+> - Drivers that simply don't populate netdev->max_mtu. In that case, it
+>   seems that the ether_setup function sets dev->max_mtu to a default
+>   value of ETH_DATA_LEN. And due to the above cases which really are
+>   MTU-challenged, we can't really make any guesses.
+> 
+> So for these cases, if the max_mtu of the master net_device is lower
+> than 1500, use that (minus the tagger overhead) as the max MTU of the
+> switch ports.
 
-> On 4/21/20 4:20 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Isn't the kernel returning both program types in the same message when
->> dumping an interface? So do we really need a separate getter instead of
->> just populating xdp_link_info with the egress ID in the existing getter?
->
-> That might work with some refactoring of get_xdp_info. I'll take a look.
+I don't like this. I suspect this will also break in subtle ways.
 
-Great, thanks! :)
+Please go back to the original behaviour. Make the call to request the
+minimum needed for DSA. And don't care at all if it fails. For jumbo
+frames then you can error out.
 
--Toke
-
+       Andrew
