@@ -2,95 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5609E1B307C
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 21:38:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ECF21B3080
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 21:38:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726115AbgDUTi0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 15:38:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40150 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725930AbgDUTi0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 15:38:26 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F362C0610D5;
-        Tue, 21 Apr 2020 12:38:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=cQsbu7/VTrxDt2wl/6zjIgUVlXPWFhpG3HWKnJn11j0=; b=UwgipCLEv4VRJvh0EI+1mBAf8
-        Iuq/z4yh3iTgqvZPzxULlQ/BDdakKc/7ry5tZuLjhF/cnIfyZSFpOKEg30JSgaH6+u/WdFZgGELbH
-        UF/ub5FlN7GU6nFZORUZnB9+n5juuEY5/Lk1+aruWMoq7YBEQrXxvp/8sxEj3XM5wRzfEHA+ECkdH
-        j0NULigdL7d/8sB3c4WuJYL1SDZr/6Dvb38XBa2xm6ptsMG4Ca96gOtWdLPRa0tqPTuAFJN/NwGuu
-        8uS5ZdV2j5oPfhAgTifnoudd7g99CtwhATAHpYTNnzWF5U/4J4th4nbASoik1KGchfevNNyt+8SfP
-        RX7CickgA==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:49226)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jQyie-0003Y9-4J; Tue, 21 Apr 2020 20:38:08 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jQyiY-0007I3-Ig; Tue, 21 Apr 2020 20:38:02 +0100
-Date:   Tue, 21 Apr 2020 20:38:02 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Michael Walle <michael@walle.cc>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [RFC PATCH net-next 1/3] net: phy: add concept of shared storage
- for PHYs
-Message-ID: <20200421193802.GG25745@shell.armlinux.org.uk>
-References: <20200420232624.9127-1-michael@walle.cc>
- <7bcd7a65740a6f85637ef17ed6b6a1e3@walle.cc>
- <20200421155031.GE933345@lunn.ch>
- <47bdeaf298a09f20ad6631db13df37d2@walle.cc>
- <20200421193055.GI933345@lunn.ch>
+        id S1726214AbgDUTiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 15:38:55 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:32204 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726056AbgDUTiy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 15:38:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587497933;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XpzSuVd5V90PhL6BcnqHLDwFt8T6eWsi+nTokkINhMc=;
+        b=LvSyDstQ37/zWriQDAJhvrf63yBhbxruIm/+wLmdAFWOPA2H3cY0MV0Gbv0x4atQERVBN9
+        YoIzfpBbm74RgIwgtoMgE/GSn+G+Hbw6nuIX135LT0y4MMkX6p0K+2apcFM9H+BgEwMczL
+        B+1E3W7NOo6cT8jMHxa8oWydlCQ8uyE=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-448-73FT0mauNcGfEdDowlf4Mg-1; Tue, 21 Apr 2020 15:38:51 -0400
+X-MC-Unique: 73FT0mauNcGfEdDowlf4Mg-1
+Received: by mail-ed1-f70.google.com with SMTP id y4so5678550edq.7
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 12:38:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XpzSuVd5V90PhL6BcnqHLDwFt8T6eWsi+nTokkINhMc=;
+        b=MmswKt1jtaZRUKtvXPxtAMMIXBYofpFpTbXr8L5lxRRZgwLHwEhBJMjpAmM2PXDeTC
+         T7CBsQQS7h4/EhJR1Aymaz8+1I6Hi9Yh+VTyW/ko6x1OsCJ/MjwlDd2RYJyh0ii5w9TN
+         jiL4m18Y1oHogwxVt6/0xmNEC8WWZsbLG+sXfvKlunYV6t0h8aRUjoSFoujY3dZXq1BX
+         nqREanvOyxEWGAIMtlrTNLxrMNaVGnVuLMOwbFjO7QHjccwfPmwZ4hQRalSPOaMAXvru
+         RacFbPANCcRSAWpraDEh4q0DjM6IcEKspktKcE8X9na6w+VtdBoKeuCGp/bmP1UoiJ5Z
+         FxUw==
+X-Gm-Message-State: AGi0PuaSMsXLPOVVTa3PNroykIUhv84GhDQlPswBlmUTOCEs4YH/fiSx
+        9F3BX3TKmhpvYhSWdcKeVtxe9NkbDjxxZd7mzCf8WqrA0VrZ3HVnx4c0XixDc6FMUve5JspcPS9
+        OSXqxt/xkgXNraHAubd7PITiNzs3MWJp+
+X-Received: by 2002:a05:6402:1bc8:: with SMTP id ch8mr19981728edb.53.1587497930361;
+        Tue, 21 Apr 2020 12:38:50 -0700 (PDT)
+X-Google-Smtp-Source: APiQypLois5vd7B6oePoU4Vt2PhuYIVz5rdLtwqNSUK9+SJn5hoeZ3oZqh9qIPHMaXgGx82nEwi00xDMswYhGIIS+Qs=
+X-Received: by 2002:a05:6402:1bc8:: with SMTP id ch8mr19981713edb.53.1587497930158;
+ Tue, 21 Apr 2020 12:38:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200421193055.GI933345@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200421180426.6945-1-jhs@emojatatu.com>
+In-Reply-To: <20200421180426.6945-1-jhs@emojatatu.com>
+From:   Andrea Claudi <aclaudi@redhat.com>
+Date:   Tue, 21 Apr 2020 21:38:38 +0200
+Message-ID: <CAPpH65zGO02uQyWQXXq6Yg_zsZcVZg+4-KWfRo_q3iACHr6s_Q@mail.gmail.com>
+Subject: Re: [PATCH iproute2 1/1] bpf: Fix segfault when custom pinning is used
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        linux-netdev <netdev@vger.kernel.org>,
+        David Ahern <dsahern@gmail.com>, daniel@iogearbox.net,
+        Jamal Hadi Salim <hadi@mojatatu.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 21, 2020 at 09:30:55PM +0200, Andrew Lunn wrote:
-> > Speaking of it. Does anyone have an idea how I could create the hwmon
-> > device without the PHY device? At the moment it is attached to the
-> > first PHY device and is removed when the PHY is removed, although
-> > there might be still other PHYs in this package. Its unlikely to
-> > happen though, but if someone has a good idea how to handle that,
-> > I'd give it a try.
-> 
-> There is a somewhat similar problem with Marvell Ethernet switches and
-> their internal PHYs. The PHYs are the same as the discrete PHYs, and
-> the usual Marvell PHY driver is used. But there is only one
-> temperature sensor for the whole switch, and it is mapped into all the
-> PHYs. So we end up creating multiple hwmon devices for the one
-> temperature sensor, one per PHY.
+On Tue, Apr 21, 2020 at 8:05 PM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>
+> From: Jamal Hadi Salim <hadi@mojatatu.com>
+>
+> Fixes: c0325b06382 ("bpf: replace snprintf with asprintf when dealing with long buffers")
+>
+> Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
+> ---
+>  lib/bpf.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+>
+> diff --git a/lib/bpf.c b/lib/bpf.c
+> index 10cf9bf4..cf636c9e 100644
+> --- a/lib/bpf.c
+> +++ b/lib/bpf.c
+> @@ -1509,12 +1509,12 @@ out:
+>  static int bpf_make_custom_path(const struct bpf_elf_ctx *ctx,
+>                                 const char *todo)
+>  {
+> -       char *tmp = NULL;
+> +       char tmp[PATH_MAX] = {};
+>         char *rem = NULL;
+>         char *sub;
+>         int ret;
+>
+> -       ret = asprintf(&tmp, "%s/../", bpf_get_work_dir(ctx->type));
+> +       ret = sprintf(tmp, "%s/../", bpf_get_work_dir(ctx->type));
+>         if (ret < 0) {
+>                 fprintf(stderr, "asprintf failed: %s\n", strerror(errno));
+>                 goto out;
+> @@ -1547,7 +1547,6 @@ static int bpf_make_custom_path(const struct bpf_elf_ctx *ctx,
+>         ret = 0;
+>  out:
+>         free(rem);
+> -       free(tmp);
+>         return ret;
+>  }
+>
+> --
+> 2.20.1
+>
 
-And sometimes we really mess it up - like on the 88e6141:
+Hi Jamal,
+Are you sure this fixes your issue? I think asprintf could segfault
+only if ctx is null, but this case is not addressed in your patch.
+I remember that Stephen asked me to use asprintf to avoid allocating
+huge buffers on stack; anyway I've no objection to sprintf, if needed.
 
-cp1configspacef4000000mdio12a200switch04mdio14-mdio-e
-Adapter: MDIO adapter
-temp1:        -75.0°C
+Andrea
 
-because DSA forces the 6390 PHY ID for this PHY, and the marvell
-driver tries to drive the PHY as if it's a different switch, so
-we end up reading a register that isn't meaningful.
-
-So, imho, the current approach isn't as good as you think it is.
-
-That aside from wasting memory allocating multiple sensors when
-there's really only one.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
