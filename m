@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77A511B23A7
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 12:17:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AD071B23A9
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 12:20:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728123AbgDUKRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 06:17:51 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:58746 "EHLO
+        id S1728391AbgDUKU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 06:20:26 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:24993 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725920AbgDUKRu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 06:17:50 -0400
+        by vger.kernel.org with ESMTP id S1725920AbgDUKUX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 06:20:23 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587464267;
+        s=mimecast20190719; t=1587464421;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=mRd6b4RQiBPSCZwBFHKE1HGIQbcvh5+HiYuWc6EgNfo=;
-        b=g++au4NMeGfu+22m7Pug31Bj66JF+sTXQaRL9NHV3Th9lxcsZP/7j54MTYnetSOCK+8XkK
-        fXgrz/r/lsSYepLxcYwaVaBxynEJr6yvtxm/Mcy7hXYYLGyioRcK4LKjrBVYsyH/WvVoL9
-        aS/hKjSJ2E3epPjVMFbnSpHRg5qGnik=
+        bh=ti96mVPhwVXyba8/PZqHEUwK2yPEqUePdjh3uI6FeEo=;
+        b=H7zRiZBxWOhThtk5XtkmE+aAujwE1C5KCZICAWEHoQVSDLyAjjC2W9VVJ/mA9Ljn3CkCU1
+        ili/6p/ZvGxwG38HrACZOeKew3eMyXAtHoRppXO+l8WR8LIamqpNghqetFiNmdv/DneYSJ
+        nfY8TTuQuIxcNq0K72xuodYx8pBwAdQ=
 Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
  [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-464-NoKmQBnpNxKwgS_yCgawhA-1; Tue, 21 Apr 2020 06:17:46 -0400
-X-MC-Unique: NoKmQBnpNxKwgS_yCgawhA-1
-Received: by mail-lf1-f72.google.com with SMTP id y23so5581419lfg.23
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 03:17:45 -0700 (PDT)
+ us-mta-216-2OXaY1SCOdCcx4axLDSMWw-1; Tue, 21 Apr 2020 06:20:19 -0400
+X-MC-Unique: 2OXaY1SCOdCcx4axLDSMWw-1
+Received: by mail-lf1-f72.google.com with SMTP id t194so5600778lff.20
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 03:20:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
          :message-id:mime-version;
-        bh=mRd6b4RQiBPSCZwBFHKE1HGIQbcvh5+HiYuWc6EgNfo=;
-        b=Sv7rxlawAnJ60DAN0IW+mCHHIRB7slPsSDW32rhhLtMSmYFs4QkiqPGm2ztqQq6uqJ
-         vdRHffficiVTKze/ZZfnl31mk34pSVL1lhVRE/sBtpknViCvlYZu26shb6o1kAN7spYK
-         TUmuaWpb1M5maFNfLyLFlhixs7vHNt7iU6oMncMHxna6AeaKnNyWxXAGObI94tpjd7gi
-         5pr6l+vvLSTX0uaF1N33bPK1vmVkrLMLlMooDkEiQLE9/EjRw2QLlspqwbkf2lLWe5u4
-         GexOfFsA1PalSEU4fyv/p3Ae0cE75QS7FnBXEXL7lUb07WsUeoGK86Utm3jAIiaVGs7o
-         ULkQ==
-X-Gm-Message-State: AGi0PuYShw1RePMth4T2zm8UqTE28Q/yrAJZX+HcpG8g4oTY0+9rb6BH
-        QlK2t+kjwtn1A1VaveFmSSoz/e3CujweQHNIjOlzYfAI4w5AbyCvl11baKR/xdb2CiDipVR+QmH
-        3d+Kl2Ol+cZVcagWm
-X-Received: by 2002:a2e:780a:: with SMTP id t10mr12952710ljc.247.1587464263957;
-        Tue, 21 Apr 2020 03:17:43 -0700 (PDT)
-X-Google-Smtp-Source: APiQypJTtPt3UlExwczxDKMR5UnIJj+ft3zV3C20vkCTAxHuPfWID6Xm66wqziIHRIYtW9TvzQs6+w==
-X-Received: by 2002:a2e:780a:: with SMTP id t10mr12952692ljc.247.1587464263663;
-        Tue, 21 Apr 2020 03:17:43 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id v4sm1515741ljj.104.2020.04.21.03.17.42
+        bh=ti96mVPhwVXyba8/PZqHEUwK2yPEqUePdjh3uI6FeEo=;
+        b=RGE/01A5lvjCYjoYxH5gRAmrlT2bdEyS9/0HS6uzRlBjVwDLpKxRnvPYgsJMPRt+mA
+         YyanY0fxYZClclvgl9OWcwL8Dd3nOBM0974In3rdipwkEh3mH/0WyiJrATwoBVx0PC57
+         bB+UzaBPKL5VB/NeDFNZIU2kOki/20O1wg07PqIh8JuyobtC7lUB/mepnN1g42V0TYfq
+         m+LWT4JdgGOnBP3O9DZbfzFCmkFBGsXvUDyDfMaJ8HoVvKcXW4k/EIRE2IHJnoe/kfHB
+         j6bwFNlmKyS9IwTG2VCQShUJPdiDCZo/TRhMcC4xMfZiUF85nkbxuZVG8o1DhdQ+btEO
+         3C9g==
+X-Gm-Message-State: AGi0Puad2i6uVv97E2swBNjRjXs6nLhzxmIlHIgXmXVJlj3vlWgYxa6P
+        uZ6HdBaVluiSeI5o2uQz6KyWGhprmHi5E9Fcu/SdoF3kztpaf+1uaddMTHqb6C61LlG1I0aiDfJ
+        YwMRwohDzUCvbze4I
+X-Received: by 2002:a2e:9c8:: with SMTP id 191mr12411523ljj.259.1587464418214;
+        Tue, 21 Apr 2020 03:20:18 -0700 (PDT)
+X-Google-Smtp-Source: APiQypLY+CvvRegog2HHY9UkuoTkflu81obKBSXnpgf8L0l+MIrZx++vhcuOAPT0sLHOxm5BSU4dsg==
+X-Received: by 2002:a2e:9c8:: with SMTP id 191mr12411486ljj.259.1587464417611;
+        Tue, 21 Apr 2020 03:20:17 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id k2sm1569928ljg.7.2020.04.21.03.20.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Apr 2020 03:17:42 -0700 (PDT)
+        Tue, 21 Apr 2020 03:20:17 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id D941218157F; Tue, 21 Apr 2020 12:17:41 +0200 (CEST)
+        id 7077E18157F; Tue, 21 Apr 2020 12:20:16 +0200 (CEST)
 From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -59,12 +59,12 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
         dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH bpf-next 06/16] net: Add IFLA_XDP_EGRESS for XDP programs in the egress path
-In-Reply-To: <20200420200055.49033-7-dsahern@kernel.org>
-References: <20200420200055.49033-1-dsahern@kernel.org> <20200420200055.49033-7-dsahern@kernel.org>
+Subject: Re: [PATCH bpf-next 12/16] libbpf: Add egress XDP support
+In-Reply-To: <20200420200055.49033-13-dsahern@kernel.org>
+References: <20200420200055.49033-1-dsahern@kernel.org> <20200420200055.49033-13-dsahern@kernel.org>
 X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 21 Apr 2020 12:17:41 +0200
-Message-ID: <87d0819m7u.fsf@toke.dk>
+Date:   Tue, 21 Apr 2020 12:20:16 +0200
+Message-ID: <87a7359m3j.fsf@toke.dk>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
@@ -76,245 +76,78 @@ David Ahern <dsahern@kernel.org> writes:
 
 > From: David Ahern <dahern@digitalocean.com>
 >
-> Running programs in the egress path, on skbs or xdp_frames, does not
-> require driver specific resources like Rx path. Accordingly, the
-> programs can be run in core code, so add xdp_egress_prog to net_device
-> to hold a reference to an attached program.
+> Patch adds egress XDP support in libbpf.
 >
-> For UAPI, add IFLA_XDP_EGRESS to if_link.h to specify egress programs,
-> add a new attach flag, XDP_ATTACHED_EGRESS_CORE, to denote the
-> attach point is at the core level (as opposed to driver or hardware)
-> and add IFLA_XDP_EGRESS_CORE_PROG_ID for reporting the program id.
+> New section name hint, xdp_egress, is added to set expected attach
+> type at program load. Programs can use xdp_egress as the prefix in
+> the SEC statement to load the program with the BPF_XDP_EGRESS
+> attach type set.
 >
-> Add egress argument to do_setlink_xdp to denote processing of
-> IFLA_XDP_EGRESS versus IFLA_XDP, and add a check that none of the
-> existing modes (SKB, DRV or HW) are set since those modes are not
-> valid. The expectation is that XDP_FLAGS_HW_MODE will be used later
-> (e.g., offloading guest programs).
+> egress is added to bpf_xdp_set_link_opts to specify egress type for
+> use with bpf_set_link_xdp_fd_opts. Update library side to check
+> for flag and set nla_type to IFLA_XDP_EGRESS.
 >
-> Add rtnl_xdp_egress_fill and helpers as the egress counterpart to the
-> existing rtnl_xdp_fill.
+> Add egress version of bpf_get_link_xdp* info and id apis with core
+> code refactored to handle both rx and tx paths.
 >
+> Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
+> Co-developed-by: David Ahern <dahern@digitalocean.com>
 > Signed-off-by: David Ahern <dahern@digitalocean.com>
 > ---
->  include/linux/netdevice.h          |  1 +
->  include/uapi/linux/if_link.h       |  3 +
->  net/core/rtnetlink.c               | 96 ++++++++++++++++++++++++++++--
->  tools/include/uapi/linux/if_link.h |  3 +
->  4 files changed, 99 insertions(+), 4 deletions(-)
+>  tools/lib/bpf/libbpf.c   |  2 ++
+>  tools/lib/bpf/libbpf.h   |  9 +++++-
+>  tools/lib/bpf/libbpf.map |  2 ++
+>  tools/lib/bpf/netlink.c  | 63 +++++++++++++++++++++++++++++++++++-----
+>  4 files changed, 67 insertions(+), 9 deletions(-)
 >
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index d0bb9e09660a..3133247681fd 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -1995,6 +1995,7 @@ struct net_device {
->  	unsigned int		real_num_rx_queues;
->  
->  	struct bpf_prog __rcu	*xdp_prog;
-> +	struct bpf_prog __rcu	*xdp_egress_prog;
->  	unsigned long		gro_flush_timeout;
->  	rx_handler_func_t __rcu	*rx_handler;
->  	void __rcu		*rx_handler_data;
-> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-> index 127c704eeba9..b3c6cb2f0f0a 100644
-> --- a/include/uapi/linux/if_link.h
-> +++ b/include/uapi/linux/if_link.h
-> @@ -170,6 +170,7 @@ enum {
->  	IFLA_PROP_LIST,
->  	IFLA_ALT_IFNAME, /* Alternative ifname */
->  	IFLA_PERM_ADDRESS,
-> +	IFLA_XDP_EGRESS, /* nested attribute with 1 or more IFLA_XDP_ attrs */
->  	__IFLA_MAX
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 8f480e29a6b0..32fc970495d9 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -6366,6 +6366,8 @@ static const struct bpf_sec_def section_defs[] = {
+>  		.is_attach_btf = true,
+>  		.expected_attach_type = BPF_LSM_MAC,
+>  		.attach_fn = attach_lsm),
+> +	BPF_EAPROG_SEC("xdp_egress",		BPF_PROG_TYPE_XDP,
+> +						BPF_XDP_EGRESS),
+>  	BPF_PROG_SEC("xdp",			BPF_PROG_TYPE_XDP),
+>  	BPF_PROG_SEC("perf_event",		BPF_PROG_TYPE_PERF_EVENT),
+>  	BPF_PROG_SEC("lwt_in",			BPF_PROG_TYPE_LWT_IN),
+> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> index f1dacecb1619..3feb1242f78e 100644
+> --- a/tools/lib/bpf/libbpf.h
+> +++ b/tools/lib/bpf/libbpf.h
+> @@ -453,14 +453,16 @@ struct xdp_link_info {
+>  	__u32 drv_prog_id;
+>  	__u32 hw_prog_id;
+>  	__u32 skb_prog_id;
+> +	__u32 egress_core_prog_id;
+>  	__u8 attach_mode;
 >  };
 >  
-> @@ -988,6 +989,7 @@ enum {
->  	XDP_ATTACHED_SKB,
->  	XDP_ATTACHED_HW,
->  	XDP_ATTACHED_MULTI,
-> +	XDP_ATTACHED_EGRESS_CORE,
+>  struct bpf_xdp_set_link_opts {
+>  	size_t sz;
+>  	int old_fd;
+> +	__u8  egress;
 >  };
+> -#define bpf_xdp_set_link_opts__last_field old_fd
+> +#define bpf_xdp_set_link_opts__last_field egress
 >  
->  enum {
-> @@ -1000,6 +1002,7 @@ enum {
->  	IFLA_XDP_SKB_PROG_ID,
->  	IFLA_XDP_HW_PROG_ID,
->  	IFLA_XDP_EXPECTED_FD,
-> +	IFLA_XDP_EGRESS_CORE_PROG_ID,
->  	__IFLA_XDP_MAX,
->  };
->  
-> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> index dc44af16226a..e9bc5cee06c8 100644
-> --- a/net/core/rtnetlink.c
-> +++ b/net/core/rtnetlink.c
-> @@ -1030,7 +1030,7 @@ static noinline size_t if_nlmsg_size(const struct net_device *dev,
->  	       + nla_total_size(MAX_PHYS_ITEM_ID_LEN) /* IFLA_PHYS_PORT_ID */
->  	       + nla_total_size(MAX_PHYS_ITEM_ID_LEN) /* IFLA_PHYS_SWITCH_ID */
->  	       + nla_total_size(IFNAMSIZ) /* IFLA_PHYS_PORT_NAME */
-> -	       + rtnl_xdp_size() /* IFLA_XDP */
-> +	       + rtnl_xdp_size() * 2 /* IFLA_XDP and IFLA_XDP_EGRESS */
->  	       + nla_total_size(4)  /* IFLA_EVENT */
->  	       + nla_total_size(4)  /* IFLA_NEW_NETNSID */
->  	       + nla_total_size(4)  /* IFLA_NEW_IFINDEX */
-> @@ -1395,6 +1395,42 @@ static int rtnl_fill_link_ifmap(struct sk_buff *skb, struct net_device *dev)
->  	return 0;
->  }
->  
-> +static u32 rtnl_xdp_egress_prog(struct net_device *dev)
-> +{
-> +	const struct bpf_prog *prog;
-> +
-> +	ASSERT_RTNL();
-> +
-> +	prog = rtnl_dereference(dev->xdp_egress_prog);
-> +	if (!prog)
-> +		return 0;
-> +	return prog->aux->id;
-> +}
-> +
-> +static int rtnl_xdp_egress_report(struct sk_buff *skb, struct net_device *dev,
-> +				  u32 *prog_id, u8 *mode, u8 tgt_mode, u32 attr,
-> +				  u32 (*get_prog_id)(struct net_device *dev))
-> +{
-> +	u32 curr_id;
-> +	int err;
-> +
-> +	curr_id = get_prog_id(dev);
-> +	if (!curr_id)
-> +		return 0;
-> +
-> +	*prog_id = curr_id;
-> +	err = nla_put_u32(skb, attr, curr_id);
-> +	if (err)
-> +		return err;
-> +
-> +	if (*mode != XDP_ATTACHED_NONE)
-> +		*mode = XDP_ATTACHED_MULTI;
-> +	else
-> +		*mode = tgt_mode;
-> +
-> +	return 0;
-> +}
-> +
->  static u32 rtnl_xdp_prog_skb(struct net_device *dev)
->  {
->  	const struct bpf_prog *generic_xdp_prog;
-> @@ -1486,6 +1522,42 @@ static int rtnl_xdp_fill(struct sk_buff *skb, struct net_device *dev)
->  	return err;
->  }
->  
-> +static int rtnl_xdp_egress_fill(struct sk_buff *skb, struct net_device *dev)
-> +{
-> +	u8 mode = XDP_ATTACHED_NONE;
-> +	struct nlattr *xdp;
-> +	u32 prog_id = 0;
-> +	int err;
-> +
-> +	xdp = nla_nest_start_noflag(skb, IFLA_XDP_EGRESS);
-> +	if (!xdp)
-> +		return -EMSGSIZE;
-> +
-> +	err = rtnl_xdp_egress_report(skb, dev, &prog_id, &mode,
-> +				     XDP_ATTACHED_EGRESS_CORE,
-> +				     IFLA_XDP_EGRESS_CORE_PROG_ID,
-> +				     rtnl_xdp_egress_prog);
-> +	if (err)
-> +		goto err_cancel;
-> +
-> +	err = nla_put_u8(skb, IFLA_XDP_ATTACHED, mode);
-> +	if (err)
-> +		goto err_cancel;
-> +
-> +	if (prog_id && mode != XDP_ATTACHED_MULTI) {
-> +		err = nla_put_u32(skb, IFLA_XDP_PROG_ID, prog_id);
-> +		if (err)
-> +			goto err_cancel;
-> +	}
-> +
-> +	nla_nest_end(skb, xdp);
-> +	return 0;
-> +
-> +err_cancel:
-> +	nla_nest_cancel(skb, xdp);
-> +	return err;
-> +}
-> +
->  static u32 rtnl_get_event(unsigned long event)
->  {
->  	u32 rtnl_event_type = IFLA_EVENT_NONE;
-> @@ -1743,6 +1815,9 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb,
->  	if (rtnl_xdp_fill(skb, dev))
->  		goto nla_put_failure;
->  
-> +	if (rtnl_xdp_egress_fill(skb, dev))
-> +		goto nla_put_failure;
-> +
->  	if (dev->rtnl_link_ops || rtnl_have_link_slave_info(dev)) {
->  		if (rtnl_link_fill(skb, dev) < 0)
->  			goto nla_put_failure;
-> @@ -1827,6 +1902,7 @@ static const struct nla_policy ifla_policy[IFLA_MAX+1] = {
->  	[IFLA_ALT_IFNAME]	= { .type = NLA_STRING,
->  				    .len = ALTIFNAMSIZ - 1 },
->  	[IFLA_PERM_ADDRESS]	= { .type = NLA_REJECT },
-> +	[IFLA_XDP_EGRESS]	= { .type = NLA_NESTED },
->  };
->  
->  static const struct nla_policy ifla_info_policy[IFLA_INFO_MAX+1] = {
-> @@ -2482,7 +2558,8 @@ static int do_set_master(struct net_device *dev, int ifindex,
->  #define DO_SETLINK_NOTIFY	0x03
->  
->  static int do_setlink_xdp(struct net_device *dev, struct nlattr *tb,
-> -			  int *status, struct netlink_ext_ack *extack)
-> +			  int *status, bool egress,
-> +			  struct netlink_ext_ack *extack)
->  {
->  	struct nlattr *xdp[IFLA_XDP_MAX + 1];
->  	u32 xdp_flags = 0;
-> @@ -2498,6 +2575,10 @@ static int do_setlink_xdp(struct net_device *dev, struct nlattr *tb,
->  
->  	if (xdp[IFLA_XDP_FLAGS]) {
->  		xdp_flags = nla_get_u32(xdp[IFLA_XDP_FLAGS]);
-> +		if (egress && xdp_flags & XDP_FLAGS_MODES) {
-> +			NL_SET_ERR_MSG(extack, "XDP_FLAGS_MODES not valid for egress");
-> +			goto out_einval;
-> +		}
->  		if (xdp_flags & ~XDP_FLAGS_MASK)
->  			goto out_einval;
->  		if (hweight32(xdp_flags & XDP_FLAGS_MODES) > 1)
-> @@ -2515,7 +2596,7 @@ static int do_setlink_xdp(struct net_device *dev, struct nlattr *tb,
->  
->  		err = dev_change_xdp_fd(dev, extack,
->  					nla_get_s32(xdp[IFLA_XDP_FD]),
-> -					expected_fd, xdp_flags, false);
-> +					expected_fd, xdp_flags, egress);
->  		if (err)
->  			return err;
->  
-> @@ -2821,7 +2902,14 @@ static int do_setlink(const struct sk_buff *skb,
->  	}
->  
->  	if (tb[IFLA_XDP]) {
-> -		err = do_setlink_xdp(dev, tb[IFLA_XDP], &status, extack);
-> +		err = do_setlink_xdp(dev, tb[IFLA_XDP], &status, false, extack);
-> +		if (err)
-> +			goto errout;
-> +	}
-> +
-> +	if (tb[IFLA_XDP_EGRESS]) {
-> +		err = do_setlink_xdp(dev, tb[IFLA_XDP_EGRESS], &status, true,
-> +				     extack);
->  		if (err)
->  			goto errout;
->  	}
+>  LIBBPF_API int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags);
+>  LIBBPF_API int bpf_set_link_xdp_fd_opts(int ifindex, int fd, __u32 flags,
+> @@ -468,6 +470,11 @@ LIBBPF_API int bpf_set_link_xdp_fd_opts(int ifindex, int fd, __u32 flags,
+>  LIBBPF_API int bpf_get_link_xdp_id(int ifindex, __u32 *prog_id, __u32 flags);
+>  LIBBPF_API int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
+>  				     size_t info_size, __u32 flags);
+> +LIBBPF_API int bpf_get_link_xdp_egress_id(int ifindex, __u32 *prog_id,
+> +					  __u32 flags);
+> +LIBBPF_API int bpf_get_link_xdp_egress_info(int ifindex,
+> +					    struct xdp_link_info *info,
+> +					    size_t info_size, __u32 flags);
 
-This means that IFLA_XDP and IFLA_XDP_EGRESS can be present in the same
-netlink message, right? But then installation of the RX program could
-succeed, but userspace would still get an error if the egress program
-installation fails? That is probably not good?
-
-Since I don't think we can atomically make sure both operations fail or
-succeed, maybe it's better to disallow both entries being present in the
-same netlink message?
+Isn't the kernel returning both program types in the same message when
+dumping an interface? So do we really need a separate getter instead of
+just populating xdp_link_info with the egress ID in the existing getter?
 
 -Toke
 
