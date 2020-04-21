@@ -2,72 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C58431B21CA
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 10:38:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6690E1B21C7
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 10:37:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728335AbgDUIhz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 04:37:55 -0400
-Received: from mail-yb1-f195.google.com ([209.85.219.195]:36808 "EHLO
-        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726018AbgDUIhx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 04:37:53 -0400
-Received: by mail-yb1-f195.google.com with SMTP id n188so6954754ybc.3;
-        Tue, 21 Apr 2020 01:37:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=v/3+VZnCM3ynIiT8UZUwJeZ01xBwJWokxUvrEQAQiYo=;
-        b=bFiWT9gfbZn/9gjObOQOTbFNwt54kCMcvWNu0aIy4nTdD0qM6djPi68yql1KO2b07h
-         LGK4eLtd1PGPIfE9J8zMbsVtGkDe+tFmG22BrgKrsIHXNgr86W2zzCr59avhi5FBoW21
-         1gO2ZVUjUTgTShYVC7QUEzdTIg1EgrWB3JqFgMPbBF2/jZiwTypRtcKVFNmc4kOnKCr8
-         FtzqnA+IM0nF71xpUFyk1w/9A1qMI12Iy8ZyRoEu6yK/RI4dAMTyaMGpu5jptGt8Cjvj
-         Ag6JRbfPkAtA+YQD46JxdgcGMytJjNJA33HggkiOv8jlsFISUmEt/kzTt9AjOEHlJaV6
-         dDYw==
-X-Gm-Message-State: AGi0Pub+120rqvy724HfOey6uUx4SsczN1QYhLSmtSz9vHbw5jM59PKt
-        UWgD54nL//XYGYGf6JvviSW/9mWHv9afCNJtf7+3Lki7
-X-Google-Smtp-Source: APiQypIaHQB7wPhEVieQJfu8de8zwg12nMpx1Ox449Qw7TthaEYyLuX1tCmdRhbmN76uN/LTV2imJSE1sR5SRTbdF3M=
-X-Received: by 2002:a25:cec8:: with SMTP id x191mr24951591ybe.39.1587458272417;
- Tue, 21 Apr 2020 01:37:52 -0700 (PDT)
+        id S1728308AbgDUIhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 04:37:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47492 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726018AbgDUIhu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Apr 2020 04:37:50 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 65BEE2098B;
+        Tue, 21 Apr 2020 08:37:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587458269;
+        bh=OHxIgROj4IF3rf5g0fXl4TEIyeeWRkA4FYDLGZXpeuo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ebfcx3qwQ9NM0N+I0taXmMPUlX2of9Ui0JjWoaD3AY9EqHloANpy+IWK6W6SNOavx
+         OU7JADfFOv8PuWQtg5mbUkIAJmi6cuJ9TE4buMBVWjn/z6LHywVM+8ZrAvU7sOSMwn
+         pj+ohd1BCE5Hrka9A+5TQCeuwTeNncDSo8N0mcyw=
+Date:   Tue, 21 Apr 2020 10:37:47 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, Dave Ertman <david.m.ertman@intel.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com, jgg@ziepe.ca,
+        parav@mellanox.com, galpress@amazon.com,
+        selvin.xavier@broadcom.com, sriharsha.basavapatna@broadcom.com,
+        benve@cisco.com, bharat@chelsio.com, xavier.huwei@huawei.com,
+        yishaih@mellanox.com, leonro@mellanox.com, mkalderon@marvell.com,
+        aditr@vmware.com, ranjani.sridharan@linux.intel.com,
+        pierre-louis.bossart@linux.intel.com,
+        Kiran Patil <kiran.patil@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>
+Subject: Re: [net-next v2 1/9] Implementation of Virtual Bus
+Message-ID: <20200421083747.GC716720@kroah.com>
+References: <20200421080235.6515-1-jeffrey.t.kirsher@intel.com>
+ <20200421080235.6515-2-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
-References: <cover.1587058078.git.nicolas.ferre@microchip.com>
- <56bb7a742093cec160c4465c808778a14b2607e7.1587058078.git.nicolas.ferre@microchip.com>
- <61762f4b-03fa-5484-334e-8515eed485e2@microchip.com> <8fcf4a8a-362c-a71f-c99e-be9500db7371@microchip.com>
-In-Reply-To: <8fcf4a8a-362c-a71f-c99e-be9500db7371@microchip.com>
-From:   Harini Katakam <harinik@xilinx.com>
-Date:   Tue, 21 Apr 2020 14:07:41 +0530
-Message-ID: <CAFcVECL-uYF2dpOZvAeGpot4wstT3551QKuYm0TCTXv_SxsyXA@mail.gmail.com>
-Subject: Re: [PATCH 4/5] net: macb: WoL support for GEM type of Ethernet controller
-To:     Nicolas Ferre <Nicolas.Ferre@microchip.com>
-Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        Claudiu Beznea <Claudiu.Beznea@microchip.com>,
-        Harini Katakam <harini.katakam@xilinx.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, linux@armlinux.org.uk,
-        Andrew Lunn <andrew@lunn.ch>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Sergio Prado <sergio.prado@e-labworks.com>,
-        Parshuram Raju Thombare <pthombar@cadence.com>,
-        antoine.tenart@bootlin.com, linux-kernel@vger.kernel.org,
-        Michal Simek <michal.simek@xilinx.com>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200421080235.6515-2-jeffrey.t.kirsher@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 21, 2020 at 1:55 PM <Nicolas.Ferre@microchip.com> wrote:
-<snip>
-> I've reviewed this series to fix this last issues. It's was a
-> combination of runtime_pm not handled properly and a mix of
-> netif_carrier_* call with phylink calls not well positioned nor balanced
-> between suspend and resume.
->
-> I have a v2 series that I'm preparing for today: Harini, I prefer to
-> post it now so it could avoid that you hit the same issues as me while
-> testing on your platform.
+On Tue, Apr 21, 2020 at 01:02:27AM -0700, Jeff Kirsher wrote:
+> --- /dev/null
+> +++ b/Documentation/driver-api/virtual_bus.rst
+> @@ -0,0 +1,62 @@
+> +===============================
+> +Virtual Bus Devices and Drivers
+> +===============================
+> +
+> +See <linux/virtual_bus.h> for the models for virtbus_device and virtbus_driver.
+> +This bus is meant to be a lightweight software based bus to attach generic
+> +devices and drivers to so that a chunk of data can be passed between them.
+> +
+> +One use case example is an RDMA driver needing to connect with several
+> +different types of PCI LAN devices to be able to request resources from
+> +them (queue sets).  Each LAN driver that supports RDMA will register a
+> +virtbus_device on the virtual bus for each physical function.  The RDMA
+> +driver will register as a virtbus_driver on the virtual bus to be
+> +matched up with multiple virtbus_devices and receive a pointer to a
+> +struct containing the callbacks that the PCI LAN drivers support for
+> +registering with them.
+> +
+> +Sections in this document:
+> +        Virtbus devices
+> +        Virtbus drivers
+> +        Device Enumeration
+> +        Device naming and driver binding
+> +        Virtual Bus API entry points
+> +
+> +Virtbus devices
+> +~~~~~~~~~~~~~~~
+> +Virtbus_devices support the minimal device functionality.  Devices will
+> +accept a name, and then, when added to the virtual bus, an automatically
+> +generated index is concatenated onto it for the virtbus_device->name.
+> +
+> +Virtbus drivers
+> +~~~~~~~~~~~~~~~
+> +Virtbus drivers register with the virtual bus to be matched with virtbus
+> +devices.  They expect to be registered with a probe and remove callback,
+> +and also support shutdown, suspend, and resume callbacks.  They otherwise
+> +follow the standard driver behavior of having discovery and enumeration
+> +handled in the bus infrastructure.
+> +
+> +Virtbus drivers register themselves with the API entry point
+> +virtbus_register_driver and unregister with virtbus_unregister_driver.
+> +
+> +Device Enumeration
+> +~~~~~~~~~~~~~~~~~~
+> +Enumeration is handled automatically by the bus infrastructure via the
+> +ida_simple methods.
+> +
+> +Device naming and driver binding
+> +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> +The virtbus_device.dev.name is the canonical name for the device. It is
+> +built from two other parts:
+> +
+> +        - virtbus_device.name (also used for matching).
+> +        - virtbus_device.id (generated automatically from ida_simple calls)
+> +
+> +Virtbus device IDs are always in "<name>.<instance>" format.  Instances are
+> +automatically selected through an ida_simple_get so are positive integers.
+> +Name is taken from the device name field.
+> +
+> +Driver IDs are simple <name>.
+> +
+> +Need to extract the name from the Virtual Device compare to name of the
+> +driver.
 
-OK thanks Nicolas.
+Why is this document even needed?
 
-Regards,
-Harini
+I understand the goal of documenting how to use this and such, but the
+above document does none of that.  The last sentance here doesn't even
+make sense to me.
+
+How about tieing it into the kerneldoc functions that you have created
+in the .c file, to create something that actually is useful?  As it is,
+the above text doesn't describe anything to me that I could actually
+use, did it help someone who wants to use this api that you know of?
+
+Bad documentation is worse than no documentation for things like this...
+
+greg k-h
