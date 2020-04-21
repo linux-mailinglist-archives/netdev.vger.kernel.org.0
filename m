@@ -2,92 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45FAD1B3050
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 21:26:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A09681B305B
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 21:31:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726116AbgDUT0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 15:26:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38352 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725902AbgDUT0u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 15:26:50 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EACB0C0610D5;
-        Tue, 21 Apr 2020 12:26:49 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id k8so3525772ejv.3;
-        Tue, 21 Apr 2020 12:26:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=idTKxWpEYXSpWMVyn2696fqjJ0Ry7jBlA9LPzj52ir0=;
-        b=FSrGDRnziT2sbgdhl+Ig8+exvCHWQV4xq20QWOQWHknyMnYuhzK19fDo+s3GWbBlvH
-         ePPjKY3vfs21mKR1ShEnjLfwyPd4PQlI7tqynuAXnRNhGABVpS9in2rWv3B4u4nCS/d7
-         CDQncWQC/B5aGHPHmNf7DrwVSC2dg4QuJydV6uUf45pwNzjizDffAJaXlpUnWyq4AUnG
-         p2TxW/7s55su2urUvTwWo4j9oCcxUHFCYPquKp0kPkuUkAvGqG6qbC8LbJsvZVnbdB4m
-         lU300xJheMMkNe1lTxfALNCmbgAQkeJ48llYhi+FY0at/8RRfmNJRarkni3JL4kHlAd7
-         iUAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=idTKxWpEYXSpWMVyn2696fqjJ0Ry7jBlA9LPzj52ir0=;
-        b=X/c0R/R4uP2EMroOYXNvDw+zzEckGd/ErG0V+PoWfWsRJI2eBK88x4Z9STnD15z0CV
-         wuU/nlJSsHpJvhl0qJEsP3Nd5E6/ytpRfHVXShjY0hRFyY9cMQr2l+U40GsKNsmzjEBW
-         9Mf6IDnRthG0FSZUSIYNMoXY1JSWSOzmC2MnL3DOWVRczsYJJ42yF6/9VCMnNb15AMvF
-         40knkWKQ59laNdEjDXBzc606QWi9SDhVLy3Fuh8mkOTnRBA3sF4BVPiw75Aj4b0AzAQ8
-         9HHJ1yWzYX+YCSs0GuzXxsfBdViZAjPrr07N+cLQ9w9km4XogqSl7bj20hXlcB+Oc+d9
-         pjIQ==
-X-Gm-Message-State: AGi0PubruIhgEQTNqV8qcdj7RcEZXihnWgu9NxtPZ5PucRLn93qlUw8t
-        OPg/B/WluLbu4dgzAI4VI/qfwynt5YHTYyqHdy0=
-X-Google-Smtp-Source: APiQypKbVFuc0+4pupCD+KUCBYs2OqlbXKOSdEObVGiR4iem9xbPhga7MoJS0F3OqoOUgWjD05yzDfNKHMWuH9SuZ48=
-X-Received: by 2002:a17:906:54cd:: with SMTP id c13mr21911261ejp.307.1587497208543;
- Tue, 21 Apr 2020 12:26:48 -0700 (PDT)
+        id S1726141AbgDUTa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 15:30:58 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54842 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725930AbgDUTa6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Apr 2020 15:30:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=869WgTAm8fPzHRXk0oXeeK3XJ3W9FcEBHCf2mBhSQ8A=; b=UhkMmxc5rqjccfJlOUb2dLymev
+        FkmPpIzQPLpgPvbZQTymH6ckC4KQ290Bf+VA/7DqWrGBz2AXOif24oj03RgSwL5uVRqRUsneEeEND
+        KBMiGYQQ1d7hYGHxolQFrl02K/4dNhxwBK5qhTSdWzdKs+hJTYINL3FmYiFBDJ1ouySk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jQybf-0044tp-73; Tue, 21 Apr 2020 21:30:55 +0200
+Date:   Tue, 21 Apr 2020 21:30:55 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [RFC PATCH net-next 1/3] net: phy: add concept of shared storage
+ for PHYs
+Message-ID: <20200421193055.GI933345@lunn.ch>
+References: <20200420232624.9127-1-michael@walle.cc>
+ <7bcd7a65740a6f85637ef17ed6b6a1e3@walle.cc>
+ <20200421155031.GE933345@lunn.ch>
+ <47bdeaf298a09f20ad6631db13df37d2@walle.cc>
 MIME-Version: 1.0
-References: <20200421171552.28393-1-luke.r.nels@gmail.com> <6f1130b3-eaea-cc5e-716f-5d6be77101b9@zytor.com>
-In-Reply-To: <6f1130b3-eaea-cc5e-716f-5d6be77101b9@zytor.com>
-From:   Xi Wang <xi.wang@gmail.com>
-Date:   Tue, 21 Apr 2020 12:26:12 -0700
-Message-ID: <CAKU6vyb38-XcFeAiP7OW0j++0jS-J4gZP6S2E21dpQwvcEFpKQ@mail.gmail.com>
-Subject: Re: [PATCH bpf 1/2] bpf, x32: Fix invalid instruction in BPF_LDX zero-extension
-To:     "H. Peter Anvin" <hpa@zytor.com>
-Cc:     Luke Nelson <lukenels@cs.washington.edu>, bpf@vger.kernel.org,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Wang YanQing <udknight@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <47bdeaf298a09f20ad6631db13df37d2@walle.cc>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 21, 2020 at 10:39 AM H. Peter Anvin <hpa@zytor.com> wrote:
-> x32 is not x86-32.  In Linux we generally call the latter "i386".
+> Speaking of it. Does anyone have an idea how I could create the hwmon
+> device without the PHY device? At the moment it is attached to the
+> first PHY device and is removed when the PHY is removed, although
+> there might be still other PHYs in this package. Its unlikely to
+> happen though, but if someone has a good idea how to handle that,
+> I'd give it a try.
 
-Agreed.  Most of the previous patches to this file use "x32" and this
-one just wanted to be consistent.
+There is a somewhat similar problem with Marvell Ethernet switches and
+their internal PHYs. The PHYs are the same as the discrete PHYs, and
+the usual Marvell PHY driver is used. But there is only one
+temperature sensor for the whole switch, and it is mapped into all the
+PHYs. So we end up creating multiple hwmon devices for the one
+temperature sensor, one per PHY.
 
-> C7 /0 imm32 is a valid instruction on i386. However, it is also
-> inefficient when the destination is a register, because B8+r imm32 is
-> equivalent, and when the value is zero, XOR is indeed more efficient.
->
-> The real error is using EMIT3() instead of EMIT2_off32(), but XOR is
-> more efficient. However, let's make the bug statement *correct*, or it
-> is going to confuse the Hades out of people in the future.
+You could take the same approach here. Each PHY exposes a hwmon
+device?
 
-I don't see how the bug statement is incorrect, which merely points
-out that "C7 C0 0" is an invalid instruction, regardless of whether
-the JIT intended to emit C7 /0 imm32, B8+r imm32, 31 /r, 33 /r, or any
-other equivalent form.
+Looking at
+static struct device *
+__hwmon_device_register(struct device *dev, const char *name, void *drvdata,
+                        const struct hwmon_chip_info *chip,
+                        const struct attribute_group **groups)
+
+I think it is O.K. to pass dev as NULL. You don't have to associate it
+to a device. So you could create the hwmon device as part of package
+initialisation and put it into shared->priv.
+
+	Andrew
