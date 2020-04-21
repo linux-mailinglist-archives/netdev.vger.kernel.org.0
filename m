@@ -2,131 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2AFF1B1B59
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 03:49:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EE671B1B5D
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 03:49:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726039AbgDUBtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Apr 2020 21:49:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44198 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725958AbgDUBtI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Apr 2020 21:49:08 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE9E5C061A0E;
-        Mon, 20 Apr 2020 18:49:07 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id q19so12225756ljp.9;
-        Mon, 20 Apr 2020 18:49:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=i2od+tkM159HRcOwmxUHukLIGN2mZccnkjlsxXKj+3M=;
-        b=Jp4ZB3SzgudcCBJnAIyIKCFnbfPVC5n8Ur0lvS0s2yekgb5Dv3f1ktZrW2ZBpaog1Z
-         AG5bBnX6qi6UsHTXqvW4y7MECtQUI3tE9G5mCt/prRM4mibfBoP64Z+Lb7M4teQhj9BV
-         bQevFt57chmlJA1nDUE2TXPryMJ48oe0yVhBv6bHYA1F9Wq/ehOBwKYjvMs8B819GV0J
-         F+EAzvZkZvIP5VycWxaUYTn2Tu0sUIhEBHZxh4IVxQQEftEOyE3HKYx2YaCEQHszwQ7M
-         cwUqeVTBwBdYbHrc89iMfxh3uxINIZYufE/uZRUiXKM6Xw0JC4ZtgE0sWu0zPFOrmECr
-         7tiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=i2od+tkM159HRcOwmxUHukLIGN2mZccnkjlsxXKj+3M=;
-        b=ZrSHec8LP3j+TrxeAjqpM7oQ+sxKhNajUoDccD30OoggYRRTcp73pC3+zvtYJ5VsdK
-         dW/a5dVKIlGerPG3ou7TwdxTaYzGX1+uirYZ2CAX9sENoAgcjq+Khu3naIneU2cJwH4V
-         r0tsrW2YtcA85lzRfj9zADlx0TM9D17Uvm7KO4dTuYYyiLorcLAu6bOseW3G7U5P1qJ3
-         6Vka1kMMAeXeCLsKeAQQh99LdFzS+gaiawGPFpyE+Du4D9xy3PlnxCFWIhJynrWOkWaW
-         /yOl1tgydeFRyClXF5dOBVJSVYZbrOtSc4Q37htQLqDYtfRC7VzatB0eYqFMMEd98SQf
-         sQEQ==
-X-Gm-Message-State: AGi0Pub/Zan+kDxgl38dfJImxH0LsU/ZsNwCOV8YhV7VezjBALEQ++GO
-        TfkhTCGNhqkavbvSg9zl+Zo+oThSSuIKNRs3BTk=
-X-Google-Smtp-Source: APiQypJVntxl0em9kojlMUJwKY+tbj4KjZSvt0b5fZ6xDZrB0kqkz4L9LmJj/4d0TSG22gyTh/9rqGal0BrCvsDxCk4=
-X-Received: by 2002:a2e:b4c2:: with SMTP id r2mr7347202ljm.143.1587433746231;
- Mon, 20 Apr 2020 18:49:06 -0700 (PDT)
+        id S1726121AbgDUBtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Apr 2020 21:49:35 -0400
+Received: from mga17.intel.com ([192.55.52.151]:47086 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725958AbgDUBtf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 20 Apr 2020 21:49:35 -0400
+IronPort-SDR: jJZQhULJuLs4j4p7bCtxMWZq+i+SirzLd2KF9ukWfQz1ycaLj160b7BRjwXzgLfm+pC0prIZaF
+ Bk47kTaYw+qw==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 18:49:35 -0700
+IronPort-SDR: /pClrDGIUSTi/yhcFYFOJDCKjqhPKe7c6oLLKJ32YTkTW09C3q40QWtqXfRJbzUShvBv3mlCjR
+ mYMXeNRpcycA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,408,1580803200"; 
+   d="scan'208";a="291449653"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
+  by orsmga008.jf.intel.com with ESMTP; 20 Apr 2020 18:49:34 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next 0/4][pull request] 40GbE Intel Wired LAN Driver Updates 2020-04-20
+Date:   Mon, 20 Apr 2020 18:49:28 -0700
+Message-Id: <20200421014932.2743607-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.25.3
 MIME-Version: 1.0
-References: <20200417000007.10734-1-jannh@google.com>
-In-Reply-To: <20200417000007.10734-1-jannh@google.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 20 Apr 2020 18:48:54 -0700
-Message-ID: <CAADnVQ+0U5K_ySgHcM-o6mbq-mcntA4XrRJe9QVHc0fUj2f2Dg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] bpf: Forbid XADD on spilled pointers for
- unprivileged users
-To:     Jann Horn <jannh@google.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 16, 2020 at 5:00 PM Jann Horn <jannh@google.com> wrote:
->
-> When check_xadd() verifies an XADD operation on a pointer to a stack slot
-> containing a spilled pointer, check_stack_read() verifies that the read,
-> which is part of XADD, is valid. However, since the placeholder value -1 is
-> passed as `value_regno`, check_stack_read() can only return a binary
-> decision and can't return the type of the value that was read. The intent
-> here is to verify whether the value read from the stack slot may be used as
-> a SCALAR_VALUE; but since check_stack_read() doesn't check the type, and
-> the type information is lost when check_stack_read() returns, this is not
-> enforced, and a malicious user can abuse XADD to leak spilled kernel
-> pointers.
->
-> Fix it by letting check_stack_read() verify that the value is usable as a
-> SCALAR_VALUE if no type information is passed to the caller.
->
-> To be able to use __is_pointer_value() in check_stack_read(), move it up.
->
-> Fix up the expected unprivileged error message for a BPF selftest that,
-> until now, assumed that unprivileged users can use XADD on stack-spilled
-> pointers. This also gives us a test for the behavior introduced in this
-> patch for free.
->
-> In theory, this could also be fixed by forbidding XADD on stack spills
-> entirely, since XADD is a locked operation (for operations on memory with
-> concurrency) and there can't be any concurrency on the BPF stack; but
-> Alexei has said that he wants to keep XADD on stack slots working to avoid
-> changes to the test suite [1].
->
-> The following BPF program demonstrates how to leak a BPF map pointer as an
-> unprivileged user using this bug:
->
->     // r7 = map_pointer
->     BPF_LD_MAP_FD(BPF_REG_7, small_map),
->     // r8 = launder(map_pointer)
->     BPF_STX_MEM(BPF_DW, BPF_REG_FP, BPF_REG_7, -8),
->     BPF_MOV64_IMM(BPF_REG_1, 0),
->     ((struct bpf_insn) {
->       .code  = BPF_STX | BPF_DW | BPF_XADD,
->       .dst_reg = BPF_REG_FP,
->       .src_reg = BPF_REG_1,
->       .off = -8
->     }),
->     BPF_LDX_MEM(BPF_DW, BPF_REG_8, BPF_REG_FP, -8),
->
->     // store r8 into map
->     BPF_MOV64_REG(BPF_REG_ARG1, BPF_REG_7),
->     BPF_MOV64_REG(BPF_REG_ARG2, BPF_REG_FP),
->     BPF_ALU64_IMM(BPF_ADD, BPF_REG_ARG2, -4),
->     BPF_ST_MEM(BPF_W, BPF_REG_ARG2, 0, 0),
->     BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
->     BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 1),
->     BPF_EXIT_INSN(),
->     BPF_STX_MEM(BPF_DW, BPF_REG_0, BPF_REG_8, 0),
->
->     BPF_MOV64_IMM(BPF_REG_0, 0),
->     BPF_EXIT_INSN()
->
-> [1] https://lore.kernel.org/bpf/20200416211116.qxqcza5vo2ddnkdq@ast-mbp.dhcp.thefacebook.com/
->
-> Fixes: 17a5267067f3 ("bpf: verifier (add verifier core)")
-> Signed-off-by: Jann Horn <jannh@google.com>
+This small series contains updates to i40e only.
 
-Applied both. Thanks
+Takashi Iwai, from SUSE, changes snprintf() to scnprintf() to avoid
+potential buffer overflow.
+
+Jesper Dangaard Brouer fixes code comments in the XDP code, which were a
+cut and paste error.
+
+Arkadiusz adds support for total port shutdown, which allows completely
+shutdown the port on the link-down procedure by physically removing the
+link from the port.
+
+Todd adds a check to see if Max Frame Size (MFS) is set to an
+unsupported value.
+
+The following are changes since commit 82ebc889091a488b4dd95e682b3c3b889a50713c:
+  qed: use true,false for bool variables
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 40GbE
+
+Arkadiusz Kubalewski (1):
+  i40e: Add support for a new feature: Total Port Shutdown
+
+Jesper Dangaard Brouer (1):
+  i40e: trivial fixup of comments in i40e_xsk.c
+
+Takashi Iwai (1):
+  i40e: Use scnprintf() for avoiding potential buffer overflow
+
+Todd Fujinaka (1):
+  i40e: Add a check to see if MFS is set
+
+ drivers/net/ethernet/intel/i40e/i40e.h        |   1 +
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    |   8 +
+ drivers/net/ethernet/intel/i40e/i40e_main.c   | 158 ++++++++++++++----
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c    |   4 +-
+ 4 files changed, 135 insertions(+), 36 deletions(-)
+
+-- 
+2.25.3
+
