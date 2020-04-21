@@ -2,91 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7479F1B23AA
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 12:21:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A27E1B23D3
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 12:29:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728447AbgDUKU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 06:20:57 -0400
-Received: from guitar.tcltek.co.il ([192.115.133.116]:51697 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725920AbgDUKUz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Apr 2020 06:20:55 -0400
-Received: from tarshish (unknown [10.0.8.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id B1A1F44046D;
-        Tue, 21 Apr 2020 13:20:52 +0300 (IDT)
-References: <616c799433477943d782bda9d8a825d56fc70c9d.1587459886.git.baruch@tkos.co.il> <20200421091720.GB25745@shell.armlinux.org.uk>
-User-agent: mu4e 1.2.0; emacs 26.1
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net] net: phy: marvell10g: limit soft reset to 88x3310
-In-reply-to: <20200421091720.GB25745@shell.armlinux.org.uk>
-Date:   Tue, 21 Apr 2020 13:20:52 +0300
-Message-ID: <87tv1db0mz.fsf@tarshish>
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S1728696AbgDUK3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 06:29:35 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:38077 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728549AbgDUK26 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 06:28:58 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from maorg@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 21 Apr 2020 13:28:53 +0300
+Received: from dev-l-vrt-201.mtl.labs.mlnx (dev-l-vrt-201.mtl.labs.mlnx [10.134.201.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 03LASrmm019072;
+        Tue, 21 Apr 2020 13:28:53 +0300
+From:   Maor Gottlieb <maorg@mellanox.com>
+To:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        kuba@kernel.org, jiri@mellanox.com, dsahern@kernel.org
+Cc:     leonro@mellanox.com, saeedm@mellanox.com,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        alexr@mellanox.com, Maor Gottlieb <maorg@mellanox.com>
+Subject: [PATCH V3 mlx5-next 00/15] Add support to get xmit slave
+Date:   Tue, 21 Apr 2020 13:28:29 +0300
+Message-Id: <20200421102844.23640-1-maorg@mellanox.com>
+X-Mailer: git-send-email 2.17.2
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell,
+Hi Dave,
 
-On Tue, Apr 21 2020, Russell King - ARM Linux admin wrote:
-> On Tue, Apr 21, 2020 at 12:04:46PM +0300, Baruch Siach wrote:
->> The MV_V2_PORT_CTRL_SWRST bit in MV_V2_PORT_CTRL is reserved on 88E2110.
->> Setting SWRST on 88E2110 breaks packets transfer after interface down/up
->> cycle.
->>
->> Fixes: 8f48c2ac85ed ("net: marvell10g: soft-reset the PHY when coming out of low power")
->> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
->
-> Okay, the presence of 88E2110 combined with 88X3310 support is going to
-> be a constant source of pain in terms of maintanence, since I know
-> nothing about this PHY, nor do I have any way to test my changes there.
->
-> I think we need to think about how to deal with that - do we split the
-> code, so that 88X3310 can be maintained separately from 88E2110 (even
-> though most of the code may be the same), or can someone send me a board
-> that has the 88E2110 on (I can't purchase as I have no funds to do so.)
+This series is a combination of netdev and RDMA, so in order to avoid
+conflicts, we would like to ask you to route this series through
+mlx5-next shared branch. It is based on v5.7-rc1 tag.
 
-I'll contact you in private about hardware availability.
+---------------------------------------------------------------------
 
-> So, I guess splitting the code is likely to be the only solution.
+The following series adds support to get the LAG master xmit slave by
+introducing new .ndo - ndo_xmit_slave_get. Every LAG module can
+implement it and it first implemented in the bond driver. 
+This is follow-up to the RFC discussion [1].
 
-This situation is no different than other drivers that support many
-variants of the same basic hardware. FEC and mvneta driver come to mind
-as examples. Hardware availability limitation is always a challenge.
+The main motivation for doing this is for drivers that offload part
+of the LAG functionality. For example, Mellanox Connect-X hardware
+implements RoCE LAG which selects the TX affinity when the resources
+are created and port is remapped when it goes down.
 
-I don't think this justifies splitting the code. But that's your call.
+The first part of this patchset introduces the new .ndo and add the
+support to the bonding module.
 
-Thanks for reviewing,
-baruch
+The second part adds support to get the RoCE LAG xmit slave by building
+skb of the RoCE packet based on the AH attributes and call to the new .ndo.
 
->> ---
->>  drivers/net/phy/marvell10g.c | 3 ++-
->>  1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
->> index d3cb88651ad2..601686f64341 100644
->> --- a/drivers/net/phy/marvell10g.c
->> +++ b/drivers/net/phy/marvell10g.c
->> @@ -263,7 +263,8 @@ static int mv3310_power_up(struct phy_device *phydev)
->>  	ret = phy_clear_bits_mmd(phydev, MDIO_MMD_VEND2, MV_V2_PORT_CTRL,
->>  				 MV_V2_PORT_CTRL_PWRDOWN);
->>
->> -	if (priv->firmware_ver < 0x00030000)
->> +	if (phydev->drv->phy_id != MARVELL_PHY_ID_88X3310 ||
->> +	    priv->firmware_ver < 0x00030000)
->>  		return ret;
->>
->>  	return phy_set_bits_mmd(phydev, MDIO_MMD_VEND2, MV_V2_PORT_CTRL,
+The third part change the mlx5 driver driver to set the QP's affinity
+port according to the slave which found by the .ndo.
 
---
-     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
+Thanks
+
+[1] https://lore.kernel.org/netdev/20200126132126.9981-1-maorg@mellanox.com/
+
+Change log:
+v3: 1. Move master_get_xmit_slave to netdevice.h and change the flags arg.
+to bool.
+    2. Split helper functions commit to multiple commits for each bond
+mode.
+    3. Extract refcotring changes to seperate commits.
+v2: The first patch wasn't sent in v1.
+v1: https://lore.kernel.org/netdev/ac373456-b838-29cf-645f-b1ea1a93e3b0@gmail.com/T/#t 
+
+Maor Gottlieb (15):
+  net/core: Introduce master_xmit_slave_get
+  bonding: Export skip slave logic to function
+  bonding: Rename slave_arr to usable_slaves
+  bonding/alb: Add helper functions to get the xmit slave
+  bonding: Add helper function to get the xmit slave based on hash
+  bonding: Add helper function to get the xmit slave in rr mode
+  bonding: Add function to get the xmit slave in active-backup mode
+  bonding: Add array of all salves
+  bonding: Implement ndo_get_xmit_slave
+  RDMA/core: Add LAG functionality
+  RDMA/core: Get xmit slave for LAG
+  net/mlx5: Change lag mutex lock to spin lock
+  net/mlx5: Add support to get lag physical port
+  RDMA/mlx5: Refactor affinity related code
+  RDMA/mlx5: Set lag tx affinity according to slave
+
+ drivers/infiniband/core/Makefile              |   2 +-
+ drivers/infiniband/core/lag.c                 | 138 +++++++++
+ drivers/infiniband/core/verbs.c               |  44 ++-
+ drivers/infiniband/hw/mlx5/ah.c               |   4 +
+ drivers/infiniband/hw/mlx5/gsi.c              |  34 ++-
+ drivers/infiniband/hw/mlx5/main.c             |   2 +
+ drivers/infiniband/hw/mlx5/mlx5_ib.h          |   1 +
+ drivers/infiniband/hw/mlx5/qp.c               | 123 +++++---
+ drivers/net/bonding/bond_alb.c                |  39 ++-
+ drivers/net/bonding/bond_main.c               | 270 +++++++++++++-----
+ drivers/net/ethernet/mellanox/mlx5/core/lag.c |  66 +++--
+ include/linux/mlx5/driver.h                   |   2 +
+ include/linux/mlx5/mlx5_ifc.h                 |   4 +-
+ include/linux/mlx5/qp.h                       |   2 +
+ include/linux/netdevice.h                     |  33 +++
+ include/net/bond_alb.h                        |   4 +
+ include/net/bonding.h                         |   3 +-
+ include/rdma/ib_verbs.h                       |   2 +
+ include/rdma/lag.h                            |  22 ++
+ 19 files changed, 617 insertions(+), 178 deletions(-)
+ create mode 100644 drivers/infiniband/core/lag.c
+ create mode 100644 include/rdma/lag.h
+
+-- 
+2.17.2
+
