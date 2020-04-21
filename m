@@ -2,96 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36E451B2A74
-	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 16:47:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCA531B2A7C
+	for <lists+netdev@lfdr.de>; Tue, 21 Apr 2020 16:51:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729089AbgDUOr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 10:47:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53936 "EHLO mail.kernel.org"
+        id S1728957AbgDUOvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 10:51:03 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54212 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728899AbgDUOr3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Apr 2020 10:47:29 -0400
-Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 98F5620679;
-        Tue, 21 Apr 2020 14:47:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587480448;
-        bh=179hm4bmrWpEhrcTpNyYUj8Z88t4HCasC1NbfEsT6Nc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=OOaIjmc99UZlb66p7Sb9+gbcrP44W4N2zNqvBVS0FZurL279nPq3L84JMZeGKgyt2
-         2hmt7B3LWtsatjQ+3wR9O2YinY824fdzOKb6q6ZEyua4OA8uNANdC7Lv0vvyVY8c+I
-         eVS5JVGty9oiMXDfDX8WpNNXrq1H/RbP+GgBWxYM=
-From:   David Ahern <dsahern@kernel.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH net] selftests: Fix suppress test in fib_tests.sh
-Date:   Tue, 21 Apr 2020 08:47:24 -0600
-Message-Id: <20200421144724.54859-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
+        id S1726628AbgDUOvD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Apr 2020 10:51:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=8Qynf6hcLm2W/HhSDd8tPztQA+MysekaejQSi+2hhk0=; b=CPDR2qKjZV2X/H2PE8UZcmkZul
+        8ImSTp8v4SUbHT7q+fufkRKFY23Kywx7R6etZoDudVi9sy5Oa+barX6Ia8KAEzlmndHj5tHM/excM
+        dinEZX0XyzbBgpwQ6xO8XQsm7uL/1BeKZwCswHFESEx1/IaKSTtP98KXHsPCrbwoRTdM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jQuEl-0042c2-7e; Tue, 21 Apr 2020 16:50:59 +0200
+Date:   Tue, 21 Apr 2020 16:50:59 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net 1/2] net: dsa: be compatible with DSA masters with
+ max_mtu of 1500 or less
+Message-ID: <20200421145059.GC933345@lunn.ch>
+References: <20200421123110.13733-1-olteanv@gmail.com>
+ <20200421123110.13733-2-olteanv@gmail.com>
+ <20200421133321.GD937199@lunn.ch>
+ <CA+h21hrXJf1vm-5b3O7zQciznKF-jGSTpe_v6Mgtv8dXNOCt7g@mail.gmail.com>
+ <20200421140653.GA933345@lunn.ch>
+ <CA+h21hq4deLKEp80Kt4Gboxon4MLsOYaXPk6Tz2JBAH0yF2q9Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hq4deLKEp80Kt4Gboxon4MLsOYaXPk6Tz2JBAH0yF2q9Q@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+> > We have always assumed the slave can send normal sized frames,
+> > independent of what the master supports. This is just a follow on from
+> > the fact we ignore errors setting the MTU on the master for the DSA
+> > overhead for normal size frames. So don't set the MTU to 1496, leave
+> > it at 1500. For all working boards out in the wild, 1500 will work.
+> >
+> >          Andrew
+> 
+> Does iperf3 TCP work on your Vybrid board with the master MTU equal to
+> the slave MTU equal to 1500 (without IP fragmentation, that is)? If it
+> does, ok, this patch can maybe be dropped.
 
-fib_tests is spewing errors:
-    ...
-    Cannot open network namespace "ns1": No such file or directory
-    Cannot open network namespace "ns1": No such file or directory
-    Cannot open network namespace "ns1": No such file or directory
-    Cannot open network namespace "ns1": No such file or directory
-    ping: connect: Network is unreachable
-    Cannot open network namespace "ns1": No such file or directory
-    Cannot open network namespace "ns1": No such file or directory
-    ...
+Yes it does.
 
-Each test entry in fib_tests is supposed to do its own setup and
-cleanup. Right now the $IP commands in fib_suppress_test are
-failing because there is no ns1. Add the setup/cleanup and logging
-expected for each test.
+> qca7000 doesn't support packets larger than 1500 MTU either, neither
+> does broadcom b44, and neither do probably more adapters which I
+> didn't find now.
 
-Fixes: ca7a03c41753 ("ipv6: do not free rt if FIB_LOOKUP_NOREF is set on suppress rule")
-Signed-off-by: David Ahern <dsahern@gmail.com>
-Cc: Jason A. Donenfeld <Jason@zx2c4.com>
----
- tools/testing/selftests/net/fib_tests.sh | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+And unfortunately, there are probably a similar number of devices
+which do work, and don't have correct MTU settings. So long as the IP
+stack does MTU correctly, it does not matter what the network device
+does with frames bigger than the MTU. And so network devices whos MTU
+handling is wrong never causes issues, and so never get detected and
+fixed.
 
-diff --git a/tools/testing/selftests/net/fib_tests.sh b/tools/testing/selftests/net/fib_tests.sh
-index b7616704b55e..84205c3a55eb 100755
---- a/tools/testing/selftests/net/fib_tests.sh
-+++ b/tools/testing/selftests/net/fib_tests.sh
-@@ -618,16 +618,22 @@ fib_nexthop_test()
- 
- fib_suppress_test()
- {
-+	echo
-+	echo "FIB rule with suppress_prefixlength"
-+	setup
-+
- 	$IP link add dummy1 type dummy
- 	$IP link set dummy1 up
- 	$IP -6 route add default dev dummy1
- 	$IP -6 rule add table main suppress_prefixlength 0
--	ping -f -c 1000 -W 1 1234::1 || true
-+	ping -f -c 1000 -W 1 1234::1 >/dev/null 2>&1
- 	$IP -6 rule del table main suppress_prefixlength 0
- 	$IP link del dummy1
- 
- 	# If we got here without crashing, we're good.
--	return 0
-+	log_test 0 0 "FIB rule suppress test"
-+
-+	cleanup
- }
- 
- ################################################################################
--- 
-2.20.1
+We have to live in a world where trying to be correct is going to
+cause regressions because of poor decisions in the past. But we can do
+jumbo correctly, since it is new, it cannot regress. And doing jumbo
+correct will help find some of these network drivers which do MTU
+settings wrong.
 
+      Andrew
