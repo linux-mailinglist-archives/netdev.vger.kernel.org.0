@@ -2,52 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B76611B32C0
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 00:46:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 853131B32C2
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 00:48:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726413AbgDUWqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 18:46:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40934 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726067AbgDUWqC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 18:46:02 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C43C0C0610D5;
-        Tue, 21 Apr 2020 15:46:02 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 75569128E9284;
-        Tue, 21 Apr 2020 15:46:02 -0700 (PDT)
-Date:   Tue, 21 Apr 2020 15:46:01 -0700 (PDT)
-Message-Id: <20200421.154601.158772582316590260.davem@davemloft.net>
-To:     yanaijie@huawei.com
-Cc:     jeffrey.t.kirsher@intel.com, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] e1000: remove unneeded conversion to bool
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200420123506.7716-1-yanaijie@huawei.com>
-References: <20200420123506.7716-1-yanaijie@huawei.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 21 Apr 2020 15:46:02 -0700 (PDT)
+        id S1726115AbgDUWsh convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Apr 2020 18:48:37 -0400
+Received: from mga07.intel.com ([134.134.136.100]:61434 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726039AbgDUWsh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Apr 2020 18:48:37 -0400
+IronPort-SDR: k+SfkvQ84w1O6diuyaubAjYNM0t3GpRO8HUNa+M1aCwD7FEoybPsve2QLCW+KLzy4fMvqByThE
+ d2un/ut78BSA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2020 15:48:37 -0700
+IronPort-SDR: xNY7g1XM3eH6S+9C1rEQearU9NyDF7cF33olJPC/U/kElHEOffqLk/MAcmmdwyW19ti3Mm7scj
+ Wcd8cBxz5MMw==
+X-IronPort-AV: E=Sophos;i="5.72,411,1580803200"; 
+   d="scan'208";a="258866889"
+Received: from pvrobles-mobl1.amr.corp.intel.com (HELO localhost) ([10.254.110.52])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2020 15:48:36 -0700
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20200421.153221.2089591404052111123.davem@davemloft.net>
+References: <20200420234313.2184282-3-jeffrey.t.kirsher@intel.com> <20200421.122610.891640326169718840.davem@davemloft.net> <158750338551.60047.10607495842380954746@pvrobles-mobl1.amr.corp.intel.com> <20200421.153221.2089591404052111123.davem@davemloft.net>
+Subject: Re: [net-next 02/13] igc: Use netdev log helpers in igc_main.c
+From:   Andre Guedes <andre.guedes@linux.intel.com>
+Cc:     jeffrey.t.kirsher@intel.com, kuba@kernel.org,
+        andre.guedes@intel.com, netdev@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, aaron.f.brown@intel.com
+To:     David Miller <davem@davemloft.net>
+Date:   Tue, 21 Apr 2020 15:48:36 -0700
+Message-ID: <158750931624.64093.11210523179576278990@pvrobles-mobl1.amr.corp.intel.com>
+User-Agent: alot/0.9
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jason Yan <yanaijie@huawei.com>
-Date: Mon, 20 Apr 2020 20:35:06 +0800
+Quoting David Miller (2020-04-21 15:32:21)
+> Please kill these newline removal changes, thank you.
 
-> The '==' expression itself is bool, no need to convert it to bool again.
-> This fixes the following coccicheck warning:
-> 
-> drivers/net/ethernet/intel/e1000/e1000_main.c:1479:44-49: WARNING:
-> conversion to bool not needed here
-> 
-> Signed-off-by: Jason Yan <yanaijie@huawei.com>
+OK, I'm working on that. Thanks.
 
-Applied to net-next.
+- Andre
