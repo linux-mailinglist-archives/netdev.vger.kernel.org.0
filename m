@@ -2,61 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 071DA1B4B55
+	by mail.lfdr.de (Postfix) with ESMTP id BAF891B4B56
 	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 19:10:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726445AbgDVRKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 13:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42548 "EHLO
+        id S1726525AbgDVRKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 13:10:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726006AbgDVRKV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 13:10:21 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 217BFC03C1A9
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 10:10:21 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id o15so1420455pgi.1
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 10:10:21 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726006AbgDVRKX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 13:10:23 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B42BC03C1A9
+        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 10:10:23 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id q18so1395497pgm.11
+        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 10:10:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=wDxWt/6E4/Xh0IsRyK40yFI36NNL8sWIy/stm1q6/5Y=;
-        b=GFgEQLZcKZkpjiQu0Wv06J0nSOx7JCPf5y9XvytKSlp/F8w8i6WPF0GOpEZX/LTAbL
-         ZYwXqftHLxXBhSkybFI1GFJFer+UA8voB5UYTh+eliQwfdialOfSrf5h00L9nLgPMYtL
-         wuBvNKP5Cl/NWH3OQPxG9b5Ccp2g7J2G7qYLDJ2dF8bD7HQl26imldIXTByw375Y7k/z
-         M4IBXhR8SgYmfZFTge3CcjKx4bX8Bd12i63tBKl1fe4SMD5wWNn6ymitNzxxyUcEGFv0
-         mE70SsGYLMy+oseTSdreXTqXeMWmlkBO1seQYLJvqf9wCSBzJiOGOem7BROiIFIQ+1jv
-         8crQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Oo9uRPEJUdv9A686Mk0RlNJ/U+paXqfIsy50MEEAT+M=;
+        b=rbBPKd52m0e7tEmgPkUzYuVIA2peJrYC+T+kgW1GuP7Psr8uoeQXq3+CjivO8a9DJr
+         ouTBpo+j9U9+++S6tpQGlEG+L6V8DquHuI2l8hbJEJQDzMmpGn0GkaYsjXjEYq7zwma3
+         qc2iriDd1mufINKo3EY/qvC1c9krjXjOwfOMRDIuNOu0V4PuYxOfbqgfaKXkw/PZSK3C
+         favU/r+LJlOr3J+a6q7TbKQaHFBgZN2m4fweJLigck7dMzRJ7UwL7Jud+rBNsmk9//14
+         40WuHuzMYfC/ZOv7mONjfX8aHCsk2LnGF5+eL01/2bir/FoKDmLHtLI8WWh0eMfdPmWR
+         S39g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=wDxWt/6E4/Xh0IsRyK40yFI36NNL8sWIy/stm1q6/5Y=;
-        b=Wx40XCXuvwH4WBPkgAB3jwzQ+9Zj8gm5lyJMMpmc/E/TMjBh7hllBG+jCCOQ17FOKN
-         i2VRlzZ+YTtr+FR8DcUFxD5HP/sODUMYjghApahX12Ood4zYWRmPS17SIW5yrr1i3Uqp
-         QcjNHPMpHHWNaaV4Fu0lV9doFfR/WLggX4kixYzzwAkbPX9lVGY4EnAh2+OF7N/rxTJM
-         QuDjY4jVLqaX9oXVsgEjvc42gXXsse/bk6q6VnTawN0XUGURVvjYhI2E49SXV4SIhB2X
-         BCbZOuskcvabv7vKtI5XTN/NqlinkB0h6PHO7P4MnGg3Zd/ZaLW8M0bMGkdUmXDM51iD
-         LXhg==
-X-Gm-Message-State: AGi0PuaFgFAGKzdAP4CWQMfmLb6AQI4dgv/S/sywQm8/yK5riDAH/UKH
-        p6wIHOFLItPbqylM6JolYVs=
-X-Google-Smtp-Source: APiQypIuN8G/ml9iwTNliRFT9cFs+RJprycntom7bSHoCpOKrtLnwvR68HnCrUpIYIlNyuMstXOmUw==
-X-Received: by 2002:a62:528e:: with SMTP id g136mr14381733pfb.165.1587575420417;
-        Wed, 22 Apr 2020 10:10:20 -0700 (PDT)
+         :references:mime-version:content-transfer-encoding;
+        bh=Oo9uRPEJUdv9A686Mk0RlNJ/U+paXqfIsy50MEEAT+M=;
+        b=KjV0GtSGzL2VH0JgiSKCmcI5EUpL/Y/rMv9SjhfWAUjvE1NG8cHRv9DZxst4YGKIAa
+         jSM+tz+IpfWa/MLTZ3zdekxCJ+qYU25AenImasO+0oo8tv1uoarkBF45H2LyS3Tphz93
+         It0a4WUXEgGzk73kWRpg/R0ykWKBnDz9E2IZBdtt1zERNeZe2LZDd4Mfh6Q+PUoGeQ1F
+         zjsk+hyBgKnpiQjIzb9o3eu8suaBJg1+BbYXILmvw4iQw5qWVCx1oWjDv0Cd29p310D+
+         nhQCKjETIHq6izzZiwZ1Tmb5l+JFY1+Owj58Tpu2QORl0n/F6gEcSYqzBPP8g9UrKYMa
+         PnmQ==
+X-Gm-Message-State: AGi0PuYN/N3oHLFFnx6BbhyPQo3SLK0rbXvDHQbdLrYcHKG1YnR5OHdw
+        SQVMQo79jzEb7BR+M95LzAA=
+X-Google-Smtp-Source: APiQypKkss9lFz8HpfCP/cYg+TF4jsXxDydzIxdMtJ4K2d+F1h8097BrC1Vgh4a59PgsZ1XmkwjsQg==
+X-Received: by 2002:a63:5645:: with SMTP id g5mr59272pgm.268.1587575423079;
+        Wed, 22 Apr 2020 10:10:23 -0700 (PDT)
 Received: from local.opencloud.tech.localdomain ([219.142.146.4])
-        by smtp.gmail.com with ESMTPSA id n16sm28549pfq.61.2020.04.22.10.10.17
+        by smtp.gmail.com with ESMTPSA id n16sm28549pfq.61.2020.04.22.10.10.20
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 22 Apr 2020 10:10:19 -0700 (PDT)
+        Wed, 22 Apr 2020 10:10:22 -0700 (PDT)
 From:   xiangxia.m.yue@gmail.com
 To:     pshelar@ovn.org, azhou@ovn.org, blp@ovn.org, u9012063@gmail.com
 Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
         Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [PATCH net-next v3 1/5] net: openvswitch: expand the meters supported number
-Date:   Thu, 23 Apr 2020 01:08:56 +0800
-Message-Id: <1587575340-6790-2-git-send-email-xiangxia.m.yue@gmail.com>
+Subject: [PATCH net-next v3 2/5] net: openvswitch: set max limitation to meters
+Date:   Thu, 23 Apr 2020 01:08:57 +0800
+Message-Id: <1587575340-6790-3-git-send-email-xiangxia.m.yue@gmail.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1587575340-6790-1-git-send-email-xiangxia.m.yue@gmail.com>
 References: <1584969039-74113-1-git-send-email-xiangxia.m.yue@gmail.com>
  <1587575340-6790-1-git-send-email-xiangxia.m.yue@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -64,459 +68,165 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-In kernel datapath of Open vSwitch, there are only 1024
-buckets of meter in one datapath. If installing more than
-1024 (e.g. 8192) meters, it may lead to the performance drop.
-But in some case, for example, Open vSwitch used as edge
-gateway, there should be 20K at least, where meters used for
-IP address bandwidth limitation.
-
-[Open vSwitch userspace datapath has this issue too.]
-
-For more scalable meter, this patch use meter array instead of
-hash tables, and expand/shrink the array when necessary. So we
-can install more meters than before in the datapath.
-Introducing the struct *dp_meter_instance, it's easy to
-expand meter though changing the *ti point in the struct
-*dp_meter_table.
+Don't allow user to create meter unlimitedly, which may cause
+to consume a large amount of kernel memory. The max number
+supported is decided by physical memory and 20K meters as default.
 
 Cc: Pravin B Shelar <pshelar@ovn.org>
 Cc: Andy Zhou <azhou@ovn.org>
 Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 ---
- net/openvswitch/datapath.h |   2 +-
- net/openvswitch/meter.c    | 240 ++++++++++++++++++++++++++++---------
- net/openvswitch/meter.h    |  16 ++-
- 3 files changed, 195 insertions(+), 63 deletions(-)
+ net/openvswitch/meter.c | 57 +++++++++++++++++++++++++++++++++--------
+ net/openvswitch/meter.h |  2 ++
+ 2 files changed, 49 insertions(+), 10 deletions(-)
 
-diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
-index e239a46c2f94..2016dd107939 100644
---- a/net/openvswitch/datapath.h
-+++ b/net/openvswitch/datapath.h
-@@ -82,7 +82,7 @@ struct datapath {
- 	u32 max_headroom;
- 
- 	/* Switch meters. */
--	struct hlist_head *meters;
-+	struct dp_meter_table meter_tbl;
- };
- 
- /**
 diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
-index 5010d1ddd4bd..f806ded1dd0a 100644
+index f806ded1dd0a..372f4565872d 100644
 --- a/net/openvswitch/meter.c
 +++ b/net/openvswitch/meter.c
-@@ -19,8 +19,6 @@
- #include "datapath.h"
- #include "meter.h"
+@@ -12,6 +12,7 @@
+ #include <linux/openvswitch.h>
+ #include <linux/netlink.h>
+ #include <linux/rculist.h>
++#include <linux/swap.h>
  
--#define METER_HASH_BUCKETS 1024
--
- static const struct nla_policy meter_policy[OVS_METER_ATTR_MAX + 1] = {
- 	[OVS_METER_ATTR_ID] = { .type = NLA_U32, },
- 	[OVS_METER_ATTR_KBPS] = { .type = NLA_FLAG },
-@@ -39,6 +37,11 @@ static const struct nla_policy band_policy[OVS_BAND_ATTR_MAX + 1] = {
- 	[OVS_BAND_ATTR_STATS] = { .len = sizeof(struct ovs_flow_stats) },
- };
- 
-+static u32 meter_hash(struct dp_meter_instance *ti, u32 id)
-+{
-+	return id % ti->n_meters;
-+}
-+
- static void ovs_meter_free(struct dp_meter *meter)
+ #include <net/netlink.h>
+ #include <net/genetlink.h>
+@@ -137,6 +138,7 @@ static int attach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
  {
- 	if (!meter)
-@@ -47,40 +50,153 @@ static void ovs_meter_free(struct dp_meter *meter)
- 	kfree_rcu(meter, rcu);
- }
+ 	struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
+ 	u32 hash = meter_hash(ti, meter->id);
++	int err;
  
--static struct hlist_head *meter_hash_bucket(const struct datapath *dp,
--					    u32 meter_id)
--{
--	return &dp->meters[meter_id & (METER_HASH_BUCKETS - 1)];
--}
--
- /* Call with ovs_mutex or RCU read lock. */
--static struct dp_meter *lookup_meter(const struct datapath *dp,
-+static struct dp_meter *lookup_meter(const struct dp_meter_table *tbl,
- 				     u32 meter_id)
- {
-+	struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
-+	u32 hash = meter_hash(ti, meter_id);
- 	struct dp_meter *meter;
--	struct hlist_head *head;
+ 	/* In generally, slots selected should be empty, because
+ 	 * OvS uses id-pool to fetch a available id.
+@@ -147,16 +149,24 @@ static int attach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
+ 	dp_meter_instance_insert(ti, meter);
  
--	head = meter_hash_bucket(dp, meter_id);
--	hlist_for_each_entry_rcu(meter, head, dp_hash_node,
--				lockdep_ovsl_is_held()) {
--		if (meter->id == meter_id)
--			return meter;
--	}
-+	meter = rcu_dereference_ovsl(ti->dp_meters[hash]);
-+	if (meter && likely(meter->id == meter_id))
-+		return meter;
-+
- 	return NULL;
- }
- 
--static void attach_meter(struct datapath *dp, struct dp_meter *meter)
-+static struct dp_meter_instance *dp_meter_instance_alloc(const u32 size)
-+{
-+	struct dp_meter_instance *ti;
-+
-+	ti = kvzalloc(sizeof(*ti) +
-+		      sizeof(struct dp_meter *) * size,
-+		      GFP_KERNEL);
-+	if (!ti)
-+		return NULL;
-+
-+	ti->n_meters = size;
-+
-+	return ti;
-+}
-+
-+static void dp_meter_instance_free(struct dp_meter_instance *ti)
-+{
-+	kvfree(ti);
-+}
-+
-+static void dp_meter_instance_free_rcu(struct rcu_head *rcu)
-+{
-+	struct dp_meter_instance *ti;
-+
-+	ti = container_of(rcu, struct dp_meter_instance, rcu);
-+	kvfree(ti);
-+}
-+
-+static int
-+dp_meter_instance_realloc(struct dp_meter_table *tbl, u32 size)
-+{
-+	struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
-+	int n_meters = min(size, ti->n_meters);
-+	struct dp_meter_instance *new_ti;
-+	int i;
-+
-+	new_ti = dp_meter_instance_alloc(size);
-+	if (!new_ti)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < n_meters; i++)
-+		new_ti->dp_meters[i] =
-+			rcu_dereference_ovsl(ti->dp_meters[i]);
-+
-+	rcu_assign_pointer(tbl->ti, new_ti);
-+	call_rcu(&ti->rcu, dp_meter_instance_free_rcu);
-+
-+	return 0;
-+}
-+
-+static void dp_meter_instance_insert(struct dp_meter_instance *ti,
-+				     struct dp_meter *meter)
-+{
-+	u32 hash;
-+
-+	hash = meter_hash(ti, meter->id);
-+	rcu_assign_pointer(ti->dp_meters[hash], meter);
-+}
-+
-+static void dp_meter_instance_remove(struct dp_meter_instance *ti,
-+				     struct dp_meter *meter)
- {
--	struct hlist_head *head = meter_hash_bucket(dp, meter->id);
-+	u32 hash;
- 
--	hlist_add_head_rcu(&meter->dp_hash_node, head);
-+	hash = meter_hash(ti, meter->id);
-+	RCU_INIT_POINTER(ti->dp_meters[hash], NULL);
- }
- 
--static void detach_meter(struct dp_meter *meter)
-+static int attach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
- {
-+	struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
-+	u32 hash = meter_hash(ti, meter->id);
-+
-+	/* In generally, slots selected should be empty, because
-+	 * OvS uses id-pool to fetch a available id.
-+	 */
-+	if (unlikely(rcu_dereference_ovsl(ti->dp_meters[hash])))
-+		return -EBUSY;
-+
-+	dp_meter_instance_insert(ti, meter);
-+
-+	/* That function is thread-safe. */
-+	if (++tbl->count >= ti->n_meters)
-+		if (dp_meter_instance_realloc(tbl, ti->n_meters * 2))
-+			goto expand_err;
-+
-+	return 0;
-+
-+expand_err:
-+	dp_meter_instance_remove(ti, meter);
-+	tbl->count--;
-+	return -ENOMEM;
-+}
-+
-+static int detach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
-+{
-+	struct dp_meter_instance *ti;
-+
- 	ASSERT_OVSL();
--	if (meter)
--		hlist_del_rcu(&meter->dp_hash_node);
-+	if (!meter)
-+		return 0;
-+
-+	ti = rcu_dereference_ovsl(tbl->ti);
-+	dp_meter_instance_remove(ti, meter);
-+
-+	tbl->count--;
-+
-+	/* Shrink the meter array if necessary. */
-+	if (ti->n_meters > DP_METER_ARRAY_SIZE_MIN &&
-+	    tbl->count <= (ti->n_meters / 4)) {
-+		int half_size = ti->n_meters / 2;
-+		int i;
-+
-+		/* Avoid hash collision, don't move slots to other place.
-+		 * Make sure there are no references of meters in array
-+		 * which will be released.
-+		 */
-+		for (i = half_size; i < ti->n_meters; i++)
-+			if (rcu_dereference_ovsl(ti->dp_meters[i]))
-+				goto out;
-+
-+		if (dp_meter_instance_realloc(tbl, half_size))
-+			goto shrink_err;
+ 	/* That function is thread-safe. */
+-	if (++tbl->count >= ti->n_meters)
+-		if (dp_meter_instance_realloc(tbl, ti->n_meters * 2))
+-			goto expand_err;
++	tbl->count++;
++	if (tbl->count >= tbl->max_meters_allowed) {
++		err = -EFBIG;
++		goto attach_err;
 +	}
 +
-+out:
-+	return 0;
-+
-+shrink_err:
-+	dp_meter_instance_insert(ti, meter);
-+	tbl->count++;
-+	return -ENOMEM;
- }
- 
- static struct sk_buff *
-@@ -273,6 +389,7 @@ static int ovs_meter_cmd_set(struct sk_buff *skb, struct genl_info *info)
- 	struct sk_buff *reply;
- 	struct ovs_header *ovs_reply_header;
- 	struct ovs_header *ovs_header = info->userhdr;
-+	struct dp_meter_table *meter_tbl;
- 	struct datapath *dp;
- 	int err;
- 	u32 meter_id;
-@@ -300,12 +417,18 @@ static int ovs_meter_cmd_set(struct sk_buff *skb, struct genl_info *info)
- 		goto exit_unlock;
- 	}
- 
-+	meter_tbl = &dp->meter_tbl;
- 	meter_id = nla_get_u32(a[OVS_METER_ATTR_ID]);
- 
--	/* Cannot fail after this. */
--	old_meter = lookup_meter(dp, meter_id);
--	detach_meter(old_meter);
--	attach_meter(dp, meter);
-+	old_meter = lookup_meter(meter_tbl, meter_id);
-+	err = detach_meter(meter_tbl, old_meter);
-+	if (err)
-+		goto exit_unlock;
-+
-+	err = attach_meter(meter_tbl, meter);
-+	if (err)
-+		goto exit_unlock;
-+
- 	ovs_unlock();
- 
- 	/* Build response with the meter_id and stats from
-@@ -337,14 +460,14 @@ static int ovs_meter_cmd_set(struct sk_buff *skb, struct genl_info *info)
- 
- static int ovs_meter_cmd_get(struct sk_buff *skb, struct genl_info *info)
- {
--	struct nlattr **a = info->attrs;
--	u32 meter_id;
- 	struct ovs_header *ovs_header = info->userhdr;
- 	struct ovs_header *ovs_reply_header;
-+	struct nlattr **a = info->attrs;
-+	struct dp_meter *meter;
-+	struct sk_buff *reply;
- 	struct datapath *dp;
-+	u32 meter_id;
- 	int err;
--	struct sk_buff *reply;
--	struct dp_meter *meter;
- 
- 	if (!a[OVS_METER_ATTR_ID])
- 		return -EINVAL;
-@@ -365,7 +488,7 @@ static int ovs_meter_cmd_get(struct sk_buff *skb, struct genl_info *info)
- 	}
- 
- 	/* Locate meter, copy stats. */
--	meter = lookup_meter(dp, meter_id);
-+	meter = lookup_meter(&dp->meter_tbl, meter_id);
- 	if (!meter) {
- 		err = -ENOENT;
- 		goto exit_unlock;
-@@ -390,18 +513,17 @@ static int ovs_meter_cmd_get(struct sk_buff *skb, struct genl_info *info)
- 
- static int ovs_meter_cmd_del(struct sk_buff *skb, struct genl_info *info)
- {
--	struct nlattr **a = info->attrs;
--	u32 meter_id;
- 	struct ovs_header *ovs_header = info->userhdr;
- 	struct ovs_header *ovs_reply_header;
-+	struct nlattr **a = info->attrs;
-+	struct dp_meter *old_meter;
-+	struct sk_buff *reply;
- 	struct datapath *dp;
-+	u32 meter_id;
- 	int err;
--	struct sk_buff *reply;
--	struct dp_meter *old_meter;
- 
- 	if (!a[OVS_METER_ATTR_ID])
- 		return -EINVAL;
--	meter_id = nla_get_u32(a[OVS_METER_ATTR_ID]);
- 
- 	reply = ovs_meter_cmd_reply_start(info, OVS_METER_CMD_DEL,
- 					  &ovs_reply_header);
-@@ -416,14 +538,19 @@ static int ovs_meter_cmd_del(struct sk_buff *skb, struct genl_info *info)
- 		goto exit_unlock;
- 	}
- 
--	old_meter = lookup_meter(dp, meter_id);
-+	meter_id = nla_get_u32(a[OVS_METER_ATTR_ID]);
-+	old_meter = lookup_meter(&dp->meter_tbl, meter_id);
- 	if (old_meter) {
- 		spin_lock_bh(&old_meter->lock);
- 		err = ovs_meter_cmd_reply_stats(reply, meter_id, old_meter);
- 		WARN_ON(err);
- 		spin_unlock_bh(&old_meter->lock);
--		detach_meter(old_meter);
-+
-+		err = detach_meter(&dp->meter_tbl, old_meter);
-+		if (err)
-+			goto exit_unlock;
- 	}
-+
- 	ovs_unlock();
- 	ovs_meter_free(old_meter);
- 	genlmsg_end(reply, ovs_reply_header);
-@@ -443,16 +570,16 @@ static int ovs_meter_cmd_del(struct sk_buff *skb, struct genl_info *info)
- bool ovs_meter_execute(struct datapath *dp, struct sk_buff *skb,
- 		       struct sw_flow_key *key, u32 meter_id)
- {
--	struct dp_meter *meter;
--	struct dp_meter_band *band;
- 	long long int now_ms = div_u64(ktime_get_ns(), 1000 * 1000);
- 	long long int long_delta_ms;
--	u32 delta_ms;
--	u32 cost;
-+	struct dp_meter_band *band;
-+	struct dp_meter *meter;
- 	int i, band_exceeded_max = -1;
- 	u32 band_exceeded_rate = 0;
-+	u32 delta_ms;
-+	u32 cost;
- 
--	meter = lookup_meter(dp, meter_id);
-+	meter = lookup_meter(&dp->meter_tbl, meter_id);
- 	/* Do not drop the packet when there is no meter. */
- 	if (!meter)
- 		return false;
-@@ -570,32 +697,27 @@ struct genl_family dp_meter_genl_family __ro_after_init = {
- 
- int ovs_meters_init(struct datapath *dp)
- {
--	int i;
-+	struct dp_meter_table *tbl = &dp->meter_tbl;
-+	struct dp_meter_instance *ti;
- 
--	dp->meters = kmalloc_array(METER_HASH_BUCKETS,
--				   sizeof(struct hlist_head), GFP_KERNEL);
--
--	if (!dp->meters)
-+	ti = dp_meter_instance_alloc(DP_METER_ARRAY_SIZE_MIN);
-+	if (!ti)
- 		return -ENOMEM;
- 
--	for (i = 0; i < METER_HASH_BUCKETS; i++)
--		INIT_HLIST_HEAD(&dp->meters[i]);
-+	rcu_assign_pointer(tbl->ti, ti);
-+	tbl->count = 0;
++	if (tbl->count >= ti->n_meters &&
++	    dp_meter_instance_realloc(tbl, ti->n_meters * 2)) {
++		err = -ENOMEM;
++		goto attach_err;
++	}
  
  	return 0;
+ 
+-expand_err:
++attach_err:
+ 	dp_meter_instance_remove(ti, meter);
+ 	tbl->count--;
+-	return -ENOMEM;
++	return err;
+ }
+ 
+ static int detach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
+@@ -266,18 +276,32 @@ static int ovs_meter_cmd_reply_stats(struct sk_buff *reply, u32 meter_id,
+ 
+ static int ovs_meter_cmd_features(struct sk_buff *skb, struct genl_info *info)
+ {
+-	struct sk_buff *reply;
++	struct ovs_header *ovs_header = info->userhdr;
+ 	struct ovs_header *ovs_reply_header;
+ 	struct nlattr *nla, *band_nla;
+-	int err;
++	struct sk_buff *reply;
++	struct datapath *dp;
++	int err = -EMSGSIZE;
+ 
+ 	reply = ovs_meter_cmd_reply_start(info, OVS_METER_CMD_FEATURES,
+ 					  &ovs_reply_header);
+ 	if (IS_ERR(reply))
+ 		return PTR_ERR(reply);
+ 
+-	if (nla_put_u32(reply, OVS_METER_ATTR_MAX_METERS, U32_MAX) ||
+-	    nla_put_u32(reply, OVS_METER_ATTR_MAX_BANDS, DP_MAX_BANDS))
++	ovs_lock();
++	dp = get_dp(sock_net(skb->sk), ovs_header->dp_ifindex);
++	if (!dp) {
++		err = -ENODEV;
++		goto exit_unlock;
++	}
++
++	if (nla_put_u32(reply, OVS_METER_ATTR_MAX_METERS,
++			dp->meter_tbl.max_meters_allowed))
++		goto exit_unlock;
++
++	ovs_unlock();
++
++	if (nla_put_u32(reply, OVS_METER_ATTR_MAX_BANDS, DP_MAX_BANDS))
+ 		goto nla_put_failure;
+ 
+ 	nla = nla_nest_start_noflag(reply, OVS_METER_ATTR_BANDS);
+@@ -296,9 +320,10 @@ static int ovs_meter_cmd_features(struct sk_buff *skb, struct genl_info *info)
+ 	genlmsg_end(reply, ovs_reply_header);
+ 	return genlmsg_reply(reply, info);
+ 
++exit_unlock:
++	ovs_unlock();
+ nla_put_failure:
+ 	nlmsg_free(reply);
+-	err = -EMSGSIZE;
+ 	return err;
+ }
+ 
+@@ -699,15 +724,27 @@ int ovs_meters_init(struct datapath *dp)
+ {
+ 	struct dp_meter_table *tbl = &dp->meter_tbl;
+ 	struct dp_meter_instance *ti;
++	unsigned long free_mem_bytes;
+ 
+ 	ti = dp_meter_instance_alloc(DP_METER_ARRAY_SIZE_MIN);
+ 	if (!ti)
+ 		return -ENOMEM;
+ 
++	/* Allow meters in a datapath to use ~3.12% of physical memory. */
++	free_mem_bytes = nr_free_buffer_pages() * (PAGE_SIZE >> 5);
++	tbl->max_meters_allowed = min(free_mem_bytes / sizeof(struct dp_meter),
++				      DP_METER_NUM_MAX);
++	if (!tbl->max_meters_allowed)
++		goto out_err;
++
+ 	rcu_assign_pointer(tbl->ti, ti);
+ 	tbl->count = 0;
+ 
+ 	return 0;
++
++out_err:
++	dp_meter_instance_free(ti);
++	return -ENOMEM;
  }
  
  void ovs_meters_exit(struct datapath *dp)
- {
-+	struct dp_meter_table *tbl = &dp->meter_tbl;
-+	struct dp_meter_instance *ti = rcu_dereference_raw(tbl->ti);
- 	int i;
- 
--	for (i = 0; i < METER_HASH_BUCKETS; i++) {
--		struct hlist_head *head = &dp->meters[i];
--		struct dp_meter *meter;
--		struct hlist_node *n;
--
--		hlist_for_each_entry_safe(meter, n, head, dp_hash_node)
--			kfree(meter);
--	}
-+	for (i = 0; i < ti->n_meters; i++)
-+		ovs_meter_free(ti->dp_meters[i]);
- 
--	kfree(dp->meters);
-+	dp_meter_instance_free(ti);
- }
 diff --git a/net/openvswitch/meter.h b/net/openvswitch/meter.h
-index f645913870bd..f52052d30a16 100644
+index f52052d30a16..fcde5ee647da 100644
 --- a/net/openvswitch/meter.h
 +++ b/net/openvswitch/meter.h
-@@ -13,11 +13,13 @@
- #include <linux/openvswitch.h>
- #include <linux/genetlink.h>
- #include <linux/skbuff.h>
-+#include <linux/bits.h>
- 
- #include "flow.h"
- struct datapath;
+@@ -20,6 +20,7 @@ struct datapath;
  
  #define DP_MAX_BANDS		1
-+#define DP_METER_ARRAY_SIZE_MIN	BIT_ULL(10)
+ #define DP_METER_ARRAY_SIZE_MIN	BIT_ULL(10)
++#define DP_METER_NUM_MAX	(200000ULL)
  
  struct dp_meter_band {
  	u32 type;
-@@ -30,9 +32,6 @@ struct dp_meter_band {
- struct dp_meter {
- 	spinlock_t lock;    /* Per meter lock */
- 	struct rcu_head rcu;
--	struct hlist_node dp_hash_node; /*Element in datapath->meters
--					 * hash table.
--					 */
- 	u32 id;
- 	u16 kbps:1, keep_stats:1;
- 	u16 n_bands;
-@@ -42,6 +41,17 @@ struct dp_meter {
- 	struct dp_meter_band bands[];
+@@ -50,6 +51,7 @@ struct dp_meter_instance {
+ struct dp_meter_table {
+ 	struct dp_meter_instance __rcu *ti;
+ 	u32 count;
++	u32 max_meters_allowed;
  };
  
-+struct dp_meter_instance {
-+	struct rcu_head rcu;
-+	u32 n_meters;
-+	struct dp_meter __rcu *dp_meters[];
-+};
-+
-+struct dp_meter_table {
-+	struct dp_meter_instance __rcu *ti;
-+	u32 count;
-+};
-+
  extern struct genl_family dp_meter_genl_family;
- int ovs_meters_init(struct datapath *dp);
- void ovs_meters_exit(struct datapath *dp);
 -- 
 2.23.0
 
