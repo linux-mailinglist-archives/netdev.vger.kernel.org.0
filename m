@@ -2,147 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 986961B484E
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 17:12:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CAE51B4861
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 17:18:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726057AbgDVPMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 11:12:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52436 "EHLO
+        id S1726240AbgDVPSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 11:18:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725924AbgDVPMc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 11:12:32 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9F1C03C1A9;
-        Wed, 22 Apr 2020 08:12:20 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id p13so993719qvt.12;
-        Wed, 22 Apr 2020 08:12:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JTzdhB0FYtmDGjYGqKEWMftcPVV+yp0ptGTyaITEGgw=;
-        b=Ew7MRsn73POUDhyKPWT5OB1gyAMLa1VJZVhvQ4z40K+2jnaFYj52YQtRya2I3tq8AZ
-         cRwQp/61gl5x6Pu5ppk7TV5ojwsEze8fqve/uphr7rmsfRPrmJDTY3rjMwK6BeVnnRUi
-         /5FQFGsgun0CEN8hnHrO30cDpkfrdCAxmkfRGRk5K6Yb1QrEGQHdoYkP3Xro30sNDchR
-         CBCs8g9bogEh02+g+OrxqIWyt6T/Vl80VsmXrHBlrn7AWFJdeoI/J7X1hlluakb/Omm0
-         +9qrHZR8E6C2uFAeEg1Ip0+di/vSS/MMho09H6uDsSHBDNRLWmRu9YclGKx3WlSvoeWp
-         4QNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JTzdhB0FYtmDGjYGqKEWMftcPVV+yp0ptGTyaITEGgw=;
-        b=EGkcvfKNtiMGPQwf7IOVCwFelHDoUjxDxsXtNH/tyD2w4qI9I/89vvlcWcn/yANclQ
-         ActGuQaoCgfV/dHLACt20NTGTH3C2BvhSLRoMD0ozi7WHn1dL8HsbOAwta0r/mC8kEUv
-         ewlI+G7JuGx2bzEHQg7I+x6uRToTDuyT7ex2yWseXSe1ArVyN4dxpU2YQUTIoXdxyTNl
-         ugAxyUC3uCtVPBEEBczqFdb/sIkLhb3ln2KzPTDMvSrG790anUAXmk3zAPjzjvYP0knI
-         4pzzwWj6Ph/Gb7htuNY7YFq6K0gjAiVECy22X3k/gYMp/jLiekQJgJNz7CNkaOQ1hjLD
-         nN8A==
-X-Gm-Message-State: AGi0PuZeBaC9EGq7cqShPLKt3C3p1COsWtWdcr5iFOyMal0mM6MmsdYS
-        qVttMYeYXBS0szj4SHYSPXg=
-X-Google-Smtp-Source: APiQypIpon7py0HWdgPdIPLMoTXPF2g6GOap8Xeda0mJuLr7jLs9bhAl7pTZqjpO5ZusWvh1Jlrnyw==
-X-Received: by 2002:ad4:4f14:: with SMTP id fb20mr5294394qvb.46.1587568339921;
-        Wed, 22 Apr 2020 08:12:19 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:c19e:4650:3a73:fee4? ([2601:282:803:7700:c19e:4650:3a73:fee4])
-        by smtp.googlemail.com with ESMTPSA id 70sm4104743qkh.67.2020.04.22.08.12.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Apr 2020 08:12:19 -0700 (PDT)
-Subject: Re: [PATCH V4 mlx5-next 10/15] RDMA/core: Add LAG functionality
-To:     Maor Gottlieb <maorg@mellanox.com>, davem@davemloft.net,
-        jgg@mellanox.com, dledford@redhat.com, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org,
-        jiri@mellanox.com, dsahern@kernel.org
-Cc:     leonro@mellanox.com, saeedm@mellanox.com,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        alexr@mellanox.com
-References: <20200422083951.17424-1-maorg@mellanox.com>
- <20200422083951.17424-11-maorg@mellanox.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <bb659995-ede0-72a3-7b43-582c18cffc5e@gmail.com>
-Date:   Wed, 22 Apr 2020 09:12:17 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
+        with ESMTP id S1725779AbgDVPS3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 11:18:29 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52849C03C1A9;
+        Wed, 22 Apr 2020 08:18:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=pYMMSN8qhxK9Rkme8UcFyi4WlSIE2Qxdgi21qfoUXzU=; b=aKOjeJ0EnyyUBEUDG+g8uMBCMN
+        Z6szyzHcyTD5j+iI6i8Om8ipuaiO+0Rumq3HPRgleVpRRmsizL57viIfxH1LKC65p0/Bx4zJQRr5n
+        shg+ispNIDtDBWB0bgwc9NNI6SzcUuo36IwRRylxJD6XinT+a/FnShF7L7vgJ+qQ6ym9ZYNR36Mcp
+        JeXuW2v9NwqFxRSKlztPqjlLLBJBMokazFbW2ZCTdH5w70MJzwSnjAHwE/FokhDD8xoFAuoXFjy/i
+        zHRC2a8lb/dwUwA4i8pZrk0jgufnPSR/9R4K0P3W8AQl6GxDBa6Xq8q/fW2MXv5+6PUhHh4xsuqtt
+        jaSUEjXg==;
+Received: from willy by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jRH8h-0007XY-UX; Wed, 22 Apr 2020 15:18:15 +0000
+Date:   Wed, 22 Apr 2020 08:18:15 -0700
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Nate Karstens <nate.karstens@garmin.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-alpha@vger.kernel.org, linux-parisc@vger.kernel.org,
+        sparclinux@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Changli Gao <xiaosuo@gmail.com>
+Subject: Re: Implement close-on-fork
+Message-ID: <20200422151815.GT5820@bombadil.infradead.org>
+References: <20200420071548.62112-1-nate.karstens@garmin.com>
+ <20200422150107.GK23230@ZenIV.linux.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <20200422083951.17424-11-maorg@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200422150107.GK23230@ZenIV.linux.org.uk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/22/20 2:39 AM, Maor Gottlieb wrote:
-> Add support to get the RoCE LAG xmit slave by building skb
-> of the RoCE packet and call to master_get_xmit_slave.
+On Wed, Apr 22, 2020 at 04:01:07PM +0100, Al Viro wrote:
+> On Mon, Apr 20, 2020 at 02:15:44AM -0500, Nate Karstens wrote:
+> > Series of 4 patches to implement close-on-fork. Tests have been
+> > published to https://github.com/nkarstens/ltp/tree/close-on-fork.
+> > 
+> > close-on-fork addresses race conditions in system(), which
+> > (depending on the implementation) is non-atomic in that it
+> > first calls a fork() and then an exec().
+> > 
+> > This functionality was approved by the Austin Common Standards
+> > Revision Group for inclusion in the next revision of the POSIX
+> > standard (see issue 1318 in the Austin Group Defect Tracker).
+> 
+> What exactly the reasons are and why would we want to implement that?
+> 
+> Pardon me, but going by the previous history, "The Austin Group Says It's
+> Good" is more of a source of concern regarding the merits, general sanity
+> and, most of all, good taste of a proposal.
+> 
+> I'm not saying that it's automatically bad, but you'll have to go much
+> deeper into the rationale of that change before your proposal is taken
+> seriously.
 
-update the ndo name
-
-...
-
-> +static struct net_device *rdma_get_xmit_slave_udp(struct ib_device *device,
-> +						  struct net_device *master,
-> +						  struct rdma_ah_attr *ah_attr)
-> +{
-> +	struct net_device *slave;
-> +	struct sk_buff *skb;
-> +
-> +	skb = rdma_build_skb(device, master, ah_attr);
-> +	if (!skb)
-> +		return NULL;
-> +
-> +	slave = netdev_get_xmit_slave(master, skb,
-> +				      !!(device->lag_flags &
-> +					 RDMA_LAG_FLAGS_HASH_ALL_SLAVES));
-> +	kfree_skb(skb);
-> +	return slave;
-> +}
-> +
-> +void rdma_lag_put_ah_roce_slave(struct rdma_ah_attr *ah_attr)
-> +{
-> +	if (ah_attr->roce.xmit_slave)
-> +		dev_put(ah_attr->roce.xmit_slave);
-> +}
-> +
-> +int rdma_lag_get_ah_roce_slave(struct ib_device *device,
-> +			       struct rdma_ah_attr *ah_attr)
-> +{
-> +	struct net_device *master;
-> +	struct net_device *slave;
-> +
-> +	if (!(ah_attr->type == RDMA_AH_ATTR_TYPE_ROCE &&
-> +	      ah_attr->grh.sgid_attr->gid_type == IB_GID_TYPE_ROCE_UDP_ENCAP))
-> +		return 0;
-> +
-> +	rcu_read_lock();
-> +	master = rdma_read_gid_attr_ndev_rcu(ah_attr->grh.sgid_attr);
-> +	if (IS_ERR(master)) {
-> +		rcu_read_unlock();
-> +		return PTR_ERR(master);
-> +	}
-> +	dev_hold(master);
-> +	rcu_read_unlock();
-> +
-> +	if (!netif_is_bond_master(master)) {
-> +		dev_put(master);
-> +		return 0;
-> +	}
-> +
-> +	slave = rdma_get_xmit_slave_udp(device, master, ah_attr);
-> +
-> +	dev_put(master);
-
-you will simplify this a bit by moving the rdma_get_xmit_slave_udp up to
-the rcu_read section above.
-
-
-> +	if (!slave) {
-> +		ibdev_warn(device, "Failed to get lag xmit slave\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	ah_attr->roce.xmit_slave = slave;
-> +
-> +	return 0;
-> +}
+https://www.mail-archive.com/austin-group-l@opengroup.org/msg05324.html
+might be useful
