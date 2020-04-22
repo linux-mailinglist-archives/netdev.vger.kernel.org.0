@@ -2,159 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE7FE1B43F3
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 14:05:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DE191B4401
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 14:08:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728520AbgDVMFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 08:05:41 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:56464 "EHLO inva021.nxp.com"
+        id S1728225AbgDVMIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 08:08:18 -0400
+Received: from foss.arm.com ([217.140.110.172]:48626 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727820AbgDVMFj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Apr 2020 08:05:39 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 442842010B3;
-        Wed, 22 Apr 2020 14:05:36 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 382CA2010B1;
-        Wed, 22 Apr 2020 14:05:36 +0200 (CEST)
-Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id E13A92030B;
-        Wed, 22 Apr 2020 14:05:35 +0200 (CEST)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     brouer@redhat.com, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH v2 net-next 5/5] dpaa2-eth: use bulk enqueue in .ndo_xdp_xmit
-Date:   Wed, 22 Apr 2020 15:05:13 +0300
-Message-Id: <20200422120513.6583-6-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200422120513.6583-1-ioana.ciornei@nxp.com>
-References: <20200422120513.6583-1-ioana.ciornei@nxp.com>
-Reply-to: ioana.ciornei@nxp.com
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726110AbgDVMIR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Apr 2020 08:08:17 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7A2C131B;
+        Wed, 22 Apr 2020 05:08:16 -0700 (PDT)
+Received: from gaia (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 983793F6CF;
+        Wed, 22 Apr 2020 05:08:14 -0700 (PDT)
+Date:   Wed, 22 Apr 2020 13:08:12 +0100
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Alex Belits <abelits@marvell.com>
+Cc:     "frederic@kernel.org" <frederic@kernel.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        Prasun Kapoor <pkapoor@marvell.com>,
+        "mingo@kernel.org" <mingo@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "will@kernel.org" <will@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3 07/13] task_isolation: arch/arm64: enable task
+ isolation functionality
+Message-ID: <20200422120811.GA3585@gaia>
+References: <07c25c246c55012981ec0296eee23e68c719333a.camel@marvell.com>
+ <299c02b268a6438704693ddb77cdcb49f382c0ea.camel@marvell.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <299c02b268a6438704693ddb77cdcb49f382c0ea.camel@marvell.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Take advantage of the bulk enqueue feature in .ndo_xdp_xmit.
-We cannot use the XDP_XMIT_FLUSH since the architecture is not capable
-to store all the frames dequeued in a NAPI cycle so we instead are
-enqueueing all the frames received in a ndo_xdp_xmit call right away.
+On Thu, Apr 09, 2020 at 03:23:35PM +0000, Alex Belits wrote:
+> diff --git a/arch/arm64/include/asm/thread_info.h b/arch/arm64/include/asm/thread_info.h
+> index f0cec4160136..7563098eb5b2 100644
+> --- a/arch/arm64/include/asm/thread_info.h
+> +++ b/arch/arm64/include/asm/thread_info.h
+> @@ -63,6 +63,7 @@ void arch_release_task_struct(struct task_struct *tsk);
+>  #define TIF_FOREIGN_FPSTATE	3	/* CPU's FP state is not current's */
+>  #define TIF_UPROBE		4	/* uprobe breakpoint or singlestep */
+>  #define TIF_FSCHECK		5	/* Check FS is USER_DS on return */
+> +#define TIF_TASK_ISOLATION	6
+>  #define TIF_NOHZ		7
+>  #define TIF_SYSCALL_TRACE	8	/* syscall trace active */
+>  #define TIF_SYSCALL_AUDIT	9	/* syscall auditing */
+> @@ -83,6 +84,7 @@ void arch_release_task_struct(struct task_struct *tsk);
+>  #define _TIF_NEED_RESCHED	(1 << TIF_NEED_RESCHED)
+>  #define _TIF_NOTIFY_RESUME	(1 << TIF_NOTIFY_RESUME)
+>  #define _TIF_FOREIGN_FPSTATE	(1 << TIF_FOREIGN_FPSTATE)
+> +#define _TIF_TASK_ISOLATION	(1 << TIF_TASK_ISOLATION)
+>  #define _TIF_NOHZ		(1 << TIF_NOHZ)
+>  #define _TIF_SYSCALL_TRACE	(1 << TIF_SYSCALL_TRACE)
+>  #define _TIF_SYSCALL_AUDIT	(1 << TIF_SYSCALL_AUDIT)
+> @@ -96,7 +98,8 @@ void arch_release_task_struct(struct task_struct *tsk);
+>  
+>  #define _TIF_WORK_MASK		(_TIF_NEED_RESCHED | _TIF_SIGPENDING | \
+>  				 _TIF_NOTIFY_RESUME | _TIF_FOREIGN_FPSTATE | \
+> -				 _TIF_UPROBE | _TIF_FSCHECK)
+> +				 _TIF_UPROBE | _TIF_FSCHECK | \
+> +				 _TIF_TASK_ISOLATION)
+>  
+>  #define _TIF_SYSCALL_WORK	(_TIF_SYSCALL_TRACE | _TIF_SYSCALL_AUDIT | \
+>  				 _TIF_SYSCALL_TRACEPOINT | _TIF_SECCOMP | \
+> diff --git a/arch/arm64/kernel/ptrace.c b/arch/arm64/kernel/ptrace.c
+> index cd6e5fa48b9c..b35b9b0c594c 100644
+> --- a/arch/arm64/kernel/ptrace.c
+> +++ b/arch/arm64/kernel/ptrace.c
+> @@ -29,6 +29,7 @@
+>  #include <linux/regset.h>
+>  #include <linux/tracehook.h>
+>  #include <linux/elf.h>
+> +#include <linux/isolation.h>
+>  
+>  #include <asm/compat.h>
+>  #include <asm/cpufeature.h>
+> @@ -1836,6 +1837,15 @@ int syscall_trace_enter(struct pt_regs *regs)
+>  			return -1;
+>  	}
+>  
+> +	/*
+> +	 * In task isolation mode, we may prevent the syscall from
+> +	 * running, and if so we also deliver a signal to the process.
+> +	 */
+> +	if (test_thread_flag(TIF_TASK_ISOLATION)) {
+> +		if (task_isolation_syscall(regs->syscallno) == -1)
+> +			return -1;
+> +	}
 
-After setting up all FDs for the xdp_frames received, enqueue multiple
-frames at a time until all are sent or the maximum number of retries is
-hit.
+Is this supposed to be called only when syscall tracing is enabled?
+It only gets here if the task has any of the _TIF_SYSCALL_WORK flags.
 
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
-Changes in v2:
- - use a statically allocated array of dpaa2_fd for each fq
- - use DEV_MAP_BULK_SIZE as the max number of xdp_frames received
+> diff --git a/arch/arm64/kernel/signal.c b/arch/arm64/kernel/signal.c
+> index 339882db5a91..d488c91a4877 100644
+> --- a/arch/arm64/kernel/signal.c
+> +++ b/arch/arm64/kernel/signal.c
+> @@ -20,6 +20,7 @@
+>  #include <linux/tracehook.h>
+>  #include <linux/ratelimit.h>
+>  #include <linux/syscalls.h>
+> +#include <linux/isolation.h>
+>  
+>  #include <asm/daifflags.h>
+>  #include <asm/debug-monitors.h>
+> @@ -898,6 +899,11 @@ static void do_signal(struct pt_regs *regs)
+>  	restore_saved_sigmask();
+>  }
+>  
+> +#define NOTIFY_RESUME_LOOP_FLAGS \
+> +	(_TIF_NEED_RESCHED | _TIF_SIGPENDING | \
+> +	_TIF_NOTIFY_RESUME | _TIF_FOREIGN_FPSTATE | \
+> +	_TIF_UPROBE | _TIF_FSCHECK)
 
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 57 +++++++++----------
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |  2 +
- 2 files changed, 30 insertions(+), 29 deletions(-)
+AFAICT, that's just _TIF_WORK_MASK without _TIF_TASK_ISOLATION. I'd
+rather not duplicate these, they are prone to get out of sync. You could
+do something like:
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 9a0432cd893c..9d4061bba0b8 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -1933,12 +1933,12 @@ static int dpaa2_eth_xdp_xmit(struct net_device *net_dev, int n,
- 			      struct xdp_frame **frames, u32 flags)
- {
- 	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
-+	int total_enqueued = 0, retries = 0, enqueued;
- 	struct dpaa2_eth_drv_stats *percpu_extras;
- 	struct rtnl_link_stats64 *percpu_stats;
-+	int num_fds, i, err, max_retries;
- 	struct dpaa2_eth_fq *fq;
--	struct dpaa2_fd fd;
--	int drops = 0;
--	int i, err;
-+	struct dpaa2_fd *fds;
- 
- 	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
- 		return -EINVAL;
-@@ -1946,41 +1946,40 @@ static int dpaa2_eth_xdp_xmit(struct net_device *net_dev, int n,
- 	if (!netif_running(net_dev))
- 		return -ENETDOWN;
- 
-+	fq = &priv->fq[smp_processor_id()];
-+	fds = fq->xdp_fds;
-+
- 	percpu_stats = this_cpu_ptr(priv->percpu_stats);
- 	percpu_extras = this_cpu_ptr(priv->percpu_extras);
- 
-+	/* create a FD for each xdp_frame in the list received */
- 	for (i = 0; i < n; i++) {
--		struct xdp_frame *xdpf = frames[i];
--
--		/* create the FD from the xdp_frame */
--		err = dpaa2_eth_xdp_create_fd(net_dev, xdpf, &fd);
--		if (err) {
--			percpu_stats->tx_dropped++;
--			xdp_return_frame_rx_napi(xdpf);
--			drops++;
--			continue;
--		}
--
--		/* enqueue the newly created FD */
--		fq = &priv->fq[smp_processor_id() % dpaa2_eth_queue_count(priv)];
--		for (i = 0; i < DPAA2_ETH_ENQUEUE_RETRIES; i++) {
--			err = priv->enqueue(priv, fq, &fd, 0, 1);
--			if (err != -EBUSY)
--				break;
--		}
-+		err = dpaa2_eth_xdp_create_fd(net_dev, frames[i], &fds[i]);
-+		if (err)
-+			break;
-+	}
-+	num_fds = i;
- 
--		percpu_extras->tx_portal_busy += i;
--		if (unlikely(err < 0)) {
--			percpu_stats->tx_errors++;
--			xdp_return_frame_rx_napi(xdpf);
-+	/* try to enqueue all the FDs until the max number of retries is hit */
-+	max_retries = num_fds * DPAA2_ETH_ENQUEUE_RETRIES;
-+	while (total_enqueued < num_fds && retries < max_retries) {
-+		err = priv->enqueue(priv, fq, &fds[total_enqueued],
-+				    0, num_fds - total_enqueued, &enqueued);
-+		if (err == -EBUSY) {
-+			percpu_extras->tx_portal_busy += ++retries;
- 			continue;
- 		}
--
--		percpu_stats->tx_packets++;
--		percpu_stats->tx_bytes += dpaa2_fd_get_len(&fd);
-+		total_enqueued += enqueued;
- 	}
- 
--	return n - drops;
-+	/* update statistics */
-+	percpu_stats->tx_packets += total_enqueued;
-+	for (i = 0; i < total_enqueued; i++)
-+		percpu_stats->tx_bytes += dpaa2_fd_get_len(&fds[i]);
-+	for (i = total_enqueued; i < n; i++)
-+		xdp_return_frame_rx_napi(frames[i]);
-+
-+	return total_enqueued;
- }
- 
- static int update_xps(struct dpaa2_eth_priv *priv)
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-index 2440ba6b21ef..289053099974 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-@@ -325,6 +325,8 @@ struct dpaa2_eth_fq {
- 			const struct dpaa2_fd *fd,
- 			struct dpaa2_eth_fq *fq);
- 	struct dpaa2_eth_fq_stats stats;
-+
-+	struct dpaa2_fd xdp_fds[DEV_MAP_BULK_SIZE];
- };
- 
- struct dpaa2_eth_ch_xdp {
+#define NOTIFY_RESUME_LOOP_FLAGS (_TIF_WORK_MASK & ~_TIF_TASK_ISOLATION)
+
+> +
+>  asmlinkage void do_notify_resume(struct pt_regs *regs,
+>  				 unsigned long thread_flags)
+>  {
+> @@ -908,6 +914,8 @@ asmlinkage void do_notify_resume(struct pt_regs *regs,
+>  	 */
+>  	trace_hardirqs_off();
+>  
+> +	task_isolation_check_run_cleanup();
+> +
+>  	do {
+>  		/* Check valid user FS if needed */
+>  		addr_limit_user_check();
+> @@ -938,7 +946,10 @@ asmlinkage void do_notify_resume(struct pt_regs *regs,
+>  
+>  		local_daif_mask();
+>  		thread_flags = READ_ONCE(current_thread_info()->flags);
+> -	} while (thread_flags & _TIF_WORK_MASK);
+> +	} while (thread_flags & NOTIFY_RESUME_LOOP_FLAGS);
+> +
+> +	if (thread_flags & _TIF_TASK_ISOLATION)
+> +		task_isolation_start();
+>  }
+>  
+>  unsigned long __ro_after_init signal_minsigstksz;
+
 -- 
-2.17.1
-
+Catalin
