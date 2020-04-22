@@ -2,88 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 613521B48AF
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 17:33:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65D541B48B7
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 17:34:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726144AbgDVPdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 11:33:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725980AbgDVPdF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 11:33:05 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51EEC03C1A9
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 08:33:04 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id l25so2813913qkk.3
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 08:33:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=3XyjPYn1ZstDYRdTA0SVbrrlal6xVE/+9BBznEYwI3U=;
-        b=niGjubiWP+ljGoo6JfuCLby2z2P9656KewqSam628miMhFRayAYZEKMpVJ1H4T2Cvs
-         0t8zxRjfiO8dqtMXBtLexM6jwmE2ePOqhz59oaWXDM59s/jvZI8+0kxKYcFdvi/HKNXN
-         KFuXCnaGv48g9FMpIWBNtS9h0cJOY3WsSLFXVxWt6KlWicA8k3aUcqwzPjN/QifpWb+d
-         zI1bfZkNQJdlMG6fHifJfpX7vPsnnfLJ9rbEl9rx7TehZ2KTQCFi6n6mOlY2hwcw9LAb
-         acn1xa+QcQfZ0hWjCgZwxWMgrtj9knJnvsLhoNtNamNEuHvhEoTLaK4HJAi/uJzej+GM
-         +V1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=3XyjPYn1ZstDYRdTA0SVbrrlal6xVE/+9BBznEYwI3U=;
-        b=KM0ExGXW1fEKBoe0uY/2MVSAIYEOezdD+UbSu85Ui/H8dHODot1FbT0YLemfmNCuQQ
-         V6DBdeUUupPw643r7WqFtNPpoGcb9sZav7DKsoX4AKpc7+ezRwEoawUeNiX1YUHU1yHW
-         YTTtuxHfLpUnUdrC/YzyUlTiBqOSwzTKzQHo2s91waj9wnxSZugWcBbXS2ttj2KsTtIU
-         wbL/JdtqUDTp5OAwHZX4SkQIkHiUL//WMUwdzbfhK5NW0sg/n9/TUkyDlpcSib1NLpAH
-         AFrspib2jEtxpmbJDudRmwAgt0wJ2LdeCzVZQLCdwVUfW6vIONt/pX+C+z+6vBRONiFJ
-         hD+w==
-X-Gm-Message-State: AGi0PuZSKW00NzmAGwCimVF3nBtIrMAcXKbELOlwV3QXU4FbtZJ9+KxM
-        TnoDS4hkFOicZONOyZPQzTo=
-X-Google-Smtp-Source: APiQypLutC7zMPE80VSnE4FSz/vDNAxiumbV6tjC7wD6uX/bGQ6IbuelYe8CqJ+fBHaToCiUes2eQQ==
-X-Received: by 2002:a37:98d:: with SMTP id 135mr26305418qkj.377.1587569584011;
-        Wed, 22 Apr 2020 08:33:04 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:c19e:4650:3a73:fee4? ([2601:282:803:7700:c19e:4650:3a73:fee4])
-        by smtp.googlemail.com with ESMTPSA id d4sm4216918qtc.48.2020.04.22.08.33.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Apr 2020 08:33:02 -0700 (PDT)
-Subject: Re: [PATCH bpf-next 04/16] net: Add BPF_XDP_EGRESS as a
- bpf_attach_type
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        brouer@redhat.com, toshiaki.makita1@gmail.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dahern@digitalocean.com>
-References: <20200420200055.49033-1-dsahern@kernel.org>
- <20200420200055.49033-5-dsahern@kernel.org> <87ftcx9mcf.fsf@toke.dk>
- <856a263f-3bde-70a7-ff89-5baaf8e2240e@gmail.com> <87pnc17yz1.fsf@toke.dk>
- <073ed1a6-ff5e-28ef-d41d-c33d87135faa@gmail.com> <87k1277om2.fsf@toke.dk>
- <154e86ee-7e6a-9598-3dab-d7b46cce0967@gmail.com> <875zdr8rrx.fsf@toke.dk>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <783d0842-a83f-c22f-25f2-4a86f3924472@gmail.com>
-Date:   Wed, 22 Apr 2020 09:33:00 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <875zdr8rrx.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S1726505AbgDVPe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 11:34:27 -0400
+Received: from bedivere.hansenpartnership.com ([66.63.167.143]:58402 "EHLO
+        bedivere.hansenpartnership.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726168AbgDVPe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 11:34:26 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 866D28EE19C;
+        Wed, 22 Apr 2020 08:34:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
+        s=20151216; t=1587569665;
+        bh=4bdRD2Z19rQrjwriVaW9PfQmwVjc28+BZsVMjx2i8Hk=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=PrBv5i4NvrpBA8AnNmMReE20QVPztGgU72CBFUaFrCQwXLXAakN10ArYvrWADzCSw
+         QcdGixmbSsellgvadaVGHAzYzyWNt7zGbMmXQpqSWYreMpWX8xxNwdvAYx/Tv3Haiu
+         5ZEQOlOR8iN4ViK1CPUhgCFIKaUrMO28SCsZL7MA=
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id we20aduEjjM5; Wed, 22 Apr 2020 08:34:25 -0700 (PDT)
+Received: from [153.66.254.194] (unknown [50.35.76.230])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 55FC88EE0CE;
+        Wed, 22 Apr 2020 08:34:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
+        s=20151216; t=1587569665;
+        bh=4bdRD2Z19rQrjwriVaW9PfQmwVjc28+BZsVMjx2i8Hk=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=PrBv5i4NvrpBA8AnNmMReE20QVPztGgU72CBFUaFrCQwXLXAakN10ArYvrWADzCSw
+         QcdGixmbSsellgvadaVGHAzYzyWNt7zGbMmXQpqSWYreMpWX8xxNwdvAYx/Tv3Haiu
+         5ZEQOlOR8iN4ViK1CPUhgCFIKaUrMO28SCsZL7MA=
+Message-ID: <1587569663.3485.18.camel@HansenPartnership.com>
+Subject: Re: Implement close-on-fork
+From:   James Bottomley <James.Bottomley@HansenPartnership.com>
+To:     Matthew Wilcox <willy@infradead.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Nate Karstens <nate.karstens@garmin.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>, Helge Deller <deller@gmx.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-alpha@vger.kernel.org, linux-parisc@vger.kernel.org,
+        sparclinux@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Changli Gao <xiaosuo@gmail.com>
+Date:   Wed, 22 Apr 2020 08:34:23 -0700
+In-Reply-To: <20200422151815.GT5820@bombadil.infradead.org>
+References: <20200420071548.62112-1-nate.karstens@garmin.com>
+         <20200422150107.GK23230@ZenIV.linux.org.uk>
+         <20200422151815.GT5820@bombadil.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.26.6 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/22/20 9:27 AM, Toke Høiland-Jørgensen wrote:
-> And as I said in the beginning, I'm perfectly happy to be told why I'm
-> wrong; but so far you have just been arguing that I'm out of scope ;)
+On Wed, 2020-04-22 at 08:18 -0700, Matthew Wilcox wrote:
+> On Wed, Apr 22, 2020 at 04:01:07PM +0100, Al Viro wrote:
+> > On Mon, Apr 20, 2020 at 02:15:44AM -0500, Nate Karstens wrote:
+> > > Series of 4 patches to implement close-on-fork. Tests have been
+> > > published to https://github.com/nkarstens/ltp/tree/close-on-fork.
+> > > 
+> > > close-on-fork addresses race conditions in system(), which
+> > > (depending on the implementation) is non-atomic in that it
+> > > first calls a fork() and then an exec().
+> > > 
+> > > This functionality was approved by the Austin Common Standards
+> > > Revision Group for inclusion in the next revision of the POSIX
+> > > standard (see issue 1318 in the Austin Group Defect Tracker).
+> > 
+> > What exactly the reasons are and why would we want to implement
+> > that?
+> > 
+> > Pardon me, but going by the previous history, "The Austin Group
+> > Says It's Good" is more of a source of concern regarding the
+> > merits, general sanity and, most of all, good taste of a proposal.
+> > 
+> > I'm not saying that it's automatically bad, but you'll have to go
+> > much deeper into the rationale of that change before your proposal
+> > is taken seriously.
+> 
+> https://www.mail-archive.com/austin-group-l@opengroup.org/msg05324.ht
+> ml
+> might be useful
 
-you are arguing about a suspected bug with existing code that is no way
-touched or modified by this patch set, so yes it is out of scope.
+So the problem is an application is written in such a way that the time
+window after it forks and before it execs can cause a file descriptor
+based resource to be held when the application state thinks it should
+have been released because of a mismatch in the expected use count?
 
-The proper way to discuss a bug in existing code is a thread focused on
-that topic, not buried inside comments on a patch set.
+Might it not be easier to rewrite the application for this problem
+rather than the kernel?  Especially as the best justification in the
+entire thread seems to be "because solaris had it".
+
+James
+
