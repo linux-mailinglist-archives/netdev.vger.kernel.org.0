@@ -2,287 +2,509 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D11D1B340B
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 02:38:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E56151B340D
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 02:40:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726432AbgDVAh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 20:37:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58228 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726409AbgDVAh6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 20:37:58 -0400
-Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC74C0610D6
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 17:37:57 -0700 (PDT)
-Received: by mail-qk1-x74a.google.com with SMTP id r129so858039qkd.19
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 17:37:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=1BrRYo+96Cv/JrFZbPvJV2ENqhE9dtp0nSEuMgbSQkQ=;
-        b=dfTf8cY1rflgEMK+6VegOrQLECkYzWyPJgQo8Cr/jLkKJ7Edly28gwqUP4WPaIOKH6
-         HgURW/boPMJzzBZDoA9ZYKilb17dcMLSdv/OowopVy1WS97hTDqLaEn09GOOvSrr97iV
-         b0r/E+uJovR8ZNrC+GZeotliH7c/dvwHD5ONa+NwYbqsbvpR+PKdnMpm/rJrbzWpt0Ut
-         BO0Hnc6/Xs67TKQBiXA8Bk3c/nLZsx0jcoXTUyBFOIZKek/6Q2VRF0A3P3TxWlXStxUd
-         +c7wBfEQbHVcm4tUuLnpIV7qTHdR6/lpKyNTpn3N6OSYu7AWgjzoDepWr3rlnoR2lDSt
-         3kIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=1BrRYo+96Cv/JrFZbPvJV2ENqhE9dtp0nSEuMgbSQkQ=;
-        b=mz6BZOYH/AQaT7dwmWaLUnr5CrqXOv80UHXdZIP0x54697uesEGSgzx0vplWf2z1j9
-         73wPzeRvGDgWeULlDShiju/3kfjIJLlGLsLGYOCrLlVQ2ZJXGeGVP7PGPLYZ+t6rtYgX
-         MkfwiU9kCsJd9Wlz9OCEubXZah1WgTegNQQ8+b9De+vB7jAWnK3r5uud+u9HNQCifLI2
-         SrvmqwI9I8mOqidOeL+R21NpMNVQsjg1Bxl0aC0EntPr7soz/n8jgtP/9kv3XXBVotzq
-         VbwD8k/L3yEf3r7rBGrkcuYLzYNIBbgsRCelIi9mS4dQ/8zucQcz0tOPtZaI70AsIY8G
-         BjHA==
-X-Gm-Message-State: AGi0PuboSPZwualtScgHMk/lb/+vnQpJXFRBB0Vp/d469hFyUHLv26AN
-        x8pIGaPVG5Nc8kpCeBa8lde47dUbM3DDEHG64kH++Zqp6ywDYtTvH8TLU/GaHGIZonangtNvluB
-        jO5xxMQgMCc3WscuED99XrEBAsILSrL2boUXcq3x9QK/zDBlErMqnMQ==
-X-Google-Smtp-Source: APiQypJcpVWz/74werdqSCEawvRSVe7Vio1SPu9EF2xlsLpHHbZ7b1/Vlmn9uTRrsVNuc9b/19qfyGI=
-X-Received: by 2002:ac8:6f6c:: with SMTP id u12mr23727526qtv.103.1587515875944;
- Tue, 21 Apr 2020 17:37:55 -0700 (PDT)
-Date:   Tue, 21 Apr 2020 17:37:53 -0700
-Message-Id: <20200422003753.124921-1-sdf@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.26.2.303.gf8c07b1a785-goog
-Subject: [PATCH bpf-next] selftests/bpf: fix a couple of broken test_btf cases
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726296AbgDVAkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 20:40:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38886 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726061AbgDVAkY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Apr 2020 20:40:24 -0400
+Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3DB91206D5;
+        Wed, 22 Apr 2020 00:40:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587516023;
+        bh=IfD6uCPazF8I5mIhhAxBNtuSaT497BWhOPnsZ1DXAkA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=miehA8gIJx1gV6a7lnQKzViaSt8h4WKKJSbpCzJNQUNELA7EfiUsf8dki4/Zx5LD3
+         Rgp3pe0yeuaPCaJXNwUegqadBZy3wIM+EFzXLmXozHkwi9VPJH7dJs+IqBVa22GVXs
+         j4ZMYvoKqKGG6zGPfKGB26F6QyJIZa/hQCQmi6G0=
+From:   David Ahern <dsahern@kernel.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
+Subject: [PATCH net-next] selftests: Add tests for vrf and xfrms
+Date:   Tue, 21 Apr 2020 18:40:22 -0600
+Message-Id: <20200422004022.63954-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 51c39bb1d5d1 ("bpf: Introduce function-by-function verification")
-introduced function linkage flag and changed the error message from
-"vlen != 0" to "Invalid func linkage" and broke some fake BPF programs.
+From: David Ahern <dsahern@gmail.com>
 
-Adjust the test accordingly.
+Add tests for vrf and xfrms with a second round after adding a
+qdisc. There are a few known problems documented with the test
+cases that fail. The fix is non-trivial; will come back to it
+when time allows.
 
-AFACT, the programs don't really need any arguments and only look
-at BTF for maps, so let's drop the args altogether.
-
-Before:
-BTF raw test[103] (func (Non zero vlen)): do_test_raw:3703:FAIL expected
-err_str:vlen != 0
-magic: 0xeb9f
-version: 1
-flags: 0x0
-hdr_len: 24
-type_off: 0
-type_len: 72
-str_off: 72
-str_len: 10
-btf_total_size: 106
-[1] INT (anon) size=4 bits_offset=0 nr_bits=32 encoding=SIGNED
-[2] INT (anon) size=4 bits_offset=0 nr_bits=32 encoding=(none)
-[3] FUNC_PROTO (anon) return=0 args=(1 a, 2 b)
-[4] FUNC func type_id=3 Invalid func linkage
-
-BTF libbpf test[1] (test_btf_haskv.o): libbpf: load bpf program failed:
-Invalid argument
-libbpf: -- BEGIN DUMP LOG ---
-libbpf:
-Validating test_long_fname_2() func#1...
-Arg#0 type PTR in test_long_fname_2() is not supported yet.
-processed 0 insns (limit 1000000) max_states_per_insn 0 total_states 0
-peak_states 0 mark_read 0
-
-libbpf: -- END LOG --
-libbpf: failed to load program 'dummy_tracepoint'
-libbpf: failed to load object 'test_btf_haskv.o'
-do_test_file:4201:FAIL bpf_object__load: -4007
-BTF libbpf test[2] (test_btf_newkv.o): libbpf: load bpf program failed:
-Invalid argument
-libbpf: -- BEGIN DUMP LOG ---
-libbpf:
-Validating test_long_fname_2() func#1...
-Arg#0 type PTR in test_long_fname_2() is not supported yet.
-processed 0 insns (limit 1000000) max_states_per_insn 0 total_states 0
-peak_states 0 mark_read 0
-
-libbpf: -- END LOG --
-libbpf: failed to load program 'dummy_tracepoint'
-libbpf: failed to load object 'test_btf_newkv.o'
-do_test_file:4201:FAIL bpf_object__load: -4007
-BTF libbpf test[3] (test_btf_nokv.o): libbpf: load bpf program failed:
-Invalid argument
-libbpf: -- BEGIN DUMP LOG ---
-libbpf:
-Validating test_long_fname_2() func#1...
-Arg#0 type PTR in test_long_fname_2() is not supported yet.
-processed 0 insns (limit 1000000) max_states_per_insn 0 total_states 0
-peak_states 0 mark_read 0
-
-libbpf: -- END LOG --
-libbpf: failed to load program 'dummy_tracepoint'
-libbpf: failed to load object 'test_btf_nokv.o'
-do_test_file:4201:FAIL bpf_object__load: -4007
-
-Fixes: 51c39bb1d5d1 ("bpf: Introduce function-by-function verification")
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
+Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- .../selftests/bpf/progs/test_btf_haskv.c       | 18 +++++-------------
- .../selftests/bpf/progs/test_btf_newkv.c       | 18 +++++-------------
- .../selftests/bpf/progs/test_btf_nokv.c        | 18 +++++-------------
- tools/testing/selftests/bpf/test_btf.c         |  2 +-
- 4 files changed, 16 insertions(+), 40 deletions(-)
+ tools/testing/selftests/net/Makefile          |   1 +
+ tools/testing/selftests/net/vrf-xfrm-tests.sh | 436 ++++++++++++++++++
+ 2 files changed, 437 insertions(+)
+ create mode 100755 tools/testing/selftests/net/vrf-xfrm-tests.sh
 
-diff --git a/tools/testing/selftests/bpf/progs/test_btf_haskv.c b/tools/testing/selftests/bpf/progs/test_btf_haskv.c
-index 88b0566da13d..31538c9ed193 100644
---- a/tools/testing/selftests/bpf/progs/test_btf_haskv.c
-+++ b/tools/testing/selftests/bpf/progs/test_btf_haskv.c
-@@ -20,20 +20,12 @@ struct bpf_map_def SEC("maps") btf_map = {
- 
- BPF_ANNOTATE_KV_PAIR(btf_map, int, struct ipv_counts);
- 
--struct dummy_tracepoint_args {
--	unsigned long long pad;
--	struct sock *sock;
--};
--
- __attribute__((noinline))
--int test_long_fname_2(struct dummy_tracepoint_args *arg)
-+int test_long_fname_2(void)
- {
- 	struct ipv_counts *counts;
- 	int key = 0;
- 
--	if (!arg->sock)
--		return 0;
--
- 	counts = bpf_map_lookup_elem(&btf_map, &key);
- 	if (!counts)
- 		return 0;
-@@ -44,15 +36,15 @@ int test_long_fname_2(struct dummy_tracepoint_args *arg)
- }
- 
- __attribute__((noinline))
--int test_long_fname_1(struct dummy_tracepoint_args *arg)
-+int test_long_fname_1(void)
- {
--	return test_long_fname_2(arg);
-+	return test_long_fname_2();
- }
- 
- SEC("dummy_tracepoint")
--int _dummy_tracepoint(struct dummy_tracepoint_args *arg)
-+int _dummy_tracepoint(void *arg)
- {
--	return test_long_fname_1(arg);
-+	return test_long_fname_1();
- }
- 
- char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/test_btf_newkv.c b/tools/testing/selftests/bpf/progs/test_btf_newkv.c
-index a924e53c8e9d..6c5560162746 100644
---- a/tools/testing/selftests/bpf/progs/test_btf_newkv.c
-+++ b/tools/testing/selftests/bpf/progs/test_btf_newkv.c
-@@ -28,20 +28,12 @@ struct {
- 	__type(value, struct ipv_counts);
- } btf_map SEC(".maps");
- 
--struct dummy_tracepoint_args {
--	unsigned long long pad;
--	struct sock *sock;
--};
--
- __attribute__((noinline))
--int test_long_fname_2(struct dummy_tracepoint_args *arg)
-+int test_long_fname_2(void)
- {
- 	struct ipv_counts *counts;
- 	int key = 0;
- 
--	if (!arg->sock)
--		return 0;
--
- 	counts = bpf_map_lookup_elem(&btf_map, &key);
- 	if (!counts)
- 		return 0;
-@@ -57,15 +49,15 @@ int test_long_fname_2(struct dummy_tracepoint_args *arg)
- }
- 
- __attribute__((noinline))
--int test_long_fname_1(struct dummy_tracepoint_args *arg)
-+int test_long_fname_1(void)
- {
--	return test_long_fname_2(arg);
-+	return test_long_fname_2();
- }
- 
- SEC("dummy_tracepoint")
--int _dummy_tracepoint(struct dummy_tracepoint_args *arg)
-+int _dummy_tracepoint(void *arg)
- {
--	return test_long_fname_1(arg);
-+	return test_long_fname_1();
- }
- 
- char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/test_btf_nokv.c b/tools/testing/selftests/bpf/progs/test_btf_nokv.c
-index 983aedd1c072..506da7fd2da2 100644
---- a/tools/testing/selftests/bpf/progs/test_btf_nokv.c
-+++ b/tools/testing/selftests/bpf/progs/test_btf_nokv.c
-@@ -17,20 +17,12 @@ struct bpf_map_def SEC("maps") btf_map = {
- 	.max_entries = 4,
- };
- 
--struct dummy_tracepoint_args {
--	unsigned long long pad;
--	struct sock *sock;
--};
--
- __attribute__((noinline))
--int test_long_fname_2(struct dummy_tracepoint_args *arg)
-+int test_long_fname_2(void)
- {
- 	struct ipv_counts *counts;
- 	int key = 0;
- 
--	if (!arg->sock)
--		return 0;
--
- 	counts = bpf_map_lookup_elem(&btf_map, &key);
- 	if (!counts)
- 		return 0;
-@@ -41,15 +33,15 @@ int test_long_fname_2(struct dummy_tracepoint_args *arg)
- }
- 
- __attribute__((noinline))
--int test_long_fname_1(struct dummy_tracepoint_args *arg)
-+int test_long_fname_1(void)
- {
--	return test_long_fname_2(arg);
-+	return test_long_fname_2();
- }
- 
- SEC("dummy_tracepoint")
--int _dummy_tracepoint(struct dummy_tracepoint_args *arg)
-+int _dummy_tracepoint(void *arg)
- {
--	return test_long_fname_1(arg);
-+	return test_long_fname_1();
- }
- 
- char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/test_btf.c b/tools/testing/selftests/bpf/test_btf.c
-index 8da77cda5f4a..305fae8f80a9 100644
---- a/tools/testing/selftests/bpf/test_btf.c
-+++ b/tools/testing/selftests/bpf/test_btf.c
-@@ -2854,7 +2854,7 @@ static struct btf_raw_test raw_tests[] = {
- 	.value_type_id = 1,
- 	.max_entries = 4,
- 	.btf_load_err = true,
--	.err_str = "vlen != 0",
-+	.err_str = "Invalid func linkage",
- },
- 
- {
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index 3f386eb9e7d7..895ec992b2f1 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -16,6 +16,7 @@ TEST_PROGS += altnames.sh icmp_redirect.sh ip6_gre_headroom.sh
+ TEST_PROGS += route_localnet.sh
+ TEST_PROGS += reuseaddr_ports_exhausted.sh
+ TEST_PROGS += txtimestamp.sh
++TEST_PROGS += vrf-xfrm-tests.sh
+ TEST_PROGS_EXTENDED := in_netns.sh
+ TEST_GEN_FILES =  socket nettest
+ TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
+diff --git a/tools/testing/selftests/net/vrf-xfrm-tests.sh b/tools/testing/selftests/net/vrf-xfrm-tests.sh
+new file mode 100755
+index 000000000000..184da81f554f
+--- /dev/null
++++ b/tools/testing/selftests/net/vrf-xfrm-tests.sh
+@@ -0,0 +1,436 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++#
++# Various combinations of VRF with xfrms and qdisc.
++
++# Kselftest framework requirement - SKIP code is 4.
++ksft_skip=4
++
++PAUSE_ON_FAIL=no
++VERBOSE=0
++ret=0
++
++HOST1_4=192.168.1.1
++HOST2_4=192.168.1.2
++HOST1_6=2001:db8:1::1
++HOST2_6=2001:db8:1::2
++
++XFRM1_4=10.0.1.1
++XFRM2_4=10.0.1.2
++XFRM1_6=fc00:1000::1
++XFRM2_6=fc00:1000::2
++IF_ID=123
++
++VRF=red
++TABLE=300
++
++AUTH_1=0xd94fcfea65fddf21dc6e0d24a0253508
++AUTH_2=0xdc6e0d24a0253508d94fcfea65fddf21
++ENC_1=0xfc46c20f8048be9725930ff3fb07ac2a91f0347dffeacf62
++ENC_2=0x3fb07ac2a91f0347dffeacf62fc46c20f8048be9725930ff
++SPI_1=0x02122b77
++SPI_2=0x2b770212
++
++which ping6 > /dev/null 2>&1 && ping6=$(which ping6) || ping6=$(which ping)
++
++################################################################################
++#
++log_test()
++{
++	local rc=$1
++	local expected=$2
++	local msg="$3"
++
++	if [ ${rc} -eq ${expected} ]; then
++		printf "TEST: %-60s  [ OK ]\n" "${msg}"
++		nsuccess=$((nsuccess+1))
++	else
++		ret=1
++		nfail=$((nfail+1))
++		printf "TEST: %-60s  [FAIL]\n" "${msg}"
++		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
++			echo
++			echo "hit enter to continue, 'q' to quit"
++			read a
++			[ "$a" = "q" ] && exit 1
++		fi
++	fi
++}
++
++run_cmd_host1()
++{
++	local cmd="$*"
++	local out
++	local rc
++
++	if [ "$VERBOSE" = "1" ]; then
++		printf "    COMMAND: $cmd\n"
++	fi
++
++	out=$(eval ip netns exec host1 $cmd 2>&1)
++	rc=$?
++	if [ "$VERBOSE" = "1" ]; then
++		if [ -n "$out" ]; then
++			echo
++			echo "    $out"
++		fi
++		echo
++	fi
++
++	return $rc
++}
++
++################################################################################
++# create namespaces for hosts and sws
++
++create_vrf()
++{
++	local ns=$1
++	local vrf=$2
++	local table=$3
++
++	if [ -n "${ns}" ]; then
++		ns="-netns ${ns}"
++	fi
++
++	ip ${ns} link add ${vrf} type vrf table ${table}
++	ip ${ns} link set ${vrf} up
++	ip ${ns} route add vrf ${vrf} unreachable default metric 8192
++	ip ${ns} -6 route add vrf ${vrf} unreachable default metric 8192
++
++	ip ${ns} addr add 127.0.0.1/8 dev ${vrf}
++	ip ${ns} -6 addr add ::1 dev ${vrf} nodad
++
++	ip ${ns} ru del pref 0
++	ip ${ns} ru add pref 32765 from all lookup local
++	ip ${ns} -6 ru del pref 0
++	ip ${ns} -6 ru add pref 32765 from all lookup local
++}
++
++create_ns()
++{
++	local ns=$1
++	local addr=$2
++	local addr6=$3
++
++	[ -z "${addr}" ] && addr="-"
++	[ -z "${addr6}" ] && addr6="-"
++
++	ip netns add ${ns}
++
++	ip -netns ${ns} link set lo up
++	if [ "${addr}" != "-" ]; then
++		ip -netns ${ns} addr add dev lo ${addr}
++	fi
++	if [ "${addr6}" != "-" ]; then
++		ip -netns ${ns} -6 addr add dev lo ${addr6}
++	fi
++
++	ip -netns ${ns} ro add unreachable default metric 8192
++	ip -netns ${ns} -6 ro add unreachable default metric 8192
++
++	ip netns exec ${ns} sysctl -qw net.ipv4.ip_forward=1
++	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.keep_addr_on_down=1
++	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.forwarding=1
++	ip netns exec ${ns} sysctl -qw net.ipv6.conf.default.forwarding=1
++	ip netns exec ${ns} sysctl -qw net.ipv6.conf.default.accept_dad=0
++}
++
++# create veth pair to connect namespaces and apply addresses.
++connect_ns()
++{
++	local ns1=$1
++	local ns1_dev=$2
++	local ns1_addr=$3
++	local ns1_addr6=$4
++	local ns2=$5
++	local ns2_dev=$6
++	local ns2_addr=$7
++	local ns2_addr6=$8
++	local ns1arg
++	local ns2arg
++
++	if [ -n "${ns1}" ]; then
++		ns1arg="-netns ${ns1}"
++	fi
++	if [ -n "${ns2}" ]; then
++		ns2arg="-netns ${ns2}"
++	fi
++
++	ip ${ns1arg} li add ${ns1_dev} type veth peer name tmp
++	ip ${ns1arg} li set ${ns1_dev} up
++	ip ${ns1arg} li set tmp netns ${ns2} name ${ns2_dev}
++	ip ${ns2arg} li set ${ns2_dev} up
++
++	if [ "${ns1_addr}" != "-" ]; then
++		ip ${ns1arg} addr add dev ${ns1_dev} ${ns1_addr}
++		ip ${ns2arg} addr add dev ${ns2_dev} ${ns2_addr}
++	fi
++
++	if [ "${ns1_addr6}" != "-" ]; then
++		ip ${ns1arg} addr add dev ${ns1_dev} ${ns1_addr6} nodad
++		ip ${ns2arg} addr add dev ${ns2_dev} ${ns2_addr6} nodad
++	fi
++}
++
++################################################################################
++
++cleanup()
++{
++	ip netns del host1
++	ip netns del host2
++}
++
++setup()
++{
++	create_ns "host1"
++	create_ns "host2"
++
++	connect_ns "host1" eth0 ${HOST1_4}/24 ${HOST1_6}/64 \
++	           "host2" eth0 ${HOST2_4}/24 ${HOST2_6}/64
++
++	create_vrf "host1" ${VRF} ${TABLE}
++	ip -netns host1 link set dev eth0 master ${VRF}
++}
++
++cleanup_xfrm()
++{
++	for ns in host1 host2
++	do
++		for x in state policy
++		do
++			ip -netns ${ns} xfrm ${x} flush
++			ip -6 -netns ${ns} xfrm ${x} flush
++		done
++	done
++}
++
++setup_xfrm()
++{
++	local h1_4=$1
++	local h2_4=$2
++	local h1_6=$3
++	local h2_6=$4
++	local devarg="$5"
++
++	#
++	# policy
++	#
++
++	# host1 - IPv4 out
++	ip -netns host1 xfrm policy add \
++	  src ${h1_4} dst ${h2_4} ${devarg} dir out \
++	  tmpl src ${HOST1_4} dst ${HOST2_4} proto esp mode tunnel
++
++	# host2 - IPv4 in
++	ip -netns host2 xfrm policy add \
++	  src ${h1_4} dst ${h2_4} dir in \
++	  tmpl src ${HOST1_4} dst ${HOST2_4} proto esp mode tunnel
++
++	# host1 - IPv4 in
++	ip -netns host1 xfrm policy add \
++	  src ${h2_4} dst ${h1_4} ${devarg} dir in \
++	  tmpl src ${HOST2_4} dst ${HOST1_4} proto esp mode tunnel
++
++	# host2 - IPv4 out
++	ip -netns host2 xfrm policy add \
++	  src ${h2_4} dst ${h1_4} dir out \
++	  tmpl src ${HOST2_4} dst ${HOST1_4} proto esp mode tunnel
++
++
++	# host1 - IPv6 out
++	ip -6 -netns host1 xfrm policy add \
++	  src ${h1_6} dst ${h2_6} ${devarg} dir out \
++	  tmpl src ${HOST1_6} dst ${HOST2_6} proto esp mode tunnel
++
++	# host2 - IPv6 in
++	ip -6 -netns host2 xfrm policy add \
++	  src ${h1_6} dst ${h2_6} dir in \
++	  tmpl src ${HOST1_6} dst ${HOST2_6} proto esp mode tunnel
++
++	# host1 - IPv6 in
++	ip -6 -netns host1 xfrm policy add \
++	  src ${h2_6} dst ${h1_6} ${devarg} dir in \
++	  tmpl src ${HOST2_6} dst ${HOST1_6} proto esp mode tunnel
++
++	# host2 - IPv6 out
++	ip -6 -netns host2 xfrm policy add \
++	  src ${h2_6} dst ${h1_6} dir out \
++	  tmpl src ${HOST2_6} dst ${HOST1_6} proto esp mode tunnel
++
++	#
++	# state
++	#
++	ip -netns host1 xfrm state add src ${HOST1_4} dst ${HOST2_4} \
++	    proto esp spi ${SPI_1} reqid 0 mode tunnel \
++	    replay-window 4 replay-oseq 0x4 \
++	    auth-trunc 'hmac(md5)' ${AUTH_1} 96 \
++	    enc 'cbc(des3_ede)' ${ENC_1} \
++	    sel src ${h1_4} dst ${h2_4} ${devarg}
++
++	ip -netns host2 xfrm state add src ${HOST1_4} dst ${HOST2_4} \
++	    proto esp spi ${SPI_1} reqid 0 mode tunnel \
++	    replay-window 4 replay-oseq 0x4 \
++	    auth-trunc 'hmac(md5)' ${AUTH_1} 96 \
++	    enc 'cbc(des3_ede)' ${ENC_1} \
++	    sel src ${h1_4} dst ${h2_4}
++
++
++	ip -netns host1 xfrm state add src ${HOST2_4} dst ${HOST1_4} \
++	    proto esp spi ${SPI_2} reqid 0 mode tunnel \
++	    replay-window 4 replay-oseq 0x4 \
++	    auth-trunc 'hmac(md5)' ${AUTH_2} 96 \
++	    enc 'cbc(des3_ede)' ${ENC_2} \
++	    sel src ${h2_4} dst ${h1_4} ${devarg}
++
++	ip -netns host2 xfrm state add src ${HOST2_4} dst ${HOST1_4} \
++	    proto esp spi ${SPI_2} reqid 0 mode tunnel \
++	    replay-window 4 replay-oseq 0x4 \
++	    auth-trunc 'hmac(md5)' ${AUTH_2} 96 \
++	    enc 'cbc(des3_ede)' ${ENC_2} \
++	    sel src ${h2_4} dst ${h1_4}
++
++
++	ip -6 -netns host1 xfrm state add src ${HOST1_6} dst ${HOST2_6} \
++	    proto esp spi ${SPI_1} reqid 0 mode tunnel \
++	    replay-window 4 replay-oseq 0x4 \
++	    auth-trunc 'hmac(md5)' ${AUTH_1} 96 \
++	    enc 'cbc(des3_ede)' ${ENC_1} \
++	    sel src ${h1_6} dst ${h2_6} ${devarg}
++
++	ip -6 -netns host2 xfrm state add src ${HOST1_6} dst ${HOST2_6} \
++	    proto esp spi ${SPI_1} reqid 0 mode tunnel \
++	    replay-window 4 replay-oseq 0x4 \
++	    auth-trunc 'hmac(md5)' ${AUTH_1} 96 \
++	    enc 'cbc(des3_ede)' ${ENC_1} \
++	    sel src ${h1_6} dst ${h2_6}
++
++
++	ip -6 -netns host1 xfrm state add src ${HOST2_6} dst ${HOST1_6} \
++	    proto esp spi ${SPI_2} reqid 0 mode tunnel \
++	    replay-window 4 replay-oseq 0x4 \
++	    auth-trunc 'hmac(md5)' ${AUTH_2} 96 \
++	    enc 'cbc(des3_ede)' ${ENC_2} \
++	    sel src ${h2_6} dst ${h1_6} ${devarg}
++
++	ip -6 -netns host2 xfrm state add src ${HOST2_6} dst ${HOST1_6} \
++	    proto esp spi ${SPI_2} reqid 0 mode tunnel \
++	    replay-window 4 replay-oseq 0x4 \
++	    auth-trunc 'hmac(md5)' ${AUTH_2} 96 \
++	    enc 'cbc(des3_ede)' ${ENC_2} \
++	    sel src ${h2_6} dst ${h1_6}
++}
++
++cleanup_xfrm_dev()
++{
++	ip -netns host1 li del xfrm0
++	ip -netns host2 addr del ${XFRM2_4}/24 dev eth0
++	ip -netns host2 addr del ${XFRM2_6}/64 dev eth0
++}
++
++setup_xfrm_dev()
++{
++	local vrfarg="vrf ${VRF}"
++
++	ip -netns host1 li add type xfrm dev eth0 if_id ${IF_ID}
++	ip -netns host1 li set xfrm0 ${vrfarg} up
++	ip -netns host1 addr add ${XFRM1_4}/24 dev xfrm0
++	ip -netns host1 addr add ${XFRM1_6}/64 dev xfrm0
++
++	ip -netns host2 addr add ${XFRM2_4}/24 dev eth0
++	ip -netns host2 addr add ${XFRM2_6}/64 dev eth0
++
++	setup_xfrm ${XFRM1_4} ${XFRM2_4} ${XFRM1_6} ${XFRM2_6} "if_id ${IF_ID}"
++}
++
++run_tests()
++{
++	cleanup_xfrm
++
++	# no IPsec
++	run_cmd_host1 ip vrf exec ${VRF} ping -c1 -w1 ${HOST2_4}
++	log_test $? 0 "IPv4 no xfrm policy"
++	run_cmd_host1 ip vrf exec ${VRF} ${ping6} -c1 -w1 ${HOST2_6}
++	log_test $? 0 "IPv6 no xfrm policy"
++
++	# xfrm without VRF in sel
++	setup_xfrm ${HOST1_4} ${HOST2_4} ${HOST1_6} ${HOST2_6}
++	run_cmd_host1 ip vrf exec ${VRF} ping -c1 -w1 ${HOST2_4}
++	log_test $? 0 "IPv4 xfrm policy based on address"
++	run_cmd_host1 ip vrf exec ${VRF} ${ping6} -c1 -w1 ${HOST2_6}
++	log_test $? 0 "IPv6 xfrm policy based on address"
++	cleanup_xfrm
++
++	# xfrm with VRF in sel
++	# Known failure: ipv4 resets the flow oif after the lookup. Fix is
++	# not straightforward.
++	# setup_xfrm ${HOST1_4} ${HOST2_4} ${HOST1_6} ${HOST2_6} "dev ${VRF}"
++	# run_cmd_host1 ip vrf exec ${VRF} ping -c1 -w1 ${HOST2_4}
++	# log_test $? 0 "IPv4 xfrm policy with VRF in selector"
++	run_cmd_host1 ip vrf exec ${VRF} ${ping6} -c1 -w1 ${HOST2_6}
++	log_test $? 0 "IPv6 xfrm policy with VRF in selector"
++	cleanup_xfrm
++
++	# xfrm with enslaved device in sel
++	# Known failures: combined with the above, __xfrm{4,6}_selector_match
++	# needs to consider both l3mdev and enslaved device index.
++	# setup_xfrm ${HOST1_4} ${HOST2_4} ${HOST1_6} ${HOST2_6} "dev eth0"
++	# run_cmd_host1 ip vrf exec ${VRF} ping -c1 -w1 ${HOST2_4}
++	# log_test $? 0 "IPv4 xfrm policy with enslaved device in selector"
++	# run_cmd_host1 ip vrf exec ${VRF} ${ping6} -c1 -w1 ${HOST2_6}
++	# log_test $? 0 "IPv6 xfrm policy with enslaved device in selector"
++	# cleanup_xfrm
++
++	# xfrm device
++	setup_xfrm_dev
++	run_cmd_host1 ip vrf exec ${VRF} ping -c1 -w1 ${XFRM2_4}
++	log_test $? 0 "IPv4 xfrm policy with xfrm device"
++	run_cmd_host1 ip vrf exec ${VRF} ${ping6} -c1 -w1 ${XFRM2_6}
++	log_test $? 0 "IPv6 xfrm policy with xfrm device"
++	cleanup_xfrm_dev
++}
++
++################################################################################
++# usage
++
++usage()
++{
++        cat <<EOF
++usage: ${0##*/} OPTS
++
++        -p          Pause on fail
++        -v          verbose mode (show commands and output)
++
++done
++EOF
++}
++
++################################################################################
++# main
++
++while getopts :pv o
++do
++	case $o in
++		p) PAUSE_ON_FAIL=yes;;
++		v) VERBOSE=$(($VERBOSE + 1));;
++		h) usage; exit 0;;
++		*) usage; exit 1;;
++	esac
++done
++
++cleanup 2>/dev/null
++setup
++
++echo
++echo "No qdisc on VRF device"
++run_tests
++
++run_cmd_host1 tc qdisc add dev ${VRF} root netem delay 100ms
++echo
++echo "netem qdisc on VRF device"
++run_tests
++
++printf "\nTests passed: %3d\n" ${nsuccess}
++printf "Tests failed: %3d\n"   ${nfail}
++
++exit $ret
 -- 
-2.26.2.303.gf8c07b1a785-goog
+2.20.1
 
