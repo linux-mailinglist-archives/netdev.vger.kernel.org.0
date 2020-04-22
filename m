@@ -2,67 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6B361B4BF9
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 19:42:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29FC61B4C2D
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 19:53:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726939AbgDVRmL convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 22 Apr 2020 13:42:11 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:34900 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726082AbgDVRmL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 13:42:11 -0400
-Received: from [192.168.1.91] (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 46689CECFD;
-        Wed, 22 Apr 2020 19:51:47 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [PATCH v1] Bluetooth: L2CAP: add support for waiting
- disconnection resp
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20200414160758.v1.1.Idab9dcdc7da549ed1fd5c66341fb8baffaee8d10@changeid>
-Date:   Wed, 22 Apr 2020 19:41:39 +0200
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Archie Pusaka <apusaka@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <84DFB53F-C60A-48D3-AC01-2C9C87BA805D@holtmann.org>
-References: <20200414160758.v1.1.Idab9dcdc7da549ed1fd5c66341fb8baffaee8d10@changeid>
-To:     Archie Pusaka <apusaka@google.com>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
+        id S1726487AbgDVRxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 13:53:00 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:56102 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726057AbgDVRxA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Apr 2020 13:53:00 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 7A6401A12ED;
+        Wed, 22 Apr 2020 19:52:58 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 6EC0D1A0EE7;
+        Wed, 22 Apr 2020 19:52:58 +0200 (CEST)
+Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 38B5D2030B;
+        Wed, 22 Apr 2020 19:52:58 +0200 (CEST)
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH] MAINTAINERS: update dpaa2-eth maintainer list
+Date:   Wed, 22 Apr 2020 20:52:54 +0300
+Message-Id: <20200422175254.2646-1-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Reply-to: ioana.ciornei@nxp.com
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Archie,
+Add myself as another maintainer of dpaa2-eth.
 
-> Whenever we disconnect a L2CAP connection, we would immediately
-> report a disconnection event (EPOLLHUP) to the upper layer, without
-> waiting for the response of the other device.
-> 
-> This patch offers an option to wait until we receive a disconnection
-> response before reporting disconnection event, by using the "how"
-> parameter in l2cap_sock_shutdown(). Therefore, upper layer can opt
-> to wait for disconnection response by shutdown(sock, SHUT_WR).
-> 
-> This can be used to enforce proper disconnection order in HID,
-> where the disconnection of the interrupt channel must be complete
-> before attempting to disconnect the control channel.
-> 
-> Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-> ---
-> 
-> net/bluetooth/l2cap_sock.c | 30 +++++++++++++++++++++++-------
-> 1 file changed, 23 insertions(+), 7 deletions(-)
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-the patch looks fine to me. Do we have something in l2cap-tester or l2test that we can verify this with before I apply it.
-
-Regards
-
-Marcel
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 6851ef7cf1bd..d5e4d13880b2 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -5173,6 +5173,7 @@ S:	Maintained
+ F:	drivers/soc/fsl/dpio
+ 
+ DPAA2 ETHERNET DRIVER
++M:	Ioana Ciornei <ioana.ciornei@nxp.com>
+ M:	Ioana Radulescu <ruxandra.radulescu@nxp.com>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
+-- 
+2.17.1
 
