@@ -2,47 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF8961B49A6
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 18:08:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFEC41B49A9
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 18:08:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726525AbgDVQIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 12:08:13 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:30554 "EHLO
+        id S1726936AbgDVQI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 12:08:26 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:26509 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726928AbgDVQIN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 12:08:13 -0400
+        with ESMTP id S1726006AbgDVQIZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 12:08:25 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587571691;
+        s=mimecast20190719; t=1587571703;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ZzzjCBq9WyI3Bb6b0nAFkEUdPjhrJ6l3Fs8nfiWFreM=;
-        b=X+LYxmOyXGd/uq9hkPRae1weuoIDKnLuqXi3P4Svw5gzy9QSzougwbc2XXTLEN4LNoNk0e
-        /8mtBqoSTqDc2W12r3dFer+2a/mArw+2PD9MqFAcCI78OQpL4kHuMUo+eKgxOAnvjNmI9D
-        B4LKB4QRQ8Ng5td06KjyCX2vQHZEGpA=
+        bh=R35aCgtTp2T6zHwz/j/qjTydyXlhLxZnyI5/178mz/E=;
+        b=frLUi5arwuFWUyV5cKUk/m2mfogWDfYukAi8oPPg/MATU+U4ptcs4sn+cr7e8IOrZBC98r
+        fS/Nh/v1sZUYmk1qDW80mYQHpUqiKSIlCp51wEFVYH4XdHShwfaooKJZKRDBKU3d2wbDth
+        pEGpPhbBYUARZ7gk2q0quqdbhBDAllI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-455-VXFCodS9NfO1G-hRFQdmZA-1; Wed, 22 Apr 2020 12:08:05 -0400
-X-MC-Unique: VXFCodS9NfO1G-hRFQdmZA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+ us-mta-239-BE0LcpEmMcKl3jU2kXppag-1; Wed, 22 Apr 2020 12:08:22 -0400
+X-MC-Unique: BE0LcpEmMcKl3jU2kXppag-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 326F613FC;
-        Wed, 22 Apr 2020 16:08:03 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5C8E418C8C01;
+        Wed, 22 Apr 2020 16:08:19 +0000 (UTC)
 Received: from firesoul.localdomain (unknown [10.40.208.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 91C666084C;
-        Wed, 22 Apr 2020 16:08:02 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A63C110190D6;
+        Wed, 22 Apr 2020 16:08:07 +0000 (UTC)
 Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id B826130000272;
-        Wed, 22 Apr 2020 18:08:01 +0200 (CEST)
-Subject: [PATCH net-next 08/33] xdp: cpumap redirect use frame_sz and increase
- skb_tailroom
+        by firesoul.localdomain (Postfix) with ESMTP id CB82830000272;
+        Wed, 22 Apr 2020 18:08:06 +0200 (CEST)
+Subject: [PATCH net-next 09/33] veth: adjust hard_start offset on redirect XDP
+ frames
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     sameehj@amazon.com
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, zorik@amazon.com, akiyano@amazon.com,
-        gtzalik@amazon.com,
+Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Mao Wenan <maowenan@huawei.com>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, zorik@amazon.com,
+        akiyano@amazon.com, gtzalik@amazon.com,
         =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Daniel Borkmann <borkmann@iogearbox.net>,
         Alexei Starovoitov <alexei.starovoitov@gmail.com>,
@@ -55,67 +58,90 @@ Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
         Lorenzo Bianconi <lorenzo@kernel.org>,
         Saeed Mahameed <saeedm@mellanox.com>,
         steffen.klassert@secunet.com
-Date:   Wed, 22 Apr 2020 18:08:01 +0200
-Message-ID: <158757168168.1370371.11510167625755235041.stgit@firesoul>
+Date:   Wed, 22 Apr 2020 18:08:06 +0200
+Message-ID: <158757168676.1370371.9335548837047528670.stgit@firesoul>
 In-Reply-To: <158757160439.1370371.13213378122947426220.stgit@firesoul>
 References: <158757160439.1370371.13213378122947426220.stgit@firesoul>
 User-Agent: StGit/0.19
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Knowing the memory size backing the packet/xdp_frame data area, and
-knowing it already have reserved room for skb_shared_info, simplifies
-using build_skb significantly.
+When native XDP redirect into a veth device, the frame arrives in the
+xdp_frame structure. It is then processed in veth_xdp_rcv_one(),
+which can run a new XDP bpf_prog on the packet. Doing so requires
+converting xdp_frame to xdp_buff, but the tricky part is that
+xdp_frame memory area is located in the top (data_hard_start) memory
+area that xdp_buff will point into.
 
-With this change we no-longer lie about the SKB truesize, but more
-importantly a significant larger skb_tailroom is now provided, e.g. when
-drivers uses a full PAGE_SIZE. This extra tailroom (in linear area) can be
-used by the network stack when coalescing SKBs (e.g. in skb_try_coalesce,
-see TCP cases where tcp_queue_rcv() can 'eat' skb).
+The current code tried to protect the xdp_frame area, by assigning
+xdp_buff.data_hard_start past this memory. This results in 32 bytes
+less headroom to expand into via BPF-helper bpf_xdp_adjust_head().
 
+This protect step is actually not needed, because BPF-helper
+bpf_xdp_adjust_head() already reserve this area, and don't allow
+BPF-prog to expand into it. Thus, it is safe to point data_hard_start
+directly at xdp_frame memory area.
+
+Cc: Toshiaki Makita <toshiaki.makita1@gmail.com>
+Fixes: 9fc8d518d9d5 ("veth: Handle xdp_frames in xdp napi ring")
+Reported-by: Mao Wenan <maowenan@huawei.com>
 Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Acked-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
 ---
- kernel/bpf/cpumap.c |   21 +++------------------
- 1 file changed, 3 insertions(+), 18 deletions(-)
+ drivers/net/veth.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-index 70f71b154fa5..9c777ac4d4bd 100644
---- a/kernel/bpf/cpumap.c
-+++ b/kernel/bpf/cpumap.c
-@@ -162,25 +162,10 @@ static struct sk_buff *cpu_map_build_skb(struct bpf_cpu_map_entry *rcpu,
- 	/* Part of headroom was reserved to xdpf */
- 	hard_start_headroom = sizeof(struct xdp_frame) +  xdpf->headroom;
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index aece0e5eec8c..d5691bb84448 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -564,13 +564,15 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
+ 					struct veth_stats *stats)
+ {
+ 	void *hard_start = frame->data - frame->headroom;
+-	void *head = hard_start - sizeof(struct xdp_frame);
+ 	int len = frame->len, delta = 0;
+ 	struct xdp_frame orig_frame;
+ 	struct bpf_prog *xdp_prog;
+ 	unsigned int headroom;
+ 	struct sk_buff *skb;
  
--	/* build_skb need to place skb_shared_info after SKB end, and
--	 * also want to know the memory "truesize".  Thus, need to
--	 * know the memory frame size backing xdp_buff.
--	 *
--	 * XDP was designed to have PAGE_SIZE frames, but this
--	 * assumption is not longer true with ixgbe and i40e.  It
--	 * would be preferred to set frame_size to 2048 or 4096
--	 * depending on the driver.
--	 *   frame_size = 2048;
--	 *   frame_len  = frame_size - sizeof(*xdp_frame);
--	 *
--	 * Instead, with info avail, skb_shared_info in placed after
--	 * packet len.  This, unfortunately fakes the truesize.
--	 * Another disadvantage of this approach, the skb_shared_info
--	 * is not at a fixed memory location, with mixed length
--	 * packets, which is bad for cache-line hotness.
-+	/* Memory size backing xdp_frame data already have reserved
-+	 * room for build_skb to place skb_shared_info in tailroom.
- 	 */
--	frame_size = SKB_DATA_ALIGN(xdpf->len + hard_start_headroom) +
--		SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-+	frame_size = xdpf->frame_sz;
++	/* bpf_xdp_adjust_head() assures BPF cannot access xdp_frame area */
++	hard_start -= sizeof(struct xdp_frame);
++
+ 	rcu_read_lock();
+ 	xdp_prog = rcu_dereference(rq->xdp_prog);
+ 	if (likely(xdp_prog)) {
+@@ -592,7 +594,6 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
+ 			break;
+ 		case XDP_TX:
+ 			orig_frame = *frame;
+-			xdp.data_hard_start = head;
+ 			xdp.rxq->mem = frame->mem;
+ 			if (unlikely(veth_xdp_tx(rq, &xdp, bq) < 0)) {
+ 				trace_xdp_exception(rq->dev, xdp_prog, act);
+@@ -605,7 +606,6 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
+ 			goto xdp_xmit;
+ 		case XDP_REDIRECT:
+ 			orig_frame = *frame;
+-			xdp.data_hard_start = head;
+ 			xdp.rxq->mem = frame->mem;
+ 			if (xdp_do_redirect(rq->dev, &xdp, xdp_prog)) {
+ 				frame = &orig_frame;
+@@ -629,7 +629,7 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
+ 	rcu_read_unlock();
  
- 	pkt_data_start = xdpf->data - hard_start_headroom;
- 	skb = build_skb_around(skb, pkt_data_start, frame_size);
+ 	headroom = sizeof(struct xdp_frame) + frame->headroom - delta;
+-	skb = veth_build_skb(head, headroom, len, 0);
++	skb = veth_build_skb(hard_start, headroom, len, 0);
+ 	if (!skb) {
+ 		xdp_return_frame(frame);
+ 		stats->rx_drops++;
 
 
