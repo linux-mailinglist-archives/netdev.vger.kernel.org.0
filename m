@@ -2,55 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0650B1B4CCD
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 20:43:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE36E1B4CD4
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 20:45:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726628AbgDVSnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 14:43:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57060 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726522AbgDVSnr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 14:43:47 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B629C03C1A9;
-        Wed, 22 Apr 2020 11:43:47 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7D3ED120ED563;
-        Wed, 22 Apr 2020 11:43:46 -0700 (PDT)
-Date:   Wed, 22 Apr 2020 11:43:45 -0700 (PDT)
-Message-Id: <20200422.114345.1554399485217894854.davem@davemloft.net>
-To:     f.fainelli@gmail.com
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 0/3] dt-bindings: net: mdio.yaml fixes
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200420180723.27936-1-f.fainelli@gmail.com>
-References: <20200420180723.27936-1-f.fainelli@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1726775AbgDVSp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 14:45:26 -0400
+Received: from terminus.zytor.com ([198.137.202.136]:42279 "EHLO
+        mail.zytor.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725810AbgDVSp0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Apr 2020 14:45:26 -0400
+Received: from hanvin-mobl2.amr.corp.intel.com ([134.134.139.76])
+        (authenticated bits=0)
+        by mail.zytor.com (8.15.2/8.15.2) with ESMTPSA id 03MIi1bp1756663
+        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
+        Wed, 22 Apr 2020 11:44:02 -0700
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 03MIi1bp1756663
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
+        s=2020032201; t=1587581047;
+        bh=dIQ0s7CSMK1UKyQ0AWlyM0gbBVakPmljyV3eEPda8bM=;
+        h=Subject:To:References:From:Date:In-Reply-To:From;
+        b=hYv6h7G1OIqP2oGYDKFgihUJ7y1uBmklu81bwutsUBYb5uLTqvrf9EdHSior/oD0i
+         DVy/dJw6Pf1/mu6noDD+0raFOhCGDpUZLNx3DiB2urI3khadAf120qbLu9iGwHpT6w
+         bRXeNpyQOuyk5F3yT41bDsH9/KBdYPSSlF9dP1iSx/u/iS/awSQ0tT5fTIev1SR1KB
+         pRtgLXoBB5nMFyjr1OyFzZl/Ay2YRjjSdZ5Z99HM86hAwGAtFMTp8iGn0TXCqyeX6L
+         DMHF+8t7dtHCgdHwKlcb9/YXGAxG3Z1xL0OqFbrP4jz0R7A7OAPsFLBmJF1M+84i9M
+         5qbMVq9zVwufQ==
+Subject: Re: [PATCH] bpf, x32: remove unneeded conversion to bool
+To:     Jason Yan <yanaijie@huawei.com>, udknight@gmail.com,
+        davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, x86@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org,
+        lukenels@cs.washington.edu, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200420123727.3616-1-yanaijie@huawei.com>
+From:   "H. Peter Anvin" <hpa@zytor.com>
+Message-ID: <dff9a49b-0d00-54b0-0375-cc908289e65a@zytor.com>
+Date:   Wed, 22 Apr 2020 11:43:58 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
+MIME-Version: 1.0
+In-Reply-To: <20200420123727.3616-1-yanaijie@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 22 Apr 2020 11:43:46 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
-Date: Mon, 20 Apr 2020 11:07:20 -0700
-
-> This patch series documents some common MDIO devices properties such as
-> resets (and delays) and broken-turn-around. The second patch also
-> rephrases some descriptions to be more general towards MDIO devices and
-> not specific towards Ethernet PHYs.
+On 2020-04-20 05:37, Jason Yan wrote:
+> The '==' expression itself is bool, no need to convert it to bool again.
+> This fixes the following coccicheck warning:
 > 
-> Changes in v3:
+> arch/x86/net/bpf_jit_comp32.c:1478:50-55: WARNING: conversion to bool
+> not needed here
+> arch/x86/net/bpf_jit_comp32.c:1479:50-55: WARNING: conversion to bool
+> not needed here
 > 
-> - corrected wording of 'broken-turn-around' in ethernet-phy.yaml and
->   mdio.yaml, add Andrew's R-b tag to patch #3
+> Signed-off-by: Jason Yan <yanaijie@huawei.com>
+> ---
+>  arch/x86/net/bpf_jit_comp32.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
 
-Series applied, thanks Florian.
+x32 is not i386.
+
+	-hpa
+
