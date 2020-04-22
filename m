@@ -2,165 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A74831B3A41
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 10:37:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53E881B3A59
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 10:40:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726398AbgDVIhz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 04:37:55 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:47830 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725836AbgDVIhz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 04:37:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587544673;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KCqP2GD+Yfw6Qi5y9jQIilT49EWNRY3d4OIxSWwGanU=;
-        b=Fby/Zze0uRkWspUN14v+RouPD2OxL0v0wEtCDCcRIyRIp6DqZHGREDKIOIu66rfAUEoxA5
-        Gm8R+MWBnQ+ifEN4YXsrBEePuJNJGREhG9XU4mCb2PvI4+BYzltAekjjc7+zI3nSLeS6Yv
-        u4VFue/yMifdugF+v3XPlgGTOQoe5K4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-438-MZ7esVZ3NUSNsNFTBTpkSw-1; Wed, 22 Apr 2020 04:37:48 -0400
-X-MC-Unique: MZ7esVZ3NUSNsNFTBTpkSw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 076B57A601;
-        Wed, 22 Apr 2020 08:37:47 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.58])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 01BA95C1B2;
-        Wed, 22 Apr 2020 08:37:42 +0000 (UTC)
-Date:   Wed, 22 Apr 2020 10:37:41 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        brouer@redhat.com
-Subject: Re: [PATCH net-next 4/4] dpaa2-eth: use bulk enqueue in
- .ndo_xdp_xmit
-Message-ID: <20200422103741.690765d0@carbon>
-In-Reply-To: <DB8PR04MB6828FCFAC2B6755E046B0B05E0D20@DB8PR04MB6828.eurprd04.prod.outlook.com>
-References: <20200421152154.10965-1-ioana.ciornei@nxp.com>
-        <20200421152154.10965-5-ioana.ciornei@nxp.com>
-        <20200422091226.774b0dd7@carbon>
-        <DB8PR04MB6828FCFAC2B6755E046B0B05E0D20@DB8PR04MB6828.eurprd04.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+        id S1726637AbgDVIkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 04:40:21 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:52171 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726520AbgDVIkF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 04:40:05 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from maorg@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 22 Apr 2020 11:39:59 +0300
+Received: from dev-l-vrt-201.mtl.labs.mlnx (dev-l-vrt-201.mtl.labs.mlnx [10.134.201.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 03M8dxgc006118;
+        Wed, 22 Apr 2020 11:39:59 +0300
+From:   Maor Gottlieb <maorg@mellanox.com>
+To:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        kuba@kernel.org, jiri@mellanox.com, dsahern@kernel.org
+Cc:     leonro@mellanox.com, saeedm@mellanox.com,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        alexr@mellanox.com, Maor Gottlieb <maorg@mellanox.com>
+Subject: [PATCH V4 mlx5-next 00/15] Add support to get xmit slave
+Date:   Wed, 22 Apr 2020 11:39:36 +0300
+Message-Id: <20200422083951.17424-1-maorg@mellanox.com>
+X-Mailer: git-send-email 2.17.2
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 22 Apr 2020 07:51:46 +0000
-Ioana Ciornei <ioana.ciornei@nxp.com> wrote:
+Hi Dave,
 
-> > Subject: Re: [PATCH net-next 4/4] dpaa2-eth: use bulk enqueue in
-> > .ndo_xdp_xmit
-> > 
-> > On Tue, 21 Apr 2020 18:21:54 +0300
-> > Ioana Ciornei <ioana.ciornei@nxp.com> wrote:
-> >   
-> > > Take advantage of the bulk enqueue feature in .ndo_xdp_xmit.
-> > > We cannot use the XDP_XMIT_FLUSH since the architecture is not capable
-> > > to store all the frames dequeued in a NAPI cycle so we instead are
-> > > enqueueing all the frames received in a ndo_xdp_xmit call right away.
-> > >
-> > > After setting up all FDs for the xdp_frames received, enqueue multiple
-> > > frames at a time until all are sent or the maximum number of retries
-> > > is hit.
-> > >
-> > > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> > > ---
-> > >  .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 60
-> > > ++++++++++---------
-> > >  1 file changed, 32 insertions(+), 28 deletions(-)
-> > >
-> > > diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> > > b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> > > index 9a0432cd893c..08b4efad46fd 100644
-> > > --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> > > +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> > > @@ -1933,12 +1933,12 @@ static int dpaa2_eth_xdp_xmit(struct net_device  
-> > *net_dev, int n,  
-> > >  			      struct xdp_frame **frames, u32 flags)  {
-> > >  	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
-> > > +	int total_enqueued = 0, retries = 0, enqueued;
-> > >  	struct dpaa2_eth_drv_stats *percpu_extras;
-> > >  	struct rtnl_link_stats64 *percpu_stats;
-> > > +	int num_fds, i, err, max_retries;
-> > >  	struct dpaa2_eth_fq *fq;
-> > > -	struct dpaa2_fd fd;
-> > > -	int drops = 0;
-> > > -	int i, err;
-> > > +	struct dpaa2_fd *fds;
-> > >
-> > >  	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
-> > >  		return -EINVAL;
-> > > @@ -1946,41 +1946,45 @@ static int dpaa2_eth_xdp_xmit(struct net_device  
-> > *net_dev, int n,  
-> > >  	if (!netif_running(net_dev))
-> > >  		return -ENETDOWN;
-> > >
-> > > +	/* create the array of frame descriptors */
-> > > +	fds = kcalloc(n, sizeof(*fds), GFP_ATOMIC);  
-> > 
-> > I don't like that you have an allocation on the transmit fast-path.
-> > 
-> > There are a number of ways you can avoid this.
-> > 
-> > Option (1) Given we know that (currently) devmap will max bulk 16 xdp_frames,
-> > we can have a call-stack local array with struct dpaa2_fd, that contains 16
-> > elements, sizeof(struct dpaa2_fd)==32 bytes times 16 is
-> > 512 bytes, so it might be acceptable.  (And add code to alloc if n > 16, to be
-> > compatible with someone increasing max bulk in devmap).
-> >   
-> 
-> I didn't know about the 16 max xdp_frames . Thanks.
-> 
-> > Option (2) extend struct dpaa2_eth_priv with an array of 16 struct dpaa2_fd's,
-> > that can be used as fds storage.  
-> 
-> I have more of a noob question here before proceeding with one of the
-> two options.
-> 
-> The ndo_xdp_xmit() callback can be called concurrently from multiple
-> softirq contexts, right?
+This series is a combination of netdev and RDMA, so in order to avoid
+conflicts, we would like to ask you to route this series through
+mlx5-next shared branch. It is based on v5.7-rc1 tag.
 
-Yes.
- 
-> If the above is true, then I think the dpaa2_eth_ch_xdp is the right
-> struct to place the array of 16 FDs.
+---------------------------------------------------------------------
 
-Good point, and it sounds correct to use dpaa2_eth_ch_xdp.
+The following series adds support to get the LAG master xmit slave by
+introducing new .ndo - ndo_get_xmit_slave. Every LAG module can
+implement it and it first implemented in the bond driver. 
+This is follow-up to the RFC discussion [1].
 
-> Also, is there any caveat to just use DEV_MAP_BULK_SIZE when
-> declaring the array?
+The main motivation for doing this is for drivers that offload part
+of the LAG functionality. For example, Mellanox Connect-X hardware
+implements RoCE LAG which selects the TX affinity when the resources
+are created and port is remapped when it goes down.
 
-Using DEV_MAP_BULK_SIZE sounds like a good idea.  Even if someone
-decide to increase that to 64, then this is only 2048 bytes(32*64).
+The first part of this patchset introduces the new .ndo and add the
+support to the bonding module.
 
+The second part adds support to get the RoCE LAG xmit slave by building
+skb of the RoCE packet based on the AH attributes and call to the new .ndo.
 
-> >   
-> > > +	if (!fds)
-> > > +		return -ENOMEM;
-> > > +  
-> > 
-> > [...]  
-> > > +	kfree(fds);  
-> > 
-> >   
-> 
+The third part change the mlx5 driver driver to set the QP's affinity
+port according to the slave which found by the .ndo.
 
+Thanks
 
+[1] https://lore.kernel.org/netdev/20200126132126.9981-1-maorg@mellanox.com/
+
+Change log:
+v4: 1. Rename master_get_xmit_slave to netdev_get_xmit_slave and move the implementation to dev.c 
+    2. Remove unnecessary check of NULL pointer.
+    3. Fix typo.
+v3: 1. Move master_get_xmit_slave to netdevice.h and change the flags arg.
+to bool.
+    2. Split helper functions commit to multiple commits for each bond
+mode.
+    3. Extract refcotring changes to seperate commits.
+v2: The first patch wasn't sent in v1.
+v1: https://lore.kernel.org/netdev/ac373456-b838-29cf-645f-b1ea1a93e3b0@gmail.com/T/#t 
+
+Maor Gottlieb (15):
+  net/core: Introduce netdev_get_xmit_slave
+  bonding: Export skip slave logic to function
+  bonding: Rename slave_arr to usable_slaves
+  bonding/alb: Add helper functions to get the xmit slave
+  bonding: Add helper function to get the xmit slave based on hash
+  bonding: Add helper function to get the xmit slave in rr mode
+  bonding: Add function to get the xmit slave in active-backup mode
+  bonding: Add array of all slaves
+  bonding: Implement ndo_get_xmit_slave
+  RDMA/core: Add LAG functionality
+  RDMA/core: Get xmit slave for LAG
+  net/mlx5: Change lag mutex lock to spin lock
+  net/mlx5: Add support to get lag physical port
+  RDMA/mlx5: Refactor affinity related code
+  RDMA/mlx5: Set lag tx affinity according to slave
+
+ drivers/infiniband/core/Makefile              |   2 +-
+ drivers/infiniband/core/lag.c                 | 138 +++++++++
+ drivers/infiniband/core/verbs.c               |  44 ++-
+ drivers/infiniband/hw/mlx5/ah.c               |   4 +
+ drivers/infiniband/hw/mlx5/gsi.c              |  34 ++-
+ drivers/infiniband/hw/mlx5/main.c             |   2 +
+ drivers/infiniband/hw/mlx5/mlx5_ib.h          |   1 +
+ drivers/infiniband/hw/mlx5/qp.c               | 123 +++++---
+ drivers/net/bonding/bond_alb.c                |  39 ++-
+ drivers/net/bonding/bond_main.c               | 268 +++++++++++++-----
+ drivers/net/ethernet/mellanox/mlx5/core/lag.c |  66 +++--
+ include/linux/mlx5/driver.h                   |   2 +
+ include/linux/mlx5/mlx5_ifc.h                 |   4 +-
+ include/linux/mlx5/qp.h                       |   2 +
+ include/linux/netdevice.h                     |   6 +
+ include/net/bond_alb.h                        |   4 +
+ include/net/bonding.h                         |   3 +-
+ include/rdma/ib_verbs.h                       |   2 +
+ include/rdma/lag.h                            |  22 ++
+ net/core/dev.c                                |  30 ++
+ 20 files changed, 618 insertions(+), 178 deletions(-)
+ create mode 100644 drivers/infiniband/core/lag.c
+ create mode 100644 include/rdma/lag.h
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.17.2
 
