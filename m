@@ -2,108 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A0FB1B3D2F
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 12:12:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36C491B3EBD
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 12:32:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728999AbgDVKMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 06:12:38 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:34238 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729014AbgDVKMh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 06:12:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587550355;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iQGoc5LkA70Jf4s1hHcHchKL4x32fK3s73ObS3Mo9wM=;
-        b=ETUCHM/cafVlEqXP/r80Q7ZKrHQld8w0o+sTbhgrAOrz3FrW6V3gESk2jbJa3YP0VG5Scz
-        RV8Ygjb6kxeSAkhiX6BH7nltcgZReac9inW+l+jjp/BB0t++xrjEeqwn8SCUEC4aKTcF0D
-        3U539GmhC6Rm4Uwl6G+twu7JKPingPc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-490-9EjndfONPnCpHfttxMDvvA-1; Wed, 22 Apr 2020 06:12:32 -0400
-X-MC-Unique: 9EjndfONPnCpHfttxMDvvA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C64AF100CD04;
-        Wed, 22 Apr 2020 10:12:30 +0000 (UTC)
-Received: from ovpn-114-173.ams2.redhat.com (ovpn-114-173.ams2.redhat.com [10.36.114.173])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 68FE1600D2;
-        Wed, 22 Apr 2020 10:12:28 +0000 (UTC)
-Message-ID: <f82e4d00d4d4680994f0885c55831b2e9a2299c1.camel@redhat.com>
-Subject: Re: [PATCH V2 -next] mptcp/pm_netlink.c : add check for
- nla_put_in/6_addr
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Bo YU <tsu.yubo@gmail.com>, matthieu.baerts@tessares.net,
-        davem@davemloft.net, kuba@kernel.org,
-        mathew.j.martineau@linux.intel.com
-Cc:     netdev@vger.kernel.org, mptcp@lists.01.org
-Date:   Wed, 22 Apr 2020 12:12:27 +0200
-In-Reply-To: <20200422013433.qzlthtmx4c7mmlh3@host>
-References: <20200422013433.qzlthtmx4c7mmlh3@host>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+        id S1730827AbgDVKbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 06:31:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36304 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730996AbgDVK21 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 06:28:27 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33234C03C1AB
+        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 03:28:27 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id t3so1830573qkg.1
+        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 03:28:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LLVnDdq2mKVm2PZsjOUW8AMYEuqdrLPHJgplBbgaWjQ=;
+        b=Pno0wxPO9RQfeDWQlhRprCFjDs5PhDV8vfIGQavxLkx/VgMqGwNKRx1C1m1bW8fvYO
+         CasvmIRDkIeds8hH0FSIgjKzKEHUE+tUZbJi4N14+Dq6wSZzofZrYhE4pE2wld+H7kBb
+         BxkfHGAUz64bv065b9TbgGGdoTt8vDdQCWb45UnoPCIzCMsZUH3AE6v6AIxt6eML3L0y
+         uei+m2S1nu186+JlIpAn/bEUp8wzm6ghJy0l7LP4ZLpmBSNhs8euDV2o2I+lbW8g+4Xy
+         lXBWAWTA7wXJieH/BWGo738Stw5+/aWZbvMh/I2q0salXKjoAd5WcCHbvc3z3hvd6e99
+         OiLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LLVnDdq2mKVm2PZsjOUW8AMYEuqdrLPHJgplBbgaWjQ=;
+        b=s/3TC7Chq+FzylvTwFPlwYzL94ozsTCs8xfnDCHK1U4mr3H6txx0KH9Cea0gFnuCbq
+         22KK70IKxQPwN+yLJ2e3E4LQJc/rCwJq6eiJ/JKpvGUSpZbtfQY3Dc6qsmqsM+QhBK/l
+         WOjRb83VvWXW8wppFmNhlcMGh7f1A+0igPFvrC1Wr+v52nR77GJVoGh08XqN0vawWIK3
+         Ir981FYm+lmxj5YmbAb7FEtNdnUYuppQPhRirAwdbCpj5rBxCIQaqB+LvMvBBIPPtKlt
+         YoicZa4puBfcXjjl4nTZt0o6wk3n20rCuqmZAVOwRfESWTBCMD7muh4U434A4xwZlJIs
+         y5WQ==
+X-Gm-Message-State: AGi0PubqscqFA5tUjBBduTv/HEWxRf+GuLLdpkyEgf4NjMPiQMYTiDFs
+        ugCNrmF5v0JBjIKnZ43Pt0TP0w==
+X-Google-Smtp-Source: APiQypJc8oiUJ5wG+4rzhnQUchuIEECKyrWFN/xpVxsIyWmncXyMjRKsVGwpYF2P1RJ+NsClrraZIw==
+X-Received: by 2002:a05:620a:49e:: with SMTP id 30mr4489216qkr.294.1587551306435;
+        Wed, 22 Apr 2020 03:28:26 -0700 (PDT)
+Received: from localhost.localdomain (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
+        by smtp.gmail.com with ESMTPSA id h3sm3531964qkf.15.2020.04.22.03.28.25
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 22 Apr 2020 03:28:25 -0700 (PDT)
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+X-Google-Original-From: Jamal Hadi Salim <jhs@emojatatu.com>
+To:     stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com, aclaudi@redhat.com,
+        daniel@iogearbox.net, asmadeus@codewreck.org,
+        Jamal Hadi Salim <hadi@mojatatu.com>
+Subject: [PATCH iproute2 v2 0/2] bpf: memory access fixes
+Date:   Wed, 22 Apr 2020 06:28:06 -0400
+Message-Id: <20200422102808.9197-1-jhs@emojatatu.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-04-22 at 09:34 +0800, Bo YU wrote:
-> Normal there should be checked for nla_put_in6_addr like other
-> usage in net.
-> 
-> Detected by CoverityScan, CID# 1461639
-> 
-> Fixes: 01cacb00b35c("mptcp: add netlink-based PM")
-> Signed-off-by: Bo YU <tsu.yubo@gmail.com>
-> ---
-> V2: Add check for nla_put_in_addr suggested by Paolo Abeni
+From: Jamal Hadi Salim <hadi@mojatatu.com>
 
-Thank you for addressing my feedback!
+Changes from V1:
+ 1) use snprintf instead of sprintf and fix corresponding error message.
+ Caught-by: Dominique Martinet <asmadeus@codewreck.org>
+ 2) Fix memory leak and extraneous free() in error path
 
-> ---
->  net/mptcp/pm_netlink.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
-> 
-> diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-> index 86d61ab34c7c..0a39f0ebad76 100644
-> --- a/net/mptcp/pm_netlink.c
-> +++ b/net/mptcp/pm_netlink.c
-> @@ -599,12 +599,15 @@ static int mptcp_nl_fill_addr(struct sk_buff *skb,
->  	    nla_put_s32(skb, MPTCP_PM_ADDR_ATTR_IF_IDX, entry->ifindex))
->  		goto nla_put_failure;
-> 
-> -	if (addr->family == AF_INET)
-> +	if (addr->family == AF_INET &&
->  		nla_put_in_addr(skb, MPTCP_PM_ADDR_ATTR_ADDR4,
-> -				addr->addr.s_addr);
-> +				addr->addr.s_addr))
-> +		goto nla_put_failure;
-> +
+Jamal Hadi Salim (2):
+  bpf: Fix segfault when custom pinning is used
+  bpf: Fix mem leak and extraneous free() in error path
 
-I'm very sorry about the nit-picking, but the above is now a single
-statement, and indentation should be adjusted accordingly:
-'nla_put_in_addr()' should be aligned with 'addr->family'.
+ lib/bpf.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-The same applies to the chunk below.
-
->  #if IS_ENABLED(CONFIG_MPTCP_IPV6)
-> -	else if (addr->family == AF_INET6)
-> -		nla_put_in6_addr(skb, MPTCP_PM_ADDR_ATTR_ADDR6, &addr->addr6);
-> +	else if (addr->family == AF_INET6 &&
-> +		nla_put_in6_addr(skb, MPTCP_PM_ADDR_ATTR_ADDR6, &addr->addr6))
-> +		goto nla_put_failure;
->  #endif
->  	nla_nest_end(skb, attr);
->  	return 0;
-
-Otherwise LGTM, thanks!
-
-Paolo
+-- 
+2.20.1
 
