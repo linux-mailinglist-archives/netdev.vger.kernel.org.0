@@ -2,105 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35F2E1B4B59
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 19:10:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D3C21B4B74
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 19:19:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726727AbgDVRKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 13:10:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42592 "EHLO
+        id S1726632AbgDVRTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 13:19:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726006AbgDVRKg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 13:10:36 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40FB1C03C1A9
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 10:10:35 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id c21so363462plz.4
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 10:10:35 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726006AbgDVRTD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 13:19:03 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 800F7C03C1A9
+        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 10:19:03 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id i16so2682139ils.12
+        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 10:19:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=0btQwxM09Ht4KdbRO8aLLSWIGBffegGFqzoKttan0Yw=;
-        b=pdCsS6B8jIQX4q5MQ1tVjufqLNt4yWdZp37YYAZp8af00vTrQaUEIVqONGv6AXv9dM
-         mAlmN/xaJkGGfIyBKZ/dccpB70bXk/47GR7xIp1qA8MzDad4ofVmMrorxLnHWuNHjODM
-         +Q0fzeVkZslZ4XrmPLy6siRYjkU6yUu1+AdYMwp6vhduQHTVWQqx6oJ5Gzheew1t60GV
-         iczv5FcFtK2iPAuDo/8gfG02EgqSHzEA8FE6hHqc5XlN2YC2tF9iOGsmtDIFiQ0uA5Ro
-         2deS2JWKuA2NEsXUY9/MKgrcoJDF2L5KEZVV+v7lyqAAB+1j+97BQXREmGTk2xQQojCf
-         KrNg==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=KSVtlt7NXmNutc81+vekvqEq8LsuRuCJqqM7wfSQgEE=;
+        b=ntd9B12ASH/sO5sr8RrvwzKIFNahJEGY4mzyDasBdLJJnNOU9ZHS8sOQAyf10DW0rZ
+         q5a8TYa5F2VjOJ+tS/6Eu8kqOS8//qL3gvryoAnDq1n+DPZIMGjI2kk/QMUFCDlgui5S
+         gg04ZYhCmQgXLbufeaHErIKOQyRrZq41NDYsJ8/ltnD38+kW6KWQsh9Mt1mPSQfs2QTA
+         rUV/3Ni+jK5+TQEw0zQ+HtMPnE9ZyGqt/E2Ypg85E6RDATPUq/TGXu7QRToZqOhpQBO1
+         OiGIRwFINn18kNdnjZFGpGw8Le7GlmK9apluGXyvPECWEHUPNSLBRr+YdYP79rApxoM3
+         4Gdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=0btQwxM09Ht4KdbRO8aLLSWIGBffegGFqzoKttan0Yw=;
-        b=eCpuIFR0hXwRNYhan7ES1mFgl7jFO4v+PcKR179+f7B1Lo4LgPBXG70l01ML98i8Ym
-         sVw69Ht698J3TchbrKlikbxqvTIGJNnKSm5ZHLrS3GRkmiGc7muSyKvyLlCGJ2F0SpIk
-         FMmM5e4m4X1jWCLNYz87n9MsFo5WINqryrPIEQzqhk5pYk0dJI5Su60R2yavQSk5zSt9
-         HxZ4UpLj+/uWnm8ZqkX+K7ETE3XByWPqQlx64dWT4uD2tMVZF99W8zmqZ9xqCCmylIyj
-         fRqsVtvdMyFS18exEYG9wXMY6EzD64kdXdtE85OjiloHCCr8qzw0ZbAwnfawossF6s4n
-         264w==
-X-Gm-Message-State: AGi0Pubm9/WyQWxhYhQgVhAiMZRT5EE6V7MfeKw94OxNc/4JfS032Lcq
-        Pvv6InZq5kdi63Vzt6QrVAo=
-X-Google-Smtp-Source: APiQypLxcIkocq3hWxSOTGaqrR6ZFCFGto6ZahpuCZzq6IsF1wf74FkU7k+ty+tIkJ1dA68vhs4WIg==
-X-Received: by 2002:a17:90a:3441:: with SMTP id o59mr11831924pjb.185.1587575434812;
-        Wed, 22 Apr 2020 10:10:34 -0700 (PDT)
-Received: from local.opencloud.tech.localdomain ([219.142.146.4])
-        by smtp.gmail.com with ESMTPSA id n16sm28549pfq.61.2020.04.22.10.10.32
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 22 Apr 2020 10:10:34 -0700 (PDT)
-From:   xiangxia.m.yue@gmail.com
-To:     pshelar@ovn.org, azhou@ovn.org, blp@ovn.org, u9012063@gmail.com
-Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [PATCH net-next v3 5/5] net: openvswitch: use u64 for meter bucket
-Date:   Thu, 23 Apr 2020 01:09:00 +0800
-Message-Id: <1587575340-6790-6-git-send-email-xiangxia.m.yue@gmail.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1587575340-6790-1-git-send-email-xiangxia.m.yue@gmail.com>
-References: <1584969039-74113-1-git-send-email-xiangxia.m.yue@gmail.com>
- <1587575340-6790-1-git-send-email-xiangxia.m.yue@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=KSVtlt7NXmNutc81+vekvqEq8LsuRuCJqqM7wfSQgEE=;
+        b=A7BWIIp+qDZVvfgm9TaSMzDwZ/QIY9xx1kW2aR4RRHQs5WDUPWG06D1EGOypOnXQxR
+         LDr6RenXMPlHqpEI1kHM4M+zgQ5zYzmsjy6/71hr/mUyVwxmtoBzMaTrU4NVP012Du7a
+         Csh72J29OwLEreaREqWSXOOJEr74egLdk2UaIa78f3MfDiQjVr3KMOZw+4bVHiXRCqEe
+         PWH8/ebfwHUFJeOrBgAMHZt7/5ok3WGShR+lgzavcP1bizlEwSe4jAoXkIr9A0ZwksKb
+         H/jtK7XIC6iOxxUbvdSyILbSQmNcAorv0BXlrY9RY7t3f9/Vq5RL18STqxCDFOlsNwJl
+         UfhQ==
+X-Gm-Message-State: AGi0PuYP879AeDoFFLQKHGsYXBNCyqEuzPfTlAa0wi5fTQo9PDWldaWV
+        QBFCwJy/cLQ58ecJjYuNvNC3Og==
+X-Google-Smtp-Source: APiQypLIYORs1eoKA2Y/wMyNYsdsdQF0Q4hEXkpkiYEi7bo/Ibf3EabzEurBWuTotlzEPPWvuRAq6w==
+X-Received: by 2002:a92:d4c4:: with SMTP id o4mr27929531ilm.38.1587575942903;
+        Wed, 22 Apr 2020 10:19:02 -0700 (PDT)
+Received: from [192.168.0.105] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
+        by smtp.googlemail.com with ESMTPSA id e22sm1851801iot.24.2020.04.22.10.19.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Apr 2020 10:19:02 -0700 (PDT)
+Subject: Re: [PATCH iproute2 v2 1/2] bpf: Fix segfault when custom pinning is
+ used
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com, aclaudi@redhat.com,
+        daniel@iogearbox.net, asmadeus@codewreck.org,
+        Jamal Hadi Salim <hadi@mojatatu.com>
+References: <20200422102808.9197-1-jhs@emojatatu.com>
+ <20200422102808.9197-2-jhs@emojatatu.com>
+ <20200422093531.4d9364c9@hermes.lan>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <5a636d8d-e287-b553-b3fb-a62afbbde4ae@mojatatu.com>
+Date:   Wed, 22 Apr 2020 13:19:01 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <20200422093531.4d9364c9@hermes.lan>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On 2020-04-22 12:35 p.m., Stephen Hemminger wrote:
+> On Wed, 22 Apr 2020 06:28:07 -0400
+> Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+> 
+>> From: Jamal Hadi Salim <hadi@mojatatu.com>
+>>
+> 
+> This is not a sufficient commit message. You need to describe what the
+> problem is and why this fixes it.
+> 
+> 
+>> Fixes: c0325b06382 ("bpf: replace snprintf with asprintf when dealing with long buffers")
+>>
+>> Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
+>> ---
+>>   lib/bpf.c | 9 ++++-----
+>>   1 file changed, 4 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/lib/bpf.c b/lib/bpf.c
+>> index 10cf9bf4..656cad02 100644
+>> --- a/lib/bpf.c
+>> +++ b/lib/bpf.c
+>> @@ -1509,15 +1509,15 @@ out:
+>>   static int bpf_make_custom_path(const struct bpf_elf_ctx *ctx,
+>>   				const char *todo)
+>>   {
+>> -	char *tmp = NULL;
+>> +	char tmp[PATH_MAX] = {};
+> 
+> Initializing the whole string to 0 is over kill here.
 
-When setting the meter rate to 4+Gbps, there is an
-overflow, the meters don't work as expected.
+Why is it overkill? ;->
+Note: I just replicated other parts of the same file which
+initialize similar array to 0.
 
-Cc: Pravin B Shelar <pshelar@ovn.org>
-Cc: Andy Zhou <azhou@ovn.org>
-Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
----
- net/openvswitch/meter.c | 2 +-
- net/openvswitch/meter.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+>>   	char *rem = NULL;
+>>   	char *sub;
+>>   	int ret;
+>>   
+>> -	ret = asprintf(&tmp, "%s/../", bpf_get_work_dir(ctx->type));
+>> +	ret = snprintf(tmp, PATH_MAX, "%s/../", bpf_get_work_dir(ctx->type));
+> 
+> snprintf will never return -1.
 
-diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
-index e36b464b32a5..915f31123f23 100644
---- a/net/openvswitch/meter.c
-+++ b/net/openvswitch/meter.c
-@@ -392,7 +392,7 @@ static struct dp_meter *dp_meter_create(struct nlattr **a)
- 		 *
- 		 * Start with a full bucket.
- 		 */
--		band->bucket = (band->burst_size + band->rate) * 1000;
-+		band->bucket = (band->burst_size + band->rate) * 1000ULL;
- 		band_max_delta_t = band->bucket / band->rate;
- 		if (band_max_delta_t > meter->max_delta_t)
- 			meter->max_delta_t = band_max_delta_t;
-diff --git a/net/openvswitch/meter.h b/net/openvswitch/meter.h
-index fcde5ee647da..9ca50bfd1142 100644
---- a/net/openvswitch/meter.h
-+++ b/net/openvswitch/meter.h
-@@ -26,7 +26,7 @@ struct dp_meter_band {
- 	u32 type;
- 	u32 rate;
- 	u32 burst_size;
--	u32 bucket; /* 1/1000 packets, or in bits */
-+	u64 bucket; /* 1/1000 packets, or in bits */
- 	struct ovs_flow_stats stats;
- };
- 
--- 
-2.23.0
+Man page says it does. Practically it may not but we have code (in
+iproute2) which assumes it will happen.
+
+Pick your poison:
+1) Ignore the return code
+2) As suggested by Dominique, something along the lines of:
+if (ret <= 0 || ret >= MAX_PATH)
+    ...error here..
+
+Which one do you prefer?
+
+cheers,
+jamal
 
