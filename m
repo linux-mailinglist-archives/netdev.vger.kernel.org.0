@@ -2,154 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E5BD1B3B85
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 11:37:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 316DE1B3BA2
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 11:43:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726109AbgDVJgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 05:36:55 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:39554 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbgDVJgy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 05:36:54 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03M9YS8I046798;
-        Wed, 22 Apr 2020 09:36:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=lVFEYa9FLN9V7tZiN4XFyrj0fF6Aq9VZmqOz4exZud8=;
- b=psNJzeFuZiJZxSPMSQn1GlAL6ezdXlg8c1RpWysw7idMliJTfd1x8gLE0senPawno0ti
- m8xdYmOZTUxX7jLEJojoTQC1WXhT+zX9tywwOfS6WE/CnwfmW8GWmeUpNd/BqIPuT1xQ
- A6gsPeAriC6lZkLSXMKjDA6vXEvyXzKxXdnB6PVX0d9hca3exbRVtzgmcyIGdKEEJF6w
- 08WXKIwmr1SD9gnxctrh0l8QM0x0Yf97ob8MoNspQNxkpcmiRKTYyWjXyaLbutI7AEKb
- I112F9I2Of5g+oFbM8xWIyhp5VNEDUz95nCSjnVRrGi0klZ7qn0KNOqM6zSpZu2BiHoi zQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 30fsgm1qpf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 22 Apr 2020 09:36:49 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03M9WG2N164011;
-        Wed, 22 Apr 2020 09:36:48 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3030.oracle.com with ESMTP id 30gb1j59v2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 22 Apr 2020 09:36:48 +0000
-Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 03M9amSb029236;
-        Wed, 22 Apr 2020 09:36:48 GMT
-Received: from mwanda (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 22 Apr 2020 02:36:47 -0700
-Date:   Wed, 22 Apr 2020 12:36:41 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Jiri Pirko <jiri@mellanox.com>
-Cc:     Ido Schimmel <idosch@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH net] mlxsw: Fix some IS_ERR() vs NULL bugs
-Message-ID: <20200422093641.GA189235@mwanda>
+        id S1726323AbgDVJnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 05:43:07 -0400
+Received: from out20-111.mail.aliyun.com ([115.124.20.111]:38802 "EHLO
+        out20-111.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725912AbgDVJnH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 05:43:07 -0400
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.06413273|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0664301-0.00201621-0.931554;FP=0|0|0|0|0|-1|-1|-1;HT=e02c03293;MF=mao-linux@maojianwei.com;NM=1;PH=DW;RN=7;RT=7;SR=0;TI=W4_5844326_v5_0AC266A0_1587548538056_o7001c947h;
+Received: from WS-web (mao-linux@maojianwei.com[W4_5844326_v5_0AC266A0_1587548538056_o7001c947h]) by e01l04378.eu6 at Wed, 22 Apr 2020 17:43:03 +0800
+Date:   Wed, 22 Apr 2020 17:43:03 +0800
+From:   "=?UTF-8?B?SmlhbndlaSBNYW8gKE1hbyk=?=" <mao-linux@maojianwei.com>
+To:     "netdev" <netdev@vger.kernel.org>
+Cc:     "davem" <davem@davemloft.net>, "kuznet" <kuznet@ms2.inr.ac.ru>,
+        "yoshfuji" <yoshfuji@linux-ipv6.org>, "kuba" <kuba@kernel.org>,
+        "dave.taht" <dave.taht@gmail.com>, "lkp" <lkp@intel.com>
+Reply-To: "=?UTF-8?B?SmlhbndlaSBNYW8gKE1hbyk=?=" <mao-linux@maojianwei.com>
+Message-ID: <a9a64f23-ed11-4b8d-b7be-75c686ad87fb.mao-linux@maojianwei.com>
+Subject: =?UTF-8?B?W1BBVENIIG5ldC1uZXh0IHYyXSBuZXQ6IGlwdjY6IHN1cHBvcnQgQXBwbGljYXRpb24tYXdh?=
+  =?UTF-8?B?cmUgSVB2NiBOZXR3b3JrICAoQVBONik=?=
+X-Mailer: [Alimail-Mailagent revision 4][W4_5844326][v5][Chrome]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9598 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 suspectscore=0 spamscore=0
- mlxlogscore=999 mlxscore=0 malwarescore=0 bulkscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
- definitions=main-2004220076
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9598 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 priorityscore=1501
- lowpriorityscore=0 mlxlogscore=999 malwarescore=0 clxscore=1015
- spamscore=0 bulkscore=0 phishscore=0 suspectscore=0 impostorscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004220076
+References: <49178de1-75cc-4736-b572-1530a0d5fccf.mao-linux@maojianwei.com>
+In-Reply-To: <49178de1-75cc-4736-b572-1530a0d5fccf.mao-linux@maojianwei.com>
+x-aliyun-mail-creator: W4_5844326_v5_M2ITW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzgxLjAuNDA0NC4xMTMgU2FmYXJpLzUzNy4zNg==3L
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mlxsw_sp_acl_rulei_create() function is supposed to return an error
-pointer from mlxsw_afa_block_create().  The problem is that these
-functions both return NULL instead of error pointers.  Half the callers
-expect NULL and half expect error pointers so it could lead to a NULL
-dereference on failure.
-
-This patch changes both of them to return error pointers and changes all
-the callers which checked for NULL to check for IS_ERR() instead.
-
-Fixes: 4cda7d8d7098 ("mlxsw: core: Introduce flexible actions support")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c | 4 ++--
- drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c          | 2 +-
- drivers/net/ethernet/mellanox/mlxsw/spectrum2_acl_tcam.c    | 4 ++--
- drivers/net/ethernet/mellanox/mlxsw/spectrum_mr_tcam.c      | 4 ++--
- 4 files changed, 7 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
-index 70a104e728f6..c3d04319ff44 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
-@@ -380,7 +380,7 @@ struct mlxsw_afa_block *mlxsw_afa_block_create(struct mlxsw_afa *mlxsw_afa)
- 
- 	block = kzalloc(sizeof(*block), GFP_KERNEL);
- 	if (!block)
--		return NULL;
-+		return ERR_PTR(-ENOMEM);
- 	INIT_LIST_HEAD(&block->resource_list);
- 	block->afa = mlxsw_afa;
- 
-@@ -408,7 +408,7 @@ struct mlxsw_afa_block *mlxsw_afa_block_create(struct mlxsw_afa *mlxsw_afa)
- 	mlxsw_afa_set_destroy(block->first_set);
- err_first_set_create:
- 	kfree(block);
--	return NULL;
-+	return ERR_PTR(-ENOMEM);
- }
- EXPORT_SYMBOL(mlxsw_afa_block_create);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-index 67ee880a8727..01cff711bbd2 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
-@@ -464,7 +464,7 @@ mlxsw_sp_acl_rulei_create(struct mlxsw_sp_acl *acl,
- 
- 	rulei = kzalloc(sizeof(*rulei), GFP_KERNEL);
- 	if (!rulei)
--		return NULL;
-+		return ERR_PTR(-ENOMEM);
- 
- 	if (afa_block) {
- 		rulei->act_block = afa_block;
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum2_acl_tcam.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum2_acl_tcam.c
-index 6c66a0f1b79e..ad69913f19c1 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum2_acl_tcam.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum2_acl_tcam.c
-@@ -88,8 +88,8 @@ static int mlxsw_sp2_acl_tcam_init(struct mlxsw_sp *mlxsw_sp, void *priv,
- 	 * to be written using PEFA register to all indexes for all regions.
- 	 */
- 	afa_block = mlxsw_afa_block_create(mlxsw_sp->afa);
--	if (!afa_block) {
--		err = -ENOMEM;
-+	if (IS_ERR(afa_block)) {
-+		err = PTR_ERR(afa_block);
- 		goto err_afa_block;
- 	}
- 	err = mlxsw_afa_block_continue(afa_block);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr_tcam.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr_tcam.c
-index 346f4a5fe053..221aa6a474eb 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr_tcam.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr_tcam.c
-@@ -199,8 +199,8 @@ mlxsw_sp_mr_tcam_afa_block_create(struct mlxsw_sp *mlxsw_sp,
- 	int err;
- 
- 	afa_block = mlxsw_afa_block_create(mlxsw_sp->afa);
--	if (!afa_block)
--		return ERR_PTR(-ENOMEM);
-+	if (IS_ERR(afa_block))
-+		return afa_block;
- 
- 	err = mlxsw_afa_block_append_allocated_counter(afa_block,
- 						       counter_index);
--- 
-2.26.1
-
+SGkgZnJpZW5kcywKCkkgd291bGQgbGlrZSB0byBwcm9wb3NlIHRoaXMgbmV3IGZlYXR1cmUgZm9y
+IHlvdSBhbmQgbGludXggbmV0d29ya2luZzoKc3VwcG9ydCBBcHBsaWNhdGlvbi1hd2FyZSBJUHY2
+IE5ldHdvcmsgKEFQTjYpCgpJIGhhdmUgbWFkZSBzb21lIGNoYW5nZXMgdG8gdjEgcGF0Y2gsIGFu
+ZCB0aGUgdjIgcGF0Y2ggZmlsZSBpcyBhcyBmb2xsb3cuCkRldGFpbHMgb2YgY2hhbmdlcyBhcmUg
+bGlzdGVkIGF0IHRoZSBib3R0b20gb2YgdGhlIGNvbW1pdCBtZXNzYWdlLgpBcHByZWNpYXRlIHlv
+dXIgcmV2aWV3cyBhbmQgY29tbWVudHMsIHRoYW5rcywgTWFvIDopCgoKRmVhdHVyZSBwcm9wb3Nh
+bDogc3VwcG9ydCBBcHBsaWNhdGlvbi1hd2FyZSBJUHY2IE5ldHdvcmsgKEFQTjYpCgpUaGlzIGZl
+YXR1cmUgYWxsb3dzIGFwcGxpY2F0aW9uIGNsaWVudC9zZXJ2ZXIgc2V0IEFQTjYgaW5mb3MgdG8g
+c29ja2V0cwp0aGV5IGFyZSB1c2luZyB0byBjb21tdW5pY2F0ZSB0byBlYWNoIG90aGVyLCBieSBz
+ZXRzb2Nrb3B0KCkuCgpBUE42IGluZm9zIGluY2x1ZGUgdGhyZWUgZmllbGRzIG5vdzogU0xBLCBB
+cHBJRCBhbmQgVXNlcklELiBUaGlzIEFQTjYKaW5mb3Mgd2lsbCBiZSBlbmNhcHN1bGF0ZWQgaW4g
+SVB2NiBIb3AtYnktSG9wKEhCSCkgZXh0ZW5zaW9uIGhlYWRlciwKYXMgYW4gQVBONiBvcHRpb24g
+VExWLgoKQWZ0ZXIgdGhhdCwgbmV0d29yayBjYW4gcHJvdmlkZSBzcGVjaWZpYyBwZXJmb3JtYW5j
+ZSBmb3IgQXBwcywgc3VjaCBhcywKbG93LWxhdHRlbmN5IGZvciBvbmxpbmUgR2FtZXMsIGxvdy1q
+aXR0ZXIgZm9yIGluZHVzdHJpYWwgY29udHJvbCwKZW5vdWdoLWJhbmR3aWR0aCBmb3IgdmlkZW8g
+Y29uZmVyZW5jZS9yZW1vdGUgbWVkaWNhbCBzeXN0ZW0sIGV0Yy4KCldlIG1hZGUgdGhyZWUgY2hh
+bmdlczoKMS4gYWRkIElQVjZfQVBONiBhcyBhbiBvcHRuYW1lIGZvciBJUFBST1RPX0lQVjYgbGV2
+ZWwuCjIuIGFkZCBzdHJ1Y3QgYXBuNl9ob3BvcHRfaGRyIHRvIHJlcHJlc2VudCBBUE42IEhCSCBo
+ZWFkZXIKMy4gYWRkIGEgZnVuY3Rpb24gdG8gZ2VuZXJhdGUgSVB2NiBBUE42IEhCSCBoZWFkZXIs
+IGFuZCByZS11c2UKICAgSVBWNl9IT1BPUFRTIHByb2NlZHVyZSB0byBzZXQgdGhpcyBoZWFkZXIg
+dG8gc29ja2V0IG9wdC4KClRoaXMgZmVhdHVyZSBpcyB0byBzdXBwb3J0IEFQTjYgSUVURiBTdGFu
+ZGFyZCBkcmFmdDoKaHR0cHM6Ly93d3cuaWV0Zi5vcmcvaWQvZHJhZnQtbGktNm1hbi1hcHAtYXdh
+cmUtaXB2Ni1uZXR3b3JrLTAxLnR4dAoKU2lnbmVkLW9mZi1ieTogSmlhbndlaSBNYW8gPG1hby1s
+aW51eEBtYW9qaWFud2VpLmNvbT4KUmVwb3J0ZWQtYnk6IGtidWlsZCB0ZXN0IHJvYm90IDxsa3BA
+aW50ZWwuY29tPgotLS0KIGluY2x1ZGUvdWFwaS9saW51eC9pbjYuaCAgfCAgNCArKysKIGluY2x1
+ZGUvdWFwaS9saW51eC9pcHY2LmggfCAxNCArKysrKysrKwogbmV0L2lwdjYvaXB2Nl9zb2NrZ2x1
+ZS5jICB8IDY4ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLS0tLQogMyBmaWxl
+cyBjaGFuZ2VkLCA3MSBpbnNlcnRpb25zKCspLCAxNSBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQg
+YS9pbmNsdWRlL3VhcGkvbGludXgvaW42LmggYi9pbmNsdWRlL3VhcGkvbGludXgvaW42LmgKaW5k
+ZXggOWYyMjczYTA4MzU2Li42NjAxY2FkNTg0MTUgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvdWFwaS9s
+aW51eC9pbjYuaAorKysgYi9pbmNsdWRlL3VhcGkvbGludXgvaW42LmgKQEAgLTI5Nyw0ICsyOTcs
+OCBAQCBzdHJ1Y3QgaW42X2Zsb3dsYWJlbF9yZXEgewogICogLi4uCiAgKiBNUlQ2X01BWAogICov
+CisKKy8qIEFQTjY6IEFwcGxpY2F0aW9uLWF3YXJlIElQdjYgTmV0d29yayAqLworI2RlZmluZSBJ
+UFY2X0FQTjYJCTgxCisKICNlbmRpZiAvKiBfVUFQSV9MSU5VWF9JTjZfSCAqLwpkaWZmIC0tZ2l0
+IGEvaW5jbHVkZS91YXBpL2xpbnV4L2lwdjYuaCBiL2luY2x1ZGUvdWFwaS9saW51eC9pcHY2LmgK
+aW5kZXggMTNlODc1MWJmMjRhLi4wMDAyYzEzNDNhYjUgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvdWFw
+aS9saW51eC9pcHY2LmgKKysrIGIvaW5jbHVkZS91YXBpL2xpbnV4L2lwdjYuaApAQCAtNzAsNiAr
+NzAsMjAgQEAgc3RydWN0IGlwdjZfb3B0X2hkciB7CiAjZGVmaW5lIGlwdjZfZGVzdG9wdF9oZHIg
+aXB2Nl9vcHRfaGRyCiAjZGVmaW5lIGlwdjZfaG9wb3B0X2hkciAgaXB2Nl9vcHRfaGRyCiAKKy8q
+IEFwcGxpY2F0aW9uLWF3YXJlIElQdjYgTmV0d29yayhBUE42KQorICogKGRyYWZ0LWxpLTZtYW4t
+YXBwLWF3YXJlLWlwdjYtbmV0d29yaywgUkZDODIwMCkKKyAqLworI2RlZmluZSBJUFY2X0hPUE9Q
+VF9UWVBFX0FQTjYJMworc3RydWN0IGFwbjZfaG9wb3B0X2hkciB7CisJc3RydWN0IGlwdjZfaG9w
+b3B0X2hkcglob3BvcHRfaGRyOworCV9fdTggCQlvcHRfdHlwZTsKKwlfX3U4IAkJb3B0X2xlbjsK
+KworCV9fYmUzMiAJCXNsYTsKKwlfX2JlMzIgCQlhcHBfaWQ7CisJX19iZTMyIAkJdXNlcl9pZDsK
+K307CisKIC8qIFJvdXRlciBBbGVydCBvcHRpb24gdmFsdWVzIChSRkMyNzExKSAqLwogI2RlZmlu
+ZSBJUFY2X09QVF9ST1VURVJBTEVSVF9NTEQJMHgwMDAwCS8qIE1MRChSRkMyNzEwKSAqLwogCmRp
+ZmYgLS1naXQgYS9uZXQvaXB2Ni9pcHY2X3NvY2tnbHVlLmMgYi9uZXQvaXB2Ni9pcHY2X3NvY2tn
+bHVlLmMKaW5kZXggZGViZGFlYmE1ZDhjLi42MDQ5ZjBlMmU2ZDQgMTAwNjQ0Ci0tLSBhL25ldC9p
+cHY2L2lwdjZfc29ja2dsdWUuYworKysgYi9uZXQvaXB2Ni9pcHY2X3NvY2tnbHVlLmMKQEAgLTEz
+Niw2ICsxMzYsMzEgQEAgc3RhdGljIGJvb2wgc2V0c29ja29wdF9uZWVkc19ydG5sKGludCBvcHRu
+YW1lKQogCXJldHVybiBmYWxzZTsKIH0KIAorLyogUmV0dXJuIEFQTjYgSG9wLWJ5LUhvcChIQkgp
+IGV4dGVuc2lvbiBoZWFkZXIgKi8KK3N0YXRpYyB2b2lkICpnZW5lcmF0ZV9hcG42X2hvcG9wdHMo
+Y2hhciBfX3VzZXIgKm9wdHZhbCwgdW5zaWduZWQgaW50IG9wdGxlbikKK3sKKwlzdHJ1Y3QgYXBu
+Nl9ob3BvcHRfaGRyICphcG42X2hiaDsKKwl1bnNpZ25lZCBpbnQgc2xhLCBhcHBfaWQsIHVzZXJf
+aWQ7CisKKwlpZiAob3B0bGVuIDwgKHNpemVvZih1bnNpZ25lZCBpbnQpICogMykgfHwgIW9wdHZh
+bCkKKwkJcmV0dXJuIE5VTEw7CisKKwlpZiAoZ2V0X3VzZXIoc2xhLCAoKHVuc2lnbmVkIGludCBf
+X3VzZXIgKilvcHR2YWwpKSB8fAorCSAgICBnZXRfdXNlcihhcHBfaWQsICgodW5zaWduZWQgaW50
+IF9fdXNlciAqKW9wdHZhbCkgKyAxKSB8fAorCSAgICBnZXRfdXNlcih1c2VyX2lkLCAoKHVuc2ln
+bmVkIGludCBfX3VzZXIgKilvcHR2YWwpICsgMikpCisJCXJldHVybiBFUlJfUFRSKC1FRkFVTFQp
+OworCisJYXBuNl9oYmggPSBremFsbG9jKHNpemVvZigqYXBuNl9oYmgpLCBHRlBfS0VSTkVMKTsK
+KwlhcG42X2hiaC0+aG9wb3B0X2hkci5oZHJsZW4gPSAoc2l6ZW9mKCphcG42X2hiaCkgPj4gMykg
+LSAxOworCWFwbjZfaGJoLT5vcHRfdHlwZSA9IElQVjZfSE9QT1BUX1RZUEVfQVBONjsKKwlhcG42
+X2hiaC0+b3B0X2xlbiA9IHNpemVvZigqYXBuNl9oYmgpIC0gNDsKKwlhcG42X2hiaC0+c2xhID0g
+aHRvbmwoc2xhKTsKKwlhcG42X2hiaC0+YXBwX2lkID0gaHRvbmwoYXBwX2lkKTsKKwlhcG42X2hi
+aC0+dXNlcl9pZCA9IGh0b25sKHVzZXJfaWQpOworCisJcmV0dXJuIGFwbjZfaGJoOworfQorCiBz
+dGF0aWMgaW50IGRvX2lwdjZfc2V0c29ja29wdChzdHJ1Y3Qgc29jayAqc2ssIGludCBsZXZlbCwg
+aW50IG9wdG5hbWUsCiAJCSAgICBjaGFyIF9fdXNlciAqb3B0dmFsLCB1bnNpZ25lZCBpbnQgb3B0
+bGVuKQogewpAQCAtNDAwLDM0ICs0MjUsNDcgQEAgc3RhdGljIGludCBkb19pcHY2X3NldHNvY2tv
+cHQoc3RydWN0IHNvY2sgKnNrLCBpbnQgbGV2ZWwsIGludCBvcHRuYW1lLAogCWNhc2UgSVBWNl9S
+VEhEUkRTVE9QVFM6CiAJY2FzZSBJUFY2X1JUSERSOgogCWNhc2UgSVBWNl9EU1RPUFRTOgorCWNh
+c2UgSVBWNl9BUE42OgogCXsKIAkJc3RydWN0IGlwdjZfdHhvcHRpb25zICpvcHQ7CiAJCXN0cnVj
+dCBpcHY2X29wdF9oZHIgKm5ldyA9IE5VTEw7CiAKIAkJLyogaG9wLWJ5LWhvcCAvIGRlc3RpbmF0
+aW9uIG9wdGlvbnMgYXJlIHByaXZpbGVnZWQgb3B0aW9uICovCiAJCXJldHYgPSAtRVBFUk07Ci0J
+CWlmIChvcHRuYW1lICE9IElQVjZfUlRIRFIgJiYgIW5zX2NhcGFibGUobmV0LT51c2VyX25zLCBD
+QVBfTkVUX1JBVykpCisJCWlmIChvcHRuYW1lICE9IElQVjZfQVBONiAmJiBvcHRuYW1lICE9IElQ
+VjZfUlRIRFIgJiYKKwkJICAgICFuc19jYXBhYmxlKG5ldC0+dXNlcl9ucywgQ0FQX05FVF9SQVcp
+KQogCQkJYnJlYWs7CiAKLQkJLyogcmVtb3ZlIGFueSBzdGlja3kgb3B0aW9ucyBoZWFkZXIgd2l0
+aCBhIHplcm8gb3B0aW9uCi0JCSAqIGxlbmd0aCwgcGVyIFJGQzM1NDIuCi0JCSAqLwotCQlpZiAo
+b3B0bGVuID09IDApCi0JCQlvcHR2YWwgPSBOVUxMOwotCQllbHNlIGlmICghb3B0dmFsKQotCQkJ
+Z290byBlX2ludmFsOwotCQllbHNlIGlmIChvcHRsZW4gPCBzaXplb2Yoc3RydWN0IGlwdjZfb3B0
+X2hkcikgfHwKLQkJCSBvcHRsZW4gJiAweDcgfHwgb3B0bGVuID4gOCAqIDI1NSkKLQkJCWdvdG8g
+ZV9pbnZhbDsKLQkJZWxzZSB7Ci0JCQluZXcgPSBtZW1kdXBfdXNlcihvcHR2YWwsIG9wdGxlbik7
+CisJCWlmIChvcHRuYW1lID09IElQVjZfQVBONikgeworCQkJbmV3ID0gZ2VuZXJhdGVfYXBuNl9o
+b3BvcHRzKG9wdHZhbCwgb3B0bGVuKTsKIAkJCWlmIChJU19FUlIobmV3KSkgewogCQkJCXJldHYg
+PSBQVFJfRVJSKG5ldyk7CiAJCQkJYnJlYWs7CiAJCQl9Ci0JCQlpZiAodW5saWtlbHkoaXB2Nl9v
+cHRsZW4obmV3KSA+IG9wdGxlbikpIHsKLQkJCQlrZnJlZShuZXcpOworCQkJLy8gbmV4dCBzdGVw
+cyBhcmUgc2FtZSBhcyBJUFY2X0hPUE9QVFMgcHJvY2VkdXJlLAorCQkJLy8gc28gd2UgcmV1c2Ug
+aXQuCisJCQlvcHRuYW1lID0gSVBWNl9IT1BPUFRTOworCQl9IGVsc2UgeworCQkJLyogcmVtb3Zl
+IGFueSBzdGlja3kgb3B0aW9ucyBoZWFkZXIgd2l0aCBhIHplcm8gb3B0aW9uCisJCQkgKiBsZW5n
+dGgsIHBlciBSRkMzNTQyLgorCQkJICovCisJCQlpZiAob3B0bGVuID09IDApCisJCQkJb3B0dmFs
+ID0gTlVMTDsKKwkJCWVsc2UgaWYgKCFvcHR2YWwpCisJCQkJZ290byBlX2ludmFsOworCQkJZWxz
+ZSBpZiAob3B0bGVuIDwgc2l6ZW9mKHN0cnVjdCBpcHY2X29wdF9oZHIpIHx8CisJCQkJICAgICBv
+cHRsZW4gJiAweDcgfHwgb3B0bGVuID4gOCAqIDI1NSkKIAkJCQlnb3RvIGVfaW52YWw7CisJCQll
+bHNlIHsKKwkJCQluZXcgPSBtZW1kdXBfdXNlcihvcHR2YWwsIG9wdGxlbik7CisJCQkJaWYgKElT
+X0VSUihuZXcpKSB7CisJCQkJCXJldHYgPSBQVFJfRVJSKG5ldyk7CisJCQkJCWJyZWFrOworCQkJ
+CX0KKwkJCQlpZiAodW5saWtlbHkoaXB2Nl9vcHRsZW4obmV3KSA+IG9wdGxlbikpIHsKKwkJCQkJ
+a2ZyZWUobmV3KTsKKwkJCQkJZ290byBlX2ludmFsOworCQkJCX0KIAkJCX0KIAkJfQogCi0tIAoy
+LjE3LjE=
