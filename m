@@ -2,145 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EE981B39B2
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 10:10:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF0301B39C0
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 10:13:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726593AbgDVIKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 04:10:12 -0400
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:51418 "EHLO
+        id S1726077AbgDVIN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 04:13:57 -0400
+Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:51886 "EHLO
         smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726590AbgDVIKK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 04:10:10 -0400
+        with ESMTP id S1725786AbgDVIN4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 04:13:56 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1587543009; x=1619079009;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mVTJV5JwUQo1OJFdp4+zEFoQwshHnnlyJfWzPtFccRk=;
-  b=txiw1gaOP2wkB5NRbZE3gRd1J1m6/PNvHahytnQvy9B08olAK+na9JTb
-   AhQU9B+lCZ/z72L94obXuZD5YkRxYKpjv8flf4KP7EfGTQWQ35Prl6UAG
-   zktDSKuNFiaRNeKNx4Pw0/C/TxxtgvYg3hdNm0qSKSc9wVcVYDzZZAd5g
-   k=;
-IronPort-SDR: sUHRSKk5fa4aB4gFKIsJvGEP+J29QVfIyu0Ui8SbSpUJCkhX/HmYhmuN2Gbf+opWkRkV/vgGY2
- WoKvUiH0rXjA==
+  t=1587543236; x=1619079236;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=X0ycJ+LmcOrmyVHQpF5kPha7hT4G7QkE2Mta9E1rZ4U=;
+  b=XHKJfgND5S3Xwp+qCA3xnpyKcSlSHm/hcEgGTShvW+VJU0DiaGW0bKXD
+   EVd8wXXpjCQc2YdDhjgVPdBbwg+M9k0m5bx2Gvc4LFAQHMavm4qwG75mF
+   +AeIEQXYJrwYNkEDCmFW74GzrwwhDaJTundXI+9Rv4II2bkQWXBR0YRYz
+   8=;
+IronPort-SDR: dNQWW0hDysau6RVnORn2PycGcWC9fzQxmHRieEpGuTnEQRhcWZDZwpZqlaKv13kYlBZnW0XhTD
+ dZ+NrNi6M8dg==
 X-IronPort-AV: E=Sophos;i="5.72,412,1580774400"; 
-   d="scan'208";a="27053369"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1a-807d4a99.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 22 Apr 2020 08:09:55 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1a-807d4a99.us-east-1.amazon.com (Postfix) with ESMTPS id DF966A0578;
-        Wed, 22 Apr 2020 08:09:54 +0000 (UTC)
-Received: from EX13D08UEB002.ant.amazon.com (10.43.60.107) by
- EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 22 Apr 2020 08:09:40 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D08UEB002.ant.amazon.com (10.43.60.107) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 22 Apr 2020 08:09:38 +0000
-Received: from dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (172.19.82.3)
- by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Wed, 22 Apr 2020 08:09:32 +0000
-Received: by dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (Postfix, from userid 9775579)
-        id 7BC6D81D32; Wed, 22 Apr 2020 08:09:31 +0000 (UTC)
-From:   <sameehj@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <sameehj@amazon.com>, <ndagan@amazon.com>
-Subject: [PATCH V1 net 13/13] net: ena: cosmetic: extract code to ena_indirection_table_set()
-Date:   Wed, 22 Apr 2020 08:09:23 +0000
-Message-ID: <20200422080923.6697-14-sameehj@amazon.com>
-X-Mailer: git-send-email 2.24.1.AMZN
-In-Reply-To: <20200422080923.6697-1-sameehj@amazon.com>
+   d="scan'208";a="27053812"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1e-a70de69e.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 22 Apr 2020 08:13:55 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1e-a70de69e.us-east-1.amazon.com (Postfix) with ESMTPS id 027CFA1809;
+        Wed, 22 Apr 2020 08:13:54 +0000 (UTC)
+Received: from EX13D17EUB001.ant.amazon.com (10.43.166.85) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 22 Apr 2020 08:13:54 +0000
+Received: from EX13D11EUB003.ant.amazon.com (10.43.166.58) by
+ EX13D17EUB001.ant.amazon.com (10.43.166.85) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 22 Apr 2020 08:13:53 +0000
+Received: from EX13D11EUB003.ant.amazon.com ([10.43.166.58]) by
+ EX13D11EUB003.ant.amazon.com ([10.43.166.58]) with mapi id 15.00.1497.006;
+ Wed, 22 Apr 2020 08:13:53 +0000
+From:   "Jubran, Samih" <sameehj@amazon.com>
+To:     "Jubran, Samih" <sameehj@amazon.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>
+Subject: RE: [PATCH V1 net 00/13] Enhance current features in ena driver
+Thread-Topic: [PATCH V1 net 00/13] Enhance current features in ena driver
+Thread-Index: AQHWGH1byd5v+WPXTkm5WFtdIYV6r6iEykqQ
+Date:   Wed, 22 Apr 2020 08:13:53 +0000
+Deferred-Delivery: Wed, 22 Apr 2020 08:13:22 +0000
+Message-ID: <b3ef046598b64a8084beefc35705e14f@EX13D11EUB003.ant.amazon.com>
 References: <20200422080923.6697-1-sameehj@amazon.com>
+In-Reply-To: <20200422080923.6697-1-sameehj@amazon.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.164.178]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arthur Kiyanovski <akiyano@amazon.com>
+Please ignore this patch series, I'll resend to net-next
 
-Extract code to ena_indirection_table_set() to make
-the code cleaner.
-
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
-Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_ethtool.c | 48 ++++++++++++-------
- 1 file changed, 30 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-index a736ad62af78..51efb9463b5d 100644
---- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-@@ -638,6 +638,32 @@ static u32 ena_get_rxfh_key_size(struct net_device *netdev)
- 	return ENA_HASH_KEY_SIZE;
- }
- 
-+static int ena_indirection_table_set(struct ena_adapter *adapter,
-+				     const u32 *indir)
-+{
-+	struct ena_com_dev *ena_dev = adapter->ena_dev;
-+	int i, rc;
-+
-+	for (i = 0; i < ENA_RX_RSS_TABLE_SIZE; i++) {
-+		rc = ena_com_indirect_table_fill_entry(ena_dev,
-+						       i,
-+						       ENA_IO_RXQ_IDX(indir[i]));
-+		if (unlikely(rc)) {
-+			netif_err(adapter, drv, adapter->netdev,
-+				  "Cannot fill indirect table (index is too large)\n");
-+			return rc;
-+		}
-+	}
-+
-+	rc = ena_com_indirect_table_set(ena_dev);
-+	if (rc) {
-+		netif_err(adapter, drv, adapter->netdev,
-+			  "Cannot set indirect table\n");
-+		return rc == -EPERM ? -EOPNOTSUPP : rc;
-+	}
-+	return rc;
-+}
-+
- static int ena_indirection_table_get(struct ena_adapter *adapter, u32 *indir)
- {
- 	struct ena_com_dev *ena_dev = adapter->ena_dev;
-@@ -712,26 +738,12 @@ static int ena_set_rxfh(struct net_device *netdev, const u32 *indir,
- 	struct ena_adapter *adapter = netdev_priv(netdev);
- 	struct ena_com_dev *ena_dev = adapter->ena_dev;
- 	enum ena_admin_hash_functions func = 0;
--	int rc, i;
-+	int rc;
- 
- 	if (indir) {
--		for (i = 0; i < ENA_RX_RSS_TABLE_SIZE; i++) {
--			rc = ena_com_indirect_table_fill_entry(ena_dev,
--							       i,
--							       ENA_IO_RXQ_IDX(indir[i]));
--			if (unlikely(rc)) {
--				netif_err(adapter, drv, netdev,
--					  "Cannot fill indirect table (index is too large)\n");
--				return rc;
--			}
--		}
--
--		rc = ena_com_indirect_table_set(ena_dev);
--		if (rc) {
--			netif_err(adapter, drv, netdev,
--				  "Cannot set indirect table\n");
--			return rc == -EPERM ? -EOPNOTSUPP : rc;
--		}
-+		rc = ena_indirection_table_set(adapter, indir);
-+		if (rc)
-+			return rc;
- 	}
- 
- 	switch (hfunc) {
--- 
-2.24.1.AMZN
+> -----Original Message-----
+> From: sameehj@amazon.com <sameehj@amazon.com>
+> Sent: Wednesday, April 22, 2020 11:09 AM
+> To: davem@davemloft.net; netdev@vger.kernel.org
+> Cc: Jubran, Samih <sameehj@amazon.com>; Woodhouse, David
+> <dwmw@amazon.co.uk>; Machulsky, Zorik <zorik@amazon.com>;
+> Matushevsky, Alexander <matua@amazon.com>; Bshara, Saeed
+> <saeedb@amazon.com>; Wilson, Matt <msw@amazon.com>; Liguori,
+> Anthony <aliguori@amazon.com>; Bshara, Nafea <nafea@amazon.com>;
+> Tzalik, Guy <gtzalik@amazon.com>; Belgazal, Netanel
+> <netanel@amazon.com>; Saidi, Ali <alisaidi@amazon.com>; Herrenschmidt,
+> Benjamin <benh@amazon.com>; Kiyanovski, Arthur
+> <akiyano@amazon.com>; Dagan, Noam <ndagan@amazon.com>
+> Subject: [PATCH V1 net 00/13] Enhance current features in ena driver
+>=20
+> From: Sameeh Jubran <sameehj@amazon.com>
+>=20
+> This patchset introduces the following:
+> * minor changes to RSS feature
+> * add total rx and tx drop counter
+> * add unmask_interrupt counter for ethtool statistics
+> * add missing implementation for ena_com_get_admin_polling_mode()
+> * some minor code clean-up and cosmetics
+> * use SHUTDOWN as reset reason when closing interface
+>=20
+> Arthur Kiyanovski (6):
+>   net: ena: fix error returning in ena_com_get_hash_function()
+>   net: ena: avoid unnecessary admin command when RSS function set fails
+>   net: ena: change default RSS hash function to Toeplitz
+>   net: ena: implement ena_com_get_admin_polling_mode()
+>   net: ena: move llq configuration from ena_probe to ena_device_init()
+>   net: ena: cosmetic: extract code to ena_indirection_table_set()
+>=20
+> Sameeh Jubran (7):
+>   net: ena: allow setting the hash function without changing the key
+>   net: ena: changes to RSS hash key allocation
+>   net: ena: remove code that does nothing
+>   net: ena: add unmask interrupts statistics to ethtool
+>   net: ena: add support for reporting of packet drops
+>   net: ena: use SHUTDOWN as reset reason when closing interface
+>   net: ena: cosmetic: remove unnecessary spaces and tabs in ena_com.h
+>     macros
+>=20
+>  .../net/ethernet/amazon/ena/ena_admin_defs.h  |   8 +
+>  drivers/net/ethernet/amazon/ena/ena_com.c     |  44 +++---
+>  drivers/net/ethernet/amazon/ena/ena_com.h     |  39 +++--
+>  drivers/net/ethernet/amazon/ena/ena_ethtool.c |  68 ++++----
+> drivers/net/ethernet/amazon/ena/ena_netdev.c  | 146 ++++++++++--------
+>  drivers/net/ethernet/amazon/ena/ena_netdev.h  |   2 +
+>  6 files changed, 181 insertions(+), 126 deletions(-)
+>=20
+> --
+> 2.24.1.AMZN
 
