@@ -2,145 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17A631B39D1
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 10:16:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BD741B3A09
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 10:28:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726539AbgDVIQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 04:16:38 -0400
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:20174 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726494AbgDVIQf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 04:16:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1587543394; x=1619079394;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mVTJV5JwUQo1OJFdp4+zEFoQwshHnnlyJfWzPtFccRk=;
-  b=v2A+1YqLtcXnF5jVpOl7POjc3qgCMheDS8Ko/qXJBW1wu/6V61CV6lBj
-   jgXsOX5MoZN78WUNTJbwK17TD+53cpGkksUBD2Oh7RqDUFGtLGMnIu9fN
-   6/RaRqszsoDFtPd/zwwwj2VwO6n5MAUBlM350ha+vNzRaXuqYI/26KOkO
-   g=;
-IronPort-SDR: tInS5ZlhOVNnCl3b91mmoX3GJVlYwIPJgmdjRzRQnKcIUTi+I7ViKq6laGuW/98q+cv8TWP8Sq
- EVtaFIsIeNvA==
-X-IronPort-AV: E=Sophos;i="5.72,412,1580774400"; 
-   d="scan'208";a="26716751"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2b-81e76b79.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 22 Apr 2020 08:16:32 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2b-81e76b79.us-west-2.amazon.com (Postfix) with ESMTPS id 708D5A2031;
-        Wed, 22 Apr 2020 08:16:32 +0000 (UTC)
-Received: from EX13d09UWC001.ant.amazon.com (10.43.162.60) by
- EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 22 Apr 2020 08:16:32 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
- EX13d09UWC001.ant.amazon.com (10.43.162.60) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 22 Apr 2020 08:16:31 +0000
-Received: from dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (172.19.82.3)
- by mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Wed, 22 Apr 2020 08:16:31 +0000
-Received: by dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (Postfix, from userid 9775579)
-        id 8A5B081D43; Wed, 22 Apr 2020 08:16:30 +0000 (UTC)
-From:   <sameehj@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <sameehj@amazon.com>, <ndagan@amazon.com>
-Subject: [PATCH V1 net-next 13/13] net: ena: cosmetic: extract code to ena_indirection_table_set()
-Date:   Wed, 22 Apr 2020 08:16:28 +0000
-Message-ID: <20200422081628.8103-14-sameehj@amazon.com>
-X-Mailer: git-send-email 2.24.1.AMZN
-In-Reply-To: <20200422081628.8103-1-sameehj@amazon.com>
-References: <20200422081628.8103-1-sameehj@amazon.com>
+        id S1726448AbgDVI2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 04:28:44 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:2833 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725811AbgDVI2n (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Apr 2020 04:28:43 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id F0402F77B6BB4EF88F18;
+        Wed, 22 Apr 2020 16:28:40 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
+ 14.3.487.0; Wed, 22 Apr 2020 16:28:39 +0800
+From:   Mao Wenan <maowenan@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <kafai@fb.com>,
+        <songliubraving@fb.com>, <yhs@fb.com>, <andriin@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@chromium.org>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>
+Subject: [PATCH bpf-next 0/2] Change return code if failed to load object
+Date:   Wed, 22 Apr 2020 16:30:08 +0800
+Message-ID: <20200422083010.28000-1-maowenan@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arthur Kiyanovski <akiyano@amazon.com>
+The first patch change return code from -EINVAL to -EOPNOTSUPP, 
+the second patch quote the err value returned by bpf_object__load().  
 
-Extract code to ena_indirection_table_set() to make
-the code cleaner.
+Mao Wenan (2):
+  bpf: Change error code when ops is NULL
+  libbpf: Return err if bpf_object__load failed
 
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
-Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_ethtool.c | 48 ++++++++++++-------
- 1 file changed, 30 insertions(+), 18 deletions(-)
+ kernel/bpf/syscall.c   | 8 +++++---
+ tools/lib/bpf/libbpf.c | 2 +-
+ 2 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-index a736ad62af78..51efb9463b5d 100644
---- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-@@ -638,6 +638,32 @@ static u32 ena_get_rxfh_key_size(struct net_device *netdev)
- 	return ENA_HASH_KEY_SIZE;
- }
- 
-+static int ena_indirection_table_set(struct ena_adapter *adapter,
-+				     const u32 *indir)
-+{
-+	struct ena_com_dev *ena_dev = adapter->ena_dev;
-+	int i, rc;
-+
-+	for (i = 0; i < ENA_RX_RSS_TABLE_SIZE; i++) {
-+		rc = ena_com_indirect_table_fill_entry(ena_dev,
-+						       i,
-+						       ENA_IO_RXQ_IDX(indir[i]));
-+		if (unlikely(rc)) {
-+			netif_err(adapter, drv, adapter->netdev,
-+				  "Cannot fill indirect table (index is too large)\n");
-+			return rc;
-+		}
-+	}
-+
-+	rc = ena_com_indirect_table_set(ena_dev);
-+	if (rc) {
-+		netif_err(adapter, drv, adapter->netdev,
-+			  "Cannot set indirect table\n");
-+		return rc == -EPERM ? -EOPNOTSUPP : rc;
-+	}
-+	return rc;
-+}
-+
- static int ena_indirection_table_get(struct ena_adapter *adapter, u32 *indir)
- {
- 	struct ena_com_dev *ena_dev = adapter->ena_dev;
-@@ -712,26 +738,12 @@ static int ena_set_rxfh(struct net_device *netdev, const u32 *indir,
- 	struct ena_adapter *adapter = netdev_priv(netdev);
- 	struct ena_com_dev *ena_dev = adapter->ena_dev;
- 	enum ena_admin_hash_functions func = 0;
--	int rc, i;
-+	int rc;
- 
- 	if (indir) {
--		for (i = 0; i < ENA_RX_RSS_TABLE_SIZE; i++) {
--			rc = ena_com_indirect_table_fill_entry(ena_dev,
--							       i,
--							       ENA_IO_RXQ_IDX(indir[i]));
--			if (unlikely(rc)) {
--				netif_err(adapter, drv, netdev,
--					  "Cannot fill indirect table (index is too large)\n");
--				return rc;
--			}
--		}
--
--		rc = ena_com_indirect_table_set(ena_dev);
--		if (rc) {
--			netif_err(adapter, drv, netdev,
--				  "Cannot set indirect table\n");
--			return rc == -EPERM ? -EOPNOTSUPP : rc;
--		}
-+		rc = ena_indirection_table_set(adapter, indir);
-+		if (rc)
-+			return rc;
- 	}
- 
- 	switch (hfunc) {
 -- 
-2.24.1.AMZN
+2.20.1
 
