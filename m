@@ -2,70 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 692FF1B33A4
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 01:48:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FC111B33C9
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 02:02:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726061AbgDUXs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 19:48:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52720 "EHLO mail.kernel.org"
+        id S1726421AbgDVACg convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Apr 2020 20:02:36 -0400
+Received: from mga14.intel.com ([192.55.52.115]:27852 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725822AbgDUXs3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 21 Apr 2020 19:48:29 -0400
-Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DCB5C2068F;
-        Tue, 21 Apr 2020 23:48:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587512909;
-        bh=drjTTPR6qP+yRPTJ11BBmGTaQoQ6JtjmWXJMNdhAOnk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=pxFfscTOpj+70Uk242QdcqxUo2popTF5iHPrizj+ZJJQDsE8Ve3EwJIH9liwIa91T
-         HQGcfNyKOEWHQD+d+uPVuO3aaQO8iepD842qpkkrzHZv6MsK0kyLE5/wwuXVMSHeFx
-         vy+BBSVlGkLreHd8VC63u2giheAaruwYBlNMnsbc=
-From:   David Ahern <dsahern@kernel.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Subject: [PATCH net] vrf: Fix IPv6 with qdisc and xfrm
-Date:   Tue, 21 Apr 2020 17:48:27 -0600
-Message-Id: <20200421234827.63465-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
+        id S1726012AbgDVACg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Apr 2020 20:02:36 -0400
+IronPort-SDR: OQk7cXA7qC8hRrYxl67wkQo5C8bxC3H3pUPkI9Aio1CDf24a6wThmWKCgxUZL8Or+svntAzmm+
+ AONhQErxCnoQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2020 17:02:35 -0700
+IronPort-SDR: M5qgxJYVhKuvVIxoKRds+DkPbc4qc1s+5g9q+PUlX7yhbNa+e7GPLOUIWQhjpt1mqemztzj6dv
+ y0C4K1Kg1EBA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,411,1580803200"; 
+   d="scan'208";a="273698995"
+Received: from fmsmsx107.amr.corp.intel.com ([10.18.124.205])
+  by orsmga002.jf.intel.com with ESMTP; 21 Apr 2020 17:02:35 -0700
+Received: from fmsmsx119.amr.corp.intel.com (10.18.124.207) by
+ fmsmsx107.amr.corp.intel.com (10.18.124.205) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Tue, 21 Apr 2020 17:02:15 -0700
+Received: from fmsmsx124.amr.corp.intel.com ([169.254.8.70]) by
+ FMSMSX119.amr.corp.intel.com ([169.254.14.63]) with mapi id 14.03.0439.000;
+ Tue, 21 Apr 2020 17:02:15 -0700
+From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>
+Subject: RE: [RFC PATCH v5 12/16] RDMA/irdma: Add miscellaneous utility
+ definitions
+Thread-Topic: [RFC PATCH v5 12/16] RDMA/irdma: Add miscellaneous utility
+ definitions
+Thread-Index: AQHWFNtzYxwJ525w0UOK+2ymyeL4bqh+OjIAgAQT/QCAAVr7AIAATqbQ
+Date:   Wed, 22 Apr 2020 00:02:14 +0000
+Message-ID: <9DD61F30A802C4429A01CA4200E302A7DCD4C042@fmsmsx124.amr.corp.intel.com>
+References: <20200417171251.1533371-1-jeffrey.t.kirsher@intel.com>
+ <20200417171251.1533371-13-jeffrey.t.kirsher@intel.com>
+ <20200417203216.GH3083@unreal>
+ <9DD61F30A802C4429A01CA4200E302A7DCD485B7@fmsmsx124.amr.corp.intel.com>
+ <20200421073044.GI121146@unreal>
+In-Reply-To: <20200421073044.GI121146@unreal>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.1.200.107]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+> Subject: Re: [RFC PATCH v5 12/16] RDMA/irdma: Add miscellaneous utility
+> definitions
+> 
 
-When a qdisc is attached to the VRF device, the packet goes down the ndo
-xmit function which is setup to send the packet back to the VRF driver
-which does a lookup to send the packet out. The lookup in the VRF driver
-is not considering xfrm policies. Change it to use ip6_dst_lookup_flow
-rather than ip6_route_output.
+[...]
+> > > > + * irdma_arp_table -manage arp table
+> > > > + * @rf: RDMA PCI function
+> > > > + * @ip_addr: ip address for device
+> > > > + * @ipv4: IPv4 flag
+> > > > + * @mac_addr: mac address ptr
+> > > > + * @action: modify, delete or add  */ int irdma_arp_table(struct
+> > > > +irdma_pci_f *rf, u32 *ip_addr, bool ipv4,
+> > > > +		    u8 *mac_addr, u32 action)
+> > >
+> > > ARP table in the RDMA driver looks strange, I see that it is legacy
+> > > from i40iw, but wonder if it is the right thing to do the same for the new driver.
+> > >
+> >
+> > See response in Patch #1.
+> 
+> OK, let's me rephrase the question.
+> Why can't you use arp_tbl from include/net/arp.h and need to implement it in the
+> RDMA driver?
+> 
 
-Fixes: 35402e313663 ("net: Add IPv6 support to VRF device")
-Signed-off-by: David Ahern <dsahern@gmail.com>
----
- drivers/net/vrf.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
-index 6f5d03b7d9c0..56f8aab46f89 100644
---- a/drivers/net/vrf.c
-+++ b/drivers/net/vrf.c
-@@ -188,8 +188,8 @@ static netdev_tx_t vrf_process_v6_outbound(struct sk_buff *skb,
- 	fl6.flowi6_proto = iph->nexthdr;
- 	fl6.flowi6_flags = FLOWI_FLAG_SKIP_NH_OIF;
- 
--	dst = ip6_route_output(net, NULL, &fl6);
--	if (dst == dst_null)
-+	dst = ip6_dst_lookup_flow(net, NULL, &fl6, NULL);
-+	if (IS_ERR(dst) || dst == dst_null)
- 		goto err;
- 
- 	skb_dst_drop(skb);
--- 
-2.20.1
-
+The driver needs to track the on-chip arp cache indices and program the
+index & entry via rdma admin queue cmd. These indices are specific to our hw
+arp cache and not the system arp table. So I am not sure how we can use it.
