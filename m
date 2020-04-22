@@ -2,127 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D946D1B48F2
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 17:42:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4A561B48F7
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 17:43:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726183AbgDVPmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 11:42:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57026 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725980AbgDVPmJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 11:42:09 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671BEC03C1A9
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 08:42:09 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id t9so1103104pjw.0
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 08:42:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TpMT6BEBkzudU+fyGrfR6ecfTgYd/EzbYbaPafE1rTA=;
-        b=wPVLVTzUtWy3Q1++5vy2rzh1nSS1nr9MsX34akI8HsFi5OdC3I6YXfBgAfk3D2y1+i
-         1HtSKyIZxZEEI926EHhBdxJBZEDmTYJBONdGKeEduXj3McBIoBBu3srH16mdh93soymR
-         /LxdHe5X2zd6V0/iWYVkfufjKWrJyaUdK5TJWAsfoy5WFz05BFToM+2Y1Nzrm7umudY0
-         a6UUxdpuDJMvv2g9eqvWw23KT/WnAILxcvUU7Xz17z76gRGCGqi4pYT10V/IrdALHkvn
-         grl3LyWRuTLP06QJnve4HB+ycSFkMyX8x+J8Puks3eOg2fCPP93oErv0YlGiv6MbXXP0
-         EOzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TpMT6BEBkzudU+fyGrfR6ecfTgYd/EzbYbaPafE1rTA=;
-        b=Xl6PhXHrHQrQkLPYhK0mrHdk/3+tyk34uP7j3xTCYYrkv6A+OuXJB3BZ146Gs2IAWQ
-         85GV8iAK89pAbg6lG0HqqBh30zlzq6UR2LZdiGtz2UBVMcnv4flrF8Pg1y/Xy1dinx+t
-         1bBTLXg83d9ZzlpYiiHw+cRKcejfRA64WftCRwk2n7s6i6DsmFmfw7tj7Im4T3LiV9CS
-         QBJ5vPi7wVqy7br7Tjn3icFUXAMCYAu9qyByJoLvGZBYsqXRX0e+8D477F0Rn8S++BU9
-         WMQMvDfY+kevDEIDIDouOu38MbFbLggw0D2Bbn0iiP2bRu7NZXFIjdpwd0GtaFv53UYy
-         Wtcg==
-X-Gm-Message-State: AGi0Pub2rgWnXxRe32Uj1wPudWuokEiNBbZvuEavnvNV0yb4NgtKOO70
-        NaOacdCA7J2CuZp/lClTySQpaF6L/hI=
-X-Google-Smtp-Source: APiQypJG2Jv6uavSRxgmIgdMFNuiQ2upZRwPh4begpnMxtUbw3dZLj703bLGO3xBSqzpn1Ct/81Zew==
-X-Received: by 2002:a17:90a:7349:: with SMTP id j9mr12524305pjs.196.1587570128342;
-        Wed, 22 Apr 2020 08:42:08 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id g1sm3585698pjt.25.2020.04.22.08.42.07
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Apr 2020 08:42:08 -0700 (PDT)
-Date:   Wed, 22 Apr 2020 08:42:00 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
+        id S1726482AbgDVPnQ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 22 Apr 2020 11:43:16 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:38123 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725980AbgDVPnQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 11:43:16 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-201-ebHGnQQSO2m-UbHBSrXtGQ-1; Wed, 22 Apr 2020 11:43:11 -0400
+X-MC-Unique: ebHGnQQSO2m-UbHBSrXtGQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C7413100CCC9;
+        Wed, 22 Apr 2020 15:43:10 +0000 (UTC)
+Received: from hog.localdomain, (unknown [10.40.194.71])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 839E619756;
+        Wed, 22 Apr 2020 15:43:09 +0000 (UTC)
+From:   Sabrina Dubroca <sd@queasysnail.net>
 To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 207403] New: Object freed twice in cleanup_net in
- net/core/net_namespace.c
-Message-ID: <20200422084200.3b342fce@hermes.lan>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Subject: [PATCH ipsec-next v3 0/2] xfrm: add IPv6 encapsulation support for ESP over UDP and TCP
+Date:   Wed, 22 Apr 2020 17:43:02 +0200
+Message-Id: <cover.1587569733.git.sd@queasysnail.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: queasysnail.net
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series adds IPv6 encapsulation of ESP over both UDP and TCP. In
+both cases, the code is very similar to the existing IPv4
+encapsulation implementation. The core espintcp code is almost
+entirely version-independent.
 
+v2: rebase on top of ipsec-next/master
+v3: really rebase this time
 
-Begin forwarded message:
+Sabrina Dubroca (2):
+  xfrm: add support for UDPv6 encapsulation of ESP
+  xfrm: add IPv6 support for espintcp
 
-Date: Wed, 22 Apr 2020 12:47:34 +0000
-From: bugzilla-daemon@bugzilla.kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 207403] New: Object freed twice in cleanup_net in net/core/net_namespace.c
-
-
-https://bugzilla.kernel.org/show_bug.cgi?id=207403
-
-            Bug ID: 207403
-           Summary: Object freed twice in cleanup_net in
-                    net/core/net_namespace.c
-           Product: Networking
-           Version: 2.5
-    Kernel Version: At least between 4.14 and 5.4
-          Hardware: x86-64
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: high
-          Priority: P1
-         Component: Other
-          Assignee: stephen@networkplumber.org
-          Reporter: jmarcet@gmail.com
-        Regression: No
-
-Created attachment 288659
-  --> https://bugzilla.kernel.org/attachment.cgi?id=288659&action=edit  
-dmesg from qemu instance running openwrt
-
-There is an issue regarding network namespaces on OpenWRT.
-
-There is some locking wrong in kernel's netns subsystem. Starting docker with a
-bunch of containers is a game of luck, they can start cleanly, but there are
-good chances the bug is hit, often crashing the entire system. I attach a dmesg
-grabbed from a qemu instance which shows it clearly.
-
-I have built OpenWRT with a vanilla kernel, and the issue still happens. It
-might have to do with the special user space tools not used in any other
-environment. It has been happening for at least between 4.14 and 5.4, and the
-issue is in the kernel.
-
-
-I hit it with docker. Using docker-compose, with some image building, after
-some time I get the oops in the attached dmesg.
-
-
-I have verified it happens on x86-64 both bare metal and under qemu, with and
-without preemption, with 1 or several CPUs.
-
-Since I have not seen it in any other environment and you might want to play
-first hands with it, I am sharing a OpenWRT image ready to use, a little more
-packed than the official ones, with docker-compose, kgdb, ftrace,... It is for
-x86-64 efi systems and runs fine under qemu.
-https://openwrt.marcet.info/latest/targets/x86/64/
-
-If there is any more info I can provide, please ask.
+ include/net/ipv6_stubs.h  |   5 +
+ include/net/xfrm.h        |   5 +
+ net/ipv4/Kconfig          |   1 +
+ net/ipv4/udp.c            |  10 +-
+ net/ipv6/Kconfig          |  12 ++
+ net/ipv6/af_inet6.c       |   5 +
+ net/ipv6/ah6.c            |   1 +
+ net/ipv6/esp6.c           | 413 +++++++++++++++++++++++++++++++++++---
+ net/ipv6/esp6_offload.c   |   7 +-
+ net/ipv6/ip6_vti.c        |  18 +-
+ net/ipv6/ipcomp6.c        |   1 +
+ net/ipv6/xfrm6_input.c    | 106 +++++++++-
+ net/ipv6/xfrm6_protocol.c |  48 +++++
+ net/xfrm/Kconfig          |   3 +
+ net/xfrm/Makefile         |   2 +-
+ net/xfrm/espintcp.c       |  56 +++++-
+ net/xfrm/xfrm_interface.c |   3 +
+ 17 files changed, 646 insertions(+), 50 deletions(-)
 
 -- 
-You are receiving this mail because:
-You are the assignee for the bug.
+2.26.1
+
