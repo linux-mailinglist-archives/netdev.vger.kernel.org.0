@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 983FE1B3A53
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 10:40:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FE461B3A5F
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 10:40:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726619AbgDVIkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 04:40:10 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:52235 "EHLO
+        id S1726655AbgDVIk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 04:40:26 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:36689 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726541AbgDVIkF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 04:40:05 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from maorg@mellanox.com)
+        with ESMTP id S1726501AbgDVIkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 04:40:04 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from maorg@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 22 Apr 2020 11:40:00 +0300
 Received: from dev-l-vrt-201.mtl.labs.mlnx (dev-l-vrt-201.mtl.labs.mlnx [10.134.201.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 03M8dxgm006118;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 03M8dxgn006118;
         Wed, 22 Apr 2020 11:40:00 +0300
 From:   Maor Gottlieb <maorg@mellanox.com>
 To:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
@@ -23,9 +23,9 @@ To:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
 Cc:     leonro@mellanox.com, saeedm@mellanox.com,
         linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         alexr@mellanox.com, Maor Gottlieb <maorg@mellanox.com>
-Subject: [PATCH V4 mlx5-next 10/15] RDMA/core: Add LAG functionality
-Date:   Wed, 22 Apr 2020 11:39:46 +0300
-Message-Id: <20200422083951.17424-11-maorg@mellanox.com>
+Subject: [PATCH V4 mlx5-next 11/15] RDMA/core: Get xmit slave for LAG
+Date:   Wed, 22 Apr 2020 11:39:47 +0300
+Message-Id: <20200422083951.17424-12-maorg@mellanox.com>
 X-Mailer: git-send-email 2.17.2
 In-Reply-To: <20200422083951.17424-1-maorg@mellanox.com>
 References: <20200422083951.17424-1-maorg@mellanox.com>
@@ -34,227 +34,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support to get the RoCE LAG xmit slave by building skb
-of the RoCE packet and call to master_get_xmit_slave.
-If driver wants to get the slave assume all slaves are available,
-then need to set RDMA_LAG_FLAGS_HASH_ALL_SLAVES in flags.
+Add a call to rdma_lag_get_ah_roce_slave when
+Address handle is created.
+Low driver can use it to select the QP's affinity port.
 
 Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
 Reviewed-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- drivers/infiniband/core/Makefile |   2 +-
- drivers/infiniband/core/lag.c    | 138 +++++++++++++++++++++++++++++++
- include/rdma/ib_verbs.h          |   2 +
- include/rdma/lag.h               |  22 +++++
- 4 files changed, 163 insertions(+), 1 deletion(-)
- create mode 100644 drivers/infiniband/core/lag.c
- create mode 100644 include/rdma/lag.h
+ drivers/infiniband/core/verbs.c | 44 ++++++++++++++++++++++-----------
+ 1 file changed, 30 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/infiniband/core/Makefile b/drivers/infiniband/core/Makefile
-index d1b14887960e..870f0fcd54d5 100644
---- a/drivers/infiniband/core/Makefile
-+++ b/drivers/infiniband/core/Makefile
-@@ -12,7 +12,7 @@ ib_core-y :=			packer.o ud_header.o verbs.o cq.o rw.o sysfs.o \
- 				roce_gid_mgmt.o mr_pool.o addr.o sa_query.o \
- 				multicast.o mad.o smi.o agent.o mad_rmpp.o \
- 				nldev.o restrack.o counters.o ib_core_uverbs.o \
--				trace.o
-+				trace.o lag.o
- 
- ib_core-$(CONFIG_SECURITY_INFINIBAND) += security.o
- ib_core-$(CONFIG_CGROUP_RDMA) += cgroup.o
-diff --git a/drivers/infiniband/core/lag.c b/drivers/infiniband/core/lag.c
-new file mode 100644
-index 000000000000..3036fb3dc43a
---- /dev/null
-+++ b/drivers/infiniband/core/lag.c
-@@ -0,0 +1,138 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/*
-+ * Copyright (c) 2020 Mellanox Technologies. All rights reserved.
-+ */
-+
-+#include <rdma/ib_verbs.h>
-+#include <rdma/ib_cache.h>
+diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
+index 56a71337112c..a0d60376ba6b 100644
+--- a/drivers/infiniband/core/verbs.c
++++ b/drivers/infiniband/core/verbs.c
+@@ -50,6 +50,7 @@
+ #include <rdma/ib_cache.h>
+ #include <rdma/ib_addr.h>
+ #include <rdma/rw.h>
 +#include <rdma/lag.h>
-+
-+static struct sk_buff *rdma_build_skb(struct ib_device *device,
-+				      struct net_device *netdev,
-+				      struct rdma_ah_attr *ah_attr)
-+{
-+	struct ipv6hdr *ip6h;
-+	struct sk_buff *skb;
-+	struct ethhdr *eth;
-+	struct iphdr *iph;
-+	struct udphdr *uh;
-+	u8 smac[ETH_ALEN];
-+	bool is_ipv4;
-+	int hdr_len;
-+
-+	is_ipv4 = ipv6_addr_v4mapped((struct in6_addr *)ah_attr->grh.dgid.raw);
-+	hdr_len = ETH_HLEN + sizeof(struct udphdr) + LL_RESERVED_SPACE(netdev);
-+	hdr_len += is_ipv4 ? sizeof(struct iphdr) : sizeof(struct ipv6hdr);
-+
-+	skb = alloc_skb(hdr_len, GFP_ATOMIC);
-+	if (!skb)
-+		return NULL;
-+
-+	skb->dev = netdev;
-+	skb_reserve(skb, hdr_len);
-+	skb_push(skb, sizeof(struct udphdr));
-+	skb_reset_transport_header(skb);
-+	uh = udp_hdr(skb);
-+	uh->source = htons(0xC000);
-+	uh->dest = htons(ROCE_V2_UDP_DPORT);
-+	uh->len = htons(sizeof(struct udphdr));
-+
-+	if (is_ipv4) {
-+		skb_push(skb, sizeof(struct iphdr));
-+		skb_reset_network_header(skb);
-+		iph = ip_hdr(skb);
-+		iph->frag_off = 0;
-+		iph->version = 4;
-+		iph->protocol = IPPROTO_UDP;
-+		iph->ihl = 0x5;
-+		iph->tot_len = htons(sizeof(struct udphdr) + sizeof(struct
-+								    iphdr));
-+		memcpy(&iph->saddr, ah_attr->grh.sgid_attr->gid.raw + 12,
-+		       sizeof(struct in_addr));
-+		memcpy(&iph->daddr, ah_attr->grh.dgid.raw + 12,
-+		       sizeof(struct in_addr));
-+	} else {
-+		skb_push(skb, sizeof(struct ipv6hdr));
-+		skb_reset_network_header(skb);
-+		ip6h = ipv6_hdr(skb);
-+		ip6h->version = 6;
-+		ip6h->nexthdr = IPPROTO_UDP;
-+		memcpy(&ip6h->flow_lbl, &ah_attr->grh.flow_label,
-+		       sizeof(*ip6h->flow_lbl));
-+		memcpy(&ip6h->saddr, ah_attr->grh.sgid_attr->gid.raw,
-+		       sizeof(struct in6_addr));
-+		memcpy(&ip6h->daddr, ah_attr->grh.dgid.raw,
-+		       sizeof(struct in6_addr));
-+	}
-+
-+	skb_push(skb, sizeof(struct ethhdr));
-+	skb_reset_mac_header(skb);
-+	eth = eth_hdr(skb);
-+	skb->protocol = eth->h_proto = htons(is_ipv4 ? ETH_P_IP : ETH_P_IPV6);
-+	rdma_read_gid_l2_fields(ah_attr->grh.sgid_attr, NULL, smac);
-+	memcpy(eth->h_source, smac, ETH_ALEN);
-+	memcpy(eth->h_dest, ah_attr->roce.dmac, ETH_ALEN);
-+
-+	return skb;
-+}
-+
-+static struct net_device *rdma_get_xmit_slave_udp(struct ib_device *device,
-+						  struct net_device *master,
-+						  struct rdma_ah_attr *ah_attr)
-+{
-+	struct net_device *slave;
-+	struct sk_buff *skb;
-+
-+	skb = rdma_build_skb(device, master, ah_attr);
-+	if (!skb)
-+		return NULL;
-+
-+	slave = netdev_get_xmit_slave(master, skb,
-+				      !!(device->lag_flags &
-+					 RDMA_LAG_FLAGS_HASH_ALL_SLAVES));
-+	kfree_skb(skb);
-+	return slave;
-+}
-+
-+void rdma_lag_put_ah_roce_slave(struct rdma_ah_attr *ah_attr)
-+{
-+	if (ah_attr->roce.xmit_slave)
-+		dev_put(ah_attr->roce.xmit_slave);
-+}
-+
-+int rdma_lag_get_ah_roce_slave(struct ib_device *device,
-+			       struct rdma_ah_attr *ah_attr)
-+{
-+	struct net_device *master;
-+	struct net_device *slave;
-+
-+	if (!(ah_attr->type == RDMA_AH_ATTR_TYPE_ROCE &&
-+	      ah_attr->grh.sgid_attr->gid_type == IB_GID_TYPE_ROCE_UDP_ENCAP))
-+		return 0;
-+
-+	rcu_read_lock();
-+	master = rdma_read_gid_attr_ndev_rcu(ah_attr->grh.sgid_attr);
-+	if (IS_ERR(master)) {
-+		rcu_read_unlock();
-+		return PTR_ERR(master);
-+	}
-+	dev_hold(master);
-+	rcu_read_unlock();
-+
-+	if (!netif_is_bond_master(master)) {
-+		dev_put(master);
-+		return 0;
-+	}
-+
-+	slave = rdma_get_xmit_slave_udp(device, master, ah_attr);
-+
-+	dev_put(master);
-+	if (!slave) {
-+		ibdev_warn(device, "Failed to get lag xmit slave\n");
-+		return -EINVAL;
-+	}
-+
-+	ah_attr->roce.xmit_slave = slave;
-+
-+	return 0;
-+}
-diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
-index bbc5cfb57cd2..60f9969b6d83 100644
---- a/include/rdma/ib_verbs.h
-+++ b/include/rdma/ib_verbs.h
-@@ -894,6 +894,7 @@ struct ib_ah_attr {
  
- struct roce_ah_attr {
- 	u8			dmac[ETH_ALEN];
-+	struct net_device	*xmit_slave;
- };
+ #include "core_priv.h"
+ #include <trace/events/rdma_core.h>
+@@ -554,8 +555,14 @@ struct ib_ah *rdma_create_ah(struct ib_pd *pd, struct rdma_ah_attr *ah_attr,
+ 	if (ret)
+ 		return ERR_PTR(ret);
  
- struct opa_ah_attr {
-@@ -2709,6 +2710,7 @@ struct ib_device {
- 	/* Used by iWarp CM */
- 	char iw_ifname[IFNAMSIZ];
- 	u32 iw_driver_flags;
-+	u32 lag_flags;
- };
+-	ah = _rdma_create_ah(pd, ah_attr, flags, NULL);
++	ret = rdma_lag_get_ah_roce_slave(pd->device, ah_attr);
++	if (ret) {
++		rdma_unfill_sgid_attr(ah_attr, old_sgid_attr);
++		return ERR_PTR(ret);
++	}
  
- struct ib_client_nl_info;
-diff --git a/include/rdma/lag.h b/include/rdma/lag.h
-new file mode 100644
-index 000000000000..a71511824207
---- /dev/null
-+++ b/include/rdma/lag.h
-@@ -0,0 +1,22 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-+/*
-+ * Copyright (c) 2020 Mellanox Technologies. All rights reserved.
-+ */
++	ah = _rdma_create_ah(pd, ah_attr, flags, NULL);
++	rdma_lag_put_ah_roce_slave(ah_attr);
+ 	rdma_unfill_sgid_attr(ah_attr, old_sgid_attr);
+ 	return ah;
+ }
+@@ -1638,6 +1645,25 @@ static int _ib_modify_qp(struct ib_qp *qp, struct ib_qp_attr *attr,
+ 					  &old_sgid_attr_av);
+ 		if (ret)
+ 			return ret;
 +
-+#ifndef _RDMA_LAG_H_
-+#define _RDMA_LAG_H_
-+
-+#include <net/lag.h>
-+
-+struct ib_device;
-+struct rdma_ah_attr;
-+
-+enum rdma_lag_flags {
-+	RDMA_LAG_FLAGS_HASH_ALL_SLAVES = 1 << 0
-+};
-+
-+void rdma_lag_put_ah_roce_slave(struct rdma_ah_attr *ah_attr);
-+int rdma_lag_get_ah_roce_slave(struct ib_device *device,
-+			       struct rdma_ah_attr *ah_attr);
-+
-+#endif /* _RDMA_LAG_H_ */
++		if (attr->ah_attr.type == RDMA_AH_ATTR_TYPE_ROCE &&
++		    is_qp_type_connected(qp)) {
++			/*
++			 * If the user provided the qp_attr then we have to
++			 * resolve it. Kerne users have to provide already
++			 * resolved rdma_ah_attr's.
++			 */
++			if (udata) {
++				ret = ib_resolve_eth_dmac(qp->device,
++							  &attr->ah_attr);
++				if (ret)
++					goto out_av;
++			}
++			ret = rdma_lag_get_ah_roce_slave(qp->device,
++							 &attr->ah_attr);
++			if (ret)
++				goto out_av;
++		}
+ 	}
+ 	if (attr_mask & IB_QP_ALT_PATH) {
+ 		/*
+@@ -1664,18 +1690,6 @@ static int _ib_modify_qp(struct ib_qp *qp, struct ib_qp_attr *attr,
+ 		}
+ 	}
+ 
+-	/*
+-	 * If the user provided the qp_attr then we have to resolve it. Kernel
+-	 * users have to provide already resolved rdma_ah_attr's
+-	 */
+-	if (udata && (attr_mask & IB_QP_AV) &&
+-	    attr->ah_attr.type == RDMA_AH_ATTR_TYPE_ROCE &&
+-	    is_qp_type_connected(qp)) {
+-		ret = ib_resolve_eth_dmac(qp->device, &attr->ah_attr);
+-		if (ret)
+-			goto out;
+-	}
+-
+ 	if (rdma_ib_or_roce(qp->device, port)) {
+ 		if (attr_mask & IB_QP_RQ_PSN && attr->rq_psn & ~0xffffff) {
+ 			dev_warn(&qp->device->dev,
+@@ -1717,8 +1731,10 @@ static int _ib_modify_qp(struct ib_qp *qp, struct ib_qp_attr *attr,
+ 	if (attr_mask & IB_QP_ALT_PATH)
+ 		rdma_unfill_sgid_attr(&attr->alt_ah_attr, old_sgid_attr_alt_av);
+ out_av:
+-	if (attr_mask & IB_QP_AV)
++	if (attr_mask & IB_QP_AV) {
++		rdma_lag_put_ah_roce_slave(&attr->ah_attr);
+ 		rdma_unfill_sgid_attr(&attr->ah_attr, old_sgid_attr_av);
++	}
+ 	return ret;
+ }
+ 
 -- 
 2.17.2
 
