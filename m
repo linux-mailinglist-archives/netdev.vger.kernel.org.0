@@ -2,70 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F0B81B3457
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 03:07:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3258D1B3476
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 03:24:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726413AbgDVBHu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 21:07:50 -0400
-Received: from cmccmta1.chinamobile.com ([221.176.66.79]:4379 "EHLO
-        cmccmta1.chinamobile.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726055AbgDVBHt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 21:07:49 -0400
-Received: from spf.mail.chinamobile.com (unknown[172.16.121.5]) by rmmx-syy-dmz-app02-12002 (RichMail) with SMTP id 2ee25e9f98d6b5c-f5e92; Wed, 22 Apr 2020 09:07:34 +0800 (CST)
-X-RM-TRANSID: 2ee25e9f98d6b5c-f5e92
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG: 00000000
-Received: from localhost.localdomain (unknown[112.25.154.146])
-        by rmsmtp-syy-appsvr03-12003 (RichMail) with SMTP id 2ee35e9f98d3d10-2c015;
-        Wed, 22 Apr 2020 09:07:34 +0800 (CST)
-X-RM-TRANSID: 2ee35e9f98d3d10-2c015
-From:   Tang Bin <tangbin@cmss.chinamobile.com>
-To:     kuba@kernel.org, khalasa@piap.pl, davem@davemloft.net,
-        linus.walleij@linaro.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tang Bin <tangbin@cmss.chinamobile.com>,
-        Zhang Shengju <zhangshengju@cmss.chinamobile.com>
-Subject: [PATCH v2] net: ethernet: ixp4xx: Add error handling in ixp4xx_eth_probe()
-Date:   Wed, 22 Apr 2020 09:09:22 +0800
-Message-Id: <20200422010922.17728-1-tangbin@cmss.chinamobile.com>
-X-Mailer: git-send-email 2.20.1.windows.1
+        id S1726294AbgDVBYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Apr 2020 21:24:41 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:25390 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726024AbgDVBYk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 21:24:40 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 03M1Odwk020932
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 18:24:39 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=wbw+03kqAr4+0VBwg+Xhrq4PpfYJHMGxVN4suU9Mbc0=;
+ b=nCIiv++nvKFhKh+R2Lb09S+eBmy9bMPW/17RPFbudNahdCM6Yjo9zwro5ayk/nl/+PRy
+ hMh+ZdkEY9pSksaQd3gGBwWHzE9v3t/qM8psdc5kM6+4ZmnEpU1QGAinyMngmADry2Zg
+ BMIu6dP5Uvf6KlL/U8V4ptlJLPmIeDPRQyI= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0089730.ppops.net with ESMTP id 30g36d31np-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 18:24:39 -0700
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Tue, 21 Apr 2020 18:24:14 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 237F02EC2E30; Tue, 21 Apr 2020 18:24:13 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] tools/runqslower: ensure own vmlinux.h is picked up first
+Date:   Tue, 21 Apr 2020 18:24:07 -0700
+Message-ID: <20200422012407.176303-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-21_10:2020-04-21,2020-04-21 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ impostorscore=0 priorityscore=1501 phishscore=0 lowpriorityscore=0
+ mlxscore=0 bulkscore=0 spamscore=0 malwarescore=0 clxscore=1015
+ mlxlogscore=273 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2003020000 definitions=main-2004220009
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function ixp4xx_eth_probe() does not perform sufficient error
-checking after executing devm_ioremap_resource(), which can result
-in crashes if a critical error path is encountered.
+Reorder include paths to ensure that runqslower sources are picking up
+vmlinux.h, generated by runqslower's own Makefile. When runqslower is bui=
+lt
+from selftests/bpf, due to current -I$(BPF_INCLUDE) -I$(OUTPUT) ordering,=
+ it
+might pick up not-yet-complete vmlinux.h, generated by selftests Makefile=
+,
+which could lead to compilation errors like [0]. So ensure that -I$(OUTPU=
+T)
+goes first and rely on runqslower's Makefile own dependency chain to ensu=
+re
+vmlinux.h is properly completed before source code relying on it is compi=
+led.
 
-Fixes: f458ac479777 ("ARM/net: ixp4xx: Pass ethernet physical base as resource")
+  [0] https://travis-ci.org/github/libbpf/libbpf/jobs/677905925
 
-Signed-off-by: Zhang Shengju <zhangshengju@cmss.chinamobile.com>
-Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
-v2:
- - add fixed tag
----
- drivers/net/ethernet/xscale/ixp4xx_eth.c | 2 ++
- 1 file changed, 2 insertions(+)
+ tools/bpf/runqslower/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-index 269596c15..2e5202923 100644
---- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
-+++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-@@ -1387,6 +1387,8 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	regs_phys = res->start;
- 	port->regs = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(port->regs))
-+		return PTR_ERR(port->regs);
- 
- 	switch (port->id) {
- 	case IXP4XX_ETH_NPEA:
--- 
-2.20.1.windows.1
-
-
+diff --git a/tools/bpf/runqslower/Makefile b/tools/bpf/runqslower/Makefil=
+e
+index 39edd68afa8e..8a6f82e56a24 100644
+--- a/tools/bpf/runqslower/Makefile
++++ b/tools/bpf/runqslower/Makefile
+@@ -8,7 +8,7 @@ BPFTOOL ?=3D $(DEFAULT_BPFTOOL)
+ LIBBPF_SRC :=3D $(abspath ../../lib/bpf)
+ BPFOBJ :=3D $(OUTPUT)/libbpf.a
+ BPF_INCLUDE :=3D $(OUTPUT)
+-INCLUDES :=3D -I$(BPF_INCLUDE) -I$(OUTPUT) -I$(abspath ../../lib)
++INCLUDES :=3D -I$(OUTPUT) -I$(BPF_INCLUDE) -I$(abspath ../../lib)
+ CFLAGS :=3D -g -Wall
+=20
+ # Try to detect best kernel BTF source
+--=20
+2.24.1
 
