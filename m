@@ -2,132 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A62D1B47CF
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 16:55:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7A3C1B47ED
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 16:57:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728089AbgDVOzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 10:55:31 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:49646 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727920AbgDVOzT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 10:55:19 -0400
-Received: from ip5f5af183.dynamic.kabel-deutschland.de ([95.90.241.131] helo=wittgenstein.fritz.box)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <christian.brauner@ubuntu.com>)
-        id 1jRGmR-0006CM-Oh; Wed, 22 Apr 2020 14:55:15 +0000
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     Jens Axboe <axboe@kernel.dk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-api@vger.kernel.org
-Cc:     Jonathan Corbet <corbet@lwn.net>, Serge Hallyn <serge@hallyn.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, Tejun Heo <tj@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Saravana Kannan <saravanak@google.com>,
-        Jan Kara <jack@suse.cz>, David Howells <dhowells@redhat.com>,
-        Seth Forshee <seth.forshee@canonical.com>,
-        David Rheinsberg <david.rheinsberg@gmail.com>,
-        Tom Gundersen <teg@jklm.no>,
-        Christian Kellner <ckellner@redhat.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
-        linux-doc@vger.kernel.org, netdev@vger.kernel.org,
-        Steve Barber <smbarber@google.com>,
-        Dylan Reid <dgreid@google.com>,
-        Filipe Brandenburger <filbranden@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Benjamin Elder <bentheelder@google.com>,
-        Akihiro Suda <suda.kyoto@gmail.com>
-Subject: [PATCH v2 7/7] loopfs: only show devices in their correct instance
-Date:   Wed, 22 Apr 2020 16:54:37 +0200
-Message-Id: <20200422145437.176057-8-christian.brauner@ubuntu.com>
-X-Mailer: git-send-email 2.26.1
-In-Reply-To: <20200422145437.176057-1-christian.brauner@ubuntu.com>
-References: <20200422145437.176057-1-christian.brauner@ubuntu.com>
+        id S1728129AbgDVO4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 10:56:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49932 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727069AbgDVO43 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 10:56:29 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70758C03C1A9
+        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 07:56:29 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id mq3so1039624pjb.1
+        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 07:56:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=cJMFTGsb3fkV1xXGdQYacTP3uNP3RmYzCrCOpiwE2HQ=;
+        b=IK/YIoz3JVZFDuKm+FCe2A5AykugcXRUcdDCVptfsdlRg5FcPrls+Bb5bkkqu1Wegi
+         1zPGM0LtXqpfRJVN9qAgkzAFdDZ64X6XaKJo+tftagtz8KGspkLpomnbsODEapLyF/Hd
+         eHYp9n+3KyHgtKcOEIRIZ80vabIwta/DiUFofreo/IF/sSKGUCkmDXXK54D8kMVHzWAt
+         TlqpPbiNT+QY+et4YOBSLmjHNL+Aq+lI1mxkHfBLoPMfPGz1kwsN981L2lVRT9m4pYTb
+         wkW5kfG2SFVRa0E0S9whrUA7QgZPvs4eWrn5L06NLeLfvAf76pIW8g7lSWJdRRJe8EOL
+         u/xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=cJMFTGsb3fkV1xXGdQYacTP3uNP3RmYzCrCOpiwE2HQ=;
+        b=N9KZ3AhuYSwJYzK374FwKIqx5HkKWXqxXDz4XFDR9m57/7lG9i751PHTjv8zsw91pF
+         K6YMCliOcN6x+0yIs7H/XLWUkCi0LpqpoKMh06sw3ycTRvyHRcOrk1rcyxcLG27ml8zR
+         D7q5O83E6srhYF2dbTZ9+BWadmxyVh5oZqY/vGjZMTNDkG1834HFd8JRfOzL+7g15h7S
+         JoMJ0FLJHwwdPhmXoWlYFcqu3Pv6RIWoGBBPU8sv4qvhHY3d3Q9qWD5SkOjL+lINwb2p
+         eveg43njOAKj8xkB8zpK1GHTxKxIEg/i/YbA4Bqx7DhgfR9Jnk0Ky+7g1+6B0WQBeZHv
+         +VeA==
+X-Gm-Message-State: AGi0PuaRoyntpqrshkddUGNEkBtt4tdRZx+bH52UO5S6jZZamxpA3pdf
+        LHSYhpjwlVP4UdlLVPwdQuo=
+X-Google-Smtp-Source: APiQypJiOpvo2NH/QPYWYtyeK1LGPRZWLxzwU0scOR5CTzLwBu8cnJxthubGruPRs4sKc27qeEIDqQ==
+X-Received: by 2002:a17:90a:30e7:: with SMTP id h94mr11385679pjb.186.1587567388892;
+        Wed, 22 Apr 2020 07:56:28 -0700 (PDT)
+Received: from host ([154.223.71.61])
+        by smtp.gmail.com with ESMTPSA id o99sm5773699pjo.8.2020.04.22.07.56.24
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 22 Apr 2020 07:56:27 -0700 (PDT)
+Date:   Wed, 22 Apr 2020 22:56:21 +0800
+From:   Bo YU <tsu.yubo@gmail.com>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     matthieu.baerts@tessares.net, davem@davemloft.net, kuba@kernel.org,
+        mathew.j.martineau@linux.intel.com, netdev@vger.kernel.org,
+        mptcp@lists.01.org
+Subject: Re: [PATCH V2 -next] mptcp/pm_netlink.c : add check for
+ nla_put_in/6_addr
+Message-ID: <20200422145618.b5qshinlmi26i6ko@host>
+References: <20200422013433.qzlthtmx4c7mmlh3@host>
+ <f82e4d00d4d4680994f0885c55831b2e9a2299c1.camel@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+In-Reply-To: <f82e4d00d4d4680994f0885c55831b2e9a2299c1.camel@redhat.com>
+User-Agent: NeoMutt/20171215
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since loopfs devices belong to a loopfs instance they have no business
-polluting the host's devtmpfs mount and should not propagate out of the
-namespace they belong to.
+On Wed, Apr 22, 2020 at 12:12:27PM +0200, Paolo Abeni wrote:
+>On Wed, 2020-04-22 at 09:34 +0800, Bo YU wrote:
+>> Normal there should be checked for nla_put_in6_addr like other
+>> usage in net.
+>>
+>> Detected by CoverityScan, CID# 1461639
+>>
+>> Fixes: 01cacb00b35c("mptcp: add netlink-based PM")
+>> Signed-off-by: Bo YU <tsu.yubo@gmail.com>
+>> ---
+>> V2: Add check for nla_put_in_addr suggested by Paolo Abeni
+>
+>Thank you for addressing my feedback!
+>
+>> ---
+>>  net/mptcp/pm_netlink.c | 11 +++++++----
+>>  1 file changed, 7 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+>> index 86d61ab34c7c..0a39f0ebad76 100644
+>> --- a/net/mptcp/pm_netlink.c
+>> +++ b/net/mptcp/pm_netlink.c
+>> @@ -599,12 +599,15 @@ static int mptcp_nl_fill_addr(struct sk_buff *skb,
+>>  	    nla_put_s32(skb, MPTCP_PM_ADDR_ATTR_IF_IDX, entry->ifindex))
+>>  		goto nla_put_failure;
+>>
+>> -	if (addr->family == AF_INET)
+>> +	if (addr->family == AF_INET &&
+>>  		nla_put_in_addr(skb, MPTCP_PM_ADDR_ATTR_ADDR4,
+>> -				addr->addr.s_addr);
+>> +				addr->addr.s_addr))
+>> +		goto nla_put_failure;
+>> +
+>
+>I'm very sorry about the nit-picking, but the above is now a single
+>statement, and indentation should be adjusted accordingly:
+>'nla_put_in_addr()' should be aligned with 'addr->family'.
+Ok, but i just want to make clear for that, do you mean:
 
-Cc: Jens Axboe <axboe@kernel.dk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
----
-/* v2 */
-unchanged
----
- drivers/base/devtmpfs.c | 4 ++--
- drivers/block/loop.c    | 4 +++-
- include/linux/device.h  | 3 +++
- 3 files changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/base/devtmpfs.c b/drivers/base/devtmpfs.c
-index c9017e0584c0..77371ceb88fa 100644
---- a/drivers/base/devtmpfs.c
-+++ b/drivers/base/devtmpfs.c
-@@ -111,7 +111,7 @@ int devtmpfs_create_node(struct device *dev)
- 	const char *tmp = NULL;
- 	struct req req;
- 
--	if (!thread)
-+	if (!thread || dev->no_devnode)
- 		return 0;
- 
- 	req.mode = 0;
-@@ -138,7 +138,7 @@ int devtmpfs_delete_node(struct device *dev)
- 	const char *tmp = NULL;
- 	struct req req;
- 
--	if (!thread)
-+	if (!thread || dev->no_devnode)
- 		return 0;
- 
- 	req.name = device_get_devnode(dev, NULL, NULL, NULL, &tmp);
-diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-index 2dc53bad4b48..5548151b9f11 100644
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -2213,8 +2213,10 @@ static int loop_add(struct loop_device **l, int i, struct inode *inode)
- 	disk->queue		= lo->lo_queue;
- 	sprintf(disk->disk_name, "loop%d", i);
- #ifdef CONFIG_BLK_DEV_LOOPFS
--	if (loopfs_i_sb(inode))
-+	if (loopfs_i_sb(inode)) {
- 		disk->user_ns = loopfs_i_sb(inode)->s_user_ns;
-+		disk_to_dev(disk)->no_devnode = true;
-+	}
- #endif
- 
- 	add_disk(disk);
-diff --git a/include/linux/device.h b/include/linux/device.h
-index ac8e37cd716a..c69ef1c5a0ef 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -523,6 +523,8 @@ struct dev_links_info {
-  *		  sync_state() callback.
-  * @dma_coherent: this particular device is dma coherent, even if the
-  *		architecture supports non-coherent devices.
-+ * @no_devnode: whether device nodes associated with this device are kept out
-+ *		of devtmpfs (e.g. due to separate filesystem)
-  *
-  * At the lowest level, every device in a Linux system is represented by an
-  * instance of struct device. The device structure contains the information
-@@ -622,6 +624,7 @@ struct device {
-     defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
- 	bool			dma_coherent:1;
- #endif
-+	bool			no_devnode:1;
- };
- 
- static inline struct device *kobj_to_dev(struct kobject *kobj)
--- 
-2.26.1
+	if (addr->family == AF_INET && nla_put_in_addr(skb,
+			MPTCP_PM_ADDR_ATTR_ADDR4, addr->addr.s_addr))
 
+In fact, i was upset by checkpatch about over 80 chars warning.
+This is my originally version patch to fix it :(. If i was wrong
+to understand your means, please  correct me. Thank you.
+
+>
+>The same applies to the chunk below.
+>
+>>  #if IS_ENABLED(CONFIG_MPTCP_IPV6)
+>> -	else if (addr->family == AF_INET6)
+>> -		nla_put_in6_addr(skb, MPTCP_PM_ADDR_ATTR_ADDR6, &addr->addr6);
+>> +	else if (addr->family == AF_INET6 &&
+>> +		nla_put_in6_addr(skb, MPTCP_PM_ADDR_ATTR_ADDR6, &addr->addr6))
+>> +		goto nla_put_failure;
+>>  #endif
+>>  	nla_nest_end(skb, attr);
+>>  	return 0;
+>
+>Otherwise LGTM, thanks!
+>
+>Paolo
+>
