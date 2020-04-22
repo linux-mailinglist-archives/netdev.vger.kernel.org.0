@@ -2,134 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 316DE1B3BA2
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 11:43:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85FE21B3BB3
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 11:48:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726323AbgDVJnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 05:43:07 -0400
-Received: from out20-111.mail.aliyun.com ([115.124.20.111]:38802 "EHLO
-        out20-111.mail.aliyun.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbgDVJnH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 05:43:07 -0400
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.06413273|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0664301-0.00201621-0.931554;FP=0|0|0|0|0|-1|-1|-1;HT=e02c03293;MF=mao-linux@maojianwei.com;NM=1;PH=DW;RN=7;RT=7;SR=0;TI=W4_5844326_v5_0AC266A0_1587548538056_o7001c947h;
-Received: from WS-web (mao-linux@maojianwei.com[W4_5844326_v5_0AC266A0_1587548538056_o7001c947h]) by e01l04378.eu6 at Wed, 22 Apr 2020 17:43:03 +0800
-Date:   Wed, 22 Apr 2020 17:43:03 +0800
-From:   "=?UTF-8?B?SmlhbndlaSBNYW8gKE1hbyk=?=" <mao-linux@maojianwei.com>
-To:     "netdev" <netdev@vger.kernel.org>
-Cc:     "davem" <davem@davemloft.net>, "kuznet" <kuznet@ms2.inr.ac.ru>,
-        "yoshfuji" <yoshfuji@linux-ipv6.org>, "kuba" <kuba@kernel.org>,
-        "dave.taht" <dave.taht@gmail.com>, "lkp" <lkp@intel.com>
-Reply-To: "=?UTF-8?B?SmlhbndlaSBNYW8gKE1hbyk=?=" <mao-linux@maojianwei.com>
-Message-ID: <a9a64f23-ed11-4b8d-b7be-75c686ad87fb.mao-linux@maojianwei.com>
-Subject: =?UTF-8?B?W1BBVENIIG5ldC1uZXh0IHYyXSBuZXQ6IGlwdjY6IHN1cHBvcnQgQXBwbGljYXRpb24tYXdh?=
-  =?UTF-8?B?cmUgSVB2NiBOZXR3b3JrICAoQVBONik=?=
-X-Mailer: [Alimail-Mailagent revision 4][W4_5844326][v5][Chrome]
+        id S1726284AbgDVJsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 05:48:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58224 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725961AbgDVJsE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 05:48:04 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6717C03C1A8
+        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 02:48:03 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id w4so1658829ioc.6
+        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 02:48:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=tIk35OlHPDX6n12j2pZSDOuj979+Q9ZAlmTrda5l5b0=;
+        b=TycfypalCWBKroIC2WsZBfzmGxEd+se/FepNnFTxDYquGhwnN0wBhWwJzzhI9HsaxG
+         uTbJGAfWYnIs0OVbUjx857XSDbHjmxKphcYrzrm7+4oN6KFy3av63t8l1KdT6Q4UPcsZ
+         wSDN6qY3D6TDdp7OX8AuG5SZCxjDZHzlJzwBSn1SuYHnyxxBAlOEcSrs/8aikpxTuijG
+         AYVLPMD6HICZlbmdNTofYIChJOjxg6DzadOwwckELLnhMFjqJr+/uv/hxrh9Pe7PvqpI
+         UyXqTMh5HfywVj5eOsJxh51l1QKF9jig+jupf0zYPMDq3XEZ2hNX48wYJh/JO60A1ng2
+         OJWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=tIk35OlHPDX6n12j2pZSDOuj979+Q9ZAlmTrda5l5b0=;
+        b=qP9R7tCstL+f0kA2Xk2Ezoe8/N/2Y7Y81DwxcFIqnLI9v+Y4A3FXBfSB9xpJzsZPBz
+         caAcBZFA1HQUn9oiLArwtvmIKZ3QaztFJeI2rPIwoeHIXPr7Z/j56nNZRsYVi/RTednb
+         /iaqb07blSo64wJHXU1Fi2DbzLtVy7L5iWj8+4fxrY0d2upNh/+VF9JWqJNmlSiYYufG
+         0xpyEAJJunpScCTr4l3VnMm1sY7sOr/gpzqPp/LzdVYwcTW0TDIpoKZKg9qHSR7SHoYo
+         7WcFGqSq2PJSJF7hJie5Nr9odhh6+lRHDoH1BXn8B9yUenuVLTGYLtnNwgJOdqN+M+x+
+         X48g==
+X-Gm-Message-State: AGi0PubLeiPk83Q2rIKmjV5DbEnLJb0sDU9U0GcHdL3xH4IXfXG5yu/v
+        VY8j2hYZZDxXaQH5kjp34flFzA==
+X-Google-Smtp-Source: APiQypIDi2d7wTXwpFVyaBmrERb0mhfR143clFk1m/t5fY1dlsItKBBR5/XCQKL/UsTln7ASsy3WuA==
+X-Received: by 2002:a05:6602:2f08:: with SMTP id q8mr24920887iow.103.1587548883177;
+        Wed, 22 Apr 2020 02:48:03 -0700 (PDT)
+Received: from [192.168.0.105] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
+        by smtp.googlemail.com with ESMTPSA id g87sm1885670ile.25.2020.04.22.02.48.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Apr 2020 02:48:02 -0700 (PDT)
+Subject: Re: [PATCH iproute2 1/1] bpf: Fix segfault when custom pinning is
+ used
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     stephen@networkplumber.org, netdev@vger.kernel.org,
+        dsahern@gmail.com, aclaudi@redhat.com, daniel@iogearbox.net,
+        Jamal Hadi Salim <hadi@mojatatu.com>
+References: <20200421180426.6945-1-jhs@emojatatu.com>
+ <20200422064215.GA17201@nautica>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <8766e548-5486-8228-f583-e5d501a41aec@mojatatu.com>
+Date:   Wed, 22 Apr 2020 05:47:47 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-References: <49178de1-75cc-4736-b572-1530a0d5fccf.mao-linux@maojianwei.com>
-In-Reply-To: <49178de1-75cc-4736-b572-1530a0d5fccf.mao-linux@maojianwei.com>
-x-aliyun-mail-creator: W4_5844326_v5_M2ITW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzgxLjAuNDA0NC4xMTMgU2FmYXJpLzUzNy4zNg==3L
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+In-Reply-To: <20200422064215.GA17201@nautica>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgZnJpZW5kcywKCkkgd291bGQgbGlrZSB0byBwcm9wb3NlIHRoaXMgbmV3IGZlYXR1cmUgZm9y
-IHlvdSBhbmQgbGludXggbmV0d29ya2luZzoKc3VwcG9ydCBBcHBsaWNhdGlvbi1hd2FyZSBJUHY2
-IE5ldHdvcmsgKEFQTjYpCgpJIGhhdmUgbWFkZSBzb21lIGNoYW5nZXMgdG8gdjEgcGF0Y2gsIGFu
-ZCB0aGUgdjIgcGF0Y2ggZmlsZSBpcyBhcyBmb2xsb3cuCkRldGFpbHMgb2YgY2hhbmdlcyBhcmUg
-bGlzdGVkIGF0IHRoZSBib3R0b20gb2YgdGhlIGNvbW1pdCBtZXNzYWdlLgpBcHByZWNpYXRlIHlv
-dXIgcmV2aWV3cyBhbmQgY29tbWVudHMsIHRoYW5rcywgTWFvIDopCgoKRmVhdHVyZSBwcm9wb3Nh
-bDogc3VwcG9ydCBBcHBsaWNhdGlvbi1hd2FyZSBJUHY2IE5ldHdvcmsgKEFQTjYpCgpUaGlzIGZl
-YXR1cmUgYWxsb3dzIGFwcGxpY2F0aW9uIGNsaWVudC9zZXJ2ZXIgc2V0IEFQTjYgaW5mb3MgdG8g
-c29ja2V0cwp0aGV5IGFyZSB1c2luZyB0byBjb21tdW5pY2F0ZSB0byBlYWNoIG90aGVyLCBieSBz
-ZXRzb2Nrb3B0KCkuCgpBUE42IGluZm9zIGluY2x1ZGUgdGhyZWUgZmllbGRzIG5vdzogU0xBLCBB
-cHBJRCBhbmQgVXNlcklELiBUaGlzIEFQTjYKaW5mb3Mgd2lsbCBiZSBlbmNhcHN1bGF0ZWQgaW4g
-SVB2NiBIb3AtYnktSG9wKEhCSCkgZXh0ZW5zaW9uIGhlYWRlciwKYXMgYW4gQVBONiBvcHRpb24g
-VExWLgoKQWZ0ZXIgdGhhdCwgbmV0d29yayBjYW4gcHJvdmlkZSBzcGVjaWZpYyBwZXJmb3JtYW5j
-ZSBmb3IgQXBwcywgc3VjaCBhcywKbG93LWxhdHRlbmN5IGZvciBvbmxpbmUgR2FtZXMsIGxvdy1q
-aXR0ZXIgZm9yIGluZHVzdHJpYWwgY29udHJvbCwKZW5vdWdoLWJhbmR3aWR0aCBmb3IgdmlkZW8g
-Y29uZmVyZW5jZS9yZW1vdGUgbWVkaWNhbCBzeXN0ZW0sIGV0Yy4KCldlIG1hZGUgdGhyZWUgY2hh
-bmdlczoKMS4gYWRkIElQVjZfQVBONiBhcyBhbiBvcHRuYW1lIGZvciBJUFBST1RPX0lQVjYgbGV2
-ZWwuCjIuIGFkZCBzdHJ1Y3QgYXBuNl9ob3BvcHRfaGRyIHRvIHJlcHJlc2VudCBBUE42IEhCSCBo
-ZWFkZXIKMy4gYWRkIGEgZnVuY3Rpb24gdG8gZ2VuZXJhdGUgSVB2NiBBUE42IEhCSCBoZWFkZXIs
-IGFuZCByZS11c2UKICAgSVBWNl9IT1BPUFRTIHByb2NlZHVyZSB0byBzZXQgdGhpcyBoZWFkZXIg
-dG8gc29ja2V0IG9wdC4KClRoaXMgZmVhdHVyZSBpcyB0byBzdXBwb3J0IEFQTjYgSUVURiBTdGFu
-ZGFyZCBkcmFmdDoKaHR0cHM6Ly93d3cuaWV0Zi5vcmcvaWQvZHJhZnQtbGktNm1hbi1hcHAtYXdh
-cmUtaXB2Ni1uZXR3b3JrLTAxLnR4dAoKU2lnbmVkLW9mZi1ieTogSmlhbndlaSBNYW8gPG1hby1s
-aW51eEBtYW9qaWFud2VpLmNvbT4KUmVwb3J0ZWQtYnk6IGtidWlsZCB0ZXN0IHJvYm90IDxsa3BA
-aW50ZWwuY29tPgotLS0KIGluY2x1ZGUvdWFwaS9saW51eC9pbjYuaCAgfCAgNCArKysKIGluY2x1
-ZGUvdWFwaS9saW51eC9pcHY2LmggfCAxNCArKysrKysrKwogbmV0L2lwdjYvaXB2Nl9zb2NrZ2x1
-ZS5jICB8IDY4ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLS0tLQogMyBmaWxl
-cyBjaGFuZ2VkLCA3MSBpbnNlcnRpb25zKCspLCAxNSBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQg
-YS9pbmNsdWRlL3VhcGkvbGludXgvaW42LmggYi9pbmNsdWRlL3VhcGkvbGludXgvaW42LmgKaW5k
-ZXggOWYyMjczYTA4MzU2Li42NjAxY2FkNTg0MTUgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvdWFwaS9s
-aW51eC9pbjYuaAorKysgYi9pbmNsdWRlL3VhcGkvbGludXgvaW42LmgKQEAgLTI5Nyw0ICsyOTcs
-OCBAQCBzdHJ1Y3QgaW42X2Zsb3dsYWJlbF9yZXEgewogICogLi4uCiAgKiBNUlQ2X01BWAogICov
-CisKKy8qIEFQTjY6IEFwcGxpY2F0aW9uLWF3YXJlIElQdjYgTmV0d29yayAqLworI2RlZmluZSBJ
-UFY2X0FQTjYJCTgxCisKICNlbmRpZiAvKiBfVUFQSV9MSU5VWF9JTjZfSCAqLwpkaWZmIC0tZ2l0
-IGEvaW5jbHVkZS91YXBpL2xpbnV4L2lwdjYuaCBiL2luY2x1ZGUvdWFwaS9saW51eC9pcHY2LmgK
-aW5kZXggMTNlODc1MWJmMjRhLi4wMDAyYzEzNDNhYjUgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvdWFw
-aS9saW51eC9pcHY2LmgKKysrIGIvaW5jbHVkZS91YXBpL2xpbnV4L2lwdjYuaApAQCAtNzAsNiAr
-NzAsMjAgQEAgc3RydWN0IGlwdjZfb3B0X2hkciB7CiAjZGVmaW5lIGlwdjZfZGVzdG9wdF9oZHIg
-aXB2Nl9vcHRfaGRyCiAjZGVmaW5lIGlwdjZfaG9wb3B0X2hkciAgaXB2Nl9vcHRfaGRyCiAKKy8q
-IEFwcGxpY2F0aW9uLWF3YXJlIElQdjYgTmV0d29yayhBUE42KQorICogKGRyYWZ0LWxpLTZtYW4t
-YXBwLWF3YXJlLWlwdjYtbmV0d29yaywgUkZDODIwMCkKKyAqLworI2RlZmluZSBJUFY2X0hPUE9Q
-VF9UWVBFX0FQTjYJMworc3RydWN0IGFwbjZfaG9wb3B0X2hkciB7CisJc3RydWN0IGlwdjZfaG9w
-b3B0X2hkcglob3BvcHRfaGRyOworCV9fdTggCQlvcHRfdHlwZTsKKwlfX3U4IAkJb3B0X2xlbjsK
-KworCV9fYmUzMiAJCXNsYTsKKwlfX2JlMzIgCQlhcHBfaWQ7CisJX19iZTMyIAkJdXNlcl9pZDsK
-K307CisKIC8qIFJvdXRlciBBbGVydCBvcHRpb24gdmFsdWVzIChSRkMyNzExKSAqLwogI2RlZmlu
-ZSBJUFY2X09QVF9ST1VURVJBTEVSVF9NTEQJMHgwMDAwCS8qIE1MRChSRkMyNzEwKSAqLwogCmRp
-ZmYgLS1naXQgYS9uZXQvaXB2Ni9pcHY2X3NvY2tnbHVlLmMgYi9uZXQvaXB2Ni9pcHY2X3NvY2tn
-bHVlLmMKaW5kZXggZGViZGFlYmE1ZDhjLi42MDQ5ZjBlMmU2ZDQgMTAwNjQ0Ci0tLSBhL25ldC9p
-cHY2L2lwdjZfc29ja2dsdWUuYworKysgYi9uZXQvaXB2Ni9pcHY2X3NvY2tnbHVlLmMKQEAgLTEz
-Niw2ICsxMzYsMzEgQEAgc3RhdGljIGJvb2wgc2V0c29ja29wdF9uZWVkc19ydG5sKGludCBvcHRu
-YW1lKQogCXJldHVybiBmYWxzZTsKIH0KIAorLyogUmV0dXJuIEFQTjYgSG9wLWJ5LUhvcChIQkgp
-IGV4dGVuc2lvbiBoZWFkZXIgKi8KK3N0YXRpYyB2b2lkICpnZW5lcmF0ZV9hcG42X2hvcG9wdHMo
-Y2hhciBfX3VzZXIgKm9wdHZhbCwgdW5zaWduZWQgaW50IG9wdGxlbikKK3sKKwlzdHJ1Y3QgYXBu
-Nl9ob3BvcHRfaGRyICphcG42X2hiaDsKKwl1bnNpZ25lZCBpbnQgc2xhLCBhcHBfaWQsIHVzZXJf
-aWQ7CisKKwlpZiAob3B0bGVuIDwgKHNpemVvZih1bnNpZ25lZCBpbnQpICogMykgfHwgIW9wdHZh
-bCkKKwkJcmV0dXJuIE5VTEw7CisKKwlpZiAoZ2V0X3VzZXIoc2xhLCAoKHVuc2lnbmVkIGludCBf
-X3VzZXIgKilvcHR2YWwpKSB8fAorCSAgICBnZXRfdXNlcihhcHBfaWQsICgodW5zaWduZWQgaW50
-IF9fdXNlciAqKW9wdHZhbCkgKyAxKSB8fAorCSAgICBnZXRfdXNlcih1c2VyX2lkLCAoKHVuc2ln
-bmVkIGludCBfX3VzZXIgKilvcHR2YWwpICsgMikpCisJCXJldHVybiBFUlJfUFRSKC1FRkFVTFQp
-OworCisJYXBuNl9oYmggPSBremFsbG9jKHNpemVvZigqYXBuNl9oYmgpLCBHRlBfS0VSTkVMKTsK
-KwlhcG42X2hiaC0+aG9wb3B0X2hkci5oZHJsZW4gPSAoc2l6ZW9mKCphcG42X2hiaCkgPj4gMykg
-LSAxOworCWFwbjZfaGJoLT5vcHRfdHlwZSA9IElQVjZfSE9QT1BUX1RZUEVfQVBONjsKKwlhcG42
-X2hiaC0+b3B0X2xlbiA9IHNpemVvZigqYXBuNl9oYmgpIC0gNDsKKwlhcG42X2hiaC0+c2xhID0g
-aHRvbmwoc2xhKTsKKwlhcG42X2hiaC0+YXBwX2lkID0gaHRvbmwoYXBwX2lkKTsKKwlhcG42X2hi
-aC0+dXNlcl9pZCA9IGh0b25sKHVzZXJfaWQpOworCisJcmV0dXJuIGFwbjZfaGJoOworfQorCiBz
-dGF0aWMgaW50IGRvX2lwdjZfc2V0c29ja29wdChzdHJ1Y3Qgc29jayAqc2ssIGludCBsZXZlbCwg
-aW50IG9wdG5hbWUsCiAJCSAgICBjaGFyIF9fdXNlciAqb3B0dmFsLCB1bnNpZ25lZCBpbnQgb3B0
-bGVuKQogewpAQCAtNDAwLDM0ICs0MjUsNDcgQEAgc3RhdGljIGludCBkb19pcHY2X3NldHNvY2tv
-cHQoc3RydWN0IHNvY2sgKnNrLCBpbnQgbGV2ZWwsIGludCBvcHRuYW1lLAogCWNhc2UgSVBWNl9S
-VEhEUkRTVE9QVFM6CiAJY2FzZSBJUFY2X1JUSERSOgogCWNhc2UgSVBWNl9EU1RPUFRTOgorCWNh
-c2UgSVBWNl9BUE42OgogCXsKIAkJc3RydWN0IGlwdjZfdHhvcHRpb25zICpvcHQ7CiAJCXN0cnVj
-dCBpcHY2X29wdF9oZHIgKm5ldyA9IE5VTEw7CiAKIAkJLyogaG9wLWJ5LWhvcCAvIGRlc3RpbmF0
-aW9uIG9wdGlvbnMgYXJlIHByaXZpbGVnZWQgb3B0aW9uICovCiAJCXJldHYgPSAtRVBFUk07Ci0J
-CWlmIChvcHRuYW1lICE9IElQVjZfUlRIRFIgJiYgIW5zX2NhcGFibGUobmV0LT51c2VyX25zLCBD
-QVBfTkVUX1JBVykpCisJCWlmIChvcHRuYW1lICE9IElQVjZfQVBONiAmJiBvcHRuYW1lICE9IElQ
-VjZfUlRIRFIgJiYKKwkJICAgICFuc19jYXBhYmxlKG5ldC0+dXNlcl9ucywgQ0FQX05FVF9SQVcp
-KQogCQkJYnJlYWs7CiAKLQkJLyogcmVtb3ZlIGFueSBzdGlja3kgb3B0aW9ucyBoZWFkZXIgd2l0
-aCBhIHplcm8gb3B0aW9uCi0JCSAqIGxlbmd0aCwgcGVyIFJGQzM1NDIuCi0JCSAqLwotCQlpZiAo
-b3B0bGVuID09IDApCi0JCQlvcHR2YWwgPSBOVUxMOwotCQllbHNlIGlmICghb3B0dmFsKQotCQkJ
-Z290byBlX2ludmFsOwotCQllbHNlIGlmIChvcHRsZW4gPCBzaXplb2Yoc3RydWN0IGlwdjZfb3B0
-X2hkcikgfHwKLQkJCSBvcHRsZW4gJiAweDcgfHwgb3B0bGVuID4gOCAqIDI1NSkKLQkJCWdvdG8g
-ZV9pbnZhbDsKLQkJZWxzZSB7Ci0JCQluZXcgPSBtZW1kdXBfdXNlcihvcHR2YWwsIG9wdGxlbik7
-CisJCWlmIChvcHRuYW1lID09IElQVjZfQVBONikgeworCQkJbmV3ID0gZ2VuZXJhdGVfYXBuNl9o
-b3BvcHRzKG9wdHZhbCwgb3B0bGVuKTsKIAkJCWlmIChJU19FUlIobmV3KSkgewogCQkJCXJldHYg
-PSBQVFJfRVJSKG5ldyk7CiAJCQkJYnJlYWs7CiAJCQl9Ci0JCQlpZiAodW5saWtlbHkoaXB2Nl9v
-cHRsZW4obmV3KSA+IG9wdGxlbikpIHsKLQkJCQlrZnJlZShuZXcpOworCQkJLy8gbmV4dCBzdGVw
-cyBhcmUgc2FtZSBhcyBJUFY2X0hPUE9QVFMgcHJvY2VkdXJlLAorCQkJLy8gc28gd2UgcmV1c2Ug
-aXQuCisJCQlvcHRuYW1lID0gSVBWNl9IT1BPUFRTOworCQl9IGVsc2UgeworCQkJLyogcmVtb3Zl
-IGFueSBzdGlja3kgb3B0aW9ucyBoZWFkZXIgd2l0aCBhIHplcm8gb3B0aW9uCisJCQkgKiBsZW5n
-dGgsIHBlciBSRkMzNTQyLgorCQkJICovCisJCQlpZiAob3B0bGVuID09IDApCisJCQkJb3B0dmFs
-ID0gTlVMTDsKKwkJCWVsc2UgaWYgKCFvcHR2YWwpCisJCQkJZ290byBlX2ludmFsOworCQkJZWxz
-ZSBpZiAob3B0bGVuIDwgc2l6ZW9mKHN0cnVjdCBpcHY2X29wdF9oZHIpIHx8CisJCQkJICAgICBv
-cHRsZW4gJiAweDcgfHwgb3B0bGVuID4gOCAqIDI1NSkKIAkJCQlnb3RvIGVfaW52YWw7CisJCQll
-bHNlIHsKKwkJCQluZXcgPSBtZW1kdXBfdXNlcihvcHR2YWwsIG9wdGxlbik7CisJCQkJaWYgKElT
-X0VSUihuZXcpKSB7CisJCQkJCXJldHYgPSBQVFJfRVJSKG5ldyk7CisJCQkJCWJyZWFrOworCQkJ
-CX0KKwkJCQlpZiAodW5saWtlbHkoaXB2Nl9vcHRsZW4obmV3KSA+IG9wdGxlbikpIHsKKwkJCQkJ
-a2ZyZWUobmV3KTsKKwkJCQkJZ290byBlX2ludmFsOworCQkJCX0KIAkJCX0KIAkJfQogCi0tIAoy
-LjE3LjE=
+On 2020-04-22 2:42 a.m., Dominique Martinet wrote:
+> (random review)
+> 
+
+Good review;->
+
+> Jamal Hadi Salim wrote on Tue, Apr 21, 2020:
+>> diff --git a/lib/bpf.c b/lib/bpf.c
+>> index 10cf9bf4..cf636c9e 100644
+>> --- a/lib/bpf.c
+>> +++ b/lib/bpf.c
+>> @@ -1509,12 +1509,12 @@ out:
+>>   static int bpf_make_custom_path(const struct bpf_elf_ctx *ctx,
+>>   				const char *todo)
+>>   {
+>> -	char *tmp = NULL;
+>> +	char tmp[PATH_MAX] = {};
+>>   	char *rem = NULL;
+>>   	char *sub;
+>>   	int ret;
+>>   
+>> -	ret = asprintf(&tmp, "%s/../", bpf_get_work_dir(ctx->type));
+>> +	ret = sprintf(tmp, "%s/../", bpf_get_work_dir(ctx->type));
+>>   	if (ret < 0) {
+>>   		fprintf(stderr, "asprintf failed: %s\n", strerror(errno));
+> 
+> error check needs to be reworded,
+
+Will reword.
+
+  and it probably needs to use snprintf
+> instead of sprintf: bpf_get_work_dir() can be up to PATH_MAX long and as
+> pointed out there are strcat() afterwards so it's still possible to
+> overflow this one
+> 
+
+and change to snprintf. The strcat afterwards is protected by the check
+                 if (strlen(tmp) + strlen(sub) + 2 > PATH_MAX)
+                         return -EINVAL;
+However, since you looked at it now that i am paying closer attention
+there's another bug there. The above check will return without freeing
+earlier asprintf allocated "rem" variable. Sounds like separate patch.
+
+cheers,
+jamal
