@@ -2,152 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB4B41B4B39
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 19:03:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C17671B4A86
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 18:32:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726839AbgDVRD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 13:03:27 -0400
-Received: from esgaroth.petrovitsch.at ([78.47.184.11]:4925 "EHLO
-        esgaroth.tuxoid.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726147AbgDVRD0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 13:03:26 -0400
-X-Greylist: delayed 1790 seconds by postgrey-1.27 at vger.kernel.org; Wed, 22 Apr 2020 13:03:23 EDT
-Received: from [10.68.100.236] (h10-gesig.woeg.acw.at [217.116.178.11] (may be forged))
-        (authenticated bits=0)
-        by esgaroth.tuxoid.at (8.15.2/8.15.2) with ESMTPSA id 03MGVYYO000469
-        (version=TLSv1 cipher=DHE-RSA-AES128-SHA bits=128 verify=NO);
-        Wed, 22 Apr 2020 18:31:34 +0200
-Subject: Re: [PATCH 1/4] fs: Implement close-on-fork
-To:     "Karstens, Nate" <Nate.Karstens@garmin.com>,
-        Matthew Wilcox <willy@infradead.org>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        David Laight <David.Laight@aculab.com>,
-        Changli Gao <xiaosuo@gmail.com>
-References: <20200420071548.62112-1-nate.karstens@garmin.com>
- <20200420071548.62112-2-nate.karstens@garmin.com>
- <fa6c5c9c7c434f878c94a7c984cd43ba@garmin.com>
- <20200422154356.GU5820@bombadil.infradead.org>
- <6ed7bd08892b4311b70636658321904f@garmin.com>
-From:   Bernd Petrovitsch <bernd@petrovitsch.priv.at>
-X-Pep-Version: 2.0
-Message-ID: <97f05204-a27c-7cc8-429a-edcf6eebaa11@petrovitsch.priv.at>
-Date:   Wed, 22 Apr 2020 16:31:34 +0000
+        id S1726421AbgDVQcX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 12:32:23 -0400
+Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:34583 "EHLO
+        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726006AbgDVQcW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 12:32:22 -0400
+Received: from barney.sedsystems.ca (barney [198.169.180.121])
+        by sed198n136.sedsystems.ca  with ESMTP id 03MGVsjt025303
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 22 Apr 2020 10:31:54 -0600 (CST)
+Received: from [192.168.233.77] (ovpn77.sedsystems.ca [192.168.233.77])
+        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id 03MGVq7S002698
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+        Wed, 22 Apr 2020 10:31:52 -0600
+Subject: Re: Xilinx axienet 1000BaseX support
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andre Przywara <andre.przywara@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-arm-kernel@lists.infradead.org
+References: <20200110142038.2ed094ba@donnerap.cambridge.arm.com>
+ <20200110150409.GD25745@shell.armlinux.org.uk>
+ <20200110152215.GF25745@shell.armlinux.org.uk>
+ <20200110170457.GH25745@shell.armlinux.org.uk>
+ <20200118112258.GT25745@shell.armlinux.org.uk>
+ <3b28dcb4-6e52-9a48-bf9c-ddad4cf5e98a@arm.com>
+ <20200120154554.GD25745@shell.armlinux.org.uk>
+ <20200127170436.5d88ca4f@donnerap.cambridge.arm.com>
+ <20200127185344.GA25745@shell.armlinux.org.uk>
+ <bf2448d0-390c-5045-3503-885240829fbf@sedsystems.ca>
+ <20200422075124.GJ25745@shell.armlinux.org.uk>
+From:   Robert Hancock <hancock@sedsystems.ca>
+Message-ID: <21ed251b-964f-3f16-1a66-728bbeffa426@sedsystems.ca>
+Date:   Wed, 22 Apr 2020 10:31:52 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+ Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <6ed7bd08892b4311b70636658321904f@garmin.com>
-Content-Type: multipart/mixed;
- boundary="------------5C6F5C422D1052E6828086F8"
+In-Reply-To: <20200422075124.GJ25745@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-X-DCC-INFN-TO-Metrics: esgaroth.tuxoid.at 1233; Body=22 Fuz1=22 Fuz2=22
-X-Virus-Scanned: clamav-milter 0.97 at esgaroth.tuxoid.at
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED
-        autolearn=unavailable version=3.3.1
-X-Spam-Report: * -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on esgaroth.tuxoid.at
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------5C6F5C422D1052E6828086F8
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+On 2020-04-22 1:51 a.m., Russell King - ARM Linux admin wrote:
+> On Tue, Apr 21, 2020 at 07:45:47PM -0600, Robert Hancock wrote:
+>> Hi Andre/Russell,
+>>
+>> Just wondering where things got to with the changes for SGMII on Xilinx
+>> axienet that you were discussing (below)? I am looking into our Xilinx setup
+>> using 1000BaseX SFP and trying to get it working "properly" with newer
+>> kernels. My understanding is that the requirements for 1000BaseX and SGMII
+>> are somewhat similar. I gathered that SGMII was working somewhat already,
+>> but that not all link modes had been tested. However, it appears 1000BaseX
+>> is not yet working in the stock kernel.
+>>
+>> The way I had this working before with a 4.19-based kernel was basically a
+>> hack to phylink to allow the Xilinx PCS/PMA PHY to be configured
+>> sufficiently as a PHY for it to work, and mostly ignored the link status of
+>> the SFP PHY itself, even though we were using in-band signalling mode with
+>> an SFP module. That was using this patch:
+>>
+>> https://patchwork.ozlabs.org/project/netdev/patch/1559330285-30246-5-git-send-email-hancock@sedsystems.ca/
+>>
+>> Of course, that's basically just a hack which I suspect mostly worked by
+>> luck. I see that there are some helpers that were added to phylink to allow
+>> setting PHY advertisements and reading PHY status from clause 22 PHY
+>> devices, so I'm guessing that is the way to go in this case? Something like:
+>>
+>> axienet_mac_config: if using in-band mode, use
+>> phylink_mii_c22_pcs_set_advertisement to configure the Xilinx PHY.
+>>
+>> axienet_mac_pcs_get_state: use phylink_mii_c22_pcs_get_state to get the MAC
+>> PCS state from the Xilinx PHY
+>>
+>> axienet_mac_an_restart: if using in-band mode, use
+>> phylink_mii_c22_pcs_an_restart to restart autonegotiation on Xilinx PHY
+>>
+>> To use those c22 functions, we need to find the mdio_device that's
+>> referenced by the phy-handle in the device tree - I guess we can just use
+>> some of the guts of of_phy_find_device to do that?
+> 
+> Please see the code for DPAA2 - it's changed slightly since I sent a
+> copy to the netdev mailing list, and it still isn't clear whether this
+> is the final approach (DPAA2 has some fun stuff such as several
+> different PHYs at address 0.) NXP basically didn't like the approach
+> I had in the patches I sent to netdev, we had a call, they presented
+> an alternative appraoch, I implemented it, then they decided my
+> original approach was the better solution for their situation.
+> 
+> See http://git.armlinux.org.uk/cgit/linux-arm.git/log/?h=cex7
+> 
+> specifically the patches from:
+> 
+>    "dpaa2-mac: add 1000BASE-X/SGMII PCS support"
+> 
+> through to:
+> 
+>    "net: phylink: add interface to configure clause 22 PCS PHY"
+> 
+> You may also need some of the patches further down in the net-queue
+> branch:
+> 
+>    "net: phylink: avoid mac_config calls"
+> 
+> through to:
+> 
+>    "net: phylink: rejig link state tracking"
 
-On 22/04/2020 16:02, Karstens, Nate wrote:
->> It's not safe to call system() from a threaded app.  That's all.  It's=
- right there in the DESCRIPTION:
->=20
-> That is true, but that description is missing from both the Linux man p=
-age and the glibc documentation (https://www.gnu.org/software/libc/manual=
-/html_mono/libc.html#Running-a-Command). It seems like a minor point that=
- won't be noticed until it causes a problem, and problems are rare enough=
- they might go unnoticed for a while. We have removed system() from our a=
-pplication, but we're also concerned that libraries we integrate will use=
- system() without our knowledge.
+Thanks for the info. I've yet to decide whether or how I'm going to 
+attempt this task at the moment - it seems like there have been a lot of 
+changes to phylink and other related code lately and it appears to be a 
+bit of a task to backport them all into a released kernel version, more 
+so back to 5.4 which is the latest LTS kernel which we would ideally 
+want to use. So I might end up trying to open-code this more inside the 
+driver and eventually switching it to use the shared code when it's 
+merged, or maybe just deferring the proper fix for this until the 
+infrastructure is more in place in mainline.
 
-Reimplementing system() is trivial.
-LD_LIBRARY_PRELOAD should take care of all system(3) calls.
+> 
+>> One concern I have is that there may be things that the PHY subsystem would
+>> configure on the device that may need to be replicated in order to get it to
+>> actually work - things like setting auto-negotiate enable/disable, the
+>> BMCR_ISOLATE bit, etc - is that something that belongs in our mac_config or
+>> in the phylink core in phylink_mii_c22_pcs_set_advertisement etc?
+> 
+> I think some of that is addressed in the above patches, except for
+> the isolate bit - do your PHYs come up with the isolate bit set?
+> Under what circumstances would you need to set it?
 
-I wonder it it has some value to add runtime checking for
-"multi-threaded" to such lib functions and error out if
-yes.
+I believe it does come up isolated - from the Xilinx PG047 document for 
+the PCS/PMA core:
 
-Apart from that, system() is a PITA even on
-single/non-threaded apps.
+"Start-up Sequencing
+IEEE 802.3-2008 clause 22.2.4.1.6 states that by default, a PHY should 
+power up in an isolate state (electrically isolated from the GMII).
+If you are using the core with the optional management interface, it is 
+necessary to write to the PCS Configuration Register 0 to take the core 
+out of the isolate state."
 
-MfG,
-	Bernd
---=20
-There is no cloud, just other people computers.
--- https://static.fsf.org/nosvn/stickers/thereisnocloud.svg
+Also, in PG138 for the AXI Ethernet core, under Gigabit Ethernet PCS/PMA 
+Management Registers, it has this note:
 
---------------5C6F5C422D1052E6828086F8
-Content-Type: application/pgp-keys;
- name="pEpkey.asc"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
- filename="pEpkey.asc"
+"When using the 1000BASE-X TEMAC core (C_TYPE = 1 and C_PHY_TYPE = 5), 
+set the isolate bit to zero (Control register 0 bit 10). The subsystem 
+is not operational until this is completed."
 
------BEGIN PGP PUBLIC KEY BLOCK-----
+> 
+> Let me know how you get on.
+> 
+> Thanks.
+> 
 
-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3D=3D
-=3DGX6K
------END PGP PUBLIC KEY BLOCK-----
-
---------------5C6F5C422D1052E6828086F8--
+-- 
+Robert Hancock
+Senior Hardware Designer
+SED Systems, a division of Calian Ltd.
+Email: hancock@sedsystems.ca
