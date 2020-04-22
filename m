@@ -2,124 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90DFF1B42EA
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 13:16:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05A8C1B4304
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 13:19:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726420AbgDVLQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 07:16:22 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:43544 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725787AbgDVLQV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 07:16:21 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 03MBGFrS062002;
-        Wed, 22 Apr 2020 06:16:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1587554175;
-        bh=89X1lvMjHBm10I+ntaGK72ShPuo8BykYYefZWM91YCc=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=J5SbB60YTkOjlSOgIX0gfiAq4s0ehSiu250MPHxgbPDIPr2/6RZRcKDGqqorUJYcB
-         EIJA/xYNx+txh80hrtYzGl3PoYcflFeIvsIieYo3BrGACPBP3+QqVj+JRh+Gmkdi6H
-         x8pl2vStWE/BCvde8i/jUO/BsqFlTytiPR785Qns=
-Received: from DLEE111.ent.ti.com (dlee111.ent.ti.com [157.170.170.22])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 03MBGFGY039190
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 22 Apr 2020 06:16:15 -0500
-Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE111.ent.ti.com
- (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Wed, 22
- Apr 2020 06:16:14 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Wed, 22 Apr 2020 06:16:14 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 03MBGAIg117679;
-        Wed, 22 Apr 2020 06:16:12 -0500
-Subject: Re: [PATCH] net: cpts: Condition WARN_ON on PTP_1588_CLOCK
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Richard Cochran <richardcochran@gmail.com>
-CC:     Clay McClure <clay@daemons.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sekhar Nori <nsekhar@ti.com>,
-        Networking <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20200416085627.1882-1-clay@daemons.net>
- <6fef3a00-6c18-b775-d1b4-dfd692261bd3@ti.com>
- <20200420093610.GA28162@arctic-shiba-lx>
- <CAK8P3a36ZxNJxUS4UzrwJiMx8UrgYPkcv4X6yYw7EC4jRBbbGQ@mail.gmail.com>
- <20200420170051.GB11862@localhost>
- <CAK8P3a11CqpDJzjy5QfV-ebHgRxUu8SRVTJPPmsus1O1+OL72Q@mail.gmail.com>
- <20200420211819.GA16930@localhost>
- <CAK8P3a18540y3zqR=mqKhj-goinN3c-FGKvAnTHnLgBxiPa4mA@mail.gmail.com>
- <20200420213406.GB20996@localhost>
- <CAK8P3a22aSbpcVK-cZ6rhnPgbYEGU3z__G9xk1EexOPZd5Hmzw@mail.gmail.com>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <c04458ed-29ee-1797-3a11-7f3f560553e6@ti.com>
-Date:   Wed, 22 Apr 2020 14:16:11 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726774AbgDVLTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 07:19:31 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:28648 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725787AbgDVLT2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 07:19:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587554366;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3adrceupXKyLIJE05IQbOejDBq5MFoIz0/34EbiMoJY=;
+        b=PGk7I5cKQw34pz13IzpAkZy8ZucbtiapSKWbzfHGhgTgTH+tHeb3ABF6PG0jBVgvFMx1qT
+        UjvlR93L6AsuGsF2Fcpj3LMtqRXEGzRLSYBY4yBAI8GPBfItqZgMcwT3AE8ut35Rp4cZr0
+        s8unYf/N5XRjKwc5fGhFkeHVzYm6lW4=
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
+ [209.85.208.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-58-Pcqzdz_HPRiBYpsTzQGSjg-1; Wed, 22 Apr 2020 07:19:24 -0400
+X-MC-Unique: Pcqzdz_HPRiBYpsTzQGSjg-1
+Received: by mail-lj1-f199.google.com with SMTP id d25so292994ljo.4
+        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 04:19:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=3adrceupXKyLIJE05IQbOejDBq5MFoIz0/34EbiMoJY=;
+        b=NrkeTCGVsSzPSHUS9ubmVJFXnI/Ph/X/jbjx8tY1pdNNV1fu+H5VTf+a6lkrjUEt+Y
+         C9ZQxRMmZJig8XZ0llRW0mVQ7u77dusAFilDVsw6ZKv1bMNn7m9/kN+sYlsIWzdMcVO3
+         wkDTmf695kPL04nJrLw/b3fKimb9c4L98KZwyU4xzfP8PyyMEtD/C/lLQzMs2wGjcRUP
+         XjdJA5X7vnFG0k2Swkh9ekrlKY5FfCN/1qS+fxuY4rWonEY96bgiSI1coEs7gkaGtXDq
+         TdMA3eVCEnoyq5ZRjQ6EN3rBJhQKqjk6wlbY5CAzVM7uNfhJMbQGJF/GF4JCplYEbpwt
+         Uycg==
+X-Gm-Message-State: AGi0PuZktJ3Yybpgli+aFKfd49qo8jfUYqphgACG4wO/MJbz1uSUYvjl
+        AOj8ya4hPLfSgHvfy4xfZVSa65JAeGX38vheuqHV9lWJ46YU5qGvcEszuY7pQl21APaIJE7taw8
+        3+ZKbPeG4BAa7H1so
+X-Received: by 2002:a2e:3a0a:: with SMTP id h10mr14858575lja.54.1587554362434;
+        Wed, 22 Apr 2020 04:19:22 -0700 (PDT)
+X-Google-Smtp-Source: APiQypKgTKXtFT05R5dgb80W+Fuy9drBsDeICtlv+U2YLMTUHhv1QoWmXiMqwE8E5fRKbb5CBf3WbA==
+X-Received: by 2002:a2e:3a0a:: with SMTP id h10mr14858565lja.54.1587554362199;
+        Wed, 22 Apr 2020 04:19:22 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id u16sm4194094ljk.9.2020.04.22.04.19.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Apr 2020 04:19:21 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id B7315181586; Wed, 22 Apr 2020 13:19:18 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH bpf-next] libbpf: add BTF-defined map-in-map support
+In-Reply-To: <20200422051006.1152644-1-andriin@fb.com>
+References: <20200422051006.1152644-1-andriin@fb.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 22 Apr 2020 13:19:18 +0200
+Message-ID: <87mu737op5.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <CAK8P3a22aSbpcVK-cZ6rhnPgbYEGU3z__G9xk1EexOPZd5Hmzw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
+Andrii Nakryiko <andriin@fb.com> writes:
 
-On 21/04/2020 00:42, Arnd Bergmann wrote:
-> On Mon, Apr 20, 2020 at 11:34 PM Richard Cochran
-> <richardcochran@gmail.com> wrote:
->>
->> On Mon, Apr 20, 2020 at 11:21:20PM +0200, Arnd Bergmann wrote:
->>> It's not great, but we have other interfaces like this that can return NULL for
->>> success when the subsystem is disabled. The problem is when there is
->>> a mismatch between the caller treating NULL as failure when it is meant to
->>> be "successful lack of object returned".
->>
->> Yeah, that should be fixed.
->>
->> To be clear, do you all see a need to change the stubbed version of
->> ptp_clock_register() or not?
-> 
-> No, if the NULL return is only meant to mean "nothing wrong, keep going
-> wihtout an object", that's fine with me. It does occasionally confuse driver
-> writers (as seen here), so it's not a great interface, but there is no general
-> solution to make it better.
+> As discussed at LPC 2019 ([0]), this patch brings (a quite belated) support
+> for declarative BTF-defined map-in-map support in libbpf. It allows to define
+> ARRAY_OF_MAPS and HASH_OF_MAPS BPF maps without any user-space initialization
+> code involved.
+>
+> Additionally, it allows to initialize outer map's slots with references to
+> respective inner maps at load time, also completely declaratively.
+>
+> Despite a weak type system of C, the way BTF-defined map-in-map definition
+> works, it's actually quite hard to accidentally initialize outer map with
+> incompatible inner maps. This being C, of course, it's still possible, but
+> even that would be caught at load time and error returned with helpful debug
+> log pointing exactly to the slot that failed to be initialized.
+>
+> Here's the relevant part of libbpf debug log showing pretty clearly of what's
+> going on with map-in-map initialization:
+>
+> libbpf: .maps relo #0: for 6 value 0 rel.r_offset 96 name 260 ('inner_map1')
+> libbpf: .maps relo #0: map 'outer_arr' slot [0] points to map 'inner_map1'
+> libbpf: .maps relo #1: for 7 value 32 rel.r_offset 112 name 249 ('inner_map2')
+> libbpf: .maps relo #1: map 'outer_arr' slot [2] points to map 'inner_map2'
+> libbpf: .maps relo #2: for 7 value 32 rel.r_offset 144 name 249 ('inner_map2')
+> libbpf: .maps relo #2: map 'outer_hash' slot [0] points to map 'inner_map2'
+> libbpf: .maps relo #3: for 6 value 0 rel.r_offset 176 name 260 ('inner_map1')
+> libbpf: .maps relo #3: map 'outer_hash' slot [4] points to map 'inner_map1'
+> libbpf: map 'inner_map1': created successfully, fd=4
+> libbpf: map 'inner_map2': created successfully, fd=5
+> libbpf: map 'outer_arr': created successfully, fd=7
+> libbpf: map 'outer_arr': slot [0] set to map 'inner_map1' fd=4
+> libbpf: map 'outer_arr': slot [2] set to map 'inner_map2' fd=5
+> libbpf: map 'outer_hash': created successfully, fd=8
+> libbpf: map 'outer_hash': slot [0] set to map 'inner_map2' fd=5
+> libbpf: map 'outer_hash': slot [4] set to map 'inner_map1' fd=4
+>
+> See also included selftest with some extra comments explaining extra details
+> of usage.
 
-As per commit
-commit d1cbfd771ce8297fa11e89f315392de6056a2181
-Author: Nicolas Pitre <nicolas.pitre@linaro.org>
-Date:   Fri Nov 11 00:10:07 2016 -0500
+Could you please put an example of usage in the commit message as well?
+Easier to find that way, especially if the selftests are not handy (such
+as in the libbpf github repo).
 
-     ptp_clock: Allow for it to be optional
-     
-     In order to break the hard dependency between the PTP clock subsystem and
-     ethernet drivers capable of being clock providers, this patch provides
-     simple PTP stub functions to allow linkage of those drivers into the
-     kernel even when the PTP subsystem is configured out. Drivers must be
-     ready to accept NULL from ptp_clock_register() in that case.
-     
-     And to make it possible for PTP to be configured out, the select statement
-     in those driver's Kconfig menu entries is converted to the new "imply"
-     statement. This way the PTP subsystem may have Kconfig dependencies of
-     its own, such as POSIX_TIMERS, without having to make those ethernet
-     drivers unavailable if POSIX timers are cconfigured out. And when support
-     for POSIX timers is selected again then the default config option for PTP
-     clock support will automatically be adjusted accordingly.
+-Toke
 
-
-the idea of using "imply" is to keep networking enabled even if PTP is configured out
-and this exactly what happens with cpts driver.
-Another question is that CPTS completely nonfunctional in this case and it was never
-expected that somebody will even try to use/run such configuration (except for random build purposes).
-
-
--- 
-Best regards,
-grygorii
