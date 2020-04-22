@@ -2,432 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C63C1B4963
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 18:03:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 177261B495E
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 18:03:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726685AbgDVQDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 12:03:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60268 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725980AbgDVQDD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 12:03:03 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37980C03C1A9;
-        Wed, 22 Apr 2020 09:03:03 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id m8so2915567lji.1;
-        Wed, 22 Apr 2020 09:03:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2N9yyathP5NvaYI1H3e9TAu0H3QGqSzr8JeuinlG/i8=;
-        b=HbDPiQvMPNKvSw1NlIntuLCTTy5/ae97g2Cxr34FFjyhhX/EfCLknKQcF+kU5abgiF
-         0wN7My7ReU7J0U/ST7JcLSliCOW48YVGhqDn86wywjJxH9mFl503mUQ63Yv302Nzsqy6
-         xg/1FLvlc7MsGKwWYSAgD+6nZI6gY48CZt1k2R5/DO82m0R52ybpM+ofO6d1fU1uM5v5
-         4Xpy3Pf+lCjpuDRoKrJnONMdmdMOB4rBiOJoz6XI07E/jqIWjg+J3j03ZdwtZma/OKA7
-         +y+EmDZ8hhGkf9TNXKO91XTQ1nV7yS2Pcll/pObxAonBVFAXaFSfuHuCgjnwhjaPobHp
-         ivWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2N9yyathP5NvaYI1H3e9TAu0H3QGqSzr8JeuinlG/i8=;
-        b=sEZhh+NAYY49FOJYnPvAVMdAML3JCPMN0VOMf/0c5Gid12TMY/pUoM3BP3zet5MsTX
-         1zALRGf7jSXVsrvTg404W7LGbRBuD7LtAdICGY2pc/ze5c1ZaH4YrESckqAJ6B0vJfE3
-         spQOdmUIX3W6t8hiHd3nCn9k1k2yrN2mRl8EoiPtOIzEyIGKXfNzl3BtD9hoQkaz2JfZ
-         kkhLEihi8zq8b654RZvg/09BqJ7GwcyhF2NoxByIPUSsLqtQdVv/ooGHUzEWA2aBM7Vf
-         Kzvhyq80OoR3iBHheFOTvMySR8/yeN9D9sXWw/AxHNromcq7eTvDWb9LzlElamFWHUTf
-         1YuQ==
-X-Gm-Message-State: AGi0PuYSTKEUAk/Ejyq0cyBbddJWxVPYtF0qWQP1RFsjhXUDusDin4Hf
-        NOToWAjY+5bguj62Pcv0nZYVOIySRDRv/AKWZ4k=
-X-Google-Smtp-Source: APiQypKJruQtD5ccxcH95BWKX5p0SVLGRANM3PyB3bAMpuIzsHuDSfLhLLUKcZ6WWlq8U8yAuizoo24VcShvw0NpXlU=
-X-Received: by 2002:a2e:3813:: with SMTP id f19mr16388007lja.216.1587571380575;
- Wed, 22 Apr 2020 09:03:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <1587408228-10861-1-git-send-email-orson.unisoc@gmail.com>
- <20200420191014.GE121146@unreal> <CA+H2tpGgGtW_8Z8fV9to39JwA_KrcfAeBC+KN87v0xKnZHt2_w@mail.gmail.com>
- <20200422142552.GA492196@unreal>
-In-Reply-To: <20200422142552.GA492196@unreal>
-From:   Orson Zhai <orsonzhai@gmail.com>
-Date:   Thu, 23 Apr 2020 00:02:48 +0800
-Message-ID: <CA+H2tpGR7tywhkexa31AD_FkhyxQgVq_L+b0DbvXzwr6yT8j9Q@mail.gmail.com>
-Subject: Re: [PATCH V2] dynamic_debug: Add an option to enable dynamic debug
- for modules only
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Orson Zhai <orson.unisoc@gmail.com>,
-        Jason Baron <jbaron@akamai.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-doc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S1726552AbgDVQC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 12:02:59 -0400
+Received: from mail-bn8nam11on2125.outbound.protection.outlook.com ([40.107.236.125]:47232
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725980AbgDVQC6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Apr 2020 12:02:58 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Hozb55Mf9KCiSGwmvZnMV4bSAG97UBEQmLCd+t8ZuG3Kc0FfmZrkND68uOqX9dTFZCeSwaWS5q7hUjWCRo3YnoK/+qrobnp2wCdkgMZW1wqgALUL0mRCB+kn7Fcn8+tueSzHsdCQ2egH1732CJjn+mLkizuu4c460OfScvCcS5F9w87QG289Hhk6yntYm30nFZ2pygPKJ7FJPYVYqMNBBm/MdMLdsI2d8Kb5lKjVz5AU5/9tSznHo+lKNSwemUB5Dufwu6ZgUhLQ5EiSs0LFodf6iNqcwSaF486iMmp+NN7nbyUS09AIXaYVySD7YBtFZzHccJLgKCHKyQyIpx/vHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sPQ7p17HjjFh4gqCMU5jLeGYW0dkPPxdhAT/gmHhxAk=;
+ b=C8J2DsOWq5SJje1MPyNE0/y3GGPm4HZzifRPCgPbFqg1tL6HBN3SKkU5yzVFGp6ZzUK5tig7iJpg7Lc1Fxz8fdWMvfePyWQ9QJTc27/K+iw5FNFpAcBC3r8VZoPZ2LW0SayS7zeXpdyaQjR1xiyTvUitnj6jZw6XCCifhy54K6tHTtvh/95622tFkpfEJEUpDpXmvXuspOLYhydEDNo+kOxuJa52L8oFI/Y5A0mmzXrBc/GygR7LgsXvMDH1p6FTMZMkvj1akUNYb49rIVusJrIaqP9Btfn5i7qVzwKH3JfTkhdoJcryw//jW8BghjaUMypWaKi0kImurLDinmyFlA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 204.77.163.244) smtp.rcpttodomain=infradead.org smtp.mailfrom=garmin.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=40) action=none
+ header.from=garmin.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garmin.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sPQ7p17HjjFh4gqCMU5jLeGYW0dkPPxdhAT/gmHhxAk=;
+ b=BITHIsW0zePFjyaFfFOFFrO+u2T0qvsuAclpu1gkYBs38DNGXTup6Slr1Gtu30bOwCzYJHpFMPfph+5O984KZNzJP+skWU/0TviZmY8v7bgwhc+fHAMoylSD2zvhIklpBm0As2q+FNmTBUyFb4XBlTyuZ4MPgy8MFV8funiEQG0Vb+33HDvCe5F/APdPHULkXI1yXiogyenw/Op6OFxnDpGF+UBPtLH0EcDjpNKJsckCMjRHj0U2S/peuNwKNb92F1nnQrM12WMpUd+n4yDcELOM93pZz7HWFMiHhlJVlGLaB9H+IwJQoxe5NR86Hr68XrPJfC9JH9J85vdwOpXZYQ==
+Received: from MWHPR12CA0034.namprd12.prod.outlook.com (2603:10b6:301:2::20)
+ by SN6PR04MB4319.namprd04.prod.outlook.com (2603:10b6:805:31::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.30; Wed, 22 Apr
+ 2020 16:02:53 +0000
+Received: from MW2NAM10FT013.eop-nam10.prod.protection.outlook.com
+ (2603:10b6:301:2:cafe::6d) by MWHPR12CA0034.outlook.office365.com
+ (2603:10b6:301:2::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13 via Frontend
+ Transport; Wed, 22 Apr 2020 16:02:53 +0000
+Authentication-Results: spf=pass (sender IP is 204.77.163.244)
+ smtp.mailfrom=garmin.com; infradead.org; dkim=none (message not signed)
+ header.d=none;infradead.org; dmarc=pass action=none header.from=garmin.com;
+Received-SPF: Pass (protection.outlook.com: domain of garmin.com designates
+ 204.77.163.244 as permitted sender) receiver=protection.outlook.com;
+ client-ip=204.77.163.244; helo=edgetransport.garmin.com;
+Received: from edgetransport.garmin.com (204.77.163.244) by
+ MW2NAM10FT013.mail.protection.outlook.com (10.13.155.23) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2937.15 via Frontend Transport; Wed, 22 Apr 2020 16:02:52 +0000
+Received: from OLAWPA-EXMB10.ad.garmin.com (10.5.144.12) by
+ olawpa-edge5.garmin.com (10.60.4.229) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.1466.3; Wed, 22 Apr 2020 11:02:50 -0500
+Received: from OLAWPA-EXMB7.ad.garmin.com (10.5.144.21) by
+ OLAWPA-EXMB10.ad.garmin.com (10.5.144.12) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1913.5; Wed, 22 Apr 2020 11:02:49 -0500
+Received: from OLAWPA-EXMB7.ad.garmin.com ([fe80::68cc:dab9:e96a:c89]) by
+ OLAWPA-EXMB7.ad.garmin.com ([fe80::68cc:dab9:e96a:c89%23]) with mapi id
+ 15.01.1913.007; Wed, 22 Apr 2020 11:02:49 -0500
+From:   "Karstens, Nate" <Nate.Karstens@garmin.com>
+To:     Matthew Wilcox <willy@infradead.org>
+CC:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Android Kernel Team <kernel-team@android.com>,
-        Orson Zhai <orson.zhai@unisoc.com>
-Content-Type: text/plain; charset="UTF-8"
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        David Laight <David.Laight@aculab.com>,
+        Changli Gao <xiaosuo@gmail.com>
+Subject: RE: [PATCH 1/4] fs: Implement close-on-fork
+Thread-Topic: [PATCH 1/4] fs: Implement close-on-fork
+Thread-Index: AQHWFuOUNQrmUX2/BU6CQ6OUTp2yNKiFQqwQgABdCAD//650EA==
+Date:   Wed, 22 Apr 2020 16:02:49 +0000
+Message-ID: <6ed7bd08892b4311b70636658321904f@garmin.com>
+References: <20200420071548.62112-1-nate.karstens@garmin.com>
+ <20200420071548.62112-2-nate.karstens@garmin.com>
+ <fa6c5c9c7c434f878c94a7c984cd43ba@garmin.com>
+ <20200422154356.GU5820@bombadil.infradead.org>
+In-Reply-To: <20200422154356.GU5820@bombadil.infradead.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.50.4.7]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25372.001
+X-TM-AS-Result: No-20.492900-8.000000-10
+X-TMASE-MatchedRID: Rp71wniPtoM4HKI/yaqRm/KR06Kw3DzKRiPTMMc/MmlOyROmWLBZSuNb
+        0aTvicGvSTuOLEQgmVbhVp16EZAE1e34OOTGEFTiB/XUnmGGOOr4qCLIu0mtIDyC5ddG2JcgDsh
+        HkVWp6Z/gF59qS0/NMzzsW2Cgd3ClR0noGmyTNMsHz0YoejTedhlKjo8zguyKSX8n1Gj4wAExhE
+        xXq6zLI1oWex3m0IGtG8983J7kkbz4Z8QQieNUXszWN98iBBeG+PgcXG6KFc5sMPuLZB/IR/hTn
+        o/hWfnfwPb5NDq94CD80wK+80FbY2+4O3SBmLlWHmtCXih7f9P3N59hBwdmnyiCVsScJChxrk+q
+        psJ8hQ9MAraxXAQN9j1Z6/6pkvauPWKLA6/g//v0VCHd+VQiHpRy1HDTPOXaT7zqZowzdpKXD5/
+        te2xRDy6Ogi9NiuirBEmpoGQQfL5yOVk+FPzL1wYtEovY17GN9pLnYtQ99xIAZTQQTIkkcywmNV
+        NFRFysdzi+MT2hFg7/6J39gwEM6MGfi/dxL5nubMGKOuLn5FURO65VAx9xehRnkhLZOCK9G88rs
+        ck3r8QvJ+I7jC1cP1Mtpl6RMI3caTNicKv7gx9+AWdjDjY8Xfy0wgIDXBCTwUqLhUY4dAI4ULAZ
+        wl+oC+LzNWBegCW2ak1q2nxhDrwLbigRnpKlKSBuGJWwgxArFnn7zLfna4I=
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--20.492900-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25372.001
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:204.77.163.244;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:edgetransport.garmin.com;PTR:extedge.garmin.com;CAT:NONE;SFTY:;SFS:(10019020)(376002)(39860400002)(136003)(346002)(396003)(46966005)(4326008)(8936002)(47076004)(86362001)(6916009)(26005)(36756003)(5660300002)(108616005)(2616005)(966005)(53546011)(7416002)(478600001)(7696005)(186003)(336012)(82740400003)(426003)(316002)(8676002)(24736004)(70206006)(7636003)(70586007)(54906003)(356005)(2906002)(246002)(82310400002);DIR:OUT;SFP:1102;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6cf3a271-9485-4c7d-0011-08d7e6d69cf6
+X-MS-TrafficTypeDiagnostic: SN6PR04MB4319:
+X-Microsoft-Antispam-PRVS: <SN6PR04MB43190D1D02FF28B2CD5DC6309CD20@SN6PR04MB4319.namprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 03818C953D
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vlc2198EXg971jw/ZYN4GoYLruk06VPCw5NT/ZH3gpL7jR8D+aQMyuVPr/nqhyJnFmklnyZGFZzW6YX0H5nrIDDKbDLMC+HZ2Zu7xFR/ALAAR7o8VgH0rUukhaOpdhghL2ESsuT7usZnyPXwdmPty2eYXmcAowdTnSLDJWb+ItiAA+UirHKSU9HUFPh41nf5kj8FDfqsQB0CufVpcMoh5RCR5QsEGXtykxF2ZGm1cEEgL/rd609sL8ozflcGDRb7Gs6OOPTOPxyI9crDZekRsi3BwUH4+QCBrt6FQ2JyMTA9239mQmUtoZ4WytnqHgmbC1/SrF63M9yzVgJrDzNXwsHZgVQCmRH+tZjfbRkk9p5lcK6TXY7wxqSnDqHvhbE7JQ5oPRcGZ1OWNcpSAGPx+ArBrlLXoL4EFWUpKzYojSKq8aBIaxuKcagGUPT1o4sJSY6LtHjpzeg3VlNPqL9E6y2kd+3k3vohhL+cEGuGI4qG+jHeEXfC6IYAD3Ouywe08EKgPY0Y9NbhoahnLkRxX/Cm5JllkW/XS2dzjUqDPxE9qmUlo0+m8kDu9VpzAZBBVdP60XoSjtM+RqP/tg4ZGA==
+X-OriginatorOrg: garmin.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2020 16:02:52.5232
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6cf3a271-9485-4c7d-0011-08d7e6d69cf6
+X-MS-Exchange-CrossTenant-Id: 38d0d425-ba52-4c0a-a03e-2a65c8e82e2d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38d0d425-ba52-4c0a-a03e-2a65c8e82e2d;Ip=[204.77.163.244];Helo=[edgetransport.garmin.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR04MB4319
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 22, 2020 at 10:25 PM Leon Romanovsky <leon@kernel.org> wrote:
->
-> On Wed, Apr 22, 2020 at 09:06:08PM +0800, Orson Zhai wrote:
-> > On Tue, Apr 21, 2020 at 3:10 AM Leon Romanovsky <leon@kernel.org> wrote:
-> > >
-> > > On Tue, Apr 21, 2020 at 02:43:48AM +0800, Orson Zhai wrote:
-> > > > From: Orson Zhai <orson.zhai@unisoc.com>
-> > > >
-> > > > Instead of enabling dynamic debug globally with CONFIG_DYNAMIC_DEBUG,
-> > > > CONFIG_DYNAMIC_DEBUG_CORE will only enable core function of dynamic
-> > > > debug. With the DYNAMIC_DEBUG_MODULE defined for any modules, dynamic
-> > > > debug will be tied to them.
-> > > >
-> > > > This is useful for people who only want to enable dynamic debug for
-> > > > kernel modules without worrying about kernel image size and memory
-> > > > consumption is increasing too much.
-> > >
-> > > Let's talk about extreme case, what is the output of bloat-o-meter
-> > > for allyesconfig build with and without dynamic debug?
-> >
-> > It is a good question.
-> > I have done exactly what you ask for x86 build yesterday. Here is the result:
-> > Total: Before=306735842, After=312600260, chg +1.91%
-> >
-> > In my case of a mobile phone, the difference is about 2MiB on 14MiB kernel image
-> > (not compressed).
-> > The reduced size is often critical sometimes, especially for low-end phones, say
-> > a system with 512MB DDR memory.
-> >
-> > Another smaller arm system in my hand, kernel size reduced about
-> > 600KiB to the zImage
-> > of 4.2MiB.
->
-> The numbers support the assumption that "memory consumption is increasing
-> too much" sentence is not fully accurate.
+> It's not safe to call system() from a threaded app.  That's all.  It's ri=
+ght there in the DESCRIPTION:
 
-OK, I may change the description more accurate. I was thinking about
-only embedded
-environment for this patch. But it really should be accurate for all
-kinds users to learn
-about it.
+That is true, but that description is missing from both the Linux man page =
+and the glibc documentation (https://www.gnu.org/software/libc/manual/html_=
+mono/libc.html#Running-a-Command). It seems like a minor point that won't b=
+e noticed until it causes a problem, and problems are rare enough they migh=
+t go unnoticed for a while. We have removed system() from our application, =
+but we're also concerned that libraries we integrate will use system() with=
+out our knowledge.
+
+-----Original Message-----
+From: Matthew Wilcox <willy@infradead.org>
+Sent: Wednesday, April 22, 2020 10:44
+To: Karstens, Nate <Nate.Karstens@garmin.com>
+Cc: Alexander Viro <viro@zeniv.linux.org.uk>; Jeff Layton <jlayton@kernel.o=
+rg>; J. Bruce Fields <bfields@fieldses.org>; Arnd Bergmann <arnd@arndb.de>;=
+ Richard Henderson <rth@twiddle.net>; Ivan Kokshaysky <ink@jurassic.park.ms=
+u.ru>; Matt Turner <mattst88@gmail.com>; James E.J. Bottomley <James.Bottom=
+ley@hansenpartnership.com>; Helge Deller <deller@gmx.de>; David S. Miller <=
+davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; linux-fsdevel@vger.=
+kernel.org; linux-arch@vger.kernel.org; linux-alpha@vger.kernel.org; linux-=
+parisc@vger.kernel.org; sparclinux@vger.kernel.org; netdev@vger.kernel.org;=
+ linux-kernel@vger.kernel.org; David Laight <David.Laight@aculab.com>; Chan=
+gli Gao <xiaosuo@gmail.com>
+Subject: Re: [PATCH 1/4] fs: Implement close-on-fork
+
+CAUTION - EXTERNAL EMAIL: Do not click any links or open any attachments un=
+less you trust the sender and know the content is safe.
+
+
+On Wed, Apr 22, 2020 at 03:36:09PM +0000, Karstens, Nate wrote:
+> There was some skepticism about whether our practice of
+> closing/reopening sockets was advisable. Regardless, it does expose
+> what I believe to be something that was overlooked in the forking
+> process model. We posted two solutions to the Austin Group defect tracker=
+:
+
+I don't think it was "overlooked" at all.  It's not safe to call system() f=
+rom a threaded app.  That's all.  It's right there in the DESCRIPTION:
+
+   The system() function need not be thread-safe.
+https://pubs.opengroup.org/onlinepubs/9699919799/functions/system.html
+
+> Ultimately the Austin Group felt that close-on-fork was the preferred
+> approach. I think it's also worth pointing that out Solaris reportedly
+> has this feature
+> (https://www.mail-archive.com/austin-group-l@opengroup.org/msg05359.html)=
 .
-> According to the result of
-> compilation for mobile phone, it looks like the problem with explode of
-> prints, which is better to clean, before introducing extra config.
 
-I don't think the debug log print is too much in my kernel. I didn't add extra
-debug print other than its original code.
-In fact it is very close to one of GKI kernels which could be found at
-AOSP kernel/common branch: android-5.4.
+I am perplexed that the Austin Group thought this was a good idea.
 
->
-> >
-> > >
-> > > I imagine that people who are interested in decreasing memory
-> > > footprint will use minimal config anyway, so it is very interesting
-> > > to see who is the target audience for this change?
-> >
-> > My motivation came from the concept of GKI (Generic Kernel Image) in Android.
-> > Google will release a common kernel image (binary) to all of the Android system
-> > vendors in the world instead of letting them to build their owns as before.
-> > Every SoC vendor's device drivers will be provided in kernel modules only.
-> > By my patch, the driver owners could debug their modules in field (say
-> > production releases)
-> > without having to enable dynamic debug for the whole GKI.
->
-> Will Google release that binary with CONFIG_DYNAMIC_DEBUG_CORE disabled?
->
-In Google's plan, there will be only one GKI (no debug version) for
-one Android version per kernel version per year.
-So if I request to enable it and they accept my request (actually they
-did), the config will be opened in that
-GKI release for this year.
+________________________________
 
-> If yes, by introducing you kernel config, these driver authors won't
-> be able to enable debug on GKI (at least for production) at all.
-> If no, what is the point of this change?
-
-I am sorry to make you feel confused.
-One of the main purpose of this  change is to export the core
-functions of dynamic debug to kernel modules.
-These functions are defined in lib/dynamic_debug.c.
-EXPORT_SYMBOL(__dynamic_pr_debug);
-EXPORT_SYMBOL(__dynamic_dev_dbg);
-EXPORT_SYMBOL(__dynamic_netdev_dbg);
-EXPORT_SYMBOL(__dynamic_ibdev_dbg);
-
-These are only being built when CONFIG_DYNAMIC_DEBUG is set. But all
-pr_debug in GKI will be built-in as well.
-It will increase not very much size as you pointed out but might worth
-to be considerred for some cases.
-To eliminate this "side-effect", my change will give an option to
-people like Google guys to export these symbols
-without the burden of size it adds before.
-
--Orson
->
-> >
-> > -Orson
-> >
-> > >
-> > > Thanks
-> > >
-> > > >
-> > > > Signed-off-by: Orson Zhai <orson.zhai@unisoc.com>
-> > > > Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > > ---
-> > > > Changes to V2:
-> > > > 1) Change DEBUG_MODULE to DYNAMIC_DEBUG_MODULE.
-> > > > 2) Change more #if defined(DYNAMIC_DEBUG) condition (in net.h, netdevice.h
-> > > >    and ib_verbs.h).
-> > > > 3) Rewrite description in howto document.
-> > > > 4) Add acked-by from Greg.
-> > > >
-> > > >
-> > > >  Documentation/admin-guide/dynamic-debug-howto.rst |  5 +++++
-> > > >  include/linux/dev_printk.h                        |  6 ++++--
-> > > >  include/linux/dynamic_debug.h                     |  2 +-
-> > > >  include/linux/net.h                               |  3 ++-
-> > > >  include/linux/netdevice.h                         |  6 ++++--
-> > > >  include/linux/printk.h                            | 14 +++++++++-----
-> > > >  include/rdma/ib_verbs.h                           |  6 ++++--
-> > > >  lib/Kconfig.debug                                 | 12 ++++++++++++
-> > > >  lib/Makefile                                      |  2 +-
-> > > >  lib/dynamic_debug.c                               |  9 +++++++--
-> > > >  10 files changed, 49 insertions(+), 16 deletions(-)
-> > > >
-> > > > diff --git a/Documentation/admin-guide/dynamic-debug-howto.rst b/Documentation/admin-guide/dynamic-debug-howto.rst
-> > > > index 0dc2eb8..1012bd9 100644
-> > > > --- a/Documentation/admin-guide/dynamic-debug-howto.rst
-> > > > +++ b/Documentation/admin-guide/dynamic-debug-howto.rst
-> > > > @@ -13,6 +13,11 @@ kernel code to obtain additional kernel information.  Currently, if
-> > > >  ``print_hex_dump_debug()``/``print_hex_dump_bytes()`` calls can be dynamically
-> > > >  enabled per-callsite.
-> > > >
-> > > > +If you do not want to enable dynamic debug globally (i.e. in some embedded
-> > > > +system), you may set ``CONFIG_DYNAMIC_DEBUG_CORE`` as basic support of dynamic
-> > > > +debug and add ``ccflags := -DDYNAMIC_DEBUG_MODULE`` into the Makefile of any
-> > > > +modules which you'd like to dynamically debug later.
-> > > > +
-> > > >  If ``CONFIG_DYNAMIC_DEBUG`` is not set, ``print_hex_dump_debug()`` is just
-> > > >  shortcut for ``print_hex_dump(KERN_DEBUG)``.
-> > > >
-> > > > diff --git a/include/linux/dev_printk.h b/include/linux/dev_printk.h
-> > > > index 5aad06b..3028b64 100644
-> > > > --- a/include/linux/dev_printk.h
-> > > > +++ b/include/linux/dev_printk.h
-> > > > @@ -109,7 +109,8 @@ void _dev_info(const struct device *dev, const char *fmt, ...)
-> > > >  #define dev_info(dev, fmt, ...)                                              \
-> > > >       _dev_info(dev, dev_fmt(fmt), ##__VA_ARGS__)
-> > > >
-> > > > -#if defined(CONFIG_DYNAMIC_DEBUG)
-> > > > +#if defined(CONFIG_DYNAMIC_DEBUG) || \
-> > > > +     (defined(CONFIG_DYNAMIC_DEBUG_CORE) && defined(DYNAMIC_DEBUG_MODULE))
-> > > >  #define dev_dbg(dev, fmt, ...)                                               \
-> > > >       dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-> > > >  #elif defined(DEBUG)
-> > > > @@ -181,7 +182,8 @@ do {                                                                      \
-> > > >       dev_level_ratelimited(dev_notice, dev, fmt, ##__VA_ARGS__)
-> > > >  #define dev_info_ratelimited(dev, fmt, ...)                          \
-> > > >       dev_level_ratelimited(dev_info, dev, fmt, ##__VA_ARGS__)
-> > > > -#if defined(CONFIG_DYNAMIC_DEBUG)
-> > > > +#if defined(CONFIG_DYNAMIC_DEBUG) || \
-> > > > +     (defined(CONFIG_DYNAMIC_DEBUG_CORE) && defined(DYNAMIC_DEBUG_MODULE))
-> > > >  /* descriptor check is first to prevent flooding with "callbacks suppressed" */
-> > > >  #define dev_dbg_ratelimited(dev, fmt, ...)                           \
-> > > >  do {                                                                 \
-> > > > diff --git a/include/linux/dynamic_debug.h b/include/linux/dynamic_debug.h
-> > > > index 4cf02ec..abcd5fd 100644
-> > > > --- a/include/linux/dynamic_debug.h
-> > > > +++ b/include/linux/dynamic_debug.h
-> > > > @@ -48,7 +48,7 @@ struct _ddebug {
-> > > >
-> > > >
-> > > >
-> > > > -#if defined(CONFIG_DYNAMIC_DEBUG)
-> > > > +#if defined(CONFIG_DYNAMIC_DEBUG_CORE)
-> > > >  int ddebug_add_module(struct _ddebug *tab, unsigned int n,
-> > > >                               const char *modname);
-> > > >  extern int ddebug_remove_module(const char *mod_name);
-> > > > diff --git a/include/linux/net.h b/include/linux/net.h
-> > > > index 6451425..7b7b21a 100644
-> > > > --- a/include/linux/net.h
-> > > > +++ b/include/linux/net.h
-> > > > @@ -264,7 +264,8 @@ do {                                                              \
-> > > >       net_ratelimited_function(pr_warn, fmt, ##__VA_ARGS__)
-> > > >  #define net_info_ratelimited(fmt, ...)                               \
-> > > >       net_ratelimited_function(pr_info, fmt, ##__VA_ARGS__)
-> > > > -#if defined(CONFIG_DYNAMIC_DEBUG)
-> > > > +#if defined(CONFIG_DYNAMIC_DEBUG) || \
-> > > > +     (defined(CONFIG_DYNAMIC_DEBUG_CORE) && defined(DYNAMIC_DEBUG_MODULE))
-> > > >  #define net_dbg_ratelimited(fmt, ...)                                        \
-> > > >  do {                                                                 \
-> > > >       DEFINE_DYNAMIC_DEBUG_METADATA(descriptor, fmt);                 \
-> > > > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> > > > index 130a668..e874643 100644
-> > > > --- a/include/linux/netdevice.h
-> > > > +++ b/include/linux/netdevice.h
-> > > > @@ -4868,7 +4868,8 @@ do {                                                            \
-> > > >  #define MODULE_ALIAS_NETDEV(device) \
-> > > >       MODULE_ALIAS("netdev-" device)
-> > > >
-> > > > -#if defined(CONFIG_DYNAMIC_DEBUG)
-> > > > +#if defined(CONFIG_DYNAMIC_DEBUG) || \
-> > > > +     (defined(CONFIG_DYNAMIC_DEBUG_CORE) && defined(DYNAMIC_DEBUG_MODULE))
-> > > >  #define netdev_dbg(__dev, format, args...)                   \
-> > > >  do {                                                         \
-> > > >       dynamic_netdev_dbg(__dev, format, ##args);              \
-> > > > @@ -4938,7 +4939,8 @@ do {                                                            \
-> > > >  #define netif_info(priv, type, dev, fmt, args...)            \
-> > > >       netif_level(info, priv, type, dev, fmt, ##args)
-> > > >
-> > > > -#if defined(CONFIG_DYNAMIC_DEBUG)
-> > > > +#if defined(CONFIG_DYNAMIC_DEBUG) || \
-> > > > +     (defined(CONFIG_DYNAMIC_DEBUG_CORE) && defined(DYNAMIC_DEBUG_MODULE))
-> > > >  #define netif_dbg(priv, type, netdev, format, args...)               \
-> > > >  do {                                                         \
-> > > >       if (netif_msg_##type(priv))                             \
-> > > > diff --git a/include/linux/printk.h b/include/linux/printk.h
-> > > > index e061635..b64c39c 100644
-> > > > --- a/include/linux/printk.h
-> > > > +++ b/include/linux/printk.h
-> > > > @@ -286,8 +286,9 @@ extern int kptr_restrict;
-> > > >  /*
-> > > >   * These can be used to print at the various log levels.
-> > > >   * All of these will print unconditionally, although note that pr_debug()
-> > > > - * and other debug macros are compiled out unless either DEBUG is defined
-> > > > - * or CONFIG_DYNAMIC_DEBUG is set.
-> > > > + * and other debug macros are compiled out unless either DEBUG is defined,
-> > > > + * CONFIG_DYNAMIC_DEBUG is set, or CONFIG_DYNAMIC_DEBUG_CORE is set when
-> > > > + * DYNAMIC_DEBUG_MODULE being defined for any modules.
-> > > >   */
-> > > >  #define pr_emerg(fmt, ...) \
-> > > >       printk(KERN_EMERG pr_fmt(fmt), ##__VA_ARGS__)
-> > > > @@ -322,7 +323,8 @@ extern int kptr_restrict;
-> > > >
-> > > >
-> > > >  /* If you are writing a driver, please use dev_dbg instead */
-> > > > -#if defined(CONFIG_DYNAMIC_DEBUG)
-> > > > +#if defined(CONFIG_DYNAMIC_DEBUG) || \
-> > > > +     (defined(CONFIG_DYNAMIC_DEBUG_CORE) && defined(DYNAMIC_DEBUG_MODULE))
-> > > >  #include <linux/dynamic_debug.h>
-> > > >
-> > > >  /* dynamic_pr_debug() uses pr_fmt() internally so we don't need it here */
-> > > > @@ -448,7 +450,8 @@ extern int kptr_restrict;
-> > > >  #endif
-> > > >
-> > > >  /* If you are writing a driver, please use dev_dbg instead */
-> > > > -#if defined(CONFIG_DYNAMIC_DEBUG)
-> > > > +#if defined(CONFIG_DYNAMIC_DEBUG) || \
-> > > > +     (defined(CONFIG_DYNAMIC_DEBUG_CORE) && defined(DYNAMIC_DEBUG_MODULE))
-> > > >  /* descriptor check is first to prevent flooding with "callbacks suppressed" */
-> > > >  #define pr_debug_ratelimited(fmt, ...)                                       \
-> > > >  do {                                                                 \
-> > > > @@ -495,7 +498,8 @@ static inline void print_hex_dump_bytes(const char *prefix_str, int prefix_type,
-> > > >
-> > > >  #endif
-> > > >
-> > > > -#if defined(CONFIG_DYNAMIC_DEBUG)
-> > > > +#if defined(CONFIG_DYNAMIC_DEBUG) || \
-> > > > +     (defined(CONFIG_DYNAMIC_DEBUG_CORE) && defined(DYNAMIC_DEBUG_MODULE))
-> > > >  #define print_hex_dump_debug(prefix_str, prefix_type, rowsize,       \
-> > > >                            groupsize, buf, len, ascii)        \
-> > > >       dynamic_hex_dump(prefix_str, prefix_type, rowsize,      \
-> > > > diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
-> > > > index bbc5cfb..e072ef6 100644
-> > > > --- a/include/rdma/ib_verbs.h
-> > > > +++ b/include/rdma/ib_verbs.h
-> > > > @@ -100,7 +100,8 @@ void ibdev_notice(const struct ib_device *ibdev, const char *format, ...);
-> > > >  __printf(2, 3) __cold
-> > > >  void ibdev_info(const struct ib_device *ibdev, const char *format, ...);
-> > > >
-> > > > -#if defined(CONFIG_DYNAMIC_DEBUG)
-> > > > +#if defined(CONFIG_DYNAMIC_DEBUG) || \
-> > > > +     (defined(CONFIG_DYNAMIC_DEBUG_CORE) && defined(DYNAMIC_DEBUG_MODULE))
-> > > >  #define ibdev_dbg(__dev, format, args...)                       \
-> > > >       dynamic_ibdev_dbg(__dev, format, ##args)
-> > > >  #else
-> > > > @@ -133,7 +134,8 @@ do {                                                                    \
-> > > >  #define ibdev_info_ratelimited(ibdev, fmt, ...) \
-> > > >       ibdev_level_ratelimited(ibdev_info, ibdev, fmt, ##__VA_ARGS__)
-> > > >
-> > > > -#if defined(CONFIG_DYNAMIC_DEBUG)
-> > > > +#if defined(CONFIG_DYNAMIC_DEBUG) || \
-> > > > +     (defined(CONFIG_DYNAMIC_DEBUG_CORE) && defined(DYNAMIC_DEBUG_MODULE))
-> > > >  /* descriptor check is first to prevent flooding with "callbacks suppressed" */
-> > > >  #define ibdev_dbg_ratelimited(ibdev, fmt, ...)                          \
-> > > >  do {                                                                    \
-> > > > diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-> > > > index 21d9c5f..9ab791b 100644
-> > > > --- a/lib/Kconfig.debug
-> > > > +++ b/lib/Kconfig.debug
-> > > > @@ -99,6 +99,7 @@ config DYNAMIC_DEBUG
-> > > >       default n
-> > > >       depends on PRINTK
-> > > >       depends on (DEBUG_FS || PROC_FS)
-> > > > +     select DYNAMIC_DEBUG_CORE
-> > > >       help
-> > > >
-> > > >         Compiles debug level messages into the kernel, which would not
-> > > > @@ -165,6 +166,17 @@ config DYNAMIC_DEBUG
-> > > >         See Documentation/admin-guide/dynamic-debug-howto.rst for additional
-> > > >         information.
-> > > >
-> > > > +config DYNAMIC_DEBUG_CORE
-> > > > +     bool "Enable core function of dynamic debug support"
-> > > > +     depends on PRINTK
-> > > > +     depends on (DEBUG_FS || PROC_FS)
-> > > > +     help
-> > > > +       Enable core functional support of dynamic debug. It is useful
-> > > > +       when you want to tie dynamic debug to your kernel modules with
-> > > > +       DYNAMIC_DEBUG_MODULE defined for each of them, especially for
-> > > > +       the case of embedded system where the kernel image size is
-> > > > +       sensitive for people.
-> > > > +
-> > > >  config SYMBOLIC_ERRNAME
-> > > >       bool "Support symbolic error names in printf"
-> > > >       default y if PRINTK
-> > > > diff --git a/lib/Makefile b/lib/Makefile
-> > > > index 685aee6..8952772 100644
-> > > > --- a/lib/Makefile
-> > > > +++ b/lib/Makefile
-> > > > @@ -186,7 +186,7 @@ lib-$(CONFIG_GENERIC_BUG) += bug.o
-> > > >
-> > > >  obj-$(CONFIG_HAVE_ARCH_TRACEHOOK) += syscall.o
-> > > >
-> > > > -obj-$(CONFIG_DYNAMIC_DEBUG) += dynamic_debug.o
-> > > > +obj-$(CONFIG_DYNAMIC_DEBUG_CORE) += dynamic_debug.o
-> > > >  obj-$(CONFIG_SYMBOLIC_ERRNAME) += errname.o
-> > > >
-> > > >  obj-$(CONFIG_NLATTR) += nlattr.o
-> > > > diff --git a/lib/dynamic_debug.c b/lib/dynamic_debug.c
-> > > > index 8f199f4..321437b 100644
-> > > > --- a/lib/dynamic_debug.c
-> > > > +++ b/lib/dynamic_debug.c
-> > > > @@ -1032,8 +1032,13 @@ static int __init dynamic_debug_init(void)
-> > > >       int verbose_bytes = 0;
-> > > >
-> > > >       if (&__start___verbose == &__stop___verbose) {
-> > > > -             pr_warn("_ddebug table is empty in a CONFIG_DYNAMIC_DEBUG build\n");
-> > > > -             return 1;
-> > > > +             if (IS_ENABLED(CONFIG_DYNAMIC_DEBUG)) {
-> > > > +                     pr_warn("_ddebug table is empty in a CONFIG_DYNAMIC_DEBUG build\n");
-> > > > +                     return 1;
-> > > > +             }
-> > > > +             pr_info("Ignore empty _ddebug table in a CONFIG_DYNAMIC_DEBUG_CORE build\n");
-> > > > +             ddebug_init_success = 1;
-> > > > +             return 0;
-> > > >       }
-> > > >       iter = __start___verbose;
-> > > >       modname = iter->modname;
-> > > > --
-> > > > 2.7.4
-> > > >
+CONFIDENTIALITY NOTICE: This email and any attachments are for the sole use=
+ of the intended recipient(s) and contain information that may be Garmin co=
+nfidential and/or Garmin legally privileged. If you have received this emai=
+l in error, please notify the sender by reply email and delete the message.=
+ Any disclosure, copying, distribution or use of this communication (includ=
+ing attachments) by someone other than the intended recipient is prohibited=
+. Thank you.
