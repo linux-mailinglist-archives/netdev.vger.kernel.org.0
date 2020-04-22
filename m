@@ -2,144 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 956671B50A7
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 01:08:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 207041B50DF
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 01:27:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726373AbgDVXIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 19:08:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57136 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725846AbgDVXIY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Apr 2020 19:08:24 -0400
-Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9C0762076E;
-        Wed, 22 Apr 2020 23:08:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587596903;
-        bh=sWXg+5PMgt2I069BA/AikzoZTNqdydc7gaV7yjaQeMs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=bKfCikyVuVgBxXTXBcno5xTpJr0bpNtn4GtDh41ketDR6w+BIWKLjZl3cy3UNeA4W
-         NtqdO+TZca1ArqYe61TICGRennjEPmgPKBpj3x5sHo/WYx1gPS5ZCgvV84R/DtOZ4o
-         7htsvokPQsE1E/BlwJBN4sTmv+X+sPhuX/3vWdHc=
-From:   David Ahern <dsahern@kernel.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next] selftests: A few improvements to fib_nexthops.sh
-Date:   Wed, 22 Apr 2020 17:08:22 -0600
-Message-Id: <20200422230822.72861-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
+        id S1726147AbgDVX1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 19:27:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44660 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725789AbgDVX1R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 19:27:17 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27D38C03C1AA;
+        Wed, 22 Apr 2020 16:27:17 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id v10so1938863qvr.2;
+        Wed, 22 Apr 2020 16:27:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JVbRCcnlDvVHgrFtItAJpGmOMWHhJ3M/HbbsklJ+CCM=;
+        b=qAGHPe2QqVwXV/xlmS6dMgtjzsGDb/3gmTOpNTsG+YTobq6CV0ixT2kvpNnB1hlojo
+         1wtWQAF2bCgweWURrYN8LLaDN5UPfJq+924RTIfsrbJXnHi0xtD7gWdkqAolWlR+ZOWT
+         PsbvSUVWGIYdU960Rk8H6vRHiXJETY+qdlDHxX7GH2EBZ4JYyknTzJP+Zh5Ig6qxxHU8
+         DnjDDWXuynB4/nGHPeeaUjU4qVt5s8JFRaeFfKF/OpXqX/hEiYdtCjyubbts1hPfESBI
+         tvMoTufHyTq+5gSw7r0Z1lCbnOZ6xnBxPeIM1sjAGtg1bdv1nRLIVKIE6zpXXLeg47Uc
+         Cyeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JVbRCcnlDvVHgrFtItAJpGmOMWHhJ3M/HbbsklJ+CCM=;
+        b=fGQAgUoRSkp2VZFkr/ykk2DjN856XORoZmcTzUoSTP1shW8lxSiYolp5lZz4cRNhXt
+         ItD4Z6FenCpQzS1BOetj9eCdOIHXhN76/M8rRYpVrobtsu01XVIseKvR+5FKqf2klc1Y
+         YYFVsUyBkuZcruQXo+XZS4qT0bcqYpH+uC8dXPnMDSR+Ckg5dEYi7tclH0GPLc9kx3so
+         CCOjdiYvorxvPHEKKt1WX1yCh/FUWRWbfzT7Gti2ZXIfwUqkgIKYV+gx0NR4swkRyJQq
+         eCd9/C2OytpGZbjzXOJTgvCyNMY2pa15o+IHFTpf6lgTGfOo6FBg3tcbDpFlvtH8HFsY
+         uJsA==
+X-Gm-Message-State: AGi0PuaYnJgWULHmZoZ1FxZDHN2PJomGKCFZZ2P5QjSBepSScUUbnCKR
+        Twk+HQr2ExUeOlBXGrUZvcM9umj9JZZvaIRHQTc=
+X-Google-Smtp-Source: APiQypIfTsL5qIMF9TRjxPp3Fr19tLsAL9y2w/qpS8ptYLmKNCvTIj7MiEM+Z4p+tsI782nffDPMmcyOEx3UkzOyBLY=
+X-Received: by 2002:a0c:eb09:: with SMTP id j9mr1537405qvp.196.1587598036356;
+ Wed, 22 Apr 2020 16:27:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200422083010.28000-1-maowenan@huawei.com> <20200422083010.28000-3-maowenan@huawei.com>
+In-Reply-To: <20200422083010.28000-3-maowenan@huawei.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 22 Apr 2020 16:27:05 -0700
+Message-ID: <CAEf4BzaNZe63WxPrv0kAq-VjdoC8gOfrsmNLYBuK6nBu1Wh8kA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/2] libbpf: Return err if bpf_object__load failed
+To:     Mao Wenan <maowenan@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+On Wed, Apr 22, 2020 at 1:30 AM Mao Wenan <maowenan@huawei.com> wrote:
+>
+> bpf_object__load() has various return code, when
+> it failed to load object, it must return err instead
+> of return -EINVAL.
+>
+> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+> ---
 
-Add nodad when adding IPv6 addresses and remove the sleep.
+This patch looks good. The other one in this series - not so sure..
 
-A recent change to iproute2 moved the 'pref medium' to the prefix
-(where it belongs). Change the expected route check to strip
-'pref medium' to be compatible with old and new iproute2.
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-Add IPv4 runtime test with an IPv6 address as the gateway in
-the default route.
-
-Signed-off-by: David Ahern <dsahern@gmail.com>
----
- tools/testing/selftests/net/fib_nexthops.sh | 25 ++++++++++++---------
- 1 file changed, 14 insertions(+), 11 deletions(-)
-
-diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
-index 6560ed796ac4..b785241127df 100755
---- a/tools/testing/selftests/net/fib_nexthops.sh
-+++ b/tools/testing/selftests/net/fib_nexthops.sh
-@@ -150,31 +150,31 @@ setup()
- 	$IP li add veth1 type veth peer name veth2
- 	$IP li set veth1 up
- 	$IP addr add 172.16.1.1/24 dev veth1
--	$IP -6 addr add 2001:db8:91::1/64 dev veth1
-+	$IP -6 addr add 2001:db8:91::1/64 dev veth1 nodad
- 
- 	$IP li add veth3 type veth peer name veth4
- 	$IP li set veth3 up
- 	$IP addr add 172.16.2.1/24 dev veth3
--	$IP -6 addr add 2001:db8:92::1/64 dev veth3
-+	$IP -6 addr add 2001:db8:92::1/64 dev veth3 nodad
- 
- 	$IP li set veth2 netns peer up
- 	ip -netns peer addr add 172.16.1.2/24 dev veth2
--	ip -netns peer -6 addr add 2001:db8:91::2/64 dev veth2
-+	ip -netns peer -6 addr add 2001:db8:91::2/64 dev veth2 nodad
- 
- 	$IP li set veth4 netns peer up
- 	ip -netns peer addr add 172.16.2.2/24 dev veth4
--	ip -netns peer -6 addr add 2001:db8:92::2/64 dev veth4
-+	ip -netns peer -6 addr add 2001:db8:92::2/64 dev veth4 nodad
- 
- 	ip -netns remote li add veth5 type veth peer name veth6
- 	ip -netns remote li set veth5 up
- 	ip -netns remote addr add dev veth5 172.16.101.1/24
--	ip -netns remote addr add dev veth5 2001:db8:101::1/64
-+	ip -netns remote -6 addr add dev veth5 2001:db8:101::1/64 nodad
- 	ip -netns remote ro add 172.16.0.0/22 via 172.16.101.2
- 	ip -netns remote -6 ro add 2001:db8:90::/40 via 2001:db8:101::2
- 
- 	ip -netns remote li set veth6 netns peer up
- 	ip -netns peer addr add dev veth6 172.16.101.2/24
--	ip -netns peer addr add dev veth6 2001:db8:101::2/64
-+	ip -netns peer -6 addr add dev veth6 2001:db8:101::2/64 nodad
- 	set +e
- }
- 
-@@ -248,7 +248,7 @@ check_route6()
- 	local expected="$2"
- 	local out
- 
--	out=$($IP -6 route ls match ${pfx} 2>/dev/null)
-+	out=$($IP -6 route ls match ${pfx} 2>/dev/null | sed -e 's/pref medium//')
- 
- 	check_output "${out}" "${expected}"
- }
-@@ -423,8 +423,6 @@ ipv6_fcnal_runtime()
- 	echo "IPv6 functional runtime"
- 	echo "-----------------------"
- 
--	sleep 5
--
- 	#
- 	# IPv6 - the basics
- 	#
-@@ -481,12 +479,12 @@ ipv6_fcnal_runtime()
- 	run_cmd "$IP -6 nexthop add id 85 dev veth1"
- 	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 85"
- 	log_test $? 0 "IPv6 route with device only nexthop"
--	check_route6 "2001:db8:101::1" "2001:db8:101::1 nhid 85 dev veth1 metric 1024 pref medium"
-+	check_route6 "2001:db8:101::1" "2001:db8:101::1 nhid 85 dev veth1 metric 1024"
- 
- 	run_cmd "$IP nexthop add id 123 group 81/85"
- 	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 123"
- 	log_test $? 0 "IPv6 multipath route with nexthop mix - dev only + gw"
--	check_route6 "2001:db8:101::1" "2001:db8:101::1 nhid 123 metric 1024 nexthop via 2001:db8:91::2 dev veth1 weight 1 nexthop dev veth1 weight 1 pref medium"
-+	check_route6 "2001:db8:101::1" "2001:db8:101::1 nhid 123 metric 1024 nexthop via 2001:db8:91::2 dev veth1 weight 1 nexthop dev veth1 weight 1"
- 
- 	#
- 	# IPv6 route with v4 nexthop - not allowed
-@@ -866,6 +864,11 @@ ipv4_fcnal_runtime()
- 		$IP neigh sh | grep 'dev veth1'
- 	fi
- 
-+	run_cmd "$IP ro del 172.16.101.1/32 via inet6 ${lladdr} dev veth1"
-+	run_cmd "$IP -4 ro add default via inet6 ${lladdr} dev veth1"
-+	run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
-+	log_test $? 0 "IPv4 default route with IPv6 gateway"
-+
- 	#
- 	# MPLS as an example of LWT encap
- 	#
--- 
-2.20.1
-
+>  tools/lib/bpf/libbpf.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 8f480e29a6b0..8e1dc6980fac 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -7006,7 +7006,7 @@ int bpf_prog_load_xattr(const struct bpf_prog_load_attr *attr,
+>         err = bpf_object__load(obj);
+>         if (err) {
+>                 bpf_object__close(obj);
+> -               return -EINVAL;
+> +               return err;
+>         }
+>
+>         *pobj = obj;
+> --
+> 2.20.1
+>
