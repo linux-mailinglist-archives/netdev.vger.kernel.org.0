@@ -2,115 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05A8C1B4304
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 13:19:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E45171B4320
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 13:21:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726774AbgDVLTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 07:19:31 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:28648 "EHLO
+        id S1726882AbgDVLVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 07:21:16 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:49710 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725787AbgDVLT2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 07:19:28 -0400
+        with ESMTP id S1726104AbgDVLVP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 07:21:15 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587554366;
+        s=mimecast20190719; t=1587554474;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=3adrceupXKyLIJE05IQbOejDBq5MFoIz0/34EbiMoJY=;
-        b=PGk7I5cKQw34pz13IzpAkZy8ZucbtiapSKWbzfHGhgTgTH+tHeb3ABF6PG0jBVgvFMx1qT
-        UjvlR93L6AsuGsF2Fcpj3LMtqRXEGzRLSYBY4yBAI8GPBfItqZgMcwT3AE8ut35Rp4cZr0
-        s8unYf/N5XRjKwc5fGhFkeHVzYm6lW4=
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-58-Pcqzdz_HPRiBYpsTzQGSjg-1; Wed, 22 Apr 2020 07:19:24 -0400
-X-MC-Unique: Pcqzdz_HPRiBYpsTzQGSjg-1
-Received: by mail-lj1-f199.google.com with SMTP id d25so292994ljo.4
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 04:19:23 -0700 (PDT)
+        bh=q9tUrARyD8+ewazJH+yYv3xVVE47BRlw6rRBG9pKD8I=;
+        b=VQaQIMEBWx3ssN/IsklMCAhfaHYq+ch5xv0gKfLaKeMem/Amt2iWvuUopYpnCyRWR1ifX0
+        CmtThW1GGCCsr+jncppvpbNO2wQotuDRdSrwUQCRMW7Hdkdix6opZhXd2icLphplskBWJk
+        hY9coi8QOPxMvBWtnhNpxR2yzdHNeaM=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-80--qRuK6PvOhWilYr19kbb7A-1; Wed, 22 Apr 2020 07:21:12 -0400
+X-MC-Unique: -qRuK6PvOhWilYr19kbb7A-1
+Received: by mail-lf1-f70.google.com with SMTP id l6so783221lfk.2
+        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 04:21:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=3adrceupXKyLIJE05IQbOejDBq5MFoIz0/34EbiMoJY=;
-        b=NrkeTCGVsSzPSHUS9ubmVJFXnI/Ph/X/jbjx8tY1pdNNV1fu+H5VTf+a6lkrjUEt+Y
-         C9ZQxRMmZJig8XZ0llRW0mVQ7u77dusAFilDVsw6ZKv1bMNn7m9/kN+sYlsIWzdMcVO3
-         wkDTmf695kPL04nJrLw/b3fKimb9c4L98KZwyU4xzfP8PyyMEtD/C/lLQzMs2wGjcRUP
-         XjdJA5X7vnFG0k2Swkh9ekrlKY5FfCN/1qS+fxuY4rWonEY96bgiSI1coEs7gkaGtXDq
-         TdMA3eVCEnoyq5ZRjQ6EN3rBJhQKqjk6wlbY5CAzVM7uNfhJMbQGJF/GF4JCplYEbpwt
-         Uycg==
-X-Gm-Message-State: AGi0PuZktJ3Yybpgli+aFKfd49qo8jfUYqphgACG4wO/MJbz1uSUYvjl
-        AOj8ya4hPLfSgHvfy4xfZVSa65JAeGX38vheuqHV9lWJ46YU5qGvcEszuY7pQl21APaIJE7taw8
-        3+ZKbPeG4BAa7H1so
-X-Received: by 2002:a2e:3a0a:: with SMTP id h10mr14858575lja.54.1587554362434;
-        Wed, 22 Apr 2020 04:19:22 -0700 (PDT)
-X-Google-Smtp-Source: APiQypKgTKXtFT05R5dgb80W+Fuy9drBsDeICtlv+U2YLMTUHhv1QoWmXiMqwE8E5fRKbb5CBf3WbA==
-X-Received: by 2002:a2e:3a0a:: with SMTP id h10mr14858565lja.54.1587554362199;
-        Wed, 22 Apr 2020 04:19:22 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id u16sm4194094ljk.9.2020.04.22.04.19.21
+         :message-id:mime-version:content-transfer-encoding;
+        bh=q9tUrARyD8+ewazJH+yYv3xVVE47BRlw6rRBG9pKD8I=;
+        b=L8QVtd2jhH3gBOIl5m1uGZNFLFkYvkhcNc7yJzBBbYnM1q8okn/bJmvpIqcrTUMnGU
+         whsHJKxPzRyn8FKpv4a0XqkaCQuX7/7gALcLxKd5aXa5jJQIcnLNTbztSDgu3O/uk2pu
+         sFRRGARDycSTR8c38JT2cIQuOWDa7apHLMkZ3unLpvhTthXM2eYECe2GieAqOC1bXPfH
+         ehfpJ52Jul2Z6NESBxkAXEScC5fPbG2Wkl/Jq8WsBQwiXfrsAPyi3wvu9CqpjT9uRtuu
+         J6utCTPzJtFREqvI82nb8nF8IdjII80xXjMQ4WB3VTZ5vKzC1wpM2flPHdMIgHbCnmeX
+         z4Yg==
+X-Gm-Message-State: AGi0PuZYUYOrQCUZQSoLM+S/FiCpHvUD2lTiLWGvifocNKgqDW5nMalj
+        qdvnE7TnIXCiEX44hyy/NPz9iR4ZkAB52pfz332vWnA2UUD8YNMKOFFkUNS1hj47VvQYdJBfbz7
+        D4lV9HxovHwZxJ9YY
+X-Received: by 2002:a2e:9e97:: with SMTP id f23mr14217078ljk.228.1587554470880;
+        Wed, 22 Apr 2020 04:21:10 -0700 (PDT)
+X-Google-Smtp-Source: APiQypITmTT57AywH64jbzwFVwrkETCXn12QqTCV5X5qy1M/kEfxNH4xJPRrrS1VKsZDmj8ZgMTmKA==
+X-Received: by 2002:a2e:9e97:: with SMTP id f23mr14217056ljk.228.1587554470569;
+        Wed, 22 Apr 2020 04:21:10 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id d24sm4511477lfi.21.2020.04.22.04.21.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Apr 2020 04:19:21 -0700 (PDT)
+        Wed, 22 Apr 2020 04:21:09 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id B7315181586; Wed, 22 Apr 2020 13:19:18 +0200 (CEST)
+        id 2FB1A181586; Wed, 22 Apr 2020 13:21:09 +0200 (CEST)
 From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: Re: [PATCH bpf-next] libbpf: add BTF-defined map-in-map support
-In-Reply-To: <20200422051006.1152644-1-andriin@fb.com>
-References: <20200422051006.1152644-1-andriin@fb.com>
+To:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
+        netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        prashantbhole.linux@gmail.com, jasowang@redhat.com,
+        brouer@redhat.com, toshiaki.makita1@gmail.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        David Ahern <dahern@digitalocean.com>
+Subject: Re: [PATCH bpf-next 04/16] net: Add BPF_XDP_EGRESS as a bpf_attach_type
+In-Reply-To: <073ed1a6-ff5e-28ef-d41d-c33d87135faa@gmail.com>
+References: <20200420200055.49033-1-dsahern@kernel.org> <20200420200055.49033-5-dsahern@kernel.org> <87ftcx9mcf.fsf@toke.dk> <856a263f-3bde-70a7-ff89-5baaf8e2240e@gmail.com> <87pnc17yz1.fsf@toke.dk> <073ed1a6-ff5e-28ef-d41d-c33d87135faa@gmail.com>
 X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 22 Apr 2020 13:19:18 +0200
-Message-ID: <87mu737op5.fsf@toke.dk>
+Date:   Wed, 22 Apr 2020 13:21:09 +0200
+Message-ID: <87k1277om2.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andriin@fb.com> writes:
+David Ahern <dsahern@gmail.com> writes:
 
-> As discussed at LPC 2019 ([0]), this patch brings (a quite belated) support
-> for declarative BTF-defined map-in-map support in libbpf. It allows to define
-> ARRAY_OF_MAPS and HASH_OF_MAPS BPF maps without any user-space initialization
-> code involved.
+> On 4/21/20 7:25 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> David Ahern <dsahern@gmail.com> writes:
+>>=20
+>>> On 4/21/20 4:14 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>>>> As I pointed out on the RFC patch, I'm concerned whether this will work
+>>>> right with freplace programs attaching to XDP programs. It may just be
+>>>> that I'm missing something, but in that case please explain why it
+>>>> works? :)
+>>>
+>>> expected_attach_type is not unique to XDP. freplace is not unique to
+>>> XDP. IF there is a problem, it is not unique to XDP, and any
+>>> enhancements needed to freplace functionality will not be unique to XDP.
+>>=20
+>> Still needs to be fixed, though :)
 >
-> Additionally, it allows to initialize outer map's slots with references to
-> respective inner maps at load time, also completely declaratively.
->
-> Despite a weak type system of C, the way BTF-defined map-in-map definition
-> works, it's actually quite hard to accidentally initialize outer map with
-> incompatible inner maps. This being C, of course, it's still possible, but
-> even that would be caught at load time and error returned with helpful debug
-> log pointing exactly to the slot that failed to be initialized.
->
-> Here's the relevant part of libbpf debug log showing pretty clearly of what's
-> going on with map-in-map initialization:
->
-> libbpf: .maps relo #0: for 6 value 0 rel.r_offset 96 name 260 ('inner_map1')
-> libbpf: .maps relo #0: map 'outer_arr' slot [0] points to map 'inner_map1'
-> libbpf: .maps relo #1: for 7 value 32 rel.r_offset 112 name 249 ('inner_map2')
-> libbpf: .maps relo #1: map 'outer_arr' slot [2] points to map 'inner_map2'
-> libbpf: .maps relo #2: for 7 value 32 rel.r_offset 144 name 249 ('inner_map2')
-> libbpf: .maps relo #2: map 'outer_hash' slot [0] points to map 'inner_map2'
-> libbpf: .maps relo #3: for 6 value 0 rel.r_offset 176 name 260 ('inner_map1')
-> libbpf: .maps relo #3: map 'outer_hash' slot [4] points to map 'inner_map1'
-> libbpf: map 'inner_map1': created successfully, fd=4
-> libbpf: map 'inner_map2': created successfully, fd=5
-> libbpf: map 'outer_arr': created successfully, fd=7
-> libbpf: map 'outer_arr': slot [0] set to map 'inner_map1' fd=4
-> libbpf: map 'outer_arr': slot [2] set to map 'inner_map2' fd=5
-> libbpf: map 'outer_hash': created successfully, fd=8
-> libbpf: map 'outer_hash': slot [0] set to map 'inner_map2' fd=5
-> libbpf: map 'outer_hash': slot [4] set to map 'inner_map1' fd=4
->
-> See also included selftest with some extra comments explaining extra details
-> of usage.
+> one problem at a time. I have a long list of items that are directly
+> relevant to what I want to do.
 
-Could you please put an example of usage in the commit message as well?
-Easier to find that way, especially if the selftests are not handy (such
-as in the libbpf github repo).
+Not saying a fix to freplace *has* to be part of this series; just
+saying that I would be more comfortable if that was fixed before we
+merge this.
+
+>> Also, at least looking through all the is_valid_access functions in
+>> filter.c, they all seem to "fail safe". I.e., specific
+>> expected_attach_type values can permit the program access to additional
+>> ranges. In which case an freplace program that doesn't have the right
+>> attach type will just be rejected if it tries to access such a field.
+>> Whereas here you're *disallowing* something based on a particular
+>> expected_attach_type, so you can end up with an egress program that
+>> should have been rejected by the verifier but isn't because it's missing
+>> the attach_type.
+>
+> There are 6 existing valid access checks on expected_attach_type doing
+> the exact same thing - validating access based on attach type.
+
+See my point about default black/white listing, though. You are adding a
+new restriction to an existing program type based on this, so surely we
+should make sure this restriction actually sticks, no?
 
 -Toke
 
