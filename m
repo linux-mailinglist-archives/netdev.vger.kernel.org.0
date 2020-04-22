@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40B061B43F4
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 14:05:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE7FE1B43F3
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 14:05:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728552AbgDVMFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 08:05:42 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:56430 "EHLO inva021.nxp.com"
+        id S1728520AbgDVMFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 08:05:41 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:56464 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726519AbgDVMFi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Apr 2020 08:05:38 -0400
+        id S1727820AbgDVMFj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Apr 2020 08:05:39 -0400
 Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id D3B652010AE;
-        Wed, 22 Apr 2020 14:05:35 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 442842010B3;
+        Wed, 22 Apr 2020 14:05:36 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id C768E200EDC;
-        Wed, 22 Apr 2020 14:05:35 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 382CA2010B1;
+        Wed, 22 Apr 2020 14:05:36 +0200 (CEST)
 Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 7909D2030B;
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id E13A92030B;
         Wed, 22 Apr 2020 14:05:35 +0200 (CEST)
 From:   Ioana Ciornei <ioana.ciornei@nxp.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     brouer@redhat.com, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH v2 net-next 4/5] dpaa2-eth: split the .ndo_xdp_xmit callback into two stages
-Date:   Wed, 22 Apr 2020 15:05:12 +0300
-Message-Id: <20200422120513.6583-5-ioana.ciornei@nxp.com>
+Subject: [PATCH v2 net-next 5/5] dpaa2-eth: use bulk enqueue in .ndo_xdp_xmit
+Date:   Wed, 22 Apr 2020 15:05:13 +0300
+Message-Id: <20200422120513.6583-6-ioana.ciornei@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200422120513.6583-1-ioana.ciornei@nxp.com>
 References: <20200422120513.6583-1-ioana.ciornei@nxp.com>
@@ -36,153 +36,125 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of having a function that both creates a frame descriptor from
-an xdp_frame and enqueues it, split this into two stages.
-Add the dpaa2_eth_xdp_create_fd that just transforms an xdp_frame into a
-FD while the actual enqueue callback is called directly from the ndo for
-each frame.
-This is particulary useful in conjunction with bulk enqueue.
+Take advantage of the bulk enqueue feature in .ndo_xdp_xmit.
+We cannot use the XDP_XMIT_FLUSH since the architecture is not capable
+to store all the frames dequeued in a NAPI cycle so we instead are
+enqueueing all the frames received in a ndo_xdp_xmit call right away.
+
+After setting up all FDs for the xdp_frames received, enqueue multiple
+frames at a time until all are sent or the maximum number of retries is
+hit.
 
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
 Changes in v2:
- - none
+ - use a statically allocated array of dpaa2_fd for each fq
+ - use DEV_MAP_BULK_SIZE as the max number of xdp_frames received
 
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 76 ++++++++++---------
- 1 file changed, 40 insertions(+), 36 deletions(-)
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 57 +++++++++----------
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |  2 +
+ 2 files changed, 30 insertions(+), 29 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 26c2868435d5..9a0432cd893c 100644
+index 9a0432cd893c..9d4061bba0b8 100644
 --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
 +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -1880,20 +1880,16 @@ static int dpaa2_eth_xdp(struct net_device *dev, struct netdev_bpf *xdp)
- 	return 0;
- }
- 
--static int dpaa2_eth_xdp_xmit_frame(struct net_device *net_dev,
--				    struct xdp_frame *xdpf)
-+static int dpaa2_eth_xdp_create_fd(struct net_device *net_dev,
-+				   struct xdp_frame *xdpf,
-+				   struct dpaa2_fd *fd)
- {
- 	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
- 	struct device *dev = net_dev->dev.parent;
--	struct rtnl_link_stats64 *percpu_stats;
--	struct dpaa2_eth_drv_stats *percpu_extras;
- 	unsigned int needed_headroom;
- 	struct dpaa2_eth_swa *swa;
--	struct dpaa2_eth_fq *fq;
--	struct dpaa2_fd fd;
- 	void *buffer_start, *aligned_start;
- 	dma_addr_t addr;
--	int err, i;
- 
- 	/* We require a minimum headroom to be able to transmit the frame.
- 	 * Otherwise return an error and let the original net_device handle it
-@@ -1902,11 +1898,8 @@ static int dpaa2_eth_xdp_xmit_frame(struct net_device *net_dev,
- 	if (xdpf->headroom < needed_headroom)
- 		return -EINVAL;
- 
--	percpu_stats = this_cpu_ptr(priv->percpu_stats);
--	percpu_extras = this_cpu_ptr(priv->percpu_extras);
--
- 	/* Setup the FD fields */
--	memset(&fd, 0, sizeof(fd));
-+	memset(fd, 0, sizeof(*fd));
- 
- 	/* Align FD address, if possible */
- 	buffer_start = xdpf->data - needed_headroom;
-@@ -1924,32 +1917,14 @@ static int dpaa2_eth_xdp_xmit_frame(struct net_device *net_dev,
- 	addr = dma_map_single(dev, buffer_start,
- 			      swa->xdp.dma_size,
- 			      DMA_BIDIRECTIONAL);
--	if (unlikely(dma_mapping_error(dev, addr))) {
--		percpu_stats->tx_dropped++;
-+	if (unlikely(dma_mapping_error(dev, addr)))
- 		return -ENOMEM;
--	}
--
--	dpaa2_fd_set_addr(&fd, addr);
--	dpaa2_fd_set_offset(&fd, xdpf->data - buffer_start);
--	dpaa2_fd_set_len(&fd, xdpf->len);
--	dpaa2_fd_set_format(&fd, dpaa2_fd_single);
--	dpaa2_fd_set_ctrl(&fd, FD_CTRL_PTA);
--
--	fq = &priv->fq[smp_processor_id() % dpaa2_eth_queue_count(priv)];
--	for (i = 0; i < DPAA2_ETH_ENQUEUE_RETRIES; i++) {
--		err = priv->enqueue(priv, fq, &fd, 0, 1, NULL);
--		if (err != -EBUSY)
--			break;
--	}
--	percpu_extras->tx_portal_busy += i;
--	if (unlikely(err < 0)) {
--		percpu_stats->tx_errors++;
--		/* let the Rx device handle the cleanup */
--		return err;
--	}
- 
--	percpu_stats->tx_packets++;
--	percpu_stats->tx_bytes += dpaa2_fd_get_len(&fd);
-+	dpaa2_fd_set_addr(fd, addr);
-+	dpaa2_fd_set_offset(fd, xdpf->data - buffer_start);
-+	dpaa2_fd_set_len(fd, xdpf->len);
-+	dpaa2_fd_set_format(fd, dpaa2_fd_single);
-+	dpaa2_fd_set_ctrl(fd, FD_CTRL_PTA);
- 
- 	return 0;
- }
-@@ -1957,6 +1932,11 @@ static int dpaa2_eth_xdp_xmit_frame(struct net_device *net_dev,
- static int dpaa2_eth_xdp_xmit(struct net_device *net_dev, int n,
+@@ -1933,12 +1933,12 @@ static int dpaa2_eth_xdp_xmit(struct net_device *net_dev, int n,
  			      struct xdp_frame **frames, u32 flags)
  {
-+	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
-+	struct dpaa2_eth_drv_stats *percpu_extras;
-+	struct rtnl_link_stats64 *percpu_stats;
-+	struct dpaa2_eth_fq *fq;
-+	struct dpaa2_fd fd;
- 	int drops = 0;
- 	int i, err;
+ 	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
++	int total_enqueued = 0, retries = 0, enqueued;
+ 	struct dpaa2_eth_drv_stats *percpu_extras;
+ 	struct rtnl_link_stats64 *percpu_stats;
++	int num_fds, i, err, max_retries;
+ 	struct dpaa2_eth_fq *fq;
+-	struct dpaa2_fd fd;
+-	int drops = 0;
+-	int i, err;
++	struct dpaa2_fd *fds;
  
-@@ -1966,14 +1946,38 @@ static int dpaa2_eth_xdp_xmit(struct net_device *net_dev, int n,
+ 	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
+ 		return -EINVAL;
+@@ -1946,41 +1946,40 @@ static int dpaa2_eth_xdp_xmit(struct net_device *net_dev, int n,
  	if (!netif_running(net_dev))
  		return -ENETDOWN;
  
-+	percpu_stats = this_cpu_ptr(priv->percpu_stats);
-+	percpu_extras = this_cpu_ptr(priv->percpu_extras);
++	fq = &priv->fq[smp_processor_id()];
++	fds = fq->xdp_fds;
 +
- 	for (i = 0; i < n; i++) {
- 		struct xdp_frame *xdpf = frames[i];
+ 	percpu_stats = this_cpu_ptr(priv->percpu_stats);
+ 	percpu_extras = this_cpu_ptr(priv->percpu_extras);
  
--		err = dpaa2_eth_xdp_xmit_frame(net_dev, xdpf);
-+		/* create the FD from the xdp_frame */
-+		err = dpaa2_eth_xdp_create_fd(net_dev, xdpf, &fd);
- 		if (err) {
-+			percpu_stats->tx_dropped++;
- 			xdp_return_frame_rx_napi(xdpf);
- 			drops++;
-+			continue;
-+		}
-+
-+		/* enqueue the newly created FD */
-+		fq = &priv->fq[smp_processor_id() % dpaa2_eth_queue_count(priv)];
-+		for (i = 0; i < DPAA2_ETH_ENQUEUE_RETRIES; i++) {
-+			err = priv->enqueue(priv, fq, &fd, 0, 1);
-+			if (err != -EBUSY)
-+				break;
++	/* create a FD for each xdp_frame in the list received */
+ 	for (i = 0; i < n; i++) {
+-		struct xdp_frame *xdpf = frames[i];
+-
+-		/* create the FD from the xdp_frame */
+-		err = dpaa2_eth_xdp_create_fd(net_dev, xdpf, &fd);
+-		if (err) {
+-			percpu_stats->tx_dropped++;
+-			xdp_return_frame_rx_napi(xdpf);
+-			drops++;
+-			continue;
+-		}
+-
+-		/* enqueue the newly created FD */
+-		fq = &priv->fq[smp_processor_id() % dpaa2_eth_queue_count(priv)];
+-		for (i = 0; i < DPAA2_ETH_ENQUEUE_RETRIES; i++) {
+-			err = priv->enqueue(priv, fq, &fd, 0, 1);
+-			if (err != -EBUSY)
+-				break;
+-		}
++		err = dpaa2_eth_xdp_create_fd(net_dev, frames[i], &fds[i]);
++		if (err)
++			break;
++	}
++	num_fds = i;
+ 
+-		percpu_extras->tx_portal_busy += i;
+-		if (unlikely(err < 0)) {
+-			percpu_stats->tx_errors++;
+-			xdp_return_frame_rx_napi(xdpf);
++	/* try to enqueue all the FDs until the max number of retries is hit */
++	max_retries = num_fds * DPAA2_ETH_ENQUEUE_RETRIES;
++	while (total_enqueued < num_fds && retries < max_retries) {
++		err = priv->enqueue(priv, fq, &fds[total_enqueued],
++				    0, num_fds - total_enqueued, &enqueued);
++		if (err == -EBUSY) {
++			percpu_extras->tx_portal_busy += ++retries;
+ 			continue;
  		}
-+
-+		percpu_extras->tx_portal_busy += i;
-+		if (unlikely(err < 0)) {
-+			percpu_stats->tx_errors++;
-+			xdp_return_frame_rx_napi(xdpf);
-+			continue;
-+		}
-+
-+		percpu_stats->tx_packets++;
-+		percpu_stats->tx_bytes += dpaa2_fd_get_len(&fd);
+-
+-		percpu_stats->tx_packets++;
+-		percpu_stats->tx_bytes += dpaa2_fd_get_len(&fd);
++		total_enqueued += enqueued;
  	}
  
- 	return n - drops;
+-	return n - drops;
++	/* update statistics */
++	percpu_stats->tx_packets += total_enqueued;
++	for (i = 0; i < total_enqueued; i++)
++		percpu_stats->tx_bytes += dpaa2_fd_get_len(&fds[i]);
++	for (i = total_enqueued; i < n; i++)
++		xdp_return_frame_rx_napi(frames[i]);
++
++	return total_enqueued;
+ }
+ 
+ static int update_xps(struct dpaa2_eth_priv *priv)
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+index 2440ba6b21ef..289053099974 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+@@ -325,6 +325,8 @@ struct dpaa2_eth_fq {
+ 			const struct dpaa2_fd *fd,
+ 			struct dpaa2_eth_fq *fq);
+ 	struct dpaa2_eth_fq_stats stats;
++
++	struct dpaa2_fd xdp_fds[DEV_MAP_BULK_SIZE];
+ };
+ 
+ struct dpaa2_eth_ch_xdp {
 -- 
 2.17.1
 
