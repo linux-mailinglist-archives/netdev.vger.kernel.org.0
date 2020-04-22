@@ -2,140 +2,259 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A81F11B3A49
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 10:39:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 983FE1B3A53
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 10:40:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726066AbgDVIj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 04:39:58 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:47372 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725786AbgDVIj5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 04:39:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1587544797; x=1619080797;
-  h=from:to:cc:date:message-id:references:in-reply-to:
-   content-transfer-encoding:mime-version:subject;
-  bh=5HSl+RgDiEJ1HnZOnd1JtwP11Ny6Jipvj1yDOa13F9s=;
-  b=Nc9VA71Ywg/vMtDDb+InXKgC9KYzumPGzPhqK96VL/67j1JtVSSCe7Ca
-   0FJ1IUwo9f4LjwuO4I9IqecnEUB6YaiXz0A2zmYj4CGJyLY1Tk3QNtmfN
-   C4OHi2ATFDtZQ0gCenzCFcbeI8fKwMTg9B3WW5X62i/8wr1pecNxEa0B2
-   Q=;
-IronPort-SDR: vSwhIC/7q7yxJH80eXzEFK1GJDGlxnjuvQtAvYO3q2B4HsqADTvm+3Rk1lKjJ2yVRYgcwNUDcW
- 5udIqJaijYzg==
-X-IronPort-AV: E=Sophos;i="5.72,413,1580774400"; 
-   d="scan'208";a="40121212"
-Subject: RE: [PATCH RFC v2 15/33] ena: add XDP frame size to amazon NIC driver
-Thread-Topic: [PATCH RFC v2 15/33] ena: add XDP frame size to amazon NIC driver
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-6f38efd9.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 22 Apr 2020 08:39:57 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2c-6f38efd9.us-west-2.amazon.com (Postfix) with ESMTPS id BCD67A1F68;
-        Wed, 22 Apr 2020 08:39:55 +0000 (UTC)
-Received: from EX13D08EUB003.ant.amazon.com (10.43.166.117) by
- EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 22 Apr 2020 08:39:55 +0000
-Received: from EX13D11EUB003.ant.amazon.com (10.43.166.58) by
- EX13D08EUB003.ant.amazon.com (10.43.166.117) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 22 Apr 2020 08:39:54 +0000
-Received: from EX13D11EUB003.ant.amazon.com ([10.43.166.58]) by
- EX13D11EUB003.ant.amazon.com ([10.43.166.58]) with mapi id 15.00.1497.006;
- Wed, 22 Apr 2020 08:39:54 +0000
-From:   "Jubran, Samih" <sameehj@amazon.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-CC:     "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        "Daniel Borkmann" <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        David Ahern <dsahern@gmail.com>,
-        "Willem de Bruijn" <willemdebruijn.kernel@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        "Saeed Mahameed" <saeedm@mellanox.com>
-Thread-Index: AQHWDZw7uC9ZFp8qsEi7EawEaduGtKiE52Rg
-Date:   Wed, 22 Apr 2020 08:39:45 +0000
-Deferred-Delivery: Wed, 22 Apr 2020 08:39:04 +0000
-Message-ID: <b8a1365d043543debcb6d9f6553dee22@EX13D11EUB003.ant.amazon.com>
-References: <158634658714.707275.7903484085370879864.stgit@firesoul>
- <158634671052.707275.5680515403770560550.stgit@firesoul>
-In-Reply-To: <158634671052.707275.5680515403770560550.stgit@firesoul>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.164.178]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+        id S1726619AbgDVIkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 04:40:10 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:52235 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726541AbgDVIkF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 04:40:05 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from maorg@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 22 Apr 2020 11:40:00 +0300
+Received: from dev-l-vrt-201.mtl.labs.mlnx (dev-l-vrt-201.mtl.labs.mlnx [10.134.201.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 03M8dxgm006118;
+        Wed, 22 Apr 2020 11:40:00 +0300
+From:   Maor Gottlieb <maorg@mellanox.com>
+To:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        kuba@kernel.org, jiri@mellanox.com, dsahern@kernel.org
+Cc:     leonro@mellanox.com, saeedm@mellanox.com,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        alexr@mellanox.com, Maor Gottlieb <maorg@mellanox.com>
+Subject: [PATCH V4 mlx5-next 10/15] RDMA/core: Add LAG functionality
+Date:   Wed, 22 Apr 2020 11:39:46 +0300
+Message-Id: <20200422083951.17424-11-maorg@mellanox.com>
+X-Mailer: git-send-email 2.17.2
+In-Reply-To: <20200422083951.17424-1-maorg@mellanox.com>
+References: <20200422083951.17424-1-maorg@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-QWNrZWQtYnk6IFNhbWVlaCBKdWJyYW4gPHNhbWVlaGpAYW1hem9uLmNvbT4NCg0KPiAtLS0tLU9y
-aWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKZXNwZXIgRGFuZ2FhcmQgQnJvdWVyIDxicm91
-ZXJAcmVkaGF0LmNvbT4NCj4gU2VudDogV2VkbmVzZGF5LCBBcHJpbCA4LCAyMDIwIDI6NTIgUE0N
-Cj4gVG86IEp1YnJhbiwgU2FtaWggPHNhbWVlaGpAYW1hem9uLmNvbT4NCj4gQ2M6IEtpeWFub3Zz
-a2ksIEFydGh1ciA8YWtpeWFub0BhbWF6b24uY29tPjsgSmVzcGVyIERhbmdhYXJkIEJyb3Vlcg0K
-PiA8YnJvdWVyQHJlZGhhdC5jb20+OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBicGZAdmdlci5r
-ZXJuZWwub3JnOw0KPiBNYWNodWxza3ksIFpvcmlrIDx6b3Jpa0BhbWF6b24uY29tPjsgS2l5YW5v
-dnNraSwgQXJ0aHVyDQo+IDxha2l5YW5vQGFtYXpvbi5jb20+OyBUemFsaWssIEd1eSA8Z3R6YWxp
-a0BhbWF6b24uY29tPjsgVG9rZSBIw7hpbGFuZC0NCj4gSsO4cmdlbnNlbiA8dG9rZUByZWRoYXQu
-Y29tPjsgRGFuaWVsIEJvcmttYW5uDQo+IDxib3JrbWFubkBpb2dlYXJib3gubmV0PjsgQWxleGVp
-IFN0YXJvdm9pdG92DQo+IDxhbGV4ZWkuc3Rhcm92b2l0b3ZAZ21haWwuY29tPjsgSm9obiBGYXN0
-YWJlbmQNCj4gPGpvaG4uZmFzdGFiZW5kQGdtYWlsLmNvbT47IEFsZXhhbmRlciBEdXljaw0KPiA8
-YWxleGFuZGVyLmR1eWNrQGdtYWlsLmNvbT47IEplZmYgS2lyc2hlciA8amVmZnJleS50LmtpcnNo
-ZXJAaW50ZWwuY29tPjsNCj4gRGF2aWQgQWhlcm4gPGRzYWhlcm5AZ21haWwuY29tPjsgV2lsbGVt
-IGRlIEJydWlqbg0KPiA8d2lsbGVtZGVicnVpam4ua2VybmVsQGdtYWlsLmNvbT47IElsaWFzIEFw
-YWxvZGltYXMNCj4gPGlsaWFzLmFwYWxvZGltYXNAbGluYXJvLm9yZz47IExvcmVuem8gQmlhbmNv
-bmkgPGxvcmVuem9Aa2VybmVsLm9yZz47DQo+IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVsbGFu
-b3guY29tPg0KPiBTdWJqZWN0OiBbRVhURVJOQUxdIFtQQVRDSCBSRkMgdjIgMTUvMzNdIGVuYTog
-YWRkIFhEUCBmcmFtZSBzaXplIHRvDQo+IGFtYXpvbiBOSUMgZHJpdmVyDQo+IA0KPiBDQVVUSU9O
-OiBUaGlzIGVtYWlsIG9yaWdpbmF0ZWQgZnJvbSBvdXRzaWRlIG9mIHRoZSBvcmdhbml6YXRpb24u
-IERvIG5vdCBjbGljaw0KPiBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5b3UgY2Fu
-IGNvbmZpcm0gdGhlIHNlbmRlciBhbmQga25vdyB0aGUNCj4gY29udGVudCBpcyBzYWZlLg0KPiAN
-Cj4gDQo+IA0KPiBGcmFtZSBzaXplIEVOQV9QQUdFX1NJWkUgaXMgbGltaXRlZCB0byAxNksgb24g
-c3lzdGVtcyB3aXRoIGxhcmdlcg0KPiBQQUdFX1NJWkUgdGhhbiAxNksuIENoYW5nZSBFTkFfWERQ
-X01BWF9NVFUgdG8gYWxzbyB0YWtlIGludG8gYWNjb3VudA0KPiB0aGUgcmVzZXJ2ZWQgdGFpbHJv
-b20uDQo+IA0KPiBDYzogQXJ0aHVyIEtpeWFub3Zza2kgPGFraXlhbm9AYW1hem9uLmNvbT4NCj4g
-U2lnbmVkLW9mZi1ieTogSmVzcGVyIERhbmdhYXJkIEJyb3VlciA8YnJvdWVyQHJlZGhhdC5jb20+
-DQo+IC0tLQ0KPiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvYW1hem9uL2VuYS9lbmFfbmV0ZGV2LmMg
-fCAgICAxICsNCj4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L2FtYXpvbi9lbmEvZW5hX25ldGRldi5o
-IHwgICAgNSArKystLQ0KPiAgMiBmaWxlcyBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDIgZGVs
-ZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvYW1hem9u
-L2VuYS9lbmFfbmV0ZGV2LmMNCj4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9hbWF6b24vZW5hL2Vu
-YV9uZXRkZXYuYw0KPiBpbmRleCAyY2M3NjVkZjhkYTMuLjBmZDdkYjE3NjlmOCAxMDA2NDQNCj4g
-LS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvYW1hem9uL2VuYS9lbmFfbmV0ZGV2LmMNCj4gKysr
-IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvYW1hem9uL2VuYS9lbmFfbmV0ZGV2LmMNCj4gQEAgLTE2
-MDYsNiArMTYwNiw3IEBAIHN0YXRpYyBpbnQgZW5hX2NsZWFuX3J4X2lycShzdHJ1Y3QgZW5hX3Jp
-bmcNCj4gKnJ4X3JpbmcsIHN0cnVjdCBuYXBpX3N0cnVjdCAqbmFwaSwNCj4gICAgICAgICAgICAg
-ICAgICAgIiVzIHFpZCAlZFxuIiwgX19mdW5jX18sIHJ4X3JpbmctPnFpZCk7DQo+ICAgICAgICAg
-cmVzX2J1ZGdldCA9IGJ1ZGdldDsNCj4gICAgICAgICB4ZHAucnhxID0gJnJ4X3JpbmctPnhkcF9y
-eHE7DQo+ICsgICAgICAgeGRwLmZyYW1lX3N6ID0gRU5BX1BBR0VfU0laRTsNCj4gDQo+ICAgICAg
-ICAgZG8gew0KPiAgICAgICAgICAgICAgICAgeGRwX3ZlcmRpY3QgPSBYRFBfUEFTUzsNCj4gZGlm
-ZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2FtYXpvbi9lbmEvZW5hX25ldGRldi5oDQo+
-IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvYW1hem9uL2VuYS9lbmFfbmV0ZGV2LmgNCj4gaW5kZXgg
-OTdkZmQwYzY3ZTg0Li5kZDAwMTI3ZGZlOWYgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvbmV0L2V0
-aGVybmV0L2FtYXpvbi9lbmEvZW5hX25ldGRldi5oDQo+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVy
-bmV0L2FtYXpvbi9lbmEvZW5hX25ldGRldi5oDQo+IEBAIC0xNTEsOCArMTUxLDkgQEANCj4gICAq
-IFRoZSBidWZmZXIgc2l6ZSB3ZSBzaGFyZSB3aXRoIHRoZSBkZXZpY2UgaXMgZGVmaW5lZCB0byBi
-ZSBFTkFfUEFHRV9TSVpFDQo+ICAgKi8NCj4gDQo+IC0jZGVmaW5lIEVOQV9YRFBfTUFYX01UVSAo
-RU5BX1BBR0VfU0laRSAtIEVUSF9ITEVOIC0gRVRIX0ZDU19MRU4NCj4gLSBcDQo+IC0gICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgVkxBTl9ITEVOIC0gWERQX1BBQ0tFVF9IRUFEUk9PTSkN
-Cj4gKyNkZWZpbmUgRU5BX1hEUF9NQVhfTVRVIChFTkFfUEFHRV9TSVpFIC0gRVRIX0hMRU4gLQ0K
-PiBFVEhfRkNTX0xFTiAtICAgICAgXA0KPiArICAgICAgICAgICAgICAgICAgICAgICAgVkxBTl9I
-TEVOIC0gWERQX1BBQ0tFVF9IRUFEUk9PTSAtICAgICAgICAgICAgICBcDQo+ICsgICAgICAgICAg
-ICAgICAgICAgICAgICBTS0JfREFUQV9BTElHTihzaXplb2Yoc3RydWN0IHNrYl9zaGFyZWRfaW5m
-bykpKQ0KPiANCj4gICNkZWZpbmUgRU5BX0lTX1hEUF9JTkRFWChhZGFwdGVyLCBpbmRleCkgKCgo
-aW5kZXgpID49IChhZGFwdGVyKS0NCj4gPnhkcF9maXJzdF9yaW5nKSAmJiBcDQo+ICAgICAgICAg
-KChpbmRleCkgPCAoYWRhcHRlciktPnhkcF9maXJzdF9yaW5nICsgKGFkYXB0ZXIpLT54ZHBfbnVt
-X3F1ZXVlcykpDQo+IA0KDQo=
+Add support to get the RoCE LAG xmit slave by building skb
+of the RoCE packet and call to master_get_xmit_slave.
+If driver wants to get the slave assume all slaves are available,
+then need to set RDMA_LAG_FLAGS_HASH_ALL_SLAVES in flags.
+
+Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
+Reviewed-by: Leon Romanovsky <leonro@mellanox.com>
+---
+ drivers/infiniband/core/Makefile |   2 +-
+ drivers/infiniband/core/lag.c    | 138 +++++++++++++++++++++++++++++++
+ include/rdma/ib_verbs.h          |   2 +
+ include/rdma/lag.h               |  22 +++++
+ 4 files changed, 163 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/infiniband/core/lag.c
+ create mode 100644 include/rdma/lag.h
+
+diff --git a/drivers/infiniband/core/Makefile b/drivers/infiniband/core/Makefile
+index d1b14887960e..870f0fcd54d5 100644
+--- a/drivers/infiniband/core/Makefile
++++ b/drivers/infiniband/core/Makefile
+@@ -12,7 +12,7 @@ ib_core-y :=			packer.o ud_header.o verbs.o cq.o rw.o sysfs.o \
+ 				roce_gid_mgmt.o mr_pool.o addr.o sa_query.o \
+ 				multicast.o mad.o smi.o agent.o mad_rmpp.o \
+ 				nldev.o restrack.o counters.o ib_core_uverbs.o \
+-				trace.o
++				trace.o lag.o
+ 
+ ib_core-$(CONFIG_SECURITY_INFINIBAND) += security.o
+ ib_core-$(CONFIG_CGROUP_RDMA) += cgroup.o
+diff --git a/drivers/infiniband/core/lag.c b/drivers/infiniband/core/lag.c
+new file mode 100644
+index 000000000000..3036fb3dc43a
+--- /dev/null
++++ b/drivers/infiniband/core/lag.c
+@@ -0,0 +1,138 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/*
++ * Copyright (c) 2020 Mellanox Technologies. All rights reserved.
++ */
++
++#include <rdma/ib_verbs.h>
++#include <rdma/ib_cache.h>
++#include <rdma/lag.h>
++
++static struct sk_buff *rdma_build_skb(struct ib_device *device,
++				      struct net_device *netdev,
++				      struct rdma_ah_attr *ah_attr)
++{
++	struct ipv6hdr *ip6h;
++	struct sk_buff *skb;
++	struct ethhdr *eth;
++	struct iphdr *iph;
++	struct udphdr *uh;
++	u8 smac[ETH_ALEN];
++	bool is_ipv4;
++	int hdr_len;
++
++	is_ipv4 = ipv6_addr_v4mapped((struct in6_addr *)ah_attr->grh.dgid.raw);
++	hdr_len = ETH_HLEN + sizeof(struct udphdr) + LL_RESERVED_SPACE(netdev);
++	hdr_len += is_ipv4 ? sizeof(struct iphdr) : sizeof(struct ipv6hdr);
++
++	skb = alloc_skb(hdr_len, GFP_ATOMIC);
++	if (!skb)
++		return NULL;
++
++	skb->dev = netdev;
++	skb_reserve(skb, hdr_len);
++	skb_push(skb, sizeof(struct udphdr));
++	skb_reset_transport_header(skb);
++	uh = udp_hdr(skb);
++	uh->source = htons(0xC000);
++	uh->dest = htons(ROCE_V2_UDP_DPORT);
++	uh->len = htons(sizeof(struct udphdr));
++
++	if (is_ipv4) {
++		skb_push(skb, sizeof(struct iphdr));
++		skb_reset_network_header(skb);
++		iph = ip_hdr(skb);
++		iph->frag_off = 0;
++		iph->version = 4;
++		iph->protocol = IPPROTO_UDP;
++		iph->ihl = 0x5;
++		iph->tot_len = htons(sizeof(struct udphdr) + sizeof(struct
++								    iphdr));
++		memcpy(&iph->saddr, ah_attr->grh.sgid_attr->gid.raw + 12,
++		       sizeof(struct in_addr));
++		memcpy(&iph->daddr, ah_attr->grh.dgid.raw + 12,
++		       sizeof(struct in_addr));
++	} else {
++		skb_push(skb, sizeof(struct ipv6hdr));
++		skb_reset_network_header(skb);
++		ip6h = ipv6_hdr(skb);
++		ip6h->version = 6;
++		ip6h->nexthdr = IPPROTO_UDP;
++		memcpy(&ip6h->flow_lbl, &ah_attr->grh.flow_label,
++		       sizeof(*ip6h->flow_lbl));
++		memcpy(&ip6h->saddr, ah_attr->grh.sgid_attr->gid.raw,
++		       sizeof(struct in6_addr));
++		memcpy(&ip6h->daddr, ah_attr->grh.dgid.raw,
++		       sizeof(struct in6_addr));
++	}
++
++	skb_push(skb, sizeof(struct ethhdr));
++	skb_reset_mac_header(skb);
++	eth = eth_hdr(skb);
++	skb->protocol = eth->h_proto = htons(is_ipv4 ? ETH_P_IP : ETH_P_IPV6);
++	rdma_read_gid_l2_fields(ah_attr->grh.sgid_attr, NULL, smac);
++	memcpy(eth->h_source, smac, ETH_ALEN);
++	memcpy(eth->h_dest, ah_attr->roce.dmac, ETH_ALEN);
++
++	return skb;
++}
++
++static struct net_device *rdma_get_xmit_slave_udp(struct ib_device *device,
++						  struct net_device *master,
++						  struct rdma_ah_attr *ah_attr)
++{
++	struct net_device *slave;
++	struct sk_buff *skb;
++
++	skb = rdma_build_skb(device, master, ah_attr);
++	if (!skb)
++		return NULL;
++
++	slave = netdev_get_xmit_slave(master, skb,
++				      !!(device->lag_flags &
++					 RDMA_LAG_FLAGS_HASH_ALL_SLAVES));
++	kfree_skb(skb);
++	return slave;
++}
++
++void rdma_lag_put_ah_roce_slave(struct rdma_ah_attr *ah_attr)
++{
++	if (ah_attr->roce.xmit_slave)
++		dev_put(ah_attr->roce.xmit_slave);
++}
++
++int rdma_lag_get_ah_roce_slave(struct ib_device *device,
++			       struct rdma_ah_attr *ah_attr)
++{
++	struct net_device *master;
++	struct net_device *slave;
++
++	if (!(ah_attr->type == RDMA_AH_ATTR_TYPE_ROCE &&
++	      ah_attr->grh.sgid_attr->gid_type == IB_GID_TYPE_ROCE_UDP_ENCAP))
++		return 0;
++
++	rcu_read_lock();
++	master = rdma_read_gid_attr_ndev_rcu(ah_attr->grh.sgid_attr);
++	if (IS_ERR(master)) {
++		rcu_read_unlock();
++		return PTR_ERR(master);
++	}
++	dev_hold(master);
++	rcu_read_unlock();
++
++	if (!netif_is_bond_master(master)) {
++		dev_put(master);
++		return 0;
++	}
++
++	slave = rdma_get_xmit_slave_udp(device, master, ah_attr);
++
++	dev_put(master);
++	if (!slave) {
++		ibdev_warn(device, "Failed to get lag xmit slave\n");
++		return -EINVAL;
++	}
++
++	ah_attr->roce.xmit_slave = slave;
++
++	return 0;
++}
+diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
+index bbc5cfb57cd2..60f9969b6d83 100644
+--- a/include/rdma/ib_verbs.h
++++ b/include/rdma/ib_verbs.h
+@@ -894,6 +894,7 @@ struct ib_ah_attr {
+ 
+ struct roce_ah_attr {
+ 	u8			dmac[ETH_ALEN];
++	struct net_device	*xmit_slave;
+ };
+ 
+ struct opa_ah_attr {
+@@ -2709,6 +2710,7 @@ struct ib_device {
+ 	/* Used by iWarp CM */
+ 	char iw_ifname[IFNAMSIZ];
+ 	u32 iw_driver_flags;
++	u32 lag_flags;
+ };
+ 
+ struct ib_client_nl_info;
+diff --git a/include/rdma/lag.h b/include/rdma/lag.h
+new file mode 100644
+index 000000000000..a71511824207
+--- /dev/null
++++ b/include/rdma/lag.h
+@@ -0,0 +1,22 @@
++/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
++/*
++ * Copyright (c) 2020 Mellanox Technologies. All rights reserved.
++ */
++
++#ifndef _RDMA_LAG_H_
++#define _RDMA_LAG_H_
++
++#include <net/lag.h>
++
++struct ib_device;
++struct rdma_ah_attr;
++
++enum rdma_lag_flags {
++	RDMA_LAG_FLAGS_HASH_ALL_SLAVES = 1 << 0
++};
++
++void rdma_lag_put_ah_roce_slave(struct rdma_ah_attr *ah_attr);
++int rdma_lag_get_ah_roce_slave(struct ib_device *device,
++			       struct rdma_ah_attr *ah_attr);
++
++#endif /* _RDMA_LAG_H_ */
+-- 
+2.17.2
+
