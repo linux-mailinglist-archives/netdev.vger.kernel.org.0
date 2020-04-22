@@ -2,85 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1115A1B4D8A
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 21:42:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84F6E1B4D9D
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 21:48:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726426AbgDVTms (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 15:42:48 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:44342 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725961AbgDVTms (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 15:42:48 -0400
-Received: by mail-ot1-f68.google.com with SMTP id j4so3250789otr.11;
-        Wed, 22 Apr 2020 12:42:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=H+xYHNUN8NpwWICu1ZzL9vzjHv/h/QGUDSeS/fpG3ug=;
-        b=CqSlvyKm8EsAor7l+Zv5/zsuuuNdp03WjTUTJ1xhVcwJKucJM9NHdtNedCKFmxDozt
-         qmy2xHRY1K8pYPGubDC3ObBudHOMkqhiI7UqHi72kNGwH1VVyRTB+dOR1SCmrjHDlqxg
-         qkLWJjqm4SFRaoKR8Xn8kWP2Pj2DGFPwWCsGMNCLazsYntOFAw4sB08rHLqmzANw/i0d
-         q4NbTeGsq4AN6TKW1fXulgSVphU5Bmm1SjMVk2pJE3/y081Us6SfMVJEtJBdht5YrySG
-         GPPlzFfEqN9cbTGlfQKkb3Z7b87HL0C2l1JMgLE2adwQLZ3X3kTuVQ8qK5UNTUw3v6G3
-         s2Ig==
-X-Gm-Message-State: AGi0PuZQwVe0gY2r/zj9+k6jh3bwTBNyZ4xgR2i/x5YIUrktCPvBPlgf
-        4Ug1sljfa/JD1D73jySmWA==
-X-Google-Smtp-Source: APiQypIAC27fXYzhwwR1murVCsIEyDWyoJ33c1WBjH8aheZV10QcVH827SMvx4BBrBuyijKmXH6PSg==
-X-Received: by 2002:a9d:23a3:: with SMTP id t32mr555321otb.333.1587584567424;
-        Wed, 22 Apr 2020 12:42:47 -0700 (PDT)
-Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id q142sm42070oic.44.2020.04.22.12.42.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Apr 2020 12:42:46 -0700 (PDT)
-Received: (nullmailer pid 8669 invoked by uid 1000);
-        Wed, 22 Apr 2020 19:42:45 -0000
-Date:   Wed, 22 Apr 2020 14:42:45 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Alistair Francis <alistair@alistair23.me>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcel@holtmann.org, johan.hedberg@gmail.com,
-        linux-bluetooth@vger.kernel.org, mripard@kernel.org, wens@csie.org,
-        anarsoul@gmail.com, devicetree@vger.kernel.org,
-        alistair23@gmail.com, linux-arm-kernel@lists.infradead.org,
-        Alistair Francis <alistair@alistair23.me>
-Subject: Re: [PATCH v4 1/3] dt-bindings: net: bluetooth: Add
- rtl8723bs-bluetooth
-Message-ID: <20200422194245.GA8411@bogus>
-References: <20200422035333.1118351-1-alistair@alistair23.me>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200422035333.1118351-1-alistair@alistair23.me>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1726380AbgDVTsk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 15:48:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38842 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725779AbgDVTsk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 15:48:40 -0400
+X-Greylist: delayed 89868 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 22 Apr 2020 12:48:40 PDT
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83294C03C1A9;
+        Wed, 22 Apr 2020 12:48:40 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 24496120ED563;
+        Wed, 22 Apr 2020 12:48:38 -0700 (PDT)
+Date:   Wed, 22 Apr 2020 12:48:37 -0700 (PDT)
+Message-Id: <20200422.124837.1955674853738164431.davem@davemloft.net>
+To:     wenxu@ucloud.cn
+Cc:     paulb@mellanox.com, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net/sched: act_ct: update nf_conn_acct for
+ act_ct SW offload in flowtable
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1587426943-31009-1-git-send-email-wenxu@ucloud.cn>
+References: <1587426943-31009-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 22 Apr 2020 12:48:38 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Apr 2020 20:53:31 -0700, Alistair Francis wrote:
-> From: Vasily Khoruzhick <anarsoul@gmail.com>
+From: wenxu@ucloud.cn
+Date: Tue, 21 Apr 2020 07:55:43 +0800
+
+> From: wenxu <wenxu@ucloud.cn>
 > 
-> Add binding document for bluetooth part of RTL8723BS/RTL8723CS
+> When the act_ct SW offload in flowtable, The counter of the conntrack
+> entry will never update. So update the nf_conn_acct conuter in act_ct
+> flowtable software offload.
 > 
-> Signed-off-by: Vasily Khoruzhick <anarsoul@gmail.com>
-> Signed-off-by: Alistair Francis <alistair@alistair23.me>
-> ---
->  .../bindings/net/realtek-bluetooth.yaml       | 54 +++++++++++++++++++
->  1 file changed, 54 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
-> 
+> Signed-off-by: wenxu <wenxu@ucloud.cn>
 
-My bot found errors running 'make dt_binding_check' on your patch:
-
-Documentation/devicetree/bindings/net/realtek-bluetooth.yaml: $id: relative path/filename doesn't match actual path or filename
-	expected: http://devicetree.org/schemas/net/realtek-bluetooth.yaml#
-
-See https://patchwork.ozlabs.org/patch/1274671
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure dt-schema is up to date:
-
-pip3 install git+https://github.com/devicetree-org/dt-schema.git@master --upgrade
-
-Please check and re-submit.
+Applied to net-next, thanks.
