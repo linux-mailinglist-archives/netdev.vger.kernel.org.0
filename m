@@ -2,242 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D72E11B4DF8
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 22:06:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AFE71B4E13
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 22:13:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726294AbgDVUF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 16:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41556 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725779AbgDVUF5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 16:05:57 -0400
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF40C03C1A9;
-        Wed, 22 Apr 2020 13:05:57 -0700 (PDT)
-Received: by mail-il1-x130.google.com with SMTP id f82so3244268ilh.8;
-        Wed, 22 Apr 2020 13:05:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Xw3SluUqEV6Dcus+DaT8e6xQrR+AQO/E/D6ih0GzeD0=;
-        b=CyS+ynH71ki+YJPjlxz1hBv+LXYl4ILW6jmkRbKWgiAZdKXtGWDYIXr9uZidi9SlmW
-         WsWRL2XpgsOHt5e4k75kW4R7K96kNriryVBN6zl3TmPHeU/DOwm+48c5E/3dq50f/SI+
-         G7K0fdjPR/LOwmbBWjyDVxsY9Zcz0rVAjqhJtLFEaYN4Kpbizt0HvfkfRUmme40j9OP+
-         LTB6J+CbesvBXuHz+Y2YDoihlayzLyhwjpOEINvwOE9XF05xmm+HZwiE3RQVP/oqT0kS
-         +jCjlCfB27rx6vtAGjWHpMApvN/6PgTTwigN8npgFPHBwgUt1k/WWZygSC0AQJaToRlY
-         7pZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Xw3SluUqEV6Dcus+DaT8e6xQrR+AQO/E/D6ih0GzeD0=;
-        b=jZSKPQiAqqzi/Nvlu55+N4+7gvcgwE2UXvWC4Xz9t8zZ0p9X5RXNd18MeRt43qvPZP
-         tfuC7BarMxrA2gKGypXZTQ3hv2NljHPmeUeCQl33vkQQrltcrVzg8+6jLrEYo8NUiox0
-         4h+yryrWqRKG4dsjwJXtmzblQisi1uXPqwzVb2iLONXhAyme0eCP1vI1818xLhhrFZXU
-         0htBy1XA8kYZqUynZrmzUmF7DSDuf9jUwtetmAKd5tQk3SGCzs2FOUIpqXH4ZP9FLzrO
-         Pg7JCh965o0XigBpjloH3FfS+F4GvnSTKmiM/U7DOSgyoh1UPyn8bGYVcU8vJDpR6zb8
-         wLiw==
-X-Gm-Message-State: AGi0PuadjsEwjqT1DSCRVcIavPTBJb83O5+h2WcmgzlCRtRr20pQDbqO
-        WdApmnU3jvPm+jTE0olWw9IRrp4SkldvibSh72w=
-X-Google-Smtp-Source: APiQypLA6rfyq5iysKbMF3E/bLPKjBS2o/ZGybhQgd+qAuG5aybxGINyfc3iCOabGaQC8z+V6zkaG0zXNpEVwyRHGYY=
-X-Received: by 2002:a92:dc0d:: with SMTP id t13mr93915iln.287.1587585957053;
- Wed, 22 Apr 2020 13:05:57 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200418011211.31725-5-Po.Liu@nxp.com> <20200422024852.23224-1-Po.Liu@nxp.com>
- <20200422024852.23224-2-Po.Liu@nxp.com> <20200422191910.gacjlviegrjriwcx@ws.localdomain>
- <CA+h21hrZiRq2-8Dx31X_rwgJ2Lkp6eF9H7M3cOyiBAWs0_xxhw@mail.gmail.com>
-In-Reply-To: <CA+h21hrZiRq2-8Dx31X_rwgJ2Lkp6eF9H7M3cOyiBAWs0_xxhw@mail.gmail.com>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Wed, 22 Apr 2020 13:05:45 -0700
-Message-ID: <CAA93jw6fAyKHCLGD8vsXXz1yGPwXk5tOzWXDMbbn3z3Kw5P8PA@mail.gmail.com>
-Subject: Re: [v3,net-next 1/4] net: qos: introduce a gate control flow action
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Po Liu <Po.Liu@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        lkml <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        michael.chan@broadcom.com, vishal@chelsio.com,
-        Saeed Mahameed <saeedm@mellanox.com>, leon@kernel.org,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        simon.horman@netronome.com,
-        Pablo Neira Ayuso <pablo@netfilter.org>, moshe@mellanox.com,
+        id S1726640AbgDVUNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 16:13:09 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:45348 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726002AbgDVUNI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 16:13:08 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 03MKD3I9066781;
+        Wed, 22 Apr 2020 15:13:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1587586383;
+        bh=hKKFgR6IXVYcUmKXIEvGQBkErtBDSNXSmYAXIxppVt0=;
+        h=From:To:CC:Subject:Date;
+        b=bN4JmzB+EyKwX08YG5HEUw62T6o6Qz5M9Q2azStYJg2eb5f4jLqSmwPwxdc7pARcH
+         AfJ7NqFoWxIt0HCpofGnyf0DWfI/BAXHFvah+yJ+5+D7N/FYsTzgEBVGWv1qVkVTdz
+         TaqiMk4YGjm8K7OsKD0IEHaIKb1sFTKagCPsoFHY=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 03MKD2kQ017495
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 22 Apr 2020 15:13:02 -0500
+Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Wed, 22
+ Apr 2020 15:13:01 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Wed, 22 Apr 2020 15:13:01 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 03MKD0X3104235;
+        Wed, 22 Apr 2020 15:13:00 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     Richard Cochran <richardcochran@gmail.com>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Tony Lindgren <tony@atomide.com>,
+        "David S. Miller" <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>,
+        <linux-kernel@vger.kernel.org>,
         Murali Karicheri <m-karicheri2@ti.com>,
-        Andre Guedes <andre.guedes@linux.intel.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        <linux-omap@vger.kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH net-next v4 00/10] net: ethernet: ti: cpts: add irq and HW_TS_PUSH events
+Date:   Wed, 22 Apr 2020 23:12:44 +0300
+Message-ID: <20200422201254.15232-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 22, 2020 at 12:31 PM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> Hi Allan,
->
-> On Wed, 22 Apr 2020 at 22:20, Allan W. Nielsen
-> <allan.nielsen@microchip.com> wrote:
-> >
-> > Hi Po,
-> >
-> > Nice to see even more work on the TSN standards in the upstream kernel.
-> >
-> > On 22.04.2020 10:48, Po Liu wrote:
-> > >EXTERNAL EMAIL: Do not click links or open attachments unless you know=
- the content is safe
-> > >
-> > >Introduce a ingress frame gate control flow action.
-> > >Tc gate action does the work like this:
-> > >Assume there is a gate allow specified ingress frames can be passed at
-> > >specific time slot, and be dropped at specific time slot. Tc filter
-> > >chooses the ingress frames, and tc gate action would specify what slot
-> > >does these frames can be passed to device and what time slot would be
-> > >dropped.
-> > >Tc gate action would provide an entry list to tell how much time gate
-> > >keep open and how much time gate keep state close. Gate action also
-> > >assign a start time to tell when the entry list start. Then driver wou=
-ld
-> > >repeat the gate entry list cyclically.
-> > >For the software simulation, gate action requires the user assign a ti=
-me
-> > >clock type.
-> > >
-> > >Below is the setting example in user space. Tc filter a stream source =
-ip
-> > >address is 192.168.0.20 and gate action own two time slots. One is las=
-t
-> > >200ms gate open let frame pass another is last 100ms gate close let
-> > >frames dropped. When the frames have passed total frames over 8000000
-> > >bytes, frames will be dropped in one 200000000ns time slot.
-> > >
-> > >> tc qdisc add dev eth0 ingress
-> > >
-> > >> tc filter add dev eth0 parent ffff: protocol ip \
-> > >           flower src_ip 192.168.0.20 \
-> > >           action gate index 2 clockid CLOCK_TAI \
-> > >           sched-entry open 200000000 -1 8000000 \
-> > >           sched-entry close 100000000 -1 -1
-> >
-> > First of all, it is a long time since I read the 802.1Qci and when I di=
-d
-> > it, it was a draft. So please let me know if I'm completly off here.
-> >
-> > I know you are focusing on the gate control in this patch serie, but I
-> > assume that you later will want to do the policing and flow-meter as
-> > well. And it could make sense to consider how all of this work
-> > toghether.
-> >
-> > A common use-case for the policing is to have multiple rules pointing a=
-t
-> > the same policing instance. Maybe you want the sum of the traffic on 2
-> > ports to be limited to 100mbit. If you specify such action on the
-> > individual rule (like done with the gate), then you can not have two
-> > rules pointing at the same policer instance.
-> >
-> > Long storry short, have you considered if it would be better to do
-> > something like:
-> >
-> >    tc filter add dev eth0 parent ffff: protocol ip \
-> >             flower src_ip 192.168.0.20 \
-> >             action psfp-id 42
-> >
-> > And then have some other function to configure the properties of psfp-i=
-d
-> > 42?
-> >
-> >
-> > /Allan
-> >
->
-> It is very good that you brought it up though, since in my opinion too
-> it is a rather important aspect, and it seems that the fact this
-> feature is already designed-in was a bit too subtle.
->
-> "psfp-id" is actually his "index" argument.
->
-> You can actually do this:
-> tc filter add dev eth0 ingress \
->         flower skip_hw dst_mac 01:80:c2:00:00:0e \
->         action gate index 1 clockid CLOCK_TAI \
->         base-time 200000000000 \
->         sched-entry OPEN 200000000 -1 -1 \
->         sched-entry CLOSE 100000000 -1 -1
-> tc filter add dev eth0 ingress \
->         flower skip_hw dst_mac 01:80:c2:00:00:0f \
->         action gate index 1
->
-> Then 2 filters get created with the same action:
->
-> tc -s filter show dev swp2 ingress
-> filter protocol all pref 49151 flower chain 0
-> filter protocol all pref 49151 flower chain 0 handle 0x1
->   dst_mac 01:80:c2:00:00:0f
->   skip_hw
->   not_in_hw
->         action order 1:
->         priority wildcard       clockid TAI     flags 0x6404f
->         base-time 200000000000                  cycle-time 300000000
->          cycle-time-ext 0
->          number    0    gate-state open         interval 200000000
->          ipv wildcard    max-octets wildcard
->          number    1    gate-state close        interval 100000000
->          ipv wildcard    max-octets wildcard
->         pipe
->          index 2 ref 2 bind 2 installed 168 sec used 168 sec
->         Action statistics:
->         Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
->         backlog 0b 0p requeues 0
->
-> filter protocol all pref 49152 flower chain 0
-> filter protocol all pref 49152 flower chain 0 handle 0x1
->   dst_mac 01:80:c2:00:00:0e
->   skip_hw
->   not_in_hw
->         action order 1:
->         priority wildcard       clockid TAI     flags 0x6404f
->         base-time 200000000000                  cycle-time 300000000
->          cycle-time-ext 0
->          number    0    gate-state open         interval 200000000
->          ipv wildcard    max-octets wildcard
->          number    1    gate-state close        interval 100000000
->          ipv wildcard    max-octets wildcard
->         pipe
->          index 2 ref 2 bind 2 installed 168 sec used 168 sec
->         Action statistics:
->         Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
->         backlog 0b 0p requeues 0
->
-> Actually my only concern is that maybe this mechanism should (?) have
-> been more generic. At the moment, this patch series implements it via
-> a TCA_GATE_ENTRY_INDEX netlink attribute, so every action which wants
-> to be shared across filters needs to reinvent this wheel.
->
-> Thoughts, everyone?
+Hi Richard, All,
 
-I don't have anything valuable to add, aside from commenting this
-whole thing makes my brain hurt.
+This is re-spin of patches to add CPSW IRQ and HW_TS_PUSH events support I've
+sent long time ago [1]. In this series, I've tried to restructure and split changes,
+and also add few additional optimizations comparing to initial RFC submission [1].
 
-> Thanks,
-> -Vladimir
+The HW_TS_PUSH events intended to serve for different timesync purposes on of
+which is to add PPS generation function, which can be implemented as below:
+
+                     +-----------------+
+                     | Control         |
+                     | application     |
+            +------->+                 +----------+
+            |        |                 |          |
+            |        |                 |          |
+            |        +-----------------+          |
+            |                                     |
+            |                                     |
+            | PTP_EXTTS_REQUEST                   |
+            |                                     |
+            |                                     |
+ +----------------------------------------------------------------+
+            |                                     |    Kernel
+    +-------+----------+                  +-------v--------+
+    |  \dev\ptpX       |                  | /sys/class/pwm/|
+    |                  |                  |                |
+    +-------^----------+                  +-------+--------+
+            |                                     |
+            |                                     |
+            |                             +-------v-------------------+
+    +-------+----------+                  |                           |
+    | CPTS driver      |                  |pwm/pwm-omap-dmtimer.c     |
+    |                  |                  +---------------------------+
+    +-------^----------+                  |clocksource/timer_ti_dm.c  |
+            |                             +-------+-------------------+
+            |HWx_TS_PUSH evt                      |
+ +----------------------------------------------------------------+
+            |                                     |         HW
+    +-------+----------+                  +-------v--------+
+    | CPTS             |                  | DMTimer        |
+    |                  |                  |                |
+    |      HWx_TS_PUSH X<-----------------+                |
+    |                  +                  |                |
+    +------------------+                  +-------+--------+
+                                                  |
+                                                  X timer4
 
 
+As per my knowledge there is at least one public implemented above PPS generation
+schema from Tusori Tibor [2] based on initial HW_TS_PUSH enable submission[1].
+And now there is work done by Lokesh Vutla <lokeshvutla@ti.com> published to
+enable PWM enable/improve PWM adjustment from user space [3][4][5].
 
---=20
-Make Music, Not War
+Main changes comparing to initial submission:
+- TX timestamp processing deferred to ptp worker only
+- both CPTS IRQ and polling events processing supported to make it work for
+  Keystone 2 also
+- switch to use new .gettimex64() interface
+- no DT updates as number of HWx_TS_PUSH inputs is static per HW
 
-Dave T=C3=A4ht
-CTO, TekLibre, LLC
-http://www.teklibre.com
-Tel: 1-831-435-0729
+Testing on am571x-idk/omap2plus_defconfig/+CONFIG_PREEMPT=y:
+1) testing HW_TS_PUSH
+ - enable pwm in DT
+	pwm16: dmtimer-pwm {
+		compatible = "ti,omap-dmtimer-pwm";
+		ti,timers = <&timer16>;
+		#pwm-cells = <3>;
+	};
+ - configure and start pwm
+  echo 0 > /sys/class/pwm/pwmchip0/export                                                                          
+  echo 1000000000 > /sys/class/pwm/pwmchip0/pwm0/period                                                            
+  echo 500000000 > /sys/class/pwm/pwmchip0/pwm0/duty_cycle                                                         
+  echo 1 > /sys/class/pwm/pwmchip0/pwm0/enable   
+ - test HWx_TS_PUSH using Kernel selftest testptp application
+  ./tools/testing/selftests/ptp/testptp -d /dev/ptp0 -e 1000 -i 3
+
+2) testing phc2sys
+# ./linuxptp/phc2sys -s CLOCK_REALTIME -c eth0 -m -O 0 -u30                                            
+phc2sys[1616.791]: eth0 rms 408190379792180864 max 1580914543017209856 freq +864 +/- 4635 delay 645 +/- 29
+phc2sys[1646.795]: eth0 rms 41 max 108 freq +0 +/- 36 delay 656 +/- 29
+phc2sys[1676.800]: eth0 rms 43 max 83 freq +2 +/- 38 delay 650 +/- 0
+phc2sys[1706.804]: eth0 rms 39 max 87 freq +4 +/- 34 delay 672 +/- 55
+phc2sys[1736.808]: eth0 rms 35 max 66 freq +1 +/- 30 delay 667 +/- 49
+phc2sys[1766.813]: eth0 rms 38 max 79 freq +2 +/- 33 delay 656 +/- 29
+phc2sys[1796.817]: eth0 rms 45 max 98 freq +1 +/- 39 delay 656 +/- 29
+phc2sys[1826.821]: eth0 rms 40 max 87 freq +5 +/- 35 delay 650 +/- 0
+phc2sys[1856.826]: eth0 rms 29 max 76 freq -0 +/- 25 delay 656 +/- 29
+phc2sys[1886.830]: eth0 rms 40 max 97 freq +4 +/- 35 delay 667 +/- 49
+phc2sys[1916.834]: eth0 rms 42 max 94 freq +2 +/- 36 delay 661 +/- 41
+phc2sys[1946.839]: eth0 rms 40 max 91 freq +2 +/- 35 delay 661 +/- 41
+phc2sys[1976.843]: eth0 rms 46 max 88 freq -0 +/- 40 delay 667 +/- 49
+phc2sys[2006.847]: eth0 rms 49 max 97 freq +2 +/- 43 delay 650 +/- 0
+
+3) testing ptp4l
+- 1G connection
+# ./linuxptp/ptp4l -P -2 -H -i eth0 -l 6 -m -q -p /dev/ptp0 -f ptp.cfg -s                              
+ptp4l[862.891]: port 1: UNCALIBRATED to SLAVE on MASTER_CLOCK_SELECTED
+ptp4l[923.894]: rms 1019697354682 max 5768279314068 freq +26053 +/- 72 delay 488 +/- 1
+ptp4l[987.896]: rms 13 max 26 freq +26005 +/- 29 delay 488 +/- 1
+ptp4l[1051.899]: rms 14 max 50 freq +25895 +/- 21 delay 488 +/- 1
+ptp4l[1115.901]: rms 11 max 27 freq +25878 +/- 17 delay 488 +/- 1
+ptp4l[1179.904]: rms 10 max 27 freq +25857 +/- 12 delay 488 +/- 1
+ptp4l[1243.906]: rms 14 max 37 freq +25851 +/- 15 delay 488 +/- 1
+ptp4l[1307.909]: rms 12 max 33 freq +25835 +/- 15 delay 488 +/- 1
+ptp4l[1371.911]: rms 11 max 27 freq +25832 +/- 14 delay 488 +/- 1
+ptp4l[1435.914]: rms 11 max 26 freq +25823 +/- 11 delay 488 +/- 1
+ptp4l[1499.916]: rms 10 max 29 freq +25829 +/- 11 delay 489 +/- 1
+ptp4l[1563.919]: rms 11 max 27 freq +25827 +/- 12 delay 488 +/- 1
+
+- 10M connection
+# ./linuxptp/ptp4l -P -2 -H -i eth0 -l 6 -m -q -p /dev/ptp0 -f ptp.cfg -s                              
+ptp4l[51.955]: port 1: UNCALIBRATED to SLAVE on MASTER_CLOCK_SELECTED
+ptp4l[112.957]: rms 279468848453933920 max 1580914542977391360 freq +25390 +/- 3207 delay 8222 +/- 36
+ptp4l[176.960]: rms 254 max 522 freq +25809 +/- 219 delay 8271 +/- 30
+ptp4l[240.962]: rms 271 max 684 freq +25868 +/- 234 delay 8249 +/- 22
+ptp4l[304.965]: rms 263 max 556 freq +25894 +/- 227 delay 8225 +/- 47
+ptp4l[368.967]: rms 238 max 648 freq +25908 +/- 204 delay 8234 +/- 40
+ptp4l[432.970]: rms 274 max 658 freq +25932 +/- 237 delay 8241 +/- 22
+ptp4l[496.972]: rms 247 max 557 freq +25943 +/- 213 delay 8223 +/- 26
+ptp4l[560.974]: rms 291 max 756 freq +25968 +/- 251 delay 8244 +/- 41
+ptp4l[624.977]: rms 249 max 697 freq +25975 +/- 216 delay 8258 +/- 22
+
+Changes in v4:
+ - fixed comments from Richard Cochran
+ - dropped patch "net: ethernet: ti: cpts: move rx timestamp processing to ptp
+   worker only"
+ - added "Acked-by" from Richard Cochran <richardcochran@gmail.com>
+ - dependencies resolved, patch merged
+
+Changes in v3:
+ - fixed rebase mess
+ - fixed build issues
+
+Changes in v2 (broken):
+ - fixed (formatting) comments from David Miller <davem@davemloft.net>
+
+v3: https://patchwork.ozlabs.org/project/netdev/cover/20200320194244.4703-1-grygorii.strashko@ti.com/
+v2: https://patchwork.ozlabs.org/cover/1258339/
+v1: https://patchwork.ozlabs.org/cover/1254708/
+
+[1] https://lore.kernel.org/patchwork/cover/799251/
+[2] https://usermanual.wiki/Document/SetupGuide.632280828.pdf
+    https://github.com/t-tibor/msc_thesis
+[3] https://patchwork.kernel.org/cover/11421329/
+[4] https://patchwork.kernel.org/cover/11433197/
+[5] https://sourceforge.net/p/linuxptp/mailman/message/36943248/
+
+Grygorii Strashko (10):
+  net: ethernet: ti: cpts: use dev_yy() api for logs
+  net: ethernet: ti: cpts: separate hw counter read from timecounter
+  net: ethernet: ti: cpts: move tc mult update in cpts_fifo_read()
+  net: ethernet: ti: cpts: switch to use new .gettimex64() interface
+  net: ethernet: ti: cpts: optimize packet to event matching
+  net: ethernet: ti: cpts: move tx timestamp processing to ptp worker
+    only
+  net: ethernet: ti: cpts: rework locking
+  net: ethernet: ti: cpts: add irq support
+  net: ethernet: ti: cpts: add support for HW_TS_PUSH events
+  net: ethernet: ti: cpsw: enable cpts irq
+
+ drivers/net/ethernet/ti/cpsw.c        |  21 ++
+ drivers/net/ethernet/ti/cpsw_new.c    |  20 ++
+ drivers/net/ethernet/ti/cpsw_priv.c   |  17 +-
+ drivers/net/ethernet/ti/cpsw_priv.h   |   2 +
+ drivers/net/ethernet/ti/cpts.c        | 421 +++++++++++++++++---------
+ drivers/net/ethernet/ti/cpts.h        |  27 +-
+ drivers/net/ethernet/ti/netcp_ethss.c |   3 +-
+ 7 files changed, 362 insertions(+), 149 deletions(-)
+
+-- 
+2.17.1
+
