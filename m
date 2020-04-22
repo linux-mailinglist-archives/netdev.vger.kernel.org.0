@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 368751B39A7
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 10:09:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C44791B39AC
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 10:10:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726509AbgDVIJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 04:09:41 -0400
-Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:46933 "EHLO
-        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726466AbgDVIJg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 04:09:36 -0400
+        id S1726552AbgDVIJy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 04:09:54 -0400
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:55159 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726463AbgDVIJs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 04:09:48 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1587542976; x=1619078976;
+  t=1587542988; x=1619078988;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=mAvHU2ojTTur1PSw64NTF05adIU5J6yj6S/1l3hNaps=;
-  b=ua2EM7b/WW3uyS9XbLjTbXOExdVM5EFS9hLUcZiH4sAQaRNFu9SIMbLR
-   YFk4CexSp/fjgdXuiBsy4CGw678cf2zr5tG1uNP7V8uCdESkDSZlllLl5
-   tEyheP/xP7spTKQOaCDmHdWbE8MOgvXIk1QsPyVDQF6jP9oKUmfbxtTKv
-   M=;
-IronPort-SDR: AMtsZWhabniQV7nnNFyiAQZWHkhoKn0HEId7frA/eH4pkmc80xSCMTtyruKKOW7jxQprURrKc9
- Hg7N+/Di53sw==
+  bh=rv1boim1V/W2R7MmrerwQvYtSdIJCmL2YhBO6TycCs0=;
+  b=bHlC5vDa+Tdzf7AIYuRvoRG4XQOTwvp8JlKNKkvHZ/GVnR//sxjnm1EB
+   ssSnl+RJBsqDXC9CgA2jA+MlzZqfmX7P8H52AItKdeENptNP1KmK6//Qr
+   CIJ/1+26ELW0neov8lw+dHLdIG2mfvzNeALJFanCXKuJ3EXope918wBwU
+   E=;
+IronPort-SDR: r+b1CuoJ4YoyG+/3aTqgdkWDH09/4VrmD7rUBZW528NsOuQC7DlMJTAH59S9t3yTKNWjxXB7rA
+ 5zj7TJHcpk6A==
 X-IronPort-AV: E=Sophos;i="5.72,412,1580774400"; 
-   d="scan'208";a="30370223"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-538b0bfb.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 22 Apr 2020 08:09:33 +0000
-Received: from EX13MTAUEE002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2a-538b0bfb.us-west-2.amazon.com (Postfix) with ESMTPS id 2B6D3A20E4;
-        Wed, 22 Apr 2020 08:09:33 +0000 (UTC)
-Received: from EX13D08UEE003.ant.amazon.com (10.43.62.118) by
- EX13MTAUEE002.ant.amazon.com (10.43.62.24) with Microsoft SMTP Server (TLS)
+   d="scan'208";a="28152287"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2a-90c42d1d.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 22 Apr 2020 08:09:38 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2a-90c42d1d.us-west-2.amazon.com (Postfix) with ESMTPS id 4D1FBA223F;
+        Wed, 22 Apr 2020 08:09:37 +0000 (UTC)
+Received: from EX13d09UWC003.ant.amazon.com (10.43.162.113) by
+ EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
  id 15.0.1497.2; Wed, 22 Apr 2020 08:09:32 +0000
-Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
- EX13D08UEE003.ant.amazon.com (10.43.62.118) with Microsoft SMTP Server (TLS)
+Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
+ EX13d09UWC003.ant.amazon.com (10.43.162.113) with Microsoft SMTP Server (TLS)
  id 15.0.1497.2; Wed, 22 Apr 2020 08:09:32 +0000
 Received: from dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (172.19.82.3)
- by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP Server id
+ by mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP Server id
  15.0.1497.2 via Frontend Transport; Wed, 22 Apr 2020 08:09:32 +0000
 Received: by dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (Postfix, from userid 9775579)
-        id 6FBA781D15; Wed, 22 Apr 2020 08:09:31 +0000 (UTC)
+        id 72AF481D1A; Wed, 22 Apr 2020 08:09:31 +0000 (UTC)
 From:   <sameehj@amazon.com>
 To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
+CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
         <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
         <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
         <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <sameehj@amazon.com>, <ndagan@amazon.com>,
-        Igor Chauskin <igorch@amazon.com>
-Subject: [PATCH V1 net 09/13] net: ena: implement ena_com_get_admin_polling_mode()
-Date:   Wed, 22 Apr 2020 08:09:19 +0000
-Message-ID: <20200422080923.6697-10-sameehj@amazon.com>
+        <benh@amazon.com>, <akiyano@amazon.com>, <ndagan@amazon.com>,
+        Shay Agroskin <shayagr@amazon.com>
+Subject: [PATCH V1 net 10/13] net: ena: use SHUTDOWN as reset reason when closing interface
+Date:   Wed, 22 Apr 2020 08:09:20 +0000
+Message-ID: <20200422080923.6697-11-sameehj@amazon.com>
 X-Mailer: git-send-email 2.24.1.AMZN
 In-Reply-To: <20200422080923.6697-1-sameehj@amazon.com>
 References: <20200422080923.6697-1-sameehj@amazon.com>
@@ -63,61 +63,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arthur Kiyanovski <akiyano@amazon.com>
+From: Sameeh Jubran <sameehj@amazon.com>
 
-Before this commit there was a function prototype named
-ena_com_get_ena_admin_polling_mode() that was never implemented.
+The 'ENA_REGS_RESET_SHUTDOWN' enum indicates a normal driver
+shutdown / removal procedure.
 
-This commit:
-1. Changes the name of the function by removing the redundant double "ena_" in it.
-2. Adds an implementation to the function.
-3. Fixes a typo in the description of the function.
+Also, a comment is added to one of the reset reason assignments for
+code clarity.
 
-Signed-off-by: Igor Chauskin <igorch@amazon.com>
+Signed-off-by: Shay Agroskin <shayagr@amazon.com>
 Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
+Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_com.c | 5 +++++
- drivers/net/ethernet/amazon/ena/ena_com.h | 4 ++--
- 2 files changed, 7 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_netdev.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
-index b51bf62af11b..b1ce95717de9 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.c
-@@ -1659,6 +1659,11 @@ void ena_com_set_admin_polling_mode(struct ena_com_dev *ena_dev, bool polling)
- 	ena_dev->admin_queue.polling = polling;
- }
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index 517681319a57..2818965427e9 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -3439,6 +3439,7 @@ static void ena_destroy_device(struct ena_adapter *adapter, bool graceful)
  
-+bool ena_com_get_admin_polling_mode(struct ena_com_dev *ena_dev)
-+{
-+	return ena_dev->admin_queue.polling;
-+}
-+
- void ena_com_set_admin_auto_polling_mode(struct ena_com_dev *ena_dev,
- 					 bool polling)
- {
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.h b/drivers/net/ethernet/amazon/ena/ena_com.h
-index e2e2fd1dc820..94986cdc0b1a 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.h
-@@ -501,7 +501,7 @@ bool ena_com_get_admin_running_state(struct ena_com_dev *ena_dev);
-  */
- void ena_com_set_admin_polling_mode(struct ena_com_dev *ena_dev, bool polling);
+ 	ena_com_mmio_reg_read_request_destroy(ena_dev);
  
--/* ena_com_set_admin_polling_mode - Get the admin completion queue polling mode
-+/* ena_com_get_admin_polling_mode - Get the admin completion queue polling mode
-  * @ena_dev: ENA communication layer struct
-  *
-  * Get the admin completion mode.
-@@ -511,7 +511,7 @@ void ena_com_set_admin_polling_mode(struct ena_com_dev *ena_dev, bool polling);
-  *
-  * @return state
-  */
--bool ena_com_get_ena_admin_polling_mode(struct ena_com_dev *ena_dev);
-+bool ena_com_get_admin_polling_mode(struct ena_com_dev *ena_dev);
++	/* return reset reason to default value */
+ 	adapter->reset_reason = ENA_REGS_RESET_NORMAL;
  
- /* ena_com_set_admin_auto_polling_mode - Enable autoswitch to polling mode
-  * @ena_dev: ENA communication layer struct
+ 	clear_bit(ENA_FLAG_TRIGGER_RESET, &adapter->flags);
+@@ -4362,6 +4363,7 @@ static void __ena_shutoff(struct pci_dev *pdev, bool shutdown)
+ 	cancel_work_sync(&adapter->reset_task);
+ 
+ 	rtnl_lock(); /* lock released inside the below if-else block */
++	adapter->reset_reason = ENA_REGS_RESET_SHUTDOWN;
+ 	ena_destroy_device(adapter, true);
+ 	if (shutdown) {
+ 		netif_device_detach(netdev);
 -- 
 2.24.1.AMZN
 
