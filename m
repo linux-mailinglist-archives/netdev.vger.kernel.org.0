@@ -2,150 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC0D11B4AF2
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 18:54:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5FB71B4B10
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 18:56:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726605AbgDVQya (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 12:54:30 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:48607 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726245AbgDVQy3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 12:54:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587574468;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BqXrTpX3oy5nBKz0NvKqThQ4hDPxT3MyqKs03+N19io=;
-        b=YaknBObiI9i4/j6qDF5DhZVh7wUl2YxDAoJPsC7JUCTikzQsoE12adscuKF6kS16CCea7x
-        2N7WJfpUBea3fEuTbPoqffOw+yORD25OA7jKm4vOdciSHV7nWcEKKz4EnkCVXV5azUF11u
-        16iuBIO5HhBNIet/dYxj8w/mJA1oVJw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-149-D27f3_n-M_6jsSUZlNKFjQ-1; Wed, 22 Apr 2020 12:54:24 -0400
-X-MC-Unique: D27f3_n-M_6jsSUZlNKFjQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9E6861800D6B;
-        Wed, 22 Apr 2020 16:54:22 +0000 (UTC)
-Received: from localhost (ovpn-113-71.ams2.redhat.com [10.36.113.71])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 91DBA60C87;
-        Wed, 22 Apr 2020 16:54:21 +0000 (UTC)
-Date:   Wed, 22 Apr 2020 17:54:20 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Stefan Hajnoczi <stefanha@gmail.com>, davem@davemloft.net,
-        Gerard Garcia <ggarcia@abra.uab.cat>, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net] vsock/virtio: postpone packet delivery to monitoring
- devices
-Message-ID: <20200422165420.GL47385@stefanha-x1.localdomain>
-References: <20200421092527.41651-1-sgarzare@redhat.com>
- <20200421154246.GA47385@stefanha-x1.localdomain>
- <20200421161724.c3pnecltfz4jajww@steredhat>
+        id S1726905AbgDVQ4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 12:56:05 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:21602 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726337AbgDVQ4F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 12:56:05 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-100-3Htmdqx8M26lXy7JzYFCfA-1; Wed, 22 Apr 2020 17:56:01 +0100
+X-MC-Unique: 3Htmdqx8M26lXy7JzYFCfA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Wed, 22 Apr 2020 17:55:58 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Wed, 22 Apr 2020 17:55:58 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Bernd Petrovitsch' <bernd@petrovitsch.priv.at>,
+        "Karstens, Nate" <Nate.Karstens@garmin.com>,
+        Matthew Wilcox <willy@infradead.org>
+CC:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Changli Gao <xiaosuo@gmail.com>
+Subject: RE: [PATCH 1/4] fs: Implement close-on-fork
+Thread-Topic: [PATCH 1/4] fs: Implement close-on-fork
+Thread-Index: AQHWGMN8ssv9Cm82zkePzv5DmgsrOaiFW04w
+Date:   Wed, 22 Apr 2020 16:55:58 +0000
+Message-ID: <337320db094d4426a621858fa0f6d7fd@AcuMS.aculab.com>
+References: <20200420071548.62112-1-nate.karstens@garmin.com>
+ <20200420071548.62112-2-nate.karstens@garmin.com>
+ <fa6c5c9c7c434f878c94a7c984cd43ba@garmin.com>
+ <20200422154356.GU5820@bombadil.infradead.org>
+ <6ed7bd08892b4311b70636658321904f@garmin.com>
+ <97f05204-a27c-7cc8-429a-edcf6eebaa11@petrovitsch.priv.at>
+In-Reply-To: <97f05204-a27c-7cc8-429a-edcf6eebaa11@petrovitsch.priv.at>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-In-Reply-To: <20200421161724.c3pnecltfz4jajww@steredhat>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="FnOKg9Ah4tDwTfQS"
-Content-Disposition: inline
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---FnOKg9Ah4tDwTfQS
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Apr 21, 2020 at 06:17:24PM +0200, Stefano Garzarella wrote:
-> On Tue, Apr 21, 2020 at 04:42:46PM +0100, Stefan Hajnoczi wrote:
-> > On Tue, Apr 21, 2020 at 11:25:27AM +0200, Stefano Garzarella wrote:
-> > > We delivering packets to monitoring devices, before to check if
-> > > the virtqueue has enough space.
-> >=20
-> > "We [are] delivering packets" and "before to check" -> "before
-> > checking".  Perhaps it can be rewritten as:
-> >=20
-> >   Packets are delivered to monitoring devices before checking if the
-> >   virtqueue has enough space.
-> >=20
->=20
-> Yeah, it is better :-)
->=20
-> > >=20
-> > > If the virtqueue is full, the transmitting packet is queued up
-> > > and it will be sent in the next iteration. This causes the same
-> > > packet to be delivered multiple times to monitoring devices.
-> > >=20
-> > > This patch fixes this issue, postponing the packet delivery
-> > > to monitoring devices, only when it is properly queued in the
-> >=20
-> > s/,//
-> >=20
-> > > virqueue.
-> >=20
-> > s/virqueue/virtqueue/
-> >=20
->=20
-> Thanks, I'll fix in the v2!
->=20
-> > > @@ -137,6 +135,11 @@ virtio_transport_send_pkt_work(struct work_struc=
-t *work)
-> > >  =09=09=09break;
-> > >  =09=09}
-> > > =20
-> > > +=09=09/* Deliver to monitoring devices all correctly transmitted
-> > > +=09=09 * packets.
-> > > +=09=09 */
-> > > +=09=09virtio_transport_deliver_tap_pkt(pkt);
-> > > +
-> >=20
-> > The device may see the tx packet and therefore receive a reply to it
-> > before we can call virtio_transport_deliver_tap_pkt().  Does this mean
-> > that replies can now appear in the packet capture before the transmitte=
-d
-> > packet?
->=20
-> hmm, you are right!
->=20
-> And the same thing can already happen in vhost-vsock where we call
-> virtio_transport_deliver_tap_pkt() after the vhost_add_used(), right?
->=20
-> The vhost-vsock case can be fixed in a simple way, but here do you think
-> we should serialize them? (e.g. mutex, spinlock)
->=20
-> In this case I'm worried about performance.
->=20
-> Or is there some virtqueue API to check availability?
-
-Let's stick to the same semantics as Ethernet netdevs.  That way there
-are no surprises to anyone who is familiar with Linux packet captures.
-I don't know what those semantics are though, you'd need to check the
-code :).
-
-Stefan
-
---FnOKg9Ah4tDwTfQS
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl6gdrwACgkQnKSrs4Gr
-c8ge/AgAr4BzzDJ/myfhWhgsvMu3TdicuwspJcKD1cHy36+ZKBVo2LAGNjaM14PE
-LfCBpZxLe0al85XyUlQfyhc2yWGnLhNBatu6d9IXH+PiwWgI6LAsE0Wt0GSFgo2Q
-8camx09TTHHx3zKvM5IyGHhJJNgQkOLjCGCRGGBclVjPZymt6KqH38T2YSvzcZlm
-SlGJwX3YlAxmaDxLnenVfdDW76tVkcpg8Ik91Fpa6RHsD+Y4zxF07/qGPIzOB4Ay
-fYQUeCAJV1Vf/au5LOy7KoH6LMdqlOKH8MzCkPXV41REHUYEOXNYWFy13HMkEj+1
-QBkWbRsN/zAS6nmFJWAAYwFz+lNDog==
-=uwp0
------END PGP SIGNATURE-----
-
---FnOKg9Ah4tDwTfQS--
+RnJvbTogQmVybmQgUGV0cm92aXRzY2gNCj4gU2VudDogMjIgQXByaWwgMjAyMCAxNzozMg0KLi4u
+DQo+IEFwYXJ0IGZyb20gdGhhdCwgc3lzdGVtKCkgaXMgYSBQSVRBIGV2ZW4gb24NCj4gc2luZ2xl
+L25vbi10aHJlYWRlZCBhcHBzLg0KDQpOb3Qgb25seSB0aGF0LCBpdCBpcyBibG9vZHkgZGFuZ2Vy
+b3VzIGJlY2F1c2UgKHR5cGljYWxseSkNCnNoZWxsIGlzIGRvaW5nIHBvc3Qgc3Vic3RpdHV0aW9u
+IHN5bnRheCBhbmFseXNpcy4NCg0KSWYgeW91IG5lZWQgdG8gcnVuIGFuIGV4dGVybmFsIHByb2Nl
+c3MgeW91IG5lZWQgdG8gZ2VuZXJhdGUNCmFuIGFydltdIGFycmF5IGNvbnRhaW5pbmcgdGhlIHBh
+cmFtZXRlcnMuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJy
+YW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lz
+dHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
