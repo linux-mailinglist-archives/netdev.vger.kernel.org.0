@@ -2,108 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 018B51B5088
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 00:51:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 956671B50A7
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 01:08:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726234AbgDVWuy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 18:50:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39012 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725846AbgDVWux (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 18:50:53 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51ECBC03C1A9
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 15:50:53 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id pg17so3162402ejb.9
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 15:50:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Qnynys4BQPslZKoLZtv+gigYSH1mIzTxrP7hA4ww/lU=;
-        b=hnSvTr/YrzIO2DvDuwHx7kv0EGHb5lLEskmSG24DfLiezXM4E7FBwY49b+iVyPyHRo
-         6LQCquXfno5+hBw4zJXcJFryneho4nAqLAIAWH8uT/v0a1OutVETmlLOvrz3xe053wwD
-         +QrE5uVPXhYUNOOJ9Zzltps6oM8y92jNoUCJRWOLU/VHI8JIvvfe29CKCY1CsX5ToPWN
-         m5CXuEaNLmiiz7BmkMJ5/yPsdfFPRxul02UHtDeylKaO9EXF5IQWWghb/J3Va0WLOYhB
-         NEEdeWGmz1n6qP95S+nAdVkWh62MrE18Vqd0YiVpW+cH/XNIpLfStsG478I85Nrw3TXW
-         0Q1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Qnynys4BQPslZKoLZtv+gigYSH1mIzTxrP7hA4ww/lU=;
-        b=tTfLuqcYJcSwtqIA7sed5otwLfKmJCDN1DNt9JcMYjT5/Tdkpoz3HzxHDp4wEO/TRH
-         +ZjnzkA1JsO639vCs/q5ucII+SCpOVtuvPLCiAHw+fs3k7pQCm69b4Ks64MlKUq1vAwO
-         X9bLlMu3s2p76/VMQqfLjyoodc++lYFGNpCnlYNfjVCpheghFfgRYWfi0PDIUvwHIMaw
-         IoWR4Onl0ucvTPkSYN3Gyc0D45wIPXGnSodw+w4XL0xPaC7NXZNAIphkLtwgJ7m4o2d/
-         MFJnKoxwPD+W9mPRZ8ljbGk6PX3xlOtjaR6NFkC76aUgbwzJj2HoDMqvqnTQJrcBsmR+
-         R/hQ==
-X-Gm-Message-State: AGi0Pub+qmlaQn3Whr1LGKtXSUwJQo3EwTXpV+jvfLQ7ARlnIlIn3HR+
-        kZnryhpTUI9Jf5M+qqrPiUlGqgd+6qqis4c1TcA=
-X-Google-Smtp-Source: APiQypJxin7o0IPw1pRETW5NWtZLZFOiY3pfcvkzjBvmtHpZeKF9mrc/YurgBryS0gTDMU3z3XEk15L4HIujJQinlWc=
-X-Received: by 2002:a17:906:6992:: with SMTP id i18mr424669ejr.293.1587595852085;
- Wed, 22 Apr 2020 15:50:52 -0700 (PDT)
+        id S1726373AbgDVXIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 19:08:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57136 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725846AbgDVXIY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Apr 2020 19:08:24 -0400
+Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9C0762076E;
+        Wed, 22 Apr 2020 23:08:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587596903;
+        bh=sWXg+5PMgt2I069BA/AikzoZTNqdydc7gaV7yjaQeMs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=bKfCikyVuVgBxXTXBcno5xTpJr0bpNtn4GtDh41ketDR6w+BIWKLjZl3cy3UNeA4W
+         NtqdO+TZca1ArqYe61TICGRennjEPmgPKBpj3x5sHo/WYx1gPS5ZCgvV84R/DtOZ4o
+         7htsvokPQsE1E/BlwJBN4sTmv+X+sPhuX/3vWdHc=
+From:   David Ahern <dsahern@kernel.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
+Subject: [PATCH net-next] selftests: A few improvements to fib_nexthops.sh
+Date:   Wed, 22 Apr 2020 17:08:22 -0600
+Message-Id: <20200422230822.72861-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 MIME-Version: 1.0
-References: <20200420162743.15847-2-olteanv@gmail.com> <202004230608.ERIsSgqQ%lkp@intel.com>
-In-Reply-To: <202004230608.ERIsSgqQ%lkp@intel.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 23 Apr 2020 01:50:41 +0300
-Message-ID: <CA+h21hpDkc02Hd5JFbD_r3sAtFAOBStQN2dAT+n0aq5SxgKwvw@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/3] net: mscc: ocelot: support matching on EtherType
-To:     kbuild test robot <lkp@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, kbuild-all@lists.01.org,
-        Ido Schimmel <idosch@idosch.org>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 Apr 2020 at 01:36, kbuild test robot <lkp@intel.com> wrote:
->
-> Hi Vladimir,
->
+From: David Ahern <dsahern@gmail.com>
 
-[...]
+Add nodad when adding IPv6 addresses and remove the sleep.
 
->
-> sparse warnings: (new ones prefixed by >>)
->
-> >> drivers/net/ethernet/mscc/ocelot_flower.c:184:54: sparse: sparse: incorrect type in assignment (different base types) @@    expected unsigned short [usertype] @@    got resunsigned short [usertype] @@
+A recent change to iproute2 moved the 'pref medium' to the prefix
+(where it belongs). Change the expected route check to strip
+'pref medium' to be compatible with old and new iproute2.
 
-What's a resunsigned short?
+Add IPv4 runtime test with an IPv6 address as the gateway in
+the default route.
 
-> >> drivers/net/ethernet/mscc/ocelot_flower.c:184:54: sparse:    expected unsigned short [usertype]
-> >> drivers/net/ethernet/mscc/ocelot_flower.c:184:54: sparse:    got restricted __be16 [usertype]
->
+Signed-off-by: David Ahern <dsahern@gmail.com>
+---
+ tools/testing/selftests/net/fib_nexthops.sh | 25 ++++++++++++---------
+ 1 file changed, 14 insertions(+), 11 deletions(-)
 
-[...]
+diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
+index 6560ed796ac4..b785241127df 100755
+--- a/tools/testing/selftests/net/fib_nexthops.sh
++++ b/tools/testing/selftests/net/fib_nexthops.sh
+@@ -150,31 +150,31 @@ setup()
+ 	$IP li add veth1 type veth peer name veth2
+ 	$IP li set veth1 up
+ 	$IP addr add 172.16.1.1/24 dev veth1
+-	$IP -6 addr add 2001:db8:91::1/64 dev veth1
++	$IP -6 addr add 2001:db8:91::1/64 dev veth1 nodad
+ 
+ 	$IP li add veth3 type veth peer name veth4
+ 	$IP li set veth3 up
+ 	$IP addr add 172.16.2.1/24 dev veth3
+-	$IP -6 addr add 2001:db8:92::1/64 dev veth3
++	$IP -6 addr add 2001:db8:92::1/64 dev veth3 nodad
+ 
+ 	$IP li set veth2 netns peer up
+ 	ip -netns peer addr add 172.16.1.2/24 dev veth2
+-	ip -netns peer -6 addr add 2001:db8:91::2/64 dev veth2
++	ip -netns peer -6 addr add 2001:db8:91::2/64 dev veth2 nodad
+ 
+ 	$IP li set veth4 netns peer up
+ 	ip -netns peer addr add 172.16.2.2/24 dev veth4
+-	ip -netns peer -6 addr add 2001:db8:92::2/64 dev veth4
++	ip -netns peer -6 addr add 2001:db8:92::2/64 dev veth4 nodad
+ 
+ 	ip -netns remote li add veth5 type veth peer name veth6
+ 	ip -netns remote li set veth5 up
+ 	ip -netns remote addr add dev veth5 172.16.101.1/24
+-	ip -netns remote addr add dev veth5 2001:db8:101::1/64
++	ip -netns remote -6 addr add dev veth5 2001:db8:101::1/64 nodad
+ 	ip -netns remote ro add 172.16.0.0/22 via 172.16.101.2
+ 	ip -netns remote -6 ro add 2001:db8:90::/40 via 2001:db8:101::2
+ 
+ 	ip -netns remote li set veth6 netns peer up
+ 	ip -netns peer addr add dev veth6 172.16.101.2/24
+-	ip -netns peer addr add dev veth6 2001:db8:101::2/64
++	ip -netns peer -6 addr add dev veth6 2001:db8:101::2/64 nodad
+ 	set +e
+ }
+ 
+@@ -248,7 +248,7 @@ check_route6()
+ 	local expected="$2"
+ 	local out
+ 
+-	out=$($IP -6 route ls match ${pfx} 2>/dev/null)
++	out=$($IP -6 route ls match ${pfx} 2>/dev/null | sed -e 's/pref medium//')
+ 
+ 	check_output "${out}" "${expected}"
+ }
+@@ -423,8 +423,6 @@ ipv6_fcnal_runtime()
+ 	echo "IPv6 functional runtime"
+ 	echo "-----------------------"
+ 
+-	sleep 5
+-
+ 	#
+ 	# IPv6 - the basics
+ 	#
+@@ -481,12 +479,12 @@ ipv6_fcnal_runtime()
+ 	run_cmd "$IP -6 nexthop add id 85 dev veth1"
+ 	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 85"
+ 	log_test $? 0 "IPv6 route with device only nexthop"
+-	check_route6 "2001:db8:101::1" "2001:db8:101::1 nhid 85 dev veth1 metric 1024 pref medium"
++	check_route6 "2001:db8:101::1" "2001:db8:101::1 nhid 85 dev veth1 metric 1024"
+ 
+ 	run_cmd "$IP nexthop add id 123 group 81/85"
+ 	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 123"
+ 	log_test $? 0 "IPv6 multipath route with nexthop mix - dev only + gw"
+-	check_route6 "2001:db8:101::1" "2001:db8:101::1 nhid 123 metric 1024 nexthop via 2001:db8:91::2 dev veth1 weight 1 nexthop dev veth1 weight 1 pref medium"
++	check_route6 "2001:db8:101::1" "2001:db8:101::1 nhid 123 metric 1024 nexthop via 2001:db8:91::2 dev veth1 weight 1 nexthop dev veth1 weight 1"
+ 
+ 	#
+ 	# IPv6 route with v4 nexthop - not allowed
+@@ -866,6 +864,11 @@ ipv4_fcnal_runtime()
+ 		$IP neigh sh | grep 'dev veth1'
+ 	fi
+ 
++	run_cmd "$IP ro del 172.16.101.1/32 via inet6 ${lladdr} dev veth1"
++	run_cmd "$IP -4 ro add default via inet6 ${lladdr} dev veth1"
++	run_cmd "ip netns exec me ping -c1 -w1 172.16.101.1"
++	log_test $? 0 "IPv4 default route with IPv6 gateway"
++
+ 	#
+ 	# MPLS as an example of LWT encap
+ 	#
+-- 
+2.20.1
 
->    179          if (match_protocol && proto != ETH_P_ALL) {
->    180                  /* TODO: support SNAP, LLC etc */
->    181                  if (proto < ETH_P_802_3_MIN)
->    182                          return -EOPNOTSUPP;
->    183                  ace->type = OCELOT_ACE_TYPE_ETYPE;
->  > 184                  *(u16 *)ace->frame.etype.etype.value = htons(proto);
-
-What's wrong with this? Doesn't it like the left hand side or the
-right hand side?
-
->    185                  *(u16 *)ace->frame.etype.etype.mask = 0xffff;
->    186          }
-
->
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
-
--Vladimir
