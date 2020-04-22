@@ -2,116 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C4251B3B73
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 11:34:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27BC21B3B70
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 11:33:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726323AbgDVJeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 05:34:03 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:37204 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbgDVJeD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 05:34:03 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03M9IX1p021651;
-        Wed, 22 Apr 2020 09:33:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=VrW0SlucwGVpYtW5sBjiy8D6cWqoWtrecyVysdPVPfc=;
- b=Qiniz0pQM5d+f+eZyV8ra2XvsnEmEFwSnsxMQJIh46V64XuHy5JSMXQKzsP2yxK4l5TY
- gaZeC18nBJDc28EkbzzumHE0M3BtYEqlolnTFSiTH06M7txVqsN7RhgXQzwNuu6Nh68f
- TPbO+jcWK4i57lnreoEHPG22+Mjw2PnWV9f7hOjqSTE85SDTa6MXQH1kO4BsMpO1KZ6B
- 1bsd8R+9nMOYGEXEoapjVJEzgK3ONwh0HRM2ZxTz2l2vF9XlvkN66aY0MG90wxaTLsVb
- 87fbRyKb9XwwHd+LusSInDIJA000Za0NUQebrQAhk5bC67JsWS21J+NWk2CaY7wUwgRL Yg== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2120.oracle.com with ESMTP id 30fsgm1q8g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 22 Apr 2020 09:33:41 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03M9XT8F167083;
-        Wed, 22 Apr 2020 09:33:40 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3020.oracle.com with ESMTP id 30gb9275m8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 22 Apr 2020 09:33:40 +0000
-Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 03M9Xcc1012562;
-        Wed, 22 Apr 2020 09:33:38 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 22 Apr 2020 02:33:38 -0700
-Date:   Wed, 22 Apr 2020 12:33:29 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Mao Wenan <maowenan@huawei.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH bpf-next 1/2] bpf: Change error code when ops is NULL
-Message-ID: <20200422093329.GI2659@kadam>
-References: <20200422083010.28000-1-maowenan@huawei.com>
- <20200422083010.28000-2-maowenan@huawei.com>
+        id S1726105AbgDVJdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 05:33:51 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:43450 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725912AbgDVJdv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Apr 2020 05:33:51 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id E428120519;
+        Wed, 22 Apr 2020 11:33:48 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id uKgNb0ZKKV0r; Wed, 22 Apr 2020 11:33:45 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (201.40.53.10.in-addr.arpa [10.53.40.201])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 94ADC2009B;
+        Wed, 22 Apr 2020 11:33:45 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 22 Apr 2020 11:33:45 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Wed, 22 Apr
+ 2020 11:33:45 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id BFE703180096; Wed, 22 Apr 2020 11:33:44 +0200 (CEST)
+Date:   Wed, 22 Apr 2020 11:33:44 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     YueHaibing <yuehaibing@huawei.com>
+CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <lucien.xin@gmail.com>
+Subject: Re: [PATCH] xfrm: policy: Only use mark as policy lookup key
+Message-ID: <20200422093344.GY13121@gauss3.secunet.de>
+References: <20200421143149.45108-1-yuehaibing@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20200422083010.28000-2-maowenan@huawei.com>
+In-Reply-To: <20200421143149.45108-1-yuehaibing@huawei.com>
 User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9598 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 adultscore=0
- bulkscore=0 suspectscore=0 malwarescore=0 phishscore=0 spamscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004220076
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9598 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 priorityscore=1501
- lowpriorityscore=0 mlxlogscore=999 malwarescore=0 clxscore=1011
- spamscore=0 bulkscore=0 phishscore=0 suspectscore=0 impostorscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004220075
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 22, 2020 at 04:30:09PM +0800, Mao Wenan wrote:
-> There is one error printed when use type
-> BPF_MAP_TYPE_SOCKMAP to create map:
-> libbpf: failed to create map (name: 'sock_map'): Invalid argument(-22)
+On Tue, Apr 21, 2020 at 10:31:49PM +0800, YueHaibing wrote:
+> While update xfrm policy as follow:
 > 
-> This is because CONFIG_BPF_STREAM_PARSER is not set, and
-> bpf_map_types[type] return invalid ops. It is not clear
-> to show the cause of config missing with return code -EINVAL,
-> so add pr_warn() and change error code to describe the reason.
-
-Since you're going to have to redo the commit any way, maybe you should
-put the line breaks at 72 characters.  I think you're using 65 character
-line breaks, but that's only for the Subject.
-
+> ip -6 xfrm policy update src fd00::1/128 dst fd00::2/128 dir in \
+>  priority 1 mark 0 mask 0x10
+> ip -6 xfrm policy update src fd00::1/128 dst fd00::2/128 dir in \
+>  priority 2 mark 0 mask 0x00
+> ip -6 xfrm policy update src fd00::1/128 dst fd00::2/128 dir in \
+>  priority 2 mark 0 mask 0x10
 > 
-> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+> We get this warning:
+> 
+> WARNING: CPU: 0 PID: 4808 at net/xfrm/xfrm_policy.c:1548
+> Kernel panic - not syncing: panic_on_warn set ...
+> CPU: 0 PID: 4808 Comm: ip Not tainted 5.7.0-rc1+ #151
+> Call Trace:
+> RIP: 0010:xfrm_policy_insert_list+0x153/0x1e0
+>  xfrm_policy_inexact_insert+0x70/0x330
+>  xfrm_policy_insert+0x1df/0x250
+>  xfrm_add_policy+0xcc/0x190 [xfrm_user]
+>  xfrm_user_rcv_msg+0x1d1/0x1f0 [xfrm_user]
+>  netlink_rcv_skb+0x4c/0x120
+>  xfrm_netlink_rcv+0x32/0x40 [xfrm_user]
+>  netlink_unicast+0x1b3/0x270
+>  netlink_sendmsg+0x350/0x470
+>  sock_sendmsg+0x4f/0x60
+> 
+> Policy C and policy A has the same mark.v and mark.m, so policy A is
+> matched in first round lookup while updating C. However policy C and
+> policy B has same mark and priority, which also leads to matched. So
+> the WARN_ON is triggered.
+> 
+> xfrm policy lookup should only be matched when the found policy has the
+> same lookup keys (mark.v & mark.m) no matter priority.
+> 
+> Fixes: 7cb8a93968e3 ("xfrm: Allow inserting policies with matching mark and different priorities")
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 > ---
->  kernel/bpf/syscall.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
+>  net/xfrm/xfrm_policy.c | 16 +++++-----------
+>  1 file changed, 5 insertions(+), 11 deletions(-)
 > 
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index d85f37239540..f67bc063bf75 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -112,9 +112,11 @@ static struct bpf_map *find_and_alloc_map(union bpf_attr *attr)
->  		return ERR_PTR(-EINVAL);
->  	type = array_index_nospec(type, ARRAY_SIZE(bpf_map_types));
->  	ops = bpf_map_types[type];
-> -	if (!ops)
-> -		return ERR_PTR(-EINVAL);
+> diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+> index 297b2fd..67d0469 100644
+> --- a/net/xfrm/xfrm_policy.c
+> +++ b/net/xfrm/xfrm_policy.c
+> @@ -1436,13 +1436,7 @@ static void xfrm_policy_requeue(struct xfrm_policy *old,
+>  static bool xfrm_policy_mark_match(struct xfrm_policy *policy,
+>  				   struct xfrm_policy *pol)
+>  {
+> -	u32 mark = policy->mark.v & policy->mark.m;
 > -
-> +	if (!ops) {
-> +		pr_warn("map type %d not supported or
-> +			 kernel config not opened\n", type);
+> -	if (policy->mark.v == pol->mark.v && policy->mark.m == pol->mark.m)
+> -		return true;
+> -
+> -	if ((mark & pol->mark.m) == pol->mark.v &&
+> -	    policy->priority == pol->priority)
 
-This pr_warn() will be badly formatted in dmesg because of the new line
-and the tabs.  I tried to add a checkpatch.pl warning for this but maybe
-it only works with -f?...
+If you remove the priority check, you can't insert policies with matching
+mark and different priorities anymore. This brings us back the old bug.
 
-regards,
-dan carpenter
-
+I plan to apply the patch from Xin Long, this seems to be the right way
+to address this problem.
