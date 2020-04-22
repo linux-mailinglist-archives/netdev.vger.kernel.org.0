@@ -2,137 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A4521B4CBE
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 20:36:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E3891B4CC0
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 20:37:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726528AbgDVSge (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 14:36:34 -0400
-Received: from mail-eopbgr70089.outbound.protection.outlook.com ([40.107.7.89]:39366
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725648AbgDVSgd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Apr 2020 14:36:33 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Jpo2mC9s3RCk1oSch/HZPjKZBVW+Aavp2urOGDhxvet7mQgh2bHUPWhEBug5EfjjgiQQ8wq5G9P5aYYcu6yb6fP/fc50KEydeTtR/ENyAOwMswG0AbseDXxESTt/bjxDXwUrfPhpwc84F4BtgmOGFkV2AgjQpn1qZh2DXEWrVt4uIns7mUv69an3EZaBXMdZau+4NwkRabyNMV3BkM49xRnWLreoTgjgYYcOXLQXRqSXIct8YOJ/avdTA2pP2T1uFnr6mygMMVqKclJQtzwXFAKzYWmSRRzTPAarMuLI+a8rsi7qQmj6+i9Azu33VHlf2JWVs+j7sH3fAMdBU/uQ3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/nLMf27VVWml/njgvwzJHq6YdIcZVfvkUEZhF2mVwz8=;
- b=FRzMbwnYx+r0JWIyO5mWsC+7xi9dLdVbQUezUK7p7be3mFzAXBFEmiHDxNAcmFPFs230MJ8vaVUW6YKwfHOqsNGRw32GMgDab1TCoN2DEp9cgu0arotj+/XqxrGUO/TegkIPgg6uOJlxQjQlWwHI7mrrP/MU9CKyeJjyScX8Q/esuqxN561KLQvHjRaauuFXqBZAufYkW4WfGhISCqaAW0hNc5RyN58mBqY7v1jr+bydU5CKMkg9xauhym/mlJhosVLSxeqDuBZzg4YiFRxYx45IzBnAVcbLlqdmyIoU6Nhu1XPZr3QC+sv0Jxjj6lUAI8gCee/xM34imftMFHFR5w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/nLMf27VVWml/njgvwzJHq6YdIcZVfvkUEZhF2mVwz8=;
- b=VtZfdZYwnyBpZPWHPYBgOeUgN7cLr5cNqjsSqALyIGgkAhiGiTtqmVa6LGUKgwzzL5REUtwI2NElCzU9mB+9l6B9O6WRbYHdDrMmWgURxo0FGGeDhL67n50egfeaDp8JgSrBnb+MBQOsHx3VIH39G/thiHf7eIZQo1OHzkqqM8o=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=leonro@mellanox.com; 
-Received: from AM6PR05MB6408.eurprd05.prod.outlook.com (2603:10a6:20b:b8::23)
- by AM6PR05MB5524.eurprd05.prod.outlook.com (2603:10a6:20b:32::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.29; Wed, 22 Apr
- 2020 18:36:29 +0000
-Received: from AM6PR05MB6408.eurprd05.prod.outlook.com
- ([fe80::1466:c39b:c016:3301]) by AM6PR05MB6408.eurprd05.prod.outlook.com
- ([fe80::1466:c39b:c016:3301%4]) with mapi id 15.20.2921.030; Wed, 22 Apr 2020
- 18:36:29 +0000
-Date:   Wed, 22 Apr 2020 21:36:27 +0300
-From:   Leon Romanovsky <leonro@mellanox.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Doug Ledford <dledford@redhat.com>, linux-rdma@vger.kernel.org,
-        Moshe Shemesh <moshe@mellanox.com>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [PATCH mlx5-next 02/24] net/mlx5: Update cq.c to new cmd
- interface
-Message-ID: <20200422183627.GC492196@unreal>
-References: <20200420114136.264924-1-leon@kernel.org>
- <20200420114136.264924-3-leon@kernel.org>
- <20200422164948.GB492196@unreal>
- <20200422183214.GW26002@ziepe.ca>
+        id S1726576AbgDVShG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 14:37:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56028 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725648AbgDVShF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 14:37:05 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85372C03C1AA
+        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 11:37:04 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id v8so5619945wma.0
+        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 11:37:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=BzEbY6n24pAiclZvkqJCJvgtLdLrTnWtF3jVZ/Y2T4w=;
+        b=ev1zMmv5x75rqxSm1rb6jV9qsuGDXNXRPEK2GHL9Rg5suad3rExIMrBpZSbTKPic9+
+         3HWCAfLpDni+NqQnsOpr4ZEvfmayzVP/p9YN/taLEpPiQIhS2ZpP09K/FEdDuUBvDd7O
+         iyXKm7xzphyyIkGdpVuDYB4/7s7UYCbHRFIBjqixS5snaGEmFPo457UYviwbf8vkGpKk
+         YppoUxHKUCF3e+b6gMp9XbPoMixwzEhps1fqsp591vNHpMcCZndgC5GtzZtGLjs/DmaH
+         cA+Mg6O4b4paSi8P3JNcrSrli+Cj6PX3o/8ZPlqfrC7nvp7nGrOH9iRtUQiMDJjnR10m
+         E84g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BzEbY6n24pAiclZvkqJCJvgtLdLrTnWtF3jVZ/Y2T4w=;
+        b=UFZ6E+l9EHMSoRFzD+NyF9Wx72tnP7UCmeLyjXT2mzFXHDLnzZLC49rL067BSQu7UG
+         1k2HHS0nFe51h+Xt/jtFwSZYKYbsQr/5Qgm1cRFvpCo4HkpWOJFUaAgZr/3cKvccXKub
+         XF0qYlCpkPcMGIaId0W9AYV/9Bmgs9+nTjH08VtkGC2KCe3H3vKX1YDXE+w8e405avGS
+         nEiUi8SZX+83Zb5HAu1SD/pdMSuQE/IoMl+ITMnlmeALeqHKWwVt8JF45dzldhbK0ESh
+         yM1lDyfQMSazRcy0gOvckDbtxT6quGXmpKKvsO0KPQ05PaY8De9rbXl3wctu5i19EJzP
+         +5QA==
+X-Gm-Message-State: AGi0Pubi3U5UZgsGijHIGm2KdE6R7q5EP/30HskwVc5aehX4r2ZuS0Xi
+        +ZpaEtgF9Y6eUBVz+HCwMd1JdQ==
+X-Google-Smtp-Source: APiQypINYxffuYcQkXZwauDbhBTnOV/AQnIU4ZG7KlbZaSlZXCt42Bbl494FXjXJMICg61ZoH9/mQQ==
+X-Received: by 2002:a1c:4144:: with SMTP id o65mr12571970wma.78.1587580623194;
+        Wed, 22 Apr 2020 11:37:03 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id l9sm32429wrq.83.2020.04.22.11.37.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Apr 2020 11:37:02 -0700 (PDT)
+Date:   Wed, 22 Apr 2020 20:37:01 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Edward Cree <ecree@solarflare.com>,
+        netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org
+Subject: Re: [PATCH net] net: flow_offload: skip hw stats check for
+ FLOW_ACTION_HW_STATS_DISABLED
+Message-ID: <20200422183701.GN6581@nanopsycho.orion>
+References: <20200420090505.pr6wsunozfh7afaj@salvia>
+ <20200420091302.GB6581@nanopsycho.orion>
+ <20200420100341.6qehcgz66wq4ysax@salvia>
+ <20200420115210.GE6581@nanopsycho.orion>
+ <3980eea4-18d8-5e62-2d6d-fce0a7e7ed4c@solarflare.com>
+ <20200420123915.nrqancwjb7226l7e@salvia>
+ <20200420134826.GH6581@nanopsycho.orion>
+ <20200420135754.GD32392@breakpoint.cc>
+ <20200420141422.GK6581@nanopsycho.orion>
+ <20200420191832.ppxjjebls2idrshh@salvia>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200422183214.GW26002@ziepe.ca>
-X-ClientProxiedBy: PR0P264CA0238.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:100:1e::34) To AM6PR05MB6408.eurprd05.prod.outlook.com
- (2603:10a6:20b:b8::23)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost (2a00:a040:183:2d::a43) by PR0P264CA0238.FRAP264.PROD.OUTLOOK.COM (2603:10a6:100:1e::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13 via Frontend Transport; Wed, 22 Apr 2020 18:36:28 +0000
-X-Originating-IP: [2a00:a040:183:2d::a43]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: e7c2a326-c7a0-4c7e-3263-08d7e6ec1262
-X-MS-TrafficTypeDiagnostic: AM6PR05MB5524:|AM6PR05MB5524:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM6PR05MB5524E93AEDA94629EDDDB3AEB0D20@AM6PR05MB5524.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-Forefront-PRVS: 03818C953D
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR05MB6408.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(7916004)(39860400002)(366004)(396003)(346002)(376002)(136003)(4326008)(478600001)(107886003)(8676002)(81156014)(5660300002)(8936002)(1076003)(316002)(16526019)(6916009)(186003)(2906002)(66946007)(52116002)(6486002)(33716001)(66476007)(66556008)(6496006)(9686003)(54906003)(86362001)(33656002);DIR:OUT;SFP:1101;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: s1BYQwOgm542BQNKMox5m5Blg9ma6vrML5t8WUTfJBOgGpluSHGFL5lOt1N3ExkIP8AkVk/lPthL+Oh89b9+Vj8dQnqpBVJ9lDEyztVRv3z5e9nxD97f6/g3/8kunj1DRyKpacw7lar0wlxZqwWw69BHnC+Za7LXSLqog4tpXenSleL8/1ibI2T6FyNPIp1QL1Z11ZRtuN0zBAIynt8Oxt7t9zWb6ds0Oj4VzvA/IgPFz2HA9vnF1Mwjn1zUsBt9b6HPISlDn7OnV85C7UzLCCmTvuHjA5lC9a+7eTKN3Oa+rYU07+Vtv+UrjWdVCKC2qsZ+W8Q7yDmbQCl93PpyvkM5k1dy+1NxtstcYGBpSNYCBzWgFk0HrUuQEfuhfHS6eIvizGmDqeQq6F+XgmHfahkHnfv1bvnqlsBpXh+c7SC3PwSVBHs2BMOONcGXUFqU
-X-MS-Exchange-AntiSpam-MessageData: S/qS9PwfPvzsvXsNeOWBiPtEBS+po+sJPKaBPzmufDDpZGr0P7sGXEpmUfsGQuJUhNx6rGqRMx3Se8n301Jna0731yS7SCct0E+7lNWqkykVaBBX/ADSMcM5Xds+xOCDL8JyeE52RMC6CGVLCLznyuf+OPfQBS5skDs6PXjcZkI=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e7c2a326-c7a0-4c7e-3263-08d7e6ec1262
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2020 18:36:29.2599
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4D7N3htDNFmb2Zy2RR/XpcOZb5aXFG07pxLxagUmOip+RZ3s10XJK3rScaBGu5kUQa+/xlKZfvS7cMFezMwXDQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5524
+In-Reply-To: <20200420191832.ppxjjebls2idrshh@salvia>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 22, 2020 at 03:32:14PM -0300, Jason Gunthorpe wrote:
-> On Wed, Apr 22, 2020 at 07:49:48PM +0300, Leon Romanovsky wrote:
-> > >  int mlx5_core_modify_cq(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq,
-> > >  			u32 *in, int inlen)
-> > >  {
-> > > -	u32 out[MLX5_ST_SZ_DW(modify_cq_out)] = {0};
-> > > -
-> > >  	MLX5_SET(modify_cq_in, in, opcode, MLX5_CMD_OP_MODIFY_CQ);
-> > >  	MLX5_SET(modify_cq_in, in, uid, cq->uid);
-> > > -	return mlx5_cmd_exec(dev, in, inlen, out, sizeof(out));
-> > > +	return mlx5_cmd_exec_in(dev, modify_cq, in);
-> > >  }
-> > >  EXPORT_SYMBOL(mlx5_core_modify_cq);
-> > >
-> >
-> > This hunk needs this fixup:
-> >
-> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cq.c b/drivers/net/ethernet/mellanox/mlx5/core/cq.c
-> > index 1a6f1f14da97..8379b24cb838 100644
-> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/cq.c
-> > @@ -187,9 +187,11 @@ EXPORT_SYMBOL(mlx5_core_query_cq);
-> >  int mlx5_core_modify_cq(struct mlx5_core_dev *dev, struct mlx5_core_cq *cq,
-> >                         u32 *in, int inlen)
-> >  {
-> > +       u32 out[MLX5_ST_SZ_DW(modify_cq_out)] = {};
-> > +
-> >         MLX5_SET(modify_cq_in, in, opcode, MLX5_CMD_OP_MODIFY_CQ);
-> >         MLX5_SET(modify_cq_in, in, uid, cq->uid);
-> > -       return mlx5_cmd_exec_in(dev, modify_cq, in);
-> > +       return mlx5_cmd_exec(dev, in, inlen, out, sizeof(out));
-> >  }
-> >  EXPORT_SYMBOL(mlx5_core_modify_cq);
+Mon, Apr 20, 2020 at 09:18:32PM CEST, pablo@netfilter.org wrote:
+>On Mon, Apr 20, 2020 at 04:14:22PM +0200, Jiri Pirko wrote:
+>> Mon, Apr 20, 2020 at 03:57:54PM CEST, fw@strlen.de wrote:
+>[...]
+>> >I mean, the user is forced to use SW datapath just because HW can't turn
+>> >off stats?!  Same for a config change, why do i need to change my rules
+>> 
+>> By default, they are on. That is what user should do in most of the
+>> cases.
 >
-> Why doesn't this one work with the helper?
-
-In the mlx5_ib_resize_cq() function inlen is equal to
-
-1290         inlen = MLX5_ST_SZ_BYTES(modify_cq_in) +
-1291                 MLX5_FLD_SZ_BYTES(modify_cq_in, pas[0]) * npas;
-
-and not to MLX5_ST_SZ_BYTES(modify_cq_in) like helper assumes.
-
-Thanks
-
+>Fair enough, I can workaround this problem by using
+>FLOW_ACTION_HW_STATS_ANY. However, I still don't need counters and
+>there is no way to say "I don't care" to the drivers.
 >
-> Jason
+>Note that the flow_offload infrastructure is used by ethtool,
+>netfilter, flowtable and tc these days.
+>
+>* ethtool's default behaviour is no counters.
+>* netfilter's default behaviour is no counters.
+>* flowtable's default behaviour is no counters.
+>
+>
+>I understand FLOW_ACTION_HW_STATS_DISABLED means disabled, strictly.
+>But would you allow me to introduce FLOW_ACTION_HW_STATS_DONT_CARE to
+>fix ethtool, netfilter and flowtable? :-)
+>
+>FLOW_ACTION_HW_STATS_DONT_CARE means "this front-end doesn't need
+>counters, let driver decide what it is best".
+>
+>Thank you.
+
+>diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+>index 3619c6acf60f..ae09d1911912 100644
+>--- a/include/net/flow_offload.h
+>+++ b/include/net/flow_offload.h
+>@@ -164,17 +164,21 @@ enum flow_action_mangle_base {
+> };
+> 
+> enum flow_action_hw_stats_bit {
+>+	FLOW_ACTION_HW_STATS_DONT_CARE_BIT,
+> 	FLOW_ACTION_HW_STATS_IMMEDIATE_BIT,
+> 	FLOW_ACTION_HW_STATS_DELAYED_BIT,
+> };
+> 
+> enum flow_action_hw_stats {
+> 	FLOW_ACTION_HW_STATS_DISABLED = 0,
+>+	FLOW_ACTION_HW_STATS_DONT_CARE =
+>+		BIT(FLOW_ACTION_HW_STATS_DONT_CARE_BIT),
+> 	FLOW_ACTION_HW_STATS_IMMEDIATE =
+> 		BIT(FLOW_ACTION_HW_STATS_IMMEDIATE_BIT),
+> 	FLOW_ACTION_HW_STATS_DELAYED = BIT(FLOW_ACTION_HW_STATS_DELAYED_BIT),
+> 	FLOW_ACTION_HW_STATS_ANY = FLOW_ACTION_HW_STATS_IMMEDIATE |
+>-				   FLOW_ACTION_HW_STATS_DELAYED,
+>+				   FLOW_ACTION_HW_STATS_DELAYED |
+>+				   FLOW_ACTION_HW_STATS_DONT_CARE,
+
+"Any" can't be "don't care". TC User expects stats. That's default.
+
+
+Let's have "don't care" bit only and set it for
+ethtool/netfilter/flowtable. Don't change any. Teach the drivers to deal
+with "don't care", most probably using the default checker.
+
+
+> };
+> 
+> typedef void (*action_destr)(void *priv);
+
