@@ -2,80 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A3D41B37A5
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 08:41:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1C171B37AE
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 08:42:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726537AbgDVGlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 02:41:51 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:26618 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726508AbgDVGlu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 02:41:50 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1587537710; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=oKUumuQTcasIYWPCKuU4pWf17rQd2gOkZlK1vxrDvYQ=;
- b=d9iymOvPI6bFFROXTWIHjuEC2pXIU/OmaPGpj+LjZ8nQAjak5rHbm0r+9dhDc0wHKk42KRKB
- fKM3++YG+pjmfhfYgDxUGTGWGTl2cRwOkhZnczvh3VMIKuUNW23vC1LTLfEucXieMflQH/4n
- MMBz2EeR02hl06jOOZWO15NfBsg=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e9fe718.7f0225d3f5e0-smtp-out-n03;
- Wed, 22 Apr 2020 06:41:28 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 478D4C432C2; Wed, 22 Apr 2020 06:41:28 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id DAEFCC433BA;
-        Wed, 22 Apr 2020 06:41:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DAEFCC433BA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1726573AbgDVGmc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 02:42:32 -0400
+Received: from nautica.notk.org ([91.121.71.147]:38194 "EHLO nautica.notk.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726077AbgDVGmc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Apr 2020 02:42:32 -0400
+Received: by nautica.notk.org (Postfix, from userid 1001)
+        id 493BBC009; Wed, 22 Apr 2020 08:42:30 +0200 (CEST)
+Date:   Wed, 22 Apr 2020 08:42:15 +0200
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     stephen@networkplumber.org, netdev@vger.kernel.org,
+        dsahern@gmail.com, aclaudi@redhat.com, daniel@iogearbox.net,
+        Jamal Hadi Salim <hadi@mojatatu.com>
+Subject: Re: [PATCH iproute2 1/1] bpf: Fix segfault when custom pinning is
+ used
+Message-ID: <20200422064215.GA17201@nautica>
+References: <20200421180426.6945-1-jhs@emojatatu.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath11k: remove conversion to bool in
- ath11k_dp_rxdesc_mpdu_valid()
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200420123718.3384-1-yanaijie@huawei.com>
-References: <20200420123718.3384-1-yanaijie@huawei.com>
-To:     Jason Yan <yanaijie@huawei.com>
-Cc:     <davem@davemloft.net>, <srirrama@codeaurora.org>,
-        <ath11k@lists.infradead.org>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Jason Yan <yanaijie@huawei.com>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200422064128.478D4C432C2@smtp.codeaurora.org>
-Date:   Wed, 22 Apr 2020 06:41:28 +0000 (UTC)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200421180426.6945-1-jhs@emojatatu.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jason Yan <yanaijie@huawei.com> wrote:
+(random review)
 
-> The '==' expression itself is bool, no need to convert it to bool again.
-> This fixes the following coccicheck warning:
-> 
-> drivers/net/wireless/ath/ath11k/dp_rx.c:255:46-51: WARNING: conversion
-> to bool not needed here
-> 
-> Signed-off-by: Jason Yan <yanaijie@huawei.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Jamal Hadi Salim wrote on Tue, Apr 21, 2020:
+> diff --git a/lib/bpf.c b/lib/bpf.c
+> index 10cf9bf4..cf636c9e 100644
+> --- a/lib/bpf.c
+> +++ b/lib/bpf.c
+> @@ -1509,12 +1509,12 @@ out:
+>  static int bpf_make_custom_path(const struct bpf_elf_ctx *ctx,
+>  				const char *todo)
+>  {
+> -	char *tmp = NULL;
+> +	char tmp[PATH_MAX] = {};
+>  	char *rem = NULL;
+>  	char *sub;
+>  	int ret;
+>  
+> -	ret = asprintf(&tmp, "%s/../", bpf_get_work_dir(ctx->type));
+> +	ret = sprintf(tmp, "%s/../", bpf_get_work_dir(ctx->type));
+>  	if (ret < 0) {
+>  		fprintf(stderr, "asprintf failed: %s\n", strerror(errno));
 
-Patch applied to ath-next branch of ath.git, thanks.
-
-8af40902f839 ath11k: remove conversion to bool in ath11k_dp_rxdesc_mpdu_valid()
+error check needs to be reworded, and it probably needs to use snprintf
+instead of sprintf: bpf_get_work_dir() can be up to PATH_MAX long and as
+pointed out there are strcat() afterwards so it's still possible to
+overflow this one
 
 -- 
-https://patchwork.kernel.org/patch/11498781/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Dominique
