@@ -2,64 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 159291B34EA
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 04:15:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 308D61B34FD
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 04:26:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726363AbgDVCPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Apr 2020 22:15:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44980 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726024AbgDVCPg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Apr 2020 22:15:36 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DD99C0610D6
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 19:15:36 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id k22so351529eds.6
-        for <netdev@vger.kernel.org>; Tue, 21 Apr 2020 19:15:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=cSQtp/nOYLotNsNkXXY6oyibp+1oVU/cPnGkEldRkFU=;
-        b=JCAXTZe82hc7amqxFozbvPO56Oe5+3GF33nl4kI44hI7cXLA3YIA0YRHUJpLE0CwQd
-         y984XRttxwWVBmPU4ZpRbTYn0X5rPLScQHIbEYtmFP15tskFcZPWqOWZO8BaJn4Mo1tc
-         NVHPgBJwnUkLGiLid41Esatg+fyES/JBcAPXTXEUyG/V7XCgy4JCHPJE9uneqYkt+NeQ
-         q7O2l8W/A2ITB27cZQBiJDua9Eue1gH07T9XMKKySkygm+fOS+k+0Qzg6WXVf6y3772F
-         Ml62AZx3SiuutjyNuL4h3VTEOQzBimL0XgKSxErwqm7utgq839KMtcKvIt5dQRVFHd/j
-         vqFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=cSQtp/nOYLotNsNkXXY6oyibp+1oVU/cPnGkEldRkFU=;
-        b=lFpwIkDFrORe0emmuOfdoF/pVtaUYSRPrb1CQlQwqHybiz0RIMOvRJApVbAPD7CxxI
-         F3TTyrKfPki0G8v4CZS+Y/Mx1PDYRYQ2yZJWOZCAgBdqfKzNVvNmDlyXoKUslV3RK87k
-         3G3o5Ts/5IBHFeZNJLzDrbJr8IeHJi8eJ1XxnOPM3O6fQnu45T5tMC3NwKBIet12HLHo
-         c84jKqQd1ClzK/MN3VH64yQRUF8Q5WYW6OBaD2H0rl6sNz7flwiX21jrCqsGua0k0La4
-         vmTq1nbehE0AycCUY33ohSzqNSh/sTfTkI+cTMVVANTDV+Iq12TZCrPkemgB4g3WeZor
-         ACFA==
-X-Gm-Message-State: AGi0PuYGDM49aoAYwXTPfz0K4ynEYvhOfnta2arU6jotGGtAg8wtvxq4
-        gXlbX/y2y8mHpJrZZM7qJOAx5WYEBjS8hDgkXrk=
-X-Google-Smtp-Source: APiQypIcF+9Yp0KvFnacaQFNiIqE8wtZrRSAuXcSkvuo/UzXiwoFXWWyyKvZFxSi/dkwpeUpvJan4MhsbRAn+x3Tttw=
-X-Received: by 2002:a05:6402:1543:: with SMTP id p3mr22263146edx.333.1587521735115;
- Tue, 21 Apr 2020 19:15:35 -0700 (PDT)
+        id S1726359AbgDVC0d convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Apr 2020 22:26:33 -0400
+Received: from mga01.intel.com ([192.55.52.88]:46504 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725912AbgDVC0c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 21 Apr 2020 22:26:32 -0400
+IronPort-SDR: 5oKxXyWBQ8rTr7ka/EEOdbZU6TNs/y4dhTH2bKNPcYKES3RaDlzLofMEf3mX61fFFNJgQLwtnv
+ ghtlJ2N34Gwg==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2020 19:26:32 -0700
+IronPort-SDR: XouFMgm3UzRANmXEwFh47GXqORtvDI7Fw0gdniRv0HcWWTppv0jqJqHmNsw/dY2m4plb4sChAm
+ m/3AwyzWarKg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,412,1580803200"; 
+   d="scan'208";a="258910745"
+Received: from orsmsx109.amr.corp.intel.com ([10.22.240.7])
+  by orsmga006.jf.intel.com with ESMTP; 21 Apr 2020 19:26:32 -0700
+Received: from orsmsx116.amr.corp.intel.com (10.22.240.14) by
+ ORSMSX109.amr.corp.intel.com (10.22.240.7) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Tue, 21 Apr 2020 19:26:31 -0700
+Received: from orsmsx112.amr.corp.intel.com ([169.254.3.248]) by
+ ORSMSX116.amr.corp.intel.com ([169.254.7.87]) with mapi id 14.03.0439.000;
+ Tue, 21 Apr 2020 19:26:31 -0700
+From:   "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Kwapulinski, Piotr" <piotr.kwapulinski@intel.com>,
+        "Loktionov, Aleksandr" <aleksandr.loktionov@intel.com>
+Subject: RE: [net-next 3/4] i40e: Add support for a new feature: Total Port
+ Shutdown
+Thread-Topic: [net-next 3/4] i40e: Add support for a new feature: Total Port
+ Shutdown
+Thread-Index: AQHWF38oXbYwrraOr02XwU5N6bu+wKiEUoqA///VLFCAALYCgP//i0LQ
+Date:   Wed, 22 Apr 2020 02:26:31 +0000
+Message-ID: <61CC2BC414934749BD9F5BF3D5D94044986705C1@ORSMSX112.amr.corp.intel.com>
+References: <20200421014932.2743607-1-jeffrey.t.kirsher@intel.com>
+        <20200421014932.2743607-4-jeffrey.t.kirsher@intel.com>
+        <20200421105551.6f41673a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <61CC2BC414934749BD9F5BF3D5D9404498670105@ORSMSX112.amr.corp.intel.com>
+ <20200421191359.0a48133b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200421191359.0a48133b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.140]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Received: by 2002:a17:906:8299:0:0:0:0 with HTTP; Tue, 21 Apr 2020 19:15:34
- -0700 (PDT)
-Reply-To: pmaurice187@gmail.com
-From:   Peace maurice <jadam8746@gmail.com>
-Date:   Wed, 22 Apr 2020 02:15:34 +0000
-Message-ID: <CAA-iaaiJpuHapuAeayOx+vjk2PCOwMHFMax6Q11o6av+bG8Jvw@mail.gmail.com>
-Subject: Dear
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Please can we talk?
-Something just came up and it's very urgent,please i need your attention.
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Tuesday, April 21, 2020 19:14
+> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
+> Cc: davem@davemloft.net; Kubalewski, Arkadiusz
+> <arkadiusz.kubalewski@intel.com>; netdev@vger.kernel.org;
+> nhorman@redhat.com; sassmann@redhat.com; Kwapulinski, Piotr
+> <piotr.kwapulinski@intel.com>; Loktionov, Aleksandr
+> <aleksandr.loktionov@intel.com>
+> Subject: Re: [net-next 3/4] i40e: Add support for a new feature: Total Port
+> Shutdown
+> 
+> On Tue, 21 Apr 2020 22:36:21 +0000 Kirsher, Jeffrey T wrote:
+> > > -----Original Message-----
+> > > From: Jakub Kicinski <kuba@kernel.org>
+> > > Sent: Tuesday, April 21, 2020 10:56
+> > > To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
+> > > Cc: davem@davemloft.net; Kubalewski, Arkadiusz
+> > > <arkadiusz.kubalewski@intel.com>; netdev@vger.kernel.org;
+> > > nhorman@redhat.com; sassmann@redhat.com; Kwapulinski, Piotr
+> > > <piotr.kwapulinski@intel.com>; Loktionov, Aleksandr
+> > > <aleksandr.loktionov@intel.com>; Bowers, AndrewX
+> > > <andrewx.bowers@intel.com>
+> > > Subject: Re: [net-next 3/4] i40e: Add support for a new feature:
+> > > Total Port Shutdown
+> > >
+> > > On Mon, 20 Apr 2020 18:49:31 -0700 Jeff Kirsher wrote:
+> > > > From: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+> > > >
+> > > > Currently after requesting to down a link on a physical network
+> > > > port, the traffic is no longer being processed but the physical
+> > > > link with a link partner is still established.
+> > > >
+> > > > Total Port Shutdown allows to completely shutdown the port on the
+> > > > link-down procedure by physically removing the link from the port.
+> > > >
+> > > > Introduced changes:
+> > > > - probe NVM if the feature was enabled at initialization of the
+> > > > port
+> > > > - special handling on link-down procedure to let FW physically
+> > > > shutdown the port if the feature was enabled
+> > >
+> > > How is this different than link-down-on-close?
+> > [Kirsher, Jeffrey T]
+> >
+> > First of all total-port-shutdown is a read only flag, the user cannot
+> > set it from the OS.  It is possible to set it in bios, but only if the
+> > motherboard supports it and the NIC has that capability.  Also, the
+> > behavior on both slightly differs, link-down-on-close brings the link
+> > down by sending (to firmware) phy_type=0, while total-port-shutdown
+> > does not, the phy_type is not changed, instead firmware is using
+> > I40E_AQ_PHY_ENABLE_LINK flag.
+> 
+> I see. IOW it's a flag that says the other flag is hard wired to on.
+> 
+> Why is it important to prevent user from performing the configuration?
+> What if an old kernel is run which won't prevent it?
+> 
+> Let's drill down into what we actually want to express here and then look at the
+> API. Michal has already converted ethtool link info to netlink..
+[Kirsher, Jeffrey T] 
 
-Regards
-Peace.
+I know this feature was driven from a customer request/demand where the
+link-down-on-close was not sufficient or caused issues.  I want to confirm what
+I believe to be the answers to your questions before I respond to them.
+
+> 
+> > > Perhaps it'd be good to start documenting the private flags in
+> > > Documentation/
+> > [Kirsher, Jeffrey T]
+> >
+> > We could look at adding that information into our kernel
+> > documentation, I am planning on updating the driver documentation in a
+> > follow-up patch set.  Would a descriptive code comment help in this case?
+> 
+> Documentation should be sufficient, IMHO, if it's coming soon.
+[Kirsher, Jeffrey T] 
+
+It will be for the 5.8 kernel...  Probably won't be next week, will most likely be
+1-2 weeks before I get to those changes/patch.
