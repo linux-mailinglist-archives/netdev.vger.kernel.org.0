@@ -2,119 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D31C91B4B4D
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 19:07:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F360C1B4B54
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 19:10:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726303AbgDVRH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 13:07:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42178 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725980AbgDVRH5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 13:07:57 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E1DC03C1A9
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 10:07:57 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id 19so3170129ioz.10
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 10:07:57 -0700 (PDT)
+        id S1726245AbgDVRKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 13:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42536 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726006AbgDVRKT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 13:10:19 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC7BC03C1A9
+        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 10:10:17 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id 145so1394260pfw.13
+        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 10:10:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=DixKlBYF/MAE7mH9mJ/8BzlYxn9h+x7wGxKEhp+uRII=;
-        b=uw1iCl+9b7hAF6k/3TTuMXNOqrz7lSaf5CFhewK0aoAMMlOtZxQE4hry3qbktdiACK
-         uEX8n8A7TaWWvfMqosgqkLAHMTQC1zXKf3m2l6/1fn54SJjrECycHTgV3rm8kmbSxnS0
-         7EG9Xkdo5WpX8T2+eq8W44W1i20QKpOVolZxMUHT/zrN8mzhDY58bfIDObiPFTDW3vUp
-         XDYVQab5c9Y9obVW+obhxHo67gdSb8UeD0OG/9XxdnuNV57WmdfJrQ3ewHyt4XeJRuSd
-         Ux2XR1qsbC1ZVgGta0Uzw1qQjlu74hypxu6VZ8I/vHEit8+TDfaJ7Wfm49068zho5fos
-         fkmg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=m2myf09f32ZWUhYNf41DERUMamAn2ogmeGu9WTISXc0=;
+        b=OAlsUT/Wp3a4X2wnVZq14eshemUi0NgsWpz/YKGzsR/l2KpP/iPil7fH4SFZGkEGgm
+         vD/IcYSiu0zyoM3j2Zc3RD2lWiqkjLAHpAvU3AgBpQbOfcCD0Nr6IHf0fwH8lwKP9Ql2
+         UE8OTCz1ajSlJ/Hx44AJj/KbPj1hF/KUhLb5z7gI7v3KUD5Gb1VuD+8W+d/xgTwtkgXF
+         9/DxeyqeJuDjmghaQ5kF1965UpXWiGj/JtiIgAPVm/U5zWoQ6+AIy0PSmnf1sGjpriQx
+         PN8ZyYqDFsxrCL63cphB3Z7a1v5yNwv0fc534/DY0ltVS95ils4aqqLYKn+tytp7ziQS
+         ICaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=DixKlBYF/MAE7mH9mJ/8BzlYxn9h+x7wGxKEhp+uRII=;
-        b=teAWDxnVWhYl7founzNgwqXTnEH4h+gVg77J1Xh7Cd0MWk/Fxqgee9QCx3Qwl861fh
-         CZ/7pZkFwpdYT77a3074XQXiUlndx3Inm14TCid/2jcSo9x6SW5H3QUkuJUrZTnLxgE7
-         vAHMf6J2SKpQ5JWRP+STes/tq1ElrvzRWtcW6Qu7CQ3kHE7xtfYMb+JmcXpCzIRkkOlE
-         P/txoQJJRGmQL0EHElq34qqcrpbxaqDnWwJsOd4myb7dExzwDMIXfGZlsbB8Rg31MNLp
-         b/kctO8ITcowyPv9ac8SNqorfswity2w/2GY/n0PkIW9On+NBvNd0TC5RWdUWGrspOva
-         Pwlg==
-X-Gm-Message-State: AGi0PuZFshxF0cwiralUguu6fzMtZ5kb9yabmHQBHBVyVwacrfabryKI
-        bj3kvEhToKaQgscxYIlDcGKlIA==
-X-Google-Smtp-Source: APiQypKEEiHTgYN8lRx+Iv0z4s28l+Y8/74OmcxZ0SRJXdnnLedboMkwJxS91MGlYyz/06zXFO5ADQ==
-X-Received: by 2002:a5d:9a94:: with SMTP id c20mr25953416iom.166.1587575276728;
-        Wed, 22 Apr 2020 10:07:56 -0700 (PDT)
-Received: from [192.168.0.105] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
-        by smtp.googlemail.com with ESMTPSA id t88sm2256588ild.30.2020.04.22.10.07.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Apr 2020 10:07:55 -0700 (PDT)
-Subject: Re: [PATCH iproute2 v2 1/2] bpf: Fix segfault when custom pinning is
- used
-To:     Dominique Martinet <asmadeus@codewreck.org>,
-        Andrea Claudi <aclaudi@redhat.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        linux-netdev <netdev@vger.kernel.org>,
-        David Ahern <dsahern@gmail.com>, daniel@iogearbox.net,
-        Jamal Hadi Salim <hadi@mojatatu.com>
-References: <20200422102808.9197-1-jhs@emojatatu.com>
- <20200422102808.9197-2-jhs@emojatatu.com>
- <CAPpH65zpv6xD08KK-Gjwx4LxNsViu6Jy2DXgQ+inUodoE5Uhgw@mail.gmail.com>
- <20200422144319.GA25914@nautica>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <a8fac40d-b46f-5c4f-f4c6-43d4c8a31ffe@mojatatu.com>
-Date:   Wed, 22 Apr 2020 13:07:54 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=m2myf09f32ZWUhYNf41DERUMamAn2ogmeGu9WTISXc0=;
+        b=b46iblTRDpIkHoZgn/8psFRm/h80AJpwyKL839e7LiFqZ3iBjqchEL9/fBqLdVyGod
+         M87sUziqe+xJQW5NRLF5Kym5WcdSkE/dpZpV1qpL01UztlyPe8qqP3iD04qajDkI0ZH9
+         DRcyOjflmv7vi8WWiImrgb04cOj6uGMin3AjkJOgUa6Prr2w4ieFlna3k8wcL41m+E49
+         O/CRpTJtqQ719Dc9IRsqwJKNHW/n4mBEvg/Jx1qCJ2U6daAddTwa7byPfk8xL779JCXv
+         4Q5uDVkqSfQY8yUeOqa8WlKra0qp9c7Rj32gjPVWS0Rna6tD9R4TP2rmcFn0CEj0npHp
+         usFA==
+X-Gm-Message-State: AGi0PuYzobhrhR03L8Z+Io2sAGsTui6gcafm4+ZWyDtjRbwtjKELG8s9
+        U/nwcxJeiv11rkWaeQddzX0=
+X-Google-Smtp-Source: APiQypJfy3bPqmxPrzBaaeeGnIbAM49xUbg7e5n7WYwWNokwAWsieoUdMDlNtfJ/jTzTIrKfUjkv6g==
+X-Received: by 2002:a62:1b87:: with SMTP id b129mr14299525pfb.162.1587575417413;
+        Wed, 22 Apr 2020 10:10:17 -0700 (PDT)
+Received: from local.opencloud.tech.localdomain ([219.142.146.4])
+        by smtp.gmail.com with ESMTPSA id n16sm28549pfq.61.2020.04.22.10.10.14
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 22 Apr 2020 10:10:16 -0700 (PDT)
+From:   xiangxia.m.yue@gmail.com
+To:     pshelar@ovn.org, azhou@ovn.org, blp@ovn.org, u9012063@gmail.com
+Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Subject: [PATCH net-next v3 0/5] expand meter tables and fix bug
+Date:   Thu, 23 Apr 2020 01:08:55 +0800
+Message-Id: <1587575340-6790-1-git-send-email-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1584969039-74113-1-git-send-email-xiangxia.m.yue@gmail.com>
+References: <1584969039-74113-1-git-send-email-xiangxia.m.yue@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200422144319.GA25914@nautica>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-04-22 10:43 a.m., Dominique Martinet wrote:
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-[...]
-> I'm actually not sure snprintf can return < 0...
+The patch set expand or shrink the meter table when necessary.
+and other patches fix bug or improve codes.
 
-Man page says it can (quick grep on iproute2 code shows some
-invocations can check for <=0)
+Tonghao Zhang (5):
+  net: openvswitch: expand the meters supported number
+  net: openvswitch: set max limitation to meters
+  net: openvswitch: remove the unnecessary check
+  net: openvswitch: make EINVAL return value more obvious
+  net: openvswitch: use u64 for meter bucket
 
-> wide character
-> formatting functions can but basic ones not really, there's hardly any
-> snprintf return checking in iproute2 code...
-> 
-> 
-> Anyway, with all that said this patch currently technically works for
-> me, despite being not so clear, so can add my reviewed-by on whatever
-> final version you take (check < 0 or >= PATH_MAX or none or both), if
-> you'd like :)
+ net/openvswitch/datapath.h |   2 +-
+ net/openvswitch/meter.c    | 303 ++++++++++++++++++++++++++++---------
+ net/openvswitch/meter.h    |  20 ++-
+ 3 files changed, 247 insertions(+), 78 deletions(-)
 
-  Will update the next chance i get to.
+-- 
+v3:
+* attach_meter return -EBUSY, not -EINVAL
+* change the return type of detach_meter
+* add comments
+* the meter max number limited by memory and DP_METER_NUM_MAX
+* fix checkpatch warnning
+v2:
+* change the hash table to meter array
+* add shrink meter codes
+* add patch 4 and 5
+--
+2.23.0
 
- >
- > Now I'm looking at this we're a bit inconsistent with return values in
- > this function, other error paths return negative value + errno set,
- > and this only returns -errno.
- >
- > Digging a bit into callers it looks like errno is the way to go, so
- > while you're modifying this it might be worth setting errno
- > to EINVALas
- > well here?
- >
-
-Will do. I wanted to leave code that didnt affect me alone; but
-granted it is reasonable for consistency..
-
- >
- > Cheers & sorry for nitpicking,
- >
-
-No sweat - we havent yet entered the realm  where the color
-of the bike shed  begins to matter ;->
-
-cheers,
-jamal
