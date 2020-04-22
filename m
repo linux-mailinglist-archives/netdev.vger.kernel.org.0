@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A444C1B39A8
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 10:09:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7CF11B39AE
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 10:10:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726515AbgDVIJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 04:09:44 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:41213 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726465AbgDVIJg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 04:09:36 -0400
+        id S1726579AbgDVIJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 04:09:58 -0400
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:55180 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726463AbgDVIJ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 04:09:56 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1587542977; x=1619078977;
+  t=1587542996; x=1619078996;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Msnd84qBQYm4DKqejTe9PyJUI6reM4yHHZnM3E65/g4=;
-  b=Yfhg7C36TvW+rsKZuJLF0IEHfxRveN0WtHATJsggvXy9JbAvDjOzane3
-   gvGSsr1tj+QsnUQgApsosUsLQjjNZYT+xdVO2UgnWkJyXphTh35pDG8gM
-   Lb8azPMvNDUII9nRDhZ+QSh88QBVcOGpWTBqXqP7tp2NI/+lTtUFR2Epo
-   Y=;
-IronPort-SDR: gg+Y5DIpwD0CkkMPxIWlRN/5g+tgtZ4W6kiSAvgoqco7TXYmfBgTVQWadHQiERSTV1tGe6Kl3S
- nZXvt1mitwxQ==
+  bh=/2Dpi1Hlbs5TnalumwrJEGMPPpKeXIO/Id9hDrXaleg=;
+  b=S1tX7vsxOquXuj6cR3b8T88QdNbEoV5edEvagGJVnrh55d3HTSrx8J+K
+   QE01evCmcGFdXax4kWFdQM0Kc0+1PbLMABcDzQaxYKNy1GfxC3dqQESoI
+   61SjPCFGTE0zBAIRixaIRO7PpwleofGPNSfur8bH55krpdpJsnvSIeE+u
+   o=;
+IronPort-SDR: f9LO1cPVQ2745tIAlwbjdFbbHCzPtnJrknwgqmPpwUmtr33+dgOluXjtf2yX0zYPM/aKsGFGwh
+ RV/vdaaJej8A==
 X-IronPort-AV: E=Sophos;i="5.72,412,1580774400"; 
-   d="scan'208";a="40115009"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-74cf8b49.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 22 Apr 2020 08:09:34 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1d-74cf8b49.us-east-1.amazon.com (Postfix) with ESMTPS id 6AF0FC05CF;
-        Wed, 22 Apr 2020 08:09:32 +0000 (UTC)
-Received: from EX13D08UEB002.ant.amazon.com (10.43.60.107) by
- EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
+   d="scan'208";a="28152319"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-303d0b0e.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 22 Apr 2020 08:09:55 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1e-303d0b0e.us-east-1.amazon.com (Postfix) with ESMTPS id 50F34A06D7;
+        Wed, 22 Apr 2020 08:09:54 +0000 (UTC)
+Received: from EX13d09UWA003.ant.amazon.com (10.43.160.227) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
  id 15.0.1497.2; Wed, 22 Apr 2020 08:09:32 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
- EX13D08UEB002.ant.amazon.com (10.43.60.107) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 22 Apr 2020 08:09:31 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
+ EX13d09UWA003.ant.amazon.com (10.43.160.227) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 22 Apr 2020 08:09:32 +0000
 Received: from dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (172.19.82.3)
- by mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Wed, 22 Apr 2020 08:09:31 +0000
+ by mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Wed, 22 Apr 2020 08:09:32 +0000
 Received: by dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (Postfix, from userid 9775579)
-        id 60A4981D00; Wed, 22 Apr 2020 08:09:31 +0000 (UTC)
+        id 639D281D02; Wed, 22 Apr 2020 08:09:31 +0000 (UTC)
 From:   <sameehj@amazon.com>
 To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
+CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
         <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
         <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
         <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <sameehj@amazon.com>, <ndagan@amazon.com>
-Subject: [PATCH V1 net 04/13] net: ena: change default RSS hash function to Toeplitz
-Date:   Wed, 22 Apr 2020 08:09:14 +0000
-Message-ID: <20200422080923.6697-5-sameehj@amazon.com>
+        <benh@amazon.com>, <akiyano@amazon.com>, <ndagan@amazon.com>
+Subject: [PATCH V1 net 05/13] net: ena: changes to RSS hash key allocation
+Date:   Wed, 22 Apr 2020 08:09:15 +0000
+Message-ID: <20200422080923.6697-6-sameehj@amazon.com>
 X-Mailer: git-send-email 2.24.1.AMZN
 In-Reply-To: <20200422080923.6697-1-sameehj@amazon.com>
 References: <20200422080923.6697-1-sameehj@amazon.com>
@@ -62,31 +62,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arthur Kiyanovski <akiyano@amazon.com>
+From: Sameeh Jubran <sameehj@amazon.com>
 
-Currently in the driver we are setting the hash function to be CRC32.
-Starting with this commit we want to change the default behaviour so that
-we set the hash function to be Toeplitz instead.
+This commit contains 2 cosmetic changes:
 
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
+1. Use ena_com_check_supported_feature_id() in
+   ena_com_hash_key_fill_default_key() instead of rewriting
+   its implementation. This also saves us a superfluous admin
+   command by using the cached value.
+
+2. Change if conditions in ena_com_rss_init() to be clearer.
+
 Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
+Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/amazon/ena/ena_com.c | 16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 2cc765df8da3..6baafc3aebea 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -3991,7 +3991,7 @@ static int ena_rss_init_default(struct ena_adapter *adapter)
- 		}
- 	}
+diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
+index d428d0606166..b51bf62af11b 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_com.c
++++ b/drivers/net/ethernet/amazon/ena/ena_com.c
+@@ -1067,16 +1067,10 @@ static void ena_com_hash_key_fill_default_key(struct ena_com_dev *ena_dev)
+ static int ena_com_hash_key_allocate(struct ena_com_dev *ena_dev)
+ {
+ 	struct ena_rss *rss = &ena_dev->rss;
+-	struct ena_admin_get_feat_resp get_resp;
+-	int rc;
  
--	rc = ena_com_fill_hash_function(ena_dev, ENA_ADMIN_CRC32, NULL,
-+	rc = ena_com_fill_hash_function(ena_dev, ENA_ADMIN_TOEPLITZ, NULL,
- 					ENA_HASH_KEY_SIZE, 0xFFFFFFFF);
- 	if (unlikely(rc && (rc != -EOPNOTSUPP))) {
- 		dev_err(dev, "Cannot fill hash function\n");
+-	rc = ena_com_get_feature_ex(ena_dev, &get_resp,
+-				    ENA_ADMIN_RSS_HASH_FUNCTION,
+-				    ena_dev->rss.hash_key_dma_addr,
+-				    sizeof(ena_dev->rss.hash_key), 0);
+-	if (unlikely(rc)) {
++	if (!ena_com_check_supported_feature_id(ena_dev,
++						ENA_ADMIN_RSS_HASH_FUNCTION))
+ 		return -EOPNOTSUPP;
+-	}
+ 
+ 	rss->hash_key =
+ 		dma_alloc_coherent(ena_dev->dmadev, sizeof(*rss->hash_key),
+@@ -2650,10 +2644,10 @@ int ena_com_rss_init(struct ena_com_dev *ena_dev, u16 indr_tbl_log_size)
+ 	 * ignore this error and have indirection table support only.
+ 	 */
+ 	rc = ena_com_hash_key_allocate(ena_dev);
+-	if (unlikely(rc) && rc != -EOPNOTSUPP)
+-		goto err_hash_key;
+-	else if (rc != -EOPNOTSUPP)
++	if (likely(!rc))
+ 		ena_com_hash_key_fill_default_key(ena_dev);
++	else if (rc != -EOPNOTSUPP)
++		goto err_hash_key;
+ 
+ 	rc = ena_com_hash_ctrl_init(ena_dev);
+ 	if (unlikely(rc))
 -- 
 2.24.1.AMZN
 
