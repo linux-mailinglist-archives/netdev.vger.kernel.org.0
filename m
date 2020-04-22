@@ -2,118 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5312B1B457C
-	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 14:56:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6325C1B45BA
+	for <lists+netdev@lfdr.de>; Wed, 22 Apr 2020 15:01:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726522AbgDVM4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 08:56:32 -0400
-Received: from mail-eopbgr00076.outbound.protection.outlook.com ([40.107.0.76]:5024
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        id S1726473AbgDVNBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 09:01:24 -0400
+Received: from mail-eopbgr80049.outbound.protection.outlook.com ([40.107.8.49]:41281
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725895AbgDVM4c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Apr 2020 08:56:32 -0400
+        id S1726319AbgDVNBY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Apr 2020 09:01:24 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AQsLGPhCGSEiEacyhnkv9rOSkEBd834ROlBVJeaavM9mHruu3i/5B15bVG+LR9Z+62vkXSxmp8HMAWyp4N0722QBu94iluZXZ3WU0MX2xhEa2bkFGLmZbfVSk8pFD5VuIzGXqH5mNCtrpqlKaT2NNPy6djH+JnbXyxnWWnkAgiDt+fSfmGzJ1c+iG7pgG8MANXiHQ6qza9ASxh8ljJkREqFxXz6cUIzdOkOQIkVlNVaZC4L3K4Aflj/QzYaFW278btoru4U2Fz8Jy6leSGZxnai1t6dZ37IZ8+Ghf0pYgGvr5H6CMxcTYtDimtzg1zogc83ZuFdk7VI0Ck44aGFdOQ==
+ b=AZuhdm77HG17w0xB5yukvSrw0sZ3lADWwfExcp1QLL9OwHCXbasiYV8o/8W6VZE20DT1TlatgB1HINYcYjZ8ByIdpQoqdfGxOdd+BStYs1174/ICE4WFvrVFdejAlQ7yQVkB33A2R5znd5QcbCm+HDqyI50xyghVY+NUcW19JzMdDNwf+GH4U4+MLy83Rnbz/Aawaz2o2bzODL3DohpC8FOBK2qveORaMgokSr25+JdVA3IMNXX0mqHj9naEtZjNzpRCIlx7rE3AhifwIr2xItLe2mMwgXUZw+F+EMtvd7GjSzBgBWxYJW9x2X1PWmDQu5k6kPkGBMcILAY4cavV3Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rE0BEB3pZXts9uv4OeO2mPAsh0yse8QRABQC9NrfGHM=;
- b=WKCERYiza7K32ppcYeS6G5+/klTnquvlo2ZpwGfUidl8DGywAmtWcF0HjaidfECz35Gry9RDg1gJ01NFF4zFVXQouP+tkKZYx31bAsbhDFElkc/wfCCA+hDGyGIe+CblHMnP85M982/3WLwOgHMse9LYbWlfD5rvOGRQDo8XWu2V2WX5izdYzG22EmR4hFMiJ9n51yT8F6Y5XM0GfGqYPHvQhHWTcfYyxgCQzqMA4Fomou5OJZLsXDE6BPYv1Cv7G0cAjNWHl73IPPuXUdAp67Nrsdd+oesIibPRMyr/F21D5CT8keVqJRNiCLO/Oo5dR3rkMavffXpVaZf0GzTYQg==
+ bh=PqEu/TI6DfGWWOKTzaByD4MRvRD7WK4/jI+6QYe588w=;
+ b=cW/pLbM5Laube+11NJHZv6mOR1cTpgE5yWOc8sLZ9vG2atyXsVSSIiyGAsL3Bch9msMI10+1taLQu+Iw05W9Ann9DyPXp16T+ZvV1gH9RPttIXtNqBSL4rMtFwio7Y/mjdY4yzwoIwgeTPYzzuBzegK2qogY0b9XrzNbqTXfXI7p4ETKpNwl+BKOlc3WOQhmfLCoOVXH6YodGPGk9aj8nh2gRSCE3dWZ0+830n0xNiYi2NdcV4UFaPfT+wMdzhzHFD80X/FBkNs59WhyCK9jMdltn7rv7l0fZT7TwJB0g6bEDEZWHq+uVF/d5A/HiiYVNPbsWzjHklfY1n6CYduhXA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rE0BEB3pZXts9uv4OeO2mPAsh0yse8QRABQC9NrfGHM=;
- b=KrcvqL6R3MLkqIcLr98ynj674pCABtdOhzTEjffo8k+uc1IoEP/2yUOGiIdMVBRI0+2z/w1TGv00sAexaDt1uzRQApnqPkzbvyrMqJN8P7p4KRze3p4g4SbKASnN+BOzfHWg4ZnxGPuwVI66iym+JNfiNVaz0KrVzDUyNsqFn78=
+ bh=PqEu/TI6DfGWWOKTzaByD4MRvRD7WK4/jI+6QYe588w=;
+ b=GvXkm4Xlk0Hu/6lwvZSZfFphchJ2BAW0FDbz0C62Hgpk5gDamRihxz9ye2m+NvmfoOlm4rUk0i8jj4HTrUJloaGma/EILI55e2wGiTEOd/b1prIidOqK71jwvyFPkX2Rbkui0SJOxYNp+gCccIcQe1+smt5o8D9WHnXsMnynYKE=
 Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=maorg@mellanox.com; 
-Received: from AM0PR05MB5873.eurprd05.prod.outlook.com (2603:10a6:208:125::25)
- by AM0PR05MB6433.eurprd05.prod.outlook.com (2603:10a6:208:145::20) with
+ smtp.mailfrom=jgg@mellanox.com; 
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (2603:10a6:803:44::15)
+ by VI1PR05MB4191.eurprd05.prod.outlook.com (2603:10a6:803:48::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.25; Wed, 22 Apr
- 2020 12:56:26 +0000
-Received: from AM0PR05MB5873.eurprd05.prod.outlook.com
- ([fe80::3401:44fa:caa1:8d41]) by AM0PR05MB5873.eurprd05.prod.outlook.com
- ([fe80::3401:44fa:caa1:8d41%6]) with mapi id 15.20.2921.030; Wed, 22 Apr 2020
- 12:56:26 +0000
-Subject: Re: [PATCH V4 mlx5-next 00/15] Add support to get xmit slave
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        kuba@kernel.org, jiri@mellanox.com, dsahern@kernel.org,
-        leonro@mellanox.com, saeedm@mellanox.com,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        alexr@mellanox.com
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.29; Wed, 22 Apr
+ 2020 13:01:19 +0000
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::a47b:e3cd:7d6d:5d4e]) by VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::a47b:e3cd:7d6d:5d4e%6]) with mapi id 15.20.2921.030; Wed, 22 Apr 2020
+ 13:01:19 +0000
+Date:   Wed, 22 Apr 2020 10:01:15 -0300
+From:   Jason Gunthorpe <jgg@mellanox.com>
+To:     Maor Gottlieb <maorg@mellanox.com>
+Cc:     davem@davemloft.net, dledford@redhat.com, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org,
+        jiri@mellanox.com, dsahern@kernel.org, leonro@mellanox.com,
+        saeedm@mellanox.com, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, alexr@mellanox.com
+Subject: Re: [PATCH V4 mlx5-next 11/15] RDMA/core: Get xmit slave for LAG
+Message-ID: <20200422130115.GT11945@mellanox.com>
 References: <20200422083951.17424-1-maorg@mellanox.com>
- <20200422124638.GK6581@nanopsycho.orion>
-From:   Maor Gottlieb <maorg@mellanox.com>
-Message-ID: <aa7a1940-90f8-b0d1-b211-a5bb27592b5a@mellanox.com>
-Date:   Wed, 22 Apr 2020 15:56:20 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-In-Reply-To: <20200422124638.GK6581@nanopsycho.orion>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-ClientProxiedBy: AM4PR0701CA0028.eurprd07.prod.outlook.com
- (2603:10a6:200:42::38) To AM0PR05MB5873.eurprd05.prod.outlook.com
- (2603:10a6:208:125::25)
+ <20200422083951.17424-12-maorg@mellanox.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200422083951.17424-12-maorg@mellanox.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: MN2PR19CA0063.namprd19.prod.outlook.com
+ (2603:10b6:208:19b::40) To VI1PR05MB4141.eurprd05.prod.outlook.com
+ (2603:10a6:803:44::15)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.100.102.4] (89.138.210.166) by AM4PR0701CA0028.eurprd07.prod.outlook.com (2603:10a6:200:42::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.9 via Frontend Transport; Wed, 22 Apr 2020 12:56:23 +0000
-X-Originating-IP: [89.138.210.166]
+Received: from mlx.ziepe.ca (142.68.57.212) by MN2PR19CA0063.namprd19.prod.outlook.com (2603:10b6:208:19b::40) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13 via Frontend Transport; Wed, 22 Apr 2020 13:01:19 +0000
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)     (envelope-from <jgg@mellanox.com>)      id 1jRF07-0006T1-Qo; Wed, 22 Apr 2020 10:01:15 -0300
+X-Originating-IP: [142.68.57.212]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 09228eaf-773e-4e8e-af9c-08d7e6bc914f
-X-MS-TrafficTypeDiagnostic: AM0PR05MB6433:|AM0PR05MB6433:
+X-MS-Office365-Filtering-Correlation-Id: cda7451e-c8d6-453e-6140-08d7e6bd3fdc
+X-MS-TrafficTypeDiagnostic: VI1PR05MB4191:|VI1PR05MB4191:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR05MB64335758978F533DBA194F69D3D20@AM0PR05MB6433.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB419123BF121E4063DD74E972CFD20@VI1PR05MB4191.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:972;
 X-Forefront-PRVS: 03818C953D
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB5873.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(366004)(346002)(376002)(39860400002)(396003)(136003)(16526019)(53546011)(478600001)(5660300002)(8936002)(2616005)(86362001)(6486002)(16576012)(316002)(6916009)(31686004)(36756003)(4744005)(81156014)(956004)(2906002)(186003)(107886003)(4326008)(8676002)(31696002)(26005)(66946007)(66556008)(966005)(7416002)(52116002)(66476007);DIR:OUT;SFP:1101;
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB4141.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(366004)(346002)(376002)(39860400002)(396003)(136003)(8676002)(37006003)(316002)(26005)(186003)(66946007)(52116002)(6862004)(107886003)(1076003)(66476007)(478600001)(5660300002)(66556008)(2616005)(4326008)(81156014)(86362001)(2906002)(33656002)(36756003)(9746002)(6636002)(8936002)(9786002)(24400500001);DIR:OUT;SFP:1101;
 Received-SPF: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tT55VwECLkzlFPZ8iotqLs7kE9hVF7qF54W1ikvjOcb2/L5VvSas8kOFYd6CaLbKBBiqSda7u4FTXulpnweZ0pjcByvaU3vC0UOkKGp2fbJBDOLXgZn2b14dD8fZupEV+mQwP6PnrTsZX0Nc3aW/YIdd3kSQdABU7vG0GmABaPuBbLSaFzGXz+5dSoedim6YnHkFyYbJw1SmBcWoumHbSl3k5jyAM/k4WCZuLhP6C1QUlQgAFWiR1+smmdAewmaW/YUsEEFJcaPRyKaFhXGEhnK23JhuCroRAJMwm4/arCfdUDkMKjjPc4V1ta6nmIuBrpgPaCN+m+zCoGQgKwc2SdIZqD3kPBLw1EcPa0EDqy7cP7WEbwCsVfH1cxqehtfzB/DawqONaoTSLLBLq9T8GGnrHO2lzikza31vP7UqFueMolDFBCH3VpoUWWqo9zpIDdgD15oFn3ZDNjaBPxf0sqE6ndx8V2h/kXhwdjfE0CPI93yt+qKg36lgd7lRhQdqnvwnNIL4Lb40KHHHLmRD8Q==
-X-MS-Exchange-AntiSpam-MessageData: nhQyspT3Gc8E/iz9FwlauRaP/xgv3JqwF0YyECuNjWWUiA68t9a3MhFfSuAebVHI4y0ZDulfpsSuWRkATZEsKzdSpAKcT7Xus0aWQ9oYZWT5Ath2pp7gMxWEe3BIVWe0UUn9eq/vC9Tz0NLp7iiAtA==
+X-Microsoft-Antispam-Message-Info: h1p67g3iLWXwmTt/c3iVqfcr3qkItK6pFWGU10upBTxwjyUQqjGcDHehc/vbmlgf7pADiHSPMqVbfAp/KN4wdqrPt7H7H83vsUraV67MsX+UsEiS+qp360MNgSt3uU6dleXDdCuA46/0Lr5n683oXydApZJkLPXFTLLRCAEYqhpei+ubeOfhlkdM6xL0ObJC+vaFADL76zDWMiRxhYC4TKOGKT1ZrmUlGuWKBOH+d14msa51cGh3Hh1Ej9KI5g0ezPJE7V7+3X6xgBf46nbf7LO1nq/IpLKCrd0qMY7MrTbMEg19fFNfXRj+PSdOFGDJFmEapKGds2u/kaGFGhjflbpbf7UmRnqNCX21fMqKOUtnvkIDh3ZWfiDkC/E3jcB9JYFz05rR0S6TB3eqttkxPxPfbIchQDXSz18iHfy4/ahZhDPBh9NUTbaSwakIWpZr+pq8ibcx/pV4af5ott77Jlvo3f24cpblrlAP692xAH+kBkSJsOx2B+TIQTMQxGEI
+X-MS-Exchange-AntiSpam-MessageData: pUnx7mctPbnXgHEKyeWSRiqrzwV+P/A0os2caXP4/G+i58Uro1+C/77sR5hyNjf1Qns3FYNhtl3TSW9U1MzVUMWrjiHe4xu0IQiS+qy3sMqZCzY30ST4uAPdn8xhmVHZkybGxrbZAGnnGO86clqROw==
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 09228eaf-773e-4e8e-af9c-08d7e6bc914f
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2020 12:56:26.3782
+X-MS-Exchange-CrossTenant-Network-Message-Id: cda7451e-c8d6-453e-6140-08d7e6bd3fdc
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2020 13:01:19.5816
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vARa1qiSs3QSHYFIT56TVa+6B9uqRWmYNIddehlE3tsWmMC1Bu75m/q5K+cj5uis+RI8TDQUE0NoFC3zL3DysA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6433
+X-MS-Exchange-CrossTenant-UserPrincipalName: cJnN67uU41f7yiWWvXLeSfYAWFSXBZk9QMfxICl3AHFqONdvMqBuM8ZQPk4tZY2djgJ+WPTQ36fy3ubDzmYeHg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4191
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Apr 22, 2020 at 11:39:47AM +0300, Maor Gottlieb wrote:
+> Add a call to rdma_lag_get_ah_roce_slave when
+> Address handle is created.
+> Low driver can use it to select the QP's affinity port.
 
-On 4/22/2020 3:46 PM, Jiri Pirko wrote:
-> Wed, Apr 22, 2020 at 10:39:36AM CEST, maorg@mellanox.com wrote:
->
-> [...]
->
->> Change log:
->> v4: 1. Rename master_get_xmit_slave to netdev_get_xmit_slave and move the implementation to dev.c
->>     2. Remove unnecessary check of NULL pointer.
->>     3. Fix typo.
-> It is really hard to follow the changes if you don't have the changelog
-> per patch. Could you have it per patch next time please?
+Lower
+ 
+> Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
+> Reviewed-by: Leon Romanovsky <leonro@mellanox.com>
+>  drivers/infiniband/core/verbs.c | 44 ++++++++++++++++++++++-----------
+>  1 file changed, 30 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
+> index 56a71337112c..a0d60376ba6b 100644
+> +++ b/drivers/infiniband/core/verbs.c
+> @@ -50,6 +50,7 @@
+>  #include <rdma/ib_cache.h>
+>  #include <rdma/ib_addr.h>
+>  #include <rdma/rw.h>
+> +#include <rdma/lag.h>
+>  
+>  #include "core_priv.h"
+>  #include <trace/events/rdma_core.h>
+> @@ -554,8 +555,14 @@ struct ib_ah *rdma_create_ah(struct ib_pd *pd, struct rdma_ah_attr *ah_attr,
+>  	if (ret)
+>  		return ERR_PTR(ret);
+>  
+> -	ah = _rdma_create_ah(pd, ah_attr, flags, NULL);
+> +	ret = rdma_lag_get_ah_roce_slave(pd->device, ah_attr);
+> +	if (ret) {
+> +		rdma_unfill_sgid_attr(ah_attr, old_sgid_attr);
+> +		return ERR_PTR(ret);
+> +	}
+>  
+> +	ah = _rdma_create_ah(pd, ah_attr, flags, NULL);
+> +	rdma_lag_put_ah_roce_slave(ah_attr);
+>  	rdma_unfill_sgid_attr(ah_attr, old_sgid_attr);
+>  	return ah;
+>  }
+> @@ -1638,6 +1645,25 @@ static int _ib_modify_qp(struct ib_qp *qp, struct ib_qp_attr *attr,
+>  					  &old_sgid_attr_av);
+>  		if (ret)
+>  			return ret;
+> +
+> +		if (attr->ah_attr.type == RDMA_AH_ATTR_TYPE_ROCE &&
+> +		    is_qp_type_connected(qp)) {
+> +			/*
+> +			 * If the user provided the qp_attr then we have to
+> +			 * resolve it. Kerne users have to provide already
 
-Sure.
->
->
->> v3: 1. Move master_get_xmit_slave to netdevice.h and change the flags arg.
->> to bool.
->>     2. Split helper functions commit to multiple commits for each bond
->> mode.
->>     3. Extract refcotring changes to seperate commits.
->> v2: The first patch wasn't sent in v1.
->> v1: https://lore.kernel.org/netdev/ac373456-b838-29cf-645f-b1ea1a93e3b0@gmail.com/T/#t
->>
+Kernel
+
+> +			 * resolved rdma_ah_attr's.
+> +			 */
+> +			if (udata) {
+> +				ret = ib_resolve_eth_dmac(qp->device,
+> +							  &attr->ah_attr);
+> +				if (ret)
+> +					goto out_av;
+> +			}
+> +			ret = rdma_lag_get_ah_roce_slave(qp->device,
+> +							 &attr->ah_attr);
+> +			if (ret)
+> +				goto out_av;
+> +		}
+>  	}
+>  	if (attr_mask & IB_QP_ALT_PATH) {
+>  		/*
+> @@ -1664,18 +1690,6 @@ static int _ib_modify_qp(struct ib_qp *qp, struct ib_qp_attr *attr,
+>  		}
+>  	}
+>  
+> -	/*
+> -	 * If the user provided the qp_attr then we have to resolve it. Kernel
+> -	 * users have to provide already resolved rdma_ah_attr's
+> -	 */
+> -	if (udata && (attr_mask & IB_QP_AV) &&
+> -	    attr->ah_attr.type == RDMA_AH_ATTR_TYPE_ROCE &&
+> -	    is_qp_type_connected(qp)) {
+> -		ret = ib_resolve_eth_dmac(qp->device, &attr->ah_attr);
+> -		if (ret)
+> -			goto out;
+> -	}
+
+Why did this need to move up?
+
+> -
+>  	if (rdma_ib_or_roce(qp->device, port)) {
+>  		if (attr_mask & IB_QP_RQ_PSN && attr->rq_psn & ~0xffffff) {
+>  			dev_warn(&qp->device->dev,
+> @@ -1717,8 +1731,10 @@ static int _ib_modify_qp(struct ib_qp *qp, struct ib_qp_attr *attr,
+>  	if (attr_mask & IB_QP_ALT_PATH)
+>  		rdma_unfill_sgid_attr(&attr->alt_ah_attr, old_sgid_attr_alt_av);
+>  out_av:
+> -	if (attr_mask & IB_QP_AV)
+> +	if (attr_mask & IB_QP_AV) {
+> +		rdma_lag_put_ah_roce_slave(&attr->ah_attr);
+
+This seems wwrong why doesn't rdma_unfill_sgid_attr do this?
+
+Jason
