@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CBDB1B51F3
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 03:36:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59EC01B51F9
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 03:38:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726522AbgDWBgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 21:36:42 -0400
-Received: from mail.hallyn.com ([178.63.66.53]:53178 "EHLO mail.hallyn.com"
+        id S1726451AbgDWBh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 21:37:57 -0400
+Received: from mail.hallyn.com ([178.63.66.53]:53220 "EHLO mail.hallyn.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725961AbgDWBgm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Apr 2020 21:36:42 -0400
+        id S1725854AbgDWBh5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Apr 2020 21:37:57 -0400
 Received: by mail.hallyn.com (Postfix, from userid 1001)
-        id AFB809D0; Wed, 22 Apr 2020 20:36:39 -0500 (CDT)
-Date:   Wed, 22 Apr 2020 20:36:39 -0500
+        id 44E5B9D0; Wed, 22 Apr 2020 20:37:54 -0500 (CDT)
+Date:   Wed, 22 Apr 2020 20:37:54 -0500
 From:   "Serge E. Hallyn" <serge@hallyn.com>
 To:     Christian Brauner <christian.brauner@ubuntu.com>
 Cc:     Jens Axboe <axboe@kernel.dk>,
@@ -38,99 +38,99 @@ Cc:     Jens Axboe <axboe@kernel.dk>,
         Kees Cook <keescook@chromium.org>,
         Benjamin Elder <bentheelder@google.com>,
         Akihiro Suda <suda.kyoto@gmail.com>
-Subject: Re: [PATCH v2 6/7] loopfs: start attaching correct namespace during
- loop_add()
-Message-ID: <20200423013639.GB2982@mail.hallyn.com>
+Subject: Re: [PATCH v2 7/7] loopfs: only show devices in their correct
+ instance
+Message-ID: <20200423013754.GC2982@mail.hallyn.com>
 References: <20200422145437.176057-1-christian.brauner@ubuntu.com>
- <20200422145437.176057-7-christian.brauner@ubuntu.com>
+ <20200422145437.176057-8-christian.brauner@ubuntu.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200422145437.176057-7-christian.brauner@ubuntu.com>
+In-Reply-To: <20200422145437.176057-8-christian.brauner@ubuntu.com>
 User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 22, 2020 at 04:54:36PM +0200, Christian Brauner wrote:
-> Tag loop devices with the namespace the loopfs instance was mounted in.
-> This has the consequence that loopfs devices carry the correct sysfs
-> permissions for all their core files. All other devices files will
-> continue to be correctly owned by the initial namespaces. Here is sample
-> output:
-> 
-> root@b1:~# mount -t loop loop /mnt
-> root@b1:~# ln -sf /mnt/loop-control /dev/loop-control
-> root@b1:~# losetup -f
-> /dev/loop8
-> root@b1:~# ln -sf /mnt/loop8 /dev/loop8
-> root@b1:~# ls -al /sys/class/block/loop8
-> lrwxrwxrwx 1 root root 0 Apr  7 13:06 /sys/class/block/loop8 -> ../../devices/virtual/block/loop8
-> root@b1:~# ls -al /sys/class/block/loop8/
-> total 0
-> drwxr-xr-x  9 root   root       0 Apr  7 13:06 .
-> drwxr-xr-x 18 nobody nogroup    0 Apr  7 13:07 ..
-> -r--r--r--  1 root   root    4096 Apr  7 13:06 alignment_offset
-> lrwxrwxrwx  1 nobody nogroup    0 Apr  7 13:07 bdi -> ../../bdi/7:8
-> -r--r--r--  1 root   root    4096 Apr  7 13:06 capability
-> -r--r--r--  1 root   root    4096 Apr  7 13:06 dev
-> -r--r--r--  1 root   root    4096 Apr  7 13:06 discard_alignment
-> -r--r--r--  1 root   root    4096 Apr  7 13:06 events
-> -r--r--r--  1 root   root    4096 Apr  7 13:06 events_async
-> -rw-r--r--  1 root   root    4096 Apr  7 13:06 events_poll_msecs
-> -r--r--r--  1 root   root    4096 Apr  7 13:06 ext_range
-> -r--r--r--  1 root   root    4096 Apr  7 13:06 hidden
-> drwxr-xr-x  2 nobody nogroup    0 Apr  7 13:07 holders
-> -r--r--r--  1 root   root    4096 Apr  7 13:06 inflight
-> drwxr-xr-x  2 nobody nogroup    0 Apr  7 13:07 integrity
-> drwxr-xr-x  3 nobody nogroup    0 Apr  7 13:07 mq
-> drwxr-xr-x  2 root   root       0 Apr  7 13:06 power
-> drwxr-xr-x  3 nobody nogroup    0 Apr  7 13:07 queue
-> -r--r--r--  1 root   root    4096 Apr  7 13:06 range
-> -r--r--r--  1 root   root    4096 Apr  7 13:06 removable
-> -r--r--r--  1 root   root    4096 Apr  7 13:06 ro
-> -r--r--r--  1 root   root    4096 Apr  7 13:06 size
-> drwxr-xr-x  2 nobody nogroup    0 Apr  7 13:07 slaves
-> -r--r--r--  1 root   root    4096 Apr  7 13:06 stat
-> lrwxrwxrwx  1 nobody nogroup    0 Apr  7 13:07 subsystem -> ../../../../class/block
-> drwxr-xr-x  2 root   root       0 Apr  7 13:06 trace
-> -rw-r--r--  1 root   root    4096 Apr  7 13:06 uevent
-> root@b1:~#
+On Wed, Apr 22, 2020 at 04:54:37PM +0200, Christian Brauner wrote:
+> Since loopfs devices belong to a loopfs instance they have no business
+> polluting the host's devtmpfs mount and should not propagate out of the
+> namespace they belong to.
 > 
 > Cc: Jens Axboe <axboe@kernel.dk>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
-
-I was a *bit* worried about not taking a reference to the
-user namespace, but it doesn't look like the chain of
-loop_remove() -> del_gendisk() -> device_del() will allow any later
-access through sysfs, so I guess it's fine.
 
 Reviewed-by: Serge Hallyn <serge@hallyn.com>
 
 > ---
 > /* v2 */
 > unchanged
-> - Christian Brauner <christian.brauner@ubuntu.com>:
->   - Adapted commit message otherwise unchanged.
 > ---
->  drivers/block/loop.c | 4 ++++
->  1 file changed, 4 insertions(+)
+>  drivers/base/devtmpfs.c | 4 ++--
+>  drivers/block/loop.c    | 4 +++-
+>  include/linux/device.h  | 3 +++
+>  3 files changed, 8 insertions(+), 3 deletions(-)
 > 
+> diff --git a/drivers/base/devtmpfs.c b/drivers/base/devtmpfs.c
+> index c9017e0584c0..77371ceb88fa 100644
+> --- a/drivers/base/devtmpfs.c
+> +++ b/drivers/base/devtmpfs.c
+> @@ -111,7 +111,7 @@ int devtmpfs_create_node(struct device *dev)
+>  	const char *tmp = NULL;
+>  	struct req req;
+>  
+> -	if (!thread)
+> +	if (!thread || dev->no_devnode)
+>  		return 0;
+>  
+>  	req.mode = 0;
+> @@ -138,7 +138,7 @@ int devtmpfs_delete_node(struct device *dev)
+>  	const char *tmp = NULL;
+>  	struct req req;
+>  
+> -	if (!thread)
+> +	if (!thread || dev->no_devnode)
+>  		return 0;
+>  
+>  	req.name = device_get_devnode(dev, NULL, NULL, NULL, &tmp);
 > diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-> index 8e21d4b33e01..2dc53bad4b48 100644
+> index 2dc53bad4b48..5548151b9f11 100644
 > --- a/drivers/block/loop.c
 > +++ b/drivers/block/loop.c
-> @@ -2212,6 +2212,10 @@ static int loop_add(struct loop_device **l, int i, struct inode *inode)
->  	disk->private_data	= lo;
+> @@ -2213,8 +2213,10 @@ static int loop_add(struct loop_device **l, int i, struct inode *inode)
 >  	disk->queue		= lo->lo_queue;
 >  	sprintf(disk->disk_name, "loop%d", i);
-> +#ifdef CONFIG_BLK_DEV_LOOPFS
-> +	if (loopfs_i_sb(inode))
-> +		disk->user_ns = loopfs_i_sb(inode)->s_user_ns;
-> +#endif
+>  #ifdef CONFIG_BLK_DEV_LOOPFS
+> -	if (loopfs_i_sb(inode))
+> +	if (loopfs_i_sb(inode)) {
+>  		disk->user_ns = loopfs_i_sb(inode)->s_user_ns;
+> +		disk_to_dev(disk)->no_devnode = true;
+> +	}
+>  #endif
 >  
 >  	add_disk(disk);
+> diff --git a/include/linux/device.h b/include/linux/device.h
+> index ac8e37cd716a..c69ef1c5a0ef 100644
+> --- a/include/linux/device.h
+> +++ b/include/linux/device.h
+> @@ -523,6 +523,8 @@ struct dev_links_info {
+>   *		  sync_state() callback.
+>   * @dma_coherent: this particular device is dma coherent, even if the
+>   *		architecture supports non-coherent devices.
+> + * @no_devnode: whether device nodes associated with this device are kept out
+> + *		of devtmpfs (e.g. due to separate filesystem)
+>   *
+>   * At the lowest level, every device in a Linux system is represented by an
+>   * instance of struct device. The device structure contains the information
+> @@ -622,6 +624,7 @@ struct device {
+>      defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
+>  	bool			dma_coherent:1;
+>  #endif
+> +	bool			no_devnode:1;
+>  };
 >  
+>  static inline struct device *kobj_to_dev(struct kobject *kobj)
 > -- 
 > 2.26.1
