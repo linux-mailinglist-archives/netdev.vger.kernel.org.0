@@ -2,145 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CDD91B6186
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 19:03:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30B671B6189
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 19:05:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729846AbgDWRCz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 13:02:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39628 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729674AbgDWRCy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 13:02:54 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B2D5C09B042;
-        Thu, 23 Apr 2020 10:02:54 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id k1so7716579wrx.4;
-        Thu, 23 Apr 2020 10:02:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OgOoFPMvziAtiUZxoE51wszbOZtCs8cBFEzsWONoXaQ=;
-        b=fNLNNyipyEVINdAKv5TCJmwFHz02ABD9GsJ45feEgUSC3QzsDSJ/C24fKrp0btqSCW
-         bD7q0I+D2qw88HV3LrvVGA+jkQuSd20SfXmhPJNdYOvvECzR+3lRimOKZdhvgKEPilcB
-         0ySYrBYjp1Oxqyh7Y3rskjj07DRr0XvjV3hgoZWku9fXg8QTRuuyJAM5PxnZHglByWL2
-         8AOKnuNZHCJq0LXMVnh1mLIS03knoIEnnbUf1L46MO6p3eoDTP8Ys1RbBbT1oVGGdSde
-         4qWLJdVy22i5VT2+5yfhtpnz4jDWjefKGZ3eoCSl5RezIbj2HgHo/xugZL/dmEGTxD3q
-         Frdw==
+        id S1729768AbgDWRFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 13:05:52 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:30873 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729673AbgDWRFv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 13:05:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587661549;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YBg76D7WNNczaCw5afubhAJ9jQW+qoa3p2n9Nwj1R+0=;
+        b=i1vMOn/PbpWchS1qMaEnglmNu9IK0OiTM5i+Gb31mV43u2GXATscCg4Svn1chwZ3ks7diw
+        ehZnly3X9jHDtUPMIzHKbZykalFCf2IMVXfuDrvHXE5rcwjDnatETYza7EAi4d+moZtUt1
+        liaXoeGlKaw7cHbvFM8X59CES1p+caY=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-267-7JmythJiOLiF0ODs8IR4xQ-1; Thu, 23 Apr 2020 13:05:48 -0400
+X-MC-Unique: 7JmythJiOLiF0ODs8IR4xQ-1
+Received: by mail-lf1-f69.google.com with SMTP id m3so2573079lfp.21
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 10:05:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OgOoFPMvziAtiUZxoE51wszbOZtCs8cBFEzsWONoXaQ=;
-        b=lLBHWkuomg7Jb+xlTNC3UGJrVYCVIWe1UlofuF1xgDXaPtMMDtxFyKtPGegJPgjpWT
-         jwvwq0IlV3VJeEng/vWlmImB1UA+vAOUOJTLi40PkEGtApniCTbvDkeb5tGdvTlKsmBE
-         Hu6JpSVYRe/Qqbp4UrzA0nVQGSWhZ6PbLH+TbqMCsN9OdTjyjRUke5B29hNfXI6I4IcK
-         fiKFObVyBSRBx1YvHQsfWm2h3Oc9sdXJDDfNGyebnf9NJcKQ78QvmvKswwHZ6OxgFb+K
-         nZVC/7hl7Vx59h+6JxnZV3OVrOHX9PRy+q1Vs0FciVlw7ZEXVB58YE+fCya2I29UlGv5
-         w0Bg==
-X-Gm-Message-State: AGi0PubyRPA8QqEQHpA6nzs4cwLNYmqT8EPxJk7Og+92eSD2YGUt+TET
-        mD2Kxiq4lVmzzCgai+9kci8x6hVY
-X-Google-Smtp-Source: APiQypLNkmvGiFI2nuonYn40oI+/9YHa3LWpEYLJDmPDLMrDGbGo6niBfzx8atGWQ8hO+m50PuzLaw==
-X-Received: by 2002:adf:ed46:: with SMTP id u6mr5623801wro.327.1587661372787;
-        Thu, 23 Apr 2020 10:02:52 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:c569:21dc:2ec:9a23? (p200300EA8F296000C56921DC02EC9A23.dip0.t-ipconnect.de. [2003:ea:8f29:6000:c569:21dc:2ec:9a23])
-        by smtp.googlemail.com with ESMTPSA id d13sm4300093wmb.39.2020.04.23.10.02.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Apr 2020 10:02:52 -0700 (PDT)
-Subject: Re: [PATCH net 1/2] net: phy: DP83822: Fix WoL in config init to be
- disabled
-To:     Dan Murphy <dmurphy@ti.com>, andrew@lunn.ch, f.fainelli@gmail.com
-Cc:     linux@armlinux.org.uk, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org, afd@ti.com
-References: <20200423163947.18313-1-dmurphy@ti.com>
- <20200423163947.18313-2-dmurphy@ti.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <487889d0-d2e4-ddd4-b199-c621b2826601@gmail.com>
-Date:   Thu, 23 Apr 2020 19:02:44 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=YBg76D7WNNczaCw5afubhAJ9jQW+qoa3p2n9Nwj1R+0=;
+        b=U9ls2o1Y3jNxokpE1Ig93pEFcF+DGWdlsOPOhAsZxnUXNfPX55uLy87/f2EqPTG7YR
+         NtVMX+eZdiiAG+VjlpXcD29RbYRvq3L/kb/+WI8p7W8O16s3Bnf2QZNev4eSyyZ1J8f2
+         1PG56+5AVJGphD6Ovyt01UX1m9HyYDKL94q/8CoKJXlDBxxteK7OJ1PIZreOKDCU/6uu
+         HQ9Zh1qXPdsJfOE7FzvKrilDO1fMkxEebkbAD5/46fSUq81/MuDkJ7XbNbnodgPdcjGL
+         U7bxWIMtYnio5+wMv0w8dr/xUV6NBZkdYKYH87nx5HOcyPDOCRYdUCf4iYmENhX5HLFB
+         6u6Q==
+X-Gm-Message-State: AGi0PuZZ8PUbEspQgRxcLgXOG56Xw4bbyqSi+BF2irK4CkwzsBtP3yqE
+        aBEMoZJWPuc16fKka2Nc9e/67lE5jc37fLraivJTvaLt2T0i2pXZovpj0y4mEGT/tPAQ8hk6bDP
+        rXSyuVl8Niia0xwVa
+X-Received: by 2002:a2e:9a93:: with SMTP id p19mr2745148lji.77.1587661545571;
+        Thu, 23 Apr 2020 10:05:45 -0700 (PDT)
+X-Google-Smtp-Source: APiQypLISdNs1Tin6l01v8rQS8qx2IcIvjCjfuVOWkNNy08zC1SmbzsDPPQbj4Ef7DJRGL+tQOLuqA==
+X-Received: by 2002:a2e:9a93:: with SMTP id p19mr2745080lji.77.1587661544376;
+        Thu, 23 Apr 2020 10:05:44 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id p23sm2211687lfc.95.2020.04.23.10.05.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Apr 2020 10:05:43 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id B99B71814FF; Thu, 23 Apr 2020 19:05:42 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Prashant Bhole <prashantbhole.linux@gmail.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        David Ahern <dahern@digitalocean.com>
+Subject: Re: [PATCH bpf-next 04/16] net: Add BPF_XDP_EGRESS as a bpf_attach_type
+In-Reply-To: <CAADnVQ+GDR15oArpEGFFOvZ35WthHyL+b97zQUxjXbz-ec5CGw@mail.gmail.com>
+References: <20200420200055.49033-5-dsahern@kernel.org> <87ftcx9mcf.fsf@toke.dk> <856a263f-3bde-70a7-ff89-5baaf8e2240e@gmail.com> <87pnc17yz1.fsf@toke.dk> <073ed1a6-ff5e-28ef-d41d-c33d87135faa@gmail.com> <87k1277om2.fsf@toke.dk> <154e86ee-7e6a-9598-3dab-d7b46cce0967@gmail.com> <875zdr8rrx.fsf@toke.dk> <783d0842-a83f-c22f-25f2-4a86f3924472@gmail.com> <87368v8qnr.fsf@toke.dk> <20200423003911.tzuu6cxtg7olvvko@ast-mbp.dhcp.thefacebook.com> <878sim6tqj.fsf@toke.dk> <CAADnVQ+GDR15oArpEGFFOvZ35WthHyL+b97zQUxjXbz-ec5CGw@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 23 Apr 2020 19:05:42 +0200
+Message-ID: <874kta6sk9.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20200423163947.18313-2-dmurphy@ti.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23.04.2020 18:39, Dan Murphy wrote:
-> The WoL feature should be disabled when config_init is called and the
-> feature should turned on or off  when set_wol is called.
-> 
-> In addition updated the calls to modify the registers to use the set_bit
-> and clear_bit function calls.
-> 
-> Fixes: 3b427751a9d0 ("net: phy: DP83822 initial driver submission")
-> Signed-off-by: Dan Murphy <dmurphy@ti.com>
-> ---
->  drivers/net/phy/dp83822.c | 30 ++++++++++++++++--------------
->  1 file changed, 16 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
-> index fe9aa3ad52a7..40fdfd043947 100644
-> --- a/drivers/net/phy/dp83822.c
-> +++ b/drivers/net/phy/dp83822.c
-> @@ -137,16 +137,19 @@ static int dp83822_set_wol(struct phy_device *phydev,
->  			value &= ~DP83822_WOL_SECURE_ON;
->  		}
->  
-> -		value |= (DP83822_WOL_EN | DP83822_WOL_INDICATION_SEL |
-> -			  DP83822_WOL_CLR_INDICATION);
-> -		phy_write_mmd(phydev, DP83822_DEVADDR, MII_DP83822_WOL_CFG,
-> -			      value);
-> +		/* Clear any pending WoL interrupt */
-> +		phy_read(phydev, MII_DP83822_MISR2);
-> +
-> +		value |= DP83822_WOL_EN | DP83822_WOL_INDICATION_SEL |
-> +			DP83822_WOL_CLR_INDICATION;
-> +
-> +		return phy_set_bits_mmd(phydev, DP83822_DEVADDR,
-> +					MII_DP83822_WOL_CFG, value);
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
-The switch to phy_set_bits_mmd() doesn't seem to be correct here.
-So far bit DP83822_WOL_MAGIC_EN is cleared if WAKE_MAGIC isn't set.
-Similar for bit DP83822_WOL_SECURE_ON. With your change they don't
-get cleared any longer.
+> On Thu, Apr 23, 2020 at 9:40 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>>
+>> > On Wed, Apr 22, 2020 at 05:51:36PM +0200, Toke H=C3=83=C2=B8iland-J=C3=
+=83=C2=B8rgensen wrote:
+>> >> David Ahern <dsahern@gmail.com> writes:
+>> >>
+>> >> > On 4/22/20 9:27 AM, Toke H=C3=83=C2=B8iland-J=C3=83=C2=B8rgensen wr=
+ote:
+>> >> >> And as I said in the beginning, I'm perfectly happy to be told why=
+ I'm
+>> >> >> wrong; but so far you have just been arguing that I'm out of scope=
+ ;)
+>> >> >
+>> >> > you are arguing about a suspected bug with existing code that is no=
+ way
+>> >> > touched or modified by this patch set, so yes it is out of scope.
+>> >>
+>> >> Your patch is relying on the (potentially buggy) behaviour, so I don't
+>> >> think it's out of scope to mention it in this context.
+>> >
+>> > Sorry for slow reply.
+>> > I'm swamped with other things atm.
+>> >
+>> > Looks like there is indeed a bug in prog_type_ext handling code that
+>> > is doing
+>> > env->ops =3D bpf_verifier_ops[tgt_prog->type];
+>> > I'm not sure whether the verifier can simply add:
+>> > prog->expected_attach_type =3D tgt_prog->expected_attach_type;
+>> > and be done with it.
+>> > Likely yes, since expected_attach_type must be zero at that point
+>> > that is enforced by bpf_prog_load_check_attach().
+>> > So I suspect it's a single line fix.
+>>
+>> Not quite: the check in bpf_tracing_prog_attach() that enforces
+>> prog->expected_attach_type=3D=3D0 also needs to go. So 5 lines :)
+>
+> prog_ext's expected_attach_type needs to stay zero.
+> It needs to be inherited from tgt prog. Hence one line:
+> prog->expected_attach_type =3D tgt_prog->expected_attach_type;
 
->  	} else {
-> -		value = phy_read_mmd(phydev, DP83822_DEVADDR,
-> -				     MII_DP83822_WOL_CFG);
-> -		value &= ~DP83822_WOL_EN;
-> -		phy_write_mmd(phydev, DP83822_DEVADDR, MII_DP83822_WOL_CFG,
-> -			      value);
-> +		value = DP83822_WOL_EN | DP83822_WOL_CLR_INDICATION;
-> +
-You clear one bit more than before. The reason for this may be worth a note
-in the commit message.
+Not sure I follow you here? I ended up with the patch below - without
+the first hunk I can't attach freplace funcs to an xdp egress prog
+(since the expected_attach_type will have been propagated from
+verification time), and so that check will fail. Or am I missing
+something?
 
-> +		return phy_clear_bits_mmd(phydev, DP83822_DEVADDR,
-> +					  MII_DP83822_WOL_CFG, value);
->  	}
->  
->  	return 0;
-> @@ -258,12 +261,11 @@ static int dp83822_config_intr(struct phy_device *phydev)
->  
->  static int dp83822_config_init(struct phy_device *phydev)
->  {
-> -	int value;
-> -
-> -	value = DP83822_WOL_MAGIC_EN | DP83822_WOL_SECURE_ON | DP83822_WOL_EN;
-> +	int value = DP83822_WOL_EN | DP83822_WOL_MAGIC_EN |
-> +		    DP83822_WOL_SECURE_ON;
->  
-> -	return phy_write_mmd(phydev, DP83822_DEVADDR, MII_DP83822_WOL_CFG,
-> -	      value);
-> +	return phy_clear_bits_mmd(phydev, DP83822_DEVADDR,
-> +				  MII_DP83822_WOL_CFG, value);
->  }
->  
->  static int dp83822_phy_reset(struct phy_device *phydev)
-> 
+-Toke
+
+
+
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index d85f37239540..40c3103c7233 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -2381,10 +2381,6 @@ static int bpf_tracing_prog_attach(struct bpf_prog *=
+prog)
+                }
+                break;
+        case BPF_PROG_TYPE_EXT:
+-               if (prog->expected_attach_type !=3D 0) {
+-                       err =3D -EINVAL;
+-                       goto out_put_prog;
+-               }
+                break;
+        case BPF_PROG_TYPE_LSM:
+                if (prog->expected_attach_type !=3D BPF_LSM_MAC) {
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 513d9c545176..41c31773a3c4 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -10485,6 +10485,7 @@ static int check_attach_btf_id(struct bpf_verifier_=
+env *env)
+                                return -EINVAL;
+                        }
+                        env->ops =3D bpf_verifier_ops[tgt_prog->type];
++                       prog->expected_attach_type =3D tgt_prog->expected_a=
+ttach_type;
+                }
+                if (!tgt_prog->jited) {
+                        verbose(env, "Can attach to only JITed progs\n");
 
