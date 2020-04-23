@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 606141B533F
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 05:54:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA4D61B5340
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 05:54:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726353AbgDWDyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 23:54:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57820 "EHLO
+        id S1726505AbgDWDys (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 23:54:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725854AbgDWDyl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 23:54:41 -0400
+        by vger.kernel.org with ESMTP id S1725854AbgDWDys (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 23:54:48 -0400
 Received: from mail-ua1-x944.google.com (mail-ua1-x944.google.com [IPv6:2607:f8b0:4864:20::944])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2704FC03C1AB
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 20:54:41 -0700 (PDT)
-Received: by mail-ua1-x944.google.com with SMTP id u12so4320401uau.10
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 20:54:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28CBC03C1AB
+        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 20:54:46 -0700 (PDT)
+Received: by mail-ua1-x944.google.com with SMTP id c24so4322356uap.13
+        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 20:54:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=SKQdMrV6LGvjxwtwpOmQRcKySkh+OYzxhvUmUyKUxIw=;
-        b=U1nLle41lQwUEC7DovRis/hdXobM/P9whPp2SzVr84QYQntn2+Ggwvj2sVVWwEhUbl
-         p2lj/q3MdqBkE44pA35X32IaK15zNxYCeiYp/iw+qVy6da1UX0PxneHBER1n2L6x+Mpa
-         sUyExx4T2HJP1b151oDes469VdjObKApZv9nWMs6n+2nDxVPBuchco7fuskh3VtoiMXy
-         szEAiNSUIB3PdKXBwbkocJIi52ugBvgEF1U4eeZyXKf3j/QWRMyjPFImH+HLjlgN29Xe
-         LtXrpD/DYgjBAFtuQxL8cJG3GFDyhVHPfD2P7J/TWDQD+L1dnbMLJoqR8xLmEeZRQDFs
-         sC8Q==
+        bh=R8UTQx3Ey5Chrhv1kbfg5h3YLmYWwpsMJJB9YIonatg=;
+        b=gHbeX08L0pNOEnOC1tiBd6cYw4YvMLn48lLeG5b5wb+usUjoda440Vwm94zUgxpR+W
+         SxJi7/ITqJ+MqmInvywBG8Ykcm+T6NzRKQZhA9fxc//5KAfRjli2hLHb+zrOGXbxfg+y
+         eM5P5kpZfTkRAcHqc2JFp6UUSU2sHYQaaAuCLxLvtVB72tmAiPYIo+f/f+S0vH2b7jaK
+         5gsEh4scV5JFePEEu68TpwZR/BhkyNpXgAs+ahdCR65EFzHDeIAQn7X9r4rZXLwTsIdu
+         RxelfamttufL074EYne9BMjkwQXfIpCYm9XESsaXS8L0lfOUW8poeAFDJ646m/9vq5kS
+         fVtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=SKQdMrV6LGvjxwtwpOmQRcKySkh+OYzxhvUmUyKUxIw=;
-        b=Q7CgtBkRgSSHEI2Bc3t1bdSnhLyco6Ispi90+ZiNRFBjvW2lghfXWhbkm4VE932tVi
-         ygDs7NgGv22xUvV9E/SSPSmKzZt4iBEjOUgJT0Hcvona+ZgHj3JbAL+p5CnZ0tYwldkx
-         mgcv34Ir5m0oQrbeCeuxhU/GRECLLzgYfvJhfBwy+qAh13i4y9fX2jKxfpprtFwES/Jw
-         rRmrCbngYTqkQ6+hMd+QZCFo7lyAj938MBcMRu/E++dJjj4ar55IljgN1+JEL09trJz5
-         FRiucIjMakgltfX5O1ikzz5MCu07pDMDARMw7LCEf9zlLJjwItbfV0fyK+UWR9ja+/sO
-         IBqw==
-X-Gm-Message-State: AGi0PuaaiMHHAeruXICFDLw7s+/RD+UF8B/Va/a9X0HWRR5IXi1Ooxxx
-        mzCMmxjX2zq40SuQ7Ich/DpJX32uTP6vA7q/dRo=
-X-Google-Smtp-Source: APiQypItLEuiIpsbT7YvlDNzmngfR7mFH3VwEjFwWEYh4PaH9TnajdSP+leoHOIkpkgW3MH8JHRWyjPQ9zLvo2NFP6M=
-X-Received: by 2002:a05:6102:2418:: with SMTP id j24mr1500483vsi.47.1587614080409;
- Wed, 22 Apr 2020 20:54:40 -0700 (PDT)
+        bh=R8UTQx3Ey5Chrhv1kbfg5h3YLmYWwpsMJJB9YIonatg=;
+        b=jrwG60XPtGEf1G+FLkb14Cr9grpzvuhIVUXxKGddaJuLiP08p9r1NaiZEaVxdWN1Uf
+         C9i1/udqZoiUvfHZURMWYbakMfzW4Mn/LXCBA43iZF3zhDFybWSeC2G8YXuAkRoREI0J
+         Aoo0WIBc7z8k+uJkeRcHfv4pB4U5ooWzzCgYkCLk8PnGv2cFFLpSi4S4aigh0zxC6H+U
+         JzTPFNIaJeHdkjw5jfmjtyaZ7lGNL8bsOm7FA+KQRZMkkjPZOpsVqaY3+csI0C6dt7L8
+         tIynohQSYup2DDzPH3xmCLvDOKyG/iTnbUle0d/iQnYrCY/Ifqi4btfPB8LcN1M8kBwd
+         m7IA==
+X-Gm-Message-State: AGi0PuYKPvSji1WERMPIfwmugnGufmnX5V52/jr79xODd8lWmyJa3Bbz
+        flSQSpya7z04IMynobuaioDSTbkNUO/c+PuvCUw=
+X-Google-Smtp-Source: APiQypIO1LJ5QFkj+FhMhj3a3TWf6P0/84tiojtFoY3Ra/tyx9uZjlRnlTZ9ESRSscKprvhMzqqerubnzWjvHzqqH1E=
+X-Received: by 2002:a67:d998:: with SMTP id u24mr1673389vsj.93.1587614086019;
+ Wed, 22 Apr 2020 20:54:46 -0700 (PDT)
 MIME-Version: 1.0
 References: <1584969039-74113-1-git-send-email-xiangxia.m.yue@gmail.com>
- <1587575340-6790-1-git-send-email-xiangxia.m.yue@gmail.com> <1587575340-6790-3-git-send-email-xiangxia.m.yue@gmail.com>
-In-Reply-To: <1587575340-6790-3-git-send-email-xiangxia.m.yue@gmail.com>
+ <1587575340-6790-1-git-send-email-xiangxia.m.yue@gmail.com> <1587575340-6790-4-git-send-email-xiangxia.m.yue@gmail.com>
+In-Reply-To: <1587575340-6790-4-git-send-email-xiangxia.m.yue@gmail.com>
 From:   Pravin Shelar <pravin.ovn@gmail.com>
-Date:   Wed, 22 Apr 2020 20:54:29 -0700
-Message-ID: <CAOrHB_DVb1wDqQxsqpn_QojQG7QiO+zAakS6Sqbkpa8Vz7DO0g@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 2/5] net: openvswitch: set max limitation to meters
+Date:   Wed, 22 Apr 2020 20:54:35 -0700
+Message-ID: <CAOrHB_APuw_5Bf+HQppk04nxHRPxhpzXCd+ONPZBwP4sRv7oOg@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 3/5] net: openvswitch: remove the unnecessary check
 To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
 Cc:     Andy Zhou <azhou@ovn.org>, Ben Pfaff <blp@ovn.org>,
         William Tu <u9012063@gmail.com>,
@@ -66,17 +66,15 @@ On Wed, Apr 22, 2020 at 10:10 AM <xiangxia.m.yue@gmail.com> wrote:
 >
 > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 >
-> Don't allow user to create meter unlimitedly, which may cause
-> to consume a large amount of kernel memory. The max number
-> supported is decided by physical memory and 20K meters as default.
+> Before invoking the ovs_meter_cmd_reply_stats, "meter"
+> was checked, so don't check it agin in that function.
 >
 > Cc: Pravin B Shelar <pshelar@ovn.org>
 > Cc: Andy Zhou <azhou@ovn.org>
 > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 > ---
->  net/openvswitch/meter.c | 57 +++++++++++++++++++++++++++++++++--------
->  net/openvswitch/meter.h |  2 ++
->  2 files changed, 49 insertions(+), 10 deletions(-)
+>  net/openvswitch/meter.c | 9 ++++-----
+>  1 file changed, 4 insertions(+), 5 deletions(-)
 >
 Acked-by: Pravin B Shelar <pshelar@ovn.org>
 
