@@ -2,81 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 170481B5342
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 05:55:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E67EA1B541B
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 07:18:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726587AbgDWDzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 23:55:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57906 "EHLO
+        id S1726741AbgDWFSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 01:18:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725854AbgDWDzK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 23:55:10 -0400
-Received: from mail-ua1-x943.google.com (mail-ua1-x943.google.com [IPv6:2607:f8b0:4864:20::943])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8257DC03C1AB
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 20:55:10 -0700 (PDT)
-Received: by mail-ua1-x943.google.com with SMTP id v24so4340163uak.0
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 20:55:10 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725867AbgDWFSM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 01:18:12 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 928EEC03C1AB;
+        Wed, 22 Apr 2020 22:18:11 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id o15so2334590pgi.1;
+        Wed, 22 Apr 2020 22:18:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=scjaDOX3dQLla0SUy2l/ZA9vSlJ/URf+wgTz4+Qt390=;
-        b=M/pj2CwIGMydm2+23+gLI+EDdeNTWbmupO+j1ITiesZ/rXrw6QlySaXQFcF7HSvRK/
-         bNQTdmMSe8Oa+Pe70yXzmDgo2WbupSWqJUZSkOK1vPQxtLjNjW2YyqjM7wPVGlZdR4t9
-         vrt92VPbAnKc38GHjn4YNLxPwgC31jWNWHze/VppBKY9IO3ExF4z6iFW/If29WwksxUm
-         9GrpfD4hRLNkdECR8EOWVUD6PFJHo1xW/aIPMHlndpuPL/zFryAD3mUtxrlt+3ZCd/37
-         n07KZCrut4O4UHeW7Xnbef0L+3jcFXRsulWIqjrf84LI3HyQOkog0T1rRKvOGUCM4sur
-         HXoQ==
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=qCBsa1pJlvt7zkIr/3FJFH5RgTV4mszszMc7Yftm9j8=;
+        b=ZnsO8fVk0++VtXCgCcGrNVzqJZq0AoklIMWuOpbYiwXhATkktI9CbfqB4yRA0SItP7
+         azBW1r6Jb5iyoAiziDIDLIuEYdQ4M97hJ/Sf/rfI92FjaZZ2S/q9tzL2QhP2j7J2egpf
+         CbxWrli3xBhkp6H20ZA2qRN7J2jVYTeh4GVyoJ11H2yCZtvohehqoD1QwPvpFLH7Ka4J
+         oqowfGJg4MNNxmHVCxWKhClqlf4InXXnWLzk4c3jbHm0H4RQyGW1999uONr1HVCP9F1M
+         bnjQ02lVGrC2IUMkYYiiJebH93C7ygcXHo1kP3G/fFgNFcLyRgVNSB52JQ5Qq2oxpqX7
+         4hxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=scjaDOX3dQLla0SUy2l/ZA9vSlJ/URf+wgTz4+Qt390=;
-        b=dkBZ5EJ1lowoekpZQGTLzlEQ587rVVFIrng4ViQSP5D9+bWPmhlS9savxL8zem/hx1
-         k+zlk9ZuIjOiAS/S1b62TNUvH6Np4gPVPZ6uaH59wodA3NrVIPJ3BdThBzuYEP6ziKgb
-         fko4zl8nlwLbQCpGJRJJMcBTevVoZgJUWzXkJEg+hORxVXXx/CYlTgte3OSWz9FKXru1
-         cezX+In5GOkAs2BXBn93dJKdobjGM5G2ZeqMjsFpUcdk/uEYKMPxFoz5rXbYORUnxEht
-         qKGb/ceMPloOd+/JhGx6IG5MbsEvPx/jKFGDw0EJduuo7ZRjZHNpLOQBv/+larFknXah
-         vFOQ==
-X-Gm-Message-State: AGi0Puav0UFiHsiisfEVz+C0mjMgvNeblL27Dq6HqYtKFvVvRFCNsgrW
-        Qnqj7soxOrLLryCVovUK5HhL9dGqFWlth2/lHTM=
-X-Google-Smtp-Source: APiQypLDXcxAGnRT5/I8WnsoiCFo9V5usIWfjhai//3vq+PwKu5tLPTBfvEq+CBEcPZHnItg68K7+WP5AuPKv7J5vtg=
-X-Received: by 2002:ab0:770b:: with SMTP id z11mr1437698uaq.64.1587614109793;
- Wed, 22 Apr 2020 20:55:09 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=qCBsa1pJlvt7zkIr/3FJFH5RgTV4mszszMc7Yftm9j8=;
+        b=QF4pwUbLkNhVu+vKs2wqZr9JmqCAYpvfgzViUj5yNNONJtIDaTdP6WaHhgwy7Ixn+X
+         T0vPLa5D4Wwz79atWE/WIgvLld4SYjgXTBYlh2h3TLFZteianxkF6DDGejYs5jg7ACSX
+         qTXj2k+nQ5kLEDlFIDL3tstwpLLFZzLGZZVi2PJsPeIQyA1Jk8Ax21kHOGW4/kXwpmpJ
+         WNCHuQmbrK2foG7R2JFD/oX+onGlQEJ4WIdSwOxop1QeFG80lpjCOR4J9b3L6Rg82D6S
+         q4/cQ2twMP5UMclUbatr6uPnlpyjzaCOmYqs/7n1BJFmYFfA2S4thrzSCd375z0lV+Vv
+         ntKQ==
+X-Gm-Message-State: AGi0Pub1qdT7OAE3l/dwKVH47lXSALGTqpS/ZdVg8nTzSzK+wW5VMbHc
+        UusTehVnzXPCeU0K0KkEbv8=
+X-Google-Smtp-Source: APiQypLKYZo7sa83+KriCNF74gBjCVlbbw0qbHAGVoV3iMxICiijUV8rmcy6yRTFdCDjoeefv36pdQ==
+X-Received: by 2002:a63:2166:: with SMTP id s38mr2306743pgm.369.1587619091150;
+        Wed, 22 Apr 2020 22:18:11 -0700 (PDT)
+Received: from udknight.localhost ([183.250.89.86])
+        by smtp.gmail.com with ESMTPSA id k10sm1300719pfa.163.2020.04.22.22.18.09
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 22 Apr 2020 22:18:10 -0700 (PDT)
+Received: from udknight.localhost (localhost [127.0.0.1])
+        by udknight.localhost (8.14.9/8.14.4) with ESMTP id 03N4AMGY001222;
+        Thu, 23 Apr 2020 12:10:22 +0800
+Received: (from root@localhost)
+        by udknight.localhost (8.14.9/8.14.9/Submit) id 03N4AGAg001218;
+        Thu, 23 Apr 2020 12:10:16 +0800
+Date:   Thu, 23 Apr 2020 12:10:16 +0800
+From:   Wang YanQing <udknight@gmail.com>
+To:     Luke Nelson <lukenels@cs.washington.edu>
+Cc:     bpf@vger.kernel.org, Brian Gerst <brgerst@gmail.com>,
+        Luke Nelson <luke.r.nels@gmail.com>,
+        Xi Wang <xi.wang@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf v2 2/2] bpf, x86_32: Fix clobbering of dst for
+ BPF_JSET
+Message-ID: <20200423041016.GA1153@udknight>
+Mail-Followup-To: Wang YanQing <udknight@gmail.com>,
+        Luke Nelson <lukenels@cs.washington.edu>, bpf@vger.kernel.org,
+        Brian Gerst <brgerst@gmail.com>,
+        Luke Nelson <luke.r.nels@gmail.com>, Xi Wang <xi.wang@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200422173630.8351-1-luke.r.nels@gmail.com>
+ <20200422173630.8351-2-luke.r.nels@gmail.com>
 MIME-Version: 1.0
-References: <1584969039-74113-1-git-send-email-xiangxia.m.yue@gmail.com>
- <1587575340-6790-1-git-send-email-xiangxia.m.yue@gmail.com> <1587575340-6790-6-git-send-email-xiangxia.m.yue@gmail.com>
-In-Reply-To: <1587575340-6790-6-git-send-email-xiangxia.m.yue@gmail.com>
-From:   Pravin Shelar <pravin.ovn@gmail.com>
-Date:   Wed, 22 Apr 2020 20:54:59 -0700
-Message-ID: <CAOrHB_CO9QtoM5EXVjWV1AX5_WQq0T1Mu=XARrz8fMOQJ6UC1w@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 5/5] net: openvswitch: use u64 for meter bucket
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Andy Zhou <azhou@ovn.org>, Ben Pfaff <blp@ovn.org>,
-        William Tu <u9012063@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        ovs dev <dev@openvswitch.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200422173630.8351-2-luke.r.nels@gmail.com>
+User-Agent: Mutt/1.7.1 (2016-10-04)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 22, 2020 at 10:10 AM <xiangxia.m.yue@gmail.com> wrote:
->
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
->
-> When setting the meter rate to 4+Gbps, there is an
-> overflow, the meters don't work as expected.
->
-> Cc: Pravin B Shelar <pshelar@ovn.org>
-> Cc: Andy Zhou <azhou@ovn.org>
-> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> ---
->  net/openvswitch/meter.c | 2 +-
->  net/openvswitch/meter.h | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
->
-Acked-by: Pravin B Shelar <pshelar@ovn.org>
-
-Thanks.
+On Wed, Apr 22, 2020 at 10:36:30AM -0700, Luke Nelson wrote:
+> The current JIT clobbers the destination register for BPF_JSET BPF_X
+> and BPF_K by using "and" and "or" instructions. This is fine when the
+> destination register is a temporary loaded from a register stored on
+> the stack but not otherwise.
+> 
+> This patch fixes the problem (for both BPF_K and BPF_X) by always loading
+> the destination register into temporaries since BPF_JSET should not
+> modify the destination register.
+> 
+> This bug may not be currently triggerable as BPF_REG_AX is the only
+> register not stored on the stack and the verifier uses it in a limited
+> way.
+> 
+> Fixes: 03f5781be2c7b ("bpf, x86_32: add eBPF JIT compiler for ia32")
+> Signed-off-by: Xi Wang <xi.wang@gmail.com>
+> Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
+Acked-by: Wang YanQing <udknight@gmail.com>
