@@ -2,83 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49E7B1B6405
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 20:50:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86F841B640B
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 20:52:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726516AbgDWSuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 14:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56498 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726057AbgDWSuM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 14:50:12 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7314DC09B042
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 11:50:11 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id v26so176693qto.0
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 11:50:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=q3yakHtkkhToc0mPyRJWA5JgfZ3ksmVduEJf6lecHJk=;
-        b=dOSlQN7Dmis0FDKjr3TxpU0IeDYkrlYiXZ6yB68Pfrol0ayNMppJGf6TA61iE4DoFM
-         wWVDeYYoxea09Ce8Du5dfIs/J1tTqMDArfHkrrOm6wlA6POQPwB2qYXXdZfc7bIbg/uz
-         c6TYRBgfK3q5LkzBcq2qLAcBfYcTvSRW9Axv+PgqdnNOhHLCEapQYXOvB6lX6tsZv0jk
-         S6wOa5MZ5MIMOD9sxVOjZSSbq5fWtt3r1+tYnuyqvhi8GBs8JOUrVoJJIRwJK9QVhVnD
-         zqFopybn39D69fkMndZaYyI9RA1TSEXrnrNT1Co6RWOhIwhY/yVL+L4gXy0Y7Wgl1r0H
-         HkLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=q3yakHtkkhToc0mPyRJWA5JgfZ3ksmVduEJf6lecHJk=;
-        b=egWEERhNWG42qfvMsZOoSnZPJ6sEow1sm7OmeUTrzJfetW9lMxKtyrrKWRiN0P+4mj
-         yAS7d2jzuczKpyf/0LsbRIhYKU0CIUMGS7JIl0QdOrMaRPoHfi9QbzAqI1JffBVJ7stC
-         9A98sJNaPqEc0d1yStak1xmV4x7M6bXYLULcAnmfms3aGg856/gop6Mz9uJIl+Lzu493
-         kFWHRIFMShc2FIfj75lHRJt8FuH+GAZKOrQ5aEB2fn/Ca2DI/bObytzV3kHR6rp5Qyyv
-         YWRhILZVqmflefsvPO3kHXkkUmYjcSbmh/wn4yUNgsgEk+2Zg5s1QSYD8lcyRsomvnA+
-         GCeQ==
-X-Gm-Message-State: AGi0PuZeu+7y7PA9Tda3qH9NhaT93Vp3MNWRU1dowdj/J1J3HEqAigh1
-        c3M164PHhyhIJSh+u9i7fHM=
-X-Google-Smtp-Source: APiQypKIEoGvwZKZYj+avd5bMW+KXaJqZ5eXGIAELuoDWDb6gw0bc1Aq1W7riKc1RUDka+izOKSFEA==
-X-Received: by 2002:ac8:6043:: with SMTP id k3mr4989321qtm.99.1587667810784;
-        Thu, 23 Apr 2020 11:50:10 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:2064:c3f6:4748:be84? ([2601:282:803:7700:2064:c3f6:4748:be84])
-        by smtp.googlemail.com with ESMTPSA id k43sm2339159qtk.67.2020.04.23.11.50.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Apr 2020 11:50:09 -0700 (PDT)
-Subject: Re: [PATCH bpf-next 13/16] bpftool: Add support for XDP egress
-To:     Quentin Monnet <quentin@isovalent.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        brouer@redhat.com, toke@redhat.com, toshiaki.makita1@gmail.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dahern@digitalocean.com>
-References: <20200420200055.49033-1-dsahern@kernel.org>
- <20200420200055.49033-14-dsahern@kernel.org>
- <d1a6ce5e-bb63-80cf-2e8f-24fbb0b36ec3@isovalent.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <47503e25-96d6-4b22-0c2b-4699f116a147@gmail.com>
-Date:   Thu, 23 Apr 2020 12:50:07 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
+        id S1728347AbgDWSwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 14:52:23 -0400
+Received: from pb-smtp20.pobox.com ([173.228.157.52]:63284 "EHLO
+        pb-smtp20.pobox.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726362AbgDWSwX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 14:52:23 -0400
+Received: from pb-smtp20.pobox.com (unknown [127.0.0.1])
+        by pb-smtp20.pobox.com (Postfix) with ESMTP id 11492CC76A;
+        Thu, 23 Apr 2020 14:52:20 -0400 (EDT)
+        (envelope-from nico@fluxnic.net)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=pobox.com; h=date:from:to
+        :cc:subject:in-reply-to:message-id:references:mime-version
+        :content-type; s=sasl; bh=pYU0AMuQlOREd1+6VLkN+ll2Wmw=; b=unNW3G
+        a0fmfK+aImdn2fY4EQSPU9uu9tT0VaYVTfSNbh/0IDBrgQ+i8Ul4QlqCYSOjeBYc
+        KTGaaeeA957jiPuwY2tlDtUIhxR++NLP4/CGBCMd1RX/bWToMt88pkxdHZP4sERl
+        v3WRduVsfUuDF4csGvtoBiKIV7BRmolP35F80=
+Received: from pb-smtp20.sea.icgroup.com (unknown [127.0.0.1])
+        by pb-smtp20.pobox.com (Postfix) with ESMTP id 0829ACC769;
+        Thu, 23 Apr 2020 14:52:20 -0400 (EDT)
+        (envelope-from nico@fluxnic.net)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=fluxnic.net;
+ h=date:from:to:cc:subject:in-reply-to:message-id:references:mime-version:content-type; s=2016-12.pbsmtp; bh=uCFGMAwTUfy3QWw/Nrw1WO4CjlHOh6AiWtHwO1XyK+c=; b=wWrhpOnobs5viGIBdcx+erqAnz9ARnG7BMjQrVIcpf92OBVxtzlP/axJsTrD6kqowNkI8GlzfYsIZfTMeYOPcGrFW0eeACS5UTQ2Rgq5+LUYwhRw6b6gSgal0KmtDFhAQetXgvwv5Ho6K+QG0YhmFCNmU8Et0SGM78A4V2Utomo=
+Received: from yoda.home (unknown [24.203.50.76])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by pb-smtp20.pobox.com (Postfix) with ESMTPSA id DDD5CCC763;
+        Thu, 23 Apr 2020 14:52:16 -0400 (EDT)
+        (envelope-from nico@fluxnic.net)
+Received: from xanadu.home (xanadu.home [192.168.2.2])
+        by yoda.home (Postfix) with ESMTPSA id 09F152DA0CE0;
+        Thu, 23 Apr 2020 14:52:15 -0400 (EDT)
+Date:   Thu, 23 Apr 2020 14:52:14 -0400 (EDT)
+From:   Nicolas Pitre <nico@fluxnic.net>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "masahiroy@kernel.org" <masahiroy@kernel.org>,
+        "Laurent.pinchart@ideasonboard.com" 
+        <Laurent.pinchart@ideasonboard.com>,
+        "airlied@linux.ie" <airlied@linux.ie>,
+        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "jernej.skrabec@siol.net" <jernej.skrabec@siol.net>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jonas@kwiboo.se" <jonas@kwiboo.se>,
+        "kieran.bingham+renesas@ideasonboard.com" 
+        <kieran.bingham+renesas@ideasonboard.com>,
+        "narmstrong@baylibre.com" <narmstrong@baylibre.com>,
+        "leon@kernel.org" <leon@kernel.org>
+Subject: Re: [RFC PATCH 1/2] Kconfig: Introduce "uses" keyword
+In-Reply-To: <20200423183055.GB26002@ziepe.ca>
+Message-ID: <nycvar.YSQ.7.76.2004231448020.2671@knanqh.ubzr>
+References: <62a51b2e5425a3cca4f7a66e2795b957f237b2da.camel@mellanox.com> <nycvar.YSQ.7.76.2004211411500.2671@knanqh.ubzr> <871rofdhtg.fsf@intel.com> <nycvar.YSQ.7.76.2004221649480.2671@knanqh.ubzr> <940d3add-4d12-56ed-617a-8b3bf8ef3a0f@infradead.org>
+ <nycvar.YSQ.7.76.2004231059170.2671@knanqh.ubzr> <20200423150556.GZ26002@ziepe.ca> <nycvar.YSQ.7.76.2004231109500.2671@knanqh.ubzr> <20200423151624.GA26002@ziepe.ca> <nycvar.YSQ.7.76.2004231128210.2671@knanqh.ubzr> <20200423183055.GB26002@ziepe.ca>
+User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <d1a6ce5e-bb63-80cf-2e8f-24fbb0b36ec3@isovalent.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+X-Pobox-Relay-ID: 8D860ECE-8593-11EA-8543-B0405B776F7B-78420484!pb-smtp20.pobox.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/23/20 4:43 AM, Quentin Monnet wrote:
-> 
-> Thanks for the bpftool update. Can you please also update the man pages
-> (bpftool-prog, bpftool-net) and bash completion?
-> 
+On Thu, 23 Apr 2020, Jason Gunthorpe wrote:
 
-will do
+> On Thu, Apr 23, 2020 at 11:33:33AM -0400, Nicolas Pitre wrote:
+> > > > No. There is no logic in restricting MTD usage based on CRAMFS or 
+> > > > CRAMFS_MTD.
+> > > 
+> > > Ah, I got it backwards, maybe this:
+> > > 
+> > > config CRAMFS
+> > >    depends on MTD if CRAMFS_MTD
+> > > 
+> > > ?
+> > 
+> > Still half-backward. CRAMFS should not depend on either MTD nor
+> > CRAMFS_MTD.
+> 
+> Well, I would view this the same as all the other cases.. the CRAMFS
+> module has an optional ability consume symbols from MTD.  Here that is
+> controlled by another 'CRAMFS_MTD' selection, but it should still
+> settle it out the same way as other cases like this - ie CRAMFS is
+> restricted to m if MTD is m
+> 
+> Arnd's point that kconfig is acyclic does kill it though :(
+> 
+> > It is CRAMFS_MTD that needs both CRAMFS and MTD.
+> > Furthermore CRAMFS_MTD can't be built-in if MTD is modular.
+> 
+> CRAMFS_MTD is a bool feature flag for the CRAMFS tristate - it is
+> CRAMFS that can't be built in if MTD is modular.
+
+Not exactly. CRAMFS still can be built irrespective of MTD. It is only 
+the XIP part of CRAMFS relying on MTD that is restricted.
+
+
+Nicolas
