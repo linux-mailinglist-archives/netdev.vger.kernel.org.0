@@ -2,175 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A10B1B5E30
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 16:46:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D6BD1B5E32
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 16:46:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728348AbgDWOqj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 23 Apr 2020 10:46:39 -0400
-Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:48482 "EHLO
-        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726380AbgDWOqj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 10:46:39 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=cambda@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0TwR7Mja_1587653191;
-Received: from zhuguangmudembp.lan(mailfrom:cambda@linux.alibaba.com fp:SMTPD_---0TwR7Mja_1587653191)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 23 Apr 2020 22:46:32 +0800
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [PATCH net-next v2] net: Add TCP_FORCE_LINGER2 to TCP setsockopt
-From:   Cambda Zhu <cambda@linux.alibaba.com>
-In-Reply-To: <3e780f88-41df-413c-7a81-6a63fd750605@gmail.com>
-Date:   Thu, 23 Apr 2020 22:46:31 +0800
-Cc:     netdev <netdev@vger.kernel.org>,
-        Dust Li <dust.li@linux.alibaba.com>,
-        Tony Lu <tonylu@linux.alibaba.com>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <256723ED-43E5-4123-B096-15AD417366CD@linux.alibaba.com>
-References: <eea2a2c3-79dc-131c-4ef5-ee027b30b701@gmail.com>
- <20200423073529.92152-1-cambda@linux.alibaba.com>
- <3e780f88-41df-413c-7a81-6a63fd750605@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
+        id S1728551AbgDWOqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 10:46:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46438 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726380AbgDWOqw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 10:46:52 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFBE9C08ED7D
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 07:46:51 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id x18so7174431wrq.2
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 07:46:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ZcgmoetuRBAZeNa5mfw4PDcuYHcw6iGM7aPwzZonDkI=;
+        b=j0w74IlsfhQmyce6HRGZwYWOqVZ2sK0K8Ovd+T+OrQM48vP6x/ZVOaz2QhI6auUZJ0
+         dPDlAUNTIm5+15n5Sip1Xxx6gdqMiyDM3QAbqzv4YkYyATsBhTPoIOGoHvEP4pWkCjbr
+         FKrOKyB2RTd7bV8klhEh4XBy7MD7j2/FjJTt+TrY3+7GZ10rKy+7aT1EMZUwN9qw2oml
+         l7qKKR6TDtCZ7em8oxi2LlaYdc6y4s9Iee+qofPefE2w4E6SD7gJc/wHHuv54qMCt7Xw
+         0XnX1FFQGQ+79oCot2RzuoW8B0TuoQU9bjMjLtUzUiPg9pNvhDR1yopaOwAQGjJMXUhx
+         faJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZcgmoetuRBAZeNa5mfw4PDcuYHcw6iGM7aPwzZonDkI=;
+        b=MXu97PnzMa4kXYsu+ltCwYbhOAxYR7pw8CPsmaeI2VQt01s1QisXhS3LcfKGyhyjrR
+         cEmv0Oh6XuOD8I94/GEKJG7Wy66OuH/IzmwxtmCvG/n7IJuaBgfz3VqcJrwL6zFkcL06
+         J7uM8CcMOuHnrK7bHHAjGxriujUNKPOlIjdpp8bQbyuQfZbglu83lpD1sFaLcTZqn8TQ
+         noPji39XFuDG/1e3oVGZgRsBCIFIaHcys7QrAq/SaLVM+uhRG7T5M7C4bptJc0tH+RHd
+         RAMWtduquuoCetDd28kXnnnyWV5MHui3TSbKANOIHiUfI0DJYmD3S0CUykQrpaY08OXz
+         7Efw==
+X-Gm-Message-State: AGi0PubD4yE5pNrXh5jdyGdJgEj/o2yzsdqUV+yqSWQrdoUBjqffbQLf
+        ngqcx5odrqwn3ZUQjw/QIjosDzmSHH0=
+X-Google-Smtp-Source: APiQypK6jVhM39noK6ufMzeMmbTa+bbhs6TfHlygzQESjL+w6KYooElu1eremhCkpK3cjeHm5Uw2tw==
+X-Received: by 2002:a5d:6b85:: with SMTP id n5mr5427562wrx.370.1587653210548;
+        Thu, 23 Apr 2020 07:46:50 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id f8sm4037401wrm.14.2020.04.23.07.46.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Apr 2020 07:46:50 -0700 (PDT)
+Date:   Thu, 23 Apr 2020 16:46:49 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Maor Gottlieb <maorg@mellanox.com>
+Cc:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        kuba@kernel.org, jiri@mellanox.com, dsahern@kernel.org,
+        leonro@mellanox.com, saeedm@mellanox.com,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        alexr@mellanox.com
+Subject: Re: [PATCH V5 mlx5-next 01/16] net/core: Introduce
+ netdev_get_xmit_slave
+Message-ID: <20200423144649.GO6581@nanopsycho.orion>
+References: <20200423125555.21759-1-maorg@mellanox.com>
+ <20200423125555.21759-2-maorg@mellanox.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200423125555.21759-2-maorg@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Thu, Apr 23, 2020 at 02:55:40PM CEST, maorg@mellanox.com wrote:
+>Add new ndo to get the xmit slave of master device.
+>Caller should call dev_put() when it no longer works with
+>slave netdevice.
+>User can ask to get the xmit slave assume all the slaves can
+>transmit by set all_slaves arg to true.
+>
+>Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
 
-
-> On Apr 23, 2020, at 21:40, Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> 
-> 
-> 
-> On 4/23/20 12:35 AM, Cambda Zhu wrote:
->> This patch adds a new TCP socket option named TCP_FORCE_LINGER2. The
->> option has same behavior as TCP_LINGER2, except the tp->linger2 value
->> can be greater than sysctl_tcp_fin_timeout if the user_ns is capable
->> with CAP_NET_ADMIN.
->> 
->> As a server, different sockets may need different FIN-WAIT timeout and
->> in most cases the system default value will be used. The timeout can
->> be adjusted by setting TCP_LINGER2 but cannot be greater than the
->> system default value. If one socket needs a timeout greater than the
->> default, we have to adjust the sysctl which affects all sockets using
->> the system default value. And if we want to adjust it for just one
->> socket and keep the original value for others, all the other sockets
->> have to set TCP_LINGER2. But with TCP_FORCE_LINGER2, the net admin can
->> set greater tp->linger2 than the default for one socket and keep
->> the sysctl_tcp_fin_timeout unchanged.
->> 
->> Signed-off-by: Cambda Zhu <cambda@linux.alibaba.com>
->> ---
->> Changes in v2:
->>   - Add int overflow check.
->> 
->> include/uapi/linux/capability.h |  1 +
->> include/uapi/linux/tcp.h        |  1 +
->> net/ipv4/tcp.c                  | 11 +++++++++++
->> 3 files changed, 13 insertions(+)
->> 
->> diff --git a/include/uapi/linux/capability.h b/include/uapi/linux/capability.h
->> index 272dc69fa080..0e30c9756a04 100644
->> --- a/include/uapi/linux/capability.h
->> +++ b/include/uapi/linux/capability.h
->> @@ -199,6 +199,7 @@ struct vfs_ns_cap_data {
->> /* Allow multicasting */
->> /* Allow read/write of device-specific registers */
->> /* Allow activation of ATM control sockets */
->> +/* Allow setting TCP_LINGER2 regardless of sysctl_tcp_fin_timeout */
->> 
->> #define CAP_NET_ADMIN        12
->> 
->> diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
->> index f2acb2566333..e21e0ce98ca1 100644
->> --- a/include/uapi/linux/tcp.h
->> +++ b/include/uapi/linux/tcp.h
->> @@ -128,6 +128,7 @@ enum {
->> #define TCP_CM_INQ		TCP_INQ
->> 
->> #define TCP_TX_DELAY		37	/* delay outgoing packets by XX usec */
->> +#define TCP_FORCE_LINGER2	38	/* Set TCP_LINGER2 regardless of sysctl_tcp_fin_timeout */
->> 
->> 
->> #define TCP_REPAIR_ON		1
->> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
->> index 6d87de434377..d8cd1fd66bc1 100644
->> --- a/net/ipv4/tcp.c
->> +++ b/net/ipv4/tcp.c
->> @@ -3149,6 +3149,17 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
->> 			tcp_enable_tx_delay();
->> 		tp->tcp_tx_delay = val;
->> 		break;
->> +	case TCP_FORCE_LINGER2:
->> +		if (val < 0)
->> +			tp->linger2 = -1;
->> +		else if (val > INT_MAX / HZ)
->> +			err = -EINVAL;
->> +		else if (val > net->ipv4.sysctl_tcp_fin_timeout / HZ &&
->> +			 !ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
->> +			tp->linger2 = 0;
->> +		else
->> +			tp->linger2 = val * HZ;
->> +		break;
->> 	default:
->> 		err = -ENOPROTOOPT;
->> 		break;
->> 
-> 
-> INT_MAX looks quite 
-> 
-> Anyway, I do not think we need a new socket option, since really it will need documentation and add more confusion.
-> 
-> net->ipv4.sysctl_tcp_fin_timeout is the default value for sockets which have tp->linger2 cleared.
-> 
-> Fact that it has been used to cap TCP_LINGER2 was probably a mistake.
-> 
-> What about adding a new define and simply let TCP_LINGER2 use it ?
-> 
-> Really there is no point trying to allow hours or even days for FIN timeout,
-> and no point limiting a socket from having a value between net->ipv4.sysctl_tcp_fin_timeout and 2 minutes,
-> at least from security perspective, these values seem legal as far as TCP specs are concerned.
-> 
-> 
-
-I also think using sysctl_tcp_fin_timeout to cap TCP_LINGER2 is probably a mistake,
-and adding a new define for TCP_LINGER2 is a good idea. I have considered the solution
-and found it may have some compatibility issues. Whatever it’s a mistake or not, a
-system administrator may have used it to limit the max timeout for all sockets. And
-when I think about the behavior of TCP_LINGER2, I'm afraid the server may also rely on
-the behavior so the server can set any value greater than sysctl_tcp_fin_timeout and
-result in the same timeout.
-
-Maybe my worry is unnecessary. If so, I think your suggestion is better.
-
-Regards,
-Cambda
-
-> 
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index dcf9a72eeaa6912202e8a1ca6cf800f7401bf517..8dceea9ae87712613243a48edddd83d9ac629295 100644
-> --- a/include/net/tcp.h
-> +++ b/include/net/tcp.h
-> @@ -126,6 +126,7 @@ void tcp_time_wait(struct sock *sk, int state, int timeo);
->                                  * to combine FIN-WAIT-2 timeout with
->                                  * TIME-WAIT timer.
->                                  */
-> +#define TCP_FIN_TIMEOUT_MAX (120 * HZ) /* max TCP_LINGER2 value (two minutes) */
-> 
-> #define TCP_DELACK_MAX ((unsigned)(HZ/5))      /* maximal time to delay before sending an ACK */
-> #if HZ >= 100
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 6d87de434377e3741314772e5fd866de1c599108..a723fec8704ba4dff235818622e52d67ec9ef489 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -3035,7 +3035,7 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
->        case TCP_LINGER2:
->                if (val < 0)
->                        tp->linger2 = -1;
-> -               else if (val > net->ipv4.sysctl_tcp_fin_timeout / HZ)
-> +               else if (val > TCP_FIN_TIMEOUT_MAX / HZ)
->                        tp->linger2 = 0;
->                else
->                        tp->linger2 = val * HZ;
-
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
