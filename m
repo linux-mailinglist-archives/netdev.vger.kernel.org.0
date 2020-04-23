@@ -2,171 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 961771B6045
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 18:05:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E807B1B6049
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 18:05:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729483AbgDWQFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 12:05:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58772 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729407AbgDWQFD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 12:05:03 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AFA4C09B041
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 09:05:03 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id x25so7002954wmc.0
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 09:05:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bV275IP5Jw11a9pF8qMDVB9WoaXSE2YATQ9Er+FF2MY=;
-        b=jsUTH8mn57tPjBpXgvDqV6OV3UXX6u9YNlV/5dOnkhD6/dG5/dn5CgXTLNuiiQ3Ze2
-         dFRcDfa5VjKJmNjwk7RTQWsQJQkCFLevfEwuLphuhwLWzCVD6xHdLqzMNYKDhEGkPfQr
-         SL32TkpPcxPSOQDJ27pNAxfmwuZdaBa51dKxr4QAoNzQLbj9XOBVVn2yTjHYexp0gtmn
-         ggAjVJvt7ldIZ4eflqt39Xa8IHVAsC5tBMsc7qR/bD9DHBfwS2qodf0N04xc2fIomaGI
-         syn6QZmUDExLkvTwLs7oMaNLKvP4HhSClJpJL07QZ6zH6Jgwp+RQ9u/iqzqIuf4f0/L5
-         n01A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bV275IP5Jw11a9pF8qMDVB9WoaXSE2YATQ9Er+FF2MY=;
-        b=Q0wOqrVeKR64RLqjz9BZaCSCib0If5ZA+VjpBM1r1pFuJDznO97OgzAr77MOqL1CT/
-         MKRI/aprWnT2fdcv7haf/jgut+C8Y9Z1eH+aldu2WdIV3p8dW6bJD0yW1tMM6lgxHisg
-         VWJA9vyQ5iWbEwcI92ArnpIgG2AhPtUzX4tKmXP/jSvFP8hSBmUmubSWwKTxWZvwEqJm
-         CV8bxZ9a1SZqOerQpnVQ2DBt2IFBGwULD+q6mbwf/ObssOYPai8mb/t3tR9mywI4trf4
-         xbwX0ciMd+loZmfgkvLlgOvaEtSSS5sSiJb0QcBbnjJbb1lRwLsSXOLA97JuQ11hKy4a
-         DENw==
-X-Gm-Message-State: AGi0PuYomeRgbrl86dDBE/8rJQJvkEWrlcv7kS8mW1gOdpCZmu3Xgc40
-        6v6MD957zP0bt4qzru/hkYYtyg==
-X-Google-Smtp-Source: APiQypKK/OFyVOwNcRBsOqWFkAQcX1ArugtVuAR3/fkNREdoc6HTu4JiB7sqV90IHXrhoCjicvr70g==
-X-Received: by 2002:a1c:1d84:: with SMTP id d126mr4829451wmd.119.1587657901855;
-        Thu, 23 Apr 2020 09:05:01 -0700 (PDT)
-Received: from localhost.localdomain ([194.53.185.104])
-        by smtp.gmail.com with ESMTPSA id x13sm4544259wmc.5.2020.04.23.09.05.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Apr 2020 09:05:01 -0700 (PDT)
-From:   Quentin Monnet <quentin@isovalent.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Quentin Monnet <quentin@isovalent.com>,
-        Richard Palethorpe <rpalethorpe@suse.com>,
-        Michael Kerrisk <mtk.manpages@gmail.com>
-Subject: [PATCH bpf-next] tools: bpftool: allow unprivileged users to probe features
-Date:   Thu, 23 Apr 2020 17:04:55 +0100
-Message-Id: <20200423160455.28509-1-quentin@isovalent.com>
-X-Mailer: git-send-email 2.20.1
+        id S1729491AbgDWQFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 12:05:45 -0400
+Received: from bmailout1.hostsharing.net ([83.223.95.100]:41493 "EHLO
+        bmailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729405AbgDWQFp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 12:05:45 -0400
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
+        by bmailout1.hostsharing.net (Postfix) with ESMTPS id 8253E30002223;
+        Thu, 23 Apr 2020 18:05:42 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 54B383D0764; Thu, 23 Apr 2020 18:05:42 +0200 (CEST)
+Date:   Thu, 23 Apr 2020 18:05:42 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Laura Garcia <nevola@gmail.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Netfilter Development Mailing list 
+        <netfilter-devel@vger.kernel.org>, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Martin Mares <mj@ucw.cz>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Thomas Graf <tgraf@suug.ch>,
+        Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>
+Subject: Re: [PATCH nf-next 3/3] netfilter: Introduce egress hook
+Message-ID: <20200423160542.d3f6yef4av2gqvur@wunner.de>
+References: <cover.1583927267.git.lukas@wunner.de>
+ <14ab7e5af20124a34a50426fd570da7d3b0369ce.1583927267.git.lukas@wunner.de>
+ <a57687ae-2da6-ca2a-1c84-e4332a5e4556@iogearbox.net>
+ <20200313145526.ikovaalfuy7rnkdl@salvia>
+ <1bd50836-33c4-da44-5771-654bfb0348cc@iogearbox.net>
+ <20200315132836.cj36ape6rpw33iqb@salvia>
+ <CAF90-WgoteQXB9WQmeT1eOHA3GpPbwPCEvNzwKkN20WqpdHW-A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAF90-WgoteQXB9WQmeT1eOHA3GpPbwPCEvNzwKkN20WqpdHW-A@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is demand for a way to identify what BPF helper functions are
-available to unprivileged users. To do so, allow unprivileged users to
-run "bpftool feature probe" to list BPF-related features. This will only
-show features accessible to those users, and may not reflect the full
-list of features available (to administrators) on the system. For
-non-JSON output, print an informational message stating so at the top of
-the list.
+On Thu, Apr 23, 2020 at 04:44:44PM +0200, Laura Garcia wrote:
+> On Sun, Mar 15, 2020 at 2:29 PM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+> > On Sat, Mar 14, 2020 at 01:12:02AM +0100, Daniel Borkmann wrote:
+> > > On 3/13/20 3:55 PM, Pablo Neira Ayuso wrote:
+> > > > We have plans to support for NAT64 and NAT46, this is the right spot
+> > > > to do this mangling. There is already support for the tunneling
+> > >
+> > > But why is existing local-out or post-routing hook _not_ sufficient for
+> > > NAT64 given it being IP based?
+> >
+> > Those hooks are not coming at the end of the IP processing. There is
+> > very relevant IP code after those hooks that cannot be bypassed such
+> > as fragmentation, tunneling and neighbour output. Such transformation
+> > needs to happen after the IP processing, exactly from where Lukas is
+> > proposing.
+> >
+> > [...]
+> > > > infrastructure in netfilter from ingress, this spot from egress will
+> > > > allow us to perform the tunneling from here. There is also no way to
+> > > > drop traffic generated by dhclient, this also allow for filtering such
+> > > > locally generated traffic. And many more.
+> 
+> Any chance to continue with this approach? I'm afraid outbound
+> af_packets also could not be filtered without this hook.
 
-Note that there is no particular reason why the probes were restricted
-to root, other than the fact I did not need them for unprivileged and
-did not bother with the additional checks at the time probes were added.
+Thanks Laura, good to hear there's interest in the functionality.
 
-Cc: Richard Palethorpe <rpalethorpe@suse.com>
-Cc: Michael Kerrisk <mtk.manpages@gmail.com>
-Signed-off-by: Quentin Monnet <quentin@isovalent.com>
----
- .../bpftool/Documentation/bpftool-feature.rst |  4 +++
- tools/bpf/bpftool/feature.c                   | 32 +++++++++++++------
- 2 files changed, 26 insertions(+), 10 deletions(-)
+Daniel submitted a revert of this series but didn't cc me:
 
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-feature.rst b/tools/bpf/bpftool/Documentation/bpftool-feature.rst
-index b04156cfd7a3..313888e87249 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-feature.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-feature.rst
-@@ -49,6 +49,10 @@ DESCRIPTION
- 		  Keyword **kernel** can be omitted. If no probe target is
- 		  specified, probing the kernel is the default behaviour.
- 
-+		  Running this command as an unprivileged user will dump only
-+		  the features available to the user, which usually represent a
-+		  small subset of the parameters supported by the system.
-+
- 	**bpftool feature probe dev** *NAME* [**full**] [**macros** [**prefix** *PREFIX*]]
- 		  Probe network device for supported eBPF features and dump
- 		  results to the console.
-diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
-index 88718ee6a438..f455bc5fcc64 100644
---- a/tools/bpf/bpftool/feature.c
-+++ b/tools/bpf/bpftool/feature.c
-@@ -471,6 +471,11 @@ probe_prog_type(enum bpf_prog_type prog_type, bool *supported_types,
- 		}
- 
- 	res = bpf_probe_prog_type(prog_type, ifindex);
-+	/* Probe may succeed even if program load fails, for unprivileged users
-+	 * check that we did not fail because of insufficient permissions
-+	 */
-+	if (geteuid() && errno == EPERM)
-+		res = false;
- 
- 	supported_types[prog_type] |= res;
- 
-@@ -499,6 +504,10 @@ probe_map_type(enum bpf_map_type map_type, const char *define_prefix,
- 
- 	res = bpf_probe_map_type(map_type, ifindex);
- 
-+	/* Probe result depends on the success of map creation, no additional
-+	 * check required for unprivileged users
-+	 */
-+
- 	maxlen = sizeof(plain_desc) - strlen(plain_comment) - 1;
- 	if (strlen(map_type_name[map_type]) > maxlen) {
- 		p_info("map type name too long");
-@@ -518,12 +527,17 @@ probe_helper_for_progtype(enum bpf_prog_type prog_type, bool supported_type,
- 			  const char *define_prefix, unsigned int id,
- 			  const char *ptype_name, __u32 ifindex)
- {
--	bool res;
-+	bool res = false;
- 
--	if (!supported_type)
--		res = false;
--	else
-+	if (supported_type) {
- 		res = bpf_probe_helper(id, prog_type, ifindex);
-+		/* Probe may succeed even if program load fails, for
-+		 * unprivileged users check that we did not fail because of
-+		 * insufficient permissions
-+		 */
-+		if (geteuid() && errno == EPERM)
-+			res = false;
-+	}
- 
- 	if (json_output) {
- 		if (res)
-@@ -729,13 +743,11 @@ static int do_probe(int argc, char **argv)
- 	__u32 ifindex = 0;
- 	char *ifname;
- 
--	/* Detection assumes user has sufficient privileges (CAP_SYS_ADMIN).
--	 * Let's approximate, and restrict usage to root user only.
-+	/* Full feature detection requires CAP_SYS_ADMIN privilege.
-+	 * Let's approximate, and warn if user is not root.
- 	 */
--	if (geteuid()) {
--		p_err("please run this command as root user");
--		return -1;
--	}
-+	if (geteuid())
-+		p_info("probing as unprivileged user, run as root to see all system features");
- 
- 	set_max_rlimit();
- 
--- 
-2.20.1
+https://lore.kernel.org/netdev/bbdee6355234e730ef686f9321bd072bcf4bb232.1584523237.git.daniel@iogearbox.net/
 
+In the ensuing discussion it turned out that the performance argument
+may be addressed by a rearrangement of sch_handle_egress() and
+nf_egress() invocations.  I could look into amending the series
+accordingly and resubmitting, though I'm currently swamped with
+other work.
+
+The question is whether that's going to be sufficient because Daniel
+mentioned having an in-tree user as a prerequisite for accepting this
+feature, to which Pablo responded with NAT64/NAT46.  I don't have
+intentions of implementing those, but maybe someone else has.
+
+Thanks,
+
+Lukas
