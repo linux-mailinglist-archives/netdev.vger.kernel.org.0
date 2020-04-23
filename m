@@ -2,98 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E56A91B6488
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 21:34:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B11D81B648C
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 21:35:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728808AbgDWTeg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 15:34:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35270 "EHLO
+        id S1728824AbgDWTfB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 15:35:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728800AbgDWTeg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 15:34:36 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F9FC09B042
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 12:34:36 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id h2so7767217wmb.4
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 12:34:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=hXV8Wtun0GovOWCgeFyuMPagkqdRp/yW2NQOzdJWQko=;
-        b=DtJWMvuseVoQv3cxoFxfdZgY0LMK9sdtkhDsEOpXfCrjJf/F2A/GzQnCc3MaeqKWK2
-         y0BTehqBvmZIsndjQMEHIeShBjZ4QGL/Ms8PHlSviTLlLOc2RZXMMb4ShG8JgmmXE623
-         upuCIdfMiO3AUND2LTubX6/lclWyvTOOQEzx1Vx8IVRRcKyhvyeMg6rGbymfWMKBc0/a
-         1beU32s4gq64ifvVO0vMNr0FRvxnMHi9JFkBg1Ds0HRufa0ai0DADJ0o89dPSHnd6VWG
-         0cRJ4gzaylhlOcyQo1SgzYWojfCUao4XOmBiFbSl6jIe0QgGUEUrgDUyyGf0KIxibc+z
-         12WQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hXV8Wtun0GovOWCgeFyuMPagkqdRp/yW2NQOzdJWQko=;
-        b=iPJ24e8PJc0NLM2eCZc0xrhzpksbHwzWPYysPUxUZIFvmc6lbrXTivezddDT2bbO8q
-         PUcrsMDH5RX+QA60COMDQW6ZD7GQsaz9/4JO9y70iaVq/Lb1Rpq6gyfUaN4ozVA0AlYU
-         VOYrDbjh/JiwSXPBw7AcvrTMKxMQILCRe7dLF2s/l1ke9L6OIreBwVQ9zKZ8JRA4z2w+
-         me+3Gan9alnsnewGt96w0lyJKcoAbillrVWcNxZRgmoBpZyt4B63iCesYPg5GFGOIUiK
-         VyK6gjwKHdGKGNY5spdHGfgXQnjs6Fdo9b1IaxsQez+eiOUZ3UrEML574IYTxakgnv+k
-         Ujiw==
-X-Gm-Message-State: AGi0PuZpfFouqA2rj5VZU03KILEr4kmBQ1S/7yGikmX95lFG8IzVmCZv
-        CXCIs15zSFMiGincvfqn17TwZNAI
-X-Google-Smtp-Source: APiQypIiUX5PBSSydsYoHmlLN/0Mv3h0Csvm2AE25rIvHxL0sypl/z7mA1N1mZwqcWGqhM6G9Me5hQ==
-X-Received: by 2002:a5d:660d:: with SMTP id n13mr6427082wru.369.1587670474558;
-        Thu, 23 Apr 2020 12:34:34 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:c569:21dc:2ec:9a23? (p200300EA8F296000C56921DC02EC9A23.dip0.t-ipconnect.de. [2003:ea:8f29:6000:c569:21dc:2ec:9a23])
-        by smtp.googlemail.com with ESMTPSA id h3sm4990073wrm.73.2020.04.23.12.34.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Apr 2020 12:34:34 -0700 (PDT)
-Subject: [PATCH net-next 1/3] net: phy: make phy_suspend a no-op if PHY is
- suspended already
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <705e2fc1-5220-d5a8-e880-5ff04e528ded@gmail.com>
-Message-ID: <ebc88561-76c1-e81e-2229-9bd16270366d@gmail.com>
-Date:   Thu, 23 Apr 2020 21:34:33 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <705e2fc1-5220-d5a8-e880-5ff04e528ded@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        with ESMTP id S1728700AbgDWTfA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 15:35:00 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D25C09B042;
+        Thu, 23 Apr 2020 12:35:00 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 68F2A127789E0;
+        Thu, 23 Apr 2020 12:35:00 -0700 (PDT)
+Date:   Thu, 23 Apr 2020 12:34:59 -0700 (PDT)
+Message-Id: <20200423.123459.1317092825451472203.davem@davemloft.net>
+To:     dan.carpenter@oracle.com
+Cc:     jiri@mellanox.com, idosch@mellanox.com, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] mlxsw: Fix some IS_ERR() vs NULL bugs
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200422093641.GA189235@mwanda>
+References: <20200422093641.GA189235@mwanda>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 23 Apr 2020 12:35:00 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Gently handle the case that phy_suspend() is called whilst PHY is in
-power-down.
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Date: Wed, 22 Apr 2020 12:36:41 +0300
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/phy/phy_device.c | 3 +++
- 1 file changed, 3 insertions(+)
+> The mlxsw_sp_acl_rulei_create() function is supposed to return an error
+> pointer from mlxsw_afa_block_create().  The problem is that these
+> functions both return NULL instead of error pointers.  Half the callers
+> expect NULL and half expect error pointers so it could lead to a NULL
+> dereference on failure.
+> 
+> This patch changes both of them to return error pointers and changes all
+> the callers which checked for NULL to check for IS_ERR() instead.
+> 
+> Fixes: 4cda7d8d7098 ("mlxsw: core: Introduce flexible actions support")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index ac2784192..206d98502 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1524,6 +1524,9 @@ int phy_suspend(struct phy_device *phydev)
- 	struct phy_driver *phydrv = phydev->drv;
- 	int ret;
- 
-+	if (phydev->suspended)
-+		return 0;
-+
- 	/* If the device has WOL enabled, we cannot suspend the PHY */
- 	phy_ethtool_get_wol(phydev, &wol);
- 	if (wol.wolopts || (netdev && netdev->wol_enabled))
--- 
-2.26.2
-
-
+Applied, thanks.
