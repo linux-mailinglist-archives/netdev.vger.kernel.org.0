@@ -2,108 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9B981B55DE
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 09:37:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF4351B5636
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 09:45:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726883AbgDWHf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 03:35:59 -0400
-Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:56877 "EHLO
-        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725562AbgDWHf7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 03:35:59 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R951e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=cambda@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0TwPIeUI_1587627354;
-Received: from localhost(mailfrom:cambda@linux.alibaba.com fp:SMTPD_---0TwPIeUI_1587627354)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 23 Apr 2020 15:35:55 +0800
-From:   Cambda Zhu <cambda@linux.alibaba.com>
-To:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Dust Li <dust.li@linux.alibaba.com>,
-        Tony Lu <tonylu@linux.alibaba.com>,
-        Cambda Zhu <cambda@linux.alibaba.com>
-Subject: [PATCH net-next v2] net: Add TCP_FORCE_LINGER2 to TCP setsockopt
-Date:   Thu, 23 Apr 2020 15:35:29 +0800
-Message-Id: <20200423073529.92152-1-cambda@linux.alibaba.com>
-X-Mailer: git-send-email 2.16.6
-In-Reply-To: <eea2a2c3-79dc-131c-4ef5-ee027b30b701@gmail.com>
-References: <eea2a2c3-79dc-131c-4ef5-ee027b30b701@gmail.com>
+        id S1727838AbgDWHmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 03:42:14 -0400
+Received: from conuserg-10.nifty.com ([210.131.2.77]:34844 "EHLO
+        conuserg-10.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725854AbgDWHmN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 03:42:13 -0400
+Received: from oscar.flets-west.jp (softbank126090202047.bbtec.net [126.90.202.47]) (authenticated)
+        by conuserg-10.nifty.com with ESMTP id 03N7dV9L000368;
+        Thu, 23 Apr 2020 16:39:32 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 03N7dV9L000368
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1587627573;
+        bh=EYsJ2uRz3WzlUm4V0pOlApP3srqM3AzplJXKFcPvEZc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=YP/cvFIDqNzUc1LGLrpWHugU6378NxtI+s6jypZfvWr37vn0c2PyraGPlREaAqEnQ
+         FC1fPQYiietJ+VjRm+QAa2UHsfgcqar1R4Y8TA7XJVvbfqBD5wafX0GIrmnV5pHmHh
+         8q5jt3rWU7dnCSGSZ6CCjGpaYlwCjjUKfj+RanMm/ZTFwZeY/4AKlUmyBZpsFcYdS1
+         zSX7an90gnGH+1EzAWoWJLkNef6Aq6rRejTbRIHliWScMURQ7y5lDCp3gkCI9qUiNU
+         0XISVVH5T4wiwolwemmrDutqkAe8H17XGYnW/Q8jrBhvoUUYbV1xExyHCGSZ7YmSk8
+         O0kUSWi3KCBuA==
+X-Nifty-SrcIP: [126.90.202.47]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Sam Ravnborg <sam@ravnborg.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Christian Brauner <christian@brauner.io>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        KP Singh <kpsingh@chromium.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Song Liu <songliubraving@fb.com>,
+        Tomas Winkler <tomas.winkler@intel.com>,
+        Yonghong Song <yhs@fb.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 00/16] kbuild: support 'userprogs' syntax
+Date:   Thu, 23 Apr 2020 16:39:13 +0900
+Message-Id: <20200423073929.127521-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a new TCP socket option named TCP_FORCE_LINGER2. The
-option has same behavior as TCP_LINGER2, except the tp->linger2 value
-can be greater than sysctl_tcp_fin_timeout if the user_ns is capable
-with CAP_NET_ADMIN.
 
-As a server, different sockets may need different FIN-WAIT timeout and
-in most cases the system default value will be used. The timeout can
-be adjusted by setting TCP_LINGER2 but cannot be greater than the
-system default value. If one socket needs a timeout greater than the
-default, we have to adjust the sysctl which affects all sockets using
-the system default value. And if we want to adjust it for just one
-socket and keep the original value for others, all the other sockets
-have to set TCP_LINGER2. But with TCP_FORCE_LINGER2, the net admin can
-set greater tp->linger2 than the default for one socket and keep
-the sysctl_tcp_fin_timeout unchanged.
+Several Makefiles use 'hostprogs' for building the code for
+the host architecture is not appropriate.
 
-Signed-off-by: Cambda Zhu <cambda@linux.alibaba.com>
----
- Changes in v2:
-   - Add int overflow check.
+This is just because Kbuild does not provide the syntax to do it.
 
- include/uapi/linux/capability.h |  1 +
- include/uapi/linux/tcp.h        |  1 +
- net/ipv4/tcp.c                  | 11 +++++++++++
- 3 files changed, 13 insertions(+)
+This series introduce 'userprogs' syntax and use it from
+sample and bpf Makefiles.
 
-diff --git a/include/uapi/linux/capability.h b/include/uapi/linux/capability.h
-index 272dc69fa080..0e30c9756a04 100644
---- a/include/uapi/linux/capability.h
-+++ b/include/uapi/linux/capability.h
-@@ -199,6 +199,7 @@ struct vfs_ns_cap_data {
- /* Allow multicasting */
- /* Allow read/write of device-specific registers */
- /* Allow activation of ATM control sockets */
-+/* Allow setting TCP_LINGER2 regardless of sysctl_tcp_fin_timeout */
- 
- #define CAP_NET_ADMIN        12
- 
-diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
-index f2acb2566333..e21e0ce98ca1 100644
---- a/include/uapi/linux/tcp.h
-+++ b/include/uapi/linux/tcp.h
-@@ -128,6 +128,7 @@ enum {
- #define TCP_CM_INQ		TCP_INQ
- 
- #define TCP_TX_DELAY		37	/* delay outgoing packets by XX usec */
-+#define TCP_FORCE_LINGER2	38	/* Set TCP_LINGER2 regardless of sysctl_tcp_fin_timeout */
- 
- 
- #define TCP_REPAIR_ON		1
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 6d87de434377..d8cd1fd66bc1 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -3149,6 +3149,17 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
- 			tcp_enable_tx_delay();
- 		tp->tcp_tx_delay = val;
- 		break;
-+	case TCP_FORCE_LINGER2:
-+		if (val < 0)
-+			tp->linger2 = -1;
-+		else if (val > INT_MAX / HZ)
-+			err = -EINVAL;
-+		else if (val > net->ipv4.sysctl_tcp_fin_timeout / HZ &&
-+			 !ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
-+			tp->linger2 = 0;
-+		else
-+			tp->linger2 = val * HZ;
-+		break;
- 	default:
- 		err = -ENOPROTOOPT;
- 		break;
+Sam worked on this in 2014.
+https://lkml.org/lkml/2014/7/13/154
+
+He used 'uapiprogs-y' but I just thought the meaning of
+"UAPI programs" is unclear.
+
+Naming is one the most difficult parts of this.
+
+I chose 'userprogs'.
+Anothor choice I had in my mind was 'targetprogs'.
+
+If you can test this series quickly by
+'make allmodconfig samples/'
+
+When building objects for userspace, [U] is displayed.
+
+masahiro@oscar:~/workspace/linux$ make allmodconfig samples/
+  [snip]
+  AR      samples/vfio-mdev/built-in.a
+  CC [M]  samples/vfio-mdev/mtty.o
+  CC [M]  samples/vfio-mdev/mdpy.o
+  CC [M]  samples/vfio-mdev/mdpy-fb.o
+  CC [M]  samples/vfio-mdev/mbochs.o
+  AR      samples/mei/built-in.a
+  CC [U]  samples/mei/mei-amt-version
+  CC [U]  samples/auxdisplay/cfag12864b-example
+  CC [M]  samples/configfs/configfs_sample.o
+  CC [M]  samples/connector/cn_test.o
+  CC [U]  samples/connector/ucon
+  CC [M]  samples/ftrace/ftrace-direct.o
+  CC [M]  samples/ftrace/ftrace-direct-too.o
+  CC [M]  samples/ftrace/ftrace-direct-modify.o
+  CC [M]  samples/ftrace/sample-trace-array.o
+  CC [U]  samples/hidraw/hid-example
+  CC [M]  samples/hw_breakpoint/data_breakpoint.o
+  CC [M]  samples/kdb/kdb_hello.o
+  CC [M]  samples/kfifo/bytestream-example.o
+  CC [M]  samples/kfifo/dma-example.o
+  CC [M]  samples/kfifo/inttype-example.o
+  CC [M]  samples/kfifo/record-example.o
+  CC [M]  samples/kobject/kobject-example.o
+  CC [M]  samples/kobject/kset-example.o
+  CC [M]  samples/kprobes/kprobe_example.o
+  CC [M]  samples/kprobes/kretprobe_example.o
+  CC [M]  samples/livepatch/livepatch-sample.o
+  CC [M]  samples/livepatch/livepatch-shadow-mod.o
+  CC [M]  samples/livepatch/livepatch-shadow-fix1.o
+  CC [M]  samples/livepatch/livepatch-shadow-fix2.o
+  CC [M]  samples/livepatch/livepatch-callbacks-demo.o
+  CC [M]  samples/livepatch/livepatch-callbacks-mod.o
+  CC [M]  samples/livepatch/livepatch-callbacks-busymod.o
+  CC [M]  samples/rpmsg/rpmsg_client_sample.o
+  CC [U]  samples/seccomp/bpf-fancy.o
+  CC [U]  samples/seccomp/bpf-helper.o
+  LD [U]  samples/seccomp/bpf-fancy
+  CC [U]  samples/seccomp/dropper
+  CC [U]  samples/seccomp/bpf-direct
+  CC [U]  samples/seccomp/user-trap
+  CC [U]  samples/timers/hpet_example
+  CC [M]  samples/trace_events/trace-events-sample.o
+  CC [M]  samples/trace_printk/trace-printk.o
+  CC [U]  samples/uhid/uhid-example
+  CC [M]  samples/v4l/v4l2-pci-skeleton.o
+  CC [U]  samples/vfs/test-fsmount
+  CC [U]  samples/vfs/test-statx
+samples/vfs/test-statx.c:24:15: warning: ‘struct foo’ declared inside parameter list will not be visible outside of this definition or declaration
+   24 | #define statx foo
+      |               ^~~
+  CC [U]  samples/watchdog/watchdog-simple
+  AR      samples/built-in.a
+
+
+
+Masahiro Yamada (15):
+  Documentation: kbuild: fix the section title format
+  Revert "objtool: Skip samples subdirectory"
+  kbuild: add infrastructure to build userspace programs
+  net: bpfilter: use 'userprogs' syntax to build bpfilter_umh
+  samples: seccomp: build sample programs for target architecture
+  kbuild: doc: document the new syntax 'userprogs'
+  samples: uhid: build sample program for target architecture
+  samples: hidraw: build sample program for target architecture
+  samples: connector: build sample program for target architecture
+  samples: vfs: build sample programs for target architecture
+  samples: pidfd: build sample program for target architecture
+  samples: mei: build sample program for target architecture
+  samples: auxdisplay: use 'userprogs' syntax
+  samples: timers: use 'userprogs' syntax
+  samples: watchdog: use 'userprogs' syntax
+
+Sam Ravnborg (1):
+  samples: uhid: fix warnings in uhid-example
+
+ Documentation/kbuild/makefiles.rst | 185 +++++++++++++++++++++--------
+ Makefile                           |  11 +-
+ net/bpfilter/Makefile              |  11 +-
+ samples/Kconfig                    |  26 +++-
+ samples/Makefile                   |   5 +-
+ samples/auxdisplay/Makefile        |  11 +-
+ samples/connector/Makefile         |  12 +-
+ samples/hidraw/Makefile            |   9 +-
+ samples/mei/Makefile               |   9 +-
+ samples/pidfd/Makefile             |   8 +-
+ samples/seccomp/Makefile           |  42 +------
+ samples/timers/Makefile            |  17 +--
+ samples/uhid/.gitignore            |   2 +
+ samples/uhid/Makefile              |   9 +-
+ samples/uhid/uhid-example.c        |   4 +-
+ samples/vfs/Makefile               |  11 +-
+ samples/watchdog/Makefile          |  10 +-
+ scripts/Makefile.build             |   5 +
+ scripts/Makefile.clean             |   2 +-
+ scripts/Makefile.userprogs         |  44 +++++++
+ 20 files changed, 258 insertions(+), 175 deletions(-)
+ create mode 100644 samples/uhid/.gitignore
+ create mode 100644 scripts/Makefile.userprogs
+
 -- 
-2.16.6
+2.25.1
 
