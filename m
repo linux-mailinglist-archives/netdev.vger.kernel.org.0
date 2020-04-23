@@ -2,131 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E16F1B5416
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 07:18:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BB981B53EF
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 07:06:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726715AbgDWFSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 01:18:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42552 "EHLO
+        id S1726547AbgDWFG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 01:06:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726691AbgDWFSJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 01:18:09 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 336DCC03C1AB;
-        Wed, 22 Apr 2020 22:18:09 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id mq3so1952089pjb.1;
-        Wed, 22 Apr 2020 22:18:09 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725854AbgDWFG1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 01:06:27 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38061C03C1AB;
+        Wed, 22 Apr 2020 22:06:25 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id g4so4844705ljl.2;
+        Wed, 22 Apr 2020 22:06:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=X/bdaJ5V5H1KJbsw0eGlJwkvK434Nt04DtUI1ZecYLM=;
-        b=lLzF5KkbfSTw9RNjqMYjexHclyBEVb2kpqk3pAlhJfOhkGFuL8B9H0LP+BdPU1z75z
-         2d10ysdqeCrSYXQKDVBciRh2uJyOchU8KwXL7eJkBaYqtnYeosCUnIXRPflLWCuTcJM5
-         rbsUTg6binJc1RpZtwfe04db8Cpsw9Yqdw5f1zB36AqxPeai14pwF+GHBO9dJcXODF0z
-         t+2jvOpVF0swL2AUFoET/5H/EvlrkSFyseYJPhehGf2PTUq0PkdlYyLmjlfausxf865x
-         UmuRMK90lsp7cuhIsBDZdcOMMSL4JUDjbeFoONMI0mcHlZ0RxvTDw1KBLQ8+sLCWrfdn
-         9JjQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jitVLzCzbHccVIgiEUXHrtF6n1Cmt04QAZRKLzrNRNQ=;
+        b=R56W6NFt+e5ZS3QPpc5TZhTeA4dVrUh7IFqFeUn791DZpOPW8BkqSQiBbQsMzXkRBo
+         civn7R+RUwuRJqPgsUSB2Rgs27ydJ0sAG8EuOCVkRnPNKtNNftvZwdEudm6TaOyY3MU8
+         Kssy21kuBhXX8Nfi3lFwzMtvUDM7712ipBYrIZ/5jKouA0ruls+RqsjSTPk75ZOsPcok
+         pLUoABPPyuhF6+gD91S+yXtmLqDLEZlrvbEEB4v8ka2NiFiwLHvNyTNOSxwLSU4DiH6/
+         FL4xZsL5rAAV3/uUI1Arw47VF8zvJbo9p9O7CDAt1+YH2Yj3eBqNnIFiylP6b7klqYWe
+         oyoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=X/bdaJ5V5H1KJbsw0eGlJwkvK434Nt04DtUI1ZecYLM=;
-        b=W/CPWGinDKkRj8u6ZTGjaMzBYctu9EXAkB+Jtumt5TAYqEmKXq4Z9az54Q7kp85Uey
-         vyWJl1tytDK8j2S8xuBtzdXa3uMyWzvO99js/VKZV9I67z78Ue3pgL0qfudKcCQSZbFl
-         8DUtl8SiTvYDqOJekRd6okbIw5mW+M+lnRrQZiDwU5mYCxsRg5Cw/HHC21FCEbAUMilL
-         6b+YT4ZQy2vKjBl2Cq4cQJcRuZZpRsVW2IAQqi0KklpAqSFJ6uKTgn4SBTl9eBKN8eSe
-         IGGVW71p7qAIlL7wYfSQhoy45wbeZehlHqyG1OSmo5GkFi6J5IBRZ1cLW6iQpA2gAUvp
-         wd6Q==
-X-Gm-Message-State: AGi0PuY+YEVdsKugEOAHikf+n2HMgQJGl+y113NH6PofcXcFiy5Wcj6P
-        SHBhmw7UTJOmDBWo+04jDWY=
-X-Google-Smtp-Source: APiQypJLLbaBcyZazQopL3aDYB6VLEH3ua/ifLN3oi85y/63+awgT+NPWSeukqaJAAkn1CF8R2cXOw==
-X-Received: by 2002:a17:90a:de8d:: with SMTP id n13mr2283164pjv.173.1587619088742;
-        Wed, 22 Apr 2020 22:18:08 -0700 (PDT)
-Received: from udknight.localhost ([183.250.89.86])
-        by smtp.gmail.com with ESMTPSA id k10sm1300719pfa.163.2020.04.22.22.18.06
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 22 Apr 2020 22:18:07 -0700 (PDT)
-Received: from udknight.localhost (localhost [127.0.0.1])
-        by udknight.localhost (8.14.9/8.14.4) with ESMTP id 03N4rwl5003504;
-        Thu, 23 Apr 2020 12:53:58 +0800
-Received: (from root@localhost)
-        by udknight.localhost (8.14.9/8.14.9/Submit) id 03N4rvmP003503;
-        Thu, 23 Apr 2020 12:53:57 +0800
-Date:   Thu, 23 Apr 2020 12:53:56 +0800
-From:   Wang YanQing <udknight@gmail.com>
-To:     Luke Nelson <lukenels@cs.washington.edu>
-Cc:     bpf@vger.kernel.org, Brian Gerst <brgerst@gmail.com>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf v2 1/2] bpf, x86_32: Fix incorrect encoding in
- BPF_LDX zero-extension
-Message-ID: <20200423045356.GB1153@udknight>
-Mail-Followup-To: Wang YanQing <udknight@gmail.com>,
-        Luke Nelson <lukenels@cs.washington.edu>, bpf@vger.kernel.org,
-        Brian Gerst <brgerst@gmail.com>,
-        Luke Nelson <luke.r.nels@gmail.com>, Xi Wang <xi.wang@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200422173630.8351-1-luke.r.nels@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jitVLzCzbHccVIgiEUXHrtF6n1Cmt04QAZRKLzrNRNQ=;
+        b=uXqwc9rULFiiKH88rLZ0/ajroEYSevd1KATWAJfWL7x0tmrhROnL5N5a9NuKgO6hgm
+         kQZVmFq1CPpsT47/dyeQkcW2K5N7DXbteHkc1HPwFBJw2YxRT6BIRnmJyaQfauDF9SCb
+         9ifzsEZCBO7P/X+AxpOtrZbMdptou4MYcLUXucrhmqfxWPj8CITCmabI4eWWqjcKwFqT
+         QrxZvNuf1R/0AvC1K87/AzwA0V0kzU5kD3J/E6zifwRaSva1Px3xNb/W6DG+W+bhSWXE
+         MECFpFOZWwePVB/EJUrc83GTLCa3Q63nmYmf2cU+xMTzHa4+fPfSnZ5P8v+d0eSceP6s
+         Q9nQ==
+X-Gm-Message-State: AGi0Pua3AANiwrTa063AEnmFBpgeyYnJWcRYdLRbUXOGU+7VFKKs2XQ6
+        TF/ML+GPY2urujkhbB+8At92UwlyVhi3mdPQ9NU=
+X-Google-Smtp-Source: APiQypJ/zDz0hcc6CXOCX3H0pPXu7yDUdkc7aERNsItpzBhKuSONl9iuHK9NUBnpdD2YUdP+c1jFgsvDHlL2ra5Esoo=
+X-Received: by 2002:a2e:b17a:: with SMTP id a26mr1146628ljm.215.1587618383453;
+ Wed, 22 Apr 2020 22:06:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200422173630.8351-1-luke.r.nels@gmail.com>
-User-Agent: Mutt/1.7.1 (2016-10-04)
+References: <20200420031634.1319102-1-songliubraving@fb.com>
+In-Reply-To: <20200420031634.1319102-1-songliubraving@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 22 Apr 2020 22:06:12 -0700
+Message-ID: <CAADnVQKhqP=iXQYo+_osmacCuHiy2WhRtpZAHsY9HT0_D=aAAQ@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next] bpf: sharing bpf runtime stats with BPF_ENABLE_STATS
+To:     Song Liu <songliubraving@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 22, 2020 at 10:36:29AM -0700, Luke Nelson wrote:
-> The current JIT uses the following sequence to zero-extend into the
-> upper 32 bits of the destination register for BPF_LDX BPF_{B,H,W},
-> when the destination register is not on the stack:
-> 
->   EMIT3(0xC7, add_1reg(0xC0, dst_hi), 0);
-> 
-> The problem is that C7 /0 encodes a MOV instruction that requires a 4-byte
-> immediate; the current code emits only 1 byte of the immediate. This
-> means that the first 3 bytes of the next instruction will be treated as
-> the rest of the immediate, breaking the stream of instructions.
-> 
-> This patch fixes the problem by instead emitting "xor dst_hi,dst_hi"
-> to clear the upper 32 bits. This fixes the problem and is more efficient
-> than using MOV to load a zero immediate.
-> 
-> This bug may not be currently triggerable as BPF_REG_AX is the only
-> register not stored on the stack and the verifier uses it in a limited
-> way, and the verifier implements a zero-extension optimization. But the
-> JIT should avoid emitting incorrect encodings regardless.
-> 
-> Fixes: 03f5781be2c7b ("bpf, x86_32: add eBPF JIT compiler for ia32")
-> Signed-off-by: Xi Wang <xi.wang@gmail.com>
-> Signed-off-by: Luke Nelson <luke.r.nels@gmail.com>
-Acked-by: Wang YanQing <udknight@gmail.com>
+On Sun, Apr 19, 2020 at 8:16 PM Song Liu <songliubraving@fb.com> wrote:
+> @@ -971,14 +982,14 @@ union bpf_attr {
+>   *
+>   *                     int ret;
+>   *                     struct bpf_tunnel_key key = {};
+> - *
+> + *
+>   *                     ret = bpf_skb_get_tunnel_key(skb, &key, sizeof(key), 0);
+>   *                     if (ret < 0)
+>   *                             return TC_ACT_SHOT;     // drop packet
+> - *
+> + *
+>   *                     if (key.remote_ipv4 != 0x0a000001)
+>   *                             return TC_ACT_SHOT;     // drop packet
+> - *
+> + *
+>   *                     return TC_ACT_OK;               // accept packet
+>   *
+>   *             This interface can also be used with all encapsulation devices
+
+Please avoid touching random lines or were they meaningful?
+In such case separate pls put them in the separate patch.
+
+The rest looks good to me. Please add corresponding libbpf support and selftest.
