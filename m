@@ -2,152 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F9A71B6A1D
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 01:49:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 019681B6A2B
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 01:54:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728036AbgDWXtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 19:49:18 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:23822 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727065AbgDWXtR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 19:49:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587685755;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EGNYPrsKE2QzIZTAtX5CBdu4BgbJymSRQ/Hbqy1rmro=;
-        b=QC4TCMMU6FhM6cUQyGk5xPLFATzHTcZQaaTbLXcU6ZPyWcwOsVVMkY1NrzxambK+i/VRpw
-        jyMOuqvwxjFaiUBerxBPrQYhO+T98JfsaUycYr1ickNK1ZvColDVKUQMd4bg88xafnS8k1
-        OcHy/oT5PbmFohZiHEvY9bVTP+RMz18=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-193-_tvk9hmwMU2dbNINIBtxPQ-1; Thu, 23 Apr 2020 19:49:13 -0400
-X-MC-Unique: _tvk9hmwMU2dbNINIBtxPQ-1
-Received: by mail-lj1-f200.google.com with SMTP id z1so1507578ljk.9
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 16:49:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=EGNYPrsKE2QzIZTAtX5CBdu4BgbJymSRQ/Hbqy1rmro=;
-        b=TzOJwqh/WnVIOK5906mbth0/8VbWcDKVSbs58KPVxRY23CHamh/V9dcubDdHh4j4w6
-         OZAtg+iPtbrJaeSXDp+ptjXhDWK03Zp25Oko1DEKI+VrJDbYBwQJ0f/hWMvu5GPuM0KQ
-         1AaO8+IlT/RmaZpwyjV0YZg/1Of6hcThzzYl8gEHhsx9XyM/wWTB3QxYinlFwxT9Kt4I
-         Lls56IzvjISiWeSSrVAUlT6Gh7LQebC0UbNkG0M/9qd7StTX3wItxppoqXinZy41/B4M
-         TehsUmBPGs6oVesWc3JzNtotVNbpa2ehQ9rur5Nkcdm2Dn+RhZFzMDfY6ZE9PBliiTFJ
-         LkQA==
-X-Gm-Message-State: AGi0PubtezWDcyScoAfwMvzRrp1d32Q0y0/r219ePJgg9qh6J+01FjuB
-        WxR1gTLMvaUGb4peT2nu8excr9VOP5nLHkRaGgT2wA04GT8faREgxSfePWaeAGzwRBTqhEwgYSh
-        e1VughJfN/ZOUjTWC
-X-Received: by 2002:a2e:860a:: with SMTP id a10mr4200500lji.20.1587685750032;
-        Thu, 23 Apr 2020 16:49:10 -0700 (PDT)
-X-Google-Smtp-Source: APiQypKtneE/cD3e+H6P2tBXAjlHTK7Kp0vkn//2F1IA/EKA7QMDJRgS497+B39VT17COMuM1sGKkw==
-X-Received: by 2002:a2e:860a:: with SMTP id a10mr4200474lji.20.1587685749722;
-        Thu, 23 Apr 2020 16:49:09 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id u7sm1891947ljk.32.2020.04.23.16.49.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Apr 2020 16:49:08 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id C3DF31814FF; Fri, 24 Apr 2020 01:49:03 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Prashant Bhole <prashantbhole.linux@gmail.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH bpf-next 04/16] net: Add BPF_XDP_EGRESS as a bpf_attach_type
-In-Reply-To: <20200423224451.rkvfnv5cbnjpepgo@ast-mbp>
-References: <073ed1a6-ff5e-28ef-d41d-c33d87135faa@gmail.com> <87k1277om2.fsf@toke.dk> <154e86ee-7e6a-9598-3dab-d7b46cce0967@gmail.com> <875zdr8rrx.fsf@toke.dk> <783d0842-a83f-c22f-25f2-4a86f3924472@gmail.com> <87368v8qnr.fsf@toke.dk> <20200423003911.tzuu6cxtg7olvvko@ast-mbp.dhcp.thefacebook.com> <878sim6tqj.fsf@toke.dk> <CAADnVQ+GDR15oArpEGFFOvZ35WthHyL+b97zQUxjXbz-ec5CGw@mail.gmail.com> <874kta6sk9.fsf@toke.dk> <20200423224451.rkvfnv5cbnjpepgo@ast-mbp>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 24 Apr 2020 01:49:03 +0200
-Message-ID: <87lfml69w0.fsf@toke.dk>
+        id S1727927AbgDWXyU convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 23 Apr 2020 19:54:20 -0400
+Received: from mga06.intel.com ([134.134.136.31]:40709 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725936AbgDWXyT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Apr 2020 19:54:19 -0400
+IronPort-SDR: T1yXaA0HJRSHr+3/qFVR6OBm+qLUcOU/+IqoIC0/ytnAVuABVsiDmPUTJkB6UVoZ/iqG+kJXuu
+ CNQ6oDQEF7zg==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2020 16:54:19 -0700
+IronPort-SDR: 1UaUOjZuZDyp8+yJoiG93ogn0L+pa4AawFacOwq1IB2QzqFYQlq8HRwxqjJhJVULpupUnJeORz
+ o9RwfX8n4tgw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,309,1583222400"; 
+   d="scan'208";a="403109783"
+Received: from fmsmsx107.amr.corp.intel.com ([10.18.124.205])
+  by orsmga004.jf.intel.com with ESMTP; 23 Apr 2020 16:54:19 -0700
+Received: from fmsmsx119.amr.corp.intel.com (10.18.124.207) by
+ fmsmsx107.amr.corp.intel.com (10.18.124.205) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 23 Apr 2020 16:54:19 -0700
+Received: from fmsmsx124.amr.corp.intel.com ([169.254.8.70]) by
+ FMSMSX119.amr.corp.intel.com ([169.254.14.63]) with mapi id 14.03.0439.000;
+ Thu, 23 Apr 2020 16:54:18 -0700
+From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+CC:     Leon Romanovsky <leon@kernel.org>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Patil, Kiran" <kiran.patil@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>
+Subject: RE: [RFC PATCH v5 01/16] RDMA/irdma: Add driver framework
+ definitions
+Thread-Topic: [RFC PATCH v5 01/16] RDMA/irdma: Add driver framework
+ definitions
+Thread-Index: AQHWFNtu4ugEuh6AnUe8PZpOjYV9PKh+KgSAgAPqlNCAASOfAIAAk97AgACTTgD//+mbEIADAuyA//+LpnCAALfQAP//uFWA
+Date:   Thu, 23 Apr 2020 23:54:18 +0000
+Message-ID: <9DD61F30A802C4429A01CA4200E302A7DCD4FD03@fmsmsx124.amr.corp.intel.com>
+References: <20200417171251.1533371-1-jeffrey.t.kirsher@intel.com>
+ <20200417171251.1533371-2-jeffrey.t.kirsher@intel.com>
+ <20200417193421.GB3083@unreal>
+ <9DD61F30A802C4429A01CA4200E302A7DCD4853F@fmsmsx124.amr.corp.intel.com>
+ <20200421004628.GQ26002@ziepe.ca>
+ <9DD61F30A802C4429A01CA4200E302A7DCD4A3E9@fmsmsx124.amr.corp.intel.com>
+ <20200421182256.GT26002@ziepe.ca>
+ <9DD61F30A802C4429A01CA4200E302A7DCD4DB92@fmsmsx124.amr.corp.intel.com>
+ <20200423150201.GY26002@ziepe.ca>
+ <9DD61F30A802C4429A01CA4200E302A7DCD4ED27@fmsmsx124.amr.corp.intel.com>
+ <20200423190327.GC26002@ziepe.ca>
+In-Reply-To: <20200423190327.GC26002@ziepe.ca>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.1.200.108]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+> Subject: Re: [RFC PATCH v5 01/16] RDMA/irdma: Add driver framework
+> definitions
+> 
+> On Thu, Apr 23, 2020 at 05:15:22PM +0000, Saleem, Shiraz wrote:
+> > > Subject: Re: [RFC PATCH v5 01/16] RDMA/irdma: Add driver framework
+> > > definitions
+> > >
+> > > On Thu, Apr 23, 2020 at 12:32:48AM +0000, Saleem, Shiraz wrote:
+> > >
+> > > > we have a split initialization design for gen2 and future products.
+> > > > phase1 is control path resource initialization in irdma_probe_dev
+> > > > and
+> > > > phase-2 is the rest of the resources with the ib registration at
+> > > > the end of irdma_open. irdma_close must de-register the ib device
+> > > > which will take care of ibdev free too. So it makes sense to keep
+> > > > allocation of the ib device in irdma_open.
+> > >
+> > > The best driver pattern is to allocate the ib_device at the very
+> > > start of probe() and use this to anchor all the device resources and memories.
+> > >
+> > > The whole close/open thing is really weird, you should get rid of it.
+> > maybe I missing something. But why is it weird?
+> 
+> Because the RDMA driver should exist as its own entity. It does not shutdown
+> unless the remove() method on is struct device_driver is closed.
+> So what exactly are open/cose supposed to be doing? I think it is a left over of
+> trying to re-implement the driver model.
+> 
+> > underlying configuration changes and reset management for the physical
+> > function need a light-weight mechanism which is realized with the
+> > close/open from netdev PCI drv --> rdma drv.
+> 
+> > Without a teardown and re-add of virtual device off the bus.
+> 
+> Yes, that is exactly right. If you have done something so disruptive that the
+> ib_device needs to be destroyed then you should unplug/replug the entire virtual
+> bus device, that is the correct and sane thing to do.
 
-> On Thu, Apr 23, 2020 at 07:05:42PM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
->> >> >
->> >> > Looks like there is indeed a bug in prog_type_ext handling code that
->> >> > is doing
->> >> > env->ops =3D bpf_verifier_ops[tgt_prog->type];
->> >> > I'm not sure whether the verifier can simply add:
->> >> > prog->expected_attach_type =3D tgt_prog->expected_attach_type;
->> >> > and be done with it.
->> >> > Likely yes, since expected_attach_type must be zero at that point
->> >> > that is enforced by bpf_prog_load_check_attach().
->> >> > So I suspect it's a single line fix.
->> >>
->> >> Not quite: the check in bpf_tracing_prog_attach() that enforces
->> >> prog->expected_attach_type=3D=3D0 also needs to go. So 5 lines :)
->> >
->> > prog_ext's expected_attach_type needs to stay zero.
->> > It needs to be inherited from tgt prog. Hence one line:
->> > prog->expected_attach_type =3D tgt_prog->expected_attach_type;
->>=20
->> Not sure I follow you here? I ended up with the patch below - without
->> the first hunk I can't attach freplace funcs to an xdp egress prog
->> (since the expected_attach_type will have been propagated from
->> verification time), and so that check will fail. Or am I missing
->> something?
->>=20
->> -Toke
->>=20
->>=20
->>=20
->> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
->> index d85f37239540..40c3103c7233 100644
->> --- a/kernel/bpf/syscall.c
->> +++ b/kernel/bpf/syscall.c
->> @@ -2381,10 +2381,6 @@ static int bpf_tracing_prog_attach(struct bpf_pro=
-g *prog)
->>                 }
->>                 break;
->>         case BPF_PROG_TYPE_EXT:
->> -               if (prog->expected_attach_type !=3D 0) {
->> -                       err =3D -EINVAL;
->> -                       goto out_put_prog;
->> -               }
->>                 break;
->
-> ahh. that extra check.
-> I think it's better to keep it for extra safety.
-> Here all expected_attach_type have clear checks depending on prog_type.
-> There is no other place where it's that obvious.
-> The verifier does similar thing earlier, but it's not that clear.
-> I think the better fix would to set expected_attach_type =3D 0 for PROG_T=
-YPE_EXT
-> at the end of do_check, since we're overriding this field temporarily
-> during verification.
+Well we have resources created in rdma driver probe which are used by any
+VF's regardless of the registration of the ib device on the PF.
+So doing a virtbus device unregister here for underlying config changes
+is more destructive than it needs to be as will trigger the remove()
+and blow out those resources too.
 
-OK, sure, can do. I do agree it's better to keep the check. I'll send a
-proper patch tomorrow, then.
 
-As far as a adding a selftest for this, I think the most natural thing
-would be to add it on top of David's tests for xdp_egress, since that's
-what hit this - would you be OK with that? And if so, should I send the
-main patch straight away and hold off on the selftest, or should I split
-them, or hold off on the whole thing?
-
--Toke
 
