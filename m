@@ -2,98 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD0891B5E87
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 17:02:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F8C21B5E89
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 17:02:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728978AbgDWPCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 11:02:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48850 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726380AbgDWPCD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 11:02:03 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1898C08ED7D
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 08:02:03 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id l25so6707726qkk.3
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 08:02:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=DLwlpyiza8pfOpInPyB6SQVmpFuV9ub52P3ivKoHw+Q=;
-        b=MpTA3aBFCm1HNXFhRgmQQeLoIMXRE5UGqDxYSdKUjn3dMtCD5O4Dm+a8we/8q/899V
-         rZpvs89aOPkgQ+lchUQxEorWeQTXdYjr2p34E8p0AHHkB5MvWG/oIAuSqBUXr8bEkWLy
-         cbvzJyo7TzOPKNRhTwAN4DXYP7jZw1p5mq7FTkSfhWG457axz54Vg71gcRgD7AOVtL7O
-         ldhq5VYg5hesDS8nRlgdq0DUjohNn960pV+1NazDUqyrlapwrVnb/0C2nwaBU3G1udKv
-         Lwde1AwEmpUDxKRmhkQVS1MEhL607zBwLWha314hB+B/j7MyO05n5VMlTAXjBWHVaW22
-         22rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=DLwlpyiza8pfOpInPyB6SQVmpFuV9ub52P3ivKoHw+Q=;
-        b=O7l7GnW9+ZjfKJuNgVBqjbvx+UYOHz2T3YvB/AQ+O4S5MNVu2QnSgU80J0RyeY4DDv
-         ype0C53zn1cvBZhljy8upUlz+elBtbwKT/vfy8ITG0qegWh1GbN3YHtPMlXPkeyMwSAO
-         0o2ltcnKoDjgwnAyKuxMYygnm0hRnaWypHQGH5MXFznOaOM03cDLYGJBSvxEyYe4aKtH
-         VOwm+gzbyy/ThwGPw5aBJBw5ZIIMBK6DAIXf3tgYuR1JVFHVwb+G9YRg/P65tnKSjklr
-         zDkkRMy5Lk+n55zNF0n1OLENUq4GSpqLxq61Ja+cpiMnwkZPfOt7aYUK71LZEqyM8xdF
-         t5uw==
-X-Gm-Message-State: AGi0PubxQRaMFi+3pzFpNf2wVMBbFd7HZSg7OL1J/QkaVBfdgW2+Zn/t
-        XxLYCc62t02wBUJeAqD/WusEiw==
-X-Google-Smtp-Source: APiQypKaydI4/rlah4IgBC55XmvhaZ/nIcUKbMhOucAvCOsB3n1xvJZiMz/1q2AIwJCiI6OkB+bPNw==
-X-Received: by 2002:a37:2e43:: with SMTP id u64mr3876337qkh.386.1587654122880;
-        Thu, 23 Apr 2020 08:02:02 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id p4sm1714275qkg.48.2020.04.23.08.02.02
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 23 Apr 2020 08:02:02 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jRdMX-0003QP-L4; Thu, 23 Apr 2020 12:02:01 -0300
-Date:   Thu, 23 Apr 2020 12:02:01 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>
-Subject: Re: [RFC PATCH v5 01/16] RDMA/irdma: Add driver framework definitions
-Message-ID: <20200423150201.GY26002@ziepe.ca>
-References: <20200417171251.1533371-1-jeffrey.t.kirsher@intel.com>
- <20200417171251.1533371-2-jeffrey.t.kirsher@intel.com>
- <20200417193421.GB3083@unreal>
- <9DD61F30A802C4429A01CA4200E302A7DCD4853F@fmsmsx124.amr.corp.intel.com>
- <20200421004628.GQ26002@ziepe.ca>
- <9DD61F30A802C4429A01CA4200E302A7DCD4A3E9@fmsmsx124.amr.corp.intel.com>
- <20200421182256.GT26002@ziepe.ca>
- <9DD61F30A802C4429A01CA4200E302A7DCD4DB92@fmsmsx124.amr.corp.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9DD61F30A802C4429A01CA4200E302A7DCD4DB92@fmsmsx124.amr.corp.intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S1728984AbgDWPCO convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 23 Apr 2020 11:02:14 -0400
+Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:40223 "EHLO
+        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728981AbgDWPCO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 11:02:14 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01f04397;MF=cambda@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0TwS.bDT_1587654126;
+Received: from zhuguangmudembp.lan(mailfrom:cambda@linux.alibaba.com fp:SMTPD_---0TwS.bDT_1587654126)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 23 Apr 2020 23:02:07 +0800
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [PATCH net-next v2] net: Add TCP_FORCE_LINGER2 to TCP setsockopt
+From:   Cambda Zhu <cambda@linux.alibaba.com>
+In-Reply-To: <CA+FuTSf3udp_d13Y8wg-vFsF2vttZ_A5_tE-EDj9z+pfZVCf5g@mail.gmail.com>
+Date:   Thu, 23 Apr 2020 23:02:06 +0800
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Dust Li <dust.li@linux.alibaba.com>,
+        Tony Lu <tonylu@linux.alibaba.com>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <E916471E-1A7E-41A2-9DCA-771FC6E876FE@linux.alibaba.com>
+References: <eea2a2c3-79dc-131c-4ef5-ee027b30b701@gmail.com>
+ <20200423073529.92152-1-cambda@linux.alibaba.com>
+ <CA+FuTSf3udp_d13Y8wg-vFsF2vttZ_A5_tE-EDj9z+pfZVCf5g@mail.gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 23, 2020 at 12:32:48AM +0000, Saleem, Shiraz wrote:
 
-> we have a split initialization design for gen2 and future products.
-> phase1 is control path resource initialization in irdma_probe_dev
-> and phase-2 is the rest of the resources with the ib registration
-> at the end of irdma_open. irdma_close must de-register the ib device
-> which will take care of ibdev free too. So it makes sense to keep
-> allocation of the ib device in irdma_open.
 
-The best driver pattern is to allocate the ib_device at the very start
-of probe() and use this to anchor all the device resources and
-memories.
+> On Apr 23, 2020, at 21:43, Willem de Bruijn <willemdebruijn.kernel@gmail.com> wrote:
+> 
+> On Thu, Apr 23, 2020 at 3:36 AM Cambda Zhu <cambda@linux.alibaba.com> wrote:
+>> 
+>> This patch adds a new TCP socket option named TCP_FORCE_LINGER2. The
+>> option has same behavior as TCP_LINGER2, except the tp->linger2 value
+>> can be greater than sysctl_tcp_fin_timeout if the user_ns is capable
+>> with CAP_NET_ADMIN.
+>> 
+>> As a server, different sockets may need different FIN-WAIT timeout and
+>> in most cases the system default value will be used. The timeout can
+>> be adjusted by setting TCP_LINGER2 but cannot be greater than the
+>> system default value. If one socket needs a timeout greater than the
+>> default, we have to adjust the sysctl which affects all sockets using
+>> the system default value. And if we want to adjust it for just one
+>> socket and keep the original value for others, all the other sockets
+>> have to set TCP_LINGER2. But with TCP_FORCE_LINGER2, the net admin can
+>> set greater tp->linger2 than the default for one socket and keep
+>> the sysctl_tcp_fin_timeout unchanged.
+>> 
+>> Signed-off-by: Cambda Zhu <cambda@linux.alibaba.com>
+>> ---
+>> Changes in v2:
+>>   - Add int overflow check.
+>> 
+>> include/uapi/linux/capability.h |  1 +
+>> include/uapi/linux/tcp.h        |  1 +
+>> net/ipv4/tcp.c                  | 11 +++++++++++
+>> 3 files changed, 13 insertions(+)
+>> 
+>> diff --git a/include/uapi/linux/capability.h b/include/uapi/linux/capability.h
+>> index 272dc69fa080..0e30c9756a04 100644
+>> --- a/include/uapi/linux/capability.h
+>> +++ b/include/uapi/linux/capability.h
+>> @@ -199,6 +199,7 @@ struct vfs_ns_cap_data {
+>> /* Allow multicasting */
+>> /* Allow read/write of device-specific registers */
+>> /* Allow activation of ATM control sockets */
+>> +/* Allow setting TCP_LINGER2 regardless of sysctl_tcp_fin_timeout */
+>> 
+>> #define CAP_NET_ADMIN        12
+>> 
+>> diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
+>> index f2acb2566333..e21e0ce98ca1 100644
+>> --- a/include/uapi/linux/tcp.h
+>> +++ b/include/uapi/linux/tcp.h
+>> @@ -128,6 +128,7 @@ enum {
+>> #define TCP_CM_INQ             TCP_INQ
+>> 
+>> #define TCP_TX_DELAY           37      /* delay outgoing packets by XX usec */
+>> +#define TCP_FORCE_LINGER2      38      /* Set TCP_LINGER2 regardless of sysctl_tcp_fin_timeout */
+>> 
+>> 
+>> #define TCP_REPAIR_ON          1
+>> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+>> index 6d87de434377..d8cd1fd66bc1 100644
+>> --- a/net/ipv4/tcp.c
+>> +++ b/net/ipv4/tcp.c
+>> @@ -3149,6 +3149,17 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
+>>                        tcp_enable_tx_delay();
+>>                tp->tcp_tx_delay = val;
+>>                break;
+>> +       case TCP_FORCE_LINGER2:
+>> +               if (val < 0)
+>> +                       tp->linger2 = -1;
+>> +               else if (val > INT_MAX / HZ)
+>> +                       err = -EINVAL;
+>> +               else if (val > net->ipv4.sysctl_tcp_fin_timeout / HZ &&
+>> +                        !ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
+>> +                       tp->linger2 = 0;
+> 
+> Instead of silently falling back to LINGER2 behavior for unprivileged
+> users, I would fail without privileges, similar to
+> SO_(SND|RCV)BUFFORCE.
+> 
 
-The whole close/open thing is really weird, you should get rid of it.
+Yes, I have considered failing without privileges too. It’s clearer
+but the user may have to set both of TCP_LINGER2 and TCP_FORCE_LINGER2
+to set the timeout as TCP_FORCE_LINGER2 not introduced.
 
-Jason
+> Also, those have capable instead of ns_capable. If there is risk to
+> system integrity, that is the right choice.
+> 
+
+I think both are ok, but the sysctl_tcp_fin_timeout is in net ns.
+
+> Slight aside, if the original setsockopt had checked optval ==
+> sizeof(int), we could have added a variant of different size (say,
+> with an additional flags field), instead of having to create a new
+> socket option.
+> 
+
+Maybe it’s a little weird… I don’t know. :)
+
+Regards,
+Cambda
+
+>> +               else
+>> +                       tp->linger2 = val * HZ;
+>> +               break;
+>>        default:
+>>                err = -ENOPROTOOPT;
+>>                break;
+>> --
+>> 2.16.6
+
