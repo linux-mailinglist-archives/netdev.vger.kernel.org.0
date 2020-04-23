@@ -2,70 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF64D1B65AD
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 22:43:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C0901B65B6
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 22:47:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726482AbgDWUnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 16:43:06 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:57096 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725877AbgDWUnF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 16:43:05 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1jRigX-0006ED-7I; Thu, 23 Apr 2020 22:43:01 +0200
-Date:   Thu, 23 Apr 2020 22:43:01 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net] netfilter: nat: never update the UDP checksum when
- it's 0
-Message-ID: <20200423204301.GF32392@breakpoint.cc>
-References: <335a95d93767f2b58ad89975e4a0b342ee00db91.1587429321.git.gnault@redhat.com>
+        id S1726460AbgDWUr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 16:47:28 -0400
+Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:54261 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726183AbgDWUr2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 16:47:28 -0400
+Received: from [192.168.42.210] ([93.22.149.4])
+        by mwinf5d27 with ME
+        id WLnQ2200T05vvQD03LnRRT; Thu, 23 Apr 2020 22:47:26 +0200
+X-ME-Helo: [192.168.42.210]
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Thu, 23 Apr 2020 22:47:26 +0200
+X-ME-IP: 93.22.149.4
+Subject: Re: [PATCH] ipw2x00: Remove a memory allocation failure log message
+To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        stas.yakovlev@gmail.com, kvalo@codeaurora.org, davem@davemloft.net
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <20200423075825.18206-1-christophe.jaillet@wanadoo.fr>
+ <5868418d-88b0-3694-2942-5988ab15bdcb@cogentembedded.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Message-ID: <3c80ef48-57a8-b414-6cf1-6c255a46f6be@wanadoo.fr>
+Date:   Thu, 23 Apr 2020 22:47:25 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <335a95d93767f2b58ad89975e4a0b342ee00db91.1587429321.git.gnault@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <5868418d-88b0-3694-2942-5988ab15bdcb@cogentembedded.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Guillaume Nault <gnault@redhat.com> wrote:
-> If the UDP header of a local VXLAN endpoint is NAT-ed, and the VXLAN
-> device has disabled UDP checksums and enabled Tx checksum offloading,
-> then the skb passed to udp_manip_pkt() has hdr->check == 0 (outer
-> checksum disabled) and skb->ip_summed == CHECKSUM_PARTIAL (inner packet
-> checksum offloaded).
-> 
-> Because of the ->ip_summed value, udp_manip_pkt() tries to update the
-> outer checksum with the new address and port, leading to an invalid
-> checksum sent on the wire, as the original null checksum obviously
-> didn't take the old address and port into account.
-> 
-> So, we can't take ->ip_summed into account in udp_manip_pkt(), as it
-> might not refer to the checksum we're acting on. Instead, we can base
-> the decision to update the UDP checksum entirely on the value of
-> hdr->check, because it's null if and only if checksum is disabled:
-> 
->   * A fully computed checksum can't be 0, since a 0 checksum is
->     represented by the CSUM_MANGLED_0 value instead.
-> 
->   * A partial checksum can't be 0, since the pseudo-header always adds
->     at least one non-zero value (the UDP protocol type 0x11) and adding
->     more values to the sum can't make it wrap to 0 as the carry is then
->     added to the wrapped number.
-> 
->   * A disabled checksum uses the special value 0.
-> 
-> The problem seems to be there from day one, although it was probably
-> not visible before UDP tunnels were implemented.
+Le 23/04/2020 à 11:46, Sergei Shtylyov a écrit :
+> Hello!
+>
+> On 23.04.2020 10:58, Christophe JAILLET wrote:
+>
+>> Axe a memory allocation failure log message. This message is useless and
+>> incorrect (vmalloc is not used here for the memory allocation)
+>>
+>> This has been like that since the very beginning of this driver in
+>> commit 43f66a6ce8da ("Add ipw2200 wireless driver.")
+>>
+>> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+>> ---
+>>   drivers/net/wireless/intel/ipw2x00/ipw2200.c | 5 ++---
+>>   1 file changed, 2 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2200.c 
+>> b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
+>> index 60b5e08dd6df..30c4f041f565 100644
+>> --- a/drivers/net/wireless/intel/ipw2x00/ipw2200.c
+>> +++ b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
+>> @@ -3770,10 +3770,9 @@ static int ipw_queue_tx_init(struct ipw_priv 
+>> *priv,
+>>       struct pci_dev *dev = priv->pci_dev;
+>>         q->txb = kmalloc_array(count, sizeof(q->txb[0]), GFP_KERNEL);
+>> -    if (!q->txb) {
+>> -        IPW_ERROR("vmalloc for auxiliary BD structures failed\n");
+>> +    if (!q->txb)
+>>           return -ENOMEM;
+>> -    }
+>> +
+>
+>    No need for this extra empty line.
 
-Indeed, we're mangling udphdr->csum unconditionally for CSUM_PARTIAL
-case. Doesn't make sense to me, so:
 
-Reviewed-by: Florian Westphal <fw@strlen.de>
+That's right, sorry about that.
+
+Can it be fixed when/if the patch is applied, or should I send a V2?
+If a V2 is required, should kcalloc be used, as pointed out by Joe Perches?
+(personally, If the code works fine as-is, I don't think it is required, 
+but it can't hurt)
+
+CJ
+
+>
+>>         q->bd =
+>>           pci_alloc_consistent(dev, sizeof(q->bd[0]) * count, 
+>> &q->q.dma_addr);
+>
+> MBR, Sergei
+>
+>
+
