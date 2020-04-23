@@ -2,151 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 393A21B5B86
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 14:36:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B9741B5BA2
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 14:42:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728231AbgDWMgB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 08:36:01 -0400
-Received: from esgaroth.petrovitsch.at ([78.47.184.11]:3302 "EHLO
-        esgaroth.tuxoid.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726090AbgDWMgB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 08:36:01 -0400
-Received: from [10.68.100.236] (h10-gesig.woeg.acw.at [217.116.178.11] (may be forged))
-        (authenticated bits=0)
-        by esgaroth.tuxoid.at (8.15.2/8.15.2) with ESMTPSA id 03NCY9Ht015917
-        (version=TLSv1 cipher=DHE-RSA-AES128-SHA bits=128 verify=NO);
-        Thu, 23 Apr 2020 14:34:10 +0200
-Subject: Re: [PATCH 1/4] fs: Implement close-on-fork
-To:     David Laight <David.Laight@ACULAB.COM>,
-        "Karstens, Nate" <Nate.Karstens@garmin.com>,
-        Matthew Wilcox <willy@infradead.org>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Changli Gao <xiaosuo@gmail.com>
-References: <20200420071548.62112-1-nate.karstens@garmin.com>
- <20200420071548.62112-2-nate.karstens@garmin.com>
- <fa6c5c9c7c434f878c94a7c984cd43ba@garmin.com>
- <20200422154356.GU5820@bombadil.infradead.org>
- <6ed7bd08892b4311b70636658321904f@garmin.com>
- <97f05204-a27c-7cc8-429a-edcf6eebaa11@petrovitsch.priv.at>
- <337320db094d4426a621858fa0f6d7fd@AcuMS.aculab.com>
-From:   Bernd Petrovitsch <bernd@petrovitsch.priv.at>
-X-Pep-Version: 2.0
-Message-ID: <f3640ed9-d846-9cbd-7690-53da5ff1473a@petrovitsch.priv.at>
-Date:   Thu, 23 Apr 2020 12:34:09 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726117AbgDWMma (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 08:42:30 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:37304 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726503AbgDWMm3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 08:42:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587645747;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KE1bO4FRGOiJn/v1XLgXXIgCOUfvGBsgfFGQzPEWsaM=;
+        b=J+AoL9p1aERkfQkH1FmBoNLQnoiTc01LaXEU+0tR7j2RUjpLuJ7rd+pUixbSFYvNmT7bMg
+        uCOrMbdOR79sbqASU0JllHW5Wq5yFfvETHdgU9KmpVrXfnOCAjAuGMli1KLicfuGM5P2wA
+        zPQzhcs+2q/1RLV0bSepeA6AEHGuhLs=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-238-K7ruBynkOuqzoe7F9ciZ1g-1; Thu, 23 Apr 2020 08:42:22 -0400
+X-MC-Unique: K7ruBynkOuqzoe7F9ciZ1g-1
+Received: by mail-wr1-f69.google.com with SMTP id r11so2773427wrx.21
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 05:42:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=KE1bO4FRGOiJn/v1XLgXXIgCOUfvGBsgfFGQzPEWsaM=;
+        b=fpJvjZjo6I0qNsmwRW4tmizB1A4YwtWpRf5CVQO3cJzEKoyMoTepBm3cKVKgYptU4G
+         zyo+qSz7wTAvAYYDsqJDghJ3mCgyadF9Ol8ebx8JtRYoddvN4zv06iOSw/8I0l779Bbd
+         ZOPr931XCKiz8m1hCz2HoFfFVfMn9Jd7oZrOLbQGLjo5NTtT+VSLCagc30dKH7QfkvdU
+         ZzK9q7m7zVJkdRHRib/FxAJnk/vPR6SNeopTUYUBUmi79kT6J0vD/f8ZXM7umliwKfCO
+         MQfSpp45xOLxM09PZJzUgWGo+hfc2iXJx58fwNxNQtvVZ1//BjkykNJSsyAVbnMhn5Do
+         M0+A==
+X-Gm-Message-State: AGi0PubiagpkL6MZFKeUKKkbN21gwffxf3noE+a+jmL9ooVhsFW9aWZJ
+        H1RZUgWm+61EeV7ZfmT3xSOgxhC8ftFPwNHpNuRFviQM79ONtgKuOTOS7ReNtj0GLXvUFY4dyAj
+        dUni0E2KAyyZAmSbT
+X-Received: by 2002:adf:aa8e:: with SMTP id h14mr5091731wrc.371.1587645741522;
+        Thu, 23 Apr 2020 05:42:21 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJb7vzVeUKkh1IeOvz0BrG6IVQHluWMcYq57o78EV05aVAwHYQwaCl8caVPingWSs3PT7cBSg==
+X-Received: by 2002:adf:aa8e:: with SMTP id h14mr5091702wrc.371.1587645741154;
+        Thu, 23 Apr 2020 05:42:21 -0700 (PDT)
+Received: from redhat.com (bzq-109-65-97-189.red.bezeqint.net. [109.65.97.189])
+        by smtp.gmail.com with ESMTPSA id 1sm3793790wmi.0.2020.04.23.05.42.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Apr 2020 05:42:20 -0700 (PDT)
+Date:   Thu, 23 Apr 2020 08:42:17 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v4] virtio: force spec specified alignment on types
+Message-ID: <20200423083934-mutt-send-email-mst@kernel.org>
+References: <20200422145510.442277-1-mst@redhat.com>
+ <7ea553de-7a27-0aa0-4afb-d167147fd155@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <337320db094d4426a621858fa0f6d7fd@AcuMS.aculab.com>
-Content-Type: multipart/mixed;
- boundary="------------985EBFE9F348F8C36FCBAAF1"
-Content-Language: en-US
-X-DCC-wuwien-Metrics: esgaroth.tuxoid.at 1290; Body=22 Fuz1=22 Fuz2=22
-X-Virus-Scanned: clamav-milter 0.97 at esgaroth.tuxoid.at
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,AWL
-        autolearn=unavailable version=3.3.1
-X-Spam-Report: * -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-        *  0.0 AWL AWL: Adjusted score from AWL reputation of From: address
-X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on esgaroth.tuxoid.at
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7ea553de-7a27-0aa0-4afb-d167147fd155@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------985EBFE9F348F8C36FCBAAF1
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+On Thu, Apr 23, 2020 at 08:10:39PM +0800, Jason Wang wrote:
+> 
+> On 2020/4/22 下午10:58, Michael S. Tsirkin wrote:
+> > The ring element addresses are passed between components with different
+> > alignments assumptions. Thus, if guest/userspace selects a pointer and
+> > host then gets and dereferences it, we might need to decrease the
+> > compiler-selected alignment to prevent compiler on the host from
+> > assuming pointer is aligned.
+> > 
+> > This actually triggers on ARM with -mabi=apcs-gnu - which is a
+> > deprecated configuration, but it seems safer to handle this
+> > generally.
+> > 
+> > Note that userspace that allocates the memory is actually OK and does
+> > not need to be fixed, but userspace that gets it from guest or another
+> > process does need to be fixed. The later doesn't generally talk to the
+> > kernel so while it might be buggy it's not talking to the kernel in the
+> > buggy way - it's just using the header in the buggy way - so fixing
+> > header and asking userspace to recompile is the best we can do.
+> > 
+> > I verified that the produced kernel binary on x86 is exactly identical
+> > before and after the change.
+> > 
+> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > ---
+> > 
+> > changes since v3:
+> > 	use __attribute__((aligned(X))) instead of __aligned,
+> > 	to avoid dependency on that macro
+> > 
+> >   drivers/vhost/vhost.c            |  8 +++---
+> >   drivers/vhost/vhost.h            |  6 ++---
+> >   drivers/vhost/vringh.c           |  6 ++---
+> >   include/linux/vringh.h           |  6 ++---
+> >   include/uapi/linux/virtio_ring.h | 46 ++++++++++++++++++++++++--------
+> >   5 files changed, 48 insertions(+), 24 deletions(-)
+> 
+> 
+> Acked-by: Jason Wang <jasowang@redhat.com>
+> 
+> (I think we can then remove the BUILD_BUG_ON() in vhost?)
+> 
+> Thanks
 
-Hi all!
+We can in theory but then it's harmless and might catch some bugs in the
+future. After all when I introduced BUILD_BUG_ON I also assumed it's not
+really necessary, I put it there just in case.
 
-On 22/04/2020 16:55, David Laight wrote:
-> From: Bernd Petrovitsch
->> Sent: 22 April 2020 17:32
-> ...
->> Apart from that, system() is a PITA even on
->> single/non-threaded apps.
->=20
-> Not only that, it is bloody dangerous because (typically)
-> shell is doing post substitution syntax analysis.
+> 
+> > diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> > index d450e16c5c25..bc77b0f465fd 100644
+> > --- a/drivers/vhost/vhost.c
+> > +++ b/drivers/vhost/vhost.c
+> > @@ -1244,9 +1244,9 @@ static int vhost_iotlb_miss(struct vhost_virtqueue *vq, u64 iova, int access)
+> >   }
+> >   static bool vq_access_ok(struct vhost_virtqueue *vq, unsigned int num,
+> > -			 struct vring_desc __user *desc,
+> > -			 struct vring_avail __user *avail,
+> > -			 struct vring_used __user *used)
+> > +			 vring_desc_t __user *desc,
+> > +			 vring_avail_t __user *avail,
+> > +			 vring_used_t __user *used)
+> >   {
+> >   	return access_ok(desc, vhost_get_desc_size(vq, num)) &&
+> > @@ -2301,7 +2301,7 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
+> >   			    struct vring_used_elem *heads,
+> >   			    unsigned count)
+> >   {
+> > -	struct vring_used_elem __user *used;
+> > +	vring_used_elem_t __user *used;
+> >   	u16 old, new;
+> >   	int start;
+> > diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+> > index f8403bd46b85..60cab4c78229 100644
+> > --- a/drivers/vhost/vhost.h
+> > +++ b/drivers/vhost/vhost.h
+> > @@ -67,9 +67,9 @@ struct vhost_virtqueue {
+> >   	/* The actual ring of buffers. */
+> >   	struct mutex mutex;
+> >   	unsigned int num;
+> > -	struct vring_desc __user *desc;
+> > -	struct vring_avail __user *avail;
+> > -	struct vring_used __user *used;
+> > +	vring_desc_t __user *desc;
+> > +	vring_avail_t __user *avail;
+> > +	vring_used_t __user *used;
+> >   	const struct vhost_iotlb_map *meta_iotlb[VHOST_NUM_ADDRS];
+> >   	struct file *kick;
+> >   	struct eventfd_ctx *call_ctx;
+> > diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+> > index ba8e0d6cfd97..e059a9a47cdf 100644
+> > --- a/drivers/vhost/vringh.c
+> > +++ b/drivers/vhost/vringh.c
+> > @@ -620,9 +620,9 @@ static inline int xfer_to_user(const struct vringh *vrh,
+> >    */
+> >   int vringh_init_user(struct vringh *vrh, u64 features,
+> >   		     unsigned int num, bool weak_barriers,
+> > -		     struct vring_desc __user *desc,
+> > -		     struct vring_avail __user *avail,
+> > -		     struct vring_used __user *used)
+> > +		     vring_desc_t __user *desc,
+> > +		     vring_avail_t __user *avail,
+> > +		     vring_used_t __user *used)
+> >   {
+> >   	/* Sane power of 2 please! */
+> >   	if (!num || num > 0xffff || (num & (num - 1))) {
+> > diff --git a/include/linux/vringh.h b/include/linux/vringh.h
+> > index 9e2763d7c159..59bd50f99291 100644
+> > --- a/include/linux/vringh.h
+> > +++ b/include/linux/vringh.h
+> > @@ -105,9 +105,9 @@ struct vringh_kiov {
+> >   /* Helpers for userspace vrings. */
+> >   int vringh_init_user(struct vringh *vrh, u64 features,
+> >   		     unsigned int num, bool weak_barriers,
+> > -		     struct vring_desc __user *desc,
+> > -		     struct vring_avail __user *avail,
+> > -		     struct vring_used __user *used);
+> > +		     vring_desc_t __user *desc,
+> > +		     vring_avail_t __user *avail,
+> > +		     vring_used_t __user *used);
+> >   static inline void vringh_iov_init(struct vringh_iov *iov,
+> >   				   struct iovec *iovec, unsigned num)
+> > diff --git a/include/uapi/linux/virtio_ring.h b/include/uapi/linux/virtio_ring.h
+> > index 9223c3a5c46a..476d3e5c0fe7 100644
+> > --- a/include/uapi/linux/virtio_ring.h
+> > +++ b/include/uapi/linux/virtio_ring.h
+> > @@ -86,6 +86,13 @@
+> >    * at the end of the used ring. Guest should ignore the used->flags field. */
+> >   #define VIRTIO_RING_F_EVENT_IDX		29
+> > +/* Alignment requirements for vring elements.
+> > + * When using pre-virtio 1.0 layout, these fall out naturally.
+> > + */
+> > +#define VRING_AVAIL_ALIGN_SIZE 2
+> > +#define VRING_USED_ALIGN_SIZE 4
+> > +#define VRING_DESC_ALIGN_SIZE 16
+> > +
+> >   /* Virtio ring descriptors: 16 bytes.  These can chain together via "next". */
+> >   struct vring_desc {
+> >   	/* Address (guest-physical). */
+> > @@ -112,29 +119,46 @@ struct vring_used_elem {
+> >   	__virtio32 len;
+> >   };
+> > +typedef struct vring_used_elem __attribute__((aligned(VRING_USED_ALIGN_SIZE)))
+> > +	vring_used_elem_t;
+> > +
+> >   struct vring_used {
+> >   	__virtio16 flags;
+> >   	__virtio16 idx;
+> > -	struct vring_used_elem ring[];
+> > +	vring_used_elem_t ring[];
+> >   };
+> > +/*
+> > + * The ring element addresses are passed between components with different
+> > + * alignments assumptions. Thus, we might need to decrease the compiler-selected
+> > + * alignment, and so must use a typedef to make sure the aligned attribute
+> > + * actually takes hold:
+> > + *
+> > + * https://gcc.gnu.org/onlinedocs//gcc/Common-Type-Attributes.html#Common-Type-Attributes
+> > + *
+> > + * When used on a struct, or struct member, the aligned attribute can only
+> > + * increase the alignment; in order to decrease it, the packed attribute must
+> > + * be specified as well. When used as part of a typedef, the aligned attribute
+> > + * can both increase and decrease alignment, and specifying the packed
+> > + * attribute generates a warning.
+> > + */
+> > +typedef struct vring_desc __attribute__((aligned(VRING_DESC_ALIGN_SIZE)))
+> > +	vring_desc_t;
+> > +typedef struct vring_avail __attribute__((aligned(VRING_AVAIL_ALIGN_SIZE)))
+> > +	vring_avail_t;
+> > +typedef struct vring_used __attribute__((aligned(VRING_USED_ALIGN_SIZE)))
+> > +	vring_used_t;
+> > +
+> >   struct vring {
+> >   	unsigned int num;
+> > -	struct vring_desc *desc;
+> > +	vring_desc_t *desc;
+> > -	struct vring_avail *avail;
+> > +	vring_avail_t *avail;
+> > -	struct vring_used *used;
+> > +	vring_used_t *used;
+> >   };
+> > -/* Alignment requirements for vring elements.
+> > - * When using pre-virtio 1.0 layout, these fall out naturally.
+> > - */
+> > -#define VRING_AVAIL_ALIGN_SIZE 2
+> > -#define VRING_USED_ALIGN_SIZE 4
+> > -#define VRING_DESC_ALIGN_SIZE 16
+> > -
+> >   #ifndef VIRTIO_RING_NO_LEGACY
+> >   /* The standard layout for the ring is a continuous chunk of memory which looks
 
-I actually meant exactly that with PITA;-)
-
-> If you need to run an external process you need to generate
-> an arv[] array containing the parameters.
-
-FullACK. That is usually similar trivial ...
-
-MfG,
-	Bernd
---=20
-There is no cloud, just other people computers.
--- https://static.fsf.org/nosvn/stickers/thereisnocloud.svg
-
---------------985EBFE9F348F8C36FCBAAF1
-Content-Type: application/pgp-keys;
- name="pEpkey.asc"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
- filename="pEpkey.asc"
-
------BEGIN PGP PUBLIC KEY BLOCK-----
-
-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3D=3D
-=3DGX6K
------END PGP PUBLIC KEY BLOCK-----
-
---------------985EBFE9F348F8C36FCBAAF1--
