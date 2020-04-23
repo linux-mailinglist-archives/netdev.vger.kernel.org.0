@@ -2,121 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F106B1B51DE
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 03:34:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CBDB1B51F3
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 03:36:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726499AbgDWBes (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 21:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36082 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725828AbgDWBeq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 21:34:46 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20997C03C1AA;
-        Wed, 22 Apr 2020 18:34:46 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id u15so4517428ljd.3;
-        Wed, 22 Apr 2020 18:34:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=G/DeIfTtEEjBtBecf4XcPLs4Cf8wCiNe7uM2NSD391A=;
-        b=cbXkS909FJhTEQvWCuDzuQzaA0NsuulPznjrsSh2fseMwmYC9aqjcVnQQRHBxMTVhI
-         9umfMk5Oioqb9J/NQvDFcGkpkb8LwVeE7Q8ZqQhgdHdges9SF+H48RBNlFto9zTe9nPt
-         rX19Rjzhz8h9r6GH9DayRPMprtydudX2lnKvHOH8KqTOO+irilhzeEqvA1JqmZ/yTyuZ
-         IThNyyZF/Q4IqP/hZ0+DAibGHUkJw8huJzTCOsd0/BBKaqB1YRVlb7y9po5ZIQqlIU9P
-         ZPJB46QxH2eLJjlZIDH2BFMuGl23H/C3Tc88PAg5vAbAGdAhSqFJzvdenRrz8bffHAcT
-         f13g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=G/DeIfTtEEjBtBecf4XcPLs4Cf8wCiNe7uM2NSD391A=;
-        b=dGA3TXx65lyY3qJKe5wAGxf5Fs+a2IKsgi9qZUL5ITUMzyGBPaophxJpNxEmrikSkI
-         V/Xt6KTRnPbEs9u5nb5X7C350JmiC2T4Jg2DMzdXobnh1L9Mi26H58eEHr1Vr67brC9v
-         7l1BGf3tZ8Qxcakj6jy1eb4KpW+zlOpCN5IKJ4lOWBMZxLwq7iTPWowLCEdAKkqU8BA6
-         FICcwYfjoNg+pKLbStF9MY4FT7ra4btNBzv5xIkH7lJds4VczmJ5OaBRihs/1JcqUxTo
-         EqIPSQgqlUKsbnQsUWJZYkicxaHMK/IIwmQFqOOVVAKxiVFuxhS5VjRPZB7FotMSO1Sf
-         7arA==
-X-Gm-Message-State: AGi0PuYEzFmi4r1769Gy8ga0G0iQ2+68MHMh/ZYQfJCsQwcg+Daun1W8
-        rDqyljeDvqcWZC/bWuWgaYA=
-X-Google-Smtp-Source: APiQypLEtOmKh2USJECy+faxyw6KIO3K2LuNbi6t5dbfIDcM6sEn5dFCwSCsnaBlpW8RcqdtOAUciA==
-X-Received: by 2002:a05:651c:119a:: with SMTP id w26mr891073ljo.53.1587605684557;
-        Wed, 22 Apr 2020 18:34:44 -0700 (PDT)
-Received: from localhost.localdomain ([87.200.95.144])
-        by smtp.gmail.com with ESMTPSA id h21sm564967lfp.1.2020.04.22.18.34.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Apr 2020 18:34:44 -0700 (PDT)
-From:   Christian Hewitt <christianshewitt@gmail.com>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-amlogic@lists.infradead.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        Christian Hewitt <christianshewitt@gmail.com>
-Subject: [PATCH v2 3/3] Bluetooth: hci_qca: allow max-speed to be set for QCA9377 devices
-Date:   Thu, 23 Apr 2020 01:34:30 +0000
-Message-Id: <20200423013430.21399-4-christianshewitt@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200423013430.21399-1-christianshewitt@gmail.com>
-References: <20200423013430.21399-1-christianshewitt@gmail.com>
+        id S1726522AbgDWBgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 21:36:42 -0400
+Received: from mail.hallyn.com ([178.63.66.53]:53178 "EHLO mail.hallyn.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725961AbgDWBgm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 22 Apr 2020 21:36:42 -0400
+Received: by mail.hallyn.com (Postfix, from userid 1001)
+        id AFB809D0; Wed, 22 Apr 2020 20:36:39 -0500 (CDT)
+Date:   Wed, 22 Apr 2020 20:36:39 -0500
+From:   "Serge E. Hallyn" <serge@hallyn.com>
+To:     Christian Brauner <christian.brauner@ubuntu.com>
+Cc:     Jens Axboe <axboe@kernel.dk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-api@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Serge Hallyn <serge@hallyn.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, Tejun Heo <tj@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saravana Kannan <saravanak@google.com>,
+        Jan Kara <jack@suse.cz>, David Howells <dhowells@redhat.com>,
+        Seth Forshee <seth.forshee@canonical.com>,
+        David Rheinsberg <david.rheinsberg@gmail.com>,
+        Tom Gundersen <teg@jklm.no>,
+        Christian Kellner <ckellner@redhat.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        =?iso-8859-1?Q?St=E9phane?= Graber <stgraber@ubuntu.com>,
+        linux-doc@vger.kernel.org, netdev@vger.kernel.org,
+        Steve Barber <smbarber@google.com>,
+        Dylan Reid <dgreid@google.com>,
+        Filipe Brandenburger <filbranden@gmail.com>,
+        Kees Cook <keescook@chromium.org>,
+        Benjamin Elder <bentheelder@google.com>,
+        Akihiro Suda <suda.kyoto@gmail.com>
+Subject: Re: [PATCH v2 6/7] loopfs: start attaching correct namespace during
+ loop_add()
+Message-ID: <20200423013639.GB2982@mail.hallyn.com>
+References: <20200422145437.176057-1-christian.brauner@ubuntu.com>
+ <20200422145437.176057-7-christian.brauner@ubuntu.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200422145437.176057-7-christian.brauner@ubuntu.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move the read of max-speed from device-tree out of the qca_is_wcn399x
-if block so oper_speed can be set for QCA9377 devices as well.
+On Wed, Apr 22, 2020 at 04:54:36PM +0200, Christian Brauner wrote:
+> Tag loop devices with the namespace the loopfs instance was mounted in.
+> This has the consequence that loopfs devices carry the correct sysfs
+> permissions for all their core files. All other devices files will
+> continue to be correctly owned by the initial namespaces. Here is sample
+> output:
+> 
+> root@b1:~# mount -t loop loop /mnt
+> root@b1:~# ln -sf /mnt/loop-control /dev/loop-control
+> root@b1:~# losetup -f
+> /dev/loop8
+> root@b1:~# ln -sf /mnt/loop8 /dev/loop8
+> root@b1:~# ls -al /sys/class/block/loop8
+> lrwxrwxrwx 1 root root 0 Apr  7 13:06 /sys/class/block/loop8 -> ../../devices/virtual/block/loop8
+> root@b1:~# ls -al /sys/class/block/loop8/
+> total 0
+> drwxr-xr-x  9 root   root       0 Apr  7 13:06 .
+> drwxr-xr-x 18 nobody nogroup    0 Apr  7 13:07 ..
+> -r--r--r--  1 root   root    4096 Apr  7 13:06 alignment_offset
+> lrwxrwxrwx  1 nobody nogroup    0 Apr  7 13:07 bdi -> ../../bdi/7:8
+> -r--r--r--  1 root   root    4096 Apr  7 13:06 capability
+> -r--r--r--  1 root   root    4096 Apr  7 13:06 dev
+> -r--r--r--  1 root   root    4096 Apr  7 13:06 discard_alignment
+> -r--r--r--  1 root   root    4096 Apr  7 13:06 events
+> -r--r--r--  1 root   root    4096 Apr  7 13:06 events_async
+> -rw-r--r--  1 root   root    4096 Apr  7 13:06 events_poll_msecs
+> -r--r--r--  1 root   root    4096 Apr  7 13:06 ext_range
+> -r--r--r--  1 root   root    4096 Apr  7 13:06 hidden
+> drwxr-xr-x  2 nobody nogroup    0 Apr  7 13:07 holders
+> -r--r--r--  1 root   root    4096 Apr  7 13:06 inflight
+> drwxr-xr-x  2 nobody nogroup    0 Apr  7 13:07 integrity
+> drwxr-xr-x  3 nobody nogroup    0 Apr  7 13:07 mq
+> drwxr-xr-x  2 root   root       0 Apr  7 13:06 power
+> drwxr-xr-x  3 nobody nogroup    0 Apr  7 13:07 queue
+> -r--r--r--  1 root   root    4096 Apr  7 13:06 range
+> -r--r--r--  1 root   root    4096 Apr  7 13:06 removable
+> -r--r--r--  1 root   root    4096 Apr  7 13:06 ro
+> -r--r--r--  1 root   root    4096 Apr  7 13:06 size
+> drwxr-xr-x  2 nobody nogroup    0 Apr  7 13:07 slaves
+> -r--r--r--  1 root   root    4096 Apr  7 13:06 stat
+> lrwxrwxrwx  1 nobody nogroup    0 Apr  7 13:07 subsystem -> ../../../../class/block
+> drwxr-xr-x  2 root   root       0 Apr  7 13:06 trace
+> -rw-r--r--  1 root   root    4096 Apr  7 13:06 uevent
+> root@b1:~#
+> 
+> Cc: Jens Axboe <axboe@kernel.dk>
+> Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
 
-Suggested-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
----
- drivers/bluetooth/hci_qca.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+I was a *bit* worried about not taking a reference to the
+user namespace, but it doesn't look like the chain of
+loop_remove() -> del_gendisk() -> device_del() will allow any later
+access through sysfs, so I guess it's fine.
 
-diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
-index 072983dc07e3..b3fd07a6f812 100644
---- a/drivers/bluetooth/hci_qca.c
-+++ b/drivers/bluetooth/hci_qca.c
-@@ -597,10 +597,12 @@ static int qca_open(struct hci_uart *hu)
- 
- 	if (hu->serdev) {
- 		qcadev = serdev_device_get_drvdata(hu->serdev);
--		if (qca_is_wcn399x(qcadev->btsoc_type)) {
-+
-+		if (qca_is_wcn399x(qcadev->btsoc_type))
- 			hu->init_speed = qcadev->init_speed;
-+
-+		if (qcadev->oper_speed)
- 			hu->oper_speed = qcadev->oper_speed;
--		}
- 	}
- 
- 	timer_setup(&qca->wake_retrans_timer, hci_ibs_wake_retrans_timeout, 0);
-@@ -1871,6 +1873,11 @@ static int qca_serdev_probe(struct serdev_device *serdev)
- 	serdev_device_set_drvdata(serdev, qcadev);
- 	device_property_read_string(&serdev->dev, "firmware-name",
- 					 &qcadev->firmware_name);
-+	device_property_read_u32(&serdev->dev, "max-speed",
-+				 &qcadev->oper_speed);
-+	if (!qcadev->oper_speed)
-+		BT_DBG("UART will pick default operating speed");
-+
- 	if (data && qca_is_wcn399x(data->soc_type)) {
- 		qcadev->btsoc_type = data->soc_type;
- 		qcadev->bt_power = devm_kzalloc(&serdev->dev,
-@@ -1895,11 +1902,6 @@ static int qca_serdev_probe(struct serdev_device *serdev)
- 			return PTR_ERR(qcadev->susclk);
- 		}
- 
--		device_property_read_u32(&serdev->dev, "max-speed",
--					 &qcadev->oper_speed);
--		if (!qcadev->oper_speed)
--			BT_DBG("UART will pick default operating speed");
--
- 		err = hci_uart_register_device(&qcadev->serdev_hu, &qca_proto);
- 		if (err) {
- 			BT_ERR("wcn3990 serdev registration failed");
--- 
-2.17.1
+Reviewed-by: Serge Hallyn <serge@hallyn.com>
 
+> ---
+> /* v2 */
+> unchanged
+> - Christian Brauner <christian.brauner@ubuntu.com>:
+>   - Adapted commit message otherwise unchanged.
+> ---
+>  drivers/block/loop.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/block/loop.c b/drivers/block/loop.c
+> index 8e21d4b33e01..2dc53bad4b48 100644
+> --- a/drivers/block/loop.c
+> +++ b/drivers/block/loop.c
+> @@ -2212,6 +2212,10 @@ static int loop_add(struct loop_device **l, int i, struct inode *inode)
+>  	disk->private_data	= lo;
+>  	disk->queue		= lo->lo_queue;
+>  	sprintf(disk->disk_name, "loop%d", i);
+> +#ifdef CONFIG_BLK_DEV_LOOPFS
+> +	if (loopfs_i_sb(inode))
+> +		disk->user_ns = loopfs_i_sb(inode)->s_user_ns;
+> +#endif
+>  
+>  	add_disk(disk);
+>  
+> -- 
+> 2.26.1
