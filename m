@@ -2,97 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD9641B5524
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 09:07:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE0591B550D
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 09:01:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726679AbgDWHFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 03:05:55 -0400
-Received: from host-88-217-225-28.customer.m-online.net ([88.217.225.28]:3276
-        "EHLO mail.dev.tdt.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726027AbgDWHFz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 03:05:55 -0400
-X-Greylist: delayed 308 seconds by postgrey-1.27 at vger.kernel.org; Thu, 23 Apr 2020 03:05:53 EDT
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id CC965206A4;
-        Thu, 23 Apr 2020 07:00:42 +0000 (UTC)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 23 Apr 2020 09:00:42 +0200
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Cc:     Andrew Hendry <andrew.hendry@gmail.com>,
+        id S1726766AbgDWHB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 03:01:27 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:47510 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726639AbgDWHBZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 03:01:25 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1587625285; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=jnGBvqgD2+rCZ5dqwcs/N0/DjWzyVn5656ZJjEr5E6M=; b=OAzIGJKgfr85qP3QxlRii25LA6STpSJc6aC+5Xf4J6IcwF359FXzoVjDlcTLcHoY57CbkuM6
+ 0+UDTVrTQsBG/g+0dY+vK9NRvjmtRO+KCFhtkjisxJ3qPaRT6d5FizasnmJvMQYoF95SgmWi
+ hT5IuJ/x1eJeAztbPJbzw0ceVuI=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5ea13d35.7f87b6312490-smtp-out-n02;
+ Thu, 23 Apr 2020 07:01:09 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id C0E57C433F2; Thu, 23 Apr 2020 07:01:07 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=ham autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 917ACC433D2;
+        Thu, 23 Apr 2020 07:01:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 917ACC433D2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     Tony Chuang <yhchuang@realtek.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-x25@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yuanxzhang@fudan.edu.cn,
-        kjlu@umn.edu, Xin Tan <tanxin.ctf@gmail.com>
-Subject: Re: [PATCH 1/2] net/x25: Fix x25_neigh refcnt leak when x25_connect()
- fails
-Organization: TDT AG
-In-Reply-To: <1587618822-13544-1-git-send-email-xiyuyang19@fudan.edu.cn>
-References: <1587618822-13544-1-git-send-email-xiyuyang19@fudan.edu.cn>
-Message-ID: <fccc5247bb916ccbd9a4c2ef8c6e76e4@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.1.5
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+        "open list\:REALTEK WIRELESS DRIVER \(rtw88\)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list\:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] rtw88: Use udelay instead of usleep in atomic context
+References: <20200423063811.2636-1-kai.heng.feng@canonical.com>
+        <20200423063811.2636-2-kai.heng.feng@canonical.com>
+        <87h7xan1cy.fsf@kamboji.qca.qualcomm.com>
+        <D2ACB475-AE1A-41D1-BEB9-1FC30DA13AE8@canonical.com>
+Date:   Thu, 23 Apr 2020 10:01:03 +0300
+In-Reply-To: <D2ACB475-AE1A-41D1-BEB9-1FC30DA13AE8@canonical.com> (Kai-Heng
+        Feng's message of "Thu, 23 Apr 2020 14:53:18 +0800")
+Message-ID: <87d07yn0sw.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-04-23 07:13, Xiyu Yang wrote:
-> x25_connect() invokes x25_get_neigh(), which returns a reference of the
-> specified x25_neigh object to "x25->neighbour" with increased refcnt.
-> 
-> When x25_connect() returns, local variable "x25" and "x25->neighbour"
-> become invalid, so the refcount should be decreased to keep refcount
-> balanced.
-> 
-> The reference counting issue happens in one exception handling path of
-> x25_connect(). When sock state is not TCP_ESTABLISHED and its flags
-> include O_NONBLOCK, the function forgets to decrease the refcnt
-> increased by x25_get_neigh(), causing a refcnt leak.
-> 
-> Fix this issue by jumping to "out_put_neigh" label when x25_connect()
-> fails.
+Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
 
-I don't agree with that.
-Please have a look at commit e21dba7a4df4 ("net/x25: fix nonblocking 
-connect).
+>> On Apr 23, 2020, at 14:49, Kalle Valo <kvalo@codeaurora.org> wrote:
+>> 
+>> Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
+>> 
+>>> It's incorrect to use usleep in atomic context.
+>>> 
+>>> Switch to a macro which uses udelay instead of usleep to prevent the issue.
+>>> 
+>>> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+>> 
+>> This fixes a regression, right? So there should be a Fixes line.
+>
+> Yes, but the regression commit isn't in Linus' tree, so the sha1 may change.
 
-But I also think you are right and there seems to be a refcnt leak,
-which should be fixed by a call to x25_neigh_put() in the
-x25_disconnect() function.
+No, the commit id won't change after I have commited the patch. I don't
+rebase my trees.
 
-- Martin
-
-
-> 
-> Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-> Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-> ---
->  net/x25/af_x25.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
-> index d5b09bbff375..e6571c56209b 100644
-> --- a/net/x25/af_x25.c
-> +++ b/net/x25/af_x25.c
-> @@ -816,7 +816,7 @@ static int x25_connect(struct socket *sock, struct
-> sockaddr *uaddr,
->  	/* Now the loop */
->  	rc = -EINPROGRESS;
->  	if (sk->sk_state != TCP_ESTABLISHED && (flags & O_NONBLOCK))
-> -		goto out;
-> +		goto out_put_neigh;
-> 
->  	rc = x25_wait_for_connection_establishment(sk);
->  	if (rc)
-
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
