@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0407A1B51E2
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 03:35:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0C4A1B51D9
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 03:34:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726384AbgDWBej (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 21:34:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36056 "EHLO
+        id S1726445AbgDWBel (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 21:34:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725828AbgDWBej (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 21:34:39 -0400
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60CA3C03C1AA;
-        Wed, 22 Apr 2020 18:34:37 -0700 (PDT)
-Received: by mail-lf1-x143.google.com with SMTP id x23so3424171lfq.1;
-        Wed, 22 Apr 2020 18:34:37 -0700 (PDT)
+        with ESMTP id S1725828AbgDWBek (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 21:34:40 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61598C03C1AA;
+        Wed, 22 Apr 2020 18:34:40 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id t11so3396032lfe.4;
+        Wed, 22 Apr 2020 18:34:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=DAjDO2syVihYfSYHVPHnBlRhOt9duNjgHctpjQ0ix6c=;
-        b=eUVd8k2O2d2zxPxp8rFtZ7IDbc6v/LYYWEtLilnhk89o1oS1POopQeOtxW9hMjQyrg
-         hnw/uKRLApQXMBqmHw/Wt1ybEHUXEO/j3o89rYQ66McADGjAU4fNtKTq2EaPMwpreHHd
-         bXwGW7BOqm+gSJUhWf2JJAt2AEr2eKDsv1ao6iRVY3v24ywl8+I3ExhuRUVChw7ndNmr
-         Omd48AdkdaZ/KhfwVtv3jM/KGdyyGL4+zhSwzouhXsYP2T6uJLH22W/sYD184aEu+sCF
-         qaA0MweY69Y5u+ZdsvkDLb8XI4t27jeR3Y5DYLWq+tQJWM9QY2KbDHod5HHOL/FRyekp
-         dPJQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=DsCsLkML8vM9o9JxjC1JcTLr6rGiyK9/YPUi2mV+hHw=;
+        b=YdTGzAGkjEBzcnx49rbGvNS1WOd+XJ8J9lgxA6IPs6gu4S+tg+tEYFwjVKgcUBvoHk
+         1oLNnIxmP+G/Y1fJpSkLvUMj2QrhyORezRtkJK1lMolyNl5JPHwZ0FleA8o+BEyGTdOY
+         WRfjsvdnGxSG52uUlmxNtGJe+szGQUWDuM/B9Tm2/z74WET6j/GRGi/yKWcwI7rCm6TZ
+         8O1Ygk3E09cp+lbJ4Z+hmQ2iKyYbnXlSmwvU8TJ5/h/IKM3Q/A7DSnXqVf47EiWcyclT
+         GeUvUyk6s50zwP5+lWTAkN3CTA51O890tDWZbj7r/+W1iau8gF7W9s6u8uS8vz+lvjw2
+         aRCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=DAjDO2syVihYfSYHVPHnBlRhOt9duNjgHctpjQ0ix6c=;
-        b=JFBOPHlJXmorpcAWw8baAoQhv2uFR+YrT8gkkI67rR2TYX4sGj2N2Ljo9KC1xDOk60
-         K8ey5apnP3Z5Hd7PsNCU+wVKYKp6bS1j9uqaglTgw0DRIaGPiGueVMCYRgPQ/wl6BKlD
-         INhUx8E5zSueCxEXEEpmshE0cuy2y1xSiABo8N+kQ6hEGhPqMeeZ17SECt41MBMnMmok
-         F1qgn4+0a/yNW5cVImOCgV2HfRvrSiPOHVBBZ77iNDBZsWUyY4ZKpJonWuHRazd7XUMr
-         lvsaXHhF9Mpi92oFmuBuXq22LUN0ed2scXoZMzAWu6gNt3W4VARsxPkxBh7NXdvPitV0
-         pt+Q==
-X-Gm-Message-State: AGi0PubDDIJ+VBkSg2FyMbevtE29hHp8hI4LFevKpe32BBrphV+IV2Za
-        qR2btzHK/hqlmXfJp3M6i/Q=
-X-Google-Smtp-Source: APiQypLVF8k5uqxjiwCBFvVf1xeH58dehjnKwlyRN+zx1HBI6paxUET+mG4Tcr86VknKMveN0sPEbg==
-X-Received: by 2002:a19:946:: with SMTP id 67mr848245lfj.142.1587605675892;
-        Wed, 22 Apr 2020 18:34:35 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=DsCsLkML8vM9o9JxjC1JcTLr6rGiyK9/YPUi2mV+hHw=;
+        b=FLVGGw06El8WdwdViqQBzGAt0N0pq9PXGb4Q4aB+j9ezzdySzGy+e69aE/si5VSSHH
+         ww91SfvZN8fhfSBure6uobKj6jwK7PB598AOcjfdciZK+6oO3VarW+UEysbIOQB6Pf6L
+         xBkxO5dkG/fBe7oWseh6EpgQxHX9HTnQSb3K01iKPAF1Fv84HH5PkxMzEak9PLMNpUXq
+         ZloV60uEwW6xzHIzG9/lR7g2AOVxm0wU86zJVYFFjDAajKKA6CF5hoBpgEtrnuxR/vJS
+         qdaaDcVO2Yu30oWY3qSm2qgvWISBH0Okb7SvVz5oRHrHXBv8Vi+gZecqeaUG2yQFLh7C
+         XHUg==
+X-Gm-Message-State: AGi0PuYCijrLaIA81qNtJE+EwC68RmJrNyyeJkF8HU/+dmSNJGd9mzXT
+        w7vEuI/pY6+SVA7J78qlfQU=
+X-Google-Smtp-Source: APiQypKpOxCqGo2vEH5cRAwTfl60WT+Lj+sRkrcgjF4/zfgt2tmFvQw3sVSr9hLuEXo/Vw1v+NKg9A==
+X-Received: by 2002:a19:5f04:: with SMTP id t4mr825926lfb.208.1587605678890;
+        Wed, 22 Apr 2020 18:34:38 -0700 (PDT)
 Received: from localhost.localdomain ([87.200.95.144])
-        by smtp.gmail.com with ESMTPSA id h21sm564967lfp.1.2020.04.22.18.34.32
+        by smtp.gmail.com with ESMTPSA id h21sm564967lfp.1.2020.04.22.18.34.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Apr 2020 18:34:35 -0700 (PDT)
+        Wed, 22 Apr 2020 18:34:38 -0700 (PDT)
 From:   Christian Hewitt <christianshewitt@gmail.com>
 To:     Marcel Holtmann <marcel@holtmann.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
@@ -53,33 +54,47 @@ To:     Marcel Holtmann <marcel@holtmann.org>,
         linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
         Christian Hewitt <christianshewitt@gmail.com>
-Subject: [PATCH v2 0/3] Bluetooth: hci_qca: add support for QCA9377
-Date:   Thu, 23 Apr 2020 01:34:27 +0000
-Message-Id: <20200423013430.21399-1-christianshewitt@gmail.com>
+Subject: [PATCH v2 1/3] dt-bindings: net: bluetooth: Add device tree bindings for QCA9377
+Date:   Thu, 23 Apr 2020 01:34:28 +0000
+Message-Id: <20200423013430.21399-2-christianshewitt@gmail.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200423013430.21399-1-christianshewitt@gmail.com>
+References: <20200423013430.21399-1-christianshewitt@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christian Hewittt <christianshewitt@gmail.com>
+QCA9377 is a QCA ROME device frequently found in Android TV boxes.
 
-This series adds a new compatible for the QCA9377 BT device that is found
-in many Android TV box devices, makes minor changes to allow max-speed
-values for the device to be read from device-tree, and updates bindings
-to reflect those changes.
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-v2 changes: rebase against bluetooth-next
-
-Christian Hewitt (3):
-  dt-bindings: net: bluetooth: Add device tree bindings for QCA9377
-  Bluetooth: hci_qca: add compatible for QCA9377
-  Bluetooth: hci_qca: allow max-speed to be set for QCA9377 devices
-
- .../bindings/net/qualcomm-bluetooth.txt         |  5 +++++
- drivers/bluetooth/hci_qca.c                     | 17 ++++++++++-------
- 2 files changed, 15 insertions(+), 7 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
+index aad2632c6443..709ca6d51650 100644
+--- a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
++++ b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
+@@ -10,6 +10,7 @@ device the slave device is attached to.
+ Required properties:
+  - compatible: should contain one of the following:
+    * "qcom,qca6174-bt"
++   * "qcom,qca9377-bt"
+    * "qcom,wcn3990-bt"
+    * "qcom,wcn3991-bt"
+    * "qcom,wcn3998-bt"
+@@ -21,6 +22,10 @@ Optional properties for compatible string qcom,qca6174-bt:
+  - clocks: clock provided to the controller (SUSCLK_32KHZ)
+  - firmware-name: specify the name of nvm firmware to load
+ 
++Optional properties for compatible string qcom,qca9377-bt:
++
++ - max-speed: see Documentation/devicetree/bindings/serial/serial.yaml
++
+ Required properties for compatible string qcom,wcn399x-bt:
+ 
+  - vddio-supply: VDD_IO supply regulator handle.
 -- 
 2.17.1
 
