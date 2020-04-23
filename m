@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A08231B5626
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 09:45:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AACD1B5616
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 09:45:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727768AbgDWHlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 03:41:39 -0400
-Received: from conuserg-10.nifty.com ([210.131.2.77]:33701 "EHLO
+        id S1727071AbgDWHlS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 03:41:18 -0400
+Received: from conuserg-10.nifty.com ([210.131.2.77]:33124 "EHLO
         conuserg-10.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726790AbgDWHlh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 03:41:37 -0400
+        with ESMTP id S1726924AbgDWHlR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 03:41:17 -0400
 Received: from oscar.flets-west.jp (softbank126090202047.bbtec.net [126.90.202.47]) (authenticated)
-        by conuserg-10.nifty.com with ESMTP id 03N7dV9P000368;
-        Thu, 23 Apr 2020 16:39:36 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 03N7dV9P000368
+        by conuserg-10.nifty.com with ESMTP id 03N7dV9Q000368;
+        Thu, 23 Apr 2020 16:39:37 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 03N7dV9Q000368
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1587627577;
-        bh=mNS7qQakks7vv7rluiZ6sy2TT3u/Yp/y0uXOfjW+ff0=;
+        s=dec2015msa; t=1587627579;
+        bh=7kgkosREChyr2qCmSzOt/aUBMEboc1zZ/PX0XU3QyZ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vgX24GzV3a5gSzU8pqBzK0uUPmBoq73gXEZoV5t08/+yMcChrq6uP7MLHhdRwGGPc
-         UWKvR0/hvVQCXVFtYvZMmDoPZQ/cwJ9mDXpvEU300Nv0iI9sU5civP4dV2/hkMVLAd
-         FK3BuYRHjhBFQa1B+oUmnNtjb8ARPuZe15DK2bHR9pfUVqUOIyrDpfQwSS0YaEk3Us
-         q6/fi3DlDwocFmaIOowfh119DbojAG/bzBarEoAk6yIvb/41VnjUiic1yir+KsK4p0
-         yG0QRj3cc7yMSM3LycQICnWyH8UcXZJq1ixs6BeZA2jNqtJYewteyupK7yviIoCJZc
-         GujOc7Bj6SMyA==
+        b=sKQN27AzEg/soVyiQBKb0WjU8r030CFHBu+V93YqWFAzX21gotLPgG9GNx4G2mxix
+         cXov2Dnt2dBtzW75by16g2pQfhe2GLq8Lpv0W2vBjbx+2FnuUuHXOySYX+Gh5oJPiw
+         vIdnENi7VKVx8SLNf0TZ4viBV3xw7fyQqkFJdMGGCwQaG31iEOm4OdIQW5EkMwIxTr
+         xM75nSIXGexHrJDDm36Sq7gSEMKDDEW+qtnxSqbN/km/xFhH/sqgcziTUs5lzOgS2A
+         Ho+WFVIL/Ep9HcNfhAXEIbN8sErrwfDgCwSahv9Io4vaB/aVtYKZXTDinaIqzSP0Gi
+         8WzQ/qET/PYfQ==
 X-Nifty-SrcIP: [126.90.202.47]
 From:   Masahiro Yamada <masahiroy@kernel.org>
 To:     linux-kbuild@vger.kernel.org
@@ -33,16 +33,14 @@ Cc:     bpf@vger.kernel.org, Sam Ravnborg <sam@ravnborg.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andriin@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 04/16] net: bpfilter: use 'userprogs' syntax to build bpfilter_umh
-Date:   Thu, 23 Apr 2020 16:39:17 +0900
-Message-Id: <20200423073929.127521-5-masahiroy@kernel.org>
+Subject: [PATCH 05/16] samples: seccomp: build sample programs for target architecture
+Date:   Thu, 23 Apr 2020 16:39:18 +0900
+Message-Id: <20200423073929.127521-6-masahiroy@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200423073929.127521-1-masahiroy@kernel.org>
 References: <20200423073929.127521-1-masahiroy@kernel.org>
@@ -53,46 +51,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The user mode helper should be compiled for the same architecture as
-the kernel.
+These userspace programs include UAPI headers exported to usr/include/.
+'make headers' always works for the target architecture (i.e. the same
+architecture as the kernel), so the sample programs must be built for
+the target as well. Kbuild now supports the 'userprogs' syntax to
+describe it cleanly.
 
-This Makefile reuses the 'hostprogs' syntax by overriding HOSTCC with CC.
+I also guarded the CONFIG option by 'depends on CC_CAN_LINK' because
+$(CC) may not necessarily provide libc.
 
-Now that Kbuild provides the syntax 'userprogs', use it to fix the
-Makefile mess.
+The 'ifndef CROSS_COMPILE' is no longer needed.
+
+BTW, the -m31 for s390 is left-over code. Commit 5a79859ae0f3 ("s390:
+remove 31 bit support") killed it.
 
 Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
 
- net/bpfilter/Makefile | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ samples/Kconfig          |  2 +-
+ samples/seccomp/Makefile | 42 +++-------------------------------------
+ 2 files changed, 4 insertions(+), 40 deletions(-)
 
-diff --git a/net/bpfilter/Makefile b/net/bpfilter/Makefile
-index 36580301da70..6ee650c6badb 100644
---- a/net/bpfilter/Makefile
-+++ b/net/bpfilter/Makefile
-@@ -3,17 +3,14 @@
- # Makefile for the Linux BPFILTER layer.
- #
+diff --git a/samples/Kconfig b/samples/Kconfig
+index 9d236c346de5..8949e9646125 100644
+--- a/samples/Kconfig
++++ b/samples/Kconfig
+@@ -126,7 +126,7 @@ config SAMPLE_PIDFD
  
--hostprogs := bpfilter_umh
-+userprogs := bpfilter_umh
- bpfilter_umh-objs := main.o
--KBUILD_HOSTCFLAGS += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi
--HOSTCC := $(CC)
-+user-ccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi
+ config SAMPLE_SECCOMP
+ 	bool "Build seccomp sample code"
+-	depends on SECCOMP_FILTER && HEADERS_INSTALL
++	depends on SECCOMP_FILTER && CC_CAN_LINK && HEADERS_INSTALL
+ 	help
+ 	  Build samples of seccomp filters using various methods of
+ 	  BPF filter construction.
+diff --git a/samples/seccomp/Makefile b/samples/seccomp/Makefile
+index 89279e8b87df..19a7b1125ddf 100644
+--- a/samples/seccomp/Makefile
++++ b/samples/seccomp/Makefile
+@@ -1,44 +1,8 @@
+ # SPDX-License-Identifier: GPL-2.0
+-ifndef CROSS_COMPILE
+-hostprogs := bpf-fancy dropper bpf-direct user-trap
++userprogs := bpf-fancy dropper bpf-direct user-trap
  
--ifeq ($(CONFIG_BPFILTER_UMH), y)
--# builtin bpfilter_umh should be compiled with -static
-+# builtin bpfilter_umh should be linked with -static
- # since rootfs isn't mounted at the time of __init
- # function is called and do_execv won't find elf interpreter
--KBUILD_HOSTLDFLAGS += -static
+-HOSTCFLAGS_bpf-fancy.o += -I$(objtree)/usr/include
+-HOSTCFLAGS_bpf-fancy.o += -idirafter $(objtree)/include
+-HOSTCFLAGS_bpf-helper.o += -I$(objtree)/usr/include
+-HOSTCFLAGS_bpf-helper.o += -idirafter $(objtree)/include
+ bpf-fancy-objs := bpf-fancy.o bpf-helper.o
+ 
+-HOSTCFLAGS_dropper.o += -I$(objtree)/usr/include
+-HOSTCFLAGS_dropper.o += -idirafter $(objtree)/include
+-dropper-objs := dropper.o
++user-ccflags += -I usr/include
+ 
+-HOSTCFLAGS_bpf-direct.o += -I$(objtree)/usr/include
+-HOSTCFLAGS_bpf-direct.o += -idirafter $(objtree)/include
+-bpf-direct-objs := bpf-direct.o
+-
+-HOSTCFLAGS_user-trap.o += -I$(objtree)/usr/include
+-HOSTCFLAGS_user-trap.o += -idirafter $(objtree)/include
+-user-trap-objs := user-trap.o
+-
+-# Try to match the kernel target.
+-ifndef CONFIG_64BIT
+-
+-# s390 has -m31 flag to build 31 bit binaries
+-ifndef CONFIG_S390
+-MFLAG = -m32
+-else
+-MFLAG = -m31
 -endif
-+bpfilter_umh-ldflags += -static
- 
- $(obj)/bpfilter_umh_blob.o: $(obj)/bpfilter_umh
- 
+-
+-HOSTCFLAGS_bpf-direct.o += $(MFLAG)
+-HOSTCFLAGS_dropper.o += $(MFLAG)
+-HOSTCFLAGS_bpf-helper.o += $(MFLAG)
+-HOSTCFLAGS_bpf-fancy.o += $(MFLAG)
+-HOSTCFLAGS_user-trap.o += $(MFLAG)
+-HOSTLDLIBS_bpf-direct += $(MFLAG)
+-HOSTLDLIBS_bpf-fancy += $(MFLAG)
+-HOSTLDLIBS_dropper += $(MFLAG)
+-HOSTLDLIBS_user-trap += $(MFLAG)
+-endif
+-always-y := $(hostprogs)
+-endif
++always-y := $(userprogs)
 -- 
 2.25.1
 
