@@ -2,94 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C0901B65B6
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 22:47:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D066F1B662F
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 23:36:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726460AbgDWUr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 16:47:28 -0400
-Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:54261 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726183AbgDWUr2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 16:47:28 -0400
-Received: from [192.168.42.210] ([93.22.149.4])
-        by mwinf5d27 with ME
-        id WLnQ2200T05vvQD03LnRRT; Thu, 23 Apr 2020 22:47:26 +0200
-X-ME-Helo: [192.168.42.210]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 23 Apr 2020 22:47:26 +0200
-X-ME-IP: 93.22.149.4
-Subject: Re: [PATCH] ipw2x00: Remove a memory allocation failure log message
-To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        stas.yakovlev@gmail.com, kvalo@codeaurora.org, davem@davemloft.net
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <20200423075825.18206-1-christophe.jaillet@wanadoo.fr>
- <5868418d-88b0-3694-2942-5988ab15bdcb@cogentembedded.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Message-ID: <3c80ef48-57a8-b414-6cf1-6c255a46f6be@wanadoo.fr>
-Date:   Thu, 23 Apr 2020 22:47:25 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726161AbgDWVgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 17:36:49 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:59420 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725777AbgDWVgt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Apr 2020 17:36:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=72UdNNtLattjMgSevGnzfPSXBZkjf27I30kkugB1DmQ=; b=RmofJN+fTjCmM2rwrw/KEjNZLZ
+        CcbKjOFmi+/gf/a1raNbrZKZy2OaX1ivorkrY3i3KW7dizDQARSR/wODe68yEKLIZM7znPxYL1MbI
+        28kc8FSDgS84dPAIbNBopHgrQBwxbWrqNgcz/3GyfRwKA4RY6lZhPtWSsPRBVKNGAgA4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jRjWV-004RzL-QO; Thu, 23 Apr 2020 23:36:43 +0200
+Date:   Thu, 23 Apr 2020 23:36:43 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Chuanhong Guo <gch981213@gmail.com>
+Cc:     DENG Qingfang <dqfext@gmail.com>, netdev <netdev@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        bridge@lists.linux-foundation.org,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
+Subject: Re: [RFC PATCH net-next] net: bridge: fix client roaming from DSA
+ user port
+Message-ID: <20200423213643.GC1054188@lunn.ch>
+References: <20200419161946.19984-1-dqfext@gmail.com>
+ <20200419164251.GM836632@lunn.ch>
+ <CALW65jYmcZJoP_i5=bgeWpcibzOmEPne3mHyBngE5bTiOZreDw@mail.gmail.com>
+ <20200420133111.GL785713@lunn.ch>
+ <CAJsYDVLZQ=ci1wp1_P0RcwsV8z27zMn4CPHHpueDF7OZ-X9aEg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <5868418d-88b0-3694-2942-5988ab15bdcb@cogentembedded.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJsYDVLZQ=ci1wp1_P0RcwsV8z27zMn4CPHHpueDF7OZ-X9aEg@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 23/04/2020 à 11:46, Sergei Shtylyov a écrit :
-> Hello!
->
-> On 23.04.2020 10:58, Christophe JAILLET wrote:
->
->> Axe a memory allocation failure log message. This message is useless and
->> incorrect (vmalloc is not used here for the memory allocation)
->>
->> This has been like that since the very beginning of this driver in
->> commit 43f66a6ce8da ("Add ipw2200 wireless driver.")
->>
->> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
->> ---
->>   drivers/net/wireless/intel/ipw2x00/ipw2200.c | 5 ++---
->>   1 file changed, 2 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2200.c 
->> b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
->> index 60b5e08dd6df..30c4f041f565 100644
->> --- a/drivers/net/wireless/intel/ipw2x00/ipw2200.c
->> +++ b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
->> @@ -3770,10 +3770,9 @@ static int ipw_queue_tx_init(struct ipw_priv 
->> *priv,
->>       struct pci_dev *dev = priv->pci_dev;
->>         q->txb = kmalloc_array(count, sizeof(q->txb[0]), GFP_KERNEL);
->> -    if (!q->txb) {
->> -        IPW_ERROR("vmalloc for auxiliary BD structures failed\n");
->> +    if (!q->txb)
->>           return -ENOMEM;
->> -    }
->> +
->
->    No need for this extra empty line.
+On Wed, Apr 22, 2020 at 02:01:28PM +0800, Chuanhong Guo wrote:
+> Hi!
+> 
+> On Tue, Apr 21, 2020 at 12:36 AM Andrew Lunn <andrew@lunn.ch> wrote:
+> >
+> > The MAC address needs to move, no argument there. But what are the
+> > mechanisms which cause this. Is learning sufficient, or does DSA need
+> > to take an active role?
+> 
+> cpu port learning will break switch operation if for whatever reason
+> we want to disable bridge offloading (e.g. ebtables?). In this case
+> a packet received from cpu port need to be sent back through
+> cpu port to another switch port, and the switch will learn from this
+> packet incorrectly.
+> 
+> If we want cpu port learning to kick in, we need to make sure that:
+> 1. When bridge offload is enabled, the switch takes care of packet
+>     flooding on switch ports itself, instead of flooding with software
+>     bridge.
 
+Hi Chuanhong
 
-That's right, sorry about that.
+This is what the skb->offload_fwd_mark is all about. If this is set to
+1, it means the switch has done all the forwarding needed for ports in
+that switch. Most of the tag drivers set this unconditionally true.
 
-Can it be fixed when/if the patch is applied, or should I send a V2?
-If a V2 is required, should kcalloc be used, as pointed out by Joe Perches?
-(personally, If the code works fine as-is, I don't think it is required, 
-but it can't hurt)
+> 2. Software bridge shouldn't forward any packet between ports
+>     on the same switch.
 
-CJ
+If skb->offload_fwd_mark is true, it won't.
 
->
->>         q->bd =
->>           pci_alloc_consistent(dev, sizeof(q->bd[0]) * count, 
->> &q->q.dma_addr);
->
-> MBR, Sergei
->
->
+> 3. cpu port learning should only be enabled when bridge
+>     offloading is used.
 
+So it should be safe for most switch drivers. And the ones which don't
+set offload_fwd_mark are probably relying of software bridging, or are
+broken and replicating frames.
+
+> It doesn't have to be a broadcast packet but it needs a packet to go
+> through both bridges.
+> 
+> Say we have bridge A and bridge B, port A1 and B1 are connected
+> together and a device is on port A2 first:
+> Bridge A knows that this device is on port A2 and will forward traffic
+> through A1 to B1 if needed. Bridge B sees these packets and knows
+> device is on port B1.
+> When the device move from A2 to B2, B updates its fdb and if a
+> packet reaches A, A will update its fdb too.
+
+The issue here is 'if a packet reaches A'. B might have no reason to
+send a unicast packet to A, if none of the destinations the device is
+talking to is reached via A. Which is why i think a
+broadcast/multicast packet is more likely to be involved.
+
+		    Andrew
