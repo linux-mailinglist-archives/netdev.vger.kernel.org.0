@@ -2,210 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C26E1B63DA
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 20:32:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EE8A1B63F7
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 20:45:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730306AbgDWScy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 14:32:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53834 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730169AbgDWScx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 14:32:53 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 388B6C09B042;
-        Thu, 23 Apr 2020 11:32:53 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id x12so5191728qts.9;
-        Thu, 23 Apr 2020 11:32:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lhSZFImqgNH7xtRrw+9Z2jpeMt/XlB727vvM7HCALn0=;
-        b=AarrP4lAA5F8PYHxuH30x/0xW8CU7tjNRlmGlficdVO98zs7CuNgufOpVi0CGB8ZDw
-         tkDoMqgXy39XnGdtSYB3pag2RWsCcJxgpCvTki54/iXAfURaE/VCUVzXRr1alibMaO7J
-         bZsvm8CXrQTPWQ+Z8ccc6FfBleObV/5VhvoCCgYKh3nTg8L9tL85/OFxel2yQfKJbWCn
-         +0DxTixWKvkwahFpLFyiZluVTQwJ8Z++NyNmCfjTesCNUpKf/YvLLr7iJxq4cMW4vz8M
-         qswYDh8VAyPI9d1xFHiFel5VuGPR8yv+bIN+CS/AYnHGDtu4QXQ0/RDiV+GrrdiUTXJA
-         pcLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lhSZFImqgNH7xtRrw+9Z2jpeMt/XlB727vvM7HCALn0=;
-        b=PgJxg8a6QRVYPQKEvcDQWVU2OE6Hck7piQYcqEtcF7RgTVtjSPXl9xm7Evj38dsJvR
-         uq8Ka4/ZoMRWVzP2Cc9USWx4e6i9X7EkIOKZuwq5PFLf1YogglkT5UDlrFT/8L8aVSTn
-         2qa4YQoqu1Sn0F1xo61/XBp9azbMyhy0tmm03h+qRa1XZY2Ky1UMdMP5y0iyW33WloH3
-         uxA1fZQ0nFwHWnKvYPB6xBaBUOtoesp+XPnA6heod0+0q0xIbdMlzer11pvmS5D0CA0U
-         Jwz70TTjr15oEPFBYqcVpJQ57R1kRxHn+aHvRrPKaLzAbh/tUT6w7TTiPIGXpjKIw5Dk
-         CGVQ==
-X-Gm-Message-State: AGi0PuYTAGt9Fa+6pbYrCiJ1CvT24dZKzkjc4oqbhWl74Ia5IrwRVbLy
-        N42yvCVxHzQzc1kJPVOTq59cspC8qyxcM2BtifvCPVHf
-X-Google-Smtp-Source: APiQypJDMCbX1GCfkFIa3awp+9gJEv3uMNWQ7scMKtQVmHf4Rs7fEGqQ8/USbxbLH+jArfDeJ5dtGRt856zB3ZlrRd0=
-X-Received: by 2002:aed:2e24:: with SMTP id j33mr5451763qtd.117.1587666772202;
- Thu, 23 Apr 2020 11:32:52 -0700 (PDT)
+        id S1728155AbgDWSp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 14:45:28 -0400
+Received: from mail-eopbgr70070.outbound.protection.outlook.com ([40.107.7.70]:34372
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728081AbgDWSp2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Apr 2020 14:45:28 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ekK7x9N/IXsuExhNsWdHHkmBuZ/G/f41XWX25amcox/rDjKCUwG97/PmWKzFLni4H/HsD480W0YSrjr/2d4+THzhBCxb/cYbLj/leWjrH7SP6rTqGmB5cBsHde3hGkTJnoHuBlVm/67VFeyt/pZhRp1k8BFoMLQuyVgnIHL+BDqJPOGjQx0OASbApJwwkMONNsRzP5iPs5iEWL6FZ+UZ3tG3zq6aprXa3Hgo5hXMIQ4G+nl6D/8WuF1jN70jp3sHtZjsTykUYGW2YVSw5vUt8XWyK5ewYqq8+U1jZN2S1wfZTa2Zd5F9LOTXBVTU3o/zuNWsCCmpxeXj4OGI0hBQXQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Lm50xSImfHc226uAKbhkoOQydLDIx3muaWelM5F8YGU=;
+ b=BWLIrZMLOXZVdwquhvW8CYaYZq3+QB7oAhA31f19wBGioOkQP6tpwSfuOdjHo7vqklRcdpgpnQmwyhjTgYroVsu5/OFGN+82KwpNHt3/Yuha45gn4qb5DKrK6Xv80tfTp8IgEjj60l4063XfGeHzZtbYymA3S4Iq/oXUfbisTlIWQc4Gu4SoXK9/0CDNiNP7+CF9SsJdYVU+nQluVqS2/sUiSpzZ8k4Swz7sZnrJzXHUbWmTEupxNnlsKBSmV/KNtqUdO4DNRydJEKlmED/lUOdSLc8bJ+L2Q4mOAFxLoBOTluvEIcD9f8qU2Qb7ff/bmwJyjlZk4QJ/GT/xYZys6A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Lm50xSImfHc226uAKbhkoOQydLDIx3muaWelM5F8YGU=;
+ b=KRo18mTBBUpEXuDZ60M4mobiDzGpu8nUQq5jjN9hQBmJrjziIVJuCZF5Em4p0Bg2QaRbN015g+pbPjmPW0JVcRtD8ALnopUdxcO8IrLKS3DDgPIi3yspmofFhzG1GrKuXtueDBoiLa7QDxpvOGqeINWsWoXm39gFJXWTlIlV8SA=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=leonro@mellanox.com; 
+Received: from AM0PR05MB6401.eurprd05.prod.outlook.com (2603:10a6:208:13e::17)
+ by AM0PR05MB4417.eurprd05.prod.outlook.com (2603:10a6:208:61::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.25; Thu, 23 Apr
+ 2020 18:45:22 +0000
+Received: from AM0PR05MB6401.eurprd05.prod.outlook.com
+ ([fe80::f980:8d53:a8e2:d7dd]) by AM0PR05MB6401.eurprd05.prod.outlook.com
+ ([fe80::f980:8d53:a8e2:d7dd%6]) with mapi id 15.20.2921.030; Thu, 23 Apr 2020
+ 18:45:22 +0000
+Date:   Thu, 23 Apr 2020 21:45:18 +0300
+From:   Leon Romanovsky <leonro@mellanox.com>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Cc:     linux-rdma@vger.kernel.org, Moshe Shemesh <moshe@mellanox.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH mlx5-next 00/24] Mass conversion to light mlx5 command
+ interface
+Message-ID: <20200423184518.GA3148@unreal>
+References: <20200420114136.264924-1-leon@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200420114136.264924-1-leon@kernel.org>
+X-ClientProxiedBy: AM0PR01CA0124.eurprd01.prod.exchangelabs.com
+ (2603:10a6:208:168::29) To AM0PR05MB6401.eurprd05.prod.outlook.com
+ (2603:10a6:208:13e::17)
 MIME-Version: 1.0
-References: <20200421051040.4087681-1-andriin@fb.com> <CAADnVQLcSVHxXz_7jNedf3ys7DLsfJU2_RA0cUEGZQLh6tsRXg@mail.gmail.com>
-In-Reply-To: <CAADnVQLcSVHxXz_7jNedf3ys7DLsfJU2_RA0cUEGZQLh6tsRXg@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 23 Apr 2020 11:32:41 -0700
-Message-ID: <CAEf4BzahRFMfEuCc4ARUCEYf_Mth_r-C_FWS3sCHpNpWCQ=Spg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: make verifier log more relevant by default
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost (2a00:a040:183:2d::a43) by AM0PR01CA0124.eurprd01.prod.exchangelabs.com (2603:10a6:208:168::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13 via Frontend Transport; Thu, 23 Apr 2020 18:45:21 +0000
+X-Originating-IP: [2a00:a040:183:2d::a43]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 77831e67-30cb-4633-8d87-08d7e7b67a3b
+X-MS-TrafficTypeDiagnostic: AM0PR05MB4417:|AM0PR05MB4417:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR05MB44170D0FA8CA7A0A98894F0DB0D30@AM0PR05MB4417.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-Forefront-PRVS: 03827AF76E
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB6401.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(7916004)(396003)(366004)(376002)(346002)(136003)(39860400002)(6496006)(66556008)(66946007)(8676002)(66476007)(4326008)(52116002)(8936002)(5660300002)(81156014)(1076003)(33716001)(110136005)(9686003)(186003)(16526019)(316002)(478600001)(6666004)(33656002)(86362001)(6486002)(6636002)(2906002)(966005)(4744005);DIR:OUT;SFP:1101;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FtA3k0ORtMJdUGnp1XU2xvXX2DwwuOimDHuQ8wl0hPu2ebdDfupaIG9CfYombjidlKfVEjEBa/kP7mTQx4SUIW5wql57/dj0YhwfeF1cAkDSQzaOOe+Xh6fX9p1/lph8/e/dw4RaIswA4HINXaw47vYDbZnq6wC9SITAcMQuQ7OAjF+TUnp2vdKpNuHNfj09olsF27rlclZZgsnEZd/RJBCXR0zOpwDmiEbEHtVxpeQtUEc56enf6nYoXAu0SdhSz0BDXRomzfHJZMi0TA51Qq+AYEpgeLd5xqRv4pVuY+lQk+69SYYaAWjoX93IeAX/hdC2HVfnFpOP+KfhKu2Uyk5d+xgQPyitkzztUEWXVSe+8m1UjNA6WPYiewMLUtWtMjXrNOijFX6F2uS5XpLKrNaBMhU/spm/RjqgObenIrHcDsPBvr3IdR64Arb/yUL+0CfoZa55muAlhdzOqMMxVFxY7UXnHHE9YrGAwtld0jB6REz+HTm7h3yGODAV8tdm93OAVYFGPmA1HarzQojPCw==
+X-MS-Exchange-AntiSpam-MessageData: QxYoMBreREKjAVkUP0gJvd90kEqy/+cITQdqkP2fHWVSVUj/0hHKBUin2bM8kyhTRf/xDdDoKHqQX4QigQMElEH6qZlJdGTbJ0uZAEqBb8DkEyvfAufhtWvcds6eICLYL4y1QX9rxvNnB1ICBCAqtbUUpDPxyTe/nTYCc8fpErk5ksAmDeCtEhNaKJl8OGw0BytKPPLPZbIY6L6FZ2BB3B5UkuT/4U0SqqVe4J3cGeto/L7STfZdbya6aN1bsb2MO7zk7vU6MpC4Q0ZcVVPb86sWfKyvTSvicGWQ603ZSRjv94RdIL579d/gMCAAd0ReqROL9OPPk/95e8QFsDmhlgeecLgPFgl6QuRpPFHib/JeDjeHrJLjSz40/N9BSRogU59EueAfo/HP7vPcYBjd+AM5uTzFWSgWsnnux3UtCZXWt+4DUy05yUPgg/323YYcRKIHKqOVMiAvJTMF+HLf3vJTR9fDgTxcdoLBC/DzBffAaIgvDS1+8/G/pCtGs7fieQ0T7xoz4q6xY8CQHnbeh4Q27gIqyOTCxSodcAOxWRfkpoCFugaUF5egQlMK4Y3bsnvHW/Bt458cmcQa4E+XJfPbVy6nJ/hsGEJyveDUaWqrfuDH08NrBF/q3f2sqdWsQWNj0BCkVqDleOV6ox1fVtAe251mhSUbaZBHwCiqhljG2bqKahviRwKVwzTKlF9Up1IhkI/6w3QPMDDd6tJjpHsYXiFcZ8qAxDfkLBCnpGJ8ZsCnfbFMJK9BWoogadFGOHsPsQ2vtfRgSfPD+AJuK6jlteofGj3HeNmmvf3HvUv9NDCa2tCwUihikXGYcfqF
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 77831e67-30cb-4633-8d87-08d7e7b67a3b
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2020 18:45:21.9480
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: vo1EwSa5MGwMzJMbp4CX4mrHk4EOXytNq1aUF9am7WqIC6OP+oEImhhn76I65cUD2EVv8Kzr9m4FaLQr7Le4hQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4417
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 22, 2020 at 10:41 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Mon, Apr 20, 2020 at 02:41:12PM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@mellanox.com>
 >
-> On Mon, Apr 20, 2020 at 10:11 PM Andrii Nakryiko <andriin@fb.com> wrote:
-> >
-> > To make BPF verifier verbose log more releavant and easier to use to debug
-> > verification failures, "pop" parts of log that were successfully verified.
-> > This has effect of leaving only verifier logs that correspond to code branches
-> > that lead to verification failure, which in practice should result in much
-> > shorter and more relevant verifier log dumps. This behavior is made the
-> > default behavior and can be overriden to do exhaustive logging by specifying
-> > BPF_LOG_LEVEL2 log level.
-> >
-> > Using BPF_LOG_LEVEL2 to disable this behavior is not ideal, because in some
-> > cases it's good to have BPF_LOG_LEVEL2 per-instruction register dump
-> > verbosity, but still have only relevant verifier branches logged. But for this
-> > patch, I didn't want to add any new flags. It might be worth-while to just
-> > rethink how BPF verifier logging is performed and requested and streamline it
-> > a bit. But this trimming of successfully verified branches seems to be useful
-> > and a good default behavior.
-> >
-> > To test this, I modified runqslower slightly to introduce read of
-> > uninitialized stack variable. Log (**truncated in the middle** to save many
-> > lines out of this commit message) BEFORE this change:
-> >
-> > ; int handle__sched_switch(u64 *ctx)
-> > 0: (bf) r6 = r1
-> > ; struct task_struct *prev = (struct task_struct *)ctx[1];
-> > 1: (79) r1 = *(u64 *)(r6 +8)
-> > func 'sched_switch' arg1 has btf_id 151 type STRUCT 'task_struct'
-> > 2: (b7) r2 = 0
-> > ; struct event event = {};
-> > 3: (7b) *(u64 *)(r10 -24) = r2
-> > last_idx 3 first_idx 0
-> > regs=4 stack=0 before 2: (b7) r2 = 0
-> > 4: (7b) *(u64 *)(r10 -32) = r2
-> > 5: (7b) *(u64 *)(r10 -40) = r2
-> > 6: (7b) *(u64 *)(r10 -48) = r2
-> > ; if (prev->state == TASK_RUNNING)
-> >
-> > [ ... instructions from insn #7 through #50 are cut out ... ]
-> >
-> > 51: (b7) r2 = 16
-> > 52: (85) call bpf_get_current_comm#16
-> > last_idx 52 first_idx 42
-> > regs=4 stack=0 before 51: (b7) r2 = 16
-> > ; bpf_perf_event_output(ctx, &events, BPF_F_CURRENT_CPU,
-> > 53: (bf) r1 = r6
-> > 54: (18) r2 = 0xffff8881f3868800
-> > 56: (18) r3 = 0xffffffff
-> > 58: (bf) r4 = r7
-> > 59: (b7) r5 = 32
-> > 60: (85) call bpf_perf_event_output#25
-> > last_idx 60 first_idx 53
-> > regs=20 stack=0 before 59: (b7) r5 = 32
-> > 61: (bf) r2 = r10
-> > ; event.pid = pid;
-> > 62: (07) r2 += -16
-> > ; bpf_map_delete_elem(&start, &pid);
-> > 63: (18) r1 = 0xffff8881f3868000
-> > 65: (85) call bpf_map_delete_elem#3
-> > ; }
-> > 66: (b7) r0 = 0
-> > 67: (95) exit
-> >
-> > from 44 to 66: safe
-> >
-> > from 34 to 66: safe
-> >
-> > from 11 to 28: R1_w=inv0 R2_w=inv0 R6_w=ctx(id=0,off=0,imm=0) R10=fp0 fp-8=mmmm???? fp-24_w=00000000 fp-32_w=00000000 fp-40_w=00000000 fp-48_w=00000000
-> > ; bpf_map_update_elem(&start, &pid, &ts, 0);
-> > 28: (bf) r2 = r10
-> > ;
-> > 29: (07) r2 += -16
-> > ; tsp = bpf_map_lookup_elem(&start, &pid);
-> > 30: (18) r1 = 0xffff8881f3868000
-> > 32: (85) call bpf_map_lookup_elem#1
-> > invalid indirect read from stack off -16+0 size 4
-> > processed 65 insns (limit 1000000) max_states_per_insn 1 total_states 5 peak_states 5 mark_read 4
-> >
-> > Notice how there is a successful code path from instruction 0 through 67, few
-> > successfully verified jumps (44->66, 34->66), and only after that 11->28 jump
-> > plus error on instruction #32.
-> >
-> > AFTER this change (full verifier log, **no truncation**):
-> >
-> > ; int handle__sched_switch(u64 *ctx)
-> > 0: (bf) r6 = r1
-> > ; struct task_struct *prev = (struct task_struct *)ctx[1];
-> > 1: (79) r1 = *(u64 *)(r6 +8)
-> > func 'sched_switch' arg1 has btf_id 151 type STRUCT 'task_struct'
-> > 2: (b7) r2 = 0
-> > ; struct event event = {};
-> > 3: (7b) *(u64 *)(r10 -24) = r2
-> > last_idx 3 first_idx 0
-> > regs=4 stack=0 before 2: (b7) r2 = 0
-> > 4: (7b) *(u64 *)(r10 -32) = r2
-> > 5: (7b) *(u64 *)(r10 -40) = r2
-> > 6: (7b) *(u64 *)(r10 -48) = r2
-> > ; if (prev->state == TASK_RUNNING)
-> > 7: (79) r2 = *(u64 *)(r1 +16)
-> > ; if (prev->state == TASK_RUNNING)
-> > 8: (55) if r2 != 0x0 goto pc+19
-> >  R1_w=ptr_task_struct(id=0,off=0,imm=0) R2_w=inv0 R6_w=ctx(id=0,off=0,imm=0) R10=fp0 fp-24_w=00000000 fp-32_w=00000000 fp-40_w=00000000 fp-48_w=00000000
-> > ; trace_enqueue(prev->tgid, prev->pid);
-> > 9: (61) r1 = *(u32 *)(r1 +1184)
-> > 10: (63) *(u32 *)(r10 -4) = r1
-> > ; if (!pid || (targ_pid && targ_pid != pid))
-> > 11: (15) if r1 == 0x0 goto pc+16
-> >
-> > from 11 to 28: R1_w=inv0 R2_w=inv0 R6_w=ctx(id=0,off=0,imm=0) R10=fp0 fp-8=mmmm???? fp-24_w=00000000 fp-32_w=00000000 fp-40_w=00000000 fp-48_w=00000000
-> > ; bpf_map_update_elem(&start, &pid, &ts, 0);
-> > 28: (bf) r2 = r10
-> > ;
-> > 29: (07) r2 += -16
-> > ; tsp = bpf_map_lookup_elem(&start, &pid);
-> > 30: (18) r1 = 0xffff8881db3ce800
-> > 32: (85) call bpf_map_lookup_elem#1
-> > invalid indirect read from stack off -16+0 size 4
-> > processed 65 insns (limit 1000000) max_states_per_insn 1 total_states 5 peak_states 5 mark_read 4
-> >
-> > Notice how in this case, there are 0-11 instructions + jump from 11 to
-> > 28 is recorded + 28-32 instructions with error on insn #32.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> Hi,
 >
-> This is great idea!
+> This is a followup to "net/mlx5: Provide simplified command interfaces" [1]
+> patch with conversion of everything in mlx5_core.
 >
+> The patch separation is done by file to simplify bisection and they are
+> all similar, but of course, I can squash it to one mega patch if it is
+> necessary.
+>
+> Thanks
+>
+> [1] https://lore.kernel.org/linux-rdma/20200413142308.936946-2-leon@kernel.org
+>
+> Leon Romanovsky (24):
 
-Thanks!
-
-> But two test_verifier tests failed:
-
-My bad, I forget to run test_verifier and test_maps. Will take a look and fix.
-
-> #722/p precise: ST insn causing spi > allocated_stack FAIL
-> Unexpected verifier log in successful load!
-> EXP: 5: (2d) if r4 > r0 goto pc+0
-> RES:
-> 0: (bf) r3 = r10
-> 1: (55) if r3 != 0x7b goto pc+0
->
-> from 1 to 2: safe
-> processed 8 insns (limit 1000000) max_states_per_insn 0 total_states 4
-> peak_states 4 mark_read 1
->
-> Please fix them up.
+Thanks, applied to mlx5-next.
