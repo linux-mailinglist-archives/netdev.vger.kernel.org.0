@@ -2,72 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 804411B5C11
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 15:02:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21DA41B5C27
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 15:09:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728527AbgDWNCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 09:02:36 -0400
-Received: from ms.lwn.net ([45.79.88.28]:44248 "EHLO ms.lwn.net"
+        id S1726463AbgDWNJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 09:09:13 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58418 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726685AbgDWNCd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Apr 2020 09:02:33 -0400
-Received: from lwn.net (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 649DA5A0;
-        Thu, 23 Apr 2020 13:02:31 +0000 (UTC)
-Date:   Thu, 23 Apr 2020 07:02:30 -0600
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Bolarinwa Olayemi Saheed <refactormyself@gmail.com>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        skhan@linuxfoundation.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Stephen Kitt <steve@sk2.org>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        "Guilherme G. Piccoli" <gpiccoli@canonical.com>,
-        Kees Cook <keescook@chromium.org>,
-        Masanari Iida <standby24x7@gmail.com>,
-        Eric Biggers <ebiggers@google.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH] docs: Fix WARNING - Title underline too short
-Message-ID: <20200423070230.3fd863ba@lwn.net>
-In-Reply-To: <20200423114517.18074-1-refactormyself@users.noreply.github.com>
-References: <20200423114517.18074-1-refactormyself@users.noreply.github.com>
-Organization: LWN.net
+        id S1726224AbgDWNJN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Apr 2020 09:09:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=CXopAFf+v3DrZghcT1PRn9hNXamCDAcmsSXzQpfAlnQ=; b=wml8c2wgtCH3o3UTAJH6DM83/I
+        9kmXEt4J0VboFLBcECVMDa0BdH8szIhZuCREUg9mEFRUcXvfrCccH95X7rowClr6OgwPHGOYf3RtU
+        UPwf6Z8xvtS0rsZxLckKYagPV/IwST/izHiMdhww9z+KB+ORh7ZJ4KzEEOZVEE/IxJwI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jRbbD-004Nm2-J9; Thu, 23 Apr 2020 15:09:03 +0200
+Date:   Thu, 23 Apr 2020 15:09:03 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Baruch Siach <baruch@tkos.co.il>
+Cc:     Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net v3 2/2] net: phy: marvell10g: hwmon support for 2110
+Message-ID: <20200423130903.GA1044545@lunn.ch>
+References: <99771ceabb63b6a6a7d112197f639084f11e4aa4.1587618482.git.baruch@tkos.co.il>
+ <f97e4690b4ec92598b3514f05e32dc26f37044ac.1587618482.git.baruch@tkos.co.il>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f97e4690b4ec92598b3514f05e32dc26f37044ac.1587618482.git.baruch@tkos.co.il>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 Apr 2020 13:45:17 +0200
-Bolarinwa Olayemi Saheed <refactormyself@gmail.com> wrote:
-
-> From: Bolarinwa Olayemi Saheed <refactormyself@gmail.com>
+On Thu, Apr 23, 2020 at 08:08:02AM +0300, Baruch Siach wrote:
+> Read the temperature sensor register from the correct location for the
+> 88E2110 PHY. There is no enable/disable bit, so leave
+> mv3310_hwmon_config() for 88X3310 only.
 > 
-> There were two instances of "Title underline too short" and they were
-> increased to match the title text.
-> 
-> Signed-off-by: Bolarinwa Olayemi Saheed <refactormyself@gmail.com>
-> ---
->  Documentation/admin-guide/sysctl/kernel.rst | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
 
-These warnings are caused by a patch entering linux-next via the -mm tree;
-Randy has already sent a patch to fix them.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-[Next time you might want to examine the recipient list a bit; this patch
-was broadcast a bit more widely than was really necessary.]
-
-Thanks,
-
-jon
+    Andrew
