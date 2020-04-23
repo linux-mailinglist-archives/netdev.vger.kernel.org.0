@@ -2,187 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C95AD1B617A
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 19:00:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7340F1B617E
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 19:00:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729797AbgDWRAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 13:00:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39164 "EHLO
+        id S1729842AbgDWRAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 13:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729687AbgDWRAA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 13:00:00 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2D3C09B042
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 09:59:59 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id h69so3180525pgc.8
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 09:59:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qPDyQbH2csrPjyijNb4DGQAnpNF+izTvcqYbBKf9PCc=;
-        b=AA5vNJ8SRKmX/xN92MN5AbUdaFKYZWv890HhVt6JzAqwAdRrqaABAdbJwHLso75iBn
-         5CMsxrp2VnEI5VhOaflriqL0sJhmsl/iIvqxrpGspEN0avgk24cmMrlSJRu3OF63XOVV
-         CtbwE+Gs1KP3YTnGLLxav9VZjTc72CQASRSsfTD+aD9x8Mxv2otWkykC6sjUy+5OWciP
-         zUj0tsu1bzZBevfo5aM2k5XN1SoVhT4xJniYNyTOW8sbar/Zp3zGEuDXylXMikqJgmZ7
-         V6fpYrK9swp1LdEeBFo3aEgnsQjFJxGds57cY4Onalo1k+eSz7wfqsnGM7ryrg/6oYiy
-         7PyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qPDyQbH2csrPjyijNb4DGQAnpNF+izTvcqYbBKf9PCc=;
-        b=J9c2bR63vYd7CYltvq/bz75sfx5qAG7UAJulVUknhyTmHNWq+mZTbbngFeDMyC7ZK9
-         NNys/KbpRRATNdlz2vFyrtC3k98+bq7qOIxBUA8SriB/VdZlQqHC9G/8sa8XjWa1S2/G
-         c1VMnUsGXdt7aLI+kZ4shXcwWlEZw7KRCu+XDmIis5Odrfs38PzGNku0CcI2dysDsTOH
-         5gssHULuJseqxEmC8J5uQ8+AYfDK2frD2GpW+YlRiJLhelv3wDN5bCqg9XWZofjFh3QG
-         wGWmJ3MCfS4Wm9IXsKom9txYnOJ5Mvbr6aV0RQqCh+60Mdrtlk3kUEPqZaHuEj6rqFeF
-         xi2w==
-X-Gm-Message-State: AGi0PuZ1TCBEGntoLtjOUivDbNhtdltdAbvLDFgwcxf84EfU/nmidfy0
-        G8lBVJTK6i/yXNC3cGKW51pxMUkW
-X-Google-Smtp-Source: APiQypJR5KdS5PgtNeeUP7oQQ8SlvE9tG6HalwqsxSNcrZUTnodVOhJj1DSoWqIbIhbeLB+062tPpw==
-X-Received: by 2002:a63:5511:: with SMTP id j17mr4741975pgb.4.1587661198759;
-        Thu, 23 Apr 2020 09:59:58 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id v133sm3112815pfc.113.2020.04.23.09.59.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Apr 2020 09:59:58 -0700 (PDT)
-Subject: Re: [PATCH net-next v2] net: Add TCP_FORCE_LINGER2 to TCP setsockopt
-To:     Cambda Zhu <cambda@linux.alibaba.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Dust Li <dust.li@linux.alibaba.com>,
-        Tony Lu <tonylu@linux.alibaba.com>
-References: <eea2a2c3-79dc-131c-4ef5-ee027b30b701@gmail.com>
- <20200423073529.92152-1-cambda@linux.alibaba.com>
- <3e780f88-41df-413c-7a81-6a63fd750605@gmail.com>
- <256723ED-43E5-4123-B096-15AD417366CD@linux.alibaba.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <2df5f6de-ee68-8309-8b48-a139a4fb6b36@gmail.com>
-Date:   Thu, 23 Apr 2020 09:59:54 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        with ESMTP id S1729674AbgDWRAV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 13:00:21 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50901C09B042;
+        Thu, 23 Apr 2020 10:00:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=SLXXj8i9vi69xcCnNJQ1dfaFIQxrJ+YqvKu0gtVCAnQ=; b=eIMON1LeXDi2bpKRQUdKsX28Z
+        sXPQjqYmJL/INAPNPDWJ4OIROoVRHub4XPPLyxOZuUC4I/Mnnd47yBIFp6nNG0mV5RU1mQMsN1zkD
+        XnxVvCum5qsMvAaSVZRvkbW0axQPcB9pZwGUYqZvoXu2gJ79TG3nBD/z4OSn2VcnsI2GKeaUHNY5S
+        XAphacigPIzIdUnQ9qogMpqRidDg0CVK0OXl/EADqiw7LoC1tnKzv6j+OGlYMwDH2i2bQLV+Zo9it
+        76DOJYBybNHwPa61WElYI+/4ru2Xda0r42mktZuW8/RmmnXfGIHweL5TzvVUbtCKVzccnK7hM3AvE
+        MOWx03tQQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54318)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jRfCr-0007au-Mo; Thu, 23 Apr 2020 18:00:09 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jRfCl-0000rV-JN; Thu, 23 Apr 2020 18:00:03 +0100
+Date:   Thu, 23 Apr 2020 18:00:03 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Matteo Croce <mcroce@redhat.com>
+Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        gregory.clement@bootlin.com, miquel.raynal@bootlin.com,
+        Nadav Haklai <nadavh@marvell.com>,
+        Stefan Chulski <stefanc@marvell.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH net-next 3/5] net: mvpp2: cls: Use RSS contexts to handle
+ RSS tables
+Message-ID: <20200423170003.GT25745@shell.armlinux.org.uk>
+References: <20190524100554.8606-1-maxime.chevallier@bootlin.com>
+ <20190524100554.8606-4-maxime.chevallier@bootlin.com>
+ <CAGnkfhzsx_uEPkZQC-_-_NamTigD8J0WgcDioqMLSHVFa3V6GQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <256723ED-43E5-4123-B096-15AD417366CD@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGnkfhzsx_uEPkZQC-_-_NamTigD8J0WgcDioqMLSHVFa3V6GQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 4/23/20 7:46 AM, Cambda Zhu wrote:
+On Tue, Apr 14, 2020 at 01:43:02AM +0200, Matteo Croce wrote:
+> On Tue, Apr 14, 2020 at 1:21 AM Maxime Chevallier
+> <maxime.chevallier@bootlin.com> wrote:
+> >
+> > The PPv2 controller has 8 RSS tables that are shared across all ports on
+> > a given PPv2 instance. The previous implementation allocated one table
+> > per port, leaving others unused.
+> >
+> > By using RSS contexts, we can make use of multiple RSS tables per
+> > port, one being the default table (always id 0), the other ones being
+> > used as destinations for flow steering, in the same way as rx rings.
+> >
+> > This commit introduces RSS contexts management in the PPv2 driver. We
+> > always reserve one table per port, allocated when the port is probed.
+> >
+> > The global table list is stored in the struct mvpp2, as it's a global
+> > resource. Each port then maintains a list of indices in that global
+> > table, that way each port can have it's own numbering scheme starting
+> > from 0.
+> >
+> > One limitation that seems unavoidable is that the hashing parameters are
+> > shared across all RSS contexts for a given port. Hashing parameters for
+> > ctx 0 will be applied to all contexts.
+> >
+> > Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 > 
+> Hi all,
 > 
->> On Apr 23, 2020, at 21:40, Eric Dumazet <eric.dumazet@gmail.com> wrote:
->>
->>
->>
->> On 4/23/20 12:35 AM, Cambda Zhu wrote:
->>> This patch adds a new TCP socket option named TCP_FORCE_LINGER2. The
->>> option has same behavior as TCP_LINGER2, except the tp->linger2 value
->>> can be greater than sysctl_tcp_fin_timeout if the user_ns is capable
->>> with CAP_NET_ADMIN.
->>>
->>> As a server, different sockets may need different FIN-WAIT timeout and
->>> in most cases the system default value will be used. The timeout can
->>> be adjusted by setting TCP_LINGER2 but cannot be greater than the
->>> system default value. If one socket needs a timeout greater than the
->>> default, we have to adjust the sysctl which affects all sockets using
->>> the system default value. And if we want to adjust it for just one
->>> socket and keep the original value for others, all the other sockets
->>> have to set TCP_LINGER2. But with TCP_FORCE_LINGER2, the net admin can
->>> set greater tp->linger2 than the default for one socket and keep
->>> the sysctl_tcp_fin_timeout unchanged.
->>>
->>> Signed-off-by: Cambda Zhu <cambda@linux.alibaba.com>
->>> ---
->>> Changes in v2:
->>>   - Add int overflow check.
->>>
->>> include/uapi/linux/capability.h |  1 +
->>> include/uapi/linux/tcp.h        |  1 +
->>> net/ipv4/tcp.c                  | 11 +++++++++++
->>> 3 files changed, 13 insertions(+)
->>>
->>> diff --git a/include/uapi/linux/capability.h b/include/uapi/linux/capability.h
->>> index 272dc69fa080..0e30c9756a04 100644
->>> --- a/include/uapi/linux/capability.h
->>> +++ b/include/uapi/linux/capability.h
->>> @@ -199,6 +199,7 @@ struct vfs_ns_cap_data {
->>> /* Allow multicasting */
->>> /* Allow read/write of device-specific registers */
->>> /* Allow activation of ATM control sockets */
->>> +/* Allow setting TCP_LINGER2 regardless of sysctl_tcp_fin_timeout */
->>>
->>> #define CAP_NET_ADMIN        12
->>>
->>> diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
->>> index f2acb2566333..e21e0ce98ca1 100644
->>> --- a/include/uapi/linux/tcp.h
->>> +++ b/include/uapi/linux/tcp.h
->>> @@ -128,6 +128,7 @@ enum {
->>> #define TCP_CM_INQ		TCP_INQ
->>>
->>> #define TCP_TX_DELAY		37	/* delay outgoing packets by XX usec */
->>> +#define TCP_FORCE_LINGER2	38	/* Set TCP_LINGER2 regardless of sysctl_tcp_fin_timeout */
->>>
->>>
->>> #define TCP_REPAIR_ON		1
->>> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
->>> index 6d87de434377..d8cd1fd66bc1 100644
->>> --- a/net/ipv4/tcp.c
->>> +++ b/net/ipv4/tcp.c
->>> @@ -3149,6 +3149,17 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
->>> 			tcp_enable_tx_delay();
->>> 		tp->tcp_tx_delay = val;
->>> 		break;
->>> +	case TCP_FORCE_LINGER2:
->>> +		if (val < 0)
->>> +			tp->linger2 = -1;
->>> +		else if (val > INT_MAX / HZ)
->>> +			err = -EINVAL;
->>> +		else if (val > net->ipv4.sysctl_tcp_fin_timeout / HZ &&
->>> +			 !ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
->>> +			tp->linger2 = 0;
->>> +		else
->>> +			tp->linger2 = val * HZ;
->>> +		break;
->>> 	default:
->>> 		err = -ENOPROTOOPT;
->>> 		break;
->>>
->>
->> INT_MAX looks quite 
->>
->> Anyway, I do not think we need a new socket option, since really it will need documentation and add more confusion.
->>
->> net->ipv4.sysctl_tcp_fin_timeout is the default value for sockets which have tp->linger2 cleared.
->>
->> Fact that it has been used to cap TCP_LINGER2 was probably a mistake.
->>
->> What about adding a new define and simply let TCP_LINGER2 use it ?
->>
->> Really there is no point trying to allow hours or even days for FIN timeout,
->> and no point limiting a socket from having a value between net->ipv4.sysctl_tcp_fin_timeout and 2 minutes,
->> at least from security perspective, these values seem legal as far as TCP specs are concerned.
->>
->>
+> I noticed that enabling rxhash blocks the RX on my Macchiatobin. It
+> works fine with the 10G ports (the RX rate goes 4x up) but it
+> completely kills the gigabit interface.
 > 
-> I also think using sysctl_tcp_fin_timeout to cap TCP_LINGER2 is probably a mistake,
-> and adding a new define for TCP_LINGER2 is a good idea. I have considered the solution
-> and found it may have some compatibility issues. Whatever it’s a mistake or not, a
-> system administrator may have used it to limit the max timeout for all sockets. And
-> when I think about the behavior of TCP_LINGER2, I'm afraid the server may also rely on
-> the behavior so the server can set any value greater than sysctl_tcp_fin_timeout and
-> result in the same timeout.
+> # 10G port
+> root@macchiatobin:~# iperf3 -c 192.168.0.2
+> Connecting to host 192.168.0.2, port 5201
+> [  5] local 192.168.0.1 port 42394 connected to 192.168.0.2 port 5201
+> [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+> [  5]   0.00-1.00   sec   941 MBytes  7.89 Gbits/sec  4030    250 KBytes
+> [  5]   1.00-2.00   sec   933 MBytes  7.82 Gbits/sec  4393    240 KBytes
+> root@macchiatobin:~# ethtool -K eth0 rxhash on
+> root@macchiatobin:~# iperf3 -c 192.168.0.2
+> Connecting to host 192.168.0.2, port 5201
+> [  5] local 192.168.0.1 port 42398 connected to 192.168.0.2 port 5201
+> [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+> [  5]   0.00-1.00   sec   860 MBytes  7.21 Gbits/sec  428    410 KBytes
+> [  5]   1.00-2.00   sec   859 MBytes  7.20 Gbits/sec  185    563 KBytes
 > 
-> Maybe my worry is unnecessary. If so, I think your suggestion is better.
->
+> # gigabit port
+> root@macchiatobin:~# iperf3 -c turbo
+> Connecting to host turbo, port 5201
+> [  5] local 192.168.85.42 port 45144 connected to 192.168.85.6 port 5201
+> [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+> [  5]   0.00-1.00   sec   113 MBytes   948 Mbits/sec    0    407 KBytes
+> [  5]   1.00-2.00   sec   112 MBytes   942 Mbits/sec    0    428 KBytes
+> root@macchiatobin:~# ethtool -K eth2 rxhash on
+> root@macchiatobin:~# iperf3 -c turbo
+> iperf3: error - unable to connect to server: Resource temporarily unavailable
+> 
+> I've bisected and it seems that this commit causes the issue. I tried
+> to revert it on nex-next as a second test, but the code has changed a
+> lot much since, generating too much conflicts.
+> Can you have a look into this?
 
-Ṕlease send a v3 with a proper changelog then, thanks !
+This behaviour on eth2 is confirmed here on v5.6.  Turning on rxhash
+appears to prevent eth2 working.
 
+Maxime, please look into this regression, thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
