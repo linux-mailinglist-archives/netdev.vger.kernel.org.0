@@ -2,113 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 558F01B58B4
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 11:59:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 781FA1B58E8
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 12:16:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726929AbgDWJ7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 05:59:15 -0400
-Received: from mail-vi1eur05on2050.outbound.protection.outlook.com ([40.107.21.50]:16009
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726343AbgDWJ7O (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Apr 2020 05:59:14 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iL4LRhSpYJsx1k6WfDOWLT6idzyWd+gQB6fdIGORWENoDfcGyWrKBsbj5r+pRMrHMvCgorzNUEC9Hh1qP3zKJQW8DqcNIavVJG2QI8xKCY/Epqc/jRx0SNvWbQH4eyn08DSkw9KL00tbn02MpjrsCHiZ8YGz5pmuQgIRctlFTFX2PjJ5qxFLfhvttFKHwADixS9BgkJD3ME7UupZAyEiXBcCQmollVP1xT3gErzxM38NSbWW+nBx7g12dYfUPp3etHgiEi5bZ/RGEg58Tri0M8tqlpsMfKnh4nYQlhFD4oJ8RS9eT4ZhH3oXUL1zjAKbTIAgHWjBbQ1UU2aOCIrgZQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qBY2AQGfa6K8poth3ZafVzXtTru3oH6q9Z8adhg843c=;
- b=gGN9XsMsTfIoqp/tip4dKU4Yu+ZZRYHQ6j01GNoGGUbKdjJe1zATZ41VSZ122iZJlEhrREpHmwYyPjBCBmMv5WKq1pu3A5Sh8g2Oc+uyuK9BwvO8OBGJa+syBHS1Fgaci0po9DGAgm5/MIZgObotUO13QI2H3PmUp6aJ8/HVDGX5sRBzc5bMGJbX3Nw+TGzyax7q/fhggjdPAqcD8otHIt/bzofxH6/51SQrrIAXE3J2C93g4bRmNtrQL86p7z8LxV9RdYxBLc1sMGFusKiwsa9jgX9jONdj3MkjaAFSJyxGx8z5rB4EQ/h8yFw2N+ocdLcvVYXvcbTJjhm2q1vRtg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qBY2AQGfa6K8poth3ZafVzXtTru3oH6q9Z8adhg843c=;
- b=YtT9AEbs1OKQ6/uWphGouzpC//H+aOBb97rmUmUUHEQ11Y5vaSV00MtQcECSXEfMOmvnnzWkYGEo65Xd/x5O5JB4gMzfEH5YEr7V9sRQtWFGuSWZi/3QxpbFO4wUBogpx0x4UWyH07hOSmBuOOw7L3BNaiZMEyGw9skMe+maHP8=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=petrm@mellanox.com; 
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
- HE1PR05MB3420.eurprd05.prod.outlook.com (2603:10a6:7:30::23) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2937.13; Thu, 23 Apr 2020 09:59:10 +0000
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::e9a8:7b1c:f82a:865b]) by HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::e9a8:7b1c:f82a:865b%6]) with mapi id 15.20.2921.030; Thu, 23 Apr 2020
- 09:59:10 +0000
-References: <19073d9bc5a2977a5a366caf5e06b392e4b63e54.1587575157.git.petrm@mellanox.com> <20200422130245.53026ff7@hermes.lan>
-User-agent: mu4e 1.3.3; emacs 26.3
-From:   Petr Machata <petrm@mellanox.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com
-Subject: Re: [PATCH iproute2-next] tc: pedit: Support JSON dumping
-In-reply-to: <20200422130245.53026ff7@hermes.lan>
-Date:   Thu, 23 Apr 2020 11:59:08 +0200
-Message-ID: <87imhq4j6b.fsf@mellanox.com>
-Content-Type: text/plain
-X-ClientProxiedBy: FRYP281CA0003.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10::13)
- To HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22)
+        id S1727022AbgDWKP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 06:15:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60782 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726420AbgDWKP4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 06:15:56 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67168C08C5F2
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 03:15:56 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id i10so6146505wrv.10
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 03:15:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Skhk4DHSP6S49ay3YbxbGVfdsBzay3NHmVMdnxxjSrE=;
+        b=I+TLKuAs2kcILC8r2y31+Fs6kHHC22w89oNz8ZAuEz7a/NwAHyHRhH49lQ99XqFuuo
+         R3IhyHzvFan0ZxMjjmeJfK6vIg83WNw9iTLpInlpuRh0PdnRrn0QvWtkQOg44kqgRhvV
+         6DE3DLosEbf6c35JWsxRezJggy2MUC2ISZmcIDlEBwPlnlZnKh5IFCFfY5isGVsrhkSe
+         AhshvpJ43SI2JP/9sqEtpMJfPwKQBtcEIfCfOo9Ifjn3Uc+GWmZyiKDrdDwhi1TlvmcU
+         OlaVa8Mi7yl+XSaQD426NmRdLYTQGFvtCyaSwMijaGAre7Qrmkw3FVmrCfkp2xlHM9CH
+         1ndg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Skhk4DHSP6S49ay3YbxbGVfdsBzay3NHmVMdnxxjSrE=;
+        b=rMRJUZuBEgTsxl+FyGo3rWVdL1OUmOOeMezom1M3+doEXjpDCNtB4Rpbt5ql0yJC6k
+         W/8ar6R8qZ33swiqVSKZ5OXcceqCtpunUEC+xPlXg//ZvBtqSFp8rBauMbdlIbT7kF4L
+         Jf+PL5AcJOXocc4VD4EjPtm+QsJ7zykhxulxNP35usAzitkYiUSFpPPYzwUpRnQq8ZOo
+         iGhPTHrcHpMOkMquxSy9UWyg/cVLiEfxUbwP40rPP4bGRoBvYxqvtbj+bJIJr/J+LGi2
+         WsdLH30gFENLHZVLfhAlLePM68khMY5HYCkPH+CSpwAm18oF3G4MA0++R4bVTQ2GkYjt
+         yWhg==
+X-Gm-Message-State: AGi0PuZNxkSFpdCqCSzLOl0Q534zxmCsZHRbARwq/edoEFCWppUFwOtU
+        cjGgn2Cieu2hRX2Meu/w244S3ur+Of8RKAN8P/Le0Q==
+X-Google-Smtp-Source: APiQypI1r8e48tHFF0GT3T2PTE6IsJMo2BsxP2K03RKXkKpfdHnZXkmcBMVOlUzUr6+GY2um2U8mlX8yVowKNlWzFZk=
+X-Received: by 2002:a5d:6887:: with SMTP id h7mr4078989wru.365.1587636954682;
+ Thu, 23 Apr 2020 03:15:54 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from yaviefel (213.220.234.169) by FRYP281CA0003.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13 via Frontend Transport; Thu, 23 Apr 2020 09:59:10 +0000
-X-Originating-IP: [213.220.234.169]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: a9fbfcd3-9a9a-4b88-3ff1-08d7e76cf869
-X-MS-TrafficTypeDiagnostic: HE1PR05MB3420:
-X-Microsoft-Antispam-PRVS: <HE1PR05MB342018EF36DF127227ACEEE4DBD30@HE1PR05MB3420.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-Forefront-PRVS: 03827AF76E
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(136003)(39860400002)(366004)(346002)(376002)(478600001)(316002)(5660300002)(81156014)(186003)(36756003)(8936002)(2906002)(4744005)(16526019)(6496006)(6486002)(66556008)(66476007)(6916009)(8676002)(86362001)(956004)(52116002)(4326008)(2616005)(66946007)(26005);DIR:OUT;SFP:1101;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6JCxl5iu2FKvKOg2pZLgqDV9X3iiQNDS3isdTcC2DAyFROXlPsWNz4x7nrwjHgcXZmjuuX2qaTbWvt4nrd2Vfdk6EIja3g4vtdOn1TPahGD1IgZEPklI6ol0NlhELsj6NIdhe7I33uuq24IUoS4F/UlTKJfiYi/dilJQD1lfWu5aqrpo2q0NMrSn2auYIL3COn3Q8BBjHEqaixUy65PcfgUDB/pM16K4RClDe1ZgVeFDnzX6XRIxV3TBaenZzJ5wQg02Tfse3d1On6os82cFe5LClEp7fI1D52aOjLajzXbxDrO1TYyI5Pqa9siPfC6ox0f1e+l66Yb/MnZiSUI/M/G64ujxtQhI86SGqA8iFRiS3/Sq3ke/ITKxtF0Rec5NarYdr92gdKCCaIDcFYwHYMGqzinDr8IG6rjGWVP2cQUBHLK5D0l3SAn7Hf2h5eDx
-X-MS-Exchange-AntiSpam-MessageData: D4+AoNKHQDdsDdd2Dqgvtw9xz5kk9Kw4vSGcecDxOFsOlW+a7Fr3es6C8zGQTHv0bsY+xVNkW/AvDTxl/rZEPB0+Mm8h9HZO0zTHctPIQtV+k6TTyJg2czOpQ1gDFiXFW3q+J0Bsn3jGiWMWClvMNw==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a9fbfcd3-9a9a-4b88-3ff1-08d7e76cf869
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2020 09:59:10.8574
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DU3ux9WfdTZ9qkgxc5ADgnYJASZJ62UdOud6jFPmQHDmfPxLCoddK9rSce9Uw0YmB+UdatFIh7szcP62pPWBGA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3420
+References: <20200414160758.v1.1.Idab9dcdc7da549ed1fd5c66341fb8baffaee8d10@changeid>
+ <84DFB53F-C60A-48D3-AC01-2C9C87BA805D@holtmann.org>
+In-Reply-To: <84DFB53F-C60A-48D3-AC01-2C9C87BA805D@holtmann.org>
+From:   Archie Pusaka <apusaka@google.com>
+Date:   Thu, 23 Apr 2020 18:15:43 +0800
+Message-ID: <CAJQfnxE_-8u_f2R9Twnn0v+tuLYu1bXmLLC_C9T_JrZ-otJxCA@mail.gmail.com>
+Subject: Re: [PATCH v1] Bluetooth: L2CAP: add support for waiting
+ disconnection resp
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Archie Pusaka <apusaka@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Marcel,
 
-Stephen Hemminger <stephen@networkplumber.org> writes:
+Let me write a test for that.
 
-> On Wed, 22 Apr 2020 20:06:15 +0300
-> Petr Machata <petrm@mellanox.com> wrote:
+However, I cannot seem to run l2cap-tester properly.
+On raspberry pi, all of the tests failed to initiate.
+On chromeOS, all BREDR tests pass (before and after the change), but
+all LE tests timed out on init stage (before and after the change).
+
+I need to find out what went wrong when I execute those tests first.
+
+Thanks,
+Archie
+
+
+On Thu, 23 Apr 2020 at 01:42, Marcel Holtmann <marcel@holtmann.org> wrote:
 >
->> +			print_string(PRINT_FP, NULL, ": %s",
->> +				     cmd ? "add" : "val");
->> +			print_string(PRINT_JSON, "cmd", NULL,
->> +				     cmd ? "add" : "set");
+> Hi Archie,
 >
-> Having different outputs for JSON and file here. Is that necessary?
-> JSON output is new, and could just mirror existing usage.
-
-This code outputs this bit:
-
-            {
-              "htype": "udp",
-              "offset": 0,
-              "cmd": "set",   <----
-              "val": "3039",
-              "mask": "ffff0000"
-            },
-
-There are currently two commands, set and add. The words used to
-configure these actions are set and add as well. The way these commands
-are dumped should be the same, too. The only reason why "set" is
-reported as "val" in file is that set used to be the implied action.
-
-JSON doesn't have to be backward compatible, so it should present the
-expected words.
+> > Whenever we disconnect a L2CAP connection, we would immediately
+> > report a disconnection event (EPOLLHUP) to the upper layer, without
+> > waiting for the response of the other device.
+> >
+> > This patch offers an option to wait until we receive a disconnection
+> > response before reporting disconnection event, by using the "how"
+> > parameter in l2cap_sock_shutdown(). Therefore, upper layer can opt
+> > to wait for disconnection response by shutdown(sock, SHUT_WR).
+> >
+> > This can be used to enforce proper disconnection order in HID,
+> > where the disconnection of the interrupt channel must be complete
+> > before attempting to disconnect the control channel.
+> >
+> > Signed-off-by: Archie Pusaka <apusaka@chromium.org>
+> > ---
+> >
+> > net/bluetooth/l2cap_sock.c | 30 +++++++++++++++++++++++-------
+> > 1 file changed, 23 insertions(+), 7 deletions(-)
+>
+> the patch looks fine to me. Do we have something in l2cap-tester or l2test that we can verify this with before I apply it.
+>
+> Regards
+>
+> Marcel
+>
