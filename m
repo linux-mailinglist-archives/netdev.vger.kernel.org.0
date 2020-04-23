@@ -2,125 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D3991B6429
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 21:03:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC0EA1B644C
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 21:11:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730371AbgDWTDc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 15:03:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58588 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730366AbgDWTDb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 15:03:31 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F14AC09B043
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 12:03:29 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id c23so5277118qtp.11
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 12:03:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=rZtX23hw1mDQPuScQ5YaUda61/3w5TZYvLEZ6jNWCt0=;
-        b=Xf6kX2y3lAHY7/NPaFvUbcNmV/gai3T0WQ1lG+u6e5LZWSlwfrxfzSsMEQu0z+YSxd
-         pHhek810+1F39o2ynxdh0ygZlRJdca9CyY4tVsq+aZ/4nTTYy504Ir4Q6cXFkiq6jipl
-         vR8oyllAS0oApdUavbEIZ1GDxg1o/J9r6ar2e5xIM4RJiiAMMSyoTf7BkChMNSUAmh93
-         T74z4D7iqViU+jcBxVwS8W26MZx/74mCcE+OCnU28sxG5S7lih35H6jSpo5UirZ4I6Ar
-         aX71daIrJs4EetvmbQtH97aJmhdno+AfMRGcQfPiv15b7FDyhcHOtM7oH2ANf17VZD+W
-         I6Kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=rZtX23hw1mDQPuScQ5YaUda61/3w5TZYvLEZ6jNWCt0=;
-        b=StUcn/96eMUOlP1uBgmZkcqJwxG0o1SO0kDOz/2GuTnoNBjocerT7d8NzwLnn7yG70
-         3ky8W7TIliUpkj+QbZvTL8ka8JXfW/pTI4dC5bZjTwDE7ZKSPCOcSaCZd+Ze/Zr+ay/r
-         IpoSJ92pqFWfmQdbcnvKA2y1sQR91OPWlvyUDIVWF9qxFSvfNOUrLXiif125QzgbE5vv
-         GVyDsk9CqAoZ6dGAHs7zG9wkZKLYk0+uZqoYXxGgI/gL49ej5mF8ySXxx5KNqVCmG95v
-         X9Qs03ca9nspZZVW8ChCSRK548vHl+RmEu8CoAKyP+f/LDmjjd69ZEZKegZ01hmQcojE
-         EOOw==
-X-Gm-Message-State: AGi0PuYeR+988hx29Q4p+gIMBmGKmA1beRELOvsmxKc4U0s6nSJHPNCT
-        K4m5WZTkjtJ2AZtvhWPFMAmBgQ==
-X-Google-Smtp-Source: APiQypLmXL81PXHuXcYxD1Wx4ZeLiaRBGhAFUaA2MxhgdlZm8avrmnKCJLrIprTv7LJl8de0iPTc5Q==
-X-Received: by 2002:ac8:4809:: with SMTP id g9mr5623041qtq.33.1587668609092;
-        Thu, 23 Apr 2020 12:03:29 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id b1sm2161158qkf.103.2020.04.23.12.03.28
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 23 Apr 2020 12:03:28 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jRh8C-0006m7-0o; Thu, 23 Apr 2020 16:03:28 -0300
-Date:   Thu, 23 Apr 2020 16:03:28 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "Patil, Kiran" <kiran.patil@intel.com>,
-        "Ertman, David M" <david.m.ertman@intel.com>
-Subject: Re: [RFC PATCH v5 01/16] RDMA/irdma: Add driver framework definitions
-Message-ID: <20200423190327.GC26002@ziepe.ca>
-References: <20200417171251.1533371-1-jeffrey.t.kirsher@intel.com>
- <20200417171251.1533371-2-jeffrey.t.kirsher@intel.com>
- <20200417193421.GB3083@unreal>
- <9DD61F30A802C4429A01CA4200E302A7DCD4853F@fmsmsx124.amr.corp.intel.com>
- <20200421004628.GQ26002@ziepe.ca>
- <9DD61F30A802C4429A01CA4200E302A7DCD4A3E9@fmsmsx124.amr.corp.intel.com>
- <20200421182256.GT26002@ziepe.ca>
- <9DD61F30A802C4429A01CA4200E302A7DCD4DB92@fmsmsx124.amr.corp.intel.com>
- <20200423150201.GY26002@ziepe.ca>
- <9DD61F30A802C4429A01CA4200E302A7DCD4ED27@fmsmsx124.amr.corp.intel.com>
+        id S1728097AbgDWTLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 15:11:35 -0400
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:37045 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726296AbgDWTLe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 15:11:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1587669094; x=1619205094;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+cVjfYAvD3unz6/hlGHc2ikrQ4gswyF1rlxFN2YivHk=;
+  b=VmiJV0ENqhfTJ/daRhsW+T80el7COvVR7Uhp2LtMcEJZpSYMT5IXqtHz
+   DUEYWJFcOcYBf41dIjeSpyv4F3fjVefWNjiwLcTKYPYUKhMRExIRdeXyP
+   Bbjh5/gLCVmQjS9KafatDH8qywv+4C6rEmheECLPk6DFPNIKvCsRa+7Yp
+   wCDB9cvEBG3QhBBMQ1QFgBwwqOSOBEbAFPJrxAIS99gAZhJVgeDifGGCt
+   EMxvb+x+ZWYAM3Cbsy2CIi09scX1n2K1mLIpZJh7cG7puKf43twCDH1SN
+   ZbaUX6BON4M2mM/zJXCO3DlGKeaQ8WQM3zlBRwAk+zTFVg1g6daqYQeFA
+   A==;
+IronPort-SDR: iHfHgFDexiVhSHmxfaViEIXRiY8e+MXC3cnM/YGOy+vDxVWcImOZAZIYrQttPmt3uHYNLLJcFL
+ jxAuIt1KC+YK+zpfveo0gNWmghvYTxZMV6LcyNQzQdPyZixq8/MGJko/t4piTy6d4dGxiCHq0o
+ iFy0lrW3pOzrn8XaCxR645jX3RMfvpQrWtAXQXv1wRsq3Y2zWUaZpxzrVxAcCQkwshYUqbcm8C
+ KS9GmqBZZXfTxttS/z0nW+ZG6Cb0Z/a5oeOb4VBGvUwJM5P7ExJ1Bs1Hu9Zb7UNr3zoWv9pikX
+ Nag=
+X-IronPort-AV: E=Sophos;i="5.73,307,1583218800"; 
+   d="scan'208";a="73628295"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Apr 2020 12:11:33 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 23 Apr 2020 12:11:34 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Thu, 23 Apr 2020 12:11:33 -0700
+Date:   Thu, 23 Apr 2020 21:11:31 +0200
+From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Po Liu <Po.Liu@nxp.com>, "David S. Miller" <davem@davemloft.net>,
+        lkml <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Vinicius Costa Gomes" <vinicius.gomes@intel.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        <michael.chan@broadcom.com>, <vishal@chelsio.com>,
+        <saeedm@mellanox.com>, <leon@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        <simon.horman@netronome.com>, <pablo@netfilter.org>,
+        <moshe@mellanox.com>, Murali Karicheri <m-karicheri2@ti.com>,
+        Andre Guedes <andre.guedes@linux.intel.com>,
+        "Stephen Hemminger" <stephen@networkplumber.org>
+Subject: Re: [v3,net-next 1/4] net: qos: introduce a gate control flow action
+Message-ID: <20200423191131.c257srsnicyrhol6@ws.localdomain>
+References: <20200418011211.31725-5-Po.Liu@nxp.com>
+ <20200422024852.23224-1-Po.Liu@nxp.com>
+ <20200422024852.23224-2-Po.Liu@nxp.com>
+ <20200422191910.gacjlviegrjriwcx@ws.localdomain>
+ <CA+h21hrZiRq2-8Dx31X_rwgJ2Lkp6eF9H7M3cOyiBAWs0_xxhw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Disposition: inline
-In-Reply-To: <9DD61F30A802C4429A01CA4200E302A7DCD4ED27@fmsmsx124.amr.corp.intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <CA+h21hrZiRq2-8Dx31X_rwgJ2Lkp6eF9H7M3cOyiBAWs0_xxhw@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 23, 2020 at 05:15:22PM +0000, Saleem, Shiraz wrote:
-> > Subject: Re: [RFC PATCH v5 01/16] RDMA/irdma: Add driver framework
-> > definitions
-> > 
-> > On Thu, Apr 23, 2020 at 12:32:48AM +0000, Saleem, Shiraz wrote:
-> > 
-> > > we have a split initialization design for gen2 and future products.
-> > > phase1 is control path resource initialization in irdma_probe_dev and
-> > > phase-2 is the rest of the resources with the ib registration at the
-> > > end of irdma_open. irdma_close must de-register the ib device which
-> > > will take care of ibdev free too. So it makes sense to keep allocation
-> > > of the ib device in irdma_open.
-> > 
-> > The best driver pattern is to allocate the ib_device at the very start of probe() and
-> > use this to anchor all the device resources and memories.
-> > 
-> > The whole close/open thing is really weird, you should get rid of it.
-> maybe I missing something. But why is it weird?
+On 22.04.2020 22:28, Vladimir Oltean wrote:
+>> >> tc qdisc add dev eth0 ingress
+>> >
+>> >> tc filter add dev eth0 parent ffff: protocol ip \
+>> >           flower src_ip 192.168.0.20 \
+>> >           action gate index 2 clockid CLOCK_TAI \
+>> >           sched-entry open 200000000 -1 8000000 \
+>> >           sched-entry close 100000000 -1 -1
+>>
+>> First of all, it is a long time since I read the 802.1Qci and when I did
+>> it, it was a draft. So please let me know if I'm completly off here.
+>>
+>> I know you are focusing on the gate control in this patch serie, but I
+>> assume that you later will want to do the policing and flow-meter as
+>> well. And it could make sense to consider how all of this work
+>> toghether.
+>>
+>> A common use-case for the policing is to have multiple rules pointing at
+>> the same policing instance. Maybe you want the sum of the traffic on 2
+>> ports to be limited to 100mbit. If you specify such action on the
+>> individual rule (like done with the gate), then you can not have two
+>> rules pointing at the same policer instance.
+>>
+>> Long storry short, have you considered if it would be better to do
+>> something like:
+>>
+>>    tc filter add dev eth0 parent ffff: protocol ip \
+>>             flower src_ip 192.168.0.20 \
+>>             action psfp-id 42
+>>
+>> And then have some other function to configure the properties of psfp-id
+>> 42?
+>>
+>>
+>> /Allan
+>>
+>
+>It is very good that you brought it up though, since in my opinion too
+>it is a rather important aspect, and it seems that the fact this
+>feature is already designed-in was a bit too subtle.
+>
+>"psfp-id" is actually his "index" argument.
+Ahh.. Thanks for clarifying, I missed this point completly.
 
-Because the RDMA driver should exist as its own entity. It does not
-shutdown unless the remove() method on is struct device_driver is
-closed.
-
-So what exactly are open/cose supposed to be doing? I think it is a
-left over of trying to re-implement the driver model.
-
-> underlying configuration changes and reset management for the physical
-> function need a light-weight mechanism which is realized with the close/open
-> from netdev PCI drv --> rdma drv.
-
-> Without a teardown and re-add of virtual device off the bus.
-
-Yes, that is exactly right. If you have done something so disruptive
-that the ib_device needs to be destroyed then you should unplug/replug
-the entire virtual bus device, that is the correct and sane thing to
-do. There is no 'light weight' here, destroying the ib_device is
-incredibly expensive and disruptive.
-
-Jason
