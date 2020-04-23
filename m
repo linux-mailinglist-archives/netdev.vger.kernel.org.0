@@ -2,110 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 022351B5169
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 02:39:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ACF81B516D
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 02:39:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726448AbgDWAjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 20:39:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55770 "EHLO
+        id S1726453AbgDWAjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 20:39:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726112AbgDWAjP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 20:39:15 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B1EC03C1AA
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 17:39:15 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id t16so1636405plo.7
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 17:39:15 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726112AbgDWAjg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 20:39:36 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A824AC03C1AA;
+        Wed, 22 Apr 2020 17:39:34 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id t11so3318661lfe.4;
+        Wed, 22 Apr 2020 17:39:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=wUakctYHwfp/MLrgLo7Q01GjcLl9cKCqsbFUgDqcwNU=;
-        b=SkE9F4C6u6poTIe5Q8SXmqR54IzjLZK904m2DTS7Dv0E0nTfuf5I9PQZwhzxdDE7Z1
-         sdKcTD7ldwll0QKZrWBKRSRZMt5mngrUnSMrVW2ayq4HglA1kqjpUf9e2IACYsSryw3C
-         CGxoIzYnPc2hbYxVZ+GEEIqrZiZXC5/bgZzJ8MJPkOvvAr998GctWNgB/U3O2IaA4nnT
-         EZwAfFL5IyoRvcUu+Tfi1+cU6WaSHIkZlPt1ZU5Fk29j4SU1y1uSOtllsI995f16lXr6
-         lc9pLl9mqfKu+DnlLrH32QKUKFdOfKBC+gF+NhyxvMfxTxcVIAs9FcFgqjOawV4JbdM3
-         akgQ==
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=5fl4A7nRdQONkc+Ns32BwHf/X7YnX+et/nIg9JJL2zU=;
+        b=Mj30sjvrkHvbKMqqfHKFNV5+YQEGBrwRZ0z+4T3vXh7n5MBP9x3dRJ6j2LmHioOge6
+         QYB43T4G4zJsbQVQ7BH3EqooNVpHMppSpitVpDBQztmzTnG24oBhFVzD/pbnt9ghXCDO
+         lIPvj3hYEECgw/yZYPuNE0KHnYN0oFHy/bnaLJb8G8jh4Pwt0ER9hkd3ECRaHkHJU+iO
+         goBbHo0eb/KFYdoDWis9mS1esjCM8LF+3/iN/bWJpmfHjiEIUFmfqjNzVq6UTTEZbD6/
+         cq6F+gZvE/nYHjEyGeNUuF/JF95Q6/HLQv3qf/7y4paceeOPZpHl3Ev/446VWEv+B+4b
+         IBCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=wUakctYHwfp/MLrgLo7Q01GjcLl9cKCqsbFUgDqcwNU=;
-        b=Fih7lGoYAtoZADHzn5DRsr21Pzyzbj/IQIPDItXdKwkY2ffcnVhNyw6UYik44xMX+3
-         1rSPhD9WWWC8+pn6fwA+Nyj0T3TWQZgTwoL/phQEQUDi/eOEswb9dsHjUYQ1uXTtPKu2
-         /PiPpifXfnaYPaMCcBrEDBy9S+bjHIhDOLSAHccyxgsXva2G2V1kTZNv/qkJTXIwjRTD
-         QVT7pB2j6cF8GSSZjucysBYS3b+JNPJVvyF4w+G2XR7fUOSFInQI6/+Pyo0HzJI5WXeZ
-         l9hg1SeOpULWiFoJbAf9xS6ponM6rABQ1qtifCwCqE9TwPOUyDb3v0VNHuHKQe7sersE
-         bVSw==
-X-Gm-Message-State: AGi0PuZxR8AmumgNGOfUwElPvA4aCT0O40w4naw4KxAAOLbJ0Qn7IVQx
-        SkX219IxDq58BQ75EyzjdCk=
-X-Google-Smtp-Source: APiQypK6s7LLgevd+MfnwdBb5rg6sxWy8JOJA5fEztwLmuz/22VotGQQnq4b3zlN+o3tH21MA4qn1g==
-X-Received: by 2002:a17:902:bcc4:: with SMTP id o4mr1293699pls.233.1587602355122;
-        Wed, 22 Apr 2020 17:39:15 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:b150])
-        by smtp.gmail.com with ESMTPSA id a9sm421108pgv.18.2020.04.22.17.39.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Apr 2020 17:39:14 -0700 (PDT)
-Date:   Wed, 22 Apr 2020 17:39:11 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        brouer@redhat.com, toshiaki.makita1@gmail.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dahern@digitalocean.com>
-Subject: Re: [PATCH bpf-next 04/16] net: Add BPF_XDP_EGRESS as a
- bpf_attach_type
-Message-ID: <20200423003911.tzuu6cxtg7olvvko@ast-mbp.dhcp.thefacebook.com>
-References: <20200420200055.49033-5-dsahern@kernel.org>
- <87ftcx9mcf.fsf@toke.dk>
- <856a263f-3bde-70a7-ff89-5baaf8e2240e@gmail.com>
- <87pnc17yz1.fsf@toke.dk>
- <073ed1a6-ff5e-28ef-d41d-c33d87135faa@gmail.com>
- <87k1277om2.fsf@toke.dk>
- <154e86ee-7e6a-9598-3dab-d7b46cce0967@gmail.com>
- <875zdr8rrx.fsf@toke.dk>
- <783d0842-a83f-c22f-25f2-4a86f3924472@gmail.com>
- <87368v8qnr.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87368v8qnr.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=5fl4A7nRdQONkc+Ns32BwHf/X7YnX+et/nIg9JJL2zU=;
+        b=B87NbZIbLKiuUTURFThhvs2SMWre10Crw9wz3hG1Bs8BKWXK3WKVm50fOqqhAiWFUl
+         cB9HP0mQjRg7R+ecQlB6M9ok6+98q6OVHlFrRMXnbljFf6i6ojTWiQoH2DhfhDZ+TZO4
+         q3zy61dkeJq7NBFd+LCl5RSL1e3u64sYQACr3iBnuDSFkj+dudjnW/Ks4f2Bol6kOHGv
+         v8rhIAmvRMpsfm3cr7pD8RoMM7WX63ZWt+X0YzuLqF8ZpCxNA6OLoolgDIBtbZ+CFOuv
+         ZUUaxE7ZJscdT0FszfJh9SlSMHYFKd0xLDO7KQw/1JmVEVtJL5n+6TVQKdWmMfJT+KbA
+         xyMg==
+X-Gm-Message-State: AGi0PuZnda7WPPp9FrmtYyhvgGZAUU5dNUaI33ktEiSxlWZ7rpStzno1
+        SdZuZw2bEko4R3wB129TEUXCz8DdoGY=
+X-Google-Smtp-Source: APiQypKEnU1zF7+eWCBcmj0qvCVqLKmZHMNFwVXoZaQrmlJkac50VlkAbDcbpHZOQ6d2aDNMPqqV1g==
+X-Received: by 2002:a19:c3c5:: with SMTP id t188mr718181lff.199.1587602373144;
+        Wed, 22 Apr 2020 17:39:33 -0700 (PDT)
+Received: from [172.16.20.20] ([87.200.95.144])
+        by smtp.gmail.com with ESMTPSA id t19sm502360lfl.53.2020.04.22.17.39.30
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 22 Apr 2020 17:39:32 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.14\))
+Subject: Re: [PATCH 0/3] Bluetooth: hci_qca: add support for QCA9377
+From:   Christian Hewitt <christianshewitt@gmail.com>
+In-Reply-To: <D965D634-A881-43E0-B9F8-DF4679BB9C6D@holtmann.org>
+Date:   Thu, 23 Apr 2020 04:39:24 +0400
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-amlogic@lists.infradead.org,
+        Bluez mailing list <linux-bluetooth@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <6103BC70-F2AC-4CA5-BF6F-152466AEEBD1@gmail.com>
+References: <20200421081656.9067-1-christianshewitt@gmail.com>
+ <D965D634-A881-43E0-B9F8-DF4679BB9C6D@holtmann.org>
+To:     Marcel Holtmann <marcel@holtmann.org>
+X-Mailer: Apple Mail (2.3445.104.14)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 22, 2020 at 05:51:36PM +0200, Toke Høiland-Jørgensen wrote:
-> David Ahern <dsahern@gmail.com> writes:
-> 
-> > On 4/22/20 9:27 AM, Toke Høiland-Jørgensen wrote:
-> >> And as I said in the beginning, I'm perfectly happy to be told why I'm
-> >> wrong; but so far you have just been arguing that I'm out of scope ;)
-> >
-> > you are arguing about a suspected bug with existing code that is no way
-> > touched or modified by this patch set, so yes it is out of scope.
-> 
-> Your patch is relying on the (potentially buggy) behaviour, so I don't
-> think it's out of scope to mention it in this context.
 
-Sorry for slow reply.
-I'm swamped with other things atm.
+> On 22 Apr 2020, at 9:39 pm, Marcel Holtmann <marcel@holtmann.org> =
+wrote:
+>=20
+> Hi Christian,
+>=20
+>> This series adds a new compatible for the QCA9377 BT device that is =
+found
+>> in many Android TV box devices, makes minor changes to allow =
+max-speed
+>> values for the device to be read from device-tree, and updates =
+bindings
+>> to reflect those changes.
+>>=20
+>> Christian Hewitt (3):
+>> dt-bindings: net: bluetooth: Add device tree bindings for QCA9377
+>> Bluetooth: hci_qca: add compatible for QCA9377
+>> Bluetooth: hci_qca: allow max-speed to be set for QCA9377 devices
+>>=20
+>> .../bindings/net/qualcomm-bluetooth.txt         |  5 +++++
+>> drivers/bluetooth/hci_qca.c                     | 17 =
+++++++++++-------
+>> 2 files changed, 15 insertions(+), 7 deletions(-)
+>=20
+> the series doesn=E2=80=99t apply cleanly against bluetooth-next tree. =
+Can you please respin it.
 
-Looks like there is indeed a bug in prog_type_ext handling code that
-is doing
-env->ops = bpf_verifier_ops[tgt_prog->type];
-I'm not sure whether the verifier can simply add:
-prog->expected_attach_type = tgt_prog->expected_attach_type;
-and be done with it.
-Likely yes, since expected_attach_type must be zero at that point
-that is enforced by bpf_prog_load_check_attach().
-So I suspect it's a single line fix.
-A selftest to prove or disprove is necessary, of course.
+Ahh, it was based on 5.7-rc1, will do, thanks.
 
-Thanks Toke for bringing it to my attention.
+Christian=
