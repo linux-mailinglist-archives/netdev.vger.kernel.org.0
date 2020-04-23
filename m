@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 981781B51DB
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 03:34:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F106B1B51DE
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 03:34:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726474AbgDWBeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 21:34:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36076 "EHLO
+        id S1726499AbgDWBes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 21:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725828AbgDWBen (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 21:34:43 -0400
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A66C03C1AA;
-        Wed, 22 Apr 2020 18:34:43 -0700 (PDT)
-Received: by mail-lf1-x141.google.com with SMTP id m2so3393745lfo.6;
-        Wed, 22 Apr 2020 18:34:43 -0700 (PDT)
+        with ESMTP id S1725828AbgDWBeq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 21:34:46 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20997C03C1AA;
+        Wed, 22 Apr 2020 18:34:46 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id u15so4517428ljd.3;
+        Wed, 22 Apr 2020 18:34:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=SjIpWwjlKzcDo7C6DWuyOHHv+FcusMs+xC0Ay0zQfow=;
-        b=cm++pq9PqU09LWqOhZICWe+XkH+rovOt0WcKcXhCkV68g2OLmySWEs8eAD81MSrcw/
-         Sy8Kt5GeHkQT+OEui9SMm19xLNGepSRVK807WGewtLrKHE1zOSjA+s+KWiPo6EkRpPC1
-         qUhtor3UpK+M0NTcMHR21oJ9SoAIPc4Giu2g7/xmzL+mLc30/RHTuIWT1h0de6xYI/JP
-         ZeBqb3tEwDtOvrsXWJbL1tzttr9/QZtRVEdc7HGRFaNn9NuSUgLla1y+FuN5Si5WVqsX
-         /0BYtRb8PYZOBVCZJ57YuqEYSVQzr6pDansJMBrdSYrQRVC2OCjdptHXIkAg2PIHg29a
-         RBQA==
+        bh=G/DeIfTtEEjBtBecf4XcPLs4Cf8wCiNe7uM2NSD391A=;
+        b=cbXkS909FJhTEQvWCuDzuQzaA0NsuulPznjrsSh2fseMwmYC9aqjcVnQQRHBxMTVhI
+         9umfMk5Oioqb9J/NQvDFcGkpkb8LwVeE7Q8ZqQhgdHdges9SF+H48RBNlFto9zTe9nPt
+         rX19Rjzhz8h9r6GH9DayRPMprtydudX2lnKvHOH8KqTOO+irilhzeEqvA1JqmZ/yTyuZ
+         IThNyyZF/Q4IqP/hZ0+DAibGHUkJw8huJzTCOsd0/BBKaqB1YRVlb7y9po5ZIQqlIU9P
+         ZPJB46QxH2eLJjlZIDH2BFMuGl23H/C3Tc88PAg5vAbAGdAhSqFJzvdenRrz8bffHAcT
+         f13g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=SjIpWwjlKzcDo7C6DWuyOHHv+FcusMs+xC0Ay0zQfow=;
-        b=gP3ePmyxa3+/JJZs8EtCL+gYB4u7KAS9wFw4XMUkfRr2i6t93gchQdXn5XMrEVfl49
-         vuKfm3L3R8eLt8adOJaJrzHMLlRtCcICy2oa5iJ8IRlEoJT0sZd3Hob55kYu8eoO5E9a
-         yVl5ONCN0JuLS3PPdtKvt9N5lGlecsTsLlS56IAjrYuKYlYXDI8YaEytRJlveQC4H70c
-         t+8lW6TM/p2ZO4K3yyCAerVQGyYYp+SyQsxc/xkukNaB8/nrITReZyVX0kxFLvtD2h9J
-         ixG3Bd3dyW301cyZFQzDjEKw0LpSvlV1ePbquJrXXNFwnII2zAkJJwRD8J0H5pJuC0xg
-         OB/w==
-X-Gm-Message-State: AGi0PuZaS4XbR2Mw0Z4RsNlHHTBjxQuWKBVsxoml39hLGFDjd/PFhHPV
-        Q0LmEE6GBvGv2JGWG5aVgCQ=
-X-Google-Smtp-Source: APiQypIyfajWd1CR5VR7pjWZXmAEpBB85Z/O3xF0H/BMnaIMr+pEz7yjtjAH8cE9ZAsZJiENbSjegg==
-X-Received: by 2002:a19:4f48:: with SMTP id a8mr815575lfk.174.1587605681743;
-        Wed, 22 Apr 2020 18:34:41 -0700 (PDT)
+        bh=G/DeIfTtEEjBtBecf4XcPLs4Cf8wCiNe7uM2NSD391A=;
+        b=dGA3TXx65lyY3qJKe5wAGxf5Fs+a2IKsgi9qZUL5ITUMzyGBPaophxJpNxEmrikSkI
+         V/Xt6KTRnPbEs9u5nb5X7C350JmiC2T4Jg2DMzdXobnh1L9Mi26H58eEHr1Vr67brC9v
+         7l1BGf3tZ8Qxcakj6jy1eb4KpW+zlOpCN5IKJ4lOWBMZxLwq7iTPWowLCEdAKkqU8BA6
+         FICcwYfjoNg+pKLbStF9MY4FT7ra4btNBzv5xIkH7lJds4VczmJ5OaBRihs/1JcqUxTo
+         EqIPSQgqlUKsbnQsUWJZYkicxaHMK/IIwmQFqOOVVAKxiVFuxhS5VjRPZB7FotMSO1Sf
+         7arA==
+X-Gm-Message-State: AGi0PuYEzFmi4r1769Gy8ga0G0iQ2+68MHMh/ZYQfJCsQwcg+Daun1W8
+        rDqyljeDvqcWZC/bWuWgaYA=
+X-Google-Smtp-Source: APiQypLEtOmKh2USJECy+faxyw6KIO3K2LuNbi6t5dbfIDcM6sEn5dFCwSCsnaBlpW8RcqdtOAUciA==
+X-Received: by 2002:a05:651c:119a:: with SMTP id w26mr891073ljo.53.1587605684557;
+        Wed, 22 Apr 2020 18:34:44 -0700 (PDT)
 Received: from localhost.localdomain ([87.200.95.144])
-        by smtp.gmail.com with ESMTPSA id h21sm564967lfp.1.2020.04.22.18.34.39
+        by smtp.gmail.com with ESMTPSA id h21sm564967lfp.1.2020.04.22.18.34.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Apr 2020 18:34:41 -0700 (PDT)
+        Wed, 22 Apr 2020 18:34:44 -0700 (PDT)
 From:   Christian Hewitt <christianshewitt@gmail.com>
 To:     Marcel Holtmann <marcel@holtmann.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
@@ -54,9 +54,9 @@ To:     Marcel Holtmann <marcel@holtmann.org>,
         linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
         Christian Hewitt <christianshewitt@gmail.com>
-Subject: [PATCH v2 2/3] Bluetooth: hci_qca: add compatible for QCA9377
-Date:   Thu, 23 Apr 2020 01:34:29 +0000
-Message-Id: <20200423013430.21399-3-christianshewitt@gmail.com>
+Subject: [PATCH v2 3/3] Bluetooth: hci_qca: allow max-speed to be set for QCA9377 devices
+Date:   Thu, 23 Apr 2020 01:34:30 +0000
+Message-Id: <20200423013430.21399-4-christianshewitt@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200423013430.21399-1-christianshewitt@gmail.com>
 References: <20200423013430.21399-1-christianshewitt@gmail.com>
@@ -65,25 +65,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a compatible so QCA9377 devices can be defined in device-tree.
+Move the read of max-speed from device-tree out of the qca_is_wcn399x
+if block so oper_speed can be set for QCA9377 devices as well.
 
+Suggested-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
 Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
 ---
- drivers/bluetooth/hci_qca.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/bluetooth/hci_qca.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
-index d0ac554584a4..072983dc07e3 100644
+index 072983dc07e3..b3fd07a6f812 100644
 --- a/drivers/bluetooth/hci_qca.c
 +++ b/drivers/bluetooth/hci_qca.c
-@@ -2058,6 +2058,7 @@ static SIMPLE_DEV_PM_OPS(qca_pm_ops, qca_suspend, qca_resume);
- static const struct of_device_id qca_bluetooth_of_match[] = {
- 	{ .compatible = "qcom,qca6174-bt" },
- 	{ .compatible = "qcom,qca6390-bt", .data = &qca_soc_data_qca6390},
-+	{ .compatible = "qcom,qca9377-bt" },
- 	{ .compatible = "qcom,wcn3990-bt", .data = &qca_soc_data_wcn3990},
- 	{ .compatible = "qcom,wcn3991-bt", .data = &qca_soc_data_wcn3991},
- 	{ .compatible = "qcom,wcn3998-bt", .data = &qca_soc_data_wcn3998},
+@@ -597,10 +597,12 @@ static int qca_open(struct hci_uart *hu)
+ 
+ 	if (hu->serdev) {
+ 		qcadev = serdev_device_get_drvdata(hu->serdev);
+-		if (qca_is_wcn399x(qcadev->btsoc_type)) {
++
++		if (qca_is_wcn399x(qcadev->btsoc_type))
+ 			hu->init_speed = qcadev->init_speed;
++
++		if (qcadev->oper_speed)
+ 			hu->oper_speed = qcadev->oper_speed;
+-		}
+ 	}
+ 
+ 	timer_setup(&qca->wake_retrans_timer, hci_ibs_wake_retrans_timeout, 0);
+@@ -1871,6 +1873,11 @@ static int qca_serdev_probe(struct serdev_device *serdev)
+ 	serdev_device_set_drvdata(serdev, qcadev);
+ 	device_property_read_string(&serdev->dev, "firmware-name",
+ 					 &qcadev->firmware_name);
++	device_property_read_u32(&serdev->dev, "max-speed",
++				 &qcadev->oper_speed);
++	if (!qcadev->oper_speed)
++		BT_DBG("UART will pick default operating speed");
++
+ 	if (data && qca_is_wcn399x(data->soc_type)) {
+ 		qcadev->btsoc_type = data->soc_type;
+ 		qcadev->bt_power = devm_kzalloc(&serdev->dev,
+@@ -1895,11 +1902,6 @@ static int qca_serdev_probe(struct serdev_device *serdev)
+ 			return PTR_ERR(qcadev->susclk);
+ 		}
+ 
+-		device_property_read_u32(&serdev->dev, "max-speed",
+-					 &qcadev->oper_speed);
+-		if (!qcadev->oper_speed)
+-			BT_DBG("UART will pick default operating speed");
+-
+ 		err = hci_uart_register_device(&qcadev->serdev_hu, &qca_proto);
+ 		if (err) {
+ 			BT_ERR("wcn3990 serdev registration failed");
 -- 
 2.17.1
 
