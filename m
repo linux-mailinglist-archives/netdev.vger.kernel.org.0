@@ -2,105 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C97E1B5454
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 07:43:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFD9F1B5483
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 08:01:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726796AbgDWFnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 01:43:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46532 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725854AbgDWFnj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 01:43:39 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81AC9C03C1AB;
-        Wed, 22 Apr 2020 22:43:37 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id j14so3711656lfg.9;
-        Wed, 22 Apr 2020 22:43:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=I2UvogU+zAttqM+UN7V1qh3mILPYKdcdnvM9RFKUig8=;
-        b=heJ49tVZFRBACNLa5zBn5n2tYnQ5miAZgU4IeW89HuIYYGSZxxiC+4CdoqNUnj4nOL
-         x2K43lna6E1GDIuB10cIdAmRAuYlPbSmhfBB1JJhdKbVs/Bz7/ooZqA7swc7J+X9UEa6
-         5pazITw+HrqoS3jmUJW7B1hFbVBIorhBgkbxpq/uNWea8kwO1Pkrhv3Y4K0hAIMC8bbZ
-         y+qycG0HPgTMNub/Rti1jBwZ6+8Imc6EnHv9pQJTTGKO2TBMMFM7xucC5OVcR9WsiALt
-         0xsgCak/eQWxsOxR640EnUE0vcb/dB8Yn4fal6eupxHVj5Tm9SbKy8eMyuSXmv6lRPzR
-         1IeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=I2UvogU+zAttqM+UN7V1qh3mILPYKdcdnvM9RFKUig8=;
-        b=DW+r457U8Vs3uL1eb0zv1EjPKCQJUcsWlJzK46cpYe1FgVnAbGIf47BcJdBiR2rBhm
-         klkCn627ivy1ikPkjUMInXmtc87kt5tSCOJUQpPFSB1VBNF8SRmnx00AZdx9PMzxzYFn
-         JJ7yLTD0ZeQ8rYGoHvq8nexlPS1uycXp7oKIFqetnLuDL5b91dGah7wB4FKDkK/M1DrA
-         w7h9+NwmoVvhciqrXEaqAoKw6ayC9EYK6ccD/Qz3jMK6wJ9+UfQBaWRc49FUiqsQqLcd
-         kL9mtqQuQripKOir0zx7Fu95QVQ8QqPW8+nAlKVQ9R2oE4Te+ZfrQ461Yvjh1cXC7LtE
-         sxtw==
-X-Gm-Message-State: AGi0Pua/qVybykHDk4F5q1+EfvdpEc9CdPhAe5BkK9dyMlwQXMW+niJF
-        Ag50zfjfFLm1CQlWbCjTuA/gIPjfSzYDfWeQfSA=
-X-Google-Smtp-Source: APiQypIvvrxeH1I47KnX+fDdysX9+aRpyk3+HEQfUukT9P/xgPoPkCvGXe17BAS2eFbjM3JY0TcVCfasQ6TOqYIM1o4=
-X-Received: by 2002:ac2:569b:: with SMTP id 27mr1312043lfr.134.1587620615984;
- Wed, 22 Apr 2020 22:43:35 -0700 (PDT)
+        id S1726593AbgDWGBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 02:01:43 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:51124 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725854AbgDWGBm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Apr 2020 02:01:42 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 0266C204B4;
+        Thu, 23 Apr 2020 08:01:41 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id xBidErRNvxDJ; Thu, 23 Apr 2020 08:01:40 +0200 (CEST)
+Received: from mail-essen-02.secunet.de (mail-essen-02.secunet.de [10.53.40.205])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 91CAF201AA;
+        Thu, 23 Apr 2020 08:01:40 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ MAIL-ESSEN-02.secunet.de (10.53.40.205) with Microsoft SMTP Server (TLS) id
+ 14.3.487.0; Thu, 23 Apr 2020 08:01:40 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Thu, 23 Apr
+ 2020 08:01:40 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id ECF9731800BD;
+ Thu, 23 Apr 2020 08:01:39 +0200 (CEST)
+Date:   Thu, 23 Apr 2020 08:01:39 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Xiyu Yang <xiyuyang19@fudan.edu.cn>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yuanxzhang@fudan.edu.cn>,
+        <kjlu@umn.edu>, Xin Tan <tanxin.ctf@gmail.com>
+Subject: Re: [PATCH] xfrm: Fix xfrm_state refcnt leak in xfrm_input()
+Message-ID: <20200423060139.GB13121@gauss3.secunet.de>
+References: <1587619161-14094-1-git-send-email-xiyuyang19@fudan.edu.cn>
 MIME-Version: 1.0
-References: <20200422093329.GI2659@kadam> <20200423033314.49205-1-maowenan@huawei.com>
- <20200423033314.49205-2-maowenan@huawei.com>
-In-Reply-To: <20200423033314.49205-2-maowenan@huawei.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 22 Apr 2020 22:43:24 -0700
-Message-ID: <CAADnVQLfqLBzsjK0KddZM7WTL3unzWw+v18L0pw8HQnWsEVUzA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/2] bpf: Change error code when ops is NULL
-To:     Mao Wenan <maowenan@huawei.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, kernel-janitors@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <1587619161-14094-1-git-send-email-xiyuyang19@fudan.edu.cn>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 22, 2020 at 8:31 PM Mao Wenan <maowenan@huawei.com> wrote:
->
-> There is one error printed when use BPF_MAP_TYPE_SOCKMAP to create map:
-> libbpf: failed to create map (name: 'sock_map'): Invalid argument(-22)
->
-> This is because CONFIG_BPF_STREAM_PARSER is not set, and
-> bpf_map_types[type] return invalid ops. It is not clear to show the
-> cause of config missing with return code -EINVAL, so add pr_warn() and
-> change error code to describe the reason.
->
-> Signed-off-by: Mao Wenan <maowenan@huawei.com>
-> ---
->  kernel/bpf/syscall.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
->
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index d85f37239540..7686778457c7 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -112,9 +112,10 @@ static struct bpf_map *find_and_alloc_map(union bpf_attr *attr)
->                 return ERR_PTR(-EINVAL);
->         type = array_index_nospec(type, ARRAY_SIZE(bpf_map_types));
->         ops = bpf_map_types[type];
-> -       if (!ops)
-> -               return ERR_PTR(-EINVAL);
-> -
-> +       if (!ops) {
-> +               pr_warn("map type %d not supported or kernel config not opened\n", type);
-> +               return ERR_PTR(-EOPNOTSUPP);
-> +       }
+On Thu, Apr 23, 2020 at 01:19:20PM +0800, Xiyu Yang wrote:
+> xfrm_input() invokes xfrm_state_lookup(), which returns a reference of
+> the specified xfrm_state object to "x" with increased refcnt and then
+> "x" is escaped to "sp->xvec[]".
+> 
+> When xfrm_input() encounters error, it calls kfree_skb() to free the
+> "skb" memory. Since "sp" comes from one of "skb" fields, this "free"
+> behavior causes "sp" becomes invalid, so the refcount for its field
+> should be decreased to keep refcount balanced before kfree_skb() calls.
+> 
+> The reference counting issue happens in several exception handling paths
+> of xfrm_input(). When those error scenarios occur such as skb_dst()
+> fails, the function forgets to decrease the refcnt increased by
+> xfrm_state_lookup() and directly calls kfree_skb(), causing a refcnt
+> leak.
 
-I don't think users will like it when kernel spams dmesg.
-If you need this level of verbosity please teach consumer of libbpf to
-print them.
-It's not a job of libbpf either.
+kfree_skb() drops these refcounts already, why should we do that here
+too?
+
