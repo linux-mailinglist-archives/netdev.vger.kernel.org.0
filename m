@@ -2,142 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 389CB1B5CBF
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 15:42:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B46EE1B5CC9
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 15:44:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727927AbgDWNmF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 09:42:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36352 "EHLO
+        id S1728595AbgDWNoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 09:44:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726224AbgDWNmF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 09:42:05 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D7DEC08E934
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 06:42:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=UaXf9i2Q1u7u/COPjY+IWmIElxx5bBJDu3o7GSXUabg=; b=WFPj6fCq++Fw8Z5aWGiw9jqE0
-        nhKBg4hgiTrb9xN6OKYjgDCoRhRaFQRI4TGHKLOTvzJOXQaK4gFKKVh2kuQE5D5r9b8nknyG/9NvC
-        qUo9uT8Yk4kKDNTiQOhRrR8vKq3B0WpzV1qGRY6YwxZFOFiyDA1QrXeExX5wKYud5+dCYfO3cinZj
-        /c0bQHYBcobUmDQBvWjohpGGrlqaj4y7STIau9bg7TT7TAVfB7zs31qlQMgtzt4lIT2AqfWEFeVWN
-        nBjdrk5YKNX6vPMqRVGL01CGNR03bgepV2wl3RiWajfcCyIvGQ7Ak+076MA+d9jeMu1Ax/ZwDQEkz
-        hF6Rmp0yQ==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:50120)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jRc74-0006aB-PP; Thu, 23 Apr 2020 14:41:58 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jRc74-0000ki-8y; Thu, 23 Apr 2020 14:41:58 +0100
-Date:   Thu, 23 Apr 2020 14:41:58 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Baruch Siach <baruch@tkos.co.il>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net v3 2/2] net: phy: marvell10g: hwmon support for 2110
-Message-ID: <20200423134158.GR5827@shell.armlinux.org.uk>
-References: <99771ceabb63b6a6a7d112197f639084f11e4aa4.1587618482.git.baruch@tkos.co.il>
- <f97e4690b4ec92598b3514f05e32dc26f37044ac.1587618482.git.baruch@tkos.co.il>
- <20200423133936.GS25745@shell.armlinux.org.uk>
+        by vger.kernel.org with ESMTP id S1728133AbgDWNoC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 09:44:02 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E39C08E934
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 06:44:01 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id s63so6382735qke.4
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 06:44:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vwWrxMzgDrpqUZdYZb5+ZHEhV15ZfAbMzYb+WqtFeWE=;
+        b=L6k5CsfjSe3pHsa/+SXmm67z581HMD+UsdbDkVb/v1Q6tAPFika1mgG38g9e9cJWiq
+         3XnPRgR0+Qz1eJNuepKX6nMR0DMI7s7WnKjQBML8CFpLWAt/xihJ7JaSuIM7MAbTUlb8
+         IedgTohiNauXnRjLQq+NVQgSm+byEOMgmfSGthVDgcpiU7QddcoFury/biHJmVr0t/zS
+         B2l/AZXwl+PSEtyFNxnZBVPozQDVogpYol5XdSC+W7Y3JW7Wb/DqfwnWAg7Hi3CUQJqh
+         3bFXtvTFj5SLM9RzOgOcDOK3YN18bpItLIdmHYMLy3BGuCNcMlY/RSZrOyD1cbJdWJqn
+         1vdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vwWrxMzgDrpqUZdYZb5+ZHEhV15ZfAbMzYb+WqtFeWE=;
+        b=jVW3KZ1pz2t0n9U4JagcLrtaGWNYkO3vzTluAgkfPrQoZ7fP72bArnvzuqQFSAafOt
+         1+w7Rl5ukoZ/qkeYm7RmebImJd/BDzkKjYf0SOMptE/PZkML4cIzw0p/CNmJkoY4ccJj
+         khjEkifMXHmexC9o/Lyv0YT9YV7HpZiWE6p8vhivVTwAAm94yVMXS/X9VN6oy+BCVaNu
+         pCvAQaTFPaF3TkT2hhc4Tc0hS/1m09UTg3QANKpIFtKVwGzQI8FwrTf1y9Gs1BCFnOHs
+         d96xJvqeLBtOn0QptfcBzVyLa9WDaDhV2bx3bhsA2dVPkyviWxPsurVzSPQuALL3mGSN
+         DdIg==
+X-Gm-Message-State: AGi0PuYrJ3uEb8A8VsQsM87+QG1MX4DuyVMQ2Q2dJ/Nd3wg7VFjlWHtw
+        e3YmbCWxdmnnVqJ5UyfFPFljrxdQ
+X-Google-Smtp-Source: APiQypLmYHub6eHW+QXsKcRtjQzG4AH20tsrVY10JnsFO6vlDl2ZLxwAVMTTp14XF7bdYVFUSvN0LQ==
+X-Received: by 2002:a37:a312:: with SMTP id m18mr1951374qke.251.1587649440670;
+        Thu, 23 Apr 2020 06:44:00 -0700 (PDT)
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com. [209.85.219.182])
+        by smtp.gmail.com with ESMTPSA id w10sm1644913qka.19.2020.04.23.06.43.59
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 23 Apr 2020 06:43:59 -0700 (PDT)
+Received: by mail-yb1-f182.google.com with SMTP id i16so3154583ybq.9
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 06:43:59 -0700 (PDT)
+X-Received: by 2002:a05:6902:52e:: with SMTP id y14mr6921520ybs.213.1587649438895;
+ Thu, 23 Apr 2020 06:43:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200423133936.GS25745@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <eea2a2c3-79dc-131c-4ef5-ee027b30b701@gmail.com> <20200423073529.92152-1-cambda@linux.alibaba.com>
+In-Reply-To: <20200423073529.92152-1-cambda@linux.alibaba.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 23 Apr 2020 09:43:21 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSf3udp_d13Y8wg-vFsF2vttZ_A5_tE-EDj9z+pfZVCf5g@mail.gmail.com>
+Message-ID: <CA+FuTSf3udp_d13Y8wg-vFsF2vttZ_A5_tE-EDj9z+pfZVCf5g@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] net: Add TCP_FORCE_LINGER2 to TCP setsockopt
+To:     Cambda Zhu <cambda@linux.alibaba.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Dust Li <dust.li@linux.alibaba.com>,
+        Tony Lu <tonylu@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 23, 2020 at 02:39:36PM +0100, Russell King - ARM Linux admin wrote:
-> On Thu, Apr 23, 2020 at 08:08:02AM +0300, Baruch Siach wrote:
-> > Read the temperature sensor register from the correct location for the
-> > 88E2110 PHY. There is no enable/disable bit, so leave
-> > mv3310_hwmon_config() for 88X3310 only.
-> > 
-> > Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-> > ---
-> > v3: Split temperature register read routine per variant (Andrew Lunn)
-> > 
-> > v2: Fix indentation (Andrew Lunn)
-> > ---
-> >  drivers/net/phy/marvell10g.c | 25 +++++++++++++++++++++++--
-> >  1 file changed, 23 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-> > index 69530a84450f..e14b9c2e5efe 100644
-> > --- a/drivers/net/phy/marvell10g.c
-> > +++ b/drivers/net/phy/marvell10g.c
-> > @@ -66,6 +66,8 @@ enum {
-> >  	MV_PCS_CSSR1_SPD2_2500	= 0x0004,
-> >  	MV_PCS_CSSR1_SPD2_10000	= 0x0000,
-> >  
-> > +	MV_PCS_TEMP		= 0x8042,
-> 
-> Please add a comment mentioning that this is for the 88E2110, and
-> it would probably be a good idea to document the MV_V2_TEMP definition
-> as 88X3310 specific as well.
-> 
-> > +
-> >  	/* These registers appear at 0x800X and 0xa00X - the 0xa00X control
-> >  	 * registers appear to set themselves to the 0x800X when AN is
-> >  	 * restarted, but status registers appear readable from either.
-> > @@ -104,6 +106,24 @@ static umode_t mv3310_hwmon_is_visible(const void *data,
-> >  	return 0;
-> >  }
-> >  
-> > +static int mv3310_hwmon_read_temp_reg(struct phy_device *phydev)
-> > +{
-> > +	return phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_TEMP);
-> > +}
-> > +
-> > +static int mv2110_hwmon_read_temp_reg(struct phy_device *phydev)
-> > +{
-> > +	return phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_TEMP);
-> > +}
-> > +
-> > +static int mv10g_hwmon_read_temp_reg(struct phy_device *phydev)
-> > +{
-> > +	if (phydev->drv->phy_id == MARVELL_PHY_ID_88X3310)
-> > +		return mv3310_hwmon_read_temp_reg(phydev);
-> > +	else /* MARVELL_PHY_ID_88E2110 */
-> > +		return mv2110_hwmon_read_temp_reg(phydev);
-> > +}
-> > +
-> >  static int mv3310_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
-> >  			     u32 attr, int channel, long *value)
-> >  {
-> > @@ -116,7 +136,7 @@ static int mv3310_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
-> >  	}
-> >  
-> >  	if (type == hwmon_temp && attr == hwmon_temp_input) {
-> > -		temp = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_TEMP);
-> > +		temp = mv10g_hwmon_read_temp_reg(phydev);
-> >  		if (temp < 0)
-> >  			return temp;
-> >  
-> > @@ -196,7 +216,8 @@ static int mv3310_hwmon_probe(struct phy_device *phydev)
-> >  	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
-> >  	int i, j, ret;
-> >  
-> > -	if (phydev->drv->phy_id != MARVELL_PHY_ID_88X3310)
-> > +	if (phydev->drv->phy_id != MARVELL_PHY_ID_88X3310 &&
-> > +	    phydev->drv->phy_id != MARVELL_PHY_ID_88E2110)
-> >  		return 0;
-> 
-> Doesn't that mean this condition can be removed, as this can only be
-> reached when one of those conditions is true?
+On Thu, Apr 23, 2020 at 3:36 AM Cambda Zhu <cambda@linux.alibaba.com> wrote:
+>
+> This patch adds a new TCP socket option named TCP_FORCE_LINGER2. The
+> option has same behavior as TCP_LINGER2, except the tp->linger2 value
+> can be greater than sysctl_tcp_fin_timeout if the user_ns is capable
+> with CAP_NET_ADMIN.
+>
+> As a server, different sockets may need different FIN-WAIT timeout and
+> in most cases the system default value will be used. The timeout can
+> be adjusted by setting TCP_LINGER2 but cannot be greater than the
+> system default value. If one socket needs a timeout greater than the
+> default, we have to adjust the sysctl which affects all sockets using
+> the system default value. And if we want to adjust it for just one
+> socket and keep the original value for others, all the other sockets
+> have to set TCP_LINGER2. But with TCP_FORCE_LINGER2, the net admin can
+> set greater tp->linger2 than the default for one socket and keep
+> the sysctl_tcp_fin_timeout unchanged.
+>
+> Signed-off-by: Cambda Zhu <cambda@linux.alibaba.com>
+> ---
+>  Changes in v2:
+>    - Add int overflow check.
+>
+>  include/uapi/linux/capability.h |  1 +
+>  include/uapi/linux/tcp.h        |  1 +
+>  net/ipv4/tcp.c                  | 11 +++++++++++
+>  3 files changed, 13 insertions(+)
+>
+> diff --git a/include/uapi/linux/capability.h b/include/uapi/linux/capability.h
+> index 272dc69fa080..0e30c9756a04 100644
+> --- a/include/uapi/linux/capability.h
+> +++ b/include/uapi/linux/capability.h
+> @@ -199,6 +199,7 @@ struct vfs_ns_cap_data {
+>  /* Allow multicasting */
+>  /* Allow read/write of device-specific registers */
+>  /* Allow activation of ATM control sockets */
+> +/* Allow setting TCP_LINGER2 regardless of sysctl_tcp_fin_timeout */
+>
+>  #define CAP_NET_ADMIN        12
+>
+> diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
+> index f2acb2566333..e21e0ce98ca1 100644
+> --- a/include/uapi/linux/tcp.h
+> +++ b/include/uapi/linux/tcp.h
+> @@ -128,6 +128,7 @@ enum {
+>  #define TCP_CM_INQ             TCP_INQ
+>
+>  #define TCP_TX_DELAY           37      /* delay outgoing packets by XX usec */
+> +#define TCP_FORCE_LINGER2      38      /* Set TCP_LINGER2 regardless of sysctl_tcp_fin_timeout */
+>
+>
+>  #define TCP_REPAIR_ON          1
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index 6d87de434377..d8cd1fd66bc1 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -3149,6 +3149,17 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
+>                         tcp_enable_tx_delay();
+>                 tp->tcp_tx_delay = val;
+>                 break;
+> +       case TCP_FORCE_LINGER2:
+> +               if (val < 0)
+> +                       tp->linger2 = -1;
+> +               else if (val > INT_MAX / HZ)
+> +                       err = -EINVAL;
+> +               else if (val > net->ipv4.sysctl_tcp_fin_timeout / HZ &&
+> +                        !ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
+> +                       tp->linger2 = 0;
 
-Thinking about this more, I think it may make sense to either reverse
-the order of this patch series, or even better combine the two patches
-into a single patch.
+Instead of silently falling back to LINGER2 behavior for unprivileged
+users, I would fail without privileges, similar to
+SO_(SND|RCV)BUFFORCE.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+Also, those have capable instead of ns_capable. If there is risk to
+system integrity, that is the right choice.
+
+Slight aside, if the original setsockopt had checked optval ==
+sizeof(int), we could have added a variant of different size (say,
+with an additional flags field), instead of having to create a new
+socket option.
+
+> +               else
+> +                       tp->linger2 = val * HZ;
+> +               break;
+>         default:
+>                 err = -ENOPROTOOPT;
+>                 break;
+> --
+> 2.16.6
+>
