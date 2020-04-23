@@ -2,85 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 569761B6481
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 21:34:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDD611B6484
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 21:34:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728733AbgDWTd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 15:33:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35162 "EHLO
+        id S1728795AbgDWTeI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 15:34:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728308AbgDWTd5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 15:33:57 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EB80C09B042;
-        Thu, 23 Apr 2020 12:33:57 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id EA79412776892;
-        Thu, 23 Apr 2020 12:33:55 -0700 (PDT)
-Date:   Thu, 23 Apr 2020 12:33:55 -0700 (PDT)
-Message-Id: <20200423.123355.1116107619410931438.davem@davemloft.net>
-To:     bloodyreaper@yandex.ru
-Cc:     kuba@kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, hauke@hauke-m.de, woojung.huh@microchip.com,
-        UNGLinuxDriver@microchip.com, sean.wang@mediatek.com,
-        matthias.bgg@gmail.com, vladimir.oltean@nxp.com,
-        claudiu.manoil@nxp.com, linus.walleij@linaro.org,
-        p.zabel@pengutronix.de, linux@armlinux.org.uk,
-        linux@rempel-privat.de, maowenan@huawei.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v2 net-next] net: dsa: add GRO support via gro_cells
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200421134108.167646-1-bloodyreaper@yandex.ru>
-References: <20200421134108.167646-1-bloodyreaper@yandex.ru>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        with ESMTP id S1728308AbgDWTeH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 15:34:07 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67F79C09B043
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 12:34:06 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id z1so1789796pfn.3
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 12:34:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9KGrEVcwlnmPKwT5aCT/vfJhRhAjFIEDID/2V1O/W6k=;
+        b=Syoy3IVI7d+UMWGA1M+MTvFTeKmhg7K9j0dR1pyRH2lQTwZdG0/89uKprpNCzGBK8A
+         bsVSTWbj2aGqYo6aJpJj5QcT8oCo0uP+xMyRKRvJnKq0G4OOEbXloxaLgaz/uIwQvmep
+         ntliF4YgZEOQraOu+KVuqXVnyWU6yhA/0V6n/ULcjSWvgGLzkX/k1gwkn0GZNYhk62vU
+         vdFwGv3LDUlnGy1xUm1B6UDDRqvwAOObTOdms0Lj/r73y5w0IB1SBhGZkpa3YiVNi5bB
+         fcG03BA94rzhJO238B0LrZ43+Su3X93OaxPNsDlAs5ZgOo59ZvOKOkmLIll72iTPteZS
+         7EDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9KGrEVcwlnmPKwT5aCT/vfJhRhAjFIEDID/2V1O/W6k=;
+        b=krW1Q4vXuhEMxczBswb5s0CRvCSOksIuKB4cr5G6+KUC1dSqHl7Xm7SLZiebC/lL5M
+         xk0d3YQHUpwCZDOByFvCO2/Xdcg4h4xkBRSHWI8ZcNf7twFsv8fSy7giffTYX1cgIywy
+         s8nCs9TBmPySNYtr3/zlFzK1WsJyeKzrCHUh99v/TwFf5dU8wlDrUQb+HHwvoluJDxiJ
+         k7+JyKmuEZOkO9la6Im2Fbcq7CACQHjFu+d9qs4wJIfqqWwoygVOa9G3l9PiVhQn+oPg
+         1r5rxEJMvBbtzUm1krDytM97L6NDInTt2aVjlvOw5/1aQq2kKUOfRKUf9MmfQnhDF0Y9
+         7fBw==
+X-Gm-Message-State: AGi0PuZyJPB7xliN3DbCKzFJxARmqvtsX4IOvuU5B1l+yCNgNdy5nZGq
+        UMV2sgOcQ25KpSiaMvchNQmYsw==
+X-Google-Smtp-Source: APiQypLb4VafY6f/+t91uK4pQhSEJppTWd+UTbrpvy0xNJwYzRVC8LaJDnwLyUJ+H2g13i8os43q5w==
+X-Received: by 2002:a63:4a59:: with SMTP id j25mr5318011pgl.336.1587670445851;
+        Thu, 23 Apr 2020 12:34:05 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id c1sm3367595pfc.94.2020.04.23.12.34.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Apr 2020 12:34:05 -0700 (PDT)
+Date:   Thu, 23 Apr 2020 12:33:56 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        ruxandra.radulescu@nxp.com, ioana.ciornei@nxp.com,
+        nipun.gupta@nxp.com, shawnguo@kernel.org
+Subject: Re: [PATCH net-next 2/2] dpaa2-eth: fix return codes used in
+ ndo_setup_tc
+Message-ID: <20200423123356.523264b4@hermes.lan>
+In-Reply-To: <20200423173804.004fd0f6@carbon>
+References: <158765382862.1613879.11444486146802159959.stgit@firesoul>
+        <158765387082.1613879.14971732890635443222.stgit@firesoul>
+        <20200423082804.6235b084@hermes.lan>
+        <20200423173804.004fd0f6@carbon>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 23 Apr 2020 12:33:56 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Lobakin <bloodyreaper@yandex.ru>
-Date: Tue, 21 Apr 2020 16:41:08 +0300
+On Thu, 23 Apr 2020 17:38:04 +0200
+Jesper Dangaard Brouer <brouer@redhat.com> wrote:
 
-> gro_cells lib is used by different encapsulating netdevices, such as
-> geneve, macsec, vxlan etc. to speed up decapsulated traffic processing.
-> CPU tag is a sort of "encapsulation", and we can use the same mechs to
-> greatly improve overall DSA performance.
-> skbs are passed to the GRO layer after removing CPU tags, so we don't
-> need any new packet offload types as it was firstly proposed by me in
-> the first GRO-over-DSA variant [1].
+> On Thu, 23 Apr 2020 08:28:58 -0700
+> Stephen Hemminger <stephen@networkplumber.org> wrote:
 > 
-> The size of struct gro_cells is sizeof(void *), so hot struct
-> dsa_slave_priv becomes only 4/8 bytes bigger, and all critical fields
-> remain in one 32-byte cacheline.
-> The other positive side effect is that drivers for network devices
-> that can be shipped as CPU ports of DSA-driven switches can now use
-> napi_gro_frags() to pass skbs to kernel. Packets built that way are
-> completely non-linear and are likely being dropped without GRO.
+> > On Thu, 23 Apr 2020 16:57:50 +0200
+> > Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+> >   
+> > > Drivers ndo_setup_tc call should return -EOPNOTSUPP, when it cannot
+> > > support the qdisc type. Other return values will result in failing the
+> > > qdisc setup.  This lead to qdisc noop getting assigned, which will
+> > > drop all TX packets on the interface.
+> > > 
+> > > Fixes: ab1e6de2bd49 ("dpaa2-eth: Add mqprio support")
+> > > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>    
+> > 
+> > Would it be possible to use extack as well?  
 > 
-> This was tested on to-be-mainlined-soon Ethernet driver that uses
-> napi_gro_frags(), and the overall performance was on par with the
-> variant from [1], sometimes even better due to minimal overhead.
-> net.core.gro_normal_batch tuning may help to push it to the limit
-> on particular setups and platforms.
+> That is what patch 1/2 already does.
 > 
-> iperf3 IPoE VLAN NAT TCP forwarding (port1.218 -> port0) setup
-> on 1.2 GHz MIPS board:
- ...
-> v2:
->  - Add some performance examples in the commit message;
->  - No functional changes.
+> > Putting errors in dmesg is unhelpful  
 > 
-> [1] https://lore.kernel.org/netdev/20191230143028.27313-1-alobakin@dlink.ru/
+> This patchset does not introduce any dmesg printk.
 > 
-> Signed-off-by: Alexander Lobakin <bloodyreaper@yandex.ru>
 
-Applied, thank you.
+I was thinking that this  
+	if (num_tc  > dpaa2_eth_tc_count(priv)) {
+ 		netdev_err(net_dev, "Max %d traffic classes supported\n",
+ 			   dpaa2_eth_tc_count(priv));
+-		return -EINVAL;
++		return -EOPNOTSUPP;
+ 	}
+
+could be an extack message, but doing that would require a change
+to the ndo_setup_tc hook to allow driver to return its own error message
+as to why the setup failed.
