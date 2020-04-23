@@ -2,97 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 632621B54B8
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 08:30:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF9181B54C3
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 08:37:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726730AbgDWGah (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 02:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53852 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725562AbgDWGah (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 02:30:37 -0400
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48F36C03C1AB
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 23:30:37 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 1001)
-        id B4C6BC01D; Thu, 23 Apr 2020 08:30:35 +0200 (CEST)
-Date:   Thu, 23 Apr 2020 08:30:20 +0200
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org, dsahern@gmail.com, aclaudi@redhat.com,
-        daniel@iogearbox.net, Jamal Hadi Salim <hadi@mojatatu.com>
-Subject: Re: [PATCH iproute2 v2 1/2] bpf: Fix segfault when custom pinning is
- used
-Message-ID: <20200423063020.GA31520@nautica>
-References: <20200422102808.9197-1-jhs@emojatatu.com>
- <20200422102808.9197-2-jhs@emojatatu.com>
- <20200422093531.4d9364c9@hermes.lan>
- <5a636d8d-e287-b553-b3fb-a62afbbde4ae@mojatatu.com>
+        id S1726618AbgDWGg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 02:36:58 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:57016 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725562AbgDWGg6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Apr 2020 02:36:58 -0400
+Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 6D733A5B66683E8B1864;
+        Thu, 23 Apr 2020 14:36:56 +0800 (CST)
+Received: from [127.0.0.1] (10.166.215.154) by DGGEMS411-HUB.china.huawei.com
+ (10.3.19.211) with Microsoft SMTP Server id 14.3.487.0; Thu, 23 Apr 2020
+ 14:36:52 +0800
+Subject: Re: [PATCH 1/2] net/x25: Fix x25_neigh refcnt leak when x25_connect()
+ fails
+To:     Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Andrew Hendry <andrew.hendry@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Martin Schiller <ms@dev.tdt.de>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        <linux-x25@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1587618822-13544-1-git-send-email-xiyuyang19@fudan.edu.cn>
+CC:     <yuanxzhang@fudan.edu.cn>, <kjlu@umn.edu>,
+        Xin Tan <tanxin.ctf@gmail.com>
+From:   Yuehaibing <yuehaibing@huawei.com>
+Message-ID: <8636fc9a-001a-9d48-087b-7f243527cd99@huawei.com>
+Date:   Thu, 23 Apr 2020 14:36:51 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <5a636d8d-e287-b553-b3fb-a62afbbde4ae@mojatatu.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <1587618822-13544-1-git-send-email-xiyuyang19@fudan.edu.cn>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.166.215.154]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jamal Hadi Salim wrote on Wed, Apr 22, 2020:
-> >>diff --git a/lib/bpf.c b/lib/bpf.c
-> >>index 10cf9bf4..656cad02 100644
-> >>--- a/lib/bpf.c
-> >>+++ b/lib/bpf.c
-> >>@@ -1509,15 +1509,15 @@ out:
-> >>  static int bpf_make_custom_path(const struct bpf_elf_ctx *ctx,
-> >>  				const char *todo)
-> >>  {
-> >>-	char *tmp = NULL;
-> >>+	char tmp[PATH_MAX] = {};
-> >
-> >Initializing the whole string to 0 is over kill here.
+On 2020/4/23 13:13, Xiyu Yang wrote:
+> x25_connect() invokes x25_get_neigh(), which returns a reference of the
+> specified x25_neigh object to "x25->neighbour" with increased refcnt.
 > 
-> Why is it overkill? ;->
-> Note: I just replicated other parts of the same file which
-> initialize similar array to 0.
-
-FWIW I kind of agree this is overkill, there's only one other occurence
-of a char * being explicitely zeroed, the rest isn't strings so probably
-have better reasons to.
-
-snprintf will safely zero-terminate it and nothing should ever access
-past the nul byte so it shouldn't be necessary.
-
-> >>  	char *rem = NULL;
-> >>  	char *sub;
-> >>  	int ret;
-> >>-	ret = asprintf(&tmp, "%s/../", bpf_get_work_dir(ctx->type));
-> >>+	ret = snprintf(tmp, PATH_MAX, "%s/../", bpf_get_work_dir(ctx->type));
-> >
-> >snprintf will never return -1.
+> When x25_connect() returns, local variable "x25" and "x25->neighbour"
+> become invalid, so the refcount should be decreased to keep refcount
+> balanced.
 > 
-> Man page says it does. Practically it may not but we have code (in
-> iproute2) which assumes it will happen.
+> The reference counting issue happens in one exception handling path of
+> x25_connect(). When sock state is not TCP_ESTABLISHED and its flags
+> include O_NONBLOCK, the function forgets to decrease the refcnt
+> increased by x25_get_neigh(), causing a refcnt leak.
 > 
-> Pick your poison:
-> 1) Ignore the return code
-> 2) As suggested by Dominique, something along the lines of:
-
-(I also said I don't think it can ever fail in the non-wide-char variant
-we use here (failure described in man page might be bad format string?
-but we use a constant string here), and that the >= check is redundant
-with the later strcat boundary checking ; by the same logic the words
-you put in my mouth here are overkill as well :) (and the max size
-variant would need some extra andling to set errno so check cannot be
-shared that easily)
-Anyway rest of iproute2 doesn't check snprintf return value much, it
-should be fine to ignore)
-
-> if (ret <= 0 || ret >= MAX_PATH)
->    ...error here..
+> Fix this issue by jumping to "out_put_neigh" label when x25_connect()
+> fails.
 > 
-> Which one do you prefer?
+> Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+> Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+> ---
+>  net/x25/af_x25.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
+> index d5b09bbff375..e6571c56209b 100644
+> --- a/net/x25/af_x25.c
+> +++ b/net/x25/af_x25.c
+> @@ -816,7 +816,7 @@ static int x25_connect(struct socket *sock, struct sockaddr *uaddr,
+>  	/* Now the loop */
+>  	rc = -EINPROGRESS;
+>  	if (sk->sk_state != TCP_ESTABLISHED && (flags & O_NONBLOCK))
+> -		goto out;
+> +		goto out_put_neigh;
 
--- 
-Dominique
+This seems not right, see
+
+commit e21dba7a4df4 ("net/x25: fix nonblocking connect")
+
+>  
+>  	rc = x25_wait_for_connection_establishment(sk);
+>  	if (rc)
+> 
+
