@@ -2,125 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6F031B51D4
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 03:33:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0407A1B51E2
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 03:35:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726192AbgDWBdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 21:33:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35920 "EHLO
+        id S1726384AbgDWBej (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 21:34:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725854AbgDWBdn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 21:33:43 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B56C03C1AA
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 18:33:43 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id t8so2077385qvw.5
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 18:33:43 -0700 (PDT)
+        with ESMTP id S1725828AbgDWBej (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 21:34:39 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60CA3C03C1AA;
+        Wed, 22 Apr 2020 18:34:37 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id x23so3424171lfq.1;
+        Wed, 22 Apr 2020 18:34:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=hQZreuLotPHHKx7xw/UOadFcaq9wGFesE+jCD9BAoGA=;
-        b=ZrCNmWMz6rQF+lqqsMXim0Fjt/u5J5Dl0GKAyjokMX8xnaF1+f9S3Id6gzH8oHRlll
-         9VOQLRVy03Aqs3p4en8AaPUVv/QjP+caYw1NYteCzB4bfe7obdG0yD2C16JNmbebWPG7
-         Df5q2E+eK+vQk+KAlOy9ANIe1dTnze/av+9HRAqWgD2u6jPXhztAHO7X5cPE7fORseC2
-         xzIHTmCy4goSN5er3xZtgKJIwI78SOmUmzEtRwB6u0icePkQ1gdmQd8u5vWLq1YjLYgE
-         C6Ud3S69+yaBSGW5fUSlALG77h6IitxhTZtz0Ozw5IELYKJTrjFjXOy2sPEeMGqi5ePW
-         AJfg==
+        h=from:to:cc:subject:date:message-id;
+        bh=DAjDO2syVihYfSYHVPHnBlRhOt9duNjgHctpjQ0ix6c=;
+        b=eUVd8k2O2d2zxPxp8rFtZ7IDbc6v/LYYWEtLilnhk89o1oS1POopQeOtxW9hMjQyrg
+         hnw/uKRLApQXMBqmHw/Wt1ybEHUXEO/j3o89rYQ66McADGjAU4fNtKTq2EaPMwpreHHd
+         bXwGW7BOqm+gSJUhWf2JJAt2AEr2eKDsv1ao6iRVY3v24ywl8+I3ExhuRUVChw7ndNmr
+         Omd48AdkdaZ/KhfwVtv3jM/KGdyyGL4+zhSwzouhXsYP2T6uJLH22W/sYD184aEu+sCF
+         qaA0MweY69Y5u+ZdsvkDLb8XI4t27jeR3Y5DYLWq+tQJWM9QY2KbDHod5HHOL/FRyekp
+         dPJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hQZreuLotPHHKx7xw/UOadFcaq9wGFesE+jCD9BAoGA=;
-        b=QTjuIFERwx1zp++SVKCQcDJWdEvZ3fGgjPdIh1iaVgPsjq75zV0cjK6oyrKYS/tQww
-         VRLTi9dFTVY95QWesqqUvfUY22UPcKp4awuUOD68Z7nFzXPtZP/psBgNa+omxx7QsLQy
-         /jFpaK/9GhWjKD5pAlZukilVdd8OP7xz3GOJGQWkCd35Q3aGafyQIXHEKvznmVGBcwB5
-         GmjPa/TeTm8ac6SAv/m6hFdDGMgWtrvVblZX6JwRQSB1cpzaPKlKxHa82O/saDduj/Ug
-         lHj8UaRW/5ga0i2UzrNZNek/XaW/WC39wbNbhCBWDobxi6X1Qgy3P7DCBVZhfW2WlhHs
-         iETA==
-X-Gm-Message-State: AGi0PuZ6/+LgbAkmMyKnJ0hq4Ve794LsJt+rvLJaiQM6qUMcpOaeMsA7
-        mj2bsTm/rE+IpjqhOVSawxE=
-X-Google-Smtp-Source: APiQypLlt16jpdR0ZxfgonfJQD9gN0ECm3dE9hgvhR1LSCg7klqpAL18NHJBVG8thNhx4WFna+rCCA==
-X-Received: by 2002:ad4:4e65:: with SMTP id ec5mr1989051qvb.32.1587605622779;
-        Wed, 22 Apr 2020 18:33:42 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:c19e:4650:3a73:fee4? ([2601:282:803:7700:c19e:4650:3a73:fee4])
-        by smtp.googlemail.com with ESMTPSA id b19sm680750qkg.72.2020.04.22.18.33.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Apr 2020 18:33:42 -0700 (PDT)
-Subject: Re: [PATCH bpf-next 12/16] libbpf: Add egress XDP support
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        David Ahern <dsahern@kernel.org>
-Cc:     Networking <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Prashant Bhole <prashantbhole.linux@gmail.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        john fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        David Ahern <dahern@digitalocean.com>
-References: <20200420200055.49033-1-dsahern@kernel.org>
- <20200420200055.49033-13-dsahern@kernel.org>
- <CAEf4Bzb1Zu1pYvPm+UhT9v7JVBjxOhABA9-fVEza=p0Wpr4e9Q@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <6d931d8e-41cf-7cbc-bedd-d0715527a499@gmail.com>
-Date:   Wed, 22 Apr 2020 19:33:39 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <CAEf4Bzb1Zu1pYvPm+UhT9v7JVBjxOhABA9-fVEza=p0Wpr4e9Q@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=DAjDO2syVihYfSYHVPHnBlRhOt9duNjgHctpjQ0ix6c=;
+        b=JFBOPHlJXmorpcAWw8baAoQhv2uFR+YrT8gkkI67rR2TYX4sGj2N2Ljo9KC1xDOk60
+         K8ey5apnP3Z5Hd7PsNCU+wVKYKp6bS1j9uqaglTgw0DRIaGPiGueVMCYRgPQ/wl6BKlD
+         INhUx8E5zSueCxEXEEpmshE0cuy2y1xSiABo8N+kQ6hEGhPqMeeZ17SECt41MBMnMmok
+         F1qgn4+0a/yNW5cVImOCgV2HfRvrSiPOHVBBZ77iNDBZsWUyY4ZKpJonWuHRazd7XUMr
+         lvsaXHhF9Mpi92oFmuBuXq22LUN0ed2scXoZMzAWu6gNt3W4VARsxPkxBh7NXdvPitV0
+         pt+Q==
+X-Gm-Message-State: AGi0PubDDIJ+VBkSg2FyMbevtE29hHp8hI4LFevKpe32BBrphV+IV2Za
+        qR2btzHK/hqlmXfJp3M6i/Q=
+X-Google-Smtp-Source: APiQypLVF8k5uqxjiwCBFvVf1xeH58dehjnKwlyRN+zx1HBI6paxUET+mG4Tcr86VknKMveN0sPEbg==
+X-Received: by 2002:a19:946:: with SMTP id 67mr848245lfj.142.1587605675892;
+        Wed, 22 Apr 2020 18:34:35 -0700 (PDT)
+Received: from localhost.localdomain ([87.200.95.144])
+        by smtp.gmail.com with ESMTPSA id h21sm564967lfp.1.2020.04.22.18.34.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Apr 2020 18:34:35 -0700 (PDT)
+From:   Christian Hewitt <christianshewitt@gmail.com>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        Christian Hewitt <christianshewitt@gmail.com>
+Subject: [PATCH v2 0/3] Bluetooth: hci_qca: add support for QCA9377
+Date:   Thu, 23 Apr 2020 01:34:27 +0000
+Message-Id: <20200423013430.21399-1-christianshewitt@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/22/20 7:19 PM, Andrii Nakryiko wrote:
->>
->> +int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
->> +                         size_t info_size, __u32 flags)
->> +{
->> +       return __bpf_get_link_xdp_info(ifindex, info, info_size, flags,
->> +                                      IFLA_XDP);
->> +}
->> +
->> +int bpf_get_link_xdp_egress_info(int ifindex, struct xdp_link_info *info,
->> +                                size_t info_size, __u32 flags)
->> +{
->> +       return __bpf_get_link_xdp_info(ifindex, info, info_size, flags,
->> +                                      IFLA_XDP_EGRESS);
->> +}
->> +
->>  static __u32 get_xdp_id(struct xdp_link_info *info, __u32 flags)
->>  {
->>         if (info->attach_mode != XDP_ATTACHED_MULTI && !flags)
->> @@ -345,6 +376,22 @@ int bpf_get_link_xdp_id(int ifindex, __u32 *prog_id, __u32 flags)
->>         return ret;
->>  }
->>
->> +int bpf_get_link_xdp_egress_id(int ifindex, __u32 *prog_id, __u32 flags)
-> 
-> Is bpf_get_link_xdp_egress_id() even needed? This is a special case of
-> bpf_get_link_xdp_egress_info(), I don't think we have to add another
-> API to support it specifically.
-> 
-> Also, just curious, would it be better to have a generalized
-> XDP/XDP_EGRESS xdp_info() functions instead of two separate ones?
+From: Christian Hewittt <christianshewitt@gmail.com>
 
-Toke mentioned that too, and I have removed bpf_get_link_xdp_egress_info.
+This series adds a new compatible for the QCA9377 BT device that is found
+in many Android TV box devices, makes minor changes to allow max-speed
+values for the device to be read from device-tree, and updates bindings
+to reflect those changes.
 
-bpf_get_link_xdp_egress_id is needed. The flags argument is a direct
-pass through for the kernel uapi and correlates to XDP_FLAGS that are
-passed to the kernel. There is no harm or overhead in exporting symbols.
-Having a simple, easy to use API for applications is important to making
-a library user friendly which is key to its adoption.
+v2 changes: rebase against bluetooth-next
 
-Will fix the other comments.
+Christian Hewitt (3):
+  dt-bindings: net: bluetooth: Add device tree bindings for QCA9377
+  Bluetooth: hci_qca: add compatible for QCA9377
+  Bluetooth: hci_qca: allow max-speed to be set for QCA9377 devices
+
+ .../bindings/net/qualcomm-bluetooth.txt         |  5 +++++
+ drivers/bluetooth/hci_qca.c                     | 17 ++++++++++-------
+ 2 files changed, 15 insertions(+), 7 deletions(-)
+
+-- 
+2.17.1
+
