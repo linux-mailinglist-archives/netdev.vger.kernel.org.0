@@ -2,215 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 631A11B5CB7
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 15:39:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0503B1B5CB0
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 15:37:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728470AbgDWNj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 09:39:29 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:25389 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728427AbgDWNj1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 09:39:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587649165;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tzW9lOcj3xSbts5Cp8WBxxGXHwoO5mLgm/tSC7f2Z3U=;
-        b=d/XZA8OGVY6vBSI18SccvZgRdVJ6jLtk8ZLYn9C0LjjV9qEsFqSwspyqq7Xdb5sORE/NDn
-        2D6nqDRtrpKI0CvehFJDK3K0hofcmBVKhsCrGh3fKgW1X0e35YYLHXWsQmwlLbVkTLKj2K
-        0hChvLJs/K7509D83KEZ97nLyBvm/+8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-457-ID71KvEMPe-vk4rHrr6y0g-1; Thu, 23 Apr 2020 09:39:23 -0400
-X-MC-Unique: ID71KvEMPe-vk4rHrr6y0g-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DC162872FF1;
-        Thu, 23 Apr 2020 13:39:22 +0000 (UTC)
-Received: from linux.fritz.box.com (ovpn-114-154.ams2.redhat.com [10.36.114.154])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BE71E1002380;
-        Thu, 23 Apr 2020 13:39:21 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     stephen@networkplumber.org, netdev@vger.kernel.org
-Cc:     dcaratti@redhat.com
-Subject: [PATCH iproute2-next 4/4] man: mptcp man page
-Date:   Thu, 23 Apr 2020 15:37:10 +0200
-Message-Id: <725b0afb6303f8507b63b1475a69aab7abf34d1e.1587572928.git.pabeni@redhat.com>
-In-Reply-To: <cover.1587572928.git.pabeni@redhat.com>
-References: <cover.1587572928.git.pabeni@redhat.com>
+        id S1728042AbgDWNh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 09:37:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35712 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726224AbgDWNhz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 09:37:55 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B8C7C08E934
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 06:37:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=WORkHuIcTQYBYtRwNiuWR70OyEKMd/LAzk7uaajjPDw=; b=VlFworbwlhLRYbC+FAlfwsp4L
+        fAYgEOEkrYj4TLsNdcDTVINDtSh2vjmqig4h8qAS3QFjpkdZ8KSNBIoNlKTuy/UfvNG7zAoUjmr1t
+        0nd3dKhTKoSJSPDgvfP/ew34rCw0hmasRGmbm3OJLsHFCiAvGw+SziYv2KY3yhhL/w98aGg+vn/US
+        BNunzit7coWIeACCil0lUNCRfHuDZ/RZQyppGeuFjHZRG73Mc011Hp5JfzrjPfAgN9pt1CMW5RN/C
+        BOuEYZEdmNE8EYhxHbVPmqoC+cbWx8r8U+ZiD9GKHx4PMor13sASod9ViDME9ojUmokImgiFRBHqq
+        sI95WByUg==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:50116)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jRc30-0006YO-NE; Thu, 23 Apr 2020 14:37:46 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jRc2y-0000jb-7L; Thu, 23 Apr 2020 14:37:44 +0100
+Date:   Thu, 23 Apr 2020 14:37:44 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Baruch Siach <baruch@tkos.co.il>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>
+Subject: Re: [PATCH net v3 1/2] net: phy: marvell10g: disable temperature
+ sensor on 2110
+Message-ID: <20200423133744.GR25745@shell.armlinux.org.uk>
+References: <99771ceabb63b6a6a7d112197f639084f11e4aa4.1587618482.git.baruch@tkos.co.il>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <99771ceabb63b6a6a7d112197f639084f11e4aa4.1587618482.git.baruch@tkos.co.il>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-describe the mptcp subcommands implemented so far.
+On Thu, Apr 23, 2020 at 08:08:01AM +0300, Baruch Siach wrote:
+> The 88E2110 temperature sensor is in a different location than 88X3310,
+> and it has no enable/disable option.
+> 
+> Fixes: 62d01535474b61 ("net: phy: marvell10g: add support for the 88x2110 PHY")
+> Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>
+> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+> ---
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- man/man8/ip-mptcp.8 | 142 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 142 insertions(+)
- create mode 100644 man/man8/ip-mptcp.8
+Shouldn't this series have a covering message?
 
-diff --git a/man/man8/ip-mptcp.8 b/man/man8/ip-mptcp.8
-new file mode 100644
-index 00000000..f6457e97
---- /dev/null
-+++ b/man/man8/ip-mptcp.8
-@@ -0,0 +1,142 @@
-+.TH IP\-MPTCP 8 "4 Apr 2020" "iproute2" "Linux"
-+.SH "NAME"
-+ip-mptcp \- MPTCP path manager configuration
-+.SH "SYNOPSIS"
-+.sp
-+.ad l
-+.in +8
-+.ti -8
-+.B ip
-+.RI "[ " OPTIONS " ]"
-+.B mptcp
-+.RB "{ "
-+.B endpoint
-+.RB " | "
-+.B limits
-+.RB " | "
-+.B help
-+.RB " }"
-+.sp
-+
-+.ti -8
-+.BR "ip mptcp endpoint add "
-+.IR IFADDR
-+.RB "[ " dev
-+.IR IFNAME " ]"
-+.RB "[ " id
-+.I ID
-+.RB "] [ "
-+.I FLAG-LIST
-+.RB "] "
-+
-+.ti -8
-+.BR "ip mptcp endpoint del id "
-+.I ID
-+
-+.ti -8
-+.BR "ip mptcp endpoint show "
-+.RB "[ " id
-+.I ID
-+.RB "]"
-+
-+.ti -8
-+.BR "ip mptcp endpoint flush"
-+
-+.ti -8
-+.IR FLAG-LIST " :=3D [ "  FLAG-LIST " ] " FLAG
-+
-+.ti -8
-+.IR FLAG " :=3D ["
-+.B signal
-+.RB "|"
-+.B subflow
-+.RB "|"
-+.B backup
-+.RB  "]"
-+
-+.ti -8
-+.BR "ip mptcp limits set "
-+.RB "[ "
-+.B subflow
-+.IR SUBFLOW_NR " ]"
-+.RB "[ "
-+.B add_addr_accepted
-+.IR  ADD_ADDR_ACCEPTED_NR " ]"
-+
-+.ti -8
-+.BR "ip mptcp limits show"
-+
-+.SH DESCRIPTION
-+
-+MPTCP is a transport protocol built on top of TCP that allows TCP
-+connections to use multiple paths to maximize resource usage and increas=
-e
-+redundancy. The ip-mptcp sub-commands allow configuring several aspects =
-of the
-+MPTCP path manager, which is in charge of subflows creation:
-+
-+.P
-+The
-+.B endpoint
-+object specifies the IP addresses that will be used and/or announced for
-+additional subflows:
-+
-+.TS
-+l l.
-+ip mptcp endpoint add	add new MPTCP endpoint
-+ip mptcp endpoint delete	delete existing MPTCP endpoint
-+ip mptcp endpoint show	get existing MPTCP endpoint
-+ip mptcp endpoint flush	flush all existing MPTCP endpoints
-+.TE
-+
-+.TP
-+.IR ID
-+is a unique numeric identifier for the given endpoint
-+
-+.TP
-+.BR signal
-+the endpoint will be announced/signalled to each peer via an ADD_ADDR MP=
-TCP
-+sub-option
-+
-+.TP
-+.BR subflow
-+if additional subflow creation is allowed by MPTCP limits, the endpoint =
-will
-+be used as the source address to create an additional subflow after that
-+the MPTCP connection is established.
-+
-+.TP
-+.BR backup
-+the endpoint will be announced as a backup address, if this is a
-+.BR signal
-+endpoint, or the subflow will be created as a backup one if this is a
-+.BR subflow
-+endpoint
-+
-+.sp
-+.PP
-+The
-+.B limits
-+object specifies the constraints for subflow creations:
-+
-+.TS
-+l l.
-+ip mptcp limits show	get current MPTCP subflow creation limits
-+ip mptcp limits set	change the MPTCP subflow creation limits
-+.TE
-+
-+.TP
-+.IR SUBFLOW_NR
-+specifies the maximum number of additional subflows allowed for each MPT=
-CP
-+connection. Additional subflows can be created due to: incoming accepted
-+ADD_ADDR option, local
-+.BR subflow
-+endpoints, additional subflows started by the peer.
-+
-+.TP
-+.IR ADD_ADDR_ACCEPTED_NR
-+specifies the maximum number of ADD_ADDR suboptions accepted for each MP=
-TCP
-+connection. The MPTCP path manager will try to create a new subflow for
-+each accepted ADD_ADDR option, respecting the
-+.IR SUBFLOW_NR
-+limit.
-+
-+.SH AUTHOR
-+Original Manpage by Paolo Abeni <pabeni@redhat.com>
---=20
-2.21.1
+In any case:
 
+Reviewed-by: Russell King <rmk+kernel@armlinux.org.uk>
+
+> v3: No change
+> 
+> v2: No change
+> ---
+>  drivers/net/phy/marvell10g.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+> index 95e3f4644aeb..69530a84450f 100644
+> --- a/drivers/net/phy/marvell10g.c
+> +++ b/drivers/net/phy/marvell10g.c
+> @@ -169,6 +169,9 @@ static int mv3310_hwmon_config(struct phy_device *phydev, bool enable)
+>  	u16 val;
+>  	int ret;
+>  
+> +	if (phydev->drv->phy_id != MARVELL_PHY_ID_88X3310)
+> +		return 0;
+> +
+>  	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, MV_V2_TEMP,
+>  			    MV_V2_TEMP_UNKNOWN);
+>  	if (ret < 0)
+> @@ -193,6 +196,9 @@ static int mv3310_hwmon_probe(struct phy_device *phydev)
+>  	struct mv3310_priv *priv = dev_get_drvdata(&phydev->mdio.dev);
+>  	int i, j, ret;
+>  
+> +	if (phydev->drv->phy_id != MARVELL_PHY_ID_88X3310)
+> +		return 0;
+> +
+>  	priv->hwmon_name = devm_kstrdup(dev, dev_name(dev), GFP_KERNEL);
+>  	if (!priv->hwmon_name)
+>  		return -ENODEV;
+> -- 
+> 2.26.1
+> 
+> 
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
