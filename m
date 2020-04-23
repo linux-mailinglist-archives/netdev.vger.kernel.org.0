@@ -2,82 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4A481B53F2
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 07:08:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AD6E1B5407
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 07:14:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726180AbgDWFIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 01:08:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41050 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725562AbgDWFIk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 01:08:40 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADDB0C03C1AB
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 22:08:39 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id u6so4811431ljl.6
-        for <netdev@vger.kernel.org>; Wed, 22 Apr 2020 22:08:39 -0700 (PDT)
+        id S1726324AbgDWFON (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 01:14:13 -0400
+Received: from mail.fudan.edu.cn ([202.120.224.10]:37472 "EHLO fudan.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725562AbgDWFOM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Apr 2020 01:14:12 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9BVyp7v+7JNNnPWd2XprNpHBALMJvmY4oS+xcvJkz+8=;
-        b=nSvnI+9RdkBuZvXzcrujqdE+s8EVInUiPc0ZGizFjORCoHaaTIVsJMCUxjcJiRiflE
-         f6GZebaPPg9bcqFpo3lqhJj9d525aQGd9BVTJvQb4Z5d7xEtDVKPmFRiuDQaZclpzGzW
-         Mg24IruyWgku9B9oxyScxUNO8qB1KLQR/s2Xt6OmubfWZ3QUV6GKW70QAgczes+7Z8CT
-         xqf0GU+290xiqR6gYCsHudYYAjrkZytQpXL15Gm+zwOAwcceA23jtW0eJmu8IMnohh8r
-         fh1KOh3pwegGQsID+TFJASjlBPIaldIQeYr16ATjzjXhJgSxSPwC2A3Z3j6OYMJmH27m
-         Ozhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9BVyp7v+7JNNnPWd2XprNpHBALMJvmY4oS+xcvJkz+8=;
-        b=m3sFTynMCSj3SFqWEustd8R+en/UGF7a0Ue17woPWciN5McVjUGh13IlSPgPtxtDtR
-         0OA0ub3oWVk4XFBYRZigDazljxDIzb0BFrVMwxypnjvjsOT+VduZnvAqJBEphHk3E1KH
-         NBdgTMtdByPyFeRIqp6r8A/2y2VqIlqDJmonauidgmt61pJvqBshdoYWjTmNzyw00wIj
-         Q988UfYikIMSjQ6gmAVlINJzxTLtwNI2ypoYIo1x3ZaI2DlhLCpEQ3PCnJC1O5SpC4mu
-         agieA9iIvI+Xo4IIz+DRiCOi//LXywzfk/+7qE0wSpji23GBhigV4wJmoaBpXCw643EG
-         4E0g==
-X-Gm-Message-State: AGi0Pua/mJPI/jvHR88TB02YGiRKoAVmVESwcTAgE6sCr+cM9jVCixt5
-        8MPQoYw5OG419K4HWIuuZfQgCqMqqHBH4HY5/3g=
-X-Google-Smtp-Source: APiQypKyEeznKjIqfdbwxg23UkfzCN5TEXkXpS32ecZVIaoCoutdw5ZfY2uw/2whob8UCFBBPkatQkUwGBNJEYdk/GA=
-X-Received: by 2002:a2e:b80b:: with SMTP id u11mr1263630ljo.212.1587618518100;
- Wed, 22 Apr 2020 22:08:38 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200420161843.46606-1-dsahern@kernel.org> <20200420162715.GA91440@rdna-mbp>
-In-Reply-To: <20200420162715.GA91440@rdna-mbp>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 22 Apr 2020 22:08:26 -0700
-Message-ID: <CAADnVQ+QAo--54s1fOrbA4TLvc_qa5+z4rs+MPZiQE8Vhj9+YQ@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: Only check mode flags in get_xdp_id
-To:     Andrey Ignatov <rdna@fb.com>
-Cc:     David Ahern <dsahern@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        David Ahern <dsahern@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+        Message-Id; bh=00QdfgWbICLjOQqr+eyyelgIderli09+aEykugx5RcA=; b=F
+        bnfA7t8ONTH01mN0KCRERzjifAVRWkGUYtSH0ZPEBP6ZxwIoGdY9uwTI50iCFEZq
+        xotLnqPIILyeyEa7dEyavkI4erm2hIxwDj7lH3Frz+TrBpDj+cJoVxjIPRadg0/X
+        R9m7LIVIKeMCIg/QqetSlBrAIVFfKlxpkXmM0EG3Q4=
+Received: from localhost.localdomain (unknown [120.229.255.80])
+        by app1 (Coremail) with SMTP id XAUFCgAXHaH5I6FeO6g8AA--.30594S3;
+        Thu, 23 Apr 2020 13:13:30 +0800 (CST)
+From:   Xiyu Yang <xiyuyang19@fudan.edu.cn>
+To:     Andrew Hendry <andrew.hendry@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Allison Randal <allison@lohutok.net>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-x25@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     yuanxzhang@fudan.edu.cn, kjlu@umn.edu,
+        Xin Tan <tanxin.ctf@gmail.com>
+Subject: [PATCH] net/x25: Fix x25_neigh refcnt leak when reveiving frame
+Date:   Thu, 23 Apr 2020 13:13:03 +0800
+Message-Id: <1587618786-13481-1-git-send-email-xiyuyang19@fudan.edu.cn>
+X-Mailer: git-send-email 2.7.4
+X-CM-TRANSID: XAUFCgAXHaH5I6FeO6g8AA--.30594S3
+X-Coremail-Antispam: 1UD129KBjvdXoWrKF1UXr4DGrykuw15WF4kJFb_yoWktrc_CF
+        n7tws7Xw12yr1xG3yxtw45AFyIvw17Xa1v9FWxtFWxZFyjgFyxAF93Xrn3Wr1fW3yxArn8
+        JFnxGr97Awn7ZjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbTAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_GcCE
+        3s1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s
+        1lnxkEFVAIw20F6cxK64vIFxWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IE
+        w4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JF0_Jw1lYx0Ex4A2jsIE14v26r1j6r4UMc
+        vjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v
+        4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc2xSY4AK67AK6r4rMxAIw28IcxkI7VAKI48JMx
+        C20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAF
+        wI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20x
+        vE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWxJVW8Jr1lIxAIcVCF04k26cxK
+        x2IYs7xG6Fyj6rWUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14
+        v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUYR6wDUUUU
+X-CM-SenderInfo: irzsiiysuqikmy6i3vldqovvfxof0/
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 20, 2020 at 9:27 AM Andrey Ignatov <rdna@fb.com> wrote:
->
-> David Ahern <dsahern@kernel.org> [Mon, 2020-04-20 09:18 -0700]:
-> > From: David Ahern <dsahern@gmail.com>
-> >
-> > The commit in the Fixes tag changed get_xdp_id to only return prog_id
-> > if flags is 0, but there are other XDP flags than the modes - e.g.,
-> > XDP_FLAGS_UPDATE_IF_NOEXIST. Since the intention was only to look at
-> > MODE flags, clear other ones before checking if flags is 0.
-> >
-> > Fixes: f07cbad29741 ("libbpf: Fix bpf_get_link_xdp_id flags handling")
-> > Signed-off-by: David Ahern <dsahern@gmail.com>
-> > Cc: Andrey Ignatov <rdna@fb.com>
->
-> Makes sense. Thanks.
->
-> Acked-by: Andrey Ignatov <rdna@fb.com>
+x25_lapb_receive_frame() invokes x25_get_neigh(), which returns a
+reference of the specified x25_neigh object to "nb" with increased
+refcnt.
 
-Applied. Thanks
+When x25_lapb_receive_frame() returns, local variable "nb" becomes
+invalid, so the refcount should be decreased to keep refcount balanced.
+
+The reference counting issue happens in one path of
+x25_lapb_receive_frame(). When pskb_may_pull() returns false, the
+function forgets to decrease the refcnt increased by x25_get_neigh(),
+causing a refcnt leak.
+
+Fix this issue by calling x25_neigh_put() when pskb_may_pull() returns
+false.
+
+Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+---
+ net/x25/x25_dev.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/net/x25/x25_dev.c b/net/x25/x25_dev.c
+index 00e782335cb0..25bf72ee6cad 100644
+--- a/net/x25/x25_dev.c
++++ b/net/x25/x25_dev.c
+@@ -115,8 +115,10 @@ int x25_lapb_receive_frame(struct sk_buff *skb, struct net_device *dev,
+ 		goto drop;
+ 	}
+ 
+-	if (!pskb_may_pull(skb, 1))
++	if (!pskb_may_pull(skb, 1)) {
++		x25_neigh_put(nb);
+ 		return 0;
++	}
+ 
+ 	switch (skb->data[0]) {
+ 
+-- 
+2.7.4
+
