@@ -2,93 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 701031B5DC8
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 16:29:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A24E1B5DF8
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 16:37:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728013AbgDWO3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 10:29:36 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:59234 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726060AbgDWO3g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 10:29:36 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 03NETSot078418;
-        Thu, 23 Apr 2020 09:29:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1587652168;
-        bh=wBBGLm/GU/IWOc28k0N2zTqFLwnTT77BHKEVRmH7rpE=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=DsQ1WXaV6Zy/vKf7bEWUOT4pa1hMMKm7faDpkefg40mq0UGDL47aMaB6ibu1B1s2s
-         2U23jQohIFFs6FN2fXpf6mz8N2KR5k5AqFdYcdO04IvBEzAQ66s8Cd+4KJ3Bc+ZbUV
-         wExBr+lr67BwPqsO7kzYvnlwfSVU/UVXetoqeecc=
-Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 03NETS0x053944
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 23 Apr 2020 09:29:28 -0500
-Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 23
- Apr 2020 09:29:28 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 23 Apr 2020 09:29:28 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 03NETP4k112639;
-        Thu, 23 Apr 2020 09:29:26 -0500
-Subject: Re: [PATCH net-next v4 00/10] net: ethernet: ti: cpts: add irq and
- HW_TS_PUSH events
-To:     David Miller <davem@davemloft.net>
-CC:     <richardcochran@gmail.com>, <lokeshvutla@ti.com>,
-        <tony@atomide.com>, <netdev@vger.kernel.org>, <nsekhar@ti.com>,
-        <linux-kernel@vger.kernel.org>, <m-karicheri2@ti.com>,
-        <linux-omap@vger.kernel.org>
-References: <20200422201254.15232-1-grygorii.strashko@ti.com>
- <20200422.195705.2021017077827664261.davem@davemloft.net>
- <20200422.195947.725312745030873910.davem@davemloft.net>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <8f7954ce-566a-1968-9800-bd0ee75959c0@ti.com>
-Date:   Thu, 23 Apr 2020 17:29:21 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1728297AbgDWOhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 10:37:24 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58630 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726363AbgDWOhY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Apr 2020 10:37:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=3+fByAMXo9X0NbPvTaF3P44AieG5P/6XjT9WC6GWwOA=; b=WZQXdpe1xs5vNCcREe9Hlz/rQn
+        KTy81E21moUdEgByQ0H3ujl4EFc7M0eQBwU910JMo1s0gi8i/7V1M6XAz+3e7u0mBIf9CAaBlJ6c/
+        8vLooOTBmXCLmXSwQeEuKoF4864sdjREcpNl4OiVRnlEArF7+2bcmguE9RtOXT1r8BrE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jRcyW-004OZN-Ci; Thu, 23 Apr 2020 16:37:12 +0200
+Date:   Thu, 23 Apr 2020 16:37:12 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Colin King <colin.king@canonical.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Michael Walle <michael@walle.cc>,
+        Guenter Roeck <linux@roeck-us.net>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] net: phy: bcm54140: fix less than zero comparison
+ on an unsigned
+Message-ID: <20200423143712.GA1020784@lunn.ch>
+References: <20200423141016.19666-1-colin.king@canonical.com>
 MIME-Version: 1.0
-In-Reply-To: <20200422.195947.725312745030873910.davem@davemloft.net>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200423141016.19666-1-colin.king@canonical.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 23/04/2020 05:59, David Miller wrote:
-> From: David Miller <davem@davemloft.net>
-> Date: Wed, 22 Apr 2020 19:57:05 -0700 (PDT)
+On Thu, Apr 23, 2020 at 03:10:16PM +0100, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
 > 
->> From: Grygorii Strashko <grygorii.strashko@ti.com>
->> Date: Wed, 22 Apr 2020 23:12:44 +0300
->>
->>> This is re-spin of patches to add CPSW IRQ and HW_TS_PUSH events support I've
->>> sent long time ago [1]. In this series, I've tried to restructure and split changes,
->>> and also add few additional optimizations comparing to initial RFC submission [1].
->>   ...
->>
->> Series applied, thanks.
+> Currently the unsigned variable tmp is being checked for an negative
+> error return from the call to bcm_phy_read_rdb and this can never
+> be true since tmp is unsigned.  Fix this by making tmp a plain int.
 > 
-> Actually I had to revert, this breaks the build:
-> 
-> [davem@localhost net-next]$ make -s -j14
-> ERROR: modpost: "cpts_misc_interrupt" [drivers/net/ethernet/ti/ti_cpsw_new.ko] undefined!
-> ERROR: modpost: "cpts_misc_interrupt" [drivers/net/ethernet/ti/ti_cpsw.ko] undefined!
-> make[1]: *** [scripts/Makefile.modpost:94: __modpost] Error 1
-> make: *** [Makefile:1319: modules] Error 2
-> 
+> Addresses-Coverity: ("Unsigned compared against 0")
 
-Fixed and resent.
+I thought 0 was unsigned?
 
--- 
-Best regards,
-grygorii
+> Fixes: 4406d36dfdf1 ("net: phy: bcm54140: add hwmon support")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
