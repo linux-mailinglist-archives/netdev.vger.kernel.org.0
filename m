@@ -2,85 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE0591B550D
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 09:01:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 552031B551F
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 09:05:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726766AbgDWHB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 03:01:27 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:47510 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726639AbgDWHBZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 03:01:25 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1587625285; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=jnGBvqgD2+rCZ5dqwcs/N0/DjWzyVn5656ZJjEr5E6M=; b=OAzIGJKgfr85qP3QxlRii25LA6STpSJc6aC+5Xf4J6IcwF359FXzoVjDlcTLcHoY57CbkuM6
- 0+UDTVrTQsBG/g+0dY+vK9NRvjmtRO+KCFhtkjisxJ3qPaRT6d5FizasnmJvMQYoF95SgmWi
- hT5IuJ/x1eJeAztbPJbzw0ceVuI=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5ea13d35.7f87b6312490-smtp-out-n02;
- Thu, 23 Apr 2020 07:01:09 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id C0E57C433F2; Thu, 23 Apr 2020 07:01:07 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 917ACC433D2;
-        Thu, 23 Apr 2020 07:01:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 917ACC433D2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Tony Chuang <yhchuang@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "open list\:REALTEK WIRELESS DRIVER \(rtw88\)" 
-        <linux-wireless@vger.kernel.org>,
-        "open list\:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/2] rtw88: Use udelay instead of usleep in atomic context
-References: <20200423063811.2636-1-kai.heng.feng@canonical.com>
-        <20200423063811.2636-2-kai.heng.feng@canonical.com>
-        <87h7xan1cy.fsf@kamboji.qca.qualcomm.com>
-        <D2ACB475-AE1A-41D1-BEB9-1FC30DA13AE8@canonical.com>
-Date:   Thu, 23 Apr 2020 10:01:03 +0300
-In-Reply-To: <D2ACB475-AE1A-41D1-BEB9-1FC30DA13AE8@canonical.com> (Kai-Heng
-        Feng's message of "Thu, 23 Apr 2020 14:53:18 +0800")
-Message-ID: <87d07yn0sw.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1726852AbgDWHER (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 03:04:17 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:2838 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726679AbgDWHEQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Apr 2020 03:04:16 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 5D3BC9A1978D68F7FC4D;
+        Thu, 23 Apr 2020 15:04:11 +0800 (CST)
+Received: from linux-lmwb.huawei.com (10.175.103.112) by
+ DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
+ 14.3.487.0; Thu, 23 Apr 2020 15:04:03 +0800
+From:   Zou Wei <zou_wei@huawei.com>
+To:     <trond.myklebust@hammerspace.com>, <anna.schumaker@netapp.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <bfields@fieldses.org>,
+        <chuck.lever@oracle.com>
+CC:     <linux-nfs@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Zou Wei <zou_wei@huawei.com>
+Subject: [PATCH -next] xprtrdma: Make xprt_rdma_slot_table_entries static
+Date:   Thu, 23 Apr 2020 15:10:02 +0800
+Message-ID: <1587625802-97494-1-git-send-email-zou_wei@huawei.com>
+X-Mailer: git-send-email 2.6.2
 MIME-Version: 1.0
 Content-Type: text/plain
+X-Originating-IP: [10.175.103.112]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
+Fix the following sparse warning:
 
->> On Apr 23, 2020, at 14:49, Kalle Valo <kvalo@codeaurora.org> wrote:
->> 
->> Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
->> 
->>> It's incorrect to use usleep in atomic context.
->>> 
->>> Switch to a macro which uses udelay instead of usleep to prevent the issue.
->>> 
->>> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
->> 
->> This fixes a regression, right? So there should be a Fixes line.
->
-> Yes, but the regression commit isn't in Linus' tree, so the sha1 may change.
+net/sunrpc/xprtrdma/transport.c:71:14: warning: symbol 'xprt_rdma_slot_table_entries'
+was not declared. Should it be static?
 
-No, the commit id won't change after I have commited the patch. I don't
-rebase my trees.
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zou Wei <zou_wei@huawei.com>
+---
+ net/sunrpc/xprtrdma/transport.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/net/sunrpc/xprtrdma/transport.c b/net/sunrpc/xprtrdma/transport.c
+index 659da37..9f2e8f5 100644
+--- a/net/sunrpc/xprtrdma/transport.c
++++ b/net/sunrpc/xprtrdma/transport.c
+@@ -68,7 +68,7 @@
+  * tunables
+  */
+ 
+-unsigned int xprt_rdma_slot_table_entries = RPCRDMA_DEF_SLOT_TABLE;
++static unsigned int xprt_rdma_slot_table_entries = RPCRDMA_DEF_SLOT_TABLE;
+ unsigned int xprt_rdma_max_inline_read = RPCRDMA_DEF_INLINE;
+ unsigned int xprt_rdma_max_inline_write = RPCRDMA_DEF_INLINE;
+ unsigned int xprt_rdma_memreg_strategy		= RPCRDMA_FRWR;
 -- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.6.2
+
