@@ -2,64 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F4971B54C7
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 08:38:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A68271B54EA
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 08:49:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726846AbgDWGi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 02:38:27 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:54341 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725562AbgDWGi1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 02:38:27 -0400
-Received: from 61-220-137-37.hinet-ip.hinet.net ([61.220.137.37] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <kai.heng.feng@canonical.com>)
-        id 1jRVV7-0002Ha-Le; Thu, 23 Apr 2020 06:38:22 +0000
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     yhchuang@realtek.com, kvalo@codeaurora.org
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org (open list:REALTEK WIRELESS DRIVER
-        (rtw88)), netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 2/2] rtw88: Use udelay instead of usleep in atomic context
-Date:   Thu, 23 Apr 2020 14:38:10 +0800
-Message-Id: <20200423063811.2636-2-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200423063811.2636-1-kai.heng.feng@canonical.com>
-References: <20200423063811.2636-1-kai.heng.feng@canonical.com>
+        id S1726842AbgDWGtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 02:49:06 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:33892 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726824AbgDWGtF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 02:49:05 -0400
+Received: from localhost.localdomain (redhouse.blr.asicdesigners.com [10.193.185.57])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 03N6mvPH003555;
+        Wed, 22 Apr 2020 23:48:58 -0700
+From:   Rohit Maheshwari <rohitm@chelsio.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     kuba@kernel.org, secdev@chelsio.com,
+        Rohit Maheshwari <rohitm@chelsio.com>
+Subject: [PATCH net] chcr: Fix CPU hard lockup
+Date:   Thu, 23 Apr 2020 12:18:55 +0530
+Message-Id: <20200423064855.11408-1-rohitm@chelsio.com>
+X-Mailer: git-send-email 2.18.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's incorrect to use usleep in atomic context.
+Soft lock should be taken in place of hard lock.
 
-Switch to a macro which uses udelay instead of usleep to prevent the issue.
-
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
 ---
- drivers/net/wireless/realtek/rtw88/fw.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/crypto/chelsio/chcr_ktls.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/fw.c b/drivers/net/wireless/realtek/rtw88/fw.c
-index 245da96dfddc..8f998b4a7234 100644
---- a/drivers/net/wireless/realtek/rtw88/fw.c
-+++ b/drivers/net/wireless/realtek/rtw88/fw.c
-@@ -228,9 +228,9 @@ static void rtw_fw_send_h2c_command(struct rtw_dev *rtwdev,
- 		goto out;
+diff --git a/drivers/crypto/chelsio/chcr_ktls.c b/drivers/crypto/chelsio/chcr_ktls.c
+index cd1769ecdc1c..e92b352fb0ad 100644
+--- a/drivers/crypto/chelsio/chcr_ktls.c
++++ b/drivers/crypto/chelsio/chcr_ktls.c
+@@ -120,12 +120,10 @@ static int chcr_ktls_save_keys(struct chcr_ktls_info *tx_info,
+ static int chcr_ktls_update_connection_state(struct chcr_ktls_info *tx_info,
+ 					     int new_state)
+ {
+-	unsigned long flags;
+-
+ 	/* This function can be called from both rx (interrupt context) and tx
+ 	 * queue contexts.
+ 	 */
+-	spin_lock_irqsave(&tx_info->lock, flags);
++	spin_lock_bh(&tx_info->lock);
+ 	switch (tx_info->connection_state) {
+ 	case KTLS_CONN_CLOSED:
+ 		tx_info->connection_state = new_state;
+@@ -169,7 +167,7 @@ static int chcr_ktls_update_connection_state(struct chcr_ktls_info *tx_info,
+ 		pr_err("unknown KTLS connection state\n");
+ 		break;
  	}
+-	spin_unlock_irqrestore(&tx_info->lock, flags);
++	spin_unlock_bh(&tx_info->lock);
  
--	ret = read_poll_timeout(rtw_read8, box_state,
--				!((box_state >> box) & 0x1), 100, 3000, false,
--				rtwdev, REG_HMETFR);
-+	ret = read_poll_timeout_atomic(rtw_read8, box_state,
-+				       !((box_state >> box) & 0x1), 100, 3000,
-+				       false, rtwdev, REG_HMETFR);
- 
- 	if (ret) {
- 		rtw_err(rtwdev, "failed to send h2c command\n");
+ 	return tx_info->connection_state;
+ }
 -- 
-2.17.1
+2.18.1
 
