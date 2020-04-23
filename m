@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCD5A1B5305
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 05:15:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E08941B530C
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 05:17:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726750AbgDWDPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 23:15:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51898 "EHLO
+        id S1726695AbgDWDRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 23:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726562AbgDWDPs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 23:15:48 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C976C03C1AA;
-        Wed, 22 Apr 2020 20:15:48 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id w2so3230122edx.4;
-        Wed, 22 Apr 2020 20:15:48 -0700 (PDT)
+        with ESMTP id S1726002AbgDWDRV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 23:17:21 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40695C03C1AA;
+        Wed, 22 Apr 2020 20:17:21 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id k22so3228187eds.6;
+        Wed, 22 Apr 2020 20:17:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=cxsx7utk7++1Wvv+Y9Ze+APMY5I4SIalD834TlR6uYg=;
-        b=hh6jrlt/msqEqx/ARg0lwpjPhcrympZFisWyBBcykRn/+/HhwXcmfEoY2+YP0u47Yq
-         Ud3Y5H54K6EPPJwtcLKPc24tNAHeqRBtw79NcFeUJXfMmNIitS6HiHImGzZkF8ygibOQ
-         V2GzTew3BWfa7bzFp25BIGaPgse/Xfbkc9Y+5mk4GXui256E2GC0zm5BIPGEbCHyeAZQ
-         eEcervtyqY2rOVsu3sJ8edjDHO18QZQR4XO4yQsPpsdgQKJQD5Vkcg4AO8SSjJ14ic/X
-         K6i9uNeSfc/lxEUKDn50xsur7nXLQD4ty1bushKSMAv67GBHldpaCbEk7n4O6Ttzreux
-         7y2w==
+        bh=aR+qXvnJ8+GuNzazGRLZb5Q+H9sJRFcwSA5eXi7K0rA=;
+        b=j482jQhMRy70zAMZaavtaLmHBPl0M0Jyqr1aQtFlysTQw8lmqM+QlyAObcdcKa68ai
+         bWdxVuSIsogrBwVKsm3bAuiS8yLfGI4rpFLlu2pvikciAA2vsHYYMnj+UjvO+wNKNzvI
+         aTwcLf38za8rPz55hTVmRF/xY7KS3fYJLwCMFWvdpz49RjoRkBJgNZPsmZgbIsH7YN3L
+         OvhMlD/DXxue4DcougAMTANS4TDWV4t9f3Clf53PPu4iKH5/x9yxLn/c6Ks6QXzRw8lg
+         BCRqhqFk/Dnl21DyGdNWY+pucZjtTlw/0mrTl6QhWTKOFyTwhgiqRWdTZe31fPoqNgjS
+         16NQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=cxsx7utk7++1Wvv+Y9Ze+APMY5I4SIalD834TlR6uYg=;
-        b=NEnC+f0QP4H04ABCpbOzN0al4ejUyUB+dk2ID1nU9/BD+lcOMcXvZTL8X387NcCrTh
-         inm3lGzhBcu5QsXySbpyAhzdKbK0o7cjsrYpSBbRYX1AELO8F8fvfJiahUp7TFe4Io3y
-         1m4k+oUF8Invv4xh+t9h/DOT4naQeBWoYt5s8b542KBosAQfkJ2NHaB0uRBra2myTu+N
-         uIxYGNl+Sr657voYRY5Fd2dqjNRHPT5VdVhEaDvhvmNpFWdI597YHWRwSAoEdPERQTvd
-         5X2s0iLJiLdqRLowK1wpoeKipwVJ83Cwp9TNKD7Hl35bhsm57tWtEsg7KbJpozNiVmll
-         XWSw==
-X-Gm-Message-State: AGi0PuZYSomBCg5P4Vo2t8/Y5MEyDkEPrJ1SBtYc8QHanLlYXJxPGlBJ
-        YupSvEqCV9t6apIfuOviU5Dqs/A6
-X-Google-Smtp-Source: APiQypJRHUysfsJxvtHghejmUkPFpdgYm2y6xvPxt/EEgHyVePhNxUknpC3IaLtoXtO311aSaLdSOg==
-X-Received: by 2002:a50:85c4:: with SMTP id q4mr1082462edh.147.1587611746367;
-        Wed, 22 Apr 2020 20:15:46 -0700 (PDT)
+        bh=aR+qXvnJ8+GuNzazGRLZb5Q+H9sJRFcwSA5eXi7K0rA=;
+        b=Wf3a3vycRUJjkaR1FT4IKkI2efqhOftPkrkeIu72hwKatmRh61sPfgCHdrBukZG7RB
+         Uj1VRxnZLr9jl3JnTqZgy9CKaVHhUbChFLtuG82JNcbxra8gXPz7r7vpHZN8p9zFvI0T
+         SU7+Evgit0wRWmbvI4nBdJdvZa23tUSEYD86t7iJXmCmymO2HspVePciT/T/5Vo/ImV2
+         vgeZLIltvwh2FTNlKnS9IWfn1TlVax6spN7PHysT1BjWVkNFmiSqJNjHkeyXOuGT5Mtv
+         TwCtZXL+UE0XG1pgMBGoE9feEtBKucauWSiUpbZzxhZbBw67gOMWbFTdwIV2oo5oUGR2
+         sZ7A==
+X-Gm-Message-State: AGi0PuaIqm6Q8Aj1sVG9BjzyaIcRBTHjeNObljrEhshmbnxTHWBOebnR
+        lrUfPC+HeHLUnaU3zGc6HVhYba3b
+X-Google-Smtp-Source: APiQypIvfd/8p99rOL+LDEasXibI5N7USA0uZxAd/qUfBVLZxGUnJ1fDPg2E14LwjfypUXn95E+VWQ==
+X-Received: by 2002:a50:a985:: with SMTP id n5mr1180165edc.338.1587611839699;
+        Wed, 22 Apr 2020 20:17:19 -0700 (PDT)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id dk19sm187042edb.66.2020.04.22.20.15.43
+        by smtp.gmail.com with ESMTPSA id du16sm256270ejc.92.2020.04.22.20.17.16
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Apr 2020 20:15:45 -0700 (PDT)
-Subject: Re: [PATCH net-next v5 1/4] dt-bindings: net: phy: Add support for
- NXP TJA11xx
+        Wed, 22 Apr 2020 20:17:19 -0700 (PDT)
+Subject: Re: [PATCH net-next v5 2/4] net: phy: tja11xx: add initial TJA1102
+ support
 To:     Oleksij Rempel <o.rempel@pengutronix.de>,
         Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -61,14 +61,14 @@ Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
         Marek Vasut <marex@denx.de>, David Jander <david@protonic.nl>,
         devicetree@vger.kernel.org
 References: <20200422092456.24281-1-o.rempel@pengutronix.de>
- <20200422092456.24281-2-o.rempel@pengutronix.de>
+ <20200422092456.24281-3-o.rempel@pengutronix.de>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <b47f742d-e79a-11c8-6d39-db27dced28b8@gmail.com>
-Date:   Wed, 22 Apr 2020 20:15:42 -0700
+Message-ID: <264beb18-522b-3608-49d1-3c17a3c79c59@gmail.com>
+Date:   Wed, 22 Apr 2020 20:17:15 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200422092456.24281-2-o.rempel@pengutronix.de>
+In-Reply-To: <20200422092456.24281-3-o.rempel@pengutronix.de>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -80,49 +80,12 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 4/22/2020 2:24 AM, Oleksij Rempel wrote:
-> Document the NXP TJA11xx PHY bindings.
+> TJA1102 is an dual T1 PHY chip. Both PHYs are separately addressable.
+> Both PHYs are similar but have different amount of functionality. For
+> example PHY 1 has no PHY ID and no health monitor.
 > 
 > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->   .../devicetree/bindings/net/nxp,tja11xx.yaml  | 61 +++++++++++++++++++
->   1 file changed, 61 insertions(+)
->   create mode 100644 Documentation/devicetree/bindings/net/nxp,tja11xx.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/nxp,tja11xx.yaml b/Documentation/devicetree/bindings/net/nxp,tja11xx.yaml
-> new file mode 100644
-> index 0000000000000..42be0255512b3
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/nxp,tja11xx.yaml
-> @@ -0,0 +1,61 @@
-> +# SPDX-License-Identifier: GPL-2.0+
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/nxp,tja11xx.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: NXP TJA11xx PHY
-> +
-> +maintainers:
-> +  - Andrew Lunn <andrew@lunn.ch>
-> +  - Florian Fainelli <f.fainelli@gmail.com>
-> +  - Heiner Kallweit <hkallweit1@gmail.com>
 
-I would have expected to have you listed as a maintainer of this 
-binding, but fair enough.
-
-> +
-> +description:
-> +  Bindings for NXP TJA11xx automotive PHYs
-> +
-> +allOf:
-> +  - $ref: ethernet-phy.yaml#
-> +
-> +patternProperties:
-> +  "^ethernet-phy@[0-9a-f]+$":
-> +    type: object
-> +    description: |
-> +      Some packages have multiple PHYs. Secondary PHY should be defines as
-
-should be defined as a subnode.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
