@@ -2,76 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72BD91B6054
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 18:07:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F10E1B6058
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 18:07:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729544AbgDWQHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 12:07:14 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:22371 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729515AbgDWQHN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 12:07:13 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1587658032; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=qbSJxZQNaWxw8mAgGamaaFomuWjyilvDfwW/TLq0WJQ=;
- b=t9ZGvrnp0scZCOrM/H6PwPWwapisyipQZiUnW/zFNrpC+T6ts2mliQVbohlXQRWykwFcemOO
- kQeAeWvZ8sGWkHiBApWezAsvWHocEUTmlDsKijDm1IXmeyhHyF8u0XSNL5fzGXa+7umKNxmt
- tZmmdCT3PO94v8WaMsBcNjVHt3E=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5ea1bd2a.7f736ae07c38-smtp-out-n01;
- Thu, 23 Apr 2020 16:07:06 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id E24FDC433D2; Thu, 23 Apr 2020 16:07:04 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id BCF2BC433D2;
-        Thu, 23 Apr 2020 16:07:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org BCF2BC433D2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1729576AbgDWQHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 12:07:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59156 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729445AbgDWQHT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 12:07:19 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BEEDC09B040;
+        Thu, 23 Apr 2020 09:07:19 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id n6so6753774ljg.12;
+        Thu, 23 Apr 2020 09:07:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RDSCrwCJp6yV1aNxYeUky66qtSq/MJskkt7kK1B6xKQ=;
+        b=Uf1KruvlAoJs+fAgo3ksUW3OW8MVaTPDBQgvnx+nc1mv+WI9yFalis4DezbVd32Zhn
+         xJ9+TwEfaUDfP+ikXz/LTQoMq0hERb6o2o4YDQh2/KO25NYvYHwb2SJDscjO5B6Iytob
+         Wy2Q+K6KdrNZPIVStFcZDuKLPDv2sGgxkNNft6y0ZnK+DXOYUsHuDwQs2JXP8Wnavavz
+         Zop46z8it+bmF6F1h5JXYdhFI1mMlY+mgNW2pna1NjWBm5oyv91Y8RHf1U+NxGRqASq4
+         vWlrcwtl4nE2pfJUYkwzgH3S4RUdpbn16xpMPV9/569nAX/xSUt+cRCIPMMuAk+9RrXt
+         8kDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RDSCrwCJp6yV1aNxYeUky66qtSq/MJskkt7kK1B6xKQ=;
+        b=b718X2qBGmm6CGz3N9Y8BOZGdxVr0vckxU0RLO+l+fWi35vxkcxWSkWYr5vaeY3Pjg
+         lKrOdp9v/5q0hO+8zk4Ha1q303SuT6N9ngplF7bT1Q1gRbc8WI9OQRlCtudptVex78o3
+         7cdXxhMvC0X1ngLrLP51pzEZLH3zSoZeprNdLROoPWz9MDfl0eN174Sz8+QZzvMMrcoP
+         Ls1gxTSPqGmwB91WzQQCfFLS74+joN8gkRruOvgrzu6wIVAS1O9HiuUh7oBxf6zJmsu/
+         BnV8DSe37j2b0YHbjfAhLaNcxwBQgSerfkYfuHTAEWMZj5AWdbgXY3whd9DmKwv3L0aT
+         dWwA==
+X-Gm-Message-State: AGi0Pua/A2RtuRjSlQt3AF3mejX7HQRRaxb3h0Q5CW7UnVFbI8EHbuev
+        sPKM/HfFLNaDD71cxsNxCRwAXn/L/k02H2FatjQ=
+X-Google-Smtp-Source: APiQypJAc7TZGWxpJrsl1LC1eNpmKa7WdnRVXX4YOULM8uo6TgMb9wma3PwDbfEnX7LIESTrts/E/0tuT1lK+Z4oSXs=
+X-Received: by 2002:a2e:b80b:: with SMTP id u11mr2854291ljo.212.1587658037752;
+ Thu, 23 Apr 2020 09:07:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2 2/2] rtw88: Use udelay instead of usleep in atomic context
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200423073007.3566-1-kai.heng.feng@canonical.com>
-References: <20200423073007.3566-1-kai.heng.feng@canonical.com>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     yhchuang@realtek.com, Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org (open list:REALTEK WIRELESS DRIVER
-        (rtw88)), netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200423160704.E24FDC433D2@smtp.codeaurora.org>
-Date:   Thu, 23 Apr 2020 16:07:04 +0000 (UTC)
+References: <20200422093329.GI2659@kadam> <20200423033314.49205-1-maowenan@huawei.com>
+ <20200423033314.49205-2-maowenan@huawei.com> <CAADnVQLfqLBzsjK0KddZM7WTL3unzWw+v18L0pw8HQnWsEVUzA@mail.gmail.com>
+ <bd36c161-8831-1f61-1531-063723a8d8c2@huawei.com>
+In-Reply-To: <bd36c161-8831-1f61-1531-063723a8d8c2@huawei.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 23 Apr 2020 09:07:05 -0700
+Message-ID: <CAADnVQK_wWkLFyzZ5eXGvTQmBj=wOXNFL6vRZkNNBHLUYn5w6Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 1/2] bpf: Change error code when ops is NULL
+To:     maowenan <maowenan@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-janitors@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kai-Heng Feng <kai.heng.feng@canonical.com> wrote:
+On Wed, Apr 22, 2020 at 11:25 PM maowenan <maowenan@huawei.com> wrote:
+>
+> On 2020/4/23 13:43, Alexei Starovoitov wrote:
+> > On Wed, Apr 22, 2020 at 8:31 PM Mao Wenan <maowenan@huawei.com> wrote:
+> >>
+> >> There is one error printed when use BPF_MAP_TYPE_SOCKMAP to create map:
+> >> libbpf: failed to create map (name: 'sock_map'): Invalid argument(-22)
+> >>
+> >> This is because CONFIG_BPF_STREAM_PARSER is not set, and
+> >> bpf_map_types[type] return invalid ops. It is not clear to show the
+> >> cause of config missing with return code -EINVAL, so add pr_warn() and
+> >> change error code to describe the reason.
+> >>
+> >> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+> >> ---
+> >>  kernel/bpf/syscall.c | 7 ++++---
+> >>  1 file changed, 4 insertions(+), 3 deletions(-)
+> >>
+> >> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> >> index d85f37239540..7686778457c7 100644
+> >> --- a/kernel/bpf/syscall.c
+> >> +++ b/kernel/bpf/syscall.c
+> >> @@ -112,9 +112,10 @@ static struct bpf_map *find_and_alloc_map(union bpf_attr *attr)
+> >>                 return ERR_PTR(-EINVAL);
+> >>         type = array_index_nospec(type, ARRAY_SIZE(bpf_map_types));
+> >>         ops = bpf_map_types[type];
+> >> -       if (!ops)
+> >> -               return ERR_PTR(-EINVAL);
+> >> -
+> >> +       if (!ops) {
+> >> +               pr_warn("map type %d not supported or kernel config not opened\n", type);
+> >> +               return ERR_PTR(-EOPNOTSUPP);
+> >> +       }
+> >
+> > I don't think users will like it when kernel spams dmesg.
+> > If you need this level of verbosity please teach consumer of libbpf to
+> > print them.
+> > It's not a job of libbpf either.
+> thanks for reviw, so is it better to delete redundant pr_warn()?
 
-> It's incorrect to use usleep in atomic context.
-> 
-> Switch to a macro which uses udelay instead of usleep to prevent the issue.
-> 
-> Fixes: 6343a6d4b213 ("rtw88: Add delay on polling h2c command status bit")
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-
-For patch 1 please also CC linux-wireless, otherwise patchwork cannot see it.
-
--- 
-https://patchwork.kernel.org/patch/11505147/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+which one?
