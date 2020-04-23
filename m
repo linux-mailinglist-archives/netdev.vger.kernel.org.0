@@ -2,97 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E807B1B6049
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 18:05:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72BD91B6054
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 18:07:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729491AbgDWQFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 12:05:45 -0400
-Received: from bmailout1.hostsharing.net ([83.223.95.100]:41493 "EHLO
-        bmailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729405AbgDWQFp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 12:05:45 -0400
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        id S1729544AbgDWQHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 12:07:14 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:22371 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729515AbgDWQHN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 12:07:13 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1587658032; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=qbSJxZQNaWxw8mAgGamaaFomuWjyilvDfwW/TLq0WJQ=;
+ b=t9ZGvrnp0scZCOrM/H6PwPWwapisyipQZiUnW/zFNrpC+T6ts2mliQVbohlXQRWykwFcemOO
+ kQeAeWvZ8sGWkHiBApWezAsvWHocEUTmlDsKijDm1IXmeyhHyF8u0XSNL5fzGXa+7umKNxmt
+ tZmmdCT3PO94v8WaMsBcNjVHt3E=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5ea1bd2a.7f736ae07c38-smtp-out-n01;
+ Thu, 23 Apr 2020 16:07:06 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id E24FDC433D2; Thu, 23 Apr 2020 16:07:04 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
-        by bmailout1.hostsharing.net (Postfix) with ESMTPS id 8253E30002223;
-        Thu, 23 Apr 2020 18:05:42 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 54B383D0764; Thu, 23 Apr 2020 18:05:42 +0200 (CEST)
-Date:   Thu, 23 Apr 2020 18:05:42 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Laura Garcia <nevola@gmail.com>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Netfilter Development Mailing list 
-        <netfilter-devel@vger.kernel.org>, coreteam@netfilter.org,
-        netdev@vger.kernel.org, Martin Mares <mj@ucw.cz>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Thomas Graf <tgraf@suug.ch>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH nf-next 3/3] netfilter: Introduce egress hook
-Message-ID: <20200423160542.d3f6yef4av2gqvur@wunner.de>
-References: <cover.1583927267.git.lukas@wunner.de>
- <14ab7e5af20124a34a50426fd570da7d3b0369ce.1583927267.git.lukas@wunner.de>
- <a57687ae-2da6-ca2a-1c84-e4332a5e4556@iogearbox.net>
- <20200313145526.ikovaalfuy7rnkdl@salvia>
- <1bd50836-33c4-da44-5771-654bfb0348cc@iogearbox.net>
- <20200315132836.cj36ape6rpw33iqb@salvia>
- <CAF90-WgoteQXB9WQmeT1eOHA3GpPbwPCEvNzwKkN20WqpdHW-A@mail.gmail.com>
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id BCF2BC433D2;
+        Thu, 23 Apr 2020 16:07:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org BCF2BC433D2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAF90-WgoteQXB9WQmeT1eOHA3GpPbwPCEvNzwKkN20WqpdHW-A@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2 2/2] rtw88: Use udelay instead of usleep in atomic context
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200423073007.3566-1-kai.heng.feng@canonical.com>
+References: <20200423073007.3566-1-kai.heng.feng@canonical.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     yhchuang@realtek.com, Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org (open list:REALTEK WIRELESS DRIVER
+        (rtw88)), netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20200423160704.E24FDC433D2@smtp.codeaurora.org>
+Date:   Thu, 23 Apr 2020 16:07:04 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 23, 2020 at 04:44:44PM +0200, Laura Garcia wrote:
-> On Sun, Mar 15, 2020 at 2:29 PM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
-> > On Sat, Mar 14, 2020 at 01:12:02AM +0100, Daniel Borkmann wrote:
-> > > On 3/13/20 3:55 PM, Pablo Neira Ayuso wrote:
-> > > > We have plans to support for NAT64 and NAT46, this is the right spot
-> > > > to do this mangling. There is already support for the tunneling
-> > >
-> > > But why is existing local-out or post-routing hook _not_ sufficient for
-> > > NAT64 given it being IP based?
-> >
-> > Those hooks are not coming at the end of the IP processing. There is
-> > very relevant IP code after those hooks that cannot be bypassed such
-> > as fragmentation, tunneling and neighbour output. Such transformation
-> > needs to happen after the IP processing, exactly from where Lukas is
-> > proposing.
-> >
-> > [...]
-> > > > infrastructure in netfilter from ingress, this spot from egress will
-> > > > allow us to perform the tunneling from here. There is also no way to
-> > > > drop traffic generated by dhclient, this also allow for filtering such
-> > > > locally generated traffic. And many more.
+Kai-Heng Feng <kai.heng.feng@canonical.com> wrote:
+
+> It's incorrect to use usleep in atomic context.
 > 
-> Any chance to continue with this approach? I'm afraid outbound
-> af_packets also could not be filtered without this hook.
+> Switch to a macro which uses udelay instead of usleep to prevent the issue.
+> 
+> Fixes: 6343a6d4b213 ("rtw88: Add delay on polling h2c command status bit")
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-Thanks Laura, good to hear there's interest in the functionality.
+For patch 1 please also CC linux-wireless, otherwise patchwork cannot see it.
 
-Daniel submitted a revert of this series but didn't cc me:
+-- 
+https://patchwork.kernel.org/patch/11505147/
 
-https://lore.kernel.org/netdev/bbdee6355234e730ef686f9321bd072bcf4bb232.1584523237.git.daniel@iogearbox.net/
-
-In the ensuing discussion it turned out that the performance argument
-may be addressed by a rearrangement of sch_handle_egress() and
-nf_egress() invocations.  I could look into amending the series
-accordingly and resubmitting, though I'm currently swamped with
-other work.
-
-The question is whether that's going to be sufficient because Daniel
-mentioned having an in-tree user as a prerequisite for accepting this
-feature, to which Pablo responded with NAT64/NAT46.  I don't have
-intentions of implementing those, but maybe someone else has.
-
-Thanks,
-
-Lukas
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
