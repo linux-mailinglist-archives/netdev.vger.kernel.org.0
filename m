@@ -2,135 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59EC01B51F9
-	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 03:38:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83F0E1B5218
+	for <lists+netdev@lfdr.de>; Thu, 23 Apr 2020 03:43:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726451AbgDWBh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Apr 2020 21:37:57 -0400
-Received: from mail.hallyn.com ([178.63.66.53]:53220 "EHLO mail.hallyn.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725854AbgDWBh5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 22 Apr 2020 21:37:57 -0400
-Received: by mail.hallyn.com (Postfix, from userid 1001)
-        id 44E5B9D0; Wed, 22 Apr 2020 20:37:54 -0500 (CDT)
-Date:   Wed, 22 Apr 2020 20:37:54 -0500
-From:   "Serge E. Hallyn" <serge@hallyn.com>
-To:     Christian Brauner <christian.brauner@ubuntu.com>
-Cc:     Jens Axboe <axboe@kernel.dk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-api@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Serge Hallyn <serge@hallyn.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, Tejun Heo <tj@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saravana Kannan <saravanak@google.com>,
-        Jan Kara <jack@suse.cz>, David Howells <dhowells@redhat.com>,
-        Seth Forshee <seth.forshee@canonical.com>,
-        David Rheinsberg <david.rheinsberg@gmail.com>,
-        Tom Gundersen <teg@jklm.no>,
-        Christian Kellner <ckellner@redhat.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        =?iso-8859-1?Q?St=E9phane?= Graber <stgraber@ubuntu.com>,
-        linux-doc@vger.kernel.org, netdev@vger.kernel.org,
-        Steve Barber <smbarber@google.com>,
-        Dylan Reid <dgreid@google.com>,
-        Filipe Brandenburger <filbranden@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Benjamin Elder <bentheelder@google.com>,
-        Akihiro Suda <suda.kyoto@gmail.com>
-Subject: Re: [PATCH v2 7/7] loopfs: only show devices in their correct
- instance
-Message-ID: <20200423013754.GC2982@mail.hallyn.com>
-References: <20200422145437.176057-1-christian.brauner@ubuntu.com>
- <20200422145437.176057-8-christian.brauner@ubuntu.com>
+        id S1726420AbgDWBnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Apr 2020 21:43:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37418 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725828AbgDWBnU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Apr 2020 21:43:20 -0400
+X-Greylist: delayed 12401 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 22 Apr 2020 18:43:20 PDT
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8221FC03C1AA;
+        Wed, 22 Apr 2020 18:43:20 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4970SN6b8Hz9sSd;
+        Thu, 23 Apr 2020 11:43:16 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1587606197;
+        bh=+Oe8bj8PhMMloiNTEF+tPE9kazN7s8cc/Q+pJLOx2ME=;
+        h=Date:From:To:Cc:Subject:From;
+        b=fwkUXe3fgqT4VNtMtTTWvC5MfPBmuvdGHhAgNSegkyiawbz/QK7t6+gxtBoEnXJP5
+         V/8IhmxIk+pf4BGL7ZB8naFdu157p8RA/NwhNjF1XeU5tHj1+OenAQGpH2WBZ752AU
+         hBUzVcH2IE2/aw2BlSHZSrFDUA90ZN3e0b77ilLpJRry28bZ0SQlqDsjQUSWKuzTBK
+         Mo6nZE6e5+EhW/7DWj5wgZNFEbY2z55D1qNTGwVWUXO+zjDcARoGm5TXQgJBHX+TtP
+         AxIbKk75RlE4OdUTWdmYL5R9XR5PRicob6gt7YxNs9HQaEArnEc+eYtuBt9jt8aaPy
+         Yx0+t7qTBaJMQ==
+Date:   Thu, 23 Apr 2020 11:43:13 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Leon Romanovsky <leonro@mellanox.com>
+Subject: linux-next: manual merge of the net-next tree with the
+ kbuild-current tree
+Message-ID: <20200423114313.634bf6cd@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200422145437.176057-8-christian.brauner@ubuntu.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: multipart/signed; boundary="Sig_/8BsiIvlLwI3mvWUcKjtJ27C";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 22, 2020 at 04:54:37PM +0200, Christian Brauner wrote:
-> Since loopfs devices belong to a loopfs instance they have no business
-> polluting the host's devtmpfs mount and should not propagate out of the
-> namespace they belong to.
-> 
-> Cc: Jens Axboe <axboe@kernel.dk>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
+--Sig_/8BsiIvlLwI3mvWUcKjtJ27C
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Serge Hallyn <serge@hallyn.com>
+Hi all,
 
-> ---
-> /* v2 */
-> unchanged
-> ---
->  drivers/base/devtmpfs.c | 4 ++--
->  drivers/block/loop.c    | 4 +++-
->  include/linux/device.h  | 3 +++
->  3 files changed, 8 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/base/devtmpfs.c b/drivers/base/devtmpfs.c
-> index c9017e0584c0..77371ceb88fa 100644
-> --- a/drivers/base/devtmpfs.c
-> +++ b/drivers/base/devtmpfs.c
-> @@ -111,7 +111,7 @@ int devtmpfs_create_node(struct device *dev)
->  	const char *tmp = NULL;
->  	struct req req;
->  
-> -	if (!thread)
-> +	if (!thread || dev->no_devnode)
->  		return 0;
->  
->  	req.mode = 0;
-> @@ -138,7 +138,7 @@ int devtmpfs_delete_node(struct device *dev)
->  	const char *tmp = NULL;
->  	struct req req;
->  
-> -	if (!thread)
-> +	if (!thread || dev->no_devnode)
->  		return 0;
->  
->  	req.name = device_get_devnode(dev, NULL, NULL, NULL, &tmp);
-> diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-> index 2dc53bad4b48..5548151b9f11 100644
-> --- a/drivers/block/loop.c
-> +++ b/drivers/block/loop.c
-> @@ -2213,8 +2213,10 @@ static int loop_add(struct loop_device **l, int i, struct inode *inode)
->  	disk->queue		= lo->lo_queue;
->  	sprintf(disk->disk_name, "loop%d", i);
->  #ifdef CONFIG_BLK_DEV_LOOPFS
-> -	if (loopfs_i_sb(inode))
-> +	if (loopfs_i_sb(inode)) {
->  		disk->user_ns = loopfs_i_sb(inode)->s_user_ns;
-> +		disk_to_dev(disk)->no_devnode = true;
-> +	}
->  #endif
->  
->  	add_disk(disk);
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index ac8e37cd716a..c69ef1c5a0ef 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -523,6 +523,8 @@ struct dev_links_info {
->   *		  sync_state() callback.
->   * @dma_coherent: this particular device is dma coherent, even if the
->   *		architecture supports non-coherent devices.
-> + * @no_devnode: whether device nodes associated with this device are kept out
-> + *		of devtmpfs (e.g. due to separate filesystem)
->   *
->   * At the lowest level, every device in a Linux system is represented by an
->   * instance of struct device. The device structure contains the information
-> @@ -622,6 +624,7 @@ struct device {
->      defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
->  	bool			dma_coherent:1;
->  #endif
-> +	bool			no_devnode:1;
->  };
->  
->  static inline struct device *kobj_to_dev(struct kobject *kobj)
-> -- 
-> 2.26.1
+Today's linux-next merge of the net-next tree got a conflict in:
+
+  include/linux/vermagic.h
+
+between commit:
+
+  e3459da6c363 ("arch: split MODULE_ARCH_VERMAGIC definitions out to <asm/v=
+ermagic.h>")
+
+from the kbuild-current tree and commit:
+
+  51161bfc66a6 ("kernel/module: Hide vermagic header file from general use")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc include/linux/vermagic.h
+index dc236577b92f,7768d20ada39..000000000000
+--- a/include/linux/vermagic.h
++++ b/include/linux/vermagic.h
+@@@ -1,9 -1,10 +1,13 @@@
+  /* SPDX-License-Identifier: GPL-2.0 */
+ +#ifndef _LINUX_VERMAGIC_H
+ +#define _LINUX_VERMAGIC_H
+ =20
++ #ifndef INCLUDE_VERMAGIC
++ #error "This header can be included from kernel/module.c or *.mod.c only"
++ #endif
++=20
+  #include <generated/utsrelease.h>
+ +#include <asm/vermagic.h>
+ =20
+  /* Simply sanity version stamp for modules. */
+  #ifdef CONFIG_SMP
+
+--Sig_/8BsiIvlLwI3mvWUcKjtJ27C
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl6g8rEACgkQAVBC80lX
+0GxBwQf/WI2vcF+eXo4TdZk72JDteMo0bxJRQTxYsF0np8HFDp94a+Z29xzOC9Ue
+7M48lUb59GipOSqbAaEQMCTSLJ1MEnALOiAFq5IrBY36wd5AEdfckhTNBN+tKKap
+aFF4NkoU9qrY7czZzu/1fiENLfqLWGJbTPAZcPQSyJN+heLQBmPc3+tpPrKlnign
+eQCNdTi6gP0pXrITEosOGSqSSaixglXDQaE1bKQMUpr68m6T8rswSDbLEVOyDeLY
+1kU20iLaL/Q14LvQuBqoNrH2uDj/JzMdR68iXKymRC2WjMTLq5IYzGY/j81nIfxT
+qjgGuoGYgWQSUHlKcLEYAiQPTFbYDg==
+=P0PE
+-----END PGP SIGNATURE-----
+
+--Sig_/8BsiIvlLwI3mvWUcKjtJ27C--
