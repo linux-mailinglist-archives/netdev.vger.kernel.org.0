@@ -2,554 +2,263 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C6101B6B41
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 04:24:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76DC71B6B94
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 04:51:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726477AbgDXCYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 22:24:36 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:2887 "EHLO huawei.com"
+        id S1726307AbgDXCui (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 22:50:38 -0400
+Received: from mail-eopbgr00045.outbound.protection.outlook.com ([40.107.0.45]:9891
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726166AbgDXCYc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Apr 2020 22:24:32 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id AB83C554A8AC514D47CD;
-        Fri, 24 Apr 2020 10:24:24 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
- 14.3.487.0; Fri, 24 Apr 2020 10:24:18 +0800
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, <kuba@kernel.org>,
-        Jian Shen <shenjian15@huawei.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 8/8] net: hns3: optimize the filter table entries handling when resetting
-Date:   Fri, 24 Apr 2020 10:23:13 +0800
-Message-ID: <1587694993-25183-9-git-send-email-tanhuazhong@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1587694993-25183-1-git-send-email-tanhuazhong@huawei.com>
-References: <1587694993-25183-1-git-send-email-tanhuazhong@huawei.com>
+        id S1725888AbgDXCui (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Apr 2020 22:50:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
+ s=selector2-armh-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=r5dzQ/8nY/xBFUSbOy893AIKqvaXupsA3rfTK9Yyz3c=;
+ b=uonxVElCFsIdx+RFr1GmsXcLr464Yt6OsJaCr62e2S/H9G7fEWWL6u1LnFjH6uKMQXLQWxjnDpxqyZjbHLXwCQVHFvMK33q2huaX/OSrWzW65dIgUS9UDoA9oSBqtme6mvQzGFhYLV5UShUljoFCAQhg7Eej2dE1rAdAU3ri+40=
+Received: from AM4P190CA0009.EURP190.PROD.OUTLOOK.COM (2603:10a6:200:56::19)
+ by AM0PR08MB5203.eurprd08.prod.outlook.com (2603:10a6:208:15f::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13; Fri, 24 Apr
+ 2020 02:50:32 +0000
+Received: from AM5EUR03FT043.eop-EUR03.prod.protection.outlook.com
+ (2603:10a6:200:56:cafe::8) by AM4P190CA0009.outlook.office365.com
+ (2603:10a6:200:56::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13 via Frontend
+ Transport; Fri, 24 Apr 2020 02:50:32 +0000
+Authentication-Results: spf=pass (sender IP is 63.35.35.123)
+ smtp.mailfrom=arm.com; vger.kernel.org; dkim=pass (signature was verified)
+ header.d=armh.onmicrosoft.com;vger.kernel.org; dmarc=bestguesspass
+ action=none header.from=arm.com;
+Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
+ 63.35.35.123 as permitted sender) receiver=protection.outlook.com;
+ client-ip=63.35.35.123; helo=64aa7808-outbound-1.mta.getcheckrecipient.com;
+Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
+ AM5EUR03FT043.mail.protection.outlook.com (10.152.17.43) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2937.19 via Frontend Transport; Fri, 24 Apr 2020 02:50:31 +0000
+Received: ("Tessian outbound 43fc5cd677c4:v53"); Fri, 24 Apr 2020 02:50:31 +0000
+X-CheckRecipientChecked: true
+X-CR-MTA-CID: abc97a36b9ad8eb2
+X-CR-MTA-TID: 64aa7808
+Received: from f839f8d49bc5.1
+        by 64aa7808-outbound-1.mta.getcheckrecipient.com id 7D69440B-399A-4059-8480-E84E74C26EAC.1;
+        Fri, 24 Apr 2020 02:50:26 +0000
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com
+    by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id f839f8d49bc5.1
+    (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384);
+    Fri, 24 Apr 2020 02:50:26 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UGiIi/kBlOCeKZonHSy/dZr/6sfDNmxSK/+ztULskJMIiHAV94PJuM9lmQFi2qDse1dK+T5mQtuUFqN5TUCB19aoAGPPn61Zj4fVx/OccrXp3hk7uzfc3swbpI7R3SU2KNYq88DShZSdU8kHK15xLe5zKfjB2BJGNzVdLAp3MvtKn1ebGq1dbjHTGIrjXp4besrU0Bf68oSVgRwx9GVhF2VD14AyuXGo4T6P0t8bOWQOH+2YAlL+V5uihFubITUX9zpLCYTWKD28wsMO3HbGXc7lfHJsJtd8oilngo4cvDnheW8te3vpJN9z34ONuNeRBx1nMSHLJpIbCBMTGgRl2Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=r5dzQ/8nY/xBFUSbOy893AIKqvaXupsA3rfTK9Yyz3c=;
+ b=RxywWHmHCdzjvBZYMvJFGLUmlBmhHYEL3t3ljUtgbZBDe9S6kqwS5BfiC8gcaRdc5kxvkofGYpvzCQI+1jtyCawjXDXHag3WqEVVh/hf4So9IkEr66HWPyI9l9nezB6mnYQ65VoKmsNG5Ka7A6hOh4cTwnPRzKCh5jdYoqt2HLsJDkU+eyluc++OvJYqm7gkYlxLaILFuhRG1TtSHa68ZkfkXjSJ/CfOgFZbTb4XRBO44Q+2mGInG1hFl7WS0R1f6H0mn3axMWQ41nYeYmCaDnwL8xzAK1ensX8T6DU/n23iAznw8fx2MSOY663PtHbw6QJUTJ8yN89whLt5IBgkoQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
+ header.d=arm.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
+ s=selector2-armh-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=r5dzQ/8nY/xBFUSbOy893AIKqvaXupsA3rfTK9Yyz3c=;
+ b=uonxVElCFsIdx+RFr1GmsXcLr464Yt6OsJaCr62e2S/H9G7fEWWL6u1LnFjH6uKMQXLQWxjnDpxqyZjbHLXwCQVHFvMK33q2huaX/OSrWzW65dIgUS9UDoA9oSBqtme6mvQzGFhYLV5UShUljoFCAQhg7Eej2dE1rAdAU3ri+40=
+Received: from HE1PR0802MB2555.eurprd08.prod.outlook.com (2603:10a6:3:e0::7)
+ by HE1PR0802MB2282.eurprd08.prod.outlook.com (2603:10a6:3:c9::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.29; Fri, 24 Apr
+ 2020 02:50:22 +0000
+Received: from HE1PR0802MB2555.eurprd08.prod.outlook.com
+ ([fe80::b1eb:9515:4851:8be]) by HE1PR0802MB2555.eurprd08.prod.outlook.com
+ ([fe80::b1eb:9515:4851:8be%6]) with mapi id 15.20.2937.012; Fri, 24 Apr 2020
+ 02:50:22 +0000
+From:   Jianyong Wu <Jianyong.Wu@arm.com>
+To:     Mark Rutland <Mark.Rutland@arm.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
+        "john.stultz@linaro.org" <john.stultz@linaro.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
+        "maz@kernel.org" <maz@kernel.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "will@kernel.org" <will@kernel.org>,
+        Suzuki Poulose <Suzuki.Poulose@arm.com>,
+        Steven Price <Steven.Price@arm.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Steve Capper <Steve.Capper@arm.com>,
+        Kaly Xin <Kaly.Xin@arm.com>, Justin He <Justin.He@arm.com>,
+        nd <nd@arm.com>
+Subject: Re: [RFC PATCH v11 5/9] psci: Add hypercall service for ptp_kvm.
+Thread-Topic: [RFC PATCH v11 5/9] psci: Add hypercall service for ptp_kvm.
+Thread-Index: AQHWF4xRpK0ubTCCx0eiqM1JOH1VE6iDV3gAgAQ/ngA=
+Date:   Fri, 24 Apr 2020 02:50:22 +0000
+Message-ID: <ab629714-c08c-2155-dd13-ad25e7f60b39@arm.com>
+References: <20200421032304.26300-1-jianyong.wu@arm.com>
+ <20200421032304.26300-6-jianyong.wu@arm.com>
+ <20200421095736.GB16306@C02TD0UTHF1T.local>
+In-Reply-To: <20200421095736.GB16306@C02TD0UTHF1T.local>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+Authentication-Results-Original: spf=none (sender IP is )
+ smtp.mailfrom=Jianyong.Wu@arm.com; 
+x-originating-ip: [113.29.88.7]
+x-ms-publictraffictype: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: ed42273e-0123-42bd-c674-08d7e7fa4136
+x-ms-traffictypediagnostic: HE1PR0802MB2282:|HE1PR0802MB2282:|AM0PR08MB5203:
+x-ms-exchange-transport-forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR08MB52036F44A3554462150EF721F4D00@AM0PR08MB5203.eurprd08.prod.outlook.com>
+x-checkrecipientrouted: true
+nodisclaimer: true
+x-ms-oob-tlc-oobclassifiers: OLM:8273;OLM:8273;
+x-forefront-prvs: 03838E948C
+X-Forefront-Antispam-Report-Untrusted: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0802MB2555.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(136003)(346002)(366004)(376002)(39860400002)(396003)(86362001)(6506007)(2616005)(6486002)(6512007)(31686004)(4326008)(26005)(37006003)(31696002)(316002)(6862004)(54906003)(186003)(53546011)(55236004)(71200400001)(76116006)(91956017)(5660300002)(478600001)(8676002)(66476007)(66446008)(64756008)(66556008)(36756003)(2906002)(8936002)(81156014)(66946007)(7416002)(6636002)(21314003);DIR:OUT;SFP:1101;
+received-spf: None (protection.outlook.com: arm.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Untrusted: BCL:0;
+X-Microsoft-Antispam-Message-Info-Original: Ul2EbkEB9aLkZhbQGEpLmAAyP5Gt5iFFKB+GiVzihOj3i9Kokx97EHfXbvFy3YIgIYzGdlExk0LXV4irCh1Fv/OsQLRdETO9AlHoAMe8iHsJ7RVphMXyvmQ9Pchr4JM35bT6vzdetM46GQVRhhRqvnGWGkpDg5l7Q7RDVUqn4ELuiV4lFYnpyGrf+Z27dA4jD+OZ5HKVeDf9wSZQpUPunSognOt3d61swohQ3eEqCsAhaN6gyFIqhQ0nmkdcV4Ozeul8t/BvMeo9DWHuf+uYIJVJ9P2G0w+ftMHPA0+O0JiED9TwSS+12eIXgUc5fqQBsz8HtG8/XT6HrtXRRYnOm0prwW1Z+LHFcL2jVnJ8rC8mQf72bBO3yONiJ2Uw3CeZRm3sxnH4ws6I5Ymedt2UxuiQjjvMG5Q2QRKeJwf0EvPbWiwqotrQyMMVvhcCxNfoIaTSsKbHlHgLmh19lCQ692O2en/ndPEuTfALwRjoMRsuF8a+liuk2jZ5UhqMkTR/
+x-ms-exchange-antispam-messagedata: YgQJQw455x+FKo5Pt8/cC2pGRZyuTFibG1mV6kUHLPgybpA0HJZIWi/8ldW2QeqpJHcnp3/hFoj8wia7uVAviCrpjN2ykhFUnLY/xVrVJReKkkOhkjqubuPKVR6VvbzDSWXRFuFX7Kmm45ZQ7b8YWw==
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <DF1D40F484214641B6EB9942D3DB49D8@eurprd08.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-CFilter-Loop: Reflected
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0802MB2282
+Original-Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=Jianyong.Wu@arm.com; 
+X-EOPAttributedMessage: 0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped: AM5EUR03FT043.eop-EUR03.prod.protection.outlook.com
+X-Forefront-Antispam-Report: CIP:63.35.35.123;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:64aa7808-outbound-1.mta.getcheckrecipient.com;PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com;CAT:NONE;SFTY:;SFS:(4636009)(396003)(376002)(39860400002)(346002)(136003)(46966005)(37006003)(31686004)(26005)(47076004)(478600001)(82740400003)(82310400002)(53546011)(6512007)(54906003)(316002)(6636002)(6506007)(5660300002)(36756003)(6862004)(36906005)(4326008)(450100002)(336012)(31696002)(81166007)(6486002)(70206006)(70586007)(2616005)(356005)(86362001)(2906002)(186003)(81156014)(8676002)(8936002)(21314003);DIR:OUT;SFP:1101;
+X-MS-Office365-Filtering-Correlation-Id-Prvs: 33ad35b1-1bb2-4b6e-524d-08d7e7fa3b9a
+X-Forefront-PRVS: 03838E948C
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: eGRhEk/CqfedkZ35gYMCf0x4fqPwBx5gKMtIXZjaICRR1wwQ5dg9UMpkOYkuGYRqHlhGqVT3V9/jgUtu0F1XNPOLFJ99q6xzehSZVQr6SjldDEP/FOK3pzwi6PgLw38T/rUbB66Eu+R6WKL8p45eKp/bm3ttGaWlGP7JDLGCvtMsfessxVntoF2fgHxzEbOrH+dUGurGjZBysKEJ5wz0DxKjlsYXkGuZSh/X1Q9HRWV4yyzTMyIMq5dMCWCltl0PyJEYj0ilVOZ93D7TcPBRGlU8uXBcAERq3LfANZoGLCcLzLnpos5fzsn4HE6OpUh+kEU6/iWVNmKHKneqTW+u7lWJs+n+EZVE9qNWjaHSJqJU6YS9b9aQVDfD31U3n6u7ytwkDySn2XrSb/aZA8giyYPBDlhgfbdg2rSORHdo5hOL9Cltqp9S/GgWVBRd/iJQUPAH1wbduGCIixIIEdU8cT5XpVLfaIOBXkbt017Hpgbx1rghzsMWK0EYTWkHS32KVergXmcS5bVI4dxrBCt2BDuE3vZv9sHLh07ycYJfumc=
+X-OriginatorOrg: arm.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2020 02:50:31.6224
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ed42273e-0123-42bd-c674-08d7e7fa4136
+X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[63.35.35.123];Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR08MB5203
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
-
-Currently, the PF driver removes all (including its VFs') MAC/VLAN
-flow director table entries when resetting, and restores them after
-reset completed.
-
-In fact, the hardware will clear all table entries only in IMP
-reset and global reset. So driver only needs to restore the table
-entries in these cases, and needs do nothing when PF reset, FLR
-or other function level reset.
-
-This patch optimizes it by removing unnecessary table entries clear
-and restoring handling in the reset flow, and doing the restoring
-after reset completed.
-
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h    |  5 ++
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  5 --
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 33 --------
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  9 ---
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 89 +++++++++++-----------
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  1 +
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c | 28 ++++++-
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 29 ++++---
- 8 files changed, 94 insertions(+), 105 deletions(-)
-
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
-index 948e67e..21a7361 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
-@@ -45,6 +45,7 @@ enum HCLGE_MBX_OPCODE {
- 	HCLGE_MBX_GET_MEDIA_TYPE,       /* (VF -> PF) get media type */
- 	HCLGE_MBX_PUSH_PROMISC_INFO,	/* (PF -> VF) push vf promisc info */
- 	HCLGE_MBX_VF_UNINIT,            /* (VF -> PF) vf is unintializing */
-+	HCLGE_MBX_HANDLE_VF_TBL,	/* (VF -> PF) store/clear hw table */
- 
- 	HCLGE_MBX_GET_VF_FLR_STATUS = 200, /* (M7 -> PF) get vf flr status */
- 	HCLGE_MBX_PUSH_LINK_STATUS,	/* (M7 -> PF) get port link status */
-@@ -70,6 +71,10 @@ enum hclge_mbx_vlan_cfg_subcode {
- 	HCLGE_MBX_GET_PORT_BASE_VLAN_STATE,	/* get port based vlan state */
- };
- 
-+enum hclge_mbx_tbl_cfg_subcode {
-+	HCLGE_MBX_VPORT_LIST_CLEAR,
-+};
-+
- #define HCLGE_MBX_MAX_MSG_SIZE	14
- #define HCLGE_MBX_MAX_RESP_DATA_SIZE	8U
- #define HCLGE_MBX_MAX_RING_CHAIN_PARAM_NUM	4
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index a56f8d6..6291aa9 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -233,7 +233,6 @@ struct hnae3_ae_dev {
- 	struct list_head node;
- 	u32 flag;
- 	unsigned long hw_err_reset_req;
--	enum hnae3_reset_type reset_type;
- 	void *priv;
- };
- 
-@@ -356,8 +355,6 @@ struct hnae3_ae_dev {
-  *   Set vlan filter config of Ports
-  * set_vf_vlan_filter()
-  *   Set vlan filter config of vf
-- * restore_vlan_table()
-- *   Restore vlan filter entries after reset
-  * enable_hw_strip_rxvtag()
-  *   Enable/disable hardware strip vlan tag of packets received
-  * set_gro_en
-@@ -528,7 +525,6 @@ struct hnae3_ae_ops {
- 				struct ethtool_rxnfc *cmd);
- 	int (*get_fd_all_rules)(struct hnae3_handle *handle,
- 				struct ethtool_rxnfc *cmd, u32 *rule_locs);
--	int (*restore_fd_rules)(struct hnae3_handle *handle);
- 	void (*enable_fd)(struct hnae3_handle *handle, bool enable);
- 	int (*add_arfs_entry)(struct hnae3_handle *handle, u16 queue_id,
- 			      u16 flow_id, struct flow_keys *fkeys);
-@@ -542,7 +538,6 @@ struct hnae3_ae_ops {
- 	void (*set_timer_task)(struct hnae3_handle *handle, bool enable);
- 	int (*mac_connect_phy)(struct hnae3_handle *handle);
- 	void (*mac_disconnect_phy)(struct hnae3_handle *handle);
--	void (*restore_vlan_table)(struct hnae3_handle *handle);
- 	int (*get_vf_config)(struct hnae3_handle *handle, int vf,
- 			     struct ifla_vf_info *ivf);
- 	int (*set_vf_link_state)(struct hnae3_handle *handle, int vf,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 6b9535c..c79d6a3 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -2102,7 +2102,6 @@ static int hns3_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	ae_dev->pdev = pdev;
- 	ae_dev->flag = ent->driver_data;
--	ae_dev->reset_type = HNAE3_NONE_RESET;
- 	hns3_get_dev_capability(pdev, ae_dev);
- 	pci_set_drvdata(pdev, ae_dev);
- 
-@@ -3936,17 +3935,6 @@ static void hns3_uninit_phy(struct net_device *netdev)
- 		h->ae_algo->ops->mac_disconnect_phy(h);
- }
- 
--static int hns3_restore_fd_rules(struct net_device *netdev)
--{
--	struct hnae3_handle *h = hns3_get_handle(netdev);
--	int ret = 0;
--
--	if (h->ae_algo->ops->restore_fd_rules)
--		ret = h->ae_algo->ops->restore_fd_rules(h);
--
--	return ret;
--}
--
- static void hns3_del_all_fd_rules(struct net_device *netdev, bool clear_list)
- {
- 	struct hnae3_handle *h = hns3_get_handle(netdev);
-@@ -4346,7 +4334,6 @@ static void hns3_restore_coal(struct hns3_nic_priv *priv)
- 
- static int hns3_reset_notify_down_enet(struct hnae3_handle *handle)
- {
--	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(handle->pdev);
- 	struct hnae3_knic_private_info *kinfo = &handle->kinfo;
- 	struct net_device *ndev = kinfo->netdev;
- 	struct hns3_nic_priv *priv = netdev_priv(ndev);
-@@ -4354,13 +4341,6 @@ static int hns3_reset_notify_down_enet(struct hnae3_handle *handle)
- 	if (test_and_set_bit(HNS3_NIC_STATE_RESETTING, &priv->state))
- 		return 0;
- 
--	/* it is cumbersome for hardware to pick-and-choose entries for deletion
--	 * from table space. Hence, for function reset software intervention is
--	 * required to delete the entries
--	 */
--	if (hns3_dev_ongoing_func_reset(ae_dev))
--		hns3_del_all_fd_rules(ndev, false);
--
- 	if (!netif_running(ndev))
- 		return 0;
- 
-@@ -4455,16 +4435,6 @@ static int hns3_reset_notify_init_enet(struct hnae3_handle *handle)
- 	return ret;
- }
- 
--static int hns3_reset_notify_restore_enet(struct hnae3_handle *handle)
--{
--	struct net_device *netdev = handle->kinfo.netdev;
--
--	if (handle->ae_algo->ops->restore_vlan_table)
--		handle->ae_algo->ops->restore_vlan_table(handle);
--
--	return hns3_restore_fd_rules(netdev);
--}
--
- static int hns3_reset_notify_uninit_enet(struct hnae3_handle *handle)
- {
- 	struct net_device *netdev = handle->kinfo.netdev;
-@@ -4514,9 +4484,6 @@ static int hns3_reset_notify(struct hnae3_handle *handle,
- 	case HNAE3_UNINIT_CLIENT:
- 		ret = hns3_reset_notify_uninit_enet(handle);
- 		break;
--	case HNAE3_RESTORE_CLIENT:
--		ret = hns3_reset_notify_restore_enet(handle);
--		break;
- 	default:
- 		break;
- 	}
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index 53bc0ed..240ba06 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -576,15 +576,6 @@ static inline void hns3_write_reg(void __iomem *base, u32 reg, u32 value)
- 	writel(value, reg_addr + reg);
- }
- 
--static inline bool hns3_dev_ongoing_func_reset(struct hnae3_ae_dev *ae_dev)
--{
--	return (ae_dev && (ae_dev->reset_type == HNAE3_FUNC_RESET ||
--			   ae_dev->reset_type == HNAE3_FLR_RESET ||
--			   ae_dev->reset_type == HNAE3_VF_FUNC_RESET ||
--			   ae_dev->reset_type == HNAE3_VF_FULL_RESET ||
--			   ae_dev->reset_type == HNAE3_VF_PF_FUNC_RESET));
--}
--
- #define hns3_read_dev(a, reg) \
- 	hns3_read_reg((a)->io_base, (reg))
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 177ef5e..c74990a 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -69,6 +69,7 @@ static enum hnae3_reset_type hclge_get_reset_level(struct hnae3_ae_dev *ae_dev,
- static int hclge_set_default_loopback(struct hclge_dev *hdev);
- 
- static void hclge_sync_mac_table(struct hclge_dev *hdev);
-+static void hclge_restore_hw_table(struct hclge_dev *hdev);
- static void hclge_sync_promisc_mode(struct hclge_dev *hdev);
- 
- static struct hnae3_ae_algo ae_algo;
-@@ -3731,22 +3732,13 @@ static int hclge_reset_stack(struct hclge_dev *hdev)
- 	if (ret)
- 		return ret;
- 
--	ret = hclge_notify_client(hdev, HNAE3_INIT_CLIENT);
--	if (ret)
--		return ret;
--
--	return hclge_notify_client(hdev, HNAE3_RESTORE_CLIENT);
-+	return hclge_notify_client(hdev, HNAE3_INIT_CLIENT);
- }
- 
- static int hclge_reset_prepare(struct hclge_dev *hdev)
- {
--	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
- 	int ret;
- 
--	/* Initialize ae_dev reset status as well, in case enet layer wants to
--	 * know if device is undergoing reset
--	 */
--	ae_dev->reset_type = hdev->reset_type;
- 	hdev->rst_stats.reset_cnt++;
- 	/* perform reset of the stack & ae device for a client */
- 	ret = hclge_notify_roce_client(hdev, HNAE3_DOWN_CLIENT);
-@@ -3808,7 +3800,6 @@ static int hclge_reset_rebuild(struct hclge_dev *hdev)
- 	hdev->last_reset_time = jiffies;
- 	hdev->rst_stats.reset_fail_cnt = 0;
- 	hdev->rst_stats.reset_done_cnt++;
--	ae_dev->reset_type = HNAE3_NONE_RESET;
- 	clear_bit(HCLGE_STATE_RST_FAIL, &hdev->state);
- 
- 	/* if default_reset_request has a higher level reset request,
-@@ -6942,8 +6933,14 @@ int hclge_vport_start(struct hclge_vport *vport)
- 	set_bit(HCLGE_VPORT_STATE_ALIVE, &vport->state);
- 	vport->last_active_jiffies = jiffies;
- 
--	if (test_bit(vport->vport_id, hdev->vport_config_block))
--		hclge_restore_mac_table_common(vport);
-+	if (test_bit(vport->vport_id, hdev->vport_config_block)) {
-+		if (vport->vport_id) {
-+			hclge_restore_mac_table_common(vport);
-+			hclge_restore_vport_vlan_table(vport);
-+		} else {
-+			hclge_restore_hw_table(hdev);
-+		}
-+	}
- 
- 	clear_bit(vport->vport_id, hdev->vport_config_block);
- 
-@@ -8789,39 +8786,34 @@ void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev)
- 	}
- }
- 
--static void hclge_restore_vlan_table(struct hnae3_handle *handle)
-+void hclge_restore_vport_vlan_table(struct hclge_vport *vport)
- {
--	struct hclge_vport *vport = hclge_get_vport(handle);
- 	struct hclge_vport_vlan_cfg *vlan, *tmp;
- 	struct hclge_dev *hdev = vport->back;
- 	u16 vlan_proto;
--	u16 state, vlan_id;
--	int i;
-+	u16 vlan_id;
-+	u16 state;
-+	int ret;
- 
--	for (i = 0; i < hdev->num_alloc_vport; i++) {
--		vport = &hdev->vport[i];
--		vlan_proto = vport->port_base_vlan_cfg.vlan_info.vlan_proto;
--		vlan_id = vport->port_base_vlan_cfg.vlan_info.vlan_tag;
--		state = vport->port_base_vlan_cfg.state;
-+	vlan_proto = vport->port_base_vlan_cfg.vlan_info.vlan_proto;
-+	vlan_id = vport->port_base_vlan_cfg.vlan_info.vlan_tag;
-+	state = vport->port_base_vlan_cfg.state;
- 
--		if (state != HNAE3_PORT_BASE_VLAN_DISABLE) {
--			hclge_set_vlan_filter_hw(hdev, htons(vlan_proto),
--						 vport->vport_id, vlan_id,
--						 false);
--			continue;
--		}
--
--		list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
--			int ret;
-+	if (state != HNAE3_PORT_BASE_VLAN_DISABLE) {
-+		clear_bit(vport->vport_id, hdev->vlan_table[vlan_id]);
-+		hclge_set_vlan_filter_hw(hdev, htons(vlan_proto),
-+					 vport->vport_id, vlan_id,
-+					 false);
-+		return;
-+	}
- 
--			if (!vlan->hd_tbl_status)
--				continue;
--			ret = hclge_set_vlan_filter_hw(hdev, htons(ETH_P_8021Q),
--						       vport->vport_id,
--						       vlan->vlan_id, false);
--			if (ret)
--				break;
--		}
-+	list_for_each_entry_safe(vlan, tmp, &vport->vlan_list, node) {
-+		ret = hclge_set_vlan_filter_hw(hdev, htons(ETH_P_8021Q),
-+					       vport->vport_id,
-+					       vlan->vlan_id, false);
-+		if (ret)
-+			break;
-+		vlan->hd_tbl_status = true;
- 	}
- }
- 
-@@ -8856,6 +8848,18 @@ void hclge_restore_mac_table_common(struct hclge_vport *vport)
- 	spin_unlock_bh(&vport->mac_list_lock);
- }
- 
-+static void hclge_restore_hw_table(struct hclge_dev *hdev)
-+{
-+	struct hclge_vport *vport = &hdev->vport[0];
-+	struct hnae3_handle *handle = &vport->nic;
-+
-+	hclge_restore_mac_table_common(vport);
-+	hclge_restore_vport_vlan_table(vport);
-+	set_bit(HCLGE_STATE_PROMISC_CHANGED, &hdev->state);
-+
-+	hclge_restore_fd_entries(handle);
-+}
-+
- int hclge_en_hw_strip_rxvtag(struct hnae3_handle *handle, bool enable)
- {
- 	struct hclge_vport *vport = hclge_get_vport(handle);
-@@ -10352,13 +10356,12 @@ static int hclge_reset_ae_dev(struct hnae3_ae_dev *ae_dev)
- 	 */
- 	if (hdev->reset_type == HNAE3_IMP_RESET ||
- 	    hdev->reset_type == HNAE3_GLOBAL_RESET) {
-+		memset(hdev->vlan_table, 0, sizeof(hdev->vlan_table));
-+		memset(hdev->vf_vlan_full, 0, sizeof(hdev->vf_vlan_full));
- 		bitmap_set(hdev->vport_config_block, 0, hdev->num_alloc_vport);
- 		hclge_reset_umv_space(hdev);
- 	}
- 
--	memset(hdev->vlan_table, 0, sizeof(hdev->vlan_table));
--	memset(hdev->vf_vlan_full, 0, sizeof(hdev->vf_vlan_full));
--
- 	ret = hclge_cmd_init(hdev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Cmd queue init failed\n");
-@@ -11191,7 +11194,6 @@ static const struct hnae3_ae_ops hclge_ops = {
- 	.get_fd_rule_cnt = hclge_get_fd_rule_cnt,
- 	.get_fd_rule_info = hclge_get_fd_rule_info,
- 	.get_fd_all_rules = hclge_get_all_rules,
--	.restore_fd_rules = hclge_restore_fd_entries,
- 	.enable_fd = hclge_enable_fd,
- 	.add_arfs_entry = hclge_add_fd_entry_by_arfs,
- 	.dbg_run_cmd = hclge_dbg_run_cmd,
-@@ -11204,7 +11206,6 @@ static const struct hnae3_ae_ops hclge_ops = {
- 	.set_timer_task = hclge_set_timer_task,
- 	.mac_connect_phy = hclge_mac_connect_phy,
- 	.mac_disconnect_phy = hclge_mac_disconnect_phy,
--	.restore_vlan_table = hclge_restore_vlan_table,
- 	.get_vf_config = hclge_get_vf_config,
- 	.set_vf_link_state = hclge_set_vf_link_state,
- 	.set_vf_spoofchk = hclge_set_vf_spoofchk,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index 8e69651..913c4f6 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -1001,6 +1001,7 @@ void hclge_rm_vport_all_mac_table(struct hclge_vport *vport, bool is_del_list,
- void hclge_rm_vport_all_vlan_table(struct hclge_vport *vport, bool is_del_list);
- void hclge_uninit_vport_vlan_table(struct hclge_dev *hdev);
- void hclge_restore_mac_table_common(struct hclge_vport *vport);
-+void hclge_restore_vport_vlan_table(struct hclge_vport *vport);
- int hclge_update_port_base_vlan_cfg(struct hclge_vport *vport, u16 state,
- 				    struct hclge_vlan_info *vlan_info);
- int hclge_push_vf_port_base_vlan_info(struct hclge_vport *vport, u8 vfid,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-index 0efc045..ac70faf 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-@@ -629,6 +629,23 @@ static void hclge_handle_ncsi_error(struct hclge_dev *hdev)
- 	ae_dev->ops->reset_event(hdev->pdev, NULL);
- }
- 
-+static void hclge_handle_vf_tbl(struct hclge_vport *vport,
-+				struct hclge_mbx_vf_to_pf_cmd *mbx_req)
-+{
-+	struct hclge_dev *hdev = vport->back;
-+	struct hclge_vf_vlan_cfg *msg_cmd;
-+
-+	msg_cmd = (struct hclge_vf_vlan_cfg *)&mbx_req->msg;
-+	if (msg_cmd->subcode == HCLGE_MBX_VPORT_LIST_CLEAR) {
-+		hclge_rm_vport_all_mac_table(vport, true, HCLGE_MAC_ADDR_UC);
-+		hclge_rm_vport_all_mac_table(vport, true, HCLGE_MAC_ADDR_MC);
-+		hclge_rm_vport_all_vlan_table(vport, true);
-+	} else {
-+		dev_warn(&hdev->pdev->dev, "Invalid cmd(%u)\n",
-+			 msg_cmd->subcode);
-+	}
-+}
-+
- void hclge_mbx_handler(struct hclge_dev *hdev)
- {
- 	struct hclge_cmq_ring *crq = &hdev->hw.cmq.crq;
-@@ -636,6 +653,7 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
- 	struct hclge_mbx_vf_to_pf_cmd *req;
- 	struct hclge_vport *vport;
- 	struct hclge_desc *desc;
-+	bool is_del = false;
- 	unsigned int flag;
- 	int ret = 0;
- 
-@@ -753,11 +771,12 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
- 			break;
- 		case HCLGE_MBX_GET_VF_FLR_STATUS:
- 		case HCLGE_MBX_VF_UNINIT:
--			hclge_rm_vport_all_mac_table(vport, true,
-+			is_del = req->msg.code == HCLGE_MBX_VF_UNINIT;
-+			hclge_rm_vport_all_mac_table(vport, is_del,
- 						     HCLGE_MAC_ADDR_UC);
--			hclge_rm_vport_all_mac_table(vport, true,
-+			hclge_rm_vport_all_mac_table(vport, is_del,
- 						     HCLGE_MAC_ADDR_MC);
--			hclge_rm_vport_all_vlan_table(vport, true);
-+			hclge_rm_vport_all_vlan_table(vport, is_del);
- 			break;
- 		case HCLGE_MBX_GET_MEDIA_TYPE:
- 			hclge_get_vf_media_type(vport, &resp_msg);
-@@ -771,6 +790,9 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
- 		case HCLGE_MBX_NCSI_ERROR:
- 			hclge_handle_ncsi_error(hdev);
- 			break;
-+		case HCLGE_MBX_HANDLE_VF_TBL:
-+			hclge_handle_vf_tbl(vport, req);
-+			break;
- 		default:
- 			dev_err(&hdev->pdev->dev,
- 				"un-supported mailbox message, code = %u\n",
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index fea197f..32341dc 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -1777,10 +1777,6 @@ static int hclgevf_reset_stack(struct hclgevf_dev *hdev)
- 	if (ret)
- 		return ret;
- 
--	ret = hclgevf_notify_client(hdev, HNAE3_RESTORE_CLIENT);
--	if (ret)
--		return ret;
--
- 	/* clear handshake status with IMP */
- 	hclgevf_reset_handshake(hdev, false);
- 
-@@ -1860,13 +1856,8 @@ static void hclgevf_reset_err_handle(struct hclgevf_dev *hdev)
- 
- static int hclgevf_reset_prepare(struct hclgevf_dev *hdev)
- {
--	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
- 	int ret;
- 
--	/* Initialize ae_dev reset status as well, in case enet layer wants to
--	 * know if device is undergoing reset
--	 */
--	ae_dev->reset_type = hdev->reset_type;
- 	hdev->rst_stats.rst_cnt++;
- 
- 	rtnl_lock();
-@@ -1881,7 +1872,6 @@ static int hclgevf_reset_prepare(struct hclgevf_dev *hdev)
- 
- static int hclgevf_reset_rebuild(struct hclgevf_dev *hdev)
- {
--	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
- 	int ret;
- 
- 	hdev->rst_stats.hw_rst_done_cnt++;
-@@ -1896,7 +1886,6 @@ static int hclgevf_reset_rebuild(struct hclgevf_dev *hdev)
- 	}
- 
- 	hdev->last_reset_time = jiffies;
--	ae_dev->reset_type = HNAE3_NONE_RESET;
- 	hdev->rst_stats.rst_done_cnt++;
- 	hdev->rst_stats.rst_fail_cnt = 0;
- 	clear_bit(HCLGEVF_STATE_RST_FAIL, &hdev->state);
-@@ -2974,6 +2963,15 @@ static int hclgevf_pci_reset(struct hclgevf_dev *hdev)
- 	return ret;
- }
- 
-+static int hclgevf_clear_vport_list(struct hclgevf_dev *hdev)
-+{
-+	struct hclge_vf_to_pf_msg send_msg;
-+
-+	hclgevf_build_send_msg(&send_msg, HCLGE_MBX_HANDLE_VF_TBL,
-+			       HCLGE_MBX_VPORT_LIST_CLEAR);
-+	return hclgevf_send_mbx_msg(hdev, &send_msg, false, NULL, 0);
-+}
-+
- static int hclgevf_reset_hdev(struct hclgevf_dev *hdev)
- {
- 	struct pci_dev *pdev = hdev->pdev;
-@@ -3083,6 +3081,15 @@ static int hclgevf_init_hdev(struct hclgevf_dev *hdev)
- 		goto err_config;
- 	}
- 
-+	/* ensure vf tbl list as empty before init*/
-+	ret = hclgevf_clear_vport_list(hdev);
-+	if (ret) {
-+		dev_err(&pdev->dev,
-+			"failed to clear tbl list configuration, ret = %d.\n",
-+			ret);
-+		goto err_config;
-+	}
-+
- 	ret = hclgevf_init_vlan_config(hdev);
- 	if (ret) {
- 		dev_err(&hdev->pdev->dev,
--- 
-2.7.4
-
+T24gMjAyMC80LzIxIDU6NTcgUE0sIE1hcmsgUnV0bGFuZCB3cm90ZToNCg0KSGkgTWFyaywNCj4g
+T24gVHVlLCBBcHIgMjEsIDIwMjAgYXQgMTE6MjM6MDBBTSArMDgwMCwgSmlhbnlvbmcgV3Ugd3Jv
+dGU6DQo+PiBwdHBfa3ZtIG1vZHVsZXMgd2lsbCBnZXQgdGhpcyBzZXJ2aWNlIHRocm91Z2ggc21j
+Y2MgY2FsbC4NCj4+IFRoZSBzZXJ2aWNlIG9mZmVycyByZWFsIHRpbWUgYW5kIGNvdW50ZXIgY3lj
+bGUgb2YgaG9zdCBmb3IgZ3Vlc3QuDQo+PiBBbHNvIGxldCBjYWxsZXIgZGV0ZXJtaW5lIHdoaWNo
+IGN5Y2xlIG9mIHZpcnR1YWwgY291bnRlciBvciBwaHlzaWNhbCBjb3VudGVyDQo+PiB0byByZXR1
+cm4uDQo+Pg0KPj4gU2lnbmVkLW9mZi1ieTogSmlhbnlvbmcgV3UgPGppYW55b25nLnd1QGFybS5j
+b20+DQo+PiAtLS0NCj4+ICAgaW5jbHVkZS9saW51eC9hcm0tc21jY2MuaCB8IDIxICsrKysrKysr
+KysrKysrKysrKysNCj4+ICAgdmlydC9rdm0vYXJtL2h5cGVyY2FsbHMuYyB8IDQ0ICsrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrLQ0KPj4gICAyIGZpbGVzIGNoYW5nZWQsIDY0
+IGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkNCj4+DQo+PiBkaWZmIC0tZ2l0IGEvaW5jbHVk
+ZS9saW51eC9hcm0tc21jY2MuaCBiL2luY2x1ZGUvbGludXgvYXJtLXNtY2NjLmgNCj4+IGluZGV4
+IDU5NDk0ZGYwZjU1Yi4uNzQ3Yjc1OTVkMGM2IDEwMDY0NA0KPj4gLS0tIGEvaW5jbHVkZS9saW51
+eC9hcm0tc21jY2MuaA0KPj4gKysrIGIvaW5jbHVkZS9saW51eC9hcm0tc21jY2MuaA0KPj4gQEAg
+LTc3LDYgKzc3LDI3IEBADQo+PiAgIAkJCSAgIEFSTV9TTUNDQ19TTUNfMzIsCQkJCVwNCj4+ICAg
+CQkJICAgMCwgMHg3ZmZmKQ0KPj4gICANCj4+ICsvKiBQVFAgS1ZNIGNhbGwgcmVxdWVzdHMgY2xv
+Y2sgdGltZSBmcm9tIGd1ZXN0IE9TIHRvIGhvc3QgKi8NCj4+ICsjZGVmaW5lIEFSTV9TTUNDQ19I
+WVBfS1ZNX1BUUF9GVU5DX0lECQkJCVwNCj4+ICsJQVJNX1NNQ0NDX0NBTExfVkFMKEFSTV9TTUND
+Q19GQVNUX0NBTEwsCQkJXA0KPj4gKwkJCSAgIEFSTV9TTUNDQ19TTUNfMzIsCQkJXA0KPj4gKwkJ
+CSAgIEFSTV9TTUNDQ19PV05FUl9TVEFOREFSRF9IWVAsCVwNCj4+ICsJCQkgICAwKQ0KPj4gKw0K
+Pj4gKy8qIHJlcXVlc3QgZm9yIHZpcnR1YWwgY291bnRlciBmcm9tIHB0cF9rdm0gZ3Vlc3QgKi8N
+Cj4+ICsjZGVmaW5lIEFSTV9TTUNDQ19IWVBfS1ZNX1BUUF9WSVJUCQkJCVwNCj4+ICsJQVJNX1NN
+Q0NDX0NBTExfVkFMKEFSTV9TTUNDQ19GQVNUX0NBTEwsCQkJXA0KPj4gKwkJCSAgIEFSTV9TTUND
+Q19TTUNfMzIsCQkJXA0KPj4gKwkJCSAgIEFSTV9TTUNDQ19PV05FUl9TVEFOREFSRF9IWVAsCVwN
+Cj4+ICsJCQkgICAxKQ0KPj4gKw0KPj4gKy8qIHJlcXVlc3QgZm9yIHBoeXNpY2FsIGNvdW50ZXIg
+ZnJvbSBwdHBfa3ZtIGd1ZXN0ICovDQo+PiArI2RlZmluZSBBUk1fU01DQ0NfSFlQX0tWTV9QVFBf
+UEhZCQkJCVwNCj4+ICsJQVJNX1NNQ0NDX0NBTExfVkFMKEFSTV9TTUNDQ19GQVNUX0NBTEwsCQkJ
+XA0KPj4gKwkJCSAgIEFSTV9TTUNDQ19TTUNfMzIsCQkJXA0KPj4gKwkJCSAgIEFSTV9TTUNDQ19P
+V05FUl9TVEFOREFSRF9IWVAsCVwNCj4+ICsJCQkgICAyKQ0KPiBBUk1fU01DQ0NfT1dORVJfU1RB
+TkRBUkRfSFlQIGlzIGZvciBzdGFuZGFyZCBjYWxscyBhcyBkZWZpbmVkIGluIFNNQ0NDDQo+IGFu
+ZCBjb21wYW5pb24gZG9jdW1lbnRzLCBzbyB3ZSBzaG91bGQgcmVmZXIgdG8gdGhlIHNwZWNpZmlj
+DQo+IGRvY3VtZW50YXRpb24gaGVyZS4gV2hlcmUgYXJlIHRoZXNlIGNhbGxzIGRlZmluZWQ/DQp5
+ZWFoLCBzaG91bGQgYWRkIHJlZmVyZW5jZSBkb2NzIG9mICJTTUMgQ0FMTElORyBDT05WRU5USU9O
+IiBoZXJlLg0KPiBJZiB0aGVzZSBjYWxscyBhcmUgTGludXgtc3BlY2lmaWMgdGhlbiBBUk1fU01D
+Q0NfT1dORVJfU1RBTkRBUkRfSFlQDQo+IGlzbid0IGFwcHJvcHJpYXRlIHRvIHVzZSwgYXMgdGhl
+eSBhcmUgdmVuZG9yLXNwZWNpZmljIGh5cGVydmlzb3Igc2VydmljZQ0KPiBjYWxsLg0KeWVhaCwg
+dmVuZG9yLXNwZWNpZmljIHNlcnZpY2UgaXMgbW9yZSBzdWl0YWJsZSBmb3IgcHRwX2t2bS4NCj4N
+Cj4gSXQgbG9va3MgbGlrZSB3ZSBkb24ndCBjdXJyZW50bHkgaGF2ZSBhIEFSTV9TTUNDQ19PV05F
+Ul9IWVAgZm9yIHRoYXQNCj4gKHdoaWNoIElJVUMgd291bGQgYmUgNiksIGJ1dCB3ZSBjYW4gYWRk
+IG9uZSBhcyBuZWNlc3NhcnkuIEkgdGhpbmsgdGhhdA0KPiBXaWxsIG1pZ2h0IGhhdmUgYWRkZWQg
+dGhhdCBhcyBwYXJ0IG9mIGhpcyBTTUNDQyBwcm9iaW5nIGJpdHMuDQoNCm9rLCBJIHdpbGwgYWRk
+IGEgbmV3ICJBUk1fU01DQ0NfT1dORVJfVkVORE9SX0hZUCIgd2hvc2UgSUlVQyBpcyA2DQoNCmFu
+ZCBjcmVhdGUgIkFSTV9TTUNDQ19IWVBfS1ZNX1BUUF9JRCIgYmFzZSBvbiBpdC4NCg0KPg0KPj4g
+Kw0KPj4gICAjaWZuZGVmIF9fQVNTRU1CTFlfXw0KPj4gICANCj4+ICAgI2luY2x1ZGUgPGxpbnV4
+L2xpbmthZ2UuaD4NCj4+IGRpZmYgLS1naXQgYS92aXJ0L2t2bS9hcm0vaHlwZXJjYWxscy5jIGIv
+dmlydC9rdm0vYXJtL2h5cGVyY2FsbHMuYw0KPj4gaW5kZXggNTUwZGZhM2U1M2NkLi5hNTMwOWMy
+OGQ0ZGMgMTAwNjQ0DQo+PiAtLS0gYS92aXJ0L2t2bS9hcm0vaHlwZXJjYWxscy5jDQo+PiArKysg
+Yi92aXJ0L2t2bS9hcm0vaHlwZXJjYWxscy5jDQo+PiBAQCAtMyw2ICszLDcgQEANCj4+ICAgDQo+
+PiAgICNpbmNsdWRlIDxsaW51eC9hcm0tc21jY2MuaD4NCj4+ICAgI2luY2x1ZGUgPGxpbnV4L2t2
+bV9ob3N0Lmg+DQo+PiArI2luY2x1ZGUgPGxpbnV4L2Nsb2Nrc291cmNlX2lkcy5oPg0KPj4gICAN
+Cj4+ICAgI2luY2x1ZGUgPGFzbS9rdm1fZW11bGF0ZS5oPg0KPj4gICANCj4+IEBAIC0xMSw4ICsx
+MiwxMSBAQA0KPj4gICANCj4+ICAgaW50IGt2bV9odmNfY2FsbF9oYW5kbGVyKHN0cnVjdCBrdm1f
+dmNwdSAqdmNwdSkNCj4+ICAgew0KPj4gLQl1MzIgZnVuY19pZCA9IHNtY2NjX2dldF9mdW5jdGlv
+bih2Y3B1KTsNCj4+ICsJc3RydWN0IHN5c3RlbV90aW1lX3NuYXBzaG90IHN5c3RpbWVfc25hcHNo
+b3Q7DQo+PiArCWxvbmcgYXJnWzRdOw0KPj4gKwl1NjQgY3ljbGVzOw0KPj4gICAJbG9uZyB2YWwg
+PSBTTUNDQ19SRVRfTk9UX1NVUFBPUlRFRDsNCj4+ICsJdTMyIGZ1bmNfaWQgPSBzbWNjY19nZXRf
+ZnVuY3Rpb24odmNwdSk7DQo+PiAgIAl1MzIgZmVhdHVyZTsNCj4+ICAgCWdwYV90IGdwYTsNCj4+
+ICAgDQo+PiBAQCAtNjIsNiArNjYsNDQgQEAgaW50IGt2bV9odmNfY2FsbF9oYW5kbGVyKHN0cnVj
+dCBrdm1fdmNwdSAqdmNwdSkNCj4+ICAgCQlpZiAoZ3BhICE9IEdQQV9JTlZBTElEKQ0KPj4gICAJ
+CQl2YWwgPSBncGE7DQo+PiAgIAkJYnJlYWs7DQo+PiArCS8qDQo+PiArCSAqIFRoaXMgc2VydmVz
+IHZpcnR1YWwga3ZtX3B0cC4NCj4+ICsJICogRm91ciB2YWx1ZXMgd2lsbCBiZSBwYXNzZWQgYmFj
+ay4NCj4+ICsJICogcmVnMCBzdG9yZXMgaGlnaCAzMi1iaXQgaG9zdCBrdGltZTsNCj4+ICsJICog
+cmVnMSBzdG9yZXMgbG93IDMyLWJpdCBob3N0IGt0aW1lOw0KPj4gKwkgKiByZWcyIHN0b3JlcyBo
+aWdoIDMyLWJpdCBkaWZmZXJlbmNlIG9mIGhvc3QgY3ljbGVzIGFuZCBjbnR2b2ZmOw0KPj4gKwkg
+KiByZWczIHN0b3JlcyBsb3cgMzItYml0IGRpZmZlcmVuY2Ugb2YgaG9zdCBjeWNsZXMgYW5kIGNu
+dHZvZmYuDQo+PiArCSAqLw0KPj4gKwljYXNlIEFSTV9TTUNDQ19IWVBfS1ZNX1BUUF9GVU5DX0lE
+Og0KPiBTaG91bGRuJ3QgdGhlIGhvc3Qgb3B0LWluIHRvIHByb3ZpZGluZyB0aGlzIHRvIHRoZSBn
+dWVzdCwgYXMgd2l0aCBvdGhlcg0KPiBmZWF0dXJlcz8NCg0KZXIsIGRvIHlvdSBtZWFuIHRoYXQg
+IkFSTV9TTUNDQ19IVl9QVl9USU1FX1hYWCIgYXMgIm9wdC1pbiI/IGlmIHNvLCBJIA0KdGhpbmsg
+dGhpcw0KDQprdm1fcHRwIGRvZXNuJ3QgbmVlZCBhIGJ1ZGR5LiB0aGUgZHJpdmVyIGluIGd1ZXN0
+IHdpbGwgY2FsbCB0aGlzIHNlcnZpY2UgDQppbiBhIGRlZmluaXRlIHdheS4NCg0KPj4gKwkJLyoN
+Cj4+ICsJCSAqIHN5c3RlbSB0aW1lIGFuZCBjb3VudGVyIHZhbHVlIG11c3QgY2FwdHVyZWQgaW4g
+dGhlIHNhbWUNCj4+ICsJCSAqIHRpbWUgdG8ga2VlcCBjb25zaXN0ZW5jeSBhbmQgcHJlY2lzaW9u
+Lg0KPj4gKwkJICovDQo+PiArCQlrdGltZV9nZXRfc25hcHNob3QoJnN5c3RpbWVfc25hcHNob3Qp
+Ow0KPj4gKwkJaWYgKHN5c3RpbWVfc25hcHNob3QuY3NfaWQgIT0gQ1NJRF9BUk1fQVJDSF9DT1VO
+VEVSKQ0KPj4gKwkJCWJyZWFrOw0KPj4gKwkJYXJnWzBdID0gdXBwZXJfMzJfYml0cyhzeXN0aW1l
+X3NuYXBzaG90LnJlYWwpOw0KPj4gKwkJYXJnWzFdID0gbG93ZXJfMzJfYml0cyhzeXN0aW1lX3Nu
+YXBzaG90LnJlYWwpOw0KPiBXaHkgZXhhY3RseSBkb2VzIHRoZSBndWVzdCBuZWVkIHRoZSBob3N0
+J3MgcmVhbCB0aW1lPyBOZWl0aGVyIHRoZSBjb3Zlcg0KPiBsZXR0ZXIgbm9yIHRoaXMgY29tbWl0
+IG1lc3NhZ2UgaGF2ZSBleHBsYWluZWQgdGhhdCwgYW5kIGZvciB0aG9zZSBvZiB1cw0KPiB1bmZh
+bWxpYXIgd2l0aCBQVFAgaXQgd291bGQgYmUgdmVyeSBoZWxwZnVsIHRvIGtub3cgdGhhdCB0byB1
+bmRlcnN0YW5kDQo+IHdoYXQncyBnb2luZyBvbi4NCg0Kb2gsIHNvcnJ5LCBJIHNob3VsZCBoYXZl
+IGFkZGVkIG1vcmUgYmFja2dyb3VuZCBrbm93bGVkZ2UgaGVyZS4NCg0KanVzdCBnaXZlIHNvbWUg
+aGludHMgaGVyZToNCg0KdGhlIGt2bV9wdHAgdGFyZ2V0cyB0byBzeW5jIGd1ZXN0IHRpbWUgd2l0
+aCBob3N0LiBzb21lIHNlcnZpY2VzIGluIHVzZXIgDQpzcGFjZQ0KDQpsaWtlIGNocm9ueSBjYW4g
+ZG8gdGltZSBzeW5jIGJ5IGlucHV0aW5nIHRpbWUoaW4ga3ZtX3B0cCBhbHNvIGNsb2NrIA0KY291
+bnRlciBzb21ldGltZXMpIGZyb20NCg0KcmVtb3RlIGNsb2Nrc291cmNlKG9mdGVuIG5ldHdvcmsg
+Y2xvY2tzb3VyY2UpLiBUaGlzIGt2bV9wdHAgZHJpdmVyIGNhbiANCm9mZmVyIGEgaW50ZXJmYWNl
+IGZvcg0KDQp0aG9zZSB1c2VyIHNwYWNlIHNlcnZpY2UgaW4gZ3Vlc3QgdG8gZ2V0IHRoZSBob3N0
+IHRpbWUgdG8gZG8gdGltZSBzeW5jIA0KaW4gZ3Vlc3QuDQoNCj4+ICsJCS8qDQo+PiArCQkgKiB3
+aGljaCBvZiB2aXJ0dWFsIGNvdW50ZXIgb3IgcGh5c2ljYWwgY291bnRlciBiZWluZw0KPj4gKwkJ
+ICogYXNrZWQgZm9yIGlzIGRlY2lkZWQgYnkgdGhlIGZpcnN0IGFyZ3VtZW50Lg0KPj4gKwkJICov
+DQo+PiArCQlmZWF0dXJlID0gc21jY2NfZ2V0X2FyZzEodmNwdSk7DQo+PiArCQlzd2l0Y2ggKGZl
+YXR1cmUpIHsNCj4+ICsJCWNhc2UgQVJNX1NNQ0NDX0hZUF9LVk1fUFRQX1BIWToNCj4+ICsJCQlj
+eWNsZXMgPSBzeXN0aW1lX3NuYXBzaG90LmN5Y2xlczsNCj4+ICsJCQlicmVhazsNCj4+ICsJCWNh
+c2UgQVJNX1NNQ0NDX0hZUF9LVk1fUFRQX1ZJUlQ6DQo+PiArCQlkZWZhdWx0Og0KPj4gKwkJCWN5
+Y2xlcyA9IHN5c3RpbWVfc25hcHNob3QuY3ljbGVzIC0NCj4+ICsJCQl2Y3B1X3Z0aW1lcih2Y3B1
+KS0+Y250dm9mZjsNCj4+ICsJCX0NCj4+ICsJCWFyZ1syXSA9IHVwcGVyXzMyX2JpdHMoY3ljbGVz
+KTsNCj4+ICsJCWFyZ1szXSA9IGxvd2VyXzMyX2JpdHMoY3ljbGVzKTsNCj4+ICsNCj4+ICsJCXNt
+Y2NjX3NldF9yZXR2YWwodmNwdSwgYXJnWzBdLCBhcmdbMV0sIGFyZ1syXSwgYXJnWzNdKTsNCj4g
+SSB0aGluayB0aGUgJ2FyZycgYnVmZmVyIGlzIGNvbmZ1c2luZyBoZXJlLCBhbmQgaXQnZCBiZSBj
+bGVhcmVyIHRvIGhhdmU6DQo+DQo+IAl1NjQgc25hcGhvdDsNCj4gCXU2NCBjeWNsZXM7DQo+DQo+
+IC4uLiBhbmQgaGVyZSBkbzoNCj4NCj4gCQlzbWNjY19zZXRfcmV0dmFsKHZjcHUsDQo+IAkJCQkg
+dXBwZXJfMzJfYml0cyhzbmFwaG90KSwNCj4gCQkJCSBsb3dlcl8zMl9iaXRzKHNuYXBzaG90KSwN
+Cj4gCQkJCSB1cHBlcl8zMl9iaXRzKGN5Y2xlcyksDQo+IAkJCQkgbG93ZXJfMzJfYml0cyhjeWNs
+ZXMpKTsNCg0KaXQncyBiZXR0ZXIgdG8gdXNlIGEgbWVhbmluZ2Z1bCB2YXJpYW50IG5hbWUuIEkg
+d2lsbCBmaXggaXQuDQoNCg0KdGhhbmtzDQoNCkppYW55b25nDQoNCj4NCj4gVGhhbmtzLA0KPiBN
+YXJrLg0KDQoNCg==
