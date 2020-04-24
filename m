@@ -2,108 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5670D1B78A7
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 16:57:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78FF41B78CE
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 17:05:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727841AbgDXO4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 10:56:49 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:32838 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726698AbgDXO4t (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Apr 2020 10:56:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=i8T8P91+yzcMB/IYq4PEZyj+h3cSZcj0sTJ9rKQhaaY=; b=iGp9a3vlmwA0+2N3ar/5vj/na/
-        ZazxDH05VDYsLFC+x395RWF8pI2wxVPWtby8BnVnCoaFv/77qGF99D4QPfirjkwi4POEhx49cg8WE
-        n/3e7HiOOu6xNUarECxAjKcAtobNKax6eXFRFl2svjY4RX4WND5aWUzDeTWpsoyV5fzg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jRzkp-004ZXA-Qh; Fri, 24 Apr 2020 16:56:35 +0200
-Date:   Fri, 24 Apr 2020 16:56:35 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florinel Iordache <florinel.iordache@nxp.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        Leo Li <leoyang.li@nxp.com>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: Re: [PATCH net-next v2 6/9] net: phy: add backplane kr driver
- support
-Message-ID: <20200424145635.GB1088354@lunn.ch>
-References: <AM0PR04MB5443BCFEC71B6903BE6EFE02FBD00@AM0PR04MB5443.eurprd04.prod.outlook.com>
+        id S1727081AbgDXPFk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 11:05:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48102 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726717AbgDXPFj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 11:05:39 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2523C09B045;
+        Fri, 24 Apr 2020 08:05:37 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id r14so4928483pfg.2;
+        Fri, 24 Apr 2020 08:05:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=d4gGd17nKXAZGsG4iVsACxdSRpoMmpH7XJzq4FM92WM=;
+        b=n4peOn/s/AQG8koZqpSrfBKGJB1DH60y3deG8H5m2P1g+SuMSiEtld5J5vGAWrpX0P
+         /BUSssIG+0rGdcPoF7u9ME1/E966Jawd9DhaaeB9DFgQJPdWlXJW0VRD0ptv4yQUNbs6
+         1gv82m6FH6lxsMio7sDaVO6b7Oa02eHBW5Ey5HPBxq8EygtY2sCPUhExZPSFmfT1QtJf
+         IfY/9dlNW2HJUowUcrbDkjBpwrseWQBFA0pksskUfQKy+N7yllXmZWGJnGRWAgPOrg2O
+         XFl6L3WIocCB/mPND6GqF2jdJmXMj/KWzUv/XNsfQOGuPq+nCp0H5BSJPjdIpp+Aidy5
+         0mhw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=d4gGd17nKXAZGsG4iVsACxdSRpoMmpH7XJzq4FM92WM=;
+        b=ZsWWIO9vSMWYborJp5iyZflbYN2iCY7LJIhIPOKP45nCQJlGWZsp09TBUfzCOP3/Qb
+         KSRRzylMq4SopQ0ZLzOLiJ0L8CdSw7GuzSAZrLOZrN3XWN7cDaKV0YlIvlYw3VenLBlD
+         8bRPfshiIe2sykjv41yjZezomSB/G4sIhdH0iHEFBDyXXqWAGM/of5vt3tlEou7+zbR8
+         qrqJWJjCUrdXASA6HjTcJI7nEbN90Q4jztz5S17p2MA4W1UHZgO/0GMduOu/EKE2dDrq
+         evOOhaiObqVkf1xQbL6dhfgqUZYZSGWlOuakDjhA3pvBinYaRAuC/4WS08Ube3faQLXf
+         nPGQ==
+X-Gm-Message-State: AGi0PuYNr37SqLE5XX6poIbgChOP3vtP2ZVXkx3lce7wVsYME/v82bJg
+        QG11P/BqEz05rVxio8RrQIq+aPen
+X-Google-Smtp-Source: APiQypKcZXLckuTzIO760BvGIrtUlZK84e+1m4OPJqIJ8UnZ6DtIh82hQIS4MhMMyJvGV1m8X2uTUQ==
+X-Received: by 2002:a63:2143:: with SMTP id s3mr9510994pgm.20.1587740736829;
+        Fri, 24 Apr 2020 08:05:36 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id y24sm6058461pfn.211.2020.04.24.08.05.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Apr 2020 08:05:35 -0700 (PDT)
+Subject: Re: [PATCH] net: openvswitch: use do_div() for 64-by-32 divisions:
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org
+References: <20200424121051.5056-1-geert@linux-m68k.org>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <d2c14a2d-4e7b-d36a-be90-e987b1ea6183@gmail.com>
+Date:   Fri, 24 Apr 2020 08:05:34 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM0PR04MB5443BCFEC71B6903BE6EFE02FBD00@AM0PR04MB5443.eurprd04.prod.outlook.com>
+In-Reply-To: <20200424121051.5056-1-geert@linux-m68k.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 24, 2020 at 02:39:54PM +0000, Florinel Iordache wrote:
-> > > +/* Backplane custom logging */
-> > > +#define bpdev_fn(fn)                                                 \
-> > > +void bpdev_##fn(struct phy_device *phydev, char *fmt, ...)           \
-> > > +{                                                                    \
-> > > +     struct va_format vaf = {                                        \
-> > > +             .fmt = fmt,                                             \
-> > > +     };                                                              \
-> > > +     va_list args;                                                   \
-> > > +     va_start(args, fmt);                                            \
-> > > +     vaf.va = &args;                                                 \
-> > > +     if (!phydev->attached_dev)                                      \
-> > > +             dev_##fn(&phydev->mdio.dev, "%pV", &vaf);               \
-> > > +     else                                                            \
-> > > +             dev_##fn(&phydev->mdio.dev, "%s: %pV",                  \
-> > > +                     netdev_name(phydev->attached_dev), &vaf);       \
-> > > +     va_end(args);                                                   \
-> > > +}
-> > > +
-> > > +bpdev_fn(err)
-> > > +EXPORT_SYMBOL(bpdev_err);
-> > > +
-> > > +bpdev_fn(warn)
-> > > +EXPORT_SYMBOL(bpdev_warn);
-> > > +
-> > > +bpdev_fn(info)
-> > > +EXPORT_SYMBOL(bpdev_info);
-> > > +
-> > > +bpdev_fn(dbg)
-> > > +EXPORT_SYMBOL(bpdev_dbg);
-> > 
-> > Didn't i say something about just using phydev_{err|warn|info|dbg}?
-> > 
-> >        Andrew
-> 
-> Hi Andrew,
-> 
-> I used this custom logging in order to be able to add any kind of useful information we might need to all prints (err/warn/info/dbg).
-> For example all these bpdev_ functions are equivalent with phydev_ but only in the case when there is no attached device: phydev->attached_dev == NULL.
-> Otherwise, if there is a device attached, then we also want to add its name to all these prints in order to know to which device the information refers to.
-> For example in this case the print looks like this:
-> [   50.853515] backplane_qoriq 8c13000:00: eth1: 10gbase-kr link trained, Tx equalization: C(-1)=0x0, C(0)=0x29, C(+1)=0x5
-> This is very useful because we can see very easy to which interface the information printed is related to: in this case the link was trained for interface: eth1
-> This information (the name of attached device: eth1) is not printed by phydev_ functions.
-> I'm sorry I have not explained all this earlier, the first time when you asked about it. 
 
-So why not argue that the phydev_* functions should be extended to
-include this information? Is this extra information only valuable for
-link training, or for anything a PHY does? If the core does not do
-something, fix the core, rather than work around it in your driver.
 
-     Andrew
+On 4/24/20 5:10 AM, Geert Uytterhoeven wrote:
+> On 32-bit architectures (e.g. m68k):
+> 
+>     ERROR: modpost: "__udivdi3" [net/openvswitch/openvswitch.ko] undefined!
+>     ERROR: modpost: "__divdi3" [net/openvswitch/openvswitch.ko] undefined!
+> 
+> Fixes: e57358873bb5d6ca ("net: openvswitch: use u64 for meter bucket")
+> Reported-by: noreply@ellerman.id.au
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> ---
+>  net/openvswitch/meter.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
+> index 915f31123f235c03..3498a5ab092ab2b8 100644
+> --- a/net/openvswitch/meter.c
+> +++ b/net/openvswitch/meter.c
+> @@ -393,7 +393,7 @@ static struct dp_meter *dp_meter_create(struct nlattr **a)
+>  		 * Start with a full bucket.
+>  		 */
+>  		band->bucket = (band->burst_size + band->rate) * 1000ULL;
+> -		band_max_delta_t = band->bucket / band->rate;
+> +		band_max_delta_t = do_div(band->bucket, band->rate);
+>  		if (band_max_delta_t > meter->max_delta_t)
+>  			meter->max_delta_t = band_max_delta_t;
+>  		band++;
+> 
+
+This is fascinating... Have you tested this patch ?
+
+Please double check what do_div() return value is supposed to be !
+
+Thanks.
