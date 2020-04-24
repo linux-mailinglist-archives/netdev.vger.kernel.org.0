@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BEF61B6B22
+	by mail.lfdr.de (Postfix) with ESMTP id B86241B6B23
 	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 04:12:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726472AbgDXCML (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 22:12:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37232 "EHLO mail.kernel.org"
+        id S1726476AbgDXCMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 22:12:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37298 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726403AbgDXCME (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Apr 2020 22:12:04 -0400
+        id S1726451AbgDXCMH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Apr 2020 22:12:07 -0400
 Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0F8F721707;
-        Fri, 24 Apr 2020 02:12:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 60A1F21582;
+        Fri, 24 Apr 2020 02:12:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587694324;
-        bh=AbQlYd9YWfTONMYbZExVoQXT6jJuo+Rf7Nwuto5So0U=;
+        s=default; t=1587694327;
+        bh=e9BGy27aTGDn3WUXlWptwuXPzEO4VCFTHKkNzzNEHYU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Oq8N4cPagJnBd3/RvcOq7fyr7CVKsH7/h3sU+G+2Aw5xx976FxNY/6yIjIE7Rh2eH
-         mmUZHQiLgM5yARfbyQrTuKKWMvdw/YCvXrkSQxuYnqEf/vKEorunTRHp2CeVVQrPZO
-         PWwBUgmzdveHj/zrmyTmDYEgMd29j38UPbOrmN1s=
+        b=WAkqKIZP19k05VCW8EHvk3Ab/jFQddMK5W9TsjbgO2PQ+FC9ZDDgjh5q5VnfmrsXO
+         cUkEvAfBDry538jfzs7m38yUI564fYAq98U6VKLUk+wGbPuTqyp5DdljE4Fao2vbFa
+         ReqTCP/9EsjJix//oZE22NnN3RKEobrJSD/S4Q98=
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -31,9 +31,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
         dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-Subject: [PATCH v2 bpf-next 11/17] net: Support xdp in the Tx path for xdp_frames
-Date:   Thu, 23 Apr 2020 20:11:42 -0600
-Message-Id: <20200424021148.83015-12-dsahern@kernel.org>
+Subject: [PATCH v2 bpf-next 12/17] libbpf: Refactor get_xdp_info
+Date:   Thu, 23 Apr 2020 20:11:43 -0600
+Message-Id: <20200424021148.83015-13-dsahern@kernel.org>
 X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 In-Reply-To: <20200424021148.83015-1-dsahern@kernel.org>
 References: <20200424021148.83015-1-dsahern@kernel.org>
@@ -46,154 +46,96 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dahern@digitalocean.com>
 
-Add support to run Tx path program on xdp_frames by adding a hook to
-bq_xmit_all before xdp_frames are passed to ndo_xdp_xmit for the device.
-
-If an xdp_frame is dropped by the program, it is removed from the
-xdp_frames array with subsequent entries moved up.
+Move parsing of IFLA_XDP attribute to a helper that can be reused
+for the new IFLA_XDP_EGRESS attribute.
 
 Signed-off-by: David Ahern <dahern@digitalocean.com>
 ---
- include/linux/netdevice.h |  3 ++
- kernel/bpf/devmap.c       | 19 +++++++++----
- net/core/dev.c            | 59 +++++++++++++++++++++++++++++++++++++++
- 3 files changed, 76 insertions(+), 5 deletions(-)
+ tools/lib/bpf/netlink.c | 43 +++++++++++++++++++++++++----------------
+ 1 file changed, 26 insertions(+), 17 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 84ef4cc1c2a7..8d77c260c43b 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3716,6 +3716,9 @@ static inline void dev_consume_skb_any(struct sk_buff *skb)
- void generic_xdp_tx(struct sk_buff *skb, struct bpf_prog *xdp_prog);
- int do_xdp_generic_rx(struct bpf_prog *xdp_prog, struct sk_buff *skb);
- u32 do_xdp_egress_skb(struct net_device *dev, struct sk_buff *skb);
-+unsigned int do_xdp_egress_frame(struct net_device *dev,
-+				 struct xdp_frame **frames,
-+				 unsigned int count);
- int netif_rx(struct sk_buff *skb);
- int netif_rx_ni(struct sk_buff *skb);
- int netif_receive_skb(struct sk_buff *skb);
-diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-index 58bdca5d978a..c038c8c3ccdb 100644
---- a/kernel/bpf/devmap.c
-+++ b/kernel/bpf/devmap.c
-@@ -322,24 +322,33 @@ static int bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
- {
- 	struct net_device *dev = bq->dev;
- 	int sent = 0, drops = 0, err = 0;
-+	unsigned int count = bq->count;
- 	int i;
+diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
+index 0b709fd10bba..90ced689e53b 100644
+--- a/tools/lib/bpf/netlink.c
++++ b/tools/lib/bpf/netlink.c
+@@ -238,51 +238,60 @@ static int __dump_link_nlmsg(struct nlmsghdr *nlh,
+ 	return dump_link_nlmsg(cookie, ifi, tb);
+ }
  
--	if (unlikely(!bq->count))
-+	if (unlikely(!count))
+-static int get_xdp_info(void *cookie, void *msg, struct nlattr **tb)
++static int process_xdp_attr(struct nlattr *tb, struct xdp_link_info *info)
+ {
+ 	struct nlattr *xdp_tb[IFLA_XDP_MAX + 1];
+-	struct xdp_id_md *xdp_id = cookie;
+-	struct ifinfomsg *ifinfo = msg;
+ 	int ret;
+ 
+-	if (xdp_id->ifindex && xdp_id->ifindex != ifinfo->ifi_index)
+-		return 0;
+-
+-	if (!tb[IFLA_XDP])
+-		return 0;
+-
+-	ret = libbpf_nla_parse_nested(xdp_tb, IFLA_XDP_MAX, tb[IFLA_XDP], NULL);
++	ret = libbpf_nla_parse_nested(xdp_tb, IFLA_XDP_MAX, tb, NULL);
+ 	if (ret)
+ 		return ret;
+ 
+ 	if (!xdp_tb[IFLA_XDP_ATTACHED])
  		return 0;
  
--	for (i = 0; i < bq->count; i++) {
-+	for (i = 0; i < count; i++) {
- 		struct xdp_frame *xdpf = bq->q[i];
+-	xdp_id->info.attach_mode = libbpf_nla_getattr_u8(
+-		xdp_tb[IFLA_XDP_ATTACHED]);
++	info->attach_mode = libbpf_nla_getattr_u8(xdp_tb[IFLA_XDP_ATTACHED]);
  
- 		prefetch(xdpf);
- 	}
+-	if (xdp_id->info.attach_mode == XDP_ATTACHED_NONE)
++	if (info->attach_mode == XDP_ATTACHED_NONE)
+ 		return 0;
  
--	sent = dev->netdev_ops->ndo_xdp_xmit(dev, bq->count, bq->q, flags);
-+	if (static_branch_unlikely(&xdp_egress_needed_key)) {
-+		count = do_xdp_egress_frame(dev, bq->q, count);
-+		drops += bq->count - count;
-+		/* all frames consumed by the xdp program? */
-+		if (!count)
-+			goto out;
-+	}
-+
-+	sent = dev->netdev_ops->ndo_xdp_xmit(dev, count, bq->q, flags);
- 	if (sent < 0) {
- 		err = sent;
- 		sent = 0;
- 		goto error;
- 	}
--	drops = bq->count - sent;
-+	drops += count - sent;
- out:
- 	bq->count = 0;
+ 	if (xdp_tb[IFLA_XDP_PROG_ID])
+-		xdp_id->info.prog_id = libbpf_nla_getattr_u32(
++		info->prog_id = libbpf_nla_getattr_u32(
+ 			xdp_tb[IFLA_XDP_PROG_ID]);
  
-@@ -351,7 +360,7 @@ static int bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
- 	/* If ndo_xdp_xmit fails with an errno, no frames have been
- 	 * xmit'ed and it's our responsibility to them free all.
- 	 */
--	for (i = 0; i < bq->count; i++) {
-+	for (i = 0; i < count; i++) {
- 		struct xdp_frame *xdpf = bq->q[i];
+ 	if (xdp_tb[IFLA_XDP_SKB_PROG_ID])
+-		xdp_id->info.skb_prog_id = libbpf_nla_getattr_u32(
++		info->skb_prog_id = libbpf_nla_getattr_u32(
+ 			xdp_tb[IFLA_XDP_SKB_PROG_ID]);
  
- 		xdp_return_frame_rx_napi(xdpf);
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 7bf0003e1876..0567a3e459aa 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4721,6 +4721,65 @@ u32 do_xdp_egress_skb(struct net_device *dev, struct sk_buff *skb)
+ 	if (xdp_tb[IFLA_XDP_DRV_PROG_ID])
+-		xdp_id->info.drv_prog_id = libbpf_nla_getattr_u32(
++		info->drv_prog_id = libbpf_nla_getattr_u32(
+ 			xdp_tb[IFLA_XDP_DRV_PROG_ID]);
+ 
+ 	if (xdp_tb[IFLA_XDP_HW_PROG_ID])
+-		xdp_id->info.hw_prog_id = libbpf_nla_getattr_u32(
++		info->hw_prog_id = libbpf_nla_getattr_u32(
+ 			xdp_tb[IFLA_XDP_HW_PROG_ID]);
+ 
+ 	return 0;
  }
- EXPORT_SYMBOL_GPL(do_xdp_egress_skb);
  
-+static u32 __xdp_egress_frame(struct net_device *dev,
-+			      struct bpf_prog *xdp_prog,
-+			      struct xdp_frame *xdp_frame,
-+			      struct xdp_txq_info *txq)
++static int get_xdp_info(void *cookie, void *msg, struct nlattr **tb)
 +{
-+	struct xdp_buff xdp;
-+	u32 act;
++	struct xdp_id_md *xdp_id = cookie;
++	struct ifinfomsg *ifinfo = msg;
++	int ret;
 +
-+	xdp.data_hard_start = xdp_frame->data - xdp_frame->headroom
-+			      - sizeof(*xdp_frame);
-+	xdp.data = xdp_frame->data;
-+	xdp.data_end = xdp.data + xdp_frame->len;
-+	xdp.data_meta = xdp.data - xdp_frame->metasize;
-+	xdp.txq = txq;
++	if (xdp_id->ifindex && xdp_id->ifindex != ifinfo->ifi_index)
++		return 0;
 +
-+	act = bpf_prog_run_xdp(xdp_prog, &xdp);
-+	act = handle_xdp_egress_act(act, dev, xdp_prog);
-+
-+	/* if not dropping frame, readjust pointers in case
-+	 * program made changes to the buffer
-+	 */
-+	if (act != XDP_DROP) {
-+		if (unlikely(!update_xdp_frame(&xdp, xdp_frame)))
-+			return XDP_DROP;
++	if (tb[IFLA_XDP]) {
++		ret = process_xdp_attr(tb[IFLA_XDP], &xdp_id->info);
++		if (ret)
++			return ret;
 +	}
 +
-+	return act;
++	return 0;
 +}
 +
-+unsigned int do_xdp_egress_frame(struct net_device *dev,
-+				 struct xdp_frame **frames,
-+				 unsigned int count)
-+{
-+	struct bpf_prog *xdp_prog;
-+
-+	xdp_prog = rcu_dereference(dev->xdp_egress_prog);
-+	if (xdp_prog) {
-+		struct xdp_txq_info txq = { .dev = dev };
-+		unsigned int i, j;
-+		u32 act;
-+
-+		for (i = 0, j = 0; i < count; i++) {
-+			struct xdp_frame *frame = frames[i];
-+
-+			act = __xdp_egress_frame(dev, xdp_prog, frame, &txq);
-+			if (act == XDP_DROP) {
-+				xdp_return_frame_rx_napi(frame);
-+				continue;
-+			}
-+
-+			frames[j] = frame;
-+			j++;
-+		}
-+		count = j;
-+	}
-+
-+	return count;
-+}
-+
- static int netif_rx_internal(struct sk_buff *skb)
+ int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
+ 			  size_t info_size, __u32 flags)
  {
- 	int ret;
 -- 
 2.21.1 (Apple Git-122.3)
 
