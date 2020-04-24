@@ -2,134 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E68B51B7206
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 12:32:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0E901B7208
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 12:32:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726860AbgDXKcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 06:32:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33564 "EHLO
+        id S1726879AbgDXKcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 06:32:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726808AbgDXKcG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 06:32:06 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EED8C09B045
-        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 03:32:06 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1jRvcq-0001wu-4o; Fri, 24 Apr 2020 12:32:04 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     edumazet@google.com, mathew.j.martineau@linux.intel.com,
-        matthieu.baerts@tessares.net, pabeni@redhat.com,
-        Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next] tcp: mptcp: use mptcp receive buffer space to select rcv window
-Date:   Fri, 24 Apr 2020 12:31:50 +0200
-Message-Id: <20200424103150.334-1-fw@strlen.de>
-X-Mailer: git-send-email 2.26.2
+        with ESMTP id S1726867AbgDXKcL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 06:32:11 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CCEEC09B046
+        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 03:32:10 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id j1so10166631wrt.1
+        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 03:32:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DuL/FnB2qQTF/BcV+/SmiUjtSwdbN0dYeuA3t4WT6Co=;
+        b=yVxvPQx9pXdyT/LBWCxfIVNFBTViFRKoy5zR8STitTUxEAIiM8wtnHH0vjXS4te3Hx
+         E3zi0seWrr1/fK4mukK0yKTIkCsY3rHuub6kTlQb6yNtrRXl2kPJvBlGa1NllzsL8xI+
+         PtHUa4+QVFROfEqtwTHrwYMNj3f1B7uPbnEIb8bxGnNLQCirKMBL0ACXpRIqKyH+9EHH
+         HIU/DL6e+vG0ehCMOqB/7DxkGlNa7jgVzyCdGkRi/pRgcV7kv30wjBz5JT1IX0SD1Hu2
+         b8UdK3B8A4tQCzSZ+JbICZzJbjHKw+ZSjEpkhd1+qsoYbaAFOUkOGIdLZ+YSqbfq9QCc
+         7dFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DuL/FnB2qQTF/BcV+/SmiUjtSwdbN0dYeuA3t4WT6Co=;
+        b=NSKtmUn41H8GQcysKXbAtTIZVtTpw5/hxtDqo63i3qyF43nuVf2Cb7npW4qhAy9+AT
+         YhPnFrBobhELUMXdc6VEQM74gUwEjLXOT3eKVguBnUFpgd0voE1B9Q2M0hnScmDvoZ92
+         s2OsZ1Dp2V173etTOSYXRa5TEX1iXmcuSx1k9CgoEpG2PARsJYb8HKYATJQ/RfZriKtS
+         ckIWKlQNTFnwJ2nwg+crFlEN4abnyXX9vYHcBxG1X6ToN+ooTxu3RO63EoGuitalFW6Y
+         VeG9JY8qBioZkJ9gAYfQPdxOcuO/KTM+0Gho9T4DSHS+nVaB0DxGx1tPqWP1YKS1E2gN
+         RrDw==
+X-Gm-Message-State: AGi0Pubq+AApz30OEf/R/A71o37YdjGL5cPXmaYYWn4/VxA324NPXVED
+        oHbEwkS++wTL+yLHKxs/awrC+Q==
+X-Google-Smtp-Source: APiQypLOZcmRrkKClt02n+pliNll9PVQ+Giu+6P0fQjVPw+L/z7ivJ5XUAjija28I30NHQvRg+Vj8w==
+X-Received: by 2002:a5d:6850:: with SMTP id o16mr9978981wrw.309.1587724328981;
+        Fri, 24 Apr 2020 03:32:08 -0700 (PDT)
+Received: from [192.168.1.10] ([194.53.185.129])
+        by smtp.gmail.com with ESMTPSA id i17sm7675624wru.39.2020.04.24.03.32.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Apr 2020 03:32:08 -0700 (PDT)
+Subject: Re: [PATCH bpf-next 07/10] bpftool: expose attach_type-to-string
+ array to non-cgroup code
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com
+References: <20200424053505.4111226-1-andriin@fb.com>
+ <20200424053505.4111226-8-andriin@fb.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <34110254-6384-153f-af39-d5f9f3a50acb@isovalent.com>
+Date:   Fri, 24 Apr 2020 11:32:07 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200424053505.4111226-8-andriin@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In MPTCP, the receive window is shared across all subflows, because it
-refers to the mptcp-level sequence space.
+2020-04-23 22:35 UTC-0700 ~ Andrii Nakryiko <andriin@fb.com>
+> Move attach_type_strings into main.h for access in non-cgroup code.
+> bpf_attach_type is used for non-cgroup attach types quite widely now. So also
+> complete missing string translations for non-cgroup attach types.
+> 
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>  tools/bpf/bpftool/cgroup.c | 28 +++-------------------------
+>  tools/bpf/bpftool/main.h   | 32 ++++++++++++++++++++++++++++++++
+>  2 files changed, 35 insertions(+), 25 deletions(-)
+> 
+> diff --git a/tools/bpf/bpftool/cgroup.c b/tools/bpf/bpftool/cgroup.c
+> index 62c6a1d7cd18..d1fd9c9f2690 100644
+> --- a/tools/bpf/bpftool/cgroup.c
+> +++ b/tools/bpf/bpftool/cgroup.c
+> @@ -31,35 +31,13 @@
+>  
+>  static unsigned int query_flags;
+>  
+> -static const char * const attach_type_strings[] = {
+> -	[BPF_CGROUP_INET_INGRESS] = "ingress",
+> -	[BPF_CGROUP_INET_EGRESS] = "egress",
+> -	[BPF_CGROUP_INET_SOCK_CREATE] = "sock_create",
+> -	[BPF_CGROUP_SOCK_OPS] = "sock_ops",
+> -	[BPF_CGROUP_DEVICE] = "device",
+> -	[BPF_CGROUP_INET4_BIND] = "bind4",
+> -	[BPF_CGROUP_INET6_BIND] = "bind6",
+> -	[BPF_CGROUP_INET4_CONNECT] = "connect4",
+> -	[BPF_CGROUP_INET6_CONNECT] = "connect6",
+> -	[BPF_CGROUP_INET4_POST_BIND] = "post_bind4",
+> -	[BPF_CGROUP_INET6_POST_BIND] = "post_bind6",
+> -	[BPF_CGROUP_UDP4_SENDMSG] = "sendmsg4",
+> -	[BPF_CGROUP_UDP6_SENDMSG] = "sendmsg6",
+> -	[BPF_CGROUP_SYSCTL] = "sysctl",
+> -	[BPF_CGROUP_UDP4_RECVMSG] = "recvmsg4",
+> -	[BPF_CGROUP_UDP6_RECVMSG] = "recvmsg6",
+> -	[BPF_CGROUP_GETSOCKOPT] = "getsockopt",
+> -	[BPF_CGROUP_SETSOCKOPT] = "setsockopt",
+> -	[__MAX_BPF_ATTACH_TYPE] = NULL,
 
-MPTCP receivers already place incoming packets on the mptcp socket
-receive queue and will charge it to the mptcp socket rcvbuf until
-userspace consumes the data.
+So you removed the "[__MAX_BPF_ATTACH_TYPE] = NULL" from the new array,
+if I understand correctly this is because all attach type enum members
+are now in the new attach_type_name[] so we're safe by looping until we
+reach __MAX_BPF_ATTACH_TYPE. Sounds good in theory but...
 
-Update __tcp_select_window to use the occupancy of the parent/mptcp
-socket instead of the subflow socket in case the tcp socket is part
-of a logical mptcp connection.
+> -};
+> -
+>  static enum bpf_attach_type parse_attach_type(const char *str)
+>  {
+>  	enum bpf_attach_type type;
+>  
+>  	for (type = 0; type < __MAX_BPF_ATTACH_TYPE; type++) {
+> -		if (attach_type_strings[type] &&
+> -		    is_prefix(str, attach_type_strings[type]))
+> +		if (attach_type_name[type] &&
+> +		    is_prefix(str, attach_type_name[type]))
+>  			return type;
+>  	}
 
-This commit doesn't change choice of initial window for passive or active
-connections.
-While it would be possible to change those as well, this adds complexity
-(especially when handling MP_JOIN requests).  Furthermore, the MPTCP RFC
-specifically says that a MPTCP sender 'MUST NOT use the RCV.WND field
-of a TCP segment at the connection level if it does not also carry a DSS
-option with a Data ACK field.'
+... I'm concerned the "attach_type_name[type]" here could segfault if we
+add a new attach type to the kernel, but don't report it immediately to
+bpftool's array.
 
-SYN/SYNACK packets do not carry a DSS option with a Data ACK field.
-
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- include/net/mptcp.h   |  3 +++
- net/ipv4/tcp_output.c |  8 ++++++--
- net/mptcp/subflow.c   | 18 ++++++++++++++++++
- 3 files changed, 27 insertions(+), 2 deletions(-)
-
-diff --git a/include/net/mptcp.h b/include/net/mptcp.h
-index 0e7c5471010b..5288fba56e55 100644
---- a/include/net/mptcp.h
-+++ b/include/net/mptcp.h
-@@ -68,6 +68,8 @@ static inline bool rsk_is_mptcp(const struct request_sock *req)
- 	return tcp_rsk(req)->is_mptcp;
- }
- 
-+void mptcp_space(const struct sock *ssk, int *space, int *full_space);
-+
- void mptcp_parse_option(const struct sk_buff *skb, const unsigned char *ptr,
- 			int opsize, struct tcp_options_received *opt_rx);
- bool mptcp_syn_options(struct sock *sk, const struct sk_buff *skb,
-@@ -197,6 +199,7 @@ static inline bool mptcp_sk_is_subflow(const struct sock *sk)
- 	return false;
- }
- 
-+static inline void mptcp_space(const struct sock *ssk, int *s, int *fs) { }
- static inline void mptcp_seq_show(struct seq_file *seq) { }
- #endif /* CONFIG_MPTCP */
- 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 2f45cde168c4..ba4482130f08 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -2772,8 +2772,12 @@ u32 __tcp_select_window(struct sock *sk)
- 	int mss = icsk->icsk_ack.rcv_mss;
- 	int free_space = tcp_space(sk);
- 	int allowed_space = tcp_full_space(sk);
--	int full_space = min_t(int, tp->window_clamp, allowed_space);
--	int window;
-+	int full_space, window;
-+
-+	if (sk_is_mptcp(sk))
-+		mptcp_space(sk, &free_space, &allowed_space);
-+
-+	full_space = min_t(int, tp->window_clamp, allowed_space);
- 
- 	if (unlikely(mss > full_space)) {
- 		mss = full_space;
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 50a8bea987c6..47f901b712f9 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -764,6 +764,24 @@ bool mptcp_subflow_data_available(struct sock *sk)
- 	return subflow->data_avail;
- }
- 
-+/* If ssk has an mptcp parent socket, use the mptcp rcvbuf occupancy,
-+ * not the ssk one.
-+ *
-+ * In mptcp, rwin is about the mptcp-level connection data.
-+ *
-+ * Data that is still on the ssk rx queue can thus be ignored,
-+ * as far as mptcp peer is concerened that data is still inflight.
-+ * DSS ACK is updated when skb is moved to the mptcp rx queue.
-+ */
-+void mptcp_space(const struct sock *ssk, int *space, int *full_space)
-+{
-+	const struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
-+	const struct sock *sk = subflow->conn;
-+
-+	*space = tcp_space(sk);
-+	*full_space = tcp_full_space(sk);
-+}
-+
- static void subflow_data_ready(struct sock *sk)
- {
- 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
--- 
-2.26.2
-
+Is there any drawback with keeping the "[__MAX_BPF_ATTACH_TYPE] = NULL"?
+Or change here to loop on ARRAY_SIZE(), as you do in your own patch for
+link?
