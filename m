@@ -2,85 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B46281B7148
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 11:56:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3AD81B714C
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 11:56:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726836AbgDXJ4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 05:56:39 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:44084 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726774AbgDXJ4i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 05:56:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587722197;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=B0Qqh9TDBZRHUvv2vtzJJZDrY1m/LNDZHf4jDBqqYrQ=;
-        b=MwB/VM/eY8IsHF55FMxiUKK6I8iJGQ/g0UMv9j7FMqWYw1StCj675EZoP6daN+wJKpUsOy
-        U5mKMdZ+JlYUfknRQ6LHKIAZVc/0SQcQpr2OXyKq8qNPJViKPYBvdiuSzszD+50OVpe4Nz
-        j+5wf1C8rW+JJK86AIP5qBanKTOX7I4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-460-ZJzFMk2oOYueEVKCJfZsDA-1; Fri, 24 Apr 2020 05:56:34 -0400
-X-MC-Unique: ZJzFMk2oOYueEVKCJfZsDA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A6940872FF7;
-        Fri, 24 Apr 2020 09:56:31 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.58])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 412B75DA30;
-        Fri, 24 Apr 2020 09:56:17 +0000 (UTC)
-Date:   Fri, 24 Apr 2020 11:56:16 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        toke@redhat.com, toshiaki.makita1@gmail.com, daniel@iogearbox.net,
-        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com, David Ahern <dahern@digitalocean.com>,
-        brouer@redhat.com
-Subject: Re: [PATCH v2 bpf-next 06/17] net: Add IFLA_XDP_EGRESS for XDP
- programs in the egress path
-Message-ID: <20200424115616.77a5689c@carbon>
-In-Reply-To: <20200424021148.83015-7-dsahern@kernel.org>
-References: <20200424021148.83015-1-dsahern@kernel.org>
-        <20200424021148.83015-7-dsahern@kernel.org>
+        id S1726850AbgDXJ4p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 05:56:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56252 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726839AbgDXJ4p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 05:56:45 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958BFC09B045;
+        Fri, 24 Apr 2020 02:56:44 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id o15so4416565pgi.1;
+        Fri, 24 Apr 2020 02:56:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8g1Qeu2PJu2OXoQ3lMahtFGRconFZq/a+DVsXd6HwAs=;
+        b=EDPb40iEk4xe3gjopzZRdm0PXV3UNcBpXaXQwvVkK6Gks2ubrPWTqneru4oMuXdOQ+
+         m7wy7cLJ3DarRKECjTxse5/OCNU8WhkX9FzcjaAsbkcSJjgUqg9VujC2sVwjqPSN3tyA
+         /ANiw4DBFT5aOy0Bku0574L44kTcWhA4BioScPGRYTP/Z9SKqeC8o8RzXN5EK6K83lym
+         Xh7XjAfAxREZFaFXIbMziFSjKK1KTPY3/8ZZrPvK3zwGMd59OGKyaH/uAmT1ctyVznxb
+         l1TOx83AIqjULTw+Oxi1uQKjo5n/eRoROEUseVnCN2ta84Kd6xXTNnPJLShRiFASMzbl
+         azdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8g1Qeu2PJu2OXoQ3lMahtFGRconFZq/a+DVsXd6HwAs=;
+        b=ewq+Cc8G8RZhoknsgZyzHiyOrvn6vqKnDO1pyQ/dPT/Ndt4hMnaTXW84GBEGmdtVlF
+         Qf6l8pXJFuxDOCzlzJonYRnCRjU6BnfWmOAeahVxDDNn1to7mjOdYba/lCqiCuXtvlwf
+         zGSW+pcnzmB1KUNeHjQF6tdwZhlQM4pj5fyJJqXspR0TUqC6AX4eV9yYixKeQ1bXb9Bh
+         RQNfaELRsGjCWbIdYn6V+nW0QIJrJK48GyZGTimOYtwwFIWFcegqIcYfjdcuWklwqrl4
+         UVSr7+hcoYfn2H60yrczeh0mfEt3cX+hYa4rwxbcsR+N/Pg3RQBY9gq5awPPuubLSxl3
+         V71A==
+X-Gm-Message-State: AGi0Pua9DD/qNKz34hkYEtenx4ycPHuO2bigPst+K+uF4XWpT7l0uLwG
+        4OY9OR9PeLShf5sl3jlbwSIzeIEa6BDHbp/NLjs=
+X-Google-Smtp-Source: APiQypJoSVO02AhLEULSq00w+T9tSO+dGfUkCB9MaeL3fJM2YBvorpMGA+TqH8RN4vRqzgEpcjgVuiAnEW+pfufBUxc=
+X-Received: by 2002:a63:1d4:: with SMTP id 203mr8109776pgb.74.1587722204197;
+ Fri, 24 Apr 2020 02:56:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+References: <20200424031617.24033-1-calvin.johnson@oss.nxp.com> <20200424031617.24033-3-calvin.johnson@oss.nxp.com>
+In-Reply-To: <20200424031617.24033-3-calvin.johnson@oss.nxp.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 24 Apr 2020 12:56:37 +0300
+Message-ID: <CAHp75Vftq3OEEC5DfW8CgV4yQKZ3doD-r6khXxgn0oOmrLnLkA@mail.gmail.com>
+Subject: Re: [net-next PATCH v1 2/2] phylink: introduce phylink_fwnode_phy_connect()
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     linux.cj@gmail.com, Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Varun Sethi <V.Sethi@nxp.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 Apr 2020 20:11:37 -0600
-David Ahern <dsahern@kernel.org> wrote:
+On Fri, Apr 24, 2020 at 6:17 AM Calvin Johnson
+<calvin.johnson@oss.nxp.com> wrote:
+>
+> Define phylink_fwnode_phy_connect() to connect phy specified by
+> a fwnode to a phylink instance. This function will handle both
+> DT and ACPI nodes.
 
-> Running programs in the egress path, on skbs or xdp_frames, does not
-> require driver specific resources like Rx path. Accordingly, the
-> programs can be run in core code, so add xdp_egress_prog to net_device
-> to hold a reference to an attached program.
+>  #include <linux/spinlock.h>
+>  #include <linux/timer.h>
+>  #include <linux/workqueue.h>
+> +#include <linux/acpi.h>
 
-I disagree.  The TX path does need driver specific resources, most
-importantly information about the TX-queue that was used.
+Looks like broken order.
 
-That said, I think this patch is the right design, to place this more
-centrally in the net-core code, as driver changes are harder to
-maintain and generally painful (I speak from experience ;-)).
+> +       if (is_of_node(fwnode)) {
+> +       } else if (is_acpi_node(fwnode)) {
+> +       }
 
-After this patchset goes in, we need continue this work, and find a
-solution for the XDP-redirect overflow problem, and TX-queue selection.
-We might still have some driver work ahead, as I think we can change the
-ndo_xdp_xmit() API, to give us the information I'm looking for.
+I'm wondering if there is an API that allows you to drop all this
+stuff. In property provider agnostic code we really don't want to see
+this.
+
+> +       if (!phy_dev)
+> +               return -ENODEV;
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+With Best Regards,
+Andy Shevchenko
