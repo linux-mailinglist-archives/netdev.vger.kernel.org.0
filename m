@@ -2,108 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78FF41B78CE
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 17:05:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCC251B78EB
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 17:10:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727081AbgDXPFk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 11:05:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48102 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726717AbgDXPFj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 11:05:39 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2523C09B045;
-        Fri, 24 Apr 2020 08:05:37 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id r14so4928483pfg.2;
-        Fri, 24 Apr 2020 08:05:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=d4gGd17nKXAZGsG4iVsACxdSRpoMmpH7XJzq4FM92WM=;
-        b=n4peOn/s/AQG8koZqpSrfBKGJB1DH60y3deG8H5m2P1g+SuMSiEtld5J5vGAWrpX0P
-         /BUSssIG+0rGdcPoF7u9ME1/E966Jawd9DhaaeB9DFgQJPdWlXJW0VRD0ptv4yQUNbs6
-         1gv82m6FH6lxsMio7sDaVO6b7Oa02eHBW5Ey5HPBxq8EygtY2sCPUhExZPSFmfT1QtJf
-         IfY/9dlNW2HJUowUcrbDkjBpwrseWQBFA0pksskUfQKy+N7yllXmZWGJnGRWAgPOrg2O
-         XFl6L3WIocCB/mPND6GqF2jdJmXMj/KWzUv/XNsfQOGuPq+nCp0H5BSJPjdIpp+Aidy5
-         0mhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=d4gGd17nKXAZGsG4iVsACxdSRpoMmpH7XJzq4FM92WM=;
-        b=ZsWWIO9vSMWYborJp5iyZflbYN2iCY7LJIhIPOKP45nCQJlGWZsp09TBUfzCOP3/Qb
-         KSRRzylMq4SopQ0ZLzOLiJ0L8CdSw7GuzSAZrLOZrN3XWN7cDaKV0YlIvlYw3VenLBlD
-         8bRPfshiIe2sykjv41yjZezomSB/G4sIhdH0iHEFBDyXXqWAGM/of5vt3tlEou7+zbR8
-         qrqJWJjCUrdXASA6HjTcJI7nEbN90Q4jztz5S17p2MA4W1UHZgO/0GMduOu/EKE2dDrq
-         evOOhaiObqVkf1xQbL6dhfgqUZYZSGWlOuakDjhA3pvBinYaRAuC/4WS08Ube3faQLXf
-         nPGQ==
-X-Gm-Message-State: AGi0PuYNr37SqLE5XX6poIbgChOP3vtP2ZVXkx3lce7wVsYME/v82bJg
-        QG11P/BqEz05rVxio8RrQIq+aPen
-X-Google-Smtp-Source: APiQypKcZXLckuTzIO760BvGIrtUlZK84e+1m4OPJqIJ8UnZ6DtIh82hQIS4MhMMyJvGV1m8X2uTUQ==
-X-Received: by 2002:a63:2143:: with SMTP id s3mr9510994pgm.20.1587740736829;
-        Fri, 24 Apr 2020 08:05:36 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id y24sm6058461pfn.211.2020.04.24.08.05.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Apr 2020 08:05:35 -0700 (PDT)
-Subject: Re: [PATCH] net: openvswitch: use do_div() for 64-by-32 divisions:
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org
-References: <20200424121051.5056-1-geert@linux-m68k.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <d2c14a2d-4e7b-d36a-be90-e987b1ea6183@gmail.com>
-Date:   Fri, 24 Apr 2020 08:05:34 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1728084AbgDXPJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 11:09:14 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:45214 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728007AbgDXPJD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 11:09:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587740941;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=mGgOnRVzcCEgMJaj5VrAhSpVCj/tilxi8AFKq06F19o=;
+        b=HQMi+60gALVmjKicGJWjiSjRRgqRn7bNekOCdLP0HC1JqNap4ubASgMMxkhONSjrbgho/V
+        vA6a3thYsFJkd7IjaBv2SivXo6uZyT46uBb8ybnhl1Kz2Kmd236HbCdOvNbHHT8U8PryGo
+        cQp7xoK+mXzSHpqPYo0PGgKu0zUxGCI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-335-MjVSv9QHNR6m_5AgATCLsw-1; Fri, 24 Apr 2020 11:08:54 -0400
+X-MC-Unique: MjVSv9QHNR6m_5AgATCLsw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 16056846348;
+        Fri, 24 Apr 2020 15:08:34 +0000 (UTC)
+Received: from steredhat.redhat.com (ovpn-114-43.ams2.redhat.com [10.36.114.43])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9E8EC5D76A;
+        Fri, 24 Apr 2020 15:08:31 +0000 (UTC)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     davem@davemloft.net
+Cc:     Jason Wang <jasowang@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        Stefano Garzarella <sgarzare@redhat.com>, kvm@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH net v2 0/2] vsock/virtio: fixes about packet delivery to
+ monitoring devices
+Date:   Fri, 24 Apr 2020 17:08:28 +0200
+Message-Id: <20200424150830.183113-1-sgarzare@redhat.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20200424121051.5056-1-geert@linux-m68k.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+During the review of v1, Stefan pointed out an issue introduced by=0D
+that patch, where replies can appear in the packet capture before=0D
+the transmitted packet.=0D
+=0D
+While fixing my patch, reverting it and adding a new flag in=0D
+'struct virtio_vsock_pkt' (patch 2/2), I found that we already had=0D
+that issue in vhost-vsock, so I fixed it (patch 1/2).=0D
+=0D
+v1 -> v2:=0D
+- reverted the v1 patch, to avoid that replies can appear in the=0D
+  packet capture before the transmitted packet [Stefan]=0D
+- added patch to fix packet delivering to monitoring devices in=0D
+  vhost-vsock=0D
+- added patch to check if the packet is already delivered to=0D
+  monitoring devices=0D
+=0D
+v1: https://patchwork.ozlabs.org/project/netdev/patch/20200421092527.41651-=
+1-sgarzare@redhat.com/=0D
+=0D
+Stefano Garzarella (2):=0D
+  vhost/vsock: fix packet delivery order to monitoring devices=0D
+  vsock/virtio: fix multiple packet delivery to monitoring devices=0D
+=0D
+ drivers/vhost/vsock.c                   | 16 +++++++++++-----=0D
+ include/linux/virtio_vsock.h            |  1 +=0D
+ net/vmw_vsock/virtio_transport_common.c |  4 ++++=0D
+ 3 files changed, 16 insertions(+), 5 deletions(-)=0D
+=0D
+-- =0D
+2.25.3=0D
+=0D
 
-
-On 4/24/20 5:10 AM, Geert Uytterhoeven wrote:
-> On 32-bit architectures (e.g. m68k):
-> 
->     ERROR: modpost: "__udivdi3" [net/openvswitch/openvswitch.ko] undefined!
->     ERROR: modpost: "__divdi3" [net/openvswitch/openvswitch.ko] undefined!
-> 
-> Fixes: e57358873bb5d6ca ("net: openvswitch: use u64 for meter bucket")
-> Reported-by: noreply@ellerman.id.au
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> ---
->  net/openvswitch/meter.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
-> index 915f31123f235c03..3498a5ab092ab2b8 100644
-> --- a/net/openvswitch/meter.c
-> +++ b/net/openvswitch/meter.c
-> @@ -393,7 +393,7 @@ static struct dp_meter *dp_meter_create(struct nlattr **a)
->  		 * Start with a full bucket.
->  		 */
->  		band->bucket = (band->burst_size + band->rate) * 1000ULL;
-> -		band_max_delta_t = band->bucket / band->rate;
-> +		band_max_delta_t = do_div(band->bucket, band->rate);
->  		if (band_max_delta_t > meter->max_delta_t)
->  			meter->max_delta_t = band_max_delta_t;
->  		band++;
-> 
-
-This is fascinating... Have you tested this patch ?
-
-Please double check what do_div() return value is supposed to be !
-
-Thanks.
