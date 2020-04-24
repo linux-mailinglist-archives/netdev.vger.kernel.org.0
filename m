@@ -2,48 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACEEB1B6F03
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 09:28:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26E6E1B6F04
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 09:28:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726753AbgDXH2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 03:28:12 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:55784 "EHLO
+        id S1726298AbgDXH2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 03:28:14 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:64936 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726743AbgDXH2J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 03:28:09 -0400
+        by vger.kernel.org with ESMTP id S1726709AbgDXH2M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 03:28:12 -0400
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03O7QKUw021188;
-        Fri, 24 Apr 2020 00:28:06 -0700
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03O7Qfwg021724;
+        Fri, 24 Apr 2020 00:28:08 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=FZM+HHWXS5YuySGYw3nh7B/UF4a5ZqALmOWuFRXjccI=;
- b=VnKsUpBKXghdAUcvzg2Q6SfAyKc7C91RJjACNfyKvekRcgcpXH0C00vtC1bmcRtd+lrf
- Am3ZljyhBZcCmcx9nF7X/9JEIM1CPdUvqu1/ADPS3Cj3pH4JmmKD2/MB9lpuih5FI22v
- jNsceCQo3eGs27rWK62wHQrF7K2kS/i+4kOT47KO74QP7dFxfjdYik/b9J/igJOsAmON
- GE4QBnado6ZPJpZCLa9fkeiVTLqg6XAo9Los8siOPTsH18Rx50ez3QskLC4Ej2lzyK0u
- 7l1IjgKdba617fmuJSqiGB/hlRLohGAhIwZjCt8etrYFr3dDtj+uFiokD0qkOBcKr1xQ ZQ== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 30kfdsb47w-7
+ content-type; s=pfpt0818; bh=n/CN7a+9Z1C6CJC4kTDukuF94Qk5XduAml5dwTHM1js=;
+ b=WKh4lT8ml4rpO88wXasvZaWsub9HemBobrN2eHW/HRFBlGPg+/yIp0bwN7uZLV/bj78f
+ pySjyr3VJDg946XZJYEt85cenw+lNXF33lj9ijgBzB4eQOBOjzCmJ+GBF9flD41yynQ5
+ Nk4FnboNMwUE/ysFuE41FFQHVYAagfZzDStxJoNOTdL2wE6iBXhvVuM1VqvHto2Md/C5
+ Gedj/x5REHfjv20/TkHvdQjp6e6+WdXVWOQM9429rAMz7T/HkuwC1htn/x3p047ywkpt
+ 4uRdFcp45eCC/PZmxgb2uQsRFy/Iqitznv1oBagZ7OymaKp6SDhvIvlYq2SuPU1DNT/g Iw== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 30kfdsb486-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 24 Apr 2020 00:28:06 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 24 Apr
- 2020 00:28:04 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 24 Apr 2020 00:28:04 -0700
+        Fri, 24 Apr 2020 00:28:08 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 24 Apr
+ 2020 00:28:06 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 24 Apr 2020 00:28:06 -0700
 Received: from NN-LT0019.marvell.com (unknown [10.193.46.2])
-        by maili.marvell.com (Postfix) with ESMTP id C0D413F7041;
-        Fri, 24 Apr 2020 00:28:02 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 2B6673F703F;
+        Fri, 24 Apr 2020 00:28:04 -0700 (PDT)
 From:   Igor Russkikh <irusskikh@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     "David S . Miller" <davem@davemloft.net>,
         Mark Starovoytov <mstarovoitov@marvell.com>,
-        Dmitry Bogdanov <dbogdanov@marvell.com>,
-        "Igor Russkikh" <irusskikh@marvell.com>
-Subject: [PATCH net-next 10/17] net: atlantic: minimal A2 fw_ops
-Date:   Fri, 24 Apr 2020 10:27:22 +0300
-Message-ID: <20200424072729.953-11-irusskikh@marvell.com>
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: [PATCH net-next 11/17] net: atlantic: A2 hw_ops skeleton
+Date:   Fri, 24 Apr 2020 10:27:23 +0300
+Message-ID: <20200424072729.953-12-irusskikh@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200424072729.953-1-irusskikh@marvell.com>
 References: <20200424072729.953-1-irusskikh@marvell.com>
@@ -56,407 +55,450 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dmitry Bogdanov <dbogdanov@marvell.com>
+This patch adds basic hw_ops layout for A2.
 
-This patch adds the minimum set of FW ops for A2.
+Actual implementation will be added in the follow-up patches.
 
-Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
-Co-developed-by: Igor Russkikh <irusskikh@marvell.com>
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
 ---
  .../net/ethernet/aquantia/atlantic/Makefile   |   1 +
- .../atlantic/hw_atl2/hw_atl2_internal.h       |  17 +
- .../aquantia/atlantic/hw_atl2/hw_atl2_utils.h |   5 +
- .../atlantic/hw_atl2/hw_atl2_utils_fw.c       | 329 ++++++++++++++++++
- 4 files changed, 352 insertions(+)
- create mode 100644 drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_internal.h
- create mode 100644 drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c
+ .../net/ethernet/aquantia/atlantic/aq_hw.h    |   1 +
+ .../ethernet/aquantia/atlantic/aq_pci_func.c  |  39 ++-
+ .../aquantia/atlantic/hw_atl2/hw_atl2.c       | 226 ++++++++++++++++++
+ .../aquantia/atlantic/hw_atl2/hw_atl2.h       |  14 ++
+ .../atlantic/hw_atl2/hw_atl2_internal.h       |  20 ++
+ 6 files changed, 294 insertions(+), 7 deletions(-)
+ create mode 100644 drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c
+ create mode 100644 drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.h
 
 diff --git a/drivers/net/ethernet/aquantia/atlantic/Makefile b/drivers/net/ethernet/aquantia/atlantic/Makefile
-index 86824f1868ab..fa845c15d0e1 100644
+index fa845c15d0e1..23f0e5b5fcdb 100644
 --- a/drivers/net/ethernet/aquantia/atlantic/Makefile
 +++ b/drivers/net/ethernet/aquantia/atlantic/Makefile
 @@ -25,6 +25,7 @@ atlantic-objs := aq_main.o \
  	hw_atl/hw_atl_utils.o \
  	hw_atl/hw_atl_utils_fw2x.o \
  	hw_atl/hw_atl_llh.o \
-+	hw_atl2/hw_atl2_utils_fw.o \
++	hw_atl2/hw_atl2.o \
+ 	hw_atl2/hw_atl2_utils_fw.o \
  	hw_atl2/hw_atl2_llh.o \
  	macsec/macsec_api.o
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h b/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
+index e770d91e0876..03fea9469f01 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
+@@ -55,6 +55,7 @@ struct aq_hw_caps_s {
+ 	u8 rx_rings;
+ 	bool flow_control;
+ 	bool is_64_dma;
++	u32 priv_data_len;
+ };
  
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_internal.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_internal.h
-new file mode 100644
-index 000000000000..233db3222bb8
---- /dev/null
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_internal.h
-@@ -0,0 +1,17 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/* Atlantic Network Driver
-+ * Copyright (C) 2020 Marvell International Ltd.
-+ */
-+
-+#ifndef HW_ATL2_INTERNAL_H
-+#define HW_ATL2_INTERNAL_H
-+
-+#include "hw_atl2_utils.h"
-+
-+#define HW_ATL2_MTU_JUMBO  16352U
-+
-+struct hw_atl2_priv {
-+	struct statistics_s last_stats;
-+};
-+
-+#endif /* HW_ATL2_INTERNAL_H */
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils.h
-index 90a1e7c723b1..9c830f6d1494 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils.h
-@@ -528,4 +528,9 @@ struct fw_interface_out {
- #define  AQ_HOST_MODE_LOW_POWER    3U
- #define  AQ_HOST_MODE_SHUTDOWN     4U
+ struct aq_hw_link_status_s {
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+index 2edf137a7030..ce46cdbc69e6 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
+@@ -16,6 +16,7 @@
+ #include "aq_pci_func.h"
+ #include "hw_atl/hw_atl_a0.h"
+ #include "hw_atl/hw_atl_b0.h"
++#include "hw_atl2/hw_atl2.h"
+ #include "aq_filters.h"
+ #include "aq_drvinfo.h"
+ #include "aq_macsec.h"
+@@ -41,6 +42,13 @@ static const struct pci_device_id aq_pci_tbl[] = {
+ 	{ PCI_VDEVICE(AQUANTIA, AQ_DEVICE_ID_AQC111S), },
+ 	{ PCI_VDEVICE(AQUANTIA, AQ_DEVICE_ID_AQC112S), },
  
-+int hw_atl2_utils_get_action_resolve_table_caps(struct aq_hw_s *self,
-+						u8 *base_index, u8 *count);
++	{ PCI_VDEVICE(AQUANTIA, AQ_DEVICE_ID_AQC113DEV), },
++	{ PCI_VDEVICE(AQUANTIA, AQ_DEVICE_ID_AQC113CS), },
++	{ PCI_VDEVICE(AQUANTIA, AQ_DEVICE_ID_AQC114CS), },
++	{ PCI_VDEVICE(AQUANTIA, AQ_DEVICE_ID_AQC113), },
++	{ PCI_VDEVICE(AQUANTIA, AQ_DEVICE_ID_AQC113C), },
++	{ PCI_VDEVICE(AQUANTIA, AQ_DEVICE_ID_AQC115C), },
 +
-+extern const struct aq_fw_ops aq_a2_fw_ops;
+ 	{}
+ };
+ 
+@@ -70,6 +78,13 @@ static const struct aq_board_revision_s hw_atl_boards[] = {
+ 	{ AQ_DEVICE_ID_AQC109S,	AQ_HWREV_ANY,	&hw_atl_ops_b1, &hw_atl_b0_caps_aqc109s, },
+ 	{ AQ_DEVICE_ID_AQC111S,	AQ_HWREV_ANY,	&hw_atl_ops_b1, &hw_atl_b0_caps_aqc111s, },
+ 	{ AQ_DEVICE_ID_AQC112S,	AQ_HWREV_ANY,	&hw_atl_ops_b1, &hw_atl_b0_caps_aqc112s, },
 +
- #endif /* HW_ATL2_UTILS_H */
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c
++	{ AQ_DEVICE_ID_AQC113DEV,	AQ_HWREV_ANY,	&hw_atl2_ops, &hw_atl2_caps_aqc113, },
++	{ AQ_DEVICE_ID_AQC113,		AQ_HWREV_ANY,	&hw_atl2_ops, &hw_atl2_caps_aqc113, },
++	{ AQ_DEVICE_ID_AQC113CS,	AQ_HWREV_ANY,	&hw_atl2_ops, &hw_atl2_caps_aqc113, },
++	{ AQ_DEVICE_ID_AQC114CS,	AQ_HWREV_ANY,	&hw_atl2_ops, &hw_atl2_caps_aqc113, },
++	{ AQ_DEVICE_ID_AQC113C,		AQ_HWREV_ANY,	&hw_atl2_ops, &hw_atl2_caps_aqc113, },
++	{ AQ_DEVICE_ID_AQC115C,		AQ_HWREV_ANY,	&hw_atl2_ops, &hw_atl2_caps_aqc113, },
+ };
+ 
+ MODULE_DEVICE_TABLE(pci, aq_pci_tbl);
+@@ -104,10 +119,8 @@ int aq_pci_func_init(struct pci_dev *pdev)
+ 	int err;
+ 
+ 	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
+-	if (!err) {
++	if (!err)
+ 		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
+-
+-	}
+ 	if (err) {
+ 		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
+ 		if (!err)
+@@ -237,6 +250,15 @@ static int aq_pci_probe(struct pci_dev *pdev,
+ 		goto err_ioremap;
+ 	}
+ 	self->aq_hw->aq_nic_cfg = aq_nic_get_cfg(self);
++	if (self->aq_hw->aq_nic_cfg->aq_hw_caps->priv_data_len) {
++		int len = self->aq_hw->aq_nic_cfg->aq_hw_caps->priv_data_len;
++
++		self->aq_hw->priv = kzalloc(len, GFP_KERNEL);
++		if (!self->aq_hw->priv) {
++			err = -ENOMEM;
++			goto err_free_aq_hw;
++		}
++	}
+ 
+ 	for (bar = 0; bar < 4; ++bar) {
+ 		if (IORESOURCE_MEM & pci_resource_flags(pdev, bar)) {
+@@ -245,19 +267,19 @@ static int aq_pci_probe(struct pci_dev *pdev,
+ 			mmio_pa = pci_resource_start(pdev, bar);
+ 			if (mmio_pa == 0U) {
+ 				err = -EIO;
+-				goto err_free_aq_hw;
++				goto err_free_aq_hw_priv;
+ 			}
+ 
+ 			reg_sz = pci_resource_len(pdev, bar);
+ 			if ((reg_sz <= 24 /*ATL_REGS_SIZE*/)) {
+ 				err = -EIO;
+-				goto err_free_aq_hw;
++				goto err_free_aq_hw_priv;
+ 			}
+ 
+ 			self->aq_hw->mmio = ioremap(mmio_pa, reg_sz);
+ 			if (!self->aq_hw->mmio) {
+ 				err = -EIO;
+-				goto err_free_aq_hw;
++				goto err_free_aq_hw_priv;
+ 			}
+ 			break;
+ 		}
+@@ -265,7 +287,7 @@ static int aq_pci_probe(struct pci_dev *pdev,
+ 
+ 	if (bar == 4) {
+ 		err = -EIO;
+-		goto err_free_aq_hw;
++		goto err_free_aq_hw_priv;
+ 	}
+ 
+ 	numvecs = min((u8)AQ_CFG_VECS_DEF,
+@@ -305,6 +327,8 @@ static int aq_pci_probe(struct pci_dev *pdev,
+ 	aq_pci_free_irq_vectors(self);
+ err_hwinit:
+ 	iounmap(self->aq_hw->mmio);
++err_free_aq_hw_priv:
++	kfree(self->aq_hw->priv);
+ err_free_aq_hw:
+ 	kfree(self->aq_hw);
+ err_ioremap:
+@@ -332,6 +356,7 @@ static void aq_pci_remove(struct pci_dev *pdev)
+ 		aq_nic_free_vectors(self);
+ 		aq_pci_free_irq_vectors(self);
+ 		iounmap(self->aq_hw->mmio);
++		kfree(self->aq_hw->priv);
+ 		kfree(self->aq_hw);
+ 		pci_release_regions(pdev);
+ 		free_netdev(self->ndev);
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c
 new file mode 100644
-index 000000000000..9f51b7d144f8
+index 000000000000..58c74a73b6cf
 --- /dev/null
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c
-@@ -0,0 +1,329 @@
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c
+@@ -0,0 +1,226 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/* Atlantic Network Driver
 + * Copyright (C) 2020 Marvell International Ltd.
 + */
 +
-+#include <linux/iopoll.h>
-+
 +#include "aq_hw.h"
-+#include "hw_atl/hw_atl_llh.h"
 +#include "hw_atl2_utils.h"
-+#include "hw_atl2_llh.h"
 +#include "hw_atl2_internal.h"
 +
-+#define AQ_A2_FW_READ_TRY_MAX 1000
++#define DEFAULT_BOARD_BASIC_CAPABILITIES \
++	.is_64_dma = true,		  \
++	.msix_irqs = 8U,		  \
++	.irq_mask = ~0U,		  \
++	.vecs = HW_ATL2_RSS_MAX,	  \
++	.tcs = HW_ATL2_TC_MAX,	  \
++	.rxd_alignment = 1U,		  \
++	.rxd_size = HW_ATL2_RXD_SIZE,   \
++	.rxds_max = HW_ATL2_MAX_RXD,    \
++	.rxds_min = HW_ATL2_MIN_RXD,    \
++	.txd_alignment = 1U,		  \
++	.txd_size = HW_ATL2_TXD_SIZE,   \
++	.txds_max = HW_ATL2_MAX_TXD,    \
++	.txds_min = HW_ATL2_MIN_TXD,    \
++	.txhwb_alignment = 4096U,	  \
++	.tx_rings = HW_ATL2_TX_RINGS,   \
++	.rx_rings = HW_ATL2_RX_RINGS,   \
++	.hw_features = NETIF_F_HW_CSUM |  \
++			NETIF_F_RXCSUM |  \
++			NETIF_F_RXHASH |  \
++			NETIF_F_SG |      \
++			NETIF_F_TSO |     \
++			NETIF_F_TSO6 |    \
++			NETIF_F_LRO |     \
++			NETIF_F_NTUPLE |  \
++			NETIF_F_HW_VLAN_CTAG_FILTER | \
++			NETIF_F_HW_VLAN_CTAG_RX |     \
++			NETIF_F_HW_VLAN_CTAG_TX |     \
++			NETIF_F_GSO_UDP_L4      |     \
++			NETIF_F_GSO_PARTIAL,          \
++	.hw_priv_flags = IFF_UNICAST_FLT, \
++	.flow_control = true,		  \
++	.mtu = HW_ATL2_MTU_JUMBO,	  \
++	.mac_regs_count = 72,		  \
++	.hw_alive_check_addr = 0x10U,     \
++	.priv_data_len = sizeof(struct hw_atl2_priv)
 +
-+#define hw_atl2_shared_buffer_write(HW, ITEM, VARIABLE) \
-+	hw_atl2_mif_shared_buf_write(HW,\
-+		(offsetof(struct fw_interface_in, ITEM) / sizeof(u32)),\
-+		(u32 *)&(VARIABLE), sizeof(VARIABLE) / sizeof(u32))
++const struct aq_hw_caps_s hw_atl2_caps_aqc113 = {
++	DEFAULT_BOARD_BASIC_CAPABILITIES,
++	.media_type = AQ_HW_MEDIA_TYPE_TP,
++	.link_speed_msk = AQ_NIC_RATE_10G |
++			  AQ_NIC_RATE_5G  |
++			  AQ_NIC_RATE_2GS |
++			  AQ_NIC_RATE_1G  |
++			  AQ_NIC_RATE_100M      |
++			  AQ_NIC_RATE_10M,
++};
 +
-+#define hw_atl2_shared_buffer_get(HW, ITEM, VARIABLE) \
-+	hw_atl2_mif_shared_buf_get(HW, \
-+		(offsetof(struct fw_interface_in, ITEM) / sizeof(u32)),\
-+		(u32 *)&(VARIABLE), \
-+		sizeof(VARIABLE) / sizeof(u32))
-+
-+/* This should never be used on non atomic fields,
-+ * treat any > u32 read as non atomic.
-+ */
-+#define hw_atl2_shared_buffer_read(HW, ITEM, VARIABLE) \
-+{\
-+	BUILD_BUG_ON_MSG((offsetof(struct fw_interface_out, ITEM) % \
-+			 sizeof(u32)) != 0,\
-+			 "Non aligned read " # ITEM);\
-+	BUILD_BUG_ON_MSG(sizeof(VARIABLE) > sizeof(u32),\
-+			 "Non atomic read " # ITEM);\
-+	hw_atl2_mif_shared_buf_read(HW, \
-+		(offsetof(struct fw_interface_out, ITEM) / sizeof(u32)),\
-+		(u32 *)&(VARIABLE), sizeof(VARIABLE) / sizeof(u32));\
-+}
-+
-+#define hw_atl2_shared_buffer_read_safe(HW, ITEM, DATA) \
-+	hw_atl2_shared_buffer_read_block((HW), \
-+		(offsetof(struct fw_interface_out, ITEM) / sizeof(u32)),\
-+		sizeof(((struct fw_interface_out *)0)->ITEM) / sizeof(u32),\
-+		(DATA))
-+
-+static int hw_atl2_shared_buffer_read_block(struct aq_hw_s *self,
-+					    u32 offset, u32 dwords, void *data)
++static int hw_atl2_hw_reset(struct aq_hw_s *self)
 +{
-+	struct transaction_counter_s tid1, tid2;
-+	int cnt = 0;
-+
-+	do {
-+		do {
-+			hw_atl2_shared_buffer_read(self, transaction_id, tid1);
-+			cnt++;
-+			if (cnt > AQ_A2_FW_READ_TRY_MAX)
-+				return -ETIME;
-+			if (tid1.transaction_cnt_a != tid1.transaction_cnt_b)
-+				udelay(1);
-+		} while (tid1.transaction_cnt_a != tid1.transaction_cnt_b);
-+
-+		hw_atl2_mif_shared_buf_read(self, offset, (u32 *)data, dwords);
-+
-+		hw_atl2_shared_buffer_read(self, transaction_id, tid2);
-+
-+		cnt++;
-+		if (cnt > AQ_A2_FW_READ_TRY_MAX)
-+			return -ETIME;
-+	} while (tid2.transaction_cnt_a != tid2.transaction_cnt_b ||
-+		 tid1.transaction_cnt_a != tid2.transaction_cnt_a);
-+
-+	return 0;
++	return -EOPNOTSUPP;
 +}
 +
-+static inline int hw_atl2_shared_buffer_finish_ack(struct aq_hw_s *self)
++static int hw_atl2_hw_rss_hash_set(struct aq_hw_s *self,
++				   struct aq_rss_parameters *rss_params)
 +{
-+	u32 val;
-+	int err;
-+
-+	hw_atl2_mif_host_finished_write_set(self, 1U);
-+	err = readx_poll_timeout_atomic(hw_atl2_mif_mcp_finished_read_get,
-+					self, val, val == 0U,
-+					100, 100000U);
-+	WARN(err, "hw_atl2_shared_buffer_finish_ack");
-+
-+	return err;
++	return -EOPNOTSUPP;
 +}
 +
-+static int aq_a2_fw_init(struct aq_hw_s *self)
++static int hw_atl2_hw_rss_set(struct aq_hw_s *self,
++			      struct aq_rss_parameters *rss_params)
 +{
-+	struct link_control_s link_control;
-+	u32 mtu;
-+	u32 val;
-+	int err;
-+
-+	hw_atl2_shared_buffer_get(self, link_control, link_control);
-+	link_control.mode = AQ_HOST_MODE_ACTIVE;
-+	hw_atl2_shared_buffer_write(self, link_control, link_control);
-+
-+	hw_atl2_shared_buffer_get(self, mtu, mtu);
-+	mtu = HW_ATL2_MTU_JUMBO;
-+	hw_atl2_shared_buffer_write(self, mtu, mtu);
-+
-+	hw_atl2_mif_host_finished_write_set(self, 1U);
-+	err = readx_poll_timeout_atomic(hw_atl2_mif_mcp_finished_read_get,
-+					self, val, val == 0U,
-+					100, 5000000U);
-+	WARN(err, "hw_atl2_shared_buffer_finish_ack");
-+
-+	return err;
++	return -EOPNOTSUPP;
 +}
 +
-+static int aq_a2_fw_deinit(struct aq_hw_s *self)
++static int hw_atl2_hw_offload_set(struct aq_hw_s *self,
++				  struct aq_nic_cfg_s *aq_nic_cfg)
 +{
-+	struct link_control_s link_control;
-+
-+	hw_atl2_shared_buffer_get(self, link_control, link_control);
-+	link_control.mode = AQ_HOST_MODE_SHUTDOWN;
-+	hw_atl2_shared_buffer_write(self, link_control, link_control);
-+
-+	return hw_atl2_shared_buffer_finish_ack(self);
++	return -EOPNOTSUPP;
 +}
 +
-+static void a2_link_speed_mask2fw(u32 speed,
-+				  struct link_options_s *link_options)
++static int hw_atl2_hw_mac_addr_set(struct aq_hw_s *self, u8 *mac_addr)
 +{
-+	link_options->rate_10G = !!(speed & AQ_NIC_RATE_10G);
-+	link_options->rate_5G = !!(speed & AQ_NIC_RATE_5G);
-+	link_options->rate_N5G = !!(speed & AQ_NIC_RATE_5GSR);
-+	link_options->rate_2P5G = !!(speed & AQ_NIC_RATE_2GS);
-+	link_options->rate_N2P5G = link_options->rate_2P5G;
-+	link_options->rate_1G = !!(speed & AQ_NIC_RATE_1G);
-+	link_options->rate_100M = !!(speed & AQ_NIC_RATE_100M);
-+	link_options->rate_10M = !!(speed & AQ_NIC_RATE_10M);
++	return -EOPNOTSUPP;
 +}
 +
-+static int aq_a2_fw_set_link_speed(struct aq_hw_s *self, u32 speed)
-+{
-+	struct link_options_s link_options;
-+
-+	hw_atl2_shared_buffer_get(self, link_options, link_options);
-+	link_options.link_up = 1U;
-+	a2_link_speed_mask2fw(speed, &link_options);
-+	hw_atl2_shared_buffer_write(self, link_options, link_options);
-+
-+	return hw_atl2_shared_buffer_finish_ack(self);
-+}
-+
-+static int aq_a2_fw_set_state(struct aq_hw_s *self,
-+			      enum hal_atl_utils_fw_state_e state)
-+{
-+	struct link_options_s link_options;
-+
-+	hw_atl2_shared_buffer_get(self, link_options, link_options);
-+
-+	switch (state) {
-+	case MPI_INIT:
-+		link_options.link_up = 1U;
-+		break;
-+	case MPI_DEINIT:
-+		link_options.link_up = 0U;
-+		break;
-+	case MPI_RESET:
-+	case MPI_POWER:
-+		/* No actions */
-+		break;
-+	}
-+
-+	hw_atl2_shared_buffer_write(self, link_options, link_options);
-+
-+	return hw_atl2_shared_buffer_finish_ack(self);
-+}
-+
-+static int aq_a2_fw_update_link_status(struct aq_hw_s *self)
-+{
-+	struct link_status_s link_status;
-+
-+	hw_atl2_shared_buffer_read(self, link_status, link_status);
-+
-+	switch (link_status.link_rate) {
-+	case AQ_A2_FW_LINK_RATE_10G:
-+		self->aq_link_status.mbps = 10000;
-+		break;
-+	case AQ_A2_FW_LINK_RATE_5G:
-+		self->aq_link_status.mbps = 5000;
-+		break;
-+	case AQ_A2_FW_LINK_RATE_2G5:
-+		self->aq_link_status.mbps = 2500;
-+		break;
-+	case AQ_A2_FW_LINK_RATE_1G:
-+		self->aq_link_status.mbps = 1000;
-+		break;
-+	case AQ_A2_FW_LINK_RATE_100M:
-+		self->aq_link_status.mbps = 100;
-+		break;
-+	case AQ_A2_FW_LINK_RATE_10M:
-+		self->aq_link_status.mbps = 10;
-+		break;
-+	default:
-+		self->aq_link_status.mbps = 0;
-+	}
-+
-+	return 0;
-+}
-+
-+static int aq_a2_fw_get_mac_permanent(struct aq_hw_s *self, u8 *mac)
-+{
-+	struct mac_address_s mac_address;
-+
-+	hw_atl2_shared_buffer_get(self, mac_address, mac_address);
-+	ether_addr_copy(mac, (u8 *)mac_address.mac_address);
-+
-+	if ((mac[0] & 0x01U) || ((mac[0] | mac[1] | mac[2]) == 0x00U)) {
-+		unsigned int rnd = 0;
-+		u32 h;
-+		u32 l;
-+
-+		get_random_bytes(&rnd, sizeof(unsigned int));
-+
-+		l = 0xE3000000U | (0xFFFFU & rnd) | (0x00 << 16);
-+		h = 0x8001300EU;
-+
-+		mac[5] = (u8)(0xFFU & l);
-+		l >>= 8;
-+		mac[4] = (u8)(0xFFU & l);
-+		l >>= 8;
-+		mac[3] = (u8)(0xFFU & l);
-+		l >>= 8;
-+		mac[2] = (u8)(0xFFU & l);
-+		mac[1] = (u8)(0xFFU & h);
-+		h >>= 8;
-+		mac[0] = (u8)(0xFFU & h);
-+	}
-+
-+	return 0;
-+}
-+
-+static int aq_a2_fw_update_stats(struct aq_hw_s *self)
++static int hw_atl2_hw_init(struct aq_hw_s *self, u8 *mac_addr)
 +{
 +	struct hw_atl2_priv *priv = (struct hw_atl2_priv *)self->priv;
-+	struct statistics_s stats;
-+
-+	hw_atl2_shared_buffer_read_safe(self, stats, &stats);
-+
-+#define AQ_SDELTA(_N_, _F_) (self->curr_stats._N_ += \
-+			stats.msm._F_ - priv->last_stats.msm._F_)
-+
-+	if (self->aq_link_status.mbps) {
-+		AQ_SDELTA(uprc, rx_unicast_frames);
-+		AQ_SDELTA(mprc, rx_multicast_frames);
-+		AQ_SDELTA(bprc, rx_broadcast_frames);
-+		AQ_SDELTA(erpr, rx_error_frames);
-+
-+		AQ_SDELTA(uptc, tx_unicast_frames);
-+		AQ_SDELTA(mptc, tx_multicast_frames);
-+		AQ_SDELTA(bptc, tx_broadcast_frames);
-+		AQ_SDELTA(erpt, tx_errors);
-+
-+		AQ_SDELTA(ubrc, rx_unicast_octets);
-+		AQ_SDELTA(ubtc, tx_unicast_octets);
-+		AQ_SDELTA(mbrc, rx_multicast_octets);
-+		AQ_SDELTA(mbtc, tx_multicast_octets);
-+		AQ_SDELTA(bbrc, rx_broadcast_octets);
-+		AQ_SDELTA(bbtc, tx_broadcast_octets);
-+	}
-+#undef AQ_SDELTA
-+	self->curr_stats.dma_pkt_rc =
-+		hw_atl_stats_rx_dma_good_pkt_counter_get(self);
-+	self->curr_stats.dma_pkt_tc =
-+		hw_atl_stats_tx_dma_good_pkt_counter_get(self);
-+	self->curr_stats.dma_oct_rc =
-+		hw_atl_stats_rx_dma_good_octet_counter_get(self);
-+	self->curr_stats.dma_oct_tc =
-+		hw_atl_stats_tx_dma_good_octet_counter_get(self);
-+	self->curr_stats.dpc = hw_atl_rpb_rx_dma_drop_pkt_cnt_get(self);
-+
-+	memcpy(&priv->last_stats, &stats, sizeof(stats));
-+
-+	return 0;
-+}
-+
-+static int aq_a2_fw_renegotiate(struct aq_hw_s *self)
-+{
-+	struct link_options_s link_options;
++	u8 base_index, count;
 +	int err;
 +
-+	hw_atl2_shared_buffer_get(self, link_options, link_options);
-+	link_options.link_renegotiate = 1U;
-+	hw_atl2_shared_buffer_write(self, link_options, link_options);
-+
-+	err = hw_atl2_shared_buffer_finish_ack(self);
-+
-+	/* We should put renegotiate status back to zero
-+	 * after command completes
-+	 */
-+	link_options.link_renegotiate = 0U;
-+	hw_atl2_shared_buffer_write(self, link_options, link_options);
-+
-+	return err;
-+}
-+
-+int hw_atl2_utils_get_action_resolve_table_caps(struct aq_hw_s *self,
-+						u8 *base_index, u8 *count)
-+{
-+	struct filter_caps_s filter_caps;
-+	int err;
-+
-+	err = hw_atl2_shared_buffer_read_safe(self, filter_caps, &filter_caps);
++	err = hw_atl2_utils_get_action_resolve_table_caps(self, &base_index,
++							  &count);
 +	if (err)
 +		return err;
 +
-+	*base_index = filter_caps.rslv_tbl_base_index;
-+	*count = filter_caps.rslv_tbl_count;
-+	return 0;
++	priv->art_base_index = 8 * base_index;
++
++	return -EOPNOTSUPP;
 +}
 +
-+const struct aq_fw_ops aq_a2_fw_ops = {
-+	.init               = aq_a2_fw_init,
-+	.deinit             = aq_a2_fw_deinit,
-+	.reset              = NULL,
-+	.renegotiate        = aq_a2_fw_renegotiate,
-+	.get_mac_permanent  = aq_a2_fw_get_mac_permanent,
-+	.set_link_speed     = aq_a2_fw_set_link_speed,
-+	.set_state          = aq_a2_fw_set_state,
-+	.update_link_status = aq_a2_fw_update_link_status,
-+	.update_stats       = aq_a2_fw_update_stats,
++static int hw_atl2_hw_ring_tx_start(struct aq_hw_s *self,
++				    struct aq_ring_s *ring)
++{
++	return -EOPNOTSUPP;
++}
++
++static int hw_atl2_hw_ring_rx_start(struct aq_hw_s *self,
++				    struct aq_ring_s *ring)
++{
++	return -EOPNOTSUPP;
++}
++
++static int hw_atl2_hw_start(struct aq_hw_s *self)
++{
++	return -EOPNOTSUPP;
++}
++
++static int hw_atl2_hw_ring_tx_xmit(struct aq_hw_s *self,
++				   struct aq_ring_s *ring,
++				   unsigned int frags)
++{
++	return -EOPNOTSUPP;
++}
++
++static int hw_atl2_hw_ring_rx_init(struct aq_hw_s *self,
++				   struct aq_ring_s *aq_ring,
++				   struct aq_ring_param_s *aq_ring_param)
++{
++	return -EOPNOTSUPP;
++}
++
++static int hw_atl2_hw_ring_tx_init(struct aq_hw_s *self,
++				   struct aq_ring_s *aq_ring,
++				   struct aq_ring_param_s *aq_ring_param)
++{
++	return -EOPNOTSUPP;
++}
++
++static int hw_atl2_hw_ring_rx_fill(struct aq_hw_s *self, struct aq_ring_s *ring,
++				   unsigned int sw_tail_old)
++{
++	return -EOPNOTSUPP;
++}
++
++static int hw_atl2_hw_ring_tx_head_update(struct aq_hw_s *self,
++					  struct aq_ring_s *ring)
++{
++	return -EOPNOTSUPP;
++}
++
++static int hw_atl2_hw_ring_rx_receive(struct aq_hw_s *self,
++				      struct aq_ring_s *ring)
++{
++	return -EOPNOTSUPP;
++}
++
++static int hw_atl2_hw_irq_enable(struct aq_hw_s *self, u64 mask)
++{
++	return -EOPNOTSUPP;
++}
++
++static int hw_atl2_hw_irq_disable(struct aq_hw_s *self, u64 mask)
++{
++	return -EOPNOTSUPP;
++}
++
++static int hw_atl2_hw_irq_read(struct aq_hw_s *self, u64 *mask)
++{
++	return -EOPNOTSUPP;
++}
++
++static int hw_atl2_hw_interrupt_moderation_set(struct aq_hw_s *self)
++{
++	return -EOPNOTSUPP;
++}
++
++static int hw_atl2_hw_stop(struct aq_hw_s *self)
++{
++	return -EOPNOTSUPP;
++}
++
++static int hw_atl2_hw_ring_tx_stop(struct aq_hw_s *self, struct aq_ring_s *ring)
++{
++	return -EOPNOTSUPP;
++}
++
++static int hw_atl2_hw_ring_rx_stop(struct aq_hw_s *self, struct aq_ring_s *ring)
++{
++	return -EOPNOTSUPP;
++}
++
++static struct aq_stats_s *hw_atl2_utils_get_hw_stats(struct aq_hw_s *self)
++{
++	return &self->curr_stats;
++}
++
++const struct aq_hw_ops hw_atl2_ops = {
++	.hw_set_mac_address   = hw_atl2_hw_mac_addr_set,
++	.hw_init              = hw_atl2_hw_init,
++	.hw_reset             = hw_atl2_hw_reset,
++	.hw_start             = hw_atl2_hw_start,
++	.hw_ring_tx_start     = hw_atl2_hw_ring_tx_start,
++	.hw_ring_tx_stop      = hw_atl2_hw_ring_tx_stop,
++	.hw_ring_rx_start     = hw_atl2_hw_ring_rx_start,
++	.hw_ring_rx_stop      = hw_atl2_hw_ring_rx_stop,
++	.hw_stop              = hw_atl2_hw_stop,
++
++	.hw_ring_tx_xmit         = hw_atl2_hw_ring_tx_xmit,
++	.hw_ring_tx_head_update  = hw_atl2_hw_ring_tx_head_update,
++
++	.hw_ring_rx_receive      = hw_atl2_hw_ring_rx_receive,
++	.hw_ring_rx_fill         = hw_atl2_hw_ring_rx_fill,
++
++	.hw_irq_enable           = hw_atl2_hw_irq_enable,
++	.hw_irq_disable          = hw_atl2_hw_irq_disable,
++	.hw_irq_read             = hw_atl2_hw_irq_read,
++
++	.hw_ring_rx_init             = hw_atl2_hw_ring_rx_init,
++	.hw_ring_tx_init             = hw_atl2_hw_ring_tx_init,
++	.hw_interrupt_moderation_set = hw_atl2_hw_interrupt_moderation_set,
++	.hw_rss_set                  = hw_atl2_hw_rss_set,
++	.hw_rss_hash_set             = hw_atl2_hw_rss_hash_set,
++	.hw_get_hw_stats             = hw_atl2_utils_get_hw_stats,
++	.hw_set_offload              = hw_atl2_hw_offload_set,
 +};
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.h
+new file mode 100644
+index 000000000000..de8723f1c28a
+--- /dev/null
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.h
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/* Atlantic Network Driver
++ * Copyright (C) 2020 Marvell International Ltd.
++ */
++
++#ifndef HW_ATL2_H
++#define HW_ATL2_H
++
++#include "aq_common.h"
++
++extern const struct aq_hw_caps_s hw_atl2_caps_aqc113;
++extern const struct aq_hw_ops hw_atl2_ops;
++
++#endif /* HW_ATL2_H */
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_internal.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_internal.h
+index 233db3222bb8..f82058484332 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_internal.h
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_internal.h
+@@ -9,9 +9,29 @@
+ #include "hw_atl2_utils.h"
+ 
+ #define HW_ATL2_MTU_JUMBO  16352U
++#define HW_ATL2_MTU        1514U
++
++#define HW_ATL2_TX_RINGS 4U
++#define HW_ATL2_RX_RINGS 4U
++
++#define HW_ATL2_RINGS_MAX 32U
++#define HW_ATL2_TXD_SIZE       (16U)
++#define HW_ATL2_RXD_SIZE       (16U)
++
++#define HW_ATL2_TC_MAX 1U
++#define HW_ATL2_RSS_MAX 8U
++
++#define HW_ATL2_MIN_RXD \
++	(ALIGN(AQ_CFG_SKB_FRAGS_MAX + 1U, AQ_HW_RXD_MULTIPLE))
++#define HW_ATL2_MIN_TXD \
++	(ALIGN(AQ_CFG_SKB_FRAGS_MAX + 1U, AQ_HW_TXD_MULTIPLE))
++
++#define HW_ATL2_MAX_RXD 8184U
++#define HW_ATL2_MAX_TXD 8184U
+ 
+ struct hw_atl2_priv {
+ 	struct statistics_s last_stats;
++	unsigned int art_base_index;
+ };
+ 
+ #endif /* HW_ATL2_INTERNAL_H */
 -- 
 2.17.1
 
