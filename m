@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B5D31B75BD
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 14:47:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFD0F1B75C0
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 14:47:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727046AbgDXMqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 08:46:47 -0400
+        id S1727845AbgDXMqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 08:46:52 -0400
 Received: from mail-am6eur05on2078.outbound.protection.outlook.com ([40.107.22.78]:39617
         "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726667AbgDXMqq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Apr 2020 08:46:46 -0400
+        id S1726698AbgDXMqu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Apr 2020 08:46:50 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nyFHVjYKtF0cdUH7YQy2O5Ubg3XvuqsAWXIHv2pCf2EZIUPHEzZs3le0jfDJX3sA5ZqnP500c6GX9FOuY3/+Sj+HljPWlqy5pG1AEjW36G2ch3fg0HLQv3o0Fz2Eu0lBy0DeMwovpnwX242BF+xkdQMkOhiFQn8iUhb2qMsaktOSFBtLHWr8bVKrWzClFgC39uWzO8uPO4B/Ociai+FWDLrS7ujS6Yg9IBXyb8qjTsx6jhfjiN8oh+ZAuQ/g2tpZjzuHX5T5clpBshmlVIjmmwP4I3LywaR/YVV6IkxjpmepED9E4icIsgkfK7qrL9eRVzzMZ+BfEywy+hJono2bzA==
+ b=dEUqYq0PwJ03kQZL+oCq3PsZawKaYeF73aVqMMDDt2ID0PWWk6VuH+jDv8Hp7hpWVLtkCUbJrCpqu4pcKBL18mAjwVhS3YOw9MxzolYDOsRYrIYaT5UCCuWMGQvTDK9V3SZeUuBMxsgt499iDRgA1EVGl7aVWf0cEb0WEqF+o1SUHB6LagGQfwZ1NZTb2p1FlabnO1tsvikrAOy93OdPWQxylaCEHo4w1Yqz95tCVSpI5NwLlzOM2r8vwrevvp2AAqVdPK5S4eATUUpaY1VG/Hn36r/KDkchmPXoKjrBvRBWYMht+nRvid55SdeVVq0dZjpeXvMrV+n6gqO3syx92w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xxBhtAnOUjXz48wuuCVoAQNYpc260BlSWY+ckCA3nK8=;
- b=fmFxRbnRZZrKknbEDmNmINhxx677Cnt/JLAiyMyB2vwcsdC7oXHvOxuqMQW+A4w3jLezkXrjUWb99cMYHEdt4e0l4hhdjicJHJ+pa/t9UHeoyWm3HQaXeTWUdbxSU7fNKzML00RMbR04u2Ax6bYrOnXehqQhq34FMwyyvsvtZrgfM1VnS4SBp5FnaQtVNv1LyCjGFcs9KBHedK4q4Gwq94vr3O6g0/NfoEhM19u9iYdcVzf9tY41xxPBRC53f7H9ONwQAmpGOYXdqDTGs3Ulfve61GpEZAFvsuoNDoR5WiJybdfbcWfJdhFdBis4nG1u/xIHLCvxkOPeKO0XmQEL2g==
+ bh=H/OAQvZonakXm5RAuQOBSKZZv1FqplaVORmgNBAuKvw=;
+ b=Gig5G5ENkvnOIg/wZIVOCGQsHE2HM9kzDkFaChedZ1zPrlSEe9hTpnUSSOglqi9EAME6mk7VP0QmW0rl2A3mhjpG+37Rv4AJGtgM3WGo6+bYJduVXfc1eeOEAnf4fqFxzEPd20aMQZfZCGo17dZMDR3j+J7H0Yd/ru67Ye+yBrLx19aSiD2J6mBYBXIppdMqpARQJDMQ2auwpJyvN/EQQw5tWFOqrAjr3U11U/PNqlbHhd3bvK0I/7shvKhhcxihbkkkb0jNkcx/ME8tVrj34fiLoRnd/4ZyxO6/iQKVdqx/CWMQgRcMsdnEXOMAvlGRsKtHTO3yRPVVLNBqiP2G4Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xxBhtAnOUjXz48wuuCVoAQNYpc260BlSWY+ckCA3nK8=;
- b=i1GO+S1B26NLjPAho+dKH6P99D7Zb5MaOVu8UlVB7Own4uAyoJqxma6Kl/yPOslKbr+9BsfNjch+yxQ9nz2JnRfOLeI/ChyEQJf0FLhFC2hy4Qg2Xs0MLrJcUmnjNsaYev4uleJYQcL9SesdRMTY9XCasTTO7sWee/XEFoFG/7o=
+ bh=H/OAQvZonakXm5RAuQOBSKZZv1FqplaVORmgNBAuKvw=;
+ b=Aa1HAS8lch/8oZdHrylus07qSq7376WymS8Lg/KXABtPcI9XlUp79HBjdWVU+unBbLSWAC9ThX+aULxXD7KImdyM/vc7qA0zwLxVtQ3tXxHE0WD658yhtW5jxi3KqRs6NhAcVDjE1fbWWF4Lez+wIa9AzHRz2NdwHHBWiIyom6Q=
 Authentication-Results: spf=none (sender IP is )
  smtp.mailfrom=florinel.iordache@nxp.com; 
 Received: from AM0PR04MB5443.eurprd04.prod.outlook.com (2603:10a6:208:119::33)
  by AM0PR04MB5937.eurprd04.prod.outlook.com (2603:10a6:208:119::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13; Fri, 24 Apr
- 2020 12:46:42 +0000
+ 2020 12:46:43 +0000
 Received: from AM0PR04MB5443.eurprd04.prod.outlook.com
  ([fe80::8cc9:252:1c77:5860]) by AM0PR04MB5443.eurprd04.prod.outlook.com
  ([fe80::8cc9:252:1c77:5860%2]) with mapi id 15.20.2937.012; Fri, 24 Apr 2020
- 12:46:42 +0000
+ 12:46:43 +0000
 From:   Florinel Iordache <florinel.iordache@nxp.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch,
         f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk
@@ -46,10 +46,12 @@ Cc:     devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
         madalin.bucur@oss.nxp.com, ioana.ciornei@nxp.com,
         linux-kernel@vger.kernel.org,
         Florinel Iordache <florinel.iordache@nxp.com>
-Subject: [PATCH net-next v2 0/9] net: ethernet backplane support
-Date:   Fri, 24 Apr 2020 15:46:22 +0300
-Message-Id: <1587732391-3374-1-git-send-email-florinel.iordache@nxp.com>
+Subject: [PATCH net-next v2 1/9] doc: net: add backplane documentation
+Date:   Fri, 24 Apr 2020 15:46:23 +0300
+Message-Id: <1587732391-3374-2-git-send-email-florinel.iordache@nxp.com>
 X-Mailer: git-send-email 1.9.1
+In-Reply-To: <1587732391-3374-1-git-send-email-florinel.iordache@nxp.com>
+References: <1587732391-3374-1-git-send-email-florinel.iordache@nxp.com>
 Reply-to: florinel.iordache@nxp.com
 Content-Type: text/plain
 X-ClientProxiedBy: AM0P190CA0025.EURP190.PROD.OUTLOOK.COM
@@ -57,138 +59,263 @@ X-ClientProxiedBy: AM0P190CA0025.EURP190.PROD.OUTLOOK.COM
  (2603:10a6:208:119::33)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from fsr-ub1464-128.ea.freescale.net (83.217.231.2) by AM0P190CA0025.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:190::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.2937.13 via Frontend Transport; Fri, 24 Apr 2020 12:46:41 +0000
+Received: from fsr-ub1464-128.ea.freescale.net (83.217.231.2) by AM0P190CA0025.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:190::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.2937.13 via Frontend Transport; Fri, 24 Apr 2020 12:46:42 +0000
 X-Mailer: git-send-email 1.9.1
 X-Originating-IP: [83.217.231.2]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 849c06ee-1c3f-4c79-38e7-08d7e84d8a04
+X-MS-Office365-Filtering-Correlation-Id: 2b9d51b4-7380-44bf-2834-08d7e84d8ab1
 X-MS-TrafficTypeDiagnostic: AM0PR04MB5937:|AM0PR04MB5937:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB593729C978F9D68CF8353C8AFBD00@AM0PR04MB5937.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Microsoft-Antispam-PRVS: <AM0PR04MB5937439CB7F6B4B89A74E334FBD00@AM0PR04MB5937.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-Forefront-PRVS: 03838E948C
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5443.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(396003)(39860400002)(346002)(376002)(366004)(52116002)(2616005)(86362001)(44832011)(6486002)(2906002)(8676002)(4326008)(66476007)(66946007)(6666004)(66556008)(8936002)(5660300002)(81156014)(6512007)(3450700001)(16526019)(956004)(186003)(6506007)(36756003)(316002)(26005)(7416002)(478600001);DIR:OUT;SFP:1101;
 Received-SPF: None (protection.outlook.com: nxp.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qtn2usOwOgpblqw36uCKZ3unFfQODIbV/vlrx5xVb5VkBuFqoznRQJyK468XTJPHU+thSPfINoWLX3encLTmvWbLY32+Gk6L6vO9GDlphwBNGJ8k/A6KHpP28X1SpsZvY47RbiiXICc8EcBNypdWa8ee+OmSL7wfeUQoKAVZ7qqhAtBQU2tIcqMLqlp0k2QXoQyqnPUI1CwGwe+8BwkbZh2ZBih5a/d21jsdSGPYBs+eQTFPQB403gpXERYYZfq5+doVuoX4Hhqi7xXAQaM8+i350fYFRPvx7JysJI471YZqYQbXx/u30ux7tVgKHHCWeixA3xYHOXdz2XVfEAUHrCHa0NVag/TWyQnOO6Ine8k3HB0sT6JdXum55w4HMlFm65BB3YuB0oiZUN61td+cBs49NgMg1ynyWQPxgZNzcUtwLPD5Q/g1zbMHTSYzBfQY
-X-MS-Exchange-AntiSpam-MessageData: 8hyedlJM/SrHBS89ujfLgs6d6likavdYBGFkJ4QyTsiDfSf5vu79XiVpBEMyQtxZRLdiO0oXhD7GHNy0enQ9wtodGL4jn50d12gJ1Q/gK9KY9Hi8JWmxpT0SyTlfueFjOuKJZaM5Had+KjRoR4V5RQ==
+X-Microsoft-Antispam-Message-Info: k3lTPSlAmz13SvDJWju5yJIF3DlEr5BOdezIKVUrTb4Xz3s0OwXhbxyJo81vb3p3NKZehwvEmheuKRN3kqg0UTbPKeAOnC2EO4Eg2zNMVyRicUPAGog6aiNVuK1Ma+0EJq/oNnjwMxACVpTNfG+pB+M+71mNHEdfVDE9o96ZObDNOEiNIWUTamt8qg+I0GU3rNrKe2ON5kDafhklC3X1Bl+1g2QDr4m4fYg+35L/Rrh4nJS3XxlF880CnGWGizxEI7q0fy8RTMOy8O6M/mRjvsPo0thPRQkOydfBTmYe0tKzNZlQVCbb/HjDIyaTKHBuoTVUr27RIX8w2mlbqXLbP2jsQUhNJxaG7i0bS+NO2GpqfQXk6KkJaUA5GCdSZgkqsO/4tbIqlb2s2Fk6P8faQsjYEXP67/KYadRukenmN0rhhY528HOhLL5TDK5ap527
+X-MS-Exchange-AntiSpam-MessageData: oAn+CqmTKtL+o+wWy5jZll6+g6832oLA921Nh9Fdn9BpbcZwRtoc4RgKRZyHcbIgTlHfOaDnPt1jhNnnSEkL3mVaTR2i6wiMBTtYD48TG+rgc5t8EoYKA4QMBwFSmJRBkoiAmTYbyAc91/9//eu6Ng==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 849c06ee-1c3f-4c79-38e7-08d7e84d8a04
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2020 12:46:42.3212
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2b9d51b4-7380-44bf-2834-08d7e84d8ab1
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2020 12:46:43.5145
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vSxyvVsq8mvkNV2rl3sXyC/rBYUHcWasdJ1CloRLUT6T/V1Ya+zoj9GCzKa7DC1R0oo8onCD/IwHQ+jsdgbeCgLuXSK/UgoQJTvK8rIV02Q=
+X-MS-Exchange-CrossTenant-UserPrincipalName: DRmbTAcc+jNpao5eFPsKDVjgZVOJa3udBFAJ/YX/ntjR++AAWoQ/FfbPv7kxzMp+3NbXlH05kp8ci2xha+Bvy0ebSnTZIY1F+q03dguzDL8=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5937
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for Ethernet Backplane KR generic driver using link training
-(ieee802.3ap/ba standards), equalization algorithms (bee, fixed) and
-enable qoriq family of devices.
-This driver is dependent on uboot Backplane KR support:
-patchwork.ozlabs.org/project/uboot/list/?series=164627&state=*
+Add ethernet backplane documentation
 
-v2 changes:
-* phy.rst and ABI/testing/sysfs-class-net-phydev updates with new PHY
-interface values according to Florian Fainelli feedback
-* dt bindings updates according to Rob Herring feedback: fixed errors
-occurred when running 'make dt_binding_check'
-* bpdev log changes according to feedback from Joe Perches: use %pV
-instead of an intermediate buffer and refactoring
-* reverse christmas tree updates according to David Miller feedback
-* use pr_info_once function in probe to display qoriq backplane driver
-version according to Joe's feedback
-* introduce helper function dt_serdes_type in qoriq backplane according
-to Joe's feedback
-* use standard linux defines to access AN control/status registers and
-not indirect with internal variables according to Andrew's feedback
-* dt bindings link training updates: pre-cursor, main-cursor, post-cursor
-* change display format for tx equalization using C() standard notation
-* add priv pointer in backplane_device and lane as device specific private
-extension to be used by upper layer backplane drivers
-* backplane refactoring: split backplane_phy_info struct in
-backplane_device and backplane_driver, add backplane specific ops and
-move amp_red as qoriq specific param
-* lane refactoring: split kr_lane_info struct in lane_device and lane_kr
-in order to separate lane kr specific data by generic device lane data,
-lane kr parameters unification, extension params for custom device
-specific
-* equalization refactoring: replace eq_setup_info/equalizer_info with
-equalizer_driver/equalizer_device data structures
-
-Feedback not addressed yet:
-* general solution for PCS representation: still working to find a
-generic suitable solution, exploring alternatives, perhaps this
-should be addressed in phy generic layer
-
-Florinel Iordache (9):
-  doc: net: add backplane documentation
-  dt-bindings: net: add backplane dt bindings
-  net: phy: add support for kr phy connection type
-  net: fman: add kr support for dpaa1 mac
-  net: dpaa2: add kr support for dpaa2 mac
-  net: phy: add backplane kr driver support
-  net: phy: enable qoriq backplane support
-  net: phy: add bee algorithm for kr training
-  arm64: dts: add serdes and mdio description
-
- Documentation/ABI/testing/sysfs-class-net-phydev   |    2 +-
- .../bindings/net/ethernet-controller.yaml          |    3 +-
- .../devicetree/bindings/net/ethernet-phy.yaml      |   50 +
- .../devicetree/bindings/net/serdes-lane.yaml       |   51 +
- Documentation/devicetree/bindings/net/serdes.yaml  |   44 +
- Documentation/networking/backplane.rst             |  165 ++
- Documentation/networking/phy.rst                   |   15 +-
- arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi     |   33 +-
- arch/arm64/boot/dts/freescale/fsl-ls1088a.dtsi     |   97 +-
- arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi     |  160 +-
- arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi     |  128 +-
- .../boot/dts/freescale/qoriq-fman3-0-10g-0.dtsi    |    5 +-
- .../boot/dts/freescale/qoriq-fman3-0-10g-1.dtsi    |    5 +-
- drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c   |   10 +-
- drivers/net/ethernet/freescale/fman/mac.c          |   10 +-
- drivers/net/phy/Kconfig                            |    2 +
- drivers/net/phy/Makefile                           |    1 +
- drivers/net/phy/backplane/Kconfig                  |   40 +
- drivers/net/phy/backplane/Makefile                 |   12 +
- drivers/net/phy/backplane/backplane.c              | 1626 ++++++++++++++++++++
- drivers/net/phy/backplane/backplane.h              |  293 ++++
- drivers/net/phy/backplane/eq_bee.c                 | 1076 +++++++++++++
- drivers/net/phy/backplane/eq_fixed.c               |   83 +
- drivers/net/phy/backplane/equalization.h           |  283 ++++
- drivers/net/phy/backplane/link_training.c          | 1529 ++++++++++++++++++
- drivers/net/phy/backplane/link_training.h          |   32 +
- drivers/net/phy/backplane/qoriq_backplane.c        |  501 ++++++
- drivers/net/phy/backplane/qoriq_backplane.h        |   46 +
- drivers/net/phy/backplane/qoriq_serdes_10g.c       |  486 ++++++
- drivers/net/phy/backplane/qoriq_serdes_28g.c       |  547 +++++++
- drivers/net/phy/phylink.c                          |   15 +-
- include/linux/phy.h                                |    6 +-
- 32 files changed, 7334 insertions(+), 22 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/serdes-lane.yaml
- create mode 100644 Documentation/devicetree/bindings/net/serdes.yaml
+Signed-off-by: Florinel Iordache <florinel.iordache@nxp.com>
+---
+ Documentation/ABI/testing/sysfs-class-net-phydev |   2 +-
+ Documentation/networking/backplane.rst           | 165 +++++++++++++++++++++++
+ Documentation/networking/phy.rst                 |  15 ++-
+ 3 files changed, 178 insertions(+), 4 deletions(-)
  create mode 100644 Documentation/networking/backplane.rst
- create mode 100644 drivers/net/phy/backplane/Kconfig
- create mode 100644 drivers/net/phy/backplane/Makefile
- create mode 100644 drivers/net/phy/backplane/backplane.c
- create mode 100644 drivers/net/phy/backplane/backplane.h
- create mode 100644 drivers/net/phy/backplane/eq_bee.c
- create mode 100644 drivers/net/phy/backplane/eq_fixed.c
- create mode 100644 drivers/net/phy/backplane/equalization.h
- create mode 100644 drivers/net/phy/backplane/link_training.c
- create mode 100644 drivers/net/phy/backplane/link_training.h
- create mode 100644 drivers/net/phy/backplane/qoriq_backplane.c
- create mode 100644 drivers/net/phy/backplane/qoriq_backplane.h
- create mode 100644 drivers/net/phy/backplane/qoriq_serdes_10g.c
- create mode 100644 drivers/net/phy/backplane/qoriq_serdes_28g.c
 
+diff --git a/Documentation/ABI/testing/sysfs-class-net-phydev b/Documentation/ABI/testing/sysfs-class-net-phydev
+index 206cbf5..69dbd36 100644
+--- a/Documentation/ABI/testing/sysfs-class-net-phydev
++++ b/Documentation/ABI/testing/sysfs-class-net-phydev
+@@ -39,7 +39,7 @@ Description:
+ 		<empty> (not available), mii, gmii, sgmii, tbi, rev-mii,
+ 		rmii, rgmii, rgmii-id, rgmii-rxid, rgmii-txid, rtbi, smii
+ 		xgmii, moca, qsgmii, trgmii, 1000base-x, 2500base-x, rxaui,
+-		xaui, 10gbase-kr, unknown
++		xaui, 10gbase-kr, 40gbase-kr4, unknown
+ 
+ What:		/sys/class/mdio_bus/<bus>/<device>/phy_standalone
+ Date:		May 2019
+diff --git a/Documentation/networking/backplane.rst b/Documentation/networking/backplane.rst
+new file mode 100644
+index 0000000..951c17e
+--- /dev/null
++++ b/Documentation/networking/backplane.rst
+@@ -0,0 +1,165 @@
++.. SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
++
++=========================
++Ethernet Backplane Driver
++=========================
++
++Author:
++Florinel Iordache <florinel.iordache@nxp.com>
++
++Contents
++========
++
++	- Ethernet Backplane Overview
++	- Equalization
++	- Auto-negotiation
++	- Link training
++	- Enable backplane support in Linux kernel
++	- Ethernet Backplane support architecture
++	- Supported equalization algorithms
++	- Supported backplane protocols
++	- Supported platforms
++
++Ethernet Backplane Overview
++===========================
++
++Ethernet operation over electrical backplanes, also referred to as Ethernet
++Backplane, combines the IEEE 802.3 Media Access Control (MAC) and MAC
++Control sublayers with a family of Physical Layers defined to support
++operation over a modular chassis backplane.
++The main standard specification for Ethernet Backplane is: IEEE802.3ap-2007
++Amendment 4: Ethernet Operation over Electrical Backplanes
++which includes the new Clause 69 through Clause 74.
++Additional specifications define support for various speeds and 4-lanes:
++IEEE802.3ba-2010.
++Signal equalization is required based on the link quality. The standard
++specifies that a start-up algorithm should be in place in order to get the
++link up.
++
++Equalization
++============
++
++Equalization represents the procedure required to minimize the effects of signal
++distortion, noise, interference occurred in high-speed communication channels.
++The equalizer purpose is to improve signal integrity in terms of bit error rate
++(BER) in order to allow accurate recovery of the transmitted symbols.
++
++A simplified view of channel equalization:
++
++            LD       <======== channel =========>      LP
++       Local Device                                Link Partner
++
++         |-----|                                         ___
++         |     |     <======== channel =========>       /   |
++         |     |      witout signal Equalization       /     \
++         |     |                                      /      |
++     ____|     |____                              ___/        \___
++
++         |\   _                                        |-----|
++         | \_/ |     <======== channel =========>      |     |
++         |     |       with signal Equalization        |     |
++         |     |                                       |     |
++     ____|     |____                               ____|     |____
++
++      LD Tx waveform                                LP Rx waveform
++
++Auto-negotiation
++================
++
++Auto-negotiation allows the devices at both ends of a link segment to advertise
++abilities, acknowledge receipt, and discover the common modes of operation that
++both devices share. It also rejects the use of operational modes not shared by
++both devices. Auto-negotiation does not test link segment characteristics.
++
++Link training
++=============
++
++Link training occurs after auto-negotiation has determined the link to be a
++Base-KR, but before auto-negotiation is done. It continuously exchanges messages
++(training frames) between the local and the remote device as part of the
++start-up phase. Link training tunes the equalization parameters of the remote and
++local transmitter to improve the link quality in terms of bit error rate.
++Both LP (link partner/remote device) and LD (local device) perform link training
++in parallel. Link training is finished when both sides decide that the channel is
++equalized and then the link is considered up.
++
++Enable backplane support in Linux kernel
++========================================
++
++To enable the Ethernet Backplane, the following Kconfig options are available:
++
++# enable generic Ethernet Backplane support:
++CONFIG_ETH_BACKPLANE=y
++# enable Fixed (No Equalization) algorithm:
++CONFIG_ETH_BACKPLANE_FIXED=y
++# enable 3-Taps Bit Edge Equalization (BEE) algorithm:
++CONFIG_ETH_BACKPLANE_BEE=y
++# enable QorIQ Ethernet Backplane driver:
++CONFIG_ETH_BACKPLANE_QORIQ=y
++
++Ethernet Backplane support architecture
++=======================================
++
++Ethernet Backplane support in Linux kernel complies with the following standard
++design concepts:
++* Modularity:
++    # internal components are separated in well defined functional modules
++* Reusability:
++    # lower layer components provide basic functionalities which are reused by
++    the upper layer modules
++* Extensibility:
++    # architecture can be easily extended with support for new:
++    	- backplane protocols
++    	- equalization algorithms
++    	- supported devices
++It is designed as a loosely coupled architecture in order to allow the
++possibility to easily create desired backplane system configurations according
++to user needs by specifying different components and initialization parameters
++without recompiling the kernel.
++
++       ------------------            ------------------------------------
++       |  EQ Algorithms |            |    Specific device drivers       |
++       |  ------------  |            |       Backplane support          |
++       |  |  Fixed   |  |            | ------------------   ----------- |
++       |  ------------  |            | |     QorIQ      |   |         | |
++       |  |   BEE    |  |            | |    devices     |   |         | |
++       |  ------------  |            | | -------------- |   |  other  | |
++       |  |  others  |  |            | | | Serdes 10G | |   | devices | |
++  ----------------------------       | | -------------- |   | support | |
++  |      Link Training       |       | | | Serdes 28G | |   |         | |
++  |   and Auto-negotiation   |       | | -------------- |   |         | |
++  |    (IEEE 802.3-ap/ba)    |       | |----------------|   |---------| |
++  ---------------------------------------------------------------------------
++  |                   Ethernet Backplane Generic Driver                     |
++  ---------------------------------------------------------------------------
++  |                         PHY Abstraction Layer                           |
++  ---------------------------------------------------------------------------
++
++Supported equalization algorithms
++=================================
++
++Ethernet Backplane supports the following equalization algorithms:
++
++- Fixed setup (No Equalization algorithm)
++- 3-Taps Bit Edge Equalization (BEE) algorithm
++
++Supported backplane protocols
++=============================
++
++Ethernet Backplane supports the following protocols:
++
++- Single-lane:
++10GBase-KR
++
++- Multi-lane:
++40GBase-KR4
++
++Supported platforms
++===================
++
++Ethernet Backplane is enabled on the following platforms:
++
++LS1046A
++LS1088A
++LS2088A
++LX2160A
+\ No newline at end of file
+diff --git a/Documentation/networking/phy.rst b/Documentation/networking/phy.rst
+index 2561060..1f1ebf2 100644
+--- a/Documentation/networking/phy.rst
++++ b/Documentation/networking/phy.rst
+@@ -279,13 +279,22 @@ Some of the interface modes are described below:
+     XFI and SFI are not PHY interface types in their own right.
+ 
+ ``PHY_INTERFACE_MODE_10GKR``
+-    This is the IEEE 802.3 Clause 49 defined 10GBASE-R with Clause 73
+-    autonegotiation. Please refer to the IEEE standard for further
+-    information.
++    This is 10G Ethernet Backplane over single lane specified in
++    IEEE802.3ap-2007 Amendment 4: Ethernet Operation over Electrical
++    Backplanes which includes the new Clause 69 through Clause 74
++    including autonegotiation. 10GKR uses the same physical layer
++    encoding as 10GBASE-R defined in IEEE802.3 Clause 49. Please refer
++    to the IEEE standard for further information.
+ 
+     Note: due to legacy usage, some 10GBASE-R usage incorrectly makes
+     use of this definition.
+ 
++``PHY_INTERFACE_MODE_40GKR4``
++    This is 40G Ethernet Backplane over 4-lanes using the same main
++    standard used for Ethernet Operation over Electrical Backplanes
++    and additional specifications that define support for Ethernet
++    Backplane over 4-lanes specified in IEEE802.3ba-2010.
++
+ Pause frames / flow control
+ ===========================
+ 
 -- 
 1.9.1
 
