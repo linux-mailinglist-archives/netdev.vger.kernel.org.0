@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E1641B6B17
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 04:11:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E5BD1B6B1B
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 04:12:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726387AbgDXCL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 22:11:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36976 "EHLO mail.kernel.org"
+        id S1726400AbgDXCL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 22:11:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37002 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726152AbgDXCLz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 23 Apr 2020 22:11:55 -0400
+        id S1726386AbgDXCL4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Apr 2020 22:11:56 -0400
 Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E107021655;
-        Fri, 24 Apr 2020 02:11:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E74A821569;
+        Fri, 24 Apr 2020 02:11:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587694314;
-        bh=cw1OvB5bjfmz4ISgzkV8Bh/aCkK9wGEOhV6W78g9uUs=;
+        s=default; t=1587694315;
+        bh=N66dw5rWx2ocDQhlwX3qzZo9rpfap56N1ignuI/0FsI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CNCju+zVN9v5bIrbDddLEerAx4ZVx9wf7KHi/MMm4EDjw9HlSvPzlMGS/I6RpCPod
-         +Ae8wUJYaoyz6AvEpi63+5wjxObUrRzmL/t3xliWLHNxkVHrITxsd9E7jIgBnFxLvI
-         3LfPldJ/pfPXak9L/Pn4zipVXq4w62Itx3IAiAJo=
+        b=xeQ6pZnH/0WvKfJz11KKSM8u/ULFAzz6h+rd0OIa1/GxaU1Id5kIV56ZEN9rYJAbX
+         9Htf10EJdKapg3Bx1Lh5N6G0tZwmpJQNE2wtw2ozV1HatiPpXweHU2p8Gyz4YicUwk
+         E9J7iIntySUNCiqmJLitA3xl683rwcyZWXtUFemc=
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -31,9 +31,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
         dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-Subject: [PATCH v2 bpf-next 03/17] net: Add XDP setup and query commands for Tx programs
-Date:   Thu, 23 Apr 2020 20:11:34 -0600
-Message-Id: <20200424021148.83015-4-dsahern@kernel.org>
+Subject: [PATCH v2 bpf-next 04/17] net: Add BPF_XDP_EGRESS as a bpf_attach_type
+Date:   Thu, 23 Apr 2020 20:11:35 -0600
+Message-Id: <20200424021148.83015-5-dsahern@kernel.org>
 X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 In-Reply-To: <20200424021148.83015-1-dsahern@kernel.org>
 References: <20200424021148.83015-1-dsahern@kernel.org>
@@ -46,172 +46,95 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dahern@digitalocean.com>
 
-Add new netdev commands, XDP_SETUP_PROG_EGRESS and
-XDP_QUERY_PROG_EGRESS, to query and setup egress programs.
+Add new bpf_attach_type, BPF_XDP_EGRESS, for BPF programs attached
+at the XDP layer, but the egress path.
 
-Update dev_change_xdp_fd and dev_xdp_install to take an egress argument.
-If egress bool is set, then use XDP_SETUP_PROG_EGRESS in dev_xdp_install
-and XDP_QUERY_PROG_EGRESS in dev_change_xdp_fd.
+Since egress path will not have ingress_ifindex and rx_queue_index
+set, update xdp_is_valid_access to block access to these entries in
+the xdp context when a program is attached with expected_attach_type
+set.
 
-Update dev_xdp_uninstall to query for XDP_QUERY_PROG_EGRESS and if a
-program is installed call dev_xdp_install with the egress argument set
-to true.
+Update dev_change_xdp_fd to verify expected_attach_type for a program
+is BPF_XDP_EGRESS if egress argument is set.
 
-This enables existing infrastructure to be used for XDP programs in
-the egress path.
+The next patch adds support for the egress ifindex.
 
-Signed-off-by: David Ahern <dahern@digitalocean.com>
-Co-developed-by: Prashant Bhole <prashantbhole.linux@gmail.com>
 Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
+Signed-off-by: David Ahern <dahern@digitalocean.com>
 ---
- include/linux/netdevice.h |  4 +++-
- net/core/dev.c            | 34 +++++++++++++++++++++++-----------
- net/core/rtnetlink.c      |  2 +-
- 3 files changed, 27 insertions(+), 13 deletions(-)
+ include/uapi/linux/bpf.h       |  1 +
+ net/core/dev.c                 | 11 +++++++++++
+ net/core/filter.c              | 11 +++++++++++
+ tools/include/uapi/linux/bpf.h |  1 +
+ 4 files changed, 24 insertions(+)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 0750b54b3765..a416c838b0ec 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -872,8 +872,10 @@ enum bpf_netdev_command {
- 	 */
- 	XDP_SETUP_PROG,
- 	XDP_SETUP_PROG_HW,
-+	XDP_SETUP_PROG_EGRESS,
- 	XDP_QUERY_PROG,
- 	XDP_QUERY_PROG_HW,
-+	XDP_QUERY_PROG_EGRESS,
- 	/* BPF program for offload callbacks, invoked at program load time. */
- 	BPF_OFFLOAD_MAP_ALLOC,
- 	BPF_OFFLOAD_MAP_FREE,
-@@ -3778,7 +3780,7 @@ struct sk_buff *dev_hard_start_xmit(struct sk_buff *skb, struct net_device *dev,
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 2e29a671d67e..a9d384998e8b 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -215,6 +215,7 @@ enum bpf_attach_type {
+ 	BPF_TRACE_FEXIT,
+ 	BPF_MODIFY_RETURN,
+ 	BPF_LSM_MAC,
++	BPF_XDP_EGRESS,
+ 	__MAX_BPF_ATTACH_TYPE
+ };
  
- typedef int (*bpf_op_t)(struct net_device *dev, struct netdev_bpf *bpf);
- int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
--		      int fd, int expected_fd, u32 flags);
-+		      int fd, int expected_fd, u32 flags, bool egress);
- u32 __dev_xdp_query(struct net_device *dev, bpf_op_t xdp_op,
- 		    enum bpf_netdev_command cmd);
- int xdp_umem_query(struct net_device *dev, u16 queue_id);
 diff --git a/net/core/dev.c b/net/core/dev.c
-index fb61522b1ce1..1d0142c1bfb3 100644
+index 1d0142c1bfb3..853a8209b00d 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -8590,7 +8590,7 @@ u32 __dev_xdp_query(struct net_device *dev, bpf_op_t bpf_op,
+@@ -8732,6 +8732,17 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
+ 		if (IS_ERR(prog))
+ 			return PTR_ERR(prog);
  
- static int dev_xdp_install(struct net_device *dev, bpf_op_t bpf_op,
- 			   struct netlink_ext_ack *extack, u32 flags,
--			   struct bpf_prog *prog)
-+			   struct bpf_prog *prog, bool egress)
++		if (egress && prog->expected_attach_type != BPF_XDP_EGRESS) {
++			NL_SET_ERR_MSG(extack, "XDP program in Tx path must use BPF_XDP_EGRESS attach type");
++			bpf_prog_put(prog);
++			return -EINVAL;
++		}
++		if (!egress && prog->expected_attach_type == BPF_XDP_EGRESS) {
++			NL_SET_ERR_MSG(extack, "XDP program in Rx path can not use BPF_XDP_EGRESS attach type");
++			bpf_prog_put(prog);
++			return -EINVAL;
++		}
++
+ 		if (!offload && bpf_prog_is_dev_bound(prog->aux)) {
+ 			NL_SET_ERR_MSG(extack, "using device-bound program without HW_MODE flag is not supported");
+ 			bpf_prog_put(prog);
+diff --git a/net/core/filter.c b/net/core/filter.c
+index a943df3ad8b0..b4d064c7fdec 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -6935,6 +6935,17 @@ static bool xdp_is_valid_access(int off, int size,
+ 				const struct bpf_prog *prog,
+ 				struct bpf_insn_access_aux *info)
  {
- 	bool non_hw = !(flags & XDP_FLAGS_HW_MODE);
- 	struct bpf_prog *prev_prog = NULL;
-@@ -8598,8 +8598,10 @@ static int dev_xdp_install(struct net_device *dev, bpf_op_t bpf_op,
- 	int err;
- 
- 	if (non_hw) {
--		prev_prog = bpf_prog_by_id(__dev_xdp_query(dev, bpf_op,
--							   XDP_QUERY_PROG));
-+		enum bpf_netdev_command cmd;
++	/* Rx data is only accessible from original XDP where
++	 * expected_attach_type is not set
++	 */
++	if (prog->expected_attach_type) {
++		switch (off) {
++		case offsetof(struct xdp_md, ingress_ifindex):
++		case offsetof(struct xdp_md, rx_queue_index):
++			return false;
++		}
++	}
 +
-+		cmd = egress ? XDP_QUERY_PROG_EGRESS : XDP_QUERY_PROG;
-+		prev_prog = bpf_prog_by_id(__dev_xdp_query(dev, bpf_op, cmd));
- 		if (IS_ERR(prev_prog))
- 			prev_prog = NULL;
- 	}
-@@ -8608,7 +8610,7 @@ static int dev_xdp_install(struct net_device *dev, bpf_op_t bpf_op,
- 	if (flags & XDP_FLAGS_HW_MODE)
- 		xdp.command = XDP_SETUP_PROG_HW;
- 	else
--		xdp.command = XDP_SETUP_PROG;
-+		xdp.command = egress ? XDP_SETUP_PROG_EGRESS : XDP_SETUP_PROG;
- 	xdp.extack = extack;
- 	xdp.flags = flags;
- 	xdp.prog = prog;
-@@ -8629,7 +8631,12 @@ static void dev_xdp_uninstall(struct net_device *dev)
- 	bpf_op_t ndo_bpf;
- 
- 	/* Remove generic XDP */
--	WARN_ON(dev_xdp_install(dev, generic_xdp_install, NULL, 0, NULL));
-+	WARN_ON(dev_xdp_install(dev, generic_xdp_install, NULL, 0, NULL,
-+				false));
-+
-+	/* Remove XDP egress */
-+	WARN_ON(dev_xdp_install(dev, generic_xdp_install, NULL, 0, NULL,
-+				true));
- 
- 	/* Remove from the driver */
- 	ndo_bpf = dev->netdev_ops->ndo_bpf;
-@@ -8641,14 +8648,14 @@ static void dev_xdp_uninstall(struct net_device *dev)
- 	WARN_ON(ndo_bpf(dev, &xdp));
- 	if (xdp.prog_id)
- 		WARN_ON(dev_xdp_install(dev, ndo_bpf, NULL, xdp.prog_flags,
--					NULL));
-+					NULL, false));
- 
- 	/* Remove HW offload */
- 	memset(&xdp, 0, sizeof(xdp));
- 	xdp.command = XDP_QUERY_PROG_HW;
- 	if (!ndo_bpf(dev, &xdp) && xdp.prog_id)
- 		WARN_ON(dev_xdp_install(dev, ndo_bpf, NULL, xdp.prog_flags,
--					NULL));
-+					NULL, false));
- }
- 
- /**
-@@ -8662,7 +8669,7 @@ static void dev_xdp_uninstall(struct net_device *dev)
-  *	Set or clear a bpf program for a device
-  */
- int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
--		      int fd, int expected_fd, u32 flags)
-+		      int fd, int expected_fd, u32 flags, bool egress)
- {
- 	const struct net_device_ops *ops = dev->netdev_ops;
- 	enum bpf_netdev_command query;
-@@ -8675,7 +8682,11 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
- 	ASSERT_RTNL();
- 
- 	offload = flags & XDP_FLAGS_HW_MODE;
--	query = offload ? XDP_QUERY_PROG_HW : XDP_QUERY_PROG;
-+	if (egress)
-+		query = XDP_QUERY_PROG_EGRESS;
-+	else
-+		query = offload ? XDP_QUERY_PROG_HW : XDP_QUERY_PROG;
-+
- 
- 	bpf_op = bpf_chk = ops->ndo_bpf;
- 	if (!bpf_op && (flags & (XDP_FLAGS_DRV_MODE | XDP_FLAGS_HW_MODE))) {
-@@ -8705,7 +8716,8 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
- 		}
- 	}
- 	if (fd >= 0) {
--		if (!offload && __dev_xdp_query(dev, bpf_chk, XDP_QUERY_PROG)) {
-+		if (!offload && !egress &&
-+		    __dev_xdp_query(dev, bpf_chk, XDP_QUERY_PROG)) {
- 			NL_SET_ERR_MSG(extack, "native and generic XDP can't be active at the same time");
- 			return -EEXIST;
- 		}
-@@ -8737,7 +8749,7 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
- 		prog = NULL;
- 	}
- 
--	err = dev_xdp_install(dev, bpf_op, extack, flags, prog);
-+	err = dev_xdp_install(dev, bpf_op, extack, flags, prog, egress);
- 	if (err < 0 && prog)
- 		bpf_prog_put(prog);
- 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 193da2bb908a..4a3e85413688 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -2522,7 +2522,7 @@ static int do_setlink_xdp(struct net_device *dev, struct nlattr *tb,
- 
- 		err = dev_change_xdp_fd(dev, extack,
- 					nla_get_s32(xdp[IFLA_XDP_FD]),
--					expected_fd, xdp_flags);
-+					expected_fd, xdp_flags, false);
- 		if (err)
- 			return err;
+ 	if (type == BPF_WRITE) {
+ 		if (bpf_prog_is_dev_bound(prog->aux)) {
+ 			switch (off) {
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 2e29a671d67e..a9d384998e8b 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -215,6 +215,7 @@ enum bpf_attach_type {
+ 	BPF_TRACE_FEXIT,
+ 	BPF_MODIFY_RETURN,
+ 	BPF_LSM_MAC,
++	BPF_XDP_EGRESS,
+ 	__MAX_BPF_ATTACH_TYPE
+ };
  
 -- 
 2.21.1 (Apple Git-122.3)
