@@ -2,71 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3576F1B6C7E
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 06:23:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEFD11B6CAB
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 06:25:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725919AbgDXEXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 00:23:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60920 "EHLO
+        id S1726008AbgDXEZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 00:25:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725776AbgDXEXK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 00:23:10 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABE95C09B045
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 21:23:10 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id a5so3434059pjh.2
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 21:23:10 -0700 (PDT)
+        with ESMTP id S1725776AbgDXEZV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 00:25:21 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 931B3C09B045
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 21:25:21 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id x2so8042749ilp.13
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 21:25:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ka7FEGk7p+85cTH/y7AxVHoYYNsSKHkOcwBeJVHM3BY=;
-        b=exG7+uzdXyLwKgTYAbxN3+K+m5QwG407S1Evmvmf2Q8lkso/A0353FH5CRfalTjFaB
-         Wb98BArh+Q9uuQmV3q3fyFeydTYh4nl8Ai8OjjuWJb7hQ0C6emGQiqyKuxNsXCcDBTPp
-         bEo53NRJLcLn3Igqj43Qawgq3VIykGWZoOT5NYvOH0Lu6ClYaAG96Snxl22F2PU2pPUq
-         7+uLbi3jzg8vO4g3OcDBhBaP/VFxFOce+4MOGikxzu7NaQ+SPluqhYiXhw28yM3e3y/z
-         XJEWgs8OKIFK0D4Z1P5wS6zkx+GLBP8eBBLdR7Nz9nR+pcBJAsiJc3K1j+Pb08b0STAT
-         41/A==
+        bh=hpIY/dmhIszPLDYQq7M9kP9jP0FcXewg/wqYNkwxSrs=;
+        b=Ry6FX8JnhrqcfHjkAda0rQMpHNmQGpT7ZY8/Y0Lf2pasQQTW4pTUeukOAINRLePZjB
+         2ycR1/wS1/siD5x6qoWgRbyzhu0CHWZe9uUhplLlr8VCft+wCkYsRKD6dYOAPIWApW6U
+         fGNAJys6oTSHZp5FLoCh1FwYLvyK6skjAtnW1HienOlPJprTIzbMRtP91shjj1sE5tM8
+         AlSy9DJMDs9+4I0AlxCdvSbFpiojSWhvjEjVe5HF10dDUbNvNxkSQgh16U39ly9PtBMI
+         lyCtQm9XU3KNs90aY2caMdGT+06w/ltiAqfA+TaNnZrx1QaLf46gUgGOVDQ3wFAgGuWq
+         SeEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=ka7FEGk7p+85cTH/y7AxVHoYYNsSKHkOcwBeJVHM3BY=;
-        b=HGnrv6jSHPUFngtOKNiugvcrsWrcrgjrgD5QyUv0e+UxkiHhXUxLilOw8+6BM90NW7
-         PYGW4wVdBal3bfIRXqhdX5dWrrPkp/46kp0XoJtd/MJm43qpRcwDwSjcxKc910RtZBxM
-         qs/2Y9cSanr3HBBbGmlXZVgNTPOXA+U5CX8cnN4mHEQyLILNVS/Ck+8ucVPove4JB7vE
-         Nfz0b6J9wlsaj+Pc0a6TM5NDMFTUCogtB1jpwOCPoqed9F3NkcQ3pR7otX+/fAy3kSsc
-         d1bkWVORGWi358GoJEH1Sx1hDBZNPiYOFTfmJsucIXsUh1WLDR9AYhuYowb8LIIVUuwd
-         PoLw==
-X-Gm-Message-State: AGi0PubGUMm2ELTeD/zvI3YLfhEBepJJm6pBtQ1X1lqh1HfLHtbLl4TQ
-        AApMudUlLOpIE1ikJg25BE1vnJy5
-X-Google-Smtp-Source: APiQypLypbbkPen7lvNh6EZliWmTyEo1E+MxanJd7IQJvL4Bphyl419CglWk/WH7rbTegSdp3lGKdA==
-X-Received: by 2002:a17:902:8497:: with SMTP id c23mr7366429plo.335.1587702190106;
-        Thu, 23 Apr 2020 21:23:10 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id t103sm3725121pjb.46.2020.04.23.21.23.08
+        bh=hpIY/dmhIszPLDYQq7M9kP9jP0FcXewg/wqYNkwxSrs=;
+        b=C+n5Cs9D2wtW2tPY1RNMSobUXJcJWq9+Xb9hzZ+kNDtX+s9Dr2U3KNXImFq5slFGcZ
+         JOdFup74MR7ZuKSxLHsYczAIqQn3gT0rOsiExMGxMn38Fpbx2FNkTYoliP7XcZWvIA5A
+         wRDreOxxVLDzcDJA1kt/8be50EyNhMnH6yYoLnwjbsYdFoFzJl/Wcm1vXac+Iya1EMJg
+         8EO85dm+BXGUlfJMqZrevuSOX6iVCGICUIdVv6/NlCJpDK7h6CPn0U6CunTYJlKUv1iJ
+         YCtGRjC+eVo/Qw4BxAHdozuv9UZ6YYBFJcFSLFEGfjbOTRxihqn3Db0duioy8NRAjZqX
+         7GWg==
+X-Gm-Message-State: AGi0PuYMRNyT0GrlcRgNgGk0ZYKeHj6ulIXpBMUd4la0ltOZmUE3ZurZ
+        pXgloKhHxC7XIwtYE56coZs=
+X-Google-Smtp-Source: APiQypJzs5V7v8vEGYnPsg+AknMGH4bjQcL3ktGEgWpxT0FSLSRFqnYPL3SEcpo8osnq5GfQcDqG2w==
+X-Received: by 2002:a92:d2c1:: with SMTP id w1mr6181407ilg.96.1587702320964;
+        Thu, 23 Apr 2020 21:25:20 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:2064:c3f6:4748:be84? ([2601:282:803:7700:2064:c3f6:4748:be84])
+        by smtp.googlemail.com with ESMTPSA id l23sm1648865ilh.71.2020.04.23.21.25.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Apr 2020 21:23:09 -0700 (PDT)
-Subject: Re: [PATCH net-next v2] net: Add TCP_FORCE_LINGER2 to TCP setsockopt
-To:     Cambda Zhu <cambda@linux.alibaba.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Dust Li <dust.li@linux.alibaba.com>,
-        Tony Lu <tonylu@linux.alibaba.com>
-References: <eea2a2c3-79dc-131c-4ef5-ee027b30b701@gmail.com>
- <20200423073529.92152-1-cambda@linux.alibaba.com>
- <3e780f88-41df-413c-7a81-6a63fd750605@gmail.com>
- <256723ED-43E5-4123-B096-15AD417366CD@linux.alibaba.com>
- <2df5f6de-ee68-8309-8b48-a139a4fb6b36@gmail.com>
- <73F510E3-F212-47B5-B575-97D15A3311C7@linux.alibaba.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <9c998b27-07c7-48e4-f3b7-a2f83d834dfa@gmail.com>
-Date:   Thu, 23 Apr 2020 21:23:07 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Thu, 23 Apr 2020 21:25:20 -0700 (PDT)
+Subject: Re: [PATCH v2 bpf-next 00/17] net: Add support for XDP in egress path
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        prashantbhole.linux@gmail.com, jasowang@redhat.com,
+        brouer@redhat.com, toke@redhat.com, toshiaki.makita1@gmail.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com
+References: <20200424021148.83015-1-dsahern@kernel.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <90cb3817-cf9b-67dd-f050-f15aaddaa545@gmail.com>
+Date:   Thu, 23 Apr 2020 22:25:18 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <73F510E3-F212-47B5-B575-97D15A3311C7@linux.alibaba.com>
+In-Reply-To: <20200424021148.83015-1-dsahern@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -75,19 +71,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 4/23/20 7:56 PM, Cambda Zhu wrote:
+On 4/23/20 8:11 PM, David Ahern wrote:
 > 
+> v1:
+> - add selftests
 
-> If the value between sysctl_tcp_fin_timeout and 2 minutes is legal, should we set tp->linger2
-> to TCP_FIN_TIMEOUT_MAX or return an error instead of set it to zero which means the default value?
+BTW, tests fail on bpf-next until the next merge with bpf tree because
+of this commit:
 
-I would not send an error.
-
-This might break some applications that could consider an error as a serious one.
-
-(You can reuse my patch basically)
-
-
+https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git/commit/?id=257d7d4f0e69f5e8e3d38351bdcab896719dba04
 
