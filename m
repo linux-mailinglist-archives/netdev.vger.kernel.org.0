@@ -2,60 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C93711B7047
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 11:07:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06AE41B7030
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 11:01:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726820AbgDXJHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 05:07:04 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:51426 "EHLO huawei.com"
+        id S1726582AbgDXJBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 05:01:51 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:59084 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726699AbgDXJHE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Apr 2020 05:07:04 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 11A9BDC05BA9F8BD9981;
-        Fri, 24 Apr 2020 17:07:02 +0800 (CST)
-Received: from localhost (10.166.215.154) by DGGEMS407-HUB.china.huawei.com
- (10.3.19.207) with Microsoft SMTP Server id 14.3.487.0; Fri, 24 Apr 2020
- 17:06:53 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
-        <yoshfuji@linux-ipv6.org>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <tom@herbertland.com>, YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH net-next] net: ipv6: remove unused inline function ip6_set_txhash
-Date:   Fri, 24 Apr 2020 17:06:29 +0800
-Message-ID: <20200424090629.33840-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1725868AbgDXJBv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Apr 2020 05:01:51 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 5C41F9ECEE24E739F83A;
+        Fri, 24 Apr 2020 17:01:50 +0800 (CST)
+Received: from huawei.com (10.90.53.225) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.487.0; Fri, 24 Apr 2020
+ 17:01:40 +0800
+From:   Zheng Bin <zhengbin13@huawei.com>
+To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
+        <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC:     <zhengbin13@huawei.com>
+Subject: [PATCH -next] net: phy: dp83867: Remove unneeded semicolon
+Date:   Fri, 24 Apr 2020 17:08:50 +0800
+Message-ID: <20200424090850.96778-1-zhengbin13@huawei.com>
+X-Mailer: git-send-email 2.26.0.106.g9fadedd
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.166.215.154]
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.90.53.225]
 X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-commit 877d1f6291f8 ("net: Set sk_txhash from a random number")
-left behind this, remove it.
+Fixes coccicheck warning:
 
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+drivers/net/phy/dp83867.c:368:2-3: Unneeded semicolon
+drivers/net/phy/dp83867.c:403:2-3: Unneeded semicolon
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
 ---
- include/net/ipv6.h | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/phy/dp83867.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index 1bf8065fe871..955badd1e8ff 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -908,7 +908,6 @@ static inline int ip6_default_np_autolabel(struct net *net)
- 	}
- }
- #else
--static inline void ip6_set_txhash(struct sock *sk) { }
- static inline __be32 ip6_make_flowlabel(struct net *net, struct sk_buff *skb,
- 					__be32 flowlabel, bool autolabel,
- 					struct flowi6 *fl6)
--- 
-2.17.1
+diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+index b55e3c0403ed..4017ae1692d8 100644
+--- a/drivers/net/phy/dp83867.c
++++ b/drivers/net/phy/dp83867.c
+@@ -365,7 +365,7 @@ static int dp83867_get_downshift(struct phy_device *phydev, u8 *data)
+ 		break;
+ 	default:
+ 		return -EINVAL;
+-	};
++	}
 
+ 	*data = enable ? count : DOWNSHIFT_DEV_DISABLE;
+
+@@ -400,7 +400,7 @@ static int dp83867_set_downshift(struct phy_device *phydev, u8 cnt)
+ 			phydev_err(phydev,
+ 				   "Downshift count must be 1, 2, 4 or 8\n");
+ 			return -EINVAL;
+-	};
++	}
+
+ 	val = DP83867_DOWNSHIFT_EN;
+ 	val |= FIELD_PREP(DP83867_DOWNSHIFT_ATTEMPT_MASK, count);
+--
+2.26.0.106.g9fadedd
 
