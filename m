@@ -2,318 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1D4A1B7F6A
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 21:56:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F18921B803F
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 22:14:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729437AbgDXTzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 15:55:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46470 "EHLO mail.kernel.org"
+        id S1729244AbgDXUOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 16:14:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57270 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729419AbgDXTzy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Apr 2020 15:55:54 -0400
-Received: from mail-qv1-f46.google.com (mail-qv1-f46.google.com [209.85.219.46])
+        id S1725970AbgDXUOb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Apr 2020 16:14:31 -0400
+Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 86228215A4;
-        Fri, 24 Apr 2020 19:55:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 17B82214AF;
+        Fri, 24 Apr 2020 20:14:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587758153;
-        bh=XyAZQ+e0o7lKduytKo6lvmMqRCZ1EqfQCzwTnAq96HM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=fV8hXCcw3sdoVZvyT2ycb3P/w1YU7ELr4Hxd9Un8zFJ8TB3zwtrJ9iPol/89Q4z9F
-         ZLYdcJdtFLdPS9FCtOahiG5HXdIX7ycnQbUXUS0XXdqLY2xw0KdQHPDw6HsaJ1+tG1
-         cqkMSsJhYHantVRmxqg7qv57CTejZPcFSiT4r/ZE=
-Received: by mail-qv1-f46.google.com with SMTP id fb4so5310871qvb.7;
-        Fri, 24 Apr 2020 12:55:53 -0700 (PDT)
-X-Gm-Message-State: AGi0PuYP157vDYmJ2xU5xTvW5md0cc49fmUYDV4/r/LDqY2uDLawKIbV
-        o6OBcLp6Ppf/HcN6BEwZU5WIFuwJjhGbzm2dcg==
-X-Google-Smtp-Source: APiQypL6QVP34OIZcFjfLZaCQy58J6loPgHHO+jJmV1P6s/hngLJU56sMwG2qfl9h0lCetvcQovdru7JCgkvs7MOHI0=
-X-Received: by 2002:a0c:a986:: with SMTP id a6mr10586552qvb.79.1587758152580;
- Fri, 24 Apr 2020 12:55:52 -0700 (PDT)
+        s=default; t=1587759270;
+        bh=T8Lu5waQSRhjGrz3yFqSXlRBwWYzhpmBdtGwr7TBL0A=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Ep3iwsdjpnGbPX2JRn2keJp5A2CVJJbNKHgU45M5Vq7gt5DXkR4fPLeuQdA9F0imQ
+         xJVE79zre6belG7SzAVuKCnY5pNnveV3hZdhLe94BLhn1v5+7YQ1pcrl6ikSjZowSx
+         lq2Fjmpl69pBe9jV05NzFD9NwcYjajiDEZtIceHU=
+From:   David Ahern <dsahern@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        prashantbhole.linux@gmail.com, jasowang@redhat.com,
+        brouer@redhat.com, toke@redhat.com, toshiaki.makita1@gmail.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        dsahern@gmail.com
+Subject: [PATCH v3 bpf-next 00/15] net: Add support for XDP in egress path
+Date:   Fri, 24 Apr 2020 14:14:13 -0600
+Message-Id: <20200424201428.89514-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 MIME-Version: 1.0
-References: <1587732391-3374-1-git-send-email-florinel.iordache@nxp.com> <1587732391-3374-3-git-send-email-florinel.iordache@nxp.com>
-In-Reply-To: <1587732391-3374-3-git-send-email-florinel.iordache@nxp.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Fri, 24 Apr 2020 14:55:40 -0500
-X-Gmail-Original-Message-ID: <CAL_Jsq+7zpDDcVzTKSufzuCWnRcLZ0h+y0TpsJE=G+pbuhWtvw@mail.gmail.com>
-Message-ID: <CAL_Jsq+7zpDDcVzTKSufzuCWnRcLZ0h+y0TpsJE=G+pbuhWtvw@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 2/9] dt-bindings: net: add backplane dt bindings
-To:     Florinel Iordache <florinel.iordache@nxp.com>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        devicetree@vger.kernel.org,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Yang-Leo Li <leoyang.li@nxp.com>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 24, 2020 at 7:46 AM Florinel Iordache
-<florinel.iordache@nxp.com> wrote:
->
-> Add ethernet backplane device tree bindings
+From: David Ahern <dsahern@gmail.com>
 
-For a new, common binding, you've got to do better than this. Bindings
-need to stand on their own. I need a h/w block diagram or something
-because I know little about "ethernet backplane".
+This series adds support for XDP in the egress path by introducing
+a new XDP attachment type, BPF_XDP_EGRESS, and adding a UAPI to
+if_link.h for attaching the program to a netdevice and reporting
+the program. bpf programs can be run on all packets in the Tx path -
+skbs or redirected xdp frames. The intent is to emulate the current
+RX path for XDP as much as possible to maintain consistency and
+symmetry in the 2 paths with their APIs.
 
->
-> Signed-off-by: Florinel Iordache <florinel.iordache@nxp.com>
-> ---
->  .../bindings/net/ethernet-controller.yaml          |  3 +-
->  .../devicetree/bindings/net/ethernet-phy.yaml      | 50 +++++++++++++++++++++
->  .../devicetree/bindings/net/serdes-lane.yaml       | 51 ++++++++++++++++++++++
->  Documentation/devicetree/bindings/net/serdes.yaml  | 44 +++++++++++++++++++
->  4 files changed, 147 insertions(+), 1 deletion(-)
->  create mode 100644 Documentation/devicetree/bindings/net/serdes-lane.yaml
->  create mode 100644 Documentation/devicetree/bindings/net/serdes.yaml
->
-> diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-> index ac471b6..541cee5 100644
-> --- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-> +++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-> @@ -93,8 +93,9 @@ properties:
->        - rxaui
->        - xaui
->
-> -      # 10GBASE-KR, XFI, SFI
-> +      # 10GBASE-KR, 40GBASE-KR4, XFI, SFI
->        - 10gbase-kr
-> +      - 40gbase-kr4
->        - usxgmii
->
->    phy-mode:
-> diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-> index 5aa141c..436b5a7 100644
-> --- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-> +++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-> @@ -161,6 +161,42 @@ properties:
->      description:
->        Specifies a reference to a node representing a SFP cage.
->
-> +  eq-algorithm:
-> +    description:
-> +      Specifies the desired equalization algorithm to be used
-> +      by the KR link training
-> +    oneOf:
-> +      - const: fixed
-> +        description:
-> +          Backplane KR using fixed coefficients meaning no
-> +          equalization algorithm
-> +      - const: bee
-> +        description:
-> +          Backplane KR using 3-Taps Bit Edge Equalization (BEE)
-> +          algorithm
-> +
-> +  eq-init:
+This is a missing primitive for XDP allowing solutions to build small,
+targeted programs properly distributed in the networking path allowing,
+for example, an egress firewall/ACL/traffic verification or packet
+manipulation and encapping an entire ethernet frame whether it is
+locally generated traffic, forwarded via the slow path (ie., full
+stack processing) or xdp redirected frames.
 
-eq-coefficients?
+Nothing about running a program in the Tx path requires driver specific
+resources like the Rx path has. Thus, programs can be run in core
+code and attached to the net_device struct similar to skb mode. The
+egress attach is done using the new XDP_FLAGS_EGRESS_MODE flag, and
+is reported by the kernel using the XDP_ATTACHED_EGRESS_CORE attach
+flag with IFLA_XDP_EGRESS_PROG_ID making the api similar to existing
+APIs for XDP.
 
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> +    minItems: 3
-> +    maxItems: 3
-> +    description:
-> +      Triplet of KR coefficients. Specifies the initialization
-> +      values for standard KR equalization coefficients used by
-> +      the link training (pre-cursor, main-cursor, post-cursor)
+The locations chosen to run the egress program - __netdev_start_xmit
+before the call to ndo_start_xmit and bq_xmit_all before invoking
+ndo_xdp_xmit - allow follow on patch sets to handle tx queueing and
+setting the queue index if multi-queue with consistency in handling
+both packet formats.
 
-items:
-  - description: pre-cursor
-  - description: main-cursor
-  ...
+A few of the patches trace back to work done on offloading programs
+from a VM by Jason Wang and Prashant Bole.
 
-Is 0-2^32 valid data? If not, add some constraints.
+v3:
+- removed IFLA_XDP_EGRESS and dropped back to XDP_FLAGS_EGRESS_MODE
+  as the uapi to specify the attach. This caused the ordering of the
+  patches to change with the uapi now introduced in the second patch
+  and 2 refactoring patches are dropped. Samples and test programs
+  updated to use the new API.
 
-> +
-> +  eq-params:
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> +    description:
-> +      Variable size array of KR parameters. Specifies the HW
-> +      specific parameters used by the link training.
+v2:
+- changed rx checks in xdp_is_valid_access to any expected_attach_type
+- add xdp_egress argument to bpftool prog rst document
+- do not allow IFLA_XDP and IFLA_XDP_EGRESS in the same config. There
+  is no way to rollback IFLA_XDP if IFLA_XDP_EGRESS fails.
+- comments from Andrii on libbpf
 
-DT is not a dumping ground for magic register values.
+v1:
+- add selftests
+- flip the order of xdp generic patches as requested by Toke
+- fixed the count arg to do_xdp_egress_frame - Toke
+- remove meta data invalidate in __xdp_egress_frame - Toke
+- fixed data_hard_start in __xdp_egress_frame - Jesper
+- refactored convert_to_xdp_frame to reuse buf to frame code - Jesper
+- added missed refactoring patch when generating patch set
 
-eq-init vs. eq-params is pretty vague as to what they are.
+RFC v5:
+- updated cover letter
+- moved running of ebpf program to from ndo_{start,xdp}_xmit to core
+  code. Dropped all tun and vhost related changes.
+- added egress support to bpftool
 
-I fail to see how these properties are related to $subject. Should be
-a separate patch.
+RFC v4:
+- updated cover letter
+- patches related to code movement between tuntap, headers and vhost
+  are dropped; previous RFC ran the XDP program in vhost context vs
+  this set which runs them before queueing to vhost. As a part of this
+  moved invocation of egress program to tun_net_xmit and tun_xdp_xmit.
+- renamed do_xdp_generic to do_xdp_generic_rx to emphasize is called
+  in the Rx path; added rx argument to do_xdp_generic_core since it
+  is used for both directions and needs to know which queue values to
+  set in xdp_buff
 
-> +
-> +  lane-handle:
-> +    $ref: /schemas/types.yaml#definitions/phandle
-> +    description:
-> +      Specifies a reference (or array of references) to a node
-> +      representing the desired SERDES lane (or lanes) used in
-> +      backplane mode.
-> +
->  required:
->    - reg
->
-> @@ -183,3 +219,17 @@ examples:
->              reset-deassert-us = <2000>;
->          };
->      };
-> +  - |
-> +    ethernet {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        ethernet-phy@0 {
-> +            compatible = "ethernet-phy-ieee802.3-c45";
-> +            reg = <0x0>;
-> +            lane-handle = <&lane_d>;
-> +            eq-algorithm = "fixed";
-> +            eq-init = <0x2 0x29 0x5>;
-> +            eq-params = <0>;
-> +        };
-> +    };
-> diff --git a/Documentation/devicetree/bindings/net/serdes-lane.yaml b/Documentation/devicetree/bindings/net/serdes-lane.yaml
-> new file mode 100644
-> index 0000000..ce3581e
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/serdes-lane.yaml
-> @@ -0,0 +1,51 @@
-> +# SPDX-License-Identifier: GPL-2.0
+RFC v3:
+- reworked the patches - splitting patch 1 from RFC v2 into 3, combining
+  patch 2 from RFC v2 into the first 3, combining patches 6 and 7 from
+  RFC v2 into 1 since both did a trivial rename and export. Reordered
+  the patches such that kernel changes are first followed by libbpf and
+  an enhancement to a sample.
 
-Dual license new bindings:
+- moved small xdp related helper functions from tun.c to tun.h to make
+  tun_ptr_free usable from the tap code. This is needed to handle the
+  case of tap builtin and tun built as a module.
 
-(GPL-2.0-only OR BSD-2-Clause)
+- pkt_ptrs added to `struct tun_file` and passed to tun_consume_packets
+  rather than declaring pkts as an array on the stack.
 
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/serdes-lane.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Serdes Lane Binding
-> +
-> +maintainers:
-> +  - Florinel Iordache <florinel.iordache@nxp.com>
-> +
-> +properties:
-> +  $nodename:
-> +    pattern: "^lane(@[a-f0-9]+)?$"
-> +
-> +  compatible:
-> +    oneOf:
-> +      - const: lane-10g
-> +        description: Lane part of a 10G SerDes module
-> +      - const: lane-28g
-> +        description: Lane part of a 28G SerDes module
-> +
-> +  reg:
-> +    description:
-> +      Registers memory map offset and size for this lane
-> +
-> +  reg-names:
-> +    description:
-> +      Names of the register map given in "reg" node.
-> +
-> +examples:
-> +  - |
-> +    serdes1: serdes@1ea0000 {
-> +        compatible = "serdes-10g";
+RFC v2:
+- New XDP attachment type: Jesper, Toke and Alexei discussed whether
+  to introduce a new program type. Since this set adds a way to attach
+  regular XDP program to the tx path, as per Alexei's suggestion, a
+  new attachment type BPF_XDP_EGRESS is introduced.
 
-Do you have a datasheet for this device as bindings describe devices?
-I assume not because serdes is a protocol, not a device. AFAIK,
-there's no standard programming interface for 'serdes' as that is
-about the only time we have any sort of genericish compatible strings.
-The compatible string at a minimum should tell me what the programming
-model for the registers are.
+- libbpf API changes:
+  Alexei had suggested _opts() style of API extension. Considering it
+  two new libbpf APIs are introduced which are equivalent to existing
+  APIs. New ones can be extended easily. Please see individual patches
+  for details. xdp1 sample program is modified to use new APIs.
 
-> +        reg = <0x0 0x1ea0000 0 0x00002000>;
-> +        reg-names = "serdes", "serdes-10g";
+- tun: Some patches from previous set are removed as they are
+  irrelevant in this series. They will in introduced later.
 
-The default address and sizes are 1 cell. So you have addr 0 with size
-0x1ea0000 and then addr 0 with size 0x2000.
 
-> +        little-endian;
-> +
-> +        #address-cells = <1>;
-> +        #size-cells = <1>;
-> +        lane_a: lane@800 {
-> +            compatible = "lane-10g";
-> +            reg = <0x800 0x40>;
-> +            reg-names = "lane", "serdes-lane";
+David Ahern (15):
+  net: Refactor convert_to_xdp_frame
+  net: uapi for XDP programs in the egress path
+  net: Add XDP setup and query commands for Tx programs
+  net: Add BPF_XDP_EGRESS as a bpf_attach_type
+  xdp: Add xdp_txq_info to xdp_buff
+  net: Rename do_xdp_generic to do_xdp_generic_rx
+  net: rename netif_receive_generic_xdp to do_generic_xdp_core
+  net: set XDP egress program on netdevice
+  net: Support xdp in the Tx path for packets as an skb
+  net: Support xdp in the Tx path for xdp_frames
+  libbpf: Add egress XDP support
+  bpftool: Add support for XDP egress
+  selftest: Add test for xdp_egress
+  selftest: Add xdp_egress attach tests
+  samples/bpf: add XDP egress support to xdp1
 
-Not valid. You have 1 entry (with a addr and size) for reg, but 2
-entries for reg-names.
+ drivers/net/tun.c                             |   4 +-
+ include/linux/netdevice.h                     |  21 +-
+ include/net/xdp.h                             |  35 ++-
+ include/uapi/linux/bpf.h                      |   3 +
+ include/uapi/linux/if_link.h                  |   6 +-
+ kernel/bpf/devmap.c                           |  19 +-
+ net/core/dev.c                                | 241 ++++++++++++++----
+ net/core/filter.c                             |  26 ++
+ net/core/rtnetlink.c                          |  23 +-
+ samples/bpf/xdp1_user.c                       |  11 +-
+ .../bpf/bpftool/Documentation/bpftool-net.rst |   4 +-
+ .../bpftool/Documentation/bpftool-prog.rst    |   2 +-
+ tools/bpf/bpftool/bash-completion/bpftool     |   4 +-
+ tools/bpf/bpftool/net.c                       |   6 +-
+ tools/bpf/bpftool/netlink_dumper.c            |   5 +
+ tools/bpf/bpftool/prog.c                      |   2 +-
+ tools/include/uapi/linux/bpf.h                |   3 +
+ tools/include/uapi/linux/if_link.h            |   6 +-
+ tools/lib/bpf/libbpf.c                        |   2 +
+ tools/lib/bpf/libbpf.h                        |   1 +
+ tools/lib/bpf/netlink.c                       |   6 +
+ tools/testing/selftests/bpf/Makefile          |   1 +
+ .../bpf/prog_tests/xdp_egress_attach.c        |  56 ++++
+ .../selftests/bpf/progs/test_xdp_egress.c     |  12 +
+ .../bpf/progs/test_xdp_egress_fail.c          |  16 ++
+ tools/testing/selftests/bpf/progs/xdp_drop.c  |  25 ++
+ .../testing/selftests/bpf/test_xdp_egress.sh  | 160 ++++++++++++
+ 27 files changed, 623 insertions(+), 77 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_egress_attach.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_egress.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_egress_fail.c
+ create mode 100644 tools/testing/selftests/bpf/progs/xdp_drop.c
+ create mode 100755 tools/testing/selftests/bpf/test_xdp_egress.sh
 
-40G is made up of 4 10G lanes, right? Do all 40G serdes phys have
-separate register regions for each lane? You can't assume lanes and DT
-nodes are 1-1.
+-- 
+2.21.1 (Apple Git-122.3)
 
-As lanes have to be child nodes, these 2 schemas should be 1. Though I
-don't think lane nodes will survive.
-
-> +        };
-> +        lane_b: lane@840 {
-> +            compatible = "lane-10g";
-> +            reg = <0x840 0x40>;
-> +            reg-names = "lane", "serdes-lane";
-> +        };
-> +    };
-> diff --git a/Documentation/devicetree/bindings/net/serdes.yaml b/Documentation/devicetree/bindings/net/serdes.yaml
-> new file mode 100644
-> index 0000000..fd3da85
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/serdes.yaml
-> @@ -0,0 +1,44 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/serdes.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Serdes Module Binding
-> +
-> +maintainers:
-> +  - Florinel Iordache <florinel.iordache@nxp.com>
-> +
-> +properties:
-> +  $nodename:
-> +    pattern: "^serdes(@[a-f0-9]+)?$"
-> +
-> +  compatible:
-> +    oneOf:
-> +      - const: serdes-10g
-> +        description: SerDes module type of 10G
-> +      - const: serdes-28g
-> +        description: SerDes module type of 28G
-> +
-> +  reg:
-> +    description:
-> +      Registers memory map offset and size for this serdes module
-> +
-> +  reg-names:
-> +    description:
-> +      Names of the register map given in "reg" node.
-> +
-> +  little-endian:
-> +    description:
-> +      Specifies the endianness of serdes module
-> +      For complete definition see
-> +      Documentation/devicetree/bindings/common-properties.txt
-> +
-> +examples:
-> +  - |
-> +    serdes1: serdes@1ea0000 {
-> +        compatible = "serdes-10g";
-> +        reg = <0x0 0x1ea0000 0 0x00002000>;
-> +        reg-names = "serdes", "serdes-10g";
-> +        little-endian;
-> +    };
-> --
-> 1.9.1
->
