@@ -2,40 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A58671B7494
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 14:27:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0EC01B7482
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 14:27:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728786AbgDXM1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 08:27:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55266 "EHLO mail.kernel.org"
+        id S1728514AbgDXMYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 08:24:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55506 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728460AbgDXMYd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Apr 2020 08:24:33 -0400
+        id S1728500AbgDXMYl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Apr 2020 08:24:41 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D52EF2168B;
-        Fri, 24 Apr 2020 12:24:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E5E8A21582;
+        Fri, 24 Apr 2020 12:24:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587731073;
-        bh=fZ0I+VOnV8QwClZ+2y5zao6blmZkFeQHWhqW6QUCWjM=;
+        s=default; t=1587731080;
+        bh=8cD1OddezbZiSb0fP44H5RhMKRNa676XV1toZF2upiU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BZrhTzaqJ1S85Ju0uWZoGJVuKzqE2YimgaZSP1kqKxjpru+JKFvBcTfu3cuOgGaQz
-         S1rXxAsilLg4PxRlYLkcDMikV9I81CXo9OdwVEGmikVBzIOfIDgm/EKvjGVd1LREhB
-         wFdqrSxrtg3hs3Qh/LgDyUMpVjUOCP5iFrpYu+DA=
+        b=OaTWhBDbk7tmdlVo9a/yaBHFscL4ypva08V9i7VG7goPhIZsR5BOtgHCYdtPN30mk
+         jQP5bQnq02lTeZJaEihbaF2R+S73Gm5b+w2uhjKJ+YlrWHzu1TlynjgfuxMPmqcyxd
+         tGkZS2ZO5Or55yiaEvkMWueEzp90jATeibV+5FfY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jason Gunthorpe <jgg@mellanox.com>,
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 11/21] net/cxgb4: Check the return from t4_query_params properly
-Date:   Fri, 24 Apr 2020 08:24:09 -0400
-Message-Id: <20200424122419.10648-11-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.14 17/21] net: stmmac: dwmac-sunxi: Provide TX and RX fifo sizes
+Date:   Fri, 24 Apr 2020 08:24:15 -0400
+Message-Id: <20200424122419.10648-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200424122419.10648-1-sashal@kernel.org>
 References: <20200424122419.10648-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -44,38 +46,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jason Gunthorpe <jgg@mellanox.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit c799fca8baf18d1bbbbad6c3b736eefbde8bdb90 ]
+[ Upstream commit 806fd188ce2a4f8b587e83e73c478e6484fbfa55 ]
 
-Positive return values are also failures that don't set val,
-although this probably can't happen. Fixes gcc 10 warning:
+After commit bfcb813203e619a8960a819bf533ad2a108d8105 ("net: dsa:
+configure the MTU for switch ports") my Lamobo R1 platform which uses
+an allwinner,sun7i-a20-gmac compatible Ethernet MAC started to fail
+by rejecting a MTU of 1536. The reason for that is that the DMA
+capabilities are not readable on this version of the IP, and there
+is also no 'tx-fifo-depth' property being provided in Device Tree. The
+property is documented as optional, and is not provided.
 
-drivers/net/ethernet/chelsio/cxgb4/t4_hw.c: In function ‘t4_phy_fw_ver’:
-drivers/net/ethernet/chelsio/cxgb4/t4_hw.c:3747:14: warning: ‘val’ may be used uninitialized in this function [-Wmaybe-uninitialized]
- 3747 |  *phy_fw_ver = val;
+Chen-Yu indicated that the FIFO sizes are 4KB for TX and 16KB for RX, so
+provide these values through platform data as an immediate fix until
+various Device Tree sources get updated accordingly.
 
-Fixes: 01b6961410b7 ("cxgb4: Add PHY firmware support for T420-BT cards")
-Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
+Fixes: eaf4fac47807 ("net: stmmac: Do not accept invalid MTU values")
+Suggested-by: Chen-Yu Tsai <wens@csie.org>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Acked-by: Chen-Yu Tsai <wens@csie.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/chelsio/cxgb4/t4_hw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-sunxi.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-index 39bcf27902e4b..0f126ce4645f3 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-@@ -3609,7 +3609,7 @@ int t4_phy_fw_ver(struct adapter *adap, int *phy_fw_ver)
- 		 FW_PARAMS_PARAM_Z_V(FW_PARAMS_PARAM_DEV_PHYFW_VERSION));
- 	ret = t4_query_params(adap, adap->mbox, adap->pf, 0, 1,
- 			      &param, &val);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 	*phy_fw_ver = val;
- 	return 0;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sunxi.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sunxi.c
+index fc1fa0f9f3387..57694eada9955 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sunxi.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sunxi.c
+@@ -155,6 +155,8 @@ static int sun7i_gmac_probe(struct platform_device *pdev)
+ 	plat_dat->init = sun7i_gmac_init;
+ 	plat_dat->exit = sun7i_gmac_exit;
+ 	plat_dat->fix_mac_speed = sun7i_fix_speed;
++	plat_dat->tx_fifo_size = 4096;
++	plat_dat->rx_fifo_size = 16384;
+ 
+ 	ret = sun7i_gmac_init(pdev, plat_dat->bsp_priv);
+ 	if (ret)
 -- 
 2.20.1
 
