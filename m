@@ -2,167 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 044A31B6E9C
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 09:04:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F03231B6EF2
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 09:27:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbgDXHEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 03:04:46 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:45168 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726056AbgDXHEq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 03:04:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587711884;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hEu1SJ6duuRKGFhLNJbLv4ttQeQ0Cp8Q4HQbhwQjvIo=;
-        b=WxkYsEvW4U9VVWWh8mmDQ0yWh5q7VHqpmGTzgV6SvuOw3yu65v+nh99EONIM1ZZm9bbTO8
-        8CwDRGCvrEftjcsYDr47LzXZMCKv4PkeEaDfkEtYh0GIXtySy4r1VBwzxom68HhX4zSppC
-        MKoABi3a2kXP8LFkiLlEUkiS+sPrzxY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-38-LgN9UwMcOCywosakEpF2vQ-1; Fri, 24 Apr 2020 03:04:40 -0400
-X-MC-Unique: LgN9UwMcOCywosakEpF2vQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B9DB9100A8E8;
-        Fri, 24 Apr 2020 07:04:38 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.58])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F2A3F60CD1;
-        Fri, 24 Apr 2020 07:04:27 +0000 (UTC)
-Date:   Fri, 24 Apr 2020 09:04:26 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Toke =?UTF-8?B?SMO4aWxh?= =?UTF-8?B?bmQtSsO4cmdlbnNlbg==?= 
-        <toke@redhat.com>, ruxandra.radulescu@nxp.com,
-        ioana.ciornei@nxp.com, nipun.gupta@nxp.com, shawnguo@kernel.org,
-        brouer@redhat.com
-Subject: Re: [PATCH net-next 2/2] dpaa2-eth: fix return codes used in
- ndo_setup_tc
-Message-ID: <20200424090426.1f9505e9@carbon>
-In-Reply-To: <20200423125600.16956cc9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <158765382862.1613879.11444486146802159959.stgit@firesoul>
-        <158765387082.1613879.14971732890635443222.stgit@firesoul>
-        <20200423082804.6235b084@hermes.lan>
-        <20200423173804.004fd0f6@carbon>
-        <20200423123356.523264b4@hermes.lan>
-        <20200423125600.16956cc9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1726577AbgDXH1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 03:27:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33080 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725898AbgDXH1C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 03:27:02 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D013EC09B045
+        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 00:27:00 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id k28so6840607lfe.10
+        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 00:27:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=YOpc3bZiRWRriDSOObFG3Qsaf8uxGUEggNP5IeWWlyc=;
+        b=Uq9i3WyVrsQvzUcGGl60mesNcqH8kUSz9cfz0yx+jCZu+S946JMHJL7esS8It0Etnm
+         H1alD/laSVyanfu+OLGlYwuz8hgJVQCCScKBzrJhJB+qRmcQxvtw0uT7ay87Dgy3GCim
+         qrx26IZ9MiZa5KQh4Q3QCgBAEshKCOyJDXlyQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=YOpc3bZiRWRriDSOObFG3Qsaf8uxGUEggNP5IeWWlyc=;
+        b=c8Ons3EMsfPM6eo9h2MtywAFPYANnStKdkUjWRj1ziQWD/4go3s0bgf2DcD63f2M15
+         IluFDWqTDcG1IDZgciKfKS+NvVz13Mbj+k2glHNqgvlrl1eH5CQ8Lj9bmCyMzRZ1fw48
+         1TtH+ijJ4evW49Q+Q79+7i59e1xw6fzS4eiZPOek14n/LuQIpyv0mB8qjgPX0svbkQMJ
+         F/H3vZNdwLSntop1rKd7B9XocvFiiecKucohTQFtm5nJ++H4C/gjsA3ogZ3yrGcLBclZ
+         tnhwJX15lk1I2L4rF+PND0C4wOob3pqJbX5Dm9fKh1l7ebuoLU/X5BRcNuaT9UJXpAXV
+         irnQ==
+X-Gm-Message-State: AGi0PuYJDhpZn7lrMQkRABjBdLlFx/8HjeYofrGhr0daNEJO3Lpbjq/o
+        DjdzxwqlcGiEKq/zOp/orJITNha+dwt7tg==
+X-Google-Smtp-Source: APiQypL57MdwPcz6SQqNih12slm2YU3XiyTUoy6A/+GUwGfBkGiI9RJaSEMMsfSToqoUJhDTX3TpbA==
+X-Received: by 2002:a19:224e:: with SMTP id i75mr5249872lfi.22.1587713219328;
+        Fri, 24 Apr 2020 00:26:59 -0700 (PDT)
+Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id y22sm3755051lfg.92.2020.04.24.00.26.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Apr 2020 00:26:58 -0700 (PDT)
+Subject: Re: [PATCH net v3] net: bridge: fix vlan stats use-after-free on
+ destruction
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
+        davem@davemloft.net, bridge@lists.linux-foundation.org,
+        syzkaller-bugs@googlegroups.com
+References: <20181114172703.5795-1-nikolay@cumulusnetworks.com>
+ <20181116165001.30896-1-nikolay@cumulusnetworks.com>
+ <20200423170521.65a3bc59@hermes.lan>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <137746b0-1655-3704-a6f1-54274615d605@cumulusnetworks.com>
+Date:   Fri, 24 Apr 2020 10:26:51 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20200423170521.65a3bc59@hermes.lan>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 23 Apr 2020 12:56:00 -0700
-Jakub Kicinski <kuba@kernel.org> wrote:
-
-> On Thu, 23 Apr 2020 12:33:56 -0700 Stephen Hemminger wrote:
-> > On Thu, 23 Apr 2020 17:38:04 +0200
-> > Jesper Dangaard Brouer <brouer@redhat.com> wrote:
-> >   
-> > > On Thu, 23 Apr 2020 08:28:58 -0700
-> > > Stephen Hemminger <stephen@networkplumber.org> wrote:
-> > >     
-> > > > On Thu, 23 Apr 2020 16:57:50 +0200
-> > > > Jesper Dangaard Brouer <brouer@redhat.com> wrote:
-> > > >       
-> > > > > Drivers ndo_setup_tc call should return -EOPNOTSUPP, when it cannot
-> > > > > support the qdisc type. Other return values will result in failing the
-> > > > > qdisc setup.  This lead to qdisc noop getting assigned, which will
-> > > > > drop all TX packets on the interface.
-> > > > > 
-> > > > > Fixes: ab1e6de2bd49 ("dpaa2-eth: Add mqprio support")
-> > > > > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>        
-> > > > 
-> > > > Would it be possible to use extack as well?      
-> > > 
-> > > That is what patch 1/2 already does.
-> > >     
-> > > > Putting errors in dmesg is unhelpful      
-> > > 
-> > > This patchset does not introduce any dmesg printk.
-> > >     
-> > 
-> > I was thinking that this  
-> > 	if (num_tc  > dpaa2_eth_tc_count(priv)) {
-> >  		netdev_err(net_dev, "Max %d traffic classes supported\n",
-> >  			   dpaa2_eth_tc_count(priv));
-> > -		return -EINVAL;
-> > +		return -EOPNOTSUPP;
-> >  	}
-> > 
-> > could be an extack message  
-
-First of all, this is a fix, and we need to keep it simple, as it needs
-to be backported to v5.3.
-
-Talking about converting this warning message this into a extack, I'm
-actually not convinced that is a good idea, or will even work.  First
-the extack cannot contain the %d number.  Second returning -EOPNOTSUPP
-this is actually not an error, and I don't think tc will print the
-extack in that case?
- 
-> That's a good question, actually. In this case Jesper was seeing a
-> failure when creating the default qdisc. The extack would go nowhere,
-> we'd have to print it to the logs, no? Which we should probably do,
-> anyway.
-
-Good point. We probably need a separate dmesg error when we cannot
-configure the default qdisc.  As there is not end-user to receive the
-extack.   But I would place that at a higher level in qdisc_create_dflt().
-It would definitely have helped me to identify what net-subsystem was
-dropping packets, and after my patch[1/2] adding the extack, an
-end-user would get a meaning full message to ease the troubleshooting.
-
-(Side-note: First I placed an extack in qdisc_create_dflt() but I
-realized it was wrong, because it could potentially override messages
-from the lower layers.)
-
-(For a separate patch:)
-
-We should discuss, that when creating the default qdisc, we should IMHO
-not allow that to fail.  As you can see in [1], this step happens
-during the qdisc init function e.g. it could also fail due to low
-memory. IMHO we should have a fallback, for when the default qdisc init
-fails, e.g. assign pfifo_fast instead or even noqueue.
-
-
-> > but doing that would require a change
-> > to the ndo_setup_tc hook to allow driver to return its own error message
-> > as to why the setup failed.  
+On 24/04/2020 03:05, Stephen Hemminger wrote:
+> On Fri, 16 Nov 2018 18:50:01 +0200
+> Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
 > 
-> Yeah :S The block offload command contains extack, but this driver
-> doesn't understand block offload, so it won't interpret it...
+>> Syzbot reported a use-after-free of the global vlan context on port vlan
+>> destruction. When I added per-port vlan stats I missed the fact that the
+>> global vlan context can be freed before the per-port vlan rcu callback.
+>> There're a few different ways to deal with this, I've chosen to add a
+>> new private flag that is set only when per-port stats are allocated so
+>> we can directly check it on destruction without dereferencing the global
+>> context at all. The new field in net_bridge_vlan uses a hole.
+>>
+>> v2: cosmetic change, move the check to br_process_vlan_info where the
+>>     other checks are done
+>> v3: add change log in the patch, add private (in-kernel only) flags in a
+>>     hole in net_bridge_vlan struct and use that instead of mixing
+>>     user-space flags with private flags
+>>
+>> Fixes: 9163a0fc1f0c ("net: bridge: add support for per-port vlan stats")
+>> Reported-by: syzbot+04681da557a0e49a52e5@syzkaller.appspotmail.com
+>> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 > 
-> That brings me to an important point - doesn't the extack in patch 1
-> override any extack driver may have set?
+> Why not just use v->stats itself as the flag.
+> Since free of NULL is a nop it would be cleaner?
+> 
 
-Nope, see above side-note.  I set the extack at the "lowest level",
-e.g. closest to the error that cause the err back-propagation, when I
-detect that this will cause a failure at higher level.
+v->stats is *always* set while the vlan is published/visible, that's a guarantee
+I don't want to break because I'll have to add null checks in the fast-path.
 
+By the way this is a thread from 2018. :-)
 
-> I remember we discussed this when adding extacks to the TC core, but 
-> I don't remember the conclusion now, ugh.
-
-When adding the extack code, I as puzzled that during debugging I
-managed to override other extack messages.  Have anyone though about a
-better way to handle if extack messages gets overridden?
-
-
-[1] https://github.com/xdp-project/xdp-project/blob/master/areas/arm64/board_nxp_ls1088/nxp-board04-troubleshoot-qdisc.org
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Cheers,
+ Nik
 
