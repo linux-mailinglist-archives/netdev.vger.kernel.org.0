@@ -2,105 +2,318 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90B681B7F5D
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 21:53:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1D4A1B7F6A
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 21:56:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729237AbgDXTx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 15:53:26 -0400
-Received: from mail-eopbgr60059.outbound.protection.outlook.com ([40.107.6.59]:29594
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726793AbgDXTxZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Apr 2020 15:53:25 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OwNukLujAIho6ewtYhaNJQ6W/qiHHaIzQtOuIaN4jyRE/LA2RjwZ6fFdGtV1jrQQY3dzzlCao8pnw9bVfPq/ful+l+BKUfTJUqbRjRrhevjGH7zcxM7gZrlbXeZtT+EBFW7mkSVqQpPsxng2UPLTzKDuyQX3njbhexOoX/ZfSQqEndksXQmCyjVEZlIeWT9hPmmokax+YKyVmJHLnsKRz455xDH/xuDE4XFaOV4d8WRmM4eBItvg3L9MZb/KWa3ebkKfswz9/KZhl3ymCOPzcEQ93SL6MSM8zFnmgCAotZ6TNv3WgeQb64bXNu/ZSENH1YrOkARUq8sYU/Iz6pwifQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tB9SdX4+nXyRffRhdfvTokn8YkxP8B45OQF0I4nnWV8=;
- b=ijPrQU0z0S2A92YFc6jwJTij8QTtrE7c7QLKtuDropgBJvqzVWp7TQVq4ThtERYP4h1h1F4BB1ZizaH6EmxlIVMJTPGwnau4wdLW8hPzE//8agxB9re0jdGQA25SulhsjtIBSdfdtGwvXNRGjziFqm+M6KXy8TgdHkA90WiViyC6Exe2llvmM7kmdLsyxLGI9hlVs7yDBBZ98+ctMhNyUwTSVlwwIf20pkxkqbYYMmdZQAAwR/AXIKdHJeI1ZjmT3CKEzHSBHr1ct2EK1kbsas1i8j4w11yl5eEzzmBy01CWfBFID1JnTIxe/n8PNKBHvScpiLYJh3md5nLk+xTeGw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tB9SdX4+nXyRffRhdfvTokn8YkxP8B45OQF0I4nnWV8=;
- b=U6EU5bdEFLOzovPDL5+sCmRuY3ISBhgkFk6Ws/q5SsB5Y+hrGOlcSAMCjis5sYoKJ1YAimZZQ6cTb43tbJvmU1uEYCS/WTgcY3+gaiqWqHGnB0Pmtz6Cr4KbS2STw0fmOw3WE2H28iYvpQ3FJaNgnxvkOTNZ+NviP2gSUJNc7Cc=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=leonro@mellanox.com; 
-Received: from AM6PR05MB6408.eurprd05.prod.outlook.com (2603:10a6:20b:b8::23)
- by AM6PR05MB6007.eurprd05.prod.outlook.com (2603:10a6:20b:b0::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13; Fri, 24 Apr
- 2020 19:53:22 +0000
-Received: from AM6PR05MB6408.eurprd05.prod.outlook.com
- ([fe80::1466:c39b:c016:3301]) by AM6PR05MB6408.eurprd05.prod.outlook.com
- ([fe80::1466:c39b:c016:3301%4]) with mapi id 15.20.2937.020; Fri, 24 Apr 2020
- 19:53:22 +0000
-Date:   Fri, 24 Apr 2020 22:53:20 +0300
-From:   Leon Romanovsky <leonro@mellanox.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        Erez Shitrit <erezsh@mellanox.com>,
-        Ariel Levkovich <lariel@mellanox.com>
-Subject: Re: [PATCH mlx5-next 3/9] net/mlx5: Use aligned variable while
- allocating ICM memory
-Message-ID: <20200424195320.GB15990@unreal>
-References: <20200424194510.11221-1-saeedm@mellanox.com>
- <20200424194510.11221-4-saeedm@mellanox.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200424194510.11221-4-saeedm@mellanox.com>
-X-ClientProxiedBy: FR2P281CA0017.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a::27) To AM6PR05MB6408.eurprd05.prod.outlook.com
- (2603:10a6:20b:b8::23)
+        id S1729437AbgDXTzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 15:55:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46470 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729419AbgDXTzy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Apr 2020 15:55:54 -0400
+Received: from mail-qv1-f46.google.com (mail-qv1-f46.google.com [209.85.219.46])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 86228215A4;
+        Fri, 24 Apr 2020 19:55:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587758153;
+        bh=XyAZQ+e0o7lKduytKo6lvmMqRCZ1EqfQCzwTnAq96HM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=fV8hXCcw3sdoVZvyT2ycb3P/w1YU7ELr4Hxd9Un8zFJ8TB3zwtrJ9iPol/89Q4z9F
+         ZLYdcJdtFLdPS9FCtOahiG5HXdIX7ycnQbUXUS0XXdqLY2xw0KdQHPDw6HsaJ1+tG1
+         cqkMSsJhYHantVRmxqg7qv57CTejZPcFSiT4r/ZE=
+Received: by mail-qv1-f46.google.com with SMTP id fb4so5310871qvb.7;
+        Fri, 24 Apr 2020 12:55:53 -0700 (PDT)
+X-Gm-Message-State: AGi0PuYP157vDYmJ2xU5xTvW5md0cc49fmUYDV4/r/LDqY2uDLawKIbV
+        o6OBcLp6Ppf/HcN6BEwZU5WIFuwJjhGbzm2dcg==
+X-Google-Smtp-Source: APiQypL6QVP34OIZcFjfLZaCQy58J6loPgHHO+jJmV1P6s/hngLJU56sMwG2qfl9h0lCetvcQovdru7JCgkvs7MOHI0=
+X-Received: by 2002:a0c:a986:: with SMTP id a6mr10586552qvb.79.1587758152580;
+ Fri, 24 Apr 2020 12:55:52 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost (2a00:a040:183:2d::a43) by FR2P281CA0017.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:a::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13 via Frontend Transport; Fri, 24 Apr 2020 19:53:22 +0000
-X-Originating-IP: [2a00:a040:183:2d::a43]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 70beacfa-dc84-4b8a-9577-08d7e88924df
-X-MS-TrafficTypeDiagnostic: AM6PR05MB6007:|AM6PR05MB6007:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM6PR05MB6007842F36098AC9669209BFB0D00@AM6PR05MB6007.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
-X-Forefront-PRVS: 03838E948C
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR05MB6408.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(7916004)(4636009)(136003)(366004)(376002)(39860400002)(396003)(346002)(6486002)(4744005)(2906002)(6862004)(6636002)(8936002)(5660300002)(52116002)(6496006)(107886003)(9686003)(86362001)(54906003)(33716001)(1076003)(316002)(186003)(66946007)(16526019)(33656002)(478600001)(66476007)(8676002)(66556008)(4326008)(81156014)(450100002);DIR:OUT;SFP:1101;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LW1axazG7v2eMNzsG/Mgqy2nZA6Z9J4XQTe9LJh5xy+KvRU3p7jpWlCmPMad0eOU28ptilMWB0n1SdNJGkMMev6UBhpdScfzFAY3XGgDJgFiJe9QF3i/YeYEX1xxYWYpqZBHSoLqGFFk7MHXDZsmehI0mKgFkeuylseJ2jzV8CjIsTkH/WDoX1InzjN9PuNSVpwTR1rOLUXvhTw0rX0KWIhUindlTbO2cgFG4YZNbKXlJq3IkYL7t6MGm1tMY6I5mQHnSsmnAW8V0DwyigdvJ2B2N9xLJj+YXVy3GnWTrRM2Kn0GAJsTGgUm64ISYv1sqn/CfleeRruuw4ZNoajBhBIKTgPI2MF6qt07o4imbbHrCRR22VyKZpVuPmrCTTHPYCwG+Uv/ToN6J7E0glsnFcM5ggUOap1wLmpI+VlSKjmHt44sLC3C4vk+U4e8LDKK
-X-MS-Exchange-AntiSpam-MessageData: mRBkKPr87A4iH2JDQQXuqBs3k3E2n0MCAeeb+mla+fbD9nKeUw5Nig2bRQLWUoW+89WcLp3FRM+6hWc1oSNwxCHngcaAVWht9jBpkTOjdqeLbdPbQmWzX9FCD5RcpnDu79q7/GtsEKZ3HDh+MbdnQ2F/PQNdZmmkkHi2R9FDXS8=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 70beacfa-dc84-4b8a-9577-08d7e88924df
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2020 19:53:22.6608
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: d9vA1mLbSbgKMysQdguEdTM3+kETDgE5r23wDhgHwLL6tm6hBqn+17Hk9dZ6e/Jxvrypvyc9bqum7Qh2lmx+kw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB6007
+References: <1587732391-3374-1-git-send-email-florinel.iordache@nxp.com> <1587732391-3374-3-git-send-email-florinel.iordache@nxp.com>
+In-Reply-To: <1587732391-3374-3-git-send-email-florinel.iordache@nxp.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Fri, 24 Apr 2020 14:55:40 -0500
+X-Gmail-Original-Message-ID: <CAL_Jsq+7zpDDcVzTKSufzuCWnRcLZ0h+y0TpsJE=G+pbuhWtvw@mail.gmail.com>
+Message-ID: <CAL_Jsq+7zpDDcVzTKSufzuCWnRcLZ0h+y0TpsJE=G+pbuhWtvw@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 2/9] dt-bindings: net: add backplane dt bindings
+To:     Florinel Iordache <florinel.iordache@nxp.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        devicetree@vger.kernel.org,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Yang-Leo Li <leoyang.li@nxp.com>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 24, 2020 at 12:45:04PM -0700, Saeed Mahameed wrote:
-> From: Erez Shitrit <erezsh@mellanox.com>
+On Fri, Apr 24, 2020 at 7:46 AM Florinel Iordache
+<florinel.iordache@nxp.com> wrote:
 >
-> The alignment value is part of the input structure, so use it and spare
-> extra memory allocation when is not needed.
-> Now, using the new ability when allocating icm for Direct-Rule
-> insertion.
-> Signed-off-by: Ariel Levkovich <lariel@mellanox.com>
-> Signed-off-by: Erez Shitrit <erezsh@mellanox.com>
+> Add ethernet backplane device tree bindings
+
+For a new, common binding, you've got to do better than this. Bindings
+need to stand on their own. I need a h/w block diagram or something
+because I know little about "ethernet backplane".
+
 >
-> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+> Signed-off-by: Florinel Iordache <florinel.iordache@nxp.com>
 > ---
+>  .../bindings/net/ethernet-controller.yaml          |  3 +-
+>  .../devicetree/bindings/net/ethernet-phy.yaml      | 50 +++++++++++++++++++++
+>  .../devicetree/bindings/net/serdes-lane.yaml       | 51 ++++++++++++++++++++++
+>  Documentation/devicetree/bindings/net/serdes.yaml  | 44 +++++++++++++++++++
+>  4 files changed, 147 insertions(+), 1 deletion(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/serdes-lane.yaml
+>  create mode 100644 Documentation/devicetree/bindings/net/serdes.yaml
+>
+> diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> index ac471b6..541cee5 100644
+> --- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> +++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> @@ -93,8 +93,9 @@ properties:
+>        - rxaui
+>        - xaui
+>
+> -      # 10GBASE-KR, XFI, SFI
+> +      # 10GBASE-KR, 40GBASE-KR4, XFI, SFI
+>        - 10gbase-kr
+> +      - 40gbase-kr4
+>        - usxgmii
+>
+>    phy-mode:
+> diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> index 5aa141c..436b5a7 100644
+> --- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> +++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> @@ -161,6 +161,42 @@ properties:
+>      description:
+>        Specifies a reference to a node representing a SFP cage.
+>
+> +  eq-algorithm:
+> +    description:
+> +      Specifies the desired equalization algorithm to be used
+> +      by the KR link training
+> +    oneOf:
+> +      - const: fixed
+> +        description:
+> +          Backplane KR using fixed coefficients meaning no
+> +          equalization algorithm
+> +      - const: bee
+> +        description:
+> +          Backplane KR using 3-Taps Bit Edge Equalization (BEE)
+> +          algorithm
+> +
+> +  eq-init:
 
-Extra blank line between SOBs and no line between text and SOBs.
+eq-coefficients?
 
-Thanks
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> +    minItems: 3
+> +    maxItems: 3
+> +    description:
+> +      Triplet of KR coefficients. Specifies the initialization
+> +      values for standard KR equalization coefficients used by
+> +      the link training (pre-cursor, main-cursor, post-cursor)
+
+items:
+  - description: pre-cursor
+  - description: main-cursor
+  ...
+
+Is 0-2^32 valid data? If not, add some constraints.
+
+> +
+> +  eq-params:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> +    description:
+> +      Variable size array of KR parameters. Specifies the HW
+> +      specific parameters used by the link training.
+
+DT is not a dumping ground for magic register values.
+
+eq-init vs. eq-params is pretty vague as to what they are.
+
+I fail to see how these properties are related to $subject. Should be
+a separate patch.
+
+> +
+> +  lane-handle:
+> +    $ref: /schemas/types.yaml#definitions/phandle
+> +    description:
+> +      Specifies a reference (or array of references) to a node
+> +      representing the desired SERDES lane (or lanes) used in
+> +      backplane mode.
+> +
+>  required:
+>    - reg
+>
+> @@ -183,3 +219,17 @@ examples:
+>              reset-deassert-us = <2000>;
+>          };
+>      };
+> +  - |
+> +    ethernet {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        ethernet-phy@0 {
+> +            compatible = "ethernet-phy-ieee802.3-c45";
+> +            reg = <0x0>;
+> +            lane-handle = <&lane_d>;
+> +            eq-algorithm = "fixed";
+> +            eq-init = <0x2 0x29 0x5>;
+> +            eq-params = <0>;
+> +        };
+> +    };
+> diff --git a/Documentation/devicetree/bindings/net/serdes-lane.yaml b/Documentation/devicetree/bindings/net/serdes-lane.yaml
+> new file mode 100644
+> index 0000000..ce3581e
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/serdes-lane.yaml
+> @@ -0,0 +1,51 @@
+> +# SPDX-License-Identifier: GPL-2.0
+
+Dual license new bindings:
+
+(GPL-2.0-only OR BSD-2-Clause)
+
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/serdes-lane.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Serdes Lane Binding
+> +
+> +maintainers:
+> +  - Florinel Iordache <florinel.iordache@nxp.com>
+> +
+> +properties:
+> +  $nodename:
+> +    pattern: "^lane(@[a-f0-9]+)?$"
+> +
+> +  compatible:
+> +    oneOf:
+> +      - const: lane-10g
+> +        description: Lane part of a 10G SerDes module
+> +      - const: lane-28g
+> +        description: Lane part of a 28G SerDes module
+> +
+> +  reg:
+> +    description:
+> +      Registers memory map offset and size for this lane
+> +
+> +  reg-names:
+> +    description:
+> +      Names of the register map given in "reg" node.
+> +
+> +examples:
+> +  - |
+> +    serdes1: serdes@1ea0000 {
+> +        compatible = "serdes-10g";
+
+Do you have a datasheet for this device as bindings describe devices?
+I assume not because serdes is a protocol, not a device. AFAIK,
+there's no standard programming interface for 'serdes' as that is
+about the only time we have any sort of genericish compatible strings.
+The compatible string at a minimum should tell me what the programming
+model for the registers are.
+
+> +        reg = <0x0 0x1ea0000 0 0x00002000>;
+> +        reg-names = "serdes", "serdes-10g";
+
+The default address and sizes are 1 cell. So you have addr 0 with size
+0x1ea0000 and then addr 0 with size 0x2000.
+
+> +        little-endian;
+> +
+> +        #address-cells = <1>;
+> +        #size-cells = <1>;
+> +        lane_a: lane@800 {
+> +            compatible = "lane-10g";
+> +            reg = <0x800 0x40>;
+> +            reg-names = "lane", "serdes-lane";
+
+Not valid. You have 1 entry (with a addr and size) for reg, but 2
+entries for reg-names.
+
+40G is made up of 4 10G lanes, right? Do all 40G serdes phys have
+separate register regions for each lane? You can't assume lanes and DT
+nodes are 1-1.
+
+As lanes have to be child nodes, these 2 schemas should be 1. Though I
+don't think lane nodes will survive.
+
+> +        };
+> +        lane_b: lane@840 {
+> +            compatible = "lane-10g";
+> +            reg = <0x840 0x40>;
+> +            reg-names = "lane", "serdes-lane";
+> +        };
+> +    };
+> diff --git a/Documentation/devicetree/bindings/net/serdes.yaml b/Documentation/devicetree/bindings/net/serdes.yaml
+> new file mode 100644
+> index 0000000..fd3da85
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/serdes.yaml
+> @@ -0,0 +1,44 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/serdes.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Serdes Module Binding
+> +
+> +maintainers:
+> +  - Florinel Iordache <florinel.iordache@nxp.com>
+> +
+> +properties:
+> +  $nodename:
+> +    pattern: "^serdes(@[a-f0-9]+)?$"
+> +
+> +  compatible:
+> +    oneOf:
+> +      - const: serdes-10g
+> +        description: SerDes module type of 10G
+> +      - const: serdes-28g
+> +        description: SerDes module type of 28G
+> +
+> +  reg:
+> +    description:
+> +      Registers memory map offset and size for this serdes module
+> +
+> +  reg-names:
+> +    description:
+> +      Names of the register map given in "reg" node.
+> +
+> +  little-endian:
+> +    description:
+> +      Specifies the endianness of serdes module
+> +      For complete definition see
+> +      Documentation/devicetree/bindings/common-properties.txt
+> +
+> +examples:
+> +  - |
+> +    serdes1: serdes@1ea0000 {
+> +        compatible = "serdes-10g";
+> +        reg = <0x0 0x1ea0000 0 0x00002000>;
+> +        reg-names = "serdes", "serdes-10g";
+> +        little-endian;
+> +    };
+> --
+> 1.9.1
+>
