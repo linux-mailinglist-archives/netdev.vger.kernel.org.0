@@ -2,169 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 569AA1B7E8D
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 21:07:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0AD51B7F3A
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 21:45:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729271AbgDXTHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 15:07:20 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:44712 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727022AbgDXTHT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 15:07:19 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03OJ3ec4026642;
-        Fri, 24 Apr 2020 12:06:58 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=hM/GrYLnqKmMzBHmP7BfjUaoL2dAdHwpFmp9GcTdpKg=;
- b=YoW0VXwwvyIny6pKKv9c1GPWwV/luiWDCDz/7DSidKflBPj7dOWwEmJtbNdpCrmv3jKW
- Pf77jfqa+fpLZL/KtwjrL27PdhNOsIDXFTf0MBoy7Y8rVnZcWTvZcii+XMWTVCSLjFQh
- jpVrZQSncVPpkbDRuKQ6EwR5b9DAirtSHAI= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 30kknkxgp4-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 24 Apr 2020 12:06:57 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Fri, 24 Apr 2020 12:06:54 -0700
+        id S1729247AbgDXTpr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 15:45:47 -0400
+Received: from mail-eopbgr70047.outbound.protection.outlook.com ([40.107.7.47]:44128
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726908AbgDXTpr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Apr 2020 15:45:47 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VIRClPYVvElwaX0TqgXPwqcXSJTDqRyayRHhe9WfeC6pOq/VW8zEydasZhEw9XXFqjMH5b9mw62gaq5TPTorBpyhS4cGpP75umh+Oo2LHrWq9dslmp1S5CZFDnljHpGP26CGrEYKycJtWY+nVTHX3OxkvcuG/5gr9jq7IT129OfbJoUqdYy6PTfwpyDFdh54u6qRkyTvEQHoEb/pfhjZGUBStyjZgwUZUJWMlUUZfCN/bnpR7cw+nSxe3ME3y2+nSYC8hSj1T9viiuriYjL5uHjUofRjGfKZwV4Pp/wSj7QIgsj74gVNwGtCdLEjdnKEsOE8wXIN7wO/+yTo+KVhRg==
+ b=E5+Pyx6YYEsaF/jTRhytSI5vRKXavObEhlHOWXAiIHb13RWFJWZKSedO3zdYsMug2r1UPxk4ynEeTFSxme0zYmCV0cVYFCQYxF6LB1aFNSeqdwmnZ5S8nkyYPlIHMDglnqP+oLEQOPxK6FfHTrHrxYA3QO2sje5lJySVTnezCLB8haPS1mFnwnlvd+Q7kGnmJrx4w5K8bsXrMhou3XBNCZLOlwJlmSichWdIWKO+LEZ9kRt7+7VvmRApiiDSfsQrQg+CzkqzVhvItmfRsNBCNVuZcq+mbKIoznc6V0yrb+Va/FtlBXTEhtGQ9tw5KXNQR0RYCD20AETT2eTsfZWg6Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hM/GrYLnqKmMzBHmP7BfjUaoL2dAdHwpFmp9GcTdpKg=;
- b=hP5TgoPtB1afinpU4yjb06/O8CzbZHtObwf0uLKr0rrz3w2Y8Nzlnaxr/2SwqVpNOU9XWnzhZqVpx8WICa57OO5NoOvMpV3gZr5RRvUwNCat/O68MrZ4Agln1QleQbb1FaRypGh8/2OE+dA+3BtXX10CdvEqkQGWuPGp0nQiBl/xchjbN6ZeSqLZQ1cvs6Qn7cEomiIc3JNlBBPMLthyniF5fZh3XSS8OTPs3gX/xqeJI7pfVhSHhSSlAEH0EIiOWxWq4SOluB/JG599/bhtvWBaC2wiCngy4PLjMWiwFVD8x0x1zYSDE8yRbftNjwotUAhnqdd5lXCnESsLoWMq4g==
+ bh=yePYpO97945zQIsJzH4azEee8B65mnqYOqpdGZ8O2es=;
+ b=KAXlZMZlGB8wpLfaVN/nOAt6UGT33ziL72z3+x2tROi1C333Qg+/Y8TdqqtAcp+Lh/3h3iFoBrUxc6GqTPE2KIfcIulUH0Ydnjj2dky/fyAGb5pp73ARCapuyfgkDXRPtykmHjYWYDhnF/1jqN67omhODopS3F82N8/r7UrIpvcrAVMzOv4vXyUmBPjjGh4L1r9FuOSg9jihPRtlKZ0fyyHMRqbTA2OGVXCm4rdZ0OAAC/9d6+kuGisj7Ry7HDEA72Lq3XBO7Ivw+R2DHvYMyUw3ebek23EFnOwc6gxVFT4AkiUjdNB9b5z4Wu7nBcur8FOg9MIcHwxuyIMw1ZkLBA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hM/GrYLnqKmMzBHmP7BfjUaoL2dAdHwpFmp9GcTdpKg=;
- b=Hpf986SzpRAxcXLpZ9r3Q4GmLwIkyYho0tIkR2UogIImrgSFbwmHSsDXVIxPd5QzHK3+TPFSZXdaYi4DKTWjoGJRSXVf+j0hZNycN22igo8xX9dBidiRY640UG6ytZNiraT/boxiopUlm5eENfRb/1xVm3oOEfFmjgl+bjP3rko=
-Received: from BYAPR15MB4119.namprd15.prod.outlook.com (2603:10b6:a02:cd::20)
- by BYAPR15MB2646.namprd15.prod.outlook.com (2603:10b6:a03:155::10) with
+ bh=yePYpO97945zQIsJzH4azEee8B65mnqYOqpdGZ8O2es=;
+ b=suEPXysAvK7+/DCRiP4vhtUjEgKK3W6vluB34k3YlrQXAcJeiG5GZTSwljLOUOFsFryu3T5xlq1r5lHcRcwOUS6AMCrj5+8/81z9TuoREKiPU6jm5de97RCV6cOHUnp7ge8EES22WwSxUlpAlL1w7yAOT6JgQwgneuIReLMjEVg=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR05MB5072.eurprd05.prod.outlook.com (2603:10a6:803:61::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.27; Fri, 24 Apr
- 2020 19:06:53 +0000
-Received: from BYAPR15MB4119.namprd15.prod.outlook.com
- ([fe80::90d6:ec75:fde:e992]) by BYAPR15MB4119.namprd15.prod.outlook.com
- ([fe80::90d6:ec75:fde:e992%7]) with mapi id 15.20.2921.030; Fri, 24 Apr 2020
- 19:06:53 +0000
-Date:   Fri, 24 Apr 2020 12:06:50 -0700
-From:   Andrey Ignatov <rdna@fb.com>
-To:     Christoph Hellwig <hch@lst.de>
-CC:     Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        <linux-kernel@vger.kernel.org>, <linux-mm@kvack.org>,
-        <linux-fsdevel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-Subject: Re: [PATCH 5/5] sysctl: pass kernel pointers to ->proc_handler
-Message-ID: <20200424190650.GA72647@rdna-mbp.dhcp.thefacebook.com>
-References: <20200424064338.538313-1-hch@lst.de>
- <20200424064338.538313-6-hch@lst.de>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200424064338.538313-6-hch@lst.de>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-ClientProxiedBy: MWHPR12CA0059.namprd12.prod.outlook.com
- (2603:10b6:300:103::21) To BYAPR15MB4119.namprd15.prod.outlook.com
- (2603:10b6:a02:cd::20)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.29; Fri, 24 Apr
+ 2020 19:45:32 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2937.020; Fri, 24 Apr 2020
+ 19:45:32 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leonro@mellanox.com>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH mlx5-next 0/9] Mellanox, mlx5-next updates 2020-04-24
+Date:   Fri, 24 Apr 2020 12:45:01 -0700
+Message-Id: <20200424194510.11221-1-saeedm@mellanox.com>
+X-Mailer: git-send-email 2.25.3
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BYAPR06CA0016.namprd06.prod.outlook.com
+ (2603:10b6:a03:d4::29) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost (2620:10d:c090:400::5:f8d0) by MWHPR12CA0059.namprd12.prod.outlook.com (2603:10b6:300:103::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13 via Frontend Transport; Fri, 24 Apr 2020 19:06:52 +0000
-X-Originating-IP: [2620:10d:c090:400::5:f8d0]
+Received: from smtp.office365.com (73.15.39.150) by BYAPR06CA0016.namprd06.prod.outlook.com (2603:10b6:a03:d4::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13 via Frontend Transport; Fri, 24 Apr 2020 19:45:30 +0000
+X-Mailer: git-send-email 2.25.3
+X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6370f825-e3ee-4832-c815-08d7e882a65d
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2646:
-X-Microsoft-Antispam-PRVS: <BYAPR15MB264688E3CFBA32A1C0EB36C9A8D00@BYAPR15MB2646.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:639;
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 5f059c91-2673-4ea6-2341-08d7e8880c78
+X-MS-TrafficTypeDiagnostic: VI1PR05MB5072:|VI1PR05MB5072:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB50729958C7F898E3102E3AA9BED00@VI1PR05MB5072.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
 X-Forefront-PRVS: 03838E948C
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4119.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10019020)(376002)(366004)(136003)(346002)(39860400002)(396003)(9686003)(66556008)(186003)(5660300002)(16526019)(54906003)(478600001)(7416002)(52116002)(6496006)(316002)(6486002)(66946007)(66476007)(86362001)(8936002)(81156014)(33656002)(2906002)(6916009)(1076003)(8676002)(4326008);DIR:OUT;SFP:1102;
-Received-SPF: None (protection.outlook.com: fb.com does not designate
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(39860400002)(136003)(396003)(376002)(366004)(346002)(6506007)(26005)(2616005)(8936002)(8676002)(316002)(6636002)(36756003)(6666004)(15650500001)(66946007)(66556008)(52116002)(81156014)(478600001)(66476007)(6512007)(956004)(5660300002)(110136005)(4326008)(1076003)(16526019)(186003)(2906002)(6486002)(86362001)(450100002)(54420400002);DIR:OUT;SFP:1101;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eNaGqUW6wSd4bBK1v86xk6mZCTRwc50jcBjq/tkNyMtygZSTtQE9d4AYHmafq+og7DtEg31A7TsKBERa871xT1IlOx4SKdcNKbE+dXWGUUyJUUAsMfzzASuU2cvotVcf3bycf3byM8zHCa5pAQU3SwM5YFPnl9VJoJVAqM5L+yc1SK8Hrp6VfYW+V8QpU5Ncs3qYKENXs9wfM4aSkBoKwa637zgwaeZWanejKCGWI7Tsq+YCkOzb+4yizIbEGA8a5RK6ez0zWfE3h5Re8+vukOjGKy3qXq9Hp98DzlGyu95YG4eIZZAS8j8NK1Asnx5Gky/61q8jMA2wy1n60EOwjt9tvICDYYwpdatHxXDadkVuf+DDX7xL5i9gntT1Dj9WXQYyf+GyBk+5xwwEjwPoloWfJhFnW/W9+6FLfks/NIMuovf0iyo3Vc6QUp7+lpew
-X-MS-Exchange-AntiSpam-MessageData: VEbm7jeTzG09fd1BaC+airxTE26QraJYUEe/Ot9gLYkU9qtJyaFqgT/lcN78FHmXoMQzzduUqFoHr+fHtGg3Fa/a7ZjKzvkEjq1CsJUTmwKLppY3pehwpevWrPXbXc+qSxxmCRy0+g+jVxM7AaukoYiMOERY7BMsbwC0sDh+Zj3nj9LOqT4x5w0UjUXM2WO5
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6370f825-e3ee-4832-c815-08d7e882a65d
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2020 19:06:53.3219
+X-Microsoft-Antispam-Message-Info: mGJ0XPvo3L71N1dKc3PSyCk2omUVWGcxIR02G7d1s7OMGSDmeVnm1ljc0qFVSyLqdETv7RkYplOdcfr7r2y8AeCsWf2fKlsyegxzDKCD9pUnfyBEXtm7bdvV09vjYTGGoaJaRR/Chi0l7ZF9SqVukUhONTqRbf5dpF5IfCvKoKVLgh1B0xiZcFbWsGC2FK59MXX9IAFlMj7Y7cD1p0vZu2gDHO8eGZjlr+lnDvPCKbEFqPJTLG4SEpjwjkiPOx1HC8OZUMabZHSI3HOBhskMSANhrrtvSTWMVXIlGeoSxA0sq4tplH34wVXIIScguvlu8nFkltSxUczMcy2JYvG1Nz0oDmR8e1cZl2KiRCDCAoFd1PPwtODbxXh1uNq1lqGjQ2eSz3FT+vAfAcfyCjpbJdpuxFqDqhazJ5LmD7vb4cfTXa2MLA59TJy077P7AujrkVVjNCb7pd/Dms9IGyLtjzAcVWcBidWog+btICfrBGlbij7L0L3AnwO4+d9YjDHG
+X-MS-Exchange-AntiSpam-MessageData: XJARCXta1QN+nLMsahyXb/GZuwncsZzwCE/sddRd+TXpZOz53v9O/LrZcF0KnkiGFgWzdbhqN4QWFPHEKUYpdTH5vj3msRjdakK9CKnvEarq9CQU5Ik3P0Xg2u+YiKRXdlxCHdF1iqb0PWKVOkuPtQ==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5f059c91-2673-4ea6-2341-08d7e8880c78
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2020 19:45:32.1828
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: o8laA+gNu2MlHLKV//wJ1THIf/h4mDwarLihJBfieHtW9btJzFXmWYrKRW7m51ti
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2646
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-24_11:2020-04-24,2020-04-24 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- lowpriorityscore=0 phishscore=0 suspectscore=0 adultscore=0 bulkscore=0
- mlxlogscore=999 impostorscore=0 malwarescore=0 clxscore=1015 mlxscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004240144
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-UserPrincipalName: POAi38lNe6bNsJXSnNmPW+IjW1jwLbqK5/HpQYD+O+fkPUf9FcG6WSl1zfi8uresxu4N8QRr831BC2ml9kSlKg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5072
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christoph Hellwig <hch@lst.de> [Thu, 2020-04-23 23:44 -0700]:
-> Instead of having all the sysctl handlers deal with user pointers, which
-> is rather hairy in terms of the BPF interaction, copy the input to and
-> from  userspace in common code.  This also means that the strings are
-> always NUL-terminated by the common code, making the API a little bit
-> safer.
-> 
-> As most handler just pass through the data to one of the common handlers
-> a lot of the changes are mechnical.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> Acked-by: Andrey Ignatov <rdna@fb.com>
+Hi, 
 
-...
+This series provides misc mlx5 updates, mostly HW bits and definitions:
 
-> @@ -72,33 +70,21 @@ extern unsigned int sysctl_sched_autogroup_enabled;
->  extern int sysctl_sched_rr_timeslice;
->  extern int sched_rr_timeslice;
->  
-> -extern int sched_rr_handler(struct ctl_table *table, int write,
-> -		void __user *buffer, size_t *lenp,
-> -		loff_t *ppos);
-> -
-> -extern int sched_rt_handler(struct ctl_table *table, int write,
-> -		void __user *buffer, size_t *lenp,
-> -		loff_t *ppos);
-> -
-> -#ifdef CONFIG_UCLAMP_TASK
+1) release all pages FW capability but
+2) Aligned ICM memory allocation
+3) COPY steering action
+4) bits and definitions for FW update feature
+5) IPSec and TLS related HW bits
 
-Decided to skim through the patch one last time to double-check the fix
-from previous iteration and found that this ifdef got lost below.
+In case of no objection this series will be applied to mlx5-next branch
+and sent later as pull request to both rdma-next and net-next branches.
 
-> -extern int sysctl_sched_uclamp_handler(struct ctl_table *table, int write,
-> -				       void __user *buffer, size_t *lenp,
-> -				       loff_t *ppos);
-> -#endif
-> -
-> -extern int sysctl_numa_balancing(struct ctl_table *table, int write,
-> -				 void __user *buffer, size_t *lenp,
-> -				 loff_t *ppos);
-> -
-> -extern int sysctl_schedstats(struct ctl_table *table, int write,
-> -				 void __user *buffer, size_t *lenp,
-> -				 loff_t *ppos);
-> +int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
-> +		size_t *lenp, loff_t *ppos);
-> +int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
-> +		size_t *lenp, loff_t *ppos);
-> +int sysctl_sched_uclamp_handler(struct ctl_table *table, int write,
-> +		void *buffer, size_t *lenp, loff_t *ppos);
+Thanks,
+Saeed.
 
-Here ^^
+---
+
+Eran Ben Elisha (1):
+  net/mlx5: Add release all pages capability bit
+
+Erez Shitrit (1):
+  net/mlx5: Use aligned variable while allocating ICM memory
+
+Huy Nguyen (1):
+  net/mlx5: Add support for COPY steering action
+
+Moshe Shemesh (2):
+  net/mlx5: Add structure layout and defines for MFRL register
+  net/mlx5: Add structure and defines for pci sync for fw update event
+
+Raed Salem (3):
+  net/mlx5: Introduce IPsec Connect-X offload hardware bits and
+    structures
+  net/mlx5: Refactor imm_inval_pkey field in cqe struct
+  net/mlx5: TX WQE Add trailer insertion field
+
+Tariq Toukan (1):
+  net/mlx5: Introduce TLS RX offload hardware bits
+
+ drivers/infiniband/hw/mlx5/cq.c               |   8 +-
+ drivers/infiniband/hw/mlx5/flow.c             |   4 +-
+ drivers/infiniband/hw/mlx5/main.c             |   2 +-
+ .../ethernet/mellanox/mlx5/core/en/tc_ct.c    |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   |   8 +-
+ .../ethernet/mellanox/mlx5/core/esw/chains.c  |   2 +-
+ .../mellanox/mlx5/core/eswitch_offloads.c     |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/fs_cmd.c  |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/lib/dm.c  |  15 ++-
+ .../mellanox/mlx5/core/steering/dr_icm_pool.c |  53 ++++----
+ .../mellanox/mlx5/core/steering/fs_dr.c       |   2 +-
+ include/linux/mlx5/device.h                   |  44 ++++++-
+ include/linux/mlx5/driver.h                   |   4 +-
+ include/linux/mlx5/mlx5_ifc.h                 | 123 ++++++++++++++++--
+ include/linux/mlx5/qp.h                       |   6 +
+ 15 files changed, 214 insertions(+), 65 deletions(-)
 
 -- 
-Andrey Ignatov
+2.25.3
+
