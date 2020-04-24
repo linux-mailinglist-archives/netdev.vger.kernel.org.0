@@ -2,91 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9E971B6BA6
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 04:57:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D9D31B6BC9
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 05:17:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726154AbgDXC5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 22:57:25 -0400
-Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:55919 "EHLO
-        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725884AbgDXC5Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 22:57:24 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.west.internal (Postfix) with ESMTP id CD09BD10;
-        Thu, 23 Apr 2020 22:57:23 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Thu, 23 Apr 2020 22:57:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rylan.coffee; h=
-        date:from:to:subject:message-id:mime-version:content-type; s=
-        fm3; bh=brsFHTOcuqgo//M85imCKMi4ly+rvtpPJ/C1YNSJwjE=; b=Q1SRUDH4
-        6CIIezndmyoo3LIlmYEWFiRCUSbukb5EaUg9mJjtdHgIBRrUhgCVD9k1YbyxSgRD
-        ZmYSSZzknqOjoIyJrdXIAEpxoGiz4Ae2U3YKRfsYcJHumQoKV3FdFf44EZpjHhN4
-        /76rlKgStMGYTqKPC4Ztxxb4LBc+JULaWOzwjMoeKFQM8rsVjGym4T2fTxauWjKQ
-        XxCztUp4shWS8e8IX+T4Xqcc64iK9WZ9bJMVP6smOmhjScHBCH7Pr5oy/X4y3sCu
-        kyBEFZ6N2wuUAwJAyq+2ZpD/8DKjnCXC+/ptWbsRnSbQ0kyQCTmdMb5tq2X1fJ1+
-        NxYqygFBM7KvCA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=content-type:date:from:message-id
-        :mime-version:subject:to:x-me-proxy:x-me-proxy:x-me-sender
-        :x-me-sender:x-sasl-enc; s=fm2; bh=brsFHTOcuqgo//M85imCKMi4ly+rv
-        tpPJ/C1YNSJwjE=; b=vF2er2Z+7N4uORZRrONoFrcP2Gxvi6OOu44nrF0U6MfO5
-        8ldsuGE6vfdzU7E9yi5RCxtE/NA4Ic1x8nxudXRESUDxIIwPYol+qIQBaMDV2wDY
-        GACd4U2+h3htPwdxXw/ide9hnhiAkLQPHgxfkxMQKiS0NmJgQnI1mrcPsImx9qvH
-        AxIQhRvn9GYNZRRWhTrWmrnZNKME0C98nk5ymbDMf8eXTrqAOtQEYlyES0uEt7T9
-        /EzKD/rGqOgrg3+o0LmpDyTaFRKDEK/ExE/dIqIKI8Zn1XSsL7Yc5h8PV63he5PD
-        Z7+t86Nk0fA3xboPQdAeh5rJMD8/IRJCF7Lve9J0Q==
-X-ME-Sender: <xms:k1WiXoHnP0mPLWCYQ6FPgG8m0k-dwYFiXKIQghIFBrHnIcas0WN-gA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrhedtgdeiudcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkgggtugesthdtredttddtjeenucfhrhhomheptfihlhgrnhcuffhm
-    vghllhhouceomhgrihhlsehrhihlrghnrdgtohhffhgvvgeqnecukfhppedutdekrdegle
-    drudehkedrkeegnecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhf
-    rhhomhepmhgrihhlsehrhihlrghnrdgtohhffhgvvg
-X-ME-Proxy: <xmx:k1WiXoHI4mVwhLkDXdH7S62Mvksv3GvZCvPlbuZsHGhIl0Tsa-BH1Q>
-    <xmx:k1WiXj4lUwmH4z_G1pVpa_GvrmzIZFpNvumtlLEPBo61VsbtG3JsEA>
-    <xmx:k1WiXlxkIkxtq8AlM8Fo3v1NzCkj7zTItlBARmwe8z--7u00Ng_VPQ>
-    <xmx:k1WiXgDr5w9y_tR3OEg34Ww7f4hfDIv7ZKBa5xrfxNABOjyIrWT4qw>
-Received: from athena (pool-108-49-158-84.bstnma.fios.verizon.net [108.49.158.84])
-        by mail.messagingengine.com (Postfix) with ESMTPA id CF76A3280060;
-        Thu, 23 Apr 2020 22:57:22 -0400 (EDT)
-Date:   Thu, 23 Apr 2020 22:57:23 -0400
-From:   Rylan Dmello <mail@rylan.coffee>
-To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        id S1726424AbgDXDQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 23:16:59 -0400
+Received: from mail-eopbgr60072.outbound.protection.outlook.com ([40.107.6.72]:3072
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725982AbgDXDQ6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 23 Apr 2020 23:16:58 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=O/8eldznQLvZrO904IQrt350kuFHzGkwB/yO1fn/o22wZpMw+rcZQpzgf+z265Hy4PMlTUHeo0jOpQ5RJJwHgW5FzAP5xqyBm/JHN9S7Ry69IPcbCrov6YEJIWp31ZUGnuSbY9wQ/lSU5+KUW/hVzT7dWqGQixU0SdIAa+LT0Njzr13qLvVcGr5s/W1QXlPfgGDoFCZbRFJfje/76rqji7gh7ar0Mqs7r9DKBX5nEuSqHOhkNRmGcUSkDugBwCFRsUT867R5P1v83yC/NUVJjY9Gt7UumsW5swB6e+MQQYiGv8uCeaCDyTSS1Y/Sc1I3ZwmR1yiW19N9ga8kVYRYsA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TJrrKFcJj3+4b7N2H1iiMO/M4JRjznloM8XjSAKSD8k=;
+ b=f1CmnYcVsLYpaMSVNkKKv02WKV0Dj682avmlorXVwMYmK5af09uvVyNY3hFa3eKJ0/Lwj3LHRzRGOKRnnpX6q3aI4KEh95ePJm8HSOcN4Gm2cwfE6ApSArHKPgc3//8+D7KZAiYHXm6rj9MRP9MuZ3YXBYO80msS63rb+wmOwOwaE3qdPculyYMmPavICjThzHWVWvtNZPLMTGZ9ZvW9FbjWadIws/DeTu5O/HvDRII+JqbBTCDPNPqDzd10aEUYEbyeDymb4AXyj7zLHPXS4ZwipLOrgepvFfcMFbnvRDQTYcnJJd7TwP3MKL1vVNbOOLObguOoxOnVAdpnfuHt1Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TJrrKFcJj3+4b7N2H1iiMO/M4JRjznloM8XjSAKSD8k=;
+ b=AO8VnscdxjPszv+bw8fdlmeHQU47kfxYuvHTHIMjxoNbtW1vgQDrJWoOkddXHGHE090kKIjU4RCY2749Uj+ffsRl+9HnLcpAAdudNvPt+t4Y6i5tVKzAMcd/6v6zh6MSfHF+C8Z5X4ReVp5QmL+M2jaMG+ytqlP9674ro4M+OXk=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=calvin.johnson@oss.nxp.com; 
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
+ by AM0PR04MB6788.eurprd04.prod.outlook.com (2603:10a6:208:18e::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13; Fri, 24 Apr
+ 2020 03:16:54 +0000
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::c4fe:d4a4:f0e1:a75b]) by AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::c4fe:d4a4:f0e1:a75b%4]) with mapi id 15.20.2921.030; Fri, 24 Apr 2020
+ 03:16:54 +0000
+From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
+To:     linux.cj@gmail.com, Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>
+Cc:     Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        linux-acpi@vger.kernel.org,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Varun Sethi <V.Sethi@nxp.com>, Marcin Wojtas <mw@semihalf.com>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: qlge: qlge_dbg.c: Remove trailing semicolon from
- macro
-Message-ID: <20200424025723.GA28156@athena>
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [net-next PATCH v1 0/2] Introduce new APIs to support phylink and phy layers
+Date:   Fri, 24 Apr 2020 08:46:15 +0530
+Message-Id: <20200424031617.24033-1-calvin.johnson@oss.nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR01CA0122.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:40::26) To AM0PR04MB5636.eurprd04.prod.outlook.com
+ (2603:10a6:208:130::22)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR01CA0122.apcprd01.prod.exchangelabs.com (2603:1096:4:40::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13 via Frontend Transport; Fri, 24 Apr 2020 03:16:47 +0000
+X-Mailer: git-send-email 2.17.1
+X-Originating-IP: [14.142.151.118]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 9a18e40c-2bc5-464a-b9c0-08d7e7fdf07e
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6788:|AM0PR04MB6788:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR04MB6788154F4A9CE76419D7739FD2D00@AM0PR04MB6788.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1728;
+X-Forefront-PRVS: 03838E948C
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(396003)(39860400002)(366004)(136003)(376002)(2616005)(8676002)(956004)(5660300002)(8936002)(81156014)(186003)(6506007)(16526019)(26005)(54906003)(86362001)(110136005)(52116002)(55236004)(2906002)(1076003)(4744005)(316002)(478600001)(44832011)(66946007)(6512007)(6666004)(6486002)(1006002)(7416002)(4326008)(66556008)(6636002)(66476007)(110426005)(921003);DIR:OUT;SFP:1101;
+Received-SPF: None (protection.outlook.com: oss.nxp.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: dCsP/QPRSPAUxNxZJ4eoa/zz3EqRmHC9TArQJt+q6J2FiJbRSCh1AlejB+s9hyUOLP9eS0Z0mnDPcKjhY7XGEDqSb2xybYlS0F0tFU2h8xM+GWBbC1nIxeL9ozn++5O/URn/fZkC2L4Uk7P9kqnl+zn+HRAxcoDyePBdCqrnHiRxdvGSZnB+g7tHuyCPoC3VAW7kIbHooN4e7dq6RrWAahcI07Dde6ISmZjjTZfY0KQkBCjj6EGFuSBv7VyO9FzqsqFJz2HFwZ4/nZ+HG8EQ6i/RvwuxhdiAt9d0tF6r2KeD5MWRD4ucQ4YpVqvjkX+vm6lPz0CKty2mn9Ot1eWl4eng1SvvvZ320KIVcZqmoeqH2tbKCv1VV5/qDO2Za3UdhGJW+vNkIYXOXpX0LjoHcuT6kIS1qEQ+xjj9gqOgp4SxYQJUey4ZiC7eMNUePmrLrWz628vuweiNpOQavHq5Pbvy0XJ8Dr2LvuHwK6ylBCq8m//f6dCWVKsjELXsUAPz/pAF54xLFpkfjOhgz4Ms3A==
+X-MS-Exchange-AntiSpam-MessageData: Ebr4Z3QciwkNvQ42QuOa4Qnxz+R0EyuBx6m22qZ3d/H7ND9J7RlthYWoVnRtpdk+uZDtvfl1POf50jm1kvVS1lYmBgn89XNwlxbat1vflMBsvIw5Qb3es8+oH9RAFMo+irCn/KX4HldLcJNwEwrJkA==
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9a18e40c-2bc5-464a-b9c0-08d7e7fdf07e
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2020 03:16:54.8071
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: pIkOqWZBfwx9u6+XtJPAOcqqltcxh5pUFPpa0Ka+38xLCvrHeetoeSFEhoEV179VDLIGB1vMGckIksGs1dJlQQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6788
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix checkpatch.pl warning: macros should not use a trailing semicolon
+Following functions are defined:
+  phylink_fwnode_phy_connect()
+  phylink_device_phy_connect()
+  fwnode_phy_find_device()
+  device_phy_find_device()
 
-Signed-off-by: Rylan Dmello <mail@rylan.coffee>
----
- drivers/staging/qlge/qlge_dbg.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+First two help in connecting phy to phylink instance.
+Remaining two help to find a phy on a mdiobus.
 
-diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
-index 1795533cbd3a..216b13d8c131 100644
---- a/drivers/staging/qlge/qlge_dbg.c
-+++ b/drivers/staging/qlge/qlge_dbg.c
-@@ -1564,7 +1564,7 @@ void ql_dump_stat(struct ql_adapter *qdev)
- 	pr_err("qdev->%-24s = %llx\n", #field, (unsigned long long)qdev->field)
- #define DUMP_QDEV_ARRAY(qdev, type, array, index, field) \
- 	pr_err("%s[%d].%s = " type "\n",		 \
--	       #array, index, #field, (qdev)->array[index].field);
-+	       #array, index, #field, (qdev)->array[index].field)
- void ql_dump_qdev(struct ql_adapter *qdev)
- {
- 	int i;
+
+Calvin Johnson (2):
+  device property: Introduce fwnode_phy_find_device()
+  phylink: introduce phylink_fwnode_phy_connect()
+
+ drivers/base/property.c   | 41 ++++++++++++++++++
+ drivers/net/phy/phylink.c | 90 +++++++++++++++++++++++++++++++++++++++
+ include/linux/phylink.h   |  6 +++
+ include/linux/property.h  |  5 +++
+ 4 files changed, 142 insertions(+)
+
 -- 
-2.26.2
+2.17.1
 
