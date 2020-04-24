@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB8231B804A
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 22:14:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3AB21B8049
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 22:14:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729560AbgDXUOw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 16:14:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57614 "EHLO mail.kernel.org"
+        id S1729556AbgDXUOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 16:14:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57632 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729537AbgDXUOq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Apr 2020 16:14:46 -0400
+        id S1729538AbgDXUOr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Apr 2020 16:14:47 -0400
 Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CCF3721BE5;
-        Fri, 24 Apr 2020 20:14:44 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CDCAC21835;
+        Fri, 24 Apr 2020 20:14:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587759285;
-        bh=Vw2FCOouxN7bROtFES0en98jMRaoYmLfRNQ/ko0YO0M=;
+        s=default; t=1587759286;
+        bh=y6cYodOnqiQ7E1VdSwSuqVLLoLlzcN3HGsrUIcZG4y0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SaPxq2UXoBMIusaFk1ItIpCTmTKXZrbM4NeVoOCMhc9b+VWkizUZt2bhkLH9rX7Nx
-         TSmeH5Lmh+bXTYCn1h4L/mCrkXVRF/vbk0rQ8oL+0KjHN2uTNWv+Xy+/ZBSez86jPI
-         50sRN5IW7v2aWC3P46CmnAfLjlEcIxSC34CmrEro=
+        b=uTlH56qWBQXiAPLes0tb0seKyfEWCyidtgt5DSB7v1iUhT+lsXU6aG4vcTI067g0H
+         l+NtHgObyQeHSdGEHl8kmwuWOA01ZZcAQnQoywE3W999hxKwSC7nsBx9cnrIJpxoEN
+         jSmJrgbt1i8G00niW9/mkph6GgxxUqmtYACDzXX8=
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -31,9 +31,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
         dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-Subject: [PATCH v3 bpf-next 14/15] selftest: Add xdp_egress attach tests
-Date:   Fri, 24 Apr 2020 14:14:27 -0600
-Message-Id: <20200424201428.89514-15-dsahern@kernel.org>
+Subject: [PATCH v3 bpf-next 15/15] samples/bpf: add XDP egress support to xdp1
+Date:   Fri, 24 Apr 2020 14:14:28 -0600
+Message-Id: <20200424201428.89514-16-dsahern@kernel.org>
 X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 In-Reply-To: <20200424201428.89514-1-dsahern@kernel.org>
 References: <20200424201428.89514-1-dsahern@kernel.org>
@@ -46,122 +46,57 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dahern@digitalocean.com>
 
-Add xdp_egress attach tests:
-1. verify egress programs cannot access ingress entries in xdp context
-2. verify ability to load, attach, and detach xdp egress to a device.
+xdp1 and xdp2 now accept -E flag to set XDP program in the egress
+path.
 
+Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
 Signed-off-by: David Ahern <dahern@digitalocean.com>
 ---
- .../bpf/prog_tests/xdp_egress_attach.c        | 56 +++++++++++++++++++
- .../selftests/bpf/progs/test_xdp_egress.c     | 12 ++++
- .../bpf/progs/test_xdp_egress_fail.c          | 16 ++++++
- 3 files changed, 84 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_egress_attach.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_egress.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_egress_fail.c
+ samples/bpf/xdp1_user.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_egress_attach.c b/tools/testing/selftests/bpf/prog_tests/xdp_egress_attach.c
-new file mode 100644
-index 000000000000..5253754b27de
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_egress_attach.c
-@@ -0,0 +1,56 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/if_link.h>
-+#include <test_progs.h>
-+
-+#define IFINDEX_LO 1
-+
-+void test_xdp_egress_attach(void)
-+{
-+	struct bpf_prog_load_attr attr = {
-+		.prog_type = BPF_PROG_TYPE_XDP,
-+		.expected_attach_type = BPF_XDP_EGRESS,
-+	};
-+	struct bpf_prog_info info = {};
-+	__u32 id, len = sizeof(info);
-+	struct bpf_object *obj;
-+	__u32 duration = 0;
-+	int err, fd = -1;
-+
-+	/* should fail - accesses rx queue info */
-+	attr.file = "./test_xdp_egress_fail.o",
-+	err = bpf_prog_load_xattr(&attr, &obj, &fd);
-+	if (CHECK(err == 0 && fd >= 0, "xdp_egress with rx failed to load",
-+		 "load of xdp_egress with rx succeeded instead of failed"))
-+		return;
-+
-+	attr.file = "./test_xdp_egress.o",
-+	err = bpf_prog_load_xattr(&attr, &obj, &fd);
-+	if (CHECK_FAIL(err))
-+		return;
-+
-+	err = bpf_obj_get_info_by_fd(fd, &info, &len);
-+	if (CHECK_FAIL(err))
-+		goto out_close;
-+
-+	err = bpf_set_link_xdp_fd(IFINDEX_LO, fd, XDP_FLAGS_EGRESS_MODE);
-+	if (CHECK(err, "xdp attach", "xdp attach failed"))
-+		goto out_close;
-+
-+	err = bpf_get_link_xdp_id(IFINDEX_LO, &id, XDP_FLAGS_EGRESS_MODE);
-+	if (CHECK(err || id != info.id, "id_check",
-+		  "loaded prog id %u != id %u, err %d", info.id, id, err))
-+		goto out;
-+
-+out:
-+	err = bpf_set_link_xdp_fd(IFINDEX_LO, -1, XDP_FLAGS_EGRESS_MODE);
-+	if (CHECK(err, "xdp detach", "xdp detach failed"))
-+		goto out_close;
-+
-+	err = bpf_get_link_xdp_id(IFINDEX_LO, &id, XDP_FLAGS_EGRESS_MODE);
-+	if (CHECK(err || id, "id_check",
-+		  "failed to detach program %u", id))
-+		goto out;
-+
-+out_close:
-+	bpf_object__close(obj);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_egress.c b/tools/testing/selftests/bpf/progs/test_xdp_egress.c
-new file mode 100644
-index 000000000000..0477e8537b7f
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_egress.c
-@@ -0,0 +1,12 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+SEC("xdp_egress")
-+int xdp_egress_good(struct xdp_md *ctx)
-+{
-+	__u32 idx = ctx->egress_ifindex;
-+
-+	return idx == 1 ? XDP_DROP : XDP_PASS;
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_egress_fail.c b/tools/testing/selftests/bpf/progs/test_xdp_egress_fail.c
-new file mode 100644
-index 000000000000..76b47b1d3bc3
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_egress_fail.c
-@@ -0,0 +1,16 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+SEC("xdp_egress")
-+int xdp_egress_fail(struct xdp_md *ctx)
-+{
-+	__u32 rxq = ctx->rx_queue_index;
-+	__u32 idx = ctx->ingress_ifindex;
-+
-+	if (idx == 1)
-+		return XDP_DROP;
-+
-+	return rxq ? XDP_DROP : XDP_PASS;
-+}
+diff --git a/samples/bpf/xdp1_user.c b/samples/bpf/xdp1_user.c
+index c447ad9e3a1d..bb104f4d8c5e 100644
+--- a/samples/bpf/xdp1_user.c
++++ b/samples/bpf/xdp1_user.c
+@@ -73,7 +73,8 @@ static void usage(const char *prog)
+ 		"OPTS:\n"
+ 		"    -S    use skb-mode\n"
+ 		"    -N    enforce native mode\n"
+-		"    -F    force loading prog\n",
++		"    -F    force loading prog\n"
++		"    -E	   egress path program\n",
+ 		prog);
+ }
+ 
+@@ -85,7 +86,7 @@ int main(int argc, char **argv)
+ 	};
+ 	struct bpf_prog_info info = {};
+ 	__u32 info_len = sizeof(info);
+-	const char *optstr = "FSN";
++	const char *optstr = "FSNE";
+ 	int prog_fd, map_fd, opt;
+ 	struct bpf_object *obj;
+ 	struct bpf_map *map;
+@@ -103,13 +104,17 @@ int main(int argc, char **argv)
+ 		case 'F':
+ 			xdp_flags &= ~XDP_FLAGS_UPDATE_IF_NOEXIST;
+ 			break;
++		case 'E':
++			xdp_flags |= XDP_FLAGS_EGRESS_MODE;
++			prog_load_attr.expected_attach_type = BPF_XDP_EGRESS;
++			break;
+ 		default:
+ 			usage(basename(argv[0]));
+ 			return 1;
+ 		}
+ 	}
+ 
+-	if (!(xdp_flags & XDP_FLAGS_SKB_MODE))
++	if (!(xdp_flags & (XDP_FLAGS_SKB_MODE | XDP_FLAGS_EGRESS_MODE)))
+ 		xdp_flags |= XDP_FLAGS_DRV_MODE;
+ 
+ 	if (optind == argc) {
 -- 
 2.21.1 (Apple Git-122.3)
 
