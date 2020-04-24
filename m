@@ -2,72 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24EAE1B7022
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 10:57:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FCE21B703F
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 11:05:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726668AbgDXI5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 04:57:38 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:53082 "EHLO huawei.com"
+        id S1726774AbgDXJFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 05:05:17 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:49544 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726324AbgDXI5h (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Apr 2020 04:57:37 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 349BF444E3346517C4EF;
-        Fri, 24 Apr 2020 16:57:27 +0800 (CST)
-Received: from huawei.com (10.90.53.225) by DGGEMS403-HUB.china.huawei.com
- (10.3.19.203) with Microsoft SMTP Server id 14.3.487.0; Fri, 24 Apr 2020
- 16:57:18 +0800
-From:   Zheng Bin <zhengbin13@huawei.com>
-To:     <irusskikh@marvell.com>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>
-CC:     <zhengbin13@huawei.com>
-Subject: [PATCH -next] net: atlantic: Remove unneeded semicolon
-Date:   Fri, 24 Apr 2020 17:04:28 +0800
-Message-ID: <20200424090428.93485-1-zhengbin13@huawei.com>
-X-Mailer: git-send-email 2.26.0.106.g9fadedd
+        id S1725868AbgDXJFR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Apr 2020 05:05:17 -0400
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id CB1285328B0C5F59B08A;
+        Fri, 24 Apr 2020 17:05:14 +0800 (CST)
+Received: from localhost (10.166.215.154) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.487.0; Fri, 24 Apr 2020
+ 17:05:05 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH net-next] net: sched: remove unused inline function qdisc_reset_all_tx
+Date:   Fri, 24 Apr 2020 17:04:50 +0800
+Message-ID: <20200424090450.44532-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.90.53.225]
+Content-Type: text/plain
+X-Originating-IP: [10.166.215.154]
 X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes coccicheck warning:
+There's no callers in-tree anymore.
 
-drivers/net/ethernet/aquantia/atlantic/aq_macsec.c:404:2-3: Unneeded semicolon
-drivers/net/ethernet/aquantia/atlantic/aq_macsec.c:420:2-3: Unneeded semicolon
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_macsec.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/net/sch_generic.h | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c b/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
-index 0b3e234a54aa..91870ceaf3fe 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
-@@ -401,7 +401,7 @@ static u32 aq_sc_idx_max(const enum aq_macsec_sc_sa sc_sa)
- 		break;
- 	default:
- 		break;
--	};
-+	}
-
- 	return result;
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 25d2ec4c8f00..1862bf5a105b 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -710,11 +710,6 @@ static inline void qdisc_reset_all_tx_gt(struct net_device *dev, unsigned int i)
+ 	}
  }
-@@ -417,7 +417,7 @@ static u32 aq_to_hw_sc_idx(const u32 sc_idx, const enum aq_macsec_sc_sa sc_sa)
- 		return sc_idx;
- 	default:
- 		WARN_ONCE(true, "Invalid sc_sa");
--	};
-+	}
+ 
+-static inline void qdisc_reset_all_tx(struct net_device *dev)
+-{
+-	qdisc_reset_all_tx_gt(dev, 0);
+-}
+-
+ /* Are all TX queues of the device empty?  */
+ static inline bool qdisc_all_tx_empty(const struct net_device *dev)
+ {
+-- 
+2.17.1
 
- 	return sc_idx;
- }
---
-2.26.0.106.g9fadedd
 
