@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC8E31B8050
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 22:15:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FF471B8046
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 22:14:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729586AbgDXUO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 16:14:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57458 "EHLO mail.kernel.org"
+        id S1729524AbgDXUOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 16:14:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57476 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729466AbgDXUOj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Apr 2020 16:14:39 -0400
+        id S1729483AbgDXUOk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Apr 2020 16:14:40 -0400
 Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5F35F21927;
-        Fri, 24 Apr 2020 20:14:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6D4972173E;
+        Fri, 24 Apr 2020 20:14:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587759278;
-        bh=u1/3oZ1r8+EI7DBdimzXx4Se/Uy0coEkTTkVX5OtrEQ=;
+        s=default; t=1587759279;
+        bh=uXRit0m6sL4/CQGHXRBUB6Oz3mVRR2+hZCtmTOgi8hg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sV8vLx6C3YrbnUGL6gGiflZJvTPo47wJecaPrNt90oP2MiyiBoLp5F+cawnEN9vWk
-         iIddkw+7ilHXEbYIQS4feG69SpovWJ27wuejQYDjJrdWUAokiq0zPsDnFAHQsj0r5E
-         /GruVa34qT0yUgeq8EgUO8MLS9QS/Aw5xYsnHvBE=
+        b=GZiHBIcqdfeXUM8nQgZLCSb0nMqj46RGKThOe1zKkDPhbbkydsdMPr8nj24PraI1c
+         uGWWwAAeups8Ht1BxE7GVtzhoUNOXOmH8j50viOCXfRrcTjAFAbvAZt0BaF9R/BVIu
+         7V1I8sHXXjI+1fshWZbPpfrtyBuaxHF8DkmGS9qg=
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -31,9 +31,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
         dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-Subject: [PATCH v3 bpf-next 07/15] net: rename netif_receive_generic_xdp to do_generic_xdp_core
-Date:   Fri, 24 Apr 2020 14:14:20 -0600
-Message-Id: <20200424201428.89514-8-dsahern@kernel.org>
+Subject: [PATCH v3 bpf-next 08/15] net: set XDP egress program on netdevice
+Date:   Fri, 24 Apr 2020 14:14:21 -0600
+Message-Id: <20200424201428.89514-9-dsahern@kernel.org>
 X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 In-Reply-To: <20200424201428.89514-1-dsahern@kernel.org>
 References: <20200424201428.89514-1-dsahern@kernel.org>
@@ -46,137 +46,131 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dahern@digitalocean.com>
 
-In skb generic path, we need a way to run XDP program on skb but
-to have customized handling of XDP actions. netif_receive_generic_xdp
-will be more helpful in such cases than do_xdp_generic.
+This patch handles the plumbing for installing an XDP egress
+program on a net_device by handling XDP_SETUP_PROG_EGRESS and
+XDP_QUERY_PROG_EGRESS in generic_xdp_install handler. New static
+key is added to signal when an egress program has been installed.
 
-This patch prepares netif_receive_generic_xdp() to be used as general
-purpose function for running xdp programs on skbs by renaming it to
-do_xdp_generic_core, moving skb_is_redirected and rxq settings as well
-as XDP return code checks to the callers.
+Update dev_xdp_uninstall to remove egress programs.
 
-This allows this core function to be used from both Rx and Tx paths
-with rxq and txq set based on context.
-
-Signed-off-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
 Signed-off-by: David Ahern <dahern@digitalocean.com>
 ---
- net/core/dev.c | 52 ++++++++++++++++++++++++--------------------------
- 1 file changed, 25 insertions(+), 27 deletions(-)
+ include/linux/netdevice.h |  2 ++
+ net/core/dev.c            | 48 +++++++++++++++++++++++++++------------
+ 2 files changed, 36 insertions(+), 14 deletions(-)
 
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 809e1a83b413..bfd8b6c8bf70 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -751,6 +751,8 @@ struct netdev_rx_queue {
+ #endif
+ } ____cacheline_aligned_in_smp;
+ 
++extern struct static_key_false xdp_egress_needed_key;
++
+ /*
+  * RX queue sysfs structures and functions.
+  */
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 50e07b7967c9..0a56862a32e5 100644
+index 0a56862a32e5..b8ebe9dcc3be 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -4501,25 +4501,17 @@ static struct netdev_rx_queue *netif_get_rxqueue(struct sk_buff *skb)
- 	return rxqueue;
+@@ -4620,6 +4620,7 @@ void generic_xdp_tx(struct sk_buff *skb, struct bpf_prog *xdp_prog)
  }
  
--static u32 netif_receive_generic_xdp(struct sk_buff *skb,
--				     struct xdp_buff *xdp,
--				     struct bpf_prog *xdp_prog)
-+static u32 do_xdp_generic_core(struct sk_buff *skb, struct xdp_buff *xdp,
-+			       struct bpf_prog *xdp_prog)
- {
--	struct netdev_rx_queue *rxqueue;
- 	void *orig_data, *orig_data_end;
--	u32 metalen, act = XDP_DROP;
- 	__be16 orig_eth_type;
- 	struct ethhdr *eth;
-+	u32 metalen, act;
- 	bool orig_bcast;
- 	int hlen, off;
- 	u32 mac_len;
- 
--	/* Reinjected packets coming from act_mirred or similar should
--	 * not get XDP generic processing.
--	 */
--	if (skb_is_redirected(skb))
--		return XDP_PASS;
--
- 	/* XDP packets must be linear and must have sufficient headroom
- 	 * of XDP_PACKET_HEADROOM bytes. This is the guarantee that also
- 	 * native XDP provides, thus we need to do it here as well.
-@@ -4535,9 +4527,9 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
- 		if (pskb_expand_head(skb,
- 				     hroom > 0 ? ALIGN(hroom, NET_SKB_PAD) : 0,
- 				     troom > 0 ? troom + 128 : 0, GFP_ATOMIC))
--			goto do_drop;
-+			return XDP_DROP;
- 		if (skb_linearize(skb))
--			goto do_drop;
-+			return XDP_DROP;
- 	}
- 
- 	/* The XDP program wants to see the packet starting at the MAC
-@@ -4555,9 +4547,6 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
- 	orig_bcast = is_multicast_ether_addr_64bits(eth->h_dest);
- 	orig_eth_type = eth->h_proto;
- 
--	rxqueue = netif_get_rxqueue(skb);
--	xdp->rxq = &rxqueue->xdp_rxq;
--
- 	act = bpf_prog_run_xdp(xdp_prog, xdp);
- 
- 	/* check if bpf_xdp_adjust_head was used */
-@@ -4600,16 +4589,6 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
- 		if (metalen)
- 			skb_metadata_set(skb, metalen);
- 		break;
--	default:
--		bpf_warn_invalid_xdp_action(act);
--		/* fall through */
--	case XDP_ABORTED:
--		trace_xdp_exception(skb->dev, xdp_prog, act);
--		/* fall through */
--	case XDP_DROP:
--	do_drop:
--		kfree_skb(skb);
--		break;
- 	}
- 
- 	return act;
-@@ -4644,12 +4623,22 @@ static DEFINE_STATIC_KEY_FALSE(generic_xdp_needed_key);
+ static DEFINE_STATIC_KEY_FALSE(generic_xdp_needed_key);
++DEFINE_STATIC_KEY_FALSE(xdp_egress_needed_key);
  
  int do_xdp_generic_rx(struct bpf_prog *xdp_prog, struct sk_buff *skb)
  {
-+	/* Reinjected packets coming from act_mirred or similar should
-+	 * not get XDP generic processing.
-+	 */
-+	if (skb_is_redirected(skb))
-+		return XDP_PASS;
-+
- 	if (xdp_prog) {
-+		struct netdev_rx_queue *rxqueue;
- 		struct xdp_buff xdp;
- 		u32 act;
- 		int err;
+@@ -5335,12 +5336,12 @@ static void __netif_receive_skb_list(struct list_head *head)
  
--		act = netif_receive_generic_xdp(skb, &xdp, xdp_prog);
-+		rxqueue = netif_get_rxqueue(skb);
-+		xdp.rxq = &rxqueue->xdp_rxq;
-+
-+		act = do_xdp_generic_core(skb, &xdp, xdp_prog);
- 		if (act != XDP_PASS) {
- 			switch (act) {
- 			case XDP_REDIRECT:
-@@ -4661,6 +4650,15 @@ int do_xdp_generic_rx(struct bpf_prog *xdp_prog, struct sk_buff *skb)
- 			case XDP_TX:
- 				generic_xdp_tx(skb, xdp_prog);
- 				break;
-+			default:
-+				bpf_warn_invalid_xdp_action(act);
-+				/* fall through */
-+			case XDP_ABORTED:
-+				trace_xdp_exception(skb->dev, xdp_prog, act);
-+				/* fall through */
-+			case XDP_DROP:
-+				kfree_skb(skb);
-+				break;
- 			}
- 			return XDP_DROP;
+ static int generic_xdp_install(struct net_device *dev, struct netdev_bpf *xdp)
+ {
+-	struct bpf_prog *old = rtnl_dereference(dev->xdp_prog);
+-	struct bpf_prog *new = xdp->prog;
++	struct bpf_prog *old, *new = xdp->prog;
+ 	int ret = 0;
+ 
+ 	switch (xdp->command) {
+ 	case XDP_SETUP_PROG:
++		old = rtnl_dereference(dev->xdp_prog);
+ 		rcu_assign_pointer(dev->xdp_prog, new);
+ 		if (old)
+ 			bpf_prog_put(old);
+@@ -5353,11 +5354,25 @@ static int generic_xdp_install(struct net_device *dev, struct netdev_bpf *xdp)
+ 			dev_disable_gro_hw(dev);
  		}
+ 		break;
++	case XDP_SETUP_PROG_EGRESS:
++		old = rtnl_dereference(dev->xdp_egress_prog);
++		rcu_assign_pointer(dev->xdp_egress_prog, new);
++		if (old)
++			bpf_prog_put(old);
+ 
++		if (old && !new)
++			static_branch_dec(&xdp_egress_needed_key);
++		else if (new && !old)
++			static_branch_inc(&xdp_egress_needed_key);
++		break;
+ 	case XDP_QUERY_PROG:
++		old = rtnl_dereference(dev->xdp_prog);
++		xdp->prog_id = old ? old->aux->id : 0;
++		break;
++	case XDP_QUERY_PROG_EGRESS:
++		old = rtnl_dereference(dev->xdp_egress_prog);
+ 		xdp->prog_id = old ? old->aux->id : 0;
+ 		break;
+-
+ 	default:
+ 		ret = -EINVAL;
+ 		break;
+@@ -8633,6 +8648,10 @@ static void dev_xdp_uninstall(struct net_device *dev)
+ 	/* Remove generic XDP */
+ 	WARN_ON(dev_xdp_install(dev, generic_xdp_install, NULL, 0, NULL));
+ 
++	/* Remove XDP egress */
++	WARN_ON(dev_xdp_install(dev, generic_xdp_install, NULL,
++				XDP_FLAGS_EGRESS_MODE, NULL));
++
+ 	/* Remove from the driver */
+ 	ndo_bpf = dev->netdev_ops->ndo_bpf;
+ 	if (!ndo_bpf)
+@@ -8679,21 +8698,22 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
+ 
+ 	offload = flags & XDP_FLAGS_HW_MODE;
+ 	egress = flags & XDP_FLAGS_EGRESS_MODE;
+-	if (egress)
++	if (egress) {
+ 		query = XDP_QUERY_PROG_EGRESS;
+-	else
++		bpf_op = bpf_chk = generic_xdp_install;
++	} else {
+ 		query = offload ? XDP_QUERY_PROG_HW : XDP_QUERY_PROG;
+ 
+-
+-	bpf_op = bpf_chk = ops->ndo_bpf;
+-	if (!bpf_op && (flags & (XDP_FLAGS_DRV_MODE | XDP_FLAGS_HW_MODE))) {
+-		NL_SET_ERR_MSG(extack, "underlying driver does not support XDP in native mode");
+-		return -EOPNOTSUPP;
++		bpf_op = bpf_chk = ops->ndo_bpf;
++		if (!bpf_op && (flags & (XDP_FLAGS_DRV_MODE | XDP_FLAGS_HW_MODE))) {
++			NL_SET_ERR_MSG(extack, "underlying driver does not support XDP in native mode");
++			return -EOPNOTSUPP;
++		}
++		if (!bpf_op || (flags & XDP_FLAGS_SKB_MODE))
++			bpf_op = generic_xdp_install;
++		if (bpf_op == bpf_chk)
++			bpf_chk = generic_xdp_install;
+ 	}
+-	if (!bpf_op || (flags & XDP_FLAGS_SKB_MODE))
+-		bpf_op = generic_xdp_install;
+-	if (bpf_op == bpf_chk)
+-		bpf_chk = generic_xdp_install;
+ 
+ 	prog_id = __dev_xdp_query(dev, bpf_op, query);
+ 	if (flags & XDP_FLAGS_REPLACE) {
 -- 
 2.21.1 (Apple Git-122.3)
 
