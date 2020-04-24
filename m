@@ -2,99 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34B521B71AA
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 12:12:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E68B51B7206
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 12:32:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726900AbgDXKMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 06:12:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58718 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726614AbgDXKMW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 06:12:22 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF92C09B046
-        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 03:12:21 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id j3so9328846ljg.8
-        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 03:12:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8hnwyy4503M97KIyTJbVUPAgWJRZoB4APIu0QnGDpRc=;
-        b=taFlNApLlAX0N3aDKmfyyICpts2QNl6sQ8mzqfUbFKU518OaF0Ui10/YNBSPgzZXT9
-         wpIJ7fFe0JNA/yd0DK384FFnMhAPnMq7wcYAsrRZvQDx3I886/MnHPaWzQw3H3SkaefU
-         FFapBW+vhrP29FK9mwPur8JInxzEYWhQt39U70BfoaXBtmc3Z3kTTPPVJia89q1mPM9U
-         g+zpxKDc+ZlCtMRNLqRr7aGYE1n+cHXjVOjbwUCkjxjls457tvnwRaHlFkFoPg9sqGeb
-         k+bzbI/C2SoS7hbK2ZsDWm7wa1SXQ/kcHTXcsnFvze0sN7NL19o2uPVUjkOaC/2Ihbtg
-         H6zA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8hnwyy4503M97KIyTJbVUPAgWJRZoB4APIu0QnGDpRc=;
-        b=FrbH4CK5D4SwQ7ObU/nPcNe4A6ULir52NH9Gbd8CAiIb408PAVi+RALgKe3D6V6hnI
-         fOieREGLNbNd4B32iTb+6TWP0/pssSCrK3fGAwfJr4rbEgOXjB4zNRExjugNk+NgqXwG
-         VOKYCqbM3wNr8SoS2x6WPej/lPXJCBJ3aUqxW21TANlbuhTnNNm+tsgqNKmkHvrV2Y1e
-         HBRYJwHeMFZ1PkjzgpL73fLWcn6hjlXZMPhuUWS/K7D+kv9K0LtVdG8kt9bLlLaQT8ML
-         O9vVXwgfOmPnpv76FgtbRgkvEFTdPSd6OyNqWPEFAJia13pxO6EM4SkRGc2L9//ak0MY
-         owOA==
-X-Gm-Message-State: AGi0Puam98g73xwzXu0BxZ+VCMmW/CEhWejWuMzLvdb2W81OVEaFv6pV
-        fE8/JSalAGK4hboslwKBM1AIo5f5Jjc=
-X-Google-Smtp-Source: APiQypLm20GzwJHygFQCB4K8W4SYS9CdMiatvAPfI3CJT+/u69stqVF60KIr0LqJ7c6dCjxt1rUumQ==
-X-Received: by 2002:a2e:a313:: with SMTP id l19mr5668228lje.133.1587723139778;
-        Fri, 24 Apr 2020 03:12:19 -0700 (PDT)
-Received: from ?IPv6:2a00:1fa0:420f:6e5c:31c9:acae:d924:779a? ([2a00:1fa0:420f:6e5c:31c9:acae:d924:779a])
-        by smtp.gmail.com with ESMTPSA id q22sm3856002ljm.10.2020.04.24.03.12.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Apr 2020 03:12:19 -0700 (PDT)
-Subject: Re: [PATCH net-next] ptp: clockmatrix: remove unnecessary comparison
-To:     Yang Yingliang <yangyingliang@huawei.com>,
-        richardcochran@gmail.com, vincent.cheng.xh@renesas.com,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1587716058-1840-1-git-send-email-yangyingliang@huawei.com>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <2c85e220-3765-4424-ee22-c9acf27f9d22@cogentembedded.com>
-Date:   Fri, 24 Apr 2020 13:12:05 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726860AbgDXKcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 06:32:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33564 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726808AbgDXKcG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 06:32:06 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EED8C09B045
+        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 03:32:06 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1jRvcq-0001wu-4o; Fri, 24 Apr 2020 12:32:04 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     <netdev@vger.kernel.org>
+Cc:     edumazet@google.com, mathew.j.martineau@linux.intel.com,
+        matthieu.baerts@tessares.net, pabeni@redhat.com,
+        Florian Westphal <fw@strlen.de>
+Subject: [PATCH net-next] tcp: mptcp: use mptcp receive buffer space to select rcv window
+Date:   Fri, 24 Apr 2020 12:31:50 +0200
+Message-Id: <20200424103150.334-1-fw@strlen.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <1587716058-1840-1-git-send-email-yangyingliang@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+In MPTCP, the receive window is shared across all subflows, because it
+refers to the mptcp-level sequence space.
 
-On 24.04.2020 11:14, Yang Yingliang wrote:
+MPTCP receivers already place incoming packets on the mptcp socket
+receive queue and will charge it to the mptcp socket rcvbuf until
+userspace consumes the data.
 
-> The type of loaddr is u8 which is always '<=' 0xff, so the
-> loaddr <= 0xff is always true, we can remove this comparison.
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
->   drivers/ptp/ptp_clockmatrix.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
-> index 032e112..56aee4f 100644
-> --- a/drivers/ptp/ptp_clockmatrix.c
-> +++ b/drivers/ptp/ptp_clockmatrix.c
-> @@ -780,7 +780,7 @@ static int idtcm_load_firmware(struct idtcm *idtcm,
->   
->   			/* Page size 128, last 4 bytes of page skipped */
->   			if (((loaddr > 0x7b) && (loaddr <= 0x7f))
-> -			     || ((loaddr > 0xfb) && (loaddr <= 0xff)))
-> +			     || loaddr <= 0xff)
+Update __tcp_select_window to use the occupancy of the parent/mptcp
+socket instead of the subflow socket in case the tcp socket is part
+of a logical mptcp connection.
 
-    Haven't you just said that this is always true? :-)
+This commit doesn't change choice of initial window for passive or active
+connections.
+While it would be possible to change those as well, this adds complexity
+(especially when handling MP_JOIN requests).  Furthermore, the MPTCP RFC
+specifically says that a MPTCP sender 'MUST NOT use the RCV.WND field
+of a TCP segment at the connection level if it does not also carry a DSS
+option with a Data ACK field.'
 
-[...]
+SYN/SYNACK packets do not carry a DSS option with a Data ACK field.
 
-MBR, Sergei
+Signed-off-by: Florian Westphal <fw@strlen.de>
+---
+ include/net/mptcp.h   |  3 +++
+ net/ipv4/tcp_output.c |  8 ++++++--
+ net/mptcp/subflow.c   | 18 ++++++++++++++++++
+ 3 files changed, 27 insertions(+), 2 deletions(-)
+
+diff --git a/include/net/mptcp.h b/include/net/mptcp.h
+index 0e7c5471010b..5288fba56e55 100644
+--- a/include/net/mptcp.h
++++ b/include/net/mptcp.h
+@@ -68,6 +68,8 @@ static inline bool rsk_is_mptcp(const struct request_sock *req)
+ 	return tcp_rsk(req)->is_mptcp;
+ }
+ 
++void mptcp_space(const struct sock *ssk, int *space, int *full_space);
++
+ void mptcp_parse_option(const struct sk_buff *skb, const unsigned char *ptr,
+ 			int opsize, struct tcp_options_received *opt_rx);
+ bool mptcp_syn_options(struct sock *sk, const struct sk_buff *skb,
+@@ -197,6 +199,7 @@ static inline bool mptcp_sk_is_subflow(const struct sock *sk)
+ 	return false;
+ }
+ 
++static inline void mptcp_space(const struct sock *ssk, int *s, int *fs) { }
+ static inline void mptcp_seq_show(struct seq_file *seq) { }
+ #endif /* CONFIG_MPTCP */
+ 
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 2f45cde168c4..ba4482130f08 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -2772,8 +2772,12 @@ u32 __tcp_select_window(struct sock *sk)
+ 	int mss = icsk->icsk_ack.rcv_mss;
+ 	int free_space = tcp_space(sk);
+ 	int allowed_space = tcp_full_space(sk);
+-	int full_space = min_t(int, tp->window_clamp, allowed_space);
+-	int window;
++	int full_space, window;
++
++	if (sk_is_mptcp(sk))
++		mptcp_space(sk, &free_space, &allowed_space);
++
++	full_space = min_t(int, tp->window_clamp, allowed_space);
+ 
+ 	if (unlikely(mss > full_space)) {
+ 		mss = full_space;
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 50a8bea987c6..47f901b712f9 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -764,6 +764,24 @@ bool mptcp_subflow_data_available(struct sock *sk)
+ 	return subflow->data_avail;
+ }
+ 
++/* If ssk has an mptcp parent socket, use the mptcp rcvbuf occupancy,
++ * not the ssk one.
++ *
++ * In mptcp, rwin is about the mptcp-level connection data.
++ *
++ * Data that is still on the ssk rx queue can thus be ignored,
++ * as far as mptcp peer is concerened that data is still inflight.
++ * DSS ACK is updated when skb is moved to the mptcp rx queue.
++ */
++void mptcp_space(const struct sock *ssk, int *space, int *full_space)
++{
++	const struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
++	const struct sock *sk = subflow->conn;
++
++	*space = tcp_space(sk);
++	*full_space = tcp_full_space(sk);
++}
++
+ static void subflow_data_ready(struct sock *sk)
+ {
+ 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
+-- 
+2.26.2
+
