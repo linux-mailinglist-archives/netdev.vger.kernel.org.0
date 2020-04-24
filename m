@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1EF91B769C
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 15:11:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39BE21B769D
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 15:11:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728182AbgDXNLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 09:11:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58408 "EHLO
+        id S1726698AbgDXNL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 09:11:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726798AbgDXNLW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 09:11:22 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB57C09B046
-        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 06:11:22 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id j3so9851213ljg.8
-        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 06:11:22 -0700 (PDT)
+        with ESMTP id S1728051AbgDXNLZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 09:11:25 -0400
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D41CC09B046
+        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 06:11:24 -0700 (PDT)
+Received: by mail-lf1-x142.google.com with SMTP id 198so7654025lfo.7
+        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 06:11:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
         h=subject:to:references:from:message-id:date:user-agent:mime-version
          :in-reply-to:content-language:content-transfer-encoding;
-        bh=Gx9hNKg0l/txCpQUT0mCibQINePXOppVz6cuR/nn8AA=;
-        b=a5yL4+q452l7JxoNgJo2bhKexP37/cRH1AQbPNfIZSiGptvZXs8q+gLLzv+J8bCwgP
-         wUe0NXRCO+V7B6dinuZT8ts9HB26TQv6R+ai4l3w+IiZ9kBnKW9TtG0LY5VjJh+VlJDE
-         Pz8EUD4+EsG1qkecWUklJ2Ysmurt3CyRnGygE=
+        bh=G2uXfV2zQ6YcJDE/jPT/znzd8EhGd4IlBIY8GlaqseU=;
+        b=boaoa6QxxZN3lCBv5P/sBvwVlfHCoZjiR0gPpaqf3dyoRwSHGfxFtQStzuk++J/6To
+         4n5I0Jvx6fc19Pv+X2xswYOFxMK3keWFmkmu4j8r60wq9yJeXq1wqyMxR2WUlB0Fv38R
+         Sk68/ReojCiQxUbN0FG1hf2ZUMLZLX0F3+EAQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=Gx9hNKg0l/txCpQUT0mCibQINePXOppVz6cuR/nn8AA=;
-        b=XGaNI+tJat/XuJeJbG9nOjAwh7GVZx+wgRt38JxY/FrUHO4CAT9R45pLtRifk/kSs1
-         sD5aH4Xs8Djea9DGv0Q4NbkM+lIOJKQn3RGnZH4cYHl873OvXhlFP+1wm3fLhZWAuppe
-         F7WOjWnVungpZTR2xkEcOcW6sQ4Hg+anc+0TKuDh0V5xWe5U9f0o63H3S3SJAJEpqsKT
-         sPzove8IWx7DmAuJRn40mpY8WnYhBazyYNeari/DKss1ZqUG30VYt7NqlpE/NeX8K7Z7
-         GJccHb3c6UlLDsbq0CWbMjQaeB//u4d7Sj9Dvpw0O2bmH76RT89DXHPB9tDL0k8xrMve
-         sOgQ==
-X-Gm-Message-State: AGi0PuaXQFG+ePq5N0c8SarNlUGYeRLPYVVdAssbVuLKYyVd5r22dON+
-        YkVhoMIjpcuQ3J9JWRrqEykFVw==
-X-Google-Smtp-Source: APiQypITC7oqv5JpXqxP9F+iKDdOC8YPa8L7rOpho6N7WEoFjOLOscnhdTlFof13kpjX94p2752lVg==
-X-Received: by 2002:a2e:9118:: with SMTP id m24mr5951942ljg.172.1587733880848;
-        Fri, 24 Apr 2020 06:11:20 -0700 (PDT)
+        bh=G2uXfV2zQ6YcJDE/jPT/znzd8EhGd4IlBIY8GlaqseU=;
+        b=RdN/weTrHMWXYCZKFR6TPU28MoeSDpSfmubU4wjQJHlivOUA9i7czCijBjSCBWtQfe
+         H1nqQA7vsAnEL+asjLD/KCwh1gB3J4vit8r6LQWAFe90KHRjZDbsWqO9Kyzi/gJRiZyA
+         V4jot2Z8sGeDMrXXgAITQNkVVTR+4Q6TS8uuiZWfcAIvpZZ1ra3klUNJauEyqs1FEZ9B
+         eZ/KqWjyKhYBBiSGCKWboqdWEVfITbV8H4w3ODPwvXiOGtjR0wG2yGZW7owykY/qWrOd
+         YdxTJDZVmgD+g7PlIBsrCI2SjkvepUlvftLLJlOfEpyo3HwphqrwdMmakdTW2JbnF6X3
+         NiRg==
+X-Gm-Message-State: AGi0PuaGBWaZs+CXKpagu1QHDhbimXXth91ZTzoq5+YcBXj/rV2ZtIGa
+        vqY32dO3jNXHA+wI4sKYBZVU/g==
+X-Google-Smtp-Source: APiQypLSz5FyzC47Rafs0O51HZGYwp2jhTj+lYOAvYPKJ5wYmLjjuBz8V0lWiSfO0U29zYw8ZGkO3A==
+X-Received: by 2002:a05:6512:3081:: with SMTP id z1mr6229213lfd.102.1587733882939;
+        Fri, 24 Apr 2020 06:11:22 -0700 (PDT)
 Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id x21sm4180540ljm.74.2020.04.24.06.11.18
+        by smtp.gmail.com with ESMTPSA id e186sm4551183lfd.83.2020.04.24.06.11.18
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Apr 2020 06:11:19 -0700 (PDT)
-Subject: Re: [PATCH net-next v3 01/11] bridge: uapi: mrp: Add mrp attributes.
+        Fri, 24 Apr 2020 06:11:21 -0700 (PDT)
+Subject: Re: [PATCH net-next v3 02/11] bridge: mrp: Update Kconfig
 To:     Horatiu Vultur <horatiu.vultur@microchip.com>, davem@davemloft.net,
         jiri@resnulli.us, ivecera@redhat.com, kuba@kernel.org,
         roopa@cumulusnetworks.com, olteanv@gmail.com, andrew@lunn.ch,
         UNGLinuxDriver@microchip.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bridge@lists.linux-foundation.org
 References: <20200422161833.1123-1-horatiu.vultur@microchip.com>
- <20200422161833.1123-2-horatiu.vultur@microchip.com>
+ <20200422161833.1123-3-horatiu.vultur@microchip.com>
 From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <2969c2e1-2ed4-87fd-7053-f70a3f923567@cumulusnetworks.com>
-Date:   Fri, 24 Apr 2020 16:11:16 +0300
+Message-ID: <cfbeabee-8df5-3a50-b43f-8833723b8ed9@cumulusnetworks.com>
+Date:   Fri, 24 Apr 2020 16:11:18 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <20200422161833.1123-2-horatiu.vultur@microchip.com>
+In-Reply-To: <20200422161833.1123-3-horatiu.vultur@microchip.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -69,42 +69,34 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 22/04/2020 19:18, Horatiu Vultur wrote:
-> Add new nested netlink attribute to configure the MRP. These attributes are used
-> by the userspace to add/delete/configure MRP instances and by the kernel to
-> notify the userspace when the MRP ring gets open/closed. MRP nested attribute
-> has the following attributes:
-> 
-> IFLA_BRIDGE_MRP_INSTANCE - the parameter type is br_mrp_instance which contains
->   the instance id, and the ifindex of the two ports. The ports can't be part of
->   multiple instances. This is used to create/delete MRP instances.
-> 
-> IFLA_BRIDGE_MRP_PORT_STATE - the parameter type is u32. Which can be forwarding,
->   blocking or disabled.
-> 
-> IFLA_BRIDGE_MRP_PORT_ROLE - the parameter type is br_mrp_port_role which
->   contains the instance id and the role. The role can be primary or secondary.
-> 
-> IFLA_BRIDGE_MRP_RING_STATE - the parameter type is br_mrp_ring_state which
->   contains the instance id and the state. The state can be open or closed.
-> 
-> IFLA_BRIDGE_MRP_RING_ROLE - the parameter type is br_mrp_ring_role which
->   contains the instance id and the ring role. The role can be MRM or MRC.
-> 
-> IFLA_BRIDGE_MRP_START_TEST - the parameter type is br_mrp_start_test which
->   contains the instance id, the interval at which to send the MRP_Test frames,
->   how many test frames can be missed before declaring the ring open and the
->   period which represent for how long to send the test frames.
-> 
-> Also add the file include/uapi/linux/mrp_bridge.h which defines all the types
-> used by MRP that are also needed by the userpace.
+> Add the option BRIDGE_MRP to allow to build in or not MRP support.
+> The default value is N.
 > 
 > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 > ---
->  include/uapi/linux/if_bridge.h  | 42 +++++++++++++++++
->  include/uapi/linux/if_ether.h   |  1 +
->  include/uapi/linux/mrp_bridge.h | 84 +++++++++++++++++++++++++++++++++
->  3 files changed, 127 insertions(+)
->  create mode 100644 include/uapi/linux/mrp_bridge.h
+>  net/bridge/Kconfig | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/net/bridge/Kconfig b/net/bridge/Kconfig
+> index e4fb050e2078..51a6414145d2 100644
+> --- a/net/bridge/Kconfig
+> +++ b/net/bridge/Kconfig
+> @@ -61,3 +61,15 @@ config BRIDGE_VLAN_FILTERING
+>  	  Say N to exclude this support and reduce the binary size.
+>  
+>  	  If unsure, say Y.
+> +
+> +config BRIDGE_MRP
+> +	bool "MRP protocol"
+> +	depends on BRIDGE
+> +	default n
+> +	help
+> +	  If you say Y here, then the Ethernet bridge will be able to run MRP
+> +	  protocol to detect loops
+> +
+> +	  Say N to exclude this support and reduce the binary size.
+> +
+> +	  If unsure, say N.
 > 
 
 Reviewed-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
