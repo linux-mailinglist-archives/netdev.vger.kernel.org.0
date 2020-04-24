@@ -2,28 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FCE21B703F
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 11:05:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C93711B7047
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 11:07:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726774AbgDXJFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 05:05:17 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:49544 "EHLO huawei.com"
+        id S1726820AbgDXJHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 05:07:04 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:51426 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725868AbgDXJFR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Apr 2020 05:05:17 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id CB1285328B0C5F59B08A;
-        Fri, 24 Apr 2020 17:05:14 +0800 (CST)
-Received: from localhost (10.166.215.154) by DGGEMS404-HUB.china.huawei.com
- (10.3.19.204) with Microsoft SMTP Server id 14.3.487.0; Fri, 24 Apr 2020
- 17:05:05 +0800
+        id S1726699AbgDXJHE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Apr 2020 05:07:04 -0400
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 11A9BDC05BA9F8BD9981;
+        Fri, 24 Apr 2020 17:07:02 +0800 (CST)
+Received: from localhost (10.166.215.154) by DGGEMS407-HUB.china.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server id 14.3.487.0; Fri, 24 Apr 2020
+ 17:06:53 +0800
 From:   YueHaibing <yuehaibing@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
+To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
+        <yoshfuji@linux-ipv6.org>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH net-next] net: sched: remove unused inline function qdisc_reset_all_tx
-Date:   Fri, 24 Apr 2020 17:04:50 +0800
-Message-ID: <20200424090450.44532-1-yuehaibing@huawei.com>
+        <tom@herbertland.com>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH net-next] net: ipv6: remove unused inline function ip6_set_txhash
+Date:   Fri, 24 Apr 2020 17:06:29 +0800
+Message-ID: <20200424090629.33840-1-yuehaibing@huawei.com>
 X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -34,29 +35,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There's no callers in-tree anymore.
+commit 877d1f6291f8 ("net: Set sk_txhash from a random number")
+left behind this, remove it.
 
 Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- include/net/sch_generic.h | 5 -----
- 1 file changed, 5 deletions(-)
+ include/net/ipv6.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index 25d2ec4c8f00..1862bf5a105b 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -710,11 +710,6 @@ static inline void qdisc_reset_all_tx_gt(struct net_device *dev, unsigned int i)
+diff --git a/include/net/ipv6.h b/include/net/ipv6.h
+index 1bf8065fe871..955badd1e8ff 100644
+--- a/include/net/ipv6.h
++++ b/include/net/ipv6.h
+@@ -908,7 +908,6 @@ static inline int ip6_default_np_autolabel(struct net *net)
  	}
  }
- 
--static inline void qdisc_reset_all_tx(struct net_device *dev)
--{
--	qdisc_reset_all_tx_gt(dev, 0);
--}
--
- /* Are all TX queues of the device empty?  */
- static inline bool qdisc_all_tx_empty(const struct net_device *dev)
- {
+ #else
+-static inline void ip6_set_txhash(struct sock *sk) { }
+ static inline __be32 ip6_make_flowlabel(struct net *net, struct sk_buff *skb,
+ 					__be32 flowlabel, bool autolabel,
+ 					struct flowi6 *fl6)
 -- 
 2.17.1
 
