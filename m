@@ -2,128 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC16A1B8228
-	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 00:44:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B80F1B821B
+	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 00:42:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726076AbgDXWoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 18:44:34 -0400
-Received: from bert.scottdial.com ([104.237.142.221]:50474 "EHLO
-        bert.scottdial.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725946AbgDXWoe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 18:44:34 -0400
-X-Greylist: delayed 597 seconds by postgrey-1.27 at vger.kernel.org; Fri, 24 Apr 2020 18:44:33 EDT
-Received: from mail.scottdial.com (mail.scottdial.com [10.8.0.6])
-        by bert.scottdial.com (Postfix) with ESMTP id BE3C257189B
-        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 18:34:35 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.scottdial.com (Postfix) with ESMTP id 682E71111605
-        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 18:34:35 -0400 (EDT)
-Received: from mail.scottdial.com ([127.0.0.1])
-        by localhost (mail.scottdial.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id fRdYJUXkPFUS for <netdev@vger.kernel.org>;
-        Fri, 24 Apr 2020 18:34:34 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.scottdial.com (Postfix) with ESMTP id 3C0A41111606
-        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 18:34:34 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.scottdial.com 3C0A41111606
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=scottdial.com;
-        s=24B7B964-7506-11E8-A7D6-CF6FBF8C6FCF; t=1587767674;
-        bh=VRx9E4q8iIkVcnzodjhOcD3cV0ev0f4YmbhU4CSLk9w=;
-        h=From:To:Date:Message-Id:MIME-Version;
-        b=jt/fYEQ5gKtgcCxMqyQtjlvOHyE7boJZjgcgveaJgy59zGLZmAo5mH2iq4oFDHZUU
-         3D4uYRe+b371Lr93I/WXOeejLv29EBBmvj1CHGcauXcc+7RNFq19gIySifsCTYHOLA
-         o2wlRwMwTcnaZnN+CMmomOy0gZUYq64vbOy9cR3ZzsMFnyuhgkLzbmcULKQ3SrIwcD
-         PRzoM5KYl4hpJCTyjPbJ17Z8b/a2+70NRiHyymgac5w25129RznVCI7CO5tuWcQeHt
-         WxOYCSPTHAgxQPDLfMaP/9IG/rF+J6wTEvV3F4Q2959kcY/AhlmxEeWQ8dYVOzWz8Q
-         WJqxb95vDNmoA==
-X-Virus-Scanned: amavisd-new at scottdial.com
-Received: from mail.scottdial.com ([127.0.0.1])
-        by localhost (mail.scottdial.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id AUX8z68my6G1 for <netdev@vger.kernel.org>;
-        Fri, 24 Apr 2020 18:34:34 -0400 (EDT)
-Received: from bruno.home.scottdial.com.home.scottdial.com (bruno.scottdial.com [172.17.1.8])
-        by mail.scottdial.com (Postfix) with ESMTP id 120671111605
-        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 18:34:34 -0400 (EDT)
-From:   Scott Dial <scott@scottdial.com>
-To:     netdev@vger.kernel.org
-Subject: [PATCH net] net: macsec: fix ingress frame ordering
-Date:   Fri, 24 Apr 2020 18:34:33 -0400
-Message-Id: <20200424223433.955775-1-scott@scottdial.com>
-X-Mailer: git-send-email 2.26.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+        id S1726032AbgDXWmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 18:42:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35920 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725874AbgDXWmN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 18:42:13 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24998C09B049
+        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 15:42:13 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3A91914E88DA8;
+        Fri, 24 Apr 2020 15:42:12 -0700 (PDT)
+Date:   Fri, 24 Apr 2020 15:42:09 -0700 (PDT)
+Message-Id: <20200424.154209.1645447397331548392.davem@davemloft.net>
+To:     idosch@idosch.org
+Cc:     netdev@vger.kernel.org, jiri@mellanox.com, amitc@mellanox.com,
+        mlxsw@mellanox.com, idosch@mellanox.com
+Subject: Re: [PATCH net-next 0/5] mlxsw: Mirroring cleanups
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200424154345.3677009-1-idosch@idosch.org>
+References: <20200424154345.3677009-1-idosch@idosch.org>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 24 Apr 2020 15:42:12 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MACsec decryption always occurs in a softirq context. Since
-the FPU may not be usable in the softirq context, this call to
-decrypt may be scheduled on the cryptd work queue. The cryptd
-work queue does not provide ordering guarantees. Therefore,
-preserving order requires masking out ASYNC implementations
-of gcm(aes).
+From: Ido Schimmel <idosch@idosch.org>
+Date: Fri, 24 Apr 2020 18:43:40 +0300
 
-On recent x86 architectures, the request for gcm(aes) will
-select the generic-gcm-aesni driver from the aesni_intel
-module. However, this implementation requires the FPU, so it
-cannot preserve frame ordering. With this change, such a
-system would select a hybrid software/hardware solution, such
-as gcm_base(ctr(aes-aesni),ghash-generic). It's notable
-that the aes-aesni implementation will fallback to the
-aes-asm implementation if the FPU is unavailable.
+> From: Ido Schimmel <idosch@mellanox.com>
+> 
+> This patch set contains various cleanups in SPAN (mirroring) code
+> noticed by Amit and I while working on future enhancements in this area.
+> No functional changes intended. Tested by current mirroring selftests.
+> 
+> Patches #1-#2 from Amit reduce nesting in a certain function and rename
+> a callback to a more meaningful name.
+> 
+> Patch #3 removes debug prints that have little value.
+> 
+> Patch #4 converts a reference count to 'refcount_t' in order to catch
+> over/under flows.
+> 
+> Patch #5 replaces a zero-length array with flexible-array member in
+> order to get a compiler warning in case the flexible array does not
+> occur last in the structure.
 
-By using a synchronous version of gcm(aes), the decryption
-will complete before returning from crypto_aead_decrypt().
-Therefore, the macsec_decrypt_done() callback will be called
-before returning from macsec_decrypt(). Thus, order will be
-preserved with calls to macsec_post_decrypt().
-
-While it's presumable that the pure AES-NI version of gcm(aes)
-is more performant, the hybrid solution is capable of gigabit
-speeds on modest hardware. Regardless, preserving the order
-of frames is paramount for many network protocols (e.g.,
-triggering TCP retries). Within the MACsec driver itself, the
-replay protection is tripped by the out-of-order frames,
-causing frames to be dropped.
-
-This bug has been present in this code since it was added in
-v4.6, however it may have went unnoticed since not all CPUs
-have gcm(aes) offload available. Additionally, the bug
-manifests as occasional out-of-order packets that are easily
-misattributed to other network phenomena.
-
-When this code was added in v4.6, the crypto/gcm.c code did
-not restrict selection of the ghash function based on the
-ASYNC flag. For instance, x86 CPUs with the PCLMULQDQ CPU
-feature would select ghash-clmulni driver is selected instead
-of ghash-generic, which will submit to the cryptd work queue
-if the FPU is busy. However, this issue was was corrected in
-v4.8 by commit b30bdfa86431afbafe15284a3ad5ac19b49b88e3, and
-was backported all the way back to the v3.14 stable branch,
-so this patch should be applicable all the way back to the
-v4.6 stable branch.
-
-Signed-off-by: Scott Dial <scott@scottdial.com>
----
- drivers/net/macsec.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index a183250ff66a..bce8b8fde400 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -1305,7 +1305,8 @@ static struct crypto_aead *macsec_alloc_tfm(char *k=
-ey, int key_len, int icv_len)
- 	struct crypto_aead *tfm;
- 	int ret;
-=20
--	tfm =3D crypto_alloc_aead("gcm(aes)", 0, 0);
-+	/* Pick a sync gcm(aes) cipher to ensure order is preserved. */
-+	tfm =3D crypto_alloc_aead("gcm(aes)", 0, CRYPTO_ALG_ASYNC);
-=20
- 	if (IS_ERR(tfm))
- 		return tfm;
---=20
-2.26.2
-
+Series applied, thanks.
