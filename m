@@ -2,53 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A4171B6F07
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 09:28:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC7051B6F08
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 09:28:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726788AbgDXH2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 03:28:22 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:17388 "EHLO
+        id S1726790AbgDXH2Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 03:28:24 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:56498 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726743AbgDXH2U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 03:28:20 -0400
+        by vger.kernel.org with ESMTP id S1726709AbgDXH2V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 03:28:21 -0400
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03O7PmRU021064;
-        Fri, 24 Apr 2020 00:28:17 -0700
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03O7PjVf021054;
+        Fri, 24 Apr 2020 00:28:19 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=05NUEw/Y5Q+72zIdfOoheYYZCFLgkxfcsZvqDWaivN4=;
- b=kkbEOD8Zjl8lbBpSNsknZyZvAEQc7M3zuGN+qS0HXjfIgW8Xgc/2GCJf/3BzMG+AQRmC
- iflSaGS0iDcN7aV/L1jJT3h9laVWqoaOIttiHpVgc/pIBLbu61ypq/X0GDNZBMX6KHg/
- zvy94IZh2Q4dK1Q4wF5lrcgK56mwVCGJ94GTD2NSNdtMqOdPKlSJFiNokGIjSuTmFpZv
- lFs/aOLv1mzWS5ng6pWeqrAUMtxmxDrppydZQSeXlDoluwAvZXe+5LkaCvPN5ECNnumK
- H52CeV/9EeQtYA+VHvRTnulyi2NprLd9+pKQRW+NCZEEO1CuiNW+O4AfBJ3BnFCvNRxx Ng== 
-Received: from sc-exch04.marvell.com ([199.233.58.184])
-        by mx0b-0016f401.pphosted.com with ESMTP id 30kfdsb48x-1
+ content-type; s=pfpt0818; bh=HqRz4f9kr1Ava3oM2rod/1L+Bk1zUnhm/nABYL0s3bg=;
+ b=dErWpuQIxRX7vyrHuTD1Sqzab7RLEza4wRJUmFV5HfnzBRcn0eVU6joRfYYpCPtroRz3
+ tFSTCBm/qSp7iWuPHt43fYunfakALJgwgHvL2BNgpAVGfGIamB5//X9rJ43BKROwnkvy
+ qibCWCfqSNWct9Yfyg0RztPnlQ9M1K7JBHAbGEvIPaZK5rqq0lMH/X+LW6XL/59TPIRk
+ NtAs4EAIYRxB82lTLEnIQjADjm5JCR57Rez61DodzX3gipRkRdRT32BTXDqaUBKqS/lb
+ 4r6wP5apdToqneMln8lD2a+QVDqtn22VmkXBKJt8X1rPx8Tsp7Q9GiDZX6EojD7cf11G 5A== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 30kfdsb492-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 24 Apr 2020 00:28:17 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 24 Apr
- 2020 00:28:15 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 24 Apr
- 2020 00:28:14 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 24 Apr 2020 00:28:14 -0700
+        Fri, 24 Apr 2020 00:28:19 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 24 Apr
+ 2020 00:28:16 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 24 Apr 2020 00:28:17 -0700
 Received: from NN-LT0019.marvell.com (unknown [10.193.46.2])
-        by maili.marvell.com (Postfix) with ESMTP id 1DC3B3F7040;
-        Fri, 24 Apr 2020 00:28:11 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 1E0223F7048;
+        Fri, 24 Apr 2020 00:28:14 -0700 (PDT)
 From:   Igor Russkikh <irusskikh@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     "David S . Miller" <davem@davemloft.net>,
         Mark Starovoytov <mstarovoitov@marvell.com>,
         Dmitry Bogdanov <dbogdanov@marvell.com>,
-        "Egor Pomozov" <epomozov@marvell.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        "Nikita Danilov" <ndanilov@marvell.com>
-Subject: [PATCH net-next 14/17] net: atlantic: HW bindings for basic A2 init/deinit hw_ops
-Date:   Fri, 24 Apr 2020 10:27:26 +0300
-Message-ID: <20200424072729.953-15-irusskikh@marvell.com>
+        "Igor Russkikh" <irusskikh@marvell.com>
+Subject: [PATCH net-next 15/17] net: atlantic: common functions needed for basic A2 init/deinit hw_ops
+Date:   Fri, 24 Apr 2020 10:27:27 +0300
+Message-ID: <20200424072729.953-16-irusskikh@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200424072729.953-1-irusskikh@marvell.com>
 References: <20200424072729.953-1-irusskikh@marvell.com>
@@ -63,277 +58,263 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dmitry Bogdanov <dbogdanov@marvell.com>
 
-This patch adds A2 register definitions for basic A2 HW
-initialization / deinitialization.
+This patch adds common functions (mostly FW-related), which are
+needed for basic A2 HW initialization / deinitialization.
 
 Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
-Co-developed-by: Egor Pomozov <epomozov@marvell.com>
-Signed-off-by: Egor Pomozov <epomozov@marvell.com>
 Co-developed-by: Igor Russkikh <irusskikh@marvell.com>
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
-Co-developed-by: Nikita Danilov <ndanilov@marvell.com>
-Signed-off-by: Nikita Danilov <ndanilov@marvell.com>
 Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
 ---
- .../aquantia/atlantic/hw_atl2/hw_atl2_llh.c   |  70 ++++++++++++
- .../aquantia/atlantic/hw_atl2/hw_atl2_llh.h   |  29 +++++
- .../atlantic/hw_atl2/hw_atl2_llh_internal.h   | 108 ++++++++++++++++++
- 3 files changed, 207 insertions(+)
+ .../net/ethernet/aquantia/atlantic/Makefile   |   1 +
+ .../aquantia/atlantic/hw_atl/hw_atl_utils.c   |   3 +-
+ .../aquantia/atlantic/hw_atl/hw_atl_utils.h   |   2 +
+ .../aquantia/atlantic/hw_atl2/hw_atl2_utils.c | 139 ++++++++++++++++++
+ .../aquantia/atlantic/hw_atl2/hw_atl2_utils.h |   8 +
+ .../atlantic/hw_atl2/hw_atl2_utils_fw.c       |  12 ++
+ 6 files changed, 163 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils.c
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.c
-index 67f46a7bdcda..af176e1e5a18 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.c
-@@ -58,6 +58,55 @@ void hw_atl2_rpf_vlan_flr_tag_set(struct aq_hw_s *aq_hw, u32 tag, u32 filter)
- 			    tag);
+diff --git a/drivers/net/ethernet/aquantia/atlantic/Makefile b/drivers/net/ethernet/aquantia/atlantic/Makefile
+index 23f0e5b5fcdb..130a105d03f3 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/Makefile
++++ b/drivers/net/ethernet/aquantia/atlantic/Makefile
+@@ -26,6 +26,7 @@ atlantic-objs := aq_main.o \
+ 	hw_atl/hw_atl_utils_fw2x.o \
+ 	hw_atl/hw_atl_llh.o \
+ 	hw_atl2/hw_atl2.o \
++	hw_atl2/hw_atl2_utils.o \
+ 	hw_atl2/hw_atl2_utils_fw.o \
+ 	hw_atl2/hw_atl2_llh.o \
+ 	macsec/macsec_api.o
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
+index 20655a2170cc..1100d40a0302 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
+@@ -53,7 +53,6 @@ enum mcp_area {
+ 	MCP_AREA_SETTINGS = 0x20000000,
+ };
+ 
+-static int hw_atl_utils_ver_match(u32 ver_expected, u32 ver_actual);
+ static int hw_atl_utils_mpi_set_state(struct aq_hw_s *self,
+ 				      enum hal_atl_utils_fw_state_e state);
+ static u32 hw_atl_utils_get_mpi_mbox_tid(struct aq_hw_s *self);
+@@ -434,7 +433,7 @@ int hw_atl_write_fwsettings_dwords(struct aq_hw_s *self, u32 offset, u32 *p,
+ 					     p, cnt, MCP_AREA_SETTINGS);
  }
  
-+/* TX */
+-static int hw_atl_utils_ver_match(u32 ver_expected, u32 ver_actual)
++int hw_atl_utils_ver_match(u32 ver_expected, u32 ver_actual)
+ {
+ 	const u32 dw_major_mask = 0xff000000U;
+ 	const u32 dw_minor_mask = 0x00ffffffU;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
+index 5db57ea9a5bd..99c1b6644ec3 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
+@@ -634,6 +634,8 @@ int hw_atl_utils_fw_rpc_call(struct aq_hw_s *self, unsigned int rpc_size);
+ int hw_atl_utils_fw_rpc_wait(struct aq_hw_s *self,
+ 			     struct hw_atl_utils_fw_rpc **rpc);
+ 
++int hw_atl_utils_ver_match(u32 ver_expected, u32 ver_actual);
 +
-+void hw_atl2_tpb_tx_buf_clk_gate_en_set(struct aq_hw_s *aq_hw, u32 clk_gate_en)
+ extern const struct aq_fw_ops aq_fw_1x_ops;
+ extern const struct aq_fw_ops aq_fw_2x_ops;
+ 
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils.c
+new file mode 100644
+index 000000000000..85ccc9a011a0
+--- /dev/null
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils.c
+@@ -0,0 +1,139 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Atlantic Network Driver
++ * Copyright (C) 2020 Marvell International Ltd.
++ */
++
++#include <linux/iopoll.h>
++
++#include "aq_hw_utils.h"
++#include "hw_atl/hw_atl_utils.h"
++#include "hw_atl2_utils.h"
++#include "hw_atl2_llh.h"
++#include "hw_atl2_llh_internal.h"
++
++#define HW_ATL2_FW_VER_1X          0x01000000U
++
++#define AQ_A2_BOOT_STARTED         BIT(0x18)
++#define AQ_A2_CRASH_INIT           BIT(0x1B)
++#define AQ_A2_BOOT_CODE_FAILED     BIT(0x1C)
++#define AQ_A2_FW_INIT_FAILED       BIT(0x1D)
++#define AQ_A2_FW_INIT_COMP_SUCCESS BIT(0x1F)
++
++#define AQ_A2_FW_BOOT_FAILED_MASK (AQ_A2_CRASH_INIT | \
++				   AQ_A2_BOOT_CODE_FAILED | \
++				   AQ_A2_FW_INIT_FAILED)
++#define AQ_A2_FW_BOOT_COMPLETE_MASK (AQ_A2_FW_BOOT_FAILED_MASK | \
++				     AQ_A2_FW_INIT_COMP_SUCCESS)
++
++#define AQ_A2_FW_BOOT_REQ_REBOOT        BIT(0x0)
++#define AQ_A2_FW_BOOT_REQ_HOST_BOOT     BIT(0x8)
++#define AQ_A2_FW_BOOT_REQ_MAC_FAST_BOOT BIT(0xA)
++#define AQ_A2_FW_BOOT_REQ_PHY_FAST_BOOT BIT(0xB)
++
++int hw_atl2_utils_initfw(struct aq_hw_s *self, const struct aq_fw_ops **fw_ops)
 +{
-+	aq_hw_write_reg_bit(aq_hw, HW_ATL2_TPB_TX_BUF_CLK_GATE_EN_ADR,
-+			    HW_ATL2_TPB_TX_BUF_CLK_GATE_EN_MSK,
-+			    HW_ATL2_TPB_TX_BUF_CLK_GATE_EN_SHIFT,
-+			    clk_gate_en);
++	int err;
++
++	self->fw_ver_actual = hw_atl2_utils_get_fw_version(self);
++
++	if (hw_atl_utils_ver_match(HW_ATL2_FW_VER_1X,
++				   self->fw_ver_actual) == 0) {
++		*fw_ops = &aq_a2_fw_ops;
++	} else {
++		aq_pr_err("Bad FW version detected: %x, but continue\n",
++			  self->fw_ver_actual);
++		*fw_ops = &aq_a2_fw_ops;
++	}
++	aq_pr_trace("Detect ATL2FW %x\n", self->fw_ver_actual);
++	self->aq_fw_ops = *fw_ops;
++	err = self->aq_fw_ops->init(self);
++
++	self->chip_features |= ATL_HW_CHIP_ANTIGUA;
++
++	return err;
 +}
 +
-+void hw_atl2_tps_tx_pkt_shed_tc_data_max_credit_set(struct aq_hw_s *aq_hw,
-+						    u32 max_credit,
-+						    u32 tc)
++static bool hw_atl2_mcp_boot_complete(struct aq_hw_s *self)
 +{
-+	aq_hw_write_reg_bit(aq_hw, HW_ATL2_TPS_DATA_TCTCREDIT_MAX_ADR(tc),
-+			    HW_ATL2_TPS_DATA_TCTCREDIT_MAX_MSK,
-+			    HW_ATL2_TPS_DATA_TCTCREDIT_MAX_SHIFT,
-+			    max_credit);
++	u32 rbl_status;
++
++	rbl_status = hw_atl2_mif_mcp_boot_reg_get(self);
++	if (rbl_status & AQ_A2_FW_BOOT_COMPLETE_MASK)
++		return true;
++
++	/* Host boot requested */
++	if (hw_atl2_mif_host_req_int_get(self) & HW_ATL2_MCP_HOST_REQ_INT_READY)
++		return true;
++
++	return false;
 +}
 +
-+void hw_atl2_tps_tx_pkt_shed_tc_data_weight_set(struct aq_hw_s *aq_hw,
-+						u32 tx_pkt_shed_tc_data_weight,
-+						u32 tc)
++int hw_atl2_utils_soft_reset(struct aq_hw_s *self)
 +{
-+	aq_hw_write_reg_bit(aq_hw, HW_ATL2_TPS_DATA_TCTWEIGHT_ADR(tc),
-+			    HW_ATL2_TPS_DATA_TCTWEIGHT_MSK,
-+			    HW_ATL2_TPS_DATA_TCTWEIGHT_SHIFT,
-+			    tx_pkt_shed_tc_data_weight);
++	bool rbl_complete = false;
++	u32 rbl_status = 0;
++	u32 rbl_request;
++	int err;
++
++	err = readx_poll_timeout_atomic(hw_atl2_mif_mcp_boot_reg_get, self,
++				rbl_status,
++				((rbl_status & AQ_A2_BOOT_STARTED) &&
++				 (rbl_status != 0xFFFFFFFFu)),
++				10, 500000);
++	if (err)
++		aq_pr_trace("Boot code probably hanged, reboot anyway");
++
++	hw_atl2_mif_host_req_int_clr(self, 0x01);
++	rbl_request = AQ_A2_FW_BOOT_REQ_REBOOT;
++#ifdef AQ_CFG_FAST_START
++	rbl_request |= AQ_A2_FW_BOOT_REQ_MAC_FAST_BOOT;
++#endif
++	hw_atl2_mif_mcp_boot_reg_set(self, rbl_request);
++
++	/* Wait for RBL boot */
++	err = readx_poll_timeout_atomic(hw_atl2_mif_mcp_boot_reg_get, self,
++				rbl_status,
++				((rbl_status & AQ_A2_BOOT_STARTED) &&
++				 (rbl_status != 0xFFFFFFFFu)),
++				10, 200000);
++	if (err) {
++		aq_pr_err("Boot code hanged");
++		goto err_exit;
++	}
++
++	err = readx_poll_timeout_atomic(hw_atl2_mcp_boot_complete, self,
++					rbl_complete,
++					rbl_complete,
++					10, 2000000);
++
++	if (err) {
++		aq_pr_err("FW Restart timed out");
++		goto err_exit;
++	}
++
++	rbl_status = hw_atl2_mif_mcp_boot_reg_get(self);
++
++	if (rbl_status & AQ_A2_FW_BOOT_FAILED_MASK) {
++		err = -EIO;
++		aq_pr_err("FW Restart failed");
++		goto err_exit;
++	}
++
++	if (hw_atl2_mif_host_req_int_get(self) &
++	    HW_ATL2_MCP_HOST_REQ_INT_READY) {
++		err = -EIO;
++		aq_pr_err("No FW detected. Dynamic FW load not implemented");
++		goto err_exit;
++	}
++
++	if (self->aq_fw_ops) {
++		err = self->aq_fw_ops->init(self);
++		if (err) {
++			aq_pr_err("FW Init failed");
++			goto err_exit;
++		}
++	}
++
++err_exit:
++	return err;
 +}
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils.h
+index 9c830f6d1494..7b99e29eadc3 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils.h
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils.h
+@@ -6,6 +6,8 @@
+ #ifndef HW_ATL2_UTILS_H
+ #define HW_ATL2_UTILS_H
+ 
++#include "aq_hw.h"
 +
-+u32 hw_atl2_get_hw_version(struct aq_hw_s *aq_hw)
-+{
-+	return aq_hw_read_reg(aq_hw, HW_ATL2_FPGA_VER_ADR);
-+}
+ /* Start of HW byte packed interface declaration */
+ #pragma pack(push, 1)
+ 
+@@ -528,6 +530,12 @@ struct fw_interface_out {
+ #define  AQ_HOST_MODE_LOW_POWER    3U
+ #define  AQ_HOST_MODE_SHUTDOWN     4U
+ 
++int hw_atl2_utils_initfw(struct aq_hw_s *self, const struct aq_fw_ops **fw_ops);
 +
-+void hw_atl2_init_launchtime(struct aq_hw_s *aq_hw)
-+{
-+	u32 hw_ver = hw_atl2_get_hw_version(aq_hw);
++int hw_atl2_utils_soft_reset(struct aq_hw_s *self);
 +
-+	aq_hw_write_reg_bit(aq_hw, HW_ATL2_LT_CTRL_ADR,
-+			    HW_ATL2_LT_CTRL_CLK_RATIO_MSK,
-+			    HW_ATL2_LT_CTRL_CLK_RATIO_SHIFT,
-+			    hw_ver  < HW_ATL2_FPGA_VER_U32(1, 0, 0, 0) ?
-+			    HW_ATL2_LT_CTRL_CLK_RATIO_FULL_SPEED :
-+			    hw_ver >= HW_ATL2_FPGA_VER_U32(1, 0, 85, 2) ?
-+			    HW_ATL2_LT_CTRL_CLK_RATIO_HALF_SPEED :
-+			    HW_ATL2_LT_CTRL_CLK_RATIO_QUATER_SPEED);
-+}
++u32 hw_atl2_utils_get_fw_version(struct aq_hw_s *self);
 +
- /* set action resolver record */
- void hw_atl2_rpf_act_rslvr_record_set(struct aq_hw_s *aq_hw, u8 location,
- 				      u32 tag, u32 mask, u32 action)
-@@ -128,3 +177,24 @@ u32 hw_atl2_mif_mcp_finished_read_get(struct aq_hw_s *aq_hw)
- 				  HW_ATL2_MIF_MCP_FINISHED_READ_MSK,
- 				  HW_ATL2_MIF_MCP_FINISHED_READ_SHIFT);
+ int hw_atl2_utils_get_action_resolve_table_caps(struct aq_hw_s *self,
+ 						u8 *base_index, u8 *count);
+ 
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c
+index 9f51b7d144f8..22d17ddd66d9 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_utils_fw.c
+@@ -301,6 +301,18 @@ static int aq_a2_fw_renegotiate(struct aq_hw_s *self)
+ 	return err;
  }
-+
-+u32 hw_atl2_mif_mcp_boot_reg_get(struct aq_hw_s *aq_hw)
+ 
++u32 hw_atl2_utils_get_fw_version(struct aq_hw_s *self)
 +{
-+	return aq_hw_read_reg(aq_hw, HW_ATL2_MIF_BOOT_REG_ADR);
++	struct version_s version;
++
++	hw_atl2_shared_buffer_read_safe(self, version, &version);
++
++	/* A2 FW version is stored in reverse order */
++	return version.mac.major << 24 |
++	       version.mac.minor << 16 |
++	       version.mac.build;
 +}
 +
-+void hw_atl2_mif_mcp_boot_reg_set(struct aq_hw_s *aq_hw, u32 val)
-+{
-+	return aq_hw_write_reg(aq_hw, HW_ATL2_MIF_BOOT_REG_ADR, val);
-+}
-+
-+u32 hw_atl2_mif_host_req_int_get(struct aq_hw_s *aq_hw)
-+{
-+	return aq_hw_read_reg(aq_hw, HW_ATL2_MCP_HOST_REQ_INT_ADR);
-+}
-+
-+void hw_atl2_mif_host_req_int_clr(struct aq_hw_s *aq_hw, u32 val)
-+{
-+	return aq_hw_write_reg(aq_hw, HW_ATL2_MCP_HOST_REQ_INT_CLR_ADR,
-+			       val);
-+}
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.h
-index bd5b0d5a8084..4acbbceb623f 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.h
-@@ -29,6 +29,23 @@ void hw_atl2_new_rpf_rss_redir_set(struct aq_hw_s *aq_hw, u32 tc, u32 index,
- /* Set VLAN filter tag */
- void hw_atl2_rpf_vlan_flr_tag_set(struct aq_hw_s *aq_hw, u32 tag, u32 filter);
- 
-+/* set tx buffer clock gate enable */
-+void hw_atl2_tpb_tx_buf_clk_gate_en_set(struct aq_hw_s *aq_hw, u32 clk_gate_en);
-+
-+/* set tx packet scheduler tc data max credit */
-+void hw_atl2_tps_tx_pkt_shed_tc_data_max_credit_set(struct aq_hw_s *aq_hw,
-+						    u32 max_credit,
-+						    u32 tc);
-+
-+/* set tx packet scheduler tc data weight */
-+void hw_atl2_tps_tx_pkt_shed_tc_data_weight_set(struct aq_hw_s *aq_hw,
-+						u32 tx_pkt_shed_tc_data_weight,
-+						u32 tc);
-+
-+u32 hw_atl2_get_hw_version(struct aq_hw_s *aq_hw);
-+
-+void hw_atl2_init_launchtime(struct aq_hw_s *aq_hw);
-+
- /* set action resolver record */
- void hw_atl2_rpf_act_rslvr_record_set(struct aq_hw_s *aq_hw, u8 location,
- 				      u32 tag, u32 mask, u32 action);
-@@ -54,4 +71,16 @@ void hw_atl2_mif_host_finished_write_set(struct aq_hw_s *aq_hw, u32 finish);
- /* get mcp finished read shared buffer indication */
- u32 hw_atl2_mif_mcp_finished_read_get(struct aq_hw_s *aq_hw);
- 
-+/* get mcp boot register */
-+u32 hw_atl2_mif_mcp_boot_reg_get(struct aq_hw_s *aq_hw);
-+
-+/* set mcp boot register */
-+void hw_atl2_mif_mcp_boot_reg_set(struct aq_hw_s *aq_hw, u32 val);
-+
-+/* get host interrupt request */
-+u32 hw_atl2_mif_host_req_int_get(struct aq_hw_s *aq_hw);
-+
-+/* clear host interrupt request */
-+void hw_atl2_mif_host_req_int_clr(struct aq_hw_s *aq_hw, u32 val);
-+
- #endif /* HW_ATL2_LLH_H */
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh_internal.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh_internal.h
-index 886491b6ab73..14b78e090950 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh_internal.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh_internal.h
-@@ -105,6 +105,105 @@
- /* default value of bitfield vlan_req_tag0{f}[3:0] */
- #define HW_ATL2_RPF_VL_TAG_DEFAULT 0x0
- 
-+/* RX rx_q{Q}_tc_map[2:0] Bitfield Definitions
-+ * Preprocessor definitions for the bitfield "rx_q{Q}_tc_map[2:0]".
-+ * Parameter: Queue {Q} | bit-level stride | range [0, 31]
-+ * PORT="pif_rx_q0_tc_map_i[2:0]"
-+ */
-+
-+/* Register address for bitfield rx_q{Q}_tc_map[2:0] */
-+#define HW_ATL2_RX_Q_TC_MAP_ADR(queue) \
-+	(((queue) < 32) ? 0x00005900 + ((queue) / 8) * 4 : 0)
-+/* Lower bit position of bitfield rx_q{Q}_tc_map[2:0] */
-+#define HW_ATL2_RX_Q_TC_MAP_SHIFT(queue) \
-+	(((queue) < 32) ? ((queue) * 4) % 32 : 0)
-+/* Width of bitfield rx_q{Q}_tc_map[2:0] */
-+#define HW_ATL2_RX_Q_TC_MAP_WIDTH 3
-+/* Default value of bitfield rx_q{Q}_tc_map[2:0] */
-+#define HW_ATL2_RX_Q_TC_MAP_DEFAULT 0x0
-+
-+/* tx tx_buffer_clk_gate_en bitfield definitions
-+ * preprocessor definitions for the bitfield "tx_buffer_clk_gate_en".
-+ * port="pif_tpb_tx_buffer_clk_gate_en_i"
-+ */
-+
-+/* register address for bitfield tx_buffer_clk_gate_en */
-+#define HW_ATL2_TPB_TX_BUF_CLK_GATE_EN_ADR 0x00007900
-+/* bitmask for bitfield tx_buffer_clk_gate_en */
-+#define HW_ATL2_TPB_TX_BUF_CLK_GATE_EN_MSK 0x00000020
-+/* inverted bitmask for bitfield tx_buffer_clk_gate_en */
-+#define HW_ATL2_TPB_TX_BUF_CLK_GATE_EN_MSKN 0xffffffdf
-+/* lower bit position of bitfield tx_buffer_clk_gate_en */
-+#define HW_ATL2_TPB_TX_BUF_CLK_GATE_EN_SHIFT 5
-+/* width of bitfield tx_buffer_clk_gate_en */
-+#define HW_ATL2_TPB_TX_BUF_CLK_GATE_EN_WIDTH 1
-+/* default value of bitfield tx_buffer_clk_gate_en */
-+#define HW_ATL2_TPB_TX_BUF_CLK_GATE_EN_DEFAULT 0x0
-+
-+/* tx data_tc{t}_credit_max[b:0] bitfield definitions
-+ * preprocessor definitions for the bitfield "data_tc{t}_credit_max[b:0]".
-+ * parameter: tc {t} | stride size 0x4 | range [0, 7]
-+ * port="pif_tps_data_tc0_credit_max_i[11:0]"
-+ */
-+
-+/* register address for bitfield data_tc{t}_credit_max[b:0] */
-+#define HW_ATL2_TPS_DATA_TCTCREDIT_MAX_ADR(tc) (0x00007110 + (tc) * 0x4)
-+/* bitmask for bitfield data_tc{t}_credit_max[b:0] */
-+#define HW_ATL2_TPS_DATA_TCTCREDIT_MAX_MSK 0x0fff0000
-+/* inverted bitmask for bitfield data_tc{t}_credit_max[b:0] */
-+#define HW_ATL2_TPS_DATA_TCTCREDIT_MAX_MSKN 0xf000ffff
-+/* lower bit position of bitfield data_tc{t}_credit_max[b:0] */
-+#define HW_ATL2_TPS_DATA_TCTCREDIT_MAX_SHIFT 16
-+/* width of bitfield data_tc{t}_credit_max[b:0] */
-+#define HW_ATL2_TPS_DATA_TCTCREDIT_MAX_WIDTH 12
-+/* default value of bitfield data_tc{t}_credit_max[b:0] */
-+#define HW_ATL2_TPS_DATA_TCTCREDIT_MAX_DEFAULT 0x0
-+
-+/* tx data_tc{t}_weight[8:0] bitfield definitions
-+ * preprocessor definitions for the bitfield "data_tc{t}_weight[8:0]".
-+ * parameter: tc {t} | stride size 0x4 | range [0, 7]
-+ * port="pif_tps_data_tc0_weight_i[8:0]"
-+ */
-+
-+/* register address for bitfield data_tc{t}_weight[8:0] */
-+#define HW_ATL2_TPS_DATA_TCTWEIGHT_ADR(tc) (0x00007110 + (tc) * 0x4)
-+/* bitmask for bitfield data_tc{t}_weight[8:0] */
-+#define HW_ATL2_TPS_DATA_TCTWEIGHT_MSK 0x000001ff
-+/* inverted bitmask for bitfield data_tc{t}_weight[8:0] */
-+#define HW_ATL2_TPS_DATA_TCTWEIGHT_MSKN 0xfffffe00
-+/* lower bit position of bitfield data_tc{t}_weight[8:0] */
-+#define HW_ATL2_TPS_DATA_TCTWEIGHT_SHIFT 0
-+/* width of bitfield data_tc{t}_weight[8:0] */
-+#define HW_ATL2_TPS_DATA_TCTWEIGHT_WIDTH 9
-+/* default value of bitfield data_tc{t}_weight[8:0] */
-+#define HW_ATL2_TPS_DATA_TCTWEIGHT_DEFAULT 0x0
-+
-+/* Launch time control register */
-+#define HW_ATL2_LT_CTRL_ADR 0x00007a1c
-+
-+#define HW_ATL2_LT_CTRL_AVB_LEN_CMP_TRSHLD_MSK 0xFFFF0000
-+#define HW_ATL2_LT_CTRL_AVB_LEN_CMP_TRSHLD_SHIFT 16
-+
-+#define HW_ATL2_LT_CTRL_CLK_RATIO_MSK 0x0000FF00
-+#define HW_ATL2_LT_CTRL_CLK_RATIO_SHIFT 8
-+#define HW_ATL2_LT_CTRL_CLK_RATIO_QUATER_SPEED 4
-+#define HW_ATL2_LT_CTRL_CLK_RATIO_HALF_SPEED 2
-+#define HW_ATL2_LT_CTRL_CLK_RATIO_FULL_SPEED 1
-+
-+#define HW_ATL2_LT_CTRL_25G_MODE_SUPPORT_MSK 0x00000008
-+#define HW_ATL2_LT_CTRL_25G_MODE_SUPPORT_SHIFT 3
-+
-+#define HW_ATL2_LT_CTRL_LINK_SPEED_MSK 0x00000007
-+#define HW_ATL2_LT_CTRL_LINK_SPEED_SHIFT 0
-+
-+/* FPGA VER register */
-+#define HW_ATL2_FPGA_VER_ADR 0x000000f4
-+#define HW_ATL2_FPGA_VER_U32(mj, mi, bl, rv) \
-+	((((mj) & 0xff) << 24) | \
-+	 (((mi) & 0xff) << 16) | \
-+	 (((bl) & 0xff) << 8) | \
-+	 (((rv) & 0xff) << 0))
-+
- /* ahb_mem_addr{f}[31:0] Bitfield Definitions
-  * Preprocessor definitions for the bitfield "ahb_mem_addr{f}[31:0]".
-  * Parameter: filter {f} | stride size 0x10 | range [0, 127]
-@@ -209,4 +308,13 @@
- /* Default value of bitfield pif_mcp_finished_buf_rd_i */
- #define HW_ATL2_MIF_MCP_FINISHED_READ_DEFAULT 0x0
- 
-+/* Register address for bitfield pif_mcp_boot_reg */
-+#define HW_ATL2_MIF_BOOT_REG_ADR 0x00003040u
-+
-+#define HW_ATL2_MCP_HOST_REQ_INT_READY BIT(0)
-+
-+#define HW_ATL2_MCP_HOST_REQ_INT_ADR 0x00000F00u
-+#define HW_ATL2_MCP_HOST_REQ_INT_SET_ADR 0x00000F04u
-+#define HW_ATL2_MCP_HOST_REQ_INT_CLR_ADR 0x00000F08u
-+
- #endif /* HW_ATL2_LLH_INTERNAL_H */
+ int hw_atl2_utils_get_action_resolve_table_caps(struct aq_hw_s *self,
+ 						u8 *base_index, u8 *count)
+ {
 -- 
 2.17.1
 
