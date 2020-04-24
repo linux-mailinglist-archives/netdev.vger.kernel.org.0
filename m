@@ -2,88 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B08241B7E6A
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 20:56:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 949B71B7E7A
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 21:01:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729154AbgDXS4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 14:56:15 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:33504 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728990AbgDXS4M (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Apr 2020 14:56:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=f/ICdXX2tvt9HuwmkaXgLln2pWbCatON189erHV+D2w=; b=ULE80aEE/yZarCd/IiRPOo/cXz
-        U+OCiL091aQQEn02pOCk+yq0IjVvJRMlySkWgN3IA0hxokJ0v6D+qZyLAwLaG3SHskytFroj5M4Vd
-        QqDZFnoxY0ElN1+VwB+yC1/69/Gb5GbgQ5YUirHPRK4y1McjE2VO0cEeMZZJoIJeS7CM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jS3Ug-004bVa-GC; Fri, 24 Apr 2020 20:56:10 +0200
-Date:   Fri, 24 Apr 2020 20:56:10 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tanjeff Moos <tanjeff@cccmz.de>
-Cc:     Networking <netdev@vger.kernel.org>
-Subject: Re: How to operate 10Gbit SFP+ module if driver doesn't support SFP+?
-Message-ID: <20200424185610.GE1088354@lunn.ch>
-References: <25058311-191c-055a-5966-aeb14440db2b@cccmz.de>
+        id S1729129AbgDXTB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 15:01:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58154 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726793AbgDXTB3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 15:01:29 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55023C09B049
+        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 12:01:29 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id x4so11796430wmj.1
+        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 12:01:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=fuVH2zlAk3e6K7JvE8Krj1RMsqD9P58GyyY6EtX13Eo=;
+        b=DOU0z6Tk5K2khHa7ZaBEvV3VKJF9JsfsKcE9LO/NjVmP8p/Fc0I+PIF4NKoC28hszq
+         +O2YoHQoiFg/VEWodK/Zb660WBnSxX894I6rsXq/Rr987mTKt1U1o4DSiCVzI6jfyjLY
+         iPX+Irn6+xkiO6/2/trFXghBF5HyckCBHQOcoF6rdSixHygHsiuwaE3WqqZemwtuk61Y
+         ykUJVc2sKyWi+7iYduNMS+4BwfJQ5NtHheT6Zr7aSFjLPlo5jtOgg5yQtui8HkayOeXD
+         Ef4ia126JB3eYaXmQkzOSaOq8EBZ46irpHWEtCdB19lHIkaY2a6Esyviyq6QhiUnSfhl
+         Usww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=fuVH2zlAk3e6K7JvE8Krj1RMsqD9P58GyyY6EtX13Eo=;
+        b=Fm3bV3F6GymjAzcgK/ZkwnLcyCO/ws5ZBJ8Ms4eeVjxgc5ZGg5fqBbGFwRNOM4Cz57
+         foqBSiyhpa17SFMn5b4Gv09qh9+9MxQr2vexohauc2yV2jGj36Xm283rlS+NTcqvZZv6
+         rpteQA3/L3hipXv0F9vLHBzYhID2MjLXOg40FapV6MMzw3FePwXZTwZQcyEDBNzJMZNY
+         sKxPO42Ur96t2l+KgDkNzpo9bqCs5gflZDiCUyLK8c0ef5k5a7VFwFNXAT6/cSmrR5TF
+         TyCkEekmCH6+iFp/yCklsvoQ7M8u6tfYTpNmVJ2IGL4p5LyNPMam5HkR9tv6G/jthHJG
+         MVqA==
+X-Gm-Message-State: AGi0PuYt7oxfK1LHPSbhhG1RPQBXs7KthpGzuSDj1hrG1kbsvdH0cUxm
+        PEbjezLSJkDCHMV1U27xe9oAz+oUfkA=
+X-Google-Smtp-Source: APiQypL1aPIh9d8uaedrNWxzPLmH79gedWWPlfs8qqd15Op3NFG2ta2f6IJS9S6M2xgAfBDzSRcI5w==
+X-Received: by 2002:a1c:99d3:: with SMTP id b202mr12111534wme.126.1587754887822;
+        Fri, 24 Apr 2020 12:01:27 -0700 (PDT)
+Received: from [192.168.1.10] ([194.53.185.129])
+        by smtp.gmail.com with ESMTPSA id q184sm3878375wma.25.2020.04.24.12.01.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Apr 2020 12:01:27 -0700 (PDT)
+Subject: Re: [PATCH bpf] bpftool: Respect the -d option in struct_ops cmd
+To:     Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com,
+        netdev@vger.kernel.org
+References: <20200424182911.1259355-1-kafai@fb.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <8fd56f56-0b2e-472d-0e8c-a9f4e80c057f@isovalent.com>
+Date:   Fri, 24 Apr 2020 20:01:26 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <25058311-191c-055a-5966-aeb14440db2b@cccmz.de>
+In-Reply-To: <20200424182911.1259355-1-kafai@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 24, 2020 at 06:41:18PM +0200, Tanjeff Moos wrote:
-> Hello netdev list,
+2020-04-24 11:29 UTC-0700 ~ Martin KaFai Lau <kafai@fb.com>
+> In the prog cmd, the "-d" option turns on the verifier log.
+> This is missed in the "struct_ops" cmd and this patch fixes it.
 > 
-> I hope that I'm at the right mailinglist for my question. If not, let me
-> know.
-> 
-> 
-> Abstract
-> --------
-> 
-> I'm trying to get a 10GBASE-SR SFP+ module running on a self-made board.
-> The MAC driver doesn't support phylink (i.e. no I²C accesses to the SFP+
-> registers), therefore I want to use PHY-less mode. On the other hand,
-> the "fixed-link" mode supports only up to 1 Gbit. The "in-band-status"
-> mode is said to not work with my setup. Thus I'm running out of options.
-> I ask you if there are further options to get things running.
-> 
-> 
-> About the hardware
-> ------------------
-> 
-> My company built an access point containing an NXP QorIQ T1023 Soc. This
-> SoC includes a MAC which is connected to an SFP+ cage. We use XFI for
-> the connection between MAC and SFP+. In addition, the SFP+ module is
-> connected to the SoC via I²C to access its registers.
-> 
-> 
-> About the software
-> ------------------
-> 
-> I am running OpenWRT with a Linux 4.14.137 kernel. There are patches on
-> that kernel (mostly from the OpenWRT project, some by us).
- 
-Hi Tanjeff
+> Fixes: 65c93628599d ("bpftool: Add struct_ops support")
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 
-Most kernel hackers don't care about such old kernels.
-
-> Details about the problem
-> -------------------------
-> 
-> For the MAC, I use the DPAA driver.
-
-Is this dpaa2? If so, a modern kernel supports PHYLINK. That solves
-most of your problems. The kernel SFP code should work so long as you
-have access the i2c via a standard linux I2C bus.
-
-     Andrew
+Looks good to me, thanks!
+Reviewed-by: Quentin Monnet <quentin@isovalent.com>
