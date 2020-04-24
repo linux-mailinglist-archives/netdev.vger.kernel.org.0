@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 477C81B7F3F
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 21:46:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A912B1B7F41
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 21:46:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729320AbgDXTp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 15:45:57 -0400
+        id S1729339AbgDXTqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 15:46:03 -0400
 Received: from mail-eopbgr70047.outbound.protection.outlook.com ([40.107.7.47]:44128
         "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729280AbgDXTp5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Apr 2020 15:45:57 -0400
+        id S1729175AbgDXTqC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Apr 2020 15:46:02 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NIxBew0zoh6enU9CjQPQQ1pWUfz4FyZBLK3l2OBFLNQ9iZjESKwIJ3eRnmhPqK7zU/iDzTrmPPCOPRHUtDIHx9oIzoXyV0KpKUDzOGbPBnUiBtkEvFiPW0qgua2gPSuV3Rq1HEwZXXwMnKnEutRvNJglS4FH2eSsI+tqP3rtgfcgm0B3wTjhEdhu7Doz+F12fWAxsM7QL/FgcIeQcrdm9SX9ZS13XQt045sIma/qOMAG558T8R30b/bwSF3uehDCONPgSCxt1OY2+Z+oRSXhEYirzn43jh2hgtEKrPLAZfXbYNRRNPSidMlw+q4XjlO+aANgTL7XbYnkKXd5bSwqoQ==
+ b=FWqaGzKhYkBjuZw2Zk3U1xHfum0iQ7EJgRQ38A3kgvGMLsorLhhBwjaFyUjzHLVsQNTcrhlf8/MRaSSgblExKjw60ERjR+H5rHVUBc3/GE8mAcOOmJ9xVqvvckd9qNdCryQ2RTtxRxyAGrRVlu0+amBsgsppxNanNzbqoIXQhFw6y/4yslGul0z020llByZKQ8giQbNEwz629u4hCXLy2E6NTx0A0H6W8vzt3Z9urk5lE4tD7tig74mCeqFAobTmtOpJv6uxAZp+szS36O8LPndkSP2wZtzpxcKuGOBjlQRHShy5Kal/HUeTx/2Qg2W4+KMlnm4NGK8X4qHYYjQUIg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=m0cH4XQk4iwRnZUkS/ep2nOAZmRlqtcPjC9Bk9ZJKxA=;
- b=Qv4fqw34SbNyEp1/sONiBiY40VqAjTXyUjIRGBQcx5/FiHy/q9r0yCy7H+YYWJLegI8HUUd484TW14He/XQxoYGTiqP8yU94KCwRZfKmt2I0ULpVuOqWgtPHWw/RHNycrzANqj3i/LIwJeqiwXp4GO/C74oWeVerD6XOQe2UY7kybYz80xbO4W3UZiNu6BKe8Dh7OLXI3lBuZgsA1kDAKPlLDTFwe/gXAWROmOfxnLsqOvkCJShDsVpr8PX1Zy0Phkuihtw9BxaiDWyL3QqV4kixxfo8u0kZ634HJOclH+I5djN4f++TomWA9wfJXFVosTemp0D27b9cnjM1atu51w==
+ bh=ku1q8tuB8ZbsGaXmq85ZSceQYsHpXfnUibrTe+fPvvE=;
+ b=BKg6MiJCf+vCUfZN8VC7kfQ3JcDKi0jwwoZ4PBLrXZD2RfxZwNyitV3hW+sUf5C6vTsziPIn6ubCg6rZH6O0jyptZwndsrpEy9E9OdIlY1p133T40+0wpqSbqjIurOCVxAe3BAeYJZPep/7H9BiZt6/iAbr8c/DcFbqa79VBDEy1WrYjkYTEWQv0RoF+qjUTZl6shgeucgSkFWpNH/yap3AtZQcCYRYVu3TcydXrJfXYP1o8nxPG6glpW6AMukWBysABR8b+YmO0YYpfRSS5yI6pCDAJB0OBi0gbBnUWU/Ra3h9cZk3k6tHU9cUVDHDW5+CR4oKvmfrw6aVqv3OuCA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=m0cH4XQk4iwRnZUkS/ep2nOAZmRlqtcPjC9Bk9ZJKxA=;
- b=F2lzBWqECqMokv6VoCnFnpZo4xRyCZmKLODaiTy8M9cej5arxn2WUFJjRZYojOeWRIFZCZBF63VPVdcAhHycwNqLaXPDHF7yyUNAfYi27iop5e/xikznWiSQ+G7oyX/YSRomWrSGOwqFzL2zwUTmDHphT2Kfqq+dLZb8TyruvGk=
+ bh=ku1q8tuB8ZbsGaXmq85ZSceQYsHpXfnUibrTe+fPvvE=;
+ b=suoX3i9tvGWsUgzrT3XC7Bh/WSZaXIbgyTOg7ap+TTFDldol0pRxYz9Ry421pVhZD/3jekOi6TXZb0C5X1wCUu/P6MKJ4rCaOOamumhFS5cfKwYUeRevN5l7i/2+fqS53GnHX1ympIMgY2amzu/BP1FsZerV5IQJzJXFb93ZtdU=
 Authentication-Results: spf=none (sender IP is )
  smtp.mailfrom=saeedm@mellanox.com; 
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR05MB5072.eurprd05.prod.outlook.com (2603:10a6:803:61::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.29; Fri, 24 Apr
- 2020 19:45:46 +0000
+ 2020 19:45:47 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2937.020; Fri, 24 Apr 2020
- 19:45:46 +0000
+ 19:45:47 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     Saeed Mahameed <saeedm@mellanox.com>,
         Leon Romanovsky <leonro@mellanox.com>
 Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        Raed Salem <raeds@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>
-Subject: [PATCH mlx5-next 2/9] net/mlx5: Introduce IPsec Connect-X offload hardware bits and structures
-Date:   Fri, 24 Apr 2020 12:45:03 -0700
-Message-Id: <20200424194510.11221-3-saeedm@mellanox.com>
+        Erez Shitrit <erezsh@mellanox.com>,
+        Ariel Levkovich <lariel@mellanox.com>
+Subject: [PATCH mlx5-next 3/9] net/mlx5: Use aligned variable while allocating ICM memory
+Date:   Fri, 24 Apr 2020 12:45:04 -0700
+Message-Id: <20200424194510.11221-4-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.25.3
 In-Reply-To: <20200424194510.11221-1-saeedm@mellanox.com>
 References: <20200424194510.11221-1-saeedm@mellanox.com>
@@ -57,193 +57,230 @@ X-ClientProxiedBy: BYAPR06CA0016.namprd06.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR06CA0016.namprd06.prod.outlook.com (2603:10b6:a03:d4::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13 via Frontend Transport; Fri, 24 Apr 2020 19:45:35 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR06CA0016.namprd06.prod.outlook.com (2603:10b6:a03:d4::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13 via Frontend Transport; Fri, 24 Apr 2020 19:45:38 +0000
 X-Mailer: git-send-email 2.25.3
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: c86110e8-b952-41fe-823d-08d7e8880fa4
+X-MS-Office365-Filtering-Correlation-Id: 2198baca-4a97-4213-020d-08d7e888113a
 X-MS-TrafficTypeDiagnostic: VI1PR05MB5072:|VI1PR05MB5072:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB5072A8D744BD6F65789B82E8BED00@VI1PR05MB5072.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:741;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB5072FD51F52EF9287F238200BED00@VI1PR05MB5072.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2887;
 X-Forefront-PRVS: 03838E948C
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(39860400002)(136003)(396003)(376002)(366004)(346002)(6506007)(26005)(2616005)(8936002)(8676002)(316002)(6636002)(36756003)(6666004)(66946007)(66556008)(52116002)(81156014)(478600001)(107886003)(66476007)(6512007)(956004)(5660300002)(110136005)(4326008)(1076003)(54906003)(16526019)(186003)(2906002)(6486002)(86362001)(450100002)(54420400002);DIR:OUT;SFP:1101;
 Received-SPF: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Xf92jTQ4oFyfM/RtLIjJPiH875IuW6wpvsMeRyQwecgvB+DYKIN6+tVNIxZeRSVVGNoHSdl1Xjoo80TfvP4f4gRfitko/VzRJ/lFa4lB8Ls8nbmCFE8f41Zwwffj1TsgmP0AeuNFG9hYv2c8SfbPjfai6URWUrzwRslXKczefay5binDStOIJO2JP9SCiG/vzx3Pbp1ZefIWv6yxcBUrDKZSenItRts+o9GyA81NUpcfrwwgR3rDBh0zsdmI4StpC4qpUNxrgdsTYyTVCgIHHM3ZNaYmfNsOUj+H7Ys62tkV+2FnyL0esQ4RRKlW9mr9ZIO6w+mQrvDjg5mkJQVtiVLS8tiOn3CLHMn5vlZybkaDhyY6+TesA8/NwwOUn5XtLAVwCqnKzOL5jxBhgUx3tPgnednkqRJUR6SDbsAHKD62RxCwuoedI8W9GKIWji6q0WrsepP9Ex1XE5cpUtVjMhA03pGEoojhRHNOCQN6TY6nNc60sOqUBkuPcJn2eZnp
-X-MS-Exchange-AntiSpam-MessageData: wmRDm3hsRgEvmFp8kq6nR0FIBXdwObKG7bjNTrDn9rsnr6VWkLVIvq7YjxERzjyRXU1otU3NhPIRl82IO+CKFBnlUHQ0kuvk3odiYSrbaPNE9WJpzzIFl4ktBDVO8xzQWUi98BwcHpaIeQBBYE45ag==
+X-Microsoft-Antispam-Message-Info: 3HE97+seu3u2C8M75YXbe6OGL+fx5gMEOGW1nwPTC4QtbqzUQ3/YXaqD6zryQPi6ymFrYiWsEq7AcNzF4n6zxscfSk5n6YRe8E6RRxoUC918aNCZPu5BhvivNrent79qH/D6p5eocX3Ir05okbiivIF0BQj+DZfVV7XCv5wTfTCfsROL4vwWh6R6D49preqdsNL4H3SIoN5ru52Cjz3GQ9vIluFNQfFdlW2hbKyi95CmywKKeOjiNMtl11D1IkvQXrDtpTHiotwxqMTAnjSFcLVoOduRaTXq9pAhVvGZod6jmtgTGq/u1OuSjAcMC/iFWiwNuq+VMwZkXRgYKLFqIl33eCmlQnWYUNH6g163IALOm3/yPONXelc3inzhvCB28neF5Smv5UEzPfOvOclilwZUKUBo1YPkMveufPy4HnqSKCi+B5CnvZafJ672fMt94ciVO3olwDDaubVo6rC4kOvP4kOGJgGta8fRDGlHhE98wpaioCuuF2J+qOMGd9eK
+X-MS-Exchange-AntiSpam-MessageData: hxQjr51cSlthcxJITAVfnip+xkA2rlAvcCYQnxlXOI6gDJo3lDjpjDjFjSTa+WruF6bnzt1MKFIHJUZwDHcNkvb069q3XNbv5+sNVUt+LMsmVWUnYDXzP2y5NSWUk7XXryUGrYacw3U7YJX//8MptQ==
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c86110e8-b952-41fe-823d-08d7e8880fa4
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2020 19:45:37.3559
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2198baca-4a97-4213-020d-08d7e888113a
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2020 19:45:40.7479
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iy72ctykHj5sysmsEtMResGHGNUHuYfTskjS3/+qwe7tjLrVNaYMvT472pByxGdI9nZ+QZFSVD0Cqn2XL5t09g==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5PKNaUh5psbB/mmy718OtvwaKXre2bV0Bnbr4pi5Y+UJGDemOg9jELUCptxGrdkRzWIAwOMPwsNo/kX853IF7Q==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5072
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Raed Salem <raeds@mellanox.com>
+From: Erez Shitrit <erezsh@mellanox.com>
 
-Add IPsec offload related IFC structs, layouts and enumerations.
+The alignment value is part of the input structure, so use it and spare
+extra memory allocation when is not needed.
+Now, using the new ability when allocating icm for Direct-Rule
+insertion.
+Signed-off-by: Ariel Levkovich <lariel@mellanox.com>
+Signed-off-by: Erez Shitrit <erezsh@mellanox.com>
 
-Signed-off-by: Raed Salem <raeds@mellanox.com>
-Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- include/linux/mlx5/device.h   |  4 ++
- include/linux/mlx5/mlx5_ifc.h | 78 +++++++++++++++++++++++++++++++++--
- 2 files changed, 79 insertions(+), 3 deletions(-)
+ drivers/infiniband/hw/mlx5/main.c             |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/lib/dm.c  | 15 ++++--
+ .../mellanox/mlx5/core/steering/dr_icm_pool.c | 53 +++++++++----------
+ include/linux/mlx5/driver.h                   |  3 +-
+ 4 files changed, 38 insertions(+), 35 deletions(-)
 
-diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
-index 2b90097a6cf9..7b57877e501e 100644
---- a/include/linux/mlx5/device.h
-+++ b/include/linux/mlx5/device.h
-@@ -1107,6 +1107,7 @@ enum mlx5_cap_type {
- 	MLX5_CAP_TLS,
- 	MLX5_CAP_VDPA_EMULATION = 0x13,
- 	MLX5_CAP_DEV_EVENT = 0x14,
-+	MLX5_CAP_IPSEC,
- 	/* NUM OF CAP Types */
- 	MLX5_CAP_NUM
- };
-@@ -1324,6 +1325,9 @@ enum mlx5_qcam_feature_groups {
- 	MLX5_GET64(device_virtio_emulation_cap, \
- 		(mdev)->caps.hca_cur[MLX5_CAP_VDPA_EMULATION], cap)
+diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
+index f10675213115..65e0e24d463b 100644
+--- a/drivers/infiniband/hw/mlx5/main.c
++++ b/drivers/infiniband/hw/mlx5/main.c
+@@ -2444,7 +2444,7 @@ static int handle_alloc_dm_sw_icm(struct ib_ucontext *ctx,
+ 	act_size = roundup_pow_of_two(act_size);
  
-+#define MLX5_CAP_IPSEC(mdev, cap)\
-+	MLX5_GET(ipsec_cap, (mdev)->caps.hca_cur[MLX5_CAP_IPSEC], cap)
-+
- enum {
- 	MLX5_CMD_STAT_OK			= 0x0,
- 	MLX5_CMD_STAT_INT_ERR			= 0x1,
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 3ad2c51ccde9..cf971d341189 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -886,7 +886,8 @@ struct mlx5_ifc_per_protocol_networking_offload_caps_bits {
- 	u8         tunnel_stateless_vxlan_gpe[0x1];
- 	u8         tunnel_stateless_ipv4_over_vxlan[0x1];
- 	u8         tunnel_stateless_ip_over_ip[0x1];
--	u8         reserved_at_2a[0x6];
-+	u8         insert_trailer[0x1];
-+	u8         reserved_at_2b[0x5];
- 	u8         max_vxlan_udp_ports[0x8];
- 	u8         reserved_at_38[0x6];
- 	u8         max_geneve_opt_len[0x1];
-@@ -1100,6 +1101,23 @@ struct mlx5_ifc_tls_cap_bits {
- 	u8         reserved_at_20[0x7e0];
- };
+ 	dm->size = act_size;
+-	err = mlx5_dm_sw_icm_alloc(dev, type, act_size,
++	err = mlx5_dm_sw_icm_alloc(dev, type, act_size, attr->alignment,
+ 				   to_mucontext(ctx)->devx_uid, &dm->dev_addr,
+ 				   &dm->icm_dm.obj_id);
+ 	if (err)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/dm.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/dm.c
+index 6cbccba56f70..3d5e57ff558c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/dm.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/dm.c
+@@ -90,7 +90,8 @@ void mlx5_dm_cleanup(struct mlx5_core_dev *dev)
+ }
  
-+struct mlx5_ifc_ipsec_cap_bits {
-+	u8         ipsec_full_offload[0x1];
-+	u8         ipsec_crypto_offload[0x1];
-+	u8         ipsec_esn[0x1];
-+	u8         ipsec_crypto_esp_aes_gcm_256_encrypt[0x1];
-+	u8         ipsec_crypto_esp_aes_gcm_128_encrypt[0x1];
-+	u8         ipsec_crypto_esp_aes_gcm_256_decrypt[0x1];
-+	u8         ipsec_crypto_esp_aes_gcm_128_decrypt[0x1];
-+	u8         reserved_at_7[0x4];
-+	u8         log_max_ipsec_offload[0x5];
-+	u8         reserved_at_10[0x10];
-+
-+	u8         min_log_ipsec_full_replay_window[0x8];
-+	u8         max_log_ipsec_full_replay_window[0x8];
-+	u8         reserved_at_30[0x7d0];
-+};
-+
- enum {
- 	MLX5_WQ_TYPE_LINKED_LIST  = 0x0,
- 	MLX5_WQ_TYPE_CYCLIC       = 0x1,
-@@ -1464,7 +1482,8 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ int mlx5_dm_sw_icm_alloc(struct mlx5_core_dev *dev, enum mlx5_sw_icm_type type,
+-			 u64 length, u16 uid, phys_addr_t *addr, u32 *obj_id)
++			 u64 length, u32 log_alignment, u16 uid,
++			 phys_addr_t *addr, u32 *obj_id)
+ {
+ 	u32 num_blocks = DIV_ROUND_UP_ULL(length, MLX5_SW_ICM_BLOCK_SIZE(dev));
+ 	u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)] = {};
+@@ -99,6 +100,7 @@ int mlx5_dm_sw_icm_alloc(struct mlx5_core_dev *dev, enum mlx5_sw_icm_type type,
+ 	unsigned long *block_map;
+ 	u64 icm_start_addr;
+ 	u32 log_icm_size;
++	u64 align_mask;
+ 	u32 max_blocks;
+ 	u64 block_idx;
+ 	void *sw_icm;
+@@ -136,11 +138,14 @@ int mlx5_dm_sw_icm_alloc(struct mlx5_core_dev *dev, enum mlx5_sw_icm_type type,
+ 		return -EOPNOTSUPP;
  
- 	u8         reserved_at_460[0x3];
- 	u8         log_max_uctx[0x5];
--	u8         reserved_at_468[0x3];
-+	u8         reserved_at_468[0x2];
-+	u8         ipsec_offload[0x1];
- 	u8         log_max_umem[0x5];
- 	u8         max_num_eqs[0x10];
+ 	max_blocks = BIT(log_icm_size - MLX5_LOG_SW_ICM_BLOCK_SIZE(dev));
++
++	if (log_alignment < MLX5_LOG_SW_ICM_BLOCK_SIZE(dev))
++		log_alignment = MLX5_LOG_SW_ICM_BLOCK_SIZE(dev);
++	align_mask = BIT(log_alignment - MLX5_LOG_SW_ICM_BLOCK_SIZE(dev)) - 1;
++
+ 	spin_lock(&dm->lock);
+-	block_idx = bitmap_find_next_zero_area(block_map,
+-					       max_blocks,
+-					       0,
+-					       num_blocks, 0);
++	block_idx = bitmap_find_next_zero_area(block_map, max_blocks, 0,
++					       num_blocks, align_mask);
  
-@@ -4143,7 +4162,8 @@ enum {
- 	MLX5_SET_FTE_MODIFY_ENABLE_MASK_ACTION    = 0x0,
- 	MLX5_SET_FTE_MODIFY_ENABLE_MASK_FLOW_TAG  = 0x1,
- 	MLX5_SET_FTE_MODIFY_ENABLE_MASK_DESTINATION_LIST    = 0x2,
--	MLX5_SET_FTE_MODIFY_ENABLE_MASK_FLOW_COUNTERS    = 0x3
-+	MLX5_SET_FTE_MODIFY_ENABLE_MASK_FLOW_COUNTERS    = 0x3,
-+	MLX5_SET_FTE_MODIFY_ENABLE_MASK_IPSEC_OBJ_ID    = 0x4
- };
+ 	if (block_idx < max_blocks)
+ 		bitmap_set(block_map,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
+index 30d2d7376f56..cc33515b9aba 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
+@@ -95,13 +95,12 @@ static int dr_icm_create_dm_mkey(struct mlx5_core_dev *mdev,
+ }
  
- struct mlx5_ifc_set_fte_out_bits {
-@@ -10468,10 +10488,62 @@ struct mlx5_ifc_affiliated_event_header_bits {
+ static struct mlx5dr_icm_mr *
+-dr_icm_pool_mr_create(struct mlx5dr_icm_pool *pool,
+-		      enum mlx5_sw_icm_type type,
+-		      size_t align_base)
++dr_icm_pool_mr_create(struct mlx5dr_icm_pool *pool)
+ {
+ 	struct mlx5_core_dev *mdev = pool->dmn->mdev;
++	enum mlx5_sw_icm_type dm_type;
+ 	struct mlx5dr_icm_mr *icm_mr;
+-	size_t align_diff;
++	size_t log_align_base;
+ 	int err;
  
- enum {
- 	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_ENCRYPTION_KEY = BIT(0xc),
-+	MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_IPSEC = BIT(0x13),
- };
+ 	icm_mr = kvzalloc(sizeof(*icm_mr), GFP_KERNEL);
+@@ -111,14 +110,22 @@ dr_icm_pool_mr_create(struct mlx5dr_icm_pool *pool,
+ 	icm_mr->pool = pool;
+ 	INIT_LIST_HEAD(&icm_mr->mr_list);
  
- enum {
- 	MLX5_GENERAL_OBJECT_TYPES_ENCRYPTION_KEY = 0xc,
-+	MLX5_GENERAL_OBJECT_TYPES_IPSEC = 0x13,
-+};
+-	icm_mr->dm.type = type;
+-
+-	/* 2^log_biggest_table * entry-size * double-for-alignment */
+ 	icm_mr->dm.length = mlx5dr_icm_pool_chunk_size_to_byte(pool->max_log_chunk_sz,
+-							       pool->icm_type) * 2;
++							       pool->icm_type);
 +
-+enum {
-+	MLX5_IPSEC_OBJECT_ICV_LEN_16B,
-+	MLX5_IPSEC_OBJECT_ICV_LEN_12B,
-+	MLX5_IPSEC_OBJECT_ICV_LEN_8B,
-+};
-+
-+struct mlx5_ifc_ipsec_obj_bits {
-+	u8         modify_field_select[0x40];
-+	u8         full_offload[0x1];
-+	u8         reserved_at_41[0x1];
-+	u8         esn_en[0x1];
-+	u8         esn_overlap[0x1];
-+	u8         reserved_at_44[0x2];
-+	u8         icv_length[0x2];
-+	u8         reserved_at_48[0x4];
-+	u8         aso_return_reg[0x4];
-+	u8         reserved_at_50[0x10];
-+
-+	u8         esn_msb[0x20];
-+
-+	u8         reserved_at_80[0x8];
-+	u8         dekn[0x18];
-+
-+	u8         salt[0x20];
-+
-+	u8         implicit_iv[0x40];
-+
-+	u8         reserved_at_100[0x700];
-+};
-+
-+struct mlx5_ifc_create_ipsec_obj_in_bits {
-+	struct mlx5_ifc_general_obj_in_cmd_hdr_bits general_obj_in_cmd_hdr;
-+	struct mlx5_ifc_ipsec_obj_bits ipsec_object;
-+};
-+
-+enum {
-+	MLX5_MODIFY_IPSEC_BITMASK_ESN_OVERLAP = BIT(0),
-+	MLX5_MODIFY_IPSEC_BITMASK_ESN_MSB = BIT(1),
-+};
-+
-+struct mlx5_ifc_query_ipsec_obj_out_bits {
-+	struct mlx5_ifc_general_obj_out_cmd_hdr_bits general_obj_out_cmd_hdr;
-+	struct mlx5_ifc_ipsec_obj_bits ipsec_object;
-+};
-+
-+struct mlx5_ifc_modify_ipsec_obj_in_bits {
-+	struct mlx5_ifc_general_obj_in_cmd_hdr_bits general_obj_in_cmd_hdr;
-+	struct mlx5_ifc_ipsec_obj_bits ipsec_object;
- };
++	if (pool->icm_type == DR_ICM_TYPE_STE) {
++		dm_type = MLX5_SW_ICM_TYPE_STEERING;
++		log_align_base = ilog2(icm_mr->dm.length);
++	} else {
++		dm_type = MLX5_SW_ICM_TYPE_HEADER_MODIFY;
++		/* Align base is 64B */
++		log_align_base = ilog2(DR_ICM_MODIFY_HDR_ALIGN_BASE);
++	}
++	icm_mr->dm.type = dm_type;
  
- struct mlx5_ifc_encryption_key_obj_bits {
+-	err = mlx5_dm_sw_icm_alloc(mdev, icm_mr->dm.type, icm_mr->dm.length, 0,
+-				   &icm_mr->dm.addr, &icm_mr->dm.obj_id);
++	err = mlx5_dm_sw_icm_alloc(mdev, icm_mr->dm.type, icm_mr->dm.length,
++				   log_align_base, 0, &icm_mr->dm.addr,
++				   &icm_mr->dm.obj_id);
+ 	if (err) {
+ 		mlx5dr_err(pool->dmn, "Failed to allocate SW ICM memory, err (%d)\n", err);
+ 		goto free_icm_mr;
+@@ -137,15 +144,18 @@ dr_icm_pool_mr_create(struct mlx5dr_icm_pool *pool,
+ 
+ 	icm_mr->icm_start_addr = icm_mr->dm.addr;
+ 
+-	/* align_base is always a power of 2 */
+-	align_diff = icm_mr->icm_start_addr & (align_base - 1);
+-	if (align_diff)
+-		icm_mr->used_length = align_base - align_diff;
++	if (icm_mr->icm_start_addr & (BIT(log_align_base) - 1)) {
++		mlx5dr_err(pool->dmn, "Failed to get Aligned ICM mem (asked: %zu)\n",
++			   log_align_base);
++		goto free_mkey;
++	}
+ 
+ 	list_add_tail(&icm_mr->mr_list, &pool->icm_mr_list);
+ 
+ 	return icm_mr;
+ 
++free_mkey:
++	mlx5_core_destroy_mkey(mdev, &icm_mr->mkey);
+ free_dm:
+ 	mlx5_dm_sw_icm_dealloc(mdev, icm_mr->dm.type, icm_mr->dm.length, 0,
+ 			       icm_mr->dm.addr, icm_mr->dm.obj_id);
+@@ -200,24 +210,11 @@ static int dr_icm_chunks_create(struct mlx5dr_icm_bucket *bucket)
+ 	struct mlx5dr_icm_pool *pool = bucket->pool;
+ 	struct mlx5dr_icm_mr *icm_mr = NULL;
+ 	struct mlx5dr_icm_chunk *chunk;
+-	enum mlx5_sw_icm_type dm_type;
+-	size_t align_base;
+ 	int i, err = 0;
+ 
+ 	mr_req_size = bucket->num_of_entries * bucket->entry_size;
+ 	mr_row_size = mlx5dr_icm_pool_chunk_size_to_byte(pool->max_log_chunk_sz,
+ 							 pool->icm_type);
+-
+-	if (pool->icm_type == DR_ICM_TYPE_STE) {
+-		dm_type = MLX5_SW_ICM_TYPE_STEERING;
+-		/* Align base is the biggest chunk size / row size */
+-		align_base = mr_row_size;
+-	} else {
+-		dm_type = MLX5_SW_ICM_TYPE_HEADER_MODIFY;
+-		/* Align base is 64B */
+-		align_base = DR_ICM_MODIFY_HDR_ALIGN_BASE;
+-	}
+-
+ 	mutex_lock(&pool->mr_mutex);
+ 	if (!list_empty(&pool->icm_mr_list)) {
+ 		icm_mr = list_last_entry(&pool->icm_mr_list,
+@@ -228,7 +225,7 @@ static int dr_icm_chunks_create(struct mlx5dr_icm_bucket *bucket)
+ 	}
+ 
+ 	if (!icm_mr || mr_free_size < mr_row_size) {
+-		icm_mr = dr_icm_pool_mr_create(pool, dm_type, align_base);
++		icm_mr = dr_icm_pool_mr_create(pool);
+ 		if (!icm_mr) {
+ 			err = -ENOMEM;
+ 			goto out_err;
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index b60e5ab7906b..b46537a81703 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -1080,7 +1080,8 @@ int mlx5_lag_query_cong_counters(struct mlx5_core_dev *dev,
+ struct mlx5_uars_page *mlx5_get_uars_page(struct mlx5_core_dev *mdev);
+ void mlx5_put_uars_page(struct mlx5_core_dev *mdev, struct mlx5_uars_page *up);
+ int mlx5_dm_sw_icm_alloc(struct mlx5_core_dev *dev, enum mlx5_sw_icm_type type,
+-			 u64 length, u16 uid, phys_addr_t *addr, u32 *obj_id);
++			 u64 length, u32 log_alignment, u16 uid,
++			 phys_addr_t *addr, u32 *obj_id);
+ int mlx5_dm_sw_icm_dealloc(struct mlx5_core_dev *dev, enum mlx5_sw_icm_type type,
+ 			   u64 length, u16 uid, phys_addr_t addr, u32 obj_id);
+ 
 -- 
 2.25.3
 
