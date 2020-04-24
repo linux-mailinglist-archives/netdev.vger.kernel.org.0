@@ -2,106 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85B351B6A3B
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 02:09:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8716F1B6A77
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 02:48:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728289AbgDXAJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 20:09:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49756 "EHLO
+        id S1728441AbgDXAso (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 20:48:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728046AbgDXAJD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 20:09:03 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 892FEC09B042
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 17:09:03 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id x15so3903961pfa.1
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 17:09:03 -0700 (PDT)
+        with ESMTP id S1728052AbgDXAso (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 20:48:44 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11E8DC09B042
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 17:48:43 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id c23so6095657qtp.11
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 17:48:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=if37bc8Wf0UXgYVdHWU4Qs3EVJtjkz/5gKswODLVgIE=;
-        b=QV3Bh3JXYsZZjx0J7Zbn/QB5Jn31R/UBu+4fPDAIwZaQobtF0XglcdJymcR1Y95X5P
-         RpJOBH7rJ425YI/IyBiBlv5cBMJtHeOFUPKwqz03iaQyn1p8mFXcbUynW33LCi/lcK13
-         Mx21VJji4VmFxfDL4uXg7McakzPiD2vzX1aYDVWhDTpEkr8uNl4VDg20G0GRJL3+b2sz
-         LJRuHRfqqgzvqEAdqsve6lURULFz/U3Teas2jO7uJwxrQUG79PRvt54OvVbOqHIEsleO
-         2ELXOet1uWOKcQjf02bwbohGMFp4YXI76A5ryFOWYfqRjgRCwEtuH6q+jPk40+P5LiTn
-         wURg==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=kqQ/23kvMPhmrmbio1Pott7UiPk/E3soHL+iEgcmvJE=;
+        b=pUYxO/YhdP6mGEU94Urf8DYtAWFKRSHq1lS8SA6GdE/cfQUQwzkDrLdQZuKpZLNzgs
+         Bn9pqYw3xEAf68z5eCZWB4Ah2+CN4i1tPETngY5flIQZoyhjpxJYTqdkYRMsqQYAGFc+
+         mzB8E8n9Bq/wBIvmgHLz+bLi6CXq0/3+WCrT3kxDF7Dxty/EtrlsRMvVTR2TfKLdfMdG
+         4KrKGjhLOExomMrHST7/Buv/w+2Ny/WkkmJQV73YlwexX5lPAcb/Qs7wuFyjwdMLnhta
+         Xf38fW4vxQoDlLz/kgBOsgXcnq1GowAwSMsPhUTSCT8jYROFFNMXnD+Hz/iLF6yNpw2I
+         VKNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=if37bc8Wf0UXgYVdHWU4Qs3EVJtjkz/5gKswODLVgIE=;
-        b=JPZgTcyxGhQ0f/fp7tapRfgOr/qxGxqSk6TgSuXmdgvCj1Cv1yj+Bsu+0VzJU3nHfa
-         HbRbIZzKUM1/Ic1XR5yAHCV2XLdfqOPzVz0V8xT+KB7gqGh+V83gfssj1t7aupAHTZpr
-         8tEoOeCrVROfPNWtlpAhTJpVdHDs2YRRWf7wfFoL8blWjcIsHXO5A1N1h/z+sJ4EO7km
-         6sZ+o1PiE3WITpH1FRi3fR35a3WyFP7rAU9+nfyxk+UtLXcuw2oY4wJRCHr4DbsFPfbK
-         xUmyH8oFbmI+LOjA2FS+l1XhVPRILVFsAy0LmY1XPHzvHVJmZVEXIixs+QC1ChZNsyaX
-         jRTw==
-X-Gm-Message-State: AGi0PuYakIFgbI9TnBwn0opnOE5PC4s2ldXdetPgsTOYVI8E5WUcWyrT
-        ppSBSZlGUwHJ55OHSR7juZs=
-X-Google-Smtp-Source: APiQypKkJRyVJvgv9jxJWEDO9i/4UmF15aN8VCtNX/7iitowJ6EwLtkzAGZZw0MxFE+2utwsYo8Lyg==
-X-Received: by 2002:a62:5ac2:: with SMTP id o185mr6494613pfb.148.1587686943120;
-        Thu, 23 Apr 2020 17:09:03 -0700 (PDT)
-Received: from local.opencloud.tech.localdomain ([219.142.146.4])
-        by smtp.gmail.com with ESMTPSA id p10sm3836100pff.210.2020.04.23.17.09.00
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 Apr 2020 17:09:02 -0700 (PDT)
-From:   xiangxia.m.yue@gmail.com
-To:     pshelar@ovn.org, azhou@ovn.org, blp@ovn.org, u9012063@gmail.com
-Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [PATCH net-next v4 5/5] net: openvswitch: use u64 for meter bucket
-Date:   Fri, 24 Apr 2020 08:08:06 +0800
-Message-Id: <1587686886-16347-6-git-send-email-xiangxia.m.yue@gmail.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1587686886-16347-1-git-send-email-xiangxia.m.yue@gmail.com>
-References: <1584969039-74113-1-git-send-email-xiangxia.m.yue@gmail.com>
- <1587686886-16347-1-git-send-email-xiangxia.m.yue@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=kqQ/23kvMPhmrmbio1Pott7UiPk/E3soHL+iEgcmvJE=;
+        b=T9Pp5Zqts2oSEIZyKmuV+S1ucFija1bZ7hfEjljVHbJG8SJsyP8Kvu95Us3HnFqP6I
+         rXj20AYuVAA2ALM0aHGdGi3NiiePTbA5EuZ12oADBRauUYH+6Nq6o3E/V73oEL3DNHxC
+         G3izM8vlg8RdXlY+eH8Z5VXc+pq6qpL4FPF657cHO5WMhbi6I/xN08p+vXGUamgwqJj9
+         OzXq5Ml5d/Y0MM2qNgTvl8wmXtYfByEXrX6DySVa8OwXTDj37kCM/ch1X0NGuU71t0/N
+         wTooYFxrt9U9JlsvGi0uQou9hCppiWJptfJl+cmpk3VuIVP0sI95KFJgiStJ9mvHlxM9
+         Krjg==
+X-Gm-Message-State: AGi0PubX1NqQnmRDrCTQvQiVs4An060BSTak1qJVVDjOp4RKT9u2cCk5
+        N3JCjTd3+Y4Rn9vmLV97bDE6bg==
+X-Google-Smtp-Source: APiQypKWwi1lUphnIm1u0yFW06VhOaNprkeE+qFrgi+iix9qyLy8VLygPu09qSBXOAZrrWLCnoHffw==
+X-Received: by 2002:ac8:359d:: with SMTP id k29mr7227438qtb.106.1587689322283;
+        Thu, 23 Apr 2020 17:48:42 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
+        by smtp.gmail.com with ESMTPSA id t75sm2659650qke.127.2020.04.23.17.48.41
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 23 Apr 2020 17:48:41 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1jRmWH-0002OL-A5; Thu, 23 Apr 2020 21:48:41 -0300
+Date:   Thu, 23 Apr 2020 21:48:41 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Patil, Kiran" <kiran.patil@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>
+Subject: Re: [RFC PATCH v5 01/16] RDMA/irdma: Add driver framework definitions
+Message-ID: <20200424004841.GD26002@ziepe.ca>
+References: <20200417193421.GB3083@unreal>
+ <9DD61F30A802C4429A01CA4200E302A7DCD4853F@fmsmsx124.amr.corp.intel.com>
+ <20200421004628.GQ26002@ziepe.ca>
+ <9DD61F30A802C4429A01CA4200E302A7DCD4A3E9@fmsmsx124.amr.corp.intel.com>
+ <20200421182256.GT26002@ziepe.ca>
+ <9DD61F30A802C4429A01CA4200E302A7DCD4DB92@fmsmsx124.amr.corp.intel.com>
+ <20200423150201.GY26002@ziepe.ca>
+ <9DD61F30A802C4429A01CA4200E302A7DCD4ED27@fmsmsx124.amr.corp.intel.com>
+ <20200423190327.GC26002@ziepe.ca>
+ <9DD61F30A802C4429A01CA4200E302A7DCD4FD03@fmsmsx124.amr.corp.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9DD61F30A802C4429A01CA4200E302A7DCD4FD03@fmsmsx124.amr.corp.intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On Thu, Apr 23, 2020 at 11:54:18PM +0000, Saleem, Shiraz wrote:
+> > Subject: Re: [RFC PATCH v5 01/16] RDMA/irdma: Add driver framework
+> > definitions
+> > 
+> > On Thu, Apr 23, 2020 at 05:15:22PM +0000, Saleem, Shiraz wrote:
+> > > > Subject: Re: [RFC PATCH v5 01/16] RDMA/irdma: Add driver framework
+> > > > definitions
+> > > >
+> > > > On Thu, Apr 23, 2020 at 12:32:48AM +0000, Saleem, Shiraz wrote:
+> > > >
+> > > > > we have a split initialization design for gen2 and future products.
+> > > > > phase1 is control path resource initialization in irdma_probe_dev
+> > > > > and
+> > > > > phase-2 is the rest of the resources with the ib registration at
+> > > > > the end of irdma_open. irdma_close must de-register the ib device
+> > > > > which will take care of ibdev free too. So it makes sense to keep
+> > > > > allocation of the ib device in irdma_open.
+> > > >
+> > > > The best driver pattern is to allocate the ib_device at the very
+> > > > start of probe() and use this to anchor all the device resources and memories.
+> > > >
+> > > > The whole close/open thing is really weird, you should get rid of it.
+> > > maybe I missing something. But why is it weird?
+> > 
+> > Because the RDMA driver should exist as its own entity. It does not shutdown
+> > unless the remove() method on is struct device_driver is closed.
+> > So what exactly are open/cose supposed to be doing? I think it is a left over of
+> > trying to re-implement the driver model.
+> > 
+> > > underlying configuration changes and reset management for the physical
+> > > function need a light-weight mechanism which is realized with the
+> > > close/open from netdev PCI drv --> rdma drv.
+> > 
+> > > Without a teardown and re-add of virtual device off the bus.
+> > 
+> > Yes, that is exactly right. If you have done something so disruptive that the
+> > ib_device needs to be destroyed then you should unplug/replug the entire virtual
+> > bus device, that is the correct and sane thing to do.
+> 
+> Well we have resources created in rdma driver probe which are used by any
+> VF's regardless of the registration of the ib device on the PF.
 
-When setting the meter rate to 4+Gbps, there is an
-overflow, the meters don't work as expected.
+Ugh, drivers that have the VF driver require the PF driver have a lot
+of problems.
 
-Cc: Pravin B Shelar <pshelar@ovn.org>
-Cc: Andy Zhou <azhou@ovn.org>
-Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Acked-by: Pravin B Shelar <pshelar@ovn.org>
----
- net/openvswitch/meter.c | 2 +-
- net/openvswitch/meter.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+But, even so, with your new split design, resources held for a VF
+belong in the core pci driver, not the rdma virtual bus device.
 
-diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
-index e36b464b32a5..915f31123f23 100644
---- a/net/openvswitch/meter.c
-+++ b/net/openvswitch/meter.c
-@@ -392,7 +392,7 @@ static struct dp_meter *dp_meter_create(struct nlattr **a)
- 		 *
- 		 * Start with a full bucket.
- 		 */
--		band->bucket = (band->burst_size + band->rate) * 1000;
-+		band->bucket = (band->burst_size + band->rate) * 1000ULL;
- 		band_max_delta_t = band->bucket / band->rate;
- 		if (band_max_delta_t > meter->max_delta_t)
- 			meter->max_delta_t = band_max_delta_t;
-diff --git a/net/openvswitch/meter.h b/net/openvswitch/meter.h
-index 61a3ca43cd77..0c33889a8515 100644
---- a/net/openvswitch/meter.h
-+++ b/net/openvswitch/meter.h
-@@ -26,7 +26,7 @@ struct dp_meter_band {
- 	u32 type;
- 	u32 rate;
- 	u32 burst_size;
--	u32 bucket; /* 1/1000 packets, or in bits */
-+	u64 bucket; /* 1/1000 packets, or in bits */
- 	struct ovs_flow_stats stats;
- };
- 
--- 
-2.23.0
-
+Jason
