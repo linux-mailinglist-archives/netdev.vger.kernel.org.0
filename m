@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 053F21B75C2
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 14:47:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F2CF1B75C7
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 14:47:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727898AbgDXMq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 08:46:56 -0400
-Received: from mail-am6eur05on2078.outbound.protection.outlook.com ([40.107.22.78]:39617
+        id S1727944AbgDXMrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 08:47:01 -0400
+Received: from mail-am6eur05on2053.outbound.protection.outlook.com ([40.107.22.53]:26784
         "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726667AbgDXMqz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Apr 2020 08:46:55 -0400
+        id S1727809AbgDXMq7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Apr 2020 08:46:59 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Uxcx601CMbdcfZ+97BW2X2OqfRqzLocIRzcMkB7vh2TkYAVNPyfnydt4ZrUTM26XrpiWCWyOL66TplgTlnc4M+HksBHViz00cT5Mg8D3jnxtAgMx5wK3zvxsinC7uQ22ONaHPZ8sVQTJWR6p4TmJiebuF4PsIuQF8NnT7ARfAE99FMdINvIlR/zU5PiroamnboxToU2yEbTy62NJeFVUHau8QIpaAoP4pTbeJGjzhlMI2TTSZ066xZtQXhKrStYvR4neXRyyxzkN5zdze4fv5dqe6JlBi4c4kaGy59ij/Fd47jbFQDSiuJ95tgiCm3teRYUz/39YlzgUd84KbXmzyQ==
+ b=Rp5SL4liSWfRCqPlYGUHArxknLRn+10/9vseV5MCjKN1ogPSBkppEyW/HSSaqdmhTWQwZx4e93tHNG3MQ3f0X5HDlijtPiuHZZSHyMVSh9IQ8iDO+zeANockXeHeBIQYCTZsIigbKhBjwCQg1I7ONFz1V9SusPvDDkoR/l2PAVDeSpxcOhequ05e54iKtmrrzp9scAAhQ4SvgQ3ifHEITFXMm6M2Ti2pU26LwKHMBpl5Ss+dcw7HrU6aJlG/2KIO+bshAlmjMJW1N6ouqoB6q3V6TuwNKum3gkxDJXRzIk+ku+s2UWjv3lNYMjxDkLInFU3zPPVpX4M7G+aHMSwJWA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KU5al8vOs/FBkr2VFZ31ZgIASh32pppJZo11zQWENdc=;
- b=I7L4L8jj/Pfv7BWLDH2YylR9wGzROSfOSXMikkbI5BcBHTMpUBVeSuhiyCGIn/qxbe92+vrW46sfo801gWwTkMNtak/P8VAOIvcGhu31ZtveYsbe3tv5Q8eTrpa0bsL0rLWqqRwY+RL8ONZrXTc7tAgMW344I5Pv1lV6rnvvVv18sUL3FDg7zs/nxsS6QjIW4bnT+wUP+y3ikitj3ukB74lfnGHh4ewxXsQ5PuTlgtfc6qPRDs0iL9SVB9VNMxzIUtwjaoBdzV0pLZPpN2fgFaJCWyToJAcNxW+Jb0N/zfMMf7T5mpQ5LXkO+P5bfGZQMhreL6QOULUygoWXu/UhQg==
+ bh=UX8Twwppfp6yTjpSjczvLtfF3GRdnklEpx/taHdFD2E=;
+ b=b1Td7StfHdk4VxUZN7Lgkawrs/mfsINfiojzroOUNOGe4OfgCsqr8V+pUD+zTiRAQwlxezKDUd13QGicmW2k2dGF3cTw05XRW7oXe60Le4bHjA6FhYtOpPyCFjrk9/UjUQKhZ/HjtfOQLuS/J4F8gmf5YEQXTQNky5ORaqEj83YQV7H1ZL+Jx5z1ecjFsaeB85o3pnMslhaqmf0POBZvBeyekFgaDg72v7NjJ5YUy7WBt/vMZEFzgPGWP3BLyzrmZ7JNG+GEIlOt4NXoH2cyMaFgoe3KKua53cq2S1Yx+EtaLgZhcKIHuBgHL1KvAxtFalwPXoniEIRJf63cEnGz/w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KU5al8vOs/FBkr2VFZ31ZgIASh32pppJZo11zQWENdc=;
- b=Enw1rWVzL0sjWcNF/kg+TfDND0U3XGFm4DzKGieBraUH8TKE1Qg6XmydEemRkapOixHs80m/o246xnjnaZ7LSRLphK6t5xZ62SijYW1vhKZSQN+qE1g4eWyiVCeKfa3e83OFnPaKFMBQVVU6NA5vPWwDgjttglhyOqLEVzF/GE4=
+ bh=UX8Twwppfp6yTjpSjczvLtfF3GRdnklEpx/taHdFD2E=;
+ b=kgh3IdKsF8bnH6GFNICMCnCKDsOhiSAyr+UGDqesfaFD0/0K0I/9AhArVkfb9Ql5djxSBh0ru0OZdP5V1kdbRKwFpxlB7cChYp314YKsz2SP5FzSj46ZrqBoe9tVRsFTFB9kNNwSRPu1I1W2hLJjWWa5pDPFzw3oBSJHHKyK5s8=
 Authentication-Results: spf=none (sender IP is )
  smtp.mailfrom=florinel.iordache@nxp.com; 
 Received: from AM0PR04MB5443.eurprd04.prod.outlook.com (2603:10a6:208:119::33)
  by AM0PR04MB5937.eurprd04.prod.outlook.com (2603:10a6:208:119::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13; Fri, 24 Apr
- 2020 12:46:45 +0000
+ 2020 12:46:46 +0000
 Received: from AM0PR04MB5443.eurprd04.prod.outlook.com
  ([fe80::8cc9:252:1c77:5860]) by AM0PR04MB5443.eurprd04.prod.outlook.com
  ([fe80::8cc9:252:1c77:5860%2]) with mapi id 15.20.2937.012; Fri, 24 Apr 2020
- 12:46:45 +0000
+ 12:46:46 +0000
 From:   Florinel Iordache <florinel.iordache@nxp.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch,
         f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk
@@ -46,9 +46,9 @@ Cc:     devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
         madalin.bucur@oss.nxp.com, ioana.ciornei@nxp.com,
         linux-kernel@vger.kernel.org,
         Florinel Iordache <florinel.iordache@nxp.com>
-Subject: [PATCH net-next v2 2/9] dt-bindings: net: add backplane dt bindings
-Date:   Fri, 24 Apr 2020 15:46:24 +0300
-Message-Id: <1587732391-3374-3-git-send-email-florinel.iordache@nxp.com>
+Subject: [PATCH net-next v2 3/9] net: phy: add kr phy connection type
+Date:   Fri, 24 Apr 2020 15:46:25 +0300
+Message-Id: <1587732391-3374-4-git-send-email-florinel.iordache@nxp.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1587732391-3374-1-git-send-email-florinel.iordache@nxp.com>
 References: <1587732391-3374-1-git-send-email-florinel.iordache@nxp.com>
@@ -59,237 +59,135 @@ X-ClientProxiedBy: AM0P190CA0025.EURP190.PROD.OUTLOOK.COM
  (2603:10a6:208:119::33)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from fsr-ub1464-128.ea.freescale.net (83.217.231.2) by AM0P190CA0025.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:190::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.2937.13 via Frontend Transport; Fri, 24 Apr 2020 12:46:43 +0000
+Received: from fsr-ub1464-128.ea.freescale.net (83.217.231.2) by AM0P190CA0025.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:190::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.20.2937.13 via Frontend Transport; Fri, 24 Apr 2020 12:46:45 +0000
 X-Mailer: git-send-email 1.9.1
 X-Originating-IP: [83.217.231.2]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 7d05bc3f-3be4-41d8-da07-08d7e84d8b67
+X-MS-Office365-Filtering-Correlation-Id: 2ff6e1a1-5a3f-4a5f-aa95-08d7e84d8c56
 X-MS-TrafficTypeDiagnostic: AM0PR04MB5937:|AM0PR04MB5937:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB5937BC825118FA2D98B11C2BFBD00@AM0PR04MB5937.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-Microsoft-Antispam-PRVS: <AM0PR04MB593750B037737C97B2C180B4FBD00@AM0PR04MB5937.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
 X-Forefront-PRVS: 03838E948C
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5443.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(396003)(39860400002)(346002)(376002)(366004)(52116002)(2616005)(86362001)(44832011)(6486002)(2906002)(8676002)(4326008)(66476007)(66946007)(6666004)(66556008)(8936002)(5660300002)(81156014)(6512007)(3450700001)(16526019)(956004)(186003)(6506007)(36756003)(316002)(26005)(966005)(7416002)(478600001);DIR:OUT;SFP:1101;
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5443.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(136003)(396003)(39860400002)(346002)(376002)(366004)(52116002)(2616005)(86362001)(44832011)(6486002)(2906002)(8676002)(4326008)(66476007)(66946007)(6666004)(66556008)(8936002)(5660300002)(81156014)(6512007)(3450700001)(16526019)(956004)(186003)(6506007)(36756003)(316002)(26005)(7416002)(478600001);DIR:OUT;SFP:1101;
 Received-SPF: None (protection.outlook.com: nxp.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: iZjC5ixBDTWfQzlr/yn6cN9zFueNqHtak1rkJXbtByndcPa/cPHUb5w9ls8ZAJzlOKJNY9NUBbVJxfDd1B3oiigVYPih6Ggs8SMpLYku6/wKoQoQxxjAI8PPabo1730cpZsXjLoVINd9JF7QIuoAW5k+t/de4yfqMXYC/CI+4N1jzix0m6Hn2hy3ygCnlOtrUkzT9NVTyKc7vwRvC0lcbRvYJrlg3PMPF7SVavNictXza4EGfy2JvFpj5SoRM1H9xQEF/QcMj6HOYAxEL+MvaHOnHQJEVgjtP1QFPNBIhypeJdY0zJs2hYG7nq7pNzyay8H0tBWEdWF5bvbO0gJD43mkCq0IPhUpQ7xhbb35suHwmnxG7s+nuoWHMw8bVW0kXkQ7erLd1zgLj0OG0sSIatad7CXIKIZws8Ci336LWe0PppIaSi4pWo7orIQ6euKU174l4Be0sPx4LNbGsqbrKWsnFIqO2vAv6X2i6JsC7UKwjZ9YogHHV5/4gEbM6uNdfsHcrS8GVkQoMKgQr7enLw==
-X-MS-Exchange-AntiSpam-MessageData: WVzQEXheQpM0lUVPyOJxhcWqs9ZCwiOq665QznA6rSKkKcGDNUhO9CaNJq0j2epnjN5JpXv6xVrUTOVFNVP7TviU8UnD5cnFz5aZpxtMpBTIjpLulY2vF4zwo+l8qasF2sFWrHlI+vVcIRC79ztSOw==
+X-Microsoft-Antispam-Message-Info: xXDxYgrTvjfib0DY6XXgABFQwSwWslU8M1W+vftbLxSsM5ke4sFB9z9cdSA0VMVC+38IZujDXizeZzal9zBtbGzQYY6lHH94qfecZsuSDba6C/4nMJx3HrGX1Stp2A5EQSB1C68O1ST5gidmVUYZTcu7H0D2C3nx6s6eay4oqJkUAXzN5TZ6RWEg778s+rOrIrkt8JSanWQEfW61sJ5/PGIB4ddeW7TpGiapw3vW0eWoYZPhALlU5erJk19AgfbYFLOm4GwSep3LhX8jMQwwM9HqsI4IhTwg85mRs3kJXciV2eRkKZKeCyIuaePfWAM1YtFL6fhgYFfSlvZ2a6oq0J0kN/lqojzmxcvPhAORJjqNEJWfYhSbX+JbZ9O9GE7rN2X8i8vlpfM9k1cY7fzUOZ3iCYnmKtyA0ZYTQIsp2cYZnN7CvqjpxOvetHJdYQkq
+X-MS-Exchange-AntiSpam-MessageData: 0rSDAnlRmUmYlFMSTm4zPDQ7iXV/Z4WGgAFDOTzB2mm2qxOeCM//DOon84e6HGRzoBSrm/AcIPqARL6swoeAQWMn+X7O6Pe/fnOAa660LFcywr0icqnxdTCJXXQ+JcP8E7Ch65WronjBH33dKl12KA==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7d05bc3f-3be4-41d8-da07-08d7e84d8b67
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2020 12:46:45.0626
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2ff6e1a1-5a3f-4a5f-aa95-08d7e84d8c56
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2020 12:46:46.2619
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PXR31337qukiDY5/zNK3ZactTvdYwDzVAwp9tWLYrdFA1fpfD+j/WQYQS6LqFA2zPbztr/rHxLhTq9tjaXYWSenyCP0I7ZS7QTfQmXvP59U=
+X-MS-Exchange-CrossTenant-UserPrincipalName: vljVO1HGVHb4fLUPg2IbFX0+wHjiyu4m6ZkruKfoD8CS4VbjiyKBNUoBvtdz8yciPsy1aoZU44uXlOqDBWRrszOyKvhUc9O8tjZSszzaPaE=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5937
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add ethernet backplane device tree bindings
+Add support for backplane kr phy connection types currently available
+(10gbase-kr, 40gbase-kr4) and the required phylink updates (cover all
+the cases for KR modes which are clause 45 compatible to correctly assign
+phy_interface and phylink#supported)
 
 Signed-off-by: Florinel Iordache <florinel.iordache@nxp.com>
 ---
- .../bindings/net/ethernet-controller.yaml          |  3 +-
- .../devicetree/bindings/net/ethernet-phy.yaml      | 50 +++++++++++++++++++++
- .../devicetree/bindings/net/serdes-lane.yaml       | 51 ++++++++++++++++++++++
- Documentation/devicetree/bindings/net/serdes.yaml  | 44 +++++++++++++++++++
- 4 files changed, 147 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/devicetree/bindings/net/serdes-lane.yaml
- create mode 100644 Documentation/devicetree/bindings/net/serdes.yaml
+ drivers/net/phy/phylink.c | 15 ++++++++++++---
+ include/linux/phy.h       |  6 +++++-
+ 2 files changed, 17 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-index ac471b6..541cee5 100644
---- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-+++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-@@ -93,8 +93,9 @@ properties:
-       - rxaui
-       - xaui
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 34ca12a..9a31f68 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -4,6 +4,7 @@
+  * technologies such as SFP cages where the PHY is hot-pluggable.
+  *
+  * Copyright (C) 2015 Russell King
++ * Copyright 2020 NXP
+  */
+ #include <linux/ethtool.h>
+ #include <linux/export.h>
+@@ -304,7 +305,6 @@ static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
+ 			break;
  
--      # 10GBASE-KR, XFI, SFI
-+      # 10GBASE-KR, 40GBASE-KR4, XFI, SFI
-       - 10gbase-kr
-+      - 40gbase-kr4
-       - usxgmii
+ 		case PHY_INTERFACE_MODE_USXGMII:
+-		case PHY_INTERFACE_MODE_10GKR:
+ 		case PHY_INTERFACE_MODE_10GBASER:
+ 			phylink_set(pl->supported, 10baseT_Half);
+ 			phylink_set(pl->supported, 10baseT_Full);
+@@ -318,7 +318,6 @@ static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
+ 			phylink_set(pl->supported, 2500baseX_Full);
+ 			phylink_set(pl->supported, 5000baseT_Full);
+ 			phylink_set(pl->supported, 10000baseT_Full);
+-			phylink_set(pl->supported, 10000baseKR_Full);
+ 			phylink_set(pl->supported, 10000baseKX4_Full);
+ 			phylink_set(pl->supported, 10000baseCR_Full);
+ 			phylink_set(pl->supported, 10000baseSR_Full);
+@@ -327,6 +326,14 @@ static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
+ 			phylink_set(pl->supported, 10000baseER_Full);
+ 			break;
  
-   phy-mode:
-diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-index 5aa141c..436b5a7 100644
---- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-+++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-@@ -161,6 +161,42 @@ properties:
-     description:
-       Specifies a reference to a node representing a SFP cage.
++		case PHY_INTERFACE_MODE_10GKR:
++			phylink_set(pl->supported, 10000baseKR_Full);
++			break;
++
++		case PHY_INTERFACE_MODE_40GKR4:
++			phylink_set(pl->supported, 40000baseKR4_Full);
++			break;
++
+ 		case PHY_INTERFACE_MODE_XLGMII:
+ 			phylink_set(pl->supported, 25000baseCR_Full);
+ 			phylink_set(pl->supported, 25000baseKR_Full);
+@@ -860,7 +867,9 @@ static int phylink_bringup_phy(struct phylink *pl, struct phy_device *phy,
+ 	if (phy->is_c45 &&
+ 	    interface != PHY_INTERFACE_MODE_RXAUI &&
+ 	    interface != PHY_INTERFACE_MODE_XAUI &&
+-	    interface != PHY_INTERFACE_MODE_USXGMII)
++	    interface != PHY_INTERFACE_MODE_USXGMII &&
++	    interface != PHY_INTERFACE_MODE_10GKR &&
++	    interface != PHY_INTERFACE_MODE_40GKR4)
+ 		config.interface = PHY_INTERFACE_MODE_NA;
+ 	else
+ 		config.interface = interface;
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 2432ca4..d7cca4b 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -6,6 +6,7 @@
+  * Author: Andy Fleming
+  *
+  * Copyright (c) 2004 Freescale Semiconductor, Inc.
++ * Copyright 2020 NXP
+  */
  
-+  eq-algorithm:
-+    description:
-+      Specifies the desired equalization algorithm to be used
-+      by the KR link training
-+    oneOf:
-+      - const: fixed
-+        description:
-+          Backplane KR using fixed coefficients meaning no
-+          equalization algorithm
-+      - const: bee
-+        description:
-+          Backplane KR using 3-Taps Bit Edge Equalization (BEE)
-+          algorithm
-+
-+  eq-init:
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    minItems: 3
-+    maxItems: 3
-+    description:
-+      Triplet of KR coefficients. Specifies the initialization
-+      values for standard KR equalization coefficients used by
-+      the link training (pre-cursor, main-cursor, post-cursor)
-+
-+  eq-params:
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    description:
-+      Variable size array of KR parameters. Specifies the HW
-+      specific parameters used by the link training.
-+
-+  lane-handle:
-+    $ref: /schemas/types.yaml#definitions/phandle
-+    description:
-+      Specifies a reference (or array of references) to a node
-+      representing the desired SERDES lane (or lanes) used in
-+      backplane mode.
-+
- required:
-   - reg
+ #ifndef __PHY_H
+@@ -107,8 +108,9 @@
+ 	/* 10GBASE-R, XFI, SFI - single lane 10G Serdes */
+ 	PHY_INTERFACE_MODE_10GBASER,
+ 	PHY_INTERFACE_MODE_USXGMII,
+-	/* 10GBASE-KR - with Clause 73 AN */
++	/* Backplane KR */
+ 	PHY_INTERFACE_MODE_10GKR,
++	PHY_INTERFACE_MODE_40GKR4,
+ 	PHY_INTERFACE_MODE_MAX,
+ } phy_interface_t;
  
-@@ -183,3 +219,17 @@ examples:
-             reset-deassert-us = <2000>;
-         };
-     };
-+  - |
-+    ethernet {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        ethernet-phy@0 {
-+            compatible = "ethernet-phy-ieee802.3-c45";
-+            reg = <0x0>;
-+            lane-handle = <&lane_d>;
-+            eq-algorithm = "fixed";
-+            eq-init = <0x2 0x29 0x5>;
-+            eq-params = <0>;
-+        };
-+    };
-diff --git a/Documentation/devicetree/bindings/net/serdes-lane.yaml b/Documentation/devicetree/bindings/net/serdes-lane.yaml
-new file mode 100644
-index 0000000..ce3581e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/serdes-lane.yaml
-@@ -0,0 +1,51 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/serdes-lane.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Serdes Lane Binding
-+
-+maintainers:
-+  - Florinel Iordache <florinel.iordache@nxp.com>
-+
-+properties:
-+  $nodename:
-+    pattern: "^lane(@[a-f0-9]+)?$"
-+
-+  compatible:
-+    oneOf:
-+      - const: lane-10g
-+        description: Lane part of a 10G SerDes module
-+      - const: lane-28g
-+        description: Lane part of a 28G SerDes module
-+
-+  reg:
-+    description:
-+      Registers memory map offset and size for this lane
-+
-+  reg-names:
-+    description:
-+      Names of the register map given in "reg" node.
-+
-+examples:
-+  - |
-+    serdes1: serdes@1ea0000 {
-+        compatible = "serdes-10g";
-+        reg = <0x0 0x1ea0000 0 0x00002000>;
-+        reg-names = "serdes", "serdes-10g";
-+        little-endian;
-+
-+        #address-cells = <1>;
-+        #size-cells = <1>;
-+        lane_a: lane@800 {
-+            compatible = "lane-10g";
-+            reg = <0x800 0x40>;
-+            reg-names = "lane", "serdes-lane";
-+        };
-+        lane_b: lane@840 {
-+            compatible = "lane-10g";
-+            reg = <0x840 0x40>;
-+            reg-names = "lane", "serdes-lane";
-+        };
-+    };
-diff --git a/Documentation/devicetree/bindings/net/serdes.yaml b/Documentation/devicetree/bindings/net/serdes.yaml
-new file mode 100644
-index 0000000..fd3da85
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/serdes.yaml
-@@ -0,0 +1,44 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/serdes.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Serdes Module Binding
-+
-+maintainers:
-+  - Florinel Iordache <florinel.iordache@nxp.com>
-+
-+properties:
-+  $nodename:
-+    pattern: "^serdes(@[a-f0-9]+)?$"
-+
-+  compatible:
-+    oneOf:
-+      - const: serdes-10g
-+        description: SerDes module type of 10G
-+      - const: serdes-28g
-+        description: SerDes module type of 28G
-+
-+  reg:
-+    description:
-+      Registers memory map offset and size for this serdes module
-+
-+  reg-names:
-+    description:
-+      Names of the register map given in "reg" node.
-+
-+  little-endian:
-+    description:
-+      Specifies the endianness of serdes module
-+      For complete definition see
-+      Documentation/devicetree/bindings/common-properties.txt
-+
-+examples:
-+  - |
-+    serdes1: serdes@1ea0000 {
-+        compatible = "serdes-10g";
-+        reg = <0x0 0x1ea0000 0 0x00002000>;
-+        reg-names = "serdes", "serdes-10g";
-+        little-endian;
-+    };
+@@ -190,6 +192,8 @@ static inline const char *phy_modes(phy_interface_t interface)
+ 		return "usxgmii";
+ 	case PHY_INTERFACE_MODE_10GKR:
+ 		return "10gbase-kr";
++	case PHY_INTERFACE_MODE_40GKR4:
++		return "40gbase-kr4";
+ 	default:
+ 		return "unknown";
+ 	}
 -- 
 1.9.1
 
