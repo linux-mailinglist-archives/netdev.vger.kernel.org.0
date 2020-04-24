@@ -2,131 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E15231B7229
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 12:40:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00E841B72DF
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 13:15:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726894AbgDXKkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 06:40:03 -0400
-Received: from foss.arm.com ([217.140.110.172]:59494 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726848AbgDXKkB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Apr 2020 06:40:01 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9ABDC1FB;
-        Fri, 24 Apr 2020 03:40:00 -0700 (PDT)
-Received: from C02TD0UTHF1T.local (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4E0C53F6CF;
-        Fri, 24 Apr 2020 03:39:56 -0700 (PDT)
-Date:   Fri, 24 Apr 2020 11:39:53 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Jianyong Wu <Jianyong.Wu@arm.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
-        "john.stultz@linaro.org" <john.stultz@linaro.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "will@kernel.org" <will@kernel.org>,
-        Suzuki Poulose <Suzuki.Poulose@arm.com>,
-        Steven Price <Steven.Price@arm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Steve Capper <Steve.Capper@arm.com>,
-        Kaly Xin <Kaly.Xin@arm.com>, Justin He <Justin.He@arm.com>,
-        nd <nd@arm.com>
-Subject: Re: [RFC PATCH v11 5/9] psci: Add hypercall service for ptp_kvm.
-Message-ID: <20200424103953.GD1167@C02TD0UTHF1T.local>
-References: <20200421032304.26300-1-jianyong.wu@arm.com>
- <20200421032304.26300-6-jianyong.wu@arm.com>
- <20200421095736.GB16306@C02TD0UTHF1T.local>
- <ab629714-c08c-2155-dd13-ad25e7f60b39@arm.com>
+        id S1726813AbgDXLPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 07:15:48 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:40251 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726489AbgDXLPr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 07:15:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587726946;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=HaP4TzM3lXjoIbaS/rheBHg159AnD4GjwtZjdM+bNw8=;
+        b=bsMBjLPRZp3/r2zf+3ETQrEqqherx/IpE9B3AEeQXBGkFicrDUl+sSGvM3xFPy1uN/tmfD
+        JG7pDt6tNx68fqlS1SjmYzpNuy+5ptB4zkK1WD7uB+Kskx2u+oszghsGWnvacbHpiG+Mwd
+        6xk4oRp0+Vl/WdVwycIEzAgsKO9lu6M=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-398-_GUnr26JMF-Z-ZE7QXecmg-1; Fri, 24 Apr 2020 07:15:42 -0400
+X-MC-Unique: _GUnr26JMF-Z-ZE7QXecmg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 15C51800D24;
+        Fri, 24 Apr 2020 11:15:41 +0000 (UTC)
+Received: from linux.fritz.box.com (ovpn-114-238.ams2.redhat.com [10.36.114.238])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 65BE65D9CC;
+        Fri, 24 Apr 2020 11:15:39 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Davide Caratti <dcaratti@redhat.com>, mptcp@lists.01.org
+Subject: [PATCH net] mptcp: fix race in msk status update
+Date:   Fri, 24 Apr 2020 13:15:21 +0200
+Message-Id: <4d5e3c09ca38a0a3ec951fa4f5bfc65d5cd40129.1587725562.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ab629714-c08c-2155-dd13-ad25e7f60b39@arm.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 24, 2020 at 03:50:22AM +0100, Jianyong Wu wrote:
-> On 2020/4/21 5:57 PM, Mark Rutland wrote:
-> > On Tue, Apr 21, 2020 at 11:23:00AM +0800, Jianyong Wu wrote:
-> >> diff --git a/virt/kvm/arm/hypercalls.c b/virt/kvm/arm/hypercalls.c
-> >> index 550dfa3e53cd..a5309c28d4dc 100644
-> >> --- a/virt/kvm/arm/hypercalls.c
-> >> +++ b/virt/kvm/arm/hypercalls.c
+Currently subflow_finish_connect() changes unconditionally
+any msk socket status other than TCP_ESTABLISHED.
 
-> >> @@ -62,6 +66,44 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
-> >>   if (gpa != GPA_INVALID)
-> >>   val = gpa;
-> >>   break;
-> >> +/*
-> >> + * This serves virtual kvm_ptp.
-> >> + * Four values will be passed back.
-> >> + * reg0 stores high 32-bit host ktime;
-> >> + * reg1 stores low 32-bit host ktime;
-> >> + * reg2 stores high 32-bit difference of host cycles and cntvoff;
-> >> + * reg3 stores low 32-bit difference of host cycles and cntvoff.
-> >> + */
-> >> +case ARM_SMCCC_HYP_KVM_PTP_FUNC_ID:
-> > Shouldn't the host opt-in to providing this to the guest, as with other
-> > features?
-> 
-> er, do you mean that "ARM_SMCCC_HV_PV_TIME_XXX" as "opt-in"? if so, I
-> think this
-> 
-> kvm_ptp doesn't need a buddy. the driver in guest will call this service
-> in a definite way.
+If an unblocking connect() races with close(), we can end-up
+triggering:
 
-I mean that when creating the VM, userspace should be able to choose
-whether the PTP service is provided to the guest. The host shouldn't
-always provide it as there may be cases where doing so is undesireable.
+IPv4: Attempt to release TCP socket in state 1 00000000e32b8b7e
 
-> >> +/*
-> >> + * system time and counter value must captured in the same
-> >> + * time to keep consistency and precision.
-> >> + */
-> >> +ktime_get_snapshot(&systime_snapshot);
-> >> +if (systime_snapshot.cs_id != CSID_ARM_ARCH_COUNTER)
-> >> +break;
-> >> +arg[0] = upper_32_bits(systime_snapshot.real);
-> >> +arg[1] = lower_32_bits(systime_snapshot.real);
-> > Why exactly does the guest need the host's real time? Neither the cover
-> > letter nor this commit message have explained that, and for those of us
-> > unfamliar with PTP it would be very helpful to know that to understand
-> > what's going on.
-> 
-> oh, sorry, I should have added more background knowledge here.
-> 
-> just give some hints here:
-> 
-> the kvm_ptp targets to sync guest time with host. some services in user
-> space
-> 
-> like chrony can do time sync by inputing time(in kvm_ptp also clock
-> counter sometimes) from
-> 
-> remote clocksource(often network clocksource). This kvm_ptp driver can
-> offer a interface for
-> 
-> those user space service in guest to get the host time to do time sync
-> in guest.
+when the msk socket is disposed.
 
-I think it would be very helpful for the commit message and/or cover
-letter to have a high-level desctiption of what PTP is meant to do, and
-an outline of the algorithmm (clearly splitting the host and guest
-bits).
+Be sure to enter the established status only from SYN_SENT.
 
-It's also not clear to me what notion of host time is being exposed to
-the guest (and consequently how this would interact with time changes on
-the host, time namespaces, etc). Having some description of that would
-be very helpful.
+Fixes: c3c123d16c0e ("net: mptcp: don't hang in mptcp_sendmsg() after TCP=
+ fallback")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+Note: the issue is possibly older, but this fix applies only
+on the mentioned commit
+---
+ net/mptcp/subflow.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-Mark.
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 87c094702d63..2488e011048c 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -225,7 +225,7 @@ static void subflow_finish_connect(struct sock *sk, c=
+onst struct sk_buff *skb)
+=20
+ 	subflow->icsk_af_ops->sk_rx_dst_set(sk, skb);
+=20
+-	if (inet_sk_state_load(parent) !=3D TCP_ESTABLISHED) {
++	if (inet_sk_state_load(parent) =3D=3D TCP_SYN_SENT) {
+ 		inet_sk_state_store(parent, TCP_ESTABLISHED);
+ 		parent->sk_state_change(parent);
+ 	}
+--=20
+2.21.1
+
