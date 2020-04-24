@@ -2,94 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 003231B6A33
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 02:02:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 743B11B6A34
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 02:05:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728206AbgDXACC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 20:02:02 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:34613 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727877AbgDXACC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 20:02:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587686521;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=KnzXeTNRWsvkIaAIlOuvsLlBsmBeB6mNMsObtuVlOWs=;
-        b=TYQJhqS+jpIXgvRhgTrAH/mHbATAOq96WQj166ssDmubgS+/ggWlgWP71OyxzY1r0NwC40
-        TuvVuvVb9IeQ3BWvyhxb/ZXUCF0eDHAtk3EhaYhVAlZGtp0afj2YjONSaQWLewqCg1PwNI
-        ffSOSd/msiCKBfZm7rohYEtF4xoQEe4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-237-gHeyccHWOHeBfk9WVBeIhw-1; Thu, 23 Apr 2020 20:01:57 -0400
-X-MC-Unique: gHeyccHWOHeBfk9WVBeIhw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DE8CA80B70D;
-        Fri, 24 Apr 2020 00:01:55 +0000 (UTC)
-Received: from localhost.localdomain.com (vpn2-54-127.bne.redhat.com [10.64.54.127])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2A64C10016DA;
-        Fri, 24 Apr 2020 00:01:51 +0000 (UTC)
-From:   Gavin Shan <gshan@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, netanel@amazon.com,
-        akiyano@amazon.com, gtzalik@amazon.com, saeedb@amazon.com,
-        zorik@amazon.com, davem@davemloft.net
-Subject: [PATCH] net/ena: Fix build warning in ena_xdp_set()
-Date:   Fri, 24 Apr 2020 10:01:46 +1000
-Message-Id: <20200424000146.6188-1-gshan@redhat.com>
+        id S1728112AbgDXAFb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Apr 2020 20:05:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49200 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727913AbgDXAFb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 20:05:31 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F3E7C09B042
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 17:05:31 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id t4so3054575plq.12
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 17:05:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=XHt+FuftJsPGeqKy6heDhwHg5C+HSjbnEYws52bz+vg=;
+        b=iG8USReCJE1ztEZykLXV7uL9Fy8/axncNlw+Bv/Q61VZ+IWsyngZOqRASZ6M5x44qB
+         EOc/OWaB1foWWTqyCLHFzJ2IbhUf5EHueFzU/+vf+LfTksaTHNeDgyFmlDchIRFueVTe
+         np46R07CrQETTvX4PrfvpwGVhAVyKLgACyXr/dlmyRyyp+dUSjXyebwne0nL3dnozeJN
+         pbCwj8I0fPluDjjOSpFm4ET1T+7T9gi0aziJORIw6u1CzwHNYsKMF8v00hsR8CXu5+Zo
+         cepx7pvgqE1XLOdDhd4EkZr+g6uvrlvPoGUApreJ2DCccoX2k2ZVr1UjbxH3Bn/I6v7v
+         3iQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=XHt+FuftJsPGeqKy6heDhwHg5C+HSjbnEYws52bz+vg=;
+        b=AM5OOahpdQEjg1rIE/X7uouNcKIz/2qpfCgLLBTQPJBBgx3StEnFRrNnFN1t+jGqcV
+         EFtPuZRII8W4fUudyS0cwrAE3lX7VF39nm340Fo+NiX/ruKESSVWLDjz8wMoe2aoIyAV
+         1ned41RrEMzhjctKruLI0icizTXo8tfJCCHNXGR7rIkUbAAqBHp2HUtXla1fCcC5xtrI
+         FSfKuvYHl3eX0xKMCne55RHKYql99IgX//ew4dJkz6jgauszdE8sC7mKWvoaH0MygR8X
+         xv1mm22cYXqVj3VQYA0NXtarBzjYEcntmCZTdie7EhD0J8MeTv5/AJZXen72ZFF2CZ21
+         ZWsQ==
+X-Gm-Message-State: AGi0Pua4MYDSqIMg9eAheTByCGKI4zVmk5Y4cmSVZr7O7j5+VizbBn/f
+        LNkBRPXbiP3aSor8WMtwjBJejw==
+X-Google-Smtp-Source: APiQypJvm23OV35t16ydy9e9LoxsKRo2WLGGXHyEG0PLKSWISnq2TVqRGPNdWN4YWMwdckZNAjHshw==
+X-Received: by 2002:a17:902:9a03:: with SMTP id v3mr6151155plp.272.1587686730810;
+        Thu, 23 Apr 2020 17:05:30 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id o15sm3325488pjp.41.2020.04.23.17.05.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Apr 2020 17:05:30 -0700 (PDT)
+Date:   Thu, 23 Apr 2020 17:05:21 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
+        davem@davemloft.net, bridge@lists.linux-foundation.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: [PATCH net v3] net: bridge: fix vlan stats use-after-free on
+ destruction
+Message-ID: <20200423170521.65a3bc59@hermes.lan>
+In-Reply-To: <20181116165001.30896-1-nikolay@cumulusnetworks.com>
+References: <20181114172703.5795-1-nikolay@cumulusnetworks.com>
+        <20181116165001.30896-1-nikolay@cumulusnetworks.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This fixes the following build warning in ena_xdp_set()
+On Fri, 16 Nov 2018 18:50:01 +0200
+Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
 
-   In file included from ./include/net/inet_sock.h:19,
-      from ./include/net/ip.h:27,
-      from drivers/net/ethernet/amazon/ena/ena_netdev.c:46:
-   drivers/net/ethernet/amazon/ena/ena_netdev.c: In function         \
-   =E2=80=98ena_xdp_set=E2=80=99:                                        =
-            \
-   drivers/net/ethernet/amazon/ena/ena_netdev.c:557:6: warning:      \
-   format =E2=80=98%lu=E2=80=99                                          =
-            \
-   expects argument of type =E2=80=98long unsigned int=E2=80=99, but argu=
-ment 4      \
-   has type =E2=80=98int=E2=80=99                                        =
-            \
-   [-Wformat=3D] "Failed to set xdp program, the current MTU (%d) is   \
-   larger than the maximum allowed MTU (%lu) while xdp is on",
+> Syzbot reported a use-after-free of the global vlan context on port vlan
+> destruction. When I added per-port vlan stats I missed the fact that the
+> global vlan context can be freed before the per-port vlan rcu callback.
+> There're a few different ways to deal with this, I've chosen to add a
+> new private flag that is set only when per-port stats are allocated so
+> we can directly check it on destruction without dereferencing the global
+> context at all. The new field in net_bridge_vlan uses a hole.
+> 
+> v2: cosmetic change, move the check to br_process_vlan_info where the
+>     other checks are done
+> v3: add change log in the patch, add private (in-kernel only) flags in a
+>     hole in net_bridge_vlan struct and use that instead of mixing
+>     user-space flags with private flags
+> 
+> Fixes: 9163a0fc1f0c ("net: bridge: add support for per-port vlan stats")
+> Reported-by: syzbot+04681da557a0e49a52e5@syzkaller.appspotmail.com
+> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 
-Signed-off-by: Gavin Shan <gshan@redhat.com>
----
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/e=
-thernet/amazon/ena/ena_netdev.c
-index 2cc765df8da3..6ff648423867 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -554,7 +554,7 @@ static int ena_xdp_set(struct net_device *netdev, str=
-uct netdev_bpf *bpf)
-=20
- 	} else if (rc =3D=3D ENA_XDP_CURRENT_MTU_TOO_LARGE) {
- 		netif_err(adapter, drv, adapter->netdev,
--			  "Failed to set xdp program, the current MTU (%d) is larger than the=
- maximum allowed MTU (%lu) while xdp is on",
-+			  "Failed to set xdp program, the current MTU (%d) is larger than the=
- maximum allowed MTU (%d) while xdp is on",
- 			  netdev->mtu, ENA_XDP_MAX_MTU);
- 		NL_SET_ERR_MSG_MOD(bpf->extack,
- 				   "Failed to set xdp program, the current MTU is larger than the ma=
-ximum allowed MTU. Check the dmesg for more info");
---=20
-2.23.0
-
+Why not just use v->stats itself as the flag.
+Since free of NULL is a nop it would be cleaner?
