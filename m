@@ -2,87 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A31211B711F
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 11:42:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F23C71B7141
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 11:54:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726791AbgDXJmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 05:42:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54102 "EHLO
+        id S1726717AbgDXJyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 05:54:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726489AbgDXJms (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 05:42:48 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66484C09B045;
-        Fri, 24 Apr 2020 02:42:48 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.93)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1jRur8-00FRkz-9F; Fri, 24 Apr 2020 11:42:46 +0200
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: mac80211 2020-04-24
-Date:   Fri, 24 Apr 2020 11:42:37 +0200
-Message-Id: <20200424094238.13194-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.25.1
+        by vger.kernel.org with ESMTP id S1726582AbgDXJyf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 05:54:35 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 802C9C09B045;
+        Fri, 24 Apr 2020 02:54:34 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id o185so4413170pgo.3;
+        Fri, 24 Apr 2020 02:54:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iVvYIfEqTyiL0cJpR1ziiocvVVbqCRYQEWmIpkQdSo4=;
+        b=lNQg7yUM1uHwNZH9rRi6aMycHtL1Wrb5aNMA14RGDMtHDItmAykWFl25jb742vRfhF
+         EToY+8xjZ3SGMPWKCWL/d0VBa26J8XWpkzgQ2YkpiobCnlFhsf2wFQJfRWFTEdJIxt+L
+         tOALbRk1YJkPUconj59UScO5akAZO43/Rude99MbOaxAFladi7T3HCeVxwu3QVLyjXqW
+         wuD6ASN6ByFkw5EXnKYCxq9ZKthzLmzdzmc/1QrG44xetQ7KbXWUL2MiCOgM0eeXCdQ6
+         h4gYVDa3Ae5GfEJ5C1n9XwkuAvet6QEQfXGzAbAZ1naPIg45QtWPruZmvjAgTlJestom
+         OZwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iVvYIfEqTyiL0cJpR1ziiocvVVbqCRYQEWmIpkQdSo4=;
+        b=hp/Kq9Ehb8/xMSAKg0bBwH4kJc2wYYIeSIXxpGLNd35jXzMNEMJCiybiXNNO1XuUAt
+         VQwsVdpYdLL7S9xaWeUbYoJuUNIf6oaWqYstvLLdCO021A7wDjDxQGUAOcp2VMSbVNpD
+         T8OdXWDZfhBAQwOxk0Jfnh9lehBhaInORwgew2JlSHnVA73gcXCrt9gvg3CLMCzRyZpn
+         KPutpCjXOtRjwu9l2Ba9Bd0NWIzc8Q/DOfnafO6rCLELLapGBKWOqZN1H6PjqAIGItGj
+         wL7cUL30ZsDfgSvpFM5gwnRts0n+1pnX+SCNMm4uU3excu5bOul6PL7PVJsf8OEVlU6W
+         T+yw==
+X-Gm-Message-State: AGi0PuZcoUnINnrCvmECFTyuG2QW/4RVYtX1PdBLCDbjf5m1Cnq95puD
+        L8P8kSLVObt4eEhY6G/8FrmEuDdWyltN1jpSVMs=
+X-Google-Smtp-Source: APiQypLTdtY2h3+c0DJDMGPfzEIOPk2dta0lyKEsWgoM7Y++nWond/ddP3DuM+fDmLggdLnM2ad9czHqSI0wS3/NnOw=
+X-Received: by 2002:aa7:8f26:: with SMTP id y6mr8944170pfr.36.1587722073914;
+ Fri, 24 Apr 2020 02:54:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200424031617.24033-1-calvin.johnson@oss.nxp.com>
+ <20200424031617.24033-2-calvin.johnson@oss.nxp.com> <b583f6fb-e6fe-3320-41c6-e019a4e10388@gmail.com>
+ <20200424092651.GA4501@lsv03152.swis.in-blr01.nxp.com>
+In-Reply-To: <20200424092651.GA4501@lsv03152.swis.in-blr01.nxp.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 24 Apr 2020 12:54:26 +0300
+Message-ID: <CAHp75VdxFjzs2uj7ZYNmwt9DC386gMNahi3A_MYV4wE3kbtq=g@mail.gmail.com>
+Subject: Re: [net-next PATCH v1 1/2] device property: Introduce fwnode_phy_find_device()
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, linux.cj@gmail.com,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Varun Sethi <V.Sethi@nxp.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+On Fri, Apr 24, 2020 at 12:27 PM Calvin Johnson
+<calvin.johnson@oss.nxp.com> wrote:
+> On Thu, Apr 23, 2020 at 08:45:03PM -0700, Florian Fainelli wrote:
+> > On 4/23/2020 8:16 PM, Calvin Johnson wrote:
 
-Just a couple of changes, the most relevant part is the debugfs
-fixes after the recent race fix.
+> > If you forget to update the MAINTAINERS file, or do not place this code
+> > under drivers/net/phy/* or drivers/of/of_mdio.c then this is going to
+> > completely escape the sight of the PHYLIB/PHYLINK maintainers...
+>
+> Did you mean the following change?
 
-Please pull and let me know if there's any problem.
+I don't think this is an appreciated option.
+Second one was to locate this code under drivers/net, which may be
+better. And perhaps other not basic (to the properties) stuff should
+be also moved to respective subsystems.
 
-Thanks,
-johannes
-
-
-
-The following changes since commit 7c74b0bec918c1e0ca0b4208038c156eacf8f13f:
-
-  ipv4: Update fib_select_default to handle nexthop objects (2020-04-22 19:57:39 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git tags/mac80211-for-net-2020-04-24
-
-for you to fetch changes up to 8ca47eb9f9e4e10e7e7fa695731a88941732c38d:
-
-  mac80211: sta_info: Add lockdep condition for RCU list usage (2020-04-24 11:31:20 +0200)
-
-----------------------------------------------------------------
-Just three changes:
- * fix a wrong GFP_KERNEL in hwsim
- * fix the debugfs mess after the mac80211 registration race fix
- * suppress false-positive RCU list lockdep warnings
-
-----------------------------------------------------------------
-Johannes Berg (1):
-      mac80211: populate debugfs only after cfg80211 init
-
-Madhuparna Bhowmik (1):
-      mac80211: sta_info: Add lockdep condition for RCU list usage
-
-Wei Yongjun (1):
-      mac80211_hwsim: use GFP_ATOMIC under spin lock
-
- drivers/net/wireless/intel/iwlegacy/3945-rs.c |  2 +-
- drivers/net/wireless/intel/iwlegacy/4965-rs.c |  2 +-
- drivers/net/wireless/intel/iwlwifi/dvm/rs.c   |  2 +-
- drivers/net/wireless/intel/iwlwifi/mvm/rs.c   |  2 +-
- drivers/net/wireless/mac80211_hwsim.c         |  2 +-
- drivers/net/wireless/realtek/rtlwifi/rc.c     |  2 +-
- include/net/mac80211.h                        |  4 +++-
- net/mac80211/main.c                           |  5 +++--
- net/mac80211/rate.c                           | 15 ++++-----------
- net/mac80211/rate.h                           | 23 +++++++++++++++++++++++
- net/mac80211/rc80211_minstrel_ht.c            | 19 +++++++++++++------
- net/mac80211/sta_info.c                       |  3 ++-
- 12 files changed, 54 insertions(+), 27 deletions(-)
-
+-- 
+With Best Regards,
+Andy Shevchenko
