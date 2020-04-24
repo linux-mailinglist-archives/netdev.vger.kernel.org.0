@@ -2,110 +2,333 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D4A71B6D27
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 07:21:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67D831B6D28
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 07:21:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726488AbgDXFVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 01:21:12 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:13056 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725919AbgDXFVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 01:21:12 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03O5L9Kl016231
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 22:21:11 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=ikO0forPp7t8DcwlBPkaLeVSS6Obv2yCRfcHPNoff/0=;
- b=bkbdsMW976Io1VNZbrbtb+Bnde5m9xVokqOxSpzlZAHFu4kJSx4H8bZq26j6LyYuqnUt
- tUKddeio/KbiguOZls6WP9m/i4+41mEiMITcZ0y/lJdLbhc+bMLZPEFJt/D0kLOKI4Sb
- tkuRw95y7ULsIdzElEK+urWvSZPQp2y0ZGQ= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 30kkpe243u-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 22:21:11 -0700
-Received: from intmgw004.08.frc2.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Thu, 23 Apr 2020 22:20:53 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id AB0B12EC37B0; Thu, 23 Apr 2020 22:20:46 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf] bpf: fix leak in LINK_UPDATE and enforce empty old_prog_fd
-Date:   Thu, 23 Apr 2020 22:20:44 -0700
-Message-ID: <20200424052045.4002963-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726511AbgDXFVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 01:21:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41670 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725967AbgDXFVW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 01:21:22 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C692C09B045
+        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 22:21:22 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jRqm7-0003I8-AJ; Fri, 24 Apr 2020 07:21:19 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jRqm6-0004UP-N7; Fri, 24 Apr 2020 07:21:18 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH net-next v1] dt-bindings: net: convert qca,ar71xx documentation to yaml
+Date:   Fri, 24 Apr 2020 07:21:16 +0200
+Message-Id: <20200424052116.17204-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.26.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-24_01:2020-04-23,2020-04-24 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- priorityscore=1501 suspectscore=8 mlxscore=0 lowpriorityscore=0
- phishscore=0 adultscore=0 malwarescore=0 clxscore=1015 mlxlogscore=842
- impostorscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2004240038
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix bug of not putting bpf_link in LINK_UPDATE command.
-Also enforce zeroed old_prog_fd if no BPF_F_REPLACE flag is specified.
+Now that we have the DT validation in place, let's convert the device tree
+bindings for the Atheros AR71XX over to a YAML schemas.
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
-This version will merge with no conflicts with the upcoming LINK_UPDATE
-refactoring patch (part of bpf_link observability patch set).
+ .../devicetree/bindings/net/qca,ar71xx.txt    |  45 ----
+ .../devicetree/bindings/net/qca,ar71xx.yaml   | 216 ++++++++++++++++++
+ 2 files changed, 216 insertions(+), 45 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/qca,ar71xx.txt
+ create mode 100644 Documentation/devicetree/bindings/net/qca,ar71xx.yaml
 
- kernel/bpf/syscall.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index d85f37239540..bca58c235ac0 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -3628,8 +3628,10 @@ static int link_update(union bpf_attr *attr)
- 		return PTR_ERR(link);
-=20
- 	new_prog =3D bpf_prog_get(attr->link_update.new_prog_fd);
--	if (IS_ERR(new_prog))
--		return PTR_ERR(new_prog);
-+	if (IS_ERR(new_prog)) {
-+		ret =3D PTR_ERR(new_prog);
-+		goto out_put_link;
-+	}
-=20
- 	if (flags & BPF_F_REPLACE) {
- 		old_prog =3D bpf_prog_get(attr->link_update.old_prog_fd);
-@@ -3638,6 +3640,9 @@ static int link_update(union bpf_attr *attr)
- 			old_prog =3D NULL;
- 			goto out_put_progs;
- 		}
-+	} else if (attr->link_update.old_prog_fd) {
-+		ret =3D -EINVAL;
-+		goto out_put_progs;
- 	}
-=20
- #ifdef CONFIG_CGROUP_BPF
-@@ -3653,6 +3658,8 @@ static int link_update(union bpf_attr *attr)
- 		bpf_prog_put(old_prog);
- 	if (ret)
- 		bpf_prog_put(new_prog);
-+out_put_link:
-+	bpf_link_put(link);
- 	return ret;
- }
-=20
---=20
-2.24.1
+diff --git a/Documentation/devicetree/bindings/net/qca,ar71xx.txt b/Documentation/devicetree/bindings/net/qca,ar71xx.txt
+deleted file mode 100644
+index 2a33e71ba72b8..0000000000000
+--- a/Documentation/devicetree/bindings/net/qca,ar71xx.txt
++++ /dev/null
+@@ -1,45 +0,0 @@
+-Required properties:
+-- compatible:	Should be "qca,<soc>-eth". Currently support compatibles are:
+-		qca,ar7100-eth - Atheros AR7100
+-		qca,ar7240-eth - Atheros AR7240
+-		qca,ar7241-eth - Atheros AR7241
+-		qca,ar7242-eth - Atheros AR7242
+-		qca,ar9130-eth - Atheros AR9130
+-		qca,ar9330-eth - Atheros AR9330
+-		qca,ar9340-eth - Atheros AR9340
+-		qca,qca9530-eth - Qualcomm Atheros QCA9530
+-		qca,qca9550-eth - Qualcomm Atheros QCA9550
+-		qca,qca9560-eth - Qualcomm Atheros QCA9560
+-
+-- reg : Address and length of the register set for the device
+-- interrupts : Should contain eth interrupt
+-- phy-mode : See ethernet.txt file in the same directory
+-- clocks: the clock used by the core
+-- clock-names: the names of the clock listed in the clocks property. These are
+-	"eth" and "mdio".
+-- resets: Should contain phandles to the reset signals
+-- reset-names: Should contain the names of reset signal listed in the resets
+-		property. These are "mac" and "mdio"
+-
+-Optional properties:
+-- phy-handle : phandle to the PHY device connected to this device.
+-- fixed-link : Assume a fixed link. See fixed-link.txt in the same directory.
+-  Use instead of phy-handle.
+-
+-Optional subnodes:
+-- mdio : specifies the mdio bus, used as a container for phy nodes
+-  according to phy.txt in the same directory
+-
+-Example:
+-
+-ethernet@1a000000 {
+-	compatible = "qca,ar9330-eth";
+-	reg = <0x1a000000 0x200>;
+-	interrupts = <5>;
+-	resets = <&rst 13>, <&rst 23>;
+-	reset-names = "mac", "mdio";
+-	clocks = <&pll ATH79_CLK_AHB>, <&pll ATH79_CLK_MDIO>;
+-	clock-names = "eth", "mdio";
+-
+-	phy-mode = "gmii";
+-};
+diff --git a/Documentation/devicetree/bindings/net/qca,ar71xx.yaml b/Documentation/devicetree/bindings/net/qca,ar71xx.yaml
+new file mode 100644
+index 0000000000000..f99a5aabe9232
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/qca,ar71xx.yaml
+@@ -0,0 +1,216 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/qca,ar71xx.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: QCA AR71XX MAC
++
++allOf:
++  - $ref: ethernet-controller.yaml#
++
++maintainers:
++  - Oleksij Rempel <o.rempel@pengutronix.de>
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - enum:
++              - qca,ar7100-eth   # Atheros AR7100
++              - qca,ar7240-eth   # Atheros AR7240
++              - qca,ar7241-eth   # Atheros AR7241
++              - qca,ar7242-eth   # Atheros AR7242
++              - qca,ar9130-eth   # Atheros AR9130
++              - qca,ar9330-eth   # Atheros AR9330
++              - qca,ar9340-eth   # Atheros AR9340
++              - qca,qca9530-eth  # Qualcomm Atheros QCA9530
++              - qca,qca9550-eth  # Qualcomm Atheros QCA9550
++              - qca,qca9560-eth  # Qualcomm Atheros QCA9560
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  '#address-cells':
++    description: number of address cells for the MDIO bus
++    const: 1
++
++  '#size-cells':
++    description: number of size cells on the MDIO bus
++    const: 0
++
++  clocks:
++    items:
++      - description: MAC main clock
++      - description: MDIO clock
++
++  clock-names:
++    items:
++      - const: eth
++      - const: mdio
++
++  resets:
++    items:
++      - description: MAC reset
++      - description: MDIO reset
++
++  reset-names:
++    items:
++      - const: mac
++      - const: mdio
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - phy-mode
++  - clocks
++  - clock-names
++  - resets
++  - reset-names
++
++examples:
++  # Lager board
++  - |
++    eth0: ethernet@19000000 {
++        compatible = "qca,ar9330-eth";
++        reg = <0x19000000 0x200>;
++        interrupts = <4>;
++        resets = <&rst 9>, <&rst 22>;
++        reset-names = "mac", "mdio";
++        clocks = <&pll 1>, <&pll 2>;
++        clock-names = "eth", "mdio";
++        qca,ethcfg = <&ethcfg>;
++        phy-mode = "mii";
++        phy-handle = <&phy_port4>;
++    };
++
++    eth1: ethernet@1a000000 {
++        compatible = "qca,ar9330-eth";
++        reg = <0x1a000000 0x200>;
++        interrupts = <5>;
++        resets = <&rst 13>, <&rst 23>;
++        reset-names = "mac", "mdio";
++        clocks = <&pll 1>, <&pll 2>;
++        clock-names = "eth", "mdio";
++
++        phy-mode = "gmii";
++
++        status = "disabled";
++
++        fixed-link {
++            speed = <1000>;
++            full-duplex;
++        };
++
++        mdio {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            switch10: switch@10 {
++                #address-cells = <1>;
++                #size-cells = <0>;
++
++                compatible = "qca,ar9331-switch";
++                reg = <0x10>;
++                resets = <&rst 8>;
++                reset-names = "switch";
++
++                interrupt-parent = <&miscintc>;
++                interrupts = <12>;
++
++                interrupt-controller;
++                #interrupt-cells = <1>;
++
++                ports {
++                    #address-cells = <1>;
++                    #size-cells = <0>;
++
++                    switch_port0: port@0 {
++                        reg = <0x0>;
++                        label = "cpu";
++                        ethernet = <&eth1>;
++
++                        phy-mode = "gmii";
++
++                        fixed-link {
++                            speed = <1000>;
++                            full-duplex;
++                        };
++                    };
++
++                    switch_port1: port@1 {
++                        reg = <0x1>;
++                        phy-handle = <&phy_port0>;
++                        phy-mode = "internal";
++
++                        status = "disabled";
++                    };
++
++                    switch_port2: port@2 {
++                        reg = <0x2>;
++                        phy-handle = <&phy_port1>;
++                        phy-mode = "internal";
++
++                        status = "disabled";
++                    };
++
++                    switch_port3: port@3 {
++                        reg = <0x3>;
++                        phy-handle = <&phy_port2>;
++                        phy-mode = "internal";
++
++                        status = "disabled";
++                    };
++
++                    switch_port4: port@4 {
++                        reg = <0x4>;
++                        phy-handle = <&phy_port3>;
++                        phy-mode = "internal";
++
++                        status = "disabled";
++                    };
++                };
++
++                mdio {
++                    #address-cells = <1>;
++                    #size-cells = <0>;
++
++                    interrupt-parent = <&switch10>;
++
++                    phy_port0: phy@0 {
++                        reg = <0x0>;
++                        interrupts = <0>;
++                        status = "disabled";
++                    };
++
++                    phy_port1: phy@1 {
++                        reg = <0x1>;
++                        interrupts = <0>;
++                        status = "disabled";
++                    };
++
++                    phy_port2: phy@2 {
++                        reg = <0x2>;
++                        interrupts = <0>;
++                        status = "disabled";
++                    };
++
++                    phy_port3: phy@3 {
++                        reg = <0x3>;
++                        interrupts = <0>;
++                        status = "disabled";
++                    };
++
++                    phy_port4: phy@4 {
++                        reg = <0x4>;
++                        interrupts = <0>;
++                        status = "disabled";
++                    };
++                };
++            };
++        };
++    };
+-- 
+2.26.1
 
