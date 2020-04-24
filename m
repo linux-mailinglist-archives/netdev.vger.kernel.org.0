@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94E9E1B6F05
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 09:28:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DC191B6F06
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 09:28:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726766AbgDXH2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 03:28:16 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:53932 "EHLO
+        id S1726776AbgDXH2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 03:28:19 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:26496 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726743AbgDXH2P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 03:28:15 -0400
+        by vger.kernel.org with ESMTP id S1726709AbgDXH2R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 03:28:17 -0400
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03O7PjVd021054;
-        Fri, 24 Apr 2020 00:28:11 -0700
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03O7PoCP021067;
+        Fri, 24 Apr 2020 00:28:13 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=RoURctvjuIeRcmUYqI+EDNrKfajdAqw01HCe6NMHYRc=;
- b=GqCAO+yyEaGZBsgXODsmEQe3VziHnt1+v79k2OcBO3fpVOWVhvk+osP7TohkIsR7iG4m
- 3H43OIvaZvmeyYSIUTGVl5g0TBKvIXXJ0NVFCpR93KyXupixKq0Hjwl3EszyjiXG5ZJV
- CGBoI9DTrnKd+pbM7UgmzkJ2O+LR3y1XMZbbkbE3UAJSwf19MfuC+nbWtHxuHs2oYgfd
- rC5wY1W5YBy/2SN0ZKyRiAmYTEyX4fnvuCkXAG6p731dryXBEm/4EjkRmlvmRYPSzG8/
- rxiZnbWCB7+sin3iE504LkHWUe3AJ7meBd4ROe+3xCQi5Qsk+ds5MwkcM+uyLAkPu57s Zg== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 30kfdsb48h-1
+ content-type; s=pfpt0818; bh=7J69JTbhlKZvYCoK3TDoon5JSHGT+d5iX1Dh51gcJ6o=;
+ b=cFZebA0kpKp3G5Z2dajJ6fPradZ7dvwT8uffhXlo4RNxinlQUrm+dOXmQY8oJJDJESac
+ poFUzUVU3Wp9yS97Q7wquoygmtFW2syfDq/Fxjg4eSiTiNpEYrG0nLGZbYyigWVod/vN
+ sajk8kx3h1/tKCEUeZS7aEPV9IQCNpXVRnuF7HJfa6pjuubAh5+e77tOX6qc+9ZJtTHl
+ WS2BxZwrSo7XnFBwwaQY5WI996ErpK+mcWtk3ICEQ2ncBj4SWpqNlcMFlDR+reN/leGw
+ SxPTS0G0L139TR14UFgXEweGchGgtY3ubhuChs59Fw8N5CmlqMeYUPZPUkVfgtfAnqGn vQ== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 30kfdsb48s-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 24 Apr 2020 00:28:11 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 24 Apr
- 2020 00:28:08 -0700
+        Fri, 24 Apr 2020 00:28:13 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 24 Apr
+ 2020 00:28:11 -0700
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 24 Apr 2020 00:28:09 -0700
+ Transport; Fri, 24 Apr 2020 00:28:11 -0700
 Received: from NN-LT0019.marvell.com (unknown [10.193.46.2])
-        by maili.marvell.com (Postfix) with ESMTP id 44D503F7040;
-        Fri, 24 Apr 2020 00:28:06 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id AC5AA3F703F;
+        Fri, 24 Apr 2020 00:28:09 -0700 (PDT)
 From:   Igor Russkikh <irusskikh@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     "David S . Miller" <davem@davemloft.net>,
         Mark Starovoytov <mstarovoitov@marvell.com>,
         Igor Russkikh <irusskikh@marvell.com>,
         "Dmitry Bogdanov" <dbogdanov@marvell.com>
-Subject: [PATCH net-next 12/17] net: atlantic: HW bindings for A2 RFP
-Date:   Fri, 24 Apr 2020 10:27:24 +0300
-Message-ID: <20200424072729.953-13-irusskikh@marvell.com>
+Subject: [PATCH net-next 13/17] net: atlantic: add A2 RPF hw_ops
+Date:   Fri, 24 Apr 2020 10:27:25 +0300
+Message-ID: <20200424072729.953-14-irusskikh@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200424072729.953-1-irusskikh@marvell.com>
 References: <20200424072729.953-1-irusskikh@marvell.com>
@@ -56,377 +56,356 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RPF is one of the modules which has been significantly
-changed/extended on A2.
-
-This patch adds the necessary A2 register definitions
-for RPF, which are used in follow-up patches.
+This patch adds RPF-related hw_ops, which are needed for basic
+functionality.
 
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 Co-developed-by: Dmitry Bogdanov <dbogdanov@marvell.com>
 Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
 Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
 ---
- .../aquantia/atlantic/hw_atl/hw_atl_llh.c     |  14 ++
- .../aquantia/atlantic/hw_atl/hw_atl_llh.h     |   6 +
- .../aquantia/atlantic/hw_atl2/hw_atl2_llh.c   |  74 ++++++++
- .../aquantia/atlantic/hw_atl2/hw_atl2_llh.h   |  26 +++
- .../atlantic/hw_atl2/hw_atl2_llh_internal.h   | 164 ++++++++++++++++++
- 5 files changed, 284 insertions(+)
+ .../aquantia/atlantic/hw_atl/hw_atl_utils.h   |   2 +
+ .../aquantia/atlantic/hw_atl2/hw_atl2.c       | 208 ++++++++++++++++++
+ .../atlantic/hw_atl2/hw_atl2_internal.h       |  49 +++++
+ 3 files changed, 259 insertions(+)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-index d1f68fc16291..8dd3232d72c4 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.c
-@@ -693,6 +693,13 @@ void hw_atl_rpfl2multicast_flr_en_set(struct aq_hw_s *aq_hw,
- 			    HW_ATL_RPFL2MC_ENF_SHIFT, l2multicast_flr_en);
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
+index 5513254642b3..5db57ea9a5bd 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
+@@ -360,6 +360,8 @@ struct aq_rx_filter_vlan {
+ 	u8 queue;
+ };
+ 
++#define HW_ATL_VLAN_MAX_FILTERS         16U
++
+ struct aq_rx_filter_l2 {
+ 	s8 queue;
+ 	u8 location;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c
+index 58c74a73b6cf..7dd5f9a1c505 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c
+@@ -4,9 +4,17 @@
+  */
+ 
+ #include "aq_hw.h"
++#include "aq_hw_utils.h"
++#include "aq_nic.h"
++#include "hw_atl/hw_atl_utils.h"
++#include "hw_atl/hw_atl_llh.h"
+ #include "hw_atl2_utils.h"
++#include "hw_atl2_llh.h"
+ #include "hw_atl2_internal.h"
+ 
++static int hw_atl2_act_rslvr_table_set(struct aq_hw_s *self, u8 location,
++				       u32 tag, u32 mask, u32 action);
++
+ #define DEFAULT_BOARD_BASIC_CAPABILITIES \
+ 	.is_64_dma = true,		  \
+ 	.msix_irqs = 8U,		  \
+@@ -55,6 +63,11 @@ const struct aq_hw_caps_s hw_atl2_caps_aqc113 = {
+ 			  AQ_NIC_RATE_10M,
+ };
+ 
++static u32 hw_atl2_sem_act_rslvr_get(struct aq_hw_s *self)
++{
++	return hw_atl_reg_glb_cpu_sem_get(self, HW_ATL2_FW_SM_ACT_RSLVR);
++}
++
+ static int hw_atl2_hw_reset(struct aq_hw_s *self)
+ {
+ 	return -EOPNOTSUPP;
+@@ -78,6 +91,60 @@ static int hw_atl2_hw_offload_set(struct aq_hw_s *self,
+ 	return -EOPNOTSUPP;
  }
  
-+u32 hw_atl_rpfl2promiscuous_mode_en_get(struct aq_hw_s *aq_hw)
++static void hw_atl2_hw_new_rx_filter_vlan_promisc(struct aq_hw_s *self,
++						  bool promisc)
 +{
-+	return aq_hw_read_reg_bit(aq_hw, HW_ATL_RPFL2PROMIS_MODE_ADR,
-+				  HW_ATL_RPFL2PROMIS_MODE_MSK,
-+				  HW_ATL_RPFL2PROMIS_MODE_SHIFT);
++	u16 off_action = (!promisc &&
++			  !hw_atl_rpfl2promiscuous_mode_en_get(self)) ?
++				HW_ATL2_ACTION_DROP : HW_ATL2_ACTION_DISABLE;
++	struct hw_atl2_priv *priv = (struct hw_atl2_priv *)self->priv;
++	u8 index;
++
++	index = priv->art_base_index + HW_ATL2_RPF_VLAN_PROMISC_OFF_INDEX;
++	hw_atl2_act_rslvr_table_set(self, index, 0,
++				    HW_ATL2_RPF_TAG_VLAN_MASK |
++				    HW_ATL2_RPF_TAG_UNTAG_MASK, off_action);
 +}
 +
- void hw_atl_rpfl2promiscuous_mode_en_set(struct aq_hw_s *aq_hw,
- 					 u32 l2promiscuous_mode_en)
++static void hw_atl2_hw_new_rx_filter_promisc(struct aq_hw_s *self, bool promisc)
++{
++	u16 off_action = promisc ? HW_ATL2_ACTION_DISABLE : HW_ATL2_ACTION_DROP;
++	struct hw_atl2_priv *priv = (struct hw_atl2_priv *)self->priv;
++	bool vlan_promisc_enable;
++	u8 index;
++
++	index = priv->art_base_index + HW_ATL2_RPF_L2_PROMISC_OFF_INDEX;
++	hw_atl2_act_rslvr_table_set(self, index, 0,
++				    HW_ATL2_RPF_TAG_UC_MASK |
++				    HW_ATL2_RPF_TAG_ALLMC_MASK,
++				    off_action);
++
++	/* turn VLAN promisc mode too */
++	vlan_promisc_enable = hw_atl_rpf_vlan_prom_mode_en_get(self);
++	hw_atl2_hw_new_rx_filter_vlan_promisc(self, promisc |
++					      vlan_promisc_enable);
++}
++
++static int hw_atl2_act_rslvr_table_set(struct aq_hw_s *self, u8 location,
++				       u32 tag, u32 mask, u32 action)
++{
++	u32 val;
++	int err;
++
++	err = readx_poll_timeout_atomic(hw_atl2_sem_act_rslvr_get,
++					self, val, val == 1,
++					1, 10000U);
++	if (err)
++		return err;
++
++	hw_atl2_rpf_act_rslvr_record_set(self, location, tag, mask,
++					 action);
++
++	hw_atl_reg_glb_cpu_sem_set(self, 1, HW_ATL2_FW_SM_ACT_RSLVR);
++
++	return err;
++}
++
+ static int hw_atl2_hw_mac_addr_set(struct aq_hw_s *self, u8 *mac_addr)
  {
-@@ -867,6 +874,13 @@ void hw_atl_rpf_vlan_prom_mode_en_set(struct aq_hw_s *aq_hw,
- 			    vlan_prom_mode_en);
+ 	return -EOPNOTSUPP;
+@@ -170,6 +237,88 @@ static int hw_atl2_hw_irq_read(struct aq_hw_s *self, u64 *mask)
+ 	return -EOPNOTSUPP;
  }
  
-+u32 hw_atl_rpf_vlan_prom_mode_en_get(struct aq_hw_s *aq_hw)
++#define IS_FILTER_ENABLED(_F_) ((packet_filter & (_F_)) ? 1U : 0U)
++
++static int hw_atl2_hw_packet_filter_set(struct aq_hw_s *self,
++					unsigned int packet_filter)
 +{
-+	return aq_hw_read_reg_bit(aq_hw, HW_ATL_RPF_VL_PROMIS_MODE_ADR,
-+				  HW_ATL_RPF_VL_PROMIS_MODE_MSK,
-+				  HW_ATL_RPF_VL_PROMIS_MODE_SHIFT);
++	struct aq_nic_cfg_s *cfg = self->aq_nic_cfg;
++	u32 vlan_promisc;
++	u32 l2_promisc;
++	unsigned int i;
++
++	l2_promisc = IS_FILTER_ENABLED(IFF_PROMISC) ||
++		     !!(cfg->priv_flags & BIT(AQ_HW_LOOPBACK_DMA_NET));
++	vlan_promisc = l2_promisc || cfg->is_vlan_force_promisc;
++
++	hw_atl_rpfl2promiscuous_mode_en_set(self, l2_promisc);
++
++	hw_atl_rpf_vlan_prom_mode_en_set(self, vlan_promisc);
++
++	hw_atl2_hw_new_rx_filter_promisc(self, IS_FILTER_ENABLED(IFF_PROMISC));
++
++	hw_atl_rpfl2multicast_flr_en_set(self,
++					 IS_FILTER_ENABLED(IFF_ALLMULTI) &&
++					 IS_FILTER_ENABLED(IFF_MULTICAST), 0);
++
++	hw_atl_rpfl2_accept_all_mc_packets_set(self,
++					      IS_FILTER_ENABLED(IFF_ALLMULTI) &&
++					      IS_FILTER_ENABLED(IFF_MULTICAST));
++
++	hw_atl_rpfl2broadcast_en_set(self, IS_FILTER_ENABLED(IFF_BROADCAST));
++
++	for (i = HW_ATL2_MAC_MIN; i < HW_ATL2_MAC_MAX; ++i)
++		hw_atl_rpfl2_uc_flr_en_set(self,
++					   (cfg->is_mc_list_enabled &&
++					    (i <= cfg->mc_list_count)) ?
++				    1U : 0U, i);
++
++	return aq_hw_err_from_flags(self);
 +}
 +
- void hw_atl_rpf_vlan_accept_untagged_packets_set(struct aq_hw_s *aq_hw,
- 						 u32 vlan_acc_untagged_packets)
++#undef IS_FILTER_ENABLED
++
++static int hw_atl2_hw_multicast_list_set(struct aq_hw_s *self,
++					 u8 ar_mac
++					 [AQ_HW_MULTICAST_ADDRESS_MAX]
++					 [ETH_ALEN],
++					 u32 count)
++{
++	struct aq_nic_cfg_s *cfg = self->aq_nic_cfg;
++	int err = 0;
++
++	if (count > (HW_ATL2_MAC_MAX - HW_ATL2_MAC_MIN)) {
++		err = -EBADRQC;
++		goto err_exit;
++	}
++	for (cfg->mc_list_count = 0U;
++			cfg->mc_list_count < count;
++			++cfg->mc_list_count) {
++		u32 i = cfg->mc_list_count;
++		u32 h = (ar_mac[i][0] << 8) | (ar_mac[i][1]);
++		u32 l = (ar_mac[i][2] << 24) | (ar_mac[i][3] << 16) |
++					(ar_mac[i][4] << 8) | ar_mac[i][5];
++
++		hw_atl_rpfl2_uc_flr_en_set(self, 0U, HW_ATL2_MAC_MIN + i);
++
++		hw_atl_rpfl2unicast_dest_addresslsw_set(self, l,
++							HW_ATL2_MAC_MIN + i);
++
++		hw_atl_rpfl2unicast_dest_addressmsw_set(self, h,
++							HW_ATL2_MAC_MIN + i);
++
++		hw_atl2_rpfl2_uc_flr_tag_set(self, 1, HW_ATL2_MAC_MIN + i);
++
++		hw_atl_rpfl2_uc_flr_en_set(self, (cfg->is_mc_list_enabled),
++					   HW_ATL2_MAC_MIN + i);
++	}
++
++	err = aq_hw_err_from_flags(self);
++
++err_exit:
++	return err;
++}
++
+ static int hw_atl2_hw_interrupt_moderation_set(struct aq_hw_s *self)
  {
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
-index 62992b23c0e8..a4699a682973 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_llh.h
-@@ -349,6 +349,9 @@ void hw_atl_rpfl2multicast_flr_en_set(struct aq_hw_s *aq_hw,
- 				      u32 l2multicast_flr_en,
- 				      u32 filter);
+ 	return -EOPNOTSUPP;
+@@ -195,6 +344,61 @@ static struct aq_stats_s *hw_atl2_utils_get_hw_stats(struct aq_hw_s *self)
+ 	return &self->curr_stats;
+ }
  
-+/* get l2 promiscuous mode enable */
-+u32 hw_atl_rpfl2promiscuous_mode_en_get(struct aq_hw_s *aq_hw);
++static int hw_atl2_hw_vlan_set(struct aq_hw_s *self,
++			       struct aq_rx_filter_vlan *aq_vlans)
++{
++	struct hw_atl2_priv *priv = (struct hw_atl2_priv *)self->priv;
++	u32 queue;
++	u8 index;
++	int i;
 +
- /* set l2 promiscuous mode enable */
- void hw_atl_rpfl2promiscuous_mode_en_set(struct aq_hw_s *aq_hw,
- 					 u32 l2promiscuous_mode_en);
-@@ -420,6 +423,9 @@ void hw_atl_rpf_vlan_outer_etht_set(struct aq_hw_s *aq_hw, u32 vlan_outer_etht);
- void hw_atl_rpf_vlan_prom_mode_en_set(struct aq_hw_s *aq_hw,
- 				      u32 vlan_prom_mode_en);
++	hw_atl_rpf_vlan_prom_mode_en_set(self, 1U);
++
++	for (i = 0; i < HW_ATL_VLAN_MAX_FILTERS; i++) {
++		queue = HW_ATL2_ACTION_ASSIGN_QUEUE(aq_vlans[i].queue);
++
++		hw_atl_rpf_vlan_flr_en_set(self, 0U, i);
++		hw_atl_rpf_vlan_rxq_en_flr_set(self, 0U, i);
++		index = priv->art_base_index + HW_ATL2_RPF_VLAN_USER_INDEX + i;
++		hw_atl2_act_rslvr_table_set(self, index, 0, 0,
++					    HW_ATL2_ACTION_DISABLE);
++		if (aq_vlans[i].enable) {
++			hw_atl_rpf_vlan_id_flr_set(self,
++						   aq_vlans[i].vlan_id, i);
++			hw_atl_rpf_vlan_flr_act_set(self, 1U, i);
++			hw_atl_rpf_vlan_flr_en_set(self, 1U, i);
++
++			if (aq_vlans[i].queue != 0xFF) {
++				hw_atl_rpf_vlan_rxq_flr_set(self,
++							    aq_vlans[i].queue,
++							    i);
++				hw_atl_rpf_vlan_rxq_en_flr_set(self, 1U, i);
++
++				hw_atl2_rpf_vlan_flr_tag_set(self, i + 2, i);
++
++				index = priv->art_base_index +
++					HW_ATL2_RPF_VLAN_USER_INDEX + i;
++				hw_atl2_act_rslvr_table_set(self, index,
++					(i + 2) << HW_ATL2_RPF_TAG_VLAN_OFFSET,
++					HW_ATL2_RPF_TAG_VLAN_MASK, queue);
++			} else {
++				hw_atl2_rpf_vlan_flr_tag_set(self, 1, i);
++			}
++		}
++	}
++
++	return aq_hw_err_from_flags(self);
++}
++
++static int hw_atl2_hw_vlan_ctrl(struct aq_hw_s *self, bool enable)
++{
++	/* set promisc in case of disabing the vlan filter */
++	hw_atl_rpf_vlan_prom_mode_en_set(self, !enable);
++	hw_atl2_hw_new_rx_filter_vlan_promisc(self, !enable);
++
++	return aq_hw_err_from_flags(self);
++}
++
+ const struct aq_hw_ops hw_atl2_ops = {
+ 	.hw_set_mac_address   = hw_atl2_hw_mac_addr_set,
+ 	.hw_init              = hw_atl2_hw_init,
+@@ -218,6 +422,10 @@ const struct aq_hw_ops hw_atl2_ops = {
  
-+/* Get VLAN promiscuous mode enable */
-+u32 hw_atl_rpf_vlan_prom_mode_en_get(struct aq_hw_s *aq_hw);
-+
- /* Set VLAN untagged action */
- void hw_atl_rpf_vlan_untagged_act_set(struct aq_hw_s *aq_hw,
- 				      u32 vlan_untagged_act);
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.c
-index b6164bc5fffd..67f46a7bdcda 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.c
-@@ -7,6 +7,80 @@
- #include "hw_atl2_llh_internal.h"
- #include "aq_hw_utils.h"
+ 	.hw_ring_rx_init             = hw_atl2_hw_ring_rx_init,
+ 	.hw_ring_tx_init             = hw_atl2_hw_ring_tx_init,
++	.hw_packet_filter_set        = hw_atl2_hw_packet_filter_set,
++	.hw_filter_vlan_set          = hw_atl2_hw_vlan_set,
++	.hw_filter_vlan_ctrl         = hw_atl2_hw_vlan_ctrl,
++	.hw_multicast_list_set       = hw_atl2_hw_multicast_list_set,
+ 	.hw_interrupt_moderation_set = hw_atl2_hw_interrupt_moderation_set,
+ 	.hw_rss_set                  = hw_atl2_hw_rss_set,
+ 	.hw_rss_hash_set             = hw_atl2_hw_rss_hash_set,
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_internal.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_internal.h
+index f82058484332..dccc89df2223 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_internal.h
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_internal.h
+@@ -18,6 +18,10 @@
+ #define HW_ATL2_TXD_SIZE       (16U)
+ #define HW_ATL2_RXD_SIZE       (16U)
  
-+void hw_atl2_rpf_rss_hash_type_set(struct aq_hw_s *aq_hw, u32 rss_hash_type)
-+{
-+	aq_hw_write_reg_bit(aq_hw, HW_ATL2_RPF_PIF_RPF_RSS_HASH_TYPEI_ADR,
-+			    HW_ATL2_RPF_PIF_RPF_RSS_HASH_TYPEI_MSK,
-+			    HW_ATL2_RPF_PIF_RPF_RSS_HASH_TYPEI_SHIFT,
-+			    rss_hash_type);
-+}
++#define HW_ATL2_MAC_UC   0U
++#define HW_ATL2_MAC_MIN  1U
++#define HW_ATL2_MAC_MAX  38U
 +
-+/* rpf */
-+
-+void hw_atl2_rpf_new_enable_set(struct aq_hw_s *aq_hw, u32 enable)
-+{
-+	aq_hw_write_reg_bit(aq_hw, HW_ATL2_RPF_NEW_EN_ADR,
-+			    HW_ATL2_RPF_NEW_EN_MSK,
-+			    HW_ATL2_RPF_NEW_EN_SHIFT,
-+			    enable);
-+}
-+
-+void hw_atl2_rpfl2_uc_flr_tag_set(struct aq_hw_s *aq_hw, u32 tag, u32 filter)
-+{
-+	aq_hw_write_reg_bit(aq_hw, HW_ATL2_RPFL2UC_TAG_ADR(filter),
-+			    HW_ATL2_RPFL2UC_TAG_MSK,
-+			    HW_ATL2_RPFL2UC_TAG_SHIFT,
-+			    tag);
-+}
-+
-+void hw_atl2_rpfl2_bc_flr_tag_set(struct aq_hw_s *aq_hw, u32 tag)
-+{
-+	aq_hw_write_reg_bit(aq_hw, HW_ATL2_RPF_L2_BC_TAG_ADR,
-+			    HW_ATL2_RPF_L2_BC_TAG_MSK,
-+			    HW_ATL2_RPF_L2_BC_TAG_SHIFT,
-+			    tag);
-+}
-+
-+void hw_atl2_new_rpf_rss_redir_set(struct aq_hw_s *aq_hw, u32 tc, u32 index,
-+				   u32 queue)
-+{
-+	aq_hw_write_reg_bit(aq_hw, HW_ATL2_RPF_RSS_REDIR_ADR(tc, index),
-+			    HW_ATL2_RPF_RSS_REDIR_MSK(tc),
-+			    HW_ATL2_RPF_RSS_REDIR_SHIFT(tc),
-+			    queue);
-+}
-+
-+void hw_atl2_rpf_vlan_flr_tag_set(struct aq_hw_s *aq_hw, u32 tag, u32 filter)
-+{
-+	aq_hw_write_reg_bit(aq_hw, HW_ATL2_RPF_VL_TAG_ADR(filter),
-+			    HW_ATL2_RPF_VL_TAG_MSK,
-+			    HW_ATL2_RPF_VL_TAG_SHIFT,
-+			    tag);
-+}
-+
-+/* set action resolver record */
-+void hw_atl2_rpf_act_rslvr_record_set(struct aq_hw_s *aq_hw, u8 location,
-+				      u32 tag, u32 mask, u32 action)
-+{
-+	aq_hw_write_reg(aq_hw,
-+			HW_ATL2_RPF_ACT_RSLVR_REQ_TAG_ADR(location),
-+			tag);
-+	aq_hw_write_reg(aq_hw,
-+			HW_ATL2_RPF_ACT_RSLVR_TAG_MASK_ADR(location),
-+			mask);
-+	aq_hw_write_reg(aq_hw,
-+			HW_ATL2_RPF_ACT_RSLVR_ACTN_ADR(location),
-+			action);
-+}
-+
-+void hw_atl2_rpf_act_rslvr_section_en_set(struct aq_hw_s *aq_hw, u32 sections)
-+{
-+	aq_hw_write_reg_bit(aq_hw, HW_ATL2_RPF_REC_TAB_EN_ADR,
-+			    HW_ATL2_RPF_REC_TAB_EN_MSK,
-+			    HW_ATL2_RPF_REC_TAB_EN_SHIFT,
-+			    sections);
-+}
-+
- void hw_atl2_mif_shared_buf_get(struct aq_hw_s *aq_hw, int offset, u32 *data,
- 				int len)
- {
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.h
-index 8ef8bd6b2534..bd5b0d5a8084 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh.h
-@@ -10,6 +10,32 @@
+ #define HW_ATL2_TC_MAX 1U
+ #define HW_ATL2_RSS_MAX 8U
  
- struct aq_hw_s;
+@@ -29,6 +33,51 @@
+ #define HW_ATL2_MAX_RXD 8184U
+ #define HW_ATL2_MAX_TXD 8184U
  
-+/** Set RSS HASH type */
-+void hw_atl2_rpf_rss_hash_type_set(struct aq_hw_s *aq_hw, u32 rss_hash_type);
++#define HW_ATL2_FW_SM_ACT_RSLVR  0x3U
 +
-+/* set new RPF enable */
-+void hw_atl2_rpf_new_enable_set(struct aq_hw_s *aq_hw, u32 enable);
++#define HW_ATL2_RPF_TAG_UC_OFFSET      0x0
++#define HW_ATL2_RPF_TAG_ALLMC_OFFSET   0x6
++#define HW_ATL2_RPF_TAG_ET_OFFSET      0x7
++#define HW_ATL2_RPF_TAG_VLAN_OFFSET    0xA
++#define HW_ATL2_RPF_TAG_UNTAG_OFFSET   0xE
++#define HW_ATL2_RPF_TAG_L3_V4_OFFSET   0xF
++#define HW_ATL2_RPF_TAG_L3_V6_OFFSET   0x12
++#define HW_ATL2_RPF_TAG_L4_OFFSET      0x15
++#define HW_ATL2_RPF_TAG_L4_FLEX_OFFSET 0x18
++#define HW_ATL2_RPF_TAG_FLEX_OFFSET    0x1B
++#define HW_ATL2_RPF_TAG_PCP_OFFSET     0x1D
 +
-+/* set l2 unicast filter tag */
-+void hw_atl2_rpfl2_uc_flr_tag_set(struct aq_hw_s *aq_hw, u32 tag, u32 filter);
++#define HW_ATL2_RPF_TAG_UC_MASK    (0x0000003F << HW_ATL2_RPF_TAG_UC_OFFSET)
++#define HW_ATL2_RPF_TAG_ALLMC_MASK (0x00000001 << HW_ATL2_RPF_TAG_ALLMC_OFFSET)
++#define HW_ATL2_RPF_TAG_UNTAG_MASK (0x00000001 << HW_ATL2_RPF_TAG_UNTAG_OFFSET)
++#define HW_ATL2_RPF_TAG_VLAN_MASK  (0x0000000F << HW_ATL2_RPF_TAG_VLAN_OFFSET)
++#define HW_ATL2_RPF_TAG_ET_MASK    (0x00000007 << HW_ATL2_RPF_TAG_ET_OFFSET)
++#define HW_ATL2_RPF_TAG_L3_V4_MASK (0x00000007 << HW_ATL2_RPF_TAG_L3_V4_OFFSET)
++#define HW_ATL2_RPF_TAG_L3_V6_MASK (0x00000007 << HW_ATL2_RPF_TAG_L3_V6_OFFSET)
++#define HW_ATL2_RPF_TAG_L4_MASK    (0x00000007 << HW_ATL2_RPF_TAG_L4_OFFSET)
++#define HW_ATL2_RPF_TAG_PCP_MASK   (0x00000007 << HW_ATL2_RPF_TAG_PCP_OFFSET)
 +
-+/* set l2 broadcast filter tag */
-+void hw_atl2_rpfl2_bc_flr_tag_set(struct aq_hw_s *aq_hw, u32 tag);
++enum HW_ATL2_RPF_ART_INDEX {
++	HW_ATL2_RPF_L2_PROMISC_OFF_INDEX,
++	HW_ATL2_RPF_VLAN_PROMISC_OFF_INDEX,
++	HW_ATL2_RPF_L3L4_USER_INDEX	= 8,
++	HW_ATL2_RPF_ET_PCP_USER_INDEX	= HW_ATL2_RPF_L3L4_USER_INDEX + 16,
++	HW_ATL2_RPF_VLAN_USER_INDEX	= HW_ATL2_RPF_ET_PCP_USER_INDEX + 16,
++	HW_ATL2_RPF_PCP_TO_TC_INDEX	= HW_ATL2_RPF_VLAN_USER_INDEX +
++					  HW_ATL_VLAN_MAX_FILTERS,
++};
 +
-+/* set new rss redirection table */
-+void hw_atl2_new_rpf_rss_redir_set(struct aq_hw_s *aq_hw, u32 tc, u32 index,
-+				   u32 queue);
++#define HW_ATL2_ACTION(ACTION, RSS, INDEX, VALID) \
++	((((ACTION) & 0x3U) << 8) | \
++	(((RSS) & 0x1U) << 7) | \
++	(((INDEX) & 0x3FU) << 2) | \
++	(((VALID) & 0x1U) << 0))
 +
-+/* Set VLAN filter tag */
-+void hw_atl2_rpf_vlan_flr_tag_set(struct aq_hw_s *aq_hw, u32 tag, u32 filter);
++#define HW_ATL2_ACTION_DROP HW_ATL2_ACTION(0, 0, 0, 1)
++#define HW_ATL2_ACTION_DISABLE HW_ATL2_ACTION(0, 0, 0, 0)
++#define HW_ATL2_ACTION_ASSIGN_QUEUE(QUEUE) HW_ATL2_ACTION(1, 0, (QUEUE), 1)
++#define HW_ATL2_ACTION_ASSIGN_TC(TC) HW_ATL2_ACTION(1, 1, (TC), 1)
 +
-+/* set action resolver record */
-+void hw_atl2_rpf_act_rslvr_record_set(struct aq_hw_s *aq_hw, u8 location,
-+				      u32 tag, u32 mask, u32 action);
-+
-+/* set enable action resolver section */
-+void hw_atl2_rpf_act_rslvr_section_en_set(struct aq_hw_s *aq_hw, u32 sections);
-+
- /* get data from firmware shared input buffer */
- void hw_atl2_mif_shared_buf_get(struct aq_hw_s *aq_hw, int offset, u32 *data,
- 				int len);
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh_internal.h b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh_internal.h
-index 835deb2d1950..886491b6ab73 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh_internal.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2_llh_internal.h
-@@ -6,6 +6,170 @@
- #ifndef HW_ATL2_LLH_INTERNAL_H
- #define HW_ATL2_LLH_INTERNAL_H
- 
-+/* RX pif_rpf_rss_hash_type_i Bitfield Definitions
-+ */
-+#define HW_ATL2_RPF_PIF_RPF_RSS_HASH_TYPEI_ADR 0x000054C8
-+#define HW_ATL2_RPF_PIF_RPF_RSS_HASH_TYPEI_MSK 0x000001FF
-+#define HW_ATL2_RPF_PIF_RPF_RSS_HASH_TYPEI_MSKN 0xFFFFFE00
-+#define HW_ATL2_RPF_PIF_RPF_RSS_HASH_TYPEI_SHIFT 0
-+#define HW_ATL2_RPF_PIF_RPF_RSS_HASH_TYPEI_WIDTH 9
-+
-+/* rx rpf_new_rpf_en bitfield definitions
-+ * preprocessor definitions for the bitfield "rpf_new_rpf_en_i".
-+ * port="pif_rpf_new_rpf_en_i
-+ */
-+
-+/* register address for bitfield rpf_new_rpf_en */
-+#define HW_ATL2_RPF_NEW_EN_ADR 0x00005104
-+/* bitmask for bitfield rpf_new_rpf_en */
-+#define HW_ATL2_RPF_NEW_EN_MSK 0x00000800
-+/* inverted bitmask for bitfield rpf_new_rpf_en */
-+#define HW_ATL2_RPF_NEW_EN_MSKN 0xfffff7ff
-+/* lower bit position of bitfield rpf_new_rpf_en */
-+#define HW_ATL2_RPF_NEW_EN_SHIFT 11
-+/* width of bitfield rpf_new_rpf_en */
-+#define HW_ATL2_RPF_NEW_EN_WIDTH 1
-+/* default value of bitfield rpf_new_rpf_en */
-+#define HW_ATL2_RPF_NEW_EN_DEFAULT 0x0
-+
-+/* rx l2_uc_req_tag0{f}[5:0] bitfield definitions
-+ * preprocessor definitions for the bitfield "l2_uc_req_tag0{f}[7:0]".
-+ * parameter: filter {f} | stride size 0x8 | range [0, 37]
-+ * port="pif_rpf_l2_uc_req_tag0[5:0]"
-+ */
-+
-+/* register address for bitfield l2_uc_req_tag0{f}[2:0] */
-+#define HW_ATL2_RPFL2UC_TAG_ADR(filter) (0x00005114 + (filter) * 0x8)
-+/* bitmask for bitfield l2_uc_req_tag0{f}[2:0] */
-+#define HW_ATL2_RPFL2UC_TAG_MSK 0x0FC00000
-+/* inverted bitmask for bitfield l2_uc_req_tag0{f}[2:0] */
-+#define HW_ATL2_RPFL2UC_TAG_MSKN 0xF03FFFFF
-+/* lower bit position of bitfield l2_uc_req_tag0{f}[2:0] */
-+#define HW_ATL2_RPFL2UC_TAG_SHIFT 22
-+/* width of bitfield l2_uc_req_tag0{f}[2:0] */
-+#define HW_ATL2_RPFL2UC_TAG_WIDTH 6
-+/* default value of bitfield l2_uc_req_tag0{f}[2:0] */
-+#define HW_ATL2_RPFL2UC_TAG_DEFAULT 0x0
-+
-+/* rpf_l2_bc_req_tag[5:0] bitfield definitions
-+ * preprocessor definitions for the bitfield "rpf_l2_bc_req_tag[5:0]".
-+ * port="pifrpf_l2_bc_req_tag_i[5:0]"
-+ */
-+
-+/* register address for bitfield rpf_l2_bc_req_tag */
-+#define HW_ATL2_RPF_L2_BC_TAG_ADR 0x000050F0
-+/* bitmask for bitfield rpf_l2_bc_req_tag */
-+#define HW_ATL2_RPF_L2_BC_TAG_MSK 0x0000003F
-+/* inverted bitmask for bitfield rpf_l2_bc_req_tag */
-+#define HW_ATL2_RPF_L2_BC_TAG_MSKN 0xffffffc0
-+/* lower bit position of bitfield rpf_l2_bc_req_tag */
-+#define HW_ATL2_RPF_L2_BC_TAG_SHIFT 0
-+/* width of bitfield rpf_l2_bc_req_tag */
-+#define HW_ATL2_RPF_L2_BC_TAG_WIDTH 6
-+/* default value of bitfield rpf_l2_bc_req_tag */
-+#define HW_ATL2_RPF_L2_BC_TAG_DEFAULT 0x0
-+
-+/* rx rpf_rss_red1_data_[4:0] bitfield definitions
-+ * preprocessor definitions for the bitfield "rpf_rss_red1_data[4:0]".
-+ * port="pif_rpf_rss_red1_data_i[4:0]"
-+ */
-+
-+/* register address for bitfield rpf_rss_red1_data[4:0] */
-+#define HW_ATL2_RPF_RSS_REDIR_ADR(TC, INDEX) (0x00006200 + \
-+					(0x100 * !!((TC) > 3)) + (INDEX) * 4)
-+/* bitmask for bitfield rpf_rss_red1_data[4:0] */
-+#define HW_ATL2_RPF_RSS_REDIR_MSK(TC)  (0x00000001F << (5 * ((TC) % 4)))
-+/* lower bit position of bitfield rpf_rss_red1_data[4:0] */
-+#define HW_ATL2_RPF_RSS_REDIR_SHIFT(TC) (5 * ((TC) % 4))
-+/* width of bitfield rpf_rss_red1_data[4:0] */
-+#define HW_ATL2_RPF_RSS_REDIR_WIDTH 5
-+/* default value of bitfield rpf_rss_red1_data[4:0] */
-+#define HW_ATL2_RPF_RSS_REDIR_DEFAULT 0x0
-+
-+/* rx vlan_req_tag0{f}[3:0] bitfield definitions
-+ * preprocessor definitions for the bitfield "vlan_req_tag0{f}[3:0]".
-+ * parameter: filter {f} | stride size 0x4 | range [0, 15]
-+ * port="pif_rpf_vlan_req_tag0[3:0]"
-+ */
-+
-+/* register address for bitfield vlan_req_tag0{f}[3:0] */
-+#define HW_ATL2_RPF_VL_TAG_ADR(filter) (0x00005290 + (filter) * 0x4)
-+/* bitmask for bitfield vlan_req_tag0{f}[3:0] */
-+#define HW_ATL2_RPF_VL_TAG_MSK 0x0000F000
-+/* inverted bitmask for bitfield vlan_req_tag0{f}[3:0] */
-+#define HW_ATL2_RPF_VL_TAG_MSKN 0xFFFF0FFF
-+/* lower bit position of bitfield vlan_req_tag0{f}[3:0] */
-+#define HW_ATL2_RPF_VL_TAG_SHIFT 12
-+/* width of bitfield vlan_req_tag0{f}[3:0] */
-+#define HW_ATL2_RPF_VL_TAG_WIDTH 4
-+/* default value of bitfield vlan_req_tag0{f}[3:0] */
-+#define HW_ATL2_RPF_VL_TAG_DEFAULT 0x0
-+
-+/* ahb_mem_addr{f}[31:0] Bitfield Definitions
-+ * Preprocessor definitions for the bitfield "ahb_mem_addr{f}[31:0]".
-+ * Parameter: filter {f} | stride size 0x10 | range [0, 127]
-+ * PORT="ahb_mem_addr{f}[31:0]"
-+ */
-+
-+/* Register address for bitfield ahb_mem_addr{f}[31:0] */
-+#define HW_ATL2_RPF_ACT_RSLVR_REQ_TAG_ADR(filter) \
-+	(0x00014000u + (filter) * 0x10)
-+/* Bitmask for bitfield ahb_mem_addr{f}[31:0] */
-+#define HW_ATL2_RPF_ACT_RSLVR_REQ_TAG_MSK 0xFFFFFFFFu
-+/* Inverted bitmask for bitfield ahb_mem_addr{f}[31:0] */
-+#define HW_ATL2_RPF_ACT_RSLVR_REQ_TAG_MSKN 0x00000000u
-+/* Lower bit position of bitfield ahb_mem_addr{f}[31:0] */
-+#define HW_ATL2_RPF_ACT_RSLVR_REQ_TAG_SHIFT 0
-+/* Width of bitfield ahb_mem_addr{f}[31:0] */
-+#define HW_ATL2_RPF_ACT_RSLVR_REQ_TAG_WIDTH 31
-+/* Default value of bitfield ahb_mem_addr{f}[31:0] */
-+#define HW_ATL2_RPF_ACT_RSLVR_REQ_TAG_DEFAULT 0x0
-+
-+/* Register address for bitfield ahb_mem_addr{f}[31:0] */
-+#define HW_ATL2_RPF_ACT_RSLVR_TAG_MASK_ADR(filter) \
-+	(0x00014004u + (filter) * 0x10)
-+/* Bitmask for bitfield ahb_mem_addr{f}[31:0] */
-+#define HW_ATL2_RPF_ACT_RSLVR_TAG_MASK_MSK 0xFFFFFFFFu
-+/* Inverted bitmask for bitfield ahb_mem_addr{f}[31:0] */
-+#define HW_ATL2_RPF_ACT_RSLVR_TAG_MASK_MSKN 0x00000000u
-+/* Lower bit position of bitfield ahb_mem_addr{f}[31:0] */
-+#define HW_ATL2_RPF_ACT_RSLVR_TAG_MASK_SHIFT 0
-+/* Width of bitfield ahb_mem_addr{f}[31:0] */
-+#define HW_ATL2_RPF_ACT_RSLVR_TAG_MASK_WIDTH 31
-+/* Default value of bitfield ahb_mem_addr{f}[31:0] */
-+#define HW_ATL2_RPF_ACT_RSLVR_TAG_MASK_DEFAULT 0x0
-+
-+/* Register address for bitfield ahb_mem_addr{f}[31:0] */
-+#define HW_ATL2_RPF_ACT_RSLVR_ACTN_ADR(filter) \
-+	(0x00014008u + (filter) * 0x10)
-+/* Bitmask for bitfield ahb_mem_addr{f}[31:0] */
-+#define HW_ATL2_RPF_ACT_RSLVR_ACTN_MSK 0x000007FFu
-+/* Inverted bitmask for bitfield ahb_mem_addr{f}[31:0] */
-+#define HW_ATL2_RPF_ACT_RSLVR_ACTN_MSKN 0xFFFFF800u
-+/* Lower bit position of bitfield ahb_mem_addr{f}[31:0] */
-+#define HW_ATL2_RPF_ACT_RSLVR_ACTN_SHIFT 0
-+/* Width of bitfield ahb_mem_addr{f}[31:0] */
-+#define HW_ATL2_RPF_ACT_RSLVR_ACTN_WIDTH 10
-+/* Default value of bitfield ahb_mem_addr{f}[31:0] */
-+#define HW_ATL2_RPF_ACT_RSLVR_ACTN_DEFAULT 0x0
-+
-+/* rpf_rec_tab_en[15:0] Bitfield Definitions
-+ * Preprocessor definitions for the bitfield "rpf_rec_tab_en[15:0]".
-+ * PORT="pif_rpf_rec_tab_en[15:0]"
-+ */
-+/* Register address for bitfield rpf_rec_tab_en[15:0] */
-+#define HW_ATL2_RPF_REC_TAB_EN_ADR 0x00006ff0u
-+/* Bitmask for bitfield rpf_rec_tab_en[15:0] */
-+#define HW_ATL2_RPF_REC_TAB_EN_MSK 0x0000FFFFu
-+/* Inverted bitmask for bitfield rpf_rec_tab_en[15:0] */
-+#define HW_ATL2_RPF_REC_TAB_EN_MSKN 0xFFFF0000u
-+/* Lower bit position of bitfield rpf_rec_tab_en[15:0] */
-+#define HW_ATL2_RPF_REC_TAB_EN_SHIFT 0
-+/* Width of bitfield rpf_rec_tab_en[15:0] */
-+#define HW_ATL2_RPF_REC_TAB_EN_WIDTH 16
-+/* Default value of bitfield rpf_rec_tab_en[15:0] */
-+#define HW_ATL2_RPF_REC_TAB_EN_DEFAULT 0x0
-+
- /* Register address for firmware shared input buffer */
- #define HW_ATL2_MIF_SHARED_BUFFER_IN_ADR(dword) (0x00012000U + (dword) * 0x4U)
- /* Register address for firmware shared output buffer */
+ struct hw_atl2_priv {
+ 	struct statistics_s last_stats;
+ 	unsigned int art_base_index;
 -- 
 2.17.1
 
