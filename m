@@ -2,67 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDA0A1B825D
-	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 01:13:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DD3D1B826B
+	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 01:23:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726031AbgDXXNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 19:13:40 -0400
-Received: from bert.scottdial.com ([104.237.142.221]:50478 "EHLO
-        bert.scottdial.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725874AbgDXXNj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 19:13:39 -0400
-Received: from mail.scottdial.com (mail.scottdial.com [10.8.0.6])
-        by bert.scottdial.com (Postfix) with ESMTP id 10A185718A1
-        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 19:13:39 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.scottdial.com (Postfix) with ESMTP id A63BB1111605
-        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 19:13:38 -0400 (EDT)
-Received: from mail.scottdial.com ([127.0.0.1])
-        by localhost (mail.scottdial.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id jEVl6ozQCrVK for <netdev@vger.kernel.org>;
-        Fri, 24 Apr 2020 19:13:37 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.scottdial.com (Postfix) with ESMTP id C682D1111606
-        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 19:13:37 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.scottdial.com C682D1111606
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=scottdial.com;
-        s=24B7B964-7506-11E8-A7D6-CF6FBF8C6FCF; t=1587770017;
-        bh=lzowNwOvUULw6pvOHyVMkiHO1T5Ku3XVhpiHjmgWS0k=;
-        h=From:To:Message-ID:Date:MIME-Version;
-        b=WaOph9GyZ7ncXrQDOhh2kPi/1EdbbMt7K36bTwPtF0AHrvpCfwORkXC9hTO8ZDXmG
-         wW1HgaB/FcOOW463iG8Ieu5ZtUzRM6hj/af520vOonBNfkgpj4r4lSgEJw7Srl5wDn
-         BAxCW5jawuQ40VwbQjgvINAfF8U7DMVncI2f/m0NISW6+JsrzDiu8d3ZeTFPPzX3lr
-         lTyApCj54T2ZblYNP1H/mLWZARYoz82rTkKTtgSFX44oVjb5c67Yznis13tN8yYqt/
-         Xauwa3Gt5dd08f8PnyUTWkXX/5PaDPDs5LMKOgkHbIy4M1m8ja1RKkVOlfgy/QrLw9
-         x+mpgGGe1JYKA==
-X-Virus-Scanned: amavisd-new at scottdial.com
-Received: from mail.scottdial.com ([127.0.0.1])
-        by localhost (mail.scottdial.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id jWNHYGx1zJ1H for <netdev@vger.kernel.org>;
-        Fri, 24 Apr 2020 19:13:37 -0400 (EDT)
-Received: from [172.17.2.2] (unknown [172.17.2.2])
-        by mail.scottdial.com (Postfix) with ESMTPSA id A0DDB1111605
-        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 19:13:37 -0400 (EDT)
-Subject: Re: [PATCH net] net: macsec: fix ingress frame ordering
-From:   Scott Dial <scott@scottdial.com>
-To:     netdev@vger.kernel.org
-References: <20200424223433.955775-1-scott@scottdial.com>
-Message-ID: <cd9e5b77-0f17-b730-4feb-15098a2a2486@scottdial.com>
-Date:   Fri, 24 Apr 2020 19:13:37 -0400
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726105AbgDXXX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 19:23:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39310 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725932AbgDXXX1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Apr 2020 19:23:27 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 31F0A214AF;
+        Fri, 24 Apr 2020 23:23:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1587770607;
+        bh=RjkafEpEUlQYwXmiRYMLYyVW1y9J3/I8SnW+sAOLIww=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HV8jmH/SAcHEHgDgQ60/GA2j/puMEj3tRbY/nBniFWjKcxufSx8NbpB7kOUd8Q80A
+         i9w7c0QTzGN5M7+vTOFOfz+uEvLkPc0zCFXC/lRaw8+/zpC7/3+C2g7++l5tAecg7A
+         owDeZ7Z1dveUZF4X/UAmHjUdDpDmxuqy30YW7WvY=
+Date:   Fri, 24 Apr 2020 16:23:25 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <salil.mehta@huawei.com>,
+        <yisen.zhuang@huawei.com>, <linuxarm@huawei.com>
+Subject: Re: [PATCH net-next 0/8] net: hns3: refactor for MAC table
+Message-ID: <20200424162325.4547ce9c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1587694993-25183-1-git-send-email-tanhuazhong@huawei.com>
+References: <1587694993-25183-1-git-send-email-tanhuazhong@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <20200424223433.955775-1-scott@scottdial.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry, ignore this. I sent this patch twice by mistake.
+On Fri, 24 Apr 2020 10:23:05 +0800 Huazhong Tan wrote:
+> This patchset refactors the MAC table management, configure
+> the MAC address asynchronously, instead of synchronously.
+> Base on this change, it also refines the handle of promisc
+> mode and filter table entries restoring after reset.
 
--- 
-Scott Dial
-scott@scottdial.com
+Looks like in patch 2 you could also remove the check if allocated_size
+is NULL if there is only once caller ;) But that's a nit, series seems
+okay:
+
+Acked-by: Jakub Kicinski <kuba@kernel.org>
