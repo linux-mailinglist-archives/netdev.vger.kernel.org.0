@@ -2,88 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00E841B72DF
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 13:15:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F23B1B734C
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 13:40:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726813AbgDXLPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 07:15:48 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:40251 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726489AbgDXLPr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 07:15:47 -0400
+        id S1726945AbgDXLkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 07:40:22 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:41118 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726746AbgDXLkW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 07:40:22 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587726946;
+        s=mimecast20190719; t=1587728421;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=HaP4TzM3lXjoIbaS/rheBHg159AnD4GjwtZjdM+bNw8=;
-        b=bsMBjLPRZp3/r2zf+3ETQrEqqherx/IpE9B3AEeQXBGkFicrDUl+sSGvM3xFPy1uN/tmfD
-        JG7pDt6tNx68fqlS1SjmYzpNuy+5ptB4zkK1WD7uB+Kskx2u+oszghsGWnvacbHpiG+Mwd
-        6xk4oRp0+Vl/WdVwycIEzAgsKO9lu6M=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-398-_GUnr26JMF-Z-ZE7QXecmg-1; Fri, 24 Apr 2020 07:15:42 -0400
-X-MC-Unique: _GUnr26JMF-Z-ZE7QXecmg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 15C51800D24;
-        Fri, 24 Apr 2020 11:15:41 +0000 (UTC)
-Received: from linux.fritz.box.com (ovpn-114-238.ams2.redhat.com [10.36.114.238])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 65BE65D9CC;
-        Fri, 24 Apr 2020 11:15:39 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Davide Caratti <dcaratti@redhat.com>, mptcp@lists.01.org
-Subject: [PATCH net] mptcp: fix race in msk status update
-Date:   Fri, 24 Apr 2020 13:15:21 +0200
-Message-Id: <4d5e3c09ca38a0a3ec951fa4f5bfc65d5cd40129.1587725562.git.pabeni@redhat.com>
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SWZ1+8++HCeLZRs7dW4H8lydDzVCFKNZ/YDYwbv9WFc=;
+        b=GO//Ua368E2juxl51pPN9TUPMGf4NBwt1ZP9N8kAqabXWj9S/o+rUeMJPjbz0II0jXHr9u
+        nL1sAd9muKnn8MpKS89eZ+cXtPDhPg878Lp9ZT0cS1RXeI+M9pNWFqTkcIywlZ6LQW3rfX
+        8RnHGbSvqknE0T8wgaL1Y6tjgA/1iek=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-334-m0UiAUIYNfG-yVLR38sChA-1; Fri, 24 Apr 2020 07:40:20 -0400
+X-MC-Unique: m0UiAUIYNfG-yVLR38sChA-1
+Received: by mail-lf1-f72.google.com with SMTP id t22so3793234lfe.14
+        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 04:40:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=SWZ1+8++HCeLZRs7dW4H8lydDzVCFKNZ/YDYwbv9WFc=;
+        b=rNAfkGEPdmLckuWpf4JPubkV8sDgBTTBI3zHcoAknbV0fgRMi85XMWUWMziIxPz6yk
+         JFTKfizxvxczAJckIpzuLUYgwNxfL+N/bg1yj1jN9u+wDHU7n0sEY3iVA9oyPES5wKkf
+         bVKgRfrghg452dyK/mDGA5UmCV8dFPbYkBHOyyWAAq1wcxDhCODXAKPdGg8P2sxyb8b3
+         kLsWvH1UB/Vxc5TIWZ38lBRfc8TazgMcR1SY7q8O/vM1ot50QmT3ldl52n41ObwSHvlB
+         cEFKoOwlJ7WEFAldxaMDzLFoK0km+617eOqU64Cmfq6ZYPtRpf54dpS1hGBVGA20CVnV
+         BLPA==
+X-Gm-Message-State: AGi0PuYFF3Ij0p/Ioxk227h62n5RFFp6wGRvIpxUvnm0OCg8lQw0L2Fr
+        EMXUAZ/ljrPvJXgvreTml7+qls5x482ScCEnHakL5iKsFgCuA5OjB8yE350argENiXQKoWOIyR1
+        E7nr/LeqhQ8Ub0uMq
+X-Received: by 2002:a2e:593:: with SMTP id 141mr5398735ljf.271.1587728418456;
+        Fri, 24 Apr 2020 04:40:18 -0700 (PDT)
+X-Google-Smtp-Source: APiQypIQZNpneb3kebTL2SDME7wq525YBjp1hgEf/Tc9yA0gnoqdxk1TPntfGJsmXk04XCBKhMauEQ==
+X-Received: by 2002:a2e:593:: with SMTP id 141mr5398732ljf.271.1587728418265;
+        Fri, 24 Apr 2020 04:40:18 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id s7sm4344285ljm.58.2020.04.24.04.40.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Apr 2020 04:40:17 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 0190E1814FF; Fri, 24 Apr 2020 13:40:16 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH bpf-next 00/10] bpf_link observability APIs
+In-Reply-To: <20200424053505.4111226-1-andriin@fb.com>
+References: <20200424053505.4111226-1-andriin@fb.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 24 Apr 2020 13:40:16 +0200
+Message-ID: <87sggt3ye7.fsf@toke.dk>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently subflow_finish_connect() changes unconditionally
-any msk socket status other than TCP_ESTABLISHED.
+Andrii Nakryiko <andriin@fb.com> writes:
 
-If an unblocking connect() races with close(), we can end-up
-triggering:
+> This patch series adds various observability APIs to bpf_link:
+>   - each bpf_link now gets ID, similar to bpf_map and bpf_prog, by which
+>     user-space can iterate over all existing bpf_links and create limited FD
+>     from ID;
+>   - allows to get extra object information with bpf_link general and
+>     type-specific information;
+>   - implements `bpf link show` command which lists all active bpf_links in the
+>     system;
+>   - implements `bpf link pin` allowing to pin bpf_link by ID or from other
+>     pinned path.
+>
+> rfc->v1:
+>   - dropped read-only bpf_links (Alexei);
 
-IPv4: Attempt to release TCP socket in state 1 00000000e32b8b7e
+Just to make sure I understand this right: With this change, the
+GET_FD_BY_ID operation will always return a r/w bpf_link fd that can
+subsequently be used to detach the link? And you're doing the 'access
+limiting' by just requiring CAP_SYS_ADMIN for the whole thing. Right? :)
 
-when the msk socket is disposed.
-
-Be sure to enter the established status only from SYN_SENT.
-
-Fixes: c3c123d16c0e ("net: mptcp: don't hang in mptcp_sendmsg() after TCP=
- fallback")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
-Note: the issue is possibly older, but this fix applies only
-on the mentioned commit
----
- net/mptcp/subflow.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 87c094702d63..2488e011048c 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -225,7 +225,7 @@ static void subflow_finish_connect(struct sock *sk, c=
-onst struct sk_buff *skb)
-=20
- 	subflow->icsk_af_ops->sk_rx_dst_set(sk, skb);
-=20
--	if (inet_sk_state_load(parent) !=3D TCP_ESTABLISHED) {
-+	if (inet_sk_state_load(parent) =3D=3D TCP_SYN_SENT) {
- 		inet_sk_state_store(parent, TCP_ESTABLISHED);
- 		parent->sk_state_change(parent);
- 	}
---=20
-2.21.1
+-Toke
 
