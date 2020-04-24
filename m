@@ -2,135 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4482E1B7E42
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 20:49:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 441411B7E65
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 20:56:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729225AbgDXStd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 14:49:33 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:34102 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728943AbgDXStc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 14:49:32 -0400
-Received: from 61-220-137-37.hinet-ip.hinet.net ([61.220.137.37] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <kai.heng.feng@canonical.com>)
-        id 1jS3O9-0006cb-MJ; Fri, 24 Apr 2020 18:49:26 +0000
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     yhchuang@realtek.com, kvalo@codeaurora.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dejin Zheng <zhengdejin5@gmail.com>,
-        Allison Randal <allison@lohutok.net>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2 1/2] iopoll: Introduce read_poll_timeout_atomic macro
-Date:   Sat, 25 Apr 2020 02:49:14 +0800
-Message-Id: <20200424184918.30360-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200423063811.2636-1-kai.heng.feng@canonical.com>
-References: <20200423063811.2636-1-kai.heng.feng@canonical.com>
+        id S1728497AbgDXS4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 14:56:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57296 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727033AbgDXS4F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 14:56:05 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B06C09B048
+        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 11:56:05 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id u127so12135300wmg.1
+        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 11:56:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZwcPKnb5cZ7VoIyj6nK3gkxMikTmBHrFG55t3Mv9UCg=;
+        b=c35SoLrq7rs1ZEEBb+3C2NhgTyW7AtBP0qrt/QOvKQIWhvbhfS9j9493wOcWXkZ5XG
+         1nodOtITd6jPRwq5tNeWfdd+w/zL8wwPQ6QdxkYQegFG+JspmvORqzwZEbsz3Vv3hmHy
+         7C/UrOX7GFXCAYW7cLVlpx+9sQE+WvrjvU3I4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZwcPKnb5cZ7VoIyj6nK3gkxMikTmBHrFG55t3Mv9UCg=;
+        b=BOO3vbOLLOLqE5MFUYk2NBYGns/Qvj/W+OZ03X7e/A4RMxyaFam0HZJXpCzakmVhnd
+         XJVKrcbLlZSsuGdxHQ1uI63F6JudftvrQQfsy4kuviTvoqcNQC7yxejzcloLaG8pA80A
+         0Uk86dycb4ckmlbYZlG1L+vx+fLNZBSDh5o28io+FTAD830Ea3uO0Mf8JzWvXTmK0U5r
+         bb9JY0jbVdlepb5cUFvybS/4zff94wPe9zhqQSJJSiCKlFN0VDp2Pbko/gsUmfJ38y+a
+         EtOUHx5qO7g7CfKhKatjUCz9939mNanojfN4CxPuwyYrGH5mdvWGPmt4IG1ZRFGejSLI
+         Fjlw==
+X-Gm-Message-State: AGi0PubiKPzg9iBAuzZlmzIrgy4XbdW1t4pAScfFc1Vo3M3nguzDZmbE
+        z/rcVTpLlHOu6gxTkj3aipl+Uw==
+X-Google-Smtp-Source: APiQypLnj6/3x5hACLSblJPJSEZ7foGXLvucMXCs24gNeadD4IBCITpw/IEu9UQ6wVZXm2IvmJQOdw==
+X-Received: by 2002:a05:600c:4102:: with SMTP id j2mr12341821wmi.159.1587754564116;
+        Fri, 24 Apr 2020 11:56:04 -0700 (PDT)
+Received: from antares.lan (111.253.187.81.in-addr.arpa. [81.187.253.111])
+        by smtp.gmail.com with ESMTPSA id r17sm9263875wrn.43.2020.04.24.11.56.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Apr 2020 11:56:02 -0700 (PDT)
+From:   Lorenz Bauer <lmb@cloudflare.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     theojulienne@github.com, Lorenz Bauer <lmb@cloudflare.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH 0/1] Open source our TC classifier
+Date:   Fri, 24 Apr 2020 19:55:54 +0100
+Message-Id: <20200424185556.7358-1-lmb@cloudflare.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Like read_poll_timeout, an atomic variant for multiple parameter read
-function can be useful.
+We've been developing an in-house L4 load balancer based on XDP
+and TC for a while. Following Alexei's call for more up-to-date examples of
+production BPF in the kernel tree [1], Cloudflare is making this available
+under dual GPL-2.0 or BSD 3-clause terms.
 
-Will be used by a later patch.
+The code requires at least v5.3 to function correctly.
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
-v2:
- - Cc linux-wireless.
+1: https://lore.kernel.org/bpf/20200326210719.den5isqxntnoqhmv@ast-mbp/
 
- include/linux/iopoll.h | 62 +++++++++++++++++++++++++++++-------------
- 1 file changed, 43 insertions(+), 19 deletions(-)
+Lorenz Bauer (1):
+  selftests/bpf: add cls_redirect classifier
 
-diff --git a/include/linux/iopoll.h b/include/linux/iopoll.h
-index cb20c733b15a..bc89ac625f26 100644
---- a/include/linux/iopoll.h
-+++ b/include/linux/iopoll.h
-@@ -57,6 +57,48 @@
- 	(cond) ? 0 : -ETIMEDOUT; \
- })
- 
-+/**
-+ * read_poll_timeout_atomic - Periodically poll an address until a condition is
-+ * 				met or a timeout occurs
-+ * @op: accessor function (takes @addr as its only argument)
-+ * @addr: Address to poll
-+ * @val: Variable to read the value into
-+ * @cond: Break condition (usually involving @val)
-+ * @delay_us: Time to udelay between reads in us (0 tight-loops).  Should
-+ *            be less than ~10us since udelay is used (see
-+ *            Documentation/timers/timers-howto.rst).
-+ * @timeout_us: Timeout in us, 0 means never timeout
-+ * @delay_before_read: if it is true, delay @delay_us before read.
-+ *
-+ * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
-+ * case, the last read value at @args is stored in @val.
-+ *
-+ * When available, you'll probably want to use one of the specialized
-+ * macros defined below rather than this macro directly.
-+ */
-+#define read_poll_timeout_atomic(op, val, cond, delay_us, timeout_us, \
-+					delay_before_read, args...) \
-+({ \
-+	u64 __timeout_us = (timeout_us); \
-+	unsigned long __delay_us = (delay_us); \
-+	ktime_t __timeout = ktime_add_us(ktime_get(), __timeout_us); \
-+	if (delay_before_read && __delay_us) \
-+		udelay(__delay_us); \
-+	for (;;) { \
-+		(val) = op(args); \
-+		if (cond) \
-+			break; \
-+		if (__timeout_us && \
-+		    ktime_compare(ktime_get(), __timeout) > 0) { \
-+			(val) = op(args); \
-+			break; \
-+		} \
-+		if (__delay_us) \
-+			udelay(__delay_us); \
-+	} \
-+	(cond) ? 0 : -ETIMEDOUT; \
-+})
-+
- /**
-  * readx_poll_timeout - Periodically poll an address until a condition is met or a timeout occurs
-  * @op: accessor function (takes @addr as its only argument)
-@@ -96,25 +138,7 @@
-  * macros defined below rather than this macro directly.
-  */
- #define readx_poll_timeout_atomic(op, addr, val, cond, delay_us, timeout_us) \
--({ \
--	u64 __timeout_us = (timeout_us); \
--	unsigned long __delay_us = (delay_us); \
--	ktime_t __timeout = ktime_add_us(ktime_get(), __timeout_us); \
--	for (;;) { \
--		(val) = op(addr); \
--		if (cond) \
--			break; \
--		if (__timeout_us && \
--		    ktime_compare(ktime_get(), __timeout) > 0) { \
--			(val) = op(addr); \
--			break; \
--		} \
--		if (__delay_us) \
--			udelay(__delay_us);	\
--	} \
--	(cond) ? 0 : -ETIMEDOUT; \
--})
--
-+	read_poll_timeout_atomic(op, val, cond, delay_us, timeout_us, false, addr)
- 
- #define readb_poll_timeout(addr, val, cond, delay_us, timeout_us) \
- 	readx_poll_timeout(readb, addr, val, cond, delay_us, timeout_us)
+ .../selftests/bpf/prog_tests/cls_redirect.c   |  456 +++++++
+ .../selftests/bpf/progs/test_cls_redirect.c   | 1058 +++++++++++++++++
+ .../selftests/bpf/progs/test_cls_redirect.h   |   54 +
+ tools/testing/selftests/bpf/test_progs.h      |    7 +
+ 4 files changed, 1575 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/cls_redirect.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_cls_redirect.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_cls_redirect.h
+
 -- 
-2.17.1
+2.20.1
 
