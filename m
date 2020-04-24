@@ -2,149 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A53F21B7B69
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 18:22:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 043961B7B8F
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 18:27:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728750AbgDXQWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 12:22:18 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:58670 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728561AbgDXQWH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 12:22:07 -0400
-Received: from ip5f5af183.dynamic.kabel-deutschland.de ([95.90.241.131] helo=wittgenstein.fritz.box)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <christian.brauner@ubuntu.com>)
-        id 1jS15Y-0004dV-8F; Fri, 24 Apr 2020 16:22:04 +0000
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     Jens Axboe <axboe@kernel.dk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-api@vger.kernel.org
-Cc:     Jonathan Corbet <corbet@lwn.net>, Serge Hallyn <serge@hallyn.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, Tejun Heo <tj@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Saravana Kannan <saravanak@google.com>,
-        Jan Kara <jack@suse.cz>, David Howells <dhowells@redhat.com>,
-        Seth Forshee <seth.forshee@canonical.com>,
-        David Rheinsberg <david.rheinsberg@gmail.com>,
-        Tom Gundersen <teg@jklm.no>,
-        Christian Kellner <ckellner@redhat.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
-        linux-doc@vger.kernel.org, netdev@vger.kernel.org,
-        Steve Barber <smbarber@google.com>,
-        Dylan Reid <dgreid@google.com>,
-        Filipe Brandenburger <filbranden@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Benjamin Elder <bentheelder@google.com>,
-        Akihiro Suda <suda.kyoto@gmail.com>
-Subject: [PATCH v3 7/7] loopfs: only show devices in their correct instance
-Date:   Fri, 24 Apr 2020 18:20:52 +0200
-Message-Id: <20200424162052.441452-8-christian.brauner@ubuntu.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200424162052.441452-1-christian.brauner@ubuntu.com>
-References: <20200424162052.441452-1-christian.brauner@ubuntu.com>
+        id S1727088AbgDXQ1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 12:27:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33080 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726908AbgDXQ1r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 12:27:47 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF71C09B046;
+        Fri, 24 Apr 2020 09:27:34 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id j4so10700929qkc.11;
+        Fri, 24 Apr 2020 09:27:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=x+fUUJZC+/c8g5zIluBggAakJoixVUnYt117PQvinJI=;
+        b=cO0f8vN0b6uacnvOKLW4h+1PijwRMQvfJU4mVI9ifU4LidsrbZkr8osrS9E9o6lm0l
+         8MIA61E4yeXNkTcLTzK0yhIJHw8UExwXJq0GjoWuZfGvF9Nf/CiM+iJfGTo0nPrBZXka
+         ZLWFx5DWreg6Wo7A7Z+yQmyFlvj/i8mJkZlN6kzM1ChXXcwgaIbna917VBI6lLZp1Oe4
+         GLQT475VxFc9SxUTmbM3Pva7AIOASA/y6oGQcLEmmG1ltVDSTMYahmPUSw837X8v1aVn
+         32WZj1hQGWKtCPWXMoWYj77YuaxNXX/IgOHz7oBlndPPXYmDKhIrD63O2/4oPVLtMlbP
+         HFvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=x+fUUJZC+/c8g5zIluBggAakJoixVUnYt117PQvinJI=;
+        b=oOi7wEMBq36gHDoDN0d8++hejP0LrnJnPu6wlYyjGJcGvoiBcksKc/z6zWdCvgLAQl
+         gy3QkszcLPV8MYaVI6z7PxUsKb9+zbkmpcClJKjJoDOXE5+6gZSn4g1igOpaHX+19Vc1
+         KYx1/4fFlrEtm31BYhSKBqpkqhNcroULntVKgMSuKUZJnVumleJ8q3HoWZ1td/mscs9H
+         o792gLEskWwVBjrTNU0FJ/a0z37lNI/ceRk/WBxZjJcbUA0o/HQEaqXln1ceI1vPlI1E
+         1ElOY4HD05EYFpaoCwV/tN+vvy5fE+Bo5IsvAG7lfmlvjCaODabfZjJK8yUai1nl/Xd4
+         sqwg==
+X-Gm-Message-State: AGi0PubgIis1bVWhxL3PUY9mjPvcRHATCbDetXP69N3AjxgKSju618rW
+        yDH/q5QUdk3wUymvFwlFwMhjFkZKnkkVGp3xBkQdAQIZCkc=
+X-Google-Smtp-Source: APiQypLMqS8hpZ1rMyFwjFIYahxa5/X1rrGWaYDhu4tfP/Srmo2/7kRYCiRDU/MyT8dt3Bh6ZQ+X3EB1aTU4BPlgeYc=
+X-Received: by 2002:a37:787:: with SMTP id 129mr9665751qkh.92.1587745653955;
+ Fri, 24 Apr 2020 09:27:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200424053505.4111226-1-andriin@fb.com> <20200424053505.4111226-8-andriin@fb.com>
+ <34110254-6384-153f-af39-d5f9f3a50acb@isovalent.com>
+In-Reply-To: <34110254-6384-153f-af39-d5f9f3a50acb@isovalent.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 24 Apr 2020 09:27:22 -0700
+Message-ID: <CAEf4BzY9tjQm1f8eTyjYjthTF9n6tZ59r1mpUsYWL4+bFuch2Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 07/10] bpftool: expose attach_type-to-string
+ array to non-cgroup code
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since loopfs devices belong to a loopfs instance they have no business
-polluting the host's devtmpfs mount and should not propagate out of the
-namespace they belong to.
+On Fri, Apr 24, 2020 at 3:32 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> 2020-04-23 22:35 UTC-0700 ~ Andrii Nakryiko <andriin@fb.com>
+> > Move attach_type_strings into main.h for access in non-cgroup code.
+> > bpf_attach_type is used for non-cgroup attach types quite widely now. So also
+> > complete missing string translations for non-cgroup attach types.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >  tools/bpf/bpftool/cgroup.c | 28 +++-------------------------
+> >  tools/bpf/bpftool/main.h   | 32 ++++++++++++++++++++++++++++++++
+> >  2 files changed, 35 insertions(+), 25 deletions(-)
+> >
+> > diff --git a/tools/bpf/bpftool/cgroup.c b/tools/bpf/bpftool/cgroup.c
+> > index 62c6a1d7cd18..d1fd9c9f2690 100644
+> > --- a/tools/bpf/bpftool/cgroup.c
+> > +++ b/tools/bpf/bpftool/cgroup.c
+> > @@ -31,35 +31,13 @@
+> >
+> >  static unsigned int query_flags;
+> >
+> > -static const char * const attach_type_strings[] = {
+> > -     [BPF_CGROUP_INET_INGRESS] = "ingress",
+> > -     [BPF_CGROUP_INET_EGRESS] = "egress",
+> > -     [BPF_CGROUP_INET_SOCK_CREATE] = "sock_create",
+> > -     [BPF_CGROUP_SOCK_OPS] = "sock_ops",
+> > -     [BPF_CGROUP_DEVICE] = "device",
+> > -     [BPF_CGROUP_INET4_BIND] = "bind4",
+> > -     [BPF_CGROUP_INET6_BIND] = "bind6",
+> > -     [BPF_CGROUP_INET4_CONNECT] = "connect4",
+> > -     [BPF_CGROUP_INET6_CONNECT] = "connect6",
+> > -     [BPF_CGROUP_INET4_POST_BIND] = "post_bind4",
+> > -     [BPF_CGROUP_INET6_POST_BIND] = "post_bind6",
+> > -     [BPF_CGROUP_UDP4_SENDMSG] = "sendmsg4",
+> > -     [BPF_CGROUP_UDP6_SENDMSG] = "sendmsg6",
+> > -     [BPF_CGROUP_SYSCTL] = "sysctl",
+> > -     [BPF_CGROUP_UDP4_RECVMSG] = "recvmsg4",
+> > -     [BPF_CGROUP_UDP6_RECVMSG] = "recvmsg6",
+> > -     [BPF_CGROUP_GETSOCKOPT] = "getsockopt",
+> > -     [BPF_CGROUP_SETSOCKOPT] = "setsockopt",
+> > -     [__MAX_BPF_ATTACH_TYPE] = NULL,
+>
+> So you removed the "[__MAX_BPF_ATTACH_TYPE] = NULL" from the new array,
+> if I understand correctly this is because all attach type enum members
+> are now in the new attach_type_name[] so we're safe by looping until we
+> reach __MAX_BPF_ATTACH_TYPE. Sounds good in theory but...
+>
 
-Cc: Jens Axboe <axboe@kernel.dk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Serge Hallyn <serge@hallyn.com>
-Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
----
-/* v2 */
-unchanged
+Well, NULL is default value, so having [__MAX_BPF_ATTACH_TYPE] = NULL
+just increases ARRAY_SIZE(attach_type_names) by one. Which is
+generally not needed, because we do proper < ARRAY_SIZE() checks
+everywhere... except for one place. show_bpf_prog in cgroup.c looks up
+name directly and can pass NULL into jsonw_string_field which will
+crash.
 
-/* v3 */
-unchanged
----
- block/partitions/core.c       | 1 +
- drivers/base/devtmpfs.c       | 4 ++--
- drivers/block/loopfs/loopfs.c | 4 +++-
- include/linux/device.h        | 3 +++
- 4 files changed, 9 insertions(+), 3 deletions(-)
+I can fix that by setting [__MAX_BPF_ATTACH_TYPE] to "unknown" or
+adding extra check in show_bpf_prog() code? Any preferences?
 
-diff --git a/block/partitions/core.c b/block/partitions/core.c
-index bc1ded1331b1..5761f5c38588 100644
---- a/block/partitions/core.c
-+++ b/block/partitions/core.c
-@@ -416,6 +416,7 @@ struct hd_struct *add_partition(struct gendisk *disk, int partno,
- 	pdev->class = &block_class;
- 	pdev->type = &part_type;
- 	pdev->parent = ddev;
-+	pdev->no_devnode = ddev->no_devnode;
- 
- 	err = blk_alloc_devt(p, &devt);
- 	if (err)
-diff --git a/drivers/base/devtmpfs.c b/drivers/base/devtmpfs.c
-index c9017e0584c0..77371ceb88fa 100644
---- a/drivers/base/devtmpfs.c
-+++ b/drivers/base/devtmpfs.c
-@@ -111,7 +111,7 @@ int devtmpfs_create_node(struct device *dev)
- 	const char *tmp = NULL;
- 	struct req req;
- 
--	if (!thread)
-+	if (!thread || dev->no_devnode)
- 		return 0;
- 
- 	req.mode = 0;
-@@ -138,7 +138,7 @@ int devtmpfs_delete_node(struct device *dev)
- 	const char *tmp = NULL;
- 	struct req req;
- 
--	if (!thread)
-+	if (!thread || dev->no_devnode)
- 		return 0;
- 
- 	req.name = device_get_devnode(dev, NULL, NULL, NULL, &tmp);
-diff --git a/drivers/block/loopfs/loopfs.c b/drivers/block/loopfs/loopfs.c
-index 9fa60c1bcc05..1bcb0b44c910 100644
---- a/drivers/block/loopfs/loopfs.c
-+++ b/drivers/block/loopfs/loopfs.c
-@@ -76,8 +76,10 @@ bool loopfs_wants_remove(const struct loop_device *lo)
- 
- void loopfs_init(struct gendisk *disk, struct inode *inode)
- {
--	if (loopfs_i_sb(inode))
-+	if (loopfs_i_sb(inode)) {
- 		disk->user_ns = loopfs_i_sb(inode)->s_user_ns;
-+		disk_to_dev(disk)->no_devnode = true;
-+	}
- }
- 
- /**
-diff --git a/include/linux/device.h b/include/linux/device.h
-index ac8e37cd716a..c69ef1c5a0ef 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -523,6 +523,8 @@ struct dev_links_info {
-  *		  sync_state() callback.
-  * @dma_coherent: this particular device is dma coherent, even if the
-  *		architecture supports non-coherent devices.
-+ * @no_devnode: whether device nodes associated with this device are kept out
-+ *		of devtmpfs (e.g. due to separate filesystem)
-  *
-  * At the lowest level, every device in a Linux system is represented by an
-  * instance of struct device. The device structure contains the information
-@@ -622,6 +624,7 @@ struct device {
-     defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
- 	bool			dma_coherent:1;
- #endif
-+	bool			no_devnode:1;
- };
- 
- static inline struct device *kobj_to_dev(struct kobject *kobj)
--- 
-2.26.2
+> > -};
+> > -
+> >  static enum bpf_attach_type parse_attach_type(const char *str)
+> >  {
+> >       enum bpf_attach_type type;
+> >
+> >       for (type = 0; type < __MAX_BPF_ATTACH_TYPE; type++) {
+> > -             if (attach_type_strings[type] &&
+> > -                 is_prefix(str, attach_type_strings[type]))
+> > +             if (attach_type_name[type] &&
+> > +                 is_prefix(str, attach_type_name[type]))
+> >                       return type;
+> >       }
+>
+> ... I'm concerned the "attach_type_name[type]" here could segfault if we
+> add a new attach type to the kernel, but don't report it immediately to
+> bpftool's array.
 
+I don't think so. Here we'll iterate over all possible bpf_attach_type
+(as far as our copy of UAPI header is concerned, of course). If some
+of the values don't have entries in attach_type_name array, we'll get
+back NULL (same as with explicit [__MAX_BPF_ATTACH_TYPE] = NULL, btw),
+which will get handled properly in the loop. And caller will get back
+__MAX_BPF_ATTACH_TYPE as bpf_attach_type value. So unless I'm still
+missing something, it seems to be working exactly the same as before?
+
+>
+> Is there any drawback with keeping the "[__MAX_BPF_ATTACH_TYPE] = NULL"?
+> Or change here to loop on ARRAY_SIZE(), as you do in your own patch for
+> link?
+
+ARRAY_SIZE() == __MAX_BPF_ATTACH_TYPE, isn't it? Previously ARRAY_SIZE
+was (__MAX_BPF_ATTACH_TYPE + 1), but I don't think it's necessary?
+
+The only difference is show_bpf_prog() which now is going to do out of
+array reads, while previously it would get NULL. But both cases are
+bad and needs fixing.
