@@ -2,101 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3AB21B8049
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 22:14:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37BE41B8042
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 22:14:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729556AbgDXUOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 16:14:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57632 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729538AbgDXUOr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Apr 2020 16:14:47 -0400
-Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CDCAC21835;
-        Fri, 24 Apr 2020 20:14:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587759286;
-        bh=y6cYodOnqiQ7E1VdSwSuqVLLoLlzcN3HGsrUIcZG4y0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uTlH56qWBQXiAPLes0tb0seKyfEWCyidtgt5DSB7v1iUhT+lsXU6aG4vcTI067g0H
-         l+NtHgObyQeHSdGEHl8kmwuWOA01ZZcAQnQoywE3W999hxKwSC7nsBx9cnrIJpxoEN
-         jSmJrgbt1i8G00niW9/mkph6GgxxUqmtYACDzXX8=
-From:   David Ahern <dsahern@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        brouer@redhat.com, toke@redhat.com, toshiaki.makita1@gmail.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-Subject: [PATCH v3 bpf-next 15/15] samples/bpf: add XDP egress support to xdp1
-Date:   Fri, 24 Apr 2020 14:14:28 -0600
-Message-Id: <20200424201428.89514-16-dsahern@kernel.org>
-X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
-In-Reply-To: <20200424201428.89514-1-dsahern@kernel.org>
-References: <20200424201428.89514-1-dsahern@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1729498AbgDXUOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 16:14:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41262 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729463AbgDXUOi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 16:14:38 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF765C09B048;
+        Fri, 24 Apr 2020 13:14:37 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id B400414C652BC;
+        Fri, 24 Apr 2020 13:14:34 -0700 (PDT)
+Date:   Fri, 24 Apr 2020 13:14:31 -0700 (PDT)
+Message-Id: <20200424.131431.718450278141264636.davem@davemloft.net>
+To:     kvalo@codeaurora.org
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Subject: Re: pull-request: wireless-drivers-2020-04-24
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200424055703.805C0C433F2@smtp.codeaurora.org>
+References: <20200424055703.805C0C433F2@smtp.codeaurora.org>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 24 Apr 2020 13:14:34 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dahern@digitalocean.com>
+From: Kalle Valo <kvalo@codeaurora.org>
+Date: Fri, 24 Apr 2020 05:57:03 +0000 (UTC)
 
-xdp1 and xdp2 now accept -E flag to set XDP program in the egress
-path.
+> here's a pull request to net tree, more info below. Please let me know if there
+> are any problems.
 
-Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
-Signed-off-by: David Ahern <dahern@digitalocean.com>
----
- samples/bpf/xdp1_user.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/samples/bpf/xdp1_user.c b/samples/bpf/xdp1_user.c
-index c447ad9e3a1d..bb104f4d8c5e 100644
---- a/samples/bpf/xdp1_user.c
-+++ b/samples/bpf/xdp1_user.c
-@@ -73,7 +73,8 @@ static void usage(const char *prog)
- 		"OPTS:\n"
- 		"    -S    use skb-mode\n"
- 		"    -N    enforce native mode\n"
--		"    -F    force loading prog\n",
-+		"    -F    force loading prog\n"
-+		"    -E	   egress path program\n",
- 		prog);
- }
- 
-@@ -85,7 +86,7 @@ int main(int argc, char **argv)
- 	};
- 	struct bpf_prog_info info = {};
- 	__u32 info_len = sizeof(info);
--	const char *optstr = "FSN";
-+	const char *optstr = "FSNE";
- 	int prog_fd, map_fd, opt;
- 	struct bpf_object *obj;
- 	struct bpf_map *map;
-@@ -103,13 +104,17 @@ int main(int argc, char **argv)
- 		case 'F':
- 			xdp_flags &= ~XDP_FLAGS_UPDATE_IF_NOEXIST;
- 			break;
-+		case 'E':
-+			xdp_flags |= XDP_FLAGS_EGRESS_MODE;
-+			prog_load_attr.expected_attach_type = BPF_XDP_EGRESS;
-+			break;
- 		default:
- 			usage(basename(argv[0]));
- 			return 1;
- 		}
- 	}
- 
--	if (!(xdp_flags & XDP_FLAGS_SKB_MODE))
-+	if (!(xdp_flags & (XDP_FLAGS_SKB_MODE | XDP_FLAGS_EGRESS_MODE)))
- 		xdp_flags |= XDP_FLAGS_DRV_MODE;
- 
- 	if (optind == argc) {
--- 
-2.21.1 (Apple Git-122.3)
-
+Pulled, thanks Kalle.
