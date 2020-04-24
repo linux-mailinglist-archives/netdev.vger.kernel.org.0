@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D83A71B8041
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 22:14:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF6981B804C
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 22:15:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729441AbgDXUOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 16:14:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57302 "EHLO mail.kernel.org"
+        id S1729434AbgDXUOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 16:14:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57326 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729389AbgDXUOd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 24 Apr 2020 16:14:33 -0400
+        id S1729418AbgDXUOf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 24 Apr 2020 16:14:35 -0400
 Received: from C02YQ0RWLVCF.internal.digitalocean.com (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1F4A121707;
-        Fri, 24 Apr 2020 20:14:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 302BE2176D;
+        Fri, 24 Apr 2020 20:14:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587759273;
-        bh=rVUUHnuGq1ptK00oaUCdlTh9WrJXYBEujOpQ/oT7CRo=;
+        s=default; t=1587759274;
+        bh=e++zcEzAxO5oCFYFQuNGtF3nMXChee/edAbeCLvnB/E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UCo6geB6yKf99nidzCpj9FuwdbpuEvv32BbyVb+4js8IqWf5yGxRgZ01tJW1m+Xg+
-         9/8CEBqflsSvsZckDWo0KirZjcrrUhFCvsUS5SFEx8yBHAvc1rJ4PnVONW6Aw2Unt6
-         x3fO3M/xKYJwBfjg932h1Ocsbh4vUZJAKcSDhSJs=
+        b=cniEjU3IVNDSewIQVuuSsMU8ftVDl/Ai2336AsBTstXifwTXzeQdonWsAmzM7GMvK
+         LBziuCAoXa4MYrqgPfyFzeWcWdMD4BltJOkO4cIMbKN/bXsefXLe/sSbLQ7YRYR3Mr
+         zDgtYQ4nQwnR8o9km8Wn1UYsHwwY+NJ/QeJCMFu4=
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org,
@@ -31,9 +31,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org,
         daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
         dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-Subject: [PATCH v3 bpf-next 02/15] net: uapi for XDP programs in the egress path
-Date:   Fri, 24 Apr 2020 14:14:15 -0600
-Message-Id: <20200424201428.89514-3-dsahern@kernel.org>
+Subject: [PATCH v3 bpf-next 03/15] net: Add XDP setup and query commands for Tx programs
+Date:   Fri, 24 Apr 2020 14:14:16 -0600
+Message-Id: <20200424201428.89514-4-dsahern@kernel.org>
 X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 In-Reply-To: <20200424201428.89514-1-dsahern@kernel.org>
 References: <20200424201428.89514-1-dsahern@kernel.org>
@@ -46,158 +46,99 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dahern@digitalocean.com>
 
-Running programs in the egress path, on skbs or xdp_frames, does not
-require driver specific resources like Rx path. Accordingly, the
-programs can be run in core code, so add xdp_egress_prog to net_device
-to hold a reference to an attached program.
+Add new netdev commands, XDP_SETUP_PROG_EGRESS and
+XDP_QUERY_PROG_EGRESS, to query and setup egress programs.
 
-For UAPI, add XDP_FLAGS_EGRESS_MODE to specify attach is at egress, add
-a new attach flag, XDP_ATTACHED_EGRESS_CORE, for reporting the attach
-point at the core, egress level and add IFLA_XDP_EGRESS_PROG_ID
-for reporting the program id. Add rtnl_xdp_prog_egress to fill in
-link message with egress data.
+Update dev_change_xdp_fd and dev_xdp_install to check for egress mode
+via XDP_FLAGS_EGRESS_MODE in the flags. If egress bool is set, then use
+XDP_SETUP_PROG_EGRESS in dev_xdp_install and XDP_QUERY_PROG_EGRESS in
+dev_change_xdp_fd.
 
 Signed-off-by: David Ahern <dahern@digitalocean.com>
+Co-developed-by: Prashant Bhole <prashantbhole.linux@gmail.com>
+Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
 ---
- include/linux/netdevice.h          |  1 +
- include/uapi/linux/if_link.h       |  6 +++++-
- net/core/rtnetlink.c               | 23 +++++++++++++++++++++--
- tools/include/uapi/linux/if_link.h |  6 +++++-
- 4 files changed, 32 insertions(+), 4 deletions(-)
+ include/linux/netdevice.h |  2 ++
+ net/core/dev.c            | 20 +++++++++++++++-----
+ 2 files changed, 17 insertions(+), 5 deletions(-)
 
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 0750b54b3765..a7b4777ddf9b 100644
+index a7b4777ddf9b..7f9cc088aa64 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -1994,6 +1994,7 @@ struct net_device {
- 	unsigned int		real_num_rx_queues;
- 
- 	struct bpf_prog __rcu	*xdp_prog;
-+	struct bpf_prog __rcu	*xdp_egress_prog;
- 	unsigned long		gro_flush_timeout;
- 	rx_handler_func_t __rcu	*rx_handler;
- 	void __rcu		*rx_handler_data;
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 127c704eeba9..4a33ff26ef62 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -975,9 +975,11 @@ enum {
- #define XDP_FLAGS_DRV_MODE		(1U << 2)
- #define XDP_FLAGS_HW_MODE		(1U << 3)
- #define XDP_FLAGS_REPLACE		(1U << 4)
-+#define XDP_FLAGS_EGRESS_MODE		(1U << 5)
- #define XDP_FLAGS_MODES			(XDP_FLAGS_SKB_MODE | \
- 					 XDP_FLAGS_DRV_MODE | \
--					 XDP_FLAGS_HW_MODE)
-+					 XDP_FLAGS_HW_MODE | \
-+					 XDP_FLAGS_EGRESS_MODE)
- #define XDP_FLAGS_MASK			(XDP_FLAGS_UPDATE_IF_NOEXIST | \
- 					 XDP_FLAGS_MODES | XDP_FLAGS_REPLACE)
- 
-@@ -988,6 +990,7 @@ enum {
- 	XDP_ATTACHED_SKB,
- 	XDP_ATTACHED_HW,
- 	XDP_ATTACHED_MULTI,
-+	XDP_ATTACHED_EGRESS_CORE,
- };
- 
- enum {
-@@ -1000,6 +1003,7 @@ enum {
- 	IFLA_XDP_SKB_PROG_ID,
- 	IFLA_XDP_HW_PROG_ID,
- 	IFLA_XDP_EXPECTED_FD,
-+	IFLA_XDP_EGRESS_PROG_ID,
- 	__IFLA_XDP_MAX,
- };
- 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index d6f4f4a9e8ba..c8f6cc67a070 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -982,7 +982,7 @@ static size_t rtnl_xdp_size(void)
- 	size_t xdp_size = nla_total_size(0) +	/* nest IFLA_XDP */
- 			  nla_total_size(1) +	/* XDP_ATTACHED */
- 			  nla_total_size(4) +	/* XDP_PROG_ID (or 1st mode) */
--			  nla_total_size(4);	/* XDP_<mode>_PROG_ID */
-+			  nla_total_size(4) * 2; /* XDP_<mode>_PROG_ID */
- 
- 	return xdp_size;
- }
-@@ -1402,6 +1402,18 @@ static int rtnl_fill_link_ifmap(struct sk_buff *skb, struct net_device *dev)
- 	return 0;
- }
- 
-+static u32 rtnl_xdp_prog_egress(struct net_device *dev)
-+{
-+	const struct bpf_prog *prog;
-+
-+	ASSERT_RTNL();
-+
-+	prog = rtnl_dereference(dev->xdp_egress_prog);
-+	if (!prog)
-+		return 0;
-+	return prog->aux->id;
-+}
-+
- static u32 rtnl_xdp_prog_skb(struct net_device *dev)
+@@ -872,8 +872,10 @@ enum bpf_netdev_command {
+ 	 */
+ 	XDP_SETUP_PROG,
+ 	XDP_SETUP_PROG_HW,
++	XDP_SETUP_PROG_EGRESS,
+ 	XDP_QUERY_PROG,
+ 	XDP_QUERY_PROG_HW,
++	XDP_QUERY_PROG_EGRESS,
+ 	/* BPF program for offload callbacks, invoked at program load time. */
+ 	BPF_OFFLOAD_MAP_ALLOC,
+ 	BPF_OFFLOAD_MAP_FREE,
+diff --git a/net/core/dev.c b/net/core/dev.c
+index fb61522b1ce1..726a93a5cb25 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -8593,13 +8593,16 @@ static int dev_xdp_install(struct net_device *dev, bpf_op_t bpf_op,
+ 			   struct bpf_prog *prog)
  {
- 	const struct bpf_prog *generic_xdp_prog;
-@@ -1474,6 +1486,12 @@ static int rtnl_xdp_fill(struct sk_buff *skb, struct net_device *dev)
- 				  IFLA_XDP_HW_PROG_ID, rtnl_xdp_prog_hw);
- 	if (err)
- 		goto err_cancel;
-+	err = rtnl_xdp_report_one(skb, dev, &prog_id, &mode,
-+				  XDP_ATTACHED_EGRESS_CORE,
-+				  IFLA_XDP_EGRESS_PROG_ID,
-+				  rtnl_xdp_prog_egress);
-+	if (err)
-+		goto err_cancel;
+ 	bool non_hw = !(flags & XDP_FLAGS_HW_MODE);
++	bool egress = flags & XDP_FLAGS_EGRESS_MODE;
+ 	struct bpf_prog *prev_prog = NULL;
+ 	struct netdev_bpf xdp;
+ 	int err;
  
- 	err = nla_put_u8(skb, IFLA_XDP_ATTACHED, mode);
- 	if (err)
-@@ -2790,7 +2808,8 @@ static int do_setlink(const struct sk_buff *skb,
- 		if (err < 0)
- 			goto errout;
+ 	if (non_hw) {
+-		prev_prog = bpf_prog_by_id(__dev_xdp_query(dev, bpf_op,
+-							   XDP_QUERY_PROG));
++		enum bpf_netdev_command cmd;
++
++		cmd = egress ? XDP_QUERY_PROG_EGRESS : XDP_QUERY_PROG;
++		prev_prog = bpf_prog_by_id(__dev_xdp_query(dev, bpf_op, cmd));
+ 		if (IS_ERR(prev_prog))
+ 			prev_prog = NULL;
+ 	}
+@@ -8608,7 +8611,7 @@ static int dev_xdp_install(struct net_device *dev, bpf_op_t bpf_op,
+ 	if (flags & XDP_FLAGS_HW_MODE)
+ 		xdp.command = XDP_SETUP_PROG_HW;
+ 	else
+-		xdp.command = XDP_SETUP_PROG;
++		xdp.command = egress ? XDP_SETUP_PROG_EGRESS : XDP_SETUP_PROG;
+ 	xdp.extack = extack;
+ 	xdp.flags = flags;
+ 	xdp.prog = prog;
+@@ -8670,12 +8673,18 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
+ 	bpf_op_t bpf_op, bpf_chk;
+ 	struct bpf_prog *prog;
+ 	bool offload;
++	bool egress;
+ 	int err;
  
--		if (xdp[IFLA_XDP_ATTACHED] || xdp[IFLA_XDP_PROG_ID]) {
-+		if (xdp[IFLA_XDP_ATTACHED] || xdp[IFLA_XDP_PROG_ID] ||
-+		    xdp[IFLA_XDP_EGRESS_PROG_ID]) {
- 			err = -EINVAL;
- 			goto errout;
+ 	ASSERT_RTNL();
+ 
+ 	offload = flags & XDP_FLAGS_HW_MODE;
+-	query = offload ? XDP_QUERY_PROG_HW : XDP_QUERY_PROG;
++	egress = flags & XDP_FLAGS_EGRESS_MODE;
++	if (egress)
++		query = XDP_QUERY_PROG_EGRESS;
++	else
++		query = offload ? XDP_QUERY_PROG_HW : XDP_QUERY_PROG;
++
+ 
+ 	bpf_op = bpf_chk = ops->ndo_bpf;
+ 	if (!bpf_op && (flags & (XDP_FLAGS_DRV_MODE | XDP_FLAGS_HW_MODE))) {
+@@ -8705,7 +8714,8 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
  		}
-diff --git a/tools/include/uapi/linux/if_link.h b/tools/include/uapi/linux/if_link.h
-index ca6665ea758a..41b1c5ff4875 100644
---- a/tools/include/uapi/linux/if_link.h
-+++ b/tools/include/uapi/linux/if_link.h
-@@ -963,9 +963,11 @@ enum {
- #define XDP_FLAGS_DRV_MODE		(1U << 2)
- #define XDP_FLAGS_HW_MODE		(1U << 3)
- #define XDP_FLAGS_REPLACE		(1U << 4)
-+#define XDP_FLAGS_EGRESS_MODE		(1U << 5)
- #define XDP_FLAGS_MODES			(XDP_FLAGS_SKB_MODE | \
- 					 XDP_FLAGS_DRV_MODE | \
--					 XDP_FLAGS_HW_MODE)
-+					 XDP_FLAGS_HW_MODE | \
-+					 XDP_FLAGS_EGRESS_MODE)
- #define XDP_FLAGS_MASK			(XDP_FLAGS_UPDATE_IF_NOEXIST | \
- 					 XDP_FLAGS_MODES | XDP_FLAGS_REPLACE)
- 
-@@ -976,6 +978,7 @@ enum {
- 	XDP_ATTACHED_SKB,
- 	XDP_ATTACHED_HW,
- 	XDP_ATTACHED_MULTI,
-+	XDP_ATTACHED_EGRESS_CORE,
- };
- 
- enum {
-@@ -988,6 +991,7 @@ enum {
- 	IFLA_XDP_SKB_PROG_ID,
- 	IFLA_XDP_HW_PROG_ID,
- 	IFLA_XDP_EXPECTED_FD,
-+	IFLA_XDP_EGRESS_PROG_ID,
- 	__IFLA_XDP_MAX,
- };
- 
+ 	}
+ 	if (fd >= 0) {
+-		if (!offload && __dev_xdp_query(dev, bpf_chk, XDP_QUERY_PROG)) {
++		if (!offload && !egress &&
++		    __dev_xdp_query(dev, bpf_chk, XDP_QUERY_PROG)) {
+ 			NL_SET_ERR_MSG(extack, "native and generic XDP can't be active at the same time");
+ 			return -EEXIST;
+ 		}
 -- 
 2.21.1 (Apple Git-122.3)
 
