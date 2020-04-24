@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2FE41B6E4E
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 08:44:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C79C1B6E5B
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 08:44:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726666AbgDXGns (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 02:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54534 "EHLO
+        id S1726691AbgDXGnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 02:43:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726008AbgDXGnr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 02:43:47 -0400
+        by vger.kernel.org with ESMTP id S1726008AbgDXGnt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 02:43:49 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCD1C09B045;
-        Thu, 23 Apr 2020 23:43:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925AFC09B045;
+        Thu, 23 Apr 2020 23:43:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=vxsFou8rrk2i4aImkDGLe2hp4TY9OM8FfB5d04ygA10=; b=YftgcwFz7d8ONI+QT9S8C9BcBT
-        DpWnaoyIFNX6jRvDiVwT05PcMP8skiFyJx/FzZwevwrg40OCiz22twFpDdhfItJvpobrGSVVmGj/F
-        YLKrbCL6P38Osml61A+M+jrYItN/t8FC1e4jeRJ5ELshvvTM7fbCMOYTXo+iyE/ZmAPwIQw7xRv9A
-        qJr1ijaqL78DRppTer4H+iupe+jZPiXyLIsVvz0c5KgkOLGSafF/1LB6//1HdPLLq9B5fctqlfDFB
-        AliDXe/7gvmRTBIEw8pczO4OTLV7vABvfklQntmAUcNZVgx0Gs97W2EWw6zVfvde568zLimfbGy+6
-        67Z3Tgzg==;
+        bh=jnM+oj2VUNSYKW0ofW8Glb8puwR8BBAMw7xq43OT+Kg=; b=JVuPjbsB6SSw1dy6DoHtGc5M4K
+        JsoBpBxRbkiQmRQ6soHqgz4vVexHwALAZJvob31s/STjS2Nxyoj2iN5PeESSZP8Mf+iNpAiMsT6h7
+        Oj8eeYpw4Bq88Tj3BheJaq/ROfRCxaLcbXAFCsLEizyU4woI+2gToqgp+jIXwwWa/zO0h9mr0SGkC
+        676mbQb7pXAwiYdGjQWoklAzfyqixyOz9zjLXa/19Ko8JhAY4hKniR8enrdX8tapcf7i+xYqn2qJQ
+        ffjmy3lrUCfnwT8EJ/U9TsNbevjepyjqf3XklCPrY1orD8sg2QYzY4qZYXTQdONrNVmCRZwVPpGPG
+        ICqgS32g==;
 Received: from [2001:4bb8:193:f203:c70:4a89:bc61:2] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jRs3r-00012w-9R; Fri, 24 Apr 2020 06:43:43 +0000
+        id 1jRs3u-00013c-96; Fri, 24 Apr 2020 06:43:46 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Kees Cook <keescook@chromium.org>,
         Iurii Zaikin <yzaikin@google.com>
@@ -34,10 +34,10 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         linux-kernel@vger.kernel.org, linux-mm@kvack.org,
         linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Andrey Ignatov <rdna@fb.com>
-Subject: [PATCH 1/5] bpf-cgroup: remove unused exports
-Date:   Fri, 24 Apr 2020 08:43:34 +0200
-Message-Id: <20200424064338.538313-2-hch@lst.de>
+        bpf@vger.kernel.org, David Rientjes <rientjes@google.com>
+Subject: [PATCH 2/5] mm: remove watermark_boost_factor_sysctl_handler
+Date:   Fri, 24 Apr 2020 08:43:35 +0200
+Message-Id: <20200424064338.538313-3-hch@lst.de>
 X-Mailer: git-send-email 2.26.1
 In-Reply-To: <20200424064338.538313-1-hch@lst.de>
 References: <20200424064338.538313-1-hch@lst.de>
@@ -49,52 +49,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Except for a few of the networking hooks called from modular ipv4 or
-ipv6 code, all of hooks are just called from guaranteed to be built-in
-code.
+watermark_boost_factor_sysctl_handler is just a pointless wrapper for
+proc_dointvec_minmax, so remove it and use proc_dointvec_minmax
+directly.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Andrey Ignatov <rdna@fb.com>
+Acked-by: David Rientjes <rientjes@google.com>
 ---
- kernel/bpf/cgroup.c | 4 ----
- 1 file changed, 4 deletions(-)
+ include/linux/mmzone.h |  2 --
+ kernel/sysctl.c        |  2 +-
+ mm/page_alloc.c        | 12 ------------
+ 3 files changed, 1 insertion(+), 15 deletions(-)
 
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index cb305e71e7deb..929d9a7263da1 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -1054,7 +1054,6 @@ int __cgroup_bpf_check_dev_permission(short dev_type, u32 major, u32 minor,
- 
- 	return !allow;
+diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+index 1b9de7d220fb7..f37bb8f187fc7 100644
+--- a/include/linux/mmzone.h
++++ b/include/linux/mmzone.h
+@@ -911,8 +911,6 @@ static inline int is_highmem(struct zone *zone)
+ struct ctl_table;
+ int min_free_kbytes_sysctl_handler(struct ctl_table *, int,
+ 					void __user *, size_t *, loff_t *);
+-int watermark_boost_factor_sysctl_handler(struct ctl_table *, int,
+-					void __user *, size_t *, loff_t *);
+ int watermark_scale_factor_sysctl_handler(struct ctl_table *, int,
+ 					void __user *, size_t *, loff_t *);
+ extern int sysctl_lowmem_reserve_ratio[MAX_NR_ZONES];
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 8a176d8727a3a..99d27acf46465 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -1491,7 +1491,7 @@ static struct ctl_table vm_table[] = {
+ 		.data		= &watermark_boost_factor,
+ 		.maxlen		= sizeof(watermark_boost_factor),
+ 		.mode		= 0644,
+-		.proc_handler	= watermark_boost_factor_sysctl_handler,
++		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+ 	},
+ 	{
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 69827d4fa0527..62c1550cd43ec 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -7978,18 +7978,6 @@ int min_free_kbytes_sysctl_handler(struct ctl_table *table, int write,
+ 	return 0;
  }
--EXPORT_SYMBOL(__cgroup_bpf_check_dev_permission);
  
- static const struct bpf_func_proto *
- cgroup_base_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
-@@ -1221,7 +1220,6 @@ int __cgroup_bpf_run_filter_sysctl(struct ctl_table_header *head,
- 
- 	return ret == 1 ? 0 : -EPERM;
- }
--EXPORT_SYMBOL(__cgroup_bpf_run_filter_sysctl);
- 
- #ifdef CONFIG_NET
- static bool __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
-@@ -1326,7 +1324,6 @@ int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
- 		sockopt_free_buf(&ctx);
- 	return ret;
- }
--EXPORT_SYMBOL(__cgroup_bpf_run_filter_setsockopt);
- 
- int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
- 				       int optname, char __user *optval,
-@@ -1413,7 +1410,6 @@ int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
- 	sockopt_free_buf(&ctx);
- 	return ret;
- }
--EXPORT_SYMBOL(__cgroup_bpf_run_filter_getsockopt);
- #endif
- 
- static ssize_t sysctl_cpy_dir(const struct ctl_dir *dir, char **bufp,
+-int watermark_boost_factor_sysctl_handler(struct ctl_table *table, int write,
+-	void __user *buffer, size_t *length, loff_t *ppos)
+-{
+-	int rc;
+-
+-	rc = proc_dointvec_minmax(table, write, buffer, length, ppos);
+-	if (rc)
+-		return rc;
+-
+-	return 0;
+-}
+-
+ int watermark_scale_factor_sysctl_handler(struct ctl_table *table, int write,
+ 	void __user *buffer, size_t *length, loff_t *ppos)
+ {
 -- 
 2.26.1
 
