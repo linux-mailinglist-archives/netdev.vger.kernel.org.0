@@ -2,139 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42ACA1B6B9E
-	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 04:53:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 406E21B6BA2
+	for <lists+netdev@lfdr.de>; Fri, 24 Apr 2020 04:56:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726070AbgDXCxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Apr 2020 22:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725888AbgDXCxZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 22:53:25 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F17B0C09B044
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 19:53:24 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id t12so6083680edw.3
-        for <netdev@vger.kernel.org>; Thu, 23 Apr 2020 19:53:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:references:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=N8J2NVAm8c8gU1AoipCJMlzR25PdFauGG+Kx8JJ8Fs8=;
-        b=SrZ4f9df5B2RiFTGEp/oBavHXRZjvy+r9bdyoXcb0i0/pZod7TdYYCarB2oE824T3C
-         2hL0Bn47m6RDHmsXqNnkuYuwztaCrEC7OxySVlDsFlfQ2v97XePRrJXHN1iGPG8XQtof
-         aUBT4laLeK/2sUSxGZJZ63F/gCmsuUqxL9m18ytOZaHRoDqS+VnRCO+ncVNERv8Cfn9F
-         RvW1dJ+HyLwkzPO8Lrf0eiAhRDzuq7VZ0eYQRiQNFwuKliXaKUnDRUn6JbL8frjGCbSZ
-         oxFMeU9HRif9Bh0f4+kDesr1mfX86ouWn9XyEx9Pugt6GbYXUq4kYWoeDH4o7tHrhCBS
-         uryw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=N8J2NVAm8c8gU1AoipCJMlzR25PdFauGG+Kx8JJ8Fs8=;
-        b=oZWf1OsABLsC+xLEg/8XZ59c5SmqEvhRtwhXKCdw9rhsg/I2JKTNfelZsj2Vojz6Tt
-         OHPk7S64Ju9AS+n52hzF03QvN9JfzM6MC2J4kvoUmubFqSy3Qq3lp+qxDF3yHipd6U4g
-         eUgXfZIR/2AyHN3OC8MZfVVhU8NI7BkAM+tldHShqbAmMblsGFoF3Fxn+zFBt3diTnVj
-         bQueuB+ohtXUMnIonZjd1IRKDNq9RHTux0MTGnLV8AkxEW+dTM+Xnz/r0jxrt6BJAdh5
-         U7XjU9TBGiJRMgaTUSIMZtUObiOdcAQHE8x6jYB6n1EYOZ59LUd4H8M2QhCxs3LPAlpO
-         eATA==
-X-Gm-Message-State: AGi0PuaIPDLeFmttHG+vrYGOcRjLsyxpxOEJdiXKgOUaDFEPYaikGkXs
-        J1D4bHR2v/ajL/JOds9KqXI=
-X-Google-Smtp-Source: APiQypI6zvph6iOTHP+FP3zf3gLB0GPqMdLLkEU9Z/PjTZ2dOscjapaUK3tNLTtL8mnaW2LyD/ktUA==
-X-Received: by 2002:a50:f98c:: with SMTP id q12mr5671333edn.172.1587696803639;
-        Thu, 23 Apr 2020 19:53:23 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id x63sm439594ede.14.2020.04.23.19.53.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 23 Apr 2020 19:53:22 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH net-next] net: phylink, dsa: eliminate
- phylink_fixed_state_cb()
-To:     Russell King <rmk+kernel@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <E1jReJU-0008Mi-N1@rmk-PC.armlinux.org.uk>
-Autocrypt: addr=f.fainelli@gmail.com; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <768261cb-c3fe-6bc6-eeae-27dd9d2e51d2@gmail.com>
-Date:   Thu, 23 Apr 2020 19:53:20 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <E1jReJU-0008Mi-N1@rmk-PC.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1726027AbgDXC4J convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 23 Apr 2020 22:56:09 -0400
+Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:40109 "EHLO
+        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725884AbgDXC4J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Apr 2020 22:56:09 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e07484;MF=cambda@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0TwTgjRt_1587696962;
+Received: from 30.225.76.126(mailfrom:cambda@linux.alibaba.com fp:SMTPD_---0TwTgjRt_1587696962)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 24 Apr 2020 10:56:02 +0800
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [PATCH net-next v2] net: Add TCP_FORCE_LINGER2 to TCP setsockopt
+From:   Cambda Zhu <cambda@linux.alibaba.com>
+In-Reply-To: <2df5f6de-ee68-8309-8b48-a139a4fb6b36@gmail.com>
+Date:   Fri, 24 Apr 2020 10:56:02 +0800
+Cc:     netdev <netdev@vger.kernel.org>,
+        Dust Li <dust.li@linux.alibaba.com>,
+        Tony Lu <tonylu@linux.alibaba.com>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <73F510E3-F212-47B5-B575-97D15A3311C7@linux.alibaba.com>
+References: <eea2a2c3-79dc-131c-4ef5-ee027b30b701@gmail.com>
+ <20200423073529.92152-1-cambda@linux.alibaba.com>
+ <3e780f88-41df-413c-7a81-6a63fd750605@gmail.com>
+ <256723ED-43E5-4123-B096-15AD417366CD@linux.alibaba.com>
+ <2df5f6de-ee68-8309-8b48-a139a4fb6b36@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/23/2020 9:02 AM, Russell King wrote:
-> Move the callback into the phylink_config structure, rather than
-> providing a callback to set this up.
+
+
+> On Apr 24, 2020, at 00:59, Eric Dumazet <eric.dumazet@gmail.com> wrote:
 > 
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> 
+> 
+> On 4/23/20 7:46 AM, Cambda Zhu wrote:
+>> 
+>> 
+>>> On Apr 23, 2020, at 21:40, Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>>> 
+>>> 
+>>> 
+>>> On 4/23/20 12:35 AM, Cambda Zhu wrote:
+>>>> This patch adds a new TCP socket option named TCP_FORCE_LINGER2. The
+>>>> option has same behavior as TCP_LINGER2, except the tp->linger2 value
+>>>> can be greater than sysctl_tcp_fin_timeout if the user_ns is capable
+>>>> with CAP_NET_ADMIN.
+>>>> 
+>>>> As a server, different sockets may need different FIN-WAIT timeout and
+>>>> in most cases the system default value will be used. The timeout can
+>>>> be adjusted by setting TCP_LINGER2 but cannot be greater than the
+>>>> system default value. If one socket needs a timeout greater than the
+>>>> default, we have to adjust the sysctl which affects all sockets using
+>>>> the system default value. And if we want to adjust it for just one
+>>>> socket and keep the original value for others, all the other sockets
+>>>> have to set TCP_LINGER2. But with TCP_FORCE_LINGER2, the net admin can
+>>>> set greater tp->linger2 than the default for one socket and keep
+>>>> the sysctl_tcp_fin_timeout unchanged.
+>>>> 
+>>>> Signed-off-by: Cambda Zhu <cambda@linux.alibaba.com>
+>>>> ---
+>>>> Changes in v2:
+>>>>  - Add int overflow check.
+>>>> 
+>>>> include/uapi/linux/capability.h |  1 +
+>>>> include/uapi/linux/tcp.h        |  1 +
+>>>> net/ipv4/tcp.c                  | 11 +++++++++++
+>>>> 3 files changed, 13 insertions(+)
+>>>> 
+>>>> diff --git a/include/uapi/linux/capability.h b/include/uapi/linux/capability.h
+>>>> index 272dc69fa080..0e30c9756a04 100644
+>>>> --- a/include/uapi/linux/capability.h
+>>>> +++ b/include/uapi/linux/capability.h
+>>>> @@ -199,6 +199,7 @@ struct vfs_ns_cap_data {
+>>>> /* Allow multicasting */
+>>>> /* Allow read/write of device-specific registers */
+>>>> /* Allow activation of ATM control sockets */
+>>>> +/* Allow setting TCP_LINGER2 regardless of sysctl_tcp_fin_timeout */
+>>>> 
+>>>> #define CAP_NET_ADMIN        12
+>>>> 
+>>>> diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
+>>>> index f2acb2566333..e21e0ce98ca1 100644
+>>>> --- a/include/uapi/linux/tcp.h
+>>>> +++ b/include/uapi/linux/tcp.h
+>>>> @@ -128,6 +128,7 @@ enum {
+>>>> #define TCP_CM_INQ		TCP_INQ
+>>>> 
+>>>> #define TCP_TX_DELAY		37	/* delay outgoing packets by XX usec */
+>>>> +#define TCP_FORCE_LINGER2	38	/* Set TCP_LINGER2 regardless of sysctl_tcp_fin_timeout */
+>>>> 
+>>>> 
+>>>> #define TCP_REPAIR_ON		1
+>>>> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+>>>> index 6d87de434377..d8cd1fd66bc1 100644
+>>>> --- a/net/ipv4/tcp.c
+>>>> +++ b/net/ipv4/tcp.c
+>>>> @@ -3149,6 +3149,17 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
+>>>> 			tcp_enable_tx_delay();
+>>>> 		tp->tcp_tx_delay = val;
+>>>> 		break;
+>>>> +	case TCP_FORCE_LINGER2:
+>>>> +		if (val < 0)
+>>>> +			tp->linger2 = -1;
+>>>> +		else if (val > INT_MAX / HZ)
+>>>> +			err = -EINVAL;
+>>>> +		else if (val > net->ipv4.sysctl_tcp_fin_timeout / HZ &&
+>>>> +			 !ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
+>>>> +			tp->linger2 = 0;
+>>>> +		else
+>>>> +			tp->linger2 = val * HZ;
+>>>> +		break;
+>>>> 	default:
+>>>> 		err = -ENOPROTOOPT;
+>>>> 		break;
+>>>> 
+>>> 
+>>> INT_MAX looks quite 
+>>> 
+>>> Anyway, I do not think we need a new socket option, since really it will need documentation and add more confusion.
+>>> 
+>>> net->ipv4.sysctl_tcp_fin_timeout is the default value for sockets which have tp->linger2 cleared.
+>>> 
+>>> Fact that it has been used to cap TCP_LINGER2 was probably a mistake.
+>>> 
+>>> What about adding a new define and simply let TCP_LINGER2 use it ?
+>>> 
+>>> Really there is no point trying to allow hours or even days for FIN timeout,
+>>> and no point limiting a socket from having a value between net->ipv4.sysctl_tcp_fin_timeout and 2 minutes,
+>>> at least from security perspective, these values seem legal as far as TCP specs are concerned.
+>>> 
+>>> 
+>> 
+>> I also think using sysctl_tcp_fin_timeout to cap TCP_LINGER2 is probably a mistake,
+>> and adding a new define for TCP_LINGER2 is a good idea. I have considered the solution
+>> and found it may have some compatibility issues. Whatever it’s a mistake or not, a
+>> system administrator may have used it to limit the max timeout for all sockets. And
+>> when I think about the behavior of TCP_LINGER2, I'm afraid the server may also rely on
+>> the behavior so the server can set any value greater than sysctl_tcp_fin_timeout and
+>> result in the same timeout.
+>> 
+>> Maybe my worry is unnecessary. If so, I think your suggestion is better.
+>> 
+> 
+> Ṕlease send a v3 with a proper changelog then, thanks !
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+If the value between sysctl_tcp_fin_timeout and 2 minutes is legal, should we set tp->linger2
+to TCP_FIN_TIMEOUT_MAX or return an error instead of set it to zero which means the default value?
 
+Regards,
+Cambda
 
