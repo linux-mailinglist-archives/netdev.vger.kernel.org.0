@@ -2,95 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A61961B820B
-	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 00:29:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC16A1B8228
+	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 00:44:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726053AbgDXW3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 18:29:46 -0400
-Received: from mout.kundenserver.de ([212.227.126.130]:59681 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725874AbgDXW3q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 18:29:46 -0400
-Received: from Cyrus.lan ([80.189.87.161]) by mrelayeu.kundenserver.de
- (mreue012 [212.227.15.163]) with ESMTPA (Nemesis) id
- 1MIyiY-1jlHZZ34UE-00KSAw; Sat, 25 Apr 2020 00:29:39 +0200
-Date:   Fri, 24 Apr 2020 23:29:38 +0100
-From:   Darren Stevens <darren@stevens-zone.net>
-To:     madalin.bacur@nxp.com, netdev@vger.kernel.org
-Cc:     oss@buserror.net, chzigotzky@xenosoft.de,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [RFC PATCH dpss_eth] Don't initialise ports with no PHY
-Message-ID: <20200424232938.1a85d353@Cyrus.lan>
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; powerpc-unknown-linux-gnu)
+        id S1726076AbgDXWoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 18:44:34 -0400
+Received: from bert.scottdial.com ([104.237.142.221]:50474 "EHLO
+        bert.scottdial.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725946AbgDXWoe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 18:44:34 -0400
+X-Greylist: delayed 597 seconds by postgrey-1.27 at vger.kernel.org; Fri, 24 Apr 2020 18:44:33 EDT
+Received: from mail.scottdial.com (mail.scottdial.com [10.8.0.6])
+        by bert.scottdial.com (Postfix) with ESMTP id BE3C257189B
+        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 18:34:35 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.scottdial.com (Postfix) with ESMTP id 682E71111605
+        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 18:34:35 -0400 (EDT)
+Received: from mail.scottdial.com ([127.0.0.1])
+        by localhost (mail.scottdial.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id fRdYJUXkPFUS for <netdev@vger.kernel.org>;
+        Fri, 24 Apr 2020 18:34:34 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.scottdial.com (Postfix) with ESMTP id 3C0A41111606
+        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 18:34:34 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.scottdial.com 3C0A41111606
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=scottdial.com;
+        s=24B7B964-7506-11E8-A7D6-CF6FBF8C6FCF; t=1587767674;
+        bh=VRx9E4q8iIkVcnzodjhOcD3cV0ev0f4YmbhU4CSLk9w=;
+        h=From:To:Date:Message-Id:MIME-Version;
+        b=jt/fYEQ5gKtgcCxMqyQtjlvOHyE7boJZjgcgveaJgy59zGLZmAo5mH2iq4oFDHZUU
+         3D4uYRe+b371Lr93I/WXOeejLv29EBBmvj1CHGcauXcc+7RNFq19gIySifsCTYHOLA
+         o2wlRwMwTcnaZnN+CMmomOy0gZUYq64vbOy9cR3ZzsMFnyuhgkLzbmcULKQ3SrIwcD
+         PRzoM5KYl4hpJCTyjPbJ17Z8b/a2+70NRiHyymgac5w25129RznVCI7CO5tuWcQeHt
+         WxOYCSPTHAgxQPDLfMaP/9IG/rF+J6wTEvV3F4Q2959kcY/AhlmxEeWQ8dYVOzWz8Q
+         WJqxb95vDNmoA==
+X-Virus-Scanned: amavisd-new at scottdial.com
+Received: from mail.scottdial.com ([127.0.0.1])
+        by localhost (mail.scottdial.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id AUX8z68my6G1 for <netdev@vger.kernel.org>;
+        Fri, 24 Apr 2020 18:34:34 -0400 (EDT)
+Received: from bruno.home.scottdial.com.home.scottdial.com (bruno.scottdial.com [172.17.1.8])
+        by mail.scottdial.com (Postfix) with ESMTP id 120671111605
+        for <netdev@vger.kernel.org>; Fri, 24 Apr 2020 18:34:34 -0400 (EDT)
+From:   Scott Dial <scott@scottdial.com>
+To:     netdev@vger.kernel.org
+Subject: [PATCH net] net: macsec: fix ingress frame ordering
+Date:   Fri, 24 Apr 2020 18:34:33 -0400
+Message-Id: <20200424223433.955775-1-scott@scottdial.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:/BZt50zNv9G906G9ocwyBjQ0Zm7jz6707yp6I7hCFQP0H2xPe50
- i+WqNCC/IMSdkxn1rB/MXN+DmFqzerlaKe/T+aYwQ6+g6QQVg8COQdAcKpKy5jq2PbVM5eD
- AHTcNBhNf4LxJ8woGO1scFAK3AbPL6g2FgNuV1CF7HVl6pyesjyO1bDu/TlVV8tKL3gQnYC
- 0AJnUzPNZ9QCNFJsaMfWQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Tbmuuh/q0bs=:c+VUHSub+5M70yCAIOHORb
- DiO/gmmocwkPydIr3xGMtncPbQ+TrPSMKb4v2F9Q/advOHtVhLR9+bF0xnH9C9/CEluIO4Fpm
- z3u2Yiifyxe8Aw4M0p2ex3abApjri3oo9JZSfba48aLIaGfPInsUS+o17nN+tkNryot1nmHmH
- Ig+9SLMqvKhEZNsPqcIvJ7I3Es58fLT57uspq7YZiBS2hcK96IsSiaMJjJ/Z5Z39Pmx7GGhk1
- NHQw3LI4OdkG9EV35f0ERQ3H4Btwf79ZY0GL2pAu40NjSCyeao513bc9EDvx6RIvMGPcYc6LB
- 1I3mTL769QYl7QcEoWJ58R1K9T2jP9pdmiH3jIbcf6xaGWh8bXBUVKe36/fmaB/cbyCv4UUfI
- h+3l/YEzifUb9c5TF1OYxOxKpyHRiHQgs6Hi+krQ7MHC8dMUYiqms9p9aCZVdhluMXr2b3L7v
- 0tNrVu/QmUXZnwwCBUJxGMmlss4aMe2x26aKxqcnuL2BJ/Soom5ySKFfwtFdkT1YutY3hFceh
- O4GfdTb+iKkabD9cNaOwx/tjbgtEh644Dp9dgfuAIFRB+SF9Emoxuy8Ud+1H5MJyUjX/pIwtC
- XoRqsgFtEsUTje6eryUyFbwenQJq819Ir+BcBw6yRYILv7ZZnJym5zj97X/vdhq050FiShUqq
- RP7+3HUJVG1HHYp1QyIlZhT2WrzP9/Btolino3JDJt2EFfX5DI3qLQH5v2eT1a9rvuEJkHWE+
- lhWTRqJMyYy22aWaWWCDjjBRae3QAdVNtmqyoj3T/8pBnfWFExyp9r/DRvn57y2en7RbK/TtG
- DfI+KnG3YHY9HKtzBQizNiZ3JsIk3yKTMg+7Ci6SE43KI/0QJ9tPenPBzSXKADqgiPPdogi
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since cbb961ca271e ("Use random MAC address when none is given")
-Varisys Cyrus P5020 boards have been listing 5 ethernet ports instead of
-the 2 the board has.This is because we were preventing the adding of the
-unused ports by not suppling them a MAC address, which this patch now
-supplies.
+MACsec decryption always occurs in a softirq context. Since
+the FPU may not be usable in the softirq context, this call to
+decrypt may be scheduled on the cryptd work queue. The cryptd
+work queue does not provide ordering guarantees. Therefore,
+preserving order requires masking out ASYNC implementations
+of gcm(aes).
 
-Prevent them from appearing in the net devices list by checking for a
-'status="disabled"' entry during probe and skipping the port if we find
-it. 
+On recent x86 architectures, the request for gcm(aes) will
+select the generic-gcm-aesni driver from the aesni_intel
+module. However, this implementation requires the FPU, so it
+cannot preserve frame ordering. With this change, such a
+system would select a hybrid software/hardware solution, such
+as gcm_base(ctr(aes-aesni),ghash-generic). It's notable
+that the aes-aesni implementation will fallback to the
+aes-asm implementation if the FPU is unavailable.
 
-Signed-off-by: Darren Stevens <Darren@stevens-zone.net>
+By using a synchronous version of gcm(aes), the decryption
+will complete before returning from crypto_aead_decrypt().
+Therefore, the macsec_decrypt_done() callback will be called
+before returning from macsec_decrypt(). Thus, order will be
+preserved with calls to macsec_post_decrypt().
 
+While it's presumable that the pure AES-NI version of gcm(aes)
+is more performant, the hybrid solution is capable of gigabit
+speeds on modest hardware. Regardless, preserving the order
+of frames is paramount for many network protocols (e.g.,
+triggering TCP retries). Within the MACsec driver itself, the
+replay protection is tripped by the out-of-order frames,
+causing frames to be dropped.
+
+This bug has been present in this code since it was added in
+v4.6, however it may have went unnoticed since not all CPUs
+have gcm(aes) offload available. Additionally, the bug
+manifests as occasional out-of-order packets that are easily
+misattributed to other network phenomena.
+
+When this code was added in v4.6, the crypto/gcm.c code did
+not restrict selection of the ghash function based on the
+ASYNC flag. For instance, x86 CPUs with the PCLMULQDQ CPU
+feature would select ghash-clmulni driver is selected instead
+of ghash-generic, which will submit to the cryptd work queue
+if the FPU is busy. However, this issue was was corrected in
+v4.8 by commit b30bdfa86431afbafe15284a3ad5ac19b49b88e3, and
+was backported all the way back to the v3.14 stable branch,
+so this patch should be applicable all the way back to the
+v4.6 stable branch.
+
+Signed-off-by: Scott Dial <scott@scottdial.com>
 ---
+ drivers/net/macsec.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
- drivers/net/ethernet/freescale/fman/mac.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index a183250ff66a..bce8b8fde400 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -1305,7 +1305,8 @@ static struct crypto_aead *macsec_alloc_tfm(char *k=
+ey, int key_len, int icv_len)
+ 	struct crypto_aead *tfm;
+ 	int ret;
+=20
+-	tfm =3D crypto_alloc_aead("gcm(aes)", 0, 0);
++	/* Pick a sync gcm(aes) cipher to ensure order is preserved. */
++	tfm =3D crypto_alloc_aead("gcm(aes)", 0, CRYPTO_ALG_ASYNC);
+=20
+ 	if (IS_ERR(tfm))
+ 		return tfm;
+--=20
+2.26.2
 
-diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
-index 43427c5..c9ed411 100644
---- a/drivers/net/ethernet/freescale/fman/mac.c
-+++ b/drivers/net/ethernet/freescale/fman/mac.c
-@@ -606,6 +606,7 @@ static int mac_probe(struct platform_device *_of_dev)
- 	struct resource		 res;
- 	struct mac_priv_s	*priv;
- 	const u8		*mac_addr;
-+	const char 		*prop;
- 	u32			 val;
- 	u8			fman_id;
- 	phy_interface_t          phy_if;
-@@ -628,6 +629,16 @@ static int mac_probe(struct platform_device *_of_dev)
- 	mac_dev->priv = priv;
- 	priv->dev = dev;
- 
-+	/* check for disabled devices and skip them, as now a missing
-+	 * MAC address will be replaced with a Random one rather than
-+	 * disabling the port
-+	 */
-+	prop = of_get_property(mac_node, "status", NULL);
-+	if (prop && !strncmp(prop, "disabled", 8) {
-+		err = -ENODEV;
-+		goto _return
-+	}
-+
- 	if (of_device_is_compatible(mac_node, "fsl,fman-dtsec")) {
- 		setup_dtsec(mac_dev);
- 		priv->internal_phy_node = of_parse_phandle(mac_node,
