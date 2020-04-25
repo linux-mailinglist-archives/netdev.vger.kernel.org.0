@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD17B1B8861
-	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 20:06:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9629D1B8863
+	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 20:06:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726238AbgDYSGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Apr 2020 14:06:44 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:34912 "EHLO vps0.lunn.ch"
+        id S1726296AbgDYSGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Apr 2020 14:06:45 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:34920 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726145AbgDYSGn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 25 Apr 2020 14:06:43 -0400
+        id S1726216AbgDYSGp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Apr 2020 14:06:45 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=7Yos8VzW69UtO1fSvS/e7mjtNLPBC7jcfccMz/pY8KI=; b=oI/TBe4o+A+c6QpnjngcJKkWWY
-        a0+mpozkbg4u3O6r/p3DDcJnZCt1YXQg6r9MgQvR/nmhCByXOkBVJzQVoCCxt4qyQC2Ng2GBCWTel
-        kue2Ydf4+3CgjFKV8XbcggP/cSleok5f6nf+6gRPfUuDhRz5aFjVCjmwCLimOYmtUg2c=;
+        bh=ZwjpsWvbPOtYchcYkpiobK2zsT37XowEU7J/OqdeYL0=; b=t/DjLGCfJnjUH5fhQjnT6G9vwM
+        MIw/ypwLzGUBzgIV9uZakYzsZVciFEgNI5wdc1F9U3UKL/Gm6oc8/O2MGjWK3SCAoJhOytVA0dhkC
+        YlzZZWmOUnw2FXRZOYqy3IlPpua4PxnW0U1O7fvuoGK1Sa8Hip1nrK2xTI+abnz9Dfo0=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
         (envelope-from <andrew@lunn.ch>)
-        id 1jSPCG-004mhm-Aa; Sat, 25 Apr 2020 20:06:36 +0200
+        id 1jSPCG-004mhr-BT; Sat, 25 Apr 2020 20:06:36 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -30,9 +30,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Chris Healy <cphealy@gmail.com>,
         Michal Kubecek <mkubecek@suse.cz>, Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next v1 5/9] net: ethtool: Make helpers public
-Date:   Sat, 25 Apr 2020 20:06:17 +0200
-Message-Id: <20200425180621.1140452-6-andrew@lunn.ch>
+Subject: [PATCH net-next v1 6/9] net: ethtool: Add infrastructure for reporting cable test results
+Date:   Sat, 25 Apr 2020 20:06:18 +0200
+Message-Id: <20200425180621.1140452-7-andrew@lunn.ch>
 X-Mailer: git-send-email 2.26.0.rc2
 In-Reply-To: <20200425180621.1140452-1-andrew@lunn.ch>
 References: <20200425180621.1140452-1-andrew@lunn.ch>
@@ -43,49 +43,211 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make some helpers for building ethtool netlink messages available
-outside the compilation unit, so they can be used for building
-messages which are not simple get/set.
+Provide infrastructure for PHY drivers to report the cable test
+results.  A netlink skb is associated to the phydev. Helpers will be
+added which can add results to this skb. Once the test has finished
+the results are sent to user space.
+
+When netlink ethtool is not part of the kernel configuration stubs are
+provided. It is also impossible to trigger a cable test, so the error
+code returned by the alloc function is of no consequence.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- net/ethtool/netlink.c | 4 ++--
- net/ethtool/netlink.h | 2 ++
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/phy/phy.c           | 21 ++++++++++++--
+ include/linux/ethtool_netlink.h | 20 +++++++++++++
+ include/linux/phy.h             |  5 ++++
+ net/ethtool/cabletest.c         | 50 +++++++++++++++++++++++++++++++++
+ 4 files changed, 94 insertions(+), 2 deletions(-)
 
-diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-index 56efd12c58ba..ffd3d1e40293 100644
---- a/net/ethtool/netlink.c
-+++ b/net/ethtool/netlink.c
-@@ -181,13 +181,13 @@ struct sk_buff *ethnl_reply_init(size_t payload, struct net_device *dev, u8 cmd,
- 	return NULL;
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index 242a7c1c4b6c..88275d971f14 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -22,6 +22,7 @@
+ #include <linux/module.h>
+ #include <linux/mii.h>
+ #include <linux/ethtool.h>
++#include <linux/ethtool_netlink.h>
+ #include <linux/phy.h>
+ #include <linux/phy_led_triggers.h>
+ #include <linux/sfp.h>
+@@ -30,6 +31,9 @@
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
+ #include <linux/atomic.h>
++#include <net/netlink.h>
++#include <net/genetlink.h>
++#include <net/sock.h>
+ 
+ #define PHY_STATE_TIME	HZ
+ 
+@@ -474,13 +478,14 @@ static void phy_trigger_machine(struct phy_device *phydev)
+ 
+ static void phy_cable_test_abort(struct phy_device *phydev)
+ {
++	ethnl_cable_test_finished(phydev);
+ 	genphy_soft_reset(phydev);
  }
  
--static void *ethnl_bcastmsg_put(struct sk_buff *skb, u8 cmd)
-+void *ethnl_bcastmsg_put(struct sk_buff *skb, u8 cmd)
+ int phy_start_cable_test(struct phy_device *phydev,
+ 			 struct netlink_ext_ack *extack)
  {
- 	return genlmsg_put(skb, 0, ++ethnl_bcast_seq, &ethtool_genl_family, 0,
- 			   cmd);
+-	int err;
++	int err = -ENOMEM;
+ 
+ 	if (!(phydev->drv &&
+ 	      phydev->drv->cable_test_start &&
+@@ -499,19 +504,30 @@ int phy_start_cable_test(struct phy_device *phydev,
+ 		goto out;
+ 	}
+ 
++	err = ethnl_cable_test_alloc(phydev);
++	if (err)
++		goto out;
++
+ 	/* Mark the carrier down until the test is complete */
+ 	phy_link_down(phydev, true);
+ 
+ 	err = phydev->drv->cable_test_start(phydev);
+ 	if (err) {
+ 		phy_link_up(phydev);
+-		goto out;
++		goto out_free;
+ 	}
+ 
+ 	phydev->state = PHY_CABLETEST;
+ 
+ 	if (phy_polling_mode(phydev))
+ 		phy_trigger_machine(phydev);
++
++	mutex_unlock(&phydev->lock);
++
++	return 0;
++
++out_free:
++	ethnl_cable_test_free(phydev);
+ out:
+ 	mutex_unlock(&phydev->lock);
+ 
+@@ -951,6 +967,7 @@ void phy_state_machine(struct work_struct *work)
+ 		}
+ 
+ 		if (finished) {
++			ethnl_cable_test_finished(phydev);
+ 			needs_aneg = true;
+ 			phydev->state = PHY_UP;
+ 		}
+diff --git a/include/linux/ethtool_netlink.h b/include/linux/ethtool_netlink.h
+index d01b77887f82..7d763ba22f6f 100644
+--- a/include/linux/ethtool_netlink.h
++++ b/include/linux/ethtool_netlink.h
+@@ -14,4 +14,24 @@ enum ethtool_multicast_groups {
+ 	ETHNL_MCGRP_MONITOR,
+ };
+ 
++struct phy_device;
++
++#if IS_ENABLED(CONFIG_ETHTOOL_NETLINK)
++int ethnl_cable_test_alloc(struct phy_device *phydev);
++void ethnl_cable_test_free(struct phy_device *phydev);
++void ethnl_cable_test_finished(struct phy_device *phydev);
++#else
++static inline int ethnl_cable_test_alloc(struct phy_device *phydev)
++{
++	return -ENOTSUPP;
++}
++
++static inline void ethnl_cable_test_free(struct phy_device *phydev)
++{
++}
++
++static inline void ethnl_cable_test_finished(struct phy_device *phydev)
++{
++}
++#endif /* IS_ENABLED(ETHTOOL_NETLINK) */
+ #endif /* _LINUX_ETHTOOL_NETLINK_H_ */
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 593da2c6041d..ee69f781995a 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -487,6 +487,11 @@ struct phy_device {
+ 	/* For use by PHYs to maintain extra state */
+ 	void *priv;
+ 
++	/* Reporting cable test results */
++	struct sk_buff *skb;
++	void *ehdr;
++	struct nlattr *nest;
++
+ 	/* Interrupt and Polling infrastructure */
+ 	struct delayed_work state_queue;
+ 
+diff --git a/net/ethtool/cabletest.c b/net/ethtool/cabletest.c
+index 44b8165ac66e..7d73239b9ead 100644
+--- a/net/ethtool/cabletest.c
++++ b/net/ethtool/cabletest.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ 
+ #include <linux/phy.h>
++#include <linux/ethtool_netlink.h>
+ #include "netlink.h"
+ #include "common.h"
+ #include "bitset.h"
+@@ -80,3 +81,52 @@ int ethnl_act_cable_test(struct sk_buff *skb, struct genl_info *info)
+ 	dev_put(dev);
+ 	return ret;
  }
- 
--static int ethnl_multicast(struct sk_buff *skb, struct net_device *dev)
-+int ethnl_multicast(struct sk_buff *skb, struct net_device *dev)
- {
- 	return genlmsg_multicast_netns(&ethtool_genl_family, dev_net(dev), skb,
- 				       0, ETHNL_MCGRP_MONITOR, GFP_KERNEL);
-diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
-index 03e65e2b9e3d..f948eab5fe16 100644
---- a/net/ethtool/netlink.h
-+++ b/net/ethtool/netlink.h
-@@ -19,6 +19,8 @@ int ethnl_fill_reply_header(struct sk_buff *skb, struct net_device *dev,
- struct sk_buff *ethnl_reply_init(size_t payload, struct net_device *dev, u8 cmd,
- 				 u16 hdr_attrtype, struct genl_info *info,
- 				 void **ehdrp);
-+void *ethnl_bcastmsg_put(struct sk_buff *skb, u8 cmd);
-+int ethnl_multicast(struct sk_buff *skb, struct net_device *dev);
- 
- /**
-  * ethnl_strz_size() - calculate attribute length for fixed size string
++
++int ethnl_cable_test_alloc(struct phy_device *phydev)
++{
++	int err = -ENOMEM;
++
++	phydev->skb = genlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
++	if (!phydev->skb)
++		goto out;
++
++	phydev->ehdr = ethnl_bcastmsg_put(phydev->skb,
++					  ETHTOOL_MSG_CABLE_TEST_NTF);
++	if (!phydev->ehdr) {
++		err = -EINVAL;
++		goto out;
++	}
++
++	err = ethnl_fill_reply_header(phydev->skb, phydev->attached_dev,
++				      ETHTOOL_A_CABLE_TEST_NTF_DEV);
++	if (err)
++		goto out;
++
++	phydev->nest = nla_nest_start(phydev->skb,
++				      ETHTOOL_A_CABLE_TEST_NTF_NEST);
++	if (!phydev->nest)
++		goto out;
++
++	return 0;
++
++out:
++	nlmsg_free(phydev->skb);
++	return err;
++}
++EXPORT_SYMBOL_GPL(ethnl_cable_test_alloc);
++
++void ethnl_cable_test_free(struct phy_device *phydev)
++{
++	nlmsg_free(phydev->skb);
++}
++EXPORT_SYMBOL_GPL(ethnl_cable_test_free);
++
++void ethnl_cable_test_finished(struct phy_device *phydev)
++{
++	nla_nest_end(phydev->skb, phydev->nest);
++
++	genlmsg_end(phydev->skb, phydev->ehdr);
++
++	ethnl_multicast(phydev->skb, phydev->attached_dev);
++}
++EXPORT_SYMBOL_GPL(ethnl_cable_test_finished);
 -- 
 2.26.1
 
