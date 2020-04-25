@@ -2,76 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3E141B82D4
-	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 02:41:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6917D1B82D9
+	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 02:44:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726061AbgDYAly (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 20:41:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54370 "EHLO
+        id S1726135AbgDYAoq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 20:44:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726031AbgDYAlx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 20:41:53 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E147C09B049;
-        Fri, 24 Apr 2020 17:41:53 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id f18so11791076lja.13;
-        Fri, 24 Apr 2020 17:41:53 -0700 (PDT)
+        with ESMTP id S1726031AbgDYAop (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 20:44:45 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28927C09B049;
+        Fri, 24 Apr 2020 17:44:44 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id j3so11786434ljg.8;
+        Fri, 24 Apr 2020 17:44:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=u37CNX/UaTtnsFCRVE0yAeDG98uxzVKA2U0RwxsFElU=;
-        b=fhEIkj7rcX91JVtBqIK4pRRSMooAMLMoDHJHWP4vVQ9pZJmGndJvTSxC263E5aaEP0
-         s0rKQaQvQEQpMmyj4keYBubxMFz1bNFGJAgROQiKhIMq6+BNwpeDlgbIru9o2Ta6mT4l
-         ROpqD//LlvtkwMSYNAAFjS2iRa33mC9WHqHyHjELFM3klYzTfOFBkgUyaSXOEqv5UdcD
-         L76Qq3D9/5Ns5RLSEgqJCSgM5YoNNIixC8euVuo2h65hWFqHy3ASwVIEXzVOSQnmtE6m
-         dGAxsVfXYZpk/sQr+EdRNuC7hruRLhl0/JNMYBcmtAWfnyURQbEp4X9eSlHRkYHdFRsX
-         dSUg==
+        bh=kzKKvPvTRv5jedvft3HGf7MSKwccH8TvsPU4jnF7S/g=;
+        b=Q8dw0+7Mj+PiebMpguuY3GEbnEhu3A3RcnUKO9ZGAgYu6Z3FdhQveI54PP/Ji+l9Zy
+         5D4Ep+XdxUNFDQx1xcJM4nsrwEIvSdJuRIXHVOtjNG8tXQVAK9cBnuHTp2Y0lKldpa5l
+         QK0HzTicOF253e4gc1DLafYdcN/DSvjxuYuyMvygj8PFaPsyDk4FWGpdQyJMOaXgj/i0
+         uyorSZIniih/X7+vox1VQtqnMPkRfLiMbLDn+IXXYPJdo2zGprxIiyD88RY+xanFHtOB
+         SQ+FqnrntbK3WU+i69KSnpL3KmA1c4P7LA9QkfMfkLytsZJ8iq7eWH9f/6RHGcM6P+sq
+         Qgrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=u37CNX/UaTtnsFCRVE0yAeDG98uxzVKA2U0RwxsFElU=;
-        b=O6DUBp/+dnaBAt0vun60kdOj9OEOnXiqwAROKyIr7V2JROVTFaNEOIuA/633NjZw9K
-         4OQ4yoFWmNsgNM7hBMNmJZobd3tyPgO5v5RENJNXkrRUTehL3QPRVfmVsYBuTgYDn9NH
-         9oiXdNnLCZMwtb2XKkDZxpZuR+0qKFQCyS4mPjW4qmgblNAxHVglfurcci08Bhbfegc1
-         Xb7e5IwefdizwyjEsqoqDvk/L6a0NDDAmUrT/T6ziD23qHtFe6Cy/QlAwuSRRLewr5vh
-         iCRameoKRHnYlHG9GIz8cI6MbMIP9thk33m5RZjeQ1T4wiLRTIWeZF0zljh4rqsz9epe
-         8FZA==
-X-Gm-Message-State: AGi0PuYOpI7zYtHyB1Rji1IiKFz6asCpufOVbPYvFhlR4IXdlE6oAdho
-        SLvWmFB7HRxVuOl685FLr6oA5q7QIuBZl9Sk2F0=
-X-Google-Smtp-Source: APiQypJ9z/QFBUOPujbjGAreDNBwVphvuUubOWWoG3o80D3qTJJbiAS76uXhtO1XAn9PjAyVQlJ4Zy3kDs5R5NPo/W4=
-X-Received: by 2002:a2e:990f:: with SMTP id v15mr6520304lji.7.1587775311815;
- Fri, 24 Apr 2020 17:41:51 -0700 (PDT)
+        bh=kzKKvPvTRv5jedvft3HGf7MSKwccH8TvsPU4jnF7S/g=;
+        b=iCHKjKDIHpLAnc0NG2ERgOsvq5SL9M7WWMPP/nSP9DBP1YGFvnPbzm/kfustslbcr5
+         hQBsgpG0s4oEcsdd5JOFu5RlMNCQGi8jSeb8TUbLB2oDY7jtLT81Tj/yXRzB1EUTmwcL
+         kMDPUwgmkPrmbk+OyOCJDmZc5SkJrHwDlwOZWV4MI4HBT2En5sEbdO/TfnpJi39MsB7o
+         PC/TEUUp2hHHMpdSPfuLJKoNnCSXl9nHkDsWV8xCQTuYm3MI4rqouUuzUBmfO05QU0P6
+         xIKSdAxbm1Ln7d21lY+HMjpINJ81TMsworL7M745E96cYenw+N8JPZQv8QxiacPqw1DC
+         LevA==
+X-Gm-Message-State: AGi0PuaRITJUM1dhahXw/1jy2wvrbIyBnqRXuib59fSwgX1qEqF90Jyc
+        ZseDvmsdh+w1Z72HfosO0hR+TnhJXdX+dXVGPN8=
+X-Google-Smtp-Source: APiQypJYVNzIHY7mZErfuL8JKO7UQTjprH2H9+55b4W0WwaynLxE57Of8Tmpz9gOZALE5GqURZRGgmtyPcLNQBRqBE8=
+X-Received: by 2002:a2e:7508:: with SMTP id q8mr7378532ljc.234.1587775481719;
+ Fri, 24 Apr 2020 17:44:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200424182911.1259355-1-kafai@fb.com> <8fd56f56-0b2e-472d-0e8c-a9f4e80c057f@isovalent.com>
-In-Reply-To: <8fd56f56-0b2e-472d-0e8c-a9f4e80c057f@isovalent.com>
+References: <1587609160-117806-1-git-send-email-zou_wei@huawei.com>
+In-Reply-To: <1587609160-117806-1-git-send-email-zou_wei@huawei.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 24 Apr 2020 17:41:40 -0700
-Message-ID: <CAADnVQ+NMfG4KxHoPRBPTP7BvObbTi9dD65ughgWiE05DM4fKA@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpftool: Respect the -d option in struct_ops cmd
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     Martin KaFai Lau <kafai@fb.com>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+Date:   Fri, 24 Apr 2020 17:44:30 -0700
+Message-ID: <CAADnVQLzuHpW1_dsqNHsgahEWqeQYPyCeuAW3V4NTaxjamwByQ@mail.gmail.com>
+Subject: Re: [PATCH -next] bpf: Make bpf_link_fops static
+To:     Zou Wei <zou_wei@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Network Development <netdev@vger.kernel.org>
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 24, 2020 at 12:01 PM Quentin Monnet <quentin@isovalent.com> wrote:
+On Wed, Apr 22, 2020 at 7:26 PM Zou Wei <zou_wei@huawei.com> wrote:
 >
-> 2020-04-24 11:29 UTC-0700 ~ Martin KaFai Lau <kafai@fb.com>
-> > In the prog cmd, the "-d" option turns on the verifier log.
-> > This is missed in the "struct_ops" cmd and this patch fixes it.
-> >
-> > Fixes: 65c93628599d ("bpftool: Add struct_ops support")
-> > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> Fix the following sparse warning:
 >
-> Looks good to me, thanks!
-> Reviewed-by: Quentin Monnet <quentin@isovalent.com>
+> kernel/bpf/syscall.c:2289:30: warning: symbol 'bpf_link_fops' was not declared. Should it be static?
+>
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Zou Wei <zou_wei@huawei.com>
 
-Applied. Thanks
+Applied to bpf tree. Thanks
