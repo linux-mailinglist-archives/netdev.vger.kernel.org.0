@@ -2,74 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 244671B8611
-	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 13:11:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55B741B8613
+	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 13:15:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726390AbgDYLLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Apr 2020 07:11:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38448 "EHLO
+        id S1726088AbgDYLOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Apr 2020 07:14:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726059AbgDYLLF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Apr 2020 07:11:05 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D762C09B04B
-        for <netdev@vger.kernel.org>; Sat, 25 Apr 2020 04:11:05 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id b12so13220328ion.8
-        for <netdev@vger.kernel.org>; Sat, 25 Apr 2020 04:11:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=TViWHe/fCibeg71RMzs+W48ldBatY/PqH+UEQJGff2s=;
-        b=HcrDIwxJ3qVtc13y8Mix9EGYsVrRMOqeozEeQpCDrJPsek+CyI5tsuY2tpXWLuLmBG
-         quxhuCvzlEJ5AoNihANdCs2fdsaj7/BnGKB1c7jYVEN8569BWO7pZTLK/MxRLTmOHBfT
-         SdBO5FGuwOxmjWd2UMwoBX5j0XV98lMGeaA8jyK4b3Xvn7u3/ebMnMi17JJflNRrk+AT
-         n9/i0KxPQ+kd72vKW0yZDWlez+GSrI8mN+EoN2yplFzkfL0pjS6ILXTJLmpF4u77lRwv
-         PhC5sPvWKMYP65O1FLfHwH95rQKbWG5HKwgJIDwLnRNwWfaWhzAPKhfjekrJ29/qavHK
-         r1hQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=TViWHe/fCibeg71RMzs+W48ldBatY/PqH+UEQJGff2s=;
-        b=NuCKDWHyBs9ilt2IGY4PnMrtJEPaAHiwnK4tRnQW8Wx/D9+Uo9O6JILe4BD392ENOx
-         SZdyyIgQIEGaLMNMr4liVQQ0I5rA6cvajkq+CKOvbUo9bRF/qlXyDuGSFsyMdMcIar0u
-         NjAZnZ3HRFzs5+gRzJm2gYL0AKctp1eRQQaudv4Cm46RjCzusWPk2zVd6U7+scwbMUcg
-         +Sn4h4sHJ4d7Q6rCjWXlTa8hwdp76M7kyfUZZGKBUkw8dP1DDOFm87Ha2h6qAVpjEs78
-         9//r0ACzYuRYUdUqB8neHvDRRJjVYroRdvkFn6avAkI4q47/krQOFUmmZtqi9OXB/RkC
-         gn8g==
-X-Gm-Message-State: AGi0PuZmk1gwQQKK5PAzK/vg8mhGWrfzKOkstOkbMGjAkQxR8K4X5hVI
-        /d9xfpljonpR1DIGXCoECqep7z3Kv1ZUqu27fmY=
-X-Google-Smtp-Source: APiQypL40YtW16MzUNLwaurrBRDCBD82C4XaZtcJq5hJs5ljutkTwgjP622uuhipuJ7vE0MjWzJoFv6E2+S6rsEghsQ=
-X-Received: by 2002:a02:ac1:: with SMTP id 184mr12401087jaw.138.1587813064698;
- Sat, 25 Apr 2020 04:11:04 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726050AbgDYLOx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Apr 2020 07:14:53 -0400
+X-Greylist: delayed 78680 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 25 Apr 2020 04:14:52 PDT
+Received: from dvalin.narfation.org (dvalin.narfation.org [IPv6:2a00:17d8:100::8b1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E1FC09B04B;
+        Sat, 25 Apr 2020 04:14:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
+        s=20121; t=1587813290;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KumF6kh56EN8JU+7POkgR7Y2ujlsA83xKr4QGN/daXg=;
+        b=d3wmTxFC0t5ZVqdKAiC+GC/Lm6Thc6opDvrFvelDyKI1DXvCx+KpYYtcjNgP9n95smB8zi
+        2N5EHiMVHUJANDnUUr77SmLF2PmdkndLm/1uNnEgso1JGbjR6n5AR5FG4LCwqBDD1I70/5
+        JxLo+0k2l3VZF+8Qpj05Lsi9Wo+mU1I=
+From:   Sven Eckelmann <sven@narfation.org>
+To:     ath10k@lists.infradead.org
+Cc:     Linus =?ISO-8859-1?Q?L=FCssing?= <linus.luessing@c0d3.blue>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ben Greear <greearb@candelatech.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Linus =?ISO-8859-1?Q?L=FCssing?= <ll@simonwunderlich.de>,
+        mail@adrianschmutzler.de
+Subject: Re: [PATCH] ath10k: increase rx buffer size to 2048
+Date:   Sat, 25 Apr 2020 13:14:42 +0200
+Message-ID: <3097447.aZuNXRJysd@sven-edge>
+In-Reply-To: <3300912.TRQvxCK2vZ@bentobox>
+References: <20200205191043.21913-1-linus.luessing@c0d3.blue> <3300912.TRQvxCK2vZ@bentobox>
 MIME-Version: 1.0
-Received: by 2002:a5e:c242:0:0:0:0:0 with HTTP; Sat, 25 Apr 2020 04:11:03
- -0700 (PDT)
-Reply-To: daoudaali2200@gmail.com
-From:   Daouda Ali <mrdaoudaali3@gmail.com>
-Date:   Sat, 25 Apr 2020 11:11:03 +0000
-Message-ID: <CA+04ALK_vB7GtuRfMm3MdmL3eXtYD=k+9uO7YP9zy_27hyRLFw@mail.gmail.com>
-Subject: INVESTMENT PROPOSAL.
-To:     daoudaali2200@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; boundary="nextPart9684083.LlcNlZrpYr"; micalg="pgp-sha512"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It=E2=80=99s my pleasure to contact you through this media because I need a=
-n
-investment assistance in your country. However I have a profitable
-investment proposal with  good interest to share with you, amounted
-the sum of (Twenty Eight Million Four Hundred Thousand United State
-Dollar ($28.400.000.00). If you  are willing to handle this project
-kindly reply urgent to enable me provide you more information about
-the investment funds and the project.
+--nextPart9684083.LlcNlZrpYr
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 
-I am waiting to hear from you through this my private
-email(daoudaali2200@gmail.com) so we can proceed further.
+On Wednesday, 1 April 2020 09:00:49 CEST Sven Eckelmann wrote:
+> On Wednesday, 5 February 2020 20:10:43 CEST Linus L=FCssing wrote:
+> > From: Linus L=FCssing <ll@simonwunderlich.de>
+> >=20
+> > Before, only frames with a maximum size of 1528 bytes could be
+> > transmitted between two 802.11s nodes.
+> >=20
+> > For batman-adv for instance, which adds its own header to each frame,
+> > we typically need an MTU of at least 1532 bytes to be able to transmit
+> > without fragmentation.
+> >=20
+> > This patch now increases the maxmimum frame size from 1528 to 1656
+> > bytes.
+> [...]
+>=20
+> @Kalle, I saw that this patch was marked as deferred [1] but I couldn't f=
+ind=20
+> any mail why it was done so. It seems like this currently creates real wo=
+rld=20
+> problems - so would be nice if you could explain shortly what is currentl=
+y=20
+> blocking its acceptance.
 
-Best Regards.
-Mr. Daouda Ali.
+Ping?
+
+Kind regards,
+	Sven
+
+> [1] https://patchwork.kernel.org/patch/11367055/
+--nextPart9684083.LlcNlZrpYr
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAl6kG6IACgkQXYcKB8Em
+e0blZhAAtUz1zZuJUiX3gvEu7u03vcUEh+9wxlrnYwC+XmWyXWZ0lswqB5egTyd0
+2XbsmAXldRfVz6HV/Gly3WGR2QBxVCkQPhEhDuUBDuNFnp/QL2+qnriubgRlDYSp
+lIVP1REqUJcADEM92Bec8vWub35lxIwMj3j/DpR9gQ/toJu9C/1Gnuw9i40WTF3i
+K+BMaPwR33aGAdTRDh1fK0zWcpuzRIOMGJf4HhoOgm3HU0K07P64UXC4x40uU1zi
+G7Tn6SekHgtio5DmRRualgp28QE69XK66W25mbLxaZQcvnUHuNEoMZC+bJh+kYkN
+pZiVdlUx6CM+CqSuztHCYT7Dgl3hC8KbTRAfVSY1M44NChglAIO3WXuHasyeqJHn
+n9BJ+q9+AcemX1whESG16iA10KMK/8PsRF9ynzM05W+JiwvDiTB0JbEfS0h4eur0
+dwiavSaAvnhoXV2bra4XxuqDxQWjagq11FCIpMg1U4WpuZSKit2K6hL31wHChsK7
+O03j+un9EU/UHlDRb4G2EM1UU3t6JngjUDlzPr1lNkVFCwiFO4wh4e8nm+GiRmuc
+yj1Wq7FREyBhhDbktr56SFLHoAluhshb2QRE+8yNAELZEi+mKS08kY/c6FVxPo63
+elfS4ktzDlNtkQO4agAAPAmIOijysXjj7mG8a+5A8vhX4Y+s6Ck=
+=2W59
+-----END PGP SIGNATURE-----
+
+--nextPart9684083.LlcNlZrpYr--
+
+
+
