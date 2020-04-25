@@ -2,90 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01C881B82E9
-	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 02:58:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 740901B82ED
+	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 02:58:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726116AbgDYA6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 20:58:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56902 "EHLO
+        id S1726138AbgDYA6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 20:58:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725874AbgDYA6U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 20:58:20 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3E1C09B049;
-        Fri, 24 Apr 2020 17:58:20 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id h11so4376748plr.11;
-        Fri, 24 Apr 2020 17:58:20 -0700 (PDT)
+        with ESMTP id S1725874AbgDYA6x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 20:58:53 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFBE5C09B049;
+        Fri, 24 Apr 2020 17:58:52 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id a21so11829718ljb.9;
+        Fri, 24 Apr 2020 17:58:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tRhsjd8Am6Cw/B3NaPu2RtrW8z5YgI2PGow/Cf8kXxg=;
-        b=dQi4hRZl5mD+QtDwbquIv6+oCtUg88rS3nzeaGjlIZWmBl4sRxXWG/ZnOUoEFsUvju
-         rKBWgeSJDdK0jLS+Je9YphRfZ/m18xtzFlkxgWZnqbPzBYP3zQB/0a7ErocUGCgJbRJ/
-         kSWDGn/TU9vjjh9shuX8O++DEtPnMS/OtIfhvLiVeH/OxDprR9fgNESU4KJqZtq9ZX4Q
-         QWSuN0Thcfoc+9Rr3rKgw5UznPF3Us6SWHCWjIV7Fn34v/RZQTgBsFWtHpgvcUPtvAS3
-         4PXj5vSX3bI6v23vgYRkY56ku2ICU4LPrsVwWbzDSCVCIQN3IzG4to7bYXCBPR9lhuak
-         dddg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=B5m3h4KSPmhQXvUHT8BFSFk4K0ftCc1eyBumHMrZhDM=;
+        b=cnaNtjQsoKEdIYptmkHf3NT1Jo4oslEE00nlcAQ3qiGGG3OneqnnUtYaSPh7CiFEEC
+         hRKfi+GodE8c47D+iWjT1srRE8pdqw2id9HciMJgZgerSwU5FlOob9iuX8np9HylQakI
+         Cy4MaPM4FQh6br4giHliCkx28JJa0oQSjCdhQDO30ne3KTbFUrSYOFhia3CMRCBxUK6S
+         /zcAdNzqtwhlh1d/nUbpIV3k9cH18BUWATojpoeGLW/+BVWJgudhnvS2Ci3AiqMR9sgU
+         /X3X8UJ0psL7x+SMcGUFIlEI2I1fdr7WCFww5XOP+Xs8e8y5wgz2X+MNR6+3+ycik4WP
+         OPTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tRhsjd8Am6Cw/B3NaPu2RtrW8z5YgI2PGow/Cf8kXxg=;
-        b=N0Kkjk71kfZ2pGtZP2qQ1z5HuR7y0Q3NnWYzaFDnS8zpZWBOrAmRC5jwlxxjIGgmum
-         YY4GHpPiMVikC44cwgr1KuToHFhdBkX2VEkuCj9q9xWpaMKVK0EvX06/IA87qwX/48M0
-         R3GM06tmoEiF0sOS/7HSyxhqXs3TqqaftwsEI7UUqYGhPIxcrONwON6eIN7MhnmKishY
-         zGJxSGwHMZyGse+eweN7w/s7vMYe8gs3W04AH2854WvMglYemP0pFWHjJjvN4NPgiSo2
-         16WpHkfObMv0gMoH4M4BPA+yCQdheLaxeI0iMfCOXltpYXw5Xm1edZGElWKxH7LjUkpN
-         a9+w==
-X-Gm-Message-State: AGi0PuZrgllWxMlsAYO4djpXKHUwNLgDUwbZRy52kN1HXvdPWA2v5PgB
-        +AOErKk6fUfd78nIxs6DF2GiARPTxQQ=
-X-Google-Smtp-Source: APiQypK6CtV6IbJKErUbHv1LFjAU21iJSl48bdJnLBN/kxLqLYld/xUASo0Tmun9ng0GMqi2LlrIEg==
-X-Received: by 2002:a17:902:b709:: with SMTP id d9mr11843348pls.118.1587776299555;
-        Fri, 24 Apr 2020 17:58:19 -0700 (PDT)
-Received: from DennisMBP.www.tendawifi.com ([122.225.224.238])
-        by smtp.gmail.com with ESMTPSA id o9sm5672333pje.47.2020.04.24.17.58.17
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 24 Apr 2020 17:58:19 -0700 (PDT)
-From:   Richard Clark <richard.xnu.clark@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, xuesong.cxs@alibaba-inc.com,
-        richard.xnu.clark@gmail.com, Igor Russkikh <irusskikh@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH] Fix the media type of AQC100 ethernet controller in the driver
-Date:   Sat, 25 Apr 2020 08:58:11 +0800
-Message-Id: <20200425005811.13021-1-richard.xnu.clark@gmail.com>
-X-Mailer: git-send-email 2.24.1 (Apple Git-126)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=B5m3h4KSPmhQXvUHT8BFSFk4K0ftCc1eyBumHMrZhDM=;
+        b=Bv+6qqhBNVqB+rSX0WurQbUrbuwNwQ4aKV+5xrsGekVT5xU0J7egRxUPQEY5dKWool
+         wDn7FAOLPc3/2rqIoaLOQqea7l94f0MhmckLHEWIBJT34BfgatmOAwhqnO9/aGhiGxBn
+         wr4WnqgQkhi3BWqJLLs8GrX75wvfM0znW0849PmopmugGUvTRuKniojOlNPYxOom7uyi
+         iqUrWwPSoyDrmskQNzkFeC8gw0dk9NDNt0Z7LdKYrCH4vMFcBGX3ZIY0CsyIjDhUpGe7
+         ikN0qUvV8mxwj96nDwx9LL+rSamW1bgvOdUWWzuoZ2fLTsdOsO4//uZDeV8ueKFdj4zC
+         1kYg==
+X-Gm-Message-State: AGi0PuYsFvBcfwOQqTmo+i8fCfin9fH5PIqiLR1EfDj73uLlXEotvCph
+        2h43PbRvckAtEe732wZesI8+kKOc7JiuwSjbiIk=
+X-Google-Smtp-Source: APiQypI0rxzJ6V3IXhVd3v1ud91CKuA1ei522eCjmo8Y6A6BiDakTJDtB0cBObTdy5oPYDCeeUlSiDRKuY8/sWbgHpc=
+X-Received: by 2002:a2e:990f:: with SMTP id v15mr6553322lji.7.1587776331161;
+ Fri, 24 Apr 2020 17:58:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <158757160439.1370371.13213378122947426220.stgit@firesoul> <158757178332.1370371.3518949026344543513.stgit@firesoul>
+In-Reply-To: <158757178332.1370371.3518949026344543513.stgit@firesoul>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 24 Apr 2020 17:58:39 -0700
+Message-ID: <CAADnVQ+hmYAJP9W_nwY+21OODxNpbxb8W-6CZaro8eL-fG4mog@mail.gmail.com>
+Subject: Re: [PATCH net-next 28/33] mlx5: rx queue setup time determine
+ frame_sz for XDP
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     sameehj@amazon.com, Tariq Toukan <tariqt@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, zorik@amazon.com,
+        Arthur Kiyanovski <akiyano@amazon.com>, gtzalik@amazon.com,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Aquantia AQC100 controller enables a SFP+ port, so the driver should
-configure the media type as '_TYPE_FIBRE' instead of '_TYPE_TP'.
+On Wed, Apr 22, 2020 at 9:09 AM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
+>
+> The mlx5 driver have multiple memory models, which are also changed
+> according to whether a XDP bpf_prog is attached.
+>
+> The 'rx_striding_rq' setting is adjusted via ethtool priv-flags e.g.:
+>  # ethtool --set-priv-flags mlx5p2 rx_striding_rq off
+>
+> On the general case with 4K page_size and regular MTU packet, then
+> the frame_sz is 2048 and 4096 when XDP is enabled, in both modes.
+>
+> The info on the given frame size is stored differently depending on the
+> RQ-mode and encoded in a union in struct mlx5e_rq union wqe/mpwqe.
+> In rx striding mode rq->mpwqe.log_stride_sz is either 11 or 12, which
+> corresponds to 2048 or 4096 (MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ).
+> In non-striding mode (MLX5_WQ_TYPE_CYCLIC) the frag_stride is stored
+> in rq->wqe.info.arr[0].frag_stride, for the first fragment, which is
+> what the XDP case cares about.
+>
+> To reduce effect on fast-path, this patch determine the frame_sz at
+> setup time, to avoid determining the memory model runtime. Variable
+> is named first_frame_sz to make it clear that this is only the frame
+> size of the first fragment.
+>
+> This mlx5 driver does a DMA-sync on XDP_TX action, but grow is safe
+> as it have done a DMA-map on the entire PAGE_SIZE. The driver also
+> already does a XDP length check against sq->hw_mtu on the possible
+> XDP xmit paths mlx5e_xmit_xdp_frame() + mlx5e_xmit_xdp_frame_mpwqe().
+>
+> Cc: Tariq Toukan <tariqt@mellanox.com>
+> Cc: Saeed Mahameed <saeedm@mellanox.com>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en.h      |    1 +
+>  drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c  |    1 +
+>  drivers/net/ethernet/mellanox/mlx5/core/en_main.c |    6 ++++++
+>  3 files changed, 8 insertions(+)
 
-Signed-off-by: Richard Clark <richard.xnu.clark@gmail.com>
-Cc: Igor Russkikh <irusskikh@marvell.com>
-Cc: "David S. Miller" <davem@davemloft.net>
----
- drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-index 2edf137a7030..8a70ffe1d326 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-@@ -57,7 +57,7 @@ static const struct aq_board_revision_s hw_atl_boards[] = {
- 	{ AQ_DEVICE_ID_D108,	AQ_HWREV_2,	&hw_atl_ops_b0, &hw_atl_b0_caps_aqc108, },
- 	{ AQ_DEVICE_ID_D109,	AQ_HWREV_2,	&hw_atl_ops_b0, &hw_atl_b0_caps_aqc109, },
- 
--	{ AQ_DEVICE_ID_AQC100,	AQ_HWREV_ANY,	&hw_atl_ops_b1, &hw_atl_b0_caps_aqc107, },
-+	{ AQ_DEVICE_ID_AQC100,	AQ_HWREV_ANY,	&hw_atl_ops_b1, &hw_atl_b0_caps_aqc100, },
- 	{ AQ_DEVICE_ID_AQC107,	AQ_HWREV_ANY,	&hw_atl_ops_b1, &hw_atl_b0_caps_aqc107, },
- 	{ AQ_DEVICE_ID_AQC108,	AQ_HWREV_ANY,	&hw_atl_ops_b1, &hw_atl_b0_caps_aqc108, },
- 	{ AQ_DEVICE_ID_AQC109,	AQ_HWREV_ANY,	&hw_atl_ops_b1, &hw_atl_b0_caps_aqc109, },
--- 
-2.17.1
+Hey mellanox folks,
 
+you had an active discussion regarding mlx5 changes earlier.
+Were your concerns resolved ?
+If so, could you please ack.
