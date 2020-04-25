@@ -2,80 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 827501B82DF
-	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 02:46:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D35C41B82E2
+	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 02:48:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726191AbgDYAqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 20:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55118 "EHLO
+        id S1726135AbgDYAsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 20:48:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726031AbgDYAqp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 20:46:45 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B84C09B049;
-        Fri, 24 Apr 2020 17:46:44 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id l19so11804036lje.10;
-        Fri, 24 Apr 2020 17:46:44 -0700 (PDT)
+        with ESMTP id S1726031AbgDYAsh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 20:48:37 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FF2C09B049;
+        Fri, 24 Apr 2020 17:48:36 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id u6so11806828ljl.6;
+        Fri, 24 Apr 2020 17:48:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hgq9stGHw/T+hAa8NJqjsEzs0n8WGs/uzkfFQrLPzgA=;
-        b=diFn3eGhG1FBbS2GswYINrnafaWh+34OkCCYahMI7b+kUX9/EVoAQSX02UXMsizHOS
-         mk9V4Z62spMaDNtSpNTvRy2SfAnSnmQ946oVXKgpKWwb+HkPp6OSFUBSDwdQbtH8qlM1
-         670S9pO0IxClTaE6R8RwYMjrRCeR9Zu+awTSy6pk03PdwkSsc66q+GQH0ETnYx3UNPj3
-         OOPOCB5DNiNftcr/5jSn5hCuZl8GZi/nsOAk5HiXJAtgaEOjOphFAGBLF+8W/A273g3i
-         lVB59uwaiFsg+tApM0AV5gyfp0SuzZJ9V6TZuUt6DRXN1xQ3mCRRfqc2ckGwWuun+DFj
-         hy/Q==
+        bh=NsQavboMviC46TTE6iijTekGRHyX4NjoGpEvCT6wOYQ=;
+        b=WMEkaXKkeMJ9u8VhnOJz/pr9wnJAgvaAgASHFXizR8jsWZS+X3SlhZkotj2DaGj39H
+         RiX5YQO/nvtsTq6TqNycZITnLRPo306Y5HAURBthMeNE0gDaRDJs8DVZmEW6kW5N1Ius
+         HTWggeo4vLHAJr2fIPyoaWkDCwUv2myV0jRo4AIBnlmtVlxdU4shwgM+mCDb6vY+liTP
+         CDRBCkReipvRPMSjEE33VimM2TrdHna9dSr6anm/zkoW7qVys6yvljI3SRsyhMmIlJxk
+         cqd3yNsWZs60nRKE5n2rMw4cXD1nE/xueJ71HU8mIVe/SBw/zPAoN2Inmj7O/4pGqwR/
+         lnDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hgq9stGHw/T+hAa8NJqjsEzs0n8WGs/uzkfFQrLPzgA=;
-        b=afmRnvJD7EKkgFpevEUcDhfvYiKmoPsvzMnucQ1eoMXwT2cRYhlxHDlcxfkuiAmpBS
-         aSwFVDtCfrnVMZezAKngnn0QP8f0p+7TEpC/cGrvrCDMm/9HAxyI3y+EaUJGnTl9h9F6
-         hNbYVcXoobdxLC0yQ2feHlDkjSALAF7tep+FE9L30ghMeaqnfQY1ZwNUszSyMm2271jK
-         Q6uVWBPgA4BCdH+CFJCG+MGqFBL4AU9k251XTAn8WMJGrJblCP/MkGELK69NlSSUhgwt
-         cYwVtX3W8KdWA85ltKDNbRAz6Qlkpf+RSytkQSGV798EVkj0+FZezuXixCP0ZVNjyUJa
-         5QEw==
-X-Gm-Message-State: AGi0PuY0ZfzLeCFZ+l3weDpTXWv9DrqF8NbtsKwrBvbU8OxR5C8QyedC
-        x21fcycGFMAMnUoGCU1L5F4+hktccc9aq6XfDx0=
-X-Google-Smtp-Source: APiQypLeloX0bj0jAnhjstM+vxjEgs5d7GVgUsJPftqhW95hLbgFcOEJVkd8pySnZ+abeCchUjwWISWNHnBCP6vs0ho=
-X-Received: by 2002:a2e:9011:: with SMTP id h17mr7696891ljg.138.1587775603308;
- Fri, 24 Apr 2020 17:46:43 -0700 (PDT)
+        bh=NsQavboMviC46TTE6iijTekGRHyX4NjoGpEvCT6wOYQ=;
+        b=KjEyCnr9FVVUay1p9mT2//iBRXf3RWeqOueyrxQtehZfWc87EgzNg2xX9wALVA11w7
+         0FNPNWwXEDOhOfYY6aWkUomRqShkYK4CBGz3ldFmN8FLlvypbmAMqFGsG6c2ATZw+cIX
+         051jIu9+S+cRt1k6UsYioHJd1gYhUw86qWIfhMi6nNsxMMRJfxMf2ycnLdEnz/N2TUh1
+         VjaVHhSydnLK/KI9skIa5PMwNEBS68lmpJlgtAPHaEaUJr8E3k7UmPIf3z4LHTNXd/DB
+         27Jkp20cOCSO0dC+JC5GS/OUeJuhMMxm3E4xRiY98HQhwOOiRMDedmfesYTe9JsvlYl8
+         VTYQ==
+X-Gm-Message-State: AGi0Puauru4GVY3LqAyf7nUoMR1vn4y05uGIkUHyvvN3AunoWi5Kspxl
+        K04ATu+pTw4CWGH9KH1dfF8bIe+uBrk8e7eLcPRv0A==
+X-Google-Smtp-Source: APiQypLKx6g8Cdu6GHQ62qS4lIV/x/wfq8XXNAmItmf59Kc8eKy2kDvIE8xZDfHa9jxtGvVPsSz4jyJ6gRsUNKu4MRo=
+X-Received: by 2002:a2e:a169:: with SMTP id u9mr7768079ljl.144.1587775714973;
+ Fri, 24 Apr 2020 17:48:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200422012407.176303-1-andriin@fb.com>
-In-Reply-To: <20200422012407.176303-1-andriin@fb.com>
+References: <20200422003753.124921-1-sdf@google.com>
+In-Reply-To: <20200422003753.124921-1-sdf@google.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 24 Apr 2020 17:46:31 -0700
-Message-ID: <CAADnVQL6Q5KCiUed2ckP=9kmW8ogoCoSyUU4G96Z7SCku_ngug@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] tools/runqslower: ensure own vmlinux.h is picked
- up first
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
+Date:   Fri, 24 Apr 2020 17:48:23 -0700
+Message-ID: <CAADnVQL+p1XmSsUe1UZ99PbBy7x-w8rqND-5HzZ5MENZtNAEvA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: fix a couple of broken test_btf cases
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 21, 2020 at 6:24 PM Andrii Nakryiko <andriin@fb.com> wrote:
+On Tue, Apr 21, 2020 at 5:37 PM Stanislav Fomichev <sdf@google.com> wrote:
 >
-> Reorder include paths to ensure that runqslower sources are picking up
-> vmlinux.h, generated by runqslower's own Makefile. When runqslower is built
-> from selftests/bpf, due to current -I$(BPF_INCLUDE) -I$(OUTPUT) ordering, it
-> might pick up not-yet-complete vmlinux.h, generated by selftests Makefile,
-> which could lead to compilation errors like [0]. So ensure that -I$(OUTPUT)
-> goes first and rely on runqslower's Makefile own dependency chain to ensure
-> vmlinux.h is properly completed before source code relying on it is compiled.
+> Commit 51c39bb1d5d1 ("bpf: Introduce function-by-function verification")
+> introduced function linkage flag and changed the error message from
+> "vlen != 0" to "Invalid func linkage" and broke some fake BPF programs.
 >
->   [0] https://travis-ci.org/github/libbpf/libbpf/jobs/677905925
+> Adjust the test accordingly.
 >
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> AFACT, the programs don't really need any arguments and only look
+> at BTF for maps, so let's drop the args altogether.
+>
+> Before:
+> BTF raw test[103] (func (Non zero vlen)): do_test_raw:3703:FAIL expected
+> err_str:vlen != 0
+> magic: 0xeb9f
+> version: 1
+> flags: 0x0
+> hdr_len: 24
+> type_off: 0
+> type_len: 72
+> str_off: 72
+> str_len: 10
+> btf_total_size: 106
+> [1] INT (anon) size=4 bits_offset=0 nr_bits=32 encoding=SIGNED
+> [2] INT (anon) size=4 bits_offset=0 nr_bits=32 encoding=(none)
+> [3] FUNC_PROTO (anon) return=0 args=(1 a, 2 b)
+> [4] FUNC func type_id=3 Invalid func linkage
+>
+> BTF libbpf test[1] (test_btf_haskv.o): libbpf: load bpf program failed:
+> Invalid argument
+> libbpf: -- BEGIN DUMP LOG ---
+> libbpf:
+> Validating test_long_fname_2() func#1...
+> Arg#0 type PTR in test_long_fname_2() is not supported yet.
+> processed 0 insns (limit 1000000) max_states_per_insn 0 total_states 0
+> peak_states 0 mark_read 0
+>
+> libbpf: -- END LOG --
+> libbpf: failed to load program 'dummy_tracepoint'
+> libbpf: failed to load object 'test_btf_haskv.o'
+> do_test_file:4201:FAIL bpf_object__load: -4007
+> BTF libbpf test[2] (test_btf_newkv.o): libbpf: load bpf program failed:
+> Invalid argument
+> libbpf: -- BEGIN DUMP LOG ---
+> libbpf:
+> Validating test_long_fname_2() func#1...
+> Arg#0 type PTR in test_long_fname_2() is not supported yet.
+> processed 0 insns (limit 1000000) max_states_per_insn 0 total_states 0
+> peak_states 0 mark_read 0
+>
+> libbpf: -- END LOG --
+> libbpf: failed to load program 'dummy_tracepoint'
+> libbpf: failed to load object 'test_btf_newkv.o'
+> do_test_file:4201:FAIL bpf_object__load: -4007
+> BTF libbpf test[3] (test_btf_nokv.o): libbpf: load bpf program failed:
+> Invalid argument
+> libbpf: -- BEGIN DUMP LOG ---
+> libbpf:
+> Validating test_long_fname_2() func#1...
+> Arg#0 type PTR in test_long_fname_2() is not supported yet.
+> processed 0 insns (limit 1000000) max_states_per_insn 0 total_states 0
+> peak_states 0 mark_read 0
+>
+> libbpf: -- END LOG --
+> libbpf: failed to load program 'dummy_tracepoint'
+> libbpf: failed to load object 'test_btf_nokv.o'
+> do_test_file:4201:FAIL bpf_object__load: -4007
+>
+> Fixes: 51c39bb1d5d1 ("bpf: Introduce function-by-function verification")
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
 
 Applied to bpf tree. Thanks
