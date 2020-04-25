@@ -2,188 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37B761B8372
-	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 05:24:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63B3B1B837C
+	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 05:41:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726100AbgDYDYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 24 Apr 2020 23:24:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51126 "EHLO
+        id S1726107AbgDYDk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 24 Apr 2020 23:40:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726044AbgDYDYO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 23:24:14 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3DC7C09B049;
-        Fri, 24 Apr 2020 20:24:13 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id ay1so4496729plb.0;
-        Fri, 24 Apr 2020 20:24:13 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726040AbgDYDk5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 24 Apr 2020 23:40:57 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB3CC09B049;
+        Fri, 24 Apr 2020 20:40:57 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id a31so2819636pje.1;
+        Fri, 24 Apr 2020 20:40:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+WWRfuh7orlDLquuWjDA1XfaW8hyaMu/nAdtjV6yHDE=;
-        b=JLIs3Bh4uHW3U/AMTC7VFILjriTdxHiuOYupAn0iehDHDeTsN5duNJObH9sOT43MZu
-         vLRx22woP89ph1nqPeGwjYxt2QKmZwFiOMSIS1ZMB0irD8MTGRXDxiZ6ckGF+ud2belB
-         nQK1370Wf7XcGwGrB+Lig59AyT3k2qlaVgcO4qMWEHYO3geDRyA6tIon/IDtqo2ChVwt
-         eQ83Yk63lPFmy1Y47GlKamnRkeggu9jMsLn6mOkSL8HEIOBroUF9a7Y8f47Bk/6+aLTY
-         KoBryaGPn7Q86xstFz+GhtzSJlF2xQeapA79siddEzfq+5GEH5k0L8dRxDnr1HlqIEmi
-         izWQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=gCcVH5/Hux51e5ZSE0ZORMI0y0lsJ9xoQDGyU7wszng=;
+        b=ja+XnjTe6I4Lxn5InchvNZxgfI+GlwoZdcDBB02rXCrU0cv1D/vzc8QMMiSBNaFmUv
+         1bbqUN+D8HoBJ71WcZK12HEunTDITWvQi9cDH+cqJB1dxb/jccB2qD/CY/IA1uds1Kei
+         2PNS5En2dviHTLVag9elDQfu8LG9naxOwbzHUYPB8vyUyb2I4pvq4hZbOfHdp87RDice
+         hRdApggAvTm9FdQB3Edgww5ix3PBpFChAGQVyNEbp+TDXnJ1QceJlCjJFqJB2lio6fpu
+         AjqVj4FdyI1UWfCToihTR2h3SicG6Gfw4sK9EWFLVu9V2/x+gQryOSCzqlNVSzJ8RP5W
+         PGtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+WWRfuh7orlDLquuWjDA1XfaW8hyaMu/nAdtjV6yHDE=;
-        b=DvGhbnz286JEB6vTfli9+S/c6/dAEIvyeI4R0CDfpU4ZIMU6wmTyzGIzopWsSsJ8ME
-         xo4ri2ZdT27eToeI7PsZ8XccIjTCpCGdgUH4vHR0JXARfdFIztmdRe3ViJ81HUBkOVsN
-         VqrZ/lasNDO+TkCo3T0xVhcc14BcHRxu5A8OZC2U+AbwpRbDDQOlhpvIY+fV7+09PxZO
-         9a/BWKyXb+qA7EDUIFIY7VQ6SEwo8289cTzyPDuWgxI6Cmd+vaFaOLXxHh9T2F4vqawr
-         XJXx30erF1vkG1wWAPRc5kSQ4xG9kJbvC1NZaKzGA/hfCafqgTOTOAMC69KMHUcIDoqN
-         9GXw==
-X-Gm-Message-State: AGi0Pubmq3lcuv8DDa9O7q+wkiGulGDYuIStkbbLPnyEwO/5/T2agEdT
-        mOSCAK1w77mQok8tquPdVqI=
-X-Google-Smtp-Source: APiQypKq4i0pK29jsd54pGTw2Q9VSTzYuEzalz8VHem8Lrq2yZj6xK1wFb/3eKyGIrSXmrCx2ekT3w==
-X-Received: by 2002:a17:902:b617:: with SMTP id b23mr13199898pls.194.1587785053356;
-        Fri, 24 Apr 2020 20:24:13 -0700 (PDT)
-Received: from [192.168.1.18] (i223-218-245-204.s42.a013.ap.plala.or.jp. [223.218.245.204])
-        by smtp.googlemail.com with ESMTPSA id u8sm5801288pjy.16.2020.04.24.20.24.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Apr 2020 20:24:12 -0700 (PDT)
-Subject: Re: [PATCH net-next 07/33] xdp: xdp_frame add member frame_sz and
- handle in convert_to_xdp_frame
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     sameehj@amazon.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        zorik@amazon.com, akiyano@amazon.com, gtzalik@amazon.com,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        David Ahern <dsahern@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        steffen.klassert@secunet.com
-References: <158757160439.1370371.13213378122947426220.stgit@firesoul>
- <158757167661.1370371.5983006045491610549.stgit@firesoul>
-From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
-Message-ID: <5c929d29-8cf8-de81-3b96-f63a9195c735@gmail.com>
-Date:   Sat, 25 Apr 2020 12:24:07 +0900
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <158757167661.1370371.5983006045491610549.stgit@firesoul>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=gCcVH5/Hux51e5ZSE0ZORMI0y0lsJ9xoQDGyU7wszng=;
+        b=Uwy32jewjS5SsYIFKrUCNEX05hvfDqlMtPNxDzgOuXGbE0VDQB74TlkZQSkdSBDwKh
+         5pbC72wFMjGQJy3BxwnrAFdOXwzZva4nhU4OhwhR/2wX+ZwGC+7BN0FEqLSCy65gLj0l
+         WqtYJpnmb/OAoyrzxgtC8BPrU7somUru5464um37VCjFygiP9eP0h4FrtYKNJpq0zR2P
+         ld+jE5jm26tO2M0rMKCMzOCPlt7JKSUL5uT6RBWccCjC/JI1qe3LZ4YyBxUwDpH0xTdz
+         SBZCyfGLP1ZAOc0hSNto139MCb9e9kjRzfh+MxFP0VuiWU2/SdbMGeLI5N/RoSZjyBU7
+         bGSA==
+X-Gm-Message-State: AGi0PuZz86JlgS0yHtWsWqFh/1RS5Px8N7RRwwcpvofSyZQTdOdCPFD+
+        t1Im6hMfox1XWwcJgKjPCpeWf6yG
+X-Google-Smtp-Source: APiQypI50Hfnd9bueBR4Xb48mVHTJUV+OwcoGfTFJMfaIOXvKO9su7aToMvXUmNYMSXzc/uHy0JvUQ==
+X-Received: by 2002:a17:90a:bf86:: with SMTP id d6mr9605583pjs.180.1587786056727;
+        Fri, 24 Apr 2020 20:40:56 -0700 (PDT)
+Received: from local.opencloud.tech.localdomain ([219.142.146.4])
+        by smtp.gmail.com with ESMTPSA id g9sm6096353pgj.89.2020.04.24.20.40.54
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 24 Apr 2020 20:40:56 -0700 (PDT)
+From:   xiangxia.m.yue@gmail.com
+To:     eric.dumazet@gmail.com, geert@linux-m68k.org, pshelar@ovn.org,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Subject: [PATCH 1/2] net: openvswitch: suitable access to the dp_meters
+Date:   Sat, 25 Apr 2020 11:39:47 +0800
+Message-Id: <1587785988-23517-1-git-send-email-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/04/23 1:07, Jesper Dangaard Brouer wrote:
-> Use hole in struct xdp_frame, when adding member frame_sz, which keeps
-> same sizeof struct (32 bytes)
-> 
-> Drivers ixgbe and sfc had bug cases where the necessary/expected
-> tailroom was not reserved. This can lead to some hard to catch memory
-> corruption issues. Having the drivers frame_sz this can be detected when
-> packet length/end via xdp->data_end exceed the xdp_data_hard_end
-> pointer, which accounts for the reserved the tailroom.
-> 
-> When detecting this driver issue, simply fail the conversion with NULL,
-> which results in feedback to driver (failing xdp_do_redirect()) causing
-> driver to drop packet. Given the lack of consistent XDP stats, this can
-> be hard to troubleshoot. And given this is a driver bug, we want to
-> generate some more noise in form of a WARN stack dump (to ID the driver
-> code that inlined convert_to_xdp_frame).
-> 
-> Inlining the WARN macro is problematic, because it adds an asm
-> instruction (on Intel CPUs ud2) what influence instruction cache
-> prefetching. Thus, introduce xdp_warn and macro XDP_WARN, to avoid this
-> and at the same time make identifying the function and line of this
-> inlined function easier.
-> 
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> ---
->   include/net/xdp.h |   14 +++++++++++++-
->   net/core/xdp.c    |    7 +++++++
->   2 files changed, 20 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/net/xdp.h b/include/net/xdp.h
-> index 99f4374f6214..55a885aa4e53 100644
-> --- a/include/net/xdp.h
-> +++ b/include/net/xdp.h
-> @@ -93,7 +93,8 @@ struct xdp_frame {
->   	void *data;
->   	u16 len;
->   	u16 headroom;
-> -	u16 metasize;
-> +	u32 metasize:8;
-> +	u32 frame_sz:24;
->   	/* Lifetime of xdp_rxq_info is limited to NAPI/enqueue time,
->   	 * while mem info is valid on remote CPU.
->   	 */
-> @@ -108,6 +109,10 @@ static inline void xdp_scrub_frame(struct xdp_frame *frame)
->   	frame->dev_rx = NULL;
->   }
->   
-> +/* Avoids inlining WARN macro in fast-path */
-> +void xdp_warn(const char* msg, const char* func, const int line);
-> +#define XDP_WARN(msg) xdp_warn(msg, __func__, __LINE__)
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-Shouldn't this have WARN_ONCE()-like mechanism?
-A buggy driver may generate massive amount of dump messages...
+To fix the following sparse warning:
+| net/openvswitch/meter.c:109:38: sparse: sparse: incorrect type
+| in assignment (different address spaces) ...
+| net/openvswitch/meter.c:720:45: sparse: sparse: incorrect type
+| in argument 1 (different address spaces) ...
 
-Toshiaki Makita
+Reported-by: kbuild test robot <lkp@intel.com>
+Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+---
+ net/openvswitch/meter.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-> +
->   struct xdp_frame *xdp_convert_zc_to_xdp_frame(struct xdp_buff *xdp);
->   
->   /* Convert xdp_buff to xdp_frame */
-> @@ -128,6 +133,12 @@ struct xdp_frame *convert_to_xdp_frame(struct xdp_buff *xdp)
->   	if (unlikely((headroom - metasize) < sizeof(*xdp_frame)))
->   		return NULL;
->   
-> +	/* Catch if driver didn't reserve tailroom for skb_shared_info */
-> +	if (unlikely(xdp->data_end > xdp_data_hard_end(xdp))) {
-> +		XDP_WARN("Driver BUG: missing reserved tailroom");
-> +		return NULL;
-> +	}
-> +
->   	/* Store info in top of packet */
->   	xdp_frame = xdp->data_hard_start;
->   
-> @@ -135,6 +146,7 @@ struct xdp_frame *convert_to_xdp_frame(struct xdp_buff *xdp)
->   	xdp_frame->len  = xdp->data_end - xdp->data;
->   	xdp_frame->headroom = headroom - sizeof(*xdp_frame);
->   	xdp_frame->metasize = metasize;
-> +	xdp_frame->frame_sz = xdp->frame_sz;
->   
->   	/* rxq only valid until napi_schedule ends, convert to xdp_mem_info */
->   	xdp_frame->mem = xdp->rxq->mem;
-> diff --git a/net/core/xdp.c b/net/core/xdp.c
-> index 4c7ea85486af..4bc3026ae218 100644
-> --- a/net/core/xdp.c
-> +++ b/net/core/xdp.c
-> @@ -11,6 +11,7 @@
->   #include <linux/slab.h>
->   #include <linux/idr.h>
->   #include <linux/rhashtable.h>
-> +#include <linux/bug.h>
->   #include <net/page_pool.h>
->   
->   #include <net/xdp.h>
-> @@ -496,3 +497,9 @@ struct xdp_frame *xdp_convert_zc_to_xdp_frame(struct xdp_buff *xdp)
->   	return xdpf;
->   }
->   EXPORT_SYMBOL_GPL(xdp_convert_zc_to_xdp_frame);
-> +
-> +/* Used by XDP_WARN macro, to avoid inlining WARN() in fast-path */
-> +void xdp_warn(const char* msg, const char* func, const int line) {
-> +	WARN(1, "XDP_WARN: %s(line:%d): %s\n", func, line, msg);
-> +};
-> +EXPORT_SYMBOL_GPL(xdp_warn);
-> 
-> 
+diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
+index 915f31123f23..612ad5586ce9 100644
+--- a/net/openvswitch/meter.c
++++ b/net/openvswitch/meter.c
+@@ -107,8 +107,8 @@ dp_meter_instance_realloc(struct dp_meter_table *tbl, u32 size)
+ 		return -ENOMEM;
+ 
+ 	for (i = 0; i < n_meters; i++)
+-		new_ti->dp_meters[i] =
+-			rcu_dereference_ovsl(ti->dp_meters[i]);
++		if (rcu_dereference_ovsl(ti->dp_meters[i]))
++			new_ti->dp_meters[i] = ti->dp_meters[i];
+ 
+ 	rcu_assign_pointer(tbl->ti, new_ti);
+ 	call_rcu(&ti->rcu, dp_meter_instance_free_rcu);
+@@ -752,7 +752,7 @@ void ovs_meters_exit(struct datapath *dp)
+ 	int i;
+ 
+ 	for (i = 0; i < ti->n_meters; i++)
+-		ovs_meter_free(ti->dp_meters[i]);
++		ovs_meter_free(rcu_dereference_raw(ti->dp_meters[i]));
+ 
+ 	dp_meter_instance_free(ti);
+ }
+-- 
+2.23.0
+
