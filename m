@@ -2,83 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BECFA1B8917
-	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 21:40:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7309C1B8922
+	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 21:49:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726296AbgDYTk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Apr 2020 15:40:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60596 "EHLO
+        id S1726230AbgDYTtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Apr 2020 15:49:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726196AbgDYTk3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Apr 2020 15:40:29 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD9FCC09B04D
-        for <netdev@vger.kernel.org>; Sat, 25 Apr 2020 12:40:28 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id i13so4569297ybl.13
-        for <netdev@vger.kernel.org>; Sat, 25 Apr 2020 12:40:28 -0700 (PDT)
+        with ESMTP id S1726190AbgDYTtt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Apr 2020 15:49:49 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D302C09B04D
+        for <netdev@vger.kernel.org>; Sat, 25 Apr 2020 12:49:49 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id p25so6574054pfn.11
+        for <netdev@vger.kernel.org>; Sat, 25 Apr 2020 12:49:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=QgqdoTX1q9FiyDtvZ8kmw0m0jsyKN3E1rjb/fZBzd1A=;
-        b=GYqsepRgHIN4pYKZhD3ayQCJQvPHjEursR/OwT55wu5f8yS5NfmprIJfS4Ucb5G2pS
-         M58rQZGMsdrolZOvv8bZheaRkvpWMG91IbWpzRVoXipCPNcTSkp1Ah3XjqWTGXXCr70n
-         SAqMmdxhLxqCZpoZ+0iwCRW3Re1DcsqZj9JTBBhoupcM/W2PRKaHnsgKYlLOQCkZ9Cte
-         Jsie1q6SoZXyjhQffhDHFPspnKoV0LY52iZotnaoE6qdVKPEjv+eZPaTfTNLAE6dsz/s
-         1UXZaTyLZhvqF5MB0PqArW4TCOt+9DqYvOD0t2KdN5sjUWB1Qnfvmv/bbQBkOVLfI5Kw
-         CDIw==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=OgQBYHxpB5C2Gqqqxd5hIxOS8nTA6NXra5DezFPK+qo=;
+        b=WXjtTExLY50dMr5el+pEOixrWDjsLE1vKzMrD+JqE/r5mDS8mdhckQa5oThh6yFwDw
+         do1QbJdqz1pdAzdh7VfbvhwwWqJVlLLZddhadl2Z9tV258LOplXGhzssFB65PpFEdYPy
+         dlUHp81IijSxFJliuHlGq9vm1N1CHFF8DBCahB6cxL7IjMoSGCFBGqTlSP4/w3e3Tp0l
+         qAi0fYVAMbU3vLaiLAUPc1d/2ZCaJDQoMhe+1qNTNdFBK6Zm2Tz6eVPv39NBG8yPnd9B
+         A8wARRh0v9+8Uo08ZwwDS0XEcwoME5EB0fB9b3nTRF1Ra0mip9oP0YTsbKjeYsWG2g1S
+         bbKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=QgqdoTX1q9FiyDtvZ8kmw0m0jsyKN3E1rjb/fZBzd1A=;
-        b=bPr/0BRrNu3f4bkwJC7zOzJ9tpsS/SlZsRsxBZexbDMkA6wEPiZVJlORJIPidQ4Xso
-         jab7VLoDov8BG12iJchsp/9jBRmwlG3Zcsz23xbkdYxfo88ewAltBad4cRrucqRVXn2d
-         aV2wBFEENUrZ2XEkb3IF92AHKJLZW6kSrRH0I2wtmYy5eMNPUv0gGu5sgHQAySY/kRzr
-         m3iKmySCU1sLlT13nSgmwU6jNbnqYFWftN85y0qBCCbSy+4w5T2zFsy8X8LK3Fod6ywZ
-         +fdtpzfV5SfMeGiIYdIwdsQm+1YC3RGeGe8/AXxtwLVuawdiUi5Pa6C2TQLsZHZrb9JY
-         v7fw==
-X-Gm-Message-State: AGi0PuaZeZ7f0UbLWO3kUwVVZelVRYMdL0Janqe500MQCZ4uOCaZ/Rc1
-        imn2i8GwtbvXSzB/boqCq4GFawTe5MDA5w==
-X-Google-Smtp-Source: APiQypJ1waA/49ECTyt+1018/gzQ0zVqDYl3wf/pejRiC1XqnyrcPLoLi4+OERo1scsBb3IxfW6cd0HkIj9tCQ==
-X-Received: by 2002:a25:3ac1:: with SMTP id h184mr24117383yba.345.1587843628139;
- Sat, 25 Apr 2020 12:40:28 -0700 (PDT)
-Date:   Sat, 25 Apr 2020 12:40:25 -0700
-Message-Id: <20200425194025.70351-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.26.2.303.gf8c07b1a785-goog
-Subject: [PATCH v2 net] fq_codel: fix TCA_FQ_CODEL_DROP_BATCH_SIZE sanity checks
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OgQBYHxpB5C2Gqqqxd5hIxOS8nTA6NXra5DezFPK+qo=;
+        b=Jhvl3krpUerdt/CQFMPMh8n07cdjJLKpdOzUvLj2u4ZC1YYxdpi5/29QjLSC9MENOl
+         8lp2Hdt08dVunaCahFi0lne4HUALU3TTeJMhHulqf8o4kumjXjDIMqWYGxTJa4dRg+ew
+         VYa3Gz+OQwQxyLyho/Tpal0gxN0hat/iXTHL0w76uIQ0AurFiY99SZ2J0KNSjto4R/qg
+         6WgN38MRNXOGeBD7Ye1vQo8KJGPpVqMLNnHna6VscSiq/Ygg6vp8qdshoUPxypfSeuBy
+         bLnrm6boeVLmstneux6cjryS4iXW3wwngiBLbVxQwPGYOmfhSJcAOr3dIpnD+XL+vOvZ
+         8d1Q==
+X-Gm-Message-State: AGi0PuZStvEsS4c/tiFSTDe/zF4/6CJiqbqtL2XVVhA1L+ytr9JCnBSG
+        eeQwFlEP83JCUVPHz/U4hLn78g/H
+X-Google-Smtp-Source: APiQypJkcqTBeqE/Yw/i2QsiOqEO202k/Y3Ir55to/CQs3IB6VBCzavE0HPzWTcQRcsSN7n3PDH6Jg==
+X-Received: by 2002:aa7:943c:: with SMTP id y28mr16133205pfo.171.1587844188534;
+        Sat, 25 Apr 2020 12:49:48 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id x25sm8755589pfm.203.2020.04.25.12.49.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 25 Apr 2020 12:49:47 -0700 (PDT)
+Subject: Re: [PATCH net-next v1 2/9] net: phy: Add support for polling cable
+ test
+To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Chris Healy <cphealy@gmail.com>,
+        Michal Kubecek <mkubecek@suse.cz>
+References: <20200425180621.1140452-1-andrew@lunn.ch>
+ <20200425180621.1140452-3-andrew@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <7557316a-fc27-ac05-6f6d-b9bac81afd82@gmail.com>
+Date:   Sat, 25 Apr 2020 12:49:46 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <20200425180621.1140452-3-andrew@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My intent was to not let users set a zero drop_batch_size,
-it seems I once again messed with min()/max().
+Hi Andrew,
 
-Fixes: 9d18562a2278 ("fq_codel: add batch ability to fq_codel_drop()")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/sched/sch_fq_codel.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 4/25/2020 11:06 AM, Andrew Lunn wrote:
+> Some PHYs are not capable of generating interrupts when a cable test
+> finished. They do however support interrupts for normal operations,
+> like link up/down. As such, the PHY state machine would normally not
+> poll the PHY.
+> 
+> Add support for indicating the PHY state machine must poll the PHY
+> when performing a cable test.
+> 
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
-diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
-index 968519ff36e97734e495d90331d3e3197660b8f6..436160be9c180ceedaeb74126e40c7e24bf7ccba 100644
---- a/net/sched/sch_fq_codel.c
-+++ b/net/sched/sch_fq_codel.c
-@@ -416,7 +416,7 @@ static int fq_codel_change(struct Qdisc *sch, struct nlattr *opt,
- 		q->quantum = max(256U, nla_get_u32(tb[TCA_FQ_CODEL_QUANTUM]));
- 
- 	if (tb[TCA_FQ_CODEL_DROP_BATCH_SIZE])
--		q->drop_batch_size = min(1U, nla_get_u32(tb[TCA_FQ_CODEL_DROP_BATCH_SIZE]));
-+		q->drop_batch_size = max(1U, nla_get_u32(tb[TCA_FQ_CODEL_DROP_BATCH_SIZE]));
- 
- 	if (tb[TCA_FQ_CODEL_MEMORY_LIMIT])
- 		q->memory_limit = min(1U << 31, nla_get_u32(tb[TCA_FQ_CODEL_MEMORY_LIMIT]));
+If you started a cable test and killed the ethtool process before the
+cable diagnostics are available, the state machine gets stuck in that
+state, so we should find a way to propagate the signal all the way to
+the PHY library somehow.
 -- 
-2.26.2.303.gf8c07b1a785-goog
-
+Florian
