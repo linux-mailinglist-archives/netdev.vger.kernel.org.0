@@ -2,138 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09D331B878A
-	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 17:55:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B245B1B87AB
+	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 18:19:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726295AbgDYPzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Apr 2020 11:55:54 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:54085 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726118AbgDYPzm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Apr 2020 11:55:42 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 3AC8E5803BD;
-        Sat, 25 Apr 2020 11:55:41 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sat, 25 Apr 2020 11:55:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alistair23.me;
-         h=from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding; s=fm3; bh=ILg74KFQ4/u/i
-        LEbpVIGKPDUn0lqkuyVDFTjVVQFF4M=; b=MyWUkHZZ+Mcwdt7tPDh4nOqgZAEVt
-        n8SU2n8ZR81Fv2JQ69Dyg1uEdGkMtEKpm/soc219ggCkilM6/1D9+OtmqfPOenjB
-        ldoLtqTsxpA3l58j2j2ws+Qsm4ncs+ahXHyZGwqLceD/yhD67JU+9FsvbJJ0KH0H
-        xKUJHUyoJjfvhIlvyuaPQBgQcyettaIm/ENgjGOFgP+fgXERqdExYTLQQvVQ3oZV
-        qCIkbphLwFFe8aJ50Ie2LVfwUjbiiN6EUeCKBKsMIpfGk9Xp/ZhqrJHuekKCLYaY
-        dduUrgJQ+SKwcqcQ2dEDydxkN8MCTy8Vkjd+XDRq0iFdlnkPfiOoL5EYw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=ILg74KFQ4/u/iLEbpVIGKPDUn0lqkuyVDFTjVVQFF4M=; b=UCDRN4Jd
-        LJ1aMZu0e0azt1QAd15mpQLEvkm7c3u+0gP103CIaOw4Q/XGpCcOEGGWyMJifCLg
-        9ohqiYsQi429Ig1oFNTzBFbW7VW/5MSqi2GRDxWR6smw/FieTf3ZS8BFdRFihbi+
-        50WCmvYm5421efcI5PBTNEhlHYua0qS7FC5QP1biymBNhbukf3tm84In2sOVExAh
-        GHl83AiZau8VJG05cv33yS4Of5eeOLPnRa0VbVUNsSBGGwqZRoTAq5tPACtbRGKN
-        JyzCbsnjkiymVnm4+scLO6k6toz5ie3GpFcSOEJ2WAC2mCqstpej7t2ACneO7mug
-        luZ/F72ZAiQlhg==
-X-ME-Sender: <xms:eV2kXi1pBLxDckTlLq0uQuE8lEyDr8jXdaOXJDDd04dyCcx-e5eu_Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrheeggdejvdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
-    ertddtnecuhfhrohhmpeetlhhishhtrghirhcuhfhrrghntghishcuoegrlhhishhtrghi
-    rhesrghlihhsthgrihhrvdefrdhmvgeqnecukfhppeejfedrleefrdekgedrvddtkeenuc
-    evlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhgrihhlfhhrohhmpegrlhhishht
-    rghirhesrghlihhsthgrihhrvdefrdhmvg
-X-ME-Proxy: <xmx:eV2kXqZrTsq_qRbUyCTF_6XuyPLGUjZ7BuDwiXHBjViahgBFV0hl6w>
-    <xmx:eV2kXm_x8CUI9jrkObOTtn3Yguxfh63r73e5LW3bdkcDWa5Q8iVRJg>
-    <xmx:eV2kXgZpYVI4tGkPcpJv3AmtMpyCUSWeZFa-C0lng4L1-U64Se0jcw>
-    <xmx:fV2kXi4qQrktnCVTQ7Iav98OQI_z_ThFrs3_xuZPYpAYfcQBnE1LSw>
-Received: from alistair-xps-14z.alistair23.me (c-73-93-84-208.hsd1.ca.comcast.net [73.93.84.208])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 921A03280067;
-        Sat, 25 Apr 2020 11:55:36 -0400 (EDT)
-From:   Alistair Francis <alistair@alistair23.me>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcel@holtmann.org, johan.hedberg@gmail.com,
-        linux-bluetooth@vger.kernel.org, mripard@kernel.org, wens@csie.org
-Cc:     anarsoul@gmail.com, devicetree@vger.kernel.org,
-        alistair23@gmail.com, linux-arm-kernel@lists.infradead.org,
-        Alistair Francis <alistair@alistair23.me>
-Subject: [DO-NOT-MERGE][PATCH v4 3/3] arm64: allwinner: Enable Bluetooth and WiFi on sopine baseboard
-Date:   Sat, 25 Apr 2020 08:55:31 -0700
-Message-Id: <20200425155531.2816584-3-alistair@alistair23.me>
-X-Mailer: git-send-email 2.26.0
-In-Reply-To: <20200425155531.2816584-1-alistair@alistair23.me>
-References: <20200425155531.2816584-1-alistair@alistair23.me>
+        id S1726154AbgDYQTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Apr 2020 12:19:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57742 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726076AbgDYQTR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Apr 2020 12:19:17 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0A4C09B04D;
+        Sat, 25 Apr 2020 09:19:14 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id i19so13977384ioh.12;
+        Sat, 25 Apr 2020 09:19:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=k+l2Dw/0DdtUd1lcg1ku8NU/TmLLMdmDMb3p6NrvwZ8=;
+        b=fq1CHCG0feG/vV4mbXm4WQ2e8G50Ya0rcOTwBzJ2wUZZRrChMALbHgBPEyMGRAIhqc
+         Eu70Qevd5MdWQZB44t89Hovz7ltKNqDKghFCgvrYzGhaNynD/pYvBc4QIl6WmUjwiAXD
+         4kBySOO0Quqfkc53pEG4Vk7Lm7+hsP2NIcHdir+9sujyEfxYE0mS+8fyk7XSEjyKm8xf
+         H0cgJGUQ6Asa7VSdx2fZKl1vFqGiW/6PWEanYq2Ri8I/Lq7kPELvQK5F5kMph0Ls98nm
+         gQKLgfUMg3T23DqAINAHAKfHaEKMmTQVBhdphFBGXx6pxmIMNySrcXbHkXAL3TA5zvgr
+         pGyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=k+l2Dw/0DdtUd1lcg1ku8NU/TmLLMdmDMb3p6NrvwZ8=;
+        b=UVUHpJc/KMveEaX/9D1pZwf7vwNrIcJpkUzpt2OULE8rKK6ge7J7j15ZufuhLagVD7
+         R7G/KUujb8qNUO1FuaNMyafvfMY5FxB6YcnydFY4JzgKtVfri3uorCEYni3f5IJamOqP
+         GGR0Jw78UDB6Z6M8zlUr7VEoJXYz6Yhpa9rEUeRyzY0syx7xSlOjtiq3CCtBFGV2Jqir
+         5uKRGHzrEjP1NP+bRnRqDwe1GDxmdrD2srUfttr3NsepfGXY26LpN56QOhz8V8LWZWa8
+         XHSL8nLkI5IxK3xTC9eRc+k0uxnGtMA2Yx+5QntGEX7Dbs6Lh+oSE/tDFGGynu5REJiY
+         6jpQ==
+X-Gm-Message-State: AGi0PuZ1t19Y7E/JTAossU2k2mgjZupnuRdoxolWEZNdCY3+HQbR81oi
+        W2G3Y+cMqIAZ3y5JkZlQPn0=
+X-Google-Smtp-Source: APiQypKy8jXL/VhrlWkqC/f7r8T4pRuZZrYoFxXhsubXRXR9ubcWrR69AiyQGuQnVB627oMQ2AL+QA==
+X-Received: by 2002:a02:9f94:: with SMTP id a20mr13137782jam.40.1587831554139;
+        Sat, 25 Apr 2020 09:19:14 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:7013:38e0:b27:9cc3? ([2601:282:803:7700:7013:38e0:b27:9cc3])
+        by smtp.googlemail.com with ESMTPSA id o19sm3375056ild.42.2020.04.25.09.19.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 25 Apr 2020 09:19:13 -0700 (PDT)
+Subject: Re: [PATCH V5 mlx5-next 01/16] net/core: Introduce
+ netdev_get_xmit_slave
+To:     Maor Gottlieb <maorg@mellanox.com>, davem@davemloft.net,
+        jgg@mellanox.com, dledford@redhat.com, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org,
+        jiri@mellanox.com, dsahern@kernel.org
+Cc:     leonro@mellanox.com, saeedm@mellanox.com,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        alexr@mellanox.com
+References: <20200423125555.21759-1-maorg@mellanox.com>
+ <20200423125555.21759-2-maorg@mellanox.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <3d68acb4-b20d-ac02-1499-e4279abb9f34@gmail.com>
+Date:   Sat, 25 Apr 2020 10:19:12 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200423125555.21759-2-maorg@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The sopine board has an optional RTL8723BS WiFi + BT module that can be
-connected to UART1. Add this to the device tree so that it will work
-for users if connected.
+On 4/23/20 6:55 AM, Maor Gottlieb wrote:
+> Add new ndo to get the xmit slave of master device.
+> Caller should call dev_put() when it no longer works with
+> slave netdevice.
 
-Signed-off-by: Alistair Francis <alistair@alistair23.me>
----
- .../allwinner/sun50i-a64-sopine-baseboard.dts | 29 +++++++++++++++++++
- 1 file changed, 29 insertions(+)
+description needs to be updated.
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-sopine-baseboard.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-sopine-baseboard.dts
-index 2f6ea9f3f6a2..34357ba143cb 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-a64-sopine-baseboard.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-sopine-baseboard.dts
-@@ -42,6 +42,11 @@ reg_vcc1v8: vcc1v8 {
- 		regulator-min-microvolt = <1800000>;
- 		regulator-max-microvolt = <1800000>;
- 	};
-+
-+	wifi_pwrseq: wifi_pwrseq {
-+		compatible = "mmc-pwrseq-simple";
-+		reset-gpios = <&r_pio 0 2 GPIO_ACTIVE_LOW>; /* PL2 */
-+	};
- };
- 
- &ac_power_supply {
-@@ -103,6 +108,17 @@ ext_rgmii_phy: ethernet-phy@1 {
- 	};
- };
- 
-+&mmc1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&mmc1_pins>;
-+	vmmc-supply = <&reg_dldo4>;
-+	vqmmc-supply = <&reg_eldo1>;
-+	mmc-pwrseq = <&wifi_pwrseq>;
-+	non-removable;
-+	bus-width = <4>;
-+	status = "okay";
-+};
-+
- &mmc2 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&mmc2_pins>;
-@@ -174,6 +190,19 @@ &uart0 {
- 	status = "okay";
- };
- 
-+&uart1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
-+	uart-has-rtscts = <1>;
-+	status = "okay";
-+
-+	bluetooth {
-+		compatible = "realtek,rtl8723bs-bt";
-+		device-wake-gpios = <&r_pio 0 5 GPIO_ACTIVE_HIGH>; /* PL5 */
-+		host-wake-gpios = <&r_pio 0 6 GPIO_ACTIVE_HIGH>; /* PL6 */
-+	};
-+};
-+
- /* On Pi-2 connector */
- &uart2 {
- 	pinctrl-names = "default";
--- 
-2.26.0
+> User can ask to get the xmit slave assume all the slaves can
+> transmit by set all_slaves arg to true.
+> 
+> Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
+> ---
+>  include/linux/netdevice.h |  6 ++++++
+>  net/core/dev.c            | 22 ++++++++++++++++++++++
+>  2 files changed, 28 insertions(+)
+> 
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 130a668049ab..d1206f08e099 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -1389,6 +1389,9 @@ struct net_device_ops {
+>  						 struct netlink_ext_ack *extack);
+>  	int			(*ndo_del_slave)(struct net_device *dev,
+>  						 struct net_device *slave_dev);
+> +	struct net_device*	(*ndo_get_xmit_slave)(struct net_device *dev,
+> +						      struct sk_buff *skb,
+> +						      bool all_slaves);
+
+documentation above struct net_device_ops { }; needs to be updated.
+
+>  	netdev_features_t	(*ndo_fix_features)(struct net_device *dev,
+>  						    netdev_features_t features);
+>  	int			(*ndo_set_features)(struct net_device *dev,
+> @@ -2731,6 +2734,9 @@ void netdev_freemem(struct net_device *dev);
+>  void synchronize_net(void);
+>  int init_dummy_netdev(struct net_device *dev);
+>  
+> +struct net_device *netdev_get_xmit_slave(struct net_device *dev,
+> +					 struct sk_buff *skb,
+> +					 bool all_slaves);
+>  struct net_device *dev_get_by_index(struct net *net, int ifindex);
+>  struct net_device *__dev_get_by_index(struct net *net, int ifindex);
+>  struct net_device *dev_get_by_index_rcu(struct net *net, int ifindex);
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 9c9e763bfe0e..e6c10980abfd 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -7785,6 +7785,28 @@ void netdev_bonding_info_change(struct net_device *dev,
+>  }
+>  EXPORT_SYMBOL(netdev_bonding_info_change);
+>  
+> +/**
+> + * netdev_get_xmit_slave - Get the xmit slave of master device
+> + * @skb: The packet
+> + * @all_slaves: assume all the slaves are active
+> + *
+> + * The reference counters are not incremented so the caller must be
+> + * careful with locks. The caller must hold RCU lock.
+> + * %NULL is returned if no slave is found.
+> + */
+> +
+> +struct net_device *netdev_get_xmit_slave(struct net_device *dev,
+> +					 struct sk_buff *skb,
+> +					 bool all_slaves)
+> +{
+> +	const struct net_device_ops *ops = dev->netdev_ops;
+> +
+> +	if (!ops->ndo_get_xmit_slave)
+> +		return NULL;
+> +	return ops->ndo_get_xmit_slave(dev, skb, all_slaves);
+> +}
+> +EXPORT_SYMBOL(netdev_get_xmit_slave);
+> +
+>  static void netdev_adjacent_add_links(struct net_device *dev)
+>  {
+>  	struct netdev_adjacent *iter;
+> 
 
