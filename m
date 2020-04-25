@@ -2,153 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B245B1B87AB
-	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 18:19:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D90171B87E0
+	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 19:00:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726154AbgDYQTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Apr 2020 12:19:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57742 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726076AbgDYQTR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Apr 2020 12:19:17 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0A4C09B04D;
-        Sat, 25 Apr 2020 09:19:14 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id i19so13977384ioh.12;
-        Sat, 25 Apr 2020 09:19:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=k+l2Dw/0DdtUd1lcg1ku8NU/TmLLMdmDMb3p6NrvwZ8=;
-        b=fq1CHCG0feG/vV4mbXm4WQ2e8G50Ya0rcOTwBzJ2wUZZRrChMALbHgBPEyMGRAIhqc
-         Eu70Qevd5MdWQZB44t89Hovz7ltKNqDKghFCgvrYzGhaNynD/pYvBc4QIl6WmUjwiAXD
-         4kBySOO0Quqfkc53pEG4Vk7Lm7+hsP2NIcHdir+9sujyEfxYE0mS+8fyk7XSEjyKm8xf
-         H0cgJGUQ6Asa7VSdx2fZKl1vFqGiW/6PWEanYq2Ri8I/Lq7kPELvQK5F5kMph0Ls98nm
-         gQKLgfUMg3T23DqAINAHAKfHaEKMmTQVBhdphFBGXx6pxmIMNySrcXbHkXAL3TA5zvgr
-         pGyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=k+l2Dw/0DdtUd1lcg1ku8NU/TmLLMdmDMb3p6NrvwZ8=;
-        b=UVUHpJc/KMveEaX/9D1pZwf7vwNrIcJpkUzpt2OULE8rKK6ge7J7j15ZufuhLagVD7
-         R7G/KUujb8qNUO1FuaNMyafvfMY5FxB6YcnydFY4JzgKtVfri3uorCEYni3f5IJamOqP
-         GGR0Jw78UDB6Z6M8zlUr7VEoJXYz6Yhpa9rEUeRyzY0syx7xSlOjtiq3CCtBFGV2Jqir
-         5uKRGHzrEjP1NP+bRnRqDwe1GDxmdrD2srUfttr3NsepfGXY26LpN56QOhz8V8LWZWa8
-         XHSL8nLkI5IxK3xTC9eRc+k0uxnGtMA2Yx+5QntGEX7Dbs6Lh+oSE/tDFGGynu5REJiY
-         6jpQ==
-X-Gm-Message-State: AGi0PuZ1t19Y7E/JTAossU2k2mgjZupnuRdoxolWEZNdCY3+HQbR81oi
-        W2G3Y+cMqIAZ3y5JkZlQPn0=
-X-Google-Smtp-Source: APiQypKy8jXL/VhrlWkqC/f7r8T4pRuZZrYoFxXhsubXRXR9ubcWrR69AiyQGuQnVB627oMQ2AL+QA==
-X-Received: by 2002:a02:9f94:: with SMTP id a20mr13137782jam.40.1587831554139;
-        Sat, 25 Apr 2020 09:19:14 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:7013:38e0:b27:9cc3? ([2601:282:803:7700:7013:38e0:b27:9cc3])
-        by smtp.googlemail.com with ESMTPSA id o19sm3375056ild.42.2020.04.25.09.19.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 25 Apr 2020 09:19:13 -0700 (PDT)
-Subject: Re: [PATCH V5 mlx5-next 01/16] net/core: Introduce
- netdev_get_xmit_slave
-To:     Maor Gottlieb <maorg@mellanox.com>, davem@davemloft.net,
-        jgg@mellanox.com, dledford@redhat.com, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org,
-        jiri@mellanox.com, dsahern@kernel.org
-Cc:     leonro@mellanox.com, saeedm@mellanox.com,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        alexr@mellanox.com
-References: <20200423125555.21759-1-maorg@mellanox.com>
- <20200423125555.21759-2-maorg@mellanox.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <3d68acb4-b20d-ac02-1499-e4279abb9f34@gmail.com>
-Date:   Sat, 25 Apr 2020 10:19:12 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
+        id S1726327AbgDYRAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Apr 2020 13:00:54 -0400
+Received: from mout.web.de ([212.227.15.3]:53191 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726155AbgDYRAy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Apr 2020 13:00:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1587834039;
+        bh=lKpSPjYpPGQXWma85OulE16yMA85/rVKlAPZzB/3y0I=;
+        h=X-UI-Sender-Class:Cc:Subject:From:To:Date;
+        b=Mv7oztloAjKX9VfhTx9+LXdYCp0n8VvZYT7IQ1QH8mvakXINDhOhpzy7ksdXjsRbF
+         87MD5b/MW2nI45bPMPrSYu4Tl1z+FFC6K6ytci0rdRrhqDhgx8tkElzt3BYL1N8Gdt
+         VxypLUZJ3q5BqF9c2Xhwp3bwdHeFOowIfUYaYzH4=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([78.49.160.204]) by smtp.web.de (mrweb003
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0M4ZVE-1jGMWY3Tpc-00yhim; Sat, 25
+ Apr 2020 19:00:38 +0200
+Cc:     linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Yash Shah <yash.shah@sifive.com>
+Subject: Re: [PATCH] net: macb: fix an issue about leak related to system
+ resources
+From:   Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+To:     Dejin Zheng <zhengdejin5@gmail.com>, netdev@vger.kernel.org
+Message-ID: <a0891e70-d39f-7822-f81a-04eb824c6fd0@web.de>
+Date:   Sat, 25 Apr 2020 19:00:35 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200423125555.21759-2-maorg@mellanox.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Language: en-GB
+X-Provags-ID: V03:K1:Wvf0Tj9YXRThpDAVM5/vvxCEA8fNyZ4Xd55fgk74ZLFrKutbX2X
+ IgHscW6wWj2WXLfeVPj76RVtIuLidpH0NiqeKNwz6EppDGF3dzW0aaZkrKBGcO4SQBmUP4a
+ CdAl/1d9nDf/EeJHxGcHPNDX8uzaEcwDqMvGRPaWXTpwvP7ZWdeHLJdKiF142ywYP+m/vCs
+ 104oSoZlbMNKnB8rKLUew==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:RjXyGDG3ey0=:XpE+HpBTjheQtENTVFbZZ1
+ 82MO2gHojzK/FRFp18czTbVbcf0aeI/TrWEUiZFr2EuxNCHsjkktpXY3/rKguuEETrKAaNgBq
+ jO6N3TDlyff5cogijpLI2f6TgfCjyBr1FvlcRqbcTUPsD0S5BWnrHxTVoAX9ScOqrrMrIH4+/
+ bVTtUHVdeJdyLJRRe4U0tqYySiVzWwOKGx/TMCU9gKxdQSNDVzsOlHUhcIsgULkN7wodGZwIm
+ vrKQUw4irZK3zzUWlHZw1f87Yq2YA69jFz6JhgfbmadgtTdLsueXDfjbsYVwQuOcw5pGrIJCu
+ 7vDVsk2S3hm7knzN0NAtMjg2oYxJQHoAlnhMlLnAHSxgnaKQkgHuCMh4Wg9uv1L0xt0Pbc9Hz
+ 5/jw/tJt4sqPnkhkEc18RU6cOn6GY5oTqnrULB47R8n3govp11FfBAFTu+W3HIHcIjcYK/Dgb
+ BiQ5WgeYhsxIAxYUfXnJkEQZ2qmzou1Tr+WaJ5MySimVlNVO7atf6vLT0z3b1Th+3yD/bpKEg
+ 8eQFUJ6CyZExoL2burps3ZvUSifFsejuxvzXkXuCKPcaVK5sspJgDEi+FWYEF3LdkdzYdfO7u
+ oojxzK99ehXMOO5aA9VQGIiDYWPGW5MJb85XtQxeaT3C+G/dh/AzODeeHNj4trLvr+ql4o0+j
+ 26gO5ZSsSR/EvP5g4YQCgkcoZTnYXB84K7vE15JQRrFkwWI3z25L2eJudqwtfPPvyPkfJrcrQ
+ DT/a+UCsc7VQWfSPaM0F8tpwakT/ybASuTD8kAez7NOap0yfxzOix3L/AKUjb1Rii7OT+AUCm
+ lt2RyzpgBe9w3yKUFcqpIfuYfPe3cfVxcOS9NWkxA45FQin5MxUQSFX6TBjbuZcL1nARktWbK
+ 1nYKknRVE9yH0puYYUGS3VbPehyDkD5cpy1YhYNcvKVEaM9q/7cG5bNOMtzHvkbkYRcaKplfF
+ rPzE+s3VLuQFHAFQRpGHH4Pmyu1qlodVAxNlIIRASdFNwoACuPwr+R4qLXnIimpxxTWRJ/YBK
+ imoYHLkRQixVfqYWt2R7FbS86/Z/l4OMWGk/LH9Li2teCIRvP95gwM0xWHfoso0ID2Z0epYgI
+ kljwrteyNnelrYJvmCrbNnzz4ghQzKfd3dGN0hIi/AOK87eXloXC1x2JPDTXdkUYNXnbh7P7F
+ cpgzRv68cqdB41jfw9gn9GNfaWgcdOOfuLPLKx9a9gxg3lAB6gDGgNujD9RXqF5keRuUBQesa
+ 5CEqpy95C9g4a5Tul
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/23/20 6:55 AM, Maor Gottlieb wrote:
-> Add new ndo to get the xmit slave of master device.
-> Caller should call dev_put() when it no longer works with
-> slave netdevice.
+> A call of the function macb_init() can fail in the function
+> fu540_c000_init. The related system resources were not released
+> then. use devm_ioremap() to replace ioremap() for fix it.
 
-description needs to be updated.
+How do you think about a wording variant like the following?
 
-> User can ask to get the xmit slave assume all the slaves can
-> transmit by set all_slaves arg to true.
-> 
-> Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
-> ---
->  include/linux/netdevice.h |  6 ++++++
->  net/core/dev.c            | 22 ++++++++++++++++++++++
->  2 files changed, 28 insertions(+)
-> 
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 130a668049ab..d1206f08e099 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -1389,6 +1389,9 @@ struct net_device_ops {
->  						 struct netlink_ext_ack *extack);
->  	int			(*ndo_del_slave)(struct net_device *dev,
->  						 struct net_device *slave_dev);
-> +	struct net_device*	(*ndo_get_xmit_slave)(struct net_device *dev,
-> +						      struct sk_buff *skb,
-> +						      bool all_slaves);
+   Subject:
+   [PATCH v2] net: macb: Use devm_ioremap() in fu540_c000_init()
 
-documentation above struct net_device_ops { }; needs to be updated.
+   Change description:
+   A call of the macb_init() function can fail here.
+   The corresponding system resources were not released then.
+   Thus replace a call of the ioremap() function by devm_ioremap().
 
->  	netdev_features_t	(*ndo_fix_features)(struct net_device *dev,
->  						    netdev_features_t features);
->  	int			(*ndo_set_features)(struct net_device *dev,
-> @@ -2731,6 +2734,9 @@ void netdev_freemem(struct net_device *dev);
->  void synchronize_net(void);
->  int init_dummy_netdev(struct net_device *dev);
->  
-> +struct net_device *netdev_get_xmit_slave(struct net_device *dev,
-> +					 struct sk_buff *skb,
-> +					 bool all_slaves);
->  struct net_device *dev_get_by_index(struct net *net, int ifindex);
->  struct net_device *__dev_get_by_index(struct net *net, int ifindex);
->  struct net_device *dev_get_by_index_rcu(struct net *net, int ifindex);
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 9c9e763bfe0e..e6c10980abfd 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -7785,6 +7785,28 @@ void netdev_bonding_info_change(struct net_device *dev,
->  }
->  EXPORT_SYMBOL(netdev_bonding_info_change);
->  
-> +/**
-> + * netdev_get_xmit_slave - Get the xmit slave of master device
-> + * @skb: The packet
-> + * @all_slaves: assume all the slaves are active
-> + *
-> + * The reference counters are not incremented so the caller must be
-> + * careful with locks. The caller must hold RCU lock.
-> + * %NULL is returned if no slave is found.
-> + */
-> +
-> +struct net_device *netdev_get_xmit_slave(struct net_device *dev,
-> +					 struct sk_buff *skb,
-> +					 bool all_slaves)
-> +{
-> +	const struct net_device_ops *ops = dev->netdev_ops;
-> +
-> +	if (!ops->ndo_get_xmit_slave)
-> +		return NULL;
-> +	return ops->ndo_get_xmit_slave(dev, skb, all_slaves);
-> +}
-> +EXPORT_SYMBOL(netdev_get_xmit_slave);
-> +
->  static void netdev_adjacent_add_links(struct net_device *dev)
->  {
->  	struct netdev_adjacent *iter;
-> 
 
+Regards,
+Markus
