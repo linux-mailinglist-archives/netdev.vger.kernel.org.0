@@ -2,129 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B822E1B8930
-	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 22:00:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 537731B8943
+	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 22:10:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726238AbgDYUAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Apr 2020 16:00:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35422 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726190AbgDYUAN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Apr 2020 16:00:13 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F38C09B04D
-        for <netdev@vger.kernel.org>; Sat, 25 Apr 2020 13:00:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=oqorickqa2e6r0bz1s0KbH5qi7NHu9py66tws9CVE6o=; b=RcCVy+w6qrj7ITJhI7DxRx8p1A
-        UaP0WmixSVuPyjc85Jp0+pQ/tWtPnWksG1qQJNRfr/3sNFFeO+AHYcUPp0mSnHt9SNI/8teCx7+Zf
-        ApfMkdm0MVpA9bV/L+UaV7NqIZwtZJl4lRuErFedGt9Xvn7mR2VoeC8WknADu390WE5muiQ1xiRew
-        UFfmFGzQUyrgWxAqS8LY3O4W9jRexpcaB1+HK1MWJ43aA0jN6Wtn1ZQ3V6SgpBXcQXB6x/VDCsQq3
-        pOLPdpgUUik5h5FecCtkE8WMVwNPabLa/DST5IVSbopuArn4SOc5dSwlLtMBArU5zPrBYMLCZGeDK
-        7/GSHWkA==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jSQy7-00079U-JZ; Sat, 25 Apr 2020 20:00:07 +0000
-Subject: Re: [PATCH net-next v1 4/9] net: ethtool: Add attributes for cable
- test reports
-To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S1726238AbgDYUKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Apr 2020 16:10:21 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:35140 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726190AbgDYUKV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 25 Apr 2020 16:10:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=mggCA6gKX3pSXAPLFZO0up3AA4RDfAgNgrJtbDnTd9s=; b=azpaor1/4L3hWCDJAuXwGu6KSZ
+        apCpuVcXhWt+FciskAINf01gEhnLtELwgB2qoe/J8iJ7PNp6fsSEPNvSKvnxONjK/OWnpvDRm7ltb
+        vOfgGCukMJKpuECI+ikckagEEj1pRaE2Ypwjg0XNfD/39M8AmCq4ZB52aRnp402wspio=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jSR7u-004o3m-VP; Sat, 25 Apr 2020 22:10:14 +0200
+Date:   Sat, 25 Apr 2020 22:10:14 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Chris Healy <cphealy@gmail.com>,
         Michal Kubecek <mkubecek@suse.cz>
+Subject: Re: [PATCH net-next v1 2/9] net: phy: Add support for polling cable
+ test
+Message-ID: <20200425201014.GF1088354@lunn.ch>
 References: <20200425180621.1140452-1-andrew@lunn.ch>
- <20200425180621.1140452-5-andrew@lunn.ch>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <7a0430f6-7303-55fd-93f5-a16add08bbc9@infradead.org>
-Date:   Sat, 25 Apr 2020 13:00:05 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+ <20200425180621.1140452-3-andrew@lunn.ch>
+ <7557316a-fc27-ac05-6f6d-b9bac81afd82@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200425180621.1140452-5-andrew@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7557316a-fc27-ac05-6f6d-b9bac81afd82@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-Here are a few edit comments for you to consider:
-
-On 4/25/20 11:06 AM, Andrew Lunn wrote:
-> Add the attributes needed to report cable test results to userspace.
-> The reports are expected to be per twisted pair. A nested property per
-> pair can report the result of the cable test. A nested property can
-> also report the length of the cable to any fault.
+On Sat, Apr 25, 2020 at 12:49:46PM -0700, Florian Fainelli wrote:
+> Hi Andrew,
 > 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> ---
->  Documentation/networking/ethtool-netlink.rst | 35 +++++++++++++++
->  include/uapi/linux/ethtool_netlink.h         | 47 +++++++++++++++++++-
->  2 files changed, 81 insertions(+), 1 deletion(-)
+> On 4/25/2020 11:06 AM, Andrew Lunn wrote:
+> > Some PHYs are not capable of generating interrupts when a cable test
+> > finished. They do however support interrupts for normal operations,
+> > like link up/down. As such, the PHY state machine would normally not
+> > poll the PHY.
+> > 
+> > Add support for indicating the PHY state machine must poll the PHY
+> > when performing a cable test.
+> > 
+> > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 > 
-> diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-> index 0c354567e991..89fd321b0e29 100644
-> --- a/Documentation/networking/ethtool-netlink.rst
-> +++ b/Documentation/networking/ethtool-netlink.rst
-> @@ -967,6 +967,41 @@ Request contents:
->    ``ETHTOOL_A_CABLE_TEST_HEADER``       nested  request header
->    ====================================  ======  ==========================
->  
-> +Notify contents:
-> +
-> +An Ethernet cable typically contains 1, 2 or 4 pairs. The length of
-> +the pair can only be measured when there is a fault in the pair and
-> +hence a reflection. Information about the fault may not be available,
-> +depends on the specific hardware. Hence the contents of the notify
+> If you started a cable test and killed the ethtool process before the
+> cable diagnostics are available, the state machine gets stuck in that
+> state, so we should find a way to propagate the signal all the way to
+> the PHY library somehow.
 
-   depending on
+Hi Florian
 
-> +message is mostly optional. The attributes can be repeated an
+It should not matter if the user space tool goes away. As you read
+later patches you will see why. But:
 
-           are
+ETHTOOL_MSG_CABLE_TEST_ACT is an action to trigger cable
+test. Assuming the driver supports it etc, the cable test is started,
+and user space immediately gets a ETHTOOL_MSG_CABLE_TEST_ACT_REPLY.
+The state is changed to PHY_CABLETEST.
 
-> +arbitrary number of times, in an arbitrary order, for an arbitrary
-> +number of pairs.
-> +
-> +The example shows a T2 cable, i.e. two pairs. One pair is O.K, and
+Sometime later, the driver indicates the cable test has
+completed. This can be an interrupt, or because it is being polled.  A
+ETHTOOL_MSG_CABLE_TEST_NTF is multicast to user space with the
+results. And the PHY then leaves state PHY_CABLETEST. If there is no
+user space listening for the ETHTOOL_MSG_CABLE_TEST_NTF, it does not
+matter.
 
-                                                             OK and
+At least with the Marvell PHY, there is no documented way to tell it
+to abort a cable test. So knowing the user space has lost interest in
+the results does not help us.
 
-> +hence has no length information. The second pair has a fault and does
-> +have length information.
-> +
-> + +-------------------------------------------+--------+-----------------------+
-> + | ``ETHTOOL_A_CABLE_TEST_HEADER``           | nested | reply header          |
-> + +-------------------------------------------+--------+-----------------------+
-> + | ``ETHTOOL_A_CABLE_TEST_NTF_RESULT``       | nested | cable test result     |
-> + +-+-----------------------------------------+--------+-----------------------+
-> + | | ``ETHTOOL_A_CABLE_RESULTS_PAIR``        | u8     | pair number           |
-> + +-+-----------------------------------------+--------+-----------------------+
-> + | | ``ETHTOOL_A_CABLE_RESULTS_CODE``        | u8     | result code           |
-> + +-+-----------------------------------------+--------+-----------------------+
-> + | ``ETHTOOL_A_CABLE_TEST_NTF_RESULT``       | nested | cable test results    |
-> + +-+-----------------------------------------+--------+-----------------------+
-> + | | ``ETHTOOL_A_CABLE_RESULTS_PAIR``        | u8     | pair number           |
-> + +-+-----------------------------------------+--------+-----------------------+
-> + | | ``ETHTOOL_A_CABLE_RESULTS_CODE``        | u8     | result code           |
-> + +-+-----------------------------------------+--------+-----------------------+
-> + | ``ETHTOOL_A_CABLE_TEST_NTF_FAULT_LENGTH`` | nested | cable length          |
-> + +-+-----------------------------------------+--------+-----------------------+
-> + | | ``ETHTOOL_A_CABLE_FAULT_LENGTH_PAIR``   | u8     | pair number           |
-> + +-+-----------------------------------------+--------+-----------------------+
-> + | | ``ETHTOOL_A_CABLE_FAULT_LENGTH_CM``     | u8     | length in cm          |
-> + +-+-----------------------------------------+--------+-----------------------+
->  
->  Request translation
->  ===================
-
-
-
--- 
-~Randy
-
+    Andrew
+    
