@@ -2,94 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF5521B865D
-	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 13:56:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E04281B8660
+	for <lists+netdev@lfdr.de>; Sat, 25 Apr 2020 14:01:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726117AbgDYL4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 25 Apr 2020 07:56:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45438 "EHLO
+        id S1726113AbgDYMBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 25 Apr 2020 08:01:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726060AbgDYL4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 25 Apr 2020 07:56:22 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67544C09B04B;
-        Sat, 25 Apr 2020 04:56:22 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id h69so5970151pgc.8;
-        Sat, 25 Apr 2020 04:56:22 -0700 (PDT)
+        with ESMTP id S1726060AbgDYMBK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 25 Apr 2020 08:01:10 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF5EC09B04B
+        for <netdev@vger.kernel.org>; Sat, 25 Apr 2020 05:01:09 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id l78so13051315qke.7
+        for <netdev@vger.kernel.org>; Sat, 25 Apr 2020 05:01:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=blyNpwJH0tDYVCiSTx7/2yaYq9p1CculusRqY7fpsWI=;
-        b=WL1JbucFohVFnUcZjY29S7QZa5qDzem7Bft9YbbmHjPYi5GgJbiefnJfxBNDrfg5L3
-         z9rDUAtppZpTvPGVECI8X8RyWJlNPlqbwa2U7SDgYvbjXEdkmh6+ZbOSH89Srz8xQtsI
-         ZFljFfHIgpnahGZUz+kP7sZe8SqXfk5G0yWV6avx2e8MgtnKVG//a4oSuC1rRtlvJsMP
-         Xpcl3QZDih5dTBWpWDAdl647mTry53MHeKTGoh99U5kuIp5jdD1e5wmU/1DiUt4uI9ec
-         MvaYeVJ5ZKv30TxP4k1bHfnISq+R/+u3SWl3bM02VPbWi89axJTJ8c3Djkn12dE+KYh0
-         Ks+Q==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UOf+YtIxqlA+vl8j/T3L4DQ0rhzMujQoBXYncPg9CwE=;
+        b=fsU1C/1TekNM/J4lIICbn7Kod/+dJYtICtLmNIMHQi8uZ3ihHyXXbvI6ahzFmdFC7R
+         ctcxjzLJc1gJXTOO6Addj4GHHY6243xGLeG4qhhraks/AyYXVBGwyYwqQ6/0Fy76oAPy
+         j8tEjVUnJS2IWOP9JI9jECMPLMq70YN46O149ZuExFNDa96ks+UMmlGXvbWQDJa/XkwA
+         Py+dguhLUro816U1CNT4nbK64R0kRqFDKK0MqlvGvtB/8t/R8xIm5m/Vn+bFy0ee3fNp
+         YoP19YJiTLNShLVEC+jxna4mcJDnqag356cAckMLffr7eIavND68l7nKdPLjQ8nD6cpJ
+         Ihaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=blyNpwJH0tDYVCiSTx7/2yaYq9p1CculusRqY7fpsWI=;
-        b=JCyXFD8d1Qc+DRqeTS3bGNqmPflabzo3dY1HR0wm9eFYDrACs4wUi2uzIvkvIg3AZV
-         sfgONM62TF6/FAO98EUEkRSOSgF/YLqT8qxMZIsmxuz2obnDCjyhdePpT7Hqm3myQGqo
-         gTk8eKJrE3TNow2KcmYgpjurBNtyY6bLjYZ2oJVGnLZrixtLhq97ZNJFuyS9G8uPdq4n
-         t275boFVTvcm22VrsZQ1PZ+4H7fRTlFJt9kkbC82W2WnuxhBVZqkaydn//pSF4GdX/3O
-         oga2cGWz9lUE9YH8YO5MUv297UjYG+XOU36ODPqCzrCl/tMKpFkaC8kzYn8/oRYFCtzG
-         c0og==
-X-Gm-Message-State: AGi0PuYemkXjFF2L7AkuFnzpBzw3AMurBPKhr2TVpB3hpTiNsqTZo1ce
-        wQZ/rTkn8G7LaYTdhUpoIp8=
-X-Google-Smtp-Source: APiQypLF4P75esfGN9Zm3TfjLbDlBrQ0dJKzlzjL/OHC3J2709yj8nlfzpyMwcHoJMZL/Q0etpn0mw==
-X-Received: by 2002:a63:65c1:: with SMTP id z184mr14356487pgb.316.1587815781919;
-        Sat, 25 Apr 2020 04:56:21 -0700 (PDT)
-Received: from localhost ([176.122.158.64])
-        by smtp.gmail.com with ESMTPSA id t11sm8061247pfl.122.2020.04.25.04.56.20
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 25 Apr 2020 04:56:21 -0700 (PDT)
-From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     davem@davemloft.net, tglx@linutronix.de, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>
-Subject: [PATCH net-next v1] ethernet: ks8842: delete unnecessary goto label
-Date:   Sat, 25 Apr 2020 19:56:12 +0800
-Message-Id: <20200425115612.17171-1-zhengdejin5@gmail.com>
-X-Mailer: git-send-email 2.25.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UOf+YtIxqlA+vl8j/T3L4DQ0rhzMujQoBXYncPg9CwE=;
+        b=bVlZfAxFIRffqP4dceT8kuNS7nvERKmK6791CMEdlO7XdP3FnAH/4ki85DVcVg7noF
+         OK+yMknhPFBPsdzIA3GWy0sNNmYYjdVccNBEBbI9J4wTjSR7PznvbIA+gOvkVZtZp61d
+         N/YPilXtAgsVdHZJAGC4mUNJtUdNBX9fn2YxCG0mmeWyWT9iEGFRUL357GR6i/f23eMd
+         TwZyqyIXPs4WF4edxh5jyEmUUuSP45YjJ/PR0dLUlXByjjZKVDQ+jmKKBJTX7//RQJqT
+         jTCTwvW2wSDbzMlYqUkpPLkus7hMhT9Nk5uEn15oqgks0zbuNsVE6hG7AIHjhfzas/WP
+         kMGw==
+X-Gm-Message-State: AGi0PuZpAlyjuVqHsRJogjgH26CXVuqu5Wk9zbdCD2zdeP3Pv0werbbc
+        cjBwvB0kaLpLYQP0qeXh2pAp+A+NZDWV2/mXgKEtLQ==
+X-Google-Smtp-Source: APiQypKCycAK1f+Of16hZKq/XjPeyzEyzN0WTmXPWU6IkkHeZxa+Yrd9GonvEuWpI1Pn+GH7RW9H3RU6dANkQ3nUN3c=
+X-Received: by 2002:a05:620a:12b6:: with SMTP id x22mr6979328qki.8.1587816068633;
+ Sat, 25 Apr 2020 05:01:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CACT4Y+YTi4JCFRqOB9rgA22S+6xxTo87X41hj6Tdfro8K3ef7g@mail.gmail.com>
+ <CAHC9VhQs6eJpX4oMrhBiDap-HhEsBBgmYWEou=ZH60YiA__T7w@mail.gmail.com>
+ <CACT4Y+b8HiV6KFuAPysZD=5hmyO4QisgxCKi4DHU3CfMPSP=yg@mail.gmail.com> <171b1244748.27df.85c95baa4474aabc7814e68940a78392@paul-moore.com>
+In-Reply-To: <171b1244748.27df.85c95baa4474aabc7814e68940a78392@paul-moore.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Sat, 25 Apr 2020 14:00:57 +0200
+Message-ID: <CACT4Y+b43uGr-44TVT9eTu_Lh=8CkKXJdSxz6tB9+BjRe9WF1A@mail.gmail.com>
+Subject: Re: selinux_netlink_send changes program behavior
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     David Miller <davem@davemloft.net>, kuba@kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>, selinux@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        syzkaller <syzkaller@googlegroups.com>,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-the label of err_register is not necessary, so delete it to
-simplify code.
+On Sat, Apr 25, 2020 at 1:42 PM Paul Moore <paul@paul-moore.com> wrote:
+> >> On Fri, Apr 24, 2020 at 4:27 AM Dmitry Vyukov <dvyukov@google.com> wrote:
+> >>> Hi SELinux maintainers,
+> >>>
+> >>> We've hit a case where a developer wasn't able to reproduce a kernel
+> >>> bug, it turned out to be a difference in behavior between SELinux and
+> >>> non-SELinux kernels.
+> >>> Condensed version: a program does sendmmsg on netlink socket with 2
+> >>> mmsghdr's, first is completely empty/zeros, second contains some
+> >>> actual payload. Without SELinux the first mmsghdr is treated as no-op
+> >>> and the kernel processes the second one (triggers bug). However the
+> >>> SELinux hook does:
+> >>>
+> >>> static int selinux_netlink_send(struct sock *sk, struct sk_buff *skb)
+> >>> {
+> >>> if (skb->len < NLMSG_HDRLEN) {
+> >>>  err = -EINVAL;
+> >>>  goto out;
+> >>> }
+> >>>
+> >>> and fails processing on the first empty mmsghdr (does not happen
+> >>> without SELinux).
+> >>>
+> >>> Is this difference in behavior intentional/acceptable/should be fixed?
+> >>
+> >> From a practical perspective, SELinux is always going to need to do a
+> >> length check as it needs to peek into the netlink message header for
+> >> the message type so it can map that to the associated SELinux
+> >> permissions.  So in that sense, the behavior is intentional and
+> >> desired; however from a bug-for-bug compatibility perspective ... not
+> >> so much.
+> >>
+> >> Ultimately, my it's-Friday-and-it's-been-a-long-week-ending-in-a-long-day
+> >> thought is that this was a buggy operation to begin with and the bug
+> >> was just caught in different parts of the kernel, depending on how it
+> >> was configured.  It may not be ideal, but I can think of worse things
+> >> (and arguably SELinux is doing the Right Thing).
+> >
+> > +netlink maintainers for intended semantics of empty netlink messages
+> >
+> > If it's a bug, or intended behavior depends on the intended
+> > behavior... which I assume is not documented anywhere officially.
+>
+> Your original email gave the impression that there was a big in the non-SELinux case; if that is not the case my response changes.
 
-Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
----
- drivers/net/ethernet/micrel/ks8842.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/micrel/ks8842.c b/drivers/net/ethernet/micrel/ks8842.c
-index f3f6dfe3eddc..213ca33a9967 100644
---- a/drivers/net/ethernet/micrel/ks8842.c
-+++ b/drivers/net/ethernet/micrel/ks8842.c
-@@ -1204,7 +1204,7 @@ static int ks8842_probe(struct platform_device *pdev)
- 	strcpy(netdev->name, "eth%d");
- 	err = register_netdev(netdev);
- 	if (err)
--		goto err_register;
-+		goto err_get_irq;
- 
- 	platform_set_drvdata(pdev, netdev);
- 
-@@ -1213,7 +1213,6 @@ static int ks8842_probe(struct platform_device *pdev)
- 
- 	return 0;
- 
--err_register:
- err_get_irq:
- 	iounmap(adapter->hw_addr);
- err_ioremap:
--- 
-2.25.0
+There is no bug... Well, there is a crash, but it is somewhere in the
+routing subsystem and is caused by the contents of the second netlink
+message. This is totally unrelated to this SELinux check and that
+crash is totally reproducible with SELinux as well if we just don't
+send the first empty message.
+The crux is really a difference in behavior in SELinux and non-SELinux cases.
 
+
+
+> > However, most of the netlink families use netlink_rcv_skb, which does:
+> >
+> > int netlink_rcv_skb(struct sk_buff *skb, int (*cb)(struct sk_buff *,
+> >                           struct nlmsghdr *,
+> >                           struct netlink_ext_ack *))
+> > {
+> >    ...
+> >    while (skb->len >= nlmsg_total_size(0)) {
+> >    ...
+> >       skb_pull(skb, msglen);
+> >    }
+> >    return 0;
+> > }
+> >
+> > 1. How intentional is this while loop logic vs sloppy error checking?
+> > 2. netlink_rcv_skb seems to be able to handle 2+ messages in the same
+> > skb, while selinux_netlink_send only checks the first one... so can I
+> > skip SELinux checks by putting a malicious message after a permitted
+> > one?..
+>
+>
+>
