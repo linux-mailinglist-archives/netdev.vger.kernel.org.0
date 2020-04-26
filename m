@@ -2,100 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DAD81B9435
-	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 23:40:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E51941B945A
+	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 23:53:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726345AbgDZVkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 17:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47054 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726188AbgDZVkQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 17:40:16 -0400
-Received: from mail-oo1-xc43.google.com (mail-oo1-xc43.google.com [IPv6:2607:f8b0:4864:20::c43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37755C061A0F
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 14:40:16 -0700 (PDT)
-Received: by mail-oo1-xc43.google.com with SMTP id r1so3433810oog.7
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 14:40:16 -0700 (PDT)
+        id S1726340AbgDZVxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 17:53:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49178 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726184AbgDZVxq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 17:53:46 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 402E5C061A0F;
+        Sun, 26 Apr 2020 14:53:46 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id s10so6214716plr.1;
+        Sun, 26 Apr 2020 14:53:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=M0oXuhWj4yor2xuDqXST2KtwYz0wKDi2kwMlCmNACN8=;
-        b=OQAmmBWQLVvCGpSFaRVT0jhFqyJYlFzpPtM0ERdsMv5BMWqGVpAnQiTXHPkTFIhhDq
-         iO/lpr64N26EP0dxB10A0fkgtPeAaIBLb8GUQiaY5/uVX1ENTCtoEIyHXpHujp46829a
-         H/zju7dU3MLI3oNF+gW0KzslTA4s0cAa4QU+gkpXJmtHhl+SYpoHbU4LfRVl8Fo7XYoP
-         CIW7tMH8dVBgwXmAvymUEwBrM7pPWCZ2TiUk1EZy8Yg4ddJQsvjK8Z8/PYB3HdyPxPzs
-         BxusNMzXOjVcdNEjx40f8k7f4wKiTKtwjK8vodsOibKn9IKyW6cjrDWYXblcsbqS9AAr
-         rUZw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=H5D1PG6e/lMszq0Rf949EFEkle4oIskhG7vE9vM9dC4=;
+        b=gz4u1B/Skr8dsJGByTK2XWhiRHHeIiJZhyUTcQxEMw5oTN+clJwfvrhHWwRaMgDPks
+         SMs+QJlwZcv4XoMltJQ/o7qXuTkMuSfpQdq4HxDJBXB1/Brawn81miRiltA44CJozitD
+         4/CP/nB3W0TUJfCo2rr6dGLiBAvgxJgcgpsFtrfASPAlOec4eLvqfib9DRtnJAFMUmDU
+         JIsUDSHkLXGpVaSiKplTehHcZ+1gNn/HtN1XqWTqzQ53K/4TPUCPgx3OR0moFSueWT16
+         epWZKE9C2Q3NooFtA+t+7twpfMYGy3NXlHU/op6j2ucEvcAcjn00qPEOyYTlMZ0JwEwZ
+         +oEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=M0oXuhWj4yor2xuDqXST2KtwYz0wKDi2kwMlCmNACN8=;
-        b=nUpme9LUXuT2CwCkwQXtUnaYRJ3QqaQzbe9hy6rn3Q65J4TT2B7T5naQl7wiMbRoXk
-         sM0jbERJNQ6wCwvEt0gh3e+Gs2K6XFL3D7o8W19pCdEvfX8QhY/rEckK4qc6MLr4mjlu
-         mNpTkeaRsN/bSggq+eZ3kUfAhRltOUxC2AqRMWN/WkeeS4dWyZtzkjoMN/vGN83Ayup7
-         exxGCcoarbdpQgXU/OUjTmCUQwe3k/2iCDEZF0k995KAL0DUncpqfyhgHOMWQdRItx40
-         gGsK8IMnmyEqqi4FaD9UM2DCwRw5kPtVvLTQpr7VVncn2aXTfYqCUh5KUu8iiu4kNuog
-         rAGg==
-X-Gm-Message-State: AGi0PubjmBUo3LaaCKExfj09xXqUrcMqlPG+WH8r4MPn70EhXBktWrSL
-        s4+pQUMmfLqJDFNwnmJyp9Yagn1rwPW0Qn3xa9M=
-X-Google-Smtp-Source: APiQypJCggetBSOyihUsi5hi2hrG2Yo9LB9s8vCdZn+G5NuZVy9DKQeEGbtmq4HfrWVSuGDOx+Iu1KQ38N0CU4eR+3g=
-X-Received: by 2002:a4a:b78f:: with SMTP id a15mr16783405oop.59.1587937214831;
- Sun, 26 Apr 2020 14:40:14 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=H5D1PG6e/lMszq0Rf949EFEkle4oIskhG7vE9vM9dC4=;
+        b=I3lNpitHO6vpe0BYxvrQqKNvXjQQbDEkNtFH8sNLq1mxcJ+AIUDJkBI4KFkQxLWIAo
+         iklrekpb6q26WBlkiGh3T+HFfepa85nv7SOgjeW6qQuALVC75CKEr6vi4GJcrD7vgvg3
+         K2oTsWCiHAfO+pRBqKseRgy286SVeJWGwIs7pGKp5wWkLfu8hwjGamk8v8u6Ir3O9B7e
+         zGcMMggptAC7Y+46YVKqQvAvQNIVx98trWae9pyN/nhK1kvkA5RMgI5BvR7zdQHiC05Y
+         6PYbHyp4p6s/psvXaL5ljRWpyuFeks5gzWoqXewIFXdmtmVCcXMQg3u3JhaBHUdwDovd
+         63RA==
+X-Gm-Message-State: AGi0PuakV54nrAg1mNaUHuo3MsQKu5kHRhT0o6j9tDgTZja0geni1mnY
+        iJsXq7CxrgFQaLkoDbD3RA4=
+X-Google-Smtp-Source: APiQypLlLPgA6Ou9oUq3eMaI0CVQsG9UrGKGpXBdsliinmBgCNXAyiE4zSfQmRisUhR9LgkPSFMytg==
+X-Received: by 2002:a17:90a:6d03:: with SMTP id z3mr20045920pjj.32.1587938024753;
+        Sun, 26 Apr 2020 14:53:44 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id 67sm954454pfx.108.2020.04.26.14.53.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Apr 2020 14:53:44 -0700 (PDT)
+Subject: Re: INFO: rcu detected stall in wg_packet_tx_worker
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     syzbot <syzbot+0251e883fe39e7a0cb0a@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        jhs@mojatatu.com,
+        =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>,
+        Krzysztof Kozlowski <krzk@kernel.org>, kuba@kernel.org,
+        kvalo@codeaurora.org, leon@kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Shuah Khan <shuah@kernel.org>, syzkaller-bugs@googlegroups.com,
+        Thomas Gleixner <tglx@linutronix.de>, vivien.didelot@gmail.com,
+        Cong Wang <xiyou.wangcong@gmail.com>
+References: <0000000000005fd19505a4355311@google.com>
+ <e40c443e-74aa-bad4-7be8-4cdddfdf3eaf@gmail.com>
+ <CAHmME9ov2ae08UTzwKL7enquChzDNxpg4c=ppnJqS2QF6ZAn_Q@mail.gmail.com>
+ <f2eb18ea-b32a-4b64-0417-9b5b2df98e33@gmail.com>
+ <29bd64f4-5fe0-605e-59cc-1afa199b1141@gmail.com>
+ <CAHmME9rR-_KvENZyBrRhYNWD+hVD-FraxPJiofsmuXBh651QXw@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <85e76f66-f807-ad12-df9d-0805b68133fa@gmail.com>
+Date:   Sun, 26 Apr 2020 14:53:42 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Received: by 2002:a05:6820:20c:0:0:0:0 with HTTP; Sun, 26 Apr 2020 14:40:14
- -0700 (PDT)
-Reply-To: sophia303robin@gmail.com
-From:   "Mrs. Sophia Robin" <mrsbeccy8@gmail.com>
-Date:   Sun, 26 Apr 2020 14:40:14 -0700
-Message-ID: <CAHU1do3ETNaBmBffU6pG8tt+TUUiaY1Cv75kixd0aoGzxDm1Vw@mail.gmail.com>
-Subject: Hello My Dearest
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAHmME9rR-_KvENZyBrRhYNWD+hVD-FraxPJiofsmuXBh651QXw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello My Dearest
 
-Please I appeal to you to exercise a little patience and read through
-my mail carefully, I am contacting you personally for investment
-assistance and a long term business relationship in your Country.
 
-I am Mrs. Sophia Robin  a citizen of the united state of America 41
-years old ,  I work in HSBC Bank in Milan Italy  as a Telex Manager
-charge of wire transfer department.
+On 4/26/20 1:46 PM, Jason A. Donenfeld wrote:
 
-I am contacting you for an important and  urgent business transaction,
-I  want the bank to transfer the money left by Dr. Cheng Chao,  A
-Chinese   Politicians who  died, March 17th 2020 without any trace of
-his family member,  he used our bank to launder money overseas through
-the help of their Political advisers. And most of the funds which they
-transferred out of the shores of China  were gold and oil money that
-was supposed to have been used to develop the continent.
-Can you invest this money and also help the poor ? The amount value at
-($10.5million Dollars), left in his account still unclaimed, if you
-know that you are capable to invest this fund into any   profitable
-business in your country kindly send me your details information as
-listed below to enable me draft you an application form of claim along
-with the deposit certificate which you are going to fill with your
-bank account detail necessary and contact the HSBC Bank in Madrid
-Spain for immediate transfer of the Amount into your bank account
-direct.
+> 
+> Ah, whew, okay. I had just begun instrumenting sfq (the highly
+> technical term for "adding printks everywhere") to figure out what's
+> going on. Looks like you've got a handle on it, so I'll let you have
+> at it.
 
-Percentage share will be 60,for me/ 40, for you.
+Yes, syzbot manages to put a zero in q->scaled_quantum
 
-(1) Your full name..................................................
-(2) Your address....................................................
-(3) Your Nationality.................................................
-(4) Your Age / Sex.....................................................
-(5) Your  Occupation............................................
-(6) Your marital status......................................
-(7) Your direct telephone number..................
-(8) Your photo.......................................
+I will send a fix.
 
-Thanks with my best regards.
-Mrs. Sophia Robin
-Telex Manager
-Milan Italy  (H.S.B.C)
+> 
+> On the brighter side, it seems like Dmitry's and my effort to get full
+> coverage of WireGuard has paid off in the sense that tons of packets
+> wind up being shoveled through it in one way or another, which is
+> good.
+> 
+
+Sure !
