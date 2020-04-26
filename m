@@ -2,75 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B59D71B9297
-	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 19:57:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 789B21B92C3
+	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 20:23:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726204AbgDZR5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 13:57:05 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:51195 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726156AbgDZR5E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 13:57:04 -0400
-Received: by mail-io1-f70.google.com with SMTP id a12so17980284ioe.17
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 10:57:02 -0700 (PDT)
+        id S1726162AbgDZSXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 14:23:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44762 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726151AbgDZSXH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 14:23:07 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72BA9C061A0F
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 11:23:07 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id s63so15884137qke.4
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 11:23:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=WFgZ9EYJjv60qBu/eLGGIOoQbLSU6avspYKPRgK3f9M=;
+        b=nT9coyD4L9OiUOoVUbZIqpmI/9QyE3dH+yOcVJ2Ml9BCln6670XSsOohHKzjPRUb5S
+         QC9rzmj35A39Knmq/tgsxkYqki0KT+K8qcEFbHu+c6s44I+Mm0GG08wnHObZqJmJz7qe
+         5qMgcXuPh2rTrD1K64QpiRZ5mu+YFcTNBfY4Kv694v72jKfxIHqH6ko1jnEH6k2tVWCN
+         8ieih+mdQjPfShrP+yiDR+AHc/y+mhOIvLuWamP3GAFS+DUkpkm/gXrGEVtJY/q/IUf+
+         VG0Irey0pKKhM8152c2GAas9DqN8RM5W7PH7pNE6eAhvgcruq9IUQMDIB8rOeQYkchjj
+         4ryg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=8TjkhMFVPAtlJvNNJhAgu9a5c+xNP6W5RwxgCUtPT8A=;
-        b=SKIqaSJfyjPdglSDD7/2avshswhpdoqVwU0GN2FKHAt/oALaXQ96EYwVf+ipIlQCbN
-         H9OfolVZbIXYFkcUg/PnCfXc80FmmVqTYzst0N3SEJSdttDCyzYMQR9B+2w5I1ffm9Ex
-         OaoR1xbH79homPzBMAUxk8+oSpzaiuUJiwQfPY+X2s1sl+++OBMEdtuM1kEmBSbYuExy
-         FcDwq2gTxS4AxqlK//WKgnaEDX3blN01WyOc5JWHxoVlXPnUbLpI4zpbimpYMx99B/bM
-         E1c4jTg5pKYhItMW4pSvYJBcYKt8zHMkSJdlPdc2xHusnAnlG5fbuekL5I2j+esxcHF2
-         PVtA==
-X-Gm-Message-State: AGi0PuZxEilmveO5UNFM+v54znCHXgdyxQzjgJReDL0UTNsuXzJOi9Ss
-        pgLuoN6S6Fqt2LNwc333GPpEKs92RxiVQlLgZTAM3b+42daY
-X-Google-Smtp-Source: APiQypJ1WErfclfWRklquQXKUFrHvg+ilCR/GXhMmL7xYap+ltlezJQoVrYWsI2Igs/lBP1SJGZYdLEjU0efu91+I8ON/mzNsiup
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=WFgZ9EYJjv60qBu/eLGGIOoQbLSU6avspYKPRgK3f9M=;
+        b=DR4/TYheleRqQB/SUjsKSIae/WdumCxFaUx7OqRFgcdpJn+WBH3HcktNnBetxucu3l
+         7V0HTPsvbr9EnqbrEMwT8yNr9e3NkG+uZEAat8yntpGAjwFduxYs2c8kkepoSK8aR0wE
+         8d4/pFDuscFrtYrFV17UVlqyeURs7XqnBcE9yU5TyCp3RdyggclEcX7Jq4BQrd00n9TV
+         xtpvBA4IVqPac4zLDKi7lJAl7rN7T7qoYUFoeKhhoGpvj43ihK8I+EkC9IMTSAul0Mo1
+         RVJuPY8zKc4BT4QDXYTN8UV6W4ug/67ZkZtehnSAEbwZfLMcaQoHb8DUsMpQWiYyQmg0
+         rPvA==
+X-Gm-Message-State: AGi0Puaqovv8q5mQ1d6QlnFGftpU56t6g7EGrVnaxG8sIuC/DCYpidAI
+        xTnSVvYtMqGvW0c/chWkIcE=
+X-Google-Smtp-Source: APiQypJlQ7XsPKSQ+OwcO8/ojBW8KhKWhgoFkYqYtgtcXBJPskDUWLu7i1Kmjz8bYSGabpkXuxP8Dw==
+X-Received: by 2002:a37:617:: with SMTP id 23mr19390387qkg.11.1587925386576;
+        Sun, 26 Apr 2020 11:23:06 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:a88f:52f9:794e:3c1? ([2601:282:803:7700:a88f:52f9:794e:3c1])
+        by smtp.googlemail.com with ESMTPSA id s50sm8565157qtj.1.2020.04.26.11.23.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Apr 2020 11:23:05 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next] tc: pedit: Support JSON dumping
+To:     Petr Machata <petrm@mellanox.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com
+References: <19073d9bc5a2977a5a366caf5e06b392e4b63e54.1587575157.git.petrm@mellanox.com>
+ <20200422130245.53026ff7@hermes.lan> <87imhq4j6b.fsf@mellanox.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <cdb5f51b-a8aa-7deb-1085-4fab7e01d64f@gmail.com>
+Date:   Sun, 26 Apr 2020 12:23:04 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.7.0
 MIME-Version: 1.0
-X-Received: by 2002:a5d:8715:: with SMTP id u21mr2705169iom.46.1587923822561;
- Sun, 26 Apr 2020 10:57:02 -0700 (PDT)
-Date:   Sun, 26 Apr 2020 10:57:02 -0700
-In-Reply-To: <00000000000005d1ab05a4351006@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005fd19505a4355311@google.com>
-Subject: Re: INFO: rcu detected stall in wg_packet_tx_worker
-From:   syzbot <syzbot+0251e883fe39e7a0cb0a@syzkaller.appspotmail.com>
-To:     Jason@zx2c4.com, davem@davemloft.net, f.fainelli@gmail.com,
-        gregkh@linuxfoundation.org, jason@zx2c4.com, jhs@mojatatu.com,
-        jiri@resnulli.us, krzk@kernel.org, kuba@kernel.org,
-        kvalo@codeaurora.org, leon@kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, shuah@kernel.org,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        vivien.didelot@gmail.com, xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <87imhq4j6b.fsf@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+On 4/23/20 3:59 AM, Petr Machata wrote:
+> 
+> Stephen Hemminger <stephen@networkplumber.org> writes:
+> 
+>> On Wed, 22 Apr 2020 20:06:15 +0300
+>> Petr Machata <petrm@mellanox.com> wrote:
+>>
+>>> +			print_string(PRINT_FP, NULL, ": %s",
+>>> +				     cmd ? "add" : "val");
+>>> +			print_string(PRINT_JSON, "cmd", NULL,
+>>> +				     cmd ? "add" : "set");
+>>
+>> Having different outputs for JSON and file here. Is that necessary?
+>> JSON output is new, and could just mirror existing usage.
+> 
+> This code outputs this bit:
+> 
+>             {
+>               "htype": "udp",
+>               "offset": 0,
+>               "cmd": "set",   <----
+>               "val": "3039",
+>               "mask": "ffff0000"
+>             },
+> 
+> There are currently two commands, set and add. The words used to
+> configure these actions are set and add as well. The way these commands
+> are dumped should be the same, too. The only reason why "set" is
+> reported as "val" in file is that set used to be the implied action.
+> 
+> JSON doesn't have to be backward compatible, so it should present the
+> expected words.
+> 
 
-commit e7096c131e5161fa3b8e52a650d7719d2857adfd
-Author: Jason A. Donenfeld <Jason@zx2c4.com>
-Date:   Sun Dec 8 23:27:34 2019 +0000
-
-    net: WireGuard secure network tunnel
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15258fcfe00000
-start commit:   b2768df2 Merge branch 'for-linus' of git://git.kernel.org/..
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=17258fcfe00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=13258fcfe00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b7a70e992f2f9b68
-dashboard link: https://syzkaller.appspot.com/bug?extid=0251e883fe39e7a0cb0a
-userspace arch: i386
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15f5f47fe00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11e8efb4100000
-
-Reported-by: syzbot+0251e883fe39e7a0cb0a@syzkaller.appspotmail.com
-Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Stephen: do you agree?
