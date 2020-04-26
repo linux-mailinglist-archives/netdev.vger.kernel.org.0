@@ -2,138 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FA921B8CDC
-	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 08:13:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40ACE1B8CE5
+	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 08:22:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726262AbgDZGNP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 02:13:15 -0400
-Received: from mga12.intel.com ([192.55.52.136]:62050 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726230AbgDZGNN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Apr 2020 02:13:13 -0400
-IronPort-SDR: HnPf5zFxfKOruBI/+nDehse2eVh7IZCvZ4IZhDN0SVEdFbsWWvaN3vEoNdD75MMczFEYbk0Szp
- VbN9k752WlBw==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2020 23:13:13 -0700
-IronPort-SDR: TXqH2o88GR3QOtZBefej95gttWbl3MPxq1zuRI/ZUhAcNTpJ4x4y3kcjcBqwctwFnRW1fWTSIg
- qtMflFXk5MBw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,319,1583222400"; 
-   d="scan'208";a="256865214"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.79])
-  by orsmga003.jf.intel.com with ESMTP; 25 Apr 2020 23:13:10 -0700
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     mst@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        jasowang@redhat.com
-Cc:     lulu@redhat.com, dan.daly@intel.com, cunming.liang@intel.com,
-        Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V2 2/2] vdpa: implement config interrupt in IFCVF
-Date:   Sun, 26 Apr 2020 14:09:44 +0800
-Message-Id: <1587881384-2133-3-git-send-email-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1587881384-2133-1-git-send-email-lingshan.zhu@intel.com>
-References: <1587881384-2133-1-git-send-email-lingshan.zhu@intel.com>
+        id S1726119AbgDZGWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 02:22:15 -0400
+Received: from guitar.tcltek.co.il ([192.115.133.116]:51926 "EHLO
+        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725951AbgDZGWO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 Apr 2020 02:22:14 -0400
+Received: from tarshish.tkos.co.il (unknown [10.0.8.3])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx.tkos.co.il (Postfix) with ESMTPS id E106A440535;
+        Sun, 26 Apr 2020 09:22:10 +0300 (IDT)
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Russell King <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>
+Subject: [PATCH net v4] net: phy: marvell10g: fix temperature sensor on 2110
+Date:   Sun, 26 Apr 2020 09:22:06 +0300
+Message-Id: <7f1ffa0c51d4f7be6867878e601037ae3326ac01.1587882126.git.baruch@tkos.co.il>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit implements config interrupt support
-in IFC VF
+Read the temperature sensor register from the correct location for the
+88E2110 PHY. There is no enable/disable bit on 2110, so make
+mv3310_hwmon_config() run on 88X3310 only.
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+Fixes: 62d01535474b61 ("net: phy: marvell10g: add support for the 88x2110 PHY")
+Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
 ---
- drivers/vdpa/ifcvf/ifcvf_base.c |  3 +++
- drivers/vdpa/ifcvf/ifcvf_base.h |  3 +++
- drivers/vdpa/ifcvf/ifcvf_main.c | 22 +++++++++++++++++++++-
- 3 files changed, 27 insertions(+), 1 deletion(-)
+v4:
+  * Combine two patches into one (RMK)
 
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
-index b61b06e..c825d99 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.c
-@@ -185,6 +185,9 @@ void ifcvf_set_status(struct ifcvf_hw *hw, u8 status)
+  * Add comments to mark PHY specific temperature registers (RMK)
+
+  * Drop PHY check on mv3310_hwmon_probe() (RMK)
+
+v3: Split temperature register read routine per variant (Andrew Lunn)
+
+v2: Fix indentation (Andrew Lunn)
+---
+ drivers/net/phy/marvell10g.c | 27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+index 95e3f4644aeb..419301bfe8c6 100644
+--- a/drivers/net/phy/marvell10g.c
++++ b/drivers/net/phy/marvell10g.c
+@@ -66,6 +66,9 @@ enum {
+ 	MV_PCS_CSSR1_SPD2_2500	= 0x0004,
+ 	MV_PCS_CSSR1_SPD2_10000	= 0x0000,
  
- void ifcvf_reset(struct ifcvf_hw *hw)
- {
-+	hw->config_cb.callback = NULL;
-+	hw->config_cb.private = NULL;
++	/* Temperature read register (88E2110 only) */
++	MV_PCS_TEMP		= 0x8042,
 +
- 	ifcvf_set_status(hw, 0);
- 	/* flush set_status, make sure VF is stopped, reset */
- 	ifcvf_get_status(hw);
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
-index e803070..23ac47d 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.h
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.h
-@@ -27,6 +27,7 @@
- 		((1ULL << VIRTIO_NET_F_MAC)			| \
- 		 (1ULL << VIRTIO_F_ANY_LAYOUT)			| \
- 		 (1ULL << VIRTIO_F_VERSION_1)			| \
-+		 (1ULL << VIRTIO_NET_F_STATUS)			| \
- 		 (1ULL << VIRTIO_F_ORDER_PLATFORM)		| \
- 		 (1ULL << VIRTIO_F_IOMMU_PLATFORM)		| \
- 		 (1ULL << VIRTIO_NET_F_MRG_RXBUF))
-@@ -81,6 +82,8 @@ struct ifcvf_hw {
- 	void __iomem *net_cfg;
- 	struct vring_info vring[IFCVF_MAX_QUEUE_PAIRS * 2];
- 	void __iomem * const *base;
-+	char config_msix_name[256];
-+	struct vdpa_callback config_cb;
- };
- 
- struct ifcvf_adapter {
-diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-index 8d54dc5..f7baeca 100644
---- a/drivers/vdpa/ifcvf/ifcvf_main.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-@@ -18,6 +18,16 @@
- #define DRIVER_AUTHOR   "Intel Corporation"
- #define IFCVF_DRIVER_NAME       "ifcvf"
- 
-+static irqreturn_t ifcvf_config_changed(int irq, void *arg)
-+{
-+	struct ifcvf_hw *vf = arg;
-+
-+	if (vf->config_cb.callback)
-+		return vf->config_cb.callback(vf->config_cb.private);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static irqreturn_t ifcvf_intr_handler(int irq, void *arg)
- {
- 	struct vring_info *vring = arg;
-@@ -256,7 +266,10 @@ static void ifcvf_vdpa_set_config(struct vdpa_device *vdpa_dev,
- static void ifcvf_vdpa_set_config_cb(struct vdpa_device *vdpa_dev,
- 				     struct vdpa_callback *cb)
- {
--	/* We don't support config interrupt */
-+	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
-+
-+	vf->config_cb.callback = cb->callback;
-+	vf->config_cb.private = cb->private;
+ 	/* These registers appear at 0x800X and 0xa00X - the 0xa00X control
+ 	 * registers appear to set themselves to the 0x800X when AN is
+ 	 * restarted, but status registers appear readable from either.
+@@ -77,6 +80,7 @@ enum {
+ 	MV_V2_PORT_CTRL		= 0xf001,
+ 	MV_V2_PORT_CTRL_SWRST	= BIT(15),
+ 	MV_V2_PORT_CTRL_PWRDOWN = BIT(11),
++	/* Temperature control/read registers (88X3310 only) */
+ 	MV_V2_TEMP_CTRL		= 0xf08a,
+ 	MV_V2_TEMP_CTRL_MASK	= 0xc000,
+ 	MV_V2_TEMP_CTRL_SAMPLE	= 0x0000,
+@@ -104,6 +108,24 @@ static umode_t mv3310_hwmon_is_visible(const void *data,
+ 	return 0;
  }
  
- /*
-@@ -292,6 +305,13 @@ static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
- 	struct ifcvf_hw *vf = &adapter->vf;
- 	int vector, i, ret, irq;
++static int mv3310_hwmon_read_temp_reg(struct phy_device *phydev)
++{
++	return phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_TEMP);
++}
++
++static int mv2110_hwmon_read_temp_reg(struct phy_device *phydev)
++{
++	return phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_TEMP);
++}
++
++static int mv10g_hwmon_read_temp_reg(struct phy_device *phydev)
++{
++	if (phydev->drv->phy_id == MARVELL_PHY_ID_88X3310)
++		return mv3310_hwmon_read_temp_reg(phydev);
++	else /* MARVELL_PHY_ID_88E2110 */
++		return mv2110_hwmon_read_temp_reg(phydev);
++}
++
+ static int mv3310_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
+ 			     u32 attr, int channel, long *value)
+ {
+@@ -116,7 +138,7 @@ static int mv3310_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
+ 	}
  
-+	snprintf(vf->config_msix_name, 256, "ifcvf[%s]-config\n",
-+		pci_name(pdev));
-+	vector = 0;
-+	irq = pci_irq_vector(pdev, vector);
-+	ret = devm_request_irq(&pdev->dev, irq,
-+			       ifcvf_config_changed, 0,
-+			       vf->config_msix_name, vf);
+ 	if (type == hwmon_temp && attr == hwmon_temp_input) {
+-		temp = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_TEMP);
++		temp = mv10g_hwmon_read_temp_reg(phydev);
+ 		if (temp < 0)
+ 			return temp;
  
- 	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
- 		snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n",
+@@ -169,6 +191,9 @@ static int mv3310_hwmon_config(struct phy_device *phydev, bool enable)
+ 	u16 val;
+ 	int ret;
+ 
++	if (phydev->drv->phy_id != MARVELL_PHY_ID_88X3310)
++		return 0;
++
+ 	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, MV_V2_TEMP,
+ 			    MV_V2_TEMP_UNKNOWN);
+ 	if (ret < 0)
 -- 
-1.8.3.1
+2.26.2
 
