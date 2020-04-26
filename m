@@ -2,68 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72FCD1B942C
-	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 23:23:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84DF31B9431
+	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 23:35:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726215AbgDZVXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 17:23:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44396 "EHLO
+        id S1726210AbgDZVfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 17:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725996AbgDZVXB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 17:23:01 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DCC2C061A0F
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 14:23:01 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id hi11so6600410pjb.3
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 14:23:00 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726184AbgDZVfS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 17:35:18 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BD31C061A0F
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 14:35:17 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id k13so18266916wrw.7
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 14:35:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=xiLMQkCx7ni+hFiV7GE10ECbgztOIFtbbbLvAX3zbnc=;
-        b=UYWe2UUvXQsZKlgbdEdClPJJFqjnOtXcZdUmFyLBNdOLqKOA2CicWbHebP5sLBh1pM
-         UzfqyCX/LfvkY7Mfk2uNm6+sb/31XiLUvXVBhQV4AUGDUVHXFN3h1GI6BdegJKSIPdA3
-         ywzfV2BShMYiRbf3hEeZrypJHdfymdxGnSoSnjqY4puu5TzXeCGbm1tcU3AQFDaB+0hF
-         nNOO+ckQaM/1c+t6z8SOsXH/PaJQJAAJTYyiShxHRit3P3YLiKqDZBq8yfqJngjDy17R
-         WlgmNNarjQA74oYopvPK6v1wXnAMJbSZ9m/7CNDfCZRC7xo2D08RZYlRJjJ01dbPM10e
-         uMnQ==
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=QGv1apCndiTMoNbG8w5nmITeWRnpIjAvUUxwCyRXOCU=;
+        b=n261jv6vp093qMVWa7nof5nkU6vCYX06I+caRos0l2pbabByAfA/7E1ynvLYR851H+
+         n2HFJ8UsdG26a3qTLPzFwVP44KuL5G7iIGL2qSmy/v4N7zEW0L9g3mtp7Q+9LfTuCOqO
+         KmAbtJhokgjOw6SIVzzAkkuDwQIfYvNJUG2Jll+E3Kp8umMdm+yfIhsNmCvoe+/g11+6
+         bfjnan72F5G/b3p3fQeuV8HuzfHgrVkBDx2pyE5Qz5pdY5wHSUnH4jkqj9tOhlLjqfgY
+         3wZDlIjovtHRzes1tDY09E7/snrsMm1+PcVGvpIfYIxqnTcAMb9DQi6eXw7H9IkwFhPN
+         5d7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=xiLMQkCx7ni+hFiV7GE10ECbgztOIFtbbbLvAX3zbnc=;
-        b=ihUgzP49uRcdVfJbJttP7A6BfBsqmiHgl2fmsGj80buTHpCGg9LcOSUQwZOOvHIDyO
-         y5u1BMXwJy19NBWjVSAAqM2J1A+r8WJ2C57jycx+Z8izYWlMWfIfImljVQn3sqGsOw2F
-         n2mJronCFY9vjvihzzLj5RpaoLfMkRrHgEfbrNhbYbrA9GdNcG2Z5E+TtsqA+BLRiy+4
-         W1vkdOuNc5pmWcEP5g9rrMGsu8Rf0Okb3v0jsTDGX+Qt8zNw9oec45FacMfrqsHqylQQ
-         KcWc7of23hHoCPMpiJfpCI4QFQ7HcHqLnvik9oq/coMgtnI8vD5bWtYo09fYnPSJTNmm
-         gvrg==
-X-Gm-Message-State: AGi0PuZjCLCEEWJBK8ZQ4Hk8n/feyb6Q7uDGquRsjWywQRuz/tDY7bl3
-        nEwdqJSz88KGw20/2VfmV43qLy9q
-X-Google-Smtp-Source: APiQypJLGHqQlYfrzl/0aJcFcwscpHoImbHpB37ss4zbwUVXoCGQVXTp5+crc9SxMJqCMp/3R6DnWw==
-X-Received: by 2002:a17:90a:d0c3:: with SMTP id y3mr13336576pjw.25.1587936180394;
-        Sun, 26 Apr 2020 14:23:00 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id v127sm10371020pfv.77.2020.04.26.14.22.58
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=QGv1apCndiTMoNbG8w5nmITeWRnpIjAvUUxwCyRXOCU=;
+        b=CGIMLXJ995mTRFnJXU+yQ0sEDD56XOIiI/uU5AOffRwi4vhSrnH/bETv1bgZNQTFwl
+         uMycY+jEi+bkCmdea4KPkHAM2+C+wc8WwVbIiDuCGF6WxHRWcLaw/jGBi2f0u8EHmeEW
+         j+9fPRwLPqay9Je5Zxpq+58S+Vn2oPYLsAp2aZmMm+8svAYNvyiVKzyaLyf7T6cQv1k0
+         OAmFdXPrPRQcWyAXq10ikwBodq0bqxn4bc/m9RAHI6NjdOQRlzY3aGd/ROfX3HfAjTWj
+         es3CRB9PNH7dxDLZw7kl/d8JDp7BtauVQn0KnOIAm4BI4+L8hyGrCqlhrL85jOUVGxzS
+         dcIQ==
+X-Gm-Message-State: AGi0PuYPqM96zDypgza7w6JfzIMx3aEsB6WEcB+Qri5se8K746Yt5j7x
+        HhMwmM3egiRTXHdyMbyCbLTFf8KE
+X-Google-Smtp-Source: APiQypI6GeS2XRqMgSkfHcl8sAwDd6IgxsFjAayDy2/fyPNXQF09Ca+9zKI16n+U8icd4ZAmZ6i2rg==
+X-Received: by 2002:adf:b1c9:: with SMTP id r9mr25691326wra.271.1587936915397;
+        Sun, 26 Apr 2020 14:35:15 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:6000:d1d0:8c1c:405c:5986? (p200300EA8F296000D1D08C1C405C5986.dip0.t-ipconnect.de. [2003:ea:8f29:6000:d1d0:8c1c:405c:5986])
+        by smtp.googlemail.com with ESMTPSA id m8sm19629989wrx.54.2020.04.26.14.35.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 26 Apr 2020 14:22:59 -0700 (PDT)
-Subject: Re: [PATCH net-next v1 1/9] net: phy: Add cable test support to state
- machine
-To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Chris Healy <cphealy@gmail.com>,
-        Michal Kubecek <mkubecek@suse.cz>
-References: <20200425180621.1140452-1-andrew@lunn.ch>
- <20200425180621.1140452-2-andrew@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <a77a19a5-bb81-434a-161c-bdbea6e9c884@gmail.com>
-Date:   Sun, 26 Apr 2020 14:22:57 -0700
+        Sun, 26 Apr 2020 14:35:14 -0700 (PDT)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next 0/2] r8169: improve chip config handling
+Message-ID: <e076bba2-e4dc-f8ce-d119-5b6735017727@gmail.com>
+Date:   Sun, 26 Apr 2020 23:35:08 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.7.0
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200425180621.1140452-2-andrew@lunn.ch>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -72,34 +65,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Series includes two improvements for chip configuration handling.
 
+Heiner Kallweit (2):
+  r8169: improve handling CPCMD_MASK
+  r8169: improve configuring RxConfig register
 
-On 4/25/2020 11:06 AM, Andrew Lunn wrote:
-> Running a cable test is desruptive to normal operation of the PHY and
-> can take a 5 to 10 seconds to complete. The RTNL lock cannot be held
-> for this amount of time, and add a new state to the state machine for
-> running a cable test.
-> 
-> The driver is expected to implement two functions. The first is used
-> to start a cable test. Once the test has started, it should return.
-> 
-> The second function is called once per second, or on interrupt to
-> check if the cable test is complete, and to allow the PHY to report
-> the status.
-> 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> ---
+ drivers/net/ethernet/realtek/r8169_main.c | 41 ++++++++++++-----------
+ 1 file changed, 21 insertions(+), 20 deletions(-)
 
-[snip]
-
->  
-> +static void phy_cable_test_abort(struct phy_device *phydev)
-> +{
-> +	genphy_soft_reset(phydev);
-
-Some drivers implement a soft_reset callback which would not be covered
-here, so I believe you need to call phy_init_hw() here. With that fixed
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>	
 -- 
-Florian
+2.26.2
+
