@@ -2,138 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D8EF1B8E0A
-	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 10:46:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 907A21B8E0F
+	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 10:50:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726251AbgDZIqY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 04:46:24 -0400
-Received: from mga17.intel.com ([192.55.52.151]:6125 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726226AbgDZIqV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Apr 2020 04:46:21 -0400
-IronPort-SDR: KyDcXHENiwWbv+gVgEC8ttl0SdA7YhtDFSZTap91LKva5z7+Pia3jeL8/G/8Fsn1QcWUUyHtPQ
- 6W9z4P2VBOFQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2020 01:46:21 -0700
-IronPort-SDR: rKNRppjA7iqDUUqC5KTwGBvg34L+MbAKAH0tlFEaXmtBqZWIEtjg6orrKDzu5Tg8M8z1CNoKG9
- 5/y/ToiwmrvQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,319,1583222400"; 
-   d="scan'208";a="275128481"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.79])
-  by orsmga002.jf.intel.com with ESMTP; 26 Apr 2020 01:46:18 -0700
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     mst@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        jasowang@redhat.com
-Cc:     lulu@redhat.com, dan.daly@intel.com, cunming.liang@intel.com,
-        Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V3 2/2] vdpa: implement config interrupt in IFCVF
-Date:   Sun, 26 Apr 2020 16:42:52 +0800
-Message-Id: <1587890572-39093-3-git-send-email-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1587890572-39093-1-git-send-email-lingshan.zhu@intel.com>
-References: <1587890572-39093-1-git-send-email-lingshan.zhu@intel.com>
+        id S1726141AbgDZIu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 04:50:26 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:40636 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726108AbgDZIuZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 04:50:25 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03Q8oHwW032492;
+        Sun, 26 Apr 2020 01:50:24 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pfpt0818;
+ bh=aumqPdP70nQp5wnKBr8YBLd0bjsA5Dcj4TlWgHVwn/w=;
+ b=PwYc547jYn0KTbspC9HQsQbeyy3M9TCALnQI5CsMg4kyfyus8dKTOuiUhpsXXHSb+4JK
+ NV0F0GNGJuzP1wgGAc3KvQp0zsEt9tTptMClh11navMFcAtzjo/g2G/fFxgsdwTuCmam
+ b2CZIjVNr/STKkVlU8kWrw86PGiATRuavaq+TMZPiJmgXSQ/DRqLzivK0fFzN/n+RbcH
+ qvTK34tM/QHW2lj0u48DULWMYTTuTL7OBldYscmxpFuT2wioKgvFaUHfs50+5KhXZNyd
+ GqdPHH0+lp/gZltxTfyRNPm+Nlbcad0Av1BIDv8JRvzWWbpK3KrMwDT+oww91YmM+JYr ug== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0a-0016f401.pphosted.com with ESMTP id 30mjjq3pdb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sun, 26 Apr 2020 01:50:24 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 26 Apr
+ 2020 01:50:22 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sun, 26 Apr 2020 01:50:22 -0700
+Received: from [10.193.46.2] (unknown [10.193.46.2])
+        by maili.marvell.com (Postfix) with ESMTP id D90A53F703F;
+        Sun, 26 Apr 2020 01:50:20 -0700 (PDT)
+Subject: Re: [EXT] Re: [PATCH net-next 08/17] net: atlantic: A2
+ driver-firmware interface
+To:     David Miller <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>,
+        Mark Starovoytov <mstarovoitov@marvell.com>,
+        Dmitry Bogdanov <dbogdanov@marvell.com>
+References: <20200424072729.953-1-irusskikh@marvell.com>
+ <20200424072729.953-9-irusskikh@marvell.com>
+ <20200424174447.0c9a3291@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200424.182532.868703272847758939.davem@davemloft.net>
+From:   Igor Russkikh <irusskikh@marvell.com>
+Message-ID: <d02ab18b-11b4-163c-f376-79161f232f3e@marvell.com>
+Date:   Sun, 26 Apr 2020 11:50:19 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:76.0) Gecko/20100101
+ Thunderbird/76.0
+MIME-Version: 1.0
+In-Reply-To: <20200424.182532.868703272847758939.davem@davemloft.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-26_01:2020-04-24,2020-04-26 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit implements config interrupt support
-in IFC VF
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
----
- drivers/vdpa/ifcvf/ifcvf_base.c |  3 +++
- drivers/vdpa/ifcvf/ifcvf_base.h |  3 +++
- drivers/vdpa/ifcvf/ifcvf_main.c | 22 +++++++++++++++++++++-
- 3 files changed, 27 insertions(+), 1 deletion(-)
+> From: Jakub Kicinski <kuba@kernel.org>
+> Date: Fri, 24 Apr 2020 17:44:47 -0700
+> 
+>> On Fri, 24 Apr 2020 10:27:20 +0300 Igor Russkikh wrote:
+>>> +/* Start of HW byte packed interface declaration */
+>>> +#pragma pack(push, 1)
+>>
+>> Does any structure here actually require packing?
+> 
+> Yes, please use the packed attribute as an absolute _last_ resort.
 
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
-index b61b06e..c825d99 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.c
-@@ -185,6 +185,9 @@ void ifcvf_set_status(struct ifcvf_hw *hw, u8 status)
- 
- void ifcvf_reset(struct ifcvf_hw *hw)
- {
-+	hw->config_cb.callback = NULL;
-+	hw->config_cb.private = NULL;
-+
- 	ifcvf_set_status(hw, 0);
- 	/* flush set_status, make sure VF is stopped, reset */
- 	ifcvf_get_status(hw);
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
-index e803070..23ac47d 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.h
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.h
-@@ -27,6 +27,7 @@
- 		((1ULL << VIRTIO_NET_F_MAC)			| \
- 		 (1ULL << VIRTIO_F_ANY_LAYOUT)			| \
- 		 (1ULL << VIRTIO_F_VERSION_1)			| \
-+		 (1ULL << VIRTIO_NET_F_STATUS)			| \
- 		 (1ULL << VIRTIO_F_ORDER_PLATFORM)		| \
- 		 (1ULL << VIRTIO_F_IOMMU_PLATFORM)		| \
- 		 (1ULL << VIRTIO_NET_F_MRG_RXBUF))
-@@ -81,6 +82,8 @@ struct ifcvf_hw {
- 	void __iomem *net_cfg;
- 	struct vring_info vring[IFCVF_MAX_QUEUE_PAIRS * 2];
- 	void __iomem * const *base;
-+	char config_msix_name[256];
-+	struct vdpa_callback config_cb;
- };
- 
- struct ifcvf_adapter {
-diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-index 8d54dc5..f7baeca 100644
---- a/drivers/vdpa/ifcvf/ifcvf_main.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-@@ -18,6 +18,16 @@
- #define DRIVER_AUTHOR   "Intel Corporation"
- #define IFCVF_DRIVER_NAME       "ifcvf"
- 
-+static irqreturn_t ifcvf_config_changed(int irq, void *arg)
-+{
-+	struct ifcvf_hw *vf = arg;
-+
-+	if (vf->config_cb.callback)
-+		return vf->config_cb.callback(vf->config_cb.private);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static irqreturn_t ifcvf_intr_handler(int irq, void *arg)
- {
- 	struct vring_info *vring = arg;
-@@ -256,7 +266,10 @@ static void ifcvf_vdpa_set_config(struct vdpa_device *vdpa_dev,
- static void ifcvf_vdpa_set_config_cb(struct vdpa_device *vdpa_dev,
- 				     struct vdpa_callback *cb)
- {
--	/* We don't support config interrupt */
-+	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
-+
-+	vf->config_cb.callback = cb->callback;
-+	vf->config_cb.private = cb->private;
- }
- 
- /*
-@@ -292,6 +305,13 @@ static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
- 	struct ifcvf_hw *vf = &adapter->vf;
- 	int vector, i, ret, irq;
- 
-+	snprintf(vf->config_msix_name, 256, "ifcvf[%s]-config\n",
-+		pci_name(pdev));
-+	vector = 0;
-+	irq = pci_irq_vector(pdev, vector);
-+	ret = devm_request_irq(&pdev->dev, irq,
-+			       ifcvf_config_changed, 0,
-+			       vf->config_msix_name, vf);
- 
- 	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
- 		snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n",
--- 
-1.8.3.1
+These are HW bit-mapped layout API, without packing compiler may screw up
+alignments in some of these structures.
 
+Regards,
+  Igor
