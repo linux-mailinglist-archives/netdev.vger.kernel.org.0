@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 691A91B8D5D
-	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 09:20:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FF8D1B8D37
+	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 09:17:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726200AbgDZHSk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 03:18:40 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:41265 "EHLO
+        id S1726384AbgDZHRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 03:17:30 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:41248 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726296AbgDZHSk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 03:18:40 -0400
+        with ESMTP id S1726281AbgDZHR2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 03:17:28 -0400
 Received: from Internal Mail-Server by MTLPINE2 (envelope-from maorg@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 26 Apr 2020 10:17:23 +0300
 Received: from dev-l-vrt-201.mtl.labs.mlnx (dev-l-vrt-201.mtl.labs.mlnx [10.134.201.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 03Q7HMTG023889;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 03Q7HMTH023889;
         Sun, 26 Apr 2020 10:17:23 +0300
 From:   Maor Gottlieb <maorg@mellanox.com>
 To:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
@@ -23,9 +23,9 @@ To:     davem@davemloft.net, jgg@mellanox.com, dledford@redhat.com,
 Cc:     leonro@mellanox.com, saeedm@mellanox.com,
         linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         alexr@mellanox.com, Maor Gottlieb <maorg@mellanox.com>
-Subject: [PATCH V6 mlx5-next 10/16] RDMA: Group create AH arguments in struct
-Date:   Sun, 26 Apr 2020 10:17:11 +0300
-Message-Id: <20200426071717.17088-11-maorg@mellanox.com>
+Subject: [PATCH V6 mlx5-next 11/16] RDMA/core: Add LAG functionality
+Date:   Sun, 26 Apr 2020 10:17:12 +0300
+Message-Id: <20200426071717.17088-12-maorg@mellanox.com>
 X-Mailer: git-send-email 2.17.2
 In-Reply-To: <20200426071717.17088-1-maorg@mellanox.com>
 References: <20200426071717.17088-1-maorg@mellanox.com>
@@ -34,487 +34,223 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Following patch adds additional argument to the create AH function,
-so it make sense to group ah_attr and flags arguments in struct.
+Add support to get the RoCE LAG xmit slave by building skb
+of the RoCE packet and call to master_get_xmit_slave.
+If driver wants to get the slave assume all slaves are available,
+then need to set RDMA_LAG_FLAGS_HASH_ALL_SLAVES in flags.
 
 Signed-off-by: Maor Gottlieb <maorg@mellanox.com>
+Reviewed-by: Leon Romanovsky <leonro@mellanox.com>
 ---
- drivers/infiniband/core/verbs.c                 |  5 ++++-
- drivers/infiniband/hw/bnxt_re/ib_verbs.c        |  8 +++++---
- drivers/infiniband/hw/bnxt_re/ib_verbs.h        |  2 +-
- drivers/infiniband/hw/efa/efa.h                 |  3 +--
- drivers/infiniband/hw/efa/efa_verbs.c           |  6 +++---
- drivers/infiniband/hw/hns/hns_roce_ah.c         |  5 +++--
- drivers/infiniband/hw/hns/hns_roce_device.h     |  4 ++--
- drivers/infiniband/hw/mlx4/ah.c                 | 11 +++++++----
- drivers/infiniband/hw/mlx4/mlx4_ib.h            |  2 +-
- drivers/infiniband/hw/mlx5/ah.c                 |  5 +++--
- drivers/infiniband/hw/mlx5/mlx5_ib.h            |  2 +-
- drivers/infiniband/hw/mthca/mthca_provider.c    |  9 +++++----
- drivers/infiniband/hw/ocrdma/ocrdma_ah.c        |  3 ++-
- drivers/infiniband/hw/ocrdma/ocrdma_ah.h        |  2 +-
- drivers/infiniband/hw/qedr/verbs.c              |  4 ++--
- drivers/infiniband/hw/qedr/verbs.h              |  2 +-
- drivers/infiniband/hw/vmw_pvrdma/pvrdma_verbs.c |  5 +++--
- drivers/infiniband/hw/vmw_pvrdma/pvrdma_verbs.h |  2 +-
- drivers/infiniband/sw/rdmavt/ah.c               | 11 ++++++-----
- drivers/infiniband/sw/rdmavt/ah.h               |  4 ++--
- drivers/infiniband/sw/rxe/rxe_verbs.c           |  9 +++++----
- include/rdma/ib_verbs.h                         |  9 +++++++--
- 22 files changed, 66 insertions(+), 47 deletions(-)
+ drivers/infiniband/core/Makefile |   2 +-
+ drivers/infiniband/core/lag.c    | 141 +++++++++++++++++++++++++++++++
+ include/rdma/ib_verbs.h          |   1 +
+ include/rdma/lag.h               |  23 +++++
+ 4 files changed, 166 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/infiniband/core/lag.c
+ create mode 100644 include/rdma/lag.h
 
-diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
-index 3bfadd8effcc..86be8a54a2d6 100644
---- a/drivers/infiniband/core/verbs.c
-+++ b/drivers/infiniband/core/verbs.c
-@@ -502,6 +502,7 @@ static struct ib_ah *_rdma_create_ah(struct ib_pd *pd,
- 				     u32 flags,
- 				     struct ib_udata *udata)
- {
-+	struct rdma_ah_init_attr init_attr = {};
- 	struct ib_device *device = pd->device;
- 	struct ib_ah *ah;
- 	int ret;
-@@ -521,8 +522,10 @@ static struct ib_ah *_rdma_create_ah(struct ib_pd *pd,
- 	ah->pd = pd;
- 	ah->type = ah_attr->type;
- 	ah->sgid_attr = rdma_update_sgid_attr(ah_attr, NULL);
-+	init_attr.ah_attr = ah_attr;
-+	init_attr.flags = flags;
+diff --git a/drivers/infiniband/core/Makefile b/drivers/infiniband/core/Makefile
+index d1b14887960e..870f0fcd54d5 100644
+--- a/drivers/infiniband/core/Makefile
++++ b/drivers/infiniband/core/Makefile
+@@ -12,7 +12,7 @@ ib_core-y :=			packer.o ud_header.o verbs.o cq.o rw.o sysfs.o \
+ 				roce_gid_mgmt.o mr_pool.o addr.o sa_query.o \
+ 				multicast.o mad.o smi.o agent.o mad_rmpp.o \
+ 				nldev.o restrack.o counters.o ib_core_uverbs.o \
+-				trace.o
++				trace.o lag.o
  
--	ret = device->ops.create_ah(ah, ah_attr, flags, udata);
-+	ret = device->ops.create_ah(ah, &init_attr, udata);
- 	if (ret) {
- 		kfree(ah);
- 		return ERR_PTR(ret);
-diff --git a/drivers/infiniband/hw/bnxt_re/ib_verbs.c b/drivers/infiniband/hw/bnxt_re/ib_verbs.c
-index d98348e82422..5a7c090204c5 100644
---- a/drivers/infiniband/hw/bnxt_re/ib_verbs.c
-+++ b/drivers/infiniband/hw/bnxt_re/ib_verbs.c
-@@ -631,11 +631,12 @@ static u8 bnxt_re_stack_to_dev_nw_type(enum rdma_network_type ntype)
- 	return nw_type;
- }
- 
--int bnxt_re_create_ah(struct ib_ah *ib_ah, struct rdma_ah_attr *ah_attr,
--		      u32 flags, struct ib_udata *udata)
-+int bnxt_re_create_ah(struct ib_ah *ib_ah, struct rdma_ah_init_attr *init_attr,
-+		      struct ib_udata *udata)
- {
- 	struct ib_pd *ib_pd = ib_ah->pd;
- 	struct bnxt_re_pd *pd = container_of(ib_pd, struct bnxt_re_pd, ib_pd);
-+	struct rdma_ah_attr *ah_attr = init_attr->ah_attr;
- 	const struct ib_global_route *grh = rdma_ah_read_grh(ah_attr);
- 	struct bnxt_re_dev *rdev = pd->rdev;
- 	const struct ib_gid_attr *sgid_attr;
-@@ -673,7 +674,8 @@ int bnxt_re_create_ah(struct ib_ah *ib_ah, struct rdma_ah_attr *ah_attr,
- 
- 	memcpy(ah->qplib_ah.dmac, ah_attr->roce.dmac, ETH_ALEN);
- 	rc = bnxt_qplib_create_ah(&rdev->qplib_res, &ah->qplib_ah,
--				  !(flags & RDMA_CREATE_AH_SLEEPABLE));
-+				  !(init_attr->flags &
-+				    RDMA_CREATE_AH_SLEEPABLE));
- 	if (rc) {
- 		ibdev_err(&rdev->ibdev, "Failed to allocate HW AH");
- 		return rc;
-diff --git a/drivers/infiniband/hw/bnxt_re/ib_verbs.h b/drivers/infiniband/hw/bnxt_re/ib_verbs.h
-index 18dd46f46cf4..204c0849ba28 100644
---- a/drivers/infiniband/hw/bnxt_re/ib_verbs.h
-+++ b/drivers/infiniband/hw/bnxt_re/ib_verbs.h
-@@ -170,7 +170,7 @@ enum rdma_link_layer bnxt_re_get_link_layer(struct ib_device *ibdev,
- 					    u8 port_num);
- int bnxt_re_alloc_pd(struct ib_pd *pd, struct ib_udata *udata);
- void bnxt_re_dealloc_pd(struct ib_pd *pd, struct ib_udata *udata);
--int bnxt_re_create_ah(struct ib_ah *ah, struct rdma_ah_attr *ah_attr, u32 flags,
-+int bnxt_re_create_ah(struct ib_ah *ah, struct rdma_ah_init_attr *init_attr,
- 		      struct ib_udata *udata);
- int bnxt_re_modify_ah(struct ib_ah *ah, struct rdma_ah_attr *ah_attr);
- int bnxt_re_query_ah(struct ib_ah *ah, struct rdma_ah_attr *ah_attr);
-diff --git a/drivers/infiniband/hw/efa/efa.h b/drivers/infiniband/hw/efa/efa.h
-index aa7396a1588a..45d519edb4c3 100644
---- a/drivers/infiniband/hw/efa/efa.h
-+++ b/drivers/infiniband/hw/efa/efa.h
-@@ -153,8 +153,7 @@ int efa_mmap(struct ib_ucontext *ibucontext,
- 	     struct vm_area_struct *vma);
- void efa_mmap_free(struct rdma_user_mmap_entry *rdma_entry);
- int efa_create_ah(struct ib_ah *ibah,
--		  struct rdma_ah_attr *ah_attr,
--		  u32 flags,
-+		  struct rdma_ah_init_attr *init_attr,
- 		  struct ib_udata *udata);
- void efa_destroy_ah(struct ib_ah *ibah, u32 flags);
- int efa_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *qp_attr,
-diff --git a/drivers/infiniband/hw/efa/efa_verbs.c b/drivers/infiniband/hw/efa/efa_verbs.c
-index 5c57098a4aee..454b01b21e6a 100644
---- a/drivers/infiniband/hw/efa/efa_verbs.c
-+++ b/drivers/infiniband/hw/efa/efa_verbs.c
-@@ -1639,10 +1639,10 @@ static int efa_ah_destroy(struct efa_dev *dev, struct efa_ah *ah)
- }
- 
- int efa_create_ah(struct ib_ah *ibah,
--		  struct rdma_ah_attr *ah_attr,
--		  u32 flags,
-+		  struct rdma_ah_init_attr *init_attr,
- 		  struct ib_udata *udata)
- {
-+	struct rdma_ah_attr *ah_attr = init_attr->ah_attr;
- 	struct efa_dev *dev = to_edev(ibah->device);
- 	struct efa_com_create_ah_params params = {};
- 	struct efa_ibv_create_ah_resp resp = {};
-@@ -1650,7 +1650,7 @@ int efa_create_ah(struct ib_ah *ibah,
- 	struct efa_ah *ah = to_eah(ibah);
- 	int err;
- 
--	if (!(flags & RDMA_CREATE_AH_SLEEPABLE)) {
-+	if (!(init_attr->flags & RDMA_CREATE_AH_SLEEPABLE)) {
- 		ibdev_dbg(&dev->ibdev,
- 			  "Create address handle is not supported in atomic context\n");
- 		err = -EOPNOTSUPP;
-diff --git a/drivers/infiniband/hw/hns/hns_roce_ah.c b/drivers/infiniband/hw/hns/hns_roce_ah.c
-index 8a522e14ef62..5b2f9314edd3 100644
---- a/drivers/infiniband/hw/hns/hns_roce_ah.c
-+++ b/drivers/infiniband/hw/hns/hns_roce_ah.c
-@@ -39,13 +39,14 @@
- #define HNS_ROCE_VLAN_SL_BIT_MASK	7
- #define HNS_ROCE_VLAN_SL_SHIFT		13
- 
--int hns_roce_create_ah(struct ib_ah *ibah, struct rdma_ah_attr *ah_attr,
--		       u32 flags, struct ib_udata *udata)
-+int hns_roce_create_ah(struct ib_ah *ibah, struct rdma_ah_init_attr *init_attr,
-+		       struct ib_udata *udata)
- {
- 	struct hns_roce_dev *hr_dev = to_hr_dev(ibah->device);
- 	const struct ib_gid_attr *gid_attr;
- 	struct device *dev = hr_dev->dev;
- 	struct hns_roce_ah *ah = to_hr_ah(ibah);
-+	struct rdma_ah_attr *ah_attr = init_attr->ah_attr;
- 	const struct ib_global_route *grh = rdma_ah_read_grh(ah_attr);
- 	u16 vlan_id = 0xffff;
- 	bool vlan_en = false;
-diff --git a/drivers/infiniband/hw/hns/hns_roce_device.h b/drivers/infiniband/hw/hns/hns_roce_device.h
-index f6b3cf6b95d6..74ef3f0b8b5a 100644
---- a/drivers/infiniband/hw/hns/hns_roce_device.h
-+++ b/drivers/infiniband/hw/hns/hns_roce_device.h
-@@ -1171,8 +1171,8 @@ void hns_roce_bitmap_free_range(struct hns_roce_bitmap *bitmap,
- 				unsigned long obj, int cnt,
- 				int rr);
- 
--int hns_roce_create_ah(struct ib_ah *ah, struct rdma_ah_attr *ah_attr,
--		       u32 flags, struct ib_udata *udata);
-+int hns_roce_create_ah(struct ib_ah *ah, struct rdma_ah_init_attr *init_attr,
-+		       struct ib_udata *udata);
- int hns_roce_query_ah(struct ib_ah *ibah, struct rdma_ah_attr *ah_attr);
- void hns_roce_destroy_ah(struct ib_ah *ah, u32 flags);
- 
-diff --git a/drivers/infiniband/hw/mlx4/ah.c b/drivers/infiniband/hw/mlx4/ah.c
-index 02a169f8027b..5f8f8d5c0ce0 100644
---- a/drivers/infiniband/hw/mlx4/ah.c
-+++ b/drivers/infiniband/hw/mlx4/ah.c
-@@ -141,10 +141,11 @@ static int create_iboe_ah(struct ib_ah *ib_ah, struct rdma_ah_attr *ah_attr)
- 	return 0;
- }
- 
--int mlx4_ib_create_ah(struct ib_ah *ib_ah, struct rdma_ah_attr *ah_attr,
--		      u32 flags, struct ib_udata *udata)
--
-+int mlx4_ib_create_ah(struct ib_ah *ib_ah, struct rdma_ah_init_attr *init_attr,
-+		      struct ib_udata *udata)
- {
-+	struct rdma_ah_attr *ah_attr = init_attr->ah_attr;
+ ib_core-$(CONFIG_SECURITY_INFINIBAND) += security.o
+ ib_core-$(CONFIG_CGROUP_RDMA) += cgroup.o
+diff --git a/drivers/infiniband/core/lag.c b/drivers/infiniband/core/lag.c
+new file mode 100644
+index 000000000000..85050b6e67dc
+--- /dev/null
++++ b/drivers/infiniband/core/lag.c
+@@ -0,0 +1,141 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/*
++ * Copyright (c) 2020 Mellanox Technologies. All rights reserved.
++ */
 +
- 	if (ah_attr->type == RDMA_AH_ATTR_TYPE_ROCE) {
- 		if (!(rdma_ah_get_ah_flags(ah_attr) & IB_AH_GRH))
- 			return -EINVAL;
-@@ -167,12 +168,14 @@ int mlx4_ib_create_ah_slave(struct ib_ah *ah, struct rdma_ah_attr *ah_attr,
- 			    int slave_sgid_index, u8 *s_mac, u16 vlan_tag)
- {
- 	struct rdma_ah_attr slave_attr = *ah_attr;
-+	struct rdma_ah_init_attr init_attr = {};
- 	struct mlx4_ib_ah *mah = to_mah(ah);
- 	int ret;
- 
- 	slave_attr.grh.sgid_attr = NULL;
- 	slave_attr.grh.sgid_index = slave_sgid_index;
--	ret = mlx4_ib_create_ah(ah, &slave_attr, 0, NULL);
-+	init_attr.ah_attr = &slave_attr;
-+	ret = mlx4_ib_create_ah(ah, &init_attr, NULL);
- 	if (ret)
- 		return ret;
- 
-diff --git a/drivers/infiniband/hw/mlx4/mlx4_ib.h b/drivers/infiniband/hw/mlx4/mlx4_ib.h
-index d188573187fa..182a237b87f7 100644
---- a/drivers/infiniband/hw/mlx4/mlx4_ib.h
-+++ b/drivers/infiniband/hw/mlx4/mlx4_ib.h
-@@ -752,7 +752,7 @@ int mlx4_ib_arm_cq(struct ib_cq *cq, enum ib_cq_notify_flags flags);
- void __mlx4_ib_cq_clean(struct mlx4_ib_cq *cq, u32 qpn, struct mlx4_ib_srq *srq);
- void mlx4_ib_cq_clean(struct mlx4_ib_cq *cq, u32 qpn, struct mlx4_ib_srq *srq);
- 
--int mlx4_ib_create_ah(struct ib_ah *ah, struct rdma_ah_attr *ah_attr, u32 flags,
-+int mlx4_ib_create_ah(struct ib_ah *ah, struct rdma_ah_init_attr *init_attr,
- 		      struct ib_udata *udata);
- int mlx4_ib_create_ah_slave(struct ib_ah *ah, struct rdma_ah_attr *ah_attr,
- 			    int slave_sgid_index, u8 *s_mac, u16 vlan_tag);
-diff --git a/drivers/infiniband/hw/mlx5/ah.c b/drivers/infiniband/hw/mlx5/ah.c
-index 80642dd359bc..9b59348d51b5 100644
---- a/drivers/infiniband/hw/mlx5/ah.c
-+++ b/drivers/infiniband/hw/mlx5/ah.c
-@@ -68,10 +68,11 @@ static void create_ib_ah(struct mlx5_ib_dev *dev, struct mlx5_ib_ah *ah,
- 	}
- }
- 
--int mlx5_ib_create_ah(struct ib_ah *ibah, struct rdma_ah_attr *ah_attr,
--		      u32 flags, struct ib_udata *udata)
-+int mlx5_ib_create_ah(struct ib_ah *ibah, struct rdma_ah_init_attr *init_attr,
-+		      struct ib_udata *udata)
- 
- {
-+	struct rdma_ah_attr *ah_attr = init_attr->ah_attr;
- 	struct mlx5_ib_ah *ah = to_mah(ibah);
- 	struct mlx5_ib_dev *dev = to_mdev(ibah->device);
- 	enum rdma_ah_attr_type ah_type = ah_attr->type;
-diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-index a4e522385de0..524c188cb4b3 100644
---- a/drivers/infiniband/hw/mlx5/mlx5_ib.h
-+++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-@@ -1180,7 +1180,7 @@ void mlx5_ib_db_unmap_user(struct mlx5_ib_ucontext *context, struct mlx5_db *db)
- void __mlx5_ib_cq_clean(struct mlx5_ib_cq *cq, u32 qpn, struct mlx5_ib_srq *srq);
- void mlx5_ib_cq_clean(struct mlx5_ib_cq *cq, u32 qpn, struct mlx5_ib_srq *srq);
- void mlx5_ib_free_srq_wqe(struct mlx5_ib_srq *srq, int wqe_index);
--int mlx5_ib_create_ah(struct ib_ah *ah, struct rdma_ah_attr *ah_attr, u32 flags,
-+int mlx5_ib_create_ah(struct ib_ah *ah, struct rdma_ah_init_attr *init_attr,
- 		      struct ib_udata *udata);
- int mlx5_ib_query_ah(struct ib_ah *ibah, struct rdma_ah_attr *ah_attr);
- void mlx5_ib_destroy_ah(struct ib_ah *ah, u32 flags);
-diff --git a/drivers/infiniband/hw/mthca/mthca_provider.c b/drivers/infiniband/hw/mthca/mthca_provider.c
-index 69a3e4f62fb1..bc3e3d741ca3 100644
---- a/drivers/infiniband/hw/mthca/mthca_provider.c
-+++ b/drivers/infiniband/hw/mthca/mthca_provider.c
-@@ -388,14 +388,15 @@ static void mthca_dealloc_pd(struct ib_pd *pd, struct ib_udata *udata)
- 	mthca_pd_free(to_mdev(pd->device), to_mpd(pd));
- }
- 
--static int mthca_ah_create(struct ib_ah *ibah, struct rdma_ah_attr *ah_attr,
--			   u32 flags, struct ib_udata *udata)
-+static int mthca_ah_create(struct ib_ah *ibah,
-+			   struct rdma_ah_init_attr *init_attr,
-+			   struct ib_udata *udata)
- 
- {
- 	struct mthca_ah *ah = to_mah(ibah);
- 
--	return mthca_create_ah(to_mdev(ibah->device), to_mpd(ibah->pd), ah_attr,
--			       ah);
-+	return mthca_create_ah(to_mdev(ibah->device), to_mpd(ibah->pd),
-+			       init_attr->ah_attr, ah);
- }
- 
- static void mthca_ah_destroy(struct ib_ah *ah, u32 flags)
-diff --git a/drivers/infiniband/hw/ocrdma/ocrdma_ah.c b/drivers/infiniband/hw/ocrdma/ocrdma_ah.c
-index 2b7f00ac41b0..6eea02b18968 100644
---- a/drivers/infiniband/hw/ocrdma/ocrdma_ah.c
-+++ b/drivers/infiniband/hw/ocrdma/ocrdma_ah.c
-@@ -155,7 +155,7 @@ static inline int set_av_attr(struct ocrdma_dev *dev, struct ocrdma_ah *ah,
- 	return status;
- }
- 
--int ocrdma_create_ah(struct ib_ah *ibah, struct rdma_ah_attr *attr, u32 flags,
-+int ocrdma_create_ah(struct ib_ah *ibah, struct rdma_ah_init_attr *init_attr,
- 		     struct ib_udata *udata)
- {
- 	u32 *ahid_addr;
-@@ -165,6 +165,7 @@ int ocrdma_create_ah(struct ib_ah *ibah, struct rdma_ah_attr *attr, u32 flags,
- 	u16 vlan_tag = 0xffff;
- 	const struct ib_gid_attr *sgid_attr;
- 	struct ocrdma_pd *pd = get_ocrdma_pd(ibah->pd);
-+	struct rdma_ah_attr *attr = init_attr->ah_attr;
- 	struct ocrdma_dev *dev = get_ocrdma_dev(ibah->device);
- 
- 	if ((attr->type != RDMA_AH_ATTR_TYPE_ROCE) ||
-diff --git a/drivers/infiniband/hw/ocrdma/ocrdma_ah.h b/drivers/infiniband/hw/ocrdma/ocrdma_ah.h
-index 9780afcde780..8b73b3489f3a 100644
---- a/drivers/infiniband/hw/ocrdma/ocrdma_ah.h
-+++ b/drivers/infiniband/hw/ocrdma/ocrdma_ah.h
-@@ -51,7 +51,7 @@ enum {
- 	OCRDMA_AH_L3_TYPE_SHIFT		= 0x1D /* 29 bits */
- };
- 
--int ocrdma_create_ah(struct ib_ah *ah, struct rdma_ah_attr *ah_attr, u32 flags,
-+int ocrdma_create_ah(struct ib_ah *ah, struct rdma_ah_init_attr *init_attr,
- 		     struct ib_udata *udata);
- void ocrdma_destroy_ah(struct ib_ah *ah, u32 flags);
- int ocrdma_query_ah(struct ib_ah *ah, struct rdma_ah_attr *ah_attr);
-diff --git a/drivers/infiniband/hw/qedr/verbs.c b/drivers/infiniband/hw/qedr/verbs.c
-index a5bd3adaf90a..d6b94a713573 100644
---- a/drivers/infiniband/hw/qedr/verbs.c
-+++ b/drivers/infiniband/hw/qedr/verbs.c
-@@ -2750,12 +2750,12 @@ int qedr_destroy_qp(struct ib_qp *ibqp, struct ib_udata *udata)
- 	return 0;
- }
- 
--int qedr_create_ah(struct ib_ah *ibah, struct rdma_ah_attr *attr, u32 flags,
-+int qedr_create_ah(struct ib_ah *ibah, struct rdma_ah_init_attr *init_attr,
- 		   struct ib_udata *udata)
- {
- 	struct qedr_ah *ah = get_qedr_ah(ibah);
- 
--	rdma_copy_ah_attr(&ah->attr, attr);
-+	rdma_copy_ah_attr(&ah->attr, init_attr->ah_attr);
- 
- 	return 0;
- }
-diff --git a/drivers/infiniband/hw/qedr/verbs.h b/drivers/infiniband/hw/qedr/verbs.h
-index 18027844eb87..5e02387e068d 100644
---- a/drivers/infiniband/hw/qedr/verbs.h
-+++ b/drivers/infiniband/hw/qedr/verbs.h
-@@ -70,7 +70,7 @@ int qedr_query_srq(struct ib_srq *ibsrq, struct ib_srq_attr *attr);
- void qedr_destroy_srq(struct ib_srq *ibsrq, struct ib_udata *udata);
- int qedr_post_srq_recv(struct ib_srq *ibsrq, const struct ib_recv_wr *wr,
- 		       const struct ib_recv_wr **bad_recv_wr);
--int qedr_create_ah(struct ib_ah *ibah, struct rdma_ah_attr *attr, u32 flags,
-+int qedr_create_ah(struct ib_ah *ibah, struct rdma_ah_init_attr *init_attr,
- 		   struct ib_udata *udata);
- void qedr_destroy_ah(struct ib_ah *ibah, u32 flags);
- 
-diff --git a/drivers/infiniband/hw/vmw_pvrdma/pvrdma_verbs.c b/drivers/infiniband/hw/vmw_pvrdma/pvrdma_verbs.c
-index faf7ecd7b3fa..ccbded2d26ce 100644
---- a/drivers/infiniband/hw/vmw_pvrdma/pvrdma_verbs.c
-+++ b/drivers/infiniband/hw/vmw_pvrdma/pvrdma_verbs.c
-@@ -509,9 +509,10 @@ void pvrdma_dealloc_pd(struct ib_pd *pd, struct ib_udata *udata)
-  *
-  * @return: 0 on success, otherwise errno.
-  */
--int pvrdma_create_ah(struct ib_ah *ibah, struct rdma_ah_attr *ah_attr,
--		     u32 flags, struct ib_udata *udata)
-+int pvrdma_create_ah(struct ib_ah *ibah, struct rdma_ah_init_attr *init_attr,
-+		     struct ib_udata *udata)
- {
-+	struct rdma_ah_attr *ah_attr = init_attr->ah_attr;
- 	struct pvrdma_dev *dev = to_vdev(ibah->device);
- 	struct pvrdma_ah *ah = to_vah(ibah);
- 	const struct ib_global_route *grh;
-diff --git a/drivers/infiniband/hw/vmw_pvrdma/pvrdma_verbs.h b/drivers/infiniband/hw/vmw_pvrdma/pvrdma_verbs.h
-index e4a48f5c0c85..267702226f10 100644
---- a/drivers/infiniband/hw/vmw_pvrdma/pvrdma_verbs.h
-+++ b/drivers/infiniband/hw/vmw_pvrdma/pvrdma_verbs.h
-@@ -414,7 +414,7 @@ int pvrdma_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
- void pvrdma_destroy_cq(struct ib_cq *cq, struct ib_udata *udata);
- int pvrdma_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *wc);
- int pvrdma_req_notify_cq(struct ib_cq *cq, enum ib_cq_notify_flags flags);
--int pvrdma_create_ah(struct ib_ah *ah, struct rdma_ah_attr *ah_attr, u32 flags,
-+int pvrdma_create_ah(struct ib_ah *ah, struct rdma_ah_init_attr *init_attr,
- 		     struct ib_udata *udata);
- void pvrdma_destroy_ah(struct ib_ah *ah, u32 flags);
- 
-diff --git a/drivers/infiniband/sw/rdmavt/ah.c b/drivers/infiniband/sw/rdmavt/ah.c
-index ee02c6176007..40480add7dd3 100644
---- a/drivers/infiniband/sw/rdmavt/ah.c
-+++ b/drivers/infiniband/sw/rdmavt/ah.c
-@@ -98,14 +98,14 @@ EXPORT_SYMBOL(rvt_check_ah);
-  *
-  * Return: 0 on success
-  */
--int rvt_create_ah(struct ib_ah *ibah, struct rdma_ah_attr *ah_attr,
--		  u32 create_flags, struct ib_udata *udata)
-+int rvt_create_ah(struct ib_ah *ibah, struct rdma_ah_init_attr *init_attr,
-+		  struct ib_udata *udata)
- {
- 	struct rvt_ah *ah = ibah_to_rvtah(ibah);
- 	struct rvt_dev_info *dev = ib_to_rvt(ibah->device);
- 	unsigned long flags;
- 
--	if (rvt_check_ah(ibah->device, ah_attr))
-+	if (rvt_check_ah(ibah->device, init_attr->ah_attr))
- 		return -EINVAL;
- 
- 	spin_lock_irqsave(&dev->n_ahs_lock, flags);
-@@ -117,10 +117,11 @@ int rvt_create_ah(struct ib_ah *ibah, struct rdma_ah_attr *ah_attr,
- 	dev->n_ahs_allocated++;
- 	spin_unlock_irqrestore(&dev->n_ahs_lock, flags);
- 
--	rdma_copy_ah_attr(&ah->attr, ah_attr);
-+	rdma_copy_ah_attr(&ah->attr, init_attr->ah_attr);
- 
- 	if (dev->driver_f.notify_new_ah)
--		dev->driver_f.notify_new_ah(ibah->device, ah_attr, ah);
-+		dev->driver_f.notify_new_ah(ibah->device,
-+					    init_attr->ah_attr, ah);
- 
- 	return 0;
- }
-diff --git a/drivers/infiniband/sw/rdmavt/ah.h b/drivers/infiniband/sw/rdmavt/ah.h
-index bbb4d3bdec4e..40b7123fec76 100644
---- a/drivers/infiniband/sw/rdmavt/ah.h
-+++ b/drivers/infiniband/sw/rdmavt/ah.h
-@@ -50,8 +50,8 @@
- 
- #include <rdma/rdma_vt.h>
- 
--int rvt_create_ah(struct ib_ah *ah, struct rdma_ah_attr *ah_attr,
--		  u32 create_flags, struct ib_udata *udata);
-+int rvt_create_ah(struct ib_ah *ah, struct rdma_ah_init_attr *init_attr,
-+		  struct ib_udata *udata);
- void rvt_destroy_ah(struct ib_ah *ibah, u32 destroy_flags);
- int rvt_modify_ah(struct ib_ah *ibah, struct rdma_ah_attr *ah_attr);
- int rvt_query_ah(struct ib_ah *ibah, struct rdma_ah_attr *ah_attr);
-diff --git a/drivers/infiniband/sw/rxe/rxe_verbs.c b/drivers/infiniband/sw/rxe/rxe_verbs.c
-index 9dd4bd7aea92..b8a22af724e8 100644
---- a/drivers/infiniband/sw/rxe/rxe_verbs.c
-+++ b/drivers/infiniband/sw/rxe/rxe_verbs.c
-@@ -195,15 +195,16 @@ static void rxe_dealloc_pd(struct ib_pd *ibpd, struct ib_udata *udata)
- 	rxe_drop_ref(pd);
- }
- 
--static int rxe_create_ah(struct ib_ah *ibah, struct rdma_ah_attr *attr,
--			 u32 flags, struct ib_udata *udata)
-+static int rxe_create_ah(struct ib_ah *ibah,
-+			 struct rdma_ah_init_attr *init_attr,
-+			 struct ib_udata *udata)
- 
- {
- 	int err;
- 	struct rxe_dev *rxe = to_rdev(ibah->device);
- 	struct rxe_ah *ah = to_rah(ibah);
- 
--	err = rxe_av_chk_attr(rxe, attr);
-+	err = rxe_av_chk_attr(rxe, init_attr->ah_attr);
- 	if (err)
- 		return err;
- 
-@@ -211,7 +212,7 @@ static int rxe_create_ah(struct ib_ah *ibah, struct rdma_ah_attr *attr,
- 	if (err)
- 		return err;
- 
--	rxe_init_av(attr, &ah->av);
-+	rxe_init_av(init_attr->ah_attr, &ah->av);
- 	return 0;
- }
- 
++#include <rdma/ib_verbs.h>
++#include <rdma/ib_cache.h>
++#include <rdma/lag.h>
++
++static struct sk_buff *rdma_build_skb(struct ib_device *device,
++				      struct net_device *netdev,
++				      struct rdma_ah_attr *ah_attr)
++{
++	struct ipv6hdr *ip6h;
++	struct sk_buff *skb;
++	struct ethhdr *eth;
++	struct iphdr *iph;
++	struct udphdr *uh;
++	u8 smac[ETH_ALEN];
++	bool is_ipv4;
++	int hdr_len;
++
++	is_ipv4 = ipv6_addr_v4mapped((struct in6_addr *)ah_attr->grh.dgid.raw);
++	hdr_len = ETH_HLEN + sizeof(struct udphdr) + LL_RESERVED_SPACE(netdev);
++	hdr_len += is_ipv4 ? sizeof(struct iphdr) : sizeof(struct ipv6hdr);
++
++	skb = alloc_skb(hdr_len, GFP_ATOMIC);
++	if (!skb)
++		return NULL;
++
++	skb->dev = netdev;
++	skb_reserve(skb, hdr_len);
++	skb_push(skb, sizeof(struct udphdr));
++	skb_reset_transport_header(skb);
++	uh = udp_hdr(skb);
++	uh->source = htons(0xC000);
++	uh->dest = htons(ROCE_V2_UDP_DPORT);
++	uh->len = htons(sizeof(struct udphdr));
++
++	if (is_ipv4) {
++		skb_push(skb, sizeof(struct iphdr));
++		skb_reset_network_header(skb);
++		iph = ip_hdr(skb);
++		iph->frag_off = 0;
++		iph->version = 4;
++		iph->protocol = IPPROTO_UDP;
++		iph->ihl = 0x5;
++		iph->tot_len = htons(sizeof(struct udphdr) + sizeof(struct
++								    iphdr));
++		memcpy(&iph->saddr, ah_attr->grh.sgid_attr->gid.raw + 12,
++		       sizeof(struct in_addr));
++		memcpy(&iph->daddr, ah_attr->grh.dgid.raw + 12,
++		       sizeof(struct in_addr));
++	} else {
++		skb_push(skb, sizeof(struct ipv6hdr));
++		skb_reset_network_header(skb);
++		ip6h = ipv6_hdr(skb);
++		ip6h->version = 6;
++		ip6h->nexthdr = IPPROTO_UDP;
++		memcpy(&ip6h->flow_lbl, &ah_attr->grh.flow_label,
++		       sizeof(*ip6h->flow_lbl));
++		memcpy(&ip6h->saddr, ah_attr->grh.sgid_attr->gid.raw,
++		       sizeof(struct in6_addr));
++		memcpy(&ip6h->daddr, ah_attr->grh.dgid.raw,
++		       sizeof(struct in6_addr));
++	}
++
++	skb_push(skb, sizeof(struct ethhdr));
++	skb_reset_mac_header(skb);
++	eth = eth_hdr(skb);
++	skb->protocol = eth->h_proto = htons(is_ipv4 ? ETH_P_IP : ETH_P_IPV6);
++	rdma_read_gid_l2_fields(ah_attr->grh.sgid_attr, NULL, smac);
++	memcpy(eth->h_source, smac, ETH_ALEN);
++	memcpy(eth->h_dest, ah_attr->roce.dmac, ETH_ALEN);
++
++	return skb;
++}
++
++static struct net_device *rdma_get_xmit_slave_udp(struct ib_device *device,
++						  struct net_device *master,
++						  struct rdma_ah_attr *ah_attr)
++{
++	struct net_device *slave;
++	struct sk_buff *skb;
++
++	skb = rdma_build_skb(device, master, ah_attr);
++	if (!skb)
++		return NULL;
++
++	slave = netdev_get_xmit_slave(master, skb,
++				      !!(device->lag_flags &
++					 RDMA_LAG_FLAGS_HASH_ALL_SLAVES));
++	kfree_skb(skb);
++	return slave;
++}
++
++void rdma_lag_put_ah_roce_slave(struct net_device *xmit_slave)
++{
++	if (xmit_slave)
++		dev_put(xmit_slave);
++}
++
++int rdma_lag_get_ah_roce_slave(struct ib_device *device,
++			       struct rdma_ah_attr *ah_attr,
++			       struct net_device **xmit_slave)
++{
++	struct net_device *master;
++	struct net_device *slave;
++	int err = 0;
++
++	*xmit_slave = NULL;
++	if (!(ah_attr->type == RDMA_AH_ATTR_TYPE_ROCE &&
++	      ah_attr->grh.sgid_attr->gid_type == IB_GID_TYPE_ROCE_UDP_ENCAP))
++		return 0;
++
++	rcu_read_lock();
++	master = rdma_read_gid_attr_ndev_rcu(ah_attr->grh.sgid_attr);
++	if (IS_ERR(master)) {
++		err = PTR_ERR(master);
++		goto unlock;
++	}
++	dev_hold(master);
++
++	if (!netif_is_bond_master(master))
++		goto put;
++
++	slave = rdma_get_xmit_slave_udp(device, master, ah_attr);
++	if (!slave) {
++		ibdev_warn(device, "Failed to get lag xmit slave\n");
++		err =  -EINVAL;
++		goto put;
++	}
++
++	dev_hold(slave);
++	*xmit_slave = slave;
++put:
++	dev_put(master);
++unlock:
++	rcu_read_unlock();
++	return err;
++}
 diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
-index bbc5cfb57cd2..20ea26810349 100644
+index 20ea26810349..e6c18ec0365a 100644
 --- a/include/rdma/ib_verbs.h
 +++ b/include/rdma/ib_verbs.h
-@@ -880,6 +880,11 @@ struct ib_mr_status {
-  */
- __attribute_const__ enum ib_rate mult_to_ib_rate(int mult);
+@@ -2714,6 +2714,7 @@ struct ib_device {
+ 	/* Used by iWarp CM */
+ 	char iw_ifname[IFNAMSIZ];
+ 	u32 iw_driver_flags;
++	u32 lag_flags;
+ };
  
-+struct rdma_ah_init_attr {
-+	struct rdma_ah_attr *ah_attr;
-+	u32 flags;
+ struct ib_client_nl_info;
+diff --git a/include/rdma/lag.h b/include/rdma/lag.h
+new file mode 100644
+index 000000000000..8f78e2c0fd7c
+--- /dev/null
++++ b/include/rdma/lag.h
+@@ -0,0 +1,23 @@
++/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
++/*
++ * Copyright (c) 2020 Mellanox Technologies. All rights reserved.
++ */
++
++#ifndef _RDMA_LAG_H_
++#define _RDMA_LAG_H_
++
++#include <net/lag.h>
++
++struct ib_device;
++struct rdma_ah_attr;
++
++enum rdma_lag_flags {
++	RDMA_LAG_FLAGS_HASH_ALL_SLAVES = 1 << 0
 +};
 +
- enum rdma_ah_attr_type {
- 	RDMA_AH_ATTR_TYPE_UNDEFINED,
- 	RDMA_AH_ATTR_TYPE_IB,
-@@ -2403,8 +2408,8 @@ struct ib_device_ops {
- 	void (*disassociate_ucontext)(struct ib_ucontext *ibcontext);
- 	int (*alloc_pd)(struct ib_pd *pd, struct ib_udata *udata);
- 	void (*dealloc_pd)(struct ib_pd *pd, struct ib_udata *udata);
--	int (*create_ah)(struct ib_ah *ah, struct rdma_ah_attr *ah_attr,
--			 u32 flags, struct ib_udata *udata);
-+	int (*create_ah)(struct ib_ah *ah, struct rdma_ah_init_attr *attr,
-+			 struct ib_udata *udata);
- 	int (*modify_ah)(struct ib_ah *ah, struct rdma_ah_attr *ah_attr);
- 	int (*query_ah)(struct ib_ah *ah, struct rdma_ah_attr *ah_attr);
- 	void (*destroy_ah)(struct ib_ah *ah, u32 flags);
++void rdma_lag_put_ah_roce_slave(struct net_device *xmit_slave);
++int rdma_lag_get_ah_roce_slave(struct ib_device *device,
++			       struct rdma_ah_attr *ah_attr,
++			       struct net_device **xmit_slave);
++
++#endif /* _RDMA_LAG_H_ */
 -- 
 2.17.2
 
