@@ -2,97 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 512681B9229
-	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 19:41:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B59D71B9297
+	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 19:57:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726312AbgDZRlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 13:41:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38244 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726303AbgDZRlP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 13:41:15 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA0BC061A0F
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 10:41:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=EKEm9tCTR1OowOv86v3kxiEHta6J0ghoPWBjdKDX0KA=; b=A8nuj1N//DPsAE1CM+/uw0aTX
-        4z3aP4srUsmErBvM+JOxEmYX8x4lYoPbHHBIIrpCUY4cAeeSUWZWIr7p8w9fUhmug/uTH6otEJxV/
-        aEtOnDLP0mN/VDANJMAs7XUFIyx8/FhbJMqlE1igkYnR6XqWBlJlA1+dfwk1Y/9bpXoySR8AfzzTY
-        J3xP1M88OPFvcBdJi5UMuaGg7gYdIFjCvxRJSzFgNiWJNX98NU2VxJsvJjbNBnKhiNlNG7V7qOeUb
-        4S+FzAosAKBkgNEuSQ7SNmQPb0yiyYUZEdcMuGb39urjJ8pfde7+JWxJxlXfP+0VED8QLlnh5f7kX
-        /3r6XGO0w==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55834)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jSlH5-0006aI-2Z; Sun, 26 Apr 2020 18:41:03 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jSlH0-0005rH-TL; Sun, 26 Apr 2020 18:40:58 +0100
-Date:   Sun, 26 Apr 2020 18:40:58 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Commit "MAINTAINERS: update dpaa2-eth maintainer list"
-Message-ID: <20200426174058.GB25745@shell.armlinux.org.uk>
+        id S1726204AbgDZR5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 13:57:05 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:51195 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726156AbgDZR5E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 13:57:04 -0400
+Received: by mail-io1-f70.google.com with SMTP id a12so17980284ioe.17
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 10:57:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=8TjkhMFVPAtlJvNNJhAgu9a5c+xNP6W5RwxgCUtPT8A=;
+        b=SKIqaSJfyjPdglSDD7/2avshswhpdoqVwU0GN2FKHAt/oALaXQ96EYwVf+ipIlQCbN
+         H9OfolVZbIXYFkcUg/PnCfXc80FmmVqTYzst0N3SEJSdttDCyzYMQR9B+2w5I1ffm9Ex
+         OaoR1xbH79homPzBMAUxk8+oSpzaiuUJiwQfPY+X2s1sl+++OBMEdtuM1kEmBSbYuExy
+         FcDwq2gTxS4AxqlK//WKgnaEDX3blN01WyOc5JWHxoVlXPnUbLpI4zpbimpYMx99B/bM
+         E1c4jTg5pKYhItMW4pSvYJBcYKt8zHMkSJdlPdc2xHusnAnlG5fbuekL5I2j+esxcHF2
+         PVtA==
+X-Gm-Message-State: AGi0PuZxEilmveO5UNFM+v54znCHXgdyxQzjgJReDL0UTNsuXzJOi9Ss
+        pgLuoN6S6Fqt2LNwc333GPpEKs92RxiVQlLgZTAM3b+42daY
+X-Google-Smtp-Source: APiQypJ1WErfclfWRklquQXKUFrHvg+ilCR/GXhMmL7xYap+ltlezJQoVrYWsI2Igs/lBP1SJGZYdLEjU0efu91+I8ON/mzNsiup
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Received: by 2002:a5d:8715:: with SMTP id u21mr2705169iom.46.1587923822561;
+ Sun, 26 Apr 2020 10:57:02 -0700 (PDT)
+Date:   Sun, 26 Apr 2020 10:57:02 -0700
+In-Reply-To: <00000000000005d1ab05a4351006@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005fd19505a4355311@google.com>
+Subject: Re: INFO: rcu detected stall in wg_packet_tx_worker
+From:   syzbot <syzbot+0251e883fe39e7a0cb0a@syzkaller.appspotmail.com>
+To:     Jason@zx2c4.com, davem@davemloft.net, f.fainelli@gmail.com,
+        gregkh@linuxfoundation.org, jason@zx2c4.com, jhs@mojatatu.com,
+        jiri@resnulli.us, krzk@kernel.org, kuba@kernel.org,
+        kvalo@codeaurora.org, leon@kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, shuah@kernel.org,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        vivien.didelot@gmail.com, xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+syzbot has bisected this bug to:
 
-I see there is the commit below in net-next, but it seems to only
-partially address my comments to you about the maintainership of
-this driver.
+commit e7096c131e5161fa3b8e52a650d7719d2857adfd
+Author: Jason A. Donenfeld <Jason@zx2c4.com>
+Date:   Sun Dec 8 23:27:34 2019 +0000
 
-Is Ioana Radulescu's email address now active again?  If it is not,
-then my original report and issue with the maintainership of DPAA2
-still stands, and it interferes with my ability to send patches.
-It means I have to keep adding a commit on top of net-next to fix
-MAINTAINERS every time I want to send patches that touch DPAA2.
+    net: WireGuard secure network tunnel
 
-Please check what the current situation is, and remove Ioana
-Radulescu's email address if it is indeed dead, or let me know if
-it is not.  Either way, I would like to get rid of one way or
-another the additional commit I'm having to carry to fix this
-apparently broken MAINTAINERS entry.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15258fcfe00000
+start commit:   b2768df2 Merge branch 'for-linus' of git://git.kernel.org/..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=17258fcfe00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=13258fcfe00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b7a70e992f2f9b68
+dashboard link: https://syzkaller.appspot.com/bug?extid=0251e883fe39e7a0cb0a
+userspace arch: i386
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15f5f47fe00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11e8efb4100000
 
-Thanks.
+Reported-by: syzbot+0251e883fe39e7a0cb0a@syzkaller.appspotmail.com
+Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
 
-commit 31fa51ad7c5664d0e6530e3d537e2eb025aa1925
-Author: Ioana Ciornei <ioana.ciornei@nxp.com>
-Date:   Wed Apr 22 20:52:54 2020 +0300
-
-    MAINTAINERS: update dpaa2-eth maintainer list
-
-    Add myself as another maintainer of dpaa2-eth.
-
-    Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 6851ef7cf1bd..d5e4d13880b2 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5173,6 +5173,7 @@ S:        Maintained
- F:     drivers/soc/fsl/dpio
-
- DPAA2 ETHERNET DRIVER
-+M:     Ioana Ciornei <ioana.ciornei@nxp.com>
- M:     Ioana Radulescu <ruxandra.radulescu@nxp.com>
- L:     netdev@vger.kernel.org
- S:     Maintained
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
