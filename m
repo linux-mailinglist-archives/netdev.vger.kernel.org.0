@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22B9A1B9114
-	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 17:04:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80F081B9115
+	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 17:05:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726189AbgDZPEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 11:04:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42304 "EHLO
+        id S1726150AbgDZPFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 11:05:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726143AbgDZPEn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 11:04:43 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137E5C061A0F
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 08:04:42 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id g2so5888971plo.3
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 08:04:42 -0700 (PDT)
+        with ESMTP id S1725876AbgDZPFg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 11:05:36 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCEBC061A0F
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 08:05:36 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id a32so6261210pje.5
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 08:05:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=5z3Gs8144cde3/+JVA0WEYDiu1HcUEYCz3riNJht24Q=;
-        b=Rx3N/3AcI9LJAthQJBd7Gqj8qP3OQCkxi/g9GlHGmMU2FFRbqN8tCjPlXDYcz6BuvI
-         8hecJADhkxmY5hs5zhA65uAbS14E43ZuxXNpqtw4aTHZnccxRALQELRG93ItgWNd3Nos
-         5zshhK2rGP9dnP330ELoPmCcDqMrK5Jg0ALIIcHMDQQVW6Kgp14q1YAREMbqObU6Btsd
-         4iSVFLRLCUdTNltG48GDzXMqKFovfz9dbOfWloBELXgHmreW1SRHQRxQc/R1BesqjtQZ
-         JTr4TnLJIuVGa0VKTX+/TVx+BuCZitD1BlP2Pn9FqGY/P7rzcYMSpwrH3ZL7caSzfW13
-         YN+Q==
+        bh=GrTmuujWbCSfYAxcW6orGhpgV12JXr/YCHzDNH/R26w=;
+        b=gObVpqfw1VUy5Olng92++HdtPG9cnC9SvzkRRdA11Q+7y5oVflgt3j4sOrdcBEGrYX
+         FhHOc8JnPMyJ3dOdQSAmxATldLOrqb2zgaO6/pXBE2CS+bZyOx1lbbkGTFeAOrdF1qn8
+         NtMlQLczcNBJZaPcFZ9BlF8t5enIbLjNxOg079VkdbwT3QT79MgsyN4NdlMak3h9wJi9
+         N8Rnh3vEPq621w+yak/GcDN4JMg4bnobOPOZQsOqbEtyCKFjL36LgjQ/95/1qvPDZsh4
+         ca3WlhYo8ciq4a65mrxbgmdaG6YtvrXs5XxuHgB3w5QT7f+mgnQ/HsZFy4FatfJ26y6j
+         S8Kw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=5z3Gs8144cde3/+JVA0WEYDiu1HcUEYCz3riNJht24Q=;
-        b=sKRU4Nwfix9WRyYOZDQ5CMfAPWwRALCgnhDAl2g4d9uzUDqhSuZxrtdr/8HBFY+uyB
-         L8vBZTZbgT9Z/Y46RdpIyqXf49UBQK8azc8Io3bWwu+cm5L3zz5QyOo0fDt023ywQ7Ha
-         zHDsDmLAU6Y1nfZI+2K08urt+hwjVqFE4ZRMWrZo8IzpkIn/ZsgttSh3EanT1v3E/F7U
-         yPfyUCKVzqL8xrvEecPv4p33IpO8qromef5jNk5LJHIwlca2cZuy5ANnvlpUQonaOwlv
-         lPrnomvq0G0nbflRWB+EruBwthiE69lK+AH7n5Ai+PLvEDB+kDH6OE3R31wbdU5LNifK
-         ItQQ==
-X-Gm-Message-State: AGi0PubW9c0nvWA0CCN7tWC6NpUC6O9o2Dmh1YDTWhjjYZoSM/JtFrjT
-        PjBlHZMVUck2kOLPOodUZbxdxJvT
-X-Google-Smtp-Source: APiQypLbnvDI24lN06wEvMP/kF2zJ6Diz3tCWZJG2B2oyFy6rEtYeKu0Fdzz1XRl6UEZKYTBBkKhxw==
-X-Received: by 2002:a17:90a:30a5:: with SMTP id h34mr17678018pjb.171.1587913480545;
-        Sun, 26 Apr 2020 08:04:40 -0700 (PDT)
+        bh=GrTmuujWbCSfYAxcW6orGhpgV12JXr/YCHzDNH/R26w=;
+        b=OdmhZKjoTXlGY1J/sldtmhKMK8rLJ5jr7RnaNgiux+CZR83YI0kvYYMzfk7tBnOg9W
+         IEd8OJjZMxswGtYnXzUOvpgaht7t662dRq218ZbEB5pO0AWsHkzneag6mUf5SObfUHN/
+         9VQ5Ta2EfwAUnas97Ps4ZIXaBlqVhnmfZ9Eq6Md5lnlTaY1GS1Mt7iMIZEsU/XPsj/h/
+         XuMjQFrE/Zqz518EZW6N+3sw97RiZDmPzQDbFvB7IujFZ2f6vqpkZ3ewf+4ong0/X6mH
+         9A1ODc97vmPJjZVjcc2miHcP9gpSP3ZfSzFYUQ0o552e8A1Yhg+TMbkesHoOPYelG/Ih
+         T3Kw==
+X-Gm-Message-State: AGi0PuYxTJn5kAi5o+X9HAsQqaX5u+SFFFFv3m8E2v3yjanjIe/wjfug
+        OVMjBa4BFyx6fskxsJ27v3jmN08j
+X-Google-Smtp-Source: APiQypJZIuCzmotkEQdYL862915BNZ7I8LgNGxWg/aPadFrC0srxvhIuVXUBLrqYffea/PdN1EfTuA==
+X-Received: by 2002:a17:902:b7cc:: with SMTP id v12mr19487171plz.39.1587913535228;
+        Sun, 26 Apr 2020 08:05:35 -0700 (PDT)
 Received: from sc9-mailhost2.vmware.com (c-76-21-95-192.hsd1.ca.comcast.net. [76.21.95.192])
-        by smtp.gmail.com with ESMTPSA id g79sm2638549pfb.60.2020.04.26.08.04.39
+        by smtp.gmail.com with ESMTPSA id p19sm9944472pfn.19.2020.04.26.08.05.34
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 26 Apr 2020 08:04:39 -0700 (PDT)
+        Sun, 26 Apr 2020 08:05:34 -0700 (PDT)
 From:   William Tu <u9012063@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     petrm@mellanox.com, lucien.xin@gmail.com, guy@alum.mit.edu,
         Dmitriy Andreyevskiy <dandreye@cisco.com>
-Subject: [PATCH iproute2-next] erspan: Add type I version 0 support.
-Date:   Sun, 26 Apr 2020 08:04:15 -0700
-Message-Id: <1587913455-78048-1-git-send-email-u9012063@gmail.com>
+Subject: [PATCH net-next] erspan: Add type I version 0 support.
+Date:   Sun, 26 Apr 2020 08:05:11 -0700
+Message-Id: <1587913511-78101-1-git-send-email-u9012063@gmail.com>
 X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -64,14 +64,14 @@ Both type I and II use 0x88BE as protocol type. Unlike type II
 and III, no sequence number or key is required.
 
 To creat a type I erspan tunnel device:
-$ ip link add dev erspan11 type erspan \
-	local 172.16.1.100 remote 172.16.1.200 \
-	erspan_ver 0
+  $ ip link add dev erspan11 type erspan \
+            local 172.16.1.100 remote 172.16.1.200 \
+            erspan_ver 0
 
 CC: Dmitriy Andreyevskiy <dandreye@cisco.com>
 Signed-off-by: William Tu <u9012063@gmail.com>
 ---
-I didn't notice there is Type I when I did first erspan type II code
+I didn't notice there is Type I when I did first erspan type II/III code
 because it is not in the ietf draft 00 and 01. It's until recently I got
 request for adding type I. Spec is below at draft 02:
 https://tools.ietf.org/html/draft-foschiano-erspan-02#section-4.1
@@ -81,67 +81,177 @@ commit ef76d65fc61d01c2ce5184140f4b1bba0019078b
 Author: Guy Harris <guy@alum.mit.edu>
 Date:   Mon Sep 30 16:35:35 2019 -0700
 
-	Fix checks for "do we have an ERSPAN header?"
+    Fix checks for "do we have an ERSPAN header?"
 ---
- ip/link_gre.c         | 4 ++--
- ip/link_gre6.c        | 6 +++---
- man/man8/ip-link.8.in | 4 ++--
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ include/net/erspan.h | 19 +++++++++++++++--
+ net/ipv4/ip_gre.c    | 58 ++++++++++++++++++++++++++++++++++++++--------------
+ 2 files changed, 60 insertions(+), 17 deletions(-)
 
-diff --git a/ip/link_gre.c b/ip/link_gre.c
-index d616a970e9a2..0461e5d06ef3 100644
---- a/ip/link_gre.c
-+++ b/ip/link_gre.c
-@@ -354,8 +354,8 @@ get_failed:
- 			NEXT_ARG();
- 			if (get_u8(&erspan_ver, *argv, 0))
- 				invarg("invalid erspan version\n", *argv);
--			if (erspan_ver != 1 && erspan_ver != 2)
--				invarg("erspan version must be 1 or 2\n", *argv);
-+			if (erspan_ver > 2)
-+				invarg("erspan version must be 0/1/2\n", *argv);
- 		} else if (is_erspan && strcmp(*argv, "erspan_dir") == 0) {
- 			NEXT_ARG();
- 			if (matches(*argv, "ingress") == 0)
-diff --git a/ip/link_gre6.c b/ip/link_gre6.c
-index 94a4ee700431..9d270f4b4455 100644
---- a/ip/link_gre6.c
-+++ b/ip/link_gre6.c
-@@ -389,8 +389,8 @@ get_failed:
- 			NEXT_ARG();
- 			if (get_u8(&erspan_ver, *argv, 0))
- 				invarg("invalid erspan version\n", *argv);
--			if (erspan_ver != 1 && erspan_ver != 2)
--				invarg("erspan version must be 1 or 2\n", *argv);
-+			if (erspan_ver > 2)
-+				invarg("erspan version must be 0/1/2\n", *argv);
- 		} else if (strcmp(*argv, "erspan_dir") == 0) {
- 			NEXT_ARG();
- 			if (matches(*argv, "ingress") == 0)
-@@ -430,7 +430,7 @@ get_failed:
- 	addattr_l(n, 1024, IFLA_GRE_FLOWINFO, &flowinfo, 4);
- 	addattr32(n, 1024, IFLA_GRE_FLAGS, flags);
- 	addattr32(n, 1024, IFLA_GRE_FWMARK, fwmark);
--	if (erspan_ver) {
-+	if (erspan_ver <= 2) {
- 		addattr8(n, 1024, IFLA_GRE_ERSPAN_VER, erspan_ver);
- 		if (erspan_ver == 1 && erspan_idx != 0) {
- 			addattr32(n, 1024, IFLA_GRE_ERSPAN_INDEX, erspan_idx);
-diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
-index 939e2ad49f4e..e8a25451f7cd 100644
---- a/man/man8/ip-link.8.in
-+++ b/man/man8/ip-link.8.in
-@@ -1163,8 +1163,8 @@ It must be an address on another interface on this host.
- .BR erspan_ver " \fIversion "
- - specifies the ERSPAN version number.
- .IR version
--indicates the ERSPAN version to be created: 1 for version 1 (type II)
--or 2 for version 2 (type III).
-+indicates the ERSPAN version to be created: 0 for version 0 type I,
-+1 for version 1 (type II) or 2 for version 2 (type III).
+diff --git a/include/net/erspan.h b/include/net/erspan.h
+index b39643ef4c95..0d9e86bd9893 100644
+--- a/include/net/erspan.h
++++ b/include/net/erspan.h
+@@ -2,7 +2,19 @@
+ #define __LINUX_ERSPAN_H
  
- .sp
- .BR erspan " \fIIDX "
+ /*
+- * GRE header for ERSPAN encapsulation (8 octets [34:41]) -- 8 bytes
++ * GRE header for ERSPAN type I encapsulation (4 octets [34:37])
++ *      0                   1                   2                   3
++ *      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++ *     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++ *     |0|0|0|0|0|00000|000000000|00000|    Protocol Type for ERSPAN   |
++ *     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++ *
++ *  The Type I ERSPAN frame format is based on the barebones IP + GRE
++ *  encapsulation (as described above) on top of the raw mirrored frame.
++ *  There is no extra ERSPAN header.
++ *
++ *
++ * GRE header for ERSPAN type II and II encapsulation (8 octets [34:41])
+  *       0                   1                   2                   3
+  *      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  *     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+@@ -43,7 +55,7 @@
+  * |                  Platform Specific Info                       |
+  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  *
+- * GRE proto ERSPAN type II = 0x88BE, type III = 0x22EB
++ * GRE proto ERSPAN type I/II = 0x88BE, type III = 0x22EB
+  */
+ 
+ #include <uapi/linux/erspan.h>
+@@ -139,6 +151,9 @@ static inline u8 get_hwid(const struct erspan_md2 *md2)
+ 
+ static inline int erspan_hdr_len(int version)
+ {
++	if (version == 0)
++		return 0;
++
+ 	return sizeof(struct erspan_base_hdr) +
+ 	       (version == 1 ? ERSPAN_V1_MDSIZE : ERSPAN_V2_MDSIZE);
+ }
+diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+index 029b24eeafba..b5c5fb329f31 100644
+--- a/net/ipv4/ip_gre.c
++++ b/net/ipv4/ip_gre.c
+@@ -248,6 +248,15 @@ static void gre_err(struct sk_buff *skb, u32 info)
+ 	ipgre_err(skb, info, &tpi);
+ }
+ 
++static inline bool is_erspan_type1(int gre_hdr_len)
++{
++	/* Both ERSPAN type I (version 0) and type II (version 1) use
++	 * protocol 0x88BE, but the type I has only 4-byte GRE header,
++	 * while type II has 8-byte.
++	 */
++	return gre_hdr_len == 4;
++}
++
+ static int erspan_rcv(struct sk_buff *skb, struct tnl_ptk_info *tpi,
+ 		      int gre_hdr_len)
+ {
+@@ -262,17 +271,26 @@ static int erspan_rcv(struct sk_buff *skb, struct tnl_ptk_info *tpi,
+ 	int len;
+ 
+ 	itn = net_generic(net, erspan_net_id);
+-
+ 	iph = ip_hdr(skb);
+-	ershdr = (struct erspan_base_hdr *)(skb->data + gre_hdr_len);
+-	ver = ershdr->ver;
+-
+-	tunnel = ip_tunnel_lookup(itn, skb->dev->ifindex,
+-				  tpi->flags | TUNNEL_KEY,
+-				  iph->saddr, iph->daddr, tpi->key);
++	if (is_erspan_type1(gre_hdr_len)) {
++		ver = 0;
++		tunnel = ip_tunnel_lookup(itn, skb->dev->ifindex,
++					  tpi->flags | TUNNEL_NO_KEY,
++					  iph->saddr, iph->daddr, 0);
++	} else {
++		ershdr = (struct erspan_base_hdr *)(skb->data + gre_hdr_len);
++		ver = ershdr->ver;
++		tunnel = ip_tunnel_lookup(itn, skb->dev->ifindex,
++					  tpi->flags | TUNNEL_KEY,
++					  iph->saddr, iph->daddr, tpi->key);
++	}
+ 
+ 	if (tunnel) {
+-		len = gre_hdr_len + erspan_hdr_len(ver);
++		if (is_erspan_type1(gre_hdr_len))
++			len = gre_hdr_len;
++		else
++			len = gre_hdr_len + erspan_hdr_len(ver);
++
+ 		if (unlikely(!pskb_may_pull(skb, len)))
+ 			return PACKET_REJECT;
+ 
+@@ -665,7 +683,10 @@ static netdev_tx_t erspan_xmit(struct sk_buff *skb,
+ 	}
+ 
+ 	/* Push ERSPAN header */
+-	if (tunnel->erspan_ver == 1) {
++	if (tunnel->erspan_ver == 0) {
++		proto = htons(ETH_P_ERSPAN);
++		tunnel->parms.o_flags &= ~TUNNEL_SEQ;
++	} else if (tunnel->erspan_ver == 1) {
+ 		erspan_build_header(skb, ntohl(tunnel->parms.o_key),
+ 				    tunnel->index,
+ 				    truncate, true);
+@@ -1066,7 +1087,10 @@ static int erspan_validate(struct nlattr *tb[], struct nlattr *data[],
+ 	if (ret)
+ 		return ret;
+ 
+-	/* ERSPAN should only have GRE sequence and key flag */
++	if (nla_get_u8(data[IFLA_GRE_ERSPAN_VER]) == 0)
++		return 0;
++
++	/* ERSPAN type II/III should only have GRE sequence and key flag */
+ 	if (data[IFLA_GRE_OFLAGS])
+ 		flags |= nla_get_be16(data[IFLA_GRE_OFLAGS]);
+ 	if (data[IFLA_GRE_IFLAGS])
+@@ -1174,7 +1198,7 @@ static int erspan_netlink_parms(struct net_device *dev,
+ 	if (data[IFLA_GRE_ERSPAN_VER]) {
+ 		t->erspan_ver = nla_get_u8(data[IFLA_GRE_ERSPAN_VER]);
+ 
+-		if (t->erspan_ver != 1 && t->erspan_ver != 2)
++		if (t->erspan_ver > 2)
+ 			return -EINVAL;
+ 	}
+ 
+@@ -1259,7 +1283,11 @@ static int erspan_tunnel_init(struct net_device *dev)
+ {
+ 	struct ip_tunnel *tunnel = netdev_priv(dev);
+ 
+-	tunnel->tun_hlen = 8;
++	if (tunnel->erspan_ver == 0)
++		tunnel->tun_hlen = 4; /* 4-byte GRE hdr. */
++	else
++		tunnel->tun_hlen = 8; /* 8-byte GRE hdr. */
++
+ 	tunnel->parms.iph.protocol = IPPROTO_GRE;
+ 	tunnel->hlen = tunnel->tun_hlen + tunnel->encap_hlen +
+ 		       erspan_hdr_len(tunnel->erspan_ver);
+@@ -1456,8 +1484,8 @@ static int ipgre_fill_info(struct sk_buff *skb, const struct net_device *dev)
+ 	struct ip_tunnel_parm *p = &t->parms;
+ 	__be16 o_flags = p->o_flags;
+ 
+-	if (t->erspan_ver == 1 || t->erspan_ver == 2) {
+-		if (!t->collect_md)
++	if (t->erspan_ver <= 2) {
++		if (t->erspan_ver != 0 && !t->collect_md)
+ 			o_flags |= TUNNEL_KEY;
+ 
+ 		if (nla_put_u8(skb, IFLA_GRE_ERSPAN_VER, t->erspan_ver))
+@@ -1466,7 +1494,7 @@ static int ipgre_fill_info(struct sk_buff *skb, const struct net_device *dev)
+ 		if (t->erspan_ver == 1) {
+ 			if (nla_put_u32(skb, IFLA_GRE_ERSPAN_INDEX, t->index))
+ 				goto nla_put_failure;
+-		} else {
++		} else if (t->erspan_ver == 2) {
+ 			if (nla_put_u8(skb, IFLA_GRE_ERSPAN_DIR, t->dir))
+ 				goto nla_put_failure;
+ 			if (nla_put_u16(skb, IFLA_GRE_ERSPAN_HWID, t->hwid))
 -- 
 2.7.4
 
