@@ -2,88 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A0D11B91E5
-	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 18:58:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 366BA1B9213
+	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 19:26:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726157AbgDZQ6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 12:58:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59812 "EHLO
+        id S1726216AbgDZR0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 13:26:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726143AbgDZQ6G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 12:58:06 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56CFFC061A0F;
-        Sun, 26 Apr 2020 09:58:06 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id j3so15008912ljg.8;
-        Sun, 26 Apr 2020 09:58:06 -0700 (PDT)
+        with ESMTP id S1725976AbgDZR0K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 13:26:10 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC4C0C061A0F
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 10:26:10 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id i16so14490469ils.12
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 10:26:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aV98zQdV8iudGcxnrL0ms1R5hGO42Yy4wHIwVeHIFzw=;
-        b=lnenXyc4wVsIebDM9zhdUA7ipYBIUfGtT9xUEgWocdxv6z3QTNV+c/pIPNmroHVF/R
-         HykcjDcWd858Wmo6KUlxNjFI1rvEbMPawksc8dGiZ+RKj29/92J3z/iGsQ+2Cnwcs1/x
-         5W0QAGNeUX/jl8pSwGVozfArA8qA7XkgSPFDmx0eGY55IM4WTzHTLUJXZv0wjC0971vA
-         UYxLJM3AKWUtI9MGmzpu3G8jj9Kve+dhLvwyAekIW8ZlXWlTXXPDq3OFa6Zk7jbNslPQ
-         nBR9MqwuHdQOTz1/hM18oqTp9kPbVjG2CtH/n6ohsaxX7DeonGEbdiD1MLpSqLoUrWYd
-         SQlA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=kxiV8Pry+O550WXGviFieXpjatQaJdMHLa3QGv9ddhI=;
+        b=tKMmwnBXIlYxWQmn03i155JQi/FM2RnYmyFe/+QWyCg4XBCjE5ySTZlQhmlzfa0qjZ
+         l/CKrKGzbpugukEUAtq6LCyYZVTD5+gYT7gN/2XvuSBn3q4fA7TK0rVVJoQvAG2+F4hZ
+         6WjfjAA4GtmwLyLMVLw14BftVUV7qpBmgcmcxOapb/cujPZW6PKg9eXQ/xjsi8O+74mV
+         79X+Vucw0EQ8xOve5/+zJY66QMFT1sQ1iiiOdalLAzfIoxlKdvnu3mldm9QK4CqXXqtH
+         omePeKvdawDidfF/+PmvgnZFcNmEda489QzVjrjwsoKRkvkKdA2GYFHVEwSdPWTDAFih
+         sdAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aV98zQdV8iudGcxnrL0ms1R5hGO42Yy4wHIwVeHIFzw=;
-        b=KmctH62P5WwT5qlqd8dWbj+HuCmxTkRjLWaWyz0ueN4bg5twiByx4jeE/3Dqbxm/2l
-         mJItbAQVS0j9kEWcezYjHFPLb0igErbOu/hVgdfxmO8x8BSaN7EO1Gs41SbG//Qg82pj
-         3b4di96z6y0QUCxyWYBQ2KbK8s/6NRezdrREE5+JDjfK0IoVYvtFk4jXPm9s4SLHkr8E
-         dyoYXMNMrLlLos70mShir45Vr69MK/LPH+MnurEyr1S9E3H45HOI11hHVA6eGRJakBqT
-         HwX1TpMLNN/nkMF/9eck5gb4/HQTwelotDXnaTZVWw473fOwUWYvHqWye0MCRjktSMLZ
-         8xEw==
-X-Gm-Message-State: AGi0PubUTXPzB57IH1w9gjwrUE4PAuG5+NTt1HmMaVXWSkFGZXHQpPrd
-        EBAODmZNpfU3f3cwYgnQdRdXfH2AAeNcMOSknWI=
-X-Google-Smtp-Source: APiQypIq1bZWROrVwXFOoU0Szj6S8Gg8+/GYTq9qx4zvNdsKhPeYnGOLgyQYv8iKfWp3jTzciPq9jrQ6jP84b2etcpw=
-X-Received: by 2002:a2e:b80b:: with SMTP id u11mr12002133ljo.212.1587920284678;
- Sun, 26 Apr 2020 09:58:04 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kxiV8Pry+O550WXGviFieXpjatQaJdMHLa3QGv9ddhI=;
+        b=Q89Xtwdlh5Czj+7g3Pd4ut5qPzYv9ifMzLeOTfCFfXXvhhZtkXNVOd6bx5101OgLhF
+         zOiidmZxY1afAGowmkPwa/7Btf3vx70vk3voVHynXNKnaYMjyDiMfKYN0MzCG80bZYtQ
+         fLMJsFYrFB35cgP9cOLa6nL9BGHAwUuDNiKBF1EC4961lxVAqCphNNRGlNupUPnhvHAZ
+         N4cz230K617LLYKhWVWwzn9kNaXl9QnCf1WA5VMjmiTwj8vOuuG77K9hnbCptmuGcqB3
+         rV3jwJz6EqpR7KgJ5ncrnQXuxr7EfiAAp9w/DKN/pXTPlSyCgKgSYfa68/t5zjIQ/SVX
+         Ixdg==
+X-Gm-Message-State: AGi0PuZGKPT8gDHsQHpv2ypDVVOfPhSUK7JbvUdgSqpSK4FW9F3AB5Ct
+        11louX00lbkQmXgJPQ/nizfmBwW/
+X-Google-Smtp-Source: APiQypJOvvt7L5gNA5eT0Hvqdh3/T3guRphb2Qrs84rijSUFew7aKs7SDD4FbxpuJ2jly3LvEYOd+g==
+X-Received: by 2002:a92:414d:: with SMTP id o74mr18318282ila.266.1587921970042;
+        Sun, 26 Apr 2020 10:26:10 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:a88f:52f9:794e:3c1? ([2601:282:803:7700:a88f:52f9:794e:3c1])
+        by smtp.googlemail.com with ESMTPSA id k11sm4148614iom.43.2020.04.26.10.26.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Apr 2020 10:26:09 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 2/3] ipv4: add sysctl for nexthop api
+ compatibility mode
+To:     Roopa Prabhu <roopa@cumulusnetworks.com>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, nikolay@cumulusnetworks.com,
+        bpoirier@cumulusnetworks.com
+References: <1587862128-24319-1-git-send-email-roopa@cumulusnetworks.com>
+ <1587862128-24319-3-git-send-email-roopa@cumulusnetworks.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <537bdf7c-a5cf-aae6-cf34-c917ab4fcbde@gmail.com>
+Date:   Sun, 26 Apr 2020 11:26:08 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.7.0
 MIME-Version: 1.0
-References: <20200423195850.1259827-1-andriin@fb.com>
-In-Reply-To: <20200423195850.1259827-1-andriin@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sun, 26 Apr 2020 09:57:53 -0700
-Message-ID: <CAADnVQL4koqLqxxVgMSk42XYNTAzdauRa0PwEzHb0L+fXoE_rQ@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next] bpf: make verifier log more relevant by default
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1587862128-24319-3-git-send-email-roopa@cumulusnetworks.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 23, 2020 at 1:04 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> To make BPF verifier verbose log more releavant and easier to use to debug
-> verification failures, "pop" parts of log that were successfully verified.
-> This has effect of leaving only verifier logs that correspond to code branches
-> that lead to verification failure, which in practice should result in much
-> shorter and more relevant verifier log dumps. This behavior is made the
-> default behavior and can be overriden to do exhaustive logging by specifying
-> BPF_LOG_LEVEL2 log level.
-...
-> On success, verbose log will only have a summary of number of processed
-> instructions, etc, but no branch tracing log. Having just a last succesful
-> branch tracing seemed weird and confusing. Having small and clean summary log
-> in success case seems quite logical and nice, though.
->
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+On 4/25/20 6:48 PM, Roopa Prabhu wrote:
+> diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+> index 81b267e..a613ecf 100644
+> --- a/net/ipv4/sysctl_net_ipv4.c
+> +++ b/net/ipv4/sysctl_net_ipv4.c
+> @@ -711,6 +711,13 @@ static struct ctl_table ipv4_net_table[] = {
+>  		.proc_handler   = proc_tcp_early_demux
+>  	},
+>  	{
+> +		.procname       = "nexthop_compat_mode",
+> +		.data           = &init_net.ipv4.sysctl_nexthop_compat_mode,
+> +		.maxlen         = sizeof(int),
+> +		.mode           = 0644,
+> +		.proc_handler   = proc_dointvec
+> +	},
 
-I think the behavior described in the last paragraph could be
-surprising to some folks who expected to see the verifier log for
-successfully loaded progs.
-May be worth mentioning this in Documentation/networking/filter.txt ?
-That doc needs some cleanup too.
+I think you can make this a bool.
 
-Applied. Thanks
+	.proc_handler   = proc_dointvec_minmax,
+        .extra1         = SYSCTL_ZERO,
+        .extra2         = SYSCTL_ONE,
+
+rest looks good to me.
