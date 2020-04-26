@@ -2,33 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44EC31B8E68
-	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 11:42:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CE881B8E6D
+	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 11:42:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726200AbgDZJli (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 05:41:38 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:3302 "EHLO huawei.com"
+        id S1726431AbgDZJlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 05:41:47 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3303 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726122AbgDZJli (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Apr 2020 05:41:38 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 0231D704CF33F966C3BC;
-        Sun, 26 Apr 2020 17:41:37 +0800 (CST)
-Received: from huawei.com (10.175.124.28) by DGGEMS404-HUB.china.huawei.com
- (10.3.19.204) with Microsoft SMTP Server id 14.3.487.0; Sun, 26 Apr 2020
- 17:41:27 +0800
+        id S1726401AbgDZJlo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 Apr 2020 05:41:44 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 9600194A452CEF78B6C3;
+        Sun, 26 Apr 2020 17:41:42 +0800 (CST)
+Received: from huawei.com (10.175.124.28) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.487.0; Sun, 26 Apr 2020
+ 17:41:36 +0800
 From:   Jason Yan <yanaijie@huawei.com>
-To:     <arend.vanspriel@broadcom.com>, <franky.lin@broadcom.com>,
-        <hante.meuleman@broadcom.com>, <chi-hsien.lin@cypress.com>,
-        <wright.feng@cypress.com>, <kvalo@codeaurora.org>,
-        <davem@davemloft.net>, <linux-wireless@vger.kernel.org>,
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        <brcm80211-dev-list@cypress.com>, <netdev@vger.kernel.org>,
+To:     <kvalo@codeaurora.org>, <davem@davemloft.net>,
+        <adobriyan@gmail.com>, <tglx@linutronix.de>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
 CC:     Jason Yan <yanaijie@huawei.com>
-Subject: [PATCH] brcmfmac: remove comparison to bool in brcmf_fws_attach()
-Date:   Sun, 26 Apr 2020 17:40:53 +0800
-Message-ID: <20200426094053.23132-1-yanaijie@huawei.com>
+Subject: [PATCH] ray_cs: use true,false for bool variable
+Date:   Sun, 26 Apr 2020 17:41:03 +0800
+Message-ID: <20200426094103.23213-1-yanaijie@huawei.com>
 X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
@@ -42,27 +39,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Fix the following coccicheck warning:
 
-drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c:2359:6-40:
-WARNING: Comparison to bool
+drivers/net/wireless/ray_cs.c:2797:5-14: WARNING: Comparison of 0/1 to
+bool variable
+drivers/net/wireless/ray_cs.c:2798:2-11: WARNING: Assignment of 0/1 to
+bool variable
 
 Signed-off-by: Jason Yan <yanaijie@huawei.com>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/ray_cs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
-index 8cc52935fd41..2b7837887c0b 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
-@@ -2356,7 +2356,7 @@ struct brcmf_fws_info *brcmf_fws_attach(struct brcmf_pub *drvr)
- 	fws->drvr = drvr;
- 	fws->fcmode = drvr->settings->fcmode;
+diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
+index c1d542bfa530..f9402424accd 100644
+--- a/drivers/net/wireless/ray_cs.c
++++ b/drivers/net/wireless/ray_cs.c
+@@ -2794,8 +2794,8 @@ static int __init init_ray_cs(void)
+ 	proc_create_data("driver/ray_cs/translate", 0200, NULL, &int_proc_ops,
+ 			 &translate);
+ #endif
+-	if (translate != 0)
+-		translate = 1;
++	if (!translate)
++		translate = true;
+ 	return 0;
+ } /* init_ray_cs */
  
--	if ((drvr->bus_if->always_use_fws_queue == false) &&
-+	if (!drvr->bus_if->always_use_fws_queue &&
- 	    (fws->fcmode == BRCMF_FWS_FCMODE_NONE)) {
- 		fws->avoid_queueing = true;
- 		brcmf_dbg(INFO, "FWS queueing will be avoided\n");
 -- 
 2.21.1
 
