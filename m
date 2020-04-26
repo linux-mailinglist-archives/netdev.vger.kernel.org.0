@@ -2,97 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30D631B92CE
-	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 20:33:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC3EC1B9305
+	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 20:38:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726170AbgDZSdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 14:33:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46350 "EHLO
+        id S1726194AbgDZSip (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 14:38:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726152AbgDZSdR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 14:33:17 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 990F0C061A0F
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 11:33:17 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id z90so12496477qtd.10
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 11:33:17 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726165AbgDZSip (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 14:38:45 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3383C061A0F
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 11:38:44 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id n4so12144650ejs.11
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 11:38:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8t4xsjbwT0nGqrKsKYLEFRpxw3G2kfw7+vnDqb0eZ+Q=;
-        b=tEmeMI8Tc5hijs0gAbyv1JNwTPHEn+9qK0zjePkm4dpkNoXRLL6PjochYyOmRirge2
-         o9rNtEEfYZNUhLAveuaaneRIMsw1RMGPWeZRsigp042GDP72bwZX14dhlhICpx4PEDwN
-         rU6Fs6efffSFsUQbas18y8R7RyETbe/T5+PPuF/t5kgj+ALd3FZyE6gf5yMNXiGxilzs
-         PSae+5h691nREUqedPYFYvhvl4MVgwrSlVWsEYxbPeF+cAufrAF7Io4lgDbmkU22cZla
-         RQfrRhOWGFtLfVf+ev0Lht8PSlbn+JMSwzLYR/UnZWkuVrSIn5mU9B83jDzbtuAlOhKZ
-         VqCg==
+        d=cumulusnetworks.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=v2wZeY20fxq9CdEKJnefHSsSlf1AI6qACEvW5aOV4yU=;
+        b=S7bIbkThluoCUAhsAHHZvCzQ4P4Txi6IqLIcZ6/qnSMjuxN37yob25TCHW7Fyhkanx
+         q5QNK3pjKi3+jfGLPkr0Az4d2pB5xL5EXEitEjJvBK6j0/3Db/V2d8z9u1niyPS1B6su
+         7euoT+r6F4igNUk/TuwclPgmnoMFsLPY/Vczc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8t4xsjbwT0nGqrKsKYLEFRpxw3G2kfw7+vnDqb0eZ+Q=;
-        b=IfmYLDeW8Igp0MEjkTLJKO/nbh2QGjoGgfxf7OSYrRgssB1b/of1Dg+Zr/wg5q2QnO
-         Oz7Q7UHXK76i+Qv+CUe/xyYe2Ici8IXK4EN4RhMBuq4URiOeJ2aihta9YDtf8XtzrWA4
-         +0S94staV+X8HfkPq6Vns/LEEcLmnYTtPgWq3S73tZR8wYQo6zBxVvEUAdXiI41w63Fk
-         3m2kfcjO91F5h8SNwlO1Z2l11dy6f3Q/PBD0vt2CFWYN/SuiLtm9bkRTDjjl6eXDl4UG
-         FtC27aWHYCMp5ckOBdNa9rIMagWCOiWxojjylWZvzcPiK+41nG/AcQ7ZM6kJWjB68pSe
-         4DBw==
-X-Gm-Message-State: AGi0PuYiBbuV11KK5f4eyAua48AdCqx5FFE03beOgOcgUOOW4Axl7hS9
-        meKPpaUOszBsXKWgD5KZO3U=
-X-Google-Smtp-Source: APiQypKAs9atSx0Anc6/ROn50YG7k1D7GGMCnkiR8XakMnEhlyJ5+Zpi/al+Apc0STCENTY1yapOrw==
-X-Received: by 2002:ac8:5057:: with SMTP id h23mr19517821qtm.287.1587925996741;
-        Sun, 26 Apr 2020 11:33:16 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:a88f:52f9:794e:3c1? ([2601:282:803:7700:a88f:52f9:794e:3c1])
-        by smtp.googlemail.com with ESMTPSA id u26sm8124327qkm.125.2020.04.26.11.33.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 26 Apr 2020 11:33:16 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 0/2] macsec: add offloading support
-To:     Igor Russkikh <irusskikh@marvell.com>, netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org,
-        Mark Starovoytov <mstarovoitov@marvell.com>
-References: <20200424083857.1265-1-irusskikh@marvell.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0a44a226-0890-c856-58dd-b16e8b83c9dc@gmail.com>
-Date:   Sun, 26 Apr 2020 12:33:14 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=v2wZeY20fxq9CdEKJnefHSsSlf1AI6qACEvW5aOV4yU=;
+        b=GrQCGLWBwCE5leCLQFlw9fA56OXqG/VQteS7/aNybR5XdVSB+HsHB1t/5tLLn0h+sa
+         crkY1RvtwkDyiloFPEPwl9eYwXEZhxltFMxIrtaE8WmbDluS+//cPacNL2nZJEbmpflZ
+         XKmkvOU17n3zckjODWurV2yqVg8svJQm6TkcFllrFbntDG5MnEMQmMbnEsorxXDdGyfv
+         JE14A2I2F+YyFCflKWW4mCO203JstWrQbxkqiarQNs/k4ngwt4MPSgWU0dhi1wa19JqL
+         BJdkfLzczWPSTUoL1qREeByzbziaVihEMIYQHholCWYIWDuF6j1UznTm4omOwx08e3MU
+         /1Jw==
+X-Gm-Message-State: AGi0PuYS0GBpdBJeg9D+fYlUaYk3p3aFF3AFXfeYRFu5de42IqpX/yHl
+        FkKx9+oLzwqiM/IM7RB3aOQbjumNn4cZj07ZaiVjHg==
+X-Google-Smtp-Source: APiQypLm+fxyupZvMWk90JNbAPVVs0arc1sQ0GCTRBFHhnreBAf53GYhIffVaPkVeB7jZvWR6bjkfDyqC8AMAIbSw50=
+X-Received: by 2002:a17:906:ce49:: with SMTP id se9mr13251974ejb.345.1587926322503;
+ Sun, 26 Apr 2020 11:38:42 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200424083857.1265-1-irusskikh@marvell.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <1587862128-24319-1-git-send-email-roopa@cumulusnetworks.com>
+ <1587862128-24319-4-git-send-email-roopa@cumulusnetworks.com> <fd7e0fa8-dc1b-b410-a327-f09cbe929c82@gmail.com>
+In-Reply-To: <fd7e0fa8-dc1b-b410-a327-f09cbe929c82@gmail.com>
+From:   Roopa Prabhu <roopa@cumulusnetworks.com>
+Date:   Sun, 26 Apr 2020 11:38:31 -0700
+Message-ID: <CAJieiUhpM7r0Ly4WUqvCJm34LUjuj=Mo5V9JiWrVTd=nLiAMHQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 3/3] selftests: net: add new testcases for
+ nexthop API compat mode sysctl
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Benjamin Poirier <bpoirier@cumulusnetworks.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/24/20 2:38 AM, Igor Russkikh wrote:
-> From: Mark Starovoytov <mstarovoitov@marvell.com>
-> 
-> This series adds support for selecting the offloading mode of a MACsec
-> interface at link creation time.
-> Available modes are for now 'off', 'phy' and 'mac', 'off' being the default
-> when an interface is created.
-> 
-> First patch adds support for MAC offloading.
-> 
-> Last patch allows a user to change the offloading mode at runtime
-> through a new attribute, `ip link add link ... offload`:
-> 
->   # ip link add link enp1s0 type macsec encrypt on offload off
->   # ip link add link enp1s0 type macsec encrypt on offload phy
->   # ip link add link enp1s0 type macsec encrypt on offload mac
-> 
-> Mark Starovoytov (2):
->   macsec: add support for MAC offload
->   macsec: add support for specifying offload at link add time
-> 
->  ip/ipmacsec.c        | 23 ++++++++++++++++++++++-
->  man/man8/ip-macsec.8 | 10 ++++++++--
->  2 files changed, 30 insertions(+), 3 deletions(-)
-> 
+On Sun, Apr 26, 2020 at 10:40 AM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 4/25/20 6:48 PM, Roopa Prabhu wrote:
+> > @@ -253,6 +253,33 @@ check_route6()
+> >       check_output "${out}" "${expected}"
+> >  }
+> >
+> > +start_ip_monitor()
+> > +{
+> > +     local mtype=$1
+> > +
+> > +     # start the monitor in the background
+> > +     tmpfile=`mktemp /var/run/nexthoptestXXX`
+> > +     mpid=`($IP monitor $1 > $tmpfile & echo $!) 2>/dev/null`
+>
+> && echo?
+>
+> also, that looks weird. shouldn't it be:
+>         mpid=($IP monitor ${mtype} > $tmpfile 2>&1 && echo $!)
+>
 
-applied to iproute2-next. Thanks
+no, the & is for background. I picked this from the rtnetlink selftest.
+It can be moved to a library if there is one, this version is
+specifically for route monitor.
 
+> you declare mtype but use $1.
+
+will fix , thats a leftover from last min cleanup
+
+>
+>
+> > +     sleep 0.2
+> > +     echo "$mpid $tmpfile"
+> > +}
+> > +
+> > +stop_ip_monitor()
+> > +{
+> > +     local mpid=$1
+> > +     local tmpfile=$2
+> > +     local el=$3
+> > +
+> > +     # check the monitor results
+> > +     kill $mpid
+> > +     lines=`wc -l $tmpfile | cut "-d " -f1`
+>
+> just for consistency with the rest of the script, use $(...) instead of
+> `...`
+>
+> > +     test $lines -eq $el
+> > +     rc=$?
+> > +     rm -rf $tmpfile
+> > +
+> > +     return $rc
+> > +}
+> > +
+> >  ################################################################################
+> >  # basic operations (add, delete, replace) on nexthops and nexthop groups
+> >  #
+>
+> ...
+>
+> > +ipv6_compat_mode()
+> > +{
+> > +     local rc
+> > +
+> > +     echo
+> > +     echo "IPv6 nexthop api compat mode test"
+> > +     echo "--------------------------------"
+> > +
+> > +     sysctl_nexthop_compat_mode_check "IPv6"
+> > +     if [ $? -eq $ksft_skip ]; then
+> > +             return $ksft_skip
+> > +     fi
+> > +
+> > +     run_cmd "$IP nexthop add id 62 via 2001:db8:91::2 dev veth1"
+> > +     run_cmd "$IP nexthop add id 63 via 2001:db8:91::3 dev veth1"
+> > +     run_cmd "$IP nexthop add id 122 group 62/63"
+> > +     ipmout=$(start_ip_monitor route)
+> > +
+> > +     run_cmd "$IP -6 ro add 2001:db8:101::1/128 nhid 122"
+> > +     # route add notification should contain expanded nexthops
+> > +     stop_ip_monitor $ipmout 3
+> > +     log_test $? 0 "IPv6 compat mode on - route add notification"
+> > +
+> > +     # route dump should contain expanded nexthops
+> > +     check_route6 "2001:db8:101::1" "2001:db8:101::1 nhid 122 metric 1024 pref medium nexthop via 2001:db8:91::2 dev veth1 weight 1 nexthop via 2001:db8:91::3 dev veth1 weight 1"
+> > +     log_test $? 0 "IPv6 compat mode on - route dump"
+> > +
+> > +     # change in nexthop group should generate route notification
+> > +     run_cmd "$IP nexthop add id 64 via 2001:db8:91::4 dev veth1"
+> > +     ipmout=$(start_ip_monitor route)
+> > +     run_cmd "$IP nexthop replace id 122 group 62/64"
+> > +     stop_ip_monitor $ipmout 3
+> > +
+> > +     log_test $? 0 "IPv6 compat mode on - nexthop change"
+> > +
+> > +     # set compat mode off
+> > +     sysctl_nexthop_compat_mode_set 0 "IPv6"
+> > +
+> > +     run_cmd "$IP -6 ro del 2001:db8:101::1/128 nhid 122"
+> > +
+> > +     run_cmd "$IP nexthop add id 62 via 2001:db8:91::2 dev veth1"
+> > +     run_cmd "$IP nexthop add id 63 via 2001:db8:91::3 dev veth1"
+> > +     run_cmd "$IP nexthop add id 122 group 62/63"
+> > +     ipmout=$(start_ip_monitor route)
+> > +
+> > +     run_cmd "$IP -6 ro add 2001:db8:101::1/128 nhid 122"
+> > +     # route add notification should not contain expanded nexthops
+> > +     stop_ip_monitor $ipmout 1
+> > +     log_test $? 0 "IPv6 compat mode off - route add notification"
+> > +
+> > +     # route dump should not contain expanded nexthops
+> > +     check_route6 "2001:db8:101::1" "2001:db8:101::1 nhid 122 metric 1024 pref medium"
+>
+> here and above, remove the 'pref medium' from the string; it was moved
+> by a recent iproute2 change (from Donald) so for compat with old and new
+> iproute2 just drop it. See 493f3cc7ee02.
+>
+
+ack, looks like my iproute2 is a little old
