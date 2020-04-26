@@ -2,144 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B3881B9425
-	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 23:12:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 004F81B942A
+	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 23:20:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726215AbgDZVMp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 17:12:45 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36916 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725996AbgDZVMp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Apr 2020 17:12:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=c8oyHREiWzXOy+tmrIvhtJK4L/myR/O3aucK4HMS5vY=; b=JrU8q8LEgYB2jZ0yqIvwQx0YTP
-        ci4agzYABFRKITXFrxbohdBngiESNLkjBSDA3oImfV8ui2BQY5xp05/cqWl4NGCqehAQr+LMwsU/b
-        oY7anMcVFpFLxxySn4Iyh7mPZu9Bcc2PX0rKS4YTK00Rukjk4Ktjy5JSErpAavHxddeU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jSoZu-0051Et-PA; Sun, 26 Apr 2020 23:12:42 +0200
-Date:   Sun, 26 Apr 2020 23:12:42 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S1726196AbgDZVUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 17:20:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43902 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725996AbgDZVT7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 17:19:59 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC28C061A0F
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 14:19:59 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id z1so6216628pfn.3
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 14:19:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=oXEu0D/CG9Yfl70RSoo1Itj7KqLjK6tC2dP6u5kTPEY=;
+        b=hVjbixCN95XIt2geyGI9R5ZutAJxoT2pvX/CoKiyxU0dqGroymhL1kHz57e854aTJ1
+         rtnMFnm6krvj4VcY1BWSyfzKiVvp3a6d56ngGr8/Q7g9x4BNCSdQU2eo+IFvWTeqXXAj
+         lfC+UGWMJl8fiwXOS2bTLXVJp6TfJPYTYHyfJnSKqZhHy2Z1vN85HQOWYPW73Qvv/Sdm
+         D3SLDGetsLSej9nXbcZMchxakGWeqjITbIX7P0cNW37/b62sqCO1QrNlepkwyqksdqoe
+         Fd+QuUe5BAy8SgUy16/CGGXZt++lu9E37w40Vn2dQMdYlRZGTvro3aDdYomncGsbIZiz
+         tfNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=oXEu0D/CG9Yfl70RSoo1Itj7KqLjK6tC2dP6u5kTPEY=;
+        b=Dtx69Ld56BGid92WU3Hajd/oQMNDFvXoXbVq2wOe/ZquO1HDjHeI3wMS8lPf0t/J+L
+         kmjyrnDGKRwgUFAJ2gJrS0ER614wuNRlKKw47swXW6nLlbIk3xHISVlZF3vmMWKGcuLr
+         qaYeG+YcZQcOhGzj8PmkhZVu787b4mM3HFTCD/3f51Sw2m606LHs4JwMRo/YvR8Yg61X
+         UK5m3DU3PaSDQllEUA/AfawUT76swuCczNq+g4xuYJGaYR+8bWBzcBpXKMzQwE5e3rvn
+         1iOY8nNfXSwacAp+O3ivE6iD1nwm9kaQoFaJEbyIbZ/x/bobBopFffwg0rJNQ+ocaJeo
+         UMww==
+X-Gm-Message-State: AGi0PuZHpgKXaq0EA9ZgKjGgHwQh5CRfAH0PEzpcnR3Tk2wevRibTNQw
+        RW+wNQl9rXFg5mkhw5XVFRa4q+QL
+X-Google-Smtp-Source: APiQypJt9sG4dR5d1C3TAY9EBcIXxp181EtLNzIBQp57USwJ5LB19JsWYfE9SYvuiNwn2yXGquDpnA==
+X-Received: by 2002:a63:e841:: with SMTP id a1mr20816308pgk.64.1587935998783;
+        Sun, 26 Apr 2020 14:19:58 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id w30sm10724066pfj.25.2020.04.26.14.19.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Apr 2020 14:19:57 -0700 (PDT)
+Subject: Re: [PATCH net-next v1 2/9] net: phy: Add support for polling cable
+ test
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Chris Healy <cphealy@gmail.com>
-Subject: Re: [PATCH net-next v1 4/9] net: ethtool: Add attributes for cable
- test reports
-Message-ID: <20200426211242.GC1183480@lunn.ch>
+        Chris Healy <cphealy@gmail.com>,
+        Michal Kubecek <mkubecek@suse.cz>
 References: <20200425180621.1140452-1-andrew@lunn.ch>
- <20200425180621.1140452-5-andrew@lunn.ch>
- <20200426202543.GD23225@lion.mk-sys.cz>
+ <20200425180621.1140452-3-andrew@lunn.ch>
+ <7557316a-fc27-ac05-6f6d-b9bac81afd82@gmail.com>
+ <20200425201014.GF1088354@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <52b62cec-cb65-03a4-f5c2-e36d0d0ff8d3@gmail.com>
+Date:   Sun, 26 Apr 2020 14:19:55 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200426202543.GD23225@lion.mk-sys.cz>
+In-Reply-To: <20200425201014.GF1088354@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > +
-> > + +-------------------------------------------+--------+-----------------------+
-> > + | ``ETHTOOL_A_CABLE_TEST_HEADER``           | nested | reply header          |
-> > + +-------------------------------------------+--------+-----------------------+
-> > + | ``ETHTOOL_A_CABLE_TEST_NTF_RESULT``       | nested | cable test result     |
-> > + +-+-----------------------------------------+--------+-----------------------+
-> > + | | ``ETHTOOL_A_CABLE_RESULTS_PAIR``        | u8     | pair number           |
-> > + +-+-----------------------------------------+--------+-----------------------+
-> > + | | ``ETHTOOL_A_CABLE_RESULTS_CODE``        | u8     | result code           |
-> > + +-+-----------------------------------------+--------+-----------------------+
-> > + | ``ETHTOOL_A_CABLE_TEST_NTF_RESULT``       | nested | cable test results    |
-> > + +-+-----------------------------------------+--------+-----------------------+
-> > + | | ``ETHTOOL_A_CABLE_RESULTS_PAIR``        | u8     | pair number           |
-> > + +-+-----------------------------------------+--------+-----------------------+
-> > + | | ``ETHTOOL_A_CABLE_RESULTS_CODE``        | u8     | result code           |
-> > + +-+-----------------------------------------+--------+-----------------------+
-> > + | ``ETHTOOL_A_CABLE_TEST_NTF_FAULT_LENGTH`` | nested | cable length          |
-> > + +-+-----------------------------------------+--------+-----------------------+
-> > + | | ``ETHTOOL_A_CABLE_FAULT_LENGTH_PAIR``   | u8     | pair number           |
-> > + +-+-----------------------------------------+--------+-----------------------+
-> > + | | ``ETHTOOL_A_CABLE_FAULT_LENGTH_CM``     | u8     | length in cm          |
-> > + +-+-----------------------------------------+--------+-----------------------+
+
+
+On 4/25/2020 1:10 PM, Andrew Lunn wrote:
+> On Sat, Apr 25, 2020 at 12:49:46PM -0700, Florian Fainelli wrote:
+>> Hi Andrew,
+>>
+>> On 4/25/2020 11:06 AM, Andrew Lunn wrote:
+>>> Some PHYs are not capable of generating interrupts when a cable test
+>>> finished. They do however support interrupts for normal operations,
+>>> like link up/down. As such, the PHY state machine would normally not
+>>> poll the PHY.
+>>>
+>>> Add support for indicating the PHY state machine must poll the PHY
+>>> when performing a cable test.
+>>>
+>>> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+>>
+>> If you started a cable test and killed the ethtool process before the
+>> cable diagnostics are available, the state machine gets stuck in that
+>> state, so we should find a way to propagate the signal all the way to
+>> the PHY library somehow.
 > 
-> Would it be complicated to gather all information for each pair
-> together? I.e. to have one nest for each pair with pair number, result
-> code and possibly other information (if available). I believe it would
-> make the message easier to process.
-
-It is something i considered, but decided against. Attributes give us
-flexibility to report whatever the PHY gives us. There is no
-standardisation here. Some PHYs will report the first fault on a
-pair. Others will report multiple faults on a pair. Some PHYs can tell
-you pair X is shorted to pair Y, etc, while some PHYs just tell you it
-is shorted. It also keeps the driver code simple. Report whatever you
-have in any order and it does not matter. And it means i don't need
-complex helper code trying to coordinating information from the
-driver.
-
-So far, a plain dump of the netlink message in user space also seems
-readable. But when we have more PHYs supported and more variability
-between PHYs we might need to consider if user space should do some
-sorting before printing the test results.
-
-> > +enum {
-> > +	ETHTOOL_A_CABLE_PAIR_0,
-> > +	ETHTOOL_A_CABLE_PAIR_1,
-> > +	ETHTOOL_A_CABLE_PAIR_2,
-> > +	ETHTOOL_A_CABLE_PAIR_3,
-> > +};
+> Hi Florian
 > 
-> Do we really need this enum, couldn't we simply use a number (possibly
-> with a sanity check of maximum value)?
-
-They are not strictly required. But it helps with consistence. Are the
-pairs numbered 0, 1, 2, 3, or 1, 2, 3, 4?
-
-> > +enum {
-> > +	ETHTOOL_A_CABLE_RESULT_UNSPEC,
-> > +	ETHTOOL_A_CABLE_RESULT_PAIR,		/* u8 ETHTOOL_A_CABLE_PAIR_ */
-> > +	ETHTOOL_A_CABLE_RESULT_CODE,		/* u8 ETHTOOL_A_CABLE_RESULT_CODE_ */
-> > +
-> > +	__ETHTOOL_A_CABLE_RESULT_CNT,
-> > +	ETHTOOL_A_CABLE_RESULT_MAX = (__ETHTOOL_A_CABLE_RESULT_CNT - 1)
-> > +};
-> > +
-> > +enum {
-> > +	ETHTOOL_A_CABLE_FAULT_LENGTH_UNSPEC,
-> > +	ETHTOOL_A_CABLE_FAULT_LENGTH_PAIR,	/* u8 ETHTOOL_A_CABLE_PAIR_ */
-> > +	ETHTOOL_A_CABLE_FAULT_LENGTH_CM,	/* u16 */
+> It should not matter if the user space tool goes away. As you read
+> later patches you will see why. But:
 > 
-> The example above says "u8" (which is obviously wrong).
+> ETHTOOL_MSG_CABLE_TEST_ACT is an action to trigger cable
+> test. Assuming the driver supports it etc, the cable test is started,
+> and user space immediately gets a ETHTOOL_MSG_CABLE_TEST_ACT_REPLY.
+> The state is changed to PHY_CABLETEST.
+> 
+> Sometime later, the driver indicates the cable test has
+> completed. This can be an interrupt, or because it is being polled.  A
+> ETHTOOL_MSG_CABLE_TEST_NTF is multicast to user space with the
+> results. And the PHY then leaves state PHY_CABLETEST. If there is no
+> user space listening for the ETHTOOL_MSG_CABLE_TEST_NTF, it does not
+> matter.
+> 
+> At least with the Marvell PHY, there is no documented way to tell it
+> to abort a cable test. So knowing the user space has lost interest in
+> the results does not help us.
 
-Yep, will fix that.
-
-> I would rather suggest u32 here to be as future proof as possible.
-
-Yes, i've been going backwards and forwards on that. I did not realize
-netlink messages were space inefficient. A u8 takes as much space as a
-u32. I picked u16 because that allows up 65535cm, or 655.35m. All the
-IEEE 802.3 Base-T standards have a maximum cable length of 100m, or
-shorter. They might work with longer cables, but i doubt a cable 6
-times longer than the specified max will work. So a u16 is ample.
-
-The only argument i can see for a u32 is if somebody can implement
-cable testing for fibre optical cables. Then a u16 is not big enough.
-But so far, i've never seen an SFP module offering this.
-
-> One more idea: it would be IMHO useful to also send a notification when
-> the test is started. It could be distinguished by a status attribute
-> which would describe status of the test as a whole (not a specific
-> pair), e.g. started, finished, aborted.
- 
-Yes, give how long these tests take, i could be useful. There is also
-already some hints about this, in that the last patch in the series
-changes the RFC 2863 status of the interface, which i hope sends a
-message to user space about the interface change of status.
-
-	Andrew
+The same is true with Broadcom PHYs, but I think we should be guarding
+somehow against the PHY state machine being left in PHY_CABLETEST state
+with no other way to recover than do an ip link set down/up in order to
+recover it. We can try to tackle this as an improvement later on.
+-- 
+Florian
