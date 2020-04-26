@@ -2,138 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E55E1B8F80
-	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 13:47:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 267D81B905D
+	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 15:11:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726251AbgDZLq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 07:46:57 -0400
-Received: from mga05.intel.com ([192.55.52.43]:11883 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726228AbgDZLqx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Apr 2020 07:46:53 -0400
-IronPort-SDR: GM65Awuqw23W0eRExFNLQ8hrxwKNhDlJdTUtXt8ZjVlHo2ZNkV4a9TAoQ8MnH9ZI/k2kPFTDuf
- 6YS6JuF08Qyw==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2020 04:46:52 -0700
-IronPort-SDR: uoXCr6IRVu738d0l769dyIzvyOpqL6kQ0HeQUcVfrtfwXEkgqQrQHldYHd1uTyUM4lFDfg227i
- Nrd3vaxICfHQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,320,1583222400"; 
-   d="scan'208";a="275155067"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.79])
-  by orsmga002.jf.intel.com with ESMTP; 26 Apr 2020 04:46:49 -0700
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     mst@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        jasowang@redhat.com
-Cc:     lulu@redhat.com, dan.daly@intel.com, cunming.liang@intel.com,
-        Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V4 3/3] vdpa: implement config interrupt in IFCVF
-Date:   Sun, 26 Apr 2020 19:43:26 +0800
-Message-Id: <1587901406-27400-4-git-send-email-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1587901406-27400-1-git-send-email-lingshan.zhu@intel.com>
-References: <1587901406-27400-1-git-send-email-lingshan.zhu@intel.com>
+        id S1726147AbgDZNK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 09:10:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53060 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726135AbgDZNK5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 09:10:57 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AE5DC061A0F
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 06:10:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Mo7rU7Moed8f/W1q9bMztC+p9uTgRtMGZKLmfeq7Uq4=; b=tY614lWoxlp7Zkd+qWUQO+08R
+        gORqzwVLjOJS89YG9wtwkydjwnloaM/Ja1JizrTn6kqri7tfF5tWUFCopfZ646AxZlSsG6dNEMPBl
+        b8O+cy8h1aLMxfOqsdXnh3C1v/DIW//rPj/XvqTZFsZ+IVxmvcv0D4quvvt9oFQMuFMNSFp+wDFQE
+        tHAhDQmFPoIJ8ib2R2KD+OVRHmXnnSGdigYPkmoAYsAhkHpNrqZ3NMcN1i6QpXwOOZhDExM++SeY+
+        3yAseBMugiIzvWB3+PNVcL/P0qOPPSxwSrSu0qOtKWadgSC+HFZRLPJGhD0gFMXpJtjRrI8POofyU
+        2gg2xsZYQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55760)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jSh3P-0005Vw-KL; Sun, 26 Apr 2020 14:10:39 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jSh3N-0005hj-4l; Sun, 26 Apr 2020 14:10:37 +0100
+Date:   Sun, 26 Apr 2020 14:10:37 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Baruch Siach <baruch@tkos.co.il>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>
+Subject: Re: [PATCH net v4] net: phy: marvell10g: fix temperature sensor on
+ 2110
+Message-ID: <20200426131036.GA25745@shell.armlinux.org.uk>
+References: <7f1ffa0c51d4f7be6867878e601037ae3326ac01.1587882126.git.baruch@tkos.co.il>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7f1ffa0c51d4f7be6867878e601037ae3326ac01.1587882126.git.baruch@tkos.co.il>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit implements config interrupt support
-in IFC VF
+On Sun, Apr 26, 2020 at 09:22:06AM +0300, Baruch Siach wrote:
+> Read the temperature sensor register from the correct location for the
+> 88E2110 PHY. There is no enable/disable bit on 2110, so make
+> mv3310_hwmon_config() run on 88X3310 only.
+> 
+> Fixes: 62d01535474b61 ("net: phy: marvell10g: add support for the 88x2110 PHY")
+> Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
----
- drivers/vdpa/ifcvf/ifcvf_base.c |  3 +++
- drivers/vdpa/ifcvf/ifcvf_base.h |  3 +++
- drivers/vdpa/ifcvf/ifcvf_main.c | 22 +++++++++++++++++++++-
- 3 files changed, 27 insertions(+), 1 deletion(-)
+Reviewed-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
-index b61b06e..c825d99 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.c
-@@ -185,6 +185,9 @@ void ifcvf_set_status(struct ifcvf_hw *hw, u8 status)
- 
- void ifcvf_reset(struct ifcvf_hw *hw)
- {
-+	hw->config_cb.callback = NULL;
-+	hw->config_cb.private = NULL;
-+
- 	ifcvf_set_status(hw, 0);
- 	/* flush set_status, make sure VF is stopped, reset */
- 	ifcvf_get_status(hw);
-diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
-index e803070..23ac47d 100644
---- a/drivers/vdpa/ifcvf/ifcvf_base.h
-+++ b/drivers/vdpa/ifcvf/ifcvf_base.h
-@@ -27,6 +27,7 @@
- 		((1ULL << VIRTIO_NET_F_MAC)			| \
- 		 (1ULL << VIRTIO_F_ANY_LAYOUT)			| \
- 		 (1ULL << VIRTIO_F_VERSION_1)			| \
-+		 (1ULL << VIRTIO_NET_F_STATUS)			| \
- 		 (1ULL << VIRTIO_F_ORDER_PLATFORM)		| \
- 		 (1ULL << VIRTIO_F_IOMMU_PLATFORM)		| \
- 		 (1ULL << VIRTIO_NET_F_MRG_RXBUF))
-@@ -81,6 +82,8 @@ struct ifcvf_hw {
- 	void __iomem *net_cfg;
- 	struct vring_info vring[IFCVF_MAX_QUEUE_PAIRS * 2];
- 	void __iomem * const *base;
-+	char config_msix_name[256];
-+	struct vdpa_callback config_cb;
- };
- 
- struct ifcvf_adapter {
-diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-index 8d54dc5..f7baeca 100644
---- a/drivers/vdpa/ifcvf/ifcvf_main.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-@@ -18,6 +18,16 @@
- #define DRIVER_AUTHOR   "Intel Corporation"
- #define IFCVF_DRIVER_NAME       "ifcvf"
- 
-+static irqreturn_t ifcvf_config_changed(int irq, void *arg)
-+{
-+	struct ifcvf_hw *vf = arg;
-+
-+	if (vf->config_cb.callback)
-+		return vf->config_cb.callback(vf->config_cb.private);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static irqreturn_t ifcvf_intr_handler(int irq, void *arg)
- {
- 	struct vring_info *vring = arg;
-@@ -256,7 +266,10 @@ static void ifcvf_vdpa_set_config(struct vdpa_device *vdpa_dev,
- static void ifcvf_vdpa_set_config_cb(struct vdpa_device *vdpa_dev,
- 				     struct vdpa_callback *cb)
- {
--	/* We don't support config interrupt */
-+	struct ifcvf_hw *vf = vdpa_to_vf(vdpa_dev);
-+
-+	vf->config_cb.callback = cb->callback;
-+	vf->config_cb.private = cb->private;
- }
- 
- /*
-@@ -292,6 +305,13 @@ static int ifcvf_request_irq(struct ifcvf_adapter *adapter)
- 	struct ifcvf_hw *vf = &adapter->vf;
- 	int vector, i, ret, irq;
- 
-+	snprintf(vf->config_msix_name, 256, "ifcvf[%s]-config\n",
-+		pci_name(pdev));
-+	vector = 0;
-+	irq = pci_irq_vector(pdev, vector);
-+	ret = devm_request_irq(&pdev->dev, irq,
-+			       ifcvf_config_changed, 0,
-+			       vf->config_msix_name, vf);
- 
- 	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
- 		snprintf(vf->vring[i].msix_name, 256, "ifcvf[%s]-%d\n",
+Thanks.
+
+> ---
+> v4:
+>   * Combine two patches into one (RMK)
+> 
+>   * Add comments to mark PHY specific temperature registers (RMK)
+> 
+>   * Drop PHY check on mv3310_hwmon_probe() (RMK)
+> 
+> v3: Split temperature register read routine per variant (Andrew Lunn)
+> 
+> v2: Fix indentation (Andrew Lunn)
+> ---
+>  drivers/net/phy/marvell10g.c | 27 ++++++++++++++++++++++++++-
+>  1 file changed, 26 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+> index 95e3f4644aeb..419301bfe8c6 100644
+> --- a/drivers/net/phy/marvell10g.c
+> +++ b/drivers/net/phy/marvell10g.c
+> @@ -66,6 +66,9 @@ enum {
+>  	MV_PCS_CSSR1_SPD2_2500	= 0x0004,
+>  	MV_PCS_CSSR1_SPD2_10000	= 0x0000,
+>  
+> +	/* Temperature read register (88E2110 only) */
+> +	MV_PCS_TEMP		= 0x8042,
+> +
+>  	/* These registers appear at 0x800X and 0xa00X - the 0xa00X control
+>  	 * registers appear to set themselves to the 0x800X when AN is
+>  	 * restarted, but status registers appear readable from either.
+> @@ -77,6 +80,7 @@ enum {
+>  	MV_V2_PORT_CTRL		= 0xf001,
+>  	MV_V2_PORT_CTRL_SWRST	= BIT(15),
+>  	MV_V2_PORT_CTRL_PWRDOWN = BIT(11),
+> +	/* Temperature control/read registers (88X3310 only) */
+>  	MV_V2_TEMP_CTRL		= 0xf08a,
+>  	MV_V2_TEMP_CTRL_MASK	= 0xc000,
+>  	MV_V2_TEMP_CTRL_SAMPLE	= 0x0000,
+> @@ -104,6 +108,24 @@ static umode_t mv3310_hwmon_is_visible(const void *data,
+>  	return 0;
+>  }
+>  
+> +static int mv3310_hwmon_read_temp_reg(struct phy_device *phydev)
+> +{
+> +	return phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_TEMP);
+> +}
+> +
+> +static int mv2110_hwmon_read_temp_reg(struct phy_device *phydev)
+> +{
+> +	return phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_TEMP);
+> +}
+> +
+> +static int mv10g_hwmon_read_temp_reg(struct phy_device *phydev)
+> +{
+> +	if (phydev->drv->phy_id == MARVELL_PHY_ID_88X3310)
+> +		return mv3310_hwmon_read_temp_reg(phydev);
+> +	else /* MARVELL_PHY_ID_88E2110 */
+> +		return mv2110_hwmon_read_temp_reg(phydev);
+> +}
+> +
+>  static int mv3310_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
+>  			     u32 attr, int channel, long *value)
+>  {
+> @@ -116,7 +138,7 @@ static int mv3310_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
+>  	}
+>  
+>  	if (type == hwmon_temp && attr == hwmon_temp_input) {
+> -		temp = phy_read_mmd(phydev, MDIO_MMD_VEND2, MV_V2_TEMP);
+> +		temp = mv10g_hwmon_read_temp_reg(phydev);
+>  		if (temp < 0)
+>  			return temp;
+>  
+> @@ -169,6 +191,9 @@ static int mv3310_hwmon_config(struct phy_device *phydev, bool enable)
+>  	u16 val;
+>  	int ret;
+>  
+> +	if (phydev->drv->phy_id != MARVELL_PHY_ID_88X3310)
+> +		return 0;
+> +
+>  	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, MV_V2_TEMP,
+>  			    MV_V2_TEMP_UNKNOWN);
+>  	if (ret < 0)
+> -- 
+> 2.26.2
+> 
+> 
+
 -- 
-1.8.3.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
