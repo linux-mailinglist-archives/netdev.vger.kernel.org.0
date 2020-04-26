@@ -2,76 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB6331B940F
-	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 22:54:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 961E81B9414
+	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 22:59:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726251AbgDZUyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 16:54:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39970 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726216AbgDZUyX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 16:54:23 -0400
-Received: from mail-ua1-x941.google.com (mail-ua1-x941.google.com [IPv6:2607:f8b0:4864:20::941])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 970FCC061A10
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 13:54:22 -0700 (PDT)
-Received: by mail-ua1-x941.google.com with SMTP id g35so3667971uad.0
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 13:54:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UHvmvK16dxVZw6xg1c1UR5rBSf+5kVr8sJmjd9CEFaU=;
-        b=g0iikt3mYmux7IwGv0TbadGw9Y6+jimMW6kFslUPJHz8ZfEaKjbAX7MM1TWAc2g19A
-         jQq52LSsRFkDtP6uKd4Eh2cx49hDiAWC91zEK4xe91a0COcvxakOvJlG1VQWhfIQ3hhz
-         cJlf0HElpFA5laQ8feNVA6pkJ6qgJHMDxwcDlISx3Fq3peJ+lRJVcVg3keI3dQastsKz
-         vfcfwAyIDydBtZy8Kab7hMSKOoxiVgw/RUo6X1y/Dh/1wc9+pEpunq7E9EEKcqO7EhMB
-         hvdvOb2Zuib6JqHtZgs8rWWahgIXvJtlcOhgn/xiQRzUrOHDUJeJd3bg4l+shdiA5Grw
-         FOJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UHvmvK16dxVZw6xg1c1UR5rBSf+5kVr8sJmjd9CEFaU=;
-        b=l5+u1qsbDEorSMng99Upe3Y+inl5WqnP4H+Hy03GpuyBpUOPQit19qU6FcDgn8/oQj
-         F+dwvl0aZ543FN9Nm8ry4Oou4ARangVMrJqN8pGfnRpCkpDCk0JNDWL4BO+3Ankr/c4r
-         K/qnaLf/vZ9O2QF7HyQF1LWQKOkn1wCf7IFgOHznWrp9gfS643dcubtyNF4ZH4PVsLgx
-         a/uI9jzZKxwicX723SyE/vvuRqlUt1rhH9ftAoOvKRIIUa5MFPxfdxpuwnRPI/XI3ETq
-         V410h37Qw7PSyaea4k5Ppu0SBPaEGelImdvuXy7ilWRSXemrgePtHUDMM4MEXeMmkyOP
-         Jglg==
-X-Gm-Message-State: AGi0PuYDH2O94uQimttMv/899RyACmwnxeMDqLvkbbg0wGEQJ6yR/YD5
-        lMn1xSK3wsNZnmFVHCEWXDlsDCnXCsBZlQAIReh4Ig==
-X-Google-Smtp-Source: APiQypId8CuX+BVlYDBqShj5QXvD9DNxkAFHvl3ApU8OQndR7n1PGxIP4ZPoBVcEBdDymek/PW1GiZK5okEd6QgjhJA=
-X-Received: by 2002:a67:f254:: with SMTP id y20mr15058958vsm.177.1587934461499;
- Sun, 26 Apr 2020 13:54:21 -0700 (PDT)
+        id S1726327AbgDZU7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 16:59:30 -0400
+Received: from smtp06.smtpout.orange.fr ([80.12.242.128]:41828 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726177AbgDZU7a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 16:59:30 -0400
+Received: from localhost.localdomain ([93.23.12.11])
+        by mwinf5d64 with ME
+        id XYzQ2201a0EJ3pp03YzReA; Sun, 26 Apr 2020 22:59:28 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sun, 26 Apr 2020 22:59:28 +0200
+X-ME-IP: 93.23.12.11
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     davem@davemloft.net, jonas.jensen@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] net: moxa: Fix a potential double 'free_irq()'
+Date:   Sun, 26 Apr 2020 22:59:21 +0200
+Message-Id: <20200426205921.47714-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20200420202643.87198-1-zenczykowski@gmail.com>
- <20200426163125.rnxwntthcrx5qejf@ast-mbp> <CAADnVQ+FM2Rb2uHPMjXnSGmQo2WMfV7f_sikADHPhnHMq0aK9w@mail.gmail.com>
-In-Reply-To: <CAADnVQ+FM2Rb2uHPMjXnSGmQo2WMfV7f_sikADHPhnHMq0aK9w@mail.gmail.com>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Sun, 26 Apr 2020 13:54:09 -0700
-Message-ID: <CANP3RGexEgmeGHab5d0pP2QsR8yVqQ+kBi=2FW1rd2CtafyJUw@mail.gmail.com>
-Subject: Re: [PATCH] net: bpf: add bpf_ktime_get_boot_ns()
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > I fixed it up and applied. Thanks
-> >
-> > In the future please cc bpf@vger for all bpf related patches.
+Should an irq requested with 'devm_request_irq' be released explicitly,
+it should be done by 'devm_free_irq()', not 'free_irq()'.
 
-Will do so.
+Fixes: 6c821bd9edc9 ("net: Add MOXA ART SoCs ethernet driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+Maybe 'devm_free_irq()' is useless here and it could be freed automatically
+by the core framework, but sometimes irq can be tricky.
+So I've preferred to keep the logic in place.
+---
+ drivers/net/ethernet/moxa/moxart_ether.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> The order of comments for bpf_ktime_get_boot_ns
-> was also incorrect.
-> Most selftests were broken.
-> I fixed it up as well.
+diff --git a/drivers/net/ethernet/moxa/moxart_ether.c b/drivers/net/ethernet/moxa/moxart_ether.c
+index e1651756bf9d..f70bb81e1ed6 100644
+--- a/drivers/net/ethernet/moxa/moxart_ether.c
++++ b/drivers/net/ethernet/moxa/moxart_ether.c
+@@ -564,7 +564,7 @@ static int moxart_remove(struct platform_device *pdev)
+ 	struct net_device *ndev = platform_get_drvdata(pdev);
+ 
+ 	unregister_netdev(ndev);
+-	free_irq(ndev->irq, ndev);
++	devm_free_irq(&pdev->dev, ndev->irq, ndev);
+ 	moxart_mac_free_memory(ndev);
+ 	free_netdev(ndev);
+ 
+-- 
+2.25.1
 
-Thank you.
