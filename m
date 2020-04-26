@@ -2,140 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AD441B90B1
-	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 15:43:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D488C1B90B4
+	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 15:46:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726146AbgDZNnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 09:43:15 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:35653 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726140AbgDZNnO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 09:43:14 -0400
-Received: by mail-il1-f198.google.com with SMTP id r5so16646996ilq.2
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 06:43:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=rlJAfwbPqtPWQJVZIPkomN7KJEtdzrl3Ui0y/x3Z8hs=;
-        b=R/i+UUzgkeIrMF048zf0v6IepV+9u5p7D/dR5ZkDvSZbvqQjj8FzKtnK5xTrC0/z8G
-         yXQTaj3Sst4wPmk3Sv8pHByww5SXFqMsDz7ZazoMVSWYlU6GQDA8kKMma4Rb3zT/Cllq
-         7uulK2I+LiZyAHKStWH/t745AC49zPdtF7on5CQOdBFARGoYqZyWNUNtRroYjSPo8MMb
-         bI7ZTff/XrWGPqvDLmF7yojiuZgdkrhwuK6OpOan48oNVhUmeA9NQS6oQlbRmpshnmuj
-         GxXgVxmSMvCbRA1gDfnm22TcZW7fCnDbChaXcWMoC5aLmif4apQng9MzLJ2OviOYB1t7
-         /bAA==
-X-Gm-Message-State: AGi0PuaKgOfhwRACGpPEKQxitpFK3EfpHgKxpr2HKJEptCzlaJVH4KXq
-        QEFIe6eOL7V9Gsx4UO/24rXQ6fJ09qTnrgHDcIURMRQYu+4I
-X-Google-Smtp-Source: APiQypKxs5VGnvM1qXq+lYJKi9Um6WY+7O0zommb3ly8Y5J38otFgmbS3FSL4vxdihxPch6+sK5nNtt+xHbSN3izMbjCgJLBOJWR
+        id S1726179AbgDZNp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 09:45:58 -0400
+Received: from mout.web.de ([212.227.15.4]:55533 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725876AbgDZNp5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 Apr 2020 09:45:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1587908745;
+        bh=5W3b2E7k21ZMiqMvB1KOtLfzNi5N75REcK7+gb02gX8=;
+        h=X-UI-Sender-Class:To:Cc:Subject:From:Date;
+        b=Ec6Ezo7avK9humZh5lhiNUnAjStzh5lwOWOVqN7L//ztNhuVH7qIlsH4LkwJ9UNVA
+         kRiUHrQY0gN/rQ0eY2e6tB3Hg9JGDdtg2vj0SX80ZtpwTWcRK0pe0cPvmscSVY3qgJ
+         ciwASOg0ikWl9jZmjyYOhdiZwo+HL2V4OugN11KY=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([93.133.52.156]) by smtp.web.de (mrweb001
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0Lcxfc-1ikbMH0S92-00iCYy; Sun, 26
+ Apr 2020 15:45:45 +0200
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Chris Lew <clew@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hemant Kumar <hemantk@codeaurora.org>,
+        Jeffrey Hugo <jhugo@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Siddartha Mohanadoss <smohanad@codeaurora.org>
+Subject: Re: [PATCH v2 2/3] net: qrtr: Add MHI transport layer
+From:   Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <85591553-f1f2-a7c9-9c5a-58f74ebeaf38@web.de>
+Date:   Sun, 26 Apr 2020 15:45:41 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-X-Received: by 2002:a02:9642:: with SMTP id c60mr16053970jai.87.1587908593710;
- Sun, 26 Apr 2020 06:43:13 -0700 (PDT)
-Date:   Sun, 26 Apr 2020 06:43:13 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000aa012505a431c7d9@google.com>
-Subject: WARNING in ib_unregister_device_queued
-From:   syzbot <syzbot+4088ed905e4ae2b0e13b@syzkaller.appspotmail.com>
-To:     dledford@redhat.com, jgg@ziepe.ca, kamalheib1@gmail.com,
-        leon@kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        parav@mellanox.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:hto1Oe3KMF6Kn2QN25fgiQmcX5MG3/poqV5HXZ2jMTIUTyxQiAB
+ 01h21WniyZQ9WtX3+1r20BJ4M/Rg2ggp3OQZ0iPxLDyU+Pphyn3+3xF+is9E0msK0fFRoFE
+ J3cuEiRfnMcwqT2+YhxLlliWCikynUPDOOjdxre+U6ZWunbAaoz7u/oZxUwmhiYaD7Grp1h
+ vo0Q1AKichEah3p+hziTw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Fb0qtxIs6Ms=:YHKnr7XW/87wD9cd9K/HTg
+ P6QbfCkfZvuD4Bm0nV/xpj173rwzMycOC9YCwIY8Bzgqev+fTIW7YIOhRNEXGFx1cu0VtcH8v
+ lZOw5qysrB7KlC3ARMWTaTKLfUuK7ao+JW35Quj2IjvkP19aS++yUyh9uaxuD9Q4qXsS+WPjd
+ Yx/YtQ03CqpI3COoQfCXNgX6lknMuDR0MBdOechbiQ/cqXdWAhSVcNZue+4cQGAL7lYT2Uqnw
+ yHjIiII8A+W7WQnIPtjKjnigBAkrARNAKh3p9/vQ0g/6sm43WhsqEDiClB99Z+P8b5i2Q5Pzt
+ HyWzPlsfyTqxG7tEZHX6HJZ+vs/T9aoIyumtZjrx7gnulupJuBP3f+bf1vz2LKsXhjoyLOBib
+ jxJxGGfS6fWIsgRSMtCRpjLKsIf0tCDcF6pl7M9L50HY0WbSC7wpOZSsVGfah979+j/YoVzp5
+ BhWwIc3aVhzB0ZT1ONEzS+8WscDmHaOhsqw9mCXYs93TbpZo9YW4apMmf1gya/Ba90z26UHcY
+ 1C858lA0sfz5C5fzoaopnCBGaS93MmK2dF3Qf5P2uYCp5GHSYc68d8uoNcBef/G33W55tl6JX
+ D0xo1SvUsBXc9UEd2u51P+XV6oja6fyKlXuBs64VWQPx29UtGnkxGqKsUf9jhBt3RXSkU5lKm
+ pxg4lsIgnqdc4r1S8AF2I7ObhtwbUid3N5NC4tZ3vAlLsI0rY29gkZFbZFkE9KBxTzW4yP6r2
+ CfyAzEEnVIETKMXjwz/nP82iXiKhPwmWTlFZS5iC7J8OIrAp0DDXbEAQqe2hrdSXAXTgKfUZe
+ zfqVcML7mggF9ISAw3UormBUzGVGdK+DzrHBA//wWYyl5W/7xZ5pjv+wv9mkUhqIF8waCgiHs
+ PRNfRx1bzuH9NkWTE5zz9m5FpADIQL/q1i3cViOsMOb6ELoTyXIEHa1OZ8kmnvM1s+9DCPWDA
+ SNT/bYbdYKfFlFjiu7cQRVfuYv0c8+UtWkGFw+Iq5HqwtdtVjLYqUzWmLw3PuLS6QBMctLKht
+ /g2XQVnFraJSVyXXa2oz1ACiE2p36rKfEO/tfbsdKANGMUuTnOOQfCQ8UgQrFlFiS+ERCj6vE
+ vY62+KOKa2fSDaPeMgOPmNsOAxDrK7Mav4RT8mmfM7kX1h04z7l7n2UcfQU/k/ISu5T4AZ75c
+ Zd9lxwc2ugI+e2Q79RiRn8KBpVU3l9LEX7/ZB0+3NBybWI6sSM6FkHMwNc4jkSHb7X24LWs6c
+ SxLXFhUm+7rRI0YEB
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+> Hence, this commit adds MHI transport layer support to QRTR for
+> transferring the QMI messages over IPC Router.
 
-syzbot found the following crash on:
-
-HEAD commit:    b9663b7c net: stmmac: Enable SERDES power up/down sequence
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=166bf717e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5d351a1019ed81a2
-dashboard link: https://syzkaller.appspot.com/bug?extid=4088ed905e4ae2b0e13b
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+4088ed905e4ae2b0e13b@syzkaller.appspotmail.com
-
-rdma_rxe: ignoring netdev event = 10 for netdevsim0
-infiniband  yz2: set down
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 22753 at drivers/infiniband/core/device.c:1565 ib_unregister_device_queued+0x122/0x160 drivers/infiniband/core/device.c:1565
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 22753 Comm: syz-executor.5 Not tainted 5.7.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- panic+0x2e3/0x75c kernel/panic.c:221
- __warn.cold+0x2f/0x35 kernel/panic.c:582
- report_bug+0x27b/0x2f0 lib/bug.c:195
- fixup_bug arch/x86/kernel/traps.c:175 [inline]
- fixup_bug arch/x86/kernel/traps.c:170 [inline]
- do_error_trap+0x12b/0x220 arch/x86/kernel/traps.c:267
- do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:286
- invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-RIP: 0010:ib_unregister_device_queued+0x122/0x160 drivers/infiniband/core/device.c:1565
-Code: fb e8 72 e2 d4 fb 48 89 ef e8 2a c3 c1 fe 48 83 c4 08 5b 5d e9 5f e2 d4 fb e8 5a e2 d4 fb 0f 0b e9 46 ff ff ff e8 4e e2 d4 fb <0f> 0b e9 6f ff ff ff 48 89 ef e8 2f a9 12 fc e9 16 ff ff ff 48 c7
-RSP: 0018:ffffc900072ef290 EFLAGS: 00010246
-RAX: 0000000000040000 RBX: ffff8880a6a24000 RCX: ffffc90013201000
-RDX: 0000000000040000 RSI: ffffffff859e51b2 RDI: ffff8880a6a24310
-RBP: 0000000000000019 R08: ffff88808d21c280 R09: ffffed1014d449bb
-R10: ffff8880a6a24dd3 R11: ffffed1014d449ba R12: 0000000000000006
-R13: ffff88805988c000 R14: 0000000000000000 R15: ffffffff8a44f8c0
- rxe_notify+0x77/0xd0 drivers/infiniband/sw/rxe/rxe_net.c:605
- notifier_call_chain+0xc0/0x230 kernel/notifier.c:83
- call_netdevice_notifiers_info net/core/dev.c:1948 [inline]
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1933
- call_netdevice_notifiers_extack net/core/dev.c:1960 [inline]
- call_netdevice_notifiers net/core/dev.c:1974 [inline]
- rollback_registered_many+0x75c/0xe70 net/core/dev.c:8828
- rollback_registered+0xf2/0x1c0 net/core/dev.c:8873
- unregister_netdevice_queue net/core/dev.c:9969 [inline]
- unregister_netdevice_queue+0x1d7/0x2b0 net/core/dev.c:9962
- unregister_netdevice include/linux/netdevice.h:2725 [inline]
- nsim_destroy+0x35/0x60 drivers/net/netdevsim/netdev.c:330
- __nsim_dev_port_del+0x144/0x1e0 drivers/net/netdevsim/dev.c:934
- nsim_dev_port_del_all+0x86/0xe0 drivers/net/netdevsim/dev.c:947
- nsim_dev_reload_destroy+0x77/0x110 drivers/net/netdevsim/dev.c:1123
- nsim_dev_reload_down+0x6e/0xd0 drivers/net/netdevsim/dev.c:703
- devlink_reload+0xbd/0x3b0 net/core/devlink.c:2797
- devlink_nl_cmd_reload+0x2f7/0x7c0 net/core/devlink.c:2832
- genl_family_rcv_msg_doit net/netlink/genetlink.c:673 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:718 [inline]
- genl_rcv_msg+0x627/0xdf0 net/netlink/genetlink.c:735
- netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2469
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:746
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6bf/0x7e0 net/socket.c:2362
- ___sys_sendmsg+0x100/0x170 net/socket.c:2416
- __sys_sendmsg+0xec/0x1b0 net/socket.c:2449
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x45c829
-Code: 0d b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f6fae1cac78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000004fcc00 RCX: 000000000045c829
-RDX: 0000000000000000 RSI: 0000000020000800 RDI: 0000000000000006
-RBP: 000000000078c040 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 0000000000000905 R14: 00000000004cbaab R15: 00007f6fae1cb6d4
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+I suggest to reconsider software development consequences around
+another implementation detail.
 
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+=E2=80=A6
+> +static int qcom_mhi_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff =
+*skb)
+> +{
+=E2=80=A6
+> +	rc =3D mhi_queue_skb(qdev->mhi_dev, DMA_TO_DEVICE, skb, skb->len,
+> +			   MHI_EOT);
+> +	if (rc) {
+> +		kfree_skb(skb);
+> +		return rc;
+> +	}
+=E2=80=A6
+> +}
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+I propose again to add a jump target so that a bit of exception handling c=
+ode
+can be better reused at the end of this function implementation.
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Do=
+cumentation/process/coding-style.rst?id=3Db2768df24ec400dd4f7fa79542f797e9=
+04812053#n450
+
++	if (rc)
++		goto free_skb;
+=E2=80=A6
++	return rc;
++
++free_skb:
++	kfree_skb(skb);
++	return rc;
++}
+
+
+Regards,
+Markus
