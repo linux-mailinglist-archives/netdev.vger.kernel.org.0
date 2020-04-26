@@ -2,132 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC5F21B93F8
-	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 22:38:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18C951B93FB
+	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 22:38:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726250AbgDZUif (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 16:38:35 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36862 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726176AbgDZUif (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Apr 2020 16:38:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=XChHcol3z6WkRRfudKrv6MH2+54Zu4xgD2AAuW6iUlU=; b=VGm7pITwwyJTSgbuCPRjjhOklb
-        9PC0Un5gEDcfW9SwbNMX5oYumcslCddRsmk1ZZ2i6xciVA3loBX47rFTG2MM9WCElRo5TXIqqqIrJ
-        nsSfVwL7dUQCcyey0yiqwByFXldviK2UQcRc9miEZxG7kRt8pnTczkk0gm7C/MFwAGxk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jSo2r-0050tu-MU; Sun, 26 Apr 2020 22:38:33 +0200
-Date:   Sun, 26 Apr 2020 22:38:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        id S1726323AbgDZUil (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 16:38:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37522 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726176AbgDZUil (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 16:38:41 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE101C061A0F;
+        Sun, 26 Apr 2020 13:38:40 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id a5so6526058pjh.2;
+        Sun, 26 Apr 2020 13:38:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=kbRv8UzLuFtGFucHws4IrZZDTtkFlPyYccFbWf0LVl0=;
+        b=R1goljTcvKUWE/3XNGp8izyowRxLIwVMhVaDsfui2Kt+zNiYBcvGaBeOntb33KuS/c
+         7MkOrpzTHefTELc3eZ7rmrMPlzRZX/TXwEJbXC9R+wv+XwCGMm2LKiMGEKf46ODvvacZ
+         D6lAVNzYNJzslPWAUYLnpz0mMMJFgCKOqcWy6bMN7f0ieiH9cCeOhpu39FscPm0jB2MN
+         U5gj1ullq/BF67Fzuvto+A1A9uT2qU7/ZWFszdRcExvBckBw+1gNx5HtqFYgBFqD855k
+         ktd1V6zHUxdYAEiDDhQpm2LPiLEODaxZr+Riyn9DrN4NkQqDLVKoCFeVSd5IMjDiw/nm
+         zR3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kbRv8UzLuFtGFucHws4IrZZDTtkFlPyYccFbWf0LVl0=;
+        b=G5Ub1Q5U8GoBqaDJsO6ssldRiyYYrfwkNhoku3zxk86oTEPldeDrd+EGAtQ4clmSBh
+         wugTVKMmfXqRAVXwW2EVldO3yZYySc6QzbF5Mq0ABy5nwbo/HETDoe/fqVfWpAW10/NR
+         4J1YmbuypJXg5ooJ8ywGcuwfIFKmpa/W/PdZ5ETu/wu5qcEd07jaLABvIxAd5iyrMIFM
+         tpMyMFeOeL27H9EM61PhurYboSW4+pPOFJ5A3lCfZ9BEu4Oe3YBWVtt0XdVkkO013yvZ
+         1yBlRVLLTiSghhLygRwE7UWG6tKhjC4U3erw5FwRXkL3NAmM95Scc6wcwKCGKNjgFmiU
+         TLPQ==
+X-Gm-Message-State: AGi0PuZaqyNlu8+dBIZx8S7yp5FsJc0C+wszIEC0bkDFIUAZj1fP9TSe
+        okVe+zaWWcy7WJCT5ISkElT00ovi
+X-Google-Smtp-Source: APiQypJz+46iiPUO85VDjW/7lyHhGc/s8pNYXirS/h1Hr4fqDD49YGRwsEhTqrgwF5lfsXv/4w7Wwg==
+X-Received: by 2002:a17:90a:3086:: with SMTP id h6mr20338000pjb.49.1587933520184;
+        Sun, 26 Apr 2020 13:38:40 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id c15sm10554263pfo.188.2020.04.26.13.38.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 26 Apr 2020 13:38:39 -0700 (PDT)
+Subject: Re: INFO: rcu detected stall in wg_packet_tx_worker
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     syzbot <syzbot+0251e883fe39e7a0cb0a@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Chris Healy <cphealy@gmail.com>
-Subject: Re: [PATCH net-next v1 3/9] net: ethtool: netlink: Add support for
- triggering a cable test
-Message-ID: <20200426203833.GB1183480@lunn.ch>
-References: <20200425180621.1140452-1-andrew@lunn.ch>
- <20200425180621.1140452-4-andrew@lunn.ch>
- <20200426193634.GB23225@lion.mk-sys.cz>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        jhs@mojatatu.com,
+        =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>,
+        Krzysztof Kozlowski <krzk@kernel.org>, kuba@kernel.org,
+        kvalo@codeaurora.org, leon@kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Shuah Khan <shuah@kernel.org>, syzkaller-bugs@googlegroups.com,
+        Thomas Gleixner <tglx@linutronix.de>, vivien.didelot@gmail.com,
+        Cong Wang <xiyou.wangcong@gmail.com>
+References: <0000000000005fd19505a4355311@google.com>
+ <e40c443e-74aa-bad4-7be8-4cdddfdf3eaf@gmail.com>
+ <CAHmME9ov2ae08UTzwKL7enquChzDNxpg4c=ppnJqS2QF6ZAn_Q@mail.gmail.com>
+ <f2eb18ea-b32a-4b64-0417-9b5b2df98e33@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <29bd64f4-5fe0-605e-59cc-1afa199b1141@gmail.com>
+Date:   Sun, 26 Apr 2020 13:38:37 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200426193634.GB23225@lion.mk-sys.cz>
+In-Reply-To: <f2eb18ea-b32a-4b64-0417-9b5b2df98e33@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > +const struct ethnl_request_ops ethnl_cable_test_act_ops = {
-> > +	.request_cmd		= ETHTOOL_MSG_CABLE_TEST_ACT,
-> > +	.reply_cmd		= ETHTOOL_MSG_CABLE_TEST_ACT_REPLY,
-> > +	.hdr_attr		= ETHTOOL_A_CABLE_TEST_HEADER,
-> > +	.max_attr		= ETHTOOL_A_CABLE_TEST_MAX,
-> > +	.req_info_size		= sizeof(struct cable_test_req_info),
-> > +	.reply_data_size	= sizeof(struct cable_test_reply_data),
-> > +	.request_policy		= cable_test_get_policy,
-> > +};
-> > +
+
+
+On 4/26/20 1:26 PM, Eric Dumazet wrote:
 > 
-> As you register ethnl_act_cable_test() as doit handler and don't use any
-> of ethnl_default_*() handlers, you don't need to define
-> ethnl_cable_test_act_ops (and also struct cable_test_req_info and struct
-> cable_test_reply_data). These would be only used by default doit/dumpit
-> handlers and default notification handler.
-
-O.K, than
-
 > 
-> > +/* CABLE_TEST_ACT */
-> > +
-> > +static const struct nla_policy
-> > +cable_test_set_policy[ETHTOOL_A_CABLE_TEST_MAX + 1] = {
-> > +	[ETHTOOL_A_CABLE_TEST_UNSPEC]		= { .type = NLA_REJECT },
-> > +	[ETHTOOL_A_CABLE_TEST_HEADER]		= { .type = NLA_NESTED },
-> > +};
+> On 4/26/20 12:42 PM, Jason A. Donenfeld wrote:
+>> On Sun, Apr 26, 2020 at 1:40 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>>>
+>>>
+>>>
+>>> On 4/26/20 10:57 AM, syzbot wrote:
+>>>> syzbot has bisected this bug to:
+>>>>
+>>>> commit e7096c131e5161fa3b8e52a650d7719d2857adfd
+>>>> Author: Jason A. Donenfeld <Jason@zx2c4.com>
+>>>> Date:   Sun Dec 8 23:27:34 2019 +0000
+>>>>
+>>>>     net: WireGuard secure network tunnel
+>>>>
+>>>> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15258fcfe00000
+>>>> start commit:   b2768df2 Merge branch 'for-linus' of git://git.kernel.org/..
+>>>> git tree:       upstream
+>>>> final crash:    https://syzkaller.appspot.com/x/report.txt?x=17258fcfe00000
+>>>> console output: https://syzkaller.appspot.com/x/log.txt?x=13258fcfe00000
+>>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=b7a70e992f2f9b68
+>>>> dashboard link: https://syzkaller.appspot.com/bug?extid=0251e883fe39e7a0cb0a
+>>>> userspace arch: i386
+>>>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15f5f47fe00000
+>>>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11e8efb4100000
+>>>>
+>>>> Reported-by: syzbot+0251e883fe39e7a0cb0a@syzkaller.appspotmail.com
+>>>> Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+>>>>
+>>>> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+>>>>
+>>>
+>>> I have not looked at the repro closely, but WireGuard has some workers
+>>> that might loop forever, cond_resched() might help a bit.
+>>
+>> I'm working on this right now. Having a bit difficult of a time
+>> getting it to reproduce locally...
+>>
+>> The reports show the stall happening always at:
+>>
+>> static struct sk_buff *
+>> sfq_dequeue(struct Qdisc *sch)
+>> {
+>>        struct sfq_sched_data *q = qdisc_priv(sch);
+>>        struct sk_buff *skb;
+>>        sfq_index a, next_a;
+>>        struct sfq_slot *slot;
+>>
+>>        /* No active slots */
+>>        if (q->tail == NULL)
+>>                return NULL;
+>>
+>> next_slot:
+>>        a = q->tail->next;
+>>        slot = &q->slots[a];
+>>
+>> Which is kind of interesting, because it's not like that should block
+>> or anything, unless there's some kasan faulting happening.
+>>
 > 
-> This should be probably rather named cable_test_act_policy - or maybe
-> cable_test_policy would suffice as you have only one request message
-> type (I've been using *_get_policy for *_GET request and *_set_policy
-> for *_SET).
-
-I probably just cut/paste and changes the name, but not set to act. I
-will fix this.
-
-> > +int ethnl_act_cable_test(struct sk_buff *skb, struct genl_info *info)
-> > +{
-> > +	struct nlattr *tb[ETHTOOL_A_CABLE_TEST_MAX + 1];
-> > +	struct ethnl_req_info req_info = {};
-> > +	struct net_device *dev;
-> > +	int ret;
-> > +
-> > +	ret = nlmsg_parse(info->nlhdr, GENL_HDRLEN, tb,
-> > +			  ETHTOOL_A_CABLE_TEST_MAX,
-> > +			  cable_test_set_policy, info->extack);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	ret = ethnl_parse_header_dev_get(&req_info,
-> > +					 tb[ETHTOOL_A_CABLE_TEST_HEADER],
-> > +					 genl_info_net(info), info->extack,
-> > +					 true);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	dev = req_info.dev;
-> > +	if (!dev->phydev) {
-> > +		ret = -EOPNOTSUPP;
-> > +		goto out_dev_put;
-> > +	}
-> > +
-> > +	rtnl_lock();
-> > +	ret = ethnl_ops_begin(dev);
-> > +	if (ret < 0)
-> > +		goto out_rtnl;
-> > +
-> > +	ret = phy_start_cable_test(dev->phydev, info->extack);
-> > +
-> > +	ethnl_ops_complete(dev);
-> > +out_rtnl:
-> > +	rtnl_unlock();
-> > +out_dev_put:
-> > +	dev_put(dev);
-> > +	return ret;
-> > +}
+> I am not really sure WireGuard is involved, the repro does not rely on it anyway.
 > 
-> As you don't send a reply message, you don't need
-> ETHTOOL_MSG_CABLE_TEST_ACT_REPLY either (we may introduce it later if
-> there is a reply message).
 
-One thing i was thinking about is sending user space a cookie at this
-point, to help pair the request to the multicasted results. Then the
-reply would be useful.
+Yes, do not spend too much time on this.
 
-      Andrew
+syzbot found its way into crazy qdisc settings these last days.
+
+( I sent a patch yesterday for choke qdisc, it seems similar checks are needed in sfq )
+
