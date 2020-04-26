@@ -2,69 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84EE41B91C4
-	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 18:34:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14EBA1B91DB
+	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 18:47:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726162AbgDZQeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 12:34:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56196 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726147AbgDZQeX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 12:34:23 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83BACC061A0F;
-        Sun, 26 Apr 2020 09:34:23 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id g4so15026630ljl.2;
-        Sun, 26 Apr 2020 09:34:23 -0700 (PDT)
+        id S1726184AbgDZQra (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 12:47:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58198 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726143AbgDZQr3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 12:47:29 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 492A2C061A0F;
+        Sun, 26 Apr 2020 09:47:29 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id f18so15011857lja.13;
+        Sun, 26 Apr 2020 09:47:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5MhVh0cxmhr6NFxudFO48mk9t9SZKg+9Yklkqo9/++8=;
-        b=otcVj5Lw70gO4jpupiekcGeWkKFnY3Gi/IRQyu8/l8G+zGMxPctPkWQoW12jvKYQl5
-         OxwhPZN+TgQKTxlZ5GPjonFCpyWIWjzgsfJLBlwmq7RLkjj6UUJAO0EgkPe1JSzEmWLI
-         TSt2dgWd7e92BjFsA6/u9DRD2TNSjZFZ3mrNZ47CdMOu3aRBmInZdG2zw3Egt3tgnxmF
-         maWN8WQ8DUblhUK4YMcVPkWC0/2/035aEIVZ0zv3W/PZH7ToaYavWV2XDBzkhy7jN0rr
-         I0XF0o+n5yoinVW3N1nc0gOonwCjxhlXNLMz8YqtLwMsCRKI3bhhZXpiRZ+7iltlRBA4
-         sEJA==
+         :cc:content-transfer-encoding;
+        bh=XIkuGkmw9unvvxymgGhCNFr2UVR4Jh5aeD7lzIpidEw=;
+        b=OM7T5Oc6RcvIDmJ0EmhtESuQbfEIF25wxn9f1W12Bqxo9LRUClCKN+3ac2TZ6J7Ll5
+         4IjORngNdQ4LmV3JE9e7YgviJsb+JyZainh9S6pcSIo3/5rufbUD9/I7eZF5zpZW3JTn
+         OPiL5U4+gKzeNw7LYJXULFiF1NOoEHjnGWVsDzbvhktbFMsOOvW9AfHNe166wu7VRoar
+         AKdz7Bor33GWkksMaLvpnyO26ib0FVcX6dwhWbAZQVb781QAF6DJD/DMjuiC174DoHt0
+         ge8V/h53Q0rwTNgSoP0cYOhyQlPHSUKh+6p+fm0AAwY+uAixbckhCOjdMKhSTtSQ7HyD
+         OFgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5MhVh0cxmhr6NFxudFO48mk9t9SZKg+9Yklkqo9/++8=;
-        b=bQAExOwQwSDkauxF0nHSWBFMU3wN4q89egR4wad+IKekivpXUsLRhPX6PUXCcCjQG5
-         mK9c0mQYNoHorVtWVecGDmQ/NuEKThKqcKWTsStEuB1is7fKHCYNJ+PMXuXI4huGhBJE
-         GfX7NzpB7xplAImHgsZI8b3Zd8nsxH4QXb2NxGHnBZOxdPX09oRVpWL218QarM4z7O7q
-         KuWBsXaHl3ShP7lh12YsdW/gFFCfTWs2dZUKHdEZsLU6np7Kn9H/jlxOw+hdLrC4smU0
-         JaDwOvelfjZSfhvobMooPUAEi5arYks4e+FqdI1dLnJ7VDxASxjFz7lqvIwUKycYf7De
-         9vKg==
-X-Gm-Message-State: AGi0PuY1Uz1mc5bg5EuF09L4KTLzQXU7et/HHWbdgNKbnXY6a5ES3fWZ
-        MB5fWzfj4da1IvcsPolldH8QmL9LNAhWfN2D1iE=
-X-Google-Smtp-Source: APiQypJx5qbkHN4Pmyt8J85PM1/22JDoA1HFIjl4dE8AEL87JiQ3S+auZEjPGIpaPV9ZMnqCfFSvhY5TRGu6bG1OceQ=
-X-Received: by 2002:a2e:b80b:: with SMTP id u11mr11958850ljo.212.1587918861888;
- Sun, 26 Apr 2020 09:34:21 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=XIkuGkmw9unvvxymgGhCNFr2UVR4Jh5aeD7lzIpidEw=;
+        b=miRfApw1YqBDUN5Q0hWpckHcV+eq2R9+WJHaJTluHJb5LP4RE445hQMD7uTO7/WHYl
+         J+G06JA4F6djftqqgsU9Zsxbq+FFNxa42zDjNvfhb0Qgheqbpj4USUnA5MLw8AmvybPL
+         1c1dtzpA0vC0XuSPo2LerQt1UnpZP/slMEVWHBqVxUCnnnIKpGcqiQVWDP/aKRJbuIPz
+         d72q8PSL7A8xYLuMxGSiUYVXWMkZ87EIo1pVoD0JJqyGtlY5B6kcuVI/9R5I5KrNHcoQ
+         X/iYEVUKL/nsRnbgP6Y7XiUqDTdbmFxhYh045q/j+7EFWaXpkfzdLzv0paAMsB6TyvT4
+         axJw==
+X-Gm-Message-State: AGi0PuY5CO+erhEWdk2TI+PAKUoM/TdegyUcS2nkmJvp6JbFTdqO/USD
+        toQR/69Fxmw6LmCFSCgPQqAdIiXg3nKowDjwjJY=
+X-Google-Smtp-Source: APiQypK7ydtH+WbSCc6iA/8pM6MH+ukVgQxtx61oskxMnJyaHkCliwaOwxdh4t/Lob99DzKljAWXWNB8/BA1nHquj1A=
+X-Received: by 2002:a2e:7508:: with SMTP id q8mr11718876ljc.234.1587919647737;
+ Sun, 26 Apr 2020 09:47:27 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200421232927.21082-1-tklauser@distanz.ch>
-In-Reply-To: <20200421232927.21082-1-tklauser@distanz.ch>
+References: <20200420202643.87198-1-zenczykowski@gmail.com> <20200426163125.rnxwntthcrx5qejf@ast-mbp>
+In-Reply-To: <20200426163125.rnxwntthcrx5qejf@ast-mbp>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sun, 26 Apr 2020 09:34:10 -0700
-Message-ID: <CAADnVQKr7mPBqWhLYLJCmCkP1YSGLQHjWr0CBuh=k7oJeg+=oQ@mail.gmail.com>
-Subject: Re: [PATCH] xsk: Fix typo in xsk_umem_consume_tx and xsk_generic_xmit comments
-To:     Tobias Klauser <tklauser@distanz.ch>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
+Date:   Sun, 26 Apr 2020 09:47:16 -0700
+Message-ID: <CAADnVQ+FM2Rb2uHPMjXnSGmQo2WMfV7f_sikADHPhnHMq0aK9w@mail.gmail.com>
+Subject: Re: [PATCH] net: bpf: add bpf_ktime_get_boot_ns()
+To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 21, 2020 at 4:30 PM Tobias Klauser <tklauser@distanz.ch> wrote:
+On Sun, Apr 26, 2020 at 9:31 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> s/backpreassure/backpressure/
+> On Mon, Apr 20, 2020 at 01:26:43PM -0700, Maciej =C5=BBenczykowski wrote:
+> > From: Maciej =C5=BBenczykowski <maze@google.com>
+> >
+> > On a device like a cellphone which is constantly suspending
+> > and resuming CLOCK_MONOTONIC is not particularly useful for
+> > keeping track of or reacting to external network events.
+> > Instead you want to use CLOCK_BOOTTIME.
+> >
+> > Hence add bpf_ktime_get_boot_ns() as a mirror of bpf_ktime_get_ns()
+> > based around CLOCK_BOOTTIME instead of CLOCK_MONOTONIC.
+> >
+> > Signed-off-by: Maciej =C5=BBenczykowski <maze@google.com>
+> ...
+> > diff --git a/net/core/filter.c b/net/core/filter.c
+> > index 755867867e57..ec567d1e6fb9 100644
+> > --- a/net/core/filter.c
+> > +++ b/net/core/filter.c
+> > @@ -6009,6 +6009,8 @@ bpf_base_func_proto(enum bpf_func_id func_id)
+> >               return &bpf_tail_call_proto;
+> >       case BPF_FUNC_ktime_get_ns:
+> >               return &bpf_ktime_get_ns_proto;
+> > +     case BPF_FUNC_ktime_get_boot_ns:
+> > +             return &bpf_ktime_get_boot_ns_proto;
+> >       default:
+> >               break;
+> >       }
 >
-> Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
+> That part got moved into kernel/bpf/helpers.c in the mean time.
+> I fixed it up and applied. Thanks
+>
+> In the future please cc bpf@vger for all bpf related patches.
 
-Applied. Thanks
+The order of comments for bpf_ktime_get_boot_ns
+was also incorrect.
+Most selftests were broken.
+I fixed it up as well.
