@@ -2,157 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D488C1B90B4
-	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 15:46:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CA491B90D0
+	for <lists+netdev@lfdr.de>; Sun, 26 Apr 2020 16:09:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726179AbgDZNp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 09:45:58 -0400
-Received: from mout.web.de ([212.227.15.4]:55533 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725876AbgDZNp5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Apr 2020 09:45:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1587908745;
-        bh=5W3b2E7k21ZMiqMvB1KOtLfzNi5N75REcK7+gb02gX8=;
-        h=X-UI-Sender-Class:To:Cc:Subject:From:Date;
-        b=Ec6Ezo7avK9humZh5lhiNUnAjStzh5lwOWOVqN7L//ztNhuVH7qIlsH4LkwJ9UNVA
-         kRiUHrQY0gN/rQ0eY2e6tB3Hg9JGDdtg2vj0SX80ZtpwTWcRK0pe0cPvmscSVY3qgJ
-         ciwASOg0ikWl9jZmjyYOhdiZwo+HL2V4OugN11KY=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.133.52.156]) by smtp.web.de (mrweb001
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0Lcxfc-1ikbMH0S92-00iCYy; Sun, 26
- Apr 2020 15:45:45 +0200
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Chris Lew <clew@codeaurora.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hemant Kumar <hemantk@codeaurora.org>,
-        Jeffrey Hugo <jhugo@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Siddartha Mohanadoss <smohanad@codeaurora.org>
-Subject: Re: [PATCH v2 2/3] net: qrtr: Add MHI transport layer
-From:   Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <85591553-f1f2-a7c9-9c5a-58f74ebeaf38@web.de>
-Date:   Sun, 26 Apr 2020 15:45:41 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726165AbgDZOJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 10:09:15 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:51044 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725876AbgDZOJP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 10:09:15 -0400
+Received: by mail-io1-f72.google.com with SMTP id a12so17454613ioe.17
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 07:09:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=pgeHEmJ3Yp5PttG/VcLln/3EKq6Mf1M6+5x9rIZGbsw=;
+        b=am8H/PcdDWUoJ442sk7aoyVNHjdbaeHGFkt7BK870yNsmySW4o41DCkzKnLoaxOcYg
+         4a3Bgvuh4vJc+STfWGK/wHFawvCMV4ohetGo4Rd7SMs9oZ6qaeJ8u1pvGKfhpz78NFQc
+         ceWMKZplKtv03tLEROUTsLs85dH2BNGsZBMHiFrwZynPecEmxxCTDhr7O7zzQW2MQYFx
+         hpfVxFZ7Cd0EN0AtYffSEDhr2uWzgQEkZtrGN9durcaUTSjo9iE0OxzsLVkGbv4YpZ3n
+         rFM0aFT1ZxM36OzhGij0r+/5CetDuxmsoF+k4gm5Myq+ReO5JbEK7yrUbLinioyezjnn
+         9QPg==
+X-Gm-Message-State: AGi0PubVKHjf9bgn/UZqxR7FJfk//dPRZor41i+b3liqOogJFHBa0pWe
+        b1dGunDPRHhgEjsZ01M3nVwcO8bPj5V+ifMOycncYcj6FURi
+X-Google-Smtp-Source: APiQypL+PzGPwqLflshfjZEe5EdryYwoMXXQIi2SWV2/7YPKn/nYZKzHseEjYIbC6fFFALLP7S/TGK8emecnu/FlaGlICw6/MSoX
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:hto1Oe3KMF6Kn2QN25fgiQmcX5MG3/poqV5HXZ2jMTIUTyxQiAB
- 01h21WniyZQ9WtX3+1r20BJ4M/Rg2ggp3OQZ0iPxLDyU+Pphyn3+3xF+is9E0msK0fFRoFE
- J3cuEiRfnMcwqT2+YhxLlliWCikynUPDOOjdxre+U6ZWunbAaoz7u/oZxUwmhiYaD7Grp1h
- vo0Q1AKichEah3p+hziTw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Fb0qtxIs6Ms=:YHKnr7XW/87wD9cd9K/HTg
- P6QbfCkfZvuD4Bm0nV/xpj173rwzMycOC9YCwIY8Bzgqev+fTIW7YIOhRNEXGFx1cu0VtcH8v
- lZOw5qysrB7KlC3ARMWTaTKLfUuK7ao+JW35Quj2IjvkP19aS++yUyh9uaxuD9Q4qXsS+WPjd
- Yx/YtQ03CqpI3COoQfCXNgX6lknMuDR0MBdOechbiQ/cqXdWAhSVcNZue+4cQGAL7lYT2Uqnw
- yHjIiII8A+W7WQnIPtjKjnigBAkrARNAKh3p9/vQ0g/6sm43WhsqEDiClB99Z+P8b5i2Q5Pzt
- HyWzPlsfyTqxG7tEZHX6HJZ+vs/T9aoIyumtZjrx7gnulupJuBP3f+bf1vz2LKsXhjoyLOBib
- jxJxGGfS6fWIsgRSMtCRpjLKsIf0tCDcF6pl7M9L50HY0WbSC7wpOZSsVGfah979+j/YoVzp5
- BhWwIc3aVhzB0ZT1ONEzS+8WscDmHaOhsqw9mCXYs93TbpZo9YW4apMmf1gya/Ba90z26UHcY
- 1C858lA0sfz5C5fzoaopnCBGaS93MmK2dF3Qf5P2uYCp5GHSYc68d8uoNcBef/G33W55tl6JX
- D0xo1SvUsBXc9UEd2u51P+XV6oja6fyKlXuBs64VWQPx29UtGnkxGqKsUf9jhBt3RXSkU5lKm
- pxg4lsIgnqdc4r1S8AF2I7ObhtwbUid3N5NC4tZ3vAlLsI0rY29gkZFbZFkE9KBxTzW4yP6r2
- CfyAzEEnVIETKMXjwz/nP82iXiKhPwmWTlFZS5iC7J8OIrAp0DDXbEAQqe2hrdSXAXTgKfUZe
- zfqVcML7mggF9ISAw3UormBUzGVGdK+DzrHBA//wWYyl5W/7xZ5pjv+wv9mkUhqIF8waCgiHs
- PRNfRx1bzuH9NkWTE5zz9m5FpADIQL/q1i3cViOsMOb6ELoTyXIEHa1OZ8kmnvM1s+9DCPWDA
- SNT/bYbdYKfFlFjiu7cQRVfuYv0c8+UtWkGFw+Iq5HqwtdtVjLYqUzWmLw3PuLS6QBMctLKht
- /g2XQVnFraJSVyXXa2oz1ACiE2p36rKfEO/tfbsdKANGMUuTnOOQfCQ8UgQrFlFiS+ERCj6vE
- vY62+KOKa2fSDaPeMgOPmNsOAxDrK7Mav4RT8mmfM7kX1h04z7l7n2UcfQU/k/ISu5T4AZ75c
- Zd9lxwc2ugI+e2Q79RiRn8KBpVU3l9LEX7/ZB0+3NBybWI6sSM6FkHMwNc4jkSHb7X24LWs6c
- SxLXFhUm+7rRI0YEB
+X-Received: by 2002:a5e:8e44:: with SMTP id r4mr16796312ioo.47.1587910152288;
+ Sun, 26 Apr 2020 07:09:12 -0700 (PDT)
+Date:   Sun, 26 Apr 2020 07:09:12 -0700
+In-Reply-To: <000000000000f1377e05a3630d32@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000009000aa05a4322411@google.com>
+Subject: Re: KMSAN: uninit-value in sctp_ootb_pkt_new
+From:   syzbot <syzbot+6751381fe5a26df5b74d@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, glider@google.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-sctp@vger.kernel.org,
+        marcelo.leitner@gmail.com, netdev@vger.kernel.org,
+        nhorman@tuxdriver.com, syzkaller-bugs@googlegroups.com,
+        vyasevich@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Hence, this commit adds MHI transport layer support to QRTR for
-> transferring the QMI messages over IPC Router.
+syzbot has found a reproducer for the following crash on:
 
-I suggest to reconsider software development consequences around
-another implementation detail.
+HEAD commit:    bfa90a4a kmsan: remove __GFP_NO_KMSAN_SHADOW
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=13ab7fbfe00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a5915107b3106aaa
+dashboard link: https://syzkaller.appspot.com/bug?extid=6751381fe5a26df5b74d
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=138df47fe00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=158a182fe00000
 
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+6751381fe5a26df5b74d@syzkaller.appspotmail.com
 
-=E2=80=A6
-> +static int qcom_mhi_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff =
-*skb)
-> +{
-=E2=80=A6
-> +	rc =3D mhi_queue_skb(qdev->mhi_dev, DMA_TO_DEVICE, skb, skb->len,
-> +			   MHI_EOT);
-> +	if (rc) {
-> +		kfree_skb(skb);
-> +		return rc;
-> +	}
-=E2=80=A6
-> +}
+batman_adv: batadv0: Interface activated: batadv_slave_1
+=====================================================
+BUG: KMSAN: uninit-value in __arch_swab32 arch/x86/include/uapi/asm/swab.h:10 [inline]
+BUG: KMSAN: uninit-value in __fswab32 include/uapi/linux/swab.h:60 [inline]
+BUG: KMSAN: uninit-value in sctp_ootb_pkt_new+0x202/0x540 net/sctp/sm_statefuns.c:6256
+CPU: 0 PID: 8800 Comm: syz-executor949 Not tainted 5.6.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1c9/0x220 lib/dump_stack.c:118
+ kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
+ __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
+ __arch_swab32 arch/x86/include/uapi/asm/swab.h:10 [inline]
+ __fswab32 include/uapi/linux/swab.h:60 [inline]
+ sctp_ootb_pkt_new+0x202/0x540 net/sctp/sm_statefuns.c:6256
+ sctp_sf_tabort_8_4_8+0xe6/0x7e0 net/sctp/sm_statefuns.c:3372
+ sctp_sf_do_5_1B_init+0x6be/0x1b60 net/sctp/sm_statefuns.c:338
+ sctp_do_sm+0x2b4/0x9a30 net/sctp/sm_sideeffect.c:1153
+ sctp_endpoint_bh_rcv+0xd54/0xfe0 net/sctp/endpointola.c:395
+ sctp_inq_push+0x300/0x420 net/sctp/inqueue.c:80
+ sctp_rcv+0x48b9/0x5410 net/sctp/input.c:256
+ ip_protocol_deliver_rcu+0x700/0xbc0 net/ipv4/ip_input.c:204
+ ip_local_deliver_finish net/ipv4/ip_input.c:231 [inline]
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ ip_local_deliver+0x62a/0x7c0 net/ipv4/ip_input.c:252
+ dst_input include/net/dst.h:442 [inline]
+ ip_rcv_finish net/ipv4/ip_input.c:428 [inline]
+ NF_HOOK include/linux/netfilter.h:307 [inline]
+ ip_rcv+0x6cf/0x750 net/ipv4/ip_input.c:538
+ __netif_receive_skb_one_core net/core/dev.c:5187 [inline]
+ __netif_receive_skb net/core/dev.c:5301 [inline]
+ netif_receive_skb_internal net/core/dev.c:5391 [inline]
+ netif_receive_skb+0xbb5/0xf20 net/core/dev.c:5450
+ tun_rx_batched include/linux/skbuff.h:4351 [inline]
+ tun_get_user+0x6aef/0x6f60 drivers/net/tun.c:1997
+ tun_chr_write_iter+0x1f2/0x360 drivers/net/tun.c:2026
+ call_write_iter include/linux/fs.h:1902 [inline]
+ new_sync_write fs/read_write.c:483 [inline]
+ __vfs_write+0xa5a/0xca0 fs/read_write.c:496
+ vfs_write+0x44a/0x8f0 fs/read_write.c:558
+ ksys_write+0x267/0x450 fs/read_write.c:611
+ __do_sys_write fs/read_write.c:623 [inline]
+ __se_sys_write+0x92/0xb0 fs/read_write.c:620
+ __x64_sys_write+0x4a/0x70 fs/read_write.c:620
+ do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:296
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x443659
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 10 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fff60095968 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 0000000000003172 RCX: 0000000000443659
+RDX: 000000000000002e RSI: 00000000200000c0 RDI: 0000000000000003
+RBP: 00007fff60095990 R08: 0000000000000000 R09: 0000000000000000
+R10: 000000000000aa14 R11: 0000000000000246 R12: 656c6c616b7a7973
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
 
-I propose again to add a jump target so that a bit of exception handling c=
-ode
-can be better reused at the end of this function implementation.
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Do=
-cumentation/process/coding-style.rst?id=3Db2768df24ec400dd4f7fa79542f797e9=
-04812053#n450
+Uninit was created at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:127
+ kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:80
+ slab_alloc_node mm/slub.c:2801 [inline]
+ __kmalloc_node_track_caller+0xb40/0x1200 mm/slub.c:4420
+ __kmalloc_reserve net/core/skbuff.c:142 [inline]
+ __alloc_skb+0x2fd/0xac0 net/core/skbuff.c:210
+ alloc_skb include/linux/skbuff.h:1081 [inline]
+ alloc_skb_with_frags+0x18c/0xa70 net/core/skbuff.c:5764
+ sock_alloc_send_pskb+0xada/0xc60 net/core/sock.c:2245
+ tun_alloc_skb drivers/net/tun.c:1529 [inline]
+ tun_get_user+0x10ae/0x6f60 drivers/net/tun.c:1843
+ tun_chr_write_iter+0x1f2/0x360 drivers/net/tun.c:2026
+ call_write_iter include/linux/fs.h:1902 [inline]
+ new_sync_write fs/read_write.c:483 [inline]
+ __vfs_write+0xa5a/0xca0 fs/read_write.c:496
+ vfs_write+0x44a/0x8f0 fs/read_write.c:558
+ ksys_write+0x267/0x450 fs/read_write.c:611
+ __do_sys_write fs/read_write.c:623 [inline]
+ __se_sys_write+0x92/0xb0 fs/read_write.c:620
+ __x64_sys_write+0x4a/0x70 fs/read_write.c:620
+ do_syscall_64+0xb8/0x160 arch/x86/entry/common.c:296
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+=====================================================
 
-+	if (rc)
-+		goto free_skb;
-=E2=80=A6
-+	return rc;
-+
-+free_skb:
-+	kfree_skb(skb);
-+	return rc;
-+}
-
-
-Regards,
-Markus
