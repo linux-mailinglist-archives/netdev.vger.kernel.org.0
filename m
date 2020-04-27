@@ -2,101 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 604BF1B94E2
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 03:19:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4B791B94FB
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 03:34:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726430AbgD0BTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 21:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52624 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726234AbgD0BTL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 21:19:11 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C98FC061A10
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 18:19:11 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id h129so9841510ybc.3
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 18:19:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=ZxZOP+BlgtNuGg0nLTAk7RNFW1EfvAUNqQrCzJ2M174=;
-        b=Pn9KmwJCoLA/dAchSkMRxbyxs8b1dK8xEXy263G1uF91hIvoLjjMcGCi2rgbYZ4153
-         LipfNqOQsQWd8CtMS46GiHqNnLktOJzAvgUHFYd8NOlxXd5VFpzL+CnYMk4cdrnMBhDR
-         6xwGwZiRG2qsNYkIukVRe+k5nVg7KxNV3x+vRCaLEMqf4szLkt+K6NL51w18IWzSMF1I
-         V76F3TmNJHpaZcV1QPkGMRADMOnyi4CaynWjWKFuJXeUFvvg4xDCpUzrE3sUZN+gtVAZ
-         MU1rOyy96e67xlNM8ucl2UDr3PZSJO4AFgUlz2uLzrbR2iuxCN41x6B93+XXjFhR7Nt4
-         PK6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=ZxZOP+BlgtNuGg0nLTAk7RNFW1EfvAUNqQrCzJ2M174=;
-        b=l1wkAAZdUR2zVDpzCWHyZTsgb8mgaPBkB03XnPuaDUCj5UV+adL0+FuUEfGjPUo6oL
-         0ZxLJnK0zdI2fZoQ34xDeIu9+hKcsFlXFyPl58uc26roD9SbhVq6AH6DBYNOBA6dtmfp
-         6nLIV9+AoUNpfpld4qLcKW3ckJRRcOwvx47LIIzfSgFG2gRKGSbxA0FqSXLix2Evf8vw
-         juT3KYk6UpZWFtlAwW2z/jvpK08tHVUHlvGJ2GVV0EN4bO+5VvBt/jKDsaNa5OjsfAEv
-         tj7P9hDQtrgp4MxfqMxEzugzUlPKpwNuM32gwIn1p7a0ae6Sx7Pnk81hyS1iy1iZ6XE2
-         UH9A==
-X-Gm-Message-State: AGi0PubbNytHkqoavPkUyz5643icwepJjSMWGdqRoXJ1p13lYtcZOXWQ
-        K19ro0eiYbUnS8GX6SzsxK5f9Am8/X4wJw==
-X-Google-Smtp-Source: APiQypKfbYWIH7o4XSxXboLuE+Ts61HZTar6l76APRQCIJ464RmvhQcNab2nDRkFue1Pu1eqbU7xzNehaMRYTw==
-X-Received: by 2002:a25:afd0:: with SMTP id d16mr33849077ybj.441.1587950350624;
- Sun, 26 Apr 2020 18:19:10 -0700 (PDT)
-Date:   Sun, 26 Apr 2020 18:19:07 -0700
-Message-Id: <20200427011907.160247-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.26.2.303.gf8c07b1a785-goog
-Subject: [PATCH net] sch_sfq: validate silly quantum values
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot+0251e883fe39e7a0cb0a@syzkaller.appspotmail.com,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726406AbgD0Bev (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 21:34:51 -0400
+Received: from mail.windriver.com ([147.11.1.11]:64530 "EHLO
+        mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726186AbgD0Beu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 21:34:50 -0400
+Received: from ALA-HCA.corp.ad.wrs.com (ala-hca.corp.ad.wrs.com [147.11.189.40])
+        by mail.windriver.com (8.15.2/8.15.2) with ESMTPS id 03R1XD3l012617
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=FAIL);
+        Sun, 26 Apr 2020 18:33:14 -0700 (PDT)
+Received: from [128.224.162.174] (128.224.162.174) by ALA-HCA.corp.ad.wrs.com
+ (147.11.189.50) with Microsoft SMTP Server (TLS) id 14.3.487.0; Sun, 26 Apr
+ 2020 18:33:13 -0700
+Subject: Re: ethtool -s always return 0 even for errors
+To:     Michal Kubecek <mkubecek@suse.cz>, <netdev@vger.kernel.org>
+CC:     <linville@tuxdriver.com>
+References: <20200423094547.2066-1-yi.zhao@windriver.com>
+ <20200423133649.GF6778@lion.mk-sys.cz>
+From:   Yi Zhao <yi.zhao@windriver.com>
+Message-ID: <8d966634-f269-0bd3-83bc-627944c34814@windriver.com>
+Date:   Mon, 27 Apr 2020 09:33:09 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <20200423133649.GF6778@lion.mk-sys.cz>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [128.224.162.174]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot managed to set up sfq so that q->scaled_quantum was zero,
-triggering an infinite loop in sfq_dequeue()
 
-More generally, we must only accept quantum between 1 and 2^18 - 7,
-meaning scaled_quantum must be in [1, 0x7FFF] range.
+On 4/23/20 9:36 PM, Michal Kubecek wrote:
+> On Thu, Apr 23, 2020 at 05:45:47PM +0800, Yi Zhao wrote:
+>> The ethtool -s returns 0 when it fails with an error (stderr):
+>>
+>> $ ethtool -s eth0 duplex full
+>> Cannot advertise duplex full
+>> $ echo $?
+>> 0
+>> $ ethtool -s eth0 speed 10
+>> Cannot advertise speed 10
+>> $ echo $?
+>> 0
+> These two are not really errors, just warnings. According to comments in
+> the code, the idea was that requesting speed and/or duplex with
+> autonegotiation enabled (either already enabled or requested to be
+> enabled) and no explicit request for advertised modes (no "advertise"
+> keyword), ethtool should enable exactly the modes (out of those
+> supported by the device) which match requested speed and/or duplex
+> value(s). The messages you see above are warnings that this logic is not
+> implemented and all parameters are just passed to kernel and probably
+> ignored (depends on the driver).
+>
+> Actually, with kernel 5.6 (with CONFIG_ETHTOOL_NETLINK=y) and ethtool
+> built from git (or 5.6 once released), these commands work as expected:
+>
+> lion:/home/mike/work/git/ethtool # ./ethtool eth0
+> Settings for eth0:
+> ...
+>          Advertised link modes:  10baseT/Half 10baseT/Full
+>                                  100baseT/Half 100baseT/Full
+>                                  1000baseT/Full
+> ...
+>          Auto-negotiation: on
+> ...
+> lion:/home/mike/work/git/ethtool # ./ethtool -s eth0 speed 100
+> lion:/home/mike/work/git/ethtool # ./ethtool eth0
+> Settings for eth0:
+> ...
+>          Advertised link modes:  100baseT/Half 100baseT/Full
+> ...
+> lion:/home/mike/work/git/ethtool # ./ethtool -s eth0 duplex full
+> lion:/home/mike/work/git/ethtool # ./ethtool eth0
+> Settings for eth0:
+> ...
+>          Advertised link modes:  10baseT/Full
+>                                  100baseT/Full
+>                                  1000baseT/Full
+> ...
+> lion:/home/mike/work/git/ethtool # ./ethtool -s eth0 speed 100 duplex full
+> lion:/home/mike/work/git/ethtool # ./ethtool eth0
+> Settings for eth0:
+> ...
+>          Advertised link modes:  100baseT/Full
+> ...
+>
+>> $ ethtool -s eth1 duplex full
+>> Cannot get current device settings: No such device
+>>    not setting duplex
+>> $ echo $?
+>> 0
+> The problem here is that for historical reasons, "ethtool -s" may issue
+> up to three separate ioctl requests (or up to four netlink requests with
+> new kernel and ethtool), depending on which parameters you request on
+> command line. Each of them can either succeed or fail and you can even
+> see multiple error messages:
+>
+> lion:/home/mike/work/git/ethtool # ethtool -s foo phyad 3 wol um msglvl 7
+> Cannot get current device settings: No such device
+>    not setting phy_address
+> Cannot get current wake-on-lan settings: No such device
+>    not setting wol
+> Cannot get msglvl: No such device
+>
+> Currently, do_sset() always returns 0. While it certainly feels wrong to
+> return 0 if all requests fail (including your case where there was only
+> one request and it failed), it is much less obvious what should we
+> return if some of the requests succeed and some fail.
 
-Otherwise, we also could have a loop in sfq_dequeue()
-if scaled_quantum happens to be 0x8000, since slot->allot
-could indefinitely switch between 0 and 0x8000.
 
-Fixes: eeaeb068f139 ("sch_sfq: allow big packets and be fair")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot+0251e883fe39e7a0cb0a@syzkaller.appspotmail.com
-Cc: Jason A. Donenfeld <Jason@zx2c4.com>
----
- net/sched/sch_sfq.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+Thank you for the detailed explanation.
 
-diff --git a/net/sched/sch_sfq.c b/net/sched/sch_sfq.c
-index c787d4d46017b4b41b8eb6d41f2b0a44560ff5bf..5a6def5e4e6df2e7b66c88aa877c7318270d48be 100644
---- a/net/sched/sch_sfq.c
-+++ b/net/sched/sch_sfq.c
-@@ -637,6 +637,15 @@ static int sfq_change(struct Qdisc *sch, struct nlattr *opt)
- 	if (ctl->divisor &&
- 	    (!is_power_of_2(ctl->divisor) || ctl->divisor > 65536))
- 		return -EINVAL;
-+
-+	/* slot->allot is a short, make sure quantum is not too big. */
-+	if (ctl->quantum) {
-+		unsigned int scaled = SFQ_ALLOT_SIZE(ctl->quantum);
-+
-+		if (scaled <= 0 || scaled > SHRT_MAX)
-+			return -EINVAL;
-+	}
-+
- 	if (ctl_v1 && !red_check_params(ctl_v1->qth_min, ctl_v1->qth_max,
- 					ctl_v1->Wlog))
- 		return -EINVAL;
--- 
-2.26.2.303.gf8c07b1a785-goog
 
+//Yi
+
+>
+> Michal
