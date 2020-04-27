@@ -2,63 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B67B1BA118
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 12:28:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 686421BA11B
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 12:28:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726987AbgD0K2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 06:28:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52964 "EHLO
+        id S1727021AbgD0K2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 06:28:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726485AbgD0K2c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 06:28:32 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5068AC0610D5
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 03:28:32 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id c21so6026586plz.4
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 03:28:32 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1727015AbgD0K2l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 06:28:41 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B746C0610D5
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 03:28:41 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id h69so8499940pgc.8
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 03:28:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=olpgY8dVdzd9SfDaKpdd6QG218jgqOl+DuD6TC24PL4=;
-        b=CzH9o7/s10NWksVrkEgKl0A8yAhJMjcupkNcPZlS/kI+aqg6wk1qGYqAid++M4dFKL
-         eqyy6f+QsQdvBPVIXtB7fQZUJUBOSTrWhKt7grP9fuUGC4JevcYM8Dko+2hBBkg7oTSF
-         lOSaV0AT+ERgfqjK8JM2oTCGYNpNkPn4DXdi3m1VEgqKcEXleHuu4UglX3S8mt0hc1Dq
-         777GqrImFoF3/yZmeyWw1442KW9iaGZFjUMbh84DmmKWNQrw333Axdn2HkB+wDklZVWE
-         7fS8vxShoS4e7lBvKOG5wwpa5DdLD6/Sq/Yacbn9ttgbUDFVLp+fzh513bRU901nRjpX
-         7Gxg==
+        bh=BgXpzzOB5OtOu3Qgjg87TBST69OVi4QcEqcXnUkKtnA=;
+        b=lmsY+bCkhwAYLl/CsIog7v7t75V3mog/aTPoCXVTF0Uhtf8Z+vStrWYSOnJMgJV7bj
+         l0rLu7r743aHs4KkNJrkosqmv1D0DQhpr8YueWmTAe6kemdUeYUhYJc887hle2iZCJEA
+         /sSrQYMHs8ja4l5q5WObf72maNRB8ggmdldHaZk3KmiA8SIi2dDFLLsY5Sa1cnceYCtp
+         5ERmWc0a5zt6l3L/r409JIUhpbneyXrwdVyDl9bDhJh7cSu1tyZxUXRNtS+z84AkRMFN
+         2F/UOsxBJDxv3tr+jQ8VrpsruvqAmP3XkPRixars7OO5FP2BQl6vnrCdysC7wFc/jC9X
+         jsyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=olpgY8dVdzd9SfDaKpdd6QG218jgqOl+DuD6TC24PL4=;
-        b=N+M21fzx08FjZjb0vYg9QDAmq7vLqtZpRZD3YWeQvLAxZlt6iayBYWxB9Uuxb+3nUo
-         KXSHbLnaFMfnM6/NLocXDYzgsqBZK03aM5fPUin2H0+D8pAiymk/wZvfy3TZ2fqhW1Og
-         RuWZVNGMeCp201YHmwYxJ68Kt1VFMLmdQ9Hf7UxNNkJy/TEZs5wwrIm4KqFZX10dznAB
-         hl4u/LeLkIkwWUvVVopff7xNnmXVdVanISE9nh5LCv/+lzWEu/u/QWGHINi4HxTGQDIk
-         TeQDxVlkGKuYelWuVw+56GAKMWv2eqX1mRvrMq6WUwvSY0EgFsMZYHm9YFzPLxi+PpQI
-         rFUQ==
-X-Gm-Message-State: AGi0PubkyEky2e22A3posca4OMrRReaWnqhRMNx2rXiWmBh0S5tUdhKh
-        c3p43P0XBHUSPfwY5x3xbp/eREsf
-X-Google-Smtp-Source: APiQypLWjYPahN5ATmo96sspm6Wriapg7oIAJFIrJK/Lf3f1aSIX+PjGBRnV2zdV9lPEFx0kZ87HRQ==
-X-Received: by 2002:a17:902:8641:: with SMTP id y1mr6836330plt.27.1587983311422;
-        Mon, 27 Apr 2020 03:28:31 -0700 (PDT)
+        bh=BgXpzzOB5OtOu3Qgjg87TBST69OVi4QcEqcXnUkKtnA=;
+        b=KSOL2whHY8UcZpxnj5sNeHqgbUg+ir517jXkLwKUXo3s9ip9+Dnlo8dUnpqwcY0dcu
+         +9eI+K6lmCFiFsEjxG7LUGvZ5us9Yosk0UzYxMKf3c3ZsKQdaViDi7ihej0QIaGJXEaj
+         PpCID3bmOPvYrCdqcMofVFvKtwudmZuRQs/FK0b6sVrlG1k4b+IqtXLeMYo6vtodtqyu
+         sHK2iVT3vUyTNDLK6lJAdD9VjFslfjoYqR++RlCjogCtHEOE8S7R9twTl70DCLPntHqw
+         4I9yRHZU/anuNhEgB5hHtcErQZAs0Iv5AGFCDpubCFtbQ3SnXOLcte14KRB7NMrpsaNJ
+         PKYw==
+X-Gm-Message-State: AGi0PuZYtRTqXQoVLEu3ObQTmEWrCG4/APDWEAfZmGhU6WsOOJPf0kpr
+        06Fp1qaHAiZvD/b7J4VrUC1PB4ir
+X-Google-Smtp-Source: APiQypJkPJBJDR0jaaEcr4VpQkW2PaskeAO7v64/i+f9Yn4j5QxPpYLEKakuGkjK6h8uUSZJ4KbHlg==
+X-Received: by 2002:aa7:979b:: with SMTP id o27mr10775154pfp.192.1587983319978;
+        Mon, 27 Apr 2020 03:28:39 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id p16sm10949664pjz.2.2020.04.27.03.28.30
+        by smtp.gmail.com with ESMTPSA id o12sm10188054pgl.87.2020.04.27.03.28.38
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 27 Apr 2020 03:28:30 -0700 (PDT)
+        Mon, 27 Apr 2020 03:28:39 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, stephen@networkplumber.org
 Cc:     David Ahern <dsahern@gmail.com>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCHv4 iproute2-next 4/7] tc: m_tunnel_key: add options support for vxlan
-Date:   Mon, 27 Apr 2020 18:27:48 +0800
-Message-Id: <916fda0179fa618e310a672314dc6091452b0d97.1587983178.git.lucien.xin@gmail.com>
+Subject: [PATCHv4 iproute2-next 5/7] tc: m_tunnel_key: add options support for erpsan
+Date:   Mon, 27 Apr 2020 18:27:49 +0800
+Message-Id: <0225abc4c546f25972bd31fcab52511c54f96ba1.1587983178.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <4ae2ca59ac4262b19212a16ee7474189ae5eca72.1587983178.git.lucien.xin@gmail.com>
+In-Reply-To: <916fda0179fa618e310a672314dc6091452b0d97.1587983178.git.lucien.xin@gmail.com>
 References: <cover.1587983178.git.lucien.xin@gmail.com>
  <a06922f5bd35b674caee4bd5919186ea1323202a.1587983178.git.lucien.xin@gmail.com>
  <838c55576eabd17db407a95bc6609c05bf5e174b.1587983178.git.lucien.xin@gmail.com>
  <4ae2ca59ac4262b19212a16ee7474189ae5eca72.1587983178.git.lucien.xin@gmail.com>
+ <916fda0179fa618e310a672314dc6091452b0d97.1587983178.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1587983178.git.lucien.xin@gmail.com>
 References: <cover.1587983178.git.lucien.xin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
@@ -66,17 +67,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to add TCA_TUNNEL_KEY_ENC_OPTS_VXLAN's parse and
-print to implement vxlan options support in m_tunnel_key, like
+This patch is to add TCA_TUNNEL_KEY_ENC_OPTS_ERSPAN's parse and
+print to implement erspan options support in m_tunnel_key, like
 Commit 6217917a3826 ("tc: m_tunnel_key: Add tunnel option support
 to act_tunnel_key") for geneve options support.
 
-Option is expressed a 32bit number for gbp only, and vxlan
-doesn't support multiple options.
+Option is expressed as version:index:dir:hwid, dir and hwid will
+be parsed when version is 2, while index will be parsed when
+version is 1. erspan doesn't support multiple options.
 
-With this patch, users can add and dump vxlan options like:
+With this patch, users can add and dump erspan options like:
 
-  # ip link add name vxlan1 type vxlan dstport 0 external
+  # ip link add name erspan1 type erspan external
   # tc qdisc add dev eth0 ingress
   # tc filter add dev eth0 protocol ip parent ffff: \
       flower indev eth0 \
@@ -86,11 +88,11 @@ With this patch, users can add and dump vxlan options like:
           dst_ip 10.0.99.193 \
           dst_port 6081 \
           id 11 \
-          vxlan_opts 65793 \
-      action mirred egress redirect dev vxlan1
+          erspan_opts 1:2:0:0 \
+      action mirred egress redirect dev erspan1
   # tc -s filter show dev eth0 parent ffff:
 
-     filter protocol ip pref 49152 flower chain 0 handle 0x1
+     filter protocol ip pref 49151 flower chain 0 handle 0x1
        indev eth0
        eth_type ipv4
        ip_proto udp
@@ -100,77 +102,79 @@ With this patch, users can add and dump vxlan options like:
          dst_ip 10.0.99.193
          key_id 11
          dst_port 6081
-         vxlan_opts 65793
+         erspan_opts 1:2:0:0
+         csum pipe
+           index 2 ref 1 bind 1
          ...
-
 v1->v2:
-  - get_u32 with base = 0 for gbp.
-  - use to print_unint("0x%x") to print gbp.
+  - no change.
 v2->v3:
-  - implement proper JSON array for opts.
+  - no change.
 v3->v4:
   - keep the same format between input and output, json and non json.
-  - print gbp as uint.
+  - print version, index, dir and hwid as uint.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- man/man8/tc-tunnel_key.8 | 10 +++++-
- tc/m_tunnel_key.c        | 84 ++++++++++++++++++++++++++++++++++++++++++------
- 2 files changed, 84 insertions(+), 10 deletions(-)
+ man/man8/tc-tunnel_key.8 |  12 ++++-
+ tc/m_tunnel_key.c        | 117 ++++++++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 127 insertions(+), 2 deletions(-)
 
 diff --git a/man/man8/tc-tunnel_key.8 b/man/man8/tc-tunnel_key.8
-index 2145eb6..c208e2c 100644
+index c208e2c..ad99724 100644
 --- a/man/man8/tc-tunnel_key.8
 +++ b/man/man8/tc-tunnel_key.8
-@@ -66,8 +66,10 @@ options.
- .B id
- ,
+@@ -68,8 +68,10 @@ options.
  .B dst_port
+ ,
+ .B geneve_opts
 -and
 +,
- .B geneve_opts
+ .B vxlan_opts
 +and
-+.B vxlan_opts
++.B erspan_opts
  are optional.
  .RS
  .TP
-@@ -91,6 +93,12 @@ is specified in the form CLASS:TYPE:DATA, where CLASS is represented as a
- variable length hexadecimal value. Additionally multiple options may be
- listed using a comma delimiter.
+@@ -99,6 +101,14 @@ Vxlan metatdata options.
+ is specified in the form GBP, as a 32bit number. Multiple options is not
+ supported.
  .TP
-+.B vxlan_opts
-+Vxlan metatdata options.
-+.B vxlan_opts
-+is specified in the form GBP, as a 32bit number. Multiple options is not
-+supported.
++.B erspan_opts
++Erspan metatdata options.
++.B erspan_opts
++is specified in the form VERSION:INDEX:DIR:HWID, where VERSION is represented
++as a 8bit number, INDEX as an 32bit number, DIR and HWID as a 8bit number.
++Multiple options is not supported. Note INDEX is used when VERSION is 1,
++and DIR and HWID are used when VERSION is 2.
 +.TP
  .B tos
  Outer header TOS
  .TP
 diff --git a/tc/m_tunnel_key.c b/tc/m_tunnel_key.c
-index 8fde689..11ec55d 100644
+index 11ec55d..2ebf2ed 100644
 --- a/tc/m_tunnel_key.c
 +++ b/tc/m_tunnel_key.c
 @@ -29,7 +29,7 @@ static void explain(void)
  		"src_ip <IP> (mandatory)\n"
  		"dst_ip <IP> (mandatory)\n"
  		"dst_port <UDP_PORT>\n"
--		"geneve_opts <OPTIONS>\n"
-+		"geneve_opts | vxlan_opts <OPTIONS>\n"
+-		"geneve_opts | vxlan_opts <OPTIONS>\n"
++		"geneve_opts | vxlan_opts | erspan_opts <OPTIONS>\n"
  		"csum | nocsum (default is \"csum\")\n");
  }
  
-@@ -112,6 +112,21 @@ static int tunnel_key_parse_u8(char *str, int base, int type,
+@@ -97,6 +97,21 @@ static int tunnel_key_parse_be16(char *str, int base, int type,
  	return 0;
  }
  
-+static int tunnel_key_parse_u32(char *str, int base, int type,
-+				struct nlmsghdr *n)
++static int tunnel_key_parse_be32(char *str, int base, int type,
++				 struct nlmsghdr *n)
 +{
-+	__u32 value;
++	__be32 value;
 +	int ret;
 +
-+	ret = get_u32(&value, str, base);
++	ret = get_be32(&value, str, base);
 +	if (ret)
 +		return ret;
 +
@@ -179,27 +183,63 @@ index 8fde689..11ec55d 100644
 +	return 0;
 +}
 +
- static int tunnel_key_parse_geneve_opt(char *str, struct nlmsghdr *n)
+ static int tunnel_key_parse_u8(char *str, int base, int type,
+ 			       struct nlmsghdr *n)
  {
- 	char *token, *saveptr = NULL;
-@@ -190,6 +205,27 @@ static int tunnel_key_parse_geneve_opts(char *str, struct nlmsghdr *n)
+@@ -226,6 +241,63 @@ static int tunnel_key_parse_vxlan_opt(char *str, struct nlmsghdr *n)
  	return 0;
  }
  
-+static int tunnel_key_parse_vxlan_opt(char *str, struct nlmsghdr *n)
++static int tunnel_key_parse_erspan_opt(char *str, struct nlmsghdr *n)
 +{
++	char *token, *saveptr = NULL;
 +	struct rtattr *encap, *nest;
-+	int ret;
++	int i, ret;
 +
 +	encap = addattr_nest(n, MAX_MSG,
 +			     TCA_TUNNEL_KEY_ENC_OPTS | NLA_F_NESTED);
 +	nest = addattr_nest(n, MAX_MSG,
-+			    TCA_TUNNEL_KEY_ENC_OPTS_VXLAN | NLA_F_NESTED);
++			    TCA_TUNNEL_KEY_ENC_OPTS_ERSPAN | NLA_F_NESTED);
 +
-+	ret = tunnel_key_parse_u32(str, 0,
-+				   TCA_TUNNEL_KEY_ENC_OPT_VXLAN_GBP, n);
-+	if (ret)
-+		return ret;
++	token = strtok_r(str, ":", &saveptr);
++	i = 1;
++	while (token) {
++		switch (i) {
++		case TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_VER:
++		{
++			ret = tunnel_key_parse_u8(token, 0, i, n);
++			if (ret)
++				return ret;
++			break;
++		}
++		case TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_INDEX:
++		{
++			ret = tunnel_key_parse_be32(token, 0, i, n);
++			if (ret)
++				return ret;
++			break;
++		}
++		case TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_DIR:
++		{
++			ret = tunnel_key_parse_u8(token, 0, i, n);
++			if (ret)
++				return ret;
++			break;
++		}
++		case TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_HWID:
++		{
++			ret = tunnel_key_parse_u8(token, 0, i, n);
++			if (ret)
++				return ret;
++			break;
++		}
++		default:
++			return -1;
++		}
++
++		token = strtok_r(NULL, ":", &saveptr);
++		i++;
++	}
 +
 +	addattr_nest_end(n, nest);
 +	addattr_nest_end(n, encap);
@@ -210,99 +250,70 @@ index 8fde689..11ec55d 100644
  static int tunnel_key_parse_tos_ttl(char *str, int type, struct nlmsghdr *n)
  {
  	int ret;
-@@ -287,6 +323,13 @@ static int parse_tunnel_key(struct action_util *a, int *argc_p, char ***argv_p,
- 				fprintf(stderr, "Illegal \"geneve_opts\"\n");
+@@ -330,6 +402,13 @@ static int parse_tunnel_key(struct action_util *a, int *argc_p, char ***argv_p,
+ 				fprintf(stderr, "Illegal \"vxlan_opts\"\n");
  				return -1;
  			}
-+		} else if (matches(*argv, "vxlan_opts") == 0) {
++		} else if (matches(*argv, "erspan_opts") == 0) {
 +			NEXT_ARG();
 +
-+			if (tunnel_key_parse_vxlan_opt(*argv, n)) {
-+				fprintf(stderr, "Illegal \"vxlan_opts\"\n");
++			if (tunnel_key_parse_erspan_opt(*argv, n)) {
++				fprintf(stderr, "Illegal \"erspan_opts\"\n");
 +				return -1;
 +			}
  		} else if (matches(*argv, "tos") == 0) {
  			NEXT_ARG();
  			ret = tunnel_key_parse_tos_ttl(*argv,
-@@ -406,13 +449,13 @@ static void tunnel_key_print_flag(FILE *f, const char *name_on,
- 		     rta_getattr_u8(attr) ? name_on : name_off);
- }
- 
--static void tunnel_key_print_geneve_options(const char *name,
--					    struct rtattr *attr)
-+static void tunnel_key_print_geneve_options(struct rtattr *attr)
- {
- 	struct rtattr *tb[TCA_TUNNEL_KEY_ENC_OPT_GENEVE_MAX + 1];
- 	struct rtattr *i = RTA_DATA(attr);
- 	int ii, data_len = 0, offset = 0;
- 	int rem = RTA_PAYLOAD(attr);
-+	char *name = "geneve_opts";
- 	char strbuf[rem * 2 + 1];
- 	char data[rem * 2 + 1];
- 	uint8_t data_r[rem];
-@@ -421,7 +464,7 @@ static void tunnel_key_print_geneve_options(const char *name,
- 
- 	open_json_array(PRINT_JSON, name);
- 	print_nl();
--	print_string(PRINT_FP, name, "\t%s ", "geneve_opt");
-+	print_string(PRINT_FP, name, "\t%s ", name);
- 
- 	while (rem) {
- 		parse_rtattr(tb, TCA_TUNNEL_KEY_ENC_OPT_GENEVE_MAX, i, rem);
-@@ -454,7 +497,27 @@ static void tunnel_key_print_geneve_options(const char *name,
+@@ -517,6 +596,39 @@ static void tunnel_key_print_vxlan_options(struct rtattr *attr)
  	close_json_array(PRINT_JSON, name);
  }
  
--static void tunnel_key_print_key_opt(const char *name, struct rtattr *attr)
-+static void tunnel_key_print_vxlan_options(struct rtattr *attr)
++static void tunnel_key_print_erspan_options(struct rtattr *attr)
 +{
-+	struct rtattr *tb[TCA_TUNNEL_KEY_ENC_OPT_VXLAN_MAX + 1];
++	struct rtattr *tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_MAX + 1];
 +	struct rtattr *i = RTA_DATA(attr);
 +	int rem = RTA_PAYLOAD(attr);
-+	char *name = "vxlan_opts";
-+	__u32 gbp;
++	char *name = "erspan_opts";
++	__u8 ver, hwid, dir;
++	__u32 idx;
 +
-+	parse_rtattr(tb, TCA_TUNNEL_KEY_ENC_OPT_VXLAN_MAX, i, rem);
-+	gbp = rta_getattr_u32(tb[TCA_TUNNEL_KEY_ENC_OPT_VXLAN_GBP]);
++	parse_rtattr(tb, TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_MAX, i, rem);
++	ver = rta_getattr_u8(tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_VER]);
++	if (ver == 1) {
++		idx = rta_getattr_be32(tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_INDEX]);
++		dir = 0;
++		hwid = 0;
++	} else {
++		idx = 0;
++		dir = rta_getattr_u8(tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_DIR]);
++		hwid = rta_getattr_u8(tb[TCA_TUNNEL_KEY_ENC_OPT_ERSPAN_HWID]);
++	}
 +
 +	print_nl();
 +	print_string(PRINT_FP, name, "\t%s ", name);
 +	open_json_array(PRINT_JSON, name);
 +	open_json_object(NULL);
-+	print_uint(PRINT_ANY, "gdp", "%u", gbp);
++	print_uint(PRINT_ANY, "ver", "%u", ver);
++	print_uint(PRINT_ANY, "index", ":%u", idx);
++	print_uint(PRINT_ANY, "dir", ":%u", dir);
++	print_uint(PRINT_ANY, "hwid", ":%u", hwid);
 +	close_json_object();
 +	close_json_array(PRINT_JSON, name);
 +}
 +
-+static void tunnel_key_print_key_opt(struct rtattr *attr)
+ static void tunnel_key_print_key_opt(struct rtattr *attr)
  {
  	struct rtattr *tb[TCA_TUNNEL_KEY_ENC_OPTS_MAX + 1];
- 
-@@ -462,8 +525,12 @@ static void tunnel_key_print_key_opt(const char *name, struct rtattr *attr)
- 		return;
- 
- 	parse_rtattr_nested(tb, TCA_TUNNEL_KEY_ENC_OPTS_MAX, attr);
--	tunnel_key_print_geneve_options(name,
--					tb[TCA_TUNNEL_KEY_ENC_OPTS_GENEVE]);
-+	if (tb[TCA_TUNNEL_KEY_ENC_OPTS_GENEVE])
-+		tunnel_key_print_geneve_options(
-+			tb[TCA_TUNNEL_KEY_ENC_OPTS_GENEVE]);
-+	else if (tb[TCA_TUNNEL_KEY_ENC_OPTS_VXLAN])
-+		tunnel_key_print_vxlan_options(
-+			tb[TCA_TUNNEL_KEY_ENC_OPTS_VXLAN]);
+@@ -531,6 +643,9 @@ static void tunnel_key_print_key_opt(struct rtattr *attr)
+ 	else if (tb[TCA_TUNNEL_KEY_ENC_OPTS_VXLAN])
+ 		tunnel_key_print_vxlan_options(
+ 			tb[TCA_TUNNEL_KEY_ENC_OPTS_VXLAN]);
++	else if (tb[TCA_TUNNEL_KEY_ENC_OPTS_ERSPAN])
++		tunnel_key_print_erspan_options(
++			tb[TCA_TUNNEL_KEY_ENC_OPTS_ERSPAN]);
  }
  
  static void tunnel_key_print_tos_ttl(FILE *f, char *name,
-@@ -519,8 +586,7 @@ static int print_tunnel_key(struct action_util *au, FILE *f, struct rtattr *arg)
- 					tb[TCA_TUNNEL_KEY_ENC_KEY_ID]);
- 		tunnel_key_print_dst_port(f, "dst_port",
- 					  tb[TCA_TUNNEL_KEY_ENC_DST_PORT]);
--		tunnel_key_print_key_opt("geneve_opts",
--					 tb[TCA_TUNNEL_KEY_ENC_OPTS]);
-+		tunnel_key_print_key_opt(tb[TCA_TUNNEL_KEY_ENC_OPTS]);
- 		tunnel_key_print_flag(f, "nocsum", "csum",
- 				      tb[TCA_TUNNEL_KEY_NO_CSUM]);
- 		tunnel_key_print_tos_ttl(f, "tos",
 -- 
 2.1.0
 
