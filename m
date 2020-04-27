@@ -2,119 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 560D41BB008
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 23:12:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E21351BB00A
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 23:14:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726272AbgD0VMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 17:12:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41214 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726224AbgD0VMG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 17:12:06 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20DAAC0610D5
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 14:12:05 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id j2so22243522wrs.9
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 14:12:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=wifirst-fr.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GNaMe1DhHJEhpbaiRVrEp64lovQYiRvz4mQuf4vIN+4=;
-        b=bMf07Jy6xU2JUPBNuHWBUTXy80NfkTTbcvPqifgEhlxFuU9/4tQXnAXsAiVNtplMQE
-         Ee7nmePIZZ9OYZucn5Fp5YLEZD2pFntGe8X+eczJDHeJUCshXFCPVwFZWW1jHaOIK+Pi
-         cGZufIeNVhtQL91FyjYT+Q7BaNKaaI374yOBTjg++S0It0PmDor4LyTYacr7dRocEUhN
-         n2zn51M6tIqENqjg4hvsanO2Dmnqs0LaN6IccnCP+//xjBEZUrMrGglEPInSJ8Nvm3/H
-         +JdvecLrcCZBSJgmldkK5m4TROR4U5AyJPZeoIdEB4T/A8Ra8RQuixwfAnJE08vjyNvv
-         R5bg==
+        id S1726208AbgD0VOQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 17:14:16 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:39029 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726030AbgD0VOP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 17:14:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588022053;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BgGlIwfj4Qu7dZ9JR/Ymkfhj3JsL/bLikEdvkUNBlTc=;
+        b=HECZT3d0/BhZGY0EycDymYa5iMC2N6BLReBqfgP2xbGC0yHFpxNXX8/nhRqH8hOL6lqZMi
+        SNos1K5wpjS7Hxd3DAd46vJ0htFyVpVICb026i7lrsr6OybS7TEQY6IMmwhvJEHRL4d03k
+        lXGcJ0tLkikzV4l1lc+WvWXNa4158oI=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-266-9Zj3UZlQNMexsRbgqUUpCQ-1; Mon, 27 Apr 2020 17:14:09 -0400
+X-MC-Unique: 9Zj3UZlQNMexsRbgqUUpCQ-1
+Received: by mail-lj1-f200.google.com with SMTP id m4so3323958lji.23
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 14:14:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=GNaMe1DhHJEhpbaiRVrEp64lovQYiRvz4mQuf4vIN+4=;
-        b=NuHxQCwyN+s7izZFV6Gbuf97TAAPPtTplmlwV2tOG+sj7vnF3Iffj61oeGa6wAsDpK
-         GnICi3odZZMHyyLwCn9n8wdOeptBMFNjWAEnKQJLszP+lpJlvQjmeLiESKRn+Ay4XuyQ
-         291TcaVFeNI2m7cG+FTG4DyBcfruFe8BG7exYZFMe0TGCSiKoLgjfpR+ZAIwlWmeILb0
-         0PhOfHcPgtTBOQW3U4zVyN/aC3m3yimh6j7T7JeURoU4yDBbJpI8FMnSifVib/2kgWHB
-         e9OCvv5IsnOxRaYuhLkM5SumHdQn26F3oAXV4CnZlAANKQzuuR/7LWlFxOEtH0EIw1tO
-         ZTvw==
-X-Gm-Message-State: AGi0PuZGehjpnH1AyBM+GHYtjHlBbkuU1WSlhLkYYlJEsnzTRJyPcAPf
-        +7oCbWwocQA1+f+P8HZpg65j625lfqU=
-X-Google-Smtp-Source: APiQypKMhubuaxfjOiaRMxjqLCgMkDTko0daJpOPk+dwPIzWxB3c+ffHxREupIXNNQGa4V6j7o3x9w==
-X-Received: by 2002:adf:e5c7:: with SMTP id a7mr30457760wrn.241.1588021923320;
-        Mon, 27 Apr 2020 14:12:03 -0700 (PDT)
-Received: from ?IPv6:2a01:e34:ec08:2c60:7f09:a6e7:d003:387? ([2a01:e34:ec08:2c60:7f09:a6e7:d003:387])
-        by smtp.gmail.com with ESMTPSA id r18sm19644542wrj.70.2020.04.27.14.12.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Apr 2020 14:12:02 -0700 (PDT)
-Subject: Re: [PATCH net] r8169: fix multicast tx issue with macvlan interface
-To:     Eric Dumazet <edumazet@google.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Charles DAYMAND <charles.daymand@wifirst.fr>,
-        netdev <netdev@vger.kernel.org>
-References: <20200327090800.27810-1-charles.daymand@wifirst.fr>
- <0bab7e0b-7b22-ad0f-2558-25602705e807@gmail.com>
- <d7a0eca8-15aa-10da-06cc-1eeef3a7a423@gmail.com>
- <CANn89iKA8k3GyxCKCJRacB42qcFqUDsiRhFOZxOQ7JCED0ChyQ@mail.gmail.com>
- <42f81a4a-24fc-f1fb-11db-ea90a692f249@gmail.com>
- <CANn89i+A=Mu=9LMscd2Daqej+uVLc3E6w33MZzTwpe2v+k89Mw@mail.gmail.com>
- <CAFJtzm03QpjGRs70tth26BdUFN_o8zsJOccbnA58ma+2uwiGcg@mail.gmail.com>
- <c02274b9-1ba0-d5e9-848f-5d6761df20f4@gmail.com>
- <CAFJtzm0H=pztSp_RQt_YNnPHQkq4N4Z5S-PqMFgE=Fp=Fo-G_w@mail.gmail.com>
- <297e210f-1784-44a9-17fb-7fbe8b6f9ec3@gmail.com>
- <CANn89iKA8MAef-XfkbLG3W+3=qUx4pqmKuWPBfrxAcupohLkyA@mail.gmail.com>
-From:   Florent Fourcot <florent.fourcot@wifirst.fr>
-Message-ID: <17fd01b4-8d4e-5c91-c51e-688a97c0da54@wifirst.fr>
-Date:   Mon, 27 Apr 2020 23:12:01 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=BgGlIwfj4Qu7dZ9JR/Ymkfhj3JsL/bLikEdvkUNBlTc=;
+        b=VK3MtthrD6AyOUguc8fmtyjw092Dsk1O3ZC0/bYyIZM8A0OPG4m3/NbQRBVhLOPz5v
+         POhcb779NtZscS3jNGo2ti4b8Co0hFM9rqz+y0qM+1V/gQwHB/swVNsnXbJMIyrTXuQD
+         8nYtvmE75Ty+KVzxXzJ/+XsFl9a+xWGtTIwswv1+OHW2Srrz9gGtnd9C4+roKur6qEFQ
+         3kQNmg7LvdIqVYPgmPA8kI8duNea9bfp1k97MQQhv1W52hsmblTRqaaHvpNktlulbi2f
+         yaJD7QxJ9bQ6j7+JnoYyLv7aKI8/ES/q0TSBbLNDiEDdU0yD+qc4xEoz98Z1npL4tKtw
+         ocxg==
+X-Gm-Message-State: AGi0PuZhxtX0GoCb8PD+zyCVO27nnUhjUq7aRPtJl8iRu4b50e8T3ZRY
+        0aJsPojaVVRyQeB9S5CRVqSko9VZgQ5eHcap8ZfRLA6zO7a+/6K1HsNUSdvVkOhVIGzRsoQYNy7
+        eJRoJ4FLFZU6qjRP+
+X-Received: by 2002:ac2:4c9a:: with SMTP id d26mr16457044lfl.112.1588022048263;
+        Mon, 27 Apr 2020 14:14:08 -0700 (PDT)
+X-Google-Smtp-Source: APiQypKln456F3CfIyM0KpOl+6Jv+MuyF+6zGB5MtY2KPKTJgPzvza+EAZUjl6HHjTdaiHLMd45cZA==
+X-Received: by 2002:ac2:4c9a:: with SMTP id d26mr16457037lfl.112.1588022048052;
+        Mon, 27 Apr 2020 14:14:08 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id x24sm12025322lfc.6.2020.04.27.14.14.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Apr 2020 14:14:07 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 961B01814FF; Mon, 27 Apr 2020 23:14:05 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     netdev@vger.kernel.org, Adhipati Blambangan <adhipati@tuta.io>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH net v3] net: xdp: account for layer 3 packets in generic skb handler
+In-Reply-To: <20200427140039.16df08f5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <CAHmME9oN0JueLJxvS48-o9CWAhkaMQYACG3m8TRixxTo6+Oh-A@mail.gmail.com> <20200427204208.2501-1-Jason@zx2c4.com> <20200427135254.3ab8628d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <20200427140039.16df08f5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 27 Apr 2020 23:14:05 +0200
+Message-ID: <877dy0y6le.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <CANn89iKA8MAef-XfkbLG3W+3=qUx4pqmKuWPBfrxAcupohLkyA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Eric, Hello Heiner,
+Jakub Kicinski <kuba@kernel.org> writes:
 
-Just for a small follow-up on your questions and current status on our 
-side for this strange topic:
+> On Mon, 27 Apr 2020 13:52:54 -0700 Jakub Kicinski wrote:
+>> On Mon, 27 Apr 2020 14:42:08 -0600 Jason A. Donenfeld wrote:
+>> > A user reported that packets from wireguard were possibly ignored by XDP
+>> > [1]. Apparently, the generic skb xdp handler path seems to assume that
+>> > packets will always have an ethernet header, which really isn't always
+>> > the case for layer 3 packets, which are produced by multiple drivers.
+>> > This patch fixes the oversight. If the mac_len is 0, then we assume
+>> > that it's a layer 3 packet, and in that case prepend a pseudo ethhdr to
+>> > the packet whose h_proto is copied from skb->protocol, which will have
+>> > the appropriate v4 or v6 ethertype. This allows us to keep XDP programs'
+>> > assumption correct about packets always having that ethernet header, so
+>> > that existing code doesn't break, while still allowing layer 3 devices
+>> > to use the generic XDP handler.
+>> 
+>> Is this going to work correctly with XDP_TX? presumably wireguard
+>> doesn't want the ethernet L2 on egress, either? And what about
+>> redirects?
+>> 
+>> I'm not sure we can paper over the L2 differences between interfaces.
+>> Isn't user supposed to know what interface the program is attached to?
+>> I believe that's the case for cls_bpf ingress, right?
+>
+> In general we should also ask ourselves if supporting XDPgeneric on
+> software interfaces isn't just pointless code bloat, and it wouldn't
+> be better to let XDP remain clearly tied to the in-driver native use
+> case.
 
-  * As explained by Charles, the setup includes a mix of macvlan + vlan. 
-So 802.1q frames are not a typo in the topic (in our real case, the 
-second macvlan interface is sent to a network namespace, but it does not 
-matter for the current issue).
+I was mostly ignoring generic XDP for a long time for this reason. But
+it seems to me that people find generic XDP quite useful, so I'm no
+longer so sure this is the right thing to do...
 
-  * We tested the same setup with other networking driver (bnx2, tg3) 
-with tx-checksum enabled (exactly same configuration than the failing 
-one on r8169 for checksum offloading), and it's perfectly working.
+-Toke
 
-  * Packets are seen as valid by tcpdump on the sender (buggy) host.
-
-  * Multicast *and* unicast packets are buggy. We detected it first on 
-multicast (since the relevant hardware was sending RIP packets), but all 
-tcp/udp packets are corrupted. ICMP packets are valid.
-
-  * We expected as well a "simple" checksum failure, but it does not 
-look so simple. Something, on our opinion probably the driver or 
-hardware, is corrupting the packet.
-
-  * Experimental patches from Heiner are not solving issue.
-
-  * We have the same behavior on at least RTL8168d/8111d, 
-RTL8169sc/8110sc and RTL8168h/8111h variants.
-
-
-As proposed by Heiner, we will try to debug step by step packet path 
-inside the kernel to find where it's become corrupted. But it looks time 
-consuming for people like us, not really experts in driver development. 
-If you have any tips or ideas concerning this topic, it could help us a lot.
-
-Best regards,
-
--- 
-Florent.
