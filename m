@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48E421BA78E
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 17:14:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C09A1BA792
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 17:14:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728156AbgD0PNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 11:13:44 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:44433 "EHLO
+        id S1728230AbgD0PNv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 11:13:51 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:48547 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728196AbgD0PNl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 11:13:41 -0400
+        by vger.kernel.org with ESMTP id S1727006AbgD0PNn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 11:13:43 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id BA8F25C00D1;
-        Mon, 27 Apr 2020 11:13:40 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 07ADE5C0065;
+        Mon, 27 Apr 2020 11:13:42 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Mon, 27 Apr 2020 11:13:40 -0400
+  by compute4.internal (MEProxy); Mon, 27 Apr 2020 11:13:42 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=f+gqWHPjNPV0zRjRUugpF5SBqOgxgvs/E6pMFy2nVHQ=; b=VG3GaOEV
-        GTN9l50ql8cI85uOIqz71sGGDlME4hnbsDctYLdct08yvx4+JGw8IjiTB2wh+Sd4
-        XHxsRxWY2XLmCKmCs55DaJQi47jAlBDYfeSxUBhntZHbWutaeqs+BumVZhesfqai
-        8KEo3qufJH8SAjsTu+IG/pvN3kdCg0Yq8jcljv4Bi4Np5gwZEBLcV8C61AvXZLXO
-        ItY3DfWUGL1SpvPcYpQP3WOydwoHZOu8eFP8oDzG2aCyEs9jGNECki5iJAKV3utx
-        VJgxl+4TtEaKch/WPXkGyR927o+f0UAmtQcjlxzam2qtRIHdcgFvXmPGmUlNdgQC
-        raRVl0JlUk55tA==
-X-ME-Sender: <xms:pPamXs97FhfFE9tq0d_M4d41zfLU4BkClfkIPPpSbmvYjziz-5c25g>
+        fm2; bh=KcXo1mbcgD9Q5Svgact5s+kVwnxv+9szMzsIABTtO90=; b=b+uVN6uL
+        1J6pWTukEvHFQFfruBwLaQueYYKEmtEK2xPItms1HGMbsUl3eSfXkauDm8dWXOks
+        JAykIhjYTRf0D0i4VZ0TUdO5tOfuHRgcfVWQqFeha9Rww/v+LU2Bf+g83npLpCku
+        nww0LsbEDXtJAmq8mW3mT51m/dZERF2i8wlC8YppvhInn8rSosF3WiFJ1X83GQUJ
+        3SrmCfV1CzkRR47a6d2hHGfseaJG8BHFdK07FJg/Q8sgNkeqCKqSX9lBMr/EYWuD
+        dMvEAsVu/v43a2A6YdDEZA+lz5/RpwbQmBqklAl1FSchifOVBb0uEFvCqgXP7rVB
+        HcWhMahH/asy8g==
+X-ME-Sender: <xms:pfamXhIcInriqMQHhisfQGY0wmP7xXwqqO8F0NxylW7BUQYiE6v2ew>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrheelgdekgecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucfkphepjeelrddukedtrdehgedrudduieenucevlhhushhtvghruf
-    hiiigvpedvnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghh
+    hiiigvpeejnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghh
     rdhorhhg
-X-ME-Proxy: <xmx:pPamXp-6obvbFJgwsGiiS4j4i8WnjRt6jUb2YiSEMF4Y2pEV9pvqjw>
-    <xmx:pPamXjvvrvbJvXAbrQwFmsK6kUxgFR4eqy0gl4h4XdxpgL53bXEDfg>
-    <xmx:pPamXkrUFxyyLWW80aD4ZCuAY2rsMNFq4LyUFVdsFxhvhaKoha_htQ>
-    <xmx:pPamXkqClCJnMmKG2YcufnxMbCVF3lfJg6IB9ZHZTX_fqzGX7O41hA>
+X-ME-Proxy: <xmx:pfamXov38uqOeawYydy5tddgWrErXpho5eR-_hS9OeYFiHxF44rN_Q>
+    <xmx:pfamXgvtD0pTmcdELqP3KlnsFQqq8IJpTHd0ce2FivGZCZm0pQ7H2A>
+    <xmx:pfamXkDzQDnbmCsDeL94uPk0x_-hnFb11WHLD3sgW4pbPoURXkbGZg>
+    <xmx:pvamXnOwfersr0wOBBGzHH2EUp-uk_mQ1GhqtUrQJ-90IU0viXus6w>
 Received: from splinter.mtl.com (bzq-79-180-54-116.red.bezeqint.net [79.180.54.116])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 672E0328005A;
-        Mon, 27 Apr 2020 11:13:39 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id BFD0D3280064;
+        Mon, 27 Apr 2020 11:13:40 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 07/13] mlxsw: spectrum_matchall: Pass mall_entry as arg to mlxsw_sp_mall_port_sample_add()
-Date:   Mon, 27 Apr 2020 18:13:04 +0300
-Message-Id: <20200427151310.3950411-8-idosch@idosch.org>
+Subject: [PATCH net-next 08/13] mlxsw: spectrum_matchall: Move ingress indication into mall_entry
+Date:   Mon, 27 Apr 2020 18:13:05 +0300
+Message-Id: <20200427151310.3950411-9-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200427151310.3950411-1-idosch@idosch.org>
 References: <20200427151310.3950411-1-idosch@idosch.org>
@@ -61,96 +61,84 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-In the preparation for future changes, have the
-mlxsw_sp_mall_port_sample_add() function to accept mall_entry including
-all needed info originally obtained from cls and act pointers.
+Instead of having it in mirror_entry structure, move it to mall_entry
+and set it during rule insertion.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- .../mellanox/mlxsw/spectrum_matchall.c        | 35 ++++++++++---------
- 1 file changed, 19 insertions(+), 16 deletions(-)
+ .../mellanox/mlxsw/spectrum_matchall.c         | 18 ++++++++----------
+ 1 file changed, 8 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
-index b57267f0c9a1..adaaee208655 100644
+index adaaee208655..c05e28971d06 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
-@@ -27,6 +27,7 @@ struct mlxsw_sp_mall_entry {
- 	enum mlxsw_sp_mall_action_type type;
- 	union {
- 		struct mlxsw_sp_mall_mirror_entry mirror;
-+		struct mlxsw_sp_port_sample sample;
- 	};
+@@ -18,13 +18,13 @@ enum mlxsw_sp_mall_action_type {
+ struct mlxsw_sp_mall_mirror_entry {
+ 	const struct net_device *to_dev;
+ 	int span_id;
+-	bool ingress;
  };
  
-@@ -87,8 +88,7 @@ static int mlxsw_sp_mall_port_sample_set(struct mlxsw_sp_port *mlxsw_sp_port,
+ struct mlxsw_sp_mall_entry {
+ 	struct list_head list;
+ 	unsigned long cookie;
+ 	enum mlxsw_sp_mall_action_type type;
++	bool ingress;
+ 	union {
+ 		struct mlxsw_sp_mall_mirror_entry mirror;
+ 		struct mlxsw_sp_port_sample sample;
+@@ -45,8 +45,7 @@ mlxsw_sp_mall_entry_find(struct mlxsw_sp_port *port, unsigned long cookie)
  
  static int
- mlxsw_sp_mall_port_sample_add(struct mlxsw_sp_port *mlxsw_sp_port,
--			      struct tc_cls_matchall_offload *cls,
--			      const struct flow_action_entry *act, bool ingress)
+ mlxsw_sp_mall_port_mirror_add(struct mlxsw_sp_port *mlxsw_sp_port,
+-			      struct mlxsw_sp_mall_entry *mall_entry,
+-			      bool ingress)
 +			      struct mlxsw_sp_mall_entry *mall_entry)
  {
- 	int err;
+ 	enum mlxsw_sp_span_type span_type;
  
-@@ -98,19 +98,14 @@ mlxsw_sp_mall_port_sample_add(struct mlxsw_sp_port *mlxsw_sp_port,
- 		netdev_err(mlxsw_sp_port->dev, "sample already active\n");
- 		return -EEXIST;
+@@ -55,9 +54,8 @@ mlxsw_sp_mall_port_mirror_add(struct mlxsw_sp_port *mlxsw_sp_port,
+ 		return -EINVAL;
  	}
--	if (act->sample.rate > MLXSW_REG_MPSC_RATE_MAX) {
--		netdev_err(mlxsw_sp_port->dev, "sample rate not supported\n");
--		return -EOPNOTSUPP;
--	}
--
- 	rcu_assign_pointer(mlxsw_sp_port->sample->psample_group,
--			   act->sample.psample_group);
--	mlxsw_sp_port->sample->truncate = act->sample.truncate;
--	mlxsw_sp_port->sample->trunc_size = act->sample.trunc_size;
--	mlxsw_sp_port->sample->rate = act->sample.rate;
-+			   mall_entry->sample.psample_group);
-+	mlxsw_sp_port->sample->truncate = mall_entry->sample.truncate;
-+	mlxsw_sp_port->sample->trunc_size = mall_entry->sample.trunc_size;
-+	mlxsw_sp_port->sample->rate = mall_entry->sample.rate;
  
- 	err = mlxsw_sp_mall_port_sample_set(mlxsw_sp_port, true,
--					    act->sample.rate);
-+					    mall_entry->sample.rate);
- 	if (err)
- 		goto err_port_sample_set;
- 	return 0;
-@@ -157,20 +152,28 @@ int mlxsw_sp_mall_replace(struct mlxsw_sp_port *mlxsw_sp_port,
- 						    ingress);
+-	mall_entry->mirror.ingress = ingress;
+-	span_type = mall_entry->mirror.ingress ? MLXSW_SP_SPAN_INGRESS :
+-						 MLXSW_SP_SPAN_EGRESS;
++	span_type = mall_entry->ingress ? MLXSW_SP_SPAN_INGRESS :
++					  MLXSW_SP_SPAN_EGRESS;
+ 	return mlxsw_sp_span_mirror_add(mlxsw_sp_port,
+ 					mall_entry->mirror.to_dev,
+ 					span_type, true,
+@@ -70,8 +68,8 @@ mlxsw_sp_mall_port_mirror_del(struct mlxsw_sp_port *mlxsw_sp_port,
+ {
+ 	enum mlxsw_sp_span_type span_type;
+ 
+-	span_type = mall_entry->mirror.ingress ? MLXSW_SP_SPAN_INGRESS :
+-						 MLXSW_SP_SPAN_EGRESS;
++	span_type = mall_entry->ingress ? MLXSW_SP_SPAN_INGRESS :
++					  MLXSW_SP_SPAN_EGRESS;
+ 	mlxsw_sp_span_mirror_del(mlxsw_sp_port, mall_entry->mirror.span_id,
+ 				 span_type, true);
+ }
+@@ -142,14 +140,14 @@ int mlxsw_sp_mall_replace(struct mlxsw_sp_port *mlxsw_sp_port,
+ 	if (!mall_entry)
+ 		return -ENOMEM;
+ 	mall_entry->cookie = f->cookie;
++	mall_entry->ingress = ingress;
+ 
+ 	act = &f->rule->action.entries[0];
+ 
+ 	if (act->id == FLOW_ACTION_MIRRED && protocol == htons(ETH_P_ALL)) {
+ 		mall_entry->type = MLXSW_SP_MALL_ACTION_TYPE_MIRROR;
+ 		mall_entry->mirror.to_dev = act->dev;
+-		err = mlxsw_sp_mall_port_mirror_add(mlxsw_sp_port, mall_entry,
+-						    ingress);
++		err = mlxsw_sp_mall_port_mirror_add(mlxsw_sp_port, mall_entry);
  	} else if (act->id == FLOW_ACTION_SAMPLE &&
  		   protocol == htons(ETH_P_ALL)) {
-+		if (act->sample.rate > MLXSW_REG_MPSC_RATE_MAX) {
-+			netdev_err(mlxsw_sp_port->dev, "sample rate not supported\n");
-+			err = -EOPNOTSUPP;
-+			goto errout;
-+		}
- 		mall_entry->type = MLXSW_SP_MALL_ACTION_TYPE_SAMPLE;
--		err = mlxsw_sp_mall_port_sample_add(mlxsw_sp_port, f, act,
--						    ingress);
-+		mall_entry->sample.psample_group = act->sample.psample_group;
-+		mall_entry->sample.truncate = act->sample.truncate;
-+		mall_entry->sample.trunc_size = act->sample.trunc_size;
-+		mall_entry->sample.rate = act->sample.rate;
-+		err = mlxsw_sp_mall_port_sample_add(mlxsw_sp_port, mall_entry);
- 	} else {
- 		err = -EOPNOTSUPP;
- 	}
- 
- 	if (err)
--		goto err_add_action;
-+		goto errout;
- 
- 	list_add_tail(&mall_entry->list, &mlxsw_sp_port->mall_list);
- 	return 0;
- 
--err_add_action:
-+errout:
- 	kfree(mall_entry);
- 	return err;
- }
+ 		if (act->sample.rate > MLXSW_REG_MPSC_RATE_MAX) {
 -- 
 2.24.1
 
