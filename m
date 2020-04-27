@@ -2,110 +2,689 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2FEC1B97CD
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 08:57:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33E771B97D5
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 08:58:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726512AbgD0G5q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 02:57:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48264 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726221AbgD0G5p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 02:57:45 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F4D5C0610D5
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 23:57:45 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id r14so8540674pfg.2
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 23:57:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:user-agent:in-reply-to:references:mime-version
-         :content-transfer-encoding:subject:to:cc:from:message-id;
-        bh=b9oxcazi1/+l/yb4NyRDEdRqX15ANK5/BAmDpBrnUi8=;
-        b=Y81pPHV6TJ9EkXH9eV7DUPae3EaO63pB3FGsztZ6e1Cs9eXuL26oRw4FSc/t7wy387
-         PeMqkJ8+MP+t/42gzbWvVaaB2Yt98ewM1robv81VUAL05jhYlGT3rJAagXrgGclpxRX1
-         1Nb0bk8G/TZA20P2pIB4lZs9Our5z5324+2XcBvdhhHA+A/CGZq5TPKZom1XN7r0lmXL
-         iWXZSA2jK85lED9cHLdbru5wH/vOdLLGQ7nOtIhUKTYF/3OWK9xa3ZqIB+T9Qyz6qttc
-         M1m0koXjvxL4yOokthBuK4FgDNXti4IgZbR5gPa4xO0hXGZJRxyQW+GoPnIwqnvHndSE
-         pECw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:user-agent:in-reply-to:references
-         :mime-version:content-transfer-encoding:subject:to:cc:from
-         :message-id;
-        bh=b9oxcazi1/+l/yb4NyRDEdRqX15ANK5/BAmDpBrnUi8=;
-        b=O7twjTcCIxqLBwXLlbyx7xOdJe2k8L3qZzBUxuiKDImdMOlmdDPjKMUIwWg1nDymT4
-         XYBVXstK2zYH9HfvjSEytF2VuY5LpvdFgKcLRmSzE81od9+KgvGwF9JW9OkiClKPS7FO
-         tNpD7ITNfq512314HUEfcuQofqXkNpp/r5WBp5715cpeE/HXFrBpW2GlqpK08QnV53Jd
-         YSzYkZv4829rU88eEh4/plvoWqm1Z4p+fjW2g0BSEjgfRoQfd+b0nU5zKCZs6pEsOcTy
-         EKbRhn53L5KXZ14QYuC4iEp25W05mZDVu1oBzXethodxvZtTFbxsB6zXGgVpllEC9B9/
-         H2gA==
-X-Gm-Message-State: AGi0PuacKOq2mq94ya4UXQFP7sFPKOich7Yv1JxDlB8tmAcDqa7jneDC
-        9tsEW/nkqQqI6Kaqyoos75JPqYxV1g==
-X-Google-Smtp-Source: APiQypK24+KNrgHgySmdTtSUONrB9B6ttKM1cQgEsHUTa4gUhqc//sqXF0yTaJNY+mlpdHFzZQghNQ==
-X-Received: by 2002:a63:214a:: with SMTP id s10mr20340551pgm.98.1587970664594;
-        Sun, 26 Apr 2020 23:57:44 -0700 (PDT)
-Received: from ?IPv6:2409:4072:608f:8328:cdd7:29cc:291b:9aa4? ([2409:4072:608f:8328:cdd7:29cc:291b:9aa4])
-        by smtp.gmail.com with ESMTPSA id h5sm10438546pjv.4.2020.04.26.23.57.43
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 26 Apr 2020 23:57:44 -0700 (PDT)
-Date:   Mon, 27 Apr 2020 12:27:37 +0530
-User-Agent: K-9 Mail for Android
-In-Reply-To: <6affe7d6-4aa1-cd72-74bf-69d8f6c3c98a@web.de>
-References: <85591553-f1f2-a7c9-9c5a-58f74ebeaf38@web.de> <20200427054023.GA3311@Mani-XPS-13-9360> <6affe7d6-4aa1-cd72-74bf-69d8f6c3c98a@web.de>
+        id S1726670AbgD0G6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 02:58:51 -0400
+Received: from mail.buslov.dev ([199.247.26.29]:54687 "EHLO mail.buslov.dev"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726539AbgD0G6v (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Apr 2020 02:58:51 -0400
+Received: from vlad-x1g6.mellanox.com (unknown [IPv6:2a01:d0:40b3:9801:fec2:781d:de90:e768])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.buslov.dev (Postfix) with ESMTPSA id BF35B1F407;
+        Mon, 27 Apr 2020 09:58:42 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=buslov.dev; s=2019;
+        t=1587970724;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RW6lZhhPELQNFcn/4M7hXHbtfpisBQx1Ggijdw8QSt0=;
+        b=vO0Jwi5u2WdtsBi7a68M/sAQSMGn+PEHK0G9//GMqkhuq7QUfxzHn32qIBkj0lFBqUgZw5
+        ieN8ZPqSV6LqoCP0fNAFu4M2yGBRCrydhFMidI9TD2XUtbuS4IuBYSjgxQ9of82y+qUWuZ
+        +NdHpXIO2uHifbuVYQRlSG2t/jxXJxvwgkP6ncp56koYPFYyqihW1uQ3seECYXvYrGrUbQ
+        pB0uA+gcKzadIK6uYbnfhIPsO2wfg0je1azo/Vg8VmMvRVkvC+pluVedbIMS7K5P/hrRlH
+        s4inWequJ80ufTyHyGOl2KlXin+7CG6zOBw3oRAMXFG4oGgkPrjOlMLoT7NMvQ==
+References: <VE1PR04MB64966A74E38DBD5F0151200C92D10@VE1PR04MB6496.eurprd04.prod.outlook.com>
+User-agent: mu4e 1.4.1; emacs 26.3
+From:   Vlad Buslov <vlad@buslov.dev>
+To:     Po Liu <po.liu@nxp.com>
+Cc:     "davem\@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "vinicius.gomes\@intel.com" <vinicius.gomes@intel.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "Vladimir Oltean" <vladimir.oltean@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        "michael.chan\@broadcom.com" <michael.chan@broadcom.com>,
+        "vishal\@chelsio.com" <vishal@chelsio.com>,
+        "saeedm\@mellanox.com" <saeedm@mellanox.com>,
+        "leon\@kernel.org" <leon@kernel.org>,
+        "jiri\@mellanox.com" <jiri@mellanox.com>,
+        "idosch\@mellanox.com" <idosch@mellanox.com>,
+        "alexandre.belloni\@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver\@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "kuba\@kernel.org" <kuba@kernel.org>,
+        "jhs\@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong\@gmail.com" <xiyou.wangcong@gmail.com>,
+        "simon.horman\@netronome.com" <simon.horman@netronome.com>,
+        "pablo\@netfilter.org" <pablo@netfilter.org>,
+        "moshe\@mellanox.com" <moshe@mellanox.com>,
+        "m-karicheri2\@ti.com" <m-karicheri2@ti.com>,
+        "andre.guedes\@linux.intel.com" <andre.guedes@linux.intel.com>,
+        "stephen\@networkplumber.org" <stephen@networkplumber.org>
+Subject: Re: [v3,net-next  1/4] net: qos: introduce a gate control flow action
+In-reply-to: <VE1PR04MB64966A74E38DBD5F0151200C92D10@VE1PR04MB6496.eurprd04.prod.outlook.com>
+Message-ID: <87tv15s9ce.fsf@buslov.dev>
+Date:   Mon, 27 Apr 2020 09:58:57 +0300
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [v2 2/3] net: qrtr: Add MHI transport layer
-To:     Markus Elfring <Markus.Elfring@web.de>,
-        Chris Lew <clew@codeaurora.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org
-CC:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hemant Kumar <hemantk@codeaurora.org>,
-        Jeffrey Hugo <jhugo@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Siddartha Mohanadoss <smohanad@codeaurora.org>
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Message-ID: <11CCC96F-FF72-464F-AC29-8E7D53C6F31E@linaro.org>
+Authentication-Results: ORIGINATING;
+        auth=pass smtp.auth=vlad@buslov.dev smtp.mailfrom=vlad@buslov.dev
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-
-On 27 April 2020 12:20:43 PM IST, Markus Elfring <Markus=2EElfring@web=2Ed=
-e> wrote:
->>> I propose again to add a jump target so that a bit of exception
->handling code
->>> can be better reused at the end of this function implementation=2E
->>>
->https://git=2Ekernel=2Eorg/pub/scm/linux/kernel/git/torvalds/linux=2Egit/=
-tree/Documentation/process/coding-style=2Erst?id=3Db2768df24ec400dd4f7fa795=
-42f797e904812053#n450
->>>
->>
->> Matter of taste! goto's are really useful if there are multiple exit
->paths
->> available=2E But in this case there is only one and I don't think we
->may add
->> anymore in future=2E So I'll keep it as it is=2E
+On Sat 25 Apr 2020 at 11:56, Po Liu <po.liu@nxp.com> wrote:
+> Hi Vlad,
 >
->Do you hope that an other optimiser software will avoid duplicate code
->like kfree_skb(skb) calls from if branches?
+>> -----Original Message-----
+>> From: Vlad Buslov <vlad@buslov.dev>
+>> Sent: 2020=E5=B9=B44=E6=9C=8823=E6=97=A5 19:03
+>> To: Po Liu <po.liu@nxp.com>
+>> Cc: davem@davemloft.net; linux-kernel@vger.kernel.org;
+>> netdev@vger.kernel.org; vinicius.gomes@intel.com; Claudiu Manoil
+>> <claudiu.manoil@nxp.com>; Vladimir Oltean <vladimir.oltean@nxp.com>;
+>> Alexandru Marginean <alexandru.marginean@nxp.com>;
+>> michael.chan@broadcom.com; vishal@chelsio.com;
+>> saeedm@mellanox.com; leon@kernel.org; jiri@mellanox.com;
+>> idosch@mellanox.com; alexandre.belloni@bootlin.com;
+>> UNGLinuxDriver@microchip.com; kuba@kernel.org; jhs@mojatatu.com;
+>> xiyou.wangcong@gmail.com; simon.horman@netronome.com;
+>> pablo@netfilter.org; moshe@mellanox.com; m-karicheri2@ti.com;
+>> andre.guedes@linux.intel.com; stephen@networkplumber.org
+>> Subject: Re: [EXT] Re: [v3,net-next 1/4] net: qos: introduce a gate cont=
+rol
+>> flow action
+>>=20
+>> Caution: EXT Email
+>>=20
+>> On Thu 23 Apr 2020 at 11:32, Po Liu <po.liu@nxp.com> wrote:
+>> >> -----Original Message-----
+>> >> From: Vlad Buslov <vlad@buslov.dev>
+>> >> Sent: 2020=E5=B9=B44=E6=9C=8823=E6=97=A5 15:43
+>> >> To: Po Liu <po.liu@nxp.com>
+>> >> Cc: Vlad Buslov <vlad@buslov.dev>; davem@davemloft.net; linux-
+>> >> kernel@vger.kernel.org; netdev@vger.kernel.org;
+>> >> vinicius.gomes@intel.com; Claudiu Manoil <claudiu.manoil@nxp.com>;
+>> >> Vladimir Oltean <vladimir.oltean@nxp.com>; Alexandru Marginean
+>> >> <alexandru.marginean@nxp.com>; michael.chan@broadcom.com;
+>> >> vishal@chelsio.com; saeedm@mellanox.com; leon@kernel.org;
+>> >> jiri@mellanox.com; idosch@mellanox.com;
+>> >> alexandre.belloni@bootlin.com; UNGLinuxDriver@microchip.com;
+>> >> kuba@kernel.org; jhs@mojatatu.com; xiyou.wangcong@gmail.com;
+>> >> simon.horman@netronome.com; pablo@netfilter.org;
+>> moshe@mellanox.com;
+>> >> m-karicheri2@ti.com; andre.guedes@linux.intel.com;
+>> >> stephen@networkplumber.org
+>> >> Subject: Re: [EXT] Re: [v3,net-next 1/4] net: qos: introduce a gate
+>> >> control flow action
+>> >>
+>> >> Caution: EXT Email
+>> >>
+>> >> On Thu 23 Apr 2020 at 06:14, Po Liu <po.liu@nxp.com> wrote:
+>> >> > Hi Vlad Buslov,
+>> >> >
+>> >> >> -----Original Message-----
+>> >> >> From: Vlad Buslov <vlad@buslov.dev>
+>> >> >> Sent: 2020=E5=B9=B44=E6=9C=8822=E6=97=A5 21:23
+>> >> >> To: Po Liu <po.liu@nxp.com>
+>> >> >> Cc: davem@davemloft.net; linux-kernel@vger.kernel.org;
+>> >> >> netdev@vger.kernel.org; vinicius.gomes@intel.com; Claudiu Manoil
+>> >> >> <claudiu.manoil@nxp.com>; Vladimir Oltean
+>> >> <vladimir.oltean@nxp.com>;
+>> >> >> Alexandru Marginean <alexandru.marginean@nxp.com>;
+>> >> >> michael.chan@broadcom.com; vishal@chelsio.com;
+>> >> saeedm@mellanox.com;
+>> >> >> leon@kernel.org; jiri@mellanox.com; idosch@mellanox.com;
+>> >> >> alexandre.belloni@bootlin.com; UNGLinuxDriver@microchip.com;
+>> >> >> kuba@kernel.org; jhs@mojatatu.com; xiyou.wangcong@gmail.com;
+>> >> >> simon.horman@netronome.com; pablo@netfilter.org;
+>> >> moshe@mellanox.com;
+>> >> >> m-karicheri2@ti.com; andre.guedes@linux.intel.com;
+>> >> >> stephen@networkplumber.org
+>> >> >> Subject: [EXT] Re: [v3,net-next 1/4] net: qos: introduce a gate
+>> >> >> control flow action
+>> >> >>
+>> >> >> Caution: EXT Email
+>> >> >>
+>> >> >> Hi Po,
+>> >> >>
+>> >> >> On Wed 22 Apr 2020 at 05:48, Po Liu <Po.Liu@nxp.com> wrote:
+>> >> >> > Introduce a ingress frame gate control flow action.
+>> >> >> > Tc gate action does the work like this:
+>> >> >> > Assume there is a gate allow specified ingress frames can be
+>> >> >> > passed at specific time slot, and be dropped at specific time
+>> >> >> > slot. Tc filter chooses the ingress frames, and tc gate action
+>> >> >> > would specify what slot does these frames can be passed to
+>> >> >> > device and what time slot would be dropped.
+>> >> >> > Tc gate action would provide an entry list to tell how much time
+>> >> >> > gate keep open and how much time gate keep state close. Gate
+>> >> action
+>> >> >> > also assign a start time to tell when the entry list start. Then
+>> >> >> > driver would repeat the gate entry list cyclically.
+>> >> >> > For the software simulation, gate action requires the user
+>> >> >> > assign a time clock type.
+>> >> >> >
+>> >> >> > Below is the setting example in user space. Tc filter a stream
+>> >> >> > source ip address is 192.168.0.20 and gate action own two time
+>> >> >> > slots. One is last 200ms gate open let frame pass another is
+>> >> >> > last 100ms gate close let frames dropped. When the frames have
+>> >> >> > passed total frames over
+>> >> >> > 8000000 bytes, frames will be dropped in one 200000000ns time
+>> slot.
+>> >> >> >
+>> >> >> >> tc qdisc add dev eth0 ingress
+>> >> >> >
+>> >> >> >> tc filter add dev eth0 parent ffff: protocol ip \
+>> >> >> >          flower src_ip 192.168.0.20 \
+>> >> >> >          action gate index 2 clockid CLOCK_TAI \
+>> >> >> >          sched-entry open 200000000 -1 8000000 \
+>> >> >> >          sched-entry close 100000000 -1 -1
+>> >> >> >
+>> >> >> >> tc chain del dev eth0 ingress chain 0
+>> >> >> >
+>> >> >> > "sched-entry" follow the name taprio style. Gate state is
+>> >> >> > "open"/"close". Follow with period nanosecond. Then next item is
+>> >> >> > internal priority value means which ingress queue should put. "-=
+1"
+>> >> >> > means wildcard. The last value optional specifies the maximum
+>> >> >> > number of MSDU octets that are permitted to pass the gate during
+>> >> >> > the specified time interval.
+>> >> >> > Base-time is not set will be 0 as default, as result start time
+>> >> >> > would be ((N + 1) * cycletime) which is the minimal of future ti=
+me.
+>> >> >> >
+>> >> >> > Below example shows filtering a stream with destination mac
+>> >> >> > address is
+>> >> >> > 10:00:80:00:00:00 and ip type is ICMP, follow the action gate.
+>> >> >> > The gate action would run with one close time slot which means
+>> >> >> > always keep
+>> >> >> close.
+>> >> >> > The time cycle is total 200000000ns. The base-time would calcula=
+te
+>> by:
+>> >> >> >
+>> >> >> >  1357000000000 + (N + 1) * cycletime
+>> >> >> >
+>> >> >> > When the total value is the future time, it will be the start ti=
+me.
+>> >> >> > The cycletime here would be 200000000ns for this case.
+>> >> >> >
+>> >> >> >> tc filter add dev eth0 parent ffff:  protocol ip \
+>> >> >> >          flower skip_hw ip_proto icmp dst_mac 10:00:80:00:00:00 \
+>> >> >> >          action gate index 12 base-time 1357000000000 \
+>> >> >> >          sched-entry close 200000000 -1 -1 \
+>> >> >> >          clockid CLOCK_TAI
+>> >> >> >
+>> >> >> > Signed-off-by: Po Liu <Po.Liu@nxp.com>
+>> >> >> > ---
+>> >> >> >  include/net/tc_act/tc_gate.h        |  54 +++
+>> >> >> >  include/uapi/linux/pkt_cls.h        |   1 +
+>> >> >> >  include/uapi/linux/tc_act/tc_gate.h |  47 ++
+>> >> >> >  net/sched/Kconfig                   |  13 +
+>> >> >> >  net/sched/Makefile                  |   1 +
+>> >> >> >  net/sched/act_gate.c                | 647
+>> >> ++++++++++++++++++++++++++++
+>> >> >> >  6 files changed, 763 insertions(+)  create mode 100644
+>> >> >> > include/net/tc_act/tc_gate.h  create mode 100644
+>> >> >> > include/uapi/linux/tc_act/tc_gate.h
+>> >> >> >  create mode 100644 net/sched/act_gate.c
+>> >> >> >
+>> >> >> > diff --git a/include/net/tc_act/tc_gate.h
+>> >> >> > b/include/net/tc_act/tc_gate.h new file mode 100644 index
+>> >> >> > 000000000000..b0ace55b2aaa
+>> >> >> > --- /dev/null
+>> >> >> > +++ b/include/net/tc_act/tc_gate.h
+>> >> >> > @@ -0,0 +1,54 @@
+>> >> >> > +/* SPDX-License-Identifier: GPL-2.0-or-later */
+>> >> >> > +/* Copyright 2020 NXP */
+>> >> >> > +
+>> >> >> > +#ifndef __NET_TC_GATE_H
+>> >> >> > +#define __NET_TC_GATE_H
+>> >> >> > +
+>> >> >> > +#include <net/act_api.h>
+>> >> >> > +#include <linux/tc_act/tc_gate.h>
+>> >> >> > +
+>> >> >> > +struct tcfg_gate_entry {
+>> >> >> > +     int                     index;
+>> >> >> > +     u8                      gate_state;
+>> >> >> > +     u32                     interval;
+>> >> >> > +     s32                     ipv;
+>> >> >> > +     s32                     maxoctets;
+>> >> >> > +     struct list_head        list;
+>> >> >> > +};
+>> >> >> > +
+>> >> >> > +struct tcf_gate_params {
+>> >> >> > +     s32                     tcfg_priority;
+>> >> >> > +     u64                     tcfg_basetime;
+>> >> >> > +     u64                     tcfg_cycletime;
+>> >> >> > +     u64                     tcfg_cycletime_ext;
+>> >> >> > +     u32                     tcfg_flags;
+>> >> >> > +     s32                     tcfg_clockid;
+>> >> >> > +     size_t                  num_entries;
+>> >> >> > +     struct list_head        entries;
+>> >> >> > +};
+>> >> >> > +
+>> >> >> > +#define GATE_ACT_GATE_OPEN   BIT(0)
+>> >> >> > +#define GATE_ACT_PENDING     BIT(1)
+>> >> >> > +struct gate_action {
+>> >> >> > +     struct tcf_gate_params param;
+>> >> >> > +     spinlock_t entry_lock;
+>> >> >> > +     u8 current_gate_status;
+>> >> >> > +     ktime_t current_close_time;
+>> >> >> > +     u32 current_entry_octets;
+>> >> >> > +     s32 current_max_octets;
+>> >> >> > +     struct tcfg_gate_entry __rcu *next_entry;
+>> >> >> > +     struct hrtimer hitimer;
+>> >> >> > +     enum tk_offsets tk_offset;
+>> >> >> > +     struct rcu_head rcu;
+>> >> >> > +};
+>> >> >> > +
+>> >> >> > +struct tcf_gate {
+>> >> >> > +     struct tc_action                common;
+>> >> >> > +     struct gate_action __rcu        *actg;
+>> >> >> > +};
+>> >> >> > +#define to_gate(a) ((struct tcf_gate *)a)
+>> >> >> > +
+>> >> >> > +#define get_gate_param(act) ((struct tcf_gate_params *)act)
+>> >> >> > +#define
+>> >> >> > +get_gate_action(p) ((struct gate_action *)p)
+>> >> >> > +
+>> >> >> > +#endif
+>> >> >> > diff --git a/include/uapi/linux/pkt_cls.h
+>> >> >> > b/include/uapi/linux/pkt_cls.h index 9f06d29cab70..fc672b232437
+>> >> >> 100644
+>> >> >> > --- a/include/uapi/linux/pkt_cls.h
+>> >> >> > +++ b/include/uapi/linux/pkt_cls.h
+>> >> >> > @@ -134,6 +134,7 @@ enum tca_id {
+>> >> >> >       TCA_ID_CTINFO,
+>> >> >> >       TCA_ID_MPLS,
+>> >> >> >       TCA_ID_CT,
+>> >> >> > +     TCA_ID_GATE,
+>> >> >> >       /* other actions go here */
+>> >> >> >       __TCA_ID_MAX =3D 255
+>> >> >> >  };
+>> >> >> > diff --git a/include/uapi/linux/tc_act/tc_gate.h
+>> >> >> > b/include/uapi/linux/tc_act/tc_gate.h
+>> >> >> > new file mode 100644
+>> >> >> > index 000000000000..f214b3a6d44f
+>> >> >> > --- /dev/null
+>> >> >> > +++ b/include/uapi/linux/tc_act/tc_gate.h
+>> >> >> > @@ -0,0 +1,47 @@
+>> >> >> > +/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
+>> >> >> > +/* Copyright 2020 NXP */
+>> >> >> > +
+>> >> >> > +#ifndef __LINUX_TC_GATE_H
+>> >> >> > +#define __LINUX_TC_GATE_H
+>> >> >> > +
+>> >> >> > +#include <linux/pkt_cls.h>
+>> >> >> > +
+>> >> >> > +struct tc_gate {
+>> >> >> > +     tc_gen;
+>> >> >> > +};
+>> >> >> > +
+>> >> >> > +enum {
+>> >> >> > +     TCA_GATE_ENTRY_UNSPEC,
+>> >> >> > +     TCA_GATE_ENTRY_INDEX,
+>> >> >> > +     TCA_GATE_ENTRY_GATE,
+>> >> >> > +     TCA_GATE_ENTRY_INTERVAL,
+>> >> >> > +     TCA_GATE_ENTRY_IPV,
+>> >> >> > +     TCA_GATE_ENTRY_MAX_OCTETS,
+>> >> >> > +     __TCA_GATE_ENTRY_MAX,
+>> >> >> > +};
+>> >> >> > +#define TCA_GATE_ENTRY_MAX (__TCA_GATE_ENTRY_MAX - 1)
+>> >> >> > +
+>> >> >> > +enum {
+>> >> >> > +     TCA_GATE_ONE_ENTRY_UNSPEC,
+>> >> >> > +     TCA_GATE_ONE_ENTRY,
+>> >> >> > +     __TCA_GATE_ONE_ENTRY_MAX,
+>> >> >> > +};
+>> >> >> > +#define TCA_GATE_ONE_ENTRY_MAX
+>> >> (__TCA_GATE_ONE_ENTRY_MAX
+>> >> >> - 1)
+>> >> >> > +
+>> >> >> > +enum {
+>> >> >> > +     TCA_GATE_UNSPEC,
+>> >> >> > +     TCA_GATE_TM,
+>> >> >> > +     TCA_GATE_PARMS,
+>> >> >> > +     TCA_GATE_PAD,
+>> >> >> > +     TCA_GATE_PRIORITY,
+>> >> >> > +     TCA_GATE_ENTRY_LIST,
+>> >> >> > +     TCA_GATE_BASE_TIME,
+>> >> >> > +     TCA_GATE_CYCLE_TIME,
+>> >> >> > +     TCA_GATE_CYCLE_TIME_EXT,
+>> >> >> > +     TCA_GATE_FLAGS,
+>> >> >> > +     TCA_GATE_CLOCKID,
+>> >> >> > +     __TCA_GATE_MAX,
+>> >> >> > +};
+>> >> >> > +#define TCA_GATE_MAX (__TCA_GATE_MAX - 1)
+>> >> >> > +
+>> >> >> > +#endif
+>> >> >> > diff --git a/net/sched/Kconfig b/net/sched/Kconfig index
+>> >> >> > bfbefb7bff9d..1314549c7567 100644
+>> >> >> > --- a/net/sched/Kconfig
+>> >> >> > +++ b/net/sched/Kconfig
+>> >> >> > @@ -981,6 +981,19 @@ config NET_ACT_CT
+>> >> >> >         To compile this code as a module, choose M here: the
+>> >> >> >         module will be called act_ct.
+>> >> >> >
+>> >> >> > +config NET_ACT_GATE
+>> >> >> > +     tristate "Frame gate entry list control tc action"
+>> >> >> > +     depends on NET_CLS_ACT
+>> >> >> > +     help
+>> >> >> > +       Say Y here to allow to control the ingress flow to be pa=
+ssed
+>> at
+>> >> >> > +       specific time slot and be dropped at other specific time=
+ slot
+>> by
+>> >> >> > +       the gate entry list. The manipulation will simulate the =
+IEEE
+>> >> >> > +       802.1Qci stream gate control behavior.
+>> >> >> > +
+>> >> >> > +       If unsure, say N.
+>> >> >> > +       To compile this code as a module, choose M here: the
+>> >> >> > +       module will be called act_gate.
+>> >> >> > +
+>> >> >> >  config NET_IFE_SKBMARK
+>> >> >> >       tristate "Support to encoding decoding skb mark on IFE act=
+ion"
+>> >> >> >       depends on NET_ACT_IFE
+>> >> >> > diff --git a/net/sched/Makefile b/net/sched/Makefile index
+>> >> >> > 31c367a6cd09..66bbf9a98f9e 100644
+>> >> >> > --- a/net/sched/Makefile
+>> >> >> > +++ b/net/sched/Makefile
+>> >> >> > @@ -30,6 +30,7 @@ obj-$(CONFIG_NET_IFE_SKBPRIO)       +=3D
+>> >> >> act_meta_skbprio.o
+>> >> >> >  obj-$(CONFIG_NET_IFE_SKBTCINDEX)     +=3D act_meta_skbtcindex.o
+>> >> >> >  obj-$(CONFIG_NET_ACT_TUNNEL_KEY)+=3D act_tunnel_key.o
+>> >> >> >  obj-$(CONFIG_NET_ACT_CT)     +=3D act_ct.o
+>> >> >> > +obj-$(CONFIG_NET_ACT_GATE)   +=3D act_gate.o
+>> >> >> >  obj-$(CONFIG_NET_SCH_FIFO)   +=3D sch_fifo.o
+>> >> >> >  obj-$(CONFIG_NET_SCH_CBQ)    +=3D sch_cbq.o
+>> >> >> >  obj-$(CONFIG_NET_SCH_HTB)    +=3D sch_htb.o
+>> >> >> > diff --git a/net/sched/act_gate.c b/net/sched/act_gate.c new
+>> >> >> > file mode
+>> >> >> > 100644 index 000000000000..e932f402b4f1
+>> >> >> > --- /dev/null
+>> >> >> > +++ b/net/sched/act_gate.c
+>> >> >> > @@ -0,0 +1,647 @@
+>> >> >> > +// SPDX-License-Identifier: GPL-2.0-or-later
+>> >> >> > +/* Copyright 2020 NXP */
+>> >> >> > +
+>> >> >> > +#include <linux/module.h>
+>> >> >> > +#include <linux/types.h>
+>> >> >> > +#include <linux/kernel.h>
+>> >> >> > +#include <linux/string.h>
+>> >> >> > +#include <linux/errno.h>
+>> >> >> > +#include <linux/skbuff.h>
+>> >> >> > +#include <linux/rtnetlink.h>
+>> >> >> > +#include <linux/init.h>
+>> >> >> > +#include <linux/slab.h>
+>> >> >> > +#include <net/act_api.h>
+>> >> >> > +#include <net/netlink.h>
+>> >> >> > +#include <net/pkt_cls.h>
+>> >> >> > +#include <net/tc_act/tc_gate.h>
+>> >> >> > +
+>> >> >> > +static unsigned int gate_net_id; static struct tc_action_ops
+>> >> >> > +act_gate_ops;
+>> >> >> > +
+>> >> >> > +static ktime_t gate_get_time(struct gate_action *gact) {
+>> >> >> > +     ktime_t mono =3D ktime_get();
+>> >> >> > +
+>> >> >> > +     switch (gact->tk_offset) {
+>> >> >> > +     case TK_OFFS_MAX:
+>> >> >> > +             return mono;
+>> >> >> > +     default:
+>> >> >> > +             return ktime_mono_to_any(mono, gact->tk_offset);
+>> >> >> > +     }
+>> >> >> > +
+>> >> >> > +     return KTIME_MAX;
+>> >> >> > +}
+>> >> >> > +
+>> >> >> > +static int gate_get_start_time(struct gate_action *gact,
+>> >> >> > +ktime_t
+>> >> >> > +*start) {
+>> >> >> > +     struct tcf_gate_params *param =3D get_gate_param(gact);
+>> >> >> > +     ktime_t now, base, cycle;
+>> >> >> > +     u64 n;
+>> >> >> > +
+>> >> >> > +     base =3D ns_to_ktime(param->tcfg_basetime);
+>> >> >> > +     now =3D gate_get_time(gact);
+>> >> >> > +
+>> >> >> > +     if (ktime_after(base, now)) {
+>> >> >> > +             *start =3D base;
+>> >> >> > +             return 0;
+>> >> >> > +     }
+>> >> >> > +
+>> >> >> > +     cycle =3D param->tcfg_cycletime;
+>> >> >> > +
+>> >> >> > +     /* cycle time should not be zero */
+>> >> >> > +     if (WARN_ON(!cycle))
+>> >> >> > +             return -EFAULT;
+>> >> >>
+>> >> >> Looking at the init code it seems that this value can be set to 0
+>> >> >> directly from netlink packet without further validation, which
+>> >> >> would allow user to trigger warning here.
+>> >> >
+>> >> > Yes,  will avoid at ahead point.
+>> >> >
+>> >> >>
+>> >> >> > +
+>> >> >> > +     n =3D div64_u64(ktime_sub_ns(now, base), cycle);
+>> >> >> > +     *start =3D ktime_add_ns(base, (n + 1) * cycle);
+>> >> >> > +     return 0;
+>> >> >> > +}
+>> >> >> > +
+>> >> >> > +static void gate_start_timer(struct gate_action *gact, ktime_t
+>> >> >> > +start) {
+>> >> >> > +     ktime_t expires;
+>> >> >> > +
+>> >> >> > +     expires =3D hrtimer_get_expires(&gact->hitimer);
+>> >> >> > +     if (expires =3D=3D 0)
+>> >> >> > +             expires =3D KTIME_MAX;
+>> >> >> > +
+>> >> >> > +     start =3D min_t(ktime_t, start, expires);
+>> >> >> > +
+>> >> >> > +     hrtimer_start(&gact->hitimer, start, HRTIMER_MODE_ABS); }
+>> >> >> > +
+>> >> >> > +static enum hrtimer_restart gate_timer_func(struct hrtimer
+>> *timer) {
+>> >> >> > +     struct gate_action *gact =3D container_of(timer, struct
+>> gate_action,
+>> >> >> > +                                             hitimer);
+>> >> >> > +     struct tcf_gate_params *p =3D get_gate_param(gact);
+>> >> >> > +     struct tcfg_gate_entry *next;
+>> >> >> > +     ktime_t close_time, now;
+>> >> >> > +
+>> >> >> > +     spin_lock(&gact->entry_lock);
+>> >> >> > +
+>> >> >> > +     next =3D rcu_dereference_protected(gact->next_entry,
+>> >> >> > +
+>> >> >> > + lockdep_is_held(&gact->entry_lock));
+>> >> >> > +
+>> >> >> > +     /* cycle start, clear pending bit, clear total octets */
+>> >> >> > +     gact->current_gate_status =3D next->gate_state ?
+>> >> >> GATE_ACT_GATE_OPEN : 0;
+>> >> >> > +     gact->current_entry_octets =3D 0;
+>> >> >> > +     gact->current_max_octets =3D next->maxoctets;
+>> >> >> > +
+>> >> >> > +     gact->current_close_time =3D ktime_add_ns(gact-
+>> >> >current_close_time,
+>> >> >> > +                                             next->interval);
+>> >> >> > +
+>> >> >> > +     close_time =3D gact->current_close_time;
+>> >> >> > +
+>> >> >> > +     if (list_is_last(&next->list, &p->entries))
+>> >> >> > +             next =3D list_first_entry(&p->entries,
+>> >> >> > +                                     struct tcfg_gate_entry, li=
+st);
+>> >> >> > +     else
+>> >> >> > +             next =3D list_next_entry(next, list);
+>> >> >> > +
+>> >> >> > +     now =3D gate_get_time(gact);
+>> >> >> > +
+>> >> >> > +     if (ktime_after(now, close_time)) {
+>> >> >> > +             ktime_t cycle, base;
+>> >> >> > +             u64 n;
+>> >> >> > +
+>> >> >> > +             cycle =3D p->tcfg_cycletime;
+>> >> >> > +             base =3D ns_to_ktime(p->tcfg_basetime);
+>> >> >> > +             n =3D div64_u64(ktime_sub_ns(now, base), cycle);
+>> >> >> > +             close_time =3D ktime_add_ns(base, (n + 1) * cycle);
+>> >> >> > +     }
+>> >> >> > +
+>> >> >> > +     rcu_assign_pointer(gact->next_entry, next);
+>> >> >> > +     spin_unlock(&gact->entry_lock);
+>> >> >>
+>> >> >> I have couple of question about synchronization here:
+>> >> >>
+>> >> >> - Why do you need next_entry to be rcu pointer? It is only
+>> >> >> assigned here with entry_lock protection and in init code before
+>> >> >> action is visible to concurrent users. I don't see any unlocked
+>> >> >> rcu-protected readers here that could benefit from it.
+>> >> >>
+>> >> >> - Why create dedicated entry_lock instead of using already
+>> >> >> existing
+>> >> >> per- action tcf_lock?
+>> >> >
+>> >> > Will try to use the tcf_lock for verification.
+>> >> > The thoughts came from that the timer period arrived then check
+>> >> > through the list and then update next time would take much more
+>> time.
+>> >> > Action function would be busy when traffic. So use a separate lock
+>> >> > here for
+>> >> >
+>> >> >>
+>> >> >> > +
+>> >> >> > +     hrtimer_set_expires(&gact->hitimer, close_time);
+>> >> >> > +
+>> >> >> > +     return HRTIMER_RESTART;
+>> >> >> > +}
+>> >> >> > +
+>> >> >> > +static int tcf_gate_act(struct sk_buff *skb, const struct tc_ac=
+tion
+>> *a,
+>> >> >> > +                     struct tcf_result *res) {
+>> >> >> > +     struct tcf_gate *g =3D to_gate(a);
+>> >> >> > +     struct gate_action *gact;
+>> >> >> > +     int action;
+>> >> >> > +
+>> >> >> > +     tcf_lastuse_update(&g->tcf_tm);
+>> >> >> > +     bstats_cpu_update(this_cpu_ptr(g->common.cpu_bstats),
+>> >> >> > + skb);
+>> >> >> > +
+>> >> >> > +     action =3D READ_ONCE(g->tcf_action);
+>> >> >> > +     rcu_read_lock();
+>> >> >>
+>> >> >> Action fastpath is already rcu read lock protected, you don't need
+>> >> >> to manually obtain it.
+>> >> >
+>> >> > Will be removed.
+>> >> >
+>> >> >>
+>> >> >> > +     gact =3D rcu_dereference_bh(g->actg);
+>> >> >> > +     if (unlikely(gact->current_gate_status &
+>> >> >> > + GATE_ACT_PENDING)) {
+>> >> >>
+>> >> >> Can't current_gate_status be concurrently modified by timer
+>> callback?
+>> >> >> This function doesn't use entry_lock to synchronize with timer.
+>> >> >
+>> >> > Will try tcf_lock either.
+>> >> >
+>> >> >>
+>> >> >> > +             rcu_read_unlock();
+>> >> >> > +             return action;
+>> >> >> > +     }
+>> >> >> > +
+>> >> >> > +     if (!(gact->current_gate_status & GATE_ACT_GATE_OPEN))
+>> >> >>
+>> >> >> ...and here
+>> >> >>
+>> >> >> > +             goto drop;
+>> >> >> > +
+>> >> >> > +     if (gact->current_max_octets >=3D 0) {
+>> >> >> > +             gact->current_entry_octets +=3D qdisc_pkt_len(skb);
+>> >> >> > +             if (gact->current_entry_octets >
+>> >> >> > + gact->current_max_octets) {
+>> >> >>
+>> >> >> here also.
+>> >> >>
+>> >> >> > +
+>> >> >> > + qstats_overlimit_inc(this_cpu_ptr(g->common.cpu_qstats));
+>> >> >>
+>> >> >> Please use tcf_action_inc_overlimit_qstats() and other wrappers
+>> >> >> for
+>> >> stats.
+>> >> >> Otherwise it will crash if user passes
+>> >> TCA_ACT_FLAGS_NO_PERCPU_STATS
+>> >> >> flag.
+>> >> >
+>> >> > The tcf_action_inc_overlimit_qstats() can't show limit counts in tc
+>> >> > show
+>> >> command. Is there anything need to do?
+>> >>
+>> >> What do you mean? Internally tcf_action_inc_overlimit_qstats() just
+>> >> calls qstats_overlimit_inc, if cpu_qstats percpu counter is not NULL:
+>> >>
+>> >>
+>> >>         if (likely(a->cpu_qstats)) {
+>> >>                 qstats_overlimit_inc(this_cpu_ptr(a->cpu_qstats));
+>> >>                 return;
+>> >>         }
+>> >>
+>> >> Is there a subtle bug somewhere in this function?
+>> >
+>> > Sorry, I updated using the tcf_action_*, and the counting is ok. I mov=
+ed
+>> back to the qstats_overlimit_inc() because tcf_action_* () include the
+>> spin_lock(&a->tcfa_lock).
+>> > I would update to  tcf_action_* () increate.
+>>=20
+>> BTW if you end up with synchronizing fastpath with tcfa_lock, then you
+>> don't need to use tcf_action_*stats() helpers and percpu counters (they
+>> will only slow down action init and increase memory usage without
+>> providing any improvements for parallelism). Instead, you can just direc=
+tly
+>> change the tcf_{q|b}stats while holding the tcfa_lock. Check pedit for
+>> example of such action.
 >
+> I tried fix two versions as your suggestion. One is keep gate_action stru=
+cture as pointer and also keep the entry_lock to fix the rcu free related i=
+ssue. Another way to remove the struct gate_action and move them to struct =
+tcf_gate align with struct tc_action. I would choose second one for next ve=
+rsion uploading since it would not use rcu which more simple(refer the pedi=
+t action). I met the status update selection like here your mention.  Since=
+ I use spin_lock(&a->tcfa_lock), but I can't using code like:
+> p->tcf_qstats.overlimits++;
+> This won't show by "tc filter show" since it is showing overlimits and dr=
+op from "qstats_overlimit_inc(this_cpu_ptr(a->cpu_qstats));"
+> So I choose the "tcf_action_inc_overlimit_qstats()" and excluded in the s=
+pin_lock.
 
-Doh=2E I didn't notice the previous kfree in skb_linearize()=2E Will spin =
-v3 incorporating this change=2E=20
+I guess you didn't update the init function to skip percpu counters
+allocation which causes zero values from percpu stats to be sent to
+userland even when you increment regular stats. Check the following line
+from pedit init:
 
-Thanks,=20
-Mani
+		ret =3D tcf_idr_create(tn, index, est, a,
+				     &act_pedit_ops, bind, false, 0);
 
->Regards,
->Markus
+Here flags value is hardcoded to zero and cpustats is false so regular
+counters can be directly used.
 
---=20
-Sent from my Android device with K-9 Mail=2E Please excuse my brevity=2E
+>
+>>=20
+>> >
+>> >>
+>> >> >
+>> >> > Br,
+>> >> > Po Liu
+>> >
+>> > Thanks a lot.
+>> >
+>> > Br,
+>> > Po Liu
+>
+> Thanks a lot.
+> Br,
+> Po Liu
+
