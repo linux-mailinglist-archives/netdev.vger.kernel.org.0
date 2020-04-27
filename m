@@ -2,81 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 759561BAA2B
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 18:37:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 130571BAA42
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 18:46:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728038AbgD0Qhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 12:37:52 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:44775 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726499AbgD0Qhw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 12:37:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588005471;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=csl1hmYpPL8mhlstV3gAcCbXq6iZpL7GNW1YjSBjXWg=;
-        b=d74iH/vcazFppJmamcDmNBtKb5yK36oMqoX8UTs9cqhTqZ9ToS6y2FHIA0tX5FpJQ74KVC
-        osqkICqzaZ3dXJ/V/r5/JqDFCca4zTnEApC6QRB51BT2/dwNiZ11TK/GqAMB6sgXUlMir7
-        7FWub6Zv3AMCUbnJt/0i0qBI1vDXVVI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-113-1LtbozPyOSSs-gHaQC3f7w-1; Mon, 27 Apr 2020 12:37:48 -0400
-X-MC-Unique: 1LtbozPyOSSs-gHaQC3f7w-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9BDC045F;
-        Mon, 27 Apr 2020 16:37:47 +0000 (UTC)
-Received: from firesoul.localdomain (unknown [10.40.208.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 30C3C66060;
-        Mon, 27 Apr 2020 16:37:44 +0000 (UTC)
-Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id A7B3730000272;
-        Mon, 27 Apr 2020 18:37:43 +0200 (CEST)
-Subject: [PATCH net-next] net: fix skb_panic to output real address
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, me@tobin.cc
-Date:   Mon, 27 Apr 2020 18:37:43 +0200
-Message-ID: <158800546361.1962096.4535216438507756179.stgit@firesoul>
-User-Agent: StGit/0.19
+        id S1726303AbgD0QqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 12:46:23 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:38772 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726282AbgD0QqX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Apr 2020 12:46:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=tP8rD2QRrQA4OB+TWtA7Qhd+z+Cz4MCa/3wl3NgU3xM=; b=I0t7k9Rlus5qnaf5BP8KN6wKIc
+        gG69s564/7nlx4KKJiGjLeNhfHPpVDLR0qLylDfWwGzYkNpuSoDKby1fpTnv/4gU3LL1XFieFaNur
+        uKI55p+XSjhFGZesbqFg1Qs8kr7CefLpyOzS1KSI0qZv7HTMzZTgV/mVKorRjcMh2j0s=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jT6tg-005FOU-V3; Mon, 27 Apr 2020 18:46:20 +0200
+Date:   Mon, 27 Apr 2020 18:46:20 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Leonard Crestez <leonard.crestez@nxp.com>
+Cc:     Andy Duan <fugang.duan@nxp.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Chris Healy <Chris.Healy@zii.aero>,
+        dl-linux-imx <linux-imx@nxp.com>, Chris Healy <cphealy@gmail.com>
+Subject: Re: [PATCH] net: ethernet: fec: Replace interrupt driven MDIO with
+ polled IO
+Message-ID: <20200427164620.GD1250287@lunn.ch>
+References: <20200414004551.607503-1-andrew@lunn.ch>
+ <VI1PR04MB6941D611F6EF67BB42826D4EEEAF0@VI1PR04MB6941.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <VI1PR04MB6941D611F6EF67BB42826D4EEEAF0@VI1PR04MB6941.eurprd04.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In skb_panic() the real pointer values are really needed to diagnose
-issues, e.g. data and head are related (to calculate headroom). The
-hashed versions of the addresses doesn't make much sense here. The
-patch use the printk specifier %px to print the actual address.
+On Mon, Apr 27, 2020 at 03:19:54PM +0000, Leonard Crestez wrote:
+> Hello,
+> 
+> This patch breaks network boot on at least imx8mm-evk. Boot works if I 
+> revert just commit 29ae6bd1b0d8 ("net: ethernet: fec: Replace interrupt 
+> driven MDIO with polled IO") on top of next-20200424.
 
-The printk documentation on %px:
-https://www.kernel.org/doc/html/latest/core-api/printk-formats.html#unmodified-addresses
+Hi Leonard
 
-Fixes: ad67b74d2469 ("printk: hash addresses printed with %p")
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
----
- net/core/skbuff.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Please could you try this:
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 7e29590482ce..1bf0c3d278e7 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -102,7 +102,7 @@ EXPORT_SYMBOL(sysctl_max_skb_frags);
- static void skb_panic(struct sk_buff *skb, unsigned int sz, void *addr,
- 		      const char msg[])
- {
--	pr_emerg("%s: text:%p len:%d put:%d head:%p data:%p tail:%#lx end:%#lx dev:%s\n",
-+	pr_emerg("%s: text:%px len:%d put:%d head:%px data:%px tail:%#lx end:%#lx dev:%s\n",
- 		 msg, addr, skb->len, sz, skb->head, skb->data,
- 		 (unsigned long)skb->tail, (unsigned long)skb->end,
- 		 skb->dev ? skb->dev->name : "<NULL>");
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-evk.dts b/arch/arm64/boot/dts/freescale/imx8mm-evk.dts
+index 951e14a3de0e..3c1adaf7affa 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-evk.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mm-evk.dts
+@@ -109,6 +109,7 @@ &fec1 {
+        phy-handle = <&ethphy0>;
+        phy-reset-gpios = <&gpio4 22 GPIO_ACTIVE_LOW>;
+        phy-reset-duration = <10>;
++       phy-reset-post-delay = <100>;
+        fsl,magic-packet;
+        status = "okay";
 
 
+There is an interesting post from Fabio Estevam
+
+https://u-boot.denx.narkive.com/PlutD3Rg/patch-1-3-phy-atheros-use-ar8035-config-for-ar8031
+
+Thanks
+	Andrew
