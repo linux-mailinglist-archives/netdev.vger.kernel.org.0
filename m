@@ -2,112 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AC971B94D5
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 03:16:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 604BF1B94E2
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 03:19:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726281AbgD0BOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 21:14:00 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:52877 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726159AbgD0BOA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 26 Apr 2020 21:14:00 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 17a70005;
-        Mon, 27 Apr 2020 00:58:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
-        :subject:date:message-id:mime-version:content-type
-        :content-transfer-encoding; s=mail; bh=WuJHIN6MQ+tAfQw0mT+WBzJwK
-        j0=; b=gbSETdyyTf9HsDVHytdWY82UkdQfXWyletKWxx50wevMEsZqYlt5M34pg
-        7L12IXZoO3NxexO++3QiDnwUOCJPjWB2RRZcfiXPjl/V3AXQQouSOyFQ9qz1FXfT
-        8UVsLVy3YkgYAYm6sNKFQXkOdiW6dzOdU2duHmgaIXlFbMvbfIQt3QEG0H1B+Ek0
-        NRgR5eZm8Yleg4YoyUTTlB5XjH13WBfgPq01EgHWEOaNvAERBjkh1uG2zZ0tao5e
-        u3AF84JkyjaZU1xXmc1Z/5YNGIqj0ATNwSjnPbz4Zq0BP2bDWMwHdEmx3ZfVKAsE
-        /0jYlwi0djYuod/ZjuY/jgGKkYBww==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id fdacbbcd (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Mon, 27 Apr 2020 00:58:45 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     netdev@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH RFC v1] net: xdp: allow for layer 3 packets in generic skb handler
-Date:   Sun, 26 Apr 2020 19:10:02 -0600
-Message-Id: <20200427011002.320081-1-Jason@zx2c4.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        id S1726430AbgD0BTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 21:19:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52624 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726234AbgD0BTL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 21:19:11 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C98FC061A10
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 18:19:11 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id h129so9841510ybc.3
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 18:19:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=ZxZOP+BlgtNuGg0nLTAk7RNFW1EfvAUNqQrCzJ2M174=;
+        b=Pn9KmwJCoLA/dAchSkMRxbyxs8b1dK8xEXy263G1uF91hIvoLjjMcGCi2rgbYZ4153
+         LipfNqOQsQWd8CtMS46GiHqNnLktOJzAvgUHFYd8NOlxXd5VFpzL+CnYMk4cdrnMBhDR
+         6xwGwZiRG2qsNYkIukVRe+k5nVg7KxNV3x+vRCaLEMqf4szLkt+K6NL51w18IWzSMF1I
+         V76F3TmNJHpaZcV1QPkGMRADMOnyi4CaynWjWKFuJXeUFvvg4xDCpUzrE3sUZN+gtVAZ
+         MU1rOyy96e67xlNM8ucl2UDr3PZSJO4AFgUlz2uLzrbR2iuxCN41x6B93+XXjFhR7Nt4
+         PK6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=ZxZOP+BlgtNuGg0nLTAk7RNFW1EfvAUNqQrCzJ2M174=;
+        b=l1wkAAZdUR2zVDpzCWHyZTsgb8mgaPBkB03XnPuaDUCj5UV+adL0+FuUEfGjPUo6oL
+         0ZxLJnK0zdI2fZoQ34xDeIu9+hKcsFlXFyPl58uc26roD9SbhVq6AH6DBYNOBA6dtmfp
+         6nLIV9+AoUNpfpld4qLcKW3ckJRRcOwvx47LIIzfSgFG2gRKGSbxA0FqSXLix2Evf8vw
+         juT3KYk6UpZWFtlAwW2z/jvpK08tHVUHlvGJ2GVV0EN4bO+5VvBt/jKDsaNa5OjsfAEv
+         tj7P9hDQtrgp4MxfqMxEzugzUlPKpwNuM32gwIn1p7a0ae6Sx7Pnk81hyS1iy1iZ6XE2
+         UH9A==
+X-Gm-Message-State: AGi0PubbNytHkqoavPkUyz5643icwepJjSMWGdqRoXJ1p13lYtcZOXWQ
+        K19ro0eiYbUnS8GX6SzsxK5f9Am8/X4wJw==
+X-Google-Smtp-Source: APiQypKfbYWIH7o4XSxXboLuE+Ts61HZTar6l76APRQCIJ464RmvhQcNab2nDRkFue1Pu1eqbU7xzNehaMRYTw==
+X-Received: by 2002:a25:afd0:: with SMTP id d16mr33849077ybj.441.1587950350624;
+ Sun, 26 Apr 2020 18:19:10 -0700 (PDT)
+Date:   Sun, 26 Apr 2020 18:19:07 -0700
+Message-Id: <20200427011907.160247-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.26.2.303.gf8c07b1a785-goog
+Subject: [PATCH net] sch_sfq: validate silly quantum values
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot+0251e883fe39e7a0cb0a@syzkaller.appspotmail.com,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A user reported a few days ago that packets from wireguard were possibly
-ignored by XDP [1]. We haven't heard back from the original reporter to
-receive more info, so this here is mostly speculative. Successfully nerd
-sniped, Toke and I started poking around. Toke noticed that the generic
-skb xdp handler path seems to assume that packets will always have an
-ethernet header, which really isn't always the case for layer 3 packets,
-which are produced by multiple drivers. This patch is untested, but I
-wanted to gauge interest in this approach: if the mac_len is 0, then we
-assume that it's a layer 3 packet, and figure out skb->protocol from
-looking at the IP header. This patch also adds some stricter testing
-around mac_len before we assume that it's an ethhdr.
+syzbot managed to set up sfq so that q->scaled_quantum was zero,
+triggering an infinite loop in sfq_dequeue()
 
-[1] https://lore.kernel.org/wireguard/M5WzVK5--3-2@tuta.io/
+More generally, we must only accept quantum between 1 and 2^18 - 7,
+meaning scaled_quantum must be in [1, 0x7FFF] range.
 
-Cc: Toke Høiland-Jørgensen <toke@redhat.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Otherwise, we also could have a loop in sfq_dequeue()
+if scaled_quantum happens to be 0x8000, since slot->allot
+could indefinitely switch between 0 and 0x8000.
+
+Fixes: eeaeb068f139 ("sch_sfq: allow big packets and be fair")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot+0251e883fe39e7a0cb0a@syzkaller.appspotmail.com
+Cc: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- net/core/dev.c | 31 +++++++++++++++++++++++--------
- 1 file changed, 23 insertions(+), 8 deletions(-)
+ net/sched/sch_sfq.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 522288177bbd..1c4b0af09be2 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4551,9 +4551,11 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
- 	xdp->data_hard_start = skb->data - skb_headroom(skb);
- 	orig_data_end = xdp->data_end;
- 	orig_data = xdp->data;
--	eth = (struct ethhdr *)xdp->data;
--	orig_bcast = is_multicast_ether_addr_64bits(eth->h_dest);
--	orig_eth_type = eth->h_proto;
-+	if (mac_len == sizeof(struct ethhdr)) {
-+		eth = (struct ethhdr *)xdp->data;
-+		orig_bcast = is_multicast_ether_addr_64bits(eth->h_dest);
-+		orig_eth_type = eth->h_proto;
+diff --git a/net/sched/sch_sfq.c b/net/sched/sch_sfq.c
+index c787d4d46017b4b41b8eb6d41f2b0a44560ff5bf..5a6def5e4e6df2e7b66c88aa877c7318270d48be 100644
+--- a/net/sched/sch_sfq.c
++++ b/net/sched/sch_sfq.c
+@@ -637,6 +637,15 @@ static int sfq_change(struct Qdisc *sch, struct nlattr *opt)
+ 	if (ctl->divisor &&
+ 	    (!is_power_of_2(ctl->divisor) || ctl->divisor > 65536))
+ 		return -EINVAL;
++
++	/* slot->allot is a short, make sure quantum is not too big. */
++	if (ctl->quantum) {
++		unsigned int scaled = SFQ_ALLOT_SIZE(ctl->quantum);
++
++		if (scaled <= 0 || scaled > SHRT_MAX)
++			return -EINVAL;
 +	}
- 
- 	rxqueue = netif_get_rxqueue(skb);
- 	xdp->rxq = &rxqueue->xdp_rxq;
-@@ -4583,11 +4585,24 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
- 	}
- 
- 	/* check if XDP changed eth hdr such SKB needs update */
--	eth = (struct ethhdr *)xdp->data;
--	if ((orig_eth_type != eth->h_proto) ||
--	    (orig_bcast != is_multicast_ether_addr_64bits(eth->h_dest))) {
--		__skb_push(skb, ETH_HLEN);
--		skb->protocol = eth_type_trans(skb, skb->dev);
-+	if (mac_len == 0) {
-+		switch (ip_hdr(skb)->version) {
-+		case 4:
-+			skb->protocol = htons(ETH_P_IP);
-+			break;
-+		case 6:
-+			skb->protocol = htons(ETH_P_IPV6);
-+			break;
-+		default:
-+			goto do_drop;
-+		}
-+	} else if (mac_len == sizeof(struct ethhdr)) {
-+		eth = (struct ethhdr *)xdp->data;
-+		if ((orig_eth_type != eth->h_proto) ||
-+		    (orig_bcast != is_multicast_ether_addr_64bits(eth->h_dest))) {
-+			__skb_push(skb, ETH_HLEN);
-+			skb->protocol = eth_type_trans(skb, skb->dev);
-+		}
- 	}
- 
- 	switch (act) {
++
+ 	if (ctl_v1 && !red_check_params(ctl_v1->qth_min, ctl_v1->qth_max,
+ 					ctl_v1->Wlog))
+ 		return -EINVAL;
 -- 
-2.26.2
+2.26.2.303.gf8c07b1a785-goog
 
