@@ -2,156 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2EA31B9983
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 10:15:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0FA81B9A12
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 10:25:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726636AbgD0IPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 04:15:11 -0400
-Received: from mail-eopbgr60089.outbound.protection.outlook.com ([40.107.6.89]:60640
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        id S1726566AbgD0IZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 04:25:48 -0400
+Received: from mail-mw2nam12on2076.outbound.protection.outlook.com ([40.107.244.76]:6234
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726003AbgD0IPK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Apr 2020 04:15:10 -0400
+        id S1726003AbgD0IZs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Apr 2020 04:25:48 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y/OHYr4Vggi0E6NlhXLdNl5S+la+MUwJelObP4S8WFBVtakmPJ0/OhXx4XG+sFGj5N8VZmqmy4OGKHs9cz44h0ZtcQfBXGVfsuALyBy3UzBZcLLWthZijxcI+kNnDFUbe81rbFCv5Zegv2RCPdCRB9drBaqAozUBe3VwcTuuORb5f1tGj4AZA+iiIuuf6LH4wZrLOXzOCTRar14TKxvWVwWfqxfaoh6xyV4TlBQTUCMunNxSftGrgyYMuUhl3ng1liENO8mGDtatBCAgmYjQ5YCt96hunEBslVA4jryN8rfddLSGLeOtW67GToJcXRh/Rpxt2Oh/ed/SV9JAcTocYg==
+ b=ao+AowwJPLLVfhl5PFHleTNEuDPJObK3vW89msAzlNUkSPDvGvhoR36HTVoPq0mBO5sOmw/T5aS/9MD9i9p5DsbzbyBoI090qXq9NJH1VGUBnSl+iKMrW2xHxR/uISMTUU5zGWb1WYPi+VtOl+9qJASWqLSJ2o7hk9m7B5VcN6wi3tWx2rt0U5OUft9x39EznJK9Qbx3XWNSkeCXdU0rAcbu5+Y2aueVA55sRnXqUThjdLtUzagICkPBKr6TZyedv4NxFsq1VZfxf8ctYd0ha4LtHE2j0+v2JfrVPv4UJjOdc1TP5dOUkluQYohJNcmeNcRF1hb8avJKJC3eNh+Q0g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ahpeHzMx8TOM8o+lJsD9EDBgpBwp9JHVo5fAGkCoJa8=;
- b=P8msHLzRccmLxGQNs99gDX1kfYQAqVh2Inv3ni8LSHFtAfBbfe9c7dVWHHTjgUWV/2Euz9sZVQQld2aPz0RMBxzwIm7dMvmLZ+/JtNZt03+kD2cKpjeSF87Q5TcMl7jMMuBfa2fZmdbP59bNYWp63qSWRLwmZn7ch5SFsYanDHdGSnSuI95ajTdumEFZiZEyeUvMAt2LW+7nqhlOMpKl42iohsZD6NTcQlrB/KlwiZB+RKgNAwFxXLP/EVhxKebtpvHJ7MViZNe41qkVH+f84UslqW/PWnRrokc/c9krgQa0kaRatBukDCJFcMJ5icH1uifxtUN8cLgqxUBy6WMIAw==
+ bh=J6cDoOE+3VVVEUh7yArzrcotYL0J3qPFmMJAOMKlWyI=;
+ b=WiK4owEFQF38x7b/GMZVV3fxsbwdM7T+7Mu5pKZkndaj33GxwMQA1UI1MU7C+tnXtaIKL6aSYSuWBLfiAfZghWtLMn3paK2adZ2BdM28EKM2niButn4eDyys5F0DPgLKADpghh7bFgO3fqtIfaGRkLg9UCEJIXChbYAzLVpeRPLBZWiMgEtZyPt8ymBotobkLf0MNGoXig2Qj897G29WMBXWip4g+d9b58VQLAQdhnuCCxoEC9oRUL+Cd2p6AoVAVhklLUIsefZ5dL2OyhcgAvy1LDZhqldYia61lYWXRhvDeZ1u7L8lw8sfCUdPoMQnmGdIr8ArXjSghZYNmvKgRQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=sifive.com; dmarc=pass action=none header.from=sifive.com;
+ dkim=pass header.d=sifive.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sifive.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ahpeHzMx8TOM8o+lJsD9EDBgpBwp9JHVo5fAGkCoJa8=;
- b=S5I+b4u6bzvfLFiZ8Xns9R/4FQvVSBUs6nVl+oAtKKaIEsMXa9UG/jlks0Xehco4edWrIeFlxRygsDadbhmm1jOX7yqlyGI7l0rYU+hs//7j0iIgmr/L7skh3O2BVU0X3ILj9eiQ/KDBUQPo0WwprxOM6Eogy50wJcjsOaMslm8=
-Received: from DB8PR04MB6828.eurprd04.prod.outlook.com (2603:10a6:10:113::21)
- by DB8PR04MB6841.eurprd04.prod.outlook.com (2603:10a6:10:116::21) with
+ bh=J6cDoOE+3VVVEUh7yArzrcotYL0J3qPFmMJAOMKlWyI=;
+ b=a6g+uTQWAGRN5STP1xD3avZRQ+Xqis5fABGNeGje5h5Pv2oPpWDoOLC9bgI512L2p1c4NXGJbdnyLoCbjSZDrCDx0xV7zvBm4YKLcBzVIfdULYMeIhZS9wjZu2aX16PcwSCrjWLZr00sIWfnjgNg0p+HvIutEbylF++hFWizbO0=
+Received: from MN2PR13MB3552.namprd13.prod.outlook.com (2603:10b6:208:16f::22)
+ by MN2PR13MB3309.namprd13.prod.outlook.com (2603:10b6:208:15a::30) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13; Mon, 27 Apr
- 2020 08:15:07 +0000
-Received: from DB8PR04MB6828.eurprd04.prod.outlook.com
- ([fe80::58e6:c037:d476:da0d]) by DB8PR04MB6828.eurprd04.prod.outlook.com
- ([fe80::58e6:c037:d476:da0d%10]) with mapi id 15.20.2937.020; Mon, 27 Apr
- 2020 08:15:07 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     "David S. Miller" <davem@davemloft.net>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.14; Mon, 27 Apr
+ 2020 08:25:43 +0000
+Received: from MN2PR13MB3552.namprd13.prod.outlook.com
+ ([fe80::9926:3966:5cbe:41e7]) by MN2PR13MB3552.namprd13.prod.outlook.com
+ ([fe80::9926:3966:5cbe:41e7%7]) with mapi id 15.20.2958.014; Mon, 27 Apr 2020
+ 08:25:42 +0000
+From:   Yash Shah <yash.shah@sifive.com>
+To:     Dejin Zheng <zhengdejin5@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        "palmer@dabbelt.com" <palmer@dabbelt.com>,
+        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: Commit "MAINTAINERS: update dpaa2-eth maintainer list"
-Thread-Topic: Commit "MAINTAINERS: update dpaa2-eth maintainer list"
-Thread-Index: AQHWG/HhEP5BTEAKSEaIobRV1LLJ36iMnPMQ
-Date:   Mon, 27 Apr 2020 08:15:07 +0000
-Message-ID: <DB8PR04MB6828010EDE71CAA128623CB2E0AF0@DB8PR04MB6828.eurprd04.prod.outlook.com>
-References: <20200426174058.GB25745@shell.armlinux.org.uk>
-In-Reply-To: <20200426174058.GB25745@shell.armlinux.org.uk>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: RE: [PATCH net v1] net: macb: fix an issue about leak related system
+ resources
+Thread-Topic: [PATCH net v1] net: macb: fix an issue about leak related system
+ resources
+Thread-Index: AQHWGwEgfqTJAKgECUicL9uwKoHGBqiMpFLw
+Date:   Mon, 27 Apr 2020 08:25:41 +0000
+Message-ID: <MN2PR13MB355263F89012F7D742DAE5FA8CAF0@MN2PR13MB3552.namprd13.prod.outlook.com>
+References: <20200425125737.5245-1-zhengdejin5@gmail.com>
+In-Reply-To: <20200425125737.5245-1-zhengdejin5@gmail.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ioana.ciornei@nxp.com; 
-x-originating-ip: [86.121.118.29]
+ smtp.mailfrom=yash.shah@sifive.com; 
+x-originating-ip: [120.138.124.57]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 9396a053-4902-4ba7-c031-08d7ea8318f9
-x-ms-traffictypediagnostic: DB8PR04MB6841:
-x-microsoft-antispam-prvs: <DB8PR04MB6841EEA803956E7DE33D5C51E0AF0@DB8PR04MB6841.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-office365-filtering-correlation-id: e14d683b-d13b-4ad4-87f1-08d7ea849393
+x-ms-traffictypediagnostic: MN2PR13MB3309:
+x-ld-processed: 22f88e9d-ae0d-4ed9-b984-cdc9be1529f1,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MN2PR13MB33095DE22B3D3BB3D2FCC7D58CAF0@MN2PR13MB3309.namprd13.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4941;
 x-forefront-prvs: 0386B406AA
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6828.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(86362001)(66556008)(4326008)(64756008)(498600001)(33656002)(9686003)(76116006)(66946007)(66446008)(66476007)(7696005)(2906002)(81156014)(52536014)(55016002)(54906003)(5660300002)(71200400001)(6916009)(15650500001)(8676002)(26005)(8936002)(44832011)(186003)(6506007);DIR:OUT;SFP:1101;
-received-spf: None (protection.outlook.com: nxp.com does not designate
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR13MB3552.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(376002)(346002)(136003)(39840400004)(396003)(366004)(8936002)(7696005)(6506007)(53546011)(81156014)(186003)(33656002)(110136005)(54906003)(71200400001)(8676002)(316002)(5660300002)(86362001)(2906002)(26005)(55016002)(66476007)(66946007)(76116006)(478600001)(9686003)(44832011)(4326008)(66446008)(52536014)(64756008)(66556008);DIR:OUT;SFP:1101;
+received-spf: None (protection.outlook.com: sifive.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: HJuPfAj+rUZuGaCjTvELepruRH4+xW8+2W2XYyZmKRgh6xKN1WskkxYxBwx+UEK6sjpEjbmjxXv9K/WqFqBz/l2zliJfbjvqfAWKh0I6EL5FNGnVGVkqKuZv2ALid4boyI1YqWAnXCDLkiuWE13gOGxWcp6tX9DGgjl/qPcDW3elECGVWskYLSWbLsiMY08ToI0HYMHSDFvoOiGBimOds6+te9lBgTYmsoGHbrSTguHnKb/Pnw8jgd1M8ZORczA5fRhq/liysJAKrdpkSABkasGSq7L2OPs1tO8Il+uQYKFBElsVlRJnvoxO3Pmevlb8aXA93AQdRPMYymISb6foYbKM36oiFoppsErK70hOquHEYiDH4oiRK3h+AgvBCsrFEU/c1D52ogmPStn8NSkRztjtyDXdfs5EVTFS6nQcCU1ZcpCAikEBM1wlHZVExIpY
-x-ms-exchange-antispam-messagedata: r2kdgIlVs/nqyClYotACEJOHq4u6hrFsrj/ZdtaNL8ZLHg0pz9UIzddWCB67wq4sph8PfHlLHDUsDK7Pce3h6k59MrEwJ9+1+vQqzCz+meAZntQ0AanvFCxYxr9n0i0wIA8LmbLAd1UgEBmD/9+fRqj7r1Wj4M7KjeWofqcdixmn78diFCh8pczgxgxm0iE0gYXqed0cyI/5KLacmjfZs12oyIdudtw0UKy3tsqQIj2W+WGXBNsmA34ZrM+uRNvJ90RLOmruE1FNMhsSSCUmLk74K4q8+FZouFvHtDIRD47KzrRznHC6EHa0Gw5EOYC4tpZK0208g305RHaOBXRSVklZZxjSmCLXkNNmZGDaqjQSRRUIeAfGdpXTygA5T/+4D3cyoPY6+Odx0fHvoG+o/mqRfql6+lW/LSpDfiObx+Ddbne71PQ8pzn4p/2YZyYGQZ6qbbxbrtc6JVt483EpKG5GK2pXylhASfqnaVW9mmQO3XbX3eEwMB0Ur5FU6C8Yutv5egBvYwYPr+QwdPRnDqcJ46yI4hRIeaduHhTFoGnxCU3+6SHfo8H7cJRODQJCVcSkgbvQB8CQntWOCoYdqbkPVACJ4Pc4Uv1aPPsPIWkQgDZrwpS1HJSv+FNmFOpdDjOnVpdlur1w7mM40lhW+3kEJhJBGBiNFJLY1H5RbgZx8GweGkZSC5c/MQkEWcbylKWmapjjzLP9W+9Po0gpwjb/IwT4APz8AGI6Xu8mGOw2qz3TVjghvjqgSZVmt49BoedYIvL/HUxK5HyN+XzW6ZI3mdS2ooMQfKrSTLKm5Uo=
-x-ms-exchange-transport-forked: True
+x-microsoft-antispam-message-info: A66dnmiLkSzNkwBDR0CqVWZPt+yEf/dE2Q4XJqcERgxZ9Wn8/i9dBj0fhFPJPqgwo6BxfmLHOtR2q3jPoYgpnZPOnGNkwu3AoirbXitE1xGbg9BTZU53QLjzgCXFzebuaKUVFBIEWPWH2wIlgeRX7sphFqw0yefDk82bEeUjKX/ZujPvOPf+Y5XKWkTdS0JxAcf6/cs+SnDQ5G4J4yT8BZ84bh72Qltl50KvWFBh3r0WO/lW7RJa1QNIxOM/IyriP2m7Qnsk01/0qV1banKmlnh1xgKxOXhYl3o/7qJVgcSRu6KLav4oOpwZrVjV76r70WMiYH1c6NRkI139/iw7fN1jOguRj8SVj45JgBSRT+eJ3MEllKvBpSfeKEnxbTq+aTD34IVm0/Om5QWr67GqO6g31W7ROvdAKNBKzUvc1CeZu6GvwiXXNzNWSUjmruqL
+x-ms-exchange-antispam-messagedata: eCLwM2W88UWMRJ5ICPAhaixTV+u2k3mmKkzzIW6gZPZ0cuSnF76+0a1+TVEreazNxe1KaaSVimeP7/MlfTyVSBuL1CpME7V4VbQrMh5nYxgkyDKTHQt8yoYTD64B1VUwW2xvteLM+NZIPGDC2IWiDK+suHgGVkeOT9OjGMUmnKHNGufgun+bPzeeCJlY6fy76EUckY3UTUUwIBSs3S6Me6BkePWQ0RMkXvqce1EDwTVwRGHKbzqHIVpCGXf/P6uTfUfPq6P6dHQORcoPg3ii+QTbRghkyB6mirJiSi8vh+6niLgUzDXOl9KD1q9glPFfRisz5G6ymzpRamcmB4Xsu32EH7lTUZT/SdIJQrlvkRgWPxM4w4fsvstv1TNRCqTv64raE0E9ssGWGC7WzvLvOHasKzH7UyjrGfr7r/HuN9lVmHjHPopy/fH3a5xufrfSgm6y9NNl9CE2gv2t/95DegyNN13dQLm3RI1oGIRAeto+BC81rz57lg5V7xGjdGSeEJtXvnVzH7BediNaK0+k8U1w4UDWxJHzOB4VKQZndfuGwiXT8/emnprP5FZ6S/BHW3eSQqPJ4AjYW3NgG+BgYT1qZQXDibzFHLEEpe7F9tLgXp5gKiiWU40tJIkQ2eo4nyyKcNZxNgot3jujf6yluvsY7G4x0k7kdair4bw4Z0K0rr2g/zt7AhDxGAKvCOks2pKWehO9LR77kJP3jRxkZZD/1Lb74jvDu1X5XrMZpgJFHPoBm0BgThPAjcXAQTirihTfSmcqmkj0dWUaJ5jCdgeLI8uj7QxLMq6JsyzEFBw=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9396a053-4902-4ba7-c031-08d7ea8318f9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Apr 2020 08:15:07.5745
+X-OriginatorOrg: sifive.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e14d683b-d13b-4ad4-87f1-08d7ea849393
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Apr 2020 08:25:42.5298
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-id: 22f88e9d-ae0d-4ed9-b984-cdc9be1529f1
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: KCY3ENr1ZIUPsSQooM+X++uWj8vHpw6USaARf3Vp2+pcLY16gA8tiFx1iXhRdMMeEfowoxpcWTJuU5gECKcEEQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6841
+X-MS-Exchange-CrossTenant-userprincipalname: cX74N57vdGxpgQ9I4jvk/pap/vjL+GWduhT6BlLl5zThatH1eQXodZRZcuC4k6gGJmaiGnLr0cyFgoxVQ3eT2g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB3309
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Commit "MAINTAINERS: update dpaa2-eth maintainer list"
+> -----Original Message-----
+> From: Dejin Zheng <zhengdejin5@gmail.com>
+> Sent: 25 April 2020 18:28
+> To: davem@davemloft.net; Paul Walmsley <paul.walmsley@sifive.com>;
+> palmer@dabbelt.com; nicolas.ferre@microchip.com; Yash Shah
+> <yash.shah@sifive.com>; netdev@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org; Dejin Zheng <zhengdejin5@gmail.com>;
+> Andy Shevchenko <andy.shevchenko@gmail.com>
+> Subject: [PATCH net v1] net: macb: fix an issue about leak related system
+> resources
 >=20
-> Hi,
+> [External Email] Do not click links or attachments unless you recognize t=
+he
+> sender and know the content is safe
 >=20
-> I see there is the commit below in net-next, but it seems to only partial=
-ly address
-> my comments to you about the maintainership of this driver.
+> A call of the function macb_init() can fail in the function fu540_c000_in=
+it. The
+> related system resources were not released then. use devm_ioremap() to
+> replace ioremap() for fix it.
 >=20
-> Is Ioana Radulescu's email address now active again?  If it is not, then =
-my
-> original report and issue with the maintainership of DPAA2 still stands, =
-and it
-> interferes with my ability to send patches.
-> It means I have to keep adding a commit on top of net-next to fix MAINTAI=
-NERS
-> every time I want to send patches that touch DPAA2.
+> Fixes: c218ad559020ff9 ("macb: Add support for SiFive FU540-C000")
+> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
+> ---
+>  drivers/net/ethernet/cadence/macb_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >=20
-> Please check what the current situation is, and remove Ioana Radulescu's =
-email
-> address if it is indeed dead, or let me know if it is not.  Either way, I=
- would like to
-> get rid of one way or another the additional commit I'm having to carry t=
-o fix
-> this apparently broken MAINTAINERS entry.
-
-Hi Russell,
-
-Ioana Radulescu's email is active. The problem that you encountered previou=
-sly
-was generated by a lack of storage of the account, which has been fixed now=
-.
-
-As additional context for this, Ioana Radulescu is in a LOA and I added mys=
-elf to
-the maintainer list so that I am copied to patches on dpaa2-eth during this=
- time.
-
-Regards,
-Ioana C
-
-
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c
+> b/drivers/net/ethernet/cadence/macb_main.c
+> index a0e8c5bbabc0..edba2eb56231 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -4178,7 +4178,7 @@ static int fu540_c000_init(struct platform_device
+> *pdev)
+>         if (!res)
+>                 return -ENODEV;
 >=20
-> Thanks.
->=20
-> commit 31fa51ad7c5664d0e6530e3d537e2eb025aa1925
-> Author: Ioana Ciornei <ioana.ciornei@nxp.com>
-> Date:   Wed Apr 22 20:52:54 2020 +0300
->=20
->     MAINTAINERS: update dpaa2-eth maintainer list
->=20
->     Add myself as another maintainer of dpaa2-eth.
->=20
->     Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
->     Signed-off-by: David S. Miller <davem@davemloft.net>
->=20
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 6851ef7cf1bd..d5e4d13880b2 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -5173,6 +5173,7 @@ S:        Maintained
->  F:     drivers/soc/fsl/dpio
->=20
->  DPAA2 ETHERNET DRIVER
-> +M:     Ioana Ciornei <ioana.ciornei@nxp.com>
->  M:     Ioana Radulescu <ruxandra.radulescu@nxp.com>
->  L:     netdev@vger.kernel.org
->  S:     Maintained
+> -       mgmt->reg =3D ioremap(res->start, resource_size(res));
+> +       mgmt->reg =3D devm_ioremap(&pdev->dev, res->start,
+> + resource_size(res));
+>         if (!mgmt->reg)
+>                 return -ENOMEM;
 >=20
 > --
+> 2.25.0
+
+The change looks good to me.
+Reviewed-by: Yash Shah <yash.shah@sifive.com>
+
+- Yash
 
