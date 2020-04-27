@@ -2,103 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31F851B95BC
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 06:15:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CF681B95C5
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 06:21:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726551AbgD0EPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 00:15:20 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:33853 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726357AbgD0EPT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 00:15:19 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id 1D0F85C00DE;
-        Mon, 27 Apr 2020 00:15:18 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Mon, 27 Apr 2020 00:15:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rylan.coffee; h=
-        date:from:to:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm3; bh=b2k2hy0obFtFe40lOY3WleQMvx/
-        DeMs6uYX07xiuYUM=; b=llX/86K09l8ElFJedOdbRBX28xXwWgVXDiSP1UmlzEc
-        0syw5duUk8wRFEenqJyGIEzj3uejgA/RAO0ihDyctwuBRKt4En+wVRZLcxe4Bb9O
-        eJeL8PqhhR2XcPF86CsVkKqVnTZ4FIT68rPZx14qmHE2wgJx8CDiUZzFuO5BieX0
-        pNtoIz5K12kEQQ5yK0CdgtK65RPRZLToydcdVErJ25xkPJ3ZYsmqmaU7adsJp8Jc
-        CBzvIGiyWfj2dDQJ7f5PvXY0opTznBPMrlRwul81cEqdtRvQUvGdJP7NVbzh2nEv
-        HHXiGC7k4oHPNYZGfEhTLBi7utfgiAAol2Vkj4w2new==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=b2k2hy
-        0obFtFe40lOY3WleQMvx/DeMs6uYX07xiuYUM=; b=AlKMLq1bLc892cBt1Q1KmH
-        64s5VqdC0fR2BCskqdMmeTDsrFAJUvB19qD9+rdCGLIHrPTy+b2mqyieQPz3vl6Y
-        QXMVd86z3xEPE21Vm3oX2GuGIYQPBbSGeu4GbfBLhGS5maEihFTX4UdNu7jpQI8w
-        WSTlDD9g4gS306oNBHLDdytTNh5cqgKlWwsDR35pkpV5v0tW56qjDkWJiUiF8hnp
-        YIBn1zxhySKqwJWQIiz5XctteeJO+/4HskGAHixqchPRIqbbvGNrUkCldujXUHR2
-        qNmdfSSUGCbgI32etLuy8ZTrar6ewFShjd11rrTrtn9rBhqzZaoJAH0NzSFbx0rA
-        ==
-X-ME-Sender: <xms:VVymXh84y6tCANY9_Y_ncc6r5-QCGhwGOfqqJ9RNkpt9TLq4Qon5Lw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrheekgdekvdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtjeenucfhrhhomheptfihlhgrnhcu
-    ffhmvghllhhouceomhgrihhlsehrhihlrghnrdgtohhffhgvvgeqnecukfhppedutdekrd
-    egledrudehkedrkeegnecuvehluhhsthgvrhfuihiivgepvdenucfrrghrrghmpehmrghi
-    lhhfrhhomhepmhgrihhlsehrhihlrghnrdgtohhffhgvvg
-X-ME-Proxy: <xmx:VVymXuod60fD-NHqfvXPabNrd-OqBDq8iulf3jv79mvzYPhlRNje-Q>
-    <xmx:VVymXsVmbP3nIDuarlYiRlGuLe4QB4pgdeJx_Uf4Yrn2bSbVJM5vsg>
-    <xmx:VVymXpJyts3RNPEbSi-swCQfx_v0abltrYHVqGZNlNXlU22Cdr8ZxQ>
-    <xmx:VlymXr1ioOfPPgoUySYicbyyax3FGEoCfJSXL7qPQIu033VdiQ5uiA>
-Received: from athena (pool-108-49-158-84.bstnma.fios.verizon.net [108.49.158.84])
-        by mail.messagingengine.com (Postfix) with ESMTPA id A9D47328005D;
-        Mon, 27 Apr 2020 00:15:17 -0400 (EDT)
-Date:   Mon, 27 Apr 2020 00:15:18 -0400
-From:   Rylan Dmello <mail@rylan.coffee>
-To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, Benjamin Poirier <bpoirier@suse.com>,
-        Jiri Pirko <jpirko@redhat.com>
-Subject: [PATCH 3/3] staging: qlge: Remove print statements for lbq_clean_idx
- and lbq_free_cnt
-Message-ID: <aa7e0197f4e34cec0855124e45696e33dd9527e5.1587959245.git.mail@rylan.coffee>
-References: <cover.1587959245.git.mail@rylan.coffee>
+        id S1726231AbgD0EVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 00:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52446 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725616AbgD0EVr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 00:21:47 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC2DC061A0F
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 21:21:45 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id i16so15430188ils.12
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 21:21:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=bLspSYpHKIimJS6Zp/uEGn7y8GrbBdjIhm9L26EtwFg=;
+        b=RPw/5avgA8khBdwLbEE8hL2p9Y6/E6QSiCo2NAJ4Xb1os+mWxSKbNeOtKN7xlf5j8N
+         gd4J3Nz1RZCf3wcJEKDHEk9TSvw2GyiObba9szGkGdtVIlCtBvf+IFRKZAYPvuN40tUt
+         Lz03/DkLTNws3J1IPHphZRKx494FYXwgAidTgspfP5frzOGCtVd51yv5bst/WoVDFWGQ
+         LlgCyzUv4bJzaVigbkVCswXoXFEDIifJTvsxr0rT+fao1OUx8utzp9AY1jJZy5uF1PwG
+         mlNiwZ/YHWKj7Uc2QBmVjaV7gORRfvw1UVU9CWnWUNuM4NeAxt+C9RBHZs8xDnh8fTml
+         Yduw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=bLspSYpHKIimJS6Zp/uEGn7y8GrbBdjIhm9L26EtwFg=;
+        b=OoHNZ6cVf1H/zvWUGPNw8ndfqKXP2fr77GDwJAVC6vjR4bZ5a8D2ne92SOXPnoXYPr
+         vaN2O9m+VIUYJ8c8rKCxVnx2w7QzWUcXS3g3qtdNhzgWdoCR6kx9URoDkuuopjZH0tZW
+         E8fyMhGnhaK1lj6v9yt4obAz+WBJbzWNk9o/vECuLXGmSmHjr4GtVrN1ks82b7hgr8XU
+         9OPWpV2B68g43peJ9pK+WF7zvEF+v4dDWc6mEE8VIRjMn4mRdI9V8MEthUm8hLXEcbaC
+         ptcK0zCmwEhH31Euw3C8Se/8zU5tmyBrwJZHw164cBDW1ZbnsH7c9aI8RqkCJff+oh24
+         ONaA==
+X-Gm-Message-State: AGi0Pua8lhglr+KRwy8DGjEIx2ltbjr9Y1QTF6LSna8TnlM4MNTPK+qs
+        nHr4sG94HgKb3TjgWDQvPTCpIXv6sIAoMNOb1go=
+X-Google-Smtp-Source: APiQypL7fNqlJCXIFTnkB/qD4mhPYe+Gl8u3KKVunP7tUyIL8kRfYIfcaTU4KD6CIXu/HrP+kxHc0fSOLXPeqX0xvQQ=
+X-Received: by 2002:a92:aa07:: with SMTP id j7mr182932ili.40.1587961305335;
+ Sun, 26 Apr 2020 21:21:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <cover.1587959245.git.mail@rylan.coffee>
+Received: by 2002:a92:a185:0:0:0:0:0 with HTTP; Sun, 26 Apr 2020 21:21:44
+ -0700 (PDT)
+Reply-To: ps.a.ecowasnepad@gmail.com
+From:   Mark Boa <suwabamorg@gmail.com>
+Date:   Sun, 26 Apr 2020 21:21:44 -0700
+Message-ID: <CAC7Sc8vKX49VLocY3zj=ZBWSMt6RvnrQh8vTGGEuDVajkR+O_Q@mail.gmail.com>
+Subject: Good Day
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove debug print statements referring to non-existent fields
-'lbq_clean_idx' and 'lbq_free_cnt' in the 'rx_ring' struct, which causes
-a compilation failure when QL_DEV_DUMP is set.
+Soliciting Your Consent,
 
-These fields were initially removed as a part of commit aec626d2092f
-("staging: qlge: Update buffer queue prod index despite oom") in 2019.
-
-Their replacement fields ('next_to_use' and 'next_to_clean') are already
-being printed, so this patch does not add new debug statements for them.
-
-Signed-off-by: Rylan Dmello <mail@rylan.coffee>
----
- drivers/staging/qlge/qlge_dbg.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
-index bf157baace54..058889687907 100644
---- a/drivers/staging/qlge/qlge_dbg.c
-+++ b/drivers/staging/qlge/qlge_dbg.c
-@@ -1757,8 +1757,6 @@ void ql_dump_rx_ring(struct rx_ring *rx_ring)
- 	       rx_ring->lbq.prod_idx_db_reg);
- 	pr_err("rx_ring->lbq.next_to_use = %d\n", rx_ring->lbq.next_to_use);
- 	pr_err("rx_ring->lbq.next_to_clean = %d\n", rx_ring->lbq.next_to_clean);
--	pr_err("rx_ring->lbq_clean_idx = %d\n", rx_ring->lbq_clean_idx);
--	pr_err("rx_ring->lbq_free_cnt = %d\n", rx_ring->lbq_free_cnt);
- 
- 	pr_err("rx_ring->sbq.base = %p\n", rx_ring->sbq.base);
- 	pr_err("rx_ring->sbq.base_dma = %llx\n",
--- 
-2.26.2
-
+I am confirming if you received my previous email regarding you having
+the same Surname with my late client. Who, leaving in
+your name in his last will of testament a huge sum of money. Please
+email me for more information.
+Regards,
+Attorney Mark Boa.
+Contact Email: ps.a.ecowasnepad@gmail.com
