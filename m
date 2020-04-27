@@ -2,116 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E441E1BAFCB
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 22:53:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 560C51BAFD0
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 22:56:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726508AbgD0Uw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 16:52:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55632 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726233AbgD0Uw5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Apr 2020 16:52:57 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 606522070B;
-        Mon, 27 Apr 2020 20:52:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588020776;
-        bh=p5RSh53pkxKLb3GRpXAsI7q8krt7jS1T3KPnqUokVrQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=1+/4jTIsbraeaekPuSRFcV4psC850aI/wFwrJZK7xyxp+uE+iSVKP7Cs3SRKSrH8O
-         gAqhcQrYhGAvgne8Pt9qRfXqC4UUzmhFFf6hmtO/fYsJa4CGhlhdAAEOKWSED5gRdx
-         0nquQ/xMbiVtzDIJO2Bxg3Ypjg/DO08YQmeoP7iI=
-Date:   Mon, 27 Apr 2020 13:52:54 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     netdev@vger.kernel.org, Adhipati Blambangan <adhipati@tuta.io>,
-        David Ahern <dsahern@gmail.com>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Subject: Re: [PATCH net v3] net: xdp: account for layer 3 packets in generic
- skb handler
-Message-ID: <20200427135254.3ab8628d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200427204208.2501-1-Jason@zx2c4.com>
-References: <CAHmME9oN0JueLJxvS48-o9CWAhkaMQYACG3m8TRixxTo6+Oh-A@mail.gmail.com>
-        <20200427204208.2501-1-Jason@zx2c4.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        id S1726426AbgD0U4y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 16:56:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38826 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726233AbgD0U4y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 16:56:54 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3013C0610D5
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 13:56:53 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id t40so149083pjb.3
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 13:56:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=Vd7lbo+APjeMiVa38cT/Njf//dKlMw+4/TEoWbGCVEg=;
+        b=hehimztGjNLGOPYsmYHKOszUAFb5VxHsGfHShDZG3MZXGF3PyzEXkNT3jk4JsrJrq4
+         QdI+lPv+2EIRrQrPM+Wvz58YQ3u6rI/olPMwKUxvRbpCkjvtP386if8JGcuvlUytm1cm
+         UosUSeh7CiARBH+y97IfjJqt9/46dHkGjbRNA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Vd7lbo+APjeMiVa38cT/Njf//dKlMw+4/TEoWbGCVEg=;
+        b=i7Mu6VVq/TH1BrPAI2wjbsS41nV4t/nGFxtgEs8vodxwYd191kaQkrCB6zV5/qB+4A
+         SOJO4Hnjhydl8ILgakBNvlDEOxbVejeIbRDtnXR6dA19pOzSevqw2ey1sa7lFz5AdGu1
+         3JTpO/cJblv7F+RItc+vB9gCchzoP1IYeBvRr5AU6+omTZT4F8GSSneCqFlG9bO4+nY9
+         WhXDak63S7WJxX1g21bBvmY3glzSJlZQlH8z+aNmfl6ViIi5nF76zA8PpqQgTrMdHjrN
+         lNjgpMXGprqKg2LhjtozxlFPR7b+5E0bCu2/3Z7HAtKjrujy/Hy7zFzf26LX6/EBTWaQ
+         +9Xg==
+X-Gm-Message-State: AGi0PuawbwBTdrlvDfABpGte4KSieldz/DfbYK54fVRyTqDW1pMjxN6X
+        gW232r3VOviuuGzgnN72QITp5g==
+X-Google-Smtp-Source: APiQypICon/lz//oKDTKDsztgLlP8r6L7mJjipX5gdFxEb/WyHwvHtBc4yISVAeeaD21Lq+9gsl8xg==
+X-Received: by 2002:a17:90a:8c85:: with SMTP id b5mr612312pjo.187.1588021013307;
+        Mon, 27 Apr 2020 13:56:53 -0700 (PDT)
+Received: from monster-08.mvlab.cumulusnetworks.com. (fw.cumulusnetworks.com. [216.129.126.126])
+        by smtp.googlemail.com with ESMTPSA id fh18sm443830pjb.0.2020.04.27.13.56.52
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 27 Apr 2020 13:56:52 -0700 (PDT)
+From:   Roopa Prabhu <roopa@cumulusnetworks.com>
+X-Google-Original-From: Roopa Prabhu
+To:     dsahern@gmail.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, rdunlap@infradead.org,
+        nikolay@cumulusnetworks.com, bpoirier@cumulusnetworks.com
+Subject: [PATCH net-next v4 0/3] New sysctl to turn off nexthop API compat mode
+Date:   Mon, 27 Apr 2020 13:56:44 -0700
+Message-Id: <1588021007-16914-1-git-send-email-roopa@cumulusnetworks.com>
+X-Mailer: git-send-email 2.1.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 27 Apr 2020 14:42:08 -0600 Jason A. Donenfeld wrote:
-> A user reported that packets from wireguard were possibly ignored by XDP
-> [1]. Apparently, the generic skb xdp handler path seems to assume that
-> packets will always have an ethernet header, which really isn't always
-> the case for layer 3 packets, which are produced by multiple drivers.
-> This patch fixes the oversight. If the mac_len is 0, then we assume
-> that it's a layer 3 packet, and in that case prepend a pseudo ethhdr to
-> the packet whose h_proto is copied from skb->protocol, which will have
-> the appropriate v4 or v6 ethertype. This allows us to keep XDP programs'
-> assumption correct about packets always having that ethernet header, so
-> that existing code doesn't break, while still allowing layer 3 devices
-> to use the generic XDP handler.
->=20
-> [1] https://lore.kernel.org/wireguard/M5WzVK5--3-2@tuta.io/
->=20
-> Reported-by: Adhipati Blambangan <adhipati@tuta.io>
-> Cc: David Ahern <dsahern@gmail.com>
-> Cc: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
->  net/core/dev.c | 10 +++++++++-
->  1 file changed, 9 insertions(+), 1 deletion(-)
->=20
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 77c154107b0d..3bc9a96bc808 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -4510,9 +4510,9 @@ static u32 netif_receive_generic_xdp(struct sk_buff=
- *skb,
->  	u32 metalen, act =3D XDP_DROP;
->  	__be16 orig_eth_type;
->  	struct ethhdr *eth;
-> +	u32 mac_len =3D ~0;
->  	bool orig_bcast;
->  	int hlen, off;
-> -	u32 mac_len;
-> =20
->  	/* Reinjected packets coming from act_mirred or similar should
->  	 * not get XDP generic processing.
-> @@ -4544,6 +4544,12 @@ static u32 netif_receive_generic_xdp(struct sk_buf=
-f *skb,
->  	 * header.
->  	 */
->  	mac_len =3D skb->data - skb_mac_header(skb);
-> +	if (!mac_len) {
-> +		eth =3D skb_push(skb, sizeof(struct ethhdr));
-> +		eth_zero_addr(eth->h_source);
-> +		eth_zero_addr(eth->h_dest);
-> +		eth->h_proto =3D skb->protocol;
-> +	}
->  	hlen =3D skb_headlen(skb) + mac_len;
->  	xdp->data =3D skb->data - mac_len;
->  	xdp->data_meta =3D xdp->data;
-> @@ -4611,6 +4617,8 @@ static u32 netif_receive_generic_xdp(struct sk_buff=
- *skb,
->  		kfree_skb(skb);
->  		break;
->  	}
-> +	if (!mac_len)
-> +		skb_pull(skb, sizeof(struct ethhdr));
+From: Roopa Prabhu <roopa@cumulusnetworks.com>
 
-Is this going to work correctly with XDP_TX? presumably wireguard
-doesn't want the ethernet L2 on egress, either? And what about
-redirects?
+Currently route nexthop API maintains user space compatibility
+with old route API by default. Dumps and netlink notifications
+support both new and old API format. In systems which have
+moved to the new API, this compatibility mode cancels some
+of the performance benefits provided by the new nexthop API.
+    
+This patch adds new sysctl nexthop_compat_mode which is on
+by default but provides the ability to turn off compatibility
+mode allowing systems to run entirely with the new routing
+API if they wish to. Old route API behaviour and support is
+not modified by this sysctl
 
-I'm not sure we can paper over the L2 differences between interfaces.
-Isn't user supposed to know what interface the program is attached to?
-I believe that's the case for cls_bpf ingress, right?
+v4: 
+	- Use davids note for Documenting the sysctl
+	- test with latest iproute2 and adjust 'pref'
 
->  	return act;
->  }
+v3: 
+	- Document new sysctl
+	- move sysctl to use proc_dointvec_minmax with 0 and 1 values
+	- selftest: remove pref medium in ipv6 test
+
+v2:
+       - Incorporate David Aherns pointers on covering dumps and
+         nexthop deletes. Also use one ipv4 sysctl to cover
+         both ipv4 and ipv6 (I see it is done that way for many
+         others)
+       - Added a selftest to cover dump and notfications for nexthop
+	 api compat mode
+
+Roopa Prabhu (3):
+  net: ipv6: new arg skip_notify to ip6_rt_del
+  net: ipv4: add sysctl for nexthop api compatibility mode
+  selftests: net: add new testcases for nexthop API compat mode sysctl
+
+ Documentation/networking/ip-sysctl.txt      |  14 ++
+ include/net/ip6_route.h                     |   2 +-
+ include/net/ipv6_stubs.h                    |   2 +-
+ include/net/netns/ipv4.h                    |   2 +
+ net/ipv4/af_inet.c                          |   1 +
+ net/ipv4/fib_semantics.c                    |   3 +
+ net/ipv4/nexthop.c                          |   5 +-
+ net/ipv4/sysctl_net_ipv4.c                  |   9 ++
+ net/ipv6/addrconf.c                         |  12 +-
+ net/ipv6/addrconf_core.c                    |   3 +-
+ net/ipv6/anycast.c                          |   4 +-
+ net/ipv6/ndisc.c                            |   2 +-
+ net/ipv6/route.c                            |  14 +-
+ tools/testing/selftests/net/fib_nexthops.sh | 198 +++++++++++++++++++++++++++-
+ 14 files changed, 250 insertions(+), 21 deletions(-)
+
+-- 
+2.1.4
 
