@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98A4D1B958C
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 05:41:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10DF31B958D
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 05:41:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726496AbgD0Dld (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 23:41:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46260 "EHLO
+        id S1726516AbgD0Dlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 23:41:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726460AbgD0Dlc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 23:41:32 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DBFAC061A0F
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 20:41:32 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id fu13so6271559pjb.5
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 20:41:32 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726429AbgD0Dld (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 23:41:33 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B85ACC061A0F
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 20:41:33 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id y6so6932143pjc.4
+        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 20:41:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=PTOk53F33eTv8lkmO9IyswbUp3ncnE/JKpB7VxyzaS4=;
-        b=P56c12/2tv8wLnalasEceSMUzR+sBdmfcyj/2IbJdG2AwVPvsjOEUlgVD2Kp97D9lB
-         LQ23VUEPpMPxZKjynOPi8ZbNf/yuUIQiQAuwTYFN/CHdinzn9iIFgzjj85f0qOvIYT7j
-         v6wy8fr3YeFQR5xrCHKrr7CuFdI3hIIaE0CLg=
+        bh=8o7CJb/ckC/Sg4EK7tppeI14IKIL+Lr7OqBzEcAolEk=;
+        b=QeAByzQPnq9UoYn0MW/130QBKQGEQzEwjHlyxnQxMa1xQynOLBwXJIjXiiZyzAiuZi
+         pjHJpptiegM7H2EVyO0DOjSBfD1ZTRB3LInRd3WZazKSTX2CAE748GPVyfwEZXemlS/6
+         hXcU9T+OZIK8JSv0RbOIADAgaHqP8JX1rWhxU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=PTOk53F33eTv8lkmO9IyswbUp3ncnE/JKpB7VxyzaS4=;
-        b=DW/ISIuGK+l402qFdL1pWIATprQ6lyzGFJgkvYxXvJaa87K6EakTl4oGt1qVQ0lVt0
-         TMe4tkf++yaYH+5lB1tokL70iIBKvH4co5CG5dD4+LaOfWoQiUu8qMz8CjFPe2P2ySq3
-         G6B+20FDP4bF5KPuU5Gt3jKr4z7w+VsuJem4q4LNAegJ4p5JdFSpz5JMxK4Qk3fFTGia
-         QudbDplh+AFHXyXpsJeJVY4oEXmm3btYxN0YABO3RT0v8ThVwTWd8/hKbmw0mUqag4fi
-         pEyXMH9u+12oiK1JRyxnwFNAl+v7DyFLEVXEZAcYNKEiGor/pOnpxIJhmHrh+X0ncuEs
-         cvEw==
-X-Gm-Message-State: AGi0PuZsb1KdvOuZ3UWkj0Gkpn98gA5cTpUukfO1Rupkmw2w6pQ38Djo
-        n0jY6T3nZImoWfXYreCYq4Uy8Q==
-X-Google-Smtp-Source: APiQypLtMPmUZziTtdWU3B78/FTZrWl/TK4rWvhOsjowloch38liHLAO3ocgiwZbaRX7SayU96lW8g==
-X-Received: by 2002:a17:90a:23a3:: with SMTP id g32mr21437481pje.78.1587958891827;
-        Sun, 26 Apr 2020 20:41:31 -0700 (PDT)
+        bh=8o7CJb/ckC/Sg4EK7tppeI14IKIL+Lr7OqBzEcAolEk=;
+        b=MNyNGTQzpR0jyl1f25oT4ddeiTKredrBA7T8xVOxesikTV/IRrAO0qWhnrB1xFTVyI
+         DIAzQt+2D/weO0ejZQvHoACYTmMQbXeFQSGoLZ6xbZ7Bq0pBCLbptaPM6FMv4bLwUrAk
+         c+FXh7BbcumYA5Cg3oE0JWpI9sqR0de0hmSSHuT+oP66ZeiBTLJksIprJb7nNbJzZHre
+         HpwgpcZv6IUtxqZOmfJFKYYrxJqCUnuBUIO8US0/eHBB9aWyPFY+hZxe5eXjOQhBUkcP
+         Z1x88SwA2fcvD2FgAKkmfFxvjCuD2PVsp6ijK4XOXP5ldIo8f5Ysboq282Ipc1qAJsWk
+         pmGg==
+X-Gm-Message-State: AGi0Pubk6DUHacIlO8kjAoh0e/uFpwoW/6ay4CKxZwsJhGSEjLe6QPU8
+        pgKO+M1x9X3/RGCPPbi3nAHmGQ==
+X-Google-Smtp-Source: APiQypKFyOIxcDuJt92qYqk3B8dFAQSFJErl0oNjnTPmEurpeK3QdQKB0maIGO164jS2mW0jXtsIJA==
+X-Received: by 2002:a17:90a:3422:: with SMTP id o31mr21241953pjb.18.1587958893239;
+        Sun, 26 Apr 2020 20:41:33 -0700 (PDT)
 Received: from monster-08.mvlab.cumulusnetworks.com. (fw.cumulusnetworks.com. [216.129.126.126])
-        by smtp.googlemail.com with ESMTPSA id 6sm11200858pfj.123.2020.04.26.20.41.30
+        by smtp.googlemail.com with ESMTPSA id 6sm11200858pfj.123.2020.04.26.20.41.31
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 26 Apr 2020 20:41:31 -0700 (PDT)
+        Sun, 26 Apr 2020 20:41:32 -0700 (PDT)
 From:   Roopa Prabhu <roopa@cumulusnetworks.com>
 X-Google-Original-From: Roopa Prabhu
 To:     dsahern@gmail.com, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, rdunlap@infradead.org,
         nikolay@cumulusnetworks.com, bpoirier@cumulusnetworks.com
-Subject: [PATCH net-next v3 2/3] net: ipv4: add sysctl for nexthop api compatibility mode
-Date:   Sun, 26 Apr 2020 20:41:24 -0700
-Message-Id: <1587958885-29540-3-git-send-email-roopa@cumulusnetworks.com>
+Subject: [PATCH net-next v3 3/3] selftests: net: add new testcases for nexthop API compat mode sysctl
+Date:   Sun, 26 Apr 2020 20:41:25 -0700
+Message-Id: <1587958885-29540-4-git-send-email-roopa@cumulusnetworks.com>
 X-Mailer: git-send-email 2.1.4
 In-Reply-To: <1587958885-29540-1-git-send-email-roopa@cumulusnetworks.com>
 References: <1587958885-29540-1-git-send-email-roopa@cumulusnetworks.com>
@@ -61,161 +61,237 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Roopa Prabhu <roopa@cumulusnetworks.com>
 
-Current route nexthop API maintains user space compatibility
-with old route API by default. Dumps and netlink notifications
-support both new and old API format. In systems which have
-moved to the new API, this compatibility mode cancels some
-of the performance benefits provided by the new nexthop API.
-
-This patch adds new sysctl nexthop_compat_mode which is on
-by default but provides the ability to turn off compatibility
-mode allowing systems to run entirely with the new routing
-API. Old route API behaviour and support is not modified by this
-sysctl.
-
-Uses a single sysctl to cover both ipv4 and ipv6 following
-other sysctls. Covers dumps and delete notifications as
-suggested by David Ahern.
+New tests to check route dump and notifications with
+net.ipv4.nexthop_compat_mode on and off.
 
 Signed-off-by: Roopa Prabhu <roopa@cumulusnetworks.com>
 ---
- Documentation/networking/ip-sysctl.txt | 14 ++++++++++++++
- include/net/netns/ipv4.h               |  2 ++
- net/ipv4/af_inet.c                     |  1 +
- net/ipv4/fib_semantics.c               |  3 +++
- net/ipv4/nexthop.c                     |  5 +++--
- net/ipv4/sysctl_net_ipv4.c             |  9 +++++++++
- net/ipv6/route.c                       |  3 ++-
- 7 files changed, 34 insertions(+), 3 deletions(-)
+ tools/testing/selftests/net/fib_nexthops.sh | 198 +++++++++++++++++++++++++++-
+ 1 file changed, 196 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
-index 6fcfd31..02029b5 100644
---- a/Documentation/networking/ip-sysctl.txt
-+++ b/Documentation/networking/ip-sysctl.txt
-@@ -1553,6 +1553,20 @@ skip_notify_on_dev_down - BOOLEAN
- 	on userspace caches to track link events and evict routes.
- 	Default: false (generate message)
+diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
+index 796670e..21454ca 100755
+--- a/tools/testing/selftests/net/fib_nexthops.sh
++++ b/tools/testing/selftests/net/fib_nexthops.sh
+@@ -19,8 +19,8 @@ ret=0
+ ksft_skip=4
  
-+nexthop_compat_mode - BOOLEAN
-+	Controls whether new route nexthop API is backward compatible
-+	with old route API. By default Route nexthop API maintains
-+	user space compatibility with old route API: Which means
-+	Route dumps and netlink notifications include both new and
-+	old route attributes. In systems which have moved to the new API,
-+	this compatibility mode provides a way to turn off the old
-+	notifications and route attributes in dumps. This sysctl is on
-+	by default but provides the ability to turn off compatibility
-+	mode allowing systems to run entirely with the new routing
-+	nexthop API. Old route API behaviour and support is not modified
-+	by this sysctl
-+	Default: true (backward compat mode)
-+
- IPv6 Fragmentation:
+ # all tests in this script. Can be overridden with -t option
+-IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime"
+-IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime"
++IPV4_TESTS="ipv4_fcnal ipv4_grp_fcnal ipv4_withv6_fcnal ipv4_fcnal_runtime ipv4_compat_mode"
++IPV6_TESTS="ipv6_fcnal ipv6_grp_fcnal ipv6_fcnal_runtime ipv6_compat_mode"
  
- ip6frag_high_thresh - INTEGER
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index 154b8f0..5acdb4d 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -111,6 +111,8 @@ struct netns_ipv4 {
- 	int sysctl_tcp_early_demux;
- 	int sysctl_udp_early_demux;
- 
-+	int sysctl_nexthop_compat_mode;
-+
- 	int sysctl_fwmark_reflect;
- 	int sysctl_tcp_fwmark_accept;
- #ifdef CONFIG_NET_L3_MASTER_DEV
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index c618e24..6177c4b 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1835,6 +1835,7 @@ static __net_init int inet_init_net(struct net *net)
- 	net->ipv4.sysctl_ip_early_demux = 1;
- 	net->ipv4.sysctl_udp_early_demux = 1;
- 	net->ipv4.sysctl_tcp_early_demux = 1;
-+	net->ipv4.sysctl_nexthop_compat_mode = 1;
- #ifdef CONFIG_SYSCTL
- 	net->ipv4.sysctl_ip_prot_sock = PROT_SOCK;
- #endif
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index 6ed8c93..7546b88 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -1780,6 +1780,8 @@ int fib_dump_info(struct sk_buff *skb, u32 portid, u32 seq, int event,
- 			goto nla_put_failure;
- 		if (nexthop_is_blackhole(fi->nh))
- 			rtm->rtm_type = RTN_BLACKHOLE;
-+		if (!fi->fib_net->ipv4.sysctl_nexthop_compat_mode)
-+			goto offload;
- 	}
- 
- 	if (nhs == 1) {
-@@ -1805,6 +1807,7 @@ int fib_dump_info(struct sk_buff *skb, u32 portid, u32 seq, int event,
- 			goto nla_put_failure;
- 	}
- 
-+offload:
- 	if (fri->offload)
- 		rtm->rtm_flags |= RTM_F_OFFLOAD;
- 	if (fri->trap)
-diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index 9999687..3957364 100644
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -784,7 +784,8 @@ static void __remove_nexthop_fib(struct net *net, struct nexthop *nh)
- 	list_for_each_entry_safe(f6i, tmp, &nh->f6i_list, nh_list) {
- 		/* __ip6_del_rt does a release, so do a hold here */
- 		fib6_info_hold(f6i);
--		ipv6_stub->ip6_del_rt(net, f6i, false);
-+		ipv6_stub->ip6_del_rt(net, f6i,
-+				      !net->ipv4.sysctl_nexthop_compat_mode);
- 	}
+ ALL_TESTS="basic ${IPV4_TESTS} ${IPV6_TESTS}"
+ TESTS="${ALL_TESTS}"
+@@ -253,6 +253,33 @@ check_route6()
+ 	check_output "${out}" "${expected}"
  }
  
-@@ -1041,7 +1042,7 @@ static int insert_nexthop(struct net *net, struct nexthop *new_nh,
- 	if (!rc) {
- 		nh_base_seq_inc(net);
- 		nexthop_notify(RTM_NEWNEXTHOP, new_nh, &cfg->nlinfo);
--		if (replace_notify)
-+		if (replace_notify && net->ipv4.sysctl_nexthop_compat_mode)
- 			nexthop_replace_notify(net, new_nh, &cfg->nlinfo);
- 	}
++start_ip_monitor()
++{
++	local mtype=$1
++
++	# start the monitor in the background
++	tmpfile=`mktemp /var/run/nexthoptestXXX`
++	mpid=`($IP monitor $mtype > $tmpfile & echo $!) 2>/dev/null`
++	sleep 0.2
++	echo "$mpid $tmpfile"
++}
++
++stop_ip_monitor()
++{
++	local mpid=$1
++	local tmpfile=$2
++	local el=$3
++
++	# check the monitor results
++	kill $mpid
++	lines=`wc -l $tmpfile | cut "-d " -f1`
++	test $lines -eq $el
++	rc=$?
++	rm -rf $tmpfile
++
++	return $rc
++}
++
+ ################################################################################
+ # basic operations (add, delete, replace) on nexthops and nexthop groups
+ #
+@@ -857,6 +884,173 @@ ipv4_fcnal_runtime()
+ 	log_test $? 0 "IPv4 route with MPLS encap, v6 gw - check"
+ }
  
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 81b267e..95ad71e 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -711,6 +711,15 @@ static struct ctl_table ipv4_net_table[] = {
- 		.proc_handler   = proc_tcp_early_demux
- 	},
- 	{
-+		.procname       = "nexthop_compat_mode",
-+		.data           = &init_net.ipv4.sysctl_nexthop_compat_mode,
-+		.maxlen         = sizeof(int),
-+		.mode           = 0644,
-+		.proc_handler   = proc_dointvec_minmax,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_ONE,
-+	},
-+	{
- 		.procname	= "ip_default_ttl",
- 		.data		= &init_net.ipv4.sysctl_ip_default_ttl,
- 		.maxlen		= sizeof(int),
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 486c36a..803212a 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -5557,7 +5557,8 @@ static int rt6_fill_node(struct net *net, struct sk_buff *skb,
- 		if (nexthop_is_blackhole(rt->nh))
- 			rtm->rtm_type = RTN_BLACKHOLE;
- 
--		if (rt6_fill_node_nexthop(skb, rt->nh, &nh_flags) < 0)
-+		if (net->ipv4.sysctl_nexthop_compat_mode &&
-+		    rt6_fill_node_nexthop(skb, rt->nh, &nh_flags) < 0)
- 			goto nla_put_failure;
- 
- 		rtm->rtm_flags |= nh_flags;
++sysctl_nexthop_compat_mode_check()
++{
++	local sysctlname="net.ipv4.nexthop_compat_mode"
++	local lprefix=$1
++
++	IPE="ip netns exec me"
++
++	$IPE sysctl -q $sysctlname 2>&1 >/dev/null
++	if [ $? -ne 0 ]; then
++		echo "SKIP: kernel lacks nexthop compat mode sysctl control"
++		return $ksft_skip
++	fi
++
++	out=$($IPE sysctl $sysctlname 2>/dev/null)
++	log_test $? 0 "$lprefix default nexthop compat mode check"
++	check_output "${out}" "$sysctlname = 1"
++}
++
++sysctl_nexthop_compat_mode_set()
++{
++	local sysctlname="net.ipv4.nexthop_compat_mode"
++	local mode=$1
++	local lprefix=$2
++
++	IPE="ip netns exec me"
++
++	out=$($IPE sysctl -w $sysctlname=$mode)
++	log_test $? 0 "$lprefix set compat mode - $mode"
++	check_output "${out}" "net.ipv4.nexthop_compat_mode = $mode"
++}
++
++ipv6_compat_mode()
++{
++	local rc
++
++	echo
++	echo "IPv6 nexthop api compat mode test"
++	echo "--------------------------------"
++
++	sysctl_nexthop_compat_mode_check "IPv6"
++	if [ $? -eq $ksft_skip ]; then
++		return $ksft_skip
++	fi
++
++	run_cmd "$IP nexthop add id 62 via 2001:db8:91::2 dev veth1"
++	run_cmd "$IP nexthop add id 63 via 2001:db8:91::3 dev veth1"
++	run_cmd "$IP nexthop add id 122 group 62/63"
++	ipmout=$(start_ip_monitor route)
++
++	run_cmd "$IP -6 ro add 2001:db8:101::1/128 nhid 122"
++	# route add notification should contain expanded nexthops
++	stop_ip_monitor $ipmout 3
++	log_test $? 0 "IPv6 compat mode on - route add notification"
++
++	# route dump should contain expanded nexthops
++	check_route6 "2001:db8:101::1" "2001:db8:101::1 nhid 122 metric 1024 nexthop via 2001:db8:91::2 dev veth1 weight 1 nexthop via 2001:db8:91::3 dev veth1 weight 1"
++	log_test $? 0 "IPv6 compat mode on - route dump"
++
++	# change in nexthop group should generate route notification
++	run_cmd "$IP nexthop add id 64 via 2001:db8:91::4 dev veth1"
++	ipmout=$(start_ip_monitor route)
++	run_cmd "$IP nexthop replace id 122 group 62/64"
++	stop_ip_monitor $ipmout 3
++
++	log_test $? 0 "IPv6 compat mode on - nexthop change"
++
++	# set compat mode off
++	sysctl_nexthop_compat_mode_set 0 "IPv6"
++
++	run_cmd "$IP -6 ro del 2001:db8:101::1/128 nhid 122"
++
++	run_cmd "$IP nexthop add id 62 via 2001:db8:91::2 dev veth1"
++	run_cmd "$IP nexthop add id 63 via 2001:db8:91::3 dev veth1"
++	run_cmd "$IP nexthop add id 122 group 62/63"
++	ipmout=$(start_ip_monitor route)
++
++	run_cmd "$IP -6 ro add 2001:db8:101::1/128 nhid 122"
++	# route add notification should not contain expanded nexthops
++	stop_ip_monitor $ipmout 1
++	log_test $? 0 "IPv6 compat mode off - route add notification"
++
++	# route dump should not contain expanded nexthops
++	check_route6 "2001:db8:101::1" "2001:db8:101::1 nhid 122 metric 1024"
++	log_test $? 0 "IPv6 compat mode off - route dump"
++
++	# change in nexthop group should not generate route notification
++	run_cmd "$IP nexthop add id 64 via 2001:db8:91::4 dev veth1"
++	ipmout=$(start_ip_monitor route)
++	run_cmd "$IP nexthop replace id 122 group 62/64"
++	stop_ip_monitor $ipmout 0
++	log_test $? 0 "IPv6 compat mode off - nexthop change"
++
++	# nexthop delete should not generate route notification
++	ipmout=$(start_ip_monitor route)
++	run_cmd "$IP nexthop del id 122"
++	stop_ip_monitor $ipmout 0
++	log_test $? 0 "IPv6 compat mode off - nexthop delete"
++
++	# set compat mode back on
++	sysctl_nexthop_compat_mode_set 1 "IPv6"
++}
++
++ipv4_compat_mode()
++{
++	local rc
++
++	echo
++	echo "IPv4 nexthop api compat mode"
++	echo "----------------------------"
++
++	sysctl_nexthop_compat_mode_check "IPv4"
++	if [ $? -eq $ksft_skip ]; then
++		return $ksft_skip
++	fi
++
++	run_cmd "$IP nexthop add id 21 via 172.16.1.2 dev veth1"
++	run_cmd "$IP nexthop add id 22 via 172.16.1.2 dev veth1"
++	run_cmd "$IP nexthop add id 122 group 21/22"
++	ipmout=$(start_ip_monitor route)
++
++	run_cmd "$IP ro add 172.16.101.1/32 nhid 122"
++	stop_ip_monitor $ipmout 3
++
++	# route add notification should contain expanded nexthops
++	log_test $? 0 "IPv4 compat mode on - route add notification"
++
++	# route dump should contain expanded nexthops
++	check_route "172.16.101.1" "172.16.101.1 nhid 122 nexthop via 172.16.1.2 dev veth1 weight 1 nexthop via 172.16.1.2 dev veth1 weight 1"
++	log_test $? 0 "IPv4 compat mode on - route dump"
++
++	# change in nexthop group should generate route notification
++	run_cmd "$IP nexthop add id 23 via 172.16.1.3 dev veth1"
++	ipmout=$(start_ip_monitor route)
++	run_cmd "$IP nexthop replace id 122 group 21/23"
++	stop_ip_monitor $ipmout 3
++	log_test $? 0 "IPv4 compat mode on - nexthop change"
++
++	sysctl_nexthop_compat_mode_set 0 "IPv4"
++
++	# cleanup
++	run_cmd "$IP ro del 172.16.101.1/32 nhid 122"
++
++	ipmout=$(start_ip_monitor route)
++	run_cmd "$IP ro add 172.16.101.1/32 nhid 122"
++	stop_ip_monitor $ipmout 1
++	# route add notification should not contain expanded nexthops
++	log_test $? 0 "IPv4 compat mode off - route add notification"
++
++	# route dump should not contain expanded nexthops
++	check_route "172.16.101.1" "172.16.101.1 nhid 122"
++	log_test $? 0 "IPv4 compat mode off - route dump"
++
++	# change in nexthop group should not generate route notification
++	ipmout=$(start_ip_monitor route)
++	run_cmd "$IP nexthop replace id 122 group 21/22"
++	stop_ip_monitor $ipmout 0
++	log_test $? 0 "IPv4 compat mode off - nexthop change"
++
++	# nexthop delete should not generate route notification
++	ipmout=$(start_ip_monitor route)
++	run_cmd "$IP nexthop del id 122"
++	stop_ip_monitor $ipmout 0
++	log_test $? 0 "IPv4 compat mode off - nexthop delete"
++
++	sysctl_nexthop_compat_mode_set 1 "IPv4"
++}
++
+ basic()
+ {
+ 	echo
 -- 
 2.1.4
 
