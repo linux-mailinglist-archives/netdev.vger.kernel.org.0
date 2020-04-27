@@ -2,132 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D76611BA6D6
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 16:47:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4AD91BA6DD
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 16:48:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727768AbgD0OrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 10:47:02 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:30008 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726539AbgD0OrC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 10:47:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587998820;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ddiB4jMApVJxygpX0CgPIMlcKA3qPJtV24eu/rm0sQc=;
-        b=Rp+8+jfPt3buYgTtoDFzYtWczdFNkDeIdCeQNjJtONYckrLX42FFCTqv6tiPGDnMTODLII
-        vfY17fzx2Kl2NZJ5MGUWdGHPDmwGx9LDaUaZZDGwKb2bjTn6gE+ojNIXwPRdwZZzCW3E3Q
-        0tuEr3neZmDMmhGbwNx30NRFEXIR3Yw=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-129-In-YMzQsP9-d3bphRqvpPw-1; Mon, 27 Apr 2020 10:46:59 -0400
-X-MC-Unique: In-YMzQsP9-d3bphRqvpPw-1
-Received: by mail-lf1-f70.google.com with SMTP id d5so7588510lfb.5
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 07:46:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ddiB4jMApVJxygpX0CgPIMlcKA3qPJtV24eu/rm0sQc=;
-        b=KnUOqGGbuqIa8dw78uYvtlSDuW0feoREybOnRhvGD1yHlKsMEtkbfNaeaPVel2chh1
-         vouSZcmc2Z92P3IyBqyNXlw8k36td6Qh5xa7lqt9ZfhJbqcRZdNr0SNPwSo9UAyxmvgY
-         +8AcAGR4SeA12vrIwhKffDS2q/7b2jotEqD+9h391hLF9Mas/uyccLzFRKvhC5K6U99B
-         +NoVQgGY3Lj6d4maOewz5j0jdMJ7mVayIVuhn/P9JQvSzHCxV4e7DDhgnVRUMbHQRoug
-         QFkKbp6U0/vkAK1m/SMPqVWdui9CIQa6tscfVf2QTedLL/CtaBwn/SsSAlN3Zw07qGXY
-         7efg==
-X-Gm-Message-State: AGi0PubULuE0+Zm/j/VL75J+4Fs2K9LJecRBJlqouvJYnotECS3zTisk
-        vsEGC0tDJ/S1oZN8xXxRXNndsBtUq6REjLW7YghYSwJ1u1Rq7xmxJS3JtiPPekaFsMeh+bwmDTf
-        d3Gpc11/h9pkJ+EQh
-X-Received: by 2002:a2e:9d83:: with SMTP id c3mr13719974ljj.90.1587998817507;
-        Mon, 27 Apr 2020 07:46:57 -0700 (PDT)
-X-Google-Smtp-Source: APiQypLji2QumBqqpxNvq3ae2aYOimecX9XLqyNhWHzRGypgd/7nOtNmrxgSlj4rZhAGQXiENtVr1Q==
-X-Received: by 2002:a2e:9d83:: with SMTP id c3mr13719962ljj.90.1587998817309;
-        Mon, 27 Apr 2020 07:46:57 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id z21sm10173772ljh.42.2020.04.27.07.46.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2020 07:46:56 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id AB6D91814FF; Mon, 27 Apr 2020 16:46:55 +0200 (CEST)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     davem@davemloft.net, jason@zx2c4.com
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org, wireguard@lists.zx2c4.com,
-        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>,
-        Dave Taht <dave.taht@gmail.com>,
-        "Rodney W . Grimes" <ietf@gndrsh.dnsmgr.net>
-Subject: [PATCH net] wireguard: Use tunnel helpers for decapsulating ECN markings
-Date:   Mon, 27 Apr 2020 16:46:25 +0200
-Message-Id: <20200427144625.581110-1-toke@redhat.com>
-X-Mailer: git-send-email 2.26.2
+        id S1727842AbgD0Os3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 10:48:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37164 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726953AbgD0Os3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 10:48:29 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C7CC0610D5;
+        Mon, 27 Apr 2020 07:48:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=YMCdyK8i4NHqmV0CuBigav+at+kNv4arzXM266XsjFA=; b=QhEo1yZ4eckdHv6Ca6QfmGgjk
+        j7W2lb6MAghgTs6Kpp00+HFRYb9nEI9mpZhp8dUlBLZWo+JDClktcag0JllPl7cx1PVkISqGH7dlP
+        SGWZ6fsZMz/StwDqxR/V2PerM4v1PeDOT9X6h/ECvuY5XFNRlJgtXmPKcPSSWnLRdWY4C1bBcYkLv
+        QuOrw9yRpJdfMO3/zKPKI2YVxj4VGQZXxmEqELmNO1//wQf+TWM1URlt+HYddcSQrOknG0XzCnA3R
+        VOtD8qSQ5cLzvsvcthEaECVeCk/uEvp0jdRpb9yshQZ0DaSiG6milrTcX/qY3D86v+6mLd1OFGv9V
+        axBseXLQw==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:44654)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jT53K-0003RG-N2; Mon, 27 Apr 2020 15:48:10 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jT53H-0006kG-32; Mon, 27 Apr 2020 15:48:07 +0100
+Date:   Mon, 27 Apr 2020 15:48:07 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     linux.cj@gmail.com, Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        linux-acpi@vger.kernel.org, Marcin Wojtas <mw@semihalf.com>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
+        Varun Sethi <V.Sethi@nxp.com>, linux-kernel@vger.kernel.org,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [net-next PATCH v2 0/3] Introduce new APIs to support phylink
+ and phy layers
+Message-ID: <20200427144806.GI25745@shell.armlinux.org.uk>
+References: <20200427132409.23664-1-calvin.johnson@oss.nxp.com>
+ <20200427135820.GH25745@shell.armlinux.org.uk>
+ <20200427143238.GA26436@lsv03152.swis.in-blr01.nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200427143238.GA26436@lsv03152.swis.in-blr01.nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-WireGuard currently only propagates ECN markings on tunnel decap according
-to the old RFC3168 specification. However, the spec has since been updated
-in RFC6040 to recommend slightly different decapsulation semantics. This
-was implemented in the kernel as a set of common helpers for ECN
-decapsulation, so let's just switch over WireGuard to using those, so it
-can benefit from this enhancement and any future tweaks.
+On Mon, Apr 27, 2020 at 08:02:38PM +0530, Calvin Johnson wrote:
+> On Mon, Apr 27, 2020 at 02:58:20PM +0100, Russell King - ARM Linux admin wrote:
+> > On Mon, Apr 27, 2020 at 06:54:06PM +0530, Calvin Johnson wrote:
+> > > Following functions are defined:
+> > >   phylink_fwnode_phy_connect()
+> > >   phylink_device_phy_connect()
+> > >   fwnode_phy_find_device()
+> > >   device_phy_find_device()
+> > >   fwnode_get_phy_node()
+> > > 
+> > > First two help in connecting phy to phylink instance.
+> > > Next two help in finding a phy on a mdiobus.
+> > > Last one helps in getting phy_node from a fwnode.
+> > > 
+> > > Changes in v2:
+> > >   move phy code from base/property.c to net/phy/phy_device.c
+> > >   replace acpi & of code to get phy-handle with fwnode_find_reference
+> > >   replace of_ and acpi_ code with generic fwnode to get phy-handle.
+> > > 
+> > > Calvin Johnson (3):
+> > >   device property: Introduce phy related fwnode functions
+> > >   net: phy: alphabetically sort header includes
+> > >   phylink: Introduce phylink_fwnode_phy_connect()
+> > 
+> > Thanks for this, but there's more work that needs to be done here.  I
+> > also think that we must have an ack from ACPI people before this can be
+> > accepted - you are in effect proposing a new way for representing PHYs
+> > in ACPI.
+> 
+> Thanks for your review.
+> 
+> Agree that we need an ack from ACPI people.
+> However, I don't think it is a completely new way as similar acpi approach to
+> get phy-handle is already in place.
+> Please see this:
+> https://elixir.bootlin.com/linux/v5.7-rc3/source/drivers/net/ethernet/apm/xgene/xgene_enet_hw.c#L832
 
-RFC6040 also recommends dropping packets on certain combinations of
-erroneous code points on the inner and outer packet headers which shouldn't
-appear in normal operation. The helper signals this by a return value > 1,
-so also add a handler for this case.
+That was added by:
 
-Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
-Reported-by: Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>
-Cc: Dave Taht <dave.taht@gmail.com>
-Cc: Rodney W. Grimes <ietf@gndrsh.dnsmgr.net>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- drivers/net/wireguard/receive.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+commit 8089a96f601bdfe3e1b41d14bb703aafaf1b8f34
+Author: Iyappan Subramanian <isubramanian@apm.com>
+Date:   Mon Jul 25 17:12:41 2016 -0700
 
-diff --git a/drivers/net/wireguard/receive.c b/drivers/net/wireguard/receive.c
-index da3b782ab7d3..f33e476ad574 100644
---- a/drivers/net/wireguard/receive.c
-+++ b/drivers/net/wireguard/receive.c
-@@ -393,13 +393,15 @@ static void wg_packet_consume_data_done(struct wg_peer *peer,
- 		len = ntohs(ip_hdr(skb)->tot_len);
- 		if (unlikely(len < sizeof(struct iphdr)))
- 			goto dishonest_packet_size;
--		if (INET_ECN_is_ce(PACKET_CB(skb)->ds))
--			IP_ECN_set_ce(ip_hdr(skb));
-+		if (INET_ECN_decapsulate(skb, PACKET_CB(skb)->ds,
-+					 ip_hdr(skb)->tos) > 1)
-+			goto ecn_decap_error;
- 	} else if (skb->protocol == htons(ETH_P_IPV6)) {
- 		len = ntohs(ipv6_hdr(skb)->payload_len) +
- 		      sizeof(struct ipv6hdr);
--		if (INET_ECN_is_ce(PACKET_CB(skb)->ds))
--			IP6_ECN_set_ce(skb, ipv6_hdr(skb));
-+		if (INET_ECN_decapsulate(skb, PACKET_CB(skb)->ds,
-+					 ipv6_get_dsfield(ipv6_hdr(skb))) > 1)
-+			goto ecn_decap_error;
- 	} else {
- 		goto dishonest_packet_type;
- 	}
-@@ -446,6 +448,12 @@ static void wg_packet_consume_data_done(struct wg_peer *peer,
- 	++dev->stats.rx_errors;
- 	++dev->stats.rx_length_errors;
- 	goto packet_processed;
-+ecn_decap_error:
-+	net_dbg_ratelimited("%s: Non-ECT packet from peer %llu (%pISpfsc)\n",
-+			    dev->name, peer->internal_id, &peer->endpoint.addr);
-+	++dev->stats.rx_errors;
-+	++dev->stats.rx_length_errors;
-+	goto packet_processed;
- packet_processed:
- 	dev_kfree_skb(skb);
- }
+    drivers: net: xgene: Add backward compatibility
+
+    This patch adds xgene_enet_check_phy_hanlde() function that checks whether
+    MDIO driver is probed successfully and sets pdata->mdio_driver to true.
+    If MDIO driver is not probed, ethernet driver falls back to backward
+    compatibility mode.
+
+    Since enum xgene_enet_cmd is used by MDIO driver, removing this from
+    ethernet driver.
+
+    Signed-off-by: Iyappan Subramanian <isubramanian@apm.com>
+    Tested-by: Fushen Chen <fchen@apm.com>
+    Tested-by: Toan Le <toanle@apm.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+
+The commit message says nothing about adding ACPI stuff, and searching
+the 'net for the posting of this patch seems to suggest that it wasn't
+obviously copied to any ACPI people:
+
+    https://lists.openwall.net/netdev/2016/07/26/11
+
+Annoyingly, searching for:
+
+    "drivers: net: xgene: Add backward compatibility" site:lore.kernel.org
+
+doesn't find it on lore, so can't get the full headers and therefore
+addresses.
+
+So, yes, there's another driver using it, but the ACPI folk probably
+never got a look-in on that instance.  Even if they had been copied,
+the patch description is probably sufficiently poor that they wouldn't
+have read the patch.
+
+I'd say there's questions over whether ACPI people will find this an
+acceptable approach.
+
+Given that your patch moves this from one driver to a subsystem thing,
+it needs to be ratified by ACPI people, because it's effectively
+becoming a standardised way to represent a PHY in ACPI.
+
 -- 
-2.26.2
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
