@@ -2,88 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1BF91BA6CD
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 16:45:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D76611BA6D6
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 16:47:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728087AbgD0Ope (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 10:45:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36700 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728076AbgD0Opb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 10:45:31 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DECD8C0610D5
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 07:45:30 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id w4so19048571ioc.6
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 07:45:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JOrvGFLeNn45xI/s2rl/zzxlYHtks7rM0/IsMdE+VMY=;
-        b=iowfW7HBSpT+htzCmqY6/CIEXd2XCfxS769yXC6LGs1QoXKTzz4yfAlVF9P8Qv29Oy
-         hmjQFjfGgK4kjEDtD/btNKpDxG+agvQ/Dm3gDsN86UP9NZJk25fxVxSBV8SECsG+pHto
-         X5xXXNA2oery012flkc7uV4sRvIvCX7y5JhZ/0fBjK0A6EBdpUpW/d/y6S3fgiObeLve
-         1Au7stpPbKB6UA1+kBQab0SYmZqFDDcROaZ/8rbQe2/TSKO2WQjbGJjNOT5PX7VzdxH4
-         OkwadeCU2Z96OqsYvO7VRCx/TpVlDMcoUUDW/z9tXNwdIa/CI0u8XIiCmpuJnFUKxVwv
-         LJmQ==
+        id S1727768AbgD0OrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 10:47:02 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:30008 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726539AbgD0OrC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 10:47:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587998820;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ddiB4jMApVJxygpX0CgPIMlcKA3qPJtV24eu/rm0sQc=;
+        b=Rp+8+jfPt3buYgTtoDFzYtWczdFNkDeIdCeQNjJtONYckrLX42FFCTqv6tiPGDnMTODLII
+        vfY17fzx2Kl2NZJ5MGUWdGHPDmwGx9LDaUaZZDGwKb2bjTn6gE+ojNIXwPRdwZZzCW3E3Q
+        0tuEr3neZmDMmhGbwNx30NRFEXIR3Yw=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-129-In-YMzQsP9-d3bphRqvpPw-1; Mon, 27 Apr 2020 10:46:59 -0400
+X-MC-Unique: In-YMzQsP9-d3bphRqvpPw-1
+Received: by mail-lf1-f70.google.com with SMTP id d5so7588510lfb.5
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 07:46:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=JOrvGFLeNn45xI/s2rl/zzxlYHtks7rM0/IsMdE+VMY=;
-        b=px8CULxdGA9rI0JaWoNIBKMX/m+nC1W7nYbZEFvvbhmgSunz0bJZs0yAzoOGYMTRxX
-         SvUwy0C2s6djYbC9GRkZrKblNW6pzMMm5YhOrSgHxw+35S6Dgu5g/CFov62jeM36R3Hz
-         ODSGCMjsjAjN8CeiKEUNcBKhVjgS270DEhDNl7236Z0wFCenvbi90ExzP1mY/rjUklgP
-         v/a3YPQ59FrHbrrSqJfwaZGfSqSyHiOKdPO3f4eV9Txb01dHxCFcZAABxg4eRAFUXgE+
-         IRBCVXrb1ynkQKfXH5/CB4bXuiOgLTTV+BT4PAVn5UTWEtg6GJjCnPuVKcqi6jlQFRHq
-         9cXg==
-X-Gm-Message-State: AGi0PuYjVsfjtsXkBsePzYgHxYUdstpOe1PWYEvb3T/vEvDfO8TYNu6r
-        xRlKkUVfkSOJe9HvsA4IVG4=
-X-Google-Smtp-Source: APiQypJdl3kcE/9h1CDKz/NCuq1/h+Tkqnb+3JkGMCnXqLiZoU6GIuvkNlBbdLEGlKu/nGhoeJIQBA==
-X-Received: by 2002:a05:6602:2e96:: with SMTP id m22mr19219868iow.169.1587998730213;
-        Mon, 27 Apr 2020 07:45:30 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:a88f:52f9:794e:3c1? ([2601:282:803:7700:a88f:52f9:794e:3c1])
-        by smtp.googlemail.com with ESMTPSA id b71sm5543070ill.75.2020.04.27.07.45.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Apr 2020 07:45:29 -0700 (PDT)
-Subject: Re: [PATCH RFC v2] net: xdp: allow for layer 3 packets in generic skb
- handler
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>, netdev@vger.kernel.org
-Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-References: <CAHmME9qXrb0ktCTeMJwt6KRsQxOWkiUNL6PNwb1CT7AK4WsVPA@mail.gmail.com>
- <20200427102229.414644-1-Jason@zx2c4.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <58760713-438f-a332-77ab-e5c34f0f61b6@gmail.com>
-Date:   Mon, 27 Apr 2020 08:45:28 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
+        bh=ddiB4jMApVJxygpX0CgPIMlcKA3qPJtV24eu/rm0sQc=;
+        b=KnUOqGGbuqIa8dw78uYvtlSDuW0feoREybOnRhvGD1yHlKsMEtkbfNaeaPVel2chh1
+         vouSZcmc2Z92P3IyBqyNXlw8k36td6Qh5xa7lqt9ZfhJbqcRZdNr0SNPwSo9UAyxmvgY
+         +8AcAGR4SeA12vrIwhKffDS2q/7b2jotEqD+9h391hLF9Mas/uyccLzFRKvhC5K6U99B
+         +NoVQgGY3Lj6d4maOewz5j0jdMJ7mVayIVuhn/P9JQvSzHCxV4e7DDhgnVRUMbHQRoug
+         QFkKbp6U0/vkAK1m/SMPqVWdui9CIQa6tscfVf2QTedLL/CtaBwn/SsSAlN3Zw07qGXY
+         7efg==
+X-Gm-Message-State: AGi0PubULuE0+Zm/j/VL75J+4Fs2K9LJecRBJlqouvJYnotECS3zTisk
+        vsEGC0tDJ/S1oZN8xXxRXNndsBtUq6REjLW7YghYSwJ1u1Rq7xmxJS3JtiPPekaFsMeh+bwmDTf
+        d3Gpc11/h9pkJ+EQh
+X-Received: by 2002:a2e:9d83:: with SMTP id c3mr13719974ljj.90.1587998817507;
+        Mon, 27 Apr 2020 07:46:57 -0700 (PDT)
+X-Google-Smtp-Source: APiQypLji2QumBqqpxNvq3ae2aYOimecX9XLqyNhWHzRGypgd/7nOtNmrxgSlj4rZhAGQXiENtVr1Q==
+X-Received: by 2002:a2e:9d83:: with SMTP id c3mr13719962ljj.90.1587998817309;
+        Mon, 27 Apr 2020 07:46:57 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id z21sm10173772ljh.42.2020.04.27.07.46.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Apr 2020 07:46:56 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id AB6D91814FF; Mon, 27 Apr 2020 16:46:55 +0200 (CEST)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     davem@davemloft.net, jason@zx2c4.com
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org, wireguard@lists.zx2c4.com,
+        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>,
+        Dave Taht <dave.taht@gmail.com>,
+        "Rodney W . Grimes" <ietf@gndrsh.dnsmgr.net>
+Subject: [PATCH net] wireguard: Use tunnel helpers for decapsulating ECN markings
+Date:   Mon, 27 Apr 2020 16:46:25 +0200
+Message-Id: <20200427144625.581110-1-toke@redhat.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20200427102229.414644-1-Jason@zx2c4.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/27/20 4:22 AM, Jason A. Donenfeld wrote:
-> @@ -4544,6 +4544,13 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
->  	 * header.
->  	 */
->  	mac_len = skb->data - skb_mac_header(skb);
-> +	if (!mac_len) {
-> +		add_eth_hdr = true;
-> +		mac_len = sizeof(struct ethhdr);
-> +		*((struct ethhdr *)skb_push(skb, mac_len)) = (struct ethhdr) {
-> +			.h_proto = skb->protocol
-> +		};
+WireGuard currently only propagates ECN markings on tunnel decap according
+to the old RFC3168 specification. However, the spec has since been updated
+in RFC6040 to recommend slightly different decapsulation semantics. This
+was implemented in the kernel as a set of common helpers for ECN
+decapsulation, so let's just switch over WireGuard to using those, so it
+can benefit from this enhancement and any future tweaks.
 
-please use a temp variable and explicit setting of the fields; that is
-not pleasant to read and can not be more performant than a more direct
+RFC6040 also recommends dropping packets on certain combinations of
+erroneous code points on the inner and outer packet headers which shouldn't
+appear in normal operation. The helper signals this by a return value > 1,
+so also add a handler for this case.
 
-                eth_zero_addr(eth->h_source);
-                eth_zero_addr(eth->h_dest);
-                eth->h_proto = skb->protocol;
+Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+Reported-by: Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>
+Cc: Dave Taht <dave.taht@gmail.com>
+Cc: Rodney W. Grimes <ietf@gndrsh.dnsmgr.net>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+ drivers/net/wireguard/receive.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/wireguard/receive.c b/drivers/net/wireguard/receive.c
+index da3b782ab7d3..f33e476ad574 100644
+--- a/drivers/net/wireguard/receive.c
++++ b/drivers/net/wireguard/receive.c
+@@ -393,13 +393,15 @@ static void wg_packet_consume_data_done(struct wg_peer *peer,
+ 		len = ntohs(ip_hdr(skb)->tot_len);
+ 		if (unlikely(len < sizeof(struct iphdr)))
+ 			goto dishonest_packet_size;
+-		if (INET_ECN_is_ce(PACKET_CB(skb)->ds))
+-			IP_ECN_set_ce(ip_hdr(skb));
++		if (INET_ECN_decapsulate(skb, PACKET_CB(skb)->ds,
++					 ip_hdr(skb)->tos) > 1)
++			goto ecn_decap_error;
+ 	} else if (skb->protocol == htons(ETH_P_IPV6)) {
+ 		len = ntohs(ipv6_hdr(skb)->payload_len) +
+ 		      sizeof(struct ipv6hdr);
+-		if (INET_ECN_is_ce(PACKET_CB(skb)->ds))
+-			IP6_ECN_set_ce(skb, ipv6_hdr(skb));
++		if (INET_ECN_decapsulate(skb, PACKET_CB(skb)->ds,
++					 ipv6_get_dsfield(ipv6_hdr(skb))) > 1)
++			goto ecn_decap_error;
+ 	} else {
+ 		goto dishonest_packet_type;
+ 	}
+@@ -446,6 +448,12 @@ static void wg_packet_consume_data_done(struct wg_peer *peer,
+ 	++dev->stats.rx_errors;
+ 	++dev->stats.rx_length_errors;
+ 	goto packet_processed;
++ecn_decap_error:
++	net_dbg_ratelimited("%s: Non-ECT packet from peer %llu (%pISpfsc)\n",
++			    dev->name, peer->internal_id, &peer->endpoint.addr);
++	++dev->stats.rx_errors;
++	++dev->stats.rx_length_errors;
++	goto packet_processed;
+ packet_processed:
+ 	dev_kfree_skb(skb);
+ }
+-- 
+2.26.2
+
