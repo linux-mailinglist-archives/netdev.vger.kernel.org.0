@@ -2,114 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B507A1BA58C
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 15:58:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 810E71BA5A9
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 16:04:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727842AbgD0N6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 09:58:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57530 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726879AbgD0N6g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 09:58:36 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:3201:214:fdff:fe10:1be6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77888C0610D5;
-        Mon, 27 Apr 2020 06:58:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=HI+hXdef3teFcq3aFHJ+lNQ36+H/xnayzEP1cLz139A=; b=m8KykkkylWdoseBY1n/gsoqEh
-        KVFTqlhC0kFSp30GS16jUkbUZq7hRIIFETkZzuGl9kBqK2RTa4RTpC3CXJ9+Rj7Y2/iLhSK6XgT3N
-        ScefK7wtt9WxTxKjVKBC1wqYSRrECSrlLe9tbgSH1oytOZq2pylhi5zsVzFC+5p4NpsqR+RUNxT9D
-        XtUWUAj78s5iuppoliNlc9owGzJlBFNQSFZrqSOPfgOik+W8NN+vB08RqRaYtuQPZwCNiRbA7SqBY
-        h1PR2wiMjIpCXZqlGIY/VXWn7lBiRbKH5zdlKb0HDEBtgr2ibt+ebxHGba7DtaX29ZXB3ypvrWRYi
-        E6rLzrZ9Q==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:44642)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jT4H7-0003EQ-Ql; Mon, 27 Apr 2020 14:58:22 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jT4H6-0006iG-Q0; Mon, 27 Apr 2020 14:58:20 +0100
-Date:   Mon, 27 Apr 2020 14:58:20 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     linux.cj@gmail.com, Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        linux-acpi@vger.kernel.org, Marcin Wojtas <mw@semihalf.com>,
-        Makarand Pawagi <makarand.pawagi@nxp.com>,
-        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
-        Varun Sethi <V.Sethi@nxp.com>, linux-kernel@vger.kernel.org,
-        Pankaj Bansal <pankaj.bansal@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [net-next PATCH v2 0/3] Introduce new APIs to support phylink
- and phy layers
-Message-ID: <20200427135820.GH25745@shell.armlinux.org.uk>
-References: <20200427132409.23664-1-calvin.johnson@oss.nxp.com>
+        id S1727843AbgD0OE5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 10:04:57 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:42516 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727010AbgD0OE5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 10:04:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587996296;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vQX0R1AZbaienuZ4mjJVfx3Fkgw7tSWAE9INms0EHiA=;
+        b=KiCEQAka2Kug7Mm/AQSaaOWRQSvTLQCsKGguNIdbG8dUPFhum8XjXXHYcAwIArszzI+PmH
+        gy8jKHEkvir5cOdv+Va8F/1XpCIO5A3fySgP2SwBak6dAcQqHqRo/pJAbPsG5XoLvK4hdJ
+        qOJOeYaE3nxz8Qhz/L9um6xB9X0BGTM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-15-pfTXZERAPU6D5-DiuuAAdg-1; Mon, 27 Apr 2020 10:04:54 -0400
+X-MC-Unique: pfTXZERAPU6D5-DiuuAAdg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9214018765B6;
+        Mon, 27 Apr 2020 14:04:53 +0000 (UTC)
+Received: from ovpn-114-189.ams2.redhat.com (ovpn-114-189.ams2.redhat.com [10.36.114.189])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 365546062C;
+        Mon, 27 Apr 2020 14:04:52 +0000 (UTC)
+Message-ID: <e6c0df38518ecc2b213bc140dc74fa89188f84e5.camel@redhat.com>
+Subject: Re: [PATCH iproute2-next 0/4] iproute: mptcp support
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     dcaratti@redhat.com, stephen@networkplumber.org,
+        netdev@vger.kernel.org
+Date:   Mon, 27 Apr 2020 16:04:50 +0200
+In-Reply-To: <cover.1587572928.git.pabeni@redhat.com>
+References: <cover.1587572928.git.pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200427132409.23664-1-calvin.johnson@oss.nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 27, 2020 at 06:54:06PM +0530, Calvin Johnson wrote:
-> Following functions are defined:
->   phylink_fwnode_phy_connect()
->   phylink_device_phy_connect()
->   fwnode_phy_find_device()
->   device_phy_find_device()
->   fwnode_get_phy_node()
-> 
-> First two help in connecting phy to phylink instance.
-> Next two help in finding a phy on a mdiobus.
-> Last one helps in getting phy_node from a fwnode.
-> 
-> Changes in v2:
->   move phy code from base/property.c to net/phy/phy_device.c
->   replace acpi & of code to get phy-handle with fwnode_find_reference
->   replace of_ and acpi_ code with generic fwnode to get phy-handle.
-> 
-> Calvin Johnson (3):
->   device property: Introduce phy related fwnode functions
->   net: phy: alphabetically sort header includes
->   phylink: Introduce phylink_fwnode_phy_connect()
+Hi David,
 
-Thanks for this, but there's more work that needs to be done here.  I
-also think that we must have an ack from ACPI people before this can be
-accepted - you are in effect proposing a new way for representing PHYs
-in ACPI.
+On Thu, 2020-04-23 at 15:37 +0200, Paolo Abeni wrote:
+> This introduces support for the MPTCP PM netlink interface, allowing admins
+> to configure several aspects of the MPTCP path manager. The subcommand is
+> documented with a newly added man-page.
+> 
+> This series also includes support for MPTCP subflow diag.
+> 
+> Davide Caratti (1):
+>   ss: allow dumping MPTCP subflow information
+> 
+> Paolo Abeni (3):
+>   uapi: update linux/mptcp.h
+>   add support for mptcp netlink interface
+>   man: mptcp man page
 
-> 
->  drivers/net/phy/phy_device.c | 83 ++++++++++++++++++++++++++++++------
->  drivers/net/phy/phylink.c    | 68 +++++++++++++++++++++++++++++
->  include/linux/phy.h          |  3 ++
->  include/linux/phylink.h      |  6 +++
->  4 files changed, 146 insertions(+), 14 deletions(-)
-> 
-> -- 
-> 2.17.1
-> 
-> 
+Due to PEBKAC, I did not include your email address in the recipient
+list. Do you prefer I'll re-submit this including you, or are you still
+fine with it?
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+Thank you!
+
+Paolo
+
