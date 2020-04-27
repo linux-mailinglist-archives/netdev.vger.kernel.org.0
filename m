@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B1821BB22B
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 01:51:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 946951BB22C
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 01:51:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726398AbgD0XvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 19:51:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37644 "EHLO
+        id S1726406AbgD0XvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 19:51:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726364AbgD0XvG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 19:51:06 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0658C03C1A7
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:51:06 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id c21so6788688plz.4
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:51:06 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726244AbgD0XvI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 19:51:08 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B35C0610D5
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:51:08 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id x15so9804555pfa.1
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:51:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=NuXkYasNKdE8gXAViAwS/O7ZbHUpG4zZKK3dPqbMz2I=;
-        b=bfhyUc6ozaKp1G1b7AP1E+47ho7sC1t2z7ApoII0Nrqz0s+8V13c9UpSJQAMPtqJco
-         nYDQISHvGiQJQPZJ3Yv9j82DOotJ1JjpGsX5H+vkWM8KFB0cay952xQLAH5C1LhHqolc
-         iqvwr3Ut3vLfq5lfpHNU8ydH3YqrApXUl0t20=
+        bh=GqGGw2A5SG7y0JMZ0ograhoz8J8rbzDeLT8aXj+Jwb0=;
+        b=eg3i/lf50IICFgVlOTstakcTn+uJg9tWxvJhjlU5LDpLvjoXR+t3QBEEEcogd9tKa0
+         q/f2ziS0hvzEnOio5naScqnV8o4ih1/x0WPDToxWA9c5LpdTEHSYsxEvflTkflW7P8+3
+         iSA4uNOrJDXHK5G9e45ifANjdDWU4PE6xxbv4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=NuXkYasNKdE8gXAViAwS/O7ZbHUpG4zZKK3dPqbMz2I=;
-        b=OZfZW1u9WKYGMyxYphNpJBKO1HbOt9lrECrrphIlG1iaUlKL9PHZhlyzpIfG55jDwx
-         Y2Pz+QNvGTauvfjxRqqhGa9vEmo5jGTL72QwRCr9DpXeWERGIAkrlXiVUJ5zLV5tOiRu
-         N1SeHgY918l6zh7yqKsZ0stACBbh0lWbVFHv3E2QXUYszD143fVdcMK0dy2Rz7YlKWJb
-         L812QWveKby38XbuAjszLSNDNgjB6GMUdYU4VtU/aJKvuz1wS+P5cpvqdk/BHdX59P90
-         Myw7skRMdaodmxohbcnBJoozNiiqDoLnjPJNjlA8KuQ2VnyGjckkJGqi0dkZ0Bg3samz
-         ji/g==
-X-Gm-Message-State: AGi0PubDQ3HgRjT5U0+eLpNKYKKTvTHV7/abpdHNv8ccOqS0yh0k/3Ao
-        QujgWufECwhzWVFsDT7M3iaiLvyHaH0=
-X-Google-Smtp-Source: APiQypIWy0W8HAblCbU2Qo2hbbPfj6oH48NPrxaMJmIsveId1PB5rk4/Rt7SvYYgMGemxba6SG2Obw==
-X-Received: by 2002:a17:902:7241:: with SMTP id c1mr24362379pll.113.1588031465696;
-        Mon, 27 Apr 2020 16:51:05 -0700 (PDT)
+        bh=GqGGw2A5SG7y0JMZ0ograhoz8J8rbzDeLT8aXj+Jwb0=;
+        b=IJCkHNFGlCDM3nnCPo4kV/Vhz9SuqBhgN1mWVYlpDMlKnsvHZ6HDVc3iRCfAH5HrL7
+         dj9z+Mmm86LIMRg26ls6CNPhNdLt0q0T4BWnb8Fx2sZ6bUopF8CvKl0zzVHj8g7uIhrb
+         OtUshLNrJJWmVErlBrB+XVhxQBnGGaq64lIOdH0w/ZY0lzP54LdUu8H0Yj+XnXKCZpXj
+         63eFDg6JILyJY6A6rPk7FENz64owl7B0nQz/QOcHxubpCnS87oG55cDPxvRSVemeAtAK
+         Ug1NhwSCW5gF7BA6eZ0CpXLaNu+mwzSF31tmZUGScKxa93FlNSaypFIidSNA1afwr4Tr
+         demA==
+X-Gm-Message-State: AGi0PuZddUCgcYzU0YltpbdTFACIJ00VzDD/dBsF0qnUUG21BDrvlKpM
+        ptw+AlH7EHoOVEC+MSAVEBmspzBojAw=
+X-Google-Smtp-Source: APiQypLqueG30lPSk8WsYzkRZjFkYbXTFZsUVhe4tcLk8IZvJYswcXBNQ541wn3hooJbNbFjfhEACA==
+X-Received: by 2002:a63:1d4c:: with SMTP id d12mr25875844pgm.247.1588031467151;
+        Mon, 27 Apr 2020 16:51:07 -0700 (PDT)
 Received: from f3.synalogic.ca (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
-        by smtp.gmail.com with ESMTPSA id 128sm13058106pfy.5.2020.04.27.16.51.04
+        by smtp.gmail.com with ESMTPSA id 128sm13058106pfy.5.2020.04.27.16.51.05
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2020 16:51:05 -0700 (PDT)
+        Mon, 27 Apr 2020 16:51:06 -0700 (PDT)
 From:   Benjamin Poirier <bpoirier@cumulusnetworks.com>
 To:     netdev@vger.kernel.org
-Subject: [PATCH iproute2 5/7] json_print: Return number of characters printed
-Date:   Tue, 28 Apr 2020 08:50:49 +0900
-Message-Id: <20200427235051.250058-6-bpoirier@cumulusnetworks.com>
+Subject: [PATCH iproute2 6/7] bridge: Align output columns
+Date:   Tue, 28 Apr 2020 08:50:50 +0900
+Message-Id: <20200427235051.250058-7-bpoirier@cumulusnetworks.com>
 X-Mailer: git-send-email 2.26.0
 In-Reply-To: <20200427235051.250058-1-bpoirier@cumulusnetworks.com>
 References: <20200427235051.250058-1-bpoirier@cumulusnetworks.com>
@@ -60,237 +60,200 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When outputting in normal mode, forward the return value from
-color_fprintf().
+Use fixed column widths to improve readability.
+
+Before:
+root@vsid:/src/iproute2# ./bridge/bridge vlan tunnelshow
+port    vlan-id tunnel-id
+vx0      1000    1000
+         1010-1020       1010-1020
+         1030    65556
+vx-longname      10      10
+
+After:
+root@vsid:/src/iproute2# ./bridge/bridge vlan tunnelshow
+port              vlan-id    tunnel-id
+vx0               1000       1000
+                  1010-1020  1010-1020
+                  1030       65556
+vx-longname       10         10
 
 Signed-off-by: Benjamin Poirier <bpoirier@cumulusnetworks.com>
 ---
- include/json_print.h | 24 ++++++-----
- lib/json_print.c     | 95 +++++++++++++++++++++++++++-----------------
- 2 files changed, 73 insertions(+), 46 deletions(-)
+ bridge/vlan.c | 73 ++++++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 52 insertions(+), 21 deletions(-)
 
-diff --git a/include/json_print.h b/include/json_print.h
-index 34444793..50e71de4 100644
---- a/include/json_print.h
-+++ b/include/json_print.h
-@@ -44,20 +44,24 @@ void close_json_array(enum output_type type, const char *delim);
- void print_nl(void);
+diff --git a/bridge/vlan.c b/bridge/vlan.c
+index 1ca7322a..a50a4fc9 100644
+--- a/bridge/vlan.c
++++ b/bridge/vlan.c
+@@ -22,6 +22,11 @@ enum vlan_show_subject {
+ 	VLAN_SHOW_TUNNELINFO,
+ };
  
- #define _PRINT_FUNC(type_name, type)					\
--	void print_color_##type_name(enum output_type t,		\
--				     enum color_attr color,		\
--				     const char *key,			\
--				     const char *fmt,			\
--				     type value);			\
-+	int print_color_##type_name(enum output_type t,			\
-+				    enum color_attr color,		\
-+				    const char *key,			\
-+				    const char *fmt,			\
-+				    type value);			\
- 									\
--	static inline void print_##type_name(enum output_type t,	\
--					     const char *key,		\
--					     const char *fmt,		\
--					     type value)		\
-+	static inline int print_##type_name(enum output_type t,		\
-+					    const char *key,		\
-+					    const char *fmt,		\
-+					    type value)			\
- 	{								\
--		print_color_##type_name(t, COLOR_NONE, key, fmt, value);	\
-+		return print_color_##type_name(t, COLOR_NONE, key, fmt,	\
-+					       value);			\
- 	}
- 
-+/* These functions return 0 if printing to a JSON context, number of
-+ * characters printed otherwise (as calculated by printf(3)).
-+ */
- _PRINT_FUNC(int, int)
- _PRINT_FUNC(s64, int64_t)
- _PRINT_FUNC(bool, bool)
-diff --git a/lib/json_print.c b/lib/json_print.c
-index 8e7f32dc..fe0705bf 100644
---- a/lib/json_print.c
-+++ b/lib/json_print.c
-@@ -123,20 +123,22 @@ void close_json_array(enum output_type type, const char *str)
-  */
- #define _PRINT_FUNC(type_name, type)					\
- 	__attribute__((format(printf, 4, 0)))				\
--	void print_color_##type_name(enum output_type t,		\
--				     enum color_attr color,		\
--				     const char *key,			\
--				     const char *fmt,			\
--				     type value)			\
-+	int print_color_##type_name(enum output_type t,			\
-+				    enum color_attr color,		\
-+				    const char *key,			\
-+				    const char *fmt,			\
-+				    type value)				\
- 	{								\
-+		int ret = 0;						\
- 		if (_IS_JSON_CONTEXT(t)) {				\
- 			if (!key)					\
- 				jsonw_##type_name(_jw, value);		\
- 			else						\
- 				jsonw_##type_name##_field(_jw, key, value); \
- 		} else if (_IS_FP_CONTEXT(t)) {				\
--			color_fprintf(stdout, color, fmt, value);          \
-+			ret = color_fprintf(stdout, color, fmt, value); \
- 		}							\
-+		return ret;						\
- 	}
- _PRINT_FUNC(int, int);
- _PRINT_FUNC(s64, int64_t);
-@@ -162,12 +164,14 @@ _PRINT_NAME_VALUE_FUNC(uint, unsigned int, u);
- _PRINT_NAME_VALUE_FUNC(string, const char*, s);
- #undef _PRINT_NAME_VALUE_FUNC
- 
--void print_color_string(enum output_type type,
--			enum color_attr color,
--			const char *key,
--			const char *fmt,
--			const char *value)
-+int print_color_string(enum output_type type,
-+		       enum color_attr color,
-+		       const char *key,
-+		       const char *fmt,
-+		       const char *value)
++#define VLAN_ID_LEN 9
++
++#define __stringify_1(x...) #x
++#define __stringify(x...) __stringify_1(x)
++
+ static void usage(void)
  {
-+	int ret = 0;
-+
- 	if (_IS_JSON_CONTEXT(type)) {
- 		if (key && !value)
- 			jsonw_name(_jw, key);
-@@ -176,8 +180,10 @@ void print_color_string(enum output_type type,
- 		else
- 			jsonw_string_field(_jw, key, value);
- 	} else if (_IS_FP_CONTEXT(type)) {
--		color_fprintf(stdout, color, fmt, value);
-+		ret = color_fprintf(stdout, color, fmt, value);
- 	}
-+
-+	return ret;
+ 	fprintf(stderr,
+@@ -256,11 +261,11 @@ static int filter_vlan_check(__u16 vid, __u16 flags)
+ 	return 1;
  }
  
- /*
-@@ -185,47 +191,58 @@ void print_color_string(enum output_type type,
-  * a value to it, you will need to use "is_json_context()" to have different
-  * branch for json and regular output. grep -r "print_bool" for example
-  */
--void print_color_bool(enum output_type type,
--		      enum color_attr color,
--		      const char *key,
--		      const char *fmt,
--		      bool value)
-+int print_color_bool(enum output_type type,
-+		     enum color_attr color,
-+		     const char *key,
-+		     const char *fmt,
-+		     bool value)
+-static void open_vlan_port(int ifi_index, const char *fmt,
+-			   enum vlan_show_subject subject)
++static void open_vlan_port(int ifi_index, enum vlan_show_subject subject)
  {
-+	int ret = 0;
-+
- 	if (_IS_JSON_CONTEXT(type)) {
- 		if (key)
- 			jsonw_bool_field(_jw, key, value);
- 		else
- 			jsonw_bool(_jw, value);
- 	} else if (_IS_FP_CONTEXT(type)) {
--		color_fprintf(stdout, color, fmt, value ? "true" : "false");
-+		ret = color_fprintf(stdout, color, fmt,
-+				    value ? "true" : "false");
- 	}
-+
-+	return ret;
+ 	open_json_object(NULL);
+-	print_color_string(PRINT_ANY, COLOR_IFNAME, "ifname", fmt,
++	print_color_string(PRINT_ANY, COLOR_IFNAME, "ifname",
++			   "%-" __stringify(IFNAMSIZ) "s  ",
+ 			   ll_index_to_name(ifi_index));
+ 	open_json_array(PRINT_JSON,
+ 			subject == VLAN_SHOW_VLAN ? "vlans": "tunnels");
+@@ -272,16 +277,18 @@ static void close_vlan_port(void)
+ 	close_json_object();
  }
  
- /*
-  * In JSON context uses hardcode %#x format: 42 -> 0x2a
-  */
--void print_color_0xhex(enum output_type type,
--		       enum color_attr color,
--		       const char *key,
--		       const char *fmt,
--		       unsigned long long hex)
-+int print_color_0xhex(enum output_type type,
-+		      enum color_attr color,
-+		      const char *key,
-+		      const char *fmt,
-+		      unsigned long long hex)
+-static void print_range(const char *name, __u32 start, __u32 id)
++static unsigned int print_range(const char *name, __u32 start, __u32 id)
  {
-+	int ret = 0;
-+
- 	if (_IS_JSON_CONTEXT(type)) {
- 		SPRINT_BUF(b1);
+ 	char end[64];
++	int width;
  
- 		snprintf(b1, sizeof(b1), "%#llx", hex);
- 		print_string(PRINT_JSON, key, NULL, b1);
- 	} else if (_IS_FP_CONTEXT(type)) {
--		color_fprintf(stdout, color, fmt, hex);
-+		ret = color_fprintf(stdout, color, fmt, hex);
- 	}
-+
-+	return ret;
+ 	snprintf(end, sizeof(end), "%sEnd", name);
+ 
+-	print_uint(PRINT_ANY, name, "\t %u", start);
++	width = print_uint(PRINT_ANY, name, "%u", start);
+ 	if (start != id)
+-		print_uint(PRINT_ANY, end, "-%u", id);
++		width += print_uint(PRINT_ANY, end, "-%u", id);
+ 
++	return width;
  }
  
--void print_color_hex(enum output_type type,
--		     enum color_attr color,
--		     const char *key,
--		     const char *fmt,
--		     unsigned int hex)
-+int print_color_hex(enum output_type type,
-+		    enum color_attr color,
-+		    const char *key,
-+		    const char *fmt,
-+		    unsigned int hex)
- {
-+	int ret = 0;
-+
- 	if (_IS_JSON_CONTEXT(type)) {
- 		SPRINT_BUF(b1);
+ static void print_vlan_tunnel_info(struct rtattr *tb, int ifindex)
+@@ -297,6 +304,7 @@ static void print_vlan_tunnel_info(struct rtattr *tb, int ifindex)
+ 		__u32 tunnel_id = 0;
+ 		__u16 tunnel_vid = 0;
+ 		__u16 tunnel_flags = 0;
++		unsigned int width;
+ 		int vcheck_ret;
  
-@@ -235,28 +252,34 @@ void print_color_hex(enum output_type type,
- 		else
- 			jsonw_string(_jw, b1);
- 	} else if (_IS_FP_CONTEXT(type)) {
--		color_fprintf(stdout, color, fmt, hex);
-+		ret = color_fprintf(stdout, color, fmt, hex);
- 	}
+ 		if (i->rta_type != IFLA_BRIDGE_VLAN_TUNNEL_INFO)
+@@ -331,12 +339,25 @@ static void print_vlan_tunnel_info(struct rtattr *tb, int ifindex)
+ 			continue;
+ 
+ 		if (!opened) {
+-			open_vlan_port(ifindex, "%s", VLAN_SHOW_TUNNELINFO);
++			open_vlan_port(ifindex, VLAN_SHOW_TUNNELINFO);
+ 			opened = true;
++		} else {
++			print_string(PRINT_FP, NULL,
++				     "%-" __stringify(IFNAMSIZ) "s  ", "");
+ 		}
+ 
+ 		open_json_object(NULL);
+-		print_range("vlan", last_vid_start, tunnel_vid);
++		width = print_range("vlan", last_vid_start, tunnel_vid);
++		if (width <= VLAN_ID_LEN) {
++			char buf[VLAN_ID_LEN + 1];
 +
-+	return ret;
++			snprintf(buf, sizeof(buf), "%-*s",
++				 VLAN_ID_LEN - width, "");
++			print_string(PRINT_FP, NULL, "%s  ", buf);
++		} else {
++			fprintf(stderr, "BUG: vlan range too wide, %u\n",
++				width);
++		}
+ 		print_range("tunid", last_tunid_start, tunnel_id);
+ 		close_json_object();
+ 		print_string(PRINT_FP, NULL, "%s", _SL_);
+@@ -404,20 +425,23 @@ static void print_vlan_flags(__u16 flags)
+ static void print_one_vlan_stats(const struct bridge_vlan_xstats *vstats)
+ {
+ 	open_json_object(NULL);
+-	print_hu(PRINT_ANY, "vid", " %hu", vstats->vid);
+ 
++	print_hu(PRINT_ANY, "vid", "%hu", vstats->vid);
+ 	print_vlan_flags(vstats->flags);
++	print_nl();
+ 
+-	print_lluint(PRINT_ANY, "rx_bytes",
+-		     "\n                   RX: %llu bytes",
++	print_string(PRINT_FP, NULL, "%-" __stringify(IFNAMSIZ) "s    ", "");
++	print_lluint(PRINT_ANY, "rx_bytes", "RX: %llu bytes",
+ 		     vstats->rx_bytes);
+ 	print_lluint(PRINT_ANY, "rx_packets", " %llu packets\n",
+-		vstats->rx_packets);
+-	print_lluint(PRINT_ANY, "tx_bytes",
+-		     "                   TX: %llu bytes",
++		     vstats->rx_packets);
++
++	print_string(PRINT_FP, NULL, "%-" __stringify(IFNAMSIZ) "s    ", "");
++	print_lluint(PRINT_ANY, "tx_bytes", "TX: %llu bytes",
+ 		     vstats->tx_bytes);
+ 	print_lluint(PRINT_ANY, "tx_packets", " %llu packets\n",
+-		vstats->tx_packets);
++		     vstats->tx_packets);
++
+ 	close_json_object();
  }
  
- /*
-  * In JSON context we don't use the argument "value" we simply call jsonw_null
-  * whereas FP context can use "value" to output anything
-  */
--void print_color_null(enum output_type type,
--		      enum color_attr color,
--		      const char *key,
--		      const char *fmt,
--		      const char *value)
-+int print_color_null(enum output_type type,
-+		     enum color_attr color,
-+		     const char *key,
-+		     const char *fmt,
-+		     const char *value)
- {
-+	int ret = 0;
-+
- 	if (_IS_JSON_CONTEXT(type)) {
- 		if (key)
- 			jsonw_null_field(_jw, key);
- 		else
- 			jsonw_null(_jw);
- 	} else if (_IS_FP_CONTEXT(type)) {
--		color_fprintf(stdout, color, fmt, value);
-+		ret = color_fprintf(stdout, color, fmt, value);
- 	}
-+
-+	return ret;
- }
+@@ -452,10 +476,11 @@ static void print_vlan_stats_attr(struct rtattr *attr, int ifindex)
  
- /* Print line separator (if not in JSON mode) */
+ 		/* found vlan stats, first time print the interface name */
+ 		if (!found_vlan) {
+-			open_vlan_port(ifindex, "%-16s", VLAN_SHOW_VLAN);
++			open_vlan_port(ifindex, VLAN_SHOW_VLAN);
+ 			found_vlan = true;
+ 		} else {
+-			print_string(PRINT_FP, NULL, "%-16s", "");
++			print_string(PRINT_FP, NULL,
++				     "%-" __stringify(IFNAMSIZ) "s  ", "");
+ 		}
+ 		print_one_vlan_stats(vstats);
+ 	}
+@@ -534,9 +559,11 @@ static int vlan_show(int argc, char **argv, int subject)
+ 		}
+ 
+ 		if (!is_json_context()) {
+-			printf("port\tvlan-id");
++			printf("%-" __stringify(IFNAMSIZ) "s  %-"
++			       __stringify(VLAN_ID_LEN) "s", "port",
++			       "vlan-id");
+ 			if (subject == VLAN_SHOW_TUNNELINFO)
+-				printf("\ttunnel-id");
++				printf("  tunnel-id");
+ 			printf("\n");
+ 		}
+ 
+@@ -555,7 +582,8 @@ static int vlan_show(int argc, char **argv, int subject)
+ 		}
+ 
+ 		if (!is_json_context())
+-			printf("%-16s vlan-id\n", "port");
++			printf("%-" __stringify(IFNAMSIZ) "s  vlan-id\n",
++			       "port");
+ 
+ 		if (rtnl_dump_filter(&rth, print_vlan_stats, stdout) < 0) {
+ 			fprintf(stderr, "Dump terminated\n");
+@@ -604,8 +632,11 @@ void print_vlan_info(struct rtattr *tb, int ifindex)
+ 			continue;
+ 
+ 		if (!opened) {
+-			open_vlan_port(ifindex, "%s", VLAN_SHOW_VLAN);
++			open_vlan_port(ifindex, VLAN_SHOW_VLAN);
+ 			opened = true;
++		} else {
++			print_string(PRINT_FP, NULL, "%-"
++				     __stringify(IFNAMSIZ) "s  ", "");
+ 		}
+ 
+ 		open_json_object(NULL);
 -- 
 2.26.0
 
