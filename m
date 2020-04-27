@@ -2,113 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DA511BB1E8
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 01:14:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FB4A1BB202
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 01:27:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726328AbgD0XOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 19:14:18 -0400
-Received: from bert.scottdial.com ([104.237.142.221]:50484 "EHLO
-        bert.scottdial.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726257AbgD0XOS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 19:14:18 -0400
-Received: from mail.scottdial.com (mail.scottdial.com [10.8.0.6])
-        by bert.scottdial.com (Postfix) with ESMTP id CE4C34E0CCE;
-        Mon, 27 Apr 2020 19:14:16 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.scottdial.com (Postfix) with ESMTP id 76B9A1155600;
-        Mon, 27 Apr 2020 19:14:16 -0400 (EDT)
-Received: from mail.scottdial.com ([127.0.0.1])
-        by localhost (mail.scottdial.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id jAHW5tW2ladp; Mon, 27 Apr 2020 19:14:15 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.scottdial.com (Postfix) with ESMTP id 73F831155601;
-        Mon, 27 Apr 2020 19:14:15 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.scottdial.com 73F831155601
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=scottdial.com;
-        s=24B7B964-7506-11E8-A7D6-CF6FBF8C6FCF; t=1588029255;
-        bh=2FMXUY1dhExjT/qZ9dWzRE87Meb+ct5NT7MhltitxZw=;
-        h=To:From:Message-ID:Date:MIME-Version;
-        b=j740Ziwf9HjlxY3u5S6X43NkIf8L//H5ziJlU/slpLjUaJMhfb0hnhyQRmaBiACk5
-         VocBmBwI2oyvXKQ5PE8aSO7FNavO2kq3q2kv8lIv3PP/kDoz0XCd987xvZZGx+NyuG
-         ylPP5x6C5T8NnMelTMf4x48sjEh0jscIv0UCcpo1IBfliWbpnECd35wUGlV5MGe6d1
-         fMEJhOMOQWsO51GK87E4XnrfaI/IezU4NEJg+5F5w++tk1g4a/SaiYHp3I7kFDI90g
-         58mucPTr/HubwgqoO+dUUBfB9pLFEx7wihPIy6bsLoEMQE//fLo45CLsPGkMUxXkfK
-         G8V1whjNnxw3A==
-X-Virus-Scanned: amavisd-new at scottdial.com
-Received: from mail.scottdial.com ([127.0.0.1])
-        by localhost (mail.scottdial.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id J4QepVvZ6_-6; Mon, 27 Apr 2020 19:14:15 -0400 (EDT)
-Received: from [172.17.2.2] (unknown [172.17.2.2])
-        by mail.scottdial.com (Postfix) with ESMTPSA id 4A9A81155600;
-        Mon, 27 Apr 2020 19:14:15 -0400 (EDT)
-Subject: Re: [PATCH net] net: macsec: preserve ingress frame ordering
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-References: <20200424225108.956252-1-scott@scottdial.com>
- <20200427.111227.1036449542794050922.davem@davemloft.net>
-From:   Scott Dial <scott@scottdial.com>
-Message-ID: <e83635ba-9cfb-f1a3-2da5-2cc4523b8248@scottdial.com>
-Date:   Mon, 27 Apr 2020 19:14:15 -0400
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726309AbgD0X1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 19:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34036 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725968AbgD0X1q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 19:27:46 -0400
+Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A4AFC0610D5
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:27:46 -0700 (PDT)
+Received: by mail-ot1-x343.google.com with SMTP id e26so29522276otr.2
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:27:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=5YLgrmmw9m+sKzPxDNVWcpKGfVmpcHCuvOPpLM6AIJg=;
+        b=HDBFJMNKiJtgLuvDHE9L8qqfMfp8S+I9sMFxmN271vwB1ymuqiEIEszD8sH16RPFNn
+         t6DC19yDqIPlbDPXXrHHSRPY77LnNZSbgadCMXbHrNUcNGYiVe5IIsWJClpgxYdJKtfR
+         sdrK6AMytGIxuBDUWhz6k8snAwAMsiMyOeXlA2fFKCAdDqG/CnsI/flb5okFJjePoC0L
+         cky9SIBfFvg3ivbXdLu0XCiN6leAHIzqj+A2YsHqCwV8gfD21+ikycnPupctfwK7oFlV
+         Mi3WJ506uW4i6ioM9KGpTZnSGrJeuWUlGaR0/yJTKrYDJ5432DvlXgg7C1VQsnMEl2kX
+         sw0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=5YLgrmmw9m+sKzPxDNVWcpKGfVmpcHCuvOPpLM6AIJg=;
+        b=MkT2+G+obeB7vsDeHXeIA/kIVIq8saQgjIWdKTZ6Yx5FZwdxpMdgqbQRNziyhjwmvo
+         M2M30JYK6F27X31nxi5LRnn7ia+Ej1LcRbznPQOdeT3NfDGOMfHkwUNsBQE0h2ysN7Wq
+         M0SS0arg3pg76NsTzF9P8dV5Bncrj7Ge4MP7Xu9wgUDg78PPKkAJNV0doeKy2GKKFkaZ
+         6ZYoc4KpXi4vLizB3sPQeFtdxQzwJttPhUPQfn2jsyrjQtJB5sKrq72FbjAOMO6daGrQ
+         m/AsqdsdaQcXKNZ/SBDIYXgMgFT6r43aK1hrGCUL/iTqqHcTjndJylHwFarRBnPBYnYf
+         4nug==
+X-Gm-Message-State: AGi0PuYA/t4rPxOWkfty7rsv3gnU9LrmEsk9+iy5wxYLQz/8pFUAqEqr
+        jW/lQhYatfrWfXYd1y6hIyup/nrt/mZe9RH97PQ=
+X-Google-Smtp-Source: APiQypKRLdZAcy75qtiWQbp2Y5a/X2x2vCkQtRi4IDXYa6ldyZgEsppjBKnzT7UXBDxEnxaWzUaw6jkR56wkxnUIo1s=
+X-Received: by 2002:a9d:6d8e:: with SMTP id x14mr13613030otp.156.1588030065800;
+ Mon, 27 Apr 2020 16:27:45 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200427.111227.1036449542794050922.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: by 2002:ac9:148e:0:0:0:0:0 with HTTP; Mon, 27 Apr 2020 16:27:44
+ -0700 (PDT)
+Reply-To: sodikamond@yahoo.com
+From:   Sodik Amond <miss.zenab.warlord2016@gmail.com>
+Date:   Mon, 27 Apr 2020 11:27:44 -1200
+Message-ID: <CAPTCC5YzLAwFa0vL10yUHwE0HPrnYXLahK8sdRGYrbP=D0QHEQ@mail.gmail.com>
+Subject: Gooday To You
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/27/2020 2:12 PM, David Miller wrote:
-> It's a real shame that instead of somehow fixing the most performant
-> setup to be actually usable, we are just throwing our hands up in
-> the air and simply avoiding to use it.
-> 
-> I feel _really_ bad for the person trying to figure out why they
-> aren't getting the macsec performance they expect, scratching their
-> heads for hours trying to figure out why the AES-NI x86 code isn't
-> being used, and after days finding a commit like this.
-
-Like most things, there are competing interests. I was the person
-scratching my head for hours trying to figure out why my packets were
-arriving out of of order causing packet drops and breaking UDP streams.
-In the end, the only solution that I could ship without modifying the
-kernel was blacklisting aesni_intel and ghash_clmulni_intel.
-
-To be clear, the sync version of gcm(aes) on an AES-NI will still use
-AES-NI for the block cipher if the FPU is available (and otherwise falls
-back to non-FPU code). Unfortunately, there is not a synchronous version
-of gcm(aes) implemented by AES-NI, but that would be a logical extension
-of the pattern to provide maximum performance and correctness. With
-regards to correctness, you can see that same decision being made in the
-mac80211 code for handling the AES-GCMP and BIP-GMAC encryption modes. I
-don't know if the crypto maintainers would entertain adding a sync
-aes(gcm) implementation to aesni_intel, but it seems like it would be
-straightforward to implement.
-
-Otherwise, I entertained a module option (simple and covers my use case)
-or even an attribute on the RXSA (a considerably more invasive change).
-However, I didn't think this would be that controversial since there are
-many places in the kernel that use AEAD algorithms in synchronous mode
-for the same reason, and therefore do not get the complete benefits of
-AES-NI acceleration.
-
->> -	tfm = crypto_alloc_aead("gcm(aes)", 0, 0);
->> +	/* Pick a sync gcm(aes) cipher to ensure order is preserved. */
->> +	tfm = crypto_alloc_aead("gcm(aes)", 0, CRYPTO_ALG_ASYNC);
-> 
-> How does this mask argument passed to crypto_alloc_aead() work?  You
-> are specifying async, does this mean you're asking for async or
-> non-async?
-
-See crypto_requires_sync(type, mask) in include/crypto/algapi.h for the
-logic of evaluating the mask. In short, the mask is what bits are not
-allowed to be set, so this masks out any async algorithms.
-
-Thanks for taking the time to evaluate my change!
-
--- 
-Scott Dial
-scott@scottdial.com
+Please i need your kind Assistance. I will be very glad if you can
+assist me to receive this sum of ( $22. Million US dollars.) into your
+bank account for the benefit of our both families, reply me if you are
+ready to receive this fund.
