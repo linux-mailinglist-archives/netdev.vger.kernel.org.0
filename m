@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D9401BB227
+	by mail.lfdr.de (Postfix) with ESMTP id DB7A31BB228
 	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 01:51:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726318AbgD0XvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 19:51:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37622 "EHLO
+        id S1726343AbgD0XvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 19:51:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726244AbgD0XvA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 19:51:00 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8140DC0610D5
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:51:00 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id f7so9779391pfa.9
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:51:00 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726244AbgD0XvC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 19:51:02 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E0BFC0610D5
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:51:02 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id f7so9779423pfa.9
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:51:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=IoGenYLfCZ3pWi6rFFSwwtnAryzI7YDsgGy0c5Iae2A=;
-        b=dyQl4RPmlYRNkCND5+Q1MIeSGpzU51yMUTmQEcMUkZfbnIbFUnqIP2vAJunU9zbO/y
-         8XKRMT/CwlC8hXNEss0asOtzefk8zr3l2avUZfjGG0iLwPAXiKuSekLuww/My9jLacwN
-         +Ft1RyvFKp5TE4n96P1aWqnD/t29JclpO0/80=
+        bh=vtY0fL5ZVtBrIXBGjRdLuaI2tiIhNBnCzlrDeA3osCs=;
+        b=TKenPXtelDxBJbE6h7L3/jHw59uWmw9MFIvARi8EkCFlRCKepM4Kpd9m82y/TX7azM
+         lF5Y0WzzvgOcRElHjc5NecfU2xgx99/ORZqzmh13n+W0dWCVjZtL44/F/T7vMQ2C1ZXm
+         OzaX5a6cGXD8mjsEDI3x9VKpYRH9MCUvwuvj8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=IoGenYLfCZ3pWi6rFFSwwtnAryzI7YDsgGy0c5Iae2A=;
-        b=PwHorDU46uHI+2iJA/+da4w9n9O8Ifm+6PmdR44cMBxGbneujThFpGTTaXElQqXRQx
-         6pxbClWRbkCDLQBou0aM3JSM/CKhNnw2ZCofqWowAkfFYyT74KOISzu0UMIldwwJMMfv
-         4nYEsdSCLegRBOGptj22k/6v7M6JhMNqdHbjUJ2Y3PFrBUGv9PGaHYB8CN9+15xczh+s
-         MZqeqkmH4Dckcae8Gy2cul4k0jFSaLBDbgaZSuaMn3zEeyisR1Y7wUcZJ7nWdI9pf6R0
-         q2gpaMsu4NL7iTrDSIBAOW4YbnLkSkym58S7EToYurKr9zQdU87PfnmAhgGLX9bnzUZ+
-         wMjw==
-X-Gm-Message-State: AGi0PubIKjTUFWMFxyNXZvb9LP3IN3Av3xJ2Z4rqXOp/83m1fA3A832k
-        27kWzvEtzucb+UHIgRg2HEIATAnvyCs=
-X-Google-Smtp-Source: APiQypL/f3zPnC5p48ir0HtMltJD6ogiNf31Oekklw44CZ7COESaGoVUYvLTKbvLQGYqpNA4n8bpug==
-X-Received: by 2002:a62:144c:: with SMTP id 73mr27595763pfu.37.1588031459781;
-        Mon, 27 Apr 2020 16:50:59 -0700 (PDT)
+        bh=vtY0fL5ZVtBrIXBGjRdLuaI2tiIhNBnCzlrDeA3osCs=;
+        b=tqWL8EgKMZwg92gx4F9ojM0UlMaXbKzncP8Yqx+j6W18tytp+vjyl1XAA8V93LJHVk
+         DPMwZ59TAWxH34BztJxtTESxmfOIie/YbmEp9P/tA12v+Gd77jdijBSKlyXfXDfa91GR
+         eNW96peAlNYvSMHQIosYVgKaBMtf7mHh9a05jrv8ADpY29HllVijHevLRwjcOvFu2tCe
+         xraBXpb2+2MxUfSSa10NfBIWvItWBZakoR3/gwTEXOFjWAXDylTCsP2zoWqlg3P9TrTV
+         dxIYhlCuZEK9fEpqHDDxuixQoGlgPHYRXygLzFqxtPzfz3O5DLGku9oijiRdBls5psLZ
+         s/jQ==
+X-Gm-Message-State: AGi0PubcToUw2pucWbIAZl8fRd28Z+00AzLn4c4rlwgQ69dhNwyVRSI2
+        qQpRXAbBW01k208nvXgoqG2kIgRXOjI=
+X-Google-Smtp-Source: APiQypIsK6NhWzpYIyIDv2eF3v1gtF7tLOcTzJm9LEo4Aavw1WLYTx+dr4eV+1vP81en2x9fJSDGBQ==
+X-Received: by 2002:a63:ac57:: with SMTP id z23mr6621355pgn.423.1588031461235;
+        Mon, 27 Apr 2020 16:51:01 -0700 (PDT)
 Received: from f3.synalogic.ca (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
-        by smtp.gmail.com with ESMTPSA id 128sm13058106pfy.5.2020.04.27.16.50.58
+        by smtp.gmail.com with ESMTPSA id 128sm13058106pfy.5.2020.04.27.16.51.00
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2020 16:50:59 -0700 (PDT)
+        Mon, 27 Apr 2020 16:51:00 -0700 (PDT)
 From:   Benjamin Poirier <bpoirier@cumulusnetworks.com>
 To:     netdev@vger.kernel.org
-Subject: [PATCH iproute2 1/7] bridge: Use the same flag names in input and output
-Date:   Tue, 28 Apr 2020 08:50:45 +0900
-Message-Id: <20200427235051.250058-2-bpoirier@cumulusnetworks.com>
+Subject: [PATCH iproute2 2/7] bridge: Use consistent column names in vlan output
+Date:   Tue, 28 Apr 2020 08:50:46 +0900
+Message-Id: <20200427235051.250058-3-bpoirier@cumulusnetworks.com>
 X-Mailer: git-send-email 2.26.0
 In-Reply-To: <20200427235051.250058-1-bpoirier@cumulusnetworks.com>
 References: <20200427235051.250058-1-bpoirier@cumulusnetworks.com>
@@ -60,30 +60,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Output the same names for vlan flags as the ones accepted in command input.
+Fix singular vs plural. Add a hyphen to clarify that each of those are
+single fields.
 
 Signed-off-by: Benjamin Poirier <bpoirier@cumulusnetworks.com>
 ---
- bridge/vlan.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ bridge/vlan.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/bridge/vlan.c b/bridge/vlan.c
-index 205851e4..08b19897 100644
+index 08b19897..a708e6d2 100644
 --- a/bridge/vlan.c
 +++ b/bridge/vlan.c
-@@ -398,10 +398,10 @@ static void print_vlan_flags(__u16 flags)
+@@ -538,9 +538,9 @@ static int vlan_show(int argc, char **argv, int subject)
+ 		}
  
- 	open_json_array(PRINT_JSON, "flags");
- 	if (flags & BRIDGE_VLAN_INFO_PVID)
--		print_string(PRINT_ANY, NULL, " %s", "PVID");
-+		print_string(PRINT_ANY, NULL, " %s", "pvid");
+ 		if (!is_json_context()) {
+-			printf("port\tvlan ids");
++			printf("port\tvlan-id");
+ 			if (subject == VLAN_SHOW_TUNNELINFO)
+-				printf("\ttunnel id");
++				printf("\ttunnel-id");
+ 			printf("\n");
+ 		}
  
- 	if (flags & BRIDGE_VLAN_INFO_UNTAGGED)
--		print_string(PRINT_ANY, NULL, " %s", "Egress Untagged");
-+		print_string(PRINT_ANY, NULL, " %s", "untagged");
- 	close_json_array(PRINT_JSON, NULL);
- }
+@@ -559,7 +559,7 @@ static int vlan_show(int argc, char **argv, int subject)
+ 		}
  
+ 		if (!is_json_context())
+-			printf("%-16s vlan id\n", "port");
++			printf("%-16s vlan-id\n", "port");
+ 
+ 		if (rtnl_dump_filter(&rth, print_vlan_stats, stdout) < 0) {
+ 			fprintf(stderr, "Dump terminated\n");
 -- 
 2.26.0
 
