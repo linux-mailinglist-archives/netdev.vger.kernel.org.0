@@ -2,88 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6C4C1BB1DA
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 01:09:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66ADC1BB1D9
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 01:09:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726336AbgD0XJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 19:09:44 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:34175 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726318AbgD0XJn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Apr 2020 19:09:43 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id b92b5ff4
-        for <netdev@vger.kernel.org>;
-        Mon, 27 Apr 2020 22:58:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type:content-transfer-encoding; s=mail; bh=Rz7dwSvq6L+O
-        cMK963akA4gOfPs=; b=X/8coleTom+JdkF1wyNizLSiZXaVBZ/pn5OzwmogB5Zu
-        gtpEigRI4NSmHNqekt03XtPz9E+hy/0VRLTUuXzpFvXtzRc4p4AWw57esIDGs6+x
-        WZoWdqLrrHUCkzrXKrz0YMc6n9j6bywrKgoyIguofeVIFUBMEdkat5XIb6U1l418
-        2TmZCsIcwl1edH6I60C6WDua3sfxW57eJpxSP4RiPfCAK0hAkEIeTHG3OX+Nb5yU
-        UpyRwE1jm6iy9Lj66mGGhdG+0xpx0eAX83XegrdJDiNkMZuktoTDqZpxvPK8Qb0f
-        E9DteUUOL4BzWJxcUDRR124cNzAL5ggguHo89bkj6Q==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id cd65ceff (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Mon, 27 Apr 2020 22:58:07 +0000 (UTC)
-Received: by mail-il1-f171.google.com with SMTP id x2so18478502ilp.13
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:09:41 -0700 (PDT)
-X-Gm-Message-State: AGi0PuYDZpOSKe5dtzdHl1rFRoURdY4Jve0ba6V6nATyZQadBnUdW/xn
-        0I0CLw6A3iwjRiGU5ammhb6JDtbQTN2coZB0iMQ=
-X-Google-Smtp-Source: APiQypIqdOjl06mq+ZG1C3Fyyk7+1A833zwE0Cgf3y6NDSLZZUGtUCZd2MmqxFYnGZ4hxQspB/YdrNQOsCn64Z86CL0=
-X-Received: by 2002:a92:5c82:: with SMTP id d2mr24398414ilg.231.1588028980593;
- Mon, 27 Apr 2020 16:09:40 -0700 (PDT)
+        id S1726328AbgD0XJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 19:09:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59482 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726224AbgD0XJm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 19:09:42 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A420C0610D5
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:09:42 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id e6so276974pjt.4
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:09:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ktpkAkv+FQC2/aYMscfJ1QK9ucmacWt4hvMl30x9ydU=;
+        b=dIiN2euSBy9WtcgpVDDTUqqjneiygI2JkvnvbY3C+Ak53Mvc/flwgv08WIz/4kntfl
+         vblKiZ9U4+61OWhOo1vU3aILEyMSTsC8Fe2bhKB/z7fD78lmeem8jJsTQtjHhh224ncF
+         8IQipx+0GkO63s+9C7RPfIKAwLjSd1hpaoQdGR0Yy4G9XdgKP4rW5lWmxACEXMO3uO9K
+         +HWUEQQqoijZJYqAbuW1vXj5Rg0M6dDX060kBFCs5VOlZ0csLFHCjwVgk2SzpIMZjY5j
+         lwM04LgwNQ/xTPiAq7IBWPhyArp9UGupeCOO/QBAtF+7xkSSFF9rIc010LCg/qM0sLZa
+         JlbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ktpkAkv+FQC2/aYMscfJ1QK9ucmacWt4hvMl30x9ydU=;
+        b=ZC8UqeCG4Es9WNfPKPK3+dzgckQusAILfH8TQqHXwkQmiRmwaKzTnDJPwzAlSDtkbr
+         +isgeNb5SidfEMAXD9QAXT8ww57oRmRHU7BMRPdKbdk9uI+xjEiMtY7pqyca7coeBkHa
+         JoMqMZXwhxU1L/mPRagdy+q6ZAz+ZfpYuEGGpxm1nMHifwet+STaOBuG/dKLomCW7N2R
+         EVfcLRqXgUvsTTWmVwutqji+bm5/Dbo+0q96ARVxyyYbKOnxK9DZ5SzXxLHVGlrN8dbA
+         D4F9ZFrxtI2AmZC3uoyxg+ixgyC21NciSiURmRg1oX6EAqStKXRxILIQlZnYN1BEENRk
+         +eDQ==
+X-Gm-Message-State: AGi0PuadsNCIookohKqOfNGh8ATYClQ0rKOEeLEpVj1Z1DNCi66uCzed
+        pcUJ9PPNDeKkK3jN4rtCIPqH5g==
+X-Google-Smtp-Source: APiQypJoqtDjtUD2tHKpPOrP5BWi8UZsgO1P6+sMUSpFaV5+ONlzlxk8qoI+eW3D/tTmM3y5ue5dZw==
+X-Received: by 2002:a17:902:b402:: with SMTP id x2mr14256051plr.42.1588028981884;
+        Mon, 27 Apr 2020 16:09:41 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id h5sm323611pjv.4.2020.04.27.16.09.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Apr 2020 16:09:41 -0700 (PDT)
+Date:   Mon, 27 Apr 2020 16:09:38 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Petr Machata <petrm@mellanox.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2-next] tc: pedit: Support JSON dumping
+Message-ID: <20200427160938.2cdce301@hermes.lan>
+In-Reply-To: <cdb5f51b-a8aa-7deb-1085-4fab7e01d64f@gmail.com>
+References: <19073d9bc5a2977a5a366caf5e06b392e4b63e54.1587575157.git.petrm@mellanox.com>
+        <20200422130245.53026ff7@hermes.lan>
+        <87imhq4j6b.fsf@mellanox.com>
+        <cdb5f51b-a8aa-7deb-1085-4fab7e01d64f@gmail.com>
 MIME-Version: 1.0
-References: <87d07sy81p.fsf@toke.dk> <20200427211619.603544-1-toke@redhat.com>
-In-Reply-To: <20200427211619.603544-1-toke@redhat.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Mon, 27 Apr 2020 17:09:29 -0600
-X-Gmail-Original-Message-ID: <CAHmME9rUCYuBCFbw=yhNPqDDJWD3ZUQ_R9xjQ-yp6DXA9_iScA@mail.gmail.com>
-Message-ID: <CAHmME9rUCYuBCFbw=yhNPqDDJWD3ZUQ_R9xjQ-yp6DXA9_iScA@mail.gmail.com>
-Subject: Re: [PATCH net v2] wireguard: use tunnel helpers for decapsulating
- ECN markings
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>,
-        Dave Taht <dave.taht@gmail.com>,
-        "Rodney W . Grimes" <ietf@gndrsh.dnsmgr.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 27, 2020 at 3:16 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> WireGuard currently only propagates ECN markings on tunnel decap accordin=
-g
-> to the old RFC3168 specification. However, the spec has since been update=
-d
-> in RFC6040 to recommend slightly different decapsulation semantics. This
-> was implemented in the kernel as a set of common helpers for ECN
-> decapsulation, so let's just switch over WireGuard to using those, so it
-> can benefit from this enhancement and any future tweaks.
->
-> RFC6040 also recommends dropping packets on certain combinations of
-> erroneous code points on the inner and outer packet headers which shouldn=
-'t
-> appear in normal operation. The helper signals this by a return value > 1=
-,
-> so also add a handler for this case.
+On Sun, 26 Apr 2020 12:23:04 -0600
+David Ahern <dsahern@gmail.com> wrote:
 
-Thanks for the details in your other email and for this v2. I've
-applied this to the wireguard tree and will send things up to net
-later this week with a few other things brewing there.
+> On 4/23/20 3:59 AM, Petr Machata wrote:
+> > 
+> > Stephen Hemminger <stephen@networkplumber.org> writes:
+> >   
+> >> On Wed, 22 Apr 2020 20:06:15 +0300
+> >> Petr Machata <petrm@mellanox.com> wrote:
+> >>  
+> >>> +			print_string(PRINT_FP, NULL, ": %s",
+> >>> +				     cmd ? "add" : "val");
+> >>> +			print_string(PRINT_JSON, "cmd", NULL,
+> >>> +				     cmd ? "add" : "set");  
+> >>
+> >> Having different outputs for JSON and file here. Is that necessary?
+> >> JSON output is new, and could just mirror existing usage.  
+> > 
+> > This code outputs this bit:
+> > 
+> >             {
+> >               "htype": "udp",
+> >               "offset": 0,
+> >               "cmd": "set",   <----
+> >               "val": "3039",
+> >               "mask": "ffff0000"
+> >             },
+> > 
+> > There are currently two commands, set and add. The words used to
+> > configure these actions are set and add as well. The way these commands
+> > are dumped should be the same, too. The only reason why "set" is
+> > reported as "val" in file is that set used to be the implied action.
+> > 
+> > JSON doesn't have to be backward compatible, so it should present the
+> > expected words.
+> >   
+> 
+> Stephen: do you agree?
 
-By the way, the original code came out of a discussion I had with Dave
-Taht while I was coding this on an airplane many years ago. I read
-some old RFCs, made some changes, he tested them with cake, and told
-me that the behavior looked correct. And that's about as far as I've
-forayed into ECN land with WireGuard. It seems like it might be
-helpful (at some point) to add something to the netns.sh test to make
-sure that all this machinery is actually working and continues to work
-properly as things change in the future.
+Sure that is fine, maybe a comment would help?
