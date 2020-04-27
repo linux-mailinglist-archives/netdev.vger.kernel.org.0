@@ -2,189 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 291981B9781
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 08:36:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4B001B97AE
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 08:45:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726539AbgD0GgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 02:36:05 -0400
-Received: from mga11.intel.com ([192.55.52.93]:16588 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726246AbgD0GgF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Apr 2020 02:36:05 -0400
-IronPort-SDR: +tEjFCGLqhGop3zX9xy1FtnIqSQBFDQFM7IYWBYRYWSAwjoZMvloWqXME5h4hpdteVFgFkiIcO
- EqdCkzsx8jtw==
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2020 23:36:05 -0700
-IronPort-SDR: Ut0YDav9MRnkvMws2fLFS8zg1C/k31aI3cWdZPvub+wsu6A0I2Cmux6GoEL0M6+HVmJwjauQwv
- 3aPC/9DZ35tQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,323,1583222400"; 
-   d="gz'50?scan'50,208,50";a="431620579"
-Received: from fyao2-mobl.ccr.corp.intel.com (HELO [10.255.30.76]) ([10.255.30.76])
-  by orsmga005.jf.intel.com with ESMTP; 26 Apr 2020 23:36:02 -0700
-To:     john.fastabend@gmail.com, alexei.starovoitov@gmail.com,
-        bpf@vger.kernel.org, daniel@iogearbox.net, ecree@solarflare.com,
-        netdev@vger.kernel.org, yhs@fb.com
-From:   Ma Xinjian <max.xinjian@intel.com>
-Subject: Re: [bpf-next PATCH 03/10] bpf: verifer, adjust_scalar_min_max_vals
- to always call update_reg_bounds()
-Message-ID: <072ad6df-9136-bfb9-e260-f6003e7d8777@intel.com>
-Date:   Mon, 27 Apr 2020 14:35:34 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.3.0
+        id S1726639AbgD0Gpf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 02:45:35 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:34908 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726504AbgD0Gpf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 02:45:35 -0400
+Received: by mail-ot1-f65.google.com with SMTP id e26so24457844otr.2;
+        Sun, 26 Apr 2020 23:45:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=A20QEuwcQ3bPQDVPM4YhHWYF19sEEIWz0tIXZgQQNBA=;
+        b=aElH/Npms16am5+g19bdMxGhPitYhjP6kwaB/Nzwg1Sf2NOqQPGHzk3tT705f278hU
+         DsFXXM8Ck+1c3QUrpU6m2CBSes95pItbPJAjI/P4PQGx0fyEU2MZBsJ0hh6yOneqLj5u
+         2lJvxbIVAyIG6U12fCRbeFnDZWXJpO/+H8GTXm1H5CBg9H88iveg6V/Y8/NK1qFskgwq
+         1EuCVd9IOJPx5GOOfmrM5HjurxVfns3J2qv5a1Oy83OeH5Iob8IwIyZ/Ccn7p9S4J1FO
+         K44SCw0ku1ObK7fSHxqPGPZ9FvXD4uaKhKxmVuTGdoA3TN2fdThOWOSGYQautXLgILf1
+         0n9A==
+X-Gm-Message-State: AGi0PubGXODkQXJ4ss5ivF/wQAF70hj6vGvfE+63iH6LtL1EZhiEBzJ/
+        UyF1Tfh+hjEBQm6UQ0FW2yaRvwXXqxrPMEVmo64=
+X-Google-Smtp-Source: APiQypKnNMH9rOhofcKlK7I9omQSdQmvVEfckYI5Sp58zjUJsZuaoc+VBXSc57/r+A1q4uEpYjSTT0Irt0S0re1bJoY=
+X-Received: by 2002:a9d:564:: with SMTP id 91mr17254715otw.250.1587969933846;
+ Sun, 26 Apr 2020 23:45:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="------------9AF489699388492211C32EDE"
-Content-Language: en-US
+References: <20200420143229.245488-1-mst@redhat.com>
+In-Reply-To: <20200420143229.245488-1-mst@redhat.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 27 Apr 2020 08:45:22 +0200
+Message-ID: <CAMuHMdWaG5EUsbTOMPkj4i50D40T0TLRvB6g-Y8Dj4C0v7KTqQ@mail.gmail.com>
+Subject: Re: [PATCH v4] vhost: disable for OABI
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Richard Earnshaw <Richard.Earnshaw@arm.com>,
+        Sudeep Dutt <sudeep.dutt@intel.com>,
+        Ashutosh Dixit <ashutosh.dixit@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jason Wang <jasowang@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        KVM list <kvm@vger.kernel.org>,
+        Christoph Hellwig <hch@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------9AF489699388492211C32EDE
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Hi Michael,
 
-Hi, John.
+Thanks for your patch!
 
+On Mon, Apr 20, 2020 at 5:13 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> vhost is currently broken on the some ARM configs.
+>
+> The reason is that the ring element addresses are passed between
+> components with different alignments assumptions. Thus, if
+> guest selects a pointer and host then gets and dereferences
+> it, then alignment assumed by the host's compiler might be
+> greater than the actual alignment of the pointer.
+> compiler on the host from assuming pointer is aligned.
+>
+> This actually triggers on ARM with -mabi=apcs-gnu - which is a
+> deprecated configuration. With this OABI, compiler assumes that
+> all structures are 4 byte aligned - which is stronger than
+> virtio guarantees for available and used rings, which are
+> merely 2 bytes. Thus a guest without -mabi=apcs-gnu running
+> on top of host with -mabi=apcs-gnu will be broken.
+>
+> The correct fix is to force alignment of structures - however
+> that is an intrusive fix that's best deferred until the next release.
+>
+> We didn't previously support such ancient systems at all - this surfaced
+> after vdpa support prompted removing dependency of vhost on
+> VIRTULIZATION. So for now, let's just add something along the lines of
+>
+>         depends on !ARM || AEABI
+>
+> to the virtio Kconfig declaration, and add a comment that it has to do
+> with struct member alignment.
+>
+> Note: we can't make VHOST and VHOST_RING themselves have
+> a dependency since these are selected. Add a new symbol for that.
 
-During our test, we noticed this commit not only cause test_verifier error
+Adding the dependencies to VHOST and VHOST_RING themselves is indeed not
+sufficient.  But IMHO you should still add VHOST_DPN dependencies t
+ these two symbols, so any driver selecting them without fulfilling the
+VHOST_DPN dependency will trigger a Kconfig warning.  Else the
+issue will be ignored silently.
 
-"bpf: test_verifier, #70 error message updates for 32-bit right shift"
+> We should be able to drop this dependency down the road.
+>
+> Fixes: 20c384f1ea1a0bc7 ("vhost: refine vhost and vringh kconfig")
+> Suggested-by: Ard Biesheuvel <ardb@kernel.org>
+> Suggested-by: Richard Earnshaw <Richard.Earnshaw@arm.com>
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
-But also cause test_align error:
+Gr{oetje,eeting}s,
 
-```
+                        Geert
 
-"Test   9: dubious pointer arithmetic ... Failed to find match 7: 
-R5_w=inv(id=0,var_off=(0x2; 0xfffffffffffffffc))"
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-"Test  10: variable subtraction ... Failed to find match 12: 
-R6=inv(id=0,smin_value=-1006,smax_value=1034,var_off=(0x2; 
-0xfffffffffffffffc))"
-
-```
-
-clang/llvm version: 11.0.0
-
-
-Whole error message please refer to  the attachment.
-
-part of error info:
-
-```
-
-# Test   9: dubious pointer arithmetic ... Failed to find match 7: 
-R5_w=inv(id=0,var_off=(0x2; 0xfffffffffffffffc))
-# func#0 @0
-# 0: R1=ctx(id=0,off=0,imm=0) R10=fp0
-# 0: (61) r2 = *(u32 *)(r1 +76)
-# 1: R1=ctx(id=0,off=0,imm=0) R2_w=pkt(id=0,off=0,r=0,imm=0) R10=fp0
-# 1: (61) r3 = *(u32 *)(r1 +80)
-# 2: R1=ctx(id=0,off=0,imm=0) R2_w=pkt(id=0,off=0,r=0,imm=0) 
-R3_w=pkt_end(id=0,off=0,imm=0) R10=fp0
-# 2: (b7) r0 = 0
-# 3: R0_w=inv0 R1=ctx(id=0,off=0,imm=0) R2_w=pkt(id=0,off=0,r=0,imm=0) 
-R3_w=pkt_end(id=0,off=0,imm=0) R10=fp0
-# 3: (bf) r5 = r3
-# 4: R0_w=inv0 R1=ctx(id=0,off=0,imm=0) R2_w=pkt(id=0,off=0,r=0,imm=0) 
-R3_w=pkt_end(id=0,off=0,imm=0) R5_w=pkt_end(id=0,off=0,imm=0) R10=fp0
-# 4: (1f) r5 -= r2
-# 5: R0_w=inv0 R1=ctx(id=0,off=0,imm=0) R2_w=pkt(id=0,off=0,r=0,imm=0) 
-R3_w=pkt_end(id=0,off=0,imm=0) R5_w=inv(id=0) R10=fp0
-# 5: (67) r5 <<= 2
-# 6: R0_w=inv0 R1=ctx(id=0,off=0,imm=0) R2_w=pkt(id=0,off=0,r=0,imm=0) 
-R3_w=pkt_end(id=0,off=0,imm=0) 
-R5_w=inv(id=0,smax_value=9223372036854775804,umax_value=18446744073709551612,var_off=(0x0; 
-0xfffffffffffffffc)) R10=fp0
-# 6: (07) r5 += 14
-[snip]
-
-# 15: (61) r4 = *(u32 *)(r6 +0)
-# invalid access to packet, off=0 size=4, R6(id=1,off=0,r=0)
-# R6 offset is outside of the packet
-# processed 16 insns (limit 1000000) max_states_per_insn 0 total_states 
-1 peak_states 1 mark_read 1
-# FAIL
-# Test  10: variable subtraction ... Failed to find match 12: 
-R6=inv(id=0,smin_value=-1006,smax_value=1034,var_off=(0x2; 
-0xfffffffffffffffc))
-# func#0 @0
-# 0: R1=ctx(id=0,off=0,imm=0) R10=fp0
-# 0: (61) r2 = *(u32 *)(r1 +76)
-# 1: R1=ctx(id=0,off=0,imm=0) R2_w=pkt(id=0,off=0,r=0,imm=0) R10=fp0
-# 1: (61) r3 = *(u32 *)(r1 +80)
-# 2: R1=ctx(id=0,off=0,imm=0) R2_w=pkt(id=0,off=0,r=0,imm=0) 
-R3_w=pkt_end(id=0,off=0,imm=0) R10=fp0
-# 2: (bf) r0 = r2
-# 3: R0_w=pkt(id=0,off=0,r=0,imm=0) R1=ctx(id=0,off=0,imm=0) 
-R2_w=pkt(id=0,off=0,r=0,imm=0) R3_w=pkt_end(id=0,off=0,imm=0) R10=fp0
-# 3: (07) r0 += 8
-# 4: R0_w=pkt(id=0,off=8,r=0,imm=0) R1=ctx(id=0,off=0,imm=0) 
-R2_w=pkt(id=0,off=0,r=0,imm=0) R3_w=pkt_end(id=0,off=0,imm=0) R10=fp0
-# 4: (3d) if r3 >= r0 goto pc+1
-#  R0_w=pkt(id=0,off=8,r=0,imm=0) R1=ctx(id=0,off=0,imm=0) 
-R2_w=pkt(id=0,off=0,r=0,imm=0) R3_w=pkt_end(id=0,off=0,imm=0) R10=fp0
-# 5: R0_w=pkt(id=0,off=8,r=0,imm=0) R1=ctx(id=0,off=0,imm=0) 
-R2_w=pkt(id=0,off=0,r=0,imm=0) R3_w=pkt_end(id=0,off=0,imm=0) R10=fp0
-# 5: (95) exit
-# 6: R0_w=pkt(id=0,off=8,r=8,imm=0) R1=ctx(id=0,off=0,imm=0) 
-R2_w=pkt(id=0,off=0,r=8,imm=0) R3_w=pkt_end(id=0,off=0,imm=0) R10=fp0
-# 6: (71) r6 = *(u8 *)(r2 +0)
-# 7: R0_w=pkt(id=0,off=8,r=8,imm=0) R1=ctx(id=0,off=0,imm=0) 
-R2_w=pkt(id=0,off=0,r=8,imm=0) R3_w=pkt_end(id=0,off=0,imm=0) 
-R6_w=inv(id=0,umax_value=255,var_off=(0x0; 0xff)) R10=fp0
-# 7: (bf) r7 = r6
-[snip]
-
-```
-
----
-Best Regards.
-Ma Xinjian
-
-
-
-
-
-
---------------9AF489699388492211C32EDE
-Content-Type: application/gzip;
- name="bpf_test_align_log.gz"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="bpf_test_align_log.gz"
-
-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
---------------9AF489699388492211C32EDE--
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
