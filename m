@@ -2,104 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 372FA1BB1D2
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 01:08:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6C4C1BB1DA
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 01:09:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726253AbgD0XII (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 19:08:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59234 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726204AbgD0XII (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 19:08:08 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D4BC0610D5
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:08:06 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id 18so8525380pfv.8
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:08:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=QK396yuRzMC+xv2HHqM6tOPmCkw6z0hr1LJInMTYAXY=;
-        b=BbuYLKpocRxNHCJgumnuN6msxlDgoBpZuUY3zGldcKzn7T3C3G5hPDnuoEHtavWWZ6
-         0e7tVj66dhAK6BjZ8dv+bPwy17Swckoei5LME3Ov2MIh2kyO9UFAkgjmZhdOg8ywCM05
-         WNdVGdKU7zwM8POcy0MsPqa1rITAIaBiWyUexi5cv1oq7CVHXhV8N/m6n6DIwTCHu3j+
-         G3QGCsnruJV5BHnREMFWVLpPZmO+9SJV/Mspy1iSbg2PteM82v4TI/tK3+n4/TOFLVYA
-         jiYAGnaXdYo1HWhWLqCsmNaZjMpAIkJ47+e8Jf4M6R6Uh0xlBd+MUvpSm1r3UJnFrk0y
-         MNPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=QK396yuRzMC+xv2HHqM6tOPmCkw6z0hr1LJInMTYAXY=;
-        b=IEIvJYDpgjQFAmtgHWOLMR+Gg14VRkpEbnNgsMY0uCCm22Q6ar/vk5c0zwFCoOe1l/
-         h0mHFydqTNHOZhvd2xwH3ggoa+hIgaJQ6c4nCZo5PfGs5Bx/eMLqwT5MUdEKJY7mEQ0l
-         2Bc7izYLRO4+DKrQcID6EdV7fNuIgzbMjxHiYxskbr8uNFabRimGvMRbWcLQ88U2BT0t
-         cQYVcK0U7wdIA1jVEam6VHF+w95E8lxaCgn5eq3m15CoYzHMjhngpz27+Vw4vIU1OD3W
-         U++5r9I8paQE/+DvxAwmNUaNlSPfwr7EtkTQhNDXehYJI/m6spN5Ak+Luv7IE2Akz+WK
-         W7pw==
-X-Gm-Message-State: AGi0PuZBjCH/bvxWPwDU7gNijgb8si8chPHoLlLnfbG8apPI3G3ftsvn
-        P+chcH4T/DFZ69i8pJsk+HX7vw==
-X-Google-Smtp-Source: APiQypLnK0G70HqEybZKS8fMIFdEsGUlfdltbUsHWXmKzuOuPZmYlBqBMwBYh6JTw9+Jud1h+d9s3w==
-X-Received: by 2002:a63:5f4d:: with SMTP id t74mr25402219pgb.385.1588028886282;
-        Mon, 27 Apr 2020 16:08:06 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id 22sm13639305pfb.132.2020.04.27.16.08.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2020 16:08:05 -0700 (PDT)
-Date:   Mon, 27 Apr 2020 16:07:57 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        Simon Horman <simon.horman@netronome.com>
-Subject: Re: [PATCHv3 iproute2-next 3/7] iproute_lwtunnel: add options
- support for erspan metadata
-Message-ID: <20200427160757.38ebc7a5@hermes.lan>
-In-Reply-To: <70c448c7-cf2e-1f63-e4ea-03e73077c0d1@gmail.com>
-References: <cover.1581676056.git.lucien.xin@gmail.com>
-        <44db73e423003e95740f831e1d16a4043bb75034.1581676056.git.lucien.xin@gmail.com>
-        <77f68795aeb3faeaf76078be9311fded7f716ea5.1581676056.git.lucien.xin@gmail.com>
-        <290ab5d2dc06b183159d293ab216962a3cc0df6d.1581676056.git.lucien.xin@gmail.com>
-        <20200214081324.48dc2090@hermes.lan>
-        <CADvbK_dYwQ6LTuNPfGjdZPkFbrV2_vrX7OL7q3oR9830Mb8NcQ@mail.gmail.com>
-        <20200423082351.5cd10f4d@hermes.lan>
-        <20200423110307.6e35fc7d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <70c448c7-cf2e-1f63-e4ea-03e73077c0d1@gmail.com>
+        id S1726336AbgD0XJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 19:09:44 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:34175 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726318AbgD0XJn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Apr 2020 19:09:43 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id b92b5ff4
+        for <netdev@vger.kernel.org>;
+        Mon, 27 Apr 2020 22:58:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type:content-transfer-encoding; s=mail; bh=Rz7dwSvq6L+O
+        cMK963akA4gOfPs=; b=X/8coleTom+JdkF1wyNizLSiZXaVBZ/pn5OzwmogB5Zu
+        gtpEigRI4NSmHNqekt03XtPz9E+hy/0VRLTUuXzpFvXtzRc4p4AWw57esIDGs6+x
+        WZoWdqLrrHUCkzrXKrz0YMc6n9j6bywrKgoyIguofeVIFUBMEdkat5XIb6U1l418
+        2TmZCsIcwl1edH6I60C6WDua3sfxW57eJpxSP4RiPfCAK0hAkEIeTHG3OX+Nb5yU
+        UpyRwE1jm6iy9Lj66mGGhdG+0xpx0eAX83XegrdJDiNkMZuktoTDqZpxvPK8Qb0f
+        E9DteUUOL4BzWJxcUDRR124cNzAL5ggguHo89bkj6Q==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id cd65ceff (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Mon, 27 Apr 2020 22:58:07 +0000 (UTC)
+Received: by mail-il1-f171.google.com with SMTP id x2so18478502ilp.13
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:09:41 -0700 (PDT)
+X-Gm-Message-State: AGi0PuYDZpOSKe5dtzdHl1rFRoURdY4Jve0ba6V6nATyZQadBnUdW/xn
+        0I0CLw6A3iwjRiGU5ammhb6JDtbQTN2coZB0iMQ=
+X-Google-Smtp-Source: APiQypIqdOjl06mq+ZG1C3Fyyk7+1A833zwE0Cgf3y6NDSLZZUGtUCZd2MmqxFYnGZ4hxQspB/YdrNQOsCn64Z86CL0=
+X-Received: by 2002:a92:5c82:: with SMTP id d2mr24398414ilg.231.1588028980593;
+ Mon, 27 Apr 2020 16:09:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <87d07sy81p.fsf@toke.dk> <20200427211619.603544-1-toke@redhat.com>
+In-Reply-To: <20200427211619.603544-1-toke@redhat.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 27 Apr 2020 17:09:29 -0600
+X-Gmail-Original-Message-ID: <CAHmME9rUCYuBCFbw=yhNPqDDJWD3ZUQ_R9xjQ-yp6DXA9_iScA@mail.gmail.com>
+Message-ID: <CAHmME9rUCYuBCFbw=yhNPqDDJWD3ZUQ_R9xjQ-yp6DXA9_iScA@mail.gmail.com>
+Subject: Re: [PATCH net v2] wireguard: use tunnel helpers for decapsulating
+ ECN markings
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>,
+        Dave Taht <dave.taht@gmail.com>,
+        "Rodney W . Grimes" <ietf@gndrsh.dnsmgr.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 27 Apr 2020 06:38:03 -0600
-David Ahern <dsahern@gmail.com> wrote:
+On Mon, Apr 27, 2020 at 3:16 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> WireGuard currently only propagates ECN markings on tunnel decap accordin=
+g
+> to the old RFC3168 specification. However, the spec has since been update=
+d
+> in RFC6040 to recommend slightly different decapsulation semantics. This
+> was implemented in the kernel as a set of common helpers for ECN
+> decapsulation, so let's just switch over WireGuard to using those, so it
+> can benefit from this enhancement and any future tweaks.
+>
+> RFC6040 also recommends dropping packets on certain combinations of
+> erroneous code points on the inner and outer packet headers which shouldn=
+'t
+> appear in normal operation. The helper signals this by a return value > 1=
+,
+> so also add a handler for this case.
 
-> On 4/23/20 12:03 PM, Jakub Kicinski wrote:
-> > On Thu, 23 Apr 2020 08:23:51 -0700 Stephen Hemminger wrote:  
-> >>  3. If non json uses hex, then json should use hex
-> >>     json is type less so { "ver":2 } and { "ver":"0x2" } are the same  
-> > 
-> > I may be missing something or misunderstanding you, but in my humble
-> > experience that's emphatically not true:
-> > 
-> > $ echo '{ "a" : 2 }' | python -c 'import sys, json; print(json.load(sys.stdin)["a"] + 1)'
-> > 3
-> > $ echo '{ "a" : "2" }' | python -c 'import sys, json; print(json.load(sys.stdin)["a"] + 1)'
-> > Traceback (most recent call last):
-> >   File "<string>", line 1, in <module>
-> > TypeError: can only concatenate str (not "int") to str
-> >   
-> 
-> I don't know which site is the definitive source for json, but several
-> do state json has several types - strings, number, true / false / null,
-> object, array.
+Thanks for the details in your other email and for this v2. I've
+applied this to the wireguard tree and will send things up to net
+later this week with a few other things brewing there.
 
-Probably I got confused because Python tries to be helpful...
-JSON is ossified/standardized http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf
-
-Best answer on the web was https://stackoverflow.com/questions/52671719/can-hex-format-be-used-with-json-files-if-so-how
-
-   "JSON does not support hexadecimal numbers but they are supported in JSON5. json5.org"
+By the way, the original code came out of a discussion I had with Dave
+Taht while I was coding this on an airplane many years ago. I read
+some old RFCs, made some changes, he tested them with cake, and told
+me that the behavior looked correct. And that's about as far as I've
+forayed into ECN land with WireGuard. It seems like it might be
+helpful (at some point) to add something to the netns.sh test to make
+sure that all this machinery is actually working and continues to work
+properly as things change in the future.
