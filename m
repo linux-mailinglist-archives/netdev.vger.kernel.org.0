@@ -2,76 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 130571BAA42
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 18:46:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6602B1BAA50
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 18:47:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726303AbgD0QqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 12:46:23 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38772 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726282AbgD0QqX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Apr 2020 12:46:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=tP8rD2QRrQA4OB+TWtA7Qhd+z+Cz4MCa/3wl3NgU3xM=; b=I0t7k9Rlus5qnaf5BP8KN6wKIc
-        gG69s564/7nlx4KKJiGjLeNhfHPpVDLR0qLylDfWwGzYkNpuSoDKby1fpTnv/4gU3LL1XFieFaNur
-        uKI55p+XSjhFGZesbqFg1Qs8kr7CefLpyOzS1KSI0qZv7HTMzZTgV/mVKorRjcMh2j0s=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jT6tg-005FOU-V3; Mon, 27 Apr 2020 18:46:20 +0200
-Date:   Mon, 27 Apr 2020 18:46:20 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Leonard Crestez <leonard.crestez@nxp.com>
-Cc:     Andy Duan <fugang.duan@nxp.com>,
+        id S1726264AbgD0Qrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 12:47:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55886 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726162AbgD0Qrv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 12:47:51 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D43C7C03C1A7
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 09:47:50 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id u15so18342494ljd.3
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 09:47:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mhCQLPtNjO6YHuKhouClWrqU42WmpvfpWOGCAYEqbv4=;
+        b=O0vxByP4X+/3CDU23KXHqB01x8ZguuOJkPTkNzYnLJOxPXOOG0xtMTuFy/SwRNSg52
+         4OUJRFH2vG2o5C3qhqWo6xj9pJqtFw4d7tX+bVp1dF3INPAdZCmAco2FLAbro0BvwcMA
+         RxwJT9LNancTdo6ZNHxMOJNEsoGxIEKRAH3CZ4aRFnG1v3WVdA+C/vAArdg7KqaiEiGI
+         l1+qGf+9GIt8J71dclf24+1lZ5NE+ksDt8+eVUoiwk36InXoB+H0ycS6bfscSgm2Rqi9
+         UA1SFJ47sI+VDsYDAhNQxOd/PUNRSRgKXHpnQRzjBAiiE4HeG9OUeWummJulUJpIjhCg
+         Tm2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mhCQLPtNjO6YHuKhouClWrqU42WmpvfpWOGCAYEqbv4=;
+        b=Z5zzMf8v8Z+3GCMvyBI6gcbKmNkVXk5vXv28j7jhE9b38AeqoTNegr9spZCNhhqWau
+         flfWLCval+ueuG+0XLMMSWOQXSn/qcHJbEn3Swor8jQCBh/8v/gYUR/eSQK9qcQm0Zs5
+         QhiBNGu11BkTdh3msHmgCtYmMNn4Jdh0LFCv9QFVJzhrtp+h4hVvsGvT972gljjerEFT
+         9WWZhwKdVNI4Xxwzqt5RJs3DtNPohlBEootJrrKG/O1LYNDvb6MqN4DokyRenQYMTiRx
+         LBF87qUG7uvfAQ23Nblni6x+9DKRP2dXOjuqUenqAmThCuMKyVoi15s8Q4rYdmYy/nMd
+         cRjg==
+X-Gm-Message-State: AGi0PuZfRwnIww8A6neICUGgFe70+LZbEm6+pdyq90QqnoHRMtqBTgiB
+        Hcx6C3xL+MKmbHnvhjjKfRefR6/vG1Ji+w/BMns=
+X-Google-Smtp-Source: APiQypIBi9LGxqJksGsjgBblD4SQ8vfEz4Mi/3qJzWZz3RgzxTlwCJbZPtOjFf5ScIE6PkmK5ItfMOh5OWK/esf2SJw=
+X-Received: by 2002:a2e:9bc4:: with SMTP id w4mr15626472ljj.178.1588006069283;
+ Mon, 27 Apr 2020 09:47:49 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200414004551.607503-1-andrew@lunn.ch> <VI1PR04MB6941D611F6EF67BB42826D4EEEAF0@VI1PR04MB6941.eurprd04.prod.outlook.com>
+ <20200427163703.GC1250287@lunn.ch>
+In-Reply-To: <20200427163703.GC1250287@lunn.ch>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Mon, 27 Apr 2020 13:48:38 -0300
+Message-ID: <CAOMZO5BxmDc26fw0nzXJ4Obp0NDka1odFwVds04xYkV2O7UKTQ@mail.gmail.com>
+Subject: Re: [PATCH] net: ethernet: fec: Replace interrupt driven MDIO with
+ polled IO
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Leonard Crestez <leonard.crestez@nxp.com>,
+        Andy Duan <fugang.duan@nxp.com>,
         David Miller <davem@davemloft.net>,
         netdev <netdev@vger.kernel.org>,
         Chris Healy <Chris.Healy@zii.aero>,
-        dl-linux-imx <linux-imx@nxp.com>, Chris Healy <cphealy@gmail.com>
-Subject: Re: [PATCH] net: ethernet: fec: Replace interrupt driven MDIO with
- polled IO
-Message-ID: <20200427164620.GD1250287@lunn.ch>
-References: <20200414004551.607503-1-andrew@lunn.ch>
- <VI1PR04MB6941D611F6EF67BB42826D4EEEAF0@VI1PR04MB6941.eurprd04.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <VI1PR04MB6941D611F6EF67BB42826D4EEEAF0@VI1PR04MB6941.eurprd04.prod.outlook.com>
+        dl-linux-imx <linux-imx@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 27, 2020 at 03:19:54PM +0000, Leonard Crestez wrote:
-> Hello,
-> 
-> This patch breaks network boot on at least imx8mm-evk. Boot works if I 
-> revert just commit 29ae6bd1b0d8 ("net: ethernet: fec: Replace interrupt 
-> driven MDIO with polled IO") on top of next-20200424.
+Hi Andrew,
 
-Hi Leonard
+On Mon, Apr 27, 2020 at 1:44 PM Andrew Lunn <andrew@lunn.ch> wrote:
 
-Please could you try this:
+> You PHY is an ATH8031? If i'm reading these IDs correctly?
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-evk.dts b/arch/arm64/boot/dts/freescale/imx8mm-evk.dts
-index 951e14a3de0e..3c1adaf7affa 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-evk.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-evk.dts
-@@ -109,6 +109,7 @@ &fec1 {
-        phy-handle = <&ethphy0>;
-        phy-reset-gpios = <&gpio4 22 GPIO_ACTIVE_LOW>;
-        phy-reset-duration = <10>;
-+       phy-reset-post-delay = <100>;
-        fsl,magic-packet;
-        status = "okay";
-
-
-There is an interesting post from Fabio Estevam
-
-https://u-boot.denx.narkive.com/PlutD3Rg/patch-1-3-phy-atheros-use-ar8035-config-for-ar8031
-
-Thanks
-	Andrew
+Yes, the imx8mm-evk has an AR8031.
