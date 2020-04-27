@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C70801BB0FF
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 00:03:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E4891BB111
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 00:04:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726635AbgD0WDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 18:03:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48140 "EHLO mail.kernel.org"
+        id S1726766AbgD0WDj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 18:03:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48146 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726381AbgD0WCB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726397AbgD0WCB (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 27 Apr 2020 18:02:01 -0400
 Received: from mail.kernel.org (ip5f5ad5c5.dynamic.kabel-deutschland.de [95.90.213.197])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0166522253;
+        by mail.kernel.org (Postfix) with ESMTPSA id 0CEC122261;
         Mon, 27 Apr 2020 22:01:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1588024917;
-        bh=jPw2vwOYLdQLlLNVqlyNjqvBBy54L5FWmYUuoJDEcdo=;
+        bh=sPYOhJHhgnxilQ96b+2lDSVXblKJN5PxG5u6FTo/J3A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Keof8qQ3MTvMj1l8+wyESbXuOCtK6WoBzNsDYSQkI0jeIy4vskn79UzBWzdxclcvu
-         9rC+i5FGabMvAJtS20uC47sgvOLNBSJ4Eij6bA4V6YgTKz9aB6pbqzaKTw26EURT2q
-         Zp0LowYr3N4QBS/n75HPkr5y5jGMtJzLYWL4aVSQ=
+        b=o/eZdJ4rncpgAI+wExY6z8bHKvTC5T5OG2YLMfp2BTb8cTWTQ7UE47vP5tiBbX7FA
+         jy2p6BtK3/iyITKcfJySRxS9+jEl1UTxYEUri3m1e2tzu0YFtBPHFkLD206phSDYBE
+         qVyJMplKPn0pBXTxCRmqFQaPyAu+eREh0H2lGEeY=
 Received: from mchehab by mail.kernel.org with local (Exim 4.92.3)
         (envelope-from <mchehab@kernel.org>)
-        id 1jTBp5-000Iq2-97; Tue, 28 Apr 2020 00:01:55 +0200
+        id 1jTBp5-000Iq8-AM; Tue, 28 Apr 2020 00:01:55 +0200
 From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 30/38] docs: networking: convert ipddp.txt to ReST
-Date:   Tue, 28 Apr 2020 00:01:45 +0200
-Message-Id: <8c3349990d7236f49b668588e40d6a14f6a81077.1588024424.git.mchehab+huawei@kernel.org>
+Subject: [PATCH 31/38] docs: networking: convert ip_dynaddr.txt to ReST
+Date:   Tue, 28 Apr 2020 00:01:46 +0200
+Message-Id: <3c731dc58c8066a68f36d2023d024a94ff9a72e7.1588024424.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <cover.1588024424.git.mchehab+huawei@kernel.org>
 References: <cover.1588024424.git.mchehab+huawei@kernel.org>
@@ -45,98 +45,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Not much to be done here:
-
 - add SPDX header;
-- use a document title from existing text;
-- adjust a chapter markup;
+- adjust title markup;
+- mark code blocks and literals as such;
+- adjust identation, whitespaces and blank lines;
 - add to networking/index.rst.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
- Documentation/networking/index.rst                |  1 +
- Documentation/networking/{ipddp.txt => ipddp.rst} | 13 +++++++++----
- Documentation/networking/ltpc.txt                 |  2 +-
- drivers/net/appletalk/Kconfig                     |  4 ++--
- 4 files changed, 13 insertions(+), 7 deletions(-)
- rename Documentation/networking/{ipddp.txt => ipddp.rst} (89%)
+ Documentation/networking/index.rst            |  1 +
+ .../{ip_dynaddr.txt => ip_dynaddr.rst}        | 29 +++++++++++++------
+ 2 files changed, 21 insertions(+), 9 deletions(-)
+ rename Documentation/networking/{ip_dynaddr.txt => ip_dynaddr.rst} (65%)
 
 diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index 488971f6b650..cf85d0a73144 100644
+index cf85d0a73144..f81aeb87aa28 100644
 --- a/Documentation/networking/index.rst
 +++ b/Documentation/networking/index.rst
-@@ -65,6 +65,7 @@ Contents:
-    gtp
+@@ -66,6 +66,7 @@ Contents:
     hinic
     ila
-+   ipddp
+    ipddp
++   ip_dynaddr
  
  .. only::  subproject and html
  
-diff --git a/Documentation/networking/ipddp.txt b/Documentation/networking/ipddp.rst
-similarity index 89%
-rename from Documentation/networking/ipddp.txt
-rename to Documentation/networking/ipddp.rst
-index ba5c217fffe0..be7091b77927 100644
---- a/Documentation/networking/ipddp.txt
-+++ b/Documentation/networking/ipddp.rst
-@@ -1,7 +1,12 @@
--Text file for ipddp.c:
--	AppleTalk-IP Decapsulation and AppleTalk-IP Encapsulation
+diff --git a/Documentation/networking/ip_dynaddr.txt b/Documentation/networking/ip_dynaddr.rst
+similarity index 65%
+rename from Documentation/networking/ip_dynaddr.txt
+rename to Documentation/networking/ip_dynaddr.rst
+index 45f3c1268e86..eacc0c780c7f 100644
+--- a/Documentation/networking/ip_dynaddr.txt
++++ b/Documentation/networking/ip_dynaddr.rst
+@@ -1,10 +1,15 @@
 +.. SPDX-License-Identifier: GPL-2.0
- 
--This text file is written by Jay Schulist <jschlst@samba.org>
-+=========================================================
-+AppleTalk-IP Decapsulation and AppleTalk-IP Encapsulation
-+=========================================================
 +
-+Documentation ipddp.c
++==================================
+ IP dynamic address hack-port v0.03
+-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++==================================
 +
-+This file is written by Jay Schulist <jschlst@samba.org>
+ This stuff allows diald ONESHOT connections to get established by
+ dynamically changing packet source address (and socket's if local procs).
+ It is implemented for TCP diald-box connections(1) and IP_MASQuerading(2).
  
- Introduction
- ------------
-@@ -21,7 +26,7 @@ kernel AppleTalk layer and drivers are available.
- Each mode requires its own user space software.
+-If enabled[*] and forwarding interface has changed:
++If enabled\ [#]_ and forwarding interface has changed:
++
+   1)  Socket (and packet) source address is rewritten ON RETRANSMISSIONS
+       while in SYN_SENT state (diald-box processes).
+   2)  Out-bounded MASQueraded source address changes ON OUTPUT (when
+@@ -12,18 +17,24 @@ If enabled[*] and forwarding interface has changed:
+       received by the tunnel.
  
- Compiling AppleTalk-IP Decapsulation/Encapsulation
--=================================================
-+==================================================
+ This is specially helpful for auto dialup links (diald), where the
+-``actual'' outgoing address is unknown at the moment the link is
++``actual`` outgoing address is unknown at the moment the link is
+ going up. So, the *same* (local AND masqueraded) connections requests that
+ bring the link up will be able to get established.
  
- AppleTalk-IP decapsulation needs to be compiled into your kernel. You
- will need to turn on AppleTalk-IP driver support. Then you will need to
-diff --git a/Documentation/networking/ltpc.txt b/Documentation/networking/ltpc.txt
-index 0bf3220c715b..a005a73b76d0 100644
---- a/Documentation/networking/ltpc.txt
-+++ b/Documentation/networking/ltpc.txt
-@@ -99,7 +99,7 @@ treat the LocalTalk device like an ordinary Ethernet device, even if
- that's what it looks like to Netatalk.
+-[*] At boot, by default no address rewriting is attempted. 
+-  To enable:
++.. [#] At boot, by default no address rewriting is attempted.
++
++  To enable::
++
+      # echo 1 > /proc/sys/net/ipv4/ip_dynaddr
+-  To enable verbose mode:
+-     # echo 2 > /proc/sys/net/ipv4/ip_dynaddr
+-  To disable (default)
++
++  To enable verbose mode::
++
++    # echo 2 > /proc/sys/net/ipv4/ip_dynaddr
++
++  To disable (default)::
++
+      # echo 0 > /proc/sys/net/ipv4/ip_dynaddr
  
- Instead, you follow the same procedure as for doing IP in EtherTalk.
--See Documentation/networking/ipddp.txt for more information about the
-+See Documentation/networking/ipddp.rst for more information about the
- kernel driver and userspace tools needed.
+ Enjoy!
  
- --------------------------------------
-diff --git a/drivers/net/appletalk/Kconfig b/drivers/net/appletalk/Kconfig
-index d4e51c048f62..ccde6479050c 100644
---- a/drivers/net/appletalk/Kconfig
-+++ b/drivers/net/appletalk/Kconfig
-@@ -86,7 +86,7 @@ config IPDDP
- 	  box is stuck on an AppleTalk only network) or decapsulate (e.g. if
- 	  you want your Linux box to act as an Internet gateway for a zoo of
- 	  AppleTalk connected Macs). Please see the file
--	  <file:Documentation/networking/ipddp.txt> for more information.
-+	  <file:Documentation/networking/ipddp.rst> for more information.
- 
- 	  If you say Y here, the AppleTalk-IP support will be compiled into
- 	  the kernel. In this case, you can either use encapsulation or
-@@ -107,4 +107,4 @@ config IPDDP_ENCAP
- 	  IP packets inside AppleTalk frames; this is useful if your Linux box
- 	  is stuck on an AppleTalk network (which hopefully contains a
- 	  decapsulator somewhere). Please see
--	  <file:Documentation/networking/ipddp.txt> for more information.
-+	  <file:Documentation/networking/ipddp.rst> for more information.
+--- Juanjo  <jjciarla@raiz.uncu.edu.ar>
++Juanjo  <jjciarla@raiz.uncu.edu.ar>
 -- 
 2.25.4
 
