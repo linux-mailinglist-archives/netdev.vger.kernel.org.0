@@ -2,111 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ED991BAB9F
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 19:48:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0CA21BABB4
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 19:52:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726295AbgD0RsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 13:48:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37178 "EHLO
+        id S1726283AbgD0Rv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 13:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725963AbgD0RsY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 13:48:24 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C38AFC0610D5
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 10:48:24 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id q10so17551174ile.0
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 10:48:24 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726223AbgD0Rv7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 13:51:59 -0400
+Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3A97C0610D5
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 10:51:58 -0700 (PDT)
+Received: by mail-qv1-xf49.google.com with SMTP id ck5so19496443qvb.18
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 10:51:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=vAXcjX6ee0HekimclcSWgL02NYtmHVfyc98d/l/9Qd4=;
-        b=Ut1BagHBWYIDTM+MtNjev5WdRZPSPtxukukOzToPtXmhiqm3NXgdfNYlG+oGs5UUla
-         SUB2TifRC2JTdfdaSZy5AusiEN0b9DzCXixv8Gwh1umhZlSz9vWHKhcwUZni0ITIPd9E
-         BOLTYElTHBnDZEVi7htxilepsPeIwhzFJ2TL13m1Uzs52hdsUSxhUtsVKn4Z8QHOteKf
-         Ulm6IISw1VFxdSDcDnhvzly4PsBrPw4Op312Cgfh4kbRLqJz96ma3rtl+OtTp4yYujnP
-         cxhkFblie4FEl82YgePt/VF+8lGOPV9YLm3AnQ6cXKvhwKTQG9LyV5fnRk8SY+umMIIu
-         b5Zw==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=OYuOx/czNLwKt8O2lBJEBXohGADalS4aNorV3IU9n1I=;
+        b=frwf+1VeDygy8ocdMV0L7e1GIz5tNSef5hAvGEolmVem6UL+HZJh0DTS1SeMzYh3TJ
+         Dm4kvP9BDL3V0vK/j/l+Py8SxS2H1UjFHUYQP0rZmnRUUgamTDV2VpBsTM9UjZrPcv+l
+         go0MkmnRWlSqYPClkRUX/QOTEIk08ysLXvcOBFagjWwnVbGXkciT1OP5CwqZbM3K143F
+         MMnLxOO9cKwFdbul1axTcmYMO+Zx5ro2L/pCSRr2Ie8YY7EKXQ6uWZ0n1jSSjdYz6KF/
+         YCEXpDg9GueyvdtpGsHiCqu5DtdF9OwwqSSg+kAWaloBFBFTjLqcvXp1TAt3XYiOHWXK
+         AK3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=vAXcjX6ee0HekimclcSWgL02NYtmHVfyc98d/l/9Qd4=;
-        b=nqRsyDWJ02BTLroRVataUTs2zV1FaT5LPsuq4tmQZiuAkQ0Duw0Oz+1I4fImvB35TC
-         ZeLcZvFligs+NGIDNgPliZEwSoRw5y+c5knuFbqkP2RSRjXfppVfPhB+nvs4apAUjZMB
-         qjb3QlF4LIrAOIOtw8KUyAsUTijyPlXOTRrcQUkaoUuYueyMLoexqbGuaw/sDuIT/VN8
-         VGIKSgTOSaRvVFABenePpLGFhZ5hDBYoHwOx1vghKSrvzqHay+gEHiGF//i3VPnW+cz3
-         H5h08pr3NBfu8H29wXxG7W/UNbzS9tCejPRajuMEkBjqAcjH4yQ5TGHFY+wPqZ0WpZ4j
-         xwjw==
-X-Gm-Message-State: AGi0PuY3qVfE9kjIPbNRIQjSeYO3ElLnZX4zONsJc0+WoAbmAFSNvmPm
-        uD9frBGERR0B+3U67yB+FKA=
-X-Google-Smtp-Source: APiQypJmkNZx+tR8UPBjrd+/QZ7KrBcPcuDrdr7wgNwylTZ0jYmIcQQhoN3YFZHsvQqawMYLeSz64g==
-X-Received: by 2002:a92:48d0:: with SMTP id j77mr21385736ilg.274.1588009703973;
-        Mon, 27 Apr 2020 10:48:23 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id n6sm5223097iog.16.2020.04.27.10.48.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2020 10:48:23 -0700 (PDT)
-Date:   Mon, 27 Apr 2020 10:48:14 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        brouer@redhat.com, toke@redhat.com, toshiaki.makita1@gmail.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-Message-ID: <5ea71ade547e3_a372ad3a5ecc5b811@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200424201428.89514-14-dsahern@kernel.org>
-References: <20200424201428.89514-1-dsahern@kernel.org>
- <20200424201428.89514-14-dsahern@kernel.org>
-Subject: RE: [PATCH v3 bpf-next 13/15] selftest: Add test for xdp_egress
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=OYuOx/czNLwKt8O2lBJEBXohGADalS4aNorV3IU9n1I=;
+        b=NPL/XJ6UO3+nAnf9nh5q2IofKOnm3rGys/zi9MVu2tkiLNqMnW+JKAyZ3XlxGDjLwL
+         UICjYU48wbO9BeRu4wqBdFcQezpW0xOXkuttxA/LUqqtNpI8Ez72Ni/SypRz7rwFriwJ
+         7se1Uk3C6RYl3HTQ4oZHrgT1A6UqDBbz1wpbjam4YF4X94+5EkbGunqF8qGYvpdO8Ruc
+         f06/LdlUAWHa4Gykv8JZABsOTmncl6oPL0N5Y/zgb+hbxMJhp/X/UZyGpCP+2CU6oTEa
+         oL6xLd+REa9Nz9EuKcBsYoL0tb65fDCaPEhssN87JltC5mRgLxSaO5YhuxXQvbNHvM4e
+         nZHQ==
+X-Gm-Message-State: AGi0PuZ5rjpdXd37YheymNhvNuzRcw3oAiyx9PGVJJbHvdV6I/Dv9J7j
+        bzaNE5ZArjKNSuP1v/uDm3CGYQTPLUW+dQ==
+X-Google-Smtp-Source: APiQypLBhuPiCY78x+9PSazbILZAkI1psItcV/Z1euDvih/ZrEi1WLn7rX78/3J/a90Vpa4mS7UiVfcAR2dVIA==
+X-Received: by 2002:ad4:46b4:: with SMTP id br20mr23483271qvb.62.1588009917980;
+ Mon, 27 Apr 2020 10:51:57 -0700 (PDT)
+Date:   Mon, 27 Apr 2020 10:51:55 -0700
+Message-Id: <20200427175155.227178-1-edumazet@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+X-Mailer: git-send-email 2.26.2.303.gf8c07b1a785-goog
+Subject: [PATCH iproute2] tc: fq_codel: add drop_batch parameter
+From:   Eric Dumazet <edumazet@google.com>
+To:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern wrote:
-> From: David Ahern <dahern@digitalocean.com>
-> 
-> Add selftest for xdp_egress. Add xdp_drop program to veth connecting
-> a namespace to drop packets and break connectivity.
-> 
-> Signed-off-by: David Ahern <dahern@digitalocean.com>
-> ---
+Commit 9d18562a2278 ("fq_codel: add batch ability to fq_codel_drop()")
+added the new TCA_FQ_CODEL_DROP_BATCH_SIZE parameter, set by default to 64.
 
-[...]
+Add to tc command the ability to get/set the drop_batch
 
-> +################################################################################
-> +# main
-> +
-> +if [ $(id -u) -ne 0 ]; then
-> +	echo "selftests: $TESTNAME [SKIP] Need root privileges"
-> +	exit $ksft_skip
-> +fi
-> +
-> +if ! ip link set dev lo xdp off > /dev/null 2>&1; then
-> +	echo "selftests: $TESTNAME [SKIP] Could not run test without the ip xdp support"
-> +	exit $ksft_skip
-> +fi
-> +
-> +if [ -z "$BPF_FS" ]; then
-> +	echo "selftests: $TESTNAME [SKIP] Could not run test without bpffs mounted"
-> +	exit $ksft_skip
-> +fi
-> +
-> +if ! bpftool version > /dev/null 2>&1; then
-> +	echo "selftests: $TESTNAME [SKIP] Could not run test without bpftool"
-> +	exit $ksft_skip
-> +fi
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ tc/q_fq_codel.c | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
-This is consistent with test_xdp_veth.sh so it is probably ok for this series
-but I think it would be nice to go back and make these fail on errors. Or at
-least fail on bpffs mount. Seems other tests fail on bpffs mount failures so
-would be OK I think.
+diff --git a/tc/q_fq_codel.c b/tc/q_fq_codel.c
+index 1c6cf1e0de9ef6aa2400f36008cbc830c37352c0..1a51302e0e2b332a4496965dfeaf520bc843f8ad 100644
+--- a/tc/q_fq_codel.c
++++ b/tc/q_fq_codel.c
+@@ -54,12 +54,14 @@ static void explain(void)
+ 					"[ memory_limit BYTES ]\n"
+ 					"[ target TIME ] [ interval TIME ]\n"
+ 					"[ quantum BYTES ] [ [no]ecn ]\n"
+-					"[ ce_threshold TIME ]\n");
++					"[ ce_threshold TIME ]\n"
++					"[ drop_batch SIZE ]\n");
+ }
+ 
+ static int fq_codel_parse_opt(struct qdisc_util *qu, int argc, char **argv,
+ 			      struct nlmsghdr *n, const char *dev)
+ {
++	unsigned int drop_batch = 0;
+ 	unsigned int limit = 0;
+ 	unsigned int flows = 0;
+ 	unsigned int target = 0;
+@@ -89,6 +91,12 @@ static int fq_codel_parse_opt(struct qdisc_util *qu, int argc, char **argv,
+ 				fprintf(stderr, "Illegal \"quantum\"\n");
+ 				return -1;
+ 			}
++		} else if (strcmp(*argv, "drop_batch") == 0) {
++			NEXT_ARG();
++			if (get_unsigned(&drop_batch, *argv, 0)) {
++				fprintf(stderr, "Illegal \"drop_batch\"\n");
++				return -1;
++			}
+ 		} else if (strcmp(*argv, "target") == 0) {
+ 			NEXT_ARG();
+ 			if (get_time(&target, *argv)) {
+@@ -147,6 +155,8 @@ static int fq_codel_parse_opt(struct qdisc_util *qu, int argc, char **argv,
+ 	if (memory != ~0U)
+ 		addattr_l(n, 1024, TCA_FQ_CODEL_MEMORY_LIMIT,
+ 			  &memory, sizeof(memory));
++	if (drop_batch)
++		addattr_l(n, 1024, TCA_FQ_CODEL_DROP_BATCH_SIZE, &drop_batch, sizeof(drop_batch));
+ 
+ 	addattr_nest_end(n, tail);
+ 	return 0;
+@@ -163,6 +173,7 @@ static int fq_codel_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt
+ 	unsigned int quantum;
+ 	unsigned int ce_threshold;
+ 	unsigned int memory_limit;
++	unsigned int drop_batch;
+ 
+ 	SPRINT_BUF(b1);
+ 
+@@ -220,6 +231,12 @@ static int fq_codel_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt
+ 		if (ecn)
+ 			print_bool(PRINT_ANY, "ecn", "ecn ", true);
+ 	}
++	if (tb[TCA_FQ_CODEL_DROP_BATCH_SIZE] &&
++	    RTA_PAYLOAD(tb[TCA_FQ_CODEL_DROP_BATCH_SIZE]) >= sizeof(__u32)) {
++		drop_batch = rta_getattr_u32(tb[TCA_FQ_CODEL_DROP_BATCH_SIZE]);
++		if (drop_batch)
++			print_uint(PRINT_ANY, "drop_batch", "drop_batch %u ", drop_batch);
++	}
+ 
+ 	return 0;
+ }
+-- 
+2.26.2.303.gf8c07b1a785-goog
 
-Otherwise LGTM.
