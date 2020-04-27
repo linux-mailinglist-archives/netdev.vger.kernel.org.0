@@ -2,29 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B47D81BA76F
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 17:10:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 974001BA773
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 17:11:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728135AbgD0PKx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 11:10:53 -0400
-Received: from simonwunderlich.de ([79.140.42.25]:37908 "EHLO
-        simonwunderlich.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727115AbgD0PKv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 11:10:51 -0400
+        id S1728106AbgD0PKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 11:10:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40690 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728018AbgD0PKu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 11:10:50 -0400
+Received: from simonwunderlich.de (packetmixer.de [IPv6:2001:4d88:2000:24::c0de])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7950BC0610D5
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 08:10:50 -0700 (PDT)
 Received: from kero.packetmixer.de (p4FD5799A.dip0.t-ipconnect.de [79.213.121.154])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by simonwunderlich.de (Postfix) with ESMTPSA id DD3416205B;
-        Mon, 27 Apr 2020 17:00:42 +0200 (CEST)
+        by simonwunderlich.de (Postfix) with ESMTPSA id 69F1B6205D;
+        Mon, 27 Apr 2020 17:00:43 +0200 (CEST)
 From:   Simon Wunderlich <sw@simonwunderlich.de>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org,
-        George Spelvin <lkml@sdf.org>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
         Sven Eckelmann <sven@narfation.org>,
         Simon Wunderlich <sw@simonwunderlich.de>
-Subject: [PATCH 1/4] batman-adv: fix batadv_nc_random_weight_tq
-Date:   Mon, 27 Apr 2020 17:00:36 +0200
-Message-Id: <20200427150039.28730-2-sw@simonwunderlich.de>
+Subject: [PATCH 2/4] batman-adv: Fix refcnt leak in batadv_show_throughput_override
+Date:   Mon, 27 Apr 2020 17:00:37 +0200
+Message-Id: <20200427150039.28730-3-sw@simonwunderlich.de>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200427150039.28730-1-sw@simonwunderlich.de>
 References: <20200427150039.28730-1-sw@simonwunderlich.de>
@@ -35,65 +39,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: George Spelvin <lkml@sdf.org>
+From: Xiyu Yang <xiyuyang19@fudan.edu.cn>
 
-and change to pseudorandom numbers, as this is a traffic dithering
-operation that doesn't need crypto-grade.
+batadv_show_throughput_override() invokes batadv_hardif_get_by_netdev(),
+which gets a batadv_hard_iface object from net_dev with increased refcnt
+and its reference is assigned to a local pointer 'hard_iface'.
 
-The previous code operated in 4 steps:
+When batadv_show_throughput_override() returns, "hard_iface" becomes
+invalid, so the refcount should be decreased to keep refcount balanced.
 
-1. Generate a random byte 0 <= rand_tq <= 255
-2. Multiply it by BATADV_TQ_MAX_VALUE - tq
-3. Divide by 255 (= BATADV_TQ_MAX_VALUE)
-4. Return BATADV_TQ_MAX_VALUE - rand_tq
+The issue happens in the normal path of
+batadv_show_throughput_override(), which forgets to decrease the refcnt
+increased by batadv_hardif_get_by_netdev() before the function returns,
+causing a refcnt leak.
 
-This would apperar to scale (BATADV_TQ_MAX_VALUE - tq) by a random
-value between 0/255 and 255/255.
+Fix this issue by calling batadv_hardif_put() before the
+batadv_show_throughput_override() returns in the normal path.
 
-But!  The intermediate value between steps 3 and 4 is stored in a u8
-variable.  So it's truncated, and most of the time, is less than 255, after
-which the division produces 0.  Specifically, if tq is odd, the product is
-always even, and can never be 255.  If tq is even, there's exactly one
-random byte value that will produce a product byte of 255.
-
-Thus, the return value is 255 (511/512 of the time) or 254 (1/512
-of the time).
-
-If we assume that the truncation is a bug, and the code is meant to scale
-the input, a simpler way of looking at it is that it's returning a random
-value between tq and BATADV_TQ_MAX_VALUE, inclusive.
-
-Well, we have an optimized function for doing just that.
-
-Fixes: 3c12de9a5c75 ("batman-adv: network coding - code and transmit packets if possible")
-Signed-off-by: George Spelvin <lkml@sdf.org>
+Fixes: 0b5ecc6811bd ("batman-adv: add throughput override attribute to hard_ifaces")
+Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
 Signed-off-by: Sven Eckelmann <sven@narfation.org>
 Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
 ---
- net/batman-adv/network-coding.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ net/batman-adv/sysfs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/batman-adv/network-coding.c b/net/batman-adv/network-coding.c
-index 8f0717c3f7b5..b0469d15da0e 100644
---- a/net/batman-adv/network-coding.c
-+++ b/net/batman-adv/network-coding.c
-@@ -1009,15 +1009,8 @@ static struct batadv_nc_path *batadv_nc_get_path(struct batadv_priv *bat_priv,
-  */
- static u8 batadv_nc_random_weight_tq(u8 tq)
- {
--	u8 rand_val, rand_tq;
--
--	get_random_bytes(&rand_val, sizeof(rand_val));
--
- 	/* randomize the estimated packet loss (max TQ - estimated TQ) */
--	rand_tq = rand_val * (BATADV_TQ_MAX_VALUE - tq);
--
--	/* normalize the randomized packet loss */
--	rand_tq /= BATADV_TQ_MAX_VALUE;
-+	u8 rand_tq = prandom_u32_max(BATADV_TQ_MAX_VALUE + 1 - tq);
+diff --git a/net/batman-adv/sysfs.c b/net/batman-adv/sysfs.c
+index c45962d8527b..c0b00268aac4 100644
+--- a/net/batman-adv/sysfs.c
++++ b/net/batman-adv/sysfs.c
+@@ -1190,6 +1190,7 @@ static ssize_t batadv_show_throughput_override(struct kobject *kobj,
  
- 	/* convert to (randomized) estimated tq again */
- 	return BATADV_TQ_MAX_VALUE - rand_tq;
+ 	tp_override = atomic_read(&hard_iface->bat_v.throughput_override);
+ 
++	batadv_hardif_put(hard_iface);
+ 	return sprintf(buff, "%u.%u MBit\n", tp_override / 10,
+ 		       tp_override % 10);
+ }
 -- 
 2.20.1
 
