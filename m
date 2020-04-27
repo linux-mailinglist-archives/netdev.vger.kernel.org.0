@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11F0C1BB142
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 00:05:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D10B51BB139
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 00:05:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726991AbgD0WFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 18:05:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47572 "EHLO mail.kernel.org"
+        id S1726482AbgD0WFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 18:05:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47986 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726204AbgD0WB6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726303AbgD0WB6 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 27 Apr 2020 18:01:58 -0400
 Received: from mail.kernel.org (ip5f5ad5c5.dynamic.kabel-deutschland.de [95.90.213.197])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 49E132082E;
+        by mail.kernel.org (Postfix) with ESMTPSA id 461012078C;
         Mon, 27 Apr 2020 22:01:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1588024916;
-        bh=6hICUJOm73tC7mybOqnlsNRDxZD2tv+mEL2WRMC0A40=;
-        h=From:To:Cc:Subject:Date:From;
-        b=WYg28824GL3DwqDlANPhGsSSLnLCt+nOUarYdI+8iK8EnAlq74+LHuJNW6rd/NOH5
-         oTUvcy5e4wOKxSC4GuXp+IABhcvwc1W2XSXkjunBIJ9G3botBuK/jslIHLS2Uid7wJ
-         H5Wm1uLFOHUzoyYKgayq/3HfAxgkHCPKSiRuDjIs=
+        bh=b6SmWk/tS2NNZD6gud57rFFy9m1IXlxDr9U59Q9cAGU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tnWvncRzP4eIl6sQYzWo2f1ba2SWNpBAg0KpcRaCXfwoD4NSRnYmrsophdGgrnXbx
+         weC1J4+Oqf2eKR+cktuprYWaSuaiBIX9Bv2SZe8erk+1dXQrThvnzza0Nt+rIp/qQl
+         vC6khWj3v+3ibOKPyOU/zJ2KanYdMcrYg0l3FhTE=
 Received: from mchehab by mail.kernel.org with local (Exim 4.92.3)
         (envelope-from <mchehab@kernel.org>)
-        id 1jTBp4-000Inf-FO; Tue, 28 Apr 2020 00:01:54 +0200
+        id 1jTBp4-000Ini-GS; Tue, 28 Apr 2020 00:01:54 +0200
 From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        netdev@vger.kernel.org, linux-hams@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org,
-        linux-decnet-user@lists.sourceforge.net,
-        ceph-devel@vger.kernel.org, bpf@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net, lvs-devel@vger.kernel.org
-Subject: [PATCH 00/38] net: manually convert files to ReST format - part 1
-Date:   Tue, 28 Apr 2020 00:01:15 +0200
-Message-Id: <cover.1588024424.git.mchehab+huawei@kernel.org>
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH 01/38] docs: networking: convert caif files to ReST
+Date:   Tue, 28 Apr 2020 00:01:16 +0200
+Message-Id: <25891dfabb48810620f82b82cc3479919bf27685.1588024424.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.25.4
+In-Reply-To: <cover.1588024424.git.mchehab+huawei@kernel.org>
+References: <cover.1588024424.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -46,181 +45,659 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are very few documents upstream that aren't converted upstream.
+There are two text files for caif, plus one already converted
+file.
 
-This series convert part of the networking text files into ReST.
-It is part of a bigger set of patches, which were split on parts,
-in order to make reviewing task easier.
+Convert the two remaining ones to ReST, create a new index.rst
+file for CAIF, adding it to the main networking documentation
+index.
 
-The full series (including those ones) are at:
-
-	https://git.linuxtv.org/mchehab/experimental.git/log/?h=net-docs
-
-And the documents, converted to HTML via the building system
-are at:
-
-	https://www.infradead.org/~mchehab/kernel_docs/networking/
-
-
-Mauro Carvalho Chehab (38):
-  docs: networking: convert caif files to ReST
-  docs: networking: convert 6pack.txt to ReST
-  docs: networking: convert altera_tse.txt to ReST
-  docs: networking: convert arcnet-hardware.txt to ReST
-  docs: networking: convert arcnet.txt to ReST
-  docs: networking: convert atm.txt to ReST
-  docs: networking: convert ax25.txt to ReST
-  docs: networking: convert baycom.txt to ReST
-  docs: networking: convert bonding.txt to ReST
-  docs: networking: convert cdc_mbim.txt to ReST
-  docs: networking: convert cops.txt to ReST
-  docs: networking: convert cxacru.txt to ReST
-  docs: networking: convert dccp.txt to ReST
-  docs: networking: convert dctcp.txt to ReST
-  docs: networking: convert decnet.txt to ReST
-  docs: networking: convert defza.txt to ReST
-  docs: networking: convert dns_resolver.txt to ReST
-  docs: networking: convert driver.txt to ReST
-  docs: networking: convert eql.txt to ReST
-  docs: networking: convert fib_trie.txt to ReST
-  docs: networking: convert filter.txt to ReST
-  docs: networking: convert fore200e.txt to ReST
-  docs: networking: convert framerelay.txt to ReST
-  docs: networking: convert generic-hdlc.txt to ReST
-  docs: networking: convert generic_netlink.txt to ReST
-  docs: networking: convert gen_stats.txt to ReST
-  docs: networking: convert gtp.txt to ReST
-  docs: networking: convert hinic.txt to ReST
-  docs: networking: convert ila.txt to ReST
-  docs: networking: convert ipddp.txt to ReST
-  docs: networking: convert ip_dynaddr.txt to ReST
-  docs: networking: convert iphase.txt to ReST
-  docs: networking: convert ipsec.txt to ReST
-  docs: networking: convert ip-sysctl.txt to ReST
-  docs: networking: convert ipv6.txt to ReST
-  docs: networking: convert ipvlan.txt to ReST
-  docs: networking: convert ipvs-sysctl.txt to ReST
-  docs: networking: convert kcm.txt to ReST
-
- .../admin-guide/kernel-parameters.txt         |   10 +-
- Documentation/admin-guide/sysctl/net.rst      |    4 +-
- Documentation/bpf/index.rst                   |    4 +-
- .../networking/{6pack.txt => 6pack.rst}       |   46 +-
- .../{altera_tse.txt => altera_tse.rst}        |   87 +-
- ...rcnet-hardware.txt => arcnet-hardware.rst} | 2169 +++++++++--------
- .../networking/{arcnet.txt => arcnet.rst}     |  348 +--
- Documentation/networking/{atm.txt => atm.rst} |    6 +
- .../networking/{ax25.txt => ax25.rst}         |    6 +
- .../networking/{baycom.txt => baycom.rst}     |  110 +-
- .../networking/{bonding.txt => bonding.rst}   | 1275 +++++-----
- Documentation/networking/caif/caif.rst        |    2 -
- Documentation/networking/caif/index.rst       |   13 +
- .../caif/{Linux-CAIF.txt => linux_caif.rst}   |   54 +-
- Documentation/networking/caif/spi_porting.rst |  229 ++
- Documentation/networking/caif/spi_porting.txt |  208 --
- .../networking/{cdc_mbim.txt => cdc_mbim.rst} |   76 +-
- Documentation/networking/cops.rst             |   80 +
- Documentation/networking/cops.txt             |   63 -
- .../networking/{cxacru.txt => cxacru.rst}     |   86 +-
- .../networking/{dccp.txt => dccp.rst}         |   39 +-
- .../networking/{dctcp.txt => dctcp.rst}       |   14 +-
- .../networking/{decnet.txt => decnet.rst}     |   77 +-
- .../networking/{defza.txt => defza.rst}       |    8 +-
- .../networking/device_drivers/intel/e100.rst  |    2 +-
- .../networking/device_drivers/intel/ixgb.rst  |    2 +-
- .../{dns_resolver.txt => dns_resolver.rst}    |   52 +-
- .../networking/{driver.txt => driver.rst}     |   22 +-
- Documentation/networking/{eql.txt => eql.rst} |  445 ++--
- .../networking/{fib_trie.txt => fib_trie.rst} |   16 +-
- .../networking/{filter.txt => filter.rst}     |  850 ++++---
- .../networking/{fore200e.txt => fore200e.rst} |    8 +-
- .../{framerelay.txt => framerelay.rst}        |   21 +-
- .../{gen_stats.txt => gen_stats.rst}          |   98 +-
- .../{generic-hdlc.txt => generic-hdlc.rst}    |   86 +-
- ...eneric_netlink.txt => generic_netlink.rst} |    6 +
- Documentation/networking/{gtp.txt => gtp.rst} |   95 +-
- .../networking/{hinic.txt => hinic.rst}       |    5 +-
- Documentation/networking/{ila.txt => ila.rst} |   81 +-
- Documentation/networking/index.rst            |   38 +
- .../{ip-sysctl.txt => ip-sysctl.rst}          |  829 ++++---
- .../{ip_dynaddr.txt => ip_dynaddr.rst}        |   29 +-
- .../networking/{ipddp.txt => ipddp.rst}       |   13 +-
- .../networking/{iphase.txt => iphase.rst}     |  185 +-
- .../networking/{ipsec.txt => ipsec.rst}       |   14 +-
- .../networking/{ipv6.txt => ipv6.rst}         |    8 +-
- .../networking/{ipvlan.txt => ipvlan.rst}     |  159 +-
- .../{ipvs-sysctl.txt => ipvs-sysctl.rst}      |  180 +-
- Documentation/networking/{kcm.txt => kcm.rst} |   83 +-
- Documentation/networking/ltpc.txt             |    2 +-
- Documentation/networking/packet_mmap.txt      |    2 +-
- Documentation/networking/snmp_counter.rst     |    2 +-
- MAINTAINERS                                   |    8 +-
- drivers/atm/Kconfig                           |    4 +-
- drivers/net/Kconfig                           |    4 +-
- drivers/net/appletalk/Kconfig                 |    6 +-
- drivers/net/arcnet/Kconfig                    |    6 +-
- drivers/net/caif/Kconfig                      |    2 +-
- drivers/net/hamradio/Kconfig                  |   10 +-
- drivers/net/wan/Kconfig                       |    4 +-
- net/Kconfig                                   |    2 +-
- net/atm/Kconfig                               |    2 +-
- net/ax25/Kconfig                              |    6 +-
- net/ceph/Kconfig                              |    2 +-
- net/core/gen_stats.c                          |    2 +-
- net/decnet/Kconfig                            |    4 +-
- net/dns_resolver/Kconfig                      |    2 +-
- net/dns_resolver/dns_key.c                    |    2 +-
- net/dns_resolver/dns_query.c                  |    2 +-
- net/ipv4/Kconfig                              |    2 +-
- net/ipv4/icmp.c                               |    2 +-
- net/ipv6/Kconfig                              |    2 +-
- tools/bpf/bpf_asm.c                           |    2 +-
- tools/bpf/bpf_dbg.c                           |    2 +-
- 74 files changed, 4656 insertions(+), 3769 deletions(-)
- rename Documentation/networking/{6pack.txt => 6pack.rst} (90%)
- rename Documentation/networking/{altera_tse.txt => altera_tse.rst} (85%)
- rename Documentation/networking/{arcnet-hardware.txt => arcnet-hardware.rst} (66%)
- rename Documentation/networking/{arcnet.txt => arcnet.rst} (76%)
- rename Documentation/networking/{atm.txt => atm.rst} (89%)
- rename Documentation/networking/{ax25.txt => ax25.rst} (91%)
- rename Documentation/networking/{baycom.txt => baycom.rst} (58%)
- rename Documentation/networking/{bonding.txt => bonding.rst} (75%)
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+---
+ Documentation/networking/caif/caif.rst        |   2 -
+ Documentation/networking/caif/index.rst       |  13 +
+ .../caif/{Linux-CAIF.txt => linux_caif.rst}   |  54 +++--
+ Documentation/networking/caif/spi_porting.rst | 229 ++++++++++++++++++
+ Documentation/networking/caif/spi_porting.txt | 208 ----------------
+ Documentation/networking/index.rst            |   1 +
+ drivers/net/caif/Kconfig                      |   2 +-
+ 7 files changed, 281 insertions(+), 228 deletions(-)
  create mode 100644 Documentation/networking/caif/index.rst
  rename Documentation/networking/caif/{Linux-CAIF.txt => linux_caif.rst} (90%)
  create mode 100644 Documentation/networking/caif/spi_porting.rst
  delete mode 100644 Documentation/networking/caif/spi_porting.txt
- rename Documentation/networking/{cdc_mbim.txt => cdc_mbim.rst} (88%)
- create mode 100644 Documentation/networking/cops.rst
- delete mode 100644 Documentation/networking/cops.txt
- rename Documentation/networking/{cxacru.txt => cxacru.rst} (66%)
- rename Documentation/networking/{dccp.txt => dccp.rst} (94%)
- rename Documentation/networking/{dctcp.txt => dctcp.rst} (89%)
- rename Documentation/networking/{decnet.txt => decnet.rst} (87%)
- rename Documentation/networking/{defza.txt => defza.rst} (91%)
- rename Documentation/networking/{dns_resolver.txt => dns_resolver.rst} (89%)
- rename Documentation/networking/{driver.txt => driver.rst} (85%)
- rename Documentation/networking/{eql.txt => eql.rst} (62%)
- rename Documentation/networking/{fib_trie.txt => fib_trie.rst} (96%)
- rename Documentation/networking/{filter.txt => filter.rst} (77%)
- rename Documentation/networking/{fore200e.txt => fore200e.rst} (94%)
- rename Documentation/networking/{framerelay.txt => framerelay.rst} (93%)
- rename Documentation/networking/{gen_stats.txt => gen_stats.rst} (60%)
- rename Documentation/networking/{generic-hdlc.txt => generic-hdlc.rst} (75%)
- rename Documentation/networking/{generic_netlink.txt => generic_netlink.rst} (64%)
- rename Documentation/networking/{gtp.txt => gtp.rst} (79%)
- rename Documentation/networking/{hinic.txt => hinic.rst} (97%)
- rename Documentation/networking/{ila.txt => ila.rst} (82%)
- rename Documentation/networking/{ip-sysctl.txt => ip-sysctl.rst} (83%)
- rename Documentation/networking/{ip_dynaddr.txt => ip_dynaddr.rst} (65%)
- rename Documentation/networking/{ipddp.txt => ipddp.rst} (89%)
- rename Documentation/networking/{iphase.txt => iphase.rst} (50%)
- rename Documentation/networking/{ipsec.txt => ipsec.rst} (90%)
- rename Documentation/networking/{ipv6.txt => ipv6.rst} (93%)
- rename Documentation/networking/{ipvlan.txt => ipvlan.rst} (54%)
- rename Documentation/networking/{ipvs-sysctl.txt => ipvs-sysctl.rst} (62%)
- rename Documentation/networking/{kcm.txt => kcm.rst} (84%)
 
+diff --git a/Documentation/networking/caif/caif.rst b/Documentation/networking/caif/caif.rst
+index 07afc8063d4d..a07213030ccf 100644
+--- a/Documentation/networking/caif/caif.rst
++++ b/Documentation/networking/caif/caif.rst
+@@ -1,5 +1,3 @@
+-:orphan:
+-
+ .. SPDX-License-Identifier: GPL-2.0
+ .. include:: <isonum.txt>
+ 
+diff --git a/Documentation/networking/caif/index.rst b/Documentation/networking/caif/index.rst
+new file mode 100644
+index 000000000000..86e5b7832ec3
+--- /dev/null
++++ b/Documentation/networking/caif/index.rst
+@@ -0,0 +1,13 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++CAIF
++====
++
++Contents:
++
++.. toctree::
++   :maxdepth: 2
++
++   linux_caif
++   caif
++   spi_porting
+diff --git a/Documentation/networking/caif/Linux-CAIF.txt b/Documentation/networking/caif/linux_caif.rst
+similarity index 90%
+rename from Documentation/networking/caif/Linux-CAIF.txt
+rename to Documentation/networking/caif/linux_caif.rst
+index 0aa4bd381bec..a0480862ab8c 100644
+--- a/Documentation/networking/caif/Linux-CAIF.txt
++++ b/Documentation/networking/caif/linux_caif.rst
+@@ -1,12 +1,19 @@
++.. SPDX-License-Identifier: GPL-2.0
++.. include:: <isonum.txt>
++
++==========
+ Linux CAIF
+-===========
+-copyright (C) ST-Ericsson AB 2010
+-Author: Sjur Brendeland/ sjur.brandeland@stericsson.com
+-License terms: GNU General Public License (GPL) version 2
++==========
++
++Copyright |copy| ST-Ericsson AB 2010
++
++:Author: Sjur Brendeland/ sjur.brandeland@stericsson.com
++:License terms: GNU General Public License (GPL) version 2
+ 
+ 
+ Introduction
+-------------
++============
++
+ CAIF is a MUX protocol used by ST-Ericsson cellular modems for
+ communication between Modem and host. The host processes can open virtual AT
+ channels, initiate GPRS Data connections, Video channels and Utility Channels.
+@@ -16,13 +23,16 @@ ST-Ericsson modems support a number of transports between modem
+ and host. Currently, UART and Loopback are available for Linux.
+ 
+ 
+-Architecture:
+-------------
++Architecture
++============
++
+ The implementation of CAIF is divided into:
++
+ * CAIF Socket Layer and GPRS IP Interface.
+ * CAIF Core Protocol Implementation
+ * CAIF Link Layer, implemented as NET devices.
+ 
++::
+ 
+   RTNL
+    !
+@@ -46,12 +56,12 @@ The implementation of CAIF is divided into:
+ 
+ 
+ 
+-I M P L E M E N T A T I O N
+-===========================
++Implementation
++==============
+ 
+ 
+ CAIF Core Protocol Layer
+-=========================================
++------------------------
+ 
+ CAIF Core layer implements the CAIF protocol as defined by ST-Ericsson.
+ It implements the CAIF protocol stack in a layered approach, where
+@@ -59,8 +69,11 @@ each layer described in the specification is implemented as a separate layer.
+ The architecture is inspired by the design patterns "Protocol Layer" and
+ "Protocol Packet".
+ 
+-== CAIF structure ==
++CAIF structure
++^^^^^^^^^^^^^^
++
+ The Core CAIF implementation contains:
++
+       -	Simple implementation of CAIF.
+       -	Layered architecture (a la Streams), each layer in the CAIF
+ 	specification is implemented in a separate c-file.
+@@ -73,7 +86,8 @@ The Core CAIF implementation contains:
+ 	to the called function (except for framing layers' receive function)
+ 
+ Layered Architecture
+---------------------
++====================
++
+ The CAIF protocol can be divided into two parts: Support functions and Protocol
+ Implementation. The support functions include:
+ 
+@@ -112,7 +126,7 @@ The CAIF Protocol implementation contains:
+       - CFSERL CAIF Serial layer. Handles concatenation/split of frames
+ 	into CAIF Frames with correct length.
+ 
+-
++::
+ 
+ 		    +---------+
+ 		    | Config  |
+@@ -143,18 +157,24 @@ The CAIF Protocol implementation contains:
+ 
+ 
+ In this layered approach the following "rules" apply.
++
+       - All layers embed the same structure "struct cflayer"
+       - A layer does not depend on any other layer's private data.
+-      - Layers are stacked by setting the pointers
++      - Layers are stacked by setting the pointers::
++
+ 		  layer->up , layer->dn
+-      -	In order to send data upwards, each layer should do
++
++      -	In order to send data upwards, each layer should do::
++
+ 		 layer->up->receive(layer->up, packet);
+-      - In order to send data downwards, each layer should do
++
++      - In order to send data downwards, each layer should do::
++
+ 		 layer->dn->transmit(layer->dn, packet);
+ 
+ 
+ CAIF Socket and IP interface
+-===========================
++============================
+ 
+ The IP interface and CAIF socket API are implemented on top of the
+ CAIF Core protocol. The IP Interface and CAIF socket have an instance of
+diff --git a/Documentation/networking/caif/spi_porting.rst b/Documentation/networking/caif/spi_porting.rst
+new file mode 100644
+index 000000000000..d49f874b20ac
+--- /dev/null
++++ b/Documentation/networking/caif/spi_porting.rst
+@@ -0,0 +1,229 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++================
++CAIF SPI porting
++================
++
++CAIF SPI basics
++===============
++
++Running CAIF over SPI needs some extra setup, owing to the nature of SPI.
++Two extra GPIOs have been added in order to negotiate the transfers
++between the master and the slave. The minimum requirement for running
++CAIF over SPI is a SPI slave chip and two GPIOs (more details below).
++Please note that running as a slave implies that you need to keep up
++with the master clock. An overrun or underrun event is fatal.
++
++CAIF SPI framework
++==================
++
++To make porting as easy as possible, the CAIF SPI has been divided in
++two parts. The first part (called the interface part) deals with all
++generic functionality such as length framing, SPI frame negotiation
++and SPI frame delivery and transmission. The other part is the CAIF
++SPI slave device part, which is the module that you have to write if
++you want to run SPI CAIF on a new hardware. This part takes care of
++the physical hardware, both with regard to SPI and to GPIOs.
++
++- Implementing a CAIF SPI device:
++
++	- Functionality provided by the CAIF SPI slave device:
++
++	In order to implement a SPI device you will, as a minimum,
++	need to implement the following
++	functions:
++
++	::
++
++	    int (*init_xfer) (struct cfspi_xfer * xfer, struct cfspi_dev *dev):
++
++	This function is called by the CAIF SPI interface to give
++	you a chance to set up your hardware to be ready to receive
++	a stream of data from the master. The xfer structure contains
++	both physical and logical addresses, as well as the total length
++	of the transfer in both directions.The dev parameter can be used
++	to map to different CAIF SPI slave devices.
++
++	::
++
++	    void (*sig_xfer) (bool xfer, struct cfspi_dev *dev):
++
++	This function is called by the CAIF SPI interface when the output
++	(SPI_INT) GPIO needs to change state. The boolean value of the xfer
++	variable indicates whether the GPIO should be asserted (HIGH) or
++	deasserted (LOW). The dev parameter can be used to map to different CAIF
++	SPI slave devices.
++
++	- Functionality provided by the CAIF SPI interface:
++
++	::
++
++	    void (*ss_cb) (bool assert, struct cfspi_ifc *ifc);
++
++	This function is called by the CAIF SPI slave device in order to
++	signal a change of state of the input GPIO (SS) to the interface.
++	Only active edges are mandatory to be reported.
++	This function can be called from IRQ context (recommended in order
++	not to introduce latency). The ifc parameter should be the pointer
++	returned from the platform probe function in the SPI device structure.
++
++	::
++
++	    void (*xfer_done_cb) (struct cfspi_ifc *ifc);
++
++	This function is called by the CAIF SPI slave device in order to
++	report that a transfer is completed. This function should only be
++	called once both the transmission and the reception are completed.
++	This function can be called from IRQ context (recommended in order
++	not to introduce latency). The ifc parameter should be the pointer
++	returned from the platform probe function in the SPI device structure.
++
++	- Connecting the bits and pieces:
++
++		- Filling in the SPI slave device structure:
++
++		  Connect the necessary callback functions.
++
++		  Indicate clock speed (used to calculate toggle delays).
++
++		  Chose a suitable name (helps debugging if you use several CAIF
++		  SPI slave devices).
++
++		  Assign your private data (can be used to map to your
++		  structure).
++
++		- Filling in the SPI slave platform device structure:
++
++		  Add name of driver to connect to ("cfspi_sspi").
++
++		  Assign the SPI slave device structure as platform data.
++
++Padding
++=======
++
++In order to optimize throughput, a number of SPI padding options are provided.
++Padding can be enabled independently for uplink and downlink transfers.
++Padding can be enabled for the head, the tail and for the total frame size.
++The padding needs to be correctly configured on both sides of the link.
++The padding can be changed via module parameters in cfspi_sspi.c or via
++the sysfs directory of the cfspi_sspi driver (before device registration).
++
++- CAIF SPI device template::
++
++    /*
++    *	Copyright (C) ST-Ericsson AB 2010
++    *	Author: Daniel Martensson / Daniel.Martensson@stericsson.com
++    *	License terms: GNU General Public License (GPL), version 2.
++    *
++    */
++
++    #include <linux/init.h>
++    #include <linux/module.h>
++    #include <linux/device.h>
++    #include <linux/wait.h>
++    #include <linux/interrupt.h>
++    #include <linux/dma-mapping.h>
++    #include <net/caif/caif_spi.h>
++
++    MODULE_LICENSE("GPL");
++
++    struct sspi_struct {
++	    struct cfspi_dev sdev;
++	    struct cfspi_xfer *xfer;
++    };
++
++    static struct sspi_struct slave;
++    static struct platform_device slave_device;
++
++    static irqreturn_t sspi_irq(int irq, void *arg)
++    {
++	    /* You only need to trigger on an edge to the active state of the
++	    * SS signal. Once a edge is detected, the ss_cb() function should be
++	    * called with the parameter assert set to true. It is OK
++	    * (and even advised) to call the ss_cb() function in IRQ context in
++	    * order not to add any delay. */
++
++	    return IRQ_HANDLED;
++    }
++
++    static void sspi_complete(void *context)
++    {
++	    /* Normally the DMA or the SPI framework will call you back
++	    * in something similar to this. The only thing you need to
++	    * do is to call the xfer_done_cb() function, providing the pointer
++	    * to the CAIF SPI interface. It is OK to call this function
++	    * from IRQ context. */
++    }
++
++    static int sspi_init_xfer(struct cfspi_xfer *xfer, struct cfspi_dev *dev)
++    {
++	    /* Store transfer info. For a normal implementation you should
++	    * set up your DMA here and make sure that you are ready to
++	    * receive the data from the master SPI. */
++
++	    struct sspi_struct *sspi = (struct sspi_struct *)dev->priv;
++
++	    sspi->xfer = xfer;
++
++	    return 0;
++    }
++
++    void sspi_sig_xfer(bool xfer, struct cfspi_dev *dev)
++    {
++	    /* If xfer is true then you should assert the SPI_INT to indicate to
++	    * the master that you are ready to receive the data from the master
++	    * SPI. If xfer is false then you should de-assert SPI_INT to indicate
++	    * that the transfer is done.
++	    */
++
++	    struct sspi_struct *sspi = (struct sspi_struct *)dev->priv;
++    }
++
++    static void sspi_release(struct device *dev)
++    {
++	    /*
++	    * Here you should release your SPI device resources.
++	    */
++    }
++
++    static int __init sspi_init(void)
++    {
++	    /* Here you should initialize your SPI device by providing the
++	    * necessary functions, clock speed, name and private data. Once
++	    * done, you can register your device with the
++	    * platform_device_register() function. This function will return
++	    * with the CAIF SPI interface initialized. This is probably also
++	    * the place where you should set up your GPIOs, interrupts and SPI
++	    * resources. */
++
++	    int res = 0;
++
++	    /* Initialize slave device. */
++	    slave.sdev.init_xfer = sspi_init_xfer;
++	    slave.sdev.sig_xfer = sspi_sig_xfer;
++	    slave.sdev.clk_mhz = 13;
++	    slave.sdev.priv = &slave;
++	    slave.sdev.name = "spi_sspi";
++	    slave_device.dev.release = sspi_release;
++
++	    /* Initialize platform device. */
++	    slave_device.name = "cfspi_sspi";
++	    slave_device.dev.platform_data = &slave.sdev;
++
++	    /* Register platform device. */
++	    res = platform_device_register(&slave_device);
++	    if (res) {
++		    printk(KERN_WARNING "sspi_init: failed to register dev.\n");
++		    return -ENODEV;
++	    }
++
++	    return res;
++    }
++
++    static void __exit sspi_exit(void)
++    {
++	    platform_device_del(&slave_device);
++    }
++
++    module_init(sspi_init);
++    module_exit(sspi_exit);
+diff --git a/Documentation/networking/caif/spi_porting.txt b/Documentation/networking/caif/spi_porting.txt
+deleted file mode 100644
+index 9efd0687dc4c..000000000000
+--- a/Documentation/networking/caif/spi_porting.txt
++++ /dev/null
+@@ -1,208 +0,0 @@
+-- CAIF SPI porting -
+-
+-- CAIF SPI basics:
+-
+-Running CAIF over SPI needs some extra setup, owing to the nature of SPI.
+-Two extra GPIOs have been added in order to negotiate the transfers
+- between the master and the slave. The minimum requirement for running
+-CAIF over SPI is a SPI slave chip and two GPIOs (more details below).
+-Please note that running as a slave implies that you need to keep up
+-with the master clock. An overrun or underrun event is fatal.
+-
+-- CAIF SPI framework:
+-
+-To make porting as easy as possible, the CAIF SPI has been divided in
+-two parts. The first part (called the interface part) deals with all
+-generic functionality such as length framing, SPI frame negotiation
+-and SPI frame delivery and transmission. The other part is the CAIF
+-SPI slave device part, which is the module that you have to write if
+-you want to run SPI CAIF on a new hardware. This part takes care of
+-the physical hardware, both with regard to SPI and to GPIOs.
+-
+-- Implementing a CAIF SPI device:
+-
+-	- Functionality provided by the CAIF SPI slave device:
+-
+-	In order to implement a SPI device you will, as a minimum,
+-	need to implement the following
+-	functions:
+-
+-	int (*init_xfer) (struct cfspi_xfer * xfer, struct cfspi_dev *dev):
+-
+-	This function is called by the CAIF SPI interface to give
+-	you a chance to set up your hardware to be ready to receive
+-	a stream of data from the master. The xfer structure contains
+-	both physical and logical addresses, as well as the total length
+-	of the transfer in both directions.The dev parameter can be used
+-	to map to different CAIF SPI slave devices.
+-
+-	void (*sig_xfer) (bool xfer, struct cfspi_dev *dev):
+-
+-	This function is called by the CAIF SPI interface when the output
+-	(SPI_INT) GPIO needs to change state. The boolean value of the xfer
+-	variable indicates whether the GPIO should be asserted (HIGH) or
+-	deasserted (LOW). The dev parameter can be used to map to different CAIF
+-	SPI slave devices.
+-
+-	- Functionality provided by the CAIF SPI interface:
+-
+-	void (*ss_cb) (bool assert, struct cfspi_ifc *ifc);
+-
+-	This function is called by the CAIF SPI slave device in order to
+-	signal a change of state of the input GPIO (SS) to the interface.
+-	Only active edges are mandatory to be reported.
+-	This function can be called from IRQ context (recommended in order
+-	not to introduce latency). The ifc parameter should be the pointer
+-	returned from the platform probe function in the SPI device structure.
+-
+-	void (*xfer_done_cb) (struct cfspi_ifc *ifc);
+-
+-	This function is called by the CAIF SPI slave device in order to
+-	report that a transfer is completed. This function should only be
+-	called once both the transmission and the reception are completed.
+-	This function can be called from IRQ context (recommended in order
+-	not to introduce latency). The ifc parameter should be the pointer
+-	returned from the platform probe function in the SPI device structure.
+-
+-	- Connecting the bits and pieces:
+-
+-		- Filling in the SPI slave device structure:
+-
+-		Connect the necessary callback functions.
+-		Indicate clock speed (used to calculate toggle delays).
+-		Chose a suitable name (helps debugging if you use several CAIF
+-		SPI slave devices).
+-		Assign your private data (can be used to map to your structure).
+-
+-		- Filling in the SPI slave platform device structure:
+-		Add name of driver to connect to ("cfspi_sspi").
+-		Assign the SPI slave device structure as platform data.
+-
+-- Padding:
+-
+-In order to optimize throughput, a number of SPI padding options are provided.
+-Padding can be enabled independently for uplink and downlink transfers.
+-Padding can be enabled for the head, the tail and for the total frame size.
+-The padding needs to be correctly configured on both sides of the link.
+-The padding can be changed via module parameters in cfspi_sspi.c or via
+-the sysfs directory of the cfspi_sspi driver (before device registration).
+-
+-- CAIF SPI device template:
+-
+-/*
+- *	Copyright (C) ST-Ericsson AB 2010
+- *	Author: Daniel Martensson / Daniel.Martensson@stericsson.com
+- *	License terms: GNU General Public License (GPL), version 2.
+- *
+- */
+-
+-#include <linux/init.h>
+-#include <linux/module.h>
+-#include <linux/device.h>
+-#include <linux/wait.h>
+-#include <linux/interrupt.h>
+-#include <linux/dma-mapping.h>
+-#include <net/caif/caif_spi.h>
+-
+-MODULE_LICENSE("GPL");
+-
+-struct sspi_struct {
+-	struct cfspi_dev sdev;
+-	struct cfspi_xfer *xfer;
+-};
+-
+-static struct sspi_struct slave;
+-static struct platform_device slave_device;
+-
+-static irqreturn_t sspi_irq(int irq, void *arg)
+-{
+-	/* You only need to trigger on an edge to the active state of the
+-	 * SS signal. Once a edge is detected, the ss_cb() function should be
+-	 * called with the parameter assert set to true. It is OK
+-	 * (and even advised) to call the ss_cb() function in IRQ context in
+-	 * order not to add any delay. */
+-
+-	return IRQ_HANDLED;
+-}
+-
+-static void sspi_complete(void *context)
+-{
+-	/* Normally the DMA or the SPI framework will call you back
+-	 * in something similar to this. The only thing you need to
+-	 * do is to call the xfer_done_cb() function, providing the pointer
+-	 * to the CAIF SPI interface. It is OK to call this function
+-	 * from IRQ context. */
+-}
+-
+-static int sspi_init_xfer(struct cfspi_xfer *xfer, struct cfspi_dev *dev)
+-{
+-	/* Store transfer info. For a normal implementation you should
+-	 * set up your DMA here and make sure that you are ready to
+-	 * receive the data from the master SPI. */
+-
+-	struct sspi_struct *sspi = (struct sspi_struct *)dev->priv;
+-
+-	sspi->xfer = xfer;
+-
+-	return 0;
+-}
+-
+-void sspi_sig_xfer(bool xfer, struct cfspi_dev *dev)
+-{
+-	/* If xfer is true then you should assert the SPI_INT to indicate to
+-	 * the master that you are ready to receive the data from the master
+-	 * SPI. If xfer is false then you should de-assert SPI_INT to indicate
+-	 * that the transfer is done.
+-	 */
+-
+-	struct sspi_struct *sspi = (struct sspi_struct *)dev->priv;
+-}
+-
+-static void sspi_release(struct device *dev)
+-{
+-	/*
+-	 * Here you should release your SPI device resources.
+-	 */
+-}
+-
+-static int __init sspi_init(void)
+-{
+-	/* Here you should initialize your SPI device by providing the
+-	 * necessary functions, clock speed, name and private data. Once
+-	 * done, you can register your device with the
+-	 * platform_device_register() function. This function will return
+-	 * with the CAIF SPI interface initialized. This is probably also
+-	 * the place where you should set up your GPIOs, interrupts and SPI
+-	 * resources. */
+-
+-	int res = 0;
+-
+-	/* Initialize slave device. */
+-	slave.sdev.init_xfer = sspi_init_xfer;
+-	slave.sdev.sig_xfer = sspi_sig_xfer;
+-	slave.sdev.clk_mhz = 13;
+-	slave.sdev.priv = &slave;
+-	slave.sdev.name = "spi_sspi";
+-	slave_device.dev.release = sspi_release;
+-
+-	/* Initialize platform device. */
+-	slave_device.name = "cfspi_sspi";
+-	slave_device.dev.platform_data = &slave.sdev;
+-
+-	/* Register platform device. */
+-	res = platform_device_register(&slave_device);
+-	if (res) {
+-		printk(KERN_WARNING "sspi_init: failed to register dev.\n");
+-		return -ENODEV;
+-	}
+-
+-	return res;
+-}
+-
+-static void __exit sspi_exit(void)
+-{
+-	platform_device_del(&slave_device);
+-}
+-
+-module_init(sspi_init);
+-module_exit(sspi_exit);
+diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
+index 6538ede29661..5b3421ec25ec 100644
+--- a/Documentation/networking/index.rst
++++ b/Documentation/networking/index.rst
+@@ -15,6 +15,7 @@ Contents:
+    device_drivers/index
+    dsa/index
+    devlink/index
++   caif/index
+    ethtool-netlink
+    ieee802154
+    j1939
+diff --git a/drivers/net/caif/Kconfig b/drivers/net/caif/Kconfig
+index 9db0570c5beb..1f2f2e8209c3 100644
+--- a/drivers/net/caif/Kconfig
++++ b/drivers/net/caif/Kconfig
+@@ -28,7 +28,7 @@ config CAIF_SPI_SLAVE
+ 	  The CAIF Link layer SPI Protocol driver for Slave SPI interface.
+ 	  This driver implements a platform driver to accommodate for a
+ 	  platform specific SPI device. A sample CAIF SPI Platform device is
+-	  provided in <file:Documentation/networking/caif/spi_porting.txt>.
++	  provided in <file:Documentation/networking/caif/spi_porting.rst>.
+ 
+ config CAIF_SPI_SYNC
+ 	bool "Next command and length in start of frame"
 -- 
 2.25.4
-
 
