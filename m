@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6206B1BA011
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 11:39:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A8361BA013
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 11:39:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726920AbgD0JjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 05:39:24 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:2915 "EHLO huawei.com"
+        id S1726929AbgD0Jjk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 05:39:40 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:44882 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726349AbgD0JjX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Apr 2020 05:39:23 -0400
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 45D47A311F6C411A0EA6;
-        Mon, 27 Apr 2020 17:39:21 +0800 (CST)
+        id S1726349AbgD0Jjk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Apr 2020 05:39:40 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id DAFCA895E56446193756;
+        Mon, 27 Apr 2020 17:39:38 +0800 (CST)
 Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 27 Apr 2020 17:39:12 +0800
+ DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
+ 14.3.487.0; Mon, 27 Apr 2020 17:39:32 +0800
 From:   Wei Yongjun <weiyongjun1@huawei.com>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Wei Yongjun <weiyongjun1@huawei.com>
-CC:     <linux-omap@vger.kernel.org>, <netdev@vger.kernel.org>,
+To:     <michal.simek@xilinx.com>, <esben@geanix.com>, <andrew@lunn.ch>,
+        <ynezz@true.cz>
+CC:     Wei Yongjun <weiyongjun1@huawei.com>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
         <kernel-janitors@vger.kernel.org>
-Subject: [PATCH net-next] drivers: net: davinci_mdio: fix potential NULL dereference in davinci_mdio_probe()
-Date:   Mon, 27 Apr 2020 09:40:32 +0000
-Message-ID: <20200427094032.181184-1-weiyongjun1@huawei.com>
+Subject: [PATCH net-next] net: ll_temac: Fix return value check in temac_probe()
+Date:   Mon, 27 Apr 2020 09:40:52 +0000
+Message-ID: <20200427094052.181554-1-weiyongjun1@huawei.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Type:   text/plain; charset=US-ASCII
@@ -37,42 +37,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-platform_get_resource() may fail and return NULL, so we should
-better check it's return value to avoid a NULL pointer dereference
-a bit later in the code.
-
-This is detected by Coccinelle semantic patch.
-
-@@
-expression pdev, res, n, t, e, e1, e2;
-@@
-
-res = \(platform_get_resource\|platform_get_resource_byname\)(pdev, t, n);
-+ if (!res)
-+   return -EINVAL;
-... when != res == NULL
-e = devm_ioremap(e1, res->start, e2);
+In case of error, the function devm_ioremap() returns NULL pointer
+not ERR_PTR(). The IS_ERR() test in the return value check should
+be replaced with NULL test.
 
 Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 ---
- drivers/net/ethernet/ti/davinci_mdio.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/xilinx/ll_temac_main.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/davinci_mdio.c b/drivers/net/ethernet/ti/davinci_mdio.c
-index 38b7f6d35759..702fdc393da0 100644
---- a/drivers/net/ethernet/ti/davinci_mdio.c
-+++ b/drivers/net/ethernet/ti/davinci_mdio.c
-@@ -397,6 +397,8 @@ static int davinci_mdio_probe(struct platform_device *pdev)
- 	data->dev = dev;
- 
+diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
+index 3e313e71ae36..929244064abd 100644
+--- a/drivers/net/ethernet/xilinx/ll_temac_main.c
++++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
+@@ -1410,9 +1410,9 @@ static int temac_probe(struct platform_device *pdev)
  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
-+		return -EINVAL;
- 	data->regs = devm_ioremap(dev, res->start, resource_size(res));
- 	if (!data->regs)
- 		return -ENOMEM;
-
-
+ 	lp->regs = devm_ioremap(&pdev->dev, res->start,
+ 					resource_size(res));
+-	if (IS_ERR(lp->regs)) {
++	if (!lp->regs) {
+ 		dev_err(&pdev->dev, "could not map TEMAC registers\n");
+-		return PTR_ERR(lp->regs);
++		return -ENOMEM;
+ 	}
+ 
+ 	/* Select register access functions with the specified
+@@ -1505,10 +1505,10 @@ static int temac_probe(struct platform_device *pdev)
+ 		res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+ 		lp->sdma_regs = devm_ioremap(&pdev->dev, res->start,
+ 						     resource_size(res));
+-		if (IS_ERR(lp->sdma_regs)) {
++		if (!lp->sdma_regs) {
+ 			dev_err(&pdev->dev,
+ 				"could not map DMA registers\n");
+-			return PTR_ERR(lp->sdma_regs);
++			return -ENOMEM;
+ 		}
+ 		if (pdata->dma_little_endian) {
+ 			lp->dma_in = temac_dma_in32_le;
 
 
 
