@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B4881BAF17
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 22:13:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 757601BAEFE
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 22:13:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726838AbgD0UN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 16:13:26 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:31444 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726849AbgD0UMy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 16:12:54 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03RKAoiN031128
+        id S1726853AbgD0UM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 16:12:57 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:27542 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726854AbgD0UMz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 16:12:55 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03RK1sOq011056
         for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 13:12:53 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=KoU+eBOgm84GYKFMCRf8IzLM26AAVlbV1/nM6UxF9MA=;
- b=T+js0XXCiRT48ajG3jDjOCVozwRq5BkoTaI/+kjtzDTS8IIgYD/MmtSltpzXRoYcBGq6
- uaKrtwASr1BxhZlQsMYMN0a/Wl0mwsS5xMwzvUGSeTV39yjoF9ygBbHVq6L4SVQo7mJe
- uxRt53NIbHlLOd6XBkn4Rx7z8iUJnRUofL4= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 30n57q246k-1
+ bh=kXoluhMsHKsMkwaNLp1zg62W5qFepa1g37rsHxyv4GI=;
+ b=Bdyp1rF6/9VkNW9Mra5YyWXJJgD6vovHiBd1w+YTQe+jPr4IdeFvz7g3Bxjvny+5p/J4
+ qofDjECIDR8z1kxYvo7Q+i20VIWpvIui7MdZw0hH56UNBuRgqagKD7IV+Igvo2zI/U6Z
+ Upm2KhH2qqQ7NvhFzkTEEsHLqz/UWQWlKfk= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 30mk1gdyeq-8
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
         for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 13:12:53 -0700
-Received: from intmgw001.08.frc2.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:21d::6) with Microsoft SMTP Server
+Received: from intmgw003.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Mon, 27 Apr 2020 13:12:52 -0700
+ 15.1.1847.3; Mon, 27 Apr 2020 13:12:51 -0700
 Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 4705C3700871; Mon, 27 Apr 2020 13:12:50 -0700 (PDT)
+        id 7FF303700871; Mon, 27 Apr 2020 13:12:51 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Yonghong Song <yhs@fb.com>
 Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
@@ -39,9 +39,9 @@ To:     Andrii Nakryiko <andriin@fb.com>, <bpf@vger.kernel.org>,
 CC:     Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next v1 13/19] bpf: handle spilled PTR_TO_BTF_ID properly when checking stack_boundary
-Date:   Mon, 27 Apr 2020 13:12:50 -0700
-Message-ID: <20200427201250.2995815-1-yhs@fb.com>
+Subject: [PATCH bpf-next v1 14/19] bpf: support variable length array in tracing programs
+Date:   Mon, 27 Apr 2020 13:12:51 -0700
+Message-ID: <20200427201251.2995957-1-yhs@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200427201235.2994549-1-yhs@fb.com>
 References: <20200427201235.2994549-1-yhs@fb.com>
@@ -51,79 +51,97 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
  definitions=2020-04-27_15:2020-04-27,2020-04-27 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
- lowpriorityscore=0 mlxscore=0 spamscore=0 phishscore=0 adultscore=0
- clxscore=1015 impostorscore=0 malwarescore=0 mlxlogscore=999
- priorityscore=1501 bulkscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2004270164
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ suspectscore=0 mlxlogscore=739 priorityscore=1501 lowpriorityscore=0
+ mlxscore=0 malwarescore=0 bulkscore=0 spamscore=0 adultscore=0
+ clxscore=1015 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2004270161
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This specifically to handle the case like below:
-   // ptr below is a socket ptr identified by PTR_TO_BTF_ID
-   u64 param[2] =3D { ptr, val };
-   bpf_seq_printf(seq, fmt, sizeof(fmt), param, sizeof(param));
+In /proc/net/ipv6_route, we have
+  struct fib6_info {
+    struct fib6_table *fib6_table;
+    ...
+    struct fib6_nh fib6_nh[0];
+  }
+  struct fib6_nh {
+    struct fib_nh_common nh_common;
+    struct rt6_info **rt6i_pcpu;
+    struct rt6_exception_bucket *rt6i_exception_bucket;
+  };
+  struct fib_nh_common {
+    ...
+    u8 nhc_gw_family;
+    ...
+  }
 
-In this case, the 16 bytes stack for "param" contains:
-   8 bytes for ptr with spilled PTR_TO_BTF_ID
-   8 bytes for val as STACK_MISC
+The access:
+  struct fib6_nh *fib6_nh =3D &rt->fib6_nh;
+  ... fib6_nh->nh_common.nhc_gw_family ...
 
-The current verifier will complain the ptr should not be visible
-to the helper.
-   ...
-   16: (7b) *(u64 *)(r10 -64) =3D r2
-   18: (7b) *(u64 *)(r10 -56) =3D r1
-   19: (bf) r4 =3D r10
-   ;
-   20: (07) r4 +=3D -64
-   ; BPF_SEQ_PRINTF(seq, fmt1, (long)s, s->sk_protocol);
-   21: (bf) r1 =3D r6
-   22: (18) r2 =3D 0xffffa8d00018605a
-   24: (b4) w3 =3D 10
-   25: (b4) w5 =3D 16
-   26: (85) call bpf_seq_printf#125
-    R0=3Dinv(id=3D0) R1_w=3Dptr_seq_file(id=3D0,off=3D0,imm=3D0)
-    R2_w=3Dmap_value(id=3D0,off=3D90,ks=3D4,vs=3D144,imm=3D0) R3_w=3Dinv1=
-0
-    R4_w=3Dfp-64 R5_w=3Dinv16 R6=3Dptr_seq_file(id=3D0,off=3D0,imm=3D0)
-    R7=3Dptr_netlink_sock(id=3D0,off=3D0,imm=3D0) R10=3Dfp0 fp-56_w=3Dmmm=
-mmmmm
-    fp-64_w=3Dptr_
-   last_idx 26 first_idx 13
-   regs=3D8 stack=3D0 before 25: (b4) w5 =3D 16
-   regs=3D8 stack=3D0 before 24: (b4) w3 =3D 10
-   invalid indirect read from stack off -64+0 size 16
-
-Let us permit this if the program is a tracing/iter program.
+This patch ensures such an access is handled properly.
 
 Signed-off-by: Yonghong Song <yhs@fb.com>
 ---
- kernel/bpf/verifier.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ kernel/bpf/btf.c | 33 ++++++++++++++++++++++++++++++++-
+ 1 file changed, 32 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 21ec85e382ca..17a780e59f77 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -3474,6 +3474,14 @@ static int check_stack_boundary(struct bpf_verifie=
-r_env *env, int regno,
- 			*stype =3D STACK_MISC;
- 			goto mark;
- 		}
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 2c098e6b1acc..22c69e1d5a56 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -3831,6 +3831,7 @@ int btf_struct_access(struct bpf_verifier_log *log,
+ 	const struct btf_type *mtype, *elem_type =3D NULL;
+ 	const struct btf_member *member;
+ 	const char *tname, *mname;
++	u32 vlen;
+=20
+ again:
+ 	tname =3D __btf_name_by_offset(btf_vmlinux, t->name_off);
+@@ -3839,7 +3840,37 @@ int btf_struct_access(struct bpf_verifier_log *log=
+,
+ 		return -EINVAL;
+ 	}
+=20
+-	if (off + size > t->size) {
++	vlen =3D btf_type_vlen(t);
++	if (vlen > 0 && off + size > t->size) {
++		/* If the last element is a variable size array, we may
++		 * need to relax the rule.
++		 */
++		struct btf_array *array_elem;
 +
-+		/* pointer value can be visible to tracing/iter program */
-+		if (env->prog->type =3D=3D BPF_PROG_TYPE_TRACING &&
-+		    env->prog->expected_attach_type =3D=3D BPF_TRACE_ITER &&
-+		    state->stack[spi].slot_type[0] =3D=3D STACK_SPILL &&
-+		    state->stack[spi].spilled_ptr.type =3D=3D PTR_TO_BTF_ID)
-+			goto mark;
++		member =3D btf_type_member(t) + vlen - 1;
++		mtype =3D btf_type_skip_modifiers(btf_vmlinux, member->type,
++						NULL);
++		if (!btf_type_is_array(mtype))
++			goto error;
 +
- 		if (state->stack[spi].slot_type[0] =3D=3D STACK_SPILL &&
- 		    state->stack[spi].spilled_ptr.type =3D=3D SCALAR_VALUE) {
- 			__mark_reg_unknown(env, &state->stack[spi].spilled_ptr);
++		array_elem =3D (struct btf_array *)(mtype + 1);
++		if (array_elem->nelems !=3D 0)
++			goto error;
++
++		moff =3D btf_member_bit_offset(t, member) / 8;
++		if (off < moff)
++			goto error;
++
++		elem_type =3D btf_type_skip_modifiers(btf_vmlinux,
++						    array_elem->type, NULL);
++		if (!btf_type_is_struct(elem_type))
++			goto error;
++
++		off =3D (off - moff) % elem_type->size;
++		return btf_struct_access(log, elem_type, off, size, atype,
++					 next_btf_id);
++
++error:
+ 		bpf_log(log, "access beyond struct %s at off %u size %u\n",
+ 			tname, off, size);
+ 		return -EACCES;
 --=20
 2.24.1
 
