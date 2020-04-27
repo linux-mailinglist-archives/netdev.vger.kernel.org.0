@@ -2,105 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 819A21BA046
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 11:46:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98D881BA077
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 11:55:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726945AbgD0Jqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 05:46:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46468 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726941AbgD0Jqy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 05:46:54 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E64BEC0610D5
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 02:46:53 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id f11so12262522ljp.1
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 02:46:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=UiB8Sz4YfAvbHdDR7SWAyV+bAGQjoJnQnsYXO+tF1Jw=;
-        b=P/lpHRdZrhWFk5hitl3BMEiBmG5w4opF0Oalc7Vj/JoILMg5y36ElUeI+8OqWPcNzr
-         YghOBqFT5ur+fYkEaQP1DXOdxTjngMaA6419pL6Wo8lYNLTZ/Q1+lF20AKOJHiG6E5r6
-         zs44vu2HOocwuzkTfmPJMGGoYFkG5TIGY8zGtoOoboq0uxJnQ5ivErKgaCD+EBfQ8hck
-         ep5kHSOtNdPFTS8mI1crRmYKZ8zFxpL+hk51g4gnMMNrmYjI9TtYVcSodtRa2/bJlUtL
-         wAkkoDHecXlBGiqiOuiHjlOXNxx/FvMzbAirJDyJhkyH6h5Ay0rzua9icwCF7VuqFAPE
-         ioOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=UiB8Sz4YfAvbHdDR7SWAyV+bAGQjoJnQnsYXO+tF1Jw=;
-        b=i4QNm6Cpg9F8Ntr2cF+9gvXgdAD09fUo94sVa/cQM6ENvm/p/1LmCE5i52dkdUGu9K
-         Rqesg786XW0kKbW0Z6hEThQ3Bal8MrtDgh0bvv8ustVTy2RdfrTNWVqa+rv2uanGSaCL
-         ZwylD4lWiywU5Y1L1o+ygn3B1HYyVmWhrv1PL76e3v9kKNjXlEQyKg2pFT7l8dPSVB7/
-         BqCP8glTSRKG/LvHlq48aWAyEH5AwdMY5rmSFCdZu34SZ6yp7KfwF72Od7554cNsNO/C
-         AJ0EGNpWyhPZlIF0NiWlcv/6hiUPVp7igIT6us0XSjoC+Rmfh2qUcWcHZUppB75eOs+o
-         TgOQ==
-X-Gm-Message-State: AGi0PubaT/El2oMyHywbgN7ccfaEVZGxuIG9JmH3LahNgXkjAEErWNjU
-        q04ZtDp/M0+hpOtDkgYZbIRfSA==
-X-Google-Smtp-Source: APiQypKroMeYJY/wQUfBYPTmpEXq29J4Z1z4LHIzXUP4q2GwmDpeJ5RcHUo8V2suYyqKrVSqw83gSA==
-X-Received: by 2002:a2e:9c09:: with SMTP id s9mr14002613lji.169.1587980812467;
-        Mon, 27 Apr 2020 02:46:52 -0700 (PDT)
-Received: from ?IPv6:2a00:1fa0:468e:1152:9c79:cdeb:725:5fa4? ([2a00:1fa0:468e:1152:9c79:cdeb:725:5fa4])
-        by smtp.gmail.com with ESMTPSA id r9sm8794099ljh.36.2020.04.27.02.46.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Apr 2020 02:46:51 -0700 (PDT)
-Subject: Re: [PATCH net-next v4 02/11] bridge: mrp: Update Kconfig
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        nikolay@cumulusnetworks.com, davem@davemloft.net, jiri@resnulli.us,
-        ivecera@redhat.com, kuba@kernel.org, roopa@cumulusnetworks.com,
-        olteanv@gmail.com, andrew@lunn.ch, UNGLinuxDriver@microchip.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-References: <20200426132208.3232-1-horatiu.vultur@microchip.com>
- <20200426132208.3232-3-horatiu.vultur@microchip.com>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <ea7b30af-57b7-4cad-b73a-a13cf762c742@cogentembedded.com>
-Date:   Mon, 27 Apr 2020 12:46:47 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726831AbgD0JzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 05:55:02 -0400
+Received: from foss.arm.com ([217.140.110.172]:32852 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726434AbgD0JzC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Apr 2020 05:55:02 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8B8101FB;
+        Mon, 27 Apr 2020 02:55:01 -0700 (PDT)
+Received: from C02TD0UTHF1T.local (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 63DB63F68F;
+        Mon, 27 Apr 2020 02:54:58 -0700 (PDT)
+Date:   Mon, 27 Apr 2020 10:54:52 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Jianyong Wu <Jianyong.Wu@arm.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
+        "john.stultz@linaro.org" <john.stultz@linaro.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
+        "maz@kernel.org" <maz@kernel.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "will@kernel.org" <will@kernel.org>,
+        Suzuki Poulose <Suzuki.Poulose@arm.com>,
+        Steven Price <Steven.Price@arm.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Steve Capper <Steve.Capper@arm.com>,
+        Kaly Xin <Kaly.Xin@arm.com>, Justin He <Justin.He@arm.com>,
+        nd <nd@arm.com>
+Subject: Re: [RFC PATCH v11 5/9] psci: Add hypercall service for ptp_kvm.
+Message-ID: <20200427095452.GA1300@C02TD0UTHF1T.local>
+References: <20200421032304.26300-1-jianyong.wu@arm.com>
+ <20200421032304.26300-6-jianyong.wu@arm.com>
+ <20200421095736.GB16306@C02TD0UTHF1T.local>
+ <ab629714-c08c-2155-dd13-ad25e7f60b39@arm.com>
+ <20200424103953.GD1167@C02TD0UTHF1T.local>
+ <b005e2c8-ed9f-3dc6-dbfa-5e6db5183f3c@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <20200426132208.3232-3-horatiu.vultur@microchip.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b005e2c8-ed9f-3dc6-dbfa-5e6db5183f3c@arm.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+Hi,
 
-On 26.04.2020 16:21, Horatiu Vultur wrote:
+On Sun, Apr 26, 2020 at 06:02:23AM +0100, Jianyong Wu wrote:
+> <html>
+> <head>
+> <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+> </head>
+> <body>
 
-> Add the option BRIDGE_MRP to allow to build in or not MRP support.
-> The default value is N.
-> 
-> Reviewed-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> ---
->   net/bridge/Kconfig | 12 ++++++++++++
->   1 file changed, 12 insertions(+)
-> 
-> diff --git a/net/bridge/Kconfig b/net/bridge/Kconfig
-> index e4fb050e2078..51a6414145d2 100644
-> --- a/net/bridge/Kconfig
-> +++ b/net/bridge/Kconfig
-> @@ -61,3 +61,15 @@ config BRIDGE_VLAN_FILTERING
->   	  Say N to exclude this support and reduce the binary size.
->   
->   	  If unsure, say Y.
-> +
-> +config BRIDGE_MRP
-> +	bool "MRP protocol"
-> +	depends on BRIDGE
-> +	default n
+Please fix your mail client to reply in plain text rather than HTML;
+it's much more painful than necessary to review and have a conversation
+when mails revert to HTML.
 
-    Not needed, N is the default default. :-)
+It would be very helpful if you could resend this mail as plaintext as
+above.
 
-[...]
-
-MBR, Sergei
+Thanks,
+Mark.
