@@ -2,107 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66ADC1BB1D9
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 01:09:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DA511BB1E8
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 01:14:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726328AbgD0XJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 19:09:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726224AbgD0XJm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 19:09:42 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A420C0610D5
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:09:42 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id e6so276974pjt.4
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:09:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ktpkAkv+FQC2/aYMscfJ1QK9ucmacWt4hvMl30x9ydU=;
-        b=dIiN2euSBy9WtcgpVDDTUqqjneiygI2JkvnvbY3C+Ak53Mvc/flwgv08WIz/4kntfl
-         vblKiZ9U4+61OWhOo1vU3aILEyMSTsC8Fe2bhKB/z7fD78lmeem8jJsTQtjHhh224ncF
-         8IQipx+0GkO63s+9C7RPfIKAwLjSd1hpaoQdGR0Yy4G9XdgKP4rW5lWmxACEXMO3uO9K
-         +HWUEQQqoijZJYqAbuW1vXj5Rg0M6dDX060kBFCs5VOlZ0csLFHCjwVgk2SzpIMZjY5j
-         lwM04LgwNQ/xTPiAq7IBWPhyArp9UGupeCOO/QBAtF+7xkSSFF9rIc010LCg/qM0sLZa
-         JlbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ktpkAkv+FQC2/aYMscfJ1QK9ucmacWt4hvMl30x9ydU=;
-        b=ZC8UqeCG4Es9WNfPKPK3+dzgckQusAILfH8TQqHXwkQmiRmwaKzTnDJPwzAlSDtkbr
-         +isgeNb5SidfEMAXD9QAXT8ww57oRmRHU7BMRPdKbdk9uI+xjEiMtY7pqyca7coeBkHa
-         JoMqMZXwhxU1L/mPRagdy+q6ZAz+ZfpYuEGGpxm1nMHifwet+STaOBuG/dKLomCW7N2R
-         EVfcLRqXgUvsTTWmVwutqji+bm5/Dbo+0q96ARVxyyYbKOnxK9DZ5SzXxLHVGlrN8dbA
-         D4F9ZFrxtI2AmZC3uoyxg+ixgyC21NciSiURmRg1oX6EAqStKXRxILIQlZnYN1BEENRk
-         +eDQ==
-X-Gm-Message-State: AGi0PuadsNCIookohKqOfNGh8ATYClQ0rKOEeLEpVj1Z1DNCi66uCzed
-        pcUJ9PPNDeKkK3jN4rtCIPqH5g==
-X-Google-Smtp-Source: APiQypJoqtDjtUD2tHKpPOrP5BWi8UZsgO1P6+sMUSpFaV5+ONlzlxk8qoI+eW3D/tTmM3y5ue5dZw==
-X-Received: by 2002:a17:902:b402:: with SMTP id x2mr14256051plr.42.1588028981884;
-        Mon, 27 Apr 2020 16:09:41 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id h5sm323611pjv.4.2020.04.27.16.09.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2020 16:09:41 -0700 (PDT)
-Date:   Mon, 27 Apr 2020 16:09:38 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Petr Machata <petrm@mellanox.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2-next] tc: pedit: Support JSON dumping
-Message-ID: <20200427160938.2cdce301@hermes.lan>
-In-Reply-To: <cdb5f51b-a8aa-7deb-1085-4fab7e01d64f@gmail.com>
-References: <19073d9bc5a2977a5a366caf5e06b392e4b63e54.1587575157.git.petrm@mellanox.com>
-        <20200422130245.53026ff7@hermes.lan>
-        <87imhq4j6b.fsf@mellanox.com>
-        <cdb5f51b-a8aa-7deb-1085-4fab7e01d64f@gmail.com>
+        id S1726328AbgD0XOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 19:14:18 -0400
+Received: from bert.scottdial.com ([104.237.142.221]:50484 "EHLO
+        bert.scottdial.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726257AbgD0XOS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 19:14:18 -0400
+Received: from mail.scottdial.com (mail.scottdial.com [10.8.0.6])
+        by bert.scottdial.com (Postfix) with ESMTP id CE4C34E0CCE;
+        Mon, 27 Apr 2020 19:14:16 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.scottdial.com (Postfix) with ESMTP id 76B9A1155600;
+        Mon, 27 Apr 2020 19:14:16 -0400 (EDT)
+Received: from mail.scottdial.com ([127.0.0.1])
+        by localhost (mail.scottdial.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id jAHW5tW2ladp; Mon, 27 Apr 2020 19:14:15 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.scottdial.com (Postfix) with ESMTP id 73F831155601;
+        Mon, 27 Apr 2020 19:14:15 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.scottdial.com 73F831155601
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=scottdial.com;
+        s=24B7B964-7506-11E8-A7D6-CF6FBF8C6FCF; t=1588029255;
+        bh=2FMXUY1dhExjT/qZ9dWzRE87Meb+ct5NT7MhltitxZw=;
+        h=To:From:Message-ID:Date:MIME-Version;
+        b=j740Ziwf9HjlxY3u5S6X43NkIf8L//H5ziJlU/slpLjUaJMhfb0hnhyQRmaBiACk5
+         VocBmBwI2oyvXKQ5PE8aSO7FNavO2kq3q2kv8lIv3PP/kDoz0XCd987xvZZGx+NyuG
+         ylPP5x6C5T8NnMelTMf4x48sjEh0jscIv0UCcpo1IBfliWbpnECd35wUGlV5MGe6d1
+         fMEJhOMOQWsO51GK87E4XnrfaI/IezU4NEJg+5F5w++tk1g4a/SaiYHp3I7kFDI90g
+         58mucPTr/HubwgqoO+dUUBfB9pLFEx7wihPIy6bsLoEMQE//fLo45CLsPGkMUxXkfK
+         G8V1whjNnxw3A==
+X-Virus-Scanned: amavisd-new at scottdial.com
+Received: from mail.scottdial.com ([127.0.0.1])
+        by localhost (mail.scottdial.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id J4QepVvZ6_-6; Mon, 27 Apr 2020 19:14:15 -0400 (EDT)
+Received: from [172.17.2.2] (unknown [172.17.2.2])
+        by mail.scottdial.com (Postfix) with ESMTPSA id 4A9A81155600;
+        Mon, 27 Apr 2020 19:14:15 -0400 (EDT)
+Subject: Re: [PATCH net] net: macsec: preserve ingress frame ordering
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org
+References: <20200424225108.956252-1-scott@scottdial.com>
+ <20200427.111227.1036449542794050922.davem@davemloft.net>
+From:   Scott Dial <scott@scottdial.com>
+Message-ID: <e83635ba-9cfb-f1a3-2da5-2cc4523b8248@scottdial.com>
+Date:   Mon, 27 Apr 2020 19:14:15 -0400
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20200427.111227.1036449542794050922.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 26 Apr 2020 12:23:04 -0600
-David Ahern <dsahern@gmail.com> wrote:
-
-> On 4/23/20 3:59 AM, Petr Machata wrote:
-> > 
-> > Stephen Hemminger <stephen@networkplumber.org> writes:
-> >   
-> >> On Wed, 22 Apr 2020 20:06:15 +0300
-> >> Petr Machata <petrm@mellanox.com> wrote:
-> >>  
-> >>> +			print_string(PRINT_FP, NULL, ": %s",
-> >>> +				     cmd ? "add" : "val");
-> >>> +			print_string(PRINT_JSON, "cmd", NULL,
-> >>> +				     cmd ? "add" : "set");  
-> >>
-> >> Having different outputs for JSON and file here. Is that necessary?
-> >> JSON output is new, and could just mirror existing usage.  
-> > 
-> > This code outputs this bit:
-> > 
-> >             {
-> >               "htype": "udp",
-> >               "offset": 0,
-> >               "cmd": "set",   <----
-> >               "val": "3039",
-> >               "mask": "ffff0000"
-> >             },
-> > 
-> > There are currently two commands, set and add. The words used to
-> > configure these actions are set and add as well. The way these commands
-> > are dumped should be the same, too. The only reason why "set" is
-> > reported as "val" in file is that set used to be the implied action.
-> > 
-> > JSON doesn't have to be backward compatible, so it should present the
-> > expected words.
-> >   
+On 4/27/2020 2:12 PM, David Miller wrote:
+> It's a real shame that instead of somehow fixing the most performant
+> setup to be actually usable, we are just throwing our hands up in
+> the air and simply avoiding to use it.
 > 
-> Stephen: do you agree?
+> I feel _really_ bad for the person trying to figure out why they
+> aren't getting the macsec performance they expect, scratching their
+> heads for hours trying to figure out why the AES-NI x86 code isn't
+> being used, and after days finding a commit like this.
 
-Sure that is fine, maybe a comment would help?
+Like most things, there are competing interests. I was the person
+scratching my head for hours trying to figure out why my packets were
+arriving out of of order causing packet drops and breaking UDP streams.
+In the end, the only solution that I could ship without modifying the
+kernel was blacklisting aesni_intel and ghash_clmulni_intel.
+
+To be clear, the sync version of gcm(aes) on an AES-NI will still use
+AES-NI for the block cipher if the FPU is available (and otherwise falls
+back to non-FPU code). Unfortunately, there is not a synchronous version
+of gcm(aes) implemented by AES-NI, but that would be a logical extension
+of the pattern to provide maximum performance and correctness. With
+regards to correctness, you can see that same decision being made in the
+mac80211 code for handling the AES-GCMP and BIP-GMAC encryption modes. I
+don't know if the crypto maintainers would entertain adding a sync
+aes(gcm) implementation to aesni_intel, but it seems like it would be
+straightforward to implement.
+
+Otherwise, I entertained a module option (simple and covers my use case)
+or even an attribute on the RXSA (a considerably more invasive change).
+However, I didn't think this would be that controversial since there are
+many places in the kernel that use AEAD algorithms in synchronous mode
+for the same reason, and therefore do not get the complete benefits of
+AES-NI acceleration.
+
+>> -	tfm = crypto_alloc_aead("gcm(aes)", 0, 0);
+>> +	/* Pick a sync gcm(aes) cipher to ensure order is preserved. */
+>> +	tfm = crypto_alloc_aead("gcm(aes)", 0, CRYPTO_ALG_ASYNC);
+> 
+> How does this mask argument passed to crypto_alloc_aead() work?  You
+> are specifying async, does this mean you're asking for async or
+> non-async?
+
+See crypto_requires_sync(type, mask) in include/crypto/algapi.h for the
+logic of evaluating the mask. In short, the mask is what bits are not
+allowed to be set, so this masks out any async algorithms.
+
+Thanks for taking the time to evaluate my change!
+
+-- 
+Scott Dial
+scott@scottdial.com
