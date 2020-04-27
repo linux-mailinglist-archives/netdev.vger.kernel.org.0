@@ -2,78 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B39FE1BA133
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 12:30:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DEAE1BA153
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 12:32:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727026AbgD0Kaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 06:30:52 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:43354 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726485AbgD0Kat (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 06:30:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587983448;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MYZR6++ueNxR+uobaz3YRdFxV1REvMETBh6qIowoIZQ=;
-        b=ftZ3tWGbDGTfQ01XZS76Cd0pbP30rzGKP5vaA4Q/HEs0wbGSpx/7li393EEXH8yYktjfND
-        h8ZI4U6bp0MH0m0GJW0/FWI6TOI/pUy+pFV4nTmxSf+OEqoxrrin1/4ZVy9u+5ZN1pIS8A
-        ZZrQVM+VXAfsGw+Tx0r2tKV+XKaCeaM=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-241-w5Q_ofodO9ihG_jTvzxX9A-1; Mon, 27 Apr 2020 06:30:46 -0400
-X-MC-Unique: w5Q_ofodO9ihG_jTvzxX9A-1
-Received: by mail-lf1-f72.google.com with SMTP id l6so7323582lfk.2
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 03:30:46 -0700 (PDT)
+        id S1727093AbgD0Kcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 06:32:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53618 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726604AbgD0Kcl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 06:32:41 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22824C0610D5;
+        Mon, 27 Apr 2020 03:32:41 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id x77so8827823pfc.0;
+        Mon, 27 Apr 2020 03:32:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=9wV8t+KAUUaO16pTgyBed4eZ0237ulm/o+EEA3p/VZ8=;
+        b=NvfFV3P9QENxPnI2l9UcXJtPbHzPGkZrbJ8cJrKRP68i56PxFVUdgEPp7inA8uSTla
+         KlT1oN8rs6O+i7rVyOApTHfx8c0kRbFEKzlolrlv/K7vBS6lY51NuUUYwtqRmye7tD+R
+         SCfrgjepue1841vdRLGL8x0BRhL6MBVvlahMTGszldUwIXmaqZnwNv9B2oOPpMeoZJmJ
+         IPtnmNhpD4FGsbw+7FWs5q8fx5onLjWCvho7vfEepvfA2BkINDmxD1qOy4mZ4NvJw/Gl
+         igXuoO2/7aTR8PG0T98L7j3oJt8c8wljW56wbgOd4nn0VUEQfpPJ9934p1ihf4X5pAuM
+         5zqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=MYZR6++ueNxR+uobaz3YRdFxV1REvMETBh6qIowoIZQ=;
-        b=ifs0BBnRRQJ9Yst/+LZSpNp9jx9AEH6XFP1qM+rmuACzR7QxN7TSuHCVHZMu3OJQJb
-         ZiGUx2RbIJyEJgLN/SqCAtp/5dQJ7bDtKazXaLDovC+t9I5/a0pv3J5lmqBPNrpMEEVh
-         J1hze8kgKsfTPuKtyYcuHZlyeQFlDHySTNKSjlAhNcTqLlgPMRt8rv3HPKfpYV2UdLxx
-         hLhePKkEfOeseLGg6hUbsCdxdLPsIRFNp+qUIE8HLt5ZpF+jdqEfI4otRtbtNgEEz54t
-         uJjd5zGqyI/fzZIHkTha05fkm8Dyn3l69rrfBdGSSzbXyL3Z1Q6F+q4XiqXeR65IObnN
-         N5Cw==
-X-Gm-Message-State: AGi0PuaF2UzOojsYDiE2Dhgyjd0FRRvOBAWsmB201o7K9xpAIiPSa21L
-        DOyuAVjCEUeid8KIkfjgkrfkQoJPTtyt2RMka3JMdYdEHhqscqbKxfuInfGFNBwXoAk4tIni1fS
-        EC7HJxmb1YHk6pqRF
-X-Received: by 2002:a19:b10:: with SMTP id 16mr15240911lfl.133.1587983445010;
-        Mon, 27 Apr 2020 03:30:45 -0700 (PDT)
-X-Google-Smtp-Source: APiQypIkS9jftxo8OIuDFHc7/X9aGlPgeYTwUb2DKkjBAVgn2ypWCM7I57jH3oYgL5cK72IqmdqMWQ==
-X-Received: by 2002:a19:b10:: with SMTP id 16mr15240901lfl.133.1587983444784;
-        Mon, 27 Apr 2020 03:30:44 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id m29sm9819757ljc.24.2020.04.27.03.30.44
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=9wV8t+KAUUaO16pTgyBed4eZ0237ulm/o+EEA3p/VZ8=;
+        b=UtGDT1gwih7OflapIsoGCEDHQrTORiOXLCHdfO1AQzLekktI6bVzRXI2yCYLMxf/o3
+         WtWno4hmLK66YNHMqbAGiaqB8xN8L2OOsrd3WV+ZFK93328OwGwS0UqzlHhDkqVP85IH
+         ag7IEKPaVKc6lKJXFODnmUv/hS1/VvQJpyLOG93vnv+XQ3vOsAZxad0NMSHI7J3+SKsU
+         SYRqLDgqbyJZfX6YcykYKD9S6SK3wJYDyCeVyfKQ55mcCUmmC7V5S4svfgfaF3hhD6yL
+         njjw3CQgn03Z4MyMaiiIgucElWrGVf3wI8JDwB3uRQAk+rO/sqiIBfdF1UBaYCqLSg8R
+         1cQA==
+X-Gm-Message-State: AGi0PubUWJcEPDtH0XYGBACig+zz20apr6A1BFRGArm2+2rsRrj4Zh/9
+        P10EdJdvFrDCfUqq/J7QPZg=
+X-Google-Smtp-Source: APiQypLzBV7LgcIQDo3MSfmmD4EcCJ9MuxGEJL6bgWC248oosT9TJ7kHhen5TYtyapMlm3tL+6vLPA==
+X-Received: by 2002:a63:794d:: with SMTP id u74mr22587793pgc.15.1587983560703;
+        Mon, 27 Apr 2020 03:32:40 -0700 (PDT)
+Received: from localhost.localdomain ([2409:4072:6004:5f2a:b425:fe6e:9d3f:4b82])
+        by smtp.gmail.com with ESMTPSA id fy21sm10801438pjb.25.2020.04.27.03.32.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2020 03:30:44 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 310451814FF; Mon, 27 Apr 2020 12:30:41 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH RFC v1] net: xdp: allow for layer 3 packets in generic skb handler
-In-Reply-To: <CAHmME9qXrb0ktCTeMJwt6KRsQxOWkiUNL6PNwb1CT7AK4WsVPA@mail.gmail.com>
-References: <20200427011002.320081-1-Jason@zx2c4.com> <87h7x51jjx.fsf@toke.dk> <CAHmME9qXrb0ktCTeMJwt6KRsQxOWkiUNL6PNwb1CT7AK4WsVPA@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 27 Apr 2020 12:30:41 +0200
-Message-ID: <87wo61z0dq.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain
+        Mon, 27 Apr 2020 03:32:39 -0700 (PDT)
+From:   Aishwarya Ramakrishnan <aishwaryarj100@gmail.com>
+To:     Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     aishwaryarj100@gmail.com
+Subject: [PATCH] dpaa_eth: Fix comparing pointer to 0
+Date:   Mon, 27 Apr 2020 16:02:30 +0530
+Message-Id: <20200427103230.4776-1-aishwaryarj100@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
+Fixes coccicheck warning:
+./drivers/net/ethernet/freescale/dpaa/dpaa_eth.c:2110:30-31:
+WARNING comparing pointer to 0
 
-> (2) is infeasible, but there's another option: we can insert a pseudo
-> ethernet header during the xdp hook for the case of mac_len==0. I'll
-> play with that and send an RFC.
+Avoid pointer type value compared to 0.
 
-Oh, right, that might work too! :)
+Signed-off-by: Aishwarya Ramakrishnan <aishwaryarj100@gmail.com>
+---
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
--Toke
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+index 2cd1f8efdfa3..c4416a5f8816 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+@@ -2107,7 +2107,7 @@ static int dpaa_a050385_wa(struct net_device *net_dev, struct sk_buff **s)
+ 
+ 	/* Workaround for DPAA_A050385 requires data start to be aligned */
+ 	start = PTR_ALIGN(new_skb->data, DPAA_A050385_ALIGN);
+-	if (start - new_skb->data != 0)
++	if (start - new_skb->data)
+ 		skb_reserve(new_skb, start - new_skb->data);
+ 
+ 	skb_put(new_skb, skb->len);
+-- 
+2.17.1
 
