@@ -2,87 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DEAE1BA153
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 12:32:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 623901BA160
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 12:33:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727093AbgD0Kcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 06:32:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53618 "EHLO
+        id S1727029AbgD0Kdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 06:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726604AbgD0Kcl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 06:32:41 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22824C0610D5;
-        Mon, 27 Apr 2020 03:32:41 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id x77so8827823pfc.0;
-        Mon, 27 Apr 2020 03:32:41 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726504AbgD0Kdt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 06:33:49 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED004C0610D5;
+        Mon, 27 Apr 2020 03:33:48 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id z1so7129950pfn.3;
+        Mon, 27 Apr 2020 03:33:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=9wV8t+KAUUaO16pTgyBed4eZ0237ulm/o+EEA3p/VZ8=;
-        b=NvfFV3P9QENxPnI2l9UcXJtPbHzPGkZrbJ8cJrKRP68i56PxFVUdgEPp7inA8uSTla
-         KlT1oN8rs6O+i7rVyOApTHfx8c0kRbFEKzlolrlv/K7vBS6lY51NuUUYwtqRmye7tD+R
-         SCfrgjepue1841vdRLGL8x0BRhL6MBVvlahMTGszldUwIXmaqZnwNv9B2oOPpMeoZJmJ
-         IPtnmNhpD4FGsbw+7FWs5q8fx5onLjWCvho7vfEepvfA2BkINDmxD1qOy4mZ4NvJw/Gl
-         igXuoO2/7aTR8PG0T98L7j3oJt8c8wljW56wbgOd4nn0VUEQfpPJ9934p1ihf4X5pAuM
-         5zqA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/yQSlVE7PnqopQQf8iulieHvAebBl49JpRFSg6plQOM=;
+        b=svEuRkyXeWE3IGEar5EHdocILyDaW+N13jTvaXBDoiDY7QzRabNPcqPxk2izwFfPrS
+         jvDbUeVC5CoKypPJaGwxGalr9dnagxExe7bIiHksHfBch3vtRWBCIEYTgyBM83QqYkz5
+         YxeEJh/bzDTpa02BND1fjJLof2J+ssnoQaXbNs732qWb1yyOPp1QbwGEv/SFEq+tUmuJ
+         VywvW5hrMuOdMz27XswGzFq7FO48vtQ7AkbuOn9dm5p6ATj1UH0ErQ/pU3bWM5YogOfU
+         fwyve8vTb692wz5hPxqwJiMgWLcz+2rUjmamPzMNrc5j0uGbaf1e6ngiPzMwAdV8NLwN
+         IthA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=9wV8t+KAUUaO16pTgyBed4eZ0237ulm/o+EEA3p/VZ8=;
-        b=UtGDT1gwih7OflapIsoGCEDHQrTORiOXLCHdfO1AQzLekktI6bVzRXI2yCYLMxf/o3
-         WtWno4hmLK66YNHMqbAGiaqB8xN8L2OOsrd3WV+ZFK93328OwGwS0UqzlHhDkqVP85IH
-         ag7IEKPaVKc6lKJXFODnmUv/hS1/VvQJpyLOG93vnv+XQ3vOsAZxad0NMSHI7J3+SKsU
-         SYRqLDgqbyJZfX6YcykYKD9S6SK3wJYDyCeVyfKQ55mcCUmmC7V5S4svfgfaF3hhD6yL
-         njjw3CQgn03Z4MyMaiiIgucElWrGVf3wI8JDwB3uRQAk+rO/sqiIBfdF1UBaYCqLSg8R
-         1cQA==
-X-Gm-Message-State: AGi0PubUWJcEPDtH0XYGBACig+zz20apr6A1BFRGArm2+2rsRrj4Zh/9
-        P10EdJdvFrDCfUqq/J7QPZg=
-X-Google-Smtp-Source: APiQypLzBV7LgcIQDo3MSfmmD4EcCJ9MuxGEJL6bgWC248oosT9TJ7kHhen5TYtyapMlm3tL+6vLPA==
-X-Received: by 2002:a63:794d:: with SMTP id u74mr22587793pgc.15.1587983560703;
-        Mon, 27 Apr 2020 03:32:40 -0700 (PDT)
-Received: from localhost.localdomain ([2409:4072:6004:5f2a:b425:fe6e:9d3f:4b82])
-        by smtp.gmail.com with ESMTPSA id fy21sm10801438pjb.25.2020.04.27.03.32.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2020 03:32:39 -0700 (PDT)
-From:   Aishwarya Ramakrishnan <aishwaryarj100@gmail.com>
-To:     Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     aishwaryarj100@gmail.com
-Subject: [PATCH] dpaa_eth: Fix comparing pointer to 0
-Date:   Mon, 27 Apr 2020 16:02:30 +0530
-Message-Id: <20200427103230.4776-1-aishwaryarj100@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/yQSlVE7PnqopQQf8iulieHvAebBl49JpRFSg6plQOM=;
+        b=sia8Kndqs18gloYktSSudrjF8kBjU07sudqIfba25fJNsTVmtdzZXB4MJccS9vU8Eh
+         no4VPtWPrAKO96UkUnbLgqyfWln9vfD03Yacwz5WpD2IejJTLk1BUfMEAxVX1U1+d/LR
+         EmrihH8oI7TUSyutjEstVtJHwwwMn5Ot85LGmMJAGBWC/rNkTEkOJRaXbmIza+70YTh6
+         PY5m9Oyq/WIRWlUI9APswT3tf+Ud9NI8r9P/8V/c1BMb1K3QnvaH9PRuQ77exiqXqF9M
+         w+pa8puTPWybjlXJbRo3khRtE+RiZbogD5UkvrTsJDeI1/P56P/TRVSXweBU3JKuHAtu
+         dLYQ==
+X-Gm-Message-State: AGi0PuYMmNnHva3RtLdFwTVzI12TFs5iUSp2b222nK81oZ9JjFOt/cvA
+        e9V41FOdYwWpQnKTed/5FsX67s2Yz7lrNd6j/LE=
+X-Google-Smtp-Source: APiQypKwFdPTEoWxkFdp7BjvZptGlC1JmP+zurw7A4cawLsmuik55JaoNHk55SZ8V/uC/2uAPJ5DV7eEk98vKKYHIXU=
+X-Received: by 2002:a63:1c1:: with SMTP id 184mr23267416pgb.203.1587983628496;
+ Mon, 27 Apr 2020 03:33:48 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200425125737.5245-1-zhengdejin5@gmail.com>
+In-Reply-To: <20200425125737.5245-1-zhengdejin5@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 27 Apr 2020 13:33:41 +0300
+Message-ID: <CAHp75VceH08X5oWSCXhx8O0Bsx9u=Tm+DVQowG+mC3Vs2=ruVQ@mail.gmail.com>
+Subject: Re: [PATCH net v1] net: macb: fix an issue about leak related system resources
+To:     Dejin Zheng <zhengdejin5@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        yash.shah@sifive.com, netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes coccicheck warning:
-./drivers/net/ethernet/freescale/dpaa/dpaa_eth.c:2110:30-31:
-WARNING comparing pointer to 0
+On Sat, Apr 25, 2020 at 3:57 PM Dejin Zheng <zhengdejin5@gmail.com> wrote:
+>
+> A call of the function macb_init() can fail in the function
+> fu540_c000_init. The related system resources were not released
+> then. use devm_ioremap() to replace ioremap() for fix it.
+>
 
-Avoid pointer type value compared to 0.
+Why not to go further and convert to use devm_platform_ioremap_resource()?
 
-Signed-off-by: Aishwarya Ramakrishnan <aishwaryarj100@gmail.com>
----
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Fixes: c218ad559020ff9 ("macb: Add support for SiFive FU540-C000")
+> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
+> ---
+>  drivers/net/ethernet/cadence/macb_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> index a0e8c5bbabc0..edba2eb56231 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -4178,7 +4178,7 @@ static int fu540_c000_init(struct platform_device *pdev)
+>         if (!res)
+>                 return -ENODEV;
+>
+> -       mgmt->reg = ioremap(res->start, resource_size(res));
+> +       mgmt->reg = devm_ioremap(&pdev->dev, res->start, resource_size(res));
+>         if (!mgmt->reg)
+>                 return -ENOMEM;
+>
+> --
+> 2.25.0
+>
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index 2cd1f8efdfa3..c4416a5f8816 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -2107,7 +2107,7 @@ static int dpaa_a050385_wa(struct net_device *net_dev, struct sk_buff **s)
- 
- 	/* Workaround for DPAA_A050385 requires data start to be aligned */
- 	start = PTR_ALIGN(new_skb->data, DPAA_A050385_ALIGN);
--	if (start - new_skb->data != 0)
-+	if (start - new_skb->data)
- 		skb_reserve(new_skb, start - new_skb->data);
- 
- 	skb_put(new_skb, skb->len);
+
 -- 
-2.17.1
-
+With Best Regards,
+Andy Shevchenko
