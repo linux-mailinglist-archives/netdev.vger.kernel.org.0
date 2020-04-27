@@ -2,114 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 852081B9F6B
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 11:10:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B0B51B9FB3
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 11:20:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726867AbgD0JKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 05:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40784 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726183AbgD0JKr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 05:10:47 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82CDAC0610D5;
-        Mon, 27 Apr 2020 02:10:47 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id 188so18667306wmc.2;
-        Mon, 27 Apr 2020 02:10:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=v8OYpZNOLgP9t4cgS+lWeCMwxdaxqT3UXnjOJoxqS0Y=;
-        b=BqT2KEPEMxn8IqVj7zJKlZqtf/b0Oy7iK02eNt7GWBNT2SBqk+rdbWEaml3cfFqH6p
-         QQIq5WxIzUgk9NArIgTB04RWTrmj9sRV78xC6RzCkOoc3S5HKX/jzO1L0BkBJ/Eml2I9
-         RL4uP3PWANi7w+GXoj5pBrcxv31qD5mMCp5f8q10J3MB8P4zC+xvRUyx8eMQVtXcZTjl
-         DE3G3WtiyMIsH5RLVfyviJFnDcXpfW5Ou/KgtNTvIvXHSzYu8+Vw1UcBUTZ+JWqW2bjQ
-         mnxDkFfHxn/lTYOkxp7+5HqN/5ukSkb4vYggZ+5r6tzuQU9OHEvWPqowbkovmIawsRhG
-         goQQ==
+        id S1726969AbgD0JU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 05:20:28 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:35732 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726930AbgD0JU1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 05:20:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587979225;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/iT1ZSnr3VWE3x+uDoNEdTmOq69Ly4M18udfvhiGRxU=;
+        b=PnZsHelsIbYey+OvnOCB60q+pnZ16P+ue57igJv/D6GdHfXjX4hZrBJsQPJsJyk6yCoqco
+        QiWpBzNLPi9gTUdZxpG7fIjf6TbEn+YZBMsrpdwsh0mEm96N2hbXARG5HRlYEd6787zA+i
+        FFnj0dD3MdclLP4cY2e20JLd4vCzUeU=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-384-EBgzQ6RSM4GZeh2DP4x8Lg-1; Mon, 27 Apr 2020 05:20:22 -0400
+X-MC-Unique: EBgzQ6RSM4GZeh2DP4x8Lg-1
+Received: by mail-wr1-f71.google.com with SMTP id d17so10160545wrr.17
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 02:20:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=v8OYpZNOLgP9t4cgS+lWeCMwxdaxqT3UXnjOJoxqS0Y=;
-        b=RPDCNsb9FT3yunwxSiZS4cdub2unWmcitn5UHwShBF19kHGl5IgvJsfvD0+i1j9uV6
-         DKpcWFJu90ik7dTZ8dA6O6knskdya+SSVAcGO2Mj+UZdr3ZZc9xWqZjvVtjFd9tle9jw
-         A4DvXEkuU+aXCWXEb2wSbsmYNl/1nzwCSfJe2Fd3k/fQpsoewzkQS6M8JgXs6DUqiM3j
-         Wvv5/5V5/lgKNfo8KNcm2UvWsPdEoc/v9HdrmHG/O0CseSFVU00Ecihi0n8LZcnQ6cJh
-         FCtlDA2xBssaQ0dPelOX+ZG5lDXwmcvXHq+SBTzaZJfFMwQ+sY89tXzbSFkVgNmyhlK7
-         z1jQ==
-X-Gm-Message-State: AGi0PuZ0VLGL4eOiEW0pdYRV7Oqa0/5cq1CG9P2MDxu4nTh3HTw8aObI
-        /D7kzRQLGY+CWWGlKd5emKl9+5Kk
-X-Google-Smtp-Source: APiQypKSCpGVCZs4NZkWauLtvGJ3ItDQAys5hbROeKn4kv73H5Cu0bGms1Pj/LrGlYx38WFqoTJRIQ==
-X-Received: by 2002:a7b:c4c9:: with SMTP id g9mr24852983wmk.171.1587978645987;
-        Mon, 27 Apr 2020 02:10:45 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:1925:3f70:bb74:e0a1? (p200300EA8F29600019253F70BB74E0A1.dip0.t-ipconnect.de. [2003:ea:8f29:6000:1925:3f70:bb74:e0a1])
-        by smtp.googlemail.com with ESMTPSA id k14sm20585389wrp.53.2020.04.27.02.10.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Apr 2020 02:10:45 -0700 (PDT)
-Subject: Re: [PATCH] net: tc35815: Fix phydev supported/advertising mask
-To:     Anthony Felice <tony.felice@timesys.com>
-Cc:     Akshay Bhat <akshay.bhat@timesys.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/iT1ZSnr3VWE3x+uDoNEdTmOq69Ly4M18udfvhiGRxU=;
+        b=lF+UghZ2PAafA2CrfYNs5KjicP/jof+9zUYHW3z657ImmwElJID+5EwEYs06Y8cSap
+         phi6hEiCE1JmXidpE13agRIn3mI5RSU7SRusHdw6YD7ieGnXxs7eehIrI6bAAwrHLvFY
+         IL25eeBqX9n4yn5ezscCDaw7re6SvrAlidBIF2jw3p4e+GUsm/+6aPyNAHgoNnqLVmhN
+         b2Mw8NARv9lrw1wXAcLcYojp0V+Gr5utO6CwGY21Lzk3hWbEi+gYl1gkQPWNFOm0ZPZD
+         bV0yLitA7kCSvKm4UIqthwRFX6gG4ttp+xI45zrklZOR2lWawEd0CBc3l5MVC6+3RtKF
+         /ufQ==
+X-Gm-Message-State: AGi0PuYPzld0bZiEWhRddf6z8Qf1rKGBWOJizr1hD1qvrUirH2qB5V3e
+        nsW53lM8cn2nkNPkFF8ql83a8dYDIov6Rd83zmOceoxbmryTxTO6iuvikHWFik85IGGUnYewPzO
+        TrhHLX8dBS80MQ3pp
+X-Received: by 2002:a7b:c147:: with SMTP id z7mr26867129wmi.52.1587979221552;
+        Mon, 27 Apr 2020 02:20:21 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJLxRMCB8YEXW9YDI2OLkrBugUH83i4IlZL7wCtXLgz+NY/798+oztf6oqjhyKDB3I0p2eFUw==
+X-Received: by 2002:a7b:c147:: with SMTP id z7mr26867111wmi.52.1587979221336;
+        Mon, 27 Apr 2020 02:20:21 -0700 (PDT)
+Received: from redhat.com (bzq-109-66-7-121.red.bezeqint.net. [109.66.7.121])
+        by smtp.gmail.com with ESMTPSA id j13sm20977689wrq.24.2020.04.27.02.20.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Apr 2020 02:20:20 -0700 (PDT)
+Date:   Mon, 27 Apr 2020 05:20:17 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Richard Earnshaw <Richard.Earnshaw@arm.com>,
+        Sudeep Dutt <sudeep.dutt@intel.com>,
+        Ashutosh Dixit <ashutosh.dixit@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Rob Herring <robh@kernel.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200427020101.3059-1-tony.felice@timesys.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <62ec43c6-e9e4-555b-4c91-dda22b3620c7@gmail.com>
-Date:   Mon, 27 Apr 2020 11:10:39 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Jason Wang <jasowang@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        KVM list <kvm@vger.kernel.org>,
+        Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH v4] vhost: disable for OABI
+Message-ID: <20200427051918-mutt-send-email-mst@kernel.org>
+References: <20200420143229.245488-1-mst@redhat.com>
+ <CAMuHMdWaG5EUsbTOMPkj4i50D40T0TLRvB6g-Y8Dj4C0v7KTqQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200427020101.3059-1-tony.felice@timesys.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdWaG5EUsbTOMPkj4i50D40T0TLRvB6g-Y8Dj4C0v7KTqQ@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27.04.2020 04:00, Anthony Felice wrote:
-> Commit 3c1bcc8614db ("net: ethernet: Convert phydev advertize and
-> supported from u32 to link mode") updated ethernet drivers to use a
-> linkmode bitmap. It mistakenly dropped a bitwise negation in the
-> tc35815 ethernet driver on a bitmask to set the supported/advertising
-> flags.
+On Mon, Apr 27, 2020 at 08:45:22AM +0200, Geert Uytterhoeven wrote:
+> Hi Michael,
 > 
-> Found by Anthony via code inspection, not tested as I do not have the
-> required hardware.
+> Thanks for your patch!
 > 
-> Fixes: 3c1bcc8614db ("net: ethernet: Convert phydev advertize and supported from u32 to link mode")
-> Signed-off-by: Anthony Felice <tony.felice@timesys.com>
-> Reviewed-by: Akshay Bhat <akshay.bhat@timesys.com>
-> ---
->  drivers/net/ethernet/toshiba/tc35815.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> On Mon, Apr 20, 2020 at 5:13 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > vhost is currently broken on the some ARM configs.
+> >
+> > The reason is that the ring element addresses are passed between
+> > components with different alignments assumptions. Thus, if
+> > guest selects a pointer and host then gets and dereferences
+> > it, then alignment assumed by the host's compiler might be
+> > greater than the actual alignment of the pointer.
+> > compiler on the host from assuming pointer is aligned.
+> >
+> > This actually triggers on ARM with -mabi=apcs-gnu - which is a
+> > deprecated configuration. With this OABI, compiler assumes that
+> > all structures are 4 byte aligned - which is stronger than
+> > virtio guarantees for available and used rings, which are
+> > merely 2 bytes. Thus a guest without -mabi=apcs-gnu running
+> > on top of host with -mabi=apcs-gnu will be broken.
+> >
+> > The correct fix is to force alignment of structures - however
+> > that is an intrusive fix that's best deferred until the next release.
+> >
+> > We didn't previously support such ancient systems at all - this surfaced
+> > after vdpa support prompted removing dependency of vhost on
+> > VIRTULIZATION. So for now, let's just add something along the lines of
+> >
+> >         depends on !ARM || AEABI
+> >
+> > to the virtio Kconfig declaration, and add a comment that it has to do
+> > with struct member alignment.
+> >
+> > Note: we can't make VHOST and VHOST_RING themselves have
+> > a dependency since these are selected. Add a new symbol for that.
 > 
-> diff --git a/drivers/net/ethernet/toshiba/tc35815.c b/drivers/net/ethernet/toshiba/tc35815.c
-> index 3fd43d30b20d..a1066fbb93b5 100644
-> --- a/drivers/net/ethernet/toshiba/tc35815.c
-> +++ b/drivers/net/ethernet/toshiba/tc35815.c
-> @@ -643,7 +643,7 @@ static int tc_mii_probe(struct net_device *dev)
->  		linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT_Half_BIT, mask);
->  		linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Half_BIT, mask);
->  	}
-> -	linkmode_and(phydev->supported, phydev->supported, mask);
-> +	linkmode_andnot(phydev->supported, phydev->supported, mask);
->  	linkmode_copy(phydev->advertising, phydev->supported);
->  
->  	lp->link = 0;
-> 
-> base-commit: 55b2af1c23eb12663015998079992f79fdfa56c8
-> 
-Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
+> Adding the dependencies to VHOST and VHOST_RING themselves is indeed not
+> sufficient.  But IMHO you should still add VHOST_DPN dependencies t
+>  these two symbols, so any driver selecting them without fulfilling the
+> VHOST_DPN dependency will trigger a Kconfig warning.  Else the
+> issue will be ignored silently.
 
-The complete structure of this code is quite weird (e.g. using module
-parameters to force a link mode), but the driver seems to be too old
-that anybody would spend effort on refactoring it.
+Good point.
+For now I'm trying to just get rid of this work around.
+If I can't I will add the suggested change.
+Thanks!
+
+> > We should be able to drop this dependency down the road.
+> >
+> > Fixes: 20c384f1ea1a0bc7 ("vhost: refine vhost and vringh kconfig")
+> > Suggested-by: Ard Biesheuvel <ardb@kernel.org>
+> > Suggested-by: Richard Earnshaw <Richard.Earnshaw@arm.com>
+> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> 
+> Gr{oetje,eeting}s,
+> 
+>                         Geert
+> 
+> -- 
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
+
