@@ -2,152 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B30861BABFE
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 20:05:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57C531BAC0E
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 20:12:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726564AbgD0SFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 14:05:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39886 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726560AbgD0SFs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 14:05:48 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1407C0610D5
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 11:05:46 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id s8so21470070ybj.9
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 11:05:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=4GUbghb2GyxnSQ8cGN3x0+FHk6GAzGRMG5qAj3e9H1M=;
-        b=HSBPP8nKGzdfIjIUfGPD8Jgsdb/F9xGCV+ct4XGZz5ptPmBXrjp4hlVHfnCOn0o7Bp
-         lkd2UESug4yiuP9DEGUZIT7YPAJf+B1Xxd2S5pkhuxqaEOpfH1upUbvYIVA3GSkKYN7M
-         JrP/EcUU9mfKiq/mNAEdUPyqHFb15Gv2TsC37y5sJovCXqfFlFDV+PaUwR7To6FP7cgF
-         gufmDui2jmLmnANGW5EZkQDKU30cAzXEJXj98CoDnkZ9nc5kX3IE0djH5qx6Fg6hlJPV
-         tY/HNhOPwzMODx1ZGRT9yBzjFKG+pqftq//IrfiIgmQjYPbn0DebayYIPmJxFtbkmLPA
-         Jxjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=4GUbghb2GyxnSQ8cGN3x0+FHk6GAzGRMG5qAj3e9H1M=;
-        b=gxcMsdLIxC3XIZEQ/M3PD8LHK2fvpYrnYx/HlvMuov1sx2lXVjQ5Ab8michFbLqtYi
-         gD//7bp65HYtSnp48hoJmsR7J1LeuKXAZ9c0oEKANTySmG0TibVz4FhPjcy4QPkPZde3
-         gEWCZcca9JIJSuo0m05OdyBhddsoWmMMaBo/uMkpQODa7sRNlxC22BfDScp94/8zmYca
-         GbmBKM21qtwiYQAgmkrLBZz79QyDeU4vpSFPPb55VEN+CTmIophuzJT/1dbjeC2iVWI2
-         MrmOsevPeoFKt4Od8Jmp57a2ZJbHSagmhDoOMdqkUOHBxorUHL1JsIYf32KM3sjIYR2u
-         0k9A==
-X-Gm-Message-State: AGi0PuZm+KOgnJQG3aK04Jltrp5Ln1O7wJS+3nGxNlTnLiw1wzdtPyGa
-        tgEZ0/gdb3bz9lmAO5DqCOK2FQnQkmdptA==
-X-Google-Smtp-Source: APiQypIy6RMbCrrLpzDMwSk1M9IXnay7LD7BN46LBaCQQxit8P1tRl5CCTPIYsjD/PxYyhUqCJSsS+CL90mb0A==
-X-Received: by 2002:a25:be08:: with SMTP id h8mr36110778ybk.136.1588010746090;
- Mon, 27 Apr 2020 11:05:46 -0700 (PDT)
-Date:   Mon, 27 Apr 2020 11:05:43 -0700
-Message-Id: <20200427180543.230025-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.26.2.303.gf8c07b1a785-goog
-Subject: [PATCH iproute2] tc: fq: add timer_slack parameter
-From:   Eric Dumazet <edumazet@google.com>
-To:     David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726311AbgD0SMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 14:12:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35998 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726189AbgD0SMX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Apr 2020 14:12:23 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 40FE5206D4;
+        Mon, 27 Apr 2020 18:12:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588011142;
+        bh=7g5uBwzZZ5gA420LyHwxU5xUr0TGoYW6+NPEExUiiL8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=15Q+QTEmerKu1Vs5lDmRInBFY2DM3mvRihDbN7B/MLY4+VkGucIhHU8mktsRg1IyD
+         DBN2LhVeB1Lblim8kSnA+GGUzjH9VQjdfEyJaCeUIWUOuM8JAaIoE8s+EAb51N2TF4
+         53GSHiF7Rr94/SgtJCtV4usGsQaxgOS4TDatQWsE=
+Date:   Mon, 27 Apr 2020 11:12:20 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        <netfilter-devel@vger.kernel.org>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH net] net: flow_offload: skip hw stats check for
+ FLOW_ACTION_HW_STATS_DISABLED
+Message-ID: <20200427111220.7b07aae1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <4f242df0-26c1-472c-c526-557ff50ef1e0@solarflare.com>
+References: <20200420090505.pr6wsunozfh7afaj@salvia>
+        <20200420091302.GB6581@nanopsycho.orion>
+        <20200420100341.6qehcgz66wq4ysax@salvia>
+        <20200420115210.GE6581@nanopsycho.orion>
+        <3980eea4-18d8-5e62-2d6d-fce0a7e7ed4c@solarflare.com>
+        <20200420123915.nrqancwjb7226l7e@salvia>
+        <20200420134826.GH6581@nanopsycho.orion>
+        <20200420135754.GD32392@breakpoint.cc>
+        <20200420141422.GK6581@nanopsycho.orion>
+        <20200420191832.ppxjjebls2idrshh@salvia>
+        <20200422183701.GN6581@nanopsycho.orion>
+        <4f242df0-26c1-472c-c526-557ff50ef1e0@solarflare.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 583396f4ca4d ("net_sched: sch_fq: enable use of hrtimer slack")
-added TCA_FQ_TIMER_SLACK parameter, with a default value of 10 usec.
+On Mon, 27 Apr 2020 15:31:48 +0100 Edward Cree wrote:
+> On 22/04/2020 19:37, Jiri Pirko wrote:
+> > "Any" can't be "don't care". TC User expects stats. That's default.
+> >
+> > Let's have "don't care" bit only and set it for
+> > ethtool/netfilter/flowtable. Don't change any. Teach the drivers to deal
+> > with "don't care", most probably using the default checker. =20
+> I think the right solution is either this, or the semantically-similar
+> =C2=A0approach of "0 means don't care, we have a bit for disabled, and ANY
+> =C2=A0(the TC default) is "all the bits except disabled", i.e.
+> =C2=A0DELAYED | IMMEDIATE.=C2=A0 That seems slightly cleaner to me, as th=
+en non-
+> =C2=A0zero settings are always "here is a bitmask of options, driver may
+> =C2=A0choose any of them".=C2=A0 (And 0 differs from DELAYED | IMMEDIATE =
+| DISABLED
+> =C2=A0only in that if new bits are added to kernel, 0 includes them.)
 
-Add the corresponding tc support to get/set this tunable.
++1
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- tc/q_fq.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
-
-diff --git a/tc/q_fq.c b/tc/q_fq.c
-index 44d8a7e03b9986a86d91bdba4310156269601a60..ffae0523b1abe6a9328c6542160ff938ad666532 100644
---- a/tc/q_fq.c
-+++ b/tc/q_fq.c
-@@ -57,6 +57,7 @@ static void explain(void)
- 		"		[ [no]pacing ] [ refill_delay TIME ]\n"
- 		"		[ low_rate_threshold RATE ]\n"
- 		"		[ orphan_mask MASK]\n"
-+		"		[ timer_slack TIME]\n"
- 		"		[ ce_threshold TIME ]\n");
- }
- 
-@@ -86,6 +87,7 @@ static int fq_parse_opt(struct qdisc_util *qu, int argc, char **argv,
- 	unsigned int refill_delay;
- 	unsigned int orphan_mask;
- 	unsigned int ce_threshold;
-+	unsigned int timer_slack;
- 	bool set_plimit = false;
- 	bool set_flow_plimit = false;
- 	bool set_quantum = false;
-@@ -96,6 +98,7 @@ static int fq_parse_opt(struct qdisc_util *qu, int argc, char **argv,
- 	bool set_orphan_mask = false;
- 	bool set_low_rate_threshold = false;
- 	bool set_ce_threshold = false;
-+	bool set_timer_slack = false;
- 	int pacing = -1;
- 	struct rtattr *tail;
- 
-@@ -146,6 +149,20 @@ static int fq_parse_opt(struct qdisc_util *qu, int argc, char **argv,
- 				return -1;
- 			}
- 			set_ce_threshold = true;
-+		} else if (strcmp(*argv, "timer_slack") == 0) {
-+			__s64 t64;
-+
-+			NEXT_ARG();
-+			if (get_time64(&t64, *argv)) {
-+				fprintf(stderr, "Illegal \"timer_slack\"\n");
-+				return -1;
-+			}
-+			timer_slack = t64;
-+			if (timer_slack != t64) {
-+				fprintf(stderr, "Illegal (out of range) \"timer_slack\"\n");
-+				return -1;
-+			}
-+			set_timer_slack = true;
- 		} else if (strcmp(*argv, "defrate") == 0) {
- 			NEXT_ARG();
- 			if (strchr(*argv, '%')) {
-@@ -240,6 +257,9 @@ static int fq_parse_opt(struct qdisc_util *qu, int argc, char **argv,
- 	if (set_ce_threshold)
- 		addattr_l(n, 1024, TCA_FQ_CE_THRESHOLD,
- 			  &ce_threshold, sizeof(ce_threshold));
-+    if (set_timer_slack)
-+		addattr_l(n, 1024, TCA_FQ_TIMER_SLACK,
-+			  &timer_slack, sizeof(timer_slack));
- 	addattr_nest_end(n, tail);
- 	return 0;
- }
-@@ -254,6 +274,7 @@ static int fq_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 	unsigned int refill_delay;
- 	unsigned int orphan_mask;
- 	unsigned int ce_threshold;
-+	unsigned int timer_slack;
- 
- 	SPRINT_BUF(b1);
- 
-@@ -355,6 +376,12 @@ static int fq_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 		}
- 	}
- 
-+	if (tb[TCA_FQ_TIMER_SLACK] &&
-+	    RTA_PAYLOAD(tb[TCA_FQ_TIMER_SLACK]) >= sizeof(__u32)) {
-+		timer_slack = rta_getattr_u32(tb[TCA_FQ_TIMER_SLACK]);
-+		fprintf(f, "timer_slack %s ", sprint_time64(timer_slack, b1));
-+	}
-+
- 	return 0;
- }
- 
--- 
-2.26.2.303.gf8c07b1a785-goog
+> And of course either way the TC uAPI needs to be able to specify the
+> =C2=A0new "don't care" option.
 
