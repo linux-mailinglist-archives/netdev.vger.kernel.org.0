@@ -2,212 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C5C01BA672
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 16:32:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F05B1BA67A
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 16:32:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728047AbgD0OcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 10:32:08 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:39226 "EHLO
+        id S1728092AbgD0Ocx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 10:32:53 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:31983 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727982AbgD0OcG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 10:32:06 -0400
+        by vger.kernel.org with ESMTP id S1727855AbgD0Ocx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 10:32:53 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587997924;
+        s=mimecast20190719; t=1587997971;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=cf6Cs2PEOytlk0F2uGTl55ZSvGzk8/G/7WE1a3ciQp0=;
-        b=KOJ43tuDVGH9tAoeN0I91LUHVjv2fbNsmnOIXp0wdr/GKNQU6OMhr/d9aTw3WLAhetbCS/
-        HO8peWM9EvLRJSwt4zXbCBHDM18cZVFnJ/K70ETv1iHnMFN3chJHKfsRzc7KtqaLqGQqUD
-        ciL2kzgHdx+pn2e3fLO79BzRuvAHLe4=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-494-W2rVupTBPi-2a_wZa_moGQ-1; Mon, 27 Apr 2020 10:32:02 -0400
-X-MC-Unique: W2rVupTBPi-2a_wZa_moGQ-1
-Received: by mail-wm1-f70.google.com with SMTP id w2so5597386wmc.3
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 07:32:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=cf6Cs2PEOytlk0F2uGTl55ZSvGzk8/G/7WE1a3ciQp0=;
-        b=VGp5oMO06MN0stOXTDAcd53CdueBp2lG5egWovF5f+wedUaRn24YUAA0aAGA7ZVzOV
-         t2qU8C5h6IPisrH0OZu1NchrCf5jEvm6pfwI+dOcfUpu5EqbViWXbRFKfAMOqeaBsiAu
-         ToHb9nLHgJWJDfLeQbKP8l/HnCkiBT8LguMv3VIvEfwPlItXmax+K/rngWZ7fLj1C9cT
-         4veJxzVJm1d811W4cLj4neJOZGiyWsz0On3plSHv6F4Wn9RolD0ZyxCN52UEwIW6AeyT
-         hTVs4HD6reyY6x844L0i4C+X6BXnT/d8hEntsUNI7dkFiEDkUve9vjkgPONAExrnrpWV
-         hlmQ==
-X-Gm-Message-State: AGi0PubBJ5TAStQHUTDpAbDUFGIuiO6OGVp32Peobsae0C0Yb66txLhY
-        fzllKVUmbUkKng/QFd2bK94rzaD0kBEao30asQQXHThdNRMKSWJWEaORbrdYGMX9Dk3cupRPsd4
-        Oj8IM1J+PKg+05ZW7
-X-Received: by 2002:a1c:4b12:: with SMTP id y18mr27319009wma.149.1587997921468;
-        Mon, 27 Apr 2020 07:32:01 -0700 (PDT)
-X-Google-Smtp-Source: APiQypJ3yRKpFpNCFurBKYh3n2YOBs/ZiNJj3mnUr/OngVCgapTti55XiOSO9MN16q48Z0I2RmPu4A==
-X-Received: by 2002:a1c:4b12:: with SMTP id y18mr27318989wma.149.1587997921191;
-        Mon, 27 Apr 2020 07:32:01 -0700 (PDT)
-Received: from redhat.com (bzq-109-66-7-121.red.bezeqint.net. [109.66.7.121])
-        by smtp.gmail.com with ESMTPSA id r18sm18328241wrj.70.2020.04.27.07.31.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2020 07:32:00 -0700 (PDT)
-Date:   Mon, 27 Apr 2020 10:31:57 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     davem@davemloft.net, Stefan Hajnoczi <stefanha@redhat.com>,
-        linux-kernel@vger.kernel.org, Jorgen Hansen <jhansen@vmware.com>,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-hyperv@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 0/3] vsock: support network namespace
-Message-ID: <20200427102828-mutt-send-email-mst@kernel.org>
-References: <20200116172428.311437-1-sgarzare@redhat.com>
- <20200427142518.uwssa6dtasrp3bfc@steredhat>
+        bh=0u80QIqRuFtq393pEWCqHrz3SEQAL/TzXNi1FumiEQg=;
+        b=QDxH77TX7AT28UumREjNz9/F9SXqqlZlRrB8SdiJfPckkB3MJ3mS/fLmBR56JGT2ne1d0G
+        7sIx8xJKVt7PtGRtAdmHMvvzXqbH4GP6F50NCFFfzn6zRhbImas36qUnletA9FtphjXj/5
+        /wWZ89/1gGLfQzcvvCa28BWv1wvLdb0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-508-uaarzkrsMMm9rifY-_Afew-1; Mon, 27 Apr 2020 10:32:41 -0400
+X-MC-Unique: uaarzkrsMMm9rifY-_Afew-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 20E9C872FE0;
+        Mon, 27 Apr 2020 14:32:38 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 338DD1A924;
+        Mon, 27 Apr 2020 14:32:25 +0000 (UTC)
+Date:   Mon, 27 Apr 2020 16:32:24 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     sameehj@amazon.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        zorik@amazon.com, akiyano@amazon.com, gtzalik@amazon.com,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        steffen.klassert@secunet.com, brouer@redhat.com
+Subject: Re: [PATCH net-next 21/33] virtio_net: add XDP frame size in two
+ code paths
+Message-ID: <20200427163224.6445d4bb@carbon>
+In-Reply-To: <3958d9c6-a7d1-6a3d-941d-0a2915cc6b09@redhat.com>
+References: <158757160439.1370371.13213378122947426220.stgit@firesoul>
+        <158757174774.1370371.14395462229209766397.stgit@firesoul>
+        <3958d9c6-a7d1-6a3d-941d-0a2915cc6b09@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200427142518.uwssa6dtasrp3bfc@steredhat>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 27, 2020 at 04:25:18PM +0200, Stefano Garzarella wrote:
-> Hi David, Michael, Stefan,
-> I'm restarting to work on this topic since Kata guys are interested to
-> have that, especially on the guest side.
-> 
-> While working on the v2 I had few doubts, and I'd like to have your
-> suggestions:
-> 
->  1. netns assigned to the device inside the guest
-> 
->    Currently I assigned this device to 'init_net'. Maybe it is better
->    if we allow the user to decide which netns assign to the device
->    or to disable this new feature to have the same behavior as before
->    (host reachable from any netns).
->    I think we can handle this in the vsock core and not in the single
->    transports.
-> 
->    The simplest way that I found, is to add a new
->    IOCTL_VM_SOCKETS_ASSIGN_G2H_NETNS to /dev/vsock to enable the feature
->    and assign the device to the same netns of the process that do the
->    ioctl(), but I'm not sure it is clean enough.
-> 
->    Maybe it is better to add new rtnetlink messages, but I'm not sure if
->    it is feasible since we don't have a netdev device.
-> 
->    What do you suggest?
+On Mon, 27 Apr 2020 15:21:02 +0800
+Jason Wang <jasowang@redhat.com> wrote:
 
-Maybe /dev/vsock-netns here too, like in the host?
+> On 2020/4/23 =E4=B8=8A=E5=8D=8812:09, Jesper Dangaard Brouer wrote:
+> > The virtio_net driver is running inside the guest-OS. There are two
+> > XDP receive code-paths in virtio_net, namely receive_small() and
+> > receive_mergeable(). The receive_big() function does not support XDP.
+> >
+> > In receive_small() the frame size is available in buflen. The buffer
+> > backing these frames are allocated in add_recvbuf_small() with same
+> > size, except for the headroom, but tailroom have reserved room for
+> > skb_shared_info. The headroom is encoded in ctx pointer as a value.
+> >
+> > In receive_mergeable() the frame size is more dynamic. There are two
+> > basic cases: (1) buffer size is based on a exponentially weighted
+> > moving average (see DECLARE_EWMA) of packet length. Or (2) in case
+> > virtnet_get_headroom() have any headroom then buffer size is
+> > PAGE_SIZE. The ctx pointer is this time used for encoding two values;
+> > the buffer len "truesize" and headroom. In case (1) if the rx buffer
+> > size is underestimated, the packet will have been split over more
+> > buffers (num_buf info in virtio_net_hdr_mrg_rxbuf placed in top of
+> > buffer area). If that happens the XDP path does a xdp_linearize_page
+> > operation.
+> >
+> > Cc: Jason Wang <jasowang@redhat.com>
+> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> > ---
+> >   drivers/net/virtio_net.c |   15 ++++++++++++---
+> >   1 file changed, 12 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > index 11f722460513..1df3676da185 100644
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -689,6 +689,7 @@ static struct sk_buff *receive_small(struct net_dev=
+ice *dev,
+> >   		xdp.data_end =3D xdp.data + len;
+> >   		xdp.data_meta =3D xdp.data;
+> >   		xdp.rxq =3D &rq->xdp_rxq;
+> > +		xdp.frame_sz =3D buflen;
+> >   		orig_data =3D xdp.data;
+> >   		act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
+> >   		stats->xdp_packets++;
+> > @@ -797,10 +798,11 @@ static struct sk_buff *receive_mergeable(struct n=
+et_device *dev,
+> >   	int offset =3D buf - page_address(page);
+> >   	struct sk_buff *head_skb, *curr_skb;
+> >   	struct bpf_prog *xdp_prog;
+> > -	unsigned int truesize;
+> > +	unsigned int truesize =3D mergeable_ctx_to_truesize(ctx);
+> >   	unsigned int headroom =3D mergeable_ctx_to_headroom(ctx);
+> > -	int err;
+> >   	unsigned int metasize =3D 0;
+> > +	unsigned int frame_sz;
+> > +	int err;
+> >  =20
+> >   	head_skb =3D NULL;
+> >   	stats->bytes +=3D len - vi->hdr_len;
+> > @@ -821,6 +823,11 @@ static struct sk_buff *receive_mergeable(struct ne=
+t_device *dev,
+> >   		if (unlikely(hdr->hdr.gso_type))
+> >   			goto err_xdp;
+> >  =20
+> > +		/* Buffers with headroom use PAGE_SIZE as alloc size,
+> > +		 * see add_recvbuf_mergeable() + get_mergeable_buf_len()
+> > +		 */
+> > +		frame_sz =3D headroom ? PAGE_SIZE : truesize;
+> > +
+> >   		/* This happens when rx buffer size is underestimated
+> >   		 * or headroom is not enough because of the buffer
+> >   		 * was refilled before XDP is set. This should only
+> > @@ -834,6 +841,8 @@ static struct sk_buff *receive_mergeable(struct net=
+_device *dev,
+> >   						      page, offset,
+> >   						      VIRTIO_XDP_HEADROOM,
+> >   						      &len);
+> > +			frame_sz =3D PAGE_SIZE; =20
+>=20
+>=20
+> Should this be PAGE_SIZE -=C2=A0 SKB_DATA_ALIGN(sizeof(struct skb_shared_=
+info))?
 
+No, frame_sz include the SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) len=
+gth.
 
-> 
->  2. netns assigned in the host
-> 
->     As Michael suggested, I added a new /dev/vhost-vsock-netns to allow
->     userspace application to use this new feature, leaving to
->     /dev/vhost-vsock the previous behavior (guest reachable from any
->     netns).
-> 
->     I like this approach, but I had these doubts:
-> 
->     - I need to allocate a new minor for that device (e.g.
->       VHOST_VSOCK_NETNS_MINOR) or is there an alternative way that I can
->       use?
-
-Not that I see. I agree it's a bit annoying. I'll think about it a bit.
-
->     - It is vhost-vsock specific, should we provide something handled in
->       the vsock core, maybe centralizing the CID allocation and adding a
->       new IOCTL or rtnetlink message like for the guest side?
->       (maybe it could be a second step, and for now we can continue with
->       the new device)
-> 
-> 
-> Thanks for the help,
-> Stefano
-> 
-> 
-> On Thu, Jan 16, 2020 at 06:24:25PM +0100, Stefano Garzarella wrote:
-> > RFC -> v1:
-> >  * added 'netns' module param to vsock.ko to enable the
-> >    network namespace support (disabled by default)
-> >  * added 'vsock_net_eq()' to check the "net" assigned to a socket
-> >    only when 'netns' support is enabled
-> > 
-> > RFC: https://patchwork.ozlabs.org/cover/1202235/
-> > 
-> > Now that we have multi-transport upstream, I started to take a look to
-> > support network namespace in vsock.
-> > 
-> > As we partially discussed in the multi-transport proposal [1], it could
-> > be nice to support network namespace in vsock to reach the following
-> > goals:
-> > - isolate host applications from guest applications using the same ports
-> >   with CID_ANY
-> > - assign the same CID of VMs running in different network namespaces
-> > - partition VMs between VMMs or at finer granularity
-> > 
-> > This new feature is disabled by default, because it changes vsock's
-> > behavior with network namespaces and could break existing applications.
-> > It can be enabled with the new 'netns' module parameter of vsock.ko.
-> > 
-> > This implementation provides the following behavior:
-> > - packets received from the host (received by G2H transports) are
-> >   assigned to the default netns (init_net)
-> > - packets received from the guest (received by H2G - vhost-vsock) are
-> >   assigned to the netns of the process that opens /dev/vhost-vsock
-> >   (usually the VMM, qemu in my tests, opens the /dev/vhost-vsock)
-> >     - for vmci I need some suggestions, because I don't know how to do
-> >       and test the same in the vmci driver, for now vmci uses the
-> >       init_net
-> > - loopback packets are exchanged only in the same netns
-> > 
-> > I tested the series in this way:
-> > l0_host$ qemu-system-x86_64 -m 4G -M accel=kvm -smp 4 \
-> >             -drive file=/tmp/vsockvm0.img,if=virtio --nographic \
-> >             -device vhost-vsock-pci,guest-cid=3
-> > 
-> > l1_vm$ echo 1 > /sys/module/vsock/parameters/netns
-> > 
-> > l1_vm$ ip netns add ns1
-> > l1_vm$ ip netns add ns2
-> >  # same CID on different netns
-> > l1_vm$ ip netns exec ns1 qemu-system-x86_64 -m 1G -M accel=kvm -smp 2 \
-> >             -drive file=/tmp/vsockvm1.img,if=virtio --nographic \
-> >             -device vhost-vsock-pci,guest-cid=4
-> > l1_vm$ ip netns exec ns2 qemu-system-x86_64 -m 1G -M accel=kvm -smp 2 \
-> >             -drive file=/tmp/vsockvm2.img,if=virtio --nographic \
-> >             -device vhost-vsock-pci,guest-cid=4
-> > 
-> >  # all iperf3 listen on CID_ANY and port 5201, but in different netns
-> > l1_vm$ ./iperf3 --vsock -s # connection from l0 or guests started
-> >                            # on default netns (init_net)
-> > l1_vm$ ip netns exec ns1 ./iperf3 --vsock -s
-> > l1_vm$ ip netns exec ns1 ./iperf3 --vsock -s
-> > 
-> > l0_host$ ./iperf3 --vsock -c 3
-> > l2_vm1$ ./iperf3 --vsock -c 2
-> > l2_vm2$ ./iperf3 --vsock -c 2
-> > 
-> > [1] https://www.spinics.net/lists/netdev/msg575792.html
-> > 
-> > Stefano Garzarella (3):
-> >   vsock: add network namespace support
-> >   vsock/virtio_transport_common: handle netns of received packets
-> >   vhost/vsock: use netns of process that opens the vhost-vsock device
-> > 
-> >  drivers/vhost/vsock.c                   | 29 ++++++++++++-----
-> >  include/linux/virtio_vsock.h            |  2 ++
-> >  include/net/af_vsock.h                  |  7 +++--
-> >  net/vmw_vsock/af_vsock.c                | 41 +++++++++++++++++++------
-> >  net/vmw_vsock/hyperv_transport.c        |  5 +--
-> >  net/vmw_vsock/virtio_transport.c        |  2 ++
-> >  net/vmw_vsock/virtio_transport_common.c | 12 ++++++--
-> >  net/vmw_vsock/vmci_transport.c          |  5 +--
-> >  8 files changed, 78 insertions(+), 25 deletions(-)
-> > 
-> > -- 
-> > 2.24.1
-> > 
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
