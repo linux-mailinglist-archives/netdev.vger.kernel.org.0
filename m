@@ -2,53 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96E491BA786
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 17:13:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94B3B1BA788
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 17:13:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727834AbgD0PNc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 11:13:32 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:46145 "EHLO
+        id S1727881AbgD0PNe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 11:13:34 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:41669 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727006AbgD0PNc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 11:13:32 -0400
+        by vger.kernel.org with ESMTP id S1727006AbgD0PNd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 11:13:33 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 23A415C00BC;
-        Mon, 27 Apr 2020 11:13:31 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 5A1495C00BF;
+        Mon, 27 Apr 2020 11:13:32 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Mon, 27 Apr 2020 11:13:31 -0400
+  by compute4.internal (MEProxy); Mon, 27 Apr 2020 11:13:32 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=54gTkCxyL2YJsVkVK
-        mYHDAzlJ6VhXdVfTlIJz9Mp3KY=; b=MSduVb2SGXtnm5RLAa2sAWT/Uk87iKSDc
-        BFheowj6DpPKVrcqK7so5yIar+MGJlSxwz75OaPd1vXzsn4L5nbe1UKsPxkXYuTd
-        +Vgf2uLxfXZz4EMHCSohI91Eaxi0PhCQVMoznf93JqwTLQji90wENbQKUKjT4ixU
-        KpR8QhRzwDeSo57YiF1nPjwsJoDqsLojAygVAfDxi1jQdmzRaxcNw7me72QJ9S9Q
-        v5Z4F7x2Ul15wcWldTmE9d9MpE8kTV5Fq7A9drYTqcpGp0jje88vmhQsGF9VFuLC
-        Heua7L6rjgsZREjqySdu5sI9ADGfu9Cuvbk1oRU45slBj2S4AX2oA==
-X-ME-Sender: <xms:mvamXsgvVOypb1xYBQj_lDFab0SSa3Z6lppxfALvVBWtLkpEuEveeQ>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; bh=UMUZSONTyJpT8SB0GxyWwv3l/0jc2M5zoa4XSgzHxqk=; b=GuawUsUW
+        AWEg2JerGqy1dueCkcUwun7254RIGtA/sBhD1pW8regGS2FH/oQeSlsVrX8GVTyj
+        JDvt8ScxOze05DwHvsxxXjX0JLuh3Ay2pP4gCuNusKs/SfwaI4yz31kAPRi1Wahg
+        8BjJasfNudNiQxfNDphbXigenMCiSYvLss8drephm85/NVFnnhCgFfweISlVi6qg
+        EbLWzL36xPYdQtYvI56aUxTy5fvOPomzGqFsC57JBZCkCk56+jWyj5LC7tuLmu7v
+        sTfa04eqs5XASys49LBxqW+rQThu1xY69yuuGSOBBfP6YeoWFgEC6FexTaSuApS2
+        UyUE7nDhoVK6GA==
+X-ME-Sender: <xms:nPamXl9j_epw5-gLsw1nQGE6ITG4QtUFIXAJOJ9Dg-kApX6EDGqbYA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrheelgdekgecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
-    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
-    rdhorhhgqeenucfkphepjeelrddukedtrdehgedrudduieenucevlhhushhtvghrufhiii
-    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdho
-    rhhg
-X-ME-Proxy: <xmx:mvamXhX10IAAw8IyDz9v8eUVDkR3kJQimEojnw1nEA9HlWvoF4p_wg>
-    <xmx:mvamXm1BhMnHWD1Fy0V7wg2zbtMcGpNwW_Vbn1cqTXAgcKu1bp6HCg>
-    <xmx:mvamXvFoJ0--nplC3A05XoLjj2EzDyqAF8PxtPb0CTPgQIpkRXXcjg>
-    <xmx:m_amXgwc7aN8yZd0CRuGvdl5hl9CLjaqZEAmNor4oSWBmfG4fToF2w>
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
+    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucfkphepjeelrddukedtrdehgedrudduieenucevlhhushhtvghruf
+    hiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghh
+    rdhorhhg
+X-ME-Proxy: <xmx:nPamXt-e41MRsPFl9DyZ-nzCJrVf3tubIRpnSYsjdz0eJsTyC-RDUA>
+    <xmx:nPamXuDr5dGeYEZMCY5QdXdWi1rBHq9uR3xuv6ZTPbEyjYOw4YQuHA>
+    <xmx:nPamXty3T7Iu7gYu8vPuuAlI7XELhTQCmFnzOyzpBDwoQ8zv1mUCSA>
+    <xmx:nPamXpu5K5uvXizsPDrt8q5dtodfufOCOZD-PxEI3oCsi7aEpKZjOQ>
 Received: from splinter.mtl.com (bzq-79-180-54-116.red.bezeqint.net [79.180.54.116])
-        by mail.messagingengine.com (Postfix) with ESMTPA id B51BE3280060;
-        Mon, 27 Apr 2020 11:13:29 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 182583280064;
+        Mon, 27 Apr 2020 11:13:30 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 00/13] mlxsw: Rework matchall offloading plumbing
-Date:   Mon, 27 Apr 2020 18:12:57 +0300
-Message-Id: <20200427151310.3950411-1-idosch@idosch.org>
+Subject: [PATCH net-next 01/13] mlxsw: spectrum_acl: Move block helpers into inline header functions
+Date:   Mon, 27 Apr 2020 18:12:58 +0300
+Message-Id: <20200427151310.3950411-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200427151310.3950411-1-idosch@idosch.org>
+References: <20200427151310.3950411-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -56,58 +59,150 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+From: Jiri Pirko <jiri@mellanox.com>
 
-Jiri says:
+The struct is defined in the header, no need to have the helpers
+in the c file. Move the helpers to the header.
 
-Currently the matchall and flower are handled by registering separate
-callbacks in mlxsw. That leads to faulty indication "in_hw_count 2" in
-filter show command for every inserted flower filter. That happens
-because matchall callback just blindly returns 0 for it and it is
-wrongly accounted for as "the offloader".
+Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+---
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    | 60 ++++++++++++++++---
+ .../ethernet/mellanox/mlxsw/spectrum_acl.c    | 43 -------------
+ 2 files changed, 51 insertions(+), 52 deletions(-)
 
-I inspected different ways to fix this problem. The only clean solution
-is to rework handling of matchall in mlxsw a bit. The driver newely
-registers one callback for bound block which is called for both matchall
-and flower filter insertions.
-
-On the way, iron out the matchall code a bit, push it into a separate
-file etc.
-
-Jiri Pirko (13):
-  mlxsw: spectrum_acl: Move block helpers into inline header functions
-  mlxsw: spectrum: Rename acl_block to flow_block
-  mlxsw: spectrum: Push flow_block related functions into a separate
-    file
-  mlxsw: spectrum: Push matchall bits into a separate file
-  mlxsw: spectrum_acl: Use block variable in mlxsw_sp_acl_rule_del()
-  mlxsw: spectrum_matchall: Pass mall_entry as arg to
-    mlxsw_sp_mall_port_mirror_add()
-  mlxsw: spectrum_matchall: Pass mall_entry as arg to
-    mlxsw_sp_mall_port_sample_add()
-  mlxsw: spectrum_matchall: Move ingress indication into mall_entry
-  mlxsw: spectrum_matchall: Push per-port rule add/del into separate
-    functions
-  mlxsw: spectrum: Avoid copying sample values and use RCU pointer
-    direcly instead
-  mlxsw: spectrum_matchall: Process matchall events from the same cb as
-    flower
-  mlxsw: spectrum: Move flow offload binding into spectrum_flow.c
-  selftests: forwarding: tc_actions.sh: add matchall mirror test
-
- drivers/net/ethernet/mellanox/mlxsw/Makefile  |   1 +
- .../net/ethernet/mellanox/mlxsw/spectrum.c    | 463 +-----------------
- .../net/ethernet/mellanox/mlxsw/spectrum.h    | 167 ++++---
- .../mellanox/mlxsw/spectrum2_mr_tcam.c        |  14 +-
- .../ethernet/mellanox/mlxsw/spectrum_acl.c    | 207 +-------
- .../ethernet/mellanox/mlxsw/spectrum_flow.c   | 303 ++++++++++++
- .../ethernet/mellanox/mlxsw/spectrum_flower.c |  24 +-
- .../mellanox/mlxsw/spectrum_matchall.c        | 278 +++++++++++
- .../selftests/net/forwarding/tc_actions.sh    |  26 +-
- 9 files changed, 756 insertions(+), 727 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlxsw/spectrum_flow.c
- create mode 100644 drivers/net/ethernet/mellanox/mlxsw/spectrum_matchall.c
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+index ca56e72cb4b7..f158cd98f8d8 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+@@ -677,12 +677,57 @@ struct mlxsw_sp_acl_block {
+ };
+ 
+ struct mlxsw_afk *mlxsw_sp_acl_afk(struct mlxsw_sp_acl *acl);
+-struct mlxsw_sp *mlxsw_sp_acl_block_mlxsw_sp(struct mlxsw_sp_acl_block *block);
+-unsigned int
+-mlxsw_sp_acl_block_rule_count(const struct mlxsw_sp_acl_block *block);
+-void mlxsw_sp_acl_block_disable_inc(struct mlxsw_sp_acl_block *block);
+-void mlxsw_sp_acl_block_disable_dec(struct mlxsw_sp_acl_block *block);
+-bool mlxsw_sp_acl_block_disabled(const struct mlxsw_sp_acl_block *block);
++
++static inline struct mlxsw_sp *
++mlxsw_sp_acl_block_mlxsw_sp(struct mlxsw_sp_acl_block *block)
++{
++	return block->mlxsw_sp;
++}
++
++static inline unsigned int
++mlxsw_sp_acl_block_rule_count(const struct mlxsw_sp_acl_block *block)
++{
++	return block ? block->rule_count : 0;
++}
++
++static inline void
++mlxsw_sp_acl_block_disable_inc(struct mlxsw_sp_acl_block *block)
++{
++	if (block)
++		block->disable_count++;
++}
++
++static inline void
++mlxsw_sp_acl_block_disable_dec(struct mlxsw_sp_acl_block *block)
++{
++	if (block)
++		block->disable_count--;
++}
++
++static inline bool
++mlxsw_sp_acl_block_disabled(const struct mlxsw_sp_acl_block *block)
++{
++	return block->disable_count;
++}
++
++static inline bool
++mlxsw_sp_acl_block_is_egress_bound(const struct mlxsw_sp_acl_block *block)
++{
++	return block->egress_binding_count;
++}
++
++static inline bool
++mlxsw_sp_acl_block_is_ingress_bound(const struct mlxsw_sp_acl_block *block)
++{
++	return block->ingress_binding_count;
++}
++
++static inline bool
++mlxsw_sp_acl_block_is_mixed_bound(const struct mlxsw_sp_acl_block *block)
++{
++	return block->ingress_binding_count && block->egress_binding_count;
++}
++
+ struct mlxsw_sp_acl_block *mlxsw_sp_acl_block_create(struct mlxsw_sp *mlxsw_sp,
+ 						     struct net *net);
+ void mlxsw_sp_acl_block_destroy(struct mlxsw_sp_acl_block *block);
+@@ -695,9 +740,6 @@ int mlxsw_sp_acl_block_unbind(struct mlxsw_sp *mlxsw_sp,
+ 			      struct mlxsw_sp_acl_block *block,
+ 			      struct mlxsw_sp_port *mlxsw_sp_port,
+ 			      bool ingress);
+-bool mlxsw_sp_acl_block_is_egress_bound(const struct mlxsw_sp_acl_block *block);
+-bool mlxsw_sp_acl_block_is_ingress_bound(const struct mlxsw_sp_acl_block *block);
+-bool mlxsw_sp_acl_block_is_mixed_bound(const struct mlxsw_sp_acl_block *block);
+ struct mlxsw_sp_acl_ruleset *
+ mlxsw_sp_acl_ruleset_lookup(struct mlxsw_sp *mlxsw_sp,
+ 			    struct mlxsw_sp_acl_block *block, u32 chain_index,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
+index 01cff711bbd2..bb06c007b3f2 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl.c
+@@ -94,49 +94,6 @@ struct mlxsw_sp_fid *mlxsw_sp_acl_dummy_fid(struct mlxsw_sp *mlxsw_sp)
+ 	return mlxsw_sp->acl->dummy_fid;
+ }
+ 
+-struct mlxsw_sp *mlxsw_sp_acl_block_mlxsw_sp(struct mlxsw_sp_acl_block *block)
+-{
+-	return block->mlxsw_sp;
+-}
+-
+-unsigned int
+-mlxsw_sp_acl_block_rule_count(const struct mlxsw_sp_acl_block *block)
+-{
+-	return block ? block->rule_count : 0;
+-}
+-
+-void mlxsw_sp_acl_block_disable_inc(struct mlxsw_sp_acl_block *block)
+-{
+-	if (block)
+-		block->disable_count++;
+-}
+-
+-void mlxsw_sp_acl_block_disable_dec(struct mlxsw_sp_acl_block *block)
+-{
+-	if (block)
+-		block->disable_count--;
+-}
+-
+-bool mlxsw_sp_acl_block_disabled(const struct mlxsw_sp_acl_block *block)
+-{
+-	return block->disable_count;
+-}
+-
+-bool mlxsw_sp_acl_block_is_egress_bound(const struct mlxsw_sp_acl_block *block)
+-{
+-	return block->egress_binding_count;
+-}
+-
+-bool mlxsw_sp_acl_block_is_ingress_bound(const struct mlxsw_sp_acl_block *block)
+-{
+-	return block->ingress_binding_count;
+-}
+-
+-bool mlxsw_sp_acl_block_is_mixed_bound(const struct mlxsw_sp_acl_block *block)
+-{
+-	return block->ingress_binding_count && block->egress_binding_count;
+-}
+-
+ static bool
+ mlxsw_sp_acl_ruleset_is_singular(const struct mlxsw_sp_acl_ruleset *ruleset)
+ {
 -- 
 2.24.1
 
