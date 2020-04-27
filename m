@@ -2,79 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FD611BB18A
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 00:31:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 234031BB18F
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 00:37:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726318AbgD0WbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 18:31:06 -0400
-Received: from ozlabs.org ([203.11.71.1]:40529 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726224AbgD0WbG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Apr 2020 18:31:06 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 499zyH209Zz9sSJ;
-        Tue, 28 Apr 2020 08:31:02 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1588026664;
-        bh=Fmq+8t9RaqoJ3RMhYnZhT/UZrui38TFUaHdcDwHmSXM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=IDd6i+8xv6sUQVUZB7/PZgG30RrejdZIUhOlVe7N/rvsb44gbbP5eQEPGNT4rV8GK
-         N3qb930qW4xbJMru2+tH+qUHpnI/5Ios9s37t8ujEsR5SvvbeK/NBXNd2ACng1gkgj
-         LvmN3TxT+lQLvMg/krdgrIfqze3bXH6WO8VZzoypRInFWsXbgPSmmOI8pOr9HLJJ7c
-         7CVoHtT5XpvhqVnjdG5eG+6jh7sAHzJMaRzG7arkulMdqt8k1bn+Q3JLDL+uzcU2Kb
-         XYlkdtzpH5yi8v3AUEYKmbKvmVmkF3HAOxInycbUCkzDq8iRJQVULRYrzY2TMv6OMS
-         M2X9kUiajp9/Q==
-Date:   Tue, 28 Apr 2020 08:31:01 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>
-Subject: linux-next: Signed-off-by missing for commit in the net-next tree
-Message-ID: <20200428083101.5b9868a7@canb.auug.org.au>
+        id S1726262AbgD0WhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 18:37:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54478 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726204AbgD0WhU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 18:37:20 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B03C0610D5;
+        Mon, 27 Apr 2020 15:37:20 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id g10so15163257lfj.13;
+        Mon, 27 Apr 2020 15:37:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=anbU4ZvHf34hEotYClri4XIToyUZmMKygID6/9blpDE=;
+        b=QCM78I1c5dB2HT2t214Q6JABmam8PDKgbSBkUcHWxMqTKUiDVnCh+x33jA+oNcB1W2
+         WLpxcLaDooFZpEocNC8kPNltgW1fio3XSCLb2R+Ve6weV2pLK6PlxCLWtGUCQOxmpkTU
+         XRKakyVMDTGfKIEa9+94D4aBhPoBGY/jQlSOODl0r6BjJ0UuH+jyOLiyEwM5z8mGvBul
+         U6M02KmTXTihw2TfxSKNcAqxra2jyDtvd6D8UEWEVOgyYBBAEEnOjemWmS8ph+dsyFbv
+         mjV7WfAzxLLNCWdTjfQwuNl9cgbfpvjC4HLNp7rbZJvlFaPQ1lSa2fghYJq+NEBIAZti
+         6YJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=anbU4ZvHf34hEotYClri4XIToyUZmMKygID6/9blpDE=;
+        b=LPVvkI3Jib05RXiYLf52btPMcnSJhSTp/tOL70DbZaeZHvTM+LxNeJKmpRpF0BYCkI
+         UjF69XGLRsHyOqLMkBNOcx8ZT/6rxBtBxsRbgt8WLBPFqydFmybUgHIrOCGv1NVAxIyZ
+         un5g0Hkt3c2tveTTwpnEY/up+cc8gpVtmf2y1N7AVOj+NmxACPDYACeICU35skxE8TlO
+         T1MLy/1/Yz2I+iIyHOIYEQbmciDNsUHmvetBEpww5LJvj4Fhe33bIKjzUC/WHCIpS5E/
+         LM7pXr/5H1uakekXUP8WfrNrIk8fE5aIpJBfOjHzPjusxUwikFPJUh+lthF4gzT3ZsqP
+         ge5w==
+X-Gm-Message-State: AGi0PuaaNtLPJ0TCQ8i5vNaC5PnyQtsDd9Rs5sOMOIjwpCyYFkACIxe/
+        zKK8LO7IkQhOkn70uh7WNn/GLIhwpBC8OkJ1ynWvsCwY
+X-Google-Smtp-Source: APiQypKhyW1sBoYYIor/KNL9tpzzfRnE/W6JA3hXnLSUhJdgTm+5B+ZQEaL5JDb1VGWct58lbl2PRkbxUBF+WTaUpuA=
+X-Received: by 2002:ac2:569b:: with SMTP id 27mr17112441lfr.134.1588027036514;
+ Mon, 27 Apr 2020 15:37:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/L.aB7SFndVmGJmjjAwEBrOL";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 27 Apr 2020 15:37:05 -0700
+Message-ID: <CAADnVQ+weKq=-=KB7j=0FfCE0bLanJ_ppn_p-ropdu8zMhWGqQ@mail.gmail.com>
+Subject: BPF office hours
+To:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/L.aB7SFndVmGJmjjAwEBrOL
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi All,
 
-Hi all,
+Announcing =E2=80=9CBPF office hours=E2=80=9D every Thursday 9am pacific ti=
+me happening at
+https://fb.zoom.us/j/91157637485
+The three letter password should be obvious.
+The meeting will not be longer than 1 hour.
 
-Commit
+Please fill in agenda in the spreadsheet:
+https://docs.google.com/spreadsheets/d/1LfrDXZ9-fdhvPEp_LHkxAMYyxxpwBXjywWa=
+0AejEveU/edit?usp=3Dsharing
+It will be used for tracking meeting notes.
+Each sheet will be frozen after the meeting to keep records.
+If there is nothing in there by Wednesday evening please assume that
+the meeting is cancelled.
+It will be marked such in the spreadsheet. There will be no explicit
+invites and cancellation emails.
 
-  26893e7e928e ("batman-adv: Utilize prandom_u32_max for random [0, max) va=
-lues")
+These meetings are not a substitute for patch discussions at bpf@vger
+but rather a way to get discussions unstuck.
 
-is missing a Signed-off-by from its committer.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/L.aB7SFndVmGJmjjAwEBrOL
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl6nXSUACgkQAVBC80lX
-0Gx6gQf/WwwbJl7R+0Ioil7+8DiVO0tSe4xC3ZT83di0ATNyyu9LPTgBbacOBmV+
-q8Ve5qIupUj/CwSOCjP54Xs+6DmrjQ3eVvYGchOiUy1cL0Ulk14Et9dOZAwayf0p
-aOHT/+On8xnFQY1Si+kF+NmGkDQyNQyaiLqeymwcScfxxFEODB6/j/0e2h9O/+bU
-h0ldcwVKfTOXvsgqIhIWctRxzbO5AWr/I8T614kGTxvuBKY6oUckfKfq3eFFm7l0
-NYfzzBhTXKMYoY0eshqofnqy8XQExP9jUGZJxMHni7QTOEAYUzZZwlvaPRYOMLow
-As5vCeANhBQJtjoxBiKLvU7SzbwzMQ==
-=UzbV
------END PGP SIGNATURE-----
-
---Sig_/L.aB7SFndVmGJmjjAwEBrOL--
+Thank you,
+Alexei and Daniel.
