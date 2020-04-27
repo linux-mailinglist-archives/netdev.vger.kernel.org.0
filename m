@@ -2,29 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70BF61B9FF1
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 11:32:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6206B1BA011
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 11:39:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726929AbgD0Jcf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 05:32:35 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:52410 "EHLO huawei.com"
+        id S1726920AbgD0JjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 05:39:24 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:2915 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726003AbgD0Jce (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Apr 2020 05:32:34 -0400
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 3B16A19B022709CB7FA2;
-        Mon, 27 Apr 2020 17:32:32 +0800 (CST)
+        id S1726349AbgD0JjX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Apr 2020 05:39:23 -0400
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 45D47A311F6C411A0EA6;
+        Mon, 27 Apr 2020 17:39:21 +0800 (CST)
 Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 27 Apr 2020 17:32:22 +0800
+ DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
+ 14.3.487.0; Mon, 27 Apr 2020 17:39:12 +0800
 From:   Wei Yongjun <weiyongjun1@huawei.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-CC:     Wei Yongjun <weiyongjun1@huawei.com>, <netdev@vger.kernel.org>,
+To:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Wei Yongjun <weiyongjun1@huawei.com>
+CC:     <linux-omap@vger.kernel.org>, <netdev@vger.kernel.org>,
         <kernel-janitors@vger.kernel.org>
-Subject: [PATCH net-next] net: ethernet: ti: fix return value check in k3_cppi_desc_pool_create_name()
-Date:   Mon, 27 Apr 2020 09:33:43 +0000
-Message-ID: <20200427093343.157119-1-weiyongjun1@huawei.com>
+Subject: [PATCH net-next] drivers: net: davinci_mdio: fix potential NULL dereference in davinci_mdio_probe()
+Date:   Mon, 27 Apr 2020 09:40:32 +0000
+Message-ID: <20200427094032.181184-1-weiyongjun1@huawei.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Type:   text/plain; charset=US-ASCII
@@ -36,31 +37,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case of error, the function gen_pool_create() returns NULL pointer
-not ERR_PTR(). The IS_ERR() test in the return value check should be
-replaced with NULL test.
+platform_get_resource() may fail and return NULL, so we should
+better check it's return value to avoid a NULL pointer dereference
+a bit later in the code.
 
-Fixes: 93a76530316a ("net: ethernet: ti: introduce am65x/j721e gigabit eth subsystem driver")
+This is detected by Coccinelle semantic patch.
+
+@@
+expression pdev, res, n, t, e, e1, e2;
+@@
+
+res = \(platform_get_resource\|platform_get_resource_byname\)(pdev, t, n);
++ if (!res)
++   return -EINVAL;
+... when != res == NULL
+e = devm_ioremap(e1, res->start, e2);
+
 Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 ---
- drivers/net/ethernet/ti/k3-cppi-desc-pool.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/ti/davinci_mdio.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/ti/k3-cppi-desc-pool.c b/drivers/net/ethernet/ti/k3-cppi-desc-pool.c
-index ad7cfc1316ce..38cc12f9f133 100644
---- a/drivers/net/ethernet/ti/k3-cppi-desc-pool.c
-+++ b/drivers/net/ethernet/ti/k3-cppi-desc-pool.c
-@@ -64,8 +64,8 @@ k3_cppi_desc_pool_create_name(struct device *dev, size_t size,
- 		return ERR_PTR(-ENOMEM);
+diff --git a/drivers/net/ethernet/ti/davinci_mdio.c b/drivers/net/ethernet/ti/davinci_mdio.c
+index 38b7f6d35759..702fdc393da0 100644
+--- a/drivers/net/ethernet/ti/davinci_mdio.c
++++ b/drivers/net/ethernet/ti/davinci_mdio.c
+@@ -397,6 +397,8 @@ static int davinci_mdio_probe(struct platform_device *pdev)
+ 	data->dev = dev;
  
- 	pool->gen_pool = gen_pool_create(ilog2(pool->desc_size), -1);
--	if (IS_ERR(pool->gen_pool)) {
--		ret = PTR_ERR(pool->gen_pool);
-+	if (!pool->gen_pool) {
-+		ret = -ENOMEM;
- 		dev_err(pool->dev, "pool create failed %d\n", ret);
- 		kfree_const(pool_name);
- 		goto gen_pool_create_fail;
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -EINVAL;
+ 	data->regs = devm_ioremap(dev, res->start, resource_size(res));
+ 	if (!data->regs)
+ 		return -ENOMEM;
+
+
 
 
 
