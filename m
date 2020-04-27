@@ -2,103 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6791C1BB085
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 23:31:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AACA1BB0A1
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 23:37:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726328AbgD0Vbs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 17:31:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39870 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726275AbgD0Vbs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Apr 2020 17:31:48 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 82DE92070B;
-        Mon, 27 Apr 2020 21:31:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588023107;
-        bh=VB1xn9K9KLA5v953nUF6UQvO8dSaJRFT1PreInCA4NU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uSlgWWZzF6MFmwFr3G8gGFlYu5eYAwflcCPGvkS+ajnbQDVep57GJxwNPedQxSPas
-         Yp6kSf1gHW2+oGmaMcuLuV4l6R6Ze9UsiFoshGzPXjSyoper7lJ20FjjW9pTh/A5GZ
-         nVRRhnPaYbw4yCovXQGalcYUC2dxcUh3+goy9A40=
-Date:   Mon, 27 Apr 2020 14:31:45 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>, netdev@vger.kernel.org,
-        Adhipati Blambangan <adhipati@tuta.io>,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH net v3] net: xdp: account for layer 3 packets in generic
- skb handler
-Message-ID: <20200427143145.19008d7d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <877dy0y6le.fsf@toke.dk>
-References: <CAHmME9oN0JueLJxvS48-o9CWAhkaMQYACG3m8TRixxTo6+Oh-A@mail.gmail.com>
- <20200427204208.2501-1-Jason@zx2c4.com>
- <20200427135254.3ab8628d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200427140039.16df08f5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <877dy0y6le.fsf@toke.dk>
+        id S1726338AbgD0VhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 17:37:15 -0400
+Received: from www62.your-server.de ([213.133.104.62]:50032 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726194AbgD0VhP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 17:37:15 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jTBR3-00037V-8y; Mon, 27 Apr 2020 23:37:05 +0200
+Received: from [178.195.186.98] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jTBR2-000H1P-R1; Mon, 27 Apr 2020 23:37:04 +0200
+Subject: Re: [PATCH bpf-next v3 1/2] bpf: Change error code when ops is NULL
+To:     Mao Wenan <maowenan@huawei.com>, ast@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org,
+        andrii.nakryiko@gmail.com, dan.carpenter@oracle.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+References: <20200426063635.130680-1-maowenan@huawei.com>
+ <20200426063635.130680-2-maowenan@huawei.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <6f975e8c-34f5-4bcb-d99d-d1977866bedf@iogearbox.net>
+Date:   Mon, 27 Apr 2020 23:37:03 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200426063635.130680-2-maowenan@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25795/Mon Apr 27 14:00:10 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 27 Apr 2020 23:14:05 +0200 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> Jakub Kicinski <kuba@kernel.org> writes:
-> > On Mon, 27 Apr 2020 13:52:54 -0700 Jakub Kicinski wrote: =20
-> >> On Mon, 27 Apr 2020 14:42:08 -0600 Jason A. Donenfeld wrote: =20
-> >> > A user reported that packets from wireguard were possibly ignored by=
- XDP
-> >> > [1]. Apparently, the generic skb xdp handler path seems to assume th=
-at
-> >> > packets will always have an ethernet header, which really isn't alwa=
-ys
-> >> > the case for layer 3 packets, which are produced by multiple drivers.
-> >> > This patch fixes the oversight. If the mac_len is 0, then we assume
-> >> > that it's a layer 3 packet, and in that case prepend a pseudo ethhdr=
- to
-> >> > the packet whose h_proto is copied from skb->protocol, which will ha=
-ve
-> >> > the appropriate v4 or v6 ethertype. This allows us to keep XDP progr=
-ams'
-> >> > assumption correct about packets always having that ethernet header,=
- so
-> >> > that existing code doesn't break, while still allowing layer 3 devic=
-es
-> >> > to use the generic XDP handler. =20
-> >>=20
-> >> Is this going to work correctly with XDP_TX? presumably wireguard
-> >> doesn't want the ethernet L2 on egress, either? And what about
-> >> redirects?
-> >>=20
-> >> I'm not sure we can paper over the L2 differences between interfaces.
-> >> Isn't user supposed to know what interface the program is attached to?
-> >> I believe that's the case for cls_bpf ingress, right? =20
-> >
-> > In general we should also ask ourselves if supporting XDPgeneric on
-> > software interfaces isn't just pointless code bloat, and it wouldn't
-> > be better to let XDP remain clearly tied to the in-driver native use
-> > case. =20
->=20
-> I was mostly ignoring generic XDP for a long time for this reason. But
-> it seems to me that people find generic XDP quite useful, so I'm no
-> longer so sure this is the right thing to do...
+On 4/26/20 8:36 AM, Mao Wenan wrote:
+> There is one error printed when use BPF_MAP_TYPE_SOCKMAP to create map:
+> libbpf: failed to create map (name: 'sock_map'): Invalid argument(-22)
+> 
+> This is because CONFIG_BPF_STREAM_PARSER is not set, and
+> bpf_map_types[type] return invalid ops. It is not clear to show the
+> cause of config missing with return code -EINVAL.
+> 
+> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+> ---
+>   kernel/bpf/syscall.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index d85f37239540..8ae78c98d91e 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -113,7 +113,7 @@ static struct bpf_map *find_and_alloc_map(union bpf_attr *attr)
+>   	type = array_index_nospec(type, ARRAY_SIZE(bpf_map_types));
+>   	ops = bpf_map_types[type];
+>   	if (!ops)
+> -		return ERR_PTR(-EINVAL);
+> +		return ERR_PTR(-EOPNOTSUPP);
+>   
+>   	if (ops->map_alloc_check) {
+>   		err = ops->map_alloc_check(attr);
+> 
 
-I wonder, maybe our documentation is not clear. IOW we were saying that
-XDP is a faster cls_bpf, which leaves out the part that XDP only makes
-sense for HW/virt devices.
+Unless I'm missing the use-case, why not using bpftool's feature probe to check for
+availability (alternatively via 'feature probe kernel macros' if you need this into
+inside the BPF prog for ifdef etc)?
 
-Kinda same story as XDP egress, folks may be asking for it but that
-doesn't mean it makes sense.
+   bpftool feature probe kernel | grep sockmap
+   eBPF map_type sockmap is NOT available
 
-Perhaps the original reporter realized this and that's why they
-disappeared?
-
-My understanding is that XDP generic is aimed at testing and stop gap
-for drivers which don't implement native. Defining behavior based on
-XDP generic's needs seems a little backwards, and risky.
-
-That said, I don't feel particularly strongly about this.
+Thanks,
+Daniel
