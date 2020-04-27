@@ -2,96 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCE431BAFCC
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 22:53:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 300C31BAF37
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 22:20:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726587AbgD0UxK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 16:53:10 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:39278 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726233AbgD0UxK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Apr 2020 16:53:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=efGhNMcByzIKwbSuL6+vIN5HMP8eMlHWTX1uzI68CKU=; b=okKfxjU3DeDIGelVFIvPPuBMDI
-        C68caCcqv6LaOQtuwHOeWOCI8Ke5BP7ftpNSssHybDw/WHfD64fLx81xk1PLunFmEyCcNNdOGugix
-        8uoCpG3F4SlvffSBQD8mDNgibT/XU1r7Is6/zTZzYUQ0dLE1B3PRUE49/rBVSPHMSt4o=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jTA8J-005H3T-FU; Mon, 27 Apr 2020 22:13:39 +0200
-Date:   Mon, 27 Apr 2020 22:13:39 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Leonard Crestez <leonard.crestez@nxp.com>
-Cc:     Andy Duan <fugang.duan@nxp.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Chris Healy <Chris.Healy@zii.aero>,
-        dl-linux-imx <linux-imx@nxp.com>, Chris Healy <cphealy@gmail.com>
-Subject: Re: [PATCH] net: ethernet: fec: Replace interrupt driven MDIO with
- polled IO
-Message-ID: <20200427201339.GJ1250287@lunn.ch>
-References: <20200414004551.607503-1-andrew@lunn.ch>
- <VI1PR04MB6941D611F6EF67BB42826D4EEEAF0@VI1PR04MB6941.eurprd04.prod.outlook.com>
- <20200427164620.GD1250287@lunn.ch>
- <VI1PR04MB6941C603529307039AF7F4ABEEAF0@VI1PR04MB6941.eurprd04.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <VI1PR04MB6941C603529307039AF7F4ABEEAF0@VI1PR04MB6941.eurprd04.prod.outlook.com>
+        id S1726817AbgD0UUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 16:20:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33082 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726233AbgD0UUL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 16:20:11 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5DBC0A3BF5
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 13:20:10 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5792915D6B9EA;
+        Mon, 27 Apr 2020 13:20:10 -0700 (PDT)
+Date:   Mon, 27 Apr 2020 13:20:09 -0700 (PDT)
+Message-Id: <20200427.132009.1387378104495053173.davem@davemloft.net>
+To:     irusskikh@marvell.com
+Cc:     kuba@kernel.org, netdev@vger.kernel.org, mstarovoitov@marvell.com,
+        dbogdanov@marvell.com
+Subject: Re: [EXT] Re: [PATCH net-next 08/17] net: atlantic: A2
+ driver-firmware interface
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <be1461d3-f87e-0bfa-0b37-6eef4a2519e6@marvell.com>
+References: <e34bcab1-303e-a4bd-862c-125f254e93d3@marvell.com>
+        <20200427120301.693525a5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <be1461d3-f87e-0bfa-0b37-6eef4a2519e6@marvell.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 27 Apr 2020 13:20:10 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Leonard
+From: Igor Russkikh <irusskikh@marvell.com>
+Date: Mon, 27 Apr 2020 23:04:24 +0300
 
-> Does not help.
-
-Thanks for testing it.
-
-> What does seem to help is inserting prints after the 
-> FEC_ENET_MII check but that's probably because it inject a long delay 
-> equivalent to the long udelay Andy has mentioned.
-
-Yes, serial ports are slow...
-
-> I found that in my case FEC_ENET_MII is already set on entry to 
-> fec_enet_mdio_read, doesn't this make fec_enet_mdio_wait pointless?
-> Perhaps the problem is that the MII Interrupt pending bit is not 
-> cleared. I can fix the problem like this:
+> This means I have to dig each and every structure in this header and
+> understand whether it may suffer from implicit alignment/holes or not.
 > 
-> diff --git drivers/net/ethernet/freescale/fec_main.c 
-> drivers/net/ethernet/freescale/fec_main.c
-> index 1ae075a246a3..f1330071647c 100644
-> --- drivers/net/ethernet/freescale/fec_main.c
-> +++ drivers/net/ethernet/freescale/fec_main.c
-> @@ -1841,10 +1841,19 @@ static int fec_enet_mdio_read(struct mii_bus 
-> *bus, int mii_id, int regnum)
+> Not mentioning the fact that these alignment rules are different on other
+> compilers, or on say 32-bit archs.
 > 
->          ret = pm_runtime_get_sync(dev);
->          if (ret < 0)
->                  return ret;
-> 
-> +       if (1) {
-> +               u32 ievent;
-> +               ievent = readl(fep->hwp + FEC_IEVENT);
-> +               if (ievent & FEC_ENET_MII) {
-> +                       dev_warn(dev, "found FEC_ENET_MII pending\n");
-> +                       writel(FEC_ENET_MII, fep->hwp + FEC_IEVENT);
-> +               }
+> I also see a lot of code through the kernel using pack(1) for the exact same
+> reason - declare hw sensitive structures and eliminate any unexpected holes.
 
-How often do you see this warning?
+Your resistence to this feedback is becomming irritating.
 
-The patch which is causing the regression clears any pending events in
-fec_enet_mii_init() and after each time we wait. So the bit should not
-be set here. If it is set, the question is why?
+Just because something is used elsewhere doesn't mean you are open to
+do the same, there is a lot of code where issues like this have not
+been caught through reivew and the code still ended up in the tree.
 
-The other option is that the hardware is broken. It is setting the
-event bit way too soon, before we can actually read the data from the
-register.
+Using packed arbitrarily is being lazy and will result in suboptimal
+code generation on several platforms.
 
-	Andrew	
+Fixed sized types have well defined padding on _all_ cpus and targets,
+so if you use them properly and pad up your structures, there is
+absolutely _nothing_ to worry about.
+
+When I was very active writing hardware drivers with many HW defined
+structures and whatnot, I never once considered packed.  It never even
+crossed my mind, because I simply defined the data structure properly
+with well defined fixed sized types and padded them out as necessary.
+
+So please stop pushing back on this feedback and get rid of the packed
+attribute.
+
+Thank you.
