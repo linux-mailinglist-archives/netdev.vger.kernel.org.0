@@ -2,123 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E8D41B96A8
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 07:40:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21FA01B96CB
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 07:50:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726546AbgD0Fkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 01:40:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36370 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726172AbgD0Fkf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 01:40:35 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CBFFC0610D5
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 22:40:34 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id ms17so6986745pjb.0
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 22:40:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=22T1fi9hCZYd16gPcEsO2HumG8BRGMGET2lEOhIEL10=;
-        b=AyJkv03rxnWCaBzdAH5twsD9kYcFCs4wXARJ3xX27DJhspQD783axyG9yWI6oKX8Hn
-         WqLMKCdno8670wi5hqobVmFSvs6h2h3Ap5h1Vunq/Ithw0kzdNq5RBAd8JOH8mYIBhwZ
-         4EhT/0kj503nGbUXkckWvsPA2YMfOHM5JWriTedy0ZDTz173mxKGmgtDCOkH+7edLyjp
-         X8YLtKgWTXq5gFQZJdzT0hecoSpiinhbJQ4M8j+acwHRGT6ACdAz6oUUNwu76E9aEMAY
-         D2ZWTJEXX13ZkfHscUEYLxwsJp3rBfJKJo74m2+ePncqCkcm5KZXyUcPZcD/7p4MR0FR
-         7bhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=22T1fi9hCZYd16gPcEsO2HumG8BRGMGET2lEOhIEL10=;
-        b=E/obYFsmDCvH/xha3umeTGdTnNVl35VEIh/yn57qC3qsmTbQQl+zaZ/F70C+212/O3
-         qtkpZKovPuNsZgqneUPwDtclUfrKoBJxIf0qKd7eCW4GMbNmXJUHSGFD7Mppxte3hNE5
-         PfahjkKhsXEBQCmn/GMe0HzJYaILbBc5hy7AoySHalqv4E7sdTyshT1Os71W3xz9pp4k
-         ZMqiEueP280nKjz7AFuqamHYFSNyLKvyFNPFtU/0zWegJkpBcajbjQQLFU7ow0Dork6D
-         lX5SetOkboUWALdwHyvF2D7wrfh4YpntssRyr8PNO0moRPJztTPC94uHZsTvB5nACYk0
-         zigw==
-X-Gm-Message-State: AGi0PuZz7HYzqopT+qAOW4aSsKg86cuyftr4X7VhKTBVsHOJAU0CeWXU
-        Q7/JRgleW1PLdAp6ftt4ATK1
-X-Google-Smtp-Source: APiQypLU+w8iopyaIUxj6f7frOXFqJA7R7fUgSTRUGPKn1R4131TNHAPvUBHF5UzJVeSaVns4RLjSw==
-X-Received: by 2002:a17:90a:ae12:: with SMTP id t18mr15259427pjq.26.1587966033683;
-        Sun, 26 Apr 2020 22:40:33 -0700 (PDT)
-Received: from Mani-XPS-13-9360 ([2409:4072:996:8534:8d2a:cf91:2e3d:2746])
-        by smtp.gmail.com with ESMTPSA id o21sm9959514pjr.37.2020.04.26.22.40.26
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 26 Apr 2020 22:40:33 -0700 (PDT)
-Date:   Mon, 27 Apr 2020 11:10:23 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Markus Elfring <Markus.Elfring@web.de>
-Cc:     Chris Lew <clew@codeaurora.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hemant Kumar <hemantk@codeaurora.org>,
-        Jeffrey Hugo <jhugo@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Siddartha Mohanadoss <smohanad@codeaurora.org>
-Subject: Re: [PATCH v2 2/3] net: qrtr: Add MHI transport layer
-Message-ID: <20200427054023.GA3311@Mani-XPS-13-9360>
-References: <85591553-f1f2-a7c9-9c5a-58f74ebeaf38@web.de>
+        id S1726575AbgD0Fug (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 01:50:36 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:38974 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726221AbgD0Fuf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 01:50:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587966634;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qGWcBqLfmDI6LvNAc0dnF3uc/R3HdjACKdZKz3JJGhI=;
+        b=WgduSMvvuCc5pUvzbkLvzhQLXFu8w+73a5Sf4zd3mz8OYRS8Jf/mRRH2XhAarNjO8ADhDf
+        2coy/b6OG9lo6uViOoqihmRl06biOMpFx2wutUXeNmOJlJ88BvENfcorZMUAbkOyssHvFk
+        BfPulu7UlA7rVM/HzOvNYu5nPzn/K0Q=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-88-TS4_BGqzOe-4bOVr1BpJBg-1; Mon, 27 Apr 2020 01:50:32 -0400
+X-MC-Unique: TS4_BGqzOe-4bOVr1BpJBg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7F6E9872FE1;
+        Mon, 27 Apr 2020 05:50:29 +0000 (UTC)
+Received: from [10.72.12.205] (ovpn-12-205.pek2.redhat.com [10.72.12.205])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D216360CD3;
+        Mon, 27 Apr 2020 05:50:17 +0000 (UTC)
+Subject: Re: [PATCH net-next 20/33] vhost_net: also populate XDP frame size
+To:     Jesper Dangaard Brouer <brouer@redhat.com>, sameehj@amazon.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, zorik@amazon.com,
+        akiyano@amazon.com, gtzalik@amazon.com,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        steffen.klassert@secunet.com
+References: <158757160439.1370371.13213378122947426220.stgit@firesoul>
+ <158757174266.1370371.14475202001364271065.stgit@firesoul>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <8ebbd5d8-e256-3d6b-7cc1-dd3d29be3504@redhat.com>
+Date:   Mon, 27 Apr 2020 13:50:15 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <85591553-f1f2-a7c9-9c5a-58f74ebeaf38@web.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <158757174266.1370371.14475202001364271065.stgit@firesoul>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 26, 2020 at 03:45:41PM +0200, Markus Elfring wrote:
-> > Hence, this commit adds MHI transport layer support to QRTR for
-> > transferring the QMI messages over IPC Router.
-> 
-> I suggest to reconsider software development consequences around
-> another implementation detail.
-> 
-> 
-> …
-> > +static int qcom_mhi_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
-> > +{
-> …
-> > +	rc = mhi_queue_skb(qdev->mhi_dev, DMA_TO_DEVICE, skb, skb->len,
-> > +			   MHI_EOT);
-> > +	if (rc) {
-> > +		kfree_skb(skb);
-> > +		return rc;
-> > +	}
-> …
-> > +}
-> 
-> I propose again to add a jump target so that a bit of exception handling code
-> can be better reused at the end of this function implementation.
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/coding-style.rst?id=b2768df24ec400dd4f7fa79542f797e904812053#n450
-> 
 
-Matter of taste! goto's are really useful if there are multiple exit paths
-available. But in this case there is only one and I don't think we may add
-anymore in future. So I'll keep it as it is.
+On 2020/4/23 =E4=B8=8A=E5=8D=8812:09, Jesper Dangaard Brouer wrote:
+> In vhost_net_build_xdp() the 'buf' that gets queued via an xdp_buff
+> have embedded a struct tun_xdp_hdr (located at xdp->data_hard_start)
+> which contains the buffer length 'buflen' (with tailroom for
+> skb_shared_info). Also storing this buflen in xdp->frame_sz, does not
+> obsolete struct tun_xdp_hdr, as it also contains a struct
+> virtio_net_hdr with other information.
+>
+> Cc: Jason Wang <jasowang@redhat.com>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+>   drivers/vhost/net.c |    1 +
+>   1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+> index 87469d67ede8..69af007e22f4 100644
+> --- a/drivers/vhost/net.c
+> +++ b/drivers/vhost/net.c
+> @@ -745,6 +745,7 @@ static int vhost_net_build_xdp(struct vhost_net_vir=
+tqueue *nvq,
+>   	xdp->data =3D buf + pad;
+>   	xdp->data_end =3D xdp->data + len;
+>   	hdr->buflen =3D buflen;
+> +	xdp->frame_sz =3D buflen;
+>  =20
+>   	--net->refcnt_bias;
+>   	alloc_frag->offset +=3D buflen;
 
-Thanks,
-Mani
 
-> +	if (rc)
-> +		goto free_skb;
-> …
-> +	return rc;
-> +
-> +free_skb:
-> +	kfree_skb(skb);
-> +	return rc;
-> +}
-> 
-> 
-> Regards,
-> Markus
+Tun_xdp_one() will use hdr->buflen as the frame_sz (patch 19), so it=20
+looks to me there's no need to do this?
+
+Thanks
+
+
+>
+>
+
