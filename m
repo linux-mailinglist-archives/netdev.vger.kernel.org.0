@@ -2,64 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F40BE1B94D4
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 03:05:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AC971B94D5
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 03:16:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726387AbgD0BFM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 26 Apr 2020 21:05:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50464 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726227AbgD0BFL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 21:05:11 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4C15C061A0F
-        for <netdev@vger.kernel.org>; Sun, 26 Apr 2020 18:05:11 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id AE29615CAB770;
-        Sun, 26 Apr 2020 18:05:08 -0700 (PDT)
-Date:   Sun, 26 Apr 2020 18:05:05 -0700 (PDT)
-Message-Id: <20200426.180505.1265322367122125261.davem@davemloft.net>
-To:     irusskikh@marvell.com
-Cc:     kuba@kernel.org, netdev@vger.kernel.org, mstarovoitov@marvell.com,
-        dbogdanov@marvell.com
-Subject: Re: [EXT] Re: [PATCH net-next 08/17] net: atlantic: A2
- driver-firmware interface
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <d02ab18b-11b4-163c-f376-79161f232f3e@marvell.com>
-References: <20200424174447.0c9a3291@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200424.182532.868703272847758939.davem@davemloft.net>
-        <d02ab18b-11b4-163c-f376-79161f232f3e@marvell.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 26 Apr 2020 18:05:09 -0700 (PDT)
+        id S1726281AbgD0BOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 21:14:00 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:52877 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726159AbgD0BOA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 26 Apr 2020 21:14:00 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 17a70005;
+        Mon, 27 Apr 2020 00:58:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
+        :subject:date:message-id:mime-version:content-type
+        :content-transfer-encoding; s=mail; bh=WuJHIN6MQ+tAfQw0mT+WBzJwK
+        j0=; b=gbSETdyyTf9HsDVHytdWY82UkdQfXWyletKWxx50wevMEsZqYlt5M34pg
+        7L12IXZoO3NxexO++3QiDnwUOCJPjWB2RRZcfiXPjl/V3AXQQouSOyFQ9qz1FXfT
+        8UVsLVy3YkgYAYm6sNKFQXkOdiW6dzOdU2duHmgaIXlFbMvbfIQt3QEG0H1B+Ek0
+        NRgR5eZm8Yleg4YoyUTTlB5XjH13WBfgPq01EgHWEOaNvAERBjkh1uG2zZ0tao5e
+        u3AF84JkyjaZU1xXmc1Z/5YNGIqj0ATNwSjnPbz4Zq0BP2bDWMwHdEmx3ZfVKAsE
+        /0jYlwi0djYuod/ZjuY/jgGKkYBww==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id fdacbbcd (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Mon, 27 Apr 2020 00:58:45 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     netdev@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Subject: [PATCH RFC v1] net: xdp: allow for layer 3 packets in generic skb handler
+Date:   Sun, 26 Apr 2020 19:10:02 -0600
+Message-Id: <20200427011002.320081-1-Jason@zx2c4.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Igor Russkikh <irusskikh@marvell.com>
-Date: Sun, 26 Apr 2020 11:50:19 +0300
+A user reported a few days ago that packets from wireguard were possibly
+ignored by XDP [1]. We haven't heard back from the original reporter to
+receive more info, so this here is mostly speculative. Successfully nerd
+sniped, Toke and I started poking around. Toke noticed that the generic
+skb xdp handler path seems to assume that packets will always have an
+ethernet header, which really isn't always the case for layer 3 packets,
+which are produced by multiple drivers. This patch is untested, but I
+wanted to gauge interest in this approach: if the mac_len is 0, then we
+assume that it's a layer 3 packet, and figure out skb->protocol from
+looking at the IP header. This patch also adds some stricter testing
+around mac_len before we assume that it's an ethhdr.
 
-> 
->> From: Jakub Kicinski <kuba@kernel.org>
->> Date: Fri, 24 Apr 2020 17:44:47 -0700
->> 
->>> On Fri, 24 Apr 2020 10:27:20 +0300 Igor Russkikh wrote:
->>>> +/* Start of HW byte packed interface declaration */
->>>> +#pragma pack(push, 1)
->>>
->>> Does any structure here actually require packing?
->> 
->> Yes, please use the packed attribute as an absolute _last_ resort.
-> 
-> These are HW bit-mapped layout API, without packing compiler may screw up
-> alignments in some of these structures.
+[1] https://lore.kernel.org/wireguard/M5WzVK5--3-2@tuta.io/
 
-The compiler will not do that if you used fixed sized types properly.
+Cc: Toke Høiland-Jørgensen <toke@redhat.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ net/core/dev.c | 31 +++++++++++++++++++++++--------
+ 1 file changed, 23 insertions(+), 8 deletions(-)
 
-Please remove __packed unless you can prove it matters.
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 522288177bbd..1c4b0af09be2 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4551,9 +4551,11 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+ 	xdp->data_hard_start = skb->data - skb_headroom(skb);
+ 	orig_data_end = xdp->data_end;
+ 	orig_data = xdp->data;
+-	eth = (struct ethhdr *)xdp->data;
+-	orig_bcast = is_multicast_ether_addr_64bits(eth->h_dest);
+-	orig_eth_type = eth->h_proto;
++	if (mac_len == sizeof(struct ethhdr)) {
++		eth = (struct ethhdr *)xdp->data;
++		orig_bcast = is_multicast_ether_addr_64bits(eth->h_dest);
++		orig_eth_type = eth->h_proto;
++	}
+ 
+ 	rxqueue = netif_get_rxqueue(skb);
+ 	xdp->rxq = &rxqueue->xdp_rxq;
+@@ -4583,11 +4585,24 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+ 	}
+ 
+ 	/* check if XDP changed eth hdr such SKB needs update */
+-	eth = (struct ethhdr *)xdp->data;
+-	if ((orig_eth_type != eth->h_proto) ||
+-	    (orig_bcast != is_multicast_ether_addr_64bits(eth->h_dest))) {
+-		__skb_push(skb, ETH_HLEN);
+-		skb->protocol = eth_type_trans(skb, skb->dev);
++	if (mac_len == 0) {
++		switch (ip_hdr(skb)->version) {
++		case 4:
++			skb->protocol = htons(ETH_P_IP);
++			break;
++		case 6:
++			skb->protocol = htons(ETH_P_IPV6);
++			break;
++		default:
++			goto do_drop;
++		}
++	} else if (mac_len == sizeof(struct ethhdr)) {
++		eth = (struct ethhdr *)xdp->data;
++		if ((orig_eth_type != eth->h_proto) ||
++		    (orig_bcast != is_multicast_ether_addr_64bits(eth->h_dest))) {
++			__skb_push(skb, ETH_HLEN);
++			skb->protocol = eth_type_trans(skb, skb->dev);
++		}
+ 	}
+ 
+ 	switch (act) {
+-- 
+2.26.2
+
