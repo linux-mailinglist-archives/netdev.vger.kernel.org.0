@@ -2,105 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E21351BB00A
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 23:14:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE41F1BB00E
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 23:16:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726208AbgD0VOQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 17:14:16 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:39029 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726030AbgD0VOP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 17:14:15 -0400
+        id S1726285AbgD0VQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 17:16:50 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:41118 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726030AbgD0VQu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 17:16:50 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588022053;
+        s=mimecast20190719; t=1588022208;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=BgGlIwfj4Qu7dZ9JR/Ymkfhj3JsL/bLikEdvkUNBlTc=;
-        b=HECZT3d0/BhZGY0EycDymYa5iMC2N6BLReBqfgP2xbGC0yHFpxNXX8/nhRqH8hOL6lqZMi
-        SNos1K5wpjS7Hxd3DAd46vJ0htFyVpVICb026i7lrsr6OybS7TEQY6IMmwhvJEHRL4d03k
-        lXGcJ0tLkikzV4l1lc+WvWXNa4158oI=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-266-9Zj3UZlQNMexsRbgqUUpCQ-1; Mon, 27 Apr 2020 17:14:09 -0400
-X-MC-Unique: 9Zj3UZlQNMexsRbgqUUpCQ-1
-Received: by mail-lj1-f200.google.com with SMTP id m4so3323958lji.23
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 14:14:09 -0700 (PDT)
+        bh=pQ6cSQ4NOD/EcRYBTUoFzvtQJ8BE84XLNBUyGYQoWso=;
+        b=Hc/Gpa+PhlfJxNriOe160016jCGfmPOG8+bviVuvIh5WQGc3D58Ev4I4o8bU5B/HwbbJ4U
+        ElHSJAwXkKgyF4RnP+pZejK64+o1kboOy59d1lFrYqrSQQBrgpNIbFk+WzAMCyU7HO+yML
+        6u4dHtCOubgzsJ48k1+l6isLKfoJtA0=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-261-W4-1hcRKM7CYTTqNsrUwpg-1; Mon, 27 Apr 2020 17:16:46 -0400
+X-MC-Unique: W4-1hcRKM7CYTTqNsrUwpg-1
+Received: by mail-lf1-f72.google.com with SMTP id v22so8081526lfa.1
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 14:16:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=BgGlIwfj4Qu7dZ9JR/Ymkfhj3JsL/bLikEdvkUNBlTc=;
-        b=VK3MtthrD6AyOUguc8fmtyjw092Dsk1O3ZC0/bYyIZM8A0OPG4m3/NbQRBVhLOPz5v
-         POhcb779NtZscS3jNGo2ti4b8Co0hFM9rqz+y0qM+1V/gQwHB/swVNsnXbJMIyrTXuQD
-         8nYtvmE75Ty+KVzxXzJ/+XsFl9a+xWGtTIwswv1+OHW2Srrz9gGtnd9C4+roKur6qEFQ
-         3kQNmg7LvdIqVYPgmPA8kI8duNea9bfp1k97MQQhv1W52hsmblTRqaaHvpNktlulbi2f
-         yaJD7QxJ9bQ6j7+JnoYyLv7aKI8/ES/q0TSBbLNDiEDdU0yD+qc4xEoz98Z1npL4tKtw
-         ocxg==
-X-Gm-Message-State: AGi0PuZhxtX0GoCb8PD+zyCVO27nnUhjUq7aRPtJl8iRu4b50e8T3ZRY
-        0aJsPojaVVRyQeB9S5CRVqSko9VZgQ5eHcap8ZfRLA6zO7a+/6K1HsNUSdvVkOhVIGzRsoQYNy7
-        eJRoJ4FLFZU6qjRP+
-X-Received: by 2002:ac2:4c9a:: with SMTP id d26mr16457044lfl.112.1588022048263;
-        Mon, 27 Apr 2020 14:14:08 -0700 (PDT)
-X-Google-Smtp-Source: APiQypKln456F3CfIyM0KpOl+6Jv+MuyF+6zGB5MtY2KPKTJgPzvza+EAZUjl6HHjTdaiHLMd45cZA==
-X-Received: by 2002:ac2:4c9a:: with SMTP id d26mr16457037lfl.112.1588022048052;
-        Mon, 27 Apr 2020 14:14:08 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id x24sm12025322lfc.6.2020.04.27.14.14.07
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=pQ6cSQ4NOD/EcRYBTUoFzvtQJ8BE84XLNBUyGYQoWso=;
+        b=F0zVIyjpPR4e1mNVqs4hF8rGw8je3q5/4Vuxm9O3RwMhO+qirDOiN0JHXabxevJvGW
+         VEn+t2z0sO9gCp3Iq61xuk2YdeMjAxrreLd6ouVz7GbvQd1HKDpanHChttfvWceE+tYZ
+         GPmGNacCjqtXZwysrUQkrls+ndJ6B7NS8Yb+DjquWZCifNhfKx5jxkWJxzRqfEnk95++
+         pv16SUFaRdbtbeN3vdqpE9dy4BrWuUodOEog+lr7IrPRZEQj9r1nXLyaCJlivQyBzXb4
+         OAmcahzoLWAYve4V+qQMDpaa9Iz5o6ZEaUOjAHa74F56yovh5KCT3aWXYjZVJ3r/hD37
+         0TqA==
+X-Gm-Message-State: AGi0PuZHQx9NuNhFONrHwtoAKHKCCHmxs3Tv6qRwC3UcTxkVZd6A/FWl
+        yI8j5e9oOlp+9ruiD7h3q+b2+pJUwsUw5bGC5Z+U+j8oTpCjb4GSSXi7ggr31uCpI0Ic9pJabnu
+        OpYy7zQT2B+/nYfxE
+X-Received: by 2002:a19:ca13:: with SMTP id a19mr16639987lfg.68.1588022204967;
+        Mon, 27 Apr 2020 14:16:44 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJ/PjJHImG1/fIdkB3vo5Rsw2djBqt6xiUD+PahDj4soiPyXITo1r2D1CiF2ttTEOwinPzcGw==
+X-Received: by 2002:a19:ca13:: with SMTP id a19mr16639974lfg.68.1588022204716;
+        Mon, 27 Apr 2020 14:16:44 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id j13sm12080093lfb.19.2020.04.27.14.16.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2020 14:14:07 -0700 (PDT)
+        Mon, 27 Apr 2020 14:16:43 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 961B01814FF; Mon, 27 Apr 2020 23:14:05 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     netdev@vger.kernel.org, Adhipati Blambangan <adhipati@tuta.io>,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH net v3] net: xdp: account for layer 3 packets in generic skb handler
-In-Reply-To: <20200427140039.16df08f5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <CAHmME9oN0JueLJxvS48-o9CWAhkaMQYACG3m8TRixxTo6+Oh-A@mail.gmail.com> <20200427204208.2501-1-Jason@zx2c4.com> <20200427135254.3ab8628d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <20200427140039.16df08f5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 27 Apr 2020 23:14:05 +0200
-Message-ID: <877dy0y6le.fsf@toke.dk>
+        id 4E1711814FF; Mon, 27 Apr 2020 23:16:43 +0200 (CEST)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     davem@davemloft.net, jason@zx2c4.com
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org, wireguard@lists.zx2c4.com,
+        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>,
+        Dave Taht <dave.taht@gmail.com>,
+        "Rodney W . Grimes" <ietf@gndrsh.dnsmgr.net>
+Subject: [PATCH net v2] wireguard: use tunnel helpers for decapsulating ECN markings
+Date:   Mon, 27 Apr 2020 23:16:19 +0200
+Message-Id: <20200427211619.603544-1-toke@redhat.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <87d07sy81p.fsf@toke.dk>
+References: <87d07sy81p.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
+WireGuard currently only propagates ECN markings on tunnel decap according
+to the old RFC3168 specification. However, the spec has since been updated
+in RFC6040 to recommend slightly different decapsulation semantics. This
+was implemented in the kernel as a set of common helpers for ECN
+decapsulation, so let's just switch over WireGuard to using those, so it
+can benefit from this enhancement and any future tweaks.
 
-> On Mon, 27 Apr 2020 13:52:54 -0700 Jakub Kicinski wrote:
->> On Mon, 27 Apr 2020 14:42:08 -0600 Jason A. Donenfeld wrote:
->> > A user reported that packets from wireguard were possibly ignored by XDP
->> > [1]. Apparently, the generic skb xdp handler path seems to assume that
->> > packets will always have an ethernet header, which really isn't always
->> > the case for layer 3 packets, which are produced by multiple drivers.
->> > This patch fixes the oversight. If the mac_len is 0, then we assume
->> > that it's a layer 3 packet, and in that case prepend a pseudo ethhdr to
->> > the packet whose h_proto is copied from skb->protocol, which will have
->> > the appropriate v4 or v6 ethertype. This allows us to keep XDP programs'
->> > assumption correct about packets always having that ethernet header, so
->> > that existing code doesn't break, while still allowing layer 3 devices
->> > to use the generic XDP handler.
->> 
->> Is this going to work correctly with XDP_TX? presumably wireguard
->> doesn't want the ethernet L2 on egress, either? And what about
->> redirects?
->> 
->> I'm not sure we can paper over the L2 differences between interfaces.
->> Isn't user supposed to know what interface the program is attached to?
->> I believe that's the case for cls_bpf ingress, right?
->
-> In general we should also ask ourselves if supporting XDPgeneric on
-> software interfaces isn't just pointless code bloat, and it wouldn't
-> be better to let XDP remain clearly tied to the in-driver native use
-> case.
+RFC6040 also recommends dropping packets on certain combinations of
+erroneous code points on the inner and outer packet headers which shouldn't
+appear in normal operation. The helper signals this by a return value > 1,
+so also add a handler for this case.
 
-I was mostly ignoring generic XDP for a long time for this reason. But
-it seems to me that people find generic XDP quite useful, so I'm no
-longer so sure this is the right thing to do...
+Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+Reported-by: Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>
+Cc: Dave Taht <dave.taht@gmail.com>
+Cc: Rodney W. Grimes <ietf@gndrsh.dnsmgr.net>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+v2:
+  - Don't log decap errors, and make sure they are recorded as frame errors,
+    not length errors.
 
--Toke
+ drivers/net/wireguard/receive.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/wireguard/receive.c b/drivers/net/wireguard/receive.c
+index da3b782ab7d3..ad36f358c807 100644
+--- a/drivers/net/wireguard/receive.c
++++ b/drivers/net/wireguard/receive.c
+@@ -393,13 +393,15 @@ static void wg_packet_consume_data_done(struct wg_peer *peer,
+ 		len = ntohs(ip_hdr(skb)->tot_len);
+ 		if (unlikely(len < sizeof(struct iphdr)))
+ 			goto dishonest_packet_size;
+-		if (INET_ECN_is_ce(PACKET_CB(skb)->ds))
+-			IP_ECN_set_ce(ip_hdr(skb));
++		if (INET_ECN_decapsulate(skb, PACKET_CB(skb)->ds,
++					 ip_hdr(skb)->tos) > 1)
++			goto ecn_decap_error;
+ 	} else if (skb->protocol == htons(ETH_P_IPV6)) {
+ 		len = ntohs(ipv6_hdr(skb)->payload_len) +
+ 		      sizeof(struct ipv6hdr);
+-		if (INET_ECN_is_ce(PACKET_CB(skb)->ds))
+-			IP6_ECN_set_ce(skb, ipv6_hdr(skb));
++		if (INET_ECN_decapsulate(skb, PACKET_CB(skb)->ds,
++					 ipv6_get_dsfield(ipv6_hdr(skb))) > 1)
++			goto ecn_decap_error;
+ 	} else {
+ 		goto dishonest_packet_type;
+ 	}
+@@ -437,6 +439,7 @@ static void wg_packet_consume_data_done(struct wg_peer *peer,
+ dishonest_packet_type:
+ 	net_dbg_ratelimited("%s: Packet is neither ipv4 nor ipv6 from peer %llu (%pISpfsc)\n",
+ 			    dev->name, peer->internal_id, &peer->endpoint.addr);
++ecn_decap_error:
+ 	++dev->stats.rx_errors;
+ 	++dev->stats.rx_frame_errors;
+ 	goto packet_processed;
+-- 
+2.26.2
 
