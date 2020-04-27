@@ -2,170 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71DBD1BB21D
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 01:44:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 792121BB221
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 01:45:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726373AbgD0Xop (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 19:44:45 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:44338 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726344AbgD0Xoo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 19:44:44 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03RNeL6f003047
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:44:43 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=bjveWCdDXoEAAMheK+U9dz/xeUB0LejzHFo0PpTJyPI=;
- b=NXwzolRwofHLhxdejzv6IcYC9fU0NYMfDv6A+7UlEW6izkOYjZatYIuf8oTNm3Bf8f8v
- mqf2m1cgHVsrw1Sq3IZ4PV6ztpjLqcdgqcTIcpuyiPlSd5CTQmfO3+URKL0RvxkmIG5+
- R4e3tr7vWQ8ZAjiRHMCelU8nnsbygvGFocM= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 30mjqn77tv-7
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:44:43 -0700
-Received: from intmgw005.03.ash8.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Mon, 27 Apr 2020 16:44:42 -0700
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 7EAE162E3380; Mon, 27 Apr 2020 16:44:36 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Song Liu <songliubraving@fb.com>
-Smtp-Origin-Hostname: devbig006.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Song Liu <songliubraving@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v5 bpf-next 3/3] bpf: add selftest for BPF_ENABLE_STATS
-Date:   Mon, 27 Apr 2020 16:44:23 -0700
-Message-ID: <20200427234423.998085-4-songliubraving@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200427234423.998085-1-songliubraving@fb.com>
-References: <20200427234423.998085-1-songliubraving@fb.com>
+        id S1726406AbgD0Xp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 19:45:26 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:45175 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726333AbgD0Xp0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Apr 2020 19:45:26 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id d7ce4485
+        for <netdev@vger.kernel.org>;
+        Mon, 27 Apr 2020 23:33:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type:content-transfer-encoding; s=mail; bh=apczle9y4c4v
+        WfYNc3qDKN+zuY0=; b=hD1SIDIdVBZyLO93Lm90aN+/yCgCollcgVGiEtGR3Zt9
+        2uXOUFxoRKvlOCuRc7BhmLa0qiL5NIBazVVsQAbdikoLLGx8StL5jh9S3PQV4Fxz
+        IknutOXpPQIFD0iRhICuD4teBXVUtknzpk4Em/H8oXHLADNJ1kW77crQPgDEQSqe
+        dSIXyIfO01wM02UrOl7IbxXVnvVJySQayzUK1EErd0SSsbzsSO2ESn/F/Nfkg9TJ
+        8Lx19YS6tB6bTUPtHKvsl1txIi4wILQQ06RirsUvrERLqnnOm1YWqyMt+l0Is+p1
+        ML1K/DZTRpnll/NrJkTia2toAzD3Dgqt7HtU7f9u+w==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id dd8d3eb1 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Mon, 27 Apr 2020 23:33:49 +0000 (UTC)
+Received: by mail-il1-f182.google.com with SMTP id q10so18532340ile.0
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:45:23 -0700 (PDT)
+X-Gm-Message-State: AGi0PubN8T/rMt+s3Z28F5V9u6x2N8z88PKn1cj8Bvmai3xPrk1lO4GP
+        PAM7vM0RGuEMcKv/RDHETKciVsyPNWUsNCYLo50=
+X-Google-Smtp-Source: APiQypIXYN3dmyTMOOBNU3DKjrDxepCtf78Eemfc0mBGrbH5VmMFgZ8puN8u6DqK4zqymBVUlEg42gXSrlMKoMhDBgQ=
+X-Received: by 2002:a92:d98c:: with SMTP id r12mr24274739iln.224.1588031122998;
+ Mon, 27 Apr 2020 16:45:22 -0700 (PDT)
 MIME-Version: 1.0
+References: <CAHmME9oN0JueLJxvS48-o9CWAhkaMQYACG3m8TRixxTo6+Oh-A@mail.gmail.com>
+ <20200427204208.2501-1-Jason@zx2c4.com> <20200427135254.3ab8628d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200427140039.16df08f5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <877dy0y6le.fsf@toke.dk> <20200427143145.19008d7d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAHmME9r7G6f5y-_SPs64guH9PrG8CKBhLDZZK6jpiOhgHBps8g@mail.gmail.com>
+In-Reply-To: <CAHmME9r7G6f5y-_SPs64guH9PrG8CKBhLDZZK6jpiOhgHBps8g@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 27 Apr 2020 17:45:12 -0600
+X-Gmail-Original-Message-ID: <CAHmME9r6Vb7yBxBsLY75zsqROUnHeoRAjmSSfAyTwZtzcs_=kg@mail.gmail.com>
+Message-ID: <CAHmME9r6Vb7yBxBsLY75zsqROUnHeoRAjmSSfAyTwZtzcs_=kg@mail.gmail.com>
+Subject: Re: [PATCH net v3] net: xdp: account for layer 3 packets in generic
+ skb handler
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Adhipati Blambangan <adhipati@tuta.io>,
+        David Ahern <dsahern@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-27_17:2020-04-27,2020-04-27 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- mlxscore=0 malwarescore=0 bulkscore=0 phishscore=0 clxscore=1015
- mlxlogscore=999 spamscore=0 lowpriorityscore=0 impostorscore=0
- suspectscore=8 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2004270193
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add test for  BPF_ENABLE_STATS, which should enable run_time_ns stats.
+On Mon, Apr 27, 2020 at 5:00 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> On Mon, Apr 27, 2020 at 3:31 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Mon, 27 Apr 2020 23:14:05 +0200 Toke H=C3=B8iland-J=C3=B8rgensen wro=
+te:
+> > > Jakub Kicinski <kuba@kernel.org> writes:
+> > > > On Mon, 27 Apr 2020 13:52:54 -0700 Jakub Kicinski wrote:
+> > > >> On Mon, 27 Apr 2020 14:42:08 -0600 Jason A. Donenfeld wrote:
+> > > >> > A user reported that packets from wireguard were possibly ignore=
+d by XDP
+> > > >> > [1]. Apparently, the generic skb xdp handler path seems to assum=
+e that
+> > > >> > packets will always have an ethernet header, which really isn't =
+always
+> > > >> > the case for layer 3 packets, which are produced by multiple dri=
+vers.
+> > > >> > This patch fixes the oversight. If the mac_len is 0, then we ass=
+ume
+> > > >> > that it's a layer 3 packet, and in that case prepend a pseudo et=
+hhdr to
+> > > >> > the packet whose h_proto is copied from skb->protocol, which wil=
+l have
+> > > >> > the appropriate v4 or v6 ethertype. This allows us to keep XDP p=
+rograms'
+> > > >> > assumption correct about packets always having that ethernet hea=
+der, so
+> > > >> > that existing code doesn't break, while still allowing layer 3 d=
+evices
+> > > >> > to use the generic XDP handler.
+> > > >>
+> > > >> Is this going to work correctly with XDP_TX? presumably wireguard
+> > > >> doesn't want the ethernet L2 on egress, either? And what about
+> > > >> redirects?
+> > > >>
+> > > >> I'm not sure we can paper over the L2 differences between interfac=
+es.
+> > > >> Isn't user supposed to know what interface the program is attached=
+ to?
+> > > >> I believe that's the case for cls_bpf ingress, right?
+> > > >
+> > > > In general we should also ask ourselves if supporting XDPgeneric on
+> > > > software interfaces isn't just pointless code bloat, and it wouldn'=
+t
+> > > > be better to let XDP remain clearly tied to the in-driver native us=
+e
+> > > > case.
+> > >
+> > > I was mostly ignoring generic XDP for a long time for this reason. Bu=
+t
+> > > it seems to me that people find generic XDP quite useful, so I'm no
+> > > longer so sure this is the right thing to do...
+> >
+> > I wonder, maybe our documentation is not clear. IOW we were saying that
+> > XDP is a faster cls_bpf, which leaves out the part that XDP only makes
+> > sense for HW/virt devices.
+> >
+> > Kinda same story as XDP egress, folks may be asking for it but that
+> > doesn't mean it makes sense.
+> >
+> > Perhaps the original reporter realized this and that's why they
+> > disappeared?
+> >
+> > My understanding is that XDP generic is aimed at testing and stop gap
+> > for drivers which don't implement native. Defining behavior based on
+> > XDP generic's needs seems a little backwards, and risky.
+> >
+> > That said, I don't feel particularly strongly about this.
+>
+> Okay, well, I'll continue developing the v3 approach a little further
+> -- making sure I have tx path handled too and whatnot. Then at least
+> something viable will be available, and you can take or leave it
+> depending on what you all decide.
 
-~/selftests/bpf# ./test_progs -t enable_stats  -v
-test_enable_stats:PASS:skel_open_and_load 0 nsec
-test_enable_stats:PASS:get_stats_fd 0 nsec
-test_enable_stats:PASS:attach_raw_tp 0 nsec
-test_enable_stats:PASS:get_prog_info 0 nsec
-test_enable_stats:PASS:check_stats_enabled 0 nsec
-Summary: 1/0 PASSED, 0 SKIPPED, 0 FAILED
-
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- .../selftests/bpf/prog_tests/enable_stats.c   | 45 +++++++++++++++++++
- .../selftests/bpf/progs/test_enable_stats.c   | 28 ++++++++++++
- 2 files changed, 73 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/enable_stats.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_enable_stats.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/enable_stats.c b/tool=
-s/testing/selftests/bpf/prog_tests/enable_stats.c
-new file mode 100644
-index 000000000000..987fc743ab75
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/enable_stats.c
-@@ -0,0 +1,45 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+#include <sys/mman.h>
-+#include "test_enable_stats.skel.h"
-+
-+void test_enable_stats(void)
-+{
-+	struct test_enable_stats *skel;
-+	struct bpf_prog_info info =3D {};
-+	__u32 info_len =3D sizeof(info);
-+	int stats_fd, err, prog_fd;
-+	int duration =3D 0;
-+
-+	skel =3D test_enable_stats__open_and_load();
-+
-+	if (CHECK(!skel, "skel_open_and_load", "skeleton open/load failed\n"))
-+		return;
-+
-+	stats_fd =3D bpf_enable_stats(BPF_STATS_RUNTIME_CNT);
-+
-+	if (CHECK(stats_fd < 0, "get_stats_fd", "failed %d\n", errno))
-+		goto cleanup;
-+
-+	err =3D test_enable_stats__attach(skel);
-+
-+	if (CHECK(err, "attach_raw_tp", "err %d\n", err))
-+		goto cleanup;
-+
-+	usleep(1000);
-+
-+	prog_fd =3D bpf_program__fd(skel->progs.test_enable_stats);
-+	err =3D bpf_obj_get_info_by_fd(prog_fd, &info, &info_len);
-+
-+	if (CHECK(err, "get_prog_info",
-+		  "failed to get bpf_prog_info for fd %d\n", prog_fd))
-+		goto cleanup;
-+
-+	CHECK(info.run_time_ns =3D=3D 0, "check_stats_enabled",
-+	      "failed to enable run_time_ns stats\n");
-+
-+cleanup:
-+	test_enable_stats__destroy(skel);
-+	if (stats_fd >=3D 0)
-+		close(stats_fd);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_enable_stats.c b/tool=
-s/testing/selftests/bpf/progs/test_enable_stats.c
-new file mode 100644
-index 000000000000..f95ac0c94639
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_enable_stats.c
-@@ -0,0 +1,28 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2020 Facebook
-+
-+#include <linux/bpf.h>
-+#include <stdint.h>
-+#include <bpf/bpf_helpers.h>
-+
-+char _license[] SEC("license") =3D "GPL";
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 1);
-+	__type(key, __u32);
-+	__type(value, __u64);
-+} count SEC(".maps");
-+
-+SEC("raw_tracepoint/sys_enter")
-+int test_enable_stats(void *ctx)
-+{
-+	__u32 key =3D 0;
-+	__u64 *val;
-+
-+	val =3D bpf_map_lookup_elem(&count, &key);
-+	if (val)
-+		*val +=3D 1;
-+
-+	return 0;
-+}
---=20
-2.24.1
-
+Actually, it looks like egress XDP still hasn't been merged. So I
+think this patch should be good to go in terms of what it is.
