@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CB191BAF00
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 22:13:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD70A1BAF05
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 22:13:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726552AbgD0UM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 16:12:59 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:35866 "EHLO
+        id S1726852AbgD0UNF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 16:13:05 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:44458 "EHLO
         mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726803AbgD0UMz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 16:12:55 -0400
+        by vger.kernel.org with ESMTP id S1726691AbgD0UM4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 16:12:56 -0400
 Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03RK1sOn011056
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 13:12:53 -0700
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03RK1sOs011056
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 13:12:54 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=HqSdaGb829zK+zJhBFX9+xDvXanr5rLzppBntb0/dCo=;
- b=KnHOEaT6AYX1LbHTOc+cpfEyGkvlB4WxxUgkC2o9L3UrKBVsHnzftCyyOvo3VA9zL1yX
- 2MfxiFiDSLL30UbTCAXMDb5MFSaIVbWWjIkFAYCV7YGCT38zkA3dA0bclgREPmfGcLPg
- DUbK23YcibuJR88PQ6FqZq+UvcdDMm+t+RM= 
+ bh=Z5WzyvU6Bl8evAcaKXqHCQvCbQ9llNqfDDDZxr8FaQY=;
+ b=i3tp1E4IRNYbXRLHTRVbl6tgqsB1tnDU8SXfNovpSTDgCG4WGP2c+8d75ASr9W65g8Is
+ MSer/uSCw9FpZuxWLgAhASINUoVFayqUI2GAM7s4p4HObBKW5trtnlpZLPBu0HQL7nIB
+ J86O2qKCTdshotSUI5nKNjvH9ZQs+jfvLgY= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 30mk1gdyeq-5
+        by mx0a-00082601.pphosted.com with ESMTP id 30mk1gdyeq-10
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 13:12:53 -0700
-Received: from intmgw003.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 13:12:54 -0700
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
  mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Mon, 27 Apr 2020 13:12:51 -0700
+ 15.1.1847.3; Mon, 27 Apr 2020 13:12:53 -0700
 Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id C96BB3700871; Mon, 27 Apr 2020 13:12:47 -0700 (PDT)
+        id 0D89E3700871; Mon, 27 Apr 2020 13:12:49 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Yonghong Song <yhs@fb.com>
 Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
@@ -39,9 +39,9 @@ To:     Andrii Nakryiko <andriin@fb.com>, <bpf@vger.kernel.org>,
 CC:     Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next v1 11/19] bpf: add task and task/file targets
-Date:   Mon, 27 Apr 2020 13:12:47 -0700
-Message-ID: <20200427201247.2995622-1-yhs@fb.com>
+Subject: [PATCH bpf-next v1 12/19] bpf: add bpf_seq_printf and bpf_seq_write helpers
+Date:   Mon, 27 Apr 2020 13:12:49 -0700
+Message-ID: <20200427201249.2995688-1-yhs@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200427201235.2994549-1-yhs@fb.com>
 References: <20200427201235.2994549-1-yhs@fb.com>
@@ -62,369 +62,347 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Only the tasks belonging to "current" pid namespace
-are enumerated.
+Two helpers bpf_seq_printf and bpf_seq_write, are added for
+writing data to the seq_file buffer.
 
-For task/file target, the bpf program will have access to
-  struct task_struct *task
-  u32 fd
-  struct file *file
-where fd/file is an open file for the task.
+bpf_seq_printf supports common format string flag/width/type
+fields so at least I can get identical results for
+netlink and ipv6_route targets.
+
+For bpf_seq_printf and bpf_seq_write, return value -EOVERFLOW
+specifically indicates a write failure due to overflow, which
+means the object will be repeated in the next bpf invocation
+if object collection stays the same. Note that if the object
+collection is changed, depending how collection traversal is
+done, even if the object still in the collection, it may not
+be visited.
 
 Signed-off-by: Yonghong Song <yhs@fb.com>
 ---
- kernel/bpf/Makefile    |   2 +-
- kernel/bpf/task_iter.c | 319 +++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 320 insertions(+), 1 deletion(-)
- create mode 100644 kernel/bpf/task_iter.c
+ include/uapi/linux/bpf.h       |  31 ++++++-
+ kernel/trace/bpf_trace.c       | 159 +++++++++++++++++++++++++++++++++
+ scripts/bpf_helpers_doc.py     |   2 +
+ tools/include/uapi/linux/bpf.h |  31 ++++++-
+ 4 files changed, 221 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
-index b2b5eefc5254..37b2d8620153 100644
---- a/kernel/bpf/Makefile
-+++ b/kernel/bpf/Makefile
-@@ -2,7 +2,7 @@
- obj-y :=3D core.o
- CFLAGS_core.o +=3D $(call cc-disable-warning, override-init)
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 576651110d16..f0ab17d8fb73 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -3042,6 +3042,33 @@ union bpf_attr {
+  * 		See: clock_gettime(CLOCK_BOOTTIME)
+  * 	Return
+  * 		Current *ktime*.
++ *
++ * int bpf_seq_printf(struct seq_file *m, const char *fmt, u32 fmt_size,=
+ const void *data, u32 data_len)
++ * 	Description
++ * 		seq_printf uses seq_file seq_printf() to print out the format strin=
+g.
++ * 		The *m* represents the seq_file. The *fmt* and *fmt_size* are for
++ * 		the format string itself. The *data* and *data_len* are format stri=
+ng
++ * 		arguments. The *data* are a u64 array and corresponding format stri=
+ng
++ * 		values are stored in the array. For strings and pointers where poin=
+tees
++ * 		are accessed, only the pointer values are stored in the *data* arra=
+y.
++ * 		The *data_len* is the *data* size in term of bytes.
++ * 	Return
++ * 		0 on success, or a negative errno in case of failure.
++ *
++ *		* **-EINVAL**		Invalid arguments, or invalid/unsupported formats.
++ *		* **-E2BIG**		Too many format specifiers.
++ *		* **-ENOMEM**		No enough memory to copy pointees or strings.
++ *		* **-EOVERFLOW**	Overflow happens, the same object will be tried aga=
+in.
++ *
++ * int bpf_seq_write(struct seq_file *m, const void *data, u32 len)
++ * 	Description
++ * 		seq_write uses seq_file seq_write() to write the data.
++ * 		The *m* represents the seq_file. The *data* and *len* represent the
++ *		data to write in bytes.
++ * 	Return
++ * 		0 on success, or a negative errno in case of failure.
++ *
++ *		* **-EOVERFLOW**	Overflow happens, the same object will be tried aga=
+in.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -3169,7 +3196,9 @@ union bpf_attr {
+ 	FN(get_netns_cookie),		\
+ 	FN(get_current_ancestor_cgroup_id),	\
+ 	FN(sk_assign),			\
+-	FN(ktime_get_boot_ns),
++	FN(ktime_get_boot_ns),		\
++	FN(seq_printf),			\
++	FN(seq_write),
 =20
--obj-$(CONFIG_BPF_SYSCALL) +=3D syscall.o verifier.o inode.o helpers.o tn=
-um.o bpf_iter.o map_iter.o
-+obj-$(CONFIG_BPF_SYSCALL) +=3D syscall.o verifier.o inode.o helpers.o tn=
-um.o bpf_iter.o map_iter.o task_iter.o
- obj-$(CONFIG_BPF_SYSCALL) +=3D hashtab.o arraymap.o percpu_freelist.o bp=
-f_lru_list.o lpm_trie.o map_in_map.o
- obj-$(CONFIG_BPF_SYSCALL) +=3D local_storage.o queue_stack_maps.o
- obj-$(CONFIG_BPF_SYSCALL) +=3D disasm.o
-diff --git a/kernel/bpf/task_iter.c b/kernel/bpf/task_iter.c
-new file mode 100644
-index 000000000000..ee29574e427d
---- /dev/null
-+++ b/kernel/bpf/task_iter.c
-@@ -0,0 +1,319 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2020 Facebook */
+ /* integer value in 'imm' field of BPF_CALL instruction selects which he=
+lper
+  * function eBPF program intends to call
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index e875c95d3ced..f7c5587b5d2e 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -457,6 +457,161 @@ const struct bpf_func_proto *bpf_get_trace_printk_p=
+roto(void)
+ 	return &bpf_trace_printk_proto;
+ }
+=20
++#define MAX_SEQ_PRINTF_VARARGS	12
++#define MAX_SEQ_PRINTF_STR_LEN	128
 +
-+#include <linux/init.h>
-+#include <linux/namei.h>
-+#include <linux/pid_namespace.h>
-+#include <linux/fs.h>
-+#include <linux/fdtable.h>
-+#include <linux/filter.h>
-+
-+struct bpf_iter_seq_task_info {
-+	struct pid_namespace *ns;
-+	struct task_struct *task;
-+	u32 id;
-+};
-+
-+static struct task_struct *task_seq_get_next(struct pid_namespace *ns, u=
-32 *id)
++BPF_CALL_5(bpf_seq_printf, struct seq_file *, m, char *, fmt, u32, fmt_s=
+ize,
++	   const void *, data, u32, data_len)
 +{
-+	struct task_struct *task =3D NULL;
-+	struct pid *pid;
++	char bufs[MAX_SEQ_PRINTF_VARARGS][MAX_SEQ_PRINTF_STR_LEN];
++	u64 params[MAX_SEQ_PRINTF_VARARGS];
++	int i, copy_size, num_args;
++	const u64 *args =3D data;
++	int fmt_cnt =3D 0;
 +
-+	rcu_read_lock();
-+	pid =3D idr_get_next(&ns->idr, id);
-+	if (pid)
-+		task =3D get_pid_task(pid, PIDTYPE_PID);
-+	rcu_read_unlock();
-+
-+	return task;
-+}
-+
-+static void *task_seq_start(struct seq_file *seq, loff_t *pos)
-+{
-+	struct bpf_iter_seq_task_info *info =3D seq->private;
-+	struct task_struct *task;
-+	u32 id =3D info->id;
-+
-+	if (*pos =3D=3D 0)
-+		info->ns =3D task_active_pid_ns(current);
-+
-+	task =3D task_seq_get_next(info->ns, &id);
-+	if (!task)
-+		return NULL;
-+
-+	++*pos;
-+	info->task =3D task;
-+	info->id =3D id;
-+
-+	return task;
-+}
-+
-+static void *task_seq_next(struct seq_file *seq, void *v, loff_t *pos)
-+{
-+	struct bpf_iter_seq_task_info *info =3D seq->private;
-+	struct task_struct *task;
-+
-+	++*pos;
-+	++info->id;
-+	task =3D task_seq_get_next(info->ns, &info->id);
-+	if (!task)
-+		return NULL;
-+
-+	put_task_struct(info->task);
-+	info->task =3D task;
-+	return task;
-+}
-+
-+struct bpf_iter__task {
-+	__bpf_md_ptr(struct bpf_iter_meta *, meta);
-+	__bpf_md_ptr(struct task_struct *, task);
-+};
-+
-+int __init __bpf_iter__task(struct bpf_iter_meta *meta, struct task_stru=
-ct *task)
-+{
-+	return 0;
-+}
-+
-+static int task_seq_show(struct seq_file *seq, void *v)
-+{
-+	struct bpf_iter_meta meta;
-+	struct bpf_iter__task ctx;
-+	struct bpf_prog *prog;
-+	int ret =3D 0;
-+
-+	prog =3D bpf_iter_get_prog(seq, sizeof(struct bpf_iter_seq_task_info),
-+				 &meta.session_id, &meta.seq_num,
-+				 v =3D=3D (void *)0);
-+	if (prog) {
-+		meta.seq =3D seq;
-+		ctx.meta =3D &meta;
-+		ctx.task =3D v;
-+		ret =3D bpf_iter_run_prog(prog, &ctx);
-+	}
-+
-+	return ret =3D=3D 0 ? 0 : -EINVAL;
-+}
-+
-+static void task_seq_stop(struct seq_file *seq, void *v)
-+{
-+	struct bpf_iter_seq_task_info *info =3D seq->private;
-+
-+	if (!v)
-+		task_seq_show(seq, v);
-+
-+	if (info->task) {
-+		put_task_struct(info->task);
-+		info->task =3D NULL;
-+	}
-+}
-+
-+static const struct seq_operations task_seq_ops =3D {
-+	.start	=3D task_seq_start,
-+	.next	=3D task_seq_next,
-+	.stop	=3D task_seq_stop,
-+	.show	=3D task_seq_show,
-+};
-+
-+struct bpf_iter_seq_task_file_info {
-+	struct pid_namespace *ns;
-+	struct task_struct *task;
-+	struct files_struct *files;
-+	u32 id;
-+	u32 fd;
-+};
-+
-+static struct file *task_file_seq_get_next(struct pid_namespace *ns, u32=
- *id,
-+					   int *fd, struct task_struct **task,
-+					   struct files_struct **fstruct)
-+{
-+	struct files_struct *files;
-+	struct task_struct *tk;
-+	u32 sid =3D *id;
-+	int sfd;
-+
-+	/* If this function returns a non-NULL file object,
-+	 * it held a reference to the files_struct and file.
-+	 * Otherwise, it does not hold any reference.
++	/*
++	 * bpf_check()->check_func_arg()->check_stack_boundary()
++	 * guarantees that fmt points to bpf program stack,
++	 * fmt_size bytes of it were initialized and fmt_size > 0
 +	 */
-+again:
-+	if (*fstruct) {
-+		files =3D *fstruct;
-+		sfd =3D *fd;
-+	} else {
-+		tk =3D task_seq_get_next(ns, &sid);
-+		if (!tk)
-+			return NULL;
++	if (fmt[--fmt_size] !=3D 0)
++		return -EINVAL;
 +
-+		files =3D get_files_struct(tk);
-+		put_task_struct(tk);
-+		if (!files) {
-+			sid =3D ++(*id);
-+			*fd =3D 0;
-+			goto again;
-+		}
-+		*fstruct =3D files;
-+		*task =3D tk;
-+		if (sid =3D=3D *id) {
-+			sfd =3D *fd;
-+		} else {
-+			*id =3D sid;
-+			sfd =3D 0;
-+		}
++	if (data_len & 7)
++		return -EINVAL;
++
++	for (i =3D 0; i < fmt_size; i++) {
++		if (fmt[i] =3D=3D '%' && (!data || !data_len))
++			return -EINVAL;
 +	}
 +
-+	rcu_read_lock();
-+	for (; sfd < files_fdtable(files)->max_fds; sfd++) {
-+		struct file *f;
++	num_args =3D data_len / 8;
 +
-+		f =3D fcheck_files(files, sfd);
-+		if (!f)
++	/* check format string for allowed specifiers */
++	for (i =3D 0; i < fmt_size; i++) {
++		if ((!isprint(fmt[i]) && !isspace(fmt[i])) || !isascii(fmt[i]))
++			return -EINVAL;
++
++		if (fmt[i] !=3D '%')
 +			continue;
-+		*fd =3D sfd;
-+		get_file(f);
-+		rcu_read_unlock();
-+		return f;
++
++		if (fmt_cnt >=3D MAX_SEQ_PRINTF_VARARGS)
++			return -E2BIG;
++
++		if (fmt_cnt >=3D num_args)
++			return -EINVAL;
++
++		/* fmt[i] !=3D 0 && fmt[last] =3D=3D 0, so we can access fmt[i + 1] */
++		i++;
++
++		/* skip optional "[0+-][num]" width formating field */
++		while (fmt[i] =3D=3D '0' || fmt[i] =3D=3D '+'  || fmt[i] =3D=3D '-')
++			i++;
++		if (fmt[i] >=3D '1' && fmt[i] <=3D '9') {
++			i++;
++			while (fmt[i] >=3D '0' && fmt[i] <=3D '9')
++				i++;
++		}
++
++		if (fmt[i] =3D=3D 's') {
++			/* disallow any further format extensions */
++			if (fmt[i + 1] !=3D 0 &&
++			    !isspace(fmt[i + 1]) &&
++			    !ispunct(fmt[i + 1]))
++				return -EINVAL;
++
++			/* try our best to copy */
++			bufs[fmt_cnt][0] =3D 0;
++			strncpy_from_unsafe(bufs[fmt_cnt],
++					    (void *) (long) args[fmt_cnt],
++					    MAX_SEQ_PRINTF_STR_LEN);
++			params[fmt_cnt] =3D (u64)(long)bufs[fmt_cnt];
++
++			fmt_cnt++;
++			continue;
++		}
++
++		if (fmt[i] =3D=3D 'p') {
++			if (fmt[i + 1] =3D=3D 0 ||
++			    fmt[i + 1] =3D=3D 'K' ||
++			    fmt[i + 1] =3D=3D 'x') {
++				/* just kernel pointers */
++				params[fmt_cnt] =3D args[fmt_cnt];
++				fmt_cnt++;
++				continue;
++			}
++
++			/* only support "%pI4", "%pi4", "%pI6" and "pi6". */
++			if (fmt[i + 1] !=3D 'i' && fmt[i + 1] !=3D 'I')
++				return -EINVAL;
++			if (fmt[i + 2] !=3D '4' && fmt[i + 2] !=3D '6')
++				return -EINVAL;
++
++			copy_size =3D (fmt[i + 2] =3D=3D '4') ? 4 : 16;
++
++			/* try our best to copy */
++			probe_kernel_read(bufs[fmt_cnt],
++					  (void *) (long) args[fmt_cnt], copy_size);
++			params[fmt_cnt] =3D (u64)(long)bufs[fmt_cnt];
++
++			i +=3D 2;
++			fmt_cnt++;
++			continue;
++		}
++
++		if (fmt[i] =3D=3D 'l') {
++			i++;
++			if (fmt[i] =3D=3D 'l')
++				i++;
++		}
++
++		if (fmt[i] !=3D 'i' && fmt[i] !=3D 'd' &&
++		    fmt[i] !=3D 'u' && fmt[i] !=3D 'x')
++			return -EINVAL;
++
++		params[fmt_cnt] =3D args[fmt_cnt];
++		fmt_cnt++;
 +	}
 +
-+	/* the current task is done, go to the next task */
-+	rcu_read_unlock();
-+	put_files_struct(files);
-+	*fstruct =3D NULL;
-+	sid =3D ++(*id);
-+	*fd =3D 0;
-+	goto again;
++	/* Maximumly we can have MAX_SEQ_PRINTF_VARARGS parameter, just give
++	 * all of them to seq_printf().
++	 */
++	seq_printf(m, fmt, params[0], params[1], params[2], params[3],
++		   params[4], params[5], params[6], params[7], params[8],
++		   params[9], params[10], params[11]);
++
++	return seq_has_overflowed(m) ? -EOVERFLOW : 0;
 +}
 +
-+static void *task_file_seq_start(struct seq_file *seq, loff_t *pos)
-+{
-+	struct bpf_iter_seq_task_file_info *info =3D seq->private;
-+	struct files_struct *files =3D NULL;
-+	struct task_struct *task =3D NULL;
-+	struct file *file;
-+	u32 id =3D info->id;
-+	int fd =3D info->fd;
-+
-+	if (*pos =3D=3D 0)
-+		info->ns =3D task_active_pid_ns(current);
-+
-+	file =3D task_file_seq_get_next(info->ns, &id, &fd, &task, &files);
-+	if (!file) {
-+		info->files =3D NULL;
-+		return NULL;
-+	}
-+
-+	++*pos;
-+	info->id =3D id;
-+	info->fd =3D fd;
-+	info->task =3D task;
-+	info->files =3D files;
-+
-+	return file;
-+}
-+
-+static void *task_file_seq_next(struct seq_file *seq, void *v, loff_t *p=
-os)
-+{
-+	struct bpf_iter_seq_task_file_info *info =3D seq->private;
-+	struct files_struct *files =3D info->files;
-+	struct task_struct *task =3D info->task;
-+	struct file *file;
-+	u32 id =3D info->id;
-+
-+	++*pos;
-+	++info->fd;
-+	fput((struct file *)v);
-+	file =3D task_file_seq_get_next(info->ns, &id, &info->fd, &task, &files=
-);
-+	if (!file) {
-+		info->files =3D NULL;
-+		return NULL;
-+	}
-+
-+	info->id =3D id;
-+	info->task =3D task;
-+	info->files =3D files;
-+
-+	return file;
-+}
-+
-+struct bpf_iter__task_file {
-+	__bpf_md_ptr(struct bpf_iter_meta *, meta);
-+	__bpf_md_ptr(struct task_struct *, task);
-+	u32 fd;
-+	__bpf_md_ptr(struct file *, file);
++static int bpf_seq_printf_btf_ids[5];
++static const struct bpf_func_proto bpf_seq_printf_proto =3D {
++	.func		=3D bpf_seq_printf,
++	.gpl_only	=3D true,
++	.ret_type	=3D RET_INTEGER,
++	.arg1_type	=3D ARG_PTR_TO_BTF_ID,
++	.arg2_type	=3D ARG_PTR_TO_MEM,
++	.arg3_type	=3D ARG_CONST_SIZE,
++	.arg4_type      =3D ARG_PTR_TO_MEM_OR_NULL,
++	.arg5_type      =3D ARG_CONST_SIZE_OR_ZERO,
++	.btf_id		=3D bpf_seq_printf_btf_ids,
 +};
 +
-+int __init __bpf_iter__task_file(struct bpf_iter_meta *meta,
-+			      struct task_struct *task, u32 fd,
-+			      struct file *file)
++BPF_CALL_3(bpf_seq_write, struct seq_file *, m, const void *, data, u32,=
+ len)
 +{
-+	return 0;
++	return seq_write(m, data, len) ? -EOVERFLOW : 0;
 +}
 +
-+static int task_file_seq_show(struct seq_file *seq, void *v)
-+{
-+	struct bpf_iter_seq_task_file_info *info =3D seq->private;
-+	struct bpf_iter__task_file ctx;
-+	struct bpf_iter_meta meta;
-+	struct bpf_prog *prog;
-+	int ret =3D 0;
-+
-+	prog =3D bpf_iter_get_prog(seq, sizeof(struct bpf_iter_seq_task_file_in=
-fo),
-+				 &meta.session_id, &meta.seq_num, v =3D=3D (void *)0);
-+	if (prog) {
-+		meta.seq =3D seq;
-+		ctx.meta =3D &meta;
-+		ctx.task =3D info->task;
-+		ctx.fd =3D info->fd;
-+		ctx.file =3D v;
-+		ret =3D bpf_iter_run_prog(prog, &ctx);
-+	}
-+
-+	return ret =3D=3D 0 ? 0 : -EINVAL;
-+}
-+
-+static void task_file_seq_stop(struct seq_file *seq, void *v)
-+{
-+	struct bpf_iter_seq_task_file_info *info =3D seq->private;
-+
-+	if (v)
-+		fput((struct file *)v);
-+	else
-+		task_file_seq_show(seq, v);
-+
-+	if (info->files) {
-+		put_files_struct(info->files);
-+		info->files =3D NULL;
-+	}
-+}
-+
-+static const struct seq_operations task_file_seq_ops =3D {
-+	.start	=3D task_file_seq_start,
-+	.next	=3D task_file_seq_next,
-+	.stop	=3D task_file_seq_stop,
-+	.show	=3D task_file_seq_show,
++static int bpf_seq_write_btf_ids[5];
++static const struct bpf_func_proto bpf_seq_write_proto =3D {
++	.func		=3D bpf_seq_write,
++	.gpl_only	=3D true,
++	.ret_type	=3D RET_INTEGER,
++	.arg1_type	=3D ARG_PTR_TO_BTF_ID,
++	.arg2_type	=3D ARG_PTR_TO_MEM,
++	.arg3_type	=3D ARG_CONST_SIZE,
++	.btf_id		=3D bpf_seq_write_btf_ids,
 +};
 +
-+static int __init task_iter_init(void)
-+{
-+	struct bpf_iter_reg task_file_reg_info =3D {
-+		.target			=3D "task_file",
-+		.target_func_name	=3D "__bpf_iter__task_file",
-+		.seq_ops		=3D &task_file_seq_ops,
-+		.seq_priv_size		=3D sizeof(struct bpf_iter_seq_task_file_info),
-+		.target_feature		=3D 0,
-+	};
-+	struct bpf_iter_reg task_reg_info =3D {
-+		.target			=3D "task",
-+		.target_func_name	=3D "__bpf_iter__task",
-+		.seq_ops		=3D &task_seq_ops,
-+		.seq_priv_size		=3D sizeof(struct bpf_iter_seq_task_info),
-+		.target_feature		=3D 0,
-+	};
-+	int ret;
-+
-+	ret =3D bpf_iter_reg_target(&task_reg_info);
-+	if (ret)
-+		return ret;
-+
-+	return bpf_iter_reg_target(&task_file_reg_info);
-+}
-+late_initcall(task_iter_init);
+ static __always_inline int
+ get_map_perf_counter(struct bpf_map *map, u64 flags,
+ 		     u64 *value, u64 *enabled, u64 *running)
+@@ -1226,6 +1381,10 @@ tracing_prog_func_proto(enum bpf_func_id func_id, =
+const struct bpf_prog *prog)
+ 	case BPF_FUNC_xdp_output:
+ 		return &bpf_xdp_output_proto;
+ #endif
++	case BPF_FUNC_seq_printf:
++		return &bpf_seq_printf_proto;
++	case BPF_FUNC_seq_write:
++		return &bpf_seq_write_proto;
+ 	default:
+ 		return raw_tp_prog_func_proto(func_id, prog);
+ 	}
+diff --git a/scripts/bpf_helpers_doc.py b/scripts/bpf_helpers_doc.py
+index f43d193aff3a..ded304c96a05 100755
+--- a/scripts/bpf_helpers_doc.py
++++ b/scripts/bpf_helpers_doc.py
+@@ -414,6 +414,7 @@ class PrinterHelpers(Printer):
+             'struct sk_reuseport_md',
+             'struct sockaddr',
+             'struct tcphdr',
++            'struct seq_file',
+=20
+             'struct __sk_buff',
+             'struct sk_msg_md',
+@@ -450,6 +451,7 @@ class PrinterHelpers(Printer):
+             'struct sk_reuseport_md',
+             'struct sockaddr',
+             'struct tcphdr',
++            'struct seq_file',
+     }
+     mapped_types =3D {
+             'u8': '__u8',
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bp=
+f.h
+index 576651110d16..f0ab17d8fb73 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -3042,6 +3042,33 @@ union bpf_attr {
+  * 		See: clock_gettime(CLOCK_BOOTTIME)
+  * 	Return
+  * 		Current *ktime*.
++ *
++ * int bpf_seq_printf(struct seq_file *m, const char *fmt, u32 fmt_size,=
+ const void *data, u32 data_len)
++ * 	Description
++ * 		seq_printf uses seq_file seq_printf() to print out the format strin=
+g.
++ * 		The *m* represents the seq_file. The *fmt* and *fmt_size* are for
++ * 		the format string itself. The *data* and *data_len* are format stri=
+ng
++ * 		arguments. The *data* are a u64 array and corresponding format stri=
+ng
++ * 		values are stored in the array. For strings and pointers where poin=
+tees
++ * 		are accessed, only the pointer values are stored in the *data* arra=
+y.
++ * 		The *data_len* is the *data* size in term of bytes.
++ * 	Return
++ * 		0 on success, or a negative errno in case of failure.
++ *
++ *		* **-EINVAL**		Invalid arguments, or invalid/unsupported formats.
++ *		* **-E2BIG**		Too many format specifiers.
++ *		* **-ENOMEM**		No enough memory to copy pointees or strings.
++ *		* **-EOVERFLOW**	Overflow happens, the same object will be tried aga=
+in.
++ *
++ * int bpf_seq_write(struct seq_file *m, const void *data, u32 len)
++ * 	Description
++ * 		seq_write uses seq_file seq_write() to write the data.
++ * 		The *m* represents the seq_file. The *data* and *len* represent the
++ *		data to write in bytes.
++ * 	Return
++ * 		0 on success, or a negative errno in case of failure.
++ *
++ *		* **-EOVERFLOW**	Overflow happens, the same object will be tried aga=
+in.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -3169,7 +3196,9 @@ union bpf_attr {
+ 	FN(get_netns_cookie),		\
+ 	FN(get_current_ancestor_cgroup_id),	\
+ 	FN(sk_assign),			\
+-	FN(ktime_get_boot_ns),
++	FN(ktime_get_boot_ns),		\
++	FN(seq_printf),			\
++	FN(seq_write),
+=20
+ /* integer value in 'imm' field of BPF_CALL instruction selects which he=
+lper
+  * function eBPF program intends to call
 --=20
 2.24.1
 
