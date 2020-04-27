@@ -2,104 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 917701B9840
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 09:20:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82A4F1B9842
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 09:21:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726539AbgD0HUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 03:20:44 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:47080 "EHLO
+        id S1726611AbgD0HVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 03:21:24 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:31394 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726349AbgD0HUn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 03:20:43 -0400
+        by vger.kernel.org with ESMTP id S1726349AbgD0HVY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 03:21:24 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587972042;
+        s=mimecast20190719; t=1587972083;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=mfdSckWLkb7DhX2heVZuq27RYRTS87u4sE1AXan2YcI=;
-        b=dnA6FmlZNi8WP60koiQYVIXuvcVOf80+4H0Ephdgjp4JXVBBrDywL+4CSxAJ30tm4nP+Zr
-        rN3qybRyP1i4/He3nfuFxInV2BdCgasNSYPjiRlI906qeZBtDppY6jWmNwp53itMqZROqX
-        QBCUBmhD3RxtCujUeOJ6MbNQsc9qA+Q=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-238-3A4-UdgdNiy33drPy7Oj8Q-1; Mon, 27 Apr 2020 03:20:37 -0400
-X-MC-Unique: 3A4-UdgdNiy33drPy7Oj8Q-1
-Received: by mail-lf1-f70.google.com with SMTP id t194so7141555lff.20
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 00:20:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=mfdSckWLkb7DhX2heVZuq27RYRTS87u4sE1AXan2YcI=;
-        b=TCpVY5f2mHVS1hj/VYv2NSYAJfbxhDLrTR4bVxubVmeVpWBhurYWHo8iEUtDuzD9KA
-         S/3JvO2FsaxVUtCB5rt+3LrKZbTTBsW/85KQe1pjuhxDYIbV5n7SfLE/rVnxi5fgZdM2
-         9r4c5woD4vOwzQYkSMA1GBVe3B2w9nNX7HB081cfCghaO2vRUTvC4DzT0e8w0Hi9AoIK
-         5yU1eFGisSnliwbzcpEhDMVE0ypyB/0q/W3k5bP5beu41Nv7P/FCaoZo1PUIQnvlsju6
-         6bGq4RPvFIWy2hFBEcLgGBfsr8u0JScSr7UOeQbSNSeGjWdtkltgAbOhgKAWgcfkF9Qn
-         yMZg==
-X-Gm-Message-State: AGi0PuZ/LrOJbyZnnWcDQxgu8B7EKJWLpOZSvNZyMMzQpPAhOrgW82ih
-        908WSBDOpCC9qE51N5ZJqLEaXjaBCcKgZ7HpO15MJ7vSgxCmTrMqFVOJa0ZcNqEVdNaD6T3XKY+
-        d7AM/3reZiBNc/tlF
-X-Received: by 2002:ac2:483a:: with SMTP id 26mr14429313lft.5.1587972036149;
-        Mon, 27 Apr 2020 00:20:36 -0700 (PDT)
-X-Google-Smtp-Source: APiQypJGAzX1IfEZMSAjZX9XJ7QCNzjQa9NM7eDhUtC9gHTJmG3hIoxM6CCCaK9X27Ry7lcIIe3R9w==
-X-Received: by 2002:ac2:483a:: with SMTP id 26mr14429300lft.5.1587972035933;
-        Mon, 27 Apr 2020 00:20:35 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id t81sm10466474lff.52.2020.04.27.00.20.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2020 00:20:35 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 5757D1814FF; Mon, 27 Apr 2020 09:20:34 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH RFC v1] net: xdp: allow for layer 3 packets in generic skb handler
-In-Reply-To: <20200427011002.320081-1-Jason@zx2c4.com>
-References: <20200427011002.320081-1-Jason@zx2c4.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 27 Apr 2020 09:20:34 +0200
-Message-ID: <87h7x51jjx.fsf@toke.dk>
+        bh=gmrqhUr63ylUIBJ0HetA0W/F7e91Q2QoSF5xiRnj80k=;
+        b=QDe4n2l4jFP5WfoLGMdrK6kRBoz1GvAIz/rk576H6kYtLcUWtT5l6kw49vQHT8/ZHDM1mi
+        VXSy9tews6Pnc6tSDlbI1tjgXxqrso8pb6Nwf/GyD/5qCSqzw2zYoO9FgXC1LyuXZLUDzq
+        OwNEClsIc+ZdRgG/y11GIQ01A7sJjAs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-55-MYQl7MChPPyI20unIZ4TkQ-1; Mon, 27 Apr 2020 03:21:18 -0400
+X-MC-Unique: MYQl7MChPPyI20unIZ4TkQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2532C107ACF9;
+        Mon, 27 Apr 2020 07:21:16 +0000 (UTC)
+Received: from [10.72.12.205] (ovpn-12-205.pek2.redhat.com [10.72.12.205])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 82AF760CD3;
+        Mon, 27 Apr 2020 07:21:04 +0000 (UTC)
+Subject: Re: [PATCH net-next 21/33] virtio_net: add XDP frame size in two code
+ paths
+To:     Jesper Dangaard Brouer <brouer@redhat.com>, sameehj@amazon.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, zorik@amazon.com,
+        akiyano@amazon.com, gtzalik@amazon.com,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        steffen.klassert@secunet.com
+References: <158757160439.1370371.13213378122947426220.stgit@firesoul>
+ <158757174774.1370371.14395462229209766397.stgit@firesoul>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <3958d9c6-a7d1-6a3d-941d-0a2915cc6b09@redhat.com>
+Date:   Mon, 27 Apr 2020 15:21:02 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <158757174774.1370371.14395462229209766397.stgit@firesoul>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
 
-> A user reported a few days ago that packets from wireguard were possibly
-> ignored by XDP [1]. We haven't heard back from the original reporter to
-> receive more info, so this here is mostly speculative. Successfully nerd
-> sniped, Toke and I started poking around. Toke noticed that the generic
-> skb xdp handler path seems to assume that packets will always have an
-> ethernet header, which really isn't always the case for layer 3 packets,
-> which are produced by multiple drivers. This patch is untested, but I
-> wanted to gauge interest in this approach: if the mac_len is 0, then we
-> assume that it's a layer 3 packet, and figure out skb->protocol from
-> looking at the IP header. This patch also adds some stricter testing
-> around mac_len before we assume that it's an ethhdr.
+On 2020/4/23 =E4=B8=8A=E5=8D=8812:09, Jesper Dangaard Brouer wrote:
+> The virtio_net driver is running inside the guest-OS. There are two
+> XDP receive code-paths in virtio_net, namely receive_small() and
+> receive_mergeable(). The receive_big() function does not support XDP.
+>
+> In receive_small() the frame size is available in buflen. The buffer
+> backing these frames are allocated in add_recvbuf_small() with same
+> size, except for the headroom, but tailroom have reserved room for
+> skb_shared_info. The headroom is encoded in ctx pointer as a value.
+>
+> In receive_mergeable() the frame size is more dynamic. There are two
+> basic cases: (1) buffer size is based on a exponentially weighted
+> moving average (see DECLARE_EWMA) of packet length. Or (2) in case
+> virtnet_get_headroom() have any headroom then buffer size is
+> PAGE_SIZE. The ctx pointer is this time used for encoding two values;
+> the buffer len "truesize" and headroom. In case (1) if the rx buffer
+> size is underestimated, the packet will have been split over more
+> buffers (num_buf info in virtio_net_hdr_mrg_rxbuf placed in top of
+> buffer area). If that happens the XDP path does a xdp_linearize_page
+> operation.
+>
+> Cc: Jason Wang <jasowang@redhat.com>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+>   drivers/net/virtio_net.c |   15 ++++++++++++---
+>   1 file changed, 12 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 11f722460513..1df3676da185 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -689,6 +689,7 @@ static struct sk_buff *receive_small(struct net_dev=
+ice *dev,
+>   		xdp.data_end =3D xdp.data + len;
+>   		xdp.data_meta =3D xdp.data;
+>   		xdp.rxq =3D &rq->xdp_rxq;
+> +		xdp.frame_sz =3D buflen;
+>   		orig_data =3D xdp.data;
+>   		act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
+>   		stats->xdp_packets++;
+> @@ -797,10 +798,11 @@ static struct sk_buff *receive_mergeable(struct n=
+et_device *dev,
+>   	int offset =3D buf - page_address(page);
+>   	struct sk_buff *head_skb, *curr_skb;
+>   	struct bpf_prog *xdp_prog;
+> -	unsigned int truesize;
+> +	unsigned int truesize =3D mergeable_ctx_to_truesize(ctx);
+>   	unsigned int headroom =3D mergeable_ctx_to_headroom(ctx);
+> -	int err;
+>   	unsigned int metasize =3D 0;
+> +	unsigned int frame_sz;
+> +	int err;
+>  =20
+>   	head_skb =3D NULL;
+>   	stats->bytes +=3D len - vi->hdr_len;
+> @@ -821,6 +823,11 @@ static struct sk_buff *receive_mergeable(struct ne=
+t_device *dev,
+>   		if (unlikely(hdr->hdr.gso_type))
+>   			goto err_xdp;
+>  =20
+> +		/* Buffers with headroom use PAGE_SIZE as alloc size,
+> +		 * see add_recvbuf_mergeable() + get_mergeable_buf_len()
+> +		 */
+> +		frame_sz =3D headroom ? PAGE_SIZE : truesize;
+> +
+>   		/* This happens when rx buffer size is underestimated
+>   		 * or headroom is not enough because of the buffer
+>   		 * was refilled before XDP is set. This should only
+> @@ -834,6 +841,8 @@ static struct sk_buff *receive_mergeable(struct net=
+_device *dev,
+>   						      page, offset,
+>   						      VIRTIO_XDP_HEADROOM,
+>   						      &len);
+> +			frame_sz =3D PAGE_SIZE;
 
-While your patch will fix the header pointer mangling for the skb, it
-unfortunately won't fix generic XDP for Wireguard: The assumption that
-there's an Ethernet header present is made for compatibility with native
-XDP, so you might say it's deliberate. I.e., the eBPF programs running
-in the XDP hook expect to see an Ethernet header as part of the packet
-data (and parses the packet like in [0]).
 
-So, to make XDP generic work for Wireguard (or other IP-header-only
-devices) we'd need to either (1) introduce a new XDP sub-type that
-assumes L4 packets, or (2) make Wireguard add a fake Ethernet header to
-the head of the packet and set the skb mac_header accordingly.
+Should this be PAGE_SIZE -=C2=A0 SKB_DATA_ALIGN(sizeof(struct skb_shared_=
+info))?
 
-We've discussed (1) before in other contexts (specifically, adding a
-802.11 sub-type), but IIRC we decided that there wasn't enough interest.
-I wonder if the same wouldn't be the case for an IP sub-type, since
-users would have to re-write their XDP programs to fit that hook type,
-and it would only be usable for generic XDP on certain tunnel interface
-types. Not sure about the feasibility of (2).
 
--Toke
+> +
+>   			if (!xdp_page)
+>   				goto err_xdp;
+>   			offset =3D VIRTIO_XDP_HEADROOM;
+> @@ -850,6 +859,7 @@ static struct sk_buff *receive_mergeable(struct net=
+_device *dev,
+>   		xdp.data_end =3D xdp.data + (len - vi->hdr_len);
+>   		xdp.data_meta =3D xdp.data;
+>   		xdp.rxq =3D &rq->xdp_rxq;
+> +		xdp.frame_sz =3D frame_sz;
 
-[0] https://github.com/xdp-project/xdp-tutorial/blob/master/packet01-parsing/xdp_prog_kern.c
+
+Maybe we can easily check by
+
+xdp.frame_sz =3D (xdp_page =3D=3D page) ? truesize : ...
+
+Thanks
+
+
+>  =20
+>   		act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
+>   		stats->xdp_packets++;
+> @@ -924,7 +934,6 @@ static struct sk_buff *receive_mergeable(struct net=
+_device *dev,
+>   	}
+>   	rcu_read_unlock();
+>  =20
+> -	truesize =3D mergeable_ctx_to_truesize(ctx);
+>   	if (unlikely(len > truesize)) {
+>   		pr_debug("%s: rx error: len %u exceeds truesize %lu\n",
+>   			 dev->name, len, (unsigned long)ctx);
+>
+>
 
