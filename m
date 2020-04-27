@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 946951BB22C
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 01:51:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 305CB1BB22D
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 01:51:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726406AbgD0XvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 19:51:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37648 "EHLO
+        id S1726413AbgD0XvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 19:51:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726244AbgD0XvI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 19:51:08 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B35C0610D5
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:51:08 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id x15so9804555pfa.1
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:51:07 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726364AbgD0XvL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 19:51:11 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7C77C0610D5
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:51:09 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id r4so9424260pgg.4
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 16:51:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=GqGGw2A5SG7y0JMZ0ograhoz8J8rbzDeLT8aXj+Jwb0=;
-        b=eg3i/lf50IICFgVlOTstakcTn+uJg9tWxvJhjlU5LDpLvjoXR+t3QBEEEcogd9tKa0
-         q/f2ziS0hvzEnOio5naScqnV8o4ih1/x0WPDToxWA9c5LpdTEHSYsxEvflTkflW7P8+3
-         iSA4uNOrJDXHK5G9e45ifANjdDWU4PE6xxbv4=
+        bh=UDOk/akctgboYmLvp+/sQybrLuFqEjs0EbkpFHZZwMc=;
+        b=YRf9CG92yiLC7U6gBzbQoAHh2fDqjupU4bkdLafip/GkK3mqH17PimYO/5jK4/86se
+         g+drxyPhCB10+RYqHlESS0rnPMLHImHH1+DAntJIci05ZXJBLh5ogt9sT9yYB73U5DRc
+         zcW0t0oU7hPrdO82YHVmw5vmiHo9Nd8t+gpJg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GqGGw2A5SG7y0JMZ0ograhoz8J8rbzDeLT8aXj+Jwb0=;
-        b=IJCkHNFGlCDM3nnCPo4kV/Vhz9SuqBhgN1mWVYlpDMlKnsvHZ6HDVc3iRCfAH5HrL7
-         dj9z+Mmm86LIMRg26ls6CNPhNdLt0q0T4BWnb8Fx2sZ6bUopF8CvKl0zzVHj8g7uIhrb
-         OtUshLNrJJWmVErlBrB+XVhxQBnGGaq64lIOdH0w/ZY0lzP54LdUu8H0Yj+XnXKCZpXj
-         63eFDg6JILyJY6A6rPk7FENz64owl7B0nQz/QOcHxubpCnS87oG55cDPxvRSVemeAtAK
-         Ug1NhwSCW5gF7BA6eZ0CpXLaNu+mwzSF31tmZUGScKxa93FlNSaypFIidSNA1afwr4Tr
-         demA==
-X-Gm-Message-State: AGi0PuZddUCgcYzU0YltpbdTFACIJ00VzDD/dBsF0qnUUG21BDrvlKpM
-        ptw+AlH7EHoOVEC+MSAVEBmspzBojAw=
-X-Google-Smtp-Source: APiQypLqueG30lPSk8WsYzkRZjFkYbXTFZsUVhe4tcLk8IZvJYswcXBNQ541wn3hooJbNbFjfhEACA==
-X-Received: by 2002:a63:1d4c:: with SMTP id d12mr25875844pgm.247.1588031467151;
-        Mon, 27 Apr 2020 16:51:07 -0700 (PDT)
+        bh=UDOk/akctgboYmLvp+/sQybrLuFqEjs0EbkpFHZZwMc=;
+        b=qxQ1lHHHsCVyqnM9FxmJr7X6Ql0Vmv9MpxRg+cXxoev56Alj5x67LbmuNbefcm9DMw
+         W2iZlsOIx5TLgJYlQExEcpqFQSUaRIMb1FP1IYe4ZO1inoQpMKAciBL3wbOkhW4C/4tL
+         kuMKgWxqmG52Szj1MsiLX1oQRPZVlXhtni282hoXE9B2d2LBncLojXzu0Jcb41MhBgUa
+         E0vmPbCT6ES1Tzu9fpCZj+992Meh8x/ILNn/oVSc0XVLGlRaQrdwf4yWTjW+eo+XYVPL
+         MC4tnPgvicGiFsLaBr5yeyaurBs/iSTnUd38qFBxhJf8lniZSSHIvk1M8le1x722h5yF
+         I/Iw==
+X-Gm-Message-State: AGi0PuYgH/LuGPAtgunWpySf888CSFDO9u7wDduFlleUUEzEAwXdF+Jy
+        W8E38dyd953+0YSO0U3bJ06E7H30uqs=
+X-Google-Smtp-Source: APiQypJmbjj5Ukan27BO4pmZk9G7ifPV7pi1k0u6Mf0/8n1hJMvVQ0+WjCaTJ0oSEhcyXnCIx/h/Wg==
+X-Received: by 2002:a65:4548:: with SMTP id x8mr25227520pgr.223.1588031468771;
+        Mon, 27 Apr 2020 16:51:08 -0700 (PDT)
 Received: from f3.synalogic.ca (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
-        by smtp.gmail.com with ESMTPSA id 128sm13058106pfy.5.2020.04.27.16.51.05
+        by smtp.gmail.com with ESMTPSA id 128sm13058106pfy.5.2020.04.27.16.51.07
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2020 16:51:06 -0700 (PDT)
+        Mon, 27 Apr 2020 16:51:08 -0700 (PDT)
 From:   Benjamin Poirier <bpoirier@cumulusnetworks.com>
 To:     netdev@vger.kernel.org
-Subject: [PATCH iproute2 6/7] bridge: Align output columns
-Date:   Tue, 28 Apr 2020 08:50:50 +0900
-Message-Id: <20200427235051.250058-7-bpoirier@cumulusnetworks.com>
+Subject: [PATCH iproute2 7/7] Replace open-coded instances of print_nl()
+Date:   Tue, 28 Apr 2020 08:50:51 +0900
+Message-Id: <20200427235051.250058-8-bpoirier@cumulusnetworks.com>
 X-Mailer: git-send-email 2.26.0
 In-Reply-To: <20200427235051.250058-1-bpoirier@cumulusnetworks.com>
 References: <20200427235051.250058-1-bpoirier@cumulusnetworks.com>
@@ -60,200 +60,386 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use fixed column widths to improve readability.
-
-Before:
-root@vsid:/src/iproute2# ./bridge/bridge vlan tunnelshow
-port    vlan-id tunnel-id
-vx0      1000    1000
-         1010-1020       1010-1020
-         1030    65556
-vx-longname      10      10
-
-After:
-root@vsid:/src/iproute2# ./bridge/bridge vlan tunnelshow
-port              vlan-id    tunnel-id
-vx0               1000       1000
-                  1010-1020  1010-1020
-                  1030       65556
-vx-longname       10         10
-
 Signed-off-by: Benjamin Poirier <bpoirier@cumulusnetworks.com>
 ---
- bridge/vlan.c | 73 ++++++++++++++++++++++++++++++++++++---------------
- 1 file changed, 52 insertions(+), 21 deletions(-)
+ bridge/vlan.c     |  4 ++--
+ tc/m_action.c     | 14 +++++++-------
+ tc/m_connmark.c   |  4 ++--
+ tc/m_ctinfo.c     |  4 ++--
+ tc/m_ife.c        |  4 ++--
+ tc/m_mpls.c       |  2 +-
+ tc/m_nat.c        |  4 ++--
+ tc/m_sample.c     |  4 ++--
+ tc/m_skbedit.c    |  4 ++--
+ tc/m_tunnel_key.c | 16 ++++++++--------
+ tc/q_taprio.c     |  8 ++++----
+ tc/tc_util.c      |  4 ++--
+ 12 files changed, 36 insertions(+), 36 deletions(-)
 
 diff --git a/bridge/vlan.c b/bridge/vlan.c
-index 1ca7322a..a50a4fc9 100644
+index a50a4fc9..ff27ea36 100644
 --- a/bridge/vlan.c
 +++ b/bridge/vlan.c
-@@ -22,6 +22,11 @@ enum vlan_show_subject {
- 	VLAN_SHOW_TUNNELINFO,
- };
- 
-+#define VLAN_ID_LEN 9
-+
-+#define __stringify_1(x...) #x
-+#define __stringify(x...) __stringify_1(x)
-+
- static void usage(void)
- {
- 	fprintf(stderr,
-@@ -256,11 +261,11 @@ static int filter_vlan_check(__u16 vid, __u16 flags)
- 	return 1;
- }
- 
--static void open_vlan_port(int ifi_index, const char *fmt,
--			   enum vlan_show_subject subject)
-+static void open_vlan_port(int ifi_index, enum vlan_show_subject subject)
- {
- 	open_json_object(NULL);
--	print_color_string(PRINT_ANY, COLOR_IFNAME, "ifname", fmt,
-+	print_color_string(PRINT_ANY, COLOR_IFNAME, "ifname",
-+			   "%-" __stringify(IFNAMSIZ) "s  ",
- 			   ll_index_to_name(ifi_index));
- 	open_json_array(PRINT_JSON,
- 			subject == VLAN_SHOW_VLAN ? "vlans": "tunnels");
-@@ -272,16 +277,18 @@ static void close_vlan_port(void)
- 	close_json_object();
- }
- 
--static void print_range(const char *name, __u32 start, __u32 id)
-+static unsigned int print_range(const char *name, __u32 start, __u32 id)
- {
- 	char end[64];
-+	int width;
- 
- 	snprintf(end, sizeof(end), "%sEnd", name);
- 
--	print_uint(PRINT_ANY, name, "\t %u", start);
-+	width = print_uint(PRINT_ANY, name, "%u", start);
- 	if (start != id)
--		print_uint(PRINT_ANY, end, "-%u", id);
-+		width += print_uint(PRINT_ANY, end, "-%u", id);
- 
-+	return width;
- }
- 
- static void print_vlan_tunnel_info(struct rtattr *tb, int ifindex)
-@@ -297,6 +304,7 @@ static void print_vlan_tunnel_info(struct rtattr *tb, int ifindex)
- 		__u32 tunnel_id = 0;
- 		__u16 tunnel_vid = 0;
- 		__u16 tunnel_flags = 0;
-+		unsigned int width;
- 		int vcheck_ret;
- 
- 		if (i->rta_type != IFLA_BRIDGE_VLAN_TUNNEL_INFO)
-@@ -331,12 +339,25 @@ static void print_vlan_tunnel_info(struct rtattr *tb, int ifindex)
- 			continue;
- 
- 		if (!opened) {
--			open_vlan_port(ifindex, "%s", VLAN_SHOW_TUNNELINFO);
-+			open_vlan_port(ifindex, VLAN_SHOW_TUNNELINFO);
- 			opened = true;
-+		} else {
-+			print_string(PRINT_FP, NULL,
-+				     "%-" __stringify(IFNAMSIZ) "s  ", "");
+@@ -360,7 +360,7 @@ static void print_vlan_tunnel_info(struct rtattr *tb, int ifindex)
  		}
- 
- 		open_json_object(NULL);
--		print_range("vlan", last_vid_start, tunnel_vid);
-+		width = print_range("vlan", last_vid_start, tunnel_vid);
-+		if (width <= VLAN_ID_LEN) {
-+			char buf[VLAN_ID_LEN + 1];
-+
-+			snprintf(buf, sizeof(buf), "%-*s",
-+				 VLAN_ID_LEN - width, "");
-+			print_string(PRINT_FP, NULL, "%s  ", buf);
-+		} else {
-+			fprintf(stderr, "BUG: vlan range too wide, %u\n",
-+				width);
-+		}
  		print_range("tunid", last_tunid_start, tunnel_id);
  		close_json_object();
- 		print_string(PRINT_FP, NULL, "%s", _SL_);
-@@ -404,20 +425,23 @@ static void print_vlan_flags(__u16 flags)
- static void print_one_vlan_stats(const struct bridge_vlan_xstats *vstats)
- {
- 	open_json_object(NULL);
--	print_hu(PRINT_ANY, "vid", " %hu", vstats->vid);
+-		print_string(PRINT_FP, NULL, "%s", _SL_);
++		print_nl();
+ 	}
  
-+	print_hu(PRINT_ANY, "vid", "%hu", vstats->vid);
- 	print_vlan_flags(vstats->flags);
+ 	if (opened)
+@@ -644,7 +644,7 @@ void print_vlan_info(struct rtattr *tb, int ifindex)
+ 
+ 		print_vlan_flags(vinfo->flags);
+ 		close_json_object();
+-		print_string(PRINT_FP, NULL, "%s", _SL_);
++		print_nl();
+ 	}
+ 
+ 	if (opened)
+diff --git a/tc/m_action.c b/tc/m_action.c
+index b41782de..66e67245 100644
+--- a/tc/m_action.c
++++ b/tc/m_action.c
+@@ -177,7 +177,7 @@ static void print_hw_stats(const struct rtattr *arg, bool print_used)
+ 			print_string(PRINT_ANY, NULL, " %s", item->str);
+ 	}
+ 	close_json_array(PRINT_JSON, NULL);
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
 +	print_nl();
- 
--	print_lluint(PRINT_ANY, "rx_bytes",
--		     "\n                   RX: %llu bytes",
-+	print_string(PRINT_FP, NULL, "%-" __stringify(IFNAMSIZ) "s    ", "");
-+	print_lluint(PRINT_ANY, "rx_bytes", "RX: %llu bytes",
- 		     vstats->rx_bytes);
- 	print_lluint(PRINT_ANY, "rx_packets", " %llu packets\n",
--		vstats->rx_packets);
--	print_lluint(PRINT_ANY, "tx_bytes",
--		     "                   TX: %llu bytes",
-+		     vstats->rx_packets);
-+
-+	print_string(PRINT_FP, NULL, "%-" __stringify(IFNAMSIZ) "s    ", "");
-+	print_lluint(PRINT_ANY, "tx_bytes", "TX: %llu bytes",
- 		     vstats->tx_bytes);
- 	print_lluint(PRINT_ANY, "tx_packets", " %llu packets\n",
--		vstats->tx_packets);
-+		     vstats->tx_packets);
-+
- 	close_json_object();
  }
  
-@@ -452,10 +476,11 @@ static void print_vlan_stats_attr(struct rtattr *attr, int ifindex)
+ static int parse_hw_stats(const char *str, struct nlmsghdr *n)
+@@ -376,11 +376,11 @@ static int tc_print_one_action(FILE *f, struct rtattr *arg)
  
- 		/* found vlan stats, first time print the interface name */
- 		if (!found_vlan) {
--			open_vlan_port(ifindex, "%-16s", VLAN_SHOW_VLAN);
-+			open_vlan_port(ifindex, VLAN_SHOW_VLAN);
- 			found_vlan = true;
- 		} else {
--			print_string(PRINT_FP, NULL, "%-16s", "");
-+			print_string(PRINT_FP, NULL,
-+				     "%-" __stringify(IFNAMSIZ) "s  ", "");
- 		}
- 		print_one_vlan_stats(vstats);
+ 	if (show_stats && tb[TCA_ACT_STATS]) {
+ 		print_string(PRINT_FP, NULL, "\tAction statistics:", NULL);
+-		print_string(PRINT_FP, NULL, "%s", _SL_);
++		print_nl();
+ 		open_json_object("stats");
+ 		print_tcstats2_attr(f, tb[TCA_ACT_STATS], "\t", NULL);
+ 		close_json_object();
+-		print_string(PRINT_FP, NULL, "%s", _SL_);
++		print_nl();
  	}
-@@ -534,9 +559,11 @@ static int vlan_show(int argc, char **argv, int subject)
+ 	if (tb[TCA_ACT_COOKIE]) {
+ 		int strsz = RTA_PAYLOAD(tb[TCA_ACT_COOKIE]);
+@@ -389,7 +389,7 @@ static int tc_print_one_action(FILE *f, struct rtattr *arg)
+ 		print_string(PRINT_ANY, "cookie", "\tcookie %s",
+ 			     hexstring_n2a(RTA_DATA(tb[TCA_ACT_COOKIE]),
+ 					   strsz, b1, sizeof(b1)));
+-		print_string(PRINT_FP, NULL, "%s", _SL_);
++		print_nl();
+ 	}
+ 	if (tb[TCA_ACT_FLAGS]) {
+ 		struct nla_bitfield32 *flags = RTA_DATA(tb[TCA_ACT_FLAGS]);
+@@ -398,7 +398,7 @@ static int tc_print_one_action(FILE *f, struct rtattr *arg)
+ 			print_bool(PRINT_ANY, "no_percpu", "\tno_percpu",
+ 				   flags->value &
+ 				   TCA_ACT_FLAGS_NO_PERCPU_STATS);
+-		print_string(PRINT_FP, NULL, "%s", _SL_);
++		print_nl();
+ 	}
+ 	if (tb[TCA_ACT_HW_STATS])
+ 		print_hw_stats(tb[TCA_ACT_HW_STATS], false);
+@@ -458,7 +458,7 @@ tc_print_action(FILE *f, const struct rtattr *arg, unsigned short tot_acts)
+ 	for (i = 0; i <= tot_acts; i++) {
+ 		if (tb[i]) {
+ 			open_json_object(NULL);
+-			print_string(PRINT_FP, NULL, "%s", _SL_);
++			print_nl();
+ 			print_uint(PRINT_ANY, "order",
+ 				   "\taction order %u: ", i);
+ 			if (tc_print_one_action(f, tb[i]) < 0) {
+@@ -497,7 +497,7 @@ int print_action(struct nlmsghdr *n, void *arg)
+ 	open_json_object(NULL);
+ 	print_uint(PRINT_ANY, "total acts", "total acts %u",
+ 		   tot_acts ? *tot_acts : 0);
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 	close_json_object();
+ 	if (tb[TCA_ACT_TAB] == NULL) {
+ 		if (n->nlmsg_type != RTM_GETACTION)
+diff --git a/tc/m_connmark.c b/tc/m_connmark.c
+index eac23489..4b2dc4e2 100644
+--- a/tc/m_connmark.c
++++ b/tc/m_connmark.c
+@@ -125,7 +125,7 @@ static int print_connmark(struct action_util *au, FILE *f, struct rtattr *arg)
+ 	print_uint(PRINT_ANY, "zone", "zone %u", ci->zone);
+ 	print_action_control(f, " ", ci->action, "");
+ 
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 	print_uint(PRINT_ANY, "index", "\t index %u", ci->index);
+ 	print_int(PRINT_ANY, "ref", " ref %d", ci->refcnt);
+ 	print_int(PRINT_ANY, "bind", " bind %d", ci->bindcnt);
+@@ -137,7 +137,7 @@ static int print_connmark(struct action_util *au, FILE *f, struct rtattr *arg)
+ 			print_tm(f, tm);
  		}
+ 	}
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
  
- 		if (!is_json_context()) {
--			printf("port\tvlan-id");
-+			printf("%-" __stringify(IFNAMSIZ) "s  %-"
-+			       __stringify(VLAN_ID_LEN) "s", "port",
-+			       "vlan-id");
- 			if (subject == VLAN_SHOW_TUNNELINFO)
--				printf("\ttunnel-id");
-+				printf("  tunnel-id");
- 			printf("\n");
+ 	return 0;
+ }
+diff --git a/tc/m_ctinfo.c b/tc/m_ctinfo.c
+index 5e451f87..e5c1b436 100644
+--- a/tc/m_ctinfo.c
++++ b/tc/m_ctinfo.c
+@@ -238,7 +238,7 @@ static int print_ctinfo(struct action_util *au, FILE *f, struct rtattr *arg)
+ 	print_hu(PRINT_ANY, "zone", "zone %u", zone);
+ 	print_action_control(f, " ", ci->action, "");
+ 
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 	print_uint(PRINT_ANY, "index", "\t index %u", ci->index);
+ 	print_int(PRINT_ANY, "ref", " ref %d", ci->refcnt);
+ 	print_int(PRINT_ANY, "bind", " bind %d", ci->bindcnt);
+@@ -256,7 +256,7 @@ static int print_ctinfo(struct action_util *au, FILE *f, struct rtattr *arg)
+ 	if (show_stats)
+ 		print_ctinfo_stats(f, tb);
+ 
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 
+ 	return 0;
+ }
+diff --git a/tc/m_ife.c b/tc/m_ife.c
+index 7c612c02..6a85e087 100644
+--- a/tc/m_ife.c
++++ b/tc/m_ife.c
+@@ -311,7 +311,7 @@ static int print_ife(struct action_util *au, FILE *f, struct rtattr *arg)
+ 					 sizeof(b2)));
+ 	}
+ 
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 	print_uint(PRINT_ANY, "index", "\t index %u", p->index);
+ 	print_int(PRINT_ANY, "ref", " ref %d", p->refcnt);
+ 	print_int(PRINT_ANY, "bind", " bind %d", p->bindcnt);
+@@ -324,7 +324,7 @@ static int print_ife(struct action_util *au, FILE *f, struct rtattr *arg)
  		}
+ 	}
  
-@@ -555,7 +582,8 @@ static int vlan_show(int argc, char **argv, int subject)
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 
+ 	return 0;
+ }
+diff --git a/tc/m_mpls.c b/tc/m_mpls.c
+index 50eba01c..3d5d9b25 100644
+--- a/tc/m_mpls.c
++++ b/tc/m_mpls.c
+@@ -265,7 +265,7 @@ static int print_mpls(struct action_util *au, FILE *f, struct rtattr *arg)
  		}
+ 	}
  
- 		if (!is_json_context())
--			printf("%-16s vlan-id\n", "port");
-+			printf("%-" __stringify(IFNAMSIZ) "s  vlan-id\n",
-+			       "port");
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
  
- 		if (rtnl_dump_filter(&rth, print_vlan_stats, stdout) < 0) {
- 			fprintf(stderr, "Dump terminated\n");
-@@ -604,8 +632,11 @@ void print_vlan_info(struct rtattr *tb, int ifindex)
- 			continue;
+ 	return 0;
+ }
+diff --git a/tc/m_nat.c b/tc/m_nat.c
+index c4b02a83..56e8f47c 100644
+--- a/tc/m_nat.c
++++ b/tc/m_nat.c
+@@ -172,7 +172,7 @@ print_nat(struct action_util *au, FILE * f, struct rtattr *arg)
+ 		     format_host_r(AF_INET, 4, &sel->new_addr, buf1, sizeof(buf1)));
  
- 		if (!opened) {
--			open_vlan_port(ifindex, "%s", VLAN_SHOW_VLAN);
-+			open_vlan_port(ifindex, VLAN_SHOW_VLAN);
- 			opened = true;
-+		} else {
-+			print_string(PRINT_FP, NULL, "%-"
-+				     __stringify(IFNAMSIZ) "s  ", "");
+ 	print_action_control(f, " ", sel->action, "");
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 	print_uint(PRINT_ANY, "index", "\t index %u", sel->index);
+ 	print_int(PRINT_ANY, "ref", " ref %d", sel->refcnt);
+ 	print_int(PRINT_ANY, "bind", " bind %d", sel->bindcnt);
+@@ -185,7 +185,7 @@ print_nat(struct action_util *au, FILE * f, struct rtattr *arg)
  		}
+ 	}
  
- 		open_json_object(NULL);
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 
+ 	return 0;
+ }
+diff --git a/tc/m_sample.c b/tc/m_sample.c
+index c068e632..4a30513a 100644
+--- a/tc/m_sample.c
++++ b/tc/m_sample.c
+@@ -167,7 +167,7 @@ static int print_sample(struct action_util *au, FILE *f, struct rtattr *arg)
+ 
+ 	print_action_control(f, " ", p->action, "");
+ 
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 	print_uint(PRINT_ANY, "index", "\t index %u", p->index);
+ 	print_int(PRINT_ANY, "ref", " ref %d", p->refcnt);
+ 	print_int(PRINT_ANY, "bind", " bind %d", p->bindcnt);
+@@ -179,7 +179,7 @@ static int print_sample(struct action_util *au, FILE *f, struct rtattr *arg)
+ 			print_tm(f, tm);
+ 		}
+ 	}
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 	return 0;
+ }
+ 
+diff --git a/tc/m_skbedit.c b/tc/m_skbedit.c
+index 761cad58..9afe2f0c 100644
+--- a/tc/m_skbedit.c
++++ b/tc/m_skbedit.c
+@@ -254,7 +254,7 @@ static int print_skbedit(struct action_util *au, FILE *f, struct rtattr *arg)
+ 
+ 	print_action_control(f, " ", p->action, "");
+ 
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 	print_uint(PRINT_ANY, "index", "\t index %u", p->index);
+ 	print_int(PRINT_ANY, "ref", " ref %d", p->refcnt);
+ 	print_int(PRINT_ANY, "bind", " bind %d", p->bindcnt);
+@@ -267,7 +267,7 @@ static int print_skbedit(struct action_util *au, FILE *f, struct rtattr *arg)
+ 		}
+ 	}
+ 
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 
+ 	return 0;
+ }
+diff --git a/tc/m_tunnel_key.c b/tc/m_tunnel_key.c
+index 8fde6891..1f6921f3 100644
+--- a/tc/m_tunnel_key.c
++++ b/tc/m_tunnel_key.c
+@@ -367,7 +367,7 @@ static void tunnel_key_print_ip_addr(FILE *f, const char *name,
+ 	else
+ 		return;
+ 
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 	if (matches(name, "src_ip") == 0)
+ 		print_string(PRINT_ANY, "src_ip", "\tsrc_ip %s",
+ 			     rt_addr_n2a_rta(family, attr));
+@@ -381,7 +381,7 @@ static void tunnel_key_print_key_id(FILE *f, const char *name,
+ {
+ 	if (!attr)
+ 		return;
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 	print_uint(PRINT_ANY, "key_id", "\tkey_id %u", rta_getattr_be32(attr));
+ }
+ 
+@@ -390,7 +390,7 @@ static void tunnel_key_print_dst_port(FILE *f, char *name,
+ {
+ 	if (!attr)
+ 		return;
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 	print_uint(PRINT_ANY, "dst_port", "\tdst_port %u",
+ 		   rta_getattr_be16(attr));
+ }
+@@ -401,7 +401,7 @@ static void tunnel_key_print_flag(FILE *f, const char *name_on,
+ {
+ 	if (!attr)
+ 		return;
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 	print_string(PRINT_ANY, "flag", "\t%s",
+ 		     rta_getattr_u8(attr) ? name_on : name_off);
+ }
+@@ -473,11 +473,11 @@ static void tunnel_key_print_tos_ttl(FILE *f, char *name,
+ 		return;
+ 
+ 	if (matches(name, "tos") == 0 && rta_getattr_u8(attr) != 0) {
+-		print_string(PRINT_FP, NULL, "%s", _SL_);
++		print_nl();
+ 		print_uint(PRINT_ANY, "tos", "\ttos 0x%x",
+ 			   rta_getattr_u8(attr));
+ 	} else if (matches(name, "ttl") == 0 && rta_getattr_u8(attr) != 0) {
+-		print_string(PRINT_FP, NULL, "%s", _SL_);
++		print_nl();
+ 		print_uint(PRINT_ANY, "ttl", "\tttl %u",
+ 			   rta_getattr_u8(attr));
+ 	}
+@@ -531,7 +531,7 @@ static int print_tunnel_key(struct action_util *au, FILE *f, struct rtattr *arg)
+ 	}
+ 	print_action_control(f, " ", parm->action, "");
+ 
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 	print_uint(PRINT_ANY, "index", "\t index %u", parm->index);
+ 	print_int(PRINT_ANY, "ref", " ref %d", parm->refcnt);
+ 	print_int(PRINT_ANY, "bind", " bind %d", parm->bindcnt);
+@@ -544,7 +544,7 @@ static int print_tunnel_key(struct action_util *au, FILE *f, struct rtattr *arg)
+ 		}
+ 	}
+ 
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 
+ 	return 0;
+ }
+diff --git a/tc/q_taprio.c b/tc/q_taprio.c
+index b9954436..e43db9d0 100644
+--- a/tc/q_taprio.c
++++ b/tc/q_taprio.c
+@@ -368,7 +368,7 @@ static int print_sched_list(FILE *f, struct rtattr *list)
+ 
+ 	open_json_array(PRINT_JSON, "schedule");
+ 
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 
+ 	for (item = RTA_DATA(list); RTA_OK(item, rem); item = RTA_NEXT(item, rem)) {
+ 		struct rtattr *tb[TCA_TAPRIO_SCHED_ENTRY_MAX + 1];
+@@ -396,7 +396,7 @@ static int print_sched_list(FILE *f, struct rtattr *list)
+ 		print_uint(PRINT_ANY, "interval", " interval %u", interval);
+ 		close_json_object();
+ 
+-		print_string(PRINT_FP, NULL, "%s", _SL_);
++		print_nl();
+ 	}
+ 
+ 	close_json_array(PRINT_ANY, "");
+@@ -454,7 +454,7 @@ static int taprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 		print_uint(PRINT_ANY, NULL, " %u", qopt->prio_tc_map[i]);
+ 	close_json_array(PRINT_ANY, "");
+ 
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 
+ 	open_json_array(PRINT_ANY, "queues");
+ 	for (i = 0; i < qopt->num_tc; i++) {
+@@ -465,7 +465,7 @@ static int taprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	}
+ 	close_json_array(PRINT_ANY, "");
+ 
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 
+ 	if (tb[TCA_TAPRIO_ATTR_SCHED_CLOCKID])
+ 		clockid = rta_getattr_s32(tb[TCA_TAPRIO_ATTR_SCHED_CLOCKID]);
+diff --git a/tc/tc_util.c b/tc/tc_util.c
+index 68938fb0..12f865cc 100644
+--- a/tc/tc_util.c
++++ b/tc/tc_util.c
+@@ -788,7 +788,7 @@ static void print_tcstats_basic_hw(struct rtattr **tbs, char *prefix)
+ 			   sizeof(bs)));
+ 
+ 		if (bs.bytes >= bs_hw.bytes && bs.packets >= bs_hw.packets) {
+-			print_string(PRINT_FP, NULL, "%s", _SL_);
++			print_nl();
+ 			print_string(PRINT_FP, NULL, "%s", prefix);
+ 			print_lluint(PRINT_ANY, "sw_bytes",
+ 				     "Sent software %llu bytes",
+@@ -798,7 +798,7 @@ static void print_tcstats_basic_hw(struct rtattr **tbs, char *prefix)
+ 		}
+ 	}
+ 
+-	print_string(PRINT_FP, NULL, "%s", _SL_);
++	print_nl();
+ 	print_string(PRINT_FP, NULL, "%s", prefix);
+ 	print_lluint(PRINT_ANY, "hw_bytes", "Sent hardware %llu bytes",
+ 		     bs_hw.bytes);
 -- 
 2.26.0
 
