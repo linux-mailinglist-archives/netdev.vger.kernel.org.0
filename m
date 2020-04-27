@@ -2,234 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D21431BA63A
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 16:20:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 333CC1BA64B
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 16:25:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727888AbgD0OUd convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 27 Apr 2020 10:20:33 -0400
-Received: from mga14.intel.com ([192.55.52.115]:18087 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727089AbgD0OUc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Apr 2020 10:20:32 -0400
-IronPort-SDR: /3iS2r+LxKiyFSKqw7fPujz38rvyItIjDMBqdix7xFXI9irpE98im2Y5ADKbVFs7mUJCtLn9Zg
- O0qfxwXnyfLg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2020 07:20:21 -0700
-IronPort-SDR: 8u1wBsafq06P0169Fc7siiQz4oMWyxRfwgSnFrh8Ubu0Mjj4U/MtW7K9ziKMJV+dXWKqcqRRXJ
- 6ZY8xyXv+thA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,324,1583222400"; 
-   d="scan'208";a="431791909"
-Received: from fmsmsx108.amr.corp.intel.com ([10.18.124.206])
-  by orsmga005.jf.intel.com with ESMTP; 27 Apr 2020 07:20:21 -0700
-Received: from fmsmsx116.amr.corp.intel.com (10.18.116.20) by
- FMSMSX108.amr.corp.intel.com (10.18.124.206) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 27 Apr 2020 07:20:20 -0700
-Received: from shsmsx102.ccr.corp.intel.com (10.239.4.154) by
- fmsmsx116.amr.corp.intel.com (10.18.116.20) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 27 Apr 2020 07:20:20 -0700
-Received: from shsmsx108.ccr.corp.intel.com ([169.254.8.7]) by
- shsmsx102.ccr.corp.intel.com ([169.254.2.138]) with mapi id 14.03.0439.000;
- Mon, 27 Apr 2020 22:20:17 +0800
-From:   "Zhang, Rui" <rui.zhang@intel.com>
-To:     'Andrzej Pietrasiewicz' <andrzej.p@collabora.com>,
-        "'linux-pm@vger.kernel.org'" <linux-pm@vger.kernel.org>
-CC:     "'Rafael J . Wysocki'" <rjw@rjwysocki.net>,
-        'Len Brown' <lenb@kernel.org>,
-        'Jiri Pirko' <jiri@mellanox.com>,
-        'Ido Schimmel' <idosch@mellanox.com>,
-        "'David S . Miller'" <davem@davemloft.net>,
-        'Peter Kaestle' <peter@piie.net>,
-        'Darren Hart' <dvhart@infradead.org>,
-        'Andy Shevchenko' <andy@infradead.org>,
-        'Support Opensource' <support.opensource@diasemi.com>,
-        'Daniel Lezcano' <daniel.lezcano@linaro.org>,
-        'Amit Kucheria' <amit.kucheria@verdurent.com>,
-        'Shawn Guo' <shawnguo@kernel.org>,
-        'Sascha Hauer' <s.hauer@pengutronix.de>,
-        'Pengutronix Kernel Team' <kernel@pengutronix.de>,
-        'Fabio Estevam' <festevam@gmail.com>,
-        'NXP Linux Team' <linux-imx@nxp.com>,
-        'Heiko Stuebner' <heiko@sntech.de>,
-        'Orson Zhai' <orsonzhai@gmail.com>,
-        'Baolin Wang' <baolin.wang7@gmail.com>,
-        'Chunyan Zhang' <zhang.lyra@gmail.com>,
-        "'linux-acpi@vger.kernel.org'" <linux-acpi@vger.kernel.org>,
-        "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>,
-        "'platform-driver-x86@vger.kernel.org'" 
-        <platform-driver-x86@vger.kernel.org>,
-        "'linux-arm-kernel@lists.infradead.org'" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "'kernel@collabora.com'" <kernel@collabora.com>,
-        'Barlomiej Zolnierkiewicz' <b.zolnierkie@samsung.com>
-Subject: RE: [PATCH v3 2/2] thermal: core: Stop polling DISABLED thermal
- devices
-Thread-Topic: [PATCH v3 2/2] thermal: core: Stop polling DISABLED thermal
- devices
-Thread-Index: AQHWGZBG4VqXwdwSNk6/8EtFFGs1V6iH9bQAgAUTBvA=
-Date:   Mon, 27 Apr 2020 14:20:17 +0000
-Message-ID: <744357E9AAD1214791ACBA4B0B90926377CF9A10@SHSMSX108.ccr.corp.intel.com>
-References: <a3998ad2-19bc-0893-a10d-2bb5adf7d99f@samsung.com>
- <20200423165705.13585-1-andrzej.p@collabora.com>
- <20200423165705.13585-3-andrzej.p@collabora.com>
- <744357E9AAD1214791ACBA4B0B90926377CF60E3@SHSMSX108.ccr.corp.intel.com>
-In-Reply-To: <744357E9AAD1214791ACBA4B0B90926377CF60E3@SHSMSX108.ccr.corp.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.239.127.40]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727921AbgD0OZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 10:25:38 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:57675 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727808AbgD0OZf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 10:25:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587997533;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=G2OKqHupmsX6p6eOVsvAeEE5c4vTAldIJ9QKI6xeIiI=;
+        b=GfjgFlt3zbQNEZytjIk/kEXbOYFkVWqFV9sLaQBJvzHhYvN7QdoHr7o8FelDPK5WNsOGh8
+        GKGNmSppFMdJoeFCHCcCbcj1DHy784ah0q6t/1Jw8YGZYrohQ2Mur2E9Yn6d0YxKII38eE
+        V5Y70hQ/kYZMi1f71C5RBvkVb/plKsQ=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-335-fpoe5692OHqurfA2js_-FA-1; Mon, 27 Apr 2020 10:25:23 -0400
+X-MC-Unique: fpoe5692OHqurfA2js_-FA-1
+Received: by mail-wr1-f69.google.com with SMTP id i10so10549536wrq.8
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 07:25:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=G2OKqHupmsX6p6eOVsvAeEE5c4vTAldIJ9QKI6xeIiI=;
+        b=pv8cPFEaesjcb/q9Logy1rMniQpoSif2CWTsbgpk5Fp20N1Rj8AU6xJ/nGE+/ITrBG
+         UZVNndvJEPP0bxytjJo88W0hvhtibfhfHYWI9kLitNUa9PJbMe43eptP5RVlyp9Z0OQS
+         aala1OKTdLzbSH+hVzpMmuN/OIIjoiPkquHrnga/5z8MiT+f9gtBLVYAb+VHeYt++XMb
+         uQq/TDCiB8jebOgeqqSrYnHnJMWMbFDsVv+cXY4QcBbx0v4qe2V7/GhimhGb2eRqdwzt
+         sDFt8vtuAEq2vbsIke//6xvn51gdmpNClaoJVEnQ/8BaWsLIzncBeiwNXaDADU1LOxwU
+         Zn4Q==
+X-Gm-Message-State: AGi0PuYY8EI/Dz2Y3OdeyRiQaWcipy91SmJfV96OAczRDeX0RYKC4OEP
+        RXAcjFkl5/zphj+ESEeN1Op6uWDljpzz7SDV6TYyjGIsxCCc9DqzHlqXctz7D/WGR9IvCA8LJeQ
+        qLv7oN7FHBpJWeIac
+X-Received: by 2002:a1c:ed04:: with SMTP id l4mr26738562wmh.93.1587997522582;
+        Mon, 27 Apr 2020 07:25:22 -0700 (PDT)
+X-Google-Smtp-Source: APiQypIxTLUJV76JfSV7akvjZLc8gxRNuDLQT/3botMuSslAXyKAEmVDR+5C/do/K4W5YD7K308fCA==
+X-Received: by 2002:a1c:ed04:: with SMTP id l4mr26738539wmh.93.1587997522273;
+        Mon, 27 Apr 2020 07:25:22 -0700 (PDT)
+Received: from steredhat (host108-207-dynamic.49-79-r.retail.telecomitalia.it. [79.49.207.108])
+        by smtp.gmail.com with ESMTPSA id m1sm20657589wro.64.2020.04.27.07.25.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Apr 2020 07:25:21 -0700 (PDT)
+Date:   Mon, 27 Apr 2020 16:25:18 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     davem@davemloft.net, Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Jorgen Hansen <jhansen@vmware.com>,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-hyperv@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 0/3] vsock: support network namespace
+Message-ID: <20200427142518.uwssa6dtasrp3bfc@steredhat>
+References: <20200116172428.311437-1-sgarzare@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200116172428.311437-1-sgarzare@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi David, Michael, Stefan,
+I'm restarting to work on this topic since Kata guys are interested to
+have that, especially on the guest side.
+
+While working on the v2 I had few doubts, and I'd like to have your
+suggestions:
+
+ 1. netns assigned to the device inside the guest
+
+   Currently I assigned this device to 'init_net'. Maybe it is better
+   if we allow the user to decide which netns assign to the device
+   or to disable this new feature to have the same behavior as before
+   (host reachable from any netns).
+   I think we can handle this in the vsock core and not in the single
+   transports.
+
+   The simplest way that I found, is to add a new
+   IOCTL_VM_SOCKETS_ASSIGN_G2H_NETNS to /dev/vsock to enable the feature
+   and assign the device to the same netns of the process that do the
+   ioctl(), but I'm not sure it is clean enough.
+
+   Maybe it is better to add new rtnetlink messages, but I'm not sure if
+   it is feasible since we don't have a netdev device.
+
+   What do you suggest?
 
 
-> -----Original Message-----
-> From: Zhang, Rui
-> Sent: Friday, April 24, 2020 5:03 PM
-> To: Andrzej Pietrasiewicz <andrzej.p@collabora.com>; linux-
-> pm@vger.kernel.org
-> Cc: Rafael J . Wysocki <rjw@rjwysocki.net>; Len Brown <lenb@kernel.org>;
-> Jiri Pirko <jiri@mellanox.com>; Ido Schimmel <idosch@mellanox.com>; David
-> S . Miller <davem@davemloft.net>; Peter Kaestle <peter@piie.net>; Darren
-> Hart <dvhart@infradead.org>; Andy Shevchenko <andy@infradead.org>;
-> Support Opensource <support.opensource@diasemi.com>; Daniel Lezcano
-> <daniel.lezcano@linaro.org>; Amit Kucheria
-> <amit.kucheria@verdurent.com>; Shawn Guo <shawnguo@kernel.org>;
-> Sascha Hauer <s.hauer@pengutronix.de>; Pengutronix Kernel Team
-> <kernel@pengutronix.de>; Fabio Estevam <festevam@gmail.com>; NXP
-> Linux Team <linux-imx@nxp.com>; Heiko Stuebner <heiko@sntech.de>;
-> Orson Zhai <orsonzhai@gmail.com>; Baolin Wang
-> <baolin.wang7@gmail.com>; Chunyan Zhang <zhang.lyra@gmail.com>; linux-
-> acpi@vger.kernel.org; netdev@vger.kernel.org; platform-driver-
-> x86@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
-> kernel@collabora.com; Barlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-> Subject: RE: [PATCH v3 2/2] thermal: core: Stop polling DISABLED thermal
-> devices
-> 
-> Hi, Andrzej,
-> 
-> Thanks for the patches. My Linux laptop was broken and won't get fixed till
-> next week, so I may lost some of the discussions previously.
-> 
-> > -----Original Message-----
-> > From: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-> > Sent: Friday, April 24, 2020 12:57 AM
-> > To: linux-pm@vger.kernel.org
-> > Cc: Zhang, Rui <rui.zhang@intel.com>; Rafael J . Wysocki
-> > <rjw@rjwysocki.net>; Len Brown <lenb@kernel.org>; Jiri Pirko
-> > <jiri@mellanox.com>; Ido Schimmel <idosch@mellanox.com>; David S .
-> > Miller <davem@davemloft.net>; Peter Kaestle <peter@piie.net>; Darren
-> > Hart <dvhart@infradead.org>; Andy Shevchenko <andy@infradead.org>;
-> > Support Opensource <support.opensource@diasemi.com>; Daniel Lezcano
-> > <daniel.lezcano@linaro.org>; Amit Kucheria
-> > <amit.kucheria@verdurent.com>; Shawn Guo <shawnguo@kernel.org>;
-> Sascha
-> > Hauer <s.hauer@pengutronix.de>; Pengutronix Kernel Team
-> > <kernel@pengutronix.de>; Fabio Estevam <festevam@gmail.com>; NXP
-> Linux
-> > Team <linux-imx@nxp.com>; Heiko Stuebner <heiko@sntech.de>; Orson
-> Zhai
-> > <orsonzhai@gmail.com>; Baolin Wang <baolin.wang7@gmail.com>;
-> Chunyan
-> > Zhang <zhang.lyra@gmail.com>; linux- acpi@vger.kernel.org;
-> > netdev@vger.kernel.org; platform-driver- x86@vger.kernel.org;
-> > linux-arm-kernel@lists.infradead.org;
-> > kernel@collabora.com; Andrzej Pietrasiewicz <andrzej.p@collabora.com>;
-> > Barlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-> > Subject: [PATCH v3 2/2] thermal: core: Stop polling DISABLED thermal
-> > devices
-> > Importance: High
-> >
-> > Polling DISABLED devices is not desired, as all such "disabled"
-> > devices are meant to be handled by userspace. This patch introduces
-> > and uses
-> > should_stop_polling() to decide whether the device should be polled or
-> not.
-> >
-> Thanks for the fix, and IMO, this reveal some more problems.
-> Say, we need to define "DISABLED" thermal zone.
-> Can we read the temperature? Can we trust the trip point value?
-> 
-> IMO, a disabled thermal zone does not mean it is handled by userspace,
-> because that is what the userspace governor designed for.
-> Instead, if a thermal zone is disabled, in thermal_zone_device_update(), we
-> should basically skip all the other operations as well.
-> 
-I overlooked the last line of the patch. So thermal_zone_device_update() returns
-immediately if the thermal zone is disabled, right?
+ 2. netns assigned in the host
 
-But how can we stop polling in this case?
-There is no chance to call into monitor_thermal_zone() in thermal_zone_device_update(),
-or do I miss something?
+    As Michael suggested, I added a new /dev/vhost-vsock-netns to allow
+    userspace application to use this new feature, leaving to
+    /dev/vhost-vsock the previous behavior (guest reachable from any
+    netns).
 
-> I'll try your patches and probably make an incremental patch.
+    I like this approach, but I had these doubts:
 
-I have finished a small patch set to improve this based on my understanding, and will post it
-tomorrow after testing.
+    - I need to allocate a new minor for that device (e.g.
+      VHOST_VSOCK_NETNS_MINOR) or is there an alternative way that I can
+      use?
 
-Thanks,
-rui
+    - It is vhost-vsock specific, should we provide something handled in
+      the vsock core, maybe centralizing the CID allocation and adding a
+      new IOCTL or rtnetlink message like for the guest side?
+      (maybe it could be a second step, and for now we can continue with
+      the new device)
+
+
+Thanks for the help,
+Stefano
+
+
+On Thu, Jan 16, 2020 at 06:24:25PM +0100, Stefano Garzarella wrote:
+> RFC -> v1:
+>  * added 'netns' module param to vsock.ko to enable the
+>    network namespace support (disabled by default)
+>  * added 'vsock_net_eq()' to check the "net" assigned to a socket
+>    only when 'netns' support is enabled
 > 
-> Thanks,
-> rui
+> RFC: https://patchwork.ozlabs.org/cover/1202235/
 > 
-> > Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-> > ---
-> >  drivers/thermal/thermal_core.c | 16 ++++++++++++++--
-> >  1 file changed, 14 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/thermal/thermal_core.c
-> > b/drivers/thermal/thermal_core.c index a2a5034f76e7..03c4d8d23284
-> > 100644
-> > --- a/drivers/thermal/thermal_core.c
-> > +++ b/drivers/thermal/thermal_core.c
-> > @@ -305,13 +305,22 @@ static void
-> > thermal_zone_device_set_polling(struct
-> > thermal_zone_device *tz,
-> >  		cancel_delayed_work(&tz->poll_queue);
-> >  }
-> >
-> > +static inline bool should_stop_polling(struct thermal_zone_device
-> > +*tz) {
-> > +	return thermal_zone_device_get_mode(tz) ==
-> > THERMAL_DEVICE_DISABLED; }
-> > +
-> >  static void monitor_thermal_zone(struct thermal_zone_device *tz)  {
-> > +	bool stop;
-> > +
-> > +	stop = should_stop_polling(tz);
-> > +
-> >  	mutex_lock(&tz->lock);
-> >
-> > -	if (tz->passive)
-> > +	if (!stop && tz->passive)
-> >  		thermal_zone_device_set_polling(tz, tz->passive_delay);
-> > -	else if (tz->polling_delay)
-> > +	else if (!stop && tz->polling_delay)
-> >  		thermal_zone_device_set_polling(tz, tz->polling_delay);
-> >  	else
-> >  		thermal_zone_device_set_polling(tz, 0); @@ -503,6 +512,9
-> @@ void
-> > thermal_zone_device_update(struct thermal_zone_device *tz,  {
-> >  	int count;
-> >
-> > +	if (should_stop_polling(tz))
-> > +		return;
-> > +
-> >  	if (atomic_read(&in_suspend))
-> >  		return;
-> >
-> > --
-> > 2.17.1
+> Now that we have multi-transport upstream, I started to take a look to
+> support network namespace in vsock.
+> 
+> As we partially discussed in the multi-transport proposal [1], it could
+> be nice to support network namespace in vsock to reach the following
+> goals:
+> - isolate host applications from guest applications using the same ports
+>   with CID_ANY
+> - assign the same CID of VMs running in different network namespaces
+> - partition VMs between VMMs or at finer granularity
+> 
+> This new feature is disabled by default, because it changes vsock's
+> behavior with network namespaces and could break existing applications.
+> It can be enabled with the new 'netns' module parameter of vsock.ko.
+> 
+> This implementation provides the following behavior:
+> - packets received from the host (received by G2H transports) are
+>   assigned to the default netns (init_net)
+> - packets received from the guest (received by H2G - vhost-vsock) are
+>   assigned to the netns of the process that opens /dev/vhost-vsock
+>   (usually the VMM, qemu in my tests, opens the /dev/vhost-vsock)
+>     - for vmci I need some suggestions, because I don't know how to do
+>       and test the same in the vmci driver, for now vmci uses the
+>       init_net
+> - loopback packets are exchanged only in the same netns
+> 
+> I tested the series in this way:
+> l0_host$ qemu-system-x86_64 -m 4G -M accel=kvm -smp 4 \
+>             -drive file=/tmp/vsockvm0.img,if=virtio --nographic \
+>             -device vhost-vsock-pci,guest-cid=3
+> 
+> l1_vm$ echo 1 > /sys/module/vsock/parameters/netns
+> 
+> l1_vm$ ip netns add ns1
+> l1_vm$ ip netns add ns2
+>  # same CID on different netns
+> l1_vm$ ip netns exec ns1 qemu-system-x86_64 -m 1G -M accel=kvm -smp 2 \
+>             -drive file=/tmp/vsockvm1.img,if=virtio --nographic \
+>             -device vhost-vsock-pci,guest-cid=4
+> l1_vm$ ip netns exec ns2 qemu-system-x86_64 -m 1G -M accel=kvm -smp 2 \
+>             -drive file=/tmp/vsockvm2.img,if=virtio --nographic \
+>             -device vhost-vsock-pci,guest-cid=4
+> 
+>  # all iperf3 listen on CID_ANY and port 5201, but in different netns
+> l1_vm$ ./iperf3 --vsock -s # connection from l0 or guests started
+>                            # on default netns (init_net)
+> l1_vm$ ip netns exec ns1 ./iperf3 --vsock -s
+> l1_vm$ ip netns exec ns1 ./iperf3 --vsock -s
+> 
+> l0_host$ ./iperf3 --vsock -c 3
+> l2_vm1$ ./iperf3 --vsock -c 2
+> l2_vm2$ ./iperf3 --vsock -c 2
+> 
+> [1] https://www.spinics.net/lists/netdev/msg575792.html
+> 
+> Stefano Garzarella (3):
+>   vsock: add network namespace support
+>   vsock/virtio_transport_common: handle netns of received packets
+>   vhost/vsock: use netns of process that opens the vhost-vsock device
+> 
+>  drivers/vhost/vsock.c                   | 29 ++++++++++++-----
+>  include/linux/virtio_vsock.h            |  2 ++
+>  include/net/af_vsock.h                  |  7 +++--
+>  net/vmw_vsock/af_vsock.c                | 41 +++++++++++++++++++------
+>  net/vmw_vsock/hyperv_transport.c        |  5 +--
+>  net/vmw_vsock/virtio_transport.c        |  2 ++
+>  net/vmw_vsock/virtio_transport_common.c | 12 ++++++--
+>  net/vmw_vsock/vmci_transport.c          |  5 +--
+>  8 files changed, 78 insertions(+), 25 deletions(-)
+> 
+> -- 
+> 2.24.1
+> 
 
