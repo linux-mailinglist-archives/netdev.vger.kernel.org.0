@@ -2,96 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC5B31B9890
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 09:27:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F4E81B957D
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 05:31:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726639AbgD0H10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 03:27:26 -0400
-Received: from mx01-bsp.telkomsigma.com ([180.250.111.16]:40288 "EHLO
-        bspproxy2.telkomsigma.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726349AbgD0H10 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 03:27:26 -0400
-X-Greylist: delayed 8982 seconds by postgrey-1.27 at vger.kernel.org; Mon, 27 Apr 2020 03:27:24 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by bspproxy2.telkomsigma.com (Postfix) with ESMTP id 04BEB21E4EE1;
-        Mon, 27 Apr 2020 10:17:02 +0700 (WIB)
-Received: from bspproxy2.telkomsigma.com ([127.0.0.1])
-        by localhost (bspproxy2.telkomsigma.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id EBbJ-CXPEu0j; Mon, 27 Apr 2020 10:17:01 +0700 (WIB)
-Received: from localhost (localhost [127.0.0.1])
-        by bspproxy2.telkomsigma.com (Postfix) with ESMTP id B73A621E4EF7;
-        Mon, 27 Apr 2020 10:17:01 +0700 (WIB)
-DKIM-Filter: OpenDKIM Filter v2.10.3 bspproxy2.telkomsigma.com B73A621E4EF7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pins.co.id;
-        s=007891C6-515B-11EA-AA7F-CECF12AB3271; t=1587957421;
-        bh=EWUP43eTPVm7xD16M60X/jX8eZnTqYlbIDiyhc+PHgg=;
-        h=MIME-Version:To:From:Date:Message-Id;
-        b=jX6+/geu4HTuDrDGPueLezuMMygOuq1DMRm4hl56q9q4rzexAqA/tWs7barNB4wBe
-         i6zMyO+95Byp5h2hLXuPk0Er3ha7sSfFLmXC9dPjDDZdJVyKqkWlvm2TBW6MEgb74N
-         MQl0FLG1w+rM9i7xD21VwmVqLiDm+6HJqETdO0yg=
-X-Virus-Scanned: amavisd-new at 
-Received: from bspproxy2.telkomsigma.com ([127.0.0.1])
-        by localhost (bspproxy2.telkomsigma.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id SK5gpTQ5D-Xi; Mon, 27 Apr 2020 10:17:01 +0700 (WIB)
-Received: from [95.168.191.226] (unknown [95.168.191.226])
-        by bspproxy2.telkomsigma.com (Postfix) with ESMTPSA id D6F7021E4EE1;
-        Mon, 27 Apr 2020 10:16:55 +0700 (WIB)
-Content-Type: text/plain; charset="iso-8859-1"
+        id S1726535AbgD0DbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 26 Apr 2020 23:31:17 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:56907 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726340AbgD0DbR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 26 Apr 2020 23:31:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587958275;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0WoA+56dUoJ/42TBfEa8gnCTKtqRiC7Gj8GgqmhVbnk=;
+        b=Dz8JzZTVTOo9q8Ox1Vo90CQ5LtyLYbTaQKLE78KvPL0/5pTAFP+4KpEEyxB24HDTFCtA6e
+        Wkixeo0/rPqg5eiXFsMW6dM5E9FIn0JgfDAkXy9JEoXIO/XWauaYtNHzWWP/5c26/Dwlqj
+        XFI/FrgPIe9kUCz8nyF4Nj5bjvi60uo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-228-mbCEEtQlNV2GbyXyosO0mw-1; Sun, 26 Apr 2020 23:31:14 -0400
+X-MC-Unique: mbCEEtQlNV2GbyXyosO0mw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 072B918FE863;
+        Mon, 27 Apr 2020 03:31:13 +0000 (UTC)
+Received: from [10.72.12.205] (ovpn-12-205.pek2.redhat.com [10.72.12.205])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 57E371001281;
+        Mon, 27 Apr 2020 03:31:07 +0000 (UTC)
+Subject: Re: [PATCH V4 0/3] vdpa: Support config interrupt in vhost_vdpa
+To:     Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     lulu@redhat.com, dan.daly@intel.com, cunming.liang@intel.com
+References: <1587901406-27400-1-git-send-email-lingshan.zhu@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <ff2471ae-254e-7697-72b7-6601a561c3d9@redhat.com>
+Date:   Mon, 27 Apr 2020 11:31:05 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
+In-Reply-To: <1587901406-27400-1-git-send-email-lingshan.zhu@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: =?utf-8?q?=C3=9Cberweisung_zur_Unterst=C3=BCtzung_von_COVID-19_Pandamic?=
-To:     Recipients <victor.iring@pins.co.id>
-From:   "Mr.Wehner David M" <victor.iring@pins.co.id>
-Date:   Sun, 26 Apr 2020 20:28:06 -0700
-Reply-To: info@zbukgroupltd.info
-Message-Id: <20200427031655.D6F7021E4EE1@bspproxy2.telkomsigma.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-B=FCro des Kopfes
-Internationaler Transfer
-Operation Zenith Bank
-(UK) Ltd LONDON United
-K=F6nigreich und Irland
-Tel.: +44 203 389 5674
-Fax: +44 704 307 1539
 
-Gru=DF,
+On 2020/4/26 =E4=B8=8B=E5=8D=887:43, Zhu Lingshan wrote:
+> This series includes two patches, one introduced
+> config interrupt support in VDPA core, the other
+> one implemented config interrupt in IFCVF.
+>
+> changes from V3:
+> move changes in driver/vhost/vhost.c to a
+> separated patch.
+>
+> changes from V2:
+> move VHOST_FILE_UNBIND to the uapi header.
+>
+> changes from V1:
+> vdpa: more efficient code to handle eventfd unbind.
+> ifcvf: add VIRTIO_NET_F_STATUS feature bit.
 
-Ihre E-Mail-Adresse wurde in einer zuf=E4lligen Ziehung in der Zenith Bank-=
-Zentrale, International Transfer Operation in London, Gro=DFbritannien, erm=
-ittelt.
 
-Ich bin Mr.WEHNER DAVID M. Ein pers=F6nlicher Buchhalter des verstorbenen M=
-r. Michael Blair, der mit Shell British Petroleum zusammengearbeitet hat. H=
-err Michael Blair, ein bekannter Philanthrop, hat vor seinem Tod in einer A=
-nwaltskanzlei ein Testament abgegeben, wonach 12,5 Millionen US-Dollar (nur=
- zw=F6lf Millionen f=FCnfhunderttausend US-Dollar) an jeden gl=FCcklichen P=
-hilanthrop oder jede gemeinn=FCtzige Organisation in =DCbersee gespendet we=
-rden sollten.
+5.8 material I think.
 
-Die Zenith Bank Plc ist mit dem verstorbenen Michael Blair einverstanden, d=
-en Fonds an eine gl=FCckliche Person in Amerika, Europa, Asien und Afrika z=
-u spenden, um Leben und Unternehmen zu verbessern
+Acked-by: Jason Wang <jasowang@redhat.com>
 
-Wir haben unsere zuf=E4llige Ziehung durchgef=FChrt und Ihre E-Mail-Adresse=
- wurde ausgew=E4hlt, um diesen Fonds als Beg=FCnstigten seines Testaments z=
-u erhalten. Bitte melden Sie sich bei mir Sobald Sie unsere E-Mail erhalten=
- haben, um die =DCbertragung zu erm=F6glichen Die Operation weist Sie an, w=
-as als n=E4chstes zu tun ist, um diesen Fonds legal zu erhalten.
 
-Es wird empfohlen, die folgenden Angaben erneut aufzunehmen:
+>
+> Zhu Lingshan (3):
+>    vdpa: Support config interrupt in vhost_vdpa
+>    vhost: replace -1 with  VHOST_FILE_UNBIND in iotcls
+>    vdpa: implement config interrupt in IFCVF
+>
+>   drivers/vdpa/ifcvf/ifcvf_base.c |  3 +++
+>   drivers/vdpa/ifcvf/ifcvf_base.h |  3 +++
+>   drivers/vdpa/ifcvf/ifcvf_main.c | 22 ++++++++++++++++++-
+>   drivers/vhost/vdpa.c            | 47 ++++++++++++++++++++++++++++++++=
++++++++++
+>   drivers/vhost/vhost.c           |  8 +++----
+>   include/uapi/linux/vhost.h      |  4 ++++
+>   6 files changed, 82 insertions(+), 5 deletions(-)
+>
 
-VOLLST=C4NDIGER NAME:
-
-VOLLST=C4NDIGE KONTAKTADRESSE:
-
-TELEFON- und FAXNUMMERN:
-
-Dein,
-Herr WEHNER DAVID M.
-Leiter International Transfer Operation
-Zenith Bank (UK) Plc
