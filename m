@@ -2,53 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 469351BA746
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 17:06:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C8E01BA739
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 17:06:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728120AbgD0PGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 11:06:25 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:57235 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727098AbgD0PGY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 11:06:24 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id E2D795C01EE;
-        Mon, 27 Apr 2020 11:06:22 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Mon, 27 Apr 2020 11:06:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=WO2kakA5IjVhc5iPb
-        9iWxydoyu5OdUnGIX68l+HG3zg=; b=nTDEIWy1TZH3V7czRU0IQZQv3tKh9BD7H
-        wQ1kEp5Wv0gQ5OHvt84er/hcCI+4FzZt4uWuPy0ln23mpq9Xhs5ClcGV0em5YaJV
-        Y7uiugmoYG7sXFpfqluBz23xT9dcWusQCUJLiCOQwfMa3ZoJA0zIB6dnN6cZXhlQ
-        dgdJGTCIqcd0ikMARqhhlXoUHjFnqja/4lCyLp9Bsj9gGMvgauRJbopqvaiZzWrQ
-        NRjukg0t4m/bUnNCSqS4MGrgsaJ4V0TVocVZWAB3JRT2+dvesntiClS5lfapdt3d
-        vNlmw62sMoAJUP8El0XGTAWiybEtFjX5JjRRj89k9Yqx/4NhSruKQ==
-X-ME-Sender: <xms:7vSmXrvYH55q-lTR5fgI62OJANXU5W_2-aKKzHq7RzFhaGvsCwx6Tg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrheelgdekfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
-    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
-    rdhorhhgqeenucfkphepjeelrddukedtrdehgedrudduieenucevlhhushhtvghrufhiii
-    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdho
-    rhhg
-X-ME-Proxy: <xmx:7vSmXp9BHbN6LI786KEHvvyaZH9oirusib-g5KDhj9DJZITKnCFonA>
-    <xmx:7vSmXlGL6jo4icgxAgWDGijlIg-oZf_xqKd0fXJpL-eSH5yJhkJLVQ>
-    <xmx:7vSmXhU_pKKOY9VVjCC9-WtiTTJYrZUeBpO7mH2vjhdZ9T4bc7tDKQ>
-    <xmx:7vSmXpl7SYpYxbkK0bieioIiGmfbjNmUWdP4sjgNy1BKY1NT-BmgcA>
-Received: from splinter.mtl.com (bzq-79-180-54-116.red.bezeqint.net [79.180.54.116])
-        by mail.messagingengine.com (Postfix) with ESMTPA id B108C3280067;
-        Mon, 27 Apr 2020 11:06:21 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net] mlxsw: spectrum_acl_tcam: Position vchunk in a vregion list properly
-Date:   Mon, 27 Apr 2020 18:05:47 +0300
-Message-Id: <20200427150547.3949211-1-idosch@idosch.org>
-X-Mailer: git-send-email 2.24.1
+        id S1727824AbgD0PGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 11:06:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39948 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727794AbgD0PGK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 11:06:10 -0400
+X-Greylist: delayed 325 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 27 Apr 2020 08:06:10 PDT
+Received: from simonwunderlich.de (packetmixer.de [IPv6:2001:4d88:2000:24::c0de])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8353C0610D5
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 08:06:10 -0700 (PDT)
+Received: from kero.packetmixer.de (p4FD5799A.dip0.t-ipconnect.de [79.213.121.154])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by simonwunderlich.de (Postfix) with ESMTPSA id 63D2862058;
+        Mon, 27 Apr 2020 17:06:09 +0200 (CEST)
+From:   Simon Wunderlich <sw@simonwunderlich.de>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org,
+        Simon Wunderlich <sw@simonwunderlich.de>
+Subject: [PATCH 0/5] pull request for net-next: batman-adv 2020-04-27
+Date:   Mon, 27 Apr 2020 17:06:02 +0200
+Message-Id: <20200427150607.31401-1-sw@simonwunderlich.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -56,52 +35,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+Hi David,
 
-Vregion helpers to get min and max priority depend on the correct
-ordering of vchunks in the vregion list. However, the current code
-always adds new chunk to the end of the list, no matter what the
-priority is. Fix this by finding the correct place in the list and put
-vchunk there.
+here is a small cleanup pull request of batman-adv to go into net-next.
 
-Fixes: 22a677661f56 ("mlxsw: spectrum: Introduce ACL core with simple TCAM implementation")
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- .../net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c  | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+Please pull or let me know of any problem!
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
-index 430da69003d8..a6e30e020b5c 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_acl_tcam.c
-@@ -986,8 +986,9 @@ mlxsw_sp_acl_tcam_vchunk_create(struct mlxsw_sp *mlxsw_sp,
- 				unsigned int priority,
- 				struct mlxsw_afk_element_usage *elusage)
- {
-+	struct mlxsw_sp_acl_tcam_vchunk *vchunk, *vchunk2;
- 	struct mlxsw_sp_acl_tcam_vregion *vregion;
--	struct mlxsw_sp_acl_tcam_vchunk *vchunk;
-+	struct list_head *pos;
- 	int err;
- 
- 	if (priority == MLXSW_SP_ACL_TCAM_CATCHALL_PRIO)
-@@ -1025,7 +1026,14 @@ mlxsw_sp_acl_tcam_vchunk_create(struct mlxsw_sp *mlxsw_sp,
- 	}
- 
- 	mlxsw_sp_acl_tcam_rehash_ctx_vregion_changed(vregion);
--	list_add_tail(&vchunk->list, &vregion->vchunk_list);
-+
-+	/* Position the vchunk inside the list according to priority */
-+	list_for_each(pos, &vregion->vchunk_list) {
-+		vchunk2 = list_entry(pos, typeof(*vchunk2), list);
-+		if (vchunk2->priority > priority)
-+			break;
-+	}
-+	list_add_tail(&vchunk->list, pos);
- 	mutex_unlock(&vregion->lock);
- 
- 	return vchunk;
--- 
-2.24.1
+Thank you,
+      Simon
 
+The following changes since commit 8f3d9f354286745c751374f5f1fcafee6b3f3136:
+
+  Linux 5.7-rc1 (2020-04-12 12:35:55 -0700)
+
+are available in the Git repository at:
+
+  git://git.open-mesh.org/linux-merge.git tags/batadv-next-for-davem-20200427
+
+for you to fetch changes up to e73f94d1b6f05f6f22434c63de255a9dec6fd23d:
+
+  batman-adv: remove unused inline function batadv_arp_change_timeout (2020-04-24 15:22:41 +0200)
+
+----------------------------------------------------------------
+This cleanup patchset includes the following patches:
+
+ - bump version strings, by Simon Wunderlich
+
+ - fix spelling error, by Sven Eckelmann
+
+ - drop unneeded types.h include, by Sven Eckelmann
+
+ - change random number generation to prandom_u32_max(),
+   by Sven Eckelmann
+
+ - remove unused function batadv_arp_change_timeout(), by Yue Haibing
+
+----------------------------------------------------------------
+Simon Wunderlich (1):
+      batman-adv: Start new development cycle
+
+Sven Eckelmann (3):
+      batman-adv: Fix spelling error in term buffer
+      batman-adv: trace: Drop unneeded types.h include
+      batman-adv: Utilize prandom_u32_max for random [0, max) values
+
+YueHaibing (1):
+      batman-adv: remove unused inline function batadv_arp_change_timeout
+
+ net/batman-adv/bat_iv_ogm.c            | 4 ++--
+ net/batman-adv/bat_v_elp.c             | 2 +-
+ net/batman-adv/bat_v_ogm.c             | 4 ++--
+ net/batman-adv/distributed-arp-table.h | 5 -----
+ net/batman-adv/main.h                  | 2 +-
+ net/batman-adv/trace.h                 | 1 -
+ net/batman-adv/types.h                 | 2 +-
+ 7 files changed, 7 insertions(+), 13 deletions(-)
