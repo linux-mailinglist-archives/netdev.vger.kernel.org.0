@@ -2,55 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 560C51BAFD0
-	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 22:56:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D52201BAFD1
+	for <lists+netdev@lfdr.de>; Mon, 27 Apr 2020 22:56:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726426AbgD0U4y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 16:56:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38826 "EHLO
+        id S1726508AbgD0U44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 16:56:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726233AbgD0U4y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 16:56:54 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3013C0610D5
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 13:56:53 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id t40so149083pjb.3
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 13:56:53 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726233AbgD0U4z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 16:56:55 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FC38C0610D5
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 13:56:55 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id n16so9225227pgb.7
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 13:56:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=Vd7lbo+APjeMiVa38cT/Njf//dKlMw+4/TEoWbGCVEg=;
-        b=hehimztGjNLGOPYsmYHKOszUAFb5VxHsGfHShDZG3MZXGF3PyzEXkNT3jk4JsrJrq4
-         QdI+lPv+2EIRrQrPM+Wvz58YQ3u6rI/olPMwKUxvRbpCkjvtP386if8JGcuvlUytm1cm
-         UosUSeh7CiARBH+y97IfjJqt9/46dHkGjbRNA=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=SiRdbPViwxIMrz5HzQL0ns04IOMq5sMONt9N9D1KnwQ=;
+        b=e9PBXj4Jjn6idG+Ym2uNon5N6dZgw+GIRwWex11wYoYwN4wfMZp0BB3z4PgNSbG7WG
+         c9IpScYEfyIksuth1xv2S8+REb3SCMG9wRx2bGPLTo5GkJTQWaTkJkZVV2NVTXx2Csve
+         B22t+r5Z+mxngcNt+wcZ8b8q8NEBNAa4X6gIY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Vd7lbo+APjeMiVa38cT/Njf//dKlMw+4/TEoWbGCVEg=;
-        b=i7Mu6VVq/TH1BrPAI2wjbsS41nV4t/nGFxtgEs8vodxwYd191kaQkrCB6zV5/qB+4A
-         SOJO4Hnjhydl8ILgakBNvlDEOxbVejeIbRDtnXR6dA19pOzSevqw2ey1sa7lFz5AdGu1
-         3JTpO/cJblv7F+RItc+vB9gCchzoP1IYeBvRr5AU6+omTZT4F8GSSneCqFlG9bO4+nY9
-         WhXDak63S7WJxX1g21bBvmY3glzSJlZQlH8z+aNmfl6ViIi5nF76zA8PpqQgTrMdHjrN
-         lNjgpMXGprqKg2LhjtozxlFPR7b+5E0bCu2/3Z7HAtKjrujy/Hy7zFzf26LX6/EBTWaQ
-         +9Xg==
-X-Gm-Message-State: AGi0PuawbwBTdrlvDfABpGte4KSieldz/DfbYK54fVRyTqDW1pMjxN6X
-        gW232r3VOviuuGzgnN72QITp5g==
-X-Google-Smtp-Source: APiQypICon/lz//oKDTKDsztgLlP8r6L7mJjipX5gdFxEb/WyHwvHtBc4yISVAeeaD21Lq+9gsl8xg==
-X-Received: by 2002:a17:90a:8c85:: with SMTP id b5mr612312pjo.187.1588021013307;
-        Mon, 27 Apr 2020 13:56:53 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=SiRdbPViwxIMrz5HzQL0ns04IOMq5sMONt9N9D1KnwQ=;
+        b=k16qvpaE5gDR0Wqbxbwr1KEqroB9b6zOxqk1Wtg3SgPNeiGak3RkFhakdzQ0UNPXhc
+         bloVfvWmx2rwmmAwBFL4ahDtsRkc5Qdn6Y7XOWlsR44QyyLrPoumbZsH86WU2vt2rE46
+         Gx4UgAaAjfbVMrG/E9zZHn/9BOAKsYUOfhzzqduaCaCX7v33DncfZTnSiZRqgx5HphRZ
+         uIV29zOiWAfZenaRmw2AQb7O1FPCTmpaXQ0KV3wkJPb72pElN/WYIHqStoQ8tOzU0c0M
+         xZuceSdCG13r3LbaUuZkMTAyQD7/FTIDq0X13ife0Ww4JweB96g7Pn44P++lOOm/+0Zw
+         c6/Q==
+X-Gm-Message-State: AGi0PuY7f053CVmzA33cLOdH5rAqD9vPZyDAttT/4nWkjDaI/q+/ldvG
+        /IWQq/qFPhvJqUPS8sLCJn7AHw==
+X-Google-Smtp-Source: APiQypLYrff0IhLBIj6o0U44P81Ww3HCAbJscyjcXTXRWdPp30xKoCO8asPka+eUgn/6hgUx3hFCZQ==
+X-Received: by 2002:a62:764b:: with SMTP id r72mr25889144pfc.207.1588021014459;
+        Mon, 27 Apr 2020 13:56:54 -0700 (PDT)
 Received: from monster-08.mvlab.cumulusnetworks.com. (fw.cumulusnetworks.com. [216.129.126.126])
-        by smtp.googlemail.com with ESMTPSA id fh18sm443830pjb.0.2020.04.27.13.56.52
+        by smtp.googlemail.com with ESMTPSA id fh18sm443830pjb.0.2020.04.27.13.56.53
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 27 Apr 2020 13:56:52 -0700 (PDT)
+        Mon, 27 Apr 2020 13:56:53 -0700 (PDT)
 From:   Roopa Prabhu <roopa@cumulusnetworks.com>
 X-Google-Original-From: Roopa Prabhu
 To:     dsahern@gmail.com, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, rdunlap@infradead.org,
         nikolay@cumulusnetworks.com, bpoirier@cumulusnetworks.com
-Subject: [PATCH net-next v4 0/3] New sysctl to turn off nexthop API compat mode
-Date:   Mon, 27 Apr 2020 13:56:44 -0700
-Message-Id: <1588021007-16914-1-git-send-email-roopa@cumulusnetworks.com>
+Subject: [PATCH net-next v4 1/3] net: ipv6: new arg skip_notify to ip6_rt_del
+Date:   Mon, 27 Apr 2020 13:56:45 -0700
+Message-Id: <1588021007-16914-2-git-send-email-roopa@cumulusnetworks.com>
 X-Mailer: git-send-email 2.1.4
+In-Reply-To: <1588021007-16914-1-git-send-email-roopa@cumulusnetworks.com>
+References: <1588021007-16914-1-git-send-email-roopa@cumulusnetworks.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -58,56 +61,201 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Roopa Prabhu <roopa@cumulusnetworks.com>
 
-Currently route nexthop API maintains user space compatibility
-with old route API by default. Dumps and netlink notifications
-support both new and old API format. In systems which have
-moved to the new API, this compatibility mode cancels some
-of the performance benefits provided by the new nexthop API.
-    
-This patch adds new sysctl nexthop_compat_mode which is on
-by default but provides the ability to turn off compatibility
-mode allowing systems to run entirely with the new routing
-API if they wish to. Old route API behaviour and support is
-not modified by this sysctl
+Used in subsequent work to skip route delete
+notifications on nexthop deletes.
 
-v4: 
-	- Use davids note for Documenting the sysctl
-	- test with latest iproute2 and adjust 'pref'
+Suggested-by: David Ahern <dsahern@gmail.com>
+Signed-off-by: Roopa Prabhu <roopa@cumulusnetworks.com>
+Reviewed-by: David Ahern <dsahern@gmail.com>
+---
+ include/net/ip6_route.h  |  2 +-
+ include/net/ipv6_stubs.h |  2 +-
+ net/ipv4/nexthop.c       |  2 +-
+ net/ipv6/addrconf.c      | 12 ++++++------
+ net/ipv6/addrconf_core.c |  3 ++-
+ net/ipv6/anycast.c       |  4 ++--
+ net/ipv6/ndisc.c         |  2 +-
+ net/ipv6/route.c         | 11 +++++++----
+ 8 files changed, 21 insertions(+), 17 deletions(-)
 
-v3: 
-	- Document new sysctl
-	- move sysctl to use proc_dointvec_minmax with 0 and 1 values
-	- selftest: remove pref medium in ipv6 test
-
-v2:
-       - Incorporate David Aherns pointers on covering dumps and
-         nexthop deletes. Also use one ipv4 sysctl to cover
-         both ipv4 and ipv6 (I see it is done that way for many
-         others)
-       - Added a selftest to cover dump and notfications for nexthop
-	 api compat mode
-
-Roopa Prabhu (3):
-  net: ipv6: new arg skip_notify to ip6_rt_del
-  net: ipv4: add sysctl for nexthop api compatibility mode
-  selftests: net: add new testcases for nexthop API compat mode sysctl
-
- Documentation/networking/ip-sysctl.txt      |  14 ++
- include/net/ip6_route.h                     |   2 +-
- include/net/ipv6_stubs.h                    |   2 +-
- include/net/netns/ipv4.h                    |   2 +
- net/ipv4/af_inet.c                          |   1 +
- net/ipv4/fib_semantics.c                    |   3 +
- net/ipv4/nexthop.c                          |   5 +-
- net/ipv4/sysctl_net_ipv4.c                  |   9 ++
- net/ipv6/addrconf.c                         |  12 +-
- net/ipv6/addrconf_core.c                    |   3 +-
- net/ipv6/anycast.c                          |   4 +-
- net/ipv6/ndisc.c                            |   2 +-
- net/ipv6/route.c                            |  14 +-
- tools/testing/selftests/net/fib_nexthops.sh | 198 +++++++++++++++++++++++++++-
- 14 files changed, 250 insertions(+), 21 deletions(-)
-
+diff --git a/include/net/ip6_route.h b/include/net/ip6_route.h
+index 9947eb1..e525f00 100644
+--- a/include/net/ip6_route.h
++++ b/include/net/ip6_route.h
+@@ -123,7 +123,7 @@ int ipv6_route_ioctl(struct net *net, unsigned int cmd, void __user *arg);
+ int ip6_route_add(struct fib6_config *cfg, gfp_t gfp_flags,
+ 		  struct netlink_ext_ack *extack);
+ int ip6_ins_rt(struct net *net, struct fib6_info *f6i);
+-int ip6_del_rt(struct net *net, struct fib6_info *f6i);
++int ip6_del_rt(struct net *net, struct fib6_info *f6i, bool skip_notify);
+ 
+ void rt6_flush_exceptions(struct fib6_info *f6i);
+ void rt6_age_exceptions(struct fib6_info *f6i, struct fib6_gc_args *gc_args,
+diff --git a/include/net/ipv6_stubs.h b/include/net/ipv6_stubs.h
+index 3e7d2c0..a5f7c12 100644
+--- a/include/net/ipv6_stubs.h
++++ b/include/net/ipv6_stubs.h
+@@ -48,7 +48,7 @@ struct ipv6_stub {
+ 			    struct netlink_ext_ack *extack);
+ 	void (*fib6_nh_release)(struct fib6_nh *fib6_nh);
+ 	void (*fib6_update_sernum)(struct net *net, struct fib6_info *rt);
+-	int (*ip6_del_rt)(struct net *net, struct fib6_info *rt);
++	int (*ip6_del_rt)(struct net *net, struct fib6_info *rt, bool skip_notify);
+ 	void (*fib6_rt_update)(struct net *net, struct fib6_info *rt,
+ 			       struct nl_info *info);
+ 
+diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+index fdfca53..9999687 100644
+--- a/net/ipv4/nexthop.c
++++ b/net/ipv4/nexthop.c
+@@ -784,7 +784,7 @@ static void __remove_nexthop_fib(struct net *net, struct nexthop *nh)
+ 	list_for_each_entry_safe(f6i, tmp, &nh->f6i_list, nh_list) {
+ 		/* __ip6_del_rt does a release, so do a hold here */
+ 		fib6_info_hold(f6i);
+-		ipv6_stub->ip6_del_rt(net, f6i);
++		ipv6_stub->ip6_del_rt(net, f6i, false);
+ 	}
+ }
+ 
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 24e319d..e49b9e9 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -1238,7 +1238,7 @@ cleanup_prefix_route(struct inet6_ifaddr *ifp, unsigned long expires,
+ 					ifp->idev->dev, 0, RTF_DEFAULT, true);
+ 	if (f6i) {
+ 		if (del_rt)
+-			ip6_del_rt(dev_net(ifp->idev->dev), f6i);
++			ip6_del_rt(dev_net(ifp->idev->dev), f6i, false);
+ 		else {
+ 			if (!(f6i->fib6_flags & RTF_EXPIRES))
+ 				fib6_set_expires(f6i, expires);
+@@ -2731,7 +2731,7 @@ void addrconf_prefix_rcv(struct net_device *dev, u8 *opt, int len, bool sllao)
+ 		if (rt) {
+ 			/* Autoconf prefix route */
+ 			if (valid_lft == 0) {
+-				ip6_del_rt(net, rt);
++				ip6_del_rt(net, rt, false);
+ 				rt = NULL;
+ 			} else if (addrconf_finite_timeout(rt_expires)) {
+ 				/* not infinity */
+@@ -3826,7 +3826,7 @@ static int addrconf_ifdown(struct net_device *dev, int how)
+ 		spin_unlock_bh(&ifa->lock);
+ 
+ 		if (rt)
+-			ip6_del_rt(net, rt);
++			ip6_del_rt(net, rt, false);
+ 
+ 		if (state != INET6_IFADDR_STATE_DEAD) {
+ 			__ipv6_ifa_notify(RTM_DELADDR, ifa);
+@@ -4665,7 +4665,7 @@ static int modify_prefix_route(struct inet6_ifaddr *ifp,
+ 	prio = ifp->rt_priority ? : IP6_RT_PRIO_ADDRCONF;
+ 	if (f6i->fib6_metric != prio) {
+ 		/* delete old one */
+-		ip6_del_rt(dev_net(ifp->idev->dev), f6i);
++		ip6_del_rt(dev_net(ifp->idev->dev), f6i, false);
+ 
+ 		/* add new one */
+ 		addrconf_prefix_route(modify_peer ? &ifp->peer_addr : &ifp->addr,
+@@ -6086,10 +6086,10 @@ static void __ipv6_ifa_notify(int event, struct inet6_ifaddr *ifp)
+ 						       ifp->idev->dev, 0, 0,
+ 						       false);
+ 			if (rt)
+-				ip6_del_rt(net, rt);
++				ip6_del_rt(net, rt, false);
+ 		}
+ 		if (ifp->rt) {
+-			ip6_del_rt(net, ifp->rt);
++			ip6_del_rt(net, ifp->rt, false);
+ 			ifp->rt = NULL;
+ 		}
+ 		rt_genid_bump_ipv6(net);
+diff --git a/net/ipv6/addrconf_core.c b/net/ipv6/addrconf_core.c
+index ea00ce3..9ebf3fe 100644
+--- a/net/ipv6/addrconf_core.c
++++ b/net/ipv6/addrconf_core.c
+@@ -185,7 +185,8 @@ static int eafnosupport_fib6_nh_init(struct net *net, struct fib6_nh *fib6_nh,
+ 	return -EAFNOSUPPORT;
+ }
+ 
+-static int eafnosupport_ip6_del_rt(struct net *net, struct fib6_info *rt)
++static int eafnosupport_ip6_del_rt(struct net *net, struct fib6_info *rt,
++				   bool skip_notify)
+ {
+ 	return -EAFNOSUPPORT;
+ }
+diff --git a/net/ipv6/anycast.c b/net/ipv6/anycast.c
+index fed91ab..8932612 100644
+--- a/net/ipv6/anycast.c
++++ b/net/ipv6/anycast.c
+@@ -364,7 +364,7 @@ int __ipv6_dev_ac_dec(struct inet6_dev *idev, const struct in6_addr *addr)
+ 	ipv6_del_acaddr_hash(aca);
+ 	addrconf_leave_solict(idev, &aca->aca_addr);
+ 
+-	ip6_del_rt(dev_net(idev->dev), aca->aca_rt);
++	ip6_del_rt(dev_net(idev->dev), aca->aca_rt, false);
+ 
+ 	aca_put(aca);
+ 	return 0;
+@@ -393,7 +393,7 @@ void ipv6_ac_destroy_dev(struct inet6_dev *idev)
+ 
+ 		addrconf_leave_solict(idev, &aca->aca_addr);
+ 
+-		ip6_del_rt(dev_net(idev->dev), aca->aca_rt);
++		ip6_del_rt(dev_net(idev->dev), aca->aca_rt, false);
+ 
+ 		aca_put(aca);
+ 
+diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
+index 1ecd4e9..2d09c4d 100644
+--- a/net/ipv6/ndisc.c
++++ b/net/ipv6/ndisc.c
+@@ -1302,7 +1302,7 @@ static void ndisc_router_discovery(struct sk_buff *skb)
+ 		}
+ 	}
+ 	if (rt && lifetime == 0) {
+-		ip6_del_rt(net, rt);
++		ip6_del_rt(net, rt, false);
+ 		rt = NULL;
+ 	}
+ 
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 310cbdd..486c36a 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -984,7 +984,7 @@ int rt6_route_rcv(struct net_device *dev, u8 *opt, int len,
+ 					gwaddr, dev);
+ 
+ 	if (rt && !lifetime) {
+-		ip6_del_rt(net, rt);
++		ip6_del_rt(net, rt, false);
+ 		rt = NULL;
+ 	}
+ 
+@@ -3729,9 +3729,12 @@ static int __ip6_del_rt(struct fib6_info *rt, struct nl_info *info)
+ 	return err;
+ }
+ 
+-int ip6_del_rt(struct net *net, struct fib6_info *rt)
++int ip6_del_rt(struct net *net, struct fib6_info *rt, bool skip_notify)
+ {
+-	struct nl_info info = { .nl_net = net };
++	struct nl_info info = {
++		.nl_net = net,
++		.skip_notify = skip_notify
++	};
+ 
+ 	return __ip6_del_rt(rt, &info);
+ }
+@@ -4252,7 +4255,7 @@ static void __rt6_purge_dflt_routers(struct net *net,
+ 		    (!idev || idev->cnf.accept_ra != 2) &&
+ 		    fib6_info_hold_safe(rt)) {
+ 			rcu_read_unlock();
+-			ip6_del_rt(net, rt);
++			ip6_del_rt(net, rt, false);
+ 			goto restart;
+ 		}
+ 	}
 -- 
 2.1.4
 
