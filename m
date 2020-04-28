@@ -2,124 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D42F1BC741
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 19:54:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C0931BC743
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 19:54:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728702AbgD1Rxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 13:53:32 -0400
-Received: from mout.web.de ([212.227.15.14]:43959 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728420AbgD1Rxc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Apr 2020 13:53:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1588096373;
-        bh=tnjQv2P9gGiR9Mb9PDJN0nYvFGdtYNLKJDSs4Sk2/Wg=;
-        h=X-UI-Sender-Class:Cc:Subject:To:From:Date;
-        b=YWWcul4nCyZy4q/m9sIPWVgxeHXOqy4GKNkUhCkxeEi0o3cg4DhWAabyuyngxrBKW
-         +bxwPzloZkbJwV200G4wkj4Hm8EC1e4LdwRfNs6cSwQwZNlcwYpX9wWouyLlZIHOLC
-         a7OVYOvcIDa/NG8Gx8X0eRwZpZE1j25wgS/cL+o8=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.131.179.255]) by smtp.web.de (mrweb006
- [213.165.67.108]) with ESMTPSA (Nemesis) id 1Mho04-1iyqYP1sW0-00dlUG; Tue, 28
- Apr 2020 19:52:53 +0200
-Cc:     linux-kernel@vger.kernel.org, Allison Randal <allison@lohutok.net>,
-        Andrew Hendry <andrew.hendry@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Subject: Re: [PATCH] net/x25: Fix null-ptr-deref in x25_disconnect
-To:     YueHaibing <yuehaibing@huawei.com>, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org
-From:   Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <2638b7a4-4c19-ca4d-3931-7442378b3b30@web.de>
-Date:   Tue, 28 Apr 2020 19:52:44 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1728557AbgD1RyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 13:54:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37992 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728420AbgD1RyB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 13:54:01 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFDB9C03C1AB;
+        Tue, 28 Apr 2020 10:54:01 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id z1so9358337pfn.3;
+        Tue, 28 Apr 2020 10:54:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=9LVxdCqe8GcaM6V/NfQ/jyAUUHMCTSNVSZtzWyQPYA4=;
+        b=AflD+FVKHd2uEdIxbnt+JK1aFO46QvtvC3FZHlROlLulhYblzgDioCcyl86EfD6m3q
+         Y6xpkAW1vI44cr4AYrH+mGvSj5Zm7GRr97+lz8d9ZFQCYH48AByjDN3uDGKVL2608UXS
+         Me/EA1S1O2ojy7GmaPL4sizfFclE9GULa7AfOZAM7vRGQYH3/lefyOKsN5FMC4Kzyufl
+         la8/ARMxFcXrZocjB0uSGXubKKvajwbfyJYtcdJJfDWsIgYmPb3OCfLevoPB1AVys1ZT
+         3jl3RzROa744HpSpm8mr9g0j8sqMxdlSPow3kNsAvnMZiL4M/tDz22ClZO0jL/VNYX2n
+         KZKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=9LVxdCqe8GcaM6V/NfQ/jyAUUHMCTSNVSZtzWyQPYA4=;
+        b=SgI1SNdbIGfzvq8cLqENqezEVdIJOJ7VE46KoELMDKAlNy3iFoRmOeDBc7o/5fKfH7
+         vexWV8HQGRbC/FhslW9j8ouvIrJzLSjt1bo/v+vYEY9cuNP3EBfbZAv+3n+vKiqXiWyn
+         Zv6OwVoYVkvIGtj2m6juGvYImCj79dwjHIBarKofx18l3fRq0uxf7MuOI2uJVXgydh6p
+         R9idT98smcjn9TM1Zwg1bV/0VZX6/G/TaYYb1TL39OHDVblvQrMqIs12b9bdFdvG1DAr
+         td/MwpCHhZ+6tSQP+KDCp+vPhkCKB+dos5K2jS6xUUbfYhcKUMzFWcQV8Z36aQlSLtBM
+         hmrA==
+X-Gm-Message-State: AGi0PuajyUUh5LRixetH3cEs6LkFZkbljUFB1nweJgK5lUtwSxzMfuoa
+        NdemMIbQIiYjceh8j8EcygE=
+X-Google-Smtp-Source: APiQypJfsXdDP1OtD03LUwR136DjGl+yzTlpMX9ePtiK5XvivgnHCmlmLAyAZQWGY7CZfd0fIdbnmg==
+X-Received: by 2002:a63:9801:: with SMTP id q1mr30366088pgd.447.1588096440937;
+        Tue, 28 Apr 2020 10:54:00 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:9061])
+        by smtp.gmail.com with ESMTPSA id o9sm2586635pjp.4.2020.04.28.10.53.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Apr 2020 10:53:59 -0700 (PDT)
+Date:   Tue, 28 Apr 2020 10:53:57 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] [RFC] net: bpf: make __bpf_skb_max_len(skb) an
+ skb-independent constant
+Message-ID: <20200428175357.xshl4lbsqmzwt6v7@ast-mbp.dhcp.thefacebook.com>
+References: <20200420231427.63894-1-zenczykowski@gmail.com>
+ <20200421102719.06bdfe02@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAHo-Oow5HZAYNT6UZsCvzAG89R4KkERYCaoTzwefXerN3+UZ9A@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:D5/9WS1n/ydLkrFWaCYUuA4RQwaKOb89GOlnieaVZKBrNRqf6kr
- UoMzoB2pLTZl6gA4fmmrFbVBMDZVw0MjoX6zt4PkiyKKxfBjWA1zXqGJlirnPO/9yqNrWCp
- xzt4SxE3UO3blTGfxJtnP2L8GvX3vnvqzogoyZeAlDRuuNy7oadUiBvzx9a/Wj37uixtEdv
- vLvfAD+YNOfki4H+QnP8A==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:hLzm4VX9290=:Wbx3fxI0yP8205erAsqsma
- jOiY1m+lb9YZcLS4jeUR03WYQN5irLNmtExn0/gGR+4z+zbYqclKds6ByzLMJybmQndX8yR5W
- Sl3r9Q4RIWVNf9Sb+29W3+3TVyFOZUwnwtHVwE58XVExf5yBQIBOvlcGnPrSvamZpWU9I2nBg
- CoLRqL2dwxOIYqN0L01FtWM7J5sMHGOKKGYtPokyjwXmoUWaYDuUXC8CF0QQkWYEFHNkBDJYa
- LyQMy/zd8990igYKG9szmtRb9q9i70u3pHzIOyeHMwxVekL26lCE0CqIPvYviUsy9aXGkN4VG
- BauCcJv6D2AL2D1kxAs/BW/y28aMcE87tcQKNEsnH01s0Wa8JwnRvBKrvNHgx/z7gtfXlQoRI
- qpFqHn4pyDe5w2WKA5DBoK0sXygwUcU0ktAYx/hyPHx3qeayVF2CnNXGi7c3xGRB113XAmqC9
- /bhkAMDP50D9G7Gi5yx2RgrPtWtjxCYaLdGKJGfCPMo69CbEd5iLTpyJzqS0aB7YLAKJrU/Ml
- nMpyIX1yIAG5ZmUDcYYCNr9FtuTFZTgD4bD3AHpQtIXJsmR/2RsqLtXTm4AGPT1hSwM0bb3Hx
- z4i8HXLXdB86iiPpEOb86Vj/ib3XTBjln5pZrBgciluknS41hlCnvsKoW1ihA10KXbf6X6QwX
- MnRAOs9bm8J5E6OeYr82fa9aRbQD3ekNynD8Jwfh+4+fFxqg538GhDsOV8u50uiWjCiNovRNy
- sOB2TTh3IG+eTlePpYyBinvxHzUOjbPbvyYSRy+CHAwuimVPRfL+AulmrXuj3YmAiosCp9m2X
- uCn401FHaRPTNYeWg380v0WALmWiYlboLtqX8h0Nw/rVgZjXoRhkk5XhiARJ01gS5Wlw12dtQ
- SwxN23qDi5mZHav54HapF0xqPyyNKVYSAFVpRtrbYcnzvd0gIkBAMILVq2CI3tcAf798ndwyF
- zZftihsle2+PfaF0YDo0gX8ZmrDiev6QNBy1APsYsf9GQ/GHPO6cRQeaRNdxg3kBbfVKAnOzX
- 1OMiALPc/u78QN9eqPnh8ArydZWx3zkOumSqxA/sswzyXd4s3+9zGBX/La8+qzi3ya7T94PBC
- 7SruHzxA/HqIfuigvsQZsqOu/wQC0Jt9vAqjPR/5HUYD4L+EZRHcf5MXmZ8UaLNon6OBvKJRK
- Zl3/ozxHv9XMRUa8IbD2gpF5FZOkw9k7YrW8iUWKp0Enb6fAcYNg3AsWCdhSRVo6t2kcm8jnG
- ghPQwhVMKlA2CrNMA
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHo-Oow5HZAYNT6UZsCvzAG89R4KkERYCaoTzwefXerN3+UZ9A@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> We should check null before do x25_neigh_put in x25_disconnect,
-> otherwise may cause null-ptr-deref like this:
+On Tue, Apr 21, 2020 at 01:36:08PM -0700, Maciej Żenczykowski wrote:
+> > > This function is used from:
+> > >   bpf_skb_adjust_room
+> > >   __bpf_skb_change_tail
+> > >   __bpf_skb_change_head
+> > >
+> > > but in the case of forwarding we're likely calling these functions
+> > > during receive processing on ingress and bpf_redirect()'ing at
+> > > a later point in time to egress on another interface, thus these
+> > > mtu checks are for the wrong device.
+> >
+> > Interesting. Without redirecting there should also be no reason
+> > to do this check at ingress, right? So at ingress it's either
+> > incorrect or unnecessary?
+> 
+> Well, I guess there's technically a chance that you'd want to mutate
+> the packet somehow during ingress pre-receive processing (without
+> redirecting)...
+> But yeah, I can't really think of a case where that would be
+> increasing the size of the packet.
+> 
+> Usually you'd be decapsulating at ingress and encapsulating at egress,
+> or doing ingress rewrite & redirect to egress...
+> 
+> (Also, note that relying on a sequence where at ingress you first call
+> bpf_redirect(ifindex, EGRESS); then change the packet size, and then
+> return TC_ACT_REDIRECT; thus being able to use the redirect ifindex
+> for mtu checks in the packet mutation functions is potentially buggy,
+> since there's no guarantee you won't call bpf_redirect again to change
+> the ifinidex, or even return from the bpf program without returning
+> TC_ACT_REDIRECT --- so while that could be *more* correct, it would
+> still have holes...)
 
-Will it be clearer to use the term =E2=80=9Cnull pointer dereference=E2=80=
-=9D
-in the final commit subject?
+yeah. there is no good fix here, since target netdev is not known,
+but dropping the check also doesn't seem right.
+How about:
+ if (skb->dev) {
+    u32 header_len = skb->dev->hard_header_len;
 
-Regards,
-Markus
+    if (!header_len)
+       header_len = ETH_HLEN;
+    return skb->dev->mtu + header_len;
+  } else {
+    return SKB_MAX_ALLOC;
+  }
+
+the idea that l3 devices won't have l2 and here we will assume
+that l2 can be added sooner or later.
+It's not pretty either, but it will solve your wifi->eth use case?
+While keeping basic sanity for other cases.
