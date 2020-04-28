@@ -2,94 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 849311BBD16
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 14:08:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F4F01BBD5E
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 14:19:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726819AbgD1MIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 08:08:22 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:59596 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726448AbgD1MIW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 08:08:22 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03SC3Sq7037375;
-        Tue, 28 Apr 2020 12:08:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=gANKfJoeceEgfA8OPvEctrQTZEimU2IEnD1yXfT1iDY=;
- b=CGnFDgP8uGkoeRuGsBIUkgjTJxg2ILIBDd8WrEJmIdaft/z/jcsiGdF5e9rYtysQJGIz
- PEXV5SZKIYfeyy1geKu7TkifjYTZJPhFCcdT535lIb0VShmiPVVa0s/FapYhJixilscE
- P+7NgfQ4EcVjxL1bsv9ffp94k7ZDfXl0bW6DhlhouGcsPnxy3NyBBGWO0jKaX/LinNFN
- cGZHf0RtYvARScQpb3oKOHbIlon5RMlKJmZgsb43rZM2TfUswI+8kz3u2fvqj2VayWHE
- 6msE6b0VQ2X6g6sRUZYlnYDdnz8W3NkgL6uHJZUOVzwaPKPEIben6hcFGCc2CbefUr3i jA== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 30p2p04qu0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 28 Apr 2020 12:08:07 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 03SC37pf112483;
-        Tue, 28 Apr 2020 12:08:07 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 30mxpftfqm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 28 Apr 2020 12:08:06 +0000
-Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 03SC85KX032436;
-        Tue, 28 Apr 2020 12:08:05 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 28 Apr 2020 05:08:05 -0700
-Date:   Tue, 28 Apr 2020 15:07:58 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Rylan Dmello <mail@rylan.coffee>
-Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, Benjamin Poirier <bpoirier@suse.com>,
-        Jiri Pirko <jpirko@redhat.com>
-Subject: Re: [PATCH 3/3] staging: qlge: Remove print statements for
- lbq_clean_idx and lbq_free_cnt
-Message-ID: <20200428120757.GD2014@kadam>
-References: <cover.1587959245.git.mail@rylan.coffee>
- <aa7e0197f4e34cec0855124e45696e33dd9527e5.1587959245.git.mail@rylan.coffee>
+        id S1726799AbgD1MTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 08:19:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726645AbgD1MTw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 08:19:52 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0DFC03C1A9;
+        Tue, 28 Apr 2020 05:19:50 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id c23so16487450qtp.11;
+        Tue, 28 Apr 2020 05:19:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=oFJ7FDcoDnoD48wdxTajGCu98nB0CyZejoNAVndFZOU=;
+        b=Pl502ELUcqiGfjmtdK/ix7MgmiAang6cxzjn3JXIqAHqztDr9xBRw93NtFkn+y/zL/
+         VkcUCdAhQlmKtupGV1YKlXM8GveDVgUjkwlsTvdEZlqhxK+Tiwa6hsP0QDqbBPaXaSTu
+         N0SWuoB0C4+Ogy7i1V3lZr1hCiCzugDY9J7JGFt6T7ZsihnVoCmiz9xa/JrzZlLA2DeL
+         RZcaFIpPmgAdsNbFVKb4FoPCOeWXvRwTIXYvEvruRhESpEBMceMDeAI1X5/61Vt7zE2u
+         tc2YyhTQQO0uuvOsNQcPLz9hQagT7UVoq4eCec+59sQMzPtDN6n6JUQsxO5WhGcL6ORj
+         p1GA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=oFJ7FDcoDnoD48wdxTajGCu98nB0CyZejoNAVndFZOU=;
+        b=f4GVMTX62v+GmHQr+g142mdn/YmsByzzvA9IndVbM5jFrUdEA312Ve6zyE8dll4nBn
+         h8DP3hmFjU4mEBPLLT/mwEMMdhUj0lbY+S4/IYJBIGdN+xBAnhTDIZ9jb5a8xiepGTsX
+         gUnjAeW9uJLbTR9vQo59Qodt/T63kpbuPbyg/ekzmrzDQIHd8kg9dRSefjBgKHfujE8m
+         Gkn3xYyHYydlEthExEO67syQctucNp9zZsWGzsbmfPoQVEjxJLAapZ+w4hVBWuT1OC1e
+         tRFs0itA94ak5xL1HXifa1xwQWnh5ruZZKHIInXv1w82jL8KFuRUri1U5Ms/Co4yiTK0
+         Bphg==
+X-Gm-Message-State: AGi0PuZr+xNoWcuLJccGulzlUZtsrUK6Rkxjq7J0nEZB2P/1lkD7l8DR
+        aMUshOIbAT1aZXbvqpU8bWA=
+X-Google-Smtp-Source: APiQypJctTj6EaLDB73zVfBLtxtFP/rLInVGSPnLku0shws1+dJ+tl3mtNnOEd4Sx8e0xUp8Nfevaw==
+X-Received: by 2002:ac8:fee:: with SMTP id f43mr28534015qtk.376.1588076389896;
+        Tue, 28 Apr 2020 05:19:49 -0700 (PDT)
+Received: from quaco.ghostprotocols.net ([179.97.37.151])
+        by smtp.gmail.com with ESMTPSA id n13sm13875149qtf.15.2020.04.28.05.19.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Apr 2020 05:19:48 -0700 (PDT)
+From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 1765B409A3; Tue, 28 Apr 2020 09:19:47 -0300 (-03)
+Date:   Tue, 28 Apr 2020 09:19:47 -0300
+To:     Eelco Chaudron <echaudro@redhat.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [RFC PATCH bpf-next 0/3] bpf: add tracing for XDP programs using
+ the BPF_PROG_TEST_RUN API
+Message-ID: <20200428121947.GC2245@kernel.org>
+References: <158453675319.3043.5779623595270458781.stgit@xdp-tutorial>
+ <819b1b3a-c801-754b-e805-7ec8266e5dfa@fb.com>
+ <D0164AC9-7AF7-4434-B6D1-0A761DC626FB@redhat.com>
+ <fefda00a-1a08-3a53-efbc-93c36292b77d@fb.com>
+ <CAADnVQ+SCu97cF5Li6nBBCkshjF45U-nPEO5jO8DQrY5PqPqyg@mail.gmail.com>
+ <F97A3E80-9C99-49CF-84C5-F09C940F7029@redhat.com>
+ <20200428040424.wvozrsy6uviz33ha@ast-mbp.dhcp.thefacebook.com>
+ <78EFC9DD-48A2-49BB-8C76-1E6FDE808067@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <aa7e0197f4e34cec0855124e45696e33dd9527e5.1587959245.git.mail@rylan.coffee>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9604 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 malwarescore=0
- mlxscore=0 bulkscore=0 adultscore=0 phishscore=0 suspectscore=2
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004280097
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9604 signatures=668686
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 phishscore=0 clxscore=1015
- bulkscore=0 adultscore=0 lowpriorityscore=0 impostorscore=0 malwarescore=0
- mlxscore=0 suspectscore=2 mlxlogscore=999 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
- definitions=main-2004280097
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <78EFC9DD-48A2-49BB-8C76-1E6FDE808067@redhat.com>
+X-Url:  http://acmel.wordpress.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 27, 2020 at 12:15:18AM -0400, Rylan Dmello wrote:
-> Remove debug print statements referring to non-existent fields
-> 'lbq_clean_idx' and 'lbq_free_cnt' in the 'rx_ring' struct, which causes
-> a compilation failure when QL_DEV_DUMP is set.
-> 
-> These fields were initially removed as a part of commit aec626d2092f
-> ("staging: qlge: Update buffer queue prod index despite oom") in 2019.
-> 
-> Their replacement fields ('next_to_use' and 'next_to_clean') are already
-> being printed, so this patch does not add new debug statements for them.
-> 
-> Signed-off-by: Rylan Dmello <mail@rylan.coffee>
+Em Tue, Apr 28, 2020 at 12:47:53PM +0200, Eelco Chaudron escreveu:
+> On 28 Apr 2020, at 6:04, Alexei Starovoitov wrote:
+> > On Fri, Apr 24, 2020 at 02:29:56PM +0200, Eelco Chaudron wrote:
 
+> > > > But in reality I think few kprobes in the prog will be enough to
+> > > > debug the program and XDP prog may still process millions of
+> > > > packets because your kprobe could be in error path and the user
+> > > > may want to capture only specific things when it triggers.
 
-Fixes: aec626d2092f ("staging: qlge: Update buffer queue prod index despite oom")
+> > > > kprobe bpf prog will execute in such case and it can capture
+> > > > necessary state from xdp prog, from packet or from maps that xdp
+> > > > prog is using.
 
-regards,
-dan carpenter
+> > > > Some sort of bpf-gdb would be needed in user space.  Obviously
+> > > > people shouldn't be writing such kprob-bpf progs that debug
+> > > > other bpf progs by hand. bpf-gdb should be able to generate them
+> > > > automatically.
 
+> > > See my opening comment. What you're describing here is more when
+> > > the right developer has access to the specific system. But this
+> > > might not even be possible in some environments.
+
+> > All I'm saying that kprobe is a way to trace kernel.
+> > The same facility should be used to trace bpf progs.
+ 
+> perf doesn’t support tracing bpf programs, do you know of any tools that
+> can, or you have any examples that would do this?
+
+I'm discussing with Yonghong and Masami what would be needed for 'perf
+probe' to be able to add kprobes to BPF jitted areas in addition to
+vmlinux and modules.
+
+- Arnaldo
