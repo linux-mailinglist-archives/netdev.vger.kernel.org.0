@@ -2,192 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F47C1BB823
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 09:54:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B01441BB86F
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 10:08:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726800AbgD1HxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 03:53:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56774 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726780AbgD1HxU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 03:53:20 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B32C03C1A9
-        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 00:53:20 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jTL3I-000289-0X; Tue, 28 Apr 2020 09:53:12 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jTL3G-0000xR-7J; Tue, 28 Apr 2020 09:53:10 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michal Kubecek <mkubecek@suse.cz>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        David Jander <david@protonic.nl>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
-        Marek Vasut <marex@denx.de>,
-        Christian Herber <christian.herber@nxp.com>
-Subject: [PATCH net-next v3 2/2] net: phy: tja11xx: add support for master-slave configuration
-Date:   Tue, 28 Apr 2020 09:53:08 +0200
-Message-Id: <20200428075308.2938-3-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200428075308.2938-1-o.rempel@pengutronix.de>
-References: <20200428075308.2938-1-o.rempel@pengutronix.de>
+        id S1726682AbgD1II3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 04:08:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59106 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726180AbgD1II3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 04:08:29 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF268C03C1A9
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 01:08:28 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id k13so23531854wrw.7
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 01:08:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=YUAj7o9nL2m8DaSAYGzH/e0dE0ICdBviMOVl3bF0PgM=;
+        b=Np2vO7sto4H3OeoenKXCo5+2CzmtGPQ29Us54cp17JJDAIK8Pj/G4HSnFHg4s3PVJB
+         ExEy8n4ZQK4wIaEM752Qp1fnzI5BlkxjsD8bF5AT+Mey4ox6m3lQREQDjyqFdypmRkmP
+         y5joqD5OWqLmqSdfB00QQa2Gq1f2VMcMiLYzWJBQi73fIYmBuI3pgMG23/VgK7/XWv+k
+         eMWZjii/I+bVbnMqkaw/hgOBfgzBWhkOw0gXKDsKGLw3XUukKnuxFF2qA3JCX5DCqCjL
+         B5Icev9Z6w9vpeNE6NUVSf/a7+ygPzgdzRCzTR90lc3o9OsL+4qFqNjT2z02vFPiuLAx
+         ss+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=YUAj7o9nL2m8DaSAYGzH/e0dE0ICdBviMOVl3bF0PgM=;
+        b=gFJLHDtq1T6+94h40Lrw28f8PWJ9qJuZ5Q942/mxgEJSGelMJhkscPH4NGJvAkn2OO
+         TPL0MImdNSU2xzJrJNnkmPyv4AInxduiC6Zuw5Qmg5Tlqf8/u2iWEa3wkJcTrtYfua4x
+         wyYTtKJhRpYaA13iLaOTXnqvqoQfRTP/CitSTcxxGhdLjEOdJdnJH/TPpjkf1zQBu6wx
+         A/1ICOxJOnfvbLUapV8Exi5qL8n2o5qleVd1Nv6sAd1VK5RYbvzRHf0hZVS+MsTbiK7i
+         w9WLOgz4h5YbUO74vSuQaNdGkIkcg7BP7ks/gz8udvLNutB7fhrSXvnYvZWspa6G8WNI
+         9IMg==
+X-Gm-Message-State: AGi0PuYi+xJpnFy2K1OOBGK6L6etitRgTj03WX4OLuD+VYYUGD4zgW6P
+        L9OqMCeZZnrslIMbU5Tu+Zw4kQ==
+X-Google-Smtp-Source: APiQypKddJ10fDB6N3lY5AmE+6anXczEr+inScltsdAv/p18+2CM1g9UCBnjoMf45gnvYw+uaR4MlQ==
+X-Received: by 2002:adf:d087:: with SMTP id y7mr31586455wrh.321.1588061307463;
+        Tue, 28 Apr 2020 01:08:27 -0700 (PDT)
+Received: from [192.168.1.10] ([194.53.185.137])
+        by smtp.gmail.com with ESMTPSA id h17sm2222133wmm.6.2020.04.28.01.08.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Apr 2020 01:08:27 -0700 (PDT)
+Subject: Re: [PATCH v4 bpf-next 12/15] bpftool: Add support for XDP egress
+To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        prashantbhole.linux@gmail.com, jasowang@redhat.com,
+        brouer@redhat.com, toke@redhat.com, toshiaki.makita1@gmail.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
+References: <20200427224633.15627-1-dsahern@kernel.org>
+ <20200427224633.15627-13-dsahern@kernel.org>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <1db59cc9-956e-6583-6fa9-444564e6d760@isovalent.com>
+Date:   Tue, 28 Apr 2020 09:08:25 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <20200427224633.15627-13-dsahern@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The TJA11xx PHYs have a vendor specific Master/Slave configuration bit,
-which is not compatible with IEEE 803.2-2018 spec for 100Base-T1
-devices. So, provide a custom config_ange call back to solve this
-problem.
+2020-04-27 16:46 UTC-0600 ~ David Ahern <dsahern@kernel.org>
+> From: David Ahern <dahern@digitalocean.com>
+> 
+> Add xdp_egress as a program type since it requires a new attach
+> type. This follows suit with other program type + attach type
+> combintations and leverages the SEC name in libbpf.
+> 
+> Add NET_ATTACH_TYPE_XDP_EGRESS and update attach_type_strings to
+> allow a user to specify 'xdp_egress' as the attach or detach point.
+> 
+> Update do_attach_detach_xdp to set XDP_FLAGS_EGRESS_MODE if egress
+> is selected.
+> 
+> Update do_xdp_dump_one to show egress program ids.
+> 
+> Update the documentation and help output.
+> 
+> Signed-off-by: David Ahern <dahern@digitalocean.com>
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/phy/nxp-tja11xx.c | 58 ++++++++++++++++++++++++++++++++++-
- 1 file changed, 57 insertions(+), 1 deletion(-)
+Reviewed-by: Quentin Monnet <quentin@isovalent.com>
 
-diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
-index cc766b2d4136e..c316d22ea7530 100644
---- a/drivers/net/phy/nxp-tja11xx.c
-+++ b/drivers/net/phy/nxp-tja11xx.c
-@@ -30,6 +30,7 @@
- #define MII_ECTRL_WAKE_REQUEST		BIT(0)
- 
- #define MII_CFG1			18
-+#define MII_CFG1_MASTER_SLAVE		BIT(15)
- #define MII_CFG1_AUTO_OP		BIT(14)
- #define MII_CFG1_SLEEP_CONFIRM		BIT(6)
- #define MII_CFG1_LED_MODE_MASK		GENMASK(5, 4)
-@@ -167,6 +168,33 @@ static int tja11xx_soft_reset(struct phy_device *phydev)
- 	return genphy_soft_reset(phydev);
- }
- 
-+static int tja11xx_config_aneg(struct phy_device *phydev)
-+{
-+	u16 ctl = 0;
-+	int ret;
-+
-+	switch (phydev->master_slave_set) {
-+	case PORT_MODE_CFG_MASTER_FORCE:
-+	case PORT_MODE_CFG_MASTER_PREFERRED:
-+		ctl |= MII_CFG1_MASTER_SLAVE;
-+		break;
-+	case PORT_MODE_CFG_SLAVE_FORCE:
-+	case PORT_MODE_CFG_SLAVE_PREFERRED:
-+		break;
-+	case PORT_MODE_CFG_UNKNOWN:
-+		return 0;
-+	default:
-+		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
-+		return -ENOTSUPP;
-+	}
-+
-+	ret = phy_modify_changed(phydev, MII_CFG1, MII_CFG1_MASTER_SLAVE, ctl);
-+	if (ret < 0)
-+		return ret;
-+
-+	return __genphy_config_aneg(phydev, ret);
-+}
-+
- static int tja11xx_config_init(struct phy_device *phydev)
- {
- 	int ret;
-@@ -222,12 +250,24 @@ static int tja11xx_config_init(struct phy_device *phydev)
- 
- static int tja11xx_read_status(struct phy_device *phydev)
- {
--	int ret;
-+	int cfg, state = 0;
-+	int ret, cfg1;
-+
-+	phydev->master_slave_get = 0;
- 
- 	ret = genphy_update_link(phydev);
- 	if (ret)
- 		return ret;
- 
-+	cfg1 = phy_read(phydev, MII_CFG1);
-+	if (cfg1 < 0)
-+		return cfg1;
-+
-+	if (cfg1 & MII_CFG1_MASTER_SLAVE)
-+		cfg = PORT_MODE_CFG_MASTER_FORCE;
-+	else
-+		cfg = PORT_MODE_CFG_SLAVE_FORCE;
-+
- 	if (phydev->link) {
- 		ret = phy_read(phydev, MII_COMMSTAT);
- 		if (ret < 0)
-@@ -235,8 +275,20 @@ static int tja11xx_read_status(struct phy_device *phydev)
- 
- 		if (!(ret & MII_COMMSTAT_LINK_UP))
- 			phydev->link = 0;
-+
-+		ret = phy_read(phydev, MII_CFG1);
-+		if (ret < 0)
-+			return ret;
-+
-+		if (cfg1 & MII_CFG1_MASTER_SLAVE)
-+			state = PORT_MODE_STATE_MASTER;
-+		else
-+			state = PORT_MODE_STATE_SLAVE;
- 	}
- 
-+	phydev->master_slave_get = cfg;
-+	phydev->master_slave_state = state;
-+
- 	return 0;
- }
- 
-@@ -504,6 +556,7 @@ static struct phy_driver tja11xx_driver[] = {
- 		.features       = PHY_BASIC_T1_FEATURES,
- 		.probe		= tja11xx_probe,
- 		.soft_reset	= tja11xx_soft_reset,
-+		.config_aneg	= tja11xx_config_aneg,
- 		.config_init	= tja11xx_config_init,
- 		.read_status	= tja11xx_read_status,
- 		.suspend	= genphy_suspend,
-@@ -519,6 +572,7 @@ static struct phy_driver tja11xx_driver[] = {
- 		.features       = PHY_BASIC_T1_FEATURES,
- 		.probe		= tja11xx_probe,
- 		.soft_reset	= tja11xx_soft_reset,
-+		.config_aneg	= tja11xx_config_aneg,
- 		.config_init	= tja11xx_config_init,
- 		.read_status	= tja11xx_read_status,
- 		.suspend	= genphy_suspend,
-@@ -533,6 +587,7 @@ static struct phy_driver tja11xx_driver[] = {
- 		.features       = PHY_BASIC_T1_FEATURES,
- 		.probe		= tja1102_p0_probe,
- 		.soft_reset	= tja11xx_soft_reset,
-+		.config_aneg	= tja11xx_config_aneg,
- 		.config_init	= tja11xx_config_init,
- 		.read_status	= tja11xx_read_status,
- 		.match_phy_device = tja1102_p0_match_phy_device,
-@@ -551,6 +606,7 @@ static struct phy_driver tja11xx_driver[] = {
- 		.features       = PHY_BASIC_T1_FEATURES,
- 		/* currently no probe for Port 1 is need */
- 		.soft_reset	= tja11xx_soft_reset,
-+		.config_aneg	= tja11xx_config_aneg,
- 		.config_init	= tja11xx_config_init,
- 		.read_status	= tja11xx_read_status,
- 		.match_phy_device = tja1102_p1_match_phy_device,
--- 
-2.26.2
-
+Thanks!
