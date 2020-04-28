@@ -2,68 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6B661BCCBB
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 21:50:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A43F11BCCBD
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 21:51:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729165AbgD1Tuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 15:50:44 -0400
-Received: from mga02.intel.com ([134.134.136.20]:5856 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728859AbgD1Tum (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Apr 2020 15:50:42 -0400
-IronPort-SDR: i1szSE+xJC5zwZLLViAuq4AO7meBXLqieJHFapg1WsT7mJKoq0aMTV2PeqOK4a8PxfycMwWRVO
- u5f/Hl6jz7pg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2020 12:50:41 -0700
-IronPort-SDR: TP6+i8pgfaouteFA2i7sAkzn/WKiOtL8dDrt/2I1ZKxt4ksCR8W1IVKhFcI+iXG1a1SDUR6AhC
- Rk0o3PxRY7rw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,328,1583222400"; 
-   d="scan'208";a="458928763"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 28 Apr 2020 12:50:38 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1jTWFa-000AjK-Oe; Wed, 29 Apr 2020 03:50:38 +0800
-Date:   Wed, 29 Apr 2020 03:50:00 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com
-Subject: [RFC PATCH] bpf: __bpf_iter__netlink() can be static
-Message-ID: <20200428194957.GA51515@dcd913b51aa6>
-References: <20200427201246.2995471-1-yhs@fb.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200427201246.2995471-1-yhs@fb.com>
-X-Patchwork-Hint: ignore
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1728903AbgD1TvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 15:51:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56312 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728584AbgD1TvD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 15:51:03 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884D3C03C1AB
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 12:51:03 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 175AD1210A3EF;
+        Tue, 28 Apr 2020 12:51:00 -0700 (PDT)
+Date:   Tue, 28 Apr 2020 12:50:56 -0700 (PDT)
+Message-Id: <20200428.125056.826064107395390963.davem@davemloft.net>
+To:     roopa@cumulusnetworks.com
+Cc:     dsahern@gmail.com, netdev@vger.kernel.org, rdunlap@infradead.org,
+        nikolay@cumulusnetworks.com, bpoirier@cumulusnetworks.com
+Subject: Re: [PATCH net-next v4 0/3] New sysctl to turn off nexthop API
+ compat mode
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1588021007-16914-1-git-send-email-roopa@cumulusnetworks.com>
+References: <1588021007-16914-1-git-send-email-roopa@cumulusnetworks.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 28 Apr 2020 12:51:00 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Roopa Prabhu <roopa@cumulusnetworks.com>
+Date: Mon, 27 Apr 2020 13:56:44 -0700
 
-Signed-off-by: kbuild test robot <lkp@intel.com>
----
- af_netlink.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Currently route nexthop API maintains user space compatibility
+> with old route API by default. Dumps and netlink notifications
+> support both new and old API format. In systems which have
+> moved to the new API, this compatibility mode cancels some
+> of the performance benefits provided by the new nexthop API.
+>     
+> This patch adds new sysctl nexthop_compat_mode which is on
+> by default but provides the ability to turn off compatibility
+> mode allowing systems to run entirely with the new routing
+> API if they wish to. Old route API behaviour and support is
+> not modified by this sysctl
+ ...
 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index b6192cd668013..b8c9a87bd3960 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -2640,7 +2640,7 @@ struct bpf_iter__netlink {
- 	__bpf_md_ptr(struct netlink_sock *, sk);
- };
- 
--int __init __bpf_iter__netlink(struct bpf_iter_meta *meta, struct netlink_sock *sk)
-+static int __init __bpf_iter__netlink(struct bpf_iter_meta *meta, struct netlink_sock *sk)
- {
- 	return 0;
- }
+Series applied, thank you.
