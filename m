@@ -2,120 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F4F01BBD5E
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 14:19:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C5D01BBD92
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 14:27:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726799AbgD1MTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 08:19:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42026 "EHLO
+        id S1726868AbgD1M1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 08:27:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726645AbgD1MTw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 08:19:52 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0DFC03C1A9;
-        Tue, 28 Apr 2020 05:19:50 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id c23so16487450qtp.11;
-        Tue, 28 Apr 2020 05:19:50 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726763AbgD1M1j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 08:27:39 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7944C03C1A9;
+        Tue, 28 Apr 2020 05:27:37 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id f82so19963815ilh.8;
+        Tue, 28 Apr 2020 05:27:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=oFJ7FDcoDnoD48wdxTajGCu98nB0CyZejoNAVndFZOU=;
-        b=Pl502ELUcqiGfjmtdK/ix7MgmiAang6cxzjn3JXIqAHqztDr9xBRw93NtFkn+y/zL/
-         VkcUCdAhQlmKtupGV1YKlXM8GveDVgUjkwlsTvdEZlqhxK+Tiwa6hsP0QDqbBPaXaSTu
-         N0SWuoB0C4+Ogy7i1V3lZr1hCiCzugDY9J7JGFt6T7ZsihnVoCmiz9xa/JrzZlLA2DeL
-         RZcaFIpPmgAdsNbFVKb4FoPCOeWXvRwTIXYvEvruRhESpEBMceMDeAI1X5/61Vt7zE2u
-         tc2YyhTQQO0uuvOsNQcPLz9hQagT7UVoq4eCec+59sQMzPtDN6n6JUQsxO5WhGcL6ORj
-         p1GA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=fco1XW6pLNbNH1bTQSneNHaMTNqKruW1B0uX8/WhHVs=;
+        b=AmFEmsyfIOpZAYZ0R0mb8Fcj7dtyg5nxj3iXNZn1m2v+dixLWn9hUDhajNZ7RPVjdf
+         8AfdWsFyqdTXQF8a5MPRbZbhOsR5Cn5H2yaOJ9qENP0ilH+vJhYB1hoiNBYBrQlpOd9Q
+         79r6+fgwERu8xXYiqLZFrvGJ5WkIc6zv6/CqhwEVYXLDZNheBcac3hHam/VUTkoOQu8j
+         tq1iSKFjbZnwxmDP5m871VTBl+0ycQgvN8Pv+b/It2PTwLEjOvtOTS2CLcUV8KWidvgR
+         vRB2WnDpXiYU93I3Q5oOIPyNoaL97if4axW9n+RCJC/B4DGF//9nDM2xiTNjKXOLrsFR
+         wdGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=oFJ7FDcoDnoD48wdxTajGCu98nB0CyZejoNAVndFZOU=;
-        b=f4GVMTX62v+GmHQr+g142mdn/YmsByzzvA9IndVbM5jFrUdEA312Ve6zyE8dll4nBn
-         h8DP3hmFjU4mEBPLLT/mwEMMdhUj0lbY+S4/IYJBIGdN+xBAnhTDIZ9jb5a8xiepGTsX
-         gUnjAeW9uJLbTR9vQo59Qodt/T63kpbuPbyg/ekzmrzDQIHd8kg9dRSefjBgKHfujE8m
-         Gkn3xYyHYydlEthExEO67syQctucNp9zZsWGzsbmfPoQVEjxJLAapZ+w4hVBWuT1OC1e
-         tRFs0itA94ak5xL1HXifa1xwQWnh5ruZZKHIInXv1w82jL8KFuRUri1U5Ms/Co4yiTK0
-         Bphg==
-X-Gm-Message-State: AGi0PuZr+xNoWcuLJccGulzlUZtsrUK6Rkxjq7J0nEZB2P/1lkD7l8DR
-        aMUshOIbAT1aZXbvqpU8bWA=
-X-Google-Smtp-Source: APiQypJctTj6EaLDB73zVfBLtxtFP/rLInVGSPnLku0shws1+dJ+tl3mtNnOEd4Sx8e0xUp8Nfevaw==
-X-Received: by 2002:ac8:fee:: with SMTP id f43mr28534015qtk.376.1588076389896;
-        Tue, 28 Apr 2020 05:19:49 -0700 (PDT)
-Received: from quaco.ghostprotocols.net ([179.97.37.151])
-        by smtp.gmail.com with ESMTPSA id n13sm13875149qtf.15.2020.04.28.05.19.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Apr 2020 05:19:48 -0700 (PDT)
-From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 1765B409A3; Tue, 28 Apr 2020 09:19:47 -0300 (-03)
-Date:   Tue, 28 Apr 2020 09:19:47 -0300
-To:     Eelco Chaudron <echaudro@redhat.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: Re: [RFC PATCH bpf-next 0/3] bpf: add tracing for XDP programs using
- the BPF_PROG_TEST_RUN API
-Message-ID: <20200428121947.GC2245@kernel.org>
-References: <158453675319.3043.5779623595270458781.stgit@xdp-tutorial>
- <819b1b3a-c801-754b-e805-7ec8266e5dfa@fb.com>
- <D0164AC9-7AF7-4434-B6D1-0A761DC626FB@redhat.com>
- <fefda00a-1a08-3a53-efbc-93c36292b77d@fb.com>
- <CAADnVQ+SCu97cF5Li6nBBCkshjF45U-nPEO5jO8DQrY5PqPqyg@mail.gmail.com>
- <F97A3E80-9C99-49CF-84C5-F09C940F7029@redhat.com>
- <20200428040424.wvozrsy6uviz33ha@ast-mbp.dhcp.thefacebook.com>
- <78EFC9DD-48A2-49BB-8C76-1E6FDE808067@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=fco1XW6pLNbNH1bTQSneNHaMTNqKruW1B0uX8/WhHVs=;
+        b=lQfEGwrxqYCxmXUejkSZneLJpcU1zSlGmg3czHAGqLqM6k3jZRP7Dg2fm27k2lpyNE
+         nbIT2H73whcuscwB1x1VvXxcRsSM6Hc3RCjc16cz7FRn/pQhUpzuLHibBMEILIKr+Gm3
+         bfvnc+ag0kyyggZ73On6Vsa9BuOm4lQddz8uH3cvJojKmp6vATraGycZE6qT4fDsxWoV
+         6hKsrLomfl1ddE2zaM6o7uTSJ7uAi357R29ywa7KpoWmTOISDrkpyvKfVl1mRiUCqkCY
+         NG+fhaBw3FUntJ/cFBy/3CTcym71x5RZKlmxVtkvzaS2o8uItMLc4f/Tg6hHSaQRvqt1
+         B/uw==
+X-Gm-Message-State: AGi0PubLKFo1SCrUH5aOYzpP6BRhN1MFgeEBqEXXrq4JobKi/xS40ZRk
+        ri5onyFC0CFHlV1vmSH1s/2N/7mE31fPdUf+vRw=
+X-Google-Smtp-Source: APiQypLp18CNKCYUQrhm+QbwkYcDgQiNWW/A63FEGHkY8gWBCgF6SzUnHY0ZhCS04zxHYOUex7NTURTaCKDJwuhREqs=
+X-Received: by 2002:a92:c7a9:: with SMTP id f9mr27216527ilk.0.1588076857153;
+ Tue, 28 Apr 2020 05:27:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <78EFC9DD-48A2-49BB-8C76-1E6FDE808067@redhat.com>
-X-Url:  http://acmel.wordpress.com
+References: <20200205191043.21913-1-linus.luessing@c0d3.blue>
+ <3300912.TRQvxCK2vZ@bentobox> <3097447.aZuNXRJysd@sven-edge> <87blnblsyv.fsf@codeaurora.org>
+In-Reply-To: <87blnblsyv.fsf@codeaurora.org>
+From:   Dave Taht <dave.taht@gmail.com>
+Date:   Tue, 28 Apr 2020 05:27:25 -0700
+Message-ID: <CAA93jw6xoh=Nu3-OcfU5cnO5rct+QGqRf_Tnwx7-BpO8Fhrakw@mail.gmail.com>
+Subject: Re: [PATCH] ath10k: increase rx buffer size to 2048
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Sven Eckelmann <sven@narfation.org>,
+        ath10k <ath10k@lists.infradead.org>,
+        =?UTF-8?Q?Linus_L=C3=BCssing?= <linus.luessing@c0d3.blue>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ben Greear <greearb@candelatech.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        =?UTF-8?Q?Linus_L=C3=BCssing?= <ll@simonwunderlich.de>,
+        mail@adrianschmutzler.de
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Tue, Apr 28, 2020 at 12:47:53PM +0200, Eelco Chaudron escreveu:
-> On 28 Apr 2020, at 6:04, Alexei Starovoitov wrote:
-> > On Fri, Apr 24, 2020 at 02:29:56PM +0200, Eelco Chaudron wrote:
+On Tue, Apr 28, 2020 at 5:06 AM Kalle Valo <kvalo@codeaurora.org> wrote:
+>
+> Sven Eckelmann <sven@narfation.org> writes:
+>
+> > On Wednesday, 1 April 2020 09:00:49 CEST Sven Eckelmann wrote:
+> >> On Wednesday, 5 February 2020 20:10:43 CEST Linus L=C3=BCssing wrote:
+> >> > From: Linus L=C3=BCssing <ll@simonwunderlich.de>
+> >> >
+> >> > Before, only frames with a maximum size of 1528 bytes could be
+> >> > transmitted between two 802.11s nodes.
+> >> >
+> >> > For batman-adv for instance, which adds its own header to each frame=
+,
+> >> > we typically need an MTU of at least 1532 bytes to be able to transm=
+it
+> >> > without fragmentation.
+> >> >
+> >> > This patch now increases the maxmimum frame size from 1528 to 1656
+> >> > bytes.
+> >> [...]
+> >>
+> >> @Kalle, I saw that this patch was marked as deferred [1] but I couldn'=
+t find
+> >> any mail why it was done so. It seems like this currently creates real=
+ world
+> >> problems - so would be nice if you could explain shortly what is curre=
+ntly
+> >> blocking its acceptance.
+> >
+> > Ping?
+>
+> Sorry for the delay, my plan was to first write some documentation about
+> different hardware families but haven't managed to do that yet.
+>
+> My problem with this patch is that I don't know what hardware and
+> firmware versions were tested, so it needs analysis before I feel safe
+> to apply it. The ath10k hardware families are very different that even
+> if a patch works perfectly on one ath10k hardware it could still break
+> badly on another one.
+>
+> What makes me faster to apply ath10k patches is to have comprehensive
+> analysis in the commit log. This shows me the patch author has
+> considered about all hardware families, not just the one he is testing
+> on, and that I don't need to do the analysis myself.
 
-> > > > But in reality I think few kprobes in the prog will be enough to
-> > > > debug the program and XDP prog may still process millions of
-> > > > packets because your kprobe could be in error path and the user
-> > > > may want to capture only specific things when it triggers.
+I have been struggling to get the ath10k to sing and dance using
+various variants
+of the firmware, on this bug over here:
 
-> > > > kprobe bpf prog will execute in such case and it can capture
-> > > > necessary state from xdp prog, from packet or from maps that xdp
-> > > > prog is using.
+https://forum.openwrt.org/t/aql-and-the-ath10k-is-lovely/
 
-> > > > Some sort of bpf-gdb would be needed in user space.  Obviously
-> > > > people shouldn't be writing such kprob-bpf progs that debug
-> > > > other bpf progs by hand. bpf-gdb should be able to generate them
-> > > > automatically.
+The puzzling thing is the loss of bidirectional throughput at codel target =
+20,
+and getting WAY more (but less than I expected) at codel target 5.
 
-> > > See my opening comment. What you're describing here is more when
-> > > the right developer has access to the specific system. But this
-> > > might not even be possible in some environments.
+This doesn't quite have bearing the size of the rx ring, except that in my
+experiments the rx ring is rather small!! and yet I get way more performanc=
+e
+out of it....
 
-> > All I'm saying that kprobe is a way to trace kernel.
-> > The same facility should be used to trace bpf progs.
- 
-> perf doesn’t support tracing bpf programs, do you know of any tools that
-> can, or you have any examples that would do this?
+(still,  as you'll see from the bug, it's WAY better than it used to be)
 
-I'm discussing with Yonghong and Masami what would be needed for 'perf
-probe' to be able to add kprobes to BPF jitted areas in addition to
-vmlinux and modules.
+is NAPI in this driver? I'm afraid to look.
+> --
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpa=
+tches
 
-- Arnaldo
+
+
+--=20
+Make Music, Not War
+
+Dave T=C3=A4ht
+CTO, TekLibre, LLC
+http://www.teklibre.com
+Tel: 1-831-435-0729
