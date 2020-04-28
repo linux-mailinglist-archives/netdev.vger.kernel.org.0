@@ -2,105 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EAE01BCC7D
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 21:38:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F3541BCC8D
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 21:43:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728908AbgD1TiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 15:38:17 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:35197 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728613AbgD1TiR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 15:38:17 -0400
-Received: by mail-il1-f197.google.com with SMTP id r5so24701419ilq.2
-        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 12:38:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=eDc8NZEKFhvGM6dQ3kv1NE06m1a7uFN0dbkh7RytWGA=;
-        b=KVYDMwbKY8vWz+nSKZMEPc/zADAaJSoTeS7Fg9Q/JwyXW/JdrhtLNZQemSB8muHBve
-         CXkYVOVGZwfYnxyoJ676oC3WetcCFYHwAKxwaN2v9853P3qKgh/TIEIsdkuvwaQqN5JC
-         l52fR/IxYHaLhVmuC+jYeksqvH+aJOiElP6kR4k+0NSBR1TgMfLK4QXXwdpboNnYW4jd
-         iGGyzd0w9aKob94s5R6+uXZrDNfXjtn2Nvluk6xzh5HFsH9Zp17kLpsfzvUK+Ofz+oOg
-         rKP6IrAXqM7xHXgNPjBSXu/GXcxKZOHqkTvwri04lgVvmc822o5SlEPlqtNweW8DfyoU
-         yFNg==
-X-Gm-Message-State: AGi0PuY9Q9RKvO3m51DoGhkdCV6YlHD/HnKfWLrQksuyfLNzEeoxHAfT
-        3B2enOzvsgIoEB6lWlfyAKUZ06+6bJQ4/PPHMn3qb7RCH+M+
-X-Google-Smtp-Source: APiQypIEFXc6pRBKZG5veE+k1ZMkPrZdlFSYtHt4b+M+rJ3vtx2X+beJ6e6vYmreUCgHtZcT7jfIf2I4WjT50f61CK5A5jAoWbFJ
+        id S1728819AbgD1Tnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 15:43:40 -0400
+Received: from mail-eopbgr70041.outbound.protection.outlook.com ([40.107.7.41]:10433
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728392AbgD1Tnj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Apr 2020 15:43:39 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KfXYihsiFYPcafXka0l8jzDplIQaTZlPy8cRmEC/OP1cjNCxojplBZaJ+AealgLpAeYbAaWT0IIC4zvnmG67q7vZ9Ix9+fP5zxJWqG7FOhU6b6NSEwiRlj0547GoDx9Em0sM6txSp9L177C5aYF2ZwdDD4FTdqQ1jpKnS5LG5FE5ksxZoe8drewtlGkNFuoSYysnscNeuWC4QkPOSB4SSOtyoVsq9s0PZSGgjtggEUV7NzU3U28a5/eRNLoh/Whfq3D0t5NFughcwfuuI6ApXpaU35w1kedbeW89o3Ju96XpTDCzaJnOLHKoQK46KnaAD8H+MlJlaKSfKI7bHzPpjg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DLFFzQWfZWM+sBXPwUNLvmMcIsJP87ClzSYJ7yx1DeQ=;
+ b=ETfVgVInJtbmrUXRva7lXqNE0MC8v7/zc/d+cuGepQCF0Xcwi0dVtQGdg3b/cT0DyB6RI4GQxa5DyKNt1kASkZjxzFTxN5HtJQOsObS6fozGST/7kt195pWlsXlNjzLM2V1p+lNp2sPR3LhddPJCwCScA3RivHNCBdDwJr5kmzQoA1AVYVT4cNIul9nrtPdoUuOZzyTkXG87ZcXiIZx4Xe1YbH2OyzTKHdI1RqRqPH8qpFzUvGK5MYblBK6hTCyQsqzb3TQIn3LC9rkFipjZAuTggFVFm/dTRg6NkcIPzQN7/VoeD5OwWvS7PgLZD+/HChanHQJVDCc92ctKe22y+g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DLFFzQWfZWM+sBXPwUNLvmMcIsJP87ClzSYJ7yx1DeQ=;
+ b=B3iVLrzDAzr9kAMS5PPcRHDLQPEXzW2eI8M3W4+fVJKGF1sUApqBLQ/UvaN3qKAP7G9FBVS12htpCVXOTu2kTj0uVjXGRJ7qsJjVt48PFkNY5bIaTxtTMXHAHN374hpCQzW2YlUKG2bcPhAYiaoIbfcpnwk65CswN9edFMPt8Yc=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
+ by VI1PR05MB6861.eurprd05.prod.outlook.com (2603:10a6:800:180::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.22; Tue, 28 Apr
+ 2020 19:43:36 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2937.023; Tue, 28 Apr 2020
+ 19:43:36 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     Leon Romanovsky <leonro@mellanox.com>
+CC:     Ariel Levkovich <lariel@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Erez Shitrit <erezsh@mellanox.com>
+Subject: Re: [PATCH mlx5-next 3/9] net/mlx5: Use aligned variable while
+ allocating ICM memory
+Thread-Topic: [PATCH mlx5-next 3/9] net/mlx5: Use aligned variable while
+ allocating ICM memory
+Thread-Index: AQHWGnDv749zZUEmH0OpavVY0xgqTqiIryAAgAZGlAA=
+Date:   Tue, 28 Apr 2020 19:43:36 +0000
+Message-ID: <d2f32b582d770dfdd99ac4850c1a8598232bc27f.camel@mellanox.com>
+References: <20200424194510.11221-1-saeedm@mellanox.com>
+         <20200424194510.11221-4-saeedm@mellanox.com>
+         <20200424195320.GB15990@unreal>
+In-Reply-To: <20200424195320.GB15990@unreal>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.34.4 (3.34.4-1.fc31) 
+authentication-results: mellanox.com; dkim=none (message not signed)
+ header.d=none;mellanox.com; dmarc=none action=none header.from=mellanox.com;
+x-originating-ip: [73.15.39.150]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 34234438-8cfb-4b1a-0b70-08d7ebac7133
+x-ms-traffictypediagnostic: VI1PR05MB6861:|VI1PR05MB6861:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB686167CFDDA559EEFD3857BBBEAC0@VI1PR05MB6861.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 0387D64A71
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(86362001)(66946007)(76116006)(64756008)(91956017)(66476007)(6506007)(66446008)(8936002)(37006003)(66556008)(2616005)(54906003)(26005)(36756003)(8676002)(6512007)(6862004)(107886003)(6486002)(71200400001)(4744005)(5660300002)(498600001)(186003)(450100002)(6636002)(4326008)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: JYxtjtWTG5k/XZXRfXpWTMrHg0RIM22HffQ51sJDzdgU1G9I446RIXCHgfmv1nPoje2pu0paL/KkbAq72i6X+TQ/KFBI9UhUsoB8n+HRMcDTQIxJ/E+ZdrHKBhcEuWA1X30zBOSajaRvo0TqtskJd+G7M8rf5IkZO0uOF0e1zIl9aaAfeH9eo8Zd6+nh2nCCcopU6T6l4qoiHNiMng2MTggDGUbI9LHAwGkHLjcOy0dwvRp8lL+x0Y3k1k1XR47Tr/PGTeLa/F0FxpvIH4zLalvykzYU0c2XYGZWabpelm5k6WM02gzrUxSUYo0l2z1HyDBHUZOCYDfvqFLLyjKW0UnwTYFqPkp1TnBsSeH50yIznabbwuVbspWOr/oTZsrOIq0DpciqEXE83tDpuABdqex6NKkmaxZNDmFakbe2iUQ967IEa/lc7ChEznVr9TtX
+x-ms-exchange-antispam-messagedata: YqM4Ue/lErlmAwlwwmT8ybCtNvU0d3WZlk9yUQvUHeJV3BY1VE4a7LdA53GmxbnXWwq+7ha7biOERJea47S1j0D68l6rvl5+tvhzhSU39J7wMz2TM47ZsuogJasfVonZwC5aKO5Kgh7cEHI8pq4rVil7ztG07cJDyYjKKk+30e6taZphSvsWL/5lMOLZnLHOvnQAHl1wAI1tWnwaph8VPXUY9oGGK77yqSmx9jb908YcJkDPAuC7wm7rtfoZbgSkfHH8JEqXpjVIK9xgt2MFGGAT4b8TF9Z4JM2R60B7vmTeMJKupNMoaUbIC1mvT7rwoGe0k6U5Fhf1v3PbRVxMlwVwwmjaMIWIIwI6CAhGT3nf7y7T3uuDswvi+buHhUS8VdV1RJMm82WbmAZo3+godR6PttDkbJ2lKu1e/ikMqt8GxvqYoKgdoOJGf2+67ZuHNeygTUo/8lJxAsK2T/NCeZAWJPbKBUEEAfY5KEX0gWUCS1TcQFGje1HFdLi7HPK26BJBi1B0OPK4c6HcRxcpeu3oQGXGYZ1+59vr7OuJWuG/kgsXOLuJWTKrAHqSl2LrrD0QnpOlIuluDMhMw3V64KnZ+WMrmSopXohry5nGv1vxB/UjvJIDGT8+UyvEOM+apYs82Y8vMhzNl5qNrU6u8gp+6GG0bx+hyIXIcXEeiXYP/KAoJ/QnpuiCzWT6R2i7ohmOwFkUbQRFwgW9Jegde+OqXFLwmRLt9HNHzX6pIQ78LXhX7FLlEleSDmD20IeFK+g94hgjXvgLHl28GDn/ZV79CiHb5UnNUbtC2DZBMVY=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <02B9CC60BB5E9244A8BC5627AC689FEB@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-Received: by 2002:a92:cb4c:: with SMTP id f12mr28882461ilq.263.1588102694984;
- Tue, 28 Apr 2020 12:38:14 -0700 (PDT)
-Date:   Tue, 28 Apr 2020 12:38:14 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000000638405a45ef96d@google.com>
-Subject: KMSAN: uninit-value in ax25_connect
-From:   syzbot <syzbot+c82752228ed975b0a623@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, glider@google.com, jreuter@yaina.de,
-        kuba@kernel.org, linux-hams@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        ralf@linux-mips.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 34234438-8cfb-4b1a-0b70-08d7ebac7133
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Apr 2020 19:43:36.0978
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: VslitKeWg7HFls3IkToziXwsimUeTlWRIo2WohKYslOCJ1Vj6npjSoX9a2mv7F4LTdB10oiVcylL869ekEWOVw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6861
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following crash on:
-
-HEAD commit:    8bbbc5cf kmsan: don't compile memmove
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=14c92275e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=cd0e9a6b0e555cc3
-dashboard link: https://syzkaller.appspot.com/bug?extid=c82752228ed975b0a623
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-userspace arch: i386
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11d74a75e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14694b45e00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+c82752228ed975b0a623@syzkaller.appspotmail.com
-
-=====================================================
-BUG: KMSAN: uninit-value in ax25_connect+0x92d/0x1e00 net/ax25/af_ax25.c:1203
-CPU: 1 PID: 11844 Comm: syz-executor808 Not tainted 5.6.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1c9/0x220 lib/dump_stack.c:118
- kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
- ax25_connect+0x92d/0x1e00 net/ax25/af_ax25.c:1203
- __sys_connect_file net/socket.c:1857 [inline]
- __sys_connect+0x6f7/0x770 net/socket.c:1874
- __do_sys_connect net/socket.c:1885 [inline]
- __se_sys_connect net/socket.c:1882 [inline]
- __ia32_sys_connect+0xdb/0x130 net/socket.c:1882
- do_syscall_32_irqs_on arch/x86/entry/common.c:339 [inline]
- do_fast_syscall_32+0x3c7/0x6e0 arch/x86/entry/common.c:410
- entry_SYSENTER_compat+0x68/0x77 arch/x86/entry/entry_64_compat.S:139
-RIP: 0023:0xf7ff7d99
-Code: 90 e8 0b 00 00 00 f3 90 0f ae e8 eb f9 8d 74 26 00 89 3c 24 c3 90 90 90 90 90 90 90 90 90 90 90 90 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 eb 0d 90 90 90 90 90 90 90 90 90 90 90 90
-RSP: 002b:00000000ff80833c EFLAGS: 00000246 ORIG_RAX: 000000000000016a
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000020000000
-RDX: 000000000000003c RSI: 00000000080ea078 RDI: 00000000ff808390
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-
-Local variable ----address@__sys_connect created at:
- __sys_connect+0xf7/0x770 net/socket.c:1870
- __sys_connect+0xf7/0x770 net/socket.c:1870
-=====================================================
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+T24gRnJpLCAyMDIwLTA0LTI0IGF0IDIyOjUzICswMzAwLCBMZW9uIFJvbWFub3Zza3kgd3JvdGU6
+DQo+IE9uIEZyaSwgQXByIDI0LCAyMDIwIGF0IDEyOjQ1OjA0UE0gLTA3MDAsIFNhZWVkIE1haGFt
+ZWVkIHdyb3RlOg0KPiA+IEZyb206IEVyZXogU2hpdHJpdCA8ZXJlenNoQG1lbGxhbm94LmNvbT4N
+Cj4gPiANCj4gPiBUaGUgYWxpZ25tZW50IHZhbHVlIGlzIHBhcnQgb2YgdGhlIGlucHV0IHN0cnVj
+dHVyZSwgc28gdXNlIGl0IGFuZA0KPiA+IHNwYXJlDQo+ID4gZXh0cmEgbWVtb3J5IGFsbG9jYXRp
+b24gd2hlbiBpcyBub3QgbmVlZGVkLg0KPiA+IE5vdywgdXNpbmcgdGhlIG5ldyBhYmlsaXR5IHdo
+ZW4gYWxsb2NhdGluZyBpY20gZm9yIERpcmVjdC1SdWxlDQo+ID4gaW5zZXJ0aW9uLg0KPiA+IFNp
+Z25lZC1vZmYtYnk6IEFyaWVsIExldmtvdmljaCA8bGFyaWVsQG1lbGxhbm94LmNvbT4NCj4gPiBT
+aWduZWQtb2ZmLWJ5OiBFcmV6IFNoaXRyaXQgPGVyZXpzaEBtZWxsYW5veC5jb20+DQo+ID4gDQo+
+ID4gU2lnbmVkLW9mZi1ieTogU2FlZWQgTWFoYW1lZWQgPHNhZWVkbUBtZWxsYW5veC5jb20+DQo+
+ID4gLS0tDQo+IA0KPiBFeHRyYSBibGFuayBsaW5lIGJldHdlZW4gU09CcyBhbmQgbm8gbGluZSBi
+ZXR3ZWVuIHRleHQgYW5kIFNPQnMuDQo+IA0KDQp3aWxsIGZpeCBhbmQgYXBwbHkuDQoNClRoYW5r
+cyENCg0K
