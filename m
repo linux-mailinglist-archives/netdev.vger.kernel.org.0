@@ -2,81 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E22A51BCF8F
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 00:14:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4576B1BCFD8
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 00:22:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726470AbgD1WOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 18:14:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50582 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726256AbgD1WOF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 18:14:05 -0400
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FB47C03C1AC;
-        Tue, 28 Apr 2020 15:14:05 -0700 (PDT)
-Received: by mail-lf1-x144.google.com with SMTP id l11so18136239lfc.5;
-        Tue, 28 Apr 2020 15:14:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bJF14BaLVM/ADkYU+eDwCN+bZs5L8nnJTZQjJY+RWHE=;
-        b=pZiZUrKu6oxh5JWQBuxE7rMCpNeubHNL4SfQ2OSbMvyeepwpMLSJmlLms72zRzG9xK
-         1THbrJaYQEWJQVQU+J799OffNlnza0lbLB+sB8o887Pg7wNPeA/k95nVnxWqA0KVFpuO
-         WWAj+jrGaCEr4MxbeScAyEGbNpChndnSI5ibvRArWgBkf0RSxQ1za5bpWlhAkRr/KgOk
-         AH7TrAHbA1lg9TBgf5uuHPSO3JPYbWuCQ5IhV846hO4ol+wgMDISLXzRLbFXfawSmILR
-         JlnrCXyeHZ+66OxzfmoUTJq+9MCsBrOxz3gj+7GxvSQ7sjaMrW5tFO0o3izgZoDg1s55
-         pvfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bJF14BaLVM/ADkYU+eDwCN+bZs5L8nnJTZQjJY+RWHE=;
-        b=dA1De0/Xki0yBe0gLiF6OvuxW76/l0Rvvpp0calYzPnIV8Acdw23+rYWwx3FRopCP3
-         Je7FdyUrTqPpW5u0b2XIpL1SjY1NpxcWjqx1Ni8kDhDukx4wLTzgfdbTXBGLME8yR6nV
-         cZte/EatNrdXCD8iC1wh9XCelGhWtffecRgzf4ZhvzuWegCDOqHT/OvdShPNtk+Xf7i6
-         6Gy852mY7C58O5HjjxK6KRXEz+VZCM5r7arRYVe5V1Xg6r44/1/Vf8NvyrgySiCj95+b
-         EIR75d0y5Q1IdkmwjzKI3TGAD3nA2v8zfVLeEu73/d8z8Cr2b0gWduBQCiDPqg2AV7wo
-         RGRg==
-X-Gm-Message-State: AGi0Pub/bNyM2JscImFCJIrbjZ8XtT7rKBBmjiBdRytrjOqOPYgtFFEL
-        +dip3VCXi1PF6UWE5SI0i01VF6G3PMWwEobdQu9A3A==
-X-Google-Smtp-Source: APiQypIt/ioRgNi4WchTJEOShSA387xTAtP0jjsE7zs7FJ7Dlp5rj/LE+zKmfmfzfjXmk+aHBkDo4A0SZphkiBauvYo=
-X-Received: by 2002:a19:505c:: with SMTP id z28mr2657157lfj.174.1588112043710;
- Tue, 28 Apr 2020 15:14:03 -0700 (PDT)
+        id S1726536AbgD1WWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 18:22:02 -0400
+Received: from correo.us.es ([193.147.175.20]:59006 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726044AbgD1WWC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Apr 2020 18:22:02 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 46C9311EB31
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 00:22:00 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 378A2BAAA3
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 00:22:00 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 2D1A3BAC2F; Wed, 29 Apr 2020 00:22:00 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 0142CDA7B2;
+        Wed, 29 Apr 2020 00:21:58 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 29 Apr 2020 00:21:57 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id D56EC42EF4E0;
+        Wed, 29 Apr 2020 00:21:57 +0200 (CEST)
+Date:   Wed, 29 Apr 2020 00:21:57 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Netfilter Development Mailing List 
+        <netfilter-devel@vger.kernel.org>
+Subject: Re: [PATCH] do not typedef socklen_t on Android
+Message-ID: <20200428222157.GA30125@salvia>
+References: <20200421081549.108375-1-zenczykowski@gmail.com>
+ <20200428000640.GE24002@salvia>
+ <CANP3RGewkX54pqZtironHRCrEYdMF2FZLdKzJz=4GU2CgC=1Mg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20200427234423.998085-1-songliubraving@fb.com>
- <20200427234423.998085-4-songliubraving@fb.com> <09720b42-9858-0e2f-babf-f3cd27f648e6@fb.com>
- <76D70217-F09E-46EA-AA1B-33B883C96EB0@fb.com>
-In-Reply-To: <76D70217-F09E-46EA-AA1B-33B883C96EB0@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 28 Apr 2020 15:13:52 -0700
-Message-ID: <CAADnVQ+WWa0aGNYN7yrhH38EQv=RxNKp-4fOw5XL+NjUce1oGQ@mail.gmail.com>
-Subject: Re: [PATCH v5 bpf-next 3/3] bpf: add selftest for BPF_ENABLE_STATS
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CANP3RGewkX54pqZtironHRCrEYdMF2FZLdKzJz=4GU2CgC=1Mg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 28, 2020 at 3:09 PM Song Liu <songliubraving@fb.com> wrote:
-> >> +
-> >> +struct {
-> >> +    __uint(type, BPF_MAP_TYPE_ARRAY);
-> >> +    __uint(max_entries, 1);
-> >> +    __type(key, __u32);
-> >> +    __type(value, __u64);
-> >> +} count SEC(".maps");
-> >
-> > Looks like a global variable can be used here?
->
-> We can use global variable. But it doesn't really matter for this test.
-> Any BPF program will work here. Do we really need a v6 for this change?
+On Mon, Apr 27, 2020 at 05:26:44PM -0700, Maciej Żenczykowski wrote:
+> I don't know all that much about it.  Mostly it just seems to work.
+> 
+> I'm quoting from: https://en.wikipedia.org/wiki/Bionic_(software) ;-)
+> 
+> Bionic is basically a BSD licensed C library for use with Linux.
+> This differs from other BSD C libraries which require a BSD kernel,
+> and from the GNU C Library (glibc) which uses the GNU Lesser General
+> Public License.
+> 
+> For the most part it's supposed to be drop-in compatible I think,
+> and the kernel headers (uapi) come from some recent version of Linux.
+> 
+> The license and smaller size are AFAIK the main benefits.
+> 
+> ---
+> 
+> Got me curious and:
+> 
+> I'm not actually sure what defines __ANDROID__, maybe __BIONIC__ would
+> be a better guard?
+> 
+> That seems to be defined in bionic/libc/include/sys/cdefs.h
+> 
+> https://android.googlesource.com/platform/bionic/+/master/libc/include/sys/cdefs.h#43
+> 
+> And the docs here:
+> 
+> https://android.googlesource.com/platform/bionic/+/master/docs/defines.md
+> 
+> do seem to suggest that __BIONIC__ is more equivalent to __GLIBC__
 
-yes. please.
-Otherwise folks will copy paste this inefficiency into future tests.
+https://sourceforge.net/p/predef/wiki/Libraries/
+
+This one also refers to the existing C library definitions which makes
+more sense to me too.
