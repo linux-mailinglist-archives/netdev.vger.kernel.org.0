@@ -2,167 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C5091BC19F
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 16:44:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 600841BC1DA
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 16:50:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728095AbgD1Oo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 10:44:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36420 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728073AbgD1Oo2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 10:44:28 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D35BC03C1AB;
-        Tue, 28 Apr 2020 07:44:28 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id d17so10440975pgo.0;
-        Tue, 28 Apr 2020 07:44:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=JsDPihDIradvM9f3uLrw4TfW583mPkxAjR22PUFbNgw=;
-        b=jTNPxSCiyyU0KwKpMbzpSBK4KSkGIk8o1pSKZtwukGLG41ZvNmsGS5VxBVhVsXGGF7
-         Y579jbF3hrNbZ7t1P/5xtvo5AJaAr94aSqIKKfTOhKjt/e6f05fj7IdqJid8ZnP22XVM
-         pn6dgX1n6cfBOj/wurixACb9gk78J0ilz3cGFS/Sc8bDALFKLmlhU+jpiC+3BfbfDuHz
-         Bkpu3URvpdyo02dAiXPfAS/XR6NkkKmJEdbtj+MRgdbQv3uax5VN7GgP/lJnbEzhySLw
-         4Mw3gfGC7C5yOgpCKfIstwyEn3QLP6PcjXUa3qIBeXOm/PioypwSCoM7U9945lbZx6sg
-         n0nQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=JsDPihDIradvM9f3uLrw4TfW583mPkxAjR22PUFbNgw=;
-        b=l1btFeE5e/v3ppKB8a1Az9uqw653vJaB+KnBB9vq35uyPxhaR366hNMK4TtgUz43rw
-         X+WwirM+zstrIuh6w3X3FZgvvch2NEjjv1S+fpDZQ5qZL1cvEf/gus0HM9eHknKn/6SZ
-         O3B4+0AysitpPfknCVaC25tXe6Uxs09DqXv45LvHXyQJx7isocS7xbPC8Cy8m0TMst4c
-         hlXwwduVGEc32xWcjmlYSzwKf8nsu/IqN0T/w4TZOCDEBu1u6/AwWx0159y+ZPUxYUNe
-         PI8HUuvICCpNUYjyLCqTDyyvzm+KKEnk5RlMKawAt+C52p93DJ2Xvz4j8YaBz0fJKEQM
-         D1Fw==
-X-Gm-Message-State: AGi0PubW9GKxrWLJ3WzhkBoPrkM5iGwsdLNAsKetgS9MsCivZARoQYXj
-        U93VXZzlrbCoAGPHcUmkKrU=
-X-Google-Smtp-Source: APiQypL3iX01wY2OqSHGJMR8Y4yXNEIVYUlcFdcIISd34gE2G8qCPiXj1wmuiQETuwl5OGVPQq8Yag==
-X-Received: by 2002:a63:6f07:: with SMTP id k7mr29916217pgc.274.1588085067622;
-        Tue, 28 Apr 2020 07:44:27 -0700 (PDT)
-Received: from varodek.localdomain ([2401:4900:40f3:10a2:97c1:b981:9f1:d7d0])
-        by smtp.gmail.com with ESMTPSA id d203sm15053203pfd.79.2020.04.28.07.44.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Apr 2020 07:44:26 -0700 (PDT)
-From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
-To:     Shannon Nelson <snelson@pensando.io>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
-        netdev@vger.kernel.org, Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
-        linux-kernel-mentees@lists.linuxfoundation.org, rjw@rjwysocki.net
-Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-pm@vger.kernel.org, skhan@linuxfoundation.org
-Subject: [Linux-kernel-mentees] [PATCH v2 2/2] realtek/8139cp: Remove Legacy Power Management
-Date:   Tue, 28 Apr 2020 20:13:14 +0530
-Message-Id: <20200428144314.24533-3-vaibhavgupta40@gmail.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200428144314.24533-1-vaibhavgupta40@gmail.com>
-References: <20200428144314.24533-1-vaibhavgupta40@gmail.com>
+        id S1727951AbgD1Oux (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 10:50:53 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:47623 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727878AbgD1Oux (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 10:50:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588085452;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rxigzlaMgu0obeYswWvhUEN5ZcN1QetQUZ5JIO9TfMk=;
+        b=CUXFK3W80YpgIC2T3+s8aw8ZYN4c5QY/kG2+3Pb9Xc85fwcrjgr03eP6CZ0FtX2Hq0YgsT
+        lHPinm2Nf0APsVX6w2NO8Z9i2O8uHgethBfWFJEzF+8tIKiL13WYA+IOFc1leJpy4ggG2h
+        zePyZgRIAq118qKTGajiQVGNVAS6nmg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-133-LiCURlxsOT-5l1DM3p1Izg-1; Tue, 28 Apr 2020 10:50:48 -0400
+X-MC-Unique: LiCURlxsOT-5l1DM3p1Izg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9C5D01005510;
+        Tue, 28 Apr 2020 14:50:45 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1869310013BD;
+        Tue, 28 Apr 2020 14:50:33 +0000 (UTC)
+Date:   Tue, 28 Apr 2020 16:50:32 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     sameehj@amazon.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        zorik@amazon.com, akiyano@amazon.com, gtzalik@amazon.com,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        steffen.klassert@secunet.com, brouer@redhat.com
+Subject: Re: [PATCH net-next 30/33] xdp: clear grow memory in
+ bpf_xdp_adjust_tail()
+Message-ID: <20200428165032.2c2dca47@carbon>
+In-Reply-To: <5ea66d1ec37bc_59462aeb755845b848@john-XPS-13-9370.notmuch>
+References: <158757160439.1370371.13213378122947426220.stgit@firesoul>
+        <158757179349.1370371.14581472372520364962.stgit@firesoul>
+        <5ea66d1ec37bc_59462aeb755845b848@john-XPS-13-9370.notmuch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Upgrade power management from legacy to generic using dev_pm_ops.
+On Sun, 26 Apr 2020 22:26:54 -0700
+John Fastabend <john.fastabend@gmail.com> wrote:
 
-Add "__maybe_unused" attribute to resume() and susend() callbacks
-definition to suppress compiler warnings.
+> Jesper Dangaard Brouer wrote:
+> > Clearing memory of tail when grow happens, because it is too easy
+> > to write a XDP_PASS program that extend the tail, which expose
+> > this memory to users that can run tcpdump.
+> > 
+> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> > ---  
+> 
+> Hi Jesper, Thanks for the series any idea what the cost of doing
+> this is? If you have some data I would be curious to know a
+> baseline measurment, a grow with memset, then a grow with memset.
+> I'm guess this can be relatively expensive?
 
-Generic callback requires an argument of type "struct device*". Hence,
-convert it to "struct net_device*" using "dev_get_drv_data()" to use
-it in the callback.
+I have a "time_bench" memset kernel module[1] that I use to understand
+that is the best-case/minimum overhead with a hot-cache.  But in this
+case, the memory will be in L3-cache (at least on Intel with DDIO).
 
-Most of the cleaning part is to remove pci_save_state(),
-pci_set_power_state(), etc power management function calls.
+For legitimate use-cases, the BPF-programmer will write her tail data
+into this memory area anyhow.  Thus, I'm not convinced this will be a
+performance issue for real use-cases.  When we have a real use-case that
+need this tail extend and does XDP_TX, I say we can revisit this.
 
-Signed-off-by: Vaibhav Gupta <vaibhavgupta40@gmail.com>
----
- drivers/net/ethernet/realtek/8139cp.c | 25 +++++++------------------
- 1 file changed, 7 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/net/ethernet/realtek/8139cp.c b/drivers/net/ethernet/realtek/8139cp.c
-index 60d342f82fb3..4f2fb1393966 100644
---- a/drivers/net/ethernet/realtek/8139cp.c
-+++ b/drivers/net/ethernet/realtek/8139cp.c
-@@ -2054,10 +2054,9 @@ static void cp_remove_one (struct pci_dev *pdev)
- 	free_netdev(dev);
- }
- 
--#ifdef CONFIG_PM
--static int cp_suspend (struct pci_dev *pdev, pm_message_t state)
-+static int __maybe_unused cp_suspend(struct device *device)
- {
--	struct net_device *dev = pci_get_drvdata(pdev);
-+	struct net_device *dev = dev_get_drvdata(device);
- 	struct cp_private *cp = netdev_priv(dev);
- 	unsigned long flags;
- 
-@@ -2075,16 +2074,12 @@ static int cp_suspend (struct pci_dev *pdev, pm_message_t state)
- 
- 	spin_unlock_irqrestore (&cp->lock, flags);
- 
--	pci_save_state(pdev);
--	pci_enable_wake(pdev, pci_choose_state(pdev, state), cp->wol_enabled);
--	pci_set_power_state(pdev, pci_choose_state(pdev, state));
--
- 	return 0;
- }
- 
--static int cp_resume (struct pci_dev *pdev)
-+static int __maybe_unused cp_resume(struct device *device)
- {
--	struct net_device *dev = pci_get_drvdata (pdev);
-+	struct net_device *dev = dev_get_drvdata(device);
- 	struct cp_private *cp = netdev_priv(dev);
- 	unsigned long flags;
- 
-@@ -2093,10 +2088,6 @@ static int cp_resume (struct pci_dev *pdev)
- 
- 	netif_device_attach (dev);
- 
--	pci_set_power_state(pdev, PCI_D0);
--	pci_restore_state(pdev);
--	pci_enable_wake(pdev, PCI_D0, 0);
--
- 	/* FIXME: sh*t may happen if the Rx ring buffer is depleted */
- 	cp_init_rings_index (cp);
- 	cp_init_hw (cp);
-@@ -2111,7 +2102,6 @@ static int cp_resume (struct pci_dev *pdev)
- 
- 	return 0;
- }
--#endif /* CONFIG_PM */
- 
- static const struct pci_device_id cp_pci_tbl[] = {
-         { PCI_DEVICE(PCI_VENDOR_ID_REALTEK,     PCI_DEVICE_ID_REALTEK_8139), },
-@@ -2120,15 +2110,14 @@ static const struct pci_device_id cp_pci_tbl[] = {
- };
- MODULE_DEVICE_TABLE(pci, cp_pci_tbl);
- 
-+static SIMPLE_DEV_PM_OPS(cp_pm_ops, cp_suspend, cp_resume);
-+
- static struct pci_driver cp_driver = {
- 	.name         = DRV_NAME,
- 	.id_table     = cp_pci_tbl,
- 	.probe        =	cp_init_one,
- 	.remove       = cp_remove_one,
--#ifdef CONFIG_PM
--	.resume       = cp_resume,
--	.suspend      = cp_suspend,
--#endif
-+	.driver.pm    = &cp_pm_ops,
- };
- 
- module_pci_driver(cp_driver);
+[1] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib/time_bench_memset.c
 -- 
-2.26.2
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
