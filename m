@@ -2,116 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3189D1BC8A6
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 20:36:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F5BA1BCAB9
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 20:53:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730134AbgD1SeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 14:34:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44282 "EHLO
+        id S1730264AbgD1Sf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 14:35:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729622AbgD1SeX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 14:34:23 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CCEAC03C1AB
-        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 11:34:23 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id 7so1364374pjo.0
-        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 11:34:23 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1730254AbgD1Sf1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 14:35:27 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62047C03C1AB;
+        Tue, 28 Apr 2020 11:35:27 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id b188so21263830qkd.9;
+        Tue, 28 Apr 2020 11:35:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=d8J9/+H1aJgIU0iPd3k8kUXfWA6cvbV7BCbp34hUMis=;
-        b=PzZLYwaag6VROB6/jTlW9RHPa3Znmxxj1gxVDF7bKVaHEe7DgmI6oiMixvFxC0hifr
-         6AF8PGrk53GEMQ2uvcLzz3tI9y6/4PYq8kHzbjRPRIjS+cqFJCnOlLMmxdtHPHCQTetS
-         rY9cdvBZM1YJK3ZB6JqBBSWL6fq8YJap+HZZkKlX6Xu1QVzE54vkzpuw2khc0Bfwu+1/
-         e1R+H9YvIHUv+u5g7rByKatPq1NJikTUOYTQ7eLDvr0JUW+MNOD19ptMr14AMCOoevYW
-         jyjAxHQzyIrOk/0iPRnrkpFhUlEvmaqOesnOkoASIrNQZLh6Z9a6eXSwSh/WDEDBNNlD
-         Gz8w==
+        bh=P/Yy7fhBlAsiT5vsaC3F1jeDsjx2gQwP5nwUdg7CMcQ=;
+        b=N/+/aw1WUYNw87C4Wh9Rnu6hcmrI2PKDe+khHwWlk4H0nFbvM1bIZ84EQa9ysh3ZaA
+         /uudFwLJUYJe9TeC9LEbOcNy7HSJfKTFiFRhrTNR1BJWur/98X8zXZSKFbTJxYAOj18m
+         dzwxJ/GY5P2Jd9oQfMEfPJz2UAALHxtzPhCkeg7UJhXyjOl7i1KnpVrvgKRUeNdfaJD4
+         kh9vkb/zhYTbtTFSDQecoK0UXlPZeqtDWwH/dLB98rC9uq7Ixmv0wlXMKNGVWmZVVe5s
+         yfMzK1OPZZKZkaYgbTAIM8lUhor++FhQ2wb+vUjMcedfBbZEm0OOFCwjElnMFGEy5trv
+         S6Yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=d8J9/+H1aJgIU0iPd3k8kUXfWA6cvbV7BCbp34hUMis=;
-        b=cE/utW8LnywkX3ZrNlER19o5rVMhBjJ2hatBuaeanZF3zSrSBuTVcFmQvKAcbtmtfg
-         4dwbuoxZaGyvVVq2vRTAn6nkeubIVFH/wqdi92MxtH27rAIS5MijE3F8eMUVxSa3UFKA
-         TIyNn0ltbfoSpJBNBiNlz/UBEmjkviFgLnzVyqscsvpgb/T432iJJ/PuOfEeru9ksWvt
-         /01Jym+TZx/SvphAFxcdkTaQYhrf5xByoM5LxjQ/S8PS/xIixdy7cu61c9cTp+4YoGCX
-         ez/OtoLm0T56CEwjY5iJGJ3YdOfLC7PU5AeiJLeIvpe2uuEWWcDQVd2UHO5d+apQPgi6
-         ernQ==
-X-Gm-Message-State: AGi0Pubu/BaJnyPY+t8eaQfJrGfN3+ywzaM2wt5rbKRwzgn5iijrFYVS
-        PVxBfeS2LdJpbVgLGXvYxmOX+TUXNB4SGKL9mdsTBg==
-X-Google-Smtp-Source: APiQypK4DziNhv8yRj8qmx9ucMaNvJnzarNstlH/ET2gZdf27UdoomqisWjZrSKO9zFfc0EmggwKCgxi0dJ9zlfGZ2Y=
-X-Received: by 2002:a17:902:988e:: with SMTP id s14mr29496990plp.179.1588098862653;
- Tue, 28 Apr 2020 11:34:22 -0700 (PDT)
+        bh=P/Yy7fhBlAsiT5vsaC3F1jeDsjx2gQwP5nwUdg7CMcQ=;
+        b=LjuRKjcaSVDYcYI5bwj/HC8BSCiUspoTpA++GWBaLSmtZYDdScm8Zd2LbsVpqNPPGq
+         yILt6Y8U2gGUVIezSlAGOREo8v4OptF8C6+pT48+UIG2qk+yyRx0bqjVUMGWjOjPlSbM
+         SDDHtRRepXKhfpGcw1MiJ68dYiJSnYWr9+tqf8ypqm41CwQBl6LEBcGcloYdI9Nq1B6L
+         RGmT86h+nWq1QGuy1jKmW2atiYQ0MGAV7dd+CfonA0e/+sQ7xDEdc3O3nUsQwvlrq/4H
+         DHwY0s5gXY3c7bq7N3GJXpA2JGVLzpSH6MsJHQg60Gd0txrSkHS8bPMieAmn3eSofyfS
+         tBEA==
+X-Gm-Message-State: AGi0PuZcds4Nkkes4DWrwv+D7GPMUyBPppCnN0KNe3ctVXP9exoOdP1B
+        uVuqsYBiEVsaN4Tpo65AKLetggZZSLAU7HTXEDk=
+X-Google-Smtp-Source: APiQypIWKfhSHsLtlSDf6HmeEUIDwoYtZ7zWivNIl+fpyyVK+ghOs5YyhqIE3rnmhO8dCuQ5twv+doY/5wFBtXwZYGs=
+X-Received: by 2002:ae9:eb8c:: with SMTP id b134mr29431920qkg.39.1588098926398;
+ Tue, 28 Apr 2020 11:35:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200428174221.2040849-1-natechancellor@gmail.com>
-In-Reply-To: <20200428174221.2040849-1-natechancellor@gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 28 Apr 2020 11:34:11 -0700
-Message-ID: <CAKwvOd=cb-dyWGeMoCE4+zdgA1R=t=QPkzU9EGiCtgdzXke_cw@mail.gmail.com>
-Subject: Re: [PATCH] dpaa2-eth: Use proper division helper in dpaa2_dbg_ch_show
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
+References: <20200428044628.3772114-1-andriin@fb.com> <20200428044628.3772114-3-andriin@fb.com>
+ <20200428164426.xkznwzd3blub2rol@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200428164426.xkznwzd3blub2rol@ast-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 28 Apr 2020 11:35:15 -0700
+Message-ID: <CAEf4Bza7mK8FH0S9S6Jqi37JQFdLjdbeU6u6QiAosoOiVdEMTA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/6] selftests/bpf: add test_progs-asan flavor
+ with AddressSantizer
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>, Julia Kartseva <hex@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 28, 2020 at 10:43 AM Nathan Chancellor
-<natechancellor@gmail.com> wrote:
+On Tue, Apr 28, 2020 at 9:44 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> When building arm32 allmodconfig:
+> On Mon, Apr 27, 2020 at 09:46:24PM -0700, Andrii Nakryiko wrote:
+> > Add another flavor of test_progs that is compiled and run with
+> > AddressSanitizer and LeakSanitizer. This allows to find potential memory
+> > correction bugs and memory leaks. Due to sometimes not trivial requirements on
+> > the environment, this is (for now) done as a separate flavor, not by default.
+> > Eventually I hope to enable it by default.
+> >
+> > To run ./test_progs-asan successfully, you need to have libasan installed in
+> > the system, where version of the package depends on GCC version you have.
+> > E.g., GCC8 needs libasan5, while GCC7 uses libasan4.
+> >
+> > For CentOS 7, to build everything successfully one would need to:
+> >   $ sudo yum install devtoolset-8-gcc devtoolset-libasan-devel
+> >
+> > For Arch Linux to run selftests, one would need to install gcc-libs package to
+> > get libasan.so.5:
+> >   $ sudo pacman -S gcc-libs
+> >
+> > Cc: Julia Kartseva <hex@fb.com>
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 >
-> ERROR: modpost: "__aeabi_uldivmod"
-> [drivers/net/ethernet/freescale/dpaa2/fsl-dpaa2-eth.ko] undefined!
+> It needs a feature check.
+> selftest shouldn't be forcing asan on everyone.
+> Even after I did:
+> sudo yum install devtoolset-8-libasan-devel
+> it still failed to build:
+>   BINARY   test_progs-asan
+> /opt/rh/devtoolset-9/root/usr/libexec/gcc/x86_64-redhat-linux/9/ld: cannot find libasan_preinit.o: No such file or directory
+> /opt/rh/devtoolset-9/root/usr/libexec/gcc/x86_64-redhat-linux/9/ld: cannot find -lasan
 >
-> frames and cdan are both of type __u64 (unsigned long long) so we need
-> to use div64_u64 to avoid this issues.
->
-> Fixes: 460fd830dd9d ("dpaa2-eth: add channel stat to debugfs")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1012
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
 
-Don't forget reported by tags to show some love to our bots! Thanks
-for the patch.
-Reported-by: kernelci.org bot <bot@kernelci.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Yeah, it worked for me initially because it still used GCC7 locally
+and older version of libasan.
 
-> ---
->  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
-> index 80291afff3ea..0a31e4268dfb 100644
-> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
-> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
-> @@ -139,7 +139,7 @@ static int dpaa2_dbg_ch_show(struct seq_file *file, void *offset)
->                            ch->stats.dequeue_portal_busy,
->                            ch->stats.frames,
->                            ch->stats.cdan,
-> -                          ch->stats.frames / ch->stats.cdan,
-> +                          div64_u64(ch->stats.frames, ch->stats.cdan),
->                            ch->buf_count);
->         }
->
->
-> base-commit: 0fd02a5d3eb7020a7e1801f8d7f01891071c85e4
-> --
-> 2.26.2
->
-> --
-> You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/20200428174221.2040849-1-natechancellor%40gmail.com.
+On CentOS you have to run the following command to set up environment
+(for current session only, though):
 
+$ scl enable devtoolset-8 bash
 
+What it does:
+- adds /opt/rh/devtoolset-8/root/usr/bin to $PATH
+- sets $LD_LIBRARY_PATH to
+/opt/rh/devtoolset-8/root/usr/lib64:/opt/rh/devtoolset-8/root/usr/lib:/opt/rh/devtoolset-8/root/usr/lib64/dyninst:/opt/rh/devtoolset-8/root/usr/lib/dyninst:/opt/rh/devtoolset-8/root/usr/lib64:/opt/rh/devtoolset-8/root/usr/lib
 
--- 
-Thanks,
-~Nick Desaulniers
+I'm going to add this to patch to ease some pain later. But yeah, I
+think I have a better plan for ASAN builds. I'll add EXTRA_CFLAGS to
+selftests Makefile, defaulted to nothing. Then for Travis CI (or
+locally) one would do:
+
+$ make EXTRA_CFLAGS='-fsanitize-address'
+
+to build ASAN versions of all the same test runners (including
+test_verifier, test_maps, etc).
+
+I think this will be better overall.
+
+> Also I really don't like that skeletons are now built three times for now good reason
+>   GEN-SKEL [test_progs-asan] test_stack_map.skel.h
+>   GEN-SKEL [test_progs-asan] test_core_reloc_nesting.skel.h
+> default vs no_alu32 makes sense. They are different bpf.o files and different skeletons,
+> but for asan there is no such need.
+
+I agree, luckily I don't really have to change anything with the above approach.
+
+>
+> Please resubmit the rest of the patches, since asan isn't a prerequisite.
+
+I'll update this patch to just add EXTRA_CFLAGS, if you are ok with
+this (and will leave instructions on installing libasan).
