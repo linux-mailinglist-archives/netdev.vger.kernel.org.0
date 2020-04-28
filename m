@@ -2,75 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDA9F1BBC66
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 13:29:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D560C1BB826
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 09:54:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726515AbgD1L3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 07:29:37 -0400
-Received: from 13.mo7.mail-out.ovh.net ([87.98.150.175]:38432 "EHLO
-        13.mo7.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726419AbgD1L3h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 07:29:37 -0400
-X-Greylist: delayed 13004 seconds by postgrey-1.27 at vger.kernel.org; Tue, 28 Apr 2020 07:29:36 EDT
-Received: from player791.ha.ovh.net (unknown [10.108.35.185])
-        by mo7.mail-out.ovh.net (Postfix) with ESMTP id D53E716106C
-        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 09:52:50 +0200 (CEST)
-Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
-        (Authenticated sender: steve@sk2.org)
-        by player791.ha.ovh.net (Postfix) with ESMTPSA id D6F3511C2DC24;
-        Tue, 28 Apr 2020 07:52:42 +0000 (UTC)
-From:   Stephen Kitt <steve@sk2.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Joe Perches <joe@perches.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Stephen Kitt <steve@sk2.org>
-Subject: [PATCH] net: Protect INET_ADDR_COOKIE on 32-bit architectures
-Date:   Tue, 28 Apr 2020 09:52:31 +0200
-Message-Id: <20200428075231.29687-1-steve@sk2.org>
-X-Mailer: git-send-email 2.20.1
+        id S1726812AbgD1Hxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 03:53:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56766 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726253AbgD1HxT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 03:53:19 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE009C03C1A9
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 00:53:19 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jTL3I-000287-0X; Tue, 28 Apr 2020 09:53:12 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jTL3F-0000uN-SB; Tue, 28 Apr 2020 09:53:09 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        David Jander <david@protonic.nl>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
+        Marek Vasut <marex@denx.de>,
+        Christian Herber <christian.herber@nxp.com>
+Subject: [PATCH net-next v3 0/2] provide support for PHY master/slave configuration
+Date:   Tue, 28 Apr 2020 09:53:06 +0200
+Message-Id: <20200428075308.2938-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 16200010813678177572
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgeduhedriedtgdduvdduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuthgvphhhvghnucfmihhtthcuoehsthgvvhgvsehskhdvrdhorhhgqeenucfkpheptddrtddrtddrtddpkedvrdeihedrvdehrddvtddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpqdhouhhtpdhhvghlohepphhlrgihvghrjeeluddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhrtghpthhtohepnhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit c7228317441f ("net: Use a more standard macro for
-INET_ADDR_COOKIE") added a __deprecated marker to the cookie name on
-32-bit architectures, with the intent that the compiler would flag
-uses of the name. However since commit 771c035372a0 ("deprecate the
-'__deprecated' attribute warnings entirely and for good"),
-__deprecated doesn't do anything and should be avoided.
+changes v3:
+- provide separate field for config and state.
+- make state rejected on set
+- add validation
 
-This patch changes INET_ADDR_COOKIE to declare a dummy typedef (so it
-makes checkpatch.pl complain, sorry...) so that any subsequent use of
-the cookie's name will in all likelihood break the build. It also
-removes the __deprecated marker.
+changes v2:
+- change names. Use MASTER_PREFERRED instead of MULTIPORT
+- configure master/slave only on request. Default configuration can be
+  provided by PHY or eeprom
+- status and configuration to the user space.
 
-Signed-off-by: Stephen Kitt <steve@sk2.org>
----
- include/net/inet_hashtables.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Oleksij Rempel (2):
+  ethtool: provide UAPI for PHY master/slave configuration.
+  net: phy: tja11xx: add support for master-slave configuration
 
-diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-index ad64ba6a057f..8a1391d82406 100644
---- a/include/net/inet_hashtables.h
-+++ b/include/net/inet_hashtables.h
-@@ -301,8 +301,9 @@ static inline struct sock *inet_lookup_listener(struct net *net,
- 	  ((__sk)->sk_bound_dev_if == (__sdif)))		&&	\
- 	 net_eq(sock_net(__sk), (__net)))
- #else /* 32-bit arch */
-+/* Break the build if anything tries to use the cookie's name. */
- #define INET_ADDR_COOKIE(__name, __saddr, __daddr) \
--	const int __name __deprecated __attribute__((unused))
-+	typedef void __name __attribute__((unused))
- 
- #define INET_MATCH(__sk, __net, __cookie, __saddr, __daddr, __ports, __dif, __sdif) \
- 	(((__sk)->sk_portpair == (__ports))		&&		\
+ Documentation/networking/ethtool-netlink.rst |  3 +
+ drivers/net/phy/nxp-tja11xx.c                | 58 ++++++++++++-
+ drivers/net/phy/phy.c                        |  7 +-
+ drivers/net/phy/phy_device.c                 | 89 ++++++++++++++++++++
+ include/linux/phy.h                          |  3 +
+ include/uapi/linux/ethtool.h                 | 29 ++++++-
+ include/uapi/linux/ethtool_netlink.h         |  2 +
+ include/uapi/linux/mii.h                     |  2 +
+ net/ethtool/linkmodes.c                      | 15 +++-
+ 9 files changed, 204 insertions(+), 4 deletions(-)
+
 -- 
-2.20.1
+2.26.2
 
