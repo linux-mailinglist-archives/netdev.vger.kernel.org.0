@@ -2,148 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B23791BB9D1
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 11:27:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA72C1BB9E2
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 11:32:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727084AbgD1J1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 05:27:39 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:22181 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726477AbgD1J1j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 05:27:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588066057;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bfXymC3HGPNSUfX/bj/qZ8iDhTWaKlEMnkZzAyhw06M=;
-        b=Iom+RxNQUxxG4x/VGnx0W2UqhvII6RyPI0zYXsziiZ+VPVVfuDudSCNscs80rhz99lXdVV
-        fXOLO4Lzt0LxE7MIlm4/LTekk4vaXIdM6zVxY2SVc5FTLgi6ta+GNjEc+cm5ylku7T9Ixz
-        KF0MihHJ9qCrf475v72HE3+ikec0/04=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-78-scXwL7yHPHqWZVOVPmMgRQ-1; Tue, 28 Apr 2020 05:27:35 -0400
-X-MC-Unique: scXwL7yHPHqWZVOVPmMgRQ-1
-Received: by mail-lf1-f71.google.com with SMTP id l5so8712490lfg.3
-        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 02:27:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=bfXymC3HGPNSUfX/bj/qZ8iDhTWaKlEMnkZzAyhw06M=;
-        b=S2j5sqgSaWmCvuIdm6xibN/bgd8tlWhPwXj5+NFeeW0LN6hpYIP5NsQorhy0y3JJVi
-         j43UiOHtFvXiYbVMIH6kCDKXWs/uqFRsxmHFwgZLCrz/DkGf1kGKqRrD8mNxnmBvtHJI
-         39hdLc/z2gSDDq5T5fmfsSknyVwljF4mUBQPGKVrPPAahKZZ3Akqj7sgsUenElNsXock
-         q8EE7xN79qcvX4Yj7Yn6+ifxnXNOUYeHYcPLfZe0JsBKbugRrJsk2Hg/EfNg8YJVbFea
-         RqcyJYONv/5oOANIIILQtX/mkeNJEzx3FbeZouhqQ1b78l8MgunE+uB5uxjb3N6dbLuE
-         wtaQ==
-X-Gm-Message-State: AGi0PubSZtTzddgCTAVmGdpR4HB6plaaT/1bgldJGPsRZFpjSbZVbH0/
-        QSSDg8FRGNhjE4Sotdy+GI16w0eIcaUhahMIRbFMt8ZsMyu9kVnV6aTFSthJFT8eSB57jhbi+fx
-        EyC5IzYzBdCAGVhyi
-X-Received: by 2002:a2e:9948:: with SMTP id r8mr16658059ljj.1.1588066053955;
-        Tue, 28 Apr 2020 02:27:33 -0700 (PDT)
-X-Google-Smtp-Source: APiQypKg6xAIsjU40aGuRhCio3mV119xePhahLQuiRpax/ce7Ms4WxTW5SyN4ijPi0TlWwBsbe2+KQ==
-X-Received: by 2002:a2e:9948:: with SMTP id r8mr16658042ljj.1.1588066053690;
-        Tue, 28 Apr 2020 02:27:33 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id w11sm6259113ljo.39.2020.04.28.02.27.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Apr 2020 02:27:32 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 0E2901814FF; Tue, 28 Apr 2020 11:27:32 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>, netdev@vger.kernel.org,
-        Adhipati Blambangan <adhipati@tuta.io>,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH net v3] net: xdp: account for layer 3 packets in generic skb handler
-In-Reply-To: <20200427143145.19008d7d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <CAHmME9oN0JueLJxvS48-o9CWAhkaMQYACG3m8TRixxTo6+Oh-A@mail.gmail.com> <20200427204208.2501-1-Jason@zx2c4.com> <20200427135254.3ab8628d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <20200427140039.16df08f5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <877dy0y6le.fsf@toke.dk> <20200427143145.19008d7d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 28 Apr 2020 11:27:31 +0200
-Message-ID: <87tv14vu2k.fsf@toke.dk>
+        id S1727074AbgD1JcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 05:32:24 -0400
+Received: from mail-eopbgr80044.outbound.protection.outlook.com ([40.107.8.44]:13573
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726951AbgD1JcX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Apr 2020 05:32:23 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TTPNzeu0kkH0dg7+dRe9QTczE3SoiKVuli4aExR2p/QnjqYG/v6MI/cxxIGmzMCBrLeYLuYhj3UeiQKqrfYo3zyqIB96fm+ROWGCPniK9wboWOUcbSYUnMmUyZNA4czarlZKIwfsPguLsAlWo3iY67IOyI+SYJ2Py2rvFgkHdFRC71kBq9AyTNRZBlARx1sHMMijyiUg/8hrkh8+sKVpX1IZznJpgwRATZFkrWux8dJAJoybSmOcaB3yXVnn+SeH01k2mwnE+q9By5tUOYoTjaBtHuJ9i+ssvlE8RriZ//FeGQt3robn4jEgN60VBMqrxJAsUs61T0+zOlpy3uLzgA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/ZjoDOQ0EShNyHHQJtlVmEHIcf6V1xeJBdlc0N9rhaw=;
+ b=V2YqTkN8i0Q3Gpx2DqAkYqawcHU6foFy6EGzn3gc4pg2BBPrikWY/W/vfqKFv8NnmOGym7HkJYjRBFbRCuatAfFe/sJ4Wxs04Mew4PMACVte/IyCqasQK3dZCs4TBnxfdyZA0QLIFQVIg01J8ALm4xgWCxay0+5hh/s+zJ7RyeC1UVnyNC6hSnBrLCX10DPscc/nPEY7k+zH4cIaJruyVodonlNOu5UbRRcfscfVR0RHji8E7X78CRRT50XLupfip70uMhmIw8Aa7z2Sip7/uN2zDugZYXrZV9Dyd+ovV4E4qwD3h5AIQeNgt4BiWgd5bW1a0Ypu1Cqk422GKYo4vQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/ZjoDOQ0EShNyHHQJtlVmEHIcf6V1xeJBdlc0N9rhaw=;
+ b=heksccZR3DduXzeLMQdvmdpJAun6xaKAzgdxPt7mFgqFvTiCFPxCDFva/p8XIGm0OM8iBDOsfsty6IBKDK57nudhuJ4hpfRM4A6ZRwc/9TTjjXD0Prhtu2Bhq3Zc+X5dhB/Kp140iYrj2AUbuHEeVJYju7q5xHdcxDREgmldHm4=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=mellanox.com;
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22) by
+ AM6SPR01MB0055.eurprd05.prod.outlook.com (2603:10a6:20b:1b::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13; Tue, 28 Apr
+ 2020 09:32:19 +0000
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::e9a8:7b1c:f82a:865b]) by HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::e9a8:7b1c:f82a:865b%6]) with mapi id 15.20.2937.023; Tue, 28 Apr 2020
+ 09:32:19 +0000
+References: <19073d9bc5a2977a5a366caf5e06b392e4b63e54.1587575157.git.petrm@mellanox.com> <20200422130245.53026ff7@hermes.lan> <87imhq4j6b.fsf@mellanox.com> <cdb5f51b-a8aa-7deb-1085-4fab7e01d64f@gmail.com> <20200427160938.2cdce301@hermes.lan>
+User-agent: mu4e 1.3.3; emacs 26.3
+From:   Petr Machata <petrm@mellanox.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2-next] tc: pedit: Support JSON dumping
+In-reply-to: <20200427160938.2cdce301@hermes.lan>
+Date:   Tue, 28 Apr 2020 11:32:17 +0200
+Message-ID: <87368o3qhq.fsf@mellanox.com>
+Content-Type: text/plain
+X-ClientProxiedBy: AM4PR0501CA0050.eurprd05.prod.outlook.com
+ (2603:10a6:200:68::18) To HE1PR05MB4746.eurprd05.prod.outlook.com
+ (2603:10a6:7:a3::22)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from yaviefel (213.220.234.169) by AM4PR0501CA0050.eurprd05.prod.outlook.com (2603:10a6:200:68::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13 via Frontend Transport; Tue, 28 Apr 2020 09:32:19 +0000
+X-Originating-IP: [213.220.234.169]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 45ff52f3-4922-4081-925c-08d7eb570c19
+X-MS-TrafficTypeDiagnostic: AM6SPR01MB0055:
+X-Microsoft-Antispam-PRVS: <AM6SPR01MB0055510DDFF425BB9782DB02DBAC0@AM6SPR01MB0055.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:628;
+X-Forefront-PRVS: 0387D64A71
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(376002)(39860400002)(346002)(396003)(136003)(6486002)(5660300002)(478600001)(66476007)(86362001)(2906002)(66946007)(316002)(6916009)(66556008)(2616005)(53546011)(16526019)(26005)(8936002)(186003)(81156014)(8676002)(956004)(6496006)(52116002)(4326008)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NzpeIlbXstnjo4miiF6lFzxdmhKUX6KEuRx2WgnQlp0cA4suK//pF50MyBFGsYuzhAyaKClWdTaeLxskWDK2at7l6E8FfB5grNOZfGh6e0EfW6AB31y5toYR3YKzL9OtRBjj+cucFoG8S4mRJj8ltbi5hMfKxhPi+ZXJH/qFlLpet7C39sJV35sIT7L+TVAQ7m2vjPduzI4iLPd6P2P7uxM1ciwlkBmemrLA2OlAJti17W5OwszvT8XX5xmlH3mjI8xmRccAylEyXUTXDak5HNgGm2SpGXyXPAGhuz0a9xLI4khO6QdZ6Bs3V63OJh8pmZxDbVE29TUvzSEbLl6isl7Sp9GsfQ7wT1o46vSCt60tT075M1hbUDNFgp1o+UkWI1k52CC9FCBfLAfjkFBs3iePowOwrTOaxm9GTHbsVgtot6ZfO6PUySCWlywZLwuh
+X-MS-Exchange-AntiSpam-MessageData: 8BlAP6NKSQq6noG2HO4W0V6CO9Sp//R/2R8Xu/Hz8TrKpfnoyakzqN65J5CCPRyVHFTq8xWKAEsUdKHPbPRVVj1CNJcjmOROKMoUls20s0Iv10y2GfeElZktAY81roiR2h8OysQCzFF3O4AGyFCbPIkN/B0usiN7Wl2xyEA9vCQcvYwm0tipBq4GNb1IyIuCdxt1nWyGuYBq7eqKrT+oqjdZqUZdyz1lz4Bde6VY3YsOpqgCtB7wz2GmDiBr94KcZtQrBCljq5iHbvjnxC9vz9N9cg2FvBoGNxe8I5/xtTEClQtE69b7Eei6EktwFQ0Fm4L6tBOaiALzZOQZvxNVCnyO7B9oGbSAw+fO/ydo8QyxVB4lNFFCdn4xnywm1smKlSEU+XPu78pJmLUiBcROknD7UuFaank4lQ0DhjWGqdQ7c32bWyJFf8KcbyQx7NDrwkGUgQ1fuPZY+/donRW0AVQCALD4f+alDl02jdyA0zHOeDoHRSRztvfbXujy3vvK31psX6TziQfUXxvZT1pDlAPbYlwD7yG3mjr8dgU5gw1DSgaYjPJkicbvGOUZ19IBmvn3disRVTnV6di3fwTlIqSZgOEbwPbyl1oG8p+POjboegRBQSB+znwYH6jVtRwRbu3HHIwev/MRi/uU4hk2+OfgMfGkFCKBXCDIRpXCKITL2t0tSB6C0C7VY18Q3zKxUC3e38Lwm2ru/rptnKZrTfdrVrJ2Dfc2FjTT0Foj1aJfBWfIv2c40gJPvT3qLNYsmBS39/Q9k4CzHN1BRiy0AOn7c3PVPY0pZN6bIvLhnAUi+NXR27yQZQko580LgX7U
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 45ff52f3-4922-4081-925c-08d7eb570c19
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2020 09:32:19.6357
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: PxwKryguO5DeSFbjDvNV40FfbcIiugx9lA1LRme7kKJyRzS7NKFRTsCcc+S2Jspg0dKMjknmlvgizEpLeFa6nw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6SPR01MB0055
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
 
-> On Mon, 27 Apr 2020 23:14:05 +0200 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Jakub Kicinski <kuba@kernel.org> writes:
->> > On Mon, 27 Apr 2020 13:52:54 -0700 Jakub Kicinski wrote:=20=20
->> >> On Mon, 27 Apr 2020 14:42:08 -0600 Jason A. Donenfeld wrote:=20=20
->> >> > A user reported that packets from wireguard were possibly ignored b=
-y XDP
->> >> > [1]. Apparently, the generic skb xdp handler path seems to assume t=
-hat
->> >> > packets will always have an ethernet header, which really isn't alw=
-ays
->> >> > the case for layer 3 packets, which are produced by multiple driver=
-s.
->> >> > This patch fixes the oversight. If the mac_len is 0, then we assume
->> >> > that it's a layer 3 packet, and in that case prepend a pseudo ethhd=
-r to
->> >> > the packet whose h_proto is copied from skb->protocol, which will h=
-ave
->> >> > the appropriate v4 or v6 ethertype. This allows us to keep XDP prog=
-rams'
->> >> > assumption correct about packets always having that ethernet header=
-, so
->> >> > that existing code doesn't break, while still allowing layer 3 devi=
-ces
->> >> > to use the generic XDP handler.=20=20
->> >>=20
->> >> Is this going to work correctly with XDP_TX? presumably wireguard
->> >> doesn't want the ethernet L2 on egress, either? And what about
->> >> redirects?
->> >>=20
->> >> I'm not sure we can paper over the L2 differences between interfaces.
->> >> Isn't user supposed to know what interface the program is attached to?
->> >> I believe that's the case for cls_bpf ingress, right?=20=20
+Stephen Hemminger <stephen@networkplumber.org> writes:
+
+> On Sun, 26 Apr 2020 12:23:04 -0600
+> David Ahern <dsahern@gmail.com> wrote:
+>
+>> On 4/23/20 3:59 AM, Petr Machata wrote:
 >> >
->> > In general we should also ask ourselves if supporting XDPgeneric on
->> > software interfaces isn't just pointless code bloat, and it wouldn't
->> > be better to let XDP remain clearly tied to the in-driver native use
->> > case.=20=20
->>=20
->> I was mostly ignoring generic XDP for a long time for this reason. But
->> it seems to me that people find generic XDP quite useful, so I'm no
->> longer so sure this is the right thing to do...
+>> > Stephen Hemminger <stephen@networkplumber.org> writes:
+>> >
+>> >> On Wed, 22 Apr 2020 20:06:15 +0300
+>> >> Petr Machata <petrm@mellanox.com> wrote:
+>> >>
+>> >>> +			print_string(PRINT_FP, NULL, ": %s",
+>> >>> +				     cmd ? "add" : "val");
+>> >>> +			print_string(PRINT_JSON, "cmd", NULL,
+>> >>> +				     cmd ? "add" : "set");
+>> >>
+>> >> Having different outputs for JSON and file here. Is that necessary?
+>> >> JSON output is new, and could just mirror existing usage.
+>> >
+>> > This code outputs this bit:
+>> >
+>> >             {
+>> >               "htype": "udp",
+>> >               "offset": 0,
+>> >               "cmd": "set",   <----
+>> >               "val": "3039",
+>> >               "mask": "ffff0000"
+>> >             },
+>> >
+>> > There are currently two commands, set and add. The words used to
+>> > configure these actions are set and add as well. The way these commands
+>> > are dumped should be the same, too. The only reason why "set" is
+>> > reported as "val" in file is that set used to be the implied action.
+>> >
+>> > JSON doesn't have to be backward compatible, so it should present the
+>> > expected words.
+>> >
+>>
+>> Stephen: do you agree?
 >
-> I wonder, maybe our documentation is not clear. IOW we were saying that
-> XDP is a faster cls_bpf, which leaves out the part that XDP only makes
-> sense for HW/virt devices.
+> Sure that is fine, maybe a comment would help?
 
-I'm not sure it's just because people think it's faster. There's also a
-semantic difference; if you just want to do ingress filtering, simply
-sticking an XDP program on the interface is a natural fit. Whereas
-figuring out the tc semantics for ingress is non-trivial. And also
-reusability of XDP programs from the native hook is an important
-consideration, I believe. Which is also why I think the pseudo-MAC
-header approach is the right fix for L3 devices :)
+Something like this?
 
-> Kinda same story as XDP egress, folks may be asking for it but that
-> doesn't mean it makes sense.
-
-Well I do also happen to think that XDP egress is a good idea ;)
-
-> Perhaps the original reporter realized this and that's why they
-> disappeared?
->
-> My understanding is that XDP generic is aimed at testing and stop gap
-> for drivers which don't implement native. Defining behavior based on
-> XDP generic's needs seems a little backwards, and risky.
-
-That I can agree with - generic XDP should follow the semantics of
-native XDP, not the other way around. But that's what we're doing here
-(with the pseudo-MAC header approach), isn't it? Whereas if we were
-saying "just write your XDP programs to assume only L3 packets" we would
-be creating a new semantic for generic XDP...
-
--Toke
-
+                        /* In FP, report the "set" command as "val" to keep
+                         * backward compatibility.
+                         */
+			print_string(PRINT_FP, NULL, ": %s",
+				     cmd ? "add" : "val");
+			print_string(PRINT_JSON, "cmd", NULL,
+				     cmd ? "add" : "set");
