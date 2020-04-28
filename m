@@ -2,221 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0F321BC054
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 15:55:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A12C01BC05F
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 15:57:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727934AbgD1NzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 09:55:25 -0400
-Received: from mga01.intel.com ([192.55.52.88]:10448 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726868AbgD1NzZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Apr 2020 09:55:25 -0400
-IronPort-SDR: Q+qI07rxoJcjyj+NDc3yS6kQuVSOYG4Ca1WpUn2aKRZUEdy1R+Y/+5K7xA+D1Ht7fAJgDIPyAT
- +ocBrjjWXHkw==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2020 06:55:24 -0700
-IronPort-SDR: UqdrexDZQzQ8E1+QY/V3sPjHn0i3RBivOyEWQ7V3IFe5kfipMoXPMYWfAJeZhGb8akXJP9ur7O
- 11OoiyRy/B9w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,327,1583222400"; 
-   d="scan'208";a="275844482"
-Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
-  by orsmga002.jf.intel.com with ESMTP; 28 Apr 2020 06:55:23 -0700
-Received: from fmsmsx158.amr.corp.intel.com (10.18.116.75) by
- FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 28 Apr 2020 06:55:23 -0700
-Received: from shsmsx101.ccr.corp.intel.com (10.239.4.153) by
- fmsmsx158.amr.corp.intel.com (10.18.116.75) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 28 Apr 2020 06:55:23 -0700
-Received: from shsmsx108.ccr.corp.intel.com ([169.254.8.7]) by
- SHSMSX101.ccr.corp.intel.com ([169.254.1.129]) with mapi id 14.03.0439.000;
- Tue, 28 Apr 2020 21:55:19 +0800
-From:   "Zhang, Rui" <rui.zhang@intel.com>
-To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
-        "'linux-pm@vger.kernel.org'" <linux-pm@vger.kernel.org>
-CC:     "'Rafael J . Wysocki'" <rjw@rjwysocki.net>,
-        'Len Brown' <lenb@kernel.org>,
-        'Jiri Pirko' <jiri@mellanox.com>,
-        'Ido Schimmel' <idosch@mellanox.com>,
-        "'David S . Miller'" <davem@davemloft.net>,
-        'Peter Kaestle' <peter@piie.net>,
-        'Darren Hart' <dvhart@infradead.org>,
-        'Andy Shevchenko' <andy@infradead.org>,
-        'Support Opensource' <support.opensource@diasemi.com>,
-        'Daniel Lezcano' <daniel.lezcano@linaro.org>,
-        'Amit Kucheria' <amit.kucheria@verdurent.com>,
-        'Shawn Guo' <shawnguo@kernel.org>,
-        'Sascha Hauer' <s.hauer@pengutronix.de>,
-        'Pengutronix Kernel Team' <kernel@pengutronix.de>,
-        'Fabio Estevam' <festevam@gmail.com>,
-        'NXP Linux Team' <linux-imx@nxp.com>,
-        'Heiko Stuebner' <heiko@sntech.de>,
-        'Orson Zhai' <orsonzhai@gmail.com>,
-        'Baolin Wang' <baolin.wang7@gmail.com>,
-        'Chunyan Zhang' <zhang.lyra@gmail.com>,
-        "'linux-acpi@vger.kernel.org'" <linux-acpi@vger.kernel.org>,
-        "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>,
-        "'platform-driver-x86@vger.kernel.org'" 
-        <platform-driver-x86@vger.kernel.org>,
-        "'linux-arm-kernel@lists.infradead.org'" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "'kernel@collabora.com'" <kernel@collabora.com>,
-        'Barlomiej Zolnierkiewicz' <b.zolnierkie@samsung.com>
-Subject: RE: [PATCH v3 2/2] thermal: core: Stop polling DISABLED thermal
- devices
-Thread-Topic: [PATCH v3 2/2] thermal: core: Stop polling DISABLED thermal
- devices
-Thread-Index: AQHWGZBG4VqXwdwSNk6/8EtFFGs1V6iH9bQAgAUTBvD//8MJgIAByd6w
-Date:   Tue, 28 Apr 2020 13:55:19 +0000
-Message-ID: <744357E9AAD1214791ACBA4B0B90926377CFA057@SHSMSX108.ccr.corp.intel.com>
-References: <a3998ad2-19bc-0893-a10d-2bb5adf7d99f@samsung.com>
- <20200423165705.13585-1-andrzej.p@collabora.com>
- <20200423165705.13585-3-andrzej.p@collabora.com>
- <744357E9AAD1214791ACBA4B0B90926377CF60E3@SHSMSX108.ccr.corp.intel.com>
- <744357E9AAD1214791ACBA4B0B90926377CF9A10@SHSMSX108.ccr.corp.intel.com>
- <da9f0547-226d-71cf-f508-f4669fb2f5c2@collabora.com>
-In-Reply-To: <da9f0547-226d-71cf-f508-f4669fb2f5c2@collabora.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.239.127.40]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+        id S1727078AbgD1N5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 09:57:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726893AbgD1N5C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 09:57:02 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87474C03C1AB
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 06:57:02 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id l78so21785592qke.7
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 06:57:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=lca.pw; s=google;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=bnjOOvh4SMYLoB4ygqU5KXt2AopllOYg67zW9fgDCNE=;
+        b=A4dGhCCaKxI4AU9G03hChxAqCSkhA71uO8KNLuohGzG0mJFT4Lp6Wh1TKfGr5BNZc6
+         Q/uT3GKjILE5nH9jbXtaoVq0q/4Ee+BQTiDpYeQvuKGelLa75+6+EbUJkiyblBO7VWZx
+         EXkLAGCs9OrP5m4MxvNr/jqwft6y6pT8ofrzBGlRY2CTsidC8jTeekQN5oeUzuJVhtB3
+         URjAAr77a9wxzmUiiwDD0eBCUtz1Us87LVmw5R4Z1nXvGsMOarA8oFckw/57kYPNCc1n
+         Be3JJqAC0MlLAhHu7rUn0cmV/bGFX8kuzDhvETpzLgIv3wrrnb9+gEezBdhVN/OCgWN3
+         l8zw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=bnjOOvh4SMYLoB4ygqU5KXt2AopllOYg67zW9fgDCNE=;
+        b=aNYL6PEv6M/jD+X9QXL5O3RHZSyZBAhidcVB2eDCzOkr6gIyWPhojwv+eZvvYLIGI1
+         zTGhgwM0AZhWiBTnSs4NAsEseNVubtgIGybvR/rl0hfN5omGyZTLpyf3qHvvKmg0ivWP
+         B6v9cF4p0B8nB1135kn0nPFJgIlfm0ZAb+ulL2SneT9etpJNHdLvDZmhaolc+F9mHLNJ
+         BxJiBHdZ+jqBEsfUE5E+xFYgefA4MF5A3ZGRIM4bjPJgv4nqd2rIemSBGiEugIsU6pvh
+         qofZjpVOoBvjla/JSIA9Jq7joRZRtthAjSiK61lwGmSVaKTLwcgjx9Dimji0TEmSm1kf
+         f5fA==
+X-Gm-Message-State: AGi0PubkC4gdddBFngAu/ugeEp4ezKGLqO/sKrn6qp3sfOpbKcrHFRQ6
+        s+p/301x9tUpfgSb/dPNZMdQnQ==
+X-Google-Smtp-Source: APiQypLeiLlI+LOU+p/8ztIa9gNMSBld4WWzJ561dEk9dxi+ri8pRessRnzlrEK+25gUPQWqWAcxIg==
+X-Received: by 2002:a05:620a:70f:: with SMTP id 15mr27416361qkc.68.1588082221618;
+        Tue, 28 Apr 2020 06:57:01 -0700 (PDT)
+Received: from [192.168.1.153] (pool-71-184-117-43.bstnma.fios.verizon.net. [71.184.117.43])
+        by smtp.gmail.com with ESMTPSA id r6sm14179799qtc.28.2020.04.28.06.57.00
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 28 Apr 2020 06:57:00 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: linux-next boot error: WARNING: suspicious RCU usage in
+ ipmr_get_table
+From:   Qian Cai <cai@lca.pw>
+In-Reply-To: <CACT4Y+YnjK+kq0pfb5fe-q1bqe2T1jq_mvKHf--Z80Z3wkyK1Q@mail.gmail.com>
+Date:   Tue, 28 Apr 2020 09:56:59 -0400
+Cc:     syzbot <syzbot+1519f497f2f9f08183c6@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        "paul E. McKenney" <paulmck@kernel.org>,
+        "Joel Fernandes (Google)" <joel@joelfernandes.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <34558B83-103E-4205-8D3D-534978D5A498@lca.pw>
+References: <000000000000df9a9805a455e07b@google.com>
+ <CACT4Y+YnjK+kq0pfb5fe-q1bqe2T1jq_mvKHf--Z80Z3wkyK1Q@mail.gmail.com>
+To:     Dmitry Vyukov <dvyukov@google.com>,
+        Amol Grover <frextrite@gmail.com>,
+        Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhlIHBhdGNoIGlzIG9uIHRvcCBvZiB0aGlzIHBhdGNoIHNldC4NClJ1biBpbnRvIGFuIGlzc3Vl
-IGR1cmluZyB0ZXN0IHRvZGF5LCB3aWxsIHNlbmQgb3V0IGFmdGVyIHRoZSBpc3N1ZSByZXNvbHZl
-ZC4NCg0KVGhhbmtzLA0KcnVpDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206
-IGxpbnV4LWFjcGktb3duZXJAdmdlci5rZXJuZWwub3JnIDxsaW51eC1hY3BpLW93bmVyQHZnZXIu
-a2VybmVsLm9yZz4NCj4gT24gQmVoYWxmIE9mIEFuZHJ6ZWogUGlldHJhc2lld2ljeg0KPiBTZW50
-OiBUdWVzZGF5LCBBcHJpbCAyOCwgMjAyMCAyOjM1IEFNDQo+IFRvOiBaaGFuZywgUnVpIDxydWku
-emhhbmdAaW50ZWwuY29tPjsgJ2xpbnV4LXBtQHZnZXIua2VybmVsLm9yZycgPGxpbnV4LQ0KPiBw
-bUB2Z2VyLmtlcm5lbC5vcmc+DQo+IENjOiAnUmFmYWVsIEogLiBXeXNvY2tpJyA8cmp3QHJqd3lz
-b2NraS5uZXQ+OyAnTGVuIEJyb3duJyA8bGVuYkBrZXJuZWwub3JnPjsNCj4gJ0ppcmkgUGlya28n
-IDxqaXJpQG1lbGxhbm94LmNvbT47ICdJZG8gU2NoaW1tZWwnIDxpZG9zY2hAbWVsbGFub3guY29t
-PjsNCj4gJ0RhdmlkIFMgLiBNaWxsZXInIDxkYXZlbUBkYXZlbWxvZnQubmV0PjsgJ1BldGVyIEth
-ZXN0bGUnIDxwZXRlckBwaWllLm5ldD47DQo+ICdEYXJyZW4gSGFydCcgPGR2aGFydEBpbmZyYWRl
-YWQub3JnPjsgJ0FuZHkgU2hldmNoZW5rbycNCj4gPGFuZHlAaW5mcmFkZWFkLm9yZz47ICdTdXBw
-b3J0IE9wZW5zb3VyY2UnDQo+IDxzdXBwb3J0Lm9wZW5zb3VyY2VAZGlhc2VtaS5jb20+OyAnRGFu
-aWVsIExlemNhbm8nDQo+IDxkYW5pZWwubGV6Y2Fub0BsaW5hcm8ub3JnPjsgJ0FtaXQgS3VjaGVy
-aWEnDQo+IDxhbWl0Lmt1Y2hlcmlhQHZlcmR1cmVudC5jb20+OyAnU2hhd24gR3VvJyA8c2hhd25n
-dW9Aa2VybmVsLm9yZz47DQo+ICdTYXNjaGEgSGF1ZXInIDxzLmhhdWVyQHBlbmd1dHJvbml4LmRl
-PjsgJ1Blbmd1dHJvbml4IEtlcm5lbCBUZWFtJw0KPiA8a2VybmVsQHBlbmd1dHJvbml4LmRlPjsg
-J0ZhYmlvIEVzdGV2YW0nIDxmZXN0ZXZhbUBnbWFpbC5jb20+OyAnTlhQDQo+IExpbnV4IFRlYW0n
-IDxsaW51eC1pbXhAbnhwLmNvbT47ICdIZWlrbyBTdHVlYm5lcicgPGhlaWtvQHNudGVjaC5kZT47
-DQo+ICdPcnNvbiBaaGFpJyA8b3Jzb256aGFpQGdtYWlsLmNvbT47ICdCYW9saW4gV2FuZycNCj4g
-PGJhb2xpbi53YW5nN0BnbWFpbC5jb20+OyAnQ2h1bnlhbiBaaGFuZycgPHpoYW5nLmx5cmFAZ21h
-aWwuY29tPjsNCj4gJ2xpbnV4LWFjcGlAdmdlci5rZXJuZWwub3JnJyA8bGludXgtYWNwaUB2Z2Vy
-Lmtlcm5lbC5vcmc+Ow0KPiAnbmV0ZGV2QHZnZXIua2VybmVsLm9yZycgPG5ldGRldkB2Z2VyLmtl
-cm5lbC5vcmc+OyAncGxhdGZvcm0tZHJpdmVyLQ0KPiB4ODZAdmdlci5rZXJuZWwub3JnJyA8cGxh
-dGZvcm0tZHJpdmVyLXg4NkB2Z2VyLmtlcm5lbC5vcmc+OyAnbGludXgtYXJtLQ0KPiBrZXJuZWxA
-bGlzdHMuaW5mcmFkZWFkLm9yZycgPGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9y
-Zz47DQo+ICdrZXJuZWxAY29sbGFib3JhLmNvbScgPGtlcm5lbEBjb2xsYWJvcmEuY29tPjsgJ0Jh
-cmxvbWllaiBab2xuaWVya2lld2ljeicNCj4gPGIuem9sbmllcmtpZUBzYW1zdW5nLmNvbT4NCj4g
-U3ViamVjdDogUmU6IFtQQVRDSCB2MyAyLzJdIHRoZXJtYWw6IGNvcmU6IFN0b3AgcG9sbGluZyBE
-SVNBQkxFRCB0aGVybWFsDQo+IGRldmljZXMNCj4gSW1wb3J0YW5jZTogSGlnaA0KPiANCj4gSGks
-DQo+IA0KPiBXIGRuaXUgMjcuMDQuMjAyMCBvwqAxNjoyMCwgWmhhbmcsIFJ1aSBwaXN6ZToNCj4g
-Pg0KPiA+DQo+ID4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4+IEZyb206IFpoYW5n
-LCBSdWkNCj4gPj4gU2VudDogRnJpZGF5LCBBcHJpbCAyNCwgMjAyMCA1OjAzIFBNDQo+ID4+IFRv
-OiBBbmRyemVqIFBpZXRyYXNpZXdpY3ogPGFuZHJ6ZWoucEBjb2xsYWJvcmEuY29tPjsgbGludXgt
-DQo+ID4+IHBtQHZnZXIua2VybmVsLm9yZw0KPiA+PiBDYzogUmFmYWVsIEogLiBXeXNvY2tpIDxy
-andAcmp3eXNvY2tpLm5ldD47IExlbiBCcm93bg0KPiA+PiA8bGVuYkBrZXJuZWwub3JnPjsgSmly
-aSBQaXJrbyA8amlyaUBtZWxsYW5veC5jb20+OyBJZG8gU2NoaW1tZWwNCj4gPj4gPGlkb3NjaEBt
-ZWxsYW5veC5jb20+OyBEYXZpZCBTIC4gTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0PjsNCj4g
-UGV0ZXINCj4gPj4gS2Flc3RsZSA8cGV0ZXJAcGlpZS5uZXQ+OyBEYXJyZW4gSGFydCA8ZHZoYXJ0
-QGluZnJhZGVhZC5vcmc+OyBBbmR5DQo+ID4+IFNoZXZjaGVua28gPGFuZHlAaW5mcmFkZWFkLm9y
-Zz47IFN1cHBvcnQgT3BlbnNvdXJjZQ0KPiA+PiA8c3VwcG9ydC5vcGVuc291cmNlQGRpYXNlbWku
-Y29tPjsgRGFuaWVsIExlemNhbm8NCj4gPj4gPGRhbmllbC5sZXpjYW5vQGxpbmFyby5vcmc+OyBB
-bWl0IEt1Y2hlcmlhDQo+ID4+IDxhbWl0Lmt1Y2hlcmlhQHZlcmR1cmVudC5jb20+OyBTaGF3biBH
-dW8gPHNoYXduZ3VvQGtlcm5lbC5vcmc+Ow0KPiA+PiBTYXNjaGEgSGF1ZXIgPHMuaGF1ZXJAcGVu
-Z3V0cm9uaXguZGU+OyBQZW5ndXRyb25peCBLZXJuZWwgVGVhbQ0KPiA+PiA8a2VybmVsQHBlbmd1
-dHJvbml4LmRlPjsgRmFiaW8gRXN0ZXZhbSA8ZmVzdGV2YW1AZ21haWwuY29tPjsgTlhQDQo+ID4+
-IExpbnV4IFRlYW0gPGxpbnV4LWlteEBueHAuY29tPjsgSGVpa28gU3R1ZWJuZXIgPGhlaWtvQHNu
-dGVjaC5kZT47DQo+ID4+IE9yc29uIFpoYWkgPG9yc29uemhhaUBnbWFpbC5jb20+OyBCYW9saW4g
-V2FuZw0KPiA+PiA8YmFvbGluLndhbmc3QGdtYWlsLmNvbT47IENodW55YW4gWmhhbmcgPHpoYW5n
-Lmx5cmFAZ21haWwuY29tPjsNCj4gPj4gbGludXgtIGFjcGlAdmdlci5rZXJuZWwub3JnOyBuZXRk
-ZXZAdmdlci5rZXJuZWwub3JnOyBwbGF0Zm9ybS1kcml2ZXItDQo+ID4+IHg4NkB2Z2VyLmtlcm5l
-bC5vcmc7IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsNCj4gPj4ga2VybmVs
-QGNvbGxhYm9yYS5jb207IEJhcmxvbWllaiBab2xuaWVya2lld2ljeg0KPiA+PiA8Yi56b2xuaWVy
-a2llQHNhbXN1bmcuY29tPg0KPiA+PiBTdWJqZWN0OiBSRTogW1BBVENIIHYzIDIvMl0gdGhlcm1h
-bDogY29yZTogU3RvcCBwb2xsaW5nIERJU0FCTEVEDQo+ID4+IHRoZXJtYWwgZGV2aWNlcw0KPiA+
-Pg0KPiA+PiBIaSwgQW5kcnplaiwNCj4gPj4NCj4gPj4gVGhhbmtzIGZvciB0aGUgcGF0Y2hlcy4g
-TXkgTGludXggbGFwdG9wIHdhcyBicm9rZW4gYW5kIHdvbid0IGdldA0KPiA+PiBmaXhlZCB0aWxs
-IG5leHQgd2Vlaywgc28gSSBtYXkgbG9zdCBzb21lIG9mIHRoZSBkaXNjdXNzaW9ucyBwcmV2aW91
-c2x5Lg0KPiA+Pg0KPiA+Pj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4+IEZyb206
-IEFuZHJ6ZWogUGlldHJhc2lld2ljeiA8YW5kcnplai5wQGNvbGxhYm9yYS5jb20+DQo+ID4+PiBT
-ZW50OiBGcmlkYXksIEFwcmlsIDI0LCAyMDIwIDEyOjU3IEFNDQo+ID4+PiBUbzogbGludXgtcG1A
-dmdlci5rZXJuZWwub3JnDQo+ID4+PiBDYzogWmhhbmcsIFJ1aSA8cnVpLnpoYW5nQGludGVsLmNv
-bT47IFJhZmFlbCBKIC4gV3lzb2NraQ0KPiA+Pj4gPHJqd0Byand5c29ja2kubmV0PjsgTGVuIEJy
-b3duIDxsZW5iQGtlcm5lbC5vcmc+OyBKaXJpIFBpcmtvDQo+ID4+PiA8amlyaUBtZWxsYW5veC5j
-b20+OyBJZG8gU2NoaW1tZWwgPGlkb3NjaEBtZWxsYW5veC5jb20+OyBEYXZpZCBTIC4NCj4gPj4+
-IE1pbGxlciA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47IFBldGVyIEthZXN0bGUgPHBldGVyQHBpaWUu
-bmV0PjsNCj4gRGFycmVuDQo+ID4+PiBIYXJ0IDxkdmhhcnRAaW5mcmFkZWFkLm9yZz47IEFuZHkg
-U2hldmNoZW5rbyA8YW5keUBpbmZyYWRlYWQub3JnPjsNCj4gPj4+IFN1cHBvcnQgT3BlbnNvdXJj
-ZSA8c3VwcG9ydC5vcGVuc291cmNlQGRpYXNlbWkuY29tPjsgRGFuaWVsDQo+IExlemNhbm8NCj4g
-Pj4+IDxkYW5pZWwubGV6Y2Fub0BsaW5hcm8ub3JnPjsgQW1pdCBLdWNoZXJpYQ0KPiA+Pj4gPGFt
-aXQua3VjaGVyaWFAdmVyZHVyZW50LmNvbT47IFNoYXduIEd1byA8c2hhd25ndW9Aa2VybmVsLm9y
-Zz47DQo+ID4+IFNhc2NoYQ0KPiA+Pj4gSGF1ZXIgPHMuaGF1ZXJAcGVuZ3V0cm9uaXguZGU+OyBQ
-ZW5ndXRyb25peCBLZXJuZWwgVGVhbQ0KPiA+Pj4gPGtlcm5lbEBwZW5ndXRyb25peC5kZT47IEZh
-YmlvIEVzdGV2YW0gPGZlc3RldmFtQGdtYWlsLmNvbT47IE5YUA0KPiA+PiBMaW51eA0KPiA+Pj4g
-VGVhbSA8bGludXgtaW14QG54cC5jb20+OyBIZWlrbyBTdHVlYm5lciA8aGVpa29Ac250ZWNoLmRl
-PjsNCj4gT3Jzb24NCj4gPj4gWmhhaQ0KPiA+Pj4gPG9yc29uemhhaUBnbWFpbC5jb20+OyBCYW9s
-aW4gV2FuZyA8YmFvbGluLndhbmc3QGdtYWlsLmNvbT47DQo+ID4+IENodW55YW4NCj4gPj4+IFpo
-YW5nIDx6aGFuZy5seXJhQGdtYWlsLmNvbT47IGxpbnV4LSBhY3BpQHZnZXIua2VybmVsLm9yZzsN
-Cj4gPj4+IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IHBsYXRmb3JtLWRyaXZlci0geDg2QHZnZXIu
-a2VybmVsLm9yZzsNCj4gPj4+IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsN
-Cj4gPj4+IGtlcm5lbEBjb2xsYWJvcmEuY29tOyBBbmRyemVqIFBpZXRyYXNpZXdpY3oNCj4gPj4+
-IDxhbmRyemVqLnBAY29sbGFib3JhLmNvbT47IEJhcmxvbWllaiBab2xuaWVya2lld2ljeg0KPiA+
-Pj4gPGIuem9sbmllcmtpZUBzYW1zdW5nLmNvbT4NCj4gPj4+IFN1YmplY3Q6IFtQQVRDSCB2MyAy
-LzJdIHRoZXJtYWw6IGNvcmU6IFN0b3AgcG9sbGluZyBESVNBQkxFRCB0aGVybWFsDQo+ID4+PiBk
-ZXZpY2VzDQo+ID4+PiBJbXBvcnRhbmNlOiBIaWdoDQo+ID4+Pg0KPiA+Pj4gUG9sbGluZyBESVNB
-QkxFRCBkZXZpY2VzIGlzIG5vdCBkZXNpcmVkLCBhcyBhbGwgc3VjaCAiZGlzYWJsZWQiDQo+ID4+
-PiBkZXZpY2VzIGFyZSBtZWFudCB0byBiZSBoYW5kbGVkIGJ5IHVzZXJzcGFjZS4gVGhpcyBwYXRj
-aCBpbnRyb2R1Y2VzDQo+ID4+PiBhbmQgdXNlcw0KPiA+Pj4gc2hvdWxkX3N0b3BfcG9sbGluZygp
-IHRvIGRlY2lkZSB3aGV0aGVyIHRoZSBkZXZpY2Ugc2hvdWxkIGJlIHBvbGxlZA0KPiA+Pj4gb3IN
-Cj4gPj4gbm90Lg0KPiA+Pj4NCj4gPj4gVGhhbmtzIGZvciB0aGUgZml4LCBhbmQgSU1PLCB0aGlz
-IHJldmVhbCBzb21lIG1vcmUgcHJvYmxlbXMuDQo+ID4+IFNheSwgd2UgbmVlZCB0byBkZWZpbmUg
-IkRJU0FCTEVEIiB0aGVybWFsIHpvbmUuDQo+ID4+IENhbiB3ZSByZWFkIHRoZSB0ZW1wZXJhdHVy
-ZT8gQ2FuIHdlIHRydXN0IHRoZSB0cmlwIHBvaW50IHZhbHVlPw0KPiA+Pg0KPiA+PiBJTU8sIGEg
-ZGlzYWJsZWQgdGhlcm1hbCB6b25lIGRvZXMgbm90IG1lYW4gaXQgaXMgaGFuZGxlZCBieQ0KPiA+
-PiB1c2Vyc3BhY2UsIGJlY2F1c2UgdGhhdCBpcyB3aGF0IHRoZSB1c2Vyc3BhY2UgZ292ZXJub3Ig
-ZGVzaWduZWQgZm9yLg0KPiA+PiBJbnN0ZWFkLCBpZiBhIHRoZXJtYWwgem9uZSBpcyBkaXNhYmxl
-ZCwgaW4NCj4gPj4gdGhlcm1hbF96b25lX2RldmljZV91cGRhdGUoKSwgd2Ugc2hvdWxkIGJhc2lj
-YWxseSBza2lwIGFsbCB0aGUgb3RoZXINCj4gb3BlcmF0aW9ucyBhcyB3ZWxsLg0KPiA+Pg0KPiA+
-IEkgb3Zlcmxvb2tlZCB0aGUgbGFzdCBsaW5lIG9mIHRoZSBwYXRjaC4gU28NCj4gPiB0aGVybWFs
-X3pvbmVfZGV2aWNlX3VwZGF0ZSgpIHJldHVybnMgaW1tZWRpYXRlbHkgaWYgdGhlIHRoZXJtYWwg
-em9uZSBpcw0KPiBkaXNhYmxlZCwgcmlnaHQ/DQo+ID4NCj4gPiBCdXQgaG93IGNhbiB3ZSBzdG9w
-IHBvbGxpbmcgaW4gdGhpcyBjYXNlPw0KPiANCj4gSXQgZG9lcyBzdG9wLiBIb3dldmVyLCBJIGlu
-ZGVlZCBvYnNlcnZlIGFuIGV4dHJhIGNhbGwgdG8NCj4gdGhlcm1hbF96b25lX2RldmljZV91cGRh
-dGUoKSBiZWZvcmUgaXQgZnVsbHkgc3RvcHMuDQo+IEkgdGhpbmsgd2hhdCBoYXBwZW5zIGlzIHRo
-aXM6DQo+IA0KPiAtIHN0b3JpbmcgImRpc2FibGVkIiBpbiBtb2RlIGVuZHMgdXAgaW4gdGhlcm1h
-bF96b25lX2RldmljZV9zZXRfbW9kZSgpLA0KPiB3aGljaCBjYWxscyBkcml2ZXIncyAtPnNldF9t
-b2RlKCkgYW5kIHRoZW4gY2FsbHMNCj4gdGhlcm1hbF96b25lX2RldmljZV91cGRhdGUoKSwgd2hp
-Y2ggcmV0dXJucyBpbW1lZGlhdGVseSBhbmQgZG9lcyBub3QNCj4gdG91Y2ggdGhlIHR6LT5wb2xs
-X3F1ZXVlIGRlbGF5ZWQgd29yaw0KPiANCj4gLSB0aGVybWFsX3pvbmVfZGV2aWNlX3VwZGF0ZSgp
-IGlzIGNhbGxlZCBmcm9tIHRoZSBkZWxheWVkIHdvcmsgd2hlbiBpdHMNCj4gdGltZSBjb21lcyBh
-bmQgdGhpcyB0aW1lIGl0IGFsc28gcmV0dXJucyBpbW1lZGlhdGVseSwgbm90IG1vZGlmeWluZyB0
-aGUgc2FpZA0KPiBkZWxheWVkIHdvcmssIHNvIHBvbGxpbmcgZWZmZWN0aXZlbHkgc3RvcHMgbm93
-Lg0KPiANCj4gPiBUaGVyZSBpcyBubyBjaGFuY2UgdG8gY2FsbCBpbnRvIG1vbml0b3JfdGhlcm1h
-bF96b25lKCkgaW4NCj4gPiB0aGVybWFsX3pvbmVfZGV2aWNlX3VwZGF0ZSgpLCBvciBkbyBJIG1p
-c3Mgc29tZXRoaW5nPw0KPiANCj4gV2l0aG91dCB0aGUgbGFzdCAiaWYiIHN0YXRlbWVudCBpbiB0
-aGlzIHBhdGNoIHBvbGxpbmcgc3RvcHMgd2l0aCB0aGUgZmlyc3QgY2FsbCB0bw0KPiB0aGVybWFs
-X3pvbmVfZGV2aWNlX3VwZGF0ZSgpIGJlY2F1c2UgaXQgaW5kZWVkIGRpc2FibGVzIHRoZSBkZWxh
-eWVkIHdvcmsuDQo+IA0KPiBTbyB5b3UgYXJlIHByb2JhYmx5IHJpZ2h0IC0gdGhhdCBsYXN0ICJp
-ZiIgc2hvdWxkIG5vdCBiZSBpbnRyb2R1Y2VkLg0KPiANCj4gPg0KPiA+PiBJJ2xsIHRyeSB5b3Vy
-IHBhdGNoZXMgYW5kIHByb2JhYmx5IG1ha2UgYW4gaW5jcmVtZW50YWwgcGF0Y2guDQo+ID4NCj4g
-PiBJIGhhdmUgZmluaXNoZWQgYSBzbWFsbCBwYXRjaCBzZXQgdG8gaW1wcm92ZSB0aGlzIGJhc2Vk
-IG9uIG15DQo+ID4gdW5kZXJzdGFuZGluZywgYW5kIHdpbGwgcG9zdCBpdCB0b21vcnJvdyBhZnRl
-ciB0ZXN0aW5nLg0KPiA+DQo+IA0KPiBJcyB5b3VyIHNtYWxsIHBhdGNoc2V0IGJhc2VkIG9uIHRv
-cCBvZiB0aGlzIHNlcmllcyBvciBpcyBpdCBhIGNvbXBsZXRlbHkNCj4gcmV3cml0dGVuIHZlcnNp
-b24/DQo+IA0KPiBBbmRyemVqDQo=
+
+
+> On Apr 28, 2020, at 4:57 AM, Dmitry Vyukov <dvyukov@google.com> wrote:
+>> net/ipv4/ipmr.c:136 RCU-list traversed in non-reader section!!
+
+=
+https://lore.kernel.org/netdev/20200222063835.14328-2-frextrite@gmail.com/=
+
+
+Never been picked up for a few months due to some reasons. You could =
+probably
+need to convince David, Paul, Steven or Linus to unblock the bot or =
+carry patches
+on your own?
+
+>> net/ipv6/ip6mr.c:124 RCU-list traversed in non-reader section!!
+
+Not sure about this if anyone is working on it. Adding a few people...
+
+>>=20
+>> other info that might help us debug this:
+>>=20
+>>=20
+>> rcu_scheduler_active =3D 2, debug_locks =3D 1
+>> 1 lock held by swapper/0/1:
+>> #0: ffffffff8a5a6330 (pernet_ops_rwsem){+.+.}-{3:3}, at: =
+register_pernet_subsys+0x16/0x40 net/core/net_namespace.c:1257
+>>=20
+>> stack backtrace:
+>> CPU: 0 PID: 1 Comm: swapper/0 Not tainted =
+5.7.0-rc3-next-20200428-syzkaller #0
+>> Hardware name: Google Google Compute Engine/Google Compute Engine, =
+BIOS Google 01/01/2011
+>> Call Trace:
+>> __dump_stack lib/dump_stack.c:77 [inline]
+>> dump_stack+0x18f/0x20d lib/dump_stack.c:118
+>> ip6mr_get_table+0x153/0x180 net/ipv6/ip6mr.c:124
+>> ip6mr_new_table+0x1b/0x70 net/ipv6/ip6mr.c:382
+>> ip6mr_rules_init net/ipv6/ip6mr.c:236 [inline]
+>> ip6mr_net_init+0x133/0x3f0 net/ipv6/ip6mr.c:1310
+>> ops_init+0xaf/0x420 net/core/net_namespace.c:151
+>> __register_pernet_operations net/core/net_namespace.c:1140 [inline]
+>> register_pernet_operations+0x346/0x840 net/core/net_namespace.c:1217
+>> register_pernet_subsys+0x25/0x40 net/core/net_namespace.c:1258
+>> ip6_mr_init+0x49/0x152 net/ipv6/ip6mr.c:1363
+>> inet6_init+0x1d7/0x6dc net/ipv6/af_inet6.c:1032
+>> do_one_initcall+0x10a/0x7d0 init/main.c:1159
+>> do_initcall_level init/main.c:1232 [inline]
+>> do_initcalls init/main.c:1248 [inline]
+>> do_basic_setup init/main.c:1268 [inline]
+>> kernel_init_freeable+0x501/0x5ae init/main.c:1454
+>> kernel_init+0xd/0x1bb init/main.c:1359
+>> ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:351
+>>=20
+>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D
+>> WARNING: suspicious RCU usage
+>> 5.7.0-rc3-next-20200428-syzkaller #0 Not tainted
+>> -----------------------------
+>> security/integrity/evm/evm_main.c:231 RCU-list traversed in =
+non-reader section!!
+
+Ditto.
+
+>>=20
+>> other info that might help us debug this:
+>>=20
+>>=20
+>> rcu_scheduler_active =3D 2, debug_locks =3D 1
+>> 2 locks held by systemd/1:
+>> #0: ffff888098dfa450 (sb_writers#8){.+.+}-{0:0}, at: sb_start_write =
+include/linux/fs.h:1659 [inline]
+>> #0: ffff888098dfa450 (sb_writers#8){.+.+}-{0:0}, at: =
+mnt_want_write+0x3a/0xb0 fs/namespace.c:354
+>> #1: ffff8880988e8310 (&type->i_mutex_dir_key#6){++++}-{3:3}, at: =
+inode_lock include/linux/fs.h:799 [inline]
+>> #1: ffff8880988e8310 (&type->i_mutex_dir_key#6){++++}-{3:3}, at: =
+vfs_setxattr+0x92/0xf0 fs/xattr.c:219
+>>=20
+>> stack backtrace:
+>> CPU: 0 PID: 1 Comm: systemd Not tainted =
+5.7.0-rc3-next-20200428-syzkaller #0
+>> Hardware name: Google Google Compute Engine/Google Compute Engine, =
+BIOS Google 01/01/2011
+>> Call Trace:
+>> __dump_stack lib/dump_stack.c:77 [inline]
+>> dump_stack+0x18f/0x20d lib/dump_stack.c:118
+>> evm_protected_xattr+0x1c2/0x210 security/integrity/evm/evm_main.c:231
+>> evm_protect_xattr.isra.0+0xb6/0x3d0 =
+security/integrity/evm/evm_main.c:318
+>> evm_inode_setxattr+0xc4/0xf0 security/integrity/evm/evm_main.c:387
+>> security_inode_setxattr+0x18f/0x200 security/security.c:1297
+>> vfs_setxattr+0xa7/0xf0 fs/xattr.c:220
+>> setxattr+0x23d/0x330 fs/xattr.c:451
+>> path_setxattr+0x170/0x190 fs/xattr.c:470
+>> __do_sys_setxattr fs/xattr.c:485 [inline]
+>> __se_sys_setxattr fs/xattr.c:481 [inline]
+>> __x64_sys_setxattr+0xc0/0x160 fs/xattr.c:481
+>> do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
+>> entry_SYSCALL_64_after_hwframe+0x49/0xb3
+>> RIP: 0033:0x7fe46005e67a
+>> Code: 48 8b 0d 21 18 2b 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f =
+84 00 00 00 00 00 0f 1f 44 00 00 49 89 ca b8 bc 00 00 00 0f 05 <48> 3d =
+01 f0 ff ff 73 01 c3 48 8b 0d ee 17 2b 00 f7 d8 64 89 01 48
+>> RSP: 002b:00007fffef423568 EFLAGS: 00000246 ORIG_RAX: =
+00000000000000bc
+>> RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fe46005e67a
+>> RDX: 00007fffef4235e0 RSI: 0000556ea53ddf9b RDI: 0000556ea6766760
+>> RBP: 0000556ea53ddf9b R08: 0000000000000000 R09: 0000000000000030
+>> R10: 0000000000000020 R11: 0000000000000246 R12: 00007fffef4235e0
+>> R13: 0000000000000020 R14: 0000000000000000 R15: 0000556ea6751700
+>>=20
+>> security/device_cgroup.c:357 RCU-list traversed in non-reader =
+section!!
+
+=
+https://lore.kernel.org/lkml/20200406105950.GA2285@workstation-kernel-dev/=
+
+
+The same story. The patch had been ignored for a while.
+
+
+
