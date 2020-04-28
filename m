@@ -2,80 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E32E31BB994
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 11:12:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02D261BB9BC
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 11:21:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726948AbgD1JMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 05:12:10 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:32668 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726462AbgD1JMJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 05:12:09 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1588065128; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=fn3H9mKpXT3A+/rYhDOKxcNKIcrs2URjyh96Pk02sMs=;
- b=F160waBxGd3PS4MIQqltmCmyABpffYan5ujZdK7mSUmxbVsUfs5HSZO478FVmpCs+yGRWUwj
- Mzz6egGLb8mM0UprTn5fRMbxhGRdug7gPut7YAkfYpNPGxT2yDo23KkkVvstu9tmy/udu60H
- LTmDiRvHIlkeQAdD7ZHTHHwdOt8=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5ea7f363.7ff444887688-smtp-out-n02;
- Tue, 28 Apr 2020 09:12:03 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id DF782C43636; Tue, 28 Apr 2020 09:12:01 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3552DC433D2;
-        Tue, 28 Apr 2020 09:11:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 3552DC433D2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1727088AbgD1JV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 05:21:27 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:34078 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726376AbgD1JV0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 05:21:26 -0400
+Received: by mail-ot1-f65.google.com with SMTP id 72so31476241otu.1;
+        Tue, 28 Apr 2020 02:21:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9M/t2ssNY0JGEJF7n9+3sQ5ye/4v7stz68WoUu6mGLc=;
+        b=MuBPFSk4LNq8/mgcBXATejmiPu4dswIe3/Ox7TbYalFP3XOD+x1tDHVBIQZBFYv8nh
+         iDN6wSTYXkQsnttUU9KIU/8sZ9TAzbq2PGladtiOKYu5+LtbnDfbG6gs1lptJCvTgpF3
+         eRHL4eGmyCyA3tYT9cOjtKKw8nTTnFhHZqwzN2F1qVaFFk2R8k4BrHdKKC4jKvuk+UV1
+         2Te7V4vI9mdjIYj4P6PBVHx6KGV9RvwpgCIzz87/Lelq+/HDZebztspJZPwCeoCCWKPI
+         MH7D3dz4GvfiH4pmhWXWeiU5qYhAieeddzNMaTNq2OjI/lp5kdEcxKLTAqcIXO6fQS58
+         pIpQ==
+X-Gm-Message-State: AGi0Puac25RCFUJdajUv1xmKw2fl9JkTb3dKXWZT8wA4OelLXkaCBPsH
+        diZpvU52lMcMPflh+sNz9+K7QfAdfkA7ipgmFbM=
+X-Google-Smtp-Source: APiQypJDSbJ1DJDFQEdbLtTytIivKB3Crd4cHWR7cth2WfX/fmYiFAGLO+N+PbHKhKzMyhfehDsMKH8W2o7XS2RsbtQ=
+X-Received: by 2002:a9d:7d85:: with SMTP id j5mr20615076otn.107.1588065686013;
+ Tue, 28 Apr 2020 02:21:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath5k: remove conversion to bool in
- ath5k_ani_calibration()
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200426094037.23048-1-yanaijie@huawei.com>
-References: <20200426094037.23048-1-yanaijie@huawei.com>
-To:     Jason Yan <yanaijie@huawei.com>
-Cc:     <jirislaby@gmail.com>, <mickflemm@gmail.com>, <mcgrof@kernel.org>,
-        <davem@davemloft.net>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Jason Yan <yanaijie@huawei.com>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200428091201.DF782C43636@smtp.codeaurora.org>
-Date:   Tue, 28 Apr 2020 09:12:01 +0000 (UTC)
+References: <20200428090749.31983-1-clay@daemons.net>
+In-Reply-To: <20200428090749.31983-1-clay@daemons.net>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 28 Apr 2020 11:21:15 +0200
+Message-ID: <CAMuHMdXhVcp3j4Sq_4fsqavw1eH_DksN-yjajqC_8pRKnjM0zA@mail.gmail.com>
+Subject: Re: [PATCH] net: Select PTP_1588_CLOCK in PTP-specific drivers
+To:     Clay McClure <clay@daemons.net>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Nicolas Pitre <nicolas.pitre@linaro.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Mao Wenan <maowenan@huawei.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Edward Cree <ecree@solarflare.com>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Josh Triplett <josh@joshtriplett.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jason Yan <yanaijie@huawei.com> wrote:
+Hi Clay,
 
-> The '>' expression itself is bool, no need to convert it to bool again.
-> This fixes the following coccicheck warning:
-> 
-> drivers/net/wireless/ath/ath5k/ani.c:504:56-61: WARNING: conversion to
-> bool not needed here
-> 
-> Signed-off-by: Jason Yan <yanaijie@huawei.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Thanks for your patch!
 
-Patch applied to ath-next branch of ath.git, thanks.
+On Tue, Apr 28, 2020 at 11:14 AM Clay McClure <clay@daemons.net> wrote:
+> Commit d1cbfd771ce8 ("ptp_clock: Allow for it to be optional") changed
+> all PTP-capable Ethernet drivers from `select PTP_1588_CLOCK` to `imply
+> PTP_1588_CLOCK`, "in order to break the hard dependency between the PTP
+> clock subsystem and ethernet drivers capable of being clock providers."
+> As a result it is possible to build PTP-capable Ethernet drivers without
+> the PTP subsystem by deselecting PTP_1588_CLOCK. Drivers are required to
+> handle the missing dependency gracefully.
+>
+> Some PTP-capable Ethernet drivers (e.g., TI_CPSW) factor their PTP code
+> out into separate drivers (e.g., TI_CPTS_MOD). The above commit also
+> changed these PTP-specific drivers to `imply PTP_1588_CLOCK`, making it
+> possible to build them without the PTP subsystem. But as Grygorii
+> Strashko noted in [1]:
+>
+> On Wed, Apr 22, 2020 at 02:16:11PM +0300, Grygorii Strashko wrote:
+>
+> > Another question is that CPTS completely nonfunctional in this case and
+> > it was never expected that somebody will even try to use/run such
+> > configuration (except for random build purposes).
+>
+> In my view, enabling a PTP-specific driver without the PTP subsystem is
+> a configuration error made possible by the above commit. Kconfig should
+> not allow users to create a configuration with missing dependencies that
+> results in "completely nonfunctional" drivers.
+>
+> I audited all network drivers that call ptp_clock_register() and found
+> six that look like PTP-specific drivers that are likely nonfunctional
+> without PTP_1588_CLOCK:
+>
+>     NET_DSA_MV88E6XXX_PTP
+>     NET_DSA_SJA1105_PTP
+>     MACB_USE_HWSTAMP
+>     CAVIUM_PTP
+>     TI_CPTS_MOD
+>     PTP_1588_CLOCK_IXP46X
+>
+> Note how they all reference PTP or timestamping in their name; this is a
+> clue that they depend on PTP_1588_CLOCK.
+>
+> Change these drivers back [2] to `select PTP_1588_CLOCK`. Note that this
+> requires also selecting POSIX_TIMERS, a transitive dependency of
+> PTP_1588_CLOCK.
 
-c26b01d5ec1a ath5k: remove conversion to bool in ath5k_ani_calibration()
+If these drivers have a hard dependency on PTP_1588_CLOCK, IMHO they
+should depend on PTP_1588_CLOCK, not select PTP_1588_CLOCK.
+
+Gr{oetje,eeting}s,
+
+                        Geert
 
 -- 
-https://patchwork.kernel.org/patch/11510327/
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
