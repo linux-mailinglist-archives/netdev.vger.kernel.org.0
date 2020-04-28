@@ -2,123 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC32A1BBBD1
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 13:03:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54F4F1BBBE1
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 13:06:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726436AbgD1LDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 07:03:15 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:29308 "EHLO
+        id S1726450AbgD1LGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 07:06:19 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:57791 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726364AbgD1LDO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 07:03:14 -0400
+        with ESMTP id S1726345AbgD1LGT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 07:06:19 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588071793;
+        s=mimecast20190719; t=1588071978;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=em3cAOHQGnvt5dPtSaqA3KqEw17BoNQHhUGrz/i4GhA=;
-        b=O7ddw2KfWzXZJ8d39864BiUdAw8NjUWtrzuHq6AoYW+d03LDWh3oufwO4+vKUZXm2fs1Ey
-        zJX5iryk569BNX1JdslStiSAcSdvLki18v0seHh6J0TGECx0tkR1plQ47hLG4Z4pUrPD+F
-        dVYdXeVE3ZOe3IfiHYC8M1eBBWApT0E=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-412-S0ex1URHM4il16KpR4m99w-1; Tue, 28 Apr 2020 07:03:11 -0400
-X-MC-Unique: S0ex1URHM4il16KpR4m99w-1
-Received: by mail-lf1-f72.google.com with SMTP id v22so8820868lfa.1
-        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 04:03:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=em3cAOHQGnvt5dPtSaqA3KqEw17BoNQHhUGrz/i4GhA=;
-        b=GG83BTlMdq4Ceh8IAucDuyfv0NBY5TI5tEGZsytNKPv3pkc9itJih5vFCIJLumxhjb
-         /6BQpsnsuql5zloLtSbEzYaMpgQISOmHN+R8An3hE8UazJ73UQ2PjHYn7geF4GnFQdpg
-         DMZ2Pa/Otda95o5/6vcnXtFhfOvJIKcV1yo0eOmc0uJb767MGiQVcjsxpRiBEOgKKKSZ
-         kapvELM/TIqwUG53H0+/88bYi3ZY+TKrceNqFlGoneZQyfWCHe78jsgAdx6K9w3aDYX3
-         TfARIUyffPF4yfI/nQ/pCQNlK15AOJM8LttWaAkHKOEpAmgrYEuLFk6RGhtPF0BtR/Ud
-         v8PA==
-X-Gm-Message-State: AGi0PubQyi4MIaVUtlyClT1++D8GDzwuPcfodRcc1TJnZeurg5Pe574a
-        vaqhdqPIhVSz5GtTe0uQ2cw+cx7kMZEpzaLK8QZfw2Jgu+IChtqJFmaq9U565kyl0h+lLFzxRAm
-        vIjLlcXzz92fJMZWn
-X-Received: by 2002:a2e:9012:: with SMTP id h18mr9859727ljg.28.1588071790106;
-        Tue, 28 Apr 2020 04:03:10 -0700 (PDT)
-X-Google-Smtp-Source: APiQypLwLTSJjvjWBg8fmmv84VcV9VxdazrKZMo6fuGa1M+W6YyIpXdgDlBosvxYF5TqeCxo30Dw2w==
-X-Received: by 2002:a2e:9012:: with SMTP id h18mr9859703ljg.28.1588071789799;
-        Tue, 28 Apr 2020 04:03:09 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id j13sm13817709lfb.19.2020.04.28.04.03.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Apr 2020 04:03:09 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 89DDB1814FF; Tue, 28 Apr 2020 13:03:07 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: Re: [PATCH v2 bpf-next 3/3] libbpf: add BTF-defined map-in-map support
-In-Reply-To: <20200428064140.122796-4-andriin@fb.com>
-References: <20200428064140.122796-1-andriin@fb.com> <20200428064140.122796-4-andriin@fb.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 28 Apr 2020 13:03:07 +0200
-Message-ID: <878sifx47o.fsf@toke.dk>
+         content-transfer-encoding:content-transfer-encoding;
+        bh=cZrNh7746+qKc61SNba7Tg/YgZ8bEpvSXbrYCGKD2oc=;
+        b=dmsWojv2JmF2rzL46jZcrfUJMfH2Fx/skxTVYiBGUDHrrl5DhD3hZpUXauJlcx/ty/qSPL
+        wrGcMBygc98iWu1p9J/pNemgQyHDOSJLq/B8heKOva5Yzt5YQmyTd6MbxCXWT95IvyJB/4
+        3s8dn6qyI/MhE8xurcj4L0z4Ns9GkQ8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-488-swH6yM4rPsyz54p_cLr8Qw-1; Tue, 28 Apr 2020 07:06:16 -0400
+X-MC-Unique: swH6yM4rPsyz54p_cLr8Qw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1986B80B70B;
+        Tue, 28 Apr 2020 11:06:15 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.40.208.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EC4C25D750;
+        Tue, 28 Apr 2020 11:06:11 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 5111F300020FB;
+        Tue, 28 Apr 2020 13:06:10 +0200 (CEST)
+Subject: [PATCH net-next] net: sched: fallback to qdisc noqueue if default
+ qdisc setup fail
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>
+Date:   Tue, 28 Apr 2020 13:06:10 +0200
+Message-ID: <158807197021.1980046.17172496536132159811.stgit@firesoul>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andriin@fb.com> writes:
+Currently if the default qdisc setup/init fails, the device ends up with
+qdisc "noop", which causes all TX packets to get dropped.
 
-> As discussed at LPC 2019 ([0]), this patch brings (a quite belated) suppo=
-rt
-> for declarative BTF-defined map-in-map support in libbpf. It allows to de=
-fine
-> ARRAY_OF_MAPS and HASH_OF_MAPS BPF maps without any user-space initializa=
-tion
-> code involved.
->
-> Additionally, it allows to initialize outer map's slots with references to
-> respective inner maps at load time, also completely declaratively.
->
-> Despite a weak type system of C, the way BTF-defined map-in-map definition
-> works, it's actually quite hard to accidentally initialize outer map with
-> incompatible inner maps. This being C, of course, it's still possible, but
-> even that would be caught at load time and error returned with helpful de=
-bug
-> log pointing exactly to the slot that failed to be initialized.
->
-> As an example, here's a rather advanced HASH_OF_MAPS declaration and
-> initialization example, filling slots #0 and #4 with two inner maps:
->
->   #include <bpf/bpf_helpers.h>
->
->   struct inner_map {
->           __uint(type, BPF_MAP_TYPE_ARRAY);
->           __uint(max_entries, 1);
->           __type(key, int);
->           __type(value, int);
->   } inner_map1 SEC(".maps"),
->     inner_map2 SEC(".maps");
->
->   struct outer_hash {
->           __uint(type, BPF_MAP_TYPE_HASH_OF_MAPS);
->           __uint(max_entries, 5);
->           __uint(key_size, sizeof(int));
->           __inner(values, struct inner_map);
->   } outer_hash SEC(".maps") =3D {
->           .values =3D {
->                   [0] =3D &inner_map2,
->                   [4] =3D &inner_map1,
->           },
->   };
+With the introduction of sysctl net/core/default_qdisc it is possible
+to change the default qdisc to be more advanced, which opens for the
+possibility that Qdisc_ops->init() can fail.
 
-I like the syntax (well, to the extent you can 'like' C syntax and its
-esoteric (ab)uses), and am only mildly horrified at what it takes to
-achieve it ;)
+This patch detect these kind of failures, and choose to fallback to
+qdisc "noqueue", which is so simple that its init call will not fail.
+This allows the interface to continue functioning.
 
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+---
+ net/sched/sch_generic.c |   15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index 2efd5b61acef..275b1347265e 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -1037,10 +1037,9 @@ static void attach_one_default_qdisc(struct net_device *dev,
+ 		ops = &pfifo_fast_ops;
+ 
+ 	qdisc = qdisc_create_dflt(dev_queue, ops, TC_H_ROOT, NULL);
+-	if (!qdisc) {
+-		netdev_info(dev, "activation failed\n");
++	if (!qdisc)
+ 		return;
+-	}
++
+ 	if (!netif_is_multiqueue(dev))
+ 		qdisc->flags |= TCQ_F_ONETXQUEUE | TCQ_F_NOPARENT;
+ 	dev_queue->qdisc_sleeping = qdisc;
+@@ -1055,6 +1054,7 @@ static void attach_default_qdiscs(struct net_device *dev)
+ 
+ 	if (!netif_is_multiqueue(dev) ||
+ 	    dev->priv_flags & IFF_NO_QUEUE) {
++init_each_txq:
+ 		netdev_for_each_tx_queue(dev, attach_one_default_qdisc, NULL);
+ 		dev->qdisc = txq->qdisc_sleeping;
+ 		qdisc_refcount_inc(dev->qdisc);
+@@ -1065,6 +1065,15 @@ static void attach_default_qdiscs(struct net_device *dev)
+ 			qdisc->ops->attach(qdisc);
+ 		}
+ 	}
++
++	/* Detect default qdisc setup/init failed and fallback to "noqueue" */
++	if (dev->qdisc == &noop_qdisc) {
++		netdev_warn(dev, "default qdisc (%s) fail, fallback to %s\n",
++			    default_qdisc_ops->id, noqueue_qdisc_ops.id);
++		dev->priv_flags |= IFF_NO_QUEUE;
++		goto init_each_txq;
++	}
++
+ #ifdef CONFIG_NET_SCHED
+ 	if (dev->qdisc != &noop_qdisc)
+ 		qdisc_hash_add(dev->qdisc, false);
+
 
