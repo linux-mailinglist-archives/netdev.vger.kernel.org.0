@@ -2,75 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C3DB1BB2FD
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 02:40:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CAF01BB334
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 03:04:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726329AbgD1Akl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 20:40:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60426 "EHLO mail.kernel.org"
+        id S1726406AbgD1BD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 21:03:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36556 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726257AbgD1Akl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Apr 2020 20:40:41 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        id S1726379AbgD1BD6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Apr 2020 21:03:58 -0400
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 30DBC206B8;
-        Tue, 28 Apr 2020 00:40:40 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 35E50206D6;
+        Tue, 28 Apr 2020 01:03:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588034440;
-        bh=lpsxGKz5/sU4u/BxoYwhurjfGL3Ah4t7W8gWsJ1KshY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZxNd6O4QxihXEnW6dxQ6t7o0eh0wOwIKY8vMnGDjR3MX49HWJsWkVNqRr5BPLLq5x
-         r4+qC5sIjAp9yIOb7rN8x2n8imjlf4avX9jLebqJv/8ksH+YZauGFFvnjJtezra17Z
-         KuSLOjfrlxy6g5+iHsNAZKNa0OPKJtm3qiQzyYx8=
-Date:   Mon, 27 Apr 2020 17:40:38 -0700
+        s=default; t=1588035837;
+        bh=MGJvylZiGkTZwwzCHb5ZFTaQJFtBOk//T/dAGP9LFuk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=B4HM7VVc2Ui10qnNjm+8cBH8Ycc+25mPPyK4A0JOCN9vXVxeH/2yQO8iuSHHKxu7a
+         K10b9rA/jDKae6xISuL+IN5+3tNKNWuy8l5GgTm/TArZxHNm4ZPNoMqtSggtZPCYuj
+         LmfEvfSWVH+qp6jnrPyIfwxvMubg+ngkjP751/BI=
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Adhipati Blambangan <adhipati@tuta.io>,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH net v3] net: xdp: account for layer 3 packets in generic
- skb handler
-Message-ID: <20200427174038.7d2f2ed8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAHmME9rr2vnCgULXEF4pPyUNU2N6g3yomPBA6mzArnPMc8kDSw@mail.gmail.com>
-References: <CAHmME9oN0JueLJxvS48-o9CWAhkaMQYACG3m8TRixxTo6+Oh-A@mail.gmail.com>
-        <20200427204208.2501-1-Jason@zx2c4.com>
-        <20200427135254.3ab8628d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200427140039.16df08f5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <877dy0y6le.fsf@toke.dk>
-        <20200427143145.19008d7d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAHmME9r7G6f5y-_SPs64guH9PrG8CKBhLDZZK6jpiOhgHBps8g@mail.gmail.com>
-        <CAHmME9r6Vb7yBxBsLY75zsqROUnHeoRAjmSSfAyTwZtzcs_=kg@mail.gmail.com>
-        <20200427171536.31a89664@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAHmME9rr2vnCgULXEF4pPyUNU2N6g3yomPBA6mzArnPMc8kDSw@mail.gmail.com>
+To:     davem@davemloft.net
+Cc:     keescook@chromium.org, shuah@kernel.org, netdev@vger.kernel.org,
+        luto@amacapital.net, wad@chromium.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com, Tim.Bird@sony.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v6 0/5] kselftest: add fixture parameters
+Date:   Mon, 27 Apr 2020 18:03:46 -0700
+Message-Id: <20200428010351.331260-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 27 Apr 2020 18:17:16 -0600 Jason A. Donenfeld wrote:
-> On Mon, Apr 27, 2020 at 6:15 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Mon, 27 Apr 2020 17:45:12 -0600 Jason A. Donenfeld wrote:  
-> > > > Okay, well, I'll continue developing the v3 approach a little further
-> > > > -- making sure I have tx path handled too and whatnot. Then at least
-> > > > something viable will be available, and you can take or leave it
-> > > > depending on what you all decide.  
-> > >
-> > > Actually, it looks like egress XDP still hasn't been merged. So I
-> > > think this patch should be good to go in terms of what it is.  
-> >
-> > TX and redirect don't require the XDP egress hook to function.  
-> 
-> Oh, you meant the TX and redirect actions returned from the ingress
-> hook. Gotcha. The paths that those take don't appear to rely on having
-> the fake header though, whereas the actual xdp_progs that run do rely
-> on that, which is why it's added there.
+Hi!
 
-Ack, but if the redirection target is a real Ethernet device it will
-see a frame without a L2 header, right? Redirect from a real Ethernet
-device to a L3 one and vice versa remains broken.
+This set is an attempt to make running tests for different
+sets of data easier. The direct motivation is the tls
+test which we'd like to run for TLS 1.2 and TLS 1.3,
+but currently there is no easy way to invoke the same
+tests with different parameters.
+
+Tested all users of kselftest_harness.h.
+
+Dave, would it be possible to take these via net-next?
+It seems we're failing to get Shuah's attention.
+
+v2:
+ - don't run tests by fixture
+ - don't pass params as an explicit argument
+
+v3:
+ - go back to the orginal implementation with an extra
+   parameter, and running by fixture (Kees);
+ - add LIST_APPEND helper (Kees);
+ - add a dot between fixture and param name (Kees);
+ - rename the params to variants (Tim);
+
+v4:
+ - whitespace fixes.
+
+v5 (Kees):
+ - move a comment;
+ - remove a temporary variable;
+ - reword the commit message on patch 4.
+
+v6:
+ - resend for net-next.
+
+v1: https://lore.kernel.org/netdev/20200313031752.2332565-1-kuba@kernel.org/
+v2: https://lore.kernel.org/netdev/20200314005501.2446494-1-kuba@kernel.org/
+v3: https://lore.kernel.org/netdev/20200316225647.3129354-1-kuba@kernel.org/
+v4: https://lore.kernel.org/netdev/20200317010419.3268916-1-kuba@kernel.org/
+v5: https://lore.kernel.org/netdev/20200318010153.40797-1-kuba@kernel.org/
+
+Jakub Kicinski (5):
+  kselftest: factor out list manipulation to a helper
+  kselftest: create fixture objects
+  kselftest: run tests by fixture
+  kselftest: add fixture variants
+  selftests: tls: run all tests for TLS 1.2 and TLS 1.3
+
+ Documentation/dev-tools/kselftest.rst       |   3 +-
+ tools/testing/selftests/kselftest_harness.h | 234 +++++++++++++++-----
+ tools/testing/selftests/net/tls.c           |  93 ++------
+ 3 files changed, 202 insertions(+), 128 deletions(-)
+
+-- 
+2.25.4
+
