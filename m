@@ -2,62 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DB311BCCF4
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 22:05:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8D381BCD1C
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 22:11:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726375AbgD1UFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 16:05:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58608 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726180AbgD1UFq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 16:05:46 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBF73C03C1AB;
-        Tue, 28 Apr 2020 13:05:46 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id DB60A1210A3F1;
-        Tue, 28 Apr 2020 13:05:45 -0700 (PDT)
-Date:   Tue, 28 Apr 2020 13:05:45 -0700 (PDT)
-Message-Id: <20200428.130545.1878103691480474686.davem@davemloft.net>
-To:     dmurphy@ti.com
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, afd@ti.com
-Subject: Re: [PATCH net v2 2/2] net: phy: DP83TC811: Fix WoL in config init
- to be disabled
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200427212112.25368-3-dmurphy@ti.com>
-References: <20200427212112.25368-1-dmurphy@ti.com>
-        <20200427212112.25368-3-dmurphy@ti.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1726353AbgD1ULe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 16:11:34 -0400
+Received: from www62.your-server.de ([213.133.104.62]:42914 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726180AbgD1ULd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 16:11:33 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jTWZd-0005iy-An; Tue, 28 Apr 2020 22:11:21 +0200
+Received: from [178.195.186.98] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jTWZc-000TWD-TC; Tue, 28 Apr 2020 22:11:20 +0200
+Subject: Re: [PATCH nf-next 3/3] netfilter: Introduce egress hook
+To:     Lukas Wunner <lukas@wunner.de>, Laura Garcia <nevola@gmail.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Netfilter Development Mailing list 
+        <netfilter-devel@vger.kernel.org>, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Martin Mares <mj@ucw.cz>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Thomas Graf <tgraf@suug.ch>,
+        Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>
+References: <cover.1583927267.git.lukas@wunner.de>
+ <14ab7e5af20124a34a50426fd570da7d3b0369ce.1583927267.git.lukas@wunner.de>
+ <a57687ae-2da6-ca2a-1c84-e4332a5e4556@iogearbox.net>
+ <20200313145526.ikovaalfuy7rnkdl@salvia>
+ <1bd50836-33c4-da44-5771-654bfb0348cc@iogearbox.net>
+ <20200315132836.cj36ape6rpw33iqb@salvia>
+ <CAF90-WgoteQXB9WQmeT1eOHA3GpPbwPCEvNzwKkN20WqpdHW-A@mail.gmail.com>
+ <20200423160542.d3f6yef4av2gqvur@wunner.de>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <1a27351b-78a8-febc-45d7-6ee2e8ebda9e@iogearbox.net>
+Date:   Tue, 28 Apr 2020 22:11:19 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <20200423160542.d3f6yef4av2gqvur@wunner.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 28 Apr 2020 13:05:46 -0700 (PDT)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25796/Tue Apr 28 14:00:48 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dan Murphy <dmurphy@ti.com>
-Date: Mon, 27 Apr 2020 16:21:12 -0500
+Hey Lukas,
 
-> +		return phy_write_mmd(phydev, DP83822_DEVADDR,
-                                             ^^^^^^^^^^^^^^^^
+On 4/23/20 6:05 PM, Lukas Wunner wrote:
+> On Thu, Apr 23, 2020 at 04:44:44PM +0200, Laura Garcia wrote:
+>> On Sun, Mar 15, 2020 at 2:29 PM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+>>> On Sat, Mar 14, 2020 at 01:12:02AM +0100, Daniel Borkmann wrote:
+>>>> On 3/13/20 3:55 PM, Pablo Neira Ayuso wrote:
+>>>>> We have plans to support for NAT64 and NAT46, this is the right spot
+>>>>> to do this mangling. There is already support for the tunneling
+>>>>
+>>>> But why is existing local-out or post-routing hook _not_ sufficient for
+>>>> NAT64 given it being IP based?
+>>>
+>>> Those hooks are not coming at the end of the IP processing. There is
+>>> very relevant IP code after those hooks that cannot be bypassed such
+>>> as fragmentation, tunneling and neighbour output. Such transformation
+>>> needs to happen after the IP processing, exactly from where Lukas is
+>>> proposing.
+>>>
+>>> [...]
+>>>>> infrastructure in netfilter from ingress, this spot from egress will
+>>>>> allow us to perform the tunneling from here. There is also no way to
+>>>>> drop traffic generated by dhclient, this also allow for filtering such
+>>>>> locally generated traffic. And many more.
+>>
+>> Any chance to continue with this approach? I'm afraid outbound
+>> af_packets also could not be filtered without this hook.
+> 
+> Thanks Laura, good to hear there's interest in the functionality.
+> 
+> Daniel submitted a revert of this series but didn't cc me:
+> 
+> https://lore.kernel.org/netdev/bbdee6355234e730ef686f9321bd072bcf4bb232.1584523237.git.daniel@iogearbox.net/
+> 
+> In the ensuing discussion it turned out that the performance argument
+> may be addressed by a rearrangement of sch_handle_egress() and
+> nf_egress() invocations.  I could look into amending the series
+> accordingly and resubmitting, though I'm currently swamped with
+> other work.
 
-Please don't submit patches that have not even had a conversation with
-the compiler.
+The rework of these hooks is still on my todo list, too swamped with
+other stuff as well right now, but I'll see to have a prototype this
+net-next development cycle.
 
-This register define only exists in dp83822.c and you are trying to use
-it in dp83tc811.c
-
-If this doesn't compile, how did you do functional testing of this
-change?
-
-If you compile tested these changes against a tree other than the 'net'
-tree, please don't do that.
-
-Thanks.
+Thanks,
+Daniel
