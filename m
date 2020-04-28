@@ -2,110 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83B5D1BB468
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 05:12:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8B5C1BB47A
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 05:25:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbgD1DMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 23:12:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40866 "EHLO
+        id S1726309AbgD1DZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 23:25:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726270AbgD1DMx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 23:12:53 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C46EC03C1A9;
-        Mon, 27 Apr 2020 20:12:53 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id 18so8784665pfv.8;
-        Mon, 27 Apr 2020 20:12:53 -0700 (PDT)
+        with ESMTP id S1726271AbgD1DZA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 23:25:00 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D19AC03C1A9;
+        Mon, 27 Apr 2020 20:25:00 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id t16so7786515plo.7;
+        Mon, 27 Apr 2020 20:25:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=5DQBGmMU3Xnx4zkIfV2JJgQ1wnCTPo/vNaQ63QI1rwk=;
-        b=Aw7hWpM6yrSAEef95p4A+fq2dxuXjMhWn0bVzpXIAMgQOO1kmH8QMc+O3beMf0M9VG
-         GCAlZ1H6xuAejpvFWGYh8igmPVO2c6bX2vlntcOnxOm4dUmoqZ/zUFvFqN0k6yvj15pd
-         KCQxhm/pwbOQsJjRnKr4O9XA9p5AH+lV9OR9wS+3DkynFKzvBE5+WBJwLF4gkGwfZ/Vj
-         v92b/EcpdvUUD6tmHcDSp7RIvvWhq2sDNqgr2+LGr+rvfgaVngyCxziniCyy14vGE8rk
-         aT7csKTwDpjbgWnSXsxJ/KtVFyjA8I0CSqR6eXbzkJb0KojGWHuGw0M50DACVJrsY2m0
-         zVgQ==
+        bh=pdrvzD+DuU91+ygk7eb413XuXlCm15QQGsmxIoU0CRg=;
+        b=fg/4BznnQOB3wPtojWBAwoEZ+UaAWf3aAGVQGM7viXJ2Ke7uVbsoIZO0kIxJypVDv5
+         UHzFcCU5y6XQpmfaQa8x8qJzY2Z2CS5aF55ZPYtjDQYubHol+2B+QV4NP6l78BVP+5Vr
+         DY/uJ2BdGA+RE1oiK/LZTJMlfTluihtFJtGFvfz1QvhbImtdVwWW7476eHC0QROeVW4m
+         gi73+OOo7sYuy+XQKLFGORd7tmvB1/fVTBZZylEyuF2EtFooYvBAHQ/+wA0V5aAOYmVC
+         L76Z+UZrRLgsWX+VbH5sltYYcPj4I+asv/fxIItuV0tBZeb1V/8dCkLwiatm8MpxQDbJ
+         y1Jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=5DQBGmMU3Xnx4zkIfV2JJgQ1wnCTPo/vNaQ63QI1rwk=;
-        b=We9L20sl+NwuKxLg76tB91ZqL+s5wSiMalOrZko/AQbvI0FqBUjFl6AeOvvGxoSIIb
-         DfwfYeDfIByHm9FHtRIWioVF7sDIFfx6YV9K0KogvChCdzCDtrzuAfMRwpJJfAgGWY9q
-         KeHIh+fqvwI5f3nmejwwlD/zrjfkDgt4WnVlNBJwo/4i9uq1D8DShsNp0J6ibujYhUZn
-         kTE6V18ZBY2tkd1dEf6x0CABphau1/h2x2ldzhfCh2dVLp8pJXPfYLrIsvhha0o4fZ2e
-         8SrVURbIxcz214w5a73vPrzOWon7MX/NIDRlPPVOX5gLUb+ZPV2SWwF1LDJyNk1dWKm3
-         /ABg==
-X-Gm-Message-State: AGi0PuZW+/fndiUOFogupV8e27Pdl6O1sL65XxCAvnAf0OSv+rj0wmcb
-        QQz3KRueiU+pAyIto+TmB+o=
-X-Google-Smtp-Source: APiQypIl7xnOpudZlElRdxi10r9mqLmSdmyuizVzXF31o7t6B/x3o6d8tdncC5JAJn0/BXTbrb0BuA==
-X-Received: by 2002:a63:1a1e:: with SMTP id a30mr25261543pga.368.1588043573046;
-        Mon, 27 Apr 2020 20:12:53 -0700 (PDT)
+        bh=pdrvzD+DuU91+ygk7eb413XuXlCm15QQGsmxIoU0CRg=;
+        b=qmqkiYUFjnW/oWDoNolS5pINW58v40zPGB2OGJH8LbAn+s1I9LbILkc2UQ/ul2BByA
+         PwGoGnzFNfREFfYjUBi///AFAkeFHc/x0u8gRveTb0ltnapfXlCV0vXab15Xl+OrBg4l
+         LLXxQ9hirSVfOl5a/9FiFh5VCX/cctzOO6R45jwvH+J6OTrveqFtX78Nuylbz8PhM323
+         1ewUmEM81IjU4Knrl8RnVyuF/XSqhcrMdKdCtKPpMmG0aw14w0LqdnANlNF0ZyHEVVZw
+         GQvF2fMol0Nky7lhoSd1/AGBr9Y/OHBx+8p1MoYLVvD+w0mQNpKclJ5Wb7Q8LgM2Z/Ud
+         YdhQ==
+X-Gm-Message-State: AGi0PuaHV+ZIc3hWu6cwxx1zvKquZK48Jxi/Prkz2hbVANjAJ0KpatX9
+        gsvdOu583RVMQDkEReoQZJtDyiaX
+X-Google-Smtp-Source: APiQypIC9LjO0hlNaH6042Opu83OU/BOZTnUNUgBOQYF2xQYkRw/EwJgy9qpkGjwuKpKCkS7w7Jbgw==
+X-Received: by 2002:a17:902:d34a:: with SMTP id l10mr26700867plk.234.1588044299733;
+        Mon, 27 Apr 2020 20:24:59 -0700 (PDT)
 Received: from localhost ([89.208.244.169])
-        by smtp.gmail.com with ESMTPSA id u13sm601745pjb.45.2020.04.27.20.12.51
+        by smtp.gmail.com with ESMTPSA id r63sm13769546pfr.42.2020.04.27.20.24.58
         (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 27 Apr 2020 20:12:52 -0700 (PDT)
-Date:   Tue, 28 Apr 2020 11:12:47 +0800
+        Mon, 27 Apr 2020 20:24:59 -0700 (PDT)
+Date:   Tue, 28 Apr 2020 11:24:53 +0800
 From:   Dejin Zheng <zhengdejin5@gmail.com>
 To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, jes@trained-monkey.org,
-        linux-acenic@sunsite.dk, netdev <netdev@vger.kernel.org>,
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        yash.shah@sifive.com, netdev <netdev@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net v1] net: acenic: fix an issue about leak related
- system resources
-Message-ID: <20200428031247.GB31933@nuc8i5>
-References: <20200425134007.15843-1-zhengdejin5@gmail.com>
- <CAHp75VeAetsZsANoHx7X-g8+LOt0+NNarXheY5AR6L+LrdHavQ@mail.gmail.com>
+Subject: Re: [PATCH net v1] net: macb: fix an issue about leak related system
+ resources
+Message-ID: <20200428032453.GA32072@nuc8i5>
+References: <20200425125737.5245-1-zhengdejin5@gmail.com>
+ <CAHp75VceH08X5oWSCXhx8O0Bsx9u=Tm+DVQowG+mC3Vs2=ruVQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHp75VeAetsZsANoHx7X-g8+LOt0+NNarXheY5AR6L+LrdHavQ@mail.gmail.com>
+In-Reply-To: <CAHp75VceH08X5oWSCXhx8O0Bsx9u=Tm+DVQowG+mC3Vs2=ruVQ@mail.gmail.com>
 User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 27, 2020 at 01:40:02PM +0300, Andy Shevchenko wrote:
-> On Sat, Apr 25, 2020 at 4:40 PM Dejin Zheng <zhengdejin5@gmail.com> wrote:
+On Mon, Apr 27, 2020 at 01:33:41PM +0300, Andy Shevchenko wrote:
+> On Sat, Apr 25, 2020 at 3:57 PM Dejin Zheng <zhengdejin5@gmail.com> wrote:
 > >
-> > the function ace_allocate_descriptors() and ace_init() can fail in
-> > the acenic_probe_one(), The related system resources were not
-> > released then. so change the error handling to fix it.
-> 
-> ...
-> 
-> > @@ -568,7 +568,7 @@ static int acenic_probe_one(struct pci_dev *pdev,
-> >  #endif
+> > A call of the function macb_init() can fail in the function
+> > fu540_c000_init. The related system resources were not released
+> > then. use devm_ioremap() to replace ioremap() for fix it.
 > >
-> >         if (ace_allocate_descriptors(dev))
-> > -               goto fail_free_netdev;
-> > +               goto fail_uninit;
 > 
-> Not sure.
-> The code is quite old and requires a lot of refactoring.
-> 
-> Briefly looking the error path there is quite twisted.
+> Why not to go further and convert to use devm_platform_ioremap_resource()?
 >
-> > @@ -580,7 +580,7 @@ static int acenic_probe_one(struct pci_dev *pdev,
-> >  #endif
+devm_platform_ioremap_resource() will call devm_request_mem_region(),
+and here did not do it.
+
+> > Fixes: c218ad559020ff9 ("macb: Add support for SiFive FU540-C000")
+> > Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+> > Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
+> > ---
+> >  drivers/net/ethernet/cadence/macb_main.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
 > >
-> >         if (ace_init(dev))
-> > -               goto fail_free_netdev;
-> > +               goto fail_uninit;
+> > diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> > index a0e8c5bbabc0..edba2eb56231 100644
+> > --- a/drivers/net/ethernet/cadence/macb_main.c
+> > +++ b/drivers/net/ethernet/cadence/macb_main.c
+> > @@ -4178,7 +4178,7 @@ static int fu540_c000_init(struct platform_device *pdev)
+> >         if (!res)
+> >                 return -ENODEV;
+> >
+> > -       mgmt->reg = ioremap(res->start, resource_size(res));
+> > +       mgmt->reg = devm_ioremap(&pdev->dev, res->start, resource_size(res));
+> >         if (!mgmt->reg)
+> >                 return -ENOMEM;
+> >
+> > --
+> > 2.25.0
+> >
 > 
-> This change seems incorrect, the ace_init() calls ace_init_cleanup() on error.
-> So, your change makes it call the cleanup() twice.
 > 
-Hi Andy:
-
-Yes, this code is quite old, and There are also some mistakes in my
-patch, abandon this commit first. Thanks!
-
-BR,
-Dejin
 > -- 
 > With Best Regards,
 > Andy Shevchenko
