@@ -2,162 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 762501BB962
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 11:00:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E82A31BB963
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 11:00:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726827AbgD1JAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 05:00:20 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:48425 "EHLO
+        id S1726743AbgD1JAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 05:00:36 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:43816 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726271AbgD1JAU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 05:00:20 -0400
+        by vger.kernel.org with ESMTP id S1726271AbgD1JAf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 05:00:35 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588064418;
+        s=mimecast20190719; t=1588064434;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=/D7IUJaHVeqhYqyfJK923a/ASGcuo1XdhwZGpbQkuNg=;
-        b=IJrgUeW6+DLwl6q2VUA1g7i9kGzw97mXHa0R8QR0dMqV/F5q4wzbY2dSodClx1tBtolAAP
-        1qtWRwtBEflEmWjVaf0I3DofQb0PhceDfR0wbthw+ztLlftc+DcCd/fD6j9KRXBrz9Gayk
-        sE5BTieENxepQWeuLIVCchwHpU7YkcE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-463-EAbsempkMH-u0MfD5PN5yg-1; Tue, 28 Apr 2020 05:00:14 -0400
-X-MC-Unique: EAbsempkMH-u0MfD5PN5yg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 927B981CBE1;
-        Tue, 28 Apr 2020 09:00:13 +0000 (UTC)
-Received: from new-host-5.redhat.com (unknown [10.40.193.151])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 53B50648C8;
-        Tue, 28 Apr 2020 09:00:12 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Andrea Claudi <aclaudi@redhat.com>, netdev@vger.kernel.org
-Subject: [PATCH iproute2-next] tc: full JSON support for 'bpf' filter
-Date:   Tue, 28 Apr 2020 11:00:07 +0200
-Message-Id: <57923a5a17573e7939a78a55ba5b6dd28ad1862f.1588064112.git.dcaratti@redhat.com>
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mxW1qjTd1LnOPfoDLRudR3VIiE6OpaYI7Q4WCzEXVWs=;
+        b=fvhIUrDg2YXD8GfR+qDuC1KAQJ7kIgBsgEnKoCRnGXPWd++d0Xs0xOVxY1vOg9E6hE3sdJ
+        Xph4bFcJrbUZmCtyaEAU255X9ODSPd67nsw1Y370Kv5mzHIVPpwpxqUgXwopCWTtmK5IUo
+        NUt0qoBv3BJ9kK3F/AAK5uXrK2rqaZY=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-501-feITv_hMOBGgQMwj5KlxMg-1; Tue, 28 Apr 2020 05:00:32 -0400
+X-MC-Unique: feITv_hMOBGgQMwj5KlxMg-1
+Received: by mail-lj1-f200.google.com with SMTP id p7so3539769ljg.15
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 02:00:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=mxW1qjTd1LnOPfoDLRudR3VIiE6OpaYI7Q4WCzEXVWs=;
+        b=N0nU6k/mj4lWU+Kh8PszIBNrwN2KuFiKOBd/TZOINUIDd0ju/aq3V1UyZm3ETwRX8D
+         KOmcpsr+4utWaNN8jPPWlO6xikoELWqlHlPZLLedM4uerjFl88WoUMtvvOfiX65R5GWl
+         I59cid8mk2FdfdjG4c2L8HvFaBI/HJddMcax4UuaDHNEb10l4H23eOjvgW7z8f/bbbeU
+         znLh5B7/QIYctOweSXDBviZXZrhjOVvjUSbJFNpJhVV/ep7IBR2flEPOFQyhk2Gzesgs
+         R1ScIWXi6do2/RYrX3sD8sFOx2d+xZiaKaJ/9slgBLJXYCiOPTjuCq6a+M21JZzNJDzs
+         y96w==
+X-Gm-Message-State: AGi0Pubomf7zEt/l5nOx4X0K47+26kgsivbOTypIyvzL6HVhS+1cXs4b
+        DFhXMpsTIq4EW2iLb94SOleL8sOZpQMpE9YNEDeazFu/vd7JK9M/fLNAJr2q3SB4m1NEETHKHFo
+        T8zGchWIv3shh8tth
+X-Received: by 2002:a19:c8cf:: with SMTP id y198mr17598084lff.197.1588064429192;
+        Tue, 28 Apr 2020 02:00:29 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJXUUxwttVHq7AAC9XoXgii6tIs1XnC+5s+SRp3/FGEun1yAR8w5nWvnrB5FohYfFlPeUbukg==
+X-Received: by 2002:a19:c8cf:: with SMTP id y198mr17598071lff.197.1588064428955;
+        Tue, 28 Apr 2020 02:00:28 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id o22sm12399636ljj.100.2020.04.28.02.00.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Apr 2020 02:00:28 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 5C3AC1814FF; Tue, 28 Apr 2020 11:00:25 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>,
+        Dave Taht <dave.taht@gmail.com>,
+        "Rodney W . Grimes" <ietf@gndrsh.dnsmgr.net>
+Subject: Re: [PATCH net v2] wireguard: use tunnel helpers for decapsulating ECN markings
+In-Reply-To: <CAHmME9rUCYuBCFbw=yhNPqDDJWD3ZUQ_R9xjQ-yp6DXA9_iScA@mail.gmail.com>
+References: <87d07sy81p.fsf@toke.dk> <20200427211619.603544-1-toke@redhat.com> <CAHmME9rUCYuBCFbw=yhNPqDDJWD3ZUQ_R9xjQ-yp6DXA9_iScA@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 28 Apr 2020 11:00:25 +0200
+Message-ID: <874kt4x9w6.fsf@toke.dk>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-example using eBPF:
+"Jason A. Donenfeld" <Jason@zx2c4.com> writes:
 
- # tc filter add dev dummy0 ingress bpf \
- > direct-action obj ./bpf/filter.o sec tc-ingress
- # tc  -j filter show dev dummy0 ingress | jq
- [
-   {
-     "protocol": "all",
-     "pref": 49152,
-     "kind": "bpf",
-     "chain": 0
-   },
-   {
-     "protocol": "all",
-     "pref": 49152,
-     "kind": "bpf",
-     "chain": 0,
-     "options": {
-       "handle": "1",
-       "bpf_name": "filter.o:[tc-ingress]",
-       "direct-action": true,
-       "not_in_hw": true,
-       "prog": {
-         "id": 101,
-         "tag": "a04f5eef06a7f555",
-         "jited": 1
-       }
-     }
-   }
- ]
+> On Mon, Apr 27, 2020 at 3:16 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> WireGuard currently only propagates ECN markings on tunnel decap accordi=
+ng
+>> to the old RFC3168 specification. However, the spec has since been updat=
+ed
+>> in RFC6040 to recommend slightly different decapsulation semantics. This
+>> was implemented in the kernel as a set of common helpers for ECN
+>> decapsulation, so let's just switch over WireGuard to using those, so it
+>> can benefit from this enhancement and any future tweaks.
+>>
+>> RFC6040 also recommends dropping packets on certain combinations of
+>> erroneous code points on the inner and outer packet headers which should=
+n't
+>> appear in normal operation. The helper signals this by a return value > =
+1,
+>> so also add a handler for this case.
+>
+> Thanks for the details in your other email and for this v2. I've
+> applied this to the wireguard tree and will send things up to net
+> later this week with a few other things brewing there.
 
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- tc/f_bpf.c | 29 +++++++++++++++--------------
- 1 file changed, 15 insertions(+), 14 deletions(-)
+Thanks!
 
-diff --git a/tc/f_bpf.c b/tc/f_bpf.c
-index 135271aa1697..519186f929e5 100644
---- a/tc/f_bpf.c
-+++ b/tc/f_bpf.c
-@@ -203,22 +203,24 @@ static int bpf_print_opt(struct filter_util *qu, FI=
-LE *f,
- 	parse_rtattr_nested(tb, TCA_BPF_MAX, opt);
-=20
- 	if (handle)
--		fprintf(f, "handle 0x%x ", handle);
-+		print_hex(PRINT_ANY, "handle", "handle 0x%x ", handle);
-=20
- 	if (tb[TCA_BPF_CLASSID]) {
- 		SPRINT_BUF(b1);
--		fprintf(f, "flowid %s ",
-+		print_string(PRINT_ANY, "flowid", "flowid %s ",
- 			sprint_tc_classid(rta_getattr_u32(tb[TCA_BPF_CLASSID]), b1));
- 	}
-=20
- 	if (tb[TCA_BPF_NAME])
--		fprintf(f, "%s ", rta_getattr_str(tb[TCA_BPF_NAME]));
-+		print_string(PRINT_ANY, "bpf_name", "%s ",
-+			     rta_getattr_str(tb[TCA_BPF_NAME]));
-=20
- 	if (tb[TCA_BPF_FLAGS]) {
- 		unsigned int flags =3D rta_getattr_u32(tb[TCA_BPF_FLAGS]);
-=20
- 		if (flags & TCA_BPF_FLAG_ACT_DIRECT)
--			fprintf(f, "direct-action ");
-+			print_bool(PRINT_ANY,
-+				   "direct-action", "direct-action ", true);
- 	}
-=20
- 	if (tb[TCA_BPF_FLAGS_GEN]) {
-@@ -226,14 +228,14 @@ static int bpf_print_opt(struct filter_util *qu, FI=
-LE *f,
- 			rta_getattr_u32(tb[TCA_BPF_FLAGS_GEN]);
-=20
- 		if (flags & TCA_CLS_FLAGS_SKIP_HW)
--			fprintf(f, "skip_hw ");
-+			print_bool(PRINT_ANY, "skip_hw", "skip_hw ", true);
- 		if (flags & TCA_CLS_FLAGS_SKIP_SW)
--			fprintf(f, "skip_sw ");
--
-+			print_bool(PRINT_ANY, "skip_sw", "skip_sw ", true);
- 		if (flags & TCA_CLS_FLAGS_IN_HW)
--			fprintf(f, "in_hw ");
-+			print_bool(PRINT_ANY, "in_hw", "in_hw ", true);
- 		else if (flags & TCA_CLS_FLAGS_NOT_IN_HW)
--			fprintf(f, "not_in_hw ");
-+			print_bool(PRINT_ANY,
-+				   "not_in_hw", "not_in_hw ", true);
- 	}
-=20
- 	if (tb[TCA_BPF_OPS] && tb[TCA_BPF_OPS_LEN])
-@@ -245,14 +247,13 @@ static int bpf_print_opt(struct filter_util *qu, FI=
-LE *f,
- 	if (!dump_ok && tb[TCA_BPF_TAG]) {
- 		SPRINT_BUF(b);
-=20
--		fprintf(f, "tag %s ",
--			hexstring_n2a(RTA_DATA(tb[TCA_BPF_TAG]),
--				      RTA_PAYLOAD(tb[TCA_BPF_TAG]),
--				      b, sizeof(b)));
-+		print_string(PRINT_ANY, "tag", "tag %s ",
-+			     hexstring_n2a(RTA_DATA(tb[TCA_BPF_TAG]),
-+			     RTA_PAYLOAD(tb[TCA_BPF_TAG]), b, sizeof(b)));
- 	}
-=20
- 	if (tb[TCA_BPF_POLICE]) {
--		fprintf(f, "\n");
-+		print_string(PRINT_FP, NULL, "\n", "");
- 		tc_print_police(f, tb[TCA_BPF_POLICE]);
- 	}
-=20
---=20
-2.25.3
+> By the way, the original code came out of a discussion I had with Dave
+> Taht while I was coding this on an airplane many years ago. I read
+> some old RFCs, made some changes, he tested them with cake, and told
+> me that the behavior looked correct. And that's about as far as I've
+> forayed into ECN land with WireGuard. It seems like it might be
+> helpful (at some point) to add something to the netns.sh test to make
+> sure that all this machinery is actually working and continues to work
+> properly as things change in the future.
+
+Yeah, good point. I guess I can look into that too at some point :)
+
+-Toke
 
