@@ -2,141 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CEC2A1BCE37
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 23:09:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 534CB1BCE3E
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 23:11:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726756AbgD1VJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 17:09:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40262 "EHLO
+        id S1726403AbgD1VLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 17:11:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726685AbgD1VJH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 17:09:07 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B27CC03C1AD;
-        Tue, 28 Apr 2020 14:09:07 -0700 (PDT)
-Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id DB16522802;
-        Tue, 28 Apr 2020 23:09:04 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1588108145;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bwlDLqZ/nodQktfiuVf//IktbvrLnxWSn8cJD7bacRo=;
-        b=t6/ldY1fNaCVz2ItgPC0bN3fu+jv4YVZnjsuVC5xptjGQMoQhCHowcx9/umqw27GgF7dTO
-        UuYw5kjdkAgefivNN0UnjcybP7mvYgH8O5e5wU3AT++byR5UXIAToYWyTEZcR1/XdTUM5U
-        PkGkUe98ZF1DTl2GDi5M5i0hKPxbK08=
-From:   Michael Walle <michael@walle.cc>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next 4/4] net: phy: bcm54140: add second PHY ID
-Date:   Tue, 28 Apr 2020 23:08:54 +0200
-Message-Id: <20200428210854.28088-4-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200428210854.28088-1-michael@walle.cc>
-References: <20200428210854.28088-1-michael@walle.cc>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spamd-Bar: ++++++
-X-Spam-Level: ******
-X-Rspamd-Server: web
-X-Spam-Status: Yes, score=6.40
-X-Spam-Score: 6.40
-X-Rspamd-Queue-Id: DB16522802
-X-Spamd-Result: default: False [6.40 / 15.00];
-         FROM_HAS_DN(0.00)[];
-         TO_DN_SOME(0.00)[];
-         R_MISSING_CHARSET(2.50)[];
-         FREEMAIL_ENVRCPT(0.00)[gmail.com];
-         TAGGED_RCPT(0.00)[];
-         MIME_GOOD(-0.10)[text/plain];
-         BROKEN_CONTENT_TYPE(1.50)[];
-         TO_MATCH_ENVRCPT_ALL(0.00)[];
-         DKIM_SIGNED(0.00)[];
-         RCPT_COUNT_SEVEN(0.00)[8];
-         MID_CONTAINS_FROM(1.00)[];
-         RCVD_COUNT_ZERO(0.00)[0];
-         FROM_EQ_ENVFROM(0.00)[];
-         MIME_TRACE(0.00)[0:+];
-         ASN(0.00)[asn:31334, ipnet:2a02:810c:8000::/33, country:DE];
-         FREEMAIL_CC(0.00)[lunn.ch,gmail.com,armlinux.org.uk,davemloft.net,walle.cc];
-         SUSPICIOUS_RECIPS(1.50)[]
-X-Spam: Yes
+        by vger.kernel.org with ESMTP id S1726284AbgD1VLN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 17:11:13 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0B28C03C1AC;
+        Tue, 28 Apr 2020 14:11:13 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 99016120F52B8;
+        Tue, 28 Apr 2020 14:11:12 -0700 (PDT)
+Date:   Tue, 28 Apr 2020 14:11:11 -0700 (PDT)
+Message-Id: <20200428.141111.54288142814578996.davem@davemloft.net>
+To:     yuehaibing@huawei.com
+Cc:     andrew.hendry@gmail.com, kuba@kernel.org, allison@lohutok.net,
+        tglx@linutronix.de, gregkh@linuxfoundation.org,
+        tanxin.ctf@gmail.com, xiyuyang19@fudan.edu.cn,
+        linux-x25@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/x25: Fix null-ptr-deref in x25_disconnect
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200428081208.26308-1-yuehaibing@huawei.com>
+References: <000000000000cbf17205a452ad4f@google.com>
+        <20200428081208.26308-1-yuehaibing@huawei.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 28 Apr 2020 14:11:13 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This PHY have to PHY IDs depending on its mode. Adjust the mask so that
-it includes both IDs.
+From: YueHaibing <yuehaibing@huawei.com>
+Date: Tue, 28 Apr 2020 16:12:08 +0800
 
-Also move the PHY_ID_BCM54140 out of the brcmphy.h into the driver to
-have the mask and the ID in one place.
+> We should check null before do x25_neigh_put in x25_disconnect,
+> otherwise may cause null-ptr-deref like this:
+...
+> Reported-by: syzbot+6db548b615e5aeefdce2@syzkaller.appspotmail.com
+> Fixes: 4becb7ee5b3d ("net/x25: Fix x25_neigh refcnt leak when x25 disconnect")
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/net/phy/bcm54140.c | 12 ++++++++++--
- include/linux/brcmphy.h    |  1 -
- 2 files changed, 10 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/phy/bcm54140.c b/drivers/net/phy/bcm54140.c
-index d73cbddbc69b..6c54f067c7fb 100644
---- a/drivers/net/phy/bcm54140.c
-+++ b/drivers/net/phy/bcm54140.c
-@@ -115,6 +115,14 @@
- #define BCM54140_HWMON_IN_ALARM_BIT(ch) ((ch) ? BCM54140_RDB_MON_ISR_3V3 \
- 					      : BCM54140_RDB_MON_ISR_1V0)
- 
-+/* This PHY has two different PHY IDs depening on its MODE_SEL pin. This
-+ * pin choses between 4x SGMII and QSGMII mode:
-+ *   AE02_5009 4x SGMII
-+ *   AE02_5019 QSGMII
-+ */
-+#define PHY_ID_BCM54140		0xae025009
-+#define BCM54140_PHY_ID_MASK	0xffffffe8
-+
- #define BCM54140_PHY_ID_REV(phy_id)	((phy_id) & 0x7)
- #define BCM54140_REV_B0			1
- 
-@@ -857,7 +865,7 @@ static int bcm54140_set_tunable(struct phy_device *phydev,
- static struct phy_driver bcm54140_drivers[] = {
- 	{
- 		.phy_id         = PHY_ID_BCM54140,
--		.phy_id_mask    = 0xfffffff8,
-+		.phy_id_mask    = BCM54140_PHY_ID_MASK,
- 		.name           = "Broadcom BCM54140",
- 		.features       = PHY_GBIT_FEATURES,
- 		.config_init    = bcm54140_config_init,
-@@ -875,7 +883,7 @@ static struct phy_driver bcm54140_drivers[] = {
- module_phy_driver(bcm54140_drivers);
- 
- static struct mdio_device_id __maybe_unused bcm54140_tbl[] = {
--	{ PHY_ID_BCM54140, 0xfffffff8 },
-+	{ PHY_ID_BCM54140, BCM54140_PHY_ID_MASK },
- 	{ }
- };
- 
-diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
-index 8be150e69c7c..897b69309964 100644
---- a/include/linux/brcmphy.h
-+++ b/include/linux/brcmphy.h
-@@ -25,7 +25,6 @@
- #define PHY_ID_BCM5461			0x002060c0
- #define PHY_ID_BCM54612E		0x03625e60
- #define PHY_ID_BCM54616S		0x03625d10
--#define PHY_ID_BCM54140			0xae025019
- #define PHY_ID_BCM57780			0x03625d90
- #define PHY_ID_BCM89610			0x03625cd0
- 
--- 
-2.20.1
-
+Applied.
