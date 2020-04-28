@@ -2,105 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16FA61BC588
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 18:44:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6E761BC5B1
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 18:48:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728303AbgD1Qoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 12:44:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55404 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728158AbgD1Qo3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 12:44:29 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC609C03C1AB;
-        Tue, 28 Apr 2020 09:44:29 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id 18so9723129pfv.8;
-        Tue, 28 Apr 2020 09:44:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Yg7QBJnhxZywCJE1FgiVcqq7iVH+KxcrQ4qH330m850=;
-        b=ZikGz310giMar93vFuNzoRG4iT6yjubj/76B3lQbaQKBwtJo46ayookYlCRGF74XFA
-         uUpCzhbvOnYbZBts5/w55pwufmVEsLpTJAOhikarc573fRNRH2kCGNbMrkL39lHgjJFV
-         PcMjEYKyTEqpq2lGoN1gPFpoyJ8gvJza13Nrc3i2y3/lCgGkz8YEGPcA0mZm05oCqAXp
-         afVPGgu5WMXxfU+ZM+km6okn9f+Xm7O+UrhqsQpGN+wnik4ThTv8FPW2B1W5CS7CJ50E
-         bIYDL9R4zHgzdmjnnLO+H5YhFIVQWsEdPxFTZjIQxMNQfHsqgqd6VCPAtDLuUF6vHJSw
-         xUKQ==
+        id S1728286AbgD1QsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 12:48:11 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:49074 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727957AbgD1QsK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 12:48:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588092489;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5gNsilDZQsJ69/kYoRFbJeYZPPecgDjxJ95W33Atd50=;
+        b=Uvl75/FPat9+WZR26Pb/SC+/fIB5anl32EELAvh+Z+1wAzJL18kd07ZLVx5jWgnyD0Yg5h
+        4d2Tg7wh5MqV+pf27/bYrLPTlEuB7z9kfqO+xGiAEtdjEk71XvuZvhTdWcFz+3MhuUvhyB
+        UdywbBD9QFjbT5aeNW3VADtmd4pYpJE=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-430-RWgXT6k9PU6ppbCZTGRdyA-1; Tue, 28 Apr 2020 12:48:08 -0400
+X-MC-Unique: RWgXT6k9PU6ppbCZTGRdyA-1
+Received: by mail-ed1-f70.google.com with SMTP id v18so8650379edr.15
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 09:48:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Yg7QBJnhxZywCJE1FgiVcqq7iVH+KxcrQ4qH330m850=;
-        b=rL+Z5/E955rDyUk8VWWg7lVmDFbI7cdqLuLNfNX6j461EWu54wIQ61UvrcJviAVZ6W
-         3P+wPhRjsYMOPQOGsfW+bQAnoWw3GKIyIG+mK/57NzKS/5kLWDFgGOia5QtAuLhX58QR
-         TovWvWyGqj2nlcESna23G9ytUPzsIhfez+9r1jVm87m69EJopVLPiuTFxDJqidph2T3a
-         wnb0sWYcYlO10Prnt0bw45dR+gPahpbAa2/Mudf4GReeFGkwEIBe9iRB1mQkjen5YgBq
-         EJ8HDr4FHm9JTSB12QBHp+QiSk1gTvgPlIgXLbIdWqfLPKtClD2o+kLHETwciTtu8K7g
-         u+jA==
-X-Gm-Message-State: AGi0PuaH77T+zvFuLmwMIhU1ysigVl0iPH3Hgoa8ibszseOpkrgLwJDG
-        IVrx3mt2d45trVg6VnoiHB4=
-X-Google-Smtp-Source: APiQypIi7H95uhoBbxuHhbXwFAOM65E2SmWkxACOKRWHUhgSvuUcGklPap9F3G+f3yOoH4VpxP0szw==
-X-Received: by 2002:a63:615:: with SMTP id 21mr28286120pgg.22.1588092269366;
-        Tue, 28 Apr 2020 09:44:29 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:9061])
-        by smtp.gmail.com with ESMTPSA id b75sm2656750pjc.23.2020.04.28.09.44.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Apr 2020 09:44:28 -0700 (PDT)
-Date:   Tue, 28 Apr 2020 09:44:26 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com,
-        kernel-team@fb.com, Julia Kartseva <hex@fb.com>
-Subject: Re: [PATCH bpf-next 2/6] selftests/bpf: add test_progs-asan flavor
- with AddressSantizer
-Message-ID: <20200428164426.xkznwzd3blub2rol@ast-mbp.dhcp.thefacebook.com>
-References: <20200428044628.3772114-1-andriin@fb.com>
- <20200428044628.3772114-3-andriin@fb.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5gNsilDZQsJ69/kYoRFbJeYZPPecgDjxJ95W33Atd50=;
+        b=kr8BDKw33bJMfKoQk6dxOgqEnG8xA9GGYXDqdieaVb4a1zPy1ht+lY1JwOgqAJgHkN
+         wuJ7EtPpAQTN26Ke9sY+FgUW3S2OxWP5pVM9PEwGqLJ+xdsAgz8rplGRcV8IW2E3xd9I
+         uD+zh4JfZbWXxzkl7puhvTqN0Evywo6D6yFl2xG3xSygeTlL555Pf7+N08Fw/2ygF08c
+         7HeD7VpF1t/8DPc8QLoe07iStECcGJTWQXfC/4Fy6NVy0tcbtk3H02N66SnvhS1NZHyJ
+         APUJvqM5Vzve5ildeUvZundWZImlocOzI7ANdLAkMdi2R+h5AK3AVaWbSvLUWlK6z5y+
+         QfTQ==
+X-Gm-Message-State: AGi0PuYFlBE3+B+kq0e6XiIk4WxjqbBVazVGMV6zKFo+XaYKVRGArsB3
+        6HQ2eCQINBpwgZG192jGtvyk+g4VCfGwt5DYSkY0/6It/WQSPuNMpRj5RLfz53tfZjAly2Edycd
+        oi/6hRJqVJn3hN8+J58eUSaO7TUONiBtb
+X-Received: by 2002:a05:6402:1bc8:: with SMTP id ch8mr22996590edb.53.1588092486723;
+        Tue, 28 Apr 2020 09:48:06 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJUVzwIeXSdr8ltJYNXlVyyFpiyKv0hohKO6MH0z7qXa++lb+bnN6G7ZwP9fgNkE+JNLKtbbxskkYTNABwkVJc=
+X-Received: by 2002:a05:6402:1bc8:: with SMTP id ch8mr22996575edb.53.1588092486476;
+ Tue, 28 Apr 2020 09:48:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200428044628.3772114-3-andriin@fb.com>
+References: <cover.1587572928.git.pabeni@redhat.com>
+In-Reply-To: <cover.1587572928.git.pabeni@redhat.com>
+From:   Andrea Claudi <aclaudi@redhat.com>
+Date:   Tue, 28 Apr 2020 18:47:55 +0200
+Message-ID: <CAPpH65wNThD4Z5a1UMpkUpEPkgi5t6yDib14w-DR=+E4iuceHQ@mail.gmail.com>
+Subject: Re: [PATCH iproute2-next 0/4] iproute: mptcp support
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        linux-netdev <netdev@vger.kernel.org>,
+        Davide Caratti <dcaratti@redhat.com>,
+        David Ahern <dsahern@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 27, 2020 at 09:46:24PM -0700, Andrii Nakryiko wrote:
-> Add another flavor of test_progs that is compiled and run with
-> AddressSanitizer and LeakSanitizer. This allows to find potential memory
-> correction bugs and memory leaks. Due to sometimes not trivial requirements on
-> the environment, this is (for now) done as a separate flavor, not by default.
-> Eventually I hope to enable it by default.
-> 
-> To run ./test_progs-asan successfully, you need to have libasan installed in
-> the system, where version of the package depends on GCC version you have.
-> E.g., GCC8 needs libasan5, while GCC7 uses libasan4.
-> 
-> For CentOS 7, to build everything successfully one would need to:
->   $ sudo yum install devtoolset-8-gcc devtoolset-libasan-devel
-> 
-> For Arch Linux to run selftests, one would need to install gcc-libs package to
-> get libasan.so.5:
->   $ sudo pacman -S gcc-libs
-> 
-> Cc: Julia Kartseva <hex@fb.com>
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+On Thu, Apr 23, 2020 at 3:39 PM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> This introduces support for the MPTCP PM netlink interface, allowing admins
+> to configure several aspects of the MPTCP path manager. The subcommand is
+> documented with a newly added man-page.
+>
+> This series also includes support for MPTCP subflow diag.
+>
+> Davide Caratti (1):
+>   ss: allow dumping MPTCP subflow information
+>
+> Paolo Abeni (3):
+>   uapi: update linux/mptcp.h
+>   add support for mptcp netlink interface
+>   man: mptcp man page
+>
+>  include/uapi/linux/mptcp.h |  89 ++++++++
+>  ip/Makefile                |   2 +-
+>  ip/ip.c                    |   3 +-
+>  ip/ip_common.h             |   1 +
+>  ip/ipmptcp.c               | 436 +++++++++++++++++++++++++++++++++++++
+>  man/man8/ip-mptcp.8        | 142 ++++++++++++
+>  man/man8/ss.8              |   5 +
+>  misc/ss.c                  |  62 ++++++
+>  8 files changed, 738 insertions(+), 2 deletions(-)
+>  create mode 100644 include/uapi/linux/mptcp.h
+>  create mode 100644 ip/ipmptcp.c
+>  create mode 100644 man/man8/ip-mptcp.8
+>
+> --
+> 2.21.1
+>
 
-It needs a feature check.
-selftest shouldn't be forcing asan on everyone.
-Even after I did:
-sudo yum install devtoolset-8-libasan-devel
-it still failed to build:
-  BINARY   test_progs-asan
-/opt/rh/devtoolset-9/root/usr/libexec/gcc/x86_64-redhat-linux/9/ld: cannot find libasan_preinit.o: No such file or directory
-/opt/rh/devtoolset-9/root/usr/libexec/gcc/x86_64-redhat-linux/9/ld: cannot find -lasan
+Acked-by: Andrea Claudi <aclaudi@redhat.com>
 
-Also I really don't like that skeletons are now built three times for now good reason
-  GEN-SKEL [test_progs-asan] test_stack_map.skel.h
-  GEN-SKEL [test_progs-asan] test_core_reloc_nesting.skel.h
-default vs no_alu32 makes sense. They are different bpf.o files and different skeletons,
-but for asan there is no such need.
-
-Please resubmit the rest of the patches, since asan isn't a prerequisite.
