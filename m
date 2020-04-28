@@ -2,138 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00FB41BB60F
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 07:51:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F01E91BB621
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 08:02:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726424AbgD1Fus (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 01:50:48 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:13322 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726282AbgD1Fus (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 01:50:48 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 03S5m128016542
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 22:50:47 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=ZppH8LmTBcCLKB2liD30tj5HEBZWJrX/+aGjeLKGTLY=;
- b=mVHGg3TkcfexgUnyiBWq+uTolpueLzieOqGoCUSxCBFmX91vkJVNaWkxxLKjEffeuGOn
- KHp5LP7pf06WnDpmVRPgytaoiDtP5sDd8RQGIvdvjSsIS3WF1VwB0DYG8AedPMjqIjGH
- 8s2R6pIStGPl6tEGjC404T6QMqjk8rSew9I= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 30mgvnh2f4-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 22:50:47 -0700
-Received: from intmgw003.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Mon, 27 Apr 2020 22:50:14 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 58D242EC3228; Mon, 27 Apr 2020 22:50:10 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Quentin Monnet <quentin@isovalent.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 10/10] bpftool: add link bash completions
-Date:   Mon, 27 Apr 2020 22:49:44 -0700
-Message-ID: <20200428054944.4015462-11-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200428054944.4015462-1-andriin@fb.com>
-References: <20200428054944.4015462-1-andriin@fb.com>
+        id S1726355AbgD1GCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 02:02:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39298 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725792AbgD1GCK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 02:02:10 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C593DC03C1A9
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 23:02:10 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id x15so10178147pfa.1
+        for <netdev@vger.kernel.org>; Mon, 27 Apr 2020 23:02:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vSUMl5+rmIjYKcblx58SaX02yQIi0h9MIrtoTul26YE=;
+        b=RQcaP3xuoZYVd93kfTuozb46dnacW//zQYKm/WkKl/9OdmS0WHGCAj41CObWTH8r/6
+         44pY3H7eFiKl/njeCBVVBJKOL5dH22OLykwBPQTKVSc8Ox5ijdoj2iNcHD60ktWRvLej
+         MWHPJ+dwdgqfK7NXRPnvAgKQ1X/6IbwLv4Z52C7x0DutPRgS2TH6YyH5Ht5Bb0UvqXoK
+         /+DTjHCthG5i4uUeSj6dDpVo4Z8NRjF1eJgxG3qh8bDAfw99r4CTuIZEuuSYdvlNrgDI
+         kkijf3EtnI88Z4Nuhp2pMZRiLzeTM9LCkfpff+etiwMGzwp2oOP1cuscohXHo+MrX/8q
+         dB5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vSUMl5+rmIjYKcblx58SaX02yQIi0h9MIrtoTul26YE=;
+        b=mOvlmBeCDEs+BXEhlO1hEMCJweMrRRdv+WHQDIcBDQpWsgPqTVDo5DJDqPAF3wo+ah
+         nuGoldC+FUq+7iroSeYImjToYaW0KSS/+W+hF3SaWJxGBVQOhg5Zbg4JN0eeDzuNzjw1
+         As0LEVmXFCRn2Ao4J+5SILTJzYh6OUvMq/t7Y7wZMeTWqZfz/CyANZMqxtF32j/51QmH
+         mOdoMtTc7cj/kjd13YdKdHc55y96bbnCb6gqj+uGP+NlUIZrPGtFiPB4/zSvOvak2o0d
+         YRLCAxvRKMZEaTCxCnF01uuT4trDZjWgRRgEz29+V9PUydQv56EUNGko0hZu839XBAS7
+         lH2w==
+X-Gm-Message-State: AGi0Puam/AaedjouVS7an0q0Sj3FGKud9MlrOJK7KbJAm5Er+kHCtssF
+        1crqlhSThbjjtlxdzTL4iKTloHv6wjE=
+X-Google-Smtp-Source: APiQypKDjSJsHjJXlx9mr7iVU8m2HEEHu682AYqjWVRvBTjq5yX+smzP6lFirIEecJjLBKb+qAVKYQ==
+X-Received: by 2002:a62:e113:: with SMTP id q19mr27457405pfh.107.1588053730050;
+        Mon, 27 Apr 2020 23:02:10 -0700 (PDT)
+Received: from MacBookAir.linux-6brj.site (99-174-169-255.lightspeed.sntcca.sbcglobal.net. [99.174.169.255])
+        by smtp.gmail.com with ESMTPSA id a12sm14006751pfr.28.2020.04.27.23.02.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Apr 2020 23:02:09 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>
+Subject: [Patch net-next 0/2] net: reduce dynamic lockdep keys
+Date:   Mon, 27 Apr 2020 23:02:04 -0700
+Message-Id: <20200428060206.21814-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.26.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-28_02:2020-04-27,2020-04-28 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0 bulkscore=0
- malwarescore=0 lowpriorityscore=0 spamscore=0 mlxscore=0
- priorityscore=1501 impostorscore=0 mlxlogscore=681 clxscore=1015
- suspectscore=8 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2004280049
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend bpftool's bash-completion script to handle new link command and it=
-s
-sub-commands.
+syzbot has been complaining about low MAX_LOCKDEP_KEYS for a
+long time, it is mostly because we register 4 dynamic keys per
+network device.
 
-Reviewed-by: Quentin Monnet <quentin@isovalent.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+This patchset reduces the number of dynamic lockdep keys from
+4 to 1 per netdev, by reverting to the previous static keys,
+except for addr_list_lock which still has to be dynamic.
+The second patch removes a bonding-specific key by the way.
+
+Cong Wang (2):
+  net: partially revert dynamic lockdep key changes
+  bonding: remove useless stats_lock_key
+
 ---
- tools/bpf/bpftool/bash-completion/bpftool | 39 +++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+ drivers/net/bonding/bond_main.c               |  4 +-
+ .../net/ethernet/netronome/nfp/nfp_net_repr.c | 16 ++++
+ drivers/net/hamradio/bpqether.c               | 20 +++++
+ drivers/net/hyperv/netvsc_drv.c               |  2 +
+ drivers/net/ipvlan/ipvlan_main.c              |  2 +
+ drivers/net/macsec.c                          |  2 +
+ drivers/net/macvlan.c                         |  2 +
+ drivers/net/ppp/ppp_generic.c                 |  2 +
+ drivers/net/team/team.c                       |  1 +
+ drivers/net/vrf.c                             |  1 +
+ .../net/wireless/intersil/hostap/hostap_hw.c  | 22 +++++
+ include/linux/netdevice.h                     | 27 ++++--
+ include/net/bonding.h                         |  1 -
+ net/8021q/vlan_dev.c                          | 23 +++++
+ net/batman-adv/soft-interface.c               | 30 +++++++
+ net/bluetooth/6lowpan.c                       |  8 ++
+ net/core/dev.c                                | 90 +++++++++++++++----
+ net/dsa/slave.c                               | 12 +++
+ net/ieee802154/6lowpan/core.c                 |  8 ++
+ net/l2tp/l2tp_eth.c                           |  1 +
+ net/netrom/af_netrom.c                        | 21 +++++
+ net/rose/af_rose.c                            | 21 +++++
+ net/sched/sch_generic.c                       | 17 ++--
+ 23 files changed, 296 insertions(+), 37 deletions(-)
 
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftoo=
-l/bash-completion/bpftool
-index 45ee99b159e2..c033c3329f73 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -98,6 +98,12 @@ _bpftool_get_btf_ids()
-         command sed -n 's/.*"id": \(.*\),$/\1/p' )" -- "$cur" ) )
- }
-=20
-+_bpftool_get_link_ids()
-+{
-+    COMPREPLY+=3D( $( compgen -W "$( bpftool -jp link 2>&1 | \
-+        command sed -n 's/.*"id": \(.*\),$/\1/p' )" -- "$cur" ) )
-+}
-+
- _bpftool_get_obj_map_names()
- {
-     local obj
-@@ -1082,6 +1088,39 @@ _bpftool()
-                     ;;
-             esac
-             ;;
-+        link)
-+            case $command in
-+                show|list|pin)
-+                    case $prev in
-+                        id)
-+                            _bpftool_get_link_ids
-+                            return 0
-+                            ;;
-+                    esac
-+                    ;;
-+            esac
-+
-+            local LINK_TYPE=3D'id pinned'
-+            case $command in
-+                show|list)
-+                    [[ $prev !=3D "$command" ]] && return 0
-+                    COMPREPLY=3D( $( compgen -W "$LINK_TYPE" -- "$cur" )=
- )
-+                    return 0
-+                    ;;
-+                pin)
-+                    if [[ $prev =3D=3D "$command" ]]; then
-+                        COMPREPLY=3D( $( compgen -W "$LINK_TYPE" -- "$cu=
-r" ) )
-+                    else
-+                        _filedir
-+                    fi
-+                    return 0
-+                    ;;
-+                *)
-+                    [[ $prev =3D=3D $object ]] && \
-+                        COMPREPLY=3D( $( compgen -W 'help pin show list'=
- -- "$cur" ) )
-+                    ;;
-+            esac
-+            ;;
-     esac
- } &&
- complete -F _bpftool bpftool
---=20
-2.24.1
+-- 
+2.26.1
 
