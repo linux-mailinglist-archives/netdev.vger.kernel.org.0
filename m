@@ -2,128 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E02DA1BC4C0
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 18:14:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C2551BC4C9
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 18:15:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728169AbgD1QO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 12:14:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50684 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728037AbgD1QO2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 12:14:28 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF7AC03C1AB;
-        Tue, 28 Apr 2020 09:14:28 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id f18so22091514lja.13;
-        Tue, 28 Apr 2020 09:14:28 -0700 (PDT)
+        id S1728307AbgD1QPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 12:15:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50828 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728300AbgD1QPX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 12:15:23 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A37DC03C1AB
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 09:15:23 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id 19so23493752ioz.10
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 09:15:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZnXnmnUGnJoiqmak1qzJ2uo0ETz1Y/4EWDM5M5+McW4=;
-        b=fGS2oo0V4315baKko4RVx1wvx1RkPf6mVsOhdOrIDDYWBQzPnkKlTSp8QHvAj1CDy9
-         nzIxC+HzhXpaIa7msXlP2DMi5d8gpXeO92dOxA7FQ2waSsG3js+AV+/HHAjo/ZlDoJQw
-         hcb9MPNRB8gjqdA06X2g4kJnT47UJptPJsJzQRnzBRzkOgQ4K9xgW14vozetfeDfkS4z
-         PiYhDAK0FEGJjn0A7uVFpN+BKbglLueXcL1gS5csd30zCtQk4+zZhwNbBojouyxNvpah
-         MVMeHsvKv2teVMfuSxNxQDDi643nUKW1KifpFcZbs5cRdQpyLgvy55+a1NCbpap4kJ/N
-         NLIA==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=MT46h/9sh3htYvv1ttQSn0o5BnyglQi3SnN5/QwyERE=;
+        b=VwSceNCVOsBaOHG9Jrn4w/xqHjZiqVRMTSUhrChS/MO2lVKfgwbrSFVUi7xr94P62U
+         KimxwjTm7Uojyso/0vhF37Qy8GZjeKxNgJxG1woHKDm9yFVSEggQUTMvqzUX6nvj1V9F
+         YgG0R8wW9d27+/Jh1/SBYmA0NEnXHvUo6ynFb6JAQKd7aAjfS1yqAZliXGU07bIjJ7OX
+         USqC3E/KWKoGRMMPet0Xu5nguCubOK6r3gXZs2g478w4QLy88vua0kXyScBpXfliAc/G
+         KxRmrqgKJLiSQHSx804kD+LYIknn54x/6R4oBszfIEO0im5V4bCdPzIL3wpRSlwxpPLu
+         SQgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZnXnmnUGnJoiqmak1qzJ2uo0ETz1Y/4EWDM5M5+McW4=;
-        b=n2BdI3BSFrziwKdD/OFP31BCCzFVnVnt/apNQ3xI3YaOKEOc9qkLIY56in2ZyzKLJc
-         38Vf0zPjX9IB3FGGyYPhw7e57gts+xUrrZ5r6lDSxsxWZtVIe/DvgxlKPh+T1R6FPTet
-         JMLKpskX1maO4Na7COB2hFPe5FEXONtNpTS4fsHRNW2bwjKNndIkIDZL02uMtJ1pirMN
-         DYHz2GNby5gJ0QQJOuAPWWEmwVluS+U7qt6kkLnV1m5qIbf19/sOJgKhH3k6TZjDdl+n
-         sgLAFRYGHs5qt02y4hZ2yRjmJrf7KxLZKaHxr/TvZf3RzPFu+QQ+eTTxjfSSzwVmYwWc
-         ruoA==
-X-Gm-Message-State: AGi0PuYoJdIFxq7m85dX9dhLuWiPZayaWLZ1ZL5wsSq4q/XeQsunQDVa
-        t+gSatM/JFGTmyi5uh6TBX2vkAoKPFriWS9Jsj0=
-X-Google-Smtp-Source: APiQypIXDLASfkazcJ+MQrYti2Ag3mLrjAObISlzH9I+j+TwEOwLu6ohEsL7aLot1tJOG7n4pooQE3SwWHE1K4b6jjM=
-X-Received: by 2002:a2e:9011:: with SMTP id h17mr18597862ljg.138.1588090466535;
- Tue, 28 Apr 2020 09:14:26 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MT46h/9sh3htYvv1ttQSn0o5BnyglQi3SnN5/QwyERE=;
+        b=YMm0W8bIOjvBLazq95PKnNQu37L5YU43HvMuNYhtSMXW2fJpbmL1BMme3rZrrrNWTj
+         OpefXQ+8tAlJUfIKHYpP/HPZDcjkNjtSiG/ayiMq5YkLv6/qosIoXZr070r/5yOgRrh9
+         RjhLo3yNlDGgk/HzBqwgtQzuaYZMiWvzvmwL2cWPQWLp2ZfOmDnqFyVu7F1DGzzeLFgz
+         63AII5El5FRkNwwavcxIURyn1SBMjbnzItfMFxZ+fn3frCfguqWxEfgLWf9ViN/2Iv+J
+         g/IDPbMZKP4om4Z1nBbRP4taAPbKdHJXiQ9n8pE7oKyXqI0FmxhNDCQth2j7lS7YPubG
+         hGCg==
+X-Gm-Message-State: AGi0PuZzOhI7EA+09ftUw4eeQNXfO2tL32fIkjJ21lCvN0vngKrTBu+A
+        uwzHVlStsunJ5jYTBJlZ1a0BdA==
+X-Google-Smtp-Source: APiQypIFCsMKWyYKdJgjRAUck8rugpuyDklCzyFDtWUKvWh012o+o7FPjXhJ5oiS0vF8vGFk+1q+dA==
+X-Received: by 2002:a02:1a01:: with SMTP id 1mr26555223jai.26.1588090522999;
+        Tue, 28 Apr 2020 09:15:22 -0700 (PDT)
+Received: from [10.0.0.125] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
+        by smtp.googlemail.com with ESMTPSA id r18sm6083126ioj.15.2020.04.28.09.15.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Apr 2020 09:15:22 -0700 (PDT)
+Subject: Re: [PATCH iproute2 v3 0/2] bpf: memory access fixes
+To:     stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com, aclaudi@redhat.com,
+        daniel@iogearbox.net, asmadeus@codewreck.org
+References: <20200423175857.20180-1-jhs@emojatatu.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <125e68f2-2868-34c1-7c13-f3fcdf844835@mojatatu.com>
+Date:   Tue, 28 Apr 2020 12:15:21 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-References: <CAK7LNARHd0DXRLONf6vH_ghsYZjzoduzkixqNDpVqqPx0yHbHg@mail.gmail.com>
-In-Reply-To: <CAK7LNARHd0DXRLONf6vH_ghsYZjzoduzkixqNDpVqqPx0yHbHg@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 28 Apr 2020 09:14:15 -0700
-Message-ID: <CAADnVQ+RvDq9qvNgSkwaMO8QcDG1gCm-SkGgNHyy1gVC3_0w=A@mail.gmail.com>
-Subject: Re: BPFilter: bit size mismatch between bpfiter_umh and vmliux
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200423175857.20180-1-jhs@emojatatu.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 28, 2020 at 3:54 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> Hi.
->
-> I have a question about potential bit size
-> mismatch between vmlinux and bpfilter_umh.
->
->
-> net/bpfilter/bpfilter_umh is compiled for the
-> default machine bit of the compiler.
-> This may not match to the kernel bit size.
->
->
-> This happens in the following scenario.
->
-> GCC can be compiled as bi-arch.
-> If you use GCC that defaults to 64-bit,
-> you can give -m32 flag to produce the 32 bit code.
->
-> When you build the kernel for 32-bit, -m32 is
-> properly passed for building the kernel space objects.
-> However, it is missing while building the userspace
-> objects for bpfilter_umh.
->
->
-> For example, my build host is x86_64 Ubuntu.
->
-> If I build the kernel for i386
-> with CONFIG_BPFILTER_UMH=y,
-> the embedded bpfilter_umh is 64bit ELF.
->
-> You can reproduce it by the following command on the
-> mainline kernel.
->
-> masahiro@oscar:~/ref/linux$ make ARCH=i386 defconfig
-> masahiro@oscar:~/ref/linux$ scripts/config -e BPFILTER
-> masahiro@oscar:~/ref/linux$ scripts/config -e BPFILTER_UMH
-> masahiro@oscar:~/ref/linux$ make $(nproc) ARCH=i386
->    ...
-> masahiro@oscar:~/ref/linux$ file vmlinux
-> vmlinux: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV),
-> statically linked,
-> BuildID[sha1]=7ac691c67b4fe9b0cd46b45a2dc2d728d7d87686, not stripped
-> masahiro@oscar:~/ref/linux$ file net/bpfilter/bpfilter_umh
-> net/bpfilter/bpfilter_umh: ELF 64-bit LSB executable, x86-64, version
-> 1 (GNU/Linux), statically linked,
-> BuildID[sha1]=baf1ffe26f4c030a99a945fc22924c8c559e60ac, for GNU/Linux
-> 3.2.0, not stripped
->
->
->
->
-> At least, the build was successful,
-> but does this work at runtime?
->
-> If this is a bug, I can fix it cleanly.
->
-> I think the bit size of the user mode helper
-> should match to the kernel bit size. Is this correct?
+Stephen,
+What happened to this?
 
-yes. they should match.
-In theory we can have -m32 umh running on 64-bit kernel,
-but I wouldn't bother adding support for such thing
-until there is a use case.
-Running 64-bit umh on 32-bit kernel is no go.
+cheers,
+jamal
+
+On 2020-04-23 1:58 p.m., Jamal Hadi Salim wrote:
+> From: Jamal Hadi Salim <jhs@mojatatu.com>
+> 
+> Changes from V2:
+>   1) Dont initialize tmp on stack (Stephen)
+>   2) Dont look at the return code of snprintf (Dominique)
+>   3) Set errno to EINVAL instead of returning -EINVAL for consistency (Dominique)
+> 
+> Changes from V1:
+>   1) use snprintf instead of sprintf and fix corresponding error message.
+>   Caught-by: Dominique Martinet <asmadeus@codewreck.org>
+>   2) Fix memory leak and extraneous free() in error path
+> 
+> Jamal Hadi Salim (2):
+>    bpf: Fix segfault when custom pinning is used
+>    bpf: Fix mem leak and extraneous free() in error path
+> 
+>   lib/bpf.c | 17 +++++++----------
+>   1 file changed, 7 insertions(+), 10 deletions(-)
+> 
+
