@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CAF01BB334
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 03:04:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4E911BB337
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 03:04:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726406AbgD1BD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 21:03:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36556 "EHLO mail.kernel.org"
+        id S1726437AbgD1BEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 21:04:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36586 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726379AbgD1BD6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726380AbgD1BD6 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 27 Apr 2020 21:03:58 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 35E50206D6;
+        by mail.kernel.org (Postfix) with ESMTPSA id BC09520728;
         Tue, 28 Apr 2020 01:03:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588035837;
-        bh=MGJvylZiGkTZwwzCHb5ZFTaQJFtBOk//T/dAGP9LFuk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=B4HM7VVc2Ui10qnNjm+8cBH8Ycc+25mPPyK4A0JOCN9vXVxeH/2yQO8iuSHHKxu7a
-         K10b9rA/jDKae6xISuL+IN5+3tNKNWuy8l5GgTm/TArZxHNm4ZPNoMqtSggtZPCYuj
-         LmfEvfSWVH+qp6jnrPyIfwxvMubg+ngkjP751/BI=
+        s=default; t=1588035838;
+        bh=BKCpSG/2cldKziJ1GnfbVna4hwN4ee2myzzzleIlH8c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=vuguE3IqmnBTeRnN0pu3nt9fOVlcGYF9OnpZi7qh90epgbcGkyZNXk0hY2kSAtG9q
+         nc+gePr/M4d9h1kMXOzwU2JOmRfaFRPFDyo2hpKC7xqkbcU3M6FToYhJcnNuBNuEH+
+         LvBCHfUVMn4Gya7zRND9PMq0EhjbcCCwP2l1JA2M=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     keescook@chromium.org, shuah@kernel.org, netdev@vger.kernel.org,
@@ -30,10 +30,12 @@ Cc:     keescook@chromium.org, shuah@kernel.org, netdev@vger.kernel.org,
         linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
         kernel-team@fb.com, Tim.Bird@sony.com,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v6 0/5] kselftest: add fixture parameters
-Date:   Mon, 27 Apr 2020 18:03:46 -0700
-Message-Id: <20200428010351.331260-1-kuba@kernel.org>
+Subject: [PATCH net-next v6 1/5] kselftest: factor out list manipulation to a helper
+Date:   Mon, 27 Apr 2020 18:03:47 -0700
+Message-Id: <20200428010351.331260-2-kuba@kernel.org>
 X-Mailer: git-send-email 2.25.4
+In-Reply-To: <20200428010351.331260-1-kuba@kernel.org>
+References: <20200428010351.331260-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -41,59 +43,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+Kees suggest to factor out the list append code to a macro,
+since following commits need it, which leads to code duplication.
 
-This set is an attempt to make running tests for different
-sets of data easier. The direct motivation is the tls
-test which we'd like to run for TLS 1.2 and TLS 1.3,
-but currently there is no easy way to invoke the same
-tests with different parameters.
+Suggested-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Acked-by: Kees Cook <keescook@chromium.org>
+---
+ tools/testing/selftests/kselftest_harness.h | 42 ++++++++++++---------
+ 1 file changed, 24 insertions(+), 18 deletions(-)
 
-Tested all users of kselftest_harness.h.
-
-Dave, would it be possible to take these via net-next?
-It seems we're failing to get Shuah's attention.
-
-v2:
- - don't run tests by fixture
- - don't pass params as an explicit argument
-
-v3:
- - go back to the orginal implementation with an extra
-   parameter, and running by fixture (Kees);
- - add LIST_APPEND helper (Kees);
- - add a dot between fixture and param name (Kees);
- - rename the params to variants (Tim);
-
-v4:
- - whitespace fixes.
-
-v5 (Kees):
- - move a comment;
- - remove a temporary variable;
- - reword the commit message on patch 4.
-
-v6:
- - resend for net-next.
-
-v1: https://lore.kernel.org/netdev/20200313031752.2332565-1-kuba@kernel.org/
-v2: https://lore.kernel.org/netdev/20200314005501.2446494-1-kuba@kernel.org/
-v3: https://lore.kernel.org/netdev/20200316225647.3129354-1-kuba@kernel.org/
-v4: https://lore.kernel.org/netdev/20200317010419.3268916-1-kuba@kernel.org/
-v5: https://lore.kernel.org/netdev/20200318010153.40797-1-kuba@kernel.org/
-
-Jakub Kicinski (5):
-  kselftest: factor out list manipulation to a helper
-  kselftest: create fixture objects
-  kselftest: run tests by fixture
-  kselftest: add fixture variants
-  selftests: tls: run all tests for TLS 1.2 and TLS 1.3
-
- Documentation/dev-tools/kselftest.rst       |   3 +-
- tools/testing/selftests/kselftest_harness.h | 234 +++++++++++++++-----
- tools/testing/selftests/net/tls.c           |  93 ++------
- 3 files changed, 202 insertions(+), 128 deletions(-)
-
+diff --git a/tools/testing/selftests/kselftest_harness.h b/tools/testing/selftests/kselftest_harness.h
+index 2bb8c81fc0b4..77f754854f0d 100644
+--- a/tools/testing/selftests/kselftest_harness.h
++++ b/tools/testing/selftests/kselftest_harness.h
+@@ -631,6 +631,29 @@
+ 	} \
+ } while (0); OPTIONAL_HANDLER(_assert)
+ 
++/* List helpers */
++#define __LIST_APPEND(head, item) \
++{ \
++	/* Circular linked list where only prev is circular. */ \
++	if (head == NULL) { \
++		head = item; \
++		item->next = NULL; \
++		item->prev = item; \
++		return;	\
++	} \
++	if (__constructor_order == _CONSTRUCTOR_ORDER_FORWARD) { \
++		item->next = NULL; \
++		item->prev = head->prev; \
++		item->prev->next = item; \
++		head->prev = item; \
++	} else { \
++		item->next = head; \
++		item->next->prev = item; \
++		item->prev = item; \
++		head = item; \
++	} \
++}
++
+ /* Contains all the information for test execution and status checking. */
+ struct __test_metadata {
+ 	const char *name;
+@@ -667,24 +690,7 @@ static int __constructor_order;
+ static inline void __register_test(struct __test_metadata *t)
+ {
+ 	__test_count++;
+-	/* Circular linked list where only prev is circular. */
+-	if (__test_list == NULL) {
+-		__test_list = t;
+-		t->next = NULL;
+-		t->prev = t;
+-		return;
+-	}
+-	if (__constructor_order == _CONSTRUCTOR_ORDER_FORWARD) {
+-		t->next = NULL;
+-		t->prev = __test_list->prev;
+-		t->prev->next = t;
+-		__test_list->prev = t;
+-	} else {
+-		t->next = __test_list;
+-		t->next->prev = t;
+-		t->prev = t;
+-		__test_list = t;
+-	}
++	__LIST_APPEND(__test_list, t);
+ }
+ 
+ static inline int __bail(int for_realz, bool no_print, __u8 step)
 -- 
 2.25.4
 
