@@ -2,61 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABEC41BC153
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 16:32:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7AAC1BC194
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 16:44:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727934AbgD1OcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 10:32:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34500 "EHLO
+        id S1728006AbgD1OoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 10:44:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727790AbgD1OcA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 10:32:00 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D9CDC03C1AB;
-        Tue, 28 Apr 2020 07:32:00 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id y6so1229284pjc.4;
-        Tue, 28 Apr 2020 07:32:00 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1727803AbgD1OoD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 10:44:03 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D46AC03C1AB;
+        Tue, 28 Apr 2020 07:44:03 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id c21so7633701plz.4;
+        Tue, 28 Apr 2020 07:44:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=IhyP4f8AVV1sqnFFlCsqGqgrzMt0SiM3qURiPJRq3p8=;
-        b=aDyMaGyfZUMROiIb3/JW8nCVu4aOaUcQviH/y1F+ivZbVlOxsopjT8VcJJdfIq+XmB
-         s+RCqL1jimk8ebYGKfPVdu2rjbo8lOS8flP5Hn/rIxFoRKaTWAVAWr2MDnZGkii8mh+q
-         3wiudRc6CVIRmWNeJqBjgKzkvYCW80IW18Rqp5U2rci4AXVVJ6gggnyIuLmKwUpZt3rp
-         CJ3O56QCbFSCv4f+lFBrCrRLF2OpCyDeBJm7JWZDWeY/+FNYhMN1LQx5YMT3cWYewNxr
-         M5b7IsBC0SV3BtGH9NRfFxGrwMGXX+2R48k3r2okzHLKKyS9Xu3bUvvnnlV2iVazNfG4
-         3fjA==
+        bh=TmxpJsxXAhcqB+ToVZExhvip4vVPdz5UbfhJp3pb3Rg=;
+        b=JpEdhd4cifBh5c7FfGbQpg7esariuAxGZdmCnyS/MuOKKFBlwHW46H+u1qAsGkWl2h
+         4zsWi/VrJlXbHu2CYHRUPR8FdH6YM7fffG20ZpEkzng0T+DtKmC1H9/5dQLJRCNMRcQa
+         4ED3iCvKAwqCjZNfyGqwfdqN5vXclVNZoOeViUVVt/8pmrJscHsJFlDwK8J43xsZwEt1
+         u/qhIc6lEJyZp8T3pBgvhLjqZpJjnDttudRto6wWbva5vb2YHplTH8wq8Re/V+hYO8Vj
+         USNMAP8K5ZuSDjJD4nEPMj+G2fUUFVQ2z9yRkyupnmoBFtpYnoAJbhf8Va1tuig3gSIX
+         fVaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=IhyP4f8AVV1sqnFFlCsqGqgrzMt0SiM3qURiPJRq3p8=;
-        b=dzRsDrQVuoUD9um8JBP+syPm0s/rrJ3lf180OuWThjsBnJgW1KZuzVTrItNa53P1UQ
-         7nkrsP50/ukmbdYRg0w147NfswXhhoq33ZKJgud22+HKfDaywFHjZIwhSi7k6KOWQ/wy
-         kYXBZKYoGK4XFcWVCzlPv9Yvr0NaIq6byiNS1WqyR2Bb4RRpu47yTbxuKfUNI/Kw7mal
-         GQyEyO/GvXqzYj6uLJrjpkZ0d4eLq490B85wbMfk8TgwQ9az6cYwcS6UyNVKKlBrFSTA
-         crHtC/Ixcv+Sv6p85wN6vSKzhD4tiac/eLvC2UBUscxVCHnjlYLXSZT1F7tviVzjBmqz
-         dL3Q==
-X-Gm-Message-State: AGi0PuYNfgZbWoh4s8+1A6ZqjbPZdp1x/RSw27urGzRK4QI6CD3qmyE9
-        /oy26v3GvxdBbr1MPgd/n/U=
-X-Google-Smtp-Source: APiQypKfhzknU9mOLb2vJO4swAbCVUZu/KiJbCHayzvFpwL+Idv+LjNL8Xxm6iMN0zGwK370D7Ek5w==
-X-Received: by 2002:a17:90a:d17:: with SMTP id t23mr5749260pja.77.1588084319572;
-        Tue, 28 Apr 2020 07:31:59 -0700 (PDT)
-Received: from localhost ([89.208.244.169])
-        by smtp.gmail.com with ESMTPSA id b15sm15299195pfd.139.2020.04.28.07.31.58
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 28 Apr 2020 07:31:59 -0700 (PDT)
-From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     nbd@nbd.name, lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
-        royluo@google.com, kvalo@codeaurora.org, davem@davemloft.net,
-        matthias.bgg@gmail.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>
-Subject: [PATCH net v1] net: mt7603: remove duplicate error message
-Date:   Tue, 28 Apr 2020 22:31:52 +0800
-Message-Id: <20200428143152.3474-1-zhengdejin5@gmail.com>
-X-Mailer: git-send-email 2.25.0
+        bh=TmxpJsxXAhcqB+ToVZExhvip4vVPdz5UbfhJp3pb3Rg=;
+        b=M8bCgYQ6zwlPtZEQFasWqyGRFuhTmavTnseT6BdZjxZDq2DihpQllaW7OxN2IFrAR5
+         ECUTUK/ExXE3XRKKn3bYFCPJv96d79Dml0ZMxKanSMVb/rKsT8moNqQj5VMqELwIVH9r
+         Pi0oju/Exs8ZaJQCR83IUKRqHREvNAfjqbZe1aDKOLwd7neVDpaGJ3RpgdYnXttbyNLK
+         +HkE1mcr5jOcoBiI5dW2sj9blawqe33/zJPiyCWZUvAn5a9GV/5Sb+uxgrpBiUpp4ksY
+         qa8QUuWAfSbcRk5fb02ALxmYfIxWZnwJaccOMFJvrPLkjPJ1wTcciIguZGyDtXTBYbaH
+         YTzg==
+X-Gm-Message-State: AGi0PuYj+btVWUxn5vIbVzJHVvsFSp4DDByIOXjhwgw5x+UFYlfb7JvK
+        dr2f0PMUs1GATmxROB1ZhN8=
+X-Google-Smtp-Source: APiQypLErRiVfS2BcM1F3SXg4qY/JpZaLDKctoUkSw9scfkA5By0Gg4GrF2ZF7DuR5iYOoa+PNuylg==
+X-Received: by 2002:a17:902:5ac2:: with SMTP id g2mr13356131plm.167.1588085041193;
+        Tue, 28 Apr 2020 07:44:01 -0700 (PDT)
+Received: from varodek.localdomain ([2401:4900:40f3:10a2:97c1:b981:9f1:d7d0])
+        by smtp.gmail.com with ESMTPSA id d203sm15053203pfd.79.2020.04.28.07.43.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Apr 2020 07:44:00 -0700 (PDT)
+From:   Vaibhav Gupta <vaibhavgupta40@gmail.com>
+To:     Shannon Nelson <snelson@pensando.io>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        Vaibhav Gupta <vaibhav.varodek@gmail.com>,
+        netdev@vger.kernel.org, Bjorn Helgaas <helgaas@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
+        linux-kernel-mentees@lists.linuxfoundation.org, rjw@rjwysocki.net
+Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-pm@vger.kernel.org, skhan@linuxfoundation.org
+Subject: [Linux-kernel-mentees] [PATCH v2 0/2] realtek ethernet : remove legacy power management callbacks.
+Date:   Tue, 28 Apr 2020 20:13:12 +0530
+Message-Id: <20200428144314.24533-1-vaibhavgupta40@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -64,31 +70,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-it will print an error message by itself when
-devm_platform_ioremap_resource() goes wrong. so remove the duplicate
-error message.
+The purpose of this patch series is to remove legacy power management callbacks
+from realtek ethernet drivers.
 
-Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
----
- drivers/net/wireless/mediatek/mt76/mt7603/soc.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+The callbacks performing suspend() and resume() operations are still calling
+pci_save_state(), pci_set_power_state(), etc. and handling the powermanagement
+themselves, which is not recommended.
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7603/soc.c b/drivers/net/wireless/mediatek/mt76/mt7603/soc.c
-index 68efb300c0d8..de170765e938 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7603/soc.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7603/soc.c
-@@ -20,10 +20,8 @@ mt76_wmac_probe(struct platform_device *pdev)
- 		return irq;
- 
- 	mem_base = devm_platform_ioremap_resource(pdev, 0);
--	if (IS_ERR(mem_base)) {
--		dev_err(&pdev->dev, "Failed to get memory resource\n");
-+	if (IS_ERR(mem_base))
- 		return PTR_ERR(mem_base);
--	}
- 
- 	mdev = mt76_alloc_device(&pdev->dev, sizeof(*dev), &mt7603_ops,
- 				 &mt7603_drv_ops);
+The conversion requires the removal of the those function calls and change the
+callback definition accordingly.
+
+Vaibhav Gupta (2):
+  realtek/8139too: Remove Legacy Power Management
+  realtek/8139cp: Remove Legacy Power Management
+
+ drivers/net/ethernet/realtek/8139cp.c  | 25 +++++++------------------
+ drivers/net/ethernet/realtek/8139too.c | 26 +++++++-------------------
+ 2 files changed, 14 insertions(+), 37 deletions(-)
+
 -- 
-2.25.0
+2.26.2
 
