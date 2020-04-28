@@ -2,372 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB1F51BCFFC
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 00:31:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9103A1BD006
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 00:32:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726551AbgD1WaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 18:30:15 -0400
-Received: from mx2.suse.de ([195.135.220.15]:57176 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725934AbgD1WaO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Apr 2020 18:30:14 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 5927BADD6;
-        Tue, 28 Apr 2020 22:30:10 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id BB72EE128C; Wed, 29 Apr 2020 00:30:10 +0200 (CEST)
-Message-Id: <8a495e43783170906ce3bf0213bc1dd7eca0e5c8.1588112572.git.mkubecek@suse.cz>
-In-Reply-To: <cover.1588112572.git.mkubecek@suse.cz>
-References: <cover.1588112572.git.mkubecek@suse.cz>
-From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ethtool 2/2] netlink: use genetlink ops information to decide
- about fallback
-To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>
-Date:   Wed, 29 Apr 2020 00:30:10 +0200 (CEST)
+        id S1726763AbgD1WbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 18:31:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53298 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725934AbgD1WbQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 18:31:16 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796C4C03C1AC;
+        Tue, 28 Apr 2020 15:31:15 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id i3so48434ioo.13;
+        Tue, 28 Apr 2020 15:31:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=AbVLurtbPKtHGUO+fKKWsxHlmaiK8ej0iLtIbYgvkqY=;
+        b=IBIdM0foFoA5gBiW1ef1KKeppBZReaKSMMZX1oyJcY1c1L2uMEPuVPcKy6lmc+sAFx
+         l4je4q4+5ojZgEzKh96arXUCOprmyOPCZupGvqHnW0rubYTXQtgvwzWBGb7K02HqzNur
+         K246olyhVIx6BQCsRdICvJSyoHwhFP9sJB65eLTS19gViyuTROgTrOTbYqlHY85y+ziT
+         Tq7q8vRFviXV08+giDLPDOxmhvlSdevVEaM1AsjrGAzb1ykqCM17gRYGjwy2EicTmO7O
+         VBJfWBTI7XwFzI4y8cMKEGyjjl0/EWVdWciCOM35CcfbLYF3AfxoDGIgMLB6THtJXHcR
+         jg1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=AbVLurtbPKtHGUO+fKKWsxHlmaiK8ej0iLtIbYgvkqY=;
+        b=CpkYN3sXhHSdYFQ653kaKcXAs6ZYHBD2WupFhvCxm1PTcy024g100C56zFdclWY+QN
+         TnbidQ0R8aTJhNjFivZfWtIdBwDJn936aiqVf/JbRDPGRfPYJtWLgZZznCLbPswTk58k
+         Tojbh6CaB8DDHaXUe34oMEOuu7EiFRXP1CJ8z8YJortPOIEcrCx5bX+9SRJkkAqRFEHZ
+         zG4/WprcMaDk1KQ6uVVmpgTce95WnKqOAffTJgppQNriXof8uPQs176bdB1GBpUtOK9Q
+         P8HAaOkIE5yq7GEp3IKdwblEYRE0M38f4itNgyEA0hhtJz4CXQSEF+BtaO8QZ5nVGhbG
+         XV5A==
+X-Gm-Message-State: AGi0PuaAzf4xxKuFkEDZdyXoa859r/OYoGosaTEs92ilj+vg2w4Vl4xO
+        4S6sYPTMGULfn13C99GPNU8=
+X-Google-Smtp-Source: APiQypITlznivHE5s76NTZhLuG5WCQNksHdwglL065Fo5oQhRkl5tUHi0dF2wVHrqFXxbF97Hvba0g==
+X-Received: by 2002:a05:6638:22a:: with SMTP id f10mr28076069jaq.59.1588113074806;
+        Tue, 28 Apr 2020 15:31:14 -0700 (PDT)
+Received: from [10.67.49.116] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id a5sm172373ioa.47.2020.04.28.15.31.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 28 Apr 2020 15:31:13 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/4] net: phy: bcm54140: fix phy_id_mask
+To:     Michael Walle <michael@walle.cc>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>
+References: <20200428210854.28088-1-michael@walle.cc>
+ <20200428210854.28088-2-michael@walle.cc>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <2112b565-c025-738d-adce-ee1ec0a4e0d1@gmail.com>
+Date:   Tue, 28 Apr 2020 15:31:12 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <20200428210854.28088-2-michael@walle.cc>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently ethtool falls back to ioctl when netlink socket initialization
-fails or if netlink request fails with -EOPNOTSUPP (and we do not know that
-request cannot possibly work via ioctl, e.g. because of wildcard device
-name or device name longer than IFNAMSIZ). This logic has one problem: we
-cannot distinguish if -EOPNOTSUPP error code means that subcommand as such
-is not implemented in kernel or that it failed for some other reason (e.g.
-specific combination of parameters is not supported by driver). If the
-latter is the case, fallback to ioctl is pointless as the same request
-would fail via ioctl as well. In some cases we can even get a duplicate
-error message.
+On 4/28/20 2:08 PM, Michael Walle wrote:
+> Broadcom defines the bits for this PHY as follows:
+>   { oui[24:3], model[6:0], revision[2:0] }
+> 
+> Thus we have to mask the lower three bits only.
+> 
+> Fixes: 6937602ed3f9 ("net: phy: add Broadcom BCM54140 support")
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-Fortunately, genetlink provides information about supported family commands
-in the form of CTRL_ATTR_OPS nested attribute. Parse this information when
-available and use it to only fall back to ioctl only if kernel support for
-netlink request as such is missing so that there is a chance that ioctl
-request will work. In such case, do not send netlink request at all.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
----
- netlink/netlink.c  | 138 ++++++++++++++++++++++++++++++++++++---------
- netlink/netlink.h  |   5 ++
- netlink/parser.c   |   7 +++
- netlink/settings.c |   7 +++
- 4 files changed, 129 insertions(+), 28 deletions(-)
+> ---
+> 
+> Please note that although this patch contains a Fixes tag its subject
+> contains the net-next tag, because the commit in question is only in
+> net-next.
 
-diff --git a/netlink/netlink.c b/netlink/netlink.c
-index 59dbab2dee00..ccd88448197d 100644
---- a/netlink/netlink.c
-+++ b/netlink/netlink.c
-@@ -92,16 +92,88 @@ int get_dev_info(const struct nlattr *nest, int *ifindex, char *ifname)
- 	return 0;
- }
- 
-+/**
-+ * netlink_cmd_check() - check support for netlink command
-+ * @ctx:            ethtool command context
-+ * @cmd:            netlink command id
-+ * @devname:        device name from user
-+ * @allow_wildcard: wildcard dumps supported
-+ *
-+ * Check if command @cmd is known to be unsupported based on ops information
-+ * from genetlink family id request. Set nlctx->ioctl_fallback if ethtool
-+ * should fall back to ioctl, i.e. when we do not know in advance that
-+ * netlink request is supported. Set nlctx->wildcard_unsupported if "*" was
-+ * used as device name but the request does not support wildcards (on either
-+ * side).
-+ *
-+ * Return: true if we know the netlink request is not supported and should
-+ * fail (and possibly fall back) without actually sending it to kernel.
-+ */
-+bool netlink_cmd_check(struct cmd_context *ctx, unsigned int cmd,
-+		       bool allow_wildcard)
-+{
-+	bool is_dump = !strcmp(ctx->devname, WILDCARD_DEVNAME);
-+	uint32_t cap = is_dump ? GENL_CMD_CAP_DUMP : GENL_CMD_CAP_DO;
-+	struct nl_context *nlctx = ctx->nlctx;
-+
-+	if (is_dump && !allow_wildcard) {
-+		nlctx->wildcard_unsupported = true;
-+		return true;
-+	}
-+	if (!nlctx->ops_flags) {
-+		nlctx->ioctl_fallback = true;
-+		return false;
-+	}
-+	if (cmd > ETHTOOL_MSG_USER_MAX || !nlctx->ops_flags[cmd]) {
-+		nlctx->ioctl_fallback = true;
-+		return true;
-+	}
-+
-+	if (is_dump && !(nlctx->ops_flags[cmd] & GENL_CMD_CAP_DUMP))
-+		nlctx->wildcard_unsupported = true;
-+
-+	return !(nlctx->ops_flags[cmd] & cap);
-+}
-+
- /* initialization */
- 
--struct fam_info {
--	const char	*fam_name;
--	const char	*grp_name;
--	uint16_t	fam_id;
--	uint32_t	grp_id;
--};
-+static int genl_read_ops(struct nl_context *nlctx,
-+			 const struct nlattr *ops_attr)
-+{
-+	struct nlattr *op_attr;
-+	uint32_t *ops_flags;
-+	int ret;
-+
-+	ops_flags = calloc(__ETHTOOL_MSG_USER_CNT, sizeof(ops_flags[0]));
-+	if (!ops_flags)
-+		return -ENOMEM;
-+
-+	mnl_attr_for_each_nested(op_attr, ops_attr) {
-+		const struct nlattr *tb[CTRL_ATTR_OP_MAX + 1] = {};
-+		DECLARE_ATTR_TB_INFO(tb);
-+		uint32_t op_id;
-+
-+		ret = mnl_attr_parse_nested(op_attr, attr_cb, &tb_info);
-+		if (ret < 0)
-+			goto err;
-+
-+		if (!tb[CTRL_ATTR_OP_ID] || !tb[CTRL_ATTR_OP_FLAGS])
-+			continue;
-+		op_id = mnl_attr_get_u32(tb[CTRL_ATTR_OP_ID]);
-+		if (op_id >= __ETHTOOL_MSG_USER_CNT)
-+			continue;
-+
-+		ops_flags[op_id] = mnl_attr_get_u32(tb[CTRL_ATTR_OP_FLAGS]);
-+	}
-+
-+	nlctx->ops_flags = ops_flags;
-+	return 0;
-+err:
-+	free(ops_flags);
-+	return ret;
-+}
- 
--static void find_mc_group(struct nlattr *nest, struct fam_info *info)
-+static void find_mc_group(struct nl_context *nlctx, struct nlattr *nest)
- {
- 	const struct nlattr *grp_tb[CTRL_ATTR_MCAST_GRP_MAX + 1] = {};
- 	DECLARE_ATTR_TB_INFO(grp_tb);
-@@ -116,9 +188,9 @@ static void find_mc_group(struct nlattr *nest, struct fam_info *info)
- 		    !grp_tb[CTRL_ATTR_MCAST_GRP_ID])
- 			continue;
- 		if (strcmp(mnl_attr_get_str(grp_tb[CTRL_ATTR_MCAST_GRP_NAME]),
--			   info->grp_name))
-+			   ETHTOOL_MCGRP_MONITOR_NAME))
- 			continue;
--		info->grp_id =
-+		nlctx->ethnl_mongrp =
- 			mnl_attr_get_u32(grp_tb[CTRL_ATTR_MCAST_GRP_ID]);
- 		return;
- 	}
-@@ -126,16 +198,21 @@ static void find_mc_group(struct nlattr *nest, struct fam_info *info)
- 
- static int family_info_cb(const struct nlmsghdr *nlhdr, void *data)
- {
--	struct fam_info *info = data;
-+	struct nl_context *nlctx = data;
- 	struct nlattr *attr;
-+	int ret;
- 
- 	mnl_attr_for_each(attr, nlhdr, GENL_HDRLEN) {
- 		switch (mnl_attr_get_type(attr)) {
- 		case CTRL_ATTR_FAMILY_ID:
--			info->fam_id = mnl_attr_get_u16(attr);
-+			nlctx->ethnl_fam = mnl_attr_get_u16(attr);
- 			break;
-+		case CTRL_ATTR_OPS:
-+			ret = genl_read_ops(nlctx, attr);
-+			if (ret < 0)
-+				return MNL_CB_ERROR;
- 		case CTRL_ATTR_MCAST_GROUPS:
--			find_mc_group(attr, info);
-+			find_mc_group(nlctx, attr);
- 			break;
- 		}
- 	}
-@@ -144,41 +221,37 @@ static int family_info_cb(const struct nlmsghdr *nlhdr, void *data)
- }
- 
- #ifdef TEST_ETHTOOL
--static int get_genl_family(struct nl_socket *nlsk, struct fam_info *info)
-+static int get_genl_family(struct nl_context *nlctx, struct nl_socket *nlsk)
- {
- 	return 0;
- }
- #else
--static int get_genl_family(struct nl_socket *nlsk, struct fam_info *info)
-+static int get_genl_family(struct nl_context *nlctx, struct nl_socket *nlsk)
- {
- 	struct nl_msg_buff *msgbuff = &nlsk->msgbuff;
- 	int ret;
- 
--	nlsk->nlctx->suppress_nlerr = 2;
-+	nlctx->suppress_nlerr = 2;
- 	ret = __msg_init(msgbuff, GENL_ID_CTRL, CTRL_CMD_GETFAMILY,
- 			 NLM_F_REQUEST | NLM_F_ACK, 1);
- 	if (ret < 0)
- 		goto out;
- 	ret = -EMSGSIZE;
--	if (ethnla_put_strz(msgbuff, CTRL_ATTR_FAMILY_NAME, info->fam_name))
-+	if (ethnla_put_strz(msgbuff, CTRL_ATTR_FAMILY_NAME, ETHTOOL_GENL_NAME))
- 		goto out;
- 
- 	nlsock_sendmsg(nlsk, NULL);
--	nlsock_process_reply(nlsk, family_info_cb, info);
--	ret = info->fam_id ? 0 : -EADDRNOTAVAIL;
-+	nlsock_process_reply(nlsk, family_info_cb, nlctx);
-+	ret = nlctx->ethnl_fam ? 0 : -EADDRNOTAVAIL;
- 
- out:
--	nlsk->nlctx->suppress_nlerr = 0;
-+	nlctx->suppress_nlerr = 0;
- 	return ret;
- }
- #endif
- 
- int netlink_init(struct cmd_context *ctx)
- {
--	struct fam_info info = {
--		.fam_name	= ETHTOOL_GENL_NAME,
--		.grp_name	= ETHTOOL_MCGRP_MONITOR_NAME,
--	};
- 	struct nl_context *nlctx;
- 	int ret;
- 
-@@ -189,11 +262,9 @@ int netlink_init(struct cmd_context *ctx)
- 	ret = nlsock_init(nlctx, &nlctx->ethnl_socket, NETLINK_GENERIC);
- 	if (ret < 0)
- 		goto out_free;
--	ret = get_genl_family(nlctx->ethnl_socket, &info);
-+	ret = get_genl_family(nlctx, nlctx->ethnl_socket);
- 	if (ret < 0)
- 		goto out_nlsk;
--	nlctx->ethnl_fam = info.fam_id;
--	nlctx->ethnl_mongrp = info.grp_id;
- 
- 	ctx->nlctx = nlctx;
- 	return 0;
-@@ -201,6 +272,7 @@ int netlink_init(struct cmd_context *ctx)
- out_nlsk:
- 	nlsock_done(nlctx->ethnl_socket);
- out_free:
-+	free(nlctx->ops_flags);
- 	free(nlctx);
- 	return ret;
- }
-@@ -210,6 +282,7 @@ static void netlink_done(struct cmd_context *ctx)
- 	if (!ctx->nlctx)
- 		return;
- 
-+	free(ctx->nlctx->ops_flags);
- 	free(ctx->nlctx);
- 	ctx->nlctx = NULL;
- 	cleanup_all_strings();
-@@ -228,6 +301,7 @@ void netlink_run_handler(struct cmd_context *ctx, nl_func_t nlfunc,
- 			 bool no_fallback)
- {
- 	bool wildcard = ctx->devname && !strcmp(ctx->devname, WILDCARD_DEVNAME);
-+	struct nl_context *nlctx;
- 	const char *reason;
- 	int ret;
- 
-@@ -245,12 +319,20 @@ void netlink_run_handler(struct cmd_context *ctx, nl_func_t nlfunc,
- 		reason = "netlink interface initialization failed";
- 		goto no_support;
- 	}
-+	nlctx = ctx->nlctx;
- 
- 	ret = nlfunc(ctx);
- 	netlink_done(ctx);
--	if (ret != -EOPNOTSUPP || no_fallback)
-+	if (no_fallback || ret != -EOPNOTSUPP || !nlctx->ioctl_fallback) {
-+		if (nlctx->wildcard_unsupported)
-+			fprintf(stderr, "%s\n",
-+				"subcommand does not support wildcard dump");
- 		exit(ret >= 0 ? ret : 1);
--	reason = "kernel netlink support for subcommand missing";
-+	}
-+	if (nlctx->wildcard_unsupported)
-+		reason = "subcommand does not support wildcard dump";
-+	else
-+		reason = "kernel netlink support for subcommand missing";
- 
- no_support:
- 	if (no_fallback) {
-diff --git a/netlink/netlink.h b/netlink/netlink.h
-index 41102d270eaf..4419be0f751a 100644
---- a/netlink/netlink.h
-+++ b/netlink/netlink.h
-@@ -25,6 +25,7 @@ struct nl_context {
- 	unsigned int		suppress_nlerr;
- 	uint16_t		ethnl_fam;
- 	uint32_t		ethnl_mongrp;
-+	uint32_t		*ops_flags;
- 	struct nl_socket	*ethnl_socket;
- 	struct nl_socket	*ethnl2_socket;
- 	struct nl_socket	*rtnl_socket;
-@@ -36,6 +37,8 @@ struct nl_context {
- 	const char		*param;
- 	char			**argp;
- 	int			argc;
-+	bool			ioctl_fallback;
-+	bool			wildcard_unsupported;
- };
- 
- struct attr_tb_info {
-@@ -50,6 +53,8 @@ int nomsg_reply_cb(const struct nlmsghdr *nlhdr, void *data);
- int attr_cb(const struct nlattr *attr, void *data);
- 
- int netlink_init(struct cmd_context *ctx);
-+bool netlink_cmd_check(struct cmd_context *ctx, unsigned int cmd,
-+		       bool allow_wildcard);
- const char *get_dev_name(const struct nlattr *nest);
- int get_dev_info(const struct nlattr *nest, int *ifindex, char *ifname);
- 
-diff --git a/netlink/parser.c b/netlink/parser.c
-index 40eb4a5c0b26..fff23f2425e9 100644
---- a/netlink/parser.c
-+++ b/netlink/parser.c
-@@ -1023,6 +1023,13 @@ int nl_parser(struct nl_context *nlctx, const struct param_parser *params,
- 			goto out_free;
- 	}
- 
-+	if (group_style == PARSER_GROUP_MSG) {
-+		ret = -EOPNOTSUPP;
-+		for (buff = buffs; buff; buff = buff->next)
-+			if (msgbuff_len(&buff->msgbuff) > buff->orig_len &&
-+			    netlink_cmd_check(nlctx->ctx, buff->id, false))
-+				goto out_free;
-+	}
- 	for (buff = buffs; buff; buff = buff->next) {
- 		struct nl_msg_buff *msgbuff = &buff->msgbuff;
- 
-diff --git a/netlink/settings.c b/netlink/settings.c
-index c8a911d718b9..25aadb988cd1 100644
---- a/netlink/settings.c
-+++ b/netlink/settings.c
-@@ -726,6 +726,13 @@ int nl_gset(struct cmd_context *ctx)
- 	struct nl_socket *nlsk = nlctx->ethnl_socket;
- 	int ret;
- 
-+	if (netlink_cmd_check(ctx, ETHTOOL_MSG_LINKMODES_GET, true) ||
-+	    netlink_cmd_check(ctx, ETHTOOL_MSG_LINKINFO_GET, true) ||
-+	    netlink_cmd_check(ctx, ETHTOOL_MSG_WOL_GET, true) ||
-+	    netlink_cmd_check(ctx, ETHTOOL_MSG_DEBUG_GET, true) ||
-+	    netlink_cmd_check(ctx, ETHTOOL_MSG_LINKSTATE_GET, true))
-+		return -EOPNOTSUPP;
-+
- 	nlctx->suppress_nlerr = 1;
- 
- 	ret = gset_request(nlsk, ETHTOOL_MSG_LINKMODES_GET,
+Yes, and this is fine, thanks for doing this!
 -- 
-2.26.2
-
+Florian
