@@ -2,100 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B87E1BB88D
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 10:12:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2C091BB895
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 10:14:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726864AbgD1IMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 04:12:34 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:3322 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726377AbgD1IMe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Apr 2020 04:12:34 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id B73309E4F2E2C5FC861F;
-        Tue, 28 Apr 2020 16:12:31 +0800 (CST)
-Received: from localhost (10.166.215.154) by DGGEMS409-HUB.china.huawei.com
- (10.3.19.209) with Microsoft SMTP Server id 14.3.487.0; Tue, 28 Apr 2020
- 16:12:24 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <andrew.hendry@gmail.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <allison@lohutok.net>, <tglx@linutronix.de>,
-        <gregkh@linuxfoundation.org>, <tanxin.ctf@gmail.com>,
-        <xiyuyang19@fudan.edu.cn>
-CC:     <linux-x25@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH] net/x25: Fix null-ptr-deref in x25_disconnect
-Date:   Tue, 28 Apr 2020 16:12:08 +0800
-Message-ID: <20200428081208.26308-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
-In-Reply-To: <000000000000cbf17205a452ad4f@google.com>
-References: <000000000000cbf17205a452ad4f@google.com>
+        id S1726828AbgD1INq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 04:13:46 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:25493 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726765AbgD1INp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 04:13:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588061624;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YyRKuzpWR77tocYAqun+YTjfRtHpPA8xvoTqR86LZ0M=;
+        b=NTEZFyhlHemPrIR9QkcZhAQkpW+dkONboek+55ynMQ5kmRehZu8CiKIaC/k5TUtCgjezxV
+        jGsS4+0IHPLL4aQ6aPvtSpQFcGBKB0g9Ndibpj6Ga0ac1FdkRGmnZ6veC+LfljkGWOfTT0
+        0CdnbX2yTB3d+0xLhQ8r3BAq1TAVv4Q=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-412-zbElCxm3MAqo-lGPyHfa2Q-1; Tue, 28 Apr 2020 04:13:35 -0400
+X-MC-Unique: zbElCxm3MAqo-lGPyHfa2Q-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A758A107B7C5;
+        Tue, 28 Apr 2020 08:13:33 +0000 (UTC)
+Received: from [10.72.13.181] (ovpn-13-181.pek2.redhat.com [10.72.13.181])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3C9F860D53;
+        Tue, 28 Apr 2020 08:13:23 +0000 (UTC)
+Subject: Re: [PATCH net-next 0/3] vsock: support network namespace
+To:     Stefano Garzarella <sgarzare@redhat.com>, davem@davemloft.net,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Jorgen Hansen <jhansen@vmware.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        linux-hyperv@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+        netdev@vger.kernel.org
+References: <20200116172428.311437-1-sgarzare@redhat.com>
+ <20200427142518.uwssa6dtasrp3bfc@steredhat>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <224cdc10-1532-7ddc-f113-676d43d8f322@redhat.com>
+Date:   Tue, 28 Apr 2020 16:13:22 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.166.215.154]
-X-CFilter-Loop: Reflected
+In-Reply-To: <20200427142518.uwssa6dtasrp3bfc@steredhat>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We should check null before do x25_neigh_put in x25_disconnect,
-otherwise may cause null-ptr-deref like this:
 
- #include <sys/socket.h>
- #include <linux/x25.h>
+On 2020/4/27 =E4=B8=8B=E5=8D=8810:25, Stefano Garzarella wrote:
+> Hi David, Michael, Stefan,
+> I'm restarting to work on this topic since Kata guys are interested to
+> have that, especially on the guest side.
+>
+> While working on the v2 I had few doubts, and I'd like to have your
+> suggestions:
+>
+>   1. netns assigned to the device inside the guest
+>
+>     Currently I assigned this device to 'init_net'. Maybe it is better
+>     if we allow the user to decide which netns assign to the device
+>     or to disable this new feature to have the same behavior as before
+>     (host reachable from any netns).
+>     I think we can handle this in the vsock core and not in the single
+>     transports.
+>
+>     The simplest way that I found, is to add a new
+>     IOCTL_VM_SOCKETS_ASSIGN_G2H_NETNS to /dev/vsock to enable the featu=
+re
+>     and assign the device to the same netns of the process that do the
+>     ioctl(), but I'm not sure it is clean enough.
+>
+>     Maybe it is better to add new rtnetlink messages, but I'm not sure =
+if
+>     it is feasible since we don't have a netdev device.
+>
+>     What do you suggest?
 
- int main() {
-    int sck_x25;
-    sck_x25 = socket(AF_X25, SOCK_SEQPACKET, 0);
-    close(sck_x25);
-    return 0;
- }
- 
-BUG: kernel NULL pointer dereference, address: 00000000000000d8
-CPU: 0 PID: 4817 Comm: t2 Not tainted 5.7.0-rc3+ #159
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.9.3-
-RIP: 0010:x25_disconnect+0x91/0xe0
-Call Trace:
- x25_release+0x18a/0x1b0
- __sock_release+0x3d/0xc0
- sock_close+0x13/0x20
- __fput+0x107/0x270
- ____fput+0x9/0x10
- task_work_run+0x6d/0xb0
- exit_to_usermode_loop+0x102/0x110
- do_syscall_64+0x23c/0x260
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
 
-Reported-by: syzbot+6db548b615e5aeefdce2@syzkaller.appspotmail.com
-Fixes: 4becb7ee5b3d ("net/x25: Fix x25_neigh refcnt leak when x25 disconnect")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- net/x25/x25_subr.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+As we've discussed, it should be a netdev probably in either guest or=20
+host side. And it would be much simpler if we want do implement=20
+namespace then. No new API is needed.
 
-diff --git a/net/x25/x25_subr.c b/net/x25/x25_subr.c
-index 8b1b06cabcbf..0285aaa1e93c 100644
---- a/net/x25/x25_subr.c
-+++ b/net/x25/x25_subr.c
-@@ -357,10 +357,12 @@ void x25_disconnect(struct sock *sk, int reason, unsigned char cause,
- 		sk->sk_state_change(sk);
- 		sock_set_flag(sk, SOCK_DEAD);
- 	}
--	read_lock_bh(&x25_list_lock);
--	x25_neigh_put(x25->neighbour);
--	x25->neighbour = NULL;
--	read_unlock_bh(&x25_list_lock);
-+	if (x25->neighbour) {
-+		read_lock_bh(&x25_list_lock);
-+		x25_neigh_put(x25->neighbour);
-+		x25->neighbour = NULL;
-+		read_unlock_bh(&x25_list_lock);
-+	}
- }
- 
- /*
--- 
-2.17.1
+Thanks
 
+
+>
+>
+>   2. netns assigned in the host
+>
+>      As Michael suggested, I added a new /dev/vhost-vsock-netns to allo=
+w
+>      userspace application to use this new feature, leaving to
+>      /dev/vhost-vsock the previous behavior (guest reachable from any
+>      netns).
+>
+>      I like this approach, but I had these doubts:
+>
+>      - I need to allocate a new minor for that device (e.g.
+>        VHOST_VSOCK_NETNS_MINOR) or is there an alternative way that I c=
+an
+>        use?
+>
+>      - It is vhost-vsock specific, should we provide something handled =
+in
+>        the vsock core, maybe centralizing the CID allocation and adding=
+ a
+>        new IOCTL or rtnetlink message like for the guest side?
+>        (maybe it could be a second step, and for now we can continue wi=
+th
+>        the new device)
+>
+>
+> Thanks for the help,
+> Stefano
+>
+>
+> On Thu, Jan 16, 2020 at 06:24:25PM +0100, Stefano Garzarella wrote:
+>> RFC -> v1:
+>>   * added 'netns' module param to vsock.ko to enable the
+>>     network namespace support (disabled by default)
+>>   * added 'vsock_net_eq()' to check the "net" assigned to a socket
+>>     only when 'netns' support is enabled
+>>
+>> RFC: https://patchwork.ozlabs.org/cover/1202235/
+>>
+>> Now that we have multi-transport upstream, I started to take a look to
+>> support network namespace in vsock.
+>>
+>> As we partially discussed in the multi-transport proposal [1], it coul=
+d
+>> be nice to support network namespace in vsock to reach the following
+>> goals:
+>> - isolate host applications from guest applications using the same por=
+ts
+>>    with CID_ANY
+>> - assign the same CID of VMs running in different network namespaces
+>> - partition VMs between VMMs or at finer granularity
+>>
+>> This new feature is disabled by default, because it changes vsock's
+>> behavior with network namespaces and could break existing applications=
+.
+>> It can be enabled with the new 'netns' module parameter of vsock.ko.
+>>
+>> This implementation provides the following behavior:
+>> - packets received from the host (received by G2H transports) are
+>>    assigned to the default netns (init_net)
+>> - packets received from the guest (received by H2G - vhost-vsock) are
+>>    assigned to the netns of the process that opens /dev/vhost-vsock
+>>    (usually the VMM, qemu in my tests, opens the /dev/vhost-vsock)
+>>      - for vmci I need some suggestions, because I don't know how to d=
+o
+>>        and test the same in the vmci driver, for now vmci uses the
+>>        init_net
+>> - loopback packets are exchanged only in the same netns
+>>
+>> I tested the series in this way:
+>> l0_host$ qemu-system-x86_64 -m 4G -M accel=3Dkvm -smp 4 \
+>>              -drive file=3D/tmp/vsockvm0.img,if=3Dvirtio --nographic \
+>>              -device vhost-vsock-pci,guest-cid=3D3
+>>
+>> l1_vm$ echo 1 > /sys/module/vsock/parameters/netns
+>>
+>> l1_vm$ ip netns add ns1
+>> l1_vm$ ip netns add ns2
+>>   # same CID on different netns
+>> l1_vm$ ip netns exec ns1 qemu-system-x86_64 -m 1G -M accel=3Dkvm -smp =
+2 \
+>>              -drive file=3D/tmp/vsockvm1.img,if=3Dvirtio --nographic \
+>>              -device vhost-vsock-pci,guest-cid=3D4
+>> l1_vm$ ip netns exec ns2 qemu-system-x86_64 -m 1G -M accel=3Dkvm -smp =
+2 \
+>>              -drive file=3D/tmp/vsockvm2.img,if=3Dvirtio --nographic \
+>>              -device vhost-vsock-pci,guest-cid=3D4
+>>
+>>   # all iperf3 listen on CID_ANY and port 5201, but in different netns
+>> l1_vm$ ./iperf3 --vsock -s # connection from l0 or guests started
+>>                             # on default netns (init_net)
+>> l1_vm$ ip netns exec ns1 ./iperf3 --vsock -s
+>> l1_vm$ ip netns exec ns1 ./iperf3 --vsock -s
+>>
+>> l0_host$ ./iperf3 --vsock -c 3
+>> l2_vm1$ ./iperf3 --vsock -c 2
+>> l2_vm2$ ./iperf3 --vsock -c 2
+>>
+>> [1] https://www.spinics.net/lists/netdev/msg575792.html
+>>
+>> Stefano Garzarella (3):
+>>    vsock: add network namespace support
+>>    vsock/virtio_transport_common: handle netns of received packets
+>>    vhost/vsock: use netns of process that opens the vhost-vsock device
+>>
+>>   drivers/vhost/vsock.c                   | 29 ++++++++++++-----
+>>   include/linux/virtio_vsock.h            |  2 ++
+>>   include/net/af_vsock.h                  |  7 +++--
+>>   net/vmw_vsock/af_vsock.c                | 41 +++++++++++++++++++----=
+--
+>>   net/vmw_vsock/hyperv_transport.c        |  5 +--
+>>   net/vmw_vsock/virtio_transport.c        |  2 ++
+>>   net/vmw_vsock/virtio_transport_common.c | 12 ++++++--
+>>   net/vmw_vsock/vmci_transport.c          |  5 +--
+>>   8 files changed, 78 insertions(+), 25 deletions(-)
+>>
+>> --=20
+>> 2.24.1
+>>
 
