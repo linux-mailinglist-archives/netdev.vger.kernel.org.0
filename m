@@ -2,57 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41C1F1BCEC8
+	by mail.lfdr.de (Postfix) with ESMTP id AE4C91BCEC9
 	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 23:34:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726456AbgD1VdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 17:33:23 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58074 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725934AbgD1VdX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Apr 2020 17:33:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=SSBdsfKzoa+pWRpdd/TC5A8IAtxlP8hPJ+9MlzTHrsY=; b=v7N91KKpRXmQ7QSDM7Gt6U048m
-        iuAl8UJIyp7w0edHieu5uuaDgnoinu44ykgOOEHr3yEkkHYw8g7qBL3B2WX1Hc1jumsIMUhNe3VWO
-        cVrvY1UkGnPmmmt08uaZBLCRb/UMmFsIvS5amnvobPsfMz4CknDV/Lj1uinYvhEJn138=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jTXr0-000AEG-1L; Tue, 28 Apr 2020 23:33:22 +0200
-Date:   Tue, 28 Apr 2020 23:33:22 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next] net: phy: at803x: add downshift support
-Message-ID: <20200428213322.GF30459@lunn.ch>
-References: <20200428211502.1290-1-michael@walle.cc>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200428211502.1290-1-michael@walle.cc>
+        id S1726740AbgD1Vdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 17:33:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44146 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726377AbgD1Vdk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 17:33:40 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D3ACC03C1AC
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 14:33:40 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 248511210A3FB;
+        Tue, 28 Apr 2020 14:33:40 -0700 (PDT)
+Date:   Tue, 28 Apr 2020 14:33:39 -0700 (PDT)
+Message-Id: <20200428.143339.1189475969435668035.davem@davemloft.net>
+To:     andrew@lunn.ch
+Cc:     netdev@vger.kernel.org, cphealy@gmail.com, fugang.duan@nxp.com,
+        leonard.crestez@nxp.com
+Subject: Re: [PATCH net-next] net: ethernet: fec: Prevent MII event after
+ MII_SPEED write
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200428175833.30517-1-andrew@lunn.ch>
+References: <20200428175833.30517-1-andrew@lunn.ch>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 28 Apr 2020 14:33:40 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 28, 2020 at 11:15:02PM +0200, Michael Walle wrote:
-> The AR8031 and AR8035 support the link speed downshift. Add driver
-> support for it. One peculiarity of these PHYs is that it needs a
-> software reset after changing the setting, thus add the .soft_reset()
-> op and do a phy_init_hw() if necessary.
-> 
-> This was tested on a custom board with the AR8031.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
+From: Andrew Lunn <andrew@lunn.ch>
+Date: Tue, 28 Apr 2020 19:58:33 +0200
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> The change to polled IO for MDIO completion assumes that MII events
+> are only generated for MDIO transactions. However on some SoCs writing
+> to the MII_SPEED register can also trigger an MII event. As a result,
+> the next MDIO read has a pending MII event, and immediately reads the
+> data registers before it contains useful data. When the read does
+> complete, another MII event is posted, which results in the next read
+> also going wrong, and the cycle continues.
+> 
+> By writing 0 to the MII_DATA register before writing to the speed
+> register, this MII event for the MII_SPEED is suppressed, and polled
+> IO works as expected.
+> 
+> Fixes: 29ae6bd1b0d8 ("net: ethernet: fec: Replace interrupt driven MDIO with polled IO")
+> Reported-by: Andy Duan <fugang.duan@nxp.com>
+> Suggested-by: Andy Duan <fugang.duan@nxp.com>
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
-    Andrew
+Applied to net-next, thanks.
