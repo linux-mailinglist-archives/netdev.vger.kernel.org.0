@@ -2,78 +2,372 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9030A1BCFFB
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 00:30:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB1F51BCFFC
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 00:31:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726508AbgD1WaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 18:30:11 -0400
-Received: from correo.us.es ([193.147.175.20]:60544 "EHLO mail.us.es"
+        id S1726551AbgD1WaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 18:30:15 -0400
+Received: from mx2.suse.de ([195.135.220.15]:57176 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726477AbgD1WaK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Apr 2020 18:30:10 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id F045E11EB3C
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 00:30:08 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id E1F9CBAAAF
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 00:30:08 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id D7499BAC2F; Wed, 29 Apr 2020 00:30:08 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id EE64CBAAAF;
-        Wed, 29 Apr 2020 00:30:06 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 29 Apr 2020 00:30:06 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id D134142EF4E1;
-        Wed, 29 Apr 2020 00:30:06 +0200 (CEST)
-Date:   Wed, 29 Apr 2020 00:30:06 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Netfilter Development Mailing List 
-        <netfilter-devel@vger.kernel.org>
-Subject: Re: [PATCH] iptables: flush stdout after every verbose log.
-Message-ID: <20200428223006.GA30304@salvia>
-References: <20200421081542.108296-1-zenczykowski@gmail.com>
- <20200428000525.GD24002@salvia>
- <CAHo-OoxP6ZrvbXFH_tC9_wdVDg7y=8bzVY9oKZTieZL_mqS1NQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHo-OoxP6ZrvbXFH_tC9_wdVDg7y=8bzVY9oKZTieZL_mqS1NQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1725934AbgD1WaO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Apr 2020 18:30:14 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 5927BADD6;
+        Tue, 28 Apr 2020 22:30:10 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id BB72EE128C; Wed, 29 Apr 2020 00:30:10 +0200 (CEST)
+Message-Id: <8a495e43783170906ce3bf0213bc1dd7eca0e5c8.1588112572.git.mkubecek@suse.cz>
+In-Reply-To: <cover.1588112572.git.mkubecek@suse.cz>
+References: <cover.1588112572.git.mkubecek@suse.cz>
+From:   Michal Kubecek <mkubecek@suse.cz>
+Subject: [PATCH ethtool 2/2] netlink: use genetlink ops information to decide
+ about fallback
+To:     John Linville <linville@tuxdriver.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>
+Date:   Wed, 29 Apr 2020 00:30:10 +0200 (CEST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 27, 2020 at 05:14:24PM -0700, Maciej Żenczykowski wrote:
-> > Could you check if this slows down iptables-restore?
-> 
-> per the iptables-restore man page
->        -v, --verbose
->               Print additional debug info during ruleset processing.
-> 
-> Well, if you run it with verbose mode enabled you probably don't care
-> about performance all that much...
+Currently ethtool falls back to ioctl when netlink socket initialization
+fails or if netlink request fails with -EOPNOTSUPP (and we do not know that
+request cannot possibly work via ioctl, e.g. because of wildcard device
+name or device name longer than IFNAMSIZ). This logic has one problem: we
+cannot distinguish if -EOPNOTSUPP error code means that subcommand as such
+is not implemented in kernel or that it failed for some other reason (e.g.
+specific combination of parameters is not supported by driver). If the
+latter is the case, fallback to ioctl is pointless as the same request
+would fail via ioctl as well. In some cases we can even get a duplicate
+error message.
 
-Thanks for explaining.
+Fortunately, genetlink provides information about supported family commands
+in the form of CTRL_ATTR_OPS nested attribute. Parse this information when
+available and use it to only fall back to ioctl only if kernel support for
+netlink request as such is missing so that there is a chance that ioctl
+request will work. In such case, do not send netlink request at all.
 
-How long has this been broken? I mean, netd has been there for quite a
-while interacting with iptables. However, the existing behaviour was
-not a problem? Or a recent bug?
+Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+---
+ netlink/netlink.c  | 138 ++++++++++++++++++++++++++++++++++++---------
+ netlink/netlink.h  |   5 ++
+ netlink/parser.c   |   7 +++
+ netlink/settings.c |   7 +++
+ 4 files changed, 129 insertions(+), 28 deletions(-)
+
+diff --git a/netlink/netlink.c b/netlink/netlink.c
+index 59dbab2dee00..ccd88448197d 100644
+--- a/netlink/netlink.c
++++ b/netlink/netlink.c
+@@ -92,16 +92,88 @@ int get_dev_info(const struct nlattr *nest, int *ifindex, char *ifname)
+ 	return 0;
+ }
+ 
++/**
++ * netlink_cmd_check() - check support for netlink command
++ * @ctx:            ethtool command context
++ * @cmd:            netlink command id
++ * @devname:        device name from user
++ * @allow_wildcard: wildcard dumps supported
++ *
++ * Check if command @cmd is known to be unsupported based on ops information
++ * from genetlink family id request. Set nlctx->ioctl_fallback if ethtool
++ * should fall back to ioctl, i.e. when we do not know in advance that
++ * netlink request is supported. Set nlctx->wildcard_unsupported if "*" was
++ * used as device name but the request does not support wildcards (on either
++ * side).
++ *
++ * Return: true if we know the netlink request is not supported and should
++ * fail (and possibly fall back) without actually sending it to kernel.
++ */
++bool netlink_cmd_check(struct cmd_context *ctx, unsigned int cmd,
++		       bool allow_wildcard)
++{
++	bool is_dump = !strcmp(ctx->devname, WILDCARD_DEVNAME);
++	uint32_t cap = is_dump ? GENL_CMD_CAP_DUMP : GENL_CMD_CAP_DO;
++	struct nl_context *nlctx = ctx->nlctx;
++
++	if (is_dump && !allow_wildcard) {
++		nlctx->wildcard_unsupported = true;
++		return true;
++	}
++	if (!nlctx->ops_flags) {
++		nlctx->ioctl_fallback = true;
++		return false;
++	}
++	if (cmd > ETHTOOL_MSG_USER_MAX || !nlctx->ops_flags[cmd]) {
++		nlctx->ioctl_fallback = true;
++		return true;
++	}
++
++	if (is_dump && !(nlctx->ops_flags[cmd] & GENL_CMD_CAP_DUMP))
++		nlctx->wildcard_unsupported = true;
++
++	return !(nlctx->ops_flags[cmd] & cap);
++}
++
+ /* initialization */
+ 
+-struct fam_info {
+-	const char	*fam_name;
+-	const char	*grp_name;
+-	uint16_t	fam_id;
+-	uint32_t	grp_id;
+-};
++static int genl_read_ops(struct nl_context *nlctx,
++			 const struct nlattr *ops_attr)
++{
++	struct nlattr *op_attr;
++	uint32_t *ops_flags;
++	int ret;
++
++	ops_flags = calloc(__ETHTOOL_MSG_USER_CNT, sizeof(ops_flags[0]));
++	if (!ops_flags)
++		return -ENOMEM;
++
++	mnl_attr_for_each_nested(op_attr, ops_attr) {
++		const struct nlattr *tb[CTRL_ATTR_OP_MAX + 1] = {};
++		DECLARE_ATTR_TB_INFO(tb);
++		uint32_t op_id;
++
++		ret = mnl_attr_parse_nested(op_attr, attr_cb, &tb_info);
++		if (ret < 0)
++			goto err;
++
++		if (!tb[CTRL_ATTR_OP_ID] || !tb[CTRL_ATTR_OP_FLAGS])
++			continue;
++		op_id = mnl_attr_get_u32(tb[CTRL_ATTR_OP_ID]);
++		if (op_id >= __ETHTOOL_MSG_USER_CNT)
++			continue;
++
++		ops_flags[op_id] = mnl_attr_get_u32(tb[CTRL_ATTR_OP_FLAGS]);
++	}
++
++	nlctx->ops_flags = ops_flags;
++	return 0;
++err:
++	free(ops_flags);
++	return ret;
++}
+ 
+-static void find_mc_group(struct nlattr *nest, struct fam_info *info)
++static void find_mc_group(struct nl_context *nlctx, struct nlattr *nest)
+ {
+ 	const struct nlattr *grp_tb[CTRL_ATTR_MCAST_GRP_MAX + 1] = {};
+ 	DECLARE_ATTR_TB_INFO(grp_tb);
+@@ -116,9 +188,9 @@ static void find_mc_group(struct nlattr *nest, struct fam_info *info)
+ 		    !grp_tb[CTRL_ATTR_MCAST_GRP_ID])
+ 			continue;
+ 		if (strcmp(mnl_attr_get_str(grp_tb[CTRL_ATTR_MCAST_GRP_NAME]),
+-			   info->grp_name))
++			   ETHTOOL_MCGRP_MONITOR_NAME))
+ 			continue;
+-		info->grp_id =
++		nlctx->ethnl_mongrp =
+ 			mnl_attr_get_u32(grp_tb[CTRL_ATTR_MCAST_GRP_ID]);
+ 		return;
+ 	}
+@@ -126,16 +198,21 @@ static void find_mc_group(struct nlattr *nest, struct fam_info *info)
+ 
+ static int family_info_cb(const struct nlmsghdr *nlhdr, void *data)
+ {
+-	struct fam_info *info = data;
++	struct nl_context *nlctx = data;
+ 	struct nlattr *attr;
++	int ret;
+ 
+ 	mnl_attr_for_each(attr, nlhdr, GENL_HDRLEN) {
+ 		switch (mnl_attr_get_type(attr)) {
+ 		case CTRL_ATTR_FAMILY_ID:
+-			info->fam_id = mnl_attr_get_u16(attr);
++			nlctx->ethnl_fam = mnl_attr_get_u16(attr);
+ 			break;
++		case CTRL_ATTR_OPS:
++			ret = genl_read_ops(nlctx, attr);
++			if (ret < 0)
++				return MNL_CB_ERROR;
+ 		case CTRL_ATTR_MCAST_GROUPS:
+-			find_mc_group(attr, info);
++			find_mc_group(nlctx, attr);
+ 			break;
+ 		}
+ 	}
+@@ -144,41 +221,37 @@ static int family_info_cb(const struct nlmsghdr *nlhdr, void *data)
+ }
+ 
+ #ifdef TEST_ETHTOOL
+-static int get_genl_family(struct nl_socket *nlsk, struct fam_info *info)
++static int get_genl_family(struct nl_context *nlctx, struct nl_socket *nlsk)
+ {
+ 	return 0;
+ }
+ #else
+-static int get_genl_family(struct nl_socket *nlsk, struct fam_info *info)
++static int get_genl_family(struct nl_context *nlctx, struct nl_socket *nlsk)
+ {
+ 	struct nl_msg_buff *msgbuff = &nlsk->msgbuff;
+ 	int ret;
+ 
+-	nlsk->nlctx->suppress_nlerr = 2;
++	nlctx->suppress_nlerr = 2;
+ 	ret = __msg_init(msgbuff, GENL_ID_CTRL, CTRL_CMD_GETFAMILY,
+ 			 NLM_F_REQUEST | NLM_F_ACK, 1);
+ 	if (ret < 0)
+ 		goto out;
+ 	ret = -EMSGSIZE;
+-	if (ethnla_put_strz(msgbuff, CTRL_ATTR_FAMILY_NAME, info->fam_name))
++	if (ethnla_put_strz(msgbuff, CTRL_ATTR_FAMILY_NAME, ETHTOOL_GENL_NAME))
+ 		goto out;
+ 
+ 	nlsock_sendmsg(nlsk, NULL);
+-	nlsock_process_reply(nlsk, family_info_cb, info);
+-	ret = info->fam_id ? 0 : -EADDRNOTAVAIL;
++	nlsock_process_reply(nlsk, family_info_cb, nlctx);
++	ret = nlctx->ethnl_fam ? 0 : -EADDRNOTAVAIL;
+ 
+ out:
+-	nlsk->nlctx->suppress_nlerr = 0;
++	nlctx->suppress_nlerr = 0;
+ 	return ret;
+ }
+ #endif
+ 
+ int netlink_init(struct cmd_context *ctx)
+ {
+-	struct fam_info info = {
+-		.fam_name	= ETHTOOL_GENL_NAME,
+-		.grp_name	= ETHTOOL_MCGRP_MONITOR_NAME,
+-	};
+ 	struct nl_context *nlctx;
+ 	int ret;
+ 
+@@ -189,11 +262,9 @@ int netlink_init(struct cmd_context *ctx)
+ 	ret = nlsock_init(nlctx, &nlctx->ethnl_socket, NETLINK_GENERIC);
+ 	if (ret < 0)
+ 		goto out_free;
+-	ret = get_genl_family(nlctx->ethnl_socket, &info);
++	ret = get_genl_family(nlctx, nlctx->ethnl_socket);
+ 	if (ret < 0)
+ 		goto out_nlsk;
+-	nlctx->ethnl_fam = info.fam_id;
+-	nlctx->ethnl_mongrp = info.grp_id;
+ 
+ 	ctx->nlctx = nlctx;
+ 	return 0;
+@@ -201,6 +272,7 @@ int netlink_init(struct cmd_context *ctx)
+ out_nlsk:
+ 	nlsock_done(nlctx->ethnl_socket);
+ out_free:
++	free(nlctx->ops_flags);
+ 	free(nlctx);
+ 	return ret;
+ }
+@@ -210,6 +282,7 @@ static void netlink_done(struct cmd_context *ctx)
+ 	if (!ctx->nlctx)
+ 		return;
+ 
++	free(ctx->nlctx->ops_flags);
+ 	free(ctx->nlctx);
+ 	ctx->nlctx = NULL;
+ 	cleanup_all_strings();
+@@ -228,6 +301,7 @@ void netlink_run_handler(struct cmd_context *ctx, nl_func_t nlfunc,
+ 			 bool no_fallback)
+ {
+ 	bool wildcard = ctx->devname && !strcmp(ctx->devname, WILDCARD_DEVNAME);
++	struct nl_context *nlctx;
+ 	const char *reason;
+ 	int ret;
+ 
+@@ -245,12 +319,20 @@ void netlink_run_handler(struct cmd_context *ctx, nl_func_t nlfunc,
+ 		reason = "netlink interface initialization failed";
+ 		goto no_support;
+ 	}
++	nlctx = ctx->nlctx;
+ 
+ 	ret = nlfunc(ctx);
+ 	netlink_done(ctx);
+-	if (ret != -EOPNOTSUPP || no_fallback)
++	if (no_fallback || ret != -EOPNOTSUPP || !nlctx->ioctl_fallback) {
++		if (nlctx->wildcard_unsupported)
++			fprintf(stderr, "%s\n",
++				"subcommand does not support wildcard dump");
+ 		exit(ret >= 0 ? ret : 1);
+-	reason = "kernel netlink support for subcommand missing";
++	}
++	if (nlctx->wildcard_unsupported)
++		reason = "subcommand does not support wildcard dump";
++	else
++		reason = "kernel netlink support for subcommand missing";
+ 
+ no_support:
+ 	if (no_fallback) {
+diff --git a/netlink/netlink.h b/netlink/netlink.h
+index 41102d270eaf..4419be0f751a 100644
+--- a/netlink/netlink.h
++++ b/netlink/netlink.h
+@@ -25,6 +25,7 @@ struct nl_context {
+ 	unsigned int		suppress_nlerr;
+ 	uint16_t		ethnl_fam;
+ 	uint32_t		ethnl_mongrp;
++	uint32_t		*ops_flags;
+ 	struct nl_socket	*ethnl_socket;
+ 	struct nl_socket	*ethnl2_socket;
+ 	struct nl_socket	*rtnl_socket;
+@@ -36,6 +37,8 @@ struct nl_context {
+ 	const char		*param;
+ 	char			**argp;
+ 	int			argc;
++	bool			ioctl_fallback;
++	bool			wildcard_unsupported;
+ };
+ 
+ struct attr_tb_info {
+@@ -50,6 +53,8 @@ int nomsg_reply_cb(const struct nlmsghdr *nlhdr, void *data);
+ int attr_cb(const struct nlattr *attr, void *data);
+ 
+ int netlink_init(struct cmd_context *ctx);
++bool netlink_cmd_check(struct cmd_context *ctx, unsigned int cmd,
++		       bool allow_wildcard);
+ const char *get_dev_name(const struct nlattr *nest);
+ int get_dev_info(const struct nlattr *nest, int *ifindex, char *ifname);
+ 
+diff --git a/netlink/parser.c b/netlink/parser.c
+index 40eb4a5c0b26..fff23f2425e9 100644
+--- a/netlink/parser.c
++++ b/netlink/parser.c
+@@ -1023,6 +1023,13 @@ int nl_parser(struct nl_context *nlctx, const struct param_parser *params,
+ 			goto out_free;
+ 	}
+ 
++	if (group_style == PARSER_GROUP_MSG) {
++		ret = -EOPNOTSUPP;
++		for (buff = buffs; buff; buff = buff->next)
++			if (msgbuff_len(&buff->msgbuff) > buff->orig_len &&
++			    netlink_cmd_check(nlctx->ctx, buff->id, false))
++				goto out_free;
++	}
+ 	for (buff = buffs; buff; buff = buff->next) {
+ 		struct nl_msg_buff *msgbuff = &buff->msgbuff;
+ 
+diff --git a/netlink/settings.c b/netlink/settings.c
+index c8a911d718b9..25aadb988cd1 100644
+--- a/netlink/settings.c
++++ b/netlink/settings.c
+@@ -726,6 +726,13 @@ int nl_gset(struct cmd_context *ctx)
+ 	struct nl_socket *nlsk = nlctx->ethnl_socket;
+ 	int ret;
+ 
++	if (netlink_cmd_check(ctx, ETHTOOL_MSG_LINKMODES_GET, true) ||
++	    netlink_cmd_check(ctx, ETHTOOL_MSG_LINKINFO_GET, true) ||
++	    netlink_cmd_check(ctx, ETHTOOL_MSG_WOL_GET, true) ||
++	    netlink_cmd_check(ctx, ETHTOOL_MSG_DEBUG_GET, true) ||
++	    netlink_cmd_check(ctx, ETHTOOL_MSG_LINKSTATE_GET, true))
++		return -EOPNOTSUPP;
++
+ 	nlctx->suppress_nlerr = 1;
+ 
+ 	ret = gset_request(nlsk, ETHTOOL_MSG_LINKMODES_GET,
+-- 
+2.26.2
+
