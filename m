@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5939D1BB76F
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 09:27:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 733F71BB77C
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 09:28:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726482AbgD1H1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 03:27:37 -0400
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:16353 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726284AbgD1H1f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 03:27:35 -0400
+        id S1726595AbgD1H2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 03:28:00 -0400
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:27828 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726519AbgD1H1r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 03:27:47 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1588058855; x=1619594855;
+  t=1588058867; x=1619594867;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=7w4lbsOoRJxc4Nt6EEAwHzDDzzUzmz8HrWkZfO0QTW4=;
-  b=kPLMjZUzeiaQjmb9YQUwtrY/hNvCLjuTs5c56U7Y1slbas7jT5GP6Xk3
-   bb7f8rEQDP1h4fKG30ZNonWr+Pc/jW4dDbpgeKeaY7YF6Y+m0J6qedS/u
-   9yfZmZTHkPFFGk+lD4ie4M0SBEEP12KQZ21dT41bryoPc/J6iIcIjhj7M
-   0=;
-IronPort-SDR: yGpLSU1w3d2+YmYK3qc6IKblae++blTuhS4Bx1OvWxJTCqBPxEQ/GlNWvbwkhDFl9PXHHjQOHc
- Jn6AP+XFiq/w==
+  bh=T/5RHHQCvNAPrkXjqCtaVNAejLQ8XFTylf6DypsFlhE=;
+  b=LuEvYf5h1AdQW0jB690KA1nrmx8RO7LV72iux5pRnZN6yKgDPYWolqqu
+   IXNQ/6lwyvky+x5GsGPeXs8Yya+S8nqWu5Sdo320+g6XPK1cy8A5se055
+   seYov8AirzUqwfzDnRzE6ubX+c2AVQwnp4U7OgwKmBrkLVjv8LQw8jwAS
+   E=;
+IronPort-SDR: Yu8oQnBBcA6AuAvV1ojkV03XN6Sd9zcOz4eqKjBJAMBd23N6owg3W7CUg88e3R5v/3pqBrWKuj
+ 61XrOQVu7EMw==
 X-IronPort-AV: E=Sophos;i="5.73,327,1583193600"; 
-   d="scan'208";a="39890324"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2b-81e76b79.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 28 Apr 2020 07:27:32 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2b-81e76b79.us-west-2.amazon.com (Postfix) with ESMTPS id 2EA4DA238F;
+   d="scan'208";a="29020929"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-97fdccfd.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 28 Apr 2020 07:27:33 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1e-97fdccfd.us-east-1.amazon.com (Postfix) with ESMTPS id 1F64FA22BB;
         Tue, 28 Apr 2020 07:27:32 +0000 (UTC)
-Received: from EX13D10UWA004.ant.amazon.com (10.43.160.64) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
+Received: from EX13d09UWC001.ant.amazon.com (10.43.162.60) by
+ EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
  id 15.0.1497.2; Tue, 28 Apr 2020 07:27:31 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
- EX13D10UWA004.ant.amazon.com (10.43.160.64) with Microsoft SMTP Server (TLS)
+Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
+ EX13d09UWC001.ant.amazon.com (10.43.162.60) with Microsoft SMTP Server (TLS)
  id 15.0.1497.2; Tue, 28 Apr 2020 07:27:31 +0000
 Received: from dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (172.19.82.3)
- by mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP Server id
+ by mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP Server id
  15.0.1497.2 via Frontend Transport; Tue, 28 Apr 2020 07:27:31 +0000
 Received: by dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (Postfix, from userid 9775579)
-        id 5EC2381DCE; Tue, 28 Apr 2020 07:27:30 +0000 (UTC)
+        id 61E0D81DF1; Tue, 28 Apr 2020 07:27:30 +0000 (UTC)
 From:   <sameehj@amazon.com>
 To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
 CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
         <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
         <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
         <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <akiyano@amazon.com>, <ndagan@amazon.com>
-Subject: [PATCH V2 net-next 07/13] net: ena: add unmask interrupts statistics to ethtool
-Date:   Tue, 28 Apr 2020 07:27:20 +0000
-Message-ID: <20200428072726.22247-8-sameehj@amazon.com>
+        <benh@amazon.com>, <akiyano@amazon.com>, <ndagan@amazon.com>,
+        Igor Chauskin <igorch@amazon.com>
+Subject: [PATCH V2 net-next 08/13] net: ena: add support for reporting of packet drops
+Date:   Tue, 28 Apr 2020 07:27:21 +0000
+Message-ID: <20200428072726.22247-9-sameehj@amazon.com>
 X-Mailer: git-send-email 2.24.1.AMZN
 In-Reply-To: <20200428072726.22247-1-sameehj@amazon.com>
 References: <20200428072726.22247-1-sameehj@amazon.com>
@@ -64,55 +65,100 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sameeh Jubran <sameehj@amazon.com>
 
-Add unmask interrupts statistics to ethtool.
+1. Add support for getting tx drops from the device and saving them
+in the driver.
+2. Report tx via netdev stats.
 
-Signed-off-by: Netanel Belgazal <netanel@amazon.com>
+Signed-off-by: Igor Chauskin <igorch@amazon.com>
+Signed-off-by: Guy Tzalik <gtzalik@amazon.com>
 Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
 Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_ethtool.c | 1 +
- drivers/net/ethernet/amazon/ena/ena_netdev.c  | 3 +++
- drivers/net/ethernet/amazon/ena/ena_netdev.h  | 1 +
- 3 files changed, 5 insertions(+)
+ drivers/net/ethernet/amazon/ena/ena_admin_defs.h | 8 ++++++++
+ drivers/net/ethernet/amazon/ena/ena_netdev.c     | 6 ++++++
+ drivers/net/ethernet/amazon/ena/ena_netdev.h     | 1 +
+ 3 files changed, 15 insertions(+)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-index c7df25f92dbd..74725d606964 100644
---- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-@@ -83,6 +83,7 @@ static const struct ena_stats ena_stats_tx_strings[] = {
- 	ENA_STAT_TX_ENTRY(bad_req_id),
- 	ENA_STAT_TX_ENTRY(llq_buffer_copy),
- 	ENA_STAT_TX_ENTRY(missed_tx),
-+	ENA_STAT_TX_ENTRY(unmask_interrupt),
+diff --git a/drivers/net/ethernet/amazon/ena/ena_admin_defs.h b/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
+index 8baf847e8622..7be3dcbf3d16 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
++++ b/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
+@@ -404,6 +404,10 @@ struct ena_admin_basic_stats {
+ 	u32 rx_drops_low;
+ 
+ 	u32 rx_drops_high;
++
++	u32 tx_drops_low;
++
++	u32 tx_drops_high;
  };
  
- static const struct ena_stats ena_stats_rx_strings[] = {
+ struct ena_admin_acq_get_stats_resp {
+@@ -1017,6 +1021,10 @@ struct ena_admin_aenq_keep_alive_desc {
+ 	u32 rx_drops_low;
+ 
+ 	u32 rx_drops_high;
++
++	u32 tx_drops_low;
++
++	u32 tx_drops_high;
+ };
+ 
+ struct ena_admin_ena_mmio_req_read_less_resp {
 diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 6baafc3aebea..3cea4c9090c2 100644
+index 3cea4c9090c2..517681319a57 100644
 --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
 +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -1762,6 +1762,9 @@ static void ena_unmask_interrupt(struct ena_ring *tx_ring,
- 				tx_ring->smoothed_interval,
- 				true);
+@@ -3172,6 +3172,7 @@ static void ena_get_stats64(struct net_device *netdev,
+ 	struct ena_ring *rx_ring, *tx_ring;
+ 	unsigned int start;
+ 	u64 rx_drops;
++	u64 tx_drops;
+ 	int i;
  
-+	u64_stats_update_begin(&tx_ring->syncp);
-+	tx_ring->tx_stats.unmask_interrupt++;
-+	u64_stats_update_end(&tx_ring->syncp);
- 	/* It is a shared MSI-X.
- 	 * Tx and Rx CQ have pointer to it.
- 	 * So we use one of them to reach the intr reg
+ 	if (!test_bit(ENA_FLAG_DEV_UP, &adapter->flags))
+@@ -3206,9 +3207,11 @@ static void ena_get_stats64(struct net_device *netdev,
+ 	do {
+ 		start = u64_stats_fetch_begin_irq(&adapter->syncp);
+ 		rx_drops = adapter->dev_stats.rx_drops;
++		tx_drops = adapter->dev_stats.tx_drops;
+ 	} while (u64_stats_fetch_retry_irq(&adapter->syncp, start));
+ 
+ 	stats->rx_dropped = rx_drops;
++	stats->tx_dropped = tx_drops;
+ 
+ 	stats->multicast = 0;
+ 	stats->collisions = 0;
+@@ -4517,14 +4520,17 @@ static void ena_keep_alive_wd(void *adapter_data,
+ 	struct ena_adapter *adapter = (struct ena_adapter *)adapter_data;
+ 	struct ena_admin_aenq_keep_alive_desc *desc;
+ 	u64 rx_drops;
++	u64 tx_drops;
+ 
+ 	desc = (struct ena_admin_aenq_keep_alive_desc *)aenq_e;
+ 	adapter->last_keep_alive_jiffies = jiffies;
+ 
+ 	rx_drops = ((u64)desc->rx_drops_high << 32) | desc->rx_drops_low;
++	tx_drops = ((u64)desc->tx_drops_high << 32) | desc->tx_drops_low;
+ 
+ 	u64_stats_update_begin(&adapter->syncp);
+ 	adapter->dev_stats.rx_drops = rx_drops;
++	adapter->dev_stats.tx_drops = tx_drops;
+ 	u64_stats_update_end(&adapter->syncp);
+ }
+ 
 diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-index 97dfd0c67e84..ebeb911c0efb 100644
+index ebeb911c0efb..bd278c4721c6 100644
 --- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
 +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-@@ -248,6 +248,7 @@ struct ena_stats_tx {
- 	u64 bad_req_id;
- 	u64 llq_buffer_copy;
- 	u64 missed_tx;
-+	u64 unmask_interrupt;
+@@ -334,6 +334,7 @@ struct ena_stats_dev {
+ 	u64 interface_down;
+ 	u64 admin_q_pause;
+ 	u64 rx_drops;
++	u64 tx_drops;
  };
  
- struct ena_stats_rx {
+ enum ena_flags_t {
 -- 
 2.24.1.AMZN
 
