@@ -2,142 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B6991BC55D
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 18:38:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F3981BC572
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 18:41:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728191AbgD1QiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 12:38:04 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:29200 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728084AbgD1QiE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 12:38:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588091883;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ozj4jNK/nmOFfl5aXvTqsTanwcDs2Wmo5RotwE0KeQU=;
-        b=Ob+nRozr7SLMgXtAv9nXaHRuYrf0rf0TQYCxTBUVXWxU5AdkmOLdFnB2QpzBWYy01qvpl2
-        VDWxSyeKUqdyWu8dpcBDhUaZ48Pu9eD9Fouj8kU8nJVqa+Hz5Zi69rIfcOk1EEQnNLU2dG
-        8KMj86l2FNylpV27Xz3pHTU1eea9n4E=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-125-yzpD3nfiOUKoyeTT4x2NDw-1; Tue, 28 Apr 2020 12:37:58 -0400
-X-MC-Unique: yzpD3nfiOUKoyeTT4x2NDw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A3351835B42;
-        Tue, 28 Apr 2020 16:37:55 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0CE745D9E5;
-        Tue, 28 Apr 2020 16:37:44 +0000 (UTC)
-Date:   Tue, 28 Apr 2020 18:37:43 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     sameehj@amazon.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        zorik@amazon.com, akiyano@amazon.com, gtzalik@amazon.com,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        David Ahern <dsahern@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        steffen.klassert@secunet.com, brouer@redhat.com
-Subject: Re: [PATCH net-next 29/33] xdp: allow bpf_xdp_adjust_tail() to grow
- packet size
-Message-ID: <20200428183743.19dee96e@carbon>
-In-Reply-To: <940b8c06-b71f-f6b1-4832-4abc58027589@iogearbox.net>
-References: <158757160439.1370371.13213378122947426220.stgit@firesoul>
-        <158757178840.1370371.13037637865133257416.stgit@firesoul>
-        <940b8c06-b71f-f6b1-4832-4abc58027589@iogearbox.net>
+        id S1728335AbgD1QlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 12:41:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54880 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728022AbgD1QlJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 12:41:09 -0400
+Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16DFCC03C1AE
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 09:41:08 -0700 (PDT)
+Received: by mail-ot1-x343.google.com with SMTP id j26so33727166ots.0
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 09:41:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sartura-hr.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ej7TTxYPOCUjZ2CQUSr20OUxUMW8qnZz71cmcRHx9Bk=;
+        b=u0IbH3M8FSosaaIdXSzKS8Q7157jIXtA/va7tZv0+OV5NyxvG48nxfl09ZhiFGDLev
+         nhACwWVrI+K6PQdVZIQ8xRtKyFAFrHDBp+/OEZehPaXnn0V6VZPc+eyN8ihnbYPNx352
+         vV6+QMDug8mCIbbhTfQE0gOLACFscEkyp9SI8PSGhFbfaEUtUDRnlhtvrzPcbWKSutmk
+         Q1qkS/Tkr4lGf5Du9Q7Is6vR97ws0NLI3sl/jqIkKfQVaGpCdfjaCI3L8LWQ217M3pkc
+         KSBkvgKQxC4NL+5rJhcyae3FUCT5WE6Ft+yRf0ZZIjiOhzQVBS3EztA/1zOkFDI0DCkZ
+         ZKPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ej7TTxYPOCUjZ2CQUSr20OUxUMW8qnZz71cmcRHx9Bk=;
+        b=iQVvrbrHfzny7mRQc9XbMIdylrGUQYS57++nIBKwAgiMD17RiMMtOqjXCINUHDCdeG
+         nmdurOIPngqSfJJqYuls7cIxHnNE/UUHVIIRj4igmqSFjcORV/qASBba8gsoOFWXn2mA
+         COzGevBQWCMMjTKim9HbpWKrq+Lnf5uJT61Mnby0OSvGzQIKgQx6TiLN8jphJl3MVCD4
+         Q9unNUWMl0UAYo1o101BuALxqkFdaPcau5GOL1ltmCll0h495qBi6N3/Ks2c2mC2T3qM
+         QToY/fj5tYqvUkmevuCz0tXWLkiWOwR5zXFicRJyDcCWBBHVRZUnW7rovsrkpYGeu0dT
+         eFUg==
+X-Gm-Message-State: AGi0PuaEBD0fNrue6WrBzM2fFehmnmOiVIo98DGYdzYlNdBTkxcbc12X
+        REewjrFCy8jiBO+D2IHNVR9qwuNV9TypmzBIjOXvEQ==
+X-Google-Smtp-Source: APiQypI5jgRZDess6nlH+QHGWtMVtpKyuiaNv0Q/5uAdeleBiZWLGdLeCKBv2lgWnykl6/7vKyO0iiEsfWwLlXlOqZc=
+X-Received: by 2002:a9d:7304:: with SMTP id e4mr13363952otk.243.1588092067350;
+ Tue, 28 Apr 2020 09:41:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+References: <20200415150244.2737206-1-robert.marko@sartura.hr>
+ <20200415150244.2737206-2-robert.marko@sartura.hr> <20200428150930.GA25643@bogus>
+In-Reply-To: <20200428150930.GA25643@bogus>
+From:   Robert Marko <robert.marko@sartura.hr>
+Date:   Tue, 28 Apr 2020 18:40:56 +0200
+Message-ID: <CA+HBbNF4S=o059AwW3UpNQ8+US1PCQ_edZM+O0m8r0ozJ5TBfw@mail.gmail.com>
+Subject: Re: [PATCH v3 2/3] dt-bindings: add Qualcomm IPQ4019 MDIO bindings
+To:     Rob Herring <robh@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        devicetree@vger.kernel.org, Luka Perkov <luka.perkov@sartura.hr>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 27 Apr 2020 21:01:14 +0200
-Daniel Borkmann <daniel@iogearbox.net> wrote:
-
-> On 4/22/20 6:09 PM, Jesper Dangaard Brouer wrote:
-> > Finally, after all drivers have a frame size, allow BPF-helper
-> > bpf_xdp_adjust_tail() to grow or extend packet size at frame tail.
-> > 
-> > Remember that helper/macro xdp_data_hard_end have reserved some
-> > tailroom.  Thus, this helper makes sure that the BPF-prog don't have
-> > access to this tailroom area.
-> > 
-> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+On Tue, Apr 28, 2020 at 5:09 PM Rob Herring <robh@kernel.org> wrote:
+>
+> On Wed, Apr 15, 2020 at 05:02:46PM +0200, Robert Marko wrote:
+> > This patch adds the binding document for the IPQ40xx MDIO driver.
+> >
+> > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+> > Cc: Luka Perkov <luka.perkov@sartura.hr>
 > > ---
-> >   include/uapi/linux/bpf.h |    4 ++--
-> >   net/core/filter.c        |   15 +++++++++++++--
-> >   2 files changed, 15 insertions(+), 4 deletions(-)
-> > 
-[...]
-> > diff --git a/net/core/filter.c b/net/core/filter.c
-> > index 7d6ceaa54d21..5e9c387f74eb 100644
-> > --- a/net/core/filter.c
-> > +++ b/net/core/filter.c
-> > @@ -3422,12 +3422,23 @@ static const struct bpf_func_proto bpf_xdp_adjust_head_proto = {
-> >   
-> >   BPF_CALL_2(bpf_xdp_adjust_tail, struct xdp_buff *, xdp, int, offset)
-> >   {
-> > +	void *data_hard_end = xdp_data_hard_end(xdp);
-> >   	void *data_end = xdp->data_end + offset;
-> >   
-> > -	/* only shrinking is allowed for now. */
-> > -	if (unlikely(offset >= 0))
-> > +	/* Notice that xdp_data_hard_end have reserved some tailroom */
-> > +	if (unlikely(data_end > data_hard_end))
-> >   		return -EINVAL;
-> >   
-> > +	/* ALL drivers MUST init xdp->frame_sz, some chicken checks below */
-> > +	if (unlikely(xdp->frame_sz < (xdp->data_end - xdp->data_hard_start))) {
-> > +		WARN(1, "Too small xdp->frame_sz = %d\n", xdp->frame_sz);
-> > +		return -EINVAL;
-> > +	}
-
-I will remove this "too small" check, as it is useless, given it will
-already get caught by above check.
-
-
-> > +	if (unlikely(xdp->frame_sz > PAGE_SIZE)) {
-> > +		WARN(1, "Too BIG xdp->frame_sz = %d\n", xdp->frame_sz);
-> > +		return -EINVAL;
-> > +	}  
-> 
-> I don't think we can add the WARN()s here. If there is a bug in the
-> driver in this area and someone deploys an XDP-based application
-> (otherwise known to work well elsewhere) on top of this, then an
-> attacker can basically remote DoS the machine with malicious packets
-> that end up triggering these WARN()s over and over.
-
-Good point.  I've changed this to WARN_ONCE(), but I'm still
-considering to remove it completely...
-
-> If you are worried that not all your driver changes are correct,
-> maybe only add those that you were able to actually test yourself or
-> that have been acked, and otherwise pre-init the frame_sz to a known
-> invalid value so this helper would only allow shrinking for them in
-> here (as today)?
-
-Hmm... no, I really want to require ALL drivers to set a valid value,
-because else we will have the "data_meta" feature situation, where a lot
-of drivers still doesn't support this.
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+> > Changes from v2 to v3:
+> > * Remove status from example
+> >
+> >  .../bindings/net/qcom,ipq40xx-mdio.yaml       | 61 +++++++++++++++++++
+> >  1 file changed, 61 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/net/qcom,ipq40xx-mdio.yaml
+> >
+> > diff --git a/Documentation/devicetree/bindings/net/qcom,ipq40xx-mdio.yaml b/Documentation/devicetree/bindings/net/qcom,ipq40xx-mdio.yaml
+> > new file mode 100644
+> > index 000000000000..8d4542ccd38c
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/net/qcom,ipq40xx-mdio.yaml
+> > @@ -0,0 +1,61 @@
+> > +# SPDX-License-Identifier: GPL-2.0
+>
+> Dual license new bindings please:
+>
+> (GPL-2.0-only OR BSD-2-Clause)
+Ok, will change it in next revision.
+>
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/net/qcom,ipq40xx-mdio.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Qualcomm IPQ40xx MDIO Controller Device Tree Bindings
+> > +
+> > +maintainers:
+> > +  - Robert Marko <robert.marko@sartura.hr>
+> > +
+> > +allOf:
+> > +  - $ref: "mdio.yaml#"
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: qcom,ipq40xx-mdio
+>
+> Don't use wildcards in compatible names. Should be SoC specific. If 'all
+> the same', then use a fallback to the 1st implementation.
+Ok, I will change it to qcom,ipq4019 then.
+The whole IPQ40xx series uses the same controller.
+>
+> > +
+> > +  "#address-cells":
+> > +    const: 1
+> > +
+> > +  "#size-cells":
+> > +    const: 0
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - "#address-cells"
+> > +  - "#size-cells"
+> > +
+> > +examples:
+> > +  - |
+> > +    mdio@90000 {
+> > +      #address-cells = <1>;
+> > +      #size-cells = <0>;
+> > +      compatible = "qcom,ipq40xx-mdio";
+> > +      reg = <0x90000 0x64>;
+> > +
+> > +      ethphy0: ethernet-phy@0 {
+> > +        reg = <0>;
+> > +      };
+> > +
+> > +      ethphy1: ethernet-phy@1 {
+> > +        reg = <1>;
+> > +      };
+> > +
+> > +      ethphy2: ethernet-phy@2 {
+> > +        reg = <2>;
+> > +      };
+> > +
+> > +      ethphy3: ethernet-phy@3 {
+> > +        reg = <3>;
+> > +      };
+> > +
+> > +      ethphy4: ethernet-phy@4 {
+> > +        reg = <4>;
+> > +      };
+> > +    };
+> > --
+> > 2.26.0
+> >
