@@ -2,55 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30C491BCCB5
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 21:50:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69CF21BCCBA
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 21:50:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729095AbgD1Tt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 15:49:59 -0400
-Received: from www62.your-server.de ([213.133.104.62]:40180 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728559AbgD1Tt7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 15:49:59 -0400
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jTWEr-0003hO-Lx; Tue, 28 Apr 2020 21:49:53 +0200
-Received: from [178.195.186.98] (helo=pc-9.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jTWEr-0006gW-90; Tue, 28 Apr 2020 21:49:53 +0200
-Subject: Re: [PATCH -next] libbpf: Remove unneeded semicolon
-To:     Zou Wei <zou_wei@huawei.com>, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1588064829-70613-1-git-send-email-zou_wei@huawei.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <fd053a28-8cc3-5c7a-7c23-4d9f0aec88f7@iogearbox.net>
-Date:   Tue, 28 Apr 2020 21:49:52 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1729150AbgD1Tun (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 15:50:43 -0400
+Received: from mga07.intel.com ([134.134.136.100]:9320 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728559AbgD1Tum (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Apr 2020 15:50:42 -0400
+IronPort-SDR: 96rFOUP9Rqp1Xr2ec/E3MYI5i2BwiNvjwpzS5VqKQI4PApijhdw4nvS39ub+0vfrDwHI/P8o0R
+ VXRHCc+8JBAA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2020 12:50:41 -0700
+IronPort-SDR: GTYNg69nGgw8fjAn8quT7aUu8wxBewWfoX/bExzZ8Fm22cOIrDWJ0ZKxGKCZsGuqJH35yt2lnj
+ kL6/HvFV/zkw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,328,1583222400"; 
+   d="scan'208";a="261207282"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 28 Apr 2020 12:50:39 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1jTWFa-000Aja-Pu; Wed, 29 Apr 2020 03:50:38 +0800
+Date:   Wed, 29 Apr 2020 03:49:55 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        netdev@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next v1 10/19] bpf: add netlink and ipv6_route targets
+Message-ID: <202004290302.TrXGQ81j%lkp@intel.com>
+References: <20200427201246.2995471-1-yhs@fb.com>
 MIME-Version: 1.0
-In-Reply-To: <1588064829-70613-1-git-send-email-zou_wei@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25796/Tue Apr 28 14:00:48 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200427201246.2995471-1-yhs@fb.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/28/20 11:07 AM, Zou Wei wrote:
-> Fixes coccicheck warning:
-> 
->   tools/lib/bpf/btf_dump.c:661:4-5: Unneeded semicolon
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Zou Wei <zou_wei@huawei.com>
+Hi Yonghong,
 
-Applied, thanks!
+I love your patch! Perhaps something to improve:
+
+[auto build test WARNING on bpf-next/master]
+[also build test WARNING on bpf/master net/master vhost/linux-next net-next/master linus/master v5.7-rc3 next-20200428]
+[cannot apply to ipvs/master]
+[if your patch is applied to the wrong git tree, please drop us a note to help
+improve the system. BTW, we also suggest to use '--base' option to specify the
+base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
+
+url:    https://github.com/0day-ci/linux/commits/Yonghong-Song/bpf-implement-bpf-iterator-for-kernel-data/20200428-115101
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-191-gc51a0382-dirty
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kbuild test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+
+>> net/netlink/af_netlink.c:2643:12: sparse: sparse: symbol '__bpf_iter__netlink' was not declared. Should it be static?
+   net/netlink/af_netlink.c:2534:13: sparse: sparse: context imbalance in 'netlink_walk_start' - wrong count at exit
+   net/netlink/af_netlink.c:2540:13: sparse: sparse: context imbalance in 'netlink_walk_stop' - unexpected unlock
+   net/netlink/af_netlink.c:2576:13: sparse: sparse: context imbalance in 'netlink_seq_start' - wrong count at exit
+
+Please review and possibly fold the followup patch.
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
