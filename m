@@ -2,237 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE0FB1BCB51
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 20:56:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3189D1BC8A6
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 20:36:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729150AbgD1S4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 14:56:09 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:51397 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729714AbgD1Sbp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 14:31:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588098702;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=k2r2nHjLmGfNXD/LczZ0iHarWiphaosQioLS/Vz6VWs=;
-        b=I0tSh8Xh6tWCIIbv7Xdi1I+fPC0MEgBuOFJRUJvEOV7aBwYWaTNFuFhbCGqmP48dtwx+BY
-        MjdmOMshva8VzK4Ah75jHgqfvUCgx0LkyHNXJwqWzHUdKdz45HluDI81rsdtWhH30HU2nQ
-        z69OoRQrvriE8YTw+an5RsLS4nGPcrY=
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
- [209.85.167.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-130-2nX5v_AlMe-0fFl-ZRRg5g-1; Tue, 28 Apr 2020 14:31:39 -0400
-X-MC-Unique: 2nX5v_AlMe-0fFl-ZRRg5g-1
-Received: by mail-lf1-f69.google.com with SMTP id v22so9301453lfa.1
-        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 11:31:39 -0700 (PDT)
+        id S1730134AbgD1SeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 14:34:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44282 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729622AbgD1SeX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 14:34:23 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CCEAC03C1AB
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 11:34:23 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id 7so1364374pjo.0
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 11:34:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=d8J9/+H1aJgIU0iPd3k8kUXfWA6cvbV7BCbp34hUMis=;
+        b=PzZLYwaag6VROB6/jTlW9RHPa3Znmxxj1gxVDF7bKVaHEe7DgmI6oiMixvFxC0hifr
+         6AF8PGrk53GEMQ2uvcLzz3tI9y6/4PYq8kHzbjRPRIjS+cqFJCnOlLMmxdtHPHCQTetS
+         rY9cdvBZM1YJK3ZB6JqBBSWL6fq8YJap+HZZkKlX6Xu1QVzE54vkzpuw2khc0Bfwu+1/
+         e1R+H9YvIHUv+u5g7rByKatPq1NJikTUOYTQ7eLDvr0JUW+MNOD19ptMr14AMCOoevYW
+         jyjAxHQzyIrOk/0iPRnrkpFhUlEvmaqOesnOkoASIrNQZLh6Z9a6eXSwSh/WDEDBNNlD
+         Gz8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=k2r2nHjLmGfNXD/LczZ0iHarWiphaosQioLS/Vz6VWs=;
-        b=mtRuIVxmpMLcYHb3j3zAoPPGOXGRB8bYkjkrXRzWiswoPqADOjaqtfnVc4rUBlQYpx
-         WI/RRD+A65Od7o6UYR5RhMIHM228M4q83jiXE/8LCmBXfAE4pRf0JBY2po35kse7ULKt
-         2kaW+q2YF17xZvtn/8KtfeTy1GMxLKyLYcJ3vkm39NmymvBN44e/1xyGu7VluqukR3Dk
-         vRKu+M6ROhgLvO5FXDwlApqu0TugbmGFc9En3dpqrpm2gDHaaL6JNmOp2r77RmrWXiFl
-         //r2zMyfGKjWt2PHgl+QhRFImNXfARWH0eNomafzcddeSPtMEk5qgY7LuvXd4JavsI3y
-         cwJQ==
-X-Gm-Message-State: AGi0PuYpAUF1Wl1txqbaM+jX8Bj4V/OmwZ2HlBj4KpBHvkBKx3KDwSV4
-        E8lt9A3zACclaJ5eyKtfXX3ALWx1ctCrK+InAAO4ioyVyE159DC75fD3S/QekQOb6qYAY5xNmbV
-        ekv+jSRoL7jg+35wf
-X-Received: by 2002:a2e:98c4:: with SMTP id s4mr18337204ljj.97.1588098697937;
-        Tue, 28 Apr 2020 11:31:37 -0700 (PDT)
-X-Google-Smtp-Source: APiQypJEZmPIZYdVxiXiIV1g1z8hyevnlrHXRrjhb35wCkqJmNR5q97rgUzomwebpQY40acDcQ0K9Q==
-X-Received: by 2002:a2e:98c4:: with SMTP id s4mr18337187ljj.97.1588098697647;
-        Tue, 28 Apr 2020 11:31:37 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id d23sm14692884ljg.90.2020.04.28.11.31.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Apr 2020 11:31:36 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 87A941814FF; Tue, 28 Apr 2020 20:31:35 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH v2 bpf-next 04/10] bpf: add support for BPF_OBJ_GET_INFO_BY_FD for bpf_link
-In-Reply-To: <CAEf4BzabqYMRDzn0ztHQithWJ56o_CWZCWotnkyhJ6D7nuNG1Q@mail.gmail.com>
-References: <20200428054944.4015462-1-andriin@fb.com> <20200428054944.4015462-5-andriin@fb.com> <87mu6wvt6t.fsf@toke.dk> <CAEf4BzabqYMRDzn0ztHQithWJ56o_CWZCWotnkyhJ6D7nuNG1Q@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 28 Apr 2020 20:31:35 +0200
-Message-ID: <87v9ljv4vs.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=d8J9/+H1aJgIU0iPd3k8kUXfWA6cvbV7BCbp34hUMis=;
+        b=cE/utW8LnywkX3ZrNlER19o5rVMhBjJ2hatBuaeanZF3zSrSBuTVcFmQvKAcbtmtfg
+         4dwbuoxZaGyvVVq2vRTAn6nkeubIVFH/wqdi92MxtH27rAIS5MijE3F8eMUVxSa3UFKA
+         TIyNn0ltbfoSpJBNBiNlz/UBEmjkviFgLnzVyqscsvpgb/T432iJJ/PuOfEeru9ksWvt
+         /01Jym+TZx/SvphAFxcdkTaQYhrf5xByoM5LxjQ/S8PS/xIixdy7cu61c9cTp+4YoGCX
+         ez/OtoLm0T56CEwjY5iJGJ3YdOfLC7PU5AeiJLeIvpe2uuEWWcDQVd2UHO5d+apQPgi6
+         ernQ==
+X-Gm-Message-State: AGi0Pubu/BaJnyPY+t8eaQfJrGfN3+ywzaM2wt5rbKRwzgn5iijrFYVS
+        PVxBfeS2LdJpbVgLGXvYxmOX+TUXNB4SGKL9mdsTBg==
+X-Google-Smtp-Source: APiQypK4DziNhv8yRj8qmx9ucMaNvJnzarNstlH/ET2gZdf27UdoomqisWjZrSKO9zFfc0EmggwKCgxi0dJ9zlfGZ2Y=
+X-Received: by 2002:a17:902:988e:: with SMTP id s14mr29496990plp.179.1588098862653;
+ Tue, 28 Apr 2020 11:34:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <20200428174221.2040849-1-natechancellor@gmail.com>
+In-Reply-To: <20200428174221.2040849-1-natechancellor@gmail.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 28 Apr 2020 11:34:11 -0700
+Message-ID: <CAKwvOd=cb-dyWGeMoCE4+zdgA1R=t=QPkzU9EGiCtgdzXke_cw@mail.gmail.com>
+Subject: Re: [PATCH] dpaa2-eth: Use proper division helper in dpaa2_dbg_ch_show
+To:     Nathan Chancellor <natechancellor@gmail.com>
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
-
-> On Tue, Apr 28, 2020 at 2:46 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
-dhat.com> wrote:
->>
->> Andrii Nakryiko <andriin@fb.com> writes:
->>
->> > Add ability to fetch bpf_link details through BPF_OBJ_GET_INFO_BY_FD c=
-ommand.
->> > Also enhance show_fdinfo to potentially include bpf_link type-specific
->> > information (similarly to obj_info).
->> >
->> > Also introduce enum bpf_link_type stored in bpf_link itself and expose=
- it in
->> > UAPI. bpf_link_tracing also now will store and return bpf_attach_type.
->> >
->> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
->> > ---
->> >  include/linux/bpf-cgroup.h     |   2 -
->> >  include/linux/bpf.h            |  10 +-
->> >  include/linux/bpf_types.h      |   6 ++
->> >  include/uapi/linux/bpf.h       |  28 ++++++
->> >  kernel/bpf/btf.c               |   2 +
->> >  kernel/bpf/cgroup.c            |  45 ++++++++-
->> >  kernel/bpf/syscall.c           | 164 +++++++++++++++++++++++++++++----
->> >  kernel/bpf/verifier.c          |   2 +
->> >  tools/include/uapi/linux/bpf.h |  31 +++++++
->> >  9 files changed, 266 insertions(+), 24 deletions(-)
->> >
->> > diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
->> > index d2d969669564..ab95824a1d99 100644
->> > --- a/include/linux/bpf-cgroup.h
->> > +++ b/include/linux/bpf-cgroup.h
->> > @@ -57,8 +57,6 @@ struct bpf_cgroup_link {
->> >       enum bpf_attach_type type;
->> >  };
->> >
->> > -extern const struct bpf_link_ops bpf_cgroup_link_lops;
->> > -
->> >  struct bpf_prog_list {
->> >       struct list_head node;
->> >       struct bpf_prog *prog;
->> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
->> > index 875d1f0af803..701c4387c711 100644
->> > --- a/include/linux/bpf.h
->> > +++ b/include/linux/bpf.h
->> > @@ -1026,9 +1026,11 @@ extern const struct file_operations bpf_prog_fo=
-ps;
->> >       extern const struct bpf_verifier_ops _name ## _verifier_ops;
->> >  #define BPF_MAP_TYPE(_id, _ops) \
->> >       extern const struct bpf_map_ops _ops;
->> > +#define BPF_LINK_TYPE(_id, _name)
->> >  #include <linux/bpf_types.h>
->> >  #undef BPF_PROG_TYPE
->> >  #undef BPF_MAP_TYPE
->> > +#undef BPF_LINK_TYPE
->> >
->> >  extern const struct bpf_prog_ops bpf_offload_prog_ops;
->> >  extern const struct bpf_verifier_ops tc_cls_act_analyzer_ops;
->> > @@ -1086,6 +1088,7 @@ int bpf_prog_new_fd(struct bpf_prog *prog);
->> >  struct bpf_link {
->> >       atomic64_t refcnt;
->> >       u32 id;
->> > +     enum bpf_link_type type;
->> >       const struct bpf_link_ops *ops;
->> >       struct bpf_prog *prog;
->> >       struct work_struct work;
->> > @@ -1103,9 +1106,14 @@ struct bpf_link_ops {
->> >       void (*dealloc)(struct bpf_link *link);
->> >       int (*update_prog)(struct bpf_link *link, struct bpf_prog *new_p=
-rog,
->> >                          struct bpf_prog *old_prog);
->> > +     void (*show_fdinfo)(const struct bpf_link *link, struct seq_file=
- *seq);
->> > +     int (*fill_link_info)(const struct bpf_link *link,
->> > +                           struct bpf_link_info *info,
->> > +                           const struct bpf_link_info *uinfo,
->> > +                           u32 info_len);
->> >  };
->> >
->> > -void bpf_link_init(struct bpf_link *link,
->> > +void bpf_link_init(struct bpf_link *link, enum bpf_link_type type,
->> >                  const struct bpf_link_ops *ops, struct bpf_prog *prog=
-);
->> >  int bpf_link_prime(struct bpf_link *link, struct bpf_link_primer *pri=
-mer);
->> >  int bpf_link_settle(struct bpf_link_primer *primer);
->> > diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
->> > index ba0c2d56f8a3..8345cdf553b8 100644
->> > --- a/include/linux/bpf_types.h
->> > +++ b/include/linux/bpf_types.h
->> > @@ -118,3 +118,9 @@ BPF_MAP_TYPE(BPF_MAP_TYPE_STACK, stack_map_ops)
->> >  #if defined(CONFIG_BPF_JIT)
->> >  BPF_MAP_TYPE(BPF_MAP_TYPE_STRUCT_OPS, bpf_struct_ops_map_ops)
->> >  #endif
->> > +
->> > +BPF_LINK_TYPE(BPF_LINK_TYPE_RAW_TRACEPOINT, raw_tracepoint)
->> > +BPF_LINK_TYPE(BPF_LINK_TYPE_TRACING, tracing)
->> > +#ifdef CONFIG_CGROUP_BPF
->> > +BPF_LINK_TYPE(BPF_LINK_TYPE_CGROUP, cgroup)
->> > +#endif
->> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
->> > index 7e6541fceade..0eccafae55bb 100644
->> > --- a/include/uapi/linux/bpf.h
->> > +++ b/include/uapi/linux/bpf.h
->> > @@ -222,6 +222,15 @@ enum bpf_attach_type {
->> >
->> >  #define MAX_BPF_ATTACH_TYPE __MAX_BPF_ATTACH_TYPE
->> >
->> > +enum bpf_link_type {
->> > +     BPF_LINK_TYPE_UNSPEC =3D 0,
->> > +     BPF_LINK_TYPE_RAW_TRACEPOINT =3D 1,
->> > +     BPF_LINK_TYPE_TRACING =3D 2,
->> > +     BPF_LINK_TYPE_CGROUP =3D 3,
->> > +
->> > +     MAX_BPF_LINK_TYPE,
->> > +};
->> > +
->> >  /* cgroup-bpf attach flags used in BPF_PROG_ATTACH command
->> >   *
->> >   * NONE(default): No further bpf programs allowed in the subtree.
->> > @@ -3612,6 +3621,25 @@ struct bpf_btf_info {
->> >       __u32 id;
->> >  } __attribute__((aligned(8)));
->> >
->> > +struct bpf_link_info {
->> > +     __u32 type;
->> > +     __u32 id;
->> > +     __u32 prog_id;
->> > +     union {
->> > +             struct {
->> > +                     __aligned_u64 tp_name; /* in/out: tp_name buffer=
- ptr */
->> > +                     __u32 tp_name_len;     /* in/out: tp_name buffer=
- len */
->> > +             } raw_tracepoint;
->> > +             struct {
->> > +                     __u32 attach_type;
->> > +             } tracing;
->>
->> On the RFC I asked whether we could get the attach target here as well.
->> You said you'd look into it; what happened to that? :)
->>
+On Tue, Apr 28, 2020 at 10:43 AM Nathan Chancellor
+<natechancellor@gmail.com> wrote:
 >
-> Right, sorry, forgot to mention this. I did take a look, but tracing
-> links are quite diverse, so I didn't see one clear way to structure
-> such "target" information, so I'd say we should push it into a
-> separate patch/discussion. E.g., fentry/fexit/fmod_exit are attached
-> to kernel functions (how do we represent that), freplace are attached
-> to another BPF program (this is a bit clearer how to represent, but
-> how do we combine that with fentry/fexit info?). LSM is also attached
-> to kernel function, but who knows, maybe we want slightly more
-> extended semantics for it. Either way, I don't see one best way to
-> structure this information and would want to avoid blocking on this
-> for this series. Also bpf_link_info is extensible, so it's not a
-> problem to extend it in follow up patches.
+> When building arm32 allmodconfig:
 >
-> Does it make sense?
+> ERROR: modpost: "__aeabi_uldivmod"
+> [drivers/net/ethernet/freescale/dpaa2/fsl-dpaa2-eth.ko] undefined!
+>
+> frames and cdan are both of type __u64 (unsigned long long) so we need
+> to use div64_u64 to avoid this issues.
+>
+> Fixes: 460fd830dd9d ("dpaa2-eth: add channel stat to debugfs")
+> Link: https://github.com/ClangBuiltLinux/linux/issues/1012
+> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
 
-Yup, fair enough, I can live with deferring this to a later series :)
+Don't forget reported by tags to show some love to our bots! Thanks
+for the patch.
+Reported-by: kernelci.org bot <bot@kernelci.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
--Toke
+> ---
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
+> index 80291afff3ea..0a31e4268dfb 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
+> @@ -139,7 +139,7 @@ static int dpaa2_dbg_ch_show(struct seq_file *file, void *offset)
+>                            ch->stats.dequeue_portal_busy,
+>                            ch->stats.frames,
+>                            ch->stats.cdan,
+> -                          ch->stats.frames / ch->stats.cdan,
+> +                          div64_u64(ch->stats.frames, ch->stats.cdan),
+>                            ch->buf_count);
+>         }
+>
+>
+> base-commit: 0fd02a5d3eb7020a7e1801f8d7f01891071c85e4
+> --
+> 2.26.2
+>
+> --
+> You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/20200428174221.2040849-1-natechancellor%40gmail.com.
 
+
+
+-- 
+Thanks,
+~Nick Desaulniers
