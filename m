@@ -2,115 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54F4F1BBBE1
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 13:06:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E804B1BBBFC
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 13:09:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726450AbgD1LGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 07:06:19 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:57791 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726345AbgD1LGT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 07:06:19 -0400
+        id S1726554AbgD1LJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 07:09:49 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:36663 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726505AbgD1LJs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 07:09:48 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588071978;
+        s=mimecast20190719; t=1588072187;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=cZrNh7746+qKc61SNba7Tg/YgZ8bEpvSXbrYCGKD2oc=;
-        b=dmsWojv2JmF2rzL46jZcrfUJMfH2Fx/skxTVYiBGUDHrrl5DhD3hZpUXauJlcx/ty/qSPL
-        wrGcMBygc98iWu1p9J/pNemgQyHDOSJLq/B8heKOva5Yzt5YQmyTd6MbxCXWT95IvyJB/4
-        3s8dn6qyI/MhE8xurcj4L0z4Ns9GkQ8=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6V60LfmG0tcTElXs5VJKM9UUG+GuW0pu0jDPXVuGiWM=;
+        b=hteqOHM05+4VpR5UkkGwwugeRa5BvsOJ6982ybvvc72eaUKLaEGwQulXkdvGJPo8W9Y1ox
+        i+33Ipt4xItXJMRiQiIRBxSK+SMCZ4e0a7K+5F+jkYY6FFkJGchqAJoiXs953wL5/87qB7
+        NSS6NoHQhHCn+d7dVl7V3PCzfl4pzHU=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-488-swH6yM4rPsyz54p_cLr8Qw-1; Tue, 28 Apr 2020 07:06:16 -0400
-X-MC-Unique: swH6yM4rPsyz54p_cLr8Qw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+ us-mta-47-Fno1ZsUVMESkOPmrv1oYRg-1; Tue, 28 Apr 2020 07:09:46 -0400
+X-MC-Unique: Fno1ZsUVMESkOPmrv1oYRg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1986B80B70B;
-        Tue, 28 Apr 2020 11:06:15 +0000 (UTC)
-Received: from firesoul.localdomain (unknown [10.40.208.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EC4C25D750;
-        Tue, 28 Apr 2020 11:06:11 +0000 (UTC)
-Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 5111F300020FB;
-        Tue, 28 Apr 2020 13:06:10 +0200 (CEST)
-Subject: [PATCH net-next] net: sched: fallback to qdisc noqueue if default
- qdisc setup fail
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>
-Date:   Tue, 28 Apr 2020 13:06:10 +0200
-Message-ID: <158807197021.1980046.17172496536132159811.stgit@firesoul>
-User-Agent: StGit/0.19
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C5A8E835B48;
+        Tue, 28 Apr 2020 11:09:43 +0000 (UTC)
+Received: from [10.36.113.197] (ovpn-113-197.ams2.redhat.com [10.36.113.197])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id E03035D9E2;
+        Tue, 28 Apr 2020 11:09:34 +0000 (UTC)
+From:   "Eelco Chaudron" <echaudro@redhat.com>
+To:     "Lorenzo Bianconi" <lorenzo.bianconi@redhat.com>
+Cc:     "Hangbin Liu" <liuhangbin@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org,
+        "Toke =?utf-8?b?SMO4aWxhbmQtSsO4cmdlbnNlbg==?=" <toke@redhat.com>,
+        "Jiri Benc" <jbenc@redhat.com>,
+        "Jesper Dangaard Brouer" <brouer@redhat.com>, ast@kernel.org,
+        "Daniel Borkmann" <daniel@iogearbox.net>
+Subject: Re: [RFC PATCHv2 bpf-next 1/2] xdp: add a new helper for dev map
+ multicast support
+Date:   Tue, 28 Apr 2020 13:09:32 +0200
+Message-ID: <FDBD279B-B6F2-4612-B962-75CAFE147B0C@redhat.com>
+In-Reply-To: <20200424141908.GA6295@localhost.localdomain>
+References: <20200415085437.23028-1-liuhangbin@gmail.com>
+ <20200424085610.10047-1-liuhangbin@gmail.com>
+ <20200424085610.10047-2-liuhangbin@gmail.com>
+ <20200424141908.GA6295@localhost.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently if the default qdisc setup/init fails, the device ends up with
-qdisc "noop", which causes all TX packets to get dropped.
 
-With the introduction of sysctl net/core/default_qdisc it is possible
-to change the default qdisc to be more advanced, which opens for the
-possibility that Qdisc_ops->init() can fail.
 
-This patch detect these kind of failures, and choose to fallback to
-qdisc "noqueue", which is so simple that its init call will not fail.
-This allows the interface to continue functioning.
+On 24 Apr 2020, at 16:19, Lorenzo Bianconi wrote:
 
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
----
- net/sched/sch_generic.c |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+[...]
 
-diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index 2efd5b61acef..275b1347265e 100644
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -1037,10 +1037,9 @@ static void attach_one_default_qdisc(struct net_device *dev,
- 		ops = &pfifo_fast_ops;
- 
- 	qdisc = qdisc_create_dflt(dev_queue, ops, TC_H_ROOT, NULL);
--	if (!qdisc) {
--		netdev_info(dev, "activation failed\n");
-+	if (!qdisc)
- 		return;
--	}
-+
- 	if (!netif_is_multiqueue(dev))
- 		qdisc->flags |= TCQ_F_ONETXQUEUE | TCQ_F_NOPARENT;
- 	dev_queue->qdisc_sleeping = qdisc;
-@@ -1055,6 +1054,7 @@ static void attach_default_qdiscs(struct net_device *dev)
- 
- 	if (!netif_is_multiqueue(dev) ||
- 	    dev->priv_flags & IFF_NO_QUEUE) {
-+init_each_txq:
- 		netdev_for_each_tx_queue(dev, attach_one_default_qdisc, NULL);
- 		dev->qdisc = txq->qdisc_sleeping;
- 		qdisc_refcount_inc(dev->qdisc);
-@@ -1065,6 +1065,15 @@ static void attach_default_qdiscs(struct net_device *dev)
- 			qdisc->ops->attach(qdisc);
- 		}
- 	}
-+
-+	/* Detect default qdisc setup/init failed and fallback to "noqueue" */
-+	if (dev->qdisc == &noop_qdisc) {
-+		netdev_warn(dev, "default qdisc (%s) fail, fallback to %s\n",
-+			    default_qdisc_ops->id, noqueue_qdisc_ops.id);
-+		dev->priv_flags |= IFF_NO_QUEUE;
-+		goto init_each_txq;
-+	}
-+
- #ifdef CONFIG_NET_SCHED
- 	if (dev->qdisc != &noop_qdisc)
- 		qdisc_hash_add(dev->qdisc, false);
+>> +{
+>> +
+>> +	switch (map->map_type) {
+>> +	case BPF_MAP_TYPE_DEVMAP:
+>> +		return dev_map_get_next_key(map, key, next_key);
+>> +	case BPF_MAP_TYPE_DEVMAP_HASH:
+>> +		return dev_map_hash_get_next_key(map, key, next_key);
+>> +	default:
+>> +		break;
+>> +	}
+>> +
+>> +	return -ENOENT;
+>> +}
+>> +
+>> +bool dev_in_exclude_map(struct bpf_dtab_netdev *obj, struct bpf_map=20
+>> *map,
+>> +			int exclude_ifindex)
+>> +{
+>> +	struct bpf_dtab_netdev *in_obj =3D NULL;
+>> +	u32 key, next_key;
+>> +	int err;
+>> +
+>> +	if (!map)
+>> +		return false;
+>
+> doing so it seems mandatory to define an exclude_map even if we want=20
+> just to do
+> not forward the packet to the "ingress" interface.
+> Moreover I was thinking that we can assume to never forward to in the=20
+> incoming
+> interface. Doing so the code would be simpler I guess. Is there a use=20
+> case for
+> it? (forward even to the ingress interface)
+>
 
+This part I can answer, it=E2=80=99s called VEPA, I think it=E2=80=99s pa=
+rt of IEEE=20
+802.1Qbg.
 
