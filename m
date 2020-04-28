@@ -2,86 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7C951BB299
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 02:14:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10AE81BB29A
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 02:15:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726377AbgD1AOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 20:14:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41312 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726233AbgD1AOi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 27 Apr 2020 20:14:38 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61967C0610D5;
-        Mon, 27 Apr 2020 17:14:38 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id n17so15679577ejh.7;
-        Mon, 27 Apr 2020 17:14:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0SHN2u7WHirj9rFGRxq0U5QdF66UP7Si1I8EoURuwhQ=;
-        b=sgRLXNCktHnIDbBPPEo/9dHee2ssaliF5PBgA3gLGGKrEeGnIsWrE+Gl/OYBp2iY7q
-         KDZbAewHf+Vjb/ym46ikKM8JtKZdfPVoMI6UWloUOYoxDo+17LbOjhapz7/eB0jRKpw+
-         i/KqcALXG96gY2Fw3QR6ByWYJREHqaMIGKNFTo0I4UOGGMSsqXifpMQb+qZ0oNKkpgtE
-         VGSL+oKhhp3gRR4jqVZnkt+g2cS9eqc1OqOQkN9pHna78neYiAQvcNm3s9+SS4Qp70mP
-         UwSiROG0rAtKs4Zodt/YOv3e8WQIEuK2oVJRboH1Qz6KTGjtfhITK8WcBhm3UNeRd1Dk
-         Jazw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0SHN2u7WHirj9rFGRxq0U5QdF66UP7Si1I8EoURuwhQ=;
-        b=HyD/vNXmc48OSkji/tnm+vmSTTQHdRO1IFHepRglhSRvAi0RQO495xxyfou/6Dn8rh
-         Gkiy8znyAUZ0aMVygZvMzTJ4raBJUuBHgE06BKHU1yKagAnJh92IeHqkyEUVQF1xu/2v
-         KAPNMLlaoBvIu0NpwUwCVTZOqQDbfpIrTmNlOm78Bt41klOc85KtvqjCCcL3eMu9JJCV
-         YiJBRzVD6BaVvvYXYRTJjFxkH3CBfaXhoqNJj4oIN1ojhegFBuf6foqyV3VZuDHTH4LT
-         5/26aULJIa/Ggc/wScZasfEka9fgum+Gmp32AII9RdVvG4NrVmKhE1/SYfg9cQ6qOwEz
-         7y6w==
-X-Gm-Message-State: AGi0Pub1wvumfoJEQP1fvnwYoeKfWGhwTUtWJgprcqDAdu8EFYaGncQ0
-        lic/xn0UGQdE5HBh2psumrxzYSyrFeKmgLQ4LdM=
-X-Google-Smtp-Source: APiQypLVxQcFf9n4f0ZANWbYr+S5VyOoeb+o5EvX5MHBzdHRbvELCXZ5w7HOS0tJCZZbXtDZ+vDtmdISvLwCpRdEdQ0=
-X-Received: by 2002:a17:906:f288:: with SMTP id gu8mr23065870ejb.281.1588032876999;
- Mon, 27 Apr 2020 17:14:36 -0700 (PDT)
+        id S1726307AbgD1APj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 20:15:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54678 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726233AbgD1APj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Apr 2020 20:15:39 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7ADD62072A;
+        Tue, 28 Apr 2020 00:15:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588032938;
+        bh=PkIS8AzznJNkJ+7g7UJcVLHLPj71SRF/DucKPkVMMbo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sPvufbFM/H0ckFM2gfly0wfnZPoozNNwHxkeR9k2kNdoRIvkfizHqo4aFcJnCA6QY
+         AzRY4pnWWXRnvHS5zWGmZK41WgbEAbLs5SSQUdHMh9Fkxp/Mts2D5RcKwexnsiCMUV
+         e4GopjQcP8IUL8O8hr3liGysyGqEoa8KLDyUGP7E=
+Date:   Mon, 27 Apr 2020 17:15:36 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Adhipati Blambangan <adhipati@tuta.io>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH net v3] net: xdp: account for layer 3 packets in generic
+ skb handler
+Message-ID: <20200427171536.31a89664@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAHmME9r6Vb7yBxBsLY75zsqROUnHeoRAjmSSfAyTwZtzcs_=kg@mail.gmail.com>
+References: <CAHmME9oN0JueLJxvS48-o9CWAhkaMQYACG3m8TRixxTo6+Oh-A@mail.gmail.com>
+        <20200427204208.2501-1-Jason@zx2c4.com>
+        <20200427135254.3ab8628d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200427140039.16df08f5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <877dy0y6le.fsf@toke.dk>
+        <20200427143145.19008d7d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAHmME9r7G6f5y-_SPs64guH9PrG8CKBhLDZZK6jpiOhgHBps8g@mail.gmail.com>
+        <CAHmME9r6Vb7yBxBsLY75zsqROUnHeoRAjmSSfAyTwZtzcs_=kg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20200421081542.108296-1-zenczykowski@gmail.com> <20200428000525.GD24002@salvia>
-In-Reply-To: <20200428000525.GD24002@salvia>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Mon, 27 Apr 2020 17:14:24 -0700
-Message-ID: <CAHo-OoxP6ZrvbXFH_tC9_wdVDg7y=8bzVY9oKZTieZL_mqS1NQ@mail.gmail.com>
-Subject: Re: [PATCH] iptables: flush stdout after every verbose log.
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Netfilter Development Mailing List 
-        <netfilter-devel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Could you check if this slows down iptables-restore?
+On Mon, 27 Apr 2020 17:45:12 -0600 Jason A. Donenfeld wrote:
+> > Okay, well, I'll continue developing the v3 approach a little further
+> > -- making sure I have tx path handled too and whatnot. Then at least
+> > something viable will be available, and you can take or leave it
+> > depending on what you all decide.  
+> 
+> Actually, it looks like egress XDP still hasn't been merged. So I
+> think this patch should be good to go in terms of what it is.
 
-per the iptables-restore man page
-       -v, --verbose
-              Print additional debug info during ruleset processing.
-
-Well, if you run it with verbose mode enabled you probably don't care
-about performance all that much...
-And it only does anything if you're feeding in comments, which again -
-is unlikely.
-
-iptables-save produces two comment lines per table, so you're likely
-to have a grand total of 8 of these lines
-(if you have raw/nat/mangle/filter tables all listed), and if you feed
-that in to iptables-restore -v then
-you end up calling flush 8 times, which triggers 8 extra write()
-syscalls - which aren't exactly expensive to begin with...
-
-So I think this is a non issue.
-
-(I could change it so that only "#PING" flushes, which is the actual
-comment netd sends for healthchecking,
-but I just don't think it matters)
+TX and redirect don't require the XDP egress hook to function.
