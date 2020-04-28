@@ -2,35 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1348C1BB2E3
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 02:26:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C3DB1BB2FD
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 02:40:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726335AbgD1A04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 27 Apr 2020 20:26:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58270 "EHLO mail.kernel.org"
+        id S1726329AbgD1Akl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 27 Apr 2020 20:40:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60426 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726016AbgD1A04 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 27 Apr 2020 20:26:56 -0400
+        id S1726257AbgD1Akl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 27 Apr 2020 20:40:41 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 44CDF2072A;
-        Tue, 28 Apr 2020 00:26:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 30DBC206B8;
+        Tue, 28 Apr 2020 00:40:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588033615;
-        bh=Pb9bN8IqHpeq8oRza2R0WRGwiUzRay12eKKJA2qhwnA=;
+        s=default; t=1588034440;
+        bh=lpsxGKz5/sU4u/BxoYwhurjfGL3Ah4t7W8gWsJ1KshY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kKzU2bX3v6XUtMmQzNgOI5+BdWXj2G+9hnqs9JQUISBRGwvFpop23od8mqWgyeh68
-         5v21SmwrVAf2T2wmkd+Fw1BGDnqPh4NdVI3LiQCD8MtxZz4IVlOB6rk3LPAbCCU0RF
-         6uuxu3tB0pXdY7XQ2aDAWCQN+1dbOWE5sjevIq70=
-Date:   Mon, 27 Apr 2020 17:26:53 -0700
+        b=ZxNd6O4QxihXEnW6dxQ6t7o0eh0wOwIKY8vMnGDjR3MX49HWJsWkVNqRr5BPLLq5x
+         r4+qC5sIjAp9yIOb7rN8x2n8imjlf4avX9jLebqJv/8ksH+YZauGFFvnjJtezra17Z
+         KuSLOjfrlxy6g5+iHsNAZKNa0OPKJtm3qiQzyYx8=
+Date:   Mon, 27 Apr 2020 17:40:38 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [PATCH net-next v3 00/11] implement DEVLINK_CMD_REGION_NEW
-Message-ID: <20200427172653.483e032d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200326183718.2384349-1-jacob.e.keller@intel.com>
-References: <20200326183718.2384349-1-jacob.e.keller@intel.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Adhipati Blambangan <adhipati@tuta.io>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH net v3] net: xdp: account for layer 3 packets in generic
+ skb handler
+Message-ID: <20200427174038.7d2f2ed8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAHmME9rr2vnCgULXEF4pPyUNU2N6g3yomPBA6mzArnPMc8kDSw@mail.gmail.com>
+References: <CAHmME9oN0JueLJxvS48-o9CWAhkaMQYACG3m8TRixxTo6+Oh-A@mail.gmail.com>
+        <20200427204208.2501-1-Jason@zx2c4.com>
+        <20200427135254.3ab8628d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200427140039.16df08f5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <877dy0y6le.fsf@toke.dk>
+        <20200427143145.19008d7d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAHmME9r7G6f5y-_SPs64guH9PrG8CKBhLDZZK6jpiOhgHBps8g@mail.gmail.com>
+        <CAHmME9r6Vb7yBxBsLY75zsqROUnHeoRAjmSSfAyTwZtzcs_=kg@mail.gmail.com>
+        <20200427171536.31a89664@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAHmME9rr2vnCgULXEF4pPyUNU2N6g3yomPBA6mzArnPMc8kDSw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -39,46 +52,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 26 Mar 2020 11:37:07 -0700 Jacob Keller wrote:
-> This series adds support for the DEVLINK_CMD_REGION_NEW operation, used to
-> enable userspace requesting a snapshot of a region on demand.
+On Mon, 27 Apr 2020 18:17:16 -0600 Jason A. Donenfeld wrote:
+> On Mon, Apr 27, 2020 at 6:15 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Mon, 27 Apr 2020 17:45:12 -0600 Jason A. Donenfeld wrote:  
+> > > > Okay, well, I'll continue developing the v3 approach a little further
+> > > > -- making sure I have tx path handled too and whatnot. Then at least
+> > > > something viable will be available, and you can take or leave it
+> > > > depending on what you all decide.  
+> > >
+> > > Actually, it looks like egress XDP still hasn't been merged. So I
+> > > think this patch should be good to go in terms of what it is.  
+> >
+> > TX and redirect don't require the XDP egress hook to function.  
 > 
-> This can be useful to enable adding regions for a driver for which there is
-> no trigger to create snapshots. By making this a core part of devlink, there
-> is no need for the drivers to use a separate channel such as debugfs.
-> 
-> The primary intent for this kind of region is to expose device information
-> that might be useful for diagnostics and information gathering.
-> 
-> The first few patches refactor regions to support a new ops structure for
-> extending the available operations that regions can perform. This includes
-> converting the destructor into an op from a function argument.
-> 
-> Next, patches refactor the snapshot id allocation to use an xarray which
-> tracks the number of current snapshots using a given id. This is done so
-> that id lifetime can be determined, and ids can be released when no longer
-> in use.
-> 
-> Without this change, snapshot ids remain used forever, until the snapshot_id
-> count rolled over UINT_MAX.
-> 
-> Finally, code to enable the previously unused DEVLINK_CMD_REGION_NEW is
-> added. This code enforces that the snapshot id is always provided, unlike
-> previous revisions of this series.
-> 
-> Finally, a patch is added to enable using this new command via the .snapshot
-> callback in both netdevsim and the ice driver.
-> 
-> For the ice driver, a new "nvm-flash" region is added, which will enable
-> read access to the NVM flash contents. The intention for this is to allow
-> diagnostics tools to gather information about the device. By using a
-> snapshot and gathering the NVM contents all at once, the contents can be
-> atomic.
+> Oh, you meant the TX and redirect actions returned from the ingress
+> hook. Gotcha. The paths that those take don't appear to rely on having
+> the fake header though, whereas the actual xdp_progs that run do rely
+> on that, which is why it's added there.
 
-Hi Jake,
-
-does iproute2 needs some patches to make this work?
-
-./devlink region new netdevsim/netdevsim1/dummy snapshot_id 1
-Command "new" not found
-
+Ack, but if the redirection target is a real Ethernet device it will
+see a frame without a L2 header, right? Redirect from a real Ethernet
+device to a L3 one and vice versa remains broken.
