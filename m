@@ -2,75 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 055EF1BBE3D
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 14:51:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7930C1BBE87
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 15:06:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727108AbgD1MvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 08:51:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46968 "EHLO
+        id S1726923AbgD1NGc convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 28 Apr 2020 09:06:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727099AbgD1Mu5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 08:50:57 -0400
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBC0DC03C1A9
-        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 05:50:55 -0700 (PDT)
-Received: by mail-lf1-x143.google.com with SMTP id g10so16693867lfj.13
-        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 05:50:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=PQUivd1s6dt/0wtzXwuaw9QVdgsvBOEKXOtnaChQj7g=;
-        b=ryBhxdSY67gkzTbFRpUsne3BUspxSu2jl4LB0NuAXIAJYo8PjOyzCBgDNFZFtyywug
-         9ybU8hCMGdfjcWUvJTQsmGDabhAlgFXF3FNIdv/nVm46AQlo3o+a+hWlVtg432bi5Ogj
-         nvPjSCgCagUGTCQlQOCddQf93hMDbIb04hW4iPkNheF87UZ3gN5ZrhvG+Edsn806RkuM
-         lRxdSZYAjtEDzKFWBNLpEpYpCYn5eKt+DfAoym72sIXOYDFSM4iyBMymyBSAeSzCRh0V
-         u6Ge7IowcDCATWkzA7YU0hinNkNo0aFdOtGmPS8jINvZK//VmBERlxo9iOmvmURxCli4
-         wwIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=PQUivd1s6dt/0wtzXwuaw9QVdgsvBOEKXOtnaChQj7g=;
-        b=rcTucvtLirrduo6PYI+ZaDBblWF/ILEZbrqEYVOItw50+8s1aSYSFC5JlYddA1JMZL
-         OQgy5nI2ZznvZNGHT+erVocN7ZxzKxkS+kWWGcON8XWv5V646D/J9kzbhLMQDwZwW1x8
-         T/Gvrqj2ocnPKqYRvaGq6wNR+pnHVSSoMrb6yhNJO3xUb5kKjVbNU22K/bBlDwcR10vG
-         NkoL1ZywQXh4SIZ8JjuhMbX3/RHXJN4J6hOqh84Z/aolfaSLitRWpao3h6ABxgsrsfCG
-         ywgJJB6ZnT2On3TtQapA05JOHonwLMccDoaqH6A6EobO7rlMD4Q+DCCCmnNQd4i7xVLk
-         uTPg==
-X-Gm-Message-State: AGi0PuZ15ENOtg9/i846kbyNvcRVVUUDnHxcBfw7nlRFQbVJcOMV1c0Y
-        cQdrCaitxYSWDXSdHJ0gHNrP38Rkrdn/Eif/ml8=
-X-Google-Smtp-Source: APiQypI7t+lNRWT9dVh6EuZ2zmgRGeHmQJ8QvVOktFNk7fiBBlFn8cRRq07dJ6ASkxZugN8e+BURQbUpHahlo8oyAPg=
-X-Received: by 2002:a19:5f04:: with SMTP id t4mr19226034lfb.208.1588078254344;
- Tue, 28 Apr 2020 05:50:54 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:ab3:5d97:0:0:0:0:0 with HTTP; Tue, 28 Apr 2020 05:50:53
- -0700 (PDT)
-Reply-To: mr.georgiosberthon@aol.com
-From:   "Mr.Georgios Berthon" <nebraskazach2@gmail.com>
-Date:   Tue, 28 Apr 2020 12:50:53 +0000
-Message-ID: <CAKaMgd1OjjTBhEv_Xmf0xo3QG01ugYjYL33N3GKDx4G_T0eBVw@mail.gmail.com>
-Subject: My Greetings to you
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+        by vger.kernel.org with ESMTP id S1726909AbgD1NGb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 09:06:31 -0400
+Received: from wp148.webpack.hosteurope.de (wp148.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:849b::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29163C03C1A9;
+        Tue, 28 Apr 2020 06:06:31 -0700 (PDT)
+Received: from ip1f126570.dynamic.kabel-deutschland.de ([31.18.101.112] helo=roelofs-mbp.fritz.box); authenticated
+        by wp148.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1jTPw8-00082n-TE; Tue, 28 Apr 2020 15:06:08 +0200
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
+Subject: Re: [PATCH] lan743x: Added fixed_phy support
+From:   Roelof Berg <rberg@berg-solutions.de>
+In-Reply-To: <20200427215209.GP1250287@lunn.ch>
+Date:   Tue, 28 Apr 2020 15:06:07 +0200
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <1AD2250A-45D3-43D7-926C-829094F1721A@berg-solutions.de>
+References: <rberg@berg-solutions.de>
+ <20200425234320.32588-1-rberg@berg-solutions.de>
+ <20200426143116.GC1140627@lunn.ch>
+ <6C2E44BB-F4D1-4BC3-9FCB-55F01DA4A3C9@berg-solutions.de>
+ <20200427215209.GP1250287@lunn.ch>
+To:     Andrew Lunn <andrew@lunn.ch>
+X-Mailer: Apple Mail (2.3608.60.0.2.5)
+X-bounce-key: webpack.hosteurope.de;rberg@berg-solutions.de;1588079191;8ccd58ed;
+X-HE-SMSGID: 1jTPw8-00082n-TE
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My Greetings to you
 
-I Am Mr.Georgios Berthon,I have a project of $12.5 Million Us Dollars
-which I will like you to support me so that the fund will be transfer
-into your bank account.
+> What is the MCU? ARM?
 
-Please if you are capable and willing , kindly reply back to me so
-that i will give more details about this project.my private e-mail at
-(mr.georgiosberthon@aol.com)
+Yes, i.mx6 with ARM.
 
-I am waiting to hear from you
+> 
+>> […]
+> 
+> If you are using ARM, device tree is the way to go.
+> 	  Andrew
+> 
 
-Thank you
-Mr.Georgios Berthon
+Sounds reasonable, I’ll move the fixed_phy configuration for lan743x from .config to the device tree, thanks a lot Andrew.
 
-Sorry if you received this letter in your spam, is due to recent
-connection error here in the country.
+Roelof
