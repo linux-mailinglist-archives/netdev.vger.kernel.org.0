@@ -2,60 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CB4C1BB78F
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 09:33:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5925F1BB788
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 09:31:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726487AbgD1HdL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 03:33:11 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:36242 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726272AbgD1HdK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 03:33:10 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 03S7U8Ck042611;
-        Tue, 28 Apr 2020 02:30:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1588059008;
-        bh=aRvGfNxOocQ8CHT1/R2w9I5wrqH65Ibh4Z5yfLh+5fo=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=sdPdisrYo35cbCC/WjP5pc+Iya7tYXd6EAJ6pwK4rQvsMf8NFfNzCtCrFd1UoKerQ
-         7XjjQaG3chiLCtZrWMxjUSmvfEs9JIW+qYG0iSdH0gntebYzJJNNbq7xLmqjuPQmwO
-         KURELBctUn0jYRc9XH5oxnhDqFnB7e/lodAxuCpc=
-Received: from DLEE107.ent.ti.com (dlee107.ent.ti.com [157.170.170.37])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 03S7U8jH080162
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 28 Apr 2020 02:30:09 -0500
-Received: from DLEE112.ent.ti.com (157.170.170.23) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 28
- Apr 2020 02:30:08 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 28 Apr 2020 02:30:08 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 03S7U6nK105476;
-        Tue, 28 Apr 2020 02:30:06 -0500
-Subject: Re: [PATCH net-next] drivers: net: davinci_mdio: fix potential NULL
- dereference in davinci_mdio_probe()
-To:     "weiyongjun (A)" <weiyongjun1@huawei.com>,
-        David Lechner <david@lechnology.com>,
-        Andrew Lunn <andrew@lunn.ch>
-CC:     "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
+        id S1726499AbgD1HbA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 03:31:00 -0400
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:12185 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726253AbgD1HbA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 03:31:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1588059060; x=1619595060;
+  h=from:to:cc:date:message-id:references:in-reply-to:
+   content-transfer-encoding:mime-version:subject;
+  bh=2HjLZWHOaVF7NHiqDMc/jh6mSztneNaJ8cvr+FXkqRk=;
+  b=Zom1g2cpxGDmV65lbCH2okV21yfqF59nTAoEoG4SLsphjOGmI2AXxgK/
+   L3TVT5IBtd8Om7RdHp7B/DHApkXOxo/8SDz6hB0MzK8/Hdg2zNKJvPWy8
+   AoU3Xm7HwuxJ14ryx9KLHfbIiOaO/zga0eXtWBgDrssRzjuBUMGGXrZXS
+   0=;
+IronPort-SDR: xE0MMxLT4d9d/K0Zn6QfVoxWjHooUtfTxPhOvodLkC4XbHfWc5ASomA1fDvmZerW8qPK1ofOde
+ +QoC0YPeEfZw==
+X-IronPort-AV: E=Sophos;i="5.73,327,1583193600"; 
+   d="scan'208";a="31563569"
+Subject: RE: [PATCH V1 net-next 08/13] net: ena: add support for reporting of packet
+ drops
+Thread-Topic: [PATCH V1 net-next 08/13] net: ena: add support for reporting of packet drops
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-38ae4ad2.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 28 Apr 2020 07:30:59 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1d-38ae4ad2.us-east-1.amazon.com (Postfix) with ESMTPS id D1334A1D15;
+        Tue, 28 Apr 2020 07:30:57 +0000 (UTC)
+Received: from EX13D17EUC001.ant.amazon.com (10.43.164.233) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 28 Apr 2020 07:30:55 +0000
+Received: from EX13D11EUC003.ant.amazon.com (10.43.164.153) by
+ EX13D17EUC001.ant.amazon.com (10.43.164.233) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 28 Apr 2020 07:30:53 +0000
+Received: from EX13D11EUC003.ant.amazon.com ([10.43.164.153]) by
+ EX13D11EUC003.ant.amazon.com ([10.43.164.153]) with mapi id 15.00.1497.006;
+ Tue, 28 Apr 2020 07:30:54 +0000
+From:   "Jubran, Samih" <sameehj@amazon.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
-References: <6AADFAC011213A4C87B956458587ADB419A6B43E@dggeml532-mbs.china.huawei.com>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <68b08143-971a-4607-098c-2cdca9a1b0ba@ti.com>
-Date:   Tue, 28 Apr 2020 10:30:01 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <6AADFAC011213A4C87B956458587ADB419A6B43E@dggeml532-mbs.china.huawei.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Chauskin, Igor" <igorch@amazon.com>
+Thread-Index: AQHWGH5V48df1KqU/EuT5Cj12GhQ7aiF4IuAgAhLmmA=
+Date:   Tue, 28 Apr 2020 07:30:47 +0000
+Deferred-Delivery: Tue, 28 Apr 2020 07:29:36 +0000
+Message-ID: <66b28156efe94d04ae379458bfe3529c@EX13D11EUC003.ant.amazon.com>
+References: <20200422081628.8103-1-sameehj@amazon.com>
+        <20200422081628.8103-9-sameehj@amazon.com>
+ <20200422174729.19fae03f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200422174729.19fae03f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.166.33]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -63,37 +84,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 28/04/2020 06:25, weiyongjun (A) wrote:
->>
->> On 4/27/20 4:40 AM, Wei Yongjun wrote:
->>> platform_get_resource() may fail and return NULL, so we should better
->>> check it's return value to avoid a NULL pointer dereference a bit
->>> later in the code.
->>>
->>> This is detected by Coccinelle semantic patch.
->>>
->>> @@
->>> expression pdev, res, n, t, e, e1, e2; @@
->>>
->>> res = \(platform_get_resource\|platform_get_resource_byname\)(pdev, t, n);
->>> + if (!res)
->>> +   return -EINVAL;
->>> ... when != res == NULL
->>> e = devm_ioremap(e1, res->start, e2);
->>>
->>> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
->>> ---
->>
->> Could we use devm_platform_ioremap_resource() instead?
-> 
-> We cannot use devm_platform_ioremap_resource() here, see
-> Commit 03f66f067560 ("net: ethernet: ti: davinci_mdio: use devm_ioremap()")
-
-Correct, could you add fixed tag as above commit actually introduced an issue:
-devm_ioremap_resource() checks input parameters for null.
-  
-Reviewed-by: Grygorii Strashko <grygorii.strashko@ti.com>
-
--- 
-Best regards,
-grygorii
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Thursday, April 23, 2020 3:47 AM
+> To: Jubran, Samih <sameehj@amazon.com>
+> Cc: davem@davemloft.net; netdev@vger.kernel.org; Woodhouse, David
+> <dwmw@amazon.co.uk>; Machulsky, Zorik <zorik@amazon.com>;
+> Matushevsky, Alexander <matua@amazon.com>; Bshara, Saeed
+> <saeedb@amazon.com>; Wilson, Matt <msw@amazon.com>; Liguori,
+> Anthony <aliguori@amazon.com>; Bshara, Nafea <nafea@amazon.com>;
+> Tzalik, Guy <gtzalik@amazon.com>; Belgazal, Netanel
+> <netanel@amazon.com>; Saidi, Ali <alisaidi@amazon.com>; Herrenschmidt,
+> Benjamin <benh@amazon.com>; Kiyanovski, Arthur
+> <akiyano@amazon.com>; Dagan, Noam <ndagan@amazon.com>; Chauskin,
+> Igor <igorch@amazon.com>
+> Subject: RE: [EXTERNAL] [PATCH V1 net-next 08/13] net: ena: add support f=
+or
+> reporting of packet drops
+>=20
+>=20
+> On Wed, 22 Apr 2020 08:16:23 +0000 sameehj@amazon.com wrote:
+> > From: Sameeh Jubran <sameehj@amazon.com>
+> >
+> > 1. Add support for getting tx drops from the device and saving them in
+> > the driver.
+> > 2. Report tx and rx drops via ethtool.
+> > 3. Report tx via netdev stats.
+>=20
+> Please don't duplicate what's already reported in standard stats in ethto=
+ol -S.
+Dropped from ethtool in v2.
