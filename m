@@ -2,172 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCFE91BCC6B
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 21:31:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DED31BCC78
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 21:36:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728620AbgD1Tbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 15:31:35 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:55851 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728474AbgD1Tbf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Apr 2020 15:31:35 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 198dd6bd
-        for <netdev@vger.kernel.org>;
-        Tue, 28 Apr 2020 19:19:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type:content-transfer-encoding; s=mail; bh=4NCKMAp2LSLS
-        oYjS3aFGTpYEyUY=; b=CMXeFZKurtXsLGq5BPnplJfLPG9FNGqKXFIylTvUfkXS
-        DfO7j2Pg9jv4TOtXQDmlEoPBlehTf5nZdphKqv5sAPD45+lw/IjhrljxHRsmzqv1
-        s/c/AUZj7za0GLPXT/Pyt/3EzlFZlsmACJExj++/lJuNpFN7kaSWItZvArSs4P6l
-        o8p+I02ucX/SBeMXvq+g44qoS/9zmuIWdaa4m3xon9Lvsc5J+EB/wLPll/kPlW0d
-        dCnP1PlZjL/fOfa/CNEPkCJTvjyqvFTnHOkv8nKmZl+Ixl2qoUXI4ZomRGk7EsDh
-        tk/uXWY6dRzpm6Ifw5u7K5I1ny7BLqvJu0fECEDpvg==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 405b5360 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Tue, 28 Apr 2020 19:19:50 +0000 (UTC)
-Received: by mail-il1-f175.google.com with SMTP id r2so29103ilo.6
-        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 12:31:31 -0700 (PDT)
-X-Gm-Message-State: AGi0PuZcJHM/JuIkIM+bV0jyd33HF/efVT5H7kGoXrgyBDr4Y/320wHm
-        BM+TGUEa4xVZqLlPYY/whp8haUosMIbRsD/GE04=
-X-Google-Smtp-Source: APiQypKb0531/kVPrh6Z1b8+s/w0CF5PuL/5L8upMvFlXWdwXmA6XzGdHFQZ9dNk165QD4a6cLyq7HnFMw7wt9Ea4hA=
-X-Received: by 2002:a92:bf0b:: with SMTP id z11mr27828279ilh.207.1588102290135;
- Tue, 28 Apr 2020 12:31:30 -0700 (PDT)
+        id S1728841AbgD1Tgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 15:36:43 -0400
+Received: from www62.your-server.de ([213.133.104.62]:37982 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728474AbgD1Tgn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 15:36:43 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jTW21-0002pP-77; Tue, 28 Apr 2020 21:36:37 +0200
+Received: from [178.195.186.98] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jTW20-000Xle-Jv; Tue, 28 Apr 2020 21:36:36 +0200
+Subject: Re: [PATCH net-next 29/33] xdp: allow bpf_xdp_adjust_tail() to grow
+ packet size
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     sameehj@amazon.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        zorik@amazon.com, akiyano@amazon.com, gtzalik@amazon.com,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        steffen.klassert@secunet.com
+References: <158757160439.1370371.13213378122947426220.stgit@firesoul>
+ <158757178840.1370371.13037637865133257416.stgit@firesoul>
+ <940b8c06-b71f-f6b1-4832-4abc58027589@iogearbox.net>
+ <20200428183743.19dee96e@carbon>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <7f6cd231-36f2-721c-4137-27b9da138ff2@iogearbox.net>
+Date:   Tue, 28 Apr 2020 21:36:35 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <202004280109.03S19SCY001751@gndrsh.dnsmgr.net>
- <87zhawvuuk.fsf@toke.dk> <CAA93jw7-yiy=ic71DWG4XHLU5eCGb1p-6bKVX7NQFmTOu+jpLQ@mail.gmail.com>
-In-Reply-To: <CAA93jw7-yiy=ic71DWG4XHLU5eCGb1p-6bKVX7NQFmTOu+jpLQ@mail.gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Tue, 28 Apr 2020 13:31:18 -0600
-X-Gmail-Original-Message-ID: <CAHmME9o1binUdw40Uxw7+RU6pDse7k0bw5seNy2CHZ3hw+Pw3Q@mail.gmail.com>
-Message-ID: <CAHmME9o1binUdw40Uxw7+RU6pDse7k0bw5seNy2CHZ3hw+Pw3Q@mail.gmail.com>
-Subject: Re: [PATCH net] wireguard: Use tunnel helpers for decapsulating ECN markings
-To:     Dave Taht <dave.taht@gmail.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>,
-        "Rodney W . Grimes" <ietf@gndrsh.dnsmgr.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200428183743.19dee96e@carbon>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25796/Tue Apr 28 14:00:48 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 28, 2020 at 12:52 PM Dave Taht <dave.taht@gmail.com> wrote:
->
-> On Tue, Apr 28, 2020 at 2:10 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
-dhat.com> wrote:
-> >
-> > "Rodney W. Grimes" <ietf@gndrsh.dnsmgr.net> writes:
-> >
-> > > Replying to a single issue I am reading, and really hope I
-> > > am miss understanding.  I am neither a wireguard or linux
-> > > user so I may be miss understanding what is said.
-> > >
-> > > Inline at {RWG}
-> > >
-> > >> "Jason A. Donenfeld" <Jason@zx2c4.com> writes:
-> > >>
-> > >> > Hey Toke,
-> > >> >
-> > >> > Thanks for fixing this. I wasn't aware there was a newer ECN RFC. =
-A
-> > >> > few comments below:
-> > >> >
-> > >> > On Mon, Apr 27, 2020 at 8:47 AM Toke H?iland-J?rgensen <toke@redha=
-t.com> wrote:
-> > >> >> RFC6040 also recommends dropping packets on certain combinations =
-of
-> > >> >> erroneous code points on the inner and outer packet headers which=
- shouldn't
-> > >> >> appear in normal operation. The helper signals this by a return v=
-alue > 1,
-> > >> >> so also add a handler for this case.
-> > >> >
-> > >> > This worries me. In the old implementation, we propagate some oute=
-r
-> > >> > header data to the inner header, which is technically an authentic=
-ity
-> > >> > violation, but minor enough that we let it slide. This patch here
-> > >> > seems to make that violation a bit worse: namely, we're now changi=
-ng
-> > >> > the behavior based on a combination of outer header + inner header=
-. An
-> > >> > attacker can manipulate the outer header (set it to CE) in order t=
-o
-> > >> > learn whether the inner header was CE or not, based on whether or =
-not
-> > >> > the packet gets dropped, which is often observable. That's some fo=
-rm
-> > >
-> > > Why is anyone dropping on decap over the CE bit?  It should be passed
-> > > on, not lead to a packet drop.  If the outer header is CE on an inner
-> > > header of CE it should just continue to be a CE, dropping it is actua=
-lly
-> > > breaking the purpose of the CE codepoint, to signal congestion before
-> > > having to cause a packet loss.
-> > >
-> > >> > of an oracle, which I'm not too keen on having in wireguard. On th=
-e
-> > >> > other hand, we pretty much already _explicitly leak this bit_ on t=
-x
-> > >> > side -- in send.c:
-> > >> >
-> > >> > PACKET_CB(skb)->ds =3D ip_tunnel_ecn_encap(0, ip_hdr(skb), skb); /=
-/ inner packet
-> > >> > ...
-> > >> > wg_socket_send_skb_to_peer(peer, skb, PACKET_CB(skb)->ds); // oute=
-r packet
-> > >> >
-> > >> > We considered that leak a-okay. But a decryption oracle seems slig=
-htly
-> > >> > worse than an explicit and intentional leak. But maybe not that mu=
-ch
-> > >> > worse.
-> > >>
-> > >> Well, seeing as those two bits on the outer header are already copie=
-d
-> > >> from the inner header, there's no additional leak added by this chan=
-ge,
-> > >> is there? An in-path observer could set CE and observe that the pack=
-et
-> > >> gets dropped, but all they would learn is that the bits were zero
-> > >
-> > > Again why is CE leading to anyone dropping?
-> > >
-> > >> (non-ECT). Which they already knew because they could just read the =
-bits
-> > >> directly from the header.
-> > >>
-> > >> Also note, BTW, that another difference between RFC 3168 and 6040 is=
- the
-> > >> propagation of ECT(1) from outer to inner header. That's not actuall=
-y
-> > >> done correctly in Linux ATM, but I sent a separate patch to fix this=
-[0],
-> > >> which Wireguard will also benefit from with this patch.
->
-> I note that there is a large ISP in argentina that has been
-> mis-marking most udp & tcp traffic
-> as CE for years now and despite many attempts to get 'em to fix it,
-> when last I checked (2? 3?)
-> months back, they still were doing it.
->
-> My impression of overall competence and veracity of multiple transit
-> and isp providers has been sorely
-> tried recently. While I support treating ect 1 and 2 properly, I am
-> inclined to start thinking that
-> ce on a non-ect encapsulated packet is something that should not be dropp=
-ed.
->
-> but, whatever is decided on that front is in the hooks in the other
-> patch above, not in wireguard,
-> and I'll make the same comment there.
+On 4/28/20 6:37 PM, Jesper Dangaard Brouer wrote:
+> On Mon, 27 Apr 2020 21:01:14 +0200
+> Daniel Borkmann <daniel@iogearbox.net> wrote:
+>> On 4/22/20 6:09 PM, Jesper Dangaard Brouer wrote:
+>>> Finally, after all drivers have a frame size, allow BPF-helper
+>>> bpf_xdp_adjust_tail() to grow or extend packet size at frame tail.
+>>>
+>>> Remember that helper/macro xdp_data_hard_end have reserved some
+>>> tailroom.  Thus, this helper makes sure that the BPF-prog don't have
+>>> access to this tailroom area.
+>>>
+>>> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+>>> ---
+>>>    include/uapi/linux/bpf.h |    4 ++--
+>>>    net/core/filter.c        |   15 +++++++++++++--
+>>>    2 files changed, 15 insertions(+), 4 deletions(-)
+>>>
+> [...]
+>>> diff --git a/net/core/filter.c b/net/core/filter.c
+>>> index 7d6ceaa54d21..5e9c387f74eb 100644
+>>> --- a/net/core/filter.c
+>>> +++ b/net/core/filter.c
+>>> @@ -3422,12 +3422,23 @@ static const struct bpf_func_proto bpf_xdp_adjust_head_proto = {
+>>>    
+>>>    BPF_CALL_2(bpf_xdp_adjust_tail, struct xdp_buff *, xdp, int, offset)
+>>>    {
+>>> +	void *data_hard_end = xdp_data_hard_end(xdp);
+>>>    	void *data_end = xdp->data_end + offset;
+>>>    
+>>> -	/* only shrinking is allowed for now. */
+>>> -	if (unlikely(offset >= 0))
+>>> +	/* Notice that xdp_data_hard_end have reserved some tailroom */
+>>> +	if (unlikely(data_end > data_hard_end))
+>>>    		return -EINVAL;
+>>>    
+>>> +	/* ALL drivers MUST init xdp->frame_sz, some chicken checks below */
+>>> +	if (unlikely(xdp->frame_sz < (xdp->data_end - xdp->data_hard_start))) {
+>>> +		WARN(1, "Too small xdp->frame_sz = %d\n", xdp->frame_sz);
+>>> +		return -EINVAL;
+>>> +	}
+> 
+> I will remove this "too small" check, as it is useless, given it will
+> already get caught by above check.
+> 
+>>> +	if (unlikely(xdp->frame_sz > PAGE_SIZE)) {
+>>> +		WARN(1, "Too BIG xdp->frame_sz = %d\n", xdp->frame_sz);
+>>> +		return -EINVAL;
+>>> +	}
+>>
+>> I don't think we can add the WARN()s here. If there is a bug in the
+>> driver in this area and someone deploys an XDP-based application
+>> (otherwise known to work well elsewhere) on top of this, then an
+>> attacker can basically remote DoS the machine with malicious packets
+>> that end up triggering these WARN()s over and over.
+> 
+> Good point.  I've changed this to WARN_ONCE(), but I'm still
+> considering to remove it completely...
+> 
+>> If you are worried that not all your driver changes are correct,
+>> maybe only add those that you were able to actually test yourself or
+>> that have been acked, and otherwise pre-init the frame_sz to a known
+>> invalid value so this helper would only allow shrinking for them in
+>> here (as today)?
+> 
+> Hmm... no, I really want to require ALL drivers to set a valid value,
+> because else we will have the "data_meta" feature situation, where a lot
+> of drivers still doesn't support this.
 
-Thanks for pointing this out. We're going to drop the dropping
-behavior in wireguard, especially in light of the fact that folks like
-to use wireguard for working around issues with their broken ISP or in
-other weird circumstances.
+Ok, makes sense, it's probably better that way. I do have a data_meta
+series for a few more drivers to push out soon to make sure there's more
+coverage as we're using it in Cilium.
