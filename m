@@ -2,115 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42B281BC4A2
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 18:11:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CF321BC482
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 18:06:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728469AbgD1QKN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 12:10:13 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:43742 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728028AbgD1QKL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 12:10:11 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 03SGA45c043200;
-        Tue, 28 Apr 2020 11:10:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1588090204;
-        bh=t2wy9FWProHqy/MyEp4hiCaYn524xY2xYIvfK5vZASk=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=leaRBxJw9Kr8Pd0v90Tn0rElaACir9qhkpx1q61vm/xCga59zhDEbEc5VLACqoMls
-         6yVkSU9pQhLIuLxl36bhLt2MzTM8n6Pd2EIPUiJmwUNRbyoGY0eb1cxRhJCleV66M8
-         cALIK6nUZCtbeJJKePEsnNgjjDx8UPevw55ikuZk=
-Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 03SGA4uW060731
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 28 Apr 2020 11:10:04 -0500
-Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 28
- Apr 2020 11:10:03 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 28 Apr 2020 11:10:03 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 03SGA36v127668;
-        Tue, 28 Apr 2020 11:10:03 -0500
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>
-CC:     <linux@armlinux.org.uk>, <davem@davemloft.net>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <afd@ti.com>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net v3 2/2] net: phy: DP83TC811: Fix WoL in config init to be disabled
-Date:   Tue, 28 Apr 2020 11:03:54 -0500
-Message-ID: <20200428160354.2879-3-dmurphy@ti.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200428160354.2879-1-dmurphy@ti.com>
-References: <20200428160354.2879-1-dmurphy@ti.com>
+        id S1728250AbgD1QG1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 12:06:27 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:26462 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728130AbgD1QG1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 12:06:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588089986;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=44TaYzj1mXVkpvAsz6mI1B0uXcADj590Ox/GtOY9fQo=;
+        b=ZTg5PiRPjV7+9IpT5TkLZ4ghpg56fHWf1eqGYHGtRpRhb6bVll+jNNMLtwJWp0i63B7A7x
+        z9WmPLPR3ix3c4P9akkabXMk8E9Jug6Wg0VtSoNk9lF2zbEYKqS4/MHM5XbV4YFEZtqKdC
+        LO03JjJ0noIHMek8sTepBuIllO9LFqM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-470-NjJboJZQOcKT0w8eDYDqBQ-1; Tue, 28 Apr 2020 12:06:23 -0400
+X-MC-Unique: NjJboJZQOcKT0w8eDYDqBQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7A6701899525;
+        Tue, 28 Apr 2020 16:06:21 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7A7175C240;
+        Tue, 28 Apr 2020 16:06:15 +0000 (UTC)
+Date:   Tue, 28 Apr 2020 18:06:13 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     sameehj@amazon.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Subject: Re: [PATCH net-next 01/33] xdp: add frame size to xdp_buff
+Message-ID: <20200428180613.7980ea7a@carbon>
+In-Reply-To: <87eesd3rvu.fsf@toke.dk>
+References: <158757160439.1370371.13213378122947426220.stgit@firesoul>
+        <158757164613.1370371.2655437650342381672.stgit@firesoul>
+        <87eesd3rvu.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The WoL feature should be disabled when config_init is called and the
-feature should turned on or off  when set_wol is called.
+On Fri, 24 Apr 2020 16:00:53 +0200
+Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
 
-In addition updated the calls to modify the registers to use the set_bit
-and clear_bit function calls.
+> Jesper Dangaard Brouer <brouer@redhat.com> writes:
+>=20
+> > XDP have evolved to support several frame sizes, but xdp_buff was not
+> > updated with this information. The frame size (frame_sz) member of
+> > xdp_buff is introduced to know the real size of the memory the frame is
+> > delivered in.
+> >
+> > When introducing this also make it clear that some tailroom is
+> > reserved/required when creating SKBs using build_skb().
+> >
+> > It would also have been an option to introduce a pointer to
+> > data_hard_end (with reserved offset). The advantage with frame_sz is
+> > that (like rxq) drivers only need to setup/assign this value once per
+> > NAPI cycle. Due to XDP-generic (and some drivers) it's not possible to
+> > store frame_sz inside xdp_rxq_info, because it's varies per packet as it
+> > can be based/depend on packet length.
+> >
+> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com> =20
+>=20
+> With one possible nit below:
+>=20
+> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 
-Fixes: 6d749428788b ("net: phy: DP83TC811: Introduce support for the
-DP83TC811 phy")
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
- drivers/net/phy/dp83tc811.c | 21 ++++++++++++---------
- 1 file changed, 12 insertions(+), 9 deletions(-)
+thx
 
-diff --git a/drivers/net/phy/dp83tc811.c b/drivers/net/phy/dp83tc811.c
-index 06f08832ebcd..d73725312c7c 100644
---- a/drivers/net/phy/dp83tc811.c
-+++ b/drivers/net/phy/dp83tc811.c
-@@ -139,16 +139,19 @@ static int dp83811_set_wol(struct phy_device *phydev,
- 			value &= ~DP83811_WOL_SECURE_ON;
- 		}
- 
--		value |= (DP83811_WOL_EN | DP83811_WOL_INDICATION_SEL |
--			  DP83811_WOL_CLR_INDICATION);
--		phy_write_mmd(phydev, DP83811_DEVADDR, MII_DP83811_WOL_CFG,
--			      value);
-+		/* Clear any pending WoL interrupt */
-+		phy_read(phydev, MII_DP83811_INT_STAT1);
-+
-+		value |= DP83811_WOL_EN | DP83811_WOL_INDICATION_SEL |
-+			 DP83811_WOL_CLR_INDICATION;
-+
-+		return phy_write_mmd(phydev, DP83811_DEVADDR,
-+				     MII_DP83811_WOL_CFG, value);
- 	} else {
--		phy_clear_bits_mmd(phydev, DP83811_DEVADDR, MII_DP83811_WOL_CFG,
--				   DP83811_WOL_EN);
-+		return phy_clear_bits_mmd(phydev, DP83811_DEVADDR,
-+					  MII_DP83811_WOL_CFG, DP83811_WOL_EN);
- 	}
- 
--	return 0;
- }
- 
- static void dp83811_get_wol(struct phy_device *phydev,
-@@ -292,8 +295,8 @@ static int dp83811_config_init(struct phy_device *phydev)
- 
- 	value = DP83811_WOL_MAGIC_EN | DP83811_WOL_SECURE_ON | DP83811_WOL_EN;
- 
--	return phy_write_mmd(phydev, DP83811_DEVADDR, MII_DP83811_WOL_CFG,
--	      value);
-+	return phy_clear_bits_mmd(phydev, DP83811_DEVADDR, MII_DP83811_WOL_CFG,
-+				  value);
- }
- 
- static int dp83811_phy_reset(struct phy_device *phydev)
--- 
-2.25.1
+> > ---
+> >  include/net/xdp.h |   13 +++++++++++++
+> >  1 file changed, 13 insertions(+)
+> >
+> > diff --git a/include/net/xdp.h b/include/net/xdp.h
+> > index 40c6d3398458..1ccf7df98bee 100644
+> > --- a/include/net/xdp.h
+> > +++ b/include/net/xdp.h
+> > @@ -6,6 +6,8 @@
+> >  #ifndef __LINUX_NET_XDP_H__
+> >  #define __LINUX_NET_XDP_H__
+> > =20
+> > +#include <linux/skbuff.h> /* skb_shared_info */
+> > +
+> >  /**
+> >   * DOC: XDP RX-queue information
+> >   *
+> > @@ -70,8 +72,19 @@ struct xdp_buff {
+> >  	void *data_hard_start;
+> >  	unsigned long handle;
+> >  	struct xdp_rxq_info *rxq;
+> > +	u32 frame_sz; /* frame size to deduct data_hard_end/reserved tailroom=
+*/ =20
+>=20
+> I think maybe you want to s/deduct/deduce/ here?
+
+Okay, queued for V2.
+
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
