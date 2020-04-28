@@ -2,119 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B63AE1BBA9C
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 12:04:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A09251BBACB
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 12:08:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727840AbgD1KD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 06:03:58 -0400
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:52533 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726932AbgD1KD6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 06:03:58 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id E5B58580339;
-        Tue, 28 Apr 2020 06:03:56 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Tue, 28 Apr 2020 06:03:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm2; bh=bfyRrpRNqGk3bD/MI+xjZ+HE0Cw
-        EJYIH+SprH0vjLlU=; b=Z+8pq0oLT7a7qD4AKlOw9YLXd1wCk+G5aFOuHQFD01Q
-        VnJYOdscNtcwEibPnzQneHtKoUU7enhp8cxYc1EA3G1pGsxGAeGS1aNwePclf9mH
-        VQQMTMh+wXvTfzhWyee5I4vNMeo+xoSMG8gxhgQ7FDquy9GbcthWjoiXYP7FoA1O
-        rJkpe5z3kH2X8K2nW4Et6B64dKFvB1TMcJ//Vvwf5n8YAlXIaHKhD/gbZy87i5GA
-        cbikWRD5p3os1pJ3bcMkWCvgzUVelxrYXNi98FiXbOoXQCubQMDE2i/Yu5/idrEL
-        34TfwHISWbYuSQepV+1XgM177rWCVMGD8DVZm4gK/6Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=bfyRrp
-        RNqGk3bD/MI+xjZ+HE0CwEJYIH+SprH0vjLlU=; b=aKShKvUn+J6r4/GBqVSb6o
-        elewB6YnWE7rJO+jVEJHKRX4qnBUT1NiNi61EIf0Uj7MRQQ0TDWkuZZatiEUgA4A
-        6+XeQYmrshabRuNRRLG6MCkEv7Xn2mF7FwJ0yz8j5DdLo5ayy9OqY78AkdhzHeIh
-        LZCI4EqlGDQPy+TsahyxA4bii2cD1Sm0b0XlWQmzRRCdEm0WFT3PeBuaTYWwJwNc
-        ZAeeNUF90qjoRJ6xIcpC4gj8LMubqPoWb1iSJ6hieSuXL+7Entcf2wLJbvhn/xrP
-        DuAhJd467p8NcYG9hH/zDVMG/v0DRJksBSlAmvG40Nsu2mi1yttJG3DAGQbTwi6w
-        ==
-X-ME-Sender: <xms:i_-nXnb__Ic3afkNaHTDJn_hnUgQ8f6wDG4silLUF2ixSudkZyDfTQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedriedugddvfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihimhgv
-    ucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucfkphepledtrd
-    ekledrieekrdejieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhl
-    fhhrohhmpehmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:i_-nXu8dzWVuc8z1fAXfP7ybogPcfXXlgD3KZKJfk32Kc9wV2AgxHg>
-    <xmx:i_-nXhAdiBirlYu-f1yUYyaGg5OEHxra4pz9fgh-oyX_R6XcdYGWwA>
-    <xmx:i_-nXisdpIP3hBSqk-PMGUylNUNDEQpJG3LXCm4WKEqpm9PK-QUm1w>
-    <xmx:jP-nXpDH7HYCZWyhumEYlOf9r1wEUbGPrrUzjtNvcc6Z03kLmP-kIA>
-Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr [90.89.68.76])
-        by mail.messagingengine.com (Postfix) with ESMTPA id D877D3280068;
-        Tue, 28 Apr 2020 06:03:54 -0400 (EDT)
-Date:   Tue, 28 Apr 2020 12:03:52 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Alistair Francis <alistair@alistair23.me>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>, wens@csie.org,
-        anarsoul@gmail.com, devicetree@vger.kernel.org,
-        alistair23@gmail.com, linux-arm-kernel@lists.infradead.org
-Subject: Re: [DO-NOT-MERGE][PATCH v4 3/3] arm64: allwinner: Enable Bluetooth
- and WiFi on sopine baseboard
-Message-ID: <20200428100352.g7g7kh5e4vpde3es@gilmour.lan>
-References: <20200425155531.2816584-1-alistair@alistair23.me>
- <20200425155531.2816584-3-alistair@alistair23.me>
- <417EB5CB-F57F-4B7E-A81E-9ECE166BE217@holtmann.org>
+        id S1727887AbgD1KIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 06:08:34 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:35110 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726932AbgD1KIe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 06:08:34 -0400
+Received: by mail-wr1-f65.google.com with SMTP id x18so23919443wrq.2;
+        Tue, 28 Apr 2020 03:08:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=wYqrGMV+EWFYnxIHszXLpHDlpZ5ax2djYBoiPCdGZtM=;
+        b=FOMkBhjc+5vrsgWg9fhi5Dv5RuAa37x1j2mwA+nnb9CPpeBZ4Mdps+M4OjTPmilIOj
+         uFUdrMTZ4FUbagGDIYGq+Zubw8Eqt96HWfmmX5uka9YkO5knZaiVcfWMYDW/AxCqOyn8
+         4sFt8xMXxzt0VryUw5XGJ+GsA3CZyLxCzKkfcV24zEZOBIGawfndeAL0hoMAW8OpGmcJ
+         uuLwKIhBfwbtnySTT+ucl4IVGbLBaGBJEWv0BZColnfJOphPjevlnz1aeoPgqbAV6UMN
+         +qYQ+0LqXFRVpDXTx/1kI0vLsFxwTzBxaIrMw5a8xs1cx65bBz3DrX9AyXQ/uos/CVl9
+         INeQ==
+X-Gm-Message-State: AGi0PuaS5btYfaCzKH8Og0eXKNdIswcV1ghh48k5tl4ELrkkjwLWwLCl
+        TTNrG8zAazVnuCI2tDDTSDgKEJMH
+X-Google-Smtp-Source: APiQypJ4xBgFV3si14qsdmuXSYJOafatBduuvUuwZF2JwDOEJMghZx1A4ojKnwlMtXWN0req9V5K6g==
+X-Received: by 2002:a5d:498d:: with SMTP id r13mr33647675wrq.374.1588068510619;
+        Tue, 28 Apr 2020 03:08:30 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2.j3c5onc20sse1dnehy4noqpfcg.zx.internal.cloudapp.net ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id x6sm27382925wrg.58.2020.04.28.03.08.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Apr 2020 03:08:29 -0700 (PDT)
+Date:   Tue, 28 Apr 2020 10:08:28 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Nathan Chancellor <natechancellor@gmail.com>
+Cc:     "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Sami Tolvanen <samitolvanen@google.com>
+Subject: Re: [PATCH] hv_netvsc: Fix netvsc_start_xmit's return type
+Message-ID: <20200428100828.aslw3pn5nhwtlsnt@liuwe-devbox-debian-v2.j3c5onc20sse1dnehy4noqpfcg.zx.internal.cloudapp.net>
+References: <20200428033042.44561-1-natechancellor@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="tpogyn2zhltbavuh"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <417EB5CB-F57F-4B7E-A81E-9ECE166BE217@holtmann.org>
+In-Reply-To: <20200428033042.44561-1-natechancellor@gmail.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Apr 27, 2020 at 08:30:43PM -0700, Nathan Chancellor wrote:
+> netvsc_start_xmit is used as a callback function for the ndo_start_xmit
+> function pointer. ndo_start_xmit's return type is netdev_tx_t but
+> netvsc_start_xmit's return type is int.
+> 
+> This causes a failure with Control Flow Integrity (CFI), which requires
+> function pointer prototypes and callback function definitions to match
+> exactly. When CFI is in enforcing, the kernel panics. When booting a
+> CFI kernel with WSL 2, the VM is immediately terminated because of this:
+> 
+> $ wsl.exe -d ubuntu
+> The Windows Subsystem for Linux instance has terminated.
+> 
+> Avoid this by using the right return type for netvsc_start_xmit.
+> 
+> Fixes: fceaf24a943d8 ("Staging: hv: add the Hyper-V virtual network driver")
+> Link: https://github.com/ClangBuiltLinux/linux/issues/1009
 
---tpogyn2zhltbavuh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Please consider pulling in the panic log from #1009 to the commit
+message. It is much better than the one line message above.
 
-Hi Marcel,
-
-On Tue, Apr 28, 2020 at 11:51:24AM +0200, Marcel Holtmann wrote:
-> Hi Alistair,
->=20
-> > The sopine board has an optional RTL8723BS WiFi + BT module that can be
-> > connected to UART1. Add this to the device tree so that it will work
-> > for users if connected.
-> >=20
-> > Signed-off-by: Alistair Francis <alistair@alistair23.me>
-> > ---
-> > .../allwinner/sun50i-a64-sopine-baseboard.dts | 29 +++++++++++++++++++
-> > 1 file changed, 29 insertions(+)
->=20
-> so I am bit confused on what to do with this series? Do you want me to ap=
-ply a
-> subset of patches or do you require specific reviews or acks?
-
-Applying 1 and 2 and leaving 3 aside would be great :)
-
-Thanks!
-Maxime
-
---tpogyn2zhltbavuh
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXqf/gwAKCRDj7w1vZxhR
-xYVMAP4nKDRimgu3t5jMwZnN+FtExoWjy6v+yWcUECMXuEsnGQEAzpQYH50JCwwP
-eZsHDHII6Y9Hkgf0t2cj0zr5cBRAGwM=
-=avZ8
------END PGP SIGNATURE-----
-
---tpogyn2zhltbavuh--
+> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+> ---
+> 
+> Do note that netvsc_xmit still returns int because netvsc_xmit has a
+> potential return from netvsc_vf_xmit, which does not return netdev_tx_t
+> because of the call to dev_queue_xmit.
+> 
+> I am not sure if that is an oversight that was introduced by
+> commit 0c195567a8f6e ("netvsc: transparent VF management") or if
+> everything works properly as it is now.
+> 
+> My patch is purely concerned with making the definition match the
+> prototype so it should be NFC aside from avoiding the CFI panic.
+> 
+>  drivers/net/hyperv/netvsc_drv.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+> index d8e86bdbfba1e..ebcfbae056900 100644
+> --- a/drivers/net/hyperv/netvsc_drv.c
+> +++ b/drivers/net/hyperv/netvsc_drv.c
+> @@ -707,7 +707,8 @@ static int netvsc_xmit(struct sk_buff *skb, struct net_device *net, bool xdp_tx)
+>  	goto drop;
+>  }
+>  
+> -static int netvsc_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+> +static netdev_tx_t netvsc_start_xmit(struct sk_buff *skb,
+> +				     struct net_device *ndev)
+>  {
+>  	return netvsc_xmit(skb, ndev, false);
+>  }
+> 
+> base-commit: 51184ae37e0518fd90cb437a2fbc953ae558cd0d
+> -- 
+> 2.26.2
+> 
