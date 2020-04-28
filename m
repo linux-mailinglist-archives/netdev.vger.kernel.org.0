@@ -2,96 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B01441BB86F
-	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 10:08:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B87E1BB88D
+	for <lists+netdev@lfdr.de>; Tue, 28 Apr 2020 10:12:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726682AbgD1II3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 04:08:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59106 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726180AbgD1II3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 04:08:29 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF268C03C1A9
-        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 01:08:28 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id k13so23531854wrw.7
-        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 01:08:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YUAj7o9nL2m8DaSAYGzH/e0dE0ICdBviMOVl3bF0PgM=;
-        b=Np2vO7sto4H3OeoenKXCo5+2CzmtGPQ29Us54cp17JJDAIK8Pj/G4HSnFHg4s3PVJB
-         ExEy8n4ZQK4wIaEM752Qp1fnzI5BlkxjsD8bF5AT+Mey4ox6m3lQREQDjyqFdypmRkmP
-         y5joqD5OWqLmqSdfB00QQa2Gq1f2VMcMiLYzWJBQi73fIYmBuI3pgMG23/VgK7/XWv+k
-         eMWZjii/I+bVbnMqkaw/hgOBfgzBWhkOw0gXKDsKGLw3XUukKnuxFF2qA3JCX5DCqCjL
-         B5Icev9Z6w9vpeNE6NUVSf/a7+ygPzgdzRCzTR90lc3o9OsL+4qFqNjT2z02vFPiuLAx
-         ss+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=YUAj7o9nL2m8DaSAYGzH/e0dE0ICdBviMOVl3bF0PgM=;
-        b=gFJLHDtq1T6+94h40Lrw28f8PWJ9qJuZ5Q942/mxgEJSGelMJhkscPH4NGJvAkn2OO
-         TPL0MImdNSU2xzJrJNnkmPyv4AInxduiC6Zuw5Qmg5Tlqf8/u2iWEa3wkJcTrtYfua4x
-         wyYTtKJhRpYaA13iLaOTXnqvqoQfRTP/CitSTcxxGhdLjEOdJdnJH/TPpjkf1zQBu6wx
-         A/1ICOxJOnfvbLUapV8Exi5qL8n2o5qleVd1Nv6sAd1VK5RYbvzRHf0hZVS+MsTbiK7i
-         w9WLOgz4h5YbUO74vSuQaNdGkIkcg7BP7ks/gz8udvLNutB7fhrSXvnYvZWspa6G8WNI
-         9IMg==
-X-Gm-Message-State: AGi0PuYi+xJpnFy2K1OOBGK6L6etitRgTj03WX4OLuD+VYYUGD4zgW6P
-        L9OqMCeZZnrslIMbU5Tu+Zw4kQ==
-X-Google-Smtp-Source: APiQypKddJ10fDB6N3lY5AmE+6anXczEr+inScltsdAv/p18+2CM1g9UCBnjoMf45gnvYw+uaR4MlQ==
-X-Received: by 2002:adf:d087:: with SMTP id y7mr31586455wrh.321.1588061307463;
-        Tue, 28 Apr 2020 01:08:27 -0700 (PDT)
-Received: from [192.168.1.10] ([194.53.185.137])
-        by smtp.gmail.com with ESMTPSA id h17sm2222133wmm.6.2020.04.28.01.08.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Apr 2020 01:08:27 -0700 (PDT)
-Subject: Re: [PATCH v4 bpf-next 12/15] bpftool: Add support for XDP egress
-To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, jasowang@redhat.com,
-        brouer@redhat.com, toke@redhat.com, toshiaki.makita1@gmail.com,
-        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        dsahern@gmail.com, David Ahern <dahern@digitalocean.com>
-References: <20200427224633.15627-1-dsahern@kernel.org>
- <20200427224633.15627-13-dsahern@kernel.org>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <1db59cc9-956e-6583-6fa9-444564e6d760@isovalent.com>
-Date:   Tue, 28 Apr 2020 09:08:25 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726864AbgD1IMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 04:12:34 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3322 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726377AbgD1IMe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Apr 2020 04:12:34 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id B73309E4F2E2C5FC861F;
+        Tue, 28 Apr 2020 16:12:31 +0800 (CST)
+Received: from localhost (10.166.215.154) by DGGEMS409-HUB.china.huawei.com
+ (10.3.19.209) with Microsoft SMTP Server id 14.3.487.0; Tue, 28 Apr 2020
+ 16:12:24 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <andrew.hendry@gmail.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <allison@lohutok.net>, <tglx@linutronix.de>,
+        <gregkh@linuxfoundation.org>, <tanxin.ctf@gmail.com>,
+        <xiyuyang19@fudan.edu.cn>
+CC:     <linux-x25@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH] net/x25: Fix null-ptr-deref in x25_disconnect
+Date:   Tue, 28 Apr 2020 16:12:08 +0800
+Message-ID: <20200428081208.26308-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
+In-Reply-To: <000000000000cbf17205a452ad4f@google.com>
+References: <000000000000cbf17205a452ad4f@google.com>
 MIME-Version: 1.0
-In-Reply-To: <20200427224633.15627-13-dsahern@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.166.215.154]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2020-04-27 16:46 UTC-0600 ~ David Ahern <dsahern@kernel.org>
-> From: David Ahern <dahern@digitalocean.com>
-> 
-> Add xdp_egress as a program type since it requires a new attach
-> type. This follows suit with other program type + attach type
-> combintations and leverages the SEC name in libbpf.
-> 
-> Add NET_ATTACH_TYPE_XDP_EGRESS and update attach_type_strings to
-> allow a user to specify 'xdp_egress' as the attach or detach point.
-> 
-> Update do_attach_detach_xdp to set XDP_FLAGS_EGRESS_MODE if egress
-> is selected.
-> 
-> Update do_xdp_dump_one to show egress program ids.
-> 
-> Update the documentation and help output.
-> 
-> Signed-off-by: David Ahern <dahern@digitalocean.com>
+We should check null before do x25_neigh_put in x25_disconnect,
+otherwise may cause null-ptr-deref like this:
 
-Reviewed-by: Quentin Monnet <quentin@isovalent.com>
+ #include <sys/socket.h>
+ #include <linux/x25.h>
 
-Thanks!
+ int main() {
+    int sck_x25;
+    sck_x25 = socket(AF_X25, SOCK_SEQPACKET, 0);
+    close(sck_x25);
+    return 0;
+ }
+ 
+BUG: kernel NULL pointer dereference, address: 00000000000000d8
+CPU: 0 PID: 4817 Comm: t2 Not tainted 5.7.0-rc3+ #159
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.9.3-
+RIP: 0010:x25_disconnect+0x91/0xe0
+Call Trace:
+ x25_release+0x18a/0x1b0
+ __sock_release+0x3d/0xc0
+ sock_close+0x13/0x20
+ __fput+0x107/0x270
+ ____fput+0x9/0x10
+ task_work_run+0x6d/0xb0
+ exit_to_usermode_loop+0x102/0x110
+ do_syscall_64+0x23c/0x260
+ entry_SYSCALL_64_after_hwframe+0x49/0xb3
+
+Reported-by: syzbot+6db548b615e5aeefdce2@syzkaller.appspotmail.com
+Fixes: 4becb7ee5b3d ("net/x25: Fix x25_neigh refcnt leak when x25 disconnect")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ net/x25/x25_subr.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/net/x25/x25_subr.c b/net/x25/x25_subr.c
+index 8b1b06cabcbf..0285aaa1e93c 100644
+--- a/net/x25/x25_subr.c
++++ b/net/x25/x25_subr.c
+@@ -357,10 +357,12 @@ void x25_disconnect(struct sock *sk, int reason, unsigned char cause,
+ 		sk->sk_state_change(sk);
+ 		sock_set_flag(sk, SOCK_DEAD);
+ 	}
+-	read_lock_bh(&x25_list_lock);
+-	x25_neigh_put(x25->neighbour);
+-	x25->neighbour = NULL;
+-	read_unlock_bh(&x25_list_lock);
++	if (x25->neighbour) {
++		read_lock_bh(&x25_list_lock);
++		x25_neigh_put(x25->neighbour);
++		x25->neighbour = NULL;
++		read_unlock_bh(&x25_list_lock);
++	}
+ }
+ 
+ /*
+-- 
+2.17.1
+
+
