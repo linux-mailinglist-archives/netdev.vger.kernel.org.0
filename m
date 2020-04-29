@@ -2,86 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A08D81BE657
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 20:37:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39B651BE658
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 20:38:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726869AbgD2Shv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 14:37:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726481AbgD2Shu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 14:37:50 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4D2EC03C1AE
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 11:37:50 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id d3so1421198pgj.6
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 11:37:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=EiAsF6GrLwFYrKI7R7bDzaYV7LQLkwmCmZukG7pI1x0=;
-        b=mEmSfKevQZKiD3hbZgXN6UfQ/NFihMCbV+lT9x5DTy9S05rrGmMi97OiTlKzNIq4at
-         jYbib7/vD1Jp2v9lh0+Nk1eeil3tACoBS7aKqFVOOT1FTp9dJU9ZbCBuOe2KhpCRabKK
-         EKkhPa800C1D96sa5uSrQM4sqHNKi2QwYKRObhNwusQQL2kSPkY7mWmXp5gphYxNh6ao
-         wodaYEIhbElL1LSimwMgSJ92dM2hjaQ+6Ym1ufnf6hFWTqP8tFpj9rSz70uTOmHUfX1C
-         pUBH4QvSjWbJ9OWwsw86TxjXGkmInOJkpJFP2h0nhkyF1OTl6jI1/TIxhhCywHaON4jL
-         qhgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=EiAsF6GrLwFYrKI7R7bDzaYV7LQLkwmCmZukG7pI1x0=;
-        b=KzBQI+HK+M68lV6Z+NNpHfTRBwCHiUHeggfUdgN6RLka+9nlvuelH6nTKNtNl47aBH
-         PuNLb7DsoOs9a1vTzxfmpui3DZQJu8A0kqL7D/M2EcEOBGm7z2gq/BGTnoqYorTQE23b
-         s+FblnceZBPkDH9C2pqoJv/xszGZuu1hYn7lGOeOu26dO1rtJuh1zCCymwSL+JUW/aZV
-         SqwZxGV83/VLW0Whf98xpx3/Vo2isqxnV4Y4+gXmrvyZjz1jKTCG4VodCjz/HlgX5nt0
-         so12BjKgl7y6lpEEEWRU+qWZnTBTaoWWhUtaPQJZgoGxOXPEIyVSifl7lyrpB26DJh+M
-         WdCQ==
-X-Gm-Message-State: AGi0PuYf0UAkr1T/aqShkXf2kiuotb9Z+zd6eyqUgGzm62wqs9T/m7+2
-        ifV0OfKL3XNHqh/Y6+3fF/2adWy5ALw=
-X-Google-Smtp-Source: APiQypId3fYIeyb2I+1xN5uNbWXO/ug24g2Gq+xLNAUNeBw5sx+YNKYByo/5q/wX4kHw8sLkw0yAmA==
-X-Received: by 2002:a63:555c:: with SMTP id f28mr18186164pgm.80.1588185470011;
-        Wed, 29 Apr 2020 11:37:50 -0700 (PDT)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id g27sm1511190pgn.52.2020.04.29.11.37.48
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 29 Apr 2020 11:37:49 -0700 (PDT)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net 2/2] ionic: refresh devinfo after fw-upgrade
-Date:   Wed, 29 Apr 2020 11:37:39 -0700
-Message-Id: <20200429183739.56540-3-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200429183739.56540-1-snelson@pensando.io>
-References: <20200429183739.56540-1-snelson@pensando.io>
+        id S1726618AbgD2Sia convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 29 Apr 2020 14:38:30 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:41526 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726456AbgD2Si3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 14:38:29 -0400
+Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1jTrbF-0002IP-03; Wed, 29 Apr 2020 18:38:25 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 35163630E4; Wed, 29 Apr 2020 11:38:23 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 2DA31AC1DB;
+        Wed, 29 Apr 2020 11:38:23 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Thomas Falcon <tlfalcon@linux.ibm.com>
+cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>
+Subject: Re: [PATCH] net/bonding: Do not transition down slave after speed/duplex check
+In-reply-to: <1588183759-7659-1-git-send-email-tlfalcon@linux.ibm.com>
+References: <1588183759-7659-1-git-send-email-tlfalcon@linux.ibm.com>
+Comments: In-reply-to Thomas Falcon <tlfalcon@linux.ibm.com>
+   message dated "Wed, 29 Apr 2020 13:09:19 -0500."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <29483.1588185503.1@famine>
+Content-Transfer-Encoding: 8BIT
+Date:   Wed, 29 Apr 2020 11:38:23 -0700
+Message-ID: <29484.1588185503@famine>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make sure we can report the new FW version after a
-fw-upgrade has finished by re-reading the device's
-fw version information.
+Thomas Falcon <tlfalcon@linux.ibm.com> wrote:
 
-Fixes: c672412f6172 ("ionic: remove lifs on fw reset")
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
+>The following behavior has been observed when testing logical partition
+>migration of LACP-bonded VNIC devices in a PowerVM pseries environment.
+>
+>1. When performing the migration, the bond master detects that a slave has
+>   lost its link, deactivates the LACP port, and sets the port's
+>   is_enabled flag to false.
+>2. The slave device then updates it's carrier state to off while it resets
+>   itself. This update triggers a NETDEV_CHANGE notification, which performs
+>   a speed and duplex update. The device does not return a valid speed
+>   and duplex, so the master sets the slave link state to BOND_LINK_FAIL.
+>3. When the slave VNIC device(s) are active again, some operations, such
+>   as setting the port's is_enabled flag, are not performed when transitioning
+>   the link state back to BOND_LINK_UP from BOND_LINK_FAIL, though the state
+>   prior to the speed check was BOND_LINK_DOWN.
+
+	Just to make sure I'm understanding correctly, in regards to
+"the state prior to the speed check was BOND_LINK_DOWN," do you mean
+that during step 1, the slave link is set to BOND_LINK_DOWN, and then in
+step 2 changed from _DOWN to _FAIL?
+
+>Affected devices are therefore not utilized in the aggregation though they
+>are operational. The simplest way to fix this seems to be to restrict the
+>link state change to devices that are currently up and running.
+
+	This sounds similar to an issue from last fall; can you confirm
+that you're running with a kernel that includes:
+
+1899bb325149 bonding: fix state transition issue in link monitoring
+
+	-J
+	
+
+>CC: Jay Vosburgh <j.vosburgh@gmail.com>
+>CC: Veaceslav Falico <vfalico@gmail.com>
+>CC: Andy Gospodarek <andy@greyhouse.net>
+>Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+>---
+> drivers/net/bonding/bond_main.c | 3 ++-
+> 1 file changed, 2 insertions(+), 1 deletion(-)
+>
+>diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+>index 2e70e43c5df5..d840da7cd379 100644
+>--- a/drivers/net/bonding/bond_main.c
+>+++ b/drivers/net/bonding/bond_main.c
+>@@ -3175,7 +3175,8 @@ static int bond_slave_netdev_event(unsigned long event,
+> 		 * speeds/duplex are available.
+> 		 */
+> 		if (bond_update_speed_duplex(slave) &&
+>-		    BOND_MODE(bond) == BOND_MODE_8023AD) {
+>+		    BOND_MODE(bond) == BOND_MODE_8023AD &&
+>+		    slave->link == BOND_LINK_UP) {
+> 			if (slave->last_link_up)
+> 				slave->link = BOND_LINK_FAIL;
+> 			else
+>-- 
+>2.18.2
+>
+
 ---
- drivers/net/ethernet/pensando/ionic/ionic_lif.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 2dc513f43fd4..2a87bfc50cc6 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -2122,6 +2122,7 @@ static void ionic_lif_handle_fw_up(struct ionic_lif *lif)
- 
- 	dev_info(ionic->dev, "FW Up: restarting LIFs\n");
- 
-+	ionic_init_devinfo(ionic);
- 	err = ionic_qcqs_alloc(lif);
- 	if (err)
- 		goto err_out;
--- 
-2.17.1
-
+	-Jay Vosburgh, jay.vosburgh@canonical.com
