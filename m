@@ -2,177 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BC1C1BD0BF
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 01:52:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A7C71BD0D1
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 02:11:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726522AbgD1XwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 19:52:15 -0400
-Received: from sed198n136.SEDSystems.ca ([198.169.180.136]:21449 "EHLO
-        sed198n136.sedsystems.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726256AbgD1XwP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 19:52:15 -0400
-Received: from barney.sedsystems.ca (barney [198.169.180.121])
-        by sed198n136.sedsystems.ca  with ESMTP id 03SNpxH7030661
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Apr 2020 17:51:59 -0600 (CST)
-Received: from [192.168.233.77] (ovpn77.sedsystems.ca [192.168.233.77])
-        by barney.sedsystems.ca (8.14.7/8.14.4) with ESMTP id 03SNpwW6013339
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Tue, 28 Apr 2020 17:51:58 -0600
-Subject: Re: Xilinx axienet 1000BaseX support
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andre Przywara <andre.przywara@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-arm-kernel@lists.infradead.org
-References: <20200110152215.GF25745@shell.armlinux.org.uk>
- <20200110170457.GH25745@shell.armlinux.org.uk>
- <20200118112258.GT25745@shell.armlinux.org.uk>
- <3b28dcb4-6e52-9a48-bf9c-ddad4cf5e98a@arm.com>
- <20200120154554.GD25745@shell.armlinux.org.uk>
- <20200127170436.5d88ca4f@donnerap.cambridge.arm.com>
- <20200127185344.GA25745@shell.armlinux.org.uk>
- <bf2448d0-390c-5045-3503-885240829fbf@sedsystems.ca>
- <20200422075124.GJ25745@shell.armlinux.org.uk>
- <8a829647-34a8-6e6a-05cf-76f5e88b8410@sedsystems.ca>
- <20200428230112.GS25745@shell.armlinux.org.uk>
-From:   Robert Hancock <hancock@sedsystems.ca>
-Message-ID: <d44d53d1-6718-e2d1-1186-b4f06d2b74cd@sedsystems.ca>
-Date:   Tue, 28 Apr 2020 17:51:58 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.7.0
+        id S1726363AbgD2AL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 20:11:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726181AbgD2AL4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 20:11:56 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763DBC03C1AC;
+        Tue, 28 Apr 2020 17:11:55 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id w65so183368pfc.12;
+        Tue, 28 Apr 2020 17:11:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5dubIge/wiAHbcmXeB9Z2pdb+p/6I0IV1z0b/YBgN1I=;
+        b=MEn+1UKdrNH8pE+Zk/FupYuJLgGhV8rOJyEilEHp4BJgOt/IJjqrxW9u821GINU+K3
+         feuiIqM/2r3Zy8JEyofGsL3GnFSei4C3OWJHYPqKq/a/UcGy232Y5Kz89lHIba3kl76i
+         zZ0rBM8WpzkCdYRhbawizG82QzMdtXfrvGOWpAAiak20GjUIrwpKPhWruaj0FJ2+jyrF
+         mRtlrnzxPV4kYLVLSvSGx11pvxilVwvq4wu9iYS59Hb7iYgfPx3ONRl4QkF+ZX/GUN3T
+         o1MWK8JgY9X4ohM+h9y3T8ZZzLGmILgMiG5V4MlOHTyF7N1jFZXJDW+PXPK3XBTqGxOC
+         fu1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5dubIge/wiAHbcmXeB9Z2pdb+p/6I0IV1z0b/YBgN1I=;
+        b=h/nllqOtVOrw/CeZhuiibHfLpDlsktKBLpaqcJQ86q73jWJUt8L0jMhiw4/VL8ZWp/
+         TfufrFpDBxoEhl95jyWnijRLQGZTPUP9QHsk7gJnWcvQyi3mA6EpSFU0Ye+hHI6V+zjE
+         XSfjIn0TKe1V29BX8s5qauns0X/zB5kNTQ3+YFveyaicbopkAg/vkhpiBYR1mkI3oACo
+         iN6zhI/9hRdl7FOoZT6Yq4CK1Ni7AzIDpxTfzqSjpml8NWXP0w1ym7MxfBAD1mJAh5U2
+         f34Z6KUgRmzfuoldR3TfxacBfT8gvjLz4/Rw8bwDpzxgYSI4QwSGZVvwAcMPL3aY8xjx
+         ms8w==
+X-Gm-Message-State: AGi0Pua09TNKgRvfEF7TrWvABqTx9eUCyb6oF40SjUfdRosF2Tt/Xufa
+        ZCS2MUebq0SioRkjCBvwXYc=
+X-Google-Smtp-Source: APiQypJV1Y5w4OteCHNEylF0I8Oj5XChrOkZ5JWw2ml7P/swY71Bur8LFdoKHlQf9moEj94PYs32UQ==
+X-Received: by 2002:a63:1d4a:: with SMTP id d10mr30877448pgm.188.1588119114056;
+        Tue, 28 Apr 2020 17:11:54 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:9061])
+        by smtp.gmail.com with ESMTPSA id gl4sm3143060pjb.42.2020.04.28.17.11.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Apr 2020 17:11:52 -0700 (PDT)
+Date:   Tue, 28 Apr 2020 17:11:50 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH v2 bpf-next 02/10] bpf: allocate ID for bpf_link
+Message-ID: <20200429001150.63c7n5f4rw5gmf3r@ast-mbp.dhcp.thefacebook.com>
+References: <20200428054944.4015462-1-andriin@fb.com>
+ <20200428054944.4015462-3-andriin@fb.com>
+ <20200428173120.lof25gzz75bx5ot7@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4Bza-gqQHz3_9RyX7pKo_2kYeh7cCmNRAxExx48JQdOpfDQ@mail.gmail.com>
+ <20200428203843.pe7d4zbki2ihnq2m@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzZ4q5ngbF9YQSrCSyXv3UkQL5YWRnuOAuKs4b7nBkYZpg@mail.gmail.com>
+ <20200428224309.pod67otmp77mcspp@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzbF1C81J1UkmqkuX5VuGZRo7cwwJcCaZRCPFqC0MEfA8A@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200428230112.GS25745@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.64 on 198.169.180.136
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzbF1C81J1UkmqkuX5VuGZRo7cwwJcCaZRCPFqC0MEfA8A@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-04-28 5:01 p.m., Russell King - ARM Linux admin wrote:
-> On Tue, Apr 28, 2020 at 03:59:45PM -0600, Robert Hancock wrote:
->> On 2020-04-22 1:51 a.m., Russell King - ARM Linux admin wrote:
->>> On Tue, Apr 21, 2020 at 07:45:47PM -0600, Robert Hancock wrote:
->>>> Hi Andre/Russell,
->>>>
->>>> Just wondering where things got to with the changes for SGMII on Xilinx
->>>> axienet that you were discussing (below)? I am looking into our Xilinx setup
->>>> using 1000BaseX SFP and trying to get it working "properly" with newer
->>>> kernels. My understanding is that the requirements for 1000BaseX and SGMII
->>>> are somewhat similar. I gathered that SGMII was working somewhat already,
->>>> but that not all link modes had been tested. However, it appears 1000BaseX
->>>> is not yet working in the stock kernel.
->>>>
->>>> The way I had this working before with a 4.19-based kernel was basically a
->>>> hack to phylink to allow the Xilinx PCS/PMA PHY to be configured
->>>> sufficiently as a PHY for it to work, and mostly ignored the link status of
->>>> the SFP PHY itself, even though we were using in-band signalling mode with
->>>> an SFP module. That was using this patch:
->>>>
->>>> https://patchwork.ozlabs.org/project/netdev/patch/1559330285-30246-5-git-send-email-hancock@sedsystems.ca/
->>>>
->>>> Of course, that's basically just a hack which I suspect mostly worked by
->>>> luck. I see that there are some helpers that were added to phylink to allow
->>>> setting PHY advertisements and reading PHY status from clause 22 PHY
->>>> devices, so I'm guessing that is the way to go in this case? Something like:
->>>>
->>>> axienet_mac_config: if using in-band mode, use
->>>> phylink_mii_c22_pcs_set_advertisement to configure the Xilinx PHY.
->>>>
->>>> axienet_mac_pcs_get_state: use phylink_mii_c22_pcs_get_state to get the MAC
->>>> PCS state from the Xilinx PHY
->>>>
->>>> axienet_mac_an_restart: if using in-band mode, use
->>>> phylink_mii_c22_pcs_an_restart to restart autonegotiation on Xilinx PHY
->>>>
->>>> To use those c22 functions, we need to find the mdio_device that's
->>>> referenced by the phy-handle in the device tree - I guess we can just use
->>>> some of the guts of of_phy_find_device to do that?
->>>
->>> Please see the code for DPAA2 - it's changed slightly since I sent a
->>> copy to the netdev mailing list, and it still isn't clear whether this
->>> is the final approach (DPAA2 has some fun stuff such as several
->>> different PHYs at address 0.) NXP basically didn't like the approach
->>> I had in the patches I sent to netdev, we had a call, they presented
->>> an alternative appraoch, I implemented it, then they decided my
->>> original approach was the better solution for their situation.
->>>
->>> See http://git.armlinux.org.uk/cgit/linux-arm.git/log/?h=cex7
->>>
->>> specifically the patches from:
->>>
->>>     "dpaa2-mac: add 1000BASE-X/SGMII PCS support"
->>>
->>> through to:
->>>
->>>     "net: phylink: add interface to configure clause 22 PCS PHY"
->>>
->>> You may also need some of the patches further down in the net-queue
->>> branch:
->>>
->>>     "net: phylink: avoid mac_config calls"
->>>
->>> through to:
->>>
->>>     "net: phylink: rejig link state tracking"
->>
->> I've been playing with this a bit on a 5.4 kernel with some of these patches
->> backported. However, I'm running into something that my previous hacks for
->> this basically dealt with as a side effect: when phylink_start is called,
->> sfp_upstream_start gets called, an SFP module is detected,
->> phylink_connect_phy gets called, but then it hits this condition and bails
->> out, because we are using INBAND mode with 1000BaseX:
->>
->> 	if (WARN_ON(pl->cfg_link_an_mode == MLO_AN_FIXED ||
->> 		    (pl->cfg_link_an_mode == MLO_AN_INBAND &&
->> 		     phy_interface_mode_is_8023z(interface))))
->> 		return -EINVAL;
+On Tue, Apr 28, 2020 at 04:25:39PM -0700, Andrii Nakryiko wrote:
+> >
+> > compiler doesn't guarantee that plain 32-bit load/store will stay 32-bit
+> > even on 64-bit archs.
+> >
+> > > If that was the case, neither
+> > > WRITE_ONCE/READ_ONCE nor smp_write_release/smp_load_acquire would
+> > > help.
+> >
+> > what do you mean? They will. That's the point of these macros.
 > 
-> I'm expecting SGMII mode to be used when there's an external PHY as
-> that gives greatest flexibility (as it allows 10 and 100Mbps speeds
-> as well.)  From what I remember, these blocks support SGMII, so it
-> should just be a matter of adding that.
+> According to Documentation/memory-barriers.txt,
+> smp_load_acquire/smp_store_release are about ordering and memory
+> barriers, not about guaranteeing atomicity of reading value.
+> Especially READ_ONCE/WRITE_ONCE which are volatile read/write, not
+> atomic read/write. But nevertheless, I'll do lock and this will become
+> moot.
 
-They do support SGMII, but unfortunately it's not a runtime configurable 
-parameter, it's a synthesis-level parameter on the FPGA IP core so you 
-have to pick one or the other for any given build. We want to be able to 
-support various fiber module types as well, and my understanding is that 
-at least some of those only do 1000BaseX, so that ends up being the 
-standard in common that we are using.
+May be that's something for Paul to clarify in the doc?
+smp_load_acquire() is READ_ONCE() + smp_mb() unoptimized in general case.
+And READ_ONCE + barrier on x86.
 
+> >
+> > > But I don't think that's the case, we have code in verifier that
+> > > does similar racy u32 write/read (it uses READ_ONCE/WRITE_ONCE) and
+> > > seems to be working fine.
+> >
+> > you mean in btf_resolve_helper_id() ?
+> > What kind of race do you see there?
 > 
->> I guess I'm not sure how this is supposed to work when the PHY on the SFP
->> module gets detected, i.e. if there's supposed to be another code path that
->> this is supposed to go down, or this is something that just hasn't been
->> fully implemented yet?
-> 
-> Copper PHYs work fine - using SGMII mode everywhere so far.
-> 
-> The problem is, if you want to use them as 1000BASE-X, you generally
-> have to ensure that the PHY is appropriately programmed for 1000BASE-X
-> negotiation, and the copper side advertisement only indicates 1G
-> support. Not all copper PHYs have the PHY accessible for such
-> programming, and in that case it becomes an exercise of "read the
-> SFP documentation before buying"!
-> 
-> The other complication is... there's nothing in the module EEPROM
-> that really says whether they are 1000BASE-X or SGMII.
-> 
-> What saves us thus far is that most copper SFPs use the Marvell
-> 88E1111 chip, which is I2C accessible, and we drive that using
-> phylib - and the phylib Marvell driver knows how to ensure that
-> the PHY is configured for SGMII mode.  I'm not sure the same is
-> true with 1000BASE-X mode.
-> 
+> Two CPUs reading/writing to same variable without lock? Value starts
+> at 0 (meaning "not yet ready") and eventually becoming valid and final
+> non-zero value. Even if they race, and one CPU reads 0 while another
+> CPU already set it to non-zero, it's fine. In verifier's case it will
+> be eventually overwritten with the same resolved btf id. In case of
+> bpf_link, GET_FD_BY_ID would pretend link doesn't exist yet and return
+> error. Seems similar enough to me.
 
--- 
-Robert Hancock
-Senior Hardware Designer
-SED Systems, a division of Calian Ltd.
-Email: hancock@sedsystems.ca
+ahh. similar in the sense that only one value is written.
+it's either zero or whatever_that_id. Right.
