@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A2DC1BE843
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 22:17:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D69DB1BE860
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 22:18:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727773AbgD2URX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 16:17:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59654 "EHLO
+        id S1727919AbgD2UR7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 16:17:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727115AbgD2URU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 16:17:20 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87F8FC03C1AE;
+        with ESMTP id S1727030AbgD2URV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 16:17:21 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93764C035493;
         Wed, 29 Apr 2020 13:17:20 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id u16so3468680wmc.5;
+Received: by mail-wr1-x442.google.com with SMTP id g13so4094287wrb.8;
         Wed, 29 Apr 2020 13:17:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GrVPUcTD2l9oJ0HPXx8l+PhUQ6rIzd+t7iX8qFgDDUE=;
-        b=ipE94I2oDHFBOK1wvyXv2dDCEJ+N4Iszv0sQleLMdWCyHveYpujY5johVU8kihYH9g
-         Q7Mvf7UdOXUqBLc+R2xZks9rvgRzyn3pL4zurFd2YBqz9lByXmau8QYKuhkD+14Fn8tp
-         Y/WJAgqkwxSN3441r2bv9I99b/EBoORAg9bRHbxaE4zOx9OifBcXW3OEx+0aIMVDnTnv
-         bN0KuMUidxZT4TORBaoScSFlGk40WcxUfYWruGgESQ3T+72m6rtw64WqNT6vDhx6ZWCv
-         rwIWOTKtw4QElEb19488qaxyVRxaKsCI08m+4+qpQcuztJdItKanL0/Ll2+F/12ze6so
-         EmjQ==
+        bh=3h1YUm9/diU16ZWjl6NvChhRtfF7E8PRZGhUvORG+lo=;
+        b=rto3GJWZQoNgPlHueUkKcCqK3IdDgA7X1HGKQOWYfa+vuMVPy1RKmcr4eaUq+riF3a
+         xlFniqSrHXGZF9y/33tP5hVCuVhcRS/vywrYUzdIzykRlTQdvDorM1o4YQ+61X9Y9Jpp
+         bakGkz05rty4xhNrYmS3PG+e6LfFh1d/3G/9FWce2aBswflbZ27TJ2Sx6LQNV0InR5MA
+         bAjqGdBDhpuyYosz+y02fxiGxrtOZO6GEnJXjUNl3holtvU1Eqs3i0wMTyKmKmjQfEGU
+         ij+AV4RQcrTVzzsyS0fQwp3D+Hky94Wq6BSgmaTX3oG7YGcNzQhAjxFix9dgPkyaXE2V
+         tE9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GrVPUcTD2l9oJ0HPXx8l+PhUQ6rIzd+t7iX8qFgDDUE=;
-        b=GtFuEpnwiA5Rqgqumt6kVi5Nic+A76H5mnVT2ljSquDahHY/pqiTx8qrQgCorEVPud
-         hUhYUqGI3a1OWf6DYwNhMFw5Mi3v8pche5yziy4EWrGzITTluOVLgXvTtDHBzdYLKOyy
-         cnz2BCZ4MOaJjoLx0YwNB20Oe8bqIDb+ZySBStXQirvTr5okIlIMG2V4s9E//b4Uo+lu
-         zmwsEpCsgQil2NzhBoo8pNOz5rI8wAkOXI740jT7cPKqLDztx4IiO6W0hhU/vK+zh9AX
-         C4StOenayZ12DGsulXAds/sPS4LJxKYIxs6kD65T5bHocqLd872IsdRXvuPdzGVvzN8X
-         WIIA==
-X-Gm-Message-State: AGi0Pub3wYIPq13FV3LbqQtuigy+ornUiC1cznf9YXJ01K0hzJ0kYqj3
-        hbS7LXoGxPwf/Gzcp+MHjok=
-X-Google-Smtp-Source: APiQypL4s/mUZ/ZYL0kEimx4vhbQ6WN12EIfKnlQOaoJRiTogeSbY1XH1KXmgf2OGXzZCm2fknw27w==
-X-Received: by 2002:a1c:6402:: with SMTP id y2mr5205603wmb.116.1588191438299;
-        Wed, 29 Apr 2020 13:17:18 -0700 (PDT)
+        bh=3h1YUm9/diU16ZWjl6NvChhRtfF7E8PRZGhUvORG+lo=;
+        b=A4HkJK5nWRN0AjisEpXk+OQ53lSY0AyV3KTJFn5XDFYOmewOqlgMfYAU6Qv18I9nJh
+         NW8e9YgCmclpwAsxpUN3riVd2LeVdBURRmZUIQYtfjwIyosqmJpfFSVRbV/Z6LVSWBw6
+         N/eiKHaZFaKMmHmDifmT+U4+YmWbj/3Vvd+/v/i2p5Hy9nwbwnQABbkJzUOH/SFmekMe
+         gtziVSrBOVkh1pW9Iouf/UJ0WsyMPJ2NIw3R5J0fDWq5G+I6qGUXw0ZW63cPJP9Nw3Xr
+         MPm3XsWdzXossM5/Va14T8ROdhgwbIZ8ZrdTyJOwb5eJQpZA/6FUJTIN2R8hJqOv+V4/
+         e6Sg==
+X-Gm-Message-State: AGi0PuY8kR/yCgFROBpLtsTIq5N4FEg31lCqowx7BWfmeHyJJFaOtD+0
+        JU612uTooMkKjsjRMDKtZY3JvA4J5Lc=
+X-Google-Smtp-Source: APiQypI/ni8XFwYIHa0cewHD1MVfQDj2saKDUC5JGqEgPQrYhLr4ehS8ZLS8+x8E0cnvoqOaFTt7Fw==
+X-Received: by 2002:a5d:42c7:: with SMTP id t7mr40611834wrr.336.1588191439216;
+        Wed, 29 Apr 2020 13:17:19 -0700 (PDT)
 Received: from localhost.localdomain (p200300F137142E00428D5CFFFEB99DB8.dip0.t-ipconnect.de. [2003:f1:3714:2e00:428d:5cff:feb9:9db8])
-        by smtp.googlemail.com with ESMTPSA id q143sm9923623wme.31.2020.04.29.13.17.17
+        by smtp.googlemail.com with ESMTPSA id q143sm9923623wme.31.2020.04.29.13.17.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Apr 2020 13:17:17 -0700 (PDT)
+        Wed, 29 Apr 2020 13:17:18 -0700 (PDT)
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 To:     robh+dt@kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
         linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org
@@ -54,9 +54,9 @@ Cc:     jianxin.pan@amlogic.com, davem@davemloft.net,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH RFC v2 05/11] net: stmmac: dwmac-meson8b: Add the PRG_ETH0_ADJ_* bits
-Date:   Wed, 29 Apr 2020 22:16:38 +0200
-Message-Id: <20200429201644.1144546-6-martin.blumenstingl@googlemail.com>
+Subject: [PATCH RFC v2 06/11] net: stmmac: dwmac-meson8b: Fetch the "timing-adjustment" clock
+Date:   Wed, 29 Apr 2020 22:16:39 +0200
+Message-Id: <20200429201644.1144546-7-martin.blumenstingl@googlemail.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200429201644.1144546-1-martin.blumenstingl@googlemail.com>
 References: <20200429201644.1144546-1-martin.blumenstingl@googlemail.com>
@@ -67,50 +67,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The PRG_ETH0_ADJ_* are used for applying the RGMII RX delay. The public
-datasheets only have very limited description for these registers, but
-Jianxin Pan provided more detailed documentation from an (unnamed)
-Amlogic engineer. Add the PRG_ETH0_ADJ_* bits along with the improved
-description.
+The PRG_ETHERNET registers have a built-in timing adjustment circuit
+which can provide the RX delay in RGMII mode. This is driven by an
+external (to this IP, but internal to the SoC) clock input. Fetch this
+clock as optional (even though it's there on all supported SoCs) since
+we just learned about it and existing .dtbs don't specify it.
 
-Suggested-by: Jianxin Pan <jianxin.pan@amlogic.com>
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- .../ethernet/stmicro/stmmac/dwmac-meson8b.c   | 21 +++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-index 1d7526ee09dd..70075628c58e 100644
+index 70075628c58e..41f3ef6bea66 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-@@ -48,6 +48,27 @@
- #define PRG_ETH0_INVERTED_RMII_CLK	BIT(11)
- #define PRG_ETH0_TX_AND_PHY_REF_CLK	BIT(12)
+@@ -85,6 +85,7 @@ struct meson8b_dwmac {
+ 	phy_interface_t			phy_mode;
+ 	struct clk			*rgmii_tx_clk;
+ 	u32				tx_delay_ns;
++	struct clk			*timing_adj_clk;
+ };
  
-+/* Bypass (= 0, the signal from the GPIO input directly connects to the
-+ * internal sampling) or enable (= 1) the internal logic for RXEN and RXD[3:0]
-+ * timing tuning.
-+ */
-+#define PRG_ETH0_ADJ_ENABLE		BIT(13)
-+/* Controls whether the RXEN and RXD[3:0] signals should be aligned with the
-+ * input RX rising/falling edge and sent to the Ethernet internals. This sets
-+ * the automatically delay and skew automatically (internally).
-+ */
-+#define PRG_ETH0_ADJ_SETUP		BIT(14)
-+/* An internal counter based on the "timing-adjustment" clock. The counter is
-+ * cleared on both, the falling and rising edge of the RX_CLK. This selects the
-+ * delay (= the counter value) when to start sampling RXEN and RXD[3:0].
-+ */
-+#define PRG_ETH0_ADJ_DELAY		GENMASK(19, 15)
-+/* Adjusts the skew between each bit of RXEN and RXD[3:0]. If a signal has a
-+ * large input delay, the bit for that signal (RXEN = bit 0, RXD[3] = bit 1,
-+ * ...) can be configured to be 1 to compensate for a delay of about 1ns.
-+ */
-+#define PRG_ETH0_ADJ_SKEW		GENMASK(24, 20)
+ struct meson8b_dwmac_clk_configs {
+@@ -380,6 +381,13 @@ static int meson8b_dwmac_probe(struct platform_device *pdev)
+ 				 &dwmac->tx_delay_ns))
+ 		dwmac->tx_delay_ns = 2;
+ 
++	dwmac->timing_adj_clk = devm_clk_get_optional(dwmac->dev,
++						      "timing-adjustment");
++	if (IS_ERR(dwmac->timing_adj_clk)) {
++		ret = PTR_ERR(dwmac->timing_adj_clk);
++		goto err_remove_config_dt;
++	}
 +
- #define MUX_CLK_NUM_PARENTS		2
- 
- struct meson8b_dwmac;
+ 	ret = meson8b_init_rgmii_tx_clk(dwmac);
+ 	if (ret)
+ 		goto err_remove_config_dt;
 -- 
 2.26.2
 
