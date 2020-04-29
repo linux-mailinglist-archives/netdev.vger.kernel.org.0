@@ -2,56 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 082F41BE6F9
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 21:11:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ABAB1BE705
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 21:13:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726950AbgD2TLE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 15:11:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49222 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726456AbgD2TLE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 15:11:04 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F741C03C1AE;
-        Wed, 29 Apr 2020 12:11:04 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D92C91210A3E3;
-        Wed, 29 Apr 2020 12:11:03 -0700 (PDT)
-Date:   Wed, 29 Apr 2020 12:11:03 -0700 (PDT)
-Message-Id: <20200429.121103.1627116280946095444.davem@davemloft.net>
-To:     johannes@sipsolutions.net
-Cc:     netdev@vger.kernel.org, ordex@autistici.org,
-        linux-wireless@vger.kernel.org
-Subject: Re: [PATCH 0/7] netlink validation improvements/refactoring
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200429134843.42224-1-johannes@sipsolutions.net>
-References: <20200429134843.42224-1-johannes@sipsolutions.net>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 29 Apr 2020 12:11:04 -0700 (PDT)
+        id S1727069AbgD2TNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 15:13:02 -0400
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:34722 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726456AbgD2TNC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 15:13:02 -0400
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1jTs8e-0000MC-7O; Wed, 29 Apr 2020 21:12:56 +0200
+Date:   Wed, 29 Apr 2020 21:12:56 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] netfilter: nf_osf: avoid passing pointer to local var
+Message-ID: <20200429191256.GL32392@breakpoint.cc>
+References: <20200429190051.27993-1-arnd@arndb.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200429190051.27993-1-arnd@arndb.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes@sipsolutions.net>
-Date: Wed, 29 Apr 2020 15:48:36 +0200
-
-> Sorry - again, I got distracted/interrupted before I could send this.
-> I made this a little more than a year ago, and then forgot it. Antonio
-> asked me something a couple of weeks ago, and that reminded me of this
-> so I'm finally sending it out now (rebased & adjusted).
+Arnd Bergmann <arnd@arndb.de> wrote:
+> gcc-10 points out that a code path exists where a pointer to a stack
+> variable may be passed back to the caller:
 > 
-> Basically this just does some refactoring & improvements for range
-> validation, leading up to a patch to expose the policy to userspace,
-> which I'll send separately as RFC for now.
+> net/netfilter/nfnetlink_osf.c: In function 'nf_osf_hdr_ctx_init':
+> cc1: warning: function may return address of local variable [-Wreturn-local-addr]
+> net/netfilter/nfnetlink_osf.c:171:16: note: declared here
+>   171 |  struct tcphdr _tcph;
+>       |                ^~~~~
+> 
+> I am not sure whether this can happen in practice, but moving the
+> variable declaration into the callers avoids the problem.
 
-Please fix the pt->min/pt->max WARN_ON() vs. range pointer issue that
-Jakub pointed out.
+LGTM, thanks Arnd.
 
-Otherwise this series looks good.
+Reviewed-by: Florian Westphal <fw@strlen.de>
