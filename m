@@ -2,121 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAEFB1BE4BC
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 19:06:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5356C1BE4F8
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 19:18:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726773AbgD2RGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 13:06:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57796 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726423AbgD2RGX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 13:06:23 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45A1C03C1AE
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 10:06:22 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id g13so3431781wrb.8
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 10:06:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=aEPxyvXnmrv0lKzfPZxfPT+WsKfMDsaiPIWT0QzMmGU=;
-        b=Vvzlc+92zBUg7NoL8uR2ONhMRjiE8WfIi3pGGh/0CTZmBVlXSdKDQA4Oj5cVwxbu/E
-         9st5sr0qKh43Pn4vT/iIM+ujs0nRoaAF+IGdb82JG76v0fJO4VYsQoMh5kVMVfuPETtB
-         GlcOqTNS0g+3hDBu7bk4lWy7gNf9TuHSOivY54ru6GXYHG1lfkMnzeEitDUUEqChTqsD
-         /ur9PNKX70lixznCpKVP+sYRhTyjVtNZFVdpr3mCJB8/5NULtCxDLybeFgINVtLXUV9Q
-         C5CwJNIWTMhPV80xgt/tPjksXJGMO9ii2MfkyiylEN1WkeZIpP+rXcv2c36Mr7C/auV+
-         iBYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aEPxyvXnmrv0lKzfPZxfPT+WsKfMDsaiPIWT0QzMmGU=;
-        b=fK+6vqwvwWnqj4MCIXlaWIp0bk8UmbXreiLiKWYP/CCRCTkTwLO/I46bLFnCHHJf3b
-         90jZXGlA7dqNDkXb3bBZZDBjEik0miqVRwT2ksmj431ZJArda0N/L1gtBPXVhwXs+gqB
-         AT8tZBzYIOhj3st/JERose5k3oT8QRV5Bi0EAXUag2bcd9z5x10bF2w7W0Um1vRqFFd6
-         wRTeodoeacTW+mTF8EXKA96B+Iy8MTm1bd45xDAyszyabYVRgANziY0l9J1GYeVpg1PV
-         DVmK7i0f+UEWcr/JJvr2yfG1vzT4fteczR5DWbrE6BSBUIZA9YSDGH2xQ1hvhd3lbq81
-         nPyg==
-X-Gm-Message-State: AGi0Pubujnsed9MOl2K1tkEwtcSs/kfFhmq18f56QMqLehVKdjQpBOtX
-        vcS2YZcns0swG/Pe0vJ15WU=
-X-Google-Smtp-Source: APiQypJhM7mszMg6zpXF1ZOwC1flfusD5OcI2WvosbF2Mlkzo94se+Dq9o0BgEXu/VQbI8vLorTL6A==
-X-Received: by 2002:a5d:6148:: with SMTP id y8mr39259342wrt.236.1588179981628;
-        Wed, 29 Apr 2020 10:06:21 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f44:e300:74d0:2441:790c:f026? (p200300EA8F44E30074D02441790CF026.dip0.t-ipconnect.de. [2003:ea:8f44:e300:74d0:2441:790c:f026])
-        by smtp.googlemail.com with ESMTPSA id x23sm8034484wmj.6.2020.04.29.10.06.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Apr 2020 10:06:21 -0700 (PDT)
-Subject: Re: [PATCH 2/2] Reset PHY in phy_init_hw() before interrupt
- configuration
-To:     "Badel, Laurent" <LaurentBadel@eaton.com>,
-        "fugang.duan@nxp.com" <fugang.duan@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "richard.leitner@skidata.com" <richard.leitner@skidata.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "alexander.levin@microsoft.com" <alexander.levin@microsoft.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc:     "Quette, Arnaud" <ArnaudQuette@Eaton.com>
-References: <CH2PR17MB3542BB17A1FA1764ACE3B20EDFAD0@CH2PR17MB3542.namprd17.prod.outlook.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <338bd206-673d-6f3e-0402-822707af5075@gmail.com>
-Date:   Wed, 29 Apr 2020 19:06:11 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726554AbgD2RSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 13:18:00 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:27796 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726481AbgD2RSA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 13:18:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588180678;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=6avqHSEb/cZhwd5OZz8U3buVE9ukc9RXfQodB0t543E=;
+        b=FcCcsfU5oxKmXJtfLMxmJq2ZxzUKPSlL53wO5+bZqtpRoCCJkiroo21Z58GFuM5tSV9tBO
+        6a3gQyHJBdpqAmPS7lf661Jsf6eaOIhksyxOM0EBMrRB3YwXramySPrzw0AcpDE6D/RZsB
+        vuawJFYk0SIamFvflUjxQEvgsXfWJEY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-360-yoeDv90SNLm5WzaQ-BP8BA-1; Wed, 29 Apr 2020 13:17:56 -0400
+X-MC-Unique: yoeDv90SNLm5WzaQ-BP8BA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AF37C107ACCA;
+        Wed, 29 Apr 2020 17:17:55 +0000 (UTC)
+Received: from linux.fritz.box.com (ovpn-114-45.ams2.redhat.com [10.36.114.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1EBF45D76A;
+        Wed, 29 Apr 2020 17:17:53 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     stephen@networkplumber.org, netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@gmail.com>, Andrea Claudi <aclaudi@redhat.com>
+Subject: [PATCH iproute2-next] man: ip.8: add reference to mptcp man-page
+Date:   Wed, 29 Apr 2020 19:17:22 +0200
+Message-Id: <bc8e7bce10677759e39fb8524f4f3e5a991313fe.1588180491.git.pabeni@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <CH2PR17MB3542BB17A1FA1764ACE3B20EDFAD0@CH2PR17MB3542.namprd17.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29.04.2020 11:03, Badel, Laurent wrote:
-> ﻿Description: this patch adds a reset of the PHY in phy_init_hw() 
-> for PHY drivers bearing the PHY_RST_AFTER_CLK_EN flag.
-> 
-> Rationale: due to the PHY reset reverting the interrupt mask to default, 
-> it is necessary to either perform the reset before PHY configuration, 
-> or re-configure the PHY after reset. This patch implements the former
-> as it is simpler and more generic. 
-> 
-> Fixes: 1b0a83ac04e383e3bed21332962b90710fcf2828 ("net: fec: add phy_reset_after_clk_enable() support")
-> Signed-off-by: Laurent Badel <laurentbadel@eaton.com>
-> 
-> ---
->  drivers/net/phy/phy_device.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> index 28e3c5c0e..2cc511364 100644
-> --- a/drivers/net/phy/phy_device.c
-> +++ b/drivers/net/phy/phy_device.c
-> @@ -1082,8 +1082,11 @@ int phy_init_hw(struct phy_device *phydev)
->  {
->  	int ret = 0;
->  
-> -	/* Deassert the reset signal */
-> -	phy_device_reset(phydev, 0);
-> +	/* Deassert the reset signal
-> +	 * If the PHY needs a reset, do it now
-> +	 */
-> +	if (!phy_reset_after_clk_enable(phydev))
+While at it, additionally fix a mandoc warning in mptcp.8
 
-If reset is asserted when entering phy_init_hw(), then
-phy_reset_after_clk_enable() basically becomes a no-op.
-Still it should work as expected due to the reset signal being
-deasserted. It would be worth describing in the comment
-why the code still works in this case.
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ man/man8/ip-mptcp.8 | 1 -
+ man/man8/ip.8       | 7 ++++++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
-> +		phy_device_reset(phydev, 0);
->  
->  	if (!phydev->drv)
->  		return 0;
-> 
+diff --git a/man/man8/ip-mptcp.8 b/man/man8/ip-mptcp.8
+index f6457e97..ef8409ea 100644
+--- a/man/man8/ip-mptcp.8
++++ b/man/man8/ip-mptcp.8
+@@ -2,7 +2,6 @@
+ .SH "NAME"
+ ip-mptcp \- MPTCP path manager configuration
+ .SH "SYNOPSIS"
+-.sp
+ .ad l
+ .in +8
+ .ti -8
+diff --git a/man/man8/ip.8 b/man/man8/ip.8
+index 1613f790..c9f7671e 100644
+--- a/man/man8/ip.8
++++ b/man/man8/ip.8
+@@ -22,7 +22,7 @@ ip \- show / manipulate routing, network devices, inter=
+faces and tunnels
+ .BR link " | " address " | " addrlabel " | " route " | " rule " | " neig=
+h " | "\
+  ntable " | " tunnel " | " tuntap " | " maddress " | "  mroute " | " mru=
+le " | "\
+  monitor " | " xfrm " | " netns " | "  l2tp " | "  tcp_metrics " | " tok=
+en " | "\
+- macsec " | " vrf " }"
++ macsec " | " vrf " | " mptcp " }"
+ .sp
+=20
+ .ti -8
+@@ -268,6 +268,10 @@ readability.
+ .B monitor
+ - watch for netlink messages.
+=20
++.TP
++.B mptcp
++- manage MPTCP path manager.
++
+ .TP
+ .B mroute
+ - multicast routing cache entry.
+@@ -405,6 +409,7 @@ was written by Alexey N. Kuznetsov and added in Linux=
+ 2.2.
+ .BR ip-link (8),
+ .BR ip-maddress (8),
+ .BR ip-monitor (8),
++.BR ip-mptcp (8),
+ .BR ip-mroute (8),
+ .BR ip-neighbour (8),
+ .BR ip-netns (8),
+--=20
+2.21.1
 
