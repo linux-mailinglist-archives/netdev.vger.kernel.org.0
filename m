@@ -2,65 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB21E1BE3F3
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 18:35:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21DF91BE3F4
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 18:35:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726539AbgD2QfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 12:35:17 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:60024 "EHLO vps0.lunn.ch"
+        id S1726741AbgD2QfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 12:35:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47022 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726456AbgD2QfQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Apr 2020 12:35:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=gJ6dA2WzObd3dMwH5IHj1oP7HzaK0xUinQxZQf2+enc=; b=M+gJ1LZSCi7zI9VMIZuMsssO/J
-        9cbIeE6eFTJsAJTeIMqkdkSsDJAA51ICHxOD3gUOcnvofSvp7+Qj0AbUYEAuRTgaxQ9IFFA8WHmaG
-        nxfLUmWh74xyOGjzHFGionONkLzQgMMFeE/lw2R00OhYc7ZxoOMthSgFQvA1379wCELY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jTpfy-000IOF-AR; Wed, 29 Apr 2020 18:35:10 +0200
-Date:   Wed, 29 Apr 2020 18:35:10 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Badel, Laurent" <LaurentBadel@eaton.com>
-Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "fugang.duan@nxp.com" <fugang.duan@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "richard.leitner@skidata.com" <richard.leitner@skidata.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "alexander.levin@microsoft.com" <alexander.levin@microsoft.com>,
-        "Quette, Arnaud" <ArnaudQuette@Eaton.com>
-Subject: Re: [EXTERNAL]  Re: [PATCH 1/2] Revert commit
- 1b0a83ac04e383e3bed21332962b90710fcf2828
-Message-ID: <20200429163510.GD66424@lunn.ch>
-References: <CH2PR17MB3542DCD8D9825EE6B88BC5FCDFAD0@CH2PR17MB3542.namprd17.prod.outlook.com>
- <20200429152519.GB66424@lunn.ch>
- <CH2PR17MB35423A4698E4068CDE3E18A6DFAD0@CH2PR17MB3542.namprd17.prod.outlook.com>
+        id S1726456AbgD2QfW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Apr 2020 12:35:22 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 13626208FE;
+        Wed, 29 Apr 2020 16:35:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588178122;
+        bh=PLK/xJE+T+VKqaVgo00E1thrQcDEKSG8CwZuddgyaa8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=v0sN7F4QCLZ6OdWwFOFaRlBuGxT95yWXHX0P+dckWE/CUdkYdR2jOMoMqJOD3T9iw
+         DpJ50f3E1vuI04wwZ6JwLbP+POc75N1c/mHVJn27TB7ELyA7kTxHXwF8ZZP4sio3kX
+         0OLMCyL1heqmfB9NaMVRlDB4yWIIYZYdD9SKWzp0=
+Date:   Wed, 29 Apr 2020 09:35:18 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kernel-team@fb.com,
+        jacob.e.keller@intel.com
+Subject: Re: [PATCH net-next] devlink: let kernel allocate region snapshot
+ id
+Message-ID: <20200429093518.531a5ed9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200429054552.GB6581@nanopsycho.orion>
+References: <20200429014248.893731-1-kuba@kernel.org>
+        <20200429054552.GB6581@nanopsycho.orion>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CH2PR17MB35423A4698E4068CDE3E18A6DFAD0@CH2PR17MB3542.namprd17.prod.outlook.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 29, 2020 at 03:48:56PM +0000, Badel, Laurent wrote:
-> ﻿Hi Andrew, 
+On Wed, 29 Apr 2020 07:45:52 +0200 Jiri Pirko wrote:
+> Wed, Apr 29, 2020 at 03:42:48AM CEST, kuba@kernel.org wrote:
+> >Jiri, this is what I had in mind of snapshots and the same
+> >thing will come back for slice allocation.  
 > 
-> Thanks for the reply. It's the mainline tree, was 5.6.-rc7 at the time.
-> There's no tree mentioned for the ethernet PHY library in the maintainers files, 
-> but am I expected to test against net/ or net-next/ ? 
-> I'm happy to do so but should I use rather use net/ since this is more of a bugfix? 
+> Okay. Could you please send the userspace patch too in order to see the
+> full picture?
 
-The netdev FAQ talks about this. You need to submit against net, to
-David Miller.
+You got it, I didn't do anything fancy there.
 
-	Andrew
+> >+static int
+> >+devlink_nl_alloc_snapshot_id(struct devlink *devlink, struct genl_info *info,
+> >+			     struct devlink_region *region, u32 *snapshot_id)
+> >+{
+> >+	struct sk_buff *msg;
+> >+	void *hdr;
+> >+	int err;
+> >+
+> >+	err = __devlink_region_snapshot_id_get(devlink, snapshot_id);
+> >+	if (err) {
+> >+		NL_SET_ERR_MSG_MOD(info->extack,  
+> 
+> No need to wrap here.
+
+Ok.
+
+> >+				   "Failed to allocate a new snapshot id");
+> >+		return err;
+> >+	}
+
+> >-	err = __devlink_snapshot_id_insert(devlink, snapshot_id);
+> >-	if (err)
+> >-		return err;
+> >+		err = __devlink_snapshot_id_insert(devlink, snapshot_id);
+> >+		if (err)
+> >+			return err;
+> >+	} else {
+> >+		err = devlink_nl_alloc_snapshot_id(devlink, info,
+> >+						   region, &snapshot_id);
+> >+		if (err)
+> >+			return err;
+> >+	}
+> > 
+> > 	err = region->ops->snapshot(devlink, info->extack, &data);  
+> 
+> How the output is going to looks like it this or any of the follow-up
+> calls in this function are going to fail?
+> 
+> I guess it is going to be handled gracefully in the userspace app,
+> right?
+
+The output is the same, just the return code is non-zero.
+
+I can change that not to print the snapshot info until we are sure the
+operation succeeded if you prefer.
+
+Initially I had the kernel not sent the message until it's done with
+the operation, but that seems unnecessarily complex. The send operation
+itself may fail, and if we ever have an operation that requires more
+than one notification we'll have to struggle with atomic sends.
+
+Better have the user space treat the failure like an exception, and
+ignore all the notifications that came earlier.
+
+That said the iproute2 patch can be improved with extra 20 lines so
+that it holds off printing the snapshot info until success.
