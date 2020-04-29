@@ -2,114 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F5DC1BD341
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 05:50:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBC7E1BD350
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 05:58:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726736AbgD2Du3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 23:50:29 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:3380 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726662AbgD2Du3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Apr 2020 23:50:29 -0400
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 202F9A8B8C69B864AD05;
-        Wed, 29 Apr 2020 11:50:27 +0800 (CST)
-Received: from [127.0.0.1] (10.166.212.180) by DGGEMS405-HUB.china.huawei.com
- (10.3.19.205) with Microsoft SMTP Server id 14.3.487.0; Wed, 29 Apr 2020
- 11:50:22 +0800
-Subject: Re: [PATCH -next] hinic: Use ARRAY_SIZE for nic_vf_cmd_msg_handler
-To:     Joe Perches <joe@perches.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <1588130136-49236-1-git-send-email-zou_wei@huawei.com>
- <01d45e599732bc5af33a09b36e63beabfcad8d25.camel@perches.com>
-From:   Samuel Zou <zou_wei@huawei.com>
-Message-ID: <a67b8ad8-f157-2200-910d-19b23dcf77ab@huawei.com>
-Date:   Wed, 29 Apr 2020 11:50:21 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726777AbgD2D6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 23:58:50 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:23496 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726755AbgD2D6t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 23:58:49 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03T3rwGE028630
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 20:58:48 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=nW1dAchKtYHXH0E5cc5HRNgJkJCkI944GZCwY6z2qYk=;
+ b=kwSWqOkskbh4agSmsibVjkTSjhsWa1NpygMRBQxpGkEPwTocE6FvDN2q6mpfwq1ElsKS
+ H4cxDSumx+awVRoQRPkFqWWwTQsj5xdJ3eB9BTDUucX777soDiLnb1BPtmhhDjkBQu/L
+ ABdRN7FJdf76fFMB36OG3UrVR4YE91hGB1A= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 30mk1grb90-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 20:58:48 -0700
+Received: from intmgw004.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Tue, 28 Apr 2020 20:58:47 -0700
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 57B0362E4BEF; Tue, 28 Apr 2020 20:58:43 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Song Liu <songliubraving@fb.com>
+Smtp-Origin-Hostname: devbig006.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        Song Liu <songliubraving@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v7 bpf-next 0/3] bpf: sharing bpf runtime stats with
+Date:   Tue, 28 Apr 2020 20:58:38 -0700
+Message-ID: <20200429035841.3959159-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <01d45e599732bc5af33a09b36e63beabfcad8d25.camel@perches.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.166.212.180]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-28_15:2020-04-28,2020-04-28 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ suspectscore=8 mlxlogscore=999 priorityscore=1501 lowpriorityscore=0
+ mlxscore=0 malwarescore=0 bulkscore=0 spamscore=0 adultscore=0
+ clxscore=1015 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2004290028
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Joe,
-Thanks for your comments, I will modify and send the v2
+run_time_ns is a useful stats for BPF programs. However, it is gated by
+sysctl kernel.bpf_stats_enabled. When multiple user space tools are
+toggling kernl.bpf_stats_enabled at the same time, they may confuse each
+other.
 
-On 2020/4/29 11:23, Joe Perches wrote:
-> On Wed, 2020-04-29 at 11:15 +0800, Zou Wei wrote:
->> fix coccinelle warning, use ARRAY_SIZE
->>
->> drivers/net/ethernet/huawei/hinic/hinic_sriov.c:713:43-44: WARNING: Use ARRAY_SIZE
->>
->> Reported-by: Hulk Robot <hulkci@huawei.com>
->> Signed-off-by: Zou Wei <zou_wei@huawei.com>
->> ---
->>   drivers/net/ethernet/huawei/hinic/hinic_sriov.c | 3 +--
->>   1 file changed, 1 insertion(+), 2 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
->> index b24788e..ac12725 100644
->> --- a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
->> +++ b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
->> @@ -710,8 +710,7 @@ int nic_pf_mbox_handler(void *hwdev, u16 vf_id, u8 cmd, void *buf_in,
->>   	if (!hwdev)
->>   		return -EFAULT;
->>   
->> -	cmd_number = sizeof(nic_vf_cmd_msg_handler) /
->> -			    sizeof(struct vf_cmd_msg_handle);
->> +	cmd_number = ARRAY_SIZE(nic_vf_cmd_msg_handler);
->>   	pfhwdev = container_of(dev, struct hinic_pfhwdev, hwdev);
->>   	nic_io = &dev->func_to_io;
->>   	for (i = 0; i < cmd_number; i++) {
-> 
-> Probably better to remove cmd_number altogether
-> ---
->   drivers/net/ethernet/huawei/hinic/hinic_sriov.c | 8 +++-----
->   1 file changed, 3 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-> index b24788..af70cc 100644
-> --- a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-> +++ b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-> @@ -704,17 +704,15 @@ int nic_pf_mbox_handler(void *hwdev, u16 vf_id, u8 cmd, void *buf_in,
->   	struct hinic_hwdev *dev = hwdev;
->   	struct hinic_func_to_io *nic_io;
->   	struct hinic_pfhwdev *pfhwdev;
-> -	u32 i, cmd_number;
-> +	u32 i;
->   	int err = 0;
->   
->   	if (!hwdev)
->   		return -EFAULT;
->   
-> -	cmd_number = sizeof(nic_vf_cmd_msg_handler) /
-> -			    sizeof(struct vf_cmd_msg_handle);
->   	pfhwdev = container_of(dev, struct hinic_pfhwdev, hwdev);
->   	nic_io = &dev->func_to_io;
-> -	for (i = 0; i < cmd_number; i++) {
-> +	for (i = 0; i < ARRAY_SIZE(nic_vf_cmd_msg_handler); i++) {
->   		vf_msg_handle = &nic_vf_cmd_msg_handler[i];
->   		if (cmd == vf_msg_handle->cmd &&
->   		    vf_msg_handle->cmd_msg_handler) {
-> @@ -725,7 +723,7 @@ int nic_pf_mbox_handler(void *hwdev, u16 vf_id, u8 cmd, void *buf_in,
->   			break;
->   		}
->   	}
-> -	if (i == cmd_number)
-> +	if (i == ARRAY_SIZE(nic_vf_cmd_msg_handler))
->   		err = hinic_msg_to_mgmt(&pfhwdev->pf_to_mgmt, HINIC_MOD_L2NIC,
->   					cmd, buf_in, in_size, buf_out,
->   					out_size, HINIC_MGMT_MSG_SYNC);
-> 
-> 
-> 
-> .
-> 
+Solve this problem with a new BPF command BPF_ENABLE_STATS.
 
+Changes v6 =3D> v7:
+  1. Add test to verify run_cnt matches count measured by the program.
+
+Changes v5 =3D> v6:
+  1. Simplify test program (Yonghong).
+  2. Rebase (with some conflicts).
+
+Changes v4 =3D> v5:
+  1. Use memset to zero bpf_attr in bpf_enable_stats() (Andrii).
+
+Changes v3 =3D> v4:
+  1. Add libbpf support and selftest;
+  2. Avoid cleaning trailing space.
+
+Changes v2 =3D> v3:
+  1. Rename the command to BPF_ENABLE_STATS, and make it extendible.
+  2. fix commit log;
+  3. remove unnecessary headers.
+
+Song Liu (3):
+  bpf: sharing bpf runtime stats with BPF_ENABLE_STATS
+  libbpf: add support for command BPF_ENABLE_STATS
+  bpf: add selftest for BPF_ENABLE_STATS
+
+ include/linux/bpf.h                           |  1 +
+ include/uapi/linux/bpf.h                      | 11 ++++
+ kernel/bpf/syscall.c                          | 50 ++++++++++++++++
+ kernel/sysctl.c                               | 37 +++++++++++-
+ tools/include/uapi/linux/bpf.h                | 11 ++++
+ tools/lib/bpf/bpf.c                           | 10 ++++
+ tools/lib/bpf/bpf.h                           |  1 +
+ tools/lib/bpf/libbpf.map                      |  5 ++
+ .../selftests/bpf/prog_tests/enable_stats.c   | 58 +++++++++++++++++++
+ .../selftests/bpf/progs/test_enable_stats.c   | 18 ++++++
+ 10 files changed, 200 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/enable_stats.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_enable_stats.c
+
+--
+2.24.1
