@@ -2,126 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EA4B1BE054
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 16:11:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5337C1BE056
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 16:11:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728222AbgD2OKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 10:10:45 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:37186 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726691AbgD2OKo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Apr 2020 10:10:44 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 79FA820E5DA8037B5AF0;
-        Wed, 29 Apr 2020 22:10:43 +0800 (CST)
-Received: from huawei.com (10.175.124.28) by DGGEMS401-HUB.china.huawei.com
- (10.3.19.201) with Microsoft SMTP Server id 14.3.487.0; Wed, 29 Apr 2020
- 22:10:36 +0800
-From:   Jason Yan <yanaijie@huawei.com>
-To:     <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <davem@davemloft.net>,
-        <linux@armlinux.org.uk>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Jason Yan <yanaijie@huawei.com>
-Subject: [PATCH] net: dsa: mv88e6xxx: remove duplicate assignment of struct members
-Date:   Wed, 29 Apr 2020 22:10:01 +0800
-Message-ID: <20200429141001.8361-1-yanaijie@huawei.com>
-X-Mailer: git-send-email 2.21.1
+        id S1728288AbgD2OLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 10:11:05 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:59338 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727119AbgD2OLF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Apr 2020 10:11:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=+vHAMoqQnDQpOixhUfky9LKFwZ/RbB5JXgw62LfiHsE=; b=bv2PwJwBqHfkjMMvHKq0qYR3ft
+        LRzgYsTI+JmDffSiFFD7mTEWQaJCV/RwN4Hv4yu+If7r01qG3ZjI9BLULHDoUFraS2MC/MlJoQnQc
+        l3xt6kOoQLgBPNA5sqmVIW0ekwEwrfin9KH1c4JMBWfRhOzADRv4MutCXmztFZed0ry8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jTnQU-000GJt-VN; Wed, 29 Apr 2020 16:11:02 +0200
+Date:   Wed, 29 Apr 2020 16:11:02 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Andy Duan <fugang.duan@nxp.com>
+Cc:     David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "cphealy@gmail.com" <cphealy@gmail.com>,
+        Leonard Crestez <leonard.crestez@nxp.com>
+Subject: Re: [EXT] Re: [PATCH net-next] net: ethernet: fec: Prevent MII event
+ after MII_SPEED write
+Message-ID: <20200429141102.GK30459@lunn.ch>
+References: <20200428175833.30517-1-andrew@lunn.ch>
+ <20200428.143339.1189475969435668035.davem@davemloft.net>
+ <HE1PR0402MB2745408F4000C8B2C119B9EDFFAD0@HE1PR0402MB2745.eurprd04.prod.outlook.com>
+ <20200428.203439.49635882087657701.davem@davemloft.net>
+ <HE1PR0402MB2745963E2B675BAC95A61E55FFAD0@HE1PR0402MB2745.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.28]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <HE1PR0402MB2745963E2B675BAC95A61E55FFAD0@HE1PR0402MB2745.eurprd04.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These struct members named 'phylink_validate' was assigned twice:
+> > >> Applied to net-next, thanks.
+> > >
+> > > David, it is too early to apply the patch, it will introduce another
+> > > break issue as I explain in previous mail for the patch.
+> > 
+> > So what should I do, revert?
+> 
+> If you can revert the patch, please do it. 
+> Thanks, David.
 
-static const struct mv88e6xxx_ops mv88e6190_ops = {
-	......
-	.phylink_validate = mv88e6390_phylink_validate,
-	......
-	.phylink_validate = mv88e6390_phylink_validate,
-};
+Hi David
 
-static const struct mv88e6xxx_ops mv88e6190x_ops = {
-	......
-	.phylink_validate = mv88e6390_phylink_validate,
-	......
-	.phylink_validate = mv88e6390x_phylink_validate,
-};
+Please do revert. I will send a new version of the patch
+soon. Probably RFC this time!
 
-static const struct mv88e6xxx_ops mv88e6191_ops = {
-	......
-	.phylink_validate = mv88e6390_phylink_validate,
-	......
-	.phylink_validate = mv88e6390_phylink_validate,
-};
-
-static const struct mv88e6xxx_ops mv88e6290_ops = {
-	......
-	.phylink_validate = mv88e6390_phylink_validate,
-	......
-	.phylink_validate = mv88e6390_phylink_validate,
-};
-
-Remove all the first one and leave the second one which are been used in
-fact. Be aware that for 'mv88e6190x_ops' the assignment functions is
-different while the others are all the same. This fixes the following
-coccicheck warning:
-
-drivers/net/dsa/mv88e6xxx/chip.c:3911:48-49: phylink_validate: first
-occurrence line 3965, second occurrence line 3967
-drivers/net/dsa/mv88e6xxx/chip.c:3970:49-50: phylink_validate: first
-occurrence line 4024, second occurrence line 4026
-drivers/net/dsa/mv88e6xxx/chip.c:4029:48-49: phylink_validate: first
-occurrence line 4082, second occurrence line 4085
-drivers/net/dsa/mv88e6xxx/chip.c:4184:48-49: phylink_validate: first
-occurrence line 4238, second occurrence line 4242
-
-Signed-off-by: Jason Yan <yanaijie@huawei.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 4 ----
- 1 file changed, 4 deletions(-)
-
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index dd8a5666a584..2b4a723c8306 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3962,7 +3962,6 @@ static const struct mv88e6xxx_ops mv88e6190_ops = {
- 	.serdes_get_stats = mv88e6390_serdes_get_stats,
- 	.serdes_get_regs_len = mv88e6390_serdes_get_regs_len,
- 	.serdes_get_regs = mv88e6390_serdes_get_regs,
--	.phylink_validate = mv88e6390_phylink_validate,
- 	.gpio_ops = &mv88e6352_gpio_ops,
- 	.phylink_validate = mv88e6390_phylink_validate,
- };
-@@ -4021,7 +4020,6 @@ static const struct mv88e6xxx_ops mv88e6190x_ops = {
- 	.serdes_get_stats = mv88e6390_serdes_get_stats,
- 	.serdes_get_regs_len = mv88e6390_serdes_get_regs_len,
- 	.serdes_get_regs = mv88e6390_serdes_get_regs,
--	.phylink_validate = mv88e6390_phylink_validate,
- 	.gpio_ops = &mv88e6352_gpio_ops,
- 	.phylink_validate = mv88e6390x_phylink_validate,
- };
-@@ -4079,7 +4077,6 @@ static const struct mv88e6xxx_ops mv88e6191_ops = {
- 	.serdes_get_stats = mv88e6390_serdes_get_stats,
- 	.serdes_get_regs_len = mv88e6390_serdes_get_regs_len,
- 	.serdes_get_regs = mv88e6390_serdes_get_regs,
--	.phylink_validate = mv88e6390_phylink_validate,
- 	.avb_ops = &mv88e6390_avb_ops,
- 	.ptp_ops = &mv88e6352_ptp_ops,
- 	.phylink_validate = mv88e6390_phylink_validate,
-@@ -4235,7 +4232,6 @@ static const struct mv88e6xxx_ops mv88e6290_ops = {
- 	.serdes_get_stats = mv88e6390_serdes_get_stats,
- 	.serdes_get_regs_len = mv88e6390_serdes_get_regs_len,
- 	.serdes_get_regs = mv88e6390_serdes_get_regs,
--	.phylink_validate = mv88e6390_phylink_validate,
- 	.gpio_ops = &mv88e6352_gpio_ops,
- 	.avb_ops = &mv88e6390_avb_ops,
- 	.ptp_ops = &mv88e6352_ptp_ops,
--- 
-2.21.1
-
+      Andrew
