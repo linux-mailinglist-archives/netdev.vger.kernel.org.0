@@ -2,103 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDB311BDF98
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 15:52:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0454C1BDFB6
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 15:56:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727791AbgD2Nwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 09:52:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57736 "EHLO mail.kernel.org"
+        id S1727983AbgD2N4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 09:56:35 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:59312 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726885AbgD2Nwc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Apr 2020 09:52:32 -0400
-Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CC0FD20B80;
-        Wed, 29 Apr 2020 13:52:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588168351;
-        bh=ytyUCCIGyI+obLrMHzKUGgdlqFzyE04ZtGFK91iRm3M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lJkD/zbF1yevejOPgDCxQVSXUwBW/PWbOWYpI/zUSqNEq2OM6x8+7V+spbjIyhxcg
-         eN9lkO0ouItL2Ik+0MigJ11kTM7haS58xBWd4EqV2++KMVrtEELIMHeaJcxnFR2Ccp
-         Bg/nUNm71ptDOwgsWg3HxAKyf3jcXK2iQLdS37HQ=
-Date:   Wed, 29 Apr 2020 14:52:28 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Marek Szyprowski <m.szyprowski@samsung.com>
-Cc:     John Stultz <john.stultz@linaro.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Rob Herring <robh@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Basil Eljuse <Basil.Eljuse@arm.com>,
-        Ferry Toth <fntoth@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        netdev <netdev@vger.kernel.org>, linux-pm@vger.kernel.org,
-        'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
-Subject: Re: [PATCH v3 1/3] driver core: Revert default
- driver_deferred_probe_timeout value to 0
-Message-ID: <20200429135228.GL4201@sirena.org.uk>
-References: <20200422203245.83244-1-john.stultz@linaro.org>
- <20200422203245.83244-2-john.stultz@linaro.org>
- <CGME20200429134605eucas1p2bd601082e7a6b8c8fdbe79c83972e2e3@eucas1p2.samsung.com>
- <9e0501b5-c8c8-bc44-51e7-4bde2844b912@samsung.com>
+        id S1727807AbgD2N4R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Apr 2020 09:56:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=lsl27Mlg7G/ECMNhQVfGG90+ab5xfwND9PAQgH/V4W0=; b=MApuiRS9UbZpd5ZUjvMiUqvSQW
+        ftNVC1kMm1O+HYJid96UCzVS+LXt8CNpCXfrt7nUFejsNFSKlAWgfWF6Nq+obrP4QQgYmR4OutzXa
+        Qp2A1ABgJwf/5P0yL6MUguhzHSjbGLrxwBXd8Qi/lWrGlXJRzY86uY6q7ebpgKqfo12M=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jTnC5-000GGL-Ol; Wed, 29 Apr 2020 15:56:09 +0200
+Date:   Wed, 29 Apr 2020 15:56:09 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Badel, Laurent" <LaurentBadel@eaton.com>
+Cc:     "fugang.duan@nxp.com" <fugang.duan@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "richard.leitner@skidata.com" <richard.leitner@skidata.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "alexander.levin@microsoft.com" <alexander.levin@microsoft.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "Quette, Arnaud" <ArnaudQuette@Eaton.com>
+Subject: Re: [PATCH 1/2] Revert commit
+ 1b0a83ac04e383e3bed21332962b90710fcf2828
+Message-ID: <20200429135609.GJ30459@lunn.ch>
+References: <CH2PR17MB3542FD48AB01562BF812A948DFAD0@CH2PR17MB3542.namprd17.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="00hq2S6J2Jlg6EbK"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <9e0501b5-c8c8-bc44-51e7-4bde2844b912@samsung.com>
-X-Cookie: I know how to do SPECIAL EFFECTS!!
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CH2PR17MB3542FD48AB01562BF812A948DFAD0@CH2PR17MB3542.namprd17.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Apr 29, 2020 at 09:03:32AM +0000, Badel, Laurent wrote:
+> ﻿Description: This patch reverts commit 1b0a83ac04e3 
+> ("net: fec: add phy_reset_after_clk_enable() support")
+> which produces undesirable behavior when PHY interrupts are enabled.
+> 
+> Rationale: the SMSC LAN8720 (and possibly other chips) is known
+> to require a reset after the external clock is enabled. Calls to
+> phy_reset_after_clk_enable() in fec_main.c have been introduced in 
+> commit 1b0a83ac04e3 ("net: fec: add phy_reset_after_clk_enable() support")
+> to handle the chip reset after enabling the clock.
+> However, this breaks when interrupts are enabled because
+> the reset reverts the configuration of the PHY interrupt mask to default
+> (in addition it also reverts the "energy detect" mode setting).
+> As a result the driver does not receive the link status change
+> and other notifications resulting in loss of connectivity. 
+> 
+> Proposed solution: revert commit 1b0a83ac04e3 and bring the reset 
+> before the PHY configuration by adding it to phy_init_hw() [phy_device.c].
+> 
+> Test results: using an iMX28-EVK-based board, these 2 patches successfully
+> restore network interface functionality when interrupts are enabled.
+> Tested using both linux-5.4.23 and latest mainline (5.6.0) kernels.
+> 
+> Fixes: 1b0a83ac04e383e3bed21332962b90710fcf2828 ("net: fec: add phy_reset_after_clk_enable() support")
+> Signed-off-by: Laurent Badel <laurentbadel@eaton.com>
 
---00hq2S6J2Jlg6EbK
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi Laurent
 
-On Wed, Apr 29, 2020 at 03:46:04PM +0200, Marek Szyprowski wrote:
-> On 22.04.2020 22:32, John Stultz wrote:
+Please also read https://www.kernel.org/doc/Documentation/networking/netdev-FAQ.txt
 
-> > Fixes: c8c43cee29f6 ("driver core: Fix driver_deferred_probe_check_stat=
-e() logic")
-> > Signed-off-by: John Stultz <john.stultz@linaro.org>
-
-> Please also revert dca0b44957e5 "regulator: Use=20
-> driver_deferred_probe_timeout for regulator_init_complete_work" then,=20
-> because now with the default 0 timeout some regulators gets disabled=20
-> during boot, before their supplies gets instantiated.
-
-Yes, please - I requested this when the revert was originally proposed :(
-
---00hq2S6J2Jlg6EbK
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl6phpsACgkQJNaLcl1U
-h9B9Ogf+MFUG/IZB61LkLCHnKhJON6xWRLosWtR73L7yE/rRElq2K/LdbZGCyN7I
-EjK3VX1zEARY+I/ZQFGed1LNwAn9hMdFEVwqFv+PHOCC6hzJd+0O2jnbyUaC+3Bq
-+Hg2vXWb9z9UXLyoXcPiz4B+1fLkS2e48lLf/ahWQfd+BZQpzNrpoZ3i+0Pt+Vqn
-mXKIC9ZbFJtslUU6Gt6fz8DzseaPWMw0qPfdssdaG4EfNCP+UO4GtxVsFwnV2h/u
-fYgUlXaMEwQJN0p+g6Qu/f4419vhBIqoDXRtqQ0Fc4tPoUif0qYSx/bEpK6No3ue
-yv7+6TCSurJPLib9y1EXa60sVn/4Hg==
-=4Efx
------END PGP SIGNATURE-----
-
---00hq2S6J2Jlg6EbK--
+       Andrew
