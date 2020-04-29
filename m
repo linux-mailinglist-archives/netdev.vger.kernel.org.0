@@ -2,89 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B31C91BE458
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 18:52:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95FE41BE45F
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 18:53:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726621AbgD2QwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 12:52:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55492 "EHLO
+        id S1726904AbgD2Qxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 12:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726481AbgD2QwB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 12:52:01 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B3CC03C1AE
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 09:52:00 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id o135so2686459qke.6
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 09:52:00 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726836AbgD2Qxm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 12:53:42 -0400
+Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA9CC03C1AE
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 09:53:41 -0700 (PDT)
+Received: by mail-qt1-x849.google.com with SMTP id u13so3467840qtk.5
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 09:53:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZcM0xqbkWa+cj7QcDuPojFL6ag2CUmEJBATUhmc6pUQ=;
-        b=UMejH44iQvsSvOsUNONle36RNHjpVatlKbS1/U0gPa256+0IRwpa3hhfycq5J7BUy2
-         p6FJmbq1qdQaLCqIf9yQavWPSIYmnp7rAJ9sl2gpkR4VIahXvh94vWh7pPK7IxG6Xr2/
-         HRu1ZCLYnCFUMlGPscugGs9O15HZrDjRuhdlrQvSm5Saz00HZ5zjV+ZuYvMAh2DYoYk4
-         EZlJ/Pf3zL/RHwYVkx26irqhHbp1vFV9Zvl7Ska8FOjIqppQk7GTBDdWUyuVFyrqtfk7
-         jsGGy5QtFAWLc7FePUwybPDcF6Mwze+QQWw3gwPMMEbpyGuscreOKJmgLnvP1xhKpdlt
-         bCpw==
+        d=google.com; s=20161025;
+        h=mime-version:message-id:date:subject:from:to;
+        bh=hxiBv9yrVqUMQBBkcYpJics8xDmceCI+NKzHLf78oM4=;
+        b=UZJ1QOmv8gqAP3TL6WhlSy+pMIl36uLRqEQROQd9ClmrxfDbJt7SVI68WC7c3gMBq1
+         2nDz7Wa2HWyj/wpG0DMEepNL1vE6xwKeB2d12CoZh2fL94sxbglbj8vdRWAFaDgGTYVK
+         WJXXNbuK6zwtfLKVQIkGpG7r2i6rX2tBSMw756h5rzLAlpaQd+Pk7pcA8BiGzc6k7fRo
+         sj51ZoXpnZC7G5PHMjygY9NKi9dtC9H8UVVnDt9vJ+3MCZTn0qSZ+fm3d5oO+eW5Z7O3
+         W6QKcCiZ8QqHq5+OJEiOBmuRIx6SaUZ0LOOu/EVtPe/Tc3cXSQGs1hK0mcjvqEcA8TDQ
+         BfcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ZcM0xqbkWa+cj7QcDuPojFL6ag2CUmEJBATUhmc6pUQ=;
-        b=KVPF9brFbiM6wEkHv+2Rtw+Snqppb0VQqEmiXJyl0qs1lJw5YeLQM4Q5yYENQUG1Gz
-         TRIkP+b+nZlzfsqnkFdHHdYdGFqVfbZnWIqnMaGbTSU9frg5ogOsihxhM1RY+xTSPPTR
-         uC3v6KduHh/71JOT55clfTrEPcy4iY5mY7C2BrQjyF45SX5Gw6mSiN1jZAe5zmou40MN
-         tz7lSjkz8d6UGpxHnLHvrzte9usqCpe/r/D5Vju+d6LVhC1nT4bs5xqKPSu+SvH1Ztmh
-         +Rao6iv9SDcDW+7vPyqcKPAEHU6zXg0/e3WiuvkYfgrud75S4P+E3YqeGsVfoX9RGoCF
-         akJQ==
-X-Gm-Message-State: AGi0PuYjU7Sfwr2TfE5CsdIHYuEncsdrl32jxgidg4iUqRQEudZGuSUo
-        JIYMaDDivfHfXrerFKDhqjI=
-X-Google-Smtp-Source: APiQypJ+OUV4Zg4A43NX6N6kGZ9L3cgL67ZBue4LobuS8meMgy+8roek7hh0DwTBT/ngGdCyM3CEtg==
-X-Received: by 2002:a37:68c5:: with SMTP id d188mr35109643qkc.85.1588179120001;
-        Wed, 29 Apr 2020 09:52:00 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:3576:688b:325:4959? ([2601:282:803:7700:3576:688b:325:4959])
-        by smtp.googlemail.com with ESMTPSA id b19sm16372285qkg.72.2020.04.29.09.51.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Apr 2020 09:51:59 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 0/4] iproute: mptcp support
-To:     Paolo Abeni <pabeni@redhat.com>, stephen@networkplumber.org,
-        netdev@vger.kernel.org
-Cc:     dcaratti@redhat.com
-References: <cover.1587572928.git.pabeni@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <2ab158b2-a0f1-1ae5-c47c-ddc0fb6afa39@gmail.com>
-Date:   Wed, 29 Apr 2020 10:51:57 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.7.0
+        h=x-gm-message-state:mime-version:message-id:date:subject:from:to;
+        bh=hxiBv9yrVqUMQBBkcYpJics8xDmceCI+NKzHLf78oM4=;
+        b=S5ZUrmzZx0LuzzHkDIlI7jO+hWUc4ErNXIDM14edNmpFUT2/CrjFKIv6L7ZHIK/NEk
+         F2hkxujhg9vnT7EOKQqS67jhqY0bvxZ6zcPz5ACNJbHBTtN/BbCeHdfPsNhRqtIMJLDv
+         nw0SoJPqaU1PJurEzbOHevgsPp8cCFtB5CNGzLo9VF7+4Nmx8B5J0kgJps34yotYWjzL
+         FlKWyPJ3zhaunzSkfhtPar9IJHrdwPOn8algk29aWsz0mrxJrGbrE+t7gNG/4/5FgF73
+         10id3WMbIhavn3IbetzgyQmYduqGSFA2BnIh0pWK6HvRZhU31DbCRKV/DRsiF8e2VGK4
+         aMWg==
+X-Gm-Message-State: AGi0PuZKxBLmZGfX3fagl0wHieqiAPg82CsWNEDpIUkEmkS5dnPnJSxL
+        OoAqDV9xRSN9udzsTnlLLY0vvRM=
+X-Google-Smtp-Source: APiQypKeG3ABWJ1wvWBY2PZ3h6VbgPHtde5vFD80OAAGiZTrlqoAW/rJLXNrsKizPsvQ59i/4g3Q+Po=
 MIME-Version: 1.0
-In-Reply-To: <cover.1587572928.git.pabeni@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a0c:b604:: with SMTP id f4mr33399340qve.40.1588179220814;
+ Wed, 29 Apr 2020 09:53:40 -0700 (PDT)
+Message-ID: <0000000000004c3fe305a470ca38@google.com>
+Date:   Wed, 29 Apr 2020 16:53:40 +0000
+Subject: 
+From:   sdf@google.com
+To:     kafai@fb.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/23/20 7:37 AM, Paolo Abeni wrote:
-> This introduces support for the MPTCP PM netlink interface, allowing admins
-> to configure several aspects of the MPTCP path manager. The subcommand is
-> documented with a newly added man-page.
-> 
-> This series also includes support for MPTCP subflow diag.
-> 
-> Davide Caratti (1):
->   ss: allow dumping MPTCP subflow information
-> 
-> Paolo Abeni (3):
->   uapi: update linux/mptcp.h
->   add support for mptcp netlink interface
->   man: mptcp man page
-> 
+Date: Wed, 29 Apr 2020 09:53:39 -0700
+From: Stanislav Fomichev <sdf@google.com>
+To: Martin KaFai Lau <kafai@fb.com>
+Cc: netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+	ast@kernel.org, daniel@iogearbox.net
+Subject: Re: [PATCH bpf-next] bpf: bpf_{g,s}etsockopt for struct bpf_sock
+Message-ID: <20200429165339.GA40941@google.com>
+References: <20200428185719.46815-1-sdf@google.com>
+  <20200429164550.xmlklvypzlcjagvw@kafai-mbp>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200429164550.xmlklvypzlcjagvw@kafai-mbp>
 
+On 04/29, Martin KaFai Lau wrote:
+> On Tue, Apr 28, 2020 at 11:57:19AM -0700, Stanislav Fomichev wrote:
+> > Currently, bpf_getsocktop and bpf_setsockopt helpers operate on the
+> > 'struct bpf_sock_ops' context in BPF_PROG_TYPE_CGROUP_SOCKOPT program.
+> > Let's generalize them and make the first argument be 'struct bpf_sock'.
+> > That way, in the future, we can allow those helpers in more places.
+> s/BPF_PROG_TYPE_CGROUP_SOCKOPT/BPF_PROG_TYPE_SOCK_OPS/
 
-applied to iproute2-next. Thanks
+> Same for the other uses in the commit message and also
+> the document comment in the uapi (and tools) bpf.h.
 
-please send an update for man/man8/ip.8
+> Others LGTM.
+Oops, good catch, will follow up with a v2, thanks!
+
+> > BPF_PROG_TYPE_CGROUP_SOCKOPT still has the existing helpers that operate
+> > on 'struct bpf_sock_ops', but we add new bpf_{g,s}etsockopt that work
+> > on 'struct bpf_sock'. [Alternatively, for BPF_PROG_TYPE_CGROUP_SOCKOPT,
+> > we can enable them both and teach verifier to pick the right one
+> > based on the context (bpf_sock_ops vs bpf_sock).]
+> >
+> > As an example, let's allow those 'struct bpf_sock' based helpers to
+> > be called from the BPF_CGROUP_INET{4,6}_CONNECT hooks. That way
+> > we can override CC before the connection is made.
+> >
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
