@@ -2,94 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3E381BE1E5
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 17:01:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 654F11BE21B
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 17:09:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726481AbgD2PBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 11:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38244 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726423AbgD2PBq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 11:01:46 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E22D4C03C1AD
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 08:01:45 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id o19so2258363qkk.5
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 08:01:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=f920QRE5gz957Dg6YScbJ4EIs4w7vSsipmkT/Y9gXGA=;
-        b=LtnbleUL4kSUA3p5MEvvVKhLUh99ANiJxPrS6XRcQnot7zoHneHOxg+M5RHBkzDO2a
-         pk4SUPoT8OIwvNkskgV5mlOABJZpCqc2TTocIbaIiDbdQ8iIwSx/GJyjiySH5eb5fUJP
-         iJDfIhBfuXkpTOvFoZrnC93FOAidogi+HxWCSGm4i6pJMHfX6zsjYouiZKSCbAO4xHkU
-         95HHX349fwRUjhepmz/qwkTM1qHDpBWNhj/rHnoUCNKGJ/tADpKi4vfFwx8mAXH9kaJp
-         +/7D2OCM5HVQ5iFNobMMesXZjQmLHdYcIvXGGsiSyKol+Lu/nsMcsAj/kSlw6Pw2t22C
-         RZpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=f920QRE5gz957Dg6YScbJ4EIs4w7vSsipmkT/Y9gXGA=;
-        b=EhYWL19wFrIV9JabyP+erX+42pE1bo9mgixxfPSpbekxC5tMUZbfs7vQbh4rutTXSV
-         MhZixa+mhe9qk+BixX0Om2UyPuaXsn3mqaqtjZ4s0Lxl8AzmlZ39YA8EL/TMb1Xr3MpW
-         84a9m3FcnNVZKVSlT4h1E+kETEpDuGV7/4DEtFREtS9cjdgymJBUDQb87rzDiZ9fKYP8
-         vNCIN3MCGOyVLppL2Trp4sM3VGNyoQ9OcF23Zu1jP8wwbxBio/JWn7JZSI/34RDoodJn
-         9brnAJYn3qn7SrtsxJCdIKW5w8gZ04byrxrgPlF1Gs5IYMbN/Pb8qRkIOtBfOs5gtQbu
-         YMdg==
-X-Gm-Message-State: AGi0PuYFzg3DriWPkj28UM5wWLrR/TmB4t5YuLQW4UF+Elwyuk3JtBOP
-        oX4fc6OanlotQUnclrPi68p1Fw==
-X-Google-Smtp-Source: APiQypKsU22FpXMqa+sWplMBvTTaL6Gl45tUrzqJXZDBiIcc4C2tOom+pXU6c8GBc5tErGio/YcfBg==
-X-Received: by 2002:ae9:ef85:: with SMTP id d127mr16079284qkg.385.1588172505162;
-        Wed, 29 Apr 2020 08:01:45 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id t13sm15678201qkt.62.2020.04.29.08.01.44
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 29 Apr 2020 08:01:44 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jToDX-0005uE-Ja; Wed, 29 Apr 2020 12:01:43 -0300
-Date:   Wed, 29 Apr 2020 12:01:43 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Maor Gottlieb <maorg@mellanox.com>
-Cc:     davem@davemloft.net, dledford@redhat.com, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org,
-        jiri@mellanox.com, dsahern@kernel.org, leonro@mellanox.com,
-        saeedm@mellanox.com, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, alexr@mellanox.com
-Subject: Re: [PATCH V6 mlx5-next 11/16] RDMA/core: Add LAG functionality
-Message-ID: <20200429150143.GC26002@ziepe.ca>
-References: <20200426071717.17088-1-maorg@mellanox.com>
- <20200426071717.17088-12-maorg@mellanox.com>
- <20200428231525.GY13640@mellanox.com>
- <20200428233009.GA31451@mellanox.com>
- <a7503b0d-68e7-3589-33fc-cf9b516d71b7@mellanox.com>
+        id S1726618AbgD2PJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 11:09:37 -0400
+Received: from mga04.intel.com ([192.55.52.120]:51891 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726530AbgD2PJg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Apr 2020 11:09:36 -0400
+IronPort-SDR: g/C3perDkehrVL4TL5JyXD+dzKmK3zHsRqslz72Mo64crlCsZMC54fUYld3VFvaXRy+1TmL6Vs
+ GzVHMgtirgwA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2020 08:09:36 -0700
+IronPort-SDR: WQ7JPyqiixk3tjGBb+d8JzMARm8zJ3Z8nbI5rSzN27DzgvK5Ll2064gPOKVaXONKiJQl6SOnyi
+ w440qNlrbDiw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,332,1583222400"; 
+   d="scan'208";a="293227924"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga002.fm.intel.com with ESMTP; 29 Apr 2020 08:09:34 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 41993166; Wed, 29 Apr 2020 18:09:32 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>
+Subject: [PATCH v1] stmmac: intel: Fix kernel crash due to wrong error path
+Date:   Wed, 29 Apr 2020 18:09:32 +0300
+Message-Id: <20200429150932.17927-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a7503b0d-68e7-3589-33fc-cf9b516d71b7@mellanox.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 29, 2020 at 12:01:07PM +0300, Maor Gottlieb wrote:
-> 
-> On 4/29/2020 2:30 AM, Jason Gunthorpe wrote:
-> > On Tue, Apr 28, 2020 at 08:15:25PM -0300, Jason Gunthorpe wrote:
-> > > On Sun, Apr 26, 2020 at 10:17:12AM +0300, Maor Gottlieb wrote:
-> > > > +int rdma_lag_get_ah_roce_slave(struct ib_device *device,
-> > > > +			       struct rdma_ah_attr *ah_attr,
-> > > > +			       struct net_device **xmit_slave)
-> > > Please do not use ** and also return int. The function should return
-> > > net_device directly and use ERR_PTR()
-> 
-> How about return NULL in failure as well (will add debug print)? Not fail
-> the flow if we didn't succeed to get the slave, let the lower driver to do
-> it if it would like to.
+Unfortunately sometimes ->probe() may fail. The commit b9663b7ca6ff
+("net: stmmac: Enable SERDES power up/down sequence")
+messed up with error handling and thus:
 
-A NULL return indicating success but 'not found' is fine.
+[   12.811311] ------------[ cut here ]------------
+[   12.811993] kernel BUG at net/core/dev.c:9937!
 
-Jason
+Fix this by properly crafted error path.
+
+Fixes: b9663b7ca6ff ("net: stmmac: Enable SERDES power up/down sequence")
+Cc: Voon Weifeng <weifeng.voon@intel.com>
+Cc: Ong Boon Leong <boon.leong.ong@intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 565da6498c846e..ff22f274aa43d6 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -4991,7 +4991,7 @@ int stmmac_dvr_probe(struct device *device,
+ 						 priv->plat->bsp_priv);
+ 
+ 		if (ret < 0)
+-			return ret;
++			goto error_serdes_powerup;
+ 	}
+ 
+ #ifdef CONFIG_DEBUG_FS
+@@ -5000,6 +5000,8 @@ int stmmac_dvr_probe(struct device *device,
+ 
+ 	return ret;
+ 
++error_serdes_powerup:
++	unregister_netdev(ndev);
+ error_netdev_register:
+ 	phylink_destroy(priv->phylink);
+ error_phy_setup:
+-- 
+2.26.2
+
