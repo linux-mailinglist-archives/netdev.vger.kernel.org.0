@@ -2,59 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBF541BE0BD
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 16:22:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD4501BE0BF
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 16:23:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727110AbgD2OWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 10:22:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60222 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726815AbgD2OWg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 10:22:36 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCEECC03C1AD
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 07:22:35 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id u127so2248218wmg.1
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 07:22:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=neVbWwDmdiMbzy/Asxd3U/Smb8d6Dvggkg471twxJ/s=;
-        b=tvsAbEbK4FwAL5TSL+qCYUqp0MDE/gO0bhsUhB8DbxsabQ0airEe1+0FFMK4vPiIxy
-         Euvi2ElaSGGPZxn2S+sBHbEXgedXEIuSrHtkDGCfwquJyh4er76GcTDabhRPWyLZDaG+
-         +cm6Ba5blUstjH8RCJJjMeIKeaszfu/MB5MzNcv9S3S44d1i3DTVhZYjFCsYcx5wSkmm
-         2EPkuACAgBfVcABCVhH6wtni46tfvZGFSBtAFcTyCJVGOlAcFtf2CoMFJDqEQ0LqIso2
-         lnV888cdVao5GKnHDiUBmvbWnFG/prjibZQUXwPpC6GAtTPDp2ZVM1MpsZ5TP+fn6dJf
-         gAjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=neVbWwDmdiMbzy/Asxd3U/Smb8d6Dvggkg471twxJ/s=;
-        b=XjaRqxx/Iy0Mq4UqvLVC0MhMRsl0vFFg9hoAKv9OEKO4tUFzNe0C70Go8klaBzWkll
-         MYw59M08cVsINd4Jn92bNyCtlDmjYVLqxz7vO/4C1E+BeCj96Rd1jqZ4hHC1qnNqllAo
-         3w8N9Tm+MIBafo9sGXSczc5q9UpoAsTHImE80ZeVfxdq6BvqMep0L6P3amfaxMRxyfyB
-         96izrm2HOgaT/9zLr/jZ6PfcHoarAFK01+JGRkppgI0zPwP1qYx2+wBcGEv64e+JjAk/
-         m8Oq26qX3xaDuySueIdRpTtqy6e8cJ9uX0RgQpZfUsiRil3ZOtHjvi9GI4eyfgPrCZo6
-         phGA==
-X-Gm-Message-State: AGi0PubOJAVQ6RPPuSCjpqEpKPJLeXejeqEQA/d7BD/iHOtZoltdlynV
-        U4NG8urHhQ93XURl2yNPLxhtdb/ZvAGq62ipKGM=
-X-Google-Smtp-Source: APiQypI931yMBXpx4QddwMc2sWiOwaCqFcvoNodgY2K2cFTKQWX107l4PXnHkCoi1QGs2iFJipF+yHWPCoUtvoX8z1g=
-X-Received: by 2002:a05:600c:258:: with SMTP id 24mr3494133wmj.73.1588170154477;
- Wed, 29 Apr 2020 07:22:34 -0700 (PDT)
+        id S1727933AbgD2OWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 10:22:53 -0400
+Received: from mga02.intel.com ([134.134.136.20]:2447 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726811AbgD2OWw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Apr 2020 10:22:52 -0400
+IronPort-SDR: ddIyjzvcB8w0uI64c2EH6wT5U6HAzdX8pFnDzATEN9YpqFwMK06TJMDvyQ99K4hpNFf6XvRbZn
+ 6Ox1T/fxpvxQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2020 07:22:51 -0700
+IronPort-SDR: LewOahKZhx0sn+cAkxy5DPIPD5ioJPKN91mYfHiyAhJgNQqzdLT3xtPMdU0LITnlc0fXmK3I9L
+ Ll8ufsaZ0K/Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,332,1583222400"; 
+   d="scan'208";a="293215157"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by fmsmga002.fm.intel.com with ESMTP; 29 Apr 2020 07:22:49 -0700
+Received: from andy by smile with local (Exim 4.93)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1jTnbw-003jji-Bu; Wed, 29 Apr 2020 17:22:52 +0300
+Date:   Wed, 29 Apr 2020 17:22:52 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH v1 1/5] stmmac: intel: Check return value of
+ clk_prepare_enable()
+Message-ID: <20200429142252.GK185537@smile.fi.intel.com>
+References: <20200429140449.9484-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Received: by 2002:a1c:49c3:0:0:0:0:0 with HTTP; Wed, 29 Apr 2020 07:22:33
- -0700 (PDT)
-Reply-To: barredwinclark4@gmail.com
-From:   Edwin Clark <akojovi6@gmail.com>
-Date:   Wed, 29 Apr 2020 15:22:33 +0100
-Message-ID: <CAFQMMJxYRRR0kpusG_tJsvuLnYspTYK60V7pdXoAbN_v4H16BQ@mail.gmail.com>
-Subject: Hi.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200429140449.9484-1-andriy.shevchenko@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Hope all is well with you and your family?
+On Wed, Apr 29, 2020 at 05:04:45PM +0300, Andy Shevchenko wrote:
+> clk_prepare_enable() might fail, we have to check its returned value.
+> 
+> While at it, remove leftover in stmmac_pci, also remove unneeded condition
+> for NULL-aware clk_unregister_fixed_rate() call and call it when
+> stmmac_dvr_probe() fails.
+
+Please, ignore this series. It appears that there is one more issue with proper
+error handling. I'll send v2 soon after additional testing.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
