@@ -2,156 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 668A71BE7AD
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 21:49:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F8941BE794
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 21:46:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727862AbgD2TsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 15:48:10 -0400
-Received: from correo.us.es ([193.147.175.20]:50016 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726877AbgD2TsI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Apr 2020 15:48:08 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 63992E1711
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 21:42:53 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 57F9CBAAB4
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 21:42:53 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 4DAB6BAAAF; Wed, 29 Apr 2020 21:42:53 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 5A6FDDA736;
-        Wed, 29 Apr 2020 21:42:51 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 29 Apr 2020 21:42:51 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 36B2B42EF9E0;
-        Wed, 29 Apr 2020 21:42:51 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 6/6] netfilter: nft_nat: add netmap support
-Date:   Wed, 29 Apr 2020 21:42:43 +0200
-Message-Id: <20200429194243.22228-7-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200429194243.22228-1-pablo@netfilter.org>
-References: <20200429194243.22228-1-pablo@netfilter.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726814AbgD2Tqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 15:46:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54868 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726456AbgD2Tqf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 15:46:35 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B768C03C1AE;
+        Wed, 29 Apr 2020 12:46:35 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id 18so1575109pfx.6;
+        Wed, 29 Apr 2020 12:46:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=Jasr6jlZgCzqBOuA5EUCTCY8i3t2aut5HXZlE2l+ixA=;
+        b=V5Rsj6ogWUsnxpcbrNBduosMFpgn/mqOzZyU41YO7+hJjMaILBQDYl8/3W+pwQBVLW
+         mF1kFlWOaA1lB28nvhuA6RCyhaJb7EYyBEEG7cqnb8LR3yL6ND8ieRjn/Zl/BnWvIFzE
+         tKkEqq70tzoGYRLKjD7EVBCIHQYQgcR6KKwtzuFEGMFNjwzDWVp4uvrEVC8STfCq5l5h
+         dxBzCbQEyAeZ2NCGMMZPhu7gATryqlmkI0monwxKI8mqjHSESR6Par1Rx5gEJ/K/8U7k
+         /mVA/Qirfx9zVaJuJkeCG+BdmBM9zsPEaPV/wojTeyGDn5LDdgDxttaSayGncSVeC6Q9
+         0oRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Jasr6jlZgCzqBOuA5EUCTCY8i3t2aut5HXZlE2l+ixA=;
+        b=gjdkM0hgImXWGmBBLNXiGUkaGVyi0t9jRyjZqHlBycKCN0pusD1M+14S3/qWWqpjEN
+         nnLBxmzoboM6Y2oylg6g3WBWeyFpNGcOpbZKgOn50OtdG4e25PRRupsWcl+EaUH1CRTq
+         3yVlXyo9/sMvp1LMCmRpLIIXpQl3jMjj9kJ/ZxxwTM2fo1Gy/DWj0ORQjvhS9dcP/HDd
+         Jd8V0T6/Eh+1fCCHNWYEZ/q/NEZFPkqCKwP2V6vXW4uL/cXByGa/BXG+XbP+dQdHAHR/
+         mOwQDQB2UDSpYocf4fY07xuCfxQHUuvW5C/odwOlUc40s4dRL94ne4H+/pCyGj3vTps0
+         8+0Q==
+X-Gm-Message-State: AGi0PuYgdvM29/ZVGyZZ/QAGZFr2+N2pw6LVBpH/0DfFZ9eubJLk+QDZ
+        c8CnPZbSxHo201jS9AYayAI=
+X-Google-Smtp-Source: APiQypLNPyaOVHptLXLwofZRhTyh5Co3/5V4oGBIpBOmhMKLW9FtjbmEsf+iMFy9tGKjI1iWiBdT2Q==
+X-Received: by 2002:a62:35c3:: with SMTP id c186mr13328125pfa.261.1588189594608;
+        Wed, 29 Apr 2020 12:46:34 -0700 (PDT)
+Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id z15sm87956pjt.20.2020.04.29.12.46.33
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 29 Apr 2020 12:46:33 -0700 (PDT)
+From:   Doug Berger <opendmb@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Doug Berger <opendmb@gmail.com>
+Subject: [PATCH net-next 0/7] net: bcmgenet: add support for Wake on Filter
+Date:   Wed, 29 Apr 2020 12:45:45 -0700
+Message-Id: <1588189552-899-1-git-send-email-opendmb@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch allows you to NAT the network address prefix onto another
-network address prefix, a.k.a. netmapping.
+This commit set adds support for waking from 'standby' using a
+Rx Network Flow Classification filter specified with ethtool.
 
-Userspace must specify the NF_NAT_RANGE_NETMAP flag and the prefix
-address through the NFTA_NAT_REG_ADDR_MIN and NFTA_NAT_REG_ADDR_MAX
-netlink attributes.
+The first two commits are bug fixes that should be applied to the
+stable branches, but are included in this patch set to reduce merge
+conflicts that might occur if not applied before the other commits
+in this set.
 
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- include/uapi/linux/netfilter/nf_nat.h |  4 ++-
- net/netfilter/nft_nat.c               | 46 ++++++++++++++++++++++++++-
- 2 files changed, 48 insertions(+), 2 deletions(-)
+The next commit consolidates WoL clock managment as a part of the
+overall WoL configuration.
 
-diff --git a/include/uapi/linux/netfilter/nf_nat.h b/include/uapi/linux/netfilter/nf_nat.h
-index 4a95c0db14d4..a64586e77b24 100644
---- a/include/uapi/linux/netfilter/nf_nat.h
-+++ b/include/uapi/linux/netfilter/nf_nat.h
-@@ -11,6 +11,7 @@
- #define NF_NAT_RANGE_PERSISTENT			(1 << 3)
- #define NF_NAT_RANGE_PROTO_RANDOM_FULLY		(1 << 4)
- #define NF_NAT_RANGE_PROTO_OFFSET		(1 << 5)
-+#define NF_NAT_RANGE_NETMAP			(1 << 6)
- 
- #define NF_NAT_RANGE_PROTO_RANDOM_ALL		\
- 	(NF_NAT_RANGE_PROTO_RANDOM | NF_NAT_RANGE_PROTO_RANDOM_FULLY)
-@@ -18,7 +19,8 @@
- #define NF_NAT_RANGE_MASK					\
- 	(NF_NAT_RANGE_MAP_IPS | NF_NAT_RANGE_PROTO_SPECIFIED |	\
- 	 NF_NAT_RANGE_PROTO_RANDOM | NF_NAT_RANGE_PERSISTENT |	\
--	 NF_NAT_RANGE_PROTO_RANDOM_FULLY | NF_NAT_RANGE_PROTO_OFFSET)
-+	 NF_NAT_RANGE_PROTO_RANDOM_FULLY | NF_NAT_RANGE_PROTO_OFFSET | \
-+	 NF_NAT_RANGE_NETMAP)
- 
- struct nf_nat_ipv4_range {
- 	unsigned int			flags;
-diff --git a/net/netfilter/nft_nat.c b/net/netfilter/nft_nat.c
-index 7442aa8b1555..23a7bfd10521 100644
---- a/net/netfilter/nft_nat.c
-+++ b/net/netfilter/nft_nat.c
-@@ -60,6 +60,46 @@ static void nft_nat_setup_proto(struct nf_nat_range2 *range,
- 		nft_reg_load16(&regs->data[priv->sreg_proto_max]);
- }
- 
-+static void nft_nat_setup_netmap(struct nf_nat_range2 *range,
-+				 const struct nft_pktinfo *pkt,
-+				 const struct nft_nat *priv)
-+{
-+	struct sk_buff *skb = pkt->skb;
-+	union nf_inet_addr new_addr;
-+	__be32 netmask;
-+	int i, len = 0;
-+
-+	switch (priv->type) {
-+	case NFT_NAT_SNAT:
-+		if (nft_pf(pkt) == NFPROTO_IPV4) {
-+			new_addr.ip = ip_hdr(skb)->saddr;
-+			len = sizeof(struct in_addr);
-+		} else {
-+			new_addr.in6 = ipv6_hdr(skb)->saddr;
-+			len = sizeof(struct in6_addr);
-+		}
-+		break;
-+	case NFT_NAT_DNAT:
-+		if (nft_pf(pkt) == NFPROTO_IPV4) {
-+			new_addr.ip = ip_hdr(skb)->daddr;
-+			len = sizeof(struct in_addr);
-+		} else {
-+			new_addr.in6 = ipv6_hdr(skb)->daddr;
-+			len = sizeof(struct in6_addr);
-+		}
-+		break;
-+	}
-+
-+	for (i = 0; i < len / sizeof(__be32); i++) {
-+		netmask = ~(range->min_addr.ip6[i] ^ range->max_addr.ip6[i]);
-+		new_addr.ip6[i] &= ~netmask;
-+		new_addr.ip6[i] |= range->min_addr.ip6[i] & netmask;
-+	}
-+
-+	range->min_addr = new_addr;
-+	range->max_addr = new_addr;
-+}
-+
- static void nft_nat_eval(const struct nft_expr *expr,
- 			 struct nft_regs *regs,
- 			 const struct nft_pktinfo *pkt)
-@@ -70,8 +110,12 @@ static void nft_nat_eval(const struct nft_expr *expr,
- 	struct nf_nat_range2 range;
- 
- 	memset(&range, 0, sizeof(range));
--	if (priv->sreg_addr_min)
-+
-+	if (priv->sreg_addr_min) {
- 		nft_nat_setup_addr(&range, regs, priv);
-+		if (priv->flags & NF_NAT_RANGE_NETMAP)
-+			nft_nat_setup_netmap(&range, pkt, priv);
-+	}
- 
- 	if (priv->sreg_proto_min)
- 		nft_nat_setup_proto(&range, regs, priv);
+The next commit restores a set of functions that were removed from
+the driver just prior to the 4.9 kernel release.
+
+The following commit relocates the functions in the file to prevent
+the need for additional forward declarations.
+
+Next, support for the Rx Network Flow Classification interface of
+ethtool is added.
+
+Finally, support for the WAKE_FILTER wol method is added.
+
+Doug Berger (7):
+  net: bcmgenet: set Rx mode before starting netif
+  net: bcmgenet: Fix WoL with password after deep sleep
+  net: bcmgenet: move clk_wol management to bcmgenet_wol
+  Revert "net: bcmgenet: remove unused function in bcmgenet.c"
+  net: bcmgenet: code movement
+  net: bcmgenet: add support for ethtool rxnfc flows
+  net: bcmgenet: add WAKE_FILTER support
+
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c     | 673 +++++++++++++++++++--
+ drivers/net/ethernet/broadcom/genet/bcmgenet.h     |  21 +-
+ drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c |  90 ++-
+ 3 files changed, 708 insertions(+), 76 deletions(-)
+
 -- 
-2.20.1
-
+2.7.4
