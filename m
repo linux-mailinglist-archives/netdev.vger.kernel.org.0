@@ -2,159 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE5CA1BD4C3
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 08:40:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 722051BD4C7
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 08:42:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726539AbgD2Gkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 02:40:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44496 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726158AbgD2Gkm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 02:40:42 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB951C03C1AD;
-        Tue, 28 Apr 2020 23:40:41 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id h124so926009qke.11;
-        Tue, 28 Apr 2020 23:40:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=L7obp+PNqVPPCZQThwJNHDeDSBKUPs9ERaTUcmz97ZU=;
-        b=gF6bW45F9fpx55zrsxC3gM9fyW86mZsZU/P7/u2Gm92kt4K36vJ8lH/Og8cx4y46/e
-         cbqUAf0zCuteCeCVqiN3ZyWn8xnSuq4+z1X767cE7Cq6NiO8ZR4BHKFDP2vEL0ZKpT5U
-         NYA/iEme9wr94wEr8CjMkUVomNjBWZfM9pwTr/GfmUTMzJotRnflsrf/yU71fH8wemzv
-         W6nrjQuyC5fkkE4j+KS7iG09uZE15IaFct9DbFiN4+nU1sg5bT4OR/fIB8nHdDgVb14T
-         mFKObTygwKDCOUjxu5oSJaaV0eZidNcIG9Pn8nl+B0Vh+l5gbugPbrJSShjNFd7NRACg
-         wooQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=L7obp+PNqVPPCZQThwJNHDeDSBKUPs9ERaTUcmz97ZU=;
-        b=cd4qmIpb3wVg/QLlLRXD55rSZNW/aaMFd8Bpy6rj9KFWtn0cQrtKtjiDsWp2V7pOVz
-         AKvgur0zW7rbFNgmiFKsF7gBjo0z4PASREA2I3zVNlQ//T7z06aUuvfsVz4zsdhBZlOb
-         AqPTYTinUMNM0zmeDIu5+WpMQ7HHX/f3yVt0cwn6eP3cuJOq3+j5bNdKoPYhk6oUrhdD
-         uiWjeDs9pAG2v36Qq+23JKv1VdmPNnfMWGoSwSraLTRhRO+q/h8cvKujdTQziXx9YzK5
-         9PYxA52/mZB9CKrLzSDsvvU8tJ8P9AoLGd8xWvGY1WnE9uKekVwx9/H8bNxN/zI6aTro
-         +P4Q==
-X-Gm-Message-State: AGi0PuaL2zscmR0ivjTgF7CvGIheAg1cj0jFOCKE2eqRgP8yp8QO3Fj/
-        XnlCVbheF/sVxkF55lRFM92jTwvSCU3ugK0wTSc=
-X-Google-Smtp-Source: APiQypJ+bLMIxQdbp3dV7tjlJc1CjnFDunjOH/5Y8g3Tt1fkfGBjBHIO+8qcZ/qNC3KhQi1ZTjr/I52NNhxzaXVIvt8=
-X-Received: by 2002:ae9:eb8c:: with SMTP id b134mr31739256qkg.39.1588142441108;
- Tue, 28 Apr 2020 23:40:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200427201235.2994549-1-yhs@fb.com> <20200427201237.2994794-1-yhs@fb.com>
- <20200429003738.pv4flhdaxpg66wiv@kafai-mbp> <3df31c9a-2df7-d76a-5e54-b2cd48692883@fb.com>
- <a5255338-94e8-3f4b-518e-e7f7146f69f2@fb.com> <65a83b48-3965-5ae9-fafd-3e8836b03d2c@fb.com>
- <7f15274d-46dd-f43f-575e-26a40032f900@fb.com> <CAEf4BzaCVZem4O9eR9gBTO5c+PHy5zE8BdLD2Aa-PCLHC4ywRg@mail.gmail.com>
- <401b5bd2-dc43-4465-1232-34428a1b3e4e@fb.com> <f9a3590f-1fd3-2151-5b52-4e7ddc0da934@fb.com>
-In-Reply-To: <f9a3590f-1fd3-2151-5b52-4e7ddc0da934@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 28 Apr 2020 23:40:30 -0700
-Message-ID: <CAEf4BzY1eycQ81h+nFKUhwAjCERAmAZhKXyHDAF2Sm4Gsb9UMw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 03/19] bpf: add bpf_map iterator
-To:     Alexei Starovoitov <ast@fb.com>
-Cc:     Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
+        id S1726519AbgD2Gmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 02:42:37 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:47504 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726158AbgD2Gmg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 02:42:36 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 03T6gLj2022023;
+        Tue, 28 Apr 2020 23:42:23 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=ein3AtokJ7ALLgFmS5SNqRlCIXzcpLEm69edW/OBsd8=;
+ b=ejOZpkPhreAvQwIJk+UMDUAvk409I1Dxxl1Fu2tswtaXYMf62fejlRwPTWpANAi4eVwX
+ 3xJIU8tFk7h435JUVqB4TRl7TNaV5gAkVnEKvdsR8mpBu0nJa+UHko4pSuhooiNgwkt8
+ i0uhsrCktmjMyinqKmZEyipLumXVuuKxd5Y= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0001303.ppops.net with ESMTP id 30mgvnsugv-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 28 Apr 2020 23:42:22 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.228) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Tue, 28 Apr 2020 23:41:48 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hg0zFKbkvtrZypjTwaLyXEkEErsU4CNUCE4qyRG03UTbD71B3D687IIrrCbR26TjUg4wFC5uGIZM35LYYZTMjJDXfSUZWmE2dw9ZItGbhz9p7BVg5K4m/BypKGO8E+3KSQ+rh/PdyziF+Ai2ysCfbUTHuE6BiDUbIcffhM103xjrNbEJ18fXl5v7zyf387YbXvhYXnktQZ4iK+pmbJUNvsYO8sjbC/nZmkJtpIviWnN1XFym+aKKmIe/W60RE0yrGcJDu5ZqWk5Ns7+xs4s5g60PfdXri9bYFpwRXT5esBcqRET+0K7xRSDEyrG622OrJRlKgvwXJpw68bOHAsySlg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ein3AtokJ7ALLgFmS5SNqRlCIXzcpLEm69edW/OBsd8=;
+ b=V5hJzocezj8h2G4t/DfOsYaUu5IXQ80VgC1yg2ftpyb99z6suPw5GBQ24hXwzRoxnBr9FYvU/ATUxXbyDXkY/uDz2AGBoltG3IfIrhEjZn88R3BzrXgrA/csRcgHkli64dp4pNASweudh92Zul9tIBkvTPXTSizDOt2O3JBkQzTxw1Heat++PGQSAdYo6d3PphVDM2B9JlymC5vAFJP8nksG52EnPi6Ehrgdzoke39+Il17IxD2An7WH8hGzSe6i6/BSkPqVKzVvyoC23AoCgBRwD5/k0Vkwl+E9dLXnWyDRvjt7itoGf5ohHp/tkxqMbUi6GlThpP2+s/uECDCAsQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ein3AtokJ7ALLgFmS5SNqRlCIXzcpLEm69edW/OBsd8=;
+ b=leZnKOdT3exHC/FNJkJeCSqvb93lo+YfmzFJmqueC1r+Boujm1Vi4spIxGj3G/okNDBftTiJkPArHJBvOLp1GK8APBcZVeW0UyvQuowyhJKP4T0Q57/JCUGUiIj5ETLY2lcPPfALQyJueA2y625viTfTs/30rHNKuK3gVuvco1w=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+Received: from MW3PR15MB4044.namprd15.prod.outlook.com (2603:10b6:303:4b::24)
+ by MW3PR15MB3930.namprd15.prod.outlook.com (2603:10b6:303:46::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13; Wed, 29 Apr
+ 2020 06:41:47 +0000
+Received: from MW3PR15MB4044.namprd15.prod.outlook.com
+ ([fe80::e5c5:aeff:ca99:aae0]) by MW3PR15MB4044.namprd15.prod.outlook.com
+ ([fe80::e5c5:aeff:ca99:aae0%5]) with mapi id 15.20.2937.026; Wed, 29 Apr 2020
+ 06:41:47 +0000
+Date:   Tue, 28 Apr 2020 23:41:44 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH bpf-next v1 06/19] bpf: support bpf tracing/iter programs
+ for BPF_LINK_UPDATE
+Message-ID: <20200429064144.sqtpev55lqflw74a@kafai-mbp>
+References: <20200427201235.2994549-1-yhs@fb.com>
+ <20200427201241.2995075-1-yhs@fb.com>
+ <20200429013239.apxevcpdc3kpqlrq@kafai-mbp>
+ <f63cd9f5-a39e-1fc8-bba3-53ebffef9cc5@fb.com>
+ <20200429055838.feupa5leawbduciy@kafai-mbp>
+ <CAEf4BzabE6FHDMqHRMtf20O1FEv-4x_PiRHdavU7uN_ox_3=rA@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzabE6FHDMqHRMtf20O1FEv-4x_PiRHdavU7uN_ox_3=rA@mail.gmail.com>
+User-Agent: NeoMutt/20180716
+X-ClientProxiedBy: MWHPR22CA0069.namprd22.prod.outlook.com
+ (2603:10b6:300:12a::31) To MW3PR15MB4044.namprd15.prod.outlook.com
+ (2603:10b6:303:4b::24)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp (2620:10d:c090:400::5:1f77) by MWHPR22CA0069.namprd22.prod.outlook.com (2603:10b6:300:12a::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13 via Frontend Transport; Wed, 29 Apr 2020 06:41:46 +0000
+X-Originating-IP: [2620:10d:c090:400::5:1f77]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c84ebcfc-ee04-425e-1ecf-08d7ec08635a
+X-MS-TrafficTypeDiagnostic: MW3PR15MB3930:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <MW3PR15MB393057538A42A0D1F30D9A96D5AD0@MW3PR15MB3930.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 03883BD916
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR15MB4044.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(396003)(136003)(39860400002)(376002)(346002)(186003)(16526019)(6496006)(52116002)(55016002)(66556008)(478600001)(8936002)(1076003)(66946007)(8676002)(66476007)(5660300002)(2906002)(86362001)(9686003)(4326008)(6916009)(54906003)(316002)(53546011)(33716001);DIR:OUT;SFP:1102;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: v7aHCGyKml/Q6IaL3WkWIzf0CclFQDxnky7KOCDLS2For6QSqhxf2mWID5LlAEJwHK1muOKyJWTbA7Ur8pXQjdsN5k1WF5cKWct4vkjVQilOT0N1bNydyF6ib6J9Ss7MJSkg74TAKvwTqTtdyLnooP58V13jdzn2RM17t8VgLmMFnxcAoLdqRyv5CwINVdxZm0gPswqEVrrMvfDPMDR1q72q3NG0j0i1KbmA9zCnqQnqmMNfZsxt3cKjcN4r6zIiGo3fnkcGyQR+84D5Wax775GppetKJfjXmBig/UV4Eg+m2KPsP/rkFPWF+sMDzSiOoB8jfZm3WoN/wWYc+7ApJYmvbNXZ80oxIOnYs/OG7ebIU3VpyMomKOwHd9r1VCi1oQKhI+KfYXINoDTdfqR2F4VryB6ldj8ho5He8jhewCiL65EkCKduStoh1Rt6K3PI
+X-MS-Exchange-AntiSpam-MessageData: YBhSVO9KxUVKY2gzuc+kau70u1Av9TzfB4GJrZiFxXJXw4B1uIMCzd6KtQQTw1dtvhDgeKWcl/e3HNWpYZ8oIfpXmfw1tJ5Rfs5mvtSwuj6SbHmqxBcHBQq4+IV2B46Q4CZ0rbjDopNdY72mnJZ9kH6Wh8A8jqpEQlmMNdqF/AknieMMJnex8XHuuxlWu0SPffqID4cbMaRY16ApDwEXfQH7lEqsBsQiTVEpPZjrjV1sP5j/EBGYEKgYSqB8ugRKWQWhboSLddo8puPzDx4nskVDNdBKkAxyUXDhX4R8J11tF4V7BqN+kPio3VMb8R+ZnbHM8G1rzsdOQYaTr325WqrrToyfDRE76lzgmk5vjCZjcEtoikldeO9wDfnZUd+0iiN1p8YY9q6UEAOTBOTeK5ITrNvnQHUPb6WckWrlo98QykLccpOtNQs4JOWsm6bjsa600NdD8/uT0RA6Sy73//GSVTKIrv0unMr/EeT16woLhsyHVCf/+1uCBViApu7h7X83tIQwclc/gROX105Cv/g3f2Lge57dNYESyM4mhN+8r5gFq2RPjC78CcHTEyaAY3KsJLuNf/InuAf2SJn1vlTTjePIcbjjfUTK4CALymaIgCtiXZqSKIJM5lNXZG8TkoO9AkxW35vIy3ki646nwfK8+3xSuecQvuZEw5YhOhjm2qTyuXklB60xpoEJBbjkm0+vQ95opW1lxy2Zr/qif6jQtTVn57Psd9u3qehQn93FpcGEikSH8YBil8O5ccIKXKJRevvKRMnt9d0az8lw0vFOTkVWu5xIlqv2KTN1d8zwlZdv2asoBpUt8ptEE4YoUCoUWuwu4RkfyMuehXQfRA==
+X-MS-Exchange-CrossTenant-Network-Message-Id: c84ebcfc-ee04-425e-1ecf-08d7ec08635a
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2020 06:41:46.8790
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KSh/qoqVpSvCFlJBOeSo1ZCIKkDdRwoX6uVvWEK06e2VCmIt7z6d/LwmkcRIs2h7
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR15MB3930
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-29_02:2020-04-28,2020-04-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0 bulkscore=0
+ malwarescore=0 lowpriorityscore=0 spamscore=0 mlxscore=0
+ priorityscore=1501 impostorscore=0 mlxlogscore=999 clxscore=1015
+ suspectscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2003020000 definitions=main-2004290054
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 28, 2020 at 11:30 PM Alexei Starovoitov <ast@fb.com> wrote:
->
-> On 4/28/20 11:20 PM, Yonghong Song wrote:
+On Tue, Apr 28, 2020 at 11:32:15PM -0700, Andrii Nakryiko wrote:
+> On Tue, Apr 28, 2020 at 10:59 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> >
+> > On Tue, Apr 28, 2020 at 10:04:54PM -0700, Yonghong Song wrote:
+> > >
+> > >
+> > > On 4/28/20 6:32 PM, Martin KaFai Lau wrote:
+> > > > On Mon, Apr 27, 2020 at 01:12:41PM -0700, Yonghong Song wrote:
+> > > > > Added BPF_LINK_UPDATE support for tracing/iter programs.
+> > > > > This way, a file based bpf iterator, which holds a reference
+> > > > > to the link, can have its bpf program updated without
+> > > > > creating new files.
+> > > > >
+> >
+> > [ ... ]
+> >
+> > > > > --- a/kernel/bpf/bpf_iter.c
+> > > > > +++ b/kernel/bpf/bpf_iter.c
+> >
+> > [ ... ]
+> >
+> > > > > @@ -121,3 +125,28 @@ int bpf_iter_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+> > > > >                   kfree(link);
+> > > > >           return err;
+> > > > >   }
+> > > > > +
+> > > > > +int bpf_iter_link_replace(struct bpf_link *link, struct bpf_prog *old_prog,
+> > > > > +                   struct bpf_prog *new_prog)
+> > > > > +{
+> > > > > + int ret = 0;
+> > > > > +
+> > > > > + mutex_lock(&bpf_iter_mutex);
+> > > > > + if (old_prog && link->prog != old_prog) {
+> > hmm....
+> >
+> > If I read this function correctly,
+> > old_prog could be NULL here and it is only needed during BPF_F_REPLACE
+> > to ensure it is replacing a particular old_prog, no?
+> 
+> Yes, do you see any problem with the above logic?
+Not at all.  I just want to point out that when old_prog is NULL,
+the link_update() would not even call bpf_prog_put(old_prog).
+
+> 
 > >
 > >
-> > On 4/28/20 11:08 PM, Andrii Nakryiko wrote:
-> >> On Tue, Apr 28, 2020 at 10:10 PM Yonghong Song <yhs@fb.com> wrote:
-> >>>
-> >>>
-> >>>
-> >>> On 4/28/20 7:44 PM, Alexei Starovoitov wrote:
-> >>>> On 4/28/20 6:15 PM, Yonghong Song wrote:
-> >>>>>
-> >>>>>
-> >>>>> On 4/28/20 5:48 PM, Alexei Starovoitov wrote:
-> >>>>>> On 4/28/20 5:37 PM, Martin KaFai Lau wrote:
-> >>>>>>>> +    prog = bpf_iter_get_prog(seq, sizeof(struct
-> >>>>>>>> bpf_iter_seq_map_info),
-> >>>>>>>> +                 &meta.session_id, &meta.seq_num,
-> >>>>>>>> +                 v == (void *)0);
-> >>>>>>>   From looking at seq_file.c, when will show() be called with "v ==
-> >>>>>>> NULL"?
-> >>>>>>>
-> >>>>>>
-> >>>>>> that v == NULL here and the whole verifier change just to allow
-> >>>>>> NULL...
-> >>>>>> may be use seq_num as an indicator of the last elem instead?
-> >>>>>> Like seq_num with upper bit set to indicate that it's last?
-> >>>>>
-> >>>>> We could. But then verifier won't have an easy way to verify that.
-> >>>>> For example, the above is expected:
-> >>>>>
-> >>>>>        int prog(struct bpf_map *map, u64 seq_num) {
-> >>>>>           if (seq_num >> 63)
-> >>>>>             return 0;
-> >>>>>           ... map->id ...
-> >>>>>           ... map->user_cnt ...
-> >>>>>        }
-> >>>>>
-> >>>>> But if user writes
-> >>>>>
-> >>>>>        int prog(struct bpf_map *map, u64 seq_num) {
-> >>>>>            ... map->id ...
-> >>>>>            ... map->user_cnt ...
-> >>>>>        }
-> >>>>>
-> >>>>> verifier won't be easy to conclude inproper map pointer tracing
-> >>>>> here and in the above map->id, map->user_cnt will cause
-> >>>>> exceptions and they will silently get value 0.
-> >>>>
-> >>>> I mean always pass valid object pointer into the prog.
-> >>>> In above case 'map' will always be valid.
-> >>>> Consider prog that iterating all map elements.
-> >>>> It's weird that the prog would always need to do
-> >>>> if (map == 0)
-> >>>>     goto out;
-> >>>> even if it doesn't care about finding last.
-> >>>> All progs would have to have such extra 'if'.
-> >>>> If we always pass valid object than there is no need
-> >>>> for such extra checks inside the prog.
-> >>>> First and last element can be indicated via seq_num
-> >>>> or via another flag or via helper call like is_this_last_elem()
-> >>>> or something.
-> >>>
-> >>> Okay, I see what you mean now. Basically this means
-> >>> seq_ops->next() should try to get/maintain next two elements,
-> >>
-> >> What about the case when there are no elements to iterate to begin
-> >> with? In that case, we still need to call bpf_prog for (empty)
-> >> post-aggregation, but we have no valid element... For bpf_map
-> >> iteration we could have fake empty bpf_map that would be passed, but
-> >> I'm not sure it's applicable for any time of object (e.g., having a
-> >> fake task_struct is probably quite a bit more problematic?)...
+> > > > > +         ret = -EPERM;
+> > > > > +         goto out_unlock;
+> > > > > + }
+> > > > > +
+> > > > > + if (link->prog->type != new_prog->type ||
+> > > > > +     link->prog->expected_attach_type != new_prog->expected_attach_type ||
+> > > > > +     strcmp(link->prog->aux->attach_func_name, new_prog->aux->attach_func_name)) {
+> > > > Can attach_btf_id be compared instead of strcmp()?
+> > >
+> > > Yes, we can do it.
+> > >
+> > > >
+> > > > > +         ret = -EINVAL;
+> > > > > +         goto out_unlock;
+> > > > > + }
+> > > > > +
+> > > > > + link->prog = new_prog;
+> > > > Does the old link->prog need a bpf_prog_put()?
+> > >
+> > > The old_prog is replaced in caller link_update (syscall.c):
 > >
-> > Oh, yes, thanks for reminding me of this. I put a call to
-> > bpf_prog in seq_ops->stop() especially to handle no object
-> > case. In that case, seq_ops->start() will return NULL,
-> > seq_ops->next() won't be called, and then seq_ops->stop()
-> > is called. My earlier attempt tries to hook with next()
-> > and then find it not working in all cases.
->
-> wait a sec. seq_ops->stop() is not the end.
-> With lseek of seq_file it can be called multiple times.
-
-We don't allow seeking on seq_file created from bpf_iter_link, so
-there should be no lseek'ing?
-
-> What's the point calling bpf prog with NULL then?
-
-To know that iteration has ended, even if there were 0 elements to
-iterate. 0, 1 or N doesn't matter, we might still need to do some
-final actions (e.g., submit or print summary).
+> > > static int link_update(union bpf_attr *attr)
+> > > {
+> > >         struct bpf_prog *old_prog = NULL, *new_prog;
+> > >         struct bpf_link *link;
+> > >         u32 flags;
+> > >         int ret;
+> > > ...
+> > >         if (link->ops == &bpf_iter_link_lops) {
+> > >                 ret = bpf_iter_link_replace(link, old_prog, new_prog);
+> > >                 goto out_put_progs;
+> > >         }
+> > >         ret = -EINVAL;
+> > >
+> > > out_put_progs:
+> > >         if (old_prog)
+> > >                 bpf_prog_put(old_prog);
+> > The old_prog in link_update() took a separate refcnt from bpf_prog_get().
+> > I don't see how it is related to the existing refcnt held in the link->prog.
+> >
+> > or I am missing something in BPF_F_REPLACE?
+> 
+> Martin is right, bpf_iter_link_replace() needs to drop its own refcnt
+> on old_prog, in addition to what generic link_update logic does here,
+> because bpf_link_iter bumped old_prog's refcnt when it was created or
+> updated last time.
