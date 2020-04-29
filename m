@@ -2,82 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0454C1BDFB6
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 15:56:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F9741BDFB8
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 15:57:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727983AbgD2N4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 09:56:35 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59312 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727807AbgD2N4R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Apr 2020 09:56:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=lsl27Mlg7G/ECMNhQVfGG90+ab5xfwND9PAQgH/V4W0=; b=MApuiRS9UbZpd5ZUjvMiUqvSQW
-        ftNVC1kMm1O+HYJid96UCzVS+LXt8CNpCXfrt7nUFejsNFSKlAWgfWF6Nq+obrP4QQgYmR4OutzXa
-        Qp2A1ABgJwf/5P0yL6MUguhzHSjbGLrxwBXd8Qi/lWrGlXJRzY86uY6q7ebpgKqfo12M=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jTnC5-000GGL-Ol; Wed, 29 Apr 2020 15:56:09 +0200
-Date:   Wed, 29 Apr 2020 15:56:09 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Badel, Laurent" <LaurentBadel@eaton.com>
-Cc:     "fugang.duan@nxp.com" <fugang.duan@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "richard.leitner@skidata.com" <richard.leitner@skidata.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "alexander.levin@microsoft.com" <alexander.levin@microsoft.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "Quette, Arnaud" <ArnaudQuette@Eaton.com>
-Subject: Re: [PATCH 1/2] Revert commit
- 1b0a83ac04e383e3bed21332962b90710fcf2828
-Message-ID: <20200429135609.GJ30459@lunn.ch>
-References: <CH2PR17MB3542FD48AB01562BF812A948DFAD0@CH2PR17MB3542.namprd17.prod.outlook.com>
+        id S1728037AbgD2N5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 09:57:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56166 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727089AbgD2N47 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 09:56:59 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 785E9C03C1AD;
+        Wed, 29 Apr 2020 06:56:59 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id h12so2341859pjz.1;
+        Wed, 29 Apr 2020 06:56:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=U2+xNJj7blIBAN27XYooXiQDtKXv0S4FTtN6zbBijtI=;
+        b=HUrMkgpKn/ZQfsXraS+H1vmtx/FSvAbCf908nuuZ7ZDLAdtoWMU8EkzdzlU9JQ8QZu
+         ANH8otGBqQl1q8UKJ2BjvOLrPE/YUkMH0q7UJYzSgGxKc2hXik53ixcLC5VWbrBfD14G
+         1Z1mu6ZdCWob82MPl0lnDmXBq9sobyEHrLjc7S+8hveoKPmNgzUjJYh4YYeJhGc6xlNr
+         DMHFpsP3cMWgpeULqF22dvF6j5frUCp6jOHv6Fvk52H/DB/MTfJXqI/ZLKA0Xog92Ozu
+         VUH5PIb0x3uZ1qJKdRPSMA65ZyjNRwWpOqydQknghkWfN8EQxcTd7wBF466HVIiqKwXL
+         rxjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=U2+xNJj7blIBAN27XYooXiQDtKXv0S4FTtN6zbBijtI=;
+        b=dNHqoIi0MKxZ1Yfx5u8jsRaAhS819pEOApvHDFzeVAvX+x5kqKI3eXjK1E6zzP0VdL
+         jix5gzdhde1swZ/EA3r+e4uLZflnD5L+VSYobMJUqCPII6Do963QtmZbzSBVhUilyX7Q
+         xFYiDVRJ5chCqDcNrzrt+EK/ckR1KHiZjbotOf5EcWIsvFnONIkMkAYEjMPZq3vwHULT
+         DBpz8TUzIe9XLAQAS2yk6W1l/l1E5oapQpMZQdDxNvjsExrhX/pVW++T8B6R7Us2ekjf
+         cpzejkMvj9oG7nBjKESh9vVZjix/UFwOa+iVL9wFoovuO0JvbtSj2YSa4tYgNDl2waDl
+         Pb7w==
+X-Gm-Message-State: AGi0PuZt/Gd9cl63ftTk0fJBNjSuUf/BOlPat1F7Y59UxZMoG/jVsRI6
+        a1Hd6CYH236AL0wHGSv/Sj8=
+X-Google-Smtp-Source: APiQypKa+Cdcrw/FaZJ+foMVdSOwfzVUl6D63+bLwA17pYPZl+DSsM1xY5H1GhaEVm3nVM20+u00ZA==
+X-Received: by 2002:a17:902:8ec1:: with SMTP id x1mr33887861plo.180.1588168619043;
+        Wed, 29 Apr 2020 06:56:59 -0700 (PDT)
+Received: from localhost ([89.208.244.169])
+        by smtp.gmail.com with ESMTPSA id y24sm1151342pfn.211.2020.04.29.06.56.57
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 29 Apr 2020 06:56:58 -0700 (PDT)
+From:   Dejin Zheng <zhengdejin5@gmail.com>
+To:     nicolas.ferre@microchip.com, davem@davemloft.net,
+        paul.walmsley@sifive.com, palmer@dabbelt.com, yash.shah@sifive.com,
+        netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH net v2] net: macb: fix an issue about leak related system resources
+Date:   Wed, 29 Apr 2020 21:56:51 +0800
+Message-Id: <20200429135651.32635-1-zhengdejin5@gmail.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CH2PR17MB3542FD48AB01562BF812A948DFAD0@CH2PR17MB3542.namprd17.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 29, 2020 at 09:03:32AM +0000, Badel, Laurent wrote:
-> ﻿Description: This patch reverts commit 1b0a83ac04e3 
-> ("net: fec: add phy_reset_after_clk_enable() support")
-> which produces undesirable behavior when PHY interrupts are enabled.
-> 
-> Rationale: the SMSC LAN8720 (and possibly other chips) is known
-> to require a reset after the external clock is enabled. Calls to
-> phy_reset_after_clk_enable() in fec_main.c have been introduced in 
-> commit 1b0a83ac04e3 ("net: fec: add phy_reset_after_clk_enable() support")
-> to handle the chip reset after enabling the clock.
-> However, this breaks when interrupts are enabled because
-> the reset reverts the configuration of the PHY interrupt mask to default
-> (in addition it also reverts the "energy detect" mode setting).
-> As a result the driver does not receive the link status change
-> and other notifications resulting in loss of connectivity. 
-> 
-> Proposed solution: revert commit 1b0a83ac04e3 and bring the reset 
-> before the PHY configuration by adding it to phy_init_hw() [phy_device.c].
-> 
-> Test results: using an iMX28-EVK-based board, these 2 patches successfully
-> restore network interface functionality when interrupts are enabled.
-> Tested using both linux-5.4.23 and latest mainline (5.6.0) kernels.
-> 
-> Fixes: 1b0a83ac04e383e3bed21332962b90710fcf2828 ("net: fec: add phy_reset_after_clk_enable() support")
-> Signed-off-by: Laurent Badel <laurentbadel@eaton.com>
+A call of the function macb_init() can fail in the function
+fu540_c000_init. The related system resources were not released
+then. use devm_platform_ioremap_resource() to replace ioremap()
+to fix it.
 
-Hi Laurent
+Fixes: c218ad559020ff9 ("macb: Add support for SiFive FU540-C000")
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reviewed-by: Yash Shah <yash.shah@sifive.com>
+Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
+---
+v1 -> v2:
+	- Nicolas and Andy suggest use devm_platform_ioremap_resource()
+	  to repalce devm_ioremap() to fix this issue. Thanks Nicolas
+	  and Andy.
+	- Yash help me to review this patch, Thanks Yash!
 
-Please also read https://www.kernel.org/doc/Documentation/networking/netdev-FAQ.txt
+ drivers/net/ethernet/cadence/macb_main.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-       Andrew
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index a0e8c5bbabc0..99354e327d1f 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -4172,13 +4172,7 @@ static int fu540_c000_clk_init(struct platform_device *pdev, struct clk **pclk,
+ 
+ static int fu540_c000_init(struct platform_device *pdev)
+ {
+-	struct resource *res;
+-
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	if (!res)
+-		return -ENODEV;
+-
+-	mgmt->reg = ioremap(res->start, resource_size(res));
++	mgmt->reg = devm_platform_ioremap_resource(pdev, 1);
+ 	if (!mgmt->reg)
+ 		return -ENOMEM;
+ 
+-- 
+2.25.0
+
