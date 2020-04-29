@@ -2,100 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1DB11BDBB0
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 14:15:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 556571BDD1C
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 15:05:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726893AbgD2MPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 08:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40124 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726628AbgD2MPS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 08:15:18 -0400
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3849C03C1AE
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 05:15:16 -0700 (PDT)
-Received: by mail-lf1-x141.google.com with SMTP id t11so1456561lfe.4
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 05:15:16 -0700 (PDT)
+        id S1726558AbgD2NFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 09:05:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48096 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726554AbgD2NFs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 09:05:48 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F7B0C03C1AD
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 06:05:48 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id h4so1945513wmb.4
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 06:05:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fR8uUeszZzFt2LU2tuKirZn9/ZjcfUzUQ8MAaG7aJLU=;
-        b=GivbK70Yv83IrbrW7RhyIJdlS0bHppB43QCI+a4XVmY1/4udQeKLqvMPBq7OxM/056
-         uwcfBGuL4DltRCWPQVj8cVbNuvYMki5OEe7YtVUPHH9StzW0f3XVWAzDdm6KFjyvo2ZA
-         ONal6lpruxUL2QKx/PxeBOHbdefVIbbwQ9vk8=
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/8EkDb+jA4Y7UIYfY/fiveZv70ZqdtTBrbZAqolYyOc=;
+        b=ZE68sFJf+zsFIvPysKOINPI+BjjiWzuI6EHne1ZHdZCHscaskebNWizOD/fqN9pwAS
+         69t9UiqEiSNzLuIaqs1R8XDW5y1D+NfVypq8LA6I0MJKq+2wImlbH+DqzruiVipXGwyf
+         MgWSP/AoFsSu0rH1mIxLyj7LTDeHuyWpEWNiRSxUsSCA1FVlOtRTYw3bRpgrFk8PhTPT
+         BaGQQtJDxJWrsxgWU/Q/Uc70K2Eml5rFPuzF/x9YpJ0lTuMefihiCfs8Q9Wnz/z4GXhZ
+         qQLcadKtaLRFbOBU68Z91dmcOmMLUI8uwkxOFDnnJsEpPqVm7DuwJZ9Xub8pxKKVvMFe
+         ylzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=fR8uUeszZzFt2LU2tuKirZn9/ZjcfUzUQ8MAaG7aJLU=;
-        b=REFIkayk7df4128RpO0FSiRbO5re5MCwwT2cYfgEffBwab2pVGZ5WcNeSGXSbOX2fx
-         aMczM0fi5rsxvpUd+G6/te5TCTQBogAxMdWls6498JFhA5tODxRAcL9/XZFmSv+wrBJO
-         HvE+UQrCOfSO2SFNVSllOw95ch23vAVJGwbPw618IoyoKsSg8IKTViUvEiL4Dd69VyKb
-         KWVLV4WOWa+YJyNr+s26xEYxuYeTT90HdYrhUU/hqxZ/VM8CTs2lLzSsiXrRpYyRmrQ5
-         QPeJW9bOXONDMpB2aTO+F3ShoVSYvgugr6HYI0cSt/8qecj4gINhM4BOVDyXuhgd1lXV
-         EgkA==
-X-Gm-Message-State: AGi0PuZqxu9dcWyNlr6HvfGjNlclGI45iI0vyoDLw9XE2BtQHN2VMKu4
-        fND30IvZsea4DOpfq/lr1Zw4uw==
-X-Google-Smtp-Source: APiQypLeMlSBJaJY8gtk/W5nI4lvaeHsjiQ1yDq0jG4P+mgzUjcApTyZVTBPIGrd1YKYMhPE7tlb1g==
-X-Received: by 2002:ac2:5e26:: with SMTP id o6mr21918859lfg.49.1588162515349;
-        Wed, 29 Apr 2020 05:15:15 -0700 (PDT)
-Received: from [192.168.1.149] (ip-5-186-116-45.cgn.fibianet.dk. [5.186.116.45])
-        by smtp.gmail.com with ESMTPSA id l18sm2183374ljg.98.2020.04.29.05.15.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Apr 2020 05:15:14 -0700 (PDT)
-Subject: Re: [RFC PATCH bpf-next 0/6] bpf, printk: add BTF-based type printing
-To:     Joe Perches <joe@perches.com>,
-        Alan Maguire <alan.maguire@oracle.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com, kafai@fb.com,
-        songliubraving@fb.com, andriin@fb.com, john.fastabend@gmail.com,
-        kpsingh@chromium.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <1587120160-3030-1-git-send-email-alan.maguire@oracle.com>
- <20200418160536.4mrvqh2lasqbyk77@ast-mbp>
- <alpine.LRH.2.21.2004201623390.12711@localhost>
- <7d6019da19d52c851d884731b1f16328fdbe2e3d.camel@perches.com>
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Message-ID: <9c14a68e-c374-bca4-d0f8-c25b51c8dfe4@rasmusvillemoes.dk>
-Date:   Wed, 29 Apr 2020 14:15:12 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        bh=/8EkDb+jA4Y7UIYfY/fiveZv70ZqdtTBrbZAqolYyOc=;
+        b=rcJg+y68CS0L+9CZVDLk8AQIcDRV4LU5BhlsQ5mn0gkSZlZ9+ZTqBnabBZ+HVaxZLl
+         6ePysNK+B6D2MPwJpeqERW6hdQ8NrU/1lbxqwb2QXhTQNJsTc+j4Mh3M2dYm9S4PjwEp
+         DXXuKGF/2SRYhnKXzwmgQkLUv+1/vudq53kNGBOLaBToItPaLSLEu2fGktSvlh9E3Pmc
+         Dbw/AYLSIeJY3RLN1itN6G2bXCbGEgnNnCIZxeEB1+fA2CuSQMMgiVnvY2PlmDUt+L2C
+         6n2SOu0wWHoO/ilrENPrxcyODjGojgj5VmG4Ac/jQB3ffHqVXW5Yf8qfpxEnW/ppWStL
+         0y5Q==
+X-Gm-Message-State: AGi0PuZezH60axmiHt/XQKdSA9CZbOHghGPs7+meE6Ia94Ux/3Vuwsf5
+        FXq77cwrNLfoWCHUVUoEpNT8TQ==
+X-Google-Smtp-Source: APiQypIhAQ6bwmZ4+a+x4PrWnOxLWWWSjcCeelD9uJcXMtpNDreE560JEPOJsntb4w6q+NbB77miWg==
+X-Received: by 2002:a1c:f306:: with SMTP id q6mr3139152wmq.169.1588165546975;
+        Wed, 29 Apr 2020 06:05:46 -0700 (PDT)
+Received: from localhost.localdomain ([194.53.185.38])
+        by smtp.gmail.com with ESMTPSA id 74sm31568199wrk.30.2020.04.29.06.05.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Apr 2020 06:05:46 -0700 (PDT)
+From:   Quentin Monnet <quentin@isovalent.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Quentin Monnet <quentin@isovalent.com>,
+        Richard Palethorpe <rpalethorpe@suse.com>,
+        Michael Kerrisk <mtk.manpages@gmail.com>
+Subject: [PATCH bpf-next v2 0/3] tools: bpftool: probe features for unprivileged users
+Date:   Wed, 29 Apr 2020 14:05:31 +0100
+Message-Id: <20200429130534.11823-1-quentin@isovalent.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <7d6019da19d52c851d884731b1f16328fdbe2e3d.camel@perches.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/04/2020 18.32, Joe Perches wrote:
-> On Mon, 2020-04-20 at 16:29 +0100, Alan Maguire wrote:
+This set allows unprivileged users to probe available features with
+bpftool. On Daniel's suggestion, the "unprivileged" keyword must be passed
+on the command line to avoid accidentally dumping a subset of the features
+supported by the system. When used by root, this keyword makes bpftool drop
+the CAP_SYS_ADMIN capability and print the features available to
+unprivileged users only.
 
->>>>   struct sk_buff *skb = alloc_skb(64, GFP_KERNEL);
->>>>
->>>>   pr_info("%pTN<struct sk_buff>", skb);
->>>
->>> why follow "TN" convention?
->>> I think "%p<struct sk_buff>" is much more obvious, unambiguous, and
->>> equally easy to parse.
->>>
->>
->> That was my first choice, but the first character
->> after the 'p' in the '%p' specifier signifies the
->> pointer format specifier. If we use '<', and have
->> '%p<', where do we put the modifiers? '%p<xYz struct foo>'
->> seems clunky to me.
+The first patch makes a variable global in feature.c to avoid piping too
+many booleans through the different functions. The second patch introduces
+the unprivileged probing, adding a dependency to libcap. Then the third
+patch makes this dependency optional, by restoring the initial behaviour
+(root only can probe features) if the library is not available.
 
-There's also the issue that %p followed by alnum has been understood to
-be reserved/specially handled by the kernel's printf implementation for
-a decade, while other characters have so far been treated as "OK, this
-was just a normal %p". A quick grep for %p< only gives a hit in
-drivers/scsi/dc395x.c, but there could be others (with field width
-modifier between % and p), and in any case I think it's a bad idea to
-extend the set of characters that cannot follow %p.
+Cc: Richard Palethorpe <rpalethorpe@suse.com>
+Cc: Michael Kerrisk <mtk.manpages@gmail.com>
 
-Rasmus
+Quentin Monnet (3):
+  tools: bpftool: for "feature probe" define "full_mode" bool as global
+  tools: bpftool: allow unprivileged users to probe features
+  tools: bpftool: make libcap dependency optional
+
+ .../bpftool/Documentation/bpftool-feature.rst |  12 +-
+ tools/bpf/bpftool/Makefile                    |  13 +-
+ tools/bpf/bpftool/bash-completion/bpftool     |   2 +-
+ tools/bpf/bpftool/feature.c                   | 141 +++++++++++++++---
+ 4 files changed, 142 insertions(+), 26 deletions(-)
+
+-- 
+2.20.1
+
