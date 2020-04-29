@@ -2,86 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E87C21BD2F9
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 05:32:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19FE71BD2FB
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 05:34:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726637AbgD2Dcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 23:32:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43542 "EHLO
+        id S1726618AbgD2Deo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 23:34:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726551AbgD2Dcd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 23:32:33 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D9BBC03C1AC;
-        Tue, 28 Apr 2020 20:32:33 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id r4so377346pgg.4;
-        Tue, 28 Apr 2020 20:32:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=oHg4Ih2xVy73JUSYzpNHihoFqPKep8Y6MUVusqxfGHo=;
-        b=DEzkn1Q2sV8YnzuyZMmp49TnNti9jXTPEoRtXMeZh7nSEiBYone93vuWY71UrPoR21
-         DPPV2r+SF2HtVON5l9Sr9ywBMPCo+U5N2Qh3uqO6ufGK4vPsIPlbNE19E3IgAHBmY8fE
-         DuBGiaprTw/aBDsbHxv/zmRu+rHWJ0n0Fr60za8AjHQTFLdBDf4bMAegs41LgcCvjCtL
-         dLkDTxrS0uiMl99Y2e4u3kr4DxOnnXXYrbF90o/Of6k8Z9qXw6Ch5cXnuHyqAD+HBQeX
-         dTniC4FxGvhndzgn1bRWnkguugaeIvQKq1dnUoR6DNK5JGMxSExBGfRJlgFJJuDuFkXi
-         7ACg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oHg4Ih2xVy73JUSYzpNHihoFqPKep8Y6MUVusqxfGHo=;
-        b=WM/PeUI23kDNFX7aeftrVbUGwX2T3BQYx/vZiH2KnyQP88tMM4d4gBfzlH1qNB1yDw
-         fO0tSWMQUN2+VcrfmhHKO4UkAwXFaY8CKn2PQCbAwzARV8aik4y/kABWhby9pmw9MLXf
-         9MeK5lt+z16NX2GzpgCF9UXJIIWbCq6yDNQe55j8CbG9Y+zONoC+z+iRjyJSkI+w700K
-         IlOMGnLUVKMolfVX0wiUhbydqATJL+HMIyMTzIj6pliBNr3qbFJd0/COLh7hXGNiBBhM
-         luqQs2dGcG1ZGom7MWKVumba0rNiM6zt9HoYomzXR0iZEZhpOWlPO1QdpjoMF81iKZ/8
-         QcMg==
-X-Gm-Message-State: AGi0PubVWSvllbsL6kj0Q30qFH9tOpgFY5Z3ewHf9FDGUmxaW9MsAdju
-        puMuXRiU9fFY7zVEZaExFc4=
-X-Google-Smtp-Source: APiQypJG70HpsOK6hrOP3VAywbncJqho0L31EVeVgjGpNQWCzfcr0gBT3U8gtbDDSqflGvDyeHYSrQ==
-X-Received: by 2002:a63:cc01:: with SMTP id x1mr21995994pgf.428.1588131152845;
-        Tue, 28 Apr 2020 20:32:32 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:3700])
-        by smtp.gmail.com with ESMTPSA id c12sm9234847pgk.11.2020.04.28.20.32.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Apr 2020 20:32:32 -0700 (PDT)
-Date:   Tue, 28 Apr 2020 20:32:29 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com
-Subject: Re: [PATCH bpf-next] bpf: bpf_{g,s}etsockopt for struct bpf_sock
-Message-ID: <20200429033229.hd243khhh6q5mwrd@ast-mbp.dhcp.thefacebook.com>
-References: <20200428185719.46815-1-sdf@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200428185719.46815-1-sdf@google.com>
+        by vger.kernel.org with ESMTP id S1726551AbgD2Den (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 23:34:43 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB556C03C1AC
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 20:34:43 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4067312759F5C;
+        Tue, 28 Apr 2020 20:34:42 -0700 (PDT)
+Date:   Tue, 28 Apr 2020 20:34:39 -0700 (PDT)
+Message-Id: <20200428.203439.49635882087657701.davem@davemloft.net>
+To:     fugang.duan@nxp.com
+Cc:     andrew@lunn.ch, netdev@vger.kernel.org, cphealy@gmail.com,
+        leonard.crestez@nxp.com
+Subject: Re: [EXT] Re: [PATCH net-next] net: ethernet: fec: Prevent MII
+ event after MII_SPEED write
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <HE1PR0402MB2745408F4000C8B2C119B9EDFFAD0@HE1PR0402MB2745.eurprd04.prod.outlook.com>
+References: <20200428175833.30517-1-andrew@lunn.ch>
+        <20200428.143339.1189475969435668035.davem@davemloft.net>
+        <HE1PR0402MB2745408F4000C8B2C119B9EDFFAD0@HE1PR0402MB2745.eurprd04.prod.outlook.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 28 Apr 2020 20:34:42 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 28, 2020 at 11:57:19AM -0700, Stanislav Fomichev wrote:
-> Currently, bpf_getsocktop and bpf_setsockopt helpers operate on the
-> 'struct bpf_sock_ops' context in BPF_PROG_TYPE_CGROUP_SOCKOPT program.
-> Let's generalize them and make the first argument be 'struct bpf_sock'.
-> That way, in the future, we can allow those helpers in more places.
-> 
-> BPF_PROG_TYPE_CGROUP_SOCKOPT still has the existing helpers that operate
-> on 'struct bpf_sock_ops', but we add new bpf_{g,s}etsockopt that work
-> on 'struct bpf_sock'. [Alternatively, for BPF_PROG_TYPE_CGROUP_SOCKOPT,
-> we can enable them both and teach verifier to pick the right one
-> based on the context (bpf_sock_ops vs bpf_sock).]
-> 
-> As an example, let's allow those 'struct bpf_sock' based helpers to
-> be called from the BPF_CGROUP_INET{4,6}_CONNECT hooks. That way
-> we can override CC before the connection is made.
-> 
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+From: Andy Duan <fugang.duan@nxp.com>
+Date: Wed, 29 Apr 2020 01:55:35 +0000
 
-Looks good to me and safety checks seem to be correct.
-Martin,
-could you please help review as well?
+> From: David Miller <davem@davemloft.net> Sent: Wednesday, April 29, 2020 5:34 AM
+>> From: Andrew Lunn <andrew@lunn.ch>
+>> Date: Tue, 28 Apr 2020 19:58:33 +0200
+>> 
+>> > The change to polled IO for MDIO completion assumes that MII events
+>> > are only generated for MDIO transactions. However on some SoCs writing
+>> > to the MII_SPEED register can also trigger an MII event. As a result,
+>> > the next MDIO read has a pending MII event, and immediately reads the
+>> > data registers before it contains useful data. When the read does
+>> > complete, another MII event is posted, which results in the next read
+>> > also going wrong, and the cycle continues.
+>> >
+>> > By writing 0 to the MII_DATA register before writing to the speed
+>> > register, this MII event for the MII_SPEED is suppressed, and polled
+>> > IO works as expected.
+>> >
+>> > Fixes: 29ae6bd1b0d8 ("net: ethernet: fec: Replace interrupt driven
+>> > MDIO with polled IO")
+>> > Reported-by: Andy Duan <fugang.duan@nxp.com>
+>> > Suggested-by: Andy Duan <fugang.duan@nxp.com>
+>> > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+>> 
+>> Applied to net-next, thanks.
+> 
+> David, it is too early to apply the patch, it will introduce another
+> break issue as I explain in previous mail for the patch.
+
+So what should I do, revert?
