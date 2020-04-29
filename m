@@ -2,134 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09E681BD813
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 11:22:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76C331BD82D
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 11:27:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726470AbgD2JV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 05:21:58 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:47030 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726423AbgD2JV6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 05:21:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588152116;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VZvr/skNPOFKMD3ogXhoD9tnQHqLrRRqrmLtubG1DcI=;
-        b=bXRhx8efqDzHNDTwyu6wp7SnFZptiDXeMokD7XE5hs/U+N7+r+W5UgEcNVTOuXoAa8ow2L
-        1xYU3jdexUXHFwHWSWGWbk0OmE2YgLe/orTlUA9kb48fJWxY9LqgDBcLq0FYIWliVks/O+
-        ebuQKuPcbXQycqfhP+5264r60LtUOl8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-122-urpKaGkpMHmnm-m04i_PzA-1; Wed, 29 Apr 2020 05:21:55 -0400
-X-MC-Unique: urpKaGkpMHmnm-m04i_PzA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 96E72107ACF4;
-        Wed, 29 Apr 2020 09:21:53 +0000 (UTC)
-Received: from [10.72.13.2] (ovpn-13-2.pek2.redhat.com [10.72.13.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 752B65C1BE;
-        Wed, 29 Apr 2020 09:21:44 +0000 (UTC)
-Subject: Re: [PATCH net-next 0/3] vsock: support network namespace
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     davem@davemloft.net, Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-kernel@vger.kernel.org, Jorgen Hansen <jhansen@vmware.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        linux-hyperv@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
-        netdev@vger.kernel.org
-References: <20200116172428.311437-1-sgarzare@redhat.com>
- <20200427142518.uwssa6dtasrp3bfc@steredhat>
- <224cdc10-1532-7ddc-f113-676d43d8f322@redhat.com>
- <20200428160052.o3ihui4262xogyg4@steredhat>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <6dc937e4-0ef9-617d-c9c8-8b1f8c428d90@redhat.com>
-Date:   Wed, 29 Apr 2020 17:21:42 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726705AbgD2J0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 05:26:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42052 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726688AbgD2J0f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 05:26:35 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA0D0C03C1AD
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 02:26:34 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jTiyy-0007rD-OA; Wed, 29 Apr 2020 11:26:20 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jTiyu-00011L-62; Wed, 29 Apr 2020 11:26:16 +0200
+Date:   Wed, 29 Apr 2020 11:26:16 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Philippe Schenker <philippe.schenker@toradex.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "sergei.shtylyov@cogentembedded.com" 
+        <sergei.shtylyov@cogentembedded.com>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "david@protonic.nl" <david@protonic.nl>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
+Subject: Re: [PATCH net-next v3] net: phy: micrel: add phy-mode support for
+ the KSZ9031 PHY
+Message-ID: <20200429092616.7ug4kdgdltxowkcs@pengutronix.de>
+References: <20200422072137.8517-1-o.rempel@pengutronix.de>
+ <CAMuHMdU1ZmSm_tjtWxoFNako2fzmranGVz5qqD2YRNEFRjX0Sw@mail.gmail.com>
+ <20200428154718.GA24923@lunn.ch>
+ <6791722391359fce92b39e3a21eef89495ccf156.camel@toradex.com>
+ <CAMuHMdXm7n6cE5-ZjwxU_yKSrCaZCwqc_tBA+M_Lq53hbH2-jg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200428160052.o3ihui4262xogyg4@steredhat>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="f37udlmunv3yqdec"
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdXm7n6cE5-ZjwxU_yKSrCaZCwqc_tBA+M_Lq53hbH2-jg@mail.gmail.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 10:46:27 up 166 days, 5 min, 179 users,  load average: 0.11, 0.06,
+ 0.01
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2020/4/29 =E4=B8=8A=E5=8D=8812:00, Stefano Garzarella wrote:
-> On Tue, Apr 28, 2020 at 04:13:22PM +0800, Jason Wang wrote:
->> On 2020/4/27 =E4=B8=8B=E5=8D=8810:25, Stefano Garzarella wrote:
->>> Hi David, Michael, Stefan,
->>> I'm restarting to work on this topic since Kata guys are interested t=
-o
->>> have that, especially on the guest side.
->>>
->>> While working on the v2 I had few doubts, and I'd like to have your
->>> suggestions:
->>>
->>>    1. netns assigned to the device inside the guest
->>>
->>>      Currently I assigned this device to 'init_net'. Maybe it is bett=
-er
->>>      if we allow the user to decide which netns assign to the device
->>>      or to disable this new feature to have the same behavior as befo=
-re
->>>      (host reachable from any netns).
->>>      I think we can handle this in the vsock core and not in the sing=
-le
->>>      transports.
->>>
->>>      The simplest way that I found, is to add a new
->>>      IOCTL_VM_SOCKETS_ASSIGN_G2H_NETNS to /dev/vsock to enable the fe=
-ature
->>>      and assign the device to the same netns of the process that do t=
-he
->>>      ioctl(), but I'm not sure it is clean enough.
->>>
->>>      Maybe it is better to add new rtnetlink messages, but I'm not su=
-re if
->>>      it is feasible since we don't have a netdev device.
->>>
->>>      What do you suggest?
->> As we've discussed, it should be a netdev probably in either guest or =
-host
->> side. And it would be much simpler if we want do implement namespace t=
-hen.
->> No new API is needed.
->>
-> Thanks Jason!
->
-> It would be cool, but I don't have much experience on netdev.
-> Do you see any particular obstacles?
+--f37udlmunv3yqdec
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+Hi Geert,
 
-I don't see but if there's we can try to find a solution or ask for=20
-netdev experts for that. I do hear from somebody that is interested in=20
-having netdev in the past.
+On Wed, Apr 29, 2020 at 10:45:35AM +0200, Geert Uytterhoeven wrote:
+> Hi Philippe,
+>=20
+> On Tue, Apr 28, 2020 at 6:16 PM Philippe Schenker
+> <philippe.schenker@toradex.com> wrote:
+> > On Tue, 2020-04-28 at 17:47 +0200, Andrew Lunn wrote:
+> > > On Tue, Apr 28, 2020 at 05:28:30PM +0200, Geert Uytterhoeven wrote:
+> > > > This triggers on Renesas Salvator-X(S):
+> > > >
+> > > >     Micrel KSZ9031 Gigabit PHY e6800000.ethernet-ffffffff:00:
+> > > > *-skew-ps values should be used only with phy-mode =3D "rgmii"
+> > > >
+> > > > which uses:
+> > > >
+> > > >         phy-mode =3D "rgmii-txid";
+> > > >
+> > > > and:
+> > > >
+> > > >         rxc-skew-ps =3D <1500>;
+> > > >
+> > > > If I understand Documentation/devicetree/bindings/net/ethernet-
+> > > > controller.yaml
+> > > > correctly:
+> > >
+> > > Checking for skews which might contradict the PHY-mode is new. I think
+> > > this is the first PHY driver to do it. So i'm not too surprised it has
+> > > triggered a warning, or there is contradictory documentation.
+> > >
+> > > Your use cases is reasonable. Have the normal transmit delay, and a
+> > > bit shorted receive delay. So we should allow it. It just makes the
+> > > validation code more complex :-(
+> >
+> > I reviewed Oleksij's patch that introduced this warning. I just want to
+> > explain our thinking why this is a good thing, but yes maybe we change
+> > that warning a little bit until it lands in mainline.
+> >
+> > The KSZ9031 driver didn't support for proper phy-modes until now as it
+> > don't have dedicated registers to control tx and rx delays. With
+> > Oleksij's patch this delay is now done accordingly in skew registers as
+> > best as possible. If you now also set the rxc-skew-ps registers those
+> > values you previously set with rgmii-txid or rxid get overwritten.
+> >
+> > We chose the warning to occur on phy-modes 'rgmii-id', 'rgmii-rxid' and
+> > 'rgmii-txid' as on those, with the 'rxc-skew-ps' value present,
+> > overwriting skew values could occur and you end up with values you do
+> > not wanted. We thought, that most of the boards have just 'rgmii' set in
+> > phy-mode with specific skew-values present.
+> >
+> > @Geert if you actually want the PHY to apply RXC and TXC delays just
+> > insert 'rgmii-id' in your DT and remove those *-skew-ps values. If you
+>=20
+> That seems to work for me, but of course doesn't take into account PCB
+> routing.
 
+On boards with simple design, the clock lines have nearly same length as da=
+ta
+lines. To provide needed clock delay, you should make clock line ~17
+centimeter longer than data lines. Or configure PHY or MAC side to
+provide needed delay.
+Since "phy-mode =3D "rgmii-txid"" was ignored till my patch. And the
+"rxc-skew-ps =3D <1500>" will add a delay of 0.6 nano seconds. Your
+configuration was:
+TX delay =3D 1.2ns
+RX delay =3D 0.6ns
 
->
-> I'll take a look to understand how to do it, surely in the guest would
-> be very useful to have the vsock device as a netdev and maybe also in t=
-he host.
+Is it really reflects the configuration of you PCB?
 
+> > need custom timing due to PCB routing it was thought out to use the phy-
+> > mode 'rgmii' and do the whole required timing with the *-skew-ps values.
+>=20
+> That mean we do have to provide all values again?
 
-Yes, it's worth to have a try then we will have a unified management=20
-interface and we will benefit from it in the future.
+No. Using proper phy-mode should be enough. If you using default TX dealy a=
+nd
+configuring RX delay manually, the phy-mode =3D "rgmii-id" is
+the right choice for you.
 
-Starting form guest is good idea which should be less complicated than ho=
-st.
+> Using "rgmii" without any skew values makes DHCP fail on R-Car H3 ES2.0,
+> M3-W (ES1.0), and M3-N (ES1.0). Interestingly, DHCP still works on R-Car
+> H3 ES1.0.
 
-Thanks
+The TX delay affects MAC to PHY path. The RX delay affects PHY to MAC
+path. On my HW, disabling TX delays, didn't affected the communication
+in any measurable way. Even with clock line length is equal to the data
+lines length. So, it may work just on the edge of the spec.
 
+> Note that I'm not too-familiar with the actual skew values needed
+> (CC Mizuguchi-san).
+>=20
+> Related commits:
+>   - 0e45da1c6ea6b186 ("arm64: dts: r8a7795: salvator-x: Fix
+> EthernetAVB PHY timing")
+>   - dda3887907d74338 ("arm64: dts: r8a7795: Use rgmii-txid phy-mode
+> for EthernetAVB")
+>   - 7eda14afb8843a0d ("arm64: dts: renesas: r8a77990: ebisu: Fix
+> EthernetAVB phy mode to rgmii")
 
->
-> Stefano
->
+Regards,
+Oleksij.
+--=20
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
 
+--f37udlmunv3yqdec
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEERBNZvwSgvmcMY/T74omh9DUaUbMFAl6pSDQACgkQ4omh9DUa
+UbPJAQ/+LKRfA0dP7eKYb/DDX4v/6S1nJMmwoCCWrjVB2nGeUL5a/T7s4AwotKvp
+D3uzbGzyVgzYo41Sl+OUDqxVA9vJ2/dKG2AooUL641ptkc03zh4ihhQajjhrIb9h
+1ig4lARM60ngONJprFehqGRbDw7MP+QmYWc9zHfh16xEDeHG/jYnvsCs9bUyIMts
+YMcwCngMANU6qDG2xxsYwAgCp+wuUVbXsn4Syh2kaL5LaoM/4sMEE1nyjQ/a/DZP
+rQN92+rX2KPS2Rp3xY2qD2Cz20c4kcuXfMNOnFJRuyBqNggdFmkezxl+QvRhTULe
+VcGMSwH9uOSVh0zze72JdCI2zj3VZd/iS7Bs94wvQpbYhlB27SpG5eq1msJ7RX8c
+tTjIBm98l4fSRRpDne5dXa+A2ThifkOeh1bGnFjJCIyXffQ1UC2PEgLVp8WW2stf
+wQfOgZnv8c8FXbSx+IgBuIcgiZtCkd3f9Nyn+MbFZqVthqRZdt5Dc2o9UiljABQP
+Rg/JMcuCjYZUWWgFNmvFCKi45I4Xh6RRCwk3TTMQUOmOanMJEY77s8/Jymjsx3tA
+PIbqTf8Nmcv+rGGHAgMm3AWmQc+kGNBoydKtdZ64yfNZjY9FzNAaU7ZmIRLz99UH
+SzocUdqZt91pTtN4G33dJLSTyWgOS1WFdpQJsbrAQl9z0u+0hkU=
+=ZopQ
+-----END PGP SIGNATURE-----
+
+--f37udlmunv3yqdec--
