@@ -2,177 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63DD91BD749
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 10:29:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 913181BD765
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 10:37:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726546AbgD2I3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 04:29:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33234 "EHLO
+        id S1726661AbgD2IhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 04:37:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726355AbgD2I3j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 04:29:39 -0400
-X-Greylist: delayed 178 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 29 Apr 2020 01:29:39 PDT
-Received: from mo6-p01-ob.smtp.rzone.de (mo6-p01-ob.smtp.rzone.de [IPv6:2a01:238:20a:202:5301::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8473EC03C1AD
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 01:29:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1588148978;
-        s=strato-dkim-0002; d=xenosoft.de;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=BfHXos+9450rpGvIhO6jrZq3f/TYqCe6XZMBD0vryCQ=;
-        b=mNRYkB3KL5KRcqz49DYr9bMePbzJJl3zxQxD3goMb/qwCz0yLXOPHXc81y13KM6jKW
-        U/9lt4KeVnucFQOIWeUpklnamgAqF2WSMdlaKxuGp+wWHpzy+raklYyIyGbTrghCf+L7
-        Pddu4Tfo3ei/GO0RD6fTgnakOLwExffYmLiIJoc1sOCzNEH+iN/jbkWgTsQBj057gO8D
-        3ywMI4n3uf01+hXybJOuRlJ54wA418crUnZKnE24NeRMQhM4CdgN0j9+sJC+3ZdlqEbc
-        OHZAI+QssxvHz4OQe6Y6jG+6ftUQg1PkFBypZ2fMX+UQeidbg22u6vyoH7TyweAHeABW
-        xUFw==
-X-RZG-AUTH: ":L2QefEenb+UdBJSdRCXu93KJ1bmSGnhMdmOod1DhGM4l4Hio94KKxRySfLxnHfJ+Dkjp5DdBJSrwuuqxvPhSdWimbfxYLit+vlzeN0mUI0H8aQ=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPv6:2a02:8109:89c0:ebfc:1c94:f1a9:15ea:cac1]
-        by smtp.strato.de (RZmta 46.6.2 AUTH)
-        with ESMTPSA id I01247w3T8QYYNW
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Wed, 29 Apr 2020 10:26:34 +0200 (CEST)
-Subject: Re: [RFC PATCH dpss_eth] Don't initialise ports with no PHY
-To:     Darren Stevens <darren@stevens-zone.net>, madalin.bacur@nxp.com,
-        netdev@vger.kernel.org, mad skateman <madskateman@gmail.com>
-Cc:     oss@buserror.net, linuxppc-dev@lists.ozlabs.org,
-        "R.T.Dickinson" <rtd2@xtra.co.nz>,
-        "contact@a-eon.com" <contact@a-eon.com>
-References: <20200424232938.1a85d353@Cyrus.lan>
-From:   Christian Zigotzky <chzigotzky@xenosoft.de>
-Message-ID: <ca95a1b2-1b16-008c-18ba-2cbd79f240e6@xenosoft.de>
-Date:   Wed, 29 Apr 2020 10:26:33 +0200
+        by vger.kernel.org with ESMTP id S1726436AbgD2IhG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 04:37:06 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40DFFC03C1AD
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 01:37:06 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id 188so1038410wmc.2
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 01:37:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=p18rSOYa9QyJHcxF1hQQmt4mlrncQfWvskudtN2fyp8=;
+        b=YNcreLIWbfHVA3Seq08Xeb65o5abdZn9Au+P0SHW6A9c/EzfI5PG41iDNfwUDH3Nyk
+         5BndTOfV6UW0hx4lgEvucAXH06TlfVnoTKQ9sfqksyGF3ISYJuJkt9tRTs9lfYj8wieo
+         PWDHlV8/XNtgxbPc0MVYKPbT1o5kqUh+wN1XPhfEMwzaxGUfy1SU+UykYkXsNEQvB0I2
+         O3R8p4o8qEe76/deDyQEl7g1ZZ5S2h3E7RS/mr9oyxeZhh9dGlZSC5cegM2jAq8pfi7D
+         doZUvdZjGyXzBMsK9DKgeN89fK+lE9RzHKHNuV3c0zhA48oFbi1xo5EJgiaoF/LpYX1A
+         /+7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=p18rSOYa9QyJHcxF1hQQmt4mlrncQfWvskudtN2fyp8=;
+        b=dFXYdzR7UHwdtgdt515SND64xv9GmGdNTrxNRckyE2r4Wk9bFMgDoW3lLpr8ijfx+7
+         NPaN+2go3ZOwJ97nduWPN+MD607GsanfV68nOLvzhMWK/P6o8o4pmupylaU4Wp6G5GfG
+         1icSAxBOd5hHPi0QXBMgRpZPObJxodJH5WIzb3zt6FIrgKTt2SWdLvPIUITkqpk16ovk
+         RX0QJcHwhq8037XMavrkE2l0J2fc/dIbSPqzXg7EfNoa6utTmR7UtVPD7f/QsaCCOWSf
+         8whQO97TcdnlbNNxUs7w2tJh71dtsnsmmcJ9bBLY8l8g/uMEvfOP4nqs+Y5E7XAG1Cdr
+         E/GA==
+X-Gm-Message-State: AGi0PuYnY5rI4XqEuMkZjVabtlGJZeumUHpi2IdZ3NDo/vfSVdCm/Tsl
+        D1gBGFVpaMw0Wpu3IcXhT3zSVA==
+X-Google-Smtp-Source: APiQypIFDmwxfdJn9ENU5B9x6Ich6QUJrdwx5gR3EIeK2B5dZTYxKvj3KNjfz/4UBedO1r8/YYYAXA==
+X-Received: by 2002:a05:600c:2214:: with SMTP id z20mr2098557wml.189.1588149424905;
+        Wed, 29 Apr 2020 01:37:04 -0700 (PDT)
+Received: from [192.168.1.10] ([194.53.185.38])
+        by smtp.gmail.com with ESMTPSA id i6sm31372580wrc.82.2020.04.29.01.37.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Apr 2020 01:37:04 -0700 (PDT)
+Subject: Re: [PATCH bpf-next v1 16/19] tools/bpftool: add bpf_iter support for
+ bptool
+To:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        netdev@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com
+References: <20200427201235.2994549-1-yhs@fb.com>
+ <20200427201253.2996156-1-yhs@fb.com>
+ <05d9c82d-8cba-db77-02af-265e4d200946@isovalent.com>
+ <82034392-5f65-fd84-8cbd-d2aa85f01ee3@fb.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <4ffc7653-311c-a2a1-2ba6-eda765f665e7@isovalent.com>
+Date:   Wed, 29 Apr 2020 09:37:03 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200424232938.1a85d353@Cyrus.lan>
-Content-Type: multipart/mixed;
- boundary="------------BF1782061CAC7863F4EF23B5"
-Content-Language: de-DE
+In-Reply-To: <82034392-5f65-fd84-8cbd-d2aa85f01ee3@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------BF1782061CAC7863F4EF23B5
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+2020-04-28 10:35 UTC-0700 ~ Yonghong Song <yhs@fb.com>
+> 
+> 
+> On 4/28/20 2:27 AM, Quentin Monnet wrote:
 
-Hi Darren,
+[...]
 
-Thanks a lot for your patch!
+>>> +    err = bpf_link__pin(link, path);
+>>
+>> Try to mount bpffs before that if "-n" is not passed? You could even
+>> call do_pin_any() from common.c by passing bpf_link__fd().
+> 
+> You probably means do_pin_fd()? That is a good suggestion, will use it
+> in the next revision.
 
-I tested it with the RC3 today.
+Right, passing bpf_link__fd() to do_pin_any() wouldn't work, it does not
+take the arguments expected by the "get_fd()" callback. My bad. So yeah,
+just do_pin_fd() in that case :)
 
-Unfortunately it doesn't compile because a bracket is missing in the 
-following line:
+[...]
 
-+    if (prop && !strncmp(prop, "disabled", 8) {
+>>
+>> Have you considered simply adapting the more traditional workflow
+>> "bpftool prog load && bpftool prog attach" so that it supports iterators
+>> instead of adding a new command? It would:
+> 
+> This is a good question, I should have clarified better in the commit
+> message.
+>   - prog load && prog attach won't work.
+>     the create_iter is a three stage process:
+>       1. prog load
+>       2. create and attach to a link
+>       3. pin link
+>     In the current implementation, the link merely just has the program.
+>     But in the future, the link will have other parameters like map_id,
+>     tgid/gid, or cgroup_id, or others.
+> 
+>     We could say to do:
+>       1. bpftool prog load <pin_path>
+>       2. bpftool iter pin prog file
+>          <maybe more parameters in the future>
+> 
+>     But this requires to pin the program itself in the bpffs, which
+>     mostly unneeded for file iterator creator.
+> 
+>     So this command `bpftool iter pin ...` is created for ease of use.
+> 
+>>
+>> - Avoid adding yet another bpftool command with a single subcommand
+> 
+> So far, yes, in the future we may have more. In my RFC patcch, I have
+> `bpftool iter show ...` for introspection, this is to show all
+> registered targets and all file iterators prog_id's.
+> 
+> This patch does not have it and I left it for the future work.
+> I am considering to use bpf iterator to do introspection here...
 
-And a semicolon is missing in the following line:
+Ok, so with the useless bpffs pinning step and the perspectives for
+other subcommands in the future, I agree it makes sense to have "iter"
+as a new command. And as you say, handling of the link may grow so it's
+probably not a bad thing to have it aside from the "prog" command.
+Thanks for the clarification (maybe add some of it to the commit log
+indeed?).
 
-+        goto _return
+> 
+>>
+>> - Enable to reuse the code from prog load, in particular for map reuse
+>> (I'm not sure how relevant maps are for iterators, but I wouldn't be
+>> surprised if someone finds a use case at some point?)
+> 
+> Yes, we do plan to have map element iterators. We can also have
+> bpf_prog or other iterators. Yes, map element iterator use
+> implementation should be `bpftool map` code base since it is
+> a use of bpf_iter infrastructure.
 
-I added the bracket and the semicolon and after that it compiled without 
-any problems. (New patch attached)
+My point was more about loading programs that reuse pre-existing, as in
+"bpftool prog load foo /sys/fs/bpf/foo map name foomap id 1337". It
+seems likely that similar syntax will be needed for loading/pinning
+iterators as well eventually, but I suppose we can try to refactor the
+code from prog.c to reuse it when the time comes.
 
-Unfortunately I see more than 2 ethernet ports with the RC3 and your 
-patch on my Cyrus P5040. Maybe Skateman has an other result on his Cyrus 
-P5020.
+> 
+>>
+>> - Avoid users naively trying to run "bpftool prog load && bpftool prog
+>> attach <prog> iter" and not understanding why it fails
+> 
+> `bpftool prog attach <prog> [map_id]` mostly used to attach a program to
+> a map, right? In this case, it won't apply, right?
 
-Maybe we have to modify the dtb file.
+Right, I'm just not convinced that all users are aware of that :) But
+fair enough.
 
-Thanks,
-Christian
+> 
+> BTW, Thanks for reviewing and catching my mistakes!
+> 
 
-
-On 25 April 2020 at 00:29 am, Darren Stevens wrote:
-> Since cbb961ca271e ("Use random MAC address when none is given")
-> Varisys Cyrus P5020 boards have been listing 5 ethernet ports instead of
-> the 2 the board has.This is because we were preventing the adding of the
-> unused ports by not suppling them a MAC address, which this patch now
-> supplies.
->
-> Prevent them from appearing in the net devices list by checking for a
-> 'status="disabled"' entry during probe and skipping the port if we find
-> it.
->
-> Signed-off-by: Darren Stevens <Darren@stevens-zone.net>
->
-> ---
->
->   drivers/net/ethernet/freescale/fman/mac.c | 11 +++++++++++
->   1 file changed, 11 insertions(+)
->
-> diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
-> index 43427c5..c9ed411 100644
-> --- a/drivers/net/ethernet/freescale/fman/mac.c
-> +++ b/drivers/net/ethernet/freescale/fman/mac.c
-> @@ -606,6 +606,7 @@ static int mac_probe(struct platform_device *_of_dev)
->   	struct resource		 res;
->   	struct mac_priv_s	*priv;
->   	const u8		*mac_addr;
-> +	const char 		*prop;
->   	u32			 val;
->   	u8			fman_id;
->   	phy_interface_t          phy_if;
-> @@ -628,6 +629,16 @@ static int mac_probe(struct platform_device *_of_dev)
->   	mac_dev->priv = priv;
->   	priv->dev = dev;
->   
-> +	/* check for disabled devices and skip them, as now a missing
-> +	 * MAC address will be replaced with a Random one rather than
-> +	 * disabling the port
-> +	 */
-> +	prop = of_get_property(mac_node, "status", NULL);
-> +	if (prop && !strncmp(prop, "disabled", 8) {
-> +		err = -ENODEV;
-> +		goto _return
-> +	}
-> +
->   	if (of_device_is_compatible(mac_node, "fsl,fman-dtsec")) {
->   		setup_dtsec(mac_dev);
->   		priv->internal_phy_node = of_parse_phandle(mac_node,
-
-
---------------BF1782061CAC7863F4EF23B5
-Content-Type: text/x-patch; charset=UTF-8;
- name="dpss_eth.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="dpss_eth.patch"
-
-diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
-index 43427c5..c9ed411 100644
---- a/drivers/net/ethernet/freescale/fman/mac.c
-+++ b/drivers/net/ethernet/freescale/fman/mac.c
-@@ -606,6 +606,7 @@ static int mac_probe(struct platform_device *_of_dev)
- 	struct resource		 res;
- 	struct mac_priv_s	*priv;
- 	const u8		*mac_addr;
-+	const char 		*prop;
- 	u32			 val;
- 	u8			fman_id;
- 	phy_interface_t          phy_if;
-@@ -628,6 +629,16 @@ static int mac_probe(struct platform_device *_of_dev)
- 	mac_dev->priv = priv;
- 	priv->dev = dev;
- 
-+	/* check for disabled devices and skip them, as now a missing
-+	 * MAC address will be replaced with a Random one rather than
-+	 * disabling the port
-+	 */
-+	prop = of_get_property(mac_node, "status", NULL);
-+	if (prop && !strncmp(prop, "disabled", 8)) {
-+		err = -ENODEV;
-+		goto _return;
-+	}
-+
- 	if (of_device_is_compatible(mac_node, "fsl,fman-dtsec")) {
- 		setup_dtsec(mac_dev);
- 		priv->internal_phy_node = of_parse_phandle(mac_node,
-
---------------BF1782061CAC7863F4EF23B5--
+Thanks for your reply and clarification, that's appreciated too!
+Quentin
