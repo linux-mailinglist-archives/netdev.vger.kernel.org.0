@@ -2,109 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCC721BE8A2
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 22:36:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 959A61BE8D1
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 22:40:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727047AbgD2Uga (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 16:36:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34410 "EHLO
+        id S1727093AbgD2Ukh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 16:40:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726481AbgD2Ug3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 16:36:29 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB873C03C1AE;
-        Wed, 29 Apr 2020 13:36:29 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id n143so3491511qkn.8;
-        Wed, 29 Apr 2020 13:36:29 -0700 (PDT)
+        with ESMTP id S1726481AbgD2Ukg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 16:40:36 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A37C03C1AE;
+        Wed, 29 Apr 2020 13:40:36 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id h124so3478587qke.11;
+        Wed, 29 Apr 2020 13:40:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=wa1e1Y92lYvZrPhLeN+VLU3x02Trx+J7qlyl+rZbDUU=;
-        b=mvj52mA/xDeZyh4CUMZzSUOlhh19TXjFKAujr/Pw2bcSm8jhF4MIsrYlxLBJIDBzQF
-         ECoRb6zvSZCVB8YCU4e3EMg6CmDBAOS2tKiII9yKK/LsUKzqajpRY5VF2hPsi7/vOeML
-         ZFhnWJ49pRJjcT+fn91yKO2K/9/KpFnNnN0+b9PpJYCk+ttzf5+UNyr4vd12VSSCaD6N
-         2erVi5RMOMMhfJRe6n/bSJn2OpxxkNo739fHiC/v8Pjoim5Ga1KNMjBOVNckG2MtxzlB
-         pJq5vuOQuTItE3xdT2BjknUqo9/pftJwNz1vZMAH5U5GF6oy+3PeoK1YZDnFvJAGFt7D
-         UPCQ==
+        bh=9tMJbiVrT9LFzwZ5MEioscrxCyJ4gVwoMkNjO1qKHKw=;
+        b=W65JJjxAp2XNrwbbFo5Jx/O20b5HwFekZ5RpQ/lBh/1ix2QczkiADfWTmktOLRxy2q
+         1QxigBtRaeiWvA1vKAGERi7qfLM9rNFV82q23Vd0VxzSjqEV22riAJtteIHWSx0hxjMx
+         9QttwSBLXlSrC0wePFokf1MZD5uBqvbGboN6qxy/kU1MW5+zK0lNp74SqL9UmXCeWavu
+         ktIs9KTgGioyN2yGoP84yjYPV633lW0tl8p/GYPvoHvNl8DKwiDmjvzLMg9HQ56k0LOi
+         zzBTvXj7frSSP+e+yRXZWbEftDnK47t0hW7Llcx2HJqftOrFovXHSAm34VFThD90MjHF
+         fIzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=wa1e1Y92lYvZrPhLeN+VLU3x02Trx+J7qlyl+rZbDUU=;
-        b=bgd1bliqVNiWbfuZVyHYOGyJYPJERHwhiYKrudvrfV+Bp7NMW91v9nKsOd6qPt2DqV
-         5Z/zP551kd+/qUFLY+4WmwhNJ76WtW5VQXgD7dbeQpeYjsEc3ox+0YXgcffw8JrtG3T2
-         KyolbeUe4RBBbzZz5yD+fEXrpyIbgmCoDHBDMWN9hgsvIhZxVztA3oAm7DMcgNeby12/
-         QkiojcIGa+Y2HLuYeKgJeInnT93Jveuo9rLrQAbIVC/b8VWWWtp63NV8paiPpbhl+UYI
-         hIuUNBdsVxKKIS0dri5vWIfEmeFRAUpqkoMMeRVxDt8HCkUDAvGTetsptX08WbJaIZZd
-         kysA==
-X-Gm-Message-State: AGi0PubTN+iansZ/kxNO6M6+YzBwmuhhU1QxthCWx3gPivvDM268T0qu
-        euQl28x+IQ7JbAkY9xtsAAYc6wGt7DtYAdJrERU=
-X-Google-Smtp-Source: APiQypK+ScNFRjviccmciq+hSgbQJQz0BvntvfGNdmkmNvKb+9q8VMEfGiSIBuE7+efgCn20i36lQOb2Fo5ytWh9By8=
-X-Received: by 2002:ae9:e854:: with SMTP id a81mr338783qkg.36.1588192588839;
- Wed, 29 Apr 2020 13:36:28 -0700 (PDT)
+        bh=9tMJbiVrT9LFzwZ5MEioscrxCyJ4gVwoMkNjO1qKHKw=;
+        b=WCUB2deHgQH8AYO9NXnFrhvbcTpFbL0+HfZ6oFm66B8eTuQYqCp1km1gOBkcZmlLnz
+         ID24ghTpu736kDbWVSLOoQnkSUV1lLf9xp8zwjMD0Ck6ht+DUaQqbmopWL+3DT0Cm1Td
+         4kyn5CkNeHY/NIaQHPqgPlyU3BR2jMlwkmTZCoSBrf1p2VnLtk64iwECSxQ95bc3dFCB
+         d+dVjhJ8fa+Losy0HJVJC983D1DAqXw6ptGUPVbvtm1b219zGeCT8EcdODW+Pb1rirFI
+         x5pGAVmJ8iB8rQU/wc5QnPh1lpXvB2CZ3kIgmWWs8Q3PCRYZf3c7VcysqepAKqWrcMcs
+         Rrxg==
+X-Gm-Message-State: AGi0PuawtfrzVAdDO3926GGG4WuBgwdiDqh+ufuBojzQJHdy/p0azZWr
+        mfcF2e7ZeveR7yAGu4n+E3lyUaytVhlRZgoW7S0=
+X-Google-Smtp-Source: APiQypIqhZmH6EI/xcQFlXyv8MnRflDW7FUShmMf4NgBMe6y7marSCihQ+26n8oDbewP30qKcwfAGXBwhWGeuG5hE7s=
+X-Received: by 2002:ae9:e854:: with SMTP id a81mr354896qkg.36.1588192835714;
+ Wed, 29 Apr 2020 13:40:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200429132217.1294289-1-arnd@arndb.de>
-In-Reply-To: <20200429132217.1294289-1-arnd@arndb.de>
+References: <20200427201235.2994549-1-yhs@fb.com> <20200427201244.2995241-1-yhs@fb.com>
+In-Reply-To: <20200427201244.2995241-1-yhs@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 29 Apr 2020 13:36:17 -0700
-Message-ID: <CAEf4Bzahz15mGQC21Hr9dfCE6uDrgWvARr2_0f0i592keW3orQ@mail.gmail.com>
-Subject: Re: [PATCH] bpf: fix unused variable warning
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
+Date:   Wed, 29 Apr 2020 13:40:24 -0700
+Message-ID: <CAEf4BzY1gor=j9kh2JxZAQc4SoyaRoVGA_7UK9z_Nb0FpCudkQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 08/19] bpf: create file bpf iterator
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 29, 2020 at 6:23 AM Arnd Bergmann <arnd@arndb.de> wrote:
+On Mon, Apr 27, 2020 at 1:18 PM Yonghong Song <yhs@fb.com> wrote:
 >
-> Hiding the only using of bpf_link_type_strs[] in an #ifdef causes
-> an unused-variable warning:
+> A new obj type BPF_TYPE_ITER is added to bpffs.
+> To produce a file bpf iterator, the fd must be
+> corresponding to a link_fd assocciated with a
+> trace/iter program. When the pinned file is
+> opened, a seq_file will be generated.
 >
-> kernel/bpf/syscall.c:2280:20: error: 'bpf_link_type_strs' defined but not used [-Werror=unused-variable]
->  2280 | static const char *bpf_link_type_strs[] = {
->
-> Move the definition into the same #ifdef.
->
-> Fixes: f2e10bff16a0 ("bpf: Add support for BPF_OBJ_GET_INFO_BY_FD for bpf_link")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Yonghong Song <yhs@fb.com>
 > ---
-
-Thanks for the fix, LGTM.
-
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-
->  kernel/bpf/syscall.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  include/linux/bpf.h   |  3 +++
+>  kernel/bpf/bpf_iter.c | 48 ++++++++++++++++++++++++++++++++++++++++++-
+>  kernel/bpf/inode.c    | 28 +++++++++++++++++++++++++
+>  kernel/bpf/syscall.c  |  2 +-
+>  4 files changed, 79 insertions(+), 2 deletions(-)
 >
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index 3cea7602de78..5e86d8749e6e 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -2274,6 +2274,7 @@ static int bpf_link_release(struct inode *inode, struct file *filp)
->         return 0;
->  }
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 0f0cafc65a04..601b3299b7e4 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1021,6 +1021,8 @@ static inline void bpf_enable_instrumentation(void)
 >
-> +#ifdef CONFIG_PROC_FS
->  #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type)
->  #define BPF_MAP_TYPE(_id, _ops)
->  #define BPF_LINK_TYPE(_id, _name) [_id] = #_name,
-> @@ -2285,7 +2286,6 @@ static const char *bpf_link_type_strs[] = {
->  #undef BPF_MAP_TYPE
->  #undef BPF_LINK_TYPE
+>  extern const struct file_operations bpf_map_fops;
+>  extern const struct file_operations bpf_prog_fops;
+> +extern const struct file_operations bpf_link_fops;
+> +extern const struct file_operations bpffs_iter_fops;
 >
-> -#ifdef CONFIG_PROC_FS
->  static void bpf_link_show_fdinfo(struct seq_file *m, struct file *filp)
+>  #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type) \
+>         extern const struct bpf_prog_ops _name ## _prog_ops; \
+> @@ -1136,6 +1138,7 @@ int bpf_iter_link_attach(const union bpf_attr *attr, struct bpf_prog *prog);
+>  int bpf_iter_link_replace(struct bpf_link *link, struct bpf_prog *old_prog,
+>                           struct bpf_prog *new_prog);
+>  int bpf_iter_new_fd(struct bpf_link *link);
+> +void *bpf_iter_get_from_fd(u32 ufd);
+>
+>  int bpf_percpu_hash_copy(struct bpf_map *map, void *key, void *value);
+>  int bpf_percpu_array_copy(struct bpf_map *map, void *key, void *value);
+> diff --git a/kernel/bpf/bpf_iter.c b/kernel/bpf/bpf_iter.c
+> index 1f4e778d1814..f5e933236996 100644
+> --- a/kernel/bpf/bpf_iter.c
+> +++ b/kernel/bpf/bpf_iter.c
+> @@ -123,7 +123,8 @@ struct bpf_prog *bpf_iter_get_prog(struct seq_file *seq, u32 priv_data_size,
 >  {
->         const struct bpf_link *link = filp->private_data;
-> --
-> 2.26.0
+>         struct extra_priv_data *extra_data;
 >
+> -       if (seq->file->f_op != &anon_bpf_iter_fops)
+> +       if (seq->file->f_op != &anon_bpf_iter_fops &&
+> +           seq->file->f_op != &bpffs_iter_fops)
+
+Do we really need anon_bpf_iter_fops and bpffs_iter_fops? Seems like
+the only difference is bpffs_iter_open. Could it be implemented as
+part of anon_bpf_iter_ops as well? Seems like open() is never called
+for anon_inode_file, so it should work for both?
+
+>                 return NULL;
+>
+>         extra_data = get_extra_priv_dptr(seq->private, priv_data_size);
+> @@ -310,3 +311,48 @@ int bpf_iter_new_fd(struct bpf_link *link)
+>         put_unused_fd(fd);
+>         return err;
+>  }
+> +
+> +static int bpffs_iter_open(struct inode *inode, struct file *file)
+> +{
+> +       struct bpf_iter_link *link = inode->i_private;
+> +
+> +       return prepare_seq_file(file, link);
+> +}
+> +
+> +static int bpffs_iter_release(struct inode *inode, struct file *file)
+> +{
+> +       return anon_iter_release(inode, file);
+> +}
+> +
+> +const struct file_operations bpffs_iter_fops = {
+> +       .open           = bpffs_iter_open,
+> +       .read           = seq_read,
+> +       .release        = bpffs_iter_release,
+> +};
+> +
+> +void *bpf_iter_get_from_fd(u32 ufd)
+
+return struct bpf_iter_link * here, given this is specific constructor
+for bpf_iter_link?
+
+> +{
+> +       struct bpf_link *link;
+> +       struct bpf_prog *prog;
+> +       struct fd f;
+> +
+> +       f = fdget(ufd);
+> +       if (!f.file)
+> +               return ERR_PTR(-EBADF);
+> +       if (f.file->f_op != &bpf_link_fops) {
+> +               link = ERR_PTR(-EINVAL);
+> +               goto out;
+> +       }
+> +
+> +       link = f.file->private_data;
+> +       prog = link->prog;
+> +       if (prog->expected_attach_type != BPF_TRACE_ITER) {
+> +               link = ERR_PTR(-EINVAL);
+> +               goto out;
+> +       }
+> +
+> +       bpf_link_inc(link);
+> +out:
+> +       fdput(f);
+> +       return link;
+> +}
+> diff --git a/kernel/bpf/inode.c b/kernel/bpf/inode.c
+> index 95087d9f4ed3..de4493983a37 100644
+> --- a/kernel/bpf/inode.c
+> +++ b/kernel/bpf/inode.c
+> @@ -26,6 +26,7 @@ enum bpf_type {
+>         BPF_TYPE_PROG,
+>         BPF_TYPE_MAP,
+>         BPF_TYPE_LINK,
+> +       BPF_TYPE_ITER,
+
+Adding ITER as an alternative type of pinned object to BPF_TYPE_LINK
+seems undesirable. We can allow opening bpf_iter's seq_file by doing
+the same trick as is done for bpf_maps, supporting seq_show (see
+bpf_mkmap() and bpf_map_support_seq_show()). Do you think we can do
+the same here? If we later see that more kinds of links would want to
+allow direct open() to create a file with some output from BPF
+program, we can generalize this as part of bpf_link infrastructure.
+For now having a custom check similar to bpf_map's seems sufficient.
+
+What do you think?
+
+>  };
+>
+>  static void *bpf_any_get(void *raw, enum bpf_type type)
+> @@ -38,6 +39,7 @@ static void *bpf_any_get(void *raw, enum bpf_type type)
+>                 bpf_map_inc_with_uref(raw);
+>                 break;
+>         case BPF_TYPE_LINK:
+> +       case BPF_TYPE_ITER:
+>                 bpf_link_inc(raw);
+>                 break;
+>         default:
+> @@ -58,6 +60,7 @@ static void bpf_any_put(void *raw, enum bpf_type type)
+>                 bpf_map_put_with_uref(raw);
+>                 break;
+>         case BPF_TYPE_LINK:
+> +       case BPF_TYPE_ITER:
+>                 bpf_link_put(raw);
+>                 break;
+>         default:
+> @@ -82,6 +85,15 @@ static void *bpf_fd_probe_obj(u32 ufd, enum bpf_type *type)
+>                 return raw;
+>         }
+>
+
+[...]
