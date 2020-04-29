@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D351A1BE9C2
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 23:21:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91C861BE9C7
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 23:22:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727073AbgD2VVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 17:21:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41648 "EHLO
+        id S1727028AbgD2VWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 17:22:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726481AbgD2VVj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 17:21:39 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7171BC03C1AE;
-        Wed, 29 Apr 2020 14:21:39 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id k8so2853998ejv.3;
-        Wed, 29 Apr 2020 14:21:39 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726481AbgD2VWX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 17:22:23 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49070C03C1AE;
+        Wed, 29 Apr 2020 14:22:23 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id w2so2784392edx.4;
+        Wed, 29 Apr 2020 14:22:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZXXqbbPUKu+/L0VjCO9rBntDr6ua5vgb7VgumpR91vI=;
-        b=vD5RygeE7ZEf9Ad966yuxM1RVlHOYdgRijHjuYKNlr5043YgjwaOS7XAmtr3wE4Ufq
-         cGySDzF57Ba8nKR6lFQkZ2nHcVgTTMmR0zTnX5SRBcHIzFOFDh4I4xOiqEMXUBGzp/oT
-         jkP7NyioFTu/0JvzNfVyKtxKjBFARRp72EwPaCCQ8b2V9Lf+EUX5f5l9qQRojMDF5tTP
-         0Xmmfpoh6NTxY4gACBAHoh3vnbqcQiUqQBcgd9XQUyHiwVhQGn9kE5OpWcog8n+eT1QI
-         UE2Hs9Gdr7Lf4pZ8meY6cuUSzzQJrvvV7hd4Ec79U44Dg+l7+96wxOnWAt4XobOtFOmw
-         JBjg==
+        bh=VrzYaK+UvftoWBbAN3y/nCoHvYfjDhGBaUx0LwB8crE=;
+        b=LoD3+HFjTbRvi6SHNkMMHaIaMNe8pxuWc+UNzM6kfikUZXXxzBbhldiLqnrfiUk8ke
+         K6pOCtF7O2ANPjZok32CE25zxlMGlllYIKHuKcuU8Ho576PI9YKAfPKMrJZ6l2b4UPvA
+         5wJVpVTFsjCEGnh9MLtz5hpS61gEHsy7nr22NAtI3amaXLYY8tUUUPDhwnX90Nhk83rT
+         NPbqpvgaMUfLvCIKq5bxQXWEk9s7KVQnZ5Z7Bm+1/wFBkfR9X0NTqE6kLBqb6zSVvGds
+         XbDUSZTLjTbKfAlod+nSQIJNDwWm6Y1EjsyvyyxPzLmLEWQ/f495YOD6B1S77keFSKci
+         M0BQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=ZXXqbbPUKu+/L0VjCO9rBntDr6ua5vgb7VgumpR91vI=;
-        b=A+wJj8+13BXEFSHUPlC9Xdlm2hCEdgtvNw6iiYsQ4EddyQlKZYlFFOCXAGcdAc2cau
-         baFGTe6FuTwJ4Drb7Kp5Em9CgWDb5thsbu1vmJJq7OXmrpN26n120TuY4QPZYEbxqsI2
-         KbW+dYf/2G4JvmgAmduKsP24578RE9n1dge4KbfqNmGqvNcexDikJR8ZlIvDVqM0eN9N
-         VVdFTa+zMpL0O72Rzv9sf8Z8VwBaOrCSERckrt5dZ6JB0vtY8fqnN7EYaOiCftuqfPXR
-         uOHrkmIuS4mT5R5ZZ9UDJyjcwjzNjLlL7kN/AanfWrS6f2sIUqXghy1mk2GQgCI8LvJl
-         f0yw==
-X-Gm-Message-State: AGi0PuaS+0TalBSFii9oZ+1hjC6J6S0/ROZcEQtek2B/686bFT4WdGAk
-        7yrhpGEps612Qf4B0buajW2PCwrE
-X-Google-Smtp-Source: APiQypLYaKSrxZ7368nJUzEfomsmyGyukx5dSSBJrLX2MdNschkbH92SYeD2fMdLWjbo2M6PXe3z2w==
-X-Received: by 2002:a17:906:ad9a:: with SMTP id la26mr4589846ejb.128.1588195297839;
-        Wed, 29 Apr 2020 14:21:37 -0700 (PDT)
+        bh=VrzYaK+UvftoWBbAN3y/nCoHvYfjDhGBaUx0LwB8crE=;
+        b=bM+n2zmxh2U1vLR+BDlt8mxYKSeLdPfr41RjcWpOgEg8noHRUhpD5gwur/gD00clsg
+         XlsOnqYKkfzzl2bMfIEfDWZ+R39RrJstqVFgScY8gAksHoWsQrPPH85ZqKI4ei7AAhFT
+         pCESxyUYWW2D7H17OZYdAyRDRCYJ4iif1d4tzYxUzsvUEU5yFJLsTrFqktVollmhuR4+
+         WvGIw4rZlPd6GZB5WCRncGOAOxVma6NyyaTAMrNwcnUr8sd4yTfxljAVJXTa2L6T8DQ4
+         4GY24F7sratPgTdWKuQAHKpriq0Mtof2SbglZDd9NW3/FT/0Y9+bfmXr9qCSshCKfKYT
+         iTFg==
+X-Gm-Message-State: AGi0PuaVfZaydqkgiu4QUoQFdgh3EVeA5sezcITDVNgDBNUL1l9c12yx
+        s+dU4mAJNwaGCkHACyiSwhi94NdU
+X-Google-Smtp-Source: APiQypKR9z7Kr1dGoDYXxFtgLsTl4c1X4izAEPp1yK+uW3DRV9m3lj4ACW6w0fwM51KBoo3e3wsOCA==
+X-Received: by 2002:aa7:c401:: with SMTP id j1mr4232647edq.31.1588195341779;
+        Wed, 29 Apr 2020 14:22:21 -0700 (PDT)
 Received: from [10.67.49.116] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id e16sm875035eja.58.2020.04.29.14.21.35
+        by smtp.googlemail.com with ESMTPSA id f21sm886230ejw.55.2020.04.29.14.22.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Apr 2020 14:21:36 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 1/7] net: bcmgenet: set Rx mode before
- starting netif
+        Wed, 29 Apr 2020 14:22:20 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 2/7] net: bcmgenet: Fix WoL with password
+ after deep sleep
 To:     Doug Berger <opendmb@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <1588190526-2082-1-git-send-email-opendmb@gmail.com>
- <1588190526-2082-2-git-send-email-opendmb@gmail.com>
+ <1588190526-2082-3-git-send-email-opendmb@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -112,12 +112,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <cdc08d25-eafa-9b14-62b6-20d95c0c1866@gmail.com>
-Date:   Wed, 29 Apr 2020 14:21:34 -0700
+Message-ID: <1ab2343d-5c3f-7d0b-2094-3c7795832bfe@gmail.com>
+Date:   Wed, 29 Apr 2020 14:22:18 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <1588190526-2082-2-git-send-email-opendmb@gmail.com>
+In-Reply-To: <1588190526-2082-3-git-send-email-opendmb@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -127,15 +127,16 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 4/29/20 1:02 PM, Doug Berger wrote:
-> This commit explicitly calls the bcmgenet_set_rx_mode() function when
-> the network interface is started. This function is normally called by
-> ndo_set_rx_mode when the flags are changed, but apparently not when
-> the driver is suspended and resumed.
+> Broadcom STB chips support a deep sleep mode where all register contents
+> are lost. Because we were stashing the MagicPacket password into some of
+> these registers a suspend into that deep sleep then a resumption would
+> not lead to being able to wake-up from MagicPacket with password again.
 > 
-> This change ensures that address filtering or promiscuous mode are
-> properly restored by the driver after the MAC may have been reset.
+> Fix this by keeping a software copy of the password and program it
+> during suspend.
 > 
-> Fixes: b6e978e50444 ("net: bcmgenet: add suspend/resume callbacks")
+> Fixes: c51de7f3976b ("net: bcmgenet: add Wake-on-LAN support code")
+> Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
 > Signed-off-by: Doug Berger <opendmb@gmail.com>
 
 Acked-by: Florian Fainelli <f.fainelli@gmail.com>
