@@ -2,319 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7959A1BEC92
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 01:18:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58B861BECA8
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 01:33:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726935AbgD2XSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 19:18:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59920 "EHLO
+        id S1726926AbgD2XdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 19:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726871AbgD2XSb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 19:18:31 -0400
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5724CC08E934
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 16:18:31 -0700 (PDT)
-Received: by mail-lf1-x143.google.com with SMTP id f8so3138235lfe.12
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 16:18:31 -0700 (PDT)
+        with ESMTP id S1726481AbgD2XdQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 19:33:16 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9997C035494
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 16:33:14 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id t2so5517044ybq.11
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 16:33:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=CbLlq66sQ9c2dpjM4PO9GavQ8mLZTTgTJBAsom1lrl4=;
-        b=o8v4X9ARjoK8udY7bCronH4Z5nsYMjaLUGECMiOK6+ImTYIaP4L0QfuiqTJsQWGfyZ
-         iVZaCX4dFBne8lLO9qw04RZnCmhRRCVP+q4HhEBFiDT1RtCx91VSkez1xEyc/Y7/vlPq
-         7d1gacWSSSKG5H3oXWBD1xhcvLCeCfwkQtoMLjuYZXPuuwy/8U5SKbvL5oW7KbOLDozO
-         sagHydZoXyUXwc91/CgRlnk2Tr7xq0d65/CmHUILhvoEWpOjBmUO1LfvUJKWnAdfLMjc
-         ye3tHnkPlfnU/y3KDVT9NDEDLuYV+qwy6VSH1vNTijEhO+2p0005IvV4533VEWfFfkOy
-         4BwQ==
+        bh=NsQTVycOGMKsU1+TvPQ2vv/5lC2AdXfUMp8A3FRSsp0=;
+        b=kwxHmWZiLG1DFm/MNQlgiq3L/0CAWBkY3PQXx2qgOOuAerWX0QZ0SuWxehD0e14kS7
+         wCtP+ZGqVw3GErxX8YdQBOKW2pIa4YQsDiXZXNKzUWBZaUiW61uno2xVf+kY5YmCobjm
+         LQOFbmy+UIIMyzdVKTidvabq9WeQCm7JNs62Ud/ilduUehXDlv1pWVgnNdY0bM9hu0jd
+         dAz+uWUukDdXBNrnJPvPIAy+KRxkGcECN/usdgdEqBwLTlq9CYyV8P/O8CDuZskSz/AK
+         atSAKrQzAxIWUfeWJDQwx8/TERwKVLIjN49SwRhW/OJZr46Gv5s1Cz/z6mRcJxhO4dje
+         8cXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CbLlq66sQ9c2dpjM4PO9GavQ8mLZTTgTJBAsom1lrl4=;
-        b=MtRm1kN/pMinEhgTEvr0jkiFbPt4nDfUxv6RXp/GFfuAbzL3n895vCHK5g+T5RiSs9
-         8gdHwVB668hH7w8F2TfVRrqe9bHmLNl+rKKx34AtnDE10iM7GYfpUT26QIe0L8CZ41uz
-         FR+T3TrnQNAnfZtSKDHRUqaYVM7OVEBBoqSD9nhL9PFU30YW51gp0dtoCQHJa7hwRb5l
-         JWJo0MDjGkQxDxnJ4uWnvSjFSpkbvrTdyuIVow14KOEf2XIBCx5Lhct4hU5EuzJqLvM0
-         6PSbsXRHx2bwxw9QOjFWsqfeiRcOB9VWaZipokVIZXTqjvj/YQCVuJvF1iKcv6A3gRYj
-         kJKQ==
-X-Gm-Message-State: AGi0PuYUiiJQLnCLIMlEUGYgLYqTKiPPmzrTZuPhw4hX9MtqqCG9Y6E1
-        Pjo2oK1UThBeVVxebM+w3B0XOA2ng6z9hIYxYy/s1w==
-X-Google-Smtp-Source: APiQypKsmAiIkZkAXJv3TNFdsoOqjHZqol0/KFmcRvdMfyq15JAnSuckNesRRNLYTgIi6bvQRGu8dTBYopRYlYR4oik=
-X-Received: by 2002:a19:7909:: with SMTP id u9mr136944lfc.130.1588202309097;
- Wed, 29 Apr 2020 16:18:29 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200306042831.17827-1-elder@linaro.org>
-In-Reply-To: <20200306042831.17827-1-elder@linaro.org>
-From:   Evan Green <evgreen@google.com>
-Date:   Wed, 29 Apr 2020 16:17:52 -0700
-Message-ID: <CAE=gft6dezobVsdmKwa8qYJzS-2ZaTxG7Vp6MYK2ve_hawSagw@mail.gmail.com>
-Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver (UPDATED)
-To:     Alex Elder <elder@linaro.org>
-Cc:     David Miller <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Dan Williams <dcbw@redhat.com>,
-        Eric Caruso <ejcaruso@google.com>,
-        Susheel Yadav Yadagiri <syadagir@codeaurora.org>,
-        Chaitanya Pratapa <cpratapa@codeaurora.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Siddharth Gupta <sidgup@codeaurora.org>,
-        netdev@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-soc@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=NsQTVycOGMKsU1+TvPQ2vv/5lC2AdXfUMp8A3FRSsp0=;
+        b=kf5QNrm0OHGnzwg2eSWvxiCh2GHv4++RGPtFTyQzNqmacZuJ928l6HoGEfq+xd9DEJ
+         5za1dIt5TOEaiAVyk4HHEY27ofjknJwnkG+CXi3Sltkf9nEFgYVDj/MtS/CSta2b//9e
+         cPoX+BkAyuAhkm/hGqgZvJ2yyO+EXurUuoid2WfVO3tyFohpuF8NfdCchMtexae06lO6
+         O9A/jvztIvNd2ZodxaOIKRhs9XnmjWThuSC75t1VlQg3ZJ7FyHBgUb00wnnw0R7KnBdI
+         ly8/z6HtD91K+tPZwF59DJwRkg4BtRHzSdAz7PmxyWtu01T8wf80f1NNsWrfIzTynLZX
+         JLEQ==
+X-Gm-Message-State: AGi0PubJdiZnmrMAZsOg8c/0MfxO3Cr8CsZExa081a//kcebIN44BHPe
+        TEk+5qM3H3uI9fTJ7dKSteFdKKE=
+X-Google-Smtp-Source: APiQypIqBgBL21PQ0Eq3F36MJk2aEaVJQ+nW8Yrqnsa+UQUqFyB8Xg4xqgB9exsepK/Eu2XoICeVI+k=
+X-Received: by 2002:a25:afd2:: with SMTP id d18mr1270079ybj.321.1588203193776;
+ Wed, 29 Apr 2020 16:33:13 -0700 (PDT)
+Date:   Wed, 29 Apr 2020 16:33:12 -0700
+In-Reply-To: <640e7fd3-4059-5ff8-f9ed-09b1becd0f7b@iogearbox.net>
+Message-Id: <20200429233312.GB241848@google.com>
+Mime-Version: 1.0
+References: <20200429170524.217865-1-sdf@google.com> <640e7fd3-4059-5ff8-f9ed-09b1becd0f7b@iogearbox.net>
+Subject: Re: [PATCH bpf-next v2] bpf: bpf_{g,s}etsockopt for struct bpf_sock
+From:   sdf@google.com
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        ast@kernel.org, John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 5, 2020 at 8:28 PM Alex Elder <elder@linaro.org> wrote:
->
-> This series presents the driver for the Qualcomm IP Accelerator (IPA).
->
-> This is version 2 of this updated series.  It includes the following
-> small changes since the previous version:
->   - Now based on net-next instead of v5.6-rc
->   - Config option now named CONFIG_QCOM_IPA
->   - Some minor cleanup in the GSI code
->   - Small change to replenish logic
->   - No longer depends on remoteproc bug fixes
-> What follows is the basically same explanation as was posted previously.
->
->                                         -Alex
->
-> I have posted earlier versions of this code previously, but it has
-> undergone quite a bit of development since the last time, so rather
-> than calling it "version 3" I'm just treating it as a new series
-> (indicating it's been updated in this message).  The fast/data path
-> is the same as before.  But the driver now (nearly) supports a
-> second platform, its transaction handling has been generalized
-> and improved, and modem activities are now handled in a more
-> unified way.
->
-> This series is available (based on net-next in branch "ipa_updated-v2"
-> in this git repository:
->   https://git.linaro.org/people/alex.elder/linux.git
->
-> The branch depends on other one other small patch that I sent out
-> for review earlier.
->   https://lore.kernel.org/lkml/20200306042302.17602-1-elder@linaro.org/
->
+On 04/30, Daniel Borkmann wrote:
+> On 4/29/20 7:05 PM, Stanislav Fomichev wrote:
+> > Currently, bpf_getsocktop and bpf_setsockopt helpers operate on the
+> > 'struct bpf_sock_ops' context in BPF_PROG_TYPE_SOCK_OPS program.
+> > Let's generalize them and make the first argument be 'struct bpf_sock'.
+> > That way, in the future, we can allow those helpers in more places.
+> >
+> > BPF_PROG_TYPE_SOCK_OPS still has the existing helpers that operate
+> > on 'struct bpf_sock_ops', but we add new bpf_{g,s}etsockopt that work
+> > on 'struct bpf_sock'. [Alternatively, for BPF_PROG_TYPE_SOCK_OPS,
+> > we can enable them both and teach verifier to pick the right one
+> > based on the context (bpf_sock_ops vs bpf_sock).]
+> >
+> > As an example, let's allow those 'struct bpf_sock' based helpers to
+> > be called from the BPF_CGROUP_INET{4,6}_CONNECT hooks. That way
+> > we can override CC before the connection is made.
+> >
+> > v2:
+> > * s/BPF_PROG_TYPE_CGROUP_SOCKOPT/BPF_PROG_TYPE_SOCK_OPS/
+> >
+> > Acked-by: John Fastabend <john.fastabend@gmail.com>
+> > Acked-by: Martin KaFai Lau <kafai@fb.com>
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> [...]
+> > +BPF_CALL_5(bpf_setsockopt, struct sock *, sk,
+> > +	   int, level, int, optname, char *, optval, int, optlen)
+> > +{
+> > +	u32 flags = 0;
+> > +	return _bpf_setsockopt(sk, level, optname, optval, optlen, flags);
+> > +}
+> > +
+> > +static const struct bpf_func_proto bpf_setsockopt_proto = {
+> > +	.func		= bpf_setsockopt,
+> > +	.gpl_only	= false,
+> > +	.ret_type	= RET_INTEGER,
+> > +	.arg1_type	= ARG_PTR_TO_SOCKET,
+> > +	.arg2_type	= ARG_ANYTHING,
+> > +	.arg3_type	= ARG_ANYTHING,
+> > +	.arg4_type	= ARG_PTR_TO_MEM,
+> > +	.arg5_type	= ARG_CONST_SIZE,
+> > +};
+> > +
+> > +BPF_CALL_5(bpf_getsockopt, struct sock *, sk,
+> > +	   int, level, int, optname, char *, optval, int, optlen)
+> > +{
+> > +	return _bpf_getsockopt(sk, level, optname, optval, optlen);
+> > +}
+> > +
+> >   static const struct bpf_func_proto bpf_getsockopt_proto = {
+> >   	.func		= bpf_getsockopt,
+> >   	.gpl_only	= false,
+> >   	.ret_type	= RET_INTEGER,
+> > +	.arg1_type	= ARG_PTR_TO_SOCKET,
+> > +	.arg2_type	= ARG_ANYTHING,
+> > +	.arg3_type	= ARG_ANYTHING,
+> > +	.arg4_type	= ARG_PTR_TO_UNINIT_MEM,
+> > +	.arg5_type	= ARG_CONST_SIZE,
+> > +};
+> > +
+> [...]
+> > @@ -6043,6 +6098,22 @@ sock_addr_func_proto(enum bpf_func_id func_id,  
+> const struct bpf_prog *prog)
+> >   		return &bpf_sk_storage_get_proto;
+> >   	case BPF_FUNC_sk_storage_delete:
+> >   		return &bpf_sk_storage_delete_proto;
+> > +	case BPF_FUNC_setsockopt:
+> > +		switch (prog->expected_attach_type) {
+> > +		case BPF_CGROUP_INET4_CONNECT:
+> > +		case BPF_CGROUP_INET6_CONNECT:
+> > +			return &bpf_setsockopt_proto;
 
-I realize this is all already in (yay!), but it took me a long time to
-get around to fully reading this driver. I'll paste my notes here for
-posterity or possible future patches. Overall the driver seemed well
-documented and thoughtfully written. As someone who has seen the old
-downstream IPA driver (though I didn't look long as my brain started
-hurting), I greatly appreciate the work required by Alex to polish
-this all up. So firstly, thanks Alex!
+> Hm, I'm not sure this is safe. In the sock_addr_func_proto() we also have
+> other helpers callable from connect hooks like sk_lookup_{tcp,udp} which
+> return a PTR_TO_SOCKET_OR_NULL, and now we can pass those sockets also  
+> into
+> bpf_{get,set}sockopt() helper after lookup to change various sk related  
+> stuff
+> but w/o being under lock. Doesn't the sock_owned_by_me() yell here at  
+> minimum
+> (I'd expect so)?
+Ugh, good point, I missed the fact that sk_lookup_{tcp,udp} are there
+for sock_addr :-( I can try to do a simple test case to verify
+that sock_owned_by_me triggers, but I'm pretty certain it should
+(I've been calling bpf_{s,g}etsockopt for context socket so it's quiet).
 
-Onto the notes. There are a couple themes I noticed. The driver seems
-occasionally to be unnecessarily layer-caked. I noticed "could be
-inlined" as a common refrain in my feedback. There are also a couple
-places with hand-rolled refcounting, atomic exchanges, and odd
-mutexes. I haven't fully digested those to be able to know how to get
-rid of them, but I'll point them out as something that "doesn't smell
-quite right".
+I don't think there is any helper similar to sock_owned_by_me() that
+I can call to verify that the socket is held by current thread
+(without the lockdep splat) and bail out?
 
-Acronyms (for my own benefit):
-ee - execution environment
-ep - endpoint
-er - endpoint or route ID
-rt - resource type
-dcd - Dynamic clock division (request to GCC to turn you off)
-bcr - Backwards compatibility register
-comp - Core master port
-holb - ???
-
-ipa_main.c:
-What is IPA_VALIDATION. Can this just be on always or removed?
-otherwise it will likely bit rot.
-I'd like to see this suspend_ref go away.
-ipa_reg.c can be inlined
-ipa_mem_init can be inlined.
-
-
-IPA_NOTIFY:
-Shouldn't CONFIG_IPA depend on IPA_NOTIFY?
-
-
-ipa_data.h
-Why are ipa_resource_src and ipa_resource_dst separate structures?
-maybe the extern globals at the bottom should just be moved into ipa_main.c
-
-
-ipa_endpoint.h
-Add a note for enum ipa_endpoint_name indicating who is TXing and RXing
-
-
-ipa_data-sc7180.c
-Where is IPA_ENDPOINT_MODEM_LAN_TX definition?
-
-
-ipa_clock.c
-IPA_CORE_CLOCK_RATE - Should probably be specified in DT as a fixed
-frequency rather than here in code.
-Interconnect bandwidths - Are these a function of the core clock rate?
-This may be fine for the initial version, but is there any way to
-derive the bandwidth requirement?
-ipa_interconnect_init_one - Probably best to just inline this
-ipa_clock_get_additional - Seems sketchy, would like to remove this
-Overall don't like the homebrew reference counting here. Would runtime
-PM help you do this?
-
-
-ipa_interrupt.h
-I'd like to get rid of ipa_interrupt_add and ipa_interrupt_remove.
-Seems like there's no need for these to be dynamically added, it's all
-one driver.
-
-
-ipa_interrupt.c
-Why does ipa_interrupt_setup() need to dynamically allocate the
-structure, can't we just embed it in struct ipa?
-Without the kzalloc, ipa_interrupt_setup() and
-ipa_interrupt_teardown() are simple enough they can probably be
-inlined (at least teardown for sure).
-Interrupt processing seems a little odd. What I would have expected is:
-Hard ISR reads pending bits, and immediately writes all pending bits
-to quiesce them. Save bitmask of pending bits, and send to the
-threaded handler. Threaded handler then reads and clears pending bits
-out, and acts on any.
-Fixes interrupt storm in ipa_isr() if an unexpected interrupt comes in
-but an expected interrupt is also pending.
-Avoids multiple register writes (one for each bit) in ipa_interrupt_process()
-Saves all the register reads in ipa_interrupt_process_all(). That
-additional read in the loop seems like it shouldn't be there either
-way.
-
-
-ipa_mem.h
-Is IPA_SHARED_MEM_SIZE supposed to be defined? It's mentioned in the comment.
-Comment says the number of canaries is the same for all IPA versions,
-but ipa_data-sdm845.c and ipa_data-sc7180.c seem to have different
-canary counts for IPA_MEM_UC_INFO?
-Should the number of canaries really be part of the chipset-specific
-config info if it's never going to change?
-Do the canary values eat into the previous region? Can we add a
-warning to ensure we don't write canary values off the beginning of
-the memory region?
-
-
-ipa_mem.c
-Maybe remove ipa_mem_teardown() if we're not planning to add anything
-to it soon, or inline it in the header for now.
-Does ipa_mem_zero_modem() erase canary values previously set up?
-
-
-gsi.h
-Why make gsi_evt_ring_state 0xf? Remove assignments and let enum do its thing.
-enum gsi_ee_id - Probably worth commenting that this defines the
-layout of the per-EE register regions, so rearranging this would
-horribly break our access to hardware.
-
-
-gsi_reg.h
-What is gsi v2.0? Is that the same as IPA 4.0?
-Why do the channel macros have things like CH_C and EE_N in them? Why
-not just CH and EE? Oh, I also see CH_E, what's that?
-
-
-gsi.c:
-enum gsi_err_code: Where's 0x7?
-gsi_channel_deprogram(): delete
-gsi_channel_update(): I'm worried about this refcount thing, how does it work?
-gsi_event_bitmap_init() can be inlined
-gsi_evt_ring_setup() and gsi_evt_ring_teardown() can be removed
-gsi_teardown(): inline
-gsi_evt_ring_exit(): remove
-
-
-ipa_gsi.h:
-Comment for ipa_gsi_channel_tx_completed has wrong function name copypasta.
-
-
-ipa_gsi.c:
-This is an interesting mezzanine interface, it looks like it was
-designed to keep GSI code from calling IPA code directly. Why is that?
-Could these at least be inlined into the ipa_gsi.h?
-
-
-gsi_trans.h:
-Why is it important that struct gsi_trans be < 128 bytes?
-
-
-gsi_trans.c:
-gsi_tre_type - Should this be in a header?
-TRE_FLAGS_ - Should these be in a header? Also, replace GENMASK(x,x)
-with BIT(x). TRE_FLAGS_IEOB_FMASK is never used (which is fine, but
-should it be?)
-gsi_trans_tre_reserve() - Why atomic_try_cmpxchg? What's the
-difference between that and atomic_cmpxchg?
-gsi_tre_len_opcode() - If len is truncated to 16 bits, why is u32
-passed in? Is len sometimes used as 32 bits?
-gsi_trans_tre_fill() - If it doesn't do a 16-byte atomic write, is
-this a problem? Could the controller see a half-baked TRE?
-
-
-ipa_endpoint.c:
-What is HOLB timer?
-
-
-ipa_table.c:
-ipa_table_valid() - This just runs all 3-bit possibilities. Could use
-flags and a loop instead.
-ipa_table_teardown() - Remove?
-
-
-ipa_cmd.c:
-ipa_cmd_tag_process_add() - What happened here? Is this just
-functionality we're not using right now?
-
-
-ipa_modem.c
-ipa_start_xmit() - Could returning BUSY result in an infinite loop if
-something goes wrong in the lower layers?
-ipa_modem_start() - Shouldn't we print some errors if the state
-variable has an unexpected value (ie not RUNNING)? In those cases we
-are likely not in a good place.
-
-
-ipa_qmi.c:
-ipa_qmi_indication() could be inlined
-init_modem_driver_req() use of static means this can never run
-concurrently with itself, right? Also if the request gets stuck in
-qmi_txn_wait() you're hosed.
-
-
-ipa_qmi_msg.c
-You could macro-ize the initialization of these elements, which would
-make things way shorter, and probably easier to read. I'm imagining
-for instance the first element in the file could be reduced to
-IPA_QMI_ELEM(QMI_OPT_FLAG, 1, struct ipa_indication_register_req,
-master_driver_init_complete_valid, 0x10)
-
-
-ipa_smp2p.c:
-s/Motex/Mutex/
-Actually I don't get why the mutex is needed at all. It's certainly
-not needed in ipa_smp2p_disable() (stores are already atomic), and
-threaded irqs already have mutual exclusion. Or are you trying to make
-sure ipa_smp2p_disable() doesn't return until
-ipa_smp2p_modem_setup_ready_isr() has fully completed? If that's
-really why, you should explain that's what it's doing and why it's
-necessary.
-Thinking more about it, why can't you just actually disable the irq?
-That calls synchronize_irq, which will flush out any instances of the
-irq running. Then no mutex necessary!
-ipa_smp2p_irq_init(), and _exit() can be inlined.
-I'd love to see clock_on and the weird reference counting go away. Is
-that really necessary?
+In this case, is something like adding new PTR_TO_LOCKED_SOCKET_OR_NULL
+is the way to go? Any other ideas?
