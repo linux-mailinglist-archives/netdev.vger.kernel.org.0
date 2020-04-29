@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B17511BE7A2
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 21:47:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B41FB1BE7A3
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 21:47:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726910AbgD2Tqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 15:46:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54888 "EHLO
+        id S1727816AbgD2TrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 15:47:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726456AbgD2Tql (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 15:46:41 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26381C035493;
-        Wed, 29 Apr 2020 12:46:41 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id a5so1204184pjh.2;
-        Wed, 29 Apr 2020 12:46:41 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726891AbgD2Tqm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 15:46:42 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8CDC03C1AE;
+        Wed, 29 Apr 2020 12:46:42 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id v2so1217978plp.9;
+        Wed, 29 Apr 2020 12:46:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=SYWum3ZnYsfLSG0jDSyn5h0VUobSFoO/qhOlaCswZZY=;
-        b=iL3Ls+ntdFBJSjM2bz4+YHeg0DtHnqRps2YE/2gubNg47g6xnBXNRsH7UEdK2CwbYc
-         BZbsUS9Ur46sWQMrxPugSeBTNjQbbSr7TBTs252Un2gEZC/jZ/ICfLtkSoCAu+rbcBsq
-         AXP0PupEUGvlvUVeX5y7yJIZnYwd7oKaCaQREx/CTiztv6yRv/1CTKOw5a7h8HAiW3GL
-         HI+Qc87V1ADL563zV2ePO8ta/uRuHrWE1OtDAvb7cpfEkob3W2qjxe3SSt7jgce5hYjj
-         fS9dAshk3BTAtAChEdh9lsEdMnrRgqVs2YGDZ1FQ7w1poF3UiQYqiJZmALJESvDN6xWu
-         uRdw==
+        bh=mtGk2U0KpShp/95WB0t8JGG8XT1WcH0CeNOC8w7hdtY=;
+        b=a3JIQrMrO2WRZP3wpeD3OcCemq5I129sg4PSWw90j6I8A9mh37U+rTezP2xX/AapPS
+         VheMGjMxgK1bZ8n3ctcVmt8w+xGwZZKMPWPFaADOWLgoLtfhCpl5JqWd/vIis4F8NB6y
+         zue0/KQHeQ6FajaNX5/FumEnaEd94WOcrpVT8m2whJ3oV+JU0KsploRWa/GkXkwz9tCl
+         Kw0fTeeuRSBlhGjESEdTMDjr1F3unewr2CxhdhZuveXi+Hk079N8qAQRX1EA98Wd1OY/
+         UQwPoCawgwIc1CMtrASALQd+wUbM2Pt7FCfUdgUFIr1qlokNittgi5lTApewk/xFowdu
+         NuSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=SYWum3ZnYsfLSG0jDSyn5h0VUobSFoO/qhOlaCswZZY=;
-        b=CAfdc+Snu+ssXrgHrXnAdNE7SE63vR4QQFcu/FphXJdSG1uuxZj7cVk5WOhsCBGfcA
-         kH8lt1HuTjPfBBsJdYY2tO+KYDAd1EAPydguN9kl45LgZ6ov2XcHT+JO/8hmbJcy2w7z
-         R9SGxTrlqkLxGl41pXgaSEqJe8Ad8iFgSoKy7mE/sbZ8Ysyac7cyBNcpw7/7o4Z0ObUB
-         dIbsT3RM2V/6vJBc2mzA55SXH9B1YiHOkJ65UR3fIKGxFUhjGcnnGx01TXGaXAdvHjN7
-         5mtwH69fFL2cQtnuOdt2zeA91o965KhHpkz2ewjmkFigv1TSJvzLd2hysSqQg1Qg/J8g
-         9xXw==
-X-Gm-Message-State: AGi0PubMyltGfWlvtE80H7Sp5ap6shJl5cs4um3DoLu86oM7VsjwRqvT
-        YlNdb1zeT6YxiTGLZ3cM/kvtjk6X
-X-Google-Smtp-Source: APiQypJ6HXBv0gezNfvDGSDGYPMI8pGkgrgfYUAgvjp7KzVb+VfTCg0WHegHbU//y6EtteToUAU67Q==
-X-Received: by 2002:a17:90a:3287:: with SMTP id l7mr84089pjb.126.1588189600675;
-        Wed, 29 Apr 2020 12:46:40 -0700 (PDT)
+        bh=mtGk2U0KpShp/95WB0t8JGG8XT1WcH0CeNOC8w7hdtY=;
+        b=OKs7glRotP8eb/B2tujblFzJ7Cd7j5Ek2sPUwSyNgcaV8RBf8Mew7k9NhVdu9gDOJR
+         2G2SbNq5fCQ9Ey3bwJUiFKv9ihZ3abDQYFyvlzwow7DQTE8TY3mtKPOrPYOdEU+7qHC8
+         MAAyDBFAuflyapgGqDOVQgHtf1Iksm2tY8oSUOTU3L5Vtu3n0WpFT3IsZkNIRoWbxERk
+         iaFrROenuVzjJwMG+vusleaFHYDbJn9/dhElFjeVaU9zTCWKhLizRDA9+sz02cmrYdz7
+         A6Rw7gxgyMk3bXE4j8GgeFZmZSe2Sq70SGfMMeQ/IheXS1CG4zmY/WmFF8J4VYxCjZOv
+         uXJQ==
+X-Gm-Message-State: AGi0PuZnFIP+5VBMmPpZYEl7uFkCvNgLQeOy61NSJ4U9+kVFE0G8Y32m
+        lNB0Q8iSEqNlR6/mdL86v34=
+X-Google-Smtp-Source: APiQypKTrsnAhRIhIHOarUvx7Z8JxbNDqsCLNxsdCwSX2cplTQODuXj9ByUPVL82SNqTsqYvWb5IMg==
+X-Received: by 2002:a17:90b:34c:: with SMTP id fh12mr83219pjb.134.1588189601528;
+        Wed, 29 Apr 2020 12:46:41 -0700 (PDT)
 Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id z15sm87956pjt.20.2020.04.29.12.46.39
+        by smtp.gmail.com with ESMTPSA id z15sm87956pjt.20.2020.04.29.12.46.40
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 29 Apr 2020 12:46:40 -0700 (PDT)
+        Wed, 29 Apr 2020 12:46:41 -0700 (PDT)
 From:   Doug Berger <opendmb@gmail.com>
 To:     Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Doug Berger <opendmb@gmail.com>
-Subject: [PATCH net-next 2/7] net: bcmgenet: Fix WoL with password after deep sleep
-Date:   Wed, 29 Apr 2020 12:45:47 -0700
-Message-Id: <1588189552-899-3-git-send-email-opendmb@gmail.com>
+        linux-kernel@vger.kernel.org,
+        Doug Berger <doug.berger@broadcom.com>
+Subject: [PATCH net-next 3/7] net: bcmgenet: move clk_wol management to bcmgenet_wol
+Date:   Wed, 29 Apr 2020 12:45:48 -0700
+Message-Id: <1588189552-899-4-git-send-email-opendmb@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1588189552-899-1-git-send-email-opendmb@gmail.com>
 References: <1588189552-899-1-git-send-email-opendmb@gmail.com>
@@ -62,138 +63,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Broadcom STB chips support a deep sleep mode where all register contents
-are lost. Because we were stashing the MagicPacket password into some of
-these registers a suspend into that deep sleep then a resumption would
-not lead to being able to wake-up from MagicPacket with password again.
+From: Doug Berger <doug.berger@broadcom.com>
 
-Fix this by keeping a software copy of the password and program it
-during suspend.
+The GENET_POWER_WOL_MAGIC power up and power down code configures
+the device for WoL when suspending and disables the WoL logic when
+resuming. It makes sense that this code should also manage the WoL
+clocking.
 
-Fixes: c51de7f3976b ("net: bcmgenet: add Wake-on-LAN support code")
-Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Doug Berger <opendmb@gmail.com>
+This commit consolidates the logic and moves it earlier in the
+resume sequence.
+
+Since the clock is now only enabled if WoL is successfully entered
+the wol_active flag is introduced to track that state to keep the
+clock enables and disables balanced in case a suspend is aborted.
+The MPD_EN hardware bit can't be used because it can be cleared
+when the MAC is reset by a deep sleep.
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.h     |  2 ++
- drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c | 39 ++++++++++------------
- 2 files changed, 20 insertions(+), 21 deletions(-)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c     | 19 +++++++------------
+ drivers/net/ethernet/broadcom/genet/bcmgenet.h     |  3 ++-
+ drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c | 14 +++++++++++---
+ 3 files changed, 20 insertions(+), 16 deletions(-)
 
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index eb0dd4d4800c..57b8608feae1 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -2,7 +2,7 @@
+ /*
+  * Broadcom GENET (Gigabit Ethernet) controller driver
+  *
+- * Copyright (c) 2014-2019 Broadcom
++ * Copyright (c) 2014-2020 Broadcom
+  */
+ 
+ #define pr_fmt(fmt)				"bcmgenet: " fmt
+@@ -3619,6 +3619,10 @@ static int bcmgenet_resume(struct device *d)
+ 	if (ret)
+ 		return ret;
+ 
++	/* From WOL-enabled suspend, switch to regular clock */
++	if (device_may_wakeup(d) && priv->wolopts)
++		bcmgenet_power_up(priv, GENET_POWER_WOL_MAGIC);
++
+ 	/* If this is an internal GPHY, power it back on now, before UniMAC is
+ 	 * brought out of reset as absolutely no UniMAC activity is allowed
+ 	 */
+@@ -3629,10 +3633,6 @@ static int bcmgenet_resume(struct device *d)
+ 
+ 	init_umac(priv);
+ 
+-	/* From WOL-enabled suspend, switch to regular clock */
+-	if (priv->wolopts)
+-		clk_disable_unprepare(priv->clk_wol);
+-
+ 	phy_init_hw(dev->phydev);
+ 
+ 	/* Speed settings must be restored */
+@@ -3650,9 +3650,6 @@ static int bcmgenet_resume(struct device *d)
+ 		bcmgenet_ext_writel(priv, reg, EXT_EXT_PWR_MGMT);
+ 	}
+ 
+-	if (priv->wolopts)
+-		bcmgenet_power_up(priv, GENET_POWER_WOL_MAGIC);
+-
+ 	/* Disable RX/TX DMA and flush TX queues */
+ 	dma_ctrl = bcmgenet_dma_disable(priv);
+ 
+@@ -3702,12 +3699,10 @@ static int bcmgenet_suspend(struct device *d)
+ 		phy_suspend(dev->phydev);
+ 
+ 	/* Prepare the device for Wake-on-LAN and switch to the slow clock */
+-	if (device_may_wakeup(d) && priv->wolopts) {
++	if (device_may_wakeup(d) && priv->wolopts)
+ 		ret = bcmgenet_power_down(priv, GENET_POWER_WOL_MAGIC);
+-		clk_prepare_enable(priv->clk_wol);
+-	} else if (priv->internal_phy) {
++	else if (priv->internal_phy)
+ 		ret = bcmgenet_power_down(priv, GENET_POWER_PASSIVE);
+-	}
+ 
+ 	/* Turn off the clocks */
+ 	clk_disable_unprepare(priv->clk);
 diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.h b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
-index daf8fb2c39b6..c3bfe97f2e5c 100644
+index c3bfe97f2e5c..a858b7305832 100644
 --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.h
 +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
-@@ -14,6 +14,7 @@
- #include <linux/if_vlan.h>
- #include <linux/phy.h>
- #include <linux/dim.h>
-+#include <linux/ethtool.h>
+@@ -1,6 +1,6 @@
+ /* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+- * Copyright (c) 2014-2017 Broadcom
++ * Copyright (c) 2014-2020 Broadcom
+  */
  
- /* total number of Buffer Descriptors, same for Rx/Tx */
- #define TOTAL_DESC				256
-@@ -676,6 +677,7 @@ struct bcmgenet_priv {
- 	/* WOL */
+ #ifndef __BCMGENET_H__
+@@ -678,6 +678,7 @@ struct bcmgenet_priv {
  	struct clk *clk_wol;
  	u32 wolopts;
-+	u8 sopass[SOPASS_MAX];
+ 	u8 sopass[SOPASS_MAX];
++	bool wol_active;
  
  	struct bcmgenet_mib_counters mib;
  
 diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-index c9a43695b182..597c0498689a 100644
+index 597c0498689a..da45a4645b94 100644
 --- a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
 +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
-@@ -41,18 +41,13 @@
- void bcmgenet_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
- {
- 	struct bcmgenet_priv *priv = netdev_priv(dev);
--	u32 reg;
+@@ -2,7 +2,7 @@
+ /*
+  * Broadcom GENET (Gigabit Ethernet) Wake-on-LAN support
+  *
+- * Copyright (c) 2014-2017 Broadcom
++ * Copyright (c) 2014-2020 Broadcom
+  */
  
- 	wol->supported = WAKE_MAGIC | WAKE_MAGICSECURE;
- 	wol->wolopts = priv->wolopts;
- 	memset(wol->sopass, 0, sizeof(wol->sopass));
+ #define pr_fmt(fmt)				"bcmgenet_wol: " fmt
+@@ -155,6 +155,9 @@ int bcmgenet_wol_power_down_cfg(struct bcmgenet_priv *priv,
+ 	netif_dbg(priv, wol, dev, "MPD WOL-ready status set after %d msec\n",
+ 		  retries);
  
--	if (wol->wolopts & WAKE_MAGICSECURE) {
--		reg = bcmgenet_umac_readl(priv, UMAC_MPD_PW_MS);
--		put_unaligned_be16(reg, &wol->sopass[0]);
--		reg = bcmgenet_umac_readl(priv, UMAC_MPD_PW_LS);
--		put_unaligned_be32(reg, &wol->sopass[2]);
--	}
-+	if (wol->wolopts & WAKE_MAGICSECURE)
-+		memcpy(wol->sopass, priv->sopass, sizeof(priv->sopass));
- }
- 
- /* ethtool function - set WOL (Wake on LAN) settings.
-@@ -62,7 +57,6 @@ int bcmgenet_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
- {
- 	struct bcmgenet_priv *priv = netdev_priv(dev);
- 	struct device *kdev = &priv->pdev->dev;
--	u32 reg;
- 
- 	if (!device_can_wakeup(kdev))
- 		return -ENOTSUPP;
-@@ -70,17 +64,8 @@ int bcmgenet_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
- 	if (wol->wolopts & ~(WAKE_MAGIC | WAKE_MAGICSECURE))
- 		return -EINVAL;
- 
--	reg = bcmgenet_umac_readl(priv, UMAC_MPD_CTRL);
--	if (wol->wolopts & WAKE_MAGICSECURE) {
--		bcmgenet_umac_writel(priv, get_unaligned_be16(&wol->sopass[0]),
--				     UMAC_MPD_PW_MS);
--		bcmgenet_umac_writel(priv, get_unaligned_be32(&wol->sopass[2]),
--				     UMAC_MPD_PW_LS);
--		reg |= MPD_PW_EN;
--	} else {
--		reg &= ~MPD_PW_EN;
--	}
--	bcmgenet_umac_writel(priv, reg, UMAC_MPD_CTRL);
-+	if (wol->wolopts & WAKE_MAGICSECURE)
-+		memcpy(priv->sopass, wol->sopass, sizeof(priv->sopass));
- 
- 	/* Flag the device and relevant IRQ as wakeup capable */
- 	if (wol->wolopts) {
-@@ -120,6 +105,14 @@ static int bcmgenet_poll_wol_status(struct bcmgenet_priv *priv)
- 	return retries;
- }
- 
-+static void bcmgenet_set_mpd_password(struct bcmgenet_priv *priv)
-+{
-+	bcmgenet_umac_writel(priv, get_unaligned_be16(&priv->sopass[0]),
-+			     UMAC_MPD_PW_MS);
-+	bcmgenet_umac_writel(priv, get_unaligned_be32(&priv->sopass[2]),
-+			     UMAC_MPD_PW_LS);
-+}
++	clk_prepare_enable(priv->clk_wol);
++	priv->wol_active = 1;
 +
- int bcmgenet_wol_power_down_cfg(struct bcmgenet_priv *priv,
- 				enum bcmgenet_power_mode mode)
- {
-@@ -144,13 +137,17 @@ int bcmgenet_wol_power_down_cfg(struct bcmgenet_priv *priv,
- 
- 	reg = bcmgenet_umac_readl(priv, UMAC_MPD_CTRL);
- 	reg |= MPD_EN;
-+	if (priv->wolopts & WAKE_MAGICSECURE) {
-+		bcmgenet_set_mpd_password(priv);
-+		reg |= MPD_PW_EN;
-+	}
- 	bcmgenet_umac_writel(priv, reg, UMAC_MPD_CTRL);
- 
- 	/* Do not leave UniMAC in MPD mode only */
- 	retries = bcmgenet_poll_wol_status(priv);
- 	if (retries < 0) {
- 		reg = bcmgenet_umac_readl(priv, UMAC_MPD_CTRL);
--		reg &= ~MPD_EN;
-+		reg &= ~(MPD_EN | MPD_PW_EN);
- 		bcmgenet_umac_writel(priv, reg, UMAC_MPD_CTRL);
- 		return retries;
+ 	/* Enable CRC forward */
+ 	reg = bcmgenet_umac_readl(priv, UMAC_CMD);
+ 	priv->crc_fwd_en = 1;
+@@ -183,9 +186,14 @@ void bcmgenet_wol_power_up_cfg(struct bcmgenet_priv *priv,
+ 		return;
  	}
-@@ -189,7 +186,7 @@ void bcmgenet_wol_power_up_cfg(struct bcmgenet_priv *priv,
+ 
++	if (!priv->wol_active)
++		return;	/* failed to suspend so skip the rest */
++
++	priv->wol_active = 0;
++	clk_disable_unprepare(priv->clk_wol);
++
++	/* Disable Magic Packet Detection */
  	reg = bcmgenet_umac_readl(priv, UMAC_MPD_CTRL);
- 	if (!(reg & MPD_EN))
- 		return;	/* already powered up so skip the rest */
--	reg &= ~MPD_EN;
-+	reg &= ~(MPD_EN | MPD_PW_EN);
+-	if (!(reg & MPD_EN))
+-		return;	/* already powered up so skip the rest */
+ 	reg &= ~(MPD_EN | MPD_PW_EN);
  	bcmgenet_umac_writel(priv, reg, UMAC_MPD_CTRL);
  
- 	/* Disable CRC Forward */
 -- 
 2.7.4
 
