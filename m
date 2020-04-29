@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8BB51BE802
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 22:02:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 553621BE80C
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 22:03:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727047AbgD2UCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 16:02:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57304 "EHLO
+        id S1727844AbgD2UCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 16:02:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726456AbgD2UCM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 16:02:12 -0400
+        with ESMTP id S1727049AbgD2UCN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 16:02:13 -0400
 Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40824C03C1AE;
-        Wed, 29 Apr 2020 13:02:12 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id 18so1591064pfv.8;
-        Wed, 29 Apr 2020 13:02:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7307EC03C1AE;
+        Wed, 29 Apr 2020 13:02:13 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id f7so1587277pfa.9;
+        Wed, 29 Apr 2020 13:02:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=CevivX0aGr8AmmZvoR5A9jtsq4aH4kUQzZm/M7FIZ5A=;
-        b=E8ctWVjqQpu2nsC3Ydpfc3LtOwRwSwTFLxeQmSyOW7GOyuklsAGKUhnLYZB9c8CsNm
-         hpp7dzl3Fd2wqkw4EbMylSk2epGKfN0TPB6mt4zjfeVkYTipehLvMlvMuZaO0CTUQ7gD
-         oU8uDZvz0tBNyGI43+GQ8eoilcf7uESduagq48P5M1vNTAGiTY4pwN4luQt20aQ7OoNw
-         qu6WQS4rhVoIS2pcvn3VaNL20p976+o1C0iflB/oSe9voUEerFo/AThNy0wmmkGCcsMY
-         y4A+/YAY2Qb1ua47Z4KnX4bXjKKaVJyibTfqIkW7k8J8N0wq/L/a4is93rRPGTOqwssF
-         aa1Q==
+        bh=SYWum3ZnYsfLSG0jDSyn5h0VUobSFoO/qhOlaCswZZY=;
+        b=kASBbSG2Y+m0qJObDTSTlmTSkZyk0AhBnwpoKMvM1AO3HtMws3K+EBeAANoqC+Wr95
+         eRvbfwJTjDHFsPEfvVx2ZTJgEufX7iSaO+48GOeAl1+fPTvxBVUKXDKdoFkrxuXWl9mC
+         XZHivxeGvDC2slGQGIQKk9b6oSDwm/NqanBRq42bKf1fJ3YTl734Ldu/4nmLQxnAjvC6
+         Lgif7O9E8JKZpEOZ9ESqtCP2cJ4d4DN/jj9OcWQ73qsP12y5kl2FcMoJrto5N8xf3Yam
+         lwa5jxeLYaeG7KTvNfarmtUfbfTsrLsCKnxg1mToMWmSC8u3Y6XEgmIDvK2WI/5GTiNo
+         2/ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=CevivX0aGr8AmmZvoR5A9jtsq4aH4kUQzZm/M7FIZ5A=;
-        b=pkz+u7qoMo4R7jonG3fkSC71MOGykA/Syo+D1jkA4btPbDZerT+JPRwsMtI7kWmAc7
-         WjOgJzfcbhxywISzyv70oQ4ztyoXB2chLgcDoTuhB/HH8u+qnaIAvqACVeOy+wuV4aVG
-         imfb9PiirlSylcD+ICl4W7/tN+qNgL1cXQYvSHlHg8xdwfjEHwfjbVOVnPB0w6NYTfqd
-         TD/pAoxnMiYbmCj3LCz9Ux4nzDIMFmxCuhvxa6eDXy600PHUKN/mucubVUrcxoHcd38P
-         oJLkgNj1FtGXfZBfDuZgSh8JVV1/w4efigU7/02xPKTiTJIgzt54efDCEUaqZTLnKPw2
-         X/9g==
-X-Gm-Message-State: AGi0Puah/2YyI7/A8y0dwreTuAvCTSXDr/VDbgisw9RZqU8GjJ4/bLMJ
-        cP2G4GwjJfCa/gJNuUegzHg=
-X-Google-Smtp-Source: APiQypImKV5ErRzSjavCApt6/HJl9CJMMMT7fj0bHkjKg0gkYmap9I/6LTUHWG0dNp63KbAHLkBTpw==
-X-Received: by 2002:a63:8c17:: with SMTP id m23mr17899491pgd.246.1588190531743;
-        Wed, 29 Apr 2020 13:02:11 -0700 (PDT)
+        bh=SYWum3ZnYsfLSG0jDSyn5h0VUobSFoO/qhOlaCswZZY=;
+        b=j+wAgXPX27Yn9kkWIPRLg564X0WNrSNnexFir10G1YYiThSMeGOMQ4Tx44z1+QMuHq
+         msUmYCUPJhVllAEHuMOLXZoxF9wGTmT+XNkKJER8lcu3KkJHHdQ7pYU5SneWV4Nd7bYb
+         uP2HhTe1C2f7NKgOfUDLPXGCLaG/ECOOjSCuUxzLoxJ3tOJz0C1/xu49lZ5Ga50CJU7R
+         mntmZulD+u8MYqCuUGA8WrnioY603H8Q5bA7Qe7Ko42wjLaPGQco972cj34nXaSEPx2q
+         vSuu08MhWwGkQx2A2kjp0uV0z8diFni2MkdnMaayj1gVIfldnDviQS2D9qjHwKB1s3oK
+         xbSw==
+X-Gm-Message-State: AGi0PuZlKgmsZZZ13vvdQgtZ3DppT7apNV4acZRGOLqffRLUS3PA8Wmu
+        kOojAxt8kleK/INxJrm+ThY=
+X-Google-Smtp-Source: APiQypJP3S9G2ZKqVVgcQlJkrH+KBcIg8Ek96iKCoB8qUyX9E4lyvZnHqhtRiIzaIPRdDm0v5H1+bQ==
+X-Received: by 2002:a63:1e5a:: with SMTP id p26mr34551434pgm.233.1588190532963;
+        Wed, 29 Apr 2020 13:02:12 -0700 (PDT)
 Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id r128sm1705817pfc.141.2020.04.29.13.02.10
+        by smtp.gmail.com with ESMTPSA id r128sm1705817pfc.141.2020.04.29.13.02.11
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 29 Apr 2020 13:02:11 -0700 (PDT)
+        Wed, 29 Apr 2020 13:02:12 -0700 (PDT)
 From:   Doug Berger <opendmb@gmail.com>
 To:     Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Doug Berger <opendmb@gmail.com>
-Subject: [PATCH net-next v2 1/7] net: bcmgenet: set Rx mode before starting netif
-Date:   Wed, 29 Apr 2020 13:02:00 -0700
-Message-Id: <1588190526-2082-2-git-send-email-opendmb@gmail.com>
+Subject: [PATCH net-next v2 2/7] net: bcmgenet: Fix WoL with password after deep sleep
+Date:   Wed, 29 Apr 2020 13:02:01 -0700
+Message-Id: <1588190526-2082-3-git-send-email-opendmb@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1588190526-2082-1-git-send-email-opendmb@gmail.com>
 References: <1588190526-2082-1-git-send-email-opendmb@gmail.com>
@@ -62,42 +62,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit explicitly calls the bcmgenet_set_rx_mode() function when
-the network interface is started. This function is normally called by
-ndo_set_rx_mode when the flags are changed, but apparently not when
-the driver is suspended and resumed.
+Broadcom STB chips support a deep sleep mode where all register contents
+are lost. Because we were stashing the MagicPacket password into some of
+these registers a suspend into that deep sleep then a resumption would
+not lead to being able to wake-up from MagicPacket with password again.
 
-This change ensures that address filtering or promiscuous mode are
-properly restored by the driver after the MAC may have been reset.
+Fix this by keeping a software copy of the password and program it
+during suspend.
 
-Fixes: b6e978e50444 ("net: bcmgenet: add suspend/resume callbacks")
+Fixes: c51de7f3976b ("net: bcmgenet: add Wake-on-LAN support code")
+Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Doug Berger <opendmb@gmail.com>
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.h     |  2 ++
+ drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c | 39 ++++++++++------------
+ 2 files changed, 20 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index 351d0282f199..eb0dd4d4800c 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -65,6 +65,9 @@
- #define GENET_RDMA_REG_OFF	(priv->hw_params->rdma_offset + \
- 				TOTAL_DESC * DMA_DESC_SIZE)
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.h b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
+index daf8fb2c39b6..c3bfe97f2e5c 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.h
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
+@@ -14,6 +14,7 @@
+ #include <linux/if_vlan.h>
+ #include <linux/phy.h>
+ #include <linux/dim.h>
++#include <linux/ethtool.h>
  
-+/* Forward declarations */
-+static void bcmgenet_set_rx_mode(struct net_device *dev);
-+
- static inline void bcmgenet_writel(u32 value, void __iomem *offset)
+ /* total number of Buffer Descriptors, same for Rx/Tx */
+ #define TOTAL_DESC				256
+@@ -676,6 +677,7 @@ struct bcmgenet_priv {
+ 	/* WOL */
+ 	struct clk *clk_wol;
+ 	u32 wolopts;
++	u8 sopass[SOPASS_MAX];
+ 
+ 	struct bcmgenet_mib_counters mib;
+ 
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
+index c9a43695b182..597c0498689a 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c
+@@ -41,18 +41,13 @@
+ void bcmgenet_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
  {
- 	/* MIPS chips strapped for BE will automagically configure the
-@@ -2793,6 +2796,7 @@ static void bcmgenet_netif_start(struct net_device *dev)
  	struct bcmgenet_priv *priv = netdev_priv(dev);
+-	u32 reg;
  
- 	/* Start the network engine */
-+	bcmgenet_set_rx_mode(dev);
- 	bcmgenet_enable_rx_napi(priv);
+ 	wol->supported = WAKE_MAGIC | WAKE_MAGICSECURE;
+ 	wol->wolopts = priv->wolopts;
+ 	memset(wol->sopass, 0, sizeof(wol->sopass));
  
- 	umac_enable_set(priv, CMD_TX_EN | CMD_RX_EN, true);
+-	if (wol->wolopts & WAKE_MAGICSECURE) {
+-		reg = bcmgenet_umac_readl(priv, UMAC_MPD_PW_MS);
+-		put_unaligned_be16(reg, &wol->sopass[0]);
+-		reg = bcmgenet_umac_readl(priv, UMAC_MPD_PW_LS);
+-		put_unaligned_be32(reg, &wol->sopass[2]);
+-	}
++	if (wol->wolopts & WAKE_MAGICSECURE)
++		memcpy(wol->sopass, priv->sopass, sizeof(priv->sopass));
+ }
+ 
+ /* ethtool function - set WOL (Wake on LAN) settings.
+@@ -62,7 +57,6 @@ int bcmgenet_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
+ {
+ 	struct bcmgenet_priv *priv = netdev_priv(dev);
+ 	struct device *kdev = &priv->pdev->dev;
+-	u32 reg;
+ 
+ 	if (!device_can_wakeup(kdev))
+ 		return -ENOTSUPP;
+@@ -70,17 +64,8 @@ int bcmgenet_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
+ 	if (wol->wolopts & ~(WAKE_MAGIC | WAKE_MAGICSECURE))
+ 		return -EINVAL;
+ 
+-	reg = bcmgenet_umac_readl(priv, UMAC_MPD_CTRL);
+-	if (wol->wolopts & WAKE_MAGICSECURE) {
+-		bcmgenet_umac_writel(priv, get_unaligned_be16(&wol->sopass[0]),
+-				     UMAC_MPD_PW_MS);
+-		bcmgenet_umac_writel(priv, get_unaligned_be32(&wol->sopass[2]),
+-				     UMAC_MPD_PW_LS);
+-		reg |= MPD_PW_EN;
+-	} else {
+-		reg &= ~MPD_PW_EN;
+-	}
+-	bcmgenet_umac_writel(priv, reg, UMAC_MPD_CTRL);
++	if (wol->wolopts & WAKE_MAGICSECURE)
++		memcpy(priv->sopass, wol->sopass, sizeof(priv->sopass));
+ 
+ 	/* Flag the device and relevant IRQ as wakeup capable */
+ 	if (wol->wolopts) {
+@@ -120,6 +105,14 @@ static int bcmgenet_poll_wol_status(struct bcmgenet_priv *priv)
+ 	return retries;
+ }
+ 
++static void bcmgenet_set_mpd_password(struct bcmgenet_priv *priv)
++{
++	bcmgenet_umac_writel(priv, get_unaligned_be16(&priv->sopass[0]),
++			     UMAC_MPD_PW_MS);
++	bcmgenet_umac_writel(priv, get_unaligned_be32(&priv->sopass[2]),
++			     UMAC_MPD_PW_LS);
++}
++
+ int bcmgenet_wol_power_down_cfg(struct bcmgenet_priv *priv,
+ 				enum bcmgenet_power_mode mode)
+ {
+@@ -144,13 +137,17 @@ int bcmgenet_wol_power_down_cfg(struct bcmgenet_priv *priv,
+ 
+ 	reg = bcmgenet_umac_readl(priv, UMAC_MPD_CTRL);
+ 	reg |= MPD_EN;
++	if (priv->wolopts & WAKE_MAGICSECURE) {
++		bcmgenet_set_mpd_password(priv);
++		reg |= MPD_PW_EN;
++	}
+ 	bcmgenet_umac_writel(priv, reg, UMAC_MPD_CTRL);
+ 
+ 	/* Do not leave UniMAC in MPD mode only */
+ 	retries = bcmgenet_poll_wol_status(priv);
+ 	if (retries < 0) {
+ 		reg = bcmgenet_umac_readl(priv, UMAC_MPD_CTRL);
+-		reg &= ~MPD_EN;
++		reg &= ~(MPD_EN | MPD_PW_EN);
+ 		bcmgenet_umac_writel(priv, reg, UMAC_MPD_CTRL);
+ 		return retries;
+ 	}
+@@ -189,7 +186,7 @@ void bcmgenet_wol_power_up_cfg(struct bcmgenet_priv *priv,
+ 	reg = bcmgenet_umac_readl(priv, UMAC_MPD_CTRL);
+ 	if (!(reg & MPD_EN))
+ 		return;	/* already powered up so skip the rest */
+-	reg &= ~MPD_EN;
++	reg &= ~(MPD_EN | MPD_PW_EN);
+ 	bcmgenet_umac_writel(priv, reg, UMAC_MPD_CTRL);
+ 
+ 	/* Disable CRC Forward */
 -- 
 2.7.4
 
