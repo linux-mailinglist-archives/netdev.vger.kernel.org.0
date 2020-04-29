@@ -2,129 +2,340 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5ADB1BD30A
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 05:43:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73F7B1BD33F
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 05:48:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726640AbgD2DnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 23:43:20 -0400
-Received: from mail-eopbgr00070.outbound.protection.outlook.com ([40.107.0.70]:1826
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        id S1727057AbgD2Drm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 23:47:42 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:3379 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726530AbgD2DnU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Apr 2020 23:43:20 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y8QZ2ofXBsXUGoXOtL0pFbBGIlOFYrrDlmZ1hhpTrf4JSGf8yXDDHTV00uhreXS9r25qHLSj0/Rwrg0FdZ80HD+2szrhqLk5OdAzv9bGq/4MQADQJc7QvxbhH9uWkFRsbSjyBKJByLnVL5jfPNitXsqeOvMbBj9hY640WGqvFu8Y8rNWHUke0YFyEvDudoC1MvW6IuZUqgg/JOWLaBxRbPSH4a3BCDXHvLmNO2GoXPfDlAj9qXRMk8X6T1UhJA6N6pp6pWC0tFoENMgiVxfbPDDA1BQ2GJnmgJOhhPiIJfY0A/MDSYktcA0RQF9koJSsjYEcOo34pIBVo4/sOahKww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/oD+PyB4u+ICAsF9ZnRCQBDp1VGJOLtrhJ2oAmqSweo=;
- b=e3sNCHjuNbXDp86IF8pWtPFE/2dDOBIBFLAd1AISyL821ZMAnwiQmi6O/O3iO6iY0tU5qN+3zzrbm3CNMucRrYqQfNzMAoTxBaFBtyqXyy3+5WD5WfMoj0fHck55qTuoCDffAATaiH/N0i8mIcrbcN5ZDb1lTQtSOnonAQlVaN3QZVzPo9/KQFmOR9AB980W0kr0BvhsFenOIaeQAnItXyzxDWS4lbXD9Trzzb67b9W8CGGvBM5qleK22pg4u7PvM2/5NAA51ACljlw/ruOQ3oDmpSyC9MxDaRgeUZHGlbifUkyE/+BQevFkSS4qC/5ZGc1M9KY3CfdjG1OJfNW2Mw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/oD+PyB4u+ICAsF9ZnRCQBDp1VGJOLtrhJ2oAmqSweo=;
- b=jmW/bVcfKfKRTwAsHMf/PU/Hi5JvkfOH/0TmZrhw9J8RwvEh8CElbrPDYrQDPCKo0bnJAva6oxAYzYPnO9V2Wm5HkCcG8Vw0345grBivOQJn4J2Id/F0R4OsHl2mAJs5g525gKjJ9UONymBM4vJdoB0HEhdgk4iCwQK4MR9vMDQ=
-Received: from HE1PR0402MB2745.eurprd04.prod.outlook.com (2603:10a6:3:d7::12)
- by HE1PR0402MB3578.eurprd04.prod.outlook.com (2603:10a6:7:84::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19; Wed, 29 Apr
- 2020 03:43:16 +0000
-Received: from HE1PR0402MB2745.eurprd04.prod.outlook.com
- ([fe80::e802:dffa:63bb:2e3d]) by HE1PR0402MB2745.eurprd04.prod.outlook.com
- ([fe80::e802:dffa:63bb:2e3d%10]) with mapi id 15.20.2937.023; Wed, 29 Apr
- 2020 03:43:15 +0000
-From:   Andy Duan <fugang.duan@nxp.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "cphealy@gmail.com" <cphealy@gmail.com>,
-        Leonard Crestez <leonard.crestez@nxp.com>
-Subject: RE: [EXT] Re: [PATCH net-next] net: ethernet: fec: Prevent MII event
- after MII_SPEED write
-Thread-Topic: [EXT] Re: [PATCH net-next] net: ethernet: fec: Prevent MII event
- after MII_SPEED write
-Thread-Index: AQHWHaSxKxjYdl/WNkuZX+80YiGqOKiPVsMggAAcLICAAAI1EA==
-Date:   Wed, 29 Apr 2020 03:43:15 +0000
-Message-ID: <HE1PR0402MB2745963E2B675BAC95A61E55FFAD0@HE1PR0402MB2745.eurprd04.prod.outlook.com>
-References: <20200428175833.30517-1-andrew@lunn.ch>
-        <20200428.143339.1189475969435668035.davem@davemloft.net>
-        <HE1PR0402MB2745408F4000C8B2C119B9EDFFAD0@HE1PR0402MB2745.eurprd04.prod.outlook.com>
- <20200428.203439.49635882087657701.davem@davemloft.net>
-In-Reply-To: <20200428.203439.49635882087657701.davem@davemloft.net>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [101.86.0.144]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 3df98783-620c-4f58-5d4a-08d7ebef7345
-x-ms-traffictypediagnostic: HE1PR0402MB3578:|HE1PR0402MB3578:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <HE1PR0402MB35787217EFAFFD7A36C3483CFFAD0@HE1PR0402MB3578.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
-x-forefront-prvs: 03883BD916
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ypZFUxGP2QEFrXNbFH50++7VGNOpiab62IVadVDsU5YKEUokHRtm96lix7o0KFQx9fJPoG64ZjBZXnlFWM46tGbh9X0WAnV4DivzVfnlhfiJ/Rk2S1BkhjVtAKoQtclYeRwjJ25NdRyoOyQGCEYCCl49hyGgNf38S/C7IIQ6dRn0VMs9Pjc1cqmZTZULxBpqJiniNIje/idJNimzfjxFA8zg8eaeV1u4AWqqkhpAvOIeBD3wQ7ORMCSjYSuaXhctT9Z402z25QqqAYBsm7Hy2PY/p+7U8Vq5pK2v83pSYGxbHfVOXla/g+hcPjIpB2EbYOhaQ3ONKZ1oZvgM1D6cMuc1JBdkEm/RpsJ55HaC4RV8UxRYGZSin+nCYRDiV4axHwRJJu1PE48w1ZKLIa210639JcZVfCP8emtvbMF9heULGALNKEFuhvrlfu8kcXx8
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0402MB2745.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(366004)(396003)(136003)(346002)(39850400004)(376002)(86362001)(6916009)(478600001)(7696005)(66476007)(66446008)(64756008)(52536014)(66556008)(76116006)(6506007)(26005)(8936002)(66946007)(186003)(316002)(8676002)(54906003)(33656002)(4326008)(2906002)(9686003)(55016002)(5660300002)(71200400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: PMtwRTFWy4AAvI3LFS6J/2jcjuHaFPjXD6lx9s/IVP7zmTus3VfTn7kXBjbZnRqm6IKaPesB9vDPKP9BwndOdquxwm69PZyit+0yZCConsE4PbBabijoBrK/V/l/ChsJmLH/AuLsjqme63lbLv9ozBg6sbsS4J8WsfgGT4XiC2x7A4N/AKpX5RMmUXZ2blyeMp3EQRT3PbkAC6WsTk8qCRk263vRMZV+AYANvZCmIFDfImmE3RRi24KXcsvIKcvnEPstVZqRCq3zfHp3iFKRiNOz54TtxtREcDiOtckqdLMRt2anwLQCWFZO4lIO7zL2HoYuNG+eHuPnk++druBuAG7dt7g44Zix5dOiO7ohifkgP6KijiPTcJ2LJ4HT2CQJs1CV6I1FBTIc5fRNctmjzrClISLFWZ5pvQhugF7R/lASFwHvWyoC7zinWDLH4V/uqO/gd/EmFJmJMf4LrgGP7OZAZ/q7IAN4fEzTT3ykqfVVrpKAzlcE+SKjl7I9a3/5cr8ubQIS0zzVoiriYjZMd3pvPbWhhMO4UoFRL41uZEOZQcGTUvBFnrZ9JkKXsX1h2kTDcJAbzKaxs6Switscn8s9TkcNlzfvot4QXMO6q4DiezLdCs0wHHqNCVx34F0tPl55YGIL9sMHyYn5UWjQhzeBix+9NIRLD8DL86NMu/cxhnD+G10NV0OOipDOTWMOzP4oRIuHCKrUsOjEb98m4LYswMFXTz5wHvdaU72D7scMy0t0VRP5ZTos+aH1BhSgcu/vVrV3qls3yuvs03NASODaCQ0vuEJzaC0Jat6UJII=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726596AbgD2Drm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 28 Apr 2020 23:47:42 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id C8369D2ECF5E782F5F7E;
+        Wed, 29 Apr 2020 11:47:34 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
+ 14.3.487.0; Wed, 29 Apr 2020 11:47:25 +0800
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, <kuba@kernel.org>,
+        Yonglong Liu <liuyonglong@huawei.com>,
+        Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH V2] net: hns3: adds support for reading module eeprom info
+Date:   Wed, 29 Apr 2020 11:46:24 +0800
+Message-ID: <1588131984-27468-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3df98783-620c-4f58-5d4a-08d7ebef7345
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Apr 2020 03:43:15.8491
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3gg72n+bV4ULaglnxVDAq0OR1mhLQJFKUbRZ+GHVXF+tft7Sp9Vl8TCpMm6eO+/HcEq77lP3/wWoUVWrSFVk4Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0402MB3578
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Miller <davem@davemloft.net> Sent: Wednesday, April 29, 2020 11=
-:35 AM
-> From: Andy Duan <fugang.duan@nxp.com>
-> Date: Wed, 29 Apr 2020 01:55:35 +0000
->=20
-> > From: David Miller <davem@davemloft.net> Sent: Wednesday, April 29,
-> > 2020 5:34 AM
-> >> From: Andrew Lunn <andrew@lunn.ch>
-> >> Date: Tue, 28 Apr 2020 19:58:33 +0200
-> >>
-> >> > The change to polled IO for MDIO completion assumes that MII events
-> >> > are only generated for MDIO transactions. However on some SoCs
-> >> > writing to the MII_SPEED register can also trigger an MII event. As
-> >> > a result, the next MDIO read has a pending MII event, and
-> >> > immediately reads the data registers before it contains useful
-> >> > data. When the read does complete, another MII event is posted,
-> >> > which results in the next read also going wrong, and the cycle conti=
-nues.
-> >> >
-> >> > By writing 0 to the MII_DATA register before writing to the speed
-> >> > register, this MII event for the MII_SPEED is suppressed, and
-> >> > polled IO works as expected.
-> >> >
-> >> > Fixes: 29ae6bd1b0d8 ("net: ethernet: fec: Replace interrupt driven
-> >> > MDIO with polled IO")
-> >> > Reported-by: Andy Duan <fugang.duan@nxp.com>
-> >> > Suggested-by: Andy Duan <fugang.duan@nxp.com>
-> >> > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> >>
-> >> Applied to net-next, thanks.
-> >
-> > David, it is too early to apply the patch, it will introduce another
-> > break issue as I explain in previous mail for the patch.
->=20
-> So what should I do, revert?
+From: Yonglong Liu <liuyonglong@huawei.com>
 
-If you can revert the patch, please do it.=20
-Thanks, David.
+This patch adds support for reading the optical module eeprom
+info via "ethtool -m".
+
+Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+---
+V2: replace self-defined macro with the SFF8024_ID_* in sfp.h
+    suggested by Jakub Kicinski.
+---
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |   4 +
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  75 +++++++++++++++
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  15 +++
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 102 +++++++++++++++++++++
+ 4 files changed, 196 insertions(+)
+
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+index 6291aa9..5602bf2 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+@@ -374,6 +374,8 @@ struct hnae3_ae_dev {
+  *   Set the max tx rate of specified vf.
+  * set_vf_mac
+  *   Configure the default MAC for specified VF
++ * get_module_eeprom
++ *   Get the optical module eeprom info.
+  */
+ struct hnae3_ae_ops {
+ 	int (*init_ae_dev)(struct hnae3_ae_dev *ae_dev);
+@@ -548,6 +550,8 @@ struct hnae3_ae_ops {
+ 	int (*set_vf_rate)(struct hnae3_handle *handle, int vf,
+ 			   int min_tx_rate, int max_tx_rate, bool force);
+ 	int (*set_vf_mac)(struct hnae3_handle *handle, int vf, u8 *p);
++	int (*get_module_eeprom)(struct hnae3_handle *handle, u32 offset,
++				 u32 len, u8 *data);
+ };
+ 
+ struct hnae3_dcb_ops {
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index 4d9c85f..1a105f2 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -4,6 +4,7 @@
+ #include <linux/etherdevice.h>
+ #include <linux/string.h>
+ #include <linux/phy.h>
++#include <linux/sfp.h>
+ 
+ #include "hns3_enet.h"
+ 
+@@ -12,6 +13,11 @@ struct hns3_stats {
+ 	int stats_offset;
+ };
+ 
++struct hns3_sfp_type {
++	u8 type;
++	u8 ext_type;
++};
++
+ /* tqp related stats */
+ #define HNS3_TQP_STAT(_string, _member)	{			\
+ 	.stats_string = _string,				\
+@@ -1386,6 +1392,73 @@ static int hns3_set_fecparam(struct net_device *netdev,
+ 	return ops->set_fec(handle, fec_mode);
+ }
+ 
++static int hns3_get_module_info(struct net_device *netdev,
++				struct ethtool_modinfo *modinfo)
++{
++#define HNS3_SFF_8636_V1_3 0x03
++
++	struct hnae3_handle *handle = hns3_get_handle(netdev);
++	const struct hnae3_ae_ops *ops = handle->ae_algo->ops;
++	struct hns3_sfp_type sfp_type;
++	int ret;
++
++	if (handle->pdev->revision == 0x20 || !ops->get_module_eeprom)
++		return -EOPNOTSUPP;
++
++	memset(&sfp_type, 0, sizeof(sfp_type));
++	ret = ops->get_module_eeprom(handle, 0, sizeof(sfp_type) / sizeof(u8),
++				     (u8 *)&sfp_type);
++	if (ret)
++		return ret;
++
++	switch (sfp_type.type) {
++	case SFF8024_ID_SFP:
++		modinfo->type = ETH_MODULE_SFF_8472;
++		modinfo->eeprom_len = ETH_MODULE_SFF_8472_LEN;
++		break;
++	case SFF8024_ID_QSFP_8438:
++		modinfo->type = ETH_MODULE_SFF_8436;
++		modinfo->eeprom_len = ETH_MODULE_SFF_8436_MAX_LEN;
++		break;
++	case SFF8024_ID_QSFP_8436_8636:
++		if (sfp_type.ext_type < HNS3_SFF_8636_V1_3) {
++			modinfo->type = ETH_MODULE_SFF_8436;
++			modinfo->eeprom_len = ETH_MODULE_SFF_8436_MAX_LEN;
++		} else {
++			modinfo->type = ETH_MODULE_SFF_8636;
++			modinfo->eeprom_len = ETH_MODULE_SFF_8636_MAX_LEN;
++		}
++		break;
++	case SFF8024_ID_QSFP28_8636:
++		modinfo->type = ETH_MODULE_SFF_8636;
++		modinfo->eeprom_len = ETH_MODULE_SFF_8636_MAX_LEN;
++		break;
++	default:
++		netdev_err(netdev, "Optical module unknown: %#x\n",
++			   sfp_type.type);
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int hns3_get_module_eeprom(struct net_device *netdev,
++				  struct ethtool_eeprom *ee, u8 *data)
++{
++	struct hnae3_handle *handle = hns3_get_handle(netdev);
++	const struct hnae3_ae_ops *ops = handle->ae_algo->ops;
++
++	if (handle->pdev->revision == 0x20 || !ops->get_module_eeprom)
++		return -EOPNOTSUPP;
++
++	if (!ee->len)
++		return -EINVAL;
++
++	memset(data, 0, ee->len);
++
++	return ops->get_module_eeprom(handle, ee->offset, ee->len, data);
++}
++
+ #define HNS3_ETHTOOL_COALESCE	(ETHTOOL_COALESCE_USECS |		\
+ 				 ETHTOOL_COALESCE_USE_ADAPTIVE |	\
+ 				 ETHTOOL_COALESCE_RX_USECS_HIGH |	\
+@@ -1449,6 +1522,8 @@ static const struct ethtool_ops hns3_ethtool_ops = {
+ 	.set_msglevel = hns3_set_msglevel,
+ 	.get_fecparam = hns3_get_fecparam,
+ 	.set_fecparam = hns3_set_fecparam,
++	.get_module_info = hns3_get_module_info,
++	.get_module_eeprom = hns3_get_module_eeprom,
+ };
+ 
+ void hns3_ethtool_set_ops(struct net_device *netdev)
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+index 90e422ef..9a9d752 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+@@ -270,6 +270,8 @@ enum hclge_opcode_type {
+ 	HCLGE_OPC_M7_COMPAT_CFG		= 0x701A,
+ 
+ 	/* SFP command */
++	HCLGE_OPC_GET_SFP_EEPROM	= 0x7100,
++	HCLGE_OPC_GET_SFP_EXIST		= 0x7101,
+ 	HCLGE_OPC_GET_SFP_INFO		= 0x7104,
+ 
+ 	/* Error INT commands */
+@@ -1054,6 +1056,19 @@ struct hclge_firmware_compat_cmd {
+ 	u8 rsv[20];
+ };
+ 
++#define HCLGE_SFP_INFO_CMD_NUM	6
++#define HCLGE_SFP_INFO_BD0_LEN	20
++#define HCLGE_SFP_INFO_BDX_LEN	24
++#define HCLGE_SFP_INFO_MAX_LEN \
++	(HCLGE_SFP_INFO_BD0_LEN + \
++	(HCLGE_SFP_INFO_CMD_NUM - 1) * HCLGE_SFP_INFO_BDX_LEN)
++
++struct hclge_sfp_info_bd0_cmd {
++	__le16 offset;
++	__le16 read_len;
++	u8 data[HCLGE_SFP_INFO_BD0_LEN];
++};
++
+ int hclge_cmd_init(struct hclge_dev *hdev);
+ static inline void hclge_write_reg(void __iomem *base, u32 reg, u32 value)
+ {
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index e2fec83..71a54dd 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -11119,6 +11119,107 @@ static void hclge_sync_promisc_mode(struct hclge_dev *hdev)
+ 	}
+ }
+ 
++static bool hclge_module_existed(struct hclge_dev *hdev)
++{
++	struct hclge_desc desc;
++	u32 existed;
++	int ret;
++
++	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_GET_SFP_EXIST, true);
++	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
++	if (ret) {
++		dev_err(&hdev->pdev->dev,
++			"failed to get SFP exist state, ret = %d\n", ret);
++		return false;
++	}
++
++	existed = le32_to_cpu(desc.data[0]);
++
++	return existed != 0;
++}
++
++/* need 6 bds(total 140 bytes) in one reading
++ * return the number of bytes actually read, 0 means read failed.
++ */
++static u16 hclge_get_sfp_eeprom_info(struct hclge_dev *hdev, u32 offset,
++				     u32 len, u8 *data)
++{
++	struct hclge_desc desc[HCLGE_SFP_INFO_CMD_NUM];
++	struct hclge_sfp_info_bd0_cmd *sfp_info_bd0;
++	u16 read_len;
++	u16 copy_len;
++	int ret;
++	int i;
++
++	/* setup all 6 bds to read module eeprom info. */
++	for (i = 0; i < HCLGE_SFP_INFO_CMD_NUM; i++) {
++		hclge_cmd_setup_basic_desc(&desc[i], HCLGE_OPC_GET_SFP_EEPROM,
++					   true);
++
++		/* bd0~bd4 need next flag */
++		if (i < HCLGE_SFP_INFO_CMD_NUM - 1)
++			desc[i].flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
++	}
++
++	/* setup bd0, this bd contains offset and read length. */
++	sfp_info_bd0 = (struct hclge_sfp_info_bd0_cmd *)desc[0].data;
++	sfp_info_bd0->offset = cpu_to_le16((u16)offset);
++	read_len = min_t(u16, len, HCLGE_SFP_INFO_MAX_LEN);
++	sfp_info_bd0->read_len = cpu_to_le16(read_len);
++
++	ret = hclge_cmd_send(&hdev->hw, desc, i);
++	if (ret) {
++		dev_err(&hdev->pdev->dev,
++			"failed to get SFP eeprom info, ret = %d\n", ret);
++		return 0;
++	}
++
++	/* copy sfp info from bd0 to out buffer. */
++	copy_len = min_t(u16, len, HCLGE_SFP_INFO_BD0_LEN);
++	memcpy(data, sfp_info_bd0->data, copy_len);
++	read_len = copy_len;
++
++	/* copy sfp info from bd1~bd5 to out buffer if needed. */
++	for (i = 1; i < HCLGE_SFP_INFO_CMD_NUM; i++) {
++		if (read_len >= len)
++			return read_len;
++
++		copy_len = min_t(u16, len - read_len, HCLGE_SFP_INFO_BDX_LEN);
++		memcpy(data + read_len, desc[i].data, copy_len);
++		read_len += copy_len;
++	}
++
++	return read_len;
++}
++
++static int hclge_get_module_eeprom(struct hnae3_handle *handle, u32 offset,
++				   u32 len, u8 *data)
++{
++	struct hclge_vport *vport = hclge_get_vport(handle);
++	struct hclge_dev *hdev = vport->back;
++	u32 read_len = 0;
++	u16 data_len;
++
++	if (hdev->hw.mac.media_type != HNAE3_MEDIA_TYPE_FIBER)
++		return -EOPNOTSUPP;
++
++	if (!hclge_module_existed(hdev))
++		return -ENXIO;
++
++	while (read_len < len) {
++		data_len = hclge_get_sfp_eeprom_info(hdev,
++						     offset + read_len,
++						     len - read_len,
++						     data + read_len);
++		if (!data_len)
++			return -EIO;
++
++		read_len += data_len;
++	}
++
++	return 0;
++}
++
+ static const struct hnae3_ae_ops hclge_ops = {
+ 	.init_ae_dev = hclge_init_ae_dev,
+ 	.uninit_ae_dev = hclge_uninit_ae_dev,
+@@ -11211,6 +11312,7 @@ static const struct hnae3_ae_ops hclge_ops = {
+ 	.set_vf_trust = hclge_set_vf_trust,
+ 	.set_vf_rate = hclge_set_vf_rate,
+ 	.set_vf_mac = hclge_set_vf_mac,
++	.get_module_eeprom = hclge_get_module_eeprom,
+ };
+ 
+ static struct hnae3_ae_algo ae_algo = {
+-- 
+2.7.4
+
