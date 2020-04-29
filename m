@@ -2,98 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A36121BE38C
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 18:16:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 649AF1BE398
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 18:20:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726524AbgD2QQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 12:16:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49880 "EHLO
+        id S1726839AbgD2QT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 12:19:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726476AbgD2QQR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 12:16:17 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5BE6C03C1AD
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 09:16:14 -0700 (PDT)
-Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id AEC4222ED8;
-        Wed, 29 Apr 2020 18:16:12 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1588176973;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=a2nzkHuAooKHpiosYQ35Mk5X3AQv0VvYBHegOxXveQc=;
-        b=bOBCbzNFlmZNw0L68KLuKZUFt2oOl4BZ8Ew0aKQ+ax4Fem+1wMqGcGZmObndsJHt8wX6W1
-        dIyRnui2U6vxI0tZF5qWiuxeL1E9TKnn8b+VuKAnSLQRFPywv27yvj3/MAJoALVw+AgZO3
-        OsF2b21lYQP25FquAZb3mBiFF0DIdf4=
-From:   Michael Walle <michael@walle.cc>
-To:     andrew@lunn.ch
-Cc:     cphealy@gmail.com, davem@davemloft.net, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, mkubecek@suse.cz, netdev@vger.kernel.org,
-        Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH net-next v1 4/9] net: ethtool: Add attributes for cable test reports
-Date:   Wed, 29 Apr 2020 18:16:05 +0200
-Message-Id: <20200429161605.23104-1-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200425180621.1140452-5-andrew@lunn.ch>
-References: <20200425180621.1140452-5-andrew@lunn.ch>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spamd-Bar: ++++++
-X-Spam-Level: ******
-X-Rspamd-Server: web
-X-Spam-Status: Yes, score=6.40
-X-Spam-Score: 6.40
-X-Rspamd-Queue-Id: AEC4222ED8
-X-Spamd-Result: default: False [6.40 / 15.00];
-         FROM_HAS_DN(0.00)[];
-         TO_DN_SOME(0.00)[];
-         R_MISSING_CHARSET(2.50)[];
-         FREEMAIL_ENVRCPT(0.00)[gmail.com];
-         TAGGED_RCPT(0.00)[];
-         MIME_GOOD(-0.10)[text/plain];
-         BROKEN_CONTENT_TYPE(1.50)[];
-         TO_MATCH_ENVRCPT_ALL(0.00)[];
-         DKIM_SIGNED(0.00)[];
-         RCPT_COUNT_SEVEN(0.00)[8];
-         MID_CONTAINS_FROM(1.00)[];
-         RCVD_COUNT_ZERO(0.00)[0];
-         FROM_EQ_ENVFROM(0.00)[];
-         MIME_TRACE(0.00)[0:+];
-         ASN(0.00)[asn:31334, ipnet:2a02:810c:8000::/33, country:DE];
-         FREEMAIL_CC(0.00)[gmail.com,davemloft.net,suse.cz,vger.kernel.org,walle.cc];
-         SUSPICIOUS_RECIPS(1.50)[]
-X-Spam: Yes
+        by vger.kernel.org with ESMTP id S1726423AbgD2QT6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 12:19:58 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B10C03C1AD
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 09:19:58 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id g12so2677529wmh.3
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 09:19:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=NdSk54qfi3ZCMHgRSOUOC81zXRS/IGM9oQqQNQ6lwdY=;
+        b=NgUp2RUup+3th55kyNbO4O1lVtL6YM8ZTv2JB8kVqraxlJV4HpK7jznzCFynpYO1ms
+         sRwfi9DWeQEyc/QKiQgWd2AoqL7bbfmLaRlP96ILu8WYVGBZwgsD1coqy0oHuCfYApeR
+         ip5xWTwUv8kJ1IfuqF72QE6SD5PmqP/NAP5XDT9+mCdjHQfJhC2fxOkDiFbXV5zPbJ0b
+         HAngkEtuCxZXTr4YL8XaYsoLoWLsV7gmtKjEcEGzbxuBrVJRTg4uHahzl3xuiBS9SnrF
+         dr/bswzWQCttA3zTHeeat3/ZNd7VaLGAOtAuCItq6gkXdHdvMVH7NABNXqK58QWERhTK
+         ddHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=NdSk54qfi3ZCMHgRSOUOC81zXRS/IGM9oQqQNQ6lwdY=;
+        b=nmtYYtjtxrsdOzltS0wo1ME9v19rrImdSsmk4UXaOlDq9ETkykazpx0F2F8QPfW1K5
+         vfGYA9sgwrg32cv1HawRk8+WkPv3JnoCIwQweZZ77ffRFTuSlKkxPTflfgpZBCm4j/oV
+         tOauFE27GsylydOJbxIsT2gwyVGZkg3rrbnwLLKIKHBrfpFrF/CgmCZ5x7LnEejKKhD8
+         vR7FtewUWRoSAX1FrC82IE+hwVZIAejqn35JznR+lpJjEbHrPdHthCwOUgYkGtx7SsSu
+         sTJhqbGaOW/tJD2MIll2tRIZkZTkpbe1tKZuQiP8xyn1D9TAOLAVYX928QG7CA6KGuWV
+         x07w==
+X-Gm-Message-State: AGi0PuY/21RjPP7aKSGu6QXnKkthGxJzjWt9PN9kv9lj4sbgHYH7DbPN
+        qZYphYfA4C2wuVGHJg9A8aUjirWg
+X-Google-Smtp-Source: APiQypLkJHuaq/TFHqjLxl+QAM6/jzgb/qJE98FDCjIZpCwrN9+T7+irvnRq2BTmhfZaXSxXbxkWTA==
+X-Received: by 2002:a7b:c3cf:: with SMTP id t15mr4217262wmj.34.1588177196905;
+        Wed, 29 Apr 2020 09:19:56 -0700 (PDT)
+Received: from localhost.localdomain ([86.121.118.29])
+        by smtp.gmail.com with ESMTPSA id r18sm28132609wrj.70.2020.04.29.09.19.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Apr 2020 09:19:56 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        davem@davemloft.net
+Cc:     jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
+        netdev@vger.kernel.org, leoyang.li@nxp.com,
+        nikolay@cumulusnetworks.com
+Subject: [PATCH net-next 0/4] Cross-chip bridging for disjoint DSA trees
+Date:   Wed, 29 Apr 2020 19:19:48 +0300
+Message-Id: <20200429161952.17769-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+This series adds support for boards where DSA switches of multiple types
+are cascaded together. Actually this type of setup was brought up before
+on netdev, and it looks like utilizing disjoint trees is the way to go:
 
-> > > > +enum {
-> > > > +	ETHTOOL_A_CABLE_PAIR_0,
-> > > > +	ETHTOOL_A_CABLE_PAIR_1,
-> > > > +	ETHTOOL_A_CABLE_PAIR_2,
-> > > > +	ETHTOOL_A_CABLE_PAIR_3,
-> > > > +};
-> > > 
-> > > Do we really need this enum, couldn't we simply use a number (possibly
-> > > with a sanity check of maximum value)?
-> > 
-> > They are not strictly required. But it helps with consistence. Are the
-> > pairs numbered 0, 1, 2, 3, or 1, 2, 3, 4?
-> 
-> OK, I'm not strictly opposed to it, it just felt a bit weird.
+https://lkml.org/lkml/2019/7/7/225
 
-Speaking of the pairs. What is PAIR_0 and what is PAIR_3? Maybe
-it is specified somewhere in a standard, but IMHO an example for
-a normal TP cable would help to prevent wild growth amongst the
-PHY drivers and would help to provide consistent reporting towards
-the user space.
+The trouble with disjoint trees (prior to this patch series) is that only
+bridging of ports within the same hardware switch can be offloaded.
+After scratching my head for a while, it looks like the easiest way to
+support hardware bridging between different DSA trees is to bridge their
+DSA masters and extend the crosschip bridging operations.
 
--michael
+I have given some thought to bridging the DSA masters with the slaves
+themselves, but given the hardware topology described in the commit
+message of patch 4/4, virtually any number (and combination) of bridges
+(forwarding domains) can be created on top of those 3x4-port front-panel
+switches. So it becomes a lot less obvious, when the front-panel ports
+are enslaved to more than 1 bridge, which bridge should the DSA masters
+be enslaved to.
+
+So the least awkward approach was to just create a completely separate
+bridge for the DSA masters, whose entire purpose is to permit hardware
+forwarding between the discrete switches beneath it.
+
+Florian Fainelli (1):
+  bridge: Allow enslaving DSA master network devices
+
+Vladimir Oltean (3):
+  net: dsa: permit cross-chip bridging between all trees in the system
+  net: dsa: introduce a dsa_switch_find function
+  net: dsa: sja1105: implement cross-chip bridging operations
+
+ drivers/net/dsa/mv88e6xxx/chip.c       |  16 +++-
+ drivers/net/dsa/sja1105/sja1105_main.c | 122 +++++++++++++++++++++++++
+ include/net/dsa.h                      |  11 ++-
+ net/bridge/br_if.c                     |   4 +-
+ net/bridge/br_input.c                  |   4 +-
+ net/dsa/dsa2.c                         |  21 +++++
+ net/dsa/dsa_priv.h                     |   1 +
+ net/dsa/port.c                         |  23 ++++-
+ net/dsa/switch.c                       |  21 +++--
+ 9 files changed, 203 insertions(+), 20 deletions(-)
+
+-- 
+2.17.1
+
