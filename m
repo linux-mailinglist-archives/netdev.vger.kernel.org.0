@@ -2,64 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5337C1BE056
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 16:11:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 869FE1BE07C
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 16:16:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728288AbgD2OLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 10:11:05 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59338 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727119AbgD2OLF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Apr 2020 10:11:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=+vHAMoqQnDQpOixhUfky9LKFwZ/RbB5JXgw62LfiHsE=; b=bv2PwJwBqHfkjMMvHKq0qYR3ft
-        LRzgYsTI+JmDffSiFFD7mTEWQaJCV/RwN4Hv4yu+If7r01qG3ZjI9BLULHDoUFraS2MC/MlJoQnQc
-        l3xt6kOoQLgBPNA5sqmVIW0ekwEwrfin9KH1c4JMBWfRhOzADRv4MutCXmztFZed0ry8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jTnQU-000GJt-VN; Wed, 29 Apr 2020 16:11:02 +0200
-Date:   Wed, 29 Apr 2020 16:11:02 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Andy Duan <fugang.duan@nxp.com>
-Cc:     David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "cphealy@gmail.com" <cphealy@gmail.com>,
-        Leonard Crestez <leonard.crestez@nxp.com>
-Subject: Re: [EXT] Re: [PATCH net-next] net: ethernet: fec: Prevent MII event
- after MII_SPEED write
-Message-ID: <20200429141102.GK30459@lunn.ch>
-References: <20200428175833.30517-1-andrew@lunn.ch>
- <20200428.143339.1189475969435668035.davem@davemloft.net>
- <HE1PR0402MB2745408F4000C8B2C119B9EDFFAD0@HE1PR0402MB2745.eurprd04.prod.outlook.com>
- <20200428.203439.49635882087657701.davem@davemloft.net>
- <HE1PR0402MB2745963E2B675BAC95A61E55FFAD0@HE1PR0402MB2745.eurprd04.prod.outlook.com>
+        id S1727068AbgD2OQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 10:16:06 -0400
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:15306 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726599AbgD2OQF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 10:16:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1588169765; x=1619705765;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=fUIXPujQe0+9QpgzpvomVP/BdpWJkMkzfXPolLDQ6R0=;
+  b=hIiC1FDC/Dd+UN4XMsnNauC5T/W7ZM/ALBkkIROeT5HarED2Zv02YTxQ
+   yEUsCKeTsJPakd9Qfk/LO8ZfjKssGRj8vsUzWrMRqP4fpEQHEPnKHJJFn
+   0+CvwlGGj3cUdVGOdZgSFQbjWhUQIyDAaZhi5kRhR1rjwyk0cwAkBul3Y
+   jpAuaiYTuILPwQnMy+rVTIPu5RT8lWNYk4YFp+/RMoS2dWF85gq81lfg4
+   sOAM77qfO9oS99p42OVmjcxJss+U8M8/jmx64DHrkySC4p37wFaHufrZm
+   8ybBCcEfHsusTirpnDYhnHJ8OfCrUEpCZCELZvJtL8kh75mVW5Ous/8jc
+   A==;
+IronPort-SDR: C29Q0VgoMsJXcLV7bfoL0uqaItF7K9hkaz9JgETNTvrIcskJOJ2ykCdh2XNZllOQyA7osCm6Wu
+ 64bNCk/stk/Si0pFz1ijBTEAywYeyCJEM84YekOle0LVirYepVo/xsbZ68Mpl5KbW1zVGbzHMX
+ LvgxicFjNJJRlqxEu/O+zAk0mX4Xe0px+Yb5qf2I/adJzvLwmuONtRL0/6SQvU9AOeYK7xlySY
+ 9PCRT515OlSSdqZCcT8khlUD6lbLZi42JwMX9sBIia2QyNGdVXPsZD7Toy3kZFodl82EkqaDkL
+ 4l4=
+X-IronPort-AV: E=Sophos;i="5.73,332,1583218800"; 
+   d="scan'208";a="74958230"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Apr 2020 07:16:04 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 29 Apr 2020 07:16:03 -0700
+Received: from [10.205.29.86] (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Wed, 29 Apr 2020 07:16:01 -0700
+Subject: Re: [PATCH net v2] net: macb: fix an issue about leak related system
+ resources
+To:     Dejin Zheng <zhengdejin5@gmail.com>, <davem@davemloft.net>,
+        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
+        <yash.shah@sifive.com>, <netdev@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+References: <20200429135651.32635-1-zhengdejin5@gmail.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+Message-ID: <3ed83017-f3de-b6b0-91d0-d9075ad9eed5@microchip.com>
+Date:   Wed, 29 Apr 2020 16:15:56 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <HE1PR0402MB2745963E2B675BAC95A61E55FFAD0@HE1PR0402MB2745.eurprd04.prod.outlook.com>
+In-Reply-To: <20200429135651.32635-1-zhengdejin5@gmail.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > >> Applied to net-next, thanks.
-> > >
-> > > David, it is too early to apply the patch, it will introduce another
-> > > break issue as I explain in previous mail for the patch.
-> > 
-> > So what should I do, revert?
+On 29/04/2020 at 15:56, Dejin Zheng wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
 > 
-> If you can revert the patch, please do it. 
-> Thanks, David.
+> A call of the function macb_init() can fail in the function
+> fu540_c000_init. The related system resources were not released
+> then. use devm_platform_ioremap_resource() to replace ioremap()
+> to fix it.
+> 
+> Fixes: c218ad559020ff9 ("macb: Add support for SiFive FU540-C000")
+> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Reviewed-by: Yash Shah <yash.shah@sifive.com>
+> Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
+> ---
+> v1 -> v2:
+>          - Nicolas and Andy suggest use devm_platform_ioremap_resource()
+>            to repalce devm_ioremap() to fix this issue. Thanks Nicolas
+>            and Andy.
+>          - Yash help me to review this patch, Thanks Yash!
+> 
+>   drivers/net/ethernet/cadence/macb_main.c | 8 +-------
+>   1 file changed, 1 insertion(+), 7 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> index a0e8c5bbabc0..99354e327d1f 100644
+> --- a/drivers/net/ethernet/cadence/macb_main.c
+> +++ b/drivers/net/ethernet/cadence/macb_main.c
+> @@ -4172,13 +4172,7 @@ static int fu540_c000_clk_init(struct platform_device *pdev, struct clk **pclk,
+> 
+>   static int fu540_c000_init(struct platform_device *pdev)
+>   {
+> -       struct resource *res;
+> -
+> -       res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+> -       if (!res)
+> -               return -ENODEV;
+> -
+> -       mgmt->reg = ioremap(res->start, resource_size(res));
+> +       mgmt->reg = devm_platform_ioremap_resource(pdev, 1);
+>          if (!mgmt->reg)
 
-Hi David
+Is your test valid then?
 
-Please do revert. I will send a new version of the patch
-soon. Probably RFC this time!
+Please use:
+if (IS_ERR(base))
+    return PTR_ERR(base);
+As advised by:
+lib/devres.c:156
 
-      Andrew
+Regards,
+   Nicolas
+
+>                  return -ENOMEM;
+> 
+> --
+> 2.25.0
+> 
+
+
+-- 
+Nicolas Ferre
