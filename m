@@ -2,141 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCBB71BD3D5
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 06:55:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF09B1BD3D8
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 06:57:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726755AbgD2EzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 00:55:19 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:51847 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726619AbgD2EzT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 00:55:19 -0400
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id 818D35C03A3;
-        Wed, 29 Apr 2020 00:55:18 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Wed, 29 Apr 2020 00:55:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rylan.coffee; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm3; bh=/qkEJFxQQnd+DohDVJwiAH2Q88T
-        56mCRQ/dGzRWSAe0=; b=NquLEErkc+H3mfU66c2KdmdeMbGYLKw8iHHObVYhCx1
-        L1FeY0fhdsWfuPUERh5Y/MHfM0QsB2l5Wi4maeLXWwogeCU2q8H8CxzcUldzCNFQ
-        ZnFYzdTYxIKEIkNSgln2Qi/IS1FFf0b1FmXbdU1E3oPl4DGh2Euut5LEyC8Ro8SU
-        SK8AWX10XObr59hLZ0SHZSO35AJiX60+eaauKJmofi4CAfOnGPqgLl1AXj9R21y7
-        24Ono03VnXXNZ0cZ3UZgX5PwuOQZrdLbrVuHVPfPdkQxQH3LCPcypDeEz8WZ0F1o
-        Lc6ROSMGhIqK1q+HAng0nbxXdT7cqcM6euBDJk6llFQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=/qkEJF
-        xQQnd+DohDVJwiAH2Q88T56mCRQ/dGzRWSAe0=; b=HP/TZYcChIkCuJFrXQnDtr
-        lpV55mIILTGUQI1glACIz4aeCfSe5TlNzhE++8PnKcfg5YncJVxoSY78i35W84Ga
-        71kFJS63X78JlcWu3LC0kfBQjMvVDvq1FpBY20Aq3ZESjjqPxfx9QKfxGMF9sgTM
-        MWJcEo9QdblAMoudhGFMor4sIcIUsB6cnIcOQcQFRUsxxhq3JEImGqdTWj3BX9Zp
-        qWsF5wohZPSIxQw7UwESKGeB5WvAJgdREkZcqMDmi3G5do4VFK1uYRjuaPJYavTi
-        EmuS9UD0r4o/cDlaDLxnz3cm+OM5hrejtkcH7hr7k7ox4AmCk1xWv2YKhlR9CJrA
-        ==
-X-ME-Sender: <xms:tQipXg3YSOru4BPTrvz6WauC2-nVZa7MGLj5Usf13U1mbXhVmjob5g>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedriedvgdekiecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtjeenucfhrhhomheptfihlhgrnhcu
-    ffhmvghllhhouceomhgrihhlsehrhihlrghnrdgtohhffhgvvgeqnecukfhppedutdekrd
-    egledrudehkedrkeegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghi
-    lhhfrhhomhepmhgrihhlsehrhihlrghnrdgtohhffhgvvg
-X-ME-Proxy: <xmx:tQipXl8TgdFMb0C-6CmjiXZtR0vh-CecGoc_7NLSo-WxF_G0NvpzBg>
-    <xmx:tQipXp15-Na2mv-nXVzB139H2NvbcG9jUQjjnWfPV5grRXrBylLd1g>
-    <xmx:tQipXg00oQJ5b716J1JJ9RQCc3u2gVYbFyZ0og1bHL2QrWbonUc1dA>
-    <xmx:tgipXj699o_t9VAaWyUWLZ-xXj1S1alWTVahOrNjyI5Nu9Jt9Ug4Lw>
-Received: from athena (pool-108-49-158-84.bstnma.fios.verizon.net [108.49.158.84])
-        by mail.messagingengine.com (Postfix) with ESMTPA id A59A83280069;
-        Wed, 29 Apr 2020 00:55:17 -0400 (EDT)
-Date:   Wed, 29 Apr 2020 00:55:16 -0400
-From:   Rylan Dmello <mail@rylan.coffee>
-To:     Joe Perches <joe@perches.com>
-Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] staging: qlge: Remove multi-line dereferences from
- qlge_main.c
-Message-ID: <20200429045516.GA2421@athena>
-References: <aae9feb569c60758ab09c923c09b600295f4cb32.1588132908.git.mail@rylan.coffee>
- <0dcf9712a49968da1935061de130bc3668e63088.camel@perches.com>
+        id S1726747AbgD2E50 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 00:57:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56704 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725497AbgD2E50 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 00:57:26 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ADE1C03C1AC;
+        Tue, 28 Apr 2020 21:57:24 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id s8so474578pgq.1;
+        Tue, 28 Apr 2020 21:57:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=gLboO9EBDW2YUXCY0KsznTXEWBqbi+LP4QEnByUSR1Q=;
+        b=IdC8qbz4roPvFNP4IZ8cq74K5IEA7Ctp1mUcBLB1mhP4VIIYnLEPvgjQdk84dVl5In
+         SOn0wcrGyrTXGR52a64GXGA/0oKfCE/W+8gLP5aso5pOU1DeFQm3qVHnG/DPLRfmuRTt
+         s47WR07JBupUByimv9Z2De1aJ9z1RJKIZFn/rITKZFgkfwWapzJ94rmUJcf5h2AUKJtG
+         dgjepnDCAf04L0o4pAhMo0GcFcTid4DXCBE3DTz8qBq+H+qQnz4DqlzGfuxRIeKNVJSD
+         tEYLTyhZSXY12w72SlPCPadc65l2VKyFo8mgFjSSOevnhCI1jhQ1Eyo/yzO6Vvep0LTC
+         Ry5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gLboO9EBDW2YUXCY0KsznTXEWBqbi+LP4QEnByUSR1Q=;
+        b=uEP1kajxzL5342WoyZqiJ8ntIkmTmKTOujPHvHiZZYXP6OfYQDkSnpDkjlMOxSCzn2
+         zvMUIQvCn49iNk6z4Xc+S8bvuRPrIT9JqyNRu9gRmC49mHUO1DO0vzfSv/sJH65HWQCU
+         4YHc5gUGgCctauzPHaE0afMlQ50M6EMgid8dviMwHp0G98vkOukYLJO63YkZfll2wHsl
+         hBFK+KaULxSDfMedQxuvgP5YNyDiz+S7nZ9DWUI/+JRmS1ifGzMtT2VWF6AzwE3KT5bl
+         M/TwYzjDi4wLqI2VVvMN+VTHOC3ZhRw8SzWVl6sQKp746Wm2GiJWSl6/HXcXSgVBfYDH
+         4KlQ==
+X-Gm-Message-State: AGi0PuY9qp0koZijo5QZpVV+aDU/kCvK/kiaAxa2EQxf21C7fzJlVGmt
+        DsClbi1wPMObdGKC7Ls4y40=
+X-Google-Smtp-Source: APiQypLK8i2VkPtvlSoHVuaUGNrmL1q3KH9URGpOiFMsFWZMf+4WObfs7pa9txYmqGfnJn5E/FG/Iw==
+X-Received: by 2002:a65:4c41:: with SMTP id l1mr31343733pgr.43.1588136243924;
+        Tue, 28 Apr 2020 21:57:23 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:562d])
+        by smtp.gmail.com with ESMTPSA id a16sm3955969pgg.23.2020.04.28.21.57.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Apr 2020 21:57:22 -0700 (PDT)
+Date:   Tue, 28 Apr 2020 21:57:20 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, kernel-team@fb.com
+Subject: Re: [PATCH v7 bpf-next 3/3] bpf: add selftest for BPF_ENABLE_STATS
+Message-ID: <20200429045720.kl737inpxduutemn@ast-mbp.dhcp.thefacebook.com>
+References: <20200429035841.3959159-1-songliubraving@fb.com>
+ <20200429035841.3959159-4-songliubraving@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0dcf9712a49968da1935061de130bc3668e63088.camel@perches.com>
+In-Reply-To: <20200429035841.3959159-4-songliubraving@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 28, 2020 at 09:31:10PM -0700, Joe Perches wrote:
-> On Wed, 2020-04-29 at 00:04 -0400, Rylan Dmello wrote:
-> > Fix checkpatch.pl warnings:
-> > 
-> >   WARNING: Avoid multiple line dereference - prefer 'qdev->func'
-> >   WARNING: Avoid multiple line dereference - prefer 'qdev->flags'
-> 
-> Assuming you are doing this for exercise:
-> 
-> It'd be better to unindent all the switch/case
-> blocks for the entire function so more functions
-> fit on single lines
-> 
-> 	switch (foo) {
-> 	case bar:
-> 		{
-> 			...;
-> 
-> should be:
-> 
-> 	switch (foo) {
-> 	case bar: {
-> 		...;
-> 
-> goto exit; might as well be break; and remove
-> the exit label too.
->
+On Tue, Apr 28, 2020 at 08:58:41PM -0700, Song Liu wrote:
+> +
+> +	skel = test_enable_stats__open_and_load();
+> +	if (CHECK(!skel, "skel_open_and_load", "skeleton open/load failed\n"))
+> +		return;
+> +
+> +	stats_fd = bpf_enable_stats(BPF_STATS_RUNTIME_CNT);
 
-Thank you - I noticed that clang-format unindented the switch-case blocks, but
-wasn't sure whether to include that in this patch set or not.
+Just realized that the name is wrong.
+The stats are enabling run_cnt and run_time_ns.
+runtime_cnt sounds like 'snark' from 'The Hunting of the Snark' :)
+May be BPF_STATS_RUN_TIME ?
 
-I will send a V2 patch that unindents these switch-case blocks throughout
-the two functions listed here, and also removes the exit label from this
-function.
+> +	if (CHECK(stats_fd < 0, "get_stats_fd", "failed %d\n", errno)) {
+> +		test_enable_stats__destroy(skel);
+> +		return;
+> +	}
+> +
+> +	err = test_enable_stats__attach(skel);
+> +	if (CHECK(err, "attach_raw_tp", "err %d\n", err))
+> +		goto cleanup;
+> +
+> +	/* generate 100 sys_enter */
+> +	for (i = 0; i < 100; i++)
+> +		usleep(1);
+> +
+> +	test_enable_stats__detach(skel);
+> +
+> +	prog_fd = bpf_program__fd(skel->progs.test_enable_stats);
+> +	memset(&info, 0, info_len);
+> +	err = bpf_obj_get_info_by_fd(prog_fd, &info, &info_len);
+> +	if (CHECK(err, "get_prog_info",
+> +		  "failed to get bpf_prog_info for fd %d\n", prog_fd))
+> +		goto cleanup;
+> +	if (CHECK(info.run_time_ns == 0, "check_stats_enabled",
+> +		  "failed to enable run_time_ns stats\n"))
+> +		goto cleanup;
+> +
+> +	bss_fd = bpf_map__fd(skel->maps.bss);
+> +	err = bpf_map_lookup_elem(bss_fd, &zero, &count);
 
-> > Signed-off-by: Rylan Dmello <mail@rylan.coffee>
-> > ---
-> >  drivers/staging/qlge/qlge_main.c | 9 ++++-----
-> >  1 file changed, 4 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-> > index d7e4dfafc1a3..10daae025790 100644
-> > --- a/drivers/staging/qlge/qlge_main.c
-> > +++ b/drivers/staging/qlge/qlge_main.c
-> > @@ -396,8 +396,7 @@ static int ql_set_mac_addr_reg(struct ql_adapter *qdev, u8 *addr, u32 type,
-> >  			 * the route field to NIC core.
-> >  			 */
-> >  			cam_output = (CAM_OUT_ROUTE_NIC |
-> > -				      (qdev->
-> > -				       func << CAM_OUT_FUNC_SHIFT) |
-> > +				      (qdev->func << CAM_OUT_FUNC_SHIFT) |
-> >  					(0 << CAM_OUT_CQ_ID_SHIFT));
-> >  			if (qdev->ndev->features & NETIF_F_HW_VLAN_CTAG_RX)
-> >  				cam_output |= CAM_OUT_RV;
-> > @@ -3432,9 +3431,9 @@ static int ql_request_irq(struct ql_adapter *qdev)
-> >  				     &qdev->rx_ring[0]);
-> >  			status =
-> >  			    request_irq(pdev->irq, qlge_isr,
-> > -					test_bit(QL_MSI_ENABLED,
-> > -						 &qdev->
-> > -						 flags) ? 0 : IRQF_SHARED,
-> > +					test_bit(QL_MSI_ENABLED, &qdev->flags)
-> > +						? 0
-> > +						: IRQF_SHARED,
-> >  					intr_context->name, &qdev->rx_ring[0]);
-> >  			if (status)
-> >  				goto err_irq;
-> 
+'count' is a global var. It's accessible directly via skeleton.
+No need for map_lookup.
+Even after __detach(skel) the global data is still valid.
+
+> +	if (CHECK(err, "map_lookup_elem",
+> +		  "failed map_lookup_elem for fd %d\n", bss_fd))
+> +		goto cleanup;
+> +
+> +	CHECK(info.run_cnt != count, "check_run_cnt_valid",
+> +	      "invalid run_cnt stats\n");
+
+what happens if there are other syscalls during for(i<100) loop?
+The count will still match, right?
+Then why 100 ? and why usleep() at all?
+test_enable_stats__attach() will generate at least one syscall.
+
+> +
+> +cleanup:
+> +	test_enable_stats__destroy(skel);
+> +	close(stats_fd);
+
+May be close(stats_fd) first.
+Then test_enable_stats__attach(skel); again.
+Generate few more syscalls and check that 'count' incrementing,
+but info.run_cnt doesnt ?
+That check assumes that sysctl is off. Overkill?
