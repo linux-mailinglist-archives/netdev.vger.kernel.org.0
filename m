@@ -2,89 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8009A1BD378
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 06:16:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ED461BD370
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 06:11:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726750AbgD2EQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 00:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50448 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725497AbgD2EQl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 00:16:41 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701E6C03C1AC;
-        Tue, 28 Apr 2020 21:16:40 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id 145so467374pfw.13;
-        Tue, 28 Apr 2020 21:16:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=33KWTafxGeio2mE7vQkUPBKD+vnrQN9Vu13t8D5iy9Q=;
-        b=cm9wtE++qMb+UN8PPrekmIPAzWDkf4AOXQcxm2owZW0UrdNRYDeaLzSNyo+vKU/Lgh
-         Jk0wmX7iN6xD28TZtGczjPpqx0ory7iTLtV7pzXZc3Yj5GHABfLJzReyfU+gsheQk6d2
-         x/h5H9SwU7lHOE8sduT7GGzxdwpPkvmWmCWk7REqghN7jY3O8mFIdrhwEivG7WQIkD/z
-         B/3CC8f1sR9J/xxjDkojO5JYGjGlW9h7Q9XBCVuHi6eHb/uQflNHcIguHGvfEX45n3Q5
-         Ss5CzZQTfOFaBPJ8uPuJoA9BVDF6wC6VpRzGjrssDRLninW0dWXR9q/oz0oT5DK9SffE
-         MDAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=33KWTafxGeio2mE7vQkUPBKD+vnrQN9Vu13t8D5iy9Q=;
-        b=d8cNPOHtU6d13TMOtAwOHkoyS3/Gf9kSvrZ982RHEAMYBLAR7wz8T6YBzBqAoXZxKb
-         CPQhQ8PE4JC2i/ORYSv2ROF62BF7yZ8Lxn8Wpp/RykROwYTuf29cQHEKIcxNUA+ahM7x
-         OHsYykYWZsdcz/JVcMNa7wBvZluTyQkVLX69D19aad9FmOLpNRzUenuSUmq7NDdpOnUz
-         uoP+W/z8RqSXiwRq0twzQiheMSxEGYsY47sYRpc+Mq7wqohRBADMt26sfBL4ZlOBbuio
-         E7yl7nMqKX5fG6pS2ZIMFcdXmxgDhKsp7xCXg5Lfr9hDyOQmLsMg2fAwnhBhRomkatyp
-         mAUQ==
-X-Gm-Message-State: AGi0PuZBqTLAFUWnDWVLo1btRqxKr1j6kVhOUjrnKrGBLqIXcddlvfWT
-        sQLoHevIzPPPw7tWla2moH5WALes
-X-Google-Smtp-Source: APiQypISyFo533B80OwtY+0HHq25LVfsLJk5M1W9XXaGiZHAYeeXeqy0SHTiUc+H8x2I2a+L67ewBw==
-X-Received: by 2002:a65:58c4:: with SMTP id e4mr32549273pgu.61.1588133799894;
-        Tue, 28 Apr 2020 21:16:39 -0700 (PDT)
-Received: from [10.230.188.43] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id u5sm14961666pfu.198.2020.04.28.21.16.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Apr 2020 21:16:38 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 4/4] net: phy: bcm54140: add second PHY ID
-To:     Michael Walle <michael@walle.cc>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>
-References: <20200428230659.7754-1-michael@walle.cc>
- <20200428230659.7754-4-michael@walle.cc>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <40b41061-ab48-ab23-9b66-4ad14b000f5d@gmail.com>
-Date:   Tue, 28 Apr 2020 21:16:38 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.7.0
+        id S1726702AbgD2ELm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 00:11:42 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3332 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725497AbgD2ELm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Apr 2020 00:11:42 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id EE75AB21C9CFFC900FED;
+        Wed, 29 Apr 2020 12:11:39 +0800 (CST)
+Received: from linux-lmwb.huawei.com (10.175.103.112) by
+ DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
+ 14.3.487.0; Wed, 29 Apr 2020 12:11:32 +0800
+From:   Zou Wei <zou_wei@huawei.com>
+To:     <aviad.krawczyk@huawei.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Zou Wei <zou_wei@huawei.com>
+Subject: [PATCH -next v2] hinic: Use ARRAY_SIZE for nic_vf_cmd_msg_handler
+Date:   Wed, 29 Apr 2020 12:17:40 +0800
+Message-ID: <1588133860-55722-1-git-send-email-zou_wei@huawei.com>
+X-Mailer: git-send-email 2.6.2
 MIME-Version: 1.0
-In-Reply-To: <20200428230659.7754-4-michael@walle.cc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.103.112]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+fix coccinelle warning, use ARRAY_SIZE
 
+drivers/net/ethernet/huawei/hinic/hinic_sriov.c:713:43-44: WARNING: Use ARRAY_SIZE
 
-On 4/28/2020 4:06 PM, Michael Walle wrote:
-> This PHY has two PHY IDs depending on its mode. Adjust the mask so that
-> it includes both IDs.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
+----------
+v1-->v2:
+   remove cmd_number
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zou Wei <zou_wei@huawei.com>
+---
+ drivers/net/ethernet/huawei/hinic/hinic_sriov.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-For future submissions to netdev, if you have a patch count > 1, please
-include a cover letter:
-
-Thanks!
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
+index b24788e..af70cca 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
+@@ -704,17 +704,15 @@ int nic_pf_mbox_handler(void *hwdev, u16 vf_id, u8 cmd, void *buf_in,
+ 	struct hinic_hwdev *dev = hwdev;
+ 	struct hinic_func_to_io *nic_io;
+ 	struct hinic_pfhwdev *pfhwdev;
+-	u32 i, cmd_number;
++	u32 i;
+ 	int err = 0;
+ 
+ 	if (!hwdev)
+ 		return -EFAULT;
+ 
+-	cmd_number = sizeof(nic_vf_cmd_msg_handler) /
+-			    sizeof(struct vf_cmd_msg_handle);
+ 	pfhwdev = container_of(dev, struct hinic_pfhwdev, hwdev);
+ 	nic_io = &dev->func_to_io;
+-	for (i = 0; i < cmd_number; i++) {
++	for (i = 0; i < ARRAY_SIZE(nic_vf_cmd_msg_handler); i++) {
+ 		vf_msg_handle = &nic_vf_cmd_msg_handler[i];
+ 		if (cmd == vf_msg_handle->cmd &&
+ 		    vf_msg_handle->cmd_msg_handler) {
+@@ -725,7 +723,7 @@ int nic_pf_mbox_handler(void *hwdev, u16 vf_id, u8 cmd, void *buf_in,
+ 			break;
+ 		}
+ 	}
+-	if (i == cmd_number)
++	if (i == ARRAY_SIZE(nic_vf_cmd_msg_handler))
+ 		err = hinic_msg_to_mgmt(&pfhwdev->pf_to_mgmt, HINIC_MOD_L2NIC,
+ 					cmd, buf_in, in_size, buf_out,
+ 					out_size, HINIC_MGMT_MSG_SYNC);
 -- 
-Florian
+2.6.2
+
