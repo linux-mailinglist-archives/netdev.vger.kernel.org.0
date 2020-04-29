@@ -2,55 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 226D61BE9D2
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 23:24:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F8351BE9E4
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 23:29:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727071AbgD2VYU convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 29 Apr 2020 17:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42062 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726481AbgD2VYT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 17:24:19 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD2D2C03C1AE
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 14:24:19 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3AC0E121938E4;
-        Wed, 29 Apr 2020 14:24:19 -0700 (PDT)
-Date:   Wed, 29 Apr 2020 14:24:18 -0700 (PDT)
-Message-Id: <20200429.142418.916531268885005041.davem@davemloft.net>
-To:     Jason@zx2c4.com
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net 0/3] wireguard fixes for 5.7-rc4
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200429205922.295361-1-Jason@zx2c4.com>
-References: <20200429205922.295361-1-Jason@zx2c4.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 29 Apr 2020 14:24:19 -0700 (PDT)
+        id S1727047AbgD2V3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 17:29:43 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60746 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726511AbgD2V3n (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Apr 2020 17:29:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=ehAF5VJKlo6UElUpdCPqKU/hhwZxb3s8IJbl7lMP8jU=; b=gXPH7oCruVVWWeaOWFGwA4pm/n
+        QF4m36glwEcwVh2Bb98/eY9snKBd52heUHGFf8+aXqtVT3WG82JcyjGkWkh77WdwqoUpMgUd0/My9
+        e+cpUxQc/kkL5FJhrsZsuafeuFua40IXiztBYAzYe8OvgYyTbPnfFnu7U+qSNEt7Q9C0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jTuGr-000KLe-7W; Wed, 29 Apr 2020 23:29:33 +0200
+Date:   Wed, 29 Apr 2020 23:29:33 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     robh+dt@kernel.org, f.fainelli@gmail.com,
+        linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
+        jianxin.pan@amlogic.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH RFC v2 00/11] dwmac-meson8b Ethernet RX delay
+ configuration
+Message-ID: <20200429212933.GA76972@lunn.ch>
+References: <20200429201644.1144546-1-martin.blumenstingl@googlemail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200429201644.1144546-1-martin.blumenstingl@googlemail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date: Wed, 29 Apr 2020 14:59:19 -0600
+> - Khadas VIM2 seems to have the RX delay built into the PCB trace
+>   length. When I enable the RX delay on the PHY or MAC I can't get any
+>   data through. I expect that we will have the same situation on all
+>   GXBB, GXM, AXG, G12A, G12B and SM1 boards
 
-> Hi Dave,
-> 
-> This series contains two fixes and a cleanup for wireguard:
-> 
-> 1) Removal of a spurious newline, from Sultan Alsawaf.
-> 
-> 2) Fix for a memory leak in an error path, in which memory allocated
->    prior to the error wasn't freed, reported by Sultan Alsawaf.
-> 
-> 3) Fix to ECN support to use RFC6040 properly like all the other tunnel
->    drivers, from Toke Høiland-Jørgensen.
+Hi Martin
 
-Series applied, and patches #2 and #3 queued up for -stable.
+Can you actually see this on the PCB? The other possibility is that
+the bootloader is configuring something, which is not getting
+overridden when linux starts up.
+
+	   Andrew
