@@ -2,80 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DA2B1BE73C
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 21:21:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0E4D1BE744
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 21:23:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727085AbgD2TVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 15:21:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50856 "EHLO
+        id S1726913AbgD2TXt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 15:23:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726524AbgD2TVV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 15:21:21 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA98C03C1AE;
-        Wed, 29 Apr 2020 12:21:21 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.93)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1jTsGi-0025CO-Mz; Wed, 29 Apr 2020 21:21:16 +0200
-Message-ID: <faf336e3ba515d41211910f3d8d207e693434cb9.camel@sipsolutions.net>
-Subject: Re: [PATCH 4/7] netlink: extend policy range validation
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Antonio Quartulli <ordex@autistici.org>,
-        linux-wireless@vger.kernel.org
-Date:   Wed, 29 Apr 2020 21:21:15 +0200
-In-Reply-To: <20200429111034.71ab2443@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20200429134843.42224-1-johannes@sipsolutions.net>
-         <20200429154836.b86f45043a5e.I7b46d9c85e4d7a99c0b5e0c2f54bb89b5750e6dc@changeid>
-         <20200429111034.71ab2443@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
-MIME-Version: 1.0
+        by vger.kernel.org with ESMTP id S1726456AbgD2TXs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 15:23:48 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F9E2C03C1AE;
+        Wed, 29 Apr 2020 12:23:48 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id w4so3511794ioc.6;
+        Wed, 29 Apr 2020 12:23:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=EyvlRZmYRqgOVKkGlRAQL5B5ntHKxv5MkfrBLYoa3CQ=;
+        b=UdW6B2hyAbti7P4F+W+xDgEVNmyWG6XqyIspcho4ZAVAOqFcE9RsDWDJYq4qCADP3C
+         wUcDHz3TLnPowsgzFN+plb1P6TzHBK8ZM1vbOUyxjOZcUZTvxCR0IxqqoqpHqxXIdmZv
+         DNcSnfdwTaHdyb8vNEPgGb53AFLYh6NT996VAkKzMSGTQQkJp8hB5BYR56qlwICpKX6e
+         2HKnMWqwLtONrd+c+gPCbs8GXksRfaTxL7HA3m2kYwqKuzyIwcHbSOqqEGaL5qZ6NHHf
+         UTPvukHNoTpj44udUkWFxjpIP+g1g7UukFjYPLprJK/81v6I/4qxgfLJU2rxda9Fmg9W
+         lSiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=EyvlRZmYRqgOVKkGlRAQL5B5ntHKxv5MkfrBLYoa3CQ=;
+        b=TNWNa6LzK7i8xLCZjkGfFtjmhGPze531LnEmj0m+XuQFxSiwpQMuznT02O0nM5OnCN
+         8SKaRyA+BDWo9NDC56dExqsxwWZlitddaHGc183bDCiH8Ox78Gxx1ISpZfa42qJpc4ra
+         mUIudTap5EPhXsc6QYl8wMbnjS7RO/Djn7pZL5dNwyDj0bLp2bKwQVyjrKRi/IBWX+9n
+         TEUvPQ+ugrW4+qpKzn+eBIghLpjzVhw/R4ZUWB6ManiJS9CiaN4008xokgoLR18dX36V
+         K5JOtZnrXhMtzBSkMXmi+XnZHoc/Dvzwm/KzBZekBR3gYrFsrILszc7XSPfsIDo5I064
+         3d1g==
+X-Gm-Message-State: AGi0PubvH3rIqfqXKtTB+ga1HklI6pTmpF7eurGbdcyiQ5A1H8EFgunC
+        S7AfZHfLxXocpEm3b6ct7Ts=
+X-Google-Smtp-Source: APiQypKDIH0fqyb+ONNt08dzrXFTAq0QeCCv/TXC+cnpC7OJjZa4OLZjSyVLYYvXoKAkl+YVJuftog==
+X-Received: by 2002:a5d:8889:: with SMTP id d9mr32563820ioo.50.1588188227941;
+        Wed, 29 Apr 2020 12:23:47 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id i13sm1345927ilq.35.2020.04.29.12.23.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Apr 2020 12:23:47 -0700 (PDT)
+Date:   Wed, 29 Apr 2020 12:23:38 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Joe Stringer <joe@wand.net.nz>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Message-ID: <5ea9d43aa9298_220d2ac81567a5b8fa@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200429181154.479310-3-jakub@cloudflare.com>
+References: <20200429181154.479310-1-jakub@cloudflare.com>
+ <20200429181154.479310-3-jakub@cloudflare.com>
+Subject: RE: [PATCH bpf-next 2/3] selftests/bpf: Test that lookup on
+ SOCKMAP/SOCKHASH is allowed
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-04-29 at 11:10 -0700, Jakub Kicinski wrote:
-
-> > +static int nla_validate_int_range_unsigned(const struct nla_policy *pt,
-> > +					   const struct nlattr *nla,
-> > +					   struct netlink_ext_ack *extack)
-> >  {
-> > -	bool validate_min, validate_max;
-> > -	s64 value;
-> > +	struct netlink_range_validation _range = {
-> > +		.min = 0,
-> > +		.max = U64_MAX,
-> > +	}, *range = &_range;
-> > +	u64 value;
-> >  
-> > -	validate_min = pt->validation_type == NLA_VALIDATE_RANGE ||
-> > -		       pt->validation_type == NLA_VALIDATE_MIN;
-> > -	validate_max = pt->validation_type == NLA_VALIDATE_RANGE ||
-> > -		       pt->validation_type == NLA_VALIDATE_MAX;
-> > +	WARN_ON_ONCE(pt->min < 0 || pt->max < 0);
+Jakub Sitnicki wrote:
+> Now that bpf_map_lookup_elem() is white-listed for SOCKMAP/SOCKHASH,
+> replace the tests which check that verifier prevents lookup on these map
+> types with ones that ensure that lookup operation is permitted, but only
+> with a release of acquired socket reference.
 > 
-> I'm probably missing something, but in case of NLA_VALIDATE_RANGE_PTR
-> aren't min and max invalid (union has the range pointer set, so this
-> will read 2 bytes of the pointer).
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
 
-No, you're right of course. It's reading 4 bytes, actually, they're both
-s16. Which I did because that's the maximum range that doesn't increase
-the size on 32-bit.
+For completeness would be nice to add a test passing this into
+sk_select_reuseport to cover that case as well. Could come as
+a follow up patch imo.
 
-I could move it into the switch, but, hm.. the unused ones (min/max if
-only one is used) should be 0, so I guess just
-
-	WARN_ON_ONCE(pt->validation_type != NLA_VALIDATE_RANGE_PTR &&
-                     (pt->min < 0 || pt->max < 0));
-
-will be fine.
-
-Thanks!
-
-johannes
-
-
+Acked-by: John Fastabend <john.fastabend@gmail.com>
