@@ -2,74 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A5191BD97C
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 12:22:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C33FB1BD97F
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 12:25:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726560AbgD2KWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 06:22:47 -0400
-Received: from mga02.intel.com ([134.134.136.20]:51400 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726355AbgD2KWr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Apr 2020 06:22:47 -0400
-IronPort-SDR: A5n8sHPjzXSV90RQUd8OoPTBisaLaZ/Xn5bHSOwPiYU9gu7iTz/ksO9Ox9gcNbk/qSzPSkRWuh
- O4c0Ux8Z6Q/Q==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2020 03:22:47 -0700
-IronPort-SDR: H4zHciGZTwYi0gg8aA1WCO3C5ckFgJATsv5r/mqRZlt7JSKQc1dSJPRMfxa+/MPcZIYu+qdb96
- 9gBzOwzMvdWg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,331,1583222400"; 
-   d="scan'208";a="282455691"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga004.fm.intel.com with ESMTP; 29 Apr 2020 03:22:44 -0700
-Received: from andy by smile with local (Exim 4.93)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1jTjrb-003hww-3A; Wed, 29 Apr 2020 13:22:47 +0300
-Date:   Wed, 29 Apr 2020 13:22:47 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jules Irenge <jbi.octave@gmail.com>
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 6/6] net: atm: Add annotation for lec_priv_walk()
-Message-ID: <20200429102247.GG185537@smile.fi.intel.com>
-References: <0/6>
- <20200429100529.19645-1-jbi.octave@gmail.com>
- <20200429100529.19645-7-jbi.octave@gmail.com>
+        id S1726621AbgD2KY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 06:24:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51162 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726426AbgD2KY7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 06:24:59 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C6AC03C1AD
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 03:24:58 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id t14so1812226wrw.12
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 03:24:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=iXQizAN15vmkFr5UmCuVlZeWN/hx4vVTXbmcBldyYF0=;
+        b=hjpd6ZDirs1V9DZRh+sELbAc0Dg3SIqRPFeEj56PCS3rfdwiCf3fT8aA24VoLdkyA9
+         QoizmmyU5EX+yvJO3E3kwGPXJqv70qqAG4fdJdxCkje95WGpAMfzmDnsVp5zjvzYdWHi
+         n7SaK1YR8c3cn2nEL6DdY+XBqrDBFcBJIhV70=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=iXQizAN15vmkFr5UmCuVlZeWN/hx4vVTXbmcBldyYF0=;
+        b=Jh9ZwVrRSCQl08jHplzXq7JDUyI7mylOBEr4aoOtTz6RKl2593SaRVaF3OGPOYSgnr
+         4NjW8cFpmRWqeQwmThWaazDs68X+2uovb0VJIpN2LCKII8UF27WrdXh+QDF3GNBezfnz
+         njxtf6H/ab06vzn23jK+pJ9D7pKWuuOIVRcV5KGsQQdtf6GmxxPQhx2oedB5qZje1UHn
+         Kqx1rITDfGcRai1SNR0sP5bYL+jW32jAhVTpMja1ikhPMXn2iL7T0d4n6xlpV9vbp/Uz
+         QetGmuB8ov9Ot6byByvl8xTRAmJ9lboX7aWlokHuB+hyxLzuU65N5izLDSbgYs2cCN4j
+         qWWQ==
+X-Gm-Message-State: AGi0PuYQb9bXQaObLi2zVn/63uRaPRfrx6+naxsyjlBxv0lyl/UZynS2
+        VnOREUxadfVT1JJMFZXW2LoZdA==
+X-Google-Smtp-Source: APiQypJ2tyaiTUpDANlX9X3wZViAkc82v+L2T+OCcWUQA++Fc2QRS/hgVPrNi3lySBHuXzZQ9AT/sg==
+X-Received: by 2002:adf:e8c4:: with SMTP id k4mr37119329wrn.209.1588155897352;
+        Wed, 29 Apr 2020 03:24:57 -0700 (PDT)
+Received: from [10.230.42.249] ([192.19.215.251])
+        by smtp.gmail.com with ESMTPSA id a10sm18955868wrg.32.2020.04.29.03.24.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 29 Apr 2020 03:24:56 -0700 (PDT)
+Subject: Re: [PATCH] brcmfmac: no need to check return value of debugfs_create
+ functions
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200429101526.GA2094124@kroah.com>
+From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
+Message-ID: <1a9ed45d-ca55-00af-6598-4c5499e4dc24@broadcom.com>
+Date:   Wed, 29 Apr 2020 12:24:54 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200429100529.19645-7-jbi.octave@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20200429101526.GA2094124@kroah.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 29, 2020 at 11:05:28AM +0100, Jules Irenge wrote:
-> Sparse reports a warning at lec_priv_walk()
-> warning: context imbalance in lec_priv_walk() - unexpected unlock
+On 4/29/2020 12:15 PM, Greg Kroah-Hartman wrote:
+> When calling debugfs functions, there is no need to ever check the
+> return value.  The function can work or not, but the code logic should
+> never do something different based on this.
 > 
-> The root cause is the missing annotation at lec_priv_walk()
-> To fix this, __acquire() and __release() annotations
-> are added in case conditions are not met.
-> This only instruct  Sparse to shutdown the warning
+> In doing this, make brcmf_debugfs_add_entry() return void as no one was
+> even paying attention to the return value.
 > 
-> Add the  __acquire(&priv->lec_arp_lock)
-> Add __release(&priv->lec_arp_lock) annotation
+> Cc: Arend van Spriel <arend.vanspriel@broadcom.com>
+> Cc: Franky Lin <franky.lin@broadcom.com>
+> Cc: Hante Meuleman <hante.meuleman@broadcom.com>
+> Cc: Chi-Hsien Lin <chi-hsien.lin@cypress.com>
+> Cc: Wright Feng <wright.feng@cypress.com>
+> Cc: Kalle Valo <kvalo@codeaurora.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: "Rafał Miłecki" <rafal@milecki.pl>
+> Cc: linux-wireless@vger.kernel.org
+> Cc: brcm80211-dev-list.pdl@broadcom.com
+> Cc: brcm80211-dev-list@cypress.com
+> Cc: netdev@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
 
-At least those two I got should be in one patch. Simple fix all same sparse
-issues at once.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Acked-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>   .../net/wireless/broadcom/brcm80211/brcmfmac/debug.c |  9 +++------
+>   .../net/wireless/broadcom/brcm80211/brcmfmac/debug.h | 12 +++++-------
+>   2 files changed, 8 insertions(+), 13 deletions(-)
