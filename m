@@ -2,92 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 242B31BE712
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 21:15:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA6F01BE71D
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 21:16:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726887AbgD2TPK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 15:15:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49858 "EHLO
+        id S1726844AbgD2TQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 15:16:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726519AbgD2TPK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 15:15:10 -0400
+        by vger.kernel.org with ESMTP id S1726423AbgD2TQP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 15:16:15 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95163C03C1AE;
-        Wed, 29 Apr 2020 12:15:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF462C03C1AE
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 12:16:15 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B96F31210A3E3;
-        Wed, 29 Apr 2020 12:15:09 -0700 (PDT)
-Date:   Wed, 29 Apr 2020 12:15:08 -0700 (PDT)
-Message-Id: <20200429.121508.82832560496943961.davem@davemloft.net>
-To:     yanaijie@huawei.com
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        linux@armlinux.org.uk, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: remove duplicate assignment of
- struct members
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7B8211210A3EF;
+        Wed, 29 Apr 2020 12:16:15 -0700 (PDT)
+Date:   Wed, 29 Apr 2020 12:16:14 -0700 (PDT)
+Message-Id: <20200429.121614.1404618498953905270.davem@davemloft.net>
+To:     andrew@lunn.ch
+Cc:     fugang.duan@nxp.com, netdev@vger.kernel.org, cphealy@gmail.com,
+        leonard.crestez@nxp.com
+Subject: Re: [EXT] Re: [PATCH net-next] net: ethernet: fec: Prevent MII
+ event after MII_SPEED write
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200429141001.8361-1-yanaijie@huawei.com>
-References: <20200429141001.8361-1-yanaijie@huawei.com>
+In-Reply-To: <20200429141102.GK30459@lunn.ch>
+References: <20200428.203439.49635882087657701.davem@davemloft.net>
+        <HE1PR0402MB2745963E2B675BAC95A61E55FFAD0@HE1PR0402MB2745.eurprd04.prod.outlook.com>
+        <20200429141102.GK30459@lunn.ch>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 29 Apr 2020 12:15:10 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 29 Apr 2020 12:16:15 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jason Yan <yanaijie@huawei.com>
-Date: Wed, 29 Apr 2020 22:10:01 +0800
+From: Andrew Lunn <andrew@lunn.ch>
+Date: Wed, 29 Apr 2020 16:11:02 +0200
 
-> These struct members named 'phylink_validate' was assigned twice:
+>> > >> Applied to net-next, thanks.
+>> > >
+>> > > David, it is too early to apply the patch, it will introduce another
+>> > > break issue as I explain in previous mail for the patch.
+>> > 
+>> > So what should I do, revert?
+>> 
+>> If you can revert the patch, please do it. 
+>> Thanks, David.
 > 
-> static const struct mv88e6xxx_ops mv88e6190_ops = {
-> 	......
-> 	.phylink_validate = mv88e6390_phylink_validate,
-> 	......
-> 	.phylink_validate = mv88e6390_phylink_validate,
-> };
+> Hi David
 > 
-> static const struct mv88e6xxx_ops mv88e6190x_ops = {
-> 	......
-> 	.phylink_validate = mv88e6390_phylink_validate,
-> 	......
-> 	.phylink_validate = mv88e6390x_phylink_validate,
-> };
-> 
-> static const struct mv88e6xxx_ops mv88e6191_ops = {
-> 	......
-> 	.phylink_validate = mv88e6390_phylink_validate,
-> 	......
-> 	.phylink_validate = mv88e6390_phylink_validate,
-> };
-> 
-> static const struct mv88e6xxx_ops mv88e6290_ops = {
-> 	......
-> 	.phylink_validate = mv88e6390_phylink_validate,
-> 	......
-> 	.phylink_validate = mv88e6390_phylink_validate,
-> };
-> 
-> Remove all the first one and leave the second one which are been used in
-> fact. Be aware that for 'mv88e6190x_ops' the assignment functions is
-> different while the others are all the same. This fixes the following
-> coccicheck warning:
-> 
-> drivers/net/dsa/mv88e6xxx/chip.c:3911:48-49: phylink_validate: first
-> occurrence line 3965, second occurrence line 3967
-> drivers/net/dsa/mv88e6xxx/chip.c:3970:49-50: phylink_validate: first
-> occurrence line 4024, second occurrence line 4026
-> drivers/net/dsa/mv88e6xxx/chip.c:4029:48-49: phylink_validate: first
-> occurrence line 4082, second occurrence line 4085
-> drivers/net/dsa/mv88e6xxx/chip.c:4184:48-49: phylink_validate: first
-> occurrence line 4238, second occurrence line 4242
-> 
-> Signed-off-by: Jason Yan <yanaijie@huawei.com>
+> Please do revert. I will send a new version of the patch
+> soon. Probably RFC this time!
 
-Applied, thanks.
+Ok, done.
