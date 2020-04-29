@@ -2,122 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C6081BD140
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 02:38:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89EE01BD14F
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 02:43:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726490AbgD2Aig (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 20:38:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44796 "EHLO
+        id S1726475AbgD2Anp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 20:43:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726401AbgD2Aig (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 20:38:36 -0400
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B09AC03C1AC
-        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 17:38:35 -0700 (PDT)
-Received: by mail-lf1-x143.google.com with SMTP id f8so175891lfe.12
-        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 17:38:35 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726345AbgD2Ano (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 20:43:44 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA4EC03C1AC;
+        Tue, 28 Apr 2020 17:43:43 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id x2so233274pfx.7;
+        Tue, 28 Apr 2020 17:43:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=shutemov-name.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=I/x8An6SXti07R7+/Bt1kXKVbp/TozSLPGc5SfRA9G4=;
-        b=MsvnquY+sc2qn97UftFa4ZLSl1tmvl2rSpnwcYZimqt1fJ9ljPT1NLQSHBpVdqUg+k
-         dFnavPNnuy5FQ2TRPGYQUCWQ2UF9qTbIUyVg4pOQdjrC8uuYuDVYvUQG+3Ki6KLryV0P
-         BgT0uCYzSDkNVEPrqrj8Njx7hXEGvwbuZaFMULAU1a6A0j9qk35t6AzWxRNa8ZWLsbDW
-         VIuMe9H8dDAwuvvvXepoU0hypWxNsDn+Nx5XVJvTsMaJn8FE2mvFN15hy1/ovllQFve1
-         UeC3ErYEGSaqBKHVspcyptsQJ3T5i+hFq9v7j/lC/+fNiNh3P9cKVM3HDmMX1uXudnV6
-         toBg==
+        bh=RvqZbBmOCcvhvbgQtK+K4Xthj6qL4q5feZtQD4t/pE8=;
+        b=p/GeeMzXhI3N7BU3iPEvsR1OciIWpneXBZIz3qTGp3NQrt0J+NzdaHwixEXVp1Q4+t
+         1Q6PrVFlWYynYzR9JitKNSsu+boP2B5i7ZP73uYPnvyObaHEtsD57fyaJuxcf6rV59vN
+         /687cmgHkR01//aefnlk2EJ8/+xiiFlIcKzlZwvbkJldUhE/q7R8Zn9yFbQYYvs7k0D+
+         LZcFpFkuwDfU3qugBYlppJruZTZklingDLhKmPQw1nNNRx2BmmMOEAIa78zJ6nwVsk4Z
+         9DDtRgB8Xz1Sas2UZKc8RTYsrTwF/LH07gTRyEF8SxWCtd3685ptlcL6mcgZIjkQadFw
+         WvpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=I/x8An6SXti07R7+/Bt1kXKVbp/TozSLPGc5SfRA9G4=;
-        b=pNNjcwBDgLhuoa1wAyj0hm1wPRkOhttrRIitSTeY9DhB6ZB+Zzjcbr9KdZ7PSxv7K5
-         dHIrq6liDw6gJVGDhNpCJled+uiPoUKqbHeTL4EzMx+thjY5PjQwvGXT7YSqZmK1BjqM
-         Vy7Z/ihUtbmKjKimOsXVrFO7S5H5VTIBY4whBQiQR4Dxv7hiWjsttZabUmJgopV8ghMB
-         DIgvgfUsLfAi3wBySeHTO+yV/zQ45YucO3ZAziCw0B2AAgrJeAI02JDVIniLtbZzDQqb
-         iugUDAkYMxIn7qbI6m0JSOmTxDSYftSymBr8WkD7GM4rul6RitM4mOo7Hb5cTnYOMz2b
-         ew/A==
-X-Gm-Message-State: AGi0Puahxj3cvFk3MC2zzIewZCd0ivqv1XQVzvLnWewE9SFDSDMvKg3U
-        rR6NAwIStyd7bYhXAfvICXYB3g==
-X-Google-Smtp-Source: APiQypLMyc9iXIT2gOmeK2EqbCOl+Idkd9uEjvQ42TnYWs5shRvqnUQruptet0p/7dvmK2mQzPSLqg==
-X-Received: by 2002:a05:6512:46d:: with SMTP id x13mr830338lfd.56.1588120714064;
-        Tue, 28 Apr 2020 17:38:34 -0700 (PDT)
-Received: from box.localdomain ([86.57.175.117])
-        by smtp.gmail.com with ESMTPSA id o23sm770668ljh.63.2020.04.28.17.38.32
+        bh=RvqZbBmOCcvhvbgQtK+K4Xthj6qL4q5feZtQD4t/pE8=;
+        b=FtZJYpe3RQFamHu1POYYn9GLNCVEaycuIJKWI55Js3aIwTw9aXC5T0l0tOE5ZyRIny
+         iL043qt2kXQcP5VVZAuV4nUyreDNRjwxgXRDH0SpMyDjrbs1NGO6EDjQ0BrHZhRkkh/G
+         ZLvMWPeq2nz8MsV2jaUVo7o1zSYAeqBUrzT87+Cg3lS2nqfnbDLeA8ZWmawIX+1II7jD
+         YMUMCI57eJvMVQSk0DZqOnizCQcVtV26ds2k6dS/fhPNH16aGQoCbk77U4/h5HJEsQ4z
+         Yi67xZBzblIFZ3L1GwvgYSoJ9+0cYgjncdJ/CvjGJdRugG6/48UoJ1y7PwN7QNFaesSr
+         1nsw==
+X-Gm-Message-State: AGi0PuaYU4AptDf23hnUz1F99fbKGyzzr1ZeFScbjqSXkGTAmDMuIRDP
+        IwqLrndhqiMDlCoPzMvGsHQ=
+X-Google-Smtp-Source: APiQypJaRL6a96aG9HCl4bkVbyOv8ha1yz2qpVVbzwUqURTQAW3iM/5txXWxKTyhdMHz0WpVkWbGUw==
+X-Received: by 2002:aa7:948f:: with SMTP id z15mr25237288pfk.129.1588121022733;
+        Tue, 28 Apr 2020 17:43:42 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:9061])
+        by smtp.gmail.com with ESMTPSA id u3sm15946904pfn.217.2020.04.28.17.43.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Apr 2020 17:38:33 -0700 (PDT)
-Received: by box.localdomain (Postfix, from userid 1000)
-        id D887C10235A; Wed, 29 Apr 2020 03:38:43 +0300 (+03)
-Date:   Wed, 29 Apr 2020 03:38:43 +0300
-From:   "Kirill A. Shutemov" <kirill@shutemov.name>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-mm@kvack.org,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        willy@infradead.org, Saeed Mahameed <saeedm@mellanox.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        mgorman@techsingularity.net,
-        "David S. Miller" <davem@davemloft.net>,
-        Tariq Toukan <tariqt@mellanox.com>
-Subject: Re: [net-next PATCH V3 1/3] mm: add dma_addr_t to struct page
-Message-ID: <20200429003843.rh2pasek7v5o3h63@box>
-References: <155002290134.5597.6544755780651689517.stgit@firesoul>
- <155002294008.5597.13759027075590385810.stgit@firesoul>
+        Tue, 28 Apr 2020 17:43:41 -0700 (PDT)
+Date:   Tue, 28 Apr 2020 17:43:40 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Song Liu <songliubraving@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        kernel-team@fb.com
+Subject: Re: [PATCH v6 bpf-next 3/3] bpf: add selftest for BPF_ENABLE_STATS
+Message-ID: <20200429004340.5y2c3rkr64u43sfg@ast-mbp.dhcp.thefacebook.com>
+References: <20200429002922.3064669-1-songliubraving@fb.com>
+ <20200429002922.3064669-4-songliubraving@fb.com>
+ <290a94fb-f3ee-227c-ffa0-66629ce8327a@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <155002294008.5597.13759027075590385810.stgit@firesoul>
+In-Reply-To: <290a94fb-f3ee-227c-ffa0-66629ce8327a@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 13, 2019 at 02:55:40AM +0100, Jesper Dangaard Brouer wrote:
-> The page_pool API is using page->private to store DMA addresses.
-> As pointed out by David Miller we can't use that on 32-bit architectures
-> with 64-bit DMA
+On Tue, Apr 28, 2020 at 05:33:54PM -0700, Yonghong Song wrote:
 > 
-> This patch adds a new dma_addr_t struct to allow storing DMA addresses
 > 
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> Acked-by: Andrew Morton <akpm@linux-foundation.org>
-> ---
->  include/linux/mm_types.h |    7 +++++++
->  1 file changed, 7 insertions(+)
+> On 4/28/20 5:29 PM, Song Liu wrote:
+> > Add test for  BPF_ENABLE_STATS, which should enable run_time_ns stats.
+> > 
+> > ~/selftests/bpf# ./test_progs -t enable_stats  -v
+> > test_enable_stats:PASS:skel_open_and_load 0 nsec
+> > test_enable_stats:PASS:get_stats_fd 0 nsec
+> > test_enable_stats:PASS:attach_raw_tp 0 nsec
+> > test_enable_stats:PASS:get_prog_info 0 nsec
+> > test_enable_stats:PASS:check_stats_enabled 0 nsec
+> > Summary: 1/0 PASSED, 0 SKIPPED, 0 FAILED
+...
+> > +static int val = 1;
+> > +
+> > +SEC("raw_tracepoint/sys_enter")
+> > +int test_enable_stats(void *ctx)
+> > +{
+> > +	__u32 key = 0;
+> > +	__u64 *val;
 > 
-> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-> index 2c471a2c43fa..0a36a22228e7 100644
-> --- a/include/linux/mm_types.h
-> +++ b/include/linux/mm_types.h
-> @@ -95,6 +95,13 @@ struct page {
->  			 */
->  			unsigned long private;
->  		};
-> +		struct {	/* page_pool used by netstack */
-> +			/**
-> +			 * @dma_addr: might require a 64-bit value even on
-> +			 * 32-bit architectures.
-> +			 */
-> +			dma_addr_t dma_addr;
-> +		};
-
-[ I'm slow, but I've just noticed this change into struct page. ]
-
-Is there a change that the dma_addr would have bit 0 set? If yes it may
-lead to false-positive PageTail() and really strange behaviour.
-
-I think it's better to put some padding into the struct to avoid aliasing
-to compound_head.
-
-See commit 1d798ca3f164 ("mm: make compound_head() robust") for context.
-
->  		struct {	/* slab, slob and slub */
->  			union {
->  				struct list_head slab_list;	/* uses lru */
+> The above two declarations (key/val) are not needed,
+> esp. "val" is shadowing.
+> Maybe the maintainer can fix it up before merging
+> if there is no other changes for this patch set.
 > 
+> > +
+> > +	val += 1;
 
--- 
- Kirill A. Shutemov
+I think 'PASSED' above is quite misleading.
+How it can pass when it wasn't incremented?
+The user space test_enable_stats() doesn't check this val.
+Please fix.
+
+usleep(1000); needs an explanation as well.
+Why 1000 ? It should work with any syscall. like getpid ?
+and with value 1 ?
+Since there is bpf_obj_get_info_by_fd() that usleep()
+is unnecessary. What am I missing?
