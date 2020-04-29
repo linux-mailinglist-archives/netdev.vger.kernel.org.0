@@ -2,283 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1DC11BE016
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 16:05:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9980D1BE049
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 16:10:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728257AbgD2OE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 10:04:58 -0400
-Received: from mga18.intel.com ([134.134.136.126]:11964 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727869AbgD2OE5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Apr 2020 10:04:57 -0400
-IronPort-SDR: iLWgJpgRFYRMtT6t2c9z53D0yw1TwL05O+L3goBJuM9Sf9iA6ueg8wAJV8aNK6A5iToglERgKO
- Pka66ogSdtHQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2020 07:04:52 -0700
-IronPort-SDR: hjWhcEhqGrqrJTscULvpQVBhMT0bQfWXlg6xJ2eRyDeM/MHiwMVZ4vYqchY/6A+NxUcMi1Ejpd
- rNlW5mq/qTXQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,332,1583222400"; 
-   d="scan'208";a="257970234"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 29 Apr 2020 07:04:50 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id CE6F5425; Wed, 29 Apr 2020 17:04:49 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 5/5] stmmac: intel: Fix indentation to put on one line affected code
-Date:   Wed, 29 Apr 2020 17:04:49 +0300
-Message-Id: <20200429140449.9484-5-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200429140449.9484-1-andriy.shevchenko@linux.intel.com>
-References: <20200429140449.9484-1-andriy.shevchenko@linux.intel.com>
+        id S1728112AbgD2OKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 10:10:19 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:3341 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726691AbgD2OKT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Apr 2020 10:10:19 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id C86CD686A7DCC01E1F55;
+        Wed, 29 Apr 2020 22:10:12 +0800 (CST)
+Received: from huawei.com (10.175.124.28) by DGGEMS413-HUB.china.huawei.com
+ (10.3.19.213) with Microsoft SMTP Server id 14.3.487.0; Wed, 29 Apr 2020
+ 22:09:58 +0800
+From:   Jason Yan <yanaijie@huawei.com>
+To:     <pkshih@realtek.com>, <kvalo@codeaurora.org>,
+        <davem@davemloft.net>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Jason Yan <yanaijie@huawei.com>
+Subject: [PATCH] rtlwifi: remove comparison of 0/1 to bool variable
+Date:   Wed, 29 Apr 2020 22:09:24 +0800
+Message-ID: <20200429140924.7750-1-yanaijie@huawei.com>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.28]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is no competition to get more LOCs into the kernel, and driver can look
-better and have improved readability without those additional line breaks.
+The variable 'rtlpriv->rfkill.rfkill_state' is bool and can directly
+assigned to bool values.
 
-While at it, shorten info structures that they are all PCI, at the end it's
-a PCI driver for Intel hardware.
+Fix the following coccicheck warning:
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+drivers/net/wireless/realtek/rtlwifi/core.c:1725:14-42: WARNING:
+Comparison of 0/1 to bool variable
+
+Signed-off-by: Jason Yan <yanaijie@huawei.com>
 ---
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 92 +++++++------------
- 1 file changed, 32 insertions(+), 60 deletions(-)
+ drivers/net/wireless/realtek/rtlwifi/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index c6154b6347a41f..4710b8e3a22f89 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -83,13 +83,9 @@ static int intel_serdes_powerup(struct net_device *ndev, void *priv_data)
- 	serdes_phy_addr = intel_priv->mdio_adhoc_addr;
+diff --git a/drivers/net/wireless/realtek/rtlwifi/core.c b/drivers/net/wireless/realtek/rtlwifi/core.c
+index f73e690bbe8e..4dd82c6052f0 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/core.c
++++ b/drivers/net/wireless/realtek/rtlwifi/core.c
+@@ -1722,7 +1722,7 @@ static void rtl_op_rfkill_poll(struct ieee80211_hw *hw)
+ 				 "wireless radio switch turned %s\n",
+ 				  radio_state ? "on" : "off");
  
- 	/* assert clk_req */
--	data = mdiobus_read(priv->mii, serdes_phy_addr,
--			    SERDES_GCR0);
--
-+	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
- 	data |= SERDES_PLL_CLK;
--
--	mdiobus_write(priv->mii, serdes_phy_addr,
--		      SERDES_GCR0, data);
-+	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
- 
- 	/* check for clk_ack assertion */
- 	data = serdes_status_poll(priv, serdes_phy_addr,
-@@ -103,13 +99,9 @@ static int intel_serdes_powerup(struct net_device *ndev, void *priv_data)
+-			blocked = (rtlpriv->rfkill.rfkill_state == 1) ? 0 : 1;
++			blocked = !rtlpriv->rfkill.rfkill_state;
+ 			wiphy_rfkill_set_hw_state(hw->wiphy, blocked);
+ 		}
  	}
- 
- 	/* assert lane reset */
--	data = mdiobus_read(priv->mii, serdes_phy_addr,
--			    SERDES_GCR0);
--
-+	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
- 	data |= SERDES_RST;
--
--	mdiobus_write(priv->mii, serdes_phy_addr,
--		      SERDES_GCR0, data);
-+	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
- 
- 	/* check for assert lane reset reflection */
- 	data = serdes_status_poll(priv, serdes_phy_addr,
-@@ -123,14 +115,12 @@ static int intel_serdes_powerup(struct net_device *ndev, void *priv_data)
- 	}
- 
- 	/*  move power state to P0 */
--	data = mdiobus_read(priv->mii, serdes_phy_addr,
--			    SERDES_GCR0);
-+	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
- 
- 	data &= ~SERDES_PWR_ST_MASK;
- 	data |= SERDES_PWR_ST_P0 << SERDES_PWR_ST_SHIFT;
- 
--	mdiobus_write(priv->mii, serdes_phy_addr,
--		      SERDES_GCR0, data);
-+	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
- 
- 	/* Check for P0 state */
- 	data = serdes_status_poll(priv, serdes_phy_addr,
-@@ -159,14 +149,12 @@ static void intel_serdes_powerdown(struct net_device *ndev, void *intel_data)
- 	serdes_phy_addr = intel_priv->mdio_adhoc_addr;
- 
- 	/*  move power state to P3 */
--	data = mdiobus_read(priv->mii, serdes_phy_addr,
--			    SERDES_GCR0);
-+	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
- 
- 	data &= ~SERDES_PWR_ST_MASK;
- 	data |= SERDES_PWR_ST_P3 << SERDES_PWR_ST_SHIFT;
- 
--	mdiobus_write(priv->mii, serdes_phy_addr,
--		      SERDES_GCR0, data);
-+	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
- 
- 	/* Check for P3 state */
- 	data = serdes_status_poll(priv, serdes_phy_addr,
-@@ -180,13 +168,9 @@ static void intel_serdes_powerdown(struct net_device *ndev, void *intel_data)
- 	}
- 
- 	/* de-assert clk_req */
--	data = mdiobus_read(priv->mii, serdes_phy_addr,
--			    SERDES_GCR0);
--
-+	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
- 	data &= ~SERDES_PLL_CLK;
--
--	mdiobus_write(priv->mii, serdes_phy_addr,
--		      SERDES_GCR0, data);
-+	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
- 
- 	/* check for clk_ack de-assert */
- 	data = serdes_status_poll(priv, serdes_phy_addr,
-@@ -200,13 +184,9 @@ static void intel_serdes_powerdown(struct net_device *ndev, void *intel_data)
- 	}
- 
- 	/* de-assert lane reset */
--	data = mdiobus_read(priv->mii, serdes_phy_addr,
--			    SERDES_GCR0);
--
-+	data = mdiobus_read(priv->mii, serdes_phy_addr, SERDES_GCR0);
- 	data &= ~SERDES_RST;
--
--	mdiobus_write(priv->mii, serdes_phy_addr,
--		      SERDES_GCR0, data);
-+	mdiobus_write(priv->mii, serdes_phy_addr, SERDES_GCR0, data);
- 
- 	/* check for de-assert lane reset reflection */
- 	data = serdes_status_poll(priv, serdes_phy_addr,
-@@ -367,7 +347,7 @@ static int ehl_sgmii_data(struct pci_dev *pdev,
- 	return ehl_common_data(pdev, plat);
- }
- 
--static struct stmmac_pci_info ehl_sgmii1g_pci_info = {
-+static struct stmmac_pci_info ehl_sgmii1g_info = {
- 	.setup = ehl_sgmii_data,
- };
- 
-@@ -381,7 +361,7 @@ static int ehl_rgmii_data(struct pci_dev *pdev,
- 	return ehl_common_data(pdev, plat);
- }
- 
--static struct stmmac_pci_info ehl_rgmii1g_pci_info = {
-+static struct stmmac_pci_info ehl_rgmii1g_info = {
- 	.setup = ehl_rgmii_data,
- };
- 
-@@ -400,7 +380,7 @@ static int ehl_pse0_rgmii1g_data(struct pci_dev *pdev,
- 	return ehl_pse0_common_data(pdev, plat);
- }
- 
--static struct stmmac_pci_info ehl_pse0_rgmii1g_pci_info = {
-+static struct stmmac_pci_info ehl_pse0_rgmii1g_info = {
- 	.setup = ehl_pse0_rgmii1g_data,
- };
- 
-@@ -413,7 +393,7 @@ static int ehl_pse0_sgmii1g_data(struct pci_dev *pdev,
- 	return ehl_pse0_common_data(pdev, plat);
- }
- 
--static struct stmmac_pci_info ehl_pse0_sgmii1g_pci_info = {
-+static struct stmmac_pci_info ehl_pse0_sgmii1g_info = {
- 	.setup = ehl_pse0_sgmii1g_data,
- };
- 
-@@ -432,7 +412,7 @@ static int ehl_pse1_rgmii1g_data(struct pci_dev *pdev,
- 	return ehl_pse1_common_data(pdev, plat);
- }
- 
--static struct stmmac_pci_info ehl_pse1_rgmii1g_pci_info = {
-+static struct stmmac_pci_info ehl_pse1_rgmii1g_info = {
- 	.setup = ehl_pse1_rgmii1g_data,
- };
- 
-@@ -445,7 +425,7 @@ static int ehl_pse1_sgmii1g_data(struct pci_dev *pdev,
- 	return ehl_pse1_common_data(pdev, plat);
- }
- 
--static struct stmmac_pci_info ehl_pse1_sgmii1g_pci_info = {
-+static struct stmmac_pci_info ehl_pse1_sgmii1g_info = {
- 	.setup = ehl_pse1_sgmii1g_data,
- };
- 
-@@ -470,7 +450,7 @@ static int tgl_sgmii_data(struct pci_dev *pdev,
- 	return tgl_common_data(pdev, plat);
- }
- 
--static struct stmmac_pci_info tgl_sgmii1g_pci_info = {
-+static struct stmmac_pci_info tgl_sgmii1g_info = {
- 	.setup = tgl_sgmii_data,
- };
- 
-@@ -573,7 +553,7 @@ static int quark_default_data(struct pci_dev *pdev,
- 	return 0;
- }
- 
--static const struct stmmac_pci_info quark_pci_info = {
-+static const struct stmmac_pci_info quark_info = {
- 	.setup = quark_default_data,
- };
- 
-@@ -598,8 +578,7 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
- 	struct stmmac_resources res;
- 	int ret;
- 
--	intel_priv = devm_kzalloc(&pdev->dev, sizeof(*intel_priv),
--				  GFP_KERNEL);
-+	intel_priv = devm_kzalloc(&pdev->dev, sizeof(*intel_priv), GFP_KERNEL);
- 	if (!intel_priv)
- 		return -ENOMEM;
- 
-@@ -734,26 +713,19 @@ static SIMPLE_DEV_PM_OPS(intel_eth_pm_ops, intel_eth_pci_suspend,
- #define PCI_DEVICE_ID_INTEL_TGL_SGMII1G_ID		0xa0ac
- 
- static const struct pci_device_id intel_eth_pci_id_table[] = {
--	{ PCI_DEVICE_DATA(INTEL, QUARK_ID, &quark_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, EHL_RGMII1G_ID, &ehl_rgmii1g_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, EHL_SGMII1G_ID, &ehl_sgmii1g_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, EHL_SGMII2G5_ID, &ehl_sgmii1g_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, EHL_PSE0_RGMII1G_ID,
--			  &ehl_pse0_rgmii1g_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, EHL_PSE0_SGMII1G_ID,
--			  &ehl_pse0_sgmii1g_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, EHL_PSE0_SGMII2G5_ID,
--			  &ehl_pse0_sgmii1g_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_RGMII1G_ID,
--			  &ehl_pse1_rgmii1g_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_SGMII1G_ID,
--			  &ehl_pse1_sgmii1g_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_SGMII2G5_ID,
--			  &ehl_pse1_sgmii1g_pci_info) },
--	{ PCI_DEVICE_DATA(INTEL, TGL_SGMII1G_ID, &tgl_sgmii1g_pci_info) },
-+	{ PCI_DEVICE_DATA(INTEL, QUARK_ID, &quark_info) },
-+	{ PCI_DEVICE_DATA(INTEL, EHL_RGMII1G_ID, &ehl_rgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, EHL_SGMII1G_ID, &ehl_sgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, EHL_SGMII2G5_ID, &ehl_sgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, EHL_PSE0_RGMII1G_ID, &ehl_pse0_rgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, EHL_PSE0_SGMII1G_ID, &ehl_pse0_sgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, EHL_PSE0_SGMII2G5_ID, &ehl_pse0_sgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_RGMII1G_ID, &ehl_pse1_rgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_SGMII1G_ID, &ehl_pse1_sgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, EHL_PSE1_SGMII2G5_ID, &ehl_pse1_sgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, TGL_SGMII1G_ID, &tgl_sgmii1g_info) },
- 	{}
- };
--
- MODULE_DEVICE_TABLE(pci, intel_eth_pci_id_table);
- 
- static struct pci_driver intel_eth_pci_driver = {
 -- 
-2.26.2
+2.21.1
 
