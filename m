@@ -2,38 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21DF91BE3F4
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 18:35:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E66B1BE412
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 18:39:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726741AbgD2QfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 12:35:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47022 "EHLO mail.kernel.org"
+        id S1726887AbgD2QjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 12:39:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50488 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726456AbgD2QfW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Apr 2020 12:35:22 -0400
+        id S1726423AbgD2QjZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Apr 2020 12:39:25 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 13626208FE;
-        Wed, 29 Apr 2020 16:35:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 04C0E20787;
+        Wed, 29 Apr 2020 16:39:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588178122;
-        bh=PLK/xJE+T+VKqaVgo00E1thrQcDEKSG8CwZuddgyaa8=;
+        s=default; t=1588178365;
+        bh=7txS/GqZpDY537RiDla39HnZtm4/CZzUk3DI+ehFO8M=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=v0sN7F4QCLZ6OdWwFOFaRlBuGxT95yWXHX0P+dckWE/CUdkYdR2jOMoMqJOD3T9iw
-         DpJ50f3E1vuI04wwZ6JwLbP+POc75N1c/mHVJn27TB7ELyA7kTxHXwF8ZZP4sio3kX
-         0OLMCyL1heqmfB9NaMVRlDB4yWIIYZYdD9SKWzp0=
-Date:   Wed, 29 Apr 2020 09:35:18 -0700
+        b=ZPe3xxEyp2utIcXEh5muenaOn5DXNt9KE0D/7V1EIpGDiHA1/9YNNNQ39PWxbRnSx
+         P5HF2whnsxts/lbPU4i+L+XEs8v+E+UqhM/NUrIUcNgYzjsYNzsLUkqIEJ8Ah6M4C0
+         +aUa9LQoxd0O1aCV8eqVL80KKQiR7NWxkoGxjLUk=
+Date:   Wed, 29 Apr 2020 09:39:23 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kernel-team@fb.com,
-        jacob.e.keller@intel.com
+To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team@fb.com" <kernel-team@fb.com>
 Subject: Re: [PATCH net-next] devlink: let kernel allocate region snapshot
  id
-Message-ID: <20200429093518.531a5ed9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200429054552.GB6581@nanopsycho.orion>
+Message-ID: <20200429093923.394c7c1c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <02874ECE860811409154E81DA85FBB58B6CF7AFF@FMSMSX102.amr.corp.intel.com>
 References: <20200429014248.893731-1-kuba@kernel.org>
         <20200429054552.GB6581@nanopsycho.orion>
+        <02874ECE860811409154E81DA85FBB58B6CF7AFF@FMSMSX102.amr.corp.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,69 +45,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 29 Apr 2020 07:45:52 +0200 Jiri Pirko wrote:
-> Wed, Apr 29, 2020 at 03:42:48AM CEST, kuba@kernel.org wrote:
-> >Jiri, this is what I had in mind of snapshots and the same
-> >thing will come back for slice allocation.  
-> 
-> Okay. Could you please send the userspace patch too in order to see the
-> full picture?
-
-You got it, I didn't do anything fancy there.
-
-> >+static int
-> >+devlink_nl_alloc_snapshot_id(struct devlink *devlink, struct genl_info *info,
-> >+			     struct devlink_region *region, u32 *snapshot_id)
-> >+{
-> >+	struct sk_buff *msg;
-> >+	void *hdr;
-> >+	int err;
-> >+
-> >+	err = __devlink_region_snapshot_id_get(devlink, snapshot_id);
-> >+	if (err) {
-> >+		NL_SET_ERR_MSG_MOD(info->extack,  
-> 
-> No need to wrap here.
-
-Ok.
-
-> >+				   "Failed to allocate a new snapshot id");
-> >+		return err;
-> >+	}
-
-> >-	err = __devlink_snapshot_id_insert(devlink, snapshot_id);
-> >-	if (err)
-> >-		return err;
-> >+		err = __devlink_snapshot_id_insert(devlink, snapshot_id);
-> >+		if (err)
-> >+			return err;
-> >+	} else {
-> >+		err = devlink_nl_alloc_snapshot_id(devlink, info,
-> >+						   region, &snapshot_id);
-> >+		if (err)
-> >+			return err;
-> >+	}
+On Wed, 29 Apr 2020 15:34:30 +0000 Keller, Jacob E wrote:
+> > How the output is going to looks like it this or any of the follow-up
+> > calls in this function are going to fail?
 > > 
-> > 	err = region->ops->snapshot(devlink, info->extack, &data);  
-> 
-> How the output is going to looks like it this or any of the follow-up
-> calls in this function are going to fail?
-> 
-> I guess it is going to be handled gracefully in the userspace app,
-> right?
+> > I guess it is going to be handled gracefully in the userspace app,
+> > right?
+>
+> I'm wondering what the issue is with just waiting to send the
+> snapshot id back until after this succeeds. Is it just easier to keep
+> it near the allocation?
 
-The output is the same, just the return code is non-zero.
-
-I can change that not to print the snapshot info until we are sure the
-operation succeeded if you prefer.
-
-Initially I had the kernel not sent the message until it's done with
-the operation, but that seems unnecessarily complex. The send operation
-itself may fail, and if we ever have an operation that requires more
-than one notification we'll have to struggle with atomic sends.
-
-Better have the user space treat the failure like an exception, and
-ignore all the notifications that came earlier.
-
-That said the iproute2 patch can be improved with extra 20 lines so
-that it holds off printing the snapshot info until success.
+I just wasn't happy with the fact that the response send may fail.
+So it just seems like better protocol from the start to expect user
+space to pay attention to the error code at the end, before it takes
+action on the response.
