@@ -2,328 +2,411 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 226DB1BD17A
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 02:59:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86B471BD17F
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 03:03:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726546AbgD2A7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 20:59:20 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:37323 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726377AbgD2A7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 20:59:17 -0400
-Received: by mail-il1-f199.google.com with SMTP id v9so795008iln.4
-        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 17:59:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=alzlnHvzElgkFCcj9uAJH09B1mPJhI3S0t6xX3E/1RQ=;
-        b=cM1oRbY5Kw0Vet5RmGZdRc7rxq5LV84RdbPfaCr7inNW2gWlJZnceRDWrO98wH81DG
-         EM2oeAqK+nS2DD1qpa9aAYFFswBIz1PN++A5F32N4xaa5cPMBM3jNyILFmwSD0qwKAAf
-         /zBsUFB7NJzu46piuCAK0pa/f/xazCIM2lbFFmNZLVlHXN0aKVIxx80L9IgR3Dy+Mu1o
-         gHlSrGqu4C4vuoCnJplt8ZrMFgZtce9jQSnWBG2d23kJbRGZKrtkAjplTz56P/tG6Wle
-         Af9GzKfUuSKbUC0toCO4Is2JNKoGYD6KL1rncaFSoW94jNjXjLs3+6FFipWcbu2PCK5H
-         cwww==
-X-Gm-Message-State: AGi0PuaGNGdeWf/bgIum0mXroyp212EI0EvfdqYeUEmM6A2/mXvFhtmr
-        Dlf6PUEQ1EEAk1RS+Azz4Ym2IzkF43M1RqWEQq37Z9F9C0E/
-X-Google-Smtp-Source: APiQypLGe/+0Cj2mey0OG0f0/zV3JhbTyVZrmB4JcWybFiNeQI7OHje5oxbKCJnGHX9UaSqJG8j5No8nK+yYYXRMZRNFZvFWNDmy
+        id S1726386AbgD2BDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 21:03:02 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:39262 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726363AbgD2BDC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 21:03:02 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03T0sR3j021947;
+        Tue, 28 Apr 2020 18:02:48 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=YiLLm+WPPb9gkelgXWtvpNwS79wUc7W9N4B/A3sCT6U=;
+ b=GezYGojIYdTXAJKVQXy90z5JbDcGhMib+buklsqQHD/RzqdZ5251zNWIecYGLBKIYGdi
+ KDqspwyN2lJE7wRNxvFwVMpXUJOg4NNcRzLUu2VozWleCiQQKl9i0JrtjFMHCC3eRVl3
+ cwtjZNcb4KEyVVQZ6MyhNDLSTF0FrPsft9M= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 30n54ek52f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 28 Apr 2020 18:02:48 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Tue, 28 Apr 2020 18:02:47 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HLgPvCBYvh/MSV+eYocFSN9M/ZdmUvNEdJDFm1H3Rn1O+XtNtVlXxtlHi7hm+37XB0gv+c3tJptPtlm4b20tW1pf83NcbafsT1MAn+WkOtkJfkqskwQtbC27HBCmqQ/0yKiUdDUe+Wl7jNN/BXtH1+1wjzSYPtvi5LTgrgOHTBaqsAoFYOyfAX6RWYIvkNP9ywZMUodjyVDQ331SpMQsY4QjMgU1cN/9YlIXZr+20lIHJPC3aQx+z3+bTGlXFhfTuPABc3c86kdPaQiV5QZ/Q6cWndvL1OP6Cb6ZSGFL1b8ZATYswnXL5UxI3tjJx7QDuJTvzXAOBab4UwpLA1ebVw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YiLLm+WPPb9gkelgXWtvpNwS79wUc7W9N4B/A3sCT6U=;
+ b=Id3HZamu7zTv1O9jzxgulKbIn3JwFWRQgo3GglL7NiVE+24hNuUmGPcstXlNke94y7oG83z6tcEaRQfQCHPYaQvLIMYKc5SoIiq//V1PIJfyuSEaJXMgycoG+Ir1fyoc2OmyDwt6nfQZOLBJF0hhxYKfh9Q504R9ys2kBu6fAkuvMwfbITE7NPM/C+80kGwjEP6BE239WXPfUQyzxeDnfMSXotJsnRRKP6IZbNGihuCTrpiitMi08blUivHFdIJbpyOfaWZLZG/kVThs+IvfWE92fQWDej/tsDoWZkbuCnmHplXj3TJLyfFIHTPIWtZtdRVlXK21q34pdkM5/3/hHw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YiLLm+WPPb9gkelgXWtvpNwS79wUc7W9N4B/A3sCT6U=;
+ b=GOpCaRZq1xtmk2y9GV8vLIXdz8MpnkSHbExA/28IJOQnTQ9zc0g4uSg+W1Gf1Yr07s8HDzjuwmvOSXtQC25JelpCF0hTAFcrTt7/nq8QAS8fmCAtj1FT2EjvQgU0uTaCLrKHcLKInxHndQhiU315er0r2lEkXoM6OVa3Fo3A8LE=
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB2888.namprd15.prod.outlook.com (2603:10b6:a03:b5::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.22; Wed, 29 Apr
+ 2020 01:02:44 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::8988:aa27:5d70:6923]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::8988:aa27:5d70:6923%5]) with mapi id 15.20.2937.023; Wed, 29 Apr 2020
+ 01:02:44 +0000
+Subject: Re: [PATCH bpf-next v1 03/19] bpf: add bpf_map iterator
+To:     Martin KaFai Lau <kafai@fb.com>
+CC:     Andrii Nakryiko <andriin@fb.com>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
+References: <20200427201235.2994549-1-yhs@fb.com>
+ <20200427201237.2994794-1-yhs@fb.com>
+ <20200429003738.pv4flhdaxpg66wiv@kafai-mbp>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <9ea9f74a-f0db-9ecb-acba-ff4f4c198615@fb.com>
+Date:   Tue, 28 Apr 2020 18:02:40 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.7.0
+In-Reply-To: <20200429003738.pv4flhdaxpg66wiv@kafai-mbp>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: CO1PR15CA0070.namprd15.prod.outlook.com
+ (2603:10b6:101:20::14) To BYAPR15MB4088.namprd15.prod.outlook.com
+ (2603:10b6:a02:c3::18)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:3d2:: with SMTP id r18mr28949634jaq.6.1588121954311;
- Tue, 28 Apr 2020 17:59:14 -0700 (PDT)
-Date:   Tue, 28 Apr 2020 17:59:14 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f2771905a46374fe@google.com>
-Subject: possible deadlock in sch_direct_xmit (2)
-From:   syzbot <syzbot+e18ac85757292b7baf96@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from macbook-pro-52.local.dhcp.thefacebook.com (2620:10d:c090:400::5:2258) by CO1PR15CA0070.namprd15.prod.outlook.com (2603:10b6:101:20::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19 via Frontend Transport; Wed, 29 Apr 2020 01:02:42 +0000
+X-Originating-IP: [2620:10d:c090:400::5:2258]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 843321cb-232e-4e94-ca84-08d7ebd90605
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2888:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB2888391F592F8EC7CBC748AED3AD0@BYAPR15MB2888.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-Forefront-PRVS: 03883BD916
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(346002)(376002)(136003)(39860400002)(396003)(66556008)(66946007)(478600001)(66476007)(316002)(36756003)(52116002)(6506007)(53546011)(5660300002)(2906002)(16526019)(37006003)(8936002)(6512007)(6862004)(31696002)(54906003)(8676002)(6486002)(6636002)(2616005)(4326008)(186003)(86362001)(31686004);DIR:OUT;SFP:1102;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: cty55vdvYSPQ2Pyv/omyK3+6EQ8nfwf1zynpuxBg3gLBHxSGqlvq4PNOqVo2IWM+Nh1jEQoCDrtHGnm+ruDI0cd2FFXVn2uDl2a8UufblX6vMPFqAUWQiCr1D9YDNBBSElOrIf0ECG2/WA72JnsrbhgSsDIPK+82ymQxJJIu+zAPRb6JEAkkcsxQgl0xtCIeLzSAJc54j9B5rO890U6ZLfD7Pt2q1qsJh7UNx9A9uxY6lLf4MKJQGpifSZACHJ775/13mxSFy0fc6u5uSrI3uu/L1qbmvzjA23Dipan3AHADDEhQrW8aQ8tqR+frpG0S6gdOkaBW6Iu/A1PUpvUi5k4TJzNrxHtVMe1yd5WO/oMfoKDZOYyZH9zJEx3/IQriHjIEwyQKYhQTgbLomSDoo1ZXdFjSLRjIxaC7iULvD4okozZv2Ls66vPaCrOV/h8j
+X-MS-Exchange-AntiSpam-MessageData: +tTf7l/HW7FVbjzidKe44QgCeTPYFmcCjxi8PaG3P1FyMnaOFiTEXg5GbnymD+igvmI6858rBgpSUM0C3iqn+dorNivbnjLocuyPymEJ8Ti4aFguZolzdJNYwkrjcjYsB0Hdr8d8KNe6OMYfsV/44x3AaAMUYUbDTodsAmoQSA4CoVY/H8O1bFj61e1pZlIG703FQMfUnbvZ7W0wq8/rJArNgflJkVCvQDahjuK1FTI0V5RxJcNFypxOYkDR7xO7qbIEz1/+KePzdgLgDJEHpjxUQNkRPbGxv0O5t4VOoa+ztG5ix2OGhRbvE+VGsIgobcNx1ECgnRqFF7pPCZApv+NdyVyf1sxggQQc0xnZ2jgsZ5s4cUVkr09aIUOc+s891gWYUl8L87rz5FDeoF8Qhpxx6byDz9qve2dHgUxm1DTyZRY4MTt5cz/yyhOl+LYT9n47mvvpxKcSccUCXYUaTr8WNlFmCVQ1xp+dma+CVBPrfF/wTT2SE47PTvYk+RchwfPR+1TjLGlQWU1CbF+gtnCdW2ToFhUOxbC+WSDNQdIR7w3fopW2sJse235XwuSnGyAZWHcSFSNxfvZwtJdMFZ05l0BwpwxdVZOuvWRvby+0GIPJTraDLzhAjCp3YmMfqxYtNtsUWuAslycaLoDOqGhWw8l2VUSQ3ZUpsiKcrQ2fRdRUwC4hLEGbUV9D1Y8//4vQejYfF8Vc6vd3J0i+Ze2k/FoKtkQFMW2iigvuPl/f8JJP8qgU0KYStDSvYwUQhPgOudACVN3DVWe0ZV42oay2cg0JTrwHBOxMMNUP5lcgIZ8Iu9hebay9SH1lnLK/K42torhhCDwLENeRjNxJRA==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 843321cb-232e-4e94-ca84-08d7ebd90605
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2020 01:02:43.9766
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HYGZmLmt8uz+8VK3LqHGsrlZFnHo6tBT7iqOLdDNEo+mSsvmP37JvNV/HIYhelUI
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2888
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-28_15:2020-04-28,2020-04-28 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ priorityscore=1501 suspectscore=0 spamscore=0 impostorscore=0
+ mlxlogscore=999 bulkscore=0 mlxscore=0 adultscore=0 malwarescore=0
+ clxscore=1015 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2003020000 definitions=main-2004290004
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following crash on:
-
-HEAD commit:    3f2eaebb bpf, riscv: Fix tail call count off by one in RV3..
-git tree:       bpf-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=120d1808100000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3b755b963c64ac09
-dashboard link: https://syzkaller.appspot.com/bug?extid=e18ac85757292b7baf96
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+e18ac85757292b7baf96@syzkaller.appspotmail.com
-
-======================================================
-WARNING: possible circular locking dependency detected
-5.7.0-rc1-syzkaller #0 Not tainted
-------------------------------------------------------
-syz-executor.4/13161 is trying to acquire lock:
-ffff8880978ed498 (&dev->qdisc_xmit_lock_key#292){+.-.}-{2:2}, at: spin_lock include/linux/spinlock.h:353 [inline]
-ffff8880978ed498 (&dev->qdisc_xmit_lock_key#292){+.-.}-{2:2}, at: __netif_tx_lock include/linux/netdevice.h:4055 [inline]
-ffff8880978ed498 (&dev->qdisc_xmit_lock_key#292){+.-.}-{2:2}, at: sch_direct_xmit+0x2be/0xc20 net/sched/sch_generic.c:311
-
-but task is already holding lock:
-ffff888099bcc898 (&dev->qdisc_xmit_lock_key#303){+.-.}-{2:2}, at: spin_lock include/linux/spinlock.h:353 [inline]
-ffff888099bcc898 (&dev->qdisc_xmit_lock_key#303){+.-.}-{2:2}, at: __netif_tx_lock include/linux/netdevice.h:4055 [inline]
-ffff888099bcc898 (&dev->qdisc_xmit_lock_key#303){+.-.}-{2:2}, at: __dev_queue_xmit+0x26ba/0x30a0 net/core/dev.c:4048
-
-which lock already depends on the new lock.
 
 
-the existing dependency chain (in reverse order) is:
+On 4/28/20 5:37 PM, Martin KaFai Lau wrote:
+> On Mon, Apr 27, 2020 at 01:12:37PM -0700, Yonghong Song wrote:
+>> The bpf_map iterator is implemented.
+>> The bpf program is called at seq_ops show() and stop() functions.
+>> bpf_iter_get_prog() will retrieve bpf program and other
+>> parameters during seq_file object traversal. In show() function,
+>> bpf program will traverse every valid object, and in stop()
+>> function, bpf program will be called one more time after all
+>> objects are traversed.
+>>
+>> The first member of the bpf context contains the meta data, namely,
+>> the seq_file, session_id and seq_num. Here, the session_id is
+>> a unique id for one specific seq_file session. The seq_num is
+>> the number of bpf prog invocations in the current session.
+>> The bpf_iter_get_prog(), which will be implemented in subsequent
+>> patches, will have more information on how meta data are computed.
+>>
+>> The second member of the bpf context is a struct bpf_map pointer,
+>> which bpf program can examine.
+>>
+>> The target implementation also provided the structure definition
+>> for bpf program and the function definition for verifier to
+>> verify the bpf program. Specifically for bpf_map iterator,
+>> the structure is "bpf_iter__bpf_map" andd the function is
+>> "__bpf_iter__bpf_map".
+>>
+>> More targets will be implemented later, all of which will include
+>> the following, similar to bpf_map iterator:
+>>    - seq_ops() implementation
+>>    - function definition for verifier to verify the bpf program
+>>    - seq_file private data size
+>>    - additional target feature
+>>
+>> Signed-off-by: Yonghong Song <yhs@fb.com>
+>> ---
+>>   include/linux/bpf.h   |  10 ++++
+>>   kernel/bpf/Makefile   |   2 +-
+>>   kernel/bpf/bpf_iter.c |  19 ++++++++
+>>   kernel/bpf/map_iter.c | 107 ++++++++++++++++++++++++++++++++++++++++++
+>>   kernel/bpf/syscall.c  |  13 +++++
+>>   5 files changed, 150 insertions(+), 1 deletion(-)
+>>   create mode 100644 kernel/bpf/map_iter.c
+>>
+>> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+>> index 5e56abc1e2f1..4ac8d61f7c3e 100644
+>> --- a/include/linux/bpf.h
+>> +++ b/include/linux/bpf.h
+>> @@ -1078,6 +1078,7 @@ int  generic_map_update_batch(struct bpf_map *map,
+>>   int  generic_map_delete_batch(struct bpf_map *map,
+>>   			      const union bpf_attr *attr,
+>>   			      union bpf_attr __user *uattr);
+>> +struct bpf_map *bpf_map_get_curr_or_next(u32 *id);
+>>   
+>>   extern int sysctl_unprivileged_bpf_disabled;
+>>   
+>> @@ -1118,7 +1119,16 @@ struct bpf_iter_reg {
+>>   	u32 target_feature;
+>>   };
+>>   
+>> +struct bpf_iter_meta {
+>> +	__bpf_md_ptr(struct seq_file *, seq);
+>> +	u64 session_id;
+>> +	u64 seq_num;
+>> +};
+>> +
+>>   int bpf_iter_reg_target(struct bpf_iter_reg *reg_info);
+>> +struct bpf_prog *bpf_iter_get_prog(struct seq_file *seq, u32 priv_data_size,
+>> +				   u64 *session_id, u64 *seq_num, bool is_last);
+>> +int bpf_iter_run_prog(struct bpf_prog *prog, void *ctx);
+>>   
+>>   int bpf_percpu_hash_copy(struct bpf_map *map, void *key, void *value);
+>>   int bpf_percpu_array_copy(struct bpf_map *map, void *key, void *value);
+>> diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
+>> index 6a8b0febd3f6..b2b5eefc5254 100644
+>> --- a/kernel/bpf/Makefile
+>> +++ b/kernel/bpf/Makefile
+>> @@ -2,7 +2,7 @@
+>>   obj-y := core.o
+>>   CFLAGS_core.o += $(call cc-disable-warning, override-init)
+>>   
+>> -obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o bpf_iter.o
+>> +obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o bpf_iter.o map_iter.o
+>>   obj-$(CONFIG_BPF_SYSCALL) += hashtab.o arraymap.o percpu_freelist.o bpf_lru_list.o lpm_trie.o map_in_map.o
+>>   obj-$(CONFIG_BPF_SYSCALL) += local_storage.o queue_stack_maps.o
+>>   obj-$(CONFIG_BPF_SYSCALL) += disasm.o
+>> diff --git a/kernel/bpf/bpf_iter.c b/kernel/bpf/bpf_iter.c
+>> index 1115b978607a..284c95587803 100644
+>> --- a/kernel/bpf/bpf_iter.c
+>> +++ b/kernel/bpf/bpf_iter.c
+>> @@ -48,3 +48,22 @@ int bpf_iter_reg_target(struct bpf_iter_reg *reg_info)
+>>   
+>>   	return 0;
+>>   }
+>> +
+>> +struct bpf_prog *bpf_iter_get_prog(struct seq_file *seq, u32 priv_data_size,
+>> +				   u64 *session_id, u64 *seq_num, bool is_last)
+>> +{
+>> +	return NULL;
+> Can this patch be moved after this function is implemented?
 
--> #1 (&dev->qdisc_xmit_lock_key#303){+.-.}-{2:2}:
-       __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
-       _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
-       spin_lock include/linux/spinlock.h:353 [inline]
-       __netif_tx_lock include/linux/netdevice.h:4055 [inline]
-       __dev_queue_xmit+0x26ba/0x30a0 net/core/dev.c:4048
-       neigh_output include/net/neighbour.h:510 [inline]
-       ip6_finish_output2+0x1091/0x25b0 net/ipv6/ip6_output.c:117
-       __ip6_finish_output+0x442/0xab0 net/ipv6/ip6_output.c:143
-       ip6_finish_output+0x34/0x1f0 net/ipv6/ip6_output.c:153
-       NF_HOOK_COND include/linux/netfilter.h:296 [inline]
-       ip6_output+0x239/0x810 net/ipv6/ip6_output.c:176
-       dst_output include/net/dst.h:435 [inline]
-       ip6_local_out+0xaf/0x1a0 net/ipv6/output_core.c:179
-       ip6_send_skb+0xb4/0x340 net/ipv6/ip6_output.c:1865
-       ip6_push_pending_frames+0xbd/0xe0 net/ipv6/ip6_output.c:1885
-       icmpv6_push_pending_frames+0x33a/0x530 net/ipv6/icmp.c:304
-       icmp6_send+0x1b0b/0x23b0 net/ipv6/icmp.c:617
-       icmpv6_send+0xde/0x210 net/ipv6/ip6_icmp.c:43
-       ip6_link_failure+0x26/0x520 net/ipv6/route.c:2640
-       dst_link_failure include/net/dst.h:418 [inline]
-       ip_tunnel_xmit+0x15fc/0x2a65 net/ipv4/ip_tunnel.c:820
-       erspan_xmit+0x90d/0x2910 net/ipv4/ip_gre.c:683
-       __netdev_start_xmit include/linux/netdevice.h:4574 [inline]
-       netdev_start_xmit include/linux/netdevice.h:4588 [inline]
-       xmit_one net/core/dev.c:3477 [inline]
-       dev_hard_start_xmit+0x1a4/0x9b0 net/core/dev.c:3493
-       sch_direct_xmit+0x345/0xc20 net/sched/sch_generic.c:313
-       qdisc_restart net/sched/sch_generic.c:376 [inline]
-       __qdisc_run+0x4d1/0x17b0 net/sched/sch_generic.c:384
-       qdisc_run include/net/pkt_sched.h:134 [inline]
-       qdisc_run include/net/pkt_sched.h:126 [inline]
-       __dev_xmit_skb net/core/dev.c:3668 [inline]
-       __dev_queue_xmit+0x2115/0x30a0 net/core/dev.c:4021
-       neigh_resolve_output net/core/neighbour.c:1489 [inline]
-       neigh_resolve_output+0x566/0x930 net/core/neighbour.c:1469
-       neigh_output include/net/neighbour.h:510 [inline]
-       ip6_finish_output2+0x1091/0x25b0 net/ipv6/ip6_output.c:117
-       __ip6_finish_output+0x442/0xab0 net/ipv6/ip6_output.c:143
-       ip6_finish_output+0x34/0x1f0 net/ipv6/ip6_output.c:153
-       NF_HOOK_COND include/linux/netfilter.h:296 [inline]
-       ip6_output+0x239/0x810 net/ipv6/ip6_output.c:176
-       dst_output include/net/dst.h:435 [inline]
-       NF_HOOK include/linux/netfilter.h:307 [inline]
-       rawv6_send_hdrinc net/ipv6/raw.c:687 [inline]
-       rawv6_sendmsg+0x20f6/0x3900 net/ipv6/raw.c:944
-       inet_sendmsg+0x99/0xe0 net/ipv4/af_inet.c:807
-       sock_sendmsg_nosec net/socket.c:652 [inline]
-       sock_sendmsg+0xcf/0x120 net/socket.c:672
-       ____sys_sendmsg+0x6bf/0x7e0 net/socket.c:2362
-       ___sys_sendmsg+0x100/0x170 net/socket.c:2416
-       __sys_sendmsg+0xec/0x1b0 net/socket.c:2449
-       do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
-       entry_SYSCALL_64_after_hwframe+0x49/0xb3
+I tried to have an example on how regristration looks like,
+so I put bpf_map iterator implementation patch immediately
+after the bpf_iter_reg_target() patch. Unfortunately, I make
+the iterator implementation complete and compiler can pass,
+I need this function() to be implemented in the above.
 
--> #0 (&dev->qdisc_xmit_lock_key#292){+.-.}-{2:2}:
-       check_prev_add kernel/locking/lockdep.c:2515 [inline]
-       check_prevs_add kernel/locking/lockdep.c:2620 [inline]
-       validate_chain kernel/locking/lockdep.c:3237 [inline]
-       __lock_acquire+0x2ab1/0x4c50 kernel/locking/lockdep.c:4355
-       lock_acquire+0x1f2/0x8f0 kernel/locking/lockdep.c:4934
-       __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
-       _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
-       spin_lock include/linux/spinlock.h:353 [inline]
-       __netif_tx_lock include/linux/netdevice.h:4055 [inline]
-       sch_direct_xmit+0x2be/0xc20 net/sched/sch_generic.c:311
-       qdisc_restart net/sched/sch_generic.c:376 [inline]
-       __qdisc_run+0x4d1/0x17b0 net/sched/sch_generic.c:384
-       qdisc_run include/net/pkt_sched.h:134 [inline]
-       qdisc_run include/net/pkt_sched.h:126 [inline]
-       __dev_xmit_skb net/core/dev.c:3668 [inline]
-       __dev_queue_xmit+0x2115/0x30a0 net/core/dev.c:4021
-       neigh_resolve_output net/core/neighbour.c:1489 [inline]
-       neigh_resolve_output+0x566/0x930 net/core/neighbour.c:1469
-       neigh_output include/net/neighbour.h:510 [inline]
-       ip6_finish_output2+0x1091/0x25b0 net/ipv6/ip6_output.c:117
-       __ip6_finish_output+0x442/0xab0 net/ipv6/ip6_output.c:143
-       ip6_finish_output+0x34/0x1f0 net/ipv6/ip6_output.c:153
-       NF_HOOK_COND include/linux/netfilter.h:296 [inline]
-       ip6_output+0x239/0x810 net/ipv6/ip6_output.c:176
-       dst_output include/net/dst.h:435 [inline]
-       NF_HOOK include/linux/netfilter.h:307 [inline]
-       ndisc_send_skb+0xf40/0x14b0 net/ipv6/ndisc.c:506
-       ndisc_send_ns+0x3b0/0x860 net/ipv6/ndisc.c:648
-       ndisc_solicit+0x2ed/0x470 net/ipv6/ndisc.c:740
-       neigh_probe+0xcc/0x110 net/core/neighbour.c:1009
-       __neigh_event_send+0x3d4/0x16d0 net/core/neighbour.c:1170
-       neigh_event_send include/net/neighbour.h:444 [inline]
-       neigh_resolve_output+0x590/0x930 net/core/neighbour.c:1473
-       neigh_output include/net/neighbour.h:510 [inline]
-       ip6_finish_output2+0x1091/0x25b0 net/ipv6/ip6_output.c:117
-       __ip6_finish_output+0x442/0xab0 net/ipv6/ip6_output.c:143
-       ip6_finish_output+0x34/0x1f0 net/ipv6/ip6_output.c:153
-       NF_HOOK_COND include/linux/netfilter.h:296 [inline]
-       ip6_output+0x239/0x810 net/ipv6/ip6_output.c:176
-       dst_output include/net/dst.h:435 [inline]
-       ip6_local_out+0xaf/0x1a0 net/ipv6/output_core.c:179
-       ip6_send_skb+0xb4/0x340 net/ipv6/ip6_output.c:1865
-       ip6_push_pending_frames+0xbd/0xe0 net/ipv6/ip6_output.c:1885
-       icmpv6_push_pending_frames+0x33a/0x530 net/ipv6/icmp.c:304
-       icmp6_send+0x1b0b/0x23b0 net/ipv6/icmp.c:617
-       icmpv6_send+0xde/0x210 net/ipv6/ip6_icmp.c:43
-       ip6_link_failure+0x26/0x520 net/ipv6/route.c:2640
-       dst_link_failure include/net/dst.h:418 [inline]
-       vti6_xmit net/ipv6/ip6_vti.c:537 [inline]
-       vti6_tnl_xmit+0xfd4/0x1d30 net/ipv6/ip6_vti.c:576
-       __netdev_start_xmit include/linux/netdevice.h:4574 [inline]
-       netdev_start_xmit include/linux/netdevice.h:4588 [inline]
-       xmit_one net/core/dev.c:3477 [inline]
-       dev_hard_start_xmit+0x1a4/0x9b0 net/core/dev.c:3493
-       __dev_queue_xmit+0x25e1/0x30a0 net/core/dev.c:4052
-       packet_snd net/packet/af_packet.c:2979 [inline]
-       packet_sendmsg+0x23cc/0x5ce0 net/packet/af_packet.c:3004
-       sock_sendmsg_nosec net/socket.c:652 [inline]
-       sock_sendmsg+0xcf/0x120 net/socket.c:672
-       ____sys_sendmsg+0x6bf/0x7e0 net/socket.c:2362
-       ___sys_sendmsg+0x100/0x170 net/socket.c:2416
-       __sys_sendmsg+0xec/0x1b0 net/socket.c:2449
-       do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
-       entry_SYSCALL_64_after_hwframe+0x49/0xb3
+I guess I can delay this patch until I can properly
+implement it, just like my RFC v2.
 
-other info that might help us debug this:
+> 
+>> +}
+>> +
+>> +int bpf_iter_run_prog(struct bpf_prog *prog, void *ctx)
+>> +{
+>> +	int ret;
+>> +
+>> +	migrate_disable();
+>> +	rcu_read_lock();
+>> +	ret = BPF_PROG_RUN(prog, ctx);
+>> +	rcu_read_unlock();
+>> +	migrate_enable();
+>> +
+>> +	return ret;
+>> +}
+>> diff --git a/kernel/bpf/map_iter.c b/kernel/bpf/map_iter.c
+>> new file mode 100644
+>> index 000000000000..bb3ad4c3bde5
+>> --- /dev/null
+>> +++ b/kernel/bpf/map_iter.c
+>> @@ -0,0 +1,107 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+>> +/* Copyright (c) 2020 Facebook */
+>> +#include <linux/bpf.h>
+>> +#include <linux/fs.h>
+>> +#include <linux/filter.h>
+>> +#include <linux/kernel.h>
+>> +
+>> +struct bpf_iter_seq_map_info {
+>> +	struct bpf_map *map;
+>> +	u32 id;
+>> +};
+>> +
+>> +static void *bpf_map_seq_start(struct seq_file *seq, loff_t *pos)
+>> +{
+>> +	struct bpf_iter_seq_map_info *info = seq->private;
+>> +	struct bpf_map *map;
+>> +	u32 id = info->id;
+>> +
+>> +	map = bpf_map_get_curr_or_next(&id);
+>> +	if (IS_ERR_OR_NULL(map))
+>> +		return NULL;
+>> +
+>> +	++*pos;
+> Does pos always need to be incremented here?
 
- Possible unsafe locking scenario:
+Yes, I skipped passing SEQ_START_TOKEN to show(). Put it another way,
+bpf program won't be called for SEQ_START_TOKEN, so I did a shortcut here.
 
-       CPU0                    CPU1
-       ----                    ----
-  lock(&dev->qdisc_xmit_lock_key#303);
-                               lock(&dev->qdisc_xmit_lock_key#292);
-                               lock(&dev->qdisc_xmit_lock_key#303);
-  lock(&dev->qdisc_xmit_lock_key#292);
+> 
+>> +	info->map = map;
+>> +	info->id = id;
+>> +	return map;
+>> +}
+>> +
+>> +static void *bpf_map_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+>> +{
+>> +	struct bpf_iter_seq_map_info *info = seq->private;
+>> +	struct bpf_map *map;
+>> +
+>> +	++*pos;
+>> +	++info->id;
+>> +	map = bpf_map_get_curr_or_next(&info->id);
+>> +	if (IS_ERR_OR_NULL(map))
+>> +		return NULL;
+>> +
+>> +	bpf_map_put(info->map);
+>> +	info->map = map;
+>> +	return map;
+>> +}
+>> +
+>> +struct bpf_iter__bpf_map {
+>> +	__bpf_md_ptr(struct bpf_iter_meta *, meta);
+>> +	__bpf_md_ptr(struct bpf_map *, map);
+>> +};
+>> +
+>> +int __init __bpf_iter__bpf_map(struct bpf_iter_meta *meta, struct bpf_map *map)
+>> +{
+>> +	return 0;
+>> +}
+>> +
+>> +static int bpf_map_seq_show(struct seq_file *seq, void *v)
+>> +{
+>> +	struct bpf_iter_meta meta;
+>> +	struct bpf_iter__bpf_map ctx;
+>> +	struct bpf_prog *prog;
+>> +	int ret = 0;
+>> +
+>> +	ctx.meta = &meta;
+>> +	ctx.map = v;
+>> +	meta.seq = seq;
+>> +	prog = bpf_iter_get_prog(seq, sizeof(struct bpf_iter_seq_map_info),
+>> +				 &meta.session_id, &meta.seq_num,
+>> +				 v == (void *)0);
+>  From looking at seq_file.c, when will show() be called with "v == NULL"?
 
- *** DEADLOCK ***
+In the stop() function.
 
-11 locks held by syz-executor.4/13161:
- #0: ffffffff899beca0 (rcu_read_lock_bh){....}-{1:2}, at: __dev_queue_xmit+0x214/0x30a0 net/core/dev.c:3987
- #1: ffff888099bcc898 (&dev->qdisc_xmit_lock_key#303){+.-.}-{2:2}, at: spin_lock include/linux/spinlock.h:353 [inline]
- #1: ffff888099bcc898 (&dev->qdisc_xmit_lock_key#303){+.-.}-{2:2}, at: __netif_tx_lock include/linux/netdevice.h:4055 [inline]
- #1: ffff888099bcc898 (&dev->qdisc_xmit_lock_key#303){+.-.}-{2:2}, at: __dev_queue_xmit+0x26ba/0x30a0 net/core/dev.c:4048
- #2: ffffffff899bed00 (rcu_read_lock){....}-{1:2}, at: icmpv6_send+0x0/0x210 net/ipv6/ip6_icmp.c:31
- #3: ffff888087823260 (k-slock-AF_INET6){+.-.}-{2:2}, at: spin_trylock include/linux/spinlock.h:363 [inline]
- #3: ffff888087823260 (k-slock-AF_INET6){+.-.}-{2:2}, at: icmpv6_xmit_lock net/ipv6/icmp.c:117 [inline]
- #3: ffff888087823260 (k-slock-AF_INET6){+.-.}-{2:2}, at: icmp6_send+0xde8/0x23b0 net/ipv6/icmp.c:538
- #4: ffffffff899bed00 (rcu_read_lock){....}-{1:2}, at: icmp6_send+0x13cd/0x23b0 net/ipv6/icmp.c:598
- #5: ffffffff899beca0 (rcu_read_lock_bh){....}-{1:2}, at: lwtunnel_xmit_redirect include/net/lwtunnel.h:92 [inline]
- #5: ffffffff899beca0 (rcu_read_lock_bh){....}-{1:2}, at: ip6_finish_output2+0x215/0x25b0 net/ipv6/ip6_output.c:103
- #6: ffffffff899bed00 (rcu_read_lock){....}-{1:2}, at: ip6_nd_hdr net/ipv6/ndisc.c:464 [inline]
- #6: ffffffff899bed00 (rcu_read_lock){....}-{1:2}, at: ndisc_send_skb+0x80a/0x14b0 net/ipv6/ndisc.c:500
- #7: ffffffff899beca0 (rcu_read_lock_bh){....}-{1:2}, at: lwtunnel_xmit_redirect include/net/lwtunnel.h:92 [inline]
- #7: ffffffff899beca0 (rcu_read_lock_bh){....}-{1:2}, at: ip6_finish_output2+0x215/0x25b0 net/ipv6/ip6_output.c:103
- #8: ffffffff899beca0 (rcu_read_lock_bh){....}-{1:2}, at: __dev_queue_xmit+0x214/0x30a0 net/core/dev.c:3987
- #9: ffff8880a208d258 (&dev->qdisc_tx_busylock_key#45){+...}-{2:2}, at: spin_trylock include/linux/spinlock.h:363 [inline]
- #9: ffff8880a208d258 (&dev->qdisc_tx_busylock_key#45){+...}-{2:2}, at: qdisc_run_begin include/net/sch_generic.h:159 [inline]
- #9: ffff8880a208d258 (&dev->qdisc_tx_busylock_key#45){+...}-{2:2}, at: qdisc_run include/net/pkt_sched.h:128 [inline]
- #9: ffff8880a208d258 (&dev->qdisc_tx_busylock_key#45){+...}-{2:2}, at: __dev_xmit_skb net/core/dev.c:3668 [inline]
- #9: ffff8880a208d258 (&dev->qdisc_tx_busylock_key#45){+...}-{2:2}, at: __dev_queue_xmit+0x27d6/0x30a0 net/core/dev.c:4021
- #10: ffff8880a208d148 (&dev->qdisc_running_key#168){+...}-{0:0}, at: neigh_resolve_output net/core/neighbour.c:1489 [inline]
- #10: ffff8880a208d148 (&dev->qdisc_running_key#168){+...}-{0:0}, at: neigh_resolve_output+0x566/0x930 net/core/neighbour.c:1469
+> 
+>> +	if (prog)
+>> +		ret = bpf_iter_run_prog(prog, &ctx);
+>> +
+>> +	return ret == 0 ? 0 : -EINVAL;
+> The verifier change in patch 4 should have ensured that prog
+> can only return 0?
 
-stack backtrace:
-CPU: 1 PID: 13161 Comm: syz-executor.4 Not tainted 5.7.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- check_noncircular+0x32e/0x3e0 kernel/locking/lockdep.c:1846
- check_prev_add kernel/locking/lockdep.c:2515 [inline]
- check_prevs_add kernel/locking/lockdep.c:2620 [inline]
- validate_chain kernel/locking/lockdep.c:3237 [inline]
- __lock_acquire+0x2ab1/0x4c50 kernel/locking/lockdep.c:4355
- lock_acquire+0x1f2/0x8f0 kernel/locking/lockdep.c:4934
- __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
- _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
- spin_lock include/linux/spinlock.h:353 [inline]
- __netif_tx_lock include/linux/netdevice.h:4055 [inline]
- sch_direct_xmit+0x2be/0xc20 net/sched/sch_generic.c:311
- qdisc_restart net/sched/sch_generic.c:376 [inline]
- __qdisc_run+0x4d1/0x17b0 net/sched/sch_generic.c:384
- qdisc_run include/net/pkt_sched.h:134 [inline]
- qdisc_run include/net/pkt_sched.h:126 [inline]
- __dev_xmit_skb net/core/dev.c:3668 [inline]
- __dev_queue_xmit+0x2115/0x30a0 net/core/dev.c:4021
- neigh_resolve_output net/core/neighbour.c:1489 [inline]
- neigh_resolve_output+0x566/0x930 net/core/neighbour.c:1469
- neigh_output include/net/neighbour.h:510 [inline]
- ip6_finish_output2+0x1091/0x25b0 net/ipv6/ip6_output.c:117
- __ip6_finish_output+0x442/0xab0 net/ipv6/ip6_output.c:143
- ip6_finish_output+0x34/0x1f0 net/ipv6/ip6_output.c:153
- NF_HOOK_COND include/linux/netfilter.h:296 [inline]
- ip6_output+0x239/0x810 net/ipv6/ip6_output.c:176
- dst_output include/net/dst.h:435 [inline]
- NF_HOOK include/linux/netfilter.h:307 [inline]
- ndisc_send_skb+0xf40/0x14b0 net/ipv6/ndisc.c:506
- ndisc_send_ns+0x3b0/0x860 net/ipv6/ndisc.c:648
- ndisc_solicit+0x2ed/0x470 net/ipv6/ndisc.c:740
- neigh_probe+0xcc/0x110 net/core/neighbour.c:1009
- __neigh_event_send+0x3d4/0x16d0 net/core/neighbour.c:1170
- neigh_event_send include/net/neighbour.h:444 [inline]
- neigh_resolve_output+0x590/0x930 net/core/neighbour.c:1473
- neigh_output include/net/neighbour.h:510 [inline]
- ip6_finish_output2+0x1091/0x25b0 net/ipv6/ip6_output.c:117
- __ip6_finish_output+0x442/0xab0 net/ipv6/ip6_output.c:143
- ip6_finish_output+0x34/0x1f0 net/ipv6/ip6_output.c:153
- NF_HOOK_COND include/linux/netfilter.h:296 [inline]
- ip6_output+0x239/0x810 net/ipv6/ip6_output.c:176
- dst_output include/net/dst.h:435 [inline]
- ip6_local_out+0xaf/0x1a0 net/ipv6/output_core.c:179
- ip6_send_skb+0xb4/0x340 net/ipv6/ip6_output.c:1865
- ip6_push_pending_frames+0xbd/0xe0 net/ipv6/ip6_output.c:1885
- icmpv6_push_pending_frames+0x33a/0x530 net/ipv6/icmp.c:304
- icmp6_send+0x1b0b/0x23b0 net/ipv6/icmp.c:617
- icmpv6_send+0xde/0x210 net/ipv6/ip6_icmp.c:43
- ip6_link_failure+0x26/0x520 net/ipv6/route.c:2640
- dst_link_failure include/net/dst.h:418 [inline]
- vti6_xmit net/ipv6/ip6_vti.c:537 [inline]
- vti6_tnl_xmit+0xfd4/0x1d30 net/ipv6/ip6_vti.c:576
- __netdev_start_xmit include/linux/netdevice.h:4574 [inline]
- netdev_start_xmit include/linux/netdevice.h:4588 [inline]
- xmit_one net/core/dev.c:3477 [inline]
- dev_hard_start_xmit+0x1a4/0x9b0 net/core/dev.c:3493
- __dev_queue_xmit+0x25e1/0x30a0 net/core/dev.c:4052
- packet_snd net/packet/af_packet.c:2979 [inline]
- packet_sendmsg+0x23cc/0x5ce0 net/packet/af_packet.c:3004
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6bf/0x7e0 net/socket.c:2362
- ___sys_sendmsg+0x100/0x170 net/socket.c:2416
- __sys_sendmsg+0xec/0x1b0 net/socket.c:2449
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:295
- entry_SYSCALL_64_after_hwframe+0x49/0xb3
-RIP: 0033:0x45c829
-Code: 0d b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ff9339b0c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000500880 RCX: 000000000045c829
-RDX: 0000000000000000 RSI: 0000000020000100 RDI: 0000000000000004
-RBP: 000000000078bf00 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 00000000000009f7 R14: 00000000004ccae4 R15: 00007ff9339b16d4
+Yes. I forgot to update this after last minutes I added verifier
+enforcement. I can do
+	if (prog)
+		bpf_iter_run_prog(prog, &ctx);
 
+	return 0;
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+>> +}
+>> +
+>> +static void bpf_map_seq_stop(struct seq_file *seq, void *v)
+>> +{
+>> +	struct bpf_iter_seq_map_info *info = seq->private;
+>> +
+>> +	if (!v)
+>> +		bpf_map_seq_show(seq, v);
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+bpf program for NULL object is called here.
+
+>> +
+>> +	if (info->map) {
+>> +		bpf_map_put(info->map);
+>> +		info->map = NULL;
+>> +	}
+>> +}
+>> +
+>> +static const struct seq_operations bpf_map_seq_ops = {
+>> +	.start	= bpf_map_seq_start,
+>> +	.next	= bpf_map_seq_next,
+>> +	.stop	= bpf_map_seq_stop,
+>> +	.show	= bpf_map_seq_show,
+>> +};
+>> +
+>> +static int __init bpf_map_iter_init(void)
+>> +{
+>> +	struct bpf_iter_reg reg_info = {
+>> +		.target			= "bpf_map",
+>> +		.target_func_name	= "__bpf_iter__bpf_map",
+>> +		.seq_ops		= &bpf_map_seq_ops,
+>> +		.seq_priv_size		= sizeof(struct bpf_iter_seq_map_info),
+>> +		.target_feature		= 0,
+>> +	};
+>> +
+>> +	return bpf_iter_reg_target(&reg_info);
+>> +}
+>> +
+>> +late_initcall(bpf_map_iter_init);
+>> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+>> index 7626b8024471..022187640943 100644
+>> --- a/kernel/bpf/syscall.c
+>> +++ b/kernel/bpf/syscall.c
+>> @@ -2800,6 +2800,19 @@ static int bpf_obj_get_next_id(const union bpf_attr *attr,
+>>   	return err;
+>>   }
+>>   
+>> +struct bpf_map *bpf_map_get_curr_or_next(u32 *id)
+>> +{
+>> +	struct bpf_map *map;
+>> +
+>> +	spin_lock_bh(&map_idr_lock);
+>> +	map = idr_get_next(&map_idr, id);
+>> +	if (map)
+>> +		map = __bpf_map_inc_not_zero(map, false);
+> nit. For the !map case, set "map = ERR_PTR(-ENOENT)" so that
+> the _OR_NULL() test is not needed.  It will be more consistent
+> with other error checking codes in syscall.c.
+
+Good point, will do that.
+
+> 
+>> +	spin_unlock_bh(&map_idr_lock);
+>> +
+>> +	return map;
+>> +}
+>> +
+>>   #define BPF_PROG_GET_FD_BY_ID_LAST_FIELD prog_id
+>>   
+>>   struct bpf_prog *bpf_prog_by_id(u32 id)
+>> -- 
+>> 2.24.1
+>>
