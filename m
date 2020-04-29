@@ -2,107 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F22E21BD2DC
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 05:23:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E87C21BD2F9
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 05:32:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726699AbgD2DXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 23:23:05 -0400
-Received: from smtprelay0177.hostedemail.com ([216.40.44.177]:32962 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726560AbgD2DXF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 23:23:05 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay08.hostedemail.com (Postfix) with ESMTP id 3D253182CED28;
-        Wed, 29 Apr 2020 03:23:04 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3867:4321:5007:6119:6642:6997:10004:10400:10848:11026:11232:11473:11657:11658:11914:12043:12114:12296:12297:12438:12555:12740:12760:12895:12986:13439:14181:14659:14721:21080:21212:21451:21627:21990:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: boy68_54e0c4c8a4616
-X-Filterd-Recvd-Size: 3371
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf16.hostedemail.com (Postfix) with ESMTPA;
-        Wed, 29 Apr 2020 03:23:03 +0000 (UTC)
-Message-ID: <01d45e599732bc5af33a09b36e63beabfcad8d25.camel@perches.com>
-Subject: Re: [PATCH -next] hinic: Use ARRAY_SIZE for nic_vf_cmd_msg_handler
-From:   Joe Perches <joe@perches.com>
-To:     Zou Wei <zou_wei@huawei.com>, aviad.krawczyk@huawei.com,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 28 Apr 2020 20:23:01 -0700
-In-Reply-To: <1588130136-49236-1-git-send-email-zou_wei@huawei.com>
-References: <1588130136-49236-1-git-send-email-zou_wei@huawei.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.1-2 
+        id S1726637AbgD2Dcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 23:32:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43542 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726551AbgD2Dcd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 23:32:33 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D9BBC03C1AC;
+        Tue, 28 Apr 2020 20:32:33 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id r4so377346pgg.4;
+        Tue, 28 Apr 2020 20:32:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=oHg4Ih2xVy73JUSYzpNHihoFqPKep8Y6MUVusqxfGHo=;
+        b=DEzkn1Q2sV8YnzuyZMmp49TnNti9jXTPEoRtXMeZh7nSEiBYone93vuWY71UrPoR21
+         DPPV2r+SF2HtVON5l9Sr9ywBMPCo+U5N2Qh3uqO6ufGK4vPsIPlbNE19E3IgAHBmY8fE
+         DuBGiaprTw/aBDsbHxv/zmRu+rHWJ0n0Fr60za8AjHQTFLdBDf4bMAegs41LgcCvjCtL
+         dLkDTxrS0uiMl99Y2e4u3kr4DxOnnXXYrbF90o/Of6k8Z9qXw6Ch5cXnuHyqAD+HBQeX
+         dTniC4FxGvhndzgn1bRWnkguugaeIvQKq1dnUoR6DNK5JGMxSExBGfRJlgFJJuDuFkXi
+         7ACg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=oHg4Ih2xVy73JUSYzpNHihoFqPKep8Y6MUVusqxfGHo=;
+        b=WM/PeUI23kDNFX7aeftrVbUGwX2T3BQYx/vZiH2KnyQP88tMM4d4gBfzlH1qNB1yDw
+         fO0tSWMQUN2+VcrfmhHKO4UkAwXFaY8CKn2PQCbAwzARV8aik4y/kABWhby9pmw9MLXf
+         9MeK5lt+z16NX2GzpgCF9UXJIIWbCq6yDNQe55j8CbG9Y+zONoC+z+iRjyJSkI+w700K
+         IlOMGnLUVKMolfVX0wiUhbydqATJL+HMIyMTzIj6pliBNr3qbFJd0/COLh7hXGNiBBhM
+         luqQs2dGcG1ZGom7MWKVumba0rNiM6zt9HoYomzXR0iZEZhpOWlPO1QdpjoMF81iKZ/8
+         QcMg==
+X-Gm-Message-State: AGi0PubVWSvllbsL6kj0Q30qFH9tOpgFY5Z3ewHf9FDGUmxaW9MsAdju
+        puMuXRiU9fFY7zVEZaExFc4=
+X-Google-Smtp-Source: APiQypJG70HpsOK6hrOP3VAywbncJqho0L31EVeVgjGpNQWCzfcr0gBT3U8gtbDDSqflGvDyeHYSrQ==
+X-Received: by 2002:a63:cc01:: with SMTP id x1mr21995994pgf.428.1588131152845;
+        Tue, 28 Apr 2020 20:32:32 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:3700])
+        by smtp.gmail.com with ESMTPSA id c12sm9234847pgk.11.2020.04.28.20.32.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Apr 2020 20:32:32 -0700 (PDT)
+Date:   Tue, 28 Apr 2020 20:32:29 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com
+Subject: Re: [PATCH bpf-next] bpf: bpf_{g,s}etsockopt for struct bpf_sock
+Message-ID: <20200429033229.hd243khhh6q5mwrd@ast-mbp.dhcp.thefacebook.com>
+References: <20200428185719.46815-1-sdf@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200428185719.46815-1-sdf@google.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-04-29 at 11:15 +0800, Zou Wei wrote:
-> fix coccinelle warning, use ARRAY_SIZE
+On Tue, Apr 28, 2020 at 11:57:19AM -0700, Stanislav Fomichev wrote:
+> Currently, bpf_getsocktop and bpf_setsockopt helpers operate on the
+> 'struct bpf_sock_ops' context in BPF_PROG_TYPE_CGROUP_SOCKOPT program.
+> Let's generalize them and make the first argument be 'struct bpf_sock'.
+> That way, in the future, we can allow those helpers in more places.
 > 
-> drivers/net/ethernet/huawei/hinic/hinic_sriov.c:713:43-44: WARNING: Use ARRAY_SIZE
+> BPF_PROG_TYPE_CGROUP_SOCKOPT still has the existing helpers that operate
+> on 'struct bpf_sock_ops', but we add new bpf_{g,s}etsockopt that work
+> on 'struct bpf_sock'. [Alternatively, for BPF_PROG_TYPE_CGROUP_SOCKOPT,
+> we can enable them both and teach verifier to pick the right one
+> based on the context (bpf_sock_ops vs bpf_sock).]
 > 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Zou Wei <zou_wei@huawei.com>
-> ---
->  drivers/net/ethernet/huawei/hinic/hinic_sriov.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+> As an example, let's allow those 'struct bpf_sock' based helpers to
+> be called from the BPF_CGROUP_INET{4,6}_CONNECT hooks. That way
+> we can override CC before the connection is made.
 > 
-> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-> index b24788e..ac12725 100644
-> --- a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-> +++ b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-> @@ -710,8 +710,7 @@ int nic_pf_mbox_handler(void *hwdev, u16 vf_id, u8 cmd, void *buf_in,
->  	if (!hwdev)
->  		return -EFAULT;
->  
-> -	cmd_number = sizeof(nic_vf_cmd_msg_handler) /
-> -			    sizeof(struct vf_cmd_msg_handle);
-> +	cmd_number = ARRAY_SIZE(nic_vf_cmd_msg_handler);
->  	pfhwdev = container_of(dev, struct hinic_pfhwdev, hwdev);
->  	nic_io = &dev->func_to_io;
->  	for (i = 0; i < cmd_number; i++) {
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
 
-Probably better to remove cmd_number altogether
----
- drivers/net/ethernet/huawei/hinic/hinic_sriov.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-index b24788..af70cc 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
-@@ -704,17 +704,15 @@ int nic_pf_mbox_handler(void *hwdev, u16 vf_id, u8 cmd, void *buf_in,
- 	struct hinic_hwdev *dev = hwdev;
- 	struct hinic_func_to_io *nic_io;
- 	struct hinic_pfhwdev *pfhwdev;
--	u32 i, cmd_number;
-+	u32 i;
- 	int err = 0;
- 
- 	if (!hwdev)
- 		return -EFAULT;
- 
--	cmd_number = sizeof(nic_vf_cmd_msg_handler) /
--			    sizeof(struct vf_cmd_msg_handle);
- 	pfhwdev = container_of(dev, struct hinic_pfhwdev, hwdev);
- 	nic_io = &dev->func_to_io;
--	for (i = 0; i < cmd_number; i++) {
-+	for (i = 0; i < ARRAY_SIZE(nic_vf_cmd_msg_handler); i++) {
- 		vf_msg_handle = &nic_vf_cmd_msg_handler[i];
- 		if (cmd == vf_msg_handle->cmd &&
- 		    vf_msg_handle->cmd_msg_handler) {
-@@ -725,7 +723,7 @@ int nic_pf_mbox_handler(void *hwdev, u16 vf_id, u8 cmd, void *buf_in,
- 			break;
- 		}
- 	}
--	if (i == cmd_number)
-+	if (i == ARRAY_SIZE(nic_vf_cmd_msg_handler))
- 		err = hinic_msg_to_mgmt(&pfhwdev->pf_to_mgmt, HINIC_MOD_L2NIC,
- 					cmd, buf_in, in_size, buf_out,
- 					out_size, HINIC_MGMT_MSG_SYNC);
-
-
+Looks good to me and safety checks seem to be correct.
+Martin,
+could you please help review as well?
