@@ -2,152 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58B861BECA8
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 01:33:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 283221BECAA
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 01:33:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726926AbgD2XdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 19:33:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33952 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726481AbgD2XdQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 19:33:16 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9997C035494
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 16:33:14 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id t2so5517044ybq.11
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 16:33:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=NsQTVycOGMKsU1+TvPQ2vv/5lC2AdXfUMp8A3FRSsp0=;
-        b=kwxHmWZiLG1DFm/MNQlgiq3L/0CAWBkY3PQXx2qgOOuAerWX0QZ0SuWxehD0e14kS7
-         wCtP+ZGqVw3GErxX8YdQBOKW2pIa4YQsDiXZXNKzUWBZaUiW61uno2xVf+kY5YmCobjm
-         LQOFbmy+UIIMyzdVKTidvabq9WeQCm7JNs62Ud/ilduUehXDlv1pWVgnNdY0bM9hu0jd
-         dAz+uWUukDdXBNrnJPvPIAy+KRxkGcECN/usdgdEqBwLTlq9CYyV8P/O8CDuZskSz/AK
-         atSAKrQzAxIWUfeWJDQwx8/TERwKVLIjN49SwRhW/OJZr46Gv5s1Cz/z6mRcJxhO4dje
-         8cXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=NsQTVycOGMKsU1+TvPQ2vv/5lC2AdXfUMp8A3FRSsp0=;
-        b=kf5QNrm0OHGnzwg2eSWvxiCh2GHv4++RGPtFTyQzNqmacZuJ928l6HoGEfq+xd9DEJ
-         5za1dIt5TOEaiAVyk4HHEY27ofjknJwnkG+CXi3Sltkf9nEFgYVDj/MtS/CSta2b//9e
-         cPoX+BkAyuAhkm/hGqgZvJ2yyO+EXurUuoid2WfVO3tyFohpuF8NfdCchMtexae06lO6
-         O9A/jvztIvNd2ZodxaOIKRhs9XnmjWThuSC75t1VlQg3ZJ7FyHBgUb00wnnw0R7KnBdI
-         ly8/z6HtD91K+tPZwF59DJwRkg4BtRHzSdAz7PmxyWtu01T8wf80f1NNsWrfIzTynLZX
-         JLEQ==
-X-Gm-Message-State: AGi0PubJdiZnmrMAZsOg8c/0MfxO3Cr8CsZExa081a//kcebIN44BHPe
-        TEk+5qM3H3uI9fTJ7dKSteFdKKE=
-X-Google-Smtp-Source: APiQypIqBgBL21PQ0Eq3F36MJk2aEaVJQ+nW8Yrqnsa+UQUqFyB8Xg4xqgB9exsepK/Eu2XoICeVI+k=
-X-Received: by 2002:a25:afd2:: with SMTP id d18mr1270079ybj.321.1588203193776;
- Wed, 29 Apr 2020 16:33:13 -0700 (PDT)
-Date:   Wed, 29 Apr 2020 16:33:12 -0700
-In-Reply-To: <640e7fd3-4059-5ff8-f9ed-09b1becd0f7b@iogearbox.net>
-Message-Id: <20200429233312.GB241848@google.com>
-Mime-Version: 1.0
-References: <20200429170524.217865-1-sdf@google.com> <640e7fd3-4059-5ff8-f9ed-09b1becd0f7b@iogearbox.net>
-Subject: Re: [PATCH bpf-next v2] bpf: bpf_{g,s}etsockopt for struct bpf_sock
-From:   sdf@google.com
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        ast@kernel.org, John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        id S1727028AbgD2Xdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 19:33:50 -0400
+Received: from www62.your-server.de ([213.133.104.62]:33030 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726935AbgD2Xdt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 19:33:49 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jTwD4-0000YI-UR; Thu, 30 Apr 2020 01:33:47 +0200
+Received: from [178.195.186.98] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jTwD4-0003Te-LV; Thu, 30 Apr 2020 01:33:46 +0200
+Subject: Re: [PATCH v8 bpf-next 1/3] bpf: sharing bpf runtime stats with
+ BPF_ENABLE_STATS
+To:     Song Liu <songliubraving@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     ast@kernel.org, kernel-team@fb.com
+References: <20200429064543.634465-1-songliubraving@fb.com>
+ <20200429064543.634465-2-songliubraving@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <77523dab-bfd0-45d4-0d03-26a07bb6483e@iogearbox.net>
+Date:   Thu, 30 Apr 2020 01:33:45 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <20200429064543.634465-2-songliubraving@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25797/Wed Apr 29 14:06:14 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/30, Daniel Borkmann wrote:
-> On 4/29/20 7:05 PM, Stanislav Fomichev wrote:
-> > Currently, bpf_getsocktop and bpf_setsockopt helpers operate on the
-> > 'struct bpf_sock_ops' context in BPF_PROG_TYPE_SOCK_OPS program.
-> > Let's generalize them and make the first argument be 'struct bpf_sock'.
-> > That way, in the future, we can allow those helpers in more places.
-> >
-> > BPF_PROG_TYPE_SOCK_OPS still has the existing helpers that operate
-> > on 'struct bpf_sock_ops', but we add new bpf_{g,s}etsockopt that work
-> > on 'struct bpf_sock'. [Alternatively, for BPF_PROG_TYPE_SOCK_OPS,
-> > we can enable them both and teach verifier to pick the right one
-> > based on the context (bpf_sock_ops vs bpf_sock).]
-> >
-> > As an example, let's allow those 'struct bpf_sock' based helpers to
-> > be called from the BPF_CGROUP_INET{4,6}_CONNECT hooks. That way
-> > we can override CC before the connection is made.
-> >
-> > v2:
-> > * s/BPF_PROG_TYPE_CGROUP_SOCKOPT/BPF_PROG_TYPE_SOCK_OPS/
-> >
-> > Acked-by: John Fastabend <john.fastabend@gmail.com>
-> > Acked-by: Martin KaFai Lau <kafai@fb.com>
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> [...]
-> > +BPF_CALL_5(bpf_setsockopt, struct sock *, sk,
-> > +	   int, level, int, optname, char *, optval, int, optlen)
-> > +{
-> > +	u32 flags = 0;
-> > +	return _bpf_setsockopt(sk, level, optname, optval, optlen, flags);
-> > +}
-> > +
-> > +static const struct bpf_func_proto bpf_setsockopt_proto = {
-> > +	.func		= bpf_setsockopt,
-> > +	.gpl_only	= false,
-> > +	.ret_type	= RET_INTEGER,
-> > +	.arg1_type	= ARG_PTR_TO_SOCKET,
-> > +	.arg2_type	= ARG_ANYTHING,
-> > +	.arg3_type	= ARG_ANYTHING,
-> > +	.arg4_type	= ARG_PTR_TO_MEM,
-> > +	.arg5_type	= ARG_CONST_SIZE,
-> > +};
-> > +
-> > +BPF_CALL_5(bpf_getsockopt, struct sock *, sk,
-> > +	   int, level, int, optname, char *, optval, int, optlen)
-> > +{
-> > +	return _bpf_getsockopt(sk, level, optname, optval, optlen);
-> > +}
-> > +
-> >   static const struct bpf_func_proto bpf_getsockopt_proto = {
-> >   	.func		= bpf_getsockopt,
-> >   	.gpl_only	= false,
-> >   	.ret_type	= RET_INTEGER,
-> > +	.arg1_type	= ARG_PTR_TO_SOCKET,
-> > +	.arg2_type	= ARG_ANYTHING,
-> > +	.arg3_type	= ARG_ANYTHING,
-> > +	.arg4_type	= ARG_PTR_TO_UNINIT_MEM,
-> > +	.arg5_type	= ARG_CONST_SIZE,
-> > +};
-> > +
-> [...]
-> > @@ -6043,6 +6098,22 @@ sock_addr_func_proto(enum bpf_func_id func_id,  
-> const struct bpf_prog *prog)
-> >   		return &bpf_sk_storage_get_proto;
-> >   	case BPF_FUNC_sk_storage_delete:
-> >   		return &bpf_sk_storage_delete_proto;
-> > +	case BPF_FUNC_setsockopt:
-> > +		switch (prog->expected_attach_type) {
-> > +		case BPF_CGROUP_INET4_CONNECT:
-> > +		case BPF_CGROUP_INET6_CONNECT:
-> > +			return &bpf_setsockopt_proto;
+On 4/29/20 8:45 AM, Song Liu wrote:
+> Currently, sysctl kernel.bpf_stats_enabled controls BPF runtime stats.
+> Typical userspace tools use kernel.bpf_stats_enabled as follows:
+> 
+>    1. Enable kernel.bpf_stats_enabled;
+>    2. Check program run_time_ns;
+>    3. Sleep for the monitoring period;
+>    4. Check program run_time_ns again, calculate the difference;
+>    5. Disable kernel.bpf_stats_enabled.
+> 
+> The problem with this approach is that only one userspace tool can toggle
+> this sysctl. If multiple tools toggle the sysctl at the same time, the
+> measurement may be inaccurate.
+> 
+> To fix this problem while keep backward compatibility, introduce a new
+> bpf command BPF_ENABLE_STATS. On success, this command enables stats and
+> returns a valid fd. BPF_ENABLE_STATS takes argument "type". Currently,
+> only one type, BPF_STATS_RUN_TIME, is supported. We can extend the
+> command to support other types of stats in the future.
+> 
+> With BPF_ENABLE_STATS, user space tool would have the following flow:
+> 
+>    1. Get a fd with BPF_ENABLE_STATS, and make sure it is valid;
+>    2. Check program run_time_ns;
+>    3. Sleep for the monitoring period;
+>    4. Check program run_time_ns again, calculate the difference;
+>    5. Close the fd.
+> 
+> Signed-off-by: Song Liu <songliubraving@fb.com>
+[...]
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index d23c04cbe14f..8691b2cc550d 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -3872,6 +3872,60 @@ static int bpf_link_get_fd_by_id(const union bpf_attr *attr)
+>   	return fd;
+>   }
+>   
+> +DEFINE_MUTEX(bpf_stats_enabled_mutex);
+> +
+> +static int bpf_stats_release(struct inode *inode, struct file *file)
+> +{
+> +	mutex_lock(&bpf_stats_enabled_mutex);
+> +	static_key_slow_dec(&bpf_stats_enabled_key.key);
+> +	mutex_unlock(&bpf_stats_enabled_mutex);
+> +	return 0;
+> +}
+> +
+> +static const struct file_operations bpf_stats_fops = {
+> +	.release = bpf_stats_release,
+> +};
+> +
+> +static int bpf_enable_runtime_stats(void)
+> +{
+> +	int fd;
+> +
+> +	mutex_lock(&bpf_stats_enabled_mutex);
+> +
+> +	/* Set a very high limit to avoid overflow */
+> +	if (static_key_count(&bpf_stats_enabled_key.key) > INT_MAX / 2) {
+> +		mutex_unlock(&bpf_stats_enabled_mutex);
+> +		return -EBUSY;
+> +	}
+> +
+> +	fd = anon_inode_getfd("bpf-stats", &bpf_stats_fops, NULL, 0);
 
-> Hm, I'm not sure this is safe. In the sock_addr_func_proto() we also have
-> other helpers callable from connect hooks like sk_lookup_{tcp,udp} which
-> return a PTR_TO_SOCKET_OR_NULL, and now we can pass those sockets also  
-> into
-> bpf_{get,set}sockopt() helper after lookup to change various sk related  
-> stuff
-> but w/o being under lock. Doesn't the sock_owned_by_me() yell here at  
-> minimum
-> (I'd expect so)?
-Ugh, good point, I missed the fact that sk_lookup_{tcp,udp} are there
-for sock_addr :-( I can try to do a simple test case to verify
-that sock_owned_by_me triggers, but I'm pretty certain it should
-(I've been calling bpf_{s,g}etsockopt for context socket so it's quiet).
+Missing O_CLOEXEC or intentional (if latter, I'd have expected a comment
+here though)?
 
-I don't think there is any helper similar to sock_owned_by_me() that
-I can call to verify that the socket is held by current thread
-(without the lockdep splat) and bail out?
+> +	if (fd >= 0)
+> +		static_key_slow_inc(&bpf_stats_enabled_key.key);
+> +
+> +	mutex_unlock(&bpf_stats_enabled_mutex);
+> +	return fd;
+> +}
+> +
+> +#define BPF_ENABLE_STATS_LAST_FIELD enable_stats.type
+> +
+[...]
+> diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+> index e961286d0e14..af08ef0690cb 100644
+> --- a/kernel/sysctl.c
+> +++ b/kernel/sysctl.c
+> @@ -201,6 +201,40 @@ static int max_extfrag_threshold = 1000;
+>   
+>   #endif /* CONFIG_SYSCTL */
+>   
+> +#ifdef CONFIG_BPF_SYSCALL
+> +static int bpf_stats_handler(struct ctl_table *table, int write,
+> +			     void __user *buffer, size_t *lenp,
+> +			     loff_t *ppos)
+> +{
+> +	struct static_key *key = (struct static_key *)table->data;
+> +	static int saved_val;
+> +	int val, ret;
+> +	struct ctl_table tmp = {
+> +		.data   = &val,
+> +		.maxlen = sizeof(val),
+> +		.mode   = table->mode,
+> +		.extra1 = SYSCTL_ZERO,
+> +		.extra2 = SYSCTL_ONE,
+> +	};
+> +
+> +	if (write && !capable(CAP_SYS_ADMIN))
+> +		return -EPERM;
+> +
+> +	mutex_lock(&bpf_stats_enabled_mutex);
+> +	val = saved_val;
+> +	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
+> +	if (write && !ret && val != saved_val) {
+> +		if (val)
+> +			static_key_slow_inc(key);
+> +		else
+> +			static_key_slow_dec(key);
+> +		saved_val = val;
+> +	}
+> +	mutex_unlock(&bpf_stats_enabled_mutex);
+> +	return ret;
+> +}
 
-In this case, is something like adding new PTR_TO_LOCKED_SOCKET_OR_NULL
-is the way to go? Any other ideas?
+nit: I wonder if most of the logic could have been shared with
+proc_do_static_key() here and only the mutex passed as an arg to
+the common helper?
+
+> +#endif
+> +
+>   /*
+>    * /proc/sys support
+>    */
+> @@ -2549,7 +2583,7 @@ static struct ctl_table kern_table[] = {
+>   		.data		= &bpf_stats_enabled_key.key,
+>   		.maxlen		= sizeof(bpf_stats_enabled_key),
+>   		.mode		= 0644,
