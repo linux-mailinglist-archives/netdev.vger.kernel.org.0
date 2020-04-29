@@ -2,54 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67BC81BD0D4
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 02:13:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C6191BD0DE
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 02:16:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726420AbgD2AM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 28 Apr 2020 20:12:57 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:58356 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726181AbgD2AM4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 28 Apr 2020 20:12:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=w6Nb671ndMc3bO0xMpa2dGWdYRiyD5E+lmZfrv/zSmM=; b=elgAk5fL6P+yFEZsCZrRjUV4sF
-        u71FovvOG3ax4aXZsHwz/JMHX14iXDRthLzQmfRSe9qBaxffAUaVZp72K5bOcOdoWtw33ATNcfM7Z
-        JFC770jC7kqN2QlY7r42bmzrRtH6RS6cRlCUxTgkcepo4jKNhZDiKh2tD4YordPVMbhw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jTaLN-000BQs-P2; Wed, 29 Apr 2020 02:12:53 +0200
-Date:   Wed, 29 Apr 2020 02:12:53 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v2 4/4] net: phy: bcm54140: add second PHY ID
-Message-ID: <20200429001253.GB22077@lunn.ch>
-References: <20200428230659.7754-1-michael@walle.cc>
- <20200428230659.7754-4-michael@walle.cc>
+        id S1726422AbgD2AQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 28 Apr 2020 20:16:26 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:9856 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726363AbgD2AQZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 28 Apr 2020 20:16:25 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 03T08HB1032750
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 17:16:24 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=G1RWv4KWcpGYqbUynxFTMnu0QYs9FOLTC6GONx5brFE=;
+ b=HJr4CQHwh0O1I+Npya/LteRpR16BAaNOQubGkyPvm9nMH+BlP/dSefIbzzXuBkmHQTb4
+ trOwHC9geS0iLRHU6ITCxvbmdgcuIDB0DbPTdM+qgjnk48t9pMLYq4KRm1fVusfV2ezK
+ g9gEx1sWfdpSpdFO4U6wuIzvBz6/YiCdmWc= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0001303.ppops.net with ESMTP id 30mgvnqcsx-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 28 Apr 2020 17:16:23 -0700
+Received: from intmgw004.03.ash8.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Tue, 28 Apr 2020 17:16:22 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 2387D2EC309B; Tue, 28 Apr 2020 17:16:18 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v3 bpf-next 00/10] bpf_link observability APIs
+Date:   Tue, 28 Apr 2020 17:16:04 -0700
+Message-ID: <20200429001614.1544-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200428230659.7754-4-michael@walle.cc>
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-28_15:2020-04-28,2020-04-28 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=11 phishscore=0 bulkscore=0
+ malwarescore=0 lowpriorityscore=0 spamscore=11 mlxscore=11
+ priorityscore=1501 impostorscore=0 mlxlogscore=93 clxscore=1015
+ suspectscore=8 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2003020000 definitions=main-2004280186
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 29, 2020 at 01:06:59AM +0200, Michael Walle wrote:
-> This PHY has two PHY IDs depending on its mode. Adjust the mask so that
-> it includes both IDs.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
+This patch series adds various observability APIs to bpf_link:
+  - each bpf_link now gets ID, similar to bpf_map and bpf_prog, by which
+    user-space can iterate over all existing bpf_links and create limited=
+ FD
+    from ID;
+  - allows to get extra object information with bpf_link general and
+    type-specific information;
+  - implements `bpf link show` command which lists all active bpf_links i=
+n the
+    system;
+  - implements `bpf link pin` allowing to pin bpf_link by ID or from othe=
+r
+    pinned path.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+v2->v3:
+  - improve spin locking around bpf_link ID (Alexei);
+  - simplify bpf_link_info handling and fix compilation error on sh arch;
+v1->v2:
+  - simplified `bpftool link show` implementation (Quentin);
+  - fixed formatting of bpftool-link.rst (Quentin);
+  - fixed attach type printing logic (Quentin);
+rfc->v1:
+  - dropped read-only bpf_links (Alexei);
+  - fixed bug in bpf_link_cleanup() not removing ID;
+  - fixed bpftool link pinning search logic;
+  - added bash-completion and man page.
 
-    Andrew
+Andrii Nakryiko (10):
+  bpf: refactor bpf_link update handling
+  bpf: allocate ID for bpf_link
+  bpf: support GET_FD_BY_ID and GET_NEXT_ID for bpf_link
+  bpf: add support for BPF_OBJ_GET_INFO_BY_FD for bpf_link
+  libbpf: add low-level APIs for new bpf_link commands
+  selftests/bpf: test bpf_link's get_next_id, get_fd_by_id, and
+    get_obj_info
+  bpftool: expose attach_type-to-string array to non-cgroup code
+  bpftool: add bpf_link show and pin support
+  bpftool: add bpftool-link manpage
+  bpftool: add link bash completions
+
+ include/linux/bpf-cgroup.h                    |  14 -
+ include/linux/bpf.h                           |  26 +-
+ include/linux/bpf_types.h                     |   6 +
+ include/uapi/linux/bpf.h                      |  31 ++
+ kernel/bpf/btf.c                              |   2 +
+ kernel/bpf/cgroup.c                           |  87 ++++-
+ kernel/bpf/syscall.c                          | 354 ++++++++++++++----
+ kernel/bpf/verifier.c                         |   2 +
+ kernel/cgroup/cgroup.c                        |  27 --
+ .../bpftool/Documentation/bpftool-link.rst    | 118 ++++++
+ tools/bpf/bpftool/bash-completion/bpftool     |  39 ++
+ tools/bpf/bpftool/cgroup.c                    |  48 +--
+ tools/bpf/bpftool/common.c                    |   2 +
+ tools/bpf/bpftool/link.c                      | 333 ++++++++++++++++
+ tools/bpf/bpftool/main.c                      |   6 +-
+ tools/bpf/bpftool/main.h                      |  37 ++
+ tools/include/uapi/linux/bpf.h                |  31 ++
+ tools/lib/bpf/bpf.c                           |  19 +-
+ tools/lib/bpf/bpf.h                           |   4 +-
+ tools/lib/bpf/libbpf.map                      |   6 +
+ .../selftests/bpf/prog_tests/bpf_obj_id.c     | 110 +++++-
+ .../testing/selftests/bpf/progs/test_obj_id.c |  14 +-
+ 22 files changed, 1132 insertions(+), 184 deletions(-)
+ create mode 100644 tools/bpf/bpftool/Documentation/bpftool-link.rst
+ create mode 100644 tools/bpf/bpftool/link.c
+
+--=20
+2.24.1
+
