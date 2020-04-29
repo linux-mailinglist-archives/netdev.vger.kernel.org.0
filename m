@@ -2,114 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED80D1BE5DA
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 20:09:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED5081BE5DB
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 20:10:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726774AbgD2SJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 14:09:33 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:36028 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726423AbgD2SJd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 14:09:33 -0400
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03TI34Pn131497;
-        Wed, 29 Apr 2020 14:09:28 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 30mh9q2wf0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Apr 2020 14:09:28 -0400
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 03TI4W3P140412;
-        Wed, 29 Apr 2020 14:09:27 -0400
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 30mh9q2wej-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Apr 2020 14:09:27 -0400
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 03TI5WE8006665;
-        Wed, 29 Apr 2020 18:09:26 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma04dal.us.ibm.com with ESMTP id 30mcu70jcf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Apr 2020 18:09:26 +0000
-Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 03TI9PjV26214756
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 29 Apr 2020 18:09:25 GMT
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8DADD6E050;
-        Wed, 29 Apr 2020 18:09:25 +0000 (GMT)
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C2D8C6E054;
-        Wed, 29 Apr 2020 18:09:22 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.80.239.215])
-        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed, 29 Apr 2020 18:09:22 +0000 (GMT)
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     linuxppc-dev@lists.ozlabs.org,
-        Thomas Falcon <tlfalcon@linux.ibm.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: [PATCH] net/bonding: Do not transition down slave after speed/duplex check
-Date:   Wed, 29 Apr 2020 13:09:19 -0500
-Message-Id: <1588183759-7659-1-git-send-email-tlfalcon@linux.ibm.com>
-X-Mailer: git-send-email 1.8.3.1
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-29_09:2020-04-29,2020-04-29 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 bulkscore=0
- spamscore=0 malwarescore=0 adultscore=0 suspectscore=1 mlxlogscore=999
- impostorscore=0 lowpriorityscore=0 mlxscore=0 phishscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004290136
+        id S1726858AbgD2SKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 14:10:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45514 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726423AbgD2SKh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Apr 2020 14:10:37 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 87F8022207;
+        Wed, 29 Apr 2020 18:10:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588183836;
+        bh=QsGMWokoEeF6AA9IlkwNMEPKv28ahqr2xwOje9PtsrI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NBjg6McJm8xLM2GJxjzeVN/0ypzjIxoKYF0I/ik0rDoozqdDxWmUQrHSTxzqlMBPB
+         5Tb86xkOSgy9ftzwyTvOaSt7uKvebC9GOfX7C49pbVeNNoio6M8yi78aLvjBGIHh1T
+         IbEImFQXGuFfeheObiS0i5AlKcKTTHWZZ5DTwxEs=
+Date:   Wed, 29 Apr 2020 11:10:34 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     netdev@vger.kernel.org, Antonio Quartulli <ordex@autistici.org>,
+        linux-wireless@vger.kernel.org,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: Re: [PATCH 4/7] netlink: extend policy range validation
+Message-ID: <20200429111034.71ab2443@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200429154836.b86f45043a5e.I7b46d9c85e4d7a99c0b5e0c2f54bb89b5750e6dc@changeid>
+References: <20200429134843.42224-1-johannes@sipsolutions.net>
+        <20200429154836.b86f45043a5e.I7b46d9c85e4d7a99c0b5e0c2f54bb89b5750e6dc@changeid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following behavior has been observed when testing logical partition
-migration of LACP-bonded VNIC devices in a PowerVM pseries environment.
+On Wed, 29 Apr 2020 15:48:40 +0200 Johannes Berg wrote:
+> diff --git a/lib/nlattr.c b/lib/nlattr.c
+> index 7f7ebd89caa4..bb66d06cc6f9 100644
+> --- a/lib/nlattr.c
+> +++ b/lib/nlattr.c
+> @@ -111,17 +111,33 @@ static int nla_validate_array(const struct nlattr *head, int len, int maxtype,
+>  	return 0;
+>  }
+>  
+> -static int nla_validate_int_range(const struct nla_policy *pt,
+> -				  const struct nlattr *nla,
+> -				  struct netlink_ext_ack *extack)
+> +static int nla_validate_int_range_unsigned(const struct nla_policy *pt,
+> +					   const struct nlattr *nla,
+> +					   struct netlink_ext_ack *extack)
+>  {
+> -	bool validate_min, validate_max;
+> -	s64 value;
+> +	struct netlink_range_validation _range = {
+> +		.min = 0,
+> +		.max = U64_MAX,
+> +	}, *range = &_range;
+> +	u64 value;
+>  
+> -	validate_min = pt->validation_type == NLA_VALIDATE_RANGE ||
+> -		       pt->validation_type == NLA_VALIDATE_MIN;
+> -	validate_max = pt->validation_type == NLA_VALIDATE_RANGE ||
+> -		       pt->validation_type == NLA_VALIDATE_MAX;
+> +	WARN_ON_ONCE(pt->min < 0 || pt->max < 0);
 
-1. When performing the migration, the bond master detects that a slave has
-   lost its link, deactivates the LACP port, and sets the port's
-   is_enabled flag to false.
-2. The slave device then updates it's carrier state to off while it resets
-   itself. This update triggers a NETDEV_CHANGE notification, which performs
-   a speed and duplex update. The device does not return a valid speed
-   and duplex, so the master sets the slave link state to BOND_LINK_FAIL.
-3. When the slave VNIC device(s) are active again, some operations, such
-   as setting the port's is_enabled flag, are not performed when transitioning
-   the link state back to BOND_LINK_UP from BOND_LINK_FAIL, though the state
-   prior to the speed check was BOND_LINK_DOWN.
+I'm probably missing something, but in case of NLA_VALIDATE_RANGE_PTR
+aren't min and max invalid (union has the range pointer set, so this
+will read 2 bytes of the pointer).
 
-Affected devices are therefore not utilized in the aggregation though they
-are operational. The simplest way to fix this seems to be to restrict the
-link state change to devices that are currently up and running.
-
-CC: Jay Vosburgh <j.vosburgh@gmail.com>
-CC: Veaceslav Falico <vfalico@gmail.com>
-CC: Andy Gospodarek <andy@greyhouse.net>
-Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
----
- drivers/net/bonding/bond_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 2e70e43c5df5..d840da7cd379 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -3175,7 +3175,8 @@ static int bond_slave_netdev_event(unsigned long event,
- 		 * speeds/duplex are available.
- 		 */
- 		if (bond_update_speed_duplex(slave) &&
--		    BOND_MODE(bond) == BOND_MODE_8023AD) {
-+		    BOND_MODE(bond) == BOND_MODE_8023AD &&
-+		    slave->link == BOND_LINK_UP) {
- 			if (slave->last_link_up)
- 				slave->link = BOND_LINK_FAIL;
- 			else
--- 
-2.18.2
+> +	switch (pt->validation_type) {
+> +	case NLA_VALIDATE_RANGE:
+> +		range->min = pt->min;
+> +		range->max = pt->max;
+> +		break;
+> +	case NLA_VALIDATE_RANGE_PTR:
+> +		range = pt->range;
+> +		break;
+> +	case NLA_VALIDATE_MIN:
+> +		range->min = pt->min;
+> +		break;
+> +	case NLA_VALIDATE_MAX:
+> +		range->max = pt->max;
+> +		break;
+> +	}
 
