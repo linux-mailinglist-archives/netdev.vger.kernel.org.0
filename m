@@ -2,129 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99AED1BD80A
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 11:18:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09E681BD813
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 11:22:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726470AbgD2JSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 05:18:07 -0400
-Received: from mail-eopbgr60045.outbound.protection.outlook.com ([40.107.6.45]:62944
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726345AbgD2JSH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Apr 2020 05:18:07 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KayasChXqlWGh1e0iiA+mLN9XzWAev2EbA10e60ljTrsJBO8X8rGS6lR/xiK8VGG13h02EYXegATsDgobToiGQmojUBqSAGdQyRdMShDjZe6YKLe3SHqA+20TWAAsHDQ8zeERjTmu/OCsUiCAPe5nMjjxc2Ev8GUNGaog5c3MSI6WipuWUJxFB+Sh/oGLSu/39RnPQKk3jTjtmzYkqTVX4yMthHLBo/zBnHk1+BFPu5r8xB1M8Xrcug1QnhiSxgK06b/KjmBs0eTCiJHjTXsnb+PJpXNfdYuwU/RPM0Y/dgvVqT17L717lzBjhM7wiFBkGNNsVwQW4P1npUmK7Ba8A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ItPTSB+hajx1cJjDprfUXT+YcpwWeD4djFuOZV5b1ms=;
- b=MQ0QJiPlrJLs/Kfu7cx16SG6u0Zg+G1uUZ3R8JJLLV5V9ML/sLuE1PAzh29f+muRccEC2oSPPvNPK0hBH4oTUsT3ZwwxvNmxaIlJqIJF4x2xlnJkQ4Vgx+CSzbk74iQokvZMShe4fGT5/OlZ+Be0lZafZ/8Hj48sxq5eYycL3mmmIa8ZgkCWc84j3ngkXXJESmOyKtUlKgVbRmCDLLHoJkcEZPkZ8qitayXon7iCWHZccu8/ENn//uw+MdlWHcIIX6tLWPIopxPgOpJ9+qe13Vp2FknMN8LURZI+OeB5ALhA1VgWiHQXpSPjK9EuV16xPLhSb2HNsHt8Bp3y2lAY/w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ItPTSB+hajx1cJjDprfUXT+YcpwWeD4djFuOZV5b1ms=;
- b=RDu/SAoWYH/En7a0RopcEGvk7JJYzwU8cKPdpgWXzaN9P1wwh/QZR2bw9NIpldi9agFbXcZ5Cd7kssJSiddtBii+dwe6+A1HQcEUIDqgtdRjFGeDMDhb58tdJCEdevxE0PGlKPgxpURCcGwEToL+rfKx91huqVRvcXJL4sA6GE4=
-Received: from DB8PR04MB6828.eurprd04.prod.outlook.com (2603:10a6:10:113::21)
- by DB8PR04MB7132.eurprd04.prod.outlook.com (2603:10a6:10:12e::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.13; Wed, 29 Apr
- 2020 09:18:05 +0000
-Received: from DB8PR04MB6828.eurprd04.prod.outlook.com
- ([fe80::58e6:c037:d476:da0d]) by DB8PR04MB6828.eurprd04.prod.outlook.com
- ([fe80::58e6:c037:d476:da0d%10]) with mapi id 15.20.2937.023; Wed, 29 Apr
- 2020 09:18:05 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] dpaa2-eth: debugfs: use div64_u64 for division
-Thread-Topic: [PATCH] dpaa2-eth: debugfs: use div64_u64 for division
-Thread-Index: AQHWHgLkhkz7UvZ/1kmdjpFTNc1tHqiP0RVg
-Date:   Wed, 29 Apr 2020 09:18:04 +0000
-Message-ID: <DB8PR04MB6828071573BDB80739446C38E0AD0@DB8PR04MB6828.eurprd04.prod.outlook.com>
-References: <20200429084740.2665893-1-arnd@arndb.de>
-In-Reply-To: <20200429084740.2665893-1-arnd@arndb.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: arndb.de; dkim=none (message not signed)
- header.d=none;arndb.de; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [86.121.118.29]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 8594c73c-3379-4f82-1586-08d7ec1e395d
-x-ms-traffictypediagnostic: DB8PR04MB7132:|DB8PR04MB7132:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB8PR04MB7132A070EEEC9DDFB85899A6E0AD0@DB8PR04MB7132.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-forefront-prvs: 03883BD916
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6828.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(39860400002)(376002)(346002)(366004)(136003)(396003)(9686003)(33656002)(26005)(55016002)(86362001)(44832011)(4326008)(7696005)(6506007)(478600001)(71200400001)(186003)(5660300002)(54906003)(8676002)(110136005)(2906002)(8936002)(316002)(66556008)(76116006)(66476007)(66946007)(64756008)(52536014)(66446008);DIR:OUT;SFP:1101;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: /fFa1/JT+PyXKrC5L2X83XMHXLIvcCsubtKYBeNGJGugcp+uTSARzPrLzfsMJm0Q89sIRqTDTPQAqAX/BwD3IZU21vz8xpgO+Et0o6Hap2qwcES3BNkHuz+YnqOD93q93/h8XFyofMPENXRF/5eAz6n61sLtZBa5Dw80fSNdAQFhoSPq0NXr67chncGGousx7cLODUgHWFF5s+mrSvwLtMif4uA1ML31Vlr1jLr8AtGlI/9kGNgV7cx09PLilDND6cp0Eu/AwqYV93otzvl06og6q4Hy7/tDSzty9AcfEMdSRVjXCQKqT9Jju9Lnf04I0R9C1pECFYo/le0cyohpQWwMgfoSwOB2edMr7LUSRD90w4LJYxvCWQqC2doa0n3BT9+llLaphtbGT0JFT0oIC0kry0QV5rIHHnJOF3P6U2ysknU52Sy0VQx+C45T/sDc
-x-ms-exchange-antispam-messagedata: cJvcaNNaq0OrWCJaXMZHPSUqNx4NqPf1WeMZOMeQH1Hr/5TLKQ/+p+1HbasRsOIaf0MOLdZ6yGHfz353r4lND2cTm70FQ72pu06Xkb9Lebsgh8+Kf8PeVDugkQQYo/yMx13pJp7OroJzCz8Gd2oiw5RlSsvUf8rQQOlSZSIUS6FRqV+/fSnwh1HwLotN9SX3vdOLcPCmF7bOH4WLMnJO287cW+c1gZZsUIkJDGwXIFoKfeHeTCpfpHLkdQN2hdVUJdEiirmZdb56NBJoirXq0OAxv44wW12hFuMRCj/ygAWU3lKdtlnnJv9yaHCdPoWwZq4dYQ7s7/0zLXSoDidXhPaFvi/JEMbayHnM13yxJM+qDYAF5YbekisajfrVqDDuyI0L6Ja0jb4MvKfSyF8/k5ObcJMmCxIAxLOaQU+kN54DsvZ1/25MUetp0cLzpp8Cn5uGCwhkuVVekQoXEPwVQ3sLNDautnGblTyEYzpd10tKMhTVy0R13PHasF8ePefr69l/3uHHqO4ASZseDH6TR+VW653M3/+H3RTBzl4B4mFctN+JdyjGHZyYzKVQsIF/mi0PSXwlDD1RPJXj0OZu+dNIb9V8fisl/mxKwr7H5jjtnuNn9tZ+O7+7hG5A/0mSoQ+IynbWdZoYdNxR2X1rI7yt6UJTpejlhLgOt9cP1Zt+3xp0wjWE5v7bQ/YCW5hZDL1GY6cGorbqvXaE2ubWZJ+uvZ5jKmmlBbYVUuHHtjecKTHf0/CZuymIsf4T8kzy5Mtdr/8LjNfEvazbGG94fk2Gv8N6JjuDZ5vPeVVaCQE=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726470AbgD2JV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 05:21:58 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:47030 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726423AbgD2JV6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 05:21:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1588152116;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VZvr/skNPOFKMD3ogXhoD9tnQHqLrRRqrmLtubG1DcI=;
+        b=bXRhx8efqDzHNDTwyu6wp7SnFZptiDXeMokD7XE5hs/U+N7+r+W5UgEcNVTOuXoAa8ow2L
+        1xYU3jdexUXHFwHWSWGWbk0OmE2YgLe/orTlUA9kb48fJWxY9LqgDBcLq0FYIWliVks/O+
+        ebuQKuPcbXQycqfhP+5264r60LtUOl8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-122-urpKaGkpMHmnm-m04i_PzA-1; Wed, 29 Apr 2020 05:21:55 -0400
+X-MC-Unique: urpKaGkpMHmnm-m04i_PzA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 96E72107ACF4;
+        Wed, 29 Apr 2020 09:21:53 +0000 (UTC)
+Received: from [10.72.13.2] (ovpn-13-2.pek2.redhat.com [10.72.13.2])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 752B65C1BE;
+        Wed, 29 Apr 2020 09:21:44 +0000 (UTC)
+Subject: Re: [PATCH net-next 0/3] vsock: support network namespace
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     davem@davemloft.net, Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        linux-kernel@vger.kernel.org, Jorgen Hansen <jhansen@vmware.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        linux-hyperv@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+        netdev@vger.kernel.org
+References: <20200116172428.311437-1-sgarzare@redhat.com>
+ <20200427142518.uwssa6dtasrp3bfc@steredhat>
+ <224cdc10-1532-7ddc-f113-676d43d8f322@redhat.com>
+ <20200428160052.o3ihui4262xogyg4@steredhat>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <6dc937e4-0ef9-617d-c9c8-8b1f8c428d90@redhat.com>
+Date:   Wed, 29 Apr 2020 17:21:42 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8594c73c-3379-4f82-1586-08d7ec1e395d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Apr 2020 09:18:05.1232
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1LnhRNm0AKCIMk9gbLCFXN7l/ZUQVKSEI+q0Bt4InhfeEXfmcGVQ0drccU6KjZuzsxpZdQz0XD/O9fcJ0tMCXg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB7132
+In-Reply-To: <20200428160052.o3ihui4262xogyg4@steredhat>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: [PATCH] dpaa2-eth: debugfs: use div64_u64 for division
->=20
-> A plain 64-bit division breaks building on 32-bit architectures:
->=20
-> ERROR: modpost: "__aeabi_uldivmod"
-> [drivers/net/ethernet/freescale/dpaa2/fsl-dpaa2-eth.ko] undefined!
->=20
-> As this function is not performance critical, just use the external helpe=
-r instead.
->=20
-> Fixes: 460fd830dd9d ("dpaa2-eth: add channel stat to debugfs")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Thanks for the patch.
-A fix for this was applied some hours ago on the net-next branch.
+On 2020/4/29 =E4=B8=8A=E5=8D=8812:00, Stefano Garzarella wrote:
+> On Tue, Apr 28, 2020 at 04:13:22PM +0800, Jason Wang wrote:
+>> On 2020/4/27 =E4=B8=8B=E5=8D=8810:25, Stefano Garzarella wrote:
+>>> Hi David, Michael, Stefan,
+>>> I'm restarting to work on this topic since Kata guys are interested t=
+o
+>>> have that, especially on the guest side.
+>>>
+>>> While working on the v2 I had few doubts, and I'd like to have your
+>>> suggestions:
+>>>
+>>>    1. netns assigned to the device inside the guest
+>>>
+>>>      Currently I assigned this device to 'init_net'. Maybe it is bett=
+er
+>>>      if we allow the user to decide which netns assign to the device
+>>>      or to disable this new feature to have the same behavior as befo=
+re
+>>>      (host reachable from any netns).
+>>>      I think we can handle this in the vsock core and not in the sing=
+le
+>>>      transports.
+>>>
+>>>      The simplest way that I found, is to add a new
+>>>      IOCTL_VM_SOCKETS_ASSIGN_G2H_NETNS to /dev/vsock to enable the fe=
+ature
+>>>      and assign the device to the same netns of the process that do t=
+he
+>>>      ioctl(), but I'm not sure it is clean enough.
+>>>
+>>>      Maybe it is better to add new rtnetlink messages, but I'm not su=
+re if
+>>>      it is feasible since we don't have a netdev device.
+>>>
+>>>      What do you suggest?
+>> As we've discussed, it should be a netdev probably in either guest or =
+host
+>> side. And it would be much simpler if we want do implement namespace t=
+hen.
+>> No new API is needed.
+>>
+> Thanks Jason!
+>
+> It would be cool, but I don't have much experience on netdev.
+> Do you see any particular obstacles?
 
---
-Ioana
 
-> ---
->  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
-> b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
-> index 80291afff3ea..0a31e4268dfb 100644
-> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
-> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
-> @@ -139,7 +139,7 @@ static int dpaa2_dbg_ch_show(struct seq_file *file, v=
-oid
-> *offset)
->  			   ch->stats.dequeue_portal_busy,
->  			   ch->stats.frames,
->  			   ch->stats.cdan,
-> -			   ch->stats.frames / ch->stats.cdan,
-> +			   div64_u64(ch->stats.frames, ch->stats.cdan),
->  			   ch->buf_count);
->  	}
->=20
-> --
-> 2.26.0
+I don't see but if there's we can try to find a solution or ask for=20
+netdev experts for that. I do hear from somebody that is interested in=20
+having netdev in the past.
+
+
+>
+> I'll take a look to understand how to do it, surely in the guest would
+> be very useful to have the vsock device as a netdev and maybe also in t=
+he host.
+
+
+Yes, it's worth to have a try then we will have a unified management=20
+interface and we will benefit from it in the future.
+
+Starting form guest is good idea which should be less complicated than ho=
+st.
+
+Thanks
+
+
+>
+> Stefano
+>
 
