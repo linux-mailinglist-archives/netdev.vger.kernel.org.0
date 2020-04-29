@@ -2,107 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C33FB1BD97F
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 12:25:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FBCA1BD989
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 12:26:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726621AbgD2KY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 06:24:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51162 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726426AbgD2KY7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 06:24:59 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C6AC03C1AD
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 03:24:58 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id t14so1812226wrw.12
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 03:24:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=iXQizAN15vmkFr5UmCuVlZeWN/hx4vVTXbmcBldyYF0=;
-        b=hjpd6ZDirs1V9DZRh+sELbAc0Dg3SIqRPFeEj56PCS3rfdwiCf3fT8aA24VoLdkyA9
-         QoizmmyU5EX+yvJO3E3kwGPXJqv70qqAG4fdJdxCkje95WGpAMfzmDnsVp5zjvzYdWHi
-         n7SaK1YR8c3cn2nEL6DdY+XBqrDBFcBJIhV70=
+        id S1726755AbgD2K00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 06:26:26 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:46400 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726355AbgD2K00 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 06:26:26 -0400
+Received: by mail-ot1-f68.google.com with SMTP id z25so1199844otq.13;
+        Wed, 29 Apr 2020 03:26:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=iXQizAN15vmkFr5UmCuVlZeWN/hx4vVTXbmcBldyYF0=;
-        b=Jh9ZwVrRSCQl08jHplzXq7JDUyI7mylOBEr4aoOtTz6RKl2593SaRVaF3OGPOYSgnr
-         4NjW8cFpmRWqeQwmThWaazDs68X+2uovb0VJIpN2LCKII8UF27WrdXh+QDF3GNBezfnz
-         njxtf6H/ab06vzn23jK+pJ9D7pKWuuOIVRcV5KGsQQdtf6GmxxPQhx2oedB5qZje1UHn
-         Kqx1rITDfGcRai1SNR0sP5bYL+jW32jAhVTpMja1ikhPMXn2iL7T0d4n6xlpV9vbp/Uz
-         QetGmuB8ov9Ot6byByvl8xTRAmJ9lboX7aWlokHuB+hyxLzuU65N5izLDSbgYs2cCN4j
-         qWWQ==
-X-Gm-Message-State: AGi0PuYQb9bXQaObLi2zVn/63uRaPRfrx6+naxsyjlBxv0lyl/UZynS2
-        VnOREUxadfVT1JJMFZXW2LoZdA==
-X-Google-Smtp-Source: APiQypJ2tyaiTUpDANlX9X3wZViAkc82v+L2T+OCcWUQA++Fc2QRS/hgVPrNi3lySBHuXzZQ9AT/sg==
-X-Received: by 2002:adf:e8c4:: with SMTP id k4mr37119329wrn.209.1588155897352;
-        Wed, 29 Apr 2020 03:24:57 -0700 (PDT)
-Received: from [10.230.42.249] ([192.19.215.251])
-        by smtp.gmail.com with ESMTPSA id a10sm18955868wrg.32.2020.04.29.03.24.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Apr 2020 03:24:56 -0700 (PDT)
-Subject: Re: [PATCH] brcmfmac: no need to check return value of debugfs_create
- functions
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200429101526.GA2094124@kroah.com>
-From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
-Message-ID: <1a9ed45d-ca55-00af-6598-4c5499e4dc24@broadcom.com>
-Date:   Wed, 29 Apr 2020 12:24:54 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mvIHWhU04g3v6LjKSsky5pEk63GBz533E/sobmoo7Wc=;
+        b=f3Nkvak66UjmGA9qsFMGjnOQsHTxX7S/iX5P4MRLEb2ZD7LUsHMkfaeeMZBN2dhf5I
+         yMav5dxFky3KGtmstKdvClOyOAOj6QNjEp8ZKv2p4X0bbhyTpCSV4eDYfUvJDqkCyV8l
+         aKuTF4yjCgvOA1bygw0cuYpKL6XMNQHXYxtpES/YN/FR1dJ1+WX1AF6BhXFpeEjrKJLd
+         OUDlBrAlNb0922P9R1vV8XDmXXh6gqsuK5NDcryBtJIoIOA7PWNqQdunBBdfV5EBvlU5
+         oo469ys7e1i2Kti0+5wOIWJmxOyDVHAIkcMfTIwVQBdmiqeNE5pGTgOgm15tNYrULjUV
+         nqjg==
+X-Gm-Message-State: AGi0PuYkJcfbc9hr6VSyJAX6wxFbnMcIkwRUosuZ0530+uVcj0T0WXtA
+        ldPT6x+wE9P5+nCagBOODKdetDwviEu3xPZJcvw=
+X-Google-Smtp-Source: APiQypJnyzo4VqldDo304UGZQtLY+7AXB7jFtaFmqclX/7CuNEy43JujxFtdEqaZN6afWwi2LXcTKDkxwr3nMu1panQ=
+X-Received: by 2002:a9d:6ac8:: with SMTP id m8mr26003040otq.262.1588155984780;
+ Wed, 29 Apr 2020 03:26:24 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200429101526.GA2094124@kroah.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20200427132409.23664-1-calvin.johnson@oss.nxp.com>
+ <20200427135820.GH25745@shell.armlinux.org.uk> <20200427143238.GA26436@lsv03152.swis.in-blr01.nxp.com>
+ <20200427144806.GI25745@shell.armlinux.org.uk> <20200429053753.GA12533@lsv03152.swis.in-blr01.nxp.com>
+In-Reply-To: <20200429053753.GA12533@lsv03152.swis.in-blr01.nxp.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 29 Apr 2020 12:26:12 +0200
+Message-ID: <CAJZ5v0g4oaDGGk1Jg5rihaG1kj1BYHpZpwTFrXX4Jo4tettbgg@mail.gmail.com>
+Subject: Re: [net-next PATCH v2 0/3] Introduce new APIs to support phylink and
+ phy layers
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>, linux.cj@gmail.com,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
+        Varun Sethi <V.Sethi@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/29/2020 12:15 PM, Greg Kroah-Hartman wrote:
-> When calling debugfs functions, there is no need to ever check the
-> return value.  The function can work or not, but the code logic should
-> never do something different based on this.
-> 
-> In doing this, make brcmf_debugfs_add_entry() return void as no one was
-> even paying attention to the return value.
-> 
-> Cc: Arend van Spriel <arend.vanspriel@broadcom.com>
-> Cc: Franky Lin <franky.lin@broadcom.com>
-> Cc: Hante Meuleman <hante.meuleman@broadcom.com>
-> Cc: Chi-Hsien Lin <chi-hsien.lin@cypress.com>
-> Cc: Wright Feng <wright.feng@cypress.com>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: "Rafał Miłecki" <rafal@milecki.pl>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: brcm80211-dev-list.pdl@broadcom.com
-> Cc: brcm80211-dev-list@cypress.com
-> Cc: netdev@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
+On Wed, Apr 29, 2020 at 7:38 AM Calvin Johnson
+<calvin.johnson@oss.nxp.com> wrote:
+>
+> On Mon, Apr 27, 2020 at 03:48:07PM +0100, Russell King - ARM Linux admin wrote:
+> > On Mon, Apr 27, 2020 at 08:02:38PM +0530, Calvin Johnson wrote:
+> > > On Mon, Apr 27, 2020 at 02:58:20PM +0100, Russell King - ARM Linux admin wrote:
+> > > > On Mon, Apr 27, 2020 at 06:54:06PM +0530, Calvin Johnson wrote:
+> > > > > Following functions are defined:
+> > > > >   phylink_fwnode_phy_connect()
+> > > > >   phylink_device_phy_connect()
+> > > > >   fwnode_phy_find_device()
+> > > > >   device_phy_find_device()
+> > > > >   fwnode_get_phy_node()
+> > > > >
+> > > > > First two help in connecting phy to phylink instance.
+> > > > > Next two help in finding a phy on a mdiobus.
+> > > > > Last one helps in getting phy_node from a fwnode.
+> > > > >
+> > > > > Changes in v2:
+> > > > >   move phy code from base/property.c to net/phy/phy_device.c
+> > > > >   replace acpi & of code to get phy-handle with fwnode_find_reference
+> > > > >   replace of_ and acpi_ code with generic fwnode to get phy-handle.
+> > > > >
+> > > > > Calvin Johnson (3):
+> > > > >   device property: Introduce phy related fwnode functions
+> > > > >   net: phy: alphabetically sort header includes
+> > > > >   phylink: Introduce phylink_fwnode_phy_connect()
+> > > >
+> > > > Thanks for this, but there's more work that needs to be done here.  I
+> > > > also think that we must have an ack from ACPI people before this can be
+> > > > accepted - you are in effect proposing a new way for representing PHYs
+> > > > in ACPI.
+> > >
+> > > Thanks for your review.
+> > >
+> > > Agree that we need an ack from ACPI people.
+> > > However, I don't think it is a completely new way as similar acpi approach to
+> > > get phy-handle is already in place.
+> > > Please see this:
+> > > https://elixir.bootlin.com/linux/v5.7-rc3/source/drivers/net/ethernet/apm/xgene/xgene_enet_hw.c#L832
+> >
+> > That was added by:
+> >
+> > commit 8089a96f601bdfe3e1b41d14bb703aafaf1b8f34
+> > Author: Iyappan Subramanian <isubramanian@apm.com>
+> > Date:   Mon Jul 25 17:12:41 2016 -0700
+> >
+> >     drivers: net: xgene: Add backward compatibility
+> >
+> >     This patch adds xgene_enet_check_phy_hanlde() function that checks whether
+> >     MDIO driver is probed successfully and sets pdata->mdio_driver to true.
+> >     If MDIO driver is not probed, ethernet driver falls back to backward
+> >     compatibility mode.
+> >
+> >     Since enum xgene_enet_cmd is used by MDIO driver, removing this from
+> >     ethernet driver.
+> >
+> >     Signed-off-by: Iyappan Subramanian <isubramanian@apm.com>
+> >     Tested-by: Fushen Chen <fchen@apm.com>
+> >     Tested-by: Toan Le <toanle@apm.com>
+> >     Signed-off-by: David S. Miller <davem@davemloft.net>
+> >
+> > The commit message says nothing about adding ACPI stuff, and searching
+> > the 'net for the posting of this patch seems to suggest that it wasn't
+> > obviously copied to any ACPI people:
+> >
+> >     https://lists.openwall.net/netdev/2016/07/26/11
+> >
+> > Annoyingly, searching for:
+> >
+> >     "drivers: net: xgene: Add backward compatibility" site:lore.kernel.org
+> >
+> > doesn't find it on lore, so can't get the full headers and therefore
+> > addresses.
+> >
+> > So, yes, there's another driver using it, but the ACPI folk probably
+> > never got a look-in on that instance.  Even if they had been copied,
+> > the patch description is probably sufficiently poor that they wouldn't
+> > have read the patch.
+> >
+> > I'd say there's questions over whether ACPI people will find this an
+> > acceptable approach.
+> >
+> > Given that your patch moves this from one driver to a subsystem thing,
+> > it needs to be ratified by ACPI people, because it's effectively
+> > becoming a standardised way to represent a PHY in ACPI.
+>
+> How can we get attention/response from ACPI people?
 
-Acked-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->   .../net/wireless/broadcom/brcm80211/brcmfmac/debug.c |  9 +++------
->   .../net/wireless/broadcom/brcm80211/brcmfmac/debug.h | 12 +++++-------
->   2 files changed, 8 insertions(+), 13 deletions(-)
+This is in my queue, but the processing of this has been slow for a
+while, sorry about that.
+
+If you have a new version of the series, please submit it, otherwise
+ping me in a couple of days if I don't respond to the patches in the
+meantime.
+
+Thanks!
