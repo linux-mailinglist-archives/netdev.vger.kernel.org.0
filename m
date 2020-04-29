@@ -2,78 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8F6B1BDA1A
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 12:51:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C8E01BDA49
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 13:07:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726676AbgD2Kvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 06:51:43 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:51729 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726516AbgD2Kvm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 06:51:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588157501;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=xfE/AAw617iPKTl7j9APnJefhmL0nSXFSdm5hBWKg4c=;
-        b=e/qKvn8uTRMPoyDjVVTTV87jGGn1orpntIXaz4FP92LHR9zHexyaJ7nAGABc/naPAScdPs
-        dSHIQ9tjZ+C9zMaXy6bUK/ce/j+DP55KXQFjbywXd5g7KAShUUbUj8J0yeKaCD9zPMahvK
-        wXABDNJ4I1IWxhlxBUAp6ll5SP1vnKk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-349-miQQCS3mPfOauskQWm6wKg-1; Wed, 29 Apr 2020 06:51:37 -0400
-X-MC-Unique: miQQCS3mPfOauskQWm6wKg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 83B7B464;
-        Wed, 29 Apr 2020 10:51:34 +0000 (UTC)
-Received: from linux.fritz.box.com (ovpn-114-45.ams2.redhat.com [10.36.114.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A53466842B;
-        Wed, 29 Apr 2020 10:51:32 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org
-Subject: [PATCH net] mptcp: fix uninitialized value access
-Date:   Wed, 29 Apr 2020 12:50:37 +0200
-Message-Id: <c2b96b3751ccf64357d2c6f0e7d23908dda8a601.1588157274.git.pabeni@redhat.com>
+        id S1726608AbgD2LHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 07:07:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57844 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726426AbgD2LHq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 07:07:46 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671E9C035494
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 04:07:46 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id x25so1561486wmc.0
+        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 04:07:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sartura-hr.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=j/VyKcY8b8oiztzP2PPDO3W5n2EDqYUH2AhxchTmUF0=;
+        b=Lm3tknJGHzMuoo/JoKQcKf/hq4d9/u81G9cSDkiJvcxCVQSQzcl6q9J5/V8Ycxz6F/
+         U+gDZbCQdbhZHXlkVzcz1f72M1K5qjNwzfGBcEu+IqARI2VGamUJOEbQqEifS184y/Dz
+         pV9iR1c/pHqOEFNQlK5EX+6aiGHVU9Blbm4mVDvkjn0gLp5vGRI6Tiv9OPH1WxkgAWop
+         dMgNj9r8mvXP79+eqS27Pch3gAYX40tuies6jIZH0FbzMK7g4JBcO7N40GM+MU/K5zHx
+         SlVrjBbBam5GkD1cuMa+Wr0Lr0gtsWIuZL3n+fT8ITCPpjOEM4Z5Ry7lDc9HFd7Np77Q
+         bcpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=j/VyKcY8b8oiztzP2PPDO3W5n2EDqYUH2AhxchTmUF0=;
+        b=gs7HJ1r1GHu1mrMupPwPSI0804DAUOo/e86/zH2bMBSIpCfCraQlGLA+xSf81IHdzy
+         0h0N4gQ/T1/clvWSjiuDjo+4l2scCWyAXbFxRcRk1DbfYXuVEA0N/5rPoK9XwVDyDgE2
+         MYjSYrq/nw4sfVUKxl6L6Pk9K0OJnHU15DYVJ97WguUvlrySi3qFYcdFtkqMiGk7vzyv
+         /pEZ+J2rb3QbLDrZYoOoGmVBurPybvGrR4ugtrqR18aHeZH86Y2IlKzKb9bVXrXyqjLx
+         JtBs97ZRgPDuu5ecm5CHCqjfzVm3SsXdsuVefTkSbGJXQ5ZZy5QcLRxBS64jFFaM2EaQ
+         7vrQ==
+X-Gm-Message-State: AGi0PuZtyn4Ouu0cgZAszTl4dAhmV8hn4XoVFFIw+J2HDgRFuItY7Us1
+        ROK7UCWFeNj6lFjjsk9OSRPmnA==
+X-Google-Smtp-Source: APiQypL5WqrsJXFEguAFnCHDsfTAN940DneFBGtmY/ARw5g4wutj/XK9n/4MOOXWknLhcLYqKfK1Wg==
+X-Received: by 2002:a7b:cd10:: with SMTP id f16mr2779712wmj.21.1588158464824;
+        Wed, 29 Apr 2020 04:07:44 -0700 (PDT)
+Received: from localhost.localdomain ([2a0e:b107:830:0:47e5:c676:4796:5818])
+        by smtp.googlemail.com with ESMTPSA id u7sm7679963wmg.41.2020.04.29.04.07.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Apr 2020 04:07:44 -0700 (PDT)
+From:   Robert Marko <robert.marko@sartura.hr>
+To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, agross@kernel.org,
+        bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        mark.rutland@arm.com, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     Robert Marko <robert.marko@sartura.hr>
+Subject: [PATCH net-next v4 0/3] net: phy: mdio: add IPQ40xx MDIO support
+Date:   Wed, 29 Apr 2020 13:07:24 +0200
+Message-Id: <20200429110726.448625-1-robert.marko@sartura.hr>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tcp_v{4,6}_syn_recv_sock() set 'own_req' only when returning
-a not NULL 'child', let's check 'own_req' only if child is
-available to avoid an - unharmful - UBSAN splat.
+This patch series provides support for the IPQ40xx built-in MDIO interface.
+Included are driver, devicetree bindings for it and devicetree node.
 
-Fixes: 20882e2cb904 ("mptcp: avoid flipping mp_capable field in syn_recv_=
-sock()")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/subflow.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Robert Marko (3):
+  net: phy: mdio: add IPQ4019 MDIO driver
+  dt-bindings: add Qualcomm IPQ4019 MDIO bindings
+  ARM: dts: qcom: ipq4019: add MDIO node
 
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index f412e886aa9b..2fa319a36ea5 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -522,7 +522,7 @@ static struct sock *subflow_syn_recv_sock(const struc=
-t sock *sk,
- 	/* check for expected invariant - should never trigger, just help
- 	 * catching eariler subtle bugs
- 	 */
--	WARN_ON_ONCE(*own_req && child && tcp_sk(child)->is_mptcp &&
-+	WARN_ON_ONCE(child && *own_req && tcp_sk(child)->is_mptcp &&
- 		     (!mptcp_subflow_ctx(child) ||
- 		      !mptcp_subflow_ctx(child)->conn));
- 	return child;
---=20
-2.21.1
+ .../bindings/net/qcom,ipq4019-mdio.yaml       |  61 +++++++
+ arch/arm/boot/dts/qcom-ipq4019.dtsi           |  28 +++
+ drivers/net/phy/Kconfig                       |   7 +
+ drivers/net/phy/Makefile                      |   1 +
+ drivers/net/phy/mdio-ipq4019.c                | 160 ++++++++++++++++++
+ 5 files changed, 257 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/qcom,ipq4019-mdio.yaml
+ create mode 100644 drivers/net/phy/mdio-ipq4019.c
+
+-- 
+2.26.2
 
