@@ -2,71 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 916601BE967
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 22:59:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13D481BE968
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 22:59:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727778AbgD2U7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 16:59:38 -0400
+        id S1727785AbgD2U7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 16:59:40 -0400
 Received: from mail.zx2c4.com ([192.95.5.64]:36243 "EHLO mail.zx2c4.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726775AbgD2U7h (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726852AbgD2U7h (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 29 Apr 2020 16:59:37 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 011146ed;
-        Wed, 29 Apr 2020 20:47:44 +0000 (UTC)
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id ac728bec;
+        Wed, 29 Apr 2020 20:47:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
         :subject:date:message-id:in-reply-to:references:mime-version
-        :content-transfer-encoding; s=mail; bh=JMN3eQobRtPSWjOTCZKaKtdG4
-        7w=; b=osxgbmb5wX0CaawVLx/OiVjfAfJrL6m7YZN5D+R9I/C4s5LDkjoRp+rV8
-        rl+uwkLK1Q4JmxNguKHBzc/QtBn1NdqZC5LrEi0XQQ3QHSDix7PogNlCXKmn4o3e
-        VaW6lKSyMyqoqgMHtrH3CZSJXG2sSVHTFXArMfb2uIMtq5U97Mph5mneA+5sW5mA
-        FsDip0cQ3joEYX/aUFv79nTF7xjhy+cwtycjO2QuUlCaK73wwaAyx+B5lTymt/ZQ
-        WACXhgYXRMfCUEZ7bBY+T26WSxUVY3vNrDsQ0YBQa5HANVo4e3BSjRo/WnSNLu19
-        mwY4T90HinFYMAiljLVKt8LPWMAPg==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 327c4750 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Wed, 29 Apr 2020 20:47:44 +0000 (UTC)
+        :content-type:content-transfer-encoding; s=mail; bh=rjkHXMSR1MAw
+        pig9vaE6l7lmDqc=; b=fn0a2M+PVPXz24zyWAawllxpMHsd5bfcUnkkoj/S9lWp
+        +RHo98nb0NRNARGf5rP9hb0wpMc/h3Fw4jiOgFwf/NO7eSw27U9nePRZOrBky0c/
+        hjrQdF8HSkFOL0npVKrj9g1r3JUOZHA6/2fAHCMpOYMYkgDY3SBIetvhzrmVz6AK
+        oHIlak1Dz8zAJWrDk7VcTLrN5sLZEy07gibk4ypJDrlRPZtgn+hzSZXNHguKoyFU
+        KFLPW/xIF+7uMhWy95jLR6uu4/ibbIYaBlc1ka/wEFhXDYU7wv5uiz7KVkbhH8Zk
+        pIXPnscnq+G7S1sO7xEuUIGVrakiUoPvr4y3EyaLMg==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d2a627ff (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Wed, 29 Apr 2020 20:47:45 +0000 (UTC)
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Sultan Alsawaf <sultan@kerneltoast.com>
-Subject: [PATCH net 2/3] wireguard: queueing: cleanup ptr_ring in error path of packet_queue_init
-Date:   Wed, 29 Apr 2020 14:59:21 -0600
-Message-Id: <20200429205922.295361-3-Jason@zx2c4.com>
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>,
+        Dave Taht <dave.taht@gmail.com>,
+        "Rodney W . Grimes" <ietf@gndrsh.dnsmgr.net>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH net 3/3] wireguard: receive: use tunnel helpers for decapsulating ECN markings
+Date:   Wed, 29 Apr 2020 14:59:22 -0600
+Message-Id: <20200429205922.295361-4-Jason@zx2c4.com>
 In-Reply-To: <20200429205922.295361-1-Jason@zx2c4.com>
 References: <20200429205922.295361-1-Jason@zx2c4.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prior, if the alloc_percpu of packet_percpu_multicore_worker_alloc
-failed, the previously allocated ptr_ring wouldn't be freed. This commit
-adds the missing call to ptr_ring_cleanup in the error case.
+From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-Reported-by: Sultan Alsawaf <sultan@kerneltoast.com>
+WireGuard currently only propagates ECN markings on tunnel decap according
+to the old RFC3168 specification. However, the spec has since been updated
+in RFC6040 to recommend slightly different decapsulation semantics. This
+was implemented in the kernel as a set of common helpers for ECN
+decapsulation, so let's just switch over WireGuard to using those, so it
+can benefit from this enhancement and any future tweaks. We do not drop
+packets with invalid ECN marking combinations, because WireGuard is
+frequently used to work around broken ISPs, which could be doing that.
+
 Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+Reported-by: Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>
+Cc: Dave Taht <dave.taht@gmail.com>
+Cc: Rodney W. Grimes <ietf@gndrsh.dnsmgr.net>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- drivers/net/wireguard/queueing.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/wireguard/receive.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireguard/queueing.c b/drivers/net/wireguard/queueing.c
-index 5c964fcb994e..71b8e80b58e1 100644
---- a/drivers/net/wireguard/queueing.c
-+++ b/drivers/net/wireguard/queueing.c
-@@ -35,8 +35,10 @@ int wg_packet_queue_init(struct crypt_queue *queue, work_func_t function,
- 		if (multicore) {
- 			queue->worker = wg_packet_percpu_multicore_worker_alloc(
- 				function, queue);
--			if (!queue->worker)
-+			if (!queue->worker) {
-+				ptr_ring_cleanup(&queue->ring, NULL);
- 				return -ENOMEM;
-+			}
- 		} else {
- 			INIT_WORK(&queue->work, function);
- 		}
+diff --git a/drivers/net/wireguard/receive.c b/drivers/net/wireguard/receive.c
+index da3b782ab7d3..267f202f1931 100644
+--- a/drivers/net/wireguard/receive.c
++++ b/drivers/net/wireguard/receive.c
+@@ -393,13 +393,11 @@ static void wg_packet_consume_data_done(struct wg_peer *peer,
+ 		len = ntohs(ip_hdr(skb)->tot_len);
+ 		if (unlikely(len < sizeof(struct iphdr)))
+ 			goto dishonest_packet_size;
+-		if (INET_ECN_is_ce(PACKET_CB(skb)->ds))
+-			IP_ECN_set_ce(ip_hdr(skb));
++		INET_ECN_decapsulate(skb, PACKET_CB(skb)->ds, ip_hdr(skb)->tos);
+ 	} else if (skb->protocol == htons(ETH_P_IPV6)) {
+ 		len = ntohs(ipv6_hdr(skb)->payload_len) +
+ 		      sizeof(struct ipv6hdr);
+-		if (INET_ECN_is_ce(PACKET_CB(skb)->ds))
+-			IP6_ECN_set_ce(skb, ipv6_hdr(skb));
++		INET_ECN_decapsulate(skb, PACKET_CB(skb)->ds, ipv6_get_dsfield(ipv6_hdr(skb)));
+ 	} else {
+ 		goto dishonest_packet_type;
+ 	}
 -- 
 2.26.2
 
