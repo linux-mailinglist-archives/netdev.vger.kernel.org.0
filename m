@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CFE21BEC6C
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 01:08:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 358401BEC78
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 01:14:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726929AbgD2XIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 19:08:41 -0400
-Received: from www62.your-server.de ([213.133.104.62]:58640 "EHLO
+        id S1727781AbgD2XOQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 19:14:16 -0400
+Received: from www62.your-server.de ([213.133.104.62]:59194 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726164AbgD2XIl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 19:08:41 -0400
+        with ESMTP id S1726164AbgD2XOO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 19:14:14 -0400
 Received: from sslproxy03.your-server.de ([88.198.220.132])
         by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89_1)
         (envelope-from <daniel@iogearbox.net>)
-        id 1jTvob-00065l-AD; Thu, 30 Apr 2020 01:08:29 +0200
+        id 1jTvu7-0006n3-Ue; Thu, 30 Apr 2020 01:14:11 +0200
 Received: from [178.195.186.98] (helo=pc-9.home)
         by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <daniel@iogearbox.net>)
-        id 1jTvob-0006Og-0h; Thu, 30 Apr 2020 01:08:29 +0200
-Subject: Re: [PATCH bpf-next v2] bpf: bpf_{g,s}etsockopt for struct bpf_sock
-To:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>
-References: <20200429170524.217865-1-sdf@google.com>
+        id 1jTvu7-000V8p-LZ; Thu, 30 Apr 2020 01:14:11 +0200
+Subject: Re: [PATCH bpf-next v3 0/3] tools: bpftool: probe features for
+ unprivileged users
+To:     Quentin Monnet <quentin@isovalent.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Richard Palethorpe <rpalethorpe@suse.com>,
+        Michael Kerrisk <mtk.manpages@gmail.com>
+References: <20200429144506.8999-1-quentin@isovalent.com>
 From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <640e7fd3-4059-5ff8-f9ed-09b1becd0f7b@iogearbox.net>
-Date:   Thu, 30 Apr 2020 01:08:28 +0200
+Message-ID: <49ca473a-efa0-19ec-c054-9e051bc4d401@iogearbox.net>
+Date:   Thu, 30 Apr 2020 01:14:10 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20200429170524.217865-1-sdf@google.com>
+In-Reply-To: <20200429144506.8999-1-quentin@isovalent.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -45,91 +46,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/29/20 7:05 PM, Stanislav Fomichev wrote:
-> Currently, bpf_getsocktop and bpf_setsockopt helpers operate on the
-> 'struct bpf_sock_ops' context in BPF_PROG_TYPE_SOCK_OPS program.
-> Let's generalize them and make the first argument be 'struct bpf_sock'.
-> That way, in the future, we can allow those helpers in more places.
+On 4/29/20 4:45 PM, Quentin Monnet wrote:
+> This set allows unprivileged users to probe available features with
+> bpftool. On Daniel's suggestion, the "unprivileged" keyword must be passed
+> on the command line to avoid accidentally dumping a subset of the features
+> supported by the system. When used by root, this keyword makes bpftool drop
+> the CAP_SYS_ADMIN capability and print the features available to
+> unprivileged users only.
 > 
-> BPF_PROG_TYPE_SOCK_OPS still has the existing helpers that operate
-> on 'struct bpf_sock_ops', but we add new bpf_{g,s}etsockopt that work
-> on 'struct bpf_sock'. [Alternatively, for BPF_PROG_TYPE_SOCK_OPS,
-> we can enable them both and teach verifier to pick the right one
-> based on the context (bpf_sock_ops vs bpf_sock).]
+> The first patch makes a variable global in feature.c to avoid piping too
+> many booleans through the different functions. The second patch introduces
+> the unprivileged probing, adding a dependency to libcap. Then the third
+> patch makes this dependency optional, by restoring the initial behaviour
+> (root only can probe features) if the library is not available.
 > 
-> As an example, let's allow those 'struct bpf_sock' based helpers to
-> be called from the BPF_CGROUP_INET{4,6}_CONNECT hooks. That way
-> we can override CC before the connection is made.
+> Cc: Richard Palethorpe <rpalethorpe@suse.com>
+> Cc: Michael Kerrisk <mtk.manpages@gmail.com>
 > 
-> v2:
-> * s/BPF_PROG_TYPE_CGROUP_SOCKOPT/BPF_PROG_TYPE_SOCK_OPS/
+> v3: Update help message for bpftool feature probe ("unprivileged").
 > 
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-[...]
-> +BPF_CALL_5(bpf_setsockopt, struct sock *, sk,
-> +	   int, level, int, optname, char *, optval, int, optlen)
-> +{
-> +	u32 flags = 0;
-> +	return _bpf_setsockopt(sk, level, optname, optval, optlen, flags);
-> +}
-> +
-> +static const struct bpf_func_proto bpf_setsockopt_proto = {
-> +	.func		= bpf_setsockopt,
-> +	.gpl_only	= false,
-> +	.ret_type	= RET_INTEGER,
-> +	.arg1_type	= ARG_PTR_TO_SOCKET,
-> +	.arg2_type	= ARG_ANYTHING,
-> +	.arg3_type	= ARG_ANYTHING,
-> +	.arg4_type	= ARG_PTR_TO_MEM,
-> +	.arg5_type	= ARG_CONST_SIZE,
-> +};
-> +
-> +BPF_CALL_5(bpf_getsockopt, struct sock *, sk,
-> +	   int, level, int, optname, char *, optval, int, optlen)
-> +{
-> +	return _bpf_getsockopt(sk, level, optname, optval, optlen);
-> +}
-> +
->   static const struct bpf_func_proto bpf_getsockopt_proto = {
->   	.func		= bpf_getsockopt,
->   	.gpl_only	= false,
->   	.ret_type	= RET_INTEGER,
-> +	.arg1_type	= ARG_PTR_TO_SOCKET,
-> +	.arg2_type	= ARG_ANYTHING,
-> +	.arg3_type	= ARG_ANYTHING,
-> +	.arg4_type	= ARG_PTR_TO_UNINIT_MEM,
-> +	.arg5_type	= ARG_CONST_SIZE,
-> +};
-> +
-[...]
-> @@ -6043,6 +6098,22 @@ sock_addr_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->   		return &bpf_sk_storage_get_proto;
->   	case BPF_FUNC_sk_storage_delete:
->   		return &bpf_sk_storage_delete_proto;
-> +	case BPF_FUNC_setsockopt:
-> +		switch (prog->expected_attach_type) {
-> +		case BPF_CGROUP_INET4_CONNECT:
-> +		case BPF_CGROUP_INET6_CONNECT:
-> +			return &bpf_setsockopt_proto;
+> v2: Add "unprivileged" keyword, libcap check (patches 1 and 3 are new).
+> 
+> Quentin Monnet (3):
+>    tools: bpftool: for "feature probe" define "full_mode" bool as global
+>    tools: bpftool: allow unprivileged users to probe features
+>    tools: bpftool: make libcap dependency optional
+> 
+>   .../bpftool/Documentation/bpftool-feature.rst |  12 +-
+>   tools/bpf/bpftool/Makefile                    |  13 +-
+>   tools/bpf/bpftool/bash-completion/bpftool     |   2 +-
+>   tools/bpf/bpftool/feature.c                   | 143 +++++++++++++++---
+>   4 files changed, 143 insertions(+), 27 deletions(-)
+> 
 
-Hm, I'm not sure this is safe. In the sock_addr_func_proto() we also have
-other helpers callable from connect hooks like sk_lookup_{tcp,udp} which
-return a PTR_TO_SOCKET_OR_NULL, and now we can pass those sockets also into
-bpf_{get,set}sockopt() helper after lookup to change various sk related stuff
-but w/o being under lock. Doesn't the sock_owned_by_me() yell here at minimum
-(I'd expect so)?
-
-> +		default:
-> +			return NULL;
-> +		}
-> +	case BPF_FUNC_getsockopt:
-> +		switch (prog->expected_attach_type) {
-> +		case BPF_CGROUP_INET4_CONNECT:
-> +		case BPF_CGROUP_INET6_CONNECT:
-> +			return &bpf_getsockopt_proto;
-> +		default:
-> +			return NULL;
-> +		}
->   	default:
+Applied, thanks!
