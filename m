@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C73B1BE845
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 22:17:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A9FB1BE85B
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 22:18:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727023AbgD2UR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 16:17:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59672 "EHLO
+        id S1727875AbgD2URq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 16:17:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727783AbgD2URY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 16:17:24 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0888C035494;
-        Wed, 29 Apr 2020 13:17:23 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id x18so4129729wrq.2;
-        Wed, 29 Apr 2020 13:17:23 -0700 (PDT)
+        with ESMTP id S1727794AbgD2URZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 16:17:25 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8A3C03C1AE;
+        Wed, 29 Apr 2020 13:17:24 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id j2so4106420wrs.9;
+        Wed, 29 Apr 2020 13:17:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=3VI9HOBgp8G2icbON78rq/SrCIcAl7ixV1OYcVb1+4o=;
-        b=t/5HRvviYO4kjJxm01NMptBZjmYlb0VIQ0kDJH0hiQmwRaXgTMo3p2fVl1tLcBwfr+
-         zbAW6+qwUqwwc1PutI6qJcHDDj8G2ZUT1T+VIXf05MnH6xPD5AptU0KMcVHmBVvGcqnP
-         qoqD4KUdH5rYmhsJQT01Nkmffyc1vduDBr8DYNOIMzJaGmrojaOFWiQSSUO+fOSZ30WO
-         Odhkaqj2w0AOeRndDoo7syz0RlT3TnTeTn8VT3E5TtQLAFtV3YCH3sQfdFQj5F/pncb0
-         +I9bAodlOX4pu/2PxMdmCol3QZa/4T8I1tLK7mbaA3DoQhZSiF2NWZyXVACaB8aKrlv2
-         1qhA==
+        bh=ML06J9nAXnrGfb8Sw/sNjsFqqfba47oOWTFdhQokhaE=;
+        b=I6xBJ2SgUjpuRy8PYgy88Vghn+35By2xz7BMjry77ASag5aKvIV0Qmf2JES6q8lIqX
+         joPBLtr3A7Ztb/TQSlS0ammJAasQdIgPRAH9n6KVnbv8Dg+5MLX9ei/DI5o+4YgsLvjQ
+         e0l//7Tok7gTPJYBjWFNKCwMX2VAfyYxxsbHmoCF2dWyNperl9l1u2w4O+Rqxi2v21P/
+         vUDnGMSfqpvBfQ37f+oiepTpjsxV47f5ElwXR8L9zEMP2XwFpS4HgevSrzEs/DkOjxZ7
+         1Q99zESKfDfl/IUuTPxbjD4lipMhJEsIj3HMKV83VbQbSl9DuCSGCXMrJ+SpJ2VeKacU
+         ymSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=3VI9HOBgp8G2icbON78rq/SrCIcAl7ixV1OYcVb1+4o=;
-        b=BCRNJwh5XHxN//Cuit0M2tj3ReJ9STRn+RWq/M5TD8CTbCt5zy7E/C4SF83z6pyukN
-         342bDv524o9JwftFX47am+ypPNrQg7LQV17CjCThhBXmiUqF4Is7gcw3Mc1cfqvdde+F
-         yvoTvRnT9r1okVFFzZ5DFyGgazK1CZzhf9AksQ0B41ktO0rKc7RrPWR2OAtN4xooBs6I
-         bTilOuQe0VvcSIBY8NGNNx4Yi0CCPBEngK+HPLirPDSgvAwCim2iC7YYQbapTm3yln9T
-         jj03xyJl9qCA19UgrlWdXDBfu5wND7UG66bySlg3MJXZms/1MyksBmTvo6Bb+Mdn/xYN
-         ycnA==
-X-Gm-Message-State: AGi0PuYLhv6rwH49Tb2Q/Z+a26A6lV95oWDBvCaYl4pzbr00036QD3Si
-        6HonduMh2WA1nu6koiR3ZWU=
-X-Google-Smtp-Source: APiQypJmysRza8OPeM91P68Zxs+u1pXUMsxPYIl1dIDymhDEUk16xHeb8vxHNwRTwGrxuxfRF/fM9w==
-X-Received: by 2002:a5d:6b86:: with SMTP id n6mr40163691wrx.113.1588191442597;
-        Wed, 29 Apr 2020 13:17:22 -0700 (PDT)
+        bh=ML06J9nAXnrGfb8Sw/sNjsFqqfba47oOWTFdhQokhaE=;
+        b=N2vcDTRxcU/+qVgxuE0yicAghNg114Y+GuONofSNiJ7p/hISfhAeDwYBqqQiyc6zav
+         9Fm38gTd0tBZhdfXgu6LuWkKO/8EWHl1KkS0F6tBVHWJgcfh1zZBMllfARcTvZXxvC1P
+         /ZmpjW5ldfSXbu1uBtKEnI6BZhbvtGfew04OjNZIRy6O0DFwnP/oqnMLLj4fq8zO6Z/e
+         MqXTy4ZFq086oye7ftb3JYs6kU3nya/N8YxRunBRL3YSxPIupbdWk+BFPY+ipLVA5/tr
+         r3XYnZtJ/hgemTBr57a93JsaLTRtgInSg9rrvwL1waSoz9hfPXG9n4FKbDp1IE95MDoY
+         Yn7Q==
+X-Gm-Message-State: AGi0PuYCPR2KDLfeGlkYa+R5UtZ2P9V29Zpx67kRnvxrhhjEKhuH9L1R
+        vhnzS/lB+AxRYnsKfwBJWNE=
+X-Google-Smtp-Source: APiQypL/Ts+PnYJmzQA093RS5PL9mTk8d7JdiY46vyorm6USMdg0g2olx5OKhnYkn4+1TCd7ozkkOQ==
+X-Received: by 2002:adf:84c1:: with SMTP id 59mr41790968wrg.350.1588191443643;
+        Wed, 29 Apr 2020 13:17:23 -0700 (PDT)
 Received: from localhost.localdomain (p200300F137142E00428D5CFFFEB99DB8.dip0.t-ipconnect.de. [2003:f1:3714:2e00:428d:5cff:feb9:9db8])
-        by smtp.googlemail.com with ESMTPSA id q143sm9923623wme.31.2020.04.29.13.17.21
+        by smtp.googlemail.com with ESMTPSA id q143sm9923623wme.31.2020.04.29.13.17.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Apr 2020 13:17:22 -0700 (PDT)
+        Wed, 29 Apr 2020 13:17:23 -0700 (PDT)
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 To:     robh+dt@kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
         linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org
@@ -54,9 +54,9 @@ Cc:     jianxin.pan@amlogic.com, davem@davemloft.net,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH DO NOT MERGE v2 09/11] arm64: dts: amlogic: Add the Ethernet "timing-adjustment" clock
-Date:   Wed, 29 Apr 2020 22:16:42 +0200
-Message-Id: <20200429201644.1144546-10-martin.blumenstingl@googlemail.com>
+Subject: [PATCH DO NOT MERGE v2 10/11] ARM: dts: meson: Add the Ethernet "timing-adjustment" clock
+Date:   Wed, 29 Apr 2020 22:16:43 +0200
+Message-Id: <20200429201644.1144546-11-martin.blumenstingl@googlemail.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200429201644.1144546-1-martin.blumenstingl@googlemail.com>
 References: <20200429201644.1144546-1-martin.blumenstingl@googlemail.com>
@@ -73,78 +73,42 @@ RGMII RX delay no the MAC side (if needed).
 
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- arch/arm64/boot/dts/amlogic/meson-axg.dtsi        | 6 ++++--
- arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi | 6 ++++--
- arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi       | 5 +++--
- arch/arm64/boot/dts/amlogic/meson-gxl.dtsi        | 5 +++--
- 4 files changed, 14 insertions(+), 8 deletions(-)
+ arch/arm/boot/dts/meson8b.dtsi  | 5 +++--
+ arch/arm/boot/dts/meson8m2.dtsi | 5 +++--
+ 2 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-axg.dtsi b/arch/arm64/boot/dts/amlogic/meson-axg.dtsi
-index aace3d32a3df..b021d802807a 100644
---- a/arch/arm64/boot/dts/amlogic/meson-axg.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-axg.dtsi
-@@ -181,8 +181,10 @@ ethmac: ethernet@ff3f0000 {
- 			interrupt-names = "macirq";
- 			clocks = <&clkc CLKID_ETH>,
- 				 <&clkc CLKID_FCLK_DIV2>,
--				 <&clkc CLKID_MPLL2>;
--			clock-names = "stmmaceth", "clkin0", "clkin1";
-+				 <&clkc CLKID_MPLL2>,
-+				 <&clkc CLKID_FCLK_DIV2>;
-+			clock-names = "stmmaceth", "clkin0", "clkin1",
-+				      "timing-adjustment";
- 			rx-fifo-depth = <4096>;
- 			tx-fifo-depth = <2048>;
- 			status = "disabled";
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
-index 0882ea215b88..f800bfc68832 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
-@@ -185,8 +185,10 @@ ethmac: ethernet@ff3f0000 {
- 			interrupt-names = "macirq";
- 			clocks = <&clkc CLKID_ETH>,
- 				 <&clkc CLKID_FCLK_DIV2>,
--				 <&clkc CLKID_MPLL2>;
--			clock-names = "stmmaceth", "clkin0", "clkin1";
-+				 <&clkc CLKID_MPLL2>,
-+				 <&clkc CLKID_FCLK_DIV2>;
-+			clock-names = "stmmaceth", "clkin0", "clkin1",
-+				      "timing-adjustment";
- 			rx-fifo-depth = <4096>;
- 			tx-fifo-depth = <2048>;
- 			status = "disabled";
-diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi
-index 0cb40326b0d3..f6efa1cdb72b 100644
---- a/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi
-@@ -310,8 +310,9 @@ &efuse {
- &ethmac {
+diff --git a/arch/arm/boot/dts/meson8b.dtsi b/arch/arm/boot/dts/meson8b.dtsi
+index e34b039b9357..ba36168b9c1b 100644
+--- a/arch/arm/boot/dts/meson8b.dtsi
++++ b/arch/arm/boot/dts/meson8b.dtsi
+@@ -425,8 +425,9 @@ &ethmac {
+ 
  	clocks = <&clkc CLKID_ETH>,
- 		 <&clkc CLKID_FCLK_DIV2>,
+ 		 <&clkc CLKID_MPLL2>,
 -		 <&clkc CLKID_MPLL2>;
 -	clock-names = "stmmaceth", "clkin0", "clkin1";
 +		 <&clkc CLKID_MPLL2>,
 +		 <&clkc CLKID_FCLK_DIV2>;
 +	clock-names = "stmmaceth", "clkin0", "clkin1", "timing-adjustment";
+ 	rx-fifo-depth = <4096>;
+ 	tx-fifo-depth = <2048>;
+ 
+diff --git a/arch/arm/boot/dts/meson8m2.dtsi b/arch/arm/boot/dts/meson8m2.dtsi
+index 5bde7f502007..96b37d5e9afd 100644
+--- a/arch/arm/boot/dts/meson8m2.dtsi
++++ b/arch/arm/boot/dts/meson8m2.dtsi
+@@ -30,8 +30,9 @@ &ethmac {
+ 		0xc1108140 0x8>;
+ 	clocks = <&clkc CLKID_ETH>,
+ 		 <&clkc CLKID_MPLL2>,
+-		 <&clkc CLKID_MPLL2>;
+-	clock-names = "stmmaceth", "clkin0", "clkin1";
++		 <&clkc CLKID_MPLL2>,
++		 <&clkc CLKID_FCLK_DIV2>;
++	clock-names = "stmmaceth", "clkin0", "clkin1", "timing-adjustment";
+ 	resets = <&reset RESET_ETHERNET>;
+ 	reset-names = "stmmaceth";
  };
- 
- &gpio_intc {
-diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
-index 259d86399390..9d173e3c8794 100644
---- a/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
-@@ -92,8 +92,9 @@ &efuse {
- &ethmac {
- 	clocks = <&clkc CLKID_ETH>,
- 		 <&clkc CLKID_FCLK_DIV2>,
--		 <&clkc CLKID_MPLL2>;
--	clock-names = "stmmaceth", "clkin0", "clkin1";
-+		 <&clkc CLKID_MPLL2>,
-+		 <&clkc CLKID_FCLK_DIV2>;
-+	clock-names = "stmmaceth", "clkin0", "clkin1", "timing-adjustment";
- 
- 	mdio0: mdio {
- 		#address-cells = <1>;
 -- 
 2.26.2
 
