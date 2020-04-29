@@ -2,123 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EC791BD401
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 07:33:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3FB31BD403
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 07:34:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726420AbgD2Fc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 01:32:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33964 "EHLO
+        id S1726450AbgD2FeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 01:34:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726158AbgD2Fc4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 01:32:56 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 314CEC03C1AC;
-        Tue, 28 Apr 2020 22:32:56 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id c23so882025qtp.11;
-        Tue, 28 Apr 2020 22:32:56 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1725861AbgD2FeD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 01:34:03 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2BE0C03C1AC;
+        Tue, 28 Apr 2020 22:34:01 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id c18so1261371ile.5;
+        Tue, 28 Apr 2020 22:34:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9LluvVKKcfJBIuFEldKgTxkv1kXnIh/Kn+l5F/0wOEw=;
-        b=sVXNfG/8245rvjUF5PDVguQiZNQxlxIGptlGDoPLuZGNN8aGvCt5mSEHlhtG6iZmXD
-         jp8pSNxY3my7wKQItrOsD1DSDzQUuduK/1AbmZ4kBUAD9t1sbemlK2vgQaPcZd5aVfJT
-         LwvbuUqaabqK7vc0TD2vb4stinl6T49r131x4CPFuhr3JtYlumXFRIJL9+LF+DKirlKY
-         oNLECT9mLUL1ACTPlJjOjaVkGrU55nc3WUnCoNTpbTtpG1BWxJ309PUOE+e318+wzNA9
-         w9KsV9IXR0jZGSHCZbhb1aV3xchvTmqZaiww7EeMoYNnuH/hHbCW8nRuLoxgEKYWCnd7
-         YdbQ==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=bgRz59ciuPjOtf0UcSjUKXVGufJvLgyAs3Hw1se2dMQ=;
+        b=hanGqn5k42N0otY5UJThabd1GHwwsgQ4X09iu3WXq2KV1uRZJG6jxKVqkSLOzeiD65
+         7FldGosVDCaqgVRNpFqSXyp+fRxwr9mfuv1b9EiDT05HmiN7YBvfGbJqrxQFbDGUvCcd
+         1G83tSjqFKYwe2fBxMFP9b+ZJ2DDEmJrMlf2vlY4KStexsF0dE3ws4TZDeQb51Gm9Cav
+         alzXxsoJ0UGRBm2hvO9ZMmzNCJAHyB+Lhg19z9i3U1qlokj9MliGPSihVHUjoJEwZ3/q
+         i0U3NmDgYwn99HSaceGaYbaJ9YHy90GFWWfKg2GVKGkF0tEXRgjCp/4Qeo0x8DKOn73I
+         fM1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9LluvVKKcfJBIuFEldKgTxkv1kXnIh/Kn+l5F/0wOEw=;
-        b=VnXit2oUoaxJD5CiywHVgohxB7zLFYlNSn9pxujZcCkXldEHDGyP5DeCGMsZ7kgCfM
-         pdtTZMaeEyzpyl7KFY76hrbsSjbdXJJpsEUdKV6CUmnjJVY5OGRu3yG/5xj158RVfVT7
-         CrhJvR5reKApR8ab2RZX8aWNR1D6D+zPWCim+mUV3INbMpFY+zNjvvNuIYcIwk4/pvhB
-         rxEuk141e1Ye6wlLgDFHoDp/Tp/lXAIkuTamdYBejOviyVQGsqN48GKfsNqQ5K8id74o
-         ADx8yk4dsyrkDsWtCY6Ew5q15vyP44j+OTXJ0n6+G1jsENSp1qYdwsqKyqvSIYAisL6/
-         ri7g==
-X-Gm-Message-State: AGi0PuYmgOWPYnmO6Hi6cDUXZGGLAk1p9sWDz+hO+J9A+u7bAZYkbThq
-        Vv9Tmmv00aoXMxI7G2cwPECudJYLQO0dzFNEVxnk8MRR
-X-Google-Smtp-Source: APiQypLkhexPgmSbI01m/Gf4VTWCon+nSh8v41DtL2J6A39tPBTF1Bv8y/hfATqViUjbMDn+Erxpo9WZulpoG0dSST8=
-X-Received: by 2002:ac8:3f6d:: with SMTP id w42mr31591227qtk.171.1588138375173;
- Tue, 28 Apr 2020 22:32:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200429035841.3959159-1-songliubraving@fb.com> <20200429035841.3959159-3-songliubraving@fb.com>
-In-Reply-To: <20200429035841.3959159-3-songliubraving@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 28 Apr 2020 22:32:44 -0700
-Message-ID: <CAEf4BzZsQxTW_aQp02cj3L3BofpQ3q76VOX_otA5q1v5EF7q6Q@mail.gmail.com>
-Subject: Re: [PATCH v7 bpf-next 2/3] libbpf: add support for command BPF_ENABLE_STATS
-To:     Song Liu <songliubraving@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=bgRz59ciuPjOtf0UcSjUKXVGufJvLgyAs3Hw1se2dMQ=;
+        b=CTtPXnE5cTWIFhf5qkocPO9bD8djlZon7yW1xAyUDqBGIVj4RiGIexklglHX8JIYPG
+         gSMtKqI9BL4A5v9KJSe7R0AHhTCqhkZ3XYSqaRlKhJDtwZfMN9PGzd57kxlnTnCsailB
+         45sDyn9Jor1rPXnedsdmrs5UEG7hHb9ykuc8vU8nFvAo6eDtrGxAlKMaVTG7QgXEWaIH
+         F+GgfBRqqJpsVWaGMiFJmFPdJSFEpNzW0qxhumwaDvNpyPFYi4UFwS3o9wZ1tt8rsS2+
+         /LN0JtCGtk3eZAgK/5UeAhrRnSXRgz+M4GMHO2g1NzzprsxMagzZuMsyvi0loO0luGTJ
+         Jzaw==
+X-Gm-Message-State: AGi0Puawy/s7n00hER3/AhJrrvNU2J+A+3I8+KXZUJdw6vURp+8qUZNV
+        tVzvRF8xspvjXLw2up1Wh+8=
+X-Google-Smtp-Source: APiQypL81X+5w8zj+RLK5mlG9KyWdsENQStYJ/RFVg/lpForslGY641y5/sRb/Ynjcpt3pakhyDd+g==
+X-Received: by 2002:a05:6e02:60f:: with SMTP id t15mr31093285ils.241.1588138441149;
+        Tue, 28 Apr 2020 22:34:01 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id r14sm538321ilq.11.2020.04.28.22.33.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Apr 2020 22:34:00 -0700 (PDT)
+Date:   Tue, 28 Apr 2020 22:33:54 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>
+Message-ID: <5ea911c2ecf72_37572ac97b86c5bcf9@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200428185719.46815-1-sdf@google.com>
+References: <20200428185719.46815-1-sdf@google.com>
+Subject: RE: [PATCH bpf-next] bpf: bpf_{g,s}etsockopt for struct bpf_sock
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 28, 2020 at 8:59 PM Song Liu <songliubraving@fb.com> wrote:
->
-> bpf_enable_stats() is added to enable given stats.
->
-> Signed-off-by: Song Liu <songliubraving@fb.com>
+Stanislav Fomichev wrote:
+> Currently, bpf_getsocktop and bpf_setsockopt helpers operate on the
+> 'struct bpf_sock_ops' context in BPF_PROG_TYPE_CGROUP_SOCKOPT program.
+> Let's generalize them and make the first argument be 'struct bpf_sock'.
+> That way, in the future, we can allow those helpers in more places.
+> 
+> BPF_PROG_TYPE_CGROUP_SOCKOPT still has the existing helpers that operate
+> on 'struct bpf_sock_ops', but we add new bpf_{g,s}etsockopt that work
+> on 'struct bpf_sock'. [Alternatively, for BPF_PROG_TYPE_CGROUP_SOCKOPT,
+> we can enable them both and teach verifier to pick the right one
+> based on the context (bpf_sock_ops vs bpf_sock).]
+> 
+> As an example, let's allow those 'struct bpf_sock' based helpers to
+> be called from the BPF_CGROUP_INET{4,6}_CONNECT hooks. That way
+> we can override CC before the connection is made.
+> 
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
 > ---
->  tools/lib/bpf/bpf.c      | 10 ++++++++++
->  tools/lib/bpf/bpf.h      |  1 +
->  tools/lib/bpf/libbpf.map |  5 +++++
->  3 files changed, 16 insertions(+)
->
-> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-> index 5cc1b0785d18..17bb4ad06c0e 100644
-> --- a/tools/lib/bpf/bpf.c
-> +++ b/tools/lib/bpf/bpf.c
-> @@ -826,3 +826,13 @@ int bpf_task_fd_query(int pid, int fd, __u32 flags, char *buf, __u32 *buf_len,
->
->         return err;
->  }
-> +
-> +int bpf_enable_stats(enum bpf_stats_type type)
-> +{
-> +       union bpf_attr attr;
-> +
-> +       memset(&attr, 0, sizeof(attr));
-> +       attr.enable_stats.type = type;
-> +
-> +       return sys_bpf(BPF_ENABLE_STATS, &attr, sizeof(attr));
-> +}
-> diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
-> index 46d47afdd887..5996e64d324c 100644
-> --- a/tools/lib/bpf/bpf.h
-> +++ b/tools/lib/bpf/bpf.h
-> @@ -229,6 +229,7 @@ LIBBPF_API int bpf_load_btf(void *btf, __u32 btf_size, char *log_buf,
->  LIBBPF_API int bpf_task_fd_query(int pid, int fd, __u32 flags, char *buf,
->                                  __u32 *buf_len, __u32 *prog_id, __u32 *fd_type,
->                                  __u64 *probe_offset, __u64 *probe_addr);
-> +LIBBPF_API int bpf_enable_stats(enum bpf_stats_type type);
->
->  #ifdef __cplusplus
->  } /* extern "C" */
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index bb8831605b25..ebd946faada5 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -254,3 +254,8 @@ LIBBPF_0.0.8 {
->                 bpf_program__set_lsm;
->                 bpf_set_link_xdp_fd_opts;
->  } LIBBPF_0.0.7;
-> +
-> +LIBBPF_0.0.9 {
-> +       global:
 
-You forgot to pull and rebase. LIBBPF_0.0.9 is already in master.
+LGTM.
 
-> +               bpf_enable_stats;
-> +} LIBBPF_0.0.8;
-> \ No newline at end of file
-> --
-> 2.24.1
->
+Acked-by: John Fastabend <john.fastabend@gmail.com>
