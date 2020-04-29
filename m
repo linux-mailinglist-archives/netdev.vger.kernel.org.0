@@ -2,90 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E11FD1BE0CB
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 16:23:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F5F91BE0CF
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 16:24:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728012AbgD2OX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 10:23:27 -0400
-Received: from mout.kundenserver.de ([212.227.126.130]:59573 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726661AbgD2OX0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 10:23:26 -0400
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue010 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1N7iOw-1j8KpB09eU-014iMZ; Wed, 29 Apr 2020 16:23:19 +0200
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Tiwei Bie <tiwei.bie@intel.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] vhost: fix default for vhost_iotlb
-Date:   Wed, 29 Apr 2020 16:23:04 +0200
-Message-Id: <20200429142317.1847441-1-arnd@arndb.de>
-X-Mailer: git-send-email 2.26.0
+        id S1726871AbgD2OYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 10:24:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60550 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726741AbgD2OYk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 10:24:40 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F88C03C1AD;
+        Wed, 29 Apr 2020 07:24:40 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id i3so2342664ioo.13;
+        Wed, 29 Apr 2020 07:24:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=A1CN4jZl4jTo+TBoqkD+2uQy2R8zmyg041lpKbHoH7M=;
+        b=pTjVdU2l+wv4rjf7RjiT6n/blcv5kQhRkTpYCmloytxCdlJT0daN6v+k5wiAG5V05p
+         +lyQmzwez7Vjd0dU1iU0E6Rw7gv7LqG1MW0U0Y8VRqwxCkoO6tKIPwR9r2MAefbYYF3B
+         mFTuY85Kakd1ESJLf7sgADtBuP8ayxrkUtE7UfCTQ/8abnCI++kDFGUmYfVXPuFStAw8
+         krNHekQgb2i+bDxKz/u6F0cAchKDkFph31Rl4hrAZW7Y5sov5rmfAJE/PJ4YSrK0H2Ne
+         PRHZ7THNVQjRH38dM2RLvEKtAl48F3dlOW+bgCnko5NxLdm07f4BuONIRIi/iW+PnDN+
+         AFcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=A1CN4jZl4jTo+TBoqkD+2uQy2R8zmyg041lpKbHoH7M=;
+        b=m/Jz6Bm3UffPAM4GsF/45veXKBDMSBp0hMBN3sV4hcoIIci2Ki6/i1c70zVka7BMu+
+         Y57ita9TsyALb3IUS2G1wfagF+yNshJ2LRqUZDFgPS9OW/Me97Iy26641Unqwc8mIQP9
+         ck6c29mpCsQCGaPfvcFYl3QM+RVgSQGrugxiHTIDnmeG4TuEIBBvgG7S7Ag/baAqxeiJ
+         whZR4Acnx4c0WYJKC8QyesNjyCONHnpImRYtxJURB1sQnCHTt4Mm+uuESLkyXzIziv+x
+         t4J4Zs+SI/698deXoobaiLpvgv2i7MEEFQy7bmySEWHEI3qPff5tyCB8PoLMGarLEYMv
+         2ljg==
+X-Gm-Message-State: AGi0PuasUZhMOkBtXBZuKwMP+AFVXzrZPUrPShUPzoVcoRuNj5daGrOA
+        Jtoyd/BCBmB6EsK4yU2K7dkGea/kzLNK+eRclUY=
+X-Google-Smtp-Source: APiQypL3YJRLn/CjDFWSkIcYSR70WFcO7nOnYCpUZp/Dvytozh01gIQHSjZZDOziBum8nxJbwwX/Hj3cpRG7hohBiiU=
+X-Received: by 2002:a02:bb91:: with SMTP id g17mr29519507jan.88.1588170279522;
+ Wed, 29 Apr 2020 07:24:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:b3pbp/XZSd+qFAXvZ9I7UjuleCw3GTy1vtyionbvaNjSrD6kYrH
- y/IBPt43A5XriZwjpg/iVL+DG+MEIGNcDlWlMfkFbLwqZGn3pMma6Xx0viUdy8bDJdYLpx4
- Lt9B3isKWwO+iGzLngj6QapH5GuypPJSDv//HUUaylj17ZdCqAsqXaqYgEDbLhcGG+xHkJk
- FAgf2eV+mFETYygqDSJbA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:cHnxtw5s88I=:liybKe0ZyJzauaYbhV1tR4
- v+detTxqBVhe77qXrhR+LJDZDMNMOV9mkaPORuAXHIO5xefWpUdkz7/jiaLp1rVYj2t2+IZXW
- gshFy77aTRiWP9IpwdC7VXhAMHccPlBSLN3hOlCaY8AuVBKJbH4zlgAI6RriDPkTOroUsBhQu
- Bub16qn/gv6uBFl5q8Mv6yfgOGbDoMBT+Iy59/H9BOg6yCTIBNZNaR0kKt55xjXZRFY9nCeIz
- fprxjDfT8ScG5bD0YZXz8EpefMvdPdPekIcs/ntCx4f5Brr9ND7oq8cpkWPdCpSrI0gLsnpdi
- oTc1r8Xe87uRzZXf8hQ6sjtoBmS7kj8RaIEsyERkpCXyoES858LWCSlfQHpSxkNVZ6XSAP7OY
- Ir3zR49Q5LlOIx5i6GpH5DLsCrOpenvCyZ4SeKcBvwrZCMeXvJaMLqfCYo8MsTRSwKbPokI01
- 1mNrqwi3kWN45VD/6TFDZ5fbTjlzmzwIz2/8aZhVjtSITAgicPam99N3mDGx0k6Vs8TFnhhcp
- rO1P5mJi5QQhgvmGKXLkBJAIH7DfNPKIuzBL0GWXOQFAzMfM4W0BJbTQcSAhh8cShtglo/RsN
- lAOvUduj4mF3d/+TzX8M/wA0ciSJd/K37cwbwyrSOXHTHwe9f/cwweHkCPwYBl4snwOFa7lKF
- S+dQUFMv9GoCpx4RCmGtGm3hnL/EUd+moTge+fJmVdqv79d7rIx+kiZXeTay19bhIB4NWeB4K
- HSJJK8hYrPtPyRvsAAH4oJnDSlMvq9s2gDZ8OGRC37fKsYgkiDOthoi3KmKJbELyTstVJ0w5c
- tS93kyVDjAmyLIv1AtkY5kjjiIpVAnOkIKdLzwZcK39cVbgrKg=
+References: <20200428144314.24533-1-vaibhavgupta40@gmail.com> <d33991cc-c219-dc27-7559-f30dd5f4aa0a@gmail.com>
+In-Reply-To: <d33991cc-c219-dc27-7559-f30dd5f4aa0a@gmail.com>
+From:   Vaibhav Gupta <vaibhav.varodek@gmail.com>
+Date:   Wed, 29 Apr 2020 19:53:36 +0530
+Message-ID: <CAPBsFfDn2GV8=o63zBRDhHddNnH+jUiiNCB+WRPUqH1mZasEPA@mail.gmail.com>
+Subject: Re: [Linux-kernel-mentees] [PATCH v2 0/2] realtek ethernet : remove
+ legacy power management callbacks.
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Martin Habets <mhabets@solarflare.com>, netdev@vger.kernel.org,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>, bjorn@helgaas.com,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
+        skhan@linuxfoundation.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-During randconfig build testing, I ran into a configuration that has
-CONFIG_VHOST=m, CONFIG_VHOST_IOTLB=m and CONFIG_VHOST_RING=y, which
-makes the iotlb implementation left out from vhost_ring, and in turn
-leads to a link failure of the vdpa_sim module:
+On Tue, 28 Apr 2020 at 23:24, Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>
+> On 28.04.2020 16:43, Vaibhav Gupta wrote:
+> > The purpose of this patch series is to remove legacy power management callbacks
+> > from realtek ethernet drivers.
+> >
+> > The callbacks performing suspend() and resume() operations are still calling
+> > pci_save_state(), pci_set_power_state(), etc. and handling the powermanagement
+> > themselves, which is not recommended.
+> >
+> Did you test any of the changes? If not, then mention this at least.
+> A typical comment in the commit message would be "compile-tested only".
+Yeah its compile-tested only. I should have mention that. Thanks for
+pointing it out.
+>
+> In addition the following should be changed.
+> [Linux-kernel-mentees] [PATCH v2 0/2]
+> Use
+> [PATCH net-next v2 0/2]
+> instead.
+Sure!
 
-ERROR: modpost: "vringh_set_iotlb" [drivers/vdpa/vdpa_sim/vdpa_sim.ko] undefined!
-ERROR: modpost: "vringh_init_iotlb" [drivers/vdpa/vdpa_sim/vdpa_sim.ko] undefined!
-ERROR: modpost: "vringh_iov_push_iotlb" [drivers/vdpa/vdpa_sim/vdpa_sim.ko] undefined!
-ERROR: modpost: "vringh_iov_pull_iotlb" [drivers/vdpa/vdpa_sim/vdpa_sim.ko] undefined!
-ERROR: modpost: "vringh_complete_iotlb" [drivers/vdpa/vdpa_sim/vdpa_sim.ko] undefined!
-ERROR: modpost: "vringh_getdesc_iotlb" [drivers/vdpa/vdpa_sim/vdpa_sim.ko] undefined!
-
-Work around it by setting the default for VHOST_IOTLB to avoid this
-configuration.
-
-Fixes: e6faeaa12841 ("vhost: drop vring dependency on iotlb")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-I fixed this a while ago locally but never got around to sending the
-fix. If the problem has been addressed differently in the meantime,
-please ignore this one.
----
- drivers/vhost/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
-index 2c75d164b827..ee5f85761024 100644
---- a/drivers/vhost/Kconfig
-+++ b/drivers/vhost/Kconfig
-@@ -1,6 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0-only
- config VHOST_IOTLB
- 	tristate
-+	default y if VHOST=m && VHOST_RING=y
- 	help
- 	  Generic IOTLB implementation for vhost and vringh.
- 	  This option is selected by any driver which needs to support
--- 
-2.26.0
-
+--Vaibhav Gupta
+>
+> > The conversion requires the removal of the those function calls and change the
+> > callback definition accordingly.
+> >
+> > Vaibhav Gupta (2):
+> >   realtek/8139too: Remove Legacy Power Management
+> >   realtek/8139cp: Remove Legacy Power Management
+> >
+> >  drivers/net/ethernet/realtek/8139cp.c  | 25 +++++++------------------
+> >  drivers/net/ethernet/realtek/8139too.c | 26 +++++++-------------------
+> >  2 files changed, 14 insertions(+), 37 deletions(-)
+> >
+>
