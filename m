@@ -2,231 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49D4E1BE170
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 16:45:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DFDC1BE177
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 16:46:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726797AbgD2OpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 10:45:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35616 "EHLO
+        id S1726901AbgD2Opf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 10:45:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726456AbgD2OpP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 10:45:15 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB17C03C1AE
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 07:45:14 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id k1so2879049wrx.4
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 07:45:14 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726558AbgD2Opf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 10:45:35 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0151C03C1AD;
+        Wed, 29 Apr 2020 07:45:33 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id t40so836030pjb.3;
+        Wed, 29 Apr 2020 07:45:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DPPOrgBA7YSTdrd+i7ZC6pH/Ktq+pTutZ/a9hfmxBNY=;
-        b=Cu8Xcoo9BIhJUKO3/OO3pntl2jZytTlHH0vNoLfclyIkpyfmN0/woDWnHUoL90J2a7
-         Dz1G+jhB/GC3ifPy/XfZ3vTXx+roQEZnywH2ztQ7jIZYAXsGIzhKdUIrFe3MgjGqePBq
-         4KxzIt20q37UWrtNKnmY1g5BfJBiunqlcAt2WzQF7F6yY0drXmTPFEIKsEHTPrfisxik
-         BPfHtRewNFGrYibuVMlKgtavgQVoJPh/K9dRABeXx6n89ZuMtjxLTxKwVvoUhdo4ldfp
-         Sf6fBG4ANITGVNDeJezePBBiRFQCrbRjvAm0xjIao+H36fhEHZK4gwh9wjYjIO0tYLyF
-         75Kg==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=69Tp1mSQ7NPHm94uWqS6FIaA0fFYFrKBdlLv7IBtpLY=;
+        b=s/4fWTDbicXxmAN5YG2saVluSNShiBVuWUNJZd/3hsWObcVKMy+Hz1LFaNj9nXro2G
+         sznVBIlTCrRZ2I2uKdyZzr+P2XcANNgcItCmiaxu0YWuSr1y9FKO8TbvuyP+qUpethOF
+         zbzpuZaYO4dkHWOA8nkNxHFcrinDdw0rWYJ4RG5vVgoJKDqkV380c3YuOnRlT2u1Mmym
+         IXHzJuMfVlUjkacfX6IY4wo+Y0h2ClS5Eikv3yaC6iD9auzQsb09FnXbjmGkKjYcI0VR
+         ZCmrp4Q6wqzpFkNL6npESO9vfRxDrR12GQo2s+sS3JGuy4DsPuJ9MvJuJpEDveqVxsrY
+         zeaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DPPOrgBA7YSTdrd+i7ZC6pH/Ktq+pTutZ/a9hfmxBNY=;
-        b=XEKEffmMYXZYf30wbbNDJtSCk/+cNbLJxN+sedgIXMhuUJYtvTomvDq0Ro7SEzY1e+
-         g84nJJOzEyc1lVFZjx4IXTCkkbBz+Em5Jvr7tYfYX04lJKXgCt6OBoHViWz6lmun2QCi
-         fD5BdD+LFHedONeQD7dUoqzikt1EWi661vn9LomdLs/6osMa27e3IIDKA4aHWVPKVaHV
-         QFxLETP6ojHTYxn/aI+xrfRSs9lleGcohe3mbmGVOnDIUBFiKwtN2qq/HOSUGVivyR17
-         IZ20E1QESPZOcSuoM99CmhPcWiEjffNPMA2/Mi0dAjCj08jYWmNWT9UNuDkCDE9IqsIr
-         ppjg==
-X-Gm-Message-State: AGi0PuYbQVPcxJQKwE/MUmqUSjTU4lCXZgAsVd3N8KMkBt7DiNc8635f
-        ieexXxHCSUhH6U7RIp8adKMSCg==
-X-Google-Smtp-Source: APiQypKacRfK99rf6iQOnxtQnKY1aL5+xx4THk8Igo/+4QWdtzZAGWlpf5bor+7yahyBS/O7wTHAmw==
-X-Received: by 2002:adf:d091:: with SMTP id y17mr38466279wrh.418.1588171513405;
-        Wed, 29 Apr 2020 07:45:13 -0700 (PDT)
-Received: from localhost.localdomain ([194.53.185.38])
-        by smtp.gmail.com with ESMTPSA id a10sm20071739wrg.32.2020.04.29.07.45.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Apr 2020 07:45:12 -0700 (PDT)
-From:   Quentin Monnet <quentin@isovalent.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Quentin Monnet <quentin@isovalent.com>,
-        Richard Palethorpe <rpalethorpe@suse.com>,
-        Michael Kerrisk <mtk.manpages@gmail.com>
-Subject: [PATCH bpf-next v3 3/3] tools: bpftool: make libcap dependency optional
-Date:   Wed, 29 Apr 2020 15:45:06 +0100
-Message-Id: <20200429144506.8999-4-quentin@isovalent.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200429144506.8999-1-quentin@isovalent.com>
-References: <20200429144506.8999-1-quentin@isovalent.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=69Tp1mSQ7NPHm94uWqS6FIaA0fFYFrKBdlLv7IBtpLY=;
+        b=bQOtuuuOIW8UsTZlt4QmJHta9gVajTZNSfSh1J8VAZ0ovJOcc4xAWqJWOBqzz+STfo
+         7uPjuhTVwehJBJtX5BwxQP839jWEiCSGfSILHohRprnURBeFfR1ihlyNpIiEa+Gdfi3v
+         A0Ha/HXJQNzngV2tbLvunvMQJ087dNLMV5vXb4Mdf34fMyPDMWIKxMtK8Cq6rgYCwCG4
+         uQ4ZX/YrtR0AXfQ1qhxjnpyJrXqntlxNoufJRgQOQQc1Qhri5wtx0twBxP5vwcADgT6Z
+         Lnhq+TK/Is10ML/HqxuPrHD7V1jSGN7Ns3hsozY2izlnQrKLIkV0dKR3ejZWZugA2UNH
+         Rj1Q==
+X-Gm-Message-State: AGi0PuZWJACPLiHGYYiii50RejdrYGOmdAzc4Gm15UWlMUz0e5Ynq74z
+        Y+y3aC09HcIa+hDZI26FYjE=
+X-Google-Smtp-Source: APiQypJEz4yCvNnsCq7cYbXWfMJygr572PjmwVxS4xfP0wVxMeKtNpYx9V6g+vd9g1uvMfnwFHt1Xg==
+X-Received: by 2002:a17:90a:6403:: with SMTP id g3mr3243981pjj.99.1588171533315;
+        Wed, 29 Apr 2020 07:45:33 -0700 (PDT)
+Received: from localhost ([89.208.244.169])
+        by smtp.gmail.com with ESMTPSA id i190sm1283383pfe.114.2020.04.29.07.45.32
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 29 Apr 2020 07:45:32 -0700 (PDT)
+Date:   Wed, 29 Apr 2020 22:45:27 +0800
+From:   Dejin Zheng <zhengdejin5@gmail.com>
+To:     Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc:     davem@davemloft.net, paul.walmsley@sifive.com, palmer@dabbelt.com,
+        yash.shah@sifive.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH net v2] net: macb: fix an issue about leak related system
+ resources
+Message-ID: <20200429144527.GA639@nuc8i5>
+References: <20200429135651.32635-1-zhengdejin5@gmail.com>
+ <3ed83017-f3de-b6b0-91d0-d9075ad9eed5@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3ed83017-f3de-b6b0-91d0-d9075ad9eed5@microchip.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The new libcap dependency is not used for an essential feature of
-bpftool, and we could imagine building the tool without checks on
-CAP_SYS_ADMIN by disabling probing features as an unprivileged users.
+On Wed, Apr 29, 2020 at 04:15:56PM +0200, Nicolas Ferre wrote:
+> On 29/04/2020 at 15:56, Dejin Zheng wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> > 
+> > A call of the function macb_init() can fail in the function
+> > fu540_c000_init. The related system resources were not released
+> > then. use devm_platform_ioremap_resource() to replace ioremap()
+> > to fix it.
+> > 
+> > Fixes: c218ad559020ff9 ("macb: Add support for SiFive FU540-C000")
+> > Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+> > Reviewed-by: Yash Shah <yash.shah@sifive.com>
+> > Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
+> > ---
+> > v1 -> v2:
+> >          - Nicolas and Andy suggest use devm_platform_ioremap_resource()
+> >            to repalce devm_ioremap() to fix this issue. Thanks Nicolas
+> >            and Andy.
+> >          - Yash help me to review this patch, Thanks Yash!
+> > 
+> >   drivers/net/ethernet/cadence/macb_main.c | 8 +-------
+> >   1 file changed, 1 insertion(+), 7 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+> > index a0e8c5bbabc0..99354e327d1f 100644
+> > --- a/drivers/net/ethernet/cadence/macb_main.c
+> > +++ b/drivers/net/ethernet/cadence/macb_main.c
+> > @@ -4172,13 +4172,7 @@ static int fu540_c000_clk_init(struct platform_device *pdev, struct clk **pclk,
+> > 
+> >   static int fu540_c000_init(struct platform_device *pdev)
+> >   {
+> > -       struct resource *res;
+> > -
+> > -       res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+> > -       if (!res)
+> > -               return -ENODEV;
+> > -
+> > -       mgmt->reg = ioremap(res->start, resource_size(res));
+> > +       mgmt->reg = devm_platform_ioremap_resource(pdev, 1);
+> >          if (!mgmt->reg)
+> 
+> Is your test valid then?
+>
+Hi Nicolas:
 
-Make it so, in order to avoid a hard dependency on libcap, and to ease
-packaging/embedding of bpftool.
+I just compiled it successfully and I didn't have the hardware of this
+driver, so I did not tested it. and this patch only affects the driver
+of "sifive,fu540-macb", if these IO addresses can be monopolized by
+this driver, this change should be ok.
 
-Signed-off-by: Quentin Monnet <quentin@isovalent.com>
----
- .../bpftool/Documentation/bpftool-feature.rst |  4 ++-
- tools/bpf/bpftool/Makefile                    | 13 +++++++---
- tools/bpf/bpftool/feature.c                   | 26 +++++++++++++++++++
- 3 files changed, 38 insertions(+), 5 deletions(-)
 
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-feature.rst b/tools/bpf/bpftool/Documentation/bpftool-feature.rst
-index ca085944e4cf..1fa755f55e0c 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-feature.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-feature.rst
-@@ -55,7 +55,9 @@ DESCRIPTION
- 		  that case usually represent a small subset of the parameters
- 		  supported by the system. Unprivileged users MUST use the
- 		  **unprivileged** keyword: This is to avoid misdetection if
--		  bpftool is inadvertently run as non-root, for example.
-+		  bpftool is inadvertently run as non-root, for example. This
-+		  keyword is unavailable if bpftool was compiled without
-+		  libcap.
- 
- 	**bpftool feature probe dev** *NAME* [**full**] [**macros** [**prefix** *PREFIX*]]
- 		  Probe network device for supported eBPF features and dump
-diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
-index 89d7962a4a44..2759f9cc3289 100644
---- a/tools/bpf/bpftool/Makefile
-+++ b/tools/bpf/bpftool/Makefile
-@@ -55,16 +55,15 @@ ifneq ($(EXTRA_LDFLAGS),)
- LDFLAGS += $(EXTRA_LDFLAGS)
- endif
- 
--LIBS = $(LIBBPF) -lelf -lz -lcap
--
- INSTALL ?= install
- RM ?= rm -f
- CLANG ?= clang
- 
- FEATURE_USER = .bpftool
--FEATURE_TESTS = libbfd disassembler-four-args reallocarray zlib \
-+FEATURE_TESTS = libbfd disassembler-four-args reallocarray zlib libcap \
-+	clang-bpf-global-var
-+FEATURE_DISPLAY = libbfd disassembler-four-args zlib libcap \
- 	clang-bpf-global-var
--FEATURE_DISPLAY = libbfd disassembler-four-args zlib clang-bpf-global-var
- 
- check_feat := 1
- NON_CHECK_FEAT_TARGETS := clean uninstall doc doc-clean doc-install doc-uninstall
-@@ -90,6 +89,12 @@ ifeq ($(feature-reallocarray), 0)
- CFLAGS += -DCOMPAT_NEED_REALLOCARRAY
- endif
- 
-+LIBS = $(LIBBPF) -lelf -lz
-+ifeq ($(feature-libcap), 1)
-+CFLAGS += -DUSE_LIBCAP
-+LIBS += -lcap
-+endif
-+
- include $(wildcard $(OUTPUT)*.d)
- 
- all: $(OUTPUT)bpftool
-diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
-index 952f4b1987c0..f54347f55ee0 100644
---- a/tools/bpf/bpftool/feature.c
-+++ b/tools/bpf/bpftool/feature.c
-@@ -6,7 +6,9 @@
- #include <string.h>
- #include <unistd.h>
- #include <net/if.h>
-+#ifdef USE_LIBCAP
- #include <sys/capability.h>
-+#endif
- #include <sys/utsname.h>
- #include <sys/vfs.h>
- 
-@@ -37,7 +39,9 @@ static const char * const helper_name[] = {
- #undef BPF_HELPER_MAKE_ENTRY
- 
- static bool full_mode;
-+#ifdef USE_LIBCAP
- static bool run_as_unprivileged;
-+#endif
- 
- /* Miscellaneous utility functions */
- 
-@@ -475,11 +479,13 @@ probe_prog_type(enum bpf_prog_type prog_type, bool *supported_types,
- 		}
- 
- 	res = bpf_probe_prog_type(prog_type, ifindex);
-+#ifdef USE_LIBCAP
- 	/* Probe may succeed even if program load fails, for unprivileged users
- 	 * check that we did not fail because of insufficient permissions
- 	 */
- 	if (run_as_unprivileged && errno == EPERM)
- 		res = false;
-+#endif
- 
- 	supported_types[prog_type] |= res;
- 
-@@ -535,12 +541,14 @@ probe_helper_for_progtype(enum bpf_prog_type prog_type, bool supported_type,
- 
- 	if (supported_type) {
- 		res = bpf_probe_helper(id, prog_type, ifindex);
-+#ifdef USE_LIBCAP
- 		/* Probe may succeed even if program load fails, for
- 		 * unprivileged users check that we did not fail because of
- 		 * insufficient permissions
- 		 */
- 		if (run_as_unprivileged && errno == EPERM)
- 			res = false;
-+#endif
- 	}
- 
- 	if (json_output) {
-@@ -738,6 +746,7 @@ static void section_misc(const char *define_prefix, __u32 ifindex)
- 
- static int handle_perms(void)
- {
-+#ifdef USE_LIBCAP
- 	cap_value_t cap_list[1] = { CAP_SYS_ADMIN };
- 	bool has_sys_admin_cap = false;
- 	cap_flag_value_t val;
-@@ -793,6 +802,18 @@ static int handle_perms(void)
- 	}
- 
- 	return res;
-+#else
-+	/* Detection assumes user has sufficient privileges (CAP_SYS_ADMIN).
-+	 * We do not use libpcap so let's approximate, and restrict usage to
-+	 * root user only.
-+	 */
-+	if (geteuid()) {
-+		p_err("full feature probing requires root privileges");
-+		return -1;
-+	}
-+
-+	return 0;
-+#endif /* USE_LIBCAP */
- }
- 
- static int do_probe(int argc, char **argv)
-@@ -852,8 +873,13 @@ static int do_probe(int argc, char **argv)
- 				return -1;
- 			define_prefix = GET_ARG();
- 		} else if (is_prefix(*argv, "unprivileged")) {
-+#ifdef USE_LIBCAP
- 			run_as_unprivileged = true;
- 			NEXT_ARG();
-+#else
-+			p_err("unprivileged run not supported, recompile bpftool with libcap");
-+			return -1;
-+#endif
- 		} else {
- 			p_err("expected no more arguments, 'kernel', 'dev', 'macros' or 'prefix', got: '%s'?",
- 			      *argv);
--- 
-2.20.1
+Hi Yash:
 
+Do you know that these IO addresses can be occupied by this driver
+alone? Thank you very much!
+
+BR,
+Dejin
+
+> Please use:
+> if (IS_ERR(base))
+>    return PTR_ERR(base);
+> As advised by:
+> lib/devres.c:156
+>
+Thanks!, I will sent it in patch v3.
+
+> Regards,
+>   Nicolas
+> 
+> >                  return -ENOMEM;
+> > 
+> > --
+> > 2.25.0
+> > 
+> 
+> 
+> -- 
+> Nicolas Ferre
