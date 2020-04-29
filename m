@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71BC11BEC37
-	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 00:55:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CB2A1BEC38
+	for <lists+netdev@lfdr.de>; Thu, 30 Apr 2020 00:55:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727100AbgD2Wz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 18:55:26 -0400
+        id S1727108AbgD2Wza (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 18:55:30 -0400
 Received: from mail-eopbgr10044.outbound.protection.outlook.com ([40.107.1.44]:62734
         "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726921AbgD2WzZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 29 Apr 2020 18:55:25 -0400
+        id S1726164AbgD2Wz2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 29 Apr 2020 18:55:28 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OFaxs+nHBb1AlIwJ2CaoNITP8yAt0NT8/iFh+1YFwbO70OMH7un/IU2qCAk5HQNuMMBzV2oMfnwf2LH9nvbc8FFa2hkPNO3AnWhXGvXxinijwSdPWx6yLn7RSK/UUQuqxjgbndSwcs26GvwFHAuC7eexYlYlB2NG7pR/qmruUOJH6ZQIWOLtVTEHe9JMwwFAsv4Q10TJi+rGn2mKcNaJBAe/QA1SUkV2MTaxCCxCzl5iFxngHzYAg5Fa6+UyDnhBuybUtopztZK5xi4S+PFJYQ81EUzkdckzSdE2pDc482lEFMKJi5qfSHrLGT9oQbfAjTO+S3J8ybDO3xvHjVT5nQ==
+ b=DXm1DwI7Kje+vKr/YGl7shnDnCSiVqpQ74acCQCgCl3Rf0R/krKiPlIx8XKpzfN7eiPR/57uoBjqtXVjg+nZYWPyB42LFpCZX7xkcLhoXYBjz2R+QuhAF+1lcps9Jg/hTAPMCm5EY1RkMl6dPBa8wTe7gFwG6a0GG0Sb+iOnqMqnfRpeQT0Gnp7em5tJDyvwtHUs/bthIl6pPxX1e8E6utJfWwAPM2KSSOcYa7P9ibHsHJe/W6iTtSgKG/AMrA/xPZhEsQsk7Tx3aYkULHas+00E2EfCUGsKjGKjjESH6LcXCKco3FT+J0d9XxDRKmqzAPAPLIp7g7CEL2Vw/UIAag==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FnnRGl9JJjbJXFUaHUNhM5ruYj30IC5ttZn/9ec7tss=;
- b=nM8M4OTkD0zv6u0Ptlg3NZmDc+P8ayWJ9K9wXiqHevnKe6weZCogPxqUysIfAzStgzyQElyXn472ahj9c7CWuljMeKQOYSwveA2GqOirIQQQRt2zypcXf7MytUAdzm30ioawnQhDGcMkMwVDk9QLruOMGiXD+yLV0D1mAOr/eg2zQms119D+Ao8uYEkMbXfaSb/+cAnnpDKl7YPVVeHmQYKbdrLDxAaijwTiuBeqXwyaMCEs3l/XM8eDO4f63eBnA9c7YnaLyeIoC3qu3kuD2zAO6tnLWH2FaWNv7FhEGzST95cluzSTXq0KksQNZvfQSwY80nx86MG6gndhCfR0eQ==
+ bh=Vq8h8/3OAdogrgGDTEaFalKljXpjv0MY1fxQWeDsi7Q=;
+ b=aFMiRxmYFQJnwag9TGLFiogv1Gg/L5q3y6udlnK2nincgk4rXPCjsrlNFxtnFTn7koEtPivwPVoH5SykU6Lka17cdF1/27Se70Y5xOdz7G+CINdMj/xwJH2DO9a1e+w03ZahkOxz7aHqm5iWz2r2ic9Y94dqMWbjN/am70vNOKJZZp3vWefZ9l7A/l+SzyF10kvJAiwSPALxJAOibtOqTW2sRPgSln8AJIFvMyjP32XkElktFJF0w+ax+wKazCwV9prYxUA7nWMssRdK7Jn7jWye89XNirbFyzX6Mkl6J9Rd8+zS8hBp3AQLrBzTLm00OuU9xZ66PqyqMKOAcjIylg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FnnRGl9JJjbJXFUaHUNhM5ruYj30IC5ttZn/9ec7tss=;
- b=Kciuv5l0LTVSRRxyDhPbfB6AWuKT4/1oSOOTmBouZ69kmauh7soGoDJHASZEE1FCccuRin6V9Gi8yykcnHFzX7o2/iru0EAhHoHlUCsFDBv+D+G401lePY512Iui54UcoC8CovKnxuI7KGqGhvxwawx9OK9hPFnnnoToQCbDC4k=
+ bh=Vq8h8/3OAdogrgGDTEaFalKljXpjv0MY1fxQWeDsi7Q=;
+ b=gq2O/TIfEOVxJC9N3JQwcVrlm1EsYodcMkISd9qC/8pq8+F6rECLIRZGeKQcTTQlxyoY3JmAfP6WDMTrHJVXZLfeKUAgHN1ac5jTUQzby6fQNYvy3nhqficQqi47JLEBwNEgd7eo86w9O4qZ0cbPEQZaaE68Y/CCWo7TN0ENtVo=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (2603:10a6:803:5e::23)
  by VI1PR05MB5247.eurprd05.prod.outlook.com (2603:10a6:803:ae::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2937.22; Wed, 29 Apr
- 2020 22:55:17 +0000
+ 2020 22:55:19 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2937.028; Wed, 29 Apr 2020
- 22:55:17 +0000
+ 22:55:19 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Parav Pandit <parav@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>, Eli Cohen <eli@mellanox.com>,
+Cc:     netdev@vger.kernel.org, Erez Shitrit <erezsh@mellanox.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Alex Vesker <valex@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net 3/8] net/mlx5: E-switch, Fix mutex init order
-Date:   Wed, 29 Apr 2020 15:54:44 -0700
-Message-Id: <20200429225449.60664-4-saeedm@mellanox.com>
+Subject: [net 4/8] net/mlx5: DR, On creation set CQ's arm_db member to right value
+Date:   Wed, 29 Apr 2020 15:54:45 -0700
+Message-Id: <20200429225449.60664-5-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <20200429225449.60664-1-saeedm@mellanox.com>
 References: <20200429225449.60664-1-saeedm@mellanox.com>
@@ -56,120 +57,92 @@ X-ClientProxiedBy: BY5PR04CA0022.namprd04.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BY5PR04CA0022.namprd04.prod.outlook.com (2603:10b6:a03:1d0::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20 via Frontend Transport; Wed, 29 Apr 2020 22:55:15 +0000
+Received: from smtp.office365.com (73.15.39.150) by BY5PR04CA0022.namprd04.prod.outlook.com (2603:10b6:a03:1d0::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20 via Frontend Transport; Wed, 29 Apr 2020 22:55:17 +0000
 X-Mailer: git-send-email 2.25.4
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: dde5075c-3e46-4e31-914c-08d7ec906282
+X-MS-Office365-Filtering-Correlation-Id: 7eb2b8e2-0a29-4097-4a82-08d7ec9063ca
 X-MS-TrafficTypeDiagnostic: VI1PR05MB5247:|VI1PR05MB5247:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB52471C30B7D725F7F12517D0BEAD0@VI1PR05MB5247.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2043;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB524740B640D15C55ACA3F403BEAD0@VI1PR05MB5247.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
 X-Forefront-PRVS: 03883BD916
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(4636009)(396003)(39860400002)(366004)(136003)(346002)(376002)(54906003)(478600001)(6512007)(2906002)(66556008)(6916009)(66476007)(316002)(107886003)(6486002)(52116002)(6506007)(66946007)(6666004)(2616005)(186003)(8676002)(16526019)(26005)(86362001)(8936002)(36756003)(1076003)(5660300002)(4326008)(956004)(54420400002);DIR:OUT;SFP:1101;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: L9XsMEJJIuNIRl/6/gPIIouJIlaYcDKwjcUngU6pDg47ucrh+SusWD6QEZ7t1RWugMCR08jv27New7WkUL7JZiv+UiW9rIfW6I12ETQ32bNfA61co1t1pNe2cqvgAEfjgqm0O9YZRNxnhzVtX3SHXpDB1/nmHDb0VFEwgDtcx0J+ZlonQNuHykZKGgFBFJYJPOAN2unY3c1VcPyMM6x9tw/07nJXSvqyvaCNn4cY6oo9IZQniK8nVMZusOyUppWIvZN5wP/YlUVolpPVObzP07c+J7ai7pTDZNru7pgX0JtZhY/93x9GsasnZaauH/PzbAApOzGSVQf4Te+7wfkoBwtxpfGDLTUbmAxw1Wn5BnbSnPWY8jXYLJMqO1FxnvFvGKIqmCyTGfl9WQJKOQkSZ/Y+XK9yVMmLoUA6qQtQ602mc0yUEy7+aPXU/cdw+TQujQx/yF/WjwwM3CVhP3MTRu575ADYKpQG49p6J77Eyzt8C+ZXXqhaGYSCitMxS0q1
-X-MS-Exchange-AntiSpam-MessageData: a+YeogfRYlf+wzsFbxa6F+aZlH6x47uegrs9dwWi8CRQXCManF10GR3xZEOuGgloII3bPB67hYhOO4KklmcLM6dx68XEI4DCfj/YPNsMa/U2T6RlZiu819HGWWeL9SxLdgS+vs73uEK2iOoV25HSp1fmS9d+laq4sBZZLNDsJRi0jz9oqn4X1Z0dAzWmbrMEn9ykMfUa8S65fl7WOYWrE5zwdXapiJmb2jIz75vJGXRXiEhFcrb7TaMw+pTT3iuWOnNtr/MeTZvSpTUk3/+47b+GeEa0FAPM3jCTyfRyI6HtnV9Uz6L2wRGU2kaKIPPwmEVFYgiZpzxeeqg4VcZYY+qao38Rfi++GRoi4Ud1q/1tOUInLCAz3sTJa0fmmRJ8vNTq4rNyyeOx1+w6GtDtdfEAPNzJPu8JfkOUPZ6DLkYWGGwnSGiOe+5ziLg3EBurDeZ+9paxpJuBfuD0LNOx24QBkpqH8NBu39Oy962qaAF8fI8iEhtjfTZpM2fMHJckBzaTt8f/H8q+O6QsZ38LRf4exQKM/7Zu6McAHQYYtw3MLTIKbAOZmoKSxZpyjhD9Ypir7om4DRQNpgzXQ/U3CSf4hi/nQVICCLtICXkEdBRpUABbFpesRA/kd4UYp5hunxeckpLANw2oRf8l6HNe6kiAAcHnqHzn+b+7dDzPv58eOmISATzC1P2kpLrN35OBBV3yqo/3epy7S0TMXlR5yRe+yJ+ilqqwWtrRKn21dXSfrB4dFPekfGEs3KR7eeCEq5DAToJynvjnO0pRkyTaAx319RLQlCbIHja4ab9rt5A=
+X-Microsoft-Antispam-Message-Info: /lxaO02q3i1fdyb6W3wHZblpiOAAMFgJMn1xqHIDh/baeJfLm2aGzV1gF62RR9ywX35aDqvzLj2mh4RPDr042heFnRE4AeCZUTDjwUC65huoRVgsw5TLnnuDhQQRQVtsHSaBQI34oS3jBo7rew+kc97zZ/cdHLqqLLQ3VdjGjVYBFyoiQomwJemjfcNJuvpfUgY8iQGwnbNI2BzR68v6SaXi7Odhb4+T+IhajuaWAIBmrLOTaO1OnZJPvz+oKSd1/qJMm5wt4kd77fRMyrVsLdWevfip/++1AGpkg8GDzqneBTDav1Ntbofrvx29u+AmKT8KAyGGfQWWHkuZq2sMk4W7yTSlxPnKH7PpCs5jmkEsH2l+25soTkpnlhwNn3TJCQeTZdCEtTyrDRfPIa/6Oa2CVps0KISQMmDefdYdLdOGqJkIW5iHATmnvp04VwrLrnrEo7tWKE/JlqDX8Zk3K+oOqAcH2Fk6qDvN0SFQXWj4YPMn1r7qSGifMd6ZV2fS
+X-MS-Exchange-AntiSpam-MessageData: YGwBWRdovs2azqUR2S4p6H5jqJu75yK7VH1gpqEP/3q6ToLp4SOFWLnqkADPKM7MjznPGmQXAXqRzZPkxeN5MA14YDgKy7GqrIqZ7SNA5TkgppaMHy3hFkygmqVPKf9f3uBQhAtrOGzXK01MZ3PgjLdE6lFhzF2xWzoFE4BXEQ1SnfkxgB4LQu1TaK54cgvD29jXZjaQQhtw0W73rTQ3Nd2DYZwGd7K8hNOmMSFhfQQ6av0xkZwcetDcOorZuRcfb9ZDZ/tkObSeHnxSFHusk2/gyLA234jF4SGoqHWcJdEQa0hm0OPv3+IqxtWZ8jOiuv/gjIHMTLME6qhe2U5ONdzYwut/K5UyMPx2M8pjp3OGtEM/G18lgllDgLP4DLEgNWklYMQslQCxd/4jSkuYWvlCC6oZZZ09VQBXRHgkEFJ83ffAMGoAVyIIEYJ396hBhhpmZpdxvWOG05701T0aojfBHZfmM0MEqdnoCivFNGvNBmQtzSKvYVs4ycA36jBefuI/nX1kb1hGv3EXMW1F+RPYXs2j0Ek3F65/uvk76aqTNeRzUv1ZpAIWQRFGs0p0Ll0gmkVkCaR4OZIhXtQKcuPxnGyZO+8l5bib0J0OiSKM/4W+bKYsEKwsov69i7rGthl17yK7jZXGjimKx6GwWWSPXqd2zDOGmP4cacua9O4DgWVV3eMkOIEsTCwO+LcaK323p86MEobLT96VYwOFonyQ7Xc7tU1BNQ86iLbjov5zxgvGrj3769h3pWUPn1FIM7R0FRjI/prDENrX5W7YAPpY2HET7ShRbo+QPHLk4H4=
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dde5075c-3e46-4e31-914c-08d7ec906282
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2020 22:55:17.0483
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7eb2b8e2-0a29-4097-4a82-08d7ec9063ca
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2020 22:55:19.1860
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Setb+W4C81N+lU4xI4zKOF8FdoUk+NxIeBulDfL4Goy76v9E0uyJ1HsfwcWwQcGUQ6c3lu0/ko+CzBaBkEy+cw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: TcO44r2IxTy0383FhKISxZwwOrhACUpmB+8kexXfQl9waidWuz+crucJP61MN2x4CSHWGXyZIfRM/5KZ9NL4Uw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5247
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Parav Pandit <parav@mellanox.com>
+From: Erez Shitrit <erezsh@mellanox.com>
 
-In cited patch mutex is initialized after its used.
-Below call trace is observed.
-Fix the order to initialize the mutex early enough.
-Similarly follow mirror sequence during cleanup.
+In polling mode, set arm_db member to a value that will avoid CQ
+event recovery by the HW.
+Otherwise we might get event without completion function.
+In addition,empty completion function to was added to protect from
+unexpected events.
 
-kernel: DEBUG_LOCKS_WARN_ON(lock->magic != lock)
-kernel: WARNING: CPU: 5 PID: 45916 at kernel/locking/mutex.c:938
-__mutex_lock+0x7d6/0x8a0
-kernel: Call Trace:
-kernel: ? esw_vport_tbl_get+0x3b/0x250 [mlx5_core]
-kernel: ? mark_held_locks+0x55/0x70
-kernel: ? __slab_free+0x274/0x400
-kernel: ? lockdep_hardirqs_on+0x140/0x1d0
-kernel: esw_vport_tbl_get+0x3b/0x250 [mlx5_core]
-kernel: ? mlx5_esw_chains_create_fdb_prio+0xa57/0xc20 [mlx5_core]
-kernel: mlx5_esw_vport_tbl_get+0x88/0xf0 [mlx5_core]
-kernel: mlx5_esw_chains_create+0x2f3/0x3e0 [mlx5_core]
-kernel: esw_create_offloads_fdb_tables+0x11d/0x580 [mlx5_core]
-kernel: esw_offloads_enable+0x26d/0x540 [mlx5_core]
-kernel: mlx5_eswitch_enable_locked+0x155/0x860 [mlx5_core]
-kernel: mlx5_devlink_eswitch_mode_set+0x1af/0x320 [mlx5_core]
-kernel: devlink_nl_cmd_eswitch_set_doit+0x41/0xb0
-
-Fixes: 96e326878fa5 ("net/mlx5e: Eswitch, Use per vport tables for mirroring")
-Signed-off-by: Parav Pandit <parav@mellanox.com>
-Reviewed-by: Roi Dayan <roid@mellanox.com>
-Reviewed-by: Eli Cohen <eli@mellanox.com>
+Fixes: 297cccebdc5a ("net/mlx5: DR, Expose an internal API to issue RDMA operations")
+Signed-off-by: Erez Shitrit <erezsh@mellanox.com>
+Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
+Reviewed-by: Alex Vesker <valex@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c   | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ .../ethernet/mellanox/mlx5/core/steering/dr_send.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index 8289af360e8d..5d9def18ae3a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -2219,10 +2219,12 @@ static int esw_offloads_steering_init(struct mlx5_eswitch *esw)
- 		total_vports = num_vfs + MLX5_SPECIAL_VPORTS(esw->dev);
- 
- 	memset(&esw->fdb_table.offloads, 0, sizeof(struct offloads_fdb));
-+	mutex_init(&esw->fdb_table.offloads.vports.lock);
-+	hash_init(esw->fdb_table.offloads.vports.table);
- 
- 	err = esw_create_uplink_offloads_acl_tables(esw);
- 	if (err)
--		return err;
-+		goto create_acl_err;
- 
- 	err = esw_create_offloads_table(esw, total_vports);
- 	if (err)
-@@ -2240,9 +2242,6 @@ static int esw_offloads_steering_init(struct mlx5_eswitch *esw)
- 	if (err)
- 		goto create_fg_err;
- 
--	mutex_init(&esw->fdb_table.offloads.vports.lock);
--	hash_init(esw->fdb_table.offloads.vports.table);
--
- 	return 0;
- 
- create_fg_err:
-@@ -2253,18 +2252,19 @@ static int esw_offloads_steering_init(struct mlx5_eswitch *esw)
- 	esw_destroy_offloads_table(esw);
- create_offloads_err:
- 	esw_destroy_uplink_offloads_acl_tables(esw);
--
-+create_acl_err:
-+	mutex_destroy(&esw->fdb_table.offloads.vports.lock);
- 	return err;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
+index c0ab9cf74929..18719acb7e54 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_send.c
+@@ -695,6 +695,12 @@ static void dr_cq_event(struct mlx5_core_cq *mcq,
+ 	pr_info("CQ event %u on CQ #%u\n", event, mcq->cqn);
  }
  
- static void esw_offloads_steering_cleanup(struct mlx5_eswitch *esw)
- {
--	mutex_destroy(&esw->fdb_table.offloads.vports.lock);
- 	esw_destroy_vport_rx_group(esw);
- 	esw_destroy_offloads_fdb_tables(esw);
- 	esw_destroy_restore_table(esw);
- 	esw_destroy_offloads_table(esw);
- 	esw_destroy_uplink_offloads_acl_tables(esw);
-+	mutex_destroy(&esw->fdb_table.offloads.vports.lock);
- }
++static void dr_cq_complete(struct mlx5_core_cq *mcq,
++			   struct mlx5_eqe *eqe)
++{
++	pr_err("CQ completion CQ: #%u\n", mcq->cqn);
++}
++
+ static struct mlx5dr_cq *dr_create_cq(struct mlx5_core_dev *mdev,
+ 				      struct mlx5_uars_page *uar,
+ 				      size_t ncqe)
+@@ -756,6 +762,7 @@ static struct mlx5dr_cq *dr_create_cq(struct mlx5_core_dev *mdev,
+ 	mlx5_fill_page_frag_array(&cq->wq_ctrl.buf, pas);
  
- static void
+ 	cq->mcq.event = dr_cq_event;
++	cq->mcq.comp  = dr_cq_complete;
+ 
+ 	err = mlx5_core_create_cq(mdev, &cq->mcq, in, inlen, out, sizeof(out));
+ 	kvfree(in);
+@@ -767,7 +774,12 @@ static struct mlx5dr_cq *dr_create_cq(struct mlx5_core_dev *mdev,
+ 	cq->mcq.set_ci_db = cq->wq_ctrl.db.db;
+ 	cq->mcq.arm_db = cq->wq_ctrl.db.db + 1;
+ 	*cq->mcq.set_ci_db = 0;
+-	*cq->mcq.arm_db = 0;
++
++	/* set no-zero value, in order to avoid the HW to run db-recovery on
++	 * CQ that used in polling mode.
++	 */
++	*cq->mcq.arm_db = cpu_to_be32(2 << 28);
++
+ 	cq->mcq.vector = 0;
+ 	cq->mcq.irqn = irqn;
+ 	cq->mcq.uar = uar;
 -- 
 2.25.4
 
