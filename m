@@ -2,85 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5CCB1BE759
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 21:28:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A7491BE768
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 21:30:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726950AbgD2T2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 15:28:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52048 "EHLO
+        id S1726635AbgD2TaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 15:30:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726524AbgD2T2o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 15:28:44 -0400
-Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C880DC035495
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 12:28:44 -0700 (PDT)
-Received: by mail-oi1-x244.google.com with SMTP id o24so2923591oic.0
-        for <netdev@vger.kernel.org>; Wed, 29 Apr 2020 12:28:44 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726481AbgD2TaN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 15:30:13 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E869C03C1AE;
+        Wed, 29 Apr 2020 12:30:13 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id c2so3530587iow.7;
+        Wed, 29 Apr 2020 12:30:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura-hr.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HrWcuaUF1HhijaMJhHIxXSdQF25IxURehoKzpWG38wE=;
-        b=oz6BuGxKcLsvPcSWuaD64ljtycmubLeGNLddDXfMv1UECC45aLYmESQWtiSmV8I3MQ
-         iN5/smqBbdtg+Z+YUOoYxdi+Xd8gCgs5IvJzZFmsI0iwEdFwud4v6J+WR5YEp0uWU5OR
-         OgJIasumbfRiXfs+nivQF5cNevC7pPoRzHLQ6v3JfTJ9A8LMw1EEEXw+3LKemlxnjWSJ
-         2k9xs2UvTAjEaohgFL2r54LiXObxbHfXxsmC1u6t3czJAFeFJByvXy31x110Kga1x3+A
-         FcTmoXr0lJECl2QS5y01sUS8VR4sDTAtLuaG5oVDcw+ech1DRlg9u13eSWjZiLUz2hQK
-         SAmw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=Q4YCfHgQGAI/IyA88ZdbL6f/Trkpcsmu5JXOJXT4xoM=;
+        b=tZ4hSNBWzW0AulTPVBXQNQPTpxjLCo3IBwKL3dQHGu1HSrDYA1aFKDxl5Hk2KNsutF
+         +gq/tN90W1rdpc37E9ANSwKeIJpqF3b83PB/p7MH6IpfZRF9m1sp/yZIdqRXYx9H5mZj
+         fT0n8IHTCU0FwwA0cha/l8svNToJ5yHB4p2DLwQN8TT44wCo+wXt7N+SE3tJW8nkBmiX
+         msAi33tlCgRLBhxt0qQqnpKwtgYhzIltearExgLkLMgnlgS9SdGdR86K8SFhxyOwT09Q
+         4eVMIZrAYQBI4gqyr3SFI+S6qcegMg0ErqUwTiLJsitbkjM483l2MpC+EZWI1YW8ikK3
+         QgpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HrWcuaUF1HhijaMJhHIxXSdQF25IxURehoKzpWG38wE=;
-        b=BGL2UvXa+GBerLM1zygnXhDA+BCGbfxZFdNiLSFxwls75CP6cuVjvPHOfJfpMIRoP1
-         xA0Lcjv0qcgE/x58+j/1lF84ztRnQzpcDoyTntcUQjHb8PFhWx1GT3yxpY2dUKMmn+i2
-         kTC8uiDZSmPXmwoDLRXw/wmkjD8auv7SJSj1t699LVH1aKazU+NSpB9UAxsGzV78FJdh
-         lMiWPw2nY2Rzf3Q8TBNuMG27FuzUwQZGMYiE2sWCri2q6WDT7IzOwfZnyZAymWP3RQWb
-         lYiA6gq9iafe0zfAETLNMQ0pRPyfLV03puG5DEZ6/cwi5CMkExpcxGCjP+Y5N+QlFFeo
-         lkGg==
-X-Gm-Message-State: AGi0PubpfW2C2663zMDZMQLfO4wrvx4KLB0xNorE+eYhYBQWVd2Lj9g/
-        8nxrM5h6X6Y8M/s4yJaecLtxmvfUP78FpmbskAfh1kw+qEWzjg==
-X-Google-Smtp-Source: APiQypJdKenEudzwmRCZsVJROESba9igAfdi955cc/HXfQHfGJhnwpqdCdg1cSi3aWNuxlg4vPxYVVubva8Ng3NxLiY=
-X-Received: by 2002:aca:1b0f:: with SMTP id b15mr2859389oib.96.1588188524148;
- Wed, 29 Apr 2020 12:28:44 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200429110726.448625-1-robert.marko@sartura.hr> <20200429.115946.788260021055034651.davem@davemloft.net>
-In-Reply-To: <20200429.115946.788260021055034651.davem@davemloft.net>
-From:   Robert Marko <robert.marko@sartura.hr>
-Date:   Wed, 29 Apr 2020 21:28:33 +0200
-Message-ID: <CA+HBbNHRyk4_nmV0HyRH=x1-L+-DFd7SQKhX6APnJA0oNEtBNA@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 0/3] net: phy: mdio: add IPQ40xx MDIO support
-To:     David Miller <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        robh+dt@kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=Q4YCfHgQGAI/IyA88ZdbL6f/Trkpcsmu5JXOJXT4xoM=;
+        b=LJAt63g/JLenMHxIWcZIFC10HLzKvm3rQdehMt0t3/OnhjsR7STGC7z0PvGOtDGD2n
+         GX5tekmHsPDADdCx1A7UJbWBJtcRwWll0I6aRJ1qDk1+Sd5g3u0e+IeyCWwXZ4m9SMFu
+         W4U/Et4F4fc4nxG6LTRJew6HlgIxnfV6ZRiDUouN+ioPYs1AWDKCTaZxKlXGlUdl+wI3
+         kkS6rgHXzCrZAAaNQWWVKnaa3VernxKZ94BD8goge43XGhGj6BQGQoCaN27G7qVTvir5
+         jXuhzmNeClQPR4WQyNOV/KpGGOHC4MG58+jsIpW/ZdtnTxe+7/8Nool6EcJ19hqwrxxb
+         vgBw==
+X-Gm-Message-State: AGi0PuZZYIzA/AHyzrqvpposgvG4HWc8L4o/CNH713IKXqvOk/IoqKFD
+        BjAS5ErQr43fVBJDWUeNI+Y=
+X-Google-Smtp-Source: APiQypJQMkB2zok6NWTvPVBfZ/GYaFkAUifMKg4ACEVAB77cIPwXnF9YgHd4oqoHfZAtkVDhtg5sYA==
+X-Received: by 2002:a5d:8c89:: with SMTP id g9mr16775921ion.1.1588188612889;
+        Wed, 29 Apr 2020 12:30:12 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id u16sm1344650ilg.55.2020.04.29.12.30.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Apr 2020 12:30:11 -0700 (PDT)
+Date:   Wed, 29 Apr 2020 12:30:04 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Joe Stringer <joe@wand.net.nz>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Message-ID: <5ea9d5bc5ab8d_4d8d2ae8075c45bc18@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200429181154.479310-4-jakub@cloudflare.com>
+References: <20200429181154.479310-1-jakub@cloudflare.com>
+ <20200429181154.479310-4-jakub@cloudflare.com>
+Subject: RE: [PATCH bpf-next 3/3] selftests/bpf: Use SOCKMAP for server
+ sockets in bpf_sk_assign test
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 29, 2020 at 8:59 PM David Miller <davem@davemloft.net> wrote:
->
-> From: Robert Marko <robert.marko@sartura.hr>
-> Date: Wed, 29 Apr 2020 13:07:24 +0200
->
-> > This patch series provides support for the IPQ40xx built-in MDIO interface.
-> > Included are driver, devicetree bindings for it and devicetree node.
->
-> The DT changes don't apply cleanly to net-next, please respin.
-Sorry about that, I accidentally based the patch on DTS that has USB
-nodes in it.
-USB patches are also in the process of being upstreamed.
+Jakub Sitnicki wrote:
+> Update bpf_sk_assign test to fetch the server socket from SOCKMAP, now that
+> map lookup from BPF in SOCKMAP is enabled. This way the test TC BPF program
+> doesn't need to know what address server socket is bound to.
+> 
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
 
-I will send a v5 ASAP.
-Thanks
->
-> Thanks.
+Acked-by: John Fastabend <john.fastabend@gmail.com>
