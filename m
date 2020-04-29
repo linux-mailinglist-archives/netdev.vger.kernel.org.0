@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47FB51BE9FA
-	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 23:34:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35FA71BE9FC
+	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 23:34:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727097AbgD2VeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 17:34:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43610 "EHLO
+        id S1727783AbgD2Vek (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 17:34:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727109AbgD2VeU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 17:34:20 -0400
+        by vger.kernel.org with ESMTP id S1727109AbgD2Vej (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 17:34:39 -0400
 Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C09B5C03C1AE;
-        Wed, 29 Apr 2020 14:34:18 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id i3so3870476ioo.13;
-        Wed, 29 Apr 2020 14:34:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD20C03C1AE;
+        Wed, 29 Apr 2020 14:34:39 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id 19so3884634ioz.10;
+        Wed, 29 Apr 2020 14:34:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8b6QHxXd3vZ+EyiWhkwhg0kfpcq3O+hjHWyjj4r6ooc=;
-        b=O66tfx9gmcUfI6elnrIm/Rvhl6ScmaK0Z2nHqOxB+aFignowhn5UeE8nZtX+fReI7S
-         souwwPxwLCavRPXkMeALk5qkWl5EKNWPHUUnRRTgoiSa9j1gLVariTMqIte6Atgqh2tp
-         1nIDcdD23gJ0LvxVHTs9Yhdw8Nus8dC9J56l/tVahHURRrB35DVR6FT5ksdRx5+FuKb6
-         N+VttRTT9sD56f20XXvlNDsd57gDAqCNXK7NZmWbECnApUtg61wYTsofK8kYYfMDyNG5
-         wNeZ8YMkfIh3I6e4Yl525GLmsloVaqybIbYEGYtFyp5e+VhuMq+qZAXlUmN3PW1/2brw
-         o5eQ==
+        bh=hBjtzzG9HNAoqA6KQtvnkfm7t9Ci0Pib7cBZWKdTPp0=;
+        b=XPMucEFG6NYmnwcO3dWK7A/tpFyK+JkHWHHlQSND2rT1DPONzDRc1ioq0Sqy9pPOXn
+         yV8v2WBpsPFunDVqEzb912JdcKI2PXdnvbW4PB3taQiaFqaE9lwS9UJpyhbxLyp6R52+
+         fZVTTtIJbQ9OVNiqBy94Gq40L8ijWdKVXP69BAAko2fyeppYyKwjcyKLtdmg0X16eZZc
+         22o6V4IPnvEoQjlfcK/luqTDcjY5FW0BN077Q9qncRgKOJwF5zgNDndYBRmjKgEMT1T4
+         OE5zJEM6NHEIND42BfMXf6t3JePItMRIVDqJhqEUXfnNYfJya3gFrUYxU9NxZSRafz3V
+         Cjyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=8b6QHxXd3vZ+EyiWhkwhg0kfpcq3O+hjHWyjj4r6ooc=;
-        b=McWH0xvH/ySpx9/5qt7BaQ0g70k+b//DLaM/cv5Ng2sIlji0HI4RHaxp70u5mzyUVD
-         uPFPEO1supXUIeyY0+U8oXJDg9XmADTmrUtbQrThopSBge3ZDTspNo4mbWNEmuNLv29N
-         vllyH0a/6twkpdTOvBt2LN2X+64b3NA3/RiKY99GHwswFdEIYorsqZA3tr+kqMPcn9Dl
-         Ykemvx1uKQpHba5mI+klsuPJVGdKVCVDHkPH6hKlbJLHSd4zw5CD5miJZlHNlEE26jlZ
-         86R/hJLSbDzzfNIc18ie73g3Y4ybjvT8mG2kTuhpbgGC8YQQhoeXBAIiNgp33MciopLf
-         Po0Q==
-X-Gm-Message-State: AGi0PubC3Hdf4VpfU3xXBSjRa+11MC2s11Hdn2st20IaFrmOLmoiIkEs
-        FSerR6tnTLnDV5k/rHAbpA5WSEdE
-X-Google-Smtp-Source: APiQypKWeCKlYsCHkBjkALP7x8BhRcR3ufT3FOYVFtXu1hFbUr2rxuauy2foOX83lf3B6V7OpPeVNw==
-X-Received: by 2002:a05:6602:2f08:: with SMTP id q8mr182814iow.103.1588196057490;
-        Wed, 29 Apr 2020 14:34:17 -0700 (PDT)
+        bh=hBjtzzG9HNAoqA6KQtvnkfm7t9Ci0Pib7cBZWKdTPp0=;
+        b=BpnMjZ+vZ1a6citkcNXlvXkoxrXP/mSotAwlg3PKFDC/FvHSp0+7/EZEofhHHgthb5
+         GM+vHLgFt9qrJtsAdME7uYj5UfK52KY5haz4tOGdrd1/2PBP8VH2gsXZ4e2wbPGiDpb+
+         RN3X8663y4r7T5I6ZpFuSjdG+fg6rNsFnu/WxpXBoZ/7w38h2g+/+rhMJzXLQSexk5Wg
+         IGNtZfXUkKP82nUMQLYqTP7MjMshgon2EBSW1cfLzKaI8qPWfz86pBSWlAeiayyBVeY/
+         eqeAxn8ESFrokg1Yr9r9sgMCpyAh8rbmp8yulhQZmfIG6VD3c+fbcEKr2jlrYpQt50gu
+         Gf2Q==
+X-Gm-Message-State: AGi0PuasRi0cNhB7XAd+XR7NOiNp09R8zLXNaRGvMUX6WO2BD+ij/PTk
+        gSfTLO7oeFtH7ZEZcncwfXoLUEom
+X-Google-Smtp-Source: APiQypLblPr+4pgGmbbp+M9VmdU5PWti1LyfR7CNzPO3ghP/Mc2lP/C+YFnmtSvf90JAebjm1VmDyg==
+X-Received: by 2002:a6b:ea16:: with SMTP id m22mr192605ioc.73.1588196078708;
+        Wed, 29 Apr 2020 14:34:38 -0700 (PDT)
 Received: from [10.67.49.116] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id h82sm1525684ila.14.2020.04.29.14.34.15
+        by smtp.googlemail.com with ESMTPSA id a9sm1489309iln.66.2020.04.29.14.34.37
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Apr 2020 14:34:16 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 3/7] net: bcmgenet: move clk_wol management to
- bcmgenet_wol
+        Wed, 29 Apr 2020 14:34:38 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 4/7] Revert "net: bcmgenet: remove unused
+ function in bcmgenet.c"
 To:     Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <1588190526-2082-1-git-send-email-opendmb@gmail.com>
- <1588190526-2082-4-git-send-email-opendmb@gmail.com>
+ <1588190526-2082-5-git-send-email-opendmb@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -112,34 +111,25 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <411df968-bcc3-298b-2125-3a90567c8bb2@gmail.com>
-Date:   Wed, 29 Apr 2020 14:34:14 -0700
+Message-ID: <29a5c3d2-c502-5838-9825-758199b57528@gmail.com>
+Date:   Wed, 29 Apr 2020 14:34:36 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <1588190526-2082-4-git-send-email-opendmb@gmail.com>
+In-Reply-To: <1588190526-2082-5-git-send-email-opendmb@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 4/29/20 1:02 PM, Doug Berger wrote:
-> The GENET_POWER_WOL_MAGIC power up and power down code configures
-> the device for WoL when suspending and disables the WoL logic when
-> resuming. It makes sense that this code should also manage the WoL
-> clocking.
+> This reverts commit e2072600a24161b7ddcfb26814f69f5fbc8ef85a.
 > 
-> This commit consolidates the logic and moves it earlier in the
-> resume sequence.
-> 
-> Since the clock is now only enabled if WoL is successfully entered
-> the wol_active flag is introduced to track that state to keep the
-> clock enables and disables balanced in case a suspend is aborted.
-> The MPD_EN hardware bit can't be used because it can be cleared
-> when the MAC is reset by a deep sleep.
+> This commit restores the previous implementation of Hardware Filter
+> Block functions to the file for use in subsequent commits.
 > 
 > Signed-off-by: Doug Berger <opendmb@gmail.com>
 
