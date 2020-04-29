@@ -2,103 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5ABFB1BE801
+	by mail.lfdr.de (Postfix) with ESMTP id C8BB51BE802
 	for <lists+netdev@lfdr.de>; Wed, 29 Apr 2020 22:02:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726955AbgD2UCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 29 Apr 2020 16:02:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57302 "EHLO
+        id S1727047AbgD2UCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 29 Apr 2020 16:02:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726456AbgD2UCL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 16:02:11 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A5A0C03C1AE;
-        Wed, 29 Apr 2020 13:02:11 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id a7so1196825pju.2;
-        Wed, 29 Apr 2020 13:02:11 -0700 (PDT)
+        with ESMTP id S1726456AbgD2UCM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 29 Apr 2020 16:02:12 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40824C03C1AE;
+        Wed, 29 Apr 2020 13:02:12 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id 18so1591064pfv.8;
+        Wed, 29 Apr 2020 13:02:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=FbKgYhNUuDOHJsHnW/KP1GDdDFu/iaKsEDkt0G2dvIM=;
-        b=PQJK8PYa3TgWlIlaOjhepDfffncYsNJM9d7nrGNG1YF74plyvZOHcwJF7i/cBAfit2
-         5qFNSGz9r5dsnXtEYnME3KPa7PnDIffdDqyyO3Cz+QmAjyIzMOxexw+Vc9Q8GLJz7wUw
-         TAi8oFs8gugm7P1Dl1rUDnP6Efeld1Va72gSTlTyiEdnXhCEexc4iQhBTbvbK9yp4vx8
-         p/hM42zhRZ+/GyuFWqJeDRyS/teI3rGX2O+ReuPlN5zIDMEVSjBhDsZqFSCOVT7+lrhR
-         1IlxSsZIsmBHkbfaAPal/IXJLAVyhA/rbc46+COdLzcXppIOaO8oOrVEuDgocdQIUBER
-         6LGw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=CevivX0aGr8AmmZvoR5A9jtsq4aH4kUQzZm/M7FIZ5A=;
+        b=E8ctWVjqQpu2nsC3Ydpfc3LtOwRwSwTFLxeQmSyOW7GOyuklsAGKUhnLYZB9c8CsNm
+         hpp7dzl3Fd2wqkw4EbMylSk2epGKfN0TPB6mt4zjfeVkYTipehLvMlvMuZaO0CTUQ7gD
+         oU8uDZvz0tBNyGI43+GQ8eoilcf7uESduagq48P5M1vNTAGiTY4pwN4luQt20aQ7OoNw
+         qu6WQS4rhVoIS2pcvn3VaNL20p976+o1C0iflB/oSe9voUEerFo/AThNy0wmmkGCcsMY
+         y4A+/YAY2Qb1ua47Z4KnX4bXjKKaVJyibTfqIkW7k8J8N0wq/L/a4is93rRPGTOqwssF
+         aa1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=FbKgYhNUuDOHJsHnW/KP1GDdDFu/iaKsEDkt0G2dvIM=;
-        b=HXUah+S/caLEAVJD40CoZMFKZp1Z9mxDSn3Ndp/5n9PqM1Z3lUQGw9KG4gL0IK27DQ
-         qlDdRRTSTNIqpT9HhWpC7diXvcMgjCvyDtLZQGl10Y8CJ65EwylL8vYbSA17OwClKrLu
-         WGSycxO6YVR7ZDIJftKUzPZyNdwE/AwnxB+ZMxyavfxkBZv+hxw8M5sz3hB2w+L47XlQ
-         6ThTVmKZSASQ48fokKg/yESAk42PJEe1dbhfxPd5VMLwHswrDM/Ys2VviAvsV1nZr0z8
-         B5O7Z12F4UqPxIdHErIJJCDsJugEf5O2BR7S2R/BVEKQ4gV4xEUYx3Iw3Fz7mId1yFz1
-         Wm+A==
-X-Gm-Message-State: AGi0Pub2YQyLryXJI2OeDt49G7k7mThQR61aAaPnIz+VNN/P78ypkBIG
-        o2vHHBbj5VQwcTUDXc5EY74=
-X-Google-Smtp-Source: APiQypLd7oTlojrgKsENfngJ6kgBaUMRvE7QpUxCW/jUWLZXE09y+Qavjl2CYK9Uj4/lIYVdOn5qMA==
-X-Received: by 2002:a17:902:7d98:: with SMTP id a24mr24166plm.97.1588190530612;
-        Wed, 29 Apr 2020 13:02:10 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=CevivX0aGr8AmmZvoR5A9jtsq4aH4kUQzZm/M7FIZ5A=;
+        b=pkz+u7qoMo4R7jonG3fkSC71MOGykA/Syo+D1jkA4btPbDZerT+JPRwsMtI7kWmAc7
+         WjOgJzfcbhxywISzyv70oQ4ztyoXB2chLgcDoTuhB/HH8u+qnaIAvqACVeOy+wuV4aVG
+         imfb9PiirlSylcD+ICl4W7/tN+qNgL1cXQYvSHlHg8xdwfjEHwfjbVOVnPB0w6NYTfqd
+         TD/pAoxnMiYbmCj3LCz9Ux4nzDIMFmxCuhvxa6eDXy600PHUKN/mucubVUrcxoHcd38P
+         oJLkgNj1FtGXfZBfDuZgSh8JVV1/w4efigU7/02xPKTiTJIgzt54efDCEUaqZTLnKPw2
+         X/9g==
+X-Gm-Message-State: AGi0Puah/2YyI7/A8y0dwreTuAvCTSXDr/VDbgisw9RZqU8GjJ4/bLMJ
+        cP2G4GwjJfCa/gJNuUegzHg=
+X-Google-Smtp-Source: APiQypImKV5ErRzSjavCApt6/HJl9CJMMMT7fj0bHkjKg0gkYmap9I/6LTUHWG0dNp63KbAHLkBTpw==
+X-Received: by 2002:a63:8c17:: with SMTP id m23mr17899491pgd.246.1588190531743;
+        Wed, 29 Apr 2020 13:02:11 -0700 (PDT)
 Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id r128sm1705817pfc.141.2020.04.29.13.02.09
+        by smtp.gmail.com with ESMTPSA id r128sm1705817pfc.141.2020.04.29.13.02.10
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 29 Apr 2020 13:02:09 -0700 (PDT)
+        Wed, 29 Apr 2020 13:02:11 -0700 (PDT)
 From:   Doug Berger <opendmb@gmail.com>
 To:     Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Doug Berger <opendmb@gmail.com>
-Subject: [PATCH net-next v2 0/7] net: bcmgenet: add support for Wake on Filter
-Date:   Wed, 29 Apr 2020 13:01:59 -0700
-Message-Id: <1588190526-2082-1-git-send-email-opendmb@gmail.com>
+Subject: [PATCH net-next v2 1/7] net: bcmgenet: set Rx mode before starting netif
+Date:   Wed, 29 Apr 2020 13:02:00 -0700
+Message-Id: <1588190526-2082-2-git-send-email-opendmb@gmail.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1588190526-2082-1-git-send-email-opendmb@gmail.com>
+References: <1588190526-2082-1-git-send-email-opendmb@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This commit explicitly calls the bcmgenet_set_rx_mode() function when
+the network interface is started. This function is normally called by
+ndo_set_rx_mode when the flags are changed, but apparently not when
+the driver is suspended and resumed.
 
-Changes in v2:
-	Corrected Signed-off-by for commit 3/7.
+This change ensures that address filtering or promiscuous mode are
+properly restored by the driver after the MAC may have been reset.
 
-This commit set adds support for waking from 'standby' using a
-Rx Network Flow Classification filter specified with ethtool.
+Fixes: b6e978e50444 ("net: bcmgenet: add suspend/resume callbacks")
+Signed-off-by: Doug Berger <opendmb@gmail.com>
+---
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-The first two commits are bug fixes that should be applied to the
-stable branches, but are included in this patch set to reduce merge
-conflicts that might occur if not applied before the other commits
-in this set.
-
-The next commit consolidates WoL clock managment as a part of the
-overall WoL configuration.
-
-The next commit restores a set of functions that were removed from
-the driver just prior to the 4.9 kernel release.
-
-The following commit relocates the functions in the file to prevent
-the need for additional forward declarations.
-
-Next, support for the Rx Network Flow Classification interface of
-ethtool is added.
-
-Finally, support for the WAKE_FILTER wol method is added.
-
-Doug Berger (7):
-  net: bcmgenet: set Rx mode before starting netif
-  net: bcmgenet: Fix WoL with password after deep sleep
-  net: bcmgenet: move clk_wol management to bcmgenet_wol
-  Revert "net: bcmgenet: remove unused function in bcmgenet.c"
-  net: bcmgenet: code movement
-  net: bcmgenet: add support for ethtool rxnfc flows
-  net: bcmgenet: add WAKE_FILTER support
-
- drivers/net/ethernet/broadcom/genet/bcmgenet.c     | 673 +++++++++++++++++++--
- drivers/net/ethernet/broadcom/genet/bcmgenet.h     |  21 +-
- drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c |  90 ++-
- 3 files changed, 708 insertions(+), 76 deletions(-)
-
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index 351d0282f199..eb0dd4d4800c 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -65,6 +65,9 @@
+ #define GENET_RDMA_REG_OFF	(priv->hw_params->rdma_offset + \
+ 				TOTAL_DESC * DMA_DESC_SIZE)
+ 
++/* Forward declarations */
++static void bcmgenet_set_rx_mode(struct net_device *dev);
++
+ static inline void bcmgenet_writel(u32 value, void __iomem *offset)
+ {
+ 	/* MIPS chips strapped for BE will automagically configure the
+@@ -2793,6 +2796,7 @@ static void bcmgenet_netif_start(struct net_device *dev)
+ 	struct bcmgenet_priv *priv = netdev_priv(dev);
+ 
+ 	/* Start the network engine */
++	bcmgenet_set_rx_mode(dev);
+ 	bcmgenet_enable_rx_napi(priv);
+ 
+ 	umac_enable_set(priv, CMD_TX_EN | CMD_RX_EN, true);
 -- 
 2.7.4
 
